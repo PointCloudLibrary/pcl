@@ -75,7 +75,7 @@ SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::setTargetFeatur
 template <typename PointSource, typename PointTarget, typename FeatureT>
 void
 SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::selectSamples(
-    const PointCloudSource& cloud, int nr_samples, pcl::Indices& sample_indices)
+    const PointCloudSource& cloud, int nr_samples, pcl::Indices& sample_indices) const
 {
   if (nr_samples > static_cast<int>(cloud.size())) {
     PCL_ERROR("[pcl::%s::selectSamples] ", getClassName().c_str());
@@ -120,11 +120,10 @@ void
 SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::findSimilarFeatures(
     const pcl::Indices& sample_indices,
     std::vector<pcl::Indices>& similar_features,
-    pcl::Indices& corresponding_indices)
+    pcl::Indices& corresponding_indices) const
 {
   // Allocate results
   corresponding_indices.resize(sample_indices.size());
-  std::vector<float> nn_distances(k_correspondences_);
 
   // Loop over the sampled features
   for (std::size_t i = 0; i < sample_indices.size(); ++i) {
@@ -133,12 +132,14 @@ SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::findSimilarFeat
 
     // Find the k nearest feature neighbors to the sampled input feature if they are not
     // in the cache already
-    if (similar_features[idx].empty())
+    if (similar_features[idx].empty()) {
+      std::vector<float> nn_distances(k_correspondences_);
       feature_tree_->nearestKSearch(*input_features_,
                                     idx,
                                     k_correspondences_,
                                     similar_features[idx],
                                     nn_distances);
+    }
 
     // Select one at random and add it to corresponding_indices
     if (k_correspondences_ == 1)
@@ -223,13 +224,11 @@ SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::computeTransfor
 
   // Temporaries
   pcl::Indices inliers;
-  float inlier_fraction;
-  float error;
 
   // If guess is not the Identity matrix we check it
   if (!guess.isApprox(Eigen::Matrix4f::Identity(), 0.01f)) {
-    getFitness(inliers, error);
-    inlier_fraction =
+    const float error = getFitness(guess, inliers);
+    const float inlier_fraction =
         static_cast<float>(inliers.size()) / static_cast<float>(input_->size());
 
     if (inlier_fraction >= inlier_fraction_ && error < lowest_error) {
@@ -241,13 +240,29 @@ SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::computeTransfor
 
   // Feature correspondence cache
   std::vector<pcl::Indices> similar_features(input_->size());
+  std::vector<float> nn_distances;
+  nn_distances.reserve(k_correspondences_);
+
+#pragma omp parallel for default(none) shared(similar_features)                        \
+    firstprivate(nn_distances) num_threads(num_threads_)
+  for (int i = 0; i < static_cast<int>(input_->size()); ++i) {
+    nn_distances.clear();
+    feature_tree_->nearestKSearch(
+        *input_features_, i, k_correspondences_, similar_features[i], nn_distances);
+  }
+
+  // Temporary containers
+  pcl::Indices sample_indices(nr_samples_);
+  pcl::Indices corresponding_indices(nr_samples_);
 
   // Start
+#pragma omp parallel for \
+  default(none) \
+  shared(lowest_error, similar_features) \
+  firstprivate(inliers, sample_indices, corresponding_indices) \
+  reduction(+: num_rejections) \
+  num_threads(num_threads_)
   for (int i = 0; i < max_iterations_; ++i) {
-    // Temporary containers
-    pcl::Indices sample_indices;
-    pcl::Indices corresponding_indices;
-
     // Draw nr_samples_ random samples
     selectSamples(*input_, nr_samples_, sample_indices);
 
@@ -257,36 +272,34 @@ SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::computeTransfor
     // Apply prerejection
     if (!correspondence_rejector_poly_->thresholdPolygon(sample_indices,
                                                          corresponding_indices)) {
-      ++num_rejections;
+      num_rejections += 1;
       continue;
     }
 
-    // Estimate the transform from the correspondences, write to transformation_
+    // Estimate the transform from the correspondences, write to transformation
+    Eigen::Matrix4f transformation;
     transformation_estimation_->estimateRigidTransformation(
-        *input_, sample_indices, *target_, corresponding_indices, transformation_);
+        *input_, sample_indices, *target_, corresponding_indices, transformation);
 
-    // Take a backup of previous result
-    const Matrix4 final_transformation_prev = final_transformation_;
-
-    // Set final result to current transformation
-    final_transformation_ = transformation_;
-
-    // Transform the input and compute the error (uses input_ and final_transformation_)
-    getFitness(inliers, error);
-
-    // Restore previous result
-    final_transformation_ = final_transformation_prev;
+    // Transform the input and compute the error (uses input_ and transformation)
+    const float error = getFitness(transformation, inliers);
 
     // If the new fit is better, update results
-    inlier_fraction =
+    const float inlier_fraction =
         static_cast<float>(inliers.size()) / static_cast<float>(input_->size());
 
-    // Update result if pose hypothesis is better
-    if (inlier_fraction >= inlier_fraction_ && error < lowest_error) {
-      inliers_ = inliers;
-      lowest_error = error;
-      converged_ = true;
-      final_transformation_ = transformation_;
+    if (inlier_fraction >= inlier_fraction_) {
+#pragma omp critical
+      {
+        // Update result if pose hypothesis is better
+        if (error < lowest_error) {
+          inliers_ = inliers;
+          lowest_error = error;
+          converged_ = true;
+          transformation_ = transformation;
+          final_transformation_ = transformation;
+        }
+      }
     }
   }
 
@@ -305,20 +318,28 @@ SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::computeTransfor
 template <typename PointSource, typename PointTarget, typename FeatureT>
 void
 SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::getFitness(
-    pcl::Indices& inliers, float& fitness_score)
+    pcl::Indices& inliers, float& fitness_score) const
+{
+  fitness_score = getFitness(final_transformation_, inliers);
+}
+
+template <typename PointSource, typename PointTarget, typename FeatureT>
+float
+SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::getFitness(
+    const Eigen::Matrix4f& transformation, pcl::Indices& inliers) const
 {
   // Initialize variables
   inliers.clear();
   inliers.reserve(input_->size());
-  fitness_score = 0.0f;
+  float fitness_score = 0.0f;
 
   // Use squared distance for comparison with NN search results
   const float max_range = corr_dist_threshold_ * corr_dist_threshold_;
 
-  // Transform the input dataset using the final transformation
+  // Transform the input dataset using the transformation
   PointCloudSource input_transformed;
   input_transformed.resize(input_->size());
-  transformPointCloud(*input_, input_transformed, final_transformation_);
+  transformPointCloud(*input_, input_transformed, transformation);
 
   // For each point in the source dataset
   for (std::size_t i = 0; i < input_transformed.size(); ++i) {
@@ -342,6 +363,8 @@ SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::getFitness(
     fitness_score /= static_cast<float>(inliers.size());
   else
     fitness_score = std::numeric_limits<float>::max();
+
+  return fitness_score;
 }
 
 } // namespace pcl
