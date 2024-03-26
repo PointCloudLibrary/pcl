@@ -48,8 +48,8 @@ namespace pcl
 {
 
 template <>
-float squaredEuclideanDistance (const pcl::segmentation::grabcut::Color &c1,
-                                const pcl::segmentation::grabcut::Color &c2)
+inline float squaredEuclideanDistance (const pcl::segmentation::grabcut::Color &c1,
+                                       const pcl::segmentation::grabcut::Color &c2)
 {
   return ((c1.r-c2.r)*(c1.r-c2.r)+(c1.g-c2.g)*(c1.g-c2.g)+(c1.b-c2.b)*(c1.b-c2.b));
 }
