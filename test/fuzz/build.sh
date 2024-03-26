@@ -9,17 +9,15 @@
 #
 
 # This script is run inside OSS-fuzz's docker image
-# and builds PCL's fuzzers to run continuously 
-# through OSS-fuzz.
-# In the OSS-fuzz  docker image PCL is located at $SRC/pcl.
+# and builds PCL's fuzzers to run continuously through OSS-fuzz.
+# In the OSS-fuzz  docker image PCL is located at $SRC/pcl
 
 # The Dockerfile that builds PCL can be found here:
-# (url pending)
+# https://github.com/google/oss-fuzz/tree/master/projects/pcl/Dockerfile
 
 # Build PCL
-cd pcl
-mkdir build && cd build
-pwd
+mkdir -p build && cd build
+
 cmake -DWITH_OPENGL=FALSE \
       -DWITH_PCAP=FALSE \
       -DWITH_VTK=FALSE \
@@ -43,23 +41,27 @@ cmake -DWITH_OPENGL=FALSE \
       -DBUILD_surface=OFF \
       -DBUILD_tracking=OFF \
       -DBUILD_visualization=OFF \
-      ..
+      $SRC/pcl
 
 make -j$(nproc)
 
 # Build fuzzers
-cd ../test/fuzz
+cd $SRC/pcl/test/fuzz
 
+# TODO: create a CMake/Makefile
+$CXX $CXXFLAGS -DPCLAPI_EXPORTS \
+        -O2 -g -DNDEBUG -fPIC -std=c++14 \
+        -o ply_reader_fuzzer.o -c ply_reader_fuzzer.cpp
 $CXX $CXXFLAGS -DPCLAPI_EXPORTS \
         -I/src/pcl/build/include -I/src/pcl/common/include \
         -I/src/pcl/dssdk/include \
         -I/src/pcl/io/include -isystem /usr/include/eigen3 \
         -O2 -g -DNDEBUG -fPIC -std=c++14 \
-        -o ply_reader_fuzzer.o -c ply_reader_fuzzer.cpp
+        -o io_wrappers.o -c io_wrappers.cpp
 
-$CXX $CXXFLAGS $LIB_FUZZING_ENGINE ply_reader_fuzzer.o \
-        ../../build/lib/libpcl_io.a ../../build/lib/libpcl_io_ply.a \
-        ../../build/lib/libpcl_common.a \
+$CXX $CXXFLAGS $LIB_FUZZING_ENGINE ply_reader_fuzzer.o io_wrappers.o \
+        $SRC/build/lib/libpcl_io.a $SRC/build/lib/libpcl_io_ply.a \
+        $SRC/build/lib/libpcl_common.a \
         /usr/local/lib/libboost_filesystem.a -o $OUT/ply_reader_fuzzer -lm
 
-zip $OUT/ply_reader_fuzzer_seed_corpus.zip $SRC/pcl/test/cube.ply
+zip -r $OUT/ply_reader_fuzzer_seed_corpus.zip ./corpus
