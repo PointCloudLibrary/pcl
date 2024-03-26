@@ -151,8 +151,10 @@ namespace pcl
           continue;
         }
 
-        for (std::size_t j = 1; j < nn_indices.size (); ++j)             // nn_indices[0] should be sq_idx
-        {
+        for (std::size_t j = 0; j < nn_indices.size(); ++j) {
+          if (seed_queue[sq_idx] == nn_indices[j]) { // Don't process the same point
+            continue;
+          }
           if (processed[nn_indices[j]])                         // Has this point been processed before ?
             continue;
 
@@ -270,8 +272,10 @@ namespace pcl
           continue;
         }
 
-        for (std::size_t j = 1; j < nn_indices.size (); ++j)             // nn_indices[0] should be sq_idx
-        {
+        for (std::size_t j = 0; j < nn_indices.size(); ++j) {
+          if (seed_queue[sq_idx] == nn_indices[j]) { // Don't process the same point
+            continue;
+          }
           if (processed[nn_indices[j]])                             // Has this point been processed before ?
             continue;
 

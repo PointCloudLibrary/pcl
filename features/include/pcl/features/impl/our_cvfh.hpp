@@ -109,37 +109,50 @@ pcl::OURCVFHEstimation<PointInT, PointNT, PointOutT>::extractEuclideanClustersSm
     if (processed[i])
       continue;
 
-    std::vector<std::size_t> seed_queue;
+    pcl::Indices seed_queue;
     std::size_t sq_idx = 0;
-    seed_queue.push_back (i);
+    seed_queue.push_back(i);
 
     processed[i] = true;
 
-    while (sq_idx < seed_queue.size ())
-    {
+    while (sq_idx < seed_queue.size()) {
       // Search for sq_idx
-      if (!tree->radiusSearch (seed_queue[sq_idx], tolerance, nn_indices, nn_distances))
-      {
+      if (!tree->radiusSearch(
+              seed_queue[sq_idx], tolerance, nn_indices, nn_distances)) {
         sq_idx++;
         continue;
       }
 
-      for (std::size_t j = 1; j < nn_indices.size (); ++j) // nn_indices[0] should be sq_idx
-      {
-        if (processed[nn_indices[j]]) // Has this point been processed before ?
-          continue;
+      const auto process_neighbor = [&](const auto& neighbor) {
+        if (processed[neighbor]) // Has this point been processed before ?
+          return;
 
         //processed[nn_indices[j]] = true;
         // [-1;1]
 
-        double dot_p = normals[seed_queue[sq_idx]].normal[0] * normals[nn_indices[j]].normal[0]
-            + normals[seed_queue[sq_idx]].normal[1] * normals[nn_indices[j]].normal[1] + normals[seed_queue[sq_idx]].normal[2]
-            * normals[nn_indices[j]].normal[2];
+        double dot_p =
+            normals[seed_queue[sq_idx]].normal[0] * normals[neighbor].normal[0] +
+            normals[seed_queue[sq_idx]].normal[1] * normals[neighbor].normal[1] +
+            normals[seed_queue[sq_idx]].normal[2] * normals[neighbor].normal[2];
 
-        if (std::abs (std::acos (dot_p)) < eps_angle)
-        {
-          processed[nn_indices[j]] = true;
-          seed_queue.push_back (nn_indices[j]);
+        if (std::abs(std::acos(dot_p)) < eps_angle) {
+          processed[neighbor] = true;
+          seed_queue.push_back(neighbor);
+        }
+      };
+
+      if (tree->getSortedResults()) {
+        // we can skip the 1st result, since it would be the same
+        for (std::size_t j = 1; j < nn_indices.size(); ++j) {
+          process_neighbor(nn_indices[j]);
+        }
+      }
+      else {
+        for (const auto& nn_idx : nn_indices) {
+          if (seed_queue[sq_idx] == nn_idx) { // Don't process the same point
+            continue;
+          }
+          process_neighbor(nn_idx);
         }
       }
 
