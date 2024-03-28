@@ -297,10 +297,6 @@ pcl::getMinMax3D (const pcl::PCLPointCloud2ConstPtr &cloud, const pcl::Indices &
       memcpy(&pt[2],
              &cloud->data[xyz_offset[2] + index * cloud->point_step],
              sizeof(float));
-      // Check if the point is invalid
-      if (!std::isfinite(pt[0]) || !std::isfinite(pt[1]) || !std::isfinite(pt[2])) {
-        continue;
-      }
       min_p = (min_p.min)(pt);
       max_p = (max_p.max)(pt);
     }
