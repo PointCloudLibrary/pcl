@@ -97,6 +97,8 @@ pcl::OURCVFHEstimation<PointInT, PointNT, PointOutT>::extractEuclideanClustersSm
               static_cast<std::size_t>(normals.size()));
     return;
   }
+  // If tree gives sorted results, we can skip the first one because it is the query point itself
+  const std::size_t nn_start_idx = tree->getSortedResults () ? 1 : 0;
 
   // Create a bool vector of processed point indices, and initialize it to false
   std::vector<bool> processed (cloud.size (), false);
@@ -124,7 +126,7 @@ pcl::OURCVFHEstimation<PointInT, PointNT, PointOutT>::extractEuclideanClustersSm
         continue;
       }
 
-      for (std::size_t j = 1; j < nn_indices.size (); ++j) // nn_indices[0] should be sq_idx
+      for (std::size_t j = nn_start_idx; j < nn_indices.size (); ++j)
       {
         if (processed[nn_indices[j]]) // Has this point been processed before ?
           continue;

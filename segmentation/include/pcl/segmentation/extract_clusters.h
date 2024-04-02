@@ -123,6 +123,8 @@ namespace pcl
                 static_cast<std::size_t>(normals.size()));
       return;
     }
+    // If tree gives sorted results, we can skip the first one because it is the query point itself
+    const std::size_t nn_start_idx = tree->getSortedResults () ? 1 : 0;
     const double cos_eps_angle = std::cos (eps_angle); // compute this once instead of acos many times (faster)
 
     // Create a bool vector of processed point indices, and initialize it to false
@@ -151,7 +153,7 @@ namespace pcl
           continue;
         }
 
-        for (std::size_t j = 1; j < nn_indices.size (); ++j)             // nn_indices[0] should be sq_idx
+        for (std::size_t j = nn_start_idx; j < nn_indices.size (); ++j)
         {
           if (processed[nn_indices[j]])                         // Has this point been processed before ?
             continue;
@@ -243,6 +245,8 @@ namespace pcl
                 static_cast<std::size_t>(normals.size()));
       return;
     }
+    // If tree gives sorted results, we can skip the first one because it is the query point itself
+    const std::size_t nn_start_idx = tree->getSortedResults () ? 1 : 0;
     const double cos_eps_angle = std::cos (eps_angle); // compute this once instead of acos many times (faster)
     // Create a bool vector of processed point indices, and initialize it to false
     std::vector<bool> processed (cloud.size (), false);
@@ -270,7 +274,7 @@ namespace pcl
           continue;
         }
 
-        for (std::size_t j = 1; j < nn_indices.size (); ++j)             // nn_indices[0] should be sq_idx
+        for (std::size_t j = nn_start_idx; j < nn_indices.size (); ++j)
         {
           if (processed[nn_indices[j]])                             // Has this point been processed before ?
             continue;
