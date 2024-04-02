@@ -638,6 +638,19 @@ TEST (VoxelGrid, Filters)
   EXPECT_LE (std::abs (output[neighbors.at (0)].y - output[centroidIdx].y), 0.02);
   EXPECT_LE ( output[neighbors.at (0)].z - output[centroidIdx].z, 0.02 * 2);
 
+  // indices must be handled correctly
+  auto indices = grid.getIndices(); // original cloud indices
+  auto cloud_copied = std::make_shared<PointCloud<PointXYZ>>();
+  *cloud_copied = *cloud;
+  for (int i = 0; i < 100; i++) {
+    cloud_copied->emplace_back(100 + i, 100 + i, 100 + i);
+  }
+  grid.setInputCloud(cloud_copied);
+  grid.setIndices(indices);
+  grid.filter(output);
+
+  EXPECT_EQ(output.size(), 100); // additional points should be ignored
+
   // Test the pcl::PCLPointCloud2 method
   VoxelGrid<PCLPointCloud2> grid2;
 
@@ -719,6 +732,18 @@ TEST (VoxelGrid, Filters)
   EXPECT_LE (std::abs (output[neighbors2.at (0)].x - output[centroidIdx2].x), 0.02);
   EXPECT_LE (std::abs (output[neighbors2.at (0)].y - output[centroidIdx2].y), 0.02);
   EXPECT_LE (output[neighbors2.at (0)].z - output[centroidIdx2].z, 0.02 * 2);
+
+  // indices must be handled correctly
+  auto indices2 = grid2.getIndices(); // original cloud indices
+  auto cloud_blob2 = std::make_shared<PCLPointCloud2>();
+  toPCLPointCloud2(*cloud_copied, *cloud_blob2);
+
+  grid2.setInputCloud(cloud_blob2);
+  grid2.setIndices(indices2);
+  grid2.filter(output_blob);
+
+  fromPCLPointCloud2(output_blob, output);
+  EXPECT_EQ(output.size(), 100); // additional points should be ignored
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1353,7 +1378,7 @@ TEST (VoxelGridMinPoints, Filters)
 
   // Verify 2 clusters (0.11 and 0.31) passed threshold and verify their location and color
   EXPECT_EQ (outputMin4.size (), 2);
-  // Offset noise applied by offsets vec are 1e-3 magnitude, so check within 1e-2 
+  // Offset noise applied by offsets vec are 1e-3 magnitude, so check within 1e-2
   EXPECT_NEAR (outputMin4[0].x, input->at(1).x, 1e-2);
   EXPECT_NEAR (outputMin4[0].y, input->at(1).y, 1e-2);
   EXPECT_NEAR (outputMin4[0].z, input->at(1).z, 1e-2);
@@ -2052,7 +2077,7 @@ TEST (FrustumCulling, Filters)
 
   Eigen::Matrix4f cam2robot;
   cam2robot << 0, 0, 1, 0, 0, -1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1;
-  // Cut out object based on ROI 
+  // Cut out object based on ROI
   fc.setInputCloud (model);
   fc.setNegative (false);
   fc.setVerticalFOV (43);
@@ -2063,7 +2088,7 @@ TEST (FrustumCulling, Filters)
   fc.setCameraPose (cam2robot);
   fc.filter (*output);
   // Should extract milk cartoon with 13541 points
-  EXPECT_EQ (output->size (), 13541); 
+  EXPECT_EQ (output->size (), 13541);
   removed = fc.getRemovedIndices ();
   EXPECT_EQ (removed->size (), model->size () - output->size ());
 
