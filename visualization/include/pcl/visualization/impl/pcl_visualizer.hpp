@@ -482,7 +482,7 @@ pcl::visualization::PCLVisualizer::addPolygon (
   const typename pcl::PointCloud<PointT>::ConstPtr &cloud,
   const std::string &id, int viewport)
 {
-  return (!addPolygon<PointT> (cloud, 0.5, 0.5, 0.5, id, viewport));
+  return (addPolygon<PointT> (cloud, 0.5, 0.5, 0.5, id, viewport));
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -603,7 +603,7 @@ pcl::visualization::PCLVisualizer::addArrow (const P1 &pt1, const P2 &pt2,
 template <typename P1, typename P2> bool
 pcl::visualization::PCLVisualizer::addLine (const P1 &pt1, const P2 &pt2, const std::string &id, int viewport)
 {
-  return (!addLine (pt1, pt2, 0.5, 0.5, 0.5, id, viewport));
+  return (addLine (pt1, pt2, 0.5, 0.5, 0.5, id, viewport));
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
