@@ -332,6 +332,15 @@ namespace pcl
         return (min_pts_);
       }
 
+      /** \brief Gets whether the results should be sorted (ascending in the distance) or not
+        * Otherwise the results may be returned in any order.
+        */
+      inline bool
+      getSortedResults () const
+      {
+        return (sorted_);
+      }
+
     protected:
       /** \brief The input point cloud dataset containing the points we need to use. */
       PointCloudConstPtr input_;

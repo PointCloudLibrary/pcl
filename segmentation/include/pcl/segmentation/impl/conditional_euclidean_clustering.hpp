@@ -60,11 +60,13 @@ pcl::ConditionalEuclideanClustering<PointT>::segment (pcl::IndicesClusters &clus
   if (!searcher_)
   {
     if (input_->isOrganized ())
-      searcher_.reset (new pcl::search::OrganizedNeighbor<PointT> ());
+      searcher_.reset (new pcl::search::OrganizedNeighbor<PointT> (false)); // not requiring sorted results is much faster
     else
-      searcher_.reset (new pcl::search::KdTree<PointT> ());
+      searcher_.reset (new pcl::search::KdTree<PointT> (false)); // not requiring sorted results is much faster
   }
   searcher_->setInputCloud (input_, indices_);
+  // If searcher_ gives sorted results, we can skip the first one because it is the query point itself
+  const int nn_start_idx = searcher_->getSortedResults () ? 1 : 0;
 
   // Temp variables used by search class
   Indices nn_indices;
@@ -100,7 +102,7 @@ pcl::ConditionalEuclideanClustering<PointT>::segment (pcl::IndicesClusters &clus
       }
 
       // Process the neighbors
-      for (int nii = 1; nii < static_cast<int> (nn_indices.size ()); ++nii)  // nii = neighbor indices iterator
+      for (int nii = nn_start_idx; nii < static_cast<int> (nn_indices.size ()); ++nii)  // nii = neighbor indices iterator
       {
         // Has this point been processed before?
         if (nn_indices[nii] == UNAVAILABLE || processed[nn_indices[nii]])
