@@ -49,6 +49,7 @@
 #include <pcl/io/ascii_io.h>
 #include <pcl/io/obj_io.h>
 #include <fstream>
+#include <iomanip> // for setprecision
 #include <locale>
 #include <stdexcept>
 
