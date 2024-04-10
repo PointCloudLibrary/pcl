@@ -40,6 +40,7 @@
 
 #pragma once
 
+#include <iomanip> // for setw
 #include <iostream>
 #include <vector>
 

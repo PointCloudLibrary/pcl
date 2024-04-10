@@ -2491,7 +2491,7 @@ TEST (VoxelGridOcclusionEstimation, Filters)
   auto input_cloud = pcl::make_shared<pcl::PointCloud<pcl::PointXYZ>>();
   input_cloud->emplace_back(0.0, 0.0, 0.0);
   input_cloud->emplace_back(9.9, 9.9, 9.9); // we want a nice bounding box from (0, 0, 0) to (10, 10, 10)
-  input_cloud->sensor_origin_ << -0.1, 0.5, 0.5; // just outside the bounding box. Most rays will enter at voxel (0, 0, 0)
+  input_cloud->sensor_origin_ << -0.1f, 0.5f, 0.5f, 0.0f; // just outside the bounding box. Most rays will enter at voxel (0, 0, 0)
   pcl::VoxelGridOcclusionEstimation<pcl::PointXYZ> vg;
   vg.setInputCloud (input_cloud);
   vg.setLeafSize (1.0, 1.0, 1.0);
