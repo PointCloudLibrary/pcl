@@ -41,15 +41,15 @@
 #ifndef PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_TORUS_H_
 #define PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_TORUS_H_
 
-#include <pcl/common/concatenate.h>
 #include <pcl/sample_consensus/sac_model_torus.h>
 
 #include <unsupported/Eigen/NonLinearOptimization> // for LevenbergMarquardt
 
+#include <pcl/common/concatenate.h>
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT>
+template <typename PointT, typename PointNT>
 bool
-pcl::SampleConsensusModelTorus<PointT>::isSampleGood(const Indices& samples) const
+pcl::SampleConsensusModelTorus<PointT, PointNT>::isSampleGood(const Indices& samples) const
 {
   // TODO implement
   (void)samples;
@@ -57,9 +57,159 @@ pcl::SampleConsensusModelTorus<PointT>::isSampleGood(const Indices& samples) con
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT>
+float crossDot(Eigen::Vector3f v1, Eigen::Vector3f v2, Eigen::Vector3f v3){
+  return v1.cross(v2).dot(v3);
+}
+
+
+template <typename PointT, typename PointNT>
 bool
-pcl::SampleConsensusModelTorus<PointT>::computeModelCoefficients(
+pcl::SampleConsensusModelTorus<PointT, PointNT>::computeModelCoefficients(
+    const Indices& samples, Eigen::VectorXf& model_coefficients) const
+{
+
+  // Make sure that the samples are valid
+  if (!isSampleGood(samples)) {
+    PCL_ERROR("[pcl::SampleConsensusModelCylinder::computeModelCoefficients] Invalid "
+              "set of samples given!\n");
+    return (false);
+  }
+
+  // Find axis using:
+
+  // @article{article,
+  //author = {Lukacs, G. and Marshall, David and Martin, R.},
+  //year = {2001},
+  //month = {09},
+  //pages = {},
+  //title = {Geometric Least-Squares Fitting of Spheres, Cylinders, Cones and Tori}
+  //}
+
+  Eigen::Vector3f n0 ( Eigen::Vector3f::Map ((*normals_)[samples[0]].normal));
+  Eigen::Vector3f n1 ( Eigen::Vector3f::Map ((*normals_)[samples[1]].normal));
+  Eigen::Vector3f n2 ( Eigen::Vector3f::Map ((*normals_)[samples[2]].normal));
+  Eigen::Vector3f n3 ( Eigen::Vector3f::Map ((*normals_)[samples[3]].normal));
+
+  Eigen::Vector3f p0 = Eigen::Vector3f((*input_)[0].getVector3fMap());
+  Eigen::Vector3f p1 = Eigen::Vector3f((*input_)[1].getVector3fMap());
+  Eigen::Vector3f p2 = Eigen::Vector3f((*input_)[2].getVector3fMap());
+  Eigen::Vector3f p3 = Eigen::Vector3f((*input_)[3].getVector3fMap());
+
+  float a01 = crossDot(n0, n1, n2);
+  float b01 = crossDot(n0, n1, n3);
+  float a0 = crossDot(p2-p1, n0, n2);
+  float a1 = crossDot(p0-p2, n1, n2);
+  float b0 = crossDot(p3-p1, n0, n3);
+  float b1 = crossDot(p0-p3, n1, n3);
+  float a = crossDot(p0-p2, p1-p0, n2);
+  float b = crossDot(p0-p3, p1-p0, n3);
+
+
+  // a10*t0*t1 + a0*t0 + a1*t1 + a = 0
+  // b10*t0*t1 + b0*t0 + b1*t1 + b = 0
+  //
+  // (a0 - b0*a10/b10)* t0 + (a1-b1*a10/b10) *t1 + a - b*a10/b10
+  // t0 = k * t1 + p
+
+  float k = -(a1-b1*a01/b01) / (a0 - b0*a01/b01);
+  float p = -(a - b*a01/b01) / (a0 - b0*a01/b01);
+
+  // Second deg eqn.
+  //
+  // b10*k*t1*t1 + b10*p*t1  | + b0*k *t1 + b0*p | + b1*t1 | + b = 0
+  //
+  // (b10*k) * t1*t1 + (b10*p + b0*k + b1) * t1  + (b0*p + b)
+
+  float _a = (b01*k);
+  float _b = (b01*p + b0*k + b1);
+  float _c = (b0*p + b);
+
+  // TODO: add check to stop if b^2 - 4+ac < 0
+
+  float s0 = (- _b + std::sqrt(_b*_b  - 4 *_a * _c)) / (2* _a);
+  float s1 = (- _b - std::sqrt(_b*_b  - 4 *_a * _c)) / (2* _a);
+
+
+  // Direction vector
+  // TODO construct d with p0, p1, s0, s1
+  Eigen::Vector3f d;
+
+  // We fit the points to the plane of the torus.
+  // Ax + By + Cz + D = 0
+  // We know that all for each point plus its normal
+  // times the external radius will give us a point
+  // in that plane
+  // Pplane_i = P_i + n_i * r
+  // we substitute A,x,B,y,C,z
+  // dx *( P_i_x + n_i_x * r ) + dy *( P_i_y + n_i_y * r ) +dz *( P_i_z + n_i_z * r ) + D = 0
+  // and finally
+  // (dx*P_i_x + dy*P_i_y + dz*P_i_z) + (dx*n_i_x + dy*n_i_y + dz*n_i_z ) * r + D = 0
+  // We can set up a linear least squares system of two variables r and D
+  // TODO: Flip normals if required, they should go towards the axis.
+  Eigen::Matrix<float, 4, 2> A
+  {
+    {d.dot(n0), 1},
+    {d.dot(n1), 1},
+    {d.dot(n2), 1},
+    {d.dot(n3), 1}
+  };
+
+
+  Eigen::Matrix<float, 4, 1> B
+  {
+    {-d.dot(p0)},
+    {-d.dot(p1)},
+    {-d.dot(p2)},
+    {-d.dot(p3)}
+  };
+
+  Eigen::Matrix<float,2,1> sol = A.bdcSvd(Eigen::ComputeThinU | Eigen::ComputeThinV).solve(B);
+
+  float r_ext = sol[0];
+  float D = sol[1];
+
+  // Axis line and plane intersect to find the centroid of the torus
+  // We take a random point on the line. We find P_rand + lambda * d belongs in the plane
+
+  Eigen::Vector3f Pany;
+  float lambda = (d.dot(Pany) + d.dot(d)) / D;
+
+  Eigen::Vector3f centroid = Pany + d*lambda;
+
+
+  // Finally, the internal radius, we solve for R^2. The least square solution will be
+  // the average in this case.
+  float r_int = std::sqrt(((p0 + r_ext*n0 - centroid).squaredNorm() +
+                           (p1 + r_ext*n1 - centroid).squaredNorm() +
+                           (p2 + r_ext*n2 - centroid).squaredNorm() +
+                           (p3 + r_ext*n3 - centroid).squaredNorm()) / 4.f);
+
+
+  model_coefficients[0] = r_int;
+  model_coefficients[1] = r_ext;
+
+  model_coefficients[2] = centroid[0];
+  model_coefficients[3] = centroid[1];
+  model_coefficients[4] = centroid[2];
+
+  model_coefficients[5] = d[0];
+  model_coefficients[6] = d[1];
+  model_coefficients[7] = d[2];
+
+
+
+
+
+
+
+
+
+}
+
+#if 0
+template <typename PointT, typename PointNT>
+bool
+pcl::SampleConsensusModelTorus<PointT, PointNT>::computeModelCoefficients(
     const Indices& samples, Eigen::VectorXf& model_coefficients) const
 {
 
@@ -144,11 +294,12 @@ pcl::SampleConsensusModelTorus<PointT>::computeModelCoefficients(
 
   return true;
 }
+#endif
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT>
+template <typename PointT, typename PointNT>
 void
-pcl::SampleConsensusModelTorus<PointT>::projectPointToPlane(
+pcl::SampleConsensusModelTorus<PointT, PointNT>::projectPointToPlane(
     const Eigen::Vector3f& p,
     const Eigen::Vector4f& plane_coefficients,
     Eigen::Vector3f& q) const
@@ -161,9 +312,9 @@ pcl::SampleConsensusModelTorus<PointT>::projectPointToPlane(
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT>
+template <typename PointT, typename PointNT>
 void
-pcl::SampleConsensusModelTorus<PointT>::getDistancesToModel(
+pcl::SampleConsensusModelTorus<PointT, PointNT>::getDistancesToModel(
     const Eigen::VectorXf& model_coefficients, std::vector<double>& distances) const
 {
 
@@ -189,9 +340,9 @@ pcl::SampleConsensusModelTorus<PointT>::getDistancesToModel(
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT>
+template <typename PointT, typename PointNT>
 void
-pcl::SampleConsensusModelTorus<PointT>::selectWithinDistance(
+pcl::SampleConsensusModelTorus<PointT, PointNT>::selectWithinDistance(
     const Eigen::VectorXf& model_coefficients, const double threshold, Indices& inliers)
 {
   // Check if the model is valid given the user constraints
@@ -222,9 +373,9 @@ pcl::SampleConsensusModelTorus<PointT>::selectWithinDistance(
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT>
+template <typename PointT, typename PointNT>
 std::size_t
-pcl::SampleConsensusModelTorus<PointT>::countWithinDistance(
+pcl::SampleConsensusModelTorus<PointT, PointNT>::countWithinDistance(
     const Eigen::VectorXf& model_coefficients, const double threshold) const
 {
   if (!isModelValid(model_coefficients))
@@ -248,9 +399,9 @@ pcl::SampleConsensusModelTorus<PointT>::countWithinDistance(
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT>
+template <typename PointT, typename PointNT>
 void
-pcl::SampleConsensusModelTorus<PointT>::optimizeModelCoefficients(
+pcl::SampleConsensusModelTorus<PointT, PointNT>::optimizeModelCoefficients(
     const Indices& inliers,
     const Eigen::VectorXf& model_coefficients,
     Eigen::VectorXf& optimized_coefficients) const
@@ -295,9 +446,9 @@ pcl::SampleConsensusModelTorus<PointT>::optimizeModelCoefficients(
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT>
+template <typename PointT, typename PointNT>
 void
-pcl::SampleConsensusModelTorus<PointT>::projectPointToTorus(
+pcl::SampleConsensusModelTorus<PointT, PointNT>::projectPointToTorus(
     const Eigen::Vector3f& p_in,
     const Eigen::VectorXf& model_coefficients,
     Eigen::Vector3f& q) const
@@ -345,9 +496,9 @@ pcl::SampleConsensusModelTorus<PointT>::projectPointToTorus(
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT>
+template <typename PointT, typename PointNT>
 void
-pcl::SampleConsensusModelTorus<PointT>::projectPoints(
+pcl::SampleConsensusModelTorus<PointT, PointNT>::projectPoints(
     const Indices& inliers,
     const Eigen::VectorXf& model_coefficients,
     PointCloud& projected_points,
@@ -375,9 +526,9 @@ pcl::SampleConsensusModelTorus<PointT>::projectPoints(
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT>
+template <typename PointT, typename PointNT>
 bool
-pcl::SampleConsensusModelTorus<PointT>::doSamplesVerifyModel(
+pcl::SampleConsensusModelTorus<PointT, PointNT>::doSamplesVerifyModel(
     const std::set<index_t>& indices,
     const Eigen::VectorXf& model_coefficients,
     const double threshold) const
@@ -390,17 +541,17 @@ pcl::SampleConsensusModelTorus<PointT>::doSamplesVerifyModel(
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT>
+template <typename PointT, typename PointNT>
 bool
-pcl::SampleConsensusModelTorus<PointT>::isModelValid(
+pcl::SampleConsensusModelTorus<PointT, PointNT>::isModelValid(
     const Eigen::VectorXf& model_coefficients) const
 {
   return true;
-  if (!SampleConsensusModel<PointT>::isModelValid(model_coefficients))
-    return (false);
+  //if (!SampleConsensusModel<PointT, PointNT>::isModelValid(model_coefficients))
+    //return (false);
 }
 
-#define PCL_INSTANTIATE_SampleConsensusModelTorus(PointT)                              \
-  template class PCL_EXPORTS pcl::SampleConsensusModelTorus<PointT>;
+#define PCL_INSTANTIATE_SampleConsensusModelTorus(PointT, PointNT)                              \
+  template class PCL_EXPORTS pcl::SampleConsensusModelTorus<PointT, PointNT>;
 
-#endif // PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_CYLINDER_H_
+#endif // PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_TORUS_H_

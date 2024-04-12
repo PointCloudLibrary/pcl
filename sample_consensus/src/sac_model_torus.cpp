@@ -1,6 +1,5 @@
 /*
  * Software License Agreement (BSD License)
- *
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2009-2012, Willow Garage, Inc.
  *  Copyright (c) 2012-, Open Perception, Inc.
@@ -45,7 +44,7 @@
 #ifdef PCL_ONLY_CORE_POINT_TYPES
   PCL_INSTANTIATE_PRODUCT(SampleConsensusModelTorus, ((pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA)(pcl::PointXYZRGB))((pcl::Normal)))
 #else
- PCL_INSTANTIATE_PRODUCT(SampleConsensusModelTorus, (PCL_XYZ_POINT_TYPES))
+ PCL_INSTANTIATE_PRODUCT(SampleConsensusModelTorus, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES))
 #endif
 #endif    // PCL_NO_PRECOMPILE
 
