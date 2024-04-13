@@ -42,14 +42,14 @@
 #define PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_TORUS_H_
 
 #include <pcl/sample_consensus/sac_model_torus.h>
+#include <pcl/common/concatenate.h>
 
 #include <unsupported/Eigen/NonLinearOptimization> // for LevenbergMarquardt
-
-#include <pcl/common/concatenate.h>
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename PointNT>
 bool
-pcl::SampleConsensusModelTorus<PointT, PointNT>::isSampleGood(const Indices& samples) const
+pcl::SampleConsensusModelTorus<PointT, PointNT>::isSampleGood(
+    const Indices& samples) const
 {
   // TODO implement
   (void)samples;
@@ -57,11 +57,13 @@ pcl::SampleConsensusModelTorus<PointT, PointNT>::isSampleGood(const Indices& sam
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-float crossDot(Eigen::Vector3f v1, Eigen::Vector3f v2, Eigen::Vector3f v3){
+float
+crossDot(Eigen::Vector3f v1, Eigen::Vector3f v2, Eigen::Vector3f v3)
+{
   return v1.cross(v2).dot(v3);
 }
 
-
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename PointNT>
 bool
 pcl::SampleConsensusModelTorus<PointT, PointNT>::computeModelCoefficients(
@@ -69,41 +71,48 @@ pcl::SampleConsensusModelTorus<PointT, PointNT>::computeModelCoefficients(
 {
 
   // Make sure that the samples are valid
-  if (!isSampleGood(samples)) {
-    PCL_ERROR("[pcl::SampleConsensusModelCylinder::computeModelCoefficients] Invalid "
-              "set of samples given!\n");
+  if (!isSampleGood (samples))
+  {
+    PCL_ERROR ("[pcl::SampleConsensusModelTorus::computeModelCoefficients] Invalid set of samples given!\n");
+    return (false);
+  }
+
+  if (!normals_)
+  {
+    PCL_ERROR ("[pcl::SampleConsensusModelTorus::computeModelCoefficients] No input dataset containing normals was given!\n");
     return (false);
   }
 
   // Find axis using:
 
   // @article{article,
-  //author = {Lukacs, G. and Marshall, David and Martin, R.},
-  //year = {2001},
-  //month = {09},
-  //pages = {},
-  //title = {Geometric Least-Squares Fitting of Spheres, Cylinders, Cones and Tori}
+  // author = {Lukacs, G. and Marshall, David and Martin, R.},
+  // year = {2001},
+  // month = {09},
+  // pages = {},
+  // title = {Geometric Least-Squares Fitting of Spheres, Cylinders, Cones and Tori}
   //}
 
-  Eigen::Vector3f n0 ( Eigen::Vector3f::Map ((*normals_)[samples[0]].normal));
-  Eigen::Vector3f n1 ( Eigen::Vector3f::Map ((*normals_)[samples[1]].normal));
-  Eigen::Vector3f n2 ( Eigen::Vector3f::Map ((*normals_)[samples[2]].normal));
-  Eigen::Vector3f n3 ( Eigen::Vector3f::Map ((*normals_)[samples[3]].normal));
+  Eigen::Vector3f n0 = Eigen::Vector3f((*normals_)[samples[0]].getNormalVector3fMap());
+  Eigen::Vector3f n1 = Eigen::Vector3f((*normals_)[samples[1]].getNormalVector3fMap());
+  Eigen::Vector3f n2 = Eigen::Vector3f((*normals_)[samples[2]].getNormalVector3fMap());
+  Eigen::Vector3f n3 = Eigen::Vector3f((*normals_)[samples[3]].getNormalVector3fMap());
+
 
   Eigen::Vector3f p0 = Eigen::Vector3f((*input_)[0].getVector3fMap());
   Eigen::Vector3f p1 = Eigen::Vector3f((*input_)[1].getVector3fMap());
   Eigen::Vector3f p2 = Eigen::Vector3f((*input_)[2].getVector3fMap());
   Eigen::Vector3f p3 = Eigen::Vector3f((*input_)[3].getVector3fMap());
 
+
   float a01 = crossDot(n0, n1, n2);
   float b01 = crossDot(n0, n1, n3);
-  float a0 = crossDot(p2-p1, n0, n2);
-  float a1 = crossDot(p0-p2, n1, n2);
-  float b0 = crossDot(p3-p1, n0, n3);
-  float b1 = crossDot(p0-p3, n1, n3);
-  float a = crossDot(p0-p2, p1-p0, n2);
-  float b = crossDot(p0-p3, p1-p0, n3);
-
+  float a0 = crossDot(p2 - p1, n0, n2);
+  float a1 = crossDot(p0 - p2, n1, n2);
+  float b0 = crossDot(p3 - p1, n0, n3);
+  float b1 = crossDot(p0 - p3, n1, n3);
+  float a = crossDot(p0 - p2, p1 - p0, n2);
+  float b = crossDot(p0 - p3, p1 - p0, n3);
 
   // a10*t0*t1 + a0*t0 + a1*t1 + a = 0
   // b10*t0*t1 + b0*t0 + b1*t1 + b = 0
@@ -111,8 +120,8 @@ pcl::SampleConsensusModelTorus<PointT, PointNT>::computeModelCoefficients(
   // (a0 - b0*a10/b10)* t0 + (a1-b1*a10/b10) *t1 + a - b*a10/b10
   // t0 = k * t1 + p
 
-  float k = -(a1-b1*a01/b01) / (a0 - b0*a01/b01);
-  float p = -(a - b*a01/b01) / (a0 - b0*a01/b01);
+  float k = -(a1 - b1 * a01 / b01) / (a0 - b0 * a01 / b01);
+  float p = -(a - b * a01 / b01) / (a0 - b0 * a01 / b01);
 
   // Second deg eqn.
   //
@@ -120,181 +129,169 @@ pcl::SampleConsensusModelTorus<PointT, PointNT>::computeModelCoefficients(
   //
   // (b10*k) * t1*t1 + (b10*p + b0*k + b1) * t1  + (b0*p + b)
 
-  float _a = (b01*k);
-  float _b = (b01*p + b0*k + b1);
-  float _c = (b0*p + b);
+  float _a = (b01 * k);
+  float _b = (b01 * p + b0 * k + b1);
+  float _c = (b0 * p + b);
 
-  // TODO: add check to stop if b^2 - 4+ac < 0
+  std::cout << "-------- params ----------------" << std::endl;
+  std::cout << "a01" << a01 << std::endl;
+  std::cout << "b01" << b01 << std::endl;
+  std::cout << "a0" << a0 << std::endl;
+  std::cout << "b0" << b0 << std::endl;
+  std::cout << "a1" << a1 << std::endl;
+  std::cout << "b1" << b1 << std::endl;
+  std::cout << "a" << a << std::endl;
+  std::cout << "b" << b << std::endl;
 
-  float s0 = (- _b + std::sqrt(_b*_b  - 4 *_a * _c)) / (2* _a);
-  float s1 = (- _b - std::sqrt(_b*_b  - 4 *_a * _c)) / (2* _a);
 
+  std::cout << "srqt" << _b * _b - 4 * _a * _c << std::endl;
+  std::cout << "_a" << _a << std::endl;
+  std::cout << "_b" << _b << std::endl;
+  std::cout << "_c" << _c << std::endl;
+  std::cout << "------------------------" << std::endl;
 
-  // Direction vector
-  // TODO construct d with p0, p1, s0, s1
-  Eigen::Vector3f d;
-
-  // We fit the points to the plane of the torus.
-  // Ax + By + Cz + D = 0
-  // We know that all for each point plus its normal
-  // times the external radius will give us a point
-  // in that plane
-  // Pplane_i = P_i + n_i * r
-  // we substitute A,x,B,y,C,z
-  // dx *( P_i_x + n_i_x * r ) + dy *( P_i_y + n_i_y * r ) +dz *( P_i_z + n_i_z * r ) + D = 0
-  // and finally
-  // (dx*P_i_x + dy*P_i_y + dz*P_i_z) + (dx*n_i_x + dy*n_i_y + dz*n_i_z ) * r + D = 0
-  // We can set up a linear least squares system of two variables r and D
-  // TODO: Flip normals if required, they should go towards the axis.
-  Eigen::Matrix<float, 4, 2> A
+  if ((_b*_b - 4*_a*_c )< 0 )
   {
-    {d.dot(n0), 1},
-    {d.dot(n1), 1},
-    {d.dot(n2), 1},
-    {d.dot(n3), 1}
-  };
-
-
-  Eigen::Matrix<float, 4, 1> B
-  {
-    {-d.dot(p0)},
-    {-d.dot(p1)},
-    {-d.dot(p2)},
-    {-d.dot(p3)}
-  };
-
-  Eigen::Matrix<float,2,1> sol = A.bdcSvd(Eigen::ComputeThinU | Eigen::ComputeThinV).solve(B);
-
-  float r_ext = sol[0];
-  float D = sol[1];
-
-  // Axis line and plane intersect to find the centroid of the torus
-  // We take a random point on the line. We find P_rand + lambda * d belongs in the plane
-
-  Eigen::Vector3f Pany;
-  float lambda = (d.dot(Pany) + d.dot(d)) / D;
-
-  Eigen::Vector3f centroid = Pany + d*lambda;
-
-
-  // Finally, the internal radius, we solve for R^2. The least square solution will be
-  // the average in this case.
-  float r_int = std::sqrt(((p0 + r_ext*n0 - centroid).squaredNorm() +
-                           (p1 + r_ext*n1 - centroid).squaredNorm() +
-                           (p2 + r_ext*n2 - centroid).squaredNorm() +
-                           (p3 + r_ext*n3 - centroid).squaredNorm()) / 4.f);
-
-
-  model_coefficients[0] = r_int;
-  model_coefficients[1] = r_ext;
-
-  model_coefficients[2] = centroid[0];
-  model_coefficients[3] = centroid[1];
-  model_coefficients[4] = centroid[2];
-
-  model_coefficients[5] = d[0];
-  model_coefficients[6] = d[1];
-  model_coefficients[7] = d[2];
-
-
-
-
-
-
-
-
-
-}
-
-#if 0
-template <typename PointT, typename PointNT>
-bool
-pcl::SampleConsensusModelTorus<PointT, PointNT>::computeModelCoefficients(
-    const Indices& samples, Eigen::VectorXf& model_coefficients) const
-{
-
-  // Make sure that the samples are valid
-  if (!isSampleGood(samples)) {
-    PCL_ERROR("[pcl::SampleConsensusModelCylinder::computeModelCoefficients] Invalid "
-              "set of samples given!\n");
+    PCL_ERROR ("[pcl::SampleConsensusModelTorus::computeModelCoefficients] Can't compute model coefficients with this method!\n");
     return (false);
   }
 
-  // First pass: Centroid will be estimated to average
-  Eigen::Vector3f centroid{0.f, 0.f, 0.f};
 
-  for (auto index : samples) {
-    Eigen::Vector3f curr_pt = Eigen::Vector3f((*input_)[index].getVector3fMap());
-    centroid = centroid + curr_pt;
-  }
-  centroid = centroid * (1 / static_cast<float>(samples.size()));
+  float s0 = (-_b + std::sqrt(_b * _b - 4 * _a * _c)) / (2 * _a);
+  float s1 = (-_b - std::sqrt(_b * _b - 4 * _a * _c)) / (2 * _a);
 
-  // Now with the centroid lets do another pass to guess min and max radius relative to
-  // centroid
-  float R_to_centroid_sq = 0.f;
-  float r_to_centroid_sq = std::numeric_limits<float>::max();
+  //
+  float r_int_stddev_cycle1 = std::numeric_limits<float>::max();
 
-  for (auto index : samples) {
-    Eigen::Vector3f curr_pt = Eigen::Vector3f((*input_)[index].getVector3fMap());
+  for (float s : {s0,s1}) {
 
-    float dsq = (curr_pt - centroid).norm();
-    if (dsq > R_to_centroid_sq) {
-      R_to_centroid_sq = dsq;
-      continue; // May be problematic in edge cases since r_to_centroid does not get set
+    std::cout << "s0" << s0 << std::endl;
+    std::cout << "s1" << s1 << std::endl;
+    std::cout << "s" << s << std::endl;
+    std::cout << "k" << k << std::endl;
+    std::cout << "p" << p << std::endl;
+
+    float t1 = s;
+    float t0 = k* t1 + p;
+
+    std::cout << n0 << std::endl;
+    std::cout << "@" << std::endl;
+    std::cout << n1 << std::endl;
+    std::cout << "@" << std::endl;
+    std::cout << p0 << std::endl;
+    std::cout << "@" << std::endl;
+    std::cout << n1 << std::endl;
+    std::cout << "@" << std::endl;
+
+    std::cout << "t0" << t0 << std::endl;
+    std::cout << "t1" << t1 << std::endl;
+    // Direction vector
+    Eigen::Vector3f d = ((p1 + n1 * t1) - (p0 + n0 * t0));
+
+    // Flip normals if required. Note |d| = 1
+    //if (n0.dot(d) / n0.norm() < M_PI / 2 ) n0 = -n0;
+    //if (n1.dot(d) / n1.norm() < M_PI / 2 ) n1 = -n1;
+    //if (n2.dot(d) / n2.norm() < M_PI / 2 ) n2 = -n2;
+    //if (n3.dot(d) / n3.norm() < M_PI / 2 ) n3 = -n3;
+
+    // We fit the points to the plane of the torus.
+    // Ax + By + Cz + D = 0
+    // We know that all for each point plus its normal
+    // times the external radius will give us a point
+    // in that plane
+    // Pplane_i = P_i + n_i * r
+    // we substitute A,x,B,y,C,z
+    // dx *( P_i_x + n_i_x * r ) + dy *( P_i_y + n_i_y * r ) +dz *( P_i_z + n_i_z * r )
+    // + D = 0 and finally (dx*P_i_x + dy*P_i_y + dz*P_i_z) + (dx*n_i_x + dy*n_i_y +
+    // dz*n_i_z ) * r + D = 0 We can set up a linear least squares system of two
+    // variables r and D
+    //
+    std::cout << "d" << std::endl;
+    std::cout <<  d << std::endl;
+    std::cout << "normals" << std::endl;
+    std::cout << n0 << std::endl;
+    std::cout << "@" << std::endl;
+    std::cout << n1 << std::endl;
+    std::cout << "@" << std::endl;
+    std::cout << n2 << std::endl;
+    std::cout << "@" << std::endl;
+    std::cout << n3 << std::endl;
+    std::cout << "@" << std::endl;
+    Eigen::MatrixXf A(4,2);
+    A <<
+         d.dot(n0) ,  1 ,
+         d.dot(n1) ,  1 ,
+         d.dot(n2) ,  1 ,
+         d.dot(n3) ,  1;
+
+    std::cout  << " A matrix!" << A << std::endl;
+
+    Eigen::Matrix<float, -1, -1> B (4,1);
+    B <<
+        -d.dot(p0),
+        -d.dot(p1),
+        -d.dot(p2),
+        -d.dot(p3);
+
+    std::cout  << " B matrix!" << B << std::endl;
+
+    Eigen::Matrix<float, -1, -1> sol;
+    sol =
+        A.bdcSvd(Eigen::ComputeThinU | Eigen::ComputeThinV).solve(B);
+
+    float r_ext = -sol(0);
+    float D = sol(1);
+
+    // Axis line and plane intersect to find the centroid of the torus
+    // We take a random point on the line. We find P_rand + lambda * d belongs in the
+    // plane
+
+    Eigen::Vector3f Pany = (p1 + n1*t1);
+    float lambda = (-d.dot(Pany) - D) / d.dot(d);
+
+    Eigen::Vector3f centroid = Pany + d * lambda;
+
+    // Finally, the internal radius. The least square solution will be
+    // the average in this case.
+    float r_int = std::sqrt(((p0 + r_ext * n0 - centroid).squaredNorm() +
+                             (p1 + r_ext * n1 - centroid).squaredNorm() +
+                             (p2 + r_ext * n2 - centroid).squaredNorm() +
+                             (p3 + r_ext * n3 - centroid).squaredNorm()) /
+                            4.f);
+
+    float r_int_stddev = std::sqrt((
+                             std::pow(r_int - (p0 + r_ext * n0 - centroid).norm(), 2) +
+                             std::pow(r_int - (p1 + r_ext * n1 - centroid).norm(), 2) +
+                             std::pow(r_int - (p2 + r_ext * n2 - centroid).norm(), 2) +
+                             std::pow(r_int - (p3 + r_ext * n3 - centroid).norm(), 2)
+                             ) /
+                            4.f);
+    std::cout << "ADSFadsf" << std::endl;
+    // We select the minimum stddev cycle
+    if (r_int_stddev < r_int_stddev_cycle1){
+      r_int_stddev_cycle1 = r_int_stddev;
+    }else{
+      break;
     }
 
-    if (dsq < r_to_centroid_sq) {
-      r_to_centroid_sq = dsq;
-    }
+    model_coefficients.resize (model_size_);
+    model_coefficients[0] = r_int;
+    model_coefficients[1] = r_ext;
+
+    model_coefficients[2] = centroid[0];
+    model_coefficients[3] = centroid[1];
+    model_coefficients[4] = centroid[2];
+
+    model_coefficients[5] = d[0];
+    model_coefficients[6] = d[1];
+    model_coefficients[7] = d[2];
   }
+  std::cout << "MODEL COEFFS" << std::endl;
+  std::cout << model_coefficients << std::endl;
 
-  model_coefficients.resize(model_size_);
-
-  // The (big) radius of the torus is the radius of the circunference
-  float R = (std::sqrt(R_to_centroid_sq) + std::sqrt(r_to_centroid_sq)) / 2;
-  // The (small) radius is the distance from circumference to points
-  float r = (std::sqrt(R_to_centroid_sq) - std::sqrt(r_to_centroid_sq)) / 2;
-
-  // Third pass is for normal estimation, it can be merged with the second pass, in the
-  // future
-  size_t i = 0;
-  Eigen::MatrixXf A(samples.size(), 3);
-  for (auto index : samples) {
-    Eigen::Vector3f curr_pt =
-        Eigen::Vector3f((*input_)[index].getVector3fMap()) - centroid;
-    A.row(i) = curr_pt;
-    A(i, 0) = curr_pt[0];
-    A(i, 1) = curr_pt[1];
-    A(i, 2) = curr_pt[2];
-    i++; // TODO, maybe not range-for here
-  }
-
-  // SVD to get the plane normal
-  Eigen::JacobiSVD<Eigen::MatrixXf> svd(A, Eigen::ComputeFullU | Eigen::ComputeFullV);
-  Eigen::VectorXf n = Eigen::MatrixXf(svd.matrixV().rightCols(1)).normalized();
-
-  // Flip normals to look up on z axis
-  if (n[2] < 0.f)
-    n = -n;
-
-  model_coefficients[0] = R;
-  model_coefficients[1] = r;
-
-  model_coefficients[2] = centroid[0];
-  model_coefficients[3] = centroid[1];
-  model_coefficients[4] = centroid[2];
-
-  model_coefficients[5] = n[0];
-  model_coefficients[6] = n[1];
-  model_coefficients[7] = n[2];
-
-  // TODO: this is not right, I still need to deal with failure in here
-  optimizeModelCoefficients(samples, model_coefficients, model_coefficients);
-  model_coefficients.tail<3>().normalize();
 
   return true;
 }
-#endif
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename PointNT>
@@ -547,11 +544,11 @@ pcl::SampleConsensusModelTorus<PointT, PointNT>::isModelValid(
     const Eigen::VectorXf& model_coefficients) const
 {
   return true;
-  //if (!SampleConsensusModel<PointT, PointNT>::isModelValid(model_coefficients))
-    //return (false);
+  // if (!SampleConsensusModel<PointT, PointNT>::isModelValid(model_coefficients))
+  // return (false);
 }
 
-#define PCL_INSTANTIATE_SampleConsensusModelTorus(PointT, PointNT)                              \
+#define PCL_INSTANTIATE_SampleConsensusModelTorus(PointT, PointNT)                     \
   template class PCL_EXPORTS pcl::SampleConsensusModelTorus<PointT, PointNT>;
 
 #endif // PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_TORUS_H_

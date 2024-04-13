@@ -918,40 +918,57 @@ TEST(SampleConsensusModelEllipse3D, RANSAC)
   EXPECT_NEAR(1.0, std::abs(coeff_refined[10]), 1e-3);
 }
 
+//
+//1
+//
+/*
+0.3
+7.758357590948854
+7.756009480304242
+6.297666724054506
+0.7071067811865475
+-0.5
+0.49999999999999994
+----------------------------
+----------------------------
+[8.359341574088198, 7.22552693060636, 5.4049978066219575]
+[7.777710489873524, 6.9794499622227635, 5.96264148630509]
+[7.578062528900397, 8.466627338184125, 6.764936180563802]
+[6.8073801963063225, 6.950495936581675, 6.568265162198814]
+
+[ 0.78726775 -0.60899961 -0.09658657]
+[0.66500173 0.11532684 0.73788374]
+[-0.58453172  0.0233942  -0.81103353]
+[-0.92017329 -0.39125533  0.01415573]
+----------------------------
+*/
+
 TEST(SampleConsensusModelTorus, RANSAC)
 {
   srand(0);
 
   // Using a custom point cloud on a tilted plane
   PointCloud<PointXYZ> cloud;
-  cloud.resize(22);
+  PointCloud<Normal> normals;
 
-  cloud[ 0].getVector3fMap() << 1.000000, 5.000000, 3.000000;
-  cloud[ 1].getVector3fMap() << 0.690983, 5.000000, 2.902110;
-  cloud[ 2].getVector3fMap() << 0.412215, 5.000000, 2.618030;
-  cloud[ 3].getVector3fMap() << 0.190983, 5.000000, 2.175570;
-  cloud[ 4].getVector3fMap() << 0.048944, 5.000000, 1.618030;
-  cloud[ 5].getVector3fMap() << 0.000000, 5.000000, 1.000000;
-  cloud[ 6].getVector3fMap() << 0.048944, 5.000000, 0.381966;
-  cloud[ 7].getVector3fMap() << 0.190983, 5.000000, -0.175571;
-  cloud[ 8].getVector3fMap() << 0.412215, 5.000000, -0.618034;
-  cloud[ 9].getVector3fMap() << 0.690983, 5.000000, -0.902113;
-  cloud[10].getVector3fMap() << 1.000000, 5.000000, -1.000000;
-  cloud[11].getVector3fMap() << 1.309020, 5.000000, -0.902113;
-  cloud[12].getVector3fMap() << 1.587790, 5.000000, -0.618034;
-  cloud[13].getVector3fMap() << 1.809020, 5.000000, -0.175571;
-  cloud[14].getVector3fMap() << 1.951060, 5.000000, 0.381966;
-  cloud[15].getVector3fMap() << 2.000000, 5.000000, 1.000000;
-  cloud[16].getVector3fMap() << 1.951060, 5.000000, 1.618030;
-  cloud[17].getVector3fMap() << 1.809020, 5.000000, 2.175570;
-  cloud[18].getVector3fMap() << 1.587790, 5.000000, 2.618030;
-  cloud[19].getVector3fMap() << 1.309020, 5.000000, 2.902110;
+  cloud.resize(5);
+  normals.resize(5);
 
-  cloud[20].getVector3fMap() << 0.85000002f, 4.8499999f, -3.1500001f;
-  cloud[21].getVector3fMap() << 1.15000000f, 5.1500001f, -2.8499999f;
+  cloud[ 0].getVector3fMap() << 8.359341574088198, 7.22552693060636, 5.4049978066219575;
+  cloud[ 1].getVector3fMap() << 7.777710489873524, 6.9794499622227635, 5.96264148630509;
+  cloud[ 2].getVector3fMap() << 7.578062528900397, 8.466627338184125, 6.764936180563802;
+  cloud[ 3].getVector3fMap() << 6.8073801963063225, 6.950495936581675, 6.5682651621988140636;
+  cloud[ 4].getVector3fMap() << 100, 100, 100;
+
+  normals[ 0].getNormalVector3fMap () <<  0.78726775, -0.60899961, -0.09658657;
+  normals[ 1].getNormalVector3fMap () << 0.66500173, 0.11532684, 0.73788374;
+  normals[ 2].getNormalVector3fMap () << -0.58453172,  0.0233942,  -0.81103353;
+  normals[ 3].getNormalVector3fMap () << -0.92017329, -0.39125533,  0.01415573;
+  normals[ 4].getNormalVector3fMap () << 1, 0,  0;
 
   // Create a shared 3d torus model pointer directly
-  SampleConsensusModelTorus<PointXYZ>::Ptr model( new SampleConsensusModelTorus<PointXYZ>(cloud.makeShared()));
+  SampleConsensusModelTorus<PointXYZ, Normal>::Ptr model( new SampleConsensusModelTorus<PointXYZ, Normal>(cloud.makeShared()));
+  model->setInputNormals (normals.makeShared ());
 
   // Create the RANSAC object
   RandomSampleConsensus<PointXYZ> sac(model, 0.0011);
@@ -962,33 +979,27 @@ TEST(SampleConsensusModelTorus, RANSAC)
 
   pcl::Indices sample;
   sac.getModel(sample);
-  EXPECT_EQ(6, sample.size());
+  EXPECT_EQ(4, sample.size());
   pcl::Indices inliers;
   sac.getInliers(inliers);
-  EXPECT_EQ(20, inliers.size());
+  EXPECT_EQ(4, inliers.size());
+
 
   Eigen::VectorXf coeff;
   sac.getModelCoefficients(coeff);
-  //EXPECT_EQ(11, coeff.size());
-  //EXPECT_NEAR(1.0, coeff[0], 1e-3);
-  //EXPECT_NEAR(5.0, coeff[1], 1e-3);
-  //EXPECT_NEAR(1.0, coeff[2], 1e-3);
 
-  //EXPECT_NEAR(2.0, coeff[3], 1e-3);
-  //EXPECT_NEAR(1.0, coeff[4], 1e-3);
 
-  //EXPECT_NEAR(0.0, coeff[5], 1e-3);
-  // Use abs in y component because both variants are valid normal vectors
-  //EXPECT_NEAR(1.0, std::abs(coeff[6]), 1e-3);
-  //EXPECT_NEAR(0.0, coeff[7], 1e-3);
+  EXPECT_EQ(7, coeff.size());
+  EXPECT_NEAR(coeff[0], 0.3, 1e-2);
+  EXPECT_NEAR(coeff[1], 7.758357590948854, 1e-2);
+  EXPECT_NEAR(coeff[2], 7.756009480304242, 1e-2);
+  EXPECT_NEAR(coeff[3], 6.297666724054506, 1e-2);
+  EXPECT_NEAR(coeff[4], 0.7071067811865475, 1e-2);
+  EXPECT_NEAR(coeff[5], -0.5, 1e-2);
+  EXPECT_NEAR(coeff[6], 0.49999999999999994, 1e-2);
 
-  //EXPECT_NEAR(0.0, coeff[8], 1e-3);
-  //EXPECT_NEAR(0.0, coeff[9], 1e-3);
-  // Use abs in z component because both variants are valid local vectors
-  //EXPECT_NEAR(1.0, std::abs(coeff[10]), 1e-3);
-
-  Eigen::VectorXf coeff_refined;
-  model->optimizeModelCoefficients(inliers, coeff, coeff_refined);
+  //Eigen::VectorXf coeff_refined;
+  //model->optimizeModelCoefficients(inliers, coeff, coeff_refined);
   //EXPECT_EQ(11, coeff_refined.size());
   //EXPECT_NEAR(1.0, coeff_refined[0], 1e-3);
   //EXPECT_NEAR(5.0, coeff_refined[1], 1e-3);

@@ -84,6 +84,7 @@ class SampleConsensusModelTorus :  public SampleConsensusModel<PointT>, public S
   using PointCloudPtr = typename SampleConsensusModel<PointT>::PointCloudPtr;
   using PointCloudConstPtr = typename SampleConsensusModel<PointT>::PointCloudConstPtr;
 
+  public:
   using Ptr = shared_ptr<SampleConsensusModelTorus<PointT, PointNT>>;
   using ConstPtr = shared_ptr<const SampleConsensusModelTorus<PointT, PointNT>>;
 
@@ -97,7 +98,7 @@ class SampleConsensusModelTorus :  public SampleConsensusModel<PointT>, public S
     , SampleConsensusModelFromNormals<PointT, PointNT> ()
 {
   model_name_ = "SampleConsensusModelTorus";
-  sample_size_ = 20;
+  sample_size_ = 4;
   model_size_ = 8;
 }
 
@@ -114,7 +115,7 @@ class SampleConsensusModelTorus :  public SampleConsensusModel<PointT>, public S
     , SampleConsensusModelFromNormals<PointT, PointNT> ()
   {
     model_name_ = "SampleConsensusModelTorus";
-    sample_size_ = 20;
+    sample_size_ = 4;
     model_size_ = 8;
   }
 
