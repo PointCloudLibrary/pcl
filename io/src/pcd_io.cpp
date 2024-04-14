@@ -71,7 +71,7 @@ pcl::PCDWriter::setLockingPermissions (const std::string &file_name,
 
   try
   {
-#if (__cplusplus >= 201703L)
+#ifdef PCL_USING_STD_FILESYSTEM
     pcl_fs::permissions (pcl_fs::path (file_name), pcl_fs::perms::set_gid, pcl_fs::perm_options::add);
 #else
     pcl_fs::permissions (pcl_fs::path (file_name), pcl_fs::add_perms | pcl_fs::set_gid_on_exe);
@@ -95,7 +95,7 @@ pcl::PCDWriter::resetLockingPermissions (const std::string &file_name,
 #ifndef NO_MANDATORY_LOCKING
   try
   {
-#if (__cplusplus >= 201703L)
+#ifdef PCL_USING_STD_FILESYSTEM
     pcl_fs::permissions (pcl_fs::path (file_name), pcl_fs::perms::set_gid, pcl_fs::perm_options::remove);
 #else
     pcl_fs::permissions (pcl_fs::path (file_name), pcl_fs::remove_perms | pcl_fs::set_gid_on_exe);
