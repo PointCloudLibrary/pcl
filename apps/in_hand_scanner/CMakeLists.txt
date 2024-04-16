@@ -75,8 +75,6 @@ if(NOT build)
   return()
 endif()
 
-include_directories("${CMAKE_CURRENT_BINARY_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}/include")
-
 set(EXE_NAME "pcl_${SUBSUBSYS_NAME}")
 
 PCL_ADD_EXECUTABLE(
@@ -91,6 +89,7 @@ PCL_ADD_EXECUTABLE(
   BUNDLE)
 
 target_link_libraries("${EXE_NAME}" ${SUBSUBSYS_LIBS} ${OPENGL_LIBRARIES} ${QTX}::Concurrent ${QTX}::Widgets ${QTX}::OpenGL)
+target_include_directories(${EXE_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
 if (${QTX} MATCHES "Qt6")
   target_link_libraries("${EXE_NAME}" ${QTX}::OpenGLWidgets)
 endif()
@@ -110,6 +109,7 @@ PCL_ADD_EXECUTABLE(
   BUNDLE)
 
 target_link_libraries(pcl_offline_integration ${SUBSUBSYS_LIBS} ${OPENGL_LIBRARIES} ${QTX}::Concurrent ${QTX}::Widgets ${QTX}::OpenGL)
+target_include_directories(pcl_offline_integration PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
 if (${QTX} MATCHES "Qt6")
   target_link_libraries(pcl_offline_integration ${QTX}::OpenGLWidgets)
 endif()

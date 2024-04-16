@@ -23,8 +23,6 @@ if(NOT build)
   return()
 endif()
 
-include_directories("${CMAKE_CURRENT_BINARY_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}/include")
-
 # Set Qt files and resources here
 set(uis
   main_window.ui
@@ -35,7 +33,7 @@ set(resources
 )
 
 set(incs
-   "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/main_window.h"
+  "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/main_window.h"
   "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/scene_tree.h"
   "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/parameter_dialog.h"
   "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/thread_controller.h"
@@ -115,6 +113,7 @@ PCL_ADD_EXECUTABLE(
     ${impl_incs})
 
 target_link_libraries("${EXE_NAME}" pcl_common pcl_io pcl_kdtree pcl_filters pcl_visualization pcl_segmentation pcl_surface pcl_features pcl_sample_consensus pcl_search ${QTX}::Widgets)
+target_include_directories(${EXE_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 # Install include files
 PCL_ADD_INCLUDES("${SUBSUBSYS_NAME}" "${SUBSUBSYS_NAME}" ${incs})

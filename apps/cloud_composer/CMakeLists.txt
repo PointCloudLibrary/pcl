@@ -28,8 +28,6 @@ if(NOT build)
   return()
 endif()
 
-include_directories("${CMAKE_CURRENT_BINARY_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}/include")
-
 #Create subdirectory for plugin libs
 set(CLOUD_COMPOSER_PLUGIN_DIR "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/cloud_composer_plugins")
 make_directory("${CLOUD_COMPOSER_PLUGIN_DIR}")

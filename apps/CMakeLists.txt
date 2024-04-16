@@ -15,16 +15,39 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
+list(APPEND CMAKE_AUTOUIC_SEARCH_PATHS "src")
+
+if(VTK_FOUND)
+  set(incs "include/pcl/${SUBSYS_NAME}/render_views_tesselated_sphere.h")
+  set(srcs "src/render_views_tesselated_sphere.cpp")
+endif()
+
+if(QHULL_FOUND)
+  set(incs
+    "include/pcl/${SUBSYS_NAME}/dominant_plane_segmentation.h"
+    "include/pcl/${SUBSYS_NAME}/timer.h"
+    ${incs}
+  )
+  set(impl_incs "include/pcl/${SUBSYS_NAME}/impl/dominant_plane_segmentation.hpp")
+  set(srcs "src/dominant_plane_segmentation.cpp" ${srcs})
+endif()
+
+set(LIB_NAME "pcl_${SUBSYS_NAME}")
+PCL_ADD_LIBRARY(${LIB_NAME} COMPONENT ${SUBSYS_NAME} SOURCES ${srcs} ${impl_incs} ${incs})
+target_link_libraries("${LIB_NAME}" pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_surface pcl_features pcl_sample_consensus pcl_search)
+PCL_MAKE_PKGCONFIG(${LIB_NAME} COMPONENT ${SUBSYS_NAME} DESC ${SUBSYS_DESC})
+# Install include files
+PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}" ${incs})
+PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/impl" ${impl_incs})
+
 # to be filled with all targets the apps subsystem
 set(PCL_APPS_ALL_TARGETS)
-
-include_directories("${CMAKE_CURRENT_BINARY_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}/include")
 
 PCL_ADD_EXECUTABLE(pcl_test_search_speed COMPONENT ${SUBSYS_NAME} SOURCES src/test_search.cpp)
 target_link_libraries(pcl_test_search_speed pcl_common pcl_io pcl_search pcl_kdtree pcl_visualization)
 
 PCL_ADD_EXECUTABLE(pcl_nn_classification_example COMPONENT ${SUBSYS_NAME} SOURCES src/nn_classification_example.cpp)
-target_link_libraries(pcl_nn_classification_example pcl_common pcl_io pcl_features pcl_kdtree)
+target_link_libraries(pcl_nn_classification_example pcl_apps pcl_common pcl_io pcl_features pcl_kdtree)
 
 PCL_ADD_EXECUTABLE(pcl_pyramid_surface_matching COMPONENT ${SUBSYS_NAME} SOURCES src/pyramid_surface_matching.cpp)
 target_link_libraries(pcl_pyramid_surface_matching pcl_common pcl_io pcl_features pcl_registration pcl_filters)
@@ -38,9 +61,6 @@ if(LIBUSB_FOUND)
 endif()
 
 if(VTK_FOUND)
-  set(incs "include/pcl/${SUBSYS_NAME}/render_views_tesselated_sphere.h")
-  set(srcs "src/render_views_tesselated_sphere.cpp")
-
   PCL_ADD_EXECUTABLE(pcl_ppf_object_recognition COMPONENT ${SUBSYS_NAME} SOURCES src/ppf_object_recognition.cpp)
   target_link_libraries(pcl_ppf_object_recognition pcl_common pcl_io pcl_filters pcl_features pcl_registration pcl_visualization pcl_sample_consensus pcl_segmentation)
 
@@ -70,8 +90,9 @@ if(VTK_FOUND)
   PCL_ADD_EXECUTABLE(pcl_face_trainer COMPONENT ${SUBSYS_NAME} SOURCES src/face_detection/face_trainer.cpp)
   target_link_libraries(pcl_face_trainer pcl_features pcl_recognition pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_surface pcl_keypoints pcl_ml pcl_search pcl_kdtree)
 
-  PCL_ADD_EXECUTABLE(pcl_fs_face_detector COMPONENT ${SUBSYS_NAME} SOURCES src/face_detection//filesystem_face_detection.cpp BUNDLE)
+  PCL_ADD_EXECUTABLE(pcl_fs_face_detector COMPONENT ${SUBSYS_NAME} SOURCES src/face_detection/filesystem_face_detection.cpp BUNDLE)
   target_link_libraries(pcl_fs_face_detector pcl_features pcl_recognition pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_surface pcl_keypoints pcl_ml pcl_search pcl_kdtree)
+  target_include_directories(pcl_fs_face_detector PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
   PCL_ADD_EXECUTABLE(pcl_stereo_ground_segmentation COMPONENT ${SUBSYS_NAME} SOURCES src/stereo_ground_segmentation.cpp)
   target_link_libraries(pcl_stereo_ground_segmentation pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_features pcl_stereo)
@@ -91,6 +112,7 @@ if(VTK_FOUND)
       BUNDLE)
 
     target_link_libraries(pcl_manual_registration pcl_common pcl_io pcl_visualization pcl_segmentation pcl_features pcl_surface pcl_registration ${QTX}::Widgets)
+    target_include_directories(pcl_manual_registration PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
     PCL_ADD_EXECUTABLE(pcl_pcd_video_player
       COMPONENT
@@ -102,6 +124,7 @@ if(VTK_FOUND)
       BUNDLE)
 
     target_link_libraries(pcl_pcd_video_player pcl_common pcl_io pcl_visualization pcl_segmentation pcl_features pcl_surface ${QTX}::Widgets)
+    target_include_directories(pcl_pcd_video_player PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
   endif()
 
   if(WITH_OPENNI)
@@ -154,6 +177,7 @@ if(VTK_FOUND)
 
     PCL_ADD_EXECUTABLE(pcl_openni_face_detector COMPONENT ${SUBSYS_NAME} SOURCES src/face_detection//openni_face_detection.cpp src/face_detection//openni_frame_source.cpp BUNDLE)
     target_link_libraries(pcl_openni_face_detector pcl_features pcl_recognition pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_surface pcl_keypoints pcl_ml pcl_search pcl_kdtree)
+    target_include_directories(pcl_openni_face_detector PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
     if(QT_FOUND AND HAVE_QVTK)
       # OpenNI Passthrough application demo
@@ -161,13 +185,13 @@ if(VTK_FOUND)
         COMPONENT
           ${SUBSYS_NAME}
         SOURCES
+          include/pcl/apps/openni_passthrough_qt.h
           include/pcl/apps/openni_passthrough.h
           src/openni_passthrough.cpp
           src/openni_passthrough.ui)
 
       target_link_libraries(pcl_openni_passthrough pcl_common pcl_io pcl_filters pcl_visualization ${QTX}::Widgets)
-
-      list(APPEND CMAKE_AUTOUIC_SEARCH_PATHS "src")
+      target_include_directories(pcl_openni_passthrough PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
       # OpenNI Organized Connected Component application demo
       PCL_ADD_EXECUTABLE(pcl_organized_segmentation_demo
@@ -180,37 +204,38 @@ if(VTK_FOUND)
           src/organized_segmentation_demo.ui
         BUNDLE)
       target_link_libraries(pcl_organized_segmentation_demo pcl_common pcl_io pcl_visualization pcl_segmentation pcl_features pcl_surface ${QTX}::Widgets)
+      target_include_directories(pcl_organized_segmentation_demo PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
     endif()
 
     if(QHULL_FOUND)
-    PCL_ADD_EXECUTABLE(pcl_openni_3d_convex_hull COMPONENT ${SUBSYS_NAME} SOURCES src/openni_3d_convex_hull.cpp BUNDLE)
-    target_link_libraries(pcl_openni_3d_convex_hull pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_features pcl_surface)
-
-    PCL_ADD_EXECUTABLE(pcl_openni_3d_concave_hull COMPONENT ${SUBSYS_NAME} SOURCES src/openni_3d_concave_hull.cpp BUNDLE)
-    target_link_libraries(pcl_openni_3d_concave_hull pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_features pcl_surface)
-
-    PCL_ADD_EXECUTABLE(pcl_openni_tracking COMPONENT ${SUBSYS_NAME} SOURCES src/openni_tracking.cpp BUNDLE)
-    target_link_libraries(pcl_openni_tracking pcl_common pcl_io pcl_surface pcl_visualization pcl_filters pcl_features pcl_segmentation pcl_tracking pcl_search)
-
-    PCL_ADD_EXECUTABLE(pcl_openni_planar_convex_hull COMPONENT ${SUBSYS_NAME} SOURCES src/openni_planar_convex_hull.cpp BUNDLE)
-    target_link_libraries(pcl_openni_planar_convex_hull pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_surface)
-
-    PCL_ADD_EXECUTABLE(pcl_ni_linemod COMPONENT ${SUBSYS_NAME} SOURCES src/ni_linemod.cpp BUNDLE)
-    target_link_libraries(pcl_ni_linemod pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_features pcl_surface pcl_search)
+      PCL_ADD_EXECUTABLE(pcl_openni_3d_convex_hull COMPONENT ${SUBSYS_NAME} SOURCES src/openni_3d_convex_hull.cpp BUNDLE)
+      target_link_libraries(pcl_openni_3d_convex_hull pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_features pcl_surface)
+  
+      PCL_ADD_EXECUTABLE(pcl_openni_3d_concave_hull COMPONENT ${SUBSYS_NAME} SOURCES src/openni_3d_concave_hull.cpp BUNDLE)
+      target_link_libraries(pcl_openni_3d_concave_hull pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_features pcl_surface)
+  
+      PCL_ADD_EXECUTABLE(pcl_openni_tracking COMPONENT ${SUBSYS_NAME} SOURCES src/openni_tracking.cpp BUNDLE)
+      target_link_libraries(pcl_openni_tracking pcl_common pcl_io pcl_surface pcl_visualization pcl_filters pcl_features pcl_segmentation pcl_tracking pcl_search)
+  
+      PCL_ADD_EXECUTABLE(pcl_openni_planar_convex_hull COMPONENT ${SUBSYS_NAME} SOURCES src/openni_planar_convex_hull.cpp BUNDLE)
+      target_link_libraries(pcl_openni_planar_convex_hull pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_surface)
+  
+      PCL_ADD_EXECUTABLE(pcl_ni_linemod COMPONENT ${SUBSYS_NAME} SOURCES src/ni_linemod.cpp BUNDLE)
+      target_link_libraries(pcl_ni_linemod pcl_apps pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_features pcl_surface pcl_search)
     endif() # QHULL_FOUND
 
     PCL_ADD_EXECUTABLE(pcl_ni_agast COMPONENT ${SUBSYS_NAME} SOURCES src/ni_agast.cpp BUNDLE)
-    target_link_libraries(pcl_ni_agast pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_features pcl_keypoints pcl_surface pcl_search)
+    target_link_libraries(pcl_ni_agast pcl_apps pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_features pcl_keypoints pcl_surface pcl_search)
 
     PCL_ADD_EXECUTABLE(pcl_ni_brisk COMPONENT ${SUBSYS_NAME} SOURCES src/ni_brisk.cpp BUNDLE)
-    target_link_libraries(pcl_ni_brisk pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_features pcl_keypoints pcl_surface pcl_search)
+    target_link_libraries(pcl_ni_brisk pcl_apps pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_features pcl_keypoints pcl_surface pcl_search)
 
     PCL_ADD_EXECUTABLE(pcl_ni_susan COMPONENT ${SUBSYS_NAME} SOURCES src/ni_susan.cpp BUNDLE)
-    target_link_libraries(pcl_ni_susan pcl_common pcl_visualization pcl_features pcl_keypoints pcl_search)
+    target_link_libraries(pcl_ni_susan pcl_apps pcl_common pcl_visualization pcl_features pcl_keypoints pcl_search)
 
     PCL_ADD_EXECUTABLE(pcl_ni_trajkovic COMPONENT ${SUBSYS_NAME} SOURCES src/ni_trajkovic.cpp BUNDLE)
-    target_link_libraries(pcl_ni_trajkovic pcl_common pcl_visualization pcl_features pcl_keypoints pcl_search)
+    target_link_libraries(pcl_ni_trajkovic pcl_apps pcl_common pcl_visualization pcl_features pcl_keypoints pcl_search)
 
     PCL_ADD_EXECUTABLE(pcl_openni_klt COMPONENT ${SUBSYS_NAME} SOURCES src/openni_klt.cpp BUNDLE)
     target_link_libraries(pcl_openni_klt pcl_common pcl_io pcl_visualization pcl_tracking)
@@ -219,9 +244,6 @@ endif() # VTK_FOUND
 
 # OpenGL and GLUT
 if(OPENGL_FOUND AND GLUT_FOUND)
-  if(NOT WIN32)
-    include_directories(SYSTEM "${OPENGL_INCLUDE_DIR}")
-  endif()
   PCL_ADD_EXECUTABLE(pcl_grabcut_2d COMPONENT ${SUBSYS_NAME} SOURCES src/grabcut_2d.cpp BUNDLE)
   if(APPLE)
     set(_glut_target ${GLUT_glut_LIBRARY})
@@ -236,26 +258,8 @@ set(PCL_APPS_MODULES_NAMES_UNSORTED ${PCL_APPS_MODULES_NAMES})
 topological_sort(PCL_APPS_MODULES_NAMES PCL_APPS_ _DEPENDS)
 sort_relative(PCL_APPS_MODULES_NAMES_UNSORTED PCL_APPS_MODULES_NAMES PCL_APPS_MODULES_DIRS)
 foreach(subdir ${PCL_APPS_MODULES_DIRS})
-add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/${subdir}")
+  add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/${subdir}")
 endforeach()
-
-if(QHULL_FOUND)
-  set(incs
-    "include/pcl/${SUBSYS_NAME}/dominant_plane_segmentation.h"
-    "include/pcl/${SUBSYS_NAME}/timer.h"
-    ${incs}
-  )
-  set(impl_incs "include/pcl/${SUBSYS_NAME}/impl/dominant_plane_segmentation.hpp")
-  set(srcs "src/dominant_plane_segmentation.cpp" ${srcs})
-endif()
-
-set(LIB_NAME "pcl_${SUBSYS_NAME}")
-PCL_ADD_LIBRARY(${LIB_NAME} COMPONENT ${SUBSYS_NAME} SOURCES ${srcs} ${impl_incs} ${incs})
-target_link_libraries("${LIB_NAME}" pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_surface pcl_features pcl_sample_consensus pcl_search)
-PCL_MAKE_PKGCONFIG(${LIB_NAME} COMPONENT ${SUBSYS_NAME} DESC ${SUBSYS_DESC})
-# Install include files
-PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}" ${incs})
-PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/impl" ${impl_incs})
 
 if(CMAKE_GENERATOR_IS_IDE)
     set(SUBSYS_TARGET_NAME APPS_BUILD)
