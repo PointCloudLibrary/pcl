@@ -209,7 +209,6 @@ if(MINGW)
   target_link_libraries(pcl_io_ply ws2_32)
 endif()
 PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/ply" ${PLY_INCLUDES})
-target_include_directories(pcl_io_ply PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include")
 target_link_libraries(pcl_io_ply pcl_common Boost::boost)
 
 set(srcs
@@ -339,8 +338,6 @@ set(LIB_NAME "pcl_${SUBSYS_NAME}")
 add_definitions(${VTK_DEFINES})
 
 PCL_ADD_LIBRARY(${LIB_NAME} COMPONENT ${SUBSYS_NAME} SOURCES ${srcs} ${incs} ${compression_incs} ${impl_incs} ${OPENNI_INCLUDES} ${OPENNI2_INCLUDES})
-
-target_include_directories(${LIB_NAME} PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include")
 
 target_link_libraries("${LIB_NAME}" Boost::boost Boost::iostreams pcl_common pcl_io_ply)
 if(TARGET Boost::filesystem)

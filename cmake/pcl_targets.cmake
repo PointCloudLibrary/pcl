@@ -196,6 +196,11 @@ function(PCL_ADD_LIBRARY _name)
   PCL_ADD_VERSION_INFO(${_name})
   target_compile_features(${_name} PUBLIC ${PCL_CXX_COMPILE_FEATURES})
 
+  target_include_directories(${_name} PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:${INCLUDE_INSTALL_ROOT}> 
+  )
+
   target_link_libraries(${_name} Threads::Threads)
   if(TARGET OpenMP::OpenMP_CXX)
     target_link_libraries(${_name} OpenMP::OpenMP_CXX)
@@ -256,6 +261,11 @@ function(PCL_CUDA_ADD_LIBRARY _name)
   PCL_ADD_VERSION_INFO(${_name})
 
   target_compile_options(${_name} PRIVATE $<$<COMPILE_LANGUAGE:CUDA>: ${GEN_CODE} --expt-relaxed-constexpr>)
+
+  target_include_directories(${_name} PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:${INCLUDE_INSTALL_ROOT}> 
+  )
 
   target_include_directories(${_name} PRIVATE ${CUDA_TOOLKIT_INCLUDE})
 
