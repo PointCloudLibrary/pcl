@@ -46,7 +46,7 @@
 
 #include <pcl/gpu/kinfu/kinfu.h>
 #include <pcl/gpu/containers/device_array.h>
-#include <pcl/gpu/containers/initialization.h>
+#include <pcl/gpu/utils/initialization.h>
 #include "openni_capture.h"
 
 #include "../src/internal.h"

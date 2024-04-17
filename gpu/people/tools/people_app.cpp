@@ -46,7 +46,7 @@
 #include <pcl/exceptions.h>
 #include <pcl/console/parse.h>
 #include <pcl/console/print.h>
-#include <pcl/gpu/containers/initialization.h>
+#include <pcl/gpu/utils/initialization.h>
 #include <pcl/gpu/people/people_detector.h>
 #include <pcl/gpu/people/colormap.h>
 #include <pcl/visualization/image_viewer.h>

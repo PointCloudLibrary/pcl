@@ -55,7 +55,7 @@
 
 #include <pcl/gpu/octree/octree.hpp>
 #include <pcl/gpu/containers/device_array.h>
-#include <pcl/gpu/containers/initialization.h>
+#include <pcl/gpu/utils/initialization.h>
 
 #include "data_source.hpp"
 

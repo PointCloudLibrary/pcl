@@ -37,7 +37,7 @@
 #include <pcl/io/openni_camera/openni.h>
 
 #include "openni_capture.h"
-#include <pcl/gpu/containers/initialization.h>
+#include <pcl/gpu/utils/initialization.h>
 
 using namespace pcl;
 using namespace pcl::gpu;
