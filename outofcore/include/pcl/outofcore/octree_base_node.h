@@ -42,6 +42,7 @@
 #include <memory>
 #include <mutex>
 #include <random>
+#include <list>
 
 #include <pcl/common/io.h>
 #include <pcl/PCLPointCloud2.h>

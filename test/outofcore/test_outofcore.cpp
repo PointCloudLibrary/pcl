@@ -44,6 +44,7 @@
 
 #include <pcl/test/gtest.h>
 
+#include <list>
 #include <vector>
 #include <iostream>
 #include <random>
