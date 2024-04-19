@@ -354,7 +354,12 @@ if(PKG_CONFIG_FOUND)
   pkg_check_modules(METSLIB metslib)
   if(METSLIB_FOUND)
     set(HAVE_METSLIB ON)
+    include_directories(SYSTEM ${METSLIB_INCLUDE_DIRS})
+  else()
+    include_directories(SYSTEM "${PCL_SOURCE_DIR}/recognition/include/pcl/recognition/3rdparty/")
   endif()
+else()
+    include_directories(SYSTEM ${PCL_SOURCE_DIR}/recognition/include/pcl/recognition/3rdparty/)
 endif()
 
 # LibPNG
