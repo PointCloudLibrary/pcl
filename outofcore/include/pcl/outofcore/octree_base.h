@@ -63,6 +63,7 @@
 #include <pcl/PCLPointCloud2.h>
 
 #include <shared_mutex>
+#include <list>
 
 namespace pcl
 {
