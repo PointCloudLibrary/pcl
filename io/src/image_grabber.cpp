@@ -612,7 +612,7 @@ pcl::ImageGrabberBase::ImageGrabberImpl::getCloudPCLZF (std::size_t idx,
                                                         double &cx,
                                                         double &cy) const
 {
-  if (idx > depth_pclzf_files_.size ())
+  if (idx >= depth_pclzf_files_.size ())
   {
     return (false);
   }
