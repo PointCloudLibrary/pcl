@@ -919,6 +919,109 @@ TEST(SampleConsensusModelEllipse3D, RANSAC)
 }
 
 
+TEST(SampleConsensusModelTorusRefine, RANSAC)
+{
+
+  srand(0);
+
+  PointCloud<PointXYZ> cloud;
+  PointCloud<Normal> normals;
+
+  cloud.resize(12);
+  normals.resize(12);
+
+  cloud[0].getVector3fMap() << 2.052800042174215 , -1.499473956010903 , 2.5922393000558;
+  cloud[1].getVector3fMap() << 3.388588815443773 , -0.2804951689253241 , 2.016023579560368;
+  cloud[2].getVector3fMap() << 2.1062433380708585 , -1.9174254209231951 , 2.2138169934854175;
+  cloud[3].getVector3fMap() << 2.9741032000482 , -1.0699765160210948 , 1.2784833859363935;
+  cloud[4].getVector3fMap() << 3.9945837837405858 , -0.24398838472758466 , 1.994969222832288;
+  cloud[5].getVector3fMap() << 3.29052359025732 , -0.7052701711244429 , 1.4026501046485196;
+  cloud[6].getVector3fMap() << 3.253762467235399 , -1.2666426752546665 , 1.2533731806961965;
+  cloud[7].getVector3fMap() << 2.793231427168476 , -1.406941876180895 , 2.914835409806976;
+  cloud[8].getVector3fMap() << 3.427656537026421 , -0.3921726018138755 , 1.1167321991754167;
+  cloud[9].getVector3fMap() << 3.45310885872988 , -1.187857062974888 , 0.9128847947344318;
+
+  normals[0].getNormalVector3fMap() << -0.9655752892034741 , 0.13480487505578329 , 0.22246798992399325;
+  normals[1].getNormalVector3fMap() << -0.9835035116470829 , -0.02321732676535275 , -0.17939286026965295;
+  normals[2].getNormalVector3fMap() << -0.6228348353863176 , -0.7614744633300792 , 0.17953665231775656;
+  normals[3].getNormalVector3fMap() << -0.3027649706212169 , 0.4167626949130777 , 0.8571127281131243;
+  normals[4].getNormalVector3fMap() << 0.9865410652838972 , 0.13739803967452247 , 0.08864821037173687;
+  normals[5].getNormalVector3fMap() << -0.723213640950708 , -0.05078427284613152 , 0.688754663994597;
+  normals[6].getNormalVector3fMap() << 0.4519195477489684 , -0.4187464441250127 , 0.7876675300499734;
+  normals[7].getNormalVector3fMap() << 0.7370319397802214 , -0.6656659398898118 , 0.11693064702813241;
+  normals[8].getNormalVector3fMap() << -0.4226770542031876 , 0.7762818780175667 , -0.4676863839279862;
+  normals[9].getNormalVector3fMap() << 0.720025487985072 , -0.5768131803911037 , -0.38581064212766236;
+
+
+  // Uniform noise between -0.1 and 0.1
+  cloud[0].getVector3fMap() += Eigen::Vector3f(-0.02519484,  0.03325529,  0.09188957);
+  cloud[1].getVector3fMap() += Eigen::Vector3f( 0.06969781, -0.06921317, -0.07229406);
+  cloud[2].getVector3fMap() += Eigen::Vector3f(-0.00064637, -0.00231905, -0.0080026 );
+  cloud[3].getVector3fMap() += Eigen::Vector3f( 0.05039557, -0.0229141 ,  0.0594657 );
+  cloud[4].getVector3fMap() += Eigen::Vector3f(-0.05717322, -0.09670288,  0.00176189);
+  cloud[5].getVector3fMap() += Eigen::Vector3f( 0.02668492, -0.06824032,  0.05790168);
+  cloud[6].getVector3fMap() += Eigen::Vector3f( 0.07829713,  0.06426746,  0.04172692);
+  cloud[7].getVector3fMap() += Eigen::Vector3f( 0.0006326 , -0.02518951, -0.00927858);
+  cloud[8].getVector3fMap() += Eigen::Vector3f(-0.04975343,  0.09912357, -0.04233801);
+  cloud[9].getVector3fMap() += Eigen::Vector3f(-0.04810247,  0.03382804,  0.07958129);
+
+  // Outliers
+  cloud[10].getVector3fMap() << 5 ,1,1;
+  cloud[11].getVector3fMap() << 5,2,1;
+
+  normals[10].getNormalVector3fMap() << 1, 0,0;
+  normals[11].getNormalVector3fMap() <<1, 0,0;
+
+  SampleConsensusModelTorus<PointXYZ, Normal>::Ptr model(
+      new SampleConsensusModelTorus<PointXYZ, Normal>(cloud.makeShared()));
+
+  model->setInputNormals (normals.makeShared ());
+
+  // Create the RANSAC object
+  RandomSampleConsensus<PointXYZ> sac(model, 0.2);
+
+  // Algorithm tests
+  bool result = sac.computeModel();
+  ASSERT_TRUE(result);
+
+  pcl::Indices sample;
+  sac.getModel(sample);
+  EXPECT_EQ(4, sample.size());
+  pcl::Indices inliers;
+  sac.getInliers(inliers);
+  EXPECT_EQ(10, inliers.size());
+
+
+  Eigen::VectorXf coeff;
+  sac.getModelCoefficients(coeff);
+
+
+  EXPECT_EQ(8, coeff.size());
+
+  EXPECT_NEAR(coeff[0],1, 2e-1);
+  EXPECT_NEAR(coeff[1],0.3, 2e-1);
+  EXPECT_NEAR(coeff[2],3, 2e-1);
+  EXPECT_NEAR(coeff[3],-1, 2e-1);
+  EXPECT_NEAR(coeff[4],2, 2e-1);
+  EXPECT_NEAR(coeff[5],0.7071067811865476, 2e-1);
+  EXPECT_NEAR(coeff[6],-0.6830127018922194, 2e-1);
+  EXPECT_NEAR(coeff[7],0.1830127018922194, 2e-1);
+
+
+  Eigen::VectorXf coeff_refined;
+  model->optimizeModelCoefficients (inliers, coeff, coeff_refined);
+  EXPECT_EQ(8, coeff.size());
+
+  EXPECT_NEAR(coeff[0],1, 1e-1);
+  EXPECT_NEAR(coeff[1],0.3, 1e-1);
+  EXPECT_NEAR(coeff[2],3, 1e-1);
+  EXPECT_NEAR(coeff[3],-1, 1e-1);
+  EXPECT_NEAR(coeff[4],2, 1e-1);
+  EXPECT_NEAR(coeff[5],0.7071067811865476, 1e-1);
+  EXPECT_NEAR(coeff[6],-0.6830127018922194, 1e-1);
+  EXPECT_NEAR(coeff[7],0.1830127018922194, 1e-1);
+}
+
 TEST(SampleConsensusModelTorus, RANSAC)
 {
   srand(0);
@@ -974,6 +1077,22 @@ TEST(SampleConsensusModelTorus, RANSAC)
   EXPECT_NEAR(coeff[5], 0.7071067811865475, 1e-2);
   EXPECT_NEAR(coeff[6], -0.5, 1e-2);
   EXPECT_NEAR(coeff[7], 0.5, 1e-2);
+
+  Eigen::VectorXf coeff_refined;
+  model->optimizeModelCoefficients (inliers, coeff, coeff_refined);
+  EXPECT_EQ(8, coeff.size());
+
+  EXPECT_NEAR(coeff[0], 1, 1e-2);
+  EXPECT_NEAR(coeff[1], 0.3, 1e-2);
+
+  EXPECT_NEAR(coeff[2], 7.758357590948854, 1e-2);
+  EXPECT_NEAR(coeff[3], 7.756009480304242, 1e-2);
+  EXPECT_NEAR(coeff[4], 6.297666724054506, 1e-2);
+
+  EXPECT_NEAR(coeff[5], 0.7071067811865475, 1e-2);
+  EXPECT_NEAR(coeff[6], -0.5, 1e-2);
+  EXPECT_NEAR(coeff[7], 0.5, 1e-2);
+
 }
 
 int

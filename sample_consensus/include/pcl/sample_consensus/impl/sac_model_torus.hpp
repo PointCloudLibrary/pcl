@@ -82,7 +82,6 @@ pcl::SampleConsensusModelTorus<PointT, PointNT>::computeModelCoefficients(
     PCL_ERROR ("[pcl::SampleConsensusModelTorus::computeModelCoefficients] No input dataset containing normals was given!\n");
     return (false);
   }
-
   // Find axis using:
 
   // @article{article,
@@ -99,10 +98,10 @@ pcl::SampleConsensusModelTorus<PointT, PointNT>::computeModelCoefficients(
   Eigen::Vector3f n3 = Eigen::Vector3f((*normals_)[samples[3]].getNormalVector3fMap());
 
 
-  Eigen::Vector3f p0 = Eigen::Vector3f((*input_)[0].getVector3fMap());
-  Eigen::Vector3f p1 = Eigen::Vector3f((*input_)[1].getVector3fMap());
-  Eigen::Vector3f p2 = Eigen::Vector3f((*input_)[2].getVector3fMap());
-  Eigen::Vector3f p3 = Eigen::Vector3f((*input_)[3].getVector3fMap());
+  Eigen::Vector3f p0 = Eigen::Vector3f((*input_)[samples[0]].getVector3fMap());
+  Eigen::Vector3f p1 = Eigen::Vector3f((*input_)[samples[1]].getVector3fMap());
+  Eigen::Vector3f p2 = Eigen::Vector3f((*input_)[samples[2]].getVector3fMap());
+  Eigen::Vector3f p3 = Eigen::Vector3f((*input_)[samples[3]].getVector3fMap());
 
 
   float a01 = crossDot(n0, n1, n2);
@@ -133,12 +132,16 @@ pcl::SampleConsensusModelTorus<PointT, PointNT>::computeModelCoefficients(
   float _b = (b01 * p + b0 * k + b1);
   float _c = (b0 * p + b);
 
-  if ((_b*_b - 4*_a*_c )< 0 )
+  float eps = 1e-9;
+  // Check for imaginary solutions, or small denominators.
+  if ((_b*_b - 4*_a*_c )< 0 ||
+      std::abs(a0 - b0 * a01) < eps ||
+      std::abs(b01) < eps  ||
+      std::abs(_a) < eps)
   {
     PCL_ERROR ("[pcl::SampleConsensusModelTorus::computeModelCoefficients] Can't compute model coefficients with this method!\n");
     return (false);
   }
-
 
   float s0 = (-_b + std::sqrt(_b * _b - 4 * _a * _c)) / (2 * _a);
   float s1 = (-_b - std::sqrt(_b * _b - 4 * _a * _c)) / (2 * _a);
@@ -153,6 +156,12 @@ pcl::SampleConsensusModelTorus<PointT, PointNT>::computeModelCoefficients(
     // Direction vector
     Eigen::Vector3f d = ((p1 + n1 * t1) - (p0 + n0 * t0));
     d.normalize();
+    // Flip direction, so that the fisrt element of the direction vector is
+    // positive, for consitency.
+    if (d[0] < 0){
+      d *= -1;
+    }
+
 
     // Flip normals if required. Note |d| = 1
     // d
@@ -172,7 +181,7 @@ pcl::SampleConsensusModelTorus<PointT, PointNT>::computeModelCoefficients(
     // + D = 0 and finally (dx*P_i_x + dy*P_i_y + dz*P_i_z) + (dx*n_i_x + dy*n_i_y +
     // dz*n_i_z ) * r + D = 0 We can set up a linear least squares system of two
     // variables r and D
-
+    //
     Eigen::MatrixXf A(4,2);
     A <<
          d.dot(n0) ,  1 ,
@@ -180,13 +189,13 @@ pcl::SampleConsensusModelTorus<PointT, PointNT>::computeModelCoefficients(
          d.dot(n2) ,  1 ,
          d.dot(n3) ,  1;
 
+
     Eigen::Matrix<float, -1, -1> B (4,1);
     B <<
         -d.dot(p0),
         -d.dot(p1),
         -d.dot(p2),
         -d.dot(p3);
-
 
     Eigen::Matrix<float, -1, -1> sol;
     sol =
@@ -220,7 +229,6 @@ pcl::SampleConsensusModelTorus<PointT, PointNT>::computeModelCoefficients(
                              std::pow(r_int - (p3 - r_ext * n3 - centroid).norm(), 2)
                              ) /
                             4.f);
-
     // We select the minimum stddev cycle
     if (r_int_stddev < r_int_stddev_cycle1){
       r_int_stddev_cycle1 = r_int_stddev;
