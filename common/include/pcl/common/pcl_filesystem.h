@@ -38,6 +38,8 @@
 
 #pragma once
 
+#include <pcl/pcl_config.h> // for PCL_PREFER_BOOST_FILESYSTEM
+
 #if (__cplusplus >= 201703L) && !defined(PCL_PREFER_BOOST_FILESYSTEM)
 #define PCL_USING_STD_FILESYSTEM
 #include <filesystem>
