@@ -711,8 +711,8 @@ pcl::OBJReader::read (const std::string &file_name, pcl::TextureMesh &mesh,
       // Tokenize the line
       pcl::split (st, line, "\t\r ");
 
-      // Ignore comments and lines with only whitespace
-      if (st.empty() || st[0] == "#")
+      // Ignore comments
+      if (st[0] == "#")
         continue;
       // Vertex
       if (st[0] == "v")
