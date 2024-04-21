@@ -133,23 +133,6 @@ pcl::SampleConsensusModelTorus<PointT, PointNT>::computeModelCoefficients(
   float _b = (b01 * p + b0 * k + b1);
   float _c = (b0 * p + b);
 
-  std::cout << "-------- params ----------------" << std::endl;
-  std::cout << "a01" << a01 << std::endl;
-  std::cout << "b01" << b01 << std::endl;
-  std::cout << "a0" << a0 << std::endl;
-  std::cout << "b0" << b0 << std::endl;
-  std::cout << "a1" << a1 << std::endl;
-  std::cout << "b1" << b1 << std::endl;
-  std::cout << "a" << a << std::endl;
-  std::cout << "b" << b << std::endl;
-
-
-  std::cout << "srqt" << _b * _b - 4 * _a * _c << std::endl;
-  std::cout << "_a" << _a << std::endl;
-  std::cout << "_b" << _b << std::endl;
-  std::cout << "_c" << _c << std::endl;
-  std::cout << "------------------------" << std::endl;
-
   if ((_b*_b - 4*_a*_c )< 0 )
   {
     PCL_ERROR ("[pcl::SampleConsensusModelTorus::computeModelCoefficients] Can't compute model coefficients with this method!\n");
@@ -160,35 +143,19 @@ pcl::SampleConsensusModelTorus<PointT, PointNT>::computeModelCoefficients(
   float s0 = (-_b + std::sqrt(_b * _b - 4 * _a * _c)) / (2 * _a);
   float s1 = (-_b - std::sqrt(_b * _b - 4 * _a * _c)) / (2 * _a);
 
-  //
   float r_int_stddev_cycle1 = std::numeric_limits<float>::max();
 
   for (float s : {s0,s1}) {
 
-    std::cout << "s0" << s0 << std::endl;
-    std::cout << "s1" << s1 << std::endl;
-    std::cout << "s" << s << std::endl;
-    std::cout << "k" << k << std::endl;
-    std::cout << "p" << p << std::endl;
-
     float t1 = s;
     float t0 = k* t1 + p;
 
-    std::cout << n0 << std::endl;
-    std::cout << "@" << std::endl;
-    std::cout << n1 << std::endl;
-    std::cout << "@" << std::endl;
-    std::cout << p0 << std::endl;
-    std::cout << "@" << std::endl;
-    std::cout << n1 << std::endl;
-    std::cout << "@" << std::endl;
-
-    std::cout << "t0" << t0 << std::endl;
-    std::cout << "t1" << t1 << std::endl;
     // Direction vector
     Eigen::Vector3f d = ((p1 + n1 * t1) - (p0 + n0 * t0));
+    d.normalize();
 
     // Flip normals if required. Note |d| = 1
+    // d
     //if (n0.dot(d) / n0.norm() < M_PI / 2 ) n0 = -n0;
     //if (n1.dot(d) / n1.norm() < M_PI / 2 ) n1 = -n1;
     //if (n2.dot(d) / n2.norm() < M_PI / 2 ) n2 = -n2;
@@ -205,26 +172,13 @@ pcl::SampleConsensusModelTorus<PointT, PointNT>::computeModelCoefficients(
     // + D = 0 and finally (dx*P_i_x + dy*P_i_y + dz*P_i_z) + (dx*n_i_x + dy*n_i_y +
     // dz*n_i_z ) * r + D = 0 We can set up a linear least squares system of two
     // variables r and D
-    //
-    std::cout << "d" << std::endl;
-    std::cout <<  d << std::endl;
-    std::cout << "normals" << std::endl;
-    std::cout << n0 << std::endl;
-    std::cout << "@" << std::endl;
-    std::cout << n1 << std::endl;
-    std::cout << "@" << std::endl;
-    std::cout << n2 << std::endl;
-    std::cout << "@" << std::endl;
-    std::cout << n3 << std::endl;
-    std::cout << "@" << std::endl;
+
     Eigen::MatrixXf A(4,2);
     A <<
          d.dot(n0) ,  1 ,
          d.dot(n1) ,  1 ,
          d.dot(n2) ,  1 ,
          d.dot(n3) ,  1;
-
-    std::cout  << " A matrix!" << A << std::endl;
 
     Eigen::Matrix<float, -1, -1> B (4,1);
     B <<
@@ -233,7 +187,6 @@ pcl::SampleConsensusModelTorus<PointT, PointNT>::computeModelCoefficients(
         -d.dot(p2),
         -d.dot(p3);
 
-    std::cout  << " B matrix!" << B << std::endl;
 
     Eigen::Matrix<float, -1, -1> sol;
     sol =
@@ -247,26 +200,27 @@ pcl::SampleConsensusModelTorus<PointT, PointNT>::computeModelCoefficients(
     // plane
 
     Eigen::Vector3f Pany = (p1 + n1*t1);
+
     float lambda = (-d.dot(Pany) - D) / d.dot(d);
 
     Eigen::Vector3f centroid = Pany + d * lambda;
 
     // Finally, the internal radius. The least square solution will be
     // the average in this case.
-    float r_int = std::sqrt(((p0 + r_ext * n0 - centroid).squaredNorm() +
-                             (p1 + r_ext * n1 - centroid).squaredNorm() +
-                             (p2 + r_ext * n2 - centroid).squaredNorm() +
-                             (p3 + r_ext * n3 - centroid).squaredNorm()) /
+    float r_int = std::sqrt(((p0 - r_ext * n0 - centroid).squaredNorm() +
+                             (p1 - r_ext * n1 - centroid).squaredNorm() +
+                             (p2 - r_ext * n2 - centroid).squaredNorm() +
+                             (p3 - r_ext * n3 - centroid).squaredNorm()) /
                             4.f);
 
     float r_int_stddev = std::sqrt((
-                             std::pow(r_int - (p0 + r_ext * n0 - centroid).norm(), 2) +
-                             std::pow(r_int - (p1 + r_ext * n1 - centroid).norm(), 2) +
-                             std::pow(r_int - (p2 + r_ext * n2 - centroid).norm(), 2) +
-                             std::pow(r_int - (p3 + r_ext * n3 - centroid).norm(), 2)
+                             std::pow(r_int - (p0 - r_ext * n0 - centroid).norm(), 2) +
+                             std::pow(r_int - (p1 - r_ext * n1 - centroid).norm(), 2) +
+                             std::pow(r_int - (p2 - r_ext * n2 - centroid).norm(), 2) +
+                             std::pow(r_int - (p3 - r_ext * n3 - centroid).norm(), 2)
                              ) /
                             4.f);
-    std::cout << "ADSFadsf" << std::endl;
+
     // We select the minimum stddev cycle
     if (r_int_stddev < r_int_stddev_cycle1){
       r_int_stddev_cycle1 = r_int_stddev;
@@ -286,10 +240,6 @@ pcl::SampleConsensusModelTorus<PointT, PointNT>::computeModelCoefficients(
     model_coefficients[6] = d[1];
     model_coefficients[7] = d[2];
   }
-  std::cout << "MODEL COEFFS" << std::endl;
-  std::cout << model_coefficients << std::endl;
-
-
   return true;
 }
 
