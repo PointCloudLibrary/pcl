@@ -41,7 +41,6 @@ PCL_ADD_TEST(io_ply_io test_ply_io
 
 # Uses VTK readers to verify
 if(VTK_FOUND AND NOT ANDROID)
-  include_directories(SYSTEM ${VTK_INCLUDE_DIRS})
   PCL_ADD_TEST (io_ply_mesh_io test_ply_mesh_io
                 FILES test_ply_mesh_io.cpp
                 LINK_WITH pcl_gtest pcl_io

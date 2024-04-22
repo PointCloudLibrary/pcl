@@ -11,9 +11,6 @@ if(ANDROID)
 endif()
 
 if(OPENGL_FOUND)
-  if(OPENGL_INCLUDE_DIR)
-    include_directories(SYSTEM "${OPENGL_INCLUDE_DIR}")
-  endif()
   if(OPENGL_DEFINITIONS)
     add_definitions("${OPENGL_DEFINITIONS}")
   endif()
@@ -137,11 +134,6 @@ endif()
 
 set(LIB_NAME "pcl_${SUBSYS_NAME}")
 PCL_ADD_LIBRARY(${LIB_NAME} COMPONENT ${SUBSYS_NAME} SOURCES ${srcs} ${incs} ${common_incs} ${impl_incs} ${common_impl_incs} ${vtk_incs})
-
-target_include_directories(${LIB_NAME} PUBLIC
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-  $<INSTALL_INTERFACE:include>  
-)
 
 # apple workaround (continued)
 if(APPLE)
