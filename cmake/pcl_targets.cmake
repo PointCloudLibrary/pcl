@@ -118,9 +118,6 @@ macro(PCL_SUBSYS_DEPEND _var)
         if(NOT _status)
           set(${_var} FALSE)
           PCL_SET_SUBSYS_STATUS(${_name} FALSE "Requires ${_dep}.")
-        else()
-          PCL_GET_SUBSYS_INCLUDE_DIR(_include_dir ${_dep})
-          include_directories(${PROJECT_SOURCE_DIR}/${_include_dir}/include)
         endif()
       endforeach()
     endif()
@@ -132,12 +129,6 @@ macro(PCL_SUBSYS_DEPEND _var)
           set(${_var} FALSE)
           PCL_SET_SUBSYS_STATUS(${_name} FALSE "Requires external library ${_dep}.")
         endif()
-      endforeach()
-    endif()
-    if(ARGS_OPT_DEPS)
-      foreach(_dep ${ARGS_OPT_DEPS})
-        PCL_GET_SUBSYS_INCLUDE_DIR(_include_dir ${_dep})
-        include_directories(${PROJECT_SOURCE_DIR}/${_include_dir}/include)
       endforeach()
     endif()
   endif()
@@ -192,32 +183,48 @@ function(PCL_ADD_LIBRARY _name)
     message(FATAL_ERROR "PCL_ADD_LIBRARY requires parameter COMPONENT.")
   endif()
 
-  add_library(${_name} ${PCL_LIB_TYPE} ${ARGS_SOURCES})
-  PCL_ADD_VERSION_INFO(${_name})
-  target_compile_features(${_name} PUBLIC ${PCL_CXX_COMPILE_FEATURES})
+  if(NOT ARGS_SOURCES)
+    add_library(${_name} INTERFACE)
+    
+    target_include_directories(${_name} INTERFACE
+      $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+      $<INSTALL_INTERFACE:${INCLUDE_INSTALL_ROOT}> 
+    )
 
-  target_link_libraries(${_name} Threads::Threads)
-  if(TARGET OpenMP::OpenMP_CXX)
-    target_link_libraries(${_name} OpenMP::OpenMP_CXX)
+  else()
+    add_library(${_name} ${PCL_LIB_TYPE} ${ARGS_SOURCES})
+    PCL_ADD_VERSION_INFO(${_name})
+    target_compile_features(${_name} PUBLIC ${PCL_CXX_COMPILE_FEATURES})
+
+    target_include_directories(${_name} PUBLIC
+      $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+      $<INSTALL_INTERFACE:${INCLUDE_INSTALL_ROOT}> 
+    )
+
+    target_link_libraries(${_name} Threads::Threads)
+    if(TARGET OpenMP::OpenMP_CXX)
+      target_link_libraries(${_name} OpenMP::OpenMP_CXX)
+    endif()
+
+    if((UNIX AND NOT ANDROID) OR MINGW)
+      target_link_libraries(${_name} m ${ATOMIC_LIBRARY})
+    endif()
+
+    if(MINGW)
+      target_link_libraries(${_name} gomp)
+    endif()
+
+    if(MSVC)
+      target_link_libraries(${_name} delayimp.lib)  # because delay load is enabled for openmp.dll
+    endif()
+    
+    set_target_properties(${_name} PROPERTIES
+      VERSION ${PCL_VERSION}
+      SOVERSION ${PCL_VERSION_MAJOR}.${PCL_VERSION_MINOR}
+      DEFINE_SYMBOL "PCLAPI_EXPORTS")
+
+      set_target_properties(${_name} PROPERTIES FOLDER "Libraries")
   endif()
-
-  if((UNIX AND NOT ANDROID) OR MINGW)
-    target_link_libraries(${_name} m ${ATOMIC_LIBRARY})
-  endif()
-
-  if(MINGW)
-    target_link_libraries(${_name} gomp)
-  endif()
-
-  if(MSVC)
-    target_link_libraries(${_name} delayimp.lib)  # because delay load is enabled for openmp.dll
-  endif()
-
-  set_target_properties(${_name} PROPERTIES
-    VERSION ${PCL_VERSION}
-    SOVERSION ${PCL_VERSION_MAJOR}.${PCL_VERSION_MINOR}
-    DEFINE_SYMBOL "PCLAPI_EXPORTS")
-  set_target_properties(${_name} PROPERTIES FOLDER "Libraries")
 
   install(TARGETS ${_name}
           RUNTIME DESTINATION ${BIN_INSTALL_DIR} COMPONENT pcl_${ARGS_COMPONENT}
@@ -250,24 +257,38 @@ function(PCL_CUDA_ADD_LIBRARY _name)
   endif()
 
   REMOVE_VTK_DEFINITIONS()
+  if(NOT ARGS_SOURCES)
+    add_library(${_name} INTERFACE)
+    
+    target_include_directories(${_name} INTERFACE
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        $<INSTALL_INTERFACE:${INCLUDE_INSTALL_ROOT}> 
+    )
 
-  add_library(${_name} ${PCL_LIB_TYPE} ${ARGS_SOURCES})
-
-  PCL_ADD_VERSION_INFO(${_name})
-
-  target_compile_options(${_name} PRIVATE $<$<COMPILE_LANGUAGE:CUDA>: ${GEN_CODE} --expt-relaxed-constexpr>)
-
-  target_include_directories(${_name} PRIVATE ${CUDA_TOOLKIT_INCLUDE})
-
-  if(MSVC)
-    target_link_libraries(${_name} delayimp.lib)  # because delay load is enabled for openmp.dll
+  else()
+    add_library(${_name} ${PCL_LIB_TYPE} ${ARGS_SOURCES})
+  
+    PCL_ADD_VERSION_INFO(${_name})
+  
+    target_compile_options(${_name} PRIVATE $<$<COMPILE_LANGUAGE:CUDA>: ${GEN_CODE} --expt-relaxed-constexpr>)
+  
+    target_include_directories(${_name} PUBLIC
+      $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+      $<INSTALL_INTERFACE:${INCLUDE_INSTALL_ROOT}> 
+    )
+  
+    target_include_directories(${_name} PRIVATE ${CUDA_TOOLKIT_INCLUDE})
+  
+    if(MSVC)
+      target_link_libraries(${_name} delayimp.lib)  # because delay load is enabled for openmp.dll
+    endif()
+  
+    set_target_properties(${_name} PROPERTIES
+      VERSION ${PCL_VERSION}
+      SOVERSION ${PCL_VERSION_MAJOR}.${PCL_VERSION_MINOR}
+      DEFINE_SYMBOL "PCLAPI_EXPORTS")
+    set_target_properties(${_name} PROPERTIES FOLDER "Libraries")
   endif()
-
-  set_target_properties(${_name} PROPERTIES
-    VERSION ${PCL_VERSION}
-    SOVERSION ${PCL_VERSION_MAJOR}.${PCL_VERSION_MINOR}
-    DEFINE_SYMBOL "PCLAPI_EXPORTS")
-  set_target_properties(${_name} PROPERTIES FOLDER "Libraries")
 
   install(TARGETS ${_name}
           RUNTIME DESTINATION ${BIN_INSTALL_DIR} COMPONENT pcl_${ARGS_COMPONENT}

@@ -1,7 +1,7 @@
 set(SUBSUBSYS_NAME in_hand_scanner)
 set(SUBSUBSYS_DESC "In-hand scanner for small objects")
 set(SUBSUBSYS_DEPS     common     features     io     kdtree apps)
-set(SUBSUBSYS_LIBS pcl_common pcl_features pcl_io pcl_kdtree)
+set(SUBSUBSYS_LIBS pcl_common pcl_geometry pcl_features pcl_io pcl_kdtree)
 set(SUBSUBSYS_EXT_DEPS ${QTX} OpenGL OpenGL_GLU openni)
 set(REASON "")
 set(DEFAULT OFF)
@@ -77,8 +77,6 @@ if(NOT build)
   return()
 endif()
 
-include_directories("${CMAKE_CURRENT_BINARY_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}/include")
-
 set(EXE_NAME "pcl_${SUBSUBSYS_NAME}")
 
 PCL_ADD_EXECUTABLE(
@@ -93,6 +91,7 @@ PCL_ADD_EXECUTABLE(
   BUNDLE)
 
 target_link_libraries("${EXE_NAME}" ${SUBSUBSYS_LIBS} ${OPENGL_LIBRARIES} ${QTX}::Concurrent ${QTX}::Widgets ${QTX}::OpenGL)
+target_include_directories(${EXE_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
 if (${QTX} MATCHES "Qt6")
   target_link_libraries("${EXE_NAME}" ${QTX}::OpenGLWidgets)
 endif()
@@ -112,6 +111,7 @@ PCL_ADD_EXECUTABLE(
   BUNDLE)
 
 target_link_libraries(pcl_offline_integration ${SUBSUBSYS_LIBS} ${OPENGL_LIBRARIES} ${QTX}::Concurrent ${QTX}::Widgets ${QTX}::OpenGL)
+target_include_directories(pcl_offline_integration PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
 if (${QTX} MATCHES "Qt6")
   target_link_libraries(pcl_offline_integration ${QTX}::OpenGLWidgets)
 endif()

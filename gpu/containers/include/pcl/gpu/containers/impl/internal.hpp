@@ -37,12 +37,12 @@
 #ifndef PCL_GPU_UTILS_INTERNAL_HPP_
 #define PCL_GPU_UTILS_INTERNAL_HPP_
 
-namespace pcl
-{
-    namespace device
-    {
-        void copyFields(int in_size, int out_size, int info[4], int size, const void* input, void* output);
-    }
+namespace pcl {
+namespace device {
+void
+copyFields(
+    int in_size, int out_size, int info[4], int size, const void* input, void* output);
 }
+} // namespace pcl
 
 #endif

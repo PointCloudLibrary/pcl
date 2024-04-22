@@ -27,8 +27,8 @@ set(common_incs
     include/pcl/cuda/common/point_type_rgb.h
     )
 
-include_directories(./include)
 set(LIB_NAME "pcl_${SUBSYS_NAME}")
+PCL_CUDA_ADD_LIBRARY(${LIB_NAME} COMPONENT ${SUBSYS_NAME})
 set(EXT_DEPS CUDA)
 PCL_MAKE_PKGCONFIG(${LIB_NAME} COMPONENT ${SUBSYS_NAME} DESC "${SUBSYS_DESC}"
     PCL_DEPS "${SUBSYS_DEPS}" EXT_DEPS "" HEADER_ONLY)

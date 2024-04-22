@@ -13,8 +13,6 @@ else()
   set(_glut_target GLUT::GLUT)
 endif()
 
-include_directories(SYSTEM ${VTK_INCLUDE_DIRS})
-
 PCL_ADD_EXECUTABLE(pcl_sim_viewer COMPONENT ${SUBSYS_NAME} SOURCES sim_viewer.cpp)
 target_link_libraries (pcl_sim_viewer
   ${VTK_IO_TARGET_LINK_LIBRARIES}    pcl_kdtree
