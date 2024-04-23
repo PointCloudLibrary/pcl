@@ -1,5 +1,80 @@
 # ChangeList
 
+## = 1.14.1 (01 May 2024) =
+
+### Notable changes
+
+**New features** *added to PCL*
+
+* **[cmake]** Make Boost filesystem optional for C++17 [[#5937](https://github.com/PointCloudLibrary/pcl/pull/5937)]
+* **[common]** Enhance toPCLPointCloud2 to remove padding on request [[#5913](https://github.com/PointCloudLibrary/pcl/pull/5913)]
+* **[io]** Enable writing data in binary PLY format to std::ostream [[#5975](https://github.com/PointCloudLibrary/pcl/pull/5975)]
+
+### Changes grouped by module
+
+#### CMake:
+
+* Switch latest Ubuntu CI to C++17 [[#5931](https://github.com/PointCloudLibrary/pcl/pull/5931)]
+* **[new feature]** Make Boost filesystem optional for C++17 [[#5937](https://github.com/PointCloudLibrary/pcl/pull/5937)]
+* Add OpenGL_GLU as external dependency. [[#5963](https://github.com/PointCloudLibrary/pcl/pull/5963)]
+* Preparation for default hidden visibility on gcc [[#5970](https://github.com/PointCloudLibrary/pcl/pull/5970)]
+* Cmake cuda find_package cuda is deprecated. [[#5953](https://github.com/PointCloudLibrary/pcl/pull/5953)]
+* fix build with CUDA [[#5976](https://github.com/PointCloudLibrary/pcl/pull/5976)]
+* Enable compatibility with Boost 1.85.0 [[#6014](https://github.com/PointCloudLibrary/pcl/pull/6014)]
+
+#### libpcl_common:
+
+* Rename variables with reserved names (PointXYZLAB) [[#5951](https://github.com/PointCloudLibrary/pcl/pull/5951)]
+* **[new feature]** Enhance toPCLPointCloud2 to remove padding on request [[#5913](https://github.com/PointCloudLibrary/pcl/pull/5913)]
+* Fix behaviour of eigen33 function if smallest eigenvalue is not unique [[#5956](https://github.com/PointCloudLibrary/pcl/pull/5956)]
+* Add option to choose boost filesystem over std filesystem [[#6005](https://github.com/PointCloudLibrary/pcl/pull/6005)]
+
+#### libpcl_filters:
+
+* Fix Bug in NormalSpaceSampling::findBin() [[#5936](https://github.com/PointCloudLibrary/pcl/pull/5936)]
+* VoxelGridOcclusionEstimation should always round down to go from coordinates to voxel indices. [[#5942](https://github.com/PointCloudLibrary/pcl/pull/5942)]
+* StatisticalOutlierRemoval: fix potential container overflow read [[#5980](https://github.com/PointCloudLibrary/pcl/pull/5980)]
+* fixing ignored `pcl::Indices` in `VoxelGrid` of `PCLPointCloud2` [[#5979](https://github.com/PointCloudLibrary/pcl/pull/5979)]
+
+#### libpcl_gpu:
+
+* Add missing PCL_EXPORTS (economical_download, optimizeModelCoefficients, vtkRenderWindowInteractorFixNew) [[#5926](https://github.com/PointCloudLibrary/pcl/pull/5926)]
+
+#### libpcl_io:
+
+* Real Sense 2 grabber stream fix [[#5912](https://github.com/PointCloudLibrary/pcl/pull/5912)]
+* Improve documentation in vtk_lib_io [[#5955](https://github.com/PointCloudLibrary/pcl/pull/5955)]
+* Add special implementation for raw_fallocate for OpenBSD [[#5957](https://github.com/PointCloudLibrary/pcl/pull/5957)]
+* Fix missing include in ply_parser.h (#5962) [[#5964](https://github.com/PointCloudLibrary/pcl/pull/5964)]
+* **[new feature]** Enable writing data in binary PLY format to std::ostream [[#5975](https://github.com/PointCloudLibrary/pcl/pull/5975)]
+* OBJReader: fix possible out-of-bounds access [[#5988](https://github.com/PointCloudLibrary/pcl/pull/5988)]
+* ImageGrabber: Fix potential index out of bounds [[#6016](https://github.com/PointCloudLibrary/pcl/pull/6016)]
+
+#### libpcl_registration:
+
+* NDT: allow access to target cloud distribution [[#5969](https://github.com/PointCloudLibrary/pcl/pull/5969)]
+* Optimize Eigen block operations [[#5974](https://github.com/PointCloudLibrary/pcl/pull/5974)]
+
+#### libpcl_sample_consensus:
+
+* Add missing PCL_EXPORTS (economical_download, optimizeModelCoefficients, vtkRenderWindowInteractorFixNew) [[#5926](https://github.com/PointCloudLibrary/pcl/pull/5926)]
+
+#### libpcl_surface:
+
+* Add `pcl::PointXYZLNormal` to GP3 PCL_INSTANTIATE (#5981) [[#5983](https://github.com/PointCloudLibrary/pcl/pull/5983)]
+
+#### libpcl_visualization:
+
+* Add missing PCL_EXPORTS (economical_download, optimizeModelCoefficients, vtkRenderWindowInteractorFixNew) [[#5926](https://github.com/PointCloudLibrary/pcl/pull/5926)]
+* Add missing pragma once in qvtk_compatibility.h [[#5943](https://github.com/PointCloudLibrary/pcl/pull/5943)]
+* fixed setShapeRenderingProperties(PCL_VISUALIZER_FONT_SIZE) [[#5993](https://github.com/PointCloudLibrary/pcl/pull/5993)]
+* fix addPolygon and addLine return value error [[#5996](https://github.com/PointCloudLibrary/pcl/pull/5996)]
+
+#### CI:
+
+* Switch latest Ubuntu CI to C++17 [[#5931](https://github.com/PointCloudLibrary/pcl/pull/5931)]
+* Fix ubuntu-variety CI and update compilers [[#5990](https://github.com/PointCloudLibrary/pcl/pull/5990)]
+
 ## = 1.14.0 (03 January 2024) =
 
 ### Notable changes
