@@ -41,9 +41,9 @@
 #include <vtkCamera.h>
 #include <vtkMatrix4x4.h>
 #include <vtkPolyData.h>
-#include <vtkRenderWindow.h>
 #include <vtkRenderer.h>
 #include <vtkRendererCollection.h>
+#include <vtkRenderWindow.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 pcl::modeler::ChannelActorItem::ChannelActorItem(

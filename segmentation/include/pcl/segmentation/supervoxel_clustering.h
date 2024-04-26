@@ -139,9 +139,7 @@ namespace pcl
             xyz_ (0.0f, 0.0f, 0.0f),
             rgb_ (0.0f, 0.0f, 0.0f),
             normal_ (0.0f, 0.0f, 0.0f, 0.0f),
-            curvature_ (0.0f),
-            distance_(0),
-            idx_(0),
+            
             owner_ (nullptr)
             {}
 
@@ -160,9 +158,9 @@ namespace pcl
           Eigen::Vector3f xyz_;
           Eigen::Vector3f rgb_;
           Eigen::Vector4f normal_;
-          float curvature_;
-          float distance_;
-          int idx_;
+          float curvature_{0.0f};
+          float distance_{0.0f};
+          int idx_{0};
           SupervoxelHelper* owner_;
 
         public:
@@ -373,11 +371,11 @@ namespace pcl
       typename NormalCloudT::ConstPtr input_normals_;
 
       /** \brief Importance of color in clustering */
-      float color_importance_;
+      float color_importance_{0.1f};
       /** \brief Importance of distance from seed center in clustering */
-      float spatial_importance_;
+      float spatial_importance_{0.4f};
       /** \brief Importance of similarity in normals for clustering */
-      float normal_importance_;
+      float normal_importance_{1.0f};
 
       /** \brief Whether or not to use the transform compressing depth in Z
        *  This is only checked if it has been manually set by the user.
@@ -385,7 +383,7 @@ namespace pcl
        */
       bool use_single_camera_transform_;
       /** \brief Whether to use default transform behavior or not */
-      bool use_default_transform_behaviour_;
+      bool use_default_transform_behaviour_{true};
 
       /** \brief Internal storage class for supervoxels
        * \note Stores pointers to leaves of clustering internal octree,

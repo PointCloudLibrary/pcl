@@ -75,7 +75,7 @@ using LZF_STATE = unsigned int[1 << (HLOG)];
 
 // IDX works because it is very similar to a multiplicative hash, e.g.
 // ((h * 57321 >> (3*8 - HLOG)) & ((1 << (HLOG)) - 1))
-#define IDX(h) ((( h >> (3*8 - HLOG)) - h  ) & ((1 << (HLOG)) - 1))
+#define IDX(h) ((( (h) >> (3*8 - HLOG)) - (h)  ) & ((1 << (HLOG)) - 1))
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 //

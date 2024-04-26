@@ -89,7 +89,7 @@ public:
     Eigen::Quaternion<Scalar> q(0, p[3], p[4], p[5]);
     q.w() = static_cast<Scalar>(std::sqrt(1 - q.dot(q)));
     q.normalize();
-    transform_matrix_.topLeftCorner(3, 3) = q.toRotationMatrix();
+    transform_matrix_.template topLeftCorner<3, 3>() = q.toRotationMatrix();
   }
 };
 } // namespace registration

@@ -43,6 +43,7 @@
 #include "utils/scan_block.hpp"
 #include "utils/morton.hpp"
 
+#include <thrust/tuple.h>
 #include <thrust/device_ptr.h>
 #include <thrust/sequence.h>
 #include <thrust/sort.h>
@@ -51,7 +52,7 @@
 
 using namespace pcl::gpu;
 
-namespace pcl 
+namespace pcl
 {
     namespace device
     {
@@ -64,21 +65,21 @@ namespace pcl
                 result.x = fmin(e1.x, e2.x);
                 result.y = fmin(e1.y, e2.y);
                 result.z = fmin(e1.z, e2.z);
-                return result;		        
-	        }	
+                return result;
+	        }
         };
 
         template<typename PointType>
         struct SelectMaxPoint
         {
-	        __host__ __device__ __forceinline__ PointType operator()(const PointType& e1, const PointType& e2) const 
-	        {		
+	        __host__ __device__ __forceinline__ PointType operator()(const PointType& e1, const PointType& e2) const
+	        {
                 PointType result;
                 result.x = fmax(e1.x, e2.x);
                 result.y = fmax(e1.y, e2.y);
                 result.z = fmax(e1.z, e2.z);
-                return result;		    
-	        }	
+                return result;
+	        }
         };
 
 
@@ -88,9 +89,9 @@ namespace pcl
             __device__ __forceinline__ thrust::tuple<float, float, float> operator()(const PointType& arg) const
             {
                 thrust::tuple<float, float, float> res;
-                res.get<0>() = arg.x;
-                res.get<1>() = arg.y;
-                res.get<2>() = arg.z;
+                thrust::get<0>(res) = arg.x;
+                thrust::get<1>(res) = arg.y;
+                thrust::get<2>(res) = arg.z;
                 return res;
             }
         };
@@ -102,8 +103,8 @@ namespace pcl
     {
         const static int max_points_per_leaf = 96;
 
-        enum 
-        { 
+        enum
+        {
             GRID_SIZE = 1,
             CTA_SIZE = 1024-32,
             STRIDE = CTA_SIZE,
@@ -116,7 +117,7 @@ namespace pcl
         __shared__ int tasks_beg;
         __shared__ int tasks_end;
         __shared__ int total_new;
-        __shared__ volatile int offsets[CTA_SIZE];                
+        __shared__ volatile int offsets[CTA_SIZE];
 
         struct SingleStepBuild
         {
@@ -127,14 +128,14 @@ namespace pcl
             static __device__ __forceinline__ int divUp(int total, int grain) { return (total + grain - 1) / grain; };
 
             __device__ __forceinline__ int FindCells(int task, int level, int cell_begs[], char cell_code[]) const
-            {               
+            {
                 int cell_count = 0;
 
                 int beg = octree.begs[task];
-                int end = octree.ends[task];                
+                int end = octree.ends[task];
 
                 if (end - beg < max_points_per_leaf)
-                {                        
+                {
                     //cell_count == 0;
                 }
                 else
@@ -142,13 +143,13 @@ namespace pcl
                     int cur_code = Morton::extractLevelCode(codes[beg], level);
 
                     cell_begs[cell_count] = beg;
-                    cell_code[cell_count] = cur_code;     
-                    ++cell_count;                        
+                    cell_code[cell_count] = cur_code;
+                    ++cell_count;
 
                     int last_code = Morton::extractLevelCode(codes[end - 1], level);
                     if (last_code == cur_code)
                     {
-                        cell_begs[cell_count] = end;                                         
+                        cell_begs[cell_count] = end;
                     }
                     else
                     {
@@ -162,7 +163,7 @@ namespace pcl
                             }
 
                             int morton_code = Morton::shiftLevelCode(search_code, level);
-                            int pos = lower_bound(codes + beg, codes + end, morton_code, CompareByLevelCode(level)) - codes; 
+                            int pos = lower_bound(codes + beg, codes + end, morton_code, CompareByLevelCode(level)) - codes;
 
                             if (pos == end)
                             {
@@ -175,7 +176,7 @@ namespace pcl
                             cell_code[cell_count] = cur_code;
                             ++cell_count;
                             beg = pos;
-                        }        
+                        }
                     }
                 }
                 return cell_count;
@@ -183,7 +184,7 @@ namespace pcl
 
 
             __device__  __forceinline__ void operator()() const
-            {             
+            {
                 //32 is a performance penalty step for search
                 static_assert((max_points_per_leaf % 32) == 0, "max_points_per_leaf must be a multiple of 32");
 
@@ -196,7 +197,7 @@ namespace pcl
                     octree. ends[0] = points_number;
                     octree.parent[0] = -1;
 
-                    //init shared                    
+                    //init shared
                     nodes_num = 1;
                     tasks_beg = 0;
                     tasks_end = 1;
@@ -211,8 +212,8 @@ namespace pcl
                 __syncthreads();
 
                 while (tasks_beg < tasks_end && level < Morton::levels)
-                {                  
-                    int task_count = tasks_end - tasks_beg;                    
+                {
+                    int task_count = tasks_end - tasks_beg;
                     int iters = divUp(task_count, CTA_SIZE);
 
                     int task = tasks_beg + threadIdx.x;
@@ -220,14 +221,14 @@ namespace pcl
                     //__syncthreads(); // extra??
 
                     for(int it = 0; it < iters; ++it, task += STRIDE)
-                    {   
+                    {
                         int cell_count = (task < tasks_end) ? FindCells(task, level, cell_begs, cell_code) : 0;
-                        
+
                         offsets[threadIdx.x] = cell_count;
                         __syncthreads();
 
                         scan_block<pcl::device::exclusive>(offsets);
-                        
+
                         //__syncthreads();  //because sync is inside the scan above
 
                         if (task < tasks_end)
@@ -255,24 +256,24 @@ namespace pcl
 
                         __syncthreads();
                         if (threadIdx.x == CTA_SIZE - 1)
-                        {                            
+                        {
                             total_new += cell_count + offsets[threadIdx.x];
                             nodes_num += cell_count + offsets[threadIdx.x];
-                        }    
-                        __syncthreads(); 
+                        }
+                        __syncthreads();
 
                     } /* for(int it = 0; it < iters; ++it, task += STRIDE) */
 
                     //__syncthreads(); //extra ??
 
                     if (threadIdx.x == CTA_SIZE - 1)
-                    {                       
+                    {
                         tasks_beg  = tasks_end;
-                        tasks_end += total_new;        
+                        tasks_end += total_new;
                         total_new = 0;
                     }
                     ++level;
-                    __syncthreads();                    
+                    __syncthreads();
                 }
 
                 if (threadIdx.x == CTA_SIZE - 1)
@@ -285,7 +286,7 @@ namespace pcl
 }
 
 void pcl::device::OctreeImpl::build()
-{       
+{
     using namespace pcl::device;
     host_octree.downloaded = false;
 
@@ -293,7 +294,7 @@ void pcl::device::OctreeImpl::build()
 
     //allocatations
     {
-        //ScopeTimer timer("new_allocs"); 
+        //ScopeTimer timer("new_allocs");
         //+1 codes               * points_num * sizeof(int)
         //+1 indices             * points_num * sizeof(int)
         //+1 octreeGlobal.nodes  * points_num * sizeof(int)
@@ -306,22 +307,22 @@ void pcl::device::OctreeImpl::build()
 
         //+3 points_sorted       * points_num * sizeof(float)
         //==
-        // 10 rows   
+        // 10 rows
 
-        //left 
-        //octreeGlobal.nodes_num * 1 * sizeof(int)          
+        //left
+        //octreeGlobal.nodes_num * 1 * sizeof(int)
         //==
-        // 3 * sizeof(int) => +1 row        
+        // 3 * sizeof(int) => +1 row
 
         const int transaction_size = 128 / sizeof(int);
         int cols = std::max<int>(points_num, transaction_size * 4);
         int rows = 10 + 1; // = 13
-            
+
         storage.create(rows, cols);
-        
+
         codes   = DeviceArray<int>(storage.ptr(0), points_num);
         indices = DeviceArray<int>(storage.ptr(1), points_num);
-        
+
         octreeGlobal.nodes   = storage.ptr(2);
         octreeGlobal.codes   = storage.ptr(3);
         octreeGlobal.begs    = storage.ptr(4);
@@ -332,10 +333,10 @@ void pcl::device::OctreeImpl::build()
 
         points_sorted = DeviceArray2D<float>(3, points_num, storage.ptr(8), storage.step());
     }
-    
+
     {
-        //ScopeTimer timer("reduce-morton-sort-permutations"); 
-    	
+        //ScopeTimer timer("reduce-morton-sort-permutations");
+
         thrust::device_ptr<PointType> beg(points.ptr());
         thrust::device_ptr<PointType> end = beg + points.size();
 
@@ -345,49 +346,49 @@ void pcl::device::OctreeImpl::build()
             atmin.x = atmin.y = atmin.z = std::numeric_limits<float>::lowest();
             atmax.w = atmin.w = 0;
 
-            //ScopeTimer timer("reduce"); 
+            //ScopeTimer timer("reduce");
             PointType minp = thrust::reduce(beg, end, atmax, SelectMinPoint<PointType>());
             PointType maxp = thrust::reduce(beg, end, atmin, SelectMaxPoint<PointType>());
 
             octreeGlobal.minp = make_float3(minp.x, minp.y, minp.z);
             octreeGlobal.maxp = make_float3(maxp.x, maxp.y, maxp.z);
         }
-    		
+
         thrust::device_ptr<int> codes_beg(codes.ptr());
         thrust::device_ptr<int> codes_end = codes_beg + codes.size();
         {
-            //ScopeTimer timer("morton"); 
+            //ScopeTimer timer("morton");
 	        thrust::transform(beg, end, codes_beg, CalcMorton(octreeGlobal.minp, octreeGlobal.maxp));
         }
 
         thrust::device_ptr<int> indices_beg(indices.ptr());
         thrust::device_ptr<int> indices_end = indices_beg + indices.size();
         {
-            //ScopeTimer timer("sort"); 
+            //ScopeTimer timer("sort");
             thrust::sequence(indices_beg, indices_end);
-            thrust::sort_by_key(codes_beg, codes_end, indices_beg );		
+            thrust::sort_by_key(codes_beg, codes_end, indices_beg );
         }
         {
-            ////ScopeTimer timer("perm"); 
+            ////ScopeTimer timer("perm");
             //thrust::copy(make_permutation_iterator(beg, indices_beg),
-            //                  make_permutation_iterator(end, indices_end), device_ptr<float3>(points_sorted.ptr()));    
+            //                  make_permutation_iterator(end, indices_end), device_ptr<float3>(points_sorted.ptr()));
 
-             
+
         }
 
         {
             thrust::device_ptr<float> xs(points_sorted.ptr(0));
             thrust::device_ptr<float> ys(points_sorted.ptr(1));
             thrust::device_ptr<float> zs(points_sorted.ptr(2));
-            //ScopeTimer timer("perm2"); 
+            //ScopeTimer timer("perm2");
             thrust::transform(make_permutation_iterator(beg, indices_beg),
-                              make_permutation_iterator(end, indices_end), 
+                              make_permutation_iterator(end, indices_end),
                               make_zip_iterator(make_tuple(xs, ys, zs)), PointType_to_tuple<PointType>());
 
-        
+
         }
     }
-    
+
     SingleStepBuild ssb;
     ssb.octree = octreeGlobal;
     ssb.codes  = codes;

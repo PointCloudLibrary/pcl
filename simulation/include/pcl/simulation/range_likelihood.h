@@ -276,31 +276,31 @@ private:
   float z_far_;
 
   // For caching only, not part of observable state.
-  mutable bool depth_buffer_dirty_;
-  mutable bool color_buffer_dirty_;
-  mutable bool score_buffer_dirty_;
+  mutable bool depth_buffer_dirty_{true};
+  mutable bool color_buffer_dirty_{true};
+  mutable bool score_buffer_dirty_{true};
 
   int which_cost_function_;
   double floor_proportion_;
   double sigma_;
 
-  GLuint fbo_;
+  GLuint fbo_{0};
   GLuint score_fbo_;
 
-  GLuint depth_render_buffer_;
-  GLuint color_render_buffer_;
+  GLuint depth_render_buffer_{0};
+  GLuint color_render_buffer_{0};
   GLuint color_texture_;
-  GLuint depth_texture_;
-  GLuint score_texture_;
-  GLuint score_summarized_texture_;
-  GLuint sensor_texture_;
-  GLuint likelihood_texture_;
+  GLuint depth_texture_{0};
+  GLuint score_texture_{0};
+  GLuint score_summarized_texture_{0};
+  GLuint sensor_texture_{0};
+  GLuint likelihood_texture_{0};
 
-  bool compute_likelihood_on_cpu_;
-  bool aggregate_on_cpu_;
-  bool use_instancing_;
+  bool compute_likelihood_on_cpu_{false};
+  bool aggregate_on_cpu_{false};
+  bool use_instancing_{false};
   bool generate_color_image_;
-  bool use_color_;
+  bool use_color_{true};
 
   gllib::Program::Ptr likelihood_program_;
   GLuint quad_vbo_;

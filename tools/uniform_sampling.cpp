@@ -38,10 +38,11 @@
 #include <pcl/PCLPointCloud2.h>
 #include <pcl/io/auto_io.h>
 #include <pcl/filters/uniform_sampling.h>
+#include <pcl/common/pcl_filesystem.h>
 #include <pcl/console/print.h>
 #include <pcl/console/parse.h>
 #include <pcl/console/time.h>
-#include <boost/filesystem.hpp>
+
 #include <algorithm>
 #include <string>
 
@@ -129,7 +130,7 @@ saveCloud (const std::string &filename, const pcl::PCLPointCloud2 &output)
 
   PCDWriter w_pcd;
   PLYWriter w_ply;
-  std::string output_ext = boost::filesystem::extension (filename);
+  std::string output_ext = pcl_fs::path (filename).extension ().string ();
   std::transform (output_ext.begin (), output_ext.end (), output_ext.begin (), ::tolower);
 
   if (output_ext == ".pcd")

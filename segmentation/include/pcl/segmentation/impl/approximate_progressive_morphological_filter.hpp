@@ -49,17 +49,7 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
-pcl::ApproximateProgressiveMorphologicalFilter<PointT>::ApproximateProgressiveMorphologicalFilter () :
-  max_window_size_ (33),
-  slope_ (0.7f),
-  max_distance_ (10.0f),
-  initial_distance_ (0.15f),
-  cell_size_ (1.0f),
-  base_ (2.0f),
-  exponential_ (true),
-  threads_ (0)
-{
-}
+pcl::ApproximateProgressiveMorphologicalFilter<PointT>::ApproximateProgressiveMorphologicalFilter () = default;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
@@ -276,7 +266,7 @@ pcl::ApproximateProgressiveMorphologicalFilter<PointT>::extract (Indices& ground
 }
 
 
-#define PCL_INSTANTIATE_ApproximateProgressiveMorphologicalFilter(T) template class pcl::ApproximateProgressiveMorphologicalFilter<T>;
+#define PCL_INSTANTIATE_ApproximateProgressiveMorphologicalFilter(T) template class PCL_EXPORTS pcl::ApproximateProgressiveMorphologicalFilter<T>;
 
 #endif    // PCL_SEGMENTATION_APPROXIMATE_PROGRESSIVE_MORPHOLOGICAL_FILTER_HPP_
 

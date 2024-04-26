@@ -13,7 +13,7 @@ template <typename PointInT>
 class NormalCoherence : public PointCoherence<PointInT> {
 public:
   /** \brief initialize the weight to 1.0. */
-  NormalCoherence() : PointCoherence<PointInT>(), weight_(1.0) {}
+  NormalCoherence() : PointCoherence<PointInT>() {}
 
   /** \brief set the weight of coherence
    * \param weight the weight of coherence
@@ -40,7 +40,7 @@ protected:
   computeCoherence(PointInT& source, PointInT& target) override;
 
   /** \brief the weight of coherence */
-  double weight_;
+  double weight_{1.0};
 };
 } // namespace tracking
 } // namespace pcl

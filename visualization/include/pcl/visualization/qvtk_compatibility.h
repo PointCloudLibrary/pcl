@@ -6,6 +6,8 @@
  *
  *  All rights reserved
  */
+#pragma once
+
 #include <pcl/pcl_macros.h>
 #include <pcl/pcl_config.h>
 

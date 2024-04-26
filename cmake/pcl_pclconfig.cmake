@@ -85,12 +85,12 @@ foreach(_ss ${PCL_SUBSYSTEMS_MODULES})
 endforeach()
 
 #Boost modules
-set(PCLCONFIG_AVAILABLE_BOOST_MODULES "system filesystem iostreams")
+set(PCLCONFIG_AVAILABLE_BOOST_MODULES "system iostreams")
+if(Boost_FILESYSTEM_FOUND)
+  string(APPEND PCLCONFIG_AVAILABLE_BOOST_MODULES " filesystem")
+endif()
 if(Boost_SERIALIZATION_FOUND)
   string(APPEND PCLCONFIG_AVAILABLE_BOOST_MODULES " serialization")
-endif()
-if(Boost_CHRONO_FOUND)
-  string(APPEND PCLCONFIG_AVAILABLE_BOOST_MODULES " chrono")
 endif()
 
 configure_file("${PCL_SOURCE_DIR}/PCLConfig.cmake.in"

@@ -69,7 +69,7 @@ namespace pcl
       enum { XML_VERSION = 1};          /** \brief This indicates the current used xml file version (for people lib only) **/
 
       enum { NUM_ATTRIBS = 2000 };
-      enum { NUM_LABELS  = 32 };        /** \brief Our code is forseen to use maximal use 32 labels **/
+      enum { NUM_LABELS  = 32 };        /** \brief Our code is foreseen to use maximal use 32 labels **/
 
       /** @todo implement label 25 to 29 **/
       enum part_t

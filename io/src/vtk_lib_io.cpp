@@ -252,7 +252,7 @@ pcl::io::vtk2mesh (const vtkSmartPointer<vtkPolyData>& poly_data, pcl::PolygonMe
 
   if (poly_data->GetPoints () == nullptr)
   {
-    PCL_ERROR ("[pcl::io::vtk2mesh] Given vtkPolyData is misformed (contains nullpointer instead of points).\n");
+    PCL_ERROR ("[pcl::io::vtk2mesh] Given vtkPolyData is malformed (contains nullpointer instead of points).\n");
     return (0);
   }
   vtkSmartPointer<vtkPoints> mesh_points = poly_data->GetPoints ();

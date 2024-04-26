@@ -136,7 +136,7 @@ pcl::people::HeadBasedSubclustering<PointT>::mergeClustersCloseInFloorCoordinate
 {
   float min_distance_between_cluster_centers = 0.4;                   // meters
   float normalize_factor = std::pow(sqrt_ground_coeffs_, 2);          // sqrt_ground_coeffs ^ 2 (precomputed for speed)
-  Eigen::Vector3f head_ground_coeffs = ground_coeffs_.head(3);        // ground plane normal (precomputed for speed)
+  Eigen::Vector3f head_ground_coeffs = ground_coeffs_.head<3>();        // ground plane normal (precomputed for speed)
   std::vector <std::vector<int> > connected_clusters;
   connected_clusters.resize(input_clusters.size());
   std::vector<bool> used_clusters;          // 0 in correspondence of clusters remained to process, 1 for already used clusters
@@ -196,7 +196,7 @@ pcl::people::HeadBasedSubclustering<PointT>::createSubClusters (pcl::people::Per
 {
   // create new clusters from the current cluster and put corresponding indices into sub_clusters_indices:
   float normalize_factor = std::pow(sqrt_ground_coeffs_, 2);          // sqrt_ground_coeffs ^ 2 (precomputed for speed)
-  Eigen::Vector3f head_ground_coeffs = ground_coeffs_.head(3);        // ground plane normal (precomputed for speed)
+  Eigen::Vector3f head_ground_coeffs = ground_coeffs_.head<3>();        // ground plane normal (precomputed for speed)
   Eigen::Matrix3Xf maxima_projected(3,maxima_number);                 // matrix containing the projection of maxima onto the ground plane
   Eigen::VectorXi subclusters_number_of_points(maxima_number);        // subclusters number of points
   std::vector <pcl::Indices> sub_clusters_indices;                    // vector of vectors with the cluster indices for every maximum

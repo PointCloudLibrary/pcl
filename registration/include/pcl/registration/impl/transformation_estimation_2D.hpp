@@ -166,7 +166,7 @@ TransformationEstimation2D<PointSource, PointTarget, Scalar>::
 
   // Assemble the correlation matrix H = source * target'
   Eigen::Matrix<Scalar, 3, 3> H =
-      (cloud_src_demean * cloud_tgt_demean.transpose()).topLeftCorner(3, 3);
+      (cloud_src_demean * cloud_tgt_demean.transpose()).template topLeftCorner<3, 3>();
 
   float angle = std::atan2((H(0, 1) - H(1, 0)), (H(0, 0) + H(1, 1)));
 
@@ -176,9 +176,10 @@ TransformationEstimation2D<PointSource, PointTarget, Scalar>::
   R(1, 0) = std::sin(angle);
 
   // Return the correct transformation
-  transformation_matrix.topLeftCorner(3, 3).matrix() = R;
-  const Eigen::Matrix<Scalar, 3, 1> Rc(R * centroid_src.head(3).matrix());
-  transformation_matrix.block(0, 3, 3, 1).matrix() = centroid_tgt.head(3) - Rc;
+  transformation_matrix.template topLeftCorner<3, 3>().matrix() = R;
+  const Eigen::Matrix<Scalar, 3, 1> Rc(R * centroid_src.template head<3>().matrix());
+  transformation_matrix.template block<3, 1>(0, 3).matrix() =
+      centroid_tgt.template head<3>() - Rc;
 }
 
 } // namespace registration

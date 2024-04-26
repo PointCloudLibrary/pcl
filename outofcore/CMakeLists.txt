@@ -2,8 +2,14 @@ set(SUBSYS_NAME outofcore)
 set(SUBSYS_DESC "Point cloud outofcore library")
 set(SUBSYS_DEPS common io filters octree visualization)
 
-set(build TRUE)
-PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ON)
+if(NOT TARGET Boost::filesystem)
+  set(DEFAULT FALSE)
+  set(REASON "Boost filesystem is not available.")
+else()
+  set(DEFAULT TRUE)
+endif()
+
+PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ${DEFAULT} "${REASON}")
 PCL_SUBSYS_DEPEND(build NAME ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS})
 
 PCL_ADD_DOC("${SUBSYS_NAME}")
@@ -61,7 +67,6 @@ set(visualization_incs
 
 set(LIB_NAME "pcl_${SUBSYS_NAME}")
 
-include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include")
 PCL_ADD_LIBRARY(${LIB_NAME} COMPONENT ${SUBSYS_NAME} SOURCES ${srcs} ${incs} ${impl_incs} ${visualization_incs})
 #PCL_ADD_SSE_FLAGS("${LIB_NAME}")
 target_link_libraries("${LIB_NAME}" pcl_common pcl_visualization ${Boost_SYSTEM_LIBRARY})

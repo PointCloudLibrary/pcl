@@ -27,7 +27,7 @@ typedef pcl::PointXYZ PointT;
 /** @brief Convenience typedef */
 typedef pcl::PointCloud<PointT> PointCloudT;
 
-/** @brief Convenience typdef for the Ensenso grabber callback */
+/** @brief Convenience typedef for the Ensenso grabber callback */
 typedef std::pair<pcl::PCLImage, pcl::PCLImage> PairOfImages;
 typedef pcl::shared_ptr<PairOfImages> PairOfImagesPtr;
 

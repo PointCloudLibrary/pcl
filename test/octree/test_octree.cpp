@@ -265,7 +265,7 @@ TEST (PCL, Octree_Dynamic_Depth_Test)
 
     for (int point = 0; point < 15; point++)
     {
-      // gereate a random point
+      // generate a random point
       PointXYZ newPoint (1.0, 2.0, 3.0);
 
       // OctreePointCloudPointVector can store all points..
@@ -290,7 +290,7 @@ TEST (PCL, Octree_Dynamic_Depth_Test)
 
     for (int point = 0; point < pointcount; point++)
     {
-      // gereate a random point
+      // generate a random point
       PointXYZ newPoint (static_cast<float> (1024.0 * rand () / RAND_MAX),
           static_cast<float> (1024.0 * rand () / RAND_MAX),
           static_cast<float> (1024.0 * rand () / RAND_MAX));
@@ -713,7 +713,7 @@ TEST (PCL, Octree_Pointcloud_Test)
 
     for (int point = 0; point < pointcount; point++)
     {
-      // gereate a random point
+      // generate a random point
       PointXYZ newPoint (static_cast<float> (1024.0 * rand () / RAND_MAX),
                          static_cast<float> (1024.0 * rand () / RAND_MAX),
                          static_cast<float> (1024.0 * rand () / RAND_MAX));

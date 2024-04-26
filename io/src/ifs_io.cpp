@@ -42,7 +42,6 @@
 
 #include <cstring>
 #include <cerrno>
-#include <boost/filesystem.hpp> // for exists
 #include <boost/iostreams/device/mapped_file.hpp> // for mapped_file_source
 
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -60,15 +59,22 @@ pcl::IFSReader::readHeader (const std::string &file_name, pcl::PCLPointCloud2 &c
   //cloud.is_dense = true;
 
   std::uint32_t nr_points = 0;
-  std::ifstream fs;
 
-  if (file_name.empty() || !boost::filesystem::exists (file_name))
+  if (file_name.empty ())
+  {
+    PCL_ERROR ("[pcl::IFSReader::readHeader] No file name given!\n");
+    return (-1);
+  }
+
+  std::ifstream fs;
+  fs.open (file_name.c_str (), std::ios::binary);
+
+  if (!fs.good ())
   {
     PCL_ERROR ("[pcl::IFSReader::readHeader] Could not find file '%s'.\n", file_name.c_str ());
     return (-1);
   }
 
-  fs.open (file_name.c_str (), std::ios::binary);
   if (!fs.is_open () || fs.fail ())
   {
     PCL_ERROR ("[pcl::IFSReader::readHeader] Could not open file '%s'! Error : %s\n", file_name.c_str (), strerror(errno));

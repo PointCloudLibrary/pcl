@@ -155,11 +155,11 @@ pcl::registration::TransformationEstimation3Point<PointSource, PointTarget, Scal
   target_it.reset();
 
   Eigen::Matrix<Scalar, 3, 1> s1 =
-      source_demean.col(1).head(3) - source_demean.col(0).head(3);
+      source_demean.col(1).template head<3>() - source_demean.col(0).template head<3>();
   s1.normalize();
 
   Eigen::Matrix<Scalar, 3, 1> s2 =
-      source_demean.col(2).head(3) - source_demean.col(0).head(3);
+      source_demean.col(2).template head<3>() - source_demean.col(0).template head<3>();
   s2 -= s2.dot(s1) * s1;
   s2.normalize();
 
@@ -169,11 +169,11 @@ pcl::registration::TransformationEstimation3Point<PointSource, PointTarget, Scal
   source_rot.col(2) = s1.cross(s2);
 
   Eigen::Matrix<Scalar, 3, 1> t1 =
-      target_demean.col(1).head(3) - target_demean.col(0).head(3);
+      target_demean.col(1).template head<3>() - target_demean.col(0).template head<3>();
   t1.normalize();
 
   Eigen::Matrix<Scalar, 3, 1> t2 =
-      target_demean.col(2).head(3) - target_demean.col(0).head(3);
+      target_demean.col(2).template head<3>() - target_demean.col(0).template head<3>();
   t2 -= t2.dot(t1) * t1;
   t2.normalize();
 
@@ -184,11 +184,11 @@ pcl::registration::TransformationEstimation3Point<PointSource, PointTarget, Scal
 
   // Eigen::Matrix <Scalar, 3, 3> R = source_rot * target_rot.transpose ();
   Eigen::Matrix<Scalar, 3, 3> R = target_rot * source_rot.transpose();
-  transformation_matrix.topLeftCorner(3, 3) = R;
-  // transformation_matrix.block (0, 3, 3, 1) = source_mean.head (3) - R *
-  // target_mean.head (3);
-  transformation_matrix.block(0, 3, 3, 1) =
-      target_mean.head(3) - R * source_mean.head(3);
+  transformation_matrix.template topLeftCorner<3, 3>() = R;
+  // transformation_matrix.block<3, 1>(0, 3) = source_mean.head<3>() - R *
+  // target_mean.head<3>();
+  transformation_matrix.template block<3, 1>(0, 3) =
+      target_mean.template head<3>() - R * source_mean.template head<3>();
 }
 
 //#define PCL_INSTANTIATE_TransformationEstimation3Point(T,U) template class PCL_EXPORTS

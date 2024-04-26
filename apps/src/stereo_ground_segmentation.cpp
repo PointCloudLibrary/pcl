@@ -36,6 +36,7 @@
 #include <pcl/common/centroid.h> // for computeMeanAndCovarianceMatrix
 #include <pcl/common/distances.h>
 #include <pcl/common/intersections.h>
+#include <pcl/common/pcl_filesystem.h>
 #include <pcl/features/integral_image_normal.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/sample_consensus/sac_model_plane.h>
@@ -49,8 +50,6 @@
 #include <pcl/visualization/image_viewer.h>
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/ModelCoefficients.h>
-
-#include <boost/filesystem.hpp> // for directory_iterator
 
 #include <mutex>
 
@@ -541,13 +540,13 @@ main(int argc, char** argv)
 
   // Get list of stereo files
   std::vector<std::string> left_images;
-  boost::filesystem::directory_iterator end_itr;
-  for (boost::filesystem::directory_iterator itr(argv[1]); itr != end_itr; ++itr) {
+  pcl_fs::directory_iterator end_itr;
+  for (pcl_fs::directory_iterator itr(argv[1]); itr != end_itr; ++itr) {
     left_images.push_back(itr->path().string());
   }
   sort(left_images.begin(), left_images.end());
   std::vector<std::string> right_images;
-  for (boost::filesystem::directory_iterator itr(argv[2]); itr != end_itr; ++itr) {
+  for (pcl_fs::directory_iterator itr(argv[2]); itr != end_itr; ++itr) {
     right_images.push_back(itr->path().string());
   }
   sort(right_images.begin(), right_images.end());

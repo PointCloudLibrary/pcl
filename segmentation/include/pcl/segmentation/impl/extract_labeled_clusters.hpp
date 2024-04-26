@@ -48,25 +48,6 @@ pcl::extractLabeledEuclideanClusters(
     float tolerance,
     std::vector<std::vector<PointIndices>>& labeled_clusters,
     unsigned int min_pts_per_cluster,
-    unsigned int max_pts_per_cluster,
-    unsigned int)
-{
-  pcl::extractLabeledEuclideanClusters<PointT>(cloud,
-                                               tree,
-                                               tolerance,
-                                               labeled_clusters,
-                                               min_pts_per_cluster,
-                                               max_pts_per_cluster);
-}
-
-template <typename PointT>
-void
-pcl::extractLabeledEuclideanClusters(
-    const PointCloud<PointT>& cloud,
-    const typename search::Search<PointT>::Ptr& tree,
-    float tolerance,
-    std::vector<std::vector<PointIndices>>& labeled_clusters,
-    unsigned int min_pts_per_cluster,
     unsigned int max_pts_per_cluster)
 {
   if (tree->getInputCloud()->size() != cloud.size()) {
@@ -76,6 +57,8 @@ pcl::extractLabeledEuclideanClusters(
               cloud.size());
     return;
   }
+  // If tree gives sorted results, we can skip the first one because it is the query point itself
+  const std::size_t nn_start_idx = tree->getSortedResults () ? 1 : 0;
   // Create a bool vector of processed point indices, and initialize it to false
   std::vector<bool> processed(cloud.size(), false);
 
@@ -107,8 +90,7 @@ pcl::extractLabeledEuclideanClusters(
         continue;
       }
 
-      for (std::size_t j = 1; j < nn_indices.size();
-           ++j) // nn_indices[0] should be sq_idx
+      for (std::size_t j = nn_start_idx; j < nn_indices.size(); ++j)
       {
         if (processed[nn_indices[j]]) // Has this point been processed before ?
           continue;
@@ -179,15 +161,6 @@ pcl::LabeledEuclideanClusterExtraction<PointT>::extract(
 
 #define PCL_INSTANTIATE_LabeledEuclideanClusterExtraction(T)                           \
   template class PCL_EXPORTS pcl::LabeledEuclideanClusterExtraction<T>;
-#define PCL_INSTANTIATE_extractLabeledEuclideanClusters_deprecated(T)                  \
-  template void PCL_EXPORTS pcl::extractLabeledEuclideanClusters<T>(                   \
-      const pcl::PointCloud<T>&,                                                       \
-      const typename pcl::search::Search<T>::Ptr&,                                     \
-      float,                                                                           \
-      std::vector<std::vector<pcl::PointIndices>>&,                                    \
-      unsigned int,                                                                    \
-      unsigned int,                                                                    \
-      unsigned int);
 #define PCL_INSTANTIATE_extractLabeledEuclideanClusters(T)                             \
   template void PCL_EXPORTS pcl::extractLabeledEuclideanClusters<T>(                   \
       const pcl::PointCloud<T>&,                                                       \

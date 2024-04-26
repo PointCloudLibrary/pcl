@@ -44,8 +44,8 @@
 #include <ui_openni_passthrough.h>
 
 #include <vtkGenericOpenGLRenderWindow.h>
-#include <vtkRenderWindow.h>
 #include <vtkRendererCollection.h>
+#include <vtkRenderWindow.h>
 
 #include <thread>
 

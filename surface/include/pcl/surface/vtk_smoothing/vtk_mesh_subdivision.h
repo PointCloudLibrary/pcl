@@ -79,7 +79,7 @@ namespace pcl
       performProcessing (pcl::PolygonMesh &output) override;
 
     private:
-      MeshSubdivisionVTKFilterType filter_type_;
+      MeshSubdivisionVTKFilterType filter_type_{LINEAR};
 
       vtkSmartPointer<vtkPolyData> vtk_polygons_;
   };

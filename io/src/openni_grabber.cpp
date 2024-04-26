@@ -42,12 +42,12 @@
 #include <pcl/io/openni_grabber.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
+#include <pcl/common/pcl_filesystem.h>
 #include <pcl/common/time.h>
 #include <pcl/console/print.h>
 #include <pcl/exceptions.h>
 #include <iostream>
 #include <thread>
-#include <boost/filesystem.hpp> // for exists
 
 using namespace std::chrono_literals;
 
@@ -303,7 +303,7 @@ pcl::OpenNIGrabber::setupDevice (const std::string& device_id, const Mode& depth
 
   try
   {
-    if (boost::filesystem::exists (device_id))
+    if (pcl_fs::exists (device_id))
     {
       device_ = driver.createVirtualDevice (device_id, true, true);
     }

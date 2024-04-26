@@ -2,7 +2,6 @@ set(SUBSYS_NAME common)
 set(SUBSYS_DESC "Point cloud common library")
 set(SUBSYS_DEPS)
 
-set(build TRUE)
 PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ON)
 PCL_SUBSYS_DEPEND(build NAME ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} EXT_DEPS eigen3 boost)
 
@@ -98,6 +97,7 @@ set(common_incs
   include/pcl/common/file_io.h
   include/pcl/common/intersections.h
   include/pcl/common/norms.h
+  include/pcl/common/pcl_filesystem.h
   include/pcl/common/piecewise_linear_function.h
   include/pcl/common/polynomial_calculations.h
   include/pcl/common/poses_from_matches.h
@@ -173,11 +173,6 @@ set(kissfft_srcs
 
 set(LIB_NAME "pcl_${SUBSYS_NAME}")
 PCL_ADD_LIBRARY(${LIB_NAME} COMPONENT ${SUBSYS_NAME} SOURCES ${srcs} ${kissfft_srcs} ${incs} ${common_incs} ${impl_incs} ${tools_incs} ${kissfft_incs} ${common_incs_impl} ${range_image_incs} ${range_image_incs_impl})
-
-target_include_directories(${LIB_NAME} PUBLIC
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-  $<INSTALL_INTERFACE:include> 
-)
 
 target_link_libraries(${LIB_NAME} Boost::boost Eigen3::Eigen)
 

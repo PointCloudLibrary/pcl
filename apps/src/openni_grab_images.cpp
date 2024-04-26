@@ -44,12 +44,9 @@
 #include <pcl/visualization/image_viewer.h>
 #include <pcl/point_types.h>
 
-#include <boost/filesystem.hpp>
-
 #include <mutex>
 
 using namespace pcl::console;
-using namespace boost::filesystem;
 
 class OpenNIGrabFrame {
 public:
@@ -254,7 +251,7 @@ public:
             depth_image->getWidth(),
             depth_image->getHeight(),
             std::numeric_limits<unsigned short>::min(),
-            // Scale so that the colors look brigher on screen
+            // Scale so that the colors look brighter on screen
             std::numeric_limits<unsigned short>::max() / 10,
             true);
 

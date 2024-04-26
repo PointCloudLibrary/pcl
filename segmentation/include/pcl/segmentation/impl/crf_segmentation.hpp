@@ -595,6 +595,6 @@ pcl::CrfSegmentation<PointT>::segmentPoints (pcl::PointCloud<pcl::PointXYZRGBL> 
 
 }
 
-#define PCL_INSTANTIATE_CrfSegmentation(T) template class pcl::CrfSegmentation<T>;
+#define PCL_INSTANTIATE_CrfSegmentation(T) template class PCL_EXPORTS pcl::CrfSegmentation<T>;
 
 #endif    // PCL_CRF_SEGMENTATION_HPP_

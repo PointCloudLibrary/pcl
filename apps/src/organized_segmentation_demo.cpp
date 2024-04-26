@@ -12,11 +12,8 @@
 #include <QObject>
 
 #include <vtkGenericOpenGLRenderWindow.h>
-#include <vtkRenderWindow.h>
 #include <vtkRendererCollection.h>
-
-// #include <boost/filesystem.hpp>  // for boost::filesystem::directory_iterator
-#include <boost/signals2/connection.hpp> // for boost::signals2::connection
+#include <vtkRenderWindow.h>
 
 void
 displayPlanarRegions(

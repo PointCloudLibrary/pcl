@@ -12,7 +12,7 @@
 #include <pcl/recognition/face_detection/face_common.h>
 
 #include <boost/algorithm/string.hpp>
-#include <boost/filesystem/operations.hpp>
+#include <boost/filesystem.hpp>
 
 #include <fstream>
 #include <string>

@@ -48,12 +48,14 @@
   * Adapted from PCL_THROW_EXCEPTION. We intentionally do not reuse PCL_THROW_EXCEPTION here
   * to avoid introducing any dependencies on PCL in this 3rd party module.       
   */
+// NOLINTBEGIN(bugprone-macro-parentheses)
 #define POISSON_THROW_EXCEPTION(ExceptionName, message)                     \
 {                                                                           \
   std::ostringstream s;                                                     \
   s << message;                                                             \
   throw ExceptionName(s.str(), __FILE__, BOOST_CURRENT_FUNCTION, __LINE__); \
 }
+// NOLINTEND(bugprone-macro-parentheses)
 
 namespace pcl
 {

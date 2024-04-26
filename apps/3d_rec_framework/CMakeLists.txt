@@ -2,10 +2,11 @@ set(SUBSUBSYS_NAME 3d_rec_framework)
 set(SUBSUBSYS_DESC "3D recognition framework")
 set(SUBSUBSYS_DEPS common geometry io filters sample_consensus segmentation visualization kdtree features surface octree registration keypoints tracking search recognition ml)
 set(SUBSUBSYS_EXT_DEPS vtk openni)
+set(REASON "")
+set(DEFAULT OFF)
 
-# Default to not building for now
-if(${DEFAULT} STREQUAL "TRUE")
-  set(DEFAULT FALSE)
+if(NOT TARGET Boost::filesystem)
+  set(REASON "Boost filesystem is not available.")
 endif()
 
 PCL_SUBSUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSUBSYS_NAME}" "${SUBSUBSYS_DESC}" ${DEFAULT} "${REASON}")
@@ -90,7 +91,7 @@ PCL_ADD_INCLUDES("${SUBSUBSYS_NAME}" "${SUBSYS_NAME}/${SUBSUBSYS_NAME}/pipeline/
 
 set(LIB_NAME "pcl_${SUBSUBSYS_NAME}")
 PCL_ADD_LIBRARY(${LIB_NAME} COMPONENT ${SUBSUBSYS_NAME} SOURCES ${srcs} ${impl_incs_pipeline} ${incs_utils} ${incs_fw} ${incs_fw_global} ${incs_fw_local} ${incc_tools_framework} ${incs_pipelines} ${incs_pc_source})
-target_link_libraries("${LIB_NAME}" pcl_apps pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_surface pcl_features pcl_sample_consensus pcl_search)
+target_link_libraries("${LIB_NAME}" pcl_apps pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_surface pcl_features pcl_sample_consensus pcl_search pcl_registration)
 
 if(WITH_OPENNI)
   target_link_libraries("${LIB_NAME}" ${OPENNI_LIBRARIES})

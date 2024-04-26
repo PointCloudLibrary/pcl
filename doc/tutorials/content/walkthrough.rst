@@ -249,7 +249,7 @@ Kd-tree
 
 	A theoretical primer explaining how Kd-trees work can be found in the `Kd-tree tutorial <https://pcl.readthedocs.io/projects/tutorials/en/master/kdtree_search.html>`_.
 
-	The *kdtree* library provides the kd-tree data-structure, using `FLANN <http://www.cs.ubc.ca/~mariusm/index.php/FLANN/FLANN>`_, that allows for fast `nearest neighbor searches <https://en.wikipedia.org/wiki/Nearest_neighbor_search>`_.
+	The *kdtree* library provides the kd-tree data-structure, using `FLANN <http://www.cs.ubc.ca/research/flann/>`_, that allows for fast `nearest neighbor searches <https://en.wikipedia.org/wiki/Nearest_neighbor_search>`_.
 
 	A `Kd-tree <https://en.wikipedia.org/wiki/Kd-tree>`_ (k-dimensional tree) is a space-partitioning data structure that stores a set of k-dimensional points in a tree structure that enables efficient range searches and nearest neighbor searches. Nearest neighbor searches are a core operation when working with point cloud data and can be used to find correspondences between groups of points or feature descriptors or to define the local neighborhood around a point or points.
 
@@ -261,7 +261,7 @@ Kd-tree
 
 **Documentation:** https://pointclouds.org/documentation/group__kdtree.html
 
-**Tutorials:** http://pointclouds.org/documentation/tutorials/#kdtree-tutorial
+**Tutorials:** https://pcl.readthedocs.io/projects/tutorials/en/master/kdtree_search.html
 
 **Interacts with:** Common_
 
@@ -291,7 +291,7 @@ Octree
 
 	The *octree* library provides efficient methods for creating a hierarchical tree data structure from point cloud data. This enables spatial partitioning, downsampling and search operations on the point data set. Each octree node has either eight children or no children. The root node describes a cubic bounding box which encapsulates all points. At every tree level, this space becomes subdivided by a factor of 2 which results in an increased voxel resolution.
 
-	The *octree* implementation provides efficient nearest neighbor search routines, such as "Neighbors within Voxel Search”, “K Nearest Neighbor Search” and “Neighbors within Radius Search”. It automatically adjusts its dimension to the point data set. A set of leaf node classes provide additional functionality, such as spacial "occupancy" and "point density per voxel" checks. Functions for serialization and deserialization enable to efficiently encode the octree structure into a binary format. Furthermore, a memory pool implementation reduces expensive memory allocation and deallocation operations in scenarios where octrees needs to be created at high rate.
+	The *octree* implementation provides efficient nearest neighbor search routines, such as "Neighbors within Voxel Search”, “K Nearest Neighbor Search” and “Neighbors within Radius Search”. It automatically adjusts its dimension to the point data set. A set of leaf node classes provide additional functionality, such as spatial "occupancy" and "point density per voxel" checks. Functions for serialization and deserialization enable to efficiently encode the octree structure into a binary format. Furthermore, a memory pool implementation reduces expensive memory allocation and deallocation operations in scenarios where octrees needs to be created at high rate.
 
 	The following figure illustrates the voxel bounding boxes of an octree nodes at lowest tree level. The octree voxels are surrounding every 3D point from the Stanford bunny's surface. The red dots represent the point data. This image is created with the `octree_viewer`_.
 

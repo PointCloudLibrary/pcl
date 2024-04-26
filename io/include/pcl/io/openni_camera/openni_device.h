@@ -178,7 +178,7 @@ namespace openni_wrapper
       void 
       setDepthRegistration (bool on_off);
 
-      /** \return whether the depth stream is registered to the RGB camera fram or not. */
+      /** \return whether the depth stream is registered to the RGB camera frame or not. */
       bool 
       isDepthRegistered () const noexcept;
 

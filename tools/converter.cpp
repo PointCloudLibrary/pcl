@@ -46,13 +46,13 @@
 
 #include <vector>
 
+#include <pcl/common/pcl_filesystem.h>
 #include <pcl/console/parse.h>
 #include <pcl/io/auto_io.h>
 #include <pcl/io/obj_io.h>
 #include <pcl/io/vtk_lib_io.h>
 #include <pcl/memory.h>  // for pcl::make_shared
 
-#include <boost/filesystem.hpp>  // for boost::filesystem::path
 #include <boost/algorithm/string.hpp>  // for boost::algorithm::ends_with
 
 #define ASCII 0
@@ -103,7 +103,7 @@ savePointCloud (const pcl::PCLPointCloud2::Ptr& input,
                 std::string output_file,
                 int output_type)
 {
-  if (boost::filesystem::path (output_file).extension () == ".pcd")
+  if (pcl_fs::path (output_file).extension () == ".pcd")
   {
     //TODO Support precision, origin, orientation
     pcl::PCDWriter w;
@@ -126,7 +126,7 @@ savePointCloud (const pcl::PCLPointCloud2::Ptr& input,
         return (false);
     }
   }
-  else if (boost::filesystem::path (output_file).extension () == ".stl")
+  else if (pcl_fs::path (output_file).extension () == ".stl")
   {
     PCL_ERROR ("STL file format does not support point clouds! Aborting.\n");
     return (false);
@@ -156,7 +156,7 @@ saveMesh (pcl::PolygonMesh& input,
           std::string output_file,
           int output_type)
 {
-  if (boost::filesystem::path (output_file).extension () == ".obj")
+  if (pcl_fs::path (output_file).extension () == ".obj")
   {
     if (output_type == BINARY || output_type == BINARY_COMPRESSED)
       PCL_WARN ("OBJ file format only supports ASCII.\n");
@@ -167,7 +167,7 @@ saveMesh (pcl::PolygonMesh& input,
     if (pcl::io::saveOBJFile (output_file, input) != 0)
       return (false);
   }
-  else if (boost::filesystem::path (output_file).extension () == ".pcd")
+  else if (pcl_fs::path (output_file).extension () == ".pcd")
   {
     if (!input.polygons.empty ())
       PCL_WARN ("PCD file format does not support meshes! Only points be saved.\n");
@@ -180,7 +180,7 @@ saveMesh (pcl::PolygonMesh& input,
     if (output_type == BINARY_COMPRESSED)
       PCL_WARN ("PLY, STL and VTK file formats only supports ASCII and binary output file types.\n");
 
-    if (input.polygons.empty() && boost::filesystem::path (output_file).extension () == ".stl")
+    if (input.polygons.empty() && pcl_fs::path (output_file).extension () == ".stl")
     {
       PCL_ERROR ("STL file format does not support point clouds! Aborting.\n");
       return (false);
@@ -263,7 +263,7 @@ main (int argc,
 
   // Try to load as mesh
   pcl::PolygonMesh mesh;
-  if (boost::filesystem::path (argv[file_args[0]]).extension () != ".pcd" &&
+  if (pcl_fs::path (argv[file_args[0]]).extension () != ".pcd" &&
       pcl::io::loadPolygonFile (argv[file_args[0]], mesh) != 0)
   {
     PCL_INFO ("Loaded a mesh with %d points (total size is %d) and the following channels:\n%s\n",
@@ -275,7 +275,7 @@ main (int argc,
     if (!saveMesh (mesh, argv[file_args[1]], output_type))
       return (-1);
   }
-  else if (boost::filesystem::path (argv[file_args[0]]).extension () == ".stl")
+  else if (pcl_fs::path (argv[file_args[0]]).extension () == ".stl")
   {
     PCL_ERROR ("Unable to load %s.\n", argv[file_args[0]]);
     return (-1);
@@ -283,7 +283,7 @@ main (int argc,
   else
   {
     // PCD, OBJ, PLY or VTK
-    if (boost::filesystem::path (argv[file_args[0]]).extension () != ".pcd")
+    if (pcl_fs::path (argv[file_args[0]]).extension () != ".pcd")
       PCL_WARN ("Could not load %s as a mesh, trying as a point cloud instead.\n", argv[file_args[0]]);
 
     //Eigen::Vector4f origin; // TODO: Support origin/orientation

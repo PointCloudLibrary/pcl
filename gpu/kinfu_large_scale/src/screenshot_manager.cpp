@@ -48,8 +48,8 @@ namespace pcl
   {
       ScreenshotManager::ScreenshotManager()
       {
-        boost::filesystem::path p ("KinFuSnapshots"); 
-        boost::filesystem::create_directory (p);
+        pcl_fs::path p ("KinFuSnapshots"); 
+        pcl_fs::create_directory (p);
         screenshot_counter = 0;
         setCameraIntrinsics();
       }

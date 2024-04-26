@@ -128,7 +128,7 @@ namespace pcl
           * \param[in] cloud the const boost shared pointer to a PointCloud message
           * \param[in] indices the point indices subset that is to be used from \a cloud 
           */
-        void
+        bool
         setInputCloud (const PointCloudConstPtr& cloud, 
                        const IndicesConstPtr& indices = IndicesConstPtr ()) override;
 

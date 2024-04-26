@@ -83,7 +83,7 @@ namespace pcl
                   id_y_ (id_y),
                   id_z_ (id_z),
                   lin_id_ (lin_id),
-                  num_points_ (0),
+                  
                   user_data_ (user_data)
                 {
                   n_[0] = n_[1] = n_[2] = p_[0] = p_[1] = p_[2] = 0.0f;
@@ -156,17 +156,13 @@ namespace pcl
                 getNeighbors () const { return (neighbors_);}
 
               protected:
-                float n_[3], p_[3];
-                int id_x_, id_y_, id_z_, lin_id_, num_points_;
+                float n_[3]{}, p_[3]{};
+                int id_x_{0}, id_y_{0}, id_z_{0}, lin_id_{0}, num_points_{0};
                 std::set<Node*> neighbors_;
-                void *user_data_;
+                void *user_data_{nullptr};
             };
 
-            Node ()
-            : data_ (nullptr),
-              parent_ (nullptr),
-              children_(nullptr)
-            {}
+            Node () = default;
 
             virtual~ Node ()
             {
@@ -264,9 +260,9 @@ namespace pcl
             }
 
           protected:
-            Node::Data *data_;
-            float center_[3], bounds_[6], radius_;
-            Node *parent_, *children_;
+            Node::Data *data_{nullptr};
+            float center_[3]{}, bounds_[6]{}, radius_{0.0f};
+            Node *parent_{nullptr}, *children_{nullptr};
         };
 
         ORROctree ();
@@ -472,9 +468,9 @@ namespace pcl
         }
 
       protected:
-        float voxel_size_, bounds_[6];
-        int tree_levels_;
-        Node* root_;
+        float voxel_size_{-1.0}, bounds_[6];
+        int tree_levels_{-1};
+        Node* root_{nullptr};
         std::vector<Node*> full_leaves_;
     };
   } // namespace recognition

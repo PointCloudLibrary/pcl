@@ -128,25 +128,25 @@ namespace pcl
       protected:
 
         /** \brief Stores all votes. */
-        pcl::PointCloud<pcl::InterestPoint>::Ptr votes_;
+        pcl::PointCloud<pcl::InterestPoint>::Ptr votes_{new pcl::PointCloud<pcl::InterestPoint>};
 
         /** \brief Signalizes if the tree is valid. */
-        bool tree_is_valid_;
+        bool tree_is_valid_{false};
 
         /** \brief Stores the origins of the votes. */
-        typename pcl::PointCloud<PointT>::Ptr votes_origins_;
+        typename pcl::PointCloud<PointT>::Ptr votes_origins_{new pcl::PointCloud<PointT>};
 
         /** \brief Stores classes for which every single vote was cast. */
-        std::vector<int> votes_class_;
+        std::vector<int> votes_class_{};
 
         /** \brief Stores the search tree. */
-        pcl::KdTreeFLANN<pcl::InterestPoint>::Ptr tree_;
+        pcl::KdTreeFLANN<pcl::InterestPoint>::Ptr tree_{nullptr};
 
         /** \brief Stores neighbours indices. */
-        pcl::Indices k_ind_;
+        pcl::Indices k_ind_{};
 
         /** \brief Stores square distances to the corresponding neighbours. */
-        std::vector<float> k_sqr_dist_;
+        std::vector<float> k_sqr_dist_{};
     };
 
     /** \brief The assignment of this structure is to store the statistical/learned weights and other information
@@ -187,16 +187,16 @@ namespace pcl
       ISMModel & operator = (const ISMModel& other);
 
       /** \brief Stores statistical weights. */
-      std::vector<std::vector<float> > statistical_weights_;
+      std::vector<std::vector<float> > statistical_weights_{};
 
       /** \brief Stores learned weights. */
-      std::vector<float> learned_weights_;
+      std::vector<float> learned_weights_{};
 
       /** \brief Stores the class label for every direction. */
-      std::vector<unsigned int> classes_;
+      std::vector<unsigned int> classes_{};
 
       /** \brief Stores the sigma value for each class. This values were used to compute the learned weights. */
-      std::vector<float> sigmas_;
+      std::vector<float> sigmas_{};
 
       /** \brief Stores the directions to objects center for each visual word. */
       Eigen::MatrixXf directions_to_center_;
@@ -205,19 +205,19 @@ namespace pcl
       Eigen::MatrixXf clusters_centers_;
 
       /** \brief This is an array of clusters. Each cluster stores the indices of the visual words that it contains. */
-      std::vector<std::vector<unsigned int> > clusters_;
+      std::vector<std::vector<unsigned int> > clusters_{};
 
       /** \brief Stores the number of classes. */
-      unsigned int number_of_classes_;
+      unsigned int number_of_classes_{0};
 
       /** \brief Stores the number of visual words. */
-      unsigned int number_of_visual_words_;
+      unsigned int number_of_visual_words_{0};
 
       /** \brief Stores the number of clusters. */
-      unsigned int number_of_clusters_;
+      unsigned int number_of_clusters_{0};
 
       /** \brief Stores descriptors dimension. */
-      unsigned int descriptors_dimension_;
+      unsigned int descriptors_dimension_{0};
 
       PCL_MAKE_ALIGNED_OPERATOR_NEW
     };
@@ -226,12 +226,12 @@ namespace pcl
   namespace ism
   {
     /** \brief This class implements Implicit Shape Model algorithm described in
-      * "Hough Transforms and 3D SURF for robust three dimensional classication"
-      * by Jan Knopp1, Mukta Prasad, Geert Willems1, Radu Timofte, and Luc Van Gool.
+      * "Hough Transforms and 3D SURF for robust three dimensional classification"
+      * by Jan Knopp, Mukta Prasad, Geert Willems, Radu Timofte, and Luc Van Gool.
       * It has two main member functions. One for training, using the data for which we know
       * which class it belongs to. And second for investigating a cloud for the presence
       * of the class of interest.
-      * Implementation of the ISM algorithm described in "Hough Transforms and 3D SURF for robust three dimensional classication"
+      * Implementation of the ISM algorithm described in "Hough Transforms and 3D SURF for robust three dimensional classification"
       * by Jan Knopp, Mukta Prasad, Geert Willems, Radu Timofte, and Luc Van Gool
       *
       * Authors: Roman Shapovalov, Alexander Velizhev, Sergey Ushakov
@@ -316,15 +316,14 @@ namespace pcl
         {
           /** \brief Empty constructor with member variables initialization. */
           VisualWordStat () :
-            class_ (-1),
-            learned_weight_ (0.0f),
+            
             dir_to_center_ (0.0f, 0.0f, 0.0f) {};
 
           /** \brief Which class this vote belongs. */
-          int class_;
+          int class_{-1};
 
           /** \brief Weight of the vote. */
-          float learned_weight_;
+          float learned_weight_{0.0f};
 
           /** \brief Expected direction to center. */
           pcl::PointXYZ dir_to_center_;
@@ -583,30 +582,30 @@ namespace pcl
       protected:
 
         /** \brief Stores the clouds used for training. */
-        std::vector<typename pcl::PointCloud<PointT>::Ptr> training_clouds_;
+        std::vector<typename pcl::PointCloud<PointT>::Ptr> training_clouds_{};
 
         /** \brief Stores the class number for each cloud from training_clouds_. */
-        std::vector<unsigned int> training_classes_;
+        std::vector<unsigned int> training_classes_{};
 
         /** \brief Stores the normals for each training cloud. */
-        std::vector<typename pcl::PointCloud<NormalT>::Ptr> training_normals_;
+        std::vector<typename pcl::PointCloud<NormalT>::Ptr> training_normals_{};
 
         /** \brief This array stores the sigma values for each training class. If this array has a size equals 0, then
           * sigma values will be calculated automatically.
           */
-        std::vector<float> training_sigmas_;
+        std::vector<float> training_sigmas_{};
 
         /** \brief This value is used for the simplification. It sets the size of grid bin. */
-        float sampling_size_;
+        float sampling_size_{0.1f};
 
         /** \brief Stores the feature estimator. */
         typename Feature::Ptr feature_estimator_;
 
         /** \brief Number of clusters, is used for clustering descriptors during the training. */
-        unsigned int number_of_clusters_;
+        unsigned int number_of_clusters_{184};
 
         /** \brief If set to false then Nvot coeff from [Knopp et al., 2010, (4)] is equal 1.0. */
-        bool n_vot_ON_;
+        bool n_vot_ON_{true};
 
         /** \brief This const value is used for indicating that for k-means clustering centers must
           * be generated as described in

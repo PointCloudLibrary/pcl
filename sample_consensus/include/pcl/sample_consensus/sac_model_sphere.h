@@ -49,11 +49,12 @@
 
 #include <pcl/sample_consensus/sac_model.h>
 #include <pcl/sample_consensus/model_types.h>
+#include <pcl/pcl_exports.h>
 
 namespace pcl
 {
   namespace internal {
-    int optimizeModelCoefficientsSphere (Eigen::VectorXf& coeff, const Eigen::ArrayXf& pts_x, const Eigen::ArrayXf& pts_y, const Eigen::ArrayXf& pts_z);
+    PCL_EXPORTS int optimizeModelCoefficientsSphere (Eigen::VectorXf& coeff, const Eigen::ArrayXf& pts_x, const Eigen::ArrayXf& pts_y, const Eigen::ArrayXf& pts_z);
   } // namespace internal
 
   /** \brief SampleConsensusModelSphere defines a model for 3D sphere segmentation.
@@ -223,10 +224,14 @@ namespace pcl
         if (!SampleConsensusModel<PointT>::isModelValid (model_coefficients))
           return (false);
 
-        if (radius_min_ != -std::numeric_limits<double>::max() && model_coefficients[3] < radius_min_)
+        if (radius_min_ != -std::numeric_limits<double>::max() && model_coefficients[3] < radius_min_) {
+          PCL_DEBUG("[SampleConsensusModelSphere::isModelValid] Model radius %g is smaller than user specified minimum radius %g\n", model_coefficients[3], radius_min_);
           return (false);
-        if (radius_max_ != std::numeric_limits<double>::max() && model_coefficients[3] > radius_max_)
+        }
+        if (radius_max_ != std::numeric_limits<double>::max() && model_coefficients[3] > radius_max_) {
+          PCL_DEBUG("[SampleConsensusModelSphere::isModelValid] Model radius %g is bigger than user specified maximum radius %g\n", model_coefficients[3], radius_max_);
           return (false);
+        }
 
         return (true);
       }

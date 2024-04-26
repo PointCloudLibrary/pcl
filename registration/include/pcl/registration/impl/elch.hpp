@@ -192,7 +192,7 @@ pcl::registration::ELCH<PointT>::initCompute()
 
     PointCloudPtr tmp(new PointCloud);
     // Eigen::Vector4f diff = pose_start - pose_end;
-    // Eigen::Translation3f translation (diff.head (3));
+    // Eigen::Translation3f translation (diff.head<3> ());
     // Eigen::Affine3f trans = translation * Eigen::Quaternionf::Identity ();
     // pcl::transformPointCloud (*(*loop_graph_)[loop_end_].cloud, *tmp, trans);
 
@@ -240,7 +240,7 @@ pcl::registration::ELCH<PointT>::compute()
   // TODO use pose
   // Eigen::Vector4f cend;
   // pcl::compute3DCentroid (*((*loop_graph_)[loop_end_].cloud), cend);
-  // Eigen::Translation3f tend (cend.head (3));
+  // Eigen::Translation3f tend (cend.head<3> ());
   // Eigen::Affine3f aend (tend);
   // Eigen::Affine3f aendI = aend.inverse ();
 

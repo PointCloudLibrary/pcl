@@ -97,7 +97,13 @@ pcl::LocalMaximum<PointT>::applyFilterIndices (Indices &indices)
     else
       searcher_.reset (new pcl::search::KdTree<PointT> (false));
   }
-  searcher_->setInputCloud (cloud_projected);
+  if (!searcher_->setInputCloud (cloud_projected))
+  {
+    PCL_ERROR ("[pcl::%s::applyFilter] Error when initializing search method!\n", getClassName ().c_str ());
+    indices.clear ();
+    removed_indices_->clear ();
+    return;
+  }
 
   // The arrays to be used
   indices.resize (indices_->size ());

@@ -60,21 +60,18 @@ namespace pcl
     struct EdgeProperties
     {
       /** \brief Describes the difference of normals of the two supervoxels being connected*/
-      float normal_difference;
+      float normal_difference{0.0f};
 
       /** \brief Describes if a connection is convex or concave*/
-      bool is_convex;
+      bool is_convex{false};
 
       /** \brief Describes if a connection is valid for the segment growing. Usually convex connections are and concave connection are not. Due to k-concavity a convex connection can be invalidated*/
-      bool is_valid;
+      bool is_valid{false};
 
       /** \brief Additional member used for the CPC algorithm. If edge has already induced a cut, it should be ignored for further cutting.*/
-      bool used_for_cutting;
+      bool used_for_cutting{false};
 
-      EdgeProperties () :
-      normal_difference (0), is_convex (false), is_valid (false), used_for_cutting (false)
-      {
-      }
+      EdgeProperties () = default;
     };
 
     public:
@@ -297,34 +294,34 @@ namespace pcl
       ///  *** Parameters *** ///
 
       /** \brief Normal Threshold in degrees [0,180] used for merging */
-      float concavity_tolerance_threshold_;
+      float concavity_tolerance_threshold_{10};
 
       /** \brief Marks if valid grouping data (\ref sv_adjacency_list_, \ref sv_label_to_seg_label_map_, \ref processed_) is available */
-      bool grouping_data_valid_;
+      bool grouping_data_valid_{false};
 
       /** \brief Marks if supervoxels have been set by calling \ref setInputSupervoxels */
-      bool supervoxels_set_;
+      bool supervoxels_set_{false};
 
       /** \brief Determines if the smoothness check is used during segmentation*/
-      bool use_smoothness_check_;
+      bool use_smoothness_check_{false};
 
       /** \brief Two supervoxels are unsmooth if their plane-to-plane distance DIST >  (expected_distance + smoothness_threshold_*voxel_resolution_). For parallel supervoxels, the expected_distance is zero. */
-      float smoothness_threshold_;
+      float smoothness_threshold_{0.1};
 
       /** \brief Determines if we use the sanity check which tries to find and invalidate singular connected patches*/
-      bool use_sanity_check_;
+      bool use_sanity_check_{false};
 
       /** \brief Seed resolution of the supervoxels (used only for smoothness check) */
-      float seed_resolution_;
+      float seed_resolution_{0.0f};
 
       /** \brief Voxel resolution used to build the supervoxels (used only for smoothness check)*/
-      float voxel_resolution_;
+      float voxel_resolution_{0.0f};
 
       /** \brief Factor used for k-convexity */
-      std::uint32_t k_factor_;
+      std::uint32_t k_factor_{0};
 
       /** \brief Minimum segment size */
-      std::uint32_t min_segment_size_;
+      std::uint32_t min_segment_size_{0};
 
       /** \brief Stores which supervoxel labels were already visited during recursive grouping.
        *  \note processed_[sv_Label] = false (default)/true (already processed) */

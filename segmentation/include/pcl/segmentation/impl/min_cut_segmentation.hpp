@@ -47,26 +47,7 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
-pcl::MinCutSegmentation<PointT>::MinCutSegmentation () :
-  inverse_sigma_ (16.0),
-  binary_potentials_are_valid_ (false),
-  epsilon_ (0.0001),
-  radius_ (16.0),
-  unary_potentials_are_valid_ (false),
-  source_weight_ (0.8),
-  search_ (),
-  number_of_neighbours_ (14),
-  graph_is_valid_ (false),
-  foreground_points_ (0),
-  background_points_ (0),
-  clusters_ (0),
-  vertices_ (0),
-  edge_marker_ (0),
-  source_ (),/////////////////////////////////
-  sink_ (),///////////////////////////////////
-  max_flow_ (0.0)
-{
-}
+pcl::MinCutSegmentation<PointT>::MinCutSegmentation () = default;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
@@ -598,6 +579,6 @@ pcl::MinCutSegmentation<PointT>::getColoredCloud ()
   return (colored_cloud);
 }
 
-#define PCL_INSTANTIATE_MinCutSegmentation(T) template class pcl::MinCutSegmentation<T>;
+#define PCL_INSTANTIATE_MinCutSegmentation(T) template class PCL_EXPORTS pcl::MinCutSegmentation<T>;
 
 #endif    // PCL_SEGMENTATION_MIN_CUT_SEGMENTATION_HPP_

@@ -7,6 +7,8 @@
 
 #pragma once
 
+#include <pcl/common/pcl_filesystem.h>
+
 namespace face_detection_apps_utils {
 
 inline bool
@@ -65,18 +67,18 @@ sortFiles(const std::string& file1, const std::string& file2)
 }
 
 inline void
-getFilesInDirectory(bf::path& dir,
+getFilesInDirectory(pcl_fs::path& dir,
                     std::string& rel_path_so_far,
                     std::vector<std::string>& relative_paths,
                     std::string& ext)
 {
-  for (const auto& dir_entry : bf::directory_iterator(dir)) {
+  for (const auto& dir_entry : pcl_fs::directory_iterator(dir)) {
     // check if its a directory, then get models in it
-    if (bf::is_directory(dir_entry)) {
+    if (pcl_fs::is_directory(dir_entry)) {
       std::string so_far =
           rel_path_so_far + (dir_entry.path().filename()).string() + "/";
 
-      bf::path curr_path = dir_entry.path();
+      pcl_fs::path curr_path = dir_entry.path();
       getFilesInDirectory(curr_path, so_far, relative_paths, ext);
     }
     else {

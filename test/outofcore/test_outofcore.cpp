@@ -44,6 +44,7 @@
 
 #include <pcl/test/gtest.h>
 
+#include <list>
 #include <vector>
 #include <iostream>
 #include <random>
@@ -394,7 +395,7 @@ class OutofcoreTest : public testing::Test
 {
   protected:
 
-    OutofcoreTest () : smallest_voxel_dim () {}
+    OutofcoreTest () = default;
 
     void SetUp () override
     {
@@ -420,7 +421,7 @@ class OutofcoreTest : public testing::Test
 
     }
 
-    double smallest_voxel_dim;
+    double smallest_voxel_dim{3.0f};
 
 };
 

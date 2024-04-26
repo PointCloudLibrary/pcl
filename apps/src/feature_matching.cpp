@@ -19,8 +19,8 @@
 #include <pcl/surface/gp3.h>
 #include <pcl/surface/marching_cubes_hoppe.h>
 #include <pcl/visualization/pcl_visualizer.h>
-#include <pcl/ModelCoefficients.h>
 #include <pcl/memory.h> // for pcl::dynamic_pointer_cast
+#include <pcl/ModelCoefficients.h>
 
 #include <string>
 #include <vector>

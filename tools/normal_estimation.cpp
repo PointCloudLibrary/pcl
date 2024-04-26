@@ -42,10 +42,11 @@
 #include <pcl/io/pcd_io.h>
 #include <pcl/features/normal_3d.h>
 #include <pcl/features/integral_image_normal.h>
+#include <pcl/common/pcl_filesystem.h>
 #include <pcl/console/print.h>
 #include <pcl/console/parse.h>
 #include <pcl/console/time.h>
-#include <boost/filesystem.hpp> // for path, exists, ...
+
 #include <boost/algorithm/string/case_conv.hpp> // for to_upper_copy
 
 using namespace pcl;
@@ -133,7 +134,6 @@ int
 batchProcess (const std::vector<std::string> &pcd_files, std::string &output_dir, int k, double radius)
 {
 #pragma omp parallel for \
-  default(none) \
   shared(k, output_dir, pcd_files, radius)
   // Disable lint since this 'for' is part of the pragma
   // NOLINTNEXTLINE(modernize-loop-convert)
@@ -151,7 +151,7 @@ batchProcess (const std::vector<std::string> &pcd_files, std::string &output_dir
     compute (cloud, output, k, radius);
 
     // Prepare output file name
-    std::string filename = boost::filesystem::path(pcd_files[i]).filename().string();
+    std::string filename = pcl_fs::path(pcd_files[i]).filename().string();
     
     // Save into the second file
     const std::string filepath = output_dir + '/' + filename;
@@ -223,14 +223,14 @@ main (int argc, char** argv)
   }
   else
   {
-    if (!input_dir.empty() && boost::filesystem::exists (input_dir))
+    if (!input_dir.empty() && pcl_fs::exists (input_dir))
     {
       std::vector<std::string> pcd_files;
-      boost::filesystem::directory_iterator end_itr;
-      for (boost::filesystem::directory_iterator itr (input_dir); itr != end_itr; ++itr)
+      pcl_fs::directory_iterator end_itr;
+      for (pcl_fs::directory_iterator itr (input_dir); itr != end_itr; ++itr)
       {
         // Only add PCD files
-        if (!is_directory (itr->status ()) && boost::algorithm::to_upper_copy (boost::filesystem::extension (itr->path ())) == ".PCD" )
+        if (!is_directory (itr->status ()) && boost::algorithm::to_upper_copy (itr->path ().extension ().string ()) == ".PCD" )
         {
           pcd_files.push_back (itr->path ().string ());
           PCL_INFO ("[Batch processing mode] Added %s for processing.\n", itr->path ().string ().c_str ());

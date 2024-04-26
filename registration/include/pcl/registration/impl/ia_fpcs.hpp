@@ -66,13 +66,9 @@ pcl::getMeanPointDensity(const typename pcl::PointCloud<PointT>::ConstPtr& cloud
   std::vector<float> dists_sqr(2);
 
   pcl::utils::ignore(nr_threads);
-#pragma omp parallel for \
-  default(none) \
-  shared(tree, cloud) \
-  firstprivate(ids, dists_sqr) \
-  reduction(+:mean_dist, num) \
-  firstprivate(s, max_dist_sqr) \
-  num_threads(nr_threads)
+#pragma omp parallel for default(none) shared(tree, cloud)                             \
+    firstprivate(ids, dists_sqr) reduction(+ : mean_dist, num)                         \
+    firstprivate(s, max_dist_sqr) num_threads(nr_threads)
   for (int i = 0; i < 1000; i++) {
     tree.nearestKSearch((*cloud)[rand() % s], 2, ids, dists_sqr);
     if (dists_sqr[1] < max_dist_sqr) {
@@ -105,19 +101,11 @@ pcl::getMeanPointDensity(const typename pcl::PointCloud<PointT>::ConstPtr& cloud
 
   pcl::utils::ignore(nr_threads);
 #if OPENMP_LEGACY_CONST_DATA_SHARING_RULE
-#pragma omp parallel for \
-  default(none) \
-  shared(tree, cloud, indices) \
-  firstprivate(ids, dists_sqr) \
-  reduction(+:mean_dist, num) \
-  num_threads(nr_threads)
+#pragma omp parallel for default(none) shared(tree, cloud, indices)                    \
+    firstprivate(ids, dists_sqr) reduction(+ : mean_dist, num) num_threads(nr_threads)
 #else
-#pragma omp parallel for \
-  default(none) \
-  shared(tree, cloud, indices, s, max_dist_sqr) \
-  firstprivate(ids, dists_sqr) \
-  reduction(+:mean_dist, num) \
-  num_threads(nr_threads)
+#pragma omp parallel for default(none) shared(tree, cloud, indices, s, max_dist_sqr)   \
+    firstprivate(ids, dists_sqr) reduction(+ : mean_dist, num) num_threads(nr_threads)
 #endif
   for (int i = 0; i < 1000; i++) {
     tree.nearestKSearch((*cloud)[indices[rand() % s]], 2, ids, dists_sqr);
@@ -136,24 +124,8 @@ pcl::registration::FPCSInitialAlignment<PointSource, PointTarget, NormalT, Scala
     FPCSInitialAlignment()
 : source_normals_()
 , target_normals_()
-, nr_threads_(1)
-, approx_overlap_(0.5f)
-, delta_(1.f)
 , score_threshold_(std::numeric_limits<float>::max())
-, nr_samples_(0)
-, max_norm_diff_(90.f)
-, max_runtime_(0)
 , fitness_score_(std::numeric_limits<float>::max())
-, diameter_()
-, max_base_diameter_sqr_()
-, use_normals_(false)
-, normalize_delta_(true)
-, max_pair_diff_()
-, max_edge_diff_()
-, coincidation_limit_()
-, max_mse_()
-, max_inlier_dist_sqr_()
-, small_error_(0.00001f)
 {
   reg_name_ = "pcl::registration::FPCSInitialAlignment";
   max_iterations_ = 0;
@@ -181,7 +153,7 @@ pcl::registration::FPCSInitialAlignment<PointSource, PointTarget, NormalT, Scala
   {
 #ifdef _OPENMP
     const unsigned int seed =
-        static_cast<unsigned int>(std::time(NULL)) ^ omp_get_thread_num();
+        static_cast<unsigned int>(std::time(nullptr)) ^ omp_get_thread_num();
     std::srand(seed);
     PCL_DEBUG("[%s::computeTransformation] Using seed=%u\n", reg_name_.c_str(), seed);
 #pragma omp for schedule(dynamic)
@@ -378,7 +350,7 @@ pcl::registration::FPCSInitialAlignment<PointSource, PointTarget, NormalT, Scala
       float d1 = pcl::squaredEuclideanDistance(*pt4, *pt1);
       float d2 = pcl::squaredEuclideanDistance(*pt4, *pt2);
       float d3 = pcl::squaredEuclideanDistance(*pt4, *pt3);
-      float d4 = (pt4->getVector3fMap() - centre_pt.head(3)).squaredNorm();
+      float d4 = (pt4->getVector3fMap() - centre_pt.head<3>()).squaredNorm();
 
       // check distance between points w.r.t minimum sampling distance; EDITED -> 4th
       // point now also limited by max base line
@@ -750,7 +722,7 @@ pcl::registration::FPCSInitialAlignment<PointSource, PointTarget, NormalT, Scala
     Eigen::Matrix4f transformation_temp;
     pcl::Correspondences correspondences_temp;
 
-    // determine corresondences between base and match according to their distance to
+    // determine correspondences between base and match according to their distance to
     // centroid
     linkMatchWithBase(base_indices, match, correspondences_temp);
 

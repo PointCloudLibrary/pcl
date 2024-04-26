@@ -38,11 +38,11 @@
 #include <pcl/io/obj_io.h>
 #include <fstream>
 #include <pcl/common/io.h>
+#include <pcl/common/pcl_filesystem.h>
 #include <pcl/console/time.h>
 #include <pcl/io/split.h>
 
 #include <boost/lexical_cast.hpp> // for lexical_cast
-#include <boost/filesystem.hpp> // for exists
 #include <boost/algorithm/string.hpp> // for trim
 
 pcl::MTLReader::MTLReader ()
@@ -146,21 +146,27 @@ int
 pcl::MTLReader::read (const std::string& obj_file_name,
                       const std::string& mtl_file_name)
 {
-  if (obj_file_name.empty() || !boost::filesystem::exists (obj_file_name))
+  if (obj_file_name.empty ())
+  {
+    PCL_ERROR ("[pcl::MTLReader::read] No OBJ file name given!\n");
+    return (-1);
+  }
+
+  if (!pcl_fs::exists (obj_file_name))
   {
     PCL_ERROR ("[pcl::MTLReader::read] Could not find file '%s'!\n",
                obj_file_name.c_str ());
     return (-1);
   }
 
-  if (mtl_file_name.empty())
+  if (mtl_file_name.empty ())
   {
     PCL_ERROR ("[pcl::MTLReader::read] MTL file name is empty!\n");
     return (-1);
   }
 
-  boost::filesystem::path obj_file_path (obj_file_name.c_str ());
-  boost::filesystem::path mtl_file_path = obj_file_path.parent_path ();
+  pcl_fs::path obj_file_path (obj_file_name.c_str ());
+  pcl_fs::path mtl_file_path = obj_file_path.parent_path ();
   mtl_file_path /=  mtl_file_name;
   return (read (mtl_file_path.string ()));
 }
@@ -168,14 +174,23 @@ pcl::MTLReader::read (const std::string& obj_file_name,
 int
 pcl::MTLReader::read (const std::string& mtl_file_path)
 {
-  if (mtl_file_path.empty() || !boost::filesystem::exists (mtl_file_path))
+  if (mtl_file_path.empty ())
+  {
+    PCL_ERROR ("[pcl::MTLReader::read] No file name given!\n");
+    return (-1);
+  }
+
+  // Open file in binary mode to avoid problem of
+  // std::getline() corrupting the result of ifstream::tellg()
+  std::ifstream mtl_file;
+  mtl_file.open (mtl_file_path.c_str (), std::ios::binary);
+
+  if (!mtl_file.good ())
   {
     PCL_ERROR ("[pcl::MTLReader::read] Could not find file '%s'.\n", mtl_file_path.c_str ());
     return (-1);
   }
 
-  std::ifstream mtl_file;
-  mtl_file.open (mtl_file_path.c_str (), std::ios::binary);
   if (!mtl_file.is_open () || mtl_file.fail ())
   {
     PCL_ERROR ("[pcl::MTLReader::read] Could not open file '%s'! Error : %s\n",
@@ -186,7 +201,7 @@ pcl::MTLReader::read (const std::string& mtl_file_path)
 
   std::string line;
   std::vector<std::string> st;
-  boost::filesystem::path parent_path = mtl_file_path.c_str ();
+  pcl_fs::path parent_path = mtl_file_path.c_str ();
   parent_path = parent_path.parent_path ();
 
   try
@@ -200,8 +215,8 @@ pcl::MTLReader::read (const std::string& mtl_file_path)
 
       // Tokenize the line
       pcl::split (st, line, "\t\r ");
-      // Ignore comments
-      if (st[0] == "#")
+      // Ignore comments and lines with only whitespace
+      if (st.empty() || st[0] == "#")
         continue;
 
       if (st[0] == "newmtl")
@@ -307,7 +322,7 @@ pcl::MTLReader::read (const std::string& mtl_file_path)
 
       if (st[0] == "map_Kd")
       {
-        boost::filesystem::path full_path = parent_path;
+        pcl_fs::path full_path = parent_path;
         full_path/= st.back ().c_str ();
         materials_.back ().tex_file = full_path.string ();
         continue;
@@ -340,18 +355,25 @@ pcl::OBJReader::readHeader (const std::string &file_name, pcl::PCLPointCloud2 &c
   data_type = 0;
   data_idx = offset;
 
-  std::ifstream fs;
   std::string line;
 
-  if (file_name.empty() || !boost::filesystem::exists (file_name))
+  if (file_name.empty ())
   {
-    PCL_ERROR ("[pcl::OBJReader::readHeader] Could not find file '%s'.\n", file_name.c_str ());
+    PCL_ERROR ("[pcl::OBJReader::readHeader] No file name given!\n");
     return (-1);
   }
 
   // Open file in binary mode to avoid problem of
   // std::getline() corrupting the result of ifstream::tellg()
+  std::ifstream fs;
   fs.open (file_name.c_str (), std::ios::binary);
+
+  if (!fs.good ())
+  {
+    PCL_ERROR ("[pcl::OBJReader::readHeader] Could not find file '%s'.\n", file_name.c_str ());
+    return (-1);
+  }
+
   if (!fs.is_open () || fs.fail ())
   {
     PCL_ERROR ("[pcl::OBJReader::readHeader] Could not open file '%s'! Error : %s\n", file_name.c_str (), strerror(errno));
@@ -551,8 +573,8 @@ pcl::OBJReader::read (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
       // Tokenize the line
       pcl::split (st, line, "\t\r ");
 
-      // Ignore comments
-      if (st[0] == "#")
+      // Ignore comments and lines with only whitespace
+      if (st.empty() || st[0] == "#")
         continue;
 
       // Vertex
@@ -882,8 +904,8 @@ pcl::OBJReader::read (const std::string &file_name, pcl::PolygonMesh &mesh,
       // Tokenize the line
       pcl::split (st, line, "\t\r ");
 
-      // Ignore comments
-      if (st[0] == "#")
+      // Ignore comments and lines with only whitespace
+      if (st.empty() || st[0] == "#")
         continue;
 
       // Vertex

@@ -319,7 +319,11 @@ pcl::GridProjection<PointNT>::getProjectionWithPlaneFit (const Eigen::Vector4f &
   Eigen::Matrix3f covariance_matrix;
   Eigen::Vector4f xyz_centroid;
 
-  computeMeanAndCovarianceMatrix (*data_, pt_union_indices, covariance_matrix, xyz_centroid);
+  if (computeMeanAndCovarianceMatrix (*data_, pt_union_indices, covariance_matrix, xyz_centroid) == 0) {
+    PCL_ERROR("[pcl::GridProjection::getProjectionWithPlaneFit] cloud or indices are empty!\n");
+    projection = p;
+    return;
+  }
 
   // Get the plane normal
   EIGEN_ALIGN16 Eigen::Vector3f::Scalar eigen_value;

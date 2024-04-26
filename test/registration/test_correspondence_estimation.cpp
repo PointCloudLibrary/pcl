@@ -101,7 +101,7 @@ TYPED_TEST(CorrespondenceEstimationTestSuite, CorrespondenceEstimationNormalShoo
   auto cloud1 (pcl::make_shared<pcl::PointCloud<PointSource>> ());
   auto cloud2 (pcl::make_shared<pcl::PointCloud<PointTarget>> ());
 
-  // Defining two parallel planes differing only by the y co-ordinate
+  // Defining two parallel planes differing only by the y coordinate
   for (std::size_t i = 0; i < 50; ++i)
   {
     for (std::size_t j = 0; j < 25; ++j)

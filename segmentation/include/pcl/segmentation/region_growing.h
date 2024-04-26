@@ -279,57 +279,57 @@ namespace pcl
     protected:
 
       /** \brief Stores the minimum number of points that a cluster needs to contain in order to be considered valid. */
-      pcl::uindex_t min_pts_per_cluster_;
+      pcl::uindex_t min_pts_per_cluster_{1};
 
       /** \brief Stores the maximum number of points that a cluster needs to contain in order to be considered valid. */
-      pcl::uindex_t max_pts_per_cluster_;
+      pcl::uindex_t max_pts_per_cluster_{std::numeric_limits<pcl::uindex_t>::max()};
 
       /** \brief Flag that signalizes if the smoothness constraint will be used. */
-      bool smooth_mode_flag_;
+      bool smooth_mode_flag_{true};
 
       /** \brief If set to true then curvature test will be done during segmentation. */
-      bool curvature_flag_;
+      bool curvature_flag_{true};
 
       /** \brief If set to true then residual test will be done during segmentation. */
-      bool residual_flag_;
+      bool residual_flag_{false};
 
       /** \brief Threshold used for testing the smoothness between points. */
-      float theta_threshold_;
+      float theta_threshold_{30.0f / 180.0f * static_cast<float>(M_PI)};
 
       /** \brief Threshold used in residual test. */
-      float residual_threshold_;
+      float residual_threshold_{0.05f};
 
       /** \brief Threshold used in curvature test. */
-      float curvature_threshold_;
+      float curvature_threshold_{0.05f};
 
       /** \brief Number of neighbours to find. */
-      unsigned int neighbour_number_;
+      unsigned int neighbour_number_{30};
 
       /** \brief Search method that will be used for KNN. */
-      KdTreePtr search_;
+      KdTreePtr search_{nullptr};
 
       /** \brief Contains normals of the points that will be segmented. */
-      NormalPtr normals_;
+      NormalPtr normals_{nullptr};
 
       /** \brief Contains neighbours of each point. */
-      std::vector<pcl::Indices> point_neighbours_;
+      std::vector<pcl::Indices> point_neighbours_{};
 
       /** \brief Point labels that tells to which segment each point belongs. */
-      std::vector<int> point_labels_;
+      std::vector<int> point_labels_{};
 
       /** \brief If set to true then normal/smoothness test will be done during segmentation.
         * It is always set to true for the usual region growing algorithm. It is used for turning on/off the test
         * for smoothness in the child class RegionGrowingRGB.*/
-      bool normal_flag_;
+      bool normal_flag_{true};
 
       /** \brief Tells how much points each segment contains. Used for reserving memory. */
-      std::vector<pcl::uindex_t> num_pts_in_segment_;
+      std::vector<pcl::uindex_t> num_pts_in_segment_{};
 
       /** \brief After the segmentation it will contain the segments. */
-      std::vector <pcl::PointIndices> clusters_;
+      std::vector <pcl::PointIndices> clusters_{};
 
       /** \brief Stores the number of segments. */
-      int number_of_segments_;
+      int number_of_segments_{0};
 
     public:
       PCL_MAKE_ALIGNED_OPERATOR_NEW

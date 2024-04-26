@@ -478,7 +478,6 @@ NarfKeypoint::calculateSparseInterestImage ()
   
   //double interest_value_calculation_start_time = getTime ();
 #pragma omp parallel for \
-  default(none) \
   shared(array_size, border_descriptions, increased_radius_squared, radius_reciprocal, radius_overhead_squared, range_image, search_radius, \
          surface_change_directions, surface_change_scores) \
   num_threads(parameters_.max_no_of_threads) \

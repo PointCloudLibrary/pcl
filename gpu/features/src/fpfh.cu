@@ -297,7 +297,7 @@ namespace pcl
             template<int bins>
             __device__ __forceinline__ void normalizeFeature(volatile float *feature, volatile float *buffer, int lane) const
             {                                
-                //nomalize buns
+                //normalize buns
                 float value = (lane < bins) ? feature[lane] : 0.f;                
                 float sum = Warp::reduce(buffer, value, plus<volatile float>());
 

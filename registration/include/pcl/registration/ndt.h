@@ -60,6 +60,7 @@ namespace pcl {
  * Optimization Theory and Methods: Nonlinear Programming. 89-100
  * \note Math refactored by Todor Stoyanov.
  * \author Brian Okorn (Space and Naval Warfare Systems Center Pacific)
+ * \ingroup registration
  */
 template <typename PointSource, typename PointTarget, typename Scalar = float>
 class NormalDistributionsTransform
@@ -219,6 +220,20 @@ public:
     return nr_iterations_;
   }
 
+  /** \brief Get access to the `VoxelGridCovariance` generated from target cloud
+   * containing point means and covariances. Set the input target cloud before calling
+   * this. Useful for debugging, e.g.
+   * \code
+   * pcl::PointCloud<PointXYZ> visualize_cloud;
+   * ndt.getTargetCells().getDisplayCloud(visualize_cloud);
+   * \endcode
+   */
+  inline const TargetGrid&
+  getTargetCells() const
+  {
+    return target_cells_;
+  }
+
   /** \brief Convert 6 element transformation vector to affine transformation.
    * \param[in] x transformation vector of the form [x, y, z, roll, pitch, yaw]
    * \param[out] trans affine transform corresponding to given transformation
@@ -291,6 +306,10 @@ protected:
     target_cells_.setInputCloud(target_);
     // Initiate voxel structure.
     target_cells_.filter(true);
+    PCL_DEBUG("[pcl::%s::init] Computed voxel structure, got %zu voxels with valid "
+              "normal distributions.\n",
+              getClassName().c_str(),
+              target_cells_.getCentroids()->size());
   }
 
   /** \brief Compute derivatives of likelihood function w.r.t. the
@@ -556,18 +575,18 @@ protected:
   TargetGrid target_cells_;
 
   /** \brief The side length of voxels. */
-  float resolution_;
+  float resolution_{1.0f};
 
   /** \brief The maximum step length. */
-  double step_size_;
+  double step_size_{0.1};
 
   /** \brief The ratio of outliers of points w.r.t. a normal distribution,
    * Equation 6.7 [Magnusson 2009]. */
-  double outlier_ratio_;
+  double outlier_ratio_{0.55};
 
   /** \brief The normalization constants used fit the point distribution to a
    * normal distribution, Equation 6.8 [Magnusson 2009]. */
-  double gauss_d1_, gauss_d2_;
+  double gauss_d1_{0.0}, gauss_d2_{0.0};
 
   /** \brief The likelihood score of the transform applied to the input cloud,
    * Equation 6.9 and 6.10 [Magnusson 2009]. */
@@ -576,7 +595,7 @@ protected:
                    16,
                    "`trans_probability_` has been renamed to `trans_likelihood_`.")
     double trans_probability_;
-    double trans_likelihood_;
+    double trans_likelihood_{0.0};
   };
 
   /** \brief Precomputed Angular Gradient

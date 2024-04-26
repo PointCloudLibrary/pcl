@@ -76,8 +76,7 @@ pcl::search::FlannSearch<PointT, FlannDistance>::KdTreeMultiIndexCreator::create
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename FlannDistance>
 pcl::search::FlannSearch<PointT, FlannDistance>::FlannSearch(bool sorted, FlannIndexCreatorPtr creator) : pcl::search::Search<PointT> ("FlannSearch",sorted),
-  index_(), creator_ (creator), eps_ (0), checks_ (32), input_copied_for_flann_ (false), point_representation_ (new DefaultPointRepresentation<PointT>),
-  dim_ (0), identity_mapping_()
+  index_(), creator_ (creator),  point_representation_ (new DefaultPointRepresentation<PointT>)
 {
   dim_ = point_representation_->getNumberOfDimensions ();
 }
@@ -91,7 +90,7 @@ pcl::search::FlannSearch<PointT, FlannDistance>::~FlannSearch()
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT, typename FlannDistance> void
+template <typename PointT, typename FlannDistance> bool
 pcl::search::FlannSearch<PointT, FlannDistance>::setInputCloud (const PointCloudConstPtr& cloud, const IndicesConstPtr& indices)
 {
   input_ = cloud;
@@ -99,6 +98,7 @@ pcl::search::FlannSearch<PointT, FlannDistance>::setInputCloud (const PointCloud
   convertInputToFlannMatrix ();
   index_ = creator_->createIndex (input_flann_);
   index_->buildIndex ();
+  return true;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////

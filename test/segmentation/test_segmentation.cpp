@@ -417,7 +417,7 @@ main (int argc, char** argv)
     return (-1);
   }
 
-  // Tranpose the cloud
+  // Transpose the cloud
   cloud_t_.reset(new PointCloud<PointXYZ>);
   *cloud_t_ = *cloud_;
   for (auto& point: *cloud_t_)

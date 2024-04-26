@@ -2,16 +2,6 @@ set(SUBSYS_NAME people)
 set(SUBSYS_DESC "Point cloud people library")
 set(SUBSYS_DEPS common kdtree search sample_consensus filters io visualization geometry segmentation octree)
 
-if(NOT VTK_FOUND)
-  set(DEFAULT FALSE)
-  set(REASON "VTK was not found.")
-else()
-  set(DEFAULT TRUE)
-  set(REASON)
-  include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include")
-endif()
-
-set(build TRUE)
 PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ON)
 PCL_SUBSYS_DEPEND(build NAME ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS})
 
@@ -43,8 +33,6 @@ set(srcs
 )
 
 set(LIB_NAME "pcl_${SUBSYS_NAME}")
-include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include")
-
 PCL_ADD_LIBRARY(${LIB_NAME} COMPONENT ${SUBSYS_NAME} SOURCES ${srcs} ${incs} ${impl_incs})
 target_link_libraries(${LIB_NAME} pcl_common pcl_filters pcl_kdtree pcl_sample_consensus pcl_segmentation pcl_visualization)
 
@@ -52,8 +40,6 @@ PCL_MAKE_PKGCONFIG(${LIB_NAME} COMPONENT ${SUBSYS_NAME} DESC ${SUBSYS_DESC} PCL_
 # Install include files
 PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}" ${incs})
 PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/impl" ${impl_incs})
-
-#SET_TARGET_PROPERTIES("${LIB_NAME}" PROPERTIES LINKER_LANGUAGE CXX)
 
 if(WITH_OPENNI)
   PCL_ADD_EXECUTABLE(pcl_ground_based_rgbd_people_detector COMPONENT ${SUBSYS_NAME} SOURCES apps/main_ground_based_people_detection.cpp BUNDLE)

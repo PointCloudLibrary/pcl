@@ -39,13 +39,13 @@
 
 
 #include <pcl/io/pcd_io.h>
+#include <pcl/common/pcl_filesystem.h>
 #include <pcl/console/print.h>
 #include <pcl/console/parse.h>
 #include <pcl/console/time.h>
 #include <pcl/filters/filter.h> // for removeNaNFromPointCloud
 
 #include <pcl/segmentation/unary_classifier.h>
-#include <boost/filesystem.hpp> // for path, exists, ...
 
 using namespace pcl;
 using namespace pcl::io;
@@ -76,15 +76,15 @@ printHelp (int, char **argv)
 
 bool
 loadTrainedFeatures (std::vector<FeatureT::Ptr> &out,
-                     const boost::filesystem::path &base_dir)
+                     const pcl_fs::path &base_dir)
 {
-  if (!boost::filesystem::exists (base_dir) && !boost::filesystem::is_directory (base_dir))
+  if (!pcl_fs::exists (base_dir) && !pcl_fs::is_directory (base_dir))
     return false;
 
-  for (boost::filesystem::directory_iterator it (base_dir); it != boost::filesystem::directory_iterator (); ++it)
+  for (pcl_fs::directory_iterator it (base_dir); it != pcl_fs::directory_iterator (); ++it)
   {    
-    if (!boost::filesystem::is_directory (it->status ()) &&
-        boost::filesystem::extension (it->path ()) == ".pcd")
+    if (!pcl_fs::is_directory (it->status ()) &&
+        it->path ().extension ().string () == ".pcd")
     {   
       const std::string path = it->path ().string ();
 

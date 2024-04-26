@@ -12,6 +12,7 @@
 #include "morton.hpp"
 #include <assert.h>
 
+#include <cstdint>
 #include <limits>
 #include <tuple>
 #include <bitset>

@@ -56,7 +56,13 @@ pcl::StatisticalOutlierRemoval<PointT>::applyFilterIndices (Indices &indices)
     else
       searcher_.reset (new pcl::search::KdTree<PointT> (false));
   }
-  searcher_->setInputCloud (input_);
+  if (!searcher_->setInputCloud (input_))
+  {
+    PCL_ERROR ("[pcl::%s::applyFilter] Error when initializing search method!\n", getClassName ().c_str ());
+    indices.clear ();
+    removed_indices_->clear ();
+    return;
+  }
 
   // The arrays to be used
   const int searcher_k = mean_k_ + 1;  // Find one more, since results include the query point.
@@ -87,11 +93,11 @@ pcl::StatisticalOutlierRemoval<PointT>::applyFilterIndices (Indices &indices)
       continue;
     }
 
-    // Calculate the mean distance to its neighbors
+    // Calculate the mean distance to its neighbors.
     double dist_sum = 0.0;
-    for (int k = 1; k < searcher_k; ++k)  // k = 0 is the query point
-      dist_sum += sqrt (nn_dists[k]);
-    distances[iii] = static_cast<float> (dist_sum / mean_k_);
+    for (std::size_t k = 1; k < nn_dists.size(); ++k) // k = 0 is the query point
+      dist_sum += sqrt(nn_dists[k]);
+    distances[iii] = static_cast<float>(dist_sum / (nn_dists.size() - 1));
     valid_distances++;
   }
 

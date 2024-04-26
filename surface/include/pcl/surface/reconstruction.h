@@ -128,7 +128,7 @@ namespace pcl
       using PCLSurfaceBase<PointInT>::getClassName;
 
       /** \brief Constructor. */
-      SurfaceReconstruction () : check_tree_ (true) {}
+      SurfaceReconstruction () = default;
 
       /** \brief Destructor. */
       ~SurfaceReconstruction () override = default;
@@ -153,7 +153,7 @@ namespace pcl
     protected:
       /** \brief A flag specifying whether or not the derived reconstruction
         * algorithm needs the search object \a tree.*/
-      bool check_tree_;
+      bool check_tree_{true};
 
       /** \brief Abstract surface reconstruction method. 
         * \param[out] output the output polygonal mesh 
@@ -197,7 +197,7 @@ namespace pcl
       using PCLSurfaceBase<PointInT>::getClassName;
 
       /** \brief Constructor. */
-      MeshConstruction () : check_tree_ (true) {}
+      MeshConstruction () = default;
 
       /** \brief Destructor. */
       ~MeshConstruction () override = default;
@@ -225,7 +225,7 @@ namespace pcl
     protected:
       /** \brief A flag specifying whether or not the derived reconstruction
         * algorithm needs the search object \a tree.*/
-      bool check_tree_;
+      bool check_tree_{true};
 
       /** \brief Abstract surface reconstruction method. 
         * \param[out] output the output polygonal mesh 

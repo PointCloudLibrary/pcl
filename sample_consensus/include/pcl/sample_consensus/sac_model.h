@@ -47,6 +47,7 @@
 #include <boost/random/mersenne_twister.hpp> // for mt19937
 #include <boost/random/uniform_int.hpp> // for uniform_int
 #include <boost/random/variate_generator.hpp> // for variate_generator
+#include <random>
 
 #include <pcl/memory.h>
 #include <pcl/console/print.h>
@@ -92,7 +93,7 @@ namespace pcl
       {
         // Create a random number generator object
         if (random)
-          rng_alg_.seed (static_cast<unsigned> (std::time(nullptr)));
+          rng_alg_.seed (std::random_device()());
         else
           rng_alg_.seed (12345u);
 
@@ -114,7 +115,7 @@ namespace pcl
         , custom_model_constraints_ ([](auto){return true;})
       {
         if (random)
-          rng_alg_.seed (static_cast<unsigned> (std::time (nullptr)));
+          rng_alg_.seed (std::random_device()());
         else
           rng_alg_.seed (12345u);
 
@@ -143,7 +144,7 @@ namespace pcl
         , custom_model_constraints_ ([](auto){return true;})
       {
         if (random)
-          rng_alg_.seed (static_cast<unsigned> (std::time(nullptr)));
+          rng_alg_.seed (std::random_device()());
         else
           rng_alg_.seed (12345u);
 

@@ -63,11 +63,7 @@ public:
 
   /** \brief Empty constructor. */
   KLDAdaptiveParticleFilterTracker()
-  : ParticleFilterTracker<PointInT, StateT>()
-  , maximum_particle_number_()
-  , epsilon_(0)
-  , delta_(0.99)
-  , bin_size_()
+  : ParticleFilterTracker<PointInT, StateT>(), bin_size_()
   {
     tracker_name_ = "KLDAdaptiveParticleFilterTracker";
   }
@@ -243,14 +239,14 @@ protected:
   resample() override;
 
   /** \brief the maximum number of the particles. */
-  unsigned int maximum_particle_number_;
+  unsigned int maximum_particle_number_{0};
 
   /** \brief error between K-L distance and MLE*/
-  double epsilon_;
+  double epsilon_{0.0};
 
   /** \brief probability of distance between K-L distance and MLE is less than
    * epsilon_*/
-  double delta_;
+  double delta_{0.99};
 
   /** \brief the size of a bin.*/
   StateT bin_size_;

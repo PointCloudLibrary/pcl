@@ -36,18 +36,17 @@
  *  Author: Raphael Favier, Technical University Eindhoven, (r.mysurname <aT> tue.nl)
  */
 
-
-#include <boost/filesystem.hpp>
-
 #include <fstream>
 #include <iostream>
 #include <sstream>
 
+#include <pcl/common/pcl_filesystem.h>
 #include <pcl/common/transforms.h>
 #include <pcl/features/normal_3d.h>
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/surface/texture_mapping.h>
 #include <pcl/io/vtk_lib_io.h>
+#include <pcl/io/ply_io.h>
 
 using namespace pcl;
 
@@ -405,7 +404,7 @@ main (int argc, char** argv)
   // read mesh from plyfile
   PCL_INFO ("\nLoading mesh from file %s...\n", argv[1]);
   pcl::PolygonMesh triangles;
-  pcl::io::loadPolygonFilePLY(argv[1], triangles);
+  pcl::io::loadPLYFile(argv[1], triangles);
 
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
   pcl::fromPCLPointCloud2(triangles.cloud, *cloud);
@@ -431,15 +430,15 @@ main (int argc, char** argv)
   PCL_INFO ("\nLoading textures and camera poses...\n");
   pcl::texture_mapping::CameraVector my_cams;
   
-  const boost::filesystem::path base_dir (".");
+  const pcl_fs::path base_dir (".");
   std::string extension (".txt");
-  for (boost::filesystem::directory_iterator it (base_dir); it != boost::filesystem::directory_iterator (); ++it)
+  for (pcl_fs::directory_iterator it (base_dir); it != pcl_fs::directory_iterator (); ++it)
   {
-    if(boost::filesystem::is_regular_file (it->status ()) && boost::filesystem::extension (it->path ()) == extension)
+    if(pcl_fs::is_regular_file (it->status ()) && it->path ().extension ().string () == extension)
     {
       pcl::TextureMapping<pcl::PointXYZ>::Camera cam;
       readCamPoseFile(it->path ().string (), cam);
-      cam.texture_file = boost::filesystem::basename (it->path ()) + ".png";
+      cam.texture_file = it->path ().stem ().string () + ".png";
       my_cams.push_back (cam);
     }
   }

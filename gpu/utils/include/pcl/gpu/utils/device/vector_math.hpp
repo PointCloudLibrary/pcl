@@ -103,7 +103,7 @@ namespace pcl
 
 
         ////////////////////////////////
-        // tempalted operations vectors 
+        // templated operations vectors 
 
         template<typename T> __device__ __host__ __forceinline__ float norm(const T& val)
         {

@@ -94,7 +94,7 @@ SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::selectSamples(
     // Select a random number
     sample_indices[i] = getRandomIndex(static_cast<int>(cloud.size()) - i);
 
-    // Run trough list of numbers, starting at the lowest, to avoid duplicates
+    // Run through list of numbers, starting at the lowest, to avoid duplicates
     for (int j = 0; j < i; j++) {
       // Move value up if it is higher than previous selections to ensure true
       // randomness

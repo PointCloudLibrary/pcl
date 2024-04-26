@@ -4,7 +4,7 @@
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010-2011, Willow Garage, Inc.
  *
- *  All rights reserved. 
+ *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -81,16 +81,16 @@ namespace pcl
   struct PCL_EXPORTS RegionXY
   {
     /** \brief Constructor. */
-    RegionXY () : x (0), y (0), width (0), height (0) {}
+    RegionXY () = default;
 
     /** \brief x-position of the region. */
-    int x;
+    int x{0};
     /** \brief y-position of the region. */
-    int y;
+    int y{0};
     /** \brief width of the region. */
-    int width;
+    int width{0};
     /** \brief height of the region. */
-    int height;
+    int height{0};
 
     /** \brief Serializes the object to the specified stream.
       * \param[out] stream the stream the object will be serialized to. */
@@ -105,7 +105,7 @@ namespace pcl
 
     /** \brief Deserializes the object from the specified stream.
       * \param[in] stream the stream the object will be deserialized from. */
-    void 
+    void
     deserialize (::std::istream & stream)
     {
       read (stream, x);

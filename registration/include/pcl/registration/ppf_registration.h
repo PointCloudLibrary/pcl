@@ -92,10 +92,8 @@ public:
                                                      static_cast<float>(M_PI),
                    float distance_discretization_step = 0.01f)
   : feature_hash_map_(new FeatureHashMapType)
-  , internals_initialized_(false)
   , angle_discretization_step_(angle_discretization_step)
   , distance_discretization_step_(distance_discretization_step)
-  , max_dist_(-1.0f)
   {}
 
   /** \brief Method that sets the feature cloud to be inserted in the hash map
@@ -155,10 +153,10 @@ public:
 
 private:
   FeatureHashMapTypePtr feature_hash_map_;
-  bool internals_initialized_;
+  bool internals_initialized_{false};
 
   float angle_discretization_step_, distance_discretization_step_;
-  float max_dist_;
+  float max_dist_{-1.0f};
 };
 
 /** \brief Class that registers two point clouds based on their sets of PPFSignatures.
@@ -169,6 +167,7 @@ private:
  *    13-18 June 2010, San Francisco, CA
  *
  * \note This class works in tandem with the PPFEstimation class
+ * \ingroup registration
  *
  * \author Alexandru-Eugen Ichim
  */
@@ -211,8 +210,6 @@ public:
    * default values */
   PPFRegistration()
   : Registration<PointSource, PointTarget>()
-  , scene_reference_point_sampling_rate_(5)
-  , clustering_position_diff_threshold_(0.01f)
   , clustering_rotation_diff_threshold_(20.0f / 180.0f * static_cast<float>(M_PI))
   {}
 
@@ -322,12 +319,12 @@ private:
   PPFHashMapSearch::Ptr search_method_;
 
   /** \brief parameter for the sampling rate of the scene reference points */
-  uindex_t scene_reference_point_sampling_rate_;
+  uindex_t scene_reference_point_sampling_rate_{5};
 
   /** \brief position and rotation difference thresholds below which two
    * poses are considered to be in the same cluster (for the clustering phase of the
    * algorithm) */
-  float clustering_position_diff_threshold_, clustering_rotation_diff_threshold_;
+  float clustering_position_diff_threshold_{0.01f}, clustering_rotation_diff_threshold_;
 
   /** \brief use a kd-tree with range searches of range max_dist to skip an O(N) pass
    * through the point cloud */

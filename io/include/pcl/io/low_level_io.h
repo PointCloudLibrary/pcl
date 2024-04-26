@@ -181,6 +181,12 @@ namespace pcl
       // All other errors are passed up.
       if (errno != EINVAL)
         return -1;
+#  elif defined(__OpenBSD__)
+      // OpenBSD has neither posix_fallocate nor fallocate
+      if (::ftruncate(fd, length) == 0)
+        return 0;
+      if (errno != EINVAL)
+        return -1;
 #  else
       // Conforming POSIX systems have posix_fallocate.
       const int res = ::posix_fallocate(fd, 0, length);

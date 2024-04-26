@@ -1,4 +1,5 @@
 #include <pcl/test/gtest.h>
+#include <pcl/common/pcl_filesystem.h>
 #include <pcl/point_types.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/io/pcd_grabber.h>
@@ -7,7 +8,7 @@
 #include <string>
 #include <thread>
 #include <vector>
-#include <boost/filesystem.hpp> // for directory_iterator, extension
+
 #include <boost/algorithm/string/case_conv.hpp> // for to_upper_copy
 
 using namespace std::chrono_literals;
@@ -519,10 +520,10 @@ int
   pclzf_dir_ = grabber_sequences + "/pclzf";
   pcd_dir_ = grabber_sequences + "/pcd";
   // Get pcd files
-  boost::filesystem::directory_iterator end_itr;
-  for (boost::filesystem::directory_iterator itr (pcd_dir_); itr != end_itr; ++itr)
+  pcl_fs::directory_iterator end_itr;
+  for (pcl_fs::directory_iterator itr (pcd_dir_); itr != end_itr; ++itr)
   {
-    if (!is_directory (itr->status ()) && boost::algorithm::to_upper_copy (boost::filesystem::extension (itr->path ())) == ".PCD" )
+    if (!is_directory (itr->status ()) && boost::algorithm::to_upper_copy (itr->path ().extension ().string ()) == ".PCD" )
     {
       pcd_files_.push_back (itr->path ().string ());
       std::cout << "added: " << itr->path ().string () << std::endl;

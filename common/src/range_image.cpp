@@ -865,7 +865,6 @@ RangeImage::getOverlap (const RangeImage& other_range_image, const Eigen::Affine
   float max_distance_squared = max_distance*max_distance;
   
 #pragma omp parallel for \
-  default(none) \
   shared(max_distance_squared, other_range_image, pixel_step, relative_transformation, search_radius) \
   schedule(dynamic, 1) \
   reduction(+ : valid_points_counter) \

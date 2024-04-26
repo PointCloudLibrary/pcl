@@ -140,6 +140,12 @@ namespace pcl
         return (std_mul_);
       }
 
+      /** \brief Provide a pointer to the search object.
+        * Calling this is optional. If not called, the search method will be chosen automatically.
+        * \param[in] searcher a pointer to the spatial search object.
+        */
+      inline void
+      setSearchMethod (const SearcherPtr &searcher) { searcher_ = searcher; }
     protected:
       using PCLBase<PointT>::input_;
       using PCLBase<PointT>::indices_;

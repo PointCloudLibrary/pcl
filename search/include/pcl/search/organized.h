@@ -52,10 +52,14 @@ namespace pcl
 {
   namespace search
   {
-    /** \brief OrganizedNeighbor is a class for optimized nearest neighbor search in organized point clouds.
-      * \author Radu B. Rusu, Julius Kammerl, Suat Gedikli, Koen Buys
-      * \ingroup search
-      */
+    /** \brief OrganizedNeighbor is a class for optimized nearest neighbor search in
+     * organized projectable point clouds, for instance from Time-Of-Flight cameras or
+     * stereo cameras. Note that rotating LIDARs may output organized clouds, but are
+     * not projectable via a pinhole camera model into two dimensions and thus will
+     * generally not work with this class.
+     * \author Radu B. Rusu, Julius Kammerl, Suat Gedikli, Koen Buys
+     * \ingroup search
+     */
     template<typename PointT>
     class OrganizedNeighbor : public pcl::search::Search<PointT>
     {
@@ -76,7 +80,7 @@ namespace pcl
 
         /** \brief Constructor
           * \param[in] sorted_results whether the results should be return sorted in ascending order on the distances or not.
-          *        This applies only for radius search, since knn always returns sorted resutls    
+          *        This applies only for radius search, since knn always returns sorted results    
           * \param[in] eps the threshold for the mean-squared-error of the estimation of the projection matrix.
           *            if the MSE is above this value, the point cloud is considered as not from a projective device,
           *            thus organized neighbor search can not be applied on that cloud.
@@ -121,7 +125,7 @@ namespace pcl
           * \param[in] cloud the const boost shared pointer to a PointCloud message
           * \param[in] indices the const boost shared pointer to PointIndices
           */
-        void
+        bool
         setInputCloud (const PointCloudConstPtr& cloud, const IndicesConstPtr &indices = IndicesConstPtr ()) override
         {
           input_ = cloud;
@@ -139,7 +143,7 @@ namespace pcl
           else
             mask_.assign (input_->size (), 1);
 
-          estimateProjectionMatrix ();
+          return estimateProjectionMatrix () && isValid ();
         }
 
         /** \brief Search for all neighbors of query point that are within a given radius.
@@ -160,7 +164,7 @@ namespace pcl
                       unsigned int max_nn = 0) const override;
 
         /** \brief estimated the projection matrix from the input cloud. */
-        void 
+        bool
         estimateProjectionMatrix ();
 
          /** \brief Search for the k-nearest neighbors for a given query point.

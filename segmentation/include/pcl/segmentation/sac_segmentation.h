@@ -81,25 +81,9 @@ namespace pcl
       /** \brief Empty constructor. 
         * \param[in] random if true set the random seed to the current time, else set to 12345 (default: false)
         */
-      SACSegmentation (bool random = false) 
-        : model_ ()
-        , sac_ ()
-        , model_type_ (-1)
-        , method_type_ (0)
-        , threshold_ (0)
-        , optimize_coefficients_ (true)
-        , radius_min_ (-std::numeric_limits<double>::max ())
-        , radius_max_ (std::numeric_limits<double>::max ())
-        , samples_radius_ (0.0)
-        , samples_radius_search_ ()
-        , eps_angle_ (0.0)
-        , axis_ (Eigen::Vector3f::Zero ())
-        , max_iterations_ (50)
-        , threads_ (-1)
-        , probability_ (0.99)
-        , random_ (random)
-      {
-      }
+      SACSegmentation(bool random = false)
+      : random_(random)
+      {}
 
       /** \brief Empty destructor. */
       ~SACSegmentation () override = default;
@@ -264,46 +248,46 @@ namespace pcl
       initSAC (const int method_type);
 
       /** \brief The model that needs to be segmented. */
-      SampleConsensusModelPtr model_;
+      SampleConsensusModelPtr model_{nullptr};
 
       /** \brief The sample consensus segmentation method. */
-      SampleConsensusPtr sac_;
+      SampleConsensusPtr sac_{nullptr};
 
       /** \brief The type of model to use (user given parameter). */
-      int model_type_;
+      int model_type_{-1};
 
       /** \brief The type of sample consensus method to use (user given parameter). */
-      int method_type_;
+      int method_type_{0};
 
       /** \brief Distance to the model threshold (user given parameter). */
-      double threshold_;
+      double threshold_{0.0};
 
       /** \brief Set to true if a coefficient refinement is required. */
-      bool optimize_coefficients_;
+      bool optimize_coefficients_{true};
 
       /** \brief The minimum and maximum radius limits for the model. Applicable to all models that estimate a radius. */
-      double radius_min_, radius_max_;
+      double radius_min_{-std::numeric_limits<double>::max()}, radius_max_{std::numeric_limits<double>::max()};
 
       /** \brief The maximum distance of subsequent samples from the first (radius search) */
-      double samples_radius_;
+      double samples_radius_{0.0};
 
       /** \brief The search object for picking subsequent samples using radius search */
-      SearchPtr samples_radius_search_;
+      SearchPtr samples_radius_search_{nullptr};
 
       /** \brief The maximum allowed difference between the model normal and the given axis. */
-      double eps_angle_;
+      double eps_angle_{0.0};
 
       /** \brief The axis along which we need to search for a model perpendicular to. */
-      Eigen::Vector3f axis_;
+      Eigen::Vector3f axis_{Eigen::Vector3f::Zero()};
 
       /** \brief Maximum number of iterations before giving up (user given parameter). */
-      int max_iterations_;
+      int max_iterations_{50};
 
       /** \brief The number of threads the scheduler should use, or a negative number if no parallelization is wanted. */
-      int threads_;
+      int threads_{-1};
 
       /** \brief Desired probability of choosing at least one sample free from outliers (user given parameter). */
-      double probability_;
+      double probability_{0.99};
 
       /** \brief Set to true if we need a random seed. */
       bool random_;
@@ -349,11 +333,6 @@ namespace pcl
         */
       SACSegmentationFromNormals (bool random = false) 
         : SACSegmentation<PointT> (random)
-        , normals_ ()
-        , distance_weight_ (0.1)
-        , distance_from_origin_ (0)
-        , min_angle_ (0.0)
-        , max_angle_ (M_PI_2)
       {};
 
       /** \brief Provide a pointer to the input dataset that contains the point normals of 
@@ -410,19 +389,19 @@ namespace pcl
 
     protected:
       /** \brief A pointer to the input dataset that contains the point normals of the XYZ dataset. */
-      PointCloudNConstPtr normals_;
+      PointCloudNConstPtr normals_{nullptr};
 
       /** \brief The relative weight (between 0 and 1) to give to the angular
         * distance (0 to pi/2) between point normals and the plane normal. 
         */
-      double distance_weight_;
+      double distance_weight_{0.1};
 
       /** \brief The distance from the template plane to the origin. */
-      double distance_from_origin_;
+      double distance_from_origin_{0.0};
 
       /** \brief The minimum and maximum allowed opening angle of valid cone model. */
-      double min_angle_;
-      double max_angle_;
+      double min_angle_{0.0};
+      double max_angle_{M_PI_2};
 
       /** \brief Initialize the Sample Consensus model and set its parameters.
         * \param[in] model_type the type of SAC model that is to be used

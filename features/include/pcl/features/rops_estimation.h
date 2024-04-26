@@ -227,7 +227,7 @@ namespace pcl
   };
 }
 
-#define PCL_INSTANTIATE_ROPSEstimation(InT, OutT) template class pcl::ROPSEstimation<InT, OutT>;
+#define PCL_INSTANTIATE_ROPSEstimation(InT, OutT) template class PCL_EXPORTS pcl::ROPSEstimation<InT, OutT>;
 
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/features/impl/rops_estimation.hpp>

@@ -58,7 +58,7 @@
   ++count; \
   if (now - last >= 1.0) \
 { \
-  std::cout << "Average framerate ("<< _WHAT_ << "): " << double (count)/double (now - last) << " Hz" <<  std::endl; \
+  std::cout << "Average framerate ("<< (_WHAT_) << "): " << double (count)/double (now - last) << " Hz" <<  std::endl; \
   count = 0; \
   last = now; \
 } \
@@ -114,7 +114,6 @@ public:
   OpenNI2Viewer (pcl::io::OpenNI2Grabber& grabber)
     : cloud_viewer_ (new pcl::visualization::PCLVisualizer ("PCL OpenNI2 cloud"))
     , grabber_ (grabber)
-    , rgb_data_ (nullptr), rgb_data_size_ (0)
   {
   }
 
@@ -266,13 +265,13 @@ public:
   pcl::visualization::ImageViewer::Ptr image_viewer_;
 
   pcl::io::OpenNI2Grabber& grabber_;
-  std::mutex cloud_mutex_;
-  std::mutex image_mutex_;
+  std::mutex cloud_mutex_{};
+  std::mutex image_mutex_{};
 
-  CloudConstPtr cloud_;
-  pcl::io::openni2::Image::Ptr image_;
-  unsigned char* rgb_data_;
-  unsigned rgb_data_size_;
+  CloudConstPtr cloud_{nullptr};
+  pcl::io::openni2::Image::Ptr image_{nullptr};
+  unsigned char* rgb_data_{nullptr};
+  unsigned rgb_data_size_{0};
 };
 
 /* ---[ */

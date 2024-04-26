@@ -157,7 +157,7 @@ namespace pcl
           /// nodes and their outgoing internal edges
           std::vector<capacitated_edge> nodes_;
           /// current flow value (includes constant)
-          double flow_value_;
+          double flow_value_{0.0};
           /// identifies which side of the cut a node falls
           std::vector<unsigned char> cut_;
 
@@ -256,12 +256,9 @@ namespace pcl
       class GaussianFitter
       {
         public:
-        GaussianFitter (float epsilon = 0.0001)
-          : sum_ (Eigen::Vector3f::Zero ())
-          , accumulator_ (Eigen::Matrix3f::Zero ())
-          , count_ (0)
-          , epsilon_ (epsilon)
-        { }
+        GaussianFitter (float epsilon = 0.0001f)
+          : epsilon_ (epsilon)
+        {}
 
         /// Add a color sample
         void
@@ -281,11 +278,11 @@ namespace pcl
 
         private:
         /// sum of r,g, and b
-        Eigen::Vector3f sum_;
+        Eigen::Vector3f sum_{Eigen::Vector3f::Zero ()};
         /// matrix of products (i.e. r*r, r*g, r*b), some values are duplicated.
-        Eigen::Matrix3f accumulator_;
+        Eigen::Matrix3f accumulator_{Eigen::Matrix3f::Zero ()};
         /// count of color samples added to the gaussian
-        std::uint32_t count_;
+        std::uint32_t count_{0};
         /// small value to add to covariance matrix diagonal to avoid singular values
         float epsilon_;
         PCL_MAKE_ALIGNED_OPERATOR_NEW
@@ -329,12 +326,8 @@ namespace pcl
       using PCLBase<PointT>::fake_indices_;
 
       /// Constructor
-      GrabCut (std::uint32_t K = 5, float lambda = 50.f)
-        : K_ (K)
-        , lambda_ (lambda)
-        , nb_neighbours_ (9)
-        , initialized_ (false)
-      {}
+      GrabCut(std::uint32_t K = 5, float lambda = 50.f) : K_(K), lambda_(lambda) {}
+
       /// Destructor
       ~GrabCut () override = default;
       // /// Set input cloud
@@ -399,12 +392,12 @@ namespace pcl
       // Storage for N-link weights, each pixel stores links to nb_neighbours
       struct NLinks
       {
-        NLinks () : nb_links (0), indices (0), dists (0), weights (0) {}
+        NLinks () = default;
 
-        int nb_links;
-        Indices indices;
-        std::vector<float> dists;
-        std::vector<float> weights;
+        int nb_links{0};
+        Indices indices{};
+        std::vector<float> dists{};
+        std::vector<float> weights{};
       };
       bool
       initCompute ();
@@ -445,39 +438,39 @@ namespace pcl
       inline bool
       isSource (vertex_descriptor v) { return (graph_.inSourceTree (v)); }
       /// image width
-      std::uint32_t width_;
+      std::uint32_t width_{0};
       /// image height
-      std::uint32_t height_;
+      std::uint32_t height_{0};
       // Variables used in formulas from the paper.
       /// Number of GMM components
       std::uint32_t K_;
       /// lambda = 50. This value was suggested the GrabCut paper.
       float lambda_;
       /// beta = 1/2 * average of the squared color distances between all pairs of 8-neighboring pixels.
-      float beta_;
+      float beta_{0.0f};
       /// L = a large value to force a pixel to be foreground or background
-      float L_;
+      float L_{0.0f};
       /// Pointer to the spatial search object.
-      KdTreePtr tree_;
+      KdTreePtr tree_{nullptr};
       /// Number of neighbours
-      int nb_neighbours_;
+      int nb_neighbours_{9};
       /// is segmentation initialized
-      bool initialized_;
+      bool initialized_{false};
       /// Precomputed N-link weights
-      std::vector<NLinks> n_links_;
+      std::vector<NLinks> n_links_{};
       /// Converted input
       segmentation::grabcut::Image::Ptr image_;
-      std::vector<segmentation::grabcut::TrimapValue> trimap_;
-      std::vector<std::size_t> GMM_component_;
-      std::vector<segmentation::grabcut::SegmentationValue> hard_segmentation_;
+      std::vector<segmentation::grabcut::TrimapValue> trimap_{};
+      std::vector<std::size_t> GMM_component_{};
+      std::vector<segmentation::grabcut::SegmentationValue> hard_segmentation_{};
       // Not yet implemented (this would be interpreted as alpha)
-      std::vector<float> soft_segmentation_;
+      std::vector<float> soft_segmentation_{};
       segmentation::grabcut::GMM background_GMM_, foreground_GMM_;
       // Graph part
       /// Graph for Graphcut
       pcl::segmentation::grabcut::BoykovKolmogorov graph_;
       /// Graph nodes
-      std::vector<vertex_descriptor> graph_nodes_;
+      std::vector<vertex_descriptor> graph_nodes_{};
   };
 }
 

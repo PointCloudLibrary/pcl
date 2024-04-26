@@ -258,7 +258,7 @@ namespace pcl
         float pair_width_;
         float voxel_size_;
         float max_coplanarity_angle_;
-        bool ignore_coplanar_opps_;
+        bool ignore_coplanar_opps_{true};
 
         std::map<std::string,Model*> models_;
         HashTable hash_table_;

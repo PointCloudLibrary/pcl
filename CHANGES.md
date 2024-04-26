@@ -1,5 +1,203 @@
 # ChangeList
 
+## = 1.14.1 (01 May 2024) =
+
+### Notable changes
+
+**New features** *added to PCL*
+
+* **[cmake]** Make Boost filesystem optional for C++17 [[#5937](https://github.com/PointCloudLibrary/pcl/pull/5937)]
+* **[common]** Enhance toPCLPointCloud2 to remove padding on request [[#5913](https://github.com/PointCloudLibrary/pcl/pull/5913)]
+* **[io]** Enable writing data in binary PLY format to std::ostream [[#5975](https://github.com/PointCloudLibrary/pcl/pull/5975)]
+
+### Changes grouped by module
+
+#### CMake:
+
+* Switch latest Ubuntu CI to C++17 [[#5931](https://github.com/PointCloudLibrary/pcl/pull/5931)]
+* **[new feature]** Make Boost filesystem optional for C++17 [[#5937](https://github.com/PointCloudLibrary/pcl/pull/5937)]
+* Add OpenGL_GLU as external dependency. [[#5963](https://github.com/PointCloudLibrary/pcl/pull/5963)]
+* Preparation for default hidden visibility on gcc [[#5970](https://github.com/PointCloudLibrary/pcl/pull/5970)]
+* Cmake cuda find_package cuda is deprecated. [[#5953](https://github.com/PointCloudLibrary/pcl/pull/5953)]
+* fix build with CUDA [[#5976](https://github.com/PointCloudLibrary/pcl/pull/5976)]
+* Enable compatibility with Boost 1.85.0 [[#6014](https://github.com/PointCloudLibrary/pcl/pull/6014)]
+
+#### libpcl_common:
+
+* Rename variables with reserved names (PointXYZLAB) [[#5951](https://github.com/PointCloudLibrary/pcl/pull/5951)]
+* **[new feature]** Enhance toPCLPointCloud2 to remove padding on request [[#5913](https://github.com/PointCloudLibrary/pcl/pull/5913)]
+* Fix behaviour of eigen33 function if smallest eigenvalue is not unique [[#5956](https://github.com/PointCloudLibrary/pcl/pull/5956)]
+* Add option to choose boost filesystem over std filesystem [[#6005](https://github.com/PointCloudLibrary/pcl/pull/6005)]
+
+#### libpcl_filters:
+
+* Fix Bug in NormalSpaceSampling::findBin() [[#5936](https://github.com/PointCloudLibrary/pcl/pull/5936)]
+* VoxelGridOcclusionEstimation should always round down to go from coordinates to voxel indices. [[#5942](https://github.com/PointCloudLibrary/pcl/pull/5942)]
+* StatisticalOutlierRemoval: fix potential container overflow read [[#5980](https://github.com/PointCloudLibrary/pcl/pull/5980)]
+* fixing ignored `pcl::Indices` in `VoxelGrid` of `PCLPointCloud2` [[#5979](https://github.com/PointCloudLibrary/pcl/pull/5979)]
+
+#### libpcl_gpu:
+
+* Add missing PCL_EXPORTS (economical_download, optimizeModelCoefficients, vtkRenderWindowInteractorFixNew) [[#5926](https://github.com/PointCloudLibrary/pcl/pull/5926)]
+
+#### libpcl_io:
+
+* Real Sense 2 grabber stream fix [[#5912](https://github.com/PointCloudLibrary/pcl/pull/5912)]
+* Improve documentation in vtk_lib_io [[#5955](https://github.com/PointCloudLibrary/pcl/pull/5955)]
+* Add special implementation for raw_fallocate for OpenBSD [[#5957](https://github.com/PointCloudLibrary/pcl/pull/5957)]
+* Fix missing include in ply_parser.h (#5962) [[#5964](https://github.com/PointCloudLibrary/pcl/pull/5964)]
+* **[new feature]** Enable writing data in binary PLY format to std::ostream [[#5975](https://github.com/PointCloudLibrary/pcl/pull/5975)]
+* OBJReader: fix possible out-of-bounds access [[#5988](https://github.com/PointCloudLibrary/pcl/pull/5988)]
+* ImageGrabber: Fix potential index out of bounds [[#6016](https://github.com/PointCloudLibrary/pcl/pull/6016)]
+
+#### libpcl_registration:
+
+* NDT: allow access to target cloud distribution [[#5969](https://github.com/PointCloudLibrary/pcl/pull/5969)]
+* Optimize Eigen block operations [[#5974](https://github.com/PointCloudLibrary/pcl/pull/5974)]
+
+#### libpcl_sample_consensus:
+
+* Add missing PCL_EXPORTS (economical_download, optimizeModelCoefficients, vtkRenderWindowInteractorFixNew) [[#5926](https://github.com/PointCloudLibrary/pcl/pull/5926)]
+
+#### libpcl_surface:
+
+* Add `pcl::PointXYZLNormal` to GP3 PCL_INSTANTIATE (#5981) [[#5983](https://github.com/PointCloudLibrary/pcl/pull/5983)]
+
+#### libpcl_visualization:
+
+* Add missing PCL_EXPORTS (economical_download, optimizeModelCoefficients, vtkRenderWindowInteractorFixNew) [[#5926](https://github.com/PointCloudLibrary/pcl/pull/5926)]
+* Add missing pragma once in qvtk_compatibility.h [[#5943](https://github.com/PointCloudLibrary/pcl/pull/5943)]
+* fixed setShapeRenderingProperties(PCL_VISUALIZER_FONT_SIZE) [[#5993](https://github.com/PointCloudLibrary/pcl/pull/5993)]
+* fix addPolygon and addLine return value error [[#5996](https://github.com/PointCloudLibrary/pcl/pull/5996)]
+
+#### CI:
+
+* Switch latest Ubuntu CI to C++17 [[#5931](https://github.com/PointCloudLibrary/pcl/pull/5931)]
+* Fix ubuntu-variety CI and update compilers [[#5990](https://github.com/PointCloudLibrary/pcl/pull/5990)]
+
+## = 1.14.0 (03 January 2024) =
+
+### Notable changes
+
+**New features** *added to PCL*
+
+* **[registration]** GICP: add Newton optimizer [[#5825](https://github.com/PointCloudLibrary/pcl/pull/5825)]
+
+**Deprecation** *of public APIs, scheduled to be removed after two minor releases*
+
+* **[segmentation]** Deprecate CrfNormalSegmentation [[#5795](https://github.com/PointCloudLibrary/pcl/pull/5795)]
+* **[sample_consensus]** Deprecate SampleConsensusModelStick [[#5796](https://github.com/PointCloudLibrary/pcl/pull/5796)]
+
+**Removal** *of the public APIs deprecated in previous releases*
+
+* remove deprecated code for 1.14 release [[#5872](https://github.com/PointCloudLibrary/pcl/pull/5872)]
+
+**Behavior changes** *in classes, apps, or tools*
+
+* **[common]** Fix register macros to match struct definitions [[#5604](https://github.com/PointCloudLibrary/pcl/pull/5604)]
+* **[registration]** ICP: remove possibly inappropriate default setting of rotation convergence threshold when user does not set it. [[#5755](https://github.com/PointCloudLibrary/pcl/pull/5755)]
+* **[surface]** MovingLeastSquares: reduce the number of instantiations to reduce com… [[#5764](https://github.com/PointCloudLibrary/pcl/pull/5764)]
+* **[filters]** Fix behaviour of BoxClipper3D [[#5769](https://github.com/PointCloudLibrary/pcl/pull/5769)]
+* **[surface][cmake]** Prefer system zlib over vendored copy in opennurbs [[#5684](https://github.com/PointCloudLibrary/pcl/pull/5684)]
+
+### Changes grouped by module
+
+#### CMake:
+
+* Move /bigobj flag (Windows/MSVC) [[#5718](https://github.com/PointCloudLibrary/pcl/pull/5718)]
+* Make OpenMP available in downstream projects [[#5744](https://github.com/PointCloudLibrary/pcl/pull/5744)]
+* Eigen: switch to imported modules and NO_MODULE [[#5613](https://github.com/PointCloudLibrary/pcl/pull/5613)]
+* Make Flann optional [[#5772](https://github.com/PointCloudLibrary/pcl/pull/5772)]
+* **[behavior change]** Prefer system zlib over vendored copy in opennurbs [[#5684](https://github.com/PointCloudLibrary/pcl/pull/5684)]
+* fix build with GNU13 and Eigen3.4 [[#5783](https://github.com/PointCloudLibrary/pcl/pull/5783)]
+* Fix Eigen alignment problem when user project is compiled as C++17 or newer [[#5793](https://github.com/PointCloudLibrary/pcl/pull/5793)]
+* Allow compilation with Boost 1.83 [[#5810](https://github.com/PointCloudLibrary/pcl/pull/5810)]
+* Use real ALIAS target for flann to preserve properties on original target. [[#5861](https://github.com/PointCloudLibrary/pcl/pull/5861)]
+
+#### libpcl_common:
+
+* **[behavior change]** Fix register macros to match struct definitions [[#5604](https://github.com/PointCloudLibrary/pcl/pull/5604)]
+* Add computeCentroidAndOBB function [[#5690](https://github.com/PointCloudLibrary/pcl/pull/5690)]
+* Remove unnecessary pseudo-instantiations of checkCoordinateSystem [[#5765](https://github.com/PointCloudLibrary/pcl/pull/5765)]
+
+#### libpcl_features:
+
+* NormalEstimationOMP: use dynamic scheduling for faster computation [[#5775](https://github.com/PointCloudLibrary/pcl/pull/5775)]
+
+#### libpcl_filters:
+
+* **[behavior change]** Fix behaviour of BoxClipper3D [[#5769](https://github.com/PointCloudLibrary/pcl/pull/5769)]
+* Let setInputCloud of search methods indicate success or failure [[#5840](https://github.com/PointCloudLibrary/pcl/pull/5840)]
+* VoxelGridOcclusionEstimation: fix behaviour if sensor origin is inside the voxel grid [[#5867](https://github.com/PointCloudLibrary/pcl/pull/5867)]
+
+#### libpcl_gpu:
+
+* Some improvements to gpu/segmentation [[#5813](https://github.com/PointCloudLibrary/pcl/pull/5813)]
+
+#### libpcl_io:
+
+* Enable writing very large PCD files on Windows [[#5675](https://github.com/PointCloudLibrary/pcl/pull/5675)]
+* Make io more locale invariant [[#5699](https://github.com/PointCloudLibrary/pcl/pull/5699)]
+* Fix reading of origin and orientation from PLY files [[#5766](https://github.com/PointCloudLibrary/pcl/pull/5766)]
+* Add missing cassert include [[#5812](https://github.com/PointCloudLibrary/pcl/pull/5812)]
+* Fix PCD load crashes on empty files [[#5855](https://github.com/PointCloudLibrary/pcl/pull/5855)]
+* Fix freeze in hdl_grabber.cpp [[#5826](https://github.com/PointCloudLibrary/pcl/pull/5826)]
+
+#### libpcl_octree:
+
+* Octree: grow in positive direction instead of negative [[#5653](https://github.com/PointCloudLibrary/pcl/pull/5653)]
+
+#### libpcl_registration:
+
+* **[behavior change]** ICP: remove possibly inappropriate default setting of rotation convergence threshold when user does not set it. [[#5755](https://github.com/PointCloudLibrary/pcl/pull/5755)]
+* Improve PPFRegistration [[#5767](https://github.com/PointCloudLibrary/pcl/pull/5767)]
+* **[new feature]** GICP: add Newton optimizer [[#5825](https://github.com/PointCloudLibrary/pcl/pull/5825)]
+* Add instantiations for ICP and TransformationEstimationSVD [[#5894](https://github.com/PointCloudLibrary/pcl/pull/5894)]
+
+#### libpcl_sample_consensus:
+
+* Improve optimizeModelCoefficients for cone, cylinder, sphere models [[#5790](https://github.com/PointCloudLibrary/pcl/pull/5790)]
+* **[deprecation]** Deprecate SampleConsensusModelStick [[#5796](https://github.com/PointCloudLibrary/pcl/pull/5796)]
+* sac_model_cylinder: fix bug in projectPointToCylinder function [[#5821](https://github.com/PointCloudLibrary/pcl/pull/5821)]
+* Replace std::time with std::random_device as seed for random number generator [[#5824](https://github.com/PointCloudLibrary/pcl/pull/5824)]
+* MSAC and RMSAC: fix check array distances empty [[#5849](https://github.com/PointCloudLibrary/pcl/pull/5849)]
+
+#### libpcl_search:
+
+* OrganizedNeighbor: add additional check to make sure the cloud is sui… [[#5729](https://github.com/PointCloudLibrary/pcl/pull/5729)]
+* Modify FlannSearch to return Indices of Point Cloud (issue #5774) [[#5780](https://github.com/PointCloudLibrary/pcl/pull/5780)]
+* Let setInputCloud of search methods indicate success or failure [[#5840](https://github.com/PointCloudLibrary/pcl/pull/5840)]
+
+#### libpcl_segmentation:
+
+* ApproximateProgressiveMorphologicalFilter: check for finite-ness [[#5756](https://github.com/PointCloudLibrary/pcl/pull/5756)]
+* **[deprecation]** Deprecate CrfNormalSegmentation [[#5795](https://github.com/PointCloudLibrary/pcl/pull/5795)]
+
+#### libpcl_surface:
+
+* ConvexHull verbose info on stdout enabled only by pcl::console::L_DEBUG [[#5689](https://github.com/PointCloudLibrary/pcl/pull/5689)]
+* **[behavior change]** MovingLeastSquares: reduce the number of instantiations to reduce com… [[#5764](https://github.com/PointCloudLibrary/pcl/pull/5764)]
+* **[behavior change]** Prefer system zlib over vendored copy in opennurbs [[#5684](https://github.com/PointCloudLibrary/pcl/pull/5684)]
+* Fix memory leak bug of poisson reconstruction [[#5832](https://github.com/PointCloudLibrary/pcl/pull/5832)]
+* Speed up nurbs surface fitting [[#5873](https://github.com/PointCloudLibrary/pcl/pull/5873)]
+
+#### libpcl_visualization:
+
+* Improve spinOnce documentation [[#5716](https://github.com/PointCloudLibrary/pcl/pull/5716)]
+
+#### PCL Apps:
+
+* Add missing includes in cloud composer app [[#5777](https://github.com/PointCloudLibrary/pcl/pull/5777)]
+
+#### PCL Docs:
+
+* Add readthedocs config files [[#5878](https://github.com/PointCloudLibrary/pcl/pull/5878)]
+
+#### CI:
+
+* **[new feature][removal]** Remove 18.04 as its EOL. [[#5799](https://github.com/PointCloudLibrary/pcl/pull/5799)]
+* Use new windows images for CI [[#5892](https://github.com/PointCloudLibrary/pcl/pull/5892)]
+
 ## = 1.13.1 (10 May 2023) =
 
 ### Notable changes

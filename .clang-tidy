@@ -1,6 +1,8 @@
 ---
 Checks: >
     -*,
+    bugprone-copy-constructor-init,
+    bugprone-macro-parentheses,
     cppcoreguidelines-pro-type-cstyle-cast,
     cppcoreguidelines-pro-type-static-cast-downcast,
     google-readability-casting,
@@ -12,6 +14,8 @@ Checks: >
     modernize-return-braced-init-list,
     modernize-shrink-to-fit,
     modernize-use-auto,
+    modernize-use-bool-literals,
+    modernize-use-default-member-init,
     modernize-use-emplace,
     modernize-use-equals-default,
     modernize-use-equals-delete,

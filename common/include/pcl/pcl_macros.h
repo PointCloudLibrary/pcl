@@ -82,7 +82,7 @@
 // MSVC < 2019 have issues:
 // * can't short-circuiting logic in macros
 // * don't define standard macros
-// => this leads to annyoing C4067 warnings (see https://developercommunity.visualstudio.com/content/problem/327796/-has-cpp-attribute-emits-warning-is-wrong-highligh.html)
+// => this leads to annoying C4067 warnings (see https://developercommunity.visualstudio.com/content/problem/327796/-has-cpp-attribute-emits-warning-is-wrong-highligh.html)
 #if defined(_MSC_VER)
   // nvcc on msvc can't work with [[deprecated]]
   #if !defined(__CUDACC__)
@@ -120,7 +120,7 @@
  * \brief A handy way to inform the user of the removal deadline
  */
 #define _PCL_PREPARE_REMOVAL_MESSAGE(Major, Minor, Msg)                                 \
-  Msg " (It will be removed in PCL " BOOST_PP_STRINGIZE(Major.Minor) ")"
+  Msg " (It will be removed in PCL " BOOST_PP_STRINGIZE((Major).Minor) ")"
 
 /**
  * \brief Tests for Minor < PCL_MINOR_VERSION
@@ -294,18 +294,18 @@ pcl_round (float number)
 #endif
 
 #define FIXED(s) \
-  std::fixed << s << std::resetiosflags(std::ios_base::fixed)
+  std::fixed << (s) << std::resetiosflags(std::ios_base::fixed)
 
 #ifndef ERASE_STRUCT
-#define ERASE_STRUCT(var) memset(&var, 0, sizeof(var))
+#define ERASE_STRUCT(var) memset(&(var), 0, sizeof(var))
 #endif
 
 #ifndef ERASE_ARRAY
-#define ERASE_ARRAY(var, size) memset(var, 0, size*sizeof(*var))
+#define ERASE_ARRAY(var, size) memset(var, 0, (size)*sizeof(*(var)))
 #endif
 
 #ifndef SET_ARRAY
-#define SET_ARRAY(var, value, size) { for (decltype(size) i = 0; i < size; ++i) var[i]=value; }
+#define SET_ARRAY(var, value, size) { for (decltype(size) i = 0; i < (size); ++i) (var)[i]=value; }
 #endif
 
 #ifndef PCL_EXTERN_C

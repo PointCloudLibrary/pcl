@@ -47,12 +47,7 @@
 
 using namespace pcl::recognition;
 
-pcl::recognition::ORROctree::ORROctree ()
-: voxel_size_ (-1.0),
-  tree_levels_ (-1),
-  root_ (nullptr)
-{
-}
+pcl::recognition::ORROctree::ORROctree () = default;
 
 //================================================================================================================================================================
 

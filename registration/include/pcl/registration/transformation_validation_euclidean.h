@@ -101,7 +101,6 @@ public:
   : max_range_(std::numeric_limits<double>::max())
   , threshold_(std::numeric_limits<double>::quiet_NaN())
   , tree_(new pcl::search::KdTree<PointTarget>)
-  , force_no_recompute_(false)
   {}
 
   virtual ~TransformationValidationEuclidean() = default;
@@ -229,7 +228,7 @@ protected:
 
   /** \brief A flag which, if set, means the tree operating on the target cloud
    * will never be recomputed*/
-  bool force_no_recompute_;
+  bool force_no_recompute_{false};
 
   /** \brief Internal point representation uses only 3D coordinates for L2 */
   class MyPointRepresentation : public pcl::PointRepresentation<PointTarget> {

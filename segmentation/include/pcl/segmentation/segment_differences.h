@@ -85,9 +85,7 @@ namespace pcl
       using PointIndicesConstPtr = PointIndices::ConstPtr;
 
       /** \brief Empty constructor. */
-      SegmentDifferences () : 
-        tree_ (), target_ (), distance_threshold_ (0)
-      {};
+      SegmentDifferences () = default;
 
       /** \brief Provide a pointer to the target dataset against which we
         * compare the input cloud given in setInputCloud
@@ -139,15 +137,15 @@ namespace pcl
       using BasePCLBase::deinitCompute;
 
       /** \brief A pointer to the spatial search object. */
-      KdTreePtr tree_;
+      KdTreePtr tree_{nullptr};
 
       /** \brief The input target point cloud dataset. */
-      PointCloudConstPtr target_;
+      PointCloudConstPtr target_{nullptr};
 
       /** \brief The distance tolerance (squared) as a measure in the L2
         * Euclidean space between corresponding points. 
         */
-      double distance_threshold_;
+      double distance_threshold_{0.0};
 
       /** \brief Class getName method. */
       virtual std::string 

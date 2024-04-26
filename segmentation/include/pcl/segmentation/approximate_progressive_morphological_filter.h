@@ -144,28 +144,28 @@ namespace pcl
     protected:
 
       /** \brief Maximum window size to be used in filtering ground returns. */
-      int max_window_size_;
+      int max_window_size_{33};
 
       /** \brief Slope value to be used in computing the height threshold. */
-      float slope_;
+      float slope_{0.7f};
 
       /** \brief Maximum height above the parameterized ground surface to be considered a ground return. */
-      float max_distance_;
+      float max_distance_{10.0f};
 
       /** \brief Initial height above the parameterized ground surface to be considered a ground return. */
-      float initial_distance_;
+      float initial_distance_{0.15f};
 
       /** \brief Cell size. */
-      float cell_size_;
+      float cell_size_{1.0f};
 
       /** \brief Base to be used in computing progressive window sizes. */
-      float base_;
+      float base_{2.0f};
 
       /** \brief Exponentially grow window sizes? */
-      bool exponential_;
+      bool exponential_{true};
 
       /** \brief Number of threads to be used. */
-      unsigned int threads_;      
+      unsigned int threads_{0};      
   };
 }
 

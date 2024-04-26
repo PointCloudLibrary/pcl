@@ -49,7 +49,7 @@ namespace tracking {
 /** Pyramidal Kanade Lucas Tomasi tracker.
  * This is an implementation of the Pyramidal Kanade Lucas Tomasi tracker that
  * operates on organized 3D keypoints with color/intensity information (this is
- * the default behaviour but you can alterate it by providing another operator
+ * the default behaviour but you can alternate it by providing another operator
  * as second template argument). It is an affine tracker that iteratively
  * computes the optical flow to find the best guess for a point p at t given its
  * location at t-1. User is advised to respect the Tomasi condition: the

@@ -482,7 +482,7 @@ pcl::visualization::PCLVisualizer::addPolygon (
   const typename pcl::PointCloud<PointT>::ConstPtr &cloud,
   const std::string &id, int viewport)
 {
-  return (!addPolygon<PointT> (cloud, 0.5, 0.5, 0.5, id, viewport));
+  return (addPolygon<PointT> (cloud, 0.5, 0.5, 0.5, id, viewport));
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -603,7 +603,7 @@ pcl::visualization::PCLVisualizer::addArrow (const P1 &pt1, const P2 &pt2,
 template <typename P1, typename P2> bool
 pcl::visualization::PCLVisualizer::addLine (const P1 &pt1, const P2 &pt2, const std::string &id, int viewport)
 {
-  return (!addLine (pt1, pt2, 0.5, 0.5, 0.5, id, viewport));
+  return (addLine (pt1, pt2, 0.5, 0.5, 0.5, id, viewport));
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -1249,10 +1249,10 @@ pcl::visualization::PCLVisualizer::addCorrespondences (
 
   Eigen::Affine3f source_transformation;
   source_transformation.linear () = source_points->sensor_orientation_.matrix ();
-  source_transformation.translation () = source_points->sensor_origin_.head (3);
+  source_transformation.translation () = source_points->sensor_origin_.template head<3> ();
   Eigen::Affine3f target_transformation;
   target_transformation.linear () = target_points->sensor_orientation_.matrix ();
-  target_transformation.translation () = target_points->sensor_origin_.head (3);
+  target_transformation.translation () = target_points->sensor_origin_.template head<3> ();
 
   int j = 0;
   // Draw lines between the best corresponding points

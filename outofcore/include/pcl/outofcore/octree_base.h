@@ -63,6 +63,7 @@
 #include <pcl/PCLPointCloud2.h>
 
 #include <shared_mutex>
+#include <list>
 
 namespace pcl
 {
@@ -93,7 +94,7 @@ namespace pcl
      *  recursively in this state. This class provides an the interface
      *  for: 
      *               -# Point/Region insertion methods 
-     *               -# Frustrum/box/region queries
+     *               -# Frustum/box/region queries
      *               -# Parameterization of resolution, container type, etc...
      *
      *  For lower-level node access, there is a Depth-First iterator
@@ -294,7 +295,7 @@ namespace pcl
         std::uint64_t
         addDataToLeaf_and_genLOD (AlignedPointTVector &p);
 
-        // Frustrum/Box/Region REQUESTS/QUERIES: DB Accessors
+        // Frustum/Box/Region REQUESTS/QUERIES: DB Accessors
         // -----------------------------------------------------------------------
         void
         queryFrustum (const double *planes, std::list<std::string>& file_names) const;
@@ -347,7 +348,7 @@ namespace pcl
         
         /** \brief Returns a random subsample of points within the given bounding box at \c query_depth.
          *
-         * \param[in] min The minimum corner of the boudning box to query.
+         * \param[in] min The minimum corner of the bounding box to query.
          * \param[out] max The maximum corner of the bounding box to query.
          * \param[in] query_depth The depth in the tree at which to look for the points. Only returns points within the given bounding box at the specified \c query_depth.
          * \param percent

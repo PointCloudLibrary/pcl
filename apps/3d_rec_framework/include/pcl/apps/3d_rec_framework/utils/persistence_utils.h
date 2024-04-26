@@ -1,7 +1,7 @@
+#include <pcl/common/pcl_filesystem.h>
 #include <pcl/io/pcd_io.h>
 
 #include <boost/algorithm/string.hpp>
-#include <boost/filesystem.hpp>
 
 #include <fstream>
 

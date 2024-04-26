@@ -40,8 +40,8 @@
 
 #pragma once
 
-#include <pcl/PolygonMesh.h>
 #include <pcl/conversions.h>
+#include <pcl/PolygonMesh.h>
 
 namespace pcl {
 namespace geometry {

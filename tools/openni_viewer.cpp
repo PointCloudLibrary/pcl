@@ -56,7 +56,7 @@ do \
     ++count; \
     if (now - last >= 1.0) \
     { \
-      std::cout << "Average framerate("<< _WHAT_ << "): " << double(count)/double(now - last) << " Hz" <<  std::endl; \
+      std::cout << "Average framerate("<< (_WHAT_) << "): " << double(count)/double(now - last) << " Hz" <<  std::endl; \
       count = 0; \
       last = now; \
     } \
@@ -109,12 +109,10 @@ class OpenNIViewer
     using Cloud = pcl::PointCloud<PointType>;
     using CloudConstPtr = typename Cloud::ConstPtr;
 
-    OpenNIViewer (pcl::Grabber& grabber)
-      : cloud_viewer_ (new pcl::visualization::PCLVisualizer ("PCL OpenNI cloud"))
-      , grabber_ (grabber)
-      , rgb_data_ (nullptr), rgb_data_size_ (0)
-    {
-    }
+    OpenNIViewer(pcl::Grabber& grabber)
+    : cloud_viewer_(new pcl::visualization::PCLVisualizer("PCL OpenNI cloud"))
+    , grabber_(grabber)
+    {}
 
     void
     cloud_callback (const CloudConstPtr& cloud)
@@ -263,8 +261,8 @@ class OpenNIViewer
     
     CloudConstPtr cloud_;
     openni_wrapper::Image::Ptr image_;
-    unsigned char* rgb_data_;
-    unsigned rgb_data_size_;
+    unsigned char* rgb_data_{nullptr};
+    unsigned rgb_data_size_{0};
 };
 
 // Create the PCLVisualizer object

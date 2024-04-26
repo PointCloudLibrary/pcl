@@ -19,7 +19,7 @@ run(pcl::RFFaceDetectorTrainer& fdrf, bool heat_map = false, bool show_votes = f
   OpenNIFrameSource::OpenNIFrameSource camera;
   OpenNIFrameSource::PointCloudPtr scene_vis;
 
-  pcl::visualization::PCLVisualizer vis("Face dection");
+  pcl::visualization::PCLVisualizer vis("Face detection");
   vis.addCoordinateSystem(0.1, "global");
 
   // keyboard callback to stop getting frames and finalize application

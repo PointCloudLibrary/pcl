@@ -253,7 +253,7 @@ private:
   void
   drawText();
 
-  /** \brief Actual implementeation of startGrabber (needed so it can be run in a
+  /** \brief Actual implementation of startGrabber (needed so it can be run in a
    * different thread and doesn't block the application when starting up). */
   void
   startGrabberImpl();

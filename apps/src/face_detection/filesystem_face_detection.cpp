@@ -5,6 +5,7 @@
  *      Author: Aitor Aldoma
  */
 
+#include <pcl/common/pcl_filesystem.h>
 #include <pcl/console/parse.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/recognition/face_detection/rf_face_detector_trainer.h>
@@ -12,10 +13,6 @@
 // clang-format off
 #include <pcl/apps/face_detection/face_detection_apps_utils.h>
 // clang-format on
-
-#include <boost/filesystem.hpp>
-
-namespace bf = boost::filesystem;
 
 bool SHOW_GT = false;
 bool VIDEO = false;
@@ -101,7 +98,7 @@ run(pcl::RFFaceDetectorTrainer& fdrf,
     bool result = face_detection_apps_utils::readMatrixFromFile(pose_file, pose_mat);
 
     if (result) {
-      Eigen::Vector3f ea = pose_mat.block<3, 3>(0, 0).eulerAngles(0, 1, 2);
+      Eigen::Vector3f ea = pose_mat.topLeftCorner<3, 3>().eulerAngles(0, 1, 2);
       Eigen::Vector3f trans_vector =
           Eigen::Vector3f(pose_mat(0, 3), pose_mat(1, 3), pose_mat(2, 3));
       std::cout << ea << std::endl;
@@ -130,7 +127,7 @@ run(pcl::RFFaceDetectorTrainer& fdrf,
                  Eigen::AngleAxisf(ea[1], Eigen::Vector3f::UnitY()) *
                  Eigen::AngleAxisf(ea[2], Eigen::Vector3f::UnitZ());
 
-      // matrixxx = pose_mat.block<3,3>(0,0);
+      // matrixxx = pose_mat.topLeftCorner<3,3>();
       vec = matrixxx * vec;
 
       cylinder_coeff.values[3] = vec[0];
@@ -222,7 +219,7 @@ main(int argc, char** argv)
     // recognize all files in directory...
     std::string start;
     std::string ext = std::string("pcd");
-    bf::path dir = test_directory;
+    pcl_fs::path dir = test_directory;
 
     std::vector<std::string> files;
     face_detection_apps_utils::getFilesInDirectory(dir, start, files, ext);

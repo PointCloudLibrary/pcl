@@ -111,7 +111,7 @@ namespace pcl
         PCLVisualizer (const std::string &name = "", const bool create_interactor = true);
 
         /** \brief PCL Visualizer constructor. It looks through the passed argv arguments to find the "-cam *.cam" argument.
-          *        If the search failed, the name for cam file is calculated with boost uuid. If there is no such file, camera is not initilalized.
+          *        If the search failed, the name for cam file is calculated with boost uuid. If there is no such file, camera is not initialized.
           * \param[in] argc
           * \param[in] argv
           * \param[in] name the window name (empty by default)
@@ -2070,27 +2070,27 @@ namespace pcl
         {
           static FPSCallback *New () { return (new FPSCallback); }
 
-          FPSCallback () : actor (), pcl_visualizer (), decimated (), last_fps(0.0f) {}
+          FPSCallback () = default;
           FPSCallback (const FPSCallback& src)  = default;
           FPSCallback& operator = (const FPSCallback& src) { actor = src.actor; pcl_visualizer = src.pcl_visualizer; decimated = src.decimated; last_fps = src.last_fps; return (*this); }
 
           void
           Execute (vtkObject*, unsigned long event_id, void*) override;
 
-          vtkTextActor *actor;
-          PCLVisualizer* pcl_visualizer;
-          bool decimated;
-          float last_fps;
+          vtkTextActor *actor{nullptr};
+          PCLVisualizer* pcl_visualizer{nullptr};
+          bool decimated{false};
+          float last_fps{0.0f};
         };
 
         /** \brief The FPSCallback object for the current visualizer. */
         vtkSmartPointer<FPSCallback> update_fps_;
 
         /** \brief Set to false if the interaction loop is running. */
-        bool stopped_;
+        bool stopped_{false};
 
         /** \brief Global timer ID. Used in destructor only. */
-        int timer_id_;
+        int timer_id_{0};
 
         /** \brief Callback object enabling us to leave the main loop, when a timer fires. */
         vtkSmartPointer<ExitMainLoopTimerCallback> exit_main_loop_timer_callback_;

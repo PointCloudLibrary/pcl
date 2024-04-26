@@ -113,8 +113,9 @@ namespace pcl
         /** \brief Pass the input dataset that the search will be performed on.
           * \param[in] cloud a const pointer to the PointCloud data
           * \param[in] indices the point indices subset that is to be used from the cloud
+          * \return True if successful, false if an error occurred, for example because the point cloud is unsuited for the search method.
           */
-        virtual void
+        virtual bool
         setInputCloud (const PointCloudConstPtr& cloud, 
                        const IndicesConstPtr &indices = IndicesConstPtr ());
 
