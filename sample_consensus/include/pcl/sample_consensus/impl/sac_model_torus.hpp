@@ -41,8 +41,10 @@
 #ifndef PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_TORUS_H_
 #define PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_TORUS_H_
 
+// clang-format off
 #include <pcl/sample_consensus/sac_model_torus.h>
 #include <pcl/common/concatenate.h>
+// clang-format on
 
 #include <unsupported/Eigen/NonLinearOptimization> // for LevenbergMarquardt
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -71,15 +73,15 @@ pcl::SampleConsensusModelTorus<PointT, PointNT>::computeModelCoefficients(
 {
 
   // Make sure that the samples are valid
-  if (!isSampleGood (samples))
-  {
-    PCL_ERROR ("[pcl::SampleConsensusModelTorus::computeModelCoefficients] Invalid set of samples given!\n");
+  if (!isSampleGood(samples)) {
+    PCL_ERROR("[pcl::SampleConsensusModelTorus::computeModelCoefficients] Invalid set "
+              "of samples given!\n");
     return (false);
   }
 
-  if (!normals_)
-  {
-    PCL_ERROR ("[pcl::SampleConsensusModelTorus::computeModelCoefficients] No input dataset containing normals was given!\n");
+  if (!normals_) {
+    PCL_ERROR("[pcl::SampleConsensusModelTorus::computeModelCoefficients] No input "
+              "dataset containing normals was given!\n");
     return (false);
   }
   // Find axis using:
@@ -97,12 +99,10 @@ pcl::SampleConsensusModelTorus<PointT, PointNT>::computeModelCoefficients(
   Eigen::Vector3f n2 = Eigen::Vector3f((*normals_)[samples[2]].getNormalVector3fMap());
   Eigen::Vector3f n3 = Eigen::Vector3f((*normals_)[samples[3]].getNormalVector3fMap());
 
-
   Eigen::Vector3f p0 = Eigen::Vector3f((*input_)[samples[0]].getVector3fMap());
   Eigen::Vector3f p1 = Eigen::Vector3f((*input_)[samples[1]].getVector3fMap());
   Eigen::Vector3f p2 = Eigen::Vector3f((*input_)[samples[2]].getVector3fMap());
   Eigen::Vector3f p3 = Eigen::Vector3f((*input_)[samples[3]].getVector3fMap());
-
 
   float a01 = crossDot(n0, n1, n2);
   float b01 = crossDot(n0, n1, n3);
@@ -134,12 +134,10 @@ pcl::SampleConsensusModelTorus<PointT, PointNT>::computeModelCoefficients(
 
   float eps = 1e-9;
   // Check for imaginary solutions, or small denominators.
-  if ((_b*_b - 4*_a*_c )< 0 ||
-      std::abs(a0 - b0 * a01) < eps ||
-      std::abs(b01) < eps  ||
-      std::abs(_a) < eps)
-  {
-    PCL_ERROR ("[pcl::SampleConsensusModelTorus::computeModelCoefficients] Can't compute model coefficients with this method!\n");
+  if ((_b * _b - 4 * _a * _c) < 0 || std::abs(a0 - b0 * a01) < eps ||
+      std::abs(b01) < eps || std::abs(_a) < eps) {
+    PCL_ERROR("[pcl::SampleConsensusModelTorus::computeModelCoefficients] Can't "
+              "compute model coefficients with this method!\n");
     return (false);
   }
 
@@ -148,27 +146,26 @@ pcl::SampleConsensusModelTorus<PointT, PointNT>::computeModelCoefficients(
 
   float r_int_stddev_cycle1 = std::numeric_limits<float>::max();
 
-  for (float s : {s0,s1}) {
+  for (float s : {s0, s1}) {
 
     float t1 = s;
-    float t0 = k* t1 + p;
+    float t0 = k * t1 + p;
 
     // Direction vector
     Eigen::Vector3f d = ((p1 + n1 * t1) - (p0 + n0 * t0));
     d.normalize();
     // Flip direction, so that the fisrt element of the direction vector is
     // positive, for consitency.
-    if (d[0] < 0){
+    if (d[0] < 0) {
       d *= -1;
     }
 
-
     // Flip normals if required. Note |d| = 1
     // d
-    //if (n0.dot(d) / n0.norm() < M_PI / 2 ) n0 = -n0;
-    //if (n1.dot(d) / n1.norm() < M_PI / 2 ) n1 = -n1;
-    //if (n2.dot(d) / n2.norm() < M_PI / 2 ) n2 = -n2;
-    //if (n3.dot(d) / n3.norm() < M_PI / 2 ) n3 = -n3;
+    // if (n0.dot(d) / n0.norm() < M_PI / 2 ) n0 = -n0;
+    // if (n1.dot(d) / n1.norm() < M_PI / 2 ) n1 = -n1;
+    // if (n2.dot(d) / n2.norm() < M_PI / 2 ) n2 = -n2;
+    // if (n3.dot(d) / n3.norm() < M_PI / 2 ) n3 = -n3;
 
     // We fit the points to the plane of the torus.
     // Ax + By + Cz + D = 0
@@ -182,24 +179,14 @@ pcl::SampleConsensusModelTorus<PointT, PointNT>::computeModelCoefficients(
     // dz*n_i_z ) * r + D = 0 We can set up a linear least squares system of two
     // variables r and D
     //
-    Eigen::MatrixXf A(4,2);
-    A <<
-         d.dot(n0) ,  1 ,
-         d.dot(n1) ,  1 ,
-         d.dot(n2) ,  1 ,
-         d.dot(n3) ,  1;
+    Eigen::MatrixXf A(4, 2);
+    A << d.dot(n0), 1, d.dot(n1), 1, d.dot(n2), 1, d.dot(n3), 1;
 
-
-    Eigen::Matrix<float, -1, -1> B (4,1);
-    B <<
-        -d.dot(p0),
-        -d.dot(p1),
-        -d.dot(p2),
-        -d.dot(p3);
+    Eigen::Matrix<float, -1, -1> B(4, 1);
+    B << -d.dot(p0), -d.dot(p1), -d.dot(p2), -d.dot(p3);
 
     Eigen::Matrix<float, -1, -1> sol;
-    sol =
-        A.bdcSvd(Eigen::ComputeThinU | Eigen::ComputeThinV).solve(B);
+    sol = A.bdcSvd(Eigen::ComputeThinU | Eigen::ComputeThinV).solve(B);
 
     float r_ext = -sol(0);
     float D = sol(1);
@@ -208,7 +195,7 @@ pcl::SampleConsensusModelTorus<PointT, PointNT>::computeModelCoefficients(
     // We take a random point on the line. We find P_rand + lambda * d belongs in the
     // plane
 
-    Eigen::Vector3f Pany = (p1 + n1*t1);
+    Eigen::Vector3f Pany = (p1 + n1 * t1);
 
     float lambda = (-d.dot(Pany) - D) / d.dot(d);
 
@@ -222,21 +209,21 @@ pcl::SampleConsensusModelTorus<PointT, PointNT>::computeModelCoefficients(
                              (p3 - r_ext * n3 - centroid).squaredNorm()) /
                             4.f);
 
-    float r_int_stddev = std::sqrt((
-                             std::pow(r_int - (p0 - r_ext * n0 - centroid).norm(), 2) +
-                             std::pow(r_int - (p1 - r_ext * n1 - centroid).norm(), 2) +
-                             std::pow(r_int - (p2 - r_ext * n2 - centroid).norm(), 2) +
-                             std::pow(r_int - (p3 - r_ext * n3 - centroid).norm(), 2)
-                             ) /
-                            4.f);
+    float r_int_stddev =
+        std::sqrt((std::pow(r_int - (p0 - r_ext * n0 - centroid).norm(), 2) +
+                   std::pow(r_int - (p1 - r_ext * n1 - centroid).norm(), 2) +
+                   std::pow(r_int - (p2 - r_ext * n2 - centroid).norm(), 2) +
+                   std::pow(r_int - (p3 - r_ext * n3 - centroid).norm(), 2)) /
+                  4.f);
     // We select the minimum stddev cycle
-    if (r_int_stddev < r_int_stddev_cycle1){
+    if (r_int_stddev < r_int_stddev_cycle1) {
       r_int_stddev_cycle1 = r_int_stddev;
-    }else{
+    }
+    else {
       break;
     }
 
-    model_coefficients.resize (model_size_);
+    model_coefficients.resize(model_size_);
     model_coefficients[0] = r_int;
     model_coefficients[1] = r_ext;
 
