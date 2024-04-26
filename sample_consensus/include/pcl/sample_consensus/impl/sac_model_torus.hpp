@@ -132,7 +132,7 @@ pcl::SampleConsensusModelTorus<PointT, PointNT>::computeModelCoefficients(
   float _b = (b01 * p + b0 * k + b1);
   float _c = (b0 * p + b);
 
-  float eps = 1e-9;
+  float eps = 1e-9; //TODO, what is the right way in pcl?
   // Check for imaginary solutions, or small denominators.
   if ((_b * _b - 4 * _a * _c) < 0 || std::abs(a0 - b0 * a01) < eps ||
       std::abs(b01) < eps || std::abs(_a) < eps) {
@@ -144,7 +144,7 @@ pcl::SampleConsensusModelTorus<PointT, PointNT>::computeModelCoefficients(
   float s0 = (-_b + std::sqrt(_b * _b - 4 * _a * _c)) / (2 * _a);
   float s1 = (-_b - std::sqrt(_b * _b - 4 * _a * _c)) / (2 * _a);
 
-  float r_int_stddev_cycle1 = std::numeric_limits<float>::max();
+  float r_maj_stddev_cycle1 = std::numeric_limits<float>::max();
 
   for (float s : {s0, s1}) {
 
@@ -170,7 +170,7 @@ pcl::SampleConsensusModelTorus<PointT, PointNT>::computeModelCoefficients(
     // We fit the points to the plane of the torus.
     // Ax + By + Cz + D = 0
     // We know that all for each point plus its normal
-    // times the external radius will give us a point
+    // times the minor radius will give us a point
     // in that plane
     // Pplane_i = P_i + n_i * r
     // we substitute A,x,B,y,C,z
@@ -188,7 +188,7 @@ pcl::SampleConsensusModelTorus<PointT, PointNT>::computeModelCoefficients(
     Eigen::Matrix<float, -1, -1> sol;
     sol = A.bdcSvd(Eigen::ComputeThinU | Eigen::ComputeThinV).solve(B);
 
-    float r_ext = -sol(0);
+    float r_min = -sol(0);
     float D = sol(1);
 
     // Axis line and plane intersect to find the centroid of the torus
@@ -201,31 +201,31 @@ pcl::SampleConsensusModelTorus<PointT, PointNT>::computeModelCoefficients(
 
     Eigen::Vector3f centroid = Pany + d * lambda;
 
-    // Finally, the internal radius. The least square solution will be
+    // Finally, the major radius. The least square solution will be
     // the average in this case.
-    float r_int = std::sqrt(((p0 - r_ext * n0 - centroid).squaredNorm() +
-                             (p1 - r_ext * n1 - centroid).squaredNorm() +
-                             (p2 - r_ext * n2 - centroid).squaredNorm() +
-                             (p3 - r_ext * n3 - centroid).squaredNorm()) /
+    float r_maj = std::sqrt(((p0 - r_min * n0 - centroid).squaredNorm() +
+                             (p1 - r_min * n1 - centroid).squaredNorm() +
+                             (p2 - r_min * n2 - centroid).squaredNorm() +
+                             (p3 - r_min * n3 - centroid).squaredNorm()) /
                             4.f);
 
-    float r_int_stddev =
-        std::sqrt((std::pow(r_int - (p0 - r_ext * n0 - centroid).norm(), 2) +
-                   std::pow(r_int - (p1 - r_ext * n1 - centroid).norm(), 2) +
-                   std::pow(r_int - (p2 - r_ext * n2 - centroid).norm(), 2) +
-                   std::pow(r_int - (p3 - r_ext * n3 - centroid).norm(), 2)) /
+    float r_maj_stddev =
+        std::sqrt((std::pow(r_maj - (p0 - r_min * n0 - centroid).norm(), 2) +
+                   std::pow(r_maj - (p1 - r_min * n1 - centroid).norm(), 2) +
+                   std::pow(r_maj - (p2 - r_min * n2 - centroid).norm(), 2) +
+                   std::pow(r_maj - (p3 - r_min * n3 - centroid).norm(), 2)) /
                   4.f);
     // We select the minimum stddev cycle
-    if (r_int_stddev < r_int_stddev_cycle1) {
-      r_int_stddev_cycle1 = r_int_stddev;
+    if (r_maj_stddev < r_maj_stddev_cycle1) {
+      r_maj_stddev_cycle1 = r_maj_stddev;
     }
     else {
       break;
     }
 
     model_coefficients.resize(model_size_);
-    model_coefficients[0] = r_int;
-    model_coefficients[1] = r_ext;
+    model_coefficients[0] = r_maj;
+    model_coefficients[1] = r_min;
 
     model_coefficients[2] = centroid[0];
     model_coefficients[3] = centroid[1];
@@ -488,9 +488,22 @@ bool
 pcl::SampleConsensusModelTorus<PointT, PointNT>::isModelValid(
     const Eigen::VectorXf& model_coefficients) const
 {
-  return true;
-  // if (!SampleConsensusModel<PointT, PointNT>::isModelValid(model_coefficients))
-  // return (false);
+  if (!SampleConsensusModel<PointT>::isModelValid (model_coefficients))
+    return (false);
+
+  if (radius_min_ != std::numeric_limits<double>::lowest() && (model_coefficients[3] < radius_min_ || model_coefficients[4] < radius_min_))
+  {
+    PCL_DEBUG ("[pcl::SampleConsensusModelTorus::isModelValid] Major radius OR minor radius of torus is/are too small: should be larger than %g, but are {%g, %g}.\n",
+               radius_min_, model_coefficients[3], model_coefficients[4]);
+    return (false);
+  }
+  if (radius_max_ != std::numeric_limits<double>::max() && (model_coefficients[3] > radius_max_ || model_coefficients[4] > radius_max_))
+  {
+    PCL_DEBUG ("[pcl::SampleConsensusModelTorus::isModelValid] Major radius OR minor radius of torus is/are too big: should be smaller than %g, but are {%g, %g}.\n",
+               radius_max_, model_coefficients[3], model_coefficients[4]);
+    return (false);
+  }
+  return (true);
 }
 
 #define PCL_INSTANTIATE_SampleConsensusModelTorus(PointT, PointNT)                     \

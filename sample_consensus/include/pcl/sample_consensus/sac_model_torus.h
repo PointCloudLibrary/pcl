@@ -66,7 +66,7 @@ optimizeModelCoefficientsTorus(Eigen::VectorXf& coeff,
  *   - \b torus_normal.y  : the Y coordinate of the normal of the torus
  *   - \b torus_normal.z  : the Z coordinate of the normal of the torus
  *
- * \author David Serret, Radu Bogdan Rusu
+ * \author lasdasdas, Radu Bogdan Rusu
  * \ingroup sample_consensus
  */
 template <typename PointT, typename PointNT>
