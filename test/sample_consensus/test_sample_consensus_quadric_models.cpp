@@ -918,6 +918,357 @@ TEST(SampleConsensusModelEllipse3D, RANSAC)
   EXPECT_NEAR(1.0, std::abs(coeff_refined[10]), 1e-3);
 }
 
+// Heavy oclusion, all points on a 30 degree segment on the major radius
+//  and 90 degrees on the minor
+TEST(SampleConsensusModelTorusOclusion, RANSAC)
+{
+
+  srand(0);
+
+  PointCloud<PointXYZ> cloud;
+  PointCloud<Normal> normals;
+
+  cloud.resize(50);
+  normals.resize(50);
+
+  cloud[0].getVector3fMap() << 1.4386461277601734, -1.0569588316537601,
+      3.6109405500068648;
+  cloud[1].getVector3fMap() << 1.5892272151771987, -1.0107131751656608,
+      3.7524801792294786;
+  cloud[2].getVector3fMap() << 0.779450850990528, -1.1095381992814901,
+      2.1362474566704086;
+  cloud[3].getVector3fMap() << 2.2332764042301116, -1.0712898227325813,
+      4.104289150491388;
+  cloud[4].getVector3fMap() << 1.4625240977021328, -1.0262438455563425,
+      3.6408698702774327;
+  cloud[5].getVector3fMap() << 1.107288574597542, -1.038213986002474,
+      3.2111695308737334;
+  cloud[6].getVector3fMap() << 1.634136176426644, -1.0586849054858922,
+      3.7791937450863844;
+  cloud[7].getVector3fMap() << 2.8081039281494284, -1.124052124218725,
+      4.208730485774282;
+  cloud[8].getVector3fMap() << 2.7325382847100004, -1.0968720291167913,
+      4.214374570675481;
+  cloud[9].getVector3fMap() << 1.1897810394404515, -1.0861469920822655,
+      3.3103205876091675;
+  cloud[10].getVector3fMap() << 0.8242772124713484, -1.0935505936537508,
+      2.4973185149793924;
+  cloud[11].getVector3fMap() << 2.9589166075430366, -1.0656763334810868,
+      4.240842449620676;
+  cloud[12].getVector3fMap() << 1.7930324882302902, -1.0629548347911097,
+      3.8893227292858175;
+  cloud[13].getVector3fMap() << 0.7810401372209808, -1.0705732580035723,
+      2.305065186549668;
+  cloud[14].getVector3fMap() << 0.9062603270739178, -1.0815748767074063,
+      2.785726514647834;
+  cloud[15].getVector3fMap() << 1.3832157146170436, -1.0790593653653633,
+      3.546265907749163;
+  cloud[16].getVector3fMap() << 2.040614544849421, -1.0918678466867353,
+      4.015855816881193;
+  cloud[17].getVector3fMap() << 2.274098663746168, -1.0273778393320356,
+      4.128098505334945;
+  cloud[18].getVector3fMap() << 1.2518457008499417, -1.0912889870169762,
+      3.38890936771287;
+  cloud[19].getVector3fMap() << 0.8773148573186607, -1.026298817514791,
+      2.7419351335271855;
+  cloud[20].getVector3fMap() << 2.460972277763233, -1.0874470683716413,
+      4.168209147029958;
+  cloud[21].getVector3fMap() << 2.326091552875379, -1.0983984335719184,
+      4.125546904328003;
+  cloud[22].getVector3fMap() << 2.0996991277329786, -1.0707210059905774,
+      4.050880542671691;
+  cloud[23].getVector3fMap() << 0.95831333743683, -1.061687690479444,
+      2.9269785200505813;
+  cloud[24].getVector3fMap() << 2.0588703194976024, -1.0025516869353353,
+      4.043701622831673;
+  normals[0].getNormalVector3fMap() << -0.6776646502188018, -0.2278353266150415,
+      0.6991864456566977;
+  normals[1].getNormalVector3fMap() << -0.6264981002776666, -0.04285270066264479,
+      0.7782440339600377;
+  normals[2].getNormalVector3fMap() << -0.8972132050327152, -0.4381527971259608,
+      0.05505080458648829;
+  normals[3].getNormalVector3fMap() << -0.32813125795357256, -0.2851592909303272,
+      0.9005631884270638;
+  normals[4].getNormalVector3fMap() << -0.6799645795137096, -0.10497538222537117,
+      0.7256916285402369;
+  normals[5].getNormalVector3fMap() << -0.8324065340358171, -0.15285594400989705,
+      0.5326672718267207;
+  normals[6].getNormalVector3fMap() << -0.5919262688649901, -0.2347396219435707,
+      0.7710516209161101;
+  normals[7].getNormalVector3fMap() << -0.07514704519204393, -0.4962084968749015,
+      0.8649451134193752;
+  normals[8].getNormalVector3fMap() << -0.11054456443635059, -0.387488116467167,
+      0.9152228465626854;
+  normals[9].getNormalVector3fMap() << -0.7604417087668234, -0.34458796832906313,
+      0.5504430394242827;
+  normals[10].getNormalVector3fMap() << -0.9040312337559508, -0.3742023746150035,
+      0.20664005232816324;
+  normals[11].getNormalVector3fMap() << -0.0176869745485768, -0.2627053339243488,
+      0.964713987904713;
+  normals[12].getNormalVector3fMap() << -0.5210086952913671, -0.25181933916444066,
+      0.8155592926658195;
+  normals[13].getNormalVector3fMap() << -0.950388588906301, -0.2822930320142894,
+      0.13066053020277188;
+  normals[14].getNormalVector3fMap() << -0.8850007317473024, -0.32629950682962533,
+      0.3321179559275326;
+  normals[15].getNormalVector3fMap() << -0.6856032449538655, -0.31623746146145426,
+      0.65569967094482;
+  normals[16].getNormalVector3fMap() << -0.3996678191380136, -0.36747138674694285,
+      0.8397799796778576;
+  normals[17].getNormalVector3fMap() << -0.3208968621888316, -0.10951135732814456,
+      0.9407616416784378;
+  normals[18].getNormalVector3fMap() << -0.728898292732006, -0.36515594806790613,
+      0.5791100175640165;
+  normals[19].getNormalVector3fMap() << -0.9387598943114375, -0.1051952700591645,
+      0.3281216481574453;
+  normals[20].getNormalVector3fMap() << -0.22602052518599647, -0.34978827348656716,
+      0.9091550395427244;
+  normals[21].getNormalVector3fMap() << -0.27783106746442193, -0.3935937342876755,
+      0.8762955382067529;
+  normals[22].getNormalVector3fMap() << -0.38553965278262686, -0.2828840239623112,
+      0.878257254521215;
+  normals[23].getNormalVector3fMap() << -0.8823896524250601, -0.24675076191777665,
+      0.4006277109564169;
+  normals[24].getNormalVector3fMap() << -0.4182604905252856, -0.010206747741342384,
+      0.908269775103241;
+
+  // 50% noise
+  //
+  cloud[25].getVector3fMap() << 0.25023241635877147, 0.27654549396527894,
+      1.07955881369387;
+  cloud[26].getVector3fMap() << 1.5449856383148206, -0.46768009897289264,
+      -2.062172100500517;
+  cloud[27].getVector3fMap() << 2.068709384697231, -0.8995244010670893,
+      0.4472750119304405;
+  cloud[28].getVector3fMap() << -1.9703101501142217, 1.1677926799358453,
+      -1.0951161775500093;
+  cloud[29].getVector3fMap() << 1.5128012164196942, -0.3784790741317119,
+      1.9953141538660382;
+  cloud[30].getVector3fMap() << -1.7035274240520712, -0.040343373432154106,
+      -0.13506114362465782;
+  cloud[31].getVector3fMap() << 1.390301434734198, -1.0836155740357354,
+      1.3817400889837255;
+  cloud[32].getVector3fMap() << 0.6973526735174085, 1.4609265623041212,
+      0.3991283042562106;
+  cloud[33].getVector3fMap() << 0.4585644490692351, 1.8056826118986748,
+      1.1908087822224616;
+  cloud[34].getVector3fMap() << -1.899161354377058, -1.2250806902713103,
+      1.5135509588271026;
+  cloud[35].getVector3fMap() << 0.05728241071603746, -1.3140082682155136,
+      -1.6804780212669348;
+  cloud[36].getVector3fMap() << -0.5371089158049953, -0.02542717526439331,
+      -0.6188539490393421;
+  cloud[37].getVector3fMap() << -0.21842672967261145, 0.6528285340670843,
+      1.937369474575887;
+  cloud[38].getVector3fMap() << 1.6906916394191258, 1.6029527944840072,
+      1.3312465637845015;
+  cloud[39].getVector3fMap() << 0.3871457304584722, -0.7014470556575774,
+      -1.3686189094260588;
+  cloud[40].getVector3fMap() << 1.1287360826333366, -1.8859435547052814,
+      -0.1392786225318703;
+  cloud[41].getVector3fMap() << -0.8284092960915028, 1.0112260700590863,
+      -1.1937340633604672;
+  cloud[42].getVector3fMap() << 1.8440270354564277, -0.3703200026464992,
+      -1.5917391524525757;
+  cloud[43].getVector3fMap() << 0.02671922592530418, 1.7827062803768543,
+      0.22852714632858673;
+  cloud[44].getVector3fMap() << -1.5132468082647963, -1.3357890987499987,
+      -1.158617245205414;
+  cloud[45].getVector3fMap() << -1.1450583549521511, 1.45432498632732,
+      -2.095300144813141;
+  cloud[46].getVector3fMap() << 0.18809078359436793, -1.6008222007566066,
+      -1.9699784955663424;
+  cloud[47].getVector3fMap() << -1.1753993948548627, 1.5857927603987902,
+      0.14497327864750886;
+  cloud[48].getVector3fMap() << 1.121788740853686, -0.27095183911320286,
+      -0.12199102154089814;
+  cloud[49].getVector3fMap() << 0.768999145889063, -2.0309651709863434,
+      0.7930530394403963;
+  normals[25].getNormalVector3fMap() << -0.5835940349115277, 0.1757014210775822,
+      0.7928095692201251;
+  normals[26].getNormalVector3fMap() << -0.6960838602866861, -0.42094642891496487,
+      -0.5816110069729798;
+  normals[27].getNormalVector3fMap() << 0.255914777841287, 0.6279839361250196,
+      -0.7349447614966528;
+  normals[28].getNormalVector3fMap() << -0.6075736135140413, 0.1336509980609126,
+      -0.7829378742140479;
+  normals[29].getNormalVector3fMap() << -0.4983181083004855, 0.6669454154651717,
+      -0.5539520518328415;
+  normals[30].getNormalVector3fMap() << -0.7745671302471588, 0.5084406300820161,
+      -0.37620989676307437;
+  normals[31].getNormalVector3fMap() << -0.424778132583581, -0.3243720781494619,
+      0.8451900928168792;
+  normals[32].getNormalVector3fMap() << -0.5821055941507861, 0.35171580987235973,
+      0.73310917764286;
+  normals[33].getNormalVector3fMap() << 0.8396655225180351, -0.48303927894460474,
+      0.2482637011147448;
+  normals[34].getNormalVector3fMap() << 0.256742174797301, 0.7352345686595317,
+      0.6273066114177216;
+  normals[35].getNormalVector3fMap() << -0.0652239383938407, -0.5360244339035914,
+      0.8416790624214975;
+  normals[36].getNormalVector3fMap() << 0.6702382164209467, -0.3031905309377628,
+      0.6773892789220579;
+  normals[37].getNormalVector3fMap() << -0.6040272704362459, -0.10302003040831528,
+      -0.7902771222197995;
+  normals[38].getNormalVector3fMap() << 0.9983521281387145, 0.041967677271189614,
+      -0.03913747954788317;
+  normals[39].getNormalVector3fMap() << -0.573664090993926, 0.46793032429526715,
+      0.6722728034875713;
+  normals[40].getNormalVector3fMap() << -0.5945467180061245, -0.48897233716525434,
+      -0.6382948014791401;
+  normals[41].getNormalVector3fMap() << 0.11334045761805764, -0.6164053590067436,
+      0.7792293462483921;
+  normals[42].getNormalVector3fMap() << -0.766256491311007, 0.13240541094009678,
+      -0.6287446196012567;
+  normals[43].getNormalVector3fMap() << 0.43564165550696804, 0.7816025130800787,
+      0.4464458080596722;
+  normals[44].getNormalVector3fMap() << 0.7597220695940338, -0.5120511261307517,
+      -0.4007817625591101;
+  normals[45].getNormalVector3fMap() << -0.6597147170804349, -0.27171235425320656,
+      -0.7006774497681952;
+  normals[46].getNormalVector3fMap() << -0.14344953607996272, 0.06349058786868034,
+      -0.9876189426345229;
+  normals[47].getNormalVector3fMap() << 0.2696193746529791, 0.8928064202811087,
+      -0.36083526534496174;
+  normals[48].getNormalVector3fMap() << 0.5473019047514905, 0.29388155846326774,
+      -0.7836416621457739;
+  normals[49].getNormalVector3fMap() << 0.053697689135186716, 0.05924709269452209,
+      -0.9967980438327452;
+
+  SampleConsensusModelTorus<PointXYZ, Normal>::Ptr model(
+      new SampleConsensusModelTorus<PointXYZ, Normal>(cloud.makeShared()));
+
+  model->setInputNormals(normals.makeShared());
+
+  // Create the RANSAC object
+  // Small threshold to filter out the numerous outliers
+  RandomSampleConsensus<PointXYZ> sac(model, 0.001);
+
+  // Algorithm tests
+  bool result = sac.computeModel();
+  ASSERT_TRUE(result);
+
+  pcl::Indices sample;
+  sac.getModel(sample);
+  EXPECT_EQ(4, sample.size());
+  pcl::Indices inliers;
+  sac.getInliers(inliers);
+  EXPECT_EQ(25, inliers.size());
+
+  Eigen::VectorXf coeff;
+  sac.getModelCoefficients(coeff);
+
+  EXPECT_EQ(8, coeff.size());
+
+  EXPECT_NEAR(coeff[0], 2, 1e-2);
+  EXPECT_NEAR(coeff[1], 0.25, 1e-2);
+  EXPECT_NEAR(coeff[2], 3, 1e-2);
+  EXPECT_NEAR(coeff[3], -1, 1e-2);
+  EXPECT_NEAR(coeff[4], 2, 1e-2);
+  EXPECT_NEAR(coeff[5], 0.0, 1e-2);
+  EXPECT_NEAR(coeff[6], 1.0, 1e-2);
+  EXPECT_NEAR(coeff[7], 2.220446049250313e-16, 1e-2);
+
+  Eigen::VectorXf coeff_refined;
+  model->optimizeModelCoefficients(inliers, coeff, coeff_refined);
+  EXPECT_EQ(8, coeff.size());
+
+  EXPECT_NEAR(coeff[0], 2, 1e-2);
+  EXPECT_NEAR(coeff[1], 0.25, 1e-2);
+  EXPECT_NEAR(coeff[2], 3, 1e-2);
+  EXPECT_NEAR(coeff[3], -1, 1e-2);
+  EXPECT_NEAR(coeff[4], 2, 1e-2);
+  EXPECT_NEAR(coeff[5], 0.0, 1e-2);
+  EXPECT_NEAR(coeff[6], 1.0, 1e-2);
+  EXPECT_NEAR(coeff[7], 2.220446049250313e-16, 1e-2);
+}
+
+// A horn shaped torus
+TEST(SampleConsensusModelTorusHorn, RANSAC)
+{
+
+  srand(0);
+
+  PointCloud<PointXYZ> cloud;
+  PointCloud<Normal> normals;
+
+  cloud.resize(7);
+  normals.resize(7);
+
+  cloud[0].getVector3fMap() << 3.000501648262739, -1.0005866141772064,
+      2.0196299263944386;
+  cloud[1].getVector3fMap() << 2.9306387358067587, -0.9355559306559758,
+      1.804104008927194;
+  cloud[2].getVector3fMap() << 3.1148967392352143, -1.3928055353556932,
+      2.1927039488583757;
+  cloud[3].getVector3fMap() << 3.0736420787608285, -0.8370133320562925,
+      1.7603380061176133;
+  cloud[4].getVector3fMap() << 2.88008899080742, -1.245300517665885, 1.7510639730129496;
+  cloud[5].getVector3fMap() << 3.0000040500927305, -1.0005041529688534,
+      2.0158691660694794;
+  cloud[6].getVector3fMap() << 2.983210284063484, -0.5044792022516073,
+      2.0456050860401795;
+  normals[0].getNormalVector3fMap() << -0.6479150922982518, 0.7576547294171206,
+      0.07851970557775474;
+  normals[1].getNormalVector3fMap() << 0.45515258767393824, -0.4228856734855979,
+      -0.783583964291224;
+  normals[2].getNormalVector3fMap() << 0.17884740355312917, -0.6114381536611204,
+      0.7708157954335032;
+  normals[3].getNormalVector3fMap() << -0.11718185523562125, -0.2593500950773666,
+      -0.958647975529547;
+  normals[4].getNormalVector3fMap() << -0.04047436729113163, -0.08279792919404502,
+      -0.995744107948202;
+  normals[5].getNormalVector3fMap() << -0.008017000458096018, 0.9979511214462377,
+      0.06347666427791779;
+  normals[6].getNormalVector3fMap() << -0.03329532756428898, 0.9826567250055698,
+      0.18242034416071792;
+
+  SampleConsensusModelTorus<PointXYZ, Normal>::Ptr model(
+      new SampleConsensusModelTorus<PointXYZ, Normal>(cloud.makeShared()));
+
+  model->setInputNormals(normals.makeShared());
+
+  // Create the RANSAC object
+  RandomSampleConsensus<PointXYZ> sac(model, 0.2);
+
+  // Algorithm tests
+  bool result = sac.computeModel();
+  ASSERT_TRUE(result);
+
+  pcl::Indices sample;
+  sac.getModel(sample);
+  EXPECT_EQ(4, sample.size());
+  pcl::Indices inliers;
+  sac.getInliers(inliers);
+  EXPECT_EQ(7, inliers.size());
+
+  Eigen::VectorXf coeff;
+  sac.getModelCoefficients(coeff);
+
+  EXPECT_EQ(8, coeff.size());
+
+  EXPECT_NEAR(coeff[0], 0.25, 1e-2);
+  EXPECT_NEAR(coeff[1], 0.25, 1e-2);
+  EXPECT_NEAR(coeff[2], 3, 1e-2);
+  EXPECT_NEAR(coeff[3], -1, 1e-2);
+  EXPECT_NEAR(coeff[4], 2, 1e-2);
+  EXPECT_NEAR(coeff[5], 0.0, 1e-2);
+  EXPECT_NEAR(coeff[6], 0.0, 1e-2);
+  EXPECT_NEAR(coeff[7], 1.0, 1e-2);
+
+  Eigen::VectorXf coeff_refined;
+  model->optimizeModelCoefficients(inliers, coeff, coeff_refined);
+  EXPECT_EQ(8, coeff.size());
+
+  EXPECT_NEAR(coeff[0], 0.25, 1e-2);
+  EXPECT_NEAR(coeff[1], 0.25, 1e-2);
+  EXPECT_NEAR(coeff[2], 3, 1e-2);
+  EXPECT_NEAR(coeff[3], -1, 1e-2);
+  EXPECT_NEAR(coeff[4], 2, 1e-2);
+  EXPECT_NEAR(coeff[5], 0.0, 1e-2);
+  EXPECT_NEAR(coeff[6], 0.0, 1e-2);
+  EXPECT_NEAR(coeff[7], 1.0, 1e-2);
+}
 
 TEST(SampleConsensusModelTorusRefine, RANSAC)
 {
