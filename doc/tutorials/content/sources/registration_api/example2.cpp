@@ -26,18 +26,18 @@ estimateKeypoints (const PointCloud<PointXYZ>::Ptr& src,
 {
   // Get an uniform grid of keypoints
   UniformSampling<PointXYZ> uniform;
-  uniform.setRadiusSearch(1); // 1m
+  uniform.setRadiusSearch (1); // 1m
 
-  uniform.setInputCloud(src);
-  uniform.filter(keypoints_src);
+  uniform.setInputCloud (src);
+  uniform.filter (keypoints_src);
 
-  uniform.setInputCloud(tgt);
-  uniform.filter(keypoints_tgt);
+  uniform.setInputCloud (tgt);
+  uniform.filter (keypoints_tgt);
 
   // For debugging purposes only: uncomment the lines below and use pcl_viewer to view
   // the results, i.e.: pcl_viewer source_pcd keypoints_src.pcd -ps 1 -ps 10
-  savePCDFileBinary("keypoints_src.pcd", keypoints_src);
-  savePCDFileBinary("keypoints_tgt.pcd", keypoints_tgt);
+  savePCDFileBinary ("keypoints_src.pcd", keypoints_src);
+  savePCDFileBinary ("keypoints_tgt.pcd", keypoints_tgt);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -48,22 +48,22 @@ estimateNormals (const PointCloud<PointXYZ>::Ptr& src,
                  PointCloud<Normal>& normals_tgt)
 {
   NormalEstimation<PointXYZ, Normal> normal_est;
-  normal_est.setInputCloud(src);
-  normal_est.setRadiusSearch(0.5); // 50cm
-  normal_est.compute(normals_src);
+  normal_est.setInputCloud (src);
+  normal_est.setRadiusSearch (0.5); // 50cm
+  normal_est.compute (normals_src);
 
-  normal_est.setInputCloud(tgt);
-  normal_est.compute(normals_tgt);
+  normal_est.setInputCloud (tgt);
+  normal_est.compute (normals_tgt);
 
   // For debugging purposes only: uncomment the lines below and use pcl_viewer to view
   // the results, i.e.: pcl_viewer normals_src.pcd
   PointCloud<PointNormal> s, t;
-  copyPointCloud(*src, s);
-  copyPointCloud(normals_src, s);
-  copyPointCloud(*tgt, t);
-  copyPointCloud(normals_tgt, t);
-  savePCDFileBinary("normals_src.pcd", s);
-  savePCDFileBinary("normals_tgt.pcd", t);
+  copyPointCloud (*src, s);
+  copyPointCloud (normals_src, s);
+  copyPointCloud (*tgt, t);
+  copyPointCloud (normals_tgt, t);
+  savePCDFileBinary ("normals_src.pcd", s);
+  savePCDFileBinary ("normals_tgt.pcd", t);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -78,28 +78,28 @@ estimateFPFH (const PointCloud<PointXYZ>::Ptr& src,
               PointCloud<FPFHSignature33>& fpfhs_tgt)
 {
   FPFHEstimation<PointXYZ, Normal, FPFHSignature33> fpfh_est;
-  fpfh_est.setInputCloud(keypoints_src);
-  fpfh_est.setInputNormals(normals_src);
-  fpfh_est.setRadiusSearch(1); // 1m
-  fpfh_est.setSearchSurface(src);
-  fpfh_est.compute(fpfhs_src);
+  fpfh_est.setInputCloud (keypoints_src);
+  fpfh_est.setInputNormals (normals_src);
+  fpfh_est.setRadiusSearch (1); // 1m
+  fpfh_est.setSearchSurface (src);
+  fpfh_est.compute (fpfhs_src);
 
-  fpfh_est.setInputCloud(keypoints_tgt);
-  fpfh_est.setInputNormals(normals_tgt);
-  fpfh_est.setSearchSurface(tgt);
-  fpfh_est.compute(fpfhs_tgt);
+  fpfh_est.setInputCloud (keypoints_tgt);
+  fpfh_est.setInputNormals (normals_tgt);
+  fpfh_est.setSearchSurface (tgt);
+  fpfh_est.compute (fpfhs_tgt);
 
   // For debugging purposes only: uncomment the lines below and use pcl_viewer to view
   // the results, i.e.: pcl_viewer fpfhs_src.pcd
   PCLPointCloud2 s, t, out;
-  toPCLPointCloud2(*keypoints_src, s);
-  toPCLPointCloud2(fpfhs_src, t);
-  concatenateFields(s, t, out);
-  savePCDFile("fpfhs_src.pcd", out);
-  toPCLPointCloud2(*keypoints_tgt, s);
-  toPCLPointCloud2(fpfhs_tgt, t);
-  concatenateFields(s, t, out);
-  savePCDFile("fpfhs_tgt.pcd", out);
+  toPCLPointCloud2 (*keypoints_src, s);
+  toPCLPointCloud2 (fpfhs_src, t);
+  concatenateFields (s, t, out);
+  savePCDFile ("fpfhs_src.pcd", out);
+  toPCLPointCloud2 (*keypoints_tgt, s);
+  toPCLPointCloud2 (fpfhs_tgt, t);
+  concatenateFields (s, t, out);
+  savePCDFile ("fpfhs_tgt.pcd", out);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -109,9 +109,9 @@ findCorrespondences (const PointCloud<FPFHSignature33>::Ptr& fpfhs_src,
                      Correspondences& all_correspondences)
 {
   CorrespondenceEstimation<FPFHSignature33, FPFHSignature33> est;
-  est.setInputCloud(fpfhs_src);
-  est.setInputTarget(fpfhs_tgt);
-  est.determineReciprocalCorrespondences(all_correspondences);
+  est.setInputCloud (fpfhs_src);
+  est.setInputTarget (fpfhs_tgt);
+  est.determineReciprocalCorrespondences (all_correspondences);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -122,11 +122,11 @@ rejectBadCorrespondences (const CorrespondencesPtr& all_correspondences,
                           Correspondences& remaining_correspondences)
 {
   CorrespondenceRejectorDistance rej;
-  rej.setInputSource<PointXYZ>(keypoints_src);
-  rej.setInputTarget<PointXYZ>(keypoints_tgt);
-  rej.setMaximumDistance(1); // 1m
-  rej.setInputCorrespondences(all_correspondences);
-  rej.getCorrespondences(remaining_correspondences);
+  rej.setInputSource<PointXYZ> (keypoints_src);
+  rej.setInputTarget<PointXYZ> (keypoints_tgt);
+  rej.setMaximumDistance (1); // 1m
+  rej.setInputCorrespondences (all_correspondences);
+  rej.getCorrespondences (remaining_correspondences);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -136,33 +136,33 @@ computeTransformation (const PointCloud<PointXYZ>::Ptr& src,
                        Eigen::Matrix4f& transform)
 {
   // Get an uniform grid of keypoints
-  PointCloud<PointXYZ>::Ptr keypoints_src(new PointCloud<PointXYZ>),
-      keypoints_tgt(new PointCloud<PointXYZ>);
+  PointCloud<PointXYZ>::Ptr keypoints_src (new PointCloud<PointXYZ>),
+      keypoints_tgt (new PointCloud<PointXYZ>);
 
-  estimateKeypoints(src, tgt, *keypoints_src, *keypoints_tgt);
-  print_info("Found %zu and %zu keypoints for the source and target datasets.\n",
-             static_cast<std::size_t>(keypoints_src->size()),
-             static_cast<std::size_t>(keypoints_tgt->size()));
+  estimateKeypoints (src, tgt, *keypoints_src, *keypoints_tgt);
+  print_info ("Found %zu and %zu keypoints for the source and target datasets.\n",
+              static_cast<std::size_t> (keypoints_src->size()),
+              static_cast<std::size_t> (keypoints_tgt->size()));
 
   // Compute normals for all points keypoint
-  PointCloud<Normal>::Ptr normals_src(new PointCloud<Normal>),
-      normals_tgt(new PointCloud<Normal>);
-  estimateNormals(src, tgt, *normals_src, *normals_tgt);
-  print_info("Estimated %zu and %zu normals for the source and target datasets.\n",
-             static_cast<std::size_t>(normals_src->size()),
-             static_cast<std::size_t>(normals_tgt->size()));
+  PointCloud<Normal>::Ptr normals_src (new PointCloud<Normal>),
+      normals_tgt (new PointCloud<Normal>);
+  estimateNormals (src, tgt, *normals_src, *normals_tgt);
+  print_info ("Estimated %zu and %zu normals for the source and target datasets.\n",
+              static_cast<std::size_t> (normals_src->size()),
+              static_cast<std::size_t> (normals_tgt->size()));
 
   // Compute FPFH features at each keypoint
-  PointCloud<FPFHSignature33>::Ptr fpfhs_src(new PointCloud<FPFHSignature33>),
-      fpfhs_tgt(new PointCloud<FPFHSignature33>);
-  estimateFPFH(src,
-               tgt,
-               normals_src,
-               normals_tgt,
-               keypoints_src,
-               keypoints_tgt,
-               *fpfhs_src,
-               *fpfhs_tgt);
+  PointCloud<FPFHSignature33>::Ptr fpfhs_src (new PointCloud<FPFHSignature33>),
+      fpfhs_tgt (new PointCloud<FPFHSignature33>);
+  estimateFPFH (src,
+                tgt,
+                normals_src,
+                normals_tgt,
+                keypoints_src,
+                keypoints_tgt,
+                *fpfhs_src,
+                *fpfhs_tgt);
 
   // Copy the data and save it to disk
   /*  PointCloud<PointNormal> s, t;
@@ -172,12 +172,12 @@ computeTransformation (const PointCloud<PointXYZ>::Ptr& src,
     copyPointCloud (normals_tgt, t);*/
 
   // Find correspondences between keypoints in FPFH space
-  CorrespondencesPtr all_correspondences(new Correspondences),
-      good_correspondences(new Correspondences);
-  findCorrespondences(fpfhs_src, fpfhs_tgt, *all_correspondences);
+  CorrespondencesPtr all_correspondences (new Correspondences),
+      good_correspondences (new Correspondences);
+  findCorrespondences (fpfhs_src, fpfhs_tgt, *all_correspondences);
 
   // Reject correspondences based on their XYZ distance
-  rejectBadCorrespondences(
+  rejectBadCorrespondences (
       all_correspondences, keypoints_src, keypoints_tgt, *good_correspondences);
 
   for (const auto& corr : (*good_correspondences))
@@ -185,7 +185,7 @@ computeTransformation (const PointCloud<PointXYZ>::Ptr& src,
   // Obtain the best transformation between the two sets of keypoints given the
   // remaining correspondences
   TransformationEstimationSVD<PointXYZ, PointXYZ> trans_est;
-  trans_est.estimateRigidTransformation(
+  trans_est.estimateRigidTransformation (
       *keypoints_src, *keypoints_tgt, *good_correspondences, transform);
 }
 
@@ -195,34 +195,34 @@ main (int argc, char** argv)
 {
   // Parse the command line arguments for .pcd files
   std::vector<int> p_file_indices;
-  p_file_indices = parse_file_extension_argument(argc, argv, ".pcd");
+  p_file_indices = parse_file_extension_argument (argc, argv, ".pcd");
   if (p_file_indices.size() != 2) {
-    print_error(
+    print_error (
         "Need one input source PCD file and one input target PCD file to continue.\n");
-    print_error("Example: %s source.pcd target.pcd\n", argv[0]);
+    print_error ("Example: %s source.pcd target.pcd\n", argv[0]);
     return (-1);
   }
 
   // Load the files
-  print_info("Loading %s as source and %s as target...\n",
-             argv[p_file_indices[0]],
-             argv[p_file_indices[1]]);
-  src.reset(new PointCloud<PointXYZ>);
-  tgt.reset(new PointCloud<PointXYZ>);
-  if (loadPCDFile(argv[p_file_indices[0]], *src) == -1 ||
-      loadPCDFile(argv[p_file_indices[1]], *tgt) == -1) {
-    print_error("Error reading the input files!\n");
+  print_info ("Loading %s as source and %s as target...\n",
+              argv[p_file_indices[0]],
+              argv[p_file_indices[1]]);
+  src.reset (new PointCloud<PointXYZ>);
+  tgt.reset (new PointCloud<PointXYZ>);
+  if (loadPCDFile (argv[p_file_indices[0]], *src) == -1 ||
+      loadPCDFile (argv[p_file_indices[1]], *tgt) == -1) {
+    print_error ("Error reading the input files!\n");
     return (-1);
   }
 
   // Compute the best transformtion
   Eigen::Matrix4f transform;
-  computeTransformation(src, tgt, transform);
+  computeTransformation (src, tgt, transform);
 
   std::cerr << transform << std::endl;
   // Transform the data and write it to disk
   PointCloud<PointXYZ> output;
-  transformPointCloud(*src, output, transform);
-  savePCDFileBinary("source_transformed.pcd", output);
+  transformPointCloud (*src, output, transform);
+  savePCDFileBinary ("source_transformed.pcd", output);
 }
 /* ]--- */

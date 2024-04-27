@@ -89,18 +89,18 @@ public:
     /** cy */
     double principal_point_y;
 
-    CameraParameters(double initValue)
-    : focal_length_x(initValue)
-    , focal_length_y(initValue)
-    , principal_point_x(initValue)
-    , principal_point_y(initValue)
+    CameraParameters (double initValue)
+    : focal_length_x (initValue)
+    , focal_length_y (initValue)
+    , principal_point_x (initValue)
+    , principal_point_y (initValue)
     {}
 
-    CameraParameters(double fx, double fy, double cx, double cy)
-    : focal_length_x(fx)
-    , focal_length_y(fy)
-    , principal_point_x(cx)
-    , principal_point_y(cy)
+    CameraParameters (double fx, double fy, double cx, double cy)
+    : focal_length_x (fx)
+    , focal_length_y (fy)
+    , principal_point_x (cx)
+    , principal_point_y (cy)
     {}
   };
 
@@ -122,23 +122,23 @@ public:
   };
 
   // define callback signature typedefs
-  using sig_cb_openni_image = void(const Image::Ptr&);
-  using sig_cb_openni_depth_image = void(const DepthImage::Ptr&);
-  using sig_cb_openni_ir_image = void(const IRImage::Ptr&);
-  using sig_cb_openni_image_depth_image = void(const Image::Ptr&,
-                                               const DepthImage::Ptr&,
-                                               float);
-  using sig_cb_openni_ir_depth_image = void(const IRImage::Ptr&,
-                                            const DepthImage::Ptr&,
-                                            float);
+  using sig_cb_openni_image = void (const Image::Ptr&);
+  using sig_cb_openni_depth_image = void (const DepthImage::Ptr&);
+  using sig_cb_openni_ir_image = void (const IRImage::Ptr&);
+  using sig_cb_openni_image_depth_image = void (const Image::Ptr&,
+                                                const DepthImage::Ptr&,
+                                                float);
+  using sig_cb_openni_ir_depth_image = void (const IRImage::Ptr&,
+                                             const DepthImage::Ptr&,
+                                             float);
   using sig_cb_openni_point_cloud =
-      void(const typename pcl::PointCloud<pcl::PointXYZ>::ConstPtr&);
+      void (const typename pcl::PointCloud<pcl::PointXYZ>::ConstPtr&);
   using sig_cb_openni_point_cloud_rgb =
-      void(const typename pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr&);
+      void (const typename pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr&);
   using sig_cb_openni_point_cloud_rgba =
-      void(const typename pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&);
+      void (const typename pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&);
   using sig_cb_openni_point_cloud_i =
-      void(const typename pcl::PointCloud<pcl::PointXYZI>::ConstPtr&);
+      void (const typename pcl::PointCloud<pcl::PointXYZI>::ConstPtr&);
 
 public:
   /** \brief Constructor
@@ -156,9 +156,9 @@ public:
    * OpenNI2DeviceManager::getAnyDevice
    * * Otherwise a pcl::IOException instance is thrown
    */
-  OpenNI2Grabber(const std::string& device_id = "",
-                 const Mode& depth_mode = OpenNI_Default_Mode,
-                 const Mode& image_mode = OpenNI_Default_Mode);
+  OpenNI2Grabber (const std::string& device_id = "",
+                  const Mode& depth_mode = OpenNI_Default_Mode,
+                  const Mode& image_mode = OpenNI_Default_Mode);
 
   /** \brief virtual Destructor inherited from the Grabber interface. It never throws.
    */
@@ -209,10 +209,10 @@ public:
                           const double rgb_principal_point_x,
                           const double rgb_principal_point_y)
   {
-    rgb_parameters_ = CameraParameters(rgb_focal_length_x,
-                                       rgb_focal_length_y,
-                                       rgb_principal_point_x,
-                                       rgb_principal_point_y);
+    rgb_parameters_ = CameraParameters (rgb_focal_length_x,
+                                        rgb_focal_length_y,
+                                        rgb_principal_point_x,
+                                        rgb_principal_point_y);
   }
 
   /** \brief Get the RGB camera parameters (fx, fy, cx, cy)
@@ -285,10 +285,10 @@ public:
                             const double depth_principal_point_x,
                             const double depth_principal_point_y)
   {
-    depth_parameters_ = CameraParameters(depth_focal_length_x,
-                                         depth_focal_length_y,
-                                         depth_principal_point_x,
-                                         depth_principal_point_y);
+    depth_parameters_ = CameraParameters (depth_focal_length_x,
+                                          depth_focal_length_y,
+                                          depth_principal_point_x,
+                                          depth_principal_point_y);
   }
 
   /** \brief Get the Depth camera parameters (fx, fy, cx, cy)
@@ -487,7 +487,7 @@ protected:
 
   struct modeComp {
     bool
-    operator()(const openni::VideoMode& mode1, const openni::VideoMode& mode2) const
+    operator() (const openni::VideoMode& mode1, const openni::VideoMode& mode2) const
     {
       if (mode1.getResolutionX() < mode2.getResolutionX())
         return true;

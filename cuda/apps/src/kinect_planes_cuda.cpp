@@ -71,7 +71,8 @@ using namespace pcl::cuda;
 
 class MultiRansac {
 public:
-  MultiRansac() : viewer("PCL CUDA - MultiSac"), new_cloud(false), use_viewer(true) {}
+  MultiRansac() : viewer ("PCL CUDA - MultiSac"), new_cloud (false), use_viewer (true)
+  {}
 
   void
   logo_cb (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr& cloud)
@@ -84,37 +85,37 @@ public:
   void
   viz_cb (pcl::visualization::PCLVisualizer& viz)
   {
-    std::lock_guard<std::mutex> l(m_mutex);
+    std::lock_guard<std::mutex> l (m_mutex);
     if (new_cloud) {
       double psize = 1.0, opacity = 1.0, linesize = 1.0;
-      std::string cloud_name("cloud");
+      std::string cloud_name ("cloud");
       using ColorHandler =
           pcl::visualization::PointCloudColorHandlerRGBField<pcl::PointXYZRGBNormal>;
 
-      ColorHandler Color_handler(normal_cloud);
+      ColorHandler Color_handler (normal_cloud);
       static bool first_time = true;
       if (!first_time) {
-        viz.getPointCloudRenderingProperties(
+        viz.getPointCloudRenderingProperties (
             pcl::visualization::PCL_VISUALIZER_LINE_WIDTH, linesize, cloud_name);
-        viz.getPointCloudRenderingProperties(
+        viz.getPointCloudRenderingProperties (
             pcl::visualization::PCL_VISUALIZER_OPACITY, opacity, cloud_name);
-        viz.getPointCloudRenderingProperties(
+        viz.getPointCloudRenderingProperties (
             pcl::visualization::PCL_VISUALIZER_POINT_SIZE, psize, cloud_name);
         // viz.removePointCloud ("normalcloud");
-        viz.removePointCloud("cloud");
+        viz.removePointCloud ("cloud");
       }
       else
         first_time = false;
 
       // viz.addPointCloudNormals<pcl::PointXYZRGBNormal> (normal_cloud, 139, 0.1,
       // "normalcloud");
-      viz.addPointCloud<pcl::PointXYZRGBNormal>(
-          normal_cloud, Color_handler, std::string("cloud"), 0);
-      viz.setPointCloudRenderingProperties(
+      viz.addPointCloud<pcl::PointXYZRGBNormal> (
+          normal_cloud, Color_handler, std::string ("cloud"), 0);
+      viz.setPointCloudRenderingProperties (
           pcl::visualization::PCL_VISUALIZER_LINE_WIDTH, linesize, cloud_name);
-      viz.setPointCloudRenderingProperties(
+      viz.setPointCloudRenderingProperties (
           pcl::visualization::PCL_VISUALIZER_OPACITY, opacity, cloud_name);
-      viz.setPointCloudRenderingProperties(
+      viz.setPointCloudRenderingProperties (
           pcl::visualization::PCL_VISUALIZER_POINT_SIZE, psize, cloud_name);
       new_cloud = false;
     }
@@ -130,8 +131,8 @@ public:
     static double last = pcl::cuda::getTime();
     double now = pcl::cuda::getTime();
     if (++count == 30 || (now - last) > 5) {
-      std::cerr << "Average framerate: " << double(count) / double(now - last) << " Hz"
-                << std::endl;
+      std::cerr << "Average framerate: " << double (count) / double (now - last)
+                << " Hz" << std::endl;
       count = 0;
       last = now;
     }
@@ -141,7 +142,7 @@ public:
     typename PointCloudAOS<Storage>::Ptr data;
     typename SampleConsensusModel1PointPlane<Storage>::Ptr sac_model;
     {
-      ScopeTimeCPU timer("All: ");
+      ScopeTimeCPU timer ("All: ");
       static int threshold_x100 = 25;
       static int smoothing_nr_iterations = 10;
       static int smoothing_filter_size = 2;
@@ -149,42 +150,43 @@ public:
 
       // Compute the PointCloud on the device
       // d2c.compute<Storage> (depth_image, image, constant, data, true, 2);
-      d2c.compute<Storage>(depth_image,
-                           image,
-                           constant,
-                           data,
-                           true,
-                           2,
-                           smoothing_nr_iterations,
-                           smoothing_filter_size);
+      d2c.compute<Storage> (depth_image,
+                            image,
+                            constant,
+                            data,
+                            true,
+                            2,
+                            smoothing_nr_iterations,
+                            smoothing_filter_size);
 
       // Compute normals
       shared_ptr<typename Storage<float4>::type> normals;
       {
-        ScopeTimeCPU time("Normal Estimation");
+        ScopeTimeCPU time ("Normal Estimation");
         // normals = computeFastPointNormals<Storage> (data);
         float focallength = 580 / 2.0;
         // normals = computePointNormals<Storage> (data->points.begin (),
         // data->points.end (), focallength, data, 0.11f, 36);
-        normals = computeFastPointNormals<Storage>(data);
+        normals = computeFastPointNormals<Storage> (data);
       }
 
       // Create sac_model
       {
-        ScopeTimeCPU t("creating sac_model");
-        sac_model.reset(new SampleConsensusModel1PointPlane<Storage>(data));
+        ScopeTimeCPU t ("creating sac_model");
+        sac_model.reset (new SampleConsensusModel1PointPlane<Storage> (data));
       }
-      sac_model->setNormals(normals);
+      sac_model->setNormals (normals);
 
-      MultiRandomSampleConsensus<Storage> sac(sac_model);
-      sac.setMinimumCoverage(0.90); // at least 95% points should be explained by planes
-      sac.setMaximumBatches(5);
-      sac.setIerationsPerBatch(1000);
-      sac.setDistanceThreshold(threshold_x100 / 100.0);
+      MultiRandomSampleConsensus<Storage> sac (sac_model);
+      sac.setMinimumCoverage (
+          0.90); // at least 95% points should be explained by planes
+      sac.setMaximumBatches (5);
+      sac.setIerationsPerBatch (1000);
+      sac.setDistanceThreshold (threshold_x100 / 100.0);
 
       {
-        ScopeTimeCPU timer("computeModel: ");
-        if (!sac.computeModel(0)) {
+        ScopeTimeCPU timer ("computeModel: ");
+        if (!sac.computeModel (0)) {
           std::cerr << "Failed to compute model" << std::endl;
         }
         else {
@@ -194,13 +196,13 @@ public:
             std::vector<typename SampleConsensusModel1PointPlane<Storage>::IndicesPtr>
                 planes;
             typename Storage<int>::type region_mask;
-            markInliers<Storage>(data, region_mask, planes);
+            markInliers<Storage> (data, region_mask, planes);
             thrust::host_vector<int> regions_host;
-            std::copy(regions_host.cbegin(),
-                      regions_host.cend(),
-                      std::ostream_iterator<int>(std::cerr, " "));
+            std::copy (regions_host.cbegin(),
+                       regions_host.cend(),
+                       std::ostream_iterator<int> (std::cerr, " "));
             {
-              ScopeTimeCPU t("retrieving inliers");
+              ScopeTimeCPU t ("retrieving inliers");
               planes = sac.getAllInliers();
             }
             std::vector<int> planes_inlier_counts = sac.getAllInlierCounts();
@@ -226,29 +228,29 @@ public:
               color.g = (int)(rand() * trand);
               color.b = (int)(rand() * trand);
               if (enable_coloring) {
-                ScopeTimeCPU t("coloring planes");
-                colorIndices<Storage>(data, inliers_stencil, color);
+                ScopeTimeCPU t ("coloring planes");
+                colorIndices<Storage> (data, inliers_stencil, color);
               }
             }
           }
 
-          cv::namedWindow("Parameters", CV_WINDOW_NORMAL);
-          cvCreateTrackbar(
+          cv::namedWindow ("Parameters", CV_WINDOW_NORMAL);
+          cvCreateTrackbar (
               "iterations", "Parameters", &smoothing_nr_iterations, 50, NULL);
-          cvCreateTrackbar(
+          cvCreateTrackbar (
               "filter_size", "Parameters", &smoothing_filter_size, 10, NULL);
-          cvCreateTrackbar("enable_coloring", "Parameters", &enable_coloring, 1, NULL);
-          cvCreateTrackbar("threshold", "Parameters", &threshold_x100, 100, NULL);
-          cv::waitKey(2);
+          cvCreateTrackbar ("enable_coloring", "Parameters", &enable_coloring, 1, NULL);
+          cvCreateTrackbar ("threshold", "Parameters", &threshold_x100, 100, NULL);
+          cv::waitKey (2);
         }
       }
     }
     if (use_viewer) {
       auto normals = sac_model->getNormals();
 
-      std::lock_guard<std::mutex> l(m_mutex);
-      normal_cloud.reset(new pcl::PointCloud<pcl::PointXYZRGBNormal>);
-      toPCL(*data, *normals, *normal_cloud);
+      std::lock_guard<std::mutex> l (m_mutex);
+      normal_cloud.reset (new pcl::PointCloud<pcl::PointXYZRGBNormal>);
+      toPCL (*data, *normals, *normal_cloud);
       new_cloud = true;
     }
 
@@ -266,24 +268,24 @@ public:
 
     if (use_device) {
       std::cerr << "[RANSAC] Using GPU..." << std::endl;
-      std::function<void(const openni_wrapper::Image::Ptr& image,
-                         const openni_wrapper::DepthImage::Ptr& depth_image,
-                         float)>
-          f = std::bind(&MultiRansac::cloud_cb<Device>, this, _1, _2, _3);
-      interface.registerCallback(f);
+      std::function<void (const openni_wrapper::Image::Ptr& image,
+                          const openni_wrapper::DepthImage::Ptr& depth_image,
+                          float)>
+          f = std::bind (&MultiRansac::cloud_cb<Device>, this, _1, _2, _3);
+      interface.registerCallback (f);
     }
     else {
       std::cerr << "[RANSAC] Using CPU..." << std::endl;
-      std::function<void(const openni_wrapper::Image::Ptr& image,
-                         const openni_wrapper::DepthImage::Ptr& depth_image,
-                         float)>
-          f = std::bind(&MultiRansac::cloud_cb<Host>, this, _1, _2, _3);
-      interface.registerCallback(f);
+      std::function<void (const openni_wrapper::Image::Ptr& image,
+                          const openni_wrapper::DepthImage::Ptr& depth_image,
+                          float)>
+          f = std::bind (&MultiRansac::cloud_cb<Host>, this, _1, _2, _3);
+      interface.registerCallback (f);
     }
 
     if (use_viewer)
-      viewer.runOnVisualizationThread(std::bind(&MultiRansac::viz_cb, this, _1),
-                                      "viz_cb");
+      viewer.runOnVisualizationThread (std::bind (&MultiRansac::viz_cb, this, _1),
+                                       "viz_cb");
 
     interface.start();
 
@@ -306,7 +308,7 @@ public:
     //------- END --------- load pcl logo file
     //
     while (!viewer.wasStopped()) {
-      pcl_sleep(1);
+      pcl_sleep (1);
     }
 
     // filegrabber.stop ();
@@ -326,7 +328,7 @@ public:
 int
 main (int argc, char** argv)
 {
-  pcl_sleep(1);
+  pcl_sleep (1);
   bool use_device = false;
   bool use_viewer = true;
   if (argc >= 2)
@@ -334,6 +336,6 @@ main (int argc, char** argv)
   if (argc >= 3)
     use_viewer = false;
   MultiRansac v;
-  v.run(use_device, use_viewer);
+  v.run (use_device, use_viewer);
   return 0;
 }

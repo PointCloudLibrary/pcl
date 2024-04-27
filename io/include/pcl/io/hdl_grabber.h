@@ -65,35 +65,35 @@ public:
    *         Represents 1 corrected packet from the HDL Velodyne
    */
   using sig_cb_velodyne_hdl_scan_point_cloud_xyz =
-      void(const pcl::PointCloud<pcl::PointXYZ>::ConstPtr&, float, float);
+      void (const pcl::PointCloud<pcl::PointXYZ>::ConstPtr&, float, float);
 
   /** \brief Signal used for a single sector
    *         Represents 1 corrected packet from the HDL Velodyne.  Each laser has a
    * different RGB
    */
   using sig_cb_velodyne_hdl_scan_point_cloud_xyzrgba =
-      void(const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&, float, float);
+      void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&, float, float);
 
   /** \brief Signal used for a single sector
    *         Represents 1 corrected packet from the HDL Velodyne with the returned
    * intensity.
    */
   using sig_cb_velodyne_hdl_scan_point_cloud_xyzi =
-      void(const pcl::PointCloud<pcl::PointXYZI>::ConstPtr&, float, float);
+      void (const pcl::PointCloud<pcl::PointXYZI>::ConstPtr&, float, float);
 
   /** \brief Signal used for a 360 degree sweep
    *         Represents multiple corrected packets from the HDL Velodyne
    *         This signal is sent when the Velodyne passes angle "0"
    */
   using sig_cb_velodyne_hdl_sweep_point_cloud_xyz =
-      void(const pcl::PointCloud<pcl::PointXYZ>::ConstPtr&);
+      void (const pcl::PointCloud<pcl::PointXYZ>::ConstPtr&);
 
   /** \brief Signal used for a 360 degree sweep
    *         Represents multiple corrected packets from the HDL Velodyne with the
    * returned intensity This signal is sent when the Velodyne passes angle "0"
    */
   using sig_cb_velodyne_hdl_sweep_point_cloud_xyzi =
-      void(const pcl::PointCloud<pcl::PointXYZI>::ConstPtr&);
+      void (const pcl::PointCloud<pcl::PointXYZI>::ConstPtr&);
 
   /** \brief Signal used for a 360 degree sweep
    *         Represents multiple corrected packets from the HDL Velodyne
@@ -101,7 +101,7 @@ public:
    * different RGB
    */
   using sig_cb_velodyne_hdl_sweep_point_cloud_xyzrgba =
-      void(const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&);
+      void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&);
 
   /** \brief Constructor taking an optional path to an HDL corrections file.  The
    * Grabber will listen on the default IP/port for data packets [192.168.3.255/2368]
@@ -110,7 +110,8 @@ public:
    * \param[in] pcapFile Path to a file which contains previously captured data packets.
    * This parameter is optional
    */
-  HDLGrabber(const std::string& correctionsFile = "", const std::string& pcapFile = "");
+  HDLGrabber (const std::string& correctionsFile = "",
+              const std::string& pcapFile = "");
 
   /** \brief Constructor taking a specified IP/port and an optional path to an HDL
    * corrections file. \param[in] ipAddress IP Address that should be used to listen for
@@ -118,9 +119,9 @@ public:
    * \param[in] correctionsFile Path to a file which contains the correction parameters
    * for the HDL.  This field is mandatory for the HDL-64, optional for the HDL-32
    */
-  HDLGrabber(const boost::asio::ip::address& ipAddress,
-             const std::uint16_t port,
-             const std::string& correctionsFile = "");
+  HDLGrabber (const boost::asio::ip::address& ipAddress,
+              const std::uint16_t port,
+              const std::string& correctionsFile = "");
 
   /** \brief virtual Destructor inherited from the Grabber interface. It never throws.
    */
@@ -177,7 +178,7 @@ public:
   void
   setLaserColorRGB (const IterT& begin, const IterT& end)
   {
-    std::copy(begin, end, laser_rgb_mapping_);
+    std::copy (begin, end, laser_rgb_mapping_);
   }
 
   /** \brief Any returns from the HDL with a distance less than this are discarded.

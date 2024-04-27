@@ -125,22 +125,22 @@ print_usage (const std::string& msg)
 
 class SimpleOpenNIViewer {
 public:
-  SimpleOpenNIViewer(ostream& outputFile_arg,
-                     OctreePointCloudCompression<PointXYZRGBA>* octreeEncoder_arg)
-  : viewer("Input Point Cloud - PCL Compression Viewer")
-  , outputFile_(outputFile_arg)
-  , octreeEncoder_(octreeEncoder_arg)
+  SimpleOpenNIViewer (ostream& outputFile_arg,
+                      OctreePointCloudCompression<PointXYZRGBA>* octreeEncoder_arg)
+  : viewer ("Input Point Cloud - PCL Compression Viewer")
+  , outputFile_ (outputFile_arg)
+  , octreeEncoder_ (octreeEncoder_arg)
   {}
 
   void
   cloud_cb_ (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr& cloud)
   {
     if (!viewer.wasStopped()) {
-      PointCloud<PointXYZRGBA>::Ptr cloudOut(new PointCloud<PointXYZRGBA>);
+      PointCloud<PointXYZRGBA>::Ptr cloudOut (new PointCloud<PointXYZRGBA>);
 
-      octreeEncoder_->encodePointCloud(cloud, outputFile_);
+      octreeEncoder_->encodePointCloud (cloud, outputFile_);
 
-      viewer.showCloud(cloud);
+      viewer.showCloud (cloud);
     }
   }
 
@@ -152,20 +152,20 @@ public:
     pcl::OpenNIGrabber interface;
 
     // make callback function from member function
-    std::function<void(const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)> f =
+    std::function<void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)> f =
         [this] (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr& cloud) {
-          cloud_cb_(cloud);
+          cloud_cb_ (cloud);
         };
 
     // connect callback function for desired signal. In this case its a point cloud with
     // color values
-    boost::signals2::connection c = interface.registerCallback(f);
+    boost::signals2::connection c = interface.registerCallback (f);
 
     // start receiving point clouds
     interface.start();
 
     while (!outputFile_.fail()) {
-      std::this_thread::sleep_for(1s);
+      std::this_thread::sleep_for (1s);
     }
 
     interface.stop();
@@ -177,28 +177,28 @@ public:
 };
 
 struct EventHelper {
-  EventHelper(ostream& outputFile_arg,
-              OctreePointCloudCompression<PointXYZRGBA>* octreeEncoder_arg,
-              const std::string& field_name = "z",
-              float min_v = 0,
-              float max_v = 3.0)
-  : outputFile_(outputFile_arg), octreeEncoder_(octreeEncoder_arg)
+  EventHelper (ostream& outputFile_arg,
+               OctreePointCloudCompression<PointXYZRGBA>* octreeEncoder_arg,
+               const std::string& field_name = "z",
+               float min_v = 0,
+               float max_v = 3.0)
+  : outputFile_ (outputFile_arg), octreeEncoder_ (octreeEncoder_arg)
   {
-    pass_.setFilterFieldName(field_name);
-    pass_.setFilterLimits(min_v, max_v);
+    pass_.setFilterFieldName (field_name);
+    pass_.setFilterLimits (min_v, max_v);
   }
 
   void
   cloud_cb_ (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr& cloud)
   {
     if (!outputFile_.fail()) {
-      PointCloud<PointXYZRGBA>::Ptr cloud_out(new PointCloud<PointXYZRGBA>);
+      PointCloud<PointXYZRGBA>::Ptr cloud_out (new PointCloud<PointXYZRGBA>);
 
       // Use a PassThrough filter to clean NaNs and remove data which is not interesting
-      pass_.setInputCloud(cloud);
-      pass_.filter(*cloud_out);
+      pass_.setInputCloud (cloud);
+      pass_.filter (*cloud_out);
 
-      octreeEncoder_->encodePointCloud(cloud_out, outputFile_);
+      octreeEncoder_->encodePointCloud (cloud_out, outputFile_);
     }
   }
 
@@ -209,20 +209,20 @@ struct EventHelper {
     pcl::OpenNIGrabber interface;
 
     // make callback function from member function
-    std::function<void(const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)> f =
+    std::function<void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)> f =
         [this] (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr& cloud) {
-          cloud_cb_(cloud);
+          cloud_cb_ (cloud);
         };
 
     // connect callback function for desired signal. In this case its a point cloud with
     // color values
-    boost::signals2::connection c = interface.registerCallback(f);
+    boost::signals2::connection c = interface.registerCallback (f);
 
     // start receiving point clouds
     interface.start();
 
     while (!outputFile_.fail()) {
-      std::this_thread::sleep_for(1s);
+      std::this_thread::sleep_for (1s);
     }
 
     interface.stop();
@@ -274,58 +274,58 @@ main (int argc, char** argv)
   bEnDecode = false;
 
   float min_v = 0.0f, max_v = 3.0f;
-  pcl::console::parse_2x_arguments(argc, argv, "-minmax", min_v, max_v, false);
-  std::string field_name("z");
-  pcl::console::parse_argument(argc, argv, "-field", field_name);
+  pcl::console::parse_2x_arguments (argc, argv, "-minmax", min_v, max_v, false);
+  std::string field_name ("z");
+  pcl::console::parse_argument (argc, argv, "-field", field_name);
 
-  if (pcl::console::find_argument(argc, argv, "-e") > 0)
+  if (pcl::console::find_argument (argc, argv, "-e") > 0)
     bShowInputCloud = true;
 
-  if (pcl::console::find_argument(argc, argv, "-s") > 0) {
+  if (pcl::console::find_argument (argc, argv, "-s") > 0) {
     bEnDecode = true;
     bServerFileMode = true;
     validArguments = true;
   }
 
-  if (pcl::console::parse_argument(argc, argv, "-c", hostName) > 0) {
+  if (pcl::console::parse_argument (argc, argv, "-c", hostName) > 0) {
     bEnDecode = false;
     bServerFileMode = true;
     validArguments = true;
   }
 
-  if (pcl::console::find_argument(argc, argv, "-x") > 0) {
+  if (pcl::console::find_argument (argc, argv, "-x") > 0) {
     bEnDecode = true;
     bServerFileMode = false;
     validArguments = true;
   }
 
-  if (pcl::console::find_argument(argc, argv, "-d") > 0) {
+  if (pcl::console::find_argument (argc, argv, "-d") > 0) {
     bEnDecode = false;
     bServerFileMode = false;
     validArguments = true;
   }
 
-  if (pcl::console::find_argument(argc, argv, "-t") > 0)
+  if (pcl::console::find_argument (argc, argv, "-t") > 0)
     showStatistics = true;
 
-  if (pcl::console::find_argument(argc, argv, "-a") > 0) {
+  if (pcl::console::find_argument (argc, argv, "-a") > 0) {
     doColorEncoding = true;
     compressionProfile = pcl::io::MANUAL_CONFIGURATION;
   }
 
-  if (pcl::console::find_argument(argc, argv, "-v") > 0) {
+  if (pcl::console::find_argument (argc, argv, "-v") > 0) {
     doVoxelGridDownDownSampling = true;
     compressionProfile = pcl::io::MANUAL_CONFIGURATION;
   }
 
-  pcl::console::parse_argument(argc, argv, "-f", fileName);
-  pcl::console::parse_argument(argc, argv, "-r", pointResolution);
-  pcl::console::parse_argument(argc, argv, "-i", iFrameRate);
-  pcl::console::parse_argument(argc, argv, "-o", octreeResolution);
-  pcl::console::parse_argument(argc, argv, "-b", colorBitResolution);
+  pcl::console::parse_argument (argc, argv, "-f", fileName);
+  pcl::console::parse_argument (argc, argv, "-r", pointResolution);
+  pcl::console::parse_argument (argc, argv, "-i", iFrameRate);
+  pcl::console::parse_argument (argc, argv, "-o", octreeResolution);
+  pcl::console::parse_argument (argc, argv, "-b", colorBitResolution);
 
   std::string profile;
-  if (pcl::console::parse_argument(argc, argv, "-p", profile) > 0) {
+  if (pcl::console::parse_argument (argc, argv, "-p", profile) > 0) {
     if (profile == "lowC")
       compressionProfile = pcl::io::LOW_RES_OFFLINE_COMPRESSION_WITH_COLOR;
     else if (profile == "lowNC")
@@ -339,7 +339,7 @@ main (int argc, char** argv)
     else if (profile == "highNC")
       compressionProfile = pcl::io::HIGH_RES_OFFLINE_COMPRESSION_WITHOUT_COLOR;
     else {
-      print_usage("Unknown profile parameter..\n");
+      print_usage ("Unknown profile parameter..\n");
       return -1;
     }
 
@@ -351,7 +351,7 @@ main (int argc, char** argv)
 
       // apply profile settings
       pointResolution = selectedProfile.pointResolution;
-      octreeResolution = float(selectedProfile.octreeResolution);
+      octreeResolution = float (selectedProfile.octreeResolution);
       doVoxelGridDownDownSampling = selectedProfile.doVoxelGridDownSampling;
       iFrameRate = selectedProfile.iFrameRate;
       doColorEncoding = selectedProfile.doColorEncoding;
@@ -359,17 +359,17 @@ main (int argc, char** argv)
     }
   }
 
-  if (pcl::console::find_argument(argc, argv, "-?") > 0) {
-    print_usage("");
+  if (pcl::console::find_argument (argc, argv, "-?") > 0) {
+    print_usage ("");
     return 1;
   }
 
   if (!validArguments) {
-    print_usage("Please specify compression mode..\n");
+    print_usage ("Please specify compression mode..\n");
     return -1;
   }
 
-  octreeCoder = new OctreePointCloudCompression<PointXYZRGBA>(
+  octreeCoder = new OctreePointCloudCompression<PointXYZRGBA> (
       compressionProfile,
       showStatistics,
       pointResolution,
@@ -377,37 +377,37 @@ main (int argc, char** argv)
       doVoxelGridDownDownSampling,
       iFrameRate,
       doColorEncoding,
-      static_cast<unsigned char>(colorBitResolution));
+      static_cast<unsigned char> (colorBitResolution));
 
   if (!bServerFileMode) {
     if (bEnDecode) {
       // ENCODING
       std::ofstream compressedPCFile;
-      compressedPCFile.open(fileName.c_str(),
-                            std::ios::out | std::ios::trunc | std::ios::binary);
+      compressedPCFile.open (fileName.c_str(),
+                             std::ios::out | std::ios::trunc | std::ios::binary);
 
       if (!bShowInputCloud) {
-        EventHelper v(compressedPCFile, octreeCoder, field_name, min_v, max_v);
+        EventHelper v (compressedPCFile, octreeCoder, field_name, min_v, max_v);
         v.run();
       }
       else {
-        SimpleOpenNIViewer v(compressedPCFile, octreeCoder);
+        SimpleOpenNIViewer v (compressedPCFile, octreeCoder);
         v.run();
       }
     }
     else {
       // DECODING
       std::ifstream compressedPCFile;
-      compressedPCFile.open(fileName.c_str(), std::ios::in | std::ios::binary);
-      compressedPCFile.seekg(0);
-      compressedPCFile.unsetf(std::ios_base::skipws);
+      compressedPCFile.open (fileName.c_str(), std::ios::in | std::ios::binary);
+      compressedPCFile.seekg (0);
+      compressedPCFile.unsetf (std::ios_base::skipws);
 
-      pcl::visualization::CloudViewer viewer("PCL Compression Viewer");
+      pcl::visualization::CloudViewer viewer ("PCL Compression Viewer");
 
       while (!compressedPCFile.eof()) {
-        PointCloud<PointXYZRGBA>::Ptr cloudOut(new PointCloud<PointXYZRGBA>());
-        octreeCoder->decodePointCloud(compressedPCFile, cloudOut);
-        viewer.showCloud(cloudOut);
+        PointCloud<PointXYZRGBA>::Ptr cloudOut (new PointCloud<PointXYZRGBA>());
+        octreeCoder->decodePointCloud (compressedPCFile, cloudOut);
+        viewer.showCloud (cloudOut);
       }
     }
   }
@@ -416,29 +416,29 @@ main (int argc, char** argv)
       // ENCODING
       try {
         boost::asio::io_service io_service;
-        tcp::endpoint endpoint(tcp::v4(), 6666);
-        tcp::acceptor acceptor(io_service, endpoint);
+        tcp::endpoint endpoint (tcp::v4(), 6666);
+        tcp::acceptor acceptor (io_service, endpoint);
 
         tcp::iostream socketStream;
 
         std::cout << "Waiting for connection.." << std::endl;
 
-        acceptor.accept(*socketStream.rdbuf());
+        acceptor.accept (*socketStream.rdbuf());
 
         std::cout << "Connected!" << std::endl;
 
         if (!bShowInputCloud) {
-          EventHelper v(socketStream, octreeCoder, field_name, min_v, max_v);
+          EventHelper v (socketStream, octreeCoder, field_name, min_v, max_v);
           v.run();
         }
         else {
-          SimpleOpenNIViewer v(socketStream, octreeCoder);
+          SimpleOpenNIViewer v (socketStream, octreeCoder);
           v.run();
         }
 
         std::cout << "Disconnected!" << std::endl;
 
-        std::this_thread::sleep_for(3s);
+        std::this_thread::sleep_for (3s);
 
       } catch (std::exception& e) {
         std::cerr << e.what() << std::endl;
@@ -449,18 +449,18 @@ main (int argc, char** argv)
       std::cout << "Connecting to: " << hostName << ".." << std::endl;
 
       try {
-        tcp::iostream socketStream(hostName.c_str(), "6666");
+        tcp::iostream socketStream (hostName.c_str(), "6666");
 
         std::cout << "Connected!" << std::endl;
 
-        pcl::visualization::CloudViewer viewer(
+        pcl::visualization::CloudViewer viewer (
             "Decoded Point Cloud - PCL Compression Viewer");
 
         while (!socketStream.fail()) {
-          FPS_CALC("drawing");
-          PointCloud<PointXYZRGBA>::Ptr cloudOut(new PointCloud<PointXYZRGBA>());
-          octreeCoder->decodePointCloud(socketStream, cloudOut);
-          viewer.showCloud(cloudOut);
+          FPS_CALC ("drawing");
+          PointCloud<PointXYZRGBA>::Ptr cloudOut (new PointCloud<PointXYZRGBA>());
+          octreeCoder->decodePointCloud (socketStream, cloudOut);
+          viewer.showCloud (cloudOut);
         }
 
       } catch (std::exception& e) {

@@ -70,7 +70,7 @@ public:
   /// @param argv An array of c-strings.  The zero entry is expected to be
   /// the name of the application.  Any additional strings will be interpreted
   /// as filenames designating point clouds to be loaded.
-  MainWindow(int argc, char** argv);
+  MainWindow (int argc, char** argv);
 
   /// @brief Destructor
   ~MainWindow() override;

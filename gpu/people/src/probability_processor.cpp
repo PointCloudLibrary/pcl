@@ -42,23 +42,23 @@
 
 pcl::gpu::people::ProbabilityProcessor::ProbabilityProcessor()
 {
-  PCL_DEBUG("[pcl::gpu::people::ProbabilityProcessor] : (D) : Constructor called\n");
-  impl_.reset(new device::ProbabilityProc());
+  PCL_DEBUG ("[pcl::gpu::people::ProbabilityProcessor] : (D) : Constructor called\n");
+  impl_.reset (new device::ProbabilityProc());
 }
 
 /** \brief This will merge the votes from the different trees into one final vote,
  * including probabilistic's **/
 void
-pcl::gpu::people::ProbabilityProcessor::SelectLabel(
+pcl::gpu::people::ProbabilityProcessor::SelectLabel (
     const Depth& depth, Labels& labels, pcl::device::LabelProbability& probabilities)
 {
-  PCL_DEBUG("[pcl::gpu::people::ProbabilityProcessor::SelectLabel] : (D) : Called\n");
-  impl_->CUDA_SelectLabel(depth, labels, probabilities);
+  PCL_DEBUG ("[pcl::gpu::people::ProbabilityProcessor::SelectLabel] : (D) : Called\n");
+  impl_->CUDA_SelectLabel (depth, labels, probabilities);
 }
 
 /** \brief This will combine two probabilities according their weight **/
 void
-pcl::gpu::people::ProbabilityProcessor::CombineProb(
+pcl::gpu::people::ProbabilityProcessor::CombineProb (
     const Depth& depth,
     pcl::device::LabelProbability& probIn1,
     float weight1,
@@ -66,59 +66,59 @@ pcl::gpu::people::ProbabilityProcessor::CombineProb(
     float weight2,
     pcl::device::LabelProbability& probOut)
 {
-  impl_->CUDA_CombineProb(depth, probIn1, weight1, probIn2, weight2, probOut);
+  impl_->CUDA_CombineProb (depth, probIn1, weight1, probIn2, weight2, probOut);
 }
 
 /** \brief This will sum a probability multiplied with it's weight **/
 void
-pcl::gpu::people::ProbabilityProcessor::WeightedSumProb(
+pcl::gpu::people::ProbabilityProcessor::WeightedSumProb (
     const Depth& depth,
     pcl::device::LabelProbability& probIn,
     float weight,
     pcl::device::LabelProbability& probOut)
 {
-  impl_->CUDA_WeightedSumProb(depth, probIn, weight, probOut);
+  impl_->CUDA_WeightedSumProb (depth, probIn, weight, probOut);
 }
 
 /** \brief This will do a GaussianBlur over the LabelProbability **/
 int
-pcl::gpu::people::ProbabilityProcessor::GaussianBlur(
+pcl::gpu::people::ProbabilityProcessor::GaussianBlur (
     const Depth& depth,
     pcl::device::LabelProbability& probIn,
     DeviceArray<float>& kernel,
     pcl::device::LabelProbability& probOut)
 {
-  return impl_->CUDA_GaussianBlur(depth, probIn, kernel, probOut);
+  return impl_->CUDA_GaussianBlur (depth, probIn, kernel, probOut);
 }
 
 /** \brief This will do a GaussianBlur over the LabelProbability **/
 int
-pcl::gpu::people::ProbabilityProcessor::GaussianBlur(
+pcl::gpu::people::ProbabilityProcessor::GaussianBlur (
     const Depth& depth,
     pcl::device::LabelProbability& probIn,
     DeviceArray<float>& kernel,
     pcl::device::LabelProbability& probTemp,
     pcl::device::LabelProbability& probOut)
 {
-  return impl_->CUDA_GaussianBlur(depth, probIn, kernel, probTemp, probOut);
+  return impl_->CUDA_GaussianBlur (depth, probIn, kernel, probTemp, probOut);
 }
 
 /** \brief This will create a Gaussian Kernel **/
 float*
-pcl::gpu::people::ProbabilityProcessor::CreateGaussianKernel(float sigma,
-                                                             int kernelSize)
+pcl::gpu::people::ProbabilityProcessor::CreateGaussianKernel (float sigma,
+                                                              int kernelSize)
 {
   float* f;
-  f = static_cast<float*>(malloc(kernelSize * sizeof(float)));
-  float sigma_sq = static_cast<float>(std::pow(sigma, 2.f));
-  float mult = static_cast<float>(1 / sqrt(2 * M_PI * sigma_sq));
-  int mid = static_cast<int>(std::floor(static_cast<float>(kernelSize) / 2.f));
+  f = static_cast<float*> (malloc (kernelSize * sizeof (float)));
+  float sigma_sq = static_cast<float> (std::pow (sigma, 2.f));
+  float mult = static_cast<float> (1 / sqrt (2 * M_PI * sigma_sq));
+  int mid = static_cast<int> (std::floor (static_cast<float> (kernelSize) / 2.f));
 
   // Create a symmetric kernel, could also be solved in CUDA kernel but let's do it here
   // :D
   float sum = 0;
   for (int i = 0; i < kernelSize; i++) {
-    f[i] = static_cast<float>(mult * std::exp(-(pow(i - mid, 2.f) / 2 * sigma_sq)));
+    f[i] = static_cast<float> (mult * std::exp (-(pow (i - mid, 2.f) / 2 * sigma_sq)));
     sum += f[i];
   }
 

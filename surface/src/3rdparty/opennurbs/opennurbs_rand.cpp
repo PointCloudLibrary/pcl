@@ -87,8 +87,8 @@ on_random_number_seed (ON__UINT32 s, ON_RANDOM_NUMBER_CONTEXT* randcontext)
 #pragma warning(push)
 #pragma warning(disable : 4127) // warning C4127: conditional expression is constant
 #endif
-  if (N * sizeof(randcontext->mt[0]) != sizeof(randcontext->mt)) {
-    ON_ERROR("the mt[] array in struct ON_RANDOM_NUMBER_CONTEXT must have length N.");
+  if (N * sizeof (randcontext->mt[0]) != sizeof (randcontext->mt)) {
+    ON_ERROR ("the mt[] array in struct ON_RANDOM_NUMBER_CONTEXT must have length N.");
   }
 #if defined(ON_COMPILER_MSC)
 #pragma warning(pop)
@@ -152,7 +152,7 @@ on_random_number (struct ON_RANDOM_NUMBER_CONTEXT* randcontext)
     /* generate N words at one time */
     if (randcontext->mti >= N + 1) {
       /* if randcontext has never been initialized */
-      on_random_number_seed(5489UL, randcontext); /* a default initial seed is used */
+      on_random_number_seed (5489UL, randcontext); /* a default initial seed is used */
     }
 
     for (kk = 0; kk < N - M; kk++) {
@@ -189,8 +189,8 @@ on_srand (ON__UINT32 s)
   // This function is not thread safe!
   // It initializes a static global which is also used by on_rand().
   struct ON_RANDOM_NUMBER_CONTEXT randcontext;
-  on_random_number_seed(s, &randcontext);
-  memcpy(&static_randcontext, &randcontext, sizeof(static_randcontext));
+  on_random_number_seed (s, &randcontext);
+  memcpy (&static_randcontext, &randcontext, sizeof (static_randcontext));
 }
 
 /* generates a random number on [0,0xffffffff]-interval */
@@ -199,7 +199,7 @@ on_rand (void)
 {
   // This function is not thread safe!
   // It modifies a static global which is also used by on_srand().
-  return on_random_number(&static_randcontext);
+  return on_random_number (&static_randcontext);
 }
 
 ///* generates a random number on [0,0x7fffffff]-interval */
@@ -243,27 +243,24 @@ ON_RandomNumberGenerator::ON_RandomNumberGenerator()
 }
 
 void
-ON_RandomNumberGenerator::Seed(ON__UINT32 s)
+ON_RandomNumberGenerator::Seed (ON__UINT32 s)
 {
-  on_random_number_seed(s, &m_rand_context);
+  on_random_number_seed (s, &m_rand_context);
 }
 
 ON__UINT32
-ON_RandomNumberGenerator::RandomNumber()
-{
-  return on_random_number(&m_rand_context);
-}
+ON_RandomNumberGenerator::RandomNumber() { return on_random_number (&m_rand_context); }
 
 double
 ON_RandomNumberGenerator::RandomDouble()
 {
-  return ((double)on_random_number(&m_rand_context)) / 4294967295.0;
+  return ((double)on_random_number (&m_rand_context)) / 4294967295.0;
 }
 
 double
-ON_RandomNumberGenerator::RandomDouble(double t0, double t1)
+ON_RandomNumberGenerator::RandomDouble (double t0, double t1)
 {
-  const double s = ((double)on_random_number(&m_rand_context)) / 4294967295.0;
+  const double s = ((double)on_random_number (&m_rand_context)) / 4294967295.0;
   return ((1.0 - s) * t0 + s * t1);
 }
 
@@ -307,9 +304,9 @@ Swap8 (std::size_t count, ON__UINT64* a, ON__UINT64* b)
 }
 
 void
-ON_RandomNumberGenerator::RandomPermutation(void* base,
-                                            std::size_t nel,
-                                            std::size_t sizeof_element)
+ON_RandomNumberGenerator::RandomPermutation (void* base,
+                                             std::size_t nel,
+                                             std::size_t sizeof_element)
 {
   ON__UINT32 i, j, n;
 
@@ -335,32 +332,32 @@ ON_RandomNumberGenerator::RandomPermutation(void* base,
   //   unlsess 2^32 / N is smallish.  If you need a random
   //   permuation of a very large array, look elsewhere.
 
-  if (0 == sizeof_element % sizeof(ON__UINT64)) {
+  if (0 == sizeof_element % sizeof (ON__UINT64)) {
     ON__UINT64* a = (ON__UINT64*)base;
-    sizeof_element /= sizeof(a[0]);
+    sizeof_element /= sizeof (a[0]);
     for (i = 0; i < n; i++) {
-      j = on_random_number(&m_rand_context) % (n - i);
+      j = on_random_number (&m_rand_context) % (n - i);
       if (j) {
-        Swap8(sizeof_element, a + i, a + i + j);
+        Swap8 (sizeof_element, a + i, a + i + j);
       }
     }
   }
-  else if (0 == sizeof_element % sizeof(ON__UINT32)) {
+  else if (0 == sizeof_element % sizeof (ON__UINT32)) {
     ON__UINT32* a = (ON__UINT32*)base;
-    sizeof_element /= sizeof(a[0]);
+    sizeof_element /= sizeof (a[0]);
     for (i = 0; i < n; i++) {
-      j = on_random_number(&m_rand_context) % (n - i);
+      j = on_random_number (&m_rand_context) % (n - i);
       if (j) {
-        Swap4(sizeof_element, a + i, a + i + j);
+        Swap4 (sizeof_element, a + i, a + i + j);
       }
     }
   }
   else {
     unsigned char* a = (unsigned char*)base;
     for (i = 0; i < n; i++) {
-      j = on_random_number(&m_rand_context) % (n - i);
+      j = on_random_number (&m_rand_context) % (n - i);
       if (j) {
-        Swap1(sizeof_element, a + i, a + i + j);
+        Swap1 (sizeof_element, a + i, a + i + j);
       }
     }
   }

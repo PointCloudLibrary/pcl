@@ -133,7 +133,7 @@ private:
   inline double
   kernel (double x, double sigma)
   {
-    return (std::exp(-(x * x) / (2 * sigma * sigma)));
+    return (std::exp (-(x * x) / (2 * sigma * sigma)));
   }
 
   /** \brief The half size of the Gaussian bilateral filter window (e.g., spatial

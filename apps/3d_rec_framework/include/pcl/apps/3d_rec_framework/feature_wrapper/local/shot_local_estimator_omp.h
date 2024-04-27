@@ -36,92 +36,93 @@ public:
             FeatureTPtr& signatures) override
   {
     if (!normal_estimator_) {
-      PCL_ERROR("SHOTLocalEstimationOMP :: This feature needs normals... please "
-                "provide a normal estimator\n");
+      PCL_ERROR ("SHOTLocalEstimationOMP :: This feature needs normals... please "
+                 "provide a normal estimator\n");
       return false;
     }
 
     if (keypoint_extractor_.empty()) {
-      PCL_ERROR("SHOTLocalEstimationOMP :: This feature needs a keypoint extractor... "
-                "please provide one\n");
+      PCL_ERROR ("SHOTLocalEstimationOMP :: This feature needs a keypoint extractor... "
+                 "please provide one\n");
       return false;
     }
 
-    pcl::PointCloud<pcl::Normal>::Ptr normals(new pcl::PointCloud<pcl::Normal>);
+    pcl::PointCloud<pcl::Normal>::Ptr normals (new pcl::PointCloud<pcl::Normal>);
     pcl::MovingLeastSquares<PointInT, PointInT> mls;
     if (adaptative_MLS_) {
       typename search::KdTree<PointInT>::Ptr tree;
       Eigen::Vector4f centroid_cluster;
-      pcl::compute3DCentroid(*in, centroid_cluster);
+      pcl::compute3DCentroid (*in, centroid_cluster);
       float dist_to_sensor = centroid_cluster.norm();
       float sigma = dist_to_sensor * 0.01f;
-      mls.setSearchMethod(tree);
-      mls.setSearchRadius(sigma);
-      mls.setUpsamplingMethod(mls.SAMPLE_LOCAL_PLANE);
-      mls.setUpsamplingRadius(0.002);
-      mls.setUpsamplingStepSize(0.001);
+      mls.setSearchMethod (tree);
+      mls.setSearchRadius (sigma);
+      mls.setUpsamplingMethod (mls.SAMPLE_LOCAL_PLANE);
+      mls.setUpsamplingRadius (0.002);
+      mls.setUpsamplingStepSize (0.001);
     }
 
-    normals.reset(new pcl::PointCloud<pcl::Normal>);
+    normals.reset (new pcl::PointCloud<pcl::Normal>);
     {
-      pcl::ScopeTime t("Compute normals");
-      normal_estimator_->estimate(in, processed, normals);
+      pcl::ScopeTime t ("Compute normals");
+      normal_estimator_->estimate (in, processed, normals);
     }
 
     if (adaptative_MLS_) {
-      mls.setInputCloud(processed);
+      mls.setInputCloud (processed);
 
-      PointInTPtr filtered(new pcl::PointCloud<PointInT>);
-      mls.process(*filtered);
+      PointInTPtr filtered (new pcl::PointCloud<PointInT>);
+      mls.process (*filtered);
 
-      processed.reset(new pcl::PointCloud<PointInT>);
-      normals.reset(new pcl::PointCloud<pcl::Normal>);
+      processed.reset (new pcl::PointCloud<PointInT>);
+      normals.reset (new pcl::PointCloud<pcl::Normal>);
       {
-        pcl::ScopeTime t("Compute normals after MLS");
+        pcl::ScopeTime t ("Compute normals after MLS");
         filtered->is_dense = false;
-        normal_estimator_->estimate(filtered, processed, normals);
+        normal_estimator_->estimate (filtered, processed, normals);
       }
     }
 
-    this->computeKeypoints(processed, keypoints, normals);
+    this->computeKeypoints (processed, keypoints, normals);
     std::cout << " " << normals->size() << " " << processed->size() << std::endl;
 
     if (keypoints->points.empty()) {
-      PCL_WARN("SHOTLocalEstimationOMP :: No keypoints were found\n");
+      PCL_WARN ("SHOTLocalEstimationOMP :: No keypoints were found\n");
       return false;
     }
 
     // compute signatures
     using SHOTEstimator = pcl::SHOTEstimationOMP<PointInT, pcl::Normal, pcl::SHOT352>;
-    typename pcl::search::KdTree<PointInT>::Ptr tree(new pcl::search::KdTree<PointInT>);
-    tree->setInputCloud(processed);
+    typename pcl::search::KdTree<PointInT>::Ptr tree (
+        new pcl::search::KdTree<PointInT>);
+    tree->setInputCloud (processed);
 
-    pcl::PointCloud<pcl::SHOT352>::Ptr shots(new pcl::PointCloud<pcl::SHOT352>);
+    pcl::PointCloud<pcl::SHOT352>::Ptr shots (new pcl::PointCloud<pcl::SHOT352>);
     SHOTEstimator shot_estimate;
-    shot_estimate.setNumberOfThreads(8);
-    shot_estimate.setSearchMethod(tree);
-    shot_estimate.setInputCloud(keypoints);
-    shot_estimate.setSearchSurface(processed);
-    shot_estimate.setInputNormals(normals);
-    shot_estimate.setRadiusSearch(support_radius_);
+    shot_estimate.setNumberOfThreads (8);
+    shot_estimate.setSearchMethod (tree);
+    shot_estimate.setInputCloud (keypoints);
+    shot_estimate.setSearchSurface (processed);
+    shot_estimate.setInputNormals (normals);
+    shot_estimate.setRadiusSearch (support_radius_);
 
     {
-      pcl::ScopeTime t("Compute SHOT");
-      shot_estimate.compute(*shots);
+      pcl::ScopeTime t ("Compute SHOT");
+      shot_estimate.compute (*shots);
     }
 
-    signatures->resize(shots->size());
+    signatures->resize (shots->size());
     signatures->width = shots->size();
     signatures->height = 1;
 
-    int size_feat = sizeof((*signatures)[0].histogram) / sizeof(float);
+    int size_feat = sizeof ((*signatures)[0].histogram) / sizeof (float);
 
     int good = 0;
     for (const auto& point : shots->points) {
 
       int NaNs = 0;
       for (int i = 0; i < size_feat; i++) {
-        if (!std::isfinite(point.descriptor[i]))
+        if (!std::isfinite (point.descriptor[i]))
           NaNs++;
       }
 
@@ -133,7 +134,7 @@ public:
         good++;
       }
     }
-    signatures->resize(good);
+    signatures->resize (good);
     signatures->width = good;
 
     return true;

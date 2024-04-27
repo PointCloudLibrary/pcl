@@ -46,44 +46,44 @@ namespace cuda {
 template <template <typename> class Storage>
 struct NormalEstimationKernel {
   using CloudConstPtr = typename PointCloudAOS<Storage>::ConstPtr;
-  NormalEstimationKernel(const typename PointCloudAOS<Storage>::ConstPtr& input,
-                         float focallength,
-                         float sqr_radius,
-                         float sqrt_desired_nr_neighbors)
-  : points_(thrust::raw_pointer_cast(&input->points[0]))
-  , focallength_(focallength)
-  , search_(input, focallength, sqr_radius)
-  , sqr_radius_(sqr_radius)
-  , sqrt_desired_nr_neighbors_(sqrt_desired_nr_neighbors)
+  NormalEstimationKernel (const typename PointCloudAOS<Storage>::ConstPtr& input,
+                          float focallength,
+                          float sqr_radius,
+                          float sqrt_desired_nr_neighbors)
+  : points_ (thrust::raw_pointer_cast (&input->points[0]))
+  , focallength_ (focallength)
+  , search_ (input, focallength, sqr_radius)
+  , sqr_radius_ (sqr_radius)
+  , sqrt_desired_nr_neighbors_ (sqrt_desired_nr_neighbors)
   {}
 
   inline __host__ __device__ float4
-  operator()(float3 query_pt)
+  operator() (float3 query_pt)
   {
     CovarianceMatrix cov;
     int nnn = 0;
-    if (!isnan(query_pt.x))
-      nnn = search_.computeCovarianceOnline(query_pt, cov, sqrt_desired_nr_neighbors_);
+    if (!isnan (query_pt.x))
+      nnn = search_.computeCovarianceOnline (query_pt, cov, sqrt_desired_nr_neighbors_);
     else
-      return make_float4(query_pt.x);
+      return make_float4 (query_pt.x);
 
     CovarianceMatrix evecs;
     float3 evals;
     // compute eigenvalues and -vectors
     if (nnn <= 1)
-      return make_float4(0);
+      return make_float4 (0);
 
-    eigen33(cov, evecs, evals);
+    eigen33 (cov, evecs, evals);
     // float curvature = evals.x / (evals.x + evals.y + evals.z);
     float curvature =
         evals.x / (query_pt.z * (0.2f / 4.0f) * query_pt.z * (0.2f / 4.0f));
 
-    float3 mc = normalize(evecs.data[0]);
+    float3 mc = normalize (evecs.data[0]);
     // TODO: this should be an optional step, as it slows down everything
     // btw, this flips the normals to face the origin (assumed to be the view point)
-    if (dot(query_pt, mc) > 0)
+    if (dot (query_pt, mc) > 0)
       mc = -mc;
-    return make_float4(mc.x, mc.y, mc.z, curvature);
+    return make_float4 (mc.x, mc.y, mc.z, curvature);
   }
 
   const PointXYZRGB* points_;
@@ -95,31 +95,33 @@ struct NormalEstimationKernel {
 
 template <template <typename> class Storage>
 struct FastNormalEstimationKernel {
-  FastNormalEstimationKernel(const typename PointCloudAOS<Storage>::ConstPtr& input,
-                             int width,
-                             int height)
-  : points_(thrust::raw_pointer_cast(&input->points[0])), width_(width), height_(height)
+  FastNormalEstimationKernel (const typename PointCloudAOS<Storage>::ConstPtr& input,
+                              int width,
+                              int height)
+  : points_ (thrust::raw_pointer_cast (&input->points[0]))
+  , width_ (width)
+  , height_ (height)
   {}
 
   inline __host__ __device__ float4
-  operator()(int idx)
+  operator() (int idx)
   {
     float3 query_pt = points_[idx];
-    if (isnan(query_pt.z))
-      return make_float4(0.0f, 0.0f, 0.0f, 0.0f);
+    if (isnan (query_pt.z))
+      return make_float4 (0.0f, 0.0f, 0.0f, 0.0f);
 
     int xIdx = idx % width_;
     int yIdx = idx / width_;
 
     // are we at a border? are our neighbor valid points?
-    bool west_valid = (xIdx > 1) && !isnan(points_[idx - 1].z) &&
-                      std::abs(points_[idx - 1].z - query_pt.z) < 200;
-    bool east_valid = (xIdx < width_ - 1) && !isnan(points_[idx + 1].z) &&
-                      std::abs(points_[idx + 1].z - query_pt.z) < 200;
-    bool north_valid = (yIdx > 1) && !isnan(points_[idx - width_].z) &&
-                       std::abs(points_[idx - width_].z - query_pt.z) < 200;
-    bool south_valid = (yIdx < height_ - 1) && !isnan(points_[idx + width_].z) &&
-                       std::abs(points_[idx + width_].z - query_pt.z) < 200;
+    bool west_valid = (xIdx > 1) && !isnan (points_[idx - 1].z) &&
+                      std::abs (points_[idx - 1].z - query_pt.z) < 200;
+    bool east_valid = (xIdx < width_ - 1) && !isnan (points_[idx + 1].z) &&
+                      std::abs (points_[idx + 1].z - query_pt.z) < 200;
+    bool north_valid = (yIdx > 1) && !isnan (points_[idx - width_].z) &&
+                       std::abs (points_[idx - width_].z - query_pt.z) < 200;
+    bool south_valid = (yIdx < height_ - 1) && !isnan (points_[idx + width_].z) &&
+                       std::abs (points_[idx + width_].z - query_pt.z) < 200;
 
     float3 horiz, vert;
     if (west_valid & east_valid)
@@ -129,7 +131,7 @@ struct FastNormalEstimationKernel {
     if (!west_valid & east_valid)
       horiz = points_[idx + 1] - points_[idx];
     if (!west_valid & !east_valid)
-      return make_float4(0.0f, 0.0f, 0.0f, 1.0f);
+      return make_float4 (0.0f, 0.0f, 0.0f, 1.0f);
 
     if (south_valid & north_valid)
       vert = points_[idx - width_] - points_[idx + width_];
@@ -138,18 +140,18 @@ struct FastNormalEstimationKernel {
     if (!south_valid & north_valid)
       vert = points_[idx - width_] - points_[idx];
     if (!south_valid & !north_valid)
-      return make_float4(0.0f, 0.0f, 0.0f, 1.0f);
+      return make_float4 (0.0f, 0.0f, 0.0f, 1.0f);
 
-    float3 normal = cross(horiz, vert);
+    float3 normal = cross (horiz, vert);
 
-    float curvature = length(normal);
-    curvature = std::abs(horiz.z) > 0.04 | std::abs(vert.z) > 0.04 | !west_valid |
+    float curvature = length (normal);
+    curvature = std::abs (horiz.z) > 0.04 | std::abs (vert.z) > 0.04 | !west_valid |
                 !east_valid | !north_valid | !south_valid;
 
-    float3 mc = normalize(normal);
-    if (dot(query_pt, mc) > 0)
+    float3 mc = normalize (normal);
+    if (dot (query_pt, mc) > 0)
       mc = -mc;
-    return make_float4(mc.x, mc.y, mc.z, curvature);
+    return make_float4 (mc.x, mc.y, mc.z, curvature);
   }
 
   const PointXYZRGB* points_;
@@ -160,40 +162,40 @@ struct FastNormalEstimationKernel {
 template <template <typename> class Storage>
 struct NormalDeviationKernel {
   using CloudConstPtr = typename PointCloudAOS<Storage>::ConstPtr;
-  NormalDeviationKernel(const typename PointCloudAOS<Storage>::ConstPtr& input,
-                        float focallength,
-                        float sqr_radius,
-                        float sqrt_desired_nr_neighbors)
-  : points_(thrust::raw_pointer_cast(&input->points[0]))
-  , focallength_(focallength)
-  , search_(input, focallength, sqr_radius)
-  , sqr_radius_(sqr_radius)
-  , sqrt_desired_nr_neighbors_(sqrt_desired_nr_neighbors)
+  NormalDeviationKernel (const typename PointCloudAOS<Storage>::ConstPtr& input,
+                         float focallength,
+                         float sqr_radius,
+                         float sqrt_desired_nr_neighbors)
+  : points_ (thrust::raw_pointer_cast (&input->points[0]))
+  , focallength_ (focallength)
+  , search_ (input, focallength, sqr_radius)
+  , sqr_radius_ (sqr_radius)
+  , sqrt_desired_nr_neighbors_ (sqrt_desired_nr_neighbors)
   {}
 
   template <typename Tuple>
   inline __host__ __device__ float4
-  operator()(const Tuple& t)
+  operator() (const Tuple& t)
   {
-    float3 query_pt = thrust::get<0>(t);
-    float4 normal = thrust::get<1>(t);
+    float3 query_pt = thrust::get<0> (t);
+    float4 normal = thrust::get<1> (t);
     CovarianceMatrix cov;
     float3 centroid;
-    if (!isnan(query_pt.x))
-      centroid = search_.computeCentroid(query_pt, cov, sqrt_desired_nr_neighbors_);
+    if (!isnan (query_pt.x))
+      centroid = search_.computeCentroid (query_pt, cov, sqrt_desired_nr_neighbors_);
     else
-      return make_float4(query_pt.x);
+      return make_float4 (query_pt.x);
 
-    float proj = normal.x * (query_pt.x - centroid.x) / sqrt(sqr_radius_) +
-                 normal.y * (query_pt.y - centroid.y) / sqrt(sqr_radius_) +
-                 normal.z * (query_pt.z - centroid.z) / sqrt(sqr_radius_);
+    float proj = normal.x * (query_pt.x - centroid.x) / sqrt (sqr_radius_) +
+                 normal.y * (query_pt.y - centroid.y) / sqrt (sqr_radius_) +
+                 normal.z * (query_pt.z - centroid.z) / sqrt (sqr_radius_);
 
     // return make_float4 (normal.x*proj, normal.y*proj, normal.z*proj, clamp (std::abs
     // (proj), 0.0f, 1.0f));
-    return make_float4((centroid.x - query_pt.x) / sqrt(sqr_radius_),
-                       (centroid.y - query_pt.y) / sqrt(sqr_radius_),
-                       (centroid.z - query_pt.z) / sqrt(sqr_radius_),
-                       0);
+    return make_float4 ((centroid.x - query_pt.x) / sqrt (sqr_radius_),
+                        (centroid.y - query_pt.y) / sqrt (sqr_radius_),
+                        (centroid.z - query_pt.z) / sqrt (sqr_radius_),
+                        0);
   }
 
   const PointXYZRGB* points_;

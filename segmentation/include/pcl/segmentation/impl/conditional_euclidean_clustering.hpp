@@ -43,7 +43,7 @@
 
 template <typename PointT>
 void
-pcl::ConditionalEuclideanClustering<PointT>::segment(pcl::IndicesClusters& clusters)
+pcl::ConditionalEuclideanClustering<PointT>::segment (pcl::IndicesClusters& clusters)
 {
   // Prepare output (going to use push_back)
   clusters.clear();
@@ -60,13 +60,13 @@ pcl::ConditionalEuclideanClustering<PointT>::segment(pcl::IndicesClusters& clust
   // Initialize the search class
   if (!searcher_) {
     if (input_->isOrganized())
-      searcher_.reset(new pcl::search::OrganizedNeighbor<PointT>(
+      searcher_.reset (new pcl::search::OrganizedNeighbor<PointT> (
           false)); // not requiring sorted results is much faster
     else
-      searcher_.reset(new pcl::search::KdTree<PointT>(
+      searcher_.reset (new pcl::search::KdTree<PointT> (
           false)); // not requiring sorted results is much faster
   }
-  searcher_->setInputCloud(input_, indices_);
+  searcher_->setInputCloud (input_, indices_);
   // If searcher_ gives sorted results, we can skip the first one because it is the
   // query point itself
   const int nn_start_idx = searcher_->getSortedResults() ? 1 : 0;
@@ -78,7 +78,7 @@ pcl::ConditionalEuclideanClustering<PointT>::segment(pcl::IndicesClusters& clust
   // Create a bool vector of processed point indices, and initialize it to false
   // Need to have it contain all possible points because radius search can not return
   // indices into indices
-  std::vector<bool> processed(input_->size(), false);
+  std::vector<bool> processed (input_->size(), false);
 
   // Process all points indexed by indices_
   for (const auto& iindex : (*indices_)) // iindex = input index
@@ -92,22 +92,22 @@ pcl::ConditionalEuclideanClustering<PointT>::segment(pcl::IndicesClusters& clust
     int cii = 0; // cii = cluster indices iterator
 
     // Add the point to the cluster
-    current_cluster.push_back(iindex);
+    current_cluster.push_back (iindex);
     processed[iindex] = true;
 
     // Process the current cluster (it can be growing in size as it is being processed)
-    while (cii < static_cast<int>(current_cluster.size())) {
+    while (cii < static_cast<int> (current_cluster.size())) {
       // Search for neighbors around the current seed point of the current cluster
-      if (searcher_->radiusSearch((*input_)[current_cluster[cii]],
-                                  cluster_tolerance_,
-                                  nn_indices,
-                                  nn_distances) < 1) {
+      if (searcher_->radiusSearch ((*input_)[current_cluster[cii]],
+                                   cluster_tolerance_,
+                                   nn_indices,
+                                   nn_distances) < 1) {
         cii++;
         continue;
       }
 
       // Process the neighbors
-      for (int nii = nn_start_idx; nii < static_cast<int>(nn_indices.size());
+      for (int nii = nn_start_idx; nii < static_cast<int> (nn_indices.size());
            ++nii) // nii = neighbor indices iterator
       {
         // Has this point been processed before?
@@ -115,11 +115,11 @@ pcl::ConditionalEuclideanClustering<PointT>::segment(pcl::IndicesClusters& clust
           continue;
 
         // Validate if condition holds
-        if (condition_function_((*input_)[current_cluster[cii]],
-                                (*input_)[nn_indices[nii]],
-                                nn_distances[nii])) {
+        if (condition_function_ ((*input_)[current_cluster[cii]],
+                                 (*input_)[nn_indices[nii]],
+                                 nn_distances[nii])) {
           // Add the point to the cluster
-          current_cluster.push_back(nn_indices[nii]);
+          current_cluster.push_back (nn_indices[nii]);
           processed[nn_indices[nii]] = true;
         }
       }
@@ -129,23 +129,23 @@ pcl::ConditionalEuclideanClustering<PointT>::segment(pcl::IndicesClusters& clust
     // If extracting removed clusters, all clusters need to be saved, otherwise only the
     // ones within the given cluster size range
     if (extract_removed_clusters_ ||
-        (static_cast<int>(current_cluster.size()) >= min_cluster_size_ &&
-         static_cast<int>(current_cluster.size()) <= max_cluster_size_)) {
+        (static_cast<int> (current_cluster.size()) >= min_cluster_size_ &&
+         static_cast<int> (current_cluster.size()) <= max_cluster_size_)) {
       pcl::PointIndices pi;
       pi.header = input_->header;
-      pi.indices.resize(current_cluster.size());
-      for (int ii = 0; ii < static_cast<int>(current_cluster.size());
+      pi.indices.resize (current_cluster.size());
+      for (int ii = 0; ii < static_cast<int> (current_cluster.size());
            ++ii) // ii = indices iterator
         pi.indices[ii] = current_cluster[ii];
 
       if (extract_removed_clusters_ &&
-          static_cast<int>(current_cluster.size()) < min_cluster_size_)
-        small_clusters_->push_back(pi);
+          static_cast<int> (current_cluster.size()) < min_cluster_size_)
+        small_clusters_->push_back (pi);
       else if (extract_removed_clusters_ &&
-               static_cast<int>(current_cluster.size()) > max_cluster_size_)
-        large_clusters_->push_back(pi);
+               static_cast<int> (current_cluster.size()) > max_cluster_size_)
+        large_clusters_->push_back (pi);
       else
-        clusters.push_back(pi);
+        clusters.push_back (pi);
     }
   }
 

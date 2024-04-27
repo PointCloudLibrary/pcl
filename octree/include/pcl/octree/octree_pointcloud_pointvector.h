@@ -75,8 +75,8 @@ public:
   /** \brief Constructor.
    *  \param resolution_arg: octree resolution at lowest octree level
    * */
-  OctreePointCloudPointVector(const double resolution_arg)
-  : OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>(resolution_arg)
+  OctreePointCloudPointVector (const double resolution_arg)
+  : OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT> (resolution_arg)
   {}
 
   /** \brief Empty class constructor. */

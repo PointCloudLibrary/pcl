@@ -57,7 +57,8 @@
     ++count;                                                                           \
     if (now - last >= 1.0) {                                                           \
       std::cout << "Average framerate (" << (_WHAT_)                                   \
-                << "): " << double(count) / double(now - last) << " Hz" << std::endl;  \
+                << "): " << double (count) / double (now - last) << " Hz"              \
+                << std::endl;                                                          \
       count = 0;                                                                       \
       last = now;                                                                      \
     }                                                                                  \
@@ -74,37 +75,37 @@ printHelp (int, char** argv)
   using pcl::console::print_error;
   using pcl::console::print_info;
 
-  print_error("Syntax is: %s [((<device_id> | <path-to-oni-file>) [-depthmode <mode>] "
-              "[-imagemode <mode>] [-xyz] | -l [<device_id>]| -h | --help)]\n",
+  print_error ("Syntax is: %s [((<device_id> | <path-to-oni-file>) [-depthmode <mode>] "
+               "[-imagemode <mode>] [-xyz] | -l [<device_id>]| -h | --help)]\n",
+               argv[0]);
+  print_info ("%s -h | --help : shows this help\n", argv[0]);
+  print_info ("%s -xyz : use only XYZ values and ignore RGB components (this flag is "
+              "required for use with ASUS Xtion Pro) \n",
               argv[0]);
-  print_info("%s -h | --help : shows this help\n", argv[0]);
-  print_info("%s -xyz : use only XYZ values and ignore RGB components (this flag is "
-             "required for use with ASUS Xtion Pro) \n",
-             argv[0]);
-  print_info("%s -l : list all available devices\n", argv[0]);
-  print_info("%s -l <device-id> :list all available modes for specified device\n",
-             argv[0]);
-  print_info("\t\t<device_id> may be \"#1\", \"#2\", ... for the first, second etc "
-             "device in the list\n");
+  print_info ("%s -l : list all available devices\n", argv[0]);
+  print_info ("%s -l <device-id> :list all available modes for specified device\n",
+              argv[0]);
+  print_info ("\t\t<device_id> may be \"#1\", \"#2\", ... for the first, second etc "
+              "device in the list\n");
 #ifndef _WIN32
-  print_info("\t\t                   bus@address for the device connected to a "
-             "specific usb-bus / address combination\n");
-  print_info("\t\t                   <serial-number>\n");
+  print_info ("\t\t                   bus@address for the device connected to a "
+              "specific usb-bus / address combination\n");
+  print_info ("\t\t                   <serial-number>\n");
 #endif
-  print_info("\n\nexamples:\n");
-  print_info("%s \"#1\"\n", argv[0]);
-  print_info("\t\t uses the first device.\n");
-  print_info("%s  \"./temp/test.oni\"\n", argv[0]);
-  print_info("\t\t uses the oni-player device to play back oni file given by path.\n");
-  print_info("%s -l\n", argv[0]);
-  print_info("\t\t list all available devices.\n");
-  print_info("%s -l \"#2\"\n", argv[0]);
-  print_info("\t\t list all available modes for the second device.\n");
+  print_info ("\n\nexamples:\n");
+  print_info ("%s \"#1\"\n", argv[0]);
+  print_info ("\t\t uses the first device.\n");
+  print_info ("%s  \"./temp/test.oni\"\n", argv[0]);
+  print_info ("\t\t uses the oni-player device to play back oni file given by path.\n");
+  print_info ("%s -l\n", argv[0]);
+  print_info ("\t\t list all available devices.\n");
+  print_info ("%s -l \"#2\"\n", argv[0]);
+  print_info ("\t\t list all available modes for the second device.\n");
 #ifndef _WIN32
-  print_info("%s A00361800903049A\n", argv[0]);
-  print_info("\t\t uses the device with the serial number \'A00361800903049A\'.\n");
-  print_info("%s 1@16\n", argv[0]);
-  print_info("\t\t uses the device on address 16 at USB bus 1.\n");
+  print_info ("%s A00361800903049A\n", argv[0]);
+  print_info ("\t\t uses the device with the serial number \'A00361800903049A\'.\n");
+  print_info ("%s 1@16\n", argv[0]);
+  print_info ("\t\t uses the device on address 16 at USB bus 1.\n");
 #endif
 }
 
@@ -115,24 +116,24 @@ public:
   using Cloud = pcl::PointCloud<PointType>;
   using CloudConstPtr = typename Cloud::ConstPtr;
 
-  OpenNI2Viewer(pcl::io::OpenNI2Grabber& grabber)
-  : cloud_viewer_(new pcl::visualization::PCLVisualizer("PCL OpenNI2 cloud"))
-  , grabber_(grabber)
+  OpenNI2Viewer (pcl::io::OpenNI2Grabber& grabber)
+  : cloud_viewer_ (new pcl::visualization::PCLVisualizer ("PCL OpenNI2 cloud"))
+  , grabber_ (grabber)
   {}
 
   void
   cloud_callback (const CloudConstPtr& cloud)
   {
-    FPS_CALC("cloud callback");
-    std::lock_guard<std::mutex> lock(cloud_mutex_);
+    FPS_CALC ("cloud callback");
+    std::lock_guard<std::mutex> lock (cloud_mutex_);
     cloud_ = cloud;
   }
 
   void
   image_callback (const pcl::io::openni2::Image::Ptr& image)
   {
-    FPS_CALC("image callback");
-    std::lock_guard<std::mutex> lock(image_mutex_);
+    FPS_CALC ("image callback");
+    std::lock_guard<std::mutex> lock (image_mutex_);
     image_ = image;
 
     if (image->getEncoding() != pcl::io::openni2::Image::RGB) {
@@ -141,7 +142,7 @@ public:
         rgb_data_size_ = image->getWidth() * image->getHeight();
         rgb_data_ = new unsigned char[rgb_data_size_ * 3];
       }
-      image_->fillRGB(image_->getWidth(), image_->getHeight(), rgb_data_);
+      image_->fillRGB (image_->getWidth(), image_->getHeight(), rgb_data_);
     }
   }
 
@@ -175,21 +176,22 @@ public:
   void
   run ()
   {
-    cloud_viewer_->registerMouseCallback(&OpenNI2Viewer::mouse_callback, *this);
-    cloud_viewer_->registerKeyboardCallback(&OpenNI2Viewer::keyboard_callback, *this);
-    cloud_viewer_->setCameraFieldOfView(1.02259994f);
-    std::function<void(const CloudConstPtr&)> cloud_cb =
-        [this] (const CloudConstPtr& cloud) { cloud_callback(cloud); };
-    boost::signals2::connection cloud_connection = grabber_.registerCallback(cloud_cb);
+    cloud_viewer_->registerMouseCallback (&OpenNI2Viewer::mouse_callback, *this);
+    cloud_viewer_->registerKeyboardCallback (&OpenNI2Viewer::keyboard_callback, *this);
+    cloud_viewer_->setCameraFieldOfView (1.02259994f);
+    std::function<void (const CloudConstPtr&)> cloud_cb =
+        [this] (const CloudConstPtr& cloud) { cloud_callback (cloud); };
+    boost::signals2::connection cloud_connection = grabber_.registerCallback (cloud_cb);
 
     boost::signals2::connection image_connection;
-    if (grabber_.providesCallback<void(const pcl::io::openni2::Image::Ptr&)>()) {
-      image_viewer_.reset(new pcl::visualization::ImageViewer("PCL OpenNI image"));
-      image_viewer_->registerMouseCallback(&OpenNI2Viewer::mouse_callback, *this);
-      image_viewer_->registerKeyboardCallback(&OpenNI2Viewer::keyboard_callback, *this);
-      std::function<void(const pcl::io::openni2::Image::Ptr&)> image_cb =
-          [this] (const pcl::io::openni2::Image::Ptr& img) { image_callback(img); };
-      image_connection = grabber_.registerCallback(image_cb);
+    if (grabber_.providesCallback<void (const pcl::io::openni2::Image::Ptr&)>()) {
+      image_viewer_.reset (new pcl::visualization::ImageViewer ("PCL OpenNI image"));
+      image_viewer_->registerMouseCallback (&OpenNI2Viewer::mouse_callback, *this);
+      image_viewer_->registerKeyboardCallback (&OpenNI2Viewer::keyboard_callback,
+                                               *this);
+      std::function<void (const pcl::io::openni2::Image::Ptr&)> image_cb =
+          [this] (const pcl::io::openni2::Image::Ptr& img) { image_callback (img); };
+      image_connection = grabber_.registerCallback (image_cb);
     }
 
     bool image_init = false, cloud_init = false;
@@ -205,54 +207,54 @@ public:
 
       // See if we can get a cloud
       if (cloud_mutex_.try_lock()) {
-        cloud_.swap(cloud);
+        cloud_.swap (cloud);
         cloud_mutex_.unlock();
       }
 
       if (cloud) {
-        FPS_CALC("drawing cloud");
+        FPS_CALC ("drawing cloud");
 
         if (!cloud_init) {
-          cloud_viewer_->setPosition(0, 0);
-          cloud_viewer_->setSize(cloud->width, cloud->height);
+          cloud_viewer_->setPosition (0, 0);
+          cloud_viewer_->setSize (cloud->width, cloud->height);
           cloud_init = true;
         }
 
-        if (!cloud_viewer_->updatePointCloud(cloud, "OpenNICloud")) {
-          cloud_viewer_->addPointCloud(cloud, "OpenNICloud");
-          cloud_viewer_->resetCameraViewpoint("OpenNICloud");
-          cloud_viewer_->setCameraPosition(0,
-                                           0,
-                                           0, // Position
-                                           0,
-                                           0,
-                                           1, // Viewpoint
-                                           0,
-                                           -1,
-                                           0); // Up
+        if (!cloud_viewer_->updatePointCloud (cloud, "OpenNICloud")) {
+          cloud_viewer_->addPointCloud (cloud, "OpenNICloud");
+          cloud_viewer_->resetCameraViewpoint ("OpenNICloud");
+          cloud_viewer_->setCameraPosition (0,
+                                            0,
+                                            0, // Position
+                                            0,
+                                            0,
+                                            1, // Viewpoint
+                                            0,
+                                            -1,
+                                            0); // Up
         }
       }
 
       // See if we can get an image
       if (image_mutex_.try_lock()) {
-        image_.swap(image);
+        image_.swap (image);
         image_mutex_.unlock();
       }
 
       if (image) {
         if (!image_init && cloud && cloud->width != 0) {
-          image_viewer_->setPosition(cloud->width, 0);
-          image_viewer_->setSize(cloud->width, cloud->height);
+          image_viewer_->setPosition (cloud->width, 0);
+          image_viewer_->setSize (cloud->width, cloud->height);
           image_init = true;
         }
 
         if (image->getEncoding() == pcl::io::openni2::Image::RGB)
-          image_viewer_->addRGBImage(
-              reinterpret_cast<const unsigned char*>(image->getData()),
+          image_viewer_->addRGBImage (
+              reinterpret_cast<const unsigned char*> (image->getData()),
               image->getWidth(),
               image->getHeight());
         else
-          image_viewer_->addRGBImage(rgb_data_, image->getWidth(), image->getHeight());
+          image_viewer_->addRGBImage (rgb_data_, image->getWidth(), image->getHeight());
         image_viewer_->spinOnce();
       }
     }
@@ -291,12 +293,12 @@ main (int argc, char** argv)
   if (argc >= 2) {
     device_id = argv[1];
     if (device_id == "--help" || device_id == "-h") {
-      printHelp(argc, argv);
+      printHelp (argc, argv);
       return 0;
     }
     if (device_id == "-l") {
       if (argc >= 3) {
-        pcl::io::OpenNI2Grabber grabber(argv[2]);
+        pcl::io::OpenNI2Grabber grabber (argv[2]);
         auto device = grabber.getDevice();
         std::cout
             << *device; // Prints out all sensor data, including supported video modes
@@ -307,7 +309,7 @@ main (int argc, char** argv)
           for (std::size_t deviceIdx = 0;
                deviceIdx < deviceManager->getNumOfConnectedDevices();
                ++deviceIdx) {
-            auto device = deviceManager->getDeviceByIndex(deviceIdx);
+            auto device = deviceManager->getDeviceByIndex (deviceIdx);
             std::cout << "Device " << device->getStringID() << "connected."
                       << std::endl;
           }
@@ -330,29 +332,29 @@ main (int argc, char** argv)
   }
 
   unsigned mode;
-  if (pcl::console::parse(argc, argv, "-depthmode", mode) != -1)
-    depth_mode = static_cast<pcl::io::OpenNI2Grabber::Mode>(mode);
+  if (pcl::console::parse (argc, argv, "-depthmode", mode) != -1)
+    depth_mode = static_cast<pcl::io::OpenNI2Grabber::Mode> (mode);
 
-  if (pcl::console::parse(argc, argv, "-imagemode", mode) != -1)
-    image_mode = static_cast<pcl::io::OpenNI2Grabber::Mode>(mode);
+  if (pcl::console::parse (argc, argv, "-imagemode", mode) != -1)
+    image_mode = static_cast<pcl::io::OpenNI2Grabber::Mode> (mode);
 
-  if (pcl::console::find_argument(argc, argv, "-xyz") != -1)
+  if (pcl::console::find_argument (argc, argv, "-xyz") != -1)
     xyz = true;
 
   try {
-    pcl::io::OpenNI2Grabber grabber(device_id, depth_mode, image_mode);
+    pcl::io::OpenNI2Grabber grabber (device_id, depth_mode, image_mode);
 
     if (xyz || !grabber.providesCallback<
                    pcl::io::OpenNI2Grabber::sig_cb_openni_point_cloud_rgb>()) {
-      OpenNI2Viewer<pcl::PointXYZ> openni_viewer(grabber);
+      OpenNI2Viewer<pcl::PointXYZ> openni_viewer (grabber);
       openni_viewer.run();
     }
     else {
-      OpenNI2Viewer<pcl::PointXYZRGBA> openni_viewer(grabber);
+      OpenNI2Viewer<pcl::PointXYZRGBA> openni_viewer (grabber);
       openni_viewer.run();
     }
   } catch (pcl::IOException& e) {
-    pcl::console::print_error("Failed to create a grabber: %s\n", e.what());
+    pcl::console::print_error ("Failed to create a grabber: %s\n", e.what());
     return (1);
   }
 

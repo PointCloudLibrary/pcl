@@ -61,39 +61,39 @@ Eigen::Quaternionf orientation;
 void
 printHelp (int, char** argv)
 {
-  print_error("Syntax is: %s input.pcd output.pcd <options>\n", argv[0]);
-  print_info("  where options are:\n");
-  print_info("                     -min X = use a minimum of X points peer cluster "
-             "(default: ");
-  print_value("%d", default_min);
-  print_info(")\n");
-  print_info("                     -max X      = use a maximum of X points peer "
-             "cluster (default: ");
-  print_value("%d", default_max);
-  print_info(")\n");
-  print_info("                     -tolerance X = the spatial distance between "
-             "clusters (default: ");
-  print_value("%lf", default_tolerance);
-  print_info(")\n");
+  print_error ("Syntax is: %s input.pcd output.pcd <options>\n", argv[0]);
+  print_info ("  where options are:\n");
+  print_info ("                     -min X = use a minimum of X points peer cluster "
+              "(default: ");
+  print_value ("%d", default_min);
+  print_info (")\n");
+  print_info ("                     -max X      = use a maximum of X points peer "
+              "cluster (default: ");
+  print_value ("%d", default_max);
+  print_info (")\n");
+  print_info ("                     -tolerance X = the spatial distance between "
+              "clusters (default: ");
+  print_value ("%lf", default_tolerance);
+  print_info (")\n");
 }
 
 bool
 loadCloud (const std::string& filename, pcl::PCLPointCloud2& cloud)
 {
   TicToc tt;
-  print_highlight("Loading ");
-  print_value("%s ", filename.c_str());
+  print_highlight ("Loading ");
+  print_value ("%s ", filename.c_str());
 
   tt.tic();
-  if (loadPCDFile(filename, cloud, translation, orientation) < 0)
+  if (loadPCDFile (filename, cloud, translation, orientation) < 0)
     return (false);
-  print_info("[done, ");
-  print_value("%g", tt.toc());
-  print_info(" ms : ");
-  print_value("%d", cloud.width * cloud.height);
-  print_info(" points]\n");
-  print_info("Available dimensions: ");
-  print_value("%s\n", pcl::getFieldsList(cloud).c_str());
+  print_info ("[done, ");
+  print_value ("%g", tt.toc());
+  print_info (" ms : ");
+  print_value ("%d", cloud.width * cloud.height);
+  print_info (" points]\n");
+  print_info ("Available dimensions: ");
+  print_value ("%s\n", pcl::getFieldsList (cloud).c_str());
 
   return (true);
 }
@@ -106,42 +106,42 @@ compute (const pcl::PCLPointCloud2::ConstPtr& input,
          double tolerance)
 {
   // Convert data to PointCloud<T>
-  PointCloud<pcl::PointXYZ>::Ptr xyz(new PointCloud<pcl::PointXYZ>);
-  fromPCLPointCloud2(*input, *xyz);
+  PointCloud<pcl::PointXYZ>::Ptr xyz (new PointCloud<pcl::PointXYZ>);
+  fromPCLPointCloud2 (*input, *xyz);
 
   // Estimate
   TicToc tt;
   tt.tic();
 
-  print_highlight(stderr, "Computing ");
+  print_highlight (stderr, "Computing ");
 
   // Creating the KdTree object for the search method of the extraction
-  pcl::search::KdTree<pcl::PointXYZ>::Ptr tree(new pcl::search::KdTree<pcl::PointXYZ>);
-  tree->setInputCloud(xyz);
+  pcl::search::KdTree<pcl::PointXYZ>::Ptr tree (new pcl::search::KdTree<pcl::PointXYZ>);
+  tree->setInputCloud (xyz);
 
   std::vector<pcl::PointIndices> cluster_indices;
   pcl::EuclideanClusterExtraction<pcl::PointXYZ> ec;
-  ec.setClusterTolerance(tolerance);
-  ec.setMinClusterSize(min);
-  ec.setMaxClusterSize(max);
-  ec.setSearchMethod(tree);
-  ec.setInputCloud(xyz);
-  ec.extract(cluster_indices);
+  ec.setClusterTolerance (tolerance);
+  ec.setMinClusterSize (min);
+  ec.setMaxClusterSize (max);
+  ec.setSearchMethod (tree);
+  ec.setInputCloud (xyz);
+  ec.extract (cluster_indices);
 
-  print_info("[done, ");
-  print_value("%g", tt.toc());
-  print_info(" ms : ");
-  print_value("%d", cluster_indices.size());
-  print_info(" clusters]\n");
+  print_info ("[done, ");
+  print_value ("%g", tt.toc());
+  print_info (" ms : ");
+  print_value ("%d", cluster_indices.size());
+  print_info (" clusters]\n");
 
-  output.reserve(cluster_indices.size());
+  output.reserve (cluster_indices.size());
   for (const auto& cluster : cluster_indices) {
     pcl::ExtractIndices<pcl::PCLPointCloud2> extract;
-    extract.setInputCloud(input);
-    extract.setIndices(pcl::make_shared<const pcl::PointIndices>(cluster));
-    pcl::PCLPointCloud2::Ptr out(new pcl::PCLPointCloud2);
-    extract.filter(*out);
-    output.push_back(out);
+    extract.setInputCloud (input);
+    extract.setIndices (pcl::make_shared<const pcl::PointIndices> (cluster));
+    pcl::PCLPointCloud2::Ptr out (new pcl::PCLPointCloud2);
+    extract.filter (*out);
+    output.push_back (out);
   }
 }
 
@@ -152,20 +152,20 @@ saveCloud (const std::string& filename,
   TicToc tt;
   tt.tic();
 
-  std::string basename = filename.substr(0, filename.length() - 4);
+  std::string basename = filename.substr (0, filename.length() - 4);
 
   for (std::size_t i = 0; i < output.size(); i++) {
-    std::string clustername = basename + std::to_string(i) + ".pcd";
-    print_highlight("Saving ");
-    print_value("%s ", clustername.c_str());
+    std::string clustername = basename + std::to_string (i) + ".pcd";
+    print_highlight ("Saving ");
+    print_value ("%s ", clustername.c_str());
 
-    pcl::io::savePCDFile(clustername, *(output[i]), translation, orientation, false);
+    pcl::io::savePCDFile (clustername, *(output[i]), translation, orientation, false);
 
-    print_info("[done, ");
-    print_value("%g", tt.toc());
-    print_info(" ms : ");
-    print_value("%d", output[i]->width * output[i]->height);
-    print_info(" points]\n");
+    print_info ("[done, ");
+    print_value ("%g", tt.toc());
+    print_info (" ms : ");
+    print_value ("%d", output[i]->width * output[i]->height);
+    print_info (" points]\n");
   }
 }
 
@@ -173,21 +173,21 @@ saveCloud (const std::string& filename,
 int
 main (int argc, char** argv)
 {
-  print_info("Extract point clusters using pcl::EuclideanClusterExtraction. For more "
-             "information, use: %s -h\n",
-             argv[0]);
+  print_info ("Extract point clusters using pcl::EuclideanClusterExtraction. For more "
+              "information, use: %s -h\n",
+              argv[0]);
   bool help = false;
-  parse_argument(argc, argv, "-h", help);
+  parse_argument (argc, argv, "-h", help);
   if (argc < 3 || help) {
-    printHelp(argc, argv);
+    printHelp (argc, argv);
     return (-1);
   }
 
   // Parse the command line arguments for .pcd files
   std::vector<int> p_file_indices;
-  p_file_indices = parse_file_extension_argument(argc, argv, ".pcd");
+  p_file_indices = parse_file_extension_argument (argc, argv, ".pcd");
   if (p_file_indices.size() != 2) {
-    print_error("Need one input PCD file and one output PCD file to continue.\n");
+    print_error ("Need one input PCD file and one output PCD file to continue.\n");
     return (-1);
   }
 
@@ -195,19 +195,19 @@ main (int argc, char** argv)
   int min = default_min;
   int max = default_max;
   double tolerance = default_tolerance;
-  parse_argument(argc, argv, "-min", min);
-  parse_argument(argc, argv, "-max", max);
-  parse_argument(argc, argv, "-tolerance", tolerance);
+  parse_argument (argc, argv, "-min", min);
+  parse_argument (argc, argv, "-max", max);
+  parse_argument (argc, argv, "-tolerance", tolerance);
 
   // Load the first file
-  pcl::PCLPointCloud2::Ptr cloud(new pcl::PCLPointCloud2);
-  if (!loadCloud(argv[p_file_indices[0]], *cloud))
+  pcl::PCLPointCloud2::Ptr cloud (new pcl::PCLPointCloud2);
+  if (!loadCloud (argv[p_file_indices[0]], *cloud))
     return (-1);
 
   // Perform the feature estimation
   std::vector<pcl::PCLPointCloud2::Ptr> output;
-  compute(cloud, output, min, max, tolerance);
+  compute (cloud, output, min, max, tolerance);
 
   // Save into the second file
-  saveCloud(argv[p_file_indices[1]], output);
+  saveCloud (argv[p_file_indices[1]], output);
 }

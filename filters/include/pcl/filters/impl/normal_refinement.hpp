@@ -46,11 +46,11 @@
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename NormalT>
 void
-pcl::NormalRefinement<NormalT>::applyFilter(PointCloud& output)
+pcl::NormalRefinement<NormalT>::applyFilter (PointCloud& output)
 {
   // Check input
   if (input_->empty()) {
-    PCL_ERROR("[pcl::%s::applyFilter] No source was input!\n", getClassName().c_str());
+    PCL_ERROR ("[pcl::%s::applyFilter] No source was input!\n", getClassName().c_str());
   }
 
   // Copy to output
@@ -58,18 +58,18 @@ pcl::NormalRefinement<NormalT>::applyFilter(PointCloud& output)
 
   // Check that correspondences are non-empty
   if (k_indices_.empty() || k_sqr_distances_.empty()) {
-    PCL_ERROR("[pcl::%s::applyFilter] No point correspondences given! Returning "
-              "original input.\n",
-              getClassName().c_str());
+    PCL_ERROR ("[pcl::%s::applyFilter] No point correspondences given! Returning "
+               "original input.\n",
+               getClassName().c_str());
     return;
   }
 
   // Check that correspondences are OK
   const unsigned int size = k_indices_.size();
   if (k_sqr_distances_.size() != size || input_->size() != size) {
-    PCL_ERROR("[pcl::%s::applyFilter] Inconsistency between size of correspondence "
-              "indices/distances or input! Returning original input.\n",
-              getClassName().c_str());
+    PCL_ERROR ("[pcl::%s::applyFilter] Inconsistency between size of correspondence "
+               "indices/distances or input! Returning original input.\n",
+               getClassName().c_str());
     return;
   }
 
@@ -88,7 +88,7 @@ pcl::NormalRefinement<NormalT>::applyFilter(PointCloud& output)
       NormalT& tmpj = tmp[j];
 
       // Refine
-      if (refineNormal(output, j, k_indices_[j], k_sqr_distances_[j], tmpj)) {
+      if (refineNormal (output, j, k_indices_[j], k_sqr_distances_[j], tmpj)) {
         // Accumulate using similarity in direction between previous iteration and
         // current
         const NormalT& outputj = output[j];
@@ -99,7 +99,7 @@ pcl::NormalRefinement<NormalT>::applyFilter(PointCloud& output)
     }
 
     // Take mean of similarities
-    ddot /= static_cast<float>(num_valids);
+    ddot /= static_cast<float> (num_valids);
 
     // Negate to since we want an error measure to approach zero
     ddot = 1.0f - ddot;
@@ -109,11 +109,11 @@ pcl::NormalRefinement<NormalT>::applyFilter(PointCloud& output)
 
     // Break if converged
     if (ddot < convergence_threshold_) {
-      PCL_DEBUG("[pcl::%s::applyFilter] Converged after %i iterations with mean error "
-                "of %f.\n",
-                getClassName().c_str(),
-                i + 1,
-                ddot);
+      PCL_DEBUG ("[pcl::%s::applyFilter] Converged after %i iterations with mean error "
+                 "of %f.\n",
+                 getClassName().c_str(),
+                 i + 1,
+                 ddot);
       break;
     }
   }

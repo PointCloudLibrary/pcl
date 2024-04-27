@@ -75,8 +75,9 @@ bool write_file_;
 void
 printHelp (int, char** argv)
 {
-  print_error("Syntax is: %s <filename>\n", argv[0]);
-  print_info("acceptable filenames include vtk, obj and ply. ply can support colour\n");
+  print_error ("Syntax is: %s <filename>\n", argv[0]);
+  print_info (
+      "acceptable filenames include vtk, obj and ply. ply can support colour\n");
 }
 
 void
@@ -109,12 +110,12 @@ display_score_image (const float* score_buffer)
     score_img[3 * i + 2] = 0;
   }
 
-  glRasterPos2i(-1, -1);
-  glDrawPixels(range_likelihood_->getWidth(),
-               range_likelihood_->getHeight(),
-               GL_RGB,
-               GL_UNSIGNED_BYTE,
-               score_img);
+  glRasterPos2i (-1, -1);
+  glDrawPixels (range_likelihood_->getWidth(),
+                range_likelihood_->getHeight(),
+                GL_RGB,
+                GL_UNSIGNED_BYTE,
+                score_img);
 
   delete[] score_img;
 }
@@ -141,7 +142,7 @@ display_depth_image (const float* depth_buffer, int width, int height)
     float z = -zf * zn / ((zf - zn) * (d - zf / (zf - zn)));
     float b = 0.075f;
     float f = 580.0f;
-    auto kd = static_cast<std::uint16_t>(1090 - b * f / z * 8);
+    auto kd = static_cast<std::uint16_t> (1090 - b * f / z * 8);
     if (kd > 2047)
       kd = 2047;
 
@@ -186,8 +187,8 @@ display_depth_image (const float* depth_buffer, int width, int height)
     }
   }
 
-  glRasterPos2i(-1, -1);
-  glDrawPixels(width, height, GL_RGB, GL_UNSIGNED_BYTE, depth_img);
+  glRasterPos2i (-1, -1);
+  glDrawPixels (width, height, GL_RGB, GL_UNSIGNED_BYTE, depth_img);
 
   delete[] depth_img;
 }
@@ -281,14 +282,14 @@ simpleVis (pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr cloud)
   // --------------------------------------------
   // -----Open 3D viewer and add point cloud-----
   // --------------------------------------------
-  pcl::visualization::PCLVisualizer::Ptr viewer(
-      new pcl::visualization::PCLVisualizer("3D Viewer"));
-  viewer->setBackgroundColor(0, 0, 0);
-  pcl::visualization::PointCloudColorHandlerRGBField<pcl::PointXYZRGB> rgb(cloud);
-  viewer->addPointCloud<pcl::PointXYZRGB>(cloud, rgb, "sample cloud");
-  viewer->setPointCloudRenderingProperties(
+  pcl::visualization::PCLVisualizer::Ptr viewer (
+      new pcl::visualization::PCLVisualizer ("3D Viewer"));
+  viewer->setBackgroundColor (0, 0, 0);
+  pcl::visualization::PointCloudColorHandlerRGBField<pcl::PointXYZRGB> rgb (cloud);
+  viewer->addPointCloud<pcl::PointXYZRGB> (cloud, rgb, "sample cloud");
+  viewer->setPointCloudRenderingProperties (
       pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 3, "sample cloud");
-  viewer->addCoordinateSystem(1.0, "reference");
+  viewer->addCoordinateSystem (1.0, "reference");
   viewer->initCameraParameters();
   return (viewer);
 }
@@ -310,15 +311,15 @@ display ()
   std::vector<float> scores;
   int n = range_likelihood_->getRows() * range_likelihood_->getCols();
   for (int i = 0; i < n; ++i) {
-    Camera camera(*camera_);
-    camera.move(0.0, i * 0.02, 0.0);
+    Camera camera (*camera_);
+    camera.move (0.0, i * 0.02, 0.0);
     // camera.move(0.0,i*0.02,0.0);
-    poses.push_back(camera.getPose());
+    poses.push_back (camera.getPose());
   }
 
-  range_likelihood_->computeLikelihoods(reference, poses, scores);
+  range_likelihood_->computeLikelihoods (reference, poses, scores);
 
-  range_likelihood_->computeLikelihoods(reference, poses, scores);
+  range_likelihood_->computeLikelihoods (reference, poses, scores);
   std::cout << "score: ";
   for (const float& score : scores) {
     std::cout << " " << score;
@@ -331,62 +332,62 @@ display ()
 
   delete[] reference;
 
-  glDrawBuffer(GL_BACK);
-  glReadBuffer(GL_BACK);
+  glDrawBuffer (GL_BACK);
+  glReadBuffer (GL_BACK);
 
   // Draw the resulting images from the range_likelihood
-  glViewport(range_likelihood_->getWidth(),
-             0,
-             range_likelihood_->getWidth(),
-             range_likelihood_->getHeight());
-  glMatrixMode(GL_PROJECTION);
+  glViewport (range_likelihood_->getWidth(),
+              0,
+              range_likelihood_->getWidth(),
+              range_likelihood_->getHeight());
+  glMatrixMode (GL_PROJECTION);
   glLoadIdentity();
-  glMatrixMode(GL_MODELVIEW);
+  glMatrixMode (GL_MODELVIEW);
   glLoadIdentity();
 
   // Draw the color image
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-  glColorMask(true, true, true, true);
-  glDisable(GL_DEPTH_TEST);
+  glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  glColorMask (true, true, true, true);
+  glDisable (GL_DEPTH_TEST);
 
-  glRasterPos2i(-1, -1);
-  glDrawPixels(range_likelihood_->getWidth(),
-               range_likelihood_->getHeight(),
-               GL_RGB,
-               GL_UNSIGNED_BYTE,
-               range_likelihood_->getColorBuffer());
+  glRasterPos2i (-1, -1);
+  glDrawPixels (range_likelihood_->getWidth(),
+                range_likelihood_->getHeight(),
+                GL_RGB,
+                GL_UNSIGNED_BYTE,
+                range_likelihood_->getColorBuffer());
 
   // Draw the depth image
-  glViewport(0, 0, range_likelihood_->getWidth(), range_likelihood_->getHeight());
+  glViewport (0, 0, range_likelihood_->getWidth(), range_likelihood_->getHeight());
 
-  glMatrixMode(GL_PROJECTION);
+  glMatrixMode (GL_PROJECTION);
   glLoadIdentity();
-  glMatrixMode(GL_MODELVIEW);
+  glMatrixMode (GL_MODELVIEW);
   glLoadIdentity();
   //  display_depth_image (range_likelihood_->getDepthBuffer ());
-  display_depth_image(range_likelihood_->getDepthBuffer(),
-                      range_likelihood_->getWidth(),
-                      range_likelihood_->getHeight());
+  display_depth_image (range_likelihood_->getDepthBuffer(),
+                       range_likelihood_->getWidth(),
+                       range_likelihood_->getHeight());
 
   // Draw the score image
-  glViewport(0,
-             range_likelihood_->getHeight(),
-             range_likelihood_->getWidth(),
-             range_likelihood_->getHeight());
-  glMatrixMode(GL_PROJECTION);
+  glViewport (0,
+              range_likelihood_->getHeight(),
+              range_likelihood_->getWidth(),
+              range_likelihood_->getHeight());
+  glMatrixMode (GL_PROJECTION);
   glLoadIdentity();
-  glMatrixMode(GL_MODELVIEW);
+  glMatrixMode (GL_MODELVIEW);
   glLoadIdentity();
-  display_score_image(range_likelihood_->getScoreBuffer());
+  display_score_image (range_likelihood_->getScoreBuffer());
 
   glutSwapBuffers();
 
   if (write_file_) {
     range_likelihood_->addNoise();
     pcl::RangeImagePlanar rangeImage;
-    range_likelihood_->getRangeImagePlanar(rangeImage);
+    range_likelihood_->getRangeImagePlanar (rangeImage);
 
-    pcl::PointCloud<pcl::PointXYZRGB>::Ptr pc_out(
+    pcl::PointCloud<pcl::PointXYZRGB>::Ptr pc_out (
         new pcl::PointCloud<pcl::PointXYZRGB>);
 
     // Optional argument to save point cloud in global frame:
@@ -395,21 +396,21 @@ display ()
     // Save in global frame - applying the camera frame:
     // range_likelihood_->getPointCloud(pc_out,true,camera_->pose());
     // Save in local frame
-    range_likelihood_->getPointCloud(pc_out, false, camera_->getPose());
+    range_likelihood_->getPointCloud (pc_out, false, camera_->getPose());
     // TODO: what to do when there are more than one simulated view?
 
     pcl::PCDWriter writer;
-    writer.write("simulated_range_image.pcd", *pc_out, false);
+    writer.write ("simulated_range_image.pcd", *pc_out, false);
     std::cout << "finished writing file\n";
 
     //     pcl::visualization::CloudViewer viewer ("Simple Cloud Viewer");
     //     viewer.showCloud (pc_out);
 
     pcl::visualization::PCLVisualizer::Ptr viewer;
-    viewer = simpleVis(pc_out);
+    viewer = simpleVis (pc_out);
     while (!viewer->wasStopped()) {
-      viewer->spinOnce(100);
-      std::this_thread::sleep_for(100ms);
+      viewer->spinOnce (100);
+      std::this_thread::sleep_for (100ms);
     }
 
     // doesn't work:
@@ -450,19 +451,19 @@ on_keyboard (unsigned char key, int, int)
   double speed = 0.1;
 
   if (key == 27)
-    exit(0);
+    exit (0);
   else if (key == 'w' || key == 'W')
-    camera_->move(speed, 0, 0);
+    camera_->move (speed, 0, 0);
   else if (key == 's' || key == 'S')
-    camera_->move(-speed, 0, 0);
+    camera_->move (-speed, 0, 0);
   else if (key == 'a' || key == 'A')
-    camera_->move(0, speed, 0);
+    camera_->move (0, speed, 0);
   else if (key == 'd' || key == 'D')
-    camera_->move(0, -speed, 0);
+    camera_->move (0, -speed, 0);
   else if (key == 'q' || key == 'Q')
-    camera_->move(0, 0, speed);
+    camera_->move (0, 0, speed);
   else if (key == 'z' || key == 'Z')
-    camera_->move(0, 0, -speed);
+    camera_->move (0, 0, -speed);
   else if (key == 'p' || key == 'P')
     paused_ = !paused_;
   else if (key == 'v' || key == 'V')
@@ -516,11 +517,11 @@ on_passive_motion (int x, int y)
     return;
 
   // in window coordinates positive y-axis is down
-  double pitch = -(0.5 - static_cast<double>(y) / window_height_) * M_PI * 4;
-  double yaw = (0.5 - static_cast<double>(x) / window_width_) * M_PI * 2 * 4;
+  double pitch = -(0.5 - static_cast<double> (y) / window_height_) * M_PI * 4;
+  double yaw = (0.5 - static_cast<double> (x) / window_width_) * M_PI * 2 * 4;
 
-  camera_->setPitch(pitch);
-  camera_->setYaw(yaw);
+  camera_->setPitch (pitch);
+  camera_->setYaw (yaw);
 }
 
 void
@@ -537,14 +538,14 @@ load_PolygonMesh_model (char* polygon_file)
 {
   pcl::PolygonMesh mesh; // (new pcl::PolygonMesh);
   // pcl::io::loadPolygonFile("/home/mfallon/data/models/dalet/Darlek_modified_works.obj",mesh);
-  pcl::io::loadPolygonFile(polygon_file, mesh);
-  pcl::PolygonMesh::Ptr cloud(new pcl::PolygonMesh(mesh));
+  pcl::io::loadPolygonFile (polygon_file, mesh);
+  pcl::PolygonMesh::Ptr cloud (new pcl::PolygonMesh (mesh));
 
   // Not sure if PolygonMesh assumes triangles if to
   // TODO: Ask a developer
   PolygonMeshModel::Ptr model =
-      PolygonMeshModel::Ptr(new PolygonMeshModel(GL_POLYGON, cloud));
-  scene_->add(model);
+      PolygonMeshModel::Ptr (new PolygonMeshModel (GL_POLYGON, cloud));
+  scene_->add (model);
 
   std::cout << "Just read " << polygon_file << std::endl;
   std::cout << mesh.polygons.size() << " polygons and " << mesh.cloud.data.size()
@@ -554,7 +555,7 @@ load_PolygonMesh_model (char* polygon_file)
 void
 initialize (int, char** argv)
 {
-  const GLubyte* version = glGetString(GL_VERSION);
+  const GLubyte* version = glGetString (GL_VERSION);
   std::cout << "OpenGL Version: " << version << std::endl;
 
   // works well for MIT CSAIL model 3rd floor:
@@ -565,12 +566,12 @@ initialize (int, char** argv)
 
   // works for small files:
   // camera_->set(-5.0, 0.0, 1.0, 0.0, 0.0, 0.0);
-  camera_->set(1.31762, 0.382931, 1.89533, 0, 0.20944, -9.14989);
-  camera_->setPitch(0.20944); // not sure why this is here:
+  camera_->set (1.31762, 0.382931, 1.89533, 0, 0.20944, -9.14989);
+  camera_->setPitch (0.20944); // not sure why this is here:
   // camera_->set(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
 
   std::cout << "About to read: " << argv[1] << std::endl;
-  load_PolygonMesh_model(argv[1]);
+  load_PolygonMesh_model (argv[1]);
 
   paused_ = false;
 }
@@ -584,72 +585,72 @@ main (int argc, char** argv)
   window_width_ = width * 2;
   window_height_ = height * 2;
 
-  print_info("Manually generate a simulated RGB-D point cloud using pcl::simulation. "
-             "For more information, use: %s -h\n",
-             argv[0]);
+  print_info ("Manually generate a simulated RGB-D point cloud using pcl::simulation. "
+              "For more information, use: %s -h\n",
+              argv[0]);
 
   if (argc < 2) {
-    printHelp(argc, argv);
+    printHelp (argc, argv);
     return (-1);
   }
 
   for (int i = 0; i < 2048; i++) {
     float v = i / 2048.0;
-    v = powf(v, 3) * 6;
+    v = powf (v, 3) * 6;
     t_gamma[i] = v * 6 * 256;
   }
 
-  glutInit(&argc, argv);
-  glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGB); // was GLUT_RGBA
-  glutInitWindowPosition(10, 10);
-  glutInitWindowSize(window_width_, window_height_);
-  glutCreateWindow("OpenGL range likelihood");
+  glutInit (&argc, argv);
+  glutInitDisplayMode (GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGB); // was GLUT_RGBA
+  glutInitWindowPosition (10, 10);
+  glutInitWindowSize (window_width_, window_height_);
+  glutCreateWindow ("OpenGL range likelihood");
 
   GLenum err = glewInit();
   if (GLEW_OK != err) {
-    std::cerr << "Error: " << glewGetErrorString(err) << std::endl;
-    exit(-1);
+    std::cerr << "Error: " << glewGetErrorString (err) << std::endl;
+    exit (-1);
   }
 
-  std::cout << "Status: Using GLEW " << glewGetString(GLEW_VERSION) << std::endl;
+  std::cout << "Status: Using GLEW " << glewGetString (GLEW_VERSION) << std::endl;
 
-  if (glewIsSupported("GL_VERSION_2_0"))
+  if (glewIsSupported ("GL_VERSION_2_0"))
     std::cout << "OpenGL 2.0 supported" << std::endl;
   else {
     std::cerr << "Error: OpenGL 2.0 not supported" << std::endl;
-    exit(1);
+    exit (1);
   }
   std::cout << "GL_MAX_VIEWPORTS: " << GL_MAX_VIEWPORTS << std::endl;
 
-  camera_ = Camera::Ptr(new Camera());
-  scene_ = Scene::Ptr(new Scene());
+  camera_ = Camera::Ptr (new Camera());
+  scene_ = Scene::Ptr (new Scene());
 
   // range_likelihood_ = RangeLikelihoodGLSL::Ptr(new RangeLikelihoodGLSL(1, 1, height,
   // width, scene_, 0));
 
   range_likelihood_ =
-      RangeLikelihood::Ptr(new RangeLikelihood(2, 2, height / 2, width / 2, scene_));
+      RangeLikelihood::Ptr (new RangeLikelihood (2, 2, height / 2, width / 2, scene_));
   // range_likelihood_ = RangeLikelihood::Ptr(new RangeLikelihood(10, 10, 96, 96,
   // scene_)); range_likelihood_ = RangeLikelihood::Ptr(new RangeLikelihood(1, 1, 480,
   // 640, scene_));
 
   // Actually corresponds to default parameters:
-  range_likelihood_->setCameraIntrinsicsParameters(
+  range_likelihood_->setCameraIntrinsicsParameters (
       640, 480, 576.09757860, 576.09757860, 321.06398107, 242.97676897);
-  range_likelihood_->setComputeOnCPU(false);
-  range_likelihood_->setSumOnCPU(true);
-  range_likelihood_->setUseColor(true);
+  range_likelihood_->setComputeOnCPU (false);
+  range_likelihood_->setSumOnCPU (true);
+  range_likelihood_->setUseColor (true);
 
-  initialize(argc, argv);
+  initialize (argc, argv);
 
-  glutReshapeFunc(on_reshape);
-  glutDisplayFunc(display);
-  glutIdleFunc(display);
-  glutKeyboardFunc(on_keyboard);
-  glutMouseFunc(on_mouse);
-  glutMotionFunc(on_motion);
-  glutPassiveMotionFunc(on_passive_motion);
-  glutEntryFunc(on_entry);
+  glutReshapeFunc (on_reshape);
+  glutDisplayFunc (display);
+  glutIdleFunc (display);
+  glutKeyboardFunc (on_keyboard);
+  glutMouseFunc (on_mouse);
+  glutMotionFunc (on_motion);
+  glutPassiveMotionFunc (on_passive_motion);
+  glutEntryFunc (on_entry);
   glutMainLoop();
 
   return 0;

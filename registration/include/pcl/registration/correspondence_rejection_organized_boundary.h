@@ -77,9 +77,9 @@ public:
   setInputSource (const typename pcl::PointCloud<PointT>::ConstPtr& cloud)
   {
     if (!data_container_)
-      data_container_.reset(new pcl::registration::DataContainer<PointT>);
-    static_pointer_cast<pcl::registration::DataContainer<PointT>>(data_container_)
-        ->setInputSource(cloud);
+      data_container_.reset (new pcl::registration::DataContainer<PointT>);
+    static_pointer_cast<pcl::registration::DataContainer<PointT>> (data_container_)
+        ->setInputSource (cloud);
   }
 
   template <typename PointT>
@@ -87,9 +87,9 @@ public:
   setInputTarget (const typename pcl::PointCloud<PointT>::ConstPtr& cloud)
   {
     if (!data_container_)
-      data_container_.reset(new pcl::registration::DataContainer<PointT>);
-    static_pointer_cast<pcl::registration::DataContainer<PointT>>(data_container_)
-        ->setInputTarget(cloud);
+      data_container_.reset (new pcl::registration::DataContainer<PointT>);
+    static_pointer_cast<pcl::registration::DataContainer<PointT>> (data_container_)
+        ->setInputTarget (cloud);
   }
 
   /** \brief See if this rejector requires source points */
@@ -103,9 +103,9 @@ public:
   void
   setSourcePoints (pcl::PCLPointCloud2::ConstPtr cloud2) override
   {
-    PointCloud<PointXYZ>::Ptr cloud(new PointCloud<PointXYZ>);
-    fromPCLPointCloud2(*cloud2, *cloud);
-    setInputSource<PointXYZ>(cloud);
+    PointCloud<PointXYZ>::Ptr cloud (new PointCloud<PointXYZ>);
+    fromPCLPointCloud2 (*cloud2, *cloud);
+    setInputSource<PointXYZ> (cloud);
   }
 
   /** \brief See if this rejector requires a target cloud */
@@ -119,9 +119,9 @@ public:
   void
   setTargetPoints (pcl::PCLPointCloud2::ConstPtr cloud2) override
   {
-    PointCloud<PointXYZ>::Ptr cloud(new PointCloud<PointXYZ>);
-    fromPCLPointCloud2(*cloud2, *cloud);
-    setInputTarget<PointXYZ>(cloud);
+    PointCloud<PointXYZ>::Ptr cloud (new PointCloud<PointXYZ>);
+    fromPCLPointCloud2 (*cloud2, *cloud);
+    setInputTarget<PointXYZ> (cloud);
   }
 
   virtual bool
@@ -137,7 +137,7 @@ protected:
   inline void
   applyRejection (pcl::Correspondences& correspondences) override
   {
-    getRemainingCorrespondences(*input_correspondences_, correspondences);
+    getRemainingCorrespondences (*input_correspondences_, correspondences);
   }
 
   int boundary_nans_threshold_{8};

@@ -47,7 +47,7 @@ namespace registration {
 template <typename PointSource, typename PointTarget, typename Scalar>
 void
 TransformationEstimationSVDScale<PointSource, PointTarget, Scalar>::
-    getTransformationFromCorrelation(
+    getTransformationFromCorrelation (
         const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic>& cloud_src_demean,
         const Eigen::Matrix<Scalar, 4, 1>& centroid_src,
         const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic>& cloud_tgt_demean,
@@ -61,7 +61,7 @@ TransformationEstimationSVDScale<PointSource, PointTarget, Scalar>::
       (cloud_src_demean * cloud_tgt_demean.transpose()).template topLeftCorner<3, 3>();
 
   // Compute the Singular Value Decomposition
-  Eigen::JacobiSVD<Eigen::Matrix<Scalar, 3, 3>> svd(
+  Eigen::JacobiSVD<Eigen::Matrix<Scalar, 3, 3>> svd (
       H, Eigen::ComputeFullU | Eigen::ComputeFullV);
   Eigen::Matrix<Scalar, 3, 3> u = svd.matrixU();
   Eigen::Matrix<Scalar, 3, 3> v = svd.matrixV();
@@ -69,7 +69,7 @@ TransformationEstimationSVDScale<PointSource, PointTarget, Scalar>::
   // Compute R = V * U'
   if (u.determinant() * v.determinant() < 0) {
     for (int x = 0; x < 3; ++x)
-      v(x, 2) *= -1;
+      v (x, 2) *= -1;
   }
 
   Eigen::Matrix<Scalar, 3, 3> R = v * u.transpose();
@@ -77,28 +77,28 @@ TransformationEstimationSVDScale<PointSource, PointTarget, Scalar>::
   // rotated cloud
   Eigen::Matrix<Scalar, 4, 4> R4;
   R4.template topLeftCorner<3, 3>() = R;
-  R4(0, 3) = 0;
-  R4(1, 3) = 0;
-  R4(2, 3) = 0;
-  R4(3, 3) = 1;
+  R4 (0, 3) = 0;
+  R4 (1, 3) = 0;
+  R4 (2, 3) = 0;
+  R4 (3, 3) = 1;
 
   Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic> src_ = R4 * cloud_src_demean;
 
   double sum_ss = 0.0f, sum_tt = 0.0f;
   for (unsigned corrIdx = 0; corrIdx < cloud_src_demean.cols(); ++corrIdx) {
-    sum_ss += cloud_src_demean(0, corrIdx) * cloud_src_demean(0, corrIdx);
-    sum_ss += cloud_src_demean(1, corrIdx) * cloud_src_demean(1, corrIdx);
-    sum_ss += cloud_src_demean(2, corrIdx) * cloud_src_demean(2, corrIdx);
+    sum_ss += cloud_src_demean (0, corrIdx) * cloud_src_demean (0, corrIdx);
+    sum_ss += cloud_src_demean (1, corrIdx) * cloud_src_demean (1, corrIdx);
+    sum_ss += cloud_src_demean (2, corrIdx) * cloud_src_demean (2, corrIdx);
 
-    sum_tt += cloud_tgt_demean(0, corrIdx) * src_(0, corrIdx);
-    sum_tt += cloud_tgt_demean(1, corrIdx) * src_(1, corrIdx);
-    sum_tt += cloud_tgt_demean(2, corrIdx) * src_(2, corrIdx);
+    sum_tt += cloud_tgt_demean (0, corrIdx) * src_ (0, corrIdx);
+    sum_tt += cloud_tgt_demean (1, corrIdx) * src_ (1, corrIdx);
+    sum_tt += cloud_tgt_demean (2, corrIdx) * src_ (2, corrIdx);
   }
 
   float scale = sum_tt / sum_ss;
   transformation_matrix.template topLeftCorner<3, 3>() = scale * R;
-  const Eigen::Matrix<Scalar, 3, 1> Rc(scale * R * centroid_src.template head<3>());
-  transformation_matrix.template block<3, 1>(0, 3) =
+  const Eigen::Matrix<Scalar, 3, 1> Rc (scale * R * centroid_src.template head<3>());
+  transformation_matrix.template block<3, 1> (0, 3) =
       centroid_tgt.template head<3>() - Rc;
 }
 

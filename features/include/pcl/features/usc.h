@@ -82,7 +82,7 @@ public:
 
   /** \brief Constructor. */
   UniqueShapeContext()
-  : radii_interval_(0), theta_divisions_(0), phi_divisions_(0), volume_lut_(0)
+  : radii_interval_ (0), theta_divisions_ (0), phi_divisions_ (0), volume_lut_ (0)
   {
     feature_name_ = "UniqueShapeContext";
     search_radius_ = 2.0;

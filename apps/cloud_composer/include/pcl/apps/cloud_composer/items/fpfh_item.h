@@ -48,10 +48,10 @@ namespace cloud_composer {
 
 class FPFHItem : public CloudComposerItem {
 public:
-  FPFHItem(QString name,
-           const pcl::PointCloud<pcl::FPFHSignature33>::Ptr& fpfh_ptr,
-           double radius);
-  FPFHItem(const FPFHItem& to_copy);
+  FPFHItem (QString name,
+            const pcl::PointCloud<pcl::FPFHSignature33>::Ptr& fpfh_ptr,
+            double radius);
+  FPFHItem (const FPFHItem& to_copy);
 
   inline int
   type () const override
@@ -77,5 +77,5 @@ private:
 } // namespace cloud_composer
 } // namespace pcl
 
-Q_DECLARE_METATYPE(pcl::PointCloud<pcl::FPFHSignature33>::Ptr);
-Q_DECLARE_METATYPE(pcl::PointCloud<pcl::FPFHSignature33>::ConstPtr);
+Q_DECLARE_METATYPE (pcl::PointCloud<pcl::FPFHSignature33>::Ptr);
+Q_DECLARE_METATYPE (pcl::PointCloud<pcl::FPFHSignature33>::ConstPtr);

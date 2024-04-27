@@ -22,10 +22,10 @@ public:
    */
   HSVColorCoherence()
   : PointCoherence<PointInT>()
-  , weight_(1.0)
-  , h_weight_(1.0)
-  , s_weight_(1.0)
-  , v_weight_(0.0)
+  , weight_ (1.0)
+  , h_weight_ (1.0)
+  , s_weight_ (1.0)
+  , v_weight_ (0.0)
   {}
 
   /** \brief set the weight of coherence

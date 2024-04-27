@@ -11,15 +11,15 @@ namespace pcl {
 namespace simulation {
 
 void
-Scene::add(Model::Ptr model)
+Scene::add (Model::Ptr model)
 {
-  models_.push_back(model);
+  models_.push_back (model);
 }
 
 void
-Scene::addCompleteModel(std::vector<Model::Ptr> model)
+Scene::addCompleteModel (std::vector<Model::Ptr> model)
 {
-  models_.push_back(model[0]);
+  models_.push_back (model[0]);
 }
 
 void

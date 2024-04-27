@@ -61,35 +61,35 @@ float default_radius = 1.0f;
 void
 printHelp (int, char** argv)
 {
-  print_error("Syntax is: %s input.pcd output.pcd <options>\n", argv[0]);
-  print_info("  where options are:\n");
-  print_info(
+  print_error ("Syntax is: %s input.pcd output.pcd <options>\n", argv[0]);
+  print_info ("  where options are:\n");
+  print_info (
       "                     -radius X = xy radius to test for local max (default: ");
-  print_value("%f", default_radius);
-  print_info(")\n");
-  print_info("                     -input_dir X  = batch process all PCD files found "
-             "in input_dir\n");
-  print_info("                     -output_dir X = save the processed files from "
-             "input_dir in this directory\n");
+  print_value ("%f", default_radius);
+  print_info (")\n");
+  print_info ("                     -input_dir X  = batch process all PCD files found "
+              "in input_dir\n");
+  print_info ("                     -output_dir X = save the processed files from "
+              "input_dir in this directory\n");
 }
 
 bool
 loadCloud (const std::string& filename, Cloud& cloud)
 {
   TicToc tt;
-  print_highlight("Loading ");
-  print_value("%s ", filename.c_str());
+  print_highlight ("Loading ");
+  print_value ("%s ", filename.c_str());
 
   tt.tic();
-  if (loadPCDFile(filename, cloud) < 0)
+  if (loadPCDFile (filename, cloud) < 0)
     return (false);
-  print_info("[done, ");
-  print_value("%g", tt.toc());
-  print_info(" ms : ");
-  print_value("%d", cloud.width * cloud.height);
-  print_info(" points]\n");
-  print_info("Available dimensions: ");
-  print_value("%s\n", pcl::getFieldsList(cloud).c_str());
+  print_info ("[done, ");
+  print_value ("%g", tt.toc());
+  print_info (" ms : ");
+  print_value ("%d", cloud.width * cloud.height);
+  print_info (" points]\n");
+  print_info ("Available dimensions: ");
+  print_value ("%s\n", pcl::getFieldsList (cloud).c_str());
 
   return (true);
 }
@@ -101,18 +101,18 @@ compute (ConstCloudPtr& input, Cloud& output, float radius)
   TicToc tt;
   tt.tic();
 
-  print_highlight(stderr, "Computing ");
+  print_highlight (stderr, "Computing ");
 
   LocalMaximum<PointType> lm;
-  lm.setInputCloud(input);
-  lm.setRadius(radius);
-  lm.filter(output);
+  lm.setInputCloud (input);
+  lm.setRadius (radius);
+  lm.filter (output);
 
-  print_info("[done, ");
-  print_value("%g", tt.toc());
-  print_info(" ms : ");
-  print_value("%d", output.width * output.height);
-  print_info(" points]\n");
+  print_info ("[done, ");
+  print_value ("%g", tt.toc());
+  print_info (" ms : ");
+  print_value ("%d", output.width * output.height);
+  print_info (" points]\n");
 }
 
 void
@@ -121,17 +121,17 @@ saveCloud (const std::string& filename, const Cloud& output)
   TicToc tt;
   tt.tic();
 
-  print_highlight("Saving ");
-  print_value("%s ", filename.c_str());
+  print_highlight ("Saving ");
+  print_value ("%s ", filename.c_str());
 
   PCDWriter w;
-  w.writeBinaryCompressed(filename, output);
+  w.writeBinaryCompressed (filename, output);
 
-  print_info("[done, ");
-  print_value("%g", tt.toc());
-  print_info(" ms : ");
-  print_value("%d", output.width * output.height);
-  print_info(" points]\n");
+  print_info ("[done, ");
+  print_value ("%g", tt.toc());
+  print_info (" ms : ");
+  print_value ("%d", output.width * output.height);
+  print_info (" points]\n");
 }
 
 int
@@ -141,20 +141,20 @@ batchProcess (const std::vector<std::string>& pcd_files,
 {
   for (const auto& pcd_file : pcd_files) {
     // Load the first file
-    Cloud::Ptr cloud(new Cloud);
-    if (!loadCloud(pcd_file, *cloud))
+    Cloud::Ptr cloud (new Cloud);
+    if (!loadCloud (pcd_file, *cloud))
       return (-1);
 
     // Perform the feature estimation
     Cloud output;
-    compute(cloud, output, radius);
+    compute (cloud, output, radius);
 
     // Prepare output file name
-    std::string filename = pcl_fs::path(pcd_file).filename().string();
+    std::string filename = pcl_fs::path (pcd_file).filename().string();
 
     // Save into the second file
     const std::string filepath = output_dir + '/' + filename;
-    saveCloud(filepath, output);
+    saveCloud (filepath, output);
   }
   return (0);
 }
@@ -163,12 +163,12 @@ batchProcess (const std::vector<std::string>& pcd_files,
 int
 main (int argc, char** argv)
 {
-  print_info("Filter a point cloud using the pcl::LocalMaximum filter. For more "
-             "information, use: %s -h\n",
-             argv[0]);
+  print_info ("Filter a point cloud using the pcl::LocalMaximum filter. For more "
+              "information, use: %s -h\n",
+              argv[0]);
 
   if (argc < 3) {
-    printHelp(argc, argv);
+    printHelp (argc, argv);
     return (-1);
   }
 
@@ -176,13 +176,13 @@ main (int argc, char** argv)
 
   // Command line parsing
   float radius = default_radius;
-  parse_argument(argc, argv, "-radius", radius);
+  parse_argument (argc, argv, "-radius", radius);
   std::string input_dir, output_dir;
-  if (parse_argument(argc, argv, "-input_dir", input_dir) != -1) {
-    PCL_INFO("Input directory given as %s. Batch process mode on.\n",
-             input_dir.c_str());
-    if (parse_argument(argc, argv, "-output_dir", output_dir) == -1) {
-      PCL_ERROR("Need an output directory! Please use -output_dir to continue.\n");
+  if (parse_argument (argc, argv, "-input_dir", input_dir) != -1) {
+    PCL_INFO ("Input directory given as %s. Batch process mode on.\n",
+              input_dir.c_str());
+    if (parse_argument (argc, argv, "-output_dir", output_dir) == -1) {
+      PCL_ERROR ("Need an output directory! Please use -output_dir to continue.\n");
       return (-1);
     }
 
@@ -193,42 +193,42 @@ main (int argc, char** argv)
   if (!batch_mode) {
     // Parse the command line arguments for .pcd files
     std::vector<int> p_file_indices;
-    p_file_indices = parse_file_extension_argument(argc, argv, ".pcd");
+    p_file_indices = parse_file_extension_argument (argc, argv, ".pcd");
     if (p_file_indices.size() != 2) {
-      print_error("Need one input PCD file and one output PCD file to continue.\n");
+      print_error ("Need one input PCD file and one output PCD file to continue.\n");
       return (-1);
     }
 
     // Load the first file
-    Cloud::Ptr cloud(new Cloud);
-    if (!loadCloud(argv[p_file_indices[0]], *cloud))
+    Cloud::Ptr cloud (new Cloud);
+    if (!loadCloud (argv[p_file_indices[0]], *cloud))
       return (-1);
 
     // Perform the feature estimation
     Cloud output;
-    compute(cloud, output, radius);
+    compute (cloud, output, radius);
 
     // Save into the second file
-    saveCloud(argv[p_file_indices[1]], output);
+    saveCloud (argv[p_file_indices[1]], output);
   }
   else {
-    if (!input_dir.empty() && pcl_fs::exists(input_dir)) {
+    if (!input_dir.empty() && pcl_fs::exists (input_dir)) {
       std::vector<std::string> pcd_files;
       pcl_fs::directory_iterator end_itr;
-      for (pcl_fs::directory_iterator itr(input_dir); itr != end_itr; ++itr) {
+      for (pcl_fs::directory_iterator itr (input_dir); itr != end_itr; ++itr) {
         // Only add PCD files
-        if (!is_directory(itr->status()) &&
-            boost::algorithm::to_upper_copy(itr->path().extension().string()) ==
+        if (!is_directory (itr->status()) &&
+            boost::algorithm::to_upper_copy (itr->path().extension().string()) ==
                 ".PCD") {
-          pcd_files.push_back(itr->path().string());
-          PCL_INFO("[Batch processing mode] Added %s for processing.\n",
-                   itr->path().string().c_str());
+          pcd_files.push_back (itr->path().string());
+          PCL_INFO ("[Batch processing mode] Added %s for processing.\n",
+                    itr->path().string().c_str());
         }
       }
-      batchProcess(pcd_files, output_dir, radius);
+      batchProcess (pcd_files, output_dir, radius);
     }
     else {
-      PCL_ERROR(
+      PCL_ERROR (
           "Batch processing mode enabled, but invalid input directory (%s) given!\n",
           input_dir.c_str());
       return (-1);

@@ -68,7 +68,7 @@ public:
   /** \brief Constructor
    * \param[in] resolution volume resolution
    */
-  TsdfVolume(const Eigen::Vector3i& resolution);
+  TsdfVolume (const Eigen::Vector3i& resolution);
 
   /** \brief Sets Tsdf volume size for each dimension
    * \param[in] size size of tsdf volume in meters

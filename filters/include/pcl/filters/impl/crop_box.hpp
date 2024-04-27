@@ -49,10 +49,10 @@
 ///////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 void
-pcl::CropBox<PointT>::applyFilter(Indices& indices)
+pcl::CropBox<PointT>::applyFilter (Indices& indices)
 {
-  indices.resize(input_->size());
-  removed_indices_->resize(input_->size());
+  indices.resize (input_->size());
+  removed_indices_->resize (input_->size());
   int indices_count = 0;
   int removed_indices_count = 0;
 
@@ -60,8 +60,8 @@ pcl::CropBox<PointT>::applyFilter(Indices& indices)
   Eigen::Affine3f inverse_transform = Eigen::Affine3f::Identity();
 
   if (rotation_ != Eigen::Vector3f::Zero()) {
-    pcl::getTransformation(
-        0, 0, 0, rotation_(0), rotation_(1), rotation_(2), transform);
+    pcl::getTransformation (
+        0, 0, 0, rotation_ (0), rotation_ (1), rotation_ (2), transform);
     inverse_transform = transform.inverse();
   }
 
@@ -72,7 +72,7 @@ pcl::CropBox<PointT>::applyFilter(Indices& indices)
   for (const auto index : *indices_) {
     if (!input_->is_dense)
       // Check if the point is invalid
-      if (!isFinite((*input_)[index]))
+      if (!isFinite ((*input_)[index]))
         continue;
 
     // Get local point
@@ -80,17 +80,17 @@ pcl::CropBox<PointT>::applyFilter(Indices& indices)
 
     // Transform point to world space
     if (!transform_matrix_is_identity)
-      local_pt = pcl::transformPoint<PointT>(local_pt, transform_);
+      local_pt = pcl::transformPoint<PointT> (local_pt, transform_);
 
     if (!translation_is_zero) {
-      local_pt.x -= translation_(0);
-      local_pt.y -= translation_(1);
-      local_pt.z -= translation_(2);
+      local_pt.x -= translation_ (0);
+      local_pt.y -= translation_ (1);
+      local_pt.z -= translation_ (2);
     }
 
     // Transform point to local space of crop box
     if (!inverse_transform_matrix_is_identity)
-      local_pt = pcl::transformPoint<PointT>(local_pt, inverse_transform);
+      local_pt = pcl::transformPoint<PointT> (local_pt, inverse_transform);
 
     // If outside the cropbox
     if ((local_pt.x < min_pt_[0] || local_pt.y < min_pt_[1] ||
@@ -110,8 +110,8 @@ pcl::CropBox<PointT>::applyFilter(Indices& indices)
         indices[indices_count++] = index;
     }
   }
-  indices.resize(indices_count);
-  removed_indices_->resize(removed_indices_count);
+  indices.resize (indices_count);
+  removed_indices_->resize (removed_indices_count);
 }
 
 #define PCL_INSTANTIATE_CropBox(T) template class PCL_EXPORTS pcl::CropBox<T>;

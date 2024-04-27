@@ -24,15 +24,15 @@ class ON_CLASS ON_Ellipse {
 public:
   ON_Ellipse(); // zeros all fields - plane is invalid
 
-  ON_Ellipse(const ON_Plane&, double, double // radii for x and y vectors
+  ON_Ellipse (const ON_Plane&, double, double // radii for x and y vectors
   );
 
-  ON_Ellipse(const ON_Circle&);
+  ON_Ellipse (const ON_Circle&);
 
   ~ON_Ellipse();
 
   ON_Ellipse&
-  operator=(const ON_Circle&);
+  operator= (const ON_Circle&);
 
   ON_BOOL32
   Create (const ON_Plane&, // point on the plane
@@ -44,11 +44,11 @@ public:
   Create (const ON_Circle&);
 
   ON_BOOL32
-  IsValid () const; // returns true if all fields contain reasonable
-                    // information and equation jibes with point and Z.
+  IsValid() const; // returns true if all fields contain reasonable
+                   // information and equation jibes with point and Z.
 
   ON_BOOL32
-  IsCircle () const; // returns true is ellipse is a circle
+  IsCircle() const; // returns true is ellipse is a circle
 
   double
   Radius (int // 0 = x axis radius, 1 = y axis radius

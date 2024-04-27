@@ -28,18 +28,18 @@ getTimestamp (const std::chrono::time_point<std::chrono::system_clock>& time =
                   std::chrono::system_clock::now())
 {
   const auto us =
-      std::chrono::duration_cast<std::chrono::microseconds>(time.time_since_epoch());
+      std::chrono::duration_cast<std::chrono::microseconds> (time.time_since_epoch());
 
-  const auto s = std::chrono::duration_cast<std::chrono::seconds>(us);
+  const auto s = std::chrono::duration_cast<std::chrono::seconds> (us);
   std::time_t tt = s.count();
   std::size_t fractional_seconds = us.count() % 1000000;
 
-  std::tm tm = *std::localtime(&tt); // local time
+  std::tm tm = *std::localtime (&tt); // local time
   std::stringstream ss;
-  ss << std::put_time(&tm, "%Y%m%dT%H%M%S");
+  ss << std::put_time (&tm, "%Y%m%dT%H%M%S");
 
   if (fractional_seconds > 0) {
-    ss << "." << std::setw(6) << std::setfill('0') << fractional_seconds;
+    ss << "." << std::setw (6) << std::setfill ('0') << fractional_seconds;
   }
 
   return ss.str();
@@ -61,18 +61,18 @@ parseTimestamp (std::string timestamp)
 
   std::size_t fractional_seconds = 0;
 
-  ss.str(timestamp);
-  ss >> std::get_time(&tm, "%Y%m%dT%H%M%S");
+  ss.str (timestamp);
+  ss >> std::get_time (&tm, "%Y%m%dT%H%M%S");
 
-  auto timepoint = std::chrono::system_clock::from_time_t(std::mktime(&tm));
+  auto timepoint = std::chrono::system_clock::from_time_t (std::mktime (&tm));
 
-  const auto pos = timestamp.find('.');
+  const auto pos = timestamp.find ('.');
 
   if (pos != std::string::npos) {
-    const auto frac_text = timestamp.substr(pos + 1);
-    ss.str(frac_text);
+    const auto frac_text = timestamp.substr (pos + 1);
+    ss.str (frac_text);
     ss >> fractional_seconds;
-    timepoint += std::chrono::microseconds(fractional_seconds);
+    timepoint += std::chrono::microseconds (fractional_seconds);
   }
 
   return timepoint;

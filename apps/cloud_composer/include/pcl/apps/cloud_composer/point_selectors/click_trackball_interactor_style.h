@@ -48,7 +48,7 @@ class ClickTrackballStyleInteractor : public vtkInteractorStyleTrackballActor {
 public:
   static ClickTrackballStyleInteractor*
   New ();
-  vtkTypeMacro(ClickTrackballStyleInteractor, vtkInteractorStyleTrackballActor);
+  vtkTypeMacro (ClickTrackballStyleInteractor, vtkInteractorStyleTrackballActor);
 
   ClickTrackballStyleInteractor();
 

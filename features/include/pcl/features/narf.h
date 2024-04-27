@@ -66,14 +66,14 @@ public:
   //! Constructor
   Narf();
   //! Copy Constructor
-  Narf(const Narf& other);
+  Narf (const Narf& other);
   //! Destructor
   ~Narf();
 
   // =====Operators=====
   //! Assignment operator
   const Narf&
-  operator=(const Narf& other);
+  operator= (const Narf& other);
 
   // =====STATIC=====
   /** The maximum number of openmp threads that can be used in this class */
@@ -188,8 +188,8 @@ public:
   inline int
   getNoOfBeamPoints () const
   {
-    return (static_cast<int>(
-        pcl_lrint(std::ceil(0.5f * float(surface_patch_pixel_size_)))));
+    return (static_cast<int> (
+        pcl_lrint (std::ceil (0.5f * float (surface_patch_pixel_size_)))));
   }
 
   //! Copy the descriptor and pose to the point struct Narf36
@@ -339,7 +339,7 @@ public:
   // =====PUBLIC STRUCTS=====
   struct FeaturePointRepresentation : public PointRepresentation<Narf*> {
     using PointT = Narf*;
-    FeaturePointRepresentation(int nr_dimensions)
+    FeaturePointRepresentation (int nr_dimensions)
     {
       this->nr_dimensions_ = nr_dimensions;
     }
@@ -349,7 +349,7 @@ public:
     copyToFloatArray (const PointT& p, float* out) const override
     {
       auto descriptor = p->getDescriptor();
-      std::copy(descriptor, descriptor + this->nr_dimensions_, out);
+      std::copy (descriptor, descriptor + this->nr_dimensions_, out);
     }
   };
 

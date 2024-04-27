@@ -43,11 +43,11 @@
 #include <pcl/point_types.h>
 // Instantiations of specific point types
 #ifdef PCL_ONLY_CORE_POINT_TYPES
-PCL_INSTANTIATE_PRODUCT(IntensityGradientEstimation,
-                        ((pcl::PointXYZI))((pcl::Normal))((pcl::IntensityGradient)))
+PCL_INSTANTIATE_PRODUCT (IntensityGradientEstimation,
+                         ((pcl::PointXYZI)) ((pcl::Normal)) ((pcl::IntensityGradient)))
 #else
-PCL_INSTANTIATE_PRODUCT(IntensityGradientEstimation,
-                        ((pcl::PointXYZI)(pcl::PointXYZINormal))(
-                            PCL_NORMAL_POINT_TYPES)((pcl::IntensityGradient)))
+PCL_INSTANTIATE_PRODUCT (IntensityGradientEstimation,
+                         ((pcl::PointXYZI) (pcl::PointXYZINormal)) (
+                             PCL_NORMAL_POINT_TYPES)((pcl::IntensityGradient)))
 #endif
 #endif // PCL_NO_PRECOMPILE

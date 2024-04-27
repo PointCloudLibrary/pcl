@@ -77,9 +77,9 @@ public:
   /** \brief RRANSAC (Randomized RANdom SAmple Consensus) main constructor
    * \param[in] model a Sample Consensus model
    */
-  RandomizedRandomSampleConsensus(const SampleConsensusModelPtr& model)
-  : SampleConsensus<PointT>(model)
-  , fraction_nr_pretest_(10.0) // Number of samples to try randomly in percents
+  RandomizedRandomSampleConsensus (const SampleConsensusModelPtr& model)
+  : SampleConsensus<PointT> (model)
+  , fraction_nr_pretest_ (10.0) // Number of samples to try randomly in percents
   {
     // Maximum number of trials before we give up.
     max_iterations_ = 10000;
@@ -89,10 +89,10 @@ public:
    * \param[in] model a Sample Consensus model
    * \param[in] threshold distance to model threshold
    */
-  RandomizedRandomSampleConsensus(const SampleConsensusModelPtr& model,
-                                  double threshold)
-  : SampleConsensus<PointT>(model, threshold)
-  , fraction_nr_pretest_(10.0) // Number of samples to try randomly in percents
+  RandomizedRandomSampleConsensus (const SampleConsensusModelPtr& model,
+                                   double threshold)
+  : SampleConsensus<PointT> (model, threshold)
+  , fraction_nr_pretest_ (10.0) // Number of samples to try randomly in percents
   {
     // Maximum number of trials before we give up.
     max_iterations_ = 10000;

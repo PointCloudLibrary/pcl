@@ -89,12 +89,12 @@
 #if defined(_MSC_VER)
 // nvcc on msvc can't work with [[deprecated]]
 #if !defined(__CUDACC__)
-#define _PCL_DEPRECATED_IMPL(Message) [[deprecated(Message)]]
+#define _PCL_DEPRECATED_IMPL(Message) [[deprecated (Message)]]
 #else
 #define _PCL_DEPRECATED_IMPL(Message)
 #endif
 #elif __has_cpp_attribute(deprecated)
-#define _PCL_DEPRECATED_IMPL(Message) [[deprecated(Message)]]
+#define _PCL_DEPRECATED_IMPL(Message) [[deprecated (Message)]]
 #else
 #warning "You need to implement _PCL_DEPRECATED_IMPL for this compiler"
 #define _PCL_DEPRECATED_IMPL(Message)
@@ -102,18 +102,18 @@
 
 // Macro for pragma operator
 #if (defined(__GNUC__) || defined(__clang__))
-#define PCL_PRAGMA(x) _Pragma(#x)
+#define PCL_PRAGMA(x) _Pragma (#x)
 #elif _MSC_VER
-#define PCL_PRAGMA(x) __pragma(#x)
+#define PCL_PRAGMA(x) __pragma (#x)
 #else
 #define PCL_PRAGMA
 #endif
 
 // Macro for emitting pragma warning for deprecated headers
 #if (defined(__GNUC__) || defined(__clang__))
-#define _PCL_DEPRECATED_HEADER_IMPL(Message) PCL_PRAGMA(message Message)
+#define _PCL_DEPRECATED_HEADER_IMPL(Message) PCL_PRAGMA (message Message)
 #elif _MSC_VER
-#define _PCL_DEPRECATED_HEADER_IMPL(Message) PCL_PRAGMA(warning(Message))
+#define _PCL_DEPRECATED_HEADER_IMPL(Message) PCL_PRAGMA (warning (Message))
 #else
 #warning "You need to implement _PCL_DEPRECATED_HEADER_IMPL for this compiler"
 #define _PCL_DEPRECATED_HEADER_IMPL(Message)
@@ -131,11 +131,11 @@
  * already `34.13.0`, and allows for smoother transition for maintainers
  */
 #define _PCL_COMPAT_MINOR_VERSION(Minor, IfPass, IfFail)                               \
-  BOOST_PP_IF(BOOST_PP_EQUAL(PCL_REVISION_VERSION, 99),                                \
-              BOOST_PP_IF(BOOST_PP_LESS(BOOST_PP_ADD(PCL_MINOR_VERSION, 1), Minor),    \
-                          IfPass,                                                      \
-                          IfFail),                                                     \
-              BOOST_PP_IF(BOOST_PP_LESS(PCL_MINOR_VERSION, Minor), IfPass, IfFail))
+  BOOST_PP_IF (                                                                        \
+      BOOST_PP_EQUAL (PCL_REVISION_VERSION, 99),                                       \
+      BOOST_PP_IF (                                                                    \
+          BOOST_PP_LESS (BOOST_PP_ADD (PCL_MINOR_VERSION, 1), Minor), IfPass, IfFail), \
+      BOOST_PP_IF (BOOST_PP_LESS (PCL_MINOR_VERSION, Minor), IfPass, IfFail))
 
 /**
  * \brief Tests for Major == PCL_MAJOR_VERSION
@@ -143,11 +143,12 @@
  * already `35.0.0`, and allows for smoother transition for maintainers
  */
 #define _PCL_COMPAT_MAJOR_VERSION(Major, IfPass, IfFail)                               \
-  BOOST_PP_IF(BOOST_PP_EQUAL(PCL_MINOR_VERSION, 99),                                   \
-              BOOST_PP_IF(BOOST_PP_EQUAL(BOOST_PP_ADD(PCL_MAJOR_VERSION, 1), Major),   \
-                          IfPass,                                                      \
-                          IfFail),                                                     \
-              BOOST_PP_IF(BOOST_PP_EQUAL(PCL_MAJOR_VERSION, Major), IfPass, IfFail))
+  BOOST_PP_IF (                                                                        \
+      BOOST_PP_EQUAL (PCL_MINOR_VERSION, 99),                                          \
+      BOOST_PP_IF (BOOST_PP_EQUAL (BOOST_PP_ADD (PCL_MAJOR_VERSION, 1), Major),        \
+                   IfPass,                                                             \
+                   IfFail),                                                            \
+      BOOST_PP_IF (BOOST_PP_EQUAL (PCL_MAJOR_VERSION, Major), IfPass, IfFail))
 
 /**
  * \brief macro for compatibility across compilers and help remove old deprecated
@@ -161,11 +162,11 @@
  *   * PCL 2.0 onwards: compiler error with "major_version_mismatch"
  */
 #define PCL_DEPRECATED(Major, Minor, Message)                                          \
-  _PCL_COMPAT_MAJOR_VERSION(                                                           \
+  _PCL_COMPAT_MAJOR_VERSION (                                                          \
       Major,                                                                           \
-      _PCL_COMPAT_MINOR_VERSION(                                                       \
+      _PCL_COMPAT_MINOR_VERSION (                                                      \
           Minor,                                                                       \
-          _PCL_DEPRECATED_IMPL(_PCL_PREPARE_REMOVAL_MESSAGE(Major, Minor, Message)),   \
+          _PCL_DEPRECATED_IMPL (_PCL_PREPARE_REMOVAL_MESSAGE (Major, Minor, Message)), \
           unneeded_deprecation),                                                       \
       major_version_mismatch)
 
@@ -182,11 +183,11 @@
  *   * PCL 2.0 onwards: compiler error with "major_version_mismatch"
  */
 #define PCL_DEPRECATED_HEADER(Major, Minor, Message)                                   \
-  _PCL_COMPAT_MAJOR_VERSION(                                                           \
+  _PCL_COMPAT_MAJOR_VERSION (                                                          \
       Major,                                                                           \
-      _PCL_COMPAT_MINOR_VERSION(                                                       \
+      _PCL_COMPAT_MINOR_VERSION (                                                      \
           Minor,                                                                       \
-          _PCL_DEPRECATED_HEADER_IMPL(_PCL_PREPARE_REMOVAL_MESSAGE(                    \
+          _PCL_DEPRECATED_HEADER_IMPL (_PCL_PREPARE_REMOVAL_MESSAGE (                  \
               Major, Minor, "This header is deprecated. " Message)),                   \
           unneeded_header),                                                            \
       major_version_mismatch)
@@ -245,26 +246,26 @@
 __inline double
 pcl_round (double number)
 {
-  return (number < 0.0 ? std::ceil(number - 0.5) : std::floor(number + 0.5));
+  return (number < 0.0 ? std::ceil (number - 0.5) : std::floor (number + 0.5));
 }
 __inline float
 pcl_round (float number)
 {
-  return (number < 0.0f ? std::ceil(number - 0.5f) : std::floor(number + 0.5f));
+  return (number < 0.0f ? std::ceil (number - 0.5f) : std::floor (number + 0.5f));
 }
 
 #ifdef __GNUC__
-#define pcl_lrint(x) (lrint(static_cast<double>(x)))
-#define pcl_lrintf(x) (lrintf(static_cast<float>(x)))
+#define pcl_lrint(x) (lrint (static_cast<double> (x)))
+#define pcl_lrintf(x) (lrintf (static_cast<float> (x)))
 #else
-#define pcl_lrint(x) (static_cast<long int>(pcl_round(x)))
-#define pcl_lrintf(x) (static_cast<long int>(pcl_round(x)))
+#define pcl_lrint(x) (static_cast<long int> (pcl_round (x)))
+#define pcl_lrintf(x) (static_cast<long int> (pcl_round (x)))
 #endif
 
 #ifdef WIN32
-#define pcl_sleep(x) Sleep(1000 * (x))
+#define pcl_sleep(x) Sleep (1000 * (x))
 #else
-#define pcl_sleep(x) sleep(x)
+#define pcl_sleep(x) sleep (x)
 #endif
 
 #ifndef PVAR
@@ -280,32 +281,32 @@ pcl_round (float number)
 #define PVARS(s) #s << " = " << (s) << " " << std::flush
 #endif
 #ifndef PVARA
-#define PVARA(s) #s << " = " << RAD2DEG(s) << "deg" << std::flush
+#define PVARA(s) #s << " = " << RAD2DEG (s) << "deg" << std::flush
 #endif
 #ifndef PVARAN
-#define PVARAN(s) #s << " = " << RAD2DEG(s) << "deg\n"
+#define PVARAN(s) #s << " = " << RAD2DEG (s) << "deg\n"
 #endif
 #ifndef PVARAC
-#define PVARAC(s) #s << " = " << RAD2DEG(s) << "deg, " << std::flush
+#define PVARAC(s) #s << " = " << RAD2DEG (s) << "deg, " << std::flush
 #endif
 #ifndef PVARAS
-#define PVARAS(s) #s << " = " << RAD2DEG(s) << "deg " << std::flush
+#define PVARAS(s) #s << " = " << RAD2DEG (s) << "deg " << std::flush
 #endif
 
-#define FIXED(s) std::fixed << (s) << std::resetiosflags(std::ios_base::fixed)
+#define FIXED(s) std::fixed << (s) << std::resetiosflags (std::ios_base::fixed)
 
 #ifndef ERASE_STRUCT
-#define ERASE_STRUCT(var) memset(&(var), 0, sizeof(var))
+#define ERASE_STRUCT(var) memset (&(var), 0, sizeof (var))
 #endif
 
 #ifndef ERASE_ARRAY
-#define ERASE_ARRAY(var, size) memset(var, 0, (size) * sizeof(*(var)))
+#define ERASE_ARRAY(var, size) memset (var, 0, (size) * sizeof (*(var)))
 #endif
 
 #ifndef SET_ARRAY
 #define SET_ARRAY(var, value, size)                                                    \
   {                                                                                    \
-    for (decltype(size) i = 0; i < (size); ++i)                                        \
+    for (decltype (size) i = 0; i < (size); ++i)                                       \
       (var)[i] = value;                                                                \
   }
 #endif
@@ -320,7 +321,7 @@ pcl_round (float number)
 
 #if defined WIN32 || defined _WIN32 || defined WINCE || defined __MINGW32__
 #ifdef PCLAPI_EXPORTS
-#define PCL_EXPORTS __declspec(dllexport)
+#define PCL_EXPORTS __declspec (dllexport)
 #else
 #define PCL_EXPORTS
 #endif
@@ -346,9 +347,9 @@ pcl_round (float number)
 #endif
 
 #if defined(__GNUC__) || defined(__PGI) || defined(__IBMCPP__) || defined(__SUNPRO_CC)
-#define PCL_ALIGN(alignment) __attribute__((aligned(alignment)))
+#define PCL_ALIGN(alignment) __attribute__ ((aligned (alignment)))
 #elif defined(_MSC_VER)
-#define PCL_ALIGN(alignment) __declspec(align(alignment))
+#define PCL_ALIGN(alignment) __declspec (align (alignment))
 #else
 #error Alignment not supported on your platform
 #endif
@@ -387,16 +388,16 @@ aligned_malloc (std::size_t size)
 {
   void* ptr;
 #if defined(MALLOC_ALIGNED)
-  ptr = std::malloc(size);
+  ptr = std::malloc (size);
 #elif defined(HAVE_POSIX_MEMALIGN)
-  if (posix_memalign(&ptr, 16, size))
+  if (posix_memalign (&ptr, 16, size))
     ptr = 0;
 #elif defined(HAVE_MM_MALLOC)
-  ptr = _mm_malloc(size, 16);
+  ptr = _mm_malloc (size, 16);
 #elif defined(_MSC_VER)
-  ptr = _aligned_malloc(size, 16);
+  ptr = _aligned_malloc (size, 16);
 #elif defined(ANDROID)
-  ptr = memalign(16, size);
+  ptr = memalign (16, size);
 #else
 #error aligned_malloc not supported on your platform
   ptr = 0;
@@ -408,13 +409,13 @@ inline void
 aligned_free (void* ptr)
 {
 #if defined(MALLOC_ALIGNED) || defined(HAVE_POSIX_MEMALIGN)
-  std::free(ptr);
+  std::free (ptr);
 #elif defined(HAVE_MM_MALLOC)
-  _mm_free(ptr);
+  _mm_free (ptr);
 #elif defined(_MSC_VER)
-  _aligned_free(ptr);
+  _aligned_free (ptr);
 #elif defined(ANDROID)
-  free(ptr);
+  free (ptr);
 #else
 #error aligned_free not supported on your platform
 #endif
@@ -481,13 +482,13 @@ aligned_free (void* ptr)
  * @endcode
  */
 #if __has_cpp_attribute(unlikely)
-#define PCL_CONDITION_UNLIKELY(x) (static_cast<bool>(x)) [[unlikely]]
+#define PCL_CONDITION_UNLIKELY(x) (static_cast<bool> (x)) [[unlikely]]
 #elif defined(__GNUC__)
-#define PCL_CONDITION_UNLIKELY(x) (__builtin_expect(static_cast<bool>(x), 0))
+#define PCL_CONDITION_UNLIKELY(x) (__builtin_expect (static_cast<bool> (x), 0))
 #elif defined(__clang__) &&                                                            \
     (PCL_LINEAR_VERSION(__clang_major__, __clang_minor__, 0) >=                        \
      PCL_LINEAR_VERSION(3, 9, 0))
-#define PCL_CONDITION_UNLIKELY(x) (__builtin_expect(static_cast<bool>(x), 0))
+#define PCL_CONDITION_UNLIKELY(x) (__builtin_expect (static_cast<bool> (x), 0))
 #else // MSVC has no such alternative
 #define PCL_CONDITION_UNLIKELY(x) (x)
 #endif
@@ -495,4 +496,4 @@ aligned_free (void* ptr)
 #define PCL_IF_UNLIKELY(x) if PCL_CONDITION_UNLIKELY (x)
 #define PCL_WHILE_UNLIKELY(x)                                                          \
   while                                                                                \
-  PCL_CONDITION_UNLIKELY(x)
+  PCL_CONDITION_UNLIKELY (x)

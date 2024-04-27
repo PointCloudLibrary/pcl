@@ -43,12 +43,12 @@
 #include <pcl/point_types.h>
 // Instantiations of specific point types
 #ifdef PCL_ONLY_CORE_POINT_TYPES
-PCL_INSTANTIATE_PRODUCT(
+PCL_INSTANTIATE_PRODUCT (
     VFHEstimation,
-    ((pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGB)(pcl::PointXYZRGBA)(
-        pcl::PointNormal))((pcl::Normal)(pcl::PointNormal))((pcl::VFHSignature308)))
+    ((pcl::PointXYZ) (pcl::PointXYZI) (pcl::PointXYZRGB) (pcl::PointXYZRGBA) (
+        pcl::PointNormal)) ((pcl::Normal) (pcl::PointNormal)) ((pcl::VFHSignature308)))
 #else
-PCL_INSTANTIATE_PRODUCT(
+PCL_INSTANTIATE_PRODUCT (
     VFHEstimation,
     (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES)((pcl::VFHSignature308)))
 #endif

@@ -102,7 +102,7 @@ struct DepthSenseGrabberImpl {
   static const int COLOR_HEIGHT = 480;
   static const int COLOR_SIZE = COLOR_WIDTH * COLOR_HEIGHT;
 
-  DepthSenseGrabberImpl(DepthSenseGrabber* parent, const std::string& device_id);
+  DepthSenseGrabberImpl (DepthSenseGrabber* parent, const std::string& device_id);
 
   ~DepthSenseGrabberImpl() noexcept;
 

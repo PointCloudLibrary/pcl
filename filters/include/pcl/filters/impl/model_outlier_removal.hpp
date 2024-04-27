@@ -55,87 +55,87 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 bool
-pcl::ModelOutlierRemoval<PointT>::initSACModel(pcl::SacModel model_type)
+pcl::ModelOutlierRemoval<PointT>::initSACModel (pcl::SacModel model_type)
 {
   // Build the model
   switch (model_type) {
   case SACMODEL_PLANE: {
-    PCL_DEBUG("[pcl::%s::initSACModel] Using a model of type: modelPLANE\n",
-              getClassName().c_str());
-    model_.reset(new SampleConsensusModelPlane<PointT>(input_));
+    PCL_DEBUG ("[pcl::%s::initSACModel] Using a model of type: modelPLANE\n",
+               getClassName().c_str());
+    model_.reset (new SampleConsensusModelPlane<PointT> (input_));
     break;
   }
   case SACMODEL_LINE: {
-    PCL_DEBUG("[pcl::%s::initSACModel] Using a model of type: modelLINE\n",
-              getClassName().c_str());
-    model_.reset(new SampleConsensusModelLine<PointT>(input_));
+    PCL_DEBUG ("[pcl::%s::initSACModel] Using a model of type: modelLINE\n",
+               getClassName().c_str());
+    model_.reset (new SampleConsensusModelLine<PointT> (input_));
     break;
   }
   case SACMODEL_CIRCLE2D: {
-    PCL_DEBUG("[pcl::%s::initSACModel] Using a model of type: modelCIRCLE2D\n",
-              getClassName().c_str());
-    model_.reset(new SampleConsensusModelCircle2D<PointT>(input_));
+    PCL_DEBUG ("[pcl::%s::initSACModel] Using a model of type: modelCIRCLE2D\n",
+               getClassName().c_str());
+    model_.reset (new SampleConsensusModelCircle2D<PointT> (input_));
     break;
   }
   case SACMODEL_SPHERE: {
-    PCL_DEBUG("[pcl::%s::initSACModel] Using a model of type: modelSPHERE\n",
-              getClassName().c_str());
-    model_.reset(new SampleConsensusModelSphere<PointT>(input_));
+    PCL_DEBUG ("[pcl::%s::initSACModel] Using a model of type: modelSPHERE\n",
+               getClassName().c_str());
+    model_.reset (new SampleConsensusModelSphere<PointT> (input_));
     break;
   }
   case SACMODEL_PARALLEL_LINE: {
-    PCL_DEBUG("[pcl::%s::initSACModel] Using a model of type: modelPARALLEL_LINE\n",
-              getClassName().c_str());
-    model_.reset(new SampleConsensusModelParallelLine<PointT>(input_));
+    PCL_DEBUG ("[pcl::%s::initSACModel] Using a model of type: modelPARALLEL_LINE\n",
+               getClassName().c_str());
+    model_.reset (new SampleConsensusModelParallelLine<PointT> (input_));
     break;
   }
   case SACMODEL_PERPENDICULAR_PLANE: {
-    PCL_DEBUG(
+    PCL_DEBUG (
         "[pcl::%s::initSACModel] Using a model of type: modelPERPENDICULAR_PLANE\n",
         getClassName().c_str());
-    model_.reset(new SampleConsensusModelPerpendicularPlane<PointT>(input_));
+    model_.reset (new SampleConsensusModelPerpendicularPlane<PointT> (input_));
     break;
   }
   case SACMODEL_CYLINDER: {
-    PCL_DEBUG("[pcl::%s::segment] Using a model of type: modelCYLINDER\n",
-              getClassName().c_str());
-    model_.reset(new SampleConsensusModelCylinder<PointT, pcl::Normal>(input_));
+    PCL_DEBUG ("[pcl::%s::segment] Using a model of type: modelCYLINDER\n",
+               getClassName().c_str());
+    model_.reset (new SampleConsensusModelCylinder<PointT, pcl::Normal> (input_));
     break;
   }
   case SACMODEL_NORMAL_PLANE: {
-    PCL_DEBUG("[pcl::%s::segment] Using a model of type: modelNORMAL_PLANE\n",
-              getClassName().c_str());
-    model_.reset(new SampleConsensusModelNormalPlane<PointT, pcl::Normal>(input_));
+    PCL_DEBUG ("[pcl::%s::segment] Using a model of type: modelNORMAL_PLANE\n",
+               getClassName().c_str());
+    model_.reset (new SampleConsensusModelNormalPlane<PointT, pcl::Normal> (input_));
     break;
   }
   case SACMODEL_CONE: {
-    PCL_DEBUG("[pcl::%s::segment] Using a model of type: modelCONE\n",
-              getClassName().c_str());
-    model_.reset(new SampleConsensusModelCone<PointT, pcl::Normal>(input_));
+    PCL_DEBUG ("[pcl::%s::segment] Using a model of type: modelCONE\n",
+               getClassName().c_str());
+    model_.reset (new SampleConsensusModelCone<PointT, pcl::Normal> (input_));
     break;
   }
   case SACMODEL_NORMAL_SPHERE: {
-    PCL_DEBUG("[pcl::%s::segment] Using a model of type: modelNORMAL_SPHERE\n",
-              getClassName().c_str());
-    model_.reset(new SampleConsensusModelNormalSphere<PointT, pcl::Normal>(input_));
+    PCL_DEBUG ("[pcl::%s::segment] Using a model of type: modelNORMAL_SPHERE\n",
+               getClassName().c_str());
+    model_.reset (new SampleConsensusModelNormalSphere<PointT, pcl::Normal> (input_));
     break;
   }
   case SACMODEL_NORMAL_PARALLEL_PLANE: {
-    PCL_DEBUG("[pcl::%s::segment] Using a model of type: modelNORMAL_PARALLEL_PLANE\n",
-              getClassName().c_str());
-    model_.reset(
-        new SampleConsensusModelNormalParallelPlane<PointT, pcl::Normal>(input_));
+    PCL_DEBUG ("[pcl::%s::segment] Using a model of type: modelNORMAL_PARALLEL_PLANE\n",
+               getClassName().c_str());
+    model_.reset (
+        new SampleConsensusModelNormalParallelPlane<PointT, pcl::Normal> (input_));
     break;
   }
   case SACMODEL_PARALLEL_PLANE: {
-    PCL_DEBUG("[pcl::%s::segment] Using a model of type: modelPARALLEL_PLANE\n",
-              getClassName().c_str());
-    model_.reset(new SampleConsensusModelParallelPlane<PointT>(input_));
+    PCL_DEBUG ("[pcl::%s::segment] Using a model of type: modelPARALLEL_PLANE\n",
+               getClassName().c_str());
+    model_.reset (new SampleConsensusModelParallelPlane<PointT> (input_));
     break;
   }
   default: {
-    PCL_ERROR("[pcl::%s::initSACModel] No valid model given!\n",
-              getClassName().c_str());
+    PCL_ERROR ("[pcl::%s::initSACModel] No valid model given!\n",
+               getClassName().c_str());
     return (false);
   }
   }
@@ -145,30 +145,30 @@ pcl::ModelOutlierRemoval<PointT>::initSACModel(pcl::SacModel model_type)
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 void
-pcl::ModelOutlierRemoval<PointT>::applyFilterIndices(Indices& indices)
+pcl::ModelOutlierRemoval<PointT>::applyFilterIndices (Indices& indices)
 {
   // The arrays to be used
-  indices.resize(indices_->size());
-  removed_indices_->resize(indices_->size());
+  indices.resize (indices_->size());
+  removed_indices_->resize (indices_->size());
   int oii = 0, rii = 0; // oii = output indices iterator, rii = removed indices iterator
   // is the filtersetup correct?
   bool valid_setup = true;
 
-  valid_setup &= initSACModel(model_type_);
+  valid_setup &= initSACModel (model_type_);
 
   using SACModelFromNormals = SampleConsensusModelFromNormals<PointT, pcl::Normal>;
   // Returns NULL if cast isn't possible
-  auto* model_from_normals = dynamic_cast<SACModelFromNormals*>(&(*model_));
+  auto* model_from_normals = dynamic_cast<SACModelFromNormals*> (&(*model_));
 
   if (model_from_normals) {
     if (!cloud_normals_) {
       valid_setup = false;
-      PCL_ERROR(
+      PCL_ERROR (
           "[pcl::ModelOutlierRemoval::applyFilterIndices]: no normals cloud set.\n");
     }
     else {
-      model_from_normals->setNormalDistanceWeight(normals_distance_weight_);
-      model_from_normals->setInputNormals(cloud_normals_);
+      model_from_normals->setNormalDistanceWeight (normals_distance_weight_);
+      model_from_normals->setInputNormals (cloud_normals_);
     }
   }
 
@@ -177,7 +177,7 @@ pcl::ModelOutlierRemoval<PointT>::applyFilterIndices(Indices& indices)
     for (const auto& iii : (*indices_)) // iii = input indices iterator
     {
       // Non-finite entries are always passed to removed indices
-      if (!isFinite((*input_)[iii])) {
+      if (!isFinite ((*input_)[iii])) {
         if (extract_removed_indices_)
           (*removed_indices_)[rii++] = iii;
         continue;
@@ -189,25 +189,25 @@ pcl::ModelOutlierRemoval<PointT>::applyFilterIndices(Indices& indices)
   // check distance of pointcloud to model
   std::vector<double> distances;
   // TODO: get signed distances !
-  model_->setIndices(
+  model_->setIndices (
       indices_); // added to reduce computation and arrange distances with indices
-  model_->getDistancesToModel(model_coefficients_, distances);
+  model_->getDistancesToModel (model_coefficients_, distances);
 
   bool thresh_result;
 
   // Filter for non-finite entries and the specified field limits
-  for (int iii = 0; iii < static_cast<int>(indices_->size());
+  for (int iii = 0; iii < static_cast<int> (indices_->size());
        ++iii) // iii = input indices iterator
   {
     // Non-finite entries are always passed to removed indices
-    if (!isFinite((*input_)[(*indices_)[iii]])) {
+    if (!isFinite ((*input_)[(*indices_)[iii]])) {
       if (extract_removed_indices_)
         (*removed_indices_)[rii++] = (*indices_)[iii];
       continue;
     }
 
     // use threshold function to separate outliers from inliers:
-    thresh_result = threshold_function_(distances[iii]);
+    thresh_result = threshold_function_ (distances[iii]);
 
     // in normal mode: define outliers as false thresh_result
     if (!negative_ && !thresh_result) {
@@ -228,8 +228,8 @@ pcl::ModelOutlierRemoval<PointT>::applyFilterIndices(Indices& indices)
   }
 
   // Resize the output arrays
-  indices.resize(oii);
-  removed_indices_->resize(rii);
+  indices.resize (oii);
+  removed_indices_->resize (rii);
 }
 
 #define PCL_INSTANTIATE_ModelOutlierRemoval(T)                                         \

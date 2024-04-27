@@ -52,17 +52,17 @@ template <typename PointT>
 std::mutex OutofcoreOctreeRamContainer<PointT>::rng_mutex_;
 
 template <typename PointT>
-std::mt19937 OutofcoreOctreeRamContainer<PointT>::rng_([] {
+std::mt19937 OutofcoreOctreeRamContainer<PointT>::rng_ ([] {
   std::random_device rd;
   return rd();
 }());
 
 template <typename PointT>
 void
-OutofcoreOctreeRamContainer<PointT>::convertToXYZ(const boost::filesystem::path& path)
+OutofcoreOctreeRamContainer<PointT>::convertToXYZ (const boost::filesystem::path& path)
 {
   if (!container_.empty()) {
-    FILE* fxyz = fopen(path.string().c_str(), "we");
+    FILE* fxyz = fopen (path.string().c_str(), "we");
 
     std::uint64_t num = size();
     for (std::uint64_t i = 0; i < num; i++) {
@@ -70,13 +70,13 @@ OutofcoreOctreeRamContainer<PointT>::convertToXYZ(const boost::filesystem::path&
 
       std::stringstream ss;
       ss << std::fixed;
-      ss.precision(16);
+      ss.precision (16);
       ss << p.x << "\t" << p.y << "\t" << p.z << "\n";
 
-      fwrite(ss.str().c_str(), 1, ss.str().size(), fxyz);
+      fwrite (ss.str().c_str(), 1, ss.str().size(), fxyz);
     }
 
-    assert(fclose(fxyz) == 0);
+    assert (fclose (fxyz) == 0);
   }
 }
 
@@ -84,37 +84,37 @@ OutofcoreOctreeRamContainer<PointT>::convertToXYZ(const boost::filesystem::path&
 
 template <typename PointT>
 void
-OutofcoreOctreeRamContainer<PointT>::insertRange(const PointT* start,
-                                                 const std::uint64_t count)
+OutofcoreOctreeRamContainer<PointT>::insertRange (const PointT* start,
+                                                  const std::uint64_t count)
 {
-  container_.insert(container_.end(), start, start + count);
+  container_.insert (container_.end(), start, start + count);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
 template <typename PointT>
 void
-OutofcoreOctreeRamContainer<PointT>::insertRange(const PointT* const* start,
-                                                 const std::uint64_t count)
+OutofcoreOctreeRamContainer<PointT>::insertRange (const PointT* const* start,
+                                                  const std::uint64_t count)
 {
   AlignedPointTVector temp;
-  temp.resize(count);
+  temp.resize (count);
   for (std::uint64_t i = 0; i < count; i++) {
     temp[i] = *start[i];
   }
-  container_.insert(container_.end(), temp.begin(), temp.end());
+  container_.insert (container_.end(), temp.begin(), temp.end());
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
 template <typename PointT>
 void
-OutofcoreOctreeRamContainer<PointT>::readRange(const std::uint64_t start,
-                                               const std::uint64_t count,
-                                               AlignedPointTVector& v)
+OutofcoreOctreeRamContainer<PointT>::readRange (const std::uint64_t start,
+                                                const std::uint64_t count,
+                                                AlignedPointTVector& v)
 {
-  v.resize(count);
-  std::copy(
+  v.resize (count);
+  std::copy (
       container_.cbegin() + start, container_.cbegin() + start + count, v.begin());
 }
 
@@ -122,20 +122,20 @@ OutofcoreOctreeRamContainer<PointT>::readRange(const std::uint64_t start,
 
 template <typename PointT>
 void
-OutofcoreOctreeRamContainer<PointT>::readRangeSubSample(const std::uint64_t start,
-                                                        const std::uint64_t count,
-                                                        const double percent,
-                                                        AlignedPointTVector& v)
+OutofcoreOctreeRamContainer<PointT>::readRangeSubSample (const std::uint64_t start,
+                                                         const std::uint64_t count,
+                                                         const double percent,
+                                                         AlignedPointTVector& v)
 {
-  auto samplesize = static_cast<std::uint64_t>(percent * static_cast<double>(count));
+  auto samplesize = static_cast<std::uint64_t> (percent * static_cast<double> (count));
 
-  std::lock_guard<std::mutex> lock(rng_mutex_);
+  std::lock_guard<std::mutex> lock (rng_mutex_);
 
-  std::uniform_int_distribution<std::uint64_t> buffdist(start, start + count);
+  std::uniform_int_distribution<std::uint64_t> buffdist (start, start + count);
 
   for (std::uint64_t i = 0; i < samplesize; i++) {
-    std::uint64_t buffstart = buffdist(rng_);
-    v.push_back(container_[buffstart]);
+    std::uint64_t buffstart = buffdist (rng_);
+    v.push_back (container_[buffstart]);
   }
 }
 

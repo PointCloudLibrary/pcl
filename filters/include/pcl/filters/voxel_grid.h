@@ -139,29 +139,29 @@ getMinMax3D (const pcl::PCLPointCloud2ConstPtr& cloud,
 inline Eigen::MatrixXi
 getHalfNeighborCellIndices ()
 {
-  Eigen::MatrixXi relative_coordinates(3, 13);
+  Eigen::MatrixXi relative_coordinates (3, 13);
   int idx = 0;
 
   // 0 - 8
   for (int i = -1; i < 2; i++) {
     for (int j = -1; j < 2; j++) {
-      relative_coordinates(0, idx) = i;
-      relative_coordinates(1, idx) = j;
-      relative_coordinates(2, idx) = -1;
+      relative_coordinates (0, idx) = i;
+      relative_coordinates (1, idx) = j;
+      relative_coordinates (2, idx) = -1;
       idx++;
     }
   }
   // 9 - 11
   for (int i = -1; i < 2; i++) {
-    relative_coordinates(0, idx) = i;
-    relative_coordinates(1, idx) = -1;
-    relative_coordinates(2, idx) = 0;
+    relative_coordinates (0, idx) = i;
+    relative_coordinates (1, idx) = -1;
+    relative_coordinates (2, idx) = 0;
     idx++;
   }
   // 12
-  relative_coordinates(0, idx) = -1;
-  relative_coordinates(1, idx) = 0;
-  relative_coordinates(2, idx) = 0;
+  relative_coordinates (0, idx) = -1;
+  relative_coordinates (1, idx) = 0;
+  relative_coordinates (2, idx) = 0;
 
   return (relative_coordinates);
 }
@@ -174,9 +174,9 @@ inline Eigen::MatrixXi
 getAllNeighborCellIndices ()
 {
   Eigen::MatrixXi relative_coordinates = getHalfNeighborCellIndices();
-  Eigen::MatrixXi relative_coordinates_all(3, 26);
-  relative_coordinates_all.block<3, 13>(0, 0) = relative_coordinates;
-  relative_coordinates_all.block<3, 13>(0, 13) = -relative_coordinates;
+  Eigen::MatrixXi relative_coordinates_all (3, 26);
+  relative_coordinates_all.block<3, 13> (0, 0) = relative_coordinates;
+  relative_coordinates_all.block<3, 13> (0, 13) = -relative_coordinates;
   return (relative_coordinates_all);
 }
 
@@ -255,12 +255,12 @@ public:
 
   /** \brief Empty constructor. */
   VoxelGrid()
-  : leaf_size_(Eigen::Vector4f::Zero())
-  , inverse_leaf_size_(Eigen::Array4f::Zero())
-  , min_b_(Eigen::Vector4i::Zero())
-  , max_b_(Eigen::Vector4i::Zero())
-  , div_b_(Eigen::Vector4i::Zero())
-  , divb_mul_(Eigen::Vector4i::Zero())
+  : leaf_size_ (Eigen::Vector4f::Zero())
+  , inverse_leaf_size_ (Eigen::Array4f::Zero())
+  , min_b_ (Eigen::Vector4i::Zero())
+  , max_b_ (Eigen::Vector4i::Zero())
+  , div_b_ (Eigen::Vector4i::Zero())
+  , divb_mul_ (Eigen::Vector4i::Zero())
   {
     filter_name_ = "VoxelGrid";
   }
@@ -408,13 +408,13 @@ public:
   inline int
   getCentroidIndex (const PointT& p) const
   {
-    return (leaf_layout_.at(
-        (Eigen::Vector4i(static_cast<int>(std::floor(p.x * inverse_leaf_size_[0])),
-                         static_cast<int>(std::floor(p.y * inverse_leaf_size_[1])),
-                         static_cast<int>(std::floor(p.z * inverse_leaf_size_[2])),
-                         0) -
+    return (leaf_layout_.at (
+        (Eigen::Vector4i (static_cast<int> (std::floor (p.x * inverse_leaf_size_[0])),
+                          static_cast<int> (std::floor (p.y * inverse_leaf_size_[1])),
+                          static_cast<int> (std::floor (p.z * inverse_leaf_size_[2])),
+                          0) -
          min_b_)
-            .dot(divb_mul_)));
+            .dot (divb_mul_)));
   }
 
   /** \brief Returns the indices in the resulting downsampled cloud of the points at the
@@ -430,22 +430,22 @@ public:
   getNeighborCentroidIndices (const PointT& reference_point,
                               const Eigen::MatrixXi& relative_coordinates) const
   {
-    Eigen::Vector4i ijk(
-        static_cast<int>(std::floor(reference_point.x * inverse_leaf_size_[0])),
-        static_cast<int>(std::floor(reference_point.y * inverse_leaf_size_[1])),
-        static_cast<int>(std::floor(reference_point.z * inverse_leaf_size_[2])),
+    Eigen::Vector4i ijk (
+        static_cast<int> (std::floor (reference_point.x * inverse_leaf_size_[0])),
+        static_cast<int> (std::floor (reference_point.y * inverse_leaf_size_[1])),
+        static_cast<int> (std::floor (reference_point.z * inverse_leaf_size_[2])),
         0);
     Eigen::Array4i diff2min = min_b_ - ijk;
     Eigen::Array4i diff2max = max_b_ - ijk;
-    std::vector<int> neighbors(relative_coordinates.cols());
+    std::vector<int> neighbors (relative_coordinates.cols());
     for (Eigen::Index ni = 0; ni < relative_coordinates.cols(); ni++) {
       Eigen::Vector4i displacement =
-          (Eigen::Vector4i() << relative_coordinates.col(ni), 0).finished();
+          (Eigen::Vector4i() << relative_coordinates.col (ni), 0).finished();
       // checking if the specified cell is in the grid
       if ((diff2min <= displacement.array()).all() &&
           (diff2max >= displacement.array()).all())
         neighbors[ni] = leaf_layout_[(
-            (ijk + displacement - min_b_).dot(divb_mul_))]; // .at() can be omitted
+            (ijk + displacement - min_b_).dot (divb_mul_))]; // .at() can be omitted
       else
         neighbors[ni] = -1; // cell is out of bounds, consider it empty
     }
@@ -471,9 +471,9 @@ public:
   inline Eigen::Vector3i
   getGridCoordinates (float x, float y, float z) const
   {
-    return {static_cast<int>(std::floor(x * inverse_leaf_size_[0])),
-            static_cast<int>(std::floor(y * inverse_leaf_size_[1])),
-            static_cast<int>(std::floor(z * inverse_leaf_size_[2]))};
+    return {static_cast<int> (std::floor (x * inverse_leaf_size_[0])),
+            static_cast<int> (std::floor (y * inverse_leaf_size_[1])),
+            static_cast<int> (std::floor (z * inverse_leaf_size_[2]))};
   }
 
   /** \brief Returns the index in the downsampled cloud corresponding to a given set of
@@ -482,9 +482,9 @@ public:
   inline int
   getCentroidIndexAt (const Eigen::Vector3i& ijk) const
   {
-    int idx = ((Eigen::Vector4i() << ijk, 0).finished() - min_b_).dot(divb_mul_);
+    int idx = ((Eigen::Vector4i() << ijk, 0).finished() - min_b_).dot (divb_mul_);
     if (idx < 0 ||
-        idx >= static_cast<int>(
+        idx >= static_cast<int> (
                    leaf_layout_.size())) // this checks also if leaf_layout_.size () ==
                                          // 0 i.e. everything was computed as needed
     {
@@ -554,7 +554,7 @@ public:
    * (true) or inside (false). \param[out] limit_negative true if data \b outside the
    * interval [min; max] is to be returned, false otherwise
    */
-  PCL_DEPRECATED(1, 16, "use bool getFilterLimitsNegative() instead")
+  PCL_DEPRECATED (1, 16, "use bool getFilterLimitsNegative() instead")
   inline void
   getFilterLimitsNegative (bool& limit_negative) const
   {
@@ -643,14 +643,14 @@ class PCL_EXPORTS VoxelGrid<pcl::PCLPointCloud2> : public Filter<pcl::PCLPointCl
 public:
   /** \brief Empty constructor. */
   VoxelGrid()
-  : leaf_size_(Eigen::Vector4f::Zero())
-  , inverse_leaf_size_(Eigen::Array4f::Zero())
+  : leaf_size_ (Eigen::Vector4f::Zero())
+  , inverse_leaf_size_ (Eigen::Array4f::Zero())
   ,
 
-  min_b_(Eigen::Vector4i::Zero())
-  , max_b_(Eigen::Vector4i::Zero())
-  , div_b_(Eigen::Vector4i::Zero())
-  , divb_mul_(Eigen::Vector4i::Zero())
+  min_b_ (Eigen::Vector4i::Zero())
+  , max_b_ (Eigen::Vector4i::Zero())
+  , div_b_ (Eigen::Vector4i::Zero())
+  , divb_mul_ (Eigen::Vector4i::Zero())
   {
     filter_name_ = "VoxelGrid";
   }
@@ -796,13 +796,13 @@ public:
   inline int
   getCentroidIndex (float x, float y, float z) const
   {
-    return (leaf_layout_.at(
-        (Eigen::Vector4i(static_cast<int>(std::floor(x * inverse_leaf_size_[0])),
-                         static_cast<int>(std::floor(y * inverse_leaf_size_[1])),
-                         static_cast<int>(std::floor(z * inverse_leaf_size_[2])),
-                         0) -
+    return (leaf_layout_.at (
+        (Eigen::Vector4i (static_cast<int> (std::floor (x * inverse_leaf_size_[0])),
+                          static_cast<int> (std::floor (y * inverse_leaf_size_[1])),
+                          static_cast<int> (std::floor (z * inverse_leaf_size_[2])),
+                          0) -
          min_b_)
-            .dot(divb_mul_)));
+            .dot (divb_mul_)));
   }
 
   /** \brief Returns the indices in the resulting downsampled cloud of the points at the
@@ -822,21 +822,21 @@ public:
                               float z,
                               const Eigen::MatrixXi& relative_coordinates) const
   {
-    Eigen::Vector4i ijk(static_cast<int>(std::floor(x * inverse_leaf_size_[0])),
-                        static_cast<int>(std::floor(y * inverse_leaf_size_[1])),
-                        static_cast<int>(std::floor(z * inverse_leaf_size_[2])),
-                        0);
+    Eigen::Vector4i ijk (static_cast<int> (std::floor (x * inverse_leaf_size_[0])),
+                         static_cast<int> (std::floor (y * inverse_leaf_size_[1])),
+                         static_cast<int> (std::floor (z * inverse_leaf_size_[2])),
+                         0);
     Eigen::Array4i diff2min = min_b_ - ijk;
     Eigen::Array4i diff2max = max_b_ - ijk;
-    std::vector<int> neighbors(relative_coordinates.cols());
+    std::vector<int> neighbors (relative_coordinates.cols());
     for (Eigen::Index ni = 0; ni < relative_coordinates.cols(); ni++) {
       Eigen::Vector4i displacement =
-          (Eigen::Vector4i() << relative_coordinates.col(ni), 0).finished();
+          (Eigen::Vector4i() << relative_coordinates.col (ni), 0).finished();
       // checking if the specified cell is in the grid
       if ((diff2min <= displacement.array()).all() &&
           (diff2max >= displacement.array()).all())
         neighbors[ni] = leaf_layout_[(
-            (ijk + displacement - min_b_).dot(divb_mul_))]; // .at() can be omitted
+            (ijk + displacement - min_b_).dot (divb_mul_))]; // .at() can be omitted
       else
         neighbors[ni] = -1; // cell is out of bounds, consider it empty
     }
@@ -863,17 +863,17 @@ public:
       const std::vector<Eigen::Vector3i, Eigen::aligned_allocator<Eigen::Vector3i>>&
           relative_coordinates) const
   {
-    Eigen::Vector4i ijk(static_cast<int>(std::floor(x * inverse_leaf_size_[0])),
-                        static_cast<int>(std::floor(y * inverse_leaf_size_[1])),
-                        static_cast<int>(std::floor(z * inverse_leaf_size_[2])),
-                        0);
+    Eigen::Vector4i ijk (static_cast<int> (std::floor (x * inverse_leaf_size_[0])),
+                         static_cast<int> (std::floor (y * inverse_leaf_size_[1])),
+                         static_cast<int> (std::floor (z * inverse_leaf_size_[2])),
+                         0);
     std::vector<int> neighbors;
-    neighbors.reserve(relative_coordinates.size());
+    neighbors.reserve (relative_coordinates.size());
     for (const auto& relative_coordinate : relative_coordinates)
-      neighbors.push_back(
+      neighbors.push_back (
           leaf_layout_[(ijk + (Eigen::Vector4i() << relative_coordinate, 0).finished() -
                         min_b_)
-                           .dot(divb_mul_)]);
+                           .dot (divb_mul_)]);
     return (neighbors);
   }
 
@@ -896,9 +896,9 @@ public:
   inline Eigen::Vector3i
   getGridCoordinates (float x, float y, float z) const
   {
-    return {static_cast<int>(std::floor(x * inverse_leaf_size_[0])),
-            static_cast<int>(std::floor(y * inverse_leaf_size_[1])),
-            static_cast<int>(std::floor(z * inverse_leaf_size_[2]))};
+    return {static_cast<int> (std::floor (x * inverse_leaf_size_[0])),
+            static_cast<int> (std::floor (y * inverse_leaf_size_[1])),
+            static_cast<int> (std::floor (z * inverse_leaf_size_[2]))};
   }
 
   /** \brief Returns the index in the downsampled cloud corresponding to a given set of
@@ -907,9 +907,9 @@ public:
   inline int
   getCentroidIndexAt (const Eigen::Vector3i& ijk) const
   {
-    int idx = ((Eigen::Vector4i() << ijk, 0).finished() - min_b_).dot(divb_mul_);
+    int idx = ((Eigen::Vector4i() << ijk, 0).finished() - min_b_).dot (divb_mul_);
     if (idx < 0 ||
-        idx >= static_cast<int>(
+        idx >= static_cast<int> (
                    leaf_layout_.size())) // this checks also if leaf_layout_.size () ==
                                          // 0 i.e. everything was computed as needed
     {
@@ -978,7 +978,7 @@ public:
    * (true) or inside (false). \param[out] limit_negative true if data \b outside the
    * interval [min; max] is to be returned, false otherwise
    */
-  PCL_DEPRECATED(1, 16, "use bool getFilterLimitsNegative() instead")
+  PCL_DEPRECATED (1, 16, "use bool getFilterLimitsNegative() instead")
   inline void
   getFilterLimitsNegative (bool& limit_negative) const
   {

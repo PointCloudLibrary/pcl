@@ -17,8 +17,8 @@ to define type specific heap sort functions.
 
 #if defined(ON_SORT_TEMPLATE_COMPARE)
 // use a compare function like strcmp for char* strings
-#define ON_HSORT_GT(A, B) ON_SORT_TEMPLATE_COMPARE(A, B) > 0
-#define ON_HSORT_GT_TMP(A) ON_SORT_TEMPLATE_COMPARE(A, &tmp) > 0
+#define ON_HSORT_GT(A, B) ON_SORT_TEMPLATE_COMPARE (A, B) > 0
+#define ON_HSORT_GT_TMP(A) ON_SORT_TEMPLATE_COMPARE (A, &tmp) > 0
 #else
 // use type compares
 #define ON_HSORT_GT(A, B) *A > *B
@@ -26,9 +26,9 @@ to define type specific heap sort functions.
 #endif
 
 #if defined(ON_SORT_TEMPLATE_USE_MEMCPY)
-#define ON_HSORT_TO_TMP(A) memcpy(&tmp, A, sizeof(tmp))
-#define ON_HSORT_FROM_TMP(A) memcpy(A, &tmp, sizeof(tmp))
-#define ON_HSORT_COPY(dst, src) memcpy(dst, src, sizeof(tmp))
+#define ON_HSORT_TO_TMP(A) memcpy (&tmp, A, sizeof (tmp))
+#define ON_HSORT_FROM_TMP(A) memcpy (A, &tmp, sizeof (tmp))
+#define ON_HSORT_COPY(dst, src) memcpy (dst, src, sizeof (tmp))
 #else
 #define ON_HSORT_TO_TMP(A) tmp = *A
 #define ON_HSORT_FROM_TMP(A) *A = tmp
@@ -56,13 +56,13 @@ static
   for (;;) {
     if (k) {
       --k;
-      ON_HSORT_TO_TMP((base + k)); /* e_tmp = e[k]; */
+      ON_HSORT_TO_TMP ((base + k)); /* e_tmp = e[k]; */
     }
     else {
-      ON_HSORT_TO_TMP(e_end);     /* e_tmp = e[i_end]; */
-      ON_HSORT_COPY(e_end, base); /* e[i_end] = e[0];  */
+      ON_HSORT_TO_TMP (e_end);     /* e_tmp = e[i_end]; */
+      ON_HSORT_COPY (e_end, base); /* e[i_end] = e[0];  */
       if (!(--i_end)) {
-        ON_HSORT_FROM_TMP(base); /* e[0] = e_tmp;     */
+        ON_HSORT_FROM_TMP (base); /* e[0] = e_tmp;     */
         break;
       }
       e_end--;
@@ -73,12 +73,12 @@ static
     e_i = base + i;
     while (j <= i_end) {
       e_j = base + j;
-      if (j < i_end && ON_HSORT_GT((e_j + 1), e_j) /*e[j] < e[j + 1] */) {
+      if (j < i_end && ON_HSORT_GT ((e_j + 1), e_j) /*e[j] < e[j + 1] */) {
         j++;
         e_j++;
       }
-      if (ON_HSORT_GT_TMP(e_j) /* tmp < e[j] */) {
-        ON_HSORT_COPY(e_i, e_j); /* e[i] = e[j]; */
+      if (ON_HSORT_GT_TMP (e_j) /* tmp < e[j] */) {
+        ON_HSORT_COPY (e_i, e_j); /* e[i] = e[j]; */
         i = j;
         e_i = e_j;
         j = (j << 1) + 1;
@@ -87,7 +87,7 @@ static
         j = i_end + 1;
     }
 
-    ON_HSORT_FROM_TMP(e_i); /* e[i] = e_tmp; */
+    ON_HSORT_FROM_TMP (e_i); /* e[i] = e_tmp; */
   }
 }
 

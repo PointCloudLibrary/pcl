@@ -50,43 +50,43 @@
 using namespace pcl;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TEST(PCL, FeaturePtr)
+TEST (PCL, FeaturePtr)
 {
-  VFHEstimation<PointXYZ, PointNormal, VFHSignature308>::Ptr vfh(
+  VFHEstimation<PointXYZ, PointNormal, VFHSignature308>::Ptr vfh (
       new VFHEstimation<PointXYZ, PointNormal, VFHSignature308>());
-  vfh->setViewPoint(1.0f, 1.0f, 1.0f);
+  vfh->setViewPoint (1.0f, 1.0f, 1.0f);
 
-  UniqueShapeContext<PointXYZ, UniqueShapeContext1960, ReferenceFrame>::Ptr usc(
+  UniqueShapeContext<PointXYZ, UniqueShapeContext1960, ReferenceFrame>::Ptr usc (
       new UniqueShapeContext<PointXYZ, UniqueShapeContext1960, ReferenceFrame>());
-  usc->setMinimalRadius(5);
+  usc->setMinimalRadius (5);
 
-  StatisticalMultiscaleInterestRegionExtraction<PointXYZ>::Ptr smire(
+  StatisticalMultiscaleInterestRegionExtraction<PointXYZ>::Ptr smire (
       new StatisticalMultiscaleInterestRegionExtraction<PointXYZ>());
   smire->getScalesVector();
 
-  SpinImageEstimation<PointXYZ, PointNormal, Histogram<153>>::Ptr spin(
+  SpinImageEstimation<PointXYZ, PointNormal, Histogram<153>>::Ptr spin (
       new SpinImageEstimation<PointXYZ, PointNormal, Histogram<153>>());
-  spin->setImageWidth(20);
+  spin->setImageWidth (20);
 
   //  RSDEstimation<PointXYZ, Normal, PrincipalRadiiRSD>::Ptr rsd (new
   //  RSDEstimation<PointXYZ, Normal, PrincipalRadiiRSD> ()); rsd->setNrSubdivisions
   //  (20);
 
 #ifndef PCL_ONLY_CORE_POINT_TYPES
-  RIFTEstimation<PointXYZI, IntensityGradient, Histogram<32>>::Ptr rift(
+  RIFTEstimation<PointXYZI, IntensityGradient, Histogram<32>>::Ptr rift (
       new RIFTEstimation<PointXYZI, IntensityGradient, Histogram<32>>());
-  rift->setNrDistanceBins(10);
+  rift->setNrDistanceBins (10);
 #endif
-  NormalBasedSignatureEstimation<PointXYZ, Normal, NormalBasedSignature12>::Ptr nbs(
+  NormalBasedSignatureEstimation<PointXYZ, Normal, NormalBasedSignature12>::Ptr nbs (
       new NormalBasedSignatureEstimation<PointXYZ, Normal, NormalBasedSignature12>());
-  nbs->setN(20);
+  nbs->setN (20);
 }
 
 /* ---[ */
 int
 main (int argc, char** argv)
 {
-  testing::InitGoogleTest(&argc, argv);
+  testing::InitGoogleTest (&argc, argv);
   return (RUN_ALL_TESTS());
 }
 /* ]--- */

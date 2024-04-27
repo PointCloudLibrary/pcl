@@ -19,7 +19,7 @@
 
 // surface of revolution
 class ON_CLASS ON_RevSurface : public ON_Surface {
-  ON_OBJECT_DECLARE(ON_RevSurface);
+  ON_OBJECT_DECLARE (ON_RevSurface);
 
 public:
   // virtual ON_Object::DestroyRuntimeCache override
@@ -73,9 +73,9 @@ public:
 
   ON_RevSurface();
   ~ON_RevSurface();
-  ON_RevSurface(const ON_RevSurface&);
+  ON_RevSurface (const ON_RevSurface&);
   ON_RevSurface&
-  operator=(const ON_RevSurface&);
+  operator= (const ON_RevSurface&);
 
   void
   Destroy ();
@@ -393,7 +393,7 @@ public:
   );
 
   ON_BOOL32
-  Transpose (); // transpose surface parameterization (swap "s" and "t")
+  Transpose(); // transpose surface parameterization (swap "s" and "t")
 
   ON_BOOL32
   Evaluate ( // returns false if unable to evaluate

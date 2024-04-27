@@ -53,49 +53,49 @@ pcl::Indices indices;
 KdTreePtr tree;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TEST(PCL, PPFEstimation)
+TEST (PCL, PPFEstimation)
 {
   // Estimate normals
   NormalEstimation<PointXYZ, Normal> normal_estimation;
-  PointCloud<Normal>::Ptr normals(new PointCloud<Normal>());
-  normal_estimation.setInputCloud(cloud.makeShared());
-  pcl::IndicesPtr indicesptr(new pcl::Indices(indices));
-  normal_estimation.setIndices(indicesptr);
-  normal_estimation.setSearchMethod(tree);
-  normal_estimation.setKSearch(10); // Use 10 nearest neighbors to estimate the normals
-  normal_estimation.compute(*normals);
+  PointCloud<Normal>::Ptr normals (new PointCloud<Normal>());
+  normal_estimation.setInputCloud (cloud.makeShared());
+  pcl::IndicesPtr indicesptr (new pcl::Indices (indices));
+  normal_estimation.setIndices (indicesptr);
+  normal_estimation.setSearchMethod (tree);
+  normal_estimation.setKSearch (10); // Use 10 nearest neighbors to estimate the normals
+  normal_estimation.compute (*normals);
 
   PPFEstimation<PointXYZ, Normal, PPFSignature> ppf_estimation;
-  ppf_estimation.setInputCloud(cloud.makeShared());
-  ppf_estimation.setInputNormals(normals);
-  PointCloud<PPFSignature>::Ptr feature_cloud(new PointCloud<PPFSignature>());
-  ppf_estimation.compute(*feature_cloud);
+  ppf_estimation.setInputCloud (cloud.makeShared());
+  ppf_estimation.setInputNormals (normals);
+  PointCloud<PPFSignature>::Ptr feature_cloud (new PointCloud<PPFSignature>());
+  ppf_estimation.compute (*feature_cloud);
 
   // Check for size of output
-  EXPECT_EQ(feature_cloud->size(), indices.size() * cloud.size());
+  EXPECT_EQ (feature_cloud->size(), indices.size() * cloud.size());
 
   // Now check for a few values in the feature cloud
-  EXPECT_TRUE(std::isnan((*feature_cloud)[0].f1));
-  EXPECT_TRUE(std::isnan((*feature_cloud)[0].f2));
-  EXPECT_TRUE(std::isnan((*feature_cloud)[0].f3));
-  EXPECT_TRUE(std::isnan((*feature_cloud)[0].f4));
-  EXPECT_TRUE(std::isnan((*feature_cloud)[0].alpha_m));
+  EXPECT_TRUE (std::isnan ((*feature_cloud)[0].f1));
+  EXPECT_TRUE (std::isnan ((*feature_cloud)[0].f2));
+  EXPECT_TRUE (std::isnan ((*feature_cloud)[0].f3));
+  EXPECT_TRUE (std::isnan ((*feature_cloud)[0].f4));
+  EXPECT_TRUE (std::isnan ((*feature_cloud)[0].alpha_m));
 
-  EXPECT_NEAR((*feature_cloud)[15127].f1, -2.51637, 1e-4);
-  EXPECT_NEAR((*feature_cloud)[15127].f2, -0.00365916, 1e-4);
-  EXPECT_NEAR((*feature_cloud)[15127].f3, -0.521141, 1e-4);
-  EXPECT_NEAR((*feature_cloud)[15127].f4, 0.0106809, 1e-4);
-  EXPECT_NEAR((*feature_cloud)[15127].alpha_m, -0.255664, 1e-4);
-  EXPECT_NEAR((*feature_cloud)[30254].f1, 0.185142, 1e-4);
-  EXPECT_NEAR((*feature_cloud)[30254].f2, 0.0425001, 1e-4);
-  EXPECT_NEAR((*feature_cloud)[30254].f3, -0.191276, 1e-4);
-  EXPECT_NEAR((*feature_cloud)[30254].f4, 0.0138508, 1e-4);
-  EXPECT_NEAR((*feature_cloud)[30254].alpha_m, 2.42955, 1e-4);
-  EXPECT_NEAR((*feature_cloud)[45381].f1, -1.96263, 1e-4);
-  EXPECT_NEAR((*feature_cloud)[45381].f2, -0.431919, 1e-4);
-  EXPECT_NEAR((*feature_cloud)[45381].f3, 0.868716, 1e-4);
-  EXPECT_NEAR((*feature_cloud)[45381].f4, 0.140129, 1e-4);
-  EXPECT_NEAR((*feature_cloud)[45381].alpha_m, -1.97276, 1e-4);
+  EXPECT_NEAR ((*feature_cloud)[15127].f1, -2.51637, 1e-4);
+  EXPECT_NEAR ((*feature_cloud)[15127].f2, -0.00365916, 1e-4);
+  EXPECT_NEAR ((*feature_cloud)[15127].f3, -0.521141, 1e-4);
+  EXPECT_NEAR ((*feature_cloud)[15127].f4, 0.0106809, 1e-4);
+  EXPECT_NEAR ((*feature_cloud)[15127].alpha_m, -0.255664, 1e-4);
+  EXPECT_NEAR ((*feature_cloud)[30254].f1, 0.185142, 1e-4);
+  EXPECT_NEAR ((*feature_cloud)[30254].f2, 0.0425001, 1e-4);
+  EXPECT_NEAR ((*feature_cloud)[30254].f3, -0.191276, 1e-4);
+  EXPECT_NEAR ((*feature_cloud)[30254].f4, 0.0138508, 1e-4);
+  EXPECT_NEAR ((*feature_cloud)[30254].alpha_m, 2.42955, 1e-4);
+  EXPECT_NEAR ((*feature_cloud)[45381].f1, -1.96263, 1e-4);
+  EXPECT_NEAR ((*feature_cloud)[45381].f2, -0.431919, 1e-4);
+  EXPECT_NEAR ((*feature_cloud)[45381].f3, 0.868716, 1e-4);
+  EXPECT_NEAR ((*feature_cloud)[45381].f4, 0.140129, 1e-4);
+  EXPECT_NEAR ((*feature_cloud)[45381].alpha_m, -1.97276, 1e-4);
 }
 
 /* ---[ */
@@ -109,21 +109,21 @@ main (int argc, char** argv)
     return (-1);
   }
 
-  if (loadPCDFile<PointXYZ>(argv[1], cloud) < 0) {
+  if (loadPCDFile<PointXYZ> (argv[1], cloud) < 0) {
     std::cerr << "Failed to read test file. Please download `bun0.pcd` and pass its "
                  "path to the test."
               << std::endl;
     return (-1);
   }
 
-  indices.resize(cloud.size());
-  for (int i = 0; i < static_cast<int>(indices.size()); ++i)
+  indices.resize (cloud.size());
+  for (int i = 0; i < static_cast<int> (indices.size()); ++i)
     indices[i] = i;
 
-  tree.reset(new search::KdTree<PointXYZ>(false));
-  tree->setInputCloud(cloud.makeShared());
+  tree.reset (new search::KdTree<PointXYZ> (false));
+  tree->setInputCloud (cloud.makeShared());
 
-  testing::InitGoogleTest(&argc, argv);
+  testing::InitGoogleTest (&argc, argv);
   return (RUN_ALL_TESTS());
 }
 /* ]--- */

@@ -45,35 +45,35 @@ namespace pcl {
 namespace filters {
 template <>
 inline void
-Pyramid<pcl::PointXYZRGB>::compute(
+Pyramid<pcl::PointXYZRGB>::compute (
     std::vector<Pyramid<pcl::PointXYZRGB>::PointCloudPtr>& output)
 {
   std::cout << "PointXYZRGB" << std::endl;
   if (!initCompute()) {
-    PCL_ERROR("[pcl::%s::compute] initCompute failed!\n", getClassName().c_str());
+    PCL_ERROR ("[pcl::%s::compute] initCompute failed!\n", getClassName().c_str());
     return;
   }
 
-  int kernel_rows = static_cast<int>(kernel_.rows());
-  int kernel_cols = static_cast<int>(kernel_.cols());
+  int kernel_rows = static_cast<int> (kernel_.rows());
+  int kernel_cols = static_cast<int> (kernel_.cols());
   int kernel_center_x = kernel_cols / 2;
   int kernel_center_y = kernel_rows / 2;
 
-  output.resize(levels_ + 1);
-  output[0].reset(new pcl::PointCloud<pcl::PointXYZRGB>);
+  output.resize (levels_ + 1);
+  output[0].reset (new pcl::PointCloud<pcl::PointXYZRGB>);
   *(output[0]) = *input_;
 
   if (input_->is_dense) {
     for (int l = 1; l <= levels_; ++l) {
-      output[l].reset(new pcl::PointCloud<pcl::PointXYZRGB>(output[l - 1]->width / 2,
-                                                            output[l - 1]->height / 2));
+      output[l].reset (new pcl::PointCloud<pcl::PointXYZRGB> (
+          output[l - 1]->width / 2, output[l - 1]->height / 2));
       const PointCloud<pcl::PointXYZRGB>& previous = *output[l - 1];
       PointCloud<pcl::PointXYZRGB>& next = *output[l];
 #pragma omp parallel for default(none)                                                 \
     shared(next, previous, kernel_rows, kernel_cols, kernel_center_x, kernel_center_y) \
     num_threads(threads_)
-      for (int i = 0; i < static_cast<int>(next.height); ++i) {  // rows
-        for (int j = 0; j < static_cast<int>(next.width); ++j) { // columns
+      for (int i = 0; i < static_cast<int> (next.height); ++i) {  // rows
+        for (int j = 0; j < static_cast<int> (next.width); ++j) { // columns
           float r = 0, g = 0, b = 0;
           for (int m = 0; m < kernel_rows; ++m) // kernel rows
           {
@@ -88,38 +88,38 @@ Pyramid<pcl::PointXYZRGB>::compute(
               // ignore input samples which are out of bound
               if (ii < 0)
                 ii = 0;
-              if (ii >= static_cast<int>(previous.height))
+              if (ii >= static_cast<int> (previous.height))
                 ii = previous.height - 1;
               if (jj < 0)
                 jj = 0;
-              if (jj >= static_cast<int>(previous.width))
+              if (jj >= static_cast<int> (previous.width))
                 jj = previous.width - 1;
-              next.at(j, i).x += previous.at(jj, ii).x * kernel_(mm, nn);
-              next.at(j, i).y += previous.at(jj, ii).y * kernel_(mm, nn);
-              next.at(j, i).z += previous.at(jj, ii).z * kernel_(mm, nn);
-              b += previous.at(jj, ii).b * kernel_(mm, nn);
-              g += previous.at(jj, ii).g * kernel_(mm, nn);
-              r += previous.at(jj, ii).r * kernel_(mm, nn);
+              next.at (j, i).x += previous.at (jj, ii).x * kernel_ (mm, nn);
+              next.at (j, i).y += previous.at (jj, ii).y * kernel_ (mm, nn);
+              next.at (j, i).z += previous.at (jj, ii).z * kernel_ (mm, nn);
+              b += previous.at (jj, ii).b * kernel_ (mm, nn);
+              g += previous.at (jj, ii).g * kernel_ (mm, nn);
+              r += previous.at (jj, ii).r * kernel_ (mm, nn);
             }
           }
-          next.at(j, i).b = static_cast<std::uint8_t>(b);
-          next.at(j, i).g = static_cast<std::uint8_t>(g);
-          next.at(j, i).r = static_cast<std::uint8_t>(r);
+          next.at (j, i).b = static_cast<std::uint8_t> (b);
+          next.at (j, i).g = static_cast<std::uint8_t> (g);
+          next.at (j, i).r = static_cast<std::uint8_t> (r);
         }
       }
     }
   }
   else {
     for (int l = 1; l <= levels_; ++l) {
-      output[l].reset(new pcl::PointCloud<pcl::PointXYZRGB>(output[l - 1]->width / 2,
-                                                            output[l - 1]->height / 2));
+      output[l].reset (new pcl::PointCloud<pcl::PointXYZRGB> (
+          output[l - 1]->width / 2, output[l - 1]->height / 2));
       const PointCloud<pcl::PointXYZRGB>& previous = *output[l - 1];
       PointCloud<pcl::PointXYZRGB>& next = *output[l];
 #pragma omp parallel for default(none)                                                 \
     shared(next, previous, kernel_rows, kernel_cols, kernel_center_x, kernel_center_y) \
     num_threads(threads_)
-      for (int i = 0; i < static_cast<int>(next.height); ++i) {  // rows
-        for (int j = 0; j < static_cast<int>(next.width); ++j) { // columns
+      for (int i = 0; i < static_cast<int> (next.height); ++i) {  // rows
+        for (int j = 0; j < static_cast<int> (next.width); ++j) { // columns
           float weight = 0;
           float r = 0, g = 0, b = 0;
           for (int m = 0; m < kernel_rows; ++m) {
@@ -130,39 +130,39 @@ Pyramid<pcl::PointXYZRGB>::compute(
               int jj = 2 * j + (n - kernel_center_x);
               if (ii < 0)
                 ii = 0;
-              if (ii >= static_cast<int>(previous.height))
+              if (ii >= static_cast<int> (previous.height))
                 ii = previous.height - 1;
               if (jj < 0)
                 jj = 0;
-              if (jj >= static_cast<int>(previous.width))
+              if (jj >= static_cast<int> (previous.width))
                 jj = previous.width - 1;
-              if (!isFinite(previous.at(jj, ii)))
+              if (!isFinite (previous.at (jj, ii)))
                 continue;
-              if (pcl::squaredEuclideanDistance(previous.at(2 * j, 2 * i),
-                                                previous.at(jj, ii)) < threshold_) {
-                next.at(j, i).x += previous.at(jj, ii).x * kernel_(mm, nn);
-                next.at(j, i).y += previous.at(jj, ii).y * kernel_(mm, nn);
-                next.at(j, i).z += previous.at(jj, ii).z * kernel_(mm, nn);
-                b += previous.at(jj, ii).b * kernel_(mm, nn);
-                g += previous.at(jj, ii).g * kernel_(mm, nn);
-                r += previous.at(jj, ii).r * kernel_(mm, nn);
-                weight += kernel_(mm, nn);
+              if (pcl::squaredEuclideanDistance (previous.at (2 * j, 2 * i),
+                                                 previous.at (jj, ii)) < threshold_) {
+                next.at (j, i).x += previous.at (jj, ii).x * kernel_ (mm, nn);
+                next.at (j, i).y += previous.at (jj, ii).y * kernel_ (mm, nn);
+                next.at (j, i).z += previous.at (jj, ii).z * kernel_ (mm, nn);
+                b += previous.at (jj, ii).b * kernel_ (mm, nn);
+                g += previous.at (jj, ii).g * kernel_ (mm, nn);
+                r += previous.at (jj, ii).r * kernel_ (mm, nn);
+                weight += kernel_ (mm, nn);
               }
             }
           }
           if (weight == 0)
-            nullify(next.at(j, i));
+            nullify (next.at (j, i));
           else {
             weight = 1.f / weight;
             r *= weight;
             g *= weight;
             b *= weight;
-            next.at(j, i).x *= weight;
-            next.at(j, i).y *= weight;
-            next.at(j, i).z *= weight;
-            next.at(j, i).b = static_cast<std::uint8_t>(b);
-            next.at(j, i).g = static_cast<std::uint8_t>(g);
-            next.at(j, i).r = static_cast<std::uint8_t>(r);
+            next.at (j, i).x *= weight;
+            next.at (j, i).y *= weight;
+            next.at (j, i).z *= weight;
+            next.at (j, i).b = static_cast<std::uint8_t> (b);
+            next.at (j, i).g = static_cast<std::uint8_t> (g);
+            next.at (j, i).r = static_cast<std::uint8_t> (r);
           }
         }
       }
@@ -172,35 +172,35 @@ Pyramid<pcl::PointXYZRGB>::compute(
 
 template <>
 inline void
-Pyramid<pcl::PointXYZRGBA>::compute(
+Pyramid<pcl::PointXYZRGBA>::compute (
     std::vector<Pyramid<pcl::PointXYZRGBA>::PointCloudPtr>& output)
 {
   std::cout << "PointXYZRGBA" << std::endl;
   if (!initCompute()) {
-    PCL_ERROR("[pcl::%s::compute] initCompute failed!\n", getClassName().c_str());
+    PCL_ERROR ("[pcl::%s::compute] initCompute failed!\n", getClassName().c_str());
     return;
   }
 
-  int kernel_rows = static_cast<int>(kernel_.rows());
-  int kernel_cols = static_cast<int>(kernel_.cols());
+  int kernel_rows = static_cast<int> (kernel_.rows());
+  int kernel_cols = static_cast<int> (kernel_.cols());
   int kernel_center_x = kernel_cols / 2;
   int kernel_center_y = kernel_rows / 2;
 
-  output.resize(levels_ + 1);
-  output[0].reset(new pcl::PointCloud<pcl::PointXYZRGBA>);
+  output.resize (levels_ + 1);
+  output[0].reset (new pcl::PointCloud<pcl::PointXYZRGBA>);
   *(output[0]) = *input_;
 
   if (input_->is_dense) {
     for (int l = 1; l <= levels_; ++l) {
-      output[l].reset(new pcl::PointCloud<pcl::PointXYZRGBA>(
+      output[l].reset (new pcl::PointCloud<pcl::PointXYZRGBA> (
           output[l - 1]->width / 2, output[l - 1]->height / 2));
       const PointCloud<pcl::PointXYZRGBA>& previous = *output[l - 1];
       PointCloud<pcl::PointXYZRGBA>& next = *output[l];
 #pragma omp parallel for default(none)                                                 \
     shared(next, previous, kernel_rows, kernel_cols, kernel_center_x, kernel_center_y) \
     num_threads(threads_)
-      for (int i = 0; i < static_cast<int>(next.height); ++i) {  // rows
-        for (int j = 0; j < static_cast<int>(next.width); ++j) { // columns
+      for (int i = 0; i < static_cast<int> (next.height); ++i) {  // rows
+        for (int j = 0; j < static_cast<int> (next.width); ++j) { // columns
           float r = 0, g = 0, b = 0, a = 0;
           for (int m = 0; m < kernel_rows; ++m) // kernel rows
           {
@@ -215,40 +215,40 @@ Pyramid<pcl::PointXYZRGBA>::compute(
               // ignore input samples which are out of bound
               if (ii < 0)
                 ii = 0;
-              if (ii >= static_cast<int>(previous.height))
+              if (ii >= static_cast<int> (previous.height))
                 ii = previous.height - 1;
               if (jj < 0)
                 jj = 0;
-              if (jj >= static_cast<int>(previous.width))
+              if (jj >= static_cast<int> (previous.width))
                 jj = previous.width - 1;
-              next.at(j, i).x += previous.at(jj, ii).x * kernel_(mm, nn);
-              next.at(j, i).y += previous.at(jj, ii).y * kernel_(mm, nn);
-              next.at(j, i).z += previous.at(jj, ii).z * kernel_(mm, nn);
-              b += previous.at(jj, ii).b * kernel_(mm, nn);
-              g += previous.at(jj, ii).g * kernel_(mm, nn);
-              r += previous.at(jj, ii).r * kernel_(mm, nn);
-              a += previous.at(jj, ii).a * kernel_(mm, nn);
+              next.at (j, i).x += previous.at (jj, ii).x * kernel_ (mm, nn);
+              next.at (j, i).y += previous.at (jj, ii).y * kernel_ (mm, nn);
+              next.at (j, i).z += previous.at (jj, ii).z * kernel_ (mm, nn);
+              b += previous.at (jj, ii).b * kernel_ (mm, nn);
+              g += previous.at (jj, ii).g * kernel_ (mm, nn);
+              r += previous.at (jj, ii).r * kernel_ (mm, nn);
+              a += previous.at (jj, ii).a * kernel_ (mm, nn);
             }
           }
-          next.at(j, i).b = static_cast<std::uint8_t>(b);
-          next.at(j, i).g = static_cast<std::uint8_t>(g);
-          next.at(j, i).r = static_cast<std::uint8_t>(r);
-          next.at(j, i).a = static_cast<std::uint8_t>(a);
+          next.at (j, i).b = static_cast<std::uint8_t> (b);
+          next.at (j, i).g = static_cast<std::uint8_t> (g);
+          next.at (j, i).r = static_cast<std::uint8_t> (r);
+          next.at (j, i).a = static_cast<std::uint8_t> (a);
         }
       }
     }
   }
   else {
     for (int l = 1; l <= levels_; ++l) {
-      output[l].reset(new pcl::PointCloud<pcl::PointXYZRGBA>(
+      output[l].reset (new pcl::PointCloud<pcl::PointXYZRGBA> (
           output[l - 1]->width / 2, output[l - 1]->height / 2));
       const PointCloud<pcl::PointXYZRGBA>& previous = *output[l - 1];
       PointCloud<pcl::PointXYZRGBA>& next = *output[l];
 #pragma omp parallel for default(none)                                                 \
     shared(next, previous, kernel_rows, kernel_cols, kernel_center_x, kernel_center_y) \
     num_threads(threads_)
-      for (int i = 0; i < static_cast<int>(next.height); ++i) {  // rows
-        for (int j = 0; j < static_cast<int>(next.width); ++j) { // columns
+      for (int i = 0; i < static_cast<int> (next.height); ++i) {  // rows
+        for (int j = 0; j < static_cast<int> (next.width); ++j) { // columns
           float weight = 0;
           float r = 0, g = 0, b = 0, a = 0;
           for (int m = 0; m < kernel_rows; ++m) {
@@ -259,42 +259,42 @@ Pyramid<pcl::PointXYZRGBA>::compute(
               int jj = 2 * j + (n - kernel_center_x);
               if (ii < 0)
                 ii = 0;
-              if (ii >= static_cast<int>(previous.height))
+              if (ii >= static_cast<int> (previous.height))
                 ii = previous.height - 1;
               if (jj < 0)
                 jj = 0;
-              if (jj >= static_cast<int>(previous.width))
+              if (jj >= static_cast<int> (previous.width))
                 jj = previous.width - 1;
-              if (!isFinite(previous.at(jj, ii)))
+              if (!isFinite (previous.at (jj, ii)))
                 continue;
-              if (pcl::squaredEuclideanDistance(previous.at(2 * j, 2 * i),
-                                                previous.at(jj, ii)) < threshold_) {
-                next.at(j, i).x += previous.at(jj, ii).x * kernel_(mm, nn);
-                next.at(j, i).y += previous.at(jj, ii).y * kernel_(mm, nn);
-                next.at(j, i).z += previous.at(jj, ii).z * kernel_(mm, nn);
-                b += previous.at(jj, ii).b * kernel_(mm, nn);
-                g += previous.at(jj, ii).g * kernel_(mm, nn);
-                r += previous.at(jj, ii).r * kernel_(mm, nn);
-                a += previous.at(jj, ii).a * kernel_(mm, nn);
-                weight += kernel_(mm, nn);
+              if (pcl::squaredEuclideanDistance (previous.at (2 * j, 2 * i),
+                                                 previous.at (jj, ii)) < threshold_) {
+                next.at (j, i).x += previous.at (jj, ii).x * kernel_ (mm, nn);
+                next.at (j, i).y += previous.at (jj, ii).y * kernel_ (mm, nn);
+                next.at (j, i).z += previous.at (jj, ii).z * kernel_ (mm, nn);
+                b += previous.at (jj, ii).b * kernel_ (mm, nn);
+                g += previous.at (jj, ii).g * kernel_ (mm, nn);
+                r += previous.at (jj, ii).r * kernel_ (mm, nn);
+                a += previous.at (jj, ii).a * kernel_ (mm, nn);
+                weight += kernel_ (mm, nn);
               }
             }
           }
           if (weight == 0)
-            nullify(next.at(j, i));
+            nullify (next.at (j, i));
           else {
             weight = 1.f / weight;
             r *= weight;
             g *= weight;
             b *= weight;
             a *= weight;
-            next.at(j, i).x *= weight;
-            next.at(j, i).y *= weight;
-            next.at(j, i).z *= weight;
-            next.at(j, i).b = static_cast<std::uint8_t>(b);
-            next.at(j, i).g = static_cast<std::uint8_t>(g);
-            next.at(j, i).r = static_cast<std::uint8_t>(r);
-            next.at(j, i).a = static_cast<std::uint8_t>(a);
+            next.at (j, i).x *= weight;
+            next.at (j, i).y *= weight;
+            next.at (j, i).z *= weight;
+            next.at (j, i).b = static_cast<std::uint8_t> (b);
+            next.at (j, i).g = static_cast<std::uint8_t> (g);
+            next.at (j, i).r = static_cast<std::uint8_t> (r);
+            next.at (j, i).a = static_cast<std::uint8_t> (a);
           }
         }
       }
@@ -304,7 +304,7 @@ Pyramid<pcl::PointXYZRGBA>::compute(
 
 template <>
 inline void
-Pyramid<pcl::RGB>::nullify(pcl::RGB& p) const
+Pyramid<pcl::RGB>::nullify (pcl::RGB& p) const
 {
   p.r = 0;
   p.g = 0;
@@ -313,34 +313,34 @@ Pyramid<pcl::RGB>::nullify(pcl::RGB& p) const
 
 template <>
 inline void
-Pyramid<pcl::RGB>::compute(std::vector<Pyramid<pcl::RGB>::PointCloudPtr>& output)
+Pyramid<pcl::RGB>::compute (std::vector<Pyramid<pcl::RGB>::PointCloudPtr>& output)
 {
   std::cout << "RGB" << std::endl;
   if (!initCompute()) {
-    PCL_ERROR("[pcl::%s::compute] initCompute failed!\n", getClassName().c_str());
+    PCL_ERROR ("[pcl::%s::compute] initCompute failed!\n", getClassName().c_str());
     return;
   }
 
-  int kernel_rows = static_cast<int>(kernel_.rows());
-  int kernel_cols = static_cast<int>(kernel_.cols());
+  int kernel_rows = static_cast<int> (kernel_.rows());
+  int kernel_cols = static_cast<int> (kernel_.cols());
   int kernel_center_x = kernel_cols / 2;
   int kernel_center_y = kernel_rows / 2;
 
-  output.resize(levels_ + 1);
-  output[0].reset(new pcl::PointCloud<pcl::RGB>);
+  output.resize (levels_ + 1);
+  output[0].reset (new pcl::PointCloud<pcl::RGB>);
   *(output[0]) = *input_;
 
   if (input_->is_dense) {
     for (int l = 1; l <= levels_; ++l) {
-      output[l].reset(new pcl::PointCloud<pcl::RGB>(output[l - 1]->width / 2,
-                                                    output[l - 1]->height / 2));
+      output[l].reset (new pcl::PointCloud<pcl::RGB> (output[l - 1]->width / 2,
+                                                      output[l - 1]->height / 2));
       const PointCloud<pcl::RGB>& previous = *output[l - 1];
       PointCloud<pcl::RGB>& next = *output[l];
 #pragma omp parallel for default(none)                                                 \
     shared(next, previous, kernel_rows, kernel_cols, kernel_center_x, kernel_center_y) \
     num_threads(threads_)
-      for (int i = 0; i < static_cast<int>(next.height); ++i) {  // rows
-        for (int j = 0; j < static_cast<int>(next.width); ++j) { // columns
+      for (int i = 0; i < static_cast<int> (next.height); ++i) {  // rows
+        for (int j = 0; j < static_cast<int> (next.width); ++j) { // columns
           float r = 0, g = 0, b = 0;
           for (int m = 0; m < kernel_rows; ++m) {
             int mm = kernel_rows - 1 - m;
@@ -350,35 +350,35 @@ Pyramid<pcl::RGB>::compute(std::vector<Pyramid<pcl::RGB>::PointCloudPtr>& output
               int jj = 2 * j + (n - kernel_center_x);
               if (ii < 0)
                 ii = 0;
-              if (ii >= static_cast<int>(previous.height))
+              if (ii >= static_cast<int> (previous.height))
                 ii = previous.height - 1;
               if (jj < 0)
                 jj = 0;
-              if (jj >= static_cast<int>(previous.width))
+              if (jj >= static_cast<int> (previous.width))
                 jj = previous.width - 1;
-              b += previous.at(jj, ii).b * kernel_(mm, nn);
-              g += previous.at(jj, ii).g * kernel_(mm, nn);
-              r += previous.at(jj, ii).r * kernel_(mm, nn);
+              b += previous.at (jj, ii).b * kernel_ (mm, nn);
+              g += previous.at (jj, ii).g * kernel_ (mm, nn);
+              r += previous.at (jj, ii).r * kernel_ (mm, nn);
             }
           }
-          next.at(j, i).b = static_cast<std::uint8_t>(b);
-          next.at(j, i).g = static_cast<std::uint8_t>(g);
-          next.at(j, i).r = static_cast<std::uint8_t>(r);
+          next.at (j, i).b = static_cast<std::uint8_t> (b);
+          next.at (j, i).g = static_cast<std::uint8_t> (g);
+          next.at (j, i).r = static_cast<std::uint8_t> (r);
         }
       }
     }
   }
   else {
     for (int l = 1; l <= levels_; ++l) {
-      output[l].reset(new pcl::PointCloud<pcl::RGB>(output[l - 1]->width / 2,
-                                                    output[l - 1]->height / 2));
+      output[l].reset (new pcl::PointCloud<pcl::RGB> (output[l - 1]->width / 2,
+                                                      output[l - 1]->height / 2));
       const PointCloud<pcl::RGB>& previous = *output[l - 1];
       PointCloud<pcl::RGB>& next = *output[l];
 #pragma omp parallel for default(none)                                                 \
     shared(next, previous, kernel_rows, kernel_cols, kernel_center_x, kernel_center_y) \
     num_threads(threads_)
-      for (int i = 0; i < static_cast<int>(next.height); ++i) {  // rows
-        for (int j = 0; j < static_cast<int>(next.width); ++j) { // columns
+      for (int i = 0; i < static_cast<int> (next.height); ++i) {  // rows
+        for (int j = 0; j < static_cast<int> (next.width); ++j) { // columns
           float weight = 0;
           float r = 0, g = 0, b = 0;
           for (int m = 0; m < kernel_rows; ++m) {
@@ -389,34 +389,34 @@ Pyramid<pcl::RGB>::compute(std::vector<Pyramid<pcl::RGB>::PointCloudPtr>& output
               int jj = 2 * j + (n - kernel_center_x);
               if (ii < 0)
                 ii = 0;
-              if (ii >= static_cast<int>(previous.height))
+              if (ii >= static_cast<int> (previous.height))
                 ii = previous.height - 1;
               if (jj < 0)
                 jj = 0;
-              if (jj >= static_cast<int>(previous.width))
+              if (jj >= static_cast<int> (previous.width))
                 jj = previous.width - 1;
-              if (!isFinite(previous.at(jj, ii)))
+              if (!isFinite (previous.at (jj, ii)))
                 continue;
               /*if (pcl::squaredEuclideanDistance(previous.at(2 * j, 2 * i),
                                                 previous.at(jj, ii)) < threshold_)*/
               {
-                b += previous.at(jj, ii).b * kernel_(mm, nn);
-                g += previous.at(jj, ii).g * kernel_(mm, nn);
-                r += previous.at(jj, ii).r * kernel_(mm, nn);
-                weight += kernel_(mm, nn);
+                b += previous.at (jj, ii).b * kernel_ (mm, nn);
+                g += previous.at (jj, ii).g * kernel_ (mm, nn);
+                r += previous.at (jj, ii).r * kernel_ (mm, nn);
+                weight += kernel_ (mm, nn);
               }
             }
           }
           if (weight == 0)
-            nullify(next.at(j, i));
+            nullify (next.at (j, i));
           else {
             weight = 1.f / weight;
             r *= weight;
             g *= weight;
             b *= weight;
-            next.at(j, i).b = static_cast<std::uint8_t>(b);
-            next.at(j, i).g = static_cast<std::uint8_t>(g);
-            next.at(j, i).r = static_cast<std::uint8_t>(r);
+            next.at (j, i).b = static_cast<std::uint8_t> (b);
+            next.at (j, i).g = static_cast<std::uint8_t> (g);
+            next.at (j, i).r = static_cast<std::uint8_t> (r);
           }
         }
       }

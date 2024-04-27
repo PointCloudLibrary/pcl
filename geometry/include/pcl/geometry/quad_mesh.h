@@ -107,7 +107,7 @@ public:
   using FaceAroundFaceCirculator = typename Base::FaceAroundFaceCirculator;
 
   /** \brief Constructor. */
-  QuadMesh() : Base(), add_quad_(4) {}
+  QuadMesh() : Base(), add_quad_ (4) {}
 
   /** \brief The base method of addFace is hidden because of the overloads in this
    * class. */
@@ -141,7 +141,7 @@ public:
     add_quad_[2] = idx_v_2;
     add_quad_[3] = idx_v_3;
 
-    return (this->addFaceImplBase(add_quad_, face_data, edge_data, half_edge_data));
+    return (this->addFaceImplBase (add_quad_, face_data, edge_data, half_edge_data));
   }
 
 private:
@@ -157,7 +157,7 @@ private:
                const HalfEdgeData& half_edge_data)
   {
     if (vertices.size() == 4)
-      return (this->addFaceImplBase(vertices, face_data, edge_data, half_edge_data));
+      return (this->addFaceImplBase (vertices, face_data, edge_data, half_edge_data));
     return (FaceIndex());
   }
 

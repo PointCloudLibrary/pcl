@@ -49,7 +49,7 @@ dot (const float3& v1, const float3& v2)
 }
 
 inline float3&
-operator+=(float3& vec, const float& v)
+operator+= (float3& vec, const float& v)
 {
   vec.x += v;
   vec.y += v;
@@ -58,7 +58,7 @@ operator+=(float3& vec, const float& v)
 }
 
 inline float3&
-operator+=(float3& vec, const float3& v)
+operator+= (float3& vec, const float3& v)
 {
   vec.x += v.x;
   vec.y += v.y;
@@ -67,13 +67,13 @@ operator+=(float3& vec, const float3& v)
 }
 
 inline float3
-operator+(const float3& v1, const float3& v2)
+operator+ (const float3& v1, const float3& v2)
 {
-  return make_float3(v1.x + v2.x, v1.y + v2.y, v1.z + v2.z);
+  return make_float3 (v1.x + v2.x, v1.y + v2.y, v1.z + v2.z);
 }
 
 inline float3&
-operator*=(float3& vec, const float& v)
+operator*= (float3& vec, const float& v)
 {
   vec.x *= v;
   vec.y *= v;
@@ -82,7 +82,7 @@ operator*=(float3& vec, const float& v)
 }
 
 inline float3&
-operator-=(float3& vec, const float& v)
+operator-= (float3& vec, const float& v)
 {
   vec.x -= v;
   vec.y -= v;
@@ -91,7 +91,7 @@ operator-=(float3& vec, const float& v)
 }
 
 inline float3&
-operator-=(float3& vec, const float3& v)
+operator-= (float3& vec, const float3& v)
 {
   vec.x -= v.x;
   vec.y -= v.y;
@@ -100,19 +100,19 @@ operator-=(float3& vec, const float3& v)
 }
 
 inline float3
-operator-(const float3& v1, const float3& v2)
+operator- (const float3& v1, const float3& v2)
 {
-  return make_float3(v1.x - v2.x, v1.y - v2.y, v1.z - v2.z);
+  return make_float3 (v1.x - v2.x, v1.y - v2.y, v1.z - v2.z);
 }
 
 inline float3
-operator-(const float3& v1)
+operator- (const float3& v1)
 {
-  return make_float3(-v1.x, -v1.y, -v1.z);
+  return make_float3 (-v1.x, -v1.y, -v1.z);
 }
 
 inline float3
-operator-(float3& v1)
+operator- (float3& v1)
 {
   v1.x = -v1.x;
   v1.y = -v1.y;
@@ -121,19 +121,19 @@ operator-(float3& v1)
 }
 
 inline float3
-operator*(const float3& v1, const float& v)
+operator* (const float3& v1, const float& v)
 {
-  return make_float3(v1.x * v, v1.y * v, v1.z * v);
+  return make_float3 (v1.x * v, v1.y * v, v1.z * v);
 }
 
 inline float
 norm (const float3& v)
 {
-  return sqrt(dot(v, v));
+  return sqrt (dot (v, v));
 }
 
 inline std::ostream&
-operator<<(std::ostream& os, const float3& v1)
+operator<< (std::ostream& os, const float3& v1)
 {
   os << "[" << v1.x << ", " << v1.y << ", " << v1.z << "]";
   return (os);
@@ -148,7 +148,7 @@ normalized(const float3& v)
 inline float3
 cross (const float3& v1, const float3& v2)
 {
-  return make_float3(
+  return make_float3 (
       v1.y * v2.z - v1.z * v2.y, v1.z * v2.x - v1.x * v2.z, v1.x * v2.y - v1.y * v2.x);
 }
 } // namespace kinfuLS

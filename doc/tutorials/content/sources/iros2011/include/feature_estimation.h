@@ -106,11 +106,11 @@ computeFeatures (const PointCloudPtr& input)
 {
   ObjectFeatures features;
   features.points = input;
-  features.normals = estimateSurfaceNormals(input, 0.05);
-  features.keypoints = detectKeypoints(input, features.normals, 0.005, 10, 8, 1.5);
+  features.normals = estimateSurfaceNormals (input, 0.05);
+  features.keypoints = detectKeypoints (input, features.normals, 0.005, 10, 8, 1.5);
   features.local_descriptors =
-      computeLocalDescriptors(input, features.normals, features.keypoints, 0.1);
-  features.global_descriptor = computeGlobalDescriptor(input, features.normals);
+      computeLocalDescriptors (input, features.normals, features.keypoints, 0.1);
+  features.global_descriptor = computeGlobalDescriptor (input, features.normals);
 
   return (features);
 }

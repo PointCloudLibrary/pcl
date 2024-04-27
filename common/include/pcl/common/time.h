@@ -65,7 +65,7 @@ public:
   getTime () const
   {
     auto end_time = std::chrono::steady_clock::now();
-    return std::chrono::duration<double, std::ratio<1, 1000>>(end_time - start_time_)
+    return std::chrono::duration<double, std::ratio<1, 1000>> (end_time - start_time_)
         .count();
   }
 
@@ -105,7 +105,7 @@ protected:
  */
 class ScopeTime : public StopWatch {
 public:
-  inline ScopeTime(const std::string& title = "") : title_(title) {}
+  inline ScopeTime (const std::string& title = "") : title_ (title) {}
 
   inline ~ScopeTime()
   {
@@ -133,7 +133,7 @@ public:
    *
    * \param[in] window_size number of most recent events that are
    * considered in frequency estimation (default: 30) */
-  EventFrequency(std::size_t window_size = 30) : window_size_(window_size)
+  EventFrequency (std::size_t window_size = 30) : window_size_ (window_size)
   {
     stop_watch_.reset();
   }
@@ -142,7 +142,7 @@ public:
   void
   event ()
   {
-    event_time_queue_.push(stop_watch_.getTimeSeconds());
+    event_time_queue_.push (stop_watch_.getTimeSeconds());
     if (event_time_queue_.size() > window_size_)
       event_time_queue_.pop();
   }
@@ -172,13 +172,13 @@ private:
 };
 
 #ifndef MEASURE_FUNCTION_TIME
-#define MEASURE_FUNCTION_TIME ScopeTime scopeTime(__func__)
+#define MEASURE_FUNCTION_TIME ScopeTime scopeTime (__func__)
 #endif
 
 inline double
 getTime ()
 {
-  return std::chrono::duration<double>(
+  return std::chrono::duration<double> (
              std::chrono::system_clock::now().time_since_epoch())
       .count();
 }
@@ -202,7 +202,7 @@ getTime ()
 
 /// Executes code, only if secs are gone since last exec.
 #ifndef DO_EVERY
-#define DO_EVERY(secs, code) DO_EVERY_TS(secs, pcl::getTime(), code)
+#define DO_EVERY(secs, code) DO_EVERY_TS (secs, pcl::getTime(), code)
 #endif
 
 } // namespace pcl

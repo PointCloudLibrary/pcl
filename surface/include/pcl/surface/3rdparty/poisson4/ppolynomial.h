@@ -47,13 +47,13 @@ public:
 
   template <int Degree2>
   StartingPolynomial<Degree + Degree2>
-  operator*(const StartingPolynomial<Degree2>& p) const;
+  operator* (const StartingPolynomial<Degree2>& p) const;
   StartingPolynomial
   scale (double s) const;
   StartingPolynomial
   shift (double t) const;
   int
-  operator<(const StartingPolynomial& sp) const;
+  operator< (const StartingPolynomial& sp) const;
   static int
   Compare (const void* v1, const void* v2);
 };
@@ -64,12 +64,12 @@ public:
   std::size_t polyCount;
   StartingPolynomial<Degree>* polys;
 
-  PPolynomial(void);
-  PPolynomial(const PPolynomial<Degree>& p);
-  ~PPolynomial(void);
+  PPolynomial (void);
+  PPolynomial (const PPolynomial<Degree>& p);
+  ~PPolynomial (void);
 
   PPolynomial&
-  operator=(const PPolynomial& p);
+  operator= (const PPolynomial& p);
 
   int
   size (void) const;
@@ -83,7 +83,7 @@ public:
   reset (std::size_t newSize);
 
   double
-  operator()(double t) const;
+  operator() (double t) const;
   double
   integral (double tMin, double tMax) const;
   double
@@ -91,37 +91,37 @@ public:
 
   template <int Degree2>
   PPolynomial<Degree>&
-  operator=(const PPolynomial<Degree2>& p);
+  operator= (const PPolynomial<Degree2>& p);
 
   PPolynomial
-  operator+(const PPolynomial& p) const;
+  operator+ (const PPolynomial& p) const;
   PPolynomial
-  operator-(const PPolynomial& p) const;
-
-  template <int Degree2>
-  PPolynomial<Degree + Degree2>
-  operator*(const Polynomial<Degree2>& p) const;
+  operator- (const PPolynomial& p) const;
 
   template <int Degree2>
   PPolynomial<Degree + Degree2>
-  operator*(const PPolynomial<Degree2>& p) const;
+  operator* (const Polynomial<Degree2>& p) const;
+
+  template <int Degree2>
+  PPolynomial<Degree + Degree2>
+  operator* (const PPolynomial<Degree2>& p) const;
 
   PPolynomial&
-  operator+=(double s);
+  operator+= (double s);
   PPolynomial&
-  operator-=(double s);
+  operator-= (double s);
   PPolynomial&
-  operator*=(double s);
+  operator*= (double s);
   PPolynomial&
-  operator/=(double s);
+  operator/= (double s);
   PPolynomial
-  operator+(double s) const;
+  operator+ (double s) const;
   PPolynomial
-  operator-(double s) const;
+  operator- (double s) const;
   PPolynomial
-  operator*(double s) const;
+  operator* (double s) const;
   PPolynomial
-  operator/(double s) const;
+  operator/ (double s) const;
 
   PPolynomial&
   addScaled (const PPolynomial& poly, double scale);

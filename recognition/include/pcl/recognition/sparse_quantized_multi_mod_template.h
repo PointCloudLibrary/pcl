@@ -82,10 +82,10 @@ struct QuantizedMultiModFeature {
   void
   serialize (std::ostream& stream) const
   {
-    write(stream, x);
-    write(stream, y);
-    write(stream, modality_index);
-    write(stream, quantized_value);
+    write (stream, x);
+    write (stream, y);
+    write (stream, modality_index);
+    write (stream, quantized_value);
   }
 
   /** \brief Deserializes the object from the specified stream.
@@ -93,10 +93,10 @@ struct QuantizedMultiModFeature {
   void
   deserialize (std::istream& stream)
   {
-    read(stream, x);
-    read(stream, y);
-    read(stream, modality_index);
-    read(stream, quantized_value);
+    read (stream, x);
+    read (stream, y);
+    read (stream, modality_index);
+    read (stream, quantized_value);
   }
 };
 
@@ -118,13 +118,13 @@ struct SparseQuantizedMultiModTemplate {
   void
   serialize (std::ostream& stream) const
   {
-    const int num_of_features = static_cast<int>(features.size());
-    write(stream, num_of_features);
+    const int num_of_features = static_cast<int> (features.size());
+    write (stream, num_of_features);
     for (int feature_index = 0; feature_index < num_of_features; ++feature_index) {
-      features[feature_index].serialize(stream);
+      features[feature_index].serialize (stream);
     }
 
-    region.serialize(stream);
+    region.serialize (stream);
   }
 
   /** \brief Deserializes the object from the specified stream.
@@ -135,13 +135,13 @@ struct SparseQuantizedMultiModTemplate {
     features.clear();
 
     int num_of_features;
-    read(stream, num_of_features);
-    features.resize(num_of_features);
+    read (stream, num_of_features);
+    features.resize (num_of_features);
     for (int feature_index = 0; feature_index < num_of_features; ++feature_index) {
-      features[feature_index].deserialize(stream);
+      features[feature_index].deserialize (stream);
     }
 
-    region.deserialize(stream);
+    region.deserialize (stream);
   }
 };
 

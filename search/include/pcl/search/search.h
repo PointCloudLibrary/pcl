@@ -83,7 +83,7 @@ public:
   using IndicesConstPtr = pcl::IndicesConstPtr;
 
   /** Constructor. */
-  Search(const std::string& name = "", bool sorted = false);
+  Search (const std::string& name = "", bool sorted = false);
 
   /** Destructor. */
   virtual ~Search() = default;
@@ -161,8 +161,8 @@ public:
                    std::vector<float>& k_sqr_distances) const
   {
     PointT p;
-    copyPoint(point, p);
-    return (nearestKSearch(p, k, k_indices, k_sqr_distances));
+    copyPoint (point, p);
+    return (nearestKSearch (p, k, k_indices, k_sqr_distances));
   }
 
   /** \brief Search for k-nearest neighbors for the given query point.
@@ -257,20 +257,20 @@ public:
 
     pcl::PointCloud<PointT> pc;
     if (indices.empty()) {
-      pc.resize(cloud.size());
+      pc.resize (cloud.size());
       for (std::size_t i = 0; i < cloud.size(); i++) {
-        pcl::for_each_type<FieldList>(
-            pcl::NdConcatenateFunctor<PointTDiff, PointT>(cloud[i], pc[i]));
+        pcl::for_each_type<FieldList> (
+            pcl::NdConcatenateFunctor<PointTDiff, PointT> (cloud[i], pc[i]));
       }
-      nearestKSearch(pc, Indices(), k, k_indices, k_sqr_distances);
+      nearestKSearch (pc, Indices(), k, k_indices, k_sqr_distances);
     }
     else {
-      pc.resize(indices.size());
+      pc.resize (indices.size());
       for (std::size_t i = 0; i < indices.size(); i++) {
-        pcl::for_each_type<FieldList>(
-            pcl::NdConcatenateFunctor<PointTDiff, PointT>(cloud[indices[i]], pc[i]));
+        pcl::for_each_type<FieldList> (
+            pcl::NdConcatenateFunctor<PointTDiff, PointT> (cloud[indices[i]], pc[i]));
       }
-      nearestKSearch(pc, Indices(), k, k_indices, k_sqr_distances);
+      nearestKSearch (pc, Indices(), k, k_indices, k_sqr_distances);
     }
   }
 
@@ -310,8 +310,8 @@ public:
                  unsigned int max_nn = 0) const
   {
     PointT p;
-    copyPoint(point, p);
-    return (radiusSearch(p, radius, k_indices, k_sqr_distances, max_nn));
+    copyPoint (point, p);
+    return (radiusSearch (p, radius, k_indices, k_sqr_distances, max_nn));
   }
 
   /** \brief Search for all the nearest neighbors of the query point in a given radius.
@@ -419,18 +419,18 @@ public:
 
     pcl::PointCloud<PointT> pc;
     if (indices.empty()) {
-      pc.resize(cloud.size());
+      pc.resize (cloud.size());
       for (std::size_t i = 0; i < cloud.size(); ++i)
-        pcl::for_each_type<FieldList>(
-            pcl::NdConcatenateFunctor<PointTDiff, PointT>(cloud[i], pc[i]));
-      radiusSearch(pc, Indices(), radius, k_indices, k_sqr_distances, max_nn);
+        pcl::for_each_type<FieldList> (
+            pcl::NdConcatenateFunctor<PointTDiff, PointT> (cloud[i], pc[i]));
+      radiusSearch (pc, Indices(), radius, k_indices, k_sqr_distances, max_nn);
     }
     else {
-      pc.resize(indices.size());
+      pc.resize (indices.size());
       for (std::size_t i = 0; i < indices.size(); ++i)
-        pcl::for_each_type<FieldList>(
-            pcl::NdConcatenateFunctor<PointTDiff, PointT>(cloud[indices[i]], pc[i]));
-      radiusSearch(pc, Indices(), radius, k_indices, k_sqr_distances, max_nn);
+        pcl::for_each_type<FieldList> (
+            pcl::NdConcatenateFunctor<PointTDiff, PointT> (cloud[indices[i]], pc[i]));
+      radiusSearch (pc, Indices(), radius, k_indices, k_sqr_distances, max_nn);
     }
   }
 
@@ -445,10 +445,10 @@ protected:
 
 private:
   struct Compare {
-    Compare(const std::vector<float>& distances) : distances_(distances) {}
+    Compare (const std::vector<float>& distances) : distances_ (distances) {}
 
     bool
-    operator()(index_t first, index_t second) const
+    operator() (index_t first, index_t second) const
     {
       return (distances_[first] < distances_[second]);
     }

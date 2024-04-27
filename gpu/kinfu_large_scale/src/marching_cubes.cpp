@@ -50,43 +50,43 @@ extern const int numVertsTable[256];
 
 pcl::gpu::kinfuLS::MarchingCubes::MarchingCubes()
 {
-  edgeTable_.upload(edgeTable, 256);
-  numVertsTable_.upload(numVertsTable, 256);
-  triTable_.upload(&triTable[0][0], 256 * 16);
+  edgeTable_.upload (edgeTable, 256);
+  numVertsTable_.upload (numVertsTable, 256);
+  triTable_.upload (&triTable[0][0], 256 * 16);
 }
 
 DeviceArray<pcl::gpu::kinfuLS::MarchingCubes::PointType>
-pcl::gpu::kinfuLS::MarchingCubes::run(const TsdfVolume& tsdf,
-                                      DeviceArray<PointType>& triangles_buffer)
+pcl::gpu::kinfuLS::MarchingCubes::run (const TsdfVolume& tsdf,
+                                       DeviceArray<PointType>& triangles_buffer)
 {
   if (triangles_buffer.empty())
-    triangles_buffer.create(DEFAULT_TRIANGLES_BUFFER_SIZE);
-  occupied_voxels_buffer_.create(3, triangles_buffer.size() / 3);
+    triangles_buffer.create (DEFAULT_TRIANGLES_BUFFER_SIZE);
+  occupied_voxels_buffer_.create (3, triangles_buffer.size() / 3);
 
-  pcl::device::kinfuLS::bindTextures(edgeTable_, triTable_, numVertsTable_);
+  pcl::device::kinfuLS::bindTextures (edgeTable_, triTable_, numVertsTable_);
 
   int active_voxels =
-      pcl::device::kinfuLS::getOccupiedVoxels(tsdf.data(), occupied_voxels_buffer_);
+      pcl::device::kinfuLS::getOccupiedVoxels (tsdf.data(), occupied_voxels_buffer_);
   if (!active_voxels) {
     pcl::device::kinfuLS::unbindTextures();
     return DeviceArray<PointType>();
   }
 
-  DeviceArray2D<int> occupied_voxels(
+  DeviceArray2D<int> occupied_voxels (
       3, active_voxels, occupied_voxels_buffer_.ptr(), occupied_voxels_buffer_.step());
 
   int total_vertexes =
-      pcl::device::kinfuLS::computeOffsetsAndTotalVertexes(occupied_voxels);
+      pcl::device::kinfuLS::computeOffsetsAndTotalVertexes (occupied_voxels);
 
-  float3 volume_size = device_cast<const float3>(tsdf.getSize());
-  pcl::device::kinfuLS::generateTriangles(
+  float3 volume_size = device_cast<const float3> (tsdf.getSize());
+  pcl::device::kinfuLS::generateTriangles (
       tsdf.data(),
       occupied_voxels,
       volume_size,
       (DeviceArray<pcl::device::kinfuLS::PointType>&)triangles_buffer);
 
   pcl::device::kinfuLS::unbindTextures();
-  return DeviceArray<PointType>(triangles_buffer.ptr(), total_vertexes);
+  return DeviceArray<PointType> (triangles_buffer.ptr(), total_vertexes);
 }
 
 // edge table maps 8-bit flag representing which cube vertices are inside

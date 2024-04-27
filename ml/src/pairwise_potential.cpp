@@ -39,21 +39,21 @@
 
 #include <pcl/ml/pairwise_potential.h>
 
-pcl::PairwisePotential::PairwisePotential(const std::vector<float>& feature,
-                                          const int feature_dimension,
-                                          const int N,
-                                          const float w)
-: N_(N), w_(w)
+pcl::PairwisePotential::PairwisePotential (const std::vector<float>& feature,
+                                           const int feature_dimension,
+                                           const int N,
+                                           const float w)
+: N_ (N), w_ (w)
 {
   // lattice_.init (feature, feature_dimension, N);
   // std::cout << "0---------" << std::endl;
-  lattice_.init(feature, feature_dimension, N);
+  lattice_.init (feature, feature_dimension, N);
 
   // std::cout << "1---------" << std::endl;
 
   // lattice_.debug ();
 
-  norm_.resize(N);
+  norm_.resize (N);
   for (int i = 0; i < N; i++)
     norm_[i] = 1;
 
@@ -70,7 +70,7 @@ pcl::PairwisePotential::PairwisePotential(const std::vector<float>& feature,
 
   // std::cout << "2---------" << std::endl;
 
-  lattice_.compute(norm_, norm_, 1);
+  lattice_.compute (norm_, norm_, 1);
 
   // std::cout << "3---------" << std::endl;
 
@@ -111,12 +111,12 @@ pcl::PairwisePotential::PairwisePotential(const std::vector<float>& feature,
 }
 
 void
-pcl::PairwisePotential::compute(std::vector<float>& out,
-                                const std::vector<float>& in,
-                                std::vector<float>& tmp,
-                                int value_size) const
+pcl::PairwisePotential::compute (std::vector<float>& out,
+                                 const std::vector<float>& in,
+                                 std::vector<float>& tmp,
+                                 int value_size) const
 {
-  lattice_.compute(tmp, in, value_size);
+  lattice_.compute (tmp, in, value_size);
   for (int i = 0, k = 0; i < N_; i++)
     for (int j = 0; j < value_size; j++, k++)
       out[k] += w_ * norm_[i] * tmp[k];

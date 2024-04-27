@@ -18,7 +18,7 @@
 #define ON_DETAIL_OBJECTY_INC_
 
 class ON_CLASS ON_DetailView : public ON_Geometry {
-  ON_OBJECT_DECLARE(ON_DetailView);
+  ON_OBJECT_DECLARE (ON_DetailView);
 
 public:
   ON_DetailView();

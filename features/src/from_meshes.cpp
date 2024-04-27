@@ -43,11 +43,11 @@
 #include <pcl/point_types.h>
 // Instantiations of specific point types
 #ifdef PCL_ONLY_CORE_POINT_TYPES
-PCL_INSTANTIATE_PRODUCT(
+PCL_INSTANTIATE_PRODUCT (
     computeApproximateCovariances,
-    ((pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA))((pcl::Normal)))
+    ((pcl::PointXYZ) (pcl::PointXYZI) (pcl::PointXYZRGBA)) ((pcl::Normal)))
 #else
-PCL_INSTANTIATE_PRODUCT(computeApproximateCovariances,
-                        (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES))
+PCL_INSTANTIATE_PRODUCT (computeApproximateCovariances,
+                         (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES))
 #endif
 #endif // PCL_NO_PRECOMPILE

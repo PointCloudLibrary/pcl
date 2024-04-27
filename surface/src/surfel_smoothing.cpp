@@ -39,4 +39,4 @@
 #include <pcl/surface/impl/surfel_smoothing.hpp>
 #include <pcl/point_types.h>
 
-PCL_INSTANTIATE_PRODUCT(SurfelSmoothing, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES))
+PCL_INSTANTIATE_PRODUCT (SurfelSmoothing, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES))

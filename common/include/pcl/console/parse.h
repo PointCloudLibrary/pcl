@@ -74,12 +74,12 @@ template <typename Type>
 int
 parse (int argc, const char* const* argv, const char* argument_name, Type& value)
 {
-  int index = find_argument(argc, argv, argument_name) + 1;
+  int index = find_argument (argc, argv, argument_name) + 1;
 
   if (index > 0 && index < argc) {
     std::istringstream stream;
     stream.clear();
-    stream.str(argv[index]);
+    stream.str (argv[index]);
     stream >> value;
   }
 

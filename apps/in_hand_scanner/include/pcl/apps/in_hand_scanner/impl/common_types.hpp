@@ -78,7 +78,7 @@ struct PointIHS : public pcl::ihs::_PointIHS {
     this->directions = 0;
   }
 
-  inline PointIHS(const PointIHS& other)
+  inline PointIHS (const PointIHS& other)
   {
     this->x = other.x;
     this->y = other.y;
@@ -98,9 +98,9 @@ struct PointIHS : public pcl::ihs::_PointIHS {
   }
 
   inline PointIHS&
-  operator=(const PointIHS& other) = default;
+  operator= (const PointIHS& other) = default;
 
-  inline PointIHS(const pcl::PointXYZRGBNormal& other, const float weight)
+  inline PointIHS (const pcl::PointXYZRGBNormal& other, const float weight)
   {
     this->x = other.x;
     this->y = other.y;
@@ -122,13 +122,13 @@ struct PointIHS : public pcl::ihs::_PointIHS {
   inline const Eigen::Vector3i
   getRGBVector3i () const
   {
-    return (Eigen::Vector3i(r, g, b));
+    return (Eigen::Vector3i (r, g, b));
   }
 
   inline const Eigen::Vector4i
   getRGBVector4i () const
   {
-    return (Eigen::Vector4i(r, g, b, a));
+    return (Eigen::Vector4i (r, g, b, a));
   }
 };
 

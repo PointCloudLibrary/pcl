@@ -45,16 +45,16 @@
 #include <pcl/filters/voxel_grid.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-pcl::modeler::NormalEstimationWorker::NormalEstimationWorker(
+pcl::modeler::NormalEstimationWorker::NormalEstimationWorker (
     const QList<CloudMeshItem*>& cloud_mesh_items, QWidget* parent)
-: AbstractWorker(cloud_mesh_items, parent)
-, x_min_(std::numeric_limits<double>::max())
-, x_max_(std::numeric_limits<double>::min())
-, y_min_(std::numeric_limits<double>::max())
-, y_max_(std::numeric_limits<double>::min())
-, z_min_(std::numeric_limits<double>::max())
-, z_max_(std::numeric_limits<double>::min())
-, search_radius_(nullptr)
+: AbstractWorker (cloud_mesh_items, parent)
+, x_min_ (std::numeric_limits<double>::max())
+, x_max_ (std::numeric_limits<double>::min())
+, y_min_ (std::numeric_limits<double>::max())
+, y_max_ (std::numeric_limits<double>::min())
+, z_min_ (std::numeric_limits<double>::max())
+, z_max_ (std::numeric_limits<double>::min())
+, search_radius_ (nullptr)
 {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -65,19 +65,19 @@ pcl::modeler::NormalEstimationWorker::~NormalEstimationWorker()
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::modeler::NormalEstimationWorker::initParameters(CloudMeshItem* cloud_mesh_item)
+pcl::modeler::NormalEstimationWorker::initParameters (CloudMeshItem* cloud_mesh_item)
 {
   Eigen::Vector4f min_pt, max_pt;
-  pcl::getMinMax3D(*(cloud_mesh_item->getCloudMesh()->getCloud()), min_pt, max_pt);
+  pcl::getMinMax3D (*(cloud_mesh_item->getCloudMesh()->getCloud()), min_pt, max_pt);
 
-  x_min_ = std::min(double(min_pt.x()), x_min_);
-  x_max_ = std::max(double(max_pt.x()), x_max_);
+  x_min_ = std::min (double (min_pt.x()), x_min_);
+  x_max_ = std::max (double (max_pt.x()), x_max_);
 
-  y_min_ = std::min(double(min_pt.y()), y_min_);
-  y_max_ = std::max(double(max_pt.y()), y_max_);
+  y_min_ = std::min (double (min_pt.y()), y_min_);
+  y_max_ = std::max (double (max_pt.y()), y_max_);
 
-  z_min_ = std::min(double(min_pt.z()), z_min_);
-  z_max_ = std::max(double(max_pt.z()), z_max_);
+  z_min_ = std::min (double (min_pt.z()), z_min_);
+  z_max_ = std::max (double (max_pt.z()), z_max_);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -88,7 +88,7 @@ pcl::modeler::NormalEstimationWorker::setupParameters()
   double y_range = y_max_ - y_min_;
   double z_range = z_max_ - z_min_;
 
-  double range_max = std::max(x_range, std::max(y_range, z_range));
+  double range_max = std::max (x_range, std::max (y_range, z_range));
   double radius = range_max / 100;
   double step = range_max / 1000;
 
@@ -99,35 +99,35 @@ pcl::modeler::NormalEstimationWorker::setupParameters()
       radius, 0, x_max_ - x_min_, step);
   // clang-format on
 
-  parameter_dialog_->addParameter(search_radius_);
+  parameter_dialog_->addParameter (search_radius_);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::modeler::NormalEstimationWorker::processImpl(CloudMeshItem* cloud_mesh_item)
+pcl::modeler::NormalEstimationWorker::processImpl (CloudMeshItem* cloud_mesh_item)
 {
   CloudMesh::PointCloudPtr cloud = cloud_mesh_item->getCloudMesh()->getCloud();
 
   // Create the normal estimation class, and pass the input dataset to it
   pcl::NormalEstimation<pcl::PointSurfel, pcl::PointNormal> normal_estimator;
-  normal_estimator.setInputCloud(cloud);
+  normal_estimator.setInputCloud (cloud);
 
-  pcl::IndicesPtr indices(new pcl::Indices());
-  pcl::removeNaNFromPointCloud(*cloud, *indices);
-  normal_estimator.setIndices(indices);
+  pcl::IndicesPtr indices (new pcl::Indices());
+  pcl::removeNaNFromPointCloud (*cloud, *indices);
+  normal_estimator.setIndices (indices);
 
   // Create an empty kdtree representation, and pass it to the normal estimation object.
   // Its content will be filled inside the object, based on the given input dataset (as
   // no other search surface is given).
-  pcl::search::KdTree<pcl::PointSurfel>::Ptr tree(
+  pcl::search::KdTree<pcl::PointSurfel>::Ptr tree (
       new pcl::search::KdTree<pcl::PointSurfel>());
-  normal_estimator.setSearchMethod(tree);
+  normal_estimator.setSearchMethod (tree);
 
   // Use all neighbors in a sphere of the search radius
-  normal_estimator.setRadiusSearch(*search_radius_);
+  normal_estimator.setRadiusSearch (*search_radius_);
 
   pcl::PointCloud<pcl::PointNormal> normals;
-  normal_estimator.compute(normals);
+  normal_estimator.compute (normals);
 
   for (std::size_t i = 0, i_end = indices->size(); i < i_end; ++i) {
     std::size_t dest = (*indices)[i];

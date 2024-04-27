@@ -21,11 +21,11 @@ ON_Base32ToString (const ON_SimpleArray<unsigned char>& base32_digits,
                    ON_String& sBase32)
 {
   int digit_count = base32_digits.Count();
-  sBase32.ReserveArray(digit_count);
-  sBase32.SetLength(digit_count);
-  bool rc = ON_Base32ToString(base32_digits, digit_count, sBase32.Array());
+  sBase32.ReserveArray (digit_count);
+  sBase32.SetLength (digit_count);
+  bool rc = ON_Base32ToString (base32_digits, digit_count, sBase32.Array());
   if (!rc)
-    sBase32.SetLength(0);
+    sBase32.SetLength (0);
   return rc;
 }
 
@@ -34,7 +34,7 @@ ON_Base32ToString (const ON_SimpleArray<unsigned char>& base32_digits,
                    ON_wString& sBase32)
 {
   ON_String s;
-  bool rc = ON_Base32ToString(base32_digits, s);
+  bool rc = ON_Base32ToString (base32_digits, s);
   if (rc)
     sBase32 = s;
   return rc;
@@ -81,12 +81,12 @@ ON_CorrectBase32StringTypos (const char* sBase32, ON_String& sBase32clean)
   if (sBase32 == sBase32clean.Array())
     sClean = sBase32clean.Array();
   else {
-    sBase32clean.SetLength(0);
-    sBase32clean.ReserveArray(strlen(sBase32));
+    sBase32clean.SetLength (0);
+    sBase32clean.ReserveArray (strlen (sBase32));
     sClean = sBase32clean.Array();
   }
-  int length = ON_CorrectBase32StringTypos(sBase32, sClean);
-  sBase32clean.SetLength(length);
+  int length = ON_CorrectBase32StringTypos (sBase32, sClean);
+  sBase32clean.SetLength (length);
   return length;
 }
 
@@ -96,11 +96,11 @@ ON_CorrectBase32StringTypos (const wchar_t* sBase32, ON_wString& sBase32clean)
   if (0 == sBase32 || 0 == sBase32[0])
     return 0;
   ON_String s = sBase32;
-  int length = ON_CorrectBase32StringTypos(s.Array(), s.Array());
+  int length = ON_CorrectBase32StringTypos (s.Array(), s.Array());
   if (length > 0)
     sBase32clean = s;
   else
-    sBase32clean.SetLength(0);
+    sBase32clean.SetLength (0);
   return length;
 }
 
@@ -143,8 +143,8 @@ int
 ON_StringToBase32 (const ON_wString& sBase32,
                    ON_SimpleArray<unsigned char>& base32_digits)
 {
-  ON_String s(sBase32);
-  return ON_StringToBase32(s, base32_digits);
+  ON_String s (sBase32);
+  return ON_StringToBase32 (s, base32_digits);
 }
 
 int
@@ -154,9 +154,9 @@ ON_StringToBase32 (const ON_String& sBase32,
   const char* s = sBase32;
   if (0 == s || 0 == s[0])
     return 0;
-  base32_digits.Reserve(sBase32.Length());
-  int digit_count = ON_StringToBase32(sBase32, base32_digits.Array());
-  base32_digits.SetCount(digit_count);
+  base32_digits.Reserve (sBase32.Length());
+  int digit_count = ON_StringToBase32 (sBase32, base32_digits.Array());
+  base32_digits.SetCount (digit_count);
   return digit_count;
 }
 
@@ -197,9 +197,9 @@ ON_GetBase32Digits (const ON_SimpleArray<unsigned char>& x,
   int x_count = x.Count();
   int bit_count = 8 * x_count;
   int base32_digit_count = (bit_count / 5) + ((bit_count % 5) ? 1 : 0);
-  base32_digits.Reserve(base32_digit_count);
-  base32_digit_count = ON_GetBase32Digits(x.Array(), x_count, base32_digits.Array());
-  base32_digits.SetCount(base32_digit_count);
+  base32_digits.Reserve (base32_digit_count);
+  base32_digit_count = ON_GetBase32Digits (x.Array(), x_count, base32_digits.Array());
+  base32_digits.SetCount (base32_digit_count);
   return base32_digit_count;
 }
 
@@ -218,12 +218,12 @@ ON_GetBase32Digits (const unsigned char* x, int x_count, unsigned char* base32_d
     return 0;
 
   if (x == base32_digits) {
-    unsigned char* tmp = (unsigned char*)onmalloc(x_count * sizeof(x[0]));
+    unsigned char* tmp = (unsigned char*)onmalloc (x_count * sizeof (x[0]));
     if (0 == tmp)
       return 0;
-    memcpy(tmp, x, x_count * sizeof(x[0]));
-    i = ON_GetBase32Digits(tmp, x_count, base32_digits);
-    onfree(tmp);
+    memcpy (tmp, x, x_count * sizeof (x[0]));
+    i = ON_GetBase32Digits (tmp, x_count, base32_digits);
+    onfree (tmp);
     return i;
   }
 

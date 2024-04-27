@@ -52,10 +52,10 @@ doStereoRatioFilter (const T* const acc,
                      int maxdisp,
                      int precision = 100)
 {
-  const auto sad_min_1st_part_it = std::min_element(acc, acc + dbest - 1);
-  const auto sad_min_2nd_part_it = std::min_element(acc + dbest + 2, acc + maxdisp);
+  const auto sad_min_1st_part_it = std::min_element (acc, acc + dbest - 1);
+  const auto sad_min_2nd_part_it = std::min_element (acc + dbest + 2, acc + maxdisp);
 
-  const auto sad_second_min = std::min(*sad_min_1st_part_it, *sad_min_2nd_part_it);
+  const auto sad_second_min = std::min (*sad_min_1st_part_it, *sad_min_2nd_part_it);
 
   if ((sad_min * precision) > ((precision - ratio_filter) * sad_second_min)) {
     return -2;
@@ -345,8 +345,8 @@ protected:
   {
     int den = (s1 + s3 - 2 * s2);
     if (den != 0)
-      return (static_cast<short int>(16 * dbest + (((s1 - s3) * 8) / den)));
-    return (static_cast<short int>(dbest * 16));
+      return (static_cast<short int> (16 * dbest + (((s1 - s3) * 8) / den)));
+    return (static_cast<short int> (dbest * 16));
   }
 
   inline short int
@@ -354,9 +354,9 @@ protected:
   {
     float den = (s1 + s3 - 2 * s2);
     if (den != 0)
-      return (static_cast<short int>(16 * dbest +
-                                     std::floor(.5 + (((s1 - s3) * 8) / den))));
-    return (static_cast<short int>(dbest * 16));
+      return (static_cast<short int> (16 * dbest +
+                                      std::floor (.5 + (((s1 - s3) * 8) / den))));
+    return (static_cast<short int> (dbest * 16));
   }
 };
 

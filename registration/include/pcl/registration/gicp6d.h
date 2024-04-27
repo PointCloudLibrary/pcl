@@ -72,7 +72,7 @@ public:
    *
    * \param[in] lab_weight the color weight
    */
-  GeneralizedIterativeClosestPoint6D(float lab_weight = 0.032f);
+  GeneralizedIterativeClosestPoint6D (float lab_weight = 0.032f);
 
   /** \brief Provide a pointer to the input source
    * (e.g., the point cloud that we want to align to the target)
@@ -144,7 +144,7 @@ protected:
     inline Ptr
     makeShared () const
     {
-      return Ptr(new MyPointRepresentation(*this));
+      return Ptr (new MyPointRepresentation (*this));
     }
 
     void

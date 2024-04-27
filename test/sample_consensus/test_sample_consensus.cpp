@@ -55,26 +55,27 @@ using namespace pcl;
 using SampleConsensusModelSpherePtr = SampleConsensusModelSphere<PointXYZ>::Ptr;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TEST(SampleConsensus, Base)
+TEST (SampleConsensus, Base)
 {
-  PointCloud<PointXYZ>::Ptr cloud(new PointCloud<PointXYZ>);
+  PointCloud<PointXYZ>::Ptr cloud (new PointCloud<PointXYZ>);
 
   // Create a shared sphere model pointer directly
-  SampleConsensusModelSpherePtr model(new SampleConsensusModelSphere<PointXYZ>(cloud));
+  SampleConsensusModelSpherePtr model (
+      new SampleConsensusModelSphere<PointXYZ> (cloud));
 
   // Create the RANSAC object
-  RandomSampleConsensus<PointXYZ> sac(model, 0.03);
+  RandomSampleConsensus<PointXYZ> sac (model, 0.03);
 
   // Basic tests
-  ASSERT_EQ(0.03, sac.getDistanceThreshold());
-  sac.setDistanceThreshold(0.03);
-  ASSERT_EQ(0.03, sac.getDistanceThreshold());
+  ASSERT_EQ (0.03, sac.getDistanceThreshold());
+  sac.setDistanceThreshold (0.03);
+  ASSERT_EQ (0.03, sac.getDistanceThreshold());
 
-  sac.setProbability(0.99);
-  ASSERT_EQ(0.99, sac.getProbability());
+  sac.setProbability (0.99);
+  ASSERT_EQ (0.99, sac.getProbability());
 
-  sac.setMaxIterations(10000);
-  ASSERT_EQ(10000, sac.getMaxIterations());
+  sac.setMaxIterations (10000);
+  ASSERT_EQ (10000, sac.getMaxIterations());
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -88,24 +89,24 @@ using sacTypes = ::testing::Types<RandomSampleConsensus<PointXYZ>,
                                   RandomizedRandomSampleConsensus<PointXYZ>,
                                   RandomizedMEstimatorSampleConsensus<PointXYZ>,
                                   MaximumLikelihoodSampleConsensus<PointXYZ>>;
-TYPED_TEST_SUITE(SacTest, sacTypes);
+TYPED_TEST_SUITE (SacTest, sacTypes);
 
-TYPED_TEST(SacTest, InfiniteLoop)
+TYPED_TEST (SacTest, InfiniteLoop)
 {
   using namespace std::chrono_literals;
 
   constexpr unsigned point_count = 100;
   PointCloud<PointXYZ> cloud;
-  cloud.resize(point_count);
+  cloud.resize (point_count);
   for (unsigned idx = 0; idx < point_count; ++idx) {
-    cloud[idx].x = static_cast<float>(idx);
+    cloud[idx].x = static_cast<float> (idx);
     cloud[idx].y = 0.0;
     cloud[idx].z = 0.0;
   }
 
-  SampleConsensusModelSpherePtr model(
-      new SampleConsensusModelSphere<PointXYZ>(cloud.makeShared()));
-  TypeParam sac(model, 0.03);
+  SampleConsensusModelSpherePtr model (
+      new SampleConsensusModelSphere<PointXYZ> (cloud.makeShared()));
+  TypeParam sac (model, 0.03);
 
   // This test sometimes fails for LMedS on azure, but always passes when run locally.
   // Enable all output for LMedS, so that when it fails next time, we hopefully see why.
@@ -114,7 +115,7 @@ TYPED_TEST(SacTest, InfiniteLoop)
   const auto previous_verbosity_level = pcl::console::getVerbosityLevel();
   if (std::is_same<TypeParam, LeastMedianSquares<PointXYZ>>::value) {
     debug_verbosity_level = 2;
-    pcl::console::setVerbosityLevel(pcl::console::L_VERBOSE);
+    pcl::console::setVerbosityLevel (pcl::console::L_VERBOSE);
   }
 
   // Set up timed conditions
@@ -122,31 +123,31 @@ TYPED_TEST(SacTest, InfiniteLoop)
   std::mutex mtx;
 
   // Create the RANSAC object
-  std::thread thread([&] () {
-    sac.computeModel(debug_verbosity_level);
+  std::thread thread ([&] () {
+    sac.computeModel (debug_verbosity_level);
 
     // Notify things are done
-    std::lock_guard<std::mutex> lock(mtx);
+    std::lock_guard<std::mutex> lock (mtx);
     cv.notify_one();
   });
 
   // Waits for the delay
-  std::unique_lock<std::mutex> lock(mtx);
+  std::unique_lock<std::mutex> lock (mtx);
 #if defined(DEBUG) || defined(_DEBUG)
-  EXPECT_EQ(std::cv_status::no_timeout, cv.wait_for(lock, 15s));
+  EXPECT_EQ (std::cv_status::no_timeout, cv.wait_for (lock, 15s));
 #else
-  EXPECT_EQ(std::cv_status::no_timeout, cv.wait_for(lock, 2s));
+  EXPECT_EQ (std::cv_status::no_timeout, cv.wait_for (lock, 2s));
 #endif
   // release lock to avoid deadlock
   lock.unlock();
   thread.join();
 
-  pcl::console::setVerbosityLevel(previous_verbosity_level); // reset verbosity level
+  pcl::console::setVerbosityLevel (previous_verbosity_level); // reset verbosity level
 }
 
 int
 main (int argc, char** argv)
 {
-  testing::InitGoogleTest(&argc, argv);
+  testing::InitGoogleTest (&argc, argv);
   return (RUN_ALL_TESTS());
 }

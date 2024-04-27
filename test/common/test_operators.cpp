@@ -43,7 +43,7 @@ using namespace pcl;
 using namespace pcl::test;
 
 //////////////////////////////////////////////////////////////////////////////
-TEST(PointOperators, PointXYZ)
+TEST (PointOperators, PointXYZ)
 {
   using namespace pcl::common;
   PointXYZ p0;
@@ -56,94 +56,94 @@ TEST(PointOperators, PointXYZ)
   p1.z = 0.05f;
   PointXYZ p2 = p0;
   p2 += p1;
-  EXPECT_EQ(p2.x, p0.x + p1.x);
-  EXPECT_EQ(p2.y, p0.y + p1.y);
-  EXPECT_EQ(p2.z, p0.z + p1.z);
+  EXPECT_EQ (p2.x, p0.x + p1.x);
+  EXPECT_EQ (p2.y, p0.y + p1.y);
+  EXPECT_EQ (p2.z, p0.z + p1.z);
 
   p2 = p0 + p1;
 
-  EXPECT_EQ(p2.x, p0.x + p1.x);
-  EXPECT_EQ(p2.y, p0.y + p1.y);
-  EXPECT_EQ(p2.z, p0.z + p1.z);
+  EXPECT_EQ (p2.x, p0.x + p1.x);
+  EXPECT_EQ (p2.y, p0.y + p1.y);
+  EXPECT_EQ (p2.z, p0.z + p1.z);
 
   PointXYZ p3 = p0 - p1;
 
-  EXPECT_EQ(p3.x, p0.x - p1.x);
-  EXPECT_EQ(p3.y, p0.y - p1.y);
-  EXPECT_EQ(p3.z, p0.z - p1.z);
+  EXPECT_EQ (p3.x, p0.x - p1.x);
+  EXPECT_EQ (p3.y, p0.y - p1.y);
+  EXPECT_EQ (p3.z, p0.z - p1.z);
 
   p3 = p0;
   p3 -= p1;
 
-  EXPECT_EQ(p3.x, p0.x - p1.x);
-  EXPECT_EQ(p3.y, p0.y - p1.y);
-  EXPECT_EQ(p3.z, p0.z - p1.z);
+  EXPECT_EQ (p3.x, p0.x - p1.x);
+  EXPECT_EQ (p3.y, p0.y - p1.y);
+  EXPECT_EQ (p3.z, p0.z - p1.z);
 
   float scalar = 4;
   p2 *= scalar;
 
-  EXPECT_EQ(p2.x, scalar * p0.x + scalar * p1.x);
-  EXPECT_EQ(p2.y, scalar * p0.y + scalar * p1.y);
-  EXPECT_EQ(p2.z, scalar * p0.z + scalar * p1.z);
+  EXPECT_EQ (p2.x, scalar * p0.x + scalar * p1.x);
+  EXPECT_EQ (p2.y, scalar * p0.y + scalar * p1.y);
+  EXPECT_EQ (p2.z, scalar * p0.z + scalar * p1.z);
 
   p2 /= 2;
 
-  EXPECT_EQ(p2.x, scalar / 2.0f * p0.x + scalar / 2.0f * p1.x);
-  EXPECT_EQ(p2.y, scalar / 2.0f * p0.y + scalar / 2.0f * p1.y);
-  EXPECT_EQ(p2.z, scalar / 2.0f * p0.z + scalar / 2.0f * p1.z);
+  EXPECT_EQ (p2.x, scalar / 2.0f * p0.x + scalar / 2.0f * p1.x);
+  EXPECT_EQ (p2.y, scalar / 2.0f * p0.y + scalar / 2.0f * p1.y);
+  EXPECT_EQ (p2.z, scalar / 2.0f * p0.z + scalar / 2.0f * p1.z);
 
   { // Addition and addition assignment
-    pcl::PointXYZ point1(1.0f, -0.5f, 2.0f), point2(4.0f, -1.5f, -1.0f);
+    pcl::PointXYZ point1 (1.0f, -0.5f, 2.0f), point2 (4.0f, -1.5f, -1.0f);
     float scalar1 = 2.0f;
     auto res1 = point1 + point2;
-    EXPECT_XYZ_EQ(res1, pcl::PointXYZ(5.0f, -2.0f, 1.0f));
+    EXPECT_XYZ_EQ (res1, pcl::PointXYZ (5.0f, -2.0f, 1.0f));
     auto res2 = point1 + scalar1;
-    EXPECT_XYZ_EQ(res2, pcl::PointXYZ(3.0f, 1.5f, 4.0f));
+    EXPECT_XYZ_EQ (res2, pcl::PointXYZ (3.0f, 1.5f, 4.0f));
     auto res3 = scalar1 + point1;
-    EXPECT_XYZ_EQ(res3, pcl::PointXYZ(3.0f, 1.5f, 4.0f));
+    EXPECT_XYZ_EQ (res3, pcl::PointXYZ (3.0f, 1.5f, 4.0f));
     point1 += point2;
-    EXPECT_XYZ_EQ(point1, pcl::PointXYZ(5.0f, -2.0f, 1.0f));
+    EXPECT_XYZ_EQ (point1, pcl::PointXYZ (5.0f, -2.0f, 1.0f));
     point2 += scalar1;
-    EXPECT_XYZ_EQ(point2, pcl::PointXYZ(6.0f, 0.5f, 1.0f));
+    EXPECT_XYZ_EQ (point2, pcl::PointXYZ (6.0f, 0.5f, 1.0f));
   }
   { // Subtraction and subtraction assignment
-    pcl::PointXYZ point1(1.0f, -0.5f, 2.0f), point2(4.0f, -1.5f, -1.0f);
+    pcl::PointXYZ point1 (1.0f, -0.5f, 2.0f), point2 (4.0f, -1.5f, -1.0f);
     float scalar1 = 2.0f;
     auto res1 = point1 - point2;
-    EXPECT_XYZ_EQ(res1, pcl::PointXYZ(-3.0f, 1.0f, 3.0f));
+    EXPECT_XYZ_EQ (res1, pcl::PointXYZ (-3.0f, 1.0f, 3.0f));
     auto res2 = point1 - scalar1;
-    EXPECT_XYZ_EQ(res2, pcl::PointXYZ(-1.0f, -2.5f, 0.0f));
+    EXPECT_XYZ_EQ (res2, pcl::PointXYZ (-1.0f, -2.5f, 0.0f));
     auto res3 = scalar1 - point1;
-    EXPECT_XYZ_EQ(res3, pcl::PointXYZ(1.0f, 2.5f, 0.0f));
+    EXPECT_XYZ_EQ (res3, pcl::PointXYZ (1.0f, 2.5f, 0.0f));
     point1 -= point2;
-    EXPECT_XYZ_EQ(point1, pcl::PointXYZ(-3.0f, 1.0f, 3.0f));
+    EXPECT_XYZ_EQ (point1, pcl::PointXYZ (-3.0f, 1.0f, 3.0f));
     point2 -= scalar1;
-    EXPECT_XYZ_EQ(point2, pcl::PointXYZ(2.0f, -3.5f, -3.0f));
+    EXPECT_XYZ_EQ (point2, pcl::PointXYZ (2.0f, -3.5f, -3.0f));
   }
   { // Multiplication and multiplication assignment
-    pcl::PointXYZ point1(1.0f, -0.5f, 2.0f), point2(4.0f, -1.5f, -1.0f);
+    pcl::PointXYZ point1 (1.0f, -0.5f, 2.0f), point2 (4.0f, -1.5f, -1.0f);
     float scalar1 = 2.0f;
     auto res2 = point1 * scalar1;
-    EXPECT_XYZ_EQ(res2, pcl::PointXYZ(2.0f, -1.0f, 4.0f));
+    EXPECT_XYZ_EQ (res2, pcl::PointXYZ (2.0f, -1.0f, 4.0f));
     auto res3 = scalar1 * point1;
-    EXPECT_XYZ_EQ(res3, pcl::PointXYZ(2.0f, -1.0f, 4.0f));
+    EXPECT_XYZ_EQ (res3, pcl::PointXYZ (2.0f, -1.0f, 4.0f));
     point2 *= scalar1;
-    EXPECT_XYZ_EQ(point2, pcl::PointXYZ(8.0f, -3.0f, -2.0f));
+    EXPECT_XYZ_EQ (point2, pcl::PointXYZ (8.0f, -3.0f, -2.0f));
   }
   { // Division and division assignment
-    pcl::PointXYZ point1(1.0f, -0.5f, 2.0f), point2(4.0f, -2.0f, -1.0f);
+    pcl::PointXYZ point1 (1.0f, -0.5f, 2.0f), point2 (4.0f, -2.0f, -1.0f);
     float scalar1 = 2.0f;
     auto res2 = point1 / scalar1;
-    EXPECT_XYZ_EQ(res2, pcl::PointXYZ(0.5f, -0.25f, 1.0f));
+    EXPECT_XYZ_EQ (res2, pcl::PointXYZ (0.5f, -0.25f, 1.0f));
     auto res3 = scalar1 / point1;
-    EXPECT_XYZ_EQ(res3, pcl::PointXYZ(2.0f, -4.0f, 1.0f));
+    EXPECT_XYZ_EQ (res3, pcl::PointXYZ (2.0f, -4.0f, 1.0f));
     point2 /= scalar1;
-    EXPECT_XYZ_EQ(point2, pcl::PointXYZ(2.0f, -1.0f, -0.5f));
+    EXPECT_XYZ_EQ (point2, pcl::PointXYZ (2.0f, -1.0f, -0.5f));
   }
 }
 
 //////////////////////////////////////////////////////////////////////////////
-TEST(PointOperators, PointXYZI)
+TEST (PointOperators, PointXYZI)
 {
   using namespace pcl::common;
   PointXYZI p0;
@@ -159,28 +159,28 @@ TEST(PointOperators, PointXYZI)
   PointXYZI p2 = p0 + p1;
   PointXYZI p3 = p0 - p1;
 
-  EXPECT_EQ(p2.x, p0.x + p1.x);
-  EXPECT_EQ(p2.y, p0.y + p1.y);
-  EXPECT_EQ(p2.z, p0.z + p1.z);
-  EXPECT_EQ(p2.intensity, p0.intensity + p1.intensity);
+  EXPECT_EQ (p2.x, p0.x + p1.x);
+  EXPECT_EQ (p2.y, p0.y + p1.y);
+  EXPECT_EQ (p2.z, p0.z + p1.z);
+  EXPECT_EQ (p2.intensity, p0.intensity + p1.intensity);
 
-  EXPECT_EQ(p3.x, p0.x - p1.x);
-  EXPECT_EQ(p3.y, p0.y - p1.y);
-  EXPECT_EQ(p3.z, p0.z - p1.z);
-  EXPECT_EQ(p3.intensity, p0.intensity - p1.intensity);
+  EXPECT_EQ (p3.x, p0.x - p1.x);
+  EXPECT_EQ (p3.y, p0.y - p1.y);
+  EXPECT_EQ (p3.z, p0.z - p1.z);
+  EXPECT_EQ (p3.intensity, p0.intensity - p1.intensity);
 
   p2 = 0.1f * p1;
-  EXPECT_NEAR(p2.x, 0.1 * p1.x, 1e-4);
-  EXPECT_NEAR(p2.y, 0.1 * p1.y, 1e-4);
-  EXPECT_NEAR(p2.z, 0.1 * p1.z, 1e-4);
-  EXPECT_NEAR(p2.intensity, 0.1 * p1.intensity, 1e-4);
+  EXPECT_NEAR (p2.x, 0.1 * p1.x, 1e-4);
+  EXPECT_NEAR (p2.y, 0.1 * p1.y, 1e-4);
+  EXPECT_NEAR (p2.z, 0.1 * p1.z, 1e-4);
+  EXPECT_NEAR (p2.intensity, 0.1 * p1.intensity, 1e-4);
   PointXYZI p4 = p1 * 0.1f;
-  EXPECT_EQ_VECTORS(p2.getVector3fMap(), p4.getVector3fMap());
-  EXPECT_EQ(p2.intensity, p4.intensity);
+  EXPECT_EQ_VECTORS (p2.getVector3fMap(), p4.getVector3fMap());
+  EXPECT_EQ (p2.intensity, p4.intensity);
 }
 
 //////////////////////////////////////////////////////////////////////////////
-TEST(PointOperators, PointXYZRGB)
+TEST (PointOperators, PointXYZRGB)
 {
   using namespace pcl::common;
   PointXYZRGB p0;
@@ -200,32 +200,32 @@ TEST(PointOperators, PointXYZRGB)
   PointXYZRGB p2 = p0 + p1;
   PointXYZRGB p3 = p0 - p1;
 
-  EXPECT_EQ(p2.x, p0.x + p1.x);
-  EXPECT_EQ(p2.y, p0.y + p1.y);
-  EXPECT_EQ(p2.z, p0.z + p1.z);
+  EXPECT_EQ (p2.x, p0.x + p1.x);
+  EXPECT_EQ (p2.y, p0.y + p1.y);
+  EXPECT_EQ (p2.z, p0.z + p1.z);
   // Disabled. Doesn't make any sense
   // EXPECT_EQ (p2.r, p0.r + p1.r);
   // EXPECT_EQ (p2.g, p0.g + p1.g);
   // EXPECT_EQ (p2.b, p0.b + p1.b);
 
-  EXPECT_EQ(p3.x, p0.x - p1.x);
-  EXPECT_EQ(p3.y, p0.y - p1.y);
-  EXPECT_EQ(p3.z, p0.z - p1.z);
+  EXPECT_EQ (p3.x, p0.x - p1.x);
+  EXPECT_EQ (p3.y, p0.y - p1.y);
+  EXPECT_EQ (p3.z, p0.z - p1.z);
   // Disabled. Doesn't make any sense
   // EXPECT_EQ (p3.r, p0.r - p1.r);
   // EXPECT_EQ (p3.g, p0.g - p1.g);
   // EXPECT_EQ (p3.b, p0.b - p1.b);
 
   p2 = 0.1f * p1;
-  EXPECT_NEAR(p2.x, 0.1 * p1.x, 1e-4);
-  EXPECT_NEAR(p2.y, 0.1 * p1.y, 1e-4);
-  EXPECT_NEAR(p2.z, 0.1 * p1.z, 1e-4);
+  EXPECT_NEAR (p2.x, 0.1 * p1.x, 1e-4);
+  EXPECT_NEAR (p2.y, 0.1 * p1.y, 1e-4);
+  EXPECT_NEAR (p2.z, 0.1 * p1.z, 1e-4);
   // Disabled. Doesn't make any sense
   // EXPECT_EQ (p2.r, static_cast<std::uint8_t> (0.1 * p1.r));
   // EXPECT_EQ (p2.g, static_cast<std::uint8_t> (0.1 * p1.g));
   // EXPECT_EQ (p2.b, static_cast<std::uint8_t> (0.1 * p1.b));
   PointXYZRGB p4 = p1 * 0.1f;
-  EXPECT_EQ_VECTORS(p2.getVector3fMap(), p4.getVector3fMap());
+  EXPECT_EQ_VECTORS (p2.getVector3fMap(), p4.getVector3fMap());
   // Disabled. Doesn't make any sense
   // EXPECT_EQ (p2.r, p4.r);
   // EXPECT_EQ (p2.g, p4.g);
@@ -235,6 +235,6 @@ TEST(PointOperators, PointXYZRGB)
 int
 main (int argc, char** argv)
 {
-  testing::InitGoogleTest(&argc, argv);
+  testing::InitGoogleTest (&argc, argv);
   return (RUN_ALL_TESTS());
 }

@@ -18,7 +18,7 @@
 #define OPENNURBS_LIGHT_INC_
 
 class ON_CLASS ON_Light : public ON_Geometry {
-  ON_OBJECT_DECLARE(ON_Light);
+  ON_OBJECT_DECLARE (ON_Light);
 
 public:
   ON_Light();
@@ -75,7 +75,7 @@ public:
 
   // virtual
   ON_UUID
-  ModelObjectId () const;
+  ModelObjectId() const;
 
   /////////////////////////////////////////////////////////////////
   //
@@ -106,29 +106,29 @@ public:
   //
   // turn light on/off
   //
-  ON_BOOL32 Enable(ON_BOOL32 = true); // returns previous state
+  ON_BOOL32 Enable (ON_BOOL32 = true); // returns previous state
   ON_BOOL32
-  IsEnabled () const;
+  IsEnabled() const;
 
   /////////////////////////////////////////////////////////
   //
   // style, location, and direction
   //   direction is ignored for "point" and "ambient" lights
   //   location is ignored for "directional" and "ambient" lights
-  void SetStyle(ON::light_style);
+  void SetStyle (ON::light_style);
   ON::light_style
   Style () const;
 
   ON_BOOL32
-  IsPointLight () const;
+  IsPointLight() const;
   ON_BOOL32
-  IsDirectionalLight () const;
+  IsDirectionalLight() const;
   ON_BOOL32
-  IsSpotLight () const;
+  IsSpotLight() const;
   ON_BOOL32
-  IsLinearLight () const;
+  IsLinearLight() const;
   ON_BOOL32
-  IsRectangularLight () const;
+  IsRectangularLight() const;
 
   ON::coordinate_system
   CoordinateSystem () const; // determined by style
@@ -188,9 +188,9 @@ public:
   //
   // colors
   //
-  void SetAmbient(ON_Color);
-  void SetDiffuse(ON_Color);
-  void SetSpecular(ON_Color);
+  void SetAmbient (ON_Color);
+  void SetDiffuse (ON_Color);
+  void SetSpecular (ON_Color);
   ON_Color
   Ambient () const;
   ON_Color

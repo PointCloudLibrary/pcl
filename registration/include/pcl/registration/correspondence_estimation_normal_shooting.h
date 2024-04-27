@@ -168,9 +168,9 @@ public:
   void
   setSourceNormals (pcl::PCLPointCloud2::ConstPtr cloud2) override
   {
-    NormalsPtr cloud(new PointCloudNormals);
-    fromPCLPointCloud2(*cloud2, *cloud);
-    setSourceNormals(cloud);
+    NormalsPtr cloud (new PointCloudNormals);
+    fromPCLPointCloud2 (*cloud2, *cloud);
+    setSourceNormals (cloud);
   }
 
   /** \brief Determine the correspondences between input and target cloud.
@@ -222,10 +222,10 @@ public:
   typename CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::Ptr
   clone () const override
   {
-    Ptr copy(new CorrespondenceEstimationNormalShooting<PointSource,
-                                                        PointTarget,
-                                                        NormalT,
-                                                        Scalar>(*this));
+    Ptr copy (new CorrespondenceEstimationNormalShooting<PointSource,
+                                                         PointTarget,
+                                                         NormalT,
+                                                         Scalar> (*this));
     return (copy);
   }
 

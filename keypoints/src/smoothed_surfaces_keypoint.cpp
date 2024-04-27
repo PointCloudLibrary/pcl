@@ -41,5 +41,5 @@
 #include <pcl/point_types.h>
 
 // Instantiations of specific point types
-PCL_INSTANTIATE_PRODUCT(SmoothedSurfacesKeypoint,
-                        (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES))
+PCL_INSTANTIATE_PRODUCT (SmoothedSurfacesKeypoint,
+                         (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES))

@@ -20,7 +20,7 @@
 class ON_CLASS ON_Line {
 public:
   ON_Line();
-  ON_Line(const ON_3dPoint& start, const ON_3dPoint& end);
+  ON_Line (const ON_3dPoint& start, const ON_3dPoint& end);
   ~ON_Line();
 
   /*
@@ -32,9 +32,9 @@ public:
 
   // line[0] = start point line[1] = end point
   ON_3dPoint&
-  operator[](int);
+  operator[] (int);
   const ON_3dPoint&
-  operator[](int) const;
+  operator[] (int) const;
 
   // Description:
   //   Create a line from two points.

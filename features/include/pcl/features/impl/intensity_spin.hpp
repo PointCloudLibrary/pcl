@@ -46,7 +46,7 @@
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT>
 void
-pcl::IntensitySpinEstimation<PointInT, PointOutT>::computeIntensitySpinImage(
+pcl::IntensitySpinEstimation<PointInT, PointOutT>::computeIntensitySpinImage (
     const PointCloudIn& cloud,
     float radius,
     float sigma,
@@ -56,15 +56,15 @@ pcl::IntensitySpinEstimation<PointInT, PointOutT>::computeIntensitySpinImage(
     Eigen::MatrixXf& intensity_spin_image)
 {
   // Determine the number of bins to use based on the size of intensity_spin_image
-  int nr_distance_bins = static_cast<int>(intensity_spin_image.cols());
-  int nr_intensity_bins = static_cast<int>(intensity_spin_image.rows());
+  int nr_distance_bins = static_cast<int> (intensity_spin_image.cols());
+  int nr_intensity_bins = static_cast<int> (intensity_spin_image.rows());
 
   // Find the min and max intensity values in the given neighborhood
   float min_intensity = std::numeric_limits<float>::max();
   float max_intensity = -std::numeric_limits<float>::max();
   for (int idx = 0; idx < k; ++idx) {
-    min_intensity = (std::min)(min_intensity, cloud[indices[idx]].intensity);
-    max_intensity = (std::max)(max_intensity, cloud[indices[idx]].intensity);
+    min_intensity = (std::min) (min_intensity, cloud[indices[idx]].intensity);
+    max_intensity = (std::max) (max_intensity, cloud[indices[idx]].intensity);
   }
 
   float constant = 1.0f / (2.0f * sigma_ * sigma_);
@@ -74,35 +74,35 @@ pcl::IntensitySpinEstimation<PointInT, PointOutT>::computeIntensitySpinImage(
     // Normalize distance and intensity values to: 0.0 <= d,i <
     // nr_distance_bins,nr_intensity_bins
     const float eps = std::numeric_limits<float>::epsilon();
-    float d = static_cast<float>(nr_distance_bins) * std::sqrt(squared_distances[idx]) /
-              (radius + eps);
-    float i = static_cast<float>(nr_intensity_bins) *
+    float d = static_cast<float> (nr_distance_bins) *
+              std::sqrt (squared_distances[idx]) / (radius + eps);
+    float i = static_cast<float> (nr_intensity_bins) *
               (cloud[indices[idx]].intensity - min_intensity) /
               (max_intensity - min_intensity + eps);
 
     if (sigma == 0) {
       // If sigma is zero, update the histogram with no smoothing kernel
-      int d_idx = static_cast<int>(d);
-      int i_idx = static_cast<int>(i);
-      intensity_spin_image(i_idx, d_idx) += 1;
+      int d_idx = static_cast<int> (d);
+      int i_idx = static_cast<int> (i);
+      intensity_spin_image (i_idx, d_idx) += 1;
     }
     else {
       // Compute the bin indices that need to be updated (+/- 3 standard deviations)
-      int d_idx_min = (std::max)(static_cast<int>(std::floor(d - 3 * sigma)), 0);
-      int d_idx_max =
-          (std::min)(static_cast<int>(std::ceil(d + 3 * sigma)), nr_distance_bins - 1);
-      int i_idx_min = (std::max)(static_cast<int>(std::floor(i - 3 * sigma)), 0);
-      int i_idx_max =
-          (std::min)(static_cast<int>(std::ceil(i + 3 * sigma)), nr_intensity_bins - 1);
+      int d_idx_min = (std::max) (static_cast<int> (std::floor (d - 3 * sigma)), 0);
+      int d_idx_max = (std::min) (static_cast<int> (std::ceil (d + 3 * sigma)),
+                                  nr_distance_bins - 1);
+      int i_idx_min = (std::max) (static_cast<int> (std::floor (i - 3 * sigma)), 0);
+      int i_idx_max = (std::min) (static_cast<int> (std::ceil (i + 3 * sigma)),
+                                  nr_intensity_bins - 1);
 
       // Update the appropriate bins of the histogram
       for (int i_idx = i_idx_min; i_idx <= i_idx_max; ++i_idx) {
         for (int d_idx = d_idx_min; d_idx <= d_idx_max; ++d_idx) {
           // Compute a "soft" update weight based on the distance between the point and
           // the bin
-          float w = std::exp(-powf(d - static_cast<float>(d_idx), 2.0f) * constant -
-                             powf(i - static_cast<float>(i_idx), 2.0f) * constant);
-          intensity_spin_image(i_idx, d_idx) += w;
+          float w = std::exp (-powf (d - static_cast<float> (d_idx), 2.0f) * constant -
+                              powf (i - static_cast<float> (i_idx), 2.0f) * constant);
+          intensity_spin_image (i_idx, d_idx) += w;
         }
       }
     }
@@ -112,13 +112,14 @@ pcl::IntensitySpinEstimation<PointInT, PointOutT>::computeIntensitySpinImage(
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT>
 void
-pcl::IntensitySpinEstimation<PointInT, PointOutT>::computeFeature(PointCloudOut& output)
+pcl::IntensitySpinEstimation<PointInT, PointOutT>::computeFeature (
+    PointCloudOut& output)
 {
   // Make sure a search radius is set
   if (search_radius_ == 0.0) {
-    PCL_ERROR("[pcl::%s::computeFeature] The search radius must be set before "
-              "computing the feature!\n",
-              getClassName().c_str());
+    PCL_ERROR ("[pcl::%s::computeFeature] The search radius must be set before "
+               "computing the feature!\n",
+               getClassName().c_str());
     output.width = output.height = 0;
     output.clear();
     return;
@@ -126,26 +127,26 @@ pcl::IntensitySpinEstimation<PointInT, PointOutT>::computeFeature(PointCloudOut&
 
   // Make sure the spin image has valid dimensions
   if (nr_intensity_bins_ <= 0) {
-    PCL_ERROR("[pcl::%s::computeFeature] The number of intensity bins must be greater "
-              "than zero!\n",
-              getClassName().c_str());
+    PCL_ERROR ("[pcl::%s::computeFeature] The number of intensity bins must be greater "
+               "than zero!\n",
+               getClassName().c_str());
     output.width = output.height = 0;
     output.clear();
     return;
   }
   if (nr_distance_bins_ <= 0) {
-    PCL_ERROR("[pcl::%s::computeFeature] The number of distance bins must be greater "
-              "than zero!\n",
-              getClassName().c_str());
+    PCL_ERROR ("[pcl::%s::computeFeature] The number of distance bins must be greater "
+               "than zero!\n",
+               getClassName().c_str());
     output.width = output.height = 0;
     output.clear();
     return;
   }
 
-  Eigen::MatrixXf intensity_spin_image(nr_intensity_bins_, nr_distance_bins_);
+  Eigen::MatrixXf intensity_spin_image (nr_intensity_bins_, nr_distance_bins_);
   // Allocate enough space to hold the radiusSearch results
-  pcl::Indices nn_indices(surface_->size());
-  std::vector<float> nn_dist_sqr(surface_->size());
+  pcl::Indices nn_indices (surface_->size());
+  std::vector<float> nn_dist_sqr (surface_->size());
 
   output.is_dense = true;
   // Iterating over the entire index vector
@@ -153,7 +154,7 @@ pcl::IntensitySpinEstimation<PointInT, PointOutT>::computeFeature(PointCloudOut&
     // Find neighbors within the search radius
     // TODO: do we want to use searchForNeighbors instead?
     int k =
-        tree_->radiusSearch((*indices_)[idx], search_radius_, nn_indices, nn_dist_sqr);
+        tree_->radiusSearch ((*indices_)[idx], search_radius_, nn_indices, nn_dist_sqr);
     if (k == 0) {
       for (int bin = 0; bin < nr_intensity_bins_ * nr_distance_bins_; ++bin)
         output[idx].histogram[bin] = std::numeric_limits<float>::quiet_NaN();
@@ -162,19 +163,19 @@ pcl::IntensitySpinEstimation<PointInT, PointOutT>::computeFeature(PointCloudOut&
     }
 
     // Compute the intensity spin image
-    computeIntensitySpinImage(*surface_,
-                              static_cast<float>(search_radius_),
-                              sigma_,
-                              k,
-                              nn_indices,
-                              nn_dist_sqr,
-                              intensity_spin_image);
+    computeIntensitySpinImage (*surface_,
+                               static_cast<float> (search_radius_),
+                               sigma_,
+                               k,
+                               nn_indices,
+                               nn_dist_sqr,
+                               intensity_spin_image);
 
     // Copy into the resultant cloud
     std::size_t bin = 0;
     for (Eigen::Index bin_j = 0; bin_j < intensity_spin_image.cols(); ++bin_j)
       for (Eigen::Index bin_i = 0; bin_i < intensity_spin_image.rows(); ++bin_i)
-        output[idx].histogram[bin++] = intensity_spin_image(bin_i, bin_j);
+        output[idx].histogram[bin++] = intensity_spin_image (bin_i, bin_j);
   }
 }
 

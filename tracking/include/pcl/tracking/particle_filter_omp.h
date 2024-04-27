@@ -57,12 +57,12 @@ public:
    * \param nr_threads the number of hardware threads to use (0 sets the value
    * back to automatic)
    */
-  ParticleFilterOMPTracker(unsigned int nr_threads = 0)
+  ParticleFilterOMPTracker (unsigned int nr_threads = 0)
   : ParticleFilterTracker<PointInT, StateT>()
   {
     tracker_name_ = "ParticleFilterOMPTracker";
 
-    setNumberOfThreads(nr_threads);
+    setNumberOfThreads (nr_threads);
   }
 
   /** \brief Initialize the scheduler and set the number of threads to use.

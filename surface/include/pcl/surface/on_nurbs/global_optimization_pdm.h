@@ -63,30 +63,30 @@ public:
 
     double common_weight;
 
-    Parameter(double intW = 1.0,
-              double intS = 1e-6,
-              double bndW = 0.0,
-              double bndS = 1e-6,
-              double cloW = 0.0,
-              double cloSig = 0.0,
-              unsigned cloSam = 0,
-              double comW = 0.0)
-    : interior_weight(intW)
-    , interior_smoothness(intS)
-    , boundary_weight(bndW)
-    , boundary_smoothness(bndS)
-    , closing_weight(cloW)
-    , closing_sigma(cloSig)
-    , closing_samples(cloSam)
-    , common_weight(comW)
+    Parameter (double intW = 1.0,
+               double intS = 1e-6,
+               double bndW = 0.0,
+               double bndS = 1e-6,
+               double cloW = 0.0,
+               double cloSig = 0.0,
+               unsigned cloSam = 0,
+               double comW = 0.0)
+    : interior_weight (intW)
+    , interior_smoothness (intS)
+    , boundary_weight (bndW)
+    , boundary_smoothness (bndS)
+    , closing_weight (cloW)
+    , closing_sigma (cloSig)
+    , closing_samples (cloSam)
+    , common_weight (comW)
     {}
   };
 
   /** \brief Constructor with a set of data and a set of B-Spline surfaces.
    * \param[in] data set of 3D point-cloud data to be fit.
    * \param[in] nurbs set of B-Spline surface used for fitting.        */
-  GlobalOptimization(const std::vector<NurbsDataSurface*>& data,
-                     const std::vector<ON_NurbsSurface*>& nurbs);
+  GlobalOptimization (const std::vector<NurbsDataSurface*>& data,
+                      const std::vector<ON_NurbsSurface*>& nurbs);
 
   /** \brief Default virtual destructor. */
   virtual ~GlobalOptimization() = default;
@@ -130,7 +130,7 @@ public:
   setQuiet (bool val)
   {
     m_quiet = val;
-    m_solver.setQuiet(val);
+    m_solver.setQuiet (val);
   }
 
 protected:
@@ -210,22 +210,22 @@ protected:
   int
   grc2gl (const ON_NurbsSurface& nurbs, int I, int J)
   {
-    return nurbs.CVCount(1) * I + J;
+    return nurbs.CVCount (1) * I + J;
   } // global row/col index to global lexicographic index
   int
   lrc2gl (const ON_NurbsSurface& nurbs, int E, int F, int i, int j)
   {
-    return grc2gl(nurbs, E + i, F + j);
+    return grc2gl (nurbs, E + i, F + j);
   } // local row/col index to global lexicographic index
   int
   gl2gr (const ON_NurbsSurface& nurbs, int A)
   {
-    return (static_cast<int>(A / nurbs.CVCount(1)));
+    return (static_cast<int> (A / nurbs.CVCount (1)));
   } // global lexicographic in global row index
   int
   gl2gc (const ON_NurbsSurface& nurbs, int A)
   {
-    return (static_cast<int>(A % nurbs.CVCount(1)));
+    return (static_cast<int> (A % nurbs.CVCount (1)));
   } // global lexicographic in global col index
 };
 

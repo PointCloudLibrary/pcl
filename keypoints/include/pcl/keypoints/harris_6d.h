@@ -70,10 +70,10 @@ public:
    * suppression
    * @param threshold the threshold to filter out weak corners
    */
-  HarrisKeypoint6D(float radius = 0.01, float threshold = 0.0)
-  : threshold_(threshold)
-  , normals_(new pcl::PointCloud<NormalT>)
-  , intensity_gradients_(new pcl::PointCloud<pcl::IntensityGradient>)
+  HarrisKeypoint6D (float radius = 0.01, float threshold = 0.0)
+  : threshold_ (threshold)
+  , normals_ (new pcl::PointCloud<NormalT>)
+  , intensity_gradients_ (new pcl::PointCloud<pcl::IntensityGradient>)
   {
     name_ = "HarrisKeypoint6D";
     search_radius_ = radius;

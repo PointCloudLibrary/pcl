@@ -37,23 +37,23 @@
 #include <pcl/common/feature_histogram.h>
 #include <pcl/console/print.h>
 
-pcl::FeatureHistogram::FeatureHistogram(std::size_t const number_of_bins,
-                                        const float min,
-                                        const float max)
-: histogram_(number_of_bins, 0)
+pcl::FeatureHistogram::FeatureHistogram (std::size_t const number_of_bins,
+                                         const float min,
+                                         const float max)
+: histogram_ (number_of_bins, 0)
 {
   // Initialize thresholds.
   if (min < max) {
     threshold_min_ = min;
     threshold_max_ = max;
-    step_ = (max - min) / static_cast<float>(number_of_bins);
+    step_ = (max - min) / static_cast<float> (number_of_bins);
   }
   else {
     threshold_min_ = 0.0f;
-    threshold_max_ = static_cast<float>(number_of_bins);
+    threshold_max_ = static_cast<float> (number_of_bins);
     step_ = 1.0f;
-    PCL_WARN("[FeatureHistogram::setThresholds] Variable \"max\" must be greater then "
-             "\"min\".\n");
+    PCL_WARN ("[FeatureHistogram::setThresholds] Variable \"max\" must be greater then "
+              "\"min\".\n");
   }
 
   // Initialize sum.
@@ -90,7 +90,7 @@ pcl::FeatureHistogram::getNumberOfBins() const
 }
 
 void
-pcl::FeatureHistogram::addValue(float value)
+pcl::FeatureHistogram::addValue (float value)
 {
   // Check, if value in the allowed range.
   if (threshold_min_ < value && value < threshold_max_) {
@@ -98,7 +98,7 @@ pcl::FeatureHistogram::addValue(float value)
     ++number_of_elements_;
 
     // Increase the bin.
-    auto bin_number = static_cast<std::size_t>((value - threshold_min_) / step_);
+    auto bin_number = static_cast<std::size_t> ((value - threshold_min_) / step_);
     ++histogram_[bin_number];
   }
 }
@@ -129,13 +129,13 @@ pcl::FeatureHistogram::getMeanValue()
   }
 
   // Compute mean value.
-  float mean = step_ * (static_cast<float>(max_idx) + 0.5f) + threshold_min_;
+  float mean = step_ * (static_cast<float> (max_idx) + 0.5f) + threshold_min_;
 
   return (mean);
 }
 
 float
-pcl::FeatureHistogram::getVariance(float mean)
+pcl::FeatureHistogram::getVariance (float mean)
 {
   // Check, if the histogram is empty.
   if (number_of_elements_ == 0) {
@@ -148,12 +148,12 @@ pcl::FeatureHistogram::getVariance(float mean)
   for (std::size_t bin = 0; bin < number_of_bins_; ++bin) {
     if (histogram_[bin] > 0) {
       // Value corresponding to the bin.
-      float value = step_ * (static_cast<float>(bin) + 0.5f) + threshold_min_;
+      float value = step_ * (static_cast<float> (bin) + 0.5f) + threshold_min_;
       float dif = value - mean;
-      variances_sum += static_cast<float>(histogram_[bin]) * dif * dif;
+      variances_sum += static_cast<float> (histogram_[bin]) * dif * dif;
     }
   }
 
   // Compute variance and return it.
-  return (variances_sum / static_cast<float>(number_of_elements_));
+  return (variances_sum / static_cast<float> (number_of_elements_));
 }

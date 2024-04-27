@@ -28,7 +28,7 @@ using PCLImagePtr = PCLImage::Ptr;
 using PCLImageConstPtr = PCLImage::ConstPtr;
 
 inline std::ostream&
-operator<<(std::ostream& s, const ::pcl::PCLImage& v)
+operator<< (std::ostream& s, const ::pcl::PCLImage& v)
 {
   s << "header: " << std::endl;
   s << v.header;

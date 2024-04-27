@@ -75,14 +75,14 @@ public:
   public:
     class Data {
     public:
-      Data(int id_x, int id_y, int id_z, int lin_id, void* user_data = nullptr)
-      : id_x_(id_x)
-      , id_y_(id_y)
-      , id_z_(id_z)
-      , lin_id_(lin_id)
+      Data (int id_x, int id_y, int id_z, int lin_id, void* user_data = nullptr)
+      : id_x_ (id_x)
+      , id_y_ (id_y)
+      , id_z_ (id_z)
+      , lin_id_ (lin_id)
       ,
 
-      user_data_(user_data)
+      user_data_ (user_data)
       {
         n_[0] = n_[1] = n_[2] = p_[0] = p_[1] = p_[2] = 0.0f;
       }
@@ -104,7 +104,7 @@ public:
         if (num_points_ < 2)
           return;
 
-        aux::mult3(p_, 1.0f / static_cast<float>(num_points_));
+        aux::mult3 (p_, 1.0f / static_cast<float> (num_points_));
         num_points_ = 1;
       }
 
@@ -187,7 +187,7 @@ public:
       inline void
       insertNeighbor (Node* node)
       {
-        neighbors_.insert(node);
+        neighbors_.insert (node);
       }
 
       inline const std::set<Node*>&
@@ -249,7 +249,7 @@ public:
       float v[3] = {0.5f * (bounds_[1] - bounds_[0]),
                     0.5f * (bounds_[3] - bounds_[2]),
                     0.5f * (bounds_[5] - bounds_[4])};
-      radius_ = static_cast<float>(aux::length3(v));
+      radius_ = static_cast<float> (aux::length3 (v));
     }
 
     inline const float*
@@ -267,7 +267,7 @@ public:
     inline void
     getBounds (float b[6]) const
     {
-      std::copy(bounds_, bounds_ + 6, b);
+      std::copy (bounds_, bounds_ + 6, b);
     }
 
     inline Node*
@@ -297,7 +297,7 @@ public:
     inline void
     setUserData (void* user_data)
     {
-      data_->setUserData(user_data);
+      data_->setUserData (user_data);
     }
 
     inline Node*
@@ -309,13 +309,13 @@ public:
     inline bool
     hasData ()
     {
-      return static_cast<bool>(data_);
+      return static_cast<bool> (data_);
     }
 
     inline bool
     hasChildren ()
     {
-      return static_cast<bool>(children_);
+      return static_cast<bool> (children_);
     }
 
     /** \brief Computes the "radius" of the node which is half the diagonal length. */
@@ -350,8 +350,8 @@ public:
       if (!this->getData() || !node->getData())
         return;
 
-      this->getData()->insertNeighbor(node);
-      node->getData()->insertNeighbor(this);
+      this->getData()->insertNeighbor (node);
+      node->getData()->insertNeighbor (this);
     }
 
   protected:
@@ -413,19 +413,19 @@ public:
       if (z >= c[2])
         id |= 1;
 
-      node = node->getChild(id);
+      node = node->getChild (id);
     }
 
     if (!node->getData()) {
-      auto* data = new Node::Data(
-          static_cast<int>((node->getCenter()[0] - bounds_[0]) / voxel_size_),
-          static_cast<int>((node->getCenter()[1] - bounds_[2]) / voxel_size_),
-          static_cast<int>((node->getCenter()[2] - bounds_[4]) / voxel_size_),
-          static_cast<int>(full_leaves_.size()));
+      auto* data = new Node::Data (
+          static_cast<int> ((node->getCenter()[0] - bounds_[0]) / voxel_size_),
+          static_cast<int> ((node->getCenter()[1] - bounds_[2]) / voxel_size_),
+          static_cast<int> ((node->getCenter()[2] - bounds_[4]) / voxel_size_),
+          static_cast<int> (full_leaves_.size()));
 
-      node->setData(data);
-      this->insertNeighbors(node);
-      full_leaves_.push_back(node);
+      node->setData (data);
+      this->insertNeighbors (node);
+      full_leaves_.push_back (node);
     }
 
     return (node);
@@ -456,11 +456,11 @@ public:
   getLeaf (int i, int j, int k)
   {
     float offset = 0.5f * voxel_size_;
-    float p[3] = {bounds_[0] + offset + static_cast<float>(i) * voxel_size_,
-                  bounds_[2] + offset + static_cast<float>(j) * voxel_size_,
-                  bounds_[4] + offset + static_cast<float>(k) * voxel_size_};
+    float p[3] = {bounds_[0] + offset + static_cast<float> (i) * voxel_size_,
+                  bounds_[2] + offset + static_cast<float> (j) * voxel_size_,
+                  bounds_[4] + offset + static_cast<float> (k) * voxel_size_};
 
-    return (this->getLeaf(p[0], p[1], p[2]));
+    return (this->getLeaf (p[0], p[1], p[2]));
   }
 
   /** \brief Returns a pointer to the leaf containing p = (x, y, z) or NULL if no such
@@ -493,7 +493,7 @@ public:
       if (z >= c[2])
         id |= 1;
 
-      node = node->getChild(id);
+      node = node->getChild (id);
     }
 
     return (node);
@@ -538,7 +538,7 @@ public:
   inline void
   getBounds (float b[6]) const
   {
-    std::copy(bounds_, bounds_ + 6, b);
+    std::copy (bounds_, bounds_ + 6, b);
   }
 
   inline float
@@ -554,88 +554,88 @@ public:
     float s = 0.5f * voxel_size_;
     Node* neigh;
 
-    neigh = this->getLeaf(c[0] + s, c[1] + s, c[2] + s);
+    neigh = this->getLeaf (c[0] + s, c[1] + s, c[2] + s);
     if (neigh)
-      node->makeNeighbors(neigh);
-    neigh = this->getLeaf(c[0] + s, c[1] + s, c[2]);
+      node->makeNeighbors (neigh);
+    neigh = this->getLeaf (c[0] + s, c[1] + s, c[2]);
     if (neigh)
-      node->makeNeighbors(neigh);
-    neigh = this->getLeaf(c[0] + s, c[1] + s, c[2] - s);
+      node->makeNeighbors (neigh);
+    neigh = this->getLeaf (c[0] + s, c[1] + s, c[2] - s);
     if (neigh)
-      node->makeNeighbors(neigh);
-    neigh = this->getLeaf(c[0] + s, c[1], c[2] + s);
+      node->makeNeighbors (neigh);
+    neigh = this->getLeaf (c[0] + s, c[1], c[2] + s);
     if (neigh)
-      node->makeNeighbors(neigh);
-    neigh = this->getLeaf(c[0] + s, c[1], c[2]);
+      node->makeNeighbors (neigh);
+    neigh = this->getLeaf (c[0] + s, c[1], c[2]);
     if (neigh)
-      node->makeNeighbors(neigh);
-    neigh = this->getLeaf(c[0] + s, c[1], c[2] - s);
+      node->makeNeighbors (neigh);
+    neigh = this->getLeaf (c[0] + s, c[1], c[2] - s);
     if (neigh)
-      node->makeNeighbors(neigh);
-    neigh = this->getLeaf(c[0] + s, c[1] - s, c[2] + s);
+      node->makeNeighbors (neigh);
+    neigh = this->getLeaf (c[0] + s, c[1] - s, c[2] + s);
     if (neigh)
-      node->makeNeighbors(neigh);
-    neigh = this->getLeaf(c[0] + s, c[1] - s, c[2]);
+      node->makeNeighbors (neigh);
+    neigh = this->getLeaf (c[0] + s, c[1] - s, c[2]);
     if (neigh)
-      node->makeNeighbors(neigh);
-    neigh = this->getLeaf(c[0] + s, c[1] - s, c[2] - s);
+      node->makeNeighbors (neigh);
+    neigh = this->getLeaf (c[0] + s, c[1] - s, c[2] - s);
     if (neigh)
-      node->makeNeighbors(neigh);
+      node->makeNeighbors (neigh);
 
-    neigh = this->getLeaf(c[0], c[1] + s, c[2] + s);
+    neigh = this->getLeaf (c[0], c[1] + s, c[2] + s);
     if (neigh)
-      node->makeNeighbors(neigh);
-    neigh = this->getLeaf(c[0], c[1] + s, c[2]);
+      node->makeNeighbors (neigh);
+    neigh = this->getLeaf (c[0], c[1] + s, c[2]);
     if (neigh)
-      node->makeNeighbors(neigh);
-    neigh = this->getLeaf(c[0], c[1] + s, c[2] - s);
+      node->makeNeighbors (neigh);
+    neigh = this->getLeaf (c[0], c[1] + s, c[2] - s);
     if (neigh)
-      node->makeNeighbors(neigh);
-    neigh = this->getLeaf(c[0], c[1], c[2] + s);
+      node->makeNeighbors (neigh);
+    neigh = this->getLeaf (c[0], c[1], c[2] + s);
     if (neigh)
-      node->makeNeighbors(neigh);
+      node->makeNeighbors (neigh);
     // neigh = this->getLeaf (c[0]  , c[1]  , c[2]  ); if ( neigh ) node->makeNeighbors
     // (neigh);
-    neigh = this->getLeaf(c[0], c[1], c[2] - s);
+    neigh = this->getLeaf (c[0], c[1], c[2] - s);
     if (neigh)
-      node->makeNeighbors(neigh);
-    neigh = this->getLeaf(c[0], c[1] - s, c[2] + s);
+      node->makeNeighbors (neigh);
+    neigh = this->getLeaf (c[0], c[1] - s, c[2] + s);
     if (neigh)
-      node->makeNeighbors(neigh);
-    neigh = this->getLeaf(c[0], c[1] - s, c[2]);
+      node->makeNeighbors (neigh);
+    neigh = this->getLeaf (c[0], c[1] - s, c[2]);
     if (neigh)
-      node->makeNeighbors(neigh);
-    neigh = this->getLeaf(c[0], c[1] - s, c[2] - s);
+      node->makeNeighbors (neigh);
+    neigh = this->getLeaf (c[0], c[1] - s, c[2] - s);
     if (neigh)
-      node->makeNeighbors(neigh);
+      node->makeNeighbors (neigh);
 
-    neigh = this->getLeaf(c[0] - s, c[1] + s, c[2] + s);
+    neigh = this->getLeaf (c[0] - s, c[1] + s, c[2] + s);
     if (neigh)
-      node->makeNeighbors(neigh);
-    neigh = this->getLeaf(c[0] - s, c[1] + s, c[2]);
+      node->makeNeighbors (neigh);
+    neigh = this->getLeaf (c[0] - s, c[1] + s, c[2]);
     if (neigh)
-      node->makeNeighbors(neigh);
-    neigh = this->getLeaf(c[0] - s, c[1] + s, c[2] - s);
+      node->makeNeighbors (neigh);
+    neigh = this->getLeaf (c[0] - s, c[1] + s, c[2] - s);
     if (neigh)
-      node->makeNeighbors(neigh);
-    neigh = this->getLeaf(c[0] - s, c[1], c[2] + s);
+      node->makeNeighbors (neigh);
+    neigh = this->getLeaf (c[0] - s, c[1], c[2] + s);
     if (neigh)
-      node->makeNeighbors(neigh);
-    neigh = this->getLeaf(c[0] - s, c[1], c[2]);
+      node->makeNeighbors (neigh);
+    neigh = this->getLeaf (c[0] - s, c[1], c[2]);
     if (neigh)
-      node->makeNeighbors(neigh);
-    neigh = this->getLeaf(c[0] - s, c[1], c[2] - s);
+      node->makeNeighbors (neigh);
+    neigh = this->getLeaf (c[0] - s, c[1], c[2] - s);
     if (neigh)
-      node->makeNeighbors(neigh);
-    neigh = this->getLeaf(c[0] - s, c[1] - s, c[2] + s);
+      node->makeNeighbors (neigh);
+    neigh = this->getLeaf (c[0] - s, c[1] - s, c[2] + s);
     if (neigh)
-      node->makeNeighbors(neigh);
-    neigh = this->getLeaf(c[0] - s, c[1] - s, c[2]);
+      node->makeNeighbors (neigh);
+    neigh = this->getLeaf (c[0] - s, c[1] - s, c[2]);
     if (neigh)
-      node->makeNeighbors(neigh);
-    neigh = this->getLeaf(c[0] - s, c[1] - s, c[2] - s);
+      node->makeNeighbors (neigh);
+    neigh = this->getLeaf (c[0] - s, c[1] - s, c[2] - s);
     if (neigh)
-      node->makeNeighbors(neigh);
+      node->makeNeighbors (neigh);
   }
 
 protected:

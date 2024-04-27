@@ -139,7 +139,7 @@ public:
 
   /** \brief Empty constructor.
    */
-  LUM() : slam_graph_(new SLAMGraph) {}
+  LUM() : slam_graph_ (new SLAMGraph) {}
 
   /** \brief Set the internal SLAM graph structure.
    * \details All data used and produced by LUM is stored in this boost::adjacency_list.

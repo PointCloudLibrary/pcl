@@ -48,7 +48,7 @@ namespace common {
 template <>
 struct IntensityFieldAccessor<pcl::PointNormal> {
   inline float
-  operator()(const pcl::PointNormal& p) const
+  operator() (const pcl::PointNormal& p) const
   {
     return (p.curvature);
   }
@@ -81,7 +81,7 @@ struct IntensityFieldAccessor<pcl::PointNormal> {
 template <>
 struct IntensityFieldAccessor<pcl::PointXYZ> {
   inline float
-  operator()(const pcl::PointXYZ& p) const
+  operator() (const pcl::PointXYZ& p) const
   {
     return (p.z);
   }
@@ -114,163 +114,163 @@ struct IntensityFieldAccessor<pcl::PointXYZ> {
 template <>
 struct IntensityFieldAccessor<pcl::PointXYZRGB> {
   inline float
-  operator()(const pcl::PointXYZRGB& p) const
+  operator() (const pcl::PointXYZRGB& p) const
   {
-    return (static_cast<float>(299 * p.r + 587 * p.g + 114 * p.b) * 0.001f);
+    return (static_cast<float> (299 * p.r + 587 * p.g + 114 * p.b) * 0.001f);
   }
 
   inline void
   get (const pcl::PointXYZRGB& p, float& intensity) const
   {
-    intensity = static_cast<float>(299 * p.r + 587 * p.g + 114 * p.b) * 0.001f;
+    intensity = static_cast<float> (299 * p.r + 587 * p.g + 114 * p.b) * 0.001f;
   }
 
   inline void
   set (pcl::PointXYZRGB& p, float intensity) const
   {
-    p.r = static_cast<std::uint8_t>(intensity * 3.34448160535f); // 1000 / 299
-    p.g = static_cast<std::uint8_t>(intensity * 1.70357751278f); // 1000 / 587
-    p.b = static_cast<std::uint8_t>(intensity * 8.77192982456f); // 1000 / 114
+    p.r = static_cast<std::uint8_t> (intensity * 3.34448160535f); // 1000 / 299
+    p.g = static_cast<std::uint8_t> (intensity * 1.70357751278f); // 1000 / 587
+    p.b = static_cast<std::uint8_t> (intensity * 8.77192982456f); // 1000 / 114
   }
 
   inline void
   demean (pcl::PointXYZRGB& p, float value) const
   {
-    float intensity = this->operator()(p);
+    float intensity = this->operator() (p);
     intensity -= value;
-    set(p, intensity);
+    set (p, intensity);
   }
 
   inline void
   add (pcl::PointXYZRGB& p, float value) const
   {
-    float intensity = this->operator()(p);
+    float intensity = this->operator() (p);
     intensity += value;
-    set(p, intensity);
+    set (p, intensity);
   }
 };
 
 template <>
 struct IntensityFieldAccessor<pcl::PointXYZRGBA> {
   inline float
-  operator()(const pcl::PointXYZRGBA& p) const
+  operator() (const pcl::PointXYZRGBA& p) const
   {
-    return (static_cast<float>(299 * p.r + 587 * p.g + 114 * p.b) * 0.001f);
+    return (static_cast<float> (299 * p.r + 587 * p.g + 114 * p.b) * 0.001f);
   }
 
   inline void
   get (const pcl::PointXYZRGBA& p, float& intensity) const
   {
-    intensity = static_cast<float>(299 * p.r + 587 * p.g + 114 * p.b) * 0.001f;
+    intensity = static_cast<float> (299 * p.r + 587 * p.g + 114 * p.b) * 0.001f;
   }
 
   inline void
   set (pcl::PointXYZRGBA& p, float intensity) const
   {
-    p.r = static_cast<std::uint8_t>(intensity * 3.34448160535f); // 1000 / 299
-    p.g = static_cast<std::uint8_t>(intensity * 1.70357751278f); // 1000 / 587
-    p.b = static_cast<std::uint8_t>(intensity * 8.77192982456f); // 1000 / 114
+    p.r = static_cast<std::uint8_t> (intensity * 3.34448160535f); // 1000 / 299
+    p.g = static_cast<std::uint8_t> (intensity * 1.70357751278f); // 1000 / 587
+    p.b = static_cast<std::uint8_t> (intensity * 8.77192982456f); // 1000 / 114
   }
 
   inline void
   demean (pcl::PointXYZRGBA& p, float value) const
   {
-    float intensity = this->operator()(p);
+    float intensity = this->operator() (p);
     intensity -= value;
-    set(p, intensity);
+    set (p, intensity);
   }
 
   inline void
   add (pcl::PointXYZRGBA& p, float value) const
   {
-    float intensity = this->operator()(p);
+    float intensity = this->operator() (p);
     intensity += value;
-    set(p, intensity);
+    set (p, intensity);
   }
 };
 
 template <>
 struct IntensityFieldAccessor<pcl::PointXYZRGBNormal> {
   inline float
-  operator()(const pcl::PointXYZRGBNormal& p) const
+  operator() (const pcl::PointXYZRGBNormal& p) const
   {
-    return (static_cast<float>(299 * p.r + 587 * p.g + 114 * p.b) * 0.001f);
+    return (static_cast<float> (299 * p.r + 587 * p.g + 114 * p.b) * 0.001f);
   }
 
   inline void
   get (const pcl::PointXYZRGBNormal& p, float& intensity) const
   {
-    intensity = static_cast<float>(299 * p.r + 587 * p.g + 114 * p.b) * 0.001f;
+    intensity = static_cast<float> (299 * p.r + 587 * p.g + 114 * p.b) * 0.001f;
   }
 
   inline void
   set (pcl::PointXYZRGBNormal& p, float intensity) const
   {
-    p.r = static_cast<std::uint8_t>(intensity * 3.34448160535f); // 1000 / 299
-    p.g = static_cast<std::uint8_t>(intensity * 1.70357751278f); // 1000 / 587
-    p.b = static_cast<std::uint8_t>(intensity * 8.77192982456f); // 1000 / 114
+    p.r = static_cast<std::uint8_t> (intensity * 3.34448160535f); // 1000 / 299
+    p.g = static_cast<std::uint8_t> (intensity * 1.70357751278f); // 1000 / 587
+    p.b = static_cast<std::uint8_t> (intensity * 8.77192982456f); // 1000 / 114
   }
 
   inline void
   demean (pcl::PointXYZRGBNormal& p, float value) const
   {
-    float intensity = this->operator()(p);
+    float intensity = this->operator() (p);
     intensity -= value;
-    set(p, intensity);
+    set (p, intensity);
   }
 
   inline void
   add (pcl::PointXYZRGBNormal& p, float value) const
   {
-    float intensity = this->operator()(p);
+    float intensity = this->operator() (p);
     intensity += value;
-    set(p, intensity);
+    set (p, intensity);
   }
 };
 
 template <>
 struct IntensityFieldAccessor<pcl::PointXYZRGBL> {
   inline float
-  operator()(const pcl::PointXYZRGBL& p) const
+  operator() (const pcl::PointXYZRGBL& p) const
   {
-    return (static_cast<float>(299 * p.r + 587 * p.g + 114 * p.b) * 0.001f);
+    return (static_cast<float> (299 * p.r + 587 * p.g + 114 * p.b) * 0.001f);
   }
 
   inline void
   get (const pcl::PointXYZRGBL& p, float& intensity) const
   {
-    intensity = static_cast<float>(299 * p.r + 587 * p.g + 114 * p.b) * 0.001f;
+    intensity = static_cast<float> (299 * p.r + 587 * p.g + 114 * p.b) * 0.001f;
   }
 
   inline void
   set (pcl::PointXYZRGBL& p, float intensity) const
   {
-    p.r = static_cast<std::uint8_t>(intensity * 3.34448160535f); // 1000 / 299
-    p.g = static_cast<std::uint8_t>(intensity * 1.70357751278f); // 1000 / 587
-    p.b = static_cast<std::uint8_t>(intensity * 8.77192982456f); // 1000 / 114
+    p.r = static_cast<std::uint8_t> (intensity * 3.34448160535f); // 1000 / 299
+    p.g = static_cast<std::uint8_t> (intensity * 1.70357751278f); // 1000 / 587
+    p.b = static_cast<std::uint8_t> (intensity * 8.77192982456f); // 1000 / 114
   }
 
   inline void
   demean (pcl::PointXYZRGBL& p, float value) const
   {
-    float intensity = this->operator()(p);
+    float intensity = this->operator() (p);
     intensity -= value;
-    set(p, intensity);
+    set (p, intensity);
   }
 
   inline void
   add (pcl::PointXYZRGBL& p, float value) const
   {
-    float intensity = this->operator()(p);
+    float intensity = this->operator() (p);
     intensity += value;
-    set(p, intensity);
+    set (p, intensity);
   }
 };
 
 template <>
 struct IntensityFieldAccessor<pcl::PointXYZLAB> {
   inline float
-  operator()(const pcl::PointXYZLAB& p) const
+  operator() (const pcl::PointXYZLAB& p) const
   {
     return (p.L);
   }
@@ -303,7 +303,7 @@ struct IntensityFieldAccessor<pcl::PointXYZLAB> {
 template <>
 struct IntensityFieldAccessor<pcl::PointXYZHSV> {
   inline float
-  operator()(const pcl::PointXYZHSV& p) const
+  operator() (const pcl::PointXYZHSV& p) const
   {
     return (p.v);
   }
@@ -337,73 +337,73 @@ struct IntensityFieldAccessor<pcl::PointXYZHSV> {
 template <>
 struct IntensityFieldAccessor<pcl::PointXYZL> {
   inline float
-  operator()(const pcl::PointXYZL& p) const
+  operator() (const pcl::PointXYZL& p) const
   {
-    return (static_cast<float>(p.label));
+    return (static_cast<float> (p.label));
   }
 
   inline void
   get (const pcl::PointXYZL& p, float& intensity) const
   {
-    intensity = static_cast<float>(p.label);
+    intensity = static_cast<float> (p.label);
   }
 
   inline void
   set (pcl::PointXYZL& p, float intensity) const
   {
-    p.label = static_cast<std::uint32_t>(intensity);
+    p.label = static_cast<std::uint32_t> (intensity);
   }
 
   inline void
   demean (pcl::PointXYZL& p, float value) const
   {
-    p.label -= static_cast<std::uint32_t>(value);
+    p.label -= static_cast<std::uint32_t> (value);
   }
 
   inline void
   add (pcl::PointXYZL& p, float value) const
   {
-    p.label += static_cast<std::uint32_t>(value);
+    p.label += static_cast<std::uint32_t> (value);
   }
 };
 
 template <>
 struct IntensityFieldAccessor<pcl::PointXYZLNormal> {
   inline float
-  operator()(const pcl::PointXYZLNormal& p) const
+  operator() (const pcl::PointXYZLNormal& p) const
   {
-    return (static_cast<float>(p.label));
+    return (static_cast<float> (p.label));
   }
 
   inline void
   get (const pcl::PointXYZLNormal& p, float& intensity) const
   {
-    intensity = static_cast<float>(p.label);
+    intensity = static_cast<float> (p.label);
   }
 
   inline void
   set (pcl::PointXYZLNormal& p, float intensity) const
   {
-    p.label = static_cast<std::uint32_t>(intensity);
+    p.label = static_cast<std::uint32_t> (intensity);
   }
 
   inline void
   demean (pcl::PointXYZLNormal& p, float value) const
   {
-    p.label -= static_cast<std::uint32_t>(value);
+    p.label -= static_cast<std::uint32_t> (value);
   }
 
   inline void
   add (pcl::PointXYZLNormal& p, float value) const
   {
-    p.label += static_cast<std::uint32_t>(value);
+    p.label += static_cast<std::uint32_t> (value);
   }
 };
 
 template <>
 struct IntensityFieldAccessor<pcl::InterestPoint> {
   inline float
-  operator()(const pcl::InterestPoint& p) const
+  operator() (const pcl::InterestPoint& p) const
   {
     return (p.strength);
   }
@@ -436,7 +436,7 @@ struct IntensityFieldAccessor<pcl::InterestPoint> {
 template <>
 struct IntensityFieldAccessor<pcl::PointWithRange> {
   inline float
-  operator()(const pcl::PointWithRange& p) const
+  operator() (const pcl::PointWithRange& p) const
   {
     return (p.range);
   }
@@ -469,7 +469,7 @@ struct IntensityFieldAccessor<pcl::PointWithRange> {
 template <>
 struct IntensityFieldAccessor<pcl::PointWithScale> {
   inline float
-  operator()(const pcl::PointWithScale& p) const
+  operator() (const pcl::PointWithScale& p) const
   {
     return (p.scale);
   }
@@ -502,7 +502,7 @@ struct IntensityFieldAccessor<pcl::PointWithScale> {
 template <>
 struct IntensityFieldAccessor<pcl::PointWithViewpoint> {
   inline float
-  operator()(const pcl::PointWithViewpoint& p) const
+  operator() (const pcl::PointWithViewpoint& p) const
   {
     return (p.z);
   }
@@ -535,7 +535,7 @@ struct IntensityFieldAccessor<pcl::PointWithViewpoint> {
 template <>
 struct IntensityFieldAccessor<pcl::PointSurfel> {
   inline float
-  operator()(const pcl::PointSurfel& p) const
+  operator() (const pcl::PointSurfel& p) const
   {
     return (p.curvature);
   }

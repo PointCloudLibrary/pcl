@@ -80,11 +80,12 @@ public:
   setTrainingFeatures (const typename pcl::PointCloud<PointT>::ConstPtr& features)
   {
     // Do not limit the number of dimensions used in the tree
-    typename pcl::CustomPointRepresentation<PointT>::Ptr cpr(
-        new pcl::CustomPointRepresentation<PointT>(std::numeric_limits<int>::max(), 0));
-    tree_.reset(new pcl::KdTreeFLANN<PointT>);
-    tree_->setPointRepresentation(cpr);
-    tree_->setInputCloud(features);
+    typename pcl::CustomPointRepresentation<PointT>::Ptr cpr (
+        new pcl::CustomPointRepresentation<PointT> (std::numeric_limits<int>::max(),
+                                                    0));
+    tree_.reset (new pcl::KdTreeFLANN<PointT>);
+    tree_->setPointRepresentation (cpr);
+    tree_->setInputCloud (features);
   }
 
   /**
@@ -113,8 +114,8 @@ public:
   {
     // Create a list of unique labels
     classes_ = labels;
-    std::sort(classes_.begin(), classes_.end());
-    classes_.erase(std::unique(classes_.begin(), classes_.end()), classes_.end());
+    std::sort (classes_.begin(), classes_.end());
+    classes_.erase (std::unique (classes_.begin(), classes_.end()), classes_.end());
 
     // Save the mapping from labels to indices in the class list
     std::map<std::string, int> label2idx;
@@ -123,9 +124,9 @@ public:
     }
 
     // Create a list holding the class index of each label
-    labels_idx_.reserve(labels.size());
+    labels_idx_.reserve (labels.size());
     for (const auto& s : labels) {
-      labels_idx_.push_back(label2idx[s]);
+      labels_idx_.push_back (label2idx[s]);
     }
   }
 
@@ -140,19 +141,19 @@ public:
   loadTrainingFeatures (const std::string& file_name,
                         const std::string& labels_file_name)
   {
-    typename pcl::PointCloud<PointT>::Ptr cloud(new pcl::PointCloud<PointT>);
-    if (pcl::io::loadPCDFile(file_name, *cloud) != 0)
+    typename pcl::PointCloud<PointT>::Ptr cloud (new pcl::PointCloud<PointT>);
+    if (pcl::io::loadPCDFile (file_name, *cloud) != 0)
       return false;
     std::vector<std::string> labels;
-    std::ifstream f(labels_file_name.c_str());
+    std::ifstream f (labels_file_name.c_str());
     std::string label;
-    while (getline(f, label))
+    while (getline (f, label))
       if (!label.empty())
-        labels.push_back(label);
+        labels.push_back (label);
     if (labels.size() != cloud->size())
       return false;
-    setTrainingFeatures(cloud);
-    setTrainingLabels(labels);
+    setTrainingFeatures (cloud);
+    setTrainingLabels (labels);
     return true;
   }
 
@@ -171,9 +172,9 @@ public:
     typename pcl::PointCloud<PointT>::ConstPtr training_features =
         tree_->getInputCloud();
     if (labels_idx_.size() == training_features->size()) {
-      if (pcl::io::savePCDFile(file_name.c_str(), *training_features) != 0)
+      if (pcl::io::savePCDFile (file_name.c_str(), *training_features) != 0)
         return false;
-      std::ofstream f(labels_file_name.c_str());
+      std::ofstream f (labels_file_name.c_str());
       for (const int& i : labels_idx_) {
         f << classes_[i] << "\n";
       }
@@ -199,8 +200,8 @@ public:
   {
     pcl::Indices k_indices;
     std::vector<float> k_sqr_distances;
-    getSimilarExemplars(p_q, radius, k_indices, k_sqr_distances, max_nn);
-    return getGaussianBestScores(gaussian_param, k_indices, k_sqr_distances);
+    getSimilarExemplars (p_q, radius, k_indices, k_sqr_distances, max_nn);
+    return getGaussianBestScores (gaussian_param, k_indices, k_sqr_distances);
   }
 
   /**
@@ -219,9 +220,9 @@ public:
                         pcl::Indices& k_indices,
                         std::vector<float>& k_sqr_distances)
   {
-    k_indices.resize(k);
-    k_sqr_distances.resize(k);
-    return tree_->nearestKSearch(p_q, k, k_indices, k_sqr_distances);
+    k_indices.resize (k);
+    k_sqr_distances.resize (k);
+    return tree_->nearestKSearch (p_q, k, k_indices, k_sqr_distances);
   }
 
   /**
@@ -240,7 +241,7 @@ public:
                        std::vector<float>& k_sqr_distances,
                        int max_nn = std::numeric_limits<int>::max())
   {
-    return tree_->radiusSearch(p_q, radius, k_indices, k_sqr_distances, max_nn);
+    return tree_->radiusSearch (p_q, radius, k_indices, k_sqr_distances, max_nn);
   }
 
   /**
@@ -254,7 +255,7 @@ public:
                                std::vector<float>& k_sqr_distances)
   {
     // Reserve space for distances
-    auto sqr_distances = std::make_shared<std::vector<float>>(
+    auto sqr_distances = std::make_shared<std::vector<float>> (
         classes_.size(), std::numeric_limits<float>::max());
 
     // Select square distance to each class
@@ -276,20 +277,20 @@ public:
   getLinearBestScores (pcl::Indices& k_indices, std::vector<float>& k_sqr_distances)
   {
     // Get smallest squared distances and transform them to a score for each class
-    auto sqr_distances = getSmallestSquaredDistances(k_indices, k_sqr_distances);
+    auto sqr_distances = getSmallestSquaredDistances (k_indices, k_sqr_distances);
 
     // Transform distances to scores
     double sum_dist = 0;
     auto result =
         std::make_shared<std::pair<std::vector<std::string>, std::vector<float>>>();
-    result->first.reserve(classes_.size());
-    result->second.reserve(classes_.size());
+    result->first.reserve (classes_.size());
+    result->second.reserve (classes_.size());
     for (std::vector<float>::const_iterator it = sqr_distances->begin();
          it != sqr_distances->end();
          ++it)
       if (*it != std::numeric_limits<float>::max()) {
-        result->first.push_back(classes_[it - sqr_distances->begin()]);
-        result->second.push_back(sqrt(*it));
+        result->first.push_back (classes_[it - sqr_distances->begin()]);
+        result->second.push_back (sqrt (*it));
         sum_dist += result->second.back();
       }
     for (float& it : result->second)
@@ -315,20 +316,20 @@ public:
                          std::vector<float>& k_sqr_distances)
   {
     // Get smallest squared distances and transform them to a score for each class
-    auto sqr_distances = getSmallestSquaredDistances(k_indices, k_sqr_distances);
+    auto sqr_distances = getSmallestSquaredDistances (k_indices, k_sqr_distances);
 
     // Transform distances to scores
     auto result =
         std::make_shared<std::pair<std::vector<std::string>, std::vector<float>>>();
-    result->first.reserve(classes_.size());
-    result->second.reserve(classes_.size());
+    result->first.reserve (classes_.size());
+    result->second.reserve (classes_.size());
     for (std::vector<float>::const_iterator it = sqr_distances->begin();
          it != sqr_distances->end();
          ++it)
       if (*it != std::numeric_limits<float>::max()) {
-        result->first.push_back(classes_[it - sqr_distances->begin()]);
+        result->first.push_back (classes_[it - sqr_distances->begin()]);
         // TODO leave it squared, and relate param to sigma...
-        result->second.push_back(std::exp(-std::sqrt(*it) / gaussian_param));
+        result->second.push_back (std::exp (-std::sqrt (*it) / gaussian_param));
       }
 
     // Return label/score list pair

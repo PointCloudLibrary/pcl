@@ -72,7 +72,7 @@ public:
 
   /** \brief Default constructor for the WorldModel.
    */
-  WorldModel() : world_(new PointCloud) { world_->is_dense = false; }
+  WorldModel() : world_ (new PointCloud) { world_->is_dense = false; }
 
   /** \brief Clear the world.
    */
@@ -80,7 +80,7 @@ public:
   reset ()
   {
     if (!world_->points.empty()) {
-      PCL_WARN("Clearing world model\n");
+      PCL_WARN ("Clearing world model\n");
       world_->points.clear();
     }
   }
@@ -144,7 +144,7 @@ public:
   {
     world_->is_dense = false;
     pcl::Indices indices;
-    pcl::removeNaNFromPointCloud(*world_, *world_, indices);
+    pcl::removeNaNFromPointCloud (*world_, *world_, indices);
   }
 
   /** \brief Returns the world as a point cloud.

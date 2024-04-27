@@ -57,19 +57,19 @@ public:
   /// @param cloud_ptr a shared pointer pointing to the cloud object.
   /// @param matrix a (4x4) transform matrix following OpenGL's format.
   /// @pre Assumes the selection_ptr is valid, non-NULL.
-  TransformCommand(const ConstSelectionPtr& selection_ptr,
-                   CloudPtr cloud_ptr,
-                   const float* matrix,
-                   float translate_x,
-                   float translate_y,
-                   float translate_z);
+  TransformCommand (const ConstSelectionPtr& selection_ptr,
+                    CloudPtr cloud_ptr,
+                    const float* matrix,
+                    float translate_x,
+                    float translate_y,
+                    float translate_z);
 
   /// @brief Copy constructor - object is not copy-constructable
-  TransformCommand(const TransformCommand&) = delete;
+  TransformCommand (const TransformCommand&) = delete;
 
   /// @brief Equal operator - object is non-copyable
   TransformCommand&
-  operator=(const TransformCommand&) = delete;
+  operator= (const TransformCommand&) = delete;
 
 protected:
   // Transforms the coordinates of the selected points according to the transform

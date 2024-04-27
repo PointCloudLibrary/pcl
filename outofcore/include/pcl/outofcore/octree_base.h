@@ -201,8 +201,8 @@ public:
    * \throws PCLException for bad extension (root node metadata must be .oct_idx
    * extension)
    */
-  OutofcoreOctreeBase(const boost::filesystem::path& root_node_name,
-                      const bool load_all);
+  OutofcoreOctreeBase (const boost::filesystem::path& root_node_name,
+                       const bool load_all);
 
   /** \brief Create a new tree
    *
@@ -220,11 +220,11 @@ public:
    * extension does not match \ref
    * pcl::outofcore::OutofcoreOctreeBaseNode::node_index_extension
    */
-  OutofcoreOctreeBase(const Eigen::Vector3d& min,
-                      const Eigen::Vector3d& max,
-                      const double resolution_arg,
-                      const boost::filesystem::path& root_node_name,
-                      const std::string& coord_sys);
+  OutofcoreOctreeBase (const Eigen::Vector3d& min,
+                       const Eigen::Vector3d& max,
+                       const double resolution_arg,
+                       const boost::filesystem::path& root_node_name,
+                       const std::string& coord_sys);
 
   /** \brief Create a new tree; will not overwrite existing tree of same name
    *
@@ -239,11 +239,11 @@ public:
    * parent directory has existing children (detects an existing tree) \throws
    * PCLException if file extension is not ".oct_idx"
    */
-  OutofcoreOctreeBase(const std::uint64_t max_depth,
-                      const Eigen::Vector3d& min,
-                      const Eigen::Vector3d& max,
-                      const boost::filesystem::path& root_node_name,
-                      const std::string& coord_sys);
+  OutofcoreOctreeBase (const std::uint64_t max_depth,
+                       const Eigen::Vector3d& min,
+                       const Eigen::Vector3d& max,
+                       const boost::filesystem::path& root_node_name,
+                       const std::string& coord_sys);
 
   virtual ~OutofcoreOctreeBase();
 
@@ -431,9 +431,9 @@ public:
                     const int query_depth,
                     std::list<std::string>& filenames) const
   {
-    std::shared_lock<std::shared_timed_mutex> lock(read_write_mutex_);
+    std::shared_lock<std::shared_timed_mutex> lock (read_write_mutex_);
     filenames.clear();
-    this->root_node_->queryBBIntersects(min, max, query_depth, filenames);
+    this->root_node_->queryBBIntersects (min, max, query_depth, filenames);
   }
 
   // Parameterization: getters and setters
@@ -454,7 +454,7 @@ public:
   inline std::uint64_t
   getNumPointsAtDepth (const std::uint64_t& depth_index) const
   {
-    return (metadata_->getLODPoints(depth_index));
+    return (metadata_->getLODPoints (depth_index));
   }
 
   /** \brief Queries the number of points in a bounding box
@@ -518,7 +518,7 @@ public:
   double
   getVoxelSideLength () const
   {
-    return (this->getVoxelSideLength(metadata_->getDepth()));
+    return (this->getVoxelSideLength (metadata_->getDepth()));
   }
 
   /** \brief Get coordinate system tag from the JSON metadata file
@@ -552,7 +552,7 @@ public:
   inline void
   printBoundingBox () const
   {
-    this->printBoundingBox(metadata_->getDepth());
+    this->printBoundingBox (metadata_->getDepth());
   }
 
   /** \brief Returns the voxel centers of all existing voxels at \c query_depth
@@ -579,7 +579,7 @@ public:
   void
   getOccupiedVoxelCenters (AlignedPointTVector& voxel_centers) const
   {
-    getOccupiedVoxelCenters(voxel_centers, metadata_->getDepth());
+    getOccupiedVoxelCenters (voxel_centers, metadata_->getDepth());
   }
 
   /** \brief Returns the voxel centers of all occupied/existing leaves of the tree
@@ -591,7 +591,7 @@ public:
       std::vector<Eigen::Vector3d, Eigen::aligned_allocator<Eigen::Vector3d>>&
           voxel_centers) const
   {
-    getOccupiedVoxelCenters(voxel_centers, metadata_->getDepth());
+    getOccupiedVoxelCenters (voxel_centers, metadata_->getDepth());
   }
 
   // Serializers
@@ -634,7 +634,7 @@ public:
   setSamplePercent (const double sample_percent_arg)
   {
     this->sample_percent_ =
-        std::fabs(sample_percent_arg) > 1.0 ? 1.0 : std::fabs(sample_percent_arg);
+        std::fabs (sample_percent_arg) > 1.0 ? 1.0 : std::fabs (sample_percent_arg);
   }
 
 protected:
@@ -645,15 +645,15 @@ protected:
         const boost::filesystem::path& root_name,
         const std::string& coord_sys);
 
-  OutofcoreOctreeBase(OutofcoreOctreeBase& rval);
+  OutofcoreOctreeBase (OutofcoreOctreeBase& rval);
 
-  OutofcoreOctreeBase(const OutofcoreOctreeBase& rval);
-
-  OutofcoreOctreeBase&
-  operator=(OutofcoreOctreeBase& rval);
+  OutofcoreOctreeBase (const OutofcoreOctreeBase& rval);
 
   OutofcoreOctreeBase&
-  operator=(const OutofcoreOctreeBase& rval);
+  operator= (OutofcoreOctreeBase& rval);
+
+  OutofcoreOctreeBase&
+  operator= (const OutofcoreOctreeBase& rval);
 
   inline OutofcoreNodeType*
   getRootNode ()
@@ -712,7 +712,7 @@ protected:
   const static std::string TREE_EXTENSION_;
   const static int OUTOFCORE_VERSION_;
 
-  const static std::uint64_t LOAD_COUNT_ = static_cast<std::uint64_t>(2e9);
+  const static std::uint64_t LOAD_COUNT_ = static_cast<std::uint64_t> (2e9);
 
 private:
   /** \brief Auxiliary function to enlarge a bounding box to a cube. */

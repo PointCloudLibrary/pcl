@@ -67,29 +67,29 @@ float voxel_size;
 Eigen::Matrix3f rgb_intrinsics_matrix;
 Eigen::VectorXf ground_coeffs;
 
-TEST(PCL, PersonClassifier)
+TEST (PCL, PersonClassifier)
 {
   // Create classifier for people detection:
-  EXPECT_TRUE(person_classifier.loadSVMFromFile(svm_filename)); // load trained SVM
+  EXPECT_TRUE (person_classifier.loadSVMFromFile (svm_filename)); // load trained SVM
 }
 
-TEST(PCL, GroundBasedPeopleDetectionApp)
+TEST (PCL, GroundBasedPeopleDetectionApp)
 {
   // People detection app initialization:
   pcl::people::GroundBasedPeopleDetectionApp<PointT>
-      people_detector;                      // people detection object
-  people_detector.setVoxelSize(voxel_size); // set the voxel size
-  people_detector.setIntrinsics(
+      people_detector;                       // people detection object
+  people_detector.setVoxelSize (voxel_size); // set the voxel size
+  people_detector.setIntrinsics (
       rgb_intrinsics_matrix); // set RGB camera intrinsic parameters
-  people_detector.setClassifier(person_classifier); // set person classifier
-  people_detector.setPersonClusterLimits(min_height, max_height, min_width, max_width);
+  people_detector.setClassifier (person_classifier); // set person classifier
+  people_detector.setPersonClusterLimits (min_height, max_height, min_width, max_width);
 
   // Perform people detection on the new cloud:
   std::vector<pcl::people::PersonCluster<PointT>>
       clusters; // vector containing persons clusters
-  people_detector.setInputCloud(cloud);
-  people_detector.setGround(ground_coeffs);       // set floor coefficients
-  EXPECT_TRUE(people_detector.compute(clusters)); // perform people detection
+  people_detector.setInputCloud (cloud);
+  people_detector.setGround (ground_coeffs);        // set floor coefficients
+  EXPECT_TRUE (people_detector.compute (clusters)); // perform people detection
 
   unsigned int k = 0;
   for (const auto& cluster : clusters) {
@@ -97,7 +97,7 @@ TEST(PCL, GroundBasedPeopleDetectionApp)
         min_confidence) // draw only people with confidence above a threshold
       k++;
   }
-  EXPECT_EQ(k, 5); // verify number of people found (should be five)
+  EXPECT_EQ (k, 5); // verify number of people found (should be five)
 }
 
 int
@@ -118,8 +118,8 @@ main (int argc, char** argv)
     return (-1);
   }
 
-  cloud = PointCloudT::Ptr(new PointCloudT);
-  if (pcl::io::loadPCDFile(argv[2], *cloud) < 0) {
+  cloud = PointCloudT::Ptr (new PointCloudT);
+  if (pcl::io::loadPCDFile (argv[2], *cloud) < 0) {
     std::cerr << "Failed to read test file. Please download `five_people.pcd` and pass "
                  "its path to the test."
               << std::endl;
@@ -137,9 +137,9 @@ main (int argc, char** argv)
 
   rgb_intrinsics_matrix << 525, 0.0, 319.5, 0.0, 525, 239.5, 0.0, 0.0,
       1.0; // Kinect RGB camera intrinsics
-  ground_coeffs.resize(4);
+  ground_coeffs.resize (4);
   ground_coeffs << -0.0103586, 0.997011, 0.0765573, -1.26614; // set ground coefficients
 
-  testing::InitGoogleTest(&argc, argv);
+  testing::InitGoogleTest (&argc, argv);
   return (RUN_ALL_TESTS());
 }

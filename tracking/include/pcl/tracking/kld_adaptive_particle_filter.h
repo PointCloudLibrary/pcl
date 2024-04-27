@@ -213,8 +213,8 @@ protected:
   virtual double
   calcKLBound (int k)
   {
-    double z = normalQuantile(delta_);
-    double chi = 1.0 - 2.0 / (9.0 * (k - 1)) + sqrt(2.0 / (9.0 * (k - 1))) * z;
+    double z = normalQuantile (delta_);
+    double chi = 1.0 - 2.0 / (9.0 * (k - 1)) + sqrt (2.0 / (9.0 * (k - 1))) * z;
     return ((k - 1.0) / (2.0 * epsilon_) * chi * chi * chi);
   }
 

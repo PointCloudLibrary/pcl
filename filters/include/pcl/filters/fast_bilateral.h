@@ -115,10 +115,10 @@ protected:
 
   class Array3D {
   public:
-    Array3D(const std::size_t width, const std::size_t height, const std::size_t depth)
-    : v_({(width * height * depth),
-          Eigen::Vector2f(0.0f, 0.0f),
-          Eigen::aligned_allocator<Eigen::Vector2f>()})
+    Array3D (const std::size_t width, const std::size_t height, const std::size_t depth)
+    : v_ ({(width * height * depth),
+           Eigen::Vector2f (0.0f, 0.0f),
+           Eigen::aligned_allocator<Eigen::Vector2f>()})
     {
       x_dim_ = width;
       y_dim_ = height;
@@ -126,13 +126,13 @@ protected:
     }
 
     inline Eigen::Vector2f&
-    operator()(const std::size_t x, const std::size_t y, const std::size_t z)
+    operator() (const std::size_t x, const std::size_t y, const std::size_t z)
     {
       return v_[(x * y_dim_ + y) * z_dim_ + z];
     }
 
     inline const Eigen::Vector2f&
-    operator()(const std::size_t x, const std::size_t y, const std::size_t z) const
+    operator() (const std::size_t x, const std::size_t y, const std::size_t z) const
     {
       return v_[(x * y_dim_ + y) * z_dim_ + z];
     }
@@ -143,7 +143,7 @@ protected:
       x_dim_ = width;
       y_dim_ = height;
       z_dim_ = depth;
-      v_.resize(x_dim_ * y_dim_ * z_dim_);
+      v_.resize (x_dim_ * y_dim_ * z_dim_);
     }
 
     Eigen::Vector2f

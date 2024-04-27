@@ -97,7 +97,7 @@ public:
   createRandomFeatures (const std::size_t num_of_features,
                         std::vector<FT>& features) override
   {
-    srand(static_cast<unsigned int>(time(nullptr)));
+    srand (static_cast<unsigned int> (time (nullptr)));
     int min_s = 20;
     float range_d = 0.05f;
     float incr_d = 0.01f;
@@ -121,14 +121,14 @@ public:
       if (num_channels_ > 1)
         f.used_ii_ = rand() % num_channels_;
 
-      windows_and_functions.push_back(f);
+      windows_and_functions.push_back (f);
     }
 
     for (std::size_t i = 0; i < windows_and_functions.size(); i++) {
       FT f = windows_and_functions[i];
       for (std::size_t j = 0; j <= 10; j++) {
-        f.threshold_ = -range_d + static_cast<float>(j) * incr_d;
-        features.push_back(f);
+        f.threshold_ = -range_d + static_cast<float> (j) * incr_d;
+        features.push_back (f);
       }
     }
   }
@@ -147,9 +147,9 @@ public:
                    std::vector<float>& results,
                    std::vector<unsigned char>& flags) const override
   {
-    results.resize(examples.size());
+    results.resize (examples.size());
     for (std::size_t i = 0; i < examples.size(); i++) {
-      evaluateFeature(feature, data_set, examples[i], results[i], flags[i]);
+      evaluateFeature (feature, data_set, examples[i], results[i], flags[i]);
     }
   }
 
@@ -169,41 +169,41 @@ public:
   {
     TrainingExample te = data_set[example];
     int el_f1 =
-        te.iimages_[feature.used_ii_]->getFiniteElementsCount(te.col_ + feature.col1_,
-                                                              te.row_ + feature.row1_,
-                                                              feature.wsizex1_,
-                                                              feature.wsizey1_);
+        te.iimages_[feature.used_ii_]->getFiniteElementsCount (te.col_ + feature.col1_,
+                                                               te.row_ + feature.row1_,
+                                                               feature.wsizex1_,
+                                                               feature.wsizey1_);
     int el_f2 =
-        te.iimages_[feature.used_ii_]->getFiniteElementsCount(te.col_ + feature.col2_,
-                                                              te.row_ + feature.row2_,
-                                                              feature.wsizex2_,
-                                                              feature.wsizey2_);
+        te.iimages_[feature.used_ii_]->getFiniteElementsCount (te.col_ + feature.col2_,
+                                                               te.row_ + feature.row2_,
+                                                               feature.wsizex2_,
+                                                               feature.wsizey2_);
 
-    float sum_f1 = static_cast<float>(
-        te.iimages_[feature.used_ii_]->getFirstOrderSum(te.col_ + feature.col1_,
-                                                        te.row_ + feature.row1_,
-                                                        feature.wsizex1_,
-                                                        feature.wsizey1_));
-    float sum_f2 = static_cast<float>(
-        te.iimages_[feature.used_ii_]->getFirstOrderSum(te.col_ + feature.col2_,
-                                                        te.row_ + feature.row2_,
-                                                        feature.wsizex2_,
-                                                        feature.wsizey2_));
+    float sum_f1 = static_cast<float> (
+        te.iimages_[feature.used_ii_]->getFirstOrderSum (te.col_ + feature.col1_,
+                                                         te.row_ + feature.row1_,
+                                                         feature.wsizex1_,
+                                                         feature.wsizey1_));
+    float sum_f2 = static_cast<float> (
+        te.iimages_[feature.used_ii_]->getFirstOrderSum (te.col_ + feature.col2_,
+                                                         te.row_ + feature.row2_,
+                                                         feature.wsizex2_,
+                                                         feature.wsizey2_));
 
     float f = min_valid_small_patch_depth_;
     if (el_f1 == 0 || el_f2 == 0 ||
-        (el_f1 <= static_cast<int>(
-                      f * static_cast<float>(feature.wsizex1_ * feature.wsizey1_))) ||
-        (el_f2 <= static_cast<int>(
-                      f * static_cast<float>(feature.wsizex2_ * feature.wsizey2_)))) {
-      result = static_cast<float>(
-          pcl_round(static_cast<float>(rand()) / static_cast<float>(RAND_MAX)));
+        (el_f1 <= static_cast<int> (
+                      f * static_cast<float> (feature.wsizex1_ * feature.wsizey1_))) ||
+        (el_f2 <= static_cast<int> (
+                      f * static_cast<float> (feature.wsizex2_ * feature.wsizey2_)))) {
+      result = static_cast<float> (
+          pcl_round (static_cast<float> (rand()) / static_cast<float> (RAND_MAX)));
       flag = 1;
     }
     else {
-      result =
-          static_cast<float>((sum_f1 / static_cast<float>(el_f1) -
-                              sum_f2 / static_cast<float>(el_f2)) > feature.threshold_);
+      result = static_cast<float> (
+          (sum_f1 / static_cast<float> (el_f1) - sum_f2 / static_cast<float> (el_f2)) >
+          feature.threshold_);
       flag = 0;
     }
   }
@@ -227,8 +227,8 @@ class PoseClassRegressionVarianceStatsEstimator
 
 public:
   /** \brief Constructor. */
-  PoseClassRegressionVarianceStatsEstimator(BranchEstimator* branch_estimator)
-  : branch_estimator_(branch_estimator)
+  PoseClassRegressionVarianceStatsEstimator (BranchEstimator* branch_estimator)
+  : branch_estimator_ (branch_estimator)
   {}
 
   /** \brief Destructor. */
@@ -264,7 +264,7 @@ public:
   {
     Eigen::Matrix<double, 1, 9, Eigen::RowMajor> accu =
         Eigen::Matrix<double, 1, 9, Eigen::RowMajor>::Zero();
-    auto point_count = static_cast<unsigned int>(examples.size());
+    auto point_count = static_cast<unsigned int> (examples.size());
 
     for (std::size_t i = 0; i < point_count; ++i) {
       TrainingExample te = data_set[examples[i]];
@@ -280,17 +280,17 @@ public:
     }
 
     if (point_count != 0) {
-      accu /= static_cast<double>(point_count);
+      accu /= static_cast<double> (point_count);
       centroid.head<3>().matrix() = accu.tail<3>();
-      covariance_matrix.coeffRef(0) = accu[0] - accu[6] * accu[6];
-      covariance_matrix.coeffRef(1) = accu[1] - accu[6] * accu[7];
-      covariance_matrix.coeffRef(2) = accu[2] - accu[6] * accu[8];
-      covariance_matrix.coeffRef(4) = accu[3] - accu[7] * accu[7];
-      covariance_matrix.coeffRef(5) = accu[4] - accu[7] * accu[8];
-      covariance_matrix.coeffRef(8) = accu[5] - accu[8] * accu[8];
-      covariance_matrix.coeffRef(3) = covariance_matrix.coeff(1);
-      covariance_matrix.coeffRef(6) = covariance_matrix.coeff(2);
-      covariance_matrix.coeffRef(7) = covariance_matrix.coeff(5);
+      covariance_matrix.coeffRef (0) = accu[0] - accu[6] * accu[6];
+      covariance_matrix.coeffRef (1) = accu[1] - accu[6] * accu[7];
+      covariance_matrix.coeffRef (2) = accu[2] - accu[6] * accu[8];
+      covariance_matrix.coeffRef (4) = accu[3] - accu[7] * accu[7];
+      covariance_matrix.coeffRef (5) = accu[4] - accu[7] * accu[8];
+      covariance_matrix.coeffRef (8) = accu[5] - accu[8] * accu[8];
+      covariance_matrix.coeffRef (3) = covariance_matrix.coeff (1);
+      covariance_matrix.coeffRef (6) = covariance_matrix.coeff (2);
+      covariance_matrix.coeffRef (7) = covariance_matrix.coeff (5);
     }
 
     return point_count;
@@ -310,7 +310,7 @@ public:
   {
     Eigen::Matrix<double, 1, 9, Eigen::RowMajor> accu =
         Eigen::Matrix<double, 1, 9, Eigen::RowMajor>::Zero();
-    auto point_count = static_cast<unsigned int>(examples.size());
+    auto point_count = static_cast<unsigned int> (examples.size());
 
     for (std::size_t i = 0; i < point_count; ++i) {
       TrainingExample te = data_set[examples[i]];
@@ -326,17 +326,17 @@ public:
     }
 
     if (point_count != 0) {
-      accu /= static_cast<double>(point_count);
+      accu /= static_cast<double> (point_count);
       centroid.head<3>().matrix() = accu.tail<3>();
-      covariance_matrix.coeffRef(0) = accu[0] - accu[6] * accu[6];
-      covariance_matrix.coeffRef(1) = accu[1] - accu[6] * accu[7];
-      covariance_matrix.coeffRef(2) = accu[2] - accu[6] * accu[8];
-      covariance_matrix.coeffRef(4) = accu[3] - accu[7] * accu[7];
-      covariance_matrix.coeffRef(5) = accu[4] - accu[7] * accu[8];
-      covariance_matrix.coeffRef(8) = accu[5] - accu[8] * accu[8];
-      covariance_matrix.coeffRef(3) = covariance_matrix.coeff(1);
-      covariance_matrix.coeffRef(6) = covariance_matrix.coeff(2);
-      covariance_matrix.coeffRef(7) = covariance_matrix.coeff(5);
+      covariance_matrix.coeffRef (0) = accu[0] - accu[6] * accu[6];
+      covariance_matrix.coeffRef (1) = accu[1] - accu[6] * accu[7];
+      covariance_matrix.coeffRef (2) = accu[2] - accu[6] * accu[8];
+      covariance_matrix.coeffRef (4) = accu[3] - accu[7] * accu[7];
+      covariance_matrix.coeffRef (5) = accu[4] - accu[7] * accu[8];
+      covariance_matrix.coeffRef (8) = accu[5] - accu[8] * accu[8];
+      covariance_matrix.coeffRef (3) = covariance_matrix.coeff (1);
+      covariance_matrix.coeffRef (6) = covariance_matrix.coeff (2);
+      covariance_matrix.coeffRef (7) = covariance_matrix.coeff (5);
     }
 
     return point_count;
@@ -362,9 +362,9 @@ public:
     const std::size_t num_of_branches = getNumOfBranches();
 
     // compute variance
-    std::vector<LabelDataType> sums(num_of_branches + 1, 0.f);
-    std::vector<LabelDataType> sqr_sums(num_of_branches + 1, 0.f);
-    std::vector<std::size_t> branch_element_count(num_of_branches + 1, 0.f);
+    std::vector<LabelDataType> sums (num_of_branches + 1, 0.f);
+    std::vector<LabelDataType> sqr_sums (num_of_branches + 1, 0.f);
+    std::vector<std::size_t> branch_element_count (num_of_branches + 1, 0.f);
 
     for (std::size_t branch_index = 0; branch_index < num_of_branches; ++branch_index) {
       branch_element_count[branch_index] = 1;
@@ -374,7 +374,7 @@ public:
     for (std::size_t example_index = 0; example_index < num_of_examples;
          ++example_index) {
       unsigned char branch_index;
-      computeBranchIndex(
+      computeBranchIndex (
           results[example_index], flags[example_index], threshold, branch_index);
 
       LabelDataType label = label_data[example_index];
@@ -386,33 +386,34 @@ public:
       sums[num_of_branches] += label;
     }
 
-    std::vector<float> hp(num_of_branches + 1, 0.f);
+    std::vector<float> hp (num_of_branches + 1, 0.f);
     for (std::size_t branch_index = 0; branch_index < (num_of_branches + 1);
          ++branch_index) {
       float pf =
-          sums[branch_index] / static_cast<float>(branch_element_count[branch_index]);
-      float pnf = (static_cast<LabelDataType>(branch_element_count[branch_index]) -
+          sums[branch_index] / static_cast<float> (branch_element_count[branch_index]);
+      float pnf = (static_cast<LabelDataType> (branch_element_count[branch_index]) -
                    sums[branch_index] + 1.f) /
-                  static_cast<LabelDataType>(branch_element_count[branch_index]);
-      hp[branch_index] -= static_cast<float>(pf * std::log(pf) + pnf * std::log(pnf));
+                  static_cast<LabelDataType> (branch_element_count[branch_index]);
+      hp[branch_index] -=
+          static_cast<float> (pf * std::log (pf) + pnf * std::log (pnf));
     }
 
     // use mean of the examples as purity
     float purity = sums[num_of_branches] /
-                   static_cast<LabelDataType>(branch_element_count[num_of_branches]);
+                   static_cast<LabelDataType> (branch_element_count[num_of_branches]);
     float tp = 0.8f;
 
     if (purity >= tp) {
       // compute covariance matrices from translation offsets and angles for the whole
       // set and children consider only positive examples...
-      std::vector<std::size_t> branch_element_count(num_of_branches + 1, 0);
+      std::vector<std::size_t> branch_element_count (num_of_branches + 1, 0);
       std::vector<std::vector<ExampleIndex>> positive_examples;
-      positive_examples.resize(num_of_branches + 1);
+      positive_examples.resize (num_of_branches + 1);
 
       for (std::size_t example_index = 0; example_index < num_of_examples;
            ++example_index) {
         unsigned char branch_index;
-        computeBranchIndex(
+        computeBranchIndex (
             results[example_index], flags[example_index], threshold, branch_index);
 
         LabelDataType label = label_data[example_index];
@@ -421,8 +422,8 @@ public:
           ++branch_element_count[branch_index];
           ++branch_element_count[num_of_branches];
 
-          positive_examples[branch_index].push_back(examples[example_index]);
-          positive_examples[num_of_branches].push_back(examples[example_index]);
+          positive_examples[branch_index].push_back (examples[example_index]);
+          positive_examples[num_of_branches].push_back (examples[example_index]);
         }
       }
 
@@ -433,41 +434,41 @@ public:
       std::vector<Eigen::Vector3d> offset_centroids;
       std::vector<Eigen::Vector3d> angle_centroids;
 
-      offset_covariances.resize(num_of_branches + 1);
-      angle_covariances.resize(num_of_branches + 1);
-      offset_centroids.resize(num_of_branches + 1);
-      angle_centroids.resize(num_of_branches + 1);
+      offset_covariances.resize (num_of_branches + 1);
+      angle_covariances.resize (num_of_branches + 1);
+      offset_centroids.resize (num_of_branches + 1);
+      angle_centroids.resize (num_of_branches + 1);
 
       for (std::size_t branch_index = 0; branch_index < (num_of_branches + 1);
            ++branch_index) {
-        computeMeanAndCovarianceOffset(data_set,
-                                       positive_examples[branch_index],
-                                       offset_covariances[branch_index],
-                                       offset_centroids[branch_index]);
-        computeMeanAndCovarianceAngles(data_set,
-                                       positive_examples[branch_index],
-                                       angle_covariances[branch_index],
-                                       angle_centroids[branch_index]);
+        computeMeanAndCovarianceOffset (data_set,
+                                        positive_examples[branch_index],
+                                        offset_covariances[branch_index],
+                                        offset_centroids[branch_index]);
+        computeMeanAndCovarianceAngles (data_set,
+                                        positive_examples[branch_index],
+                                        angle_covariances[branch_index],
+                                        angle_centroids[branch_index]);
       }
 
       // update information_gain
-      std::vector<float> hr(num_of_branches + 1, 0.f);
+      std::vector<float> hr (num_of_branches + 1, 0.f);
       for (std::size_t branch_index = 0; branch_index < (num_of_branches + 1);
            ++branch_index) {
-        hr[branch_index] = static_cast<float>(
-            0.5f * std::log(std::pow(2 * M_PI, 3) *
-                            offset_covariances[branch_index].determinant()) +
-            0.5f * std::log(std::pow(2 * M_PI, 3) *
-                            angle_covariances[branch_index].determinant()));
+        hr[branch_index] = static_cast<float> (
+            0.5f * std::log (std::pow (2 * M_PI, 3) *
+                             offset_covariances[branch_index].determinant()) +
+            0.5f * std::log (std::pow (2 * M_PI, 3) *
+                             angle_covariances[branch_index].determinant()));
       }
 
       for (std::size_t branch_index = 0; branch_index < (num_of_branches + 1);
            ++branch_index) {
         hp[branch_index] +=
-            std::max(sums[branch_index] /
-                             static_cast<float>(branch_element_count[branch_index]) -
-                         tp,
-                     0.f) *
+            std::max (sums[branch_index] /
+                              static_cast<float> (branch_element_count[branch_index]) -
+                          tp,
+                      0.f) *
             hr[branch_index];
       }
     }
@@ -475,8 +476,8 @@ public:
     float information_gain = hp[num_of_branches + 1];
     for (std::size_t branch_index = 0; branch_index < (num_of_branches);
          ++branch_index) {
-      information_gain -= static_cast<float>(branch_element_count[branch_index]) /
-                          static_cast<float>(branch_element_count[num_of_branches]) *
+      information_gain -= static_cast<float> (branch_element_count[branch_index]) /
+                          static_cast<float> (branch_element_count[num_of_branches]) *
                           hp[branch_index];
     }
 
@@ -497,10 +498,10 @@ public:
   {
     const std::size_t num_of_results = results.size();
 
-    branch_indices.resize(num_of_results);
+    branch_indices.resize (num_of_results);
     for (std::size_t result_index = 0; result_index < num_of_results; ++result_index) {
       unsigned char branch_index;
-      computeBranchIndex(
+      computeBranchIndex (
           results[result_index], flags[result_index], threshold, branch_index);
       branch_indices[result_index] = branch_index;
     }
@@ -518,7 +519,7 @@ public:
                       const float threshold,
                       unsigned char& branch_index) const override
   {
-    branch_estimator_->computeBranchIndex(result, flag, threshold, branch_index);
+    branch_estimator_->computeBranchIndex (result, flag, threshold, branch_index);
   }
 
   /** \brief Computes and sets the statistics for a node.
@@ -545,8 +546,8 @@ public:
       sqr_sum += label * label;
     }
 
-    sum /= static_cast<float>(num_of_examples);
-    sqr_sum /= static_cast<float>(num_of_examples);
+    sum /= static_cast<float> (num_of_examples);
+    sqr_sum /= static_cast<float> (num_of_examples);
 
     const float variance = sqr_sum - sum * sum;
 
@@ -561,13 +562,13 @@ public:
       LabelDataType label = label_data[example_index];
 
       if (label == 1)
-        positive_examples.push_back(examples[example_index]);
+        positive_examples.push_back (examples[example_index]);
     }
 
     // compute covariance from offsets and angles
-    computeMeanAndCovarianceOffset(
+    computeMeanAndCovarianceOffset (
         data_set, positive_examples, node.covariance_trans_, node.trans_mean_);
-    computeMeanAndCovarianceAngles(
+    computeMeanAndCovarianceAngles (
         data_set, positive_examples, node.covariance_rot_, node.rot_mean_);
   }
 

@@ -46,10 +46,10 @@ namespace cloud_composer {
 
 class NormalsItem : public CloudComposerItem {
 public:
-  NormalsItem(QString name,
-              const pcl::PointCloud<pcl::Normal>::Ptr& normals_ptr,
-              double radius);
-  NormalsItem(const NormalsItem& to_copy);
+  NormalsItem (QString name,
+               const pcl::PointCloud<pcl::Normal>::Ptr& normals_ptr,
+               double radius);
+  NormalsItem (const NormalsItem& to_copy);
 
   inline int
   type () const override
@@ -75,5 +75,5 @@ private:
 } // namespace cloud_composer
 } // namespace pcl
 
-Q_DECLARE_METATYPE(pcl::PointCloud<pcl::Normal>::Ptr);
-Q_DECLARE_METATYPE(pcl::PointCloud<pcl::Normal>::ConstPtr);
+Q_DECLARE_METATYPE (pcl::PointCloud<pcl::Normal>::Ptr);
+Q_DECLARE_METATYPE (pcl::PointCloud<pcl::Normal>::ConstPtr);

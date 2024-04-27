@@ -50,43 +50,43 @@ Random (void);
 template <class Real>
 struct Point3D {
   Real coords[3];
-  Point3D(void) { coords[0] = coords[1] = coords[2] = Real(0); }
+  Point3D (void) { coords[0] = coords[1] = coords[2] = Real (0); }
   inline Real&
-  operator[](int i)
+  operator[] (int i)
   {
     return coords[i];
   }
   inline const Real&
-  operator[](int i) const
+  operator[] (int i) const
   {
     return coords[i];
   }
   inline Point3D&
-  operator+=(Point3D p)
+  operator+= (Point3D p)
   {
     coords[0] += p.coords[0], coords[1] += p.coords[1], coords[2] += p.coords[2];
     return *this;
   }
   inline Point3D&
-  operator-=(Point3D p)
+  operator-= (Point3D p)
   {
     coords[0] -= p.coords[0], coords[1] -= p.coords[1], coords[2] -= p.coords[2];
     return *this;
   }
   inline Point3D&
-  operator*=(Real r)
+  operator*= (Real r)
   {
     coords[0] *= r, coords[1] *= r, coords[2] *= r;
     return *this;
   }
   inline Point3D&
-  operator/=(Real r)
+  operator/= (Real r)
   {
     coords[0] /= r, coords[1] /= r, coords[2] /= r;
     return *this;
   }
   inline Point3D
-  operator+(Point3D p) const
+  operator+ (Point3D p) const
   {
     Point3D q;
     q.coords[0] = coords[0] + p.coords[0], q.coords[1] = coords[1] + p.coords[1],
@@ -94,7 +94,7 @@ struct Point3D {
     return q;
   }
   inline Point3D
-  operator-(Point3D p) const
+  operator- (Point3D p) const
   {
     Point3D q;
     q.coords[0] = coords[0] - p.coords[0], q.coords[1] = coords[1] - p.coords[1],
@@ -102,7 +102,7 @@ struct Point3D {
     return q;
   }
   inline Point3D
-  operator*(Real r) const
+  operator* (Real r) const
   {
     Point3D q;
     q.coords[0] = coords[0] * r, q.coords[1] = coords[1] * r,
@@ -110,9 +110,9 @@ struct Point3D {
     return q;
   }
   inline Point3D
-  operator/(Real r) const
+  operator/ (Real r) const
   {
-    return (*this) * (Real(1.) / r);
+    return (*this) * (Real (1.) / r);
   }
 };
 
@@ -154,7 +154,7 @@ public:
     d[0] = p[0][0] - p[1][0];
     d[1] = p[0][1] - p[1][1];
 
-    return sqrt(d[0] * d[0] + d[1] * d[1]);
+    return sqrt (d[0] * d[0] + d[1] * d[1]);
   }
 };
 class Triangle {
@@ -171,7 +171,7 @@ public:
     v[0] = v1[1] * v2[2] - v1[2] * v2[1];
     v[1] = -v1[0] * v2[2] + v1[2] * v2[0];
     v[2] = v1[0] * v2[1] - v1[1] * v2[0];
-    return sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]) / 2;
+    return sqrt (v[0] * v[0] + v[1] * v[1] + v[2] * v[2]) / 2;
   }
   double
   AspectRatio (void) const
@@ -193,12 +193,12 @@ public:
   char inCore;
 
   int
-  operator==(const CoredPointIndex& cpi) const
+  operator== (const CoredPointIndex& cpi) const
   {
     return (index == cpi.index) && (inCore == cpi.inCore);
   };
   int
-  operator!=(const CoredPointIndex& cpi) const
+  operator!= (const CoredPointIndex& cpi) const
   {
     return (index != cpi.index) || (inCore != cpi.inCore);
   };
@@ -218,14 +218,14 @@ public:
 
 class TriangulationEdge {
 public:
-  TriangulationEdge(void);
+  TriangulationEdge (void);
   int pIndex[2];
   int tIndex[2];
 };
 
 class TriangulationTriangle {
 public:
-  TriangulationTriangle(void);
+  TriangulationTriangle (void);
   int eIndex[3];
 };
 
@@ -303,12 +303,12 @@ public:
   struct Vertex {
     Point3D<float> start, end;
     float value;
-    Vertex(void) { ; }
-    Vertex(Point3D<float> s, Point3D<float> e, float v)
+    Vertex (void) { ; }
+    Vertex (Point3D<float> s, Point3D<float> e, float v)
     {
       start = s, end = e, value = v;
     }
-    Vertex(Point3D<float> s, Point3D<float> e, Point3D<float> p)
+    Vertex (Point3D<float> s, Point3D<float> e, Point3D<float> p)
     {
       start = s, end = e;
       // < p , e-s > = < s + v*(e-s) , e-s >
@@ -349,7 +349,7 @@ class PCL_EXPORTS CoredVectorMeshData : public CoredMeshData {
   int oocPointIndex;
 
 public:
-  CoredVectorMeshData(void);
+  CoredVectorMeshData (void);
 
   void
   resetIterator (void);
@@ -376,7 +376,7 @@ class PCL_EXPORTS CoredVectorMeshData2 : public CoredMeshData2 {
   int oocPointIndex;
 
 public:
-  CoredVectorMeshData2(void);
+  CoredVectorMeshData2 (void);
 
   void
   resetIterator (void);
@@ -401,8 +401,8 @@ class CoredFileMeshData : public CoredMeshData {
   int oocPoints, polygons;
 
 public:
-  CoredFileMeshData(void);
-  ~CoredFileMeshData(void);
+  CoredFileMeshData (void);
+  ~CoredFileMeshData (void);
 
   void
   resetIterator (void);
@@ -427,8 +427,8 @@ class CoredFileMeshData2 : public CoredMeshData2 {
   int oocPoints, polygons;
 
 public:
-  CoredFileMeshData2(void);
-  ~CoredFileMeshData2(void);
+  CoredFileMeshData2 (void);
+  ~CoredFileMeshData2 (void);
 
   void
   resetIterator (void);

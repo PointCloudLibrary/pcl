@@ -55,33 +55,33 @@ template <typename PointModelT,
           typename PointSceneRfT>
 template <typename PointType, typename PointRfType>
 void
-pcl::Hough3DGrouping<PointModelT, PointSceneT, PointModelRfT, PointSceneRfT>::computeRf(
-    const typename pcl::PointCloud<PointType>::ConstPtr& input,
-    pcl::PointCloud<PointRfType>& rf)
+pcl::Hough3DGrouping<PointModelT, PointSceneT, PointModelRfT, PointSceneRfT>::
+    computeRf (const typename pcl::PointCloud<PointType>::ConstPtr& input,
+               pcl::PointCloud<PointRfType>& rf)
 {
   if (local_rf_search_radius_ == 0) {
-    PCL_WARN("[pcl::Hough3DGrouping::computeRf()] Warning! Reference frame search "
-             "radius not set. Computing with default value. Results might be "
-             "incorrect, algorithm might be slow.\n");
-    local_rf_search_radius_ = static_cast<float>(hough_bin_size_);
+    PCL_WARN ("[pcl::Hough3DGrouping::computeRf()] Warning! Reference frame search "
+              "radius not set. Computing with default value. Results might be "
+              "incorrect, algorithm might be slow.\n");
+    local_rf_search_radius_ = static_cast<float> (hough_bin_size_);
   }
-  pcl::PointCloud<Normal>::Ptr normal_cloud(new pcl::PointCloud<Normal>());
+  pcl::PointCloud<Normal>::Ptr normal_cloud (new pcl::PointCloud<Normal>());
   NormalEstimation<PointType, Normal> norm_est;
-  norm_est.setInputCloud(input);
+  norm_est.setInputCloud (input);
   if (local_rf_normals_search_radius_ <= 0.0f) {
-    norm_est.setKSearch(15);
+    norm_est.setKSearch (15);
   }
   else {
-    norm_est.setRadiusSearch(local_rf_normals_search_radius_);
+    norm_est.setRadiusSearch (local_rf_normals_search_radius_);
   }
-  norm_est.compute(*normal_cloud);
+  norm_est.compute (*normal_cloud);
 
   BOARDLocalReferenceFrameEstimation<PointType, Normal, PointRfType> rf_est;
-  rf_est.setInputCloud(input);
-  rf_est.setInputNormals(normal_cloud);
-  rf_est.setFindHoles(true);
-  rf_est.setRadiusSearch(local_rf_search_radius_);
-  rf_est.compute(rf);
+  rf_est.setInputCloud (input);
+  rf_est.setInputNormals (normal_cloud);
+  rf_est.setFindHoles (true);
+  rf_est.setRadiusSearch (local_rf_search_radius_);
+  rf_est.compute (rf);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -93,13 +93,13 @@ bool
 pcl::Hough3DGrouping<PointModelT, PointSceneT, PointModelRfT, PointSceneRfT>::train()
 {
   if (!input_) {
-    PCL_ERROR("[pcl::Hough3DGrouping::train()] Error! Input cloud not set.\n");
+    PCL_ERROR ("[pcl::Hough3DGrouping::train()] Error! Input cloud not set.\n");
     return (false);
   }
 
   if (!input_rf_) {
-    ModelRfCloudPtr new_input_rf(new ModelRfCloud());
-    computeRf<PointModelT, PointModelRfT>(input_, *new_input_rf);
+    ModelRfCloudPtr new_input_rf (new ModelRfCloud());
+    computeRf<PointModelT, PointModelRfT> (input_, *new_input_rf);
     input_rf_ = new_input_rf;
     // PCL_ERROR(
     //   "[pcl::Hough3DGrouping::train()] Error! Input reference frame not set.\n");
@@ -107,36 +107,36 @@ pcl::Hough3DGrouping<PointModelT, PointSceneT, PointModelRfT, PointSceneRfT>::tr
   }
 
   if (input_->size() != input_rf_->size()) {
-    PCL_ERROR("[pcl::Hough3DGrouping::train()] Error! Input cloud size != Input RF "
-              "cloud size.\n");
+    PCL_ERROR ("[pcl::Hough3DGrouping::train()] Error! Input cloud size != Input RF "
+               "cloud size.\n");
     return (false);
   }
 
   model_votes_.clear();
-  model_votes_.resize(input_->size());
+  model_votes_.resize (input_->size());
 
   // compute model centroid
-  Eigen::Vector3f centroid(0, 0, 0);
+  Eigen::Vector3f centroid (0, 0, 0);
   for (std::size_t i = 0; i < input_->size(); ++i) {
-    centroid += input_->at(i).getVector3fMap();
+    centroid += input_->at (i).getVector3fMap();
   }
-  centroid /= static_cast<float>(input_->size());
+  centroid /= static_cast<float> (input_->size());
 
   // compute model votes
   for (std::size_t i = 0; i < input_->size(); ++i) {
-    Eigen::Vector3f x_ax((*input_rf_)[i].x_axis[0],
-                         (*input_rf_)[i].x_axis[1],
-                         (*input_rf_)[i].x_axis[2]);
-    Eigen::Vector3f y_ax((*input_rf_)[i].y_axis[0],
-                         (*input_rf_)[i].y_axis[1],
-                         (*input_rf_)[i].y_axis[2]);
-    Eigen::Vector3f z_ax((*input_rf_)[i].z_axis[0],
-                         (*input_rf_)[i].z_axis[1],
-                         (*input_rf_)[i].z_axis[2]);
+    Eigen::Vector3f x_ax ((*input_rf_)[i].x_axis[0],
+                          (*input_rf_)[i].x_axis[1],
+                          (*input_rf_)[i].x_axis[2]);
+    Eigen::Vector3f y_ax ((*input_rf_)[i].y_axis[0],
+                          (*input_rf_)[i].y_axis[1],
+                          (*input_rf_)[i].y_axis[2]);
+    Eigen::Vector3f z_ax ((*input_rf_)[i].z_axis[0],
+                          (*input_rf_)[i].z_axis[1],
+                          (*input_rf_)[i].z_axis[2]);
 
-    model_votes_[i].x() = x_ax.dot(centroid - input_->at(i).getVector3fMap());
-    model_votes_[i].y() = y_ax.dot(centroid - input_->at(i).getVector3fMap());
-    model_votes_[i].z() = z_ax.dot(centroid - input_->at(i).getVector3fMap());
+    model_votes_[i].x() = x_ax.dot (centroid - input_->at (i).getVector3fMap());
+    model_votes_[i].y() = y_ax.dot (centroid - input_->at (i).getVector3fMap());
+    model_votes_[i].z() = z_ax.dot (centroid - input_->at (i).getVector3fMap());
   }
 
   needs_training_ = false;
@@ -166,8 +166,8 @@ pcl::Hough3DGrouping<PointModelT, PointSceneT, PointModelRfT, PointSceneRfT>::
   // }
 
   if (!scene_rf_) {
-    ModelRfCloudPtr new_scene_rf(new ModelRfCloud());
-    computeRf<PointSceneT, PointSceneRfT>(scene_, *new_scene_rf);
+    ModelRfCloudPtr new_scene_rf (new ModelRfCloud());
+    computeRf<PointSceneT, PointSceneRfT> (scene_, *new_scene_rf);
     scene_rf_ = new_scene_rf;
     // PCL_ERROR(
     //   "[pcl::Hough3DGrouping::recognizeModelInstances()] Error! Scene reference frame
@@ -176,46 +176,46 @@ pcl::Hough3DGrouping<PointModelT, PointSceneT, PointModelRfT, PointSceneRfT>::
   }
 
   if (scene_->size() != scene_rf_->size()) {
-    PCL_ERROR("[pcl::Hough3DGrouping::recognizeModelInstances()] Error! Scene cloud "
-              "size != Scene RF cloud size.\n");
+    PCL_ERROR ("[pcl::Hough3DGrouping::recognizeModelInstances()] Error! Scene cloud "
+               "size != Scene RF cloud size.\n");
     return (false);
   }
 
   if (!model_scene_corrs_) {
-    PCL_ERROR(
+    PCL_ERROR (
         "[pcl::Hough3DGrouping::recognizeModelInstances()] Error! Correspondences not "
         "set, please set them before calling again this function.\n");
     return (false);
   }
 
-  int n_matches = static_cast<int>(model_scene_corrs_->size());
+  int n_matches = static_cast<int> (model_scene_corrs_->size());
   if (n_matches == 0) {
     return (false);
   }
 
-  std::vector<Eigen::Vector3d, Eigen::aligned_allocator<Eigen::Vector3d>> scene_votes(
+  std::vector<Eigen::Vector3d, Eigen::aligned_allocator<Eigen::Vector3d>> scene_votes (
       n_matches);
   Eigen::Vector3d d_min, d_max, bin_size;
 
-  d_min.setConstant(std::numeric_limits<double>::max());
-  d_max.setConstant(-std::numeric_limits<double>::max());
-  bin_size.setConstant(hough_bin_size_);
+  d_min.setConstant (std::numeric_limits<double>::max());
+  d_max.setConstant (-std::numeric_limits<double>::max());
+  bin_size.setConstant (hough_bin_size_);
 
   float max_distance = -std::numeric_limits<float>::max();
 
   // Calculating 3D Hough space dimensions and vote position for each match
   for (int i = 0; i < n_matches; ++i) {
-    int scene_index = model_scene_corrs_->at(i).index_match;
-    int model_index = model_scene_corrs_->at(i).index_query;
+    int scene_index = model_scene_corrs_->at (i).index_match;
+    int model_index = model_scene_corrs_->at (i).index_query;
 
-    const Eigen::Vector3f& scene_point = scene_->at(scene_index).getVector3fMap();
-    const PointSceneRfT& scene_point_rf = scene_rf_->at(scene_index);
+    const Eigen::Vector3f& scene_point = scene_->at (scene_index).getVector3fMap();
+    const PointSceneRfT& scene_point_rf = scene_rf_->at (scene_index);
 
-    Eigen::Vector3f scene_point_rf_x(
+    Eigen::Vector3f scene_point_rf_x (
         scene_point_rf.x_axis[0], scene_point_rf.x_axis[1], scene_point_rf.x_axis[2]);
-    Eigen::Vector3f scene_point_rf_y(
+    Eigen::Vector3f scene_point_rf_y (
         scene_point_rf.y_axis[0], scene_point_rf.y_axis[1], scene_point_rf.y_axis[2]);
-    Eigen::Vector3f scene_point_rf_z(
+    Eigen::Vector3f scene_point_rf_z (
         scene_point_rf.z_axis[0], scene_point_rf.z_axis[1], scene_point_rf.z_axis[2]);
 
     // const Eigen::Vector3f& model_point = input_->at (model_index).getVector3fMap ();
@@ -247,24 +247,24 @@ pcl::Hough3DGrouping<PointModelT, PointSceneT, PointModelRfT, PointSceneRfT>::
       d_max.z() = scene_votes[i].z();
 
     // Calculate max distance for interpolated votes
-    if (use_interpolation_ && max_distance < model_scene_corrs_->at(i).distance) {
-      max_distance = model_scene_corrs_->at(i).distance;
+    if (use_interpolation_ && max_distance < model_scene_corrs_->at (i).distance) {
+      max_distance = model_scene_corrs_->at (i).distance;
     }
   }
 
   // Hough Voting
-  hough_space_.reset(new pcl::recognition::HoughSpace3D(d_min, bin_size, d_max));
+  hough_space_.reset (new pcl::recognition::HoughSpace3D (d_min, bin_size, d_max));
 
   for (int i = 0; i < n_matches; ++i) {
     double weight = 1.0;
     if (use_distance_weight_ && max_distance != 0) {
-      weight = 1.0 - (model_scene_corrs_->at(i).distance / max_distance);
+      weight = 1.0 - (model_scene_corrs_->at (i).distance / max_distance);
     }
     if (use_interpolation_) {
-      hough_space_->voteInt(scene_votes[i], weight, i);
+      hough_space_->voteInt (scene_votes[i], weight, i);
     }
     else {
-      hough_space_->vote(scene_votes[i], weight, i);
+      hough_space_->vote (scene_votes[i], weight, i);
     }
   }
 
@@ -280,7 +280,7 @@ template <typename PointModelT,
           typename PointSceneRfT>
 void
 pcl::Hough3DGrouping<PointModelT, PointSceneT, PointModelRfT, PointSceneRfT>::
-    clusterCorrespondences(std::vector<Correspondences>& model_instances)
+    clusterCorrespondences (std::vector<Correspondences>& model_instances)
 {
   model_instances.clear();
   found_transformations_.clear();
@@ -293,30 +293,30 @@ pcl::Hough3DGrouping<PointModelT, PointSceneT, PointModelRfT, PointSceneRfT>::
   std::vector<double> max_values;
   std::vector<std::vector<int>> max_ids;
 
-  hough_space_->findMaxima(hough_threshold_, max_values, max_ids);
+  hough_space_->findMaxima (hough_threshold_, max_values, max_ids);
 
   // Insert maximas into result vector, after Ransac correspondence rejection
   // Temp copy of scene cloud with the type cast to ModelT in order to use Ransac
-  PointCloudPtr temp_scene_cloud_ptr(new PointCloud);
-  pcl::copyPointCloud(*scene_, *temp_scene_cloud_ptr);
+  PointCloudPtr temp_scene_cloud_ptr (new PointCloud);
+  pcl::copyPointCloud (*scene_, *temp_scene_cloud_ptr);
 
   pcl::registration::CorrespondenceRejectorSampleConsensus<PointModelT> corr_rejector;
-  corr_rejector.setMaximumIterations(10000);
-  corr_rejector.setInlierThreshold(hough_bin_size_);
-  corr_rejector.setInputSource(input_);
-  corr_rejector.setInputTarget(temp_scene_cloud_ptr);
+  corr_rejector.setMaximumIterations (10000);
+  corr_rejector.setInlierThreshold (hough_bin_size_);
+  corr_rejector.setInputSource (input_);
+  corr_rejector.setInputTarget (temp_scene_cloud_ptr);
 
   for (std::size_t j = 0; j < max_values.size(); ++j) {
     Correspondences temp_corrs, filtered_corrs;
     for (const int& i : max_ids[j]) {
-      temp_corrs.push_back(model_scene_corrs_->at(i));
+      temp_corrs.push_back (model_scene_corrs_->at (i));
     }
     // RANSAC filtering
-    corr_rejector.getRemainingCorrespondences(temp_corrs, filtered_corrs);
+    corr_rejector.getRemainingCorrespondences (temp_corrs, filtered_corrs);
     // Save transformations for recognize
-    found_transformations_.push_back(corr_rejector.getBestTransformation());
+    found_transformations_.push_back (corr_rejector.getBestTransformation());
 
-    model_instances.push_back(filtered_corrs);
+    model_instances.push_back (filtered_corrs);
   }
 }
 
@@ -359,12 +359,12 @@ template <typename PointModelT,
           typename PointModelRfT,
           typename PointSceneRfT>
 bool
-pcl::Hough3DGrouping<PointModelT, PointSceneT, PointModelRfT, PointSceneRfT>::recognize(
-    std::vector<Eigen::Matrix4f, Eigen::aligned_allocator<Eigen::Matrix4f>>&
-        transformations)
+pcl::Hough3DGrouping<PointModelT, PointSceneT, PointModelRfT, PointSceneRfT>::
+    recognize (std::vector<Eigen::Matrix4f, Eigen::aligned_allocator<Eigen::Matrix4f>>&
+                   transformations)
 {
   std::vector<pcl::Correspondences> model_instances;
-  return (this->recognize(transformations, model_instances));
+  return (this->recognize (transformations, model_instances));
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -373,19 +373,19 @@ template <typename PointModelT,
           typename PointModelRfT,
           typename PointSceneRfT>
 bool
-pcl::Hough3DGrouping<PointModelT, PointSceneT, PointModelRfT, PointSceneRfT>::recognize(
-    std::vector<Eigen::Matrix4f, Eigen::aligned_allocator<Eigen::Matrix4f>>&
-        transformations,
-    std::vector<pcl::Correspondences>& clustered_corrs)
+pcl::Hough3DGrouping<PointModelT, PointSceneT, PointModelRfT, PointSceneRfT>::
+    recognize (std::vector<Eigen::Matrix4f, Eigen::aligned_allocator<Eigen::Matrix4f>>&
+                   transformations,
+               std::vector<pcl::Correspondences>& clustered_corrs)
 {
   transformations.clear();
   if (!this->initCompute()) {
-    PCL_ERROR("[pcl::Hough3DGrouping::recognize()] Error! Model cloud or Scene cloud "
-              "not set, please set them before calling again this function.\n");
+    PCL_ERROR ("[pcl::Hough3DGrouping::recognize()] Error! Model cloud or Scene cloud "
+               "not set, please set them before calling again this function.\n");
     return (false);
   }
 
-  clusterCorrespondences(clustered_corrs);
+  clusterCorrespondences (clustered_corrs);
 
   transformations = found_transformations_;
 

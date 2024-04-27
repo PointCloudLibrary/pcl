@@ -57,7 +57,7 @@ public:
   // =====CONSTRUCTOR & DESTRUCTOR=====
   /** Constructor */
   PCL_EXPORTS
-  RangeImagePlanar ();
+  RangeImagePlanar();
   /** Destructor */
   PCL_EXPORTS ~RangeImagePlanar() override;
 
@@ -79,7 +79,7 @@ public:
   inline Ptr
   makeShared ()
   {
-    return Ptr(new RangeImagePlanar(*this));
+    return Ptr (new RangeImagePlanar (*this));
   }
 
   /** \brief Create the image from an existing disparity image.

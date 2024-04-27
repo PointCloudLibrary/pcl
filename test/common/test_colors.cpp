@@ -37,23 +37,23 @@
 #include <pcl/test/gtest.h>
 #include <pcl/pcl_tests.h>
 
-TEST(ColorLUT, Glasbey)
+TEST (ColorLUT, Glasbey)
 {
-  ASSERT_EQ(pcl::GlasbeyLUT::size(), 256);
-  ASSERT_RGB_EQ(pcl::GlasbeyLUT::at(0), pcl::RGB(77, 175, 74));
-  ASSERT_RGB_EQ(pcl::GlasbeyLUT::at(255), pcl::RGB(117, 143, 207));
+  ASSERT_EQ (pcl::GlasbeyLUT::size(), 256);
+  ASSERT_RGB_EQ (pcl::GlasbeyLUT::at (0), pcl::RGB (77, 175, 74));
+  ASSERT_RGB_EQ (pcl::GlasbeyLUT::at (255), pcl::RGB (117, 143, 207));
 }
 
-TEST(ColorLUT, Viridis)
+TEST (ColorLUT, Viridis)
 {
-  ASSERT_EQ(pcl::ViridisLUT::size(), 256);
-  ASSERT_RGB_EQ(pcl::ViridisLUT::at(0), pcl::RGB(68, 1, 84));
-  ASSERT_RGB_EQ(pcl::ViridisLUT::at(255), pcl::RGB(254, 231, 36));
+  ASSERT_EQ (pcl::ViridisLUT::size(), 256);
+  ASSERT_RGB_EQ (pcl::ViridisLUT::at (0), pcl::RGB (68, 1, 84));
+  ASSERT_RGB_EQ (pcl::ViridisLUT::at (255), pcl::RGB (254, 231, 36));
 }
 
 int
 main (int argc, char** argv)
 {
-  testing::InitGoogleTest(&argc, argv);
+  testing::InitGoogleTest (&argc, argv);
   return (RUN_ALL_TESTS());
 }

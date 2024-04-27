@@ -46,25 +46,25 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::seededHueSegmentation(const PointCloud<PointXYZRGB>& cloud,
-                           const search::Search<PointXYZRGB>::Ptr& tree,
-                           float tolerance,
-                           PointIndices& indices_in,
-                           PointIndices& indices_out,
-                           float delta_hue)
+pcl::seededHueSegmentation (const PointCloud<PointXYZRGB>& cloud,
+                            const search::Search<PointXYZRGB>::Ptr& tree,
+                            float tolerance,
+                            PointIndices& indices_in,
+                            PointIndices& indices_out,
+                            float delta_hue)
 {
   if (tree->getInputCloud()->size() != cloud.size()) {
-    PCL_ERROR("[pcl::seededHueSegmentation] Tree built for a different point cloud "
-              "dataset (%zu) than the input cloud (%zu)!\n",
-              static_cast<std::size_t>(tree->getInputCloud()->size()),
-              static_cast<std::size_t>(cloud.size()));
+    PCL_ERROR ("[pcl::seededHueSegmentation] Tree built for a different point cloud "
+               "dataset (%zu) than the input cloud (%zu)!\n",
+               static_cast<std::size_t> (tree->getInputCloud()->size()),
+               static_cast<std::size_t> (cloud.size()));
     return;
   }
   // If tree gives sorted results, we can skip the first one because it is the query
   // point itself
   const std::size_t nn_start_idx = tree->getSortedResults() ? 1 : 0;
   // Create a bool vector of processed point indices, and initialize it to false
-  std::vector<bool> processed(cloud.size(), false);
+  std::vector<bool> processed (cloud.size(), false);
 
   Indices nn_indices;
   std::vector<float> nn_distances;
@@ -78,21 +78,22 @@ pcl::seededHueSegmentation(const PointCloud<PointXYZRGB>& cloud,
 
     Indices seed_queue;
     int sq_idx = 0;
-    seed_queue.push_back(i);
+    seed_queue.push_back (i);
 
     PointXYZRGB p;
     p = cloud[i];
     PointXYZHSV h;
-    PointXYZRGBtoXYZHSV(p, h);
+    PointXYZRGBtoXYZHSV (p, h);
 
-    while (sq_idx < static_cast<int>(seed_queue.size())) {
-      int ret = tree->radiusSearch(seed_queue[sq_idx],
-                                   tolerance,
-                                   nn_indices,
-                                   nn_distances,
-                                   std::numeric_limits<int>::max());
+    while (sq_idx < static_cast<int> (seed_queue.size())) {
+      int ret = tree->radiusSearch (seed_queue[sq_idx],
+                                    tolerance,
+                                    nn_indices,
+                                    nn_distances,
+                                    std::numeric_limits<int>::max());
       if (ret == -1)
-        PCL_ERROR("[pcl::seededHueSegmentation] radiusSearch returned error code -1\n");
+        PCL_ERROR (
+            "[pcl::seededHueSegmentation] radiusSearch returned error code -1\n");
       // Search for sq_idx
       if (!ret) {
         sq_idx++;
@@ -106,10 +107,10 @@ pcl::seededHueSegmentation(const PointCloud<PointXYZRGB>& cloud,
         PointXYZRGB p_l;
         p_l = cloud[nn_indices[j]];
         PointXYZHSV h_l;
-        PointXYZRGBtoXYZHSV(p_l, h_l);
+        PointXYZRGBtoXYZHSV (p_l, h_l);
 
-        if (std::fabs(h_l.h - h.h) < delta_hue) {
-          seed_queue.push_back(nn_indices[j]);
+        if (std::fabs (h_l.h - h.h) < delta_hue) {
+          seed_queue.push_back (nn_indices[j]);
           processed[nn_indices[j]] = true;
         }
       }
@@ -118,32 +119,32 @@ pcl::seededHueSegmentation(const PointCloud<PointXYZRGB>& cloud,
     }
     // Copy the seed queue into the output indices
     for (const auto& l : seed_queue)
-      indices_out.indices.push_back(l);
+      indices_out.indices.push_back (l);
   }
   // This is purely esthetical, can be removed for speed purposes
-  std::sort(indices_out.indices.begin(), indices_out.indices.end());
+  std::sort (indices_out.indices.begin(), indices_out.indices.end());
 }
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::seededHueSegmentation(const PointCloud<PointXYZRGB>& cloud,
-                           const search::Search<PointXYZRGBL>::Ptr& tree,
-                           float tolerance,
-                           PointIndices& indices_in,
-                           PointIndices& indices_out,
-                           float delta_hue)
+pcl::seededHueSegmentation (const PointCloud<PointXYZRGB>& cloud,
+                            const search::Search<PointXYZRGBL>::Ptr& tree,
+                            float tolerance,
+                            PointIndices& indices_in,
+                            PointIndices& indices_out,
+                            float delta_hue)
 {
   if (tree->getInputCloud()->size() != cloud.size()) {
-    PCL_ERROR("[pcl::seededHueSegmentation] Tree built for a different point cloud "
-              "dataset (%zu) than the input cloud (%zu)!\n",
-              static_cast<std::size_t>(tree->getInputCloud()->size()),
-              static_cast<std::size_t>(cloud.size()));
+    PCL_ERROR ("[pcl::seededHueSegmentation] Tree built for a different point cloud "
+               "dataset (%zu) than the input cloud (%zu)!\n",
+               static_cast<std::size_t> (tree->getInputCloud()->size()),
+               static_cast<std::size_t> (cloud.size()));
     return;
   }
   // If tree gives sorted results, we can skip the first one because it is the query
   // point itself
   const std::size_t nn_start_idx = tree->getSortedResults() ? 1 : 0;
   // Create a bool vector of processed point indices, and initialize it to false
-  std::vector<bool> processed(cloud.size(), false);
+  std::vector<bool> processed (cloud.size(), false);
 
   Indices nn_indices;
   std::vector<float> nn_distances;
@@ -157,21 +158,22 @@ pcl::seededHueSegmentation(const PointCloud<PointXYZRGB>& cloud,
 
     Indices seed_queue;
     int sq_idx = 0;
-    seed_queue.push_back(i);
+    seed_queue.push_back (i);
 
     PointXYZRGB p;
     p = cloud[i];
     PointXYZHSV h;
-    PointXYZRGBtoXYZHSV(p, h);
+    PointXYZRGBtoXYZHSV (p, h);
 
-    while (sq_idx < static_cast<int>(seed_queue.size())) {
-      int ret = tree->radiusSearch(seed_queue[sq_idx],
-                                   tolerance,
-                                   nn_indices,
-                                   nn_distances,
-                                   std::numeric_limits<int>::max());
+    while (sq_idx < static_cast<int> (seed_queue.size())) {
+      int ret = tree->radiusSearch (seed_queue[sq_idx],
+                                    tolerance,
+                                    nn_indices,
+                                    nn_distances,
+                                    std::numeric_limits<int>::max());
       if (ret == -1)
-        PCL_ERROR("[pcl::seededHueSegmentation] radiusSearch returned error code -1\n");
+        PCL_ERROR (
+            "[pcl::seededHueSegmentation] radiusSearch returned error code -1\n");
       // Search for sq_idx
       if (!ret) {
         sq_idx++;
@@ -184,10 +186,10 @@ pcl::seededHueSegmentation(const PointCloud<PointXYZRGB>& cloud,
         PointXYZRGB p_l;
         p_l = cloud[nn_indices[j]];
         PointXYZHSV h_l;
-        PointXYZRGBtoXYZHSV(p_l, h_l);
+        PointXYZRGBtoXYZHSV (p_l, h_l);
 
-        if (std::fabs(h_l.h - h.h) < delta_hue) {
-          seed_queue.push_back(nn_indices[j]);
+        if (std::fabs (h_l.h - h.h) < delta_hue) {
+          seed_queue.push_back (nn_indices[j]);
           processed[nn_indices[j]] = true;
         }
       }
@@ -196,16 +198,17 @@ pcl::seededHueSegmentation(const PointCloud<PointXYZRGB>& cloud,
     }
     // Copy the seed queue into the output indices
     for (const auto& l : seed_queue)
-      indices_out.indices.push_back(l);
+      indices_out.indices.push_back (l);
   }
   // This is purely esthetical, can be removed for speed purposes
-  std::sort(indices_out.indices.begin(), indices_out.indices.end());
+  std::sort (indices_out.indices.begin(), indices_out.indices.end());
 }
 //////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////
 
 void
-pcl::SeededHueSegmentation::segment(PointIndices& indices_in, PointIndices& indices_out)
+pcl::SeededHueSegmentation::segment (PointIndices& indices_in,
+                                     PointIndices& indices_out)
 {
   if (!initCompute() || (input_ && input_->points.empty()) ||
       (indices_ && indices_->empty())) {
@@ -216,19 +219,19 @@ pcl::SeededHueSegmentation::segment(PointIndices& indices_in, PointIndices& indi
   // Initialize the spatial locator
   if (!tree_) {
     if (input_->isOrganized())
-      tree_.reset(new pcl::search::OrganizedNeighbor<PointXYZRGB>());
+      tree_.reset (new pcl::search::OrganizedNeighbor<PointXYZRGB>());
     else
-      tree_.reset(new pcl::search::KdTree<PointXYZRGB>(false));
+      tree_.reset (new pcl::search::KdTree<PointXYZRGB> (false));
   }
 
   // Send the input dataset to the spatial locator
-  tree_->setInputCloud(input_);
-  seededHueSegmentation(*input_,
-                        tree_,
-                        static_cast<float>(cluster_tolerance_),
-                        indices_in,
-                        indices_out,
-                        delta_hue_);
+  tree_->setInputCloud (input_);
+  seededHueSegmentation (*input_,
+                         tree_,
+                         static_cast<float> (cluster_tolerance_),
+                         indices_in,
+                         indices_out,
+                         delta_hue_);
   deinitCompute();
 }
 

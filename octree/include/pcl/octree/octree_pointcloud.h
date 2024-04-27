@@ -79,7 +79,7 @@ public:
   /** \brief Octree pointcloud constructor.
    * \param[in] resolution_arg octree resolution at lowest octree level
    */
-  OctreePointCloud(const double resolution_arg);
+  OctreePointCloud (const double resolution_arg);
 
   // public typedefs
   using IndicesPtr = shared_ptr<Indices>;
@@ -165,8 +165,8 @@ public:
   {
     // octree needs to be empty to change its resolution
     if (this->leaf_count_ > 0) {
-      PCL_ERROR("[pcl::octree::OctreePointCloud::setResolution] Octree needs to be "
-                "empty to change its resolution(leaf count should must be 0)!\n");
+      PCL_ERROR ("[pcl::octree::OctreePointCloud::setResolution] Octree needs to be "
+                 "empty to change its resolution(leaf count should must be 0)!\n");
       return;
     }
 
@@ -377,7 +377,7 @@ public:
   inline double
   getVoxelSquaredDiameter () const
   {
-    return getVoxelSquaredDiameter(this->octree_depth_);
+    return getVoxelSquaredDiameter (this->octree_depth_);
   }
 
   /** \brief Calculates the squared voxel cube side length at given tree depth
@@ -393,7 +393,7 @@ public:
   inline double
   getVoxelSquaredSideLen () const
   {
-    return getVoxelSquaredSideLen(this->octree_depth_);
+    return getVoxelSquaredSideLen (this->octree_depth_);
   }
 
   /** \brief Generate bounds of the current voxel of an octree iterator
@@ -406,10 +406,10 @@ public:
                   Eigen::Vector3f& min_pt,
                   Eigen::Vector3f& max_pt) const
   {
-    this->genVoxelBoundsFromOctreeKey(iterator.getCurrentOctreeKey(),
-                                      iterator.getCurrentOctreeDepth(),
-                                      min_pt,
-                                      max_pt);
+    this->genVoxelBoundsFromOctreeKey (iterator.getCurrentOctreeKey(),
+                                       iterator.getCurrentOctreeDepth(),
+                                       min_pt,
+                                       max_pt);
   }
 
   /** \brief Enable dynamic octree structure
@@ -421,8 +421,9 @@ public:
   enableDynamicDepth (std::size_t maxObjsPerLeaf)
   {
     if (this->leaf_count_ > 0) {
-      PCL_ERROR("[pcl::octree::OctreePointCloud::enableDynamicDepth] Leaf count should "
-                "must be 0!\n");
+      PCL_ERROR (
+          "[pcl::octree::OctreePointCloud::enableDynamicDepth] Leaf count should "
+          "must be 0!\n");
       return;
     }
     max_objs_per_leaf_ = maxObjsPerLeaf;
@@ -468,9 +469,9 @@ protected:
     OctreeKey key;
 
     // generate key for point
-    this->genOctreeKeyforPoint(point_arg, key);
+    this->genOctreeKeyforPoint (point_arg, key);
 
-    return (this->findLeaf(key));
+    return (this->findLeaf (key));
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

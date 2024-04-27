@@ -101,7 +101,7 @@ public:
   inline void
   setNrDistanceBins (std::size_t nr_distance_bins)
   {
-    nr_distance_bins_ = static_cast<int>(nr_distance_bins);
+    nr_distance_bins_ = static_cast<int> (nr_distance_bins);
   };
 
   /** \brief Returns the number of bins in the distance dimension of the spin image. */
@@ -118,7 +118,7 @@ public:
   inline void
   setNrIntensityBins (std::size_t nr_intensity_bins)
   {
-    nr_intensity_bins_ = static_cast<int>(nr_intensity_bins);
+    nr_intensity_bins_ = static_cast<int> (nr_intensity_bins);
   };
 
   /** \brief Returns the number of bins in the intensity dimension of the spin image. */

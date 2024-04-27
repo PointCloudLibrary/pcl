@@ -60,10 +60,10 @@ class PCL_EXPORTS MultiChannel2DComparisonFeatureHandler
 
 public:
   /** Constructor. */
-  MultiChannel2DComparisonFeatureHandler(const int feature_window_width,
-                                         const int feature_window_height)
-  : feature_window_width_(feature_window_width)
-  , feature_window_height_(feature_window_height)
+  MultiChannel2DComparisonFeatureHandler (const int feature_window_width,
+                                          const int feature_window_height)
+  : feature_window_width_ (feature_window_width)
+  , feature_window_height_ (feature_window_height)
   {}
 
   /** Sets the feature window size.
@@ -88,19 +88,19 @@ public:
       const std::size_t num_of_features,
       std::vector<MultiChannel2DComparisonFeature<PointXY32i>>& features)
   {
-    features.resize(num_of_features);
+    features.resize (num_of_features);
     for (std::size_t feature_index = 0; feature_index < num_of_features;
          ++feature_index) {
-      features[feature_index].p1 = PointXY32i::randomPoint(-feature_window_width_ / 2,
-                                                           feature_window_width_ / 2,
-                                                           -feature_window_height_ / 2,
-                                                           feature_window_height_ / 2);
-      features[feature_index].p2 = PointXY32i::randomPoint(-feature_window_width_ / 2,
-                                                           feature_window_width_ / 2,
-                                                           -feature_window_height_ / 2,
-                                                           feature_window_height_ / 2);
-      features[feature_index].channel = static_cast<unsigned char>(
-          NUM_OF_CHANNELS * (static_cast<float>(rand()) / (RAND_MAX + 1)));
+      features[feature_index].p1 = PointXY32i::randomPoint (-feature_window_width_ / 2,
+                                                            feature_window_width_ / 2,
+                                                            -feature_window_height_ / 2,
+                                                            feature_window_height_ / 2);
+      features[feature_index].p2 = PointXY32i::randomPoint (-feature_window_width_ / 2,
+                                                            feature_window_width_ / 2,
+                                                            -feature_window_height_ / 2,
+                                                            feature_window_height_ / 2);
+      features[feature_index].channel = static_cast<unsigned char> (
+          NUM_OF_CHANNELS * (static_cast<float> (rand()) / (RAND_MAX + 1)));
     }
   }
 
@@ -120,12 +120,12 @@ public:
                    std::vector<float>& results,
                    std::vector<unsigned char>& flags) const
   {
-    results.resize(examples.size());
-    flags.resize(examples.size());
+    results.resize (examples.size());
+    flags.resize (examples.size());
     for (int example_index = 0; example_index < examples.size(); ++example_index) {
       const MultipleData2DExampleIndex& example = examples[example_index];
 
-      evaluateFeature(
+      evaluateFeature (
           feature, data_set, example, results[example_index], flags[example_index]);
     }
   }
@@ -150,24 +150,24 @@ public:
     const int center_row_index = example.y;
 
     const std::size_t p1_col =
-        static_cast<std::size_t>(feature.p1.x + center_col_index);
+        static_cast<std::size_t> (feature.p1.x + center_col_index);
     const std::size_t p1_row =
-        static_cast<std::size_t>(feature.p1.y + center_row_index);
+        static_cast<std::size_t> (feature.p1.y + center_row_index);
 
     const std::size_t p2_col =
-        static_cast<std::size_t>(feature.p2.x + center_col_index);
+        static_cast<std::size_t> (feature.p2.x + center_col_index);
     const std::size_t p2_row =
-        static_cast<std::size_t>(feature.p2.y + center_row_index);
+        static_cast<std::size_t> (feature.p2.y + center_row_index);
 
     const unsigned char channel = feature.channel;
 
     const float value1 =
-        static_cast<float>(data_set(example.data_set_id, p1_col, p1_row)[channel]);
+        static_cast<float> (data_set (example.data_set_id, p1_col, p1_row)[channel]);
     const float value2 =
-        static_cast<float>(data_set(example.data_set_id, p2_col, p2_row)[channel]);
+        static_cast<float> (data_set (example.data_set_id, p2_col, p2_row)[channel]);
 
     result = value1 - value2;
-    flag = (std::isfinite(value1) && std::isfinite(value2)) ? 0 : 1;
+    flag = (std::isfinite (value1) && std::isfinite (value2)) ? 0 : 1;
   }
 
   /** Generates code for feature evaluation.
@@ -209,10 +209,10 @@ class PCL_EXPORTS ScaledMultiChannel2DComparisonFeatureHandler
 
 public:
   /** Constructor. */
-  ScaledMultiChannel2DComparisonFeatureHandler(const int feature_window_width,
-                                               const int feature_window_height)
-  : feature_window_width_(feature_window_width)
-  , feature_window_height_(feature_window_height)
+  ScaledMultiChannel2DComparisonFeatureHandler (const int feature_window_width,
+                                                const int feature_window_height)
+  : feature_window_width_ (feature_window_width)
+  , feature_window_height_ (feature_window_height)
   {}
 
   /** Sets the feature window size.
@@ -237,19 +237,19 @@ public:
       const std::size_t num_of_features,
       std::vector<MultiChannel2DComparisonFeature<PointXY32f>>& features)
   {
-    features.resize(num_of_features);
+    features.resize (num_of_features);
     for (std::size_t feature_index = 0; feature_index < num_of_features;
          ++feature_index) {
-      features[feature_index].p1 = PointXY32f::randomPoint(-feature_window_width_ / 2,
-                                                           feature_window_width_ / 2,
-                                                           -feature_window_height_ / 2,
-                                                           feature_window_height_ / 2);
-      features[feature_index].p2 = PointXY32f::randomPoint(-feature_window_width_ / 2,
-                                                           feature_window_width_ / 2,
-                                                           -feature_window_height_ / 2,
-                                                           feature_window_height_ / 2);
-      features[feature_index].channel = static_cast<unsigned char>(
-          NUM_OF_CHANNELS * (static_cast<float>(rand()) / (RAND_MAX + 1)));
+      features[feature_index].p1 = PointXY32f::randomPoint (-feature_window_width_ / 2,
+                                                            feature_window_width_ / 2,
+                                                            -feature_window_height_ / 2,
+                                                            feature_window_height_ / 2);
+      features[feature_index].p2 = PointXY32f::randomPoint (-feature_window_width_ / 2,
+                                                            feature_window_width_ / 2,
+                                                            -feature_window_height_ / 2,
+                                                            feature_window_height_ / 2);
+      features[feature_index].channel = static_cast<unsigned char> (
+          NUM_OF_CHANNELS * (static_cast<float> (rand()) / (RAND_MAX + 1)));
     }
   }
 
@@ -269,12 +269,12 @@ public:
                    std::vector<float>& results,
                    std::vector<unsigned char>& flags) const
   {
-    results.resize(examples.size());
-    flags.resize(examples.size());
+    results.resize (examples.size());
+    flags.resize (examples.size());
     for (int example_index = 0; example_index < examples.size(); ++example_index) {
       const MultipleData2DExampleIndex& example = examples[example_index];
 
-      evaluateFeature(
+      evaluateFeature (
           feature, data_set, example, results[example_index], flags[example_index]);
     }
   }
@@ -300,32 +300,32 @@ public:
 
     float scale;
     if (INVERT_SCALE)
-      scale = 1.0f / static_cast<float>(data_set(example.data_set_id,
-                                                 center_col_index,
-                                                 center_row_index)[SCALE_CHANNEL]);
+      scale = 1.0f / static_cast<float> (data_set (example.data_set_id,
+                                                   center_col_index,
+                                                   center_row_index)[SCALE_CHANNEL]);
     else
-      scale = static_cast<float>(data_set(
+      scale = static_cast<float> (data_set (
           example.data_set_id, center_col_index, center_row_index)[SCALE_CHANNEL]);
 
     const std::size_t p1_col =
-        static_cast<std::size_t>(scale * feature.p1.x + center_col_index);
+        static_cast<std::size_t> (scale * feature.p1.x + center_col_index);
     const std::size_t p1_row =
-        static_cast<std::size_t>(scale * feature.p1.y + center_row_index);
+        static_cast<std::size_t> (scale * feature.p1.y + center_row_index);
 
     const std::size_t p2_col =
-        static_cast<std::size_t>(scale * feature.p2.x + center_col_index);
+        static_cast<std::size_t> (scale * feature.p2.x + center_col_index);
     const std::size_t p2_row =
-        static_cast<std::size_t>(scale * feature.p2.y + center_row_index);
+        static_cast<std::size_t> (scale * feature.p2.y + center_row_index);
 
     const unsigned char channel = feature.channel;
 
     const float value1 =
-        static_cast<float>(data_set(example.data_set_id, p1_col, p1_row)[channel]);
+        static_cast<float> (data_set (example.data_set_id, p1_col, p1_row)[channel]);
     const float value2 =
-        static_cast<float>(data_set(example.data_set_id, p2_col, p2_row)[channel]);
+        static_cast<float> (data_set (example.data_set_id, p2_col, p2_row)[channel]);
 
     result = value1 - value2;
-    flag = (std::isfinite(value1) && std::isfinite(value2)) ? 0 : 1;
+    flag = (std::isfinite (value1) && std::isfinite (value2)) ? 0 : 1;
   }
 
   /** Generates code for feature evaluation.
@@ -391,7 +391,7 @@ ScaledMultiChannel2DComparisonFeatureHandlerCCodeGenerator<
     DATA_TYPE,
     NUM_OF_CHANNELS,
     SCALE_CHANNEL,
-    INVERT_SCALE>::generateEvalFunctionCode(std::ostream& stream) const
+    INVERT_SCALE>::generateEvalFunctionCode (std::ostream& stream) const
 {
   if (NUM_OF_CHANNELS == 1 && SCALE_CHANNEL == 0 && INVERT_SCALE) {
     stream << "const float scale  = 1.0f / static_cast<float> (*data_ptr);"
@@ -399,7 +399,7 @@ ScaledMultiChannel2DComparisonFeatureHandlerCCodeGenerator<
     stream << "" << std::endl;
     stream << "struct LocalFeatureHandler" << std::endl;
     stream << "{" << std::endl;
-    stream << "  static inline void eval (" << typeid(DATA_TYPE).name()
+    stream << "  static inline void eval (" << typeid (DATA_TYPE).name()
            << " * a_ptr, const float a_x1, const float a_y1, const float a_x2, const "
               "float a_y2, const float a_scale, const int a_width, float & a_result, "
               "unsigned char & a_flags)"
@@ -426,8 +426,8 @@ ScaledMultiChannel2DComparisonFeatureHandlerCCodeGenerator<DATA_TYPE,
                                                            NUM_OF_CHANNELS,
                                                            SCALE_CHANNEL,
                                                            INVERT_SCALE>::
-    generateEvalCode(const MultiChannel2DComparisonFeature<PointXY32f>& feature,
-                     std::ostream& stream) const
+    generateEvalCode (const MultiChannel2DComparisonFeature<PointXY32f>& feature,
+                      std::ostream& stream) const
 {
   stream << "LocalFeatureHandler::eval (data_ptr, " << feature.p1.x << ", "
          << feature.p1.y << ", " << feature.p2.x << ", " << feature.p2.y << ", "

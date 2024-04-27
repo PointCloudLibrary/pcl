@@ -6,14 +6,14 @@
 int
 main ()
 {
-  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
-  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_filtered(
+  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
+  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_filtered (
       new pcl::PointCloud<pcl::PointXYZ>);
 
   // Fill in the cloud data
   cloud->width = 5;
   cloud->height = 1;
-  cloud->points.resize(cloud->width * cloud->height);
+  cloud->points.resize (cloud->width * cloud->height);
 
   for (auto& point : *cloud) {
     point.x = 1024 * rand() / (RAND_MAX + 1.0f);
@@ -26,12 +26,12 @@ main ()
     std::cerr << "    " << point.x << " " << point.y << " " << point.z << std::endl;
   // build the filter
   pcl::RadiusOutlierRemoval<pcl::PointXYZ> outrem;
-  outrem.setInputCloud(cloud);
-  outrem.setRadiusSearch(0.8);
-  outrem.setMinNeighborsInRadius(2);
+  outrem.setInputCloud (cloud);
+  outrem.setRadiusSearch (0.8);
+  outrem.setMinNeighborsInRadius (2);
 
   // apply filter
-  outrem.filter(*cloud_filtered);
+  outrem.filter (*cloud_filtered);
 
   // display pointcloud after filtering
   std::cerr << "Cloud after filtering: " << std::endl;

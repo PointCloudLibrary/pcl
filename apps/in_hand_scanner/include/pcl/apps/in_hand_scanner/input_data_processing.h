@@ -182,32 +182,32 @@ public:
   inline void
   setHMin (const float h_min)
   {
-    h_min_ = pcl::ihs::clamp(h_min, 0.f, 360.f);
+    h_min_ = pcl::ihs::clamp (h_min, 0.f, 360.f);
   }
   inline void
   setHMax (const float h_max)
   {
-    h_max_ = pcl::ihs::clamp(h_max, 0.f, 360.f);
+    h_max_ = pcl::ihs::clamp (h_max, 0.f, 360.f);
   }
   inline void
   setSMin (const float s_min)
   {
-    s_min_ = pcl::ihs::clamp(s_min, 0.f, 1.f);
+    s_min_ = pcl::ihs::clamp (s_min, 0.f, 1.f);
   }
   inline void
   setSMax (const float s_max)
   {
-    s_max_ = pcl::ihs::clamp(s_max, 0.f, 1.f);
+    s_max_ = pcl::ihs::clamp (s_max, 0.f, 1.f);
   }
   inline void
   setVMin (const float v_min)
   {
-    v_min_ = pcl::ihs::clamp(v_min, 0.f, 1.f);
+    v_min_ = pcl::ihs::clamp (v_min, 0.f, 1.f);
   }
   inline void
   setVMax (const float v_max)
   {
-    v_max_ = pcl::ihs::clamp(v_max, 0.f, 1.f);
+    v_max_ = pcl::ihs::clamp (v_max, 0.f, 1.f);
   }
 
   inline float

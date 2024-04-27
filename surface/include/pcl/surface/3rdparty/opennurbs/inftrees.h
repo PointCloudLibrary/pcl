@@ -46,9 +46,9 @@ typedef struct {
 /* Type of code to build for inftable() */
 typedef enum { CODES, LENS, DISTS } codetype;
 
-extern int inflate_table OF((codetype type,
-                             unsigned short FAR* lens,
-                             unsigned codes,
-                             code FAR* FAR* table,
-                             unsigned FAR* bits,
-                             unsigned short FAR* work));
+extern int inflate_table OF ((codetype type,
+                              unsigned short FAR* lens,
+                              unsigned codes,
+                              code FAR* FAR* table,
+                              unsigned FAR* bits,
+                              unsigned short FAR* work));

@@ -57,7 +57,7 @@ protected:
     int y;
 
     bool
-    operator<(const Candidate& rhs)
+    operator< (const Candidate& rhs)
     {
       return (gradient.magnitude > rhs.gradient.magnitude);
     }
@@ -66,7 +66,7 @@ protected:
 public:
   using PointCloudIn = pcl::PointCloud<PointInT>;
 
-  ColorGradientDOTModality(std::size_t bin_size);
+  ColorGradientDOTModality (std::size_t bin_size);
 
   virtual ~ColorGradientDOTModality() = default;
 
@@ -129,10 +129,10 @@ private:
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT>
-pcl::ColorGradientDOTModality<PointInT>::ColorGradientDOTModality(
+pcl::ColorGradientDOTModality<PointInT>::ColorGradientDOTModality (
     const std::size_t bin_size)
-: bin_size_(bin_size)
-, gradient_magnitude_threshold_(80.0f)
+: bin_size_ (bin_size)
+, gradient_magnitude_threshold_ (80.0f)
 , color_gradients_()
 , dominant_quantized_color_gradients_()
 {}
@@ -160,11 +160,11 @@ pcl::ColorGradientDOTModality<PointInT>::computeMaxColorGradients()
   const int width = input_->width;
   const int height = input_->height;
 
-  color_gradients_.resize(width * height);
+  color_gradients_.resize (width * height);
   color_gradients_.width = width;
   color_gradients_.height = height;
 
-  constexpr float pi = std::tan(1.0f) * 4;
+  constexpr float pi = std::tan (1.0f) * 4;
   for (int row_index = 0; row_index < height - 2; ++row_index) {
     for (int col_index = 0; col_index < width - 2; ++col_index) {
       const int index0 = row_index * width + col_index;
@@ -183,13 +183,13 @@ pcl::ColorGradientDOTModality<PointInT>::computeMaxColorGradients()
       const unsigned char g_r = (*input_)[index_r].g;
       const unsigned char b_r = (*input_)[index_r].b;
 
-      const float r_dx = static_cast<float>(r_c) - static_cast<float>(r0);
-      const float g_dx = static_cast<float>(g_c) - static_cast<float>(g0);
-      const float b_dx = static_cast<float>(b_c) - static_cast<float>(b0);
+      const float r_dx = static_cast<float> (r_c) - static_cast<float> (r0);
+      const float g_dx = static_cast<float> (g_c) - static_cast<float> (g0);
+      const float b_dx = static_cast<float> (b_c) - static_cast<float> (b0);
 
-      const float r_dy = static_cast<float>(r_r) - static_cast<float>(r0);
-      const float g_dy = static_cast<float>(g_r) - static_cast<float>(g0);
-      const float b_dy = static_cast<float>(b_r) - static_cast<float>(b0);
+      const float r_dy = static_cast<float> (r_r) - static_cast<float> (r0);
+      const float g_dy = static_cast<float> (g_r) - static_cast<float> (g0);
+      const float b_dy = static_cast<float> (b_r) - static_cast<float> (b0);
 
       const float sqr_mag_r = r_dx * r_dx + r_dy * r_dy;
       const float sqr_mag_g = g_dx * g_dx + g_dy * g_dy;
@@ -199,22 +199,22 @@ pcl::ColorGradientDOTModality<PointInT>::computeMaxColorGradients()
       gradient.x = col_index;
       gradient.y = row_index;
       if (sqr_mag_r > sqr_mag_g && sqr_mag_r > sqr_mag_b) {
-        gradient.magnitude = sqrt(sqr_mag_r);
-        gradient.angle = std::atan2(r_dy, r_dx) * 180.0f / pi;
+        gradient.magnitude = sqrt (sqr_mag_r);
+        gradient.angle = std::atan2 (r_dy, r_dx) * 180.0f / pi;
       }
       else if (sqr_mag_g > sqr_mag_b) {
-        gradient.magnitude = sqrt(sqr_mag_g);
-        gradient.angle = std::atan2(g_dy, g_dx) * 180.0f / pi;
+        gradient.magnitude = sqrt (sqr_mag_g);
+        gradient.angle = std::atan2 (g_dy, g_dx) * 180.0f / pi;
       }
       else {
-        gradient.magnitude = sqrt(sqr_mag_b);
-        gradient.angle = std::atan2(b_dy, b_dx) * 180.0f / pi;
+        gradient.magnitude = sqrt (sqr_mag_b);
+        gradient.angle = std::atan2 (b_dy, b_dx) * 180.0f / pi;
       }
 
-      assert(color_gradients_(col_index + 1, row_index + 1).angle >= -180 &&
-             color_gradients_(col_index + 1, row_index + 1).angle <= 180);
+      assert (color_gradients_ (col_index + 1, row_index + 1).angle >= -180 &&
+              color_gradients_ (col_index + 1, row_index + 1).angle <= 180);
 
-      color_gradients_(col_index + 1, row_index + 1) = gradient;
+      color_gradients_ (col_index + 1, row_index + 1) = gradient;
     }
   }
 
@@ -232,14 +232,14 @@ pcl::ColorGradientDOTModality<PointInT>::computeDominantQuantizedGradients()
   const std::size_t output_width = input_width / bin_size_;
   const std::size_t output_height = input_height / bin_size_;
 
-  dominant_quantized_color_gradients_.resize(output_width, output_height);
+  dominant_quantized_color_gradients_.resize (output_width, output_height);
 
   constexpr std::size_t num_gradient_bins = 7;
 
   constexpr float divisor = 180.0f / (num_gradient_bins - 1.0f);
 
   unsigned char* peak_pointer = dominant_quantized_color_gradients_.getData();
-  std::fill_n(peak_pointer, output_width * output_height, 0);
+  std::fill_n (peak_pointer, output_width * output_height, 0);
 
   for (std::size_t row_bin_index = 0; row_bin_index < output_height; ++row_bin_index) {
     for (std::size_t col_bin_index = 0; col_bin_index < output_width; ++col_bin_index) {
@@ -255,7 +255,7 @@ pcl::ColorGradientDOTModality<PointInT>::computeDominantQuantizedGradients()
         for (std::size_t col_sub_index = 0; col_sub_index < bin_size_;
              ++col_sub_index) {
           const float magnitude =
-              color_gradients_(col_sub_index + x_position, row_sub_index + y_position)
+              color_gradients_ (col_sub_index + x_position, row_sub_index + y_position)
                   .magnitude;
 
           if (magnitude > max_gradient) {
@@ -268,13 +268,13 @@ pcl::ColorGradientDOTModality<PointInT>::computeDominantQuantizedGradients()
 
       if (max_gradient >= gradient_magnitude_threshold_) {
         const std::size_t angle =
-            static_cast<std::size_t>(180 +
-                                     color_gradients_(max_gradient_pos_x + x_position,
-                                                      max_gradient_pos_y + y_position)
-                                         .angle +
-                                     0.5f);
+            static_cast<std::size_t> (180 +
+                                      color_gradients_ (max_gradient_pos_x + x_position,
+                                                        max_gradient_pos_y + y_position)
+                                          .angle +
+                                      0.5f);
         const std::size_t bin_index =
-            static_cast<std::size_t>((angle >= 180 ? angle - 180 : angle) / divisor);
+            static_cast<std::size_t> ((angle >= 180 ? angle - 180 : angle) / divisor);
 
         *peak_pointer |= 1 << bin_index;
       }
@@ -291,7 +291,7 @@ pcl::ColorGradientDOTModality<PointInT>::computeDominantQuantizedGradients()
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT>
 pcl::QuantizedMap
-pcl::ColorGradientDOTModality<PointInT>::computeInvariantQuantizedMap(
+pcl::ColorGradientDOTModality<PointInT>::computeInvariantQuantizedMap (
     const MaskMap& mask, const RegionXY& region)
 {
   const std::size_t input_width = input_->width;
@@ -306,7 +306,7 @@ pcl::ColorGradientDOTModality<PointInT>::computeInvariantQuantizedMap(
   const std::size_t sub_height = region.height / bin_size_;
 
   QuantizedMap map;
-  map.resize(sub_width, sub_height);
+  map.resize (sub_width, sub_height);
 
   constexpr std::size_t num_gradient_bins = 7;
   constexpr std::size_t max_num_of_gradients = 7;
@@ -324,18 +324,18 @@ pcl::ColorGradientDOTModality<PointInT>::computeInvariantQuantizedMap(
       std::vector<std::size_t> y_coordinates;
       std::vector<float> values;
 
-      for (int row_pixel_index = -static_cast<int>(bin_size_) / 2;
-           row_pixel_index <= static_cast<int>(bin_size_) / 2;
-           row_pixel_index += static_cast<int>(bin_size_) / 2) {
+      for (int row_pixel_index = -static_cast<int> (bin_size_) / 2;
+           row_pixel_index <= static_cast<int> (bin_size_) / 2;
+           row_pixel_index += static_cast<int> (bin_size_) / 2) {
         const std::size_t y_position =
             row_pixel_index + (sub_start_y + row_bin_index) * bin_size_;
 
         if (y_position < 0 || y_position >= input_height)
           continue;
 
-        for (int col_pixel_index = -static_cast<int>(bin_size_) / 2;
-             col_pixel_index <= static_cast<int>(bin_size_) / 2;
-             col_pixel_index += static_cast<int>(bin_size_) / 2) {
+        for (int col_pixel_index = -static_cast<int> (bin_size_) / 2;
+             col_pixel_index <= static_cast<int> (bin_size_) / 2;
+             col_pixel_index += static_cast<int> (bin_size_) / 2) {
           const std::size_t x_position =
               col_pixel_index + (sub_start_x + col_bin_index) * bin_size_;
           std::size_t counter = 0;
@@ -350,8 +350,8 @@ pcl::ColorGradientDOTModality<PointInT>::computeInvariantQuantizedMap(
                  ++row_sub_index) {
               for (std::size_t col_sub_index = 0; col_sub_index < bin_size_;
                    ++col_sub_index) {
-                const float magnitude = color_gradients_(col_sub_index + x_position,
-                                                         row_sub_index + y_position)
+                const float magnitude = color_gradients_ (col_sub_index + x_position,
+                                                          row_sub_index + y_position)
                                             .magnitude;
 
                 if (magnitude > local_max_gradient)
@@ -379,8 +379,8 @@ pcl::ColorGradientDOTModality<PointInT>::computeInvariantQuantizedMap(
                    ++row_sub_index) {
                 for (std::size_t col_sub_index = 0; col_sub_index < bin_size_;
                      ++col_sub_index) {
-                  const float magnitude = color_gradients_(col_sub_index + x_position,
-                                                           row_sub_index + y_position)
+                  const float magnitude = color_gradients_ (col_sub_index + x_position,
+                                                            row_sub_index + y_position)
                                               .magnitude;
 
                   if (magnitude > max_gradient) {
@@ -407,30 +407,30 @@ pcl::ColorGradientDOTModality<PointInT>::computeInvariantQuantizedMap(
 
             ++counter;
 
-            const std::size_t angle = static_cast<std::size_t>(
+            const std::size_t angle = static_cast<std::size_t> (
                 180 +
-                color_gradients_(max_gradient_pos_x + x_position,
-                                 max_gradient_pos_y + y_position)
+                color_gradients_ (max_gradient_pos_x + x_position,
+                                  max_gradient_pos_y + y_position)
                     .angle +
                 0.5f);
-            const std::size_t bin_index = static_cast<std::size_t>(
+            const std::size_t bin_index = static_cast<std::size_t> (
                 (angle >= 180 ? angle - 180 : angle) / divisor);
 
             *peak_pointer |= 1 << bin_index;
 
-            x_coordinates.push_back(max_gradient_pos_x + x_position);
-            y_coordinates.push_back(max_gradient_pos_y + y_position);
-            values.push_back(max_gradient);
+            x_coordinates.push_back (max_gradient_pos_x + x_position);
+            y_coordinates.push_back (max_gradient_pos_y + y_position);
+            values.push_back (max_gradient);
 
-            color_gradients_(max_gradient_pos_x + x_position,
-                             max_gradient_pos_y + y_position)
+            color_gradients_ (max_gradient_pos_x + x_position,
+                              max_gradient_pos_y + y_position)
                 .magnitude = -1.0f;
           }
 
           // reset values which have been set to -1
           for (std::size_t value_index = 0; value_index < values.size();
                ++value_index) {
-            color_gradients_(x_coordinates[value_index], y_coordinates[value_index])
+            color_gradients_ (x_coordinates[value_index], y_coordinates[value_index])
                 .magnitude = values[value_index];
           }
 

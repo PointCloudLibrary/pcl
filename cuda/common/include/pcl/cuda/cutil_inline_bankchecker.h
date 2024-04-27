@@ -14,16 +14,16 @@
 #ifdef _DEBUG
 #if __DEVICE_EMULATION__
 #define cutilBankChecker(array, idx)                                                   \
-  (__cutilBankChecker(threadIdx.x,                                                     \
-                      threadIdx.y,                                                     \
-                      threadIdx.z,                                                     \
-                      blockDim.x,                                                      \
-                      blockDim.y,                                                      \
-                      blockDim.z,                                                      \
-                      #array,                                                          \
-                      idx,                                                             \
-                      __FILE__,                                                        \
-                      __LINE__),                                                       \
+  (__cutilBankChecker (threadIdx.x,                                                    \
+                       threadIdx.y,                                                    \
+                       threadIdx.z,                                                    \
+                       blockDim.x,                                                     \
+                       blockDim.y,                                                     \
+                       blockDim.z,                                                     \
+                       #array,                                                         \
+                       idx,                                                            \
+                       __FILE__,                                                       \
+                       __LINE__),                                                      \
    array[idx])
 
 #else
@@ -46,5 +46,5 @@ __cutilBankChecker (unsigned int tidx,
                     char* file,
                     int line)
 {
-  cutCheckBankAccess(tidx, tidy, tidz, bdimx, bdimy, bdimz, file, line, aname, index);
+  cutCheckBankAccess (tidx, tidy, tidz, bdimx, bdimy, bdimz, file, line, aname, index);
 }

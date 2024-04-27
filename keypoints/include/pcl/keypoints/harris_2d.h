@@ -75,21 +75,21 @@ public:
    * \param min_distance
    * \param[in] threshold the threshold to filter out weak corners
    */
-  HarrisKeypoint2D(ResponseMethod method = HARRIS,
-                   int window_width = 3,
-                   int window_height = 3,
-                   int min_distance = 5,
-                   float threshold = 0.0)
-  : threshold_(threshold)
-  , refine_(false)
-  , nonmax_(true)
-  , method_(method)
-  , threads_(0)
-  , response_(new pcl::PointCloud<PointOutT>())
-  , window_width_(window_width)
-  , window_height_(window_height)
-  , skipped_pixels_(0)
-  , min_distance_(min_distance)
+  HarrisKeypoint2D (ResponseMethod method = HARRIS,
+                    int window_width = 3,
+                    int window_height = 3,
+                    int min_distance = 5,
+                    float threshold = 0.0)
+  : threshold_ (threshold)
+  , refine_ (false)
+  , nonmax_ (true)
+  , method_ (method)
+  , threads_ (0)
+  , response_ (new pcl::PointCloud<PointOutT>())
+  , window_width_ (window_width)
+  , window_height_ (window_height)
+  , skipped_pixels_ (0)
+  , min_distance_ (min_distance)
   {
     name_ = "HarrisKeypoint2D";
   }
@@ -189,7 +189,7 @@ private:
   bool
   greaterIntensityAtIndices (int a, int b) const
   {
-    return (response_->at(a).intensity > response_->at(b).intensity);
+    return (response_->at (a).intensity > response_->at (b).intensity);
   }
   /// Window width
   int window_width_;

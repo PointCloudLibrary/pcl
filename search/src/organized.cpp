@@ -42,4 +42,4 @@
 #include <pcl/point_types.h>
 
 // Instantiations of specific point types
-PCL_INSTANTIATE(OrganizedNeighbor, PCL_XYZ_POINT_TYPES)
+PCL_INSTANTIATE (OrganizedNeighbor, PCL_XYZ_POINT_TYPES)

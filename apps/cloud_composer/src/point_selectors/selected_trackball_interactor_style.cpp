@@ -14,7 +14,7 @@
 
 namespace pcl {
 namespace cloud_composer {
-vtkStandardNewMacro(SelectedTrackballStyleInteractor);
+vtkStandardNewMacro (SelectedTrackballStyleInteractor);
 }
 } // namespace pcl
 
@@ -30,21 +30,21 @@ pcl::cloud_composer::SelectedTrackballStyleInteractor::setSelectedActors()
   QList<QString> selected_cloud_ids;
   QModelIndexList selected_indexes = model_->getSelectionModel()->selectedIndexes();
   foreach (QModelIndex index, selected_indexes) {
-    QStandardItem* item = model_->itemFromIndex(index);
-    CloudItem* cloud_item = dynamic_cast<CloudItem*>(item);
+    QStandardItem* item = model_->itemFromIndex (index);
+    CloudItem* cloud_item = dynamic_cast<CloudItem*> (item);
     if (cloud_item)
-      selected_cloud_ids.append(cloud_item->getId());
+      selected_cloud_ids.append (cloud_item->getId());
   }
 
   for (const auto& actorItem : *actors_) {
-    QString id = QString::fromStdString(actorItem.first);
-    if (selected_cloud_ids.contains(id)) {
+    QString id = QString::fromStdString (actorItem.first);
+    if (selected_cloud_ids.contains (id)) {
       vtkLODActor* actor = actorItem.second.actor;
       qDebug() << "Adding " << id << " to selected manip! ptr =" << actor;
-      selected_actors_map_.insert(id, actor);
+      selected_actors_map_.insert (id, actor);
       vtkSmartPointer<vtkMatrix4x4> start_matrix = vtkSmartPointer<vtkMatrix4x4>::New();
-      actor->GetMatrix(start_matrix);
-      start_matrix_map_.insert(id, start_matrix);
+      actor->GetMatrix (start_matrix);
+      start_matrix_map_.insert (id, start_matrix);
     }
   }
 }
@@ -70,13 +70,13 @@ pcl::cloud_composer::SelectedTrackballStyleInteractor::OnLeftButtonUp()
 {
   vtkInteractorStyleTrackballActor::OnLeftButtonUp();
   foreach (QString id, selected_actors_map_.keys()) {
-    vtkLODActor* actor = selected_actors_map_.value(id);
+    vtkLODActor* actor = selected_actors_map_.value (id);
     ManipulationEvent* manip_event = new ManipulationEvent();
     // Fetch the actor we manipulated
     vtkSmartPointer<vtkMatrix4x4> end_matrix = vtkSmartPointer<vtkMatrix4x4>::New();
-    actor->GetMatrix(end_matrix);
-    manip_event->addManipulation(id, start_matrix_map_.value(id), end_matrix);
-    this->InvokeEvent(this->manipulation_complete_event_, manip_event);
+    actor->GetMatrix (end_matrix);
+    manip_event->addManipulation (id, start_matrix_map_.value (id), end_matrix);
+    this->InvokeEvent (this->manipulation_complete_event_, manip_event);
   }
 }
 
@@ -85,13 +85,13 @@ pcl::cloud_composer::SelectedTrackballStyleInteractor::OnRightButtonUp()
 {
   vtkInteractorStyleTrackballActor::OnRightButtonUp();
   foreach (QString id, selected_actors_map_.keys()) {
-    vtkLODActor* actor = selected_actors_map_.value(id);
+    vtkLODActor* actor = selected_actors_map_.value (id);
     ManipulationEvent* manip_event = new ManipulationEvent();
     // Fetch the actor we manipulated
     vtkSmartPointer<vtkMatrix4x4> end_matrix = vtkSmartPointer<vtkMatrix4x4>::New();
-    actor->GetMatrix(end_matrix);
-    manip_event->addManipulation(id, start_matrix_map_.value(id), end_matrix);
-    this->InvokeEvent(this->manipulation_complete_event_, manip_event);
+    actor->GetMatrix (end_matrix);
+    manip_event->addManipulation (id, start_matrix_map_.value (id), end_matrix);
+    this->InvokeEvent (this->manipulation_complete_event_, manip_event);
   }
 }
 
@@ -116,11 +116,11 @@ pcl::cloud_composer::SelectedTrackballStyleInteractor::Rotate()
 
   cam->OrthogonalizeViewUp();
   cam->ComputeViewPlaneNormal();
-  cam->GetViewUp(view_up);
-  vtkMath::Normalize(view_up);
-  cam->GetViewPlaneNormal(view_look);
-  vtkMath::Cross(view_up, view_look, view_right);
-  vtkMath::Normalize(view_right);
+  cam->GetViewUp (view_up);
+  vtkMath::Normalize (view_up);
+  cam->GetViewPlaneNormal (view_look);
+  vtkMath::Cross (view_up, view_look, view_right);
+  vtkMath::Normalize (view_right);
 
   // Get the furtherest point from object position+origin
   double outsidept[3];
@@ -132,12 +132,12 @@ pcl::cloud_composer::SelectedTrackballStyleInteractor::Rotate()
   // Convert them to display coord
   double disp_obj_center[3];
 
-  this->ComputeWorldToDisplay(
+  this->ComputeWorldToDisplay (
       obj_center[0], obj_center[1], obj_center[2], disp_obj_center);
 
-  this->ComputeWorldToDisplay(outsidept[0], outsidept[1], outsidept[2], outsidept);
+  this->ComputeWorldToDisplay (outsidept[0], outsidept[1], outsidept[2], outsidept);
 
-  double radius = sqrt(vtkMath::Distance2BetweenPoints(disp_obj_center, outsidept));
+  double radius = sqrt (vtkMath::Distance2BetweenPoints (disp_obj_center, outsidept));
   double nxf = (rwi->GetEventPosition()[0] - disp_obj_center[0]) / radius;
 
   double nyf = (rwi->GetEventPosition()[1] - disp_obj_center[1]) / radius;
@@ -147,10 +147,10 @@ pcl::cloud_composer::SelectedTrackballStyleInteractor::Rotate()
   double oyf = (rwi->GetLastEventPosition()[1] - disp_obj_center[1]) / radius;
 
   if (((nxf * nxf + nyf * nyf) <= 1.0) && ((oxf * oxf + oyf * oyf) <= 1.0)) {
-    double newXAngle = vtkMath::DegreesFromRadians(asin(nxf));
-    double newYAngle = vtkMath::DegreesFromRadians(asin(nyf));
-    double oldXAngle = vtkMath::DegreesFromRadians(asin(oxf));
-    double oldYAngle = vtkMath::DegreesFromRadians(asin(oyf));
+    double newXAngle = vtkMath::DegreesFromRadians (asin (nxf));
+    double newYAngle = vtkMath::DegreesFromRadians (asin (nyf));
+    double oldXAngle = vtkMath::DegreesFromRadians (asin (oxf));
+    double oldYAngle = vtkMath::DegreesFromRadians (asin (oyf));
 
     double scale[3];
     scale[0] = scale[1] = scale[2] = 1.0;
@@ -171,8 +171,8 @@ pcl::cloud_composer::SelectedTrackballStyleInteractor::Rotate()
     rotate[1][3] = view_right[2];
 
     foreach (QString id, selected_actors_map_.keys()) {
-      vtkLODActor* actor = selected_actors_map_.value(id);
-      this->Prop3DTransform(actor, obj_center, 2, rotate, scale);
+      vtkLODActor* actor = selected_actors_map_.value (id);
+      this->Prop3DTransform (actor, obj_center, 2, rotate, scale);
     }
     delete[] rotate[0];
     delete[] rotate[1];
@@ -206,29 +206,29 @@ pcl::cloud_composer::SelectedTrackballStyleInteractor::Spin()
   if (cam->GetParallelProjection()) {
     // If parallel projection, want to get the view plane normal...
     cam->ComputeViewPlaneNormal();
-    cam->GetViewPlaneNormal(motion_vector);
+    cam->GetViewPlaneNormal (motion_vector);
   }
   else {
     // Perspective projection, get vector from eye to center of actor
-    cam->GetPosition(view_point);
+    cam->GetPosition (view_point);
     motion_vector[0] = view_point[0] - obj_center[0];
     motion_vector[1] = view_point[1] - obj_center[1];
     motion_vector[2] = view_point[2] - obj_center[2];
-    vtkMath::Normalize(motion_vector);
+    vtkMath::Normalize (motion_vector);
   }
 
   double disp_obj_center[3];
 
-  this->ComputeWorldToDisplay(
+  this->ComputeWorldToDisplay (
       obj_center[0], obj_center[1], obj_center[2], disp_obj_center);
 
-  double newAngle = vtkMath::DegreesFromRadians(
-      std::atan2(rwi->GetEventPosition()[1] - disp_obj_center[1],
-                 rwi->GetEventPosition()[0] - disp_obj_center[0]));
+  double newAngle = vtkMath::DegreesFromRadians (
+      std::atan2 (rwi->GetEventPosition()[1] - disp_obj_center[1],
+                  rwi->GetEventPosition()[0] - disp_obj_center[0]));
 
-  double oldAngle = vtkMath::DegreesFromRadians(
-      std::atan2(rwi->GetLastEventPosition()[1] - disp_obj_center[1],
-                 rwi->GetLastEventPosition()[0] - disp_obj_center[0]));
+  double oldAngle = vtkMath::DegreesFromRadians (
+      std::atan2 (rwi->GetLastEventPosition()[1] - disp_obj_center[1],
+                  rwi->GetLastEventPosition()[0] - disp_obj_center[0]));
 
   double scale[3];
   scale[0] = scale[1] = scale[2] = 1.0;
@@ -242,8 +242,8 @@ pcl::cloud_composer::SelectedTrackballStyleInteractor::Spin()
   rotate[0][3] = motion_vector[2];
 
   foreach (QString id, selected_actors_map_.keys()) {
-    vtkLODActor* actor = selected_actors_map_.value(id);
-    this->Prop3DTransform(actor, obj_center, 1, rotate, scale);
+    vtkLODActor* actor = selected_actors_map_.value (id);
+    this->Prop3DTransform (actor, obj_center, 1, rotate, scale);
   }
 
   delete[] rotate[0];
@@ -272,35 +272,35 @@ pcl::cloud_composer::SelectedTrackballStyleInteractor::Pan()
   double disp_obj_center[3], new_pick_point[4];
   double old_pick_point[4], motion_vector[3];
 
-  this->ComputeWorldToDisplay(
+  this->ComputeWorldToDisplay (
       obj_center[0], obj_center[1], obj_center[2], disp_obj_center);
 
-  this->ComputeDisplayToWorld(rwi->GetEventPosition()[0],
-                              rwi->GetEventPosition()[1],
-                              disp_obj_center[2],
-                              new_pick_point);
+  this->ComputeDisplayToWorld (rwi->GetEventPosition()[0],
+                               rwi->GetEventPosition()[1],
+                               disp_obj_center[2],
+                               new_pick_point);
 
-  this->ComputeDisplayToWorld(rwi->GetLastEventPosition()[0],
-                              rwi->GetLastEventPosition()[1],
-                              disp_obj_center[2],
-                              old_pick_point);
+  this->ComputeDisplayToWorld (rwi->GetLastEventPosition()[0],
+                               rwi->GetLastEventPosition()[1],
+                               disp_obj_center[2],
+                               old_pick_point);
 
   motion_vector[0] = new_pick_point[0] - old_pick_point[0];
   motion_vector[1] = new_pick_point[1] - old_pick_point[1];
   motion_vector[2] = new_pick_point[2] - old_pick_point[2];
 
   foreach (QString id, selected_actors_map_.keys()) {
-    vtkLODActor* actor = selected_actors_map_.value(id);
+    vtkLODActor* actor = selected_actors_map_.value (id);
     if (actor->GetUserMatrix() != nullptr) {
       vtkTransform* t = vtkTransform::New();
       t->PostMultiply();
-      t->SetMatrix(actor->GetUserMatrix());
-      t->Translate(motion_vector[0], motion_vector[1], motion_vector[2]);
-      actor->GetUserMatrix()->DeepCopy(t->GetMatrix());
+      t->SetMatrix (actor->GetUserMatrix());
+      t->Translate (motion_vector[0], motion_vector[1], motion_vector[2]);
+      actor->GetUserMatrix()->DeepCopy (t->GetMatrix());
       t->Delete();
     }
     else {
-      actor->AddPosition(motion_vector[0], motion_vector[1], motion_vector[2]);
+      actor->AddPosition (motion_vector[0], motion_vector[1], motion_vector[2]);
     }
   }
 
@@ -326,15 +326,15 @@ pcl::cloud_composer::SelectedTrackballStyleInteractor::UniformScale()
   double* center = this->CurrentRenderer->GetCenter();
 
   double yf = dy / center[1] * this->MotionFactor;
-  double scaleFactor = pow(1.1, yf);
+  double scaleFactor = pow (1.1, yf);
 
   double** rotate = nullptr;
 
   double scale[3];
   scale[0] = scale[1] = scale[2] = scaleFactor;
   foreach (QString id, selected_actors_map_.keys()) {
-    vtkLODActor* actor = selected_actors_map_.value(id);
-    this->Prop3DTransform(actor, obj_center, 0, rotate, scale);
+    vtkLODActor* actor = selected_actors_map_.value (id);
+    this->Prop3DTransform (actor, obj_center, 0, rotate, scale);
   }
 
   if (this->AutoAdjustCameraClippingRange) {

@@ -70,9 +70,9 @@ public:
   using ConstPtr = shared_ptr<const RealSenseGrabber>;
 
   using sig_cb_real_sense_point_cloud =
-      void(const pcl::PointCloud<pcl::PointXYZ>::ConstPtr&);
+      void (const pcl::PointCloud<pcl::PointXYZ>::ConstPtr&);
   using sig_cb_real_sense_point_cloud_rgba =
-      void(const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&);
+      void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&);
 
   /** A descriptor for capturing mode.
    *
@@ -93,31 +93,31 @@ public:
     Mode();
 
     /** Set desired framerate, the rest is "don't care". */
-    Mode(unsigned int fps);
+    Mode (unsigned int fps);
 
     /** Set desired depth resolution, the rest is "don't care". */
-    Mode(unsigned int depth_width, unsigned int depth_height);
+    Mode (unsigned int depth_width, unsigned int depth_height);
 
     /** Set desired framerate and depth resolution, the rest is "don't
      * care". */
-    Mode(unsigned int fps, unsigned int depth_width, unsigned int depth_height);
+    Mode (unsigned int fps, unsigned int depth_width, unsigned int depth_height);
 
     /** Set desired depth and color resolution, the rest is "don't
      * care". */
-    Mode(unsigned int depth_width,
-         unsigned int depth_height,
-         unsigned int color_width,
-         unsigned int color_height);
+    Mode (unsigned int depth_width,
+          unsigned int depth_height,
+          unsigned int color_width,
+          unsigned int color_height);
 
     /** Set desired framerate, depth and color resolution. */
-    Mode(unsigned int fps,
-         unsigned int depth_width,
-         unsigned int depth_height,
-         unsigned int color_width,
-         unsigned int color_height);
+    Mode (unsigned int fps,
+          unsigned int depth_width,
+          unsigned int depth_height,
+          unsigned int color_width,
+          unsigned int color_height);
 
     bool
-    operator==(const pcl::RealSenseGrabber::Mode& m) const;
+    operator== (const pcl::RealSenseGrabber::Mode& m) const;
   };
 
   enum TemporalFilteringType {
@@ -144,9 +144,9 @@ public:
    * \param[in] strict if set to \c true, an exception will be thrown if
    * device does not support exactly the mode requested. Otherwise the
    * closest available mode is selected. */
-  RealSenseGrabber(const std::string& device_id = "",
-                   const Mode& mode = Mode(),
-                   bool strict = false);
+  RealSenseGrabber (const std::string& device_id = "",
+                    const Mode& mode = Mode(),
+                    bool strict = false);
 
   virtual ~RealSenseGrabber() noexcept;
 
@@ -162,7 +162,7 @@ public:
   virtual std::string
   getName () const
   {
-    return (std::string("RealSenseGrabber"));
+    return (std::string ("RealSenseGrabber"));
   }
 
   virtual float

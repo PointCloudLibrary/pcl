@@ -46,251 +46,251 @@
 
 std::string mesh_file_vtk_;
 
-TEST(PCL, PLYPolygonMeshIO)
+TEST (PCL, PLYPolygonMeshIO)
 {
   pcl::PolygonMesh mesh;
-  pcl::io::loadPolygonFileVTK(mesh_file_vtk_, mesh);
+  pcl::io::loadPolygonFileVTK (mesh_file_vtk_, mesh);
   // Save ascii
-  pcl::io::savePLYFile("test_mesh_ascii.ply", mesh);
+  pcl::io::savePLYFile ("test_mesh_ascii.ply", mesh);
   // Save binary
-  pcl::io::savePLYFileBinary("test_mesh_binary.ply", mesh);
+  pcl::io::savePLYFileBinary ("test_mesh_binary.ply", mesh);
   // Load both with vtk ply parser
   pcl::PolygonMesh mesh_ascii_vtk;
-  pcl::io::loadPolygonFilePLY("test_mesh_ascii.ply", mesh_ascii_vtk);
+  pcl::io::loadPolygonFilePLY ("test_mesh_ascii.ply", mesh_ascii_vtk);
   pcl::PolygonMesh mesh_binary_vtk;
-  pcl::io::loadPolygonFilePLY("test_mesh_binary.ply", mesh_binary_vtk);
+  pcl::io::loadPolygonFilePLY ("test_mesh_binary.ply", mesh_binary_vtk);
   // Load both with pcl ply parser
   pcl::PolygonMesh mesh_ascii_pcl;
-  pcl::io::loadPLYFile("test_mesh_ascii.ply", mesh_ascii_pcl);
+  pcl::io::loadPLYFile ("test_mesh_ascii.ply", mesh_ascii_pcl);
   pcl::PolygonMesh mesh_binary_pcl;
-  pcl::io::loadPLYFile("test_mesh_binary.ply", mesh_binary_pcl);
+  pcl::io::loadPLYFile ("test_mesh_binary.ply", mesh_binary_pcl);
   // Compare the 3
   pcl::PointCloud<pcl::PointXYZ> verts, verts_ascii_vtk, verts_binary_vtk,
       verts_ascii_pcl, verts_binary_pcl;
-  pcl::fromPCLPointCloud2(mesh.cloud, verts);
-  pcl::fromPCLPointCloud2(mesh_ascii_vtk.cloud, verts_ascii_vtk);
-  pcl::fromPCLPointCloud2(mesh_binary_vtk.cloud, verts_binary_vtk);
-  pcl::fromPCLPointCloud2(mesh_ascii_pcl.cloud, verts_ascii_pcl);
-  pcl::fromPCLPointCloud2(mesh_binary_pcl.cloud, verts_binary_pcl);
-  EXPECT_EQ(verts_ascii_vtk.size(), verts.size());
-  EXPECT_EQ(verts_binary_vtk.size(), verts.size());
-  EXPECT_EQ(verts_ascii_pcl.size(), verts.size());
-  EXPECT_EQ(verts_binary_pcl.size(), verts.size());
+  pcl::fromPCLPointCloud2 (mesh.cloud, verts);
+  pcl::fromPCLPointCloud2 (mesh_ascii_vtk.cloud, verts_ascii_vtk);
+  pcl::fromPCLPointCloud2 (mesh_binary_vtk.cloud, verts_binary_vtk);
+  pcl::fromPCLPointCloud2 (mesh_ascii_pcl.cloud, verts_ascii_pcl);
+  pcl::fromPCLPointCloud2 (mesh_binary_pcl.cloud, verts_binary_pcl);
+  EXPECT_EQ (verts_ascii_vtk.size(), verts.size());
+  EXPECT_EQ (verts_binary_vtk.size(), verts.size());
+  EXPECT_EQ (verts_ascii_pcl.size(), verts.size());
+  EXPECT_EQ (verts_binary_pcl.size(), verts.size());
   for (std::size_t i = 0; i < verts.size(); i++) {
-    EXPECT_NEAR(verts_ascii_vtk.at(i).x, verts.at(i).x, 1E-2);
-    EXPECT_NEAR(verts_ascii_vtk.at(i).y, verts.at(i).y, 1E-2);
-    EXPECT_NEAR(verts_ascii_vtk.at(i).z, verts.at(i).z, 1E-2);
-    EXPECT_NEAR(verts_binary_vtk.at(i).x, verts.at(i).x, 1E-4);
-    EXPECT_NEAR(verts_binary_vtk.at(i).y, verts.at(i).y, 1E-4);
-    EXPECT_NEAR(verts_binary_vtk.at(i).z, verts.at(i).z, 1E-4);
-    EXPECT_NEAR(verts_ascii_pcl.at(i).x, verts.at(i).x, 1E-2);
-    EXPECT_NEAR(verts_ascii_pcl.at(i).y, verts.at(i).y, 1E-2);
-    EXPECT_NEAR(verts_ascii_pcl.at(i).z, verts.at(i).z, 1E-2);
-    EXPECT_NEAR(verts_binary_pcl.at(i).x, verts.at(i).x, 1E-4);
-    EXPECT_NEAR(verts_binary_pcl.at(i).y, verts.at(i).y, 1E-4);
-    EXPECT_NEAR(verts_binary_pcl.at(i).z, verts.at(i).z, 1E-4);
+    EXPECT_NEAR (verts_ascii_vtk.at (i).x, verts.at (i).x, 1E-2);
+    EXPECT_NEAR (verts_ascii_vtk.at (i).y, verts.at (i).y, 1E-2);
+    EXPECT_NEAR (verts_ascii_vtk.at (i).z, verts.at (i).z, 1E-2);
+    EXPECT_NEAR (verts_binary_vtk.at (i).x, verts.at (i).x, 1E-4);
+    EXPECT_NEAR (verts_binary_vtk.at (i).y, verts.at (i).y, 1E-4);
+    EXPECT_NEAR (verts_binary_vtk.at (i).z, verts.at (i).z, 1E-4);
+    EXPECT_NEAR (verts_ascii_pcl.at (i).x, verts.at (i).x, 1E-2);
+    EXPECT_NEAR (verts_ascii_pcl.at (i).y, verts.at (i).y, 1E-2);
+    EXPECT_NEAR (verts_ascii_pcl.at (i).z, verts.at (i).z, 1E-2);
+    EXPECT_NEAR (verts_binary_pcl.at (i).x, verts.at (i).x, 1E-4);
+    EXPECT_NEAR (verts_binary_pcl.at (i).y, verts.at (i).y, 1E-4);
+    EXPECT_NEAR (verts_binary_pcl.at (i).z, verts.at (i).z, 1E-4);
   }
-  ASSERT_EQ(mesh_ascii_vtk.polygons.size(), mesh.polygons.size());
-  ASSERT_EQ(mesh_binary_vtk.polygons.size(), mesh.polygons.size());
-  ASSERT_EQ(mesh_ascii_pcl.polygons.size(), mesh.polygons.size());
-  ASSERT_EQ(mesh_binary_pcl.polygons.size(), mesh.polygons.size());
+  ASSERT_EQ (mesh_ascii_vtk.polygons.size(), mesh.polygons.size());
+  ASSERT_EQ (mesh_binary_vtk.polygons.size(), mesh.polygons.size());
+  ASSERT_EQ (mesh_ascii_pcl.polygons.size(), mesh.polygons.size());
+  ASSERT_EQ (mesh_binary_pcl.polygons.size(), mesh.polygons.size());
   for (std::size_t i = 0; i < mesh.polygons.size(); i++) {
-    ASSERT_EQ(mesh_ascii_vtk.polygons[i].vertices.size(),
-              mesh.polygons[i].vertices.size());
-    ASSERT_EQ(mesh_binary_vtk.polygons[i].vertices.size(),
-              mesh.polygons[i].vertices.size());
-    ASSERT_EQ(mesh_ascii_pcl.polygons[i].vertices.size(),
-              mesh.polygons[i].vertices.size());
-    ASSERT_EQ(mesh_binary_pcl.polygons[i].vertices.size(),
-              mesh.polygons[i].vertices.size());
+    ASSERT_EQ (mesh_ascii_vtk.polygons[i].vertices.size(),
+               mesh.polygons[i].vertices.size());
+    ASSERT_EQ (mesh_binary_vtk.polygons[i].vertices.size(),
+               mesh.polygons[i].vertices.size());
+    ASSERT_EQ (mesh_ascii_pcl.polygons[i].vertices.size(),
+               mesh.polygons[i].vertices.size());
+    ASSERT_EQ (mesh_binary_pcl.polygons[i].vertices.size(),
+               mesh.polygons[i].vertices.size());
     for (std::size_t j = 0; j < mesh.polygons[i].vertices.size(); j++) {
-      EXPECT_EQ(mesh_ascii_vtk.polygons[i].vertices[j], mesh.polygons[i].vertices[j]);
-      EXPECT_EQ(mesh_binary_vtk.polygons[i].vertices[j], mesh.polygons[i].vertices[j]);
-      EXPECT_EQ(mesh_ascii_pcl.polygons[i].vertices[j], mesh.polygons[i].vertices[j]);
-      EXPECT_EQ(mesh_binary_pcl.polygons[i].vertices[j], mesh.polygons[i].vertices[j]);
+      EXPECT_EQ (mesh_ascii_vtk.polygons[i].vertices[j], mesh.polygons[i].vertices[j]);
+      EXPECT_EQ (mesh_binary_vtk.polygons[i].vertices[j], mesh.polygons[i].vertices[j]);
+      EXPECT_EQ (mesh_ascii_pcl.polygons[i].vertices[j], mesh.polygons[i].vertices[j]);
+      EXPECT_EQ (mesh_binary_pcl.polygons[i].vertices[j], mesh.polygons[i].vertices[j]);
     }
   }
 
-  remove("test_mesh_ascii.ply");
-  remove("test_mesh_binary.ply");
+  remove ("test_mesh_ascii.ply");
+  remove ("test_mesh_binary.ply");
 }
 
-TEST(PCL, PLYPolygonMeshColoredIO)
+TEST (PCL, PLYPolygonMeshColoredIO)
 {
   pcl::PolygonMesh mesh;
-  pcl::io::loadPolygonFileVTK(mesh_file_vtk_, mesh);
+  pcl::io::loadPolygonFileVTK (mesh_file_vtk_, mesh);
   // Artificially color
   pcl::PolygonMesh mesh_rgb;
   pcl::PolygonMesh mesh_rgba;
   pcl::PointCloud<pcl::PointXYZRGB> vertices_rgb;
   pcl::PointCloud<pcl::PointXYZRGBA> vertices_rgba;
-  pcl::fromPCLPointCloud2(mesh.cloud, vertices_rgb);
-  pcl::fromPCLPointCloud2(mesh.cloud, vertices_rgba);
+  pcl::fromPCLPointCloud2 (mesh.cloud, vertices_rgb);
+  pcl::fromPCLPointCloud2 (mesh.cloud, vertices_rgba);
   mesh_rgb.polygons = mesh.polygons;
   mesh_rgba.polygons = mesh.polygons;
   for (std::size_t i = 0; i < vertices_rgb.size(); ++i) {
-    pcl::PointXYZRGB& pt_rgb = vertices_rgb.at(i);
-    pcl::PointXYZRGBA& pt_rgba = vertices_rgba.at(i);
-    pt_rgb.r = pt_rgba.r = static_cast<std::uint8_t>(rand() % 256);
-    pt_rgb.g = pt_rgba.g = static_cast<std::uint8_t>(rand() % 256);
-    pt_rgb.b = pt_rgba.b = static_cast<std::uint8_t>(rand() % 256);
-    pt_rgba.a = static_cast<std::uint8_t>(rand() % 256);
+    pcl::PointXYZRGB& pt_rgb = vertices_rgb.at (i);
+    pcl::PointXYZRGBA& pt_rgba = vertices_rgba.at (i);
+    pt_rgb.r = pt_rgba.r = static_cast<std::uint8_t> (rand() % 256);
+    pt_rgb.g = pt_rgba.g = static_cast<std::uint8_t> (rand() % 256);
+    pt_rgb.b = pt_rgba.b = static_cast<std::uint8_t> (rand() % 256);
+    pt_rgba.a = static_cast<std::uint8_t> (rand() % 256);
   }
-  pcl::toPCLPointCloud2(vertices_rgb, mesh_rgb.cloud);
-  pcl::toPCLPointCloud2(vertices_rgba, mesh_rgba.cloud);
+  pcl::toPCLPointCloud2 (vertices_rgb, mesh_rgb.cloud);
+  pcl::toPCLPointCloud2 (vertices_rgba, mesh_rgba.cloud);
   // Save ascii
-  pcl::io::savePLYFile("test_mesh_rgb_ascii.ply", mesh_rgb);
-  pcl::io::savePLYFile("test_mesh_rgba_ascii.ply", mesh_rgba);
+  pcl::io::savePLYFile ("test_mesh_rgb_ascii.ply", mesh_rgb);
+  pcl::io::savePLYFile ("test_mesh_rgba_ascii.ply", mesh_rgba);
   // Save binary
-  pcl::io::savePLYFileBinary("test_mesh_rgb_binary.ply", mesh_rgb);
-  pcl::io::savePLYFileBinary("test_mesh_rgba_binary.ply", mesh_rgba);
+  pcl::io::savePLYFileBinary ("test_mesh_rgb_binary.ply", mesh_rgb);
+  pcl::io::savePLYFileBinary ("test_mesh_rgba_binary.ply", mesh_rgba);
   // Load both with vtk ply parser
   pcl::PolygonMesh mesh_rgb_ascii_vtk;
   pcl::PolygonMesh mesh_rgba_ascii_vtk;
-  pcl::io::loadPolygonFilePLY("test_mesh_rgb_ascii.ply", mesh_rgb_ascii_vtk);
-  pcl::io::loadPolygonFilePLY("test_mesh_rgba_ascii.ply", mesh_rgba_ascii_vtk);
+  pcl::io::loadPolygonFilePLY ("test_mesh_rgb_ascii.ply", mesh_rgb_ascii_vtk);
+  pcl::io::loadPolygonFilePLY ("test_mesh_rgba_ascii.ply", mesh_rgba_ascii_vtk);
   pcl::PolygonMesh mesh_rgb_binary_vtk;
   pcl::PolygonMesh mesh_rgba_binary_vtk;
-  pcl::io::loadPolygonFilePLY("test_mesh_rgb_binary.ply", mesh_rgb_binary_vtk);
-  pcl::io::loadPolygonFilePLY("test_mesh_rgba_binary.ply", mesh_rgba_binary_vtk);
+  pcl::io::loadPolygonFilePLY ("test_mesh_rgb_binary.ply", mesh_rgb_binary_vtk);
+  pcl::io::loadPolygonFilePLY ("test_mesh_rgba_binary.ply", mesh_rgba_binary_vtk);
   // Load both with pcl ply parser
   pcl::PolygonMesh mesh_rgb_ascii_pcl;
   pcl::PolygonMesh mesh_rgba_ascii_pcl;
-  pcl::io::loadPolygonFilePLY("test_mesh_rgb_ascii.ply", mesh_rgb_ascii_pcl);
-  pcl::io::loadPolygonFilePLY("test_mesh_rgba_ascii.ply", mesh_rgba_ascii_pcl);
+  pcl::io::loadPolygonFilePLY ("test_mesh_rgb_ascii.ply", mesh_rgb_ascii_pcl);
+  pcl::io::loadPolygonFilePLY ("test_mesh_rgba_ascii.ply", mesh_rgba_ascii_pcl);
   pcl::PolygonMesh mesh_rgb_binary_pcl;
   pcl::PolygonMesh mesh_rgba_binary_pcl;
-  pcl::io::loadPolygonFilePLY("test_mesh_rgb_binary.ply", mesh_rgb_binary_pcl);
-  pcl::io::loadPolygonFilePLY("test_mesh_rgba_binary.ply", mesh_rgba_binary_pcl);
+  pcl::io::loadPolygonFilePLY ("test_mesh_rgb_binary.ply", mesh_rgb_binary_pcl);
+  pcl::io::loadPolygonFilePLY ("test_mesh_rgba_binary.ply", mesh_rgba_binary_pcl);
   // Compare the 5
   pcl::PointCloud<pcl::PointXYZRGBA> verts_rgba_ascii_vtk, verts_rgba_binary_vtk;
   pcl::PointCloud<pcl::PointXYZRGB> verts_rgb_ascii_vtk, verts_rgb_binary_vtk;
-  pcl::fromPCLPointCloud2(mesh_rgb_ascii_vtk.cloud, verts_rgb_ascii_vtk);
-  pcl::fromPCLPointCloud2(mesh_rgba_ascii_vtk.cloud, verts_rgba_ascii_vtk);
-  pcl::fromPCLPointCloud2(mesh_rgb_binary_vtk.cloud, verts_rgb_binary_vtk);
-  pcl::fromPCLPointCloud2(mesh_rgba_binary_vtk.cloud, verts_rgba_binary_vtk);
+  pcl::fromPCLPointCloud2 (mesh_rgb_ascii_vtk.cloud, verts_rgb_ascii_vtk);
+  pcl::fromPCLPointCloud2 (mesh_rgba_ascii_vtk.cloud, verts_rgba_ascii_vtk);
+  pcl::fromPCLPointCloud2 (mesh_rgb_binary_vtk.cloud, verts_rgb_binary_vtk);
+  pcl::fromPCLPointCloud2 (mesh_rgba_binary_vtk.cloud, verts_rgba_binary_vtk);
   pcl::PointCloud<pcl::PointXYZRGBA> verts_rgba_ascii_pcl, verts_rgba_binary_pcl;
   pcl::PointCloud<pcl::PointXYZRGB> verts_rgb_ascii_pcl, verts_rgb_binary_pcl;
-  pcl::fromPCLPointCloud2(mesh_rgb_ascii_pcl.cloud, verts_rgb_ascii_pcl);
-  pcl::fromPCLPointCloud2(mesh_rgba_ascii_pcl.cloud, verts_rgba_ascii_pcl);
-  pcl::fromPCLPointCloud2(mesh_rgb_binary_pcl.cloud, verts_rgb_binary_pcl);
-  pcl::fromPCLPointCloud2(mesh_rgba_binary_pcl.cloud, verts_rgba_binary_pcl);
-  ASSERT_EQ(verts_rgb_ascii_vtk.size(), vertices_rgba.size());
-  ASSERT_EQ(verts_rgba_ascii_vtk.size(), vertices_rgba.size());
-  ASSERT_EQ(verts_rgb_binary_vtk.size(), vertices_rgba.size());
-  ASSERT_EQ(verts_rgba_binary_vtk.size(), vertices_rgba.size());
-  ASSERT_EQ(verts_rgb_ascii_pcl.size(), vertices_rgba.size());
-  ASSERT_EQ(verts_rgba_ascii_pcl.size(), vertices_rgba.size());
-  ASSERT_EQ(verts_rgb_binary_pcl.size(), vertices_rgba.size());
-  ASSERT_EQ(verts_rgba_binary_pcl.size(), vertices_rgba.size());
+  pcl::fromPCLPointCloud2 (mesh_rgb_ascii_pcl.cloud, verts_rgb_ascii_pcl);
+  pcl::fromPCLPointCloud2 (mesh_rgba_ascii_pcl.cloud, verts_rgba_ascii_pcl);
+  pcl::fromPCLPointCloud2 (mesh_rgb_binary_pcl.cloud, verts_rgb_binary_pcl);
+  pcl::fromPCLPointCloud2 (mesh_rgba_binary_pcl.cloud, verts_rgba_binary_pcl);
+  ASSERT_EQ (verts_rgb_ascii_vtk.size(), vertices_rgba.size());
+  ASSERT_EQ (verts_rgba_ascii_vtk.size(), vertices_rgba.size());
+  ASSERT_EQ (verts_rgb_binary_vtk.size(), vertices_rgba.size());
+  ASSERT_EQ (verts_rgba_binary_vtk.size(), vertices_rgba.size());
+  ASSERT_EQ (verts_rgb_ascii_pcl.size(), vertices_rgba.size());
+  ASSERT_EQ (verts_rgba_ascii_pcl.size(), vertices_rgba.size());
+  ASSERT_EQ (verts_rgb_binary_pcl.size(), vertices_rgba.size());
+  ASSERT_EQ (verts_rgba_binary_pcl.size(), vertices_rgba.size());
   for (std::size_t i = 0; i < vertices_rgba.size(); i++) {
-    EXPECT_NEAR(verts_rgba_ascii_vtk.at(i).x, vertices_rgba.at(i).x, 1E-2);
-    EXPECT_NEAR(verts_rgba_ascii_vtk.at(i).y, vertices_rgba.at(i).y, 1E-2);
-    EXPECT_NEAR(verts_rgba_ascii_vtk.at(i).z, vertices_rgba.at(i).z, 1E-2);
-    EXPECT_EQ(verts_rgba_ascii_vtk.at(i).r, vertices_rgba.at(i).r);
-    EXPECT_EQ(verts_rgba_ascii_vtk.at(i).g, vertices_rgba.at(i).g);
-    EXPECT_EQ(verts_rgba_ascii_vtk.at(i).b, vertices_rgba.at(i).b);
-    EXPECT_NEAR(verts_rgba_binary_vtk.at(i).x, vertices_rgba.at(i).x, 1E-4);
-    EXPECT_NEAR(verts_rgba_binary_vtk.at(i).y, vertices_rgba.at(i).y, 1E-4);
-    EXPECT_NEAR(verts_rgba_binary_vtk.at(i).z, vertices_rgba.at(i).z, 1E-4);
-    EXPECT_EQ(verts_rgba_binary_vtk.at(i).r, vertices_rgba.at(i).r);
-    EXPECT_EQ(verts_rgba_binary_vtk.at(i).g, vertices_rgba.at(i).g);
-    EXPECT_EQ(verts_rgba_binary_vtk.at(i).b, vertices_rgba.at(i).b);
-    EXPECT_NEAR(verts_rgb_ascii_vtk.at(i).x, vertices_rgba.at(i).x, 1E-2);
-    EXPECT_NEAR(verts_rgb_ascii_vtk.at(i).y, vertices_rgba.at(i).y, 1E-2);
-    EXPECT_NEAR(verts_rgb_ascii_vtk.at(i).z, vertices_rgba.at(i).z, 1E-2);
-    EXPECT_EQ(verts_rgb_ascii_vtk.at(i).r, vertices_rgba.at(i).r);
-    EXPECT_EQ(verts_rgb_ascii_vtk.at(i).g, vertices_rgba.at(i).g);
-    EXPECT_EQ(verts_rgb_ascii_vtk.at(i).b, vertices_rgba.at(i).b);
-    EXPECT_NEAR(verts_rgb_binary_vtk.at(i).x, vertices_rgba.at(i).x, 1E-4);
-    EXPECT_NEAR(verts_rgb_binary_vtk.at(i).y, vertices_rgba.at(i).y, 1E-4);
-    EXPECT_NEAR(verts_rgb_binary_vtk.at(i).z, vertices_rgba.at(i).z, 1E-4);
-    EXPECT_EQ(verts_rgb_binary_vtk.at(i).r, vertices_rgba.at(i).r);
-    EXPECT_EQ(verts_rgb_binary_vtk.at(i).g, vertices_rgba.at(i).g);
-    EXPECT_EQ(verts_rgb_binary_vtk.at(i).b, vertices_rgba.at(i).b);
+    EXPECT_NEAR (verts_rgba_ascii_vtk.at (i).x, vertices_rgba.at (i).x, 1E-2);
+    EXPECT_NEAR (verts_rgba_ascii_vtk.at (i).y, vertices_rgba.at (i).y, 1E-2);
+    EXPECT_NEAR (verts_rgba_ascii_vtk.at (i).z, vertices_rgba.at (i).z, 1E-2);
+    EXPECT_EQ (verts_rgba_ascii_vtk.at (i).r, vertices_rgba.at (i).r);
+    EXPECT_EQ (verts_rgba_ascii_vtk.at (i).g, vertices_rgba.at (i).g);
+    EXPECT_EQ (verts_rgba_ascii_vtk.at (i).b, vertices_rgba.at (i).b);
+    EXPECT_NEAR (verts_rgba_binary_vtk.at (i).x, vertices_rgba.at (i).x, 1E-4);
+    EXPECT_NEAR (verts_rgba_binary_vtk.at (i).y, vertices_rgba.at (i).y, 1E-4);
+    EXPECT_NEAR (verts_rgba_binary_vtk.at (i).z, vertices_rgba.at (i).z, 1E-4);
+    EXPECT_EQ (verts_rgba_binary_vtk.at (i).r, vertices_rgba.at (i).r);
+    EXPECT_EQ (verts_rgba_binary_vtk.at (i).g, vertices_rgba.at (i).g);
+    EXPECT_EQ (verts_rgba_binary_vtk.at (i).b, vertices_rgba.at (i).b);
+    EXPECT_NEAR (verts_rgb_ascii_vtk.at (i).x, vertices_rgba.at (i).x, 1E-2);
+    EXPECT_NEAR (verts_rgb_ascii_vtk.at (i).y, vertices_rgba.at (i).y, 1E-2);
+    EXPECT_NEAR (verts_rgb_ascii_vtk.at (i).z, vertices_rgba.at (i).z, 1E-2);
+    EXPECT_EQ (verts_rgb_ascii_vtk.at (i).r, vertices_rgba.at (i).r);
+    EXPECT_EQ (verts_rgb_ascii_vtk.at (i).g, vertices_rgba.at (i).g);
+    EXPECT_EQ (verts_rgb_ascii_vtk.at (i).b, vertices_rgba.at (i).b);
+    EXPECT_NEAR (verts_rgb_binary_vtk.at (i).x, vertices_rgba.at (i).x, 1E-4);
+    EXPECT_NEAR (verts_rgb_binary_vtk.at (i).y, vertices_rgba.at (i).y, 1E-4);
+    EXPECT_NEAR (verts_rgb_binary_vtk.at (i).z, vertices_rgba.at (i).z, 1E-4);
+    EXPECT_EQ (verts_rgb_binary_vtk.at (i).r, vertices_rgba.at (i).r);
+    EXPECT_EQ (verts_rgb_binary_vtk.at (i).g, vertices_rgba.at (i).g);
+    EXPECT_EQ (verts_rgb_binary_vtk.at (i).b, vertices_rgba.at (i).b);
 
-    EXPECT_NEAR(verts_rgba_ascii_pcl.at(i).x, vertices_rgba.at(i).x, 1E-2);
-    EXPECT_NEAR(verts_rgba_ascii_pcl.at(i).y, vertices_rgba.at(i).y, 1E-2);
-    EXPECT_NEAR(verts_rgba_ascii_pcl.at(i).z, vertices_rgba.at(i).z, 1E-2);
-    EXPECT_EQ(verts_rgba_ascii_pcl.at(i).r, vertices_rgba.at(i).r);
-    EXPECT_EQ(verts_rgba_ascii_pcl.at(i).g, vertices_rgba.at(i).g);
-    EXPECT_EQ(verts_rgba_ascii_pcl.at(i).b, vertices_rgba.at(i).b);
-    EXPECT_NEAR(verts_rgba_binary_pcl.at(i).x, vertices_rgba.at(i).x, 1E-4);
-    EXPECT_NEAR(verts_rgba_binary_pcl.at(i).y, vertices_rgba.at(i).y, 1E-4);
-    EXPECT_NEAR(verts_rgba_binary_pcl.at(i).z, vertices_rgba.at(i).z, 1E-4);
-    EXPECT_EQ(verts_rgba_binary_pcl.at(i).r, vertices_rgba.at(i).r);
-    EXPECT_EQ(verts_rgba_binary_pcl.at(i).g, vertices_rgba.at(i).g);
-    EXPECT_EQ(verts_rgba_binary_pcl.at(i).b, vertices_rgba.at(i).b);
-    EXPECT_NEAR(verts_rgb_ascii_pcl.at(i).x, vertices_rgba.at(i).x, 1E-2);
-    EXPECT_NEAR(verts_rgb_ascii_pcl.at(i).y, vertices_rgba.at(i).y, 1E-2);
-    EXPECT_NEAR(verts_rgb_ascii_pcl.at(i).z, vertices_rgba.at(i).z, 1E-2);
-    EXPECT_EQ(verts_rgb_ascii_pcl.at(i).r, vertices_rgba.at(i).r);
-    EXPECT_EQ(verts_rgb_ascii_pcl.at(i).g, vertices_rgba.at(i).g);
-    EXPECT_EQ(verts_rgb_ascii_pcl.at(i).b, vertices_rgba.at(i).b);
-    EXPECT_NEAR(verts_rgb_binary_pcl.at(i).x, vertices_rgba.at(i).x, 1E-4);
-    EXPECT_NEAR(verts_rgb_binary_pcl.at(i).y, vertices_rgba.at(i).y, 1E-4);
-    EXPECT_NEAR(verts_rgb_binary_pcl.at(i).z, vertices_rgba.at(i).z, 1E-4);
-    EXPECT_EQ(verts_rgb_binary_pcl.at(i).r, vertices_rgba.at(i).r);
-    EXPECT_EQ(verts_rgb_binary_pcl.at(i).g, vertices_rgba.at(i).g);
-    EXPECT_EQ(verts_rgb_binary_pcl.at(i).b, vertices_rgba.at(i).b);
+    EXPECT_NEAR (verts_rgba_ascii_pcl.at (i).x, vertices_rgba.at (i).x, 1E-2);
+    EXPECT_NEAR (verts_rgba_ascii_pcl.at (i).y, vertices_rgba.at (i).y, 1E-2);
+    EXPECT_NEAR (verts_rgba_ascii_pcl.at (i).z, vertices_rgba.at (i).z, 1E-2);
+    EXPECT_EQ (verts_rgba_ascii_pcl.at (i).r, vertices_rgba.at (i).r);
+    EXPECT_EQ (verts_rgba_ascii_pcl.at (i).g, vertices_rgba.at (i).g);
+    EXPECT_EQ (verts_rgba_ascii_pcl.at (i).b, vertices_rgba.at (i).b);
+    EXPECT_NEAR (verts_rgba_binary_pcl.at (i).x, vertices_rgba.at (i).x, 1E-4);
+    EXPECT_NEAR (verts_rgba_binary_pcl.at (i).y, vertices_rgba.at (i).y, 1E-4);
+    EXPECT_NEAR (verts_rgba_binary_pcl.at (i).z, vertices_rgba.at (i).z, 1E-4);
+    EXPECT_EQ (verts_rgba_binary_pcl.at (i).r, vertices_rgba.at (i).r);
+    EXPECT_EQ (verts_rgba_binary_pcl.at (i).g, vertices_rgba.at (i).g);
+    EXPECT_EQ (verts_rgba_binary_pcl.at (i).b, vertices_rgba.at (i).b);
+    EXPECT_NEAR (verts_rgb_ascii_pcl.at (i).x, vertices_rgba.at (i).x, 1E-2);
+    EXPECT_NEAR (verts_rgb_ascii_pcl.at (i).y, vertices_rgba.at (i).y, 1E-2);
+    EXPECT_NEAR (verts_rgb_ascii_pcl.at (i).z, vertices_rgba.at (i).z, 1E-2);
+    EXPECT_EQ (verts_rgb_ascii_pcl.at (i).r, vertices_rgba.at (i).r);
+    EXPECT_EQ (verts_rgb_ascii_pcl.at (i).g, vertices_rgba.at (i).g);
+    EXPECT_EQ (verts_rgb_ascii_pcl.at (i).b, vertices_rgba.at (i).b);
+    EXPECT_NEAR (verts_rgb_binary_pcl.at (i).x, vertices_rgba.at (i).x, 1E-4);
+    EXPECT_NEAR (verts_rgb_binary_pcl.at (i).y, vertices_rgba.at (i).y, 1E-4);
+    EXPECT_NEAR (verts_rgb_binary_pcl.at (i).z, vertices_rgba.at (i).z, 1E-4);
+    EXPECT_EQ (verts_rgb_binary_pcl.at (i).r, vertices_rgba.at (i).r);
+    EXPECT_EQ (verts_rgb_binary_pcl.at (i).g, vertices_rgba.at (i).g);
+    EXPECT_EQ (verts_rgb_binary_pcl.at (i).b, vertices_rgba.at (i).b);
   }
-  ASSERT_EQ(mesh_rgb_ascii_vtk.polygons.size(), mesh.polygons.size());
-  ASSERT_EQ(mesh_rgba_ascii_vtk.polygons.size(), mesh.polygons.size());
-  ASSERT_EQ(mesh_rgb_binary_vtk.polygons.size(), mesh.polygons.size());
-  ASSERT_EQ(mesh_rgba_binary_vtk.polygons.size(), mesh.polygons.size());
+  ASSERT_EQ (mesh_rgb_ascii_vtk.polygons.size(), mesh.polygons.size());
+  ASSERT_EQ (mesh_rgba_ascii_vtk.polygons.size(), mesh.polygons.size());
+  ASSERT_EQ (mesh_rgb_binary_vtk.polygons.size(), mesh.polygons.size());
+  ASSERT_EQ (mesh_rgba_binary_vtk.polygons.size(), mesh.polygons.size());
   for (std::size_t i = 0; i < mesh.polygons.size(); i++) {
-    ASSERT_EQ(mesh_rgb_ascii_vtk.polygons[i].vertices.size(),
-              mesh.polygons[i].vertices.size());
-    ASSERT_EQ(mesh_rgba_ascii_vtk.polygons[i].vertices.size(),
-              mesh.polygons[i].vertices.size());
-    ASSERT_EQ(mesh_rgb_binary_vtk.polygons[i].vertices.size(),
-              mesh.polygons[i].vertices.size());
-    ASSERT_EQ(mesh_rgba_binary_vtk.polygons[i].vertices.size(),
-              mesh.polygons[i].vertices.size());
+    ASSERT_EQ (mesh_rgb_ascii_vtk.polygons[i].vertices.size(),
+               mesh.polygons[i].vertices.size());
+    ASSERT_EQ (mesh_rgba_ascii_vtk.polygons[i].vertices.size(),
+               mesh.polygons[i].vertices.size());
+    ASSERT_EQ (mesh_rgb_binary_vtk.polygons[i].vertices.size(),
+               mesh.polygons[i].vertices.size());
+    ASSERT_EQ (mesh_rgba_binary_vtk.polygons[i].vertices.size(),
+               mesh.polygons[i].vertices.size());
     for (std::size_t j = 0; j < mesh.polygons[i].vertices.size(); j++) {
-      EXPECT_EQ(mesh_rgb_ascii_vtk.polygons[i].vertices[j],
-                mesh.polygons[i].vertices[j]);
-      EXPECT_EQ(mesh_rgba_ascii_vtk.polygons[i].vertices[j],
-                mesh.polygons[i].vertices[j]);
-      EXPECT_EQ(mesh_rgb_binary_vtk.polygons[i].vertices[j],
-                mesh.polygons[i].vertices[j]);
-      EXPECT_EQ(mesh_rgba_binary_vtk.polygons[i].vertices[j],
-                mesh.polygons[i].vertices[j]);
+      EXPECT_EQ (mesh_rgb_ascii_vtk.polygons[i].vertices[j],
+                 mesh.polygons[i].vertices[j]);
+      EXPECT_EQ (mesh_rgba_ascii_vtk.polygons[i].vertices[j],
+                 mesh.polygons[i].vertices[j]);
+      EXPECT_EQ (mesh_rgb_binary_vtk.polygons[i].vertices[j],
+                 mesh.polygons[i].vertices[j]);
+      EXPECT_EQ (mesh_rgba_binary_vtk.polygons[i].vertices[j],
+                 mesh.polygons[i].vertices[j]);
     }
   }
 
-  ASSERT_EQ(mesh_rgb_ascii_pcl.polygons.size(), mesh.polygons.size());
-  ASSERT_EQ(mesh_rgba_ascii_pcl.polygons.size(), mesh.polygons.size());
-  ASSERT_EQ(mesh_rgb_binary_pcl.polygons.size(), mesh.polygons.size());
-  ASSERT_EQ(mesh_rgba_binary_pcl.polygons.size(), mesh.polygons.size());
+  ASSERT_EQ (mesh_rgb_ascii_pcl.polygons.size(), mesh.polygons.size());
+  ASSERT_EQ (mesh_rgba_ascii_pcl.polygons.size(), mesh.polygons.size());
+  ASSERT_EQ (mesh_rgb_binary_pcl.polygons.size(), mesh.polygons.size());
+  ASSERT_EQ (mesh_rgba_binary_pcl.polygons.size(), mesh.polygons.size());
   for (std::size_t i = 0; i < mesh.polygons.size(); i++) {
-    ASSERT_EQ(mesh_rgb_ascii_pcl.polygons[i].vertices.size(),
-              mesh.polygons[i].vertices.size());
-    ASSERT_EQ(mesh_rgba_ascii_pcl.polygons[i].vertices.size(),
-              mesh.polygons[i].vertices.size());
-    ASSERT_EQ(mesh_rgb_binary_pcl.polygons[i].vertices.size(),
-              mesh.polygons[i].vertices.size());
-    ASSERT_EQ(mesh_rgba_binary_pcl.polygons[i].vertices.size(),
-              mesh.polygons[i].vertices.size());
+    ASSERT_EQ (mesh_rgb_ascii_pcl.polygons[i].vertices.size(),
+               mesh.polygons[i].vertices.size());
+    ASSERT_EQ (mesh_rgba_ascii_pcl.polygons[i].vertices.size(),
+               mesh.polygons[i].vertices.size());
+    ASSERT_EQ (mesh_rgb_binary_pcl.polygons[i].vertices.size(),
+               mesh.polygons[i].vertices.size());
+    ASSERT_EQ (mesh_rgba_binary_pcl.polygons[i].vertices.size(),
+               mesh.polygons[i].vertices.size());
     for (std::size_t j = 0; j < mesh.polygons[i].vertices.size(); j++) {
-      EXPECT_EQ(mesh_rgb_ascii_pcl.polygons[i].vertices[j],
-                mesh.polygons[i].vertices[j]);
-      EXPECT_EQ(mesh_rgba_ascii_pcl.polygons[i].vertices[j],
-                mesh.polygons[i].vertices[j]);
-      EXPECT_EQ(mesh_rgb_binary_pcl.polygons[i].vertices[j],
-                mesh.polygons[i].vertices[j]);
-      EXPECT_EQ(mesh_rgba_binary_pcl.polygons[i].vertices[j],
-                mesh.polygons[i].vertices[j]);
+      EXPECT_EQ (mesh_rgb_ascii_pcl.polygons[i].vertices[j],
+                 mesh.polygons[i].vertices[j]);
+      EXPECT_EQ (mesh_rgba_ascii_pcl.polygons[i].vertices[j],
+                 mesh.polygons[i].vertices[j]);
+      EXPECT_EQ (mesh_rgb_binary_pcl.polygons[i].vertices[j],
+                 mesh.polygons[i].vertices[j]);
+      EXPECT_EQ (mesh_rgba_binary_pcl.polygons[i].vertices[j],
+                 mesh.polygons[i].vertices[j]);
     }
   }
 
-  remove("test_mesh_rgb_ascii.ply");
-  remove("test_mesh_rgba_ascii.ply");
-  remove("test_mesh_rgb_binary.ply");
-  remove("test_mesh_rgba_binary.ply");
+  remove ("test_mesh_rgb_ascii.ply");
+  remove ("test_mesh_rgba_ascii.ply");
+  remove ("test_mesh_rgb_binary.ply");
+  remove ("test_mesh_rgba_binary.ply");
 }
 
-TEST(PCL, PLYPolygonMeshSpecificFieldOrder)
+TEST (PCL, PLYPolygonMeshSpecificFieldOrder)
 { // test a specific order of xyz, rgba, and normal fields
   pcl::PolygonMesh mesh;
   auto add_field = [] (std::vector<pcl::PCLPointField>& fields,
@@ -303,54 +303,55 @@ TEST(PCL, PLYPolygonMeshSpecificFieldOrder)
     fields.back().datatype = datatype;
     fields.back().count = 1;
   };
-  add_field(mesh.cloud.fields, "x", 0, pcl::PCLPointField::PointFieldTypes::FLOAT32);
-  add_field(mesh.cloud.fields, "y", 4, pcl::PCLPointField::PointFieldTypes::FLOAT32);
-  add_field(mesh.cloud.fields, "z", 8, pcl::PCLPointField::PointFieldTypes::FLOAT32);
-  add_field(
+  add_field (mesh.cloud.fields, "x", 0, pcl::PCLPointField::PointFieldTypes::FLOAT32);
+  add_field (mesh.cloud.fields, "y", 4, pcl::PCLPointField::PointFieldTypes::FLOAT32);
+  add_field (mesh.cloud.fields, "z", 8, pcl::PCLPointField::PointFieldTypes::FLOAT32);
+  add_field (
       mesh.cloud.fields, "normal_x", 12, pcl::PCLPointField::PointFieldTypes::FLOAT32);
-  add_field(
+  add_field (
       mesh.cloud.fields, "normal_y", 16, pcl::PCLPointField::PointFieldTypes::FLOAT32);
-  add_field(
+  add_field (
       mesh.cloud.fields, "normal_z", 20, pcl::PCLPointField::PointFieldTypes::FLOAT32);
-  add_field(mesh.cloud.fields, "rgba", 24, pcl::PCLPointField::PointFieldTypes::UINT32);
+  add_field (
+      mesh.cloud.fields, "rgba", 24, pcl::PCLPointField::PointFieldTypes::UINT32);
   mesh.cloud.height = mesh.cloud.width = 1;
-  mesh.cloud.data.resize(28);
+  mesh.cloud.data.resize (28);
   constexpr float x = 0.0, y = 1.0, z = 2.0, normal_x = 1.0, normal_y = 0.0,
                   normal_z = 0.0;
   constexpr std::uint32_t rgba = 0x326496;
-  memcpy(&mesh.cloud.data[0],
-         &x,
-         sizeof(float)); // NOLINT(readability-container-data-pointer)
-  memcpy(&mesh.cloud.data[4], &y, sizeof(float));
-  memcpy(&mesh.cloud.data[8], &z, sizeof(float));
-  memcpy(&mesh.cloud.data[12], &normal_x, sizeof(float));
-  memcpy(&mesh.cloud.data[16], &normal_y, sizeof(float));
-  memcpy(&mesh.cloud.data[20], &normal_z, sizeof(float));
-  memcpy(&mesh.cloud.data[24], &rgba, sizeof(std::uint32_t));
+  memcpy (&mesh.cloud.data[0],
+          &x,
+          sizeof (float)); // NOLINT(readability-container-data-pointer)
+  memcpy (&mesh.cloud.data[4], &y, sizeof (float));
+  memcpy (&mesh.cloud.data[8], &z, sizeof (float));
+  memcpy (&mesh.cloud.data[12], &normal_x, sizeof (float));
+  memcpy (&mesh.cloud.data[16], &normal_y, sizeof (float));
+  memcpy (&mesh.cloud.data[20], &normal_z, sizeof (float));
+  memcpy (&mesh.cloud.data[24], &rgba, sizeof (std::uint32_t));
 
-  pcl::io::savePLYFileBinary("test_mesh_xyzrgbnormal_binary.ply", mesh);
+  pcl::io::savePLYFileBinary ("test_mesh_xyzrgbnormal_binary.ply", mesh);
   pcl::PolygonMesh mesh_in_binary;
-  pcl::io::loadPLYFile("test_mesh_xyzrgbnormal_binary.ply", mesh_in_binary);
-  ASSERT_EQ(mesh.cloud.data.size(), mesh_in_binary.cloud.data.size());
+  pcl::io::loadPLYFile ("test_mesh_xyzrgbnormal_binary.ply", mesh_in_binary);
+  ASSERT_EQ (mesh.cloud.data.size(), mesh_in_binary.cloud.data.size());
   for (std::size_t i = 0; i < mesh.cloud.data.size(); ++i) {
-    EXPECT_EQ(mesh.cloud.data[i], mesh_in_binary.cloud.data[i]);
+    EXPECT_EQ (mesh.cloud.data[i], mesh_in_binary.cloud.data[i]);
   }
-  remove("test_mesh_xyzrgbnormal_binary.ply");
+  remove ("test_mesh_xyzrgbnormal_binary.ply");
 
-  pcl::io::savePLYFile("test_mesh_xyzrgbnormal_ascii.ply", mesh);
+  pcl::io::savePLYFile ("test_mesh_xyzrgbnormal_ascii.ply", mesh);
   pcl::PolygonMesh mesh_in_ascii;
-  pcl::io::loadPLYFile("test_mesh_xyzrgbnormal_ascii.ply", mesh_in_ascii);
-  ASSERT_EQ(mesh.cloud.data.size(), mesh_in_ascii.cloud.data.size());
+  pcl::io::loadPLYFile ("test_mesh_xyzrgbnormal_ascii.ply", mesh_in_ascii);
+  ASSERT_EQ (mesh.cloud.data.size(), mesh_in_ascii.cloud.data.size());
   for (std::size_t i = 0; i < mesh.cloud.data.size(); ++i) {
-    EXPECT_EQ(mesh.cloud.data[i], mesh_in_ascii.cloud.data[i]);
+    EXPECT_EQ (mesh.cloud.data[i], mesh_in_ascii.cloud.data[i]);
   }
-  remove("test_mesh_xyzrgbnormal_ascii.ply");
+  remove ("test_mesh_xyzrgbnormal_ascii.ply");
 }
 
-TEST(PCL, PLYPolygonMeshUintIndices)
+TEST (PCL, PLYPolygonMeshUintIndices)
 {
   std::ofstream fs;
-  fs.open("mesh_uint_indices.ply");
+  fs.open ("mesh_uint_indices.ply");
   fs << "ply\n"
         "format ascii 1.0\n"
         "element vertex 3\n"
@@ -366,21 +367,21 @@ TEST(PCL, PLYPolygonMeshUintIndices)
         "3 2 0 1\n";
   fs.close();
   pcl::PolygonMesh mesh;
-  int const res = pcl::io::loadPLYFile("mesh_uint_indices.ply", mesh);
-  EXPECT_NE(res, -1);
-  EXPECT_EQ(mesh.cloud.width, 3);
-  EXPECT_EQ(mesh.cloud.height, 1);
-  EXPECT_EQ(mesh.polygons.size(), 1);
-  EXPECT_EQ(mesh.polygons.front().vertices.size(), 3);
+  int const res = pcl::io::loadPLYFile ("mesh_uint_indices.ply", mesh);
+  EXPECT_NE (res, -1);
+  EXPECT_EQ (mesh.cloud.width, 3);
+  EXPECT_EQ (mesh.cloud.height, 1);
+  EXPECT_EQ (mesh.polygons.size(), 1);
+  EXPECT_EQ (mesh.polygons.front().vertices.size(), 3);
 
-  remove("mesh_uint_indices.ply");
+  remove ("mesh_uint_indices.ply");
 }
 
 /* ---[ */
 int
 main (int argc, char** argv)
 {
-  testing::InitGoogleTest(&argc, argv);
+  testing::InitGoogleTest (&argc, argv);
   if (argc < 2) {
     std::cerr << "No test files were given. Please add the path to TUM_Rabbit.vtk to "
                  "this test."

@@ -56,8 +56,7 @@ public:
   // =====CONSTRUCTOR & DESTRUCTOR=====
   /** Constructor */
   PCL_EXPORTS
-  RangeImageSpherical ()
-  {}
+  RangeImageSpherical() {}
   /** Destructor */
   PCL_EXPORTS virtual ~RangeImageSpherical() = default;
 
@@ -74,7 +73,7 @@ public:
   inline Ptr
   makeShared ()
   {
-    return Ptr(new RangeImageSpherical(*this));
+    return Ptr (new RangeImageSpherical (*this));
   }
 
   // Since we reimplement some of these overloaded functions, we have to do the

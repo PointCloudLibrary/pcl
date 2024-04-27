@@ -30,7 +30,7 @@
 
 class ON_CLASS ON_Texture : public ON_Object {
 public:
-  ON_OBJECT_DECLARE(ON_Texture);
+  ON_OBJECT_DECLARE (ON_Texture);
 
   ON_Texture();
   ~ON_Texture();

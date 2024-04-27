@@ -19,16 +19,16 @@
 
 class ON_PolylineCurve;
 class ON_CLASS ON_PolylineCurve : public ON_Curve {
-  ON_OBJECT_DECLARE(ON_PolylineCurve);
+  ON_OBJECT_DECLARE (ON_PolylineCurve);
 
 public:
   ON_PolylineCurve();
-  ON_PolylineCurve(const ON_3dPointArray&);
-  ON_PolylineCurve(const ON_PolylineCurve&);
+  ON_PolylineCurve (const ON_3dPointArray&);
+  ON_PolylineCurve (const ON_PolylineCurve&);
   ON_PolylineCurve&
-  operator=(const ON_PolylineCurve&);
+  operator= (const ON_PolylineCurve&);
   ON_PolylineCurve&
-  operator=(const ON_3dPointArray&);
+  operator= (const ON_3dPointArray&);
 
   virtual ~ON_PolylineCurve();
 
@@ -291,7 +291,7 @@ public:
   //   some other point is distinct from the first and
   //   last point.
   ON_BOOL32
-  IsClosed () const;
+  IsClosed() const;
 
   // Description:
   //   virtual ON_Curve::IsPeriodic override.
@@ -397,7 +397,7 @@ public:
   // Remarks:
   //   Domain changes from [a,b] to [-b,-a]
   ON_BOOL32
-  Reverse ();
+  Reverse();
 
   /*
   Description:

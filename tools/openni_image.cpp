@@ -71,17 +71,17 @@ int nr_frames_total = 0;
 size_t
 getTotalSystemMemory ()
 {
-  std::uint64_t pages = sysconf(_SC_AVPHYS_PAGES);
-  std::uint64_t page_size = sysconf(_SC_PAGE_SIZE);
-  print_info("Total available memory size: %lluMB.\n", (pages * page_size) / 1048576);
+  std::uint64_t pages = sysconf (_SC_AVPHYS_PAGES);
+  std::uint64_t page_size = sysconf (_SC_PAGE_SIZE);
+  print_info ("Total available memory size: %lluMB.\n", (pages * page_size) / 1048576);
   if (pages * page_size >
-      static_cast<std::uint64_t>(std::numeric_limits<std::size_t>::max())) {
+      static_cast<std::uint64_t> (std::numeric_limits<std::size_t>::max())) {
     return std::numeric_limits<std::size_t>::max();
   }
-  return static_cast<std::size_t>(pages * page_size);
+  return static_cast<std::size_t> (pages * page_size);
 }
 
-const int BUFFER_SIZE = static_cast<int>(getTotalSystemMemory() / (640 * 480) / 2);
+const int BUFFER_SIZE = static_cast<int> (getTotalSystemMemory() / (640 * 480) / 2);
 #else
 
 constexpr int BUFFER_SIZE = 200;
@@ -97,7 +97,7 @@ int buff_size = BUFFER_SIZE;
     ++count;                                                                           \
     if (now - last >= 1.0) {                                                           \
       std::cerr << "Average framerate(" << (_WHAT_)                                    \
-                << "): " << double(count) / double(now - last)                         \
+                << "): " << double (count) / double (now - last)                       \
                 << " Hz. Queue size: " << (buff).getSize()                             \
                 << ", number of frames written so far: " << nr_frames_total << "\n";   \
       count = 0;                                                                       \
@@ -113,7 +113,7 @@ int buff_size = BUFFER_SIZE;
     ++count;                                                                           \
     if (now - last >= 1.0) {                                                           \
       std::cerr << "Average framerate(" << (_WHAT_)                                    \
-                << "): " << double(count) / double(now - last)                         \
+                << "): " << double (count) / double (now - last)                       \
                 << " Hz. Queue size: " << (buff).getSize() << "\n";                    \
       count = 0;                                                                       \
       last = now;                                                                      \
@@ -129,12 +129,12 @@ int buff_size = BUFFER_SIZE;
     if (now - last >= 1.0) {                                                           \
       if (visualize && global_visualize)                                               \
         std::cerr << "Average framerate(" << (_WHAT_)                                  \
-                  << "): " << double(count) / double(now - last)                       \
+                  << "): " << double (count) / double (now - last)                     \
                   << " Hz. Queue size: " << (buff1).getSize() << " (w) / "             \
                   << (buff2).getSize() << " (v)\n";                                    \
       else                                                                             \
         std::cerr << "Average framerate(" << (_WHAT_)                                  \
-                  << "): " << double(count) / double(now - last)                       \
+                  << "): " << double (count) / double (now - last)                     \
                   << " Hz. Queue size: " << (buff1).getSize() << " (w)\n";             \
       count = 0;                                                                       \
       last = now;                                                                      \
@@ -146,16 +146,16 @@ struct Frame {
   using Ptr = std::shared_ptr<Frame>;
   using ConstPtr = std::shared_ptr<const Frame>;
 
-  Frame(const openni_wrapper::Image::Ptr& _image,
-        const openni_wrapper::DepthImage::Ptr& _depth_image,
-        const io::CameraParameters& _parameters_rgb,
-        const io::CameraParameters& _parameters_depth,
-        const std::chrono::time_point<std::chrono::system_clock>& _time)
-  : image(_image)
-  , depth_image(_depth_image)
-  , parameters_rgb(_parameters_rgb)
-  , parameters_depth(_parameters_depth)
-  , time(_time)
+  Frame (const openni_wrapper::Image::Ptr& _image,
+         const openni_wrapper::DepthImage::Ptr& _depth_image,
+         const io::CameraParameters& _parameters_rgb,
+         const io::CameraParameters& _parameters_depth,
+         const std::chrono::time_point<std::chrono::system_clock>& _time)
+  : image (_image)
+  , depth_image (_depth_image)
+  , parameters_rgb (_parameters_rgb)
+  , parameters_depth (_parameters_depth)
+  , time (_time)
   {}
 
   const openni_wrapper::Image::Ptr image;
@@ -170,19 +170,19 @@ struct Frame {
 class Buffer {
 public:
   Buffer() = default;
-  Buffer(const Buffer&) = delete; // Disabled copy constructor
+  Buffer (const Buffer&) = delete; // Disabled copy constructor
   Buffer&
-  operator=(const Buffer&) = delete; // Disabled assignment operator
+  operator= (const Buffer&) = delete; // Disabled assignment operator
 
   bool
   pushBack (Frame::ConstPtr frame)
   {
     bool retVal = false;
     {
-      std::lock_guard<std::mutex> buff_lock(bmutex_);
+      std::lock_guard<std::mutex> buff_lock (bmutex_);
       if (!buffer_.full())
         retVal = true;
-      buffer_.push_back(frame);
+      buffer_.push_back (frame);
     }
     buff_empty_.notify_one();
     return (retVal);
@@ -193,15 +193,15 @@ public:
   {
     Frame::ConstPtr cloud;
     {
-      std::unique_lock<std::mutex> buff_lock(bmutex_);
+      std::unique_lock<std::mutex> buff_lock (bmutex_);
       while (buffer_.empty()) {
         if (is_done)
           break;
         {
-          std::lock_guard<std::mutex> io_lock(io_mutex);
+          std::lock_guard<std::mutex> io_lock (io_mutex);
           // std::cerr << "No data in buffer_ yet or buffer is empty." << std::endl;
         }
-        buff_empty_.wait(buff_lock);
+        buff_empty_.wait (buff_lock);
       }
       cloud = buffer_.front();
       buffer_.pop_front();
@@ -212,41 +212,41 @@ public:
   inline bool
   isFull ()
   {
-    std::lock_guard<std::mutex> buff_lock(bmutex_);
+    std::lock_guard<std::mutex> buff_lock (bmutex_);
     return (buffer_.full());
   }
 
   inline bool
   isEmpty ()
   {
-    std::lock_guard<std::mutex> buff_lock(bmutex_);
+    std::lock_guard<std::mutex> buff_lock (bmutex_);
     return (buffer_.empty());
   }
 
   inline int
   getSize ()
   {
-    std::lock_guard<std::mutex> buff_lock(bmutex_);
-    return (static_cast<int>(buffer_.size()));
+    std::lock_guard<std::mutex> buff_lock (bmutex_);
+    return (static_cast<int> (buffer_.size()));
   }
 
   inline int
   getCapacity ()
   {
-    return (static_cast<int>(buffer_.capacity()));
+    return (static_cast<int> (buffer_.capacity()));
   }
 
   inline void
   setCapacity (int buff_size)
   {
-    std::lock_guard<std::mutex> buff_lock(bmutex_);
-    buffer_.set_capacity(buff_size);
+    std::lock_guard<std::mutex> buff_lock (bmutex_);
+    buffer_.set_capacity (buff_size);
   }
 
   inline void
   clear ()
   {
-    std::lock_guard<std::mutex> buff_lock(bmutex_);
+    std::lock_guard<std::mutex> buff_lock (bmutex_);
     buffer_.clear();
   }
 
@@ -266,36 +266,39 @@ private:
     if (!frame)
       return;
 
-    FPS_CALC_WRITER("data write   ", buf_);
+    FPS_CALC_WRITER ("data write   ", buf_);
     nr_frames_total++;
 
-    const std::string time_string = getTimestamp(frame->time);
+    const std::string time_string = getTimestamp (frame->time);
 
     // Save RGB data
     const std::string rgb_filename = "frame_" + time_string + "_rgb.pclzf";
     switch (frame->image->getEncoding()) {
     case openni_wrapper::Image::YUV422: {
       io::LZFYUV422ImageWriter lrgb;
-      lrgb.write(reinterpret_cast<const char*>(&frame->image->getMetaData().Data()[0]),
-                 frame->image->getWidth(),
-                 frame->image->getHeight(),
-                 rgb_filename);
+      lrgb.write (
+          reinterpret_cast<const char*> (&frame->image->getMetaData().Data()[0]),
+          frame->image->getWidth(),
+          frame->image->getHeight(),
+          rgb_filename);
       break;
     }
     case openni_wrapper::Image::RGB: {
       io::LZFRGB24ImageWriter lrgb;
-      lrgb.write(reinterpret_cast<const char*>(&frame->image->getMetaData().Data()[0]),
-                 frame->image->getWidth(),
-                 frame->image->getHeight(),
-                 rgb_filename);
+      lrgb.write (
+          reinterpret_cast<const char*> (&frame->image->getMetaData().Data()[0]),
+          frame->image->getWidth(),
+          frame->image->getHeight(),
+          rgb_filename);
       break;
     }
     case openni_wrapper::Image::BAYER_GRBG: {
       io::LZFBayer8ImageWriter lrgb;
-      lrgb.write(reinterpret_cast<const char*>(&frame->image->getMetaData().Data()[0]),
-                 frame->image->getWidth(),
-                 frame->image->getHeight(),
-                 rgb_filename);
+      lrgb.write (
+          reinterpret_cast<const char*> (&frame->image->getMetaData().Data()[0]),
+          frame->image->getWidth(),
+          frame->image->getHeight(),
+          rgb_filename);
       break;
     }
     }
@@ -305,18 +308,18 @@ private:
 
     io::LZFDepth16ImageWriter ld;
     // io::LZFShift11ImageWriter ld;
-    ld.write(reinterpret_cast<const char*>(
-                 &frame->depth_image->getDepthMetaData().Data()[0]),
-             frame->depth_image->getWidth(),
-             frame->depth_image->getHeight(),
-             depth_filename);
+    ld.write (reinterpret_cast<const char*> (
+                  &frame->depth_image->getDepthMetaData().Data()[0]),
+              frame->depth_image->getWidth(),
+              frame->depth_image->getHeight(),
+              depth_filename);
 
     // Save depth data
     const std::string xml_filename = "frame_" + time_string + ".xml";
 
     io::LZFRGB24ImageWriter lrgb;
-    lrgb.writeParameters(frame->parameters_rgb, xml_filename);
-    ld.writeParameters(frame->parameters_depth, xml_filename);
+    lrgb.writeParameters (frame->parameters_rgb, xml_filename);
+    ld.writeParameters (frame->parameters_depth, xml_filename);
     // By default, the z-value depth multiplication factor is written as part of the
     // LZFDepthImageWriter's writeParameters as 0.001 If you want to change that,
     // uncomment the next line and change the value
@@ -331,31 +334,31 @@ private:
   {
     while (!is_done) {
       if (save_data || toggle_one_frame_capture)
-        writeToDisk(buf_.popFront());
+        writeToDisk (buf_.popFront());
       else
-        std::this_thread::sleep_for(100us);
+        std::this_thread::sleep_for (100us);
     }
 
     if (save_data && buf_.getSize() > 0) {
       {
-        std::lock_guard<std::mutex> io_lock(io_mutex);
-        print_info("Writing remaining %ld clouds in the buffer to disk...\n",
-                   buf_.getSize());
+        std::lock_guard<std::mutex> io_lock (io_mutex);
+        print_info ("Writing remaining %ld clouds in the buffer to disk...\n",
+                    buf_.getSize());
       }
       while (!buf_.isEmpty()) {
         {
-          std::lock_guard<std::mutex> io_lock(io_mutex);
-          print_info("Clearing buffer... %ld remaining...\n", buf_.getSize());
+          std::lock_guard<std::mutex> io_lock (io_mutex);
+          print_info ("Clearing buffer... %ld remaining...\n", buf_.getSize());
         }
-        writeToDisk(buf_.popFront());
+        writeToDisk (buf_.popFront());
       }
     }
   }
 
 public:
-  Writer(Buffer& buf) : buf_(buf)
+  Writer (Buffer& buf) : buf_ (buf)
   {
-    thread_.reset(new std::thread(&Writer::receiveAndProcess, this));
+    thread_.reset (new std::thread (&Writer::receiveAndProcess, this));
   }
 
   ///////////////////////////////////////////////////////////////////////////////////////
@@ -363,8 +366,8 @@ public:
   stop ()
   {
     thread_->join();
-    std::lock_guard<std::mutex> io_lock(io_mutex);
-    print_highlight("Writer done.\n");
+    std::lock_guard<std::mutex> io_lock (io_mutex);
+    print_highlight ("Writer done.\n");
   }
 
 private:
@@ -383,33 +386,33 @@ private:
   {
     const auto time = std::chrono::system_clock::now();
 
-    FPS_CALC_DRIVER("driver       ", buf_write_, buf_vis_);
+    FPS_CALC_DRIVER ("driver       ", buf_write_, buf_vis_);
 
     // Extract camera parameters
     io::CameraParameters parameters_rgb;
     parameters_rgb.focal_length_x = parameters_rgb.focal_length_y =
-        grabber_.getDevice()->getImageFocalLength(depth_image->getWidth());
+        grabber_.getDevice()->getImageFocalLength (depth_image->getWidth());
     parameters_rgb.principal_point_x = image->getWidth() >> 1;
     parameters_rgb.principal_point_y = image->getHeight() >> 1;
 
     io::CameraParameters parameters_depth;
     parameters_depth.focal_length_x = parameters_depth.focal_length_y =
-        grabber_.getDevice()->getDepthFocalLength(depth_image->getWidth());
+        grabber_.getDevice()->getDepthFocalLength (depth_image->getWidth());
     parameters_depth.principal_point_x = depth_image->getWidth() >> 1;
     parameters_depth.principal_point_y = depth_image->getHeight() >> 1;
 
     // Create a new frame
-    Frame::ConstPtr frame(
-        new Frame(image, depth_image, parameters_rgb, parameters_depth, time));
+    Frame::ConstPtr frame (
+        new Frame (image, depth_image, parameters_rgb, parameters_depth, time));
 
-    if ((save_data || toggle_one_frame_capture) && !buf_write_.pushBack(frame)) {
-      std::lock_guard<std::mutex> io_lock(io_mutex);
-      print_warn("Warning! Write buffer was full, overwriting data!\n");
+    if ((save_data || toggle_one_frame_capture) && !buf_write_.pushBack (frame)) {
+      std::lock_guard<std::mutex> io_lock (io_mutex);
+      print_warn ("Warning! Write buffer was full, overwriting data!\n");
     }
 
-    if (global_visualize && visualize && !buf_vis_.pushBack(frame)) {
-      std::lock_guard<std::mutex> io_lock(io_mutex);
-      print_warn("Warning! Visualization buffer was full, overwriting data!\n");
+    if (global_visualize && visualize && !buf_vis_.pushBack (frame)) {
+      std::lock_guard<std::mutex> io_lock (io_mutex);
+      print_warn ("Warning! Visualization buffer was full, overwriting data!\n");
     }
   }
 
@@ -417,28 +420,28 @@ private:
   void
   grabAndSend ()
   {
-    std::function<void(const openni_wrapper::Image::Ptr&,
-                       const openni_wrapper::DepthImage::Ptr&,
-                       float)>
+    std::function<void (const openni_wrapper::Image::Ptr&,
+                        const openni_wrapper::DepthImage::Ptr&,
+                        float)>
         image_cb = [this] (const openni_wrapper::Image::Ptr& img,
                            const openni_wrapper::DepthImage::Ptr& depth,
-                           float f) { image_callback(img, depth, f); };
-    boost::signals2::connection image_connection = grabber_.registerCallback(image_cb);
+                           float f) { image_callback (img, depth, f); };
+    boost::signals2::connection image_connection = grabber_.registerCallback (image_cb);
 
     grabber_.start();
 
     while (!is_done) {
-      std::this_thread::sleep_for(1s);
+      std::this_thread::sleep_for (1s);
     }
     grabber_.stop();
     image_connection.disconnect();
   }
 
 public:
-  Driver(OpenNIGrabber& grabber, Buffer& buf_write, Buffer& buf_vis)
-  : grabber_(grabber), buf_write_(buf_write), buf_vis_(buf_vis)
+  Driver (OpenNIGrabber& grabber, Buffer& buf_write, Buffer& buf_vis)
+  : grabber_ (grabber), buf_write_ (buf_write), buf_vis_ (buf_vis)
   {
-    thread_.reset(new std::thread(&Driver::grabAndSend, this));
+    thread_.reset (new std::thread (&Driver::grabAndSend, this));
   }
 
   ///////////////////////////////////////////////////////////////////////////////////////
@@ -446,8 +449,8 @@ public:
   stop ()
   {
     thread_->join();
-    std::lock_guard<std::mutex> io_lock(io_mutex);
-    print_highlight("Grabber done.\n");
+    std::lock_guard<std::mutex> io_lock (io_mutex);
+    print_highlight ("Grabber done.\n");
   }
 
 private:
@@ -463,28 +466,28 @@ private:
   void
   receiveAndView ()
   {
-    std::string mouseMsg2D("Mouse coordinates in image viewer");
-    std::string keyMsg2D("Key event for image viewer");
+    std::string mouseMsg2D ("Mouse coordinates in image viewer");
+    std::string keyMsg2D ("Key event for image viewer");
 
-    image_viewer_->registerMouseCallback(
-        &Viewer::mouse_callback, *this, static_cast<void*>(&mouseMsg2D));
-    image_viewer_->registerKeyboardCallback(
-        &Viewer::keyboard_callback, *this, static_cast<void*>(&keyMsg2D));
-    depth_image_viewer_->registerMouseCallback(
-        &Viewer::mouse_callback, *this, static_cast<void*>(&mouseMsg2D));
-    depth_image_viewer_->registerKeyboardCallback(
-        &Viewer::keyboard_callback, *this, static_cast<void*>(&keyMsg2D));
+    image_viewer_->registerMouseCallback (
+        &Viewer::mouse_callback, *this, static_cast<void*> (&mouseMsg2D));
+    image_viewer_->registerKeyboardCallback (
+        &Viewer::keyboard_callback, *this, static_cast<void*> (&keyMsg2D));
+    depth_image_viewer_->registerMouseCallback (
+        &Viewer::mouse_callback, *this, static_cast<void*> (&mouseMsg2D));
+    depth_image_viewer_->registerKeyboardCallback (
+        &Viewer::keyboard_callback, *this, static_cast<void*> (&keyMsg2D));
 
     // Position the first window (RGB)
     if (!image_cld_init_) {
-      image_viewer_->setPosition(0, 0);
+      image_viewer_->setPosition (0, 0);
       image_cld_init_ = !image_cld_init_;
     }
 
     // Process until stopped
     while (!image_viewer_->wasStopped() && !depth_image_viewer_->wasStopped() &&
            !is_done) {
-      std::this_thread::sleep_for(100us);
+      std::this_thread::sleep_for (100us);
 
       if (!visualize) {
         image_viewer_->spinOnce();
@@ -495,29 +498,30 @@ private:
       while (!buf_.isEmpty() && !is_done) {
         Frame::ConstPtr frame = buf_.popFront();
 
-        FPS_CALC_VIEWER("visualization", buf_);
+        FPS_CALC_VIEWER ("visualization", buf_);
         // Add to renderer
         if (frame->image) {
           // Copy RGB data for visualization
-          static std::vector<unsigned char> rgb_data(frame->image->getWidth() *
-                                                     frame->image->getHeight() * 3);
+          static std::vector<unsigned char> rgb_data (frame->image->getWidth() *
+                                                      frame->image->getHeight() * 3);
           if (frame->image->getEncoding() != openni_wrapper::Image::RGB) {
-            frame->image->fillRGB(
+            frame->image->fillRGB (
                 frame->image->getWidth(), frame->image->getHeight(), rgb_data.data());
           }
           else
-            memcpy(
+            memcpy (
                 rgb_data.data(), frame->image->getMetaData().Data(), rgb_data.size());
 
-          image_viewer_->addRGBImage(reinterpret_cast<unsigned char*>(rgb_data.data()),
-                                     frame->image->getWidth(),
-                                     frame->image->getHeight(),
-                                     "rgb_image");
+          image_viewer_->addRGBImage (
+              reinterpret_cast<unsigned char*> (rgb_data.data()),
+              frame->image->getWidth(),
+              frame->image->getHeight(),
+              "rgb_image");
         }
 
         if (frame->depth_image) {
-          unsigned char* data = visualization::FloatImageUtils::getVisualImage(
-              reinterpret_cast<const unsigned short*>(
+          unsigned char* data = visualization::FloatImageUtils::getVisualImage (
+              reinterpret_cast<const unsigned short*> (
                   &frame->depth_image->getDepthMetaData().Data()[0]),
               frame->depth_image->getWidth(),
               frame->depth_image->getHeight(),
@@ -526,12 +530,12 @@ private:
               std::numeric_limits<unsigned short>::max() / 10,
               true);
 
-          depth_image_viewer_->addRGBImage(data,
-                                           frame->depth_image->getWidth(),
-                                           frame->depth_image->getHeight(),
-                                           "rgb_image");
+          depth_image_viewer_->addRGBImage (data,
+                                            frame->depth_image->getWidth(),
+                                            frame->depth_image->getHeight(),
+                                            "rgb_image");
           if (!depth_image_cld_init_) {
-            depth_image_viewer_->setPosition(frame->depth_image->getWidth(), 0);
+            depth_image_viewer_->setPosition (frame->depth_image->getWidth(), 0);
             depth_image_cld_init_ = !depth_image_cld_init_;
           }
           delete[] data;
@@ -544,11 +548,12 @@ private:
 
 public:
   ///////////////////////////////////////////////////////////////////////////////////////
-  Viewer(Buffer& buf) : buf_(buf)
+  Viewer (Buffer& buf) : buf_ (buf)
   {
-    image_viewer_.reset(new visualization::ImageViewer("PCL/OpenNI RGB image viewer"));
-    depth_image_viewer_.reset(
-        new visualization::ImageViewer("PCL/OpenNI depth image viewer"));
+    image_viewer_.reset (
+        new visualization::ImageViewer ("PCL/OpenNI RGB image viewer"));
+    depth_image_viewer_.reset (
+        new visualization::ImageViewer ("PCL/OpenNI depth image viewer"));
 
     receiveAndView();
   }
@@ -557,8 +562,8 @@ public:
   void
   stop ()
   {
-    std::lock_guard<std::mutex> io_lock(io_mutex);
-    print_highlight("Viewer done.\n");
+    std::lock_guard<std::mutex> io_lock (io_mutex);
+    print_highlight ("Viewer done.\n");
   }
 
   ///////////////////////////////////////////////////////////////////////////////////////
@@ -569,7 +574,7 @@ public:
     if (event.getKeySym() == "space") {
       if (event.keyDown()) {
         save_data = !save_data;
-        PCL_INFO("Toggled recording state: %s.\n", save_data ? "enabled" : "disabled");
+        PCL_INFO ("Toggled recording state: %s.\n", save_data ? "enabled" : "disabled");
       }
       return;
     }
@@ -579,14 +584,14 @@ public:
       visualize = !visualize;
       if (!visualize)
         buf_.clear();
-      PCL_INFO("Visualization state: %s.\n", (visualize ? "on" : "off"));
+      PCL_INFO ("Visualization state: %s.\n", (visualize ? "on" : "off"));
       return;
     }
 
     // S saves one frame
     if (event.getKeyCode() == 's' && event.keyDown()) {
       toggle_one_frame_capture = true;
-      PCL_INFO("Toggled single frame capture state.\n");
+      PCL_INFO ("Toggled single frame capture state.\n");
       return;
     }
 
@@ -604,7 +609,7 @@ public:
     if (mouse_event.getType() == visualization::MouseEvent::MouseButtonPress &&
         mouse_event.getButton() == visualization::MouseEvent::LeftButton) {
       toggle_one_frame_capture = true;
-      PCL_INFO("Toggled single frame capture state.\n");
+      PCL_INFO ("Toggled single frame capture state.\n");
     }
   }
 
@@ -662,8 +667,8 @@ usage (char** argv)
 void
 ctrlC (int)
 {
-  std::lock_guard<std::mutex> io_lock(io_mutex);
-  print_info("\nCtrl-C detected, exit condition set to true.\n");
+  std::lock_guard<std::mutex> io_lock (io_mutex);
+  print_info ("\nCtrl-C detected, exit condition set to true.\n");
   is_done = true;
 }
 
@@ -671,17 +676,17 @@ ctrlC (int)
 int
 main (int argc, char** argv)
 {
-  print_highlight("PCL OpenNI Image Viewer/Recorder. See %s -h for options.\n",
-                  argv[0]);
+  print_highlight ("PCL OpenNI Image Viewer/Recorder. See %s -h for options.\n",
+                   argv[0]);
   bool debug = false;
-  console::parse_argument(argc, argv, "-debug", debug);
+  console::parse_argument (argc, argv, "-debug", debug);
   if (debug)
-    console::setVerbosityLevel(console::L_DEBUG);
+    console::setVerbosityLevel (console::L_DEBUG);
 
-  if (parse_argument(argc, argv, "-buf", buff_size) != -1)
-    print_highlight("Setting buffer size to %d frames.\n", buff_size);
+  if (parse_argument (argc, argv, "-buf", buff_size) != -1)
+    print_highlight ("Setting buffer size to %d frames.\n", buff_size);
   else
-    print_highlight("Using default buffer size of %d frames.\n", buff_size);
+    print_highlight ("Using default buffer size of %d frames.\n", buff_size);
 
   std::string device_id;
   OpenNIGrabber::Mode image_mode = OpenNIGrabber::OpenNI_Default_Mode;
@@ -690,12 +695,12 @@ main (int argc, char** argv)
   if (argc >= 2) {
     device_id = argv[1];
     if (device_id == "--help" || device_id == "-h") {
-      usage(argv);
+      usage (argv);
       return (0);
     }
     if (device_id == "-l") {
       if (argc >= 3) {
-        OpenNIGrabber grabber(argv[2]);
+        OpenNIGrabber grabber (argv[2]);
         auto device = grabber.getDevice();
         std::vector<std::pair<int, XnMapOutputMode>> modes;
 
@@ -727,11 +732,11 @@ main (int argc, char** argv)
           for (unsigned deviceIdx = 0; deviceIdx < driver.getNumberDevices();
                ++deviceIdx) {
             std::cout << "Device: " << deviceIdx + 1
-                      << ", vendor: " << driver.getVendorName(deviceIdx)
-                      << ", product: " << driver.getProductName(deviceIdx)
-                      << ", connected: " << driver.getBus(deviceIdx) << " @ "
-                      << driver.getAddress(deviceIdx) << ", serial number: \'"
-                      << driver.getSerialNumber(deviceIdx) << "\'" << std::endl;
+                      << ", vendor: " << driver.getVendorName (deviceIdx)
+                      << ", product: " << driver.getProductName (deviceIdx)
+                      << ", connected: " << driver.getBus (deviceIdx) << " @ "
+                      << driver.getAddress (deviceIdx) << ", serial number: \'"
+                      << driver.getSerialNumber (deviceIdx) << "\'" << std::endl;
           }
         }
         else
@@ -749,34 +754,34 @@ main (int argc, char** argv)
   }
 
   unsigned mode;
-  if (console::parse(argc, argv, "-imagemode", mode) != -1)
-    image_mode = static_cast<OpenNIGrabber::Mode>(mode);
-  if (console::parse(argc, argv, "-depthmode", mode) != -1)
-    depth_mode = static_cast<OpenNIGrabber::Mode>(mode);
+  if (console::parse (argc, argv, "-imagemode", mode) != -1)
+    image_mode = static_cast<OpenNIGrabber::Mode> (mode);
+  if (console::parse (argc, argv, "-depthmode", mode) != -1)
+    depth_mode = static_cast<OpenNIGrabber::Mode> (mode);
 
   int depthformat = openni_wrapper::OpenNIDevice::OpenNI_12_bit_depth;
-  console::parse_argument(argc, argv, "-depthformat", depthformat);
-  console::parse_argument(argc, argv, "-visualize", global_visualize);
+  console::parse_argument (argc, argv, "-depthformat", depthformat);
+  console::parse_argument (argc, argv, "-visualize", global_visualize);
 
-  OpenNIGrabber ni_grabber(device_id, depth_mode, image_mode);
+  OpenNIGrabber ni_grabber (device_id, depth_mode, image_mode);
   // Set the depth output format
-  ni_grabber.getDevice()->setDepthOutputFormat(
-      static_cast<openni_wrapper::OpenNIDevice::DepthMode>(depthformat));
+  ni_grabber.getDevice()->setDepthOutputFormat (
+      static_cast<openni_wrapper::OpenNIDevice::DepthMode> (depthformat));
 
   // int imageformat = 0;
   // console::parse_argument (argc, argv, "-imageformat", imageformat);
 
   Buffer buf_write, buf_vis;
-  buf_write.setCapacity(buff_size);
-  buf_vis.setCapacity(buff_size);
+  buf_write.setCapacity (buff_size);
+  buf_vis.setCapacity (buff_size);
 
-  signal(SIGINT, ctrlC);
+  signal (SIGINT, ctrlC);
 
-  Driver driver(ni_grabber, buf_write, buf_vis);
-  Writer writer(buf_write);
+  Driver driver (ni_grabber, buf_write, buf_vis);
+  Writer writer (buf_write);
   std::shared_ptr<Viewer> viewer;
   if (global_visualize)
-    viewer.reset(new Viewer(buf_vis));
+    viewer.reset (new Viewer (buf_vis));
   else
     save_data = true;
 
@@ -786,6 +791,6 @@ main (int argc, char** argv)
     viewer->stop();
   writer.stop();
 
-  print_highlight("Total number of frames written: %d.\n", nr_frames_total);
+  print_highlight ("Total number of frames written: %d.\n", nr_frames_total);
   return (0);
 }

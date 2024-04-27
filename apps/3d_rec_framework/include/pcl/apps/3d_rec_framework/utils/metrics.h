@@ -58,12 +58,12 @@ struct HistIntersectionUnionDistance {
 
   template <typename Iterator1, typename Iterator2>
   ResultType
-  operator()(Iterator1 a,
-             Iterator2 b,
-             std::size_t size,
-             ResultType worst_dist = -1) const
+  operator() (Iterator1 a,
+              Iterator2 b,
+              std::size_t size,
+              ResultType worst_dist = -1) const
   {
-    pcl::utils::ignore(worst_dist);
+    pcl::utils::ignore (worst_dist);
     ResultType result = ResultType();
     ResultType min0, min1, min2, min3;
     ResultType max0, max1, max2, max3;
@@ -98,7 +98,7 @@ struct HistIntersectionUnionDistance {
       b++;
     }
 
-    result = static_cast<ResultType>(1.0 - ((1 + sum_min) / (1 + sum_max)));
+    result = static_cast<ResultType> (1.0 - ((1 + sum_min) / (1 + sum_max)));
     return result;
   }
 

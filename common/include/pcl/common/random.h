@@ -74,8 +74,8 @@ template <typename T>
 class UniformGenerator {
 public:
   struct Parameters {
-    Parameters(T _min = 0, T _max = 1, std::uint32_t _seed = 1)
-    : min(_min), max(_max), seed(_seed)
+    Parameters (T _min = 0, T _max = 1, std::uint32_t _seed = 1)
+    : min (_min), max (_max), seed (_seed)
     {}
 
     T min;
@@ -88,12 +88,12 @@ public:
    * \param max: included higher bound
    * \param seed: seeding value
    */
-  UniformGenerator(T min = 0, T max = 1, std::uint32_t seed = -1);
+  UniformGenerator (T min = 0, T max = 1, std::uint32_t seed = -1);
 
   /** Constructor
    * \param parameters uniform distribution parameters and generator seed
    */
-  UniformGenerator(const Parameters& parameters);
+  UniformGenerator (const Parameters& parameters);
 
   /** Change seed value
    * \param[in] seed new generator seed value
@@ -126,7 +126,7 @@ public:
   inline T
   run ()
   {
-    return (distribution_(rng_));
+    return (distribution_ (rng_));
   }
 
 private:
@@ -148,8 +148,8 @@ template <typename T>
 class NormalGenerator {
 public:
   struct Parameters {
-    Parameters(T _mean = 0, T _sigma = 1, std::uint32_t _seed = 1)
-    : mean(_mean), sigma(_sigma), seed(_seed)
+    Parameters (T _mean = 0, T _sigma = 1, std::uint32_t _seed = 1)
+    : mean (_mean), sigma (_sigma), seed (_seed)
     {}
 
     T mean;
@@ -162,12 +162,12 @@ public:
    * \param[in] sigma normal variation
    * \param[in] seed seeding value
    */
-  NormalGenerator(T mean = 0, T sigma = 1, std::uint32_t seed = -1);
+  NormalGenerator (T mean = 0, T sigma = 1, std::uint32_t seed = -1);
 
   /** Constructor
    * \param parameters normal distribution parameters and seed
    */
-  NormalGenerator(const Parameters& parameters);
+  NormalGenerator (const Parameters& parameters);
 
   /** Change seed value
    * \param[in] seed new seed value
@@ -200,7 +200,7 @@ public:
   inline T
   run ()
   {
-    return (distribution_(rng_));
+    return (distribution_ (rng_));
   }
 
   using DistributionType = typename normal_distribution<T>::type;

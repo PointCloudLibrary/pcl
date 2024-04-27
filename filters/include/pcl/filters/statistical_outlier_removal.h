@@ -91,8 +91,8 @@ public:
    * \param[in] extract_removed_indices Set to true if you want to be able to extract
    * the indices of points being removed (default = false).
    */
-  StatisticalOutlierRemoval(bool extract_removed_indices = false)
-  : FilterIndices<PointT>(extract_removed_indices), searcher_()
+  StatisticalOutlierRemoval (bool extract_removed_indices = false)
+  : FilterIndices<PointT> (extract_removed_indices), searcher_()
   {
     filter_name_ = "StatisticalOutlierRemoval";
   }
@@ -165,7 +165,7 @@ protected:
   void
   applyFilter (Indices& indices) override
   {
-    applyFilterIndices(indices);
+    applyFilterIndices (indices);
   }
 
   /** \brief Filtered results are indexed by an indices array.
@@ -214,8 +214,8 @@ class PCL_EXPORTS StatisticalOutlierRemoval<pcl::PCLPointCloud2>
 
 public:
   /** \brief Empty constructor. */
-  StatisticalOutlierRemoval(bool extract_removed_indices = false)
-  : FilterIndices<pcl::PCLPointCloud2>::FilterIndices(extract_removed_indices)
+  StatisticalOutlierRemoval (bool extract_removed_indices = false)
+  : FilterIndices<pcl::PCLPointCloud2>::FilterIndices (extract_removed_indices)
   {
     filter_name_ = "StatisticalOutlierRemoval";
   }

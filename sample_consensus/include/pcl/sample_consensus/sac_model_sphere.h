@@ -92,8 +92,8 @@ public:
    * \param[in] random if true set the random seed to the current time, else set to
    * 12345 (default: false)
    */
-  SampleConsensusModelSphere(const PointCloudConstPtr& cloud, bool random = false)
-  : SampleConsensusModel<PointT>(cloud, random)
+  SampleConsensusModelSphere (const PointCloudConstPtr& cloud, bool random = false)
+  : SampleConsensusModel<PointT> (cloud, random)
   {
     model_name_ = "SampleConsensusModelSphere";
     sample_size_ = 4;
@@ -106,10 +106,10 @@ public:
    * \param[in] random if true set the random seed to the current time, else set to
    * 12345 (default: false)
    */
-  SampleConsensusModelSphere(const PointCloudConstPtr& cloud,
-                             const Indices& indices,
-                             bool random = false)
-  : SampleConsensusModel<PointT>(cloud, indices, random)
+  SampleConsensusModelSphere (const PointCloudConstPtr& cloud,
+                              const Indices& indices,
+                              bool random = false)
+  : SampleConsensusModel<PointT> (cloud, indices, random)
   {
     model_name_ = "SampleConsensusModelSphere";
     sample_size_ = 4;
@@ -122,7 +122,7 @@ public:
   /** \brief Copy constructor.
    * \param[in] source the model to copy into this
    */
-  SampleConsensusModelSphere(const SampleConsensusModelSphere& source)
+  SampleConsensusModelSphere (const SampleConsensusModelSphere& source)
   : SampleConsensusModel<PointT>()
   {
     *this = source;
@@ -133,9 +133,9 @@ public:
    * \param[in] source the model to copy into this
    */
   inline SampleConsensusModelSphere&
-  operator=(const SampleConsensusModelSphere& source)
+  operator= (const SampleConsensusModelSphere& source)
   {
-    SampleConsensusModel<PointT>::operator=(source);
+    SampleConsensusModel<PointT>::operator= (source);
     return (*this);
   }
 
@@ -232,23 +232,24 @@ protected:
   bool
   isModelValid (const Eigen::VectorXf& model_coefficients) const override
   {
-    if (!SampleConsensusModel<PointT>::isModelValid(model_coefficients))
+    if (!SampleConsensusModel<PointT>::isModelValid (model_coefficients))
       return (false);
 
     if (radius_min_ != -std::numeric_limits<double>::max() &&
         model_coefficients[3] < radius_min_) {
-      PCL_DEBUG("[SampleConsensusModelSphere::isModelValid] Model radius %g is smaller "
-                "than user specified minimum radius %g\n",
-                model_coefficients[3],
-                radius_min_);
+      PCL_DEBUG (
+          "[SampleConsensusModelSphere::isModelValid] Model radius %g is smaller "
+          "than user specified minimum radius %g\n",
+          model_coefficients[3],
+          radius_min_);
       return (false);
     }
     if (radius_max_ != std::numeric_limits<double>::max() &&
         model_coefficients[3] > radius_max_) {
-      PCL_DEBUG("[SampleConsensusModelSphere::isModelValid] Model radius %g is bigger "
-                "than user specified maximum radius %g\n",
-                model_coefficients[3],
-                radius_max_);
+      PCL_DEBUG ("[SampleConsensusModelSphere::isModelValid] Model radius %g is bigger "
+                 "than user specified maximum radius %g\n",
+                 model_coefficients[3],
+                 radius_max_);
       return (false);
     }
 

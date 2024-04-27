@@ -49,13 +49,13 @@ namespace pcl {
 template <typename PointT>
 class CloudIterator {
 public:
-  CloudIterator(PointCloud<PointT>& cloud);
+  CloudIterator (PointCloud<PointT>& cloud);
 
-  CloudIterator(PointCloud<PointT>& cloud, const Indices& indices);
+  CloudIterator (PointCloud<PointT>& cloud, const Indices& indices);
 
-  CloudIterator(PointCloud<PointT>& cloud, const PointIndices& indices);
+  CloudIterator (PointCloud<PointT>& cloud, const PointIndices& indices);
 
-  CloudIterator(PointCloud<PointT>& cloud, const Correspondences& corrs, bool source);
+  CloudIterator (PointCloud<PointT>& cloud, const Correspondences& corrs, bool source);
 
   ~CloudIterator();
 
@@ -63,7 +63,7 @@ public:
   operator++();
 
   void
-  operator++(int);
+  operator++ (int);
 
   PointT&
   operator*() const;
@@ -100,7 +100,7 @@ private:
     operator++() = 0;
 
     virtual void
-    operator++(int) = 0;
+    operator++ (int) = 0;
 
     virtual PointT&
     operator*() const = 0;
@@ -135,15 +135,15 @@ private:
 template <typename PointT>
 class ConstCloudIterator {
 public:
-  ConstCloudIterator(const PointCloud<PointT>& cloud);
+  ConstCloudIterator (const PointCloud<PointT>& cloud);
 
-  ConstCloudIterator(const PointCloud<PointT>& cloud, const Indices& indices);
+  ConstCloudIterator (const PointCloud<PointT>& cloud, const Indices& indices);
 
-  ConstCloudIterator(const PointCloud<PointT>& cloud, const PointIndices& indices);
+  ConstCloudIterator (const PointCloud<PointT>& cloud, const PointIndices& indices);
 
-  ConstCloudIterator(const PointCloud<PointT>& cloud,
-                     const Correspondences& corrs,
-                     bool source);
+  ConstCloudIterator (const PointCloud<PointT>& cloud,
+                      const Correspondences& corrs,
+                      bool source);
 
   ~ConstCloudIterator();
 
@@ -151,7 +151,7 @@ public:
   operator++();
 
   void
-  operator++(int);
+  operator++ (int);
 
   const PointT&
   operator*() const;
@@ -188,7 +188,7 @@ private:
     operator++() = 0;
 
     virtual void
-    operator++(int) = 0;
+    operator++ (int) = 0;
 
     virtual const PointT&
     operator*() const = 0;

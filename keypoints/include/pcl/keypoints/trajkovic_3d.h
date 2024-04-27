@@ -75,14 +75,14 @@ public:
    * \param[in] first_threshold the threshold used in the simple cornerness test.
    * \param[in] second_threshold the threshold used to reject weak corners.
    */
-  TrajkovicKeypoint3D(ComputationMethod method = FOUR_CORNERS,
-                      int window_size = 3,
-                      float first_threshold = 0.00046,
-                      float second_threshold = 0.03589)
-  : method_(method)
-  , window_size_(window_size)
-  , first_threshold_(first_threshold)
-  , second_threshold_(second_threshold)
+  TrajkovicKeypoint3D (ComputationMethod method = FOUR_CORNERS,
+                       int window_size = 3,
+                       float first_threshold = 0.00046,
+                       float second_threshold = 0.03589)
+  : method_ (method)
+  , window_size_ (window_size)
+  , first_threshold_ (first_threshold)
+  , second_threshold_ (second_threshold)
   {
     name_ = "TrajkovicKeypoint3D";
   }
@@ -199,10 +199,10 @@ private:
   getNormalOrNull (int i, int j, int& counter) const
   {
     static const NormalT null;
-    if (!isFinite((*normals_)(i, j)))
+    if (!isFinite ((*normals_) (i, j)))
       return (null);
     ++counter;
-    return ((*normals_)(i, j));
+    return ((*normals_) (i, j));
   }
   /// \return difference of two normals vectors
   inline float
@@ -214,13 +214,13 @@ private:
     double mx = b.normal_x;
     double my = b.normal_y;
     double mz = b.normal_z;
-    return (static_cast<float>(1.0 - (nx * mx + ny * my + nz * mz)));
+    return (static_cast<float> (1.0 - (nx * mx + ny * my + nz * mz)));
   }
   /// \return squared difference of two normals vectors
   inline float
   squaredNormalsDiff (const NormalT& a, const NormalT& b) const
   {
-    float diff = normalsDiff(a, b);
+    float diff = normalsDiff (a, b);
     return (diff * diff);
   }
   /** Comparator for responses intensity

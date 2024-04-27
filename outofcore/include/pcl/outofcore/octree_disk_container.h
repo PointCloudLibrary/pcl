@@ -88,7 +88,7 @@ public:
    * \param[in] dir Path to the tree. If it is a directory, it
    * will create the metadata. If it is a file, it will load the metadata into memory.
    */
-  OutofcoreOctreeDiskContainer(const boost::filesystem::path& dir);
+  OutofcoreOctreeDiskContainer (const boost::filesystem::path& dir);
 
   /** \brief flushes write buffer, then frees memory */
   ~OutofcoreOctreeDiskContainer() override;
@@ -96,7 +96,7 @@ public:
   /** \brief provides random access to points based on a linear index
    */
   inline PointT
-  operator[](std::uint64_t idx) const override;
+  operator[] (std::uint64_t idx) const override;
 
   /** \brief Adds a single point to the buffer to be written to disk when the buffer
    * grows sufficiently large, the object is destroyed, or the write buffer is manually
@@ -203,7 +203,7 @@ public:
   void
   flush (const bool force_cache_dealloc)
   {
-    flushWritebuff(force_cache_dealloc);
+    flushWritebuff (force_cache_dealloc);
   }
 
   /** \brief Returns this objects path name */
@@ -219,10 +219,11 @@ public:
     // clear elements that have not yet been written to disk
     writebuff_.clear();
     // remove the binary data in the directory
-    PCL_DEBUG("[Octree Disk Container] Removing the point data from disk, in file %s\n",
-              disk_storage_filename_.c_str());
-    boost::filesystem::remove(
-        static_cast<boost::filesystem::path>(disk_storage_filename_.c_str()));
+    PCL_DEBUG (
+        "[Octree Disk Container] Removing the point data from disk, in file %s\n",
+        disk_storage_filename_.c_str());
+    boost::filesystem::remove (
+        static_cast<boost::filesystem::path> (disk_storage_filename_.c_str()));
     // reset the size-of-file counter
     filelen_ = 0;
   }
@@ -234,37 +235,37 @@ public:
   void
   convertToXYZ (const boost::filesystem::path& path) override
   {
-    if (boost::filesystem::exists(disk_storage_filename_)) {
-      FILE* fxyz = fopen(path.string().c_str(), "we");
+    if (boost::filesystem::exists (disk_storage_filename_)) {
+      FILE* fxyz = fopen (path.string().c_str(), "we");
 
-      FILE* f = fopen(disk_storage_filename_.c_str(), "rbe");
-      assert(f != nullptr);
+      FILE* f = fopen (disk_storage_filename_.c_str(), "rbe");
+      assert (f != nullptr);
 
       std::uint64_t num = size();
       PointT p;
-      char* loc = reinterpret_cast<char*>(&p);
+      char* loc = reinterpret_cast<char*> (&p);
 
       for (std::uint64_t i = 0; i < num; i++) {
-        int seekret = _fseeki64(f, i * sizeof(PointT), SEEK_SET);
-        pcl::utils::ignore(seekret);
-        assert(seekret == 0);
-        std::size_t readlen = fread(loc, sizeof(PointT), 1, f);
-        pcl::utils::ignore(readlen);
-        assert(readlen == 1);
+        int seekret = _fseeki64 (f, i * sizeof (PointT), SEEK_SET);
+        pcl::utils::ignore (seekret);
+        assert (seekret == 0);
+        std::size_t readlen = fread (loc, sizeof (PointT), 1, f);
+        pcl::utils::ignore (readlen);
+        assert (readlen == 1);
 
         // of << p.x << "\t" << p.y << "\t" << p.z << "\n";
         std::stringstream ss;
         ss << std::fixed;
-        ss.precision(16);
+        ss.precision (16);
         ss << p.x << "\t" << p.y << "\t" << p.z << "\n";
 
-        fwrite(ss.str().c_str(), 1, ss.str().size(), fxyz);
+        fwrite (ss.str().c_str(), 1, ss.str().size(), fxyz);
       }
-      int res = fclose(f);
-      pcl::utils::ignore(res);
-      assert(res == 0);
-      res = fclose(fxyz);
-      assert(res == 0);
+      int res = fclose (f);
+      pcl::utils::ignore (res);
+      assert (res == 0);
+      res = fclose (fxyz);
+      assert (res == 0);
     }
   }
 
@@ -282,10 +283,10 @@ public:
 
 private:
   // no copy construction
-  OutofcoreOctreeDiskContainer(const OutofcoreOctreeDiskContainer& /*rval*/) {}
+  OutofcoreOctreeDiskContainer (const OutofcoreOctreeDiskContainer& /*rval*/) {}
 
   OutofcoreOctreeDiskContainer&
-  operator=(const OutofcoreOctreeDiskContainer& /*rval*/)
+  operator= (const OutofcoreOctreeDiskContainer& /*rval*/)
   {}
 
   void

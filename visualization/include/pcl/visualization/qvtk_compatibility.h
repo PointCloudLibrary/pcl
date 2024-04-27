@@ -47,9 +47,9 @@ inline auto PCL_EXPORTS
 setRenderWindowCompat (PCLQVTKWidget& qvtk, vtkRenderWindow& window)
 {
 #if VTK_MAJOR_VERSION > 8
-  return qvtk.setRenderWindow(&window);
+  return qvtk.setRenderWindow (&window);
 #else
-  return qvtk.SetRenderWindow(&window);
+  return qvtk.SetRenderWindow (&window);
 #endif // VTK_MAJOR_VERSION > 8
 }
 

@@ -73,15 +73,15 @@ public:
   PCL_MAKE_ALIGNED_OPERATOR_NEW
 
   /** \brief Empty constructor. */
-  UniformSampling(bool extract_removed_indices = false)
-  : Filter<PointT>(extract_removed_indices)
+  UniformSampling (bool extract_removed_indices = false)
+  : Filter<PointT> (extract_removed_indices)
   , leaves_()
-  , leaf_size_(Eigen::Vector4f::Zero())
-  , inverse_leaf_size_(Eigen::Vector4f::Zero())
-  , min_b_(Eigen::Vector4i::Zero())
-  , max_b_(Eigen::Vector4i::Zero())
-  , div_b_(Eigen::Vector4i::Zero())
-  , divb_mul_(Eigen::Vector4i::Zero())
+  , leaf_size_ (Eigen::Vector4f::Zero())
+  , inverse_leaf_size_ (Eigen::Vector4f::Zero())
+  , min_b_ (Eigen::Vector4i::Zero())
+  , max_b_ (Eigen::Vector4i::Zero())
+  , div_b_ (Eigen::Vector4i::Zero())
+  , divb_mul_ (Eigen::Vector4i::Zero())
   {
     filter_name_ = "UniformSampling";
   }
@@ -95,7 +95,7 @@ public:
   virtual inline void
   setRadiusSearch (double radius)
   {
-    leaf_size_[0] = leaf_size_[1] = leaf_size_[2] = static_cast<float>(radius);
+    leaf_size_[0] = leaf_size_[1] = leaf_size_[2] = static_cast<float> (radius);
     // Avoid division errors
     if (leaf_size_[3] == 0)
       leaf_size_[3] = 1;

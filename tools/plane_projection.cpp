@@ -54,28 +54,28 @@ Eigen::Quaternionf orientation;
 void
 printHelp (int, char** argv)
 {
-  print_error("Syntax is: %s input.pcd output.pcd A B C D\n", argv[0]);
-  print_info("  where the plane is represented by the following equation:\n");
-  print_info("                     Ax + By + Cz + D = 0\n");
+  print_error ("Syntax is: %s input.pcd output.pcd A B C D\n", argv[0]);
+  print_info ("  where the plane is represented by the following equation:\n");
+  print_info ("                     Ax + By + Cz + D = 0\n");
 }
 
 bool
 loadCloud (const std::string& filename, pcl::PCLPointCloud2& cloud)
 {
   TicToc tt;
-  print_highlight("Loading ");
-  print_value("%s ", filename.c_str());
+  print_highlight ("Loading ");
+  print_value ("%s ", filename.c_str());
 
   tt.tic();
-  if (loadPCDFile(filename, cloud, translation, orientation) < 0)
+  if (loadPCDFile (filename, cloud, translation, orientation) < 0)
     return (false);
-  print_info("[done, ");
-  print_value("%g", tt.toc());
-  print_info(" ms : ");
-  print_value("%d", cloud.width * cloud.height);
-  print_info(" points]\n");
-  print_info("Available dimensions: ");
-  print_value("%s\n", pcl::getFieldsList(cloud).c_str());
+  print_info ("[done, ");
+  print_value ("%g", tt.toc());
+  print_info (" ms : ");
+  print_value ("%d", cloud.width * cloud.height);
+  print_info (" points]\n");
+  print_info ("Available dimensions: ");
+  print_value ("%s\n", pcl::getFieldsList (cloud).c_str());
 
   return (true);
 }
@@ -92,17 +92,17 @@ project (const pcl::PCLPointCloud2::ConstPtr& input,
   coeffs << a, b, c, d;
 
   // Convert data to PointCloud<T>
-  PointCloud<PointXYZ>::Ptr xyz(new PointCloud<PointXYZ>);
-  fromPCLPointCloud2(*input, *xyz);
+  PointCloud<PointXYZ>::Ptr xyz (new PointCloud<PointXYZ>);
+  fromPCLPointCloud2 (*input, *xyz);
 
   // Estimate
   TicToc tt;
   tt.tic();
 
   // First, we'll find a point on the plane
-  print_highlight(stderr, "Projecting ");
+  print_highlight (stderr, "Projecting ");
 
-  PointCloud<PointXYZ>::Ptr projected_cloud_pcl(new PointCloud<PointXYZ>);
+  PointCloud<PointXYZ>::Ptr projected_cloud_pcl (new PointCloud<PointXYZ>);
   projected_cloud_pcl->width = xyz->width;
   projected_cloud_pcl->height = xyz->height;
   projected_cloud_pcl->is_dense = xyz->is_dense;
@@ -111,23 +111,23 @@ project (const pcl::PCLPointCloud2::ConstPtr& input,
 
   for (const auto& point : *xyz) {
     pcl::PointXYZ projection;
-    pcl::projectPoint<PointXYZ>(point, coeffs, projection);
-    projected_cloud_pcl->points.push_back(projection);
+    pcl::projectPoint<PointXYZ> (point, coeffs, projection);
+    projected_cloud_pcl->points.push_back (projection);
   }
 
-  print_info("[done, ");
-  print_value("%g", tt.toc());
-  print_info(" ms : ");
-  pcl::io::savePCDFile("foo.pcd", *projected_cloud_pcl);
+  print_info ("[done, ");
+  print_value ("%g", tt.toc());
+  print_info (" ms : ");
+  pcl::io::savePCDFile ("foo.pcd", *projected_cloud_pcl);
 
   // Convert data back
   pcl::PCLPointCloud2 projected_cloud;
-  toPCLPointCloud2(*projected_cloud_pcl, projected_cloud);
+  toPCLPointCloud2 (*projected_cloud_pcl, projected_cloud);
 
   // we can actually use concatenate fields to inject our projection into the
   // output, the second argument overwrites the first's fields for those that
   // are shared
-  concatenateFields(*input, projected_cloud, output);
+  concatenateFields (*input, projected_cloud, output);
 }
 
 void
@@ -136,59 +136,59 @@ saveCloud (const std::string& filename, const pcl::PCLPointCloud2& output)
   TicToc tt;
   tt.tic();
 
-  print_highlight("Saving ");
-  print_value("%s ", filename.c_str());
+  print_highlight ("Saving ");
+  print_value ("%s ", filename.c_str());
 
-  pcl::io::savePCDFile(filename, output, translation, orientation, false);
+  pcl::io::savePCDFile (filename, output, translation, orientation, false);
 
-  print_info("[done, ");
-  print_value("%g", tt.toc());
-  print_info(" ms : ");
-  print_value("%d", output.width * output.height);
-  print_info(" points]\n");
+  print_info ("[done, ");
+  print_value ("%g", tt.toc());
+  print_info (" ms : ");
+  print_value ("%d", output.width * output.height);
+  print_info (" points]\n");
 }
 
 /* ---[ */
 int
 main (int argc, char** argv)
 {
-  print_info("Estimate surface normals using pcl::NormalEstimation. For more "
-             "information, use: %s -h\n",
-             argv[0]);
+  print_info ("Estimate surface normals using pcl::NormalEstimation. For more "
+              "information, use: %s -h\n",
+              argv[0]);
 
   if (argc < 3) {
-    printHelp(argc, argv);
+    printHelp (argc, argv);
     return (-1);
   }
 
   // Parse the command line arguments for .pcd files
   std::vector<int> p_file_indices;
-  p_file_indices = parse_file_extension_argument(argc, argv, ".pcd");
+  p_file_indices = parse_file_extension_argument (argc, argv, ".pcd");
   if (p_file_indices.size() != 2) {
-    print_error("Need one input PCD file and one output PCD file to continue.\n");
+    print_error ("Need one input PCD file and one output PCD file to continue.\n");
     return (-1);
   }
 
   if (argc != 7) {
-    print_error("This function takes: input_file output_file A B C D");
+    print_error ("This function takes: input_file output_file A B C D");
     return (-1);
   }
 
   // Command line parsing
-  float a = static_cast<float>(atof(argv[3]));
-  float b = static_cast<float>(atof(argv[4]));
-  float c = static_cast<float>(atof(argv[5]));
-  float d = static_cast<float>(atof(argv[6]));
+  float a = static_cast<float> (atof (argv[3]));
+  float b = static_cast<float> (atof (argv[4]));
+  float c = static_cast<float> (atof (argv[5]));
+  float d = static_cast<float> (atof (argv[6]));
 
   // Load the first file
-  pcl::PCLPointCloud2::Ptr cloud(new pcl::PCLPointCloud2);
-  if (!loadCloud(argv[p_file_indices[0]], *cloud))
+  pcl::PCLPointCloud2::Ptr cloud (new pcl::PCLPointCloud2);
+  if (!loadCloud (argv[p_file_indices[0]], *cloud))
     return (-1);
 
   // Perform the feature estimation
   pcl::PCLPointCloud2 output;
-  project(cloud, output, a, b, c, d);
+  project (cloud, output, a, b, c, d);
 
   // Save into the second file
-  saveCloud(argv[p_file_indices[1]], output);
+  saveCloud (argv[p_file_indices[1]], output);
 }

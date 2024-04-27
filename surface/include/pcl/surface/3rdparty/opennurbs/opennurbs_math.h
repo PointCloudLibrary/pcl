@@ -34,21 +34,21 @@ public:
     Calls ON_Sum::Begin(x)
   */
   void
-  operator=(double x);
+  operator= (double x);
 
   /*
   Description:
     Calls ON_Sum::Plus(x);
   */
   void
-  operator+=(double x);
+  operator+= (double x);
 
   /*
   Description:
     Calls ON_Sum::Plus(-x);
   */
   void
-  operator-=(double x);
+  operator-= (double x);
 
   /*
   Description:
@@ -156,10 +156,10 @@ public:
                 increasing finite domains must be specificed
                 when this parameter is not NULL.
   */
-  ON_Evaluator(int parameter_count,
-               int value_count,
-               const ON_Interval* domain,
-               const bool* periodic);
+  ON_Evaluator (int parameter_count,
+                int value_count,
+                const ON_Interval* domain,
+                const bool* periodic);
 
   virtual ~ON_Evaluator();
 
@@ -310,7 +310,7 @@ public:
 private:
   ON_Evaluator(); // prohibit default constructor
   ON_Evaluator&
-  operator=(const ON_Evaluator&); // prohibit operator= (can't copy const members)
+  operator= (const ON_Evaluator&); // prohibit operator= (can't copy const members)
 };
 
 /*
@@ -380,13 +380,13 @@ private:
 #if defined(_GNU_SOURCE)
 // if you are using an older version of gcc, use finite()
 // #define ON_IS_FINITE(x) (finite(x)?true:false)
-#define ON_IS_FINITE(x) (isfinite(x) ? true : false)
+#define ON_IS_FINITE(x) (isfinite (x) ? true : false)
 #else
-#define ON_IS_FINITE(x) (_finite(x) ? true : false)
+#define ON_IS_FINITE(x) (_finite (x) ? true : false)
 #endif
 
-#define ON_IS_VALID(x) (x != ON_UNSET_VALUE && ON_IS_FINITE(x))
-#define ON_IS_VALID_FLOAT(x) (x != ON_UNSET_FLOAT && ON_IS_FINITE(x))
+#define ON_IS_VALID(x) (x != ON_UNSET_VALUE && ON_IS_FINITE (x))
+#define ON_IS_VALID_FLOAT(x) (x != ON_UNSET_FLOAT && ON_IS_FINITE (x))
 
 #endif
 
@@ -487,9 +487,9 @@ ON_SearchMonotoneArray ( // find a value in an increasing array
                          //           )
                          //    length-1: t == array[length-1]
                          //      length: t >= array[length-1]
-    const double*, // array[]
-    int,           // length of array
-    double         // t = value to search for
+    const double*,       // array[]
+    int,                 // length of array
+    double               // t = value to search for
 );
 
 /*
@@ -1145,7 +1145,7 @@ ON_EvNormalPartials (const ON_3dVector& ds,
 
 ON_DECL
 ON_BOOL32
-ON_Pullback3dVector(    // use to pull 3d vector back to surface parameter space
+ON_Pullback3dVector (   // use to pull 3d vector back to surface parameter space
     const ON_3dVector&, // 3d vector
     double, // signed distance from vector location to closet point on surface
             // < 0 if point is below with respect to Du x Dv
@@ -1159,7 +1159,7 @@ ON_Pullback3dVector(    // use to pull 3d vector back to surface parameter space
 
 ON_DECL
 ON_BOOL32
-ON_GetParameterTolerance(
+ON_GetParameterTolerance (
     double,  // t0      domain
     double,  // t1
     double,  // t       parameter in domain

@@ -67,16 +67,16 @@ public:
   using CloudPtr = typename Cloud::Ptr;
   using CloudConstPtr = typename Cloud::ConstPtr;
 
-  OpenNIVoxelGrid(const std::string& device_id = "",
-                  const std::string& = "z",
-                  float = 0,
-                  float = 5.0,
-                  float leaf_size_x = 0.01,
-                  float leaf_size_y = 0.01,
-                  float leaf_size_z = 0.01)
-  : viewer("PCL OpenNI VoxelGrid Viewer"), device_id_(device_id)
+  OpenNIVoxelGrid (const std::string& device_id = "",
+                   const std::string& = "z",
+                   float = 0,
+                   float = 5.0,
+                   float leaf_size_x = 0.01,
+                   float leaf_size_y = 0.01,
+                   float leaf_size_z = 0.01)
+  : viewer ("PCL OpenNI VoxelGrid Viewer"), device_id_ (device_id)
   {
-    grid_.setLeafSize(leaf_size_x, leaf_size_y, leaf_size_z);
+    grid_.setLeafSize (leaf_size_x, leaf_size_y, leaf_size_z);
     // grid_.setFilterFieldName (field_name);
     // grid_.setFilterLimits (min_v, max_v);
   }
@@ -84,14 +84,14 @@ public:
   void
   cloud_cb_ (const CloudConstPtr& cloud)
   {
-    set(cloud);
+    set (cloud);
   }
 
   void
   set (const CloudConstPtr& cloud)
   {
     // lock while we set our cloud;
-    std::lock_guard<std::mutex> lock(mtx_);
+    std::lock_guard<std::mutex> lock (mtx_);
     cloud_ = cloud;
   }
 
@@ -99,11 +99,11 @@ public:
   get ()
   {
     // lock while we swap our cloud and reset it.
-    std::lock_guard<std::mutex> lock(mtx_);
-    CloudPtr temp_cloud(new Cloud);
+    std::lock_guard<std::mutex> lock (mtx_);
+    CloudPtr temp_cloud (new Cloud);
 
-    grid_.setInputCloud(cloud_);
-    grid_.filter(*temp_cloud);
+    grid_.setInputCloud (cloud_);
+    grid_.filter (*temp_cloud);
 
     return temp_cloud;
   }
@@ -111,20 +111,20 @@ public:
   void
   run ()
   {
-    pcl::OpenNIGrabber interface(device_id_);
+    pcl::OpenNIGrabber interface (device_id_);
 
-    std::function<void(const CloudConstPtr&)> f = [this] (const CloudConstPtr& cloud) {
-      cloud_cb_(cloud);
+    std::function<void (const CloudConstPtr&)> f = [this] (const CloudConstPtr& cloud) {
+      cloud_cb_ (cloud);
     };
-    boost::signals2::connection c = interface.registerCallback(f);
+    boost::signals2::connection c = interface.registerCallback (f);
 
     interface.start();
 
     while (!viewer.wasStopped()) {
       if (cloud_) {
-        FPS_CALC("drawing");
+        FPS_CALC ("drawing");
         // the call to get() sets the cloud_ to null;
-        viewer.showCloud(get());
+        viewer.showCloud (get());
       }
     }
 
@@ -181,9 +181,9 @@ int
 main (int argc, char** argv)
 {
   /////////////////////////////////////////////////////////////////////
-  if (pcl::console::find_argument(argc, argv, "-h") != -1 ||
-      pcl::console::find_argument(argc, argv, "--help") != -1) {
-    usage(argv);
+  if (pcl::console::find_argument (argc, argv, "-h") != -1 ||
+      pcl::console::find_argument (argc, argv, "--help") != -1) {
+    usage (argv);
     return 1;
   }
 
@@ -192,27 +192,27 @@ main (int argc, char** argv)
   std::string field_name = "z";
   float leaf_x = 0.01f, leaf_y = 0.01f, leaf_z = 0.01f;
 
-  if (pcl::console::parse_argument(argc, argv, "-device_id", device_id) == -1 &&
+  if (pcl::console::parse_argument (argc, argv, "-device_id", device_id) == -1 &&
       argc > 1 && argv[1][0] != '-')
     device_id = argv[1];
 
-  pcl::console::parse_2x_arguments(argc, argv, "-minmax", min_v, max_v);
-  pcl::console::parse_argument(argc, argv, "-field", field_name);
-  PCL_INFO(
+  pcl::console::parse_2x_arguments (argc, argv, "-minmax", min_v, max_v);
+  pcl::console::parse_argument (argc, argv, "-field", field_name);
+  PCL_INFO (
       "Filtering data on %s between %f -> %f.\n", field_name.c_str(), min_v, max_v);
 
-  pcl::console::parse_3x_arguments(argc, argv, "-leaf", leaf_x, leaf_y, leaf_z);
-  PCL_INFO("Using %f, %f, %f as a leaf size for VoxelGrid.\n", leaf_x, leaf_y, leaf_z);
+  pcl::console::parse_3x_arguments (argc, argv, "-leaf", leaf_x, leaf_y, leaf_z);
+  PCL_INFO ("Using %f, %f, %f as a leaf size for VoxelGrid.\n", leaf_x, leaf_y, leaf_z);
   /////////////////////////////////////////////////////////////////////
 
-  pcl::OpenNIGrabber grabber(device_id);
+  pcl::OpenNIGrabber grabber (device_id);
   if (grabber.providesCallback<pcl::OpenNIGrabber::sig_cb_openni_point_cloud_rgba>()) {
-    OpenNIVoxelGrid<pcl::PointXYZRGBA> v(
+    OpenNIVoxelGrid<pcl::PointXYZRGBA> v (
         device_id, field_name, min_v, max_v, leaf_x, leaf_y, leaf_z);
     v.run();
   }
   else {
-    OpenNIVoxelGrid<pcl::PointXYZ> v(
+    OpenNIVoxelGrid<pcl::PointXYZ> v (
         device_id, field_name, min_v, max_v, leaf_x, leaf_y, leaf_z);
     v.run();
   }

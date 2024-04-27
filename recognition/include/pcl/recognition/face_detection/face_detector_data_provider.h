@@ -46,24 +46,24 @@ private:
                        std::vector<std::string>& relative_paths,
                        std::string& ext)
   {
-    for (const auto& dir_entry : bf::directory_iterator(dir)) {
+    for (const auto& dir_entry : bf::directory_iterator (dir)) {
       // check if its a directory, then get models in it
-      if (bf::is_directory(dir_entry)) {
+      if (bf::is_directory (dir_entry)) {
         std::string so_far =
             rel_path_so_far + (dir_entry.path().filename()).string() + "/";
         bf::path curr_path = dir_entry.path();
-        getFilesInDirectory(curr_path, so_far, relative_paths, ext);
+        getFilesInDirectory (curr_path, so_far, relative_paths, ext);
       }
       else {
         // check that it is a ply file and then add, otherwise ignore..
         std::vector<std::string> strs;
         std::string file = (dir_entry.path().filename()).string();
-        boost::split(strs, file, boost::is_any_of("."));
+        boost::split (strs, file, boost::is_any_of ("."));
         std::string extension = strs[strs.size() - 1];
 
         if (extension == ext) {
           std::string path = rel_path_so_far + (dir_entry.path().filename()).string();
-          relative_paths.push_back(path);
+          relative_paths.push_back (path);
         }
       }
     }
@@ -74,19 +74,19 @@ private:
   {
 
     std::ifstream in;
-    in.open(file.c_str(), std::ifstream::in);
+    in.open (file.c_str(), std::ifstream::in);
     if (!in.is_open()) {
       return false;
     }
 
     char linebuf[1024];
-    in.getline(linebuf, 1024);
-    std::string line(linebuf);
+    in.getline (linebuf, 1024);
+    std::string line (linebuf);
     std::vector<std::string> strs_2;
-    boost::split(strs_2, line, boost::is_any_of(" "));
+    boost::split (strs_2, line, boost::is_any_of (" "));
 
     for (int i = 0; i < 16; i++) {
-      matrix(i / 4, i % 4) = static_cast<float>(atof(strs_2[i].c_str()));
+      matrix (i / 4, i % 4) = static_cast<float> (atof (strs_2[i].c_str()));
     }
 
     return true;
@@ -109,10 +109,10 @@ private:
   {
     cloud_out.width = max_col - min_col + 1;
     cloud_out.height = max_row - min_row + 1;
-    cloud_out.resize(cloud_out.width * cloud_out.height);
+    cloud_out.resize (cloud_out.width * cloud_out.height);
     for (unsigned int u = 0; u < cloud_out.width; u++) {
       for (unsigned int v = 0; v < cloud_out.height; v++) {
-        cloud_out.at(u, v) = cloud_in.at(min_col + u, min_row + v);
+        cloud_out.at (u, v) = cloud_in.at (min_col + u, min_row + v);
       }
     }
 

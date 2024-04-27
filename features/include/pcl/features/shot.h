@@ -92,7 +92,7 @@ protected:
   /** \brief Empty constructor.
    * \param[in] nr_shape_bins the number of bins in the shape histogram
    */
-  SHOTEstimationBase(int nr_shape_bins = 10) : nr_shape_bins_(nr_shape_bins)
+  SHOTEstimationBase (int nr_shape_bins = 10) : nr_shape_bins_ (nr_shape_bins)
   {
     feature_name_ = "SHOTEstimation";
   }
@@ -249,7 +249,7 @@ public:
   using PointCloudIn = typename Feature<PointInT, PointOutT>::PointCloudIn;
 
   /** \brief Empty constructor. */
-  SHOTEstimation() : SHOTEstimationBase<PointInT, PointNT, PointOutT, PointRFT>(10)
+  SHOTEstimation() : SHOTEstimationBase<PointInT, PointNT, PointOutT, PointRFT> (10)
   {
     feature_name_ = "SHOTEstimation";
   };
@@ -336,10 +336,10 @@ public:
    * \param[in] describe_shape
    * \param[in] describe_color
    */
-  SHOTColorEstimation(bool describe_shape = true, bool describe_color = true)
-  : SHOTEstimationBase<PointInT, PointNT, PointOutT, PointRFT>(10)
-  , b_describe_shape_(describe_shape)
-  , b_describe_color_(describe_color)
+  SHOTColorEstimation (bool describe_shape = true, bool describe_color = true)
+  : SHOTEstimationBase<PointInT, PointNT, PointOutT, PointRFT> (10)
+  , b_describe_shape_ (describe_shape)
+  , b_describe_color_ (describe_color)
   {
     feature_name_ = "SHOTColorEstimation";
   }

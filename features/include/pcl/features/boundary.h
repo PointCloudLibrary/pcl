@@ -97,7 +97,7 @@ public:
   /** \brief Empty constructor.
    * The angular threshold \a angle_threshold_ is set to M_PI / 2.0
    */
-  BoundaryEstimation() : angle_threshold_(static_cast<float>(M_PI) / 2.0f)
+  BoundaryEstimation() : angle_threshold_ (static_cast<float> (M_PI) / 2.0f)
   {
     feature_name_ = "BoundaryEstimation";
   };
@@ -162,7 +162,7 @@ public:
   {
     pcl::Vector4fMapConst p_coeff_v = p_coeff.getNormalVector4fMap();
     v = p_coeff_v.unitOrthogonal();
-    u = p_coeff_v.cross3(v);
+    u = p_coeff_v.cross3 (v);
   }
 
 protected:

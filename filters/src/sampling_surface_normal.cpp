@@ -42,7 +42,7 @@
 #include <pcl/impl/instantiate.hpp>
 #include <pcl/point_types.h>
 
-PCL_INSTANTIATE(SamplingSurfaceNormal,
-                (pcl::PointNormal)(pcl::PointXYZRGBNormal)(pcl::PointXYZINormal))
+PCL_INSTANTIATE (SamplingSurfaceNormal,
+                 (pcl::PointNormal) (pcl::PointXYZRGBNormal) (pcl::PointXYZINormal))
 
 #endif // PCL_NO_PRECOMPILE

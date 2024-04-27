@@ -66,14 +66,14 @@ computePointNormal (const pcl::PointCloud<PointT>& cloud,
   Eigen::Vector4f xyz_centroid;
 
   if (cloud.size() < 3 ||
-      computeMeanAndCovarianceMatrix(cloud, covariance_matrix, xyz_centroid) == 0) {
-    plane_parameters.setConstant(std::numeric_limits<float>::quiet_NaN());
+      computeMeanAndCovarianceMatrix (cloud, covariance_matrix, xyz_centroid) == 0) {
+    plane_parameters.setConstant (std::numeric_limits<float>::quiet_NaN());
     curvature = std::numeric_limits<float>::quiet_NaN();
     return false;
   }
 
   // Get the plane normal and surface curvature
-  solvePlaneParameters(covariance_matrix, xyz_centroid, plane_parameters, curvature);
+  solvePlaneParameters (covariance_matrix, xyz_centroid, plane_parameters, curvature);
   return true;
 }
 
@@ -98,14 +98,14 @@ computePointNormal (const pcl::PointCloud<PointT>& cloud,
   EIGEN_ALIGN16 Eigen::Matrix3f covariance_matrix;
   // 16-bytes aligned placeholder for the XYZ centroid of a surface patch
   Eigen::Vector4f xyz_centroid;
-  if (indices.size() < 3 || computeMeanAndCovarianceMatrix(
+  if (indices.size() < 3 || computeMeanAndCovarianceMatrix (
                                 cloud, indices, covariance_matrix, xyz_centroid) == 0) {
-    plane_parameters.setConstant(std::numeric_limits<float>::quiet_NaN());
+    plane_parameters.setConstant (std::numeric_limits<float>::quiet_NaN());
     curvature = std::numeric_limits<float>::quiet_NaN();
     return false;
   }
   // Get the plane normal and surface curvature
-  solvePlaneParameters(covariance_matrix, xyz_centroid, plane_parameters, curvature);
+  solvePlaneParameters (covariance_matrix, xyz_centroid, plane_parameters, curvature);
   return true;
 }
 
@@ -125,17 +125,17 @@ flipNormalTowardsViewpoint (const PointT& point,
                             float vp_z,
                             Eigen::Matrix<Scalar, 4, 1>& normal)
 {
-  Eigen::Matrix<Scalar, 4, 1> vp(vp_x - point.x, vp_y - point.y, vp_z - point.z, 0);
+  Eigen::Matrix<Scalar, 4, 1> vp (vp_x - point.x, vp_y - point.y, vp_z - point.z, 0);
 
   // Dot product between the (viewpoint - point) and the plane normal
-  float cos_theta = vp.dot(normal);
+  float cos_theta = vp.dot (normal);
 
   // Flip the plane normal
   if (cos_theta < 0) {
     normal *= -1;
     normal[3] = 0.0f;
     // Hessian form (D = nc . p_plane (centroid here) + p)
-    normal[3] = -1 * normal.dot(point.getVector4fMap());
+    normal[3] = -1 * normal.dot (point.getVector4fMap());
   }
 }
 
@@ -155,10 +155,10 @@ flipNormalTowardsViewpoint (const PointT& point,
                             float vp_z,
                             Eigen::Matrix<Scalar, 3, 1>& normal)
 {
-  Eigen::Matrix<Scalar, 3, 1> vp(vp_x - point.x, vp_y - point.y, vp_z - point.z);
+  Eigen::Matrix<Scalar, 3, 1> vp (vp_x - point.x, vp_y - point.y, vp_z - point.z);
 
   // Flip the plane normal
-  if (vp.dot(normal) < 0)
+  if (vp.dot (normal) < 0)
     normal *= -1;
 }
 
@@ -225,7 +225,7 @@ flipNormalTowardsNormalsMean (pcl::PointCloud<PointNT> const& normal_cloud,
   for (const auto& normal_index : normal_indices) {
     const PointNT& cur_pt = normal_cloud[normal_index];
 
-    if (pcl::isFinite(cur_pt)) {
+    if (pcl::isFinite (cur_pt)) {
       normal_mean += cur_pt.getNormalVector3fMap();
     }
   }
@@ -235,7 +235,7 @@ flipNormalTowardsNormalsMean (pcl::PointCloud<PointNT> const& normal_cloud,
 
   normal_mean.normalize();
 
-  if (normal.dot(normal_mean) < 0) {
+  if (normal.dot (normal_mean) < 0) {
     normal = -normal;
   }
 
@@ -288,15 +288,15 @@ public:
                       float& curvature)
   {
     if (indices.size() < 3 ||
-        computeMeanAndCovarianceMatrix(
+        computeMeanAndCovarianceMatrix (
             cloud, indices, covariance_matrix_, xyz_centroid_) == 0) {
-      plane_parameters.setConstant(std::numeric_limits<float>::quiet_NaN());
+      plane_parameters.setConstant (std::numeric_limits<float>::quiet_NaN());
       curvature = std::numeric_limits<float>::quiet_NaN();
       return false;
     }
 
     // Get the plane normal and surface curvature
-    solvePlaneParameters(
+    solvePlaneParameters (
         covariance_matrix_, xyz_centroid_, plane_parameters, curvature);
     return true;
   }
@@ -318,14 +318,14 @@ public:
                       float& curvature)
   {
     if (indices.size() < 3 ||
-        computeMeanAndCovarianceMatrix(
+        computeMeanAndCovarianceMatrix (
             cloud, indices, covariance_matrix_, xyz_centroid_) == 0) {
       nx = ny = nz = curvature = std::numeric_limits<float>::quiet_NaN();
       return false;
     }
 
     // Get the plane normal and surface curvature
-    solvePlaneParameters(covariance_matrix_, nx, ny, nz, curvature);
+    solvePlaneParameters (covariance_matrix_, nx, ny, nz, curvature);
     return true;
   }
 
@@ -337,9 +337,9 @@ public:
   {
     input_ = cloud;
     if (use_sensor_origin_) {
-      vpx_ = input_->sensor_origin_.coeff(0);
-      vpy_ = input_->sensor_origin_.coeff(1);
-      vpz_ = input_->sensor_origin_.coeff(2);
+      vpx_ = input_->sensor_origin_.coeff (0);
+      vpy_ = input_->sensor_origin_.coeff (1);
+      vpz_ = input_->sensor_origin_.coeff (2);
     }
   }
 
@@ -383,9 +383,9 @@ public:
   {
     use_sensor_origin_ = true;
     if (input_) {
-      vpx_ = input_->sensor_origin_.coeff(0);
-      vpy_ = input_->sensor_origin_.coeff(1);
-      vpz_ = input_->sensor_origin_.coeff(2);
+      vpx_ = input_->sensor_origin_.coeff (0);
+      vpy_ = input_->sensor_origin_.coeff (1);
+      vpz_ = input_->sensor_origin_.coeff (2);
     }
     else {
       vpx_ = 0;

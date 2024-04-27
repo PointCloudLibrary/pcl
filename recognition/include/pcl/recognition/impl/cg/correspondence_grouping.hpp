@@ -44,7 +44,7 @@ namespace pcl {
 
 template <typename PointModelT, typename PointSceneT>
 void
-CorrespondenceGrouping<PointModelT, PointSceneT>::cluster(
+CorrespondenceGrouping<PointModelT, PointSceneT>::cluster (
     std::vector<Correspondences>& clustered_corrs)
 {
   clustered_corrs.clear();
@@ -55,7 +55,7 @@ CorrespondenceGrouping<PointModelT, PointSceneT>::cluster(
   }
 
   // Perform the actual clustering
-  clusterCorrespondences(clustered_corrs);
+  clusterCorrespondences (clustered_corrs);
 
   deinitCompute();
 }

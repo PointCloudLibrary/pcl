@@ -49,7 +49,7 @@ class CopyBuffer : public Statistics {
 public:
   /// @brief Default Constructor
   /// @details This creates an empty buffer
-  CopyBuffer(bool register_stats = false)
+  CopyBuffer (bool register_stats = false)
   {
     if (register_stats)
       registerStats();

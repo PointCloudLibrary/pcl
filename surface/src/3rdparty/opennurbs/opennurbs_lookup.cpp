@@ -23,7 +23,7 @@ IdIsNotZero (const ON_UUID* id)
   // zero ids.  The caller always checks that
   // id is not null.
   const unsigned char* p = (const unsigned char*)id;
-  unsigned int i = (unsigned int)sizeof(ON_UUID);
+  unsigned int i = (unsigned int)sizeof (ON_UUID);
   while (i--) {
     if (0 != *p++)
       return true;
@@ -128,7 +128,7 @@ IdCRC (const ON_UUID* id)
   return current_remainder;
 }
 
-ON_SerialNumberMap::ON_SerialNumberMap(ON_MEMORY_POOL* pool)
+ON_SerialNumberMap::ON_SerialNumberMap (ON_MEMORY_POOL* pool)
 {
   m_maxsn = 0;
   m_reserved = 0;
@@ -142,8 +142,8 @@ ON_SerialNumberMap::ON_SerialNumberMap(ON_MEMORY_POOL* pool)
   m_sn_block0.EmptyBlock();
   m_bHashTableIsValid = true;
   m_active_id_count = 0;
-  memset(&m_inactive_id, 0, sizeof(m_inactive_id));
-  memset(m_hash_table, 0, sizeof(m_hash_table));
+  memset (&m_inactive_id, 0, sizeof (m_inactive_id));
+  memset (m_hash_table, 0, sizeof (m_hash_table));
 }
 
 ON_SerialNumberMap::~ON_SerialNumberMap() { EmptyList(); }
@@ -159,16 +159,16 @@ ON_SerialNumberMap::EmptyList()
     std::size_t i = m_snblk_list_capacity;
     while (i--) {
       if (0 != m_snblk_list[i])
-        onfree(m_snblk_list[i]);
+        onfree (m_snblk_list[i]);
     }
-    onfree(m_snblk_list);
+    onfree (m_snblk_list);
     m_snblk_list = 0;
     m_snblk_list_capacity = 0;
     m_snblk_list_count = 0;
   }
   m_bHashTableIsValid = true;
   m_active_id_count = 0;
-  memset(m_hash_table, 0, sizeof(m_hash_table));
+  memset (m_hash_table, 0, sizeof (m_hash_table));
 }
 
 void
@@ -266,7 +266,7 @@ ON_SerialNumberMap::SN_BLOCK::SortBlockHelper()
   if (m_count > 1) {
 #if 1
     // Quick sort
-    ON_qsort_SN_ELEMENT(m_sn, m_count);
+    ON_qsort_SN_ELEMENT (m_sn, m_count);
 #else
     // Heap sort
     std::size_t i, j, k, i_end;
@@ -323,43 +323,43 @@ ON_SerialNumberMap_IsNotValidBlock ()
 }
 
 bool
-ON_SerialNumberMap::SN_BLOCK::IsValidBlock(ON_TextLog* textlog,
-                                           struct SN_ELEMENT* const* hash_table,
-                                           std::size_t* active_id_count) const
+ON_SerialNumberMap::SN_BLOCK::IsValidBlock (ON_TextLog* textlog,
+                                            struct SN_ELEMENT* const* hash_table,
+                                            std::size_t* active_id_count) const
 {
   unsigned int sn0, sn;
   std::size_t i, pc, aidcnt;
 
   if (m_count > SN_BLOCK_CAPACITY) {
     if (textlog)
-      textlog->Print("SN_BLOCK m_count = %u (should be >=0 and <%u).\n",
-                     m_count,
-                     SN_BLOCK_CAPACITY);
+      textlog->Print ("SN_BLOCK m_count = %u (should be >=0 and <%u).\n",
+                      m_count,
+                      SN_BLOCK_CAPACITY);
     return ON_SerialNumberMap_IsNotValidBlock();
   }
 
   if (m_purged > m_count) {
     if (textlog)
-      textlog->Print(
+      textlog->Print (
           "SN_BLOCK m_purged = %u (should be >0 and <=%u).\n", m_purged, m_count);
     return ON_SerialNumberMap_IsNotValidBlock();
   }
 
   if (m_count < 2 && 1 != m_sorted) {
     if (textlog)
-      textlog->Print("SN_BLOCK m_count = %u but m_sorted is not 1.\n", m_count);
+      textlog->Print ("SN_BLOCK m_count = %u but m_sorted is not 1.\n", m_count);
     return ON_SerialNumberMap_IsNotValidBlock();
   }
 
   if (0 == m_count) {
     if (0 != m_sn0) {
       if (textlog)
-        textlog->Print("SN_BLOCK m_count = 0 but m_sn0 != 0.\n");
+        textlog->Print ("SN_BLOCK m_count = 0 but m_sn0 != 0.\n");
       return ON_SerialNumberMap_IsNotValidBlock();
     }
     if (0 != m_sn1) {
       if (textlog)
-        textlog->Print("SN_BLOCK m_count = 0 but m_sn1 != 0.\n");
+        textlog->Print ("SN_BLOCK m_count = 0 but m_sn1 != 0.\n");
       return ON_SerialNumberMap_IsNotValidBlock();
     }
     return true;
@@ -367,14 +367,14 @@ ON_SerialNumberMap::SN_BLOCK::IsValidBlock(ON_TextLog* textlog,
 
   if (m_sn1 < m_sn0) {
     if (textlog)
-      textlog->Print("SN_BLOCK m_sn1 < m_sn0.\n");
+      textlog->Print ("SN_BLOCK m_sn1 < m_sn0.\n");
     return ON_SerialNumberMap_IsNotValidBlock();
   }
 
   if (m_count > m_purged) {
     if (m_sn1 - m_sn0 < m_count - m_purged - 1) {
       if (textlog)
-        textlog->Print("SN_BLOCK m_sn1 < m_sn0.\n");
+        textlog->Print ("SN_BLOCK m_sn1 < m_sn0.\n");
       return ON_SerialNumberMap_IsNotValidBlock();
     }
   }
@@ -390,8 +390,8 @@ ON_SerialNumberMap::SN_BLOCK::IsValidBlock(ON_TextLog* textlog,
       pc++;
       if (0 != m_sn[i].m_id_active) {
         if (textlog)
-          textlog->Print("SN_BLOCK m_sn[%d].m_sn_active = 0 but m_id_active != 0.\n",
-                         i);
+          textlog->Print ("SN_BLOCK m_sn[%d].m_sn_active = 0 but m_id_active != 0.\n",
+                          i);
         return ON_SerialNumberMap_IsNotValidBlock();
       }
     }
@@ -399,9 +399,9 @@ ON_SerialNumberMap::SN_BLOCK::IsValidBlock(ON_TextLog* textlog,
       // The element has active serial number and active id.
       // It must have a nonzero m_id and be in the hash table.
       aidcnt++;
-      if (IdIsNotZero(&m_sn[i].m_id)) {
+      if (IdIsNotZero (&m_sn[i].m_id)) {
         const SN_ELEMENT* e;
-        for (e = hash_table[IdCRC(&m_sn[i].m_id) % ID_HASH_TABLE_COUNT]; 0 != e;
+        for (e = hash_table[IdCRC (&m_sn[i].m_id) % ID_HASH_TABLE_COUNT]; 0 != e;
              e = e->m_next) {
           if (e == &m_sn[i]) {
             // found m_sn[i] in the hash table
@@ -412,15 +412,15 @@ ON_SerialNumberMap::SN_BLOCK::IsValidBlock(ON_TextLog* textlog,
           // m_sn[i] is not in the hash table but m_id_active indicates
           // it should be.
           if (textlog)
-            textlog->Print("SN_BLOCK m_sn[%d].m_id_active != 0 but the element is not "
-                           "in m_hash_table[].\n",
-                           i);
+            textlog->Print ("SN_BLOCK m_sn[%d].m_id_active != 0 but the element is not "
+                            "in m_hash_table[].\n",
+                            i);
           return ON_SerialNumberMap_IsNotValidBlock();
         }
       }
       else {
         if (textlog)
-          textlog->Print("SN_BLOCK m_sn[%d].m_id_active != 0 but m_id = 0.\n", i);
+          textlog->Print ("SN_BLOCK m_sn[%d].m_id_active != 0 but m_id = 0.\n", i);
         return ON_SerialNumberMap_IsNotValidBlock();
       }
     }
@@ -429,12 +429,12 @@ ON_SerialNumberMap::SN_BLOCK::IsValidBlock(ON_TextLog* textlog,
     sn = m_sn[i].m_sn;
     if (sn < m_sn0) {
       if (textlog)
-        textlog->Print("SN_BLOCK m_sn[%d] < m_sn0.\n", i);
+        textlog->Print ("SN_BLOCK m_sn[%d] < m_sn0.\n", i);
       return ON_SerialNumberMap_IsNotValidBlock();
     }
     if (sn > m_sn1) {
       if (textlog)
-        textlog->Print("SN_BLOCK m_sn[%d] > m_sn1.\n", i);
+        textlog->Print ("SN_BLOCK m_sn[%d] > m_sn1.\n", i);
       return ON_SerialNumberMap_IsNotValidBlock();
     }
 
@@ -442,7 +442,7 @@ ON_SerialNumberMap::SN_BLOCK::IsValidBlock(ON_TextLog* textlog,
       // Verify this sn is bigger than the previous one
       if (sn <= sn0) {
         if (textlog)
-          textlog->Print("SN_BLOCK m_sn[%d] > m_sn[%d].\n", i, i - 1);
+          textlog->Print ("SN_BLOCK m_sn[%d] > m_sn[%d].\n", i, i - 1);
         return ON_SerialNumberMap_IsNotValidBlock();
       }
       sn0 = sn;
@@ -451,7 +451,7 @@ ON_SerialNumberMap::SN_BLOCK::IsValidBlock(ON_TextLog* textlog,
 
   if (pc != m_purged) {
     if (textlog)
-      textlog->Print("SN_BLOCK m_purged = %u (should be %u)\n", m_purged, pc);
+      textlog->Print ("SN_BLOCK m_purged = %u (should be %u)\n", m_purged, pc);
     return ON_SerialNumberMap_IsNotValidBlock();
   }
 
@@ -464,7 +464,7 @@ ON_SerialNumberMap::SN_BLOCK::IsValidBlock(ON_TextLog* textlog,
 }
 
 struct ON_SerialNumberMap::SN_ELEMENT*
-ON_SerialNumberMap::SN_BLOCK::BinarySearchBlockHelper(unsigned int sn)
+ON_SerialNumberMap::SN_BLOCK::BinarySearchBlockHelper (unsigned int sn)
 {
   // Perform a binary search on the serial number values in the m_sn[] array.
   //
@@ -507,7 +507,7 @@ ON_SerialNumberMap::UpdateMaxSNHelper()
 }
 
 struct ON_SerialNumberMap::SN_ELEMENT*
-ON_SerialNumberMap::FindElementHelper(unsigned int sn)
+ON_SerialNumberMap::FindElementHelper (unsigned int sn)
 {
   struct SN_BLOCK** eblk_array;
   struct SN_BLOCK* eblk;
@@ -546,7 +546,7 @@ ON_SerialNumberMap::FindElementHelper(unsigned int sn)
         m_sn_block0.SortBlockHelper();
       }
       e = (sn <= m_sn_block0.m_sn1 && m_sn_block0.m_sn0 <= sn)
-              ? m_sn_block0.BinarySearchBlockHelper(sn)
+              ? m_sn_block0.BinarySearchBlockHelper (sn)
               : 0;
     }
     else if (m_sn_block0.m_purged > m_sn_block0.m_count / SN_PURGE_RATIO) {
@@ -556,11 +556,11 @@ ON_SerialNumberMap::FindElementHelper(unsigned int sn)
       m_sn_block0.CullBlockHelper();
       UpdateMaxSNHelper();
       e = (sn <= m_sn_block0.m_sn1 && m_sn_block0.m_sn0 <= sn)
-              ? m_sn_block0.BinarySearchBlockHelper(sn)
+              ? m_sn_block0.BinarySearchBlockHelper (sn)
               : 0;
     }
     else {
-      e = m_sn_block0.BinarySearchBlockHelper(sn);
+      e = m_sn_block0.BinarySearchBlockHelper (sn);
     }
     if (e)
       return e;
@@ -611,7 +611,7 @@ ON_SerialNumberMap::FindElementHelper(unsigned int sn)
     }
     else {
       m_e_blk = eblk;
-      return eblk->BinarySearchBlockHelper(sn);
+      return eblk->BinarySearchBlockHelper (sn);
     }
   }
 
@@ -660,20 +660,20 @@ ON_SerialNumberMap::FirstElement() const
     // It's possible the element is in m_sn_block0.
     if (m_sn_block0.m_purged > 0) {
       // remove purged elements from m_sn_block0.
-      const_cast<ON_SerialNumberMap*>(this)->InvalidateHashTableHelper();
-      const_cast<ON_SerialNumberMap*>(this)->m_sn_count -= m_sn_block0.m_purged;
-      const_cast<ON_SerialNumberMap*>(this)->m_sn_purged -= m_sn_block0.m_purged;
-      const_cast<ON_SerialNumberMap*>(this)->m_sn_block0.CullBlockHelper();
+      const_cast<ON_SerialNumberMap*> (this)->InvalidateHashTableHelper();
+      const_cast<ON_SerialNumberMap*> (this)->m_sn_count -= m_sn_block0.m_purged;
+      const_cast<ON_SerialNumberMap*> (this)->m_sn_purged -= m_sn_block0.m_purged;
+      const_cast<ON_SerialNumberMap*> (this)->m_sn_block0.CullBlockHelper();
     }
     if (!m_sn_block0.m_sorted) {
       // sort elements in m_sn_block0.
-      const_cast<ON_SerialNumberMap*>(this)->InvalidateHashTableHelper();
-      const_cast<ON_SerialNumberMap*>(this)->m_sn_block0.SortBlockHelper();
+      const_cast<ON_SerialNumberMap*> (this)->InvalidateHashTableHelper();
+      const_cast<ON_SerialNumberMap*> (this)->m_sn_block0.SortBlockHelper();
     }
     if (!e || m_sn_block0.m_sn0 < e->m_sn) {
       // first element in m_sn_block0 is the
       // one with the smallest serial number.
-      e = const_cast<struct SN_ELEMENT*>(&m_sn_block0.m_sn[0]);
+      e = const_cast<struct SN_ELEMENT*> (&m_sn_block0.m_sn[0]);
     }
   }
   return e;
@@ -693,17 +693,17 @@ ON_SerialNumberMap::LastElement() const
   if (m_sn_block0.m_count > m_sn_block0.m_purged) {
     if (m_sn_block0.m_purged > 0) {
       // remove purged elements from m_sn_block0
-      const_cast<ON_SerialNumberMap*>(this)->InvalidateHashTableHelper();
-      const_cast<ON_SerialNumberMap*>(this)->m_sn_count -= m_sn_block0.m_purged;
-      const_cast<ON_SerialNumberMap*>(this)->m_sn_purged -= m_sn_block0.m_purged;
-      const_cast<ON_SerialNumberMap*>(this)->m_sn_block0.CullBlockHelper();
+      const_cast<ON_SerialNumberMap*> (this)->InvalidateHashTableHelper();
+      const_cast<ON_SerialNumberMap*> (this)->m_sn_count -= m_sn_block0.m_purged;
+      const_cast<ON_SerialNumberMap*> (this)->m_sn_purged -= m_sn_block0.m_purged;
+      const_cast<ON_SerialNumberMap*> (this)->m_sn_block0.CullBlockHelper();
     }
     if (!m_sn_block0.m_sorted) {
       // sort m_sn_block0
-      const_cast<ON_SerialNumberMap*>(this)->InvalidateHashTableHelper();
-      const_cast<ON_SerialNumberMap*>(this)->m_sn_block0.SortBlockHelper();
+      const_cast<ON_SerialNumberMap*> (this)->InvalidateHashTableHelper();
+      const_cast<ON_SerialNumberMap*> (this)->m_sn_block0.SortBlockHelper();
     }
-    e = const_cast<struct SN_ELEMENT*>(&m_sn_block0.m_sn[m_sn_block0.m_count - 1]);
+    e = const_cast<struct SN_ELEMENT*> (&m_sn_block0.m_sn[m_sn_block0.m_count - 1]);
   }
 
   i = m_snblk_list_count;
@@ -726,27 +726,27 @@ ON_SerialNumberMap::LastElement() const
 }
 
 struct ON_SerialNumberMap::SN_ELEMENT*
-ON_SerialNumberMap::FindSerialNumber(unsigned int sn) const
+ON_SerialNumberMap::FindSerialNumber (unsigned int sn) const
 {
-  struct SN_ELEMENT* e = const_cast<ON_SerialNumberMap*>(this)->FindElementHelper(sn);
+  struct SN_ELEMENT* e = const_cast<ON_SerialNumberMap*> (this)->FindElementHelper (sn);
   return ((e && e->m_sn_active) ? e : 0);
 }
 
 struct ON_SerialNumberMap::SN_ELEMENT*
-ON_SerialNumberMap::FindId(ON_UUID id) const
+ON_SerialNumberMap::FindId (ON_UUID id) const
 {
   struct SN_ELEMENT* e = 0;
   std::size_t i;
 
   if (m_active_id_count > 0) {
-    i = HashIndex(&id);
-    if (0 != i || IdIsNotZero(&id)) {
+    i = HashIndex (&id);
+    if (0 != i || IdIsNotZero (&id)) {
       if (!m_bHashTableIsValid) {
-        const_cast<ON_SerialNumberMap*>(this)->BuildHashTableHelper();
+        const_cast<ON_SerialNumberMap*> (this)->BuildHashTableHelper();
       }
       e = m_hash_table[i];
       while (e) {
-        if (0 == memcmp(&e->m_id, &id, sizeof(e->m_id)))
+        if (0 == memcmp (&e->m_id, &id, sizeof (e->m_id)))
           break;
         e = e->m_next;
       }
@@ -756,10 +756,10 @@ ON_SerialNumberMap::FindId(ON_UUID id) const
 }
 
 std::size_t
-ON_SerialNumberMap::GetElements(unsigned int sn0,
-                                unsigned int sn1,
-                                std::size_t max_count,
-                                ON_SimpleArray<SN_ELEMENT>& elements) const
+ON_SerialNumberMap::GetElements (unsigned int sn0,
+                                 unsigned int sn1,
+                                 std::size_t max_count,
+                                 ON_SimpleArray<SN_ELEMENT>& elements) const
 {
   std::size_t i, j, k, c;
   const SN_ELEMENT *ei, *ek;
@@ -770,11 +770,11 @@ ON_SerialNumberMap::GetElements(unsigned int sn0,
     return 0;
 
   if (sn0 + 3 <= sn1) {
-    elements.Reserve(elements_count0 + 3);
+    elements.Reserve (elements_count0 + 3);
     while (sn0 <= sn1) {
-      ei = const_cast<ON_SerialNumberMap*>(this)->FindElementHelper(sn0++);
+      ei = const_cast<ON_SerialNumberMap*> (this)->FindElementHelper (sn0++);
       if (ei && ei->m_sn_active)
-        elements.Append(*ei);
+        elements.Append (*ei);
     }
     return (elements.Count() - elements_count0);
   }
@@ -812,9 +812,9 @@ ON_SerialNumberMap::GetElements(unsigned int sn0,
 
   // set c = estimate of number of items in m_snblk_list[]
   if (ek) {
-    c = m_snblk_list[j]->ActiveElementEstimate(ek->m_sn, sn1);
+    c = m_snblk_list[j]->ActiveElementEstimate (ek->m_sn, sn1);
     for (i = j + 1; i < m_snblk_list_count && m_snblk_list[i]->m_sn0 <= sn1; i++) {
-      c += m_snblk_list[j]->ActiveElementEstimate(ek->m_sn, sn1);
+      c += m_snblk_list[j]->ActiveElementEstimate (ek->m_sn, sn1);
     }
   }
   else
@@ -827,15 +827,15 @@ ON_SerialNumberMap::GetElements(unsigned int sn0,
       sn0 <= m_sn_block0.m_sn1 && !m_sn_block0.m_sorted) {
     if (!m_sn_block0.m_sorted) {
       if (m_sn_block0.m_purged > 0) {
-        const_cast<ON_SerialNumberMap*>(this)->InvalidateHashTableHelper();
-        const_cast<ON_SerialNumberMap*>(this)->m_sn_count -= m_sn_block0.m_purged;
-        const_cast<ON_SerialNumberMap*>(this)->m_sn_purged -= m_sn_block0.m_purged;
-        const_cast<ON_SerialNumberMap*>(this)->m_sn_block0.CullBlockHelper();
-        const_cast<ON_SerialNumberMap*>(this)->UpdateMaxSNHelper();
+        const_cast<ON_SerialNumberMap*> (this)->InvalidateHashTableHelper();
+        const_cast<ON_SerialNumberMap*> (this)->m_sn_count -= m_sn_block0.m_purged;
+        const_cast<ON_SerialNumberMap*> (this)->m_sn_purged -= m_sn_block0.m_purged;
+        const_cast<ON_SerialNumberMap*> (this)->m_sn_block0.CullBlockHelper();
+        const_cast<ON_SerialNumberMap*> (this)->UpdateMaxSNHelper();
       }
       if (m_sn_block0.m_count > 0) {
-        const_cast<ON_SerialNumberMap*>(this)->InvalidateHashTableHelper();
-        const_cast<ON_SerialNumberMap*>(this)->m_sn_block0.SortBlockHelper();
+        const_cast<ON_SerialNumberMap*> (this)->InvalidateHashTableHelper();
+        const_cast<ON_SerialNumberMap*> (this)->m_sn_block0.SortBlockHelper();
         if (sn1 >= m_sn_block0.m_sn0 && sn0 <= m_sn_block0.m_sn1) {
           i = m_sn_block0.m_count;
           ei = &m_sn_block0.m_sn[0];
@@ -861,7 +861,7 @@ ON_SerialNumberMap::GetElements(unsigned int sn0,
 
   // adjust c = estimate of number of items in m_snblk_list[]
   if (ei)
-    c += m_sn_block0.ActiveElementEstimate(ei->m_sn, sn1);
+    c += m_sn_block0.ActiveElementEstimate (ei->m_sn, sn1);
   if (c > (sn1 - sn0 + 1))
     c = (sn1 - sn0 + 1);
   if (c > 2 * 4096)
@@ -869,13 +869,13 @@ ON_SerialNumberMap::GetElements(unsigned int sn0,
 
   // reserve room for elements so we don't thrash memory
   // while growing a large dynamic array.
-  elements.Reserve(elements.Count() + ((int)c));
+  elements.Reserve (elements.Count() + ((int)c));
 
   // Add appropriate elements to elements[] array.
   while (ei || ek) {
     if (ei && (!ek || ei->m_sn < ek->m_sn)) {
       if (ei->m_sn_active)
-        elements.Append(*ei);
+        elements.Append (*ei);
       if (--i) {
         if ((++ei)->m_sn > sn1) {
           ei = 0;
@@ -887,7 +887,7 @@ ON_SerialNumberMap::GetElements(unsigned int sn0,
     }
     else {
       if (ek->m_sn_active)
-        elements.Append(*ei);
+        elements.Append (*ei);
       if (--k) {
         if ((++ek)->m_sn > sn1) {
           ek = 0;
@@ -907,14 +907,14 @@ ON_SerialNumberMap::GetElements(unsigned int sn0,
 }
 
 struct ON_SerialNumberMap::SN_ELEMENT*
-ON_SerialNumberMap::RemoveSerialNumberAndId(unsigned int sn)
+ON_SerialNumberMap::RemoveSerialNumberAndId (unsigned int sn)
 {
-  struct SN_ELEMENT* e = FindElementHelper(sn);
+  struct SN_ELEMENT* e = FindElementHelper (sn);
   if (e && e->m_sn_active) {
     if (e->m_id_active) {
       if (m_bHashTableIsValid) {
         // Hash table is valid - remove the element from the table
-        std::size_t i = HashIndex(&e->m_id);
+        std::size_t i = HashIndex (&e->m_id);
         struct SN_ELEMENT* prev = 0;
         struct SN_ELEMENT* h;
         for (h = m_hash_table[i]; h; h = h->m_next) {
@@ -936,7 +936,7 @@ ON_SerialNumberMap::RemoveSerialNumberAndId(unsigned int sn)
         m_active_id_count--;
       }
       else {
-        ON_ERROR("ON_SerialNumberMap - m_active_id_count corruption");
+        ON_ERROR ("ON_SerialNumberMap - m_active_id_count corruption");
       }
 
       // save this id.  When objects are replaced, this id will
@@ -980,20 +980,20 @@ ON_SerialNumberMap::RemoveSerialNumberAndId(unsigned int sn)
 }
 
 struct ON_SerialNumberMap::SN_ELEMENT*
-ON_SerialNumberMap::RemoveId(unsigned int sn, ON_UUID id)
+ON_SerialNumberMap::RemoveId (unsigned int sn, ON_UUID id)
 {
   struct SN_ELEMENT* e = 0;
   struct SN_ELEMENT* prev;
   std::size_t i;
   if (m_active_id_count > 0) {
-    i = HashIndex(&id);
-    if (i != 0 || IdIsNotZero(&id)) {
+    i = HashIndex (&id);
+    if (i != 0 || IdIsNotZero (&id)) {
       if (!m_bHashTableIsValid && sn > 0) {
         // We can avoid rebuilding the hash table.
         // Use the serial number to find the element.
-        e = FindSerialNumber(sn);
+        e = FindSerialNumber (sn);
         if (e) {
-          if (e->m_id_active && 0 == memcmp(&e->m_id, &id, sizeof(e->m_id))) {
+          if (e->m_id_active && 0 == memcmp (&e->m_id, &id, sizeof (e->m_id))) {
             e->m_next = 0;
             e->m_id_active = 0;
             m_active_id_count--;
@@ -1009,7 +1009,7 @@ ON_SerialNumberMap::RemoveId(unsigned int sn, ON_UUID id)
         BuildHashTableHelper();
         prev = 0;
         for (e = m_hash_table[i]; e; e = e->m_next) {
-          if (0 == memcmp(&e->m_id, &id, sizeof(e->m_id))) {
+          if (0 == memcmp (&e->m_id, &id, sizeof (e->m_id))) {
             if (prev)
               prev->m_next = e->m_next;
             else
@@ -1029,7 +1029,7 @@ ON_SerialNumberMap::RemoveId(unsigned int sn, ON_UUID id)
 }
 
 int
-ON_SerialNumberMap::SN_BLOCK::CompareMaxSN(const void* a, const void* b)
+ON_SerialNumberMap::SN_BLOCK::CompareMaxSN (const void* a, const void* b)
 {
   const unsigned int sna = (*((const SN_BLOCK* const*)a))->m_sn1;
   const unsigned int snb = (*((const SN_BLOCK* const*)b))->m_sn1;
@@ -1043,8 +1043,8 @@ ON_SerialNumberMap::SN_BLOCK::CompareMaxSN(const void* a, const void* b)
 }
 
 std::size_t
-ON_SerialNumberMap::SN_BLOCK::ActiveElementEstimate(unsigned int sn0,
-                                                    unsigned int sn1) const
+ON_SerialNumberMap::SN_BLOCK::ActiveElementEstimate (unsigned int sn0,
+                                                     unsigned int sn1) const
 {
   std::size_t c = m_count - m_purged;
   if (c > 0) {
@@ -1067,17 +1067,17 @@ ON_SerialNumberMap_IsNotValid ()
 }
 
 bool
-ON_SerialNumberMap::IsValid(ON_TextLog* textlog) const
+ON_SerialNumberMap::IsValid (ON_TextLog* textlog) const
 {
   std::size_t i, c, pc, aic;
 
   aic = 0;
 
-  const_cast<ON_SerialNumberMap*>(this)->BuildHashTableHelper();
+  const_cast<ON_SerialNumberMap*> (this)->BuildHashTableHelper();
 
-  if (!m_sn_block0.IsValidBlock(textlog, m_hash_table, &aic)) {
+  if (!m_sn_block0.IsValidBlock (textlog, m_hash_table, &aic)) {
     if (textlog)
-      textlog->Print("m_sn_block0 is not valid\n");
+      textlog->Print ("m_sn_block0 is not valid\n");
     return ON_SerialNumberMap_IsNotValid();
   }
 
@@ -1087,24 +1087,24 @@ ON_SerialNumberMap::IsValid(ON_TextLog* textlog) const
   for (i = 0; i < m_snblk_list_count; i++) {
     if (0 == m_snblk_list[i]->m_count) {
       if (textlog)
-        textlog->Print("m_snblk_list[%d] is empty\n", i);
+        textlog->Print ("m_snblk_list[%d] is empty\n", i);
       return ON_SerialNumberMap_IsNotValid();
     }
     if (1 != m_snblk_list[i]->m_sorted) {
       if (textlog)
-        textlog->Print("m_snblk_list[%d] is not sorted\n", i);
+        textlog->Print ("m_snblk_list[%d] is not sorted\n", i);
       return ON_SerialNumberMap_IsNotValid();
     }
-    if (!m_snblk_list[i]->IsValidBlock(textlog, m_hash_table, &aic)) {
+    if (!m_snblk_list[i]->IsValidBlock (textlog, m_hash_table, &aic)) {
       if (textlog)
-        textlog->Print("m_snblk_list[%d] is not valid\n", i);
+        textlog->Print ("m_snblk_list[%d] is not valid\n", i);
       return ON_SerialNumberMap_IsNotValid();
     }
     c += m_snblk_list[i]->m_count;
     pc += m_snblk_list[i]->m_purged;
     if (i > 0 && m_snblk_list[i]->m_sn0 <= m_snblk_list[i - 1]->m_sn1) {
       if (textlog)
-        textlog->Print(
+        textlog->Print (
             "m_snblk_list[%d]->m_sn0 <= m_snblk_list[%d]->m_sn1\n", i, i - 1);
       return ON_SerialNumberMap_IsNotValid();
     }
@@ -1112,29 +1112,30 @@ ON_SerialNumberMap::IsValid(ON_TextLog* textlog) const
 
   if (c != m_sn_count) {
     if (textlog)
-      textlog->Print("m_sn_count=%d (should be %d) is not correct\n", m_sn_count, c);
+      textlog->Print ("m_sn_count=%d (should be %d) is not correct\n", m_sn_count, c);
     return ON_SerialNumberMap_IsNotValid();
   }
 
   if (pc != m_sn_purged) {
     if (textlog)
-      textlog->Print("m_sn_purged=%d (should be %d) is not correct\n", m_sn_purged, pc);
+      textlog->Print (
+          "m_sn_purged=%d (should be %d) is not correct\n", m_sn_purged, pc);
     return ON_SerialNumberMap_IsNotValid();
   }
 
   if (m_active_id_count != aic) {
     if (textlog)
-      textlog->Print("m_active_id_count=%d (should be %d) is not correct\n",
-                     m_active_id_count,
-                     aic);
+      textlog->Print ("m_active_id_count=%d (should be %d) is not correct\n",
+                      m_active_id_count,
+                      aic);
     return ON_SerialNumberMap_IsNotValid();
   }
 
   if (m_active_id_count + m_sn_purged > m_sn_count) {
     if (textlog)
-      textlog->Print("m_active_id_count=%d > %d = (m_sn_count-m_sn_purged)\n",
-                     m_active_id_count,
-                     m_sn_count - m_sn_purged);
+      textlog->Print ("m_active_id_count=%d > %d = (m_sn_count-m_sn_purged)\n",
+                      m_active_id_count,
+                      m_sn_count - m_sn_purged);
     return ON_SerialNumberMap_IsNotValid();
   }
 
@@ -1148,7 +1149,7 @@ ON_SerialNumberMap::IsValid(ON_TextLog* textlog) const
 
   if (c > m_active_id_count) {
     if (textlog)
-      textlog->Print("m_hash_table[] linked lists have too many elements.\n");
+      textlog->Print ("m_hash_table[] linked lists have too many elements.\n");
     return ON_SerialNumberMap_IsNotValid();
   }
 
@@ -1156,8 +1157,8 @@ ON_SerialNumberMap::IsValid(ON_TextLog* textlog) const
 }
 
 std::size_t
-ON_SerialNumberMap::GarbageCollectMoveHelper(ON_SerialNumberMap::SN_BLOCK* dst,
-                                             ON_SerialNumberMap::SN_BLOCK* src)
+ON_SerialNumberMap::GarbageCollectMoveHelper (ON_SerialNumberMap::SN_BLOCK* dst,
+                                              ON_SerialNumberMap::SN_BLOCK* src)
 {
   // This helper is used by GarbageCollectHelper and moves
   // as many entries as possible from src to dst.
@@ -1178,7 +1179,7 @@ ON_SerialNumberMap::GarbageCollectMoveHelper(ON_SerialNumberMap::SN_BLOCK* dst,
           dst->m_sn1 = src->m_sn1;
         }
       }
-      memcpy(&dst->m_sn[dst->m_count], &src->m_sn[0], n * sizeof(src->m_sn[0]));
+      memcpy (&dst->m_sn[dst->m_count], &src->m_sn[0], n * sizeof (src->m_sn[0]));
       dst->m_count += n;
       if (dst->m_sorted) {
         dst->m_sn0 =
@@ -1259,10 +1260,10 @@ ON_SerialNumberMap::GarbageCollectHelper()
       for (j = i + 1; j < m_snblk_list_count; j++) {
         if (m_snblk_list[j]->m_count > 0) {
           // ... and m_snblk_list[j] is not empty
-          ON_qsort(m_snblk_list + i,
-                   m_snblk_list_count - i,
-                   sizeof(*m_snblk_list),
-                   SN_BLOCK::CompareMaxSN);
+          ON_qsort (m_snblk_list + i,
+                    m_snblk_list_count - i,
+                    sizeof (*m_snblk_list),
+                    SN_BLOCK::CompareMaxSN);
           break;
         }
       }
@@ -1279,8 +1280,8 @@ ON_SerialNumberMap::GarbageCollectHelper()
     // have the lowest serial numbers and m_sn_block0.m_sn[] contains
     // the largest.
     std::size_t snarray_count = 0;
-    struct SN_ELEMENT* snarray = (struct SN_ELEMENT*)onmalloc_from_pool(
-        m_pool, 2 * SN_BLOCK_CAPACITY * sizeof(snarray[0]));
+    struct SN_ELEMENT* snarray = (struct SN_ELEMENT*)onmalloc_from_pool (
+        m_pool, 2 * SN_BLOCK_CAPACITY * sizeof (snarray[0]));
     for (i = 0; i < m_snblk_list_count && m_sn_block0.m_count > 0; i++) {
       if (m_snblk_list[i]->m_sn1 < m_sn_block0.m_sn0)
         continue;
@@ -1303,39 +1304,39 @@ ON_SerialNumberMap::GarbageCollectHelper()
           // value, then we should get j == blk->m_count exit.
           // If blk->m_sn[blk->m_count-1].m_sn is the largest value,
           // then we should get k == m_sn_block0.m_count and exit.
-          ON_ERROR("Bogus information - should never get here");
+          ON_ERROR ("Bogus information - should never get here");
           break;
         }
       }
       n = blk->m_count - j;
       if (n > 0) {
-        memcpy(&snarray[snarray_count], &blk->m_sn[j], n * sizeof(snarray[0]));
+        memcpy (&snarray[snarray_count], &blk->m_sn[j], n * sizeof (snarray[0]));
         snarray_count += n;
       }
       else {
         while (k < m_sn_block0.m_count && m_sn_block0.m_sn[k].m_sn < sn1)
           snarray[snarray_count++] = m_sn_block0.m_sn[k++];
       }
-      n = (snarray_count > static_cast<std::size_t>(SN_BLOCK_CAPACITY))
-              ? static_cast<std::size_t>(SN_BLOCK_CAPACITY)
+      n = (snarray_count > static_cast<std::size_t> (SN_BLOCK_CAPACITY))
+              ? static_cast<std::size_t> (SN_BLOCK_CAPACITY)
               : snarray_count;
       if (k < m_sn_block0.m_count) {
-        memcpy(&snarray[snarray_count],
-               &m_sn_block0.m_sn[k],
-               (m_sn_block0.m_count - k) * sizeof(snarray[0]));
+        memcpy (&snarray[snarray_count],
+                &m_sn_block0.m_sn[k],
+                (m_sn_block0.m_count - k) * sizeof (snarray[0]));
         snarray_count += (m_sn_block0.m_count - k);
       }
       blk->m_count = n;
-      memcpy(&blk->m_sn[0], snarray, blk->m_count * sizeof(blk->m_sn[0]));
+      memcpy (&blk->m_sn[0], snarray, blk->m_count * sizeof (blk->m_sn[0]));
       blk->m_sn0 = blk->m_sn[0].m_sn;
       blk->m_sn1 = blk->m_sn[blk->m_count - 1].m_sn;
       if (snarray_count > n) {
         // put the end of snarray[] (the largest serial numbers)
         // in m_sn_block0.m_sn[].
         m_sn_block0.m_count = (snarray_count - n);
-        memcpy(&m_sn_block0.m_sn[0],
-               &snarray[n],
-               m_sn_block0.m_count * sizeof(m_sn_block0.m_sn[0]));
+        memcpy (&m_sn_block0.m_sn[0],
+                &snarray[n],
+                m_sn_block0.m_count * sizeof (m_sn_block0.m_sn[0]));
         m_sn_block0.m_sn0 = m_sn_block0.m_sn[0].m_sn;
         m_sn_block0.m_sn1 = m_sn_block0.m_sn[m_sn_block0.m_count - 1].m_sn;
       }
@@ -1343,7 +1344,7 @@ ON_SerialNumberMap::GarbageCollectHelper()
         m_sn_block0.EmptyBlock();
       }
     }
-    onfree(snarray);
+    onfree (snarray);
     snarray = 0;
   }
 
@@ -1352,7 +1353,7 @@ ON_SerialNumberMap::GarbageCollectHelper()
     for (j = i + 1; j < m_snblk_list_count; j++) {
       if (m_snblk_list[i]->m_count >= SN_BLOCK_CAPACITY)
         break;
-      GarbageCollectMoveHelper(m_snblk_list[i], m_snblk_list[j]);
+      GarbageCollectMoveHelper (m_snblk_list[i], m_snblk_list[j]);
     }
   }
   while (m_snblk_list_count > 0 && 0 == m_snblk_list[m_snblk_list_count - 1]->m_count) {
@@ -1362,7 +1363,7 @@ ON_SerialNumberMap::GarbageCollectHelper()
   // Make sure m_sn_block0.m_an[] is has plenty of room
   if (m_sn_block0.m_count > SN_BLOCK_CAPACITY / 4) {
     if (m_snblk_list_count > 0) {
-      GarbageCollectMoveHelper(m_snblk_list[m_snblk_list_count - 1], &m_sn_block0);
+      GarbageCollectMoveHelper (m_snblk_list[m_snblk_list_count - 1], &m_sn_block0);
     }
     if (m_sn_block0.m_count > SN_BLOCK_CAPACITY / 2) {
       // Need to add a new block to m_snblk_list[]
@@ -1370,16 +1371,16 @@ ON_SerialNumberMap::GarbageCollectHelper()
         // Add room to store more pointers to blocks in the m_sn_list[]
         i = m_snblk_list_capacity;
         m_snblk_list_capacity += 32;
-        n = m_snblk_list_capacity * sizeof(m_snblk_list[0]);
-        m_snblk_list = (SN_BLOCK**)((0 == m_snblk_list) ? onmalloc_from_pool(m_pool, n)
-                                                        : onrealloc(m_snblk_list, n));
+        n = m_snblk_list_capacity * sizeof (m_snblk_list[0]);
+        m_snblk_list = (SN_BLOCK**)((0 == m_snblk_list) ? onmalloc_from_pool (m_pool, n)
+                                                        : onrealloc (m_snblk_list, n));
         while (i < m_snblk_list_capacity)
           m_snblk_list[i++] = 0;
       }
       if (0 == m_snblk_list[m_snblk_list_count]) {
         // add room to store at more serial numbers
-        m_snblk_list[m_snblk_list_count] = (SN_BLOCK*)onmalloc_from_pool(
-            m_pool, sizeof(*(m_snblk_list[m_snblk_list_count])));
+        m_snblk_list[m_snblk_list_count] = (SN_BLOCK*)onmalloc_from_pool (
+            m_pool, sizeof (*(m_snblk_list[m_snblk_list_count])));
       }
       *m_snblk_list[m_snblk_list_count++] = m_sn_block0;
       m_sn_block0.EmptyBlock();
@@ -1388,16 +1389,16 @@ ON_SerialNumberMap::GarbageCollectHelper()
 }
 
 struct ON_SerialNumberMap::SN_ELEMENT*
-ON_SerialNumberMap::AddSerialNumber(unsigned int sn)
+ON_SerialNumberMap::AddSerialNumber (unsigned int sn)
 {
   if (sn <= 0)
     return 0;
-  struct SN_ELEMENT* e = FindElementHelper(sn);
+  struct SN_ELEMENT* e = FindElementHelper (sn);
   if (e) {
     if (0 == e->m_sn_active) {
       m_sn_purged--;
       m_e_blk->m_purged--;
-      memset(e, 0, sizeof(*e));
+      memset (e, 0, sizeof (*e));
       e->m_sn = sn;
       e->m_sn_active = 1;
     }
@@ -1426,7 +1427,7 @@ ON_SerialNumberMap::AddSerialNumber(unsigned int sn)
       m_maxsn = sn;
     m_sn_count++;
     e = &m_sn_block0.m_sn[m_sn_block0.m_count++];
-    memset(e, 0, sizeof(*e));
+    memset (e, 0, sizeof (*e));
     e->m_sn = sn;
     e->m_sn_active = 1;
   }
@@ -1435,22 +1436,22 @@ ON_SerialNumberMap::AddSerialNumber(unsigned int sn)
 }
 
 struct ON_SerialNumberMap::SN_ELEMENT*
-ON_SerialNumberMap::AddSerialNumberAndId(unsigned int sn, ON_UUID id)
+ON_SerialNumberMap::AddSerialNumberAndId (unsigned int sn, ON_UUID id)
 {
-  struct SN_ELEMENT* e = AddSerialNumber(sn);
+  struct SN_ELEMENT* e = AddSerialNumber (sn);
   std::size_t i;
 
   if (0 != e && 0 == e->m_id_active) {
-    if (IdIsNotZero(&id)) {
+    if (IdIsNotZero (&id)) {
       if (m_active_id_count > 0 &&
-          0 != memcmp(&m_inactive_id, &id, sizeof(m_inactive_id))) {
+          0 != memcmp (&m_inactive_id, &id, sizeof (m_inactive_id))) {
         // Need to determine if id is already in use.
         BuildHashTableHelper();
-        i = HashIndex(&id);
+        i = HashIndex (&id);
         for (const struct SN_ELEMENT* h = m_hash_table[i]; h; h = h->m_next) {
-          if (0 == memcmp(&h->m_id, &id, sizeof(h->m_id))) {
+          if (0 == memcmp (&h->m_id, &id, sizeof (h->m_id))) {
             // This id is already in use. Create a new id.
-            ON_CreateUuid(id);
+            ON_CreateUuid (id);
             break;
           }
         }
@@ -1458,7 +1459,7 @@ ON_SerialNumberMap::AddSerialNumberAndId(unsigned int sn, ON_UUID id)
     }
     else {
       // The input id was zero. Create a new id.
-      ON_CreateUuid(id);
+      ON_CreateUuid (id);
     }
 
     // Add id to the hash table
@@ -1470,23 +1471,23 @@ ON_SerialNumberMap::AddSerialNumberAndId(unsigned int sn, ON_UUID id)
       // is dirty, it will get rebuilt before
       // it needs to be used and this element
       // will be included at that time.
-      i = HashIndex(&id);
+      i = HashIndex (&id);
       e->m_next = m_hash_table[i];
       m_hash_table[i] = e;
     }
     m_active_id_count++;
-    memset(&m_inactive_id, 0, sizeof(m_inactive_id));
+    memset (&m_inactive_id, 0, sizeof (m_inactive_id));
   }
 
   return e;
 }
 
 std::size_t
-ON_SerialNumberMap::HashIndex(const ON_UUID* id) const
+ON_SerialNumberMap::HashIndex (const ON_UUID* id) const
 {
   // this is a private member function and the caller
   // insures the id pointer is not null.
-  return (IdCRC(id) % ID_HASH_TABLE_COUNT);
+  return (IdCRC (id) % ID_HASH_TABLE_COUNT);
 }
 
 void
@@ -1500,12 +1501,12 @@ ON_SerialNumberMap::InvalidateHashTableHelper()
   // BuildHashTableHelper() will restore it.
   if (m_bHashTableIsValid) {
     m_bHashTableIsValid = false;
-    memset(m_hash_table, 0, sizeof(m_hash_table));
+    memset (m_hash_table, 0, sizeof (m_hash_table));
   }
 }
 
 bool
-ON_SerialNumberMap::RemoveBlockFromHashTableHelper(
+ON_SerialNumberMap::RemoveBlockFromHashTableHelper (
     const struct ON_SerialNumberMap::SN_BLOCK* blk)
 {
   // quickly remove every id in the block from the hash table.
@@ -1543,7 +1544,7 @@ ON_SerialNumberMap::RemoveBlockFromHashTableHelper(
     for (e = blk->m_sn, i = blk->m_count; i--; e++) {
       if (e->m_id_active) {
         prev = 0;
-        hash_i = HashIndex(&e->m_id);
+        hash_i = HashIndex (&e->m_id);
         for (h = m_hash_table[hash_i]; h; h = h->m_next) {
           if (h == e) {
             // Do not change value of SN_ELEMENT's m_id_active.
@@ -1565,14 +1566,14 @@ ON_SerialNumberMap::RemoveBlockFromHashTableHelper(
 }
 
 void
-ON_SerialNumberMap::AddBlockToHashTableHelper(struct ON_SerialNumberMap::SN_BLOCK* blk)
+ON_SerialNumberMap::AddBlockToHashTableHelper (struct ON_SerialNumberMap::SN_BLOCK* blk)
 {
   if (m_bHashTableIsValid) {
     SN_ELEMENT* e;
     std::size_t i, hash_i;
     for (e = blk->m_sn, i = blk->m_count; i--; e++) {
       if (e->m_id_active) {
-        hash_i = HashIndex(&e->m_id);
+        hash_i = HashIndex (&e->m_id);
         e->m_next = m_hash_table[hash_i];
         m_hash_table[hash_i] = e;
       }
@@ -1600,7 +1601,7 @@ ON_SerialNumberMap::BuildHashTableHelper()
           e = &blk->m_sn[0];
           for (j = blk->m_count; j--; e++) {
             if (e->m_id_active) {
-              hash_i = HashIndex(&e->m_id);
+              hash_i = HashIndex (&e->m_id);
               e->m_next = m_hash_table[hash_i];
               m_hash_table[hash_i] = e;
             }
@@ -1616,7 +1617,7 @@ ON_SerialNumberMap::BuildHashTableHelper()
         e = &blk->m_sn[0];
         for (j = blk->m_count; j--; e++) {
           if (e->m_id_active) {
-            hash_i = HashIndex(&e->m_id);
+            hash_i = HashIndex (&e->m_id);
             e->m_next = m_hash_table[hash_i];
             m_hash_table[hash_i] = e;
           }
@@ -1630,57 +1631,57 @@ ON_SerialNumberMap::BuildHashTableHelper()
 }
 
 void
-ON_SerialNumberMap::SN_ELEMENT::Dump(ON_TextLog& text_log) const
+ON_SerialNumberMap::SN_ELEMENT::Dump (ON_TextLog& text_log) const
 {
-  text_log.Print("m_id = ");
-  text_log.Print(m_id);
-  text_log.Print("\nm_sn = %d\n", m_sn);
-  text_log.Print("m_sn_active = %d\n", m_sn_active);
-  text_log.Print("m_id_active = %d\n", m_id_active);
+  text_log.Print ("m_id = ");
+  text_log.Print (m_id);
+  text_log.Print ("\nm_sn = %d\n", m_sn);
+  text_log.Print ("m_sn_active = %d\n", m_sn_active);
+  text_log.Print ("m_id_active = %d\n", m_id_active);
 }
 
 void
-ON_SerialNumberMap::SN_BLOCK::Dump(ON_TextLog& text_log) const
+ON_SerialNumberMap::SN_BLOCK::Dump (ON_TextLog& text_log) const
 {
-  text_log.Print("m_count = %d\n", m_count);
-  text_log.Print("m_purged = %d\n", m_purged);
-  text_log.Print("m_sorted = %d\n", m_sorted);
-  text_log.Print("m_sn0 = %d\n", m_sn0);
-  text_log.Print("m_sn1 = %d\n", m_sn1);
+  text_log.Print ("m_count = %d\n", m_count);
+  text_log.Print ("m_purged = %d\n", m_purged);
+  text_log.Print ("m_sorted = %d\n", m_sorted);
+  text_log.Print ("m_sn0 = %d\n", m_sn0);
+  text_log.Print ("m_sn1 = %d\n", m_sn1);
   if (m_count > 0) {
-    text_log.Print("m_sn[0]\n");
+    text_log.Print ("m_sn[0]\n");
     text_log.PushIndent();
-    m_sn[0].Dump(text_log);
+    m_sn[0].Dump (text_log);
     text_log.PopIndent();
     if (m_count > 1) {
-      text_log.Print("m_sn[%d]\n", m_count - 1);
+      text_log.Print ("m_sn[%d]\n", m_count - 1);
       text_log.PushIndent();
-      m_sn[m_count - 1].Dump(text_log);
+      m_sn[m_count - 1].Dump (text_log);
       text_log.PopIndent();
     }
   }
 }
 
 void
-ON_SerialNumberMap::Dump(ON_TextLog& text_log) const
+ON_SerialNumberMap::Dump (ON_TextLog& text_log) const
 {
-  text_log.Print("m_maxsn = %d\n", m_maxsn);
-  text_log.Print("m_sn_count = %d\n", m_sn_count);
-  text_log.Print("m_sn_purged = %d\n", m_sn_purged);
-  text_log.Print("m_active_id_count = %d\n", m_sn_purged);
-  text_log.Print("m_bHashTableIsValid = %d\n", m_bHashTableIsValid);
-  text_log.Print("m_snblk_list_capacity = %d\n", m_snblk_list_capacity);
-  text_log.Print("m_snblk_list_count = %d\n", m_snblk_list_count);
+  text_log.Print ("m_maxsn = %d\n", m_maxsn);
+  text_log.Print ("m_sn_count = %d\n", m_sn_count);
+  text_log.Print ("m_sn_purged = %d\n", m_sn_purged);
+  text_log.Print ("m_active_id_count = %d\n", m_sn_purged);
+  text_log.Print ("m_bHashTableIsValid = %d\n", m_bHashTableIsValid);
+  text_log.Print ("m_snblk_list_capacity = %d\n", m_snblk_list_capacity);
+  text_log.Print ("m_snblk_list_count = %d\n", m_snblk_list_count);
 
-  text_log.Print("m_sn_block0\n");
+  text_log.Print ("m_sn_block0\n");
   text_log.PushIndent();
-  m_sn_block0.Dump(text_log);
+  m_sn_block0.Dump (text_log);
   text_log.PopIndent();
 
   for (std::size_t i = 0; i < m_snblk_list_count; i++) {
-    text_log.Print("m_snblk_list[%d]\n", i);
+    text_log.Print ("m_snblk_list[%d]\n", i);
     text_log.PushIndent();
-    m_snblk_list[i]->Dump(text_log);
+    m_snblk_list[i]->Dump (text_log);
     text_log.PopIndent();
   }
 }

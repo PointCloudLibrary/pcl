@@ -423,8 +423,8 @@ public:
          const std::string& filename_data,
          const std::string& filename_xml)
   {
-    bool res1 = write(data, width, height, filename_data);
-    bool res2 = writeParameters(parameters, filename_xml);
+    bool res1 = write (data, width, height, filename_data);
+    bool res2 = writeParameters (parameters, filename_xml);
     return (res1 && res2);
   }
 

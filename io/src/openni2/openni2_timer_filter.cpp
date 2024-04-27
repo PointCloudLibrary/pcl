@@ -37,15 +37,16 @@ namespace pcl {
 namespace io {
 namespace openni2 {
 
-OpenNI2TimerFilter::OpenNI2TimerFilter(std::size_t filter_len) : filter_len_(filter_len)
+OpenNI2TimerFilter::OpenNI2TimerFilter (std::size_t filter_len)
+: filter_len_ (filter_len)
 {}
 
 OpenNI2TimerFilter::~OpenNI2TimerFilter() = default;
 
 void
-OpenNI2TimerFilter::addSample(double sample)
+OpenNI2TimerFilter::addSample (double sample)
 {
-  buffer_.push_back(sample);
+  buffer_.push_back (sample);
   if (buffer_.size() > filter_len_)
     buffer_.pop_front();
 }
@@ -56,7 +57,7 @@ OpenNI2TimerFilter::getMedian()
   if (!buffer_.empty()) {
     std::deque<double> sort_buffer = buffer_;
 
-    std::sort(sort_buffer.begin(), sort_buffer.end());
+    std::sort (sort_buffer.begin(), sort_buffer.end());
 
     return sort_buffer[sort_buffer.size() / 2];
   }
@@ -76,7 +77,7 @@ OpenNI2TimerFilter::getMovingAvg()
       sum += *(it++);
     }
 
-    return sum / static_cast<double>(buffer_.size());
+    return sum / static_cast<double> (buffer_.size());
   }
   return (0.0);
 }

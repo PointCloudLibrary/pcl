@@ -60,10 +60,10 @@ class KeyboardEvent;
 
 class PCL_EXPORTS Window {
 public:
-  Window(const std::string& window_name = "");
-  Window(const Window& src);
+  Window (const std::string& window_name = "");
+  Window (const Window& src);
   Window&
-  operator=(const Window& src);
+  operator= (const Window& src);
 
   virtual ~Window();
 
@@ -94,12 +94,12 @@ public:
    * @return          connection object that allows to disconnect the callback function.
    */
   boost::signals2::connection
-  registerKeyboardCallback (void (*callback)(const pcl::visualization::KeyboardEvent&,
-                                             void*),
+  registerKeyboardCallback (void (*callback) (const pcl::visualization::KeyboardEvent&,
+                                              void*),
                             void* cookie = nullptr)
   {
-    return registerKeyboardCallback(
-        [=] (const pcl::visualization::KeyboardEvent& e) { (*callback)(e, cookie); });
+    return registerKeyboardCallback (
+        [=] (const pcl::visualization::KeyboardEvent& e) { (*callback) (e, cookie); });
   }
 
   /**
@@ -113,13 +113,13 @@ public:
   template <typename T>
   boost::signals2::connection
   registerKeyboardCallback (
-      void (T::*callback)(const pcl::visualization::KeyboardEvent&, void*),
+      void (T::*callback) (const pcl::visualization::KeyboardEvent&, void*),
       T& instance,
       void* cookie = nullptr)
   {
-    return registerKeyboardCallback(
+    return registerKeyboardCallback (
         [=, &instance] (const pcl::visualization::KeyboardEvent& e) {
-          (instance.*callback)(e, cookie);
+          (instance.*callback) (e, cookie);
         });
   }
 
@@ -131,11 +131,12 @@ public:
    * @return          connection object that allows to disconnect the callback function.
    */
   boost::signals2::connection
-  registerMouseCallback (void (*callback)(const pcl::visualization::MouseEvent&, void*),
+  registerMouseCallback (void (*callback) (const pcl::visualization::MouseEvent&,
+                                           void*),
                          void* cookie = nullptr)
   {
-    return registerMouseCallback(
-        [=] (const pcl::visualization::MouseEvent& e) { (*callback)(e, cookie); });
+    return registerMouseCallback (
+        [=] (const pcl::visualization::MouseEvent& e) { (*callback) (e, cookie); });
   }
 
   /**
@@ -148,14 +149,14 @@ public:
    */
   template <typename T>
   boost::signals2::connection
-  registerMouseCallback (void (T::*callback)(const pcl::visualization::MouseEvent&,
-                                             void*),
+  registerMouseCallback (void (T::*callback) (const pcl::visualization::MouseEvent&,
+                                              void*),
                          T& instance,
                          void* cookie = nullptr)
   {
-    return registerMouseCallback(
+    return registerMouseCallback (
         [=, &instance] (const pcl::visualization::MouseEvent& e) {
-          (instance.*callback)(e, cookie);
+          (instance.*callback) (e, cookie);
         });
   }
 
@@ -172,16 +173,16 @@ protected: // methods
    * @return  connection object that allows to disconnect the callback function.
    */
   // param   the std function that will be registered as a callback for a mouse event
-  boost::signals2::connection
-      registerMouseCallback(std::function<void(const pcl::visualization::MouseEvent&)>);
+  boost::signals2::connection registerMouseCallback (
+      std::function<void (const pcl::visualization::MouseEvent&)>);
 
   /**
    * @brief   registering a callback std::function for keyboard events
    * @return  connection object that allows to disconnect the callback function.
    */
   // param   the std function that will be registered as a callback for a keyboard event
-  boost::signals2::connection registerKeyboardCallback(
-      std::function<void(const pcl::visualization::KeyboardEvent&)>);
+  boost::signals2::connection registerKeyboardCallback (
+      std::function<void (const pcl::visualization::KeyboardEvent&)>);
 
   void
   emitMouseEvent (unsigned long event_id);
@@ -231,8 +232,8 @@ protected: // types
   int timer_id_{0};
 
 protected: // member fields
-  boost::signals2::signal<void(const pcl::visualization::MouseEvent&)> mouse_signal_;
-  boost::signals2::signal<void(const pcl::visualization::KeyboardEvent&)>
+  boost::signals2::signal<void (const pcl::visualization::MouseEvent&)> mouse_signal_;
+  boost::signals2::signal<void (const pcl::visualization::KeyboardEvent&)>
       keyboard_signal_;
 
   vtkSmartPointer<vtkRenderWindow> win_;

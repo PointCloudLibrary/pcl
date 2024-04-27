@@ -34,8 +34,8 @@ public:
   using Ptr = std::shared_ptr<GrabCutHelper>;
   using ConstPtr = std::shared_ptr<const GrabCutHelper>;
 
-  GrabCutHelper(std::uint32_t K = 5, float lambda = 50.f)
-  : pcl::GrabCut<pcl::PointXYZRGB>(K, lambda)
+  GrabCutHelper (std::uint32_t K = 5, float lambda = 50.f)
+  : pcl::GrabCut<pcl::PointXYZRGB> (K, lambda)
   {}
 
   ~GrabCutHelper() override = default;
@@ -76,62 +76,63 @@ private:
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 void
-GrabCutHelper::setInputCloud(const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr& cloud)
+GrabCutHelper::setInputCloud (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr& cloud)
 {
-  pcl::GrabCut<pcl::PointXYZRGB>::setInputCloud(cloud);
+  pcl::GrabCut<pcl::PointXYZRGB>::setInputCloud (cloud);
   // Reset clouds
-  n_links_image_.reset(new pcl::PointCloud<float>(cloud->width, cloud->height, 0));
-  t_links_image_.reset(
-      new pcl::segmentation::grabcut::Image(cloud->width, cloud->height));
-  gmm_image_.reset(new pcl::segmentation::grabcut::Image(cloud->width, cloud->height));
-  alpha_image_.reset(new pcl::PointCloud<float>(cloud->width, cloud->height, 0));
+  n_links_image_.reset (new pcl::PointCloud<float> (cloud->width, cloud->height, 0));
+  t_links_image_.reset (
+      new pcl::segmentation::grabcut::Image (cloud->width, cloud->height));
+  gmm_image_.reset (
+      new pcl::segmentation::grabcut::Image (cloud->width, cloud->height));
+  alpha_image_.reset (new pcl::PointCloud<float> (cloud->width, cloud->height, 0));
   image_height_1_ = cloud->height - 1;
   image_width_1_ = cloud->width - 1;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 void
-GrabCutHelper::setBackgroundPointsIndices(
+GrabCutHelper::setBackgroundPointsIndices (
     const pcl::PointIndices::ConstPtr& point_indices)
 {
-  pcl::GrabCut<pcl::PointXYZRGB>::setBackgroundPointsIndices(point_indices);
+  pcl::GrabCut<pcl::PointXYZRGB>::setBackgroundPointsIndices (point_indices);
   buildImages();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 void
-GrabCutHelper::setBackgroundPointsIndices(int x1, int y1, int x2, int y2)
+GrabCutHelper::setBackgroundPointsIndices (int x1, int y1, int x2, int y2)
 {
-  pcl::PointIndices::Ptr point_indices(new pcl::PointIndices);
-  point_indices->indices.reserve(input_->size());
+  pcl::PointIndices::Ptr point_indices (new pcl::PointIndices);
+  point_indices->indices.reserve (input_->size());
   if (x1 > x2)
-    std::swap(x1, x2);
+    std::swap (x1, x2);
   if (y1 > y2)
-    std::swap(y1, y2);
-  x1 = std::max(x1, 0);
-  y1 = std::max(y1, 0);
-  x2 = std::min(static_cast<int>(input_->width - 1), x2);
-  y2 = std::min(static_cast<int>(input_->height - 1), y2);
+    std::swap (y1, y2);
+  x1 = std::max (x1, 0);
+  y1 = std::max (y1, 0);
+  x2 = std::min (static_cast<int> (input_->width - 1), x2);
+  y2 = std::min (static_cast<int> (input_->height - 1), y2);
   for (int y = y1; y <= y2; ++y)
     for (int x = x1; x <= x2; ++x)
-      point_indices->indices.push_back(y * input_->width + x);
-  setBackgroundPointsIndices(point_indices);
+      point_indices->indices.push_back (y * input_->width + x);
+  setBackgroundPointsIndices (point_indices);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 void
-GrabCutHelper::setTrimap(
+GrabCutHelper::setTrimap (
     int x1, int y1, int x2, int y2, const pcl::segmentation::grabcut::TrimapValue& t)
 {
   using namespace pcl::segmentation::grabcut;
   if (x1 > x2)
-    std::swap(x1, x2);
+    std::swap (x1, x2);
   if (y1 > y2)
-    std::swap(y1, y2);
-  x1 = std::max(x1, 0);
-  y1 = std::max(y1, 0);
-  x2 = std::min(static_cast<int>(image_height_1_), x2);
-  y2 = std::min(static_cast<int>(image_width_1_), y2);
+    std::swap (y1, y2);
+  x1 = std::max (x1, 0);
+  y1 = std::max (y1, 0);
+  x2 = std::min (static_cast<int> (image_height_1_), x2);
+  y2 = std::min (static_cast<int> (image_width_1_), y2);
   for (int y = y1; y <= y2; ++y)
     for (int x = x1; x <= x2; ++x) {
       std::size_t idx = y * input_->width + x;
@@ -177,49 +178,49 @@ void
 GrabCutHelper::buildImages()
 {
   using namespace pcl::segmentation::grabcut;
-  std::fill(n_links_image_->begin(), n_links_image_->end(), 0.0f);
-  for (int y = 0; y < static_cast<int>(image_->height); ++y) {
-    for (int x = 0; x < static_cast<int>(image_->width); ++x) {
+  std::fill (n_links_image_->begin(), n_links_image_->end(), 0.0f);
+  for (int y = 0; y < static_cast<int> (image_->height); ++y) {
+    for (int x = 0; x < static_cast<int> (image_->width); ++x) {
       std::size_t index = y * image_->width + x;
 
       if (x > 0 && y < image_height_1_) {
-        (*n_links_image_)(x, y) += n_links_[index].weights[0];
-        (*n_links_image_)(x - 1, y + 1) += n_links_[index].weights[0];
+        (*n_links_image_) (x, y) += n_links_[index].weights[0];
+        (*n_links_image_) (x - 1, y + 1) += n_links_[index].weights[0];
       }
 
       if (y < image_height_1_) {
-        (*n_links_image_)(x, y) += n_links_[index].weights[1];
-        (*n_links_image_)(x, y + 1) += n_links_[index].weights[1];
+        (*n_links_image_) (x, y) += n_links_[index].weights[1];
+        (*n_links_image_) (x, y + 1) += n_links_[index].weights[1];
       }
 
       if (x < image_width_1_ && y < image_height_1_) {
-        (*n_links_image_)(x, y) += n_links_[index].weights[2];
-        (*n_links_image_)(x + 1, y + 1) += n_links_[index].weights[2];
+        (*n_links_image_) (x, y) += n_links_[index].weights[2];
+        (*n_links_image_) (x + 1, y + 1) += n_links_[index].weights[2];
       }
 
       if (x < image_width_1_) {
-        (*n_links_image_)(x, y) += n_links_[index].weights[3];
-        (*n_links_image_)(x + 1, y) += n_links_[index].weights[3];
+        (*n_links_image_) (x, y) += n_links_[index].weights[3];
+        (*n_links_image_) (x + 1, y) += n_links_[index].weights[3];
       }
 
       // TLinks cloud
       pcl::segmentation::grabcut::Color& tlink_point = (*t_links_image_)[index];
       pcl::segmentation::grabcut::Color& gmm_point = (*gmm_image_)[index];
       float& alpha_point = (*alpha_image_)[index];
-      double red = pow(graph_.getSourceEdgeCapacity(index) / L_, 0.25);   // red
-      double green = pow(graph_.getTargetEdgeCapacity(index) / L_, 0.25); // green
-      tlink_point.r = static_cast<float>(red);
-      tlink_point.g = static_cast<float>(green);
+      double red = pow (graph_.getSourceEdgeCapacity (index) / L_, 0.25);   // red
+      double green = pow (graph_.getTargetEdgeCapacity (index) / L_, 0.25); // green
+      tlink_point.r = static_cast<float> (red);
+      tlink_point.g = static_cast<float> (green);
       gmm_point.b = tlink_point.b = 0;
       // GMM cloud and Alpha cloud
       if (hard_segmentation_[index] == SegmentationForeground) {
         gmm_point.r =
-            static_cast<float>(GMM_component_[index] + 1) / static_cast<float>(K_);
+            static_cast<float> (GMM_component_[index] + 1) / static_cast<float> (K_);
         alpha_point = 0;
       }
       else {
         gmm_point.g =
-            static_cast<float>(GMM_component_[index] + 1) / static_cast<float>(K_);
+            static_cast<float> (GMM_component_[index] + 1) / static_cast<float> (K_);
         alpha_point = 0.75;
       }
     }
@@ -228,32 +229,32 @@ GrabCutHelper::buildImages()
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 void
-GrabCutHelper::display(int display_type)
+GrabCutHelper::display (int display_type)
 {
   switch (display_type) {
   case 0:
-    glDrawPixels(image_->width, image_->height, GL_RGB, GL_FLOAT, &((*image_)[0]));
+    glDrawPixels (image_->width, image_->height, GL_RGB, GL_FLOAT, &((*image_)[0]));
     break;
 
   case 1:
-    glDrawPixels(
+    glDrawPixels (
         gmm_image_->width, gmm_image_->height, GL_RGB, GL_FLOAT, &((*gmm_image_)[0]));
     break;
 
   case 2:
-    glDrawPixels(n_links_image_->width,
-                 n_links_image_->height,
-                 GL_LUMINANCE,
-                 GL_FLOAT,
-                 &((*n_links_image_)[0]));
+    glDrawPixels (n_links_image_->width,
+                  n_links_image_->height,
+                  GL_LUMINANCE,
+                  GL_FLOAT,
+                  &((*n_links_image_)[0]));
     break;
 
   case 3:
-    glDrawPixels(t_links_image_->width,
-                 t_links_image_->height,
-                 GL_RGB,
-                 GL_FLOAT,
-                 &((*t_links_image_)[0]));
+    glDrawPixels (t_links_image_->width,
+                  t_links_image_->height,
+                  GL_RGB,
+                  GL_FLOAT,
+                  &((*t_links_image_)[0]));
     break;
 
   default:
@@ -266,11 +267,11 @@ GrabCutHelper::display(int display_type)
 void
 GrabCutHelper::overlayAlpha()
 {
-  glDrawPixels(alpha_image_->width,
-               alpha_image_->height,
-               GL_ALPHA,
-               GL_FLOAT,
-               &((*alpha_image_)[0]));
+  glDrawPixels (alpha_image_->width,
+                alpha_image_->height,
+                GL_ALPHA,
+                GL_FLOAT,
+                &((*alpha_image_)[0]));
 }
 
 /* GUI interface */
@@ -290,28 +291,28 @@ pcl::segmentation::grabcut::Image::Ptr display_image;
 void
 display ()
 {
-  glClear(GL_COLOR_BUFFER_BIT);
+  glClear (GL_COLOR_BUFFER_BIT);
 
   if (display_type == -1)
-    glDrawPixels(display_image->width,
-                 display_image->height,
-                 GL_RGB,
-                 GL_FLOAT,
-                 &((*display_image)[0]));
+    glDrawPixels (display_image->width,
+                  display_image->height,
+                  GL_RGB,
+                  GL_FLOAT,
+                  &((*display_image)[0]));
   else
-    grabcut.display(display_type);
+    grabcut.display (display_type);
 
   if (show_mask) {
     grabcut.overlayAlpha();
   }
 
   if (box) {
-    glColor4f(1, 1, 1, 1);
-    glBegin(GL_LINE_LOOP);
-    glVertex2d(xstart, ystart);
-    glVertex2d(xstart, yend);
-    glVertex2d(xend, yend);
-    glVertex2d(xend, ystart);
+    glColor4f (1, 1, 1, 1);
+    glBegin (GL_LINE_LOOP);
+    glVertex2d (xstart, ystart);
+    glVertex2d (xstart, yend);
+    glVertex2d (xend, yend);
+    glVertex2d (xend, ystart);
     glEnd();
   }
 
@@ -332,7 +333,7 @@ idle_callback ()
 
   if (!changed) {
     refining_ = false;
-    glutIdleFunc(nullptr);
+    glutIdleFunc (nullptr);
   }
 }
 
@@ -350,11 +351,11 @@ motion_callback (int x, int y)
 
   if (initialized) {
     if (left)
-      grabcut.setTrimap(
+      grabcut.setTrimap (
           x - 2, y - 2, x + 2, y + 2, pcl::segmentation::grabcut::TrimapForeground);
 
     if (right)
-      grabcut.setTrimap(
+      grabcut.setTrimap (
           x - 2, y - 2, x + 2, y + 2, pcl::segmentation::grabcut::TrimapForeground);
 
     glutPostRedisplay();
@@ -388,7 +389,7 @@ mouse_callback (int button, int state, int x, int y)
       else {
         xend = x;
         yend = y;
-        grabcut.setBackgroundPointsIndices(xstart, ystart, xend, yend);
+        grabcut.setBackgroundPointsIndices (xstart, ystart, xend, yend);
         box = false;
         initialized = true;
         show_mask = true;
@@ -446,7 +447,7 @@ keyboard_callback (unsigned char key, int, int)
     break;
   case 'r': // run GrabCut refinement
     refining_ = true;
-    glutIdleFunc(idle_callback);
+    glutIdleFunc (idle_callback);
     break;
   case 'o': // run one step of GrabCut refinement
     grabcut.refineOnce();
@@ -464,12 +465,12 @@ keyboard_callback (unsigned char key, int, int)
 #if defined(FREEGLUT) || defined(GLUI_OPENGLUT)
     glutLeaveMainLoop();
 #else
-    exit(0);
+    exit (0);
 #endif
     break;
   case 27:
     refining_ = false;
-    glutIdleFunc(nullptr);
+    glutIdleFunc (nullptr);
   default:
     break;
   }
@@ -482,7 +483,7 @@ main (int argc, char** argv)
 {
   // Parse the command line arguments for .pcd files
   std::vector<int> parsed_file_indices =
-      pcl::console::parse_file_extension_argument(argc, argv, ".pcd");
+      pcl::console::parse_file_extension_argument (argc, argv, ".pcd");
   if (parsed_file_indices.empty()) {
     // clang-format off
     pcl::console::print_error("Need at least an input PCD file (e.g. scene.pcd) to continue!\n\n");
@@ -494,27 +495,27 @@ main (int argc, char** argv)
   pcl::PCDReader reader;
   // Test the header
   pcl::PCLPointCloud2 dummy;
-  reader.readHeader(argv[parsed_file_indices[0]], dummy);
-  pcl::PointCloud<pcl::PointXYZRGB>::Ptr scene(new pcl::PointCloud<pcl::PointXYZRGB>);
-  if (pcl::getFieldIndex(dummy, "rgba") != -1) {
-    if (pcl::io::loadPCDFile(argv[parsed_file_indices[0]], *scene) < 0) {
-      pcl::console::print_error(stderr, "[error]\n");
+  reader.readHeader (argv[parsed_file_indices[0]], dummy);
+  pcl::PointCloud<pcl::PointXYZRGB>::Ptr scene (new pcl::PointCloud<pcl::PointXYZRGB>);
+  if (pcl::getFieldIndex (dummy, "rgba") != -1) {
+    if (pcl::io::loadPCDFile (argv[parsed_file_indices[0]], *scene) < 0) {
+      pcl::console::print_error (stderr, "[error]\n");
       return -2;
     }
   }
-  else if (pcl::getFieldIndex(dummy, "rgb") != -1) {
-    if (pcl::io::loadPCDFile(argv[parsed_file_indices[0]], *scene) < 0) {
-      pcl::console::print_error(stderr, "[error]\n");
+  else if (pcl::getFieldIndex (dummy, "rgb") != -1) {
+    if (pcl::io::loadPCDFile (argv[parsed_file_indices[0]], *scene) < 0) {
+      pcl::console::print_error (stderr, "[error]\n");
       return -2;
     }
   }
   else {
-    pcl::console::print_error(stderr, "[No RGB data found!]\n");
+    pcl::console::print_error (stderr, "[No RGB data found!]\n");
     return -1;
   }
 
   if (scene->isOrganized()) {
-    pcl::console::print_highlight("Enabling 2D image viewer mode.\n");
+    pcl::console::print_highlight ("Enabling 2D image viewer mode.\n");
   }
 
   width = scene->width;
@@ -522,47 +523,47 @@ main (int argc, char** argv)
 
   display_type = -1;
 
-  display_image.reset(
-      new pcl::segmentation::grabcut::Image(scene->width, scene->height));
-  pcl::PointCloud<pcl::PointXYZRGB>::Ptr tmp(
-      new pcl::PointCloud<pcl::PointXYZRGB>(scene->width, scene->height));
+  display_image.reset (
+      new pcl::segmentation::grabcut::Image (scene->width, scene->height));
+  pcl::PointCloud<pcl::PointXYZRGB>::Ptr tmp (
+      new pcl::PointCloud<pcl::PointXYZRGB> (scene->width, scene->height));
 
   if (scene->isOrganized()) {
     std::uint32_t height_1 = scene->height - 1;
     for (std::size_t i = 0; i < scene->height; ++i) {
       for (std::size_t j = 0; j < scene->width; ++j) {
-        const pcl::PointXYZRGB& p = (*scene)(j, i);
+        const pcl::PointXYZRGB& p = (*scene) (j, i);
         std::size_t reverse_index = (height_1 - i) * scene->width + j;
-        (*display_image)[reverse_index].r = static_cast<float>(p.r) / 255.0;
-        (*display_image)[reverse_index].g = static_cast<float>(p.g) / 255.0;
-        (*display_image)[reverse_index].b = static_cast<float>(p.b) / 255.0;
+        (*display_image)[reverse_index].r = static_cast<float> (p.r) / 255.0;
+        (*display_image)[reverse_index].g = static_cast<float> (p.g) / 255.0;
+        (*display_image)[reverse_index].b = static_cast<float> (p.b) / 255.0;
         (*tmp)[reverse_index] = p;
       }
     }
   }
 
-  grabcut.setInputCloud(tmp);
+  grabcut.setInputCloud (tmp);
 
-  glutInit(&argc, argv);
-  glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
+  glutInit (&argc, argv);
+  glutInitDisplayMode (GLUT_DOUBLE | GLUT_RGB);
 
-  glutInitWindowSize(width, height);
-  glutInitWindowPosition(100, 100);
+  glutInitWindowSize (width, height);
+  glutInitWindowPosition (100, 100);
 
-  glutCreateWindow("GrabCut");
+  glutCreateWindow ("GrabCut");
 
-  glOrtho(0, width, 0, height, -1, 1);
+  glOrtho (0, width, 0, height, -1, 1);
 
   // set the background color to black (RGBA)
-  glClearColor(0.0, 0.0, 0.0, 0.0);
-  glEnable(GL_TEXTURE_2D);
-  glEnable(GL_BLEND);
-  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  glClearColor (0.0, 0.0, 0.0, 0.0);
+  glEnable (GL_TEXTURE_2D);
+  glEnable (GL_BLEND);
+  glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-  glutDisplayFunc(display);
-  glutMouseFunc(mouse_callback);
-  glutMotionFunc(motion_callback);
-  glutKeyboardFunc(keyboard_callback);
+  glutDisplayFunc (display);
+  glutMouseFunc (mouse_callback);
+  glutMotionFunc (motion_callback);
+  glutKeyboardFunc (keyboard_callback);
 
   glutMainLoop();
 

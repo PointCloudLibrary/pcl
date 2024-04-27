@@ -18,12 +18,12 @@
 
 ON_Cone::ON_Cone() { height = 0.0; }
 
-ON_Cone::ON_Cone(const ON_Plane& p, double h, double r) { Create(p, h, r); }
+ON_Cone::ON_Cone (const ON_Plane& p, double h, double r) { Create (p, h, r); }
 
 ON_Cone::~ON_Cone() {}
 
 ON_BOOL32
-ON_Cone::Create(const ON_Plane& p, double h, double r)
+ON_Cone::Create (const ON_Plane& p, double h, double r)
 {
   plane = p;
   height = h;
@@ -32,10 +32,7 @@ ON_Cone::Create(const ON_Plane& p, double h, double r)
 }
 
 ON_BOOL32
-ON_Cone::IsValid() const
-{
-  return (plane.IsValid() && height != 0.0 && radius != 0.0);
-}
+ON_Cone::IsValid() const { return (plane.IsValid() && height != 0.0 && radius != 0.0); }
 
 const ON_3dVector&
 ON_Cone::Axis() const
@@ -58,7 +55,7 @@ ON_Cone::BasePoint() const
 double
 ON_Cone::AngleInRadians() const
 {
-  return height == 0.0 ? (radius != 0.0 ? ON_PI : 0.0) : atan(radius / height);
+  return height == 0.0 ? (radius != 0.0 ? ON_PI : 0.0) : atan (radius / height);
 }
 
 double
@@ -68,10 +65,10 @@ ON_Cone::AngleInDegrees() const
 }
 
 ON_Circle
-ON_Cone::CircleAt(double height_parameter) const
+ON_Cone::CircleAt (double height_parameter) const
 {
-  ON_Circle c(plane, radius);
-  c.Translate(height_parameter * plane.zaxis);
+  ON_Circle c (plane, radius);
+  c.Translate (height_parameter * plane.zaxis);
   if (height != 0.0)
     c.radius *= height_parameter / height;
   else if (height_parameter == 0.0)
@@ -80,45 +77,45 @@ ON_Cone::CircleAt(double height_parameter) const
 }
 
 ON_Line
-ON_Cone::LineAt(double radial_parameter) const
+ON_Cone::LineAt (double radial_parameter) const
 {
-  return ON_Line(PointAt(radial_parameter, height), ApexPoint());
+  return ON_Line (PointAt (radial_parameter, height), ApexPoint());
 }
 
 ON_3dPoint
-ON_Cone::PointAt(double radial_parameter, double height_parameter) const
+ON_Cone::PointAt (double radial_parameter, double height_parameter) const
 {
   double r;
   if (height != 0.0)
     r = (radius / height) * height_parameter;
   else
     r = (height_parameter == 0.0) ? 0.0 : radius;
-  return plane.PointAt(r * cos(radial_parameter), r * sin(radial_parameter)) +
+  return plane.PointAt (r * cos (radial_parameter), r * sin (radial_parameter)) +
          height_parameter * plane.zaxis;
 }
 
 ON_3dVector
-ON_Cone::NormalAt(double radial_parameter, double) const
+ON_Cone::NormalAt (double radial_parameter, double) const
 {
-  double s = sin(radial_parameter);
-  double c = cos(radial_parameter);
+  double s = sin (radial_parameter);
+  double c = cos (radial_parameter);
   if (radius < 0.) {
     c = -c;
     s = -s;
   }
   ON_3dVector ds = c * plane.yaxis - s * plane.xaxis;
   ON_3dVector N =
-      ON_CrossProduct(((radius < 0.0) ? -ds : ds),
-                      plane.PointAt(radius * c, radius * s, height) - plane.origin);
+      ON_CrossProduct (((radius < 0.0) ? -ds : ds),
+                       plane.PointAt (radius * c, radius * s, height) - plane.origin);
   N.Unitize();
   return N;
 }
 
 ON_BOOL32
-ON_Cone::Transform(const ON_Xform& xform)
+ON_Cone::Transform (const ON_Xform& xform)
 {
-  ON_Circle xc(plane, radius);
-  ON_BOOL32 rc = xc.Transform(xform);
+  ON_Circle xc (plane, radius);
+  ON_BOOL32 rc = xc.Transform (xform);
   if (rc) {
     ON_3dPoint xH = xform * (plane.origin + height * plane.zaxis);
     double xh = (xH - xc.plane.origin) * xc.plane.zaxis;
@@ -130,9 +127,9 @@ ON_Cone::Transform(const ON_Xform& xform)
 }
 
 bool
-ON_Cone::ClosestPointTo(ON_3dPoint point,
-                        double* radial_parameter,
-                        double* height_parameter) const
+ON_Cone::ClosestPointTo (ON_3dPoint point,
+                         double* radial_parameter,
+                         double* height_parameter) const
 {
   // untested code
 
@@ -144,7 +141,7 @@ ON_Cone::ClosestPointTo(ON_3dPoint point,
   double z = v * plane.zaxis;
 
   if (radial_parameter) {
-    double a = (0.0 == y && 0.0 == x) ? 0.0 : atan2(y, x);
+    double a = (0.0 == y && 0.0 == x) ? 0.0 : atan2 (y, x);
 
     if (a > 2.0 * ON_PI) {
       a -= 2.0 * ON_PI;
@@ -167,9 +164,9 @@ ON_Cone::ClosestPointTo(ON_3dPoint point,
     v.Unitize();
     v.x *= radius;
     v.y *= radius;
-    ON_Line line(ON_origin,
-                 v.x * plane.xaxis + v.y * plane.yaxis + height * plane.zaxis);
-    rc = line.ClosestPointTo(point, &z);
+    ON_Line line (ON_origin,
+                  v.x * plane.xaxis + v.y * plane.yaxis + height * plane.zaxis);
+    rc = line.ClosestPointTo (point, &z);
     if (rc) {
       *height_parameter = z * height;
     }
@@ -180,7 +177,7 @@ ON_Cone::ClosestPointTo(ON_3dPoint point,
 
 // returns point on cylinder that is closest to given point
 ON_3dPoint
-ON_Cone::ClosestPointTo(ON_3dPoint point) const
+ON_Cone::ClosestPointTo (ON_3dPoint point) const
 {
   // untested code
 
@@ -198,60 +195,60 @@ ON_Cone::ClosestPointTo(ON_3dPoint point) const
   v.Unitize();
   v.x *= radius;
   v.y *= radius;
-  ON_Line line(ON_origin, v.x * plane.xaxis + v.y * plane.yaxis + height * plane.zaxis);
-  return line.ClosestPointTo(point);
+  ON_Line line (ON_origin,
+                v.x * plane.xaxis + v.y * plane.yaxis + height * plane.zaxis);
+  return line.ClosestPointTo (point);
 }
 
 ON_BOOL32
-ON_Cone::Rotate(double sin_angle, double cos_angle, const ON_3dVector& axis_of_rotation)
+ON_Cone::Rotate (double sin_angle,
+                 double cos_angle,
+                 const ON_3dVector& axis_of_rotation)
 {
-  return Rotate(sin_angle, cos_angle, axis_of_rotation, plane.origin);
+  return Rotate (sin_angle, cos_angle, axis_of_rotation, plane.origin);
 }
 
 ON_BOOL32
-ON_Cone::Rotate(double angle, const ON_3dVector& axis_of_rotation)
+ON_Cone::Rotate (double angle, const ON_3dVector& axis_of_rotation)
 {
-  return Rotate(sin(angle), cos(angle), axis_of_rotation, plane.origin);
+  return Rotate (sin (angle), cos (angle), axis_of_rotation, plane.origin);
 }
 
 // rotate plane about a point and axis
 ON_BOOL32
-ON_Cone::Rotate(double sin_angle,
-                double cos_angle,
-                const ON_3dVector& axis_of_rotation,
-                const ON_3dPoint& center_of_rotation)
+ON_Cone::Rotate (double sin_angle,
+                 double cos_angle,
+                 const ON_3dVector& axis_of_rotation,
+                 const ON_3dPoint& center_of_rotation)
 {
-  return plane.Rotate(sin_angle, cos_angle, axis_of_rotation, center_of_rotation);
+  return plane.Rotate (sin_angle, cos_angle, axis_of_rotation, center_of_rotation);
 }
 
 ON_BOOL32
-ON_Cone::Rotate(double angle,            // angle in radians
-                const ON_3dVector& axis, // axis of rotation
-                const ON_3dPoint& point  // center of rotation
+ON_Cone::Rotate (double angle,            // angle in radians
+                 const ON_3dVector& axis, // axis of rotation
+                 const ON_3dPoint& point  // center of rotation
 )
 {
-  return Rotate(sin(angle), cos(angle), axis, point);
+  return Rotate (sin (angle), cos (angle), axis, point);
 }
 
 ON_BOOL32
-ON_Cone::Translate(const ON_3dVector& delta)
-{
-  return plane.Translate(delta);
-}
+ON_Cone::Translate (const ON_3dVector& delta) { return plane.Translate (delta); }
 
 int
-ON_Cone::GetNurbForm(ON_NurbsSurface& s) const
+ON_Cone::GetNurbForm (ON_NurbsSurface& s) const
 {
   int rc = 0;
   if (IsValid()) {
-    ON_Circle c = CircleAt(height);
+    ON_Circle c = CircleAt (height);
     ON_NurbsCurve n;
-    c.GetNurbForm(n);
+    c.GetNurbForm (n);
     ON_3dPoint apex = ApexPoint();
     ON_4dPoint cv;
     int i, j0, j1;
 
-    s.Create(3, true, 3, 2, 9, 2);
+    s.Create (3, true, 3, 2, 9, 2);
     for (i = 0; i < 10; i++)
       s.m_knot[0][i] = n.m_knot[i];
 
@@ -269,12 +266,12 @@ ON_Cone::GetNurbForm(ON_NurbsSurface& s) const
     }
 
     for (i = 0; i < 9; i++) {
-      cv = n.CV(i);
-      s.SetCV(i, j1, ON::homogeneous_rational, &cv.x);
+      cv = n.CV (i);
+      s.SetCV (i, j1, ON::homogeneous_rational, &cv.x);
       cv.x = apex.x * cv.w;
       cv.y = apex.y * cv.w;
       cv.z = apex.z * cv.w;
-      s.SetCV(i, j0, cv);
+      s.SetCV (i, j0, cv);
     }
     rc = 2;
   }
@@ -282,7 +279,7 @@ ON_Cone::GetNurbForm(ON_NurbsSurface& s) const
 }
 
 ON_RevSurface*
-ON_Cone::RevSurfaceForm(ON_RevSurface* srf) const
+ON_Cone::RevSurfaceForm (ON_RevSurface* srf) const
 {
   if (srf)
     srf->Destroy();
@@ -291,17 +288,17 @@ ON_Cone::RevSurfaceForm(ON_RevSurface* srf) const
     ON_Line line;
     ON_Interval line_domain;
     if (height >= 0.0)
-      line_domain.Set(0.0, height);
+      line_domain.Set (0.0, height);
     else
-      line_domain.Set(height, 0.0);
-    line.from = PointAt(0.0, line_domain[0]);
-    line.to = PointAt(0.0, line_domain[1]);
-    ON_LineCurve* line_curve = new ON_LineCurve(line, line_domain[0], line_domain[1]);
+      line_domain.Set (height, 0.0);
+    line.from = PointAt (0.0, line_domain[0]);
+    line.to = PointAt (0.0, line_domain[1]);
+    ON_LineCurve* line_curve = new ON_LineCurve (line, line_domain[0], line_domain[1]);
     if (srf)
       pRevSurface = srf;
     else
       pRevSurface = new ON_RevSurface();
-    pRevSurface->m_angle.Set(0.0, 2.0 * ON_PI);
+    pRevSurface->m_angle.Set (0.0, 2.0 * ON_PI);
     pRevSurface->m_t = pRevSurface->m_angle;
     pRevSurface->m_curve = line_curve;
     pRevSurface->m_axis.from = plane.origin;
@@ -309,7 +306,7 @@ ON_Cone::RevSurfaceForm(ON_RevSurface* srf) const
     pRevSurface->m_bTransposed = false;
     pRevSurface->m_bbox.m_min = plane.origin;
     pRevSurface->m_bbox.m_max = plane.origin;
-    pRevSurface->m_bbox.Union(CircleAt(height).BoundingBox());
+    pRevSurface->m_bbox.Union (CircleAt (height).BoundingBox());
   }
   return pRevSurface;
 }

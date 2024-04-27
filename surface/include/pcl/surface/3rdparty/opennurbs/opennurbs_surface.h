@@ -42,7 +42,7 @@ class ON_CurveProxy;
 class ON_Surface;
 
 class PCL_EXPORTS ON_CLASS ON_Surface : public ON_Geometry {
-  ON_OBJECT_DECLARE(ON_Surface);
+  ON_OBJECT_DECLARE (ON_Surface);
 
 public:
   // virtual ON_Object::DestroyRuntimeCache override
@@ -74,9 +74,9 @@ public:
 
 public:
   ON_Surface();
-  ON_Surface(const ON_Surface&);
+  ON_Surface (const ON_Surface&);
   ON_Surface&
-  operator=(const ON_Surface&);
+  operator= (const ON_Surface&);
   virtual ~ON_Surface();
 
   // virtual ON_Object::SizeOf override
@@ -122,7 +122,7 @@ public:
     ON_Brep::Create( ON_Surface&* )
   */
   ON_BOOL32
-  HasBrepForm () const;
+  HasBrepForm() const;
 
   /*
   Description:
@@ -875,7 +875,7 @@ ON_DLL_TEMPLATE template class ON_CLASS ON_SimpleArray<ON_Surface*>;
 
 class ON_CLASS ON_SurfaceArray : public ON_SimpleArray<ON_Surface*> {
 public:
-  ON_SurfaceArray(int = 0);
+  ON_SurfaceArray (int = 0);
   ~ON_SurfaceArray();
 
   ON_BOOL32

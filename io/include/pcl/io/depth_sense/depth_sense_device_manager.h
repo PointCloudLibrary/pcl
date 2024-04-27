@@ -66,9 +66,9 @@ public:
   {
     static Ptr instance;
     if (!instance) {
-      std::lock_guard<std::mutex> lock(mutex_);
+      std::lock_guard<std::mutex> lock (mutex_);
       if (!instance)
-        instance.reset(new DepthSenseDeviceManager);
+        instance.reset (new DepthSenseDeviceManager);
     }
     return (instance);
   }
@@ -122,7 +122,7 @@ private:
   inline bool
   isCaptured (const std::string& sn) const
   {
-    return (captured_devices_.count(sn) != 0);
+    return (captured_devices_.count (sn) != 0);
   }
 
   DepthSense::Context context_;

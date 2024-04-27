@@ -45,7 +45,7 @@ template <class Type>
 void
 read (std::istream& stream, Type& value)
 {
-  stream.read(reinterpret_cast<char*>(&value), sizeof(value));
+  stream.read (reinterpret_cast<char*> (&value), sizeof (value));
 }
 
 /** \brief Function for reading data arrays from a stream. */
@@ -54,7 +54,7 @@ void
 read (std::istream& stream, Type* value, int nr_values)
 {
   for (int value_index = 0; value_index < nr_values; ++value_index) {
-    read(stream, value[value_index]);
+    read (stream, value[value_index]);
   }
 }
 
@@ -63,7 +63,7 @@ template <class Type>
 void
 write (std::ostream& stream, Type value)
 {
-  stream.write(reinterpret_cast<char*>(&value), sizeof(value));
+  stream.write (reinterpret_cast<char*> (&value), sizeof (value));
 }
 
 /** \brief Function for writing data arrays to a stream. */
@@ -72,7 +72,7 @@ void
 write (std::ostream& stream, Type* value, int nr_values)
 {
   for (int value_index = 0; value_index < nr_values; ++value_index) {
-    write(stream, value[value_index]);
+    write (stream, value[value_index]);
   }
 }
 
@@ -97,10 +97,10 @@ struct PCL_EXPORTS RegionXY {
   void
   serialize (std::ostream& stream) const
   {
-    write(stream, x);
-    write(stream, y);
-    write(stream, width);
-    write(stream, height);
+    write (stream, x);
+    write (stream, y);
+    write (stream, width);
+    write (stream, height);
   }
 
   /** \brief Deserializes the object from the specified stream.
@@ -108,10 +108,10 @@ struct PCL_EXPORTS RegionXY {
   void
   deserialize (::std::istream& stream)
   {
-    read(stream, x);
-    read(stream, y);
-    read(stream, width);
-    read(stream, height);
+    read (stream, x);
+    read (stream, y);
+    read (stream, width);
+    read (stream, height);
   }
 };
 } // namespace pcl

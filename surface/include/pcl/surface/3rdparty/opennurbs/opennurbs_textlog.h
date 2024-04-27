@@ -36,7 +36,7 @@ public:
               pointer must remain valid as long as the text
               log is in use.
   */
-  ON_TextLog(FILE* fp); // dump to open ASCII text file
+  ON_TextLog (FILE* fp); // dump to open ASCII text file
 
   /*
   Description:
@@ -45,7 +45,7 @@ public:
     s - [in] String that must exist as long as
              the text log is in use.
   */
-  ON_TextLog(ON_wString& s);
+  ON_TextLog (ON_wString& s);
 
   virtual ~ON_TextLog();
 
@@ -208,29 +208,29 @@ public:
   );
 
   ON_TextLog&
-  operator<<(const char*);
+  operator<< (const char*);
   ON_TextLog&
-  operator<<(char);
+  operator<< (char);
   ON_TextLog&
-  operator<<(short);
+  operator<< (short);
   ON_TextLog&
-  operator<<(int);
+  operator<< (int);
   ON_TextLog&
-  operator<<(float);
+  operator<< (float);
   ON_TextLog&
-  operator<<(double);
+  operator<< (double);
   ON_TextLog&
-  operator<<(const ON_2dPoint&);
+  operator<< (const ON_2dPoint&);
   ON_TextLog&
-  operator<<(const ON_3dPoint&);
+  operator<< (const ON_3dPoint&);
   ON_TextLog&
-  operator<<(const ON_4dPoint&);
+  operator<< (const ON_4dPoint&);
   ON_TextLog&
-  operator<<(const ON_2dVector&);
+  operator<< (const ON_2dVector&);
   ON_TextLog&
-  operator<<(const ON_3dVector&);
+  operator<< (const ON_3dVector&);
   ON_TextLog&
-  operator<<(const ON_Xform&);
+  operator<< (const ON_Xform&);
 
 protected:
   FILE* m_pFile;
@@ -278,9 +278,9 @@ private:
 
 private:
   // no implementation
-  ON_TextLog(const ON_TextLog&);
+  ON_TextLog (const ON_TextLog&);
   ON_TextLog&
-  operator=(const ON_TextLog&);
+  operator= (const ON_TextLog&);
 };
 
 #endif

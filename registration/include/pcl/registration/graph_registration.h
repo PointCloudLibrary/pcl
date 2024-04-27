@@ -58,8 +58,8 @@ public:
 
   /** \brief Empty constructor */
   GraphRegistration()
-  : graph_handler_(new GraphHandler)
-  , last_aligned_vertex_(boost::graph_traits<GraphT>::null_vertex())
+  : graph_handler_ (new GraphHandler)
+  , last_aligned_vertex_ (boost::graph_traits<GraphT>::null_vertex())
   , last_vertices_()
   {}
 
@@ -72,7 +72,7 @@ public:
   addPointCloud (const typename pcl::PointCloud<PointT>::ConstPtr& cloud,
                  const Eigen::Matrix4f& pose)
   {
-    last_vertices_.push_back(graph_handler_->addPointCloud(cloud, pose));
+    last_vertices_.push_back (graph_handler_->addPointCloud (cloud, pose));
   }
 
   /** \brief Set the graph handler */

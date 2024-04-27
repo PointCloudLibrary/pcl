@@ -29,7 +29,7 @@ struct EIGEN_ALIGN16 ParticleXYZRPY : public _ParticleXYZRPY {
     data[3] = 1.0f;
   }
 
-  inline ParticleXYZRPY(float _x, float _y, float _z)
+  inline ParticleXYZRPY (float _x, float _y, float _z)
   {
     x = _x;
     y = _y;
@@ -38,7 +38,7 @@ struct EIGEN_ALIGN16 ParticleXYZRPY : public _ParticleXYZRPY {
     data[3] = 1.0f;
   }
 
-  inline ParticleXYZRPY(
+  inline ParticleXYZRPY (
       float _x, float _y, float _z, float _roll, float _pitch, float _yaw)
   {
     x = _x;
@@ -59,9 +59,9 @@ struct EIGEN_ALIGN16 ParticleXYZRPY : public _ParticleXYZRPY {
   void
   sample (const std::vector<double>& mean, const std::vector<double>& cov)
   {
-    x += static_cast<float>(sampleNormal(mean[0], cov[0]));
-    y += static_cast<float>(sampleNormal(mean[1], cov[1]));
-    z += static_cast<float>(sampleNormal(mean[2], cov[2]));
+    x += static_cast<float> (sampleNormal (mean[0], cov[0]));
+    y += static_cast<float> (sampleNormal (mean[1], cov[1]));
+    z += static_cast<float> (sampleNormal (mean[2], cov[2]));
 
     // The roll, pitch, yaw space is not Euclidean, so if we sample roll,
     // pitch, and yaw independently, we bias our sampling in a complicated
@@ -75,32 +75,32 @@ struct EIGEN_ALIGN16 ParticleXYZRPY : public _ParticleXYZRPY {
     // is that our distribution's properties are consistent over the space
     // of rotations.
     Eigen::Matrix3f current_rotation;
-    current_rotation = getTransformation(x, y, z, roll, pitch, yaw).rotation();
-    Eigen::Quaternionf q_current_rotation(current_rotation);
+    current_rotation = getTransformation (x, y, z, roll, pitch, yaw).rotation();
+    Eigen::Quaternionf q_current_rotation (current_rotation);
 
     Eigen::Matrix3f mean_rotation;
     mean_rotation =
-        getTransformation(mean[0], mean[1], mean[2], mean[3], mean[4], mean[5])
+        getTransformation (mean[0], mean[1], mean[2], mean[3], mean[4], mean[5])
             .rotation();
-    Eigen::Quaternionf q_mean_rotation(mean_rotation);
+    Eigen::Quaternionf q_mean_rotation (mean_rotation);
 
     // Scales 1.0 radians of variance in RPY sampling into equivalent units for
     // quaternion sampling.
     constexpr float scale_factor = 0.2862;
 
-    float a = sampleNormal(0, scale_factor * cov[3]);
-    float b = sampleNormal(0, scale_factor * cov[4]);
-    float c = sampleNormal(0, scale_factor * cov[5]);
+    float a = sampleNormal (0, scale_factor * cov[3]);
+    float b = sampleNormal (0, scale_factor * cov[4]);
+    float c = sampleNormal (0, scale_factor * cov[5]);
 
-    Eigen::Vector4f vec_sample_mean_0(a, b, c, 1);
-    Eigen::Quaternionf q_sample_mean_0(vec_sample_mean_0);
+    Eigen::Vector4f vec_sample_mean_0 (a, b, c, 1);
+    Eigen::Quaternionf q_sample_mean_0 (vec_sample_mean_0);
     q_sample_mean_0.normalize();
 
     Eigen::Quaternionf q_sample_user_mean =
         q_sample_mean_0 * q_mean_rotation * q_current_rotation;
 
-    Eigen::Affine3f affine_R(q_sample_user_mean.toRotationMatrix());
-    pcl::getEulerAngles(affine_R, roll, pitch, yaw);
+    Eigen::Affine3f affine_R (q_sample_user_mean.toRotationMatrix());
+    pcl::getEulerAngles (affine_R, roll, pitch, yaw);
   }
 
   void
@@ -117,14 +117,14 @@ struct EIGEN_ALIGN16 ParticleXYZRPY : public _ParticleXYZRPY {
   inline Eigen::Affine3f
   toEigenMatrix () const
   {
-    return getTransformation(x, y, z, roll, pitch, yaw);
+    return getTransformation (x, y, z, roll, pitch, yaw);
   }
 
   static ParticleXYZRPY
   toState (const Eigen::Affine3f& trans)
   {
     float trans_x, trans_y, trans_z, trans_roll, trans_pitch, trans_yaw;
-    getTranslationAndEulerAngles(
+    getTranslationAndEulerAngles (
         trans, trans_x, trans_y, trans_z, trans_roll, trans_pitch, trans_yaw);
     return {trans_x, trans_y, trans_z, trans_roll, trans_pitch, trans_yaw};
   }
@@ -140,22 +140,22 @@ struct EIGEN_ALIGN16 ParticleXYZRPY : public _ParticleXYZRPY {
       wa.x += point->x * point->weight;
       wa.y += point->y * point->weight;
       wa.z += point->z * point->weight;
-      wa_pitch_cos = std::cos(point->pitch);
-      wa_roll_sin += wa_pitch_cos * std::sin(point->roll) * point->weight;
-      wa_roll_cos += wa_pitch_cos * std::cos(point->roll) * point->weight;
-      wa_pitch_sin += std::sin(point->pitch) * point->weight;
-      wa_yaw_sin += wa_pitch_cos * std::sin(point->yaw) * point->weight;
-      wa_yaw_cos += wa_pitch_cos * std::cos(point->yaw) * point->weight;
+      wa_pitch_cos = std::cos (point->pitch);
+      wa_roll_sin += wa_pitch_cos * std::sin (point->roll) * point->weight;
+      wa_roll_cos += wa_pitch_cos * std::cos (point->roll) * point->weight;
+      wa_pitch_sin += std::sin (point->pitch) * point->weight;
+      wa_yaw_sin += wa_pitch_cos * std::sin (point->yaw) * point->weight;
+      wa_yaw_cos += wa_pitch_cos * std::cos (point->yaw) * point->weight;
     }
-    wa.roll = std::atan2(wa_roll_sin, wa_roll_cos);
-    wa.pitch = std::asin(wa_pitch_sin);
-    wa.yaw = std::atan2(wa_yaw_sin, wa_yaw_cos);
+    wa.roll = std::atan2 (wa_roll_sin, wa_roll_cos);
+    wa.pitch = std::asin (wa_pitch_sin);
+    wa.yaw = std::atan2 (wa_yaw_sin, wa_yaw_cos);
     return wa;
   }
 
   // a[i]
   inline float
-  operator[](unsigned int i)
+  operator[] (unsigned int i)
   {
     switch (i) {
     case 0:
@@ -179,7 +179,7 @@ struct EIGEN_ALIGN16 ParticleXYZRPY : public _ParticleXYZRPY {
 };
 
 inline std::ostream&
-operator<<(std::ostream& os, const ParticleXYZRPY& p)
+operator<< (std::ostream& os, const ParticleXYZRPY& p)
 {
   os << "(" << p.x << "," << p.y << "," << p.z << "," << p.roll << "," << p.pitch << ","
      << p.yaw << ")";
@@ -188,21 +188,21 @@ operator<<(std::ostream& os, const ParticleXYZRPY& p)
 
 // a * k
 inline ParticleXYZRPY
-operator*(const ParticleXYZRPY& p, double val)
+operator* (const ParticleXYZRPY& p, double val)
 {
   pcl::tracking::ParticleXYZRPY newp;
-  newp.x = static_cast<float>(p.x * val);
-  newp.y = static_cast<float>(p.y * val);
-  newp.z = static_cast<float>(p.z * val);
-  newp.roll = static_cast<float>(p.roll * val);
-  newp.pitch = static_cast<float>(p.pitch * val);
-  newp.yaw = static_cast<float>(p.yaw * val);
+  newp.x = static_cast<float> (p.x * val);
+  newp.y = static_cast<float> (p.y * val);
+  newp.z = static_cast<float> (p.z * val);
+  newp.roll = static_cast<float> (p.roll * val);
+  newp.pitch = static_cast<float> (p.pitch * val);
+  newp.yaw = static_cast<float> (p.yaw * val);
   return (newp);
 }
 
 // a + b
 inline ParticleXYZRPY
-operator+(const ParticleXYZRPY& a, const ParticleXYZRPY& b)
+operator+ (const ParticleXYZRPY& a, const ParticleXYZRPY& b)
 {
   pcl::tracking::ParticleXYZRPY newp;
   newp.x = a.x + b.x;
@@ -216,7 +216,7 @@ operator+(const ParticleXYZRPY& a, const ParticleXYZRPY& b)
 
 // a - b
 inline ParticleXYZRPY
-operator-(const ParticleXYZRPY& a, const ParticleXYZRPY& b)
+operator- (const ParticleXYZRPY& a, const ParticleXYZRPY& b)
 {
   pcl::tracking::ParticleXYZRPY newp;
   newp.x = a.x - b.x;
@@ -256,7 +256,7 @@ struct EIGEN_ALIGN16 ParticleXYZR : public _ParticleXYZR {
     data[3] = 1.0f;
   }
 
-  inline ParticleXYZR(float _x, float _y, float _z)
+  inline ParticleXYZR (float _x, float _y, float _z)
   {
     x = _x;
     y = _y;
@@ -265,7 +265,7 @@ struct EIGEN_ALIGN16 ParticleXYZR : public _ParticleXYZR {
     data[3] = 1.0f;
   }
 
-  inline ParticleXYZR(float _x, float _y, float _z, float, float _pitch, float)
+  inline ParticleXYZR (float _x, float _y, float _z, float, float _pitch, float)
   {
     x = _x;
     y = _y;
@@ -285,11 +285,11 @@ struct EIGEN_ALIGN16 ParticleXYZR : public _ParticleXYZR {
   void
   sample (const std::vector<double>& mean, const std::vector<double>& cov)
   {
-    x += static_cast<float>(sampleNormal(mean[0], cov[0]));
-    y += static_cast<float>(sampleNormal(mean[1], cov[1]));
-    z += static_cast<float>(sampleNormal(mean[2], cov[2]));
+    x += static_cast<float> (sampleNormal (mean[0], cov[0]));
+    y += static_cast<float> (sampleNormal (mean[1], cov[1]));
+    z += static_cast<float> (sampleNormal (mean[2], cov[2]));
     roll = 0;
-    pitch += static_cast<float>(sampleNormal(mean[4], cov[4]));
+    pitch += static_cast<float> (sampleNormal (mean[4], cov[4]));
     yaw = 0;
   }
 
@@ -307,14 +307,14 @@ struct EIGEN_ALIGN16 ParticleXYZR : public _ParticleXYZR {
   inline Eigen::Affine3f
   toEigenMatrix () const
   {
-    return getTransformation(x, y, z, roll, pitch, yaw);
+    return getTransformation (x, y, z, roll, pitch, yaw);
   }
 
   static ParticleXYZR
   toState (const Eigen::Affine3f& trans)
   {
     float trans_x, trans_y, trans_z, trans_roll, trans_pitch, trans_yaw;
-    getTranslationAndEulerAngles(
+    getTranslationAndEulerAngles (
         trans, trans_x, trans_y, trans_z, trans_roll, trans_pitch, trans_yaw);
     return {trans_x, trans_y, trans_z, 0, trans_pitch, 0};
   }
@@ -329,17 +329,17 @@ struct EIGEN_ALIGN16 ParticleXYZR : public _ParticleXYZR {
       wa.x += point->x * point->weight;
       wa.y += point->y * point->weight;
       wa.z += point->z * point->weight;
-      wa_pitch_sin += std::sin(point->pitch) * point->weight;
+      wa_pitch_sin += std::sin (point->pitch) * point->weight;
     }
     wa.roll = 0.0;
-    wa.pitch = std::asin(wa_pitch_sin);
+    wa.pitch = std::asin (wa_pitch_sin);
     wa.yaw = 0.0;
     return wa;
   }
 
   // a[i]
   inline float
-  operator[](unsigned int i)
+  operator[] (unsigned int i)
   {
     switch (i) {
     case 0:
@@ -363,7 +363,7 @@ struct EIGEN_ALIGN16 ParticleXYZR : public _ParticleXYZR {
 };
 
 inline std::ostream&
-operator<<(std::ostream& os, const ParticleXYZR& p)
+operator<< (std::ostream& os, const ParticleXYZR& p)
 {
   os << "(" << p.x << "," << p.y << "," << p.z << "," << p.roll << "," << p.pitch << ","
      << p.yaw << ")";
@@ -372,21 +372,21 @@ operator<<(std::ostream& os, const ParticleXYZR& p)
 
 // a * k
 inline ParticleXYZR
-operator*(const ParticleXYZR& p, double val)
+operator* (const ParticleXYZR& p, double val)
 {
   pcl::tracking::ParticleXYZR newp;
-  newp.x = static_cast<float>(p.x * val);
-  newp.y = static_cast<float>(p.y * val);
-  newp.z = static_cast<float>(p.z * val);
-  newp.roll = static_cast<float>(p.roll * val);
-  newp.pitch = static_cast<float>(p.pitch * val);
-  newp.yaw = static_cast<float>(p.yaw * val);
+  newp.x = static_cast<float> (p.x * val);
+  newp.y = static_cast<float> (p.y * val);
+  newp.z = static_cast<float> (p.z * val);
+  newp.roll = static_cast<float> (p.roll * val);
+  newp.pitch = static_cast<float> (p.pitch * val);
+  newp.yaw = static_cast<float> (p.yaw * val);
   return (newp);
 }
 
 // a + b
 inline ParticleXYZR
-operator+(const ParticleXYZR& a, const ParticleXYZR& b)
+operator+ (const ParticleXYZR& a, const ParticleXYZR& b)
 {
   pcl::tracking::ParticleXYZR newp;
   newp.x = a.x + b.x;
@@ -400,7 +400,7 @@ operator+(const ParticleXYZR& a, const ParticleXYZR& b)
 
 // a - b
 inline ParticleXYZR
-operator-(const ParticleXYZR& a, const ParticleXYZR& b)
+operator- (const ParticleXYZR& a, const ParticleXYZR& b)
 {
   pcl::tracking::ParticleXYZR newp;
   newp.x = a.x - b.x;
@@ -440,7 +440,7 @@ struct EIGEN_ALIGN16 ParticleXYRPY : public _ParticleXYRPY {
     data[3] = 1.0f;
   }
 
-  inline ParticleXYRPY(float _x, float, float _z)
+  inline ParticleXYRPY (float _x, float, float _z)
   {
     x = _x;
     y = 0;
@@ -449,7 +449,8 @@ struct EIGEN_ALIGN16 ParticleXYRPY : public _ParticleXYRPY {
     data[3] = 1.0f;
   }
 
-  inline ParticleXYRPY(float _x, float, float _z, float _roll, float _pitch, float _yaw)
+  inline ParticleXYRPY (
+      float _x, float, float _z, float _roll, float _pitch, float _yaw)
   {
     x = _x;
     y = 0;
@@ -469,12 +470,12 @@ struct EIGEN_ALIGN16 ParticleXYRPY : public _ParticleXYRPY {
   void
   sample (const std::vector<double>& mean, const std::vector<double>& cov)
   {
-    x += static_cast<float>(sampleNormal(mean[0], cov[0]));
+    x += static_cast<float> (sampleNormal (mean[0], cov[0]));
     y = 0;
-    z += static_cast<float>(sampleNormal(mean[2], cov[2]));
-    roll += static_cast<float>(sampleNormal(mean[3], cov[3]));
-    pitch += static_cast<float>(sampleNormal(mean[4], cov[4]));
-    yaw += static_cast<float>(sampleNormal(mean[5], cov[5]));
+    z += static_cast<float> (sampleNormal (mean[2], cov[2]));
+    roll += static_cast<float> (sampleNormal (mean[3], cov[3]));
+    pitch += static_cast<float> (sampleNormal (mean[4], cov[4]));
+    yaw += static_cast<float> (sampleNormal (mean[5], cov[5]));
   }
 
   void
@@ -491,14 +492,14 @@ struct EIGEN_ALIGN16 ParticleXYRPY : public _ParticleXYRPY {
   inline Eigen::Affine3f
   toEigenMatrix () const
   {
-    return getTransformation(x, y, z, roll, pitch, yaw);
+    return getTransformation (x, y, z, roll, pitch, yaw);
   }
 
   static ParticleXYRPY
   toState (const Eigen::Affine3f& trans)
   {
     float trans_x, trans_y, trans_z, trans_roll, trans_pitch, trans_yaw;
-    getTranslationAndEulerAngles(
+    getTranslationAndEulerAngles (
         trans, trans_x, trans_y, trans_z, trans_roll, trans_pitch, trans_yaw);
     return {trans_x, 0, trans_z, trans_roll, trans_pitch, trans_yaw};
   }
@@ -513,23 +514,23 @@ struct EIGEN_ALIGN16 ParticleXYRPY : public _ParticleXYRPY {
     for (auto point = first; point != last; ++point) {
       wa.x += point->x * point->weight;
       wa.z += point->z * point->weight;
-      wa_pitch_cos = std::cos(point->pitch);
-      wa_roll_sin += wa_pitch_cos * std::sin(point->roll) * point->weight;
-      wa_roll_cos += wa_pitch_cos * std::cos(point->roll) * point->weight;
-      wa_pitch_sin += std::sin(point->pitch) * point->weight;
-      wa_yaw_sin += wa_pitch_cos * std::sin(point->yaw) * point->weight;
-      wa_yaw_cos += wa_pitch_cos * std::cos(point->yaw) * point->weight;
+      wa_pitch_cos = std::cos (point->pitch);
+      wa_roll_sin += wa_pitch_cos * std::sin (point->roll) * point->weight;
+      wa_roll_cos += wa_pitch_cos * std::cos (point->roll) * point->weight;
+      wa_pitch_sin += std::sin (point->pitch) * point->weight;
+      wa_yaw_sin += wa_pitch_cos * std::sin (point->yaw) * point->weight;
+      wa_yaw_cos += wa_pitch_cos * std::cos (point->yaw) * point->weight;
     }
     wa.y = 0;
-    wa.roll = std::atan2(wa_roll_sin, wa_roll_cos);
-    wa.pitch = std::asin(wa_pitch_sin);
-    wa.yaw = std::atan2(wa_yaw_sin, wa_yaw_cos);
+    wa.roll = std::atan2 (wa_roll_sin, wa_roll_cos);
+    wa.pitch = std::asin (wa_pitch_sin);
+    wa.yaw = std::atan2 (wa_yaw_sin, wa_yaw_cos);
     return wa;
   }
 
   // a[i]
   inline float
-  operator[](unsigned int i)
+  operator[] (unsigned int i)
   {
     switch (i) {
     case 0:
@@ -553,7 +554,7 @@ struct EIGEN_ALIGN16 ParticleXYRPY : public _ParticleXYRPY {
 };
 
 inline std::ostream&
-operator<<(std::ostream& os, const ParticleXYRPY& p)
+operator<< (std::ostream& os, const ParticleXYRPY& p)
 {
   os << "(" << p.x << "," << p.y << "," << p.z << "," << p.roll << "," << p.pitch << ","
      << p.yaw << ")";
@@ -562,21 +563,21 @@ operator<<(std::ostream& os, const ParticleXYRPY& p)
 
 // a * k
 inline ParticleXYRPY
-operator*(const ParticleXYRPY& p, double val)
+operator* (const ParticleXYRPY& p, double val)
 {
   pcl::tracking::ParticleXYRPY newp;
-  newp.x = static_cast<float>(p.x * val);
-  newp.y = static_cast<float>(p.y * val);
-  newp.z = static_cast<float>(p.z * val);
-  newp.roll = static_cast<float>(p.roll * val);
-  newp.pitch = static_cast<float>(p.pitch * val);
-  newp.yaw = static_cast<float>(p.yaw * val);
+  newp.x = static_cast<float> (p.x * val);
+  newp.y = static_cast<float> (p.y * val);
+  newp.z = static_cast<float> (p.z * val);
+  newp.roll = static_cast<float> (p.roll * val);
+  newp.pitch = static_cast<float> (p.pitch * val);
+  newp.yaw = static_cast<float> (p.yaw * val);
   return (newp);
 }
 
 // a + b
 inline ParticleXYRPY
-operator+(const ParticleXYRPY& a, const ParticleXYRPY& b)
+operator+ (const ParticleXYRPY& a, const ParticleXYRPY& b)
 {
   pcl::tracking::ParticleXYRPY newp;
   newp.x = a.x + b.x;
@@ -590,7 +591,7 @@ operator+(const ParticleXYRPY& a, const ParticleXYRPY& b)
 
 // a - b
 inline ParticleXYRPY
-operator-(const ParticleXYRPY& a, const ParticleXYRPY& b)
+operator- (const ParticleXYRPY& a, const ParticleXYRPY& b)
 {
   pcl::tracking::ParticleXYRPY newp;
   newp.x = a.x - b.x;
@@ -630,7 +631,7 @@ struct EIGEN_ALIGN16 ParticleXYRP : public _ParticleXYRP {
     data[3] = 1.0f;
   }
 
-  inline ParticleXYRP(float _x, float, float _z)
+  inline ParticleXYRP (float _x, float, float _z)
   {
     x = _x;
     y = 0;
@@ -639,7 +640,7 @@ struct EIGEN_ALIGN16 ParticleXYRP : public _ParticleXYRP {
     data[3] = 1.0f;
   }
 
-  inline ParticleXYRP(float _x, float, float _z, float, float _pitch, float _yaw)
+  inline ParticleXYRP (float _x, float, float _z, float, float _pitch, float _yaw)
   {
     x = _x;
     y = 0;
@@ -659,12 +660,12 @@ struct EIGEN_ALIGN16 ParticleXYRP : public _ParticleXYRP {
   void
   sample (const std::vector<double>& mean, const std::vector<double>& cov)
   {
-    x += static_cast<float>(sampleNormal(mean[0], cov[0]));
+    x += static_cast<float> (sampleNormal (mean[0], cov[0]));
     y = 0;
-    z += static_cast<float>(sampleNormal(mean[2], cov[2]));
+    z += static_cast<float> (sampleNormal (mean[2], cov[2]));
     roll = 0;
-    pitch += static_cast<float>(sampleNormal(mean[4], cov[4]));
-    yaw += static_cast<float>(sampleNormal(mean[5], cov[5]));
+    pitch += static_cast<float> (sampleNormal (mean[4], cov[4]));
+    yaw += static_cast<float> (sampleNormal (mean[5], cov[5]));
   }
 
   void
@@ -681,14 +682,14 @@ struct EIGEN_ALIGN16 ParticleXYRP : public _ParticleXYRP {
   inline Eigen::Affine3f
   toEigenMatrix () const
   {
-    return getTransformation(x, y, z, roll, pitch, yaw);
+    return getTransformation (x, y, z, roll, pitch, yaw);
   }
 
   static ParticleXYRP
   toState (const Eigen::Affine3f& trans)
   {
     float trans_x, trans_y, trans_z, trans_roll, trans_pitch, trans_yaw;
-    getTranslationAndEulerAngles(
+    getTranslationAndEulerAngles (
         trans, trans_x, trans_y, trans_z, trans_roll, trans_pitch, trans_yaw);
     return {trans_x, 0, trans_z, 0, trans_pitch, trans_yaw};
   }
@@ -702,21 +703,21 @@ struct EIGEN_ALIGN16 ParticleXYRP : public _ParticleXYRP {
     for (auto point = first; point != last; ++point) {
       wa.x += point->x * point->weight;
       wa.z += point->z * point->weight;
-      wa_pitch_cos = std::cos(point->pitch);
-      wa_pitch_sin += std::sin(point->pitch) * point->weight;
-      wa_yaw_sin += wa_pitch_cos * std::sin(point->yaw) * point->weight;
-      wa_yaw_cos += wa_pitch_cos * std::cos(point->yaw) * point->weight;
+      wa_pitch_cos = std::cos (point->pitch);
+      wa_pitch_sin += std::sin (point->pitch) * point->weight;
+      wa_yaw_sin += wa_pitch_cos * std::sin (point->yaw) * point->weight;
+      wa_yaw_cos += wa_pitch_cos * std::cos (point->yaw) * point->weight;
     }
     wa.y = 0.0;
     wa.roll = 0.0;
-    wa.pitch = std::asin(wa_pitch_sin);
-    wa.yaw = std::atan2(wa_yaw_sin, wa_yaw_cos);
+    wa.pitch = std::asin (wa_pitch_sin);
+    wa.yaw = std::atan2 (wa_yaw_sin, wa_yaw_cos);
     return wa;
   }
 
   // a[i]
   inline float
-  operator[](unsigned int i)
+  operator[] (unsigned int i)
   {
     switch (i) {
     case 0:
@@ -740,7 +741,7 @@ struct EIGEN_ALIGN16 ParticleXYRP : public _ParticleXYRP {
 };
 
 inline std::ostream&
-operator<<(std::ostream& os, const ParticleXYRP& p)
+operator<< (std::ostream& os, const ParticleXYRP& p)
 {
   os << "(" << p.x << "," << p.y << "," << p.z << "," << p.roll << "," << p.pitch << ","
      << p.yaw << ")";
@@ -749,21 +750,21 @@ operator<<(std::ostream& os, const ParticleXYRP& p)
 
 // a * k
 inline ParticleXYRP
-operator*(const ParticleXYRP& p, double val)
+operator* (const ParticleXYRP& p, double val)
 {
   pcl::tracking::ParticleXYRP newp;
-  newp.x = static_cast<float>(p.x * val);
-  newp.y = static_cast<float>(p.y * val);
-  newp.z = static_cast<float>(p.z * val);
-  newp.roll = static_cast<float>(p.roll * val);
-  newp.pitch = static_cast<float>(p.pitch * val);
-  newp.yaw = static_cast<float>(p.yaw * val);
+  newp.x = static_cast<float> (p.x * val);
+  newp.y = static_cast<float> (p.y * val);
+  newp.z = static_cast<float> (p.z * val);
+  newp.roll = static_cast<float> (p.roll * val);
+  newp.pitch = static_cast<float> (p.pitch * val);
+  newp.yaw = static_cast<float> (p.yaw * val);
   return (newp);
 }
 
 // a + b
 inline ParticleXYRP
-operator+(const ParticleXYRP& a, const ParticleXYRP& b)
+operator+ (const ParticleXYRP& a, const ParticleXYRP& b)
 {
   pcl::tracking::ParticleXYRP newp;
   newp.x = a.x + b.x;
@@ -777,7 +778,7 @@ operator+(const ParticleXYRP& a, const ParticleXYRP& b)
 
 // a - b
 inline ParticleXYRP
-operator-(const ParticleXYRP& a, const ParticleXYRP& b)
+operator- (const ParticleXYRP& a, const ParticleXYRP& b)
 {
   pcl::tracking::ParticleXYRP newp;
   newp.x = a.x - b.x;
@@ -817,7 +818,7 @@ struct EIGEN_ALIGN16 ParticleXYR : public _ParticleXYR {
     data[3] = 1.0f;
   }
 
-  inline ParticleXYR(float _x, float, float _z)
+  inline ParticleXYR (float _x, float, float _z)
   {
     x = _x;
     y = 0;
@@ -826,7 +827,7 @@ struct EIGEN_ALIGN16 ParticleXYR : public _ParticleXYR {
     data[3] = 1.0f;
   }
 
-  inline ParticleXYR(float _x, float, float _z, float, float _pitch, float)
+  inline ParticleXYR (float _x, float, float _z, float, float _pitch, float)
   {
     x = _x;
     y = 0;
@@ -846,11 +847,11 @@ struct EIGEN_ALIGN16 ParticleXYR : public _ParticleXYR {
   void
   sample (const std::vector<double>& mean, const std::vector<double>& cov)
   {
-    x += static_cast<float>(sampleNormal(mean[0], cov[0]));
+    x += static_cast<float> (sampleNormal (mean[0], cov[0]));
     y = 0;
-    z += static_cast<float>(sampleNormal(mean[2], cov[2]));
+    z += static_cast<float> (sampleNormal (mean[2], cov[2]));
     roll = 0;
-    pitch += static_cast<float>(sampleNormal(mean[4], cov[4]));
+    pitch += static_cast<float> (sampleNormal (mean[4], cov[4]));
     yaw = 0;
   }
 
@@ -868,14 +869,14 @@ struct EIGEN_ALIGN16 ParticleXYR : public _ParticleXYR {
   inline Eigen::Affine3f
   toEigenMatrix () const
   {
-    return getTransformation(x, y, z, roll, pitch, yaw);
+    return getTransformation (x, y, z, roll, pitch, yaw);
   }
 
   static ParticleXYR
   toState (const Eigen::Affine3f& trans)
   {
     float trans_x, trans_y, trans_z, trans_roll, trans_pitch, trans_yaw;
-    getTranslationAndEulerAngles(
+    getTranslationAndEulerAngles (
         trans, trans_x, trans_y, trans_z, trans_roll, trans_pitch, trans_yaw);
     return {trans_x, 0, trans_z, 0, trans_pitch, 0};
   }
@@ -889,18 +890,18 @@ struct EIGEN_ALIGN16 ParticleXYR : public _ParticleXYR {
     for (auto point = first; point != last; ++point) {
       wa.x += point->x * point->weight;
       wa.z += point->z * point->weight;
-      wa_pitch_sin += std::sin(point->pitch) * point->weight;
+      wa_pitch_sin += std::sin (point->pitch) * point->weight;
     }
     wa.y = 0.0;
     wa.roll = 0.0;
-    wa.pitch = std::asin(wa_pitch_sin);
+    wa.pitch = std::asin (wa_pitch_sin);
     wa.yaw = 0.0;
     return wa;
   }
 
   // a[i]
   inline float
-  operator[](unsigned int i)
+  operator[] (unsigned int i)
   {
     switch (i) {
     case 0:
@@ -924,7 +925,7 @@ struct EIGEN_ALIGN16 ParticleXYR : public _ParticleXYR {
 };
 
 inline std::ostream&
-operator<<(std::ostream& os, const ParticleXYR& p)
+operator<< (std::ostream& os, const ParticleXYR& p)
 {
   os << "(" << p.x << "," << p.y << "," << p.z << "," << p.roll << "," << p.pitch << ","
      << p.yaw << ")";
@@ -933,21 +934,21 @@ operator<<(std::ostream& os, const ParticleXYR& p)
 
 // a * k
 inline ParticleXYR
-operator*(const ParticleXYR& p, double val)
+operator* (const ParticleXYR& p, double val)
 {
   pcl::tracking::ParticleXYR newp;
-  newp.x = static_cast<float>(p.x * val);
-  newp.y = static_cast<float>(p.y * val);
-  newp.z = static_cast<float>(p.z * val);
-  newp.roll = static_cast<float>(p.roll * val);
-  newp.pitch = static_cast<float>(p.pitch * val);
-  newp.yaw = static_cast<float>(p.yaw * val);
+  newp.x = static_cast<float> (p.x * val);
+  newp.y = static_cast<float> (p.y * val);
+  newp.z = static_cast<float> (p.z * val);
+  newp.roll = static_cast<float> (p.roll * val);
+  newp.pitch = static_cast<float> (p.pitch * val);
+  newp.yaw = static_cast<float> (p.yaw * val);
   return (newp);
 }
 
 // a + b
 inline ParticleXYR
-operator+(const ParticleXYR& a, const ParticleXYR& b)
+operator+ (const ParticleXYR& a, const ParticleXYR& b)
 {
   pcl::tracking::ParticleXYR newp;
   newp.x = a.x + b.x;
@@ -961,7 +962,7 @@ operator+(const ParticleXYR& a, const ParticleXYR& b)
 
 // a - b
 inline ParticleXYR
-operator-(const ParticleXYR& a, const ParticleXYR& b)
+operator- (const ParticleXYR& a, const ParticleXYR& b)
 {
   pcl::tracking::ParticleXYR newp;
   newp.x = a.x - b.x;
@@ -977,8 +978,8 @@ operator-(const ParticleXYR& a, const ParticleXYR& b)
 } // namespace pcl
 
 #define PCL_STATE_POINT_TYPES                                                          \
-  (pcl::tracking::ParticleXYR)(pcl::tracking::ParticleXYZRPY)(                         \
-      pcl::tracking::ParticleXYZR)(pcl::tracking::ParticleXYRPY)(                      \
+  (pcl::tracking::ParticleXYR) (pcl::tracking::ParticleXYZRPY) (                       \
+      pcl::tracking::ParticleXYZR) (pcl::tracking::ParticleXYRPY) (                    \
       pcl::tracking::ParticleXYRP)
 
 #endif //

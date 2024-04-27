@@ -71,7 +71,7 @@ public:
   inline void
   setBitDepth (unsigned char bitDepth_arg)
   {
-    colorBitReduction_ = static_cast<unsigned char>(8 - bitDepth_arg);
+    colorBitReduction_ = static_cast<unsigned char> (8 - bitDepth_arg);
   }
 
   /** \brief Retrieve color bit depth of encoded color information.
@@ -80,7 +80,7 @@ public:
   inline unsigned char
   getBitDepth ()
   {
-    return (static_cast<unsigned char>(8 - colorBitReduction_));
+    return (static_cast<unsigned char> (8 - colorBitReduction_));
   }
 
   /** \brief Set amount of voxels containing point color information and reserve memory
@@ -89,7 +89,7 @@ public:
   inline void
   setVoxelCount (unsigned int voxelCount_arg)
   {
-    pointAvgColorDataVector_.reserve(voxelCount_arg * 3);
+    pointAvgColorDataVector_.reserve (voxelCount_arg * 3);
   }
 
   /** \brief Set amount of points within point cloud to be encoded and reserve memory
@@ -98,7 +98,7 @@ public:
   inline void
   setPointCount (unsigned int pointCount_arg)
   {
-    pointDiffColorDataVector_.reserve(pointCount_arg * 3);
+    pointDiffColorDataVector_.reserve (pointCount_arg * 3);
   }
 
   /** \brief Initialize encoding of color information
@@ -154,9 +154,9 @@ public:
     // iterate over points
     for (const auto& idx : indexVector_arg) {
       // get color information from points
-      const char* idxPointPtr = reinterpret_cast<const char*>(&(*inputCloud_arg)[idx]);
+      const char* idxPointPtr = reinterpret_cast<const char*> (&(*inputCloud_arg)[idx]);
       const int& colorInt =
-          *reinterpret_cast<const int*>(idxPointPtr + rgba_offset_arg);
+          *reinterpret_cast<const int*> (idxPointPtr + rgba_offset_arg);
 
       // add color information
       avgRed += (colorInt >> 0) & 0xFF;
@@ -164,7 +164,7 @@ public:
       avgBlue += (colorInt >> 16) & 0xFF;
     }
 
-    const auto len = static_cast<uindex_t>(indexVector_arg.size());
+    const auto len = static_cast<uindex_t> (indexVector_arg.size());
     // calculated average color information
     if (len > 1) {
       avgRed /= len;
@@ -178,9 +178,9 @@ public:
     avgBlue >>= colorBitReduction_;
 
     // add to average color vector
-    pointAvgColorDataVector_.push_back(static_cast<char>(avgRed));
-    pointAvgColorDataVector_.push_back(static_cast<char>(avgGreen));
-    pointAvgColorDataVector_.push_back(static_cast<char>(avgBlue));
+    pointAvgColorDataVector_.push_back (static_cast<char> (avgRed));
+    pointAvgColorDataVector_.push_back (static_cast<char> (avgGreen));
+    pointAvgColorDataVector_.push_back (static_cast<char> (avgBlue));
   }
 
   /** \brief Encode color information of a subset of points from point cloud
@@ -203,9 +203,9 @@ public:
     // iterate over points
     for (const auto& idx : indexVector_arg) {
       // get color information from point
-      const char* idxPointPtr = reinterpret_cast<const char*>(&(*inputCloud_arg)[idx]);
+      const char* idxPointPtr = reinterpret_cast<const char*> (&(*inputCloud_arg)[idx]);
       const int& colorInt =
-          *reinterpret_cast<const int*>(idxPointPtr + rgba_offset_arg);
+          *reinterpret_cast<const int*> (idxPointPtr + rgba_offset_arg);
 
       // add color information
       avgRed += (colorInt >> 0) & 0xFF;
@@ -213,7 +213,7 @@ public:
       avgBlue += (colorInt >> 16) & 0xFF;
     }
 
-    const auto len = static_cast<uindex_t>(indexVector_arg.size());
+    const auto len = static_cast<uindex_t> (indexVector_arg.size());
     if (len > 1) {
       unsigned char diffRed;
       unsigned char diffGreen;
@@ -227,27 +227,27 @@ public:
       // iterate over points for differential encoding
       for (const auto& idx : indexVector_arg) {
         const char* idxPointPtr =
-            reinterpret_cast<const char*>(&(*inputCloud_arg)[idx]);
+            reinterpret_cast<const char*> (&(*inputCloud_arg)[idx]);
         const int& colorInt =
-            *reinterpret_cast<const int*>(idxPointPtr + rgba_offset_arg);
+            *reinterpret_cast<const int*> (idxPointPtr + rgba_offset_arg);
 
         // extract color components and do XOR encoding with predicted average color
-        diffRed = (static_cast<unsigned char>(avgRed)) ^
-                  static_cast<unsigned char>(((colorInt >> 0) & 0xFF));
-        diffGreen = (static_cast<unsigned char>(avgGreen)) ^
-                    static_cast<unsigned char>(((colorInt >> 8) & 0xFF));
-        diffBlue = (static_cast<unsigned char>(avgBlue)) ^
-                   static_cast<unsigned char>(((colorInt >> 16) & 0xFF));
+        diffRed = (static_cast<unsigned char> (avgRed)) ^
+                  static_cast<unsigned char> (((colorInt >> 0) & 0xFF));
+        diffGreen = (static_cast<unsigned char> (avgGreen)) ^
+                    static_cast<unsigned char> (((colorInt >> 8) & 0xFF));
+        diffBlue = (static_cast<unsigned char> (avgBlue)) ^
+                   static_cast<unsigned char> (((colorInt >> 16) & 0xFF));
 
         // remove least significant bits
-        diffRed = static_cast<unsigned char>(diffRed >> colorBitReduction_);
-        diffGreen = static_cast<unsigned char>(diffGreen >> colorBitReduction_);
-        diffBlue = static_cast<unsigned char>(diffBlue >> colorBitReduction_);
+        diffRed = static_cast<unsigned char> (diffRed >> colorBitReduction_);
+        diffGreen = static_cast<unsigned char> (diffGreen >> colorBitReduction_);
+        diffBlue = static_cast<unsigned char> (diffBlue >> colorBitReduction_);
 
         // add to differential color vector
-        pointDiffColorDataVector_.push_back(static_cast<char>(diffRed));
-        pointDiffColorDataVector_.push_back(static_cast<char>(diffGreen));
-        pointDiffColorDataVector_.push_back(static_cast<char>(diffBlue));
+        pointDiffColorDataVector_.push_back (static_cast<char> (diffRed));
+        pointDiffColorDataVector_.push_back (static_cast<char> (diffGreen));
+        pointDiffColorDataVector_.push_back (static_cast<char> (diffBlue));
       }
     }
 
@@ -257,9 +257,9 @@ public:
     avgBlue >>= colorBitReduction_;
 
     // add to differential color vector
-    pointAvgColorDataVector_.push_back(static_cast<char>(avgRed));
-    pointAvgColorDataVector_.push_back(static_cast<char>(avgGreen));
-    pointAvgColorDataVector_.push_back(static_cast<char>(avgBlue));
+    pointAvgColorDataVector_.push_back (static_cast<char> (avgRed));
+    pointAvgColorDataVector_.push_back (static_cast<char> (avgGreen));
+    pointAvgColorDataVector_.push_back (static_cast<char> (avgBlue));
   }
 
   /** \brief Decode color information
@@ -274,7 +274,7 @@ public:
                 uindex_t endIdx_arg,
                 unsigned char rgba_offset_arg)
   {
-    assert(beginIdx_arg <= endIdx_arg);
+    assert (beginIdx_arg <= endIdx_arg);
 
     // amount of points to be decoded
     const index_t pointCount = endIdx_arg - beginIdx_arg;
@@ -285,9 +285,9 @@ public:
     unsigned char avgBlue = *(pointAvgColorDataVector_Iterator_++);
 
     // invert bit shifts during encoding
-    avgRed = static_cast<unsigned char>(avgRed << colorBitReduction_);
-    avgGreen = static_cast<unsigned char>(avgGreen << colorBitReduction_);
-    avgBlue = static_cast<unsigned char>(avgBlue << colorBitReduction_);
+    avgRed = static_cast<unsigned char> (avgRed << colorBitReduction_);
+    avgGreen = static_cast<unsigned char> (avgGreen << colorBitReduction_);
+    avgBlue = static_cast<unsigned char> (avgBlue << colorBitReduction_);
 
     // iterate over points
     for (index_t i = 0; i < pointCount; i++) {
@@ -295,16 +295,16 @@ public:
       if (pointCount > 1) {
         // get differential color information from input vector
         unsigned char diffRed =
-            static_cast<unsigned char>(*(pointDiffColorDataVector_Iterator_++));
+            static_cast<unsigned char> (*(pointDiffColorDataVector_Iterator_++));
         unsigned char diffGreen =
-            static_cast<unsigned char>(*(pointDiffColorDataVector_Iterator_++));
+            static_cast<unsigned char> (*(pointDiffColorDataVector_Iterator_++));
         unsigned char diffBlue =
-            static_cast<unsigned char>(*(pointDiffColorDataVector_Iterator_++));
+            static_cast<unsigned char> (*(pointDiffColorDataVector_Iterator_++));
 
         // invert bit shifts during encoding
-        diffRed = static_cast<unsigned char>(diffRed << colorBitReduction_);
-        diffGreen = static_cast<unsigned char>(diffGreen << colorBitReduction_);
-        diffBlue = static_cast<unsigned char>(diffBlue << colorBitReduction_);
+        diffRed = static_cast<unsigned char> (diffRed << colorBitReduction_);
+        diffGreen = static_cast<unsigned char> (diffGreen << colorBitReduction_);
+        diffBlue = static_cast<unsigned char> (diffBlue << colorBitReduction_);
 
         // decode color information
         colorInt = ((avgRed ^ diffRed) << 0) | ((avgGreen ^ diffGreen) << 8) |
@@ -316,8 +316,8 @@ public:
       }
 
       char* idxPointPtr =
-          reinterpret_cast<char*>(&(*outputCloud_arg)[beginIdx_arg + i]);
-      int& pointColor = *reinterpret_cast<int*>(idxPointPtr + rgba_offset_arg);
+          reinterpret_cast<char*> (&(*outputCloud_arg)[beginIdx_arg + i]);
+      int& pointColor = *reinterpret_cast<int*> (idxPointPtr + rgba_offset_arg);
       // assign color to point from point cloud
       pointColor = colorInt;
     }
@@ -335,16 +335,16 @@ public:
                    std::size_t endIdx_arg,
                    unsigned char rgba_offset_arg)
   {
-    assert(beginIdx_arg <= endIdx_arg);
+    assert (beginIdx_arg <= endIdx_arg);
 
     // amount of points to be decoded
-    auto pointCount = static_cast<unsigned int>(endIdx_arg - beginIdx_arg);
+    auto pointCount = static_cast<unsigned int> (endIdx_arg - beginIdx_arg);
 
     // iterate over points
     for (std::size_t i = 0; i < pointCount; i++) {
       char* idxPointPtr =
-          reinterpret_cast<char*>(&(*outputCloud_arg)[beginIdx_arg + i]);
-      int& pointColor = *reinterpret_cast<int*>(idxPointPtr + rgba_offset_arg);
+          reinterpret_cast<char*> (&(*outputCloud_arg)[beginIdx_arg + i]);
+      int& pointColor = *reinterpret_cast<int*> (idxPointPtr + rgba_offset_arg);
       // assign color to point from point cloud
       pointColor = defaultColor_;
     }

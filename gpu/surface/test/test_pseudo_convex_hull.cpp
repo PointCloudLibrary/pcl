@@ -67,75 +67,76 @@ using namespace pcl::gpu;
 int
 loadCloud (const std::string& file, pcl::PointCloud<pcl::PointXYZ>& cloud)
 {
-  int result = pcl::io::loadPCDFile(file, cloud);
+  int result = pcl::io::loadPCDFile (file, cloud);
   if (result != -1)
     return result;
 
-  std::string name = file.substr(0, file.find_last_of("."));
+  std::string name = file.substr (0, file.find_last_of ("."));
 
-  result = pcl::io::loadPCDFile(name + ".pcd", cloud);
+  result = pcl::io::loadPCDFile (name + ".pcd", cloud);
   if (result != -1)
     return result;
 
-  result = pcl::io::loadPLYFile(name + ".ply", cloud);
+  result = pcl::io::loadPLYFile (name + ".ply", cloud);
   if (result != -1)
-    pcl::io::savePCDFile(name + ".pcd", cloud, true);
+    pcl::io::savePCDFile (name + ".pcd", cloud, true);
   return result;
 };
 
 // TEST(PCL_SurfaceGPU, DISABGLED_pseudoConvexHull)
-TEST(PCL_SurfaceGPU, pseudoConvexHull)
+TEST (PCL_SurfaceGPU, pseudoConvexHull)
 {
-  PseudoConvexHull3D pch(1e5);
+  PseudoConvexHull3D pch (1e5);
 
-  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_ptr(new pcl::PointCloud<pcl::PointXYZ>());
+  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_ptr (new pcl::PointCloud<pcl::PointXYZ>());
   // ASSERT_TRUE(loadCloud("d:/dragon.ply", *cloud_ptr) != -1);
   // ASSERT_TRUE(loadCloud("d:/horse.ply", *cloud_ptr) != -1);
-  ASSERT_TRUE(loadCloud("d:/Ramesses.ply", *cloud_ptr) != -1);
+  ASSERT_TRUE (loadCloud ("d:/Ramesses.ply", *cloud_ptr) != -1);
 
   pcl::PointCloud<pcl::PointXYZ>::Ptr convex_ptr;
 
   PseudoConvexHull3D::Cloud cloud_device;
   PseudoConvexHull3D::Cloud convex_device;
-  cloud_device.upload(cloud_ptr->points);
+  cloud_device.upload (cloud_ptr->points);
 
   pcl::PolygonMesh mesh;
 
   {
-    pcl::ScopeTime time("cpu");
+    pcl::ScopeTime time ("cpu");
     pcl::ConvexHull<pcl::PointXYZ> ch;
-    ch.setInputCloud(cloud_ptr);
-    ch.reconstruct(mesh);
+    ch.setInputCloud (cloud_ptr);
+    ch.reconstruct (mesh);
   }
 
   {
-    pcl::ScopeTime time("gpu+cpu");
+    pcl::ScopeTime time ("gpu+cpu");
     {
-      pcl::ScopeTime time("gpu");
-      pch.reconstruct(cloud_device, convex_device);
+      pcl::ScopeTime time ("gpu");
+      pch.reconstruct (cloud_device, convex_device);
     }
 
-    convex_ptr.reset(new pcl::PointCloud<pcl::PointXYZ>((int)convex_device.size(), 1));
-    convex_device.download(convex_ptr->points);
+    convex_ptr.reset (
+        new pcl::PointCloud<pcl::PointXYZ> ((int)convex_device.size(), 1));
+    convex_device.download (convex_ptr->points);
 
     pcl::ConvexHull<pcl::PointXYZ> ch;
-    ch.setInputCloud(convex_ptr);
-    ch.reconstruct(mesh);
+    ch.setInputCloud (convex_ptr);
+    ch.reconstruct (mesh);
   }
 
-  pcl::visualization::PCLVisualizer viewer("Viewer");
-  viewer.addPointCloud<pcl::PointXYZ>(cloud_ptr, "sample cloud");
+  pcl::visualization::PCLVisualizer viewer ("Viewer");
+  viewer.addPointCloud<pcl::PointXYZ> (cloud_ptr, "sample cloud");
 
-  viewer.spinOnce(1, true);
+  viewer.spinOnce (1, true);
 
-  pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> single_color(
+  pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> single_color (
       convex_ptr, 0, 255, 0);
 
-  viewer.addPointCloud<pcl::PointXYZ>(convex_ptr, single_color, "convex");
-  viewer.setPointCloudRenderingProperties(
+  viewer.addPointCloud<pcl::PointXYZ> (convex_ptr, single_color, "convex");
+  viewer.setPointCloudRenderingProperties (
       pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 5, "convex");
 
-  viewer.addPolylineFromPolygonMesh(mesh);
+  viewer.addPolylineFromPolygonMesh (mesh);
 
   viewer.spin();
 }

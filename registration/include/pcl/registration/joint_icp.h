@@ -141,9 +141,9 @@ public:
   void
   setInputSource (const PointCloudSourceConstPtr& /*cloud*/) override
   {
-    PCL_WARN("[pcl::%s::setInputSource] Warning; JointIterativeClosestPoint expects "
-             "multiple clouds. Please use addInputSource.\n",
-             getClassName().c_str());
+    PCL_WARN ("[pcl::%s::setInputSource] Warning; JointIterativeClosestPoint expects "
+              "multiple clouds. Please use addInputSource.\n",
+              getClassName().c_str());
     return;
   }
 
@@ -157,8 +157,8 @@ public:
     // Set the parent InputSource, just to get all cached values (e.g. the existence of
     // normals).
     if (sources_.empty())
-      IterativeClosestPoint<PointSource, PointTarget, Scalar>::setInputSource(cloud);
-    sources_.push_back(cloud);
+      IterativeClosestPoint<PointSource, PointTarget, Scalar>::setInputSource (cloud);
+    sources_.push_back (cloud);
   }
 
   /** \brief Provide a pointer to the input target
@@ -167,9 +167,9 @@ public:
   void
   setInputTarget (const PointCloudTargetConstPtr& /*cloud*/) override
   {
-    PCL_WARN("[pcl::%s::setInputTarget] Warning; JointIterativeClosestPoint expects "
-             "multiple clouds. Please use addInputTarget.\n",
-             getClassName().c_str());
+    PCL_WARN ("[pcl::%s::setInputTarget] Warning; JointIterativeClosestPoint expects "
+              "multiple clouds. Please use addInputTarget.\n",
+              getClassName().c_str());
     return;
   }
 
@@ -183,8 +183,8 @@ public:
     // Set the parent InputTarget, just to get all cached values (e.g. the existence of
     // normals).
     if (targets_.empty())
-      IterativeClosestPoint<PointSource, PointTarget, Scalar>::setInputTarget(cloud);
-    targets_.push_back(cloud);
+      IterativeClosestPoint<PointSource, PointTarget, Scalar>::setInputTarget (cloud);
+    targets_.push_back (cloud);
   }
 
   /** \brief Add a manual correspondence estimator
@@ -197,7 +197,7 @@ public:
   inline void
   addCorrespondenceEstimation (CorrespondenceEstimationPtr ce)
   {
-    correspondence_estimations_.push_back(ce);
+    correspondence_estimations_.push_back (ce);
   }
 
   /** \brief Reset my list of input sources

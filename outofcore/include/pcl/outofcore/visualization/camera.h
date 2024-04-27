@@ -21,8 +21,8 @@ class Camera : public Object {
 public:
   // Operators
   // -----------------------------------------------------------------------------
-  Camera(std::string name);
-  Camera(std::string name, vtkSmartPointer<vtkCamera> camera);
+  Camera (std::string name);
+  Camera (std::string name, vtkSmartPointer<vtkCamera> camera);
 
 private:
   //  friend std::ostream & operator<<(std::ostream &os, const Camera& camera);
@@ -98,7 +98,7 @@ public:
     // since the compiler complains that the constructor selected
     // with {projection_matrix_ * model_view_matrix_} is explicit
     // NOLINTNEXTLINE(modernize-return-braced-init-list)
-    return Eigen::Matrix4d(projection_matrix_ * model_view_matrix_);
+    return Eigen::Matrix4d (projection_matrix_ * model_view_matrix_);
   }
 
   Eigen::Vector3d
@@ -108,7 +108,7 @@ public:
     Eigen::Matrix4d inverse_model_view_matrix = model_view_matrix_.inverse();
     Eigen::Vector3d position;
     for (int i = 0; i < 3; i++) {
-      position(i) = inverse_model_view_matrix(i, 3);
+      position (i) = inverse_model_view_matrix (i, 3);
     }
 
     return position;
@@ -117,7 +117,7 @@ public:
   inline void
   setClippingRange (float near_value = 0.0001f, float far_value = 100000.f)
   {
-    camera_->SetClippingRange(near_value, far_value);
+    camera_->SetClippingRange (near_value, far_value);
   }
 
   void

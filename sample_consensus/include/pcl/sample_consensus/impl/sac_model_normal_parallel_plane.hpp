@@ -46,10 +46,10 @@
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename PointNT>
 bool
-pcl::SampleConsensusModelNormalParallelPlane<PointT, PointNT>::isModelValid(
+pcl::SampleConsensusModelNormalParallelPlane<PointT, PointNT>::isModelValid (
     const Eigen::VectorXf& model_coefficients) const
 {
-  if (!SampleConsensusModel<PointT>::isModelValid(model_coefficients))
+  if (!SampleConsensusModel<PointT>::isModelValid (model_coefficients))
     return (false);
 
   // Check against template, if given
@@ -59,21 +59,22 @@ pcl::SampleConsensusModelNormalParallelPlane<PointT, PointNT>::isModelValid(
     coeff[3] = 0.0f;
     coeff.normalize();
 
-    if (std::abs(axis_.dot(coeff)) < cos_angle_) {
-      PCL_DEBUG("[pcl::SampleConsensusModelNormalParallelPlane::isModelValid] Angle "
-                "between plane normal and given axis is too large.\n");
+    if (std::abs (axis_.dot (coeff)) < cos_angle_) {
+      PCL_DEBUG ("[pcl::SampleConsensusModelNormalParallelPlane::isModelValid] Angle "
+                 "between plane normal and given axis is too large.\n");
       return (false);
     }
   }
 
   if (eps_dist_ > 0.0) {
-    if (std::abs(-model_coefficients[3] - distance_from_origin_) > eps_dist_) {
-      PCL_DEBUG("[pcl::SampleConsensusModelNormalParallelPlane::isModelValid] Distance "
-                "of plane to origin is wrong: expected %g, but is %g, difference is "
-                "larger than %g.\n",
-                distance_from_origin_,
-                -model_coefficients[3],
-                eps_dist_);
+    if (std::abs (-model_coefficients[3] - distance_from_origin_) > eps_dist_) {
+      PCL_DEBUG (
+          "[pcl::SampleConsensusModelNormalParallelPlane::isModelValid] Distance "
+          "of plane to origin is wrong: expected %g, but is %g, difference is "
+          "larger than %g.\n",
+          distance_from_origin_,
+          -model_coefficients[3],
+          eps_dist_);
       return (false);
     }
   }

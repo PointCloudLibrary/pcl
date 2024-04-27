@@ -18,7 +18,7 @@
 #define OPENNURBS_FONT_INC_
 
 class ON_CLASS ON_Font : public ON_Object {
-  ON_OBJECT_DECLARE(ON_Font);
+  ON_OBJECT_DECLARE (ON_Font);
 
 public:
   ON_Font();
@@ -44,9 +44,9 @@ public:
   CreateFontFromFaceName (const wchar_t* face_name, bool bBold, bool bItalic);
 
 #if defined(ON_OS_WINDOWS_GDI)
-  ON_Font(const LOGFONT& logfont);
+  ON_Font (const LOGFONT& logfont);
   ON_Font&
-  operator=(const LOGFONT& logfont);
+  operator= (const LOGFONT& logfont);
 #endif
 
   //////////////////////////////////////////////////////////////////////
@@ -91,7 +91,7 @@ public:
 
   // virtual
   ON_UUID
-  ModelObjectId () const;
+  ModelObjectId() const;
 
   //////////////////////////////////////////////////////////////////////
   //

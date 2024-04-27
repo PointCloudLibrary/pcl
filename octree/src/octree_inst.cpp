@@ -57,13 +57,13 @@ template class PCL_EXPORTS pcl::octree::OctreeBase<pcl::octree::OctreeContainerE
 #include <pcl/impl/instantiate.hpp>
 #include <pcl/point_types.h>
 
-PCL_INSTANTIATE(OctreePointCloudSingleBufferWithLeafDataTVector, PCL_XYZ_POINT_TYPES)
-PCL_INSTANTIATE(OctreePointCloudDoubleBufferWithLeafDataTVector, PCL_XYZ_POINT_TYPES)
+PCL_INSTANTIATE (OctreePointCloudSingleBufferWithLeafDataTVector, PCL_XYZ_POINT_TYPES)
+PCL_INSTANTIATE (OctreePointCloudDoubleBufferWithLeafDataTVector, PCL_XYZ_POINT_TYPES)
 
-PCL_INSTANTIATE(OctreePointCloudSearch, PCL_XYZ_POINT_TYPES)
+PCL_INSTANTIATE (OctreePointCloudSearch, PCL_XYZ_POINT_TYPES)
 
 // PCL_INSTANTIATE(OctreePointCloudSingleBufferWithLeafDataT, PCL_XYZ_POINT_TYPES)
-PCL_INSTANTIATE(OctreePointCloudSingleBufferWithEmptyLeaf, PCL_XYZ_POINT_TYPES)
+PCL_INSTANTIATE (OctreePointCloudSingleBufferWithEmptyLeaf, PCL_XYZ_POINT_TYPES)
 
 /*
  * Note: Disable apriori instantiation of these octree types to speed up compilation.

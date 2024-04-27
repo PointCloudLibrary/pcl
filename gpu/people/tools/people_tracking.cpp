@@ -29,13 +29,13 @@ using namespace std::chrono_literals;
 
 class PeopleTrackingApp {
 public:
-  PeopleTrackingApp() : viewer("PCL People Tracking App") {}
+  PeopleTrackingApp() : viewer ("PCL People Tracking App") {}
 
   void
   cloud_cb_ (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr& cloud)
   {
     if (!viewer.wasStopped())
-      viewer.showCloud(cloud);
+      viewer.showCloud (cloud);
     ////////////////////CALLBACK IMPL/////////////////////
 
     /// @todo rewrite this to a pointcloud::Ptr
@@ -43,14 +43,14 @@ public:
     pcl::PointCloud<pcl::PointXYZRGB> cloud_in_filt;
     cloud_in = *cloud;
 
-    cv::Mat dmat(cloud_in.height, cloud_in.width, CV_16U);
+    cv::Mat dmat (cloud_in.height, cloud_in.width, CV_16U);
 
     // Project pointcloud back into the imageplane
     // TODO: do this directly in GPU?
-    pcl::people::label_skeleton::makeDepthImage16FromPointCloud(dmat, cloud_in);
+    pcl::people::label_skeleton::makeDepthImage16FromPointCloud (dmat, cloud_in);
 
     // Process the depthimage (CUDA)
-    m_proc->process(dmat, m_lmap);
+    m_proc->process (dmat, m_lmap);
 
     ////////////////////END CALLBACK IMPL/////////////////
   }
@@ -60,16 +60,16 @@ public:
   {
     pcl::Grabber* interface = new pcl::OpenNIGrabber();
 
-    std::function<void(const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr&)> f =
+    std::function<void (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr&)> f =
         [this] (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr& cloud) {
-          cloud_cb_(cloud);
+          cloud_cb_ (cloud);
         };
 
-    interface->registerCallback(f);
+    interface->registerCallback (f);
     interface->start();
 
     while (!viewer.wasStopped()) {
-      std::this_thread::sleep_for(1s);
+      std::this_thread::sleep_for (1s);
     }
     interface->stop();
   }
@@ -77,15 +77,15 @@ public:
   void
   load_tree (std::string treeFilenames[4], int numTrees)
   {
-    std::ifstream fin0(treeFilenames[0]);
-    assert(fin0.is_open());
-    m_proc = std::make_unique<pcl::people::trees::MultiTreeLiveProc>(fin0);
+    std::ifstream fin0 (treeFilenames[0]);
+    assert (fin0.is_open());
+    m_proc = std::make_unique<pcl::people::trees::MultiTreeLiveProc> (fin0);
 
     /// Load the other tree files
     for (const auto& file : treeFilenames) {
-      std::ifstream fin(file);
-      assert(fin.is_open());
-      m_proc->addTree(fin);
+      std::ifstream fin (file);
+      assert (fin.is_open());
+      m_proc->addTree (fin);
     }
   }
 
@@ -112,26 +112,26 @@ print_help ()
 int
 main (int argc, char** argv)
 {
-  if (pcl::console::find_switch(argc, argv, "--help") ||
-      pcl::console::find_switch(argc, argv, "-h"))
+  if (pcl::console::find_switch (argc, argv, "--help") ||
+      pcl::console::find_switch (argc, argv, "-h"))
     return print_help();
 
   std::string treeFilenames[4];
   int numTrees;
-  pcl::console::parse_argument(argc, argv, "-numTrees", numTrees);
-  pcl::console::parse_argument(argc, argv, "-tree0", treeFilenames[0]);
-  pcl::console::parse_argument(argc, argv, "-tree1", treeFilenames[1]);
-  pcl::console::parse_argument(argc, argv, "-tree2", treeFilenames[2]);
-  pcl::console::parse_argument(argc, argv, "-tree3", treeFilenames[3]);
+  pcl::console::parse_argument (argc, argv, "-numTrees", numTrees);
+  pcl::console::parse_argument (argc, argv, "-tree0", treeFilenames[0]);
+  pcl::console::parse_argument (argc, argv, "-tree1", treeFilenames[1]);
+  pcl::console::parse_argument (argc, argv, "-tree2", treeFilenames[2]);
+  pcl::console::parse_argument (argc, argv, "-tree3", treeFilenames[3]);
   // Don't know if this assert is still needed with pcl::console?
-  assert(numTrees > 0);
-  assert(numTrees <= 4);
+  assert (numTrees > 0);
+  assert (numTrees <= 4);
 
   /// Create the app
   PeopleTrackingApp app;
 
   /// Load the first tree
-  app.load_tree(treeFilenames, numTrees);
+  app.load_tree (treeFilenames, numTrees);
 
   /// Run the app
   app.run();

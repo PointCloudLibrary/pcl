@@ -70,27 +70,27 @@ public:
   using CloudPtr = typename Cloud::Ptr;
   using CloudConstPtr = typename Cloud::ConstPtr;
 
-  OpenNIIntegralImageNormalEstimation(const std::string& device_id = "")
-  : viewer("PCL OpenNI NormalEstimation Viewer"), device_id_(device_id)
+  OpenNIIntegralImageNormalEstimation (const std::string& device_id = "")
+  : viewer ("PCL OpenNI NormalEstimation Viewer"), device_id_ (device_id)
   {
-    ne_.setNormalEstimationMethod(
+    ne_.setNormalEstimationMethod (
         pcl::IntegralImageNormalEstimation<PointType, pcl::Normal>::COVARIANCE_MATRIX);
-    ne_.setNormalSmoothingSize(11.0);
+    ne_.setNormalSmoothingSize (11.0);
     new_cloud_ = false;
-    viewer.registerKeyboardCallback(
+    viewer.registerKeyboardCallback (
         &OpenNIIntegralImageNormalEstimation::keyboard_callback, *this);
   }
 
   void
   cloud_cb (const CloudConstPtr& cloud)
   {
-    std::lock_guard<std::mutex> lock(mtx_);
+    std::lock_guard<std::mutex> lock (mtx_);
     // lock while we set our cloud;
 
-    normals_.reset(new pcl::PointCloud<pcl::Normal>);
+    normals_.reset (new pcl::PointCloud<pcl::Normal>);
 
-    ne_.setInputCloud(cloud);
-    ne_.compute(*normals_);
+    ne_.setInputCloud (cloud);
+    ne_.compute (*normals_);
     cloud_ = cloud;
 
     new_cloud_ = true;
@@ -107,18 +107,18 @@ public:
 
     CloudConstPtr temp_cloud;
     pcl::PointCloud<pcl::Normal>::Ptr temp_normals;
-    temp_cloud.swap(cloud_); // here we set cloud_ to null, so that
-    temp_normals.swap(normals_);
+    temp_cloud.swap (cloud_); // here we set cloud_ to null, so that
+    temp_normals.swap (normals_);
     mtx_.unlock();
 
-    if (!viz.updatePointCloud(temp_cloud, "OpenNICloud")) {
-      viz.addPointCloud(temp_cloud, "OpenNICloud");
-      viz.resetCameraViewpoint("OpenNICloud");
+    if (!viz.updatePointCloud (temp_cloud, "OpenNICloud")) {
+      viz.addPointCloud (temp_cloud, "OpenNICloud");
+      viz.resetCameraViewpoint ("OpenNICloud");
     }
     // Render the data
     if (new_cloud_) {
-      viz.removePointCloud("normalcloud");
-      viz.addPointCloudNormals<PointType, pcl::Normal>(
+      viz.removePointCloud ("normalcloud");
+      viz.addPointCloudNormals<PointType, pcl::Normal> (
           temp_cloud, temp_normals, 100, 0.05f, "normalcloud");
       new_cloud_ = false;
     }
@@ -127,28 +127,28 @@ public:
   void
   keyboard_callback (const pcl::visualization::KeyboardEvent& event, void*)
   {
-    std::lock_guard<std::mutex> lock(mtx_);
+    std::lock_guard<std::mutex> lock (mtx_);
     switch (event.getKeyCode()) {
     case '1':
-      ne_.setNormalEstimationMethod(
+      ne_.setNormalEstimationMethod (
           pcl::IntegralImageNormalEstimation<PointType,
                                              pcl::Normal>::COVARIANCE_MATRIX);
       std::cout << "switched to COVARIANCE_MATRIX method\n";
       break;
     case '2':
-      ne_.setNormalEstimationMethod(
+      ne_.setNormalEstimationMethod (
           pcl::IntegralImageNormalEstimation<PointType,
                                              pcl::Normal>::AVERAGE_3D_GRADIENT);
       std::cout << "switched to AVERAGE_3D_GRADIENT method\n";
       break;
     case '3':
-      ne_.setNormalEstimationMethod(
+      ne_.setNormalEstimationMethod (
           pcl::IntegralImageNormalEstimation<PointType,
                                              pcl::Normal>::AVERAGE_DEPTH_CHANGE);
       std::cout << "switched to AVERAGE_DEPTH_CHANGE method\n";
       break;
     case '4':
-      ne_.setNormalEstimationMethod(
+      ne_.setNormalEstimationMethod (
           pcl::IntegralImageNormalEstimation<PointType,
                                              pcl::Normal>::SIMPLE_3D_GRADIENT);
       std::cout << "switched to SIMPLE_3D_GRADIENT method\n";
@@ -159,20 +159,20 @@ public:
   void
   run ()
   {
-    pcl::OpenNIGrabber interface(device_id_);
+    pcl::OpenNIGrabber interface (device_id_);
 
-    std::function<void(const CloudConstPtr&)> f = [this] (const CloudConstPtr& cloud) {
-      cloud_cb(cloud);
+    std::function<void (const CloudConstPtr&)> f = [this] (const CloudConstPtr& cloud) {
+      cloud_cb (cloud);
     };
-    boost::signals2::connection c = interface.registerCallback(f);
+    boost::signals2::connection c = interface.registerCallback (f);
 
-    viewer.runOnVisualizationThread(
-        [this] (pcl::visualization::PCLVisualizer& viz) { viz_cb(viz); }, "viz_cb");
+    viewer.runOnVisualizationThread (
+        [this] (pcl::visualization::PCLVisualizer& viz) { viz_cb (viz); }, "viz_cb");
 
     interface.start();
 
     while (!viewer.wasStopped()) {
-      std::this_thread::sleep_for(1s);
+      std::this_thread::sleep_for (1s);
     }
 
     interface.stop();
@@ -223,14 +223,14 @@ int
 main (int argc, char** argv)
 {
   /////////////////////////////////////////////////////////////////////
-  if (pcl::console::find_argument(argc, argv, "-h") != -1 ||
-      pcl::console::find_argument(argc, argv, "--help") != -1) {
-    usage(argv);
+  if (pcl::console::find_argument (argc, argv, "-h") != -1 ||
+      pcl::console::find_argument (argc, argv, "--help") != -1) {
+    usage (argv);
     return 1;
   }
 
   std::string device_id = "";
-  if (pcl::console::parse_argument(argc, argv, "-device_id", device_id) == -1 &&
+  if (pcl::console::parse_argument (argc, argv, "-device_id", device_id) == -1 &&
       argc > 1 && argv[1][0] != '-')
     device_id = argv[1];
   /////////////////////////////////////////////////////////////////////
@@ -244,15 +244,15 @@ main (int argc, char** argv)
   std::cout << "<Q,q> quit\n\n";
   // clang-format on
 
-  pcl::OpenNIGrabber grabber(device_id);
+  pcl::OpenNIGrabber grabber (device_id);
   if (grabber.providesCallback<pcl::OpenNIGrabber::sig_cb_openni_point_cloud_rgba>()) {
-    PCL_INFO("PointXYZRGBA mode enabled.\n");
-    OpenNIIntegralImageNormalEstimation<pcl::PointXYZRGBA> v(device_id);
+    PCL_INFO ("PointXYZRGBA mode enabled.\n");
+    OpenNIIntegralImageNormalEstimation<pcl::PointXYZRGBA> v (device_id);
     v.run();
   }
   else {
-    PCL_INFO("PointXYZ mode enabled.\n");
-    OpenNIIntegralImageNormalEstimation<pcl::PointXYZ> v(device_id);
+    PCL_INFO ("PointXYZ mode enabled.\n");
+    OpenNIIntegralImageNormalEstimation<pcl::PointXYZ> v (device_id);
     v.run();
   }
 

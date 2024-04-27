@@ -20,9 +20,9 @@
 class ON_CLASS ON_Polyline : public ON_3dPointArray {
 public:
   ON_Polyline();
-  ON_Polyline(const ON_3dPointArray&);
+  ON_Polyline (const ON_3dPointArray&);
   ON_Polyline&
-  operator=(const ON_3dPointArray&);
+  operator= (const ON_3dPointArray&);
   ~ON_Polyline();
 
   // Description:

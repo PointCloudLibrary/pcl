@@ -16,18 +16,18 @@
 
 #include "pcl/surface/3rdparty/opennurbs/opennurbs.h"
 
-ON_OBJECT_IMPLEMENT(ON_CurveOnSurface,
-                    ON_Curve,
-                    "4ED7D4D8-E947-11d3-BFE5-0010830122F0");
+ON_OBJECT_IMPLEMENT (ON_CurveOnSurface,
+                     ON_Curve,
+                     "4ED7D4D8-E947-11d3-BFE5-0010830122F0");
 
-ON_CurveOnSurface::ON_CurveOnSurface() : m_c2(0), m_c3(0), m_s(0) {}
+ON_CurveOnSurface::ON_CurveOnSurface() : m_c2 (0), m_c3 (0), m_s (0) {}
 
-ON_CurveOnSurface::ON_CurveOnSurface(ON_Curve* c2, ON_Curve* c3, ON_Surface* s)
-: m_c2(c2), m_c3(c3), m_s(s)
+ON_CurveOnSurface::ON_CurveOnSurface (ON_Curve* c2, ON_Curve* c3, ON_Surface* s)
+: m_c2 (c2), m_c3 (c3), m_s (s)
 {}
 
-ON_CurveOnSurface::ON_CurveOnSurface(const ON_CurveOnSurface& src)
-: ON_Curve(src), m_c2(0), m_c3(0), m_s(0)
+ON_CurveOnSurface::ON_CurveOnSurface (const ON_CurveOnSurface& src)
+: ON_Curve (src), m_c2 (0), m_c3 (0), m_s (0)
 {
   *this = src;
 }
@@ -36,7 +36,7 @@ unsigned int
 ON_CurveOnSurface::SizeOf() const
 {
   unsigned int sz = ON_Curve::SizeOf();
-  sz += sizeof(*this) - sizeof(ON_Curve);
+  sz += sizeof (*this) - sizeof (ON_Curve);
   if (m_c2)
     sz += m_c2->SizeOf();
   if (m_c3)
@@ -47,10 +47,10 @@ ON_CurveOnSurface::SizeOf() const
 }
 
 ON_CurveOnSurface&
-ON_CurveOnSurface::operator=(const ON_CurveOnSurface& src)
+ON_CurveOnSurface::operator= (const ON_CurveOnSurface& src)
 {
   if (this != &src) {
-    ON_Curve::operator=(src);
+    ON_Curve::operator= (src);
     if (m_c2) {
       delete m_c2;
       m_c2 = 0;
@@ -63,14 +63,14 @@ ON_CurveOnSurface::operator=(const ON_CurveOnSurface& src)
       delete m_s;
       m_s = 0;
     }
-    if (ON_Curve::Cast(src.m_c2)) {
-      m_c2 = ON_Curve::Cast(src.m_c2->Duplicate());
+    if (ON_Curve::Cast (src.m_c2)) {
+      m_c2 = ON_Curve::Cast (src.m_c2->Duplicate());
     }
-    if (ON_Curve::Cast(src.m_c3)) {
-      m_c3 = ON_Curve::Cast(src.m_c3->Duplicate());
+    if (ON_Curve::Cast (src.m_c3)) {
+      m_c3 = ON_Curve::Cast (src.m_c3->Duplicate());
     }
-    if (ON_Surface::Cast(src.m_s)) {
-      m_s = ON_Surface::Cast(src.m_s->Duplicate());
+    if (ON_Surface::Cast (src.m_s)) {
+      m_s = ON_Surface::Cast (src.m_s->Duplicate());
     }
   }
   return *this;
@@ -93,7 +93,7 @@ ON_CurveOnSurface::~ON_CurveOnSurface()
 }
 
 ON_BOOL32
-ON_CurveOnSurface::IsValid(ON_TextLog*) const
+ON_CurveOnSurface::IsValid (ON_TextLog*) const
 {
   if (!m_c2)
     return false;
@@ -102,7 +102,7 @@ ON_CurveOnSurface::IsValid(ON_TextLog*) const
   if (!m_c2->IsValid())
     return false;
   if (m_c2->Dimension() != 2) {
-    ON_ERROR("ON_CurveOnSurface::IsValid() m_c2 is not 2d.");
+    ON_ERROR ("ON_CurveOnSurface::IsValid() m_c2 is not 2d.");
     return false;
   }
   if (!m_s->IsValid())
@@ -111,7 +111,7 @@ ON_CurveOnSurface::IsValid(ON_TextLog*) const
     if (!m_c3->IsValid())
       return false;
     if (m_c3->Dimension() != m_s->Dimension()) {
-      ON_ERROR("ON_CurveOnSurface::IsValid() m_c3 and m_s have different dimensions.");
+      ON_ERROR ("ON_CurveOnSurface::IsValid() m_c3 and m_s have different dimensions.");
       return false;
     }
   }
@@ -120,29 +120,29 @@ ON_CurveOnSurface::IsValid(ON_TextLog*) const
 }
 
 void
-ON_CurveOnSurface::Dump(ON_TextLog& dump) const
+ON_CurveOnSurface::Dump (ON_TextLog& dump) const
 {
-  dump.Print("ON_CurveOnSurface \n");
+  dump.Print ("ON_CurveOnSurface \n");
 }
 
 ON_BOOL32
-ON_CurveOnSurface::Write(ON_BinaryArchive& file // open binary file
+ON_CurveOnSurface::Write (ON_BinaryArchive& file // open binary file
 ) const
 {
   ON_BOOL32 rc = IsValid();
   if (rc)
-    rc = file.WriteObject(*m_c2);
+    rc = file.WriteObject (*m_c2);
   if (rc)
-    rc = file.WriteInt(m_c3 ? 1 : 0);
+    rc = file.WriteInt (m_c3 ? 1 : 0);
   if (rc && m_c3)
-    rc = file.WriteObject(*m_c3);
+    rc = file.WriteObject (*m_c3);
   if (rc)
-    rc = file.WriteObject(*m_s);
+    rc = file.WriteObject (*m_s);
   return rc;
 }
 
 ON_BOOL32
-ON_CurveOnSurface::Read(ON_BinaryArchive& file // open binary file
+ON_CurveOnSurface::Read (ON_BinaryArchive& file // open binary file
 )
 {
   delete m_c2;
@@ -153,9 +153,9 @@ ON_CurveOnSurface::Read(ON_BinaryArchive& file // open binary file
   m_s = 0;
 
   ON_Object* o = 0;
-  ON_BOOL32 rc = file.ReadObject(&o);
+  ON_BOOL32 rc = file.ReadObject (&o);
   if (rc && o) {
-    m_c2 = ON_Curve::Cast(o);
+    m_c2 = ON_Curve::Cast (o);
     if (!m_c2) {
       delete o;
     }
@@ -165,12 +165,12 @@ ON_CurveOnSurface::Read(ON_BinaryArchive& file // open binary file
   o = 0;
 
   ON_BOOL32 bHasC3 = 0;
-  rc = file.ReadInt(&bHasC3);
+  rc = file.ReadInt (&bHasC3);
   if (rc && bHasC3) {
     if (rc)
-      rc = file.ReadObject(&o);
+      rc = file.ReadObject (&o);
     if (rc && o) {
-      m_c2 = ON_Curve::Cast(o);
+      m_c2 = ON_Curve::Cast (o);
       if (!m_c2) {
         delete o;
       }
@@ -181,9 +181,9 @@ ON_CurveOnSurface::Read(ON_BinaryArchive& file // open binary file
   o = 0;
 
   if (rc)
-    rc = file.ReadObject(&o);
+    rc = file.ReadObject (&o);
   if (rc && o) {
-    m_s = ON_Surface::Cast(o);
+    m_s = ON_Surface::Cast (o);
     if (!m_s) {
       delete o;
       rc = false;
@@ -200,26 +200,26 @@ ON_CurveOnSurface::Dimension() const
 }
 
 ON_BOOL32
-ON_CurveOnSurface::GetBBox( // returns true if successful
-    double* boxmin,         // minimum
-    double* boxmax,         // maximum
+ON_CurveOnSurface::GetBBox ( // returns true if successful
+    double* boxmin,          // minimum
+    double* boxmax,          // maximum
     ON_BOOL32 bGrowBox) const
 {
-  return (m_s) ? m_s->GetBBox(boxmin, boxmax, bGrowBox) : false;
+  return (m_s) ? m_s->GetBBox (boxmin, boxmax, bGrowBox) : false;
 }
 
 ON_BOOL32
-ON_CurveOnSurface::Transform(const ON_Xform& xform)
+ON_CurveOnSurface::Transform (const ON_Xform& xform)
 {
-  TransformUserData(xform);
+  TransformUserData (xform);
   DestroyCurveTree();
-  return (m_s) ? m_s->Transform(xform) : false;
+  return (m_s) ? m_s->Transform (xform) : false;
 }
 
 ON_BOOL32
-ON_CurveOnSurface::SwapCoordinates(int i, int j)
+ON_CurveOnSurface::SwapCoordinates (int i, int j)
 {
-  return (m_s) ? m_s->SwapCoordinates(i, j) : false;
+  return (m_s) ? m_s->SwapCoordinates (i, j) : false;
 }
 
 ON_Interval
@@ -238,11 +238,11 @@ ON_CurveOnSurface::SpanCount() const
 }
 
 ON_BOOL32
-ON_CurveOnSurface::GetSpanVector( // span "knots"
-    double* s                     // array of length SpanCount() + 1
+ON_CurveOnSurface::GetSpanVector ( // span "knots"
+    double* s                      // array of length SpanCount() + 1
 ) const
 {
-  return m_c2 ? m_c2->GetSpanVector(s) : false;
+  return m_c2 ? m_c2->GetSpanVector (s) : false;
 }
 
 int
@@ -252,21 +252,21 @@ ON_CurveOnSurface::Degree() const
 }
 
 ON_BOOL32
-ON_CurveOnSurface::GetParameterTolerance(double t,       // t = parameter in domain
-                                         double* tminus, // tminus
-                                         double* tplus   // tplus
+ON_CurveOnSurface::GetParameterTolerance (double t,       // t = parameter in domain
+                                          double* tminus, // tminus
+                                          double* tplus   // tplus
 ) const
 {
-  return (m_c2) ? m_c2->GetParameterTolerance(t, tminus, tplus) : false;
+  return (m_c2) ? m_c2->GetParameterTolerance (t, tminus, tplus) : false;
 }
 
 ON_BOOL32
-ON_CurveOnSurface::IsLinear( // true if curve locus is a line segment
-    double tolerance         // tolerance to use when checking linearity
+ON_CurveOnSurface::IsLinear ( // true if curve locus is a line segment
+    double tolerance          // tolerance to use when checking linearity
 ) const
 {
-  ON_BOOL32 rc = (m_c2 && ON_PlaneSurface::Cast(m_s))
-                     ? (ON_PlaneSurface::Cast(m_s) && m_c2->IsLinear(tolerance))
+  ON_BOOL32 rc = (m_c2 && ON_PlaneSurface::Cast (m_s))
+                     ? (ON_PlaneSurface::Cast (m_s) && m_c2->IsLinear (tolerance))
                      : false;
   if (rc) {
     // TODO: rc = m_s->IsPlanar(tolerance)
@@ -275,29 +275,29 @@ ON_CurveOnSurface::IsLinear( // true if curve locus is a line segment
 }
 
 ON_BOOL32
-ON_CurveOnSurface::IsArc(  // true if curve locus in an arc or circle
+ON_CurveOnSurface::IsArc ( // true if curve locus in an arc or circle
     const ON_Plane* plane, // if not NULL, test is performed in this plane
     ON_Arc* arc,           // if not NULL and true is returned, then arc
                            // arc parameters are filled in
     double tolerance       // tolerance to use when checking linearity
 ) const
 {
-  return (m_c2 && ON_PlaneSurface::Cast(m_s)) ? m_c2->IsArc(plane, arc, tolerance)
-                                              : false;
+  return (m_c2 && ON_PlaneSurface::Cast (m_s)) ? m_c2->IsArc (plane, arc, tolerance)
+                                               : false;
 }
 
 ON_BOOL32
-ON_CurveOnSurface::IsPlanar(ON_Plane*, // plane if not NULL and true is returned, then
-                                       // plane parameters are filled in
-                            double // tolerance to use when checking linearity
+ON_CurveOnSurface::IsPlanar (ON_Plane*, // plane if not NULL and true is returned, then
+                                        // plane parameters are filled in
+                             double     // tolerance to use when checking linearity
 ) const
 {
-  return (ON_PlaneSurface::Cast(m_s)) ? true : false;
+  return (ON_PlaneSurface::Cast (m_s)) ? true : false;
 }
 
 ON_BOOL32
-ON_CurveOnSurface::IsInPlane(const ON_Plane&, // plane to test
-                             double // tolerance to use when checking linearity
+ON_CurveOnSurface::IsInPlane (const ON_Plane&, // plane to test
+                              double // tolerance to use when checking linearity
 ) const
 {
   return false;
@@ -329,17 +329,17 @@ ON_CurveOnSurface::Reverse()
 }
 
 ON_BOOL32
-ON_CurveOnSurface::Evaluate( // returns false if unable to evaluate
-    double t,                // evaluation parameter
-    int der_count,           // number of derivatives (>=0)
-    int v_stride,            // v[] array stride (>=Dimension())
-    double* v,               // v[] array of length stride*(ndir+1)
-    int side,                // optional - determines which side to evaluate from
-                             //         0 = default
-                             //      <  0 to evaluate from below,
-                             //      >  0 to evaluate from above
-    int* hint                // optional - evaluation hint (int) used to speed
-                             //            repeated evaluations
+ON_CurveOnSurface::Evaluate ( // returns false if unable to evaluate
+    double t,                 // evaluation parameter
+    int der_count,            // number of derivatives (>=0)
+    int v_stride,             // v[] array stride (>=Dimension())
+    double* v,                // v[] array of length stride*(ndir+1)
+    int side,                 // optional - determines which side to evaluate from
+                              //         0 = default
+                              //      <  0 to evaluate from below,
+                              //      >  0 to evaluate from above
+    int* hint                 // optional - evaluation hint (int) used to speed
+                              //            repeated evaluations
 ) const
 {
   ON_3dVector c[5];
@@ -356,7 +356,7 @@ ON_CurveOnSurface::Evaluate( // returns false if unable to evaluate
       shint[0] &= 0xFF;
     }
 
-    rc = (m_c2 && m_s) ? m_c2->Evaluate(t, der_count, 3, c[0], side, &chint) : false;
+    rc = (m_c2 && m_s) ? m_c2->Evaluate (t, der_count, 3, c[0], side, &chint) : false;
     if (rc) {
       side = 0;
       if (der_count > 0) {
@@ -367,7 +367,7 @@ ON_CurveOnSurface::Evaluate( // returns false if unable to evaluate
           side = (c[1].y >= 0.0) ? 2 : 3;
         }
       }
-      rc = m_s->Evaluate(c[0].x, c[0].y, der_count, 3, s[0], side, shint);
+      rc = m_s->Evaluate (c[0].x, c[0].y, der_count, 3, s[0], side, shint);
       if (rc) {
         if (hint) {
           *hint =
@@ -438,7 +438,7 @@ ON_CurveOnSurface::Evaluate( // returns false if unable to evaluate
 
 int
 ON_CurveOnSurface::
-    GetNurbForm(           // returns 0: unable to create NURBS representation
+    GetNurbForm (          // returns 0: unable to create NURBS representation
                            //            with desired accuracy.
                            //         1: success - returned NURBS parameterization
                            //            matches the curve's to wthe desired accuracy
@@ -453,6 +453,6 @@ ON_CurveOnSurface::
         const ON_Interval* // OPTIONAL subdomain of 2d curve
     ) const
 {
-  ON_ERROR("TODO - finish ON_CurveOnSurface::GetNurbForm().");
+  ON_ERROR ("TODO - finish ON_CurveOnSurface::GetNurbForm().");
   return false;
 }

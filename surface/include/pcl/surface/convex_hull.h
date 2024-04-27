@@ -58,8 +58,8 @@ inline bool
 comparePoints2D (const std::pair<int, Eigen::Vector4f>& p1,
                  const std::pair<int, Eigen::Vector4f>& p2)
 {
-  double angle1 = std::atan2(p1.second[1], p1.second[0]) + M_PI;
-  double angle2 = std::atan2(p2.second[1], p2.second[0]) + M_PI;
+  double angle1 = std::atan2 (p1.second[1], p1.second[0]) + M_PI;
+  double angle2 = std::atan2 (p2.second[1], p2.second[0]) + M_PI;
   return (angle1 > angle2);
 }
 
@@ -121,9 +121,9 @@ public:
   {
     compute_area_ = value;
     if (compute_area_)
-      qhull_flags = std::string("qhull FA");
+      qhull_flags = std::string ("qhull FA");
     else
-      qhull_flags = std::string("qhull ");
+      qhull_flags = std::string ("qhull ");
   }
 
   /** \brief Returns the total area of the convex hull. */
@@ -152,8 +152,8 @@ public:
     if ((dimension == 2) || (dimension == 3))
       dimension_ = dimension;
     else
-      PCL_ERROR("[pcl::%s::setDimension] Invalid input dimension specified!\n",
-                getClassName().c_str());
+      PCL_ERROR ("[pcl::%s::setDimension] Invalid input dimension specified!\n",
+                 getClassName().c_str());
   }
 
   /** \brief Returns the dimensionality (2 or 3) of the calculated hull. */
@@ -249,7 +249,7 @@ protected:
 
   /** \brief How close can a 2D plane's normal be to an axis to make projection
    * problematic. */
-  double projection_angle_thresh_{std::cos(0.174532925)};
+  double projection_angle_thresh_{std::cos (0.174532925)};
 
   /** \brief Option flag string to be used calling qhull. */
   std::string qhull_flags{"qhull "};

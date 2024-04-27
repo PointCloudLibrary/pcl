@@ -47,7 +47,7 @@
 
 template <typename PointT>
 QList<pcl::cloud_composer::CloudComposerItem*>
-pcl::cloud_composer::SupervoxelsTool::performTemplatedAction(
+pcl::cloud_composer::SupervoxelsTool::performTemplatedAction (
     const QList<const CloudComposerItem*>& input_data)
 {
   QList<CloudComposerItem*> output;
@@ -58,7 +58,7 @@ pcl::cloud_composer::SupervoxelsTool::performTemplatedAction(
     //    qCritical () << "SupervoxelsTool requires sanitized input!";
     //    return output;
     //  }
-    QVariant variant = input_item->data(ItemDataRole::CLOUD_TEMPLATED);
+    QVariant variant = input_item->data (ItemDataRole::CLOUD_TEMPLATED);
     if (!variant.canConvert<typename PointCloud<PointT>::Ptr>()) {
       qWarning() << "Attempted to cast to template type which does not exist in this "
                     "item! (input list)";
@@ -70,48 +70,48 @@ pcl::cloud_composer::SupervoxelsTool::performTemplatedAction(
   }
 
   foreach (const CloudComposerItem* input_item, input_data) {
-    QVariant variant = input_item->data(ItemDataRole::CLOUD_TEMPLATED);
+    QVariant variant = input_item->data (ItemDataRole::CLOUD_TEMPLATED);
     typename PointCloud<PointT>::Ptr input_cloud =
         variant.value<typename PointCloud<PointT>::Ptr>();
 
-    float resolution = parameter_model_->getProperty("Resolution").toFloat();
+    float resolution = parameter_model_->getProperty ("Resolution").toFloat();
     qDebug() << "Octree resolution = " << resolution;
-    float seed_resolution = parameter_model_->getProperty("Seed Resolution").toFloat();
+    float seed_resolution = parameter_model_->getProperty ("Seed Resolution").toFloat();
     qDebug() << "Seed resolution = " << seed_resolution;
 
-    float rgb_weight = parameter_model_->getProperty("RGB Weight").toFloat();
-    float normal_weight = parameter_model_->getProperty("Normals Weight").toFloat();
-    float spatial_weight = parameter_model_->getProperty("Spatial Weight").toFloat();
+    float rgb_weight = parameter_model_->getProperty ("RGB Weight").toFloat();
+    float normal_weight = parameter_model_->getProperty ("Normals Weight").toFloat();
+    float spatial_weight = parameter_model_->getProperty ("Spatial Weight").toFloat();
 
-    pcl::SupervoxelClustering<PointT> super(resolution, seed_resolution);
-    super.setInputCloud(input_cloud);
-    super.setColorImportance(rgb_weight);
-    super.setSpatialImportance(spatial_weight);
-    super.setNormalImportance(normal_weight);
+    pcl::SupervoxelClustering<PointT> super (resolution, seed_resolution);
+    super.setInputCloud (input_cloud);
+    super.setColorImportance (rgb_weight);
+    super.setSpatialImportance (spatial_weight);
+    super.setNormalImportance (normal_weight);
     std::map<std::uint32_t, typename pcl::Supervoxel<PointT>::Ptr> supervoxel_clusters;
-    super.extract(supervoxel_clusters);
+    super.extract (supervoxel_clusters);
 
     std::map<std::uint32_t, typename pcl::Supervoxel<PointT>::Ptr>
         refined_supervoxel_clusters;
-    super.refineSupervoxels(3, refined_supervoxel_clusters);
+    super.refineSupervoxels (3, refined_supervoxel_clusters);
 
     auto label_segments = super.getLabeledVoxelCloud();
     auto color_segments = pcl::make_shared<pcl::PointCloud<PointXYZRGBA>>();
-    pcl::copyPointCloud(*label_segments, *color_segments);
+    pcl::copyPointCloud (*label_segments, *color_segments);
     for (size_t i = 0; i < label_segments->size(); ++i)
-      color_segments->at(i).rgba =
-          GlasbeyLUT::at(label_segments->at(i).label % GlasbeyLUT::size()).rgba;
-    CloudItem* cloud_item_out = CloudItem::createCloudItemFromTemplate<PointXYZRGBA>(
+      color_segments->at (i).rgba =
+          GlasbeyLUT::at (label_segments->at (i).label % GlasbeyLUT::size()).rgba;
+    CloudItem* cloud_item_out = CloudItem::createCloudItemFromTemplate<PointXYZRGBA> (
         input_item->text(), color_segments);
 
-    output.append(cloud_item_out);
+    output.append (cloud_item_out);
   }
 
   return output;
 }
 
 #define PCL_INSTANTIATE_performTemplatedAction(T)                                      \
-  template void pcl::cloud_composer::SupervoxelsTool::performTemplatedAction<T>(       \
+  template void pcl::cloud_composer::SupervoxelsTool::performTemplatedAction<T> (      \
       QList<const CloudComposerItem*>);
 
 #endif // IMPL_SUPERVOXELS_HPP_

@@ -69,15 +69,15 @@ public:
    * \param[in] threshold the corner detection threshold
    * \param[in] bmax the max image value (default: 255)
    */
-  AbstractAgastDetector(const std::size_t width,
-                        const std::size_t height,
-                        const double threshold,
-                        const double bmax)
-  : width_(width)
-  , height_(height)
-  , threshold_(threshold)
-  , nr_max_keypoints_(std::numeric_limits<unsigned int>::max())
-  , bmax_(bmax)
+  AbstractAgastDetector (const std::size_t width,
+                         const std::size_t height,
+                         const double threshold,
+                         const double bmax)
+  : width_ (width)
+  , height_ (height)
+  , threshold_ (threshold)
+  , nr_max_keypoints_ (std::numeric_limits<unsigned int>::max())
+  , bmax_ (bmax)
   {}
 
   /** \brief Destructor. */
@@ -194,7 +194,7 @@ protected:
      * \param[in] i2 the second score index
      */
     inline bool
-    operator()(const ScoreIndex& i1, const ScoreIndex& i2)
+    operator() (const ScoreIndex& i1, const ScoreIndex& i2)
     {
       return (i1.score > i2.score);
     }
@@ -272,11 +272,11 @@ public:
    * \param[in] threshold the corner detection threshold
    * \param[in] bmax the max image value (default: 255)
    */
-  AgastDetector7_12s(const std::size_t width,
-                     const std::size_t height,
-                     const double threshold,
-                     const double bmax = 255)
-  : AbstractAgastDetector(width, height, threshold, bmax)
+  AgastDetector7_12s (const std::size_t width,
+                      const std::size_t height,
+                      const double threshold,
+                      const double bmax = 255)
+  : AbstractAgastDetector (width, height, threshold, bmax)
   {
     initPattern();
   }
@@ -346,11 +346,11 @@ public:
    * \param[in] threshold the corner detection threshold
    * \param[in] bmax the max image value (default: 255)
    */
-  AgastDetector5_8(const std::size_t width,
-                   const std::size_t height,
-                   const double threshold,
-                   const double bmax = 255)
-  : AbstractAgastDetector(width, height, threshold, bmax)
+  AgastDetector5_8 (const std::size_t width,
+                    const std::size_t height,
+                    const double threshold,
+                    const double bmax = 255)
+  : AbstractAgastDetector (width, height, threshold, bmax)
   {
     initPattern();
   }
@@ -420,11 +420,11 @@ public:
    * \param[in] threshold the corner detection threshold
    * \param[in] bmax the max image value (default: 255)
    */
-  OastDetector9_16(const std::size_t width,
-                   const std::size_t height,
-                   const double threshold,
-                   const double bmax = 255)
-  : AbstractAgastDetector(width, height, threshold, bmax)
+  OastDetector9_16 (const std::size_t width,
+                    const std::size_t height,
+                    const double threshold,
+                    const double bmax = 255)
+  : AbstractAgastDetector (width, height, threshold, bmax)
   {
     initPattern();
   }
@@ -485,51 +485,51 @@ namespace internal {
 /////////////////////////////////////////////////////////////////////////////////////
 template <typename Out>
 struct AgastApplyNonMaxSuppresion {
-  AgastApplyNonMaxSuppresion(
+  AgastApplyNonMaxSuppresion (
       const std::vector<unsigned char>& image_data,
       const pcl::PointCloud<pcl::PointUV>& tmp_cloud,
       const pcl::keypoints::agast::AbstractAgastDetector::Ptr& detector,
       pcl::PointCloud<Out>& output)
   {
     pcl::PointCloud<pcl::PointUV> output_temp;
-    detector->applyNonMaxSuppression(image_data, tmp_cloud, output_temp);
-    pcl::copyPointCloud(output_temp, output);
+    detector->applyNonMaxSuppression (image_data, tmp_cloud, output_temp);
+    pcl::copyPointCloud (output_temp, output);
   }
 };
 
 /////////////////////////////////////////////////////////////////////////////////////
 template <>
 struct AgastApplyNonMaxSuppresion<pcl::PointUV> {
-  AgastApplyNonMaxSuppresion(
+  AgastApplyNonMaxSuppresion (
       const std::vector<unsigned char>& image_data,
       const pcl::PointCloud<pcl::PointUV>& tmp_cloud,
       const pcl::keypoints::agast::AbstractAgastDetector::Ptr& detector,
       pcl::PointCloud<pcl::PointUV>& output)
   {
-    detector->applyNonMaxSuppression(image_data, tmp_cloud, output);
+    detector->applyNonMaxSuppression (image_data, tmp_cloud, output);
   }
 };
 /////////////////////////////////////////////////////////////////////////////////////
 template <typename Out>
 struct AgastDetector {
-  AgastDetector(const std::vector<unsigned char>& image_data,
-                const pcl::keypoints::agast::AbstractAgastDetector::Ptr& detector,
-                pcl::PointCloud<Out>& output)
+  AgastDetector (const std::vector<unsigned char>& image_data,
+                 const pcl::keypoints::agast::AbstractAgastDetector::Ptr& detector,
+                 pcl::PointCloud<Out>& output)
   {
     pcl::PointCloud<pcl::PointUV> output_temp;
-    detector->detectKeypoints(image_data, output_temp);
-    pcl::copyPointCloud(output_temp, output);
+    detector->detectKeypoints (image_data, output_temp);
+    pcl::copyPointCloud (output_temp, output);
   }
 };
 
 /////////////////////////////////////////////////////////////////////////////////////
 template <>
 struct AgastDetector<pcl::PointUV> {
-  AgastDetector(const std::vector<unsigned char>& image_data,
-                const pcl::keypoints::agast::AbstractAgastDetector::Ptr& detector,
-                pcl::PointCloud<pcl::PointUV>& output)
+  AgastDetector (const std::vector<unsigned char>& image_data,
+                 const pcl::keypoints::agast::AbstractAgastDetector::Ptr& detector,
+                 pcl::PointCloud<pcl::PointUV>& output)
   {
-    detector->detectKeypoints(image_data, output);
+    detector->detectKeypoints (image_data, output);
   }
 };
 } // namespace internal
@@ -571,7 +571,7 @@ public:
   using Keypoint<PointInT, PointOutT>::k_;
 
   /** \brief Constructor */
-  AgastKeypoint2DBase() : nr_max_keypoints_(std::numeric_limits<unsigned int>::max())
+  AgastKeypoint2DBase() : nr_max_keypoints_ (std::numeric_limits<unsigned int>::max())
   {
     k_ = 1;
   }

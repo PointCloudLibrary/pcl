@@ -15,8 +15,8 @@ generateData (double* ax, double* acos, double* asin, int numPoints)
   double inc = 7.5 / (numPoints - 1);
   for (int i = 0; i < numPoints; ++i) {
     ax[i] = i * inc;
-    acos[i] = std::cos(i * inc);
-    asin[i] = sin(i * inc);
+    acos[i] = std::cos (i * inc);
+    asin[i] = sin (i * inc);
   }
 }
 
@@ -41,67 +41,67 @@ int
 main ()
 {
   // defining a plotter
-  PCLPlotter* plotter = new PCLPlotter("My Plotter");
+  PCLPlotter* plotter = new PCLPlotter ("My Plotter");
 
   // setting some properties
-  plotter->setShowLegend(true);
+  plotter->setShowLegend (true);
 
   // generating point correspondences
   int numPoints = 69;
   double ax[100], acos[100], asin[100];
-  generateData(ax, acos, asin, numPoints);
+  generateData (ax, acos, asin, numPoints);
 
   // adding plot data
-  plotter->addPlotData(ax, acos, numPoints, "cos");
-  plotter->addPlotData(ax, asin, numPoints, "sin");
+  plotter->addPlotData (ax, acos, numPoints, "cos");
+  plotter->addPlotData (ax, asin, numPoints, "sin");
 
   // display for 2 seconds
-  plotter->spinOnce(3000);
+  plotter->spinOnce (3000);
   plotter->clearPlots();
 
   //...................plotting implicit functions and custom
-  //callbacks....................
+  // callbacks....................
 
   // make a fixed axis
-  plotter->setYRange(-10, 10);
+  plotter->setYRange (-10, 10);
 
   // defining polynomials
-  std::vector<double> func1(1, 0);
+  std::vector<double> func1 (1, 0);
   func1[0] = 1; // y = 1
-  std::vector<double> func2(3, 0);
+  std::vector<double> func2 (3, 0);
   func2[2] = 1; // y = x^2
 
-  plotter->addPlotData(
-      std::make_pair(func1, func2), -10, 10, "y = 1/x^2", 100, vtkChart::POINTS);
-  plotter->spinOnce(2000);
+  plotter->addPlotData (
+      std::make_pair (func1, func2), -10, 10, "y = 1/x^2", 100, vtkChart::POINTS);
+  plotter->spinOnce (2000);
 
-  plotter->addPlotData(func2, -10, 10, "y = x^2");
-  plotter->spinOnce(2000);
+  plotter->addPlotData (func2, -10, 10, "y = x^2");
+  plotter->spinOnce (2000);
 
   // callbacks
-  plotter->addPlotData(identity, -10, 10, "identity");
-  plotter->spinOnce(2000);
+  plotter->addPlotData (identity, -10, 10, "identity");
+  plotter->spinOnce (2000);
 
-  plotter->addPlotData(std::abs, -10, 10, "abs");
-  plotter->spinOnce(2000);
+  plotter->addPlotData (std::abs, -10, 10, "abs");
+  plotter->spinOnce (2000);
 
-  plotter->addPlotData(step, -10, 10, "step", 100, vtkChart::POINTS);
-  plotter->spinOnce(2000);
+  plotter->addPlotData (step, -10, 10, "step", 100, vtkChart::POINTS);
+  plotter->spinOnce (2000);
 
   plotter->clearPlots();
 
   //........................A simple animation..............................
-  std::vector<double> fsq(3, 0);
+  std::vector<double> fsq (3, 0);
   fsq[2] = -100; // y = x^2
   while (!plotter->wasStopped()) {
     if (fsq[2] == 100)
       fsq[2] = -100;
     fsq[2]++;
     char str[50];
-    sprintf(str, "y = %dx^2", (int)fsq[2]);
-    plotter->addPlotData(fsq, -10, 10, str);
+    sprintf (str, "y = %dx^2", (int)fsq[2]);
+    plotter->addPlotData (fsq, -10, 10, str);
 
-    plotter->spinOnce(100);
+    plotter->spinOnce (100);
     plotter->clearPlots();
   }
 

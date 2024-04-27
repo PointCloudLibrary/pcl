@@ -80,12 +80,12 @@ public:
    * \param[in] random if true set the random seed to the current time, else set to
    * 12345 (default: false)
    */
-  SampleConsensusModelParallelPlane(const PointCloudConstPtr& cloud,
-                                    bool random = false)
-  : SampleConsensusModelPlane<PointT>(cloud, random)
-  , axis_(Eigen::Vector3f::Zero())
-  , eps_angle_(0.0)
-  , sin_angle_(-1.0)
+  SampleConsensusModelParallelPlane (const PointCloudConstPtr& cloud,
+                                     bool random = false)
+  : SampleConsensusModelPlane<PointT> (cloud, random)
+  , axis_ (Eigen::Vector3f::Zero())
+  , eps_angle_ (0.0)
+  , sin_angle_ (-1.0)
   {
     model_name_ = "SampleConsensusModelParallelPlane";
     sample_size_ = 3;
@@ -98,13 +98,13 @@ public:
    * \param[in] random if true set the random seed to the current time, else set to
    * 12345 (default: false)
    */
-  SampleConsensusModelParallelPlane(const PointCloudConstPtr& cloud,
-                                    const Indices& indices,
-                                    bool random = false)
-  : SampleConsensusModelPlane<PointT>(cloud, indices, random)
-  , axis_(Eigen::Vector3f::Zero())
-  , eps_angle_(0.0)
-  , sin_angle_(-1.0)
+  SampleConsensusModelParallelPlane (const PointCloudConstPtr& cloud,
+                                     const Indices& indices,
+                                     bool random = false)
+  : SampleConsensusModelPlane<PointT> (cloud, indices, random)
+  , axis_ (Eigen::Vector3f::Zero())
+  , eps_angle_ (0.0)
+  , sin_angle_ (-1.0)
   {
     model_name_ = "SampleConsensusModelParallelPlane";
     sample_size_ = 3;
@@ -139,7 +139,7 @@ public:
   setEpsAngle (const double ea)
   {
     eps_angle_ = ea;
-    sin_angle_ = std::abs(sin(ea));
+    sin_angle_ = std::abs (sin (ea));
   }
 
   /** \brief Get the angle epsilon (delta) threshold. */

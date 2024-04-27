@@ -55,7 +55,7 @@ namespace openni_wrapper {
  */
 class PCL_EXPORTS ImageYUV422 : public Image {
 public:
-  ImageYUV422(pcl::shared_ptr<xn::ImageMetaData> image_meta_data) noexcept;
+  ImageYUV422 (pcl::shared_ptr<xn::ImageMetaData> image_meta_data) noexcept;
   ~ImageYUV422() noexcept override;
 
   inline Encoding
@@ -87,10 +87,10 @@ public:
 };
 
 bool
-ImageYUV422::resizingSupported(unsigned input_width,
-                               unsigned input_height,
-                               unsigned output_width,
-                               unsigned output_height)
+ImageYUV422::resizingSupported (unsigned input_width,
+                                unsigned input_height,
+                                unsigned output_width,
+                                unsigned output_height)
 {
   return (output_width <= input_width && output_height <= input_height &&
           input_width % output_width == 0 && input_height % output_height == 0);

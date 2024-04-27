@@ -74,7 +74,7 @@ public:
    *   disk, or a human readable format of the metadata in case a binary format is being
    * used */
   friend std::ostream&
-  operator<<(std::ostream& os, const OutofcoreAbstractMetadata& metadata_arg);
+  operator<< (std::ostream& os, const OutofcoreAbstractMetadata& metadata_arg);
 
 protected:
   /** \brief Constructs the metadata ascii which can be written to disk or piped to

@@ -56,8 +56,8 @@ using PointCloudTPtr = pcl::PointCloud<PointT>::Ptr;
 using PointCloudTNPtr = pcl::PointCloud<pcl::Normal>::Ptr;
 
 PointCloud<PointXYZ>::Ptr cloud_;
-PointCloudTPtr model_cloud(new pcl::PointCloud<PointT>);
-PointCloudTNPtr model_cloud_normals(new pcl::PointCloud<pcl::Normal>);
+PointCloudTPtr model_cloud (new pcl::PointCloud<PointT>);
+PointCloudTNPtr model_cloud_normals (new pcl::PointCloud<pcl::Normal>);
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -67,22 +67,22 @@ estimateNormals (pcl::PointCloud<PointT>::Ptr cloud,
 {
   // Create the normal estimation class, and pass the input dataset to it
   pcl::NormalEstimation<pcl::PointXYZ, pcl::Normal> ne;
-  ne.setInputCloud(cloud);
+  ne.setInputCloud (cloud);
 
   // Create an empty kdtree representation, and pass it to the normal estimation object.
   // Its content will be filled inside the object, based on the given input dataset (as
   // no other search surface is given).
-  pcl::search::KdTree<pcl::PointXYZ>::Ptr tree(
+  pcl::search::KdTree<pcl::PointXYZ>::Ptr tree (
       new pcl::search::KdTree<pcl::PointXYZ>());
-  ne.setSearchMethod(tree);
+  ne.setSearchMethod (tree);
 
   // Use all neighbors in a sphere of radius 1m
   // experiments with tensors dataset show that the points are as far apart as 1m from
   // each other
-  ne.setRadiusSearch(0.03);
+  ne.setRadiusSearch (0.03);
 
   // Compute the features
-  ne.compute(*cloud_normals);
+  ne.compute (*cloud_normals);
 
   // cloud_normals->size () should have the same size as the input cloud->size ()*
   return cloud_normals->size();
@@ -90,18 +90,18 @@ estimateNormals (pcl::PointCloud<PointT>::Ptr cloud,
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-TEST(ORROctreeTest, OctreeSphereIntersection)
+TEST (ORROctreeTest, OctreeSphereIntersection)
 {
   float voxel_size = 0.02f;
   float pair_width = 0.05f;
   float frac_of_points_for_registration = 0.3f;
   std::string object_name = "test_object";
 
-  ModelLibrary::Model new_model(*model_cloud,
-                                *model_cloud_normals,
-                                voxel_size,
-                                object_name,
-                                frac_of_points_for_registration);
+  ModelLibrary::Model new_model (*model_cloud,
+                                 *model_cloud_normals,
+                                 voxel_size,
+                                 object_name,
+                                 frac_of_points_for_registration);
 
   const ORROctree& octree = new_model.getOctree();
   const std::vector<ORROctree::Node*>& full_leaves = octree.getFullLeaves();
@@ -112,11 +112,11 @@ TEST(ORROctreeTest, OctreeSphereIntersection)
     const ORROctree::Node::Data* node_data1 = leaf1->getData();
     // Get all full leaves at the right distance to the current leaf
     inter_leaves.clear();
-    octree.getFullLeavesIntersectedBySphere(
+    octree.getFullLeavesIntersectedBySphere (
         node_data1->getPoint(), pair_width, inter_leaves);
     // Ensure that inter_leaves does not contain leaf1
     for (const auto& leaf2 : inter_leaves) {
-      EXPECT_NE(leaf1, leaf2);
+      EXPECT_NE (leaf1, leaf2);
     }
   }
 }
@@ -135,19 +135,19 @@ main (int argc, char** argv)
   }
 
   // Load a standard PCD file from disk
-  if (pcl::io::loadPCDFile(argv[1], *model_cloud) < 0) {
+  if (pcl::io::loadPCDFile (argv[1], *model_cloud) < 0) {
     std::cerr << "Failed to read test file. Please download `bunny.pcd` and pass its "
                  "path to the test."
               << std::endl;
     return (-1);
   }
 
-  if (!estimateNormals(model_cloud, model_cloud_normals) == model_cloud->size()) {
+  if (!estimateNormals (model_cloud, model_cloud_normals) == model_cloud->size()) {
     std::cerr << "Failed to estimate normals" << std::endl;
     return (-1);
   }
 
-  testing::InitGoogleTest(&argc, argv);
+  testing::InitGoogleTest (&argc, argv);
   return (RUN_ALL_TESTS());
 }
 /* ]--- */

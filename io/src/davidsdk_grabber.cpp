@@ -57,11 +57,11 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 pcl::DavidSDKGrabber::DavidSDKGrabber()
-: client_connected_(false)
-, running_(false)
-, local_path_("C:/temp")
-, remote_path_("C:/temp")
-, file_format_("stl")
+: client_connected_ (false)
+, running_ (false)
+, local_path_ ("C:/temp")
+, remote_path_ ("C:/temp")
+, file_format_ ("stl")
 {
   point_cloud_signal_ = createSignal<sig_cb_davidsdk_point_cloud>();
   mesh_signal_ = createSignal<sig_cb_davidsdk_mesh>();
@@ -88,7 +88,7 @@ pcl::DavidSDKGrabber::~DavidSDKGrabber() noexcept
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 david::ServerInfo
-pcl::DavidSDKGrabber::connect(const std::string& address, std::uint16_t port)
+pcl::DavidSDKGrabber::connect (const std::string& address, std::uint16_t port)
 {
   david::ServerInfo server_info;
 
@@ -96,7 +96,7 @@ pcl::DavidSDKGrabber::connect(const std::string& address, std::uint16_t port)
     return (server_info);
 
   try {
-    david_.Connect(address, port);
+    david_.Connect (address, port);
     client_connected_ = true;
   } catch (david::Exception& e) {
     e.PrintError();
@@ -107,13 +107,13 @@ pcl::DavidSDKGrabber::connect(const std::string& address, std::uint16_t port)
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::DavidSDKGrabber::disconnect(const bool stop_server)
+pcl::DavidSDKGrabber::disconnect (const bool stop_server)
 {
   if (!client_connected_)
     return;
 
   try {
-    david_.Disconnect(stop_server);
+    david_.Disconnect (stop_server);
   } catch (david::Exception& e) {
     e.PrintError();
   }
@@ -130,7 +130,7 @@ pcl::DavidSDKGrabber::start()
 
   frequency_.reset();
   running_ = true;
-  grabber_thread_ = std::thread(&pcl::DavidSDKGrabber::processGrabbing, this);
+  grabber_thread_ = std::thread (&pcl::DavidSDKGrabber::processGrabbing, this);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -212,7 +212,7 @@ pcl::DavidSDKGrabber::getFileFormat()
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::DavidSDKGrabber::setLocalPath(std::string path)
+pcl::DavidSDKGrabber::setLocalPath (std::string path)
 {
   local_path_ = path;
 
@@ -222,7 +222,7 @@ pcl::DavidSDKGrabber::setLocalPath(std::string path)
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::DavidSDKGrabber::setRemotePath(std::string path)
+pcl::DavidSDKGrabber::setRemotePath (std::string path)
 {
   remote_path_ = path;
 
@@ -232,22 +232,22 @@ pcl::DavidSDKGrabber::setRemotePath(std::string path)
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::DavidSDKGrabber::setLocalAndRemotePaths(std::string local_path,
-                                             std::string remote_path)
+pcl::DavidSDKGrabber::setLocalAndRemotePaths (std::string local_path,
+                                              std::string remote_path)
 {
-  setLocalPath(local_path);
-  setRemotePath(remote_path);
+  setLocalPath (local_path);
+  setRemotePath (remote_path);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 bool
-pcl::DavidSDKGrabber::calibrate(double grid_size)
+pcl::DavidSDKGrabber::calibrate (double grid_size)
 {
   if (!client_connected_ || running_)
     return (false);
 
   try {
-    david_.sls().Calibrate(grid_size);
+    david_.sls().Calibrate (grid_size);
   } catch (david::Exception& e) {
     e.PrintError();
     return (false);
@@ -257,34 +257,34 @@ pcl::DavidSDKGrabber::calibrate(double grid_size)
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 bool
-pcl::DavidSDKGrabber::grabSingleCloud(pcl::PointCloud<pcl::PointXYZ>& cloud)
+pcl::DavidSDKGrabber::grabSingleCloud (pcl::PointCloud<pcl::PointXYZ>& cloud)
 {
   if (!client_connected_ || running_)
     return (false);
 
   try {
-    david_.sls().Scan(false);
+    david_.sls().Scan (false);
     david_.fusion().DeleteAllMeshes();
     david_.sls().AddScanToShapeFusion();
-    david_.sls().ExportMesh(remote_path_ + "scan." + file_format_);
+    david_.sls().ExportMesh (remote_path_ + "scan." + file_format_);
 
     pcl::PolygonMesh mesh;
     if (file_format_ == "obj") {
-      if (pcl::io::loadOBJFile(local_path_ + "scan." + file_format_, mesh) == 0)
+      if (pcl::io::loadOBJFile (local_path_ + "scan." + file_format_, mesh) == 0)
         return (false);
     }
     else if (file_format_ == "ply") {
-      if (pcl::io::loadPLYFile(local_path_ + "scan." + file_format_, mesh) == 0)
+      if (pcl::io::loadPLYFile (local_path_ + "scan." + file_format_, mesh) == 0)
         return (false);
     }
     else if (file_format_ == "stl") {
-      if (pcl::io::loadPolygonFileSTL(local_path_ + "scan." + file_format_, mesh) == 0)
+      if (pcl::io::loadPolygonFileSTL (local_path_ + "scan." + file_format_, mesh) == 0)
         return (false);
     }
     else
       return (false);
 
-    pcl::fromPCLPointCloud2(mesh.cloud, cloud);
+    pcl::fromPCLPointCloud2 (mesh.cloud, cloud);
   } catch (david::Exception& e) {
     e.PrintError();
     return (false);
@@ -294,27 +294,27 @@ pcl::DavidSDKGrabber::grabSingleCloud(pcl::PointCloud<pcl::PointXYZ>& cloud)
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 bool
-pcl::DavidSDKGrabber::grabSingleMesh(pcl::PolygonMesh& mesh)
+pcl::DavidSDKGrabber::grabSingleMesh (pcl::PolygonMesh& mesh)
 {
   if (!client_connected_ || running_)
     return (false);
 
   try {
-    david_.sls().Scan(false);
+    david_.sls().Scan (false);
     david_.fusion().DeleteAllMeshes();
     david_.sls().AddScanToShapeFusion();
-    david_.sls().ExportMesh(remote_path_ + "scan." + file_format_);
+    david_.sls().ExportMesh (remote_path_ + "scan." + file_format_);
 
     if (file_format_ == "obj") {
-      if (pcl::io::loadOBJFile(local_path_ + "scan." + file_format_, mesh) == 0)
+      if (pcl::io::loadOBJFile (local_path_ + "scan." + file_format_, mesh) == 0)
         return (false);
     }
     else if (file_format_ == "ply") {
-      if (pcl::io::loadPLYFile(local_path_ + "scan." + file_format_, mesh) == 0)
+      if (pcl::io::loadPLYFile (local_path_ + "scan." + file_format_, mesh) == 0)
         return (false);
     }
     else if (file_format_ == "stl") {
-      if (pcl::io::loadPolygonFileSTL(local_path_ + "scan." + file_format_, mesh) == 0)
+      if (pcl::io::loadPolygonFileSTL (local_path_ + "scan." + file_format_, mesh) == 0)
         return (false);
     }
     else
@@ -331,7 +331,7 @@ pcl::DavidSDKGrabber::grabSingleMesh(pcl::PolygonMesh& mesh)
 float
 pcl::DavidSDKGrabber::getFramesPerSecond() const
 {
-  std::lock_guard<std::mutex> lock(fps_mutex_);
+  std::lock_guard<std::mutex> lock (fps_mutex_);
   return (frequency_.getFrequency());
 }
 
@@ -360,9 +360,9 @@ pcl::DavidSDKGrabber::processGrabbing()
         if (num_slots<sig_cb_davidsdk_image>() > 0 ||
             num_slots<sig_cb_davidsdk_point_cloud_image>() > 0 ||
             num_slots<sig_cb_davidsdk_mesh_image>() > 0) {
-          image.reset(new pcl::PCLImage);
+          image.reset (new pcl::PCLImage);
           int width, height;
-          david_.sls().GetLiveImage(image->data, width, height);
+          david_.sls().GetLiveImage (image->data, width, height);
           image->width = (std::uint32_t)width;
           image->height = (std::uint32_t)height;
           image->encoding = "CV_8UC1";
@@ -373,23 +373,23 @@ pcl::DavidSDKGrabber::processGrabbing()
             num_slots<sig_cb_davidsdk_mesh>() > 0 ||
             num_slots<sig_cb_davidsdk_point_cloud_image>() > 0 ||
             num_slots<sig_cb_davidsdk_mesh_image>() > 0) {
-          mesh.reset(new pcl::PolygonMesh);
-          david_.sls().Scan(false);
+          mesh.reset (new pcl::PolygonMesh);
+          david_.sls().Scan (false);
           david_.fusion().DeleteAllMeshes();
           david_.sls().AddScanToShapeFusion();
-          david_.sls().ExportMesh(remote_path_ + "scan." + file_format_);
+          david_.sls().ExportMesh (remote_path_ + "scan." + file_format_);
 
           if (file_format_ == "obj") {
-            if (pcl::io::loadOBJFile(local_path_ + "scan." + file_format_, *mesh) == 0)
+            if (pcl::io::loadOBJFile (local_path_ + "scan." + file_format_, *mesh) == 0)
               return;
           }
           else if (file_format_ == "ply") {
-            if (pcl::io::loadPLYFile(local_path_ + "scan." + file_format_, *mesh) == 0)
+            if (pcl::io::loadPLYFile (local_path_ + "scan." + file_format_, *mesh) == 0)
               return;
           }
           else if (file_format_ == "stl") {
-            if (pcl::io::loadPolygonFileSTL(local_path_ + "scan." + file_format_,
-                                            *mesh) == 0)
+            if (pcl::io::loadPolygonFileSTL (local_path_ + "scan." + file_format_,
+                                             *mesh) == 0)
               return;
           }
           else
@@ -397,22 +397,22 @@ pcl::DavidSDKGrabber::processGrabbing()
 
           if (num_slots<sig_cb_davidsdk_point_cloud>() > 0 ||
               num_slots<sig_cb_davidsdk_point_cloud_image>() > 0) {
-            cloud.reset(new PointCloud<pcl::PointXYZ>);
-            pcl::fromPCLPointCloud2(mesh->cloud, *cloud);
+            cloud.reset (new PointCloud<pcl::PointXYZ>);
+            pcl::fromPCLPointCloud2 (mesh->cloud, *cloud);
           }
         }
 
         // Publish signals
         if (num_slots<sig_cb_davidsdk_point_cloud_image>() > 0)
-          point_cloud_image_signal_->operator()(cloud, image);
+          point_cloud_image_signal_->operator() (cloud, image);
         if (num_slots<sig_cb_davidsdk_mesh_image>() > 0)
-          mesh_image_signal_->operator()(mesh, image);
+          mesh_image_signal_->operator() (mesh, image);
         else if (num_slots<sig_cb_davidsdk_point_cloud>() > 0)
-          point_cloud_signal_->operator()(cloud);
+          point_cloud_signal_->operator() (cloud);
         else if (num_slots<sig_cb_davidsdk_mesh>() > 0)
-          mesh_signal_->operator()(mesh);
+          mesh_signal_->operator() (mesh);
         else if (num_slots<sig_cb_davidsdk_image>() > 0)
-          image_signal_->operator()(image);
+          image_signal_->operator() (image);
       }
       continue_grabbing = running_;
     } catch (david::Exception& e) {

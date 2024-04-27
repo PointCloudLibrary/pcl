@@ -80,8 +80,8 @@ public:
    * \param[in] extract_removed_indices Set to true if you want to be able to extract
    * the indices of points being removed (default = false).
    */
-  RadiusOutlierRemoval(bool extract_removed_indices = false)
-  : FilterIndices<PointT>(extract_removed_indices), searcher_()
+  RadiusOutlierRemoval (bool extract_removed_indices = false)
+  : FilterIndices<PointT> (extract_removed_indices), searcher_()
   {
     filter_name_ = "RadiusOutlierRemoval";
   }
@@ -161,7 +161,7 @@ protected:
   void
   applyFilter (Indices& indices) override
   {
-    applyFilterIndices(indices);
+    applyFilterIndices (indices);
   }
 
   /** \brief Filtered results are indexed by an indices array.
@@ -205,8 +205,8 @@ class PCL_EXPORTS RadiusOutlierRemoval<pcl::PCLPointCloud2>
 
 public:
   /** \brief Empty constructor. */
-  RadiusOutlierRemoval(bool extract_removed_indices = false)
-  : FilterIndices<pcl::PCLPointCloud2>::FilterIndices(extract_removed_indices)
+  RadiusOutlierRemoval (bool extract_removed_indices = false)
+  : FilterIndices<pcl::PCLPointCloud2>::FilterIndices (extract_removed_indices)
   {
     filter_name_ = "RadiusOutlierRemoval";
   }

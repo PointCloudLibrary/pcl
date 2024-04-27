@@ -118,7 +118,7 @@ public:
     32 bit unsigned random number [0,0xFFFFFFFF] [0,4294967295]
   */
   ON__UINT32
-  RandomNumber ();
+  RandomNumber();
 
   /*
   Returns:

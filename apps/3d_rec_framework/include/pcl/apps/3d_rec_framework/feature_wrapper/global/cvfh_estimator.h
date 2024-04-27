@@ -58,7 +58,7 @@ public:
   {
 
     if (!normal_estimator_) {
-      PCL_ERROR("This feature needs normals... please provide a normal estimator\n");
+      PCL_ERROR ("This feature needs normals... please provide a normal estimator\n");
       return;
     }
 
@@ -66,48 +66,48 @@ public:
     if (adaptative_MLS_) {
       typename search::KdTree<PointInT>::Ptr tree;
       Eigen::Vector4f centroid_cluster;
-      pcl::compute3DCentroid(*in, centroid_cluster);
+      pcl::compute3DCentroid (*in, centroid_cluster);
       float dist_to_sensor = centroid_cluster.norm();
       float sigma = dist_to_sensor * 0.01f;
-      mls.setSearchMethod(tree);
-      mls.setSearchRadius(sigma);
-      mls.setUpsamplingMethod(mls.SAMPLE_LOCAL_PLANE);
-      mls.setUpsamplingRadius(0.002);
-      mls.setUpsamplingStepSize(0.001);
+      mls.setSearchMethod (tree);
+      mls.setSearchRadius (sigma);
+      mls.setUpsamplingMethod (mls.SAMPLE_LOCAL_PLANE);
+      mls.setUpsamplingRadius (0.002);
+      mls.setUpsamplingStepSize (0.001);
     }
 
-    normals_.reset(new pcl::PointCloud<pcl::Normal>);
+    normals_.reset (new pcl::PointCloud<pcl::Normal>);
     {
-      normal_estimator_->estimate(in, processed, normals_);
+      normal_estimator_->estimate (in, processed, normals_);
     }
 
     if (adaptative_MLS_) {
-      mls.setInputCloud(processed);
+      mls.setInputCloud (processed);
 
-      PointInTPtr filtered(new pcl::PointCloud<PointInT>);
-      mls.process(*filtered);
+      PointInTPtr filtered (new pcl::PointCloud<PointInT>);
+      mls.process (*filtered);
 
-      processed.reset(new pcl::PointCloud<PointInT>);
-      normals_.reset(new pcl::PointCloud<pcl::Normal>);
+      processed.reset (new pcl::PointCloud<PointInT>);
+      normals_.reset (new pcl::PointCloud<pcl::Normal>);
       {
         filtered->is_dense = false;
-        normal_estimator_->estimate(filtered, processed, normals_);
+        normal_estimator_->estimate (filtered, processed, normals_);
       }
     }
 
     using CVFHEstimation = pcl::CVFHEstimation<PointInT, pcl::Normal, FeatureT>;
     pcl::PointCloud<FeatureT> cvfh_signatures;
-    typename pcl::search::KdTree<PointInT>::Ptr cvfh_tree(
+    typename pcl::search::KdTree<PointInT>::Ptr cvfh_tree (
         new pcl::search::KdTree<PointInT>);
 
     CVFHEstimation cvfh;
-    cvfh.setSearchMethod(cvfh_tree);
-    cvfh.setInputCloud(processed);
-    cvfh.setInputNormals(normals_);
+    cvfh.setSearchMethod (cvfh_tree);
+    cvfh.setInputCloud (processed);
+    cvfh.setInputNormals (normals_);
 
-    cvfh.setEPSAngleThreshold(eps_angle_threshold_);
-    cvfh.setCurvatureThreshold(curvature_threshold_);
-    cvfh.setNormalizeBins(normalize_bins_);
+    cvfh.setEPSAngleThreshold (eps_angle_threshold_);
+    cvfh.setCurvatureThreshold (curvature_threshold_);
+    cvfh.setNormalizeBins (normalize_bins_);
 
     float radius = normal_estimator_->normal_radius_;
     float cluster_tolerance_radius =
@@ -124,23 +124,23 @@ public:
       }
     }
 
-    cvfh.setClusterTolerance(cluster_tolerance_radius);
-    cvfh.setRadiusNormals(radius);
-    cvfh.setMinPoints(100);
+    cvfh.setClusterTolerance (cluster_tolerance_radius);
+    cvfh.setRadiusNormals (radius);
+    cvfh.setMinPoints (100);
 
-    cvfh.compute(cvfh_signatures);
+    cvfh.compute (cvfh_signatures);
 
     for (std::size_t i = 0; i < cvfh_signatures.size(); i++) {
       pcl::PointCloud<FeatureT> vfh_signature;
-      vfh_signature.resize(1);
+      vfh_signature.resize (1);
       vfh_signature.width = vfh_signature.height = 1;
       for (int d = 0; d < 308; ++d)
         vfh_signature[0].histogram[d] = cvfh_signatures[i].histogram[d];
 
-      signatures.push_back(vfh_signature);
+      signatures.push_back (vfh_signature);
     }
 
-    cvfh.getCentroidClusters(centroids);
+    cvfh.getCentroidClusters (centroids);
   }
 
   bool

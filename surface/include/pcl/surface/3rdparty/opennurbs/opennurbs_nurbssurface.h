@@ -59,7 +59,7 @@ class ON_Brep;
 class ON_NurbsSurface;
 
 class PCL_EXPORTS ON_CLASS ON_NurbsSurface : public ON_Surface {
-  ON_OBJECT_DECLARE(ON_NurbsSurface);
+  ON_OBJECT_DECLARE (ON_NurbsSurface);
 
 public:
   /*
@@ -85,14 +85,14 @@ public:
        int cv_count1);
 
   ON_NurbsSurface();
-  ON_NurbsSurface(const ON_NurbsSurface& nurbs_surface);
-  ON_NurbsSurface(const ON_BezierSurface& bezier_surface);
-  ON_NurbsSurface(int dimension,         // dimension (>= 1)
-                  ON_BOOL32 bIsRational, // true to make a rational NURBS
-                  int order0,            // order0 (>= 2)
-                  int order1,            // order1 (>= 2)
-                  int cv_count0,         // cv count0 (>= order0)
-                  int cv_count1          // cv count1 (>= order1)
+  ON_NurbsSurface (const ON_NurbsSurface& nurbs_surface);
+  ON_NurbsSurface (const ON_BezierSurface& bezier_surface);
+  ON_NurbsSurface (int dimension,         // dimension (>= 1)
+                   ON_BOOL32 bIsRational, // true to make a rational NURBS
+                   int order0,            // order0 (>= 2)
+                   int order1,            // order1 (>= 2)
+                   int cv_count0,         // cv count0 (>= order0)
+                   int cv_count1          // cv count1 (>= order1)
   );
 
   // virtual ON_Object::SizeOf override
@@ -222,7 +222,7 @@ public:
   EmergencyDestroy (); // call if memory used by this class becomes invalid
 
   ON_NurbsSurface&
-  operator=(const ON_NurbsSurface&);
+  operator= (const ON_NurbsSurface&);
 
   /*
   Description:
@@ -231,7 +231,7 @@ public:
     bezier_surface - [in]
   */
   ON_NurbsSurface&
-  operator=(const ON_BezierSurface& bezier_surface);
+  operator= (const ON_BezierSurface& bezier_surface);
 
   /////////////////////////////////////////////////////////////////
   // ON_Object overrides
@@ -489,7 +489,7 @@ public:
   );
 
   ON_BOOL32
-  Transpose (); // transpose surface parameterization (swap "s" and "t")
+  Transpose(); // transpose surface parameterization (swap "s" and "t")
 
   ON_BOOL32
   Evaluate ( // returns false if unable to evaluate
@@ -1037,47 +1037,47 @@ public:
 };
 
 class PCL_EXPORTS ON_CLASS ON_NurbsCage : public ON_Geometry {
-  ON_OBJECT_DECLARE(ON_NurbsCage);
+  ON_OBJECT_DECLARE (ON_NurbsCage);
 
 public:
   ON_NurbsCage();
 
-  ON_NurbsCage(int dim,
-               bool is_rat,
-               int order0,
-               int order1,
-               int order2,
-               int cv_count0,
-               int cv_count1,
-               int cv_count2);
+  ON_NurbsCage (int dim,
+                bool is_rat,
+                int order0,
+                int order1,
+                int order2,
+                int cv_count0,
+                int cv_count1,
+                int cv_count2);
 
-  ON_NurbsCage(const ON_BoundingBox& bbox,
-               int order0,
-               int order1,
-               int order2,
-               int cv_count0,
-               int cv_count1,
-               int cv_count2);
+  ON_NurbsCage (const ON_BoundingBox& bbox,
+                int order0,
+                int order1,
+                int order2,
+                int cv_count0,
+                int cv_count1,
+                int cv_count2);
 
-  ON_NurbsCage(const ON_3dPoint* box_corners, // array of 8 3d points
-               int order0,
-               int order1,
-               int order2,
-               int cv_count0,
-               int cv_count1,
-               int cv_count2);
+  ON_NurbsCage (const ON_3dPoint* box_corners, // array of 8 3d points
+                int order0,
+                int order1,
+                int order2,
+                int cv_count0,
+                int cv_count1,
+                int cv_count2);
 
-  ON_NurbsCage(const ON_BezierCage& src);
+  ON_NurbsCage (const ON_BezierCage& src);
 
   ~ON_NurbsCage();
 
-  ON_NurbsCage(const ON_NurbsCage& src);
+  ON_NurbsCage (const ON_NurbsCage& src);
 
   ON_NurbsCage&
-  operator=(const ON_NurbsCage& src);
+  operator= (const ON_NurbsCage& src);
 
   ON_NurbsCage&
-  operator=(const ON_BezierCage& src);
+  operator= (const ON_BezierCage& src);
 
   /*
   Description:
@@ -1711,7 +1711,7 @@ bool
 ON_GetCageXform (const ON_NurbsCage& cage, ON_Xform& cage_xform);
 
 class PCL_EXPORTS ON_CLASS ON_MorphControl : public ON_Geometry {
-  ON_OBJECT_DECLARE(ON_MorphControl);
+  ON_OBJECT_DECLARE (ON_MorphControl);
 
 public:
   ON_MorphControl();
@@ -1773,7 +1773,7 @@ public:
   Transform (const ON_Xform& xform);
 
   ON_BOOL32
-  HasBrepForm () const;
+  HasBrepForm() const;
 
   ON_Brep*
   BrepForm (ON_Brep* brep = NULL) const;
@@ -1814,8 +1814,8 @@ public:
   Knot (int dir) const;
   ON_3dex
   MaxCVIndex () const;
-  const double* CV(ON_3dex) const;
-  double Weight(ON_3dex) const;
+  const double* CV (ON_3dex) const;
+  double Weight (ON_3dex) const;
 
   /////////////////////////////////////////////////////////
   //

@@ -43,20 +43,21 @@
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::StatisticalOutlierRemoval<pcl::PCLPointCloud2>::applyFilter(PCLPointCloud2& output)
+pcl::StatisticalOutlierRemoval<pcl::PCLPointCloud2>::applyFilter (
+    PCLPointCloud2& output)
 {
   // If fields x/y/z are not present, we cannot filter
   if (x_idx_ == UNAVAILABLE || y_idx_ == UNAVAILABLE || z_idx_ == UNAVAILABLE) {
-    PCL_ERROR("[pcl::%s::applyFilter] Input dataset doesn't have x-y-z coordinates!\n",
-              getClassName().c_str());
+    PCL_ERROR ("[pcl::%s::applyFilter] Input dataset doesn't have x-y-z coordinates!\n",
+               getClassName().c_str());
     output.width = output.height = 0;
     output.data.clear();
     return;
   }
 
   if (std_mul_ == 0.0) {
-    PCL_ERROR("[pcl::%s::applyFilter] Standard deviation multiplier not set!\n",
-              getClassName().c_str());
+    PCL_ERROR ("[pcl::%s::applyFilter] Standard deviation multiplier not set!\n",
+               getClassName().c_str());
     output.width = output.height = 0;
     output.data.clear();
     return;
@@ -66,7 +67,7 @@ pcl::StatisticalOutlierRemoval<pcl::PCLPointCloud2>::applyFilter(PCLPointCloud2&
   double variance;
   double stddev;
   std::vector<float> distances;
-  generateStatistics(mean, variance, stddev, distances);
+  generateStatistics (mean, variance, stddev, distances);
   double const distance_threshold =
       mean +
       std_mul_ * stddev; // a distance that is bigger than this signals an outlier
@@ -78,20 +79,20 @@ pcl::StatisticalOutlierRemoval<pcl::PCLPointCloud2>::applyFilter(PCLPointCloud2&
   if (keep_organized_) {
     output.width = input_->width;
     output.height = input_->height;
-    output.data.resize(input_->data.size());
+    output.data.resize (input_->data.size());
   }
   else {
     output.height = 1;
-    output.data.resize(indices_->size() * input_->point_step); // reserve enough space
+    output.data.resize (indices_->size() * input_->point_step); // reserve enough space
   }
 
-  removed_indices_->resize(input_->data.size());
+  removed_indices_->resize (input_->data.size());
 
   // Build a new cloud by neglecting outliers
   int nr_p = 0;
   int nr_removed_p = 0;
   bool remove_point = false;
-  for (int cp = 0; cp < static_cast<int>(indices_->size()); ++cp) {
+  for (int cp = 0; cp < static_cast<int> (indices_->size()); ++cp) {
     if (negative_)
       remove_point = (distances[cp] <= distance_threshold);
     else
@@ -103,11 +104,11 @@ pcl::StatisticalOutlierRemoval<pcl::PCLPointCloud2>::applyFilter(PCLPointCloud2&
 
       if (keep_organized_) {
         /* Set the current point to NaN. */
-        *(reinterpret_cast<float*>(&output.data[nr_p * output.point_step]) + 0) =
+        *(reinterpret_cast<float*> (&output.data[nr_p * output.point_step]) + 0) =
             std::numeric_limits<float>::quiet_NaN();
-        *(reinterpret_cast<float*>(&output.data[nr_p * output.point_step]) + 1) =
+        *(reinterpret_cast<float*> (&output.data[nr_p * output.point_step]) + 1) =
             std::numeric_limits<float>::quiet_NaN();
-        *(reinterpret_cast<float*>(&output.data[nr_p * output.point_step]) + 2) =
+        *(reinterpret_cast<float*> (&output.data[nr_p * output.point_step]) + 2) =
             std::numeric_limits<float>::quiet_NaN();
         nr_p++;
         output.is_dense = false;
@@ -116,37 +117,37 @@ pcl::StatisticalOutlierRemoval<pcl::PCLPointCloud2>::applyFilter(PCLPointCloud2&
         continue;
     }
     else {
-      memcpy(&output.data[nr_p * output.point_step],
-             &input_->data[(*indices_)[cp] * output.point_step],
-             output.point_step);
+      memcpy (&output.data[nr_p * output.point_step],
+              &input_->data[(*indices_)[cp] * output.point_step],
+              output.point_step);
       nr_p++;
     }
   }
 
   if (!keep_organized_) {
     output.width = nr_p;
-    output.data.resize(output.width * output.point_step);
+    output.data.resize (output.width * output.point_step);
   }
   output.row_step = output.point_step * output.width;
 
-  removed_indices_->resize(nr_removed_p);
+  removed_indices_->resize (nr_removed_p);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::StatisticalOutlierRemoval<pcl::PCLPointCloud2>::applyFilter(Indices& indices)
+pcl::StatisticalOutlierRemoval<pcl::PCLPointCloud2>::applyFilter (Indices& indices)
 {
   // If fields x/y/z are not present, we cannot filter
   if (x_idx_ == UNAVAILABLE || y_idx_ == UNAVAILABLE || z_idx_ == UNAVAILABLE) {
-    PCL_ERROR("[pcl::%s::applyFilter] Input dataset doesn't have x-y-z coordinates!\n",
-              getClassName().c_str());
+    PCL_ERROR ("[pcl::%s::applyFilter] Input dataset doesn't have x-y-z coordinates!\n",
+               getClassName().c_str());
     indices.clear();
     return;
   }
 
   if (std_mul_ == 0.0) {
-    PCL_ERROR("[pcl::%s::applyFilter] Standard deviation multiplier not set!\n",
-              getClassName().c_str());
+    PCL_ERROR ("[pcl::%s::applyFilter] Standard deviation multiplier not set!\n",
+               getClassName().c_str());
     indices.clear();
     return;
   }
@@ -155,7 +156,7 @@ pcl::StatisticalOutlierRemoval<pcl::PCLPointCloud2>::applyFilter(Indices& indice
   double variance;
   double stddev;
   std::vector<float> distances;
-  generateStatistics(mean, variance, stddev, distances);
+  generateStatistics (mean, variance, stddev, distances);
   double const distance_threshold =
       mean +
       std_mul_ * stddev; // a distance that is bigger than this signals an outlier
@@ -177,47 +178,47 @@ pcl::StatisticalOutlierRemoval<pcl::PCLPointCloud2>::applyFilter(Indices& indice
   }
 
   // Resize the output arrays
-  indices.resize(nr_p);
-  removed_indices_->resize(nr_p);
+  indices.resize (nr_p);
+  removed_indices_->resize (nr_p);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::StatisticalOutlierRemoval<pcl::PCLPointCloud2>::generateStatistics(
+pcl::StatisticalOutlierRemoval<pcl::PCLPointCloud2>::generateStatistics (
     double& mean, double& variance, double& stddev, std::vector<float>& distances)
 {
   // Send the input dataset to the spatial locator
-  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
-  pcl::fromPCLPointCloud2(*input_, *cloud);
+  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
+  pcl::fromPCLPointCloud2 (*input_, *cloud);
 
   // Initialize the spatial locator
   if (!tree_) {
     if (cloud->isOrganized())
-      tree_.reset(new pcl::search::OrganizedNeighbor<pcl::PointXYZ>());
+      tree_.reset (new pcl::search::OrganizedNeighbor<pcl::PointXYZ>());
     else
-      tree_.reset(new pcl::search::KdTree<pcl::PointXYZ>(false));
+      tree_.reset (new pcl::search::KdTree<pcl::PointXYZ> (false));
   }
 
-  tree_->setInputCloud(cloud);
+  tree_->setInputCloud (cloud);
 
   // Allocate enough space to hold the results
-  Indices nn_indices(mean_k_);
-  std::vector<float> nn_dists(mean_k_);
+  Indices nn_indices (mean_k_);
+  std::vector<float> nn_dists (mean_k_);
 
-  distances.resize(indices_->size());
+  distances.resize (indices_->size());
   int valid_distances = 0;
   // Go over all the points and calculate the mean or smallest distance
   for (std::size_t cp = 0; cp < indices_->size(); ++cp) {
-    if (!std::isfinite((*cloud)[(*indices_)[cp]].x) ||
-        !std::isfinite((*cloud)[(*indices_)[cp]].y) ||
-        !std::isfinite((*cloud)[(*indices_)[cp]].z)) {
+    if (!std::isfinite ((*cloud)[(*indices_)[cp]].x) ||
+        !std::isfinite ((*cloud)[(*indices_)[cp]].y) ||
+        !std::isfinite ((*cloud)[(*indices_)[cp]].z)) {
       distances[cp] = 0;
       continue;
     }
 
-    if (tree_->nearestKSearch((*indices_)[cp], mean_k_, nn_indices, nn_dists) == 0) {
+    if (tree_->nearestKSearch ((*indices_)[cp], mean_k_, nn_indices, nn_dists) == 0) {
       distances[cp] = 0;
-      PCL_WARN(
+      PCL_WARN (
           "[pcl::%s::applyFilter] Searching for the closest %d neighbors failed.\n",
           getClassName().c_str(),
           mean_k_);
@@ -227,8 +228,8 @@ pcl::StatisticalOutlierRemoval<pcl::PCLPointCloud2>::generateStatistics(
     // Calculate the mean distance to its neighbors.
     double dist_sum = 0.0;
     for (std::size_t k = 1; k < nn_dists.size(); ++k) // k = 0 is the query point
-      dist_sum += sqrt(nn_dists[k]);
-    distances[cp] = static_cast<float>(dist_sum / (nn_dists.size() - 1));
+      dist_sum += sqrt (nn_dists[k]);
+    distances[cp] = static_cast<float> (dist_sum / (nn_dists.size() - 1));
     valid_distances++;
   }
 
@@ -239,10 +240,10 @@ pcl::StatisticalOutlierRemoval<pcl::PCLPointCloud2>::generateStatistics(
     sq_sum += distance * distance;
   }
 
-  mean = sum / static_cast<double>(valid_distances);
-  variance = (sq_sum - sum * sum / static_cast<double>(valid_distances)) /
-             (static_cast<double>(valid_distances) - 1);
-  stddev = sqrt(variance);
+  mean = sum / static_cast<double> (valid_distances);
+  variance = (sq_sum - sum * sum / static_cast<double> (valid_distances)) /
+             (static_cast<double> (valid_distances) - 1);
+  stddev = sqrt (variance);
 }
 
 #ifndef PCL_NO_PRECOMPILE
@@ -250,6 +251,6 @@ pcl::StatisticalOutlierRemoval<pcl::PCLPointCloud2>::generateStatistics(
 #include <pcl/point_types.h>
 
 // Instantiations of specific point types
-PCL_INSTANTIATE(StatisticalOutlierRemoval, PCL_XYZ_POINT_TYPES)
+PCL_INSTANTIATE (StatisticalOutlierRemoval, PCL_XYZ_POINT_TYPES)
 
 #endif // PCL_NO_PRECOMPILE

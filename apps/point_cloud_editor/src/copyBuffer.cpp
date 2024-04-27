@@ -43,13 +43,13 @@
 #include <pcl/apps/point_cloud_editor/statistics.h>
 
 void
-CopyBuffer::set(const ConstCloudPtr& cloud_ptr, const Selection& selection)
+CopyBuffer::set (const ConstCloudPtr& cloud_ptr, const Selection& selection)
 {
   clean();
   if (!cloud_ptr)
     return;
   for (const unsigned int& s_it : selection)
-    buffer_.append((*cloud_ptr)[s_it]);
+    buffer_.append ((*cloud_ptr)[s_it]);
 }
 
 const Cloud&
@@ -76,6 +76,6 @@ CopyBuffer::getStat() const
   if (buffer_.size() == 0)
     return "";
   const std::string title = "The number of points copied to the clipboard: ";
-  const std::string num_str = std::to_string(buffer_.size());
+  const std::string num_str = std::to_string (buffer_.size());
   return title + num_str;
 }

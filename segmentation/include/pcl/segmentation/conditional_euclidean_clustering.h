@@ -94,12 +94,12 @@ public:
    * \param[in] extract_removed_clusters Set to true if you want to be able to extract
    * the clusters that are too large or too small (default = false)
    */
-  ConditionalEuclideanClustering(bool extract_removed_clusters = false)
+  ConditionalEuclideanClustering (bool extract_removed_clusters = false)
   : searcher_()
   , condition_function_()
-  , extract_removed_clusters_(extract_removed_clusters)
-  , small_clusters_(new pcl::IndicesClusters)
-  , large_clusters_(new pcl::IndicesClusters)
+  , extract_removed_clusters_ (extract_removed_clusters)
+  , small_clusters_ (new pcl::IndicesClusters)
+  , large_clusters_ (new pcl::IndicesClusters)
   {}
 
   /** \brief Provide a pointer to the search object.
@@ -135,7 +135,9 @@ public:
    * function that needs to hold for clustering
    */
   inline void
-  setConditionFunction (bool (*condition_function)(const PointT&, const PointT&, float))
+  setConditionFunction (bool (*condition_function) (const PointT&,
+                                                    const PointT&,
+                                                    float))
   {
     condition_function_ = condition_function;
   }
@@ -145,7 +147,7 @@ public:
    * convenience. See the documentation for setConditionFunction(). */
   inline void
   setConditionFunction (
-      std::function<bool(const PointT&, const PointT&, float)> condition_function)
+      std::function<bool (const PointT&, const PointT&, float)> condition_function)
   {
     condition_function_ = condition_function;
   }
@@ -229,9 +231,9 @@ public:
                       IndicesClustersPtr& large_clusters)
   {
     if (!extract_removed_clusters_) {
-      PCL_WARN("[pcl::ConditionalEuclideanClustering::getRemovedClusters] You need to "
-               "set extract_removed_clusters to true (in this class' constructor) if "
-               "you want to use this functionality.\n");
+      PCL_WARN ("[pcl::ConditionalEuclideanClustering::getRemovedClusters] You need to "
+                "set extract_removed_clusters to true (in this class' constructor) if "
+                "you want to use this functionality.\n");
       return;
     }
     small_clusters = small_clusters_;
@@ -243,7 +245,7 @@ private:
   SearcherPtr searcher_{nullptr};
 
   /** \brief The condition function that needs to hold for clustering */
-  std::function<bool(const PointT&, const PointT&, float)> condition_function_;
+  std::function<bool (const PointT&, const PointT&, float)> condition_function_;
 
   /** \brief The distance to scan for cluster candidates (default = 0.0) */
   float cluster_tolerance_{0.0f};

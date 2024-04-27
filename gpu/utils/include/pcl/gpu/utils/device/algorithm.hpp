@@ -43,7 +43,7 @@ template <class T>
 __device__ __host__ __forceinline__ void
 swap (T& a, T& b)
 {
-  T c(a);
+  T c (a);
   a = b;
   b = c;
 }
@@ -60,7 +60,7 @@ lower_bound (Iterator first, Iterator last, const T& val, BinaryPredicate comp)
 
     middle += half;
 
-    if (comp(*middle, val)) {
+    if (comp (*middle, val)) {
       first = middle;
       ++first;
       len -= half + 1;

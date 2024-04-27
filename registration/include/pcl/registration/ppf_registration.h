@@ -56,7 +56,7 @@ public:
   struct HashKeyStruct : public std::pair<int, std::pair<int, std::pair<int, int>>> {
     HashKeyStruct() = default;
 
-    HashKeyStruct(int a, int b, int c, int d)
+    HashKeyStruct (int a, int b, int c, int d)
     {
       this->first = a;
       this->second.first = b;
@@ -65,7 +65,7 @@ public:
     }
 
     std::size_t
-    operator()(const HashKeyStruct& s) const noexcept
+    operator() (const HashKeyStruct& s) const noexcept
     {
       const std::size_t h1 = std::hash<int>{}(s.first);
       const std::size_t h2 = std::hash<int>{}(s.second.first);
@@ -88,12 +88,12 @@ public:
    * distance_discretization_step the step value between each bin of the hash map for
    * the distance values
    */
-  PPFHashMapSearch(float angle_discretization_step = 12.0f / 180.0f *
-                                                     static_cast<float>(M_PI),
-                   float distance_discretization_step = 0.01f)
-  : feature_hash_map_(new FeatureHashMapType)
-  , angle_discretization_step_(angle_discretization_step)
-  , distance_discretization_step_(distance_discretization_step)
+  PPFHashMapSearch (float angle_discretization_step = 12.0f / 180.0f *
+                                                      static_cast<float> (M_PI),
+                    float distance_discretization_step = 0.01f)
+  : feature_hash_map_ (new FeatureHashMapType)
+  , angle_discretization_step_ (angle_discretization_step)
+  , distance_discretization_step_ (distance_discretization_step)
   {}
 
   /** \brief Method that sets the feature cloud to be inserted in the hash map
@@ -122,7 +122,7 @@ public:
   Ptr
   makeShared ()
   {
-    return Ptr(new PPFHashMapSearch(*this));
+    return Ptr (new PPFHashMapSearch (*this));
   }
 
   /** \brief Returns the angle discretization step parameter (the step value between
@@ -180,8 +180,8 @@ public:
    * - std::pair does not have a custom allocator
    */
   struct PoseWithVotes {
-    PoseWithVotes(const Eigen::Affine3f& a_pose, unsigned int& a_votes)
-    : pose(a_pose), votes(a_votes)
+    PoseWithVotes (const Eigen::Affine3f& a_pose, unsigned int& a_votes)
+    : pose (a_pose), votes (a_votes)
     {}
 
     Eigen::Affine3f pose;
@@ -210,7 +210,7 @@ public:
    * default values */
   PPFRegistration()
   : Registration<PointSource, PointTarget>()
-  , clustering_rotation_diff_threshold_(20.0f / 180.0f * static_cast<float>(M_PI))
+  , clustering_rotation_diff_threshold_ (20.0f / 180.0f * static_cast<float> (M_PI))
   {}
 
   /** \brief Method for setting the position difference clustering parameter

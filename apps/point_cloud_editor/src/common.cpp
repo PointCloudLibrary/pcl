@@ -45,7 +45,7 @@
 void
 setIdentity (float* matrix)
 {
-  std::fill_n(matrix, MATRIX_SIZE, 0.0f);
+  std::fill_n (matrix, MATRIX_SIZE, 0.0f);
   for (unsigned int i = 0; i < MATRIX_SIZE; i += MATRIX_SIZE_DIM + 1)
     matrix[i] = 1.0f;
 }
@@ -62,7 +62,7 @@ multMatrix (const float* left, const float* right, float* result)
       r[i * MATRIX_SIZE_DIM + j] = sum;
     }
   }
-  std::copy(r, r + MATRIX_SIZE, result);
+  std::copy (r, r + MATRIX_SIZE, result);
 }
 
 // This code was found on:
@@ -189,5 +189,5 @@ invertMatrix (const float* matrix, float* inverse)
 void
 stringToLower (std::string& s)
 {
-  std::transform(s.begin(), s.end(), s.begin(), tolower);
+  std::transform (s.begin(), s.end(), s.begin(), tolower);
 }

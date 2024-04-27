@@ -55,16 +55,16 @@ computePairFeatures (const float3& p1,
   f1 = f2 = f3 = f4 = 0.0f;
 
   float3 dp2p1 = p2 - p1;
-  f4 = norm(dp2p1);
+  f4 = norm (dp2p1);
 
   if (f4 == 0.f)
     return false;
 
   float3 n1_copy = n1, n2_copy = n2;
-  float angle1 = dot(n1_copy, dp2p1) / f4;
+  float angle1 = dot (n1_copy, dp2p1) / f4;
 
-  float angle2 = dot(n2_copy, dp2p1) / f4;
-  if (std::acos(std::abs(angle1)) > std::acos(std::abs(angle2))) {
+  float angle2 = dot (n2_copy, dp2p1) / f4;
+  if (std::acos (std::abs (angle1)) > std::acos (std::abs (angle2))) {
     // switch p1 and p2
     n1_copy = n2;
     n2_copy = n1;
@@ -76,8 +76,8 @@ computePairFeatures (const float3& p1,
 
   // Create a Darboux frame coordinate system u-v-w
   // u = n1; v = (p_idx - q_idx) x u / || (p_idx - q_idx) x u ||; w = u x v
-  float3 v = cross(dp2p1, n1_copy);
-  float v_norm = norm(v);
+  float3 v = cross (dp2p1, n1_copy);
+  float v_norm = norm (v);
   if (v_norm == 0.0f)
     return false;
 
@@ -85,12 +85,12 @@ computePairFeatures (const float3& p1,
   v *= 1.f / v_norm;
 
   // Do not have to normalize w - it is a unit vector by construction
-  f2 = dot(v, n2_copy);
+  f2 = dot (v, n2_copy);
 
-  float3 w = cross(n1_copy, v);
+  float3 w = cross (n1_copy, v);
   // Compute f1 = arctan (w * n2, u * n2) i.e. angle of n2 in the x=u, y=w coordinate
   // system
-  f1 = std::atan2(dot(w, n2_copy), dot(n1_copy, n2_copy)); // @todo optimize this
+  f1 = std::atan2 (dot (w, n2_copy), dot (n1_copy, n2_copy)); // @todo optimize this
 
   return true;
 }
@@ -111,7 +111,7 @@ computeRGBPairFeatures (const float3& p1,
                         float& f7)
 {
   float3 dp2p1 = p2 - p1;
-  f4 = norm(dp2p1);
+  f4 = norm (dp2p1);
 
   if (f4 == 0.0f) {
     f1 = f2 = f3 = f4 = f5 = f6 = f7 = 0.0f;
@@ -119,14 +119,14 @@ computeRGBPairFeatures (const float3& p1,
   }
 
   float3 n1_copy = n1, n2_copy = n2;
-  float angle1 = dot(n1_copy, dp2p1) / f4;
+  float angle1 = dot (n1_copy, dp2p1) / f4;
 
   f3 = angle1;
 
   // Create a Darboux frame coordinate system u-v-w
   // u = n1; v = (p_idx - q_idx) x u / || (p_idx - q_idx) x u ||; w = u x v
-  float3 v = cross(dp2p1, n1_copy);
-  float v_norm = norm(v);
+  float3 v = cross (dp2p1, n1_copy);
+  float v_norm = norm (v);
   if (v_norm == 0.0f) {
     f1 = f2 = f3 = f4 = f5 = f6 = f7 = 0.0f;
     return false;
@@ -134,14 +134,14 @@ computeRGBPairFeatures (const float3& p1,
   // Normalize v
   v *= 1.f / v_norm;
 
-  float3 w = cross(n1_copy, v);
+  float3 w = cross (n1_copy, v);
   // Do not have to normalize w - it is a unit vector by construction
 
-  f2 = dot(v, n2_copy);
+  f2 = dot (v, n2_copy);
 
   // Compute f1 = arctan (w * n2, u * n2) i.e. angle of n2 in the x=u, y=w coordinate
   // system
-  f1 = std::atan2(dot(w, n2_copy), dot(n1_copy, n2_copy));
+  f1 = std::atan2 (dot (w, n2_copy), dot (n1_copy, n2_copy));
 
   // everything before was standard 4D-Darboux frame feature pair
   // now, for the experimental color stuff
@@ -190,15 +190,15 @@ computePPFPairFeature (const float3& p1,
 {
   float3 delta = p2 - p1;
 
-  f4 = norm(delta);
+  f4 = norm (delta);
 
   delta.x /= f4;
   delta.y /= f4;
   delta.z /= f4;
 
-  f1 = dot(n1, delta);
-  f2 = dot(n2, delta);
-  f3 = dot(n1, n2);
+  f1 = dot (n1, delta);
+  f2 = dot (n2, delta);
+  f3 = dot (n1, n2);
 
   return true;
 }
@@ -209,19 +209,19 @@ computeAlfaM (const float3& model_reference_point,
               const float3& model_point,
               float& alpha_m)
 {
-  float acos_value = std::acos(model_reference_normal.x);
+  float acos_value = std::acos (model_reference_normal.x);
 
   // float3 cross_vector = cross(model_reference_normal, Eigen::Vector3f::UnitX);
   float3 cross_vector =
-      make_float3(0, model_reference_normal.z, -model_reference_normal.y);
-  float3 cross_vector_norm = normalized(cross_vector);
+      make_float3 (0, model_reference_normal.z, -model_reference_normal.y);
+  float3 cross_vector_norm = normalized (cross_vector);
 
   // Eigen::AngleAxisf rotation_mg (acos_value, cross_vector_norm);
   // Eigen::Affine3f transform_mg = Eigen::Translation3f ( rotation_mg * ((-1) *
   // model_reference_point)) * rotation_mg;
 
   float3 row1, row2, row3; // == rotation_mg
-  AngleAxisf(acos_value, cross_vector_norm, row1, row2, row3);
+  AngleAxisf (acos_value, cross_vector_norm, row1, row2, row3);
 
   float3 translation;
   // translation.x = row1.x * -model_reference_point.x + row1.y *
@@ -239,9 +239,9 @@ computeAlfaM (const float3& model_reference_point,
   model_point_transformed.z = translation.z + row3.x * model_point.x +
                               row3.y * model_point.y + row3.z * model_point.z;
 
-  float angle = std::atan2(-model_point_transformed.z, model_point_transformed.y);
+  float angle = std::atan2 (-model_point_transformed.z, model_point_transformed.y);
 
-  if (sinf(angle) * model_point_transformed.z < 0.0f)
+  if (sinf (angle) * model_point_transformed.z < 0.0f)
     // if (angle * model_point_transformed.z < 0.ff)
     angle *= -1;
   alpha_m = -angle;

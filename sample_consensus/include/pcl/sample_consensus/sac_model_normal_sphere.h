@@ -95,8 +95,9 @@ public:
    * \param[in] random if true set the random seed to the current time, else set to
    * 12345 (default: false)
    */
-  SampleConsensusModelNormalSphere(const PointCloudConstPtr& cloud, bool random = false)
-  : SampleConsensusModelSphere<PointT>(cloud, random)
+  SampleConsensusModelNormalSphere (const PointCloudConstPtr& cloud,
+                                    bool random = false)
+  : SampleConsensusModelSphere<PointT> (cloud, random)
   , SampleConsensusModelFromNormals<PointT, PointNT>()
   {
     model_name_ = "SampleConsensusModelNormalSphere";
@@ -110,10 +111,10 @@ public:
    * \param[in] random if true set the random seed to the current time, else set to
    * 12345 (default: false)
    */
-  SampleConsensusModelNormalSphere(const PointCloudConstPtr& cloud,
-                                   const Indices& indices,
-                                   bool random = false)
-  : SampleConsensusModelSphere<PointT>(cloud, indices, random)
+  SampleConsensusModelNormalSphere (const PointCloudConstPtr& cloud,
+                                    const Indices& indices,
+                                    bool random = false)
+  : SampleConsensusModelSphere<PointT> (cloud, indices, random)
   , SampleConsensusModelFromNormals<PointT, PointNT>()
   {
     model_name_ = "SampleConsensusModelNormalSphere";

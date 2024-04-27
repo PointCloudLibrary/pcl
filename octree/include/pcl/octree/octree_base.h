@@ -117,37 +117,37 @@ public:
   Iterator
   begin (uindex_t max_depth_arg = 0u)
   {
-    return Iterator(this, max_depth_arg ? max_depth_arg : this->octree_depth_);
+    return Iterator (this, max_depth_arg ? max_depth_arg : this->octree_depth_);
   };
 
   ConstIterator
   begin (uindex_t max_depth_arg = 0u) const
   {
-    return ConstIterator(this, max_depth_arg ? max_depth_arg : this->octree_depth_);
+    return ConstIterator (this, max_depth_arg ? max_depth_arg : this->octree_depth_);
   };
 
   ConstIterator
   cbegin (uindex_t max_depth_arg = 0u) const
   {
-    return ConstIterator(this, max_depth_arg ? max_depth_arg : this->octree_depth_);
+    return ConstIterator (this, max_depth_arg ? max_depth_arg : this->octree_depth_);
   };
 
   const Iterator
   end ()
   {
-    return Iterator(this, 0, nullptr);
+    return Iterator (this, 0, nullptr);
   };
 
   const ConstIterator
   end () const
   {
-    return ConstIterator(this, 0, nullptr);
+    return ConstIterator (this, 0, nullptr);
   };
 
   const ConstIterator
   cend () const
   {
-    return ConstIterator(this, 0, nullptr);
+    return ConstIterator (this, 0, nullptr);
   };
 
   // Octree leaf node iterators
@@ -165,27 +165,27 @@ public:
   LeafNodeDepthFirstIterator
   leaf_depth_begin (uindex_t max_depth_arg = 0u)
   {
-    return LeafNodeDepthFirstIterator(
+    return LeafNodeDepthFirstIterator (
         this, max_depth_arg ? max_depth_arg : this->octree_depth_);
   };
 
   ConstLeafNodeDepthFirstIterator
   leaf_depth_begin (uindex_t max_depth_arg = 0u) const
   {
-    return ConstLeafNodeDepthFirstIterator(
+    return ConstLeafNodeDepthFirstIterator (
         this, max_depth_arg ? max_depth_arg : this->octree_depth_);
   };
 
   const LeafNodeDepthFirstIterator
   leaf_depth_end ()
   {
-    return LeafNodeDepthFirstIterator(this, 0, nullptr);
+    return LeafNodeDepthFirstIterator (this, 0, nullptr);
   };
 
   const ConstLeafNodeDepthFirstIterator
   leaf_depth_end () const
   {
-    return ConstLeafNodeDepthFirstIterator(this, 0, nullptr);
+    return ConstLeafNodeDepthFirstIterator (this, 0, nullptr);
   };
 
   // Octree depth-first iterators
@@ -195,27 +195,27 @@ public:
   DepthFirstIterator
   depth_begin (uindex_t max_depth_arg = 0u)
   {
-    return DepthFirstIterator(this,
-                              max_depth_arg ? max_depth_arg : this->octree_depth_);
+    return DepthFirstIterator (this,
+                               max_depth_arg ? max_depth_arg : this->octree_depth_);
   };
 
   ConstDepthFirstIterator
   depth_begin (uindex_t max_depth_arg = 0u) const
   {
-    return ConstDepthFirstIterator(this,
-                                   max_depth_arg ? max_depth_arg : this->octree_depth_);
+    return ConstDepthFirstIterator (
+        this, max_depth_arg ? max_depth_arg : this->octree_depth_);
   };
 
   const DepthFirstIterator
   depth_end ()
   {
-    return DepthFirstIterator(this, 0, nullptr);
+    return DepthFirstIterator (this, 0, nullptr);
   };
 
   const ConstDepthFirstIterator
   depth_end () const
   {
-    return ConstDepthFirstIterator(this, 0, nullptr);
+    return ConstDepthFirstIterator (this, 0, nullptr);
   };
 
   // Octree breadth-first iterators
@@ -225,27 +225,27 @@ public:
   BreadthFirstIterator
   breadth_begin (uindex_t max_depth_arg = 0u)
   {
-    return BreadthFirstIterator(this,
-                                max_depth_arg ? max_depth_arg : this->octree_depth_);
+    return BreadthFirstIterator (this,
+                                 max_depth_arg ? max_depth_arg : this->octree_depth_);
   };
 
   ConstBreadthFirstIterator
   breadth_begin (uindex_t max_depth_arg = 0u) const
   {
-    return ConstBreadthFirstIterator(
+    return ConstBreadthFirstIterator (
         this, max_depth_arg ? max_depth_arg : this->octree_depth_);
   };
 
   const BreadthFirstIterator
   breadth_end ()
   {
-    return BreadthFirstIterator(this, 0, nullptr);
+    return BreadthFirstIterator (this, 0, nullptr);
   };
 
   const ConstBreadthFirstIterator
   breadth_end () const
   {
-    return ConstBreadthFirstIterator(this, 0, nullptr);
+    return ConstBreadthFirstIterator (this, 0, nullptr);
   };
 
   // Octree breadth iterators at a given depth
@@ -255,25 +255,25 @@ public:
   FixedDepthIterator
   fixed_depth_begin (uindex_t fixed_depth_arg = 0u)
   {
-    return FixedDepthIterator(this, fixed_depth_arg);
+    return FixedDepthIterator (this, fixed_depth_arg);
   };
 
   ConstFixedDepthIterator
   fixed_depth_begin (uindex_t fixed_depth_arg = 0u) const
   {
-    return ConstFixedDepthIterator(this, fixed_depth_arg);
+    return ConstFixedDepthIterator (this, fixed_depth_arg);
   };
 
   const FixedDepthIterator
   fixed_depth_end ()
   {
-    return FixedDepthIterator(this, 0, nullptr);
+    return FixedDepthIterator (this, 0, nullptr);
   };
 
   const ConstFixedDepthIterator
   fixed_depth_end () const
   {
-    return ConstFixedDepthIterator(this, 0, nullptr);
+    return ConstFixedDepthIterator (this, 0, nullptr);
   };
 
   // Octree leaf node iterators
@@ -284,27 +284,27 @@ public:
   LeafNodeBreadthFirstIterator
   leaf_breadth_begin (uindex_t max_depth_arg = 0u)
   {
-    return LeafNodeBreadthFirstIterator(
+    return LeafNodeBreadthFirstIterator (
         this, max_depth_arg ? max_depth_arg : this->octree_depth_);
   };
 
   ConstLeafNodeBreadthFirstIterator
   leaf_breadth_begin (uindex_t max_depth_arg = 0u) const
   {
-    return ConstLeafNodeBreadthFirstIterator(
+    return ConstLeafNodeBreadthFirstIterator (
         this, max_depth_arg ? max_depth_arg : this->octree_depth_);
   };
 
   const LeafNodeBreadthFirstIterator
   leaf_breadth_end ()
   {
-    return LeafNodeBreadthFirstIterator(this, 0, nullptr);
+    return LeafNodeBreadthFirstIterator (this, 0, nullptr);
   };
 
   const ConstLeafNodeBreadthFirstIterator
   leaf_breadth_end () const
   {
-    return ConstLeafNodeBreadthFirstIterator(this, 0, nullptr);
+    return ConstLeafNodeBreadthFirstIterator (this, 0, nullptr);
   };
 
   /** \brief Empty constructor. */
@@ -314,25 +314,25 @@ public:
   virtual ~OctreeBase();
 
   /** \brief Copy constructor. */
-  OctreeBase(const OctreeBase& source)
-  : leaf_count_(source.leaf_count_)
-  , branch_count_(source.branch_count_)
-  , root_node_(new(BranchNode)(*(source.root_node_)))
-  , depth_mask_(source.depth_mask_)
-  , octree_depth_(source.octree_depth_)
-  , dynamic_depth_enabled_(source.dynamic_depth_enabled_)
-  , max_key_(source.max_key_)
+  OctreeBase (const OctreeBase& source)
+  : leaf_count_ (source.leaf_count_)
+  , branch_count_ (source.branch_count_)
+  , root_node_ (new (BranchNode) (*(source.root_node_)))
+  , depth_mask_ (source.depth_mask_)
+  , octree_depth_ (source.octree_depth_)
+  , dynamic_depth_enabled_ (source.dynamic_depth_enabled_)
+  , max_key_ (source.max_key_)
   {}
 
   /** \brief Copy operator. */
   OctreeBase&
-  operator=(const OctreeBase& source)
+  operator= (const OctreeBase& source)
   {
     leaf_count_ = source.leaf_count_;
     branch_count_ = source.branch_count_;
     delete root_node_;
 
-    root_node_ = new (BranchNode)(*(source.root_node_));
+    root_node_ = new (BranchNode) (*(source.root_node_));
     depth_mask_ = source.depth_mask_;
     max_key_ = source.max_key_;
     octree_depth_ = source.octree_depth_;
@@ -483,7 +483,7 @@ protected:
     LeafNode* leaf_node = nullptr;
     BranchNode* leaf_node_parent;
 
-    createLeafRecursive(key_arg, depth_mask_, root_node_, leaf_node, leaf_node_parent);
+    createLeafRecursive (key_arg, depth_mask_, root_node_, leaf_node, leaf_node_parent);
 
     LeafContainerT* ret = leaf_node->getContainerPtr();
 
@@ -498,7 +498,7 @@ protected:
   findLeaf (const OctreeKey& key_arg) const
   {
     LeafContainerT* result = nullptr;
-    findLeafRecursive(key_arg, depth_mask_, root_node_, result);
+    findLeafRecursive (key_arg, depth_mask_, root_node_, result);
     return result;
   }
 
@@ -509,7 +509,7 @@ protected:
   bool
   existLeaf (const OctreeKey& key_arg) const
   {
-    return (findLeaf(key_arg) != nullptr);
+    return (findLeaf (key_arg) != nullptr);
   }
 
   /** \brief Remove leaf node from octree
@@ -519,7 +519,7 @@ protected:
   removeLeaf (const OctreeKey& key_arg)
   {
     if (key_arg <= max_key_)
-      deleteLeafRecursive(key_arg, depth_mask_, root_node_);
+      deleteLeafRecursive (key_arg, depth_mask_, root_node_);
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -542,7 +542,7 @@ protected:
   branchHasChild (const BranchNode& branch_arg, unsigned char child_idx_arg) const
   {
     // test occupancyByte for child existence
-    return (branch_arg.getChildPtr(child_idx_arg) != nullptr);
+    return (branch_arg.getChildPtr (child_idx_arg) != nullptr);
   }
 
   /** \brief Retrieve a child node pointer for child node at child_idx.
@@ -553,7 +553,7 @@ protected:
   OctreeNode*
   getBranchChildPtr (const BranchNode& branch_arg, unsigned char child_idx_arg) const
   {
-    return branch_arg.getChildPtr(child_idx_arg);
+    return branch_arg.getChildPtr (child_idx_arg);
   }
 
   /** \brief Assign new child node to branch
@@ -581,8 +581,8 @@ protected:
     // create bit pattern
     node_bits = 0;
     for (unsigned char i = 0; i < 8; i++) {
-      const OctreeNode* child = branch_arg.getChildPtr(i);
-      node_bits |= static_cast<char>((!!child) << i);
+      const OctreeNode* child = branch_arg.getChildPtr (i);
+      node_bits |= static_cast<char> ((!!child) << i);
     }
 
     return (node_bits);
@@ -595,13 +595,13 @@ protected:
   void
   deleteBranchChild (BranchNode& branch_arg, unsigned char child_idx_arg)
   {
-    if (branch_arg.hasChild(child_idx_arg)) {
+    if (branch_arg.hasChild (child_idx_arg)) {
       OctreeNode* branch_child = branch_arg[child_idx_arg];
 
       switch (branch_child->getNodeType()) {
       case BRANCH_NODE: {
         // free child branch recursively
-        deleteBranch(*static_cast<BranchNode*>(branch_child));
+        deleteBranch (*static_cast<BranchNode*> (branch_child));
         // delete branch node
         delete branch_child;
       } break;
@@ -628,7 +628,7 @@ protected:
   {
     // delete all branch node children
     for (char i = 0; i < 8; i++)
-      deleteBranchChild(branch_arg, i);
+      deleteBranchChild (branch_arg, i);
   }
 
   /** \brief Create and add a new branch child to a branch class
@@ -640,7 +640,7 @@ protected:
   createBranchChild (BranchNode& branch_arg, unsigned char child_idx_arg)
   {
     auto* new_branch_child = new BranchNode();
-    branch_arg[child_idx_arg] = static_cast<OctreeNode*>(new_branch_child);
+    branch_arg[child_idx_arg] = static_cast<OctreeNode*> (new_branch_child);
 
     return new_branch_child;
   }
@@ -654,7 +654,7 @@ protected:
   createLeafChild (BranchNode& branch_arg, unsigned char child_idx_arg)
   {
     auto* new_leaf_child = new LeafNode();
-    branch_arg[child_idx_arg] = static_cast<OctreeNode*>(new_leaf_child);
+    branch_arg[child_idx_arg] = static_cast<OctreeNode*> (new_leaf_child);
 
     return new_leaf_child;
   }

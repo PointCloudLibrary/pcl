@@ -79,20 +79,20 @@ public:
    * param[in] volume_res volume grid resolution (typically device::VOLUME_X x
    * device::VOLUME_Y x device::VOLUME_Z)
    */
-  DeviceVolume(const Eigen::Vector3f& volume_size, const Eigen::Vector3i& volume_res)
-  : volume_size_(volume_size)
+  DeviceVolume (const Eigen::Vector3f& volume_size, const Eigen::Vector3i& volume_res)
+  : volume_size_ (volume_size)
   {
     // initialize GPU
-    device_volume_.create(
+    device_volume_.create (
         volume_res[1] * volume_res[2],
         volume_res[0]); // (device::VOLUME_Y * device::VOLUME_Z, device::VOLUME_X)
-    pcl::device::initVolume(device_volume_);
+    pcl::device::initVolume (device_volume_);
 
     // truncation distance
     Eigen::Vector3f voxel_size = volume_size.array() / volume_res.array().cast<float>();
-    trunc_dist_ = std::max(
+    trunc_dist_ = std::max (
         (float)min_trunc_dist,
-        2.1f * std::max(voxel_size[0], std::max(voxel_size[1], voxel_size[2])));
+        2.1f * std::max (voxel_size[0], std::max (voxel_size[1], voxel_size[2])));
   };
 
   /** \brief Creates the TSDF volume on the GPU
@@ -121,7 +121,7 @@ private:
   D&
   device_cast (Matx& matx)
   {
-    return (*reinterpret_cast<D*>(matx.data()));
+    return (*reinterpret_cast<D*> (matx.data()));
   };
 
   pcl::gpu::DeviceArray2D<int> device_volume_;
@@ -132,8 +132,9 @@ private:
 };
 
 void
-DeviceVolume::createFromDepth(const pcl::device::PtrStepSz<const unsigned short>& depth,
-                              const pcl::device::Intr& intr)
+DeviceVolume::createFromDepth (
+    const pcl::device::PtrStepSz<const unsigned short>& depth,
+    const pcl::device::Intr& intr)
 {
   using namespace pcl;
 
@@ -144,40 +145,40 @@ DeviceVolume::createFromDepth(const pcl::device::PtrStepSz<const unsigned short>
 
   // scale depth values
   gpu::DeviceArray2D<float> device_depth_scaled;
-  device_depth_scaled.create(rows, cols);
+  device_depth_scaled.create (rows, cols);
 
   // upload depth map on GPU
   pcl::gpu::KinfuTracker::DepthMap device_depth;
-  device_depth.upload(depth.data, depth.step, depth.rows, depth.cols);
+  device_depth.upload (depth.data, depth.step, depth.rows, depth.cols);
 
   // initial camera rotation and translation
   Matrix3frm init_Rcam = Eigen::Matrix3f::Identity();
   Eigen::Vector3f init_tcam =
-      volume_size_ * 0.5f - Eigen::Vector3f(0, 0, volume_size_(2) / 2 * 1.2f);
+      volume_size_ * 0.5f - Eigen::Vector3f (0, 0, volume_size_ (2) / 2 * 1.2f);
 
   Matrix3frm init_Rcam_inv = init_Rcam.inverse();
-  device::Mat33& device_Rcam_inv = device_cast<device::Mat33>(init_Rcam_inv);
-  float3& device_tcam = device_cast<float3>(init_tcam);
+  device::Mat33& device_Rcam_inv = device_cast<device::Mat33> (init_Rcam_inv);
+  float3& device_tcam = device_cast<float3> (init_tcam);
 
   // integrate depth values into volume
-  float3 device_volume_size = device_cast<float3>(volume_size_);
-  device::integrateTsdfVolume(device_depth,
-                              intr,
-                              device_volume_size,
-                              device_Rcam_inv,
-                              device_tcam,
-                              trunc_dist_,
-                              device_volume_,
-                              device_depth_scaled);
+  float3 device_volume_size = device_cast<float3> (volume_size_);
+  device::integrateTsdfVolume (device_depth,
+                               intr,
+                               device_volume_size,
+                               device_Rcam_inv,
+                               device_tcam,
+                               trunc_dist_,
+                               device_volume_,
+                               device_depth_scaled);
 }
 
 bool
-DeviceVolume::getVolume(pcl::TSDFVolume<VoxelT, WeightT>::Ptr& volume)
+DeviceVolume::getVolume (pcl::TSDFVolume<VoxelT, WeightT>::Ptr& volume)
 {
   int volume_size = device_volume_.rows() * device_volume_.cols();
 
   if ((std::size_t)volume_size != volume->size()) {
-    pc::print_error(
+    pc::print_error (
         "Device volume size (%d) and tsdf volume size (%d) don't match. ABORTING!\n",
         volume_size,
         volume->size());
@@ -187,7 +188,7 @@ DeviceVolume::getVolume(pcl::TSDFVolume<VoxelT, WeightT>::Ptr& volume)
   std::vector<VoxelT>& volume_vec = volume->volumeWriteable();
   std::vector<WeightT>& weights_vec = volume->weightsWriteable();
 
-  device_volume_.download(&volume_vec[0], device_volume_.cols() * sizeof(int));
+  device_volume_.download (&volume_vec[0], device_volume_.cols() * sizeof (int));
 
 #pragma omp parallel for default(none) shared(volume, volume_vec, weights_vec)
   for (int i = 0; i < (int)volume->size(); ++i) {
@@ -200,21 +201,21 @@ DeviceVolume::getVolume(pcl::TSDFVolume<VoxelT, WeightT>::Ptr& volume)
 }
 
 bool
-DeviceVolume::getCloud(pcl::PointCloud<pcl::PointXYZ>::Ptr& cloud)
+DeviceVolume::getCloud (pcl::PointCloud<pcl::PointXYZ>::Ptr& cloud)
 {
   constexpr int DEFAULT_VOLUME_CLOUD_BUFFER_SIZE = 10 * 1000 * 1000;
 
   // point buffer on the device
-  pcl::gpu::DeviceArray<pcl::PointXYZ> device_cloud_buffer(
+  pcl::gpu::DeviceArray<pcl::PointXYZ> device_cloud_buffer (
       DEFAULT_VOLUME_CLOUD_BUFFER_SIZE);
 
   // do the extraction
-  float3 device_volume_size = device_cast<float3>(volume_size_);
-  /*size_t size =*/pcl::device::extractCloud(
+  float3 device_volume_size = device_cast<float3> (volume_size_);
+  /*size_t size =*/pcl::device::extractCloud (
       device_volume_, device_volume_size, device_cloud_buffer);
 
   // write into point cloud structure
-  device_cloud_buffer.download(cloud->points);
+  device_cloud_buffer.download (cloud->points);
   cloud->width = cloud->size();
   cloud->height = 1;
 
@@ -242,8 +243,8 @@ convertDepthRGBToCloud (
 {
   // resize point cloud if it doesn't fit
   if (depth.rows != (int)cloud->height || depth.cols != (int)cloud->width)
-    cloud = pcl::PointCloud<PointT>::Ptr(
-        new pcl::PointCloud<PointT>(depth.cols, depth.rows));
+    cloud = pcl::PointCloud<PointT>::Ptr (
+        new pcl::PointCloud<PointT> (depth.cols, depth.rows));
 
   // std::cout << "step = " << rgb24.step << std::endl;
   // std::cout << "elem size = " << rgb24.elem_size << std::endl;
@@ -251,7 +252,7 @@ convertDepthRGBToCloud (
   // iterate over all depth and rgb values
   for (int y = 0; y < depth.rows; ++y) {
     // get pointers to the values in one row
-    const unsigned short* depth_row_ptr = depth.ptr(y);
+    const unsigned short* depth_row_ptr = depth.ptr (y);
     // const pcl::gpu::KinfuTracker::RGB *rgb24_row_ptr = rgb24.ptr(y);
     // const char* rgb24_row_ptr = (const char*) rgb24.ptr(y);
 
@@ -260,7 +261,7 @@ convertDepthRGBToCloud (
       float u = (x - intr.cx) / intr.fx;
       float v = (y - intr.cy) / intr.fy;
 
-      PointT& point = cloud->at(x, y);
+      PointT& point = cloud->at (x, y);
 
       point.z = depth_row_ptr[x] / 1000.0f;
       point.x = u * point.z;
@@ -299,20 +300,20 @@ captureCloud (pcl::gpu::CaptureOpenNI& capture,
               pcl::PointCloud<PointT>::Ptr& cloud)
 {
   // capture frame
-  if (!capture.grab(depth, rgb24)) {
-    pc::print_error("Can't capture via sensor.\n");
+  if (!capture.grab (depth, rgb24)) {
+    pc::print_error ("Can't capture via sensor.\n");
     return false;
   }
 
   // get intrinsics from capture
   float f = capture.depth_focal_length_VGA;
-  intr = pcl::device::Intr(f, f, depth.cols / 2, depth.rows / 2);
+  intr = pcl::device::Intr (f, f, depth.cols / 2, depth.rows / 2);
 
   // generate point cloud
-  cloud =
-      pcl::PointCloud<PointT>::Ptr(new pcl::PointCloud<PointT>(depth.cols, depth.rows));
-  if (!convertDepthRGBToCloud(depth, rgb24, intr, cloud)) {
-    pc::print_error("Conversion depth --> cloud was not successful!\n");
+  cloud = pcl::PointCloud<PointT>::Ptr (
+      new pcl::PointCloud<PointT> (depth.cols, depth.rows));
+  if (!convertDepthRGBToCloud (depth, rgb24, intr, cloud)) {
+    pc::print_error ("Conversion depth --> cloud was not successful!\n");
     return false;
   }
 
@@ -348,22 +349,22 @@ keyboard_callback (const pcl::visualization::KeyboardEvent& event, void* cookie)
 void
 printUsage (char* argv[])
 {
-  pc::print_error("usage: %s <options>\n\n", argv[0]);
+  pc::print_error ("usage: %s <options>\n\n", argv[0]);
 
-  pc::print_info("  where options are:\n");
-  pc::print_info("                    -cf = cloud filename (default: ");
-  pc::print_value("%s)", cloud_file.c_str());
-  pc::print_info(")\n");
-  pc::print_info("                    -vf = volume filename (default: ");
-  pc::print_value("%s", volume_file.c_str());
-  pc::print_info(")\n");
-  pc::print_info(
+  pc::print_info ("  where options are:\n");
+  pc::print_info ("                    -cf = cloud filename (default: ");
+  pc::print_value ("%s)", cloud_file.c_str());
+  pc::print_info (")\n");
+  pc::print_info ("                    -vf = volume filename (default: ");
+  pc::print_value ("%s", volume_file.c_str());
+  pc::print_info (")\n");
+  pc::print_info (
       "                    -ec = extract cloud from generated volume (default: ");
-  pc::print_value("0 (false)", volume_file.c_str());
-  pc::print_info(")\n");
-  pc::print_info("                    -td = minimal truncation distance (default: ");
-  pc::print_value("%f", min_trunc_dist);
-  pc::print_info(")\n");
+  pc::print_value ("0 (false)", volume_file.c_str());
+  pc::print_info (")\n");
+  pc::print_info ("                    -td = minimal truncation distance (default: ");
+  pc::print_value ("%f", min_trunc_dist);
+  pc::print_info (")\n");
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -373,43 +374,43 @@ printUsage (char* argv[])
 int
 main (int argc, char* argv[])
 {
-  pc::print_info("Records a 2.5 point cloud (organized = depth map) as TSDF volume. "
-                 "For more information, use: %s -h\n",
-                 argv[0]);
+  pc::print_info ("Records a 2.5 point cloud (organized = depth map) as TSDF volume. "
+                  "For more information, use: %s -h\n",
+                  argv[0]);
 
   /***
    * PARSE COMMAND LINE
    */
 
   // check for help
-  if (pc::find_argument(argc, argv, "-h") > 0) {
-    pc::print_warn("Showing help: \n\n");
-    printUsage(argv);
+  if (pc::find_argument (argc, argv, "-h") > 0) {
+    pc::print_warn ("Showing help: \n\n");
+    printUsage (argv);
     return (EXIT_SUCCESS);
   }
 
   // parse input cloud file
-  pc::parse_argument(argc, argv, "-cf", cloud_file);
+  pc::parse_argument (argc, argv, "-cf", cloud_file);
 
   // parse output volume file
-  pc::parse_argument(argc, argv, "-vf", volume_file);
+  pc::parse_argument (argc, argv, "-vf", volume_file);
 
   // parse options to extract and save cloud from volume
-  pc::parse_argument(argc, argv, "-ec", extract_cloud_volume);
+  pc::parse_argument (argc, argv, "-ec", extract_cloud_volume);
 
   // parse minimual truncation distance
-  pc::parse_argument(argc, argv, "-td", min_trunc_dist);
+  pc::parse_argument (argc, argv, "-td", min_trunc_dist);
 
   /***
    * SET UP AND VISUALIZATION
    */
 
-  pc::print_info(" -------------------- START OF ALGORITHM --------------------\n");
+  pc::print_info (" -------------------- START OF ALGORITHM --------------------\n");
 
-  pcl::gpu::setDevice(0);
-  pcl::gpu::printShortCudaDeviceInfo(0);
+  pcl::gpu::setDevice (0);
+  pcl::gpu::printShortCudaDeviceInfo (0);
 
-  pcl::gpu::CaptureOpenNI capture(0); // first OpenNI device;
+  pcl::gpu::CaptureOpenNI capture (0); // first OpenNI device;
   pcl::device::PtrStepSz<const unsigned short> depth;
   pcl::device::PtrStepSz<const pcl::gpu::KinfuTracker::PixelRGB> rgb24;
 
@@ -417,7 +418,7 @@ main (int argc, char* argv[])
   pcl::device::Intr intr;
 
   // capture first frame
-  if (!captureCloud(capture, depth, rgb24, intr, cloud))
+  if (!captureCloud (capture, depth, rgb24, intr, cloud))
     return EXIT_FAILURE;
 
   // start visualizer
@@ -425,27 +426,27 @@ main (int argc, char* argv[])
   // pcl::visualization::PointCloudColorHandlerRGBField<PointT> color_handler (cloud);
   // pcl::visualization::PointCloudColorHandlerCustom<PointT> color_handler (cloud, 0.5,
   // 0.5, 0.5);
-  visualizer.addPointCloud<PointT>(cloud); //, color_handler, "cloud");
-  visualizer.setPointCloudRenderingProperties(
+  visualizer.addPointCloud<PointT> (cloud); //, color_handler, "cloud");
+  visualizer.setPointCloudRenderingProperties (
       pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 1);
-  visualizer.addCoordinateSystem(1, "global");
+  visualizer.addCoordinateSystem (1, "global");
   visualizer.initCameraParameters();
-  visualizer.registerKeyboardCallback(keyboard_callback);
+  visualizer.registerKeyboardCallback (keyboard_callback);
   visualizer.spinOnce();
 
   /***
    * CAPTURING DATA AND GENERATING CLOUD
    */
 
-  pc::print_highlight("Capturing data ... \n");
+  pc::print_highlight ("Capturing data ... \n");
 
   while (!quit && !save) {
     // capture data and convert to point cloud
-    if (!captureCloud(capture, depth, rgb24, intr, cloud))
+    if (!captureCloud (capture, depth, rgb24, intr, cloud))
       return EXIT_FAILURE;
 
     // update visualization
-    visualizer.updatePointCloud<PointT>(cloud); //, color_handler, "cloud");
+    visualizer.updatePointCloud<PointT> (cloud); //, color_handler, "cloud");
     visualizer.spinOnce();
   }
 
@@ -457,96 +458,96 @@ main (int argc, char* argv[])
    */
 
   // create volume object
-  pcl::TSDFVolume<VoxelT, WeightT>::Ptr volume(new pcl::TSDFVolume<VoxelT, WeightT>);
-  Eigen::Vector3i resolution(
+  pcl::TSDFVolume<VoxelT, WeightT>::Ptr volume (new pcl::TSDFVolume<VoxelT, WeightT>);
+  Eigen::Vector3i resolution (
       pcl::device::VOLUME_X, pcl::device::VOLUME_Y, pcl::device::VOLUME_Z);
-  Eigen::Vector3f volume_size = Eigen::Vector3f::Constant(3000);
-  volume->resize(resolution, volume_size);
+  Eigen::Vector3f volume_size = Eigen::Vector3f::Constant (3000);
+  volume->resize (resolution, volume_size);
 
-  DeviceVolume::Ptr device_volume(
-      new DeviceVolume(volume->volumeSize(), volume->gridResolution()));
+  DeviceVolume::Ptr device_volume (
+      new DeviceVolume (volume->volumeSize(), volume->gridResolution()));
 
   // integrate depth in device volume
-  pc::print_highlight("Converting depth map to volume ... ");
+  pc::print_highlight ("Converting depth map to volume ... ");
   std::cout << std::flush;
-  device_volume->createFromDepth(depth, intr);
+  device_volume->createFromDepth (depth, intr);
 
   // get volume from device
-  if (!device_volume->getVolume(volume)) {
-    pc::print_error("Coudln't get volume from device!\n");
+  if (!device_volume->getVolume (volume)) {
+    pc::print_error ("Coudln't get volume from device!\n");
     return (EXIT_FAILURE);
   }
-  pc::print_info("done [%d voxels]\n", volume->size());
+  pc::print_info ("done [%d voxels]\n", volume->size());
 
   // generating TSDF cloud
-  pc::print_highlight("Generating tsdf volume cloud ... ");
+  pc::print_highlight ("Generating tsdf volume cloud ... ");
   std::cout << std::flush;
-  pcl::PointCloud<pcl::PointXYZI>::Ptr tsdf_cloud(new pcl::PointCloud<pcl::PointXYZI>);
-  volume->convertToTsdfCloud(tsdf_cloud);
-  pc::print_info("done [%d points]\n", tsdf_cloud->size());
+  pcl::PointCloud<pcl::PointXYZI>::Ptr tsdf_cloud (new pcl::PointCloud<pcl::PointXYZI>);
+  volume->convertToTsdfCloud (tsdf_cloud);
+  pc::print_info ("done [%d points]\n", tsdf_cloud->size());
 
   // get cloud from volume
-  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_volume(new pcl::PointCloud<pcl::PointXYZ>);
+  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_volume (new pcl::PointCloud<pcl::PointXYZ>);
   if (extract_cloud_volume) {
-    pc::print_highlight("Generating cloud from volume ... ");
+    pc::print_highlight ("Generating cloud from volume ... ");
     std::cout << std::flush;
-    if (!device_volume->getCloud(cloud_volume)) {
-      pc::print_error("Cloudn't get cloud from device volume!\n");
+    if (!device_volume->getCloud (cloud_volume)) {
+      pc::print_error ("Cloudn't get cloud from device volume!\n");
       return (EXIT_FAILURE);
     }
-    pc::print_info("done [%d points]\n", cloud_volume->size());
+    pc::print_info ("done [%d points]\n", cloud_volume->size());
   }
 
   /***
    * STORE RESULTS
    */
 
-  pc::print_highlight("Storing results:\n");
+  pc::print_highlight ("Storing results:\n");
 
   // point cloud
-  pc::print_info("Saving captured cloud to ");
-  pc::print_value("%s", cloud_file.c_str());
-  pc::print_info(" ... ");
-  if (pcl::io::savePCDFile(cloud_file, *cloud, true) < 0) {
+  pc::print_info ("Saving captured cloud to ");
+  pc::print_value ("%s", cloud_file.c_str());
+  pc::print_info (" ... ");
+  if (pcl::io::savePCDFile (cloud_file, *cloud, true) < 0) {
     std::cout << std::endl;
-    pc::print_error("Cloudn't save the point cloud to file %s.\n", cloud_file.c_str());
+    pc::print_error ("Cloudn't save the point cloud to file %s.\n", cloud_file.c_str());
   }
   else
-    pc::print_info("done [%d points].\n", cloud->size());
+    pc::print_info ("done [%d points].\n", cloud->size());
 
   // volume
-  if (!volume->save(volume_file, true))
-    pc::print_error("Cloudn't save the volume to file %s.\n", volume_file.c_str());
+  if (!volume->save (volume_file, true))
+    pc::print_error ("Cloudn't save the volume to file %s.\n", volume_file.c_str());
 
   // TSDF point cloud
-  std::string tsdf_cloud_file(pcl::getFilenameWithoutExtension(volume_file) +
-                              "_cloud.pcd");
-  pc::print_info("Saving volume cloud to ");
-  pc::print_value("%s", tsdf_cloud_file.c_str());
-  pc::print_info(" ... ");
-  if (pcl::io::savePCDFile(tsdf_cloud_file, *tsdf_cloud, true) < 0) {
+  std::string tsdf_cloud_file (pcl::getFilenameWithoutExtension (volume_file) +
+                               "_cloud.pcd");
+  pc::print_info ("Saving volume cloud to ");
+  pc::print_value ("%s", tsdf_cloud_file.c_str());
+  pc::print_info (" ... ");
+  if (pcl::io::savePCDFile (tsdf_cloud_file, *tsdf_cloud, true) < 0) {
     std::cout << std::endl;
-    pc::print_error("Cloudn't save the volume point cloud to file %s.\n",
-                    tsdf_cloud_file.c_str());
+    pc::print_error ("Cloudn't save the volume point cloud to file %s.\n",
+                     tsdf_cloud_file.c_str());
   }
   else
-    pc::print_info("done [%d points].\n", tsdf_cloud->size());
+    pc::print_info ("done [%d points].\n", tsdf_cloud->size());
 
   // point cloud from volume
   if (extract_cloud_volume) {
-    std::string cloud_volume_file(pcl::getFilenameWithoutExtension(cloud_file) +
-                                  "_from_volume.pcd");
-    pc::print_info("Saving cloud from volume to ");
-    pc::print_value("%s", cloud_volume_file.c_str());
-    pc::print_info(" ... ");
-    if (pcl::io::savePCDFile(cloud_volume_file, *cloud_volume, true) < 0) {
+    std::string cloud_volume_file (pcl::getFilenameWithoutExtension (cloud_file) +
+                                   "_from_volume.pcd");
+    pc::print_info ("Saving cloud from volume to ");
+    pc::print_value ("%s", cloud_volume_file.c_str());
+    pc::print_info (" ... ");
+    if (pcl::io::savePCDFile (cloud_volume_file, *cloud_volume, true) < 0) {
       std::cout << std::endl;
-      pc::print_error("Cloudn't save the point cloud to file %s.\n",
-                      cloud_volume_file.c_str());
+      pc::print_error ("Cloudn't save the point cloud to file %s.\n",
+                       cloud_volume_file.c_str());
     }
     else
-      pc::print_info("done [%d points].\n", cloud_volume->size());
+      pc::print_info ("done [%d points].\n", cloud_volume->size());
   }
 
-  pc::print_info(" --------------------  END OF ALGORITHM  --------------------\n");
+  pc::print_info (" --------------------  END OF ALGORITHM  --------------------\n");
 }

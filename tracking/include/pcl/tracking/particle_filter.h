@@ -53,12 +53,12 @@ public:
   : representative_state_(), motion_(), pass_x_(), pass_y_(), pass_z_()
   {
     tracker_name_ = "ParticleFilterTracker";
-    pass_x_.setFilterFieldName("x");
-    pass_y_.setFilterFieldName("y");
-    pass_z_.setFilterFieldName("z");
-    pass_x_.setKeepOrganized(false);
-    pass_y_.setKeepOrganized(false);
-    pass_z_.setKeepOrganized(false);
+    pass_x_.setFilterFieldName ("x");
+    pass_y_.setFilterFieldName ("y");
+    pass_z_.setFilterFieldName ("z");
+    pass_x_.setKeepOrganized (false);
+    pass_y_.setKeepOrganized (false);
+    pass_z_.setKeepOrganized (false);
   }
 
   /** \brief Set the number of iteration.
@@ -245,7 +245,7 @@ public:
   inline double
   normalizeParticleWeight (double w, double w_min, double w_max)
   {
-    return std::exp(1.0 - alpha_ * (w - w_min) / (w_max - w_min));
+    return std::exp (1.0 - alpha_ * (w - w_min) / (w_max - w_min));
   }
 
   /** \brief Set the value of alpha.
@@ -274,9 +274,9 @@ public:
       use_normal_ = use_normal;
       return;
     }
-    PCL_WARN("[pcl::%s::setUseNormal] "
-             "use_normal_ == true is not supported in this Point Type.\n",
-             getClassName().c_str());
+    PCL_WARN ("[pcl::%s::setUseNormal] "
+              "use_normal_ == true is not supported in this Point Type.\n",
+              getClassName().c_str());
     use_normal_ = false;
   }
 
@@ -445,9 +445,9 @@ protected:
   void
   computeTransformedPointCloudWithNormal (const StateT&, pcl::Indices&, PointCloudIn&)
   {
-    PCL_WARN("[pcl::%s::computeTransformedPointCloudWithNormal] "
-             "use_normal_ == true is not supported in this Point Type.\n",
-             getClassName().c_str());
+    PCL_WARN ("[pcl::%s::computeTransformedPointCloudWithNormal] "
+              "use_normal_ == true is not supported in this Point Type.\n",
+              getClassName().c_str());
   }
 #endif
 

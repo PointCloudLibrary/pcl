@@ -14,9 +14,9 @@ private:
 
 public:
   Scene();
-  Scene(const Scene& op) = delete;
+  Scene (const Scene& op) = delete;
   Scene&
-  operator=(const Scene& op) = delete;
+  operator= (const Scene& op) = delete;
 
   // Singleton
   static Scene*

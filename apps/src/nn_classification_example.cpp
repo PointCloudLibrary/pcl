@@ -44,17 +44,17 @@ main (int, char* argv[])
   // Load input file
   char* file_name = argv[1];
   pcl::PCLPointCloud2 cloud_blob;
-  pcl::io::loadPCDFile(file_name, cloud_blob);
+  pcl::io::loadPCDFile (file_name, cloud_blob);
 
   // Do general classification using VFHClassifierNN
   pcl::VFHClassifierNN vfh_classifier;
-  vfh_classifier.loadTrainingFeatures(argv[2], argv[3]);
+  vfh_classifier.loadTrainingFeatures (argv[2], argv[3]);
   vfh_classifier.finalizeTraining();
-  const auto result = vfh_classifier.classify(cloud_blob);
+  const auto result = vfh_classifier.classify (cloud_blob);
 
   // Print results
   for (std::size_t i = 0; i < result->first.size(); ++i)
-    std::cerr << result->first.at(i) << ": " << result->second.at(i) << std::endl;
+    std::cerr << result->first.at (i) << ": " << result->second.at (i) << std::endl;
 
   return 0;
 }

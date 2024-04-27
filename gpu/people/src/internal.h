@@ -61,7 +61,8 @@ using MultiLabels = DeviceArray2D<char4>;
 struct Intr {
   float fx, fy, cx, cy;
   Intr() {}
-  Intr(float fx_, float fy_, float cx_, float cy_) : fx(fx_), fy(fy_), cx(cx_), cy(cy_)
+  Intr (float fx_, float fy_, float cx_, float cy_)
+  : fx (fx_), fy (fy_), cx (cx_), cy (cy_)
   {}
 
   void
@@ -147,17 +148,17 @@ struct CUDATree {
   DeviceArray<Node> nodes_device;
   DeviceArray<Label> leaves_device;
 
-  CUDATree(int treeHeight_,
-           const std::vector<Node>& nodes,
-           const std::vector<Label>& leaves);
+  CUDATree (int treeHeight_,
+            const std::vector<Node>& nodes,
+            const std::vector<Label>& leaves);
 };
 
 /** \brief Processor using multiple trees */
 class MultiTreeLiveProc {
 public:
   /** \brief Constructor with default values, allocates multilmap device memory **/
-  MultiTreeLiveProc(int def_rows = 480, int def_cols = 640)
-  : multilmap(def_rows, def_cols)
+  MultiTreeLiveProc (int def_rows = 480, int def_cols = 640)
+  : multilmap (def_rows, def_cols)
   {}
 
   void

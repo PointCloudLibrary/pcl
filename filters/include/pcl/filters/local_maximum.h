@@ -64,8 +64,8 @@ protected:
 
 public:
   /** \brief Empty constructor. */
-  LocalMaximum(bool extract_removed_indices = false)
-  : FilterIndices<PointT>::FilterIndices(extract_removed_indices), searcher_()
+  LocalMaximum (bool extract_removed_indices = false)
+  : FilterIndices<PointT>::FilterIndices (extract_removed_indices), searcher_()
   {
     filter_name_ = "LocalMaximum";
   }
@@ -119,7 +119,7 @@ protected:
   void
   applyFilter (Indices& indices) override
   {
-    applyFilterIndices(indices);
+    applyFilterIndices (indices);
   }
 
   /** \brief Filtered results are indexed by an indices array.

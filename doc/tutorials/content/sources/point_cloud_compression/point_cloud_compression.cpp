@@ -10,12 +10,12 @@
 #include <sstream>
 
 #ifdef WIN32
-#define sleep(x) Sleep((x)*1000)
+#define sleep(x) Sleep ((x)*1000)
 #endif
 
 class SimpleOpenNIViewer {
 public:
-  SimpleOpenNIViewer() : viewer(" Point Cloud Compression Example") {}
+  SimpleOpenNIViewer() : viewer (" Point Cloud Compression Example") {}
 
   void
   cloud_cb_ (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr& cloud)
@@ -24,17 +24,17 @@ public:
       // stringstream to store compressed point cloud
       std::stringstream compressedData;
       // output pointcloud
-      pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloudOut(
+      pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloudOut (
           new pcl::PointCloud<pcl::PointXYZRGBA>());
 
       // compress point cloud
-      PointCloudEncoder->encodePointCloud(cloud, compressedData);
+      PointCloudEncoder->encodePointCloud (cloud, compressedData);
 
       // decompress point cloud
-      PointCloudDecoder->decodePointCloud(compressedData, cloudOut);
+      PointCloudDecoder->decodePointCloud (compressedData, cloudOut);
 
       // show decompressed point cloud
-      viewer.showCloud(cloudOut);
+      viewer.showCloud (cloudOut);
     }
   }
 
@@ -50,7 +50,7 @@ public:
         pcl::io::MED_RES_ONLINE_COMPRESSION_WITH_COLOR;
 
     // instantiate point cloud compression for encoding and decoding
-    PointCloudEncoder = new pcl::io::OctreePointCloudCompression<pcl::PointXYZRGBA>(
+    PointCloudEncoder = new pcl::io::OctreePointCloudCompression<pcl::PointXYZRGBA> (
         compressionProfile, showStatistics);
     PointCloudDecoder = new pcl::io::OctreePointCloudCompression<pcl::PointXYZRGBA>();
 
@@ -58,20 +58,20 @@ public:
     pcl::Grabber* interface = new pcl::OpenNIGrabber();
 
     // make callback function from member function
-    std::function<void(const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)> f =
+    std::function<void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)> f =
         [this] (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr& cloud) {
-          cloud_cb_(cloud);
+          cloud_cb_ (cloud);
         };
 
     // connect callback function for desired signal. In this case its a point cloud with
     // color values
-    boost::signals2::connection c = interface->registerCallback(f);
+    boost::signals2::connection c = interface->registerCallback (f);
 
     // start receiving point clouds
     interface->start();
 
     while (!viewer.wasStopped()) {
-      sleep(1);
+      sleep (1);
     }
 
     interface->stop();

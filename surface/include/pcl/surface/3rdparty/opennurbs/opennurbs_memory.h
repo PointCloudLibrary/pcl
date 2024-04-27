@@ -36,14 +36,14 @@ ON_MEMORY_POOL*
 ON_WorkerMemoryPool (void);
 
 ON_DECL
-void* onmalloc(size_t);
+void* onmalloc (size_t);
 
 ON_DECL
 void*
 onmalloc_from_pool (ON_MEMORY_POOL*, size_t);
 
 ON_DECL
-void* oncalloc(size_t, size_t);
+void* oncalloc (size_t, size_t);
 
 ON_DECL
 void*

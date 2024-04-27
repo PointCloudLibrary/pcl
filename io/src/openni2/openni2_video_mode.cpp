@@ -36,10 +36,10 @@ namespace io {
 namespace openni2 {
 
 std::ostream&
-operator<<(std::ostream& stream, const OpenNI2VideoMode& video_mode)
+operator<< (std::ostream& stream, const OpenNI2VideoMode& video_mode)
 {
-  stream << "Resolution: " << static_cast<int>(video_mode.x_resolution_) << "x"
-         << static_cast<int>(video_mode.y_resolution_) << "@" << video_mode.frame_rate_
+  stream << "Resolution: " << static_cast<int> (video_mode.x_resolution_) << "x"
+         << static_cast<int> (video_mode.y_resolution_) << "@" << video_mode.frame_rate_
          << "Hz Format: ";
 
   switch (video_mode.pixel_format_) {
@@ -79,7 +79,7 @@ operator<<(std::ostream& stream, const OpenNI2VideoMode& video_mode)
 }
 
 bool
-operator==(const OpenNI2VideoMode& video_mode_a, const OpenNI2VideoMode& video_mode_b)
+operator== (const OpenNI2VideoMode& video_mode_a, const OpenNI2VideoMode& video_mode_b)
 {
   return (video_mode_a.x_resolution_ == video_mode_b.x_resolution_) &&
          (video_mode_a.y_resolution_ == video_mode_b.y_resolution_) &&
@@ -88,7 +88,7 @@ operator==(const OpenNI2VideoMode& video_mode_a, const OpenNI2VideoMode& video_m
 }
 
 bool
-operator!=(const OpenNI2VideoMode& video_mode_a, const OpenNI2VideoMode& video_mode_b)
+operator!= (const OpenNI2VideoMode& video_mode_a, const OpenNI2VideoMode& video_mode_b)
 {
   return !(video_mode_a == video_mode_b);
 }

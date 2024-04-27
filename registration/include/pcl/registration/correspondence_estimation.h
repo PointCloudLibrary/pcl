@@ -92,9 +92,9 @@ public:
 
   /** \brief Empty constructor. */
   CorrespondenceEstimationBase()
-  : corr_name_("CorrespondenceEstimationBase")
-  , tree_(new pcl::search::KdTree<PointTarget>)
-  , tree_reciprocal_(new pcl::search::KdTree<PointSource>)
+  : corr_name_ ("CorrespondenceEstimationBase")
+  , tree_ (new pcl::search::KdTree<PointTarget>)
+  , tree_reciprocal_ (new pcl::search::KdTree<PointSource>)
   , target_()
   , point_representation_()
   , input_transformed_()
@@ -112,7 +112,7 @@ public:
   setInputSource (const PointCloudSourceConstPtr& cloud)
   {
     source_cloud_updated_ = true;
-    PCLBase<PointSource>::setInputCloud(cloud);
+    PCLBase<PointSource>::setInputCloud (cloud);
     input_fields_ = pcl::getFields<PointSource>();
   }
 
@@ -148,9 +148,9 @@ public:
   virtual void
   setSourceNormals (pcl::PCLPointCloud2::ConstPtr /*cloud2*/)
   {
-    PCL_WARN("[pcl::registration::%s::setSourceNormals] This class does not require "
-             "input source normals\n",
-             getClassName().c_str());
+    PCL_WARN ("[pcl::registration::%s::setSourceNormals] This class does not require "
+              "input source normals\n",
+              getClassName().c_str());
   }
 
   /** \brief See if this rejector requires target normals */
@@ -164,9 +164,9 @@ public:
   virtual void
   setTargetNormals (pcl::PCLPointCloud2::ConstPtr /*cloud2*/)
   {
-    PCL_WARN("[pcl::registration::%s::setTargetNormals] This class does not require "
-             "input target normals\n",
-             getClassName().c_str());
+    PCL_WARN ("[pcl::registration::%s::setTargetNormals] This class does not require "
+              "input target normals\n",
+              getClassName().c_str());
   }
 
   /** \brief Provide a pointer to the vector of indices that represent the
@@ -176,7 +176,7 @@ public:
   inline void
   setIndicesSource (const IndicesPtr& indices)
   {
-    setIndices(indices);
+    setIndices (indices);
   }
 
   /** \brief Get a pointer to the vector of indices used for the source dataset. */
@@ -476,7 +476,7 @@ public:
   typename CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::Ptr
   clone () const override
   {
-    Ptr copy(new CorrespondenceEstimation<PointSource, PointTarget, Scalar>(*this));
+    Ptr copy (new CorrespondenceEstimation<PointSource, PointTarget, Scalar> (*this));
     return (copy);
   }
 };

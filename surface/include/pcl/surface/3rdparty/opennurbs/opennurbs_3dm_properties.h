@@ -28,7 +28,7 @@ public:
   void
   Default ();
   ON_BOOL32
-  IsValid () const;
+  IsValid() const;
   int
   NewRevision (); // returns updated revision count
 
@@ -68,15 +68,15 @@ public:
 class ON_CLASS ON_3dmNotes {
 public:
   ON_3dmNotes();
-  ON_3dmNotes(const ON_3dmNotes&);
+  ON_3dmNotes (const ON_3dmNotes&);
   ~ON_3dmNotes();
   ON_3dmNotes&
-  operator=(const ON_3dmNotes&);
+  operator= (const ON_3dmNotes&);
 
   void
   Default ();
   ON_BOOL32
-  IsValid () const;
+  IsValid() const;
 
   ON_BOOL32
   Read (ON_BinaryArchive&);
@@ -108,15 +108,15 @@ class ON_CLASS ON_3dmApplication {
   // application that created the 3dm file
 public:
   ON_3dmApplication();
-  ON_3dmApplication(const ON_3dmApplication&);
+  ON_3dmApplication (const ON_3dmApplication&);
   ~ON_3dmApplication();
   ON_3dmApplication&
-  operator=(const ON_3dmApplication&);
+  operator= (const ON_3dmApplication&);
 
   void
   Default ();
   ON_BOOL32
-  IsValid () const;
+  IsValid() const;
 
   ON_BOOL32
   Read (ON_BinaryArchive&);
@@ -137,9 +137,9 @@ class ON_CLASS ON_3dmProperties {
 public:
   ON_3dmProperties();
   ~ON_3dmProperties();
-  ON_3dmProperties(const ON_3dmProperties&);
+  ON_3dmProperties (const ON_3dmProperties&);
   ON_3dmProperties&
-  operator=(const ON_3dmProperties&);
+  operator= (const ON_3dmProperties&);
 
   void
   Default ();

@@ -70,15 +70,16 @@ public:
   using pcl::PlaneCoefficientComparator<PointT, PointNT>::distance_threshold_;
 
   /** \brief Empty constructor for RGBPlaneCoefficientComparator. */
-  RGBPlaneCoefficientComparator() : color_threshold_(50.0f) {}
+  RGBPlaneCoefficientComparator() : color_threshold_ (50.0f) {}
 
   /** \brief Constructor for RGBPlaneCoefficientComparator.
    * \param[in] plane_coeff_d a reference to a vector of d coefficients of plane
    * equations.  Must be the same size as the input cloud and input normals.  a, b, and
    * c coefficients are in the input normals.
    */
-  RGBPlaneCoefficientComparator(shared_ptr<std::vector<float>>& plane_coeff_d)
-  : PlaneCoefficientComparator<PointT, PointNT>(plane_coeff_d), color_threshold_(50.0f)
+  RGBPlaneCoefficientComparator (shared_ptr<std::vector<float>>& plane_coeff_d)
+  : PlaneCoefficientComparator<PointT, PointNT> (plane_coeff_d)
+  , color_threshold_ (50.0f)
   {}
 
   /** \brief Destructor for RGBPlaneCoefficientComparator. */
@@ -113,15 +114,15 @@ public:
     float dx = (*input_)[idx1].x - (*input_)[idx2].x;
     float dy = (*input_)[idx1].y - (*input_)[idx2].y;
     float dz = (*input_)[idx1].z - (*input_)[idx2].z;
-    float dist = std::sqrt(dx * dx + dy * dy + dz * dz);
+    float dist = std::sqrt (dx * dx + dy * dy + dz * dz);
     int dr = (*input_)[idx1].r - (*input_)[idx2].r;
     int dg = (*input_)[idx1].g - (*input_)[idx2].g;
     int db = (*input_)[idx1].b - (*input_)[idx2].b;
     // Note: This is not the best metric for color comparisons, we should probably use
     // HSV space.
-    float color_dist = static_cast<float>(dr * dr + dg * dg + db * db);
+    float color_dist = static_cast<float> (dr * dr + dg * dg + db * db);
     return ((dist < distance_threshold_) &&
-            ((*normals_)[idx1].getNormalVector3fMap().dot(
+            ((*normals_)[idx1].getNormalVector3fMap().dot (
                  (*normals_)[idx2].getNormalVector3fMap()) > angular_threshold_) &&
             (color_dist < color_threshold_));
   }

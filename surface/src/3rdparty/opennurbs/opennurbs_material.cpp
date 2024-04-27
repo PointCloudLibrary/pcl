@@ -20,7 +20,7 @@
 //   Class ON_Material
 ////////////////////////////////////////////////////////////////
 
-ON_OBJECT_IMPLEMENT(ON_Material, ON_Object, "60B5DBBC-E660-11d3-BFE4-0010830122F0");
+ON_OBJECT_IMPLEMENT (ON_Material, ON_Object, "60B5DBBC-E660-11d3-BFE4-0010830122F0");
 
 double ON_Material::m_max_shine = 255.0f;
 
@@ -40,14 +40,14 @@ ON_Material::Default()
   m_material_name.Destroy();
   m_flamingo_library.Destroy();
 
-  m_ambient.SetRGB(0, 0, 0);
-  m_diffuse.SetRGB(128, 128, 128);
-  m_emission.SetRGB(0, 0, 0);
-  m_specular.SetRGB(255, 255, 255);
+  m_ambient.SetRGB (0, 0, 0);
+  m_diffuse.SetRGB (128, 128, 128);
+  m_emission.SetRGB (0, 0, 0);
+  m_specular.SetRGB (255, 255, 255);
   // m_reflection = m_specular;
   // m_transparent = m_diffuse;
-  m_reflection.SetRGB(255, 255, 255);
-  m_transparent.SetRGB(255, 255, 255);
+  m_reflection.SetRGB (255, 255, 255);
+  m_transparent.SetRGB (255, 255, 255);
 
   m_index_of_refraction = 1.0;
   m_reflectivity = 0.0;
@@ -79,132 +79,129 @@ ON_Material::ON_Material() { Default(); }
 ON_Material::~ON_Material() {}
 
 ON_BOOL32
-ON_Material::IsValid(ON_TextLog*) const { return true; }
+ON_Material::IsValid (ON_TextLog*) const { return true; }
 
 void
-ON_Material::Dump(ON_TextLog& dump) const
+ON_Material::Dump (ON_TextLog& dump) const
 {
   const wchar_t* s;
-  dump.Print("index = %d\n", MaterialIndex());
-  dump.Print("id = ");
-  dump.Print(m_material_id);
-  dump.Print("\n");
+  dump.Print ("index = %d\n", MaterialIndex());
+  dump.Print ("id = ");
+  dump.Print (m_material_id);
+  dump.Print ("\n");
 
   s = m_material_name;
   if (!s)
     s = L"";
-  dump.Print("name = \"%ls\"\n", s);
+  dump.Print ("name = \"%ls\"\n", s);
 
-  dump.Print("ambient rgb = ");
-  dump.PrintRGB(m_ambient);
-  dump.Print("\n");
-  dump.Print("diffuse rgb = ");
-  dump.PrintRGB(m_diffuse);
-  dump.Print("\n");
-  dump.Print("emmisive rgb = ");
-  dump.PrintRGB(m_emission);
-  dump.Print("\n");
-  dump.Print("specular rgb = ");
-  dump.PrintRGB(m_specular);
-  dump.Print("\n");
-  dump.Print("reflection rgb = ");
-  dump.PrintRGB(m_reflection);
-  dump.Print("\n");
-  dump.Print("transparent rgb = ");
-  dump.PrintRGB(m_transparent);
-  dump.Print("\n");
-  dump.Print("shine = %g%%\n", 100.0 * m_shine / ON_Material::MaxShine());
-  dump.Print("transparency = %g%%\n", 100.0 * m_transparency);
-  dump.Print("reflectivity = %g%%\n", 100.0 * m_reflectivity);
-  dump.Print("index of refraction = %g\n", m_index_of_refraction);
+  dump.Print ("ambient rgb = ");
+  dump.PrintRGB (m_ambient);
+  dump.Print ("\n");
+  dump.Print ("diffuse rgb = ");
+  dump.PrintRGB (m_diffuse);
+  dump.Print ("\n");
+  dump.Print ("emmisive rgb = ");
+  dump.PrintRGB (m_emission);
+  dump.Print ("\n");
+  dump.Print ("specular rgb = ");
+  dump.PrintRGB (m_specular);
+  dump.Print ("\n");
+  dump.Print ("reflection rgb = ");
+  dump.PrintRGB (m_reflection);
+  dump.Print ("\n");
+  dump.Print ("transparent rgb = ");
+  dump.PrintRGB (m_transparent);
+  dump.Print ("\n");
+  dump.Print ("shine = %g%%\n", 100.0 * m_shine / ON_Material::MaxShine());
+  dump.Print ("transparency = %g%%\n", 100.0 * m_transparency);
+  dump.Print ("reflectivity = %g%%\n", 100.0 * m_reflectivity);
+  dump.Print ("index of refraction = %g\n", m_index_of_refraction);
 
-  dump.Print("plug-in id = ");
-  dump.Print(m_plugin_id);
-  dump.Print("\n");
+  dump.Print ("plug-in id = ");
+  dump.Print (m_plugin_id);
+  dump.Print ("\n");
   int i;
   for (i = 0; i < m_textures.Count(); i++) {
-    dump.Print("texture[%d]:\n", i);
+    dump.Print ("texture[%d]:\n", i);
     dump.PushIndent();
-    m_textures[i].Dump(dump);
+    m_textures[i].Dump (dump);
     dump.PopIndent();
   }
 }
 
 ON_UUID
-ON_Material::MaterialPlugInUuid() const
-{
-  return m_plugin_id;
-}
+ON_Material::MaterialPlugInUuid() const { return m_plugin_id; }
 
 void
-ON_Material::SetMaterialPlugInUuid(ON_UUID u)
+ON_Material::SetMaterialPlugInUuid (ON_UUID u)
 {
   m_plugin_id = u;
 }
 
 ON_BOOL32
-ON_Material::Write(ON_BinaryArchive& file) const
+ON_Material::Write (ON_BinaryArchive& file) const
 {
   bool rc = false;
   if (file.Archive3dmVersion() <= 3) {
     // V2 or V3 file format
-    rc = WriteV3Helper(file);
+    rc = WriteV3Helper (file);
   }
   else {
     // V4 file format
 
     // The chunk version 2.0 prevents old V3 IO code from attempting
     // to read this material
-    rc = file.Write3dmChunkVersion(2, 0); // never change the 2,0
+    rc = file.Write3dmChunkVersion (2, 0); // never change the 2,0
 
     // version 1.2 field (20061113*)
     // version 1.3 fields (20100917*)
     if (rc)
-      rc = file.BeginWrite3dmChunk(TCODE_ANONYMOUS_CHUNK, 1, 3);
+      rc = file.BeginWrite3dmChunk (TCODE_ANONYMOUS_CHUNK, 1, 3);
     if (rc) {
       for (;;) {
         if (rc)
-          rc = file.WriteUuid(m_material_id);
+          rc = file.WriteUuid (m_material_id);
         if (rc)
-          rc = file.WriteInt(m_material_index);
+          rc = file.WriteInt (m_material_index);
         if (rc)
-          rc = file.WriteString(m_material_name);
+          rc = file.WriteString (m_material_name);
 
         if (rc)
-          rc = file.WriteUuid(m_plugin_id);
+          rc = file.WriteUuid (m_plugin_id);
 
         if (rc)
-          rc = file.WriteColor(m_ambient);
+          rc = file.WriteColor (m_ambient);
         if (rc)
-          rc = file.WriteColor(m_diffuse);
+          rc = file.WriteColor (m_diffuse);
         if (rc)
-          rc = file.WriteColor(m_emission);
+          rc = file.WriteColor (m_emission);
         if (rc)
-          rc = file.WriteColor(m_specular);
+          rc = file.WriteColor (m_specular);
         if (rc)
-          rc = file.WriteColor(m_reflection);
+          rc = file.WriteColor (m_reflection);
         if (rc)
-          rc = file.WriteColor(m_transparent);
+          rc = file.WriteColor (m_transparent);
 
         if (rc)
-          rc = file.WriteDouble(m_index_of_refraction);
+          rc = file.WriteDouble (m_index_of_refraction);
         if (rc)
-          rc = file.WriteDouble(m_reflectivity);
+          rc = file.WriteDouble (m_reflectivity);
         if (rc)
-          rc = file.WriteDouble(m_shine);
+          rc = file.WriteDouble (m_shine);
         if (rc)
-          rc = file.WriteDouble(m_transparency);
+          rc = file.WriteDouble (m_transparency);
 
         if (!rc)
           break;
 
         // array of textures written in a way that user data persists
-        rc = file.BeginWrite3dmChunk(TCODE_ANONYMOUS_CHUNK, 1, 0);
+        rc = file.BeginWrite3dmChunk (TCODE_ANONYMOUS_CHUNK, 1, 0);
         if (rc) {
           int i, count = m_textures.Count();
-          rc = file.WriteInt(count);
+          rc = file.WriteInt (count);
           for (i = 0; i < count && rc; i++) {
-            rc = file.WriteObject(&m_textures[i]);
+            rc = file.WriteObject (&m_textures[i]);
           }
           if (!file.EndWrite3dmChunk())
             rc = false;
@@ -212,17 +209,17 @@ ON_Material::Write(ON_BinaryArchive& file) const
 
         // version 1.1 field
         if (rc)
-          rc = file.WriteString(m_flamingo_library);
+          rc = file.WriteString (m_flamingo_library);
 
         // version 1.2 field (20061113)
         if (rc)
-          rc = file.WriteArray(m_material_channel);
+          rc = file.WriteArray (m_material_channel);
 
         // version 1.3 fields (20100917*)
-        rc = file.WriteBool(m_bShared);
+        rc = file.WriteBool (m_bShared);
         if (!rc)
           break;
-        rc = file.WriteBool(m_bDisableLighting);
+        rc = file.WriteBool (m_bDisableLighting);
         if (!rc)
           break;
 
@@ -236,54 +233,54 @@ ON_Material::Write(ON_BinaryArchive& file) const
 }
 
 bool
-ON_Material::WriteV3Helper(ON_BinaryArchive& file) const
+ON_Material::WriteV3Helper (ON_BinaryArchive& file) const
 {
   int i;
   // V2 and V3 file format
 
-  bool rc = file.Write3dmChunkVersion(1, 1);
+  bool rc = file.Write3dmChunkVersion (1, 1);
   if (rc)
-    rc = file.WriteColor(m_ambient);
+    rc = file.WriteColor (m_ambient);
   if (rc)
-    rc = file.WriteColor(m_diffuse);
+    rc = file.WriteColor (m_diffuse);
   if (rc)
-    rc = file.WriteColor(m_emission);
+    rc = file.WriteColor (m_emission);
   if (rc)
-    rc = file.WriteColor(m_specular);
+    rc = file.WriteColor (m_specular);
   if (rc)
-    rc = file.WriteDouble(Shine());
+    rc = file.WriteDouble (Shine());
   if (rc)
-    rc = file.WriteDouble(m_transparency);
+    rc = file.WriteDouble (m_transparency);
 
   if (rc)
-    rc = file.WriteChar((unsigned char)1); // OBSOLETE // m_casts_shadows
+    rc = file.WriteChar ((unsigned char)1); // OBSOLETE // m_casts_shadows
   if (rc)
-    rc = file.WriteChar((unsigned char)1); // OBSOLETE // m_shows_shadows
+    rc = file.WriteChar ((unsigned char)1); // OBSOLETE // m_shows_shadows
 
   if (rc)
-    rc = file.WriteChar((unsigned char)0); // OBSOLETE // m_wire_mode
+    rc = file.WriteChar ((unsigned char)0); // OBSOLETE // m_wire_mode
   if (rc)
-    rc = file.WriteChar((unsigned char)2); // OBSOLETE // m_wire_density
+    rc = file.WriteChar ((unsigned char)2); // OBSOLETE // m_wire_density
 
   if (rc)
-    rc = file.WriteColor(ON_Color(0, 0, 0)); // OBSOLETE // m_wire_color
+    rc = file.WriteColor (ON_Color (0, 0, 0)); // OBSOLETE // m_wire_color
 
   if (rc) {
     // OBSOLETE - line style info never used
     short s = 0;
     if (rc)
-      rc = file.WriteShort(s);
+      rc = file.WriteShort (s);
     if (rc)
-      rc = file.WriteShort(s);
+      rc = file.WriteShort (s);
     if (rc)
-      rc = file.WriteDouble(0.0);
+      rc = file.WriteDouble (0.0);
     if (rc)
-      rc = file.WriteDouble(1.0);
+      rc = file.WriteDouble (1.0);
   }
 
   ON_wString filename;
   int j = 0;
-  i = FindTexture(NULL, ON_Texture::bitmap_texture);
+  i = FindTexture (NULL, ON_Texture::bitmap_texture);
   if (i >= 0) {
     const ON_Texture& tmap = m_textures[i];
     if (tmap.m_filename.Length() > 0) {
@@ -296,16 +293,16 @@ ON_Material::WriteV3Helper(ON_BinaryArchive& file) const
   // OBSOLETE // if ( rc ) rc = file.WriteInt( i );
   // OBSOLETE // if ( rc ) rc = file.WriteInt( m_texture_bitmap_index );
   if (rc)
-    rc = file.WriteString(filename);
+    rc = file.WriteString (filename);
   if (rc)
-    rc = file.WriteInt(j);
+    rc = file.WriteInt (j);
   if (rc)
-    rc = file.WriteInt(0);
+    rc = file.WriteInt (0);
 
   filename.Destroy();
   j = 0;
   double bump_scale = 1.0;
-  i = FindTexture(NULL, ON_Texture::bump_texture);
+  i = FindTexture (NULL, ON_Texture::bump_texture);
   if (i >= 0) {
     const ON_Texture& tmap = m_textures[i];
     if (tmap.m_filename.Length() > 0) {
@@ -320,17 +317,17 @@ ON_Material::WriteV3Helper(ON_BinaryArchive& file) const
   // OBSOLETE //if ( rc ) rc = file.WriteInt( m_bump_bitmap_index );
   // OBSOLETE //if ( rc ) rc = file.WriteDouble( m_bump_scale );
   if (rc)
-    rc = file.WriteString(filename);
+    rc = file.WriteString (filename);
   if (rc)
-    rc = file.WriteInt(j);
+    rc = file.WriteInt (j);
   if (rc)
-    rc = file.WriteInt(0);
+    rc = file.WriteInt (0);
   if (rc)
-    rc = file.WriteDouble(bump_scale);
+    rc = file.WriteDouble (bump_scale);
 
   filename.Destroy();
   j = 0;
-  i = FindTexture(NULL, ON_Texture::emap_texture);
+  i = FindTexture (NULL, ON_Texture::emap_texture);
   if (i >= 0) {
     const ON_Texture& tmap = m_textures[i];
     if (tmap.m_filename.Length() > 0) {
@@ -343,45 +340,45 @@ ON_Material::WriteV3Helper(ON_BinaryArchive& file) const
   // OBSOLETE //if ( rc ) rc = file.WriteInt( i );
   // OBSOLETE //if ( rc ) rc = file.WriteInt( m_emap_bitmap_index );
   if (rc)
-    rc = file.WriteString(filename);
+    rc = file.WriteString (filename);
   if (rc)
-    rc = file.WriteInt(j);
+    rc = file.WriteInt (j);
   if (rc)
-    rc = file.WriteInt(0);
+    rc = file.WriteInt (0);
 
   if (rc)
-    rc = file.WriteInt(m_material_index);
+    rc = file.WriteInt (m_material_index);
 
   if (rc)
-    rc = file.WriteUuid(m_plugin_id);
+    rc = file.WriteUuid (m_plugin_id);
   if (rc)
-    rc = file.WriteString(m_flamingo_library);
+    rc = file.WriteString (m_flamingo_library);
   if (rc)
-    rc = file.WriteString(m_material_name);
+    rc = file.WriteString (m_material_name);
 
   // 1.1 fields
   if (rc)
-    rc = file.WriteUuid(m_material_id);
+    rc = file.WriteUuid (m_material_id);
   if (rc)
-    rc = file.WriteColor(m_reflection);
+    rc = file.WriteColor (m_reflection);
   if (rc)
-    rc = file.WriteColor(m_transparent);
+    rc = file.WriteColor (m_transparent);
   if (rc)
-    rc = file.WriteDouble(m_index_of_refraction);
+    rc = file.WriteDouble (m_index_of_refraction);
 
   return rc;
 }
 
 ON_BOOL32
-ON_Material::Read(ON_BinaryArchive& file)
+ON_Material::Read (ON_BinaryArchive& file)
 {
   Default();
   int major_version = 0;
   int minor_version = 0;
-  bool rc = file.Read3dmChunkVersion(&major_version, &minor_version);
+  bool rc = file.Read3dmChunkVersion (&major_version, &minor_version);
   if (rc) {
     if (1 == major_version) {
-      rc = ReadV3Helper(file, minor_version);
+      rc = ReadV3Helper (file, minor_version);
     }
     else if (2 == major_version) {
       // fancy V4 material
@@ -389,32 +386,32 @@ ON_Material::Read(ON_BinaryArchive& file)
 
       // The chunk version 2.0 prevents old V3 IO code from attempting
       // to read this material
-      rc =
-          file.BeginRead3dmChunk(TCODE_ANONYMOUS_CHUNK, &major_version, &minor_version);
+      rc = file.BeginRead3dmChunk (
+          TCODE_ANONYMOUS_CHUNK, &major_version, &minor_version);
       if (rc) {
         for (;;) {
           if (rc)
-            rc = file.ReadUuid(m_material_id);
+            rc = file.ReadUuid (m_material_id);
           if (rc)
-            rc = file.ReadInt(&m_material_index);
+            rc = file.ReadInt (&m_material_index);
           if (rc)
-            rc = file.ReadString(m_material_name);
+            rc = file.ReadString (m_material_name);
 
           if (rc)
-            rc = file.ReadUuid(m_plugin_id);
+            rc = file.ReadUuid (m_plugin_id);
 
           if (rc)
-            rc = file.ReadColor(m_ambient);
+            rc = file.ReadColor (m_ambient);
           if (rc)
-            rc = file.ReadColor(m_diffuse);
+            rc = file.ReadColor (m_diffuse);
           if (rc)
-            rc = file.ReadColor(m_emission);
+            rc = file.ReadColor (m_emission);
           if (rc)
-            rc = file.ReadColor(m_specular);
+            rc = file.ReadColor (m_specular);
           if (rc)
-            rc = file.ReadColor(m_reflection);
+            rc = file.ReadColor (m_reflection);
           if (rc)
-            rc = file.ReadColor(m_transparent);
+            rc = file.ReadColor (m_transparent);
 
           if (rc && file.ArchiveOpenNURBSVersion() < 200912010 &&
               128 == m_transparent.Red() && 128 == m_transparent.Green() &&
@@ -427,13 +424,13 @@ ON_Material::Read(ON_BinaryArchive& file)
           }
 
           if (rc)
-            rc = file.ReadDouble(&m_index_of_refraction);
+            rc = file.ReadDouble (&m_index_of_refraction);
           if (rc)
-            rc = file.ReadDouble(&m_reflectivity);
+            rc = file.ReadDouble (&m_reflectivity);
           if (rc)
-            rc = file.ReadDouble(&m_shine);
+            rc = file.ReadDouble (&m_shine);
           if (rc)
-            rc = file.ReadDouble(&m_transparency);
+            rc = file.ReadDouble (&m_transparency);
 
           if (!rc)
             break;
@@ -441,15 +438,15 @@ ON_Material::Read(ON_BinaryArchive& file)
           // array of textures read in a way that user data persists
           int texmajver = 0;
           int texminver = 0;
-          rc = file.BeginRead3dmChunk(TCODE_ANONYMOUS_CHUNK, &texmajver, &texminver);
+          rc = file.BeginRead3dmChunk (TCODE_ANONYMOUS_CHUNK, &texmajver, &texminver);
           if (rc) {
             if (1 == texmajver) {
               int i, count = 0;
-              rc = file.ReadInt(&count);
+              rc = file.ReadInt (&count);
               if (rc)
-                m_textures.Reserve(count);
+                m_textures.Reserve (count);
               for (i = 0; i < count && rc; i++) {
-                int trc = file.ReadObject(m_textures.AppendNew());
+                int trc = file.ReadObject (m_textures.AppendNew());
                 if (trc <= 0)
                   rc = false;
                 else if (trc > 1)
@@ -461,22 +458,22 @@ ON_Material::Read(ON_BinaryArchive& file)
           }
 
           if (rc && minor_version >= 1) {
-            rc = file.ReadString(m_flamingo_library);
+            rc = file.ReadString (m_flamingo_library);
             if (!rc)
               break;
 
             if (minor_version >= 2) {
               // version 1.2 field (20061113)
-              rc = file.ReadArray(m_material_channel);
+              rc = file.ReadArray (m_material_channel);
               if (!rc)
                 break;
 
               if (minor_version >= 3) {
                 // version 1.3 fields (20100917*)
-                rc = file.ReadBool(&m_bShared);
+                rc = file.ReadBool (&m_bShared);
                 if (!rc)
                   break;
-                rc = file.ReadBool(&m_bDisableLighting);
+                rc = file.ReadBool (&m_bDisableLighting);
                 if (!rc)
                   break;
               }
@@ -494,7 +491,7 @@ ON_Material::Read(ON_BinaryArchive& file)
 }
 
 bool
-ON_Material::ReadV3Helper(ON_BinaryArchive& file, int minor_version)
+ON_Material::ReadV3Helper (ON_BinaryArchive& file, int minor_version)
 {
   double shine = 0.0, transparency = 0.0;
   int i, j;
@@ -502,65 +499,65 @@ ON_Material::ReadV3Helper(ON_BinaryArchive& file, int minor_version)
   {
     // common to all version 1.x formats
     if (rc)
-      rc = file.ReadColor(m_ambient);
+      rc = file.ReadColor (m_ambient);
     if (rc)
-      rc = file.ReadColor(m_diffuse);
+      rc = file.ReadColor (m_diffuse);
     if (rc)
-      rc = file.ReadColor(m_emission);
+      rc = file.ReadColor (m_emission);
     if (rc)
-      rc = file.ReadColor(m_specular);
+      rc = file.ReadColor (m_specular);
     if (rc)
-      rc = file.ReadDouble(&shine);
+      rc = file.ReadDouble (&shine);
     if (rc)
-      SetShine(shine);
+      SetShine (shine);
     if (rc)
-      rc = file.ReadDouble(&transparency);
+      rc = file.ReadDouble (&transparency);
     if (rc)
-      SetTransparency(transparency);
+      SetTransparency (transparency);
 
     unsigned char obsolete_uc;
     if (rc)
-      rc = file.ReadChar(&obsolete_uc); // m_casts_shadows
+      rc = file.ReadChar (&obsolete_uc); // m_casts_shadows
     if (rc)
-      rc = file.ReadChar(&obsolete_uc); // m_shows_shadows
+      rc = file.ReadChar (&obsolete_uc); // m_shows_shadows
 
     if (rc)
-      rc = file.ReadChar(&obsolete_uc); // m_wire_mode
+      rc = file.ReadChar (&obsolete_uc); // m_wire_mode
     if (rc)
-      rc = file.ReadChar(&obsolete_uc); // m_wire_density
+      rc = file.ReadChar (&obsolete_uc); // m_wire_density
 
     ON_Color obsolete_color;
     if (rc)
-      rc = file.ReadColor(obsolete_color); // m_wire_color
+      rc = file.ReadColor (obsolete_color); // m_wire_color
 
     if (rc) {
       // OBSOLETE if ( rc ) rc = file.ReadLineStyle( m_wire_style );
       short s;
       double x;
       if (rc)
-        rc = file.ReadShort(&s);
+        rc = file.ReadShort (&s);
       if (rc)
-        rc = file.ReadShort(&s);
+        rc = file.ReadShort (&s);
       if (rc)
-        rc = file.ReadDouble(&x);
+        rc = file.ReadDouble (&x);
       if (rc)
-        rc = file.ReadDouble(&x);
+        rc = file.ReadDouble (&x);
     }
 
     ON_wString str;
 
     if (rc)
-      rc = file.ReadString(str); // sTextureBitmapFileName
+      rc = file.ReadString (str); // sTextureBitmapFileName
     i = 0;
     j = 0;
     if (rc)
-      rc = file.ReadInt(&i);
+      rc = file.ReadInt (&i);
     // OBSOLETE // if ( rc ) SetTextureMode( ON::TextureMode(i) );
     if (rc)
-      rc = file.ReadInt(&j); //&m_texture_bitmap_index
+      rc = file.ReadInt (&j); //&m_texture_bitmap_index
 
     if (rc && !str.IsEmpty()) {
-      ON_Texture& texture = m_textures[AddTexture(str, ON_Texture::bitmap_texture)];
+      ON_Texture& texture = m_textures[AddTexture (str, ON_Texture::bitmap_texture)];
       if (2 == i) {
         texture.m_mode = ON_Texture::decal_texture;
       }
@@ -570,37 +567,37 @@ ON_Material::ReadV3Helper(ON_BinaryArchive& file, int minor_version)
     }
 
     if (rc)
-      rc = file.ReadString(str); // sBumpBitmapFileName
+      rc = file.ReadString (str); // sBumpBitmapFileName
     if (rc)
-      rc = file.ReadInt(&i);
+      rc = file.ReadInt (&i);
     // OBSOLETE // if ( rc ) SetBumpMode( ON::TextureMode(i) );
     if (rc)
-      rc = file.ReadInt(&j); //&m_bump_bitmap_index );
+      rc = file.ReadInt (&j); //&m_bump_bitmap_index );
     double bump_scale = 0.0;
     if (rc)
-      rc = file.ReadDouble(&bump_scale);
+      rc = file.ReadDouble (&bump_scale);
 
     if (rc && !str.IsEmpty()) {
-      ON_Texture& texture = m_textures[AddTexture(str, ON_Texture::bump_texture)];
+      ON_Texture& texture = m_textures[AddTexture (str, ON_Texture::bump_texture)];
       if (2 == i) {
         texture.m_mode = ON_Texture::decal_texture;
       }
       else {
         texture.m_mode = ON_Texture::modulate_texture;
       }
-      texture.m_bump_scale.Set(0.0, bump_scale);
+      texture.m_bump_scale.Set (0.0, bump_scale);
     }
 
     if (rc)
-      rc = file.ReadString(str); // sEmapBitmapFileName
+      rc = file.ReadString (str); // sEmapBitmapFileName
     if (rc)
-      rc = file.ReadInt(&i);
+      rc = file.ReadInt (&i);
     // OBSOLETE // if ( rc ) SetEmapMode( ON::TextureMode(i) );
     if (rc)
-      rc = file.ReadInt(&j); //&m_emap_bitmap_index;
+      rc = file.ReadInt (&j); //&m_emap_bitmap_index;
 
     if (rc && !str.IsEmpty()) {
-      ON_Texture& texture = m_textures[AddTexture(str, ON_Texture::emap_texture)];
+      ON_Texture& texture = m_textures[AddTexture (str, ON_Texture::emap_texture)];
       if (2 == i) {
         texture.m_mode = ON_Texture::decal_texture;
       }
@@ -610,29 +607,29 @@ ON_Material::ReadV3Helper(ON_BinaryArchive& file, int minor_version)
     }
 
     if (rc)
-      rc = file.ReadInt(&m_material_index);
+      rc = file.ReadInt (&m_material_index);
 
     if (rc)
-      rc = file.ReadUuid(m_plugin_id);
+      rc = file.ReadUuid (m_plugin_id);
     if (rc)
-      rc = file.ReadString(m_flamingo_library);
+      rc = file.ReadString (m_flamingo_library);
     if (rc)
-      rc = file.ReadString(m_material_name);
+      rc = file.ReadString (m_material_name);
 
     if (minor_version >= 1) {
       // 1.1 fields
       if (rc)
-        rc = file.ReadUuid(m_material_id);
+        rc = file.ReadUuid (m_material_id);
       if (rc)
-        rc = file.ReadColor(m_reflection);
+        rc = file.ReadColor (m_reflection);
       if (rc)
-        rc = file.ReadColor(m_transparent);
+        rc = file.ReadColor (m_transparent);
       if (rc)
-        rc = file.ReadDouble(&m_index_of_refraction);
+        rc = file.ReadDouble (&m_index_of_refraction);
     }
     else {
       // old material needs a valid id.
-      ON_CreateUuid(m_material_id);
+      ON_CreateUuid (m_material_id);
     }
   }
 
@@ -646,14 +643,14 @@ ON_Material::ObjectType() const
 }
 
 int
-ON_Material::FindTexture(const wchar_t* filename, ON_Texture::TYPE type, int i0) const
+ON_Material::FindTexture (const wchar_t* filename, ON_Texture::TYPE type, int i0) const
 {
   int i, count = m_textures.Count();
   for (i = ((i0 < 0) ? 0 : (i0 + 1)); i < count; i++) {
     if (type != m_textures[i].m_type && type != ON_Texture::no_texture_type) {
       continue;
     }
-    if (filename && m_textures[i].m_filename.CompareNoCase(filename)) {
+    if (filename && m_textures[i].m_filename.CompareNoCase (filename)) {
       continue;
     }
     return i;
@@ -662,18 +659,18 @@ ON_Material::FindTexture(const wchar_t* filename, ON_Texture::TYPE type, int i0)
 }
 
 int
-ON_Material::FindTexture(ON_UUID texture_id) const
+ON_Material::FindTexture (ON_UUID texture_id) const
 {
   int i, count = m_textures.Count();
   for (i = 0; i < count; i++) {
-    if (!ON_UuidCompare(&texture_id, &m_textures[i].m_texture_id))
+    if (!ON_UuidCompare (&texture_id, &m_textures[i].m_texture_id))
       return i;
   }
   return -1;
 }
 
 int
-ON_Material::DeleteTexture(const wchar_t* filename, ON_Texture::TYPE type)
+ON_Material::DeleteTexture (const wchar_t* filename, ON_Texture::TYPE type)
 {
   int deleted_count = 0;
   int i;
@@ -686,9 +683,9 @@ ON_Material::DeleteTexture(const wchar_t* filename, ON_Texture::TYPE type)
     for (i = m_textures.Count() - 1; i >= 0; i--) {
       if (type != ON_Texture::no_texture_type && type != m_textures[i].m_type)
         continue;
-      if (filename && m_textures[i].m_filename.CompareNoCase(filename))
+      if (filename && m_textures[i].m_filename.CompareNoCase (filename))
         continue;
-      m_textures.Remove(i);
+      m_textures.Remove (i);
       deleted_count++;
     }
   }
@@ -696,28 +693,28 @@ ON_Material::DeleteTexture(const wchar_t* filename, ON_Texture::TYPE type)
 }
 
 int
-ON_Material::AddTexture(const ON_Texture& tx)
+ON_Material::AddTexture (const ON_Texture& tx)
 {
   // has to copy user data
-  int i = FindTexture(tx.m_filename, tx.m_type);
+  int i = FindTexture (tx.m_filename, tx.m_type);
   if (i < 0) {
     i = m_textures.Count();
-    m_textures.Append(tx);
+    m_textures.Append (tx);
   }
   else {
     m_textures[i] = tx;
   }
-  if (ON_UuidIsNil(m_textures[i].m_texture_id)) {
-    ON_CreateUuid(m_textures[i].m_texture_id);
+  if (ON_UuidIsNil (m_textures[i].m_texture_id)) {
+    ON_CreateUuid (m_textures[i].m_texture_id);
   }
 
   return i;
 }
 
 int
-ON_Material::AddTexture(const wchar_t* filename, ON_Texture::TYPE type)
+ON_Material::AddTexture (const wchar_t* filename, ON_Texture::TYPE type)
 {
-  int ti = FindTexture(NULL, type);
+  int ti = FindTexture (NULL, type);
   if (ti < 0) {
     ti = m_textures.Count();
     m_textures.AppendNew();
@@ -727,7 +724,7 @@ ON_Material::AddTexture(const wchar_t* filename, ON_Texture::TYPE type)
     m_textures[ti].m_type = type;
     m_textures[ti].m_mode = ON_Texture::modulate_texture;
     m_textures[ti].m_magfilter = ON_Texture::linear_filter;
-    ON_CreateUuid(m_textures[ti].m_texture_id);
+    ON_CreateUuid (m_textures[ti].m_texture_id);
   }
   return ti;
 }
@@ -740,7 +737,7 @@ ON_Material::Shine() const
 }
 
 void
-ON_Material::SetShine(double shine)
+ON_Material::SetShine (double shine)
 {
   if (shine < 0.0)
     m_shine = 0.0;
@@ -758,7 +755,7 @@ ON_Material::Transparency() const
 }
 
 void
-ON_Material::SetTransparency(double transparency)
+ON_Material::SetTransparency (double transparency)
 {
   if (transparency < 0.0)
     m_transparency = 0.0f;
@@ -769,15 +766,15 @@ ON_Material::SetTransparency(double transparency)
 }
 
 bool
-ON_Material::operator==(const ON_Material& src) const
+ON_Material::operator== (const ON_Material& src) const
 {
-  return Compare(src) ? false : true;
+  return Compare (src) ? false : true;
 }
 
 bool
-ON_Material::operator!=(const ON_Material& src) const
+ON_Material::operator!= (const ON_Material& src) const
 {
-  return Compare(src) ? true : false;
+  return Compare (src) ? true : false;
 }
 
 static int
@@ -795,7 +792,7 @@ CompareXform (const ON_Xform& a, const ON_Xform& b)
   i = 16;
   j = 0;
   while (i-- && !j) {
-    j = CompareDouble(*da++, *db++);
+    j = CompareDouble (*da++, *db++);
   }
 
   return j;
@@ -816,15 +813,15 @@ CompareTextureDoubles (std::size_t count, const double* a, const double* b)
 }
 
 int
-ON_Texture::Compare(const ON_Texture& other) const
+ON_Texture::Compare (const ON_Texture& other) const
 {
-  int rc = ON_UuidCompare(&m_texture_id, &other.m_texture_id);
+  int rc = ON_UuidCompare (&m_texture_id, &other.m_texture_id);
   while (!rc) {
     rc = m_mapping_channel_id - other.m_mapping_channel_id;
     if (rc)
       break;
 
-    rc = m_filename.CompareNoCase(other.m_filename);
+    rc = m_filename.CompareNoCase (other.m_filename);
     if (rc)
       break;
 
@@ -860,33 +857,33 @@ ON_Texture::Compare(const ON_Texture& other) const
     if (rc)
       break;
 
-    rc = CompareXform(m_uvw, other.m_uvw);
+    rc = CompareXform (m_uvw, other.m_uvw);
     if (rc)
       break;
 
-    rc = m_border_color.Compare(other.m_border_color);
+    rc = m_border_color.Compare (other.m_border_color);
     if (rc)
       break;
 
-    rc = m_transparent_color.Compare(other.m_transparent_color);
+    rc = m_transparent_color.Compare (other.m_transparent_color);
     if (rc)
       break;
 
-    rc = m_bump_scale.Compare(other.m_bump_scale);
+    rc = m_bump_scale.Compare (other.m_bump_scale);
     if (rc)
       break;
 
-    rc = CompareTextureDoubles(1, &m_blend_constant_A, &other.m_blend_constant_A);
+    rc = CompareTextureDoubles (1, &m_blend_constant_A, &other.m_blend_constant_A);
     if (rc)
       break;
 
-    rc = CompareTextureDoubles(
-        sizeof(m_blend_A) / sizeof(m_blend_A[0]), m_blend_A, other.m_blend_A);
+    rc = CompareTextureDoubles (
+        sizeof (m_blend_A) / sizeof (m_blend_A[0]), m_blend_A, other.m_blend_A);
     if (rc)
       break;
 
-    rc = CompareTextureDoubles(
-        sizeof(m_blend_RGB) / sizeof(m_blend_RGB[0]), m_blend_RGB, other.m_blend_RGB);
+    rc = CompareTextureDoubles (
+        sizeof (m_blend_RGB) / sizeof (m_blend_RGB[0]), m_blend_RGB, other.m_blend_RGB);
     if (rc)
       break;
 
@@ -897,61 +894,61 @@ ON_Texture::Compare(const ON_Texture& other) const
 }
 
 int
-ON_Material::Compare(const ON_Material& other) const
+ON_Material::Compare (const ON_Material& other) const
 {
   // do NOT test m_material_index
 
-  int rc = ON_UuidCompare(&m_material_id, &other.m_material_id);
+  int rc = ON_UuidCompare (&m_material_id, &other.m_material_id);
   while (!rc) {
-    rc = m_material_name.CompareNoCase(other.m_material_name);
+    rc = m_material_name.CompareNoCase (other.m_material_name);
     if (rc)
       break;
 
-    rc = m_ambient.Compare(other.m_ambient);
+    rc = m_ambient.Compare (other.m_ambient);
     if (rc)
       break;
 
-    rc = m_diffuse.Compare(other.m_diffuse);
+    rc = m_diffuse.Compare (other.m_diffuse);
     if (rc)
       break;
 
-    rc = m_diffuse.Compare(other.m_diffuse);
+    rc = m_diffuse.Compare (other.m_diffuse);
     if (rc)
       break;
 
-    rc = m_emission.Compare(other.m_emission);
+    rc = m_emission.Compare (other.m_emission);
     if (rc)
       break;
 
-    rc = m_specular.Compare(other.m_specular);
+    rc = m_specular.Compare (other.m_specular);
     if (rc)
       break;
 
-    rc = m_reflection.Compare(other.m_reflection);
+    rc = m_reflection.Compare (other.m_reflection);
     if (rc)
       break;
 
-    rc = m_transparent.Compare(other.m_transparent);
+    rc = m_transparent.Compare (other.m_transparent);
     if (rc)
       break;
 
-    rc = CompareDouble(m_index_of_refraction, other.m_index_of_refraction);
+    rc = CompareDouble (m_index_of_refraction, other.m_index_of_refraction);
     if (rc)
       break;
 
-    rc = CompareDouble(m_reflectivity, other.m_reflectivity);
+    rc = CompareDouble (m_reflectivity, other.m_reflectivity);
     if (rc)
       break;
 
-    rc = CompareDouble(m_shine, other.m_shine);
+    rc = CompareDouble (m_shine, other.m_shine);
     if (rc)
       break;
 
-    rc = CompareDouble(m_transparency, other.m_transparency);
+    rc = CompareDouble (m_transparency, other.m_transparency);
     if (rc)
       break;
 
-    rc = ON_UuidCompare(&m_plugin_id, &other.m_plugin_id);
+    rc = ON_UuidCompare (&m_plugin_id, &other.m_plugin_id);
     if (rc)
       break;
 
@@ -959,7 +956,7 @@ ON_Material::Compare(const ON_Material& other) const
     rc = tcount - other.m_textures.Count();
     int i;
     for (i = 0; i < tcount && !rc; i++) {
-      rc = m_textures[i].Compare(other.m_textures[i]);
+      rc = m_textures[i].Compare (other.m_textures[i]);
     }
     if (rc)
       break;
@@ -995,25 +992,25 @@ ON_Material::Specular() const
 }
 
 void
-ON_Material::SetAmbient(ON_Color c)
+ON_Material::SetAmbient (ON_Color c)
 {
   m_ambient = c;
 }
 
 void
-ON_Material::SetDiffuse(ON_Color c)
+ON_Material::SetDiffuse (ON_Color c)
 {
   m_diffuse = c;
 }
 
 void
-ON_Material::SetEmission(ON_Color c)
+ON_Material::SetEmission (ON_Color c)
 {
   m_emission = c;
 }
 
 void
-ON_Material::SetSpecular(ON_Color c)
+ON_Material::SetSpecular (ON_Color c)
 {
   m_specular = c;
 }
@@ -1025,7 +1022,7 @@ ON_Material::MaterialIndex() const
 }
 
 void
-ON_Material::SetMaterialIndex(int i)
+ON_Material::SetMaterialIndex (int i)
 {
   m_material_index = i;
 }
@@ -1037,7 +1034,7 @@ ON_Material::MaterialName() const
 }
 
 void
-ON_Material::SetMaterialName(const wchar_t* sMaterialName)
+ON_Material::SetMaterialName (const wchar_t* sMaterialName)
 {
   m_material_name = sMaterialName;
 }
@@ -1046,7 +1043,7 @@ ON_Material::SetMaterialName(const wchar_t* sMaterialName)
 //   Class ON_Texture
 ////////////////////////////////////////////////////////////////
 
-ON_OBJECT_IMPLEMENT(ON_Texture, ON_Object, "D6FF106D-329B-4f29-97E2-FD282A618020");
+ON_OBJECT_IMPLEMENT (ON_Texture, ON_Object, "D6FF106D-329B-4f29-97E2-FD282A618020");
 
 ON_Texture::ON_Texture()
 {
@@ -1056,11 +1053,11 @@ ON_Texture::ON_Texture()
 ON_Texture::~ON_Texture() {}
 
 ON_BOOL32
-ON_Texture::IsValid(ON_TextLog* text_log) const
+ON_Texture::IsValid (ON_TextLog* text_log) const
 {
   if (no_texture_type == m_type || force_32bit_texture_type == m_type) {
     if (text_log) {
-      text_log->Print("ON_Texture m_type has invalid value.\n");
+      text_log->Print ("ON_Texture m_type has invalid value.\n");
     }
     return false;
   }
@@ -1072,7 +1069,7 @@ ON_Texture::IsValid(ON_TextLog* text_log) const
 
 // overrides virtual ON_Object::Dump
 void
-ON_Texture::Dump(ON_TextLog&) const
+ON_Texture::Dump (ON_TextLog&) const
 {}
 
 // overrides virtual ON_Object::SizeOf
@@ -1080,81 +1077,81 @@ unsigned int
 ON_Texture::SizeOf() const
 {
   unsigned int sz = ON_Object::SizeOf();
-  sz += sizeof(*this) - sizeof(ON_Object);
-  sz += m_filename.Length() * sizeof(wchar_t);
+  sz += sizeof (*this) - sizeof (ON_Object);
+  sz += m_filename.Length() * sizeof (wchar_t);
   return sz;
 }
 
 // overrides virtual ON_Object::Write
 ON_BOOL32
-ON_Texture::Write(ON_BinaryArchive& binary_archive) const
+ON_Texture::Write (ON_BinaryArchive& binary_archive) const
 {
-  bool rc = binary_archive.BeginWrite3dmChunk(TCODE_ANONYMOUS_CHUNK, 1, 0);
+  bool rc = binary_archive.BeginWrite3dmChunk (TCODE_ANONYMOUS_CHUNK, 1, 0);
   if (rc) {
 
     for (;;) {
       // 1.0 values
-      rc = binary_archive.WriteUuid(m_texture_id);
+      rc = binary_archive.WriteUuid (m_texture_id);
       if (!rc)
         break;
-      rc = binary_archive.WriteInt(m_mapping_channel_id);
+      rc = binary_archive.WriteInt (m_mapping_channel_id);
       if (!rc)
         break;
-      rc = binary_archive.WriteString(m_filename);
+      rc = binary_archive.WriteString (m_filename);
       if (!rc)
         break;
-      rc = binary_archive.WriteBool(m_bOn);
+      rc = binary_archive.WriteBool (m_bOn);
       if (!rc)
         break;
-      rc = binary_archive.WriteInt(m_type);
+      rc = binary_archive.WriteInt (m_type);
       if (!rc)
         break;
-      rc = binary_archive.WriteInt(m_mode);
+      rc = binary_archive.WriteInt (m_mode);
       if (!rc)
         break;
-      rc = binary_archive.WriteInt(m_minfilter);
+      rc = binary_archive.WriteInt (m_minfilter);
       if (!rc)
         break;
-      rc = binary_archive.WriteInt(m_magfilter);
+      rc = binary_archive.WriteInt (m_magfilter);
       if (!rc)
         break;
-      rc = binary_archive.WriteInt(m_wrapu);
+      rc = binary_archive.WriteInt (m_wrapu);
       if (!rc)
         break;
-      rc = binary_archive.WriteInt(m_wrapv);
+      rc = binary_archive.WriteInt (m_wrapv);
       if (!rc)
         break;
-      rc = binary_archive.WriteInt(m_wrapw);
+      rc = binary_archive.WriteInt (m_wrapw);
       if (!rc)
         break;
-      rc = binary_archive.WriteXform(m_uvw);
+      rc = binary_archive.WriteXform (m_uvw);
       if (!rc)
         break;
-      rc = binary_archive.WriteColor(m_border_color);
+      rc = binary_archive.WriteColor (m_border_color);
       if (!rc)
         break;
-      rc = binary_archive.WriteColor(m_transparent_color);
+      rc = binary_archive.WriteColor (m_transparent_color);
       if (!rc)
         break;
-      rc = binary_archive.WriteUuid(m_transparency_texture_id);
+      rc = binary_archive.WriteUuid (m_transparency_texture_id);
       if (!rc)
         break;
-      rc = binary_archive.WriteInterval(m_bump_scale);
+      rc = binary_archive.WriteInterval (m_bump_scale);
       if (!rc)
         break;
-      rc = binary_archive.WriteDouble(m_blend_constant_A);
+      rc = binary_archive.WriteDouble (m_blend_constant_A);
       if (!rc)
         break;
-      rc = binary_archive.WriteDouble(4, m_blend_A);
+      rc = binary_archive.WriteDouble (4, m_blend_A);
       if (!rc)
         break;
-      rc = binary_archive.WriteColor(m_blend_constant_RGB);
+      rc = binary_archive.WriteColor (m_blend_constant_RGB);
       if (!rc)
         break;
-      rc = binary_archive.WriteDouble(4, m_blend_RGB);
+      rc = binary_archive.WriteDouble (4, m_blend_RGB);
       if (!rc)
         break;
-      rc = binary_archive.WriteInt(m_blend_order);
+      rc = binary_archive.WriteInt (m_blend_order);
       if (!rc)
         break;
 
@@ -1168,7 +1165,7 @@ ON_Texture::Write(ON_BinaryArchive& binary_archive) const
 }
 
 ON_Texture::TYPE
-ON_Texture::TypeFromInt(int i)
+ON_Texture::TypeFromInt (int i)
 {
   ON_Texture::TYPE type = no_texture_type;
 
@@ -1197,7 +1194,7 @@ ON_Texture::TypeFromInt(int i)
 }
 
 ON_Texture::MODE
-ON_Texture::ModeFromInt(int i)
+ON_Texture::ModeFromInt (int i)
 {
   ON_Texture::MODE mode = no_texture_mode;
   switch ((unsigned int)i) {
@@ -1221,7 +1218,7 @@ ON_Texture::ModeFromInt(int i)
 }
 
 ON_Texture::FILTER
-ON_Texture::FilterFromInt(int i)
+ON_Texture::FilterFromInt (int i)
 {
   ON_Texture::FILTER filter = linear_filter;
   switch ((unsigned int)i) {
@@ -1239,7 +1236,7 @@ ON_Texture::FilterFromInt(int i)
 }
 
 ON_Texture::WRAP
-ON_Texture::WrapFromInt(int i)
+ON_Texture::WrapFromInt (int i)
 {
   ON_Texture::WRAP wrap = repeat_wrap;
 
@@ -1260,13 +1257,13 @@ ON_Texture::WrapFromInt(int i)
 
 // overrides virtual ON_Object::Read
 ON_BOOL32
-ON_Texture::Read(ON_BinaryArchive& binary_archive)
+ON_Texture::Read (ON_BinaryArchive& binary_archive)
 {
   Default();
 
   int major_version = 0;
   int minor_version = 0;
-  bool rc = binary_archive.BeginRead3dmChunk(
+  bool rc = binary_archive.BeginRead3dmChunk (
       TCODE_ANONYMOUS_CHUNK, &major_version, &minor_version);
   if (rc) {
 
@@ -1277,91 +1274,91 @@ ON_Texture::Read(ON_BinaryArchive& binary_archive)
       int i;
       for (;;) {
         // 1.0 values
-        rc = binary_archive.ReadUuid(m_texture_id);
+        rc = binary_archive.ReadUuid (m_texture_id);
         if (!rc)
           break;
 
-        rc = binary_archive.ReadInt(&m_mapping_channel_id);
+        rc = binary_archive.ReadInt (&m_mapping_channel_id);
         if (!rc)
           break;
 
-        rc = binary_archive.ReadString(m_filename);
+        rc = binary_archive.ReadString (m_filename);
         if (!rc)
           break;
 
-        rc = binary_archive.ReadBool(&m_bOn);
+        rc = binary_archive.ReadBool (&m_bOn);
         if (!rc)
           break;
 
-        rc = binary_archive.ReadInt(&i);
+        rc = binary_archive.ReadInt (&i);
         if (!rc)
           break;
-        m_type = ON_Texture::TypeFromInt(i);
+        m_type = ON_Texture::TypeFromInt (i);
 
-        rc = binary_archive.ReadInt(&i);
+        rc = binary_archive.ReadInt (&i);
         if (!rc)
           break;
-        m_mode = ON_Texture::ModeFromInt(i);
+        m_mode = ON_Texture::ModeFromInt (i);
 
-        rc = binary_archive.ReadInt(&i);
+        rc = binary_archive.ReadInt (&i);
         if (!rc)
           break;
-        m_minfilter = ON_Texture::FilterFromInt(i);
+        m_minfilter = ON_Texture::FilterFromInt (i);
 
-        rc = binary_archive.ReadInt(&i);
+        rc = binary_archive.ReadInt (&i);
         if (!rc)
           break;
-        m_magfilter = ON_Texture::FilterFromInt(i);
+        m_magfilter = ON_Texture::FilterFromInt (i);
 
-        rc = binary_archive.ReadInt(&i);
+        rc = binary_archive.ReadInt (&i);
         if (!rc)
           break;
-        m_wrapu = ON_Texture::WrapFromInt(i);
+        m_wrapu = ON_Texture::WrapFromInt (i);
 
-        rc = binary_archive.ReadInt(&i);
+        rc = binary_archive.ReadInt (&i);
         if (!rc)
           break;
-        m_wrapv = ON_Texture::WrapFromInt(i);
+        m_wrapv = ON_Texture::WrapFromInt (i);
 
-        rc = binary_archive.ReadInt(&i);
+        rc = binary_archive.ReadInt (&i);
         if (!rc)
           break;
-        m_wrapw = ON_Texture::WrapFromInt(i);
+        m_wrapw = ON_Texture::WrapFromInt (i);
 
-        rc = binary_archive.ReadXform(m_uvw);
-        if (!rc)
-          break;
-
-        rc = binary_archive.ReadColor(m_border_color);
+        rc = binary_archive.ReadXform (m_uvw);
         if (!rc)
           break;
 
-        rc = binary_archive.ReadColor(m_transparent_color);
+        rc = binary_archive.ReadColor (m_border_color);
         if (!rc)
           break;
 
-        rc = binary_archive.ReadUuid(m_transparency_texture_id);
+        rc = binary_archive.ReadColor (m_transparent_color);
         if (!rc)
           break;
 
-        rc = binary_archive.ReadInterval(m_bump_scale);
+        rc = binary_archive.ReadUuid (m_transparency_texture_id);
         if (!rc)
           break;
 
-        rc = binary_archive.ReadDouble(&m_blend_constant_A);
-        if (!rc)
-          break;
-        rc = binary_archive.ReadDouble(4, m_blend_A);
-        if (!rc)
-          break;
-        rc = binary_archive.ReadColor(m_blend_constant_RGB);
-        if (!rc)
-          break;
-        rc = binary_archive.ReadDouble(4, m_blend_RGB);
+        rc = binary_archive.ReadInterval (m_bump_scale);
         if (!rc)
           break;
 
-        rc = binary_archive.ReadInt(&m_blend_order);
+        rc = binary_archive.ReadDouble (&m_blend_constant_A);
+        if (!rc)
+          break;
+        rc = binary_archive.ReadDouble (4, m_blend_A);
+        if (!rc)
+          break;
+        rc = binary_archive.ReadColor (m_blend_constant_RGB);
+        if (!rc)
+          break;
+        rc = binary_archive.ReadDouble (4, m_blend_RGB);
+        if (!rc)
+          break;
+
+        rc = binary_archive.ReadInt (&m_blend_order);
         if (!rc)
           break;
 
@@ -1395,11 +1392,11 @@ ON_Texture::Default()
   m_border_color = ON_UNSET_COLOR;
   m_transparent_color = ON_UNSET_COLOR;
   m_transparency_texture_id = ON_nil_uuid;
-  m_bump_scale.Set(0.0, 1.0);
+  m_bump_scale.Set (0.0, 1.0);
   m_blend_constant_A = 1.0;
   m_blend_A[0] = m_blend_A[1] = 1.0;
   m_blend_A[2] = m_blend_A[3] = 0.0;
-  m_blend_constant_RGB.SetRGB(0, 0, 0);
+  m_blend_constant_RGB.SetRGB (0, 0, 0);
   m_blend_RGB[0] = m_blend_RGB[1] = 1.0;
   m_blend_RGB[2] = m_blend_RGB[3] = 0.0;
   m_blend_order = 0;
@@ -1407,12 +1404,12 @@ ON_Texture::Default()
   m_runtime_ptr = 0;
 }
 
-ON_OBJECT_IMPLEMENT(ON_TextureMapping,
-                    ON_Object,
-                    "32EC997A-C3BF-4ae5-AB19-FD572B8AD554");
+ON_OBJECT_IMPLEMENT (ON_TextureMapping,
+                     ON_Object,
+                     "32EC997A-C3BF-4ae5-AB19-FD572B8AD554");
 
 ON_TextureMapping::TYPE
-ON_TextureMapping::TypeFromInt(int i)
+ON_TextureMapping::TypeFromInt (int i)
 {
   ON_TextureMapping::TYPE t;
   switch (i) {
@@ -1448,7 +1445,7 @@ ON_TextureMapping::TypeFromInt(int i)
 }
 
 ON_TextureMapping::PROJECTION
-ON_TextureMapping::ProjectionFromInt(int i)
+ON_TextureMapping::ProjectionFromInt (int i)
 {
   ON_TextureMapping::PROJECTION p;
   switch (i) {
@@ -1466,7 +1463,7 @@ ON_TextureMapping::ProjectionFromInt(int i)
 }
 
 ON_TextureMapping::TEXTURE_SPACE
-ON_TextureMapping::TextureSpaceFromInt(int i)
+ON_TextureMapping::TextureSpaceFromInt (int i)
 {
   ON_TextureMapping::TEXTURE_SPACE ts = single;
 
@@ -1497,7 +1494,7 @@ ON_TextureMapping::~ON_TextureMapping()
 
 // The copy constructor and operator= overrides are needed
 // to ensure m_mapping_primitive is properly copied.
-ON_TextureMapping::ON_TextureMapping(const ON_TextureMapping& src) : ON_Object(src)
+ON_TextureMapping::ON_TextureMapping (const ON_TextureMapping& src) : ON_Object (src)
 {
   m_mapping_id = src.m_mapping_id;
   m_mapping_index = src.m_mapping_index;
@@ -1514,14 +1511,14 @@ ON_TextureMapping::ON_TextureMapping(const ON_TextureMapping& src) : ON_Object(s
 }
 
 ON_TextureMapping&
-ON_TextureMapping::operator=(const ON_TextureMapping& src)
+ON_TextureMapping::operator= (const ON_TextureMapping& src)
 {
   if (this != &src) {
     if (m_mapping_primitive) {
       delete m_mapping_primitive;
       m_mapping_primitive = 0;
     }
-    ON_Object::operator=(src);
+    ON_Object::operator= (src);
     m_mapping_id = src.m_mapping_id;
     m_mapping_index = src.m_mapping_index;
     m_mapping_name = src.m_mapping_name;
@@ -1560,27 +1557,27 @@ ON_TextureMapping::Default()
 }
 
 ON_BOOL32
-ON_TextureMapping::IsValid(ON_TextLog* text_log) const
+ON_TextureMapping::IsValid (ON_TextLog* text_log) const
 {
-  if (m_type != ON_TextureMapping::TypeFromInt(m_type)) {
+  if (m_type != ON_TextureMapping::TypeFromInt (m_type)) {
     if (text_log) {
-      text_log->Print("ON_TextureMapping m_type = %d is not a valid value.\n", m_type);
+      text_log->Print ("ON_TextureMapping m_type = %d is not a valid value.\n", m_type);
     }
     return false;
   }
 
-  if (m_projection != ON_TextureMapping::ProjectionFromInt(m_projection)) {
+  if (m_projection != ON_TextureMapping::ProjectionFromInt (m_projection)) {
     if (text_log) {
-      text_log->Print("ON_TextureMapping m_projection = %d is not a valid value.\n",
-                      m_projection);
+      text_log->Print ("ON_TextureMapping m_projection = %d is not a valid value.\n",
+                       m_projection);
     }
     return false;
   }
 
-  if (m_texture_space != ON_TextureMapping::TextureSpaceFromInt(m_texture_space)) {
+  if (m_texture_space != ON_TextureMapping::TextureSpaceFromInt (m_texture_space)) {
     if (text_log) {
-      text_log->Print("ON_TextureMapping m_texture_space = %d is not a valid value.\n",
-                      m_texture_space);
+      text_log->Print ("ON_TextureMapping m_texture_space = %d is not a valid value.\n",
+                       m_texture_space);
     }
     return false;
   }
@@ -1589,77 +1586,77 @@ ON_TextureMapping::IsValid(ON_TextLog* text_log) const
 }
 
 void
-ON_TextureMapping::Dump(ON_TextLog& text_log) const
+ON_TextureMapping::Dump (ON_TextLog& text_log) const
 {
-  text_log.Print("Texture mapping id: ");
-  text_log.Print(m_mapping_id);
-  text_log.Print("\n");
+  text_log.Print ("Texture mapping id: ");
+  text_log.Print (m_mapping_id);
+  text_log.Print ("\n");
   text_log.PushIndent();
 
-  text_log.Print("type: ");
+  text_log.Print ("type: ");
   switch (m_type) {
   case no_mapping:
-    text_log.Print("no mapping\n");
+    text_log.Print ("no mapping\n");
     break;
   case plane_mapping:
-    text_log.Print("plane mapping\n");
+    text_log.Print ("plane mapping\n");
     break;
   case cylinder_mapping:
-    text_log.Print("cylinder mapping\n");
+    text_log.Print ("cylinder mapping\n");
     break;
   case sphere_mapping:
-    text_log.Print("sphere mapping\n");
+    text_log.Print ("sphere mapping\n");
     break;
   case box_mapping:
-    text_log.Print("box mapping\n");
+    text_log.Print ("box mapping\n");
     break;
   default:
-    text_log.Print("%d\n", m_type);
+    text_log.Print ("%d\n", m_type);
     break;
   }
 
-  text_log.Print("projection: ");
+  text_log.Print ("projection: ");
   switch (m_projection) {
   case no_projection:
-    text_log.Print("no projection\n");
+    text_log.Print ("no projection\n");
     break;
   case clspt_projection:
-    text_log.Print("closest point to mesh vertex\n");
+    text_log.Print ("closest point to mesh vertex\n");
     break;
   case ray_projection:
-    text_log.Print("mesh normal ray intersection\n");
+    text_log.Print ("mesh normal ray intersection\n");
     break;
   default:
-    text_log.Print("%d\n", m_projection);
+    text_log.Print ("%d\n", m_projection);
     break;
   }
 
-  text_log.Print("texture_space: ");
+  text_log.Print ("texture_space: ");
   switch (m_texture_space) {
   case single:
-    text_log.Print("single texture space\n");
+    text_log.Print ("single texture space\n");
     break;
   case clspt_projection:
-    text_log.Print("divided texture space\n");
+    text_log.Print ("divided texture space\n");
     break;
   default:
-    text_log.Print("%d\n", m_texture_space);
+    text_log.Print ("%d\n", m_texture_space);
     break;
   }
 
-  text_log.Print("XYZ point transformation:\n");
+  text_log.Print ("XYZ point transformation:\n");
   text_log.PushIndent();
-  text_log.Print(m_Pxyz);
+  text_log.Print (m_Pxyz);
   text_log.PopIndent();
 
-  text_log.Print("XYZ normal transformation:\n");
+  text_log.Print ("XYZ normal transformation:\n");
   text_log.PushIndent();
-  text_log.Print(m_Nxyz);
+  text_log.Print (m_Nxyz);
   text_log.PopIndent();
 
-  text_log.Print("UVW transformation:\n");
+  text_log.Print ("UVW transformation:\n");
   text_log.PushIndent();
-  text_log.Print(m_uvw);
+  text_log.Print (m_uvw);
   text_log.PopIndent();
 
   text_log.PopIndent();
@@ -1669,16 +1666,16 @@ unsigned int
 ON_TextureMapping::SizeOf() const
 {
   unsigned int sz = ON_Object::SizeOf();
-  sz = sizeof(*this) - sizeof(ON_Object);
+  sz = sizeof (*this) - sizeof (ON_Object);
   return sz;
 }
 
 bool
-ON_TextureMapping::ReverseTextureCoordinate(int dir)
+ON_TextureMapping::ReverseTextureCoordinate (int dir)
 {
   bool rc = false;
   if (0 <= dir && dir <= 3) {
-    ON_Xform x(1.0);
+    ON_Xform x (1.0);
     x.m_xform[dir][dir] = -1.0;
     x.m_xform[dir][3] = 1.0;
     m_uvw = x * m_uvw;
@@ -1688,11 +1685,11 @@ ON_TextureMapping::ReverseTextureCoordinate(int dir)
 }
 
 bool
-ON_TextureMapping::SwapTextureCoordinate(int i, int j)
+ON_TextureMapping::SwapTextureCoordinate (int i, int j)
 {
   bool rc = false;
   if (i != j && 0 <= i && i <= 3 && 0 <= j && j <= 3) {
-    ON_Xform x(1.0);
+    ON_Xform x (1.0);
     x.m_xform[i][i] = x.m_xform[j][j] = 0.0;
     x.m_xform[i][j] = x.m_xform[j][i] = 1.0;
     m_uvw = x * m_uvw;
@@ -1702,11 +1699,12 @@ ON_TextureMapping::SwapTextureCoordinate(int i, int j)
 }
 
 bool
-ON_TextureMapping::TileTextureCoordinate(int dir, double count, double offset)
+ON_TextureMapping::TileTextureCoordinate (int dir, double count, double offset)
 {
   bool rc = false;
-  if (0 <= dir && dir <= 3 && 0.0 != count && ON_IsValid(count) && ON_IsValid(offset)) {
-    ON_Xform x(1.0);
+  if (0 <= dir && dir <= 3 && 0.0 != count && ON_IsValid (count) &&
+      ON_IsValid (offset)) {
+    ON_Xform x (1.0);
     x.m_xform[dir][dir] = count;
     x.m_xform[dir][3] = offset;
     m_uvw = x * m_uvw;
@@ -1716,11 +1714,11 @@ ON_TextureMapping::TileTextureCoordinate(int dir, double count, double offset)
 }
 
 bool
-ON_Texture::ReverseTextureCoordinate(int dir)
+ON_Texture::ReverseTextureCoordinate (int dir)
 {
   bool rc = false;
   if (0 <= dir && dir <= 3) {
-    ON_Xform x(1.0);
+    ON_Xform x (1.0);
     x.m_xform[dir][dir] = -1.0;
     x.m_xform[dir][3] = 1.0;
     m_uvw = x * m_uvw;
@@ -1730,11 +1728,11 @@ ON_Texture::ReverseTextureCoordinate(int dir)
 }
 
 bool
-ON_Texture::SwapTextureCoordinate(int i, int j)
+ON_Texture::SwapTextureCoordinate (int i, int j)
 {
   bool rc = false;
   if (i != j && 0 <= i && i <= 3 && 0 <= j && j <= 3) {
-    ON_Xform x(1.0);
+    ON_Xform x (1.0);
     x.m_xform[i][i] = x.m_xform[j][j] = 0.0;
     x.m_xform[i][j] = x.m_xform[j][i] = 1.0;
     m_uvw = x * m_uvw;
@@ -1744,11 +1742,12 @@ ON_Texture::SwapTextureCoordinate(int i, int j)
 }
 
 bool
-ON_Texture::TileTextureCoordinate(int dir, double count, double offset)
+ON_Texture::TileTextureCoordinate (int dir, double count, double offset)
 {
   bool rc = false;
-  if (0 <= dir && dir <= 3 && 0.0 != count && ON_IsValid(count) && ON_IsValid(offset)) {
-    ON_Xform x(1.0);
+  if (0 <= dir && dir <= 3 && 0.0 != count && ON_IsValid (count) &&
+      ON_IsValid (offset)) {
+    ON_Xform x (1.0);
     x.m_xform[dir][dir] = count;
     x.m_xform[dir][3] = offset;
     m_uvw = x * m_uvw;
@@ -1758,7 +1757,7 @@ ON_Texture::TileTextureCoordinate(int dir, double count, double offset)
 }
 
 bool
-ON_Texture::IsTiled(int dir, double* count, double* offset) const
+ON_Texture::IsTiled (int dir, double* count, double* offset) const
 {
   if (count)
     *count = 1.0;
@@ -1818,10 +1817,10 @@ IntersectBoxRayHelper (const ON_3dPoint& rst, const ON_3dVector& n, int dir, dou
   double t, t0, t1;
 
   // protect against overflow
-  t = fabs(nx) * on__overflow_tol;
+  t = fabs (nx) * on__overflow_tol;
   t0 = (-1.0 - (&rst.x)[dir]);
   t1 = (1.0 - (&rst.x)[dir]);
-  if (fabs(t0) >= t || fabs(t1) >= t) {
+  if (fabs (t0) >= t || fabs (t1) >= t) {
     *s = ON_UNSET_VALUE;
     return 0;
   }
@@ -1833,7 +1832,7 @@ IntersectBoxRayHelper (const ON_3dPoint& rst, const ON_3dVector& n, int dir, dou
     Q.x = Q[dir];
     Q[dir] = t;
   }
-  if (fabs(Q.x + 1.0) > ON_SQRT_EPSILON || Q.y < -(1.0 + ON_SQRT_EPSILON) ||
+  if (fabs (Q.x + 1.0) > ON_SQRT_EPSILON || Q.y < -(1.0 + ON_SQRT_EPSILON) ||
       Q.y > (1.0 + ON_SQRT_EPSILON) || Q.z < -(1.0 + ON_SQRT_EPSILON) ||
       Q.z > (1.0 + ON_SQRT_EPSILON)) {
     // The ray's intersection with the plane missed the
@@ -1848,7 +1847,7 @@ IntersectBoxRayHelper (const ON_3dPoint& rst, const ON_3dVector& n, int dir, dou
     Q.x = Q[dir];
     Q[dir] = t;
   }
-  if (fabs(Q.x - 1.0) > ON_SQRT_EPSILON || Q.y < -(1.0 + ON_SQRT_EPSILON) ||
+  if (fabs (Q.x - 1.0) > ON_SQRT_EPSILON || Q.y < -(1.0 + ON_SQRT_EPSILON) ||
       Q.y > (1.0 + ON_SQRT_EPSILON) || Q.z < -(1.0 + ON_SQRT_EPSILON) ||
       Q.z > (1.0 + ON_SQRT_EPSILON)) {
     // The ray's intersection with the plane missed the
@@ -1861,7 +1860,7 @@ IntersectBoxRayHelper (const ON_3dPoint& rst, const ON_3dVector& n, int dir, dou
   }
 
   int rc;
-  if (ON_UNSET_VALUE == t0 || 1 == BestHitHelper(t0, t1)) {
+  if (ON_UNSET_VALUE == t0 || 1 == BestHitHelper (t0, t1)) {
     rc = 2 + 2 * dir;
     *s = t1;
   }
@@ -1873,19 +1872,19 @@ IntersectBoxRayHelper (const ON_3dPoint& rst, const ON_3dVector& n, int dir, dou
 }
 
 int
-ON_TextureMapping::EvaluatePlaneMapping(const ON_3dPoint& P,
-                                        const ON_3dVector& N,
-                                        ON_3dPoint* T) const
+ON_TextureMapping::EvaluatePlaneMapping (const ON_3dPoint& P,
+                                         const ON_3dVector& N,
+                                         ON_3dPoint* T) const
 {
   // The matrix m_Pxyz transforms the world  coordinate
   // "mapping rectangle" into the rectangle
   //   -1 <= r <= 1, -1 <= s <= 1, and  (-1 <= t <= 1)
 
-  ON_3dPoint rst(m_Pxyz * P);
+  ON_3dPoint rst (m_Pxyz * P);
 
   if (ray_projection == m_projection) {
-    ON_3dVector n(m_Nxyz * N);
-    if (fabs(rst.z) < fabs(n.z) * on__overflow_tol) {
+    ON_3dVector n (m_Nxyz * N);
+    if (fabs (rst.z) < fabs (n.z) * on__overflow_tol) {
       double t = -rst.z / n.z;
       rst.x = rst.x + t * n.x;
       rst.y = rst.y + t * n.y;
@@ -1908,30 +1907,30 @@ ON_TextureMapping::EvaluatePlaneMapping(const ON_3dPoint& P,
 }
 
 int
-ON_TextureMapping::EvaluateSphereMapping(const ON_3dPoint& P,
-                                         const ON_3dVector& N,
-                                         ON_3dPoint* T) const
+ON_TextureMapping::EvaluateSphereMapping (const ON_3dPoint& P,
+                                          const ON_3dVector& N,
+                                          ON_3dPoint* T) const
 {
   // The matrix m_Pxyz transforms the world coordinate
   // "mapping sphere" into the sphere centered at
   // rst = (0,0,0) with radius 1.0.
 
-  ON_3dPoint rst(m_Pxyz * P);
+  ON_3dPoint rst (m_Pxyz * P);
   const double r = ((const ON_3dVector*)(&rst.x))->Length();
   double t0, t1;
 
   if (ray_projection == m_projection) {
-    ON_3dVector n(m_Nxyz * N);
+    ON_3dVector n (m_Nxyz * N);
     // Shoot a ray from P in the direction N and see if it
     // hits the sphere.
-    int rc =
-        ON_SolveQuadraticEquation((n.x * n.x + n.y * n.y + n.z * n.z),
-                                  2.0 * (rst.x * n.x + rst.y * n.y + rst.z * n.z),
-                                  (rst.x * rst.x + rst.y * rst.y + rst.z * rst.z) - 1.0,
-                                  &t0,
-                                  &t1);
+    int rc = ON_SolveQuadraticEquation (
+        (n.x * n.x + n.y * n.y + n.z * n.z),
+        2.0 * (rst.x * n.x + rst.y * n.y + rst.z * n.z),
+        (rst.x * rst.x + rst.y * rst.y + rst.z * rst.z) - 1.0,
+        &t0,
+        &t1);
     if (rc >= 0) {
-      if (2 != rc && 1 == BestHitHelper(t0, t1)) {
+      if (2 != rc && 1 == BestHitHelper (t0, t1)) {
         t0 = t1;
       }
       rst = rst + t0 * n;
@@ -1939,9 +1938,9 @@ ON_TextureMapping::EvaluateSphereMapping(const ON_3dPoint& P,
   }
 
   // convert sphere 3d location to longitude, latitude, radius
-  double longitude = (0.0 != rst.y || 0.0 != rst.x) ? atan2(rst.y, rst.x) : 0.0;
+  double longitude = (0.0 != rst.y || 0.0 != rst.x) ? atan2 (rst.y, rst.x) : 0.0;
   double latitude =
-      (0.0 != rst.z) ? atan2(rst.z, ((const ON_2dVector*)(&rst.x))->Length()) : 0.0;
+      (0.0 != rst.z) ? atan2 (rst.z, ((const ON_2dVector*)(&rst.x))->Length()) : 0.0;
   if (latitude > ON_PI)
     latitude -= 2.0 * ON_PI;
 
@@ -1971,16 +1970,16 @@ ON_TextureMapping::EvaluateSphereMapping(const ON_3dPoint& P,
 }
 
 int
-ON_TextureMapping::EvaluateCylinderMapping(const ON_3dPoint& P,
-                                           const ON_3dVector& N,
-                                           ON_3dPoint* T) const
+ON_TextureMapping::EvaluateCylinderMapping (const ON_3dPoint& P,
+                                            const ON_3dVector& N,
+                                            ON_3dPoint* T) const
 {
   // The matrix m_Pxyz transforms the world coordinate
   // "mapping cylinder" into the cylinder centered at
   // rst = (0,0,0) with radius 1.0.  The axis runs
   // from rst = (0,0,-1) to rst = (0,0,+1).
 
-  ON_3dPoint rst(m_Pxyz * P);
+  ON_3dPoint rst (m_Pxyz * P);
 
   ON_3dPoint Q;
   const double r = ((const ON_2dVector*)(&rst.x))->Length();
@@ -1990,21 +1989,21 @@ ON_TextureMapping::EvaluateCylinderMapping(const ON_3dPoint& P,
 
   side0 = 0;
   if (ON_TextureMapping::ray_projection == mapping_proj) {
-    ON_3dVector n(m_Nxyz * N);
+    ON_3dVector n (m_Nxyz * N);
     t = 0.0;
 
     if (m_bCapped) {
       // shoot at caps
       //  The < t check prevents overflow when the
       //  ray is nearly parallel to the cap.
-      t = fabs(n.z) * on__overflow_tol;
-      if (fabs(1.0 + rst.z) < t && fabs(1.0 - rst.z) < t) {
+      t = fabs (n.z) * on__overflow_tol;
+      if (fabs (1.0 + rst.z) < t && fabs (1.0 - rst.z) < t) {
         side0 = 2;
         side1 = 3;
 
         t0 = (-1.0 - rst.z) / n.z;
         Q = rst + t0 * n;
-        if (fabs(1.0 + Q.z) > ON_SQRT_EPSILON ||
+        if (fabs (1.0 + Q.z) > ON_SQRT_EPSILON ||
             (Q.x * Q.x + Q.y * Q.y) > 1.0 + 2.0 * ON_SQRT_EPSILON + ON_EPSILON) {
           // The ray's intersection with the bottom plane missed the
           // radius 1 disk that is the bottom of the cylinder.
@@ -2013,13 +2012,13 @@ ON_TextureMapping::EvaluateCylinderMapping(const ON_3dPoint& P,
 
         t1 = (1.0 - rst.z) / n.z;
         Q = rst + t1 * n;
-        if (fabs(1.0 - Q.z) > ON_SQRT_EPSILON ||
+        if (fabs (1.0 - Q.z) > ON_SQRT_EPSILON ||
             (Q.x * Q.x + Q.y * Q.y) > 1.0 + 2.0 * ON_SQRT_EPSILON + ON_EPSILON) {
           // The ray's intersection with the top plane missed the
           // radius 1 disk that is the top of the cylinder.
           side1 = 0;
         }
-        if (0 == side0 || 1 == BestHitHelper(t0, t1)) {
+        if (0 == side0 || 1 == BestHitHelper (t0, t1)) {
           side0 = side1;
           t = t1;
         }
@@ -2030,13 +2029,13 @@ ON_TextureMapping::EvaluateCylinderMapping(const ON_3dPoint& P,
     }
 
     // shoot ray at the cylinder wall
-    int rc = ON_SolveQuadraticEquation((n.x * n.x + n.y * n.y),
-                                       2.0 * (rst.x * n.x + rst.y * n.y),
-                                       (rst.x * rst.x + rst.y * rst.y) - 1.0,
-                                       &t0,
-                                       &t1);
+    int rc = ON_SolveQuadraticEquation ((n.x * n.x + n.y * n.y),
+                                        2.0 * (rst.x * n.x + rst.y * n.y),
+                                        (rst.x * rst.x + rst.y * rst.y) - 1.0,
+                                        &t0,
+                                        &t1);
     if (rc >= 0) {
-      if (2 != rc && 1 == BestHitHelper(t0, t1)) {
+      if (2 != rc && 1 == BestHitHelper (t0, t1)) {
         t0 = t1;
       }
       if (0 == side0) {
@@ -2045,7 +2044,7 @@ ON_TextureMapping::EvaluateCylinderMapping(const ON_3dPoint& P,
         side0 = 1;
         rst = rst + t0 * n;
       }
-      else if (1 != BestHitHelper(t0, t)) {
+      else if (1 != BestHitHelper (t0, t)) {
         // The cylinder is capped and the ray hit the cap,
         // hit the infinite cylinder wall, and the wall
         // hit is "first".  If the ray hits the finite
@@ -2068,8 +2067,8 @@ ON_TextureMapping::EvaluateCylinderMapping(const ON_3dPoint& P,
   }
 
   if (m_bCapped && 0 == side0) {
-    if (fabs(rst.z) > 1.0 + ON_SQRT_EPSILON) {
-      if (fabs(rst.z) > r) {
+    if (fabs (rst.z) > 1.0 + ON_SQRT_EPSILON) {
+      if (fabs (rst.z) > r) {
         side0 = (rst.z < 0.0) ? 2 : 3;
       }
     }
@@ -2077,8 +2076,8 @@ ON_TextureMapping::EvaluateCylinderMapping(const ON_3dPoint& P,
       // The point is inside the capped cylinder.
       // Use normal to dermine which surface to use
       // for closest point test.
-      ON_3dVector n(m_Nxyz * N);
-      if ((fabs(n.z) > fabs(n.x) && fabs(n.z) > fabs(n.y))) {
+      ON_3dVector n (m_Nxyz * N);
+      if ((fabs (n.z) > fabs (n.x) && fabs (n.z) > fabs (n.y))) {
         side0 = (n.z < 0.0) ? 2 : 3;
       }
     }
@@ -2129,7 +2128,7 @@ ON_TextureMapping::EvaluateCylinderMapping(const ON_3dPoint& P,
     // P maps to side of the cylinder.
     //
     // convert longitude to normalized texture coordinate
-    t = (0.0 != rst.y || 0.0 != rst.x) ? atan2(rst.y, rst.x) : 0.0;
+    t = (0.0 != rst.y || 0.0 != rst.x) ? atan2 (rst.y, rst.x) : 0.0;
     rst.x = 0.5 * t / ON_PI;
     if (rst.x < -ON_EPSILON)
       rst.x += 1.0;
@@ -2163,18 +2162,18 @@ ON_TextureMapping::EvaluateCylinderMapping(const ON_3dPoint& P,
 }
 
 int
-ON_TextureMapping::EvaluateBoxMapping(const ON_3dPoint& P,
-                                      const ON_3dVector& N,
-                                      ON_3dPoint* T) const
+ON_TextureMapping::EvaluateBoxMapping (const ON_3dPoint& P,
+                                       const ON_3dVector& N,
+                                       ON_3dPoint* T) const
 {
   // The matrix m_Pxyz transforms the world coordinate
   // "mapping cylinder" into the cylinder centered at
   // rst = (0,0,0) with radius 1.0.  The axis runs
   // from rst = (0,0,-1) to rst = (0,0,+1).
 
-  ON_3dPoint rst(m_Pxyz * P);
+  ON_3dPoint rst (m_Pxyz * P);
 
-  ON_3dVector n(m_Nxyz * N);
+  ON_3dVector n (m_Nxyz * N);
   n.Unitize();
 
   int side0, side1;
@@ -2195,17 +2194,17 @@ ON_TextureMapping::EvaluateBoxMapping(const ON_3dPoint& P,
 
     if (m_bCapped) {
       // intersect ray with top and bottom
-      side0 = IntersectBoxRayHelper(rst, n, 2, &t0);
+      side0 = IntersectBoxRayHelper (rst, n, 2, &t0);
     }
     // intersect ray with front and back
-    side1 = IntersectBoxRayHelper(rst, n, 0, &t1);
-    if (0 == side0 || 1 == BestHitHelper(t0, t1)) {
+    side1 = IntersectBoxRayHelper (rst, n, 0, &t1);
+    if (0 == side0 || 1 == BestHitHelper (t0, t1)) {
       side0 = side1;
       t0 = t1;
     }
     // intersect ray with left and right
-    side1 = IntersectBoxRayHelper(rst, n, 1, &t1);
-    if (0 == side0 || 1 == BestHitHelper(t0, t1)) {
+    side1 = IntersectBoxRayHelper (rst, n, 1, &t1);
+    if (0 == side0 || 1 == BestHitHelper (t0, t1)) {
       side0 = side1;
       t0 = t1;
     }
@@ -2217,8 +2216,8 @@ ON_TextureMapping::EvaluateBoxMapping(const ON_3dPoint& P,
 
   if (0 == side0) {
     // set side0 = side closest to the point
-    side1 = (fabs(rst.x) >= fabs(rst.y)) ? 0 : 1;
-    if (m_bCapped && fabs(rst.z) > fabs(((double*)&rst.x)[side1]))
+    side1 = (fabs (rst.x) >= fabs (rst.y)) ? 0 : 1;
+    if (m_bCapped && fabs (rst.z) > fabs (((double*)&rst.x)[side1]))
       side1 = 2;
     t1 = (&rst.x)[side1];
     if (t1 < 0.0) {
@@ -2233,8 +2232,8 @@ ON_TextureMapping::EvaluateBoxMapping(const ON_3dPoint& P,
     //// is not zero, then use it to choose the side
     //// used for the closest point projection.
 
-    side1 = (fabs(n.x) >= fabs(n.y)) ? 0 : 1;
-    if (m_bCapped && fabs(n.z) > fabs((&n.x)[side1])) {
+    side1 = (fabs (n.x) >= fabs (n.y)) ? 0 : 1;
+    if (m_bCapped && fabs (n.z) > fabs ((&n.x)[side1])) {
       side1 = 2;
     }
     t1 = n[side1];
@@ -2300,11 +2299,11 @@ ON_TextureMapping::EvaluateBoxMapping(const ON_3dPoint& P,
 }
 
 int
-ON_TextureMapping::Evaluate(const ON_3dPoint& P,
-                            const ON_3dVector& N,
-                            ON_3dPoint* T,
-                            const ON_Xform& P_xform,
-                            const ON_Xform& N_xform) const
+ON_TextureMapping::Evaluate (const ON_3dPoint& P,
+                             const ON_3dVector& N,
+                             ON_3dPoint* T,
+                             const ON_Xform& P_xform,
+                             const ON_Xform& N_xform) const
 {
   int rc;
   ON_3dPoint Q = P * P_xform;
@@ -2312,19 +2311,19 @@ ON_TextureMapping::Evaluate(const ON_3dPoint& P,
     // need a transformed normal
     ON_3dVector V = N_xform * N;
     V.Unitize();
-    rc = Evaluate(Q, V, T);
+    rc = Evaluate (Q, V, T);
   }
   else {
     // normal is ignored
-    rc = Evaluate(Q, N, T);
+    rc = Evaluate (Q, N, T);
   }
   return rc;
 }
 
 int
-ON_TextureMapping::Evaluate(const ON_3dPoint& P,
-                            const ON_3dVector& N,
-                            ON_3dPoint* T) const
+ON_TextureMapping::Evaluate (const ON_3dPoint& P,
+                             const ON_3dVector& N,
+                             ON_3dPoint* T) const
 {
   int rc;
 
@@ -2334,13 +2333,13 @@ ON_TextureMapping::Evaluate(const ON_3dPoint& P,
     rc = 1;
     break;
   case sphere_mapping:
-    rc = EvaluateSphereMapping(P, N, T);
+    rc = EvaluateSphereMapping (P, N, T);
     break;
   case cylinder_mapping:
-    rc = EvaluateCylinderMapping(P, N, T);
+    rc = EvaluateCylinderMapping (P, N, T);
     break;
   case box_mapping:
-    rc = EvaluateBoxMapping(P, N, T);
+    rc = EvaluateBoxMapping (P, N, T);
     break;
 
   case mesh_mapping_primitive:
@@ -2356,7 +2355,7 @@ ON_TextureMapping::Evaluate(const ON_3dPoint& P,
     break;
 
   default:
-    rc = EvaluatePlaneMapping(P, N, T);
+    rc = EvaluatePlaneMapping (P, N, T);
     break;
   }
   return rc;
@@ -2367,23 +2366,23 @@ ON_TextureMapping::MappingCRC() const
 {
   // include any member that can change values returned by Evaluate
   ON__UINT32 crc32 = 0x12345678;
-  crc32 = ON_CRC32(crc32, sizeof(m_type), &m_type);
+  crc32 = ON_CRC32 (crc32, sizeof (m_type), &m_type);
   if (ON_TextureMapping::srfp_mapping != m_type) {
     // As of 21 June 2006 m_Pxyz cannot effect srfp_mapping,
     // so it shouldn't be included in the CRC for srfp_mappings.
-    crc32 = ON_CRC32(crc32, sizeof(m_projection), &m_projection);
-    crc32 = ON_CRC32(crc32, sizeof(m_texture_space), &m_texture_space);
-    crc32 = ON_CRC32(crc32, sizeof(m_bCapped), &m_bCapped);
-    crc32 = ON_CRC32(crc32, sizeof(m_Pxyz), &m_Pxyz);
+    crc32 = ON_CRC32 (crc32, sizeof (m_projection), &m_projection);
+    crc32 = ON_CRC32 (crc32, sizeof (m_texture_space), &m_texture_space);
+    crc32 = ON_CRC32 (crc32, sizeof (m_bCapped), &m_bCapped);
+    crc32 = ON_CRC32 (crc32, sizeof (m_Pxyz), &m_Pxyz);
     // do not include m_Nxyz here - it won't help and may hurt
 
     if (0 != m_mapping_primitive) {
       switch (m_type) {
       case ON_TextureMapping::mesh_mapping_primitive: {
-        const ON_Mesh* mesh = ON_Mesh::Cast(m_mapping_primitive);
+        const ON_Mesh* mesh = ON_Mesh::Cast (m_mapping_primitive);
         if (0 == mesh)
           break;
-        crc32 = mesh->DataCRC(crc32);
+        crc32 = mesh->DataCRC (crc32);
         if (mesh->HasTextureCoordinates()) {
           // 25 August 2010 Dale Lear
           //   Including m_T[] in crc32 per Jussi and Andy email discussion.
@@ -2391,15 +2390,15 @@ ON_TextureMapping::MappingCRC() const
           //   "picture" on the mesh to be applied to the target in
           //   a visual way.
           const ON_2fPoint* tex = mesh->m_T.Array();
-          crc32 = ON_CRC32(crc32, mesh->m_T.Count() * sizeof(tex[0]), tex);
+          crc32 = ON_CRC32 (crc32, mesh->m_T.Count() * sizeof (tex[0]), tex);
         }
       } break;
 
       case ON_TextureMapping::brep_mapping_primitive: {
-        const ON_Brep* brep = ON_Brep::Cast(m_mapping_primitive);
+        const ON_Brep* brep = ON_Brep::Cast (m_mapping_primitive);
         if (0 == brep)
           break;
-        crc32 = brep->DataCRC(crc32);
+        crc32 = brep->DataCRC (crc32);
         // 25 August 2010 Dale Lear
         //   Should brep's render meshes be included in the crc?
         //   The texture that is being mapped is actually
@@ -2411,10 +2410,10 @@ ON_TextureMapping::MappingCRC() const
       } break;
 
       case ON_TextureMapping::srf_mapping_primitive: {
-        const ON_Surface* surface = ON_Surface::Cast(m_mapping_primitive);
+        const ON_Surface* surface = ON_Surface::Cast (m_mapping_primitive);
         if (0 == surface)
           break;
-        crc32 = surface->DataCRC(crc32);
+        crc32 = surface->DataCRC (crc32);
       } break;
 
       case ON_TextureMapping::no_mapping:
@@ -2430,7 +2429,7 @@ ON_TextureMapping::MappingCRC() const
     }
   }
 
-  crc32 = ON_CRC32(crc32, sizeof(m_uvw), &m_uvw);
+  crc32 = ON_CRC32 (crc32, sizeof (m_uvw), &m_uvw);
   return crc32;
 }
 
@@ -2452,25 +2451,25 @@ ON_TextureMapping::RequiresVertexNormals() const
 }
 
 bool
-ON_TextureMapping::IsPeriodic(void) const
+ON_TextureMapping::IsPeriodic (void) const
 {
   return (m_type == sphere_mapping || m_type == cylinder_mapping);
 }
 
 bool
-ON_TextureMapping::HasMatchingTextureCoordinates(const ON_Mesh& mesh,
-                                                 const ON_Xform* mesh_xform) const
+ON_TextureMapping::HasMatchingTextureCoordinates (const ON_Mesh& mesh,
+                                                  const ON_Xform* mesh_xform) const
 {
   bool rc = (mesh.HasTextureCoordinates())
-                ? HasMatchingTextureCoordinates(mesh.m_Ttag, mesh_xform)
+                ? HasMatchingTextureCoordinates (mesh.m_Ttag, mesh_xform)
                 : false;
 
   return rc;
 }
 
 bool
-ON_TextureMapping::HasMatchingTextureCoordinates(const ON_MappingTag& tag,
-                                                 const ON_Xform* mesh_xform) const
+ON_TextureMapping::HasMatchingTextureCoordinates (const ON_MappingTag& tag,
+                                                  const ON_Xform* mesh_xform) const
 {
   bool rc = false;
 
@@ -2493,7 +2492,7 @@ ON_TextureMapping::HasMatchingTextureCoordinates(const ON_MappingTag& tag,
       const double* a = &mesh_xform->m_xform[0][0];
       const double* b = &tag.m_mesh_xform.m_xform[0][0];
       for (int i = 16; i--; /*empty*/) {
-        if (fabs(*a++ - *b++) > ON_SQRT_EPSILON) {
+        if (fabs (*a++ - *b++) > ON_SQRT_EPSILON) {
           rc = false;
           break;
         }
@@ -2574,18 +2573,18 @@ GetSPTCHelper (const ON_Mesh& mesh,
       // (u, v) = known surface parameter
       if (mesh.m_packed_tex_rotate) {
         // verify this by checking with mesher
-        a = 1.0 - srf_vdom.NormalizedParameterAt(v);
-        b = srf_udom.NormalizedParameterAt(u);
+        a = 1.0 - srf_vdom.NormalizedParameterAt (v);
+        b = srf_udom.NormalizedParameterAt (u);
       }
       else {
-        a = srf_udom.NormalizedParameterAt(u);
-        b = srf_vdom.NormalizedParameterAt(v);
+        a = srf_udom.NormalizedParameterAt (u);
+        b = srf_vdom.NormalizedParameterAt (v);
       }
 
       // When textures are packed, tex_udom and tex_vdom
       // are subintervals of (0,1).
-      u = tex_udom.ParameterAt(a);
-      v = tex_vdom.ParameterAt(b);
+      u = tex_udom.ParameterAt (a);
+      v = tex_vdom.ParameterAt (b);
 
       tc[0] = (float)u;
       tc[1] = (float)v;
@@ -2593,12 +2592,12 @@ GetSPTCHelper (const ON_Mesh& mesh,
     }
   }
   else if (bHaveUVWXform) {
-    const ON_Xform xform(mapping.m_uvw);
+    const ON_Xform xform (mapping.m_uvw);
     ON_3dPoint P;
     for (i = 0; i < vcnt; i++) {
       // normalize surface parameter
-      P.x = srf_udom.NormalizedParameterAt(S[i].x);
-      P.y = srf_vdom.NormalizedParameterAt(S[i].y);
+      P.x = srf_udom.NormalizedParameterAt (S[i].x);
+      P.y = srf_vdom.NormalizedParameterAt (S[i].y);
       P.z = 0.0;
 
       // apply m_uvw transformation
@@ -2614,8 +2613,8 @@ GetSPTCHelper (const ON_Mesh& mesh,
     // It only applies if the texture is packed.
     for (i = 0; i < vcnt; i++) {
       // tc = normalized surface parameter
-      a = srf_udom.NormalizedParameterAt(S[i].x);
-      b = srf_vdom.NormalizedParameterAt(S[i].y);
+      a = srf_udom.NormalizedParameterAt (S[i].x);
+      b = srf_vdom.NormalizedParameterAt (S[i].y);
 
       tc[0] = (float)a;
       tc[1] = (float)b;
@@ -2627,14 +2626,14 @@ GetSPTCHelper (const ON_Mesh& mesh,
 }
 
 bool
-ON_TextureMapping::GetTextureCoordinates(const ON_Mesh& mesh,
-                                         ON_SimpleArray<ON_3fPoint>& T,
-                                         const ON_Xform* mesh_xform,
-                                         bool bLazy,
-                                         ON_SimpleArray<int>* Tside) const
+ON_TextureMapping::GetTextureCoordinates (const ON_Mesh& mesh,
+                                          ON_SimpleArray<ON_3fPoint>& T,
+                                          const ON_Xform* mesh_xform,
+                                          bool bLazy,
+                                          ON_SimpleArray<int>* Tside) const
 {
   if (Tside)
-    Tside->SetCount(0);
+    Tside->SetCount (0);
 
   int i;
   const int vcnt = mesh.m_V.Count();
@@ -2645,16 +2644,16 @@ ON_TextureMapping::GetTextureCoordinates(const ON_Mesh& mesh,
     int tci, tccount = mesh.m_TC.Count();
     for (tci = 0; tci < tccount; tci++) {
       if (vcnt == mesh.m_TC[tci].m_T.Count()) {
-        if (HasMatchingTextureCoordinates(mesh.m_TC[tci].m_tag, mesh_xform)) {
+        if (HasMatchingTextureCoordinates (mesh.m_TC[tci].m_tag, mesh_xform)) {
           T = mesh.m_TC[tci].m_T;
           return true;
         }
       }
     }
 
-    if (HasMatchingTextureCoordinates(mesh, mesh_xform)) {
-      T.Reserve(vcnt);
-      T.SetCount(vcnt);
+    if (HasMatchingTextureCoordinates (mesh, mesh_xform)) {
+      T.Reserve (vcnt);
+      T.SetCount (vcnt);
       const ON_2fPoint* f = mesh.m_T.Array();
       ON_3fPoint* d = T.Array();
       for (i = vcnt; i--; f++, d++) {
@@ -2670,30 +2669,30 @@ ON_TextureMapping::GetTextureCoordinates(const ON_Mesh& mesh,
 
   if (ON_TextureMapping::srfp_mapping == m_type) {
     // uv textures from surface parameterization
-    T.Reserve(vcnt);
-    T.SetCount(vcnt);
+    T.Reserve (vcnt);
+    T.SetCount (vcnt);
     T.Zero();
-    rc = GetSPTCHelper(mesh, *this, &T[0].x, 3);
+    rc = GetSPTCHelper (mesh, *this, &T[0].x, 3);
   }
   else {
     ON_3dPoint P, tc;
-    ON_3dVector N(0.0, 0.0, 0.0);
+    ON_3dVector N (0.0, 0.0, 0.0);
 
     const ON_3fPoint* mesh_V = mesh.m_V.Array();
     const ON_3fVector* mesh_N = mesh.HasVertexNormals() ? mesh.m_N.Array() : 0;
 
-    T.Reserve(vcnt);
-    T.SetCount(vcnt);
+    T.Reserve (vcnt);
+    T.SetCount (vcnt);
 
     int* Tsd = 0;
     if (Tside) {
-      Tside->Reserve(vcnt);
-      Tside->SetCount(vcnt);
+      Tside->Reserve (vcnt);
+      Tside->SetCount (vcnt);
       Tsd = Tside->Array();
-      memset(Tsd, 0, vcnt * sizeof(Tsd[0]));
+      memset (Tsd, 0, vcnt * sizeof (Tsd[0]));
     }
 
-    ON_Xform P_xform(1.0), N_xform(1.0);
+    ON_Xform P_xform (1.0), N_xform (1.0);
     const double* PT = 0;
     const double* NT = 0;
     if (mesh_xform) {
@@ -2701,7 +2700,7 @@ ON_TextureMapping::GetTextureCoordinates(const ON_Mesh& mesh,
         // ignore transformation
         mesh_xform = 0;
       }
-      else if (0.0 != mesh_xform->GetMappingXforms(P_xform, N_xform)) {
+      else if (0.0 != mesh_xform->GetMappingXforms (P_xform, N_xform)) {
         PT = &P_xform[0][0];
         NT = &N_xform[0][0];
       }
@@ -2740,7 +2739,7 @@ ON_TextureMapping::GetTextureCoordinates(const ON_Mesh& mesh,
           N.y = PT[4] * f[0] + PT[5] * f[1] + PT[6] * f[2];
           N.z = PT[8] * f[0] + PT[9] * f[1] + PT[10] * f[2];
           N.Unitize();
-          sd = Evaluate(P, N, &tc);
+          sd = Evaluate (P, N, &tc);
           T[i] = tc;
           if (Tsd)
             Tsd[i] = sd;
@@ -2751,7 +2750,7 @@ ON_TextureMapping::GetTextureCoordinates(const ON_Mesh& mesh,
         for (i = 0; i < vcnt; i++) {
           P = mesh_V[i];
           N = mesh_N[i];
-          sd = Evaluate(P, N, &tc);
+          sd = Evaluate (P, N, &tc);
           T[i] = tc;
           if (Tsd)
             Tsd[i] = sd;
@@ -2768,7 +2767,7 @@ ON_TextureMapping::GetTextureCoordinates(const ON_Mesh& mesh,
         P.x = w * (PT[0] * f[0] + PT[1] * f[1] + PT[2] * f[2] + PT[3]);
         P.y = w * (PT[4] * f[0] + PT[5] * f[1] + PT[6] * f[2] + PT[7]);
         P.z = w * (PT[8] * f[0] + PT[9] * f[1] + PT[10] * f[2] + PT[11]);
-        sd = Evaluate(P, N, &tc);
+        sd = Evaluate (P, N, &tc);
         T[i] = tc;
         if (Tsd)
           Tsd[i] = sd;
@@ -2778,7 +2777,7 @@ ON_TextureMapping::GetTextureCoordinates(const ON_Mesh& mesh,
       // normal is not used and mesh vertex is ok
       for (i = 0; i < vcnt; i++) {
         P = mesh_V[i];
-        sd = Evaluate(P, N, &tc);
+        sd = Evaluate (P, N, &tc);
         T[i] = tc;
         if (Tsd)
           Tsd[i] = sd;
@@ -2796,8 +2795,8 @@ ThreeToTwoHelper (const ON_SimpleArray<ON_3fPoint>& T3, ON_SimpleArray<ON_2fPoin
   int i = T3.Count();
   const ON_3fPoint* t3 = T3.Array();
 
-  T2.Reserve(i);
-  T2.SetCount(i);
+  T2.Reserve (i);
+  T2.SetCount (i);
   ON_2fPoint* t2 = T2.Array();
   while (i--) {
     t2->x = t3->x;
@@ -2808,17 +2807,17 @@ ThreeToTwoHelper (const ON_SimpleArray<ON_3fPoint>& T3, ON_SimpleArray<ON_2fPoin
 }
 
 bool
-ON_TextureMapping::GetTextureCoordinates(const ON_Mesh& mesh,
-                                         ON_SimpleArray<ON_2fPoint>& T,
-                                         const ON_Xform* mesh_xform,
-                                         bool bLazy,
-                                         ON_SimpleArray<int>* Tside) const
+ON_TextureMapping::GetTextureCoordinates (const ON_Mesh& mesh,
+                                          ON_SimpleArray<ON_2fPoint>& T,
+                                          const ON_Xform* mesh_xform,
+                                          bool bLazy,
+                                          ON_SimpleArray<int>* Tside) const
 {
   bool rc = false;
   if (Tside)
-    Tside->SetCount(0);
+    Tside->SetCount (0);
   if (bLazy) {
-    if (HasMatchingTextureCoordinates(mesh, mesh_xform)) {
+    if (HasMatchingTextureCoordinates (mesh, mesh_xform)) {
       if (T.Array() != mesh.m_T.Array()) {
         // different arrays - copy
         T = mesh.m_T;
@@ -2830,9 +2829,9 @@ ON_TextureMapping::GetTextureCoordinates(const ON_Mesh& mesh,
       int tci, tccount = mesh.m_TC.Count();
       for (tci = 0; tci < tccount; tci++) {
         if (vcnt == mesh.m_TC[tci].m_T.Count()) {
-          if (HasMatchingTextureCoordinates(mesh.m_TC[tci].m_tag, mesh_xform)) {
+          if (HasMatchingTextureCoordinates (mesh.m_TC[tci].m_tag, mesh_xform)) {
             // copy T3d[] results to T[]
-            ThreeToTwoHelper(mesh.m_TC[tci].m_T, T);
+            ThreeToTwoHelper (mesh.m_TC[tci].m_T, T);
             return true;
           }
         }
@@ -2842,17 +2841,17 @@ ON_TextureMapping::GetTextureCoordinates(const ON_Mesh& mesh,
 
   if (ON_TextureMapping::srfp_mapping == m_type) {
     // uv textures from surface parameterization
-    T.Reserve(mesh.m_V.Count());
-    T.SetCount(mesh.m_V.Count());
+    T.Reserve (mesh.m_V.Count());
+    T.SetCount (mesh.m_V.Count());
     T.Zero();
-    rc = GetSPTCHelper(mesh, *this, &T[0].x, 2);
+    rc = GetSPTCHelper (mesh, *this, &T[0].x, 2);
   }
   else {
-    T.SetCount(0);
+    T.SetCount (0);
     ON_SimpleArray<ON_3fPoint> T3;
-    if (GetTextureCoordinates(mesh, T3, mesh_xform, false, Tside)) {
+    if (GetTextureCoordinates (mesh, T3, mesh_xform, false, Tside)) {
       // copy T3d[] results to T[]
-      ThreeToTwoHelper(T3, T);
+      ThreeToTwoHelper (T3, T);
       rc = true;
     }
   }
@@ -2915,7 +2914,7 @@ class ON__CChangeTextureCoordinateHelper {
   // DO NOT PUT THIS CLASS IN A HEADER FILE
   // IT IS A PRIVATE HELPER CLASS.
 public:
-  ON__CChangeTextureCoordinateHelper(ON_Mesh& mesh, int newvcnt, float*& mesh_T);
+  ON__CChangeTextureCoordinateHelper (ON_Mesh& mesh, int newvcnt, float*& mesh_T);
   ~ON__CChangeTextureCoordinateHelper();
 
   int
@@ -2951,19 +2950,19 @@ public:
 
 private:
   // no implementation
-  ON__CChangeTextureCoordinateHelper(const ON__CChangeTextureCoordinateHelper&);
+  ON__CChangeTextureCoordinateHelper (const ON__CChangeTextureCoordinateHelper&);
   ON__CChangeTextureCoordinateHelper&
-  operator=(const ON__CChangeTextureCoordinateHelper&);
+  operator= (const ON__CChangeTextureCoordinateHelper&);
 };
 
 void
-ON__CChangeTextureCoordinateHelper::ChangeTextureCoordinate(
+ON__CChangeTextureCoordinateHelper::ChangeTextureCoordinate (
     int* Fvi, int fvi, float x, float y, float* mesh_T, int mesh_T_stride)
 {
   int oldvi = Fvi[fvi];
   float* T = mesh_T + (oldvi * mesh_T_stride);
   if (x != T[0] || (y != ON_UNSET_FLOAT && y != T[1])) {
-    int newvi = DupVertex(oldvi);
+    int newvi = DupVertex (oldvi);
     T = mesh_T + (newvi * mesh_T_stride);
     T[0] = x;
     if (y != ON_UNSET_FLOAT)
@@ -2979,10 +2978,10 @@ ON__CChangeTextureCoordinateHelper::ChangeTextureCoordinate(
   }
 }
 
-ON__CChangeTextureCoordinateHelper::ON__CChangeTextureCoordinateHelper(ON_Mesh& mesh,
-                                                                       int newvcnt,
-                                                                       float*& mesh_T)
-: m_mesh(mesh), m_mesh_dV(0), m_vuse_count(0)
+ON__CChangeTextureCoordinateHelper::ON__CChangeTextureCoordinateHelper (ON_Mesh& mesh,
+                                                                        int newvcnt,
+                                                                        float*& mesh_T)
+: m_mesh (mesh), m_mesh_dV (0), m_vuse_count (0)
 {
   // adding vertices invalidates this cached information.
   m_mesh.DestroyTopology();
@@ -2999,11 +2998,11 @@ ON__CChangeTextureCoordinateHelper::ON__CChangeTextureCoordinateHelper(ON_Mesh& 
   // saved array base pointers will be invalid, and you crash
   // the next time they are used.
 
-  m_mesh.m_V.Reserve(vcnt + newvcnt);
+  m_mesh.m_V.Reserve (vcnt + newvcnt);
 
   if (m_mesh.HasDoublePrecisionVertices() && m_mesh.DoublePrecisionVerticesAreValid()) {
     m_mesh_dV = &m_mesh.DoublePrecisionVertices();
-    m_mesh_dV->Reserve(vcnt + newvcnt);
+    m_mesh_dV->Reserve (vcnt + newvcnt);
   }
   else {
     m_mesh.DestroyDoublePrecisionVertices();
@@ -3011,46 +3010,46 @@ ON__CChangeTextureCoordinateHelper::ON__CChangeTextureCoordinateHelper(ON_Mesh& 
 
   m_bHasVertexNormals = m_mesh.HasVertexNormals();
   if (m_bHasVertexNormals)
-    m_mesh.m_N.Reserve(vcnt + newvcnt);
+    m_mesh.m_N.Reserve (vcnt + newvcnt);
 
   m_bHasVertexTextures = m_mesh.HasTextureCoordinates();
   if (m_bHasVertexTextures) {
     float* p = (float*)m_mesh.m_T.Array();
-    m_mesh.m_T.Reserve(vcnt + newvcnt);
+    m_mesh.m_T.Reserve (vcnt + newvcnt);
     if (p == mesh_T)
       mesh_T = (float*)m_mesh.m_T.Array();
   }
 
   m_bHasVertexColors = m_mesh.HasVertexColors();
   if (m_bHasVertexColors)
-    m_mesh.m_C.Reserve(vcnt + newvcnt);
+    m_mesh.m_C.Reserve (vcnt + newvcnt);
 
   m_bHasSurfaceParameters = m_mesh.HasSurfaceParameters();
   if (m_bHasSurfaceParameters)
-    m_mesh.m_S.Reserve(vcnt + newvcnt);
+    m_mesh.m_S.Reserve (vcnt + newvcnt);
 
   m_bHasPrincipalCurvatures = m_mesh.HasPrincipalCurvatures();
   if (m_bHasPrincipalCurvatures)
-    m_mesh.m_K.Reserve(vcnt + newvcnt);
+    m_mesh.m_K.Reserve (vcnt + newvcnt);
 
   m_bHasHiddenVertices = (0 != m_mesh.HiddenVertexArray());
   if (m_bHasHiddenVertices)
-    m_mesh.m_H.Reserve(vcnt + newvcnt);
+    m_mesh.m_H.Reserve (vcnt + newvcnt);
 
   // Set m_TC[] to be the subset of m_mesh.m_TC[] that is
   // valid for duplication.
   m_bHasCachedTextures = false;
   int tci, tccount = m_mesh.m_TC.Count();
-  m_TC.Reserve(tccount);
+  m_TC.Reserve (tccount);
   for (tci = 0; tci < tccount; tci++) {
     ON_TextureCoordinates& tc = m_mesh.m_TC[tci];
     if (vcnt == tc.m_T.Count()) {
       m_bHasCachedTextures = true;
       float* p = (float*)tc.m_T.Array();
-      tc.m_T.Reserve(vcnt + newvcnt);
+      tc.m_T.Reserve (vcnt + newvcnt);
       if (p == mesh_T)
         mesh_T = (float*)tc.m_T.Array();
-      m_TC.Append(&tc);
+      m_TC.Append (&tc);
     }
   }
 }
@@ -3065,7 +3064,7 @@ ON__CChangeTextureCoordinateHelper::~ON__CChangeTextureCoordinateHelper()
 }
 
 int
-ON__CChangeTextureCoordinateHelper::DupVertex(int vi)
+ON__CChangeTextureCoordinateHelper::DupVertex (int vi)
 {
   if (0 == m_vuse_count) {
     // m_vuse[] is an array of length = original number of
@@ -3077,8 +3076,8 @@ ON__CChangeTextureCoordinateHelper::DupVertex(int vi)
     // texture maps. m_vuse[] is set the first time
     // DupVertex() is called.
     m_vuse_count = m_mesh.m_V.Count();
-    m_vuse.Reserve(m_vuse_count);
-    m_vuse.SetCount(m_vuse_count);
+    m_vuse.Reserve (m_vuse_count);
+    m_vuse.SetCount (m_vuse_count);
     m_vuse.Zero();
     for (int fi = 0; fi < m_mesh.m_F.Count(); fi++) {
       const int* Fvi = m_mesh.m_F[fi].vi;
@@ -3109,7 +3108,7 @@ ON__CChangeTextureCoordinateHelper::DupVertex(int vi)
   *m_mesh.m_V.Last() = m_mesh.m_V[vi];
   if (0 != m_mesh_dV) {
     m_mesh_dV->AppendNew();
-    *(m_mesh_dV->Last()) = m_mesh_dV->operator[](vi);
+    *(m_mesh_dV->Last()) = m_mesh_dV->operator[] (vi);
   }
   if (m_bHasVertexTextures) {
     m_mesh.m_T.AppendNew();
@@ -3218,7 +3217,7 @@ IntersectBoxSideRayHelper (int side,
   // protect against overflow
   nx = (&n.x)[dir];
   t0 = (t1 - (&rst.x)[dir]);
-  if (fabs(t0) >= fabs(nx) * on__overflow_tol) {
+  if (fabs (t0) >= fabs (nx) * on__overflow_tol) {
     *s = ON_UNSET_VALUE;
     return 0;
   }
@@ -3230,7 +3229,7 @@ IntersectBoxSideRayHelper (int side,
     Q.x = Q[dir];
     Q[dir] = t;
   }
-  if (fabs(Q.x - t1) > ON_SQRT_EPSILON || fabs(Q.y) > 1.0e8 || fabs(Q.z) > 1.0e8) {
+  if (fabs (Q.x - t1) > ON_SQRT_EPSILON || fabs (Q.y) > 1.0e8 || fabs (Q.z) > 1.0e8) {
     *s = ON_UNSET_VALUE;
     return 0;
   }
@@ -3258,9 +3257,9 @@ EvBoxSideTextureCoordinateHelper2 (int side,
   // rst = (0,0,0) with radius 1.0.  The axis runs
   // from rst = (0,0,-1) to rst = (0,0,+1).
 
-  ON_3dPoint rst(box_mapping.m_Pxyz * P);
+  ON_3dPoint rst (box_mapping.m_Pxyz * P);
 
-  ON_3dVector n(box_mapping.m_Nxyz * N);
+  ON_3dVector n (box_mapping.m_Nxyz * N);
   n.Unitize();
 
   // side flag
@@ -3273,7 +3272,7 @@ EvBoxSideTextureCoordinateHelper2 (int side,
 
   if (ON_TextureMapping::ray_projection == box_mapping.m_projection) {
     double s;
-    if (side == IntersectBoxSideRayHelper(side, rst, n, &s)) {
+    if (side == IntersectBoxSideRayHelper (side, rst, n, &s)) {
       // ray hit the box side
       rst = rst + s * n;
     }
@@ -3346,12 +3345,12 @@ EvBoxSideTextureCoordinateHelper1 (const ON_Mesh& mesh,
 {
   bool rc = false;
   ON_3dPoint P, tc;
-  ON_3dVector N(0.0, 0.0, 0.0);
+  ON_3dVector N (0.0, 0.0, 0.0);
 
   const ON_3fPoint* mesh_V = mesh.m_V.Array();
   const ON_3fVector* mesh_N = mesh.HasVertexNormals() ? mesh.m_N.Array() : 0;
 
-  ON_Xform P_xform(1.0), N_xform(1.0);
+  ON_Xform P_xform (1.0), N_xform (1.0);
   const double* PT = 0;
   const double* NT = 0;
   if (mesh_xform) {
@@ -3359,7 +3358,7 @@ EvBoxSideTextureCoordinateHelper1 (const ON_Mesh& mesh,
       // ignore transformation
       mesh_xform = 0;
     }
-    else if (0.0 != mesh_xform->GetMappingXforms(P_xform, N_xform)) {
+    else if (0.0 != mesh_xform->GetMappingXforms (P_xform, N_xform)) {
       PT = &P_xform[0][0];
       NT = &N_xform[0][0];
     }
@@ -3410,7 +3409,7 @@ EvBoxSideTextureCoordinateHelper1 (const ON_Mesh& mesh,
     P = mesh_V[vi];
   }
 
-  rc = EvBoxSideTextureCoordinateHelper2(side, box_mapping, P, N, &tc);
+  rc = EvBoxSideTextureCoordinateHelper2 (side, box_mapping, P, N, &tc);
   if (rc) {
     rc = tc.IsValid();
     if (rc) {
@@ -3458,7 +3457,7 @@ AdjustSingleBoxTextureCoordinatesHelper (ON_Mesh& mesh,
   int j, k, fi, sd[4], fvicnt, side, newvcnt = 0;
   ON__CNewMeshFace mf;
   ON_2fPoint tc;
-  ON_SimpleArray<ON__CNewMeshFace> mflist(512);
+  ON_SimpleArray<ON__CNewMeshFace> mflist (512);
   float d;
   for (fi = 0; fi < fcnt; fi++) {
     Fvi = mesh_F[fi].vi;
@@ -3472,7 +3471,7 @@ AdjustSingleBoxTextureCoordinatesHelper (ON_Mesh& mesh,
     }
     fvicnt = (Fvi[2] != Fvi[3]) ? 4 : 3;
 
-    memset(&mf, 0, sizeof(mf));
+    memset (&mf, 0, sizeof (mf));
     mf.tc[0] = mesh_T + (Fvi[0] * mesh_T_stride);
     mf.tc[1] = mesh_T + (Fvi[1] * mesh_T_stride);
     mf.tc[2] = mesh_T + (Fvi[2] * mesh_T_stride);
@@ -3480,9 +3479,9 @@ AdjustSingleBoxTextureCoordinatesHelper (ON_Mesh& mesh,
 
     // find the side we will use for this face
     side = sd[0];
-    d = TcDistanceHelper(mf.tc[0]);
+    d = TcDistanceHelper (mf.tc[0]);
     for (j = 1; j < fvicnt; j++) {
-      float d1 = TcDistanceHelper(mf.tc[j]);
+      float d1 = TcDistanceHelper (mf.tc[j]);
       if (d1 > d) {
         side = sd[j];
         d = d1;
@@ -3498,7 +3497,7 @@ AdjustSingleBoxTextureCoordinatesHelper (ON_Mesh& mesh,
     for (j = 0; j < fvicnt; j++) {
       if (sd[j] != side) {
         // calculate new tc for this side
-        if (EvBoxSideTextureCoordinateHelper1(
+        if (EvBoxSideTextureCoordinateHelper1 (
                 mesh, mesh_xform, Fvi[j], side, box_mapping, &tc.x, &tc.y)) {
           if (tc.x != mf.tc[j].x || tc.y != mf.tc[j].y) {
             mf.tc[j] = tc;
@@ -3513,14 +3512,14 @@ AdjustSingleBoxTextureCoordinatesHelper (ON_Mesh& mesh,
     if (j >= fvicnt && mf.newvcnt > 0) {
       mf.fi = fi;
       newvcnt += mf.newvcnt;
-      mflist.Append(mf);
+      mflist.Append (mf);
     }
   }
 
   if (newvcnt <= 0)
     return;
 
-  ON__CChangeTextureCoordinateHelper helper(mesh, vcnt + newvcnt, mesh_T);
+  ON__CChangeTextureCoordinateHelper helper (mesh, vcnt + newvcnt, mesh_T);
 
   const int mflist_count = mflist.Count();
 
@@ -3530,7 +3529,7 @@ AdjustSingleBoxTextureCoordinatesHelper (ON_Mesh& mesh,
     fvicnt = (fvi[2] != fvi[3]) ? 4 : 3;
     for (j = 0; j < fvicnt; j++) {
       if (mf.bNewV[j]) {
-        helper.ChangeTextureCoordinate(
+        helper.ChangeTextureCoordinate (
             fvi, j, mf.tc[j].x, mf.tc[j].y, mesh_T, mesh_T_stride);
       }
     }
@@ -3564,14 +3563,14 @@ AdjustMeshPeriodicTextureCoordinatesHelper (ON_Mesh& mesh,
   const bool bBoxCheck = (Tsd && ON_TextureMapping::box_mapping == mapping_type);
 
   if (bBoxCheck && ON_TextureMapping::single == mapping.m_texture_space) {
-    AdjustSingleBoxTextureCoordinatesHelper(
+    AdjustSingleBoxTextureCoordinatesHelper (
         mesh, mesh_xform, mesh_T, mesh_T_stride, Tsd, mapping);
     return;
   }
 
   ON_Workspace ws;
-  int* quad = ws.GetIntMemory(vcnt); // ~ws will free quad memory
-  float* Tx = (float*)ws.GetMemory(vcnt * sizeof(Tx[0]));
+  int* quad = ws.GetIntMemory (vcnt); // ~ws will free quad memory
+  float* Tx = (float*)ws.GetMemory (vcnt * sizeof (Tx[0]));
   float t;
   int vi, ti, q = 0;
   int ftc_count = 0;
@@ -3626,13 +3625,13 @@ AdjustMeshPeriodicTextureCoordinatesHelper (ON_Mesh& mesh,
 
   // 4*ftc_count = (over) estimate of the number of faces that
   // will be changed.
-  ON_SimpleArray<ON__CMeshFaceTC> ftc_list(ftc_count * 4 + 128);
+  ON_SimpleArray<ON__CMeshFaceTC> ftc_list (ftc_count * 4 + 128);
   ftc_count = 0;
   const ON_MeshFace* F = mesh.m_F.Array();
   const int* Fvi;
   int fi;
   ON__CMeshFaceTC ftc;
-  memset(&ftc, 0, sizeof(ftc));
+  memset (&ftc, 0, sizeof (ftc));
   float t0, t1;
 
   for (fi = 0; fi < fcnt; fi++) {
@@ -3663,7 +3662,7 @@ AdjustMeshPeriodicTextureCoordinatesHelper (ON_Mesh& mesh,
         t0 = (8 == ftc.quad[3]) ? ON_UNSET_FLOAT : ftc.Tx[3];
         t1 = (8 == ftc.quad[1]) ? ON_UNSET_FLOAT : ftc.Tx[1];
         if (ON_UNSET_FLOAT != t0 || ON_UNSET_FLOAT != t1) {
-          ftc.Tx[0] = PoleFix(t0, t1);
+          ftc.Tx[0] = PoleFix (t0, t1);
           ftc.quad[0] = ((ftc.Tx[0] < ang0) ? 1 : ((ftc.Tx[0] > ang1) ? 4 : 0));
           q |= ftc.quad[0];
           ftc.fi = fi;
@@ -3673,7 +3672,7 @@ AdjustMeshPeriodicTextureCoordinatesHelper (ON_Mesh& mesh,
         t0 = (8 == ftc.quad[0]) ? ON_UNSET_FLOAT : ftc.Tx[0];
         t1 = (8 == ftc.quad[2]) ? ON_UNSET_FLOAT : ftc.Tx[2];
         if (ON_UNSET_FLOAT != t0 || ON_UNSET_FLOAT != t1) {
-          ftc.Tx[1] = PoleFix(t0, t1);
+          ftc.Tx[1] = PoleFix (t0, t1);
           ftc.quad[1] = ((ftc.Tx[1] < ang0) ? 1 : ((ftc.Tx[1] > ang1) ? 4 : 0));
           q |= ftc.quad[1];
           ftc.fi = fi;
@@ -3684,7 +3683,7 @@ AdjustMeshPeriodicTextureCoordinatesHelper (ON_Mesh& mesh,
         t0 = (8 == ftc.quad[1]) ? ON_UNSET_FLOAT : ftc.Tx[1];
         t1 = (8 == ftc.quad[k]) ? ON_UNSET_FLOAT : ftc.Tx[k];
         if (ON_UNSET_FLOAT != t0 || ON_UNSET_FLOAT != t1) {
-          ftc.Tx[2] = PoleFix(t0, t1);
+          ftc.Tx[2] = PoleFix (t0, t1);
           ftc.quad[2] = ((ftc.Tx[2] < ang0) ? 1 : ((ftc.Tx[2] > ang1) ? 4 : 0));
           if (!k) {
             ftc.Tx[3] = ftc.Tx[2];
@@ -3698,7 +3697,7 @@ AdjustMeshPeriodicTextureCoordinatesHelper (ON_Mesh& mesh,
         t0 = (8 == ftc.quad[2]) ? ON_UNSET_FLOAT : ftc.Tx[2];
         t1 = (8 == ftc.quad[0]) ? ON_UNSET_FLOAT : ftc.Tx[0];
         if (ON_UNSET_FLOAT != t0 || ON_UNSET_FLOAT != t1) {
-          ftc.Tx[3] = PoleFix(t0, t1);
+          ftc.Tx[3] = PoleFix (t0, t1);
           ftc.quad[3] = ((ftc.Tx[3] < ang0) ? 1 : ((ftc.Tx[3] > ang1) ? 4 : 0));
           q |= ftc.quad[3];
           ftc.fi = fi;
@@ -3799,7 +3798,7 @@ AdjustMeshPeriodicTextureCoordinatesHelper (ON_Mesh& mesh,
 
     if (ftc.fi >= 0) {
       // face will require special handling
-      ftc_list.Append(ftc);
+      ftc_list.Append (ftc);
     }
   }
 
@@ -3840,7 +3839,7 @@ AdjustMeshPeriodicTextureCoordinatesHelper (ON_Mesh& mesh,
          // tries to use them below will crash.
 
   // reserve room for new vertex information
-  ON__CChangeTextureCoordinateHelper helper(mesh, newvcnt, mesh_T);
+  ON__CChangeTextureCoordinateHelper helper (mesh, newvcnt, mesh_T);
 
   // add vertices and update mesh faces
   for (ftci = 0; ftci < ftc_count; ftci++) {
@@ -3848,19 +3847,19 @@ AdjustMeshPeriodicTextureCoordinatesHelper (ON_Mesh& mesh,
     int* meshFvi = mesh.m_F[ftc.fi].vi;
 
     if (ftc.bSetT[0]) {
-      helper.ChangeTextureCoordinate(
+      helper.ChangeTextureCoordinate (
           meshFvi, 0, ftc.Tx[0], ON_UNSET_FLOAT, mesh_T, mesh_T_stride);
     }
     if (ftc.bSetT[1]) {
-      helper.ChangeTextureCoordinate(
+      helper.ChangeTextureCoordinate (
           meshFvi, 1, ftc.Tx[1], ON_UNSET_FLOAT, mesh_T, mesh_T_stride);
     }
     if (ftc.bSetT[2]) {
-      helper.ChangeTextureCoordinate(
+      helper.ChangeTextureCoordinate (
           meshFvi, 2, ftc.Tx[2], ON_UNSET_FLOAT, mesh_T, mesh_T_stride);
     }
     if (ftc.bSetT[3]) {
-      helper.ChangeTextureCoordinate(
+      helper.ChangeTextureCoordinate (
           meshFvi, 3, ftc.Tx[3], ON_UNSET_FLOAT, mesh_T, mesh_T_stride);
     }
   }
@@ -3915,9 +3914,9 @@ HasSharedVertices (const ON_Mesh& mesh)
 }
 
 const ON_TextureCoordinates*
-ON_Mesh::SetCachedTextureCoordinates(const class ON_TextureMapping& mapping,
-                                     const class ON_Xform* mesh_xform,
-                                     bool bLazy)
+ON_Mesh::SetCachedTextureCoordinates (const class ON_TextureMapping& mapping,
+                                      const class ON_Xform* mesh_xform,
+                                      bool bLazy)
 {
   if (mapping.RequiresVertexNormals() && !HasVertexNormals())
     ComputeVertexNormals();
@@ -3927,7 +3926,7 @@ ON_Mesh::SetCachedTextureCoordinates(const class ON_TextureMapping& mapping,
   ON_SimpleArray<int> Tside;
   ON_SimpleArray<int>* Tsd = 0;
   bool bSeamCheck =
-      SeamCheckHelper(mp, two_pi_tc, Tside, Tsd) && HasSharedVertices(*this);
+      SeamCheckHelper (mp, two_pi_tc, Tside, Tsd) && HasSharedVertices (*this);
   if (bSeamCheck)
     mp.m_uvw.Identity();
 
@@ -3940,7 +3939,7 @@ ON_Mesh::SetCachedTextureCoordinates(const class ON_TextureMapping& mapping,
       }
     }
   }
-  if (bLazy && TC && mapping.HasMatchingTextureCoordinates(TC->m_tag, mesh_xform))
+  if (bLazy && TC && mapping.HasMatchingTextureCoordinates (TC->m_tag, mesh_xform))
     return TC;
 
   if (!TC) {
@@ -3950,13 +3949,13 @@ ON_Mesh::SetCachedTextureCoordinates(const class ON_TextureMapping& mapping,
 
   // Use mp instead of mapping to call GetTextureCoordinates()
   // because m_uvw must be the identity if we have seams.
-  if (!mp.GetTextureCoordinates(*this, TC->m_T, mesh_xform, false, Tsd)) {
+  if (!mp.GetTextureCoordinates (*this, TC->m_T, mesh_xform, false, Tsd)) {
     int tci = (int)(TC - m_TC.Array());
-    m_TC.Remove(tci);
+    m_TC.Remove (tci);
     return 0;
   }
 
-  TC->m_tag.Set(mapping);
+  TC->m_tag.Set (mapping);
   if (mesh_xform && mesh_xform->IsValid() && !mesh_xform->IsIdentity() &&
       !mesh_xform->IsZero()) {
     TC->m_tag.m_mesh_xform = *mesh_xform;
@@ -3966,16 +3965,16 @@ ON_Mesh::SetCachedTextureCoordinates(const class ON_TextureMapping& mapping,
 
   if (bSeamCheck && m_F.Count() > 0 && TC->m_T.Count() == m_V.Count()) {
     float* mesh_T = (float*)TC->m_T.Array();
-    int mesh_T_stride = sizeof(TC->m_T[0]) / sizeof(mesh_T[0]);
+    int mesh_T_stride = sizeof (TC->m_T[0]) / sizeof (mesh_T[0]);
     if (Tsd && Tside.Count() != m_V.Count())
       Tsd = 0;
-    AdjustMeshPeriodicTextureCoordinatesHelper(*this,
-                                               mesh_xform,
-                                               mesh_T,
-                                               mesh_T_stride,
-                                               Tsd ? Tside.Array() : 0,
-                                               two_pi_tc,
-                                               mp);
+    AdjustMeshPeriodicTextureCoordinatesHelper (*this,
+                                                mesh_xform,
+                                                mesh_T,
+                                                mesh_T_stride,
+                                                Tsd ? Tside.Array() : 0,
+                                                two_pi_tc,
+                                                mp);
     mesh_T = 0; // when the array is grown, the pointer may become invalid
     if (!mapping.m_uvw.IsIdentity() && !mapping.m_uvw.IsZero()) {
       // Apply the uvw transformation that is on mapping
@@ -3995,9 +3994,9 @@ ON_Mesh::SetCachedTextureCoordinates(const class ON_TextureMapping& mapping,
 }
 
 bool
-ON_Mesh::SetTextureCoordinates(const class ON_TextureMapping& mapping,
-                               const class ON_Xform* mesh_xform,
-                               bool bLazy)
+ON_Mesh::SetTextureCoordinates (const class ON_TextureMapping& mapping,
+                                const class ON_Xform* mesh_xform,
+                                bool bLazy)
 {
   if (mapping.RequiresVertexNormals() && !HasVertexNormals())
     ComputeVertexNormals();
@@ -4011,17 +4010,17 @@ ON_Mesh::SetTextureCoordinates(const class ON_TextureMapping& mapping,
   double two_pi_tc = 1.0;
 
   bool bSeamCheck =
-      SeamCheckHelper(mp, two_pi_tc, Tside, Tsd) && HasSharedVertices(*this);
+      SeamCheckHelper (mp, two_pi_tc, Tside, Tsd) && HasSharedVertices (*this);
   if (bSeamCheck)
     mp.m_uvw.Identity();
 
   // Use mp instead of mapping to call GetTextureCoordinates()
   // because m_uvw must be the identity if we have seams.
-  bool rc = mp.GetTextureCoordinates(*this, m_T, mesh_xform, bLazy, Tsd);
+  bool rc = mp.GetTextureCoordinates (*this, m_T, mesh_xform, bLazy, Tsd);
 
   if (rc) {
     // update the texture coordinate tag
-    m_Ttag.Set(mapping);
+    m_Ttag.Set (mapping);
     if (mesh_xform && mesh_xform->IsValid() && !mesh_xform->IsIdentity() &&
         !mesh_xform->IsZero()) {
       m_Ttag.m_mesh_xform = *mesh_xform;
@@ -4030,16 +4029,16 @@ ON_Mesh::SetTextureCoordinates(const class ON_TextureMapping& mapping,
 
   if (rc && bSeamCheck && HasTextureCoordinates() && m_F.Count() > 0) {
     float* mesh_T = (float*)m_T.Array();
-    int mesh_T_stride = sizeof(m_T[0]) / sizeof(mesh_T[0]);
+    int mesh_T_stride = sizeof (m_T[0]) / sizeof (mesh_T[0]);
     if (Tsd && Tside.Count() != m_V.Count())
       Tsd = 0;
-    AdjustMeshPeriodicTextureCoordinatesHelper(*this,
-                                               mesh_xform,
-                                               mesh_T,
-                                               mesh_T_stride,
-                                               Tsd ? Tside.Array() : 0,
-                                               two_pi_tc,
-                                               mp);
+    AdjustMeshPeriodicTextureCoordinatesHelper (*this,
+                                                mesh_xform,
+                                                mesh_T,
+                                                mesh_T_stride,
+                                                Tsd ? Tside.Array() : 0,
+                                                two_pi_tc,
+                                                mp);
     mesh_T = 0; // when the array is grown, the pointer may become invalid
     if (!mapping.m_uvw.IsIdentity() && !mapping.m_uvw.IsZero()) {
       // Apply the uvw transformation that is on mapping
@@ -4066,33 +4065,33 @@ ON_MappingChannel::ON_MappingChannel() { Default(); }
 void
 ON_MappingChannel::Default()
 {
-  memset(this, 0, sizeof(*this));
+  memset (this, 0, sizeof (*this));
   m_mapping_channel_id = 1;
   m_mapping_index = -1;
   m_object_xform.Identity();
 }
 
 int
-ON_MappingChannel::Compare(const ON_MappingChannel& other) const
+ON_MappingChannel::Compare (const ON_MappingChannel& other) const
 {
   int rc = m_mapping_channel_id - other.m_mapping_channel_id;
   if (!rc)
-    rc = ON_UuidCompare(m_mapping_id, other.m_mapping_id);
+    rc = ON_UuidCompare (m_mapping_id, other.m_mapping_id);
   return rc;
 }
 
 bool
-ON_MappingChannel::Write(ON_BinaryArchive& archive) const
+ON_MappingChannel::Write (ON_BinaryArchive& archive) const
 {
-  bool rc = archive.BeginWrite3dmChunk(TCODE_ANONYMOUS_CHUNK, 1, 1);
+  bool rc = archive.BeginWrite3dmChunk (TCODE_ANONYMOUS_CHUNK, 1, 1);
   if (rc) {
-    rc = archive.WriteInt(m_mapping_channel_id);
+    rc = archive.WriteInt (m_mapping_channel_id);
     if (rc)
-      rc = archive.WriteUuid(m_mapping_id);
+      rc = archive.WriteUuid (m_mapping_id);
 
     // 1.1 field added 6 June 2006
     if (rc)
-      rc = archive.WriteXform(m_object_xform);
+      rc = archive.WriteXform (m_object_xform);
 
     if (!archive.EndWrite3dmChunk())
       rc = false;
@@ -4101,24 +4100,24 @@ ON_MappingChannel::Write(ON_BinaryArchive& archive) const
 }
 
 bool
-ON_MappingChannel::Read(ON_BinaryArchive& archive)
+ON_MappingChannel::Read (ON_BinaryArchive& archive)
 {
   Default();
   int major_version = 0;
   int minor_version = 0;
   bool rc =
-      archive.BeginRead3dmChunk(TCODE_ANONYMOUS_CHUNK, &major_version, &minor_version);
+      archive.BeginRead3dmChunk (TCODE_ANONYMOUS_CHUNK, &major_version, &minor_version);
   if (rc) {
     rc = (1 == major_version);
     if (rc)
-      rc = archive.ReadInt(&m_mapping_channel_id);
+      rc = archive.ReadInt (&m_mapping_channel_id);
     if (rc)
-      rc = archive.ReadUuid(m_mapping_id);
+      rc = archive.ReadUuid (m_mapping_id);
 
     if (rc && minor_version >= 1) {
       // 1.1 field added 6 June 2006
       if (rc)
-        rc = archive.ReadXform(m_object_xform);
+        rc = archive.ReadXform (m_object_xform);
       if (rc && archive.ArchiveOpenNURBSVersion() < 200610030 &&
           m_object_xform.IsZero()) {
         // Between versions 200606060 and 200610030,
@@ -4143,7 +4142,7 @@ ON_MappingRef::ON_MappingRef() { Default(); }
 void
 ON_MaterialRef::Default()
 {
-  memset(this, 0, sizeof(*this));
+  memset (this, 0, sizeof (*this));
   // runtme index value of -1 means not set
   m_material_index = -1;
   m_material_backface_index = -1;
@@ -4158,28 +4157,28 @@ ON_MappingRef::Default()
 }
 
 int
-ON_MaterialRef::Compare(const ON_MaterialRef& other) const
+ON_MaterialRef::Compare (const ON_MaterialRef& other) const
 {
-  int rc = ON_UuidCompare(m_plugin_id, other.m_plugin_id);
+  int rc = ON_UuidCompare (m_plugin_id, other.m_plugin_id);
   if (rc)
     rc = ((int)m_material_source) - ((int)other.m_material_source);
   if (!rc)
-    rc = ON_UuidCompare(m_material_id, other.m_material_id);
+    rc = ON_UuidCompare (m_material_id, other.m_material_id);
   if (!rc)
-    rc = ON_UuidCompare(m_material_backface_id, other.m_material_backface_id);
+    rc = ON_UuidCompare (m_material_backface_id, other.m_material_backface_id);
   return rc;
 }
 
 int
-ON_MappingRef::Compare(const ON_MappingRef& other) const
+ON_MappingRef::Compare (const ON_MappingRef& other) const
 {
-  int rc = ON_UuidCompare(m_plugin_id, other.m_plugin_id);
+  int rc = ON_UuidCompare (m_plugin_id, other.m_plugin_id);
   if (!rc) {
     const int count = m_mapping_channels.Count();
     rc = count - other.m_mapping_channels.Count();
     if (!rc) {
       for (int i = 0; i < count && !rc; i++) {
-        rc = m_mapping_channels[i].Compare(other.m_mapping_channels[i]);
+        rc = m_mapping_channels[i].Compare (other.m_mapping_channels[i]);
       }
     }
   }
@@ -4187,14 +4186,14 @@ ON_MappingRef::Compare(const ON_MappingRef& other) const
 }
 
 bool
-ON_MaterialRef::Write(ON_BinaryArchive& archive) const
+ON_MaterialRef::Write (ON_BinaryArchive& archive) const
 {
-  bool rc = archive.BeginWrite3dmChunk(TCODE_ANONYMOUS_CHUNK, 1, 1);
+  bool rc = archive.BeginWrite3dmChunk (TCODE_ANONYMOUS_CHUNK, 1, 1);
   if (rc) {
     if (rc)
-      rc = archive.WriteUuid(m_plugin_id);
+      rc = archive.WriteUuid (m_plugin_id);
     if (rc)
-      rc = archive.WriteUuid(m_material_id);
+      rc = archive.WriteUuid (m_material_id);
 
     // 23 May 2006 Dale lear
     //   m_mapping_channels[] was removed from ON_MaterialRef.
@@ -4203,13 +4202,13 @@ ON_MaterialRef::Write(ON_BinaryArchive& archive) const
     //
     // if (rc) rc = archive.WriteArray( m_mapping_channels );
     if (rc)
-      rc = archive.WriteInt(0);
+      rc = archive.WriteInt (0);
 
     // 23 May 2006 added
     if (rc)
-      rc = archive.WriteUuid(m_material_backface_id);
+      rc = archive.WriteUuid (m_material_backface_id);
     if (rc)
-      rc = archive.WriteInt(m_material_source);
+      rc = archive.WriteInt (m_material_source);
 
     if (!archive.EndWrite3dmChunk())
       rc = false;
@@ -4218,20 +4217,20 @@ ON_MaterialRef::Write(ON_BinaryArchive& archive) const
 }
 
 bool
-ON_MaterialRef::Read(ON_BinaryArchive& archive)
+ON_MaterialRef::Read (ON_BinaryArchive& archive)
 {
   Default();
   int major_version = 0;
   int minor_version = 0;
   bool rc =
-      archive.BeginRead3dmChunk(TCODE_ANONYMOUS_CHUNK, &major_version, &minor_version);
+      archive.BeginRead3dmChunk (TCODE_ANONYMOUS_CHUNK, &major_version, &minor_version);
   if (rc) {
     rc = (1 == major_version);
 
     if (rc)
-      rc = archive.ReadUuid(m_plugin_id);
+      rc = archive.ReadUuid (m_plugin_id);
     if (rc)
-      rc = archive.ReadUuid(m_material_id);
+      rc = archive.ReadUuid (m_material_id);
 
     // 23 May 2006 Dale lear
     //   m_mapping_channels[] was removed from ON_MaterialRef.
@@ -4239,16 +4238,16 @@ ON_MaterialRef::Read(ON_BinaryArchive& archive)
     //   write a zero as the array length.
     ON_SimpleArray<ON_MappingChannel> obsolete_mapping_channels;
     if (rc)
-      rc = archive.ReadArray(obsolete_mapping_channels);
+      rc = archive.ReadArray (obsolete_mapping_channels);
 
     if (minor_version >= 1) {
       if (rc)
-        rc = archive.ReadUuid(m_material_backface_id);
+        rc = archive.ReadUuid (m_material_backface_id);
       int i = m_material_source;
       if (rc)
-        rc = archive.ReadInt(&i);
+        rc = archive.ReadInt (&i);
       if (rc)
-        m_material_source = (unsigned char)ON::ObjectMaterialSource(i);
+        m_material_source = (unsigned char)ON::ObjectMaterialSource (i);
     }
 
     if (!archive.EndRead3dmChunk())
@@ -4260,18 +4259,18 @@ ON_MaterialRef::Read(ON_BinaryArchive& archive)
 ON::object_material_source
 ON_MaterialRef::MaterialSource() const
 {
-  return ON::ObjectMaterialSource(m_material_source);
+  return ON::ObjectMaterialSource (m_material_source);
 }
 
 bool
-ON_MappingRef::Write(ON_BinaryArchive& archive) const
+ON_MappingRef::Write (ON_BinaryArchive& archive) const
 {
-  bool rc = archive.BeginWrite3dmChunk(TCODE_ANONYMOUS_CHUNK, 1, 0);
+  bool rc = archive.BeginWrite3dmChunk (TCODE_ANONYMOUS_CHUNK, 1, 0);
   if (rc) {
     if (rc)
-      rc = archive.WriteUuid(m_plugin_id);
+      rc = archive.WriteUuid (m_plugin_id);
     if (rc)
-      rc = archive.WriteArray(m_mapping_channels);
+      rc = archive.WriteArray (m_mapping_channels);
 
     if (!archive.EndWrite3dmChunk())
       rc = false;
@@ -4280,20 +4279,20 @@ ON_MappingRef::Write(ON_BinaryArchive& archive) const
 }
 
 bool
-ON_MappingRef::Read(ON_BinaryArchive& archive)
+ON_MappingRef::Read (ON_BinaryArchive& archive)
 {
   Default();
   int major_version = 0;
   int minor_version = 0;
   bool rc =
-      archive.BeginRead3dmChunk(TCODE_ANONYMOUS_CHUNK, &major_version, &minor_version);
+      archive.BeginRead3dmChunk (TCODE_ANONYMOUS_CHUNK, &major_version, &minor_version);
   if (rc) {
     rc = (1 == major_version);
 
     if (rc)
-      rc = archive.ReadUuid(m_plugin_id);
+      rc = archive.ReadUuid (m_plugin_id);
     if (rc)
-      rc = archive.ReadArray(m_mapping_channels);
+      rc = archive.ReadArray (m_mapping_channels);
 
     if (!archive.EndRead3dmChunk())
       rc = false;
@@ -4302,7 +4301,7 @@ ON_MappingRef::Read(ON_BinaryArchive& archive)
 }
 
 bool
-ON_MappingRef::Transform(const ON_Xform& xform)
+ON_MappingRef::Transform (const ON_Xform& xform)
 {
   int count = m_mapping_channels.Count();
   if (count > 0) {
@@ -4336,7 +4335,7 @@ ON_RenderingAttributes::Default()
 }
 
 void
-ON_ObjectRenderingAttributes::EnableAdvancedTexturePreview(bool b)
+ON_ObjectRenderingAttributes::EnableAdvancedTexturePreview (bool b)
 {
   if (b)
     m_bits |= 1; // set bit 1
@@ -4351,7 +4350,7 @@ ON_ObjectRenderingAttributes::AdvancedTexturePreview() const
 }
 
 bool
-ON_RenderingAttributes::IsValid(ON_TextLog* text_log) const
+ON_RenderingAttributes::IsValid (ON_TextLog* text_log) const
 {
   // plug-in uuids must be unique
   int count;
@@ -4362,12 +4361,12 @@ ON_RenderingAttributes::IsValid(ON_TextLog* text_log) const
     for (i = 0; i < count - 1; i++) {
       plugin_id = mr[i].m_plugin_id;
       for (j = i + 1; j < count; j++) {
-        if (!ON_UuidCompare(&plugin_id, &mr[j].m_plugin_id)) {
+        if (!ON_UuidCompare (&plugin_id, &mr[j].m_plugin_id)) {
           if (text_log) {
-            text_log->Print("ON_RenderingAttributes error: m_materials[%d] and "
-                            "m_materials[%d] have the same plug-in id.\n",
-                            i,
-                            j);
+            text_log->Print ("ON_RenderingAttributes error: m_materials[%d] and "
+                             "m_materials[%d] have the same plug-in id.\n",
+                             i,
+                             j);
           }
           return false;
         }
@@ -4378,9 +4377,9 @@ ON_RenderingAttributes::IsValid(ON_TextLog* text_log) const
 }
 
 bool
-ON_ObjectRenderingAttributes::IsValid(ON_TextLog* text_log) const
+ON_ObjectRenderingAttributes::IsValid (ON_TextLog* text_log) const
 {
-  if (!ON_RenderingAttributes::IsValid(text_log))
+  if (!ON_RenderingAttributes::IsValid (text_log))
     return false;
 
   // plug-in uuids must be unique
@@ -4392,12 +4391,12 @@ ON_ObjectRenderingAttributes::IsValid(ON_TextLog* text_log) const
     for (i = 0; i < count - 1; i++) {
       plugin_id = mr[i].m_plugin_id;
       for (j = i + 1; j < count; j++) {
-        if (!ON_UuidCompare(&plugin_id, &mr[j].m_plugin_id)) {
+        if (!ON_UuidCompare (&plugin_id, &mr[j].m_plugin_id)) {
           if (text_log) {
-            text_log->Print("ON_ObjectRenderingAttributes error: m_mappings[%d] and "
-                            "m_mappings[%d] have the same plug-in id.\n",
-                            i,
-                            j);
+            text_log->Print ("ON_ObjectRenderingAttributes error: m_mappings[%d] and "
+                             "m_mappings[%d] have the same plug-in id.\n",
+                             i,
+                             j);
           }
           return false;
         }
@@ -4409,21 +4408,21 @@ ON_ObjectRenderingAttributes::IsValid(ON_TextLog* text_log) const
 }
 
 int
-ON_RenderingAttributes::Compare(const ON_RenderingAttributes& other) const
+ON_RenderingAttributes::Compare (const ON_RenderingAttributes& other) const
 {
   const int count = m_materials.Count();
   int rc = count - other.m_materials.Count();
   if (!rc) {
     int i;
     for (i = 0; i < count && !rc; i++) {
-      rc = m_materials[i].Compare(other.m_materials[i]);
+      rc = m_materials[i].Compare (other.m_materials[i]);
     }
   }
   return rc;
 }
 
 const ON_MaterialRef*
-ON_RenderingAttributes::MaterialRef(const ON_UUID& plugin_id) const
+ON_RenderingAttributes::MaterialRef (const ON_UUID& plugin_id) const
 {
   int count;
   if ((count = m_materials.Count()) > 0) {
@@ -4436,15 +4435,15 @@ ON_RenderingAttributes::MaterialRef(const ON_UUID& plugin_id) const
 }
 
 int
-ON_ObjectRenderingAttributes::Compare(const ON_ObjectRenderingAttributes& other) const
+ON_ObjectRenderingAttributes::Compare (const ON_ObjectRenderingAttributes& other) const
 {
-  int rc = ON_RenderingAttributes::Compare(other);
+  int rc = ON_RenderingAttributes::Compare (other);
   if (!rc) {
     int i;
     const int count = m_mappings.Count();
     rc = other.m_mappings.Count() - count;
     for (i = 0; i < count && !rc; i++) {
-      rc = m_mappings[i].Compare(other.m_mappings[i]);
+      rc = m_mappings[i].Compare (other.m_mappings[i]);
     }
     if (!rc) {
       rc = ((int)(m_bCastsShadows ? 1 : 0)) - ((int)(other.m_bCastsShadows ? 1 : 0));
@@ -4462,18 +4461,18 @@ ON_ObjectRenderingAttributes::Compare(const ON_ObjectRenderingAttributes& other)
 }
 
 bool
-ON_ObjectRenderingAttributes::Transform(const ON_Xform& xform)
+ON_ObjectRenderingAttributes::Transform (const ON_Xform& xform)
 {
   int i;
   if ((i = m_mappings.Count()) > 0) {
     for (ON_MappingRef* mr = m_mappings.Array(); i--; mr++)
-      mr->Transform(xform);
+      mr->Transform (xform);
   }
   return true;
 }
 
 const ON_MappingRef*
-ON_ObjectRenderingAttributes::MappingRef(const ON_UUID& plugin_id) const
+ON_ObjectRenderingAttributes::MappingRef (const ON_UUID& plugin_id) const
 {
   int count;
   if ((count = m_mappings.Count()) > 0) {
@@ -4486,12 +4485,12 @@ ON_ObjectRenderingAttributes::MappingRef(const ON_UUID& plugin_id) const
 }
 
 ON_MappingRef*
-ON_ObjectRenderingAttributes::AddMappingRef(const ON_UUID& plugin_id)
+ON_ObjectRenderingAttributes::AddMappingRef (const ON_UUID& plugin_id)
 {
   ON_MappingRef* mr = 0;
   int count;
   if ((count = m_mappings.Count()) > 0) {
-    for (mr = const_cast<ON_MappingRef*>(m_mappings.Array()); count--; mr++) {
+    for (mr = const_cast<ON_MappingRef*> (m_mappings.Array()); count--; mr++) {
       if (plugin_id == mr->m_plugin_id)
         break;
     }
@@ -4506,19 +4505,19 @@ ON_ObjectRenderingAttributes::AddMappingRef(const ON_UUID& plugin_id)
 }
 
 bool
-ON_ObjectRenderingAttributes::DeleteMappingRef(const ON_UUID& plugin_id)
+ON_ObjectRenderingAttributes::DeleteMappingRef (const ON_UUID& plugin_id)
 {
-  const ON_MappingRef* mr = MappingRef(plugin_id);
+  const ON_MappingRef* mr = MappingRef (plugin_id);
   if (mr)
-    m_mappings.Remove((int)(mr - m_mappings.Array())); // safe ptr to in conversion
+    m_mappings.Remove ((int)(mr - m_mappings.Array())); // safe ptr to in conversion
   return (0 != mr);
 }
 
 const ON_MappingChannel*
-ON_ObjectRenderingAttributes::MappingChannel(const ON_UUID& plugin_id,
-                                             const ON_UUID& mapping_id) const
+ON_ObjectRenderingAttributes::MappingChannel (const ON_UUID& plugin_id,
+                                              const ON_UUID& mapping_id) const
 {
-  const ON_MappingRef* mr = MappingRef(plugin_id);
+  const ON_MappingRef* mr = MappingRef (plugin_id);
   if (mr) {
     int count;
     if ((count = mr->m_mapping_channels.Count()) > 0) {
@@ -4533,10 +4532,10 @@ ON_ObjectRenderingAttributes::MappingChannel(const ON_UUID& plugin_id,
 }
 
 const ON_MappingChannel*
-ON_ObjectRenderingAttributes::MappingChannel(const ON_UUID& plugin_id,
-                                             int mapping_channel_id) const
+ON_ObjectRenderingAttributes::MappingChannel (const ON_UUID& plugin_id,
+                                              int mapping_channel_id) const
 {
-  const ON_MappingRef* mr = MappingRef(plugin_id);
+  const ON_MappingRef* mr = MappingRef (plugin_id);
   if (mr) {
     int count;
     if ((count = mr->m_mapping_channels.Count()) > 0) {
@@ -4551,11 +4550,11 @@ ON_ObjectRenderingAttributes::MappingChannel(const ON_UUID& plugin_id,
 }
 
 bool
-ON_ObjectRenderingAttributes::AddMappingChannel(const ON_UUID& plugin_id,
-                                                int mapping_channel_id,
-                                                const ON_UUID& mapping_id)
+ON_ObjectRenderingAttributes::AddMappingChannel (const ON_UUID& plugin_id,
+                                                 int mapping_channel_id,
+                                                 const ON_UUID& mapping_id)
 {
-  ON_MappingRef* mr = const_cast<ON_MappingRef*>(MappingRef(plugin_id));
+  ON_MappingRef* mr = const_cast<ON_MappingRef*> (MappingRef (plugin_id));
   if (!mr) {
     mr = &m_mappings.AppendNew();
     mr->m_plugin_id = plugin_id;
@@ -4568,37 +4567,37 @@ ON_ObjectRenderingAttributes::AddMappingChannel(const ON_UUID& plugin_id,
     return true;
   }
 
-  return mr->AddMappingChannel(mapping_channel_id, mapping_id);
+  return mr->AddMappingChannel (mapping_channel_id, mapping_id);
 }
 
 bool
-ON_ObjectRenderingAttributes::DeleteMappingChannel(const ON_UUID& plugin_id,
-                                                   int mapping_channel_id)
+ON_ObjectRenderingAttributes::DeleteMappingChannel (const ON_UUID& plugin_id,
+                                                    int mapping_channel_id)
 {
-  ON_MappingRef* mr = const_cast<ON_MappingRef*>(MappingRef(plugin_id));
-  return mr ? mr->DeleteMappingChannel(mapping_channel_id) : false;
+  ON_MappingRef* mr = const_cast<ON_MappingRef*> (MappingRef (plugin_id));
+  return mr ? mr->DeleteMappingChannel (mapping_channel_id) : false;
 }
 
 bool
-ON_ObjectRenderingAttributes::DeleteMappingChannel(const ON_UUID& plugin_id,
-                                                   const ON_UUID& mapping_id)
+ON_ObjectRenderingAttributes::DeleteMappingChannel (const ON_UUID& plugin_id,
+                                                    const ON_UUID& mapping_id)
 {
-  ON_MappingRef* mr = const_cast<ON_MappingRef*>(MappingRef(plugin_id));
-  return mr ? mr->DeleteMappingChannel(mapping_id) : false;
+  ON_MappingRef* mr = const_cast<ON_MappingRef*> (MappingRef (plugin_id));
+  return mr ? mr->DeleteMappingChannel (mapping_id) : false;
 }
 
 bool
-ON_ObjectRenderingAttributes::ChangeMappingChannel(const ON_UUID& plugin_id,
-                                                   int old_mapping_channel_id,
-                                                   int new_mapping_channel_id)
+ON_ObjectRenderingAttributes::ChangeMappingChannel (const ON_UUID& plugin_id,
+                                                    int old_mapping_channel_id,
+                                                    int new_mapping_channel_id)
 {
-  ON_MappingRef* mr = const_cast<ON_MappingRef*>(MappingRef(plugin_id));
-  return mr ? mr->ChangeMappingChannel(old_mapping_channel_id, new_mapping_channel_id)
+  ON_MappingRef* mr = const_cast<ON_MappingRef*> (MappingRef (plugin_id));
+  return mr ? mr->ChangeMappingChannel (old_mapping_channel_id, new_mapping_channel_id)
             : false;
 }
 
 const ON_MappingChannel*
-ON_MappingRef::MappingChannel(const ON_UUID& mapping_id) const
+ON_MappingRef::MappingChannel (const ON_UUID& mapping_id) const
 {
   int count;
   if ((count = m_mapping_channels.Count()) > 0) {
@@ -4611,7 +4610,7 @@ ON_MappingRef::MappingChannel(const ON_UUID& mapping_id) const
 }
 
 const ON_MappingChannel*
-ON_MappingRef::MappingChannel(int mapping_channel_id) const
+ON_MappingRef::MappingChannel (int mapping_channel_id) const
 {
   int count;
   if ((count = m_mapping_channels.Count()) > 0) {
@@ -4624,7 +4623,7 @@ ON_MappingRef::MappingChannel(int mapping_channel_id) const
 }
 
 bool
-ON_MappingRef::AddMappingChannel(int mapping_channel_id, const ON_UUID& mapping_id)
+ON_MappingRef::AddMappingChannel (int mapping_channel_id, const ON_UUID& mapping_id)
 {
   int i;
   if ((i = m_mapping_channels.Count()) > 0) {
@@ -4632,7 +4631,7 @@ ON_MappingRef::AddMappingChannel(int mapping_channel_id, const ON_UUID& mapping_
       if (mapping_channel_id == mc->m_mapping_channel_id) {
         // a matching mapping channel id exists
         // return true if mapping_id matches
-        return (0 == ON_UuidCompare(&mapping_id, &mc->m_mapping_id));
+        return (0 == ON_UuidCompare (&mapping_id, &mc->m_mapping_id));
       }
     }
   }
@@ -4648,31 +4647,31 @@ ON_MappingRef::AddMappingChannel(int mapping_channel_id, const ON_UUID& mapping_
 }
 
 bool
-ON_MappingRef::DeleteMappingChannel(int mapping_channel_id)
+ON_MappingRef::DeleteMappingChannel (int mapping_channel_id)
 {
-  const ON_MappingChannel* mc = MappingChannel(mapping_channel_id);
+  const ON_MappingChannel* mc = MappingChannel (mapping_channel_id);
   if (mc) {
-    m_mapping_channels.Remove((int)(mc - m_mapping_channels.Array()));
+    m_mapping_channels.Remove ((int)(mc - m_mapping_channels.Array()));
   }
   return (0 != mc);
 }
 
 bool
-ON_MappingRef::DeleteMappingChannel(const ON_UUID& mapping_id)
+ON_MappingRef::DeleteMappingChannel (const ON_UUID& mapping_id)
 {
-  const ON_MappingChannel* mc = MappingChannel(mapping_id);
+  const ON_MappingChannel* mc = MappingChannel (mapping_id);
   if (mc) {
-    m_mapping_channels.Remove((int)(mc - m_mapping_channels.Array()));
+    m_mapping_channels.Remove ((int)(mc - m_mapping_channels.Array()));
   }
   return (0 != mc);
 }
 
 bool
-ON_MappingRef::ChangeMappingChannel(int old_mapping_channel_id,
-                                    int new_mapping_channel_id)
+ON_MappingRef::ChangeMappingChannel (int old_mapping_channel_id,
+                                     int new_mapping_channel_id)
 {
   ON_MappingChannel* mc =
-      const_cast<ON_MappingChannel*>(MappingChannel(old_mapping_channel_id));
+      const_cast<ON_MappingChannel*> (MappingChannel (old_mapping_channel_id));
   if (mc) {
     mc->m_mapping_channel_id = new_mapping_channel_id;
   }
@@ -4680,13 +4679,13 @@ ON_MappingRef::ChangeMappingChannel(int old_mapping_channel_id,
 }
 
 bool
-ON_RenderingAttributes::Write(ON_BinaryArchive& archive) const
+ON_RenderingAttributes::Write (ON_BinaryArchive& archive) const
 {
-  bool rc = archive.BeginWrite3dmChunk(TCODE_ANONYMOUS_CHUNK, 1, 0);
+  bool rc = archive.BeginWrite3dmChunk (TCODE_ANONYMOUS_CHUNK, 1, 0);
   if (!rc)
     return false;
   for (;;) {
-    rc = archive.WriteArray(m_materials);
+    rc = archive.WriteArray (m_materials);
     if (!rc)
       break;
 
@@ -4698,20 +4697,20 @@ ON_RenderingAttributes::Write(ON_BinaryArchive& archive) const
 }
 
 bool
-ON_RenderingAttributes::Read(ON_BinaryArchive& archive)
+ON_RenderingAttributes::Read (ON_BinaryArchive& archive)
 {
   Default();
   int major_version = 0;
   int minor_version = 0;
   bool rc =
-      archive.BeginRead3dmChunk(TCODE_ANONYMOUS_CHUNK, &major_version, &minor_version);
+      archive.BeginRead3dmChunk (TCODE_ANONYMOUS_CHUNK, &major_version, &minor_version);
   if (!rc)
     return false;
   for (;;) {
     rc = (1 == major_version);
     if (!rc)
       break;
-    rc = archive.ReadArray(m_materials);
+    rc = archive.ReadArray (m_materials);
     if (!rc)
       break;
 
@@ -4723,31 +4722,31 @@ ON_RenderingAttributes::Read(ON_BinaryArchive& archive)
 }
 
 bool
-ON_ObjectRenderingAttributes::Write(ON_BinaryArchive& archive) const
+ON_ObjectRenderingAttributes::Write (ON_BinaryArchive& archive) const
 {
-  bool rc = archive.BeginWrite3dmChunk(TCODE_ANONYMOUS_CHUNK, 1, 3);
+  bool rc = archive.BeginWrite3dmChunk (TCODE_ANONYMOUS_CHUNK, 1, 3);
   if (!rc)
     return false;
   for (;;) {
     // DO NOT CALL ON_RenderingAttributes::Write
-    rc = archive.WriteArray(m_materials);
+    rc = archive.WriteArray (m_materials);
     if (!rc)
       break;
-    rc = archive.WriteArray(m_mappings);
+    rc = archive.WriteArray (m_mappings);
     if (!rc)
       break;
 
     // version 1.2 fields added 20061129
-    rc = archive.WriteBool(m_bCastsShadows);
+    rc = archive.WriteBool (m_bCastsShadows);
     if (!rc)
       break;
-    rc = archive.WriteBool(m_bReceivesShadows);
+    rc = archive.WriteBool (m_bReceivesShadows);
     if (!rc)
       break;
 
     // version 1.3 fields added 20101019
     bool b = AdvancedTexturePreview();
-    rc = archive.WriteBool(b);
+    rc = archive.WriteBool (b);
     if (!rc)
       break;
 
@@ -4759,13 +4758,13 @@ ON_ObjectRenderingAttributes::Write(ON_BinaryArchive& archive) const
 }
 
 bool
-ON_ObjectRenderingAttributes::Read(ON_BinaryArchive& archive)
+ON_ObjectRenderingAttributes::Read (ON_BinaryArchive& archive)
 {
   Default();
   int major_version = 0;
   int minor_version = 0;
   bool rc =
-      archive.BeginRead3dmChunk(TCODE_ANONYMOUS_CHUNK, &major_version, &minor_version);
+      archive.BeginRead3dmChunk (TCODE_ANONYMOUS_CHUNK, &major_version, &minor_version);
   if (!rc)
     return false;
   for (;;) {
@@ -4775,11 +4774,11 @@ ON_ObjectRenderingAttributes::Read(ON_BinaryArchive& archive)
 
     // DO NOT CALL ON_RenderingAttributes::Read
     if (rc)
-      rc = archive.ReadArray(m_materials);
+      rc = archive.ReadArray (m_materials);
     if (!rc)
       break;
     if (rc)
-      rc = archive.ReadArray(m_mappings);
+      rc = archive.ReadArray (m_mappings);
     if (!rc)
       break;
 
@@ -4787,10 +4786,10 @@ ON_ObjectRenderingAttributes::Read(ON_BinaryArchive& archive)
       break;
 
     // version 1.2 fields added 20061129
-    rc = archive.ReadBool(&m_bCastsShadows);
+    rc = archive.ReadBool (&m_bCastsShadows);
     if (!rc)
       break;
-    rc = archive.ReadBool(&m_bReceivesShadows);
+    rc = archive.ReadBool (&m_bReceivesShadows);
     if (!rc)
       break;
 
@@ -4799,7 +4798,7 @@ ON_ObjectRenderingAttributes::Read(ON_BinaryArchive& archive)
 
     // version 1.3 fields added 20101019
     bool b = AdvancedTexturePreview();
-    rc = archive.ReadBool(&b);
+    rc = archive.ReadBool (&b);
     if (!rc)
       break;
     // Jussi 20120430: We don't want to enable advanced texture preview by default. It
@@ -4816,19 +4815,19 @@ ON_ObjectRenderingAttributes::Read(ON_BinaryArchive& archive)
 }
 
 bool
-ON_TextureMapping::SetSurfaceParameterMapping(void)
+ON_TextureMapping::SetSurfaceParameterMapping (void)
 {
   Default();
   m_type = srfp_mapping;
-  ON_CreateUuid(m_mapping_id);
+  ON_CreateUuid (m_mapping_id);
   return true;
 }
 
 bool
-ON_TextureMapping::SetPlaneMapping(const ON_Plane& plane,
-                                   const ON_Interval& dx,
-                                   const ON_Interval& dy,
-                                   const ON_Interval& dz)
+ON_TextureMapping::SetPlaneMapping (const ON_Plane& plane,
+                                    const ON_Interval& dx,
+                                    const ON_Interval& dy,
+                                    const ON_Interval& dz)
 {
   Default();
 
@@ -4837,12 +4836,12 @@ ON_TextureMapping::SetPlaneMapping(const ON_Plane& plane,
   // forget to set it correctly.
   if (!plane.origin.IsValid())
     return false;
-  if (!ON_IsRightHandFrame(plane.xaxis, plane.yaxis, plane.zaxis))
+  if (!ON_IsRightHandFrame (plane.xaxis, plane.yaxis, plane.zaxis))
     return false;
   if (!dx.IsValid() || !dy.IsValid() || !dz.IsValid())
     return false;
 
-  ON_3dPoint C = plane.PointAt(dx.Mid(), dy.Mid(), dz.Mid());
+  ON_3dPoint C = plane.PointAt (dx.Mid(), dy.Mid(), dz.Mid());
   C.x = (0.0 == C.x) ? 0.0 : -C.x;
   C.y = (0.0 == C.y) ? 0.0 : -C.y;
   C.z = (0.0 == C.z) ? 0.0 : -C.z;
@@ -4918,7 +4917,7 @@ ON_TextureMapping::SetPlaneMapping(const ON_Plane& plane,
   m_Nxyz.m_xform[3][3] = 1.0;
 
   m_type = plane_mapping;
-  ON_CreateUuid(m_mapping_id);
+  ON_CreateUuid (m_mapping_id);
 
 #if defined(ON_DEBUG)
   {
@@ -4926,22 +4925,22 @@ ON_TextureMapping::SetPlaneMapping(const ON_Plane& plane,
     p.xaxis = (2.0 / sx) * plane.xaxis;
     p.yaxis = (2.0 / sy) * plane.yaxis;
     p.zaxis = (2.0 / sz) * plane.zaxis;
-    p.origin.Set(-C.x, -C.y, -C.z);
+    p.origin.Set (-C.x, -C.y, -C.z);
     p.UpdateEquation();
     ON_Xform P_dbg, N_dbg;
-    P_dbg.Rotation(p, ON_xy_plane);
-    P_dbg.GetSurfaceNormalXform(N_dbg);
+    P_dbg.Rotation (p, ON_xy_plane);
+    P_dbg.GetSurfaceNormalXform (N_dbg);
 
     for (int i = 0; i < 4; i++) {
       for (int j = 0; j < 4; j++) {
-        if (fabs(m_Pxyz[i][j] - P_dbg[i][j]) >=
-            ON_SQRT_EPSILON * (fabs(m_Pxyz[i][j]) + 128.0)) {
-          ON_ERROR("m_Pxyz is nor right\n");
+        if (fabs (m_Pxyz[i][j] - P_dbg[i][j]) >=
+            ON_SQRT_EPSILON * (fabs (m_Pxyz[i][j]) + 128.0)) {
+          ON_ERROR ("m_Pxyz is nor right\n");
           break;
         }
-        if (fabs(m_Nxyz[i][j] - N_dbg[i][j]) >=
-            ON_SQRT_EPSILON * (fabs(m_Nxyz[i][j]) + 128.0)) {
-          ON_ERROR("m_Nxyz is nor right\n");
+        if (fabs (m_Nxyz[i][j] - N_dbg[i][j]) >=
+            ON_SQRT_EPSILON * (fabs (m_Nxyz[i][j]) + 128.0)) {
+          ON_ERROR ("m_Nxyz is nor right\n");
           break;
         }
       }
@@ -4952,10 +4951,10 @@ ON_TextureMapping::SetPlaneMapping(const ON_Plane& plane,
 }
 
 bool
-ON_TextureMapping::SetBoxMapping(
+ON_TextureMapping::SetBoxMapping (
     const ON_Plane& plane, ON_Interval dx, ON_Interval dy, ON_Interval dz, bool bCapped)
 {
-  bool rc = SetPlaneMapping(plane, dx, dy, dz);
+  bool rc = SetPlaneMapping (plane, dx, dy, dz);
   if (rc) {
     m_bCapped = bCapped;
     m_type = ON_TextureMapping::box_mapping;
@@ -4964,19 +4963,19 @@ ON_TextureMapping::SetBoxMapping(
 }
 
 bool
-ON_TextureMapping::SetCylinderMapping(const ON_Cylinder& cylinder, bool bIsCapped)
+ON_TextureMapping::SetCylinderMapping (const ON_Cylinder& cylinder, bool bIsCapped)
 {
   ON_Interval dr, dh;
-  if (!ON_IsValid(cylinder.circle.radius))
+  if (!ON_IsValid (cylinder.circle.radius))
     return false;
   double r = cylinder.circle.radius;
   if (0.0 == r)
     r = 1.0;
-  dr.Set(-r, r);
-  dh.Set(cylinder.height[0], cylinder.height[1]);
+  dr.Set (-r, r);
+  dh.Set (cylinder.height[0], cylinder.height[1]);
   if (dh[0] == dh[1]) {
     if (ON_UNSET_VALUE == dh[0]) {
-      dh.Set(-1.0, 1.0);
+      dh.Set (-1.0, 1.0);
     }
     else {
       dh.m_t[0] -= 1.0;
@@ -4986,7 +4985,7 @@ ON_TextureMapping::SetCylinderMapping(const ON_Cylinder& cylinder, bool bIsCappe
   if (!dh.IsValid())
     return false;
 
-  bool rc = SetBoxMapping(cylinder.circle.plane, dr, dr, dh, bIsCapped);
+  bool rc = SetBoxMapping (cylinder.circle.plane, dr, dr, dh, bIsCapped);
   if (rc) {
     m_type = cylinder_mapping;
   }
@@ -4995,10 +4994,10 @@ ON_TextureMapping::SetCylinderMapping(const ON_Cylinder& cylinder, bool bIsCappe
 }
 
 bool
-ON_TextureMapping::SetSphereMapping(const ON_Sphere& sphere)
+ON_TextureMapping::SetSphereMapping (const ON_Sphere& sphere)
 {
-  ON_Interval dr(-sphere.radius, sphere.radius);
-  bool rc = SetBoxMapping(sphere.plane, dr, dr, dr, false);
+  ON_Interval dr (-sphere.radius, sphere.radius);
+  bool rc = SetBoxMapping (sphere.plane, dr, dr, dr, false);
   if (rc) {
     m_type = sphere_mapping;
   }
@@ -5006,16 +5005,16 @@ ON_TextureMapping::SetSphereMapping(const ON_Sphere& sphere)
 }
 
 bool
-ON_TextureMapping::GetMappingPlane(ON_Plane& plane,
-                                   ON_Interval& dx,
-                                   ON_Interval& dy,
-                                   ON_Interval& dz) const
+ON_TextureMapping::GetMappingPlane (ON_Plane& plane,
+                                    ON_Interval& dx,
+                                    ON_Interval& dy,
+                                    ON_Interval& dz) const
 {
-  ON_Xform xform(m_Pxyz);
+  ON_Xform xform (m_Pxyz);
 
-  ON_3dVector S(((ON_3dVector*)&xform.m_xform[0])->Length(),
-                ((ON_3dVector*)&xform.m_xform[1])->Length(),
-                ((ON_3dVector*)&xform.m_xform[2])->Length());
+  ON_3dVector S (((ON_3dVector*)&xform.m_xform[0])->Length(),
+                 ((ON_3dVector*)&xform.m_xform[1])->Length(),
+                 ((ON_3dVector*)&xform.m_xform[2])->Length());
 
   if (0.0 == S.x)
     return false;
@@ -5047,11 +5046,11 @@ ON_TextureMapping::GetMappingPlane(ON_Plane& plane,
   xform.m_xform[3][2] = 0.0;
   xform.m_xform[3][3] = 1.0;
 
-  ON_Xform inv(xform);
+  ON_Xform inv (xform);
   if (!inv.Invert())
     return false;
 
-  plane.origin.Set(inv.m_xform[0][3], inv.m_xform[1][3], inv.m_xform[2][3]);
+  plane.origin.Set (inv.m_xform[0][3], inv.m_xform[1][3], inv.m_xform[2][3]);
   xform.m_xform[0][3] = 0.0;
   xform.m_xform[1][3] = 0.0;
   xform.m_xform[2][3] = 0.0;
@@ -5061,28 +5060,28 @@ ON_TextureMapping::GetMappingPlane(ON_Plane& plane,
 
   plane.UpdateEquation();
 
-  dx.Set(-S.x, S.x);
-  dy.Set(-S.y, S.y);
-  dz.Set(-S.z, S.z);
+  dx.Set (-S.x, S.x);
+  dy.Set (-S.y, S.y);
+  dz.Set (-S.z, S.z);
 
   return plane.IsValid();
 }
 
 bool
-ON_TextureMapping::GetMappingBox(ON_Plane& plane,
-                                 ON_Interval& dx,
-                                 ON_Interval& dy,
-                                 ON_Interval& dz) const
+ON_TextureMapping::GetMappingBox (ON_Plane& plane,
+                                  ON_Interval& dx,
+                                  ON_Interval& dy,
+                                  ON_Interval& dz) const
 {
-  return GetMappingPlane(plane, dx, dy, dz);
+  return GetMappingPlane (plane, dx, dy, dz);
 }
 
 bool
-ON_TextureMapping::GetMappingCylinder(ON_Cylinder& cylinder) const
+ON_TextureMapping::GetMappingCylinder (ON_Cylinder& cylinder) const
 {
   ON_Interval dx, dy, dz;
   ON_Plane plane;
-  bool rc = GetMappingPlane(cylinder.circle.plane, dx, dy, dz);
+  bool rc = GetMappingPlane (cylinder.circle.plane, dx, dy, dz);
   if (rc) {
     double r0 = 0.5 * dx.Length();
     double r1 = 0.5 * dy.Length();
@@ -5095,10 +5094,10 @@ ON_TextureMapping::GetMappingCylinder(ON_Cylinder& cylinder) const
 }
 
 bool
-ON_TextureMapping::GetMappingSphere(ON_Sphere& sphere) const
+ON_TextureMapping::GetMappingSphere (ON_Sphere& sphere) const
 {
   ON_Interval dx, dy, dz;
-  bool rc = GetMappingPlane(sphere.plane, dx, dy, dz);
+  bool rc = GetMappingPlane (sphere.plane, dx, dy, dz);
   if (rc) {
     double r0 = 0.5 * dx.Length();
     double r1 = 0.5 * dy.Length();

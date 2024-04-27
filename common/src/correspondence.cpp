@@ -44,10 +44,10 @@
 
 //////////////////////////////////////////////////////////////////////////////
 void
-pcl::getRejectedQueryIndices(const pcl::Correspondences& correspondences_before,
-                             const pcl::Correspondences& correspondences_after,
-                             Indices& indices,
-                             bool presorting_required)
+pcl::getRejectedQueryIndices (const pcl::Correspondences& correspondences_before,
+                              const pcl::Correspondences& correspondences_after,
+                              Indices& indices,
+                              bool presorting_required)
 {
   indices.clear();
 
@@ -57,35 +57,35 @@ pcl::getRejectedQueryIndices(const pcl::Correspondences& correspondences_before,
   if (nr_correspondences_before == 0)
     return;
   if (nr_correspondences_after == 0) {
-    indices.resize(nr_correspondences_before);
+    indices.resize (nr_correspondences_before);
     for (std::size_t i = 0; i < nr_correspondences_before; ++i)
       indices[i] = correspondences_before[i].index_query;
     return;
   }
 
-  Indices indices_before(nr_correspondences_before);
+  Indices indices_before (nr_correspondences_before);
   for (std::size_t i = 0; i < nr_correspondences_before; ++i)
     indices_before[i] = correspondences_before[i].index_query;
 
-  Indices indices_after(nr_correspondences_after);
+  Indices indices_after (nr_correspondences_after);
   for (std::size_t i = 0; i < nr_correspondences_after; ++i)
     indices_after[i] = correspondences_after[i].index_query;
 
   if (presorting_required) {
-    std::sort(indices_before.begin(), indices_before.end());
-    std::sort(indices_after.begin(), indices_after.end());
+    std::sort (indices_before.begin(), indices_before.end());
+    std::sort (indices_after.begin(), indices_after.end());
   }
 
-  set_difference(indices_before.begin(),
-                 indices_before.end(),
-                 indices_after.begin(),
-                 indices_after.end(),
-                 inserter(indices, indices.begin()));
+  set_difference (indices_before.begin(),
+                  indices_before.end(),
+                  indices_after.begin(),
+                  indices_after.end(),
+                  inserter (indices, indices.begin()));
 }
 
 namespace pcl {
 std::ostream&
-operator<<(std::ostream& os, const Correspondence& c)
+operator<< (std::ostream& os, const Correspondence& c)
 {
   os << c.index_query << " " << c.index_match << " " << c.distance;
   return (os);

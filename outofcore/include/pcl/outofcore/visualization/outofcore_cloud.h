@@ -58,14 +58,14 @@ public:
   // static MonitorQueue<std::string> pcd_queue;
 
   struct PcdQueueItem {
-    PcdQueueItem(std::string pcd_file, float coverage)
+    PcdQueueItem (std::string pcd_file, float coverage)
     {
       this->pcd_file = pcd_file;
       this->coverage = coverage;
     }
 
     bool
-    operator<(const PcdQueueItem& rhs) const
+    operator< (const PcdQueueItem& rhs) const
     {
       return coverage < rhs.coverage;
     }
@@ -81,10 +81,10 @@ public:
 
   class CloudDataCacheItem : public LRUCacheItem<vtkSmartPointer<vtkPolyData>> {
   public:
-    CloudDataCacheItem(std::string pcd_file,
-                       float coverage,
-                       vtkSmartPointer<vtkPolyData> cloud_data,
-                       std::size_t timestamp)
+    CloudDataCacheItem (std::string pcd_file,
+                        float coverage,
+                        vtkSmartPointer<vtkPolyData> cloud_data,
+                        std::size_t timestamp)
     {
       this->pcd_file = pcd_file;
       this->coverage = coverage;
@@ -113,7 +113,7 @@ public:
 
   // Operators
   // -----------------------------------------------------------------------------
-  OutofcoreCloud(std::string name, boost::filesystem::path& tree_root);
+  OutofcoreCloud (std::string name, boost::filesystem::path& tree_root);
 
   // Methods
   // -----------------------------------------------------------------------------
@@ -146,11 +146,11 @@ public:
     if (displayDepth < 0) {
       displayDepth = 0;
     }
-    else if (static_cast<unsigned int>(displayDepth) > octree_->getDepth()) {
+    else if (static_cast<unsigned int> (displayDepth) > octree_->getDepth()) {
       displayDepth = octree_->getDepth();
     }
 
-    if (display_depth_ != static_cast<std::uint64_t>(displayDepth)) {
+    if (display_depth_ != static_cast<std::uint64_t> (displayDepth)) {
       display_depth_ = displayDepth;
       updateVoxelData();
       // updateCloudData();
@@ -190,7 +190,7 @@ public:
   void
   setDisplayVoxels (bool display_voxels)
   {
-    voxel_actor_->SetVisibility(display_voxels);
+    voxel_actor_->SetVisibility (display_voxels);
   }
 
   bool

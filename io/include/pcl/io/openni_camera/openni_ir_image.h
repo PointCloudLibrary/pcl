@@ -54,7 +54,7 @@ public:
   using Ptr = pcl::shared_ptr<IRImage>;
   using ConstPtr = pcl::shared_ptr<const IRImage>;
 
-  inline IRImage(pcl::shared_ptr<xn::IRMetaData> ir_meta_data) noexcept;
+  inline IRImage (pcl::shared_ptr<xn::IRMetaData> ir_meta_data) noexcept;
   inline virtual ~IRImage() noexcept;
 
   void
@@ -78,8 +78,8 @@ protected:
   pcl::shared_ptr<xn::IRMetaData> ir_md_;
 };
 
-IRImage::IRImage(pcl::shared_ptr<xn::IRMetaData> ir_meta_data) noexcept
-: ir_md_(std::move(ir_meta_data))
+IRImage::IRImage (pcl::shared_ptr<xn::IRMetaData> ir_meta_data) noexcept
+: ir_md_ (std::move (ir_meta_data))
 {}
 
 IRImage::~IRImage() noexcept = default;
@@ -105,7 +105,7 @@ IRImage::getFrameID() const noexcept
 unsigned long
 IRImage::getTimeStamp() const noexcept
 {
-  return static_cast<unsigned long>(ir_md_->Timestamp());
+  return static_cast<unsigned long> (ir_md_->Timestamp());
 }
 
 const xn::IRMetaData&

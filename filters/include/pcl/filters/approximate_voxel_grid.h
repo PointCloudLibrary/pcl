@@ -46,8 +46,8 @@ template <typename PointT>
 struct xNdCopyEigenPointFunctor {
   using Pod = typename traits::POD<PointT>::type;
 
-  xNdCopyEigenPointFunctor(const Eigen::VectorXf& p1, PointT& p2)
-  : p1_(p1), p2_(reinterpret_cast<Pod&>(p2))
+  xNdCopyEigenPointFunctor (const Eigen::VectorXf& p1, PointT& p2)
+  : p1_ (p1), p2_ (reinterpret_cast<Pod&> (p2))
   {}
 
   template <typename Key>
@@ -56,9 +56,9 @@ struct xNdCopyEigenPointFunctor {
   {
     // boost::fusion::at_key<Key> (p2_) = p1_[f_idx_++];
     using T = typename pcl::traits::datatype<PointT, Key>::type;
-    std::uint8_t* data_ptr =
-        reinterpret_cast<std::uint8_t*>(&p2_) + pcl::traits::offset<PointT, Key>::value;
-    *reinterpret_cast<T*>(data_ptr) = static_cast<T>(p1_[f_idx_++]);
+    std::uint8_t* data_ptr = reinterpret_cast<std::uint8_t*> (&p2_) +
+                             pcl::traits::offset<PointT, Key>::value;
+    *reinterpret_cast<T*> (data_ptr) = static_cast<T> (p1_[f_idx_++]);
   }
 
 private:
@@ -73,8 +73,8 @@ template <typename PointT>
 struct xNdCopyPointEigenFunctor {
   using Pod = typename traits::POD<PointT>::type;
 
-  xNdCopyPointEigenFunctor(const PointT& p1, Eigen::VectorXf& p2)
-  : p1_(reinterpret_cast<const Pod&>(p1)), p2_(p2)
+  xNdCopyPointEigenFunctor (const PointT& p1, Eigen::VectorXf& p2)
+  : p1_ (reinterpret_cast<const Pod&> (p1)), p2_ (p2)
   {}
 
   template <typename Key>
@@ -83,9 +83,9 @@ struct xNdCopyPointEigenFunctor {
   {
     // p2_[f_idx_++] = boost::fusion::at_key<Key> (p1_);
     using T = typename pcl::traits::datatype<PointT, Key>::type;
-    const std::uint8_t* data_ptr = reinterpret_cast<const std::uint8_t*>(&p1_) +
+    const std::uint8_t* data_ptr = reinterpret_cast<const std::uint8_t*> (&p1_) +
                                    pcl::traits::offset<PointT, Key>::value;
-    p2_[f_idx_++] = static_cast<float>(*reinterpret_cast<const T*>(data_ptr));
+    p2_[f_idx_++] = static_cast<float> (*reinterpret_cast<const T*> (data_ptr));
   }
 
 private:
@@ -129,11 +129,11 @@ public:
   /** \brief Empty constructor. */
   ApproximateVoxelGrid()
   : pcl::Filter<PointT>()
-  , leaf_size_(Eigen::Vector3f::Ones())
-  , inverse_leaf_size_(Eigen::Array3f::Ones())
+  , leaf_size_ (Eigen::Vector3f::Ones())
+  , inverse_leaf_size_ (Eigen::Array3f::Ones())
   ,
 
-  history_(new he[histsize_])
+  history_ (new he[histsize_])
   {
     filter_name_ = "ApproximateVoxelGrid";
   }
@@ -141,12 +141,12 @@ public:
   /** \brief Copy constructor.
    * \param[in] src the approximate voxel grid to copy into this.
    */
-  ApproximateVoxelGrid(const ApproximateVoxelGrid& src)
+  ApproximateVoxelGrid (const ApproximateVoxelGrid& src)
   : pcl::Filter<PointT>()
-  , leaf_size_(src.leaf_size_)
-  , inverse_leaf_size_(src.inverse_leaf_size_)
-  , downsample_all_data_(src.downsample_all_data_)
-  , histsize_(src.histsize_)
+  , leaf_size_ (src.leaf_size_)
+  , inverse_leaf_size_ (src.inverse_leaf_size_)
+  , downsample_all_data_ (src.downsample_all_data_)
+  , histsize_ (src.histsize_)
   , history_()
   {
     history_ = new he[histsize_];
@@ -162,7 +162,7 @@ public:
    * \param[in] src the approximate voxel grid to copy into this.
    */
   inline ApproximateVoxelGrid&
-  operator=(const ApproximateVoxelGrid& src)
+  operator= (const ApproximateVoxelGrid& src)
   {
     leaf_size_ = src.leaf_size_;
     inverse_leaf_size_ = src.inverse_leaf_size_;
@@ -192,7 +192,7 @@ public:
   inline void
   setLeafSize (float lx, float ly, float lz)
   {
-    setLeafSize(Eigen::Vector3f(lx, ly, lz));
+    setLeafSize (Eigen::Vector3f (lx, ly, lz));
   }
 
   /** \brief Get the voxel grid leaf size. */

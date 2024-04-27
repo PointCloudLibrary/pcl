@@ -47,72 +47,72 @@
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 void
-pcl::SampleConsensusModelParallelLine<PointT>::selectWithinDistance(
+pcl::SampleConsensusModelParallelLine<PointT>::selectWithinDistance (
     const Eigen::VectorXf& model_coefficients, const double threshold, Indices& inliers)
 {
   // Check if the model is valid given the user constraints
-  if (!isModelValid(model_coefficients)) {
+  if (!isModelValid (model_coefficients)) {
     inliers.clear();
     return;
   }
 
-  SampleConsensusModelLine<PointT>::selectWithinDistance(
+  SampleConsensusModelLine<PointT>::selectWithinDistance (
       model_coefficients, threshold, inliers);
 }
 
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 std::size_t
-pcl::SampleConsensusModelParallelLine<PointT>::countWithinDistance(
+pcl::SampleConsensusModelParallelLine<PointT>::countWithinDistance (
     const Eigen::VectorXf& model_coefficients, const double threshold) const
 {
   // Check if the model is valid given the user constraints
-  if (!isModelValid(model_coefficients)) {
+  if (!isModelValid (model_coefficients)) {
     return (0);
   }
 
-  return (SampleConsensusModelLine<PointT>::countWithinDistance(model_coefficients,
-                                                                threshold));
+  return (SampleConsensusModelLine<PointT>::countWithinDistance (model_coefficients,
+                                                                 threshold));
 }
 
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 void
-pcl::SampleConsensusModelParallelLine<PointT>::getDistancesToModel(
+pcl::SampleConsensusModelParallelLine<PointT>::getDistancesToModel (
     const Eigen::VectorXf& model_coefficients, std::vector<double>& distances) const
 {
   // Check if the model is valid given the user constraints
-  if (!isModelValid(model_coefficients)) {
+  if (!isModelValid (model_coefficients)) {
     distances.clear();
     return;
   }
 
-  SampleConsensusModelLine<PointT>::getDistancesToModel(model_coefficients, distances);
+  SampleConsensusModelLine<PointT>::getDistancesToModel (model_coefficients, distances);
 }
 
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 bool
-pcl::SampleConsensusModelParallelLine<PointT>::isModelValid(
+pcl::SampleConsensusModelParallelLine<PointT>::isModelValid (
     const Eigen::VectorXf& model_coefficients) const
 {
-  if (!SampleConsensusModel<PointT>::isModelValid(model_coefficients))
+  if (!SampleConsensusModel<PointT>::isModelValid (model_coefficients))
     return (false);
 
   // Check against template, if given
   if (eps_angle_ > 0.0) {
     // Obtain the line direction
-    Eigen::Vector4f line_dir(
+    Eigen::Vector4f line_dir (
         model_coefficients[3], model_coefficients[4], model_coefficients[5], 0.0f);
 
-    Eigen::Vector4f axis(axis_[0], axis_[1], axis_[2], 0.0f);
-    double angle_diff = std::abs(getAngle3D(axis, line_dir));
-    angle_diff = (std::min)(angle_diff, M_PI - angle_diff);
+    Eigen::Vector4f axis (axis_[0], axis_[1], axis_[2], 0.0f);
+    double angle_diff = std::abs (getAngle3D (axis, line_dir));
+    angle_diff = (std::min) (angle_diff, M_PI - angle_diff);
     // Check whether the current line model satisfies our angle threshold criterion with
     // respect to the given axis
     if (angle_diff > eps_angle_) {
-      PCL_DEBUG("[pcl::SampleConsensusModelParallelLine::isModelValid] Angle between "
-                "line direction and given axis is too large.\n");
+      PCL_DEBUG ("[pcl::SampleConsensusModelParallelLine::isModelValid] Angle between "
+                 "line direction and given axis is too large.\n");
       return (false);
     }
   }

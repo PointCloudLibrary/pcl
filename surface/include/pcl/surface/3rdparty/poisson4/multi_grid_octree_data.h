@@ -134,27 +134,27 @@ public:
   TreeOctNode** treeNodes;
   int* nodeCount;
   int maxDepth;
-  SortedTreeNodes(void);
-  ~SortedTreeNodes(void);
+  SortedTreeNodes (void);
+  ~SortedTreeNodes (void);
   void
   set (TreeOctNode& root);
   struct CornerIndices {
     int idx[pcl::poisson::Cube::CORNERS] = {-1, -1, -1, -1, -1, -1, -1, -1};
-    CornerIndices(void) = default;
+    CornerIndices (void) = default;
     int&
-    operator[](int i)
+    operator[] (int i)
     {
       return idx[i];
     }
     const int&
-    operator[](int i) const
+    operator[] (int i) const
     {
       return idx[i];
     }
   };
   struct CornerTableData {
-    CornerTableData(void) { cCount = 0; }
-    ~CornerTableData(void) { clear(); }
+    CornerTableData (void) { cCount = 0; }
+    ~CornerTableData (void) { clear(); }
     void
     clear (void)
     {
@@ -162,9 +162,9 @@ public:
       cCount = 0;
     }
     CornerIndices&
-    operator[](const TreeOctNode* node);
+    operator[] (const TreeOctNode* node);
     const CornerIndices&
-    operator[](const TreeOctNode* node) const;
+    operator[] (const TreeOctNode* node) const;
     CornerIndices&
     cornerIndices (const TreeOctNode* node);
     const CornerIndices&
@@ -183,12 +183,12 @@ public:
                   const TreeOctNode* rootNode,
                   int threads) const
   {
-    setCornerTable(cData, rootNode, maxDepth - 1, threads);
+    setCornerTable (cData, rootNode, maxDepth - 1, threads);
   }
   void
   setCornerTable (CornerTableData& cData, int threads) const
   {
-    setCornerTable(cData, treeNodes[0], maxDepth - 1, threads);
+    setCornerTable (cData, treeNodes[0], maxDepth - 1, threads);
   }
   int
   getMaxCornerCount (const TreeOctNode* rootNode,
@@ -198,30 +198,30 @@ public:
   struct EdgeIndices {
     int idx[pcl::poisson::Cube::EDGES] = {
         -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1};
-    EdgeIndices(void) = default;
+    EdgeIndices (void) = default;
     int&
-    operator[](int i)
+    operator[] (int i)
     {
       return idx[i];
     }
     const int&
-    operator[](int i) const
+    operator[] (int i) const
     {
       return idx[i];
     }
   };
   struct EdgeTableData {
-    EdgeTableData(void) { eCount = 0; }
-    ~EdgeTableData(void) { clear(); }
+    EdgeTableData (void) { eCount = 0; }
+    ~EdgeTableData (void) { clear(); }
     void
     clear (void)
     {
       eTable.clear(), eCount = 0;
     }
     EdgeIndices&
-    operator[](const TreeOctNode* node);
+    operator[] (const TreeOctNode* node);
     const EdgeIndices&
-    operator[](const TreeOctNode* node) const;
+    operator[] (const TreeOctNode* node) const;
     EdgeIndices&
     edgeIndices (const TreeOctNode* node);
     const EdgeIndices&
@@ -238,12 +238,12 @@ public:
   void
   setEdgeTable (EdgeTableData& eData, const TreeOctNode* rootNode, int threads)
   {
-    setEdgeTable(eData, rootNode, maxDepth - 1, threads);
+    setEdgeTable (eData, rootNode, maxDepth - 1, threads);
   }
   void
   setEdgeTable (EdgeTableData& eData, int threads)
   {
-    setEdgeTable(eData, treeNodes[0], maxDepth - 1, threads);
+    setEdgeTable (eData, treeNodes[0], maxDepth - 1, threads);
   }
   int
   getMaxEdgeCount (const TreeOctNode* rootNode, int depth, int threads) const;
@@ -263,8 +263,8 @@ public:
   Real constraint, solution;
   int pointIndex;
 
-  TreeNodeData(void);
-  ~TreeNodeData(void);
+  TreeNodeData (void);
+  ~TreeNodeData (void);
 };
 
 template <int Degree>
@@ -277,7 +277,7 @@ class Octree {
     pcl::poisson::Point3D<Real> position;
     Real weight;
     Real value;
-    PointData(pcl::poisson::Point3D<Real> p, Real w, Real v = 0)
+    PointData (pcl::poisson::Point3D<Real> p, Real w, Real v = 0)
     {
       position = p, weight = w, value = v;
     }
@@ -583,7 +583,7 @@ class Octree {
   int
   NonLinearUpdateWeightContribution (TreeOctNode* node,
                                      const pcl::poisson::Point3D<Real>& position,
-                                     Real weight = Real(1.0));
+                                     Real weight = Real (1.0));
   Real
   NonLinearGetSampleWeight (TreeOctNode* node,
                             const pcl::poisson::Point3D<Real>& position);
@@ -637,7 +637,7 @@ public:
   Real postNormalSmooth;
   TreeOctNode tree;
   pcl::poisson::BSplineData<Degree, BSplineDataReal> fData;
-  Octree(void);
+  Octree (void);
 
   void
   setBSplineData (int maxDepth, Real normalSmooth = -1, bool reflectBoundary = false);

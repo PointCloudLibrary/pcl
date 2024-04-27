@@ -23,7 +23,7 @@ using ModelCoefficientsPtr = ModelCoefficients::Ptr;
 using ModelCoefficientsConstPtr = ModelCoefficients::ConstPtr;
 
 inline std::ostream&
-operator<<(std::ostream& s, const ::pcl::ModelCoefficients& v)
+operator<< (std::ostream& s, const ::pcl::ModelCoefficients& v)
 {
   s << "header: " << std::endl;
   s << v.header;

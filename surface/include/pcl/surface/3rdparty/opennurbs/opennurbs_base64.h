@@ -155,7 +155,7 @@ public:
     input stream.
   */
   ON__UINT64
-  InSize () const;
+  InSize() const;
 
   /*
   Returns:
@@ -167,7 +167,7 @@ public:
     output stream.
   */
   ON__UINT64
-  OutSize () const;
+  OutSize() const;
 
   /*
   Returns:
@@ -178,7 +178,7 @@ public:
     returned value is the 32-bit crc of the entire input stream.
   */
   ON__UINT32
-  InCRC () const;
+  InCRC() const;
 
   /*
   Returns:
@@ -189,7 +189,7 @@ public:
     the entire output stream.
   */
   ON__UINT32
-  OutCRC () const;
+  OutCRC() const;
 
 private:
   ON_StreamCallbackFunction m_out_callback_function;
@@ -206,9 +206,9 @@ private:
 
 private:
   // prohibit use - no implementation
-  ON_Base64EncodeStream(const ON_Base64EncodeStream&);
+  ON_Base64EncodeStream (const ON_Base64EncodeStream&);
   ON_Base64EncodeStream&
-  operator=(const ON_Base64EncodeStream&);
+  operator= (const ON_Base64EncodeStream&);
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////

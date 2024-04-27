@@ -212,7 +212,7 @@ struct TConvVec2Base<double4> {
   using TBase = Ncv64f;
 };
 
-#define NC(T) (sizeof(T) / sizeof(TConvVec2Base<T>::TBase))
+#define NC(T) (sizeof (T) / sizeof (TConvVec2Base<T>::TBase))
 
 template <typename TBase, Ncv32u NC>
 struct TConvBase2Vec;
@@ -282,19 +282,19 @@ template <typename Tin>
 static inline __host__ __device__ void
 _TDemoteClampZ (Tin& a, Ncv8u& out)
 {
-  out = (Ncv8u)CLAMP_0_255(a);
+  out = (Ncv8u)CLAMP_0_255 (a);
 };
 template <typename Tin>
 static inline __host__ __device__ void
 _TDemoteClampZ (Tin& a, Ncv16u& out)
 {
-  out = (Ncv16u)CLAMP(a, 0, std::numeric_limits<unsigned short>::max());
+  out = (Ncv16u)CLAMP (a, 0, std::numeric_limits<unsigned short>::max());
 }
 template <typename Tin>
 static inline __host__ __device__ void
 _TDemoteClampZ (Tin& a, Ncv32u& out)
 {
-  out = (Ncv32u)CLAMP(a, 0, std::numeric_limits<unsigned int>::max());
+  out = (Ncv32u)CLAMP (a, 0, std::numeric_limits<unsigned int>::max());
 }
 template <typename Tin>
 static inline __host__ __device__ void
@@ -308,19 +308,19 @@ template <typename Tin>
 static inline __host__ __device__ void
 _TDemoteClampNN (Tin& a, Ncv8u& out)
 {
-  out = (Ncv8u)CLAMP_0_255(a + 0.5f);
+  out = (Ncv8u)CLAMP_0_255 (a + 0.5f);
 }
 template <typename Tin>
 static inline __host__ __device__ void
 _TDemoteClampNN (Tin& a, Ncv16u& out)
 {
-  out = (Ncv16u)CLAMP(a + 0.5f, 0, std::numeric_limits<unsigned short>::max());
+  out = (Ncv16u)CLAMP (a + 0.5f, 0, std::numeric_limits<unsigned short>::max());
 }
 template <typename Tin>
 static inline __host__ __device__ void
 _TDemoteClampNN (Tin& a, Ncv32u& out)
 {
-  out = (Ncv32u)CLAMP(a + 0.5f, 0, std::numeric_limits<unsigned int>::max());
+  out = (Ncv32u)CLAMP (a + 0.5f, 0, std::numeric_limits<unsigned int>::max());
 }
 template <typename Tin>
 static inline __host__ __device__ void
@@ -336,167 +336,167 @@ template <>
 inline __host__ __device__ uchar1
 _pixMakeZero<uchar1>()
 {
-  return make_uchar1(0);
+  return make_uchar1 (0);
 }
 template <>
 inline __host__ __device__ uchar3
 _pixMakeZero<uchar3>()
 {
-  return make_uchar3(0, 0, 0);
+  return make_uchar3 (0, 0, 0);
 }
 template <>
 inline __host__ __device__ uchar4
 _pixMakeZero<uchar4>()
 {
-  return make_uchar4(0, 0, 0, 0);
+  return make_uchar4 (0, 0, 0, 0);
 }
 template <>
 inline __host__ __device__ ushort1
 _pixMakeZero<ushort1>()
 {
-  return make_ushort1(0);
+  return make_ushort1 (0);
 }
 template <>
 inline __host__ __device__ ushort3
 _pixMakeZero<ushort3>()
 {
-  return make_ushort3(0, 0, 0);
+  return make_ushort3 (0, 0, 0);
 }
 template <>
 inline __host__ __device__ ushort4
 _pixMakeZero<ushort4>()
 {
-  return make_ushort4(0, 0, 0, 0);
+  return make_ushort4 (0, 0, 0, 0);
 }
 template <>
 inline __host__ __device__ uint1
 _pixMakeZero<uint1>()
 {
-  return make_uint1(0);
+  return make_uint1 (0);
 }
 template <>
 inline __host__ __device__ uint3
 _pixMakeZero<uint3>()
 {
-  return make_uint3(0, 0, 0);
+  return make_uint3 (0, 0, 0);
 }
 template <>
 inline __host__ __device__ uint4
 _pixMakeZero<uint4>()
 {
-  return make_uint4(0, 0, 0, 0);
+  return make_uint4 (0, 0, 0, 0);
 }
 template <>
 inline __host__ __device__ float1
 _pixMakeZero<float1>()
 {
-  return make_float1(0.f);
+  return make_float1 (0.f);
 }
 template <>
 inline __host__ __device__ float3
 _pixMakeZero<float3>()
 {
-  return make_float3(0.f, 0.f, 0.f);
+  return make_float3 (0.f, 0.f, 0.f);
 }
 template <>
 inline __host__ __device__ float4
 _pixMakeZero<float4>()
 {
-  return make_float4(0.f, 0.f, 0.f, 0.f);
+  return make_float4 (0.f, 0.f, 0.f, 0.f);
 }
 template <>
 inline __host__ __device__ double1
 _pixMakeZero<double1>()
 {
-  return make_double1(0.);
+  return make_double1 (0.);
 }
 template <>
 inline __host__ __device__ double3
 _pixMakeZero<double3>()
 {
-  return make_double3(0., 0., 0.);
+  return make_double3 (0., 0., 0.);
 }
 template <>
 inline __host__ __device__ double4
 _pixMakeZero<double4>()
 {
-  return make_double4(0., 0., 0., 0.);
+  return make_double4 (0., 0., 0., 0.);
 }
 
 static inline __host__ __device__ uchar1
 _pixMake (Ncv8u x)
 {
-  return make_uchar1(x);
+  return make_uchar1 (x);
 }
 static inline __host__ __device__ uchar3
 _pixMake (Ncv8u x, Ncv8u y, Ncv8u z)
 {
-  return make_uchar3(x, y, z);
+  return make_uchar3 (x, y, z);
 }
 static inline __host__ __device__ uchar4
 _pixMake (Ncv8u x, Ncv8u y, Ncv8u z, Ncv8u w)
 {
-  return make_uchar4(x, y, z, w);
+  return make_uchar4 (x, y, z, w);
 }
 static inline __host__ __device__ ushort1
 _pixMake (Ncv16u x)
 {
-  return make_ushort1(x);
+  return make_ushort1 (x);
 }
 static inline __host__ __device__ ushort3
 _pixMake (Ncv16u x, Ncv16u y, Ncv16u z)
 {
-  return make_ushort3(x, y, z);
+  return make_ushort3 (x, y, z);
 }
 static inline __host__ __device__ ushort4
 _pixMake (Ncv16u x, Ncv16u y, Ncv16u z, Ncv16u w)
 {
-  return make_ushort4(x, y, z, w);
+  return make_ushort4 (x, y, z, w);
 }
 static inline __host__ __device__ uint1
 _pixMake (Ncv32u x)
 {
-  return make_uint1(x);
+  return make_uint1 (x);
 }
 static inline __host__ __device__ uint3
 _pixMake (Ncv32u x, Ncv32u y, Ncv32u z)
 {
-  return make_uint3(x, y, z);
+  return make_uint3 (x, y, z);
 }
 static inline __host__ __device__ uint4
 _pixMake (Ncv32u x, Ncv32u y, Ncv32u z, Ncv32u w)
 {
-  return make_uint4(x, y, z, w);
+  return make_uint4 (x, y, z, w);
 }
 static inline __host__ __device__ float1
 _pixMake (Ncv32f x)
 {
-  return make_float1(x);
+  return make_float1 (x);
 }
 static inline __host__ __device__ float3
 _pixMake (Ncv32f x, Ncv32f y, Ncv32f z)
 {
-  return make_float3(x, y, z);
+  return make_float3 (x, y, z);
 }
 static inline __host__ __device__ float4
 _pixMake (Ncv32f x, Ncv32f y, Ncv32f z, Ncv32f w)
 {
-  return make_float4(x, y, z, w);
+  return make_float4 (x, y, z, w);
 }
 static inline __host__ __device__ double1
 _pixMake (Ncv64f x)
 {
-  return make_double1(x);
+  return make_double1 (x);
 }
 static inline __host__ __device__ double3
 _pixMake (Ncv64f x, Ncv64f y, Ncv64f z)
 {
-  return make_double3(x, y, z);
+  return make_double3 (x, y, z);
 }
 static inline __host__ __device__ double4
 _pixMake (Ncv64f x, Ncv64f y, Ncv64f z, Ncv64f w)
 {
-  return make_double4(x, y, z, w);
+  return make_double4 (x, y, z, w);
 }
 
 template <typename Tin, typename Tout, Ncv32u CN>
@@ -511,7 +511,7 @@ struct __pixDemoteClampZ_CN<Tin, Tout, 1> {
   _pixDemoteClampZ_CN (Tin& pix)
   {
     Tout out;
-    _TDemoteClampZ(pix.x, out.x);
+    _TDemoteClampZ (pix.x, out.x);
     return out;
   }
 };
@@ -522,9 +522,9 @@ struct __pixDemoteClampZ_CN<Tin, Tout, 3> {
   _pixDemoteClampZ_CN (Tin& pix)
   {
     Tout out;
-    _TDemoteClampZ(pix.x, out.x);
-    _TDemoteClampZ(pix.y, out.y);
-    _TDemoteClampZ(pix.z, out.z);
+    _TDemoteClampZ (pix.x, out.x);
+    _TDemoteClampZ (pix.y, out.y);
+    _TDemoteClampZ (pix.z, out.z);
     return out;
   }
 };
@@ -535,10 +535,10 @@ struct __pixDemoteClampZ_CN<Tin, Tout, 4> {
   _pixDemoteClampZ_CN (Tin& pix)
   {
     Tout out;
-    _TDemoteClampZ(pix.x, out.x);
-    _TDemoteClampZ(pix.y, out.y);
-    _TDemoteClampZ(pix.z, out.z);
-    _TDemoteClampZ(pix.w, out.w);
+    _TDemoteClampZ (pix.x, out.x);
+    _TDemoteClampZ (pix.y, out.y);
+    _TDemoteClampZ (pix.z, out.z);
+    _TDemoteClampZ (pix.w, out.w);
     return out;
   }
 };
@@ -547,7 +547,7 @@ template <typename Tin, typename Tout>
 static inline __host__ __device__ Tout
 _pixDemoteClampZ (Tin& pix)
 {
-  return __pixDemoteClampZ_CN<Tin, Tout, NC(Tin)>::_pixDemoteClampZ_CN(pix);
+  return __pixDemoteClampZ_CN<Tin, Tout, NC (Tin)>::_pixDemoteClampZ_CN (pix);
 }
 
 template <typename Tin, typename Tout, Ncv32u CN>
@@ -562,7 +562,7 @@ struct __pixDemoteClampNN_CN<Tin, Tout, 1> {
   _pixDemoteClampNN_CN (Tin& pix)
   {
     Tout out;
-    _TDemoteClampNN(pix.x, out.x);
+    _TDemoteClampNN (pix.x, out.x);
     return out;
   }
 };
@@ -573,9 +573,9 @@ struct __pixDemoteClampNN_CN<Tin, Tout, 3> {
   _pixDemoteClampNN_CN (Tin& pix)
   {
     Tout out;
-    _TDemoteClampNN(pix.x, out.x);
-    _TDemoteClampNN(pix.y, out.y);
-    _TDemoteClampNN(pix.z, out.z);
+    _TDemoteClampNN (pix.x, out.x);
+    _TDemoteClampNN (pix.y, out.y);
+    _TDemoteClampNN (pix.z, out.z);
     return out;
   }
 };
@@ -586,10 +586,10 @@ struct __pixDemoteClampNN_CN<Tin, Tout, 4> {
   _pixDemoteClampNN_CN (Tin& pix)
   {
     Tout out;
-    _TDemoteClampNN(pix.x, out.x);
-    _TDemoteClampNN(pix.y, out.y);
-    _TDemoteClampNN(pix.z, out.z);
-    _TDemoteClampNN(pix.w, out.w);
+    _TDemoteClampNN (pix.x, out.x);
+    _TDemoteClampNN (pix.y, out.y);
+    _TDemoteClampNN (pix.z, out.z);
+    _TDemoteClampNN (pix.w, out.w);
     return out;
   }
 };
@@ -598,7 +598,7 @@ template <typename Tin, typename Tout>
 static inline __host__ __device__ Tout
 _pixDemoteClampNN (Tin& pix)
 {
-  return __pixDemoteClampNN_CN<Tin, Tout, NC(Tin)>::_pixDemoteClampNN_CN(pix);
+  return __pixDemoteClampNN_CN<Tin, Tout, NC (Tin)>::_pixDemoteClampNN_CN (pix);
 }
 
 template <typename Tin, typename Tout, typename Tw, Ncv32u CN>
@@ -652,7 +652,7 @@ template <typename Tin, typename Tout, typename Tw>
 static __host__ __device__ Tout
 _pixScale (Tin& pix, Tw w)
 {
-  return __pixScale_CN<Tin, Tout, Tw, NC(Tin)>::_pixScale_CN(pix, w);
+  return __pixScale_CN<Tin, Tout, Tw, NC (Tin)>::_pixScale_CN (pix, w);
 }
 
 template <typename Tin, typename Tout, Ncv32u CN>
@@ -703,7 +703,7 @@ template <typename Tin, typename Tout>
 static __host__ __device__ Tout
 _pixAdd (Tout& pix1, Tin& pix2)
 {
-  return __pixAdd_CN<Tin, Tout, NC(Tin)>::_pixAdd_CN(pix1, pix2);
+  return __pixAdd_CN<Tin, Tout, NC (Tin)>::_pixAdd_CN (pix1, pix2);
 }
 
 template <typename Tin, typename Tout, Ncv32u CN>
@@ -717,7 +717,7 @@ struct __pixDist_CN<Tin, Tout, 1> {
   static __host__ __device__ Tout
   _pixDist_CN (Tin& pix1, Tin& pix2)
   {
-    return Tout(SQR(pix1.x - pix2.x));
+    return Tout (SQR (pix1.x - pix2.x));
   }
 };
 
@@ -726,7 +726,7 @@ struct __pixDist_CN<Tin, Tout, 3> {
   static __host__ __device__ Tout
   _pixDist_CN (Tin& pix1, Tin& pix2)
   {
-    return Tout(SQR(pix1.x - pix2.x) + SQR(pix1.y - pix2.y) + SQR(pix1.z - pix2.z));
+    return Tout (SQR (pix1.x - pix2.x) + SQR (pix1.y - pix2.y) + SQR (pix1.z - pix2.z));
   }
 };
 
@@ -735,8 +735,8 @@ struct __pixDist_CN<Tin, Tout, 4> {
   static __host__ __device__ Tout
   _pixDist_CN (Tin& pix1, Tin& pix2)
   {
-    return Tout(SQR(pix1.x - pix2.x) + SQR(pix1.y - pix2.y) + SQR(pix1.z - pix2.z) +
-                SQR(pix1.w - pix2.w));
+    return Tout (SQR (pix1.x - pix2.x) + SQR (pix1.y - pix2.y) + SQR (pix1.z - pix2.z) +
+                 SQR (pix1.w - pix2.w));
   }
 };
 
@@ -744,7 +744,7 @@ template <typename Tin, typename Tout>
 static __host__ __device__ Tout
 _pixDist (Tin& pix1, Tin& pix2)
 {
-  return __pixDist_CN<Tin, Tout, NC(Tin)>::_pixDist_CN(pix1, pix2);
+  return __pixDist_CN<Tin, Tout, NC (Tin)>::_pixDist_CN (pix1, pix2);
 }
 
 template <typename T>

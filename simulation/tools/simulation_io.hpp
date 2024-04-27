@@ -31,7 +31,7 @@ public:
   using Ptr = shared_ptr<SimExample>;
   using ConstPtr = shared_ptr<const SimExample>;
 
-  SimExample(int argc, char** argv, int height, int width);
+  SimExample (int argc, char** argv, int height, int width);
   void
   initializeGL (int argc, char** argv);
 

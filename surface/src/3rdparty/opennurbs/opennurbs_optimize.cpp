@@ -17,7 +17,7 @@
 #include "pcl/surface/3rdparty/opennurbs/opennurbs.h"
 
 int
-ON_FindLocalMinimum (int (*f)(void*, double, double*, double*),
+ON_FindLocalMinimum (int (*f) (void*, double, double*, double*),
                      void* farg,
                      double ax,
                      double bx,
@@ -72,34 +72,34 @@ ON_FindLocalMinimum (int (*f)(void*, double, double*, double*),
   d = e = 0.0;
 
   if (0 == t_addr) {
-    ON_ERROR("t_addr is NULL");
+    ON_ERROR ("t_addr is NULL");
     return 0;
   }
 
   *t_addr = bx;
 
   if (max_it < 2) {
-    ON_ERROR("max_it must be >= 2");
+    ON_ERROR ("max_it must be >= 2");
     return 0;
   }
-  if (!ON_IsValid(rel_stepsize_tol) || rel_stepsize_tol <= 0.0 ||
+  if (!ON_IsValid (rel_stepsize_tol) || rel_stepsize_tol <= 0.0 ||
       rel_stepsize_tol >= 1.0) {
-    ON_ERROR("rel_stepsize_tol must be strictly between 0.0 and 1.0");
+    ON_ERROR ("rel_stepsize_tol must be strictly between 0.0 and 1.0");
     return 0;
   }
-  if (!ON_IsValid(abs_stepsize_tol) || abs_stepsize_tol <= 0.0) {
-    ON_ERROR("abs_stepsize_tol must be > 0");
+  if (!ON_IsValid (abs_stepsize_tol) || abs_stepsize_tol <= 0.0) {
+    ON_ERROR ("abs_stepsize_tol must be > 0");
     return 0;
   }
 
   a = (ax < cx ? ax : cx);
   b = (ax > cx ? ax : cx);
   x = w = v = bx;
-  rc = f(farg, x, &fx, &dx);
+  rc = f (farg, x, &fx, &dx);
   if (rc) {
     // f() returned nonzero return code which means we need to bailout
     if (rc < 0) {
-      ON_ERROR("ON_FindLocalMinimum() f() failed to evaluate.");
+      ON_ERROR ("ON_FindLocalMinimum() f() failed to evaluate.");
     }
     *t_addr = x;
     return rc > 0 ? 1 : 0; // return 1 means f() said result is good enough, return = 0
@@ -109,14 +109,14 @@ ON_FindLocalMinimum (int (*f)(void*, double, double*, double*),
   dw = dv = dx;
   while (max_it--) {
     xm = 0.5 * (a + b);
-    tol1 = rel_stepsize_tol * fabs(x) + abs_stepsize_tol;
+    tol1 = rel_stepsize_tol * fabs (x) + abs_stepsize_tol;
     tol2 = 2.0 * tol1;
-    if (fabs(x - xm) <= (tol2 - 0.5 * (b - a))) {
+    if (fabs (x - xm) <= (tol2 - 0.5 * (b - a))) {
       // further adjustments to x are smaller than stepsize tolerance
       *t_addr = x;
       return 1;
     }
-    if (fabs(e) > tol1) {
+    if (fabs (e) > tol1) {
       d1 = 2.0 * (b - a);
       d2 = d1;
       if (dw != dx)
@@ -131,12 +131,12 @@ ON_FindLocalMinimum (int (*f)(void*, double, double*, double*),
       e = d;
       if (ok1 || ok2) {
         if (ok1 && ok2)
-          d = (fabs(d1) < fabs(d2) ? d1 : d2);
+          d = (fabs (d1) < fabs (d2) ? d1 : d2);
         else if (ok1)
           d = d1;
         else
           d = d2;
-        if (fabs(d) <= fabs(0.5 * olde)) {
+        if (fabs (d) <= fabs (0.5 * olde)) {
           u = x + d;
           if (u - a < tol2 || b - u < tol2) {
             d = (xm >= x) ? tol1 : -tol1;
@@ -153,13 +153,13 @@ ON_FindLocalMinimum (int (*f)(void*, double, double*, double*),
     else {
       d = 0.5 * (e = (dx >= 0.0 ? a - x : b - x));
     }
-    if (fabs(d) >= tol1) {
+    if (fabs (d) >= tol1) {
       u = x + d;
-      rc = f(farg, u, &fu, &du);
+      rc = f (farg, u, &fu, &du);
     }
     else {
       u = (d >= 0.0) ? x + tol1 : x - tol1;
-      rc = f(farg, u, &fu, &du);
+      rc = f (farg, u, &fu, &du);
       if (rc >= 0 && fu > fx) {
         // tweaking x any more increases function value - x is a numerical minimum
         *t_addr = x;
@@ -169,7 +169,7 @@ ON_FindLocalMinimum (int (*f)(void*, double, double*, double*),
     if (rc) {
       // f() returned nonzero return code which means we need to bailout
       if (rc < 0) {
-        ON_ERROR("ON_FindLocalMinimum() f() failed to evaluate.");
+        ON_ERROR ("ON_FindLocalMinimum() f() failed to evaluate.");
       }
       else {
         *t_addr = (fu < fx) ? u : x;
@@ -212,29 +212,29 @@ ON_FindLocalMinimum (int (*f)(void*, double, double*, double*),
     }
   }
   *t_addr = x; // best known answer
-  ON_ERROR("ON_FindLocalMinimum() failed to converge");
+  ON_ERROR ("ON_FindLocalMinimum() failed to converge");
   return 2; // 2 means we failed to converge
 }
 
 ON_LocalZero1::ON_LocalZero1()
-: m_t0(ON_UNSET_VALUE)
-, m_t1(ON_UNSET_VALUE)
-, m_f_tolerance(0.0)
-, m_t_tolerance(0.0)
-, m_k(NULL)
-, m_k_count(0)
+: m_t0 (ON_UNSET_VALUE)
+, m_t1 (ON_UNSET_VALUE)
+, m_f_tolerance (0.0)
+, m_t_tolerance (0.0)
+, m_k (NULL)
+, m_k_count (0)
 {}
 
 ON_LocalZero1::~ON_LocalZero1() {}
 
 ON_BOOL32
-ON_LocalZero1::BracketZero(double s0, double f0, double s1, double f1, int level)
+ON_LocalZero1::BracketZero (double s0, double f0, double s1, double f1, int level)
 {
   double s, f, d;
 
   // private helper for FindSearchDomain()
   if ((f0 <= 0.0 && f1 >= 0.0) || (f0 >= 0.0 && f1 <= 0.0) ||
-      fabs(f0) <= m_f_tolerance || fabs(f1) <= m_f_tolerance) {
+      fabs (f0) <= m_f_tolerance || fabs (f1) <= m_f_tolerance) {
     m_t0 = s0;
     m_t1 = s1;
     return true;
@@ -242,17 +242,17 @@ ON_LocalZero1::BracketZero(double s0, double f0, double s1, double f1, int level
 
   if (level++ <= 8) {
     s = 0.5 * s0 + s1;
-    if (s0 < s && s < s1 && Evaluate(s, &f, &d, 0)) {
+    if (s0 < s && s < s1 && Evaluate (s, &f, &d, 0)) {
       if (f * d >= 0.0) {
         // search left side first
-        if (BracketZero(s0, f0, s, f, level)) {
+        if (BracketZero (s0, f0, s, f, level)) {
           m_s0 = s0;
           m_f0 = f0;
           m_s1 = s;
           m_f1 = f;
           return true;
         }
-        if (BracketZero(s, f, s1, f1, level)) {
+        if (BracketZero (s, f, s1, f1, level)) {
           m_s0 = s;
           m_f0 = f;
           m_s1 = s1;
@@ -262,14 +262,14 @@ ON_LocalZero1::BracketZero(double s0, double f0, double s1, double f1, int level
       }
       else {
         // search right side first
-        if (BracketZero(s, f, s1, f1, level)) {
+        if (BracketZero (s, f, s1, f1, level)) {
           m_s0 = s;
           m_f0 = f;
           m_s1 = s1;
           m_f1 = f1;
           return true;
         }
-        if (BracketZero(s0, f0, s, f, level)) {
+        if (BracketZero (s0, f0, s, f, level)) {
           m_s0 = s0;
           m_f0 = f0;
           m_s1 = s;
@@ -283,16 +283,16 @@ ON_LocalZero1::BracketZero(double s0, double f0, double s1, double f1, int level
 }
 
 ON_BOOL32
-ON_LocalZero1::BracketSpan(double s0, double f0, double s1, double f1)
+ON_LocalZero1::BracketSpan (double s0, double f0, double s1, double f1)
 {
   int i0, i1, i;
   double fm, fp;
   ON_BOOL32 rc = true;
   if (m_k && m_k_count >= 3) {
-    i0 = ON_SearchMonotoneArray(m_k, m_k_count, s0);
+    i0 = ON_SearchMonotoneArray (m_k, m_k_count, s0);
     if (i0 < 0)
       i0 = 0;
-    i1 = ON_SearchMonotoneArray(m_k, m_k_count, s1);
+    i1 = ON_SearchMonotoneArray (m_k, m_k_count, s1);
     if (i1 >= m_k_count)
       i1 = m_k_count - 1;
     while (i1 >= 0 && s1 == m_k[i1]) {
@@ -303,8 +303,8 @@ ON_LocalZero1::BracketSpan(double s0, double f0, double s1, double f1)
       i0++;
     if (i0 <= i1) {
       // we have s0 < m_k[i0] <= ... <= m_k[i1] < s1
-      Evaluate(m_k[i0], &fm, NULL, -1); // gaurd against C0 discontinuities
-      Evaluate(m_k[i0], &fp, NULL, 1);
+      Evaluate (m_k[i0], &fm, NULL, -1); // gaurd against C0 discontinuities
+      Evaluate (m_k[i0], &fp, NULL, 1);
       if ((f0 <= 0.0 && fm >= 0.0) || (f0 >= 0.0 && fm <= 0.0)) {
         m_s1 = m_k[i0];
         m_f1 = fm;
@@ -313,8 +313,8 @@ ON_LocalZero1::BracketSpan(double s0, double f0, double s1, double f1)
         m_s0 = m_k[i0];
         m_f0 = fp;
         if (i0 < i1) {
-          Evaluate(m_k[i1], &fm, NULL, -1);
-          Evaluate(m_k[i1], &fp, NULL, 1);
+          Evaluate (m_k[i1], &fm, NULL, -1);
+          Evaluate (m_k[i1], &fp, NULL, 1);
           if ((f1 <= 0.0 && fp >= 0.0) || (f1 >= 0.0 && fp <= 0.0)) {
             m_s0 = m_k[i1];
             m_f0 = fp;
@@ -328,8 +328,8 @@ ON_LocalZero1::BracketSpan(double s0, double f0, double s1, double f1)
               // m_k[i],m_k[i+1].  We need to do this in order to make sure
               // we are passing a C2 function to the repeated zero finders.
               i = (i0 + i1) >> 1;
-              Evaluate(m_k[i], &fm, NULL, -1);
-              Evaluate(m_k[i], &fp, NULL, 1);
+              Evaluate (m_k[i], &fm, NULL, -1);
+              Evaluate (m_k[i], &fp, NULL, 1);
               if ((f0 <= 0.0 && fm >= 0.0) || (f0 >= 0.0 && fm <= 0.0)) {
                 m_s1 = m_k[i];
                 m_f1 = fm;
@@ -367,7 +367,7 @@ ON_LocalZero1::BracketSpan(double s0, double f0, double s1, double f1)
 }
 
 ON_BOOL32
-ON_LocalZero1::FindZero(double* t)
+ON_LocalZero1::FindZero (double* t)
 {
   // Find values of m_t0 and m_t1 between t0 and t1 such that
   // f(m_t0) and f(m_t1) have different signs
@@ -382,51 +382,51 @@ ON_LocalZero1::FindZero(double* t)
       m_s0 = m_t1;
       m_s1 = m_t0;
       if (m_t0 == m_t1) {
-        if (Evaluate(m_t0, &m_f0, NULL, 1)) {
+        if (Evaluate (m_t0, &m_f0, NULL, 1)) {
           m_f1 = m_f0;
-          if (fabs(m_f0) <= m_f_tolerance) {
+          if (fabs (m_f0) <= m_f_tolerance) {
             *t = m_t0;
             return true;
           }
         }
-        ON_ERROR("Illegal input");
+        ON_ERROR ("Illegal input");
         return false;
       }
     }
   }
 
   if (rc)
-    rc = Evaluate(m_s0, &m_f0, NULL, 1);
+    rc = Evaluate (m_s0, &m_f0, NULL, 1);
   if (rc)
-    rc = Evaluate(m_s1, &m_f1, NULL, -1);
+    rc = Evaluate (m_s1, &m_f1, NULL, -1);
 
   if (rc)
-    rc = BracketZero(m_s0, m_f0, m_s1, m_f1);
+    rc = BracketZero (m_s0, m_f0, m_s1, m_f1);
   if (rc) {
-    if (fabs(m_f0) <= m_f_tolerance && fabs(m_f0) <= fabs(m_f1)) {
+    if (fabs (m_f0) <= m_f_tolerance && fabs (m_f0) <= fabs (m_f1)) {
       // |f(s0)| <= user specified stopping tolerance
       *t = m_s0;
     }
-    else if (fabs(m_f1) <= m_f_tolerance) {
+    else if (fabs (m_f1) <= m_f_tolerance) {
       // |f(s1)| <= user specified stopping tolerance
       *t = m_s1;
     }
     else {
       if (rc)
-        rc = BracketSpan(m_s0, m_f0, m_s1, m_f1);
+        rc = BracketSpan (m_s0, m_f0, m_s1, m_f1);
       if (rc)
-        rc = NewtonRaphson(m_s0, m_f0, m_s1, m_f1, 128, t);
+        rc = NewtonRaphson (m_s0, m_f0, m_s1, m_f1, 128, t);
     }
   }
   if (!rc) {
-    ON_ERROR("ON_LocalZero1::FindZero() failed");
+    ON_ERROR ("ON_LocalZero1::FindZero() failed");
   }
 
   return rc;
 }
 
 ON_BOOL32
-ON_LocalZero1::NewtonRaphson(
+ON_LocalZero1::NewtonRaphson (
     double s0, double f0, double s1, double f1, int maxit, double* t)
 {
   // private function - input must satisfy
@@ -452,12 +452,12 @@ ON_LocalZero1::NewtonRaphson(
 
   double s, f, d, x, ds, prevds;
 
-  if (fabs(f0) <= m_f_tolerance && fabs(f0) <= fabs(f1)) {
+  if (fabs (f0) <= m_f_tolerance && fabs (f0) <= fabs (f1)) {
     // |f(s0)| <= user specified stopping tolerance
     *t = s0;
     return true;
   }
-  if (fabs(f1) <= m_f_tolerance) {
+  if (fabs (f1) <= m_f_tolerance) {
     // |f(s1)| <= user specified stopping tolerance
     *t = s1;
     return true;
@@ -473,30 +473,30 @@ ON_LocalZero1::NewtonRaphson(
   }
 
   s = 0.5 * (s0 + s1);
-  if (!Evaluate(s, &f, &d, 0)) {
-    *t = (fabs(f0) <= fabs(f1)) ? s0 : s1;
+  if (!Evaluate (s, &f, &d, 0)) {
+    *t = (fabs (f0) <= fabs (f1)) ? s0 : s1;
     return false;
   }
 
-  if (fabs(f) <= m_f_tolerance) {
+  if (fabs (f) <= m_f_tolerance) {
     // |f(s)| <= user specified stopping tolerance
     *t = s;
     return true;
   }
 
   if (f1 <= 0.0) {
-    *t = (fabs(f0) <= fabs(f1)) ? s0 : s1;
+    *t = (fabs (f0) <= fabs (f1)) ? s0 : s1;
     return false;
   }
 
-  ds = fabs(s1 - s0);
+  ds = fabs (s1 - s0);
   prevds = 0.0;
 
   while (maxit--) {
     if ((f + (s0 - s) * d) * (f + (s1 - s) * d) >
             0.0 // true if NR's line segment doesn't cross zero inside interval
-        || fabs(2.0 * f) > fabs(prevds * d) // true if expected decrease in function
-                                            // value from previous step didn't happen
+        || fabs (2.0 * f) > fabs (prevds * d) // true if expected decrease in function
+                                              // value from previous step didn't happen
     ) {
       // bisect
       prevds = ds;
@@ -504,7 +504,7 @@ ON_LocalZero1::NewtonRaphson(
       s = s0 + ds;
       if (s == s0) {
         // interval is too small to be divided using double division
-        if (fabs(f1) < fabs(f0)) {
+        if (fabs (f1) < fabs (f0)) {
           s = s1;
         }
         *t = s;
@@ -519,11 +519,11 @@ ON_LocalZero1::NewtonRaphson(
       s += ds;
       if (s == x) {
         // Newton step size < smallest double than can be added to s
-        if (fabs(f0) < fabs(f)) {
+        if (fabs (f0) < fabs (f)) {
           f = f0;
           s = s0;
         }
-        if (fabs(f1) < fabs(f)) {
+        if (fabs (f1) < fabs (f)) {
           s = s1;
         }
         *t = s;
@@ -531,18 +531,18 @@ ON_LocalZero1::NewtonRaphson(
       }
     }
 
-    if (!Evaluate(s, &f, &d, 0)) {
-      *t = (fabs(f0) <= fabs(f1)) ? s0 : s1; // emergency bailout
+    if (!Evaluate (s, &f, &d, 0)) {
+      *t = (fabs (f0) <= fabs (f1)) ? s0 : s1; // emergency bailout
       return false;
     }
 
-    if (fabs(f) <= m_f_tolerance) {
+    if (fabs (f) <= m_f_tolerance) {
       // |f(s)| <= user specified stopping tolerance
-      if (fabs(f0) < fabs(f)) {
+      if (fabs (f0) < fabs (f)) {
         f = f0;
         *t = s0;
       }
-      if (fabs(f1) < fabs(f)) {
+      if (fabs (f1) < fabs (f)) {
         *t = s1;
       }
       return true;
@@ -557,14 +557,14 @@ ON_LocalZero1::NewtonRaphson(
       s1 = s;
     }
 
-    if (fabs(s1 - s0) <= m_t_tolerance) {
+    if (fabs (s1 - s0) <= m_t_tolerance) {
       // a root has been bracketed to an interval that is small enough
       // to satisify user.
-      *t = (fabs(f0) <= fabs(f1)) ? s0 : s1;
+      *t = (fabs (f0) <= fabs (f1)) ? s0 : s1;
       return true;
     }
   }
 
-  *t = (fabs(f0) <= fabs(f1)) ? s0 : s1; // emergency bailout
+  *t = (fabs (f0) <= fabs (f1)) ? s0 : s1; // emergency bailout
   return false;
 }

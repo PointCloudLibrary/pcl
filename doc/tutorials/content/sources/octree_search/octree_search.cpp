@@ -8,14 +8,14 @@
 int
 main ()
 {
-  srand((unsigned int)time(NULL));
+  srand ((unsigned int)time (NULL));
 
-  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
+  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
 
   // Generate pointcloud data
   cloud->width = 1000;
   cloud->height = 1;
-  cloud->points.resize(cloud->width * cloud->height);
+  cloud->points.resize (cloud->width * cloud->height);
 
   for (std::size_t i = 0; i < cloud->size(); ++i) {
     (*cloud)[i].x = 1024.0f * rand() / (RAND_MAX + 1.0f);
@@ -25,9 +25,9 @@ main ()
 
   float resolution = 128.0f;
 
-  pcl::octree::OctreePointCloudSearch<pcl::PointXYZ> octree(resolution);
+  pcl::octree::OctreePointCloudSearch<pcl::PointXYZ> octree (resolution);
 
-  octree.setInputCloud(cloud);
+  octree.setInputCloud (cloud);
   octree.addPointsFromInputCloud();
 
   pcl::PointXYZ searchPoint;
@@ -40,7 +40,7 @@ main ()
 
   std::vector<int> pointIdxVec;
 
-  if (octree.voxelSearch(searchPoint, pointIdxVec)) {
+  if (octree.voxelSearch (searchPoint, pointIdxVec)) {
     std::cout << "Neighbors within voxel search at (" << searchPoint.x << " "
               << searchPoint.y << " " << searchPoint.z << ")" << std::endl;
 
@@ -60,7 +60,7 @@ main ()
   std::cout << "K nearest neighbor search at (" << searchPoint.x << " " << searchPoint.y
             << " " << searchPoint.z << ") with K=" << K << std::endl;
 
-  if (octree.nearestKSearch(
+  if (octree.nearestKSearch (
           searchPoint, K, pointIdxNKNSearch, pointNKNSquaredDistance) > 0) {
     for (std::size_t i = 0; i < pointIdxNKNSearch.size(); ++i)
       std::cout << "    " << (*cloud)[pointIdxNKNSearch[i]].x << " "
@@ -81,7 +81,7 @@ main ()
             << searchPoint.y << " " << searchPoint.z << ") with radius=" << radius
             << std::endl;
 
-  if (octree.radiusSearch(
+  if (octree.radiusSearch (
           searchPoint, radius, pointIdxRadiusSearch, pointRadiusSquaredDistance) > 0) {
     for (std::size_t i = 0; i < pointIdxRadiusSearch.size(); ++i)
       std::cout << "    " << (*cloud)[pointIdxRadiusSearch[i]].x << " "

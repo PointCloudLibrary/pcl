@@ -69,23 +69,23 @@ public:
   /** \brief Constructor for base SAC.
    * \param model a Sample Consensus model
    */
-  SampleConsensus(const SampleConsensusModelPtr& model)
-  : sac_model_(model)
-  , probability_(0.99)
-  , iterations_(0)
-  , threshold_(std::numeric_limits<double>::max())
-  , max_iterations_(1000){};
+  SampleConsensus (const SampleConsensusModelPtr& model)
+  : sac_model_ (model)
+  , probability_ (0.99)
+  , iterations_ (0)
+  , threshold_ (std::numeric_limits<double>::max())
+  , max_iterations_ (1000){};
 
   /** \brief Constructor for base SAC.
    * \param model a Sample Consensus model
    * \param threshold distance to model threshold
    */
-  SampleConsensus(const SampleConsensusModelPtr& model, float threshold)
-  : sac_model_(model)
-  , probability_(0.99)
-  , iterations_(0)
-  , threshold_(threshold)
-  , max_iterations_(1000){};
+  SampleConsensus (const SampleConsensusModelPtr& model, float threshold)
+  : sac_model_ (model)
+  , probability_ (0.99)
+  , iterations_ (0)
+  , threshold_ (threshold)
+  , max_iterations_ (1000){};
 
   /** \brief Destructor for base SAC. */
   virtual ~SampleConsensus() = default;

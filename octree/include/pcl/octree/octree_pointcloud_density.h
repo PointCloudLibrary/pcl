@@ -59,17 +59,17 @@ public:
   virtual OctreePointCloudDensityContainer*
   deepCopy () const
   {
-    return (new OctreePointCloudDensityContainer(*this));
+    return (new OctreePointCloudDensityContainer (*this));
   }
 
   /** \brief Equal comparison operator
    * \param[in] other OctreePointCloudDensityContainer to compare with
    */
   bool
-  operator==(const OctreeContainerBase& other) const override
+  operator== (const OctreeContainerBase& other) const override
   {
     const auto* otherContainer =
-        dynamic_cast<const OctreePointCloudDensityContainer*>(&other);
+        dynamic_cast<const OctreePointCloudDensityContainer*> (&other);
 
     return (this->point_counter_ == otherContainer->point_counter_);
   }
@@ -120,8 +120,8 @@ public:
   /** \brief OctreePointCloudDensity class constructor.
    *  \param resolution_arg:  octree resolution at lowest octree level
    * */
-  OctreePointCloudDensity(const double resolution_arg)
-  : OctreePointCloud<PointT, LeafContainerT, BranchContainerT>(resolution_arg)
+  OctreePointCloudDensity (const double resolution_arg)
+  : OctreePointCloud<PointT, LeafContainerT, BranchContainerT> (resolution_arg)
   {}
 
   /** \brief Empty class deconstructor. */
@@ -138,7 +138,7 @@ public:
   {
     uindex_t point_count = 0;
 
-    OctreePointCloudDensityContainer* leaf = this->findLeafAtPoint(point_arg);
+    OctreePointCloudDensityContainer* leaf = this->findLeafAtPoint (point_arg);
 
     if (leaf)
       point_count = leaf->getPointCounter();

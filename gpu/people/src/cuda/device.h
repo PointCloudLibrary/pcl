@@ -70,7 +70,7 @@ computePoint (unsigned short depth, int x, int y, const Intr& intr)
 __device__ __forceinline__ bool
 isFinite (const float3& p)
 {
-  return isfinite(p.x) && isfinite(p.y) && isfinite(p.z);
+  return isfinite (p.x) && isfinite (p.y) && isfinite (p.z);
 }
 } // namespace device
 } // namespace pcl

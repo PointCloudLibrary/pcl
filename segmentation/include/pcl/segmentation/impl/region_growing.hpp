@@ -76,7 +76,7 @@ pcl::RegionGrowing<PointT, NormalT>::getMinClusterSize()
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename NormalT>
 void
-pcl::RegionGrowing<PointT, NormalT>::setMinClusterSize(pcl::uindex_t min_cluster_size)
+pcl::RegionGrowing<PointT, NormalT>::setMinClusterSize (pcl::uindex_t min_cluster_size)
 {
   min_pts_per_cluster_ = min_cluster_size;
 }
@@ -92,7 +92,7 @@ pcl::RegionGrowing<PointT, NormalT>::getMaxClusterSize()
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename NormalT>
 void
-pcl::RegionGrowing<PointT, NormalT>::setMaxClusterSize(pcl::uindex_t max_cluster_size)
+pcl::RegionGrowing<PointT, NormalT>::setMaxClusterSize (pcl::uindex_t max_cluster_size)
 {
   max_pts_per_cluster_ = max_cluster_size;
 }
@@ -108,7 +108,7 @@ pcl::RegionGrowing<PointT, NormalT>::getSmoothModeFlag() const
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename NormalT>
 void
-pcl::RegionGrowing<PointT, NormalT>::setSmoothModeFlag(bool value)
+pcl::RegionGrowing<PointT, NormalT>::setSmoothModeFlag (bool value)
 {
   smooth_mode_flag_ = value;
 }
@@ -124,7 +124,7 @@ pcl::RegionGrowing<PointT, NormalT>::getCurvatureTestFlag() const
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename NormalT>
 void
-pcl::RegionGrowing<PointT, NormalT>::setCurvatureTestFlag(bool value)
+pcl::RegionGrowing<PointT, NormalT>::setCurvatureTestFlag (bool value)
 {
   curvature_flag_ = value;
 
@@ -143,7 +143,7 @@ pcl::RegionGrowing<PointT, NormalT>::getResidualTestFlag() const
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename NormalT>
 void
-pcl::RegionGrowing<PointT, NormalT>::setResidualTestFlag(bool value)
+pcl::RegionGrowing<PointT, NormalT>::setResidualTestFlag (bool value)
 {
   residual_flag_ = value;
 
@@ -162,7 +162,7 @@ pcl::RegionGrowing<PointT, NormalT>::getSmoothnessThreshold() const
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename NormalT>
 void
-pcl::RegionGrowing<PointT, NormalT>::setSmoothnessThreshold(float theta)
+pcl::RegionGrowing<PointT, NormalT>::setSmoothnessThreshold (float theta)
 {
   theta_threshold_ = theta;
 }
@@ -178,7 +178,7 @@ pcl::RegionGrowing<PointT, NormalT>::getResidualThreshold() const
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename NormalT>
 void
-pcl::RegionGrowing<PointT, NormalT>::setResidualThreshold(float residual)
+pcl::RegionGrowing<PointT, NormalT>::setResidualThreshold (float residual)
 {
   residual_threshold_ = residual;
 }
@@ -194,7 +194,7 @@ pcl::RegionGrowing<PointT, NormalT>::getCurvatureThreshold() const
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename NormalT>
 void
-pcl::RegionGrowing<PointT, NormalT>::setCurvatureThreshold(float curvature)
+pcl::RegionGrowing<PointT, NormalT>::setCurvatureThreshold (float curvature)
 {
   curvature_threshold_ = curvature;
 }
@@ -210,7 +210,7 @@ pcl::RegionGrowing<PointT, NormalT>::getNumberOfNeighbours() const
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename NormalT>
 void
-pcl::RegionGrowing<PointT, NormalT>::setNumberOfNeighbours(
+pcl::RegionGrowing<PointT, NormalT>::setNumberOfNeighbours (
     unsigned int neighbour_number)
 {
   neighbour_number_ = neighbour_number;
@@ -227,7 +227,7 @@ pcl::RegionGrowing<PointT, NormalT>::getSearchMethod() const
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename NormalT>
 void
-pcl::RegionGrowing<PointT, NormalT>::setSearchMethod(const KdTreePtr& tree)
+pcl::RegionGrowing<PointT, NormalT>::setSearchMethod (const KdTreePtr& tree)
 {
   search_ = tree;
 }
@@ -243,7 +243,7 @@ pcl::RegionGrowing<PointT, NormalT>::getInputNormals() const
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename NormalT>
 void
-pcl::RegionGrowing<PointT, NormalT>::setInputNormals(const NormalPtr& norm)
+pcl::RegionGrowing<PointT, NormalT>::setInputNormals (const NormalPtr& norm)
 {
   normals_ = norm;
 }
@@ -251,7 +251,7 @@ pcl::RegionGrowing<PointT, NormalT>::setInputNormals(const NormalPtr& norm)
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename NormalT>
 void
-pcl::RegionGrowing<PointT, NormalT>::extract(std::vector<pcl::PointIndices>& clusters)
+pcl::RegionGrowing<PointT, NormalT>::extract (std::vector<pcl::PointIndices>& clusters)
 {
   clusters_.clear();
   clusters.clear();
@@ -276,7 +276,7 @@ pcl::RegionGrowing<PointT, NormalT>::extract(std::vector<pcl::PointIndices>& clu
   applySmoothRegionGrowingAlgorithm();
   assembleRegions();
 
-  clusters.resize(clusters_.size());
+  clusters.resize (clusters_.size());
   auto cluster_iter_input = clusters.begin();
   for (const auto& cluster : clusters_) {
     if ((cluster.indices.size() >= min_pts_per_cluster_) &&
@@ -286,8 +286,8 @@ pcl::RegionGrowing<PointT, NormalT>::extract(std::vector<pcl::PointIndices>& clu
     }
   }
 
-  clusters_ = std::vector<pcl::PointIndices>(clusters.begin(), cluster_iter_input);
-  clusters.resize(clusters_.size());
+  clusters_ = std::vector<pcl::PointIndices> (clusters.begin(), cluster_iter_input);
+  clusters.resize (clusters_.size());
 
   deinitCompute();
 }
@@ -325,15 +325,15 @@ pcl::RegionGrowing<PointT, NormalT>::prepareForSegmentation()
 
   // if user didn't set search method
   if (!search_)
-    search_.reset(new pcl::search::KdTree<PointT>);
+    search_.reset (new pcl::search::KdTree<PointT>);
 
   if (indices_) {
     if (indices_->empty())
-      PCL_ERROR("[pcl::RegionGrowing::prepareForSegmentation] Empty given indices!\n");
-    search_->setInputCloud(input_, indices_);
+      PCL_ERROR ("[pcl::RegionGrowing::prepareForSegmentation] Empty given indices!\n");
+    search_->setInputCloud (input_, indices_);
   }
   else
-    search_->setInputCloud(input_);
+    search_->setInputCloud (input_);
 
   return (true);
 }
@@ -346,21 +346,21 @@ pcl::RegionGrowing<PointT, NormalT>::findPointNeighbours()
   pcl::Indices neighbours;
   std::vector<float> distances;
 
-  point_neighbours_.resize(input_->size(), neighbours);
+  point_neighbours_.resize (input_->size(), neighbours);
   if (input_->is_dense) {
     for (const auto& point_index : (*indices_)) {
       neighbours.clear();
-      search_->nearestKSearch(point_index, neighbour_number_, neighbours, distances);
-      point_neighbours_[point_index].swap(neighbours);
+      search_->nearestKSearch (point_index, neighbour_number_, neighbours, distances);
+      point_neighbours_[point_index].swap (neighbours);
     }
   }
   else {
     for (const auto& point_index : (*indices_)) {
-      if (!pcl::isFinite((*input_)[point_index]))
+      if (!pcl::isFinite ((*input_)[point_index]))
         continue;
       neighbours.clear();
-      search_->nearestKSearch(point_index, neighbour_number_, neighbours, distances);
-      point_neighbours_[point_index].swap(neighbours);
+      search_->nearestKSearch (point_index, neighbour_number_, neighbours, distances);
+      point_neighbours_[point_index].swap (neighbours);
     }
   }
 }
@@ -370,12 +370,12 @@ template <typename PointT, typename NormalT>
 void
 pcl::RegionGrowing<PointT, NormalT>::applySmoothRegionGrowingAlgorithm()
 {
-  int num_of_pts = static_cast<int>(indices_->size());
-  point_labels_.resize(input_->size(), -1);
+  int num_of_pts = static_cast<int> (indices_->size());
+  point_labels_.resize (input_->size(), -1);
 
   std::vector<std::pair<float, int>> point_residual;
   std::pair<float, int> pair;
-  point_residual.resize(num_of_pts, pair);
+  point_residual.resize (num_of_pts, pair);
 
   if (normal_flag_) {
     for (int i_point = 0; i_point < num_of_pts; i_point++) {
@@ -383,7 +383,7 @@ pcl::RegionGrowing<PointT, NormalT>::applySmoothRegionGrowingAlgorithm()
       point_residual[i_point].first = (*normals_)[point_index].curvature;
       point_residual[i_point].second = point_index;
     }
-    std::sort(point_residual.begin(), point_residual.end(), comparePair);
+    std::sort (point_residual.begin(), point_residual.end(), comparePair);
   }
   else {
     for (int i_point = 0; i_point < num_of_pts; i_point++) {
@@ -399,9 +399,9 @@ pcl::RegionGrowing<PointT, NormalT>::applySmoothRegionGrowingAlgorithm()
   int number_of_segments = 0;
   while (segmented_pts_num < num_of_pts) {
     int pts_in_segment;
-    pts_in_segment = growRegion(seed, number_of_segments);
+    pts_in_segment = growRegion (seed, number_of_segments);
     segmented_pts_num += pts_in_segment;
-    num_pts_in_segment_.push_back(pts_in_segment);
+    num_pts_in_segment_.push_back (pts_in_segment);
     number_of_segments++;
 
     // find next point that is not segmented yet
@@ -419,10 +419,10 @@ pcl::RegionGrowing<PointT, NormalT>::applySmoothRegionGrowingAlgorithm()
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename NormalT>
 int
-pcl::RegionGrowing<PointT, NormalT>::growRegion(int initial_seed, int segment_number)
+pcl::RegionGrowing<PointT, NormalT>::growRegion (int initial_seed, int segment_number)
 {
   std::queue<int> seeds;
-  seeds.push(initial_seed);
+  seeds.push (initial_seed);
   point_labels_[initial_seed] = segment_number;
 
   int num_pts_in_segment = 1;
@@ -443,7 +443,7 @@ pcl::RegionGrowing<PointT, NormalT>::growRegion(int initial_seed, int segment_nu
 
       bool is_a_seed = false;
       bool belongs_to_segment =
-          validatePoint(initial_seed, curr_seed, index, is_a_seed);
+          validatePoint (initial_seed, curr_seed, index, is_a_seed);
 
       if (!belongs_to_segment) {
         i_nghbr++;
@@ -454,7 +454,7 @@ pcl::RegionGrowing<PointT, NormalT>::growRegion(int initial_seed, int segment_nu
       num_pts_in_segment++;
 
       if (is_a_seed) {
-        seeds.push(index);
+        seeds.push (index);
       }
 
       i_nghbr++;
@@ -467,39 +467,39 @@ pcl::RegionGrowing<PointT, NormalT>::growRegion(int initial_seed, int segment_nu
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename NormalT>
 bool
-pcl::RegionGrowing<PointT, NormalT>::validatePoint(pcl::index_t initial_seed,
-                                                   pcl::index_t point,
-                                                   pcl::index_t nghbr,
-                                                   bool& is_a_seed) const
+pcl::RegionGrowing<PointT, NormalT>::validatePoint (pcl::index_t initial_seed,
+                                                    pcl::index_t point,
+                                                    pcl::index_t nghbr,
+                                                    bool& is_a_seed) const
 {
   is_a_seed = true;
 
-  float cosine_threshold = std::cos(theta_threshold_);
+  float cosine_threshold = std::cos (theta_threshold_);
   float data[4];
 
   data[0] = (*input_)[point].data[0];
   data[1] = (*input_)[point].data[1];
   data[2] = (*input_)[point].data[2];
   data[3] = (*input_)[point].data[3];
-  Eigen::Map<Eigen::Vector3f> initial_point(static_cast<float*>(data));
-  Eigen::Map<Eigen::Vector3f> initial_normal(
-      static_cast<float*>((*normals_)[point].normal));
+  Eigen::Map<Eigen::Vector3f> initial_point (static_cast<float*> (data));
+  Eigen::Map<Eigen::Vector3f> initial_normal (
+      static_cast<float*> ((*normals_)[point].normal));
 
   // check the angle between normals
   if (smooth_mode_flag_) {
-    Eigen::Map<Eigen::Vector3f> nghbr_normal(
-        static_cast<float*>((*normals_)[nghbr].normal));
-    float dot_product = std::abs(nghbr_normal.dot(initial_normal));
+    Eigen::Map<Eigen::Vector3f> nghbr_normal (
+        static_cast<float*> ((*normals_)[nghbr].normal));
+    float dot_product = std::abs (nghbr_normal.dot (initial_normal));
     if (dot_product < cosine_threshold) {
       return (false);
     }
   }
   else {
-    Eigen::Map<Eigen::Vector3f> nghbr_normal(
-        static_cast<float*>((*normals_)[nghbr].normal));
-    Eigen::Map<Eigen::Vector3f> initial_seed_normal(
-        static_cast<float*>((*normals_)[initial_seed].normal));
-    float dot_product = std::abs(nghbr_normal.dot(initial_seed_normal));
+    Eigen::Map<Eigen::Vector3f> nghbr_normal (
+        static_cast<float*> ((*normals_)[nghbr].normal));
+    Eigen::Map<Eigen::Vector3f> initial_seed_normal (
+        static_cast<float*> ((*normals_)[initial_seed].normal));
+    float dot_product = std::abs (nghbr_normal.dot (initial_seed_normal));
     if (dot_product < cosine_threshold)
       return (false);
   }
@@ -516,8 +516,8 @@ pcl::RegionGrowing<PointT, NormalT>::validatePoint(pcl::index_t initial_seed,
   data_1[1] = (*input_)[nghbr].data[1];
   data_1[2] = (*input_)[nghbr].data[2];
   data_1[3] = (*input_)[nghbr].data[3];
-  Eigen::Map<Eigen::Vector3f> nghbr_point(static_cast<float*>(data_1));
-  float residual = std::abs(initial_normal.dot(initial_point - nghbr_point));
+  Eigen::Map<Eigen::Vector3f> nghbr_point (static_cast<float*> (data_1));
+  float residual = std::abs (initial_normal.dot (initial_point - nghbr_point));
   if (residual_flag_ && residual > residual_threshold_)
     is_a_seed = false;
 
@@ -533,13 +533,13 @@ pcl::RegionGrowing<PointT, NormalT>::assembleRegions()
   const auto number_of_points = input_->size();
 
   pcl::PointIndices segment;
-  clusters_.resize(number_of_segments, segment);
+  clusters_.resize (number_of_segments, segment);
 
   for (std::size_t i_seg = 0; i_seg < number_of_segments; i_seg++) {
-    clusters_[i_seg].indices.resize(num_pts_in_segment_[i_seg], 0);
+    clusters_[i_seg].indices.resize (num_pts_in_segment_[i_seg], 0);
   }
 
-  std::vector<int> counter(number_of_segments, 0);
+  std::vector<int> counter (number_of_segments, 0);
 
   for (std::size_t i_point = 0; i_point < number_of_points; i_point++) {
     const auto segment_index = point_labels_[i_point];
@@ -556,8 +556,8 @@ pcl::RegionGrowing<PointT, NormalT>::assembleRegions()
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename NormalT>
 void
-pcl::RegionGrowing<PointT, NormalT>::getSegmentFromPoint(pcl::index_t index,
-                                                         pcl::PointIndices& cluster)
+pcl::RegionGrowing<PointT, NormalT>::getSegmentFromPoint (pcl::index_t index,
+                                                          pcl::PointIndices& cluster)
 {
   cluster.indices.clear();
 
@@ -596,14 +596,14 @@ pcl::RegionGrowing<PointT, NormalT>::getSegmentFromPoint(pcl::index_t index,
     // to which this point belongs
     for (const auto& i_segment : clusters_) {
       const auto it =
-          std::find(i_segment.indices.cbegin(), i_segment.indices.cend(), index);
+          std::find (i_segment.indices.cbegin(), i_segment.indices.cend(), index);
       if (it != i_segment.indices.cend()) {
         // if segment was found
         cluster.indices.clear();
-        cluster.indices.reserve(i_segment.indices.size());
-        std::copy(i_segment.indices.begin(),
-                  i_segment.indices.end(),
-                  std::back_inserter(cluster.indices));
+        cluster.indices.reserve (i_segment.indices.size());
+        std::copy (i_segment.indices.begin(),
+                   i_segment.indices.end(),
+                   std::back_inserter (cluster.indices));
         break;
       }
     } // next segment
@@ -620,14 +620,14 @@ pcl::RegionGrowing<PointT, NormalT>::getColoredCloud()
   pcl::PointCloud<pcl::PointXYZRGB>::Ptr colored_cloud;
 
   if (!clusters_.empty()) {
-    colored_cloud.reset(new pcl::PointCloud<pcl::PointXYZRGB>);
+    colored_cloud.reset (new pcl::PointCloud<pcl::PointXYZRGB>);
 
-    srand(static_cast<unsigned int>(time(nullptr)));
+    srand (static_cast<unsigned int> (time (nullptr)));
     std::vector<unsigned char> colors;
     for (std::size_t i_segment = 0; i_segment < clusters_.size(); i_segment++) {
-      colors.push_back(static_cast<unsigned char>(rand() % 256));
-      colors.push_back(static_cast<unsigned char>(rand() % 256));
-      colors.push_back(static_cast<unsigned char>(rand() % 256));
+      colors.push_back (static_cast<unsigned char> (rand() % 256));
+      colors.push_back (static_cast<unsigned char> (rand() % 256));
+      colors.push_back (static_cast<unsigned char> (rand() % 256));
     }
 
     colored_cloud->width = input_->width;
@@ -641,7 +641,7 @@ pcl::RegionGrowing<PointT, NormalT>::getColoredCloud()
       point.r = 255;
       point.g = 0;
       point.b = 0;
-      colored_cloud->points.push_back(point);
+      colored_cloud->points.push_back (point);
     }
 
     int next_color = 0;
@@ -666,14 +666,14 @@ pcl::RegionGrowing<PointT, NormalT>::getColoredCloudRGBA()
   pcl::PointCloud<pcl::PointXYZRGBA>::Ptr colored_cloud;
 
   if (!clusters_.empty()) {
-    colored_cloud.reset(new pcl::PointCloud<pcl::PointXYZRGBA>);
+    colored_cloud.reset (new pcl::PointCloud<pcl::PointXYZRGBA>);
 
-    srand(static_cast<unsigned int>(time(nullptr)));
+    srand (static_cast<unsigned int> (time (nullptr)));
     std::vector<unsigned char> colors;
     for (std::size_t i_segment = 0; i_segment < clusters_.size(); i_segment++) {
-      colors.push_back(static_cast<unsigned char>(rand() % 256));
-      colors.push_back(static_cast<unsigned char>(rand() % 256));
-      colors.push_back(static_cast<unsigned char>(rand() % 256));
+      colors.push_back (static_cast<unsigned char> (rand() % 256));
+      colors.push_back (static_cast<unsigned char> (rand() % 256));
+      colors.push_back (static_cast<unsigned char> (rand() % 256));
     }
 
     colored_cloud->width = input_->width;
@@ -688,7 +688,7 @@ pcl::RegionGrowing<PointT, NormalT>::getColoredCloudRGBA()
       point.g = 0;
       point.b = 0;
       point.a = 0;
-      colored_cloud->points.push_back(point);
+      colored_cloud->points.push_back (point);
     }
 
     int next_color = 0;

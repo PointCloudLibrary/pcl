@@ -93,22 +93,22 @@ pcl::visualization::PCLVisualizerInteractorStyle::Initialize()
   // LUT is disabled by default
   lut_enabled_ = false;
   lut_actor_ = vtkSmartPointer<vtkScalarBarActor>::New();
-  lut_actor_->SetTitle("");
+  lut_actor_->SetTitle ("");
   lut_actor_->SetOrientationToHorizontal();
-  lut_actor_->SetPosition(0.05, 0.01);
-  lut_actor_->SetWidth(0.9);
-  lut_actor_->SetHeight(0.1);
-  lut_actor_->SetNumberOfLabels(lut_actor_->GetNumberOfLabels() * 2);
+  lut_actor_->SetPosition (0.05, 0.01);
+  lut_actor_->SetWidth (0.9);
+  lut_actor_->SetHeight (0.1);
+  lut_actor_->SetNumberOfLabels (lut_actor_->GetNumberOfLabels() * 2);
   vtkSmartPointer<vtkTextProperty> prop = lut_actor_->GetLabelTextProperty();
-  prop->SetFontSize(10);
-  lut_actor_->SetLabelTextProperty(prop);
-  lut_actor_->SetTitleTextProperty(prop);
+  prop->SetFontSize (10);
+  lut_actor_->SetLabelTextProperty (prop);
+  lut_actor_->SetTitleTextProperty (prop);
 
   // Create the image filter and PNG writer objects
   wif_ = vtkSmartPointer<vtkWindowToImageFilter>::New();
   wif_->ReadFrontBufferOff();
   snapshot_writer_ = vtkSmartPointer<vtkPNGWriter>::New();
-  snapshot_writer_->SetInputConnection(wif_->GetOutputPort());
+  snapshot_writer_->SetInputConnection (wif_->GetOutputPort());
 
   init_ = true;
 
@@ -120,33 +120,33 @@ pcl::visualization::PCLVisualizerInteractorStyle::Initialize()
   // Add our own mouse callback before any user callback. Used for accurate point
   // picking.
   mouse_callback_ = vtkSmartPointer<pcl::visualization::PointPickingCallback>::New();
-  AddObserver(vtkCommand::LeftButtonPressEvent, mouse_callback_);
-  AddObserver(vtkCommand::LeftButtonReleaseEvent, mouse_callback_);
+  AddObserver (vtkCommand::LeftButtonPressEvent, mouse_callback_);
+  AddObserver (vtkCommand::LeftButtonReleaseEvent, mouse_callback_);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::visualization::PCLVisualizerInteractorStyle::saveScreenshot(
+pcl::visualization::PCLVisualizerInteractorStyle::saveScreenshot (
     const std::string& file)
 {
-  FindPokedRenderer(Interactor->GetEventPosition()[0],
-                    Interactor->GetEventPosition()[1]);
-  wif_->SetInput(Interactor->GetRenderWindow());
+  FindPokedRenderer (Interactor->GetEventPosition()[0],
+                     Interactor->GetEventPosition()[1]);
+  wif_->SetInput (Interactor->GetRenderWindow());
   wif_->Modified(); // Update the WindowToImageFilter
   snapshot_writer_->Modified();
-  snapshot_writer_->SetFileName(file.c_str());
+  snapshot_writer_->SetFileName (file.c_str());
   snapshot_writer_->Write();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 bool
-pcl::visualization::PCLVisualizerInteractorStyle::saveCameraParameters(
+pcl::visualization::PCLVisualizerInteractorStyle::saveCameraParameters (
     const std::string& file)
 {
-  FindPokedRenderer(Interactor->GetEventPosition()[0],
-                    Interactor->GetEventPosition()[1]);
+  FindPokedRenderer (Interactor->GetEventPosition()[0],
+                     Interactor->GetEventPosition()[1]);
 
-  std::ofstream ofs_cam(file.c_str());
+  std::ofstream ofs_cam (file.c_str());
   if (!ofs_cam.is_open()) {
     return (false);
   }
@@ -156,10 +156,10 @@ pcl::visualization::PCLVisualizerInteractorStyle::saveCameraParameters(
                                        ->GetFirstRenderer()
                                        ->GetActiveCamera();
   double clip[2], focal[3], pos[3], view[3];
-  cam->GetClippingRange(clip);
-  cam->GetFocalPoint(focal);
-  cam->GetPosition(pos);
-  cam->GetViewUp(view);
+  cam->GetClippingRange (clip);
+  cam->GetFocalPoint (focal);
+  cam->GetPosition (pos);
+  cam->GetViewUp (view);
   int* win_pos = Interactor->GetRenderWindow()->GetPosition();
   int* win_size = Interactor->GetRenderWindow()->GetSize();
   ofs_cam << clip[0] << "," << clip[1] << "/" << focal[0] << "," << focal[1] << ","
@@ -174,7 +174,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::saveCameraParameters(
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::visualization::PCLVisualizerInteractorStyle::getCameraParameters(
+pcl::visualization::PCLVisualizerInteractorStyle::getCameraParameters (
     pcl::visualization::Camera& camera, int viewport) const
 {
   rens_->InitTraversal();
@@ -184,7 +184,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::getCameraParameters(
     if (viewport++ == i) {
       auto window = Interactor->GetRenderWindow();
       auto cam = renderer->GetActiveCamera();
-      camera = Camera(*cam, *window);
+      camera = Camera (*cam, *window);
       break;
     }
   }
@@ -192,7 +192,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::getCameraParameters(
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 bool
-pcl::visualization::PCLVisualizerInteractorStyle::loadCameraParameters(
+pcl::visualization::PCLVisualizerInteractorStyle::loadCameraParameters (
     const std::string& file)
 {
   std::ifstream fs;
@@ -200,21 +200,21 @@ pcl::visualization::PCLVisualizerInteractorStyle::loadCameraParameters(
   std::vector<std::string> camera;
   bool ret;
 
-  fs.open(file.c_str());
+  fs.open (file.c_str());
   if (!fs.is_open()) {
     return (false);
   }
   while (!fs.eof()) {
-    getline(fs, line);
+    getline (fs, line);
     if (line.empty())
       continue;
 
-    boost::split(camera, line, boost::is_any_of("/"), boost::token_compress_on);
+    boost::split (camera, line, boost::is_any_of ("/"), boost::token_compress_on);
     break;
   }
   fs.close();
 
-  ret = getCameraParameters(camera);
+  ret = getCameraParameters (camera);
   if (ret) {
     camera_file_ = file;
   }
@@ -224,29 +224,30 @@ pcl::visualization::PCLVisualizerInteractorStyle::loadCameraParameters(
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::visualization::PCLVisualizerInteractorStyle::setCameraParameters(
+pcl::visualization::PCLVisualizerInteractorStyle::setCameraParameters (
     const Eigen::Matrix3f& intrinsics, const Eigen::Matrix4f& extrinsics, int viewport)
 {
   // Position = extrinsic translation
-  Eigen::Vector3f pos_vec = extrinsics.block<3, 1>(0, 3);
+  Eigen::Vector3f pos_vec = extrinsics.block<3, 1> (0, 3);
 
   // Rotate the view vector
   Eigen::Matrix3f rotation = extrinsics.topLeftCorner<3, 3>();
-  Eigen::Vector3f y_axis(0.f, 1.f, 0.f);
-  Eigen::Vector3f up_vec(rotation * y_axis);
+  Eigen::Vector3f y_axis (0.f, 1.f, 0.f);
+  Eigen::Vector3f up_vec (rotation * y_axis);
 
   // Compute the new focal point
-  Eigen::Vector3f z_axis(0.f, 0.f, 1.f);
+  Eigen::Vector3f z_axis (0.f, 0.f, 1.f);
   Eigen::Vector3f focal_vec = pos_vec + rotation * z_axis;
 
   // Get the width and height of the image - assume the calibrated centers are at the
   // center of the image
   Eigen::Vector2i window_size;
-  window_size[0] = 2 * static_cast<int>(intrinsics(0, 2));
-  window_size[1] = 2 * static_cast<int>(intrinsics(1, 2));
+  window_size[0] = 2 * static_cast<int> (intrinsics (0, 2));
+  window_size[1] = 2 * static_cast<int> (intrinsics (1, 2));
 
   // Compute the vertical field of view based on the focal length and image height
-  double fovy = 2 * std::atan(window_size[1] / (2. * intrinsics(1, 1))) * 180.0 / M_PI;
+  double fovy =
+      2 * std::atan (window_size[1] / (2. * intrinsics (1, 1))) * 180.0 / M_PI;
 
   rens_->InitTraversal();
   vtkRenderer* renderer = nullptr;
@@ -255,13 +256,13 @@ pcl::visualization::PCLVisualizerInteractorStyle::setCameraParameters(
     // Modify all renderer's cameras
     if (viewport == 0 || viewport == i) {
       vtkSmartPointer<vtkCamera> cam = renderer->GetActiveCamera();
-      cam->SetPosition(pos_vec[0], pos_vec[1], pos_vec[2]);
-      cam->SetFocalPoint(focal_vec[0], focal_vec[1], focal_vec[2]);
-      cam->SetViewUp(up_vec[0], up_vec[1], up_vec[2]);
-      cam->SetUseHorizontalViewAngle(0);
-      cam->SetViewAngle(fovy);
-      cam->SetClippingRange(0.01, 1000.01);
-      win_->SetSize(window_size[0], window_size[1]);
+      cam->SetPosition (pos_vec[0], pos_vec[1], pos_vec[2]);
+      cam->SetFocalPoint (focal_vec[0], focal_vec[1], focal_vec[2]);
+      cam->SetViewUp (up_vec[0], up_vec[1], up_vec[2]);
+      cam->SetUseHorizontalViewAngle (0);
+      cam->SetViewAngle (fovy);
+      cam->SetClippingRange (0.01, 1000.01);
+      win_->SetSize (window_size[0], window_size[1]);
     }
     ++i;
   }
@@ -270,7 +271,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::setCameraParameters(
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::visualization::PCLVisualizerInteractorStyle::setCameraParameters(
+pcl::visualization::PCLVisualizerInteractorStyle::setCameraParameters (
     const pcl::visualization::Camera& camera, int viewport)
 {
   rens_->InitTraversal();
@@ -280,15 +281,15 @@ pcl::visualization::PCLVisualizerInteractorStyle::setCameraParameters(
     // Modify all renderer's cameras
     if (viewport == 0 || viewport == i) {
       vtkSmartPointer<vtkCamera> cam = renderer->GetActiveCamera();
-      cam->SetPosition(camera.pos[0], camera.pos[1], camera.pos[2]);
-      cam->SetFocalPoint(camera.focal[0], camera.focal[1], camera.focal[2]);
-      cam->SetViewUp(camera.view[0], camera.view[1], camera.view[2]);
-      cam->SetClippingRange(camera.clip);
-      cam->SetUseHorizontalViewAngle(0);
-      cam->SetViewAngle(camera.fovy * 180.0 / M_PI);
+      cam->SetPosition (camera.pos[0], camera.pos[1], camera.pos[2]);
+      cam->SetFocalPoint (camera.focal[0], camera.focal[1], camera.focal[2]);
+      cam->SetViewUp (camera.view[0], camera.view[1], camera.view[2]);
+      cam->SetClippingRange (camera.clip);
+      cam->SetUseHorizontalViewAngle (0);
+      cam->SetViewAngle (camera.fovy * 180.0 / M_PI);
 
-      win_->SetSize(static_cast<int>(camera.window_size[0]),
-                    static_cast<int>(camera.window_size[1]));
+      win_->SetSize (static_cast<int> (camera.window_size[0]),
+                     static_cast<int> (camera.window_size[1]));
     }
     ++i;
   }
@@ -298,12 +299,12 @@ pcl::visualization::PCLVisualizerInteractorStyle::setCameraParameters(
 void
 pcl::visualization::PCLVisualizerInteractorStyle::zoomIn()
 {
-  FindPokedRenderer(Interactor->GetEventPosition()[0],
-                    Interactor->GetEventPosition()[1]);
+  FindPokedRenderer (Interactor->GetEventPosition()[0],
+                     Interactor->GetEventPosition()[1]);
   // Zoom in
   StartDolly();
   double factor = 10.0 * 0.2 * .5;
-  Dolly(pow(1.1, factor));
+  Dolly (pow (1.1, factor));
   EndDolly();
 }
 
@@ -311,115 +312,123 @@ pcl::visualization::PCLVisualizerInteractorStyle::zoomIn()
 void
 pcl::visualization::PCLVisualizerInteractorStyle::zoomOut()
 {
-  FindPokedRenderer(Interactor->GetEventPosition()[0],
-                    Interactor->GetEventPosition()[1]);
+  FindPokedRenderer (Interactor->GetEventPosition()[0],
+                     Interactor->GetEventPosition()[1]);
   // Zoom out
   StartDolly();
   double factor = 10.0 * -0.2 * .5;
-  Dolly(pow(1.1, factor));
+  Dolly (pow (1.1, factor));
   EndDolly();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 bool
-pcl::visualization::PCLVisualizerInteractorStyle::getCameraParameters(
+pcl::visualization::PCLVisualizerInteractorStyle::getCameraParameters (
     const std::vector<std::string>& camera)
 {
   pcl::visualization::Camera camera_temp;
 
   // look for '/' as a separator
   if (camera.size() != 7) {
-    pcl::console::print_error(
+    pcl::console::print_error (
         "[PCLVisualizer::getCameraParameters] Camera parameters given, but with an "
         "invalid number of options (%lu vs 7)!\n",
-        static_cast<unsigned long>(camera.size()));
+        static_cast<unsigned long> (camera.size()));
     return (false);
   }
 
-  std::string clip_str = camera.at(0);
-  std::string focal_str = camera.at(1);
-  std::string pos_str = camera.at(2);
-  std::string view_str = camera.at(3);
-  std::string fovy_str = camera.at(4);
-  std::string win_size_str = camera.at(5);
-  std::string win_pos_str = camera.at(6);
+  std::string clip_str = camera.at (0);
+  std::string focal_str = camera.at (1);
+  std::string pos_str = camera.at (2);
+  std::string view_str = camera.at (3);
+  std::string fovy_str = camera.at (4);
+  std::string win_size_str = camera.at (5);
+  std::string win_pos_str = camera.at (6);
 
   // Get each camera setting separately and parse for ','
   std::vector<std::string> clip_st;
-  boost::split(clip_st, clip_str, boost::is_any_of(","), boost::token_compress_on);
+  boost::split (clip_st, clip_str, boost::is_any_of (","), boost::token_compress_on);
   if (clip_st.size() != 2) {
-    pcl::console::print_error("[PCLVisualizer::getCameraParameters] Invalid parameters "
-                              "given for camera clipping angle!\n");
+    pcl::console::print_error (
+        "[PCLVisualizer::getCameraParameters] Invalid parameters "
+        "given for camera clipping angle!\n");
     return (false);
   }
-  camera_temp.clip[0] = atof(clip_st.at(0).c_str());
-  camera_temp.clip[1] = atof(clip_st.at(1).c_str());
+  camera_temp.clip[0] = atof (clip_st.at (0).c_str());
+  camera_temp.clip[1] = atof (clip_st.at (1).c_str());
 
   std::vector<std::string> focal_st;
-  boost::split(focal_st, focal_str, boost::is_any_of(","), boost::token_compress_on);
+  boost::split (focal_st, focal_str, boost::is_any_of (","), boost::token_compress_on);
   if (focal_st.size() != 3) {
-    pcl::console::print_error("[PCLVisualizer::getCameraParameters] Invalid parameters "
-                              "given for camera focal point!\n");
+    pcl::console::print_error (
+        "[PCLVisualizer::getCameraParameters] Invalid parameters "
+        "given for camera focal point!\n");
     return (false);
   }
-  camera_temp.focal[0] = atof(focal_st.at(0).c_str());
-  camera_temp.focal[1] = atof(focal_st.at(1).c_str());
-  camera_temp.focal[2] = atof(focal_st.at(2).c_str());
+  camera_temp.focal[0] = atof (focal_st.at (0).c_str());
+  camera_temp.focal[1] = atof (focal_st.at (1).c_str());
+  camera_temp.focal[2] = atof (focal_st.at (2).c_str());
 
   std::vector<std::string> pos_st;
-  boost::split(pos_st, pos_str, boost::is_any_of(","), boost::token_compress_on);
+  boost::split (pos_st, pos_str, boost::is_any_of (","), boost::token_compress_on);
   if (pos_st.size() != 3) {
-    pcl::console::print_error("[PCLVisualizer::getCameraParameters] Invalid parameters "
-                              "given for camera position!\n");
+    pcl::console::print_error (
+        "[PCLVisualizer::getCameraParameters] Invalid parameters "
+        "given for camera position!\n");
     return (false);
   }
-  camera_temp.pos[0] = atof(pos_st.at(0).c_str());
-  camera_temp.pos[1] = atof(pos_st.at(1).c_str());
-  camera_temp.pos[2] = atof(pos_st.at(2).c_str());
+  camera_temp.pos[0] = atof (pos_st.at (0).c_str());
+  camera_temp.pos[1] = atof (pos_st.at (1).c_str());
+  camera_temp.pos[2] = atof (pos_st.at (2).c_str());
 
   std::vector<std::string> view_st;
-  boost::split(view_st, view_str, boost::is_any_of(","), boost::token_compress_on);
+  boost::split (view_st, view_str, boost::is_any_of (","), boost::token_compress_on);
   if (view_st.size() != 3) {
-    pcl::console::print_error("[PCLVisualizer::getCameraParameters] Invalid parameters "
-                              "given for camera viewup!\n");
+    pcl::console::print_error (
+        "[PCLVisualizer::getCameraParameters] Invalid parameters "
+        "given for camera viewup!\n");
     return (false);
   }
-  camera_temp.view[0] = atof(view_st.at(0).c_str());
-  camera_temp.view[1] = atof(view_st.at(1).c_str());
-  camera_temp.view[2] = atof(view_st.at(2).c_str());
+  camera_temp.view[0] = atof (view_st.at (0).c_str());
+  camera_temp.view[1] = atof (view_st.at (1).c_str());
+  camera_temp.view[2] = atof (view_st.at (2).c_str());
 
   std::vector<std::string> fovy_size_st;
-  boost::split(fovy_size_st, fovy_str, boost::is_any_of(","), boost::token_compress_on);
+  boost::split (
+      fovy_size_st, fovy_str, boost::is_any_of (","), boost::token_compress_on);
   if (fovy_size_st.size() != 1) {
-    pcl::console::print_error("[PCLVisualizer::getCameraParameters] Invalid parameters "
-                              "given for field of view angle!\n");
+    pcl::console::print_error (
+        "[PCLVisualizer::getCameraParameters] Invalid parameters "
+        "given for field of view angle!\n");
     return (false);
   }
-  camera_temp.fovy = atof(fovy_size_st.at(0).c_str());
+  camera_temp.fovy = atof (fovy_size_st.at (0).c_str());
 
   std::vector<std::string> win_size_st;
-  boost::split(
-      win_size_st, win_size_str, boost::is_any_of(","), boost::token_compress_on);
+  boost::split (
+      win_size_st, win_size_str, boost::is_any_of (","), boost::token_compress_on);
   if (win_size_st.size() != 2) {
-    pcl::console::print_error("[PCLVisualizer::getCameraParameters] Invalid parameters "
-                              "given for window size!\n");
+    pcl::console::print_error (
+        "[PCLVisualizer::getCameraParameters] Invalid parameters "
+        "given for window size!\n");
     return (false);
   }
-  camera_temp.window_size[0] = atof(win_size_st.at(0).c_str());
-  camera_temp.window_size[1] = atof(win_size_st.at(1).c_str());
+  camera_temp.window_size[0] = atof (win_size_st.at (0).c_str());
+  camera_temp.window_size[1] = atof (win_size_st.at (1).c_str());
 
   std::vector<std::string> win_pos_st;
-  boost::split(
-      win_pos_st, win_pos_str, boost::is_any_of(","), boost::token_compress_on);
+  boost::split (
+      win_pos_st, win_pos_str, boost::is_any_of (","), boost::token_compress_on);
   if (win_pos_st.size() != 2) {
-    pcl::console::print_error("[PCLVisualizer::getCameraParameters] Invalid parameters "
-                              "given for window position!\n");
+    pcl::console::print_error (
+        "[PCLVisualizer::getCameraParameters] Invalid parameters "
+        "given for window position!\n");
     return (false);
   }
-  camera_temp.window_pos[0] = atof(win_pos_st.at(0).c_str());
-  camera_temp.window_pos[1] = atof(win_pos_st.at(1).c_str());
+  camera_temp.window_pos[0] = atof (win_pos_st.at (0).c_str());
+  camera_temp.window_pos[1] = atof (win_pos_st.at (1).c_str());
 
-  setCameraParameters(camera_temp);
+  setCameraParameters (camera_temp);
 
   return (true);
 }
@@ -430,14 +439,14 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnChar()
 {
   // Make sure we ignore the same events we handle in OnKeyDown to avoid calling things
   // twice
-  FindPokedRenderer(Interactor->GetEventPosition()[0],
-                    Interactor->GetEventPosition()[1]);
+  FindPokedRenderer (Interactor->GetEventPosition()[0],
+                     Interactor->GetEventPosition()[1]);
   if (Interactor->GetKeyCode() >= '0' && Interactor->GetKeyCode() <= '9')
     return;
-  std::string key(Interactor->GetKeySym());
-  if (key.find("XF86ZoomIn") != std::string::npos)
+  std::string key (Interactor->GetKeySym());
+  if (key.find ("XF86ZoomIn") != std::string::npos)
     zoomIn();
-  else if (key.find("XF86ZoomOut") != std::string::npos)
+  else if (key.find ("XF86ZoomOut") != std::string::npos)
     zoomOut();
 
   bool keymod = false;
@@ -502,34 +511,34 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnChar()
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 boost::signals2::connection
-pcl::visualization::PCLVisualizerInteractorStyle::registerMouseCallback(
-    std::function<void(const pcl::visualization::MouseEvent&)> callback)
+pcl::visualization::PCLVisualizerInteractorStyle::registerMouseCallback (
+    std::function<void (const pcl::visualization::MouseEvent&)> callback)
 {
-  return (mouse_signal_.connect(callback));
+  return (mouse_signal_.connect (callback));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 boost::signals2::connection
-pcl::visualization::PCLVisualizerInteractorStyle::registerKeyboardCallback(
-    std::function<void(const pcl::visualization::KeyboardEvent&)> callback)
+pcl::visualization::PCLVisualizerInteractorStyle::registerKeyboardCallback (
+    std::function<void (const pcl::visualization::KeyboardEvent&)> callback)
 {
-  return (keyboard_signal_.connect(callback));
+  return (keyboard_signal_.connect (callback));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 boost::signals2::connection
-pcl::visualization::PCLVisualizerInteractorStyle::registerPointPickingCallback(
-    std::function<void(const pcl::visualization::PointPickingEvent&)> callback)
+pcl::visualization::PCLVisualizerInteractorStyle::registerPointPickingCallback (
+    std::function<void (const pcl::visualization::PointPickingEvent&)> callback)
 {
-  return (point_picking_signal_.connect(callback));
+  return (point_picking_signal_.connect (callback));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 boost::signals2::connection
-pcl::visualization::PCLVisualizerInteractorStyle::registerAreaPickingCallback(
-    std::function<void(const pcl::visualization::AreaPickingEvent&)> callback)
+pcl::visualization::PCLVisualizerInteractorStyle::registerAreaPickingCallback (
+    std::function<void (const pcl::visualization::AreaPickingEvent&)> callback)
 {
-  return (area_picking_signal_.connect(callback));
+  return (area_picking_signal_.connect (callback));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -537,24 +546,24 @@ void
 pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown()
 {
   if (!init_) {
-    pcl::console::print_error(
+    pcl::console::print_error (
         "[PCLVisualizerInteractorStyle] Interactor style not initialized. Please call "
         "Initialize () before continuing.\n");
     return;
   }
 
   if (!rens_) {
-    pcl::console::print_error(
+    pcl::console::print_error (
         "[PCLVisualizerInteractorStyle] No renderer collection given! Use "
         "SetRendererCollection () before continuing.\n");
     return;
   }
 
-  FindPokedRenderer(Interactor->GetEventPosition()[0],
-                    Interactor->GetEventPosition()[1]);
+  FindPokedRenderer (Interactor->GetEventPosition()[0],
+                     Interactor->GetEventPosition()[1]);
 
   if (!wif_->GetInput()) {
-    wif_->SetInput(Interactor->GetRenderWindow());
+    wif_->SetInput (Interactor->GetRenderWindow());
     wif_->Modified();
     snapshot_writer_->Modified();
   }
@@ -593,21 +602,21 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown()
   if ((Interactor->GetKeySym()[0] == 'S' || Interactor->GetKeySym()[0] == 's') &&
       ctrl && !alt && !shift) {
     if (camera_file_.empty()) {
-      getCameraParameters(camera_);
+      getCameraParameters (camera_);
       camera_saved_ = true;
-      pcl::console::print_info(
+      pcl::console::print_info (
           "Camera parameters saved, you can press CTRL + R to restore.\n");
     }
     else {
-      if (saveCameraParameters(camera_file_)) {
-        pcl::console::print_info(
+      if (saveCameraParameters (camera_file_)) {
+        pcl::console::print_info (
             "Save camera parameters to %s, you can press CTRL + R to restore.\n",
             camera_file_.c_str());
       }
       else {
-        pcl::console::print_error("[PCLVisualizerInteractorStyle] Can't save camera "
-                                  "parameters to file: %s.\n",
-                                  camera_file_.c_str());
+        pcl::console::print_error ("[PCLVisualizerInteractorStyle] Can't save camera "
+                                   "parameters to file: %s.\n",
+                                   camera_file_.c_str());
       }
     }
   }
@@ -617,27 +626,27 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown()
       ctrl && !alt && !shift) {
     if (camera_file_.empty()) {
       if (camera_saved_) {
-        setCameraParameters(camera_);
-        pcl::console::print_info("Camera parameters restored.\n");
+        setCameraParameters (camera_);
+        pcl::console::print_info ("Camera parameters restored.\n");
       }
       else {
-        pcl::console::print_info("No camera parameters saved for restoring.\n");
+        pcl::console::print_info ("No camera parameters saved for restoring.\n");
       }
     }
     else {
-      if (pcl_fs::exists(camera_file_)) {
-        if (loadCameraParameters(camera_file_)) {
-          pcl::console::print_info("Restore camera parameters from %s.\n",
-                                   camera_file_.c_str());
+      if (pcl_fs::exists (camera_file_)) {
+        if (loadCameraParameters (camera_file_)) {
+          pcl::console::print_info ("Restore camera parameters from %s.\n",
+                                    camera_file_.c_str());
         }
         else {
-          pcl::console::print_error("Can't restore camera parameters from file: %s.\n",
-                                    camera_file_.c_str());
+          pcl::console::print_error ("Can't restore camera parameters from file: %s.\n",
+                                     camera_file_.c_str());
         }
       }
       else {
-        pcl::console::print_info("No camera parameters saved in %s for restoring.\n",
-                                 camera_file_.c_str());
+        pcl::console::print_info ("No camera parameters saved in %s for restoring.\n",
+                                  camera_file_.c_str());
       }
     }
   }
@@ -657,7 +666,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown()
     if (keymod) {
       for (auto& actor : *cloud_actors_) {
         CloudActor& act = actor.second;
-        if (index >= static_cast<int>(act.geometry_handlers.size()))
+        if (index >= static_cast<int> (act.geometry_handlers.size()))
           continue;
 
         // Save the geometry handler index for later usage
@@ -669,23 +678,23 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown()
 
         // Use the handler to obtain the geometry
         vtkSmartPointer<vtkPoints> points;
-        geometry_handler->getGeometry(points);
+        geometry_handler->getGeometry (points);
 
         // Set the vertices
         vtkSmartPointer<vtkCellArray> vertices = vtkSmartPointer<vtkCellArray>::New();
-        for (vtkIdType i = 0; i < static_cast<vtkIdType>(points->GetNumberOfPoints());
+        for (vtkIdType i = 0; i < static_cast<vtkIdType> (points->GetNumberOfPoints());
              ++i)
-          vertices->InsertNextCell(static_cast<vtkIdType>(1), &i);
+          vertices->InsertNextCell (static_cast<vtkIdType> (1), &i);
 
         // Create the data
         vtkSmartPointer<vtkPolyData> data = vtkSmartPointer<vtkPolyData>::New();
-        data->SetPoints(points);
-        data->SetVerts(vertices);
+        data->SetPoints (points);
+        data->SetVerts (vertices);
         // Modify the mapper
-        auto* mapper = dynamic_cast<vtkDataSetMapper*>(act.actor->GetMapper());
-        mapper->SetInputData(data);
+        auto* mapper = dynamic_cast<vtkDataSetMapper*> (act.actor->GetMapper());
+        mapper->SetInputData (data);
         // Modify the actor
-        act.actor->SetMapper(mapper);
+        act.actor->SetMapper (mapper);
 
         act.actor->Modified();
       }
@@ -694,7 +703,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown()
       for (auto& actor : *cloud_actors_) {
         CloudActor& act = actor.second;
         // Check for out of bounds
-        if (index >= static_cast<int>(act.color_handlers.size()))
+        if (index >= static_cast<int> (act.color_handlers.size()))
           continue;
 
         // Save the color handler index for later usage
@@ -706,42 +715,42 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown()
 
         auto scalars = color_handler->getColor();
         double minmax[2];
-        scalars->GetRange(minmax);
+        scalars->GetRange (minmax);
         // Update the data
-        auto* data = dynamic_cast<vtkPolyData*>(act.actor->GetMapper()->GetInput());
-        data->GetPointData()->SetScalars(scalars);
+        auto* data = dynamic_cast<vtkPolyData*> (act.actor->GetMapper()->GetInput());
+        data->GetPointData()->SetScalars (scalars);
         // Modify the mapper
-        auto* mapper = dynamic_cast<vtkDataSetMapper*>(act.actor->GetMapper());
-        mapper->SetScalarRange(minmax);
+        auto* mapper = dynamic_cast<vtkDataSetMapper*> (act.actor->GetMapper());
+        mapper->SetScalarRange (minmax);
         mapper->SetScalarModeToUsePointData();
-        mapper->SetInputData(data);
+        mapper->SetInputData (data);
         // Modify the actor
-        act.actor->SetMapper(mapper);
+        act.actor->SetMapper (mapper);
 
         act.actor->Modified();
       }
     }
 
-    KeyboardEvent event(true,
-                        Interactor->GetKeySym(),
-                        Interactor->GetKeyCode(),
-                        Interactor->GetAltKey(),
-                        Interactor->GetControlKey(),
-                        Interactor->GetShiftKey());
-    keyboard_signal_(event);
+    KeyboardEvent event (true,
+                         Interactor->GetKeySym(),
+                         Interactor->GetKeyCode(),
+                         Interactor->GetAltKey(),
+                         Interactor->GetControlKey(),
+                         Interactor->GetShiftKey());
+    keyboard_signal_ (event);
     Interactor->Render();
     return;
   }
 
-  std::string key(Interactor->GetKeySym());
-  if (key.find("XF86ZoomIn") != std::string::npos)
+  std::string key (Interactor->GetKeySym());
+  if (key.find ("XF86ZoomIn") != std::string::npos)
     zoomIn();
-  else if (key.find("XF86ZoomOut") != std::string::npos)
+  else if (key.find ("XF86ZoomOut") != std::string::npos)
     zoomOut();
 
   char KeyCodeChar = Interactor->GetKeyCode();
   if (KeyCodeChar == 0) {
-    std::string KeyString(Interactor->GetKeySym());
+    std::string KeyString (Interactor->GetKeySym());
     if (KeyString == "KP_Add")
       KeyCodeChar = '+';
     else if (KeyString == "KP_Subtract")
@@ -751,7 +760,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown()
   switch (KeyCodeChar) {
   case 'h':
   case 'H': {
-    pcl::console::print_info(
+    pcl::console::print_info (
         "| Help:\n"
         "-------\n"
         "          p, P   : switch to a point-based representation\n"
@@ -804,25 +813,25 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown()
       std::list<std::string> geometry_handlers_list, color_handlers_list;
       CloudActor* act = &actor.second;
       for (auto& geometry_handler : act->geometry_handlers)
-        geometry_handlers_list.push_back(geometry_handler->getFieldName());
+        geometry_handlers_list.push_back (geometry_handler->getFieldName());
       for (auto& color_handler : act->color_handlers)
-        color_handlers_list.push_back(color_handler->getFieldName());
+        color_handlers_list.push_back (color_handler->getFieldName());
 
       if (!geometry_handlers_list.empty()) {
         int i = 0;
-        pcl::console::print_info("List of available geometry handlers for actor ");
-        pcl::console::print_value("%s: ", actor.first.c_str());
+        pcl::console::print_info ("List of available geometry handlers for actor ");
+        pcl::console::print_value ("%s: ", actor.first.c_str());
         for (auto& git : geometry_handlers_list)
-          pcl::console::print_value("%s(%d) ", git.c_str(), ++i);
-        pcl::console::print_info("\n");
+          pcl::console::print_value ("%s(%d) ", git.c_str(), ++i);
+        pcl::console::print_info ("\n");
       }
       if (!color_handlers_list.empty()) {
         int i = 0;
-        pcl::console::print_info("List of available color handlers for actor ");
-        pcl::console::print_value("%s: ", actor.first.c_str());
+        pcl::console::print_info ("List of available color handlers for actor ");
+        pcl::console::print_value ("%s: ", actor.first.c_str());
         for (auto& cit : color_handlers_list)
-          pcl::console::print_value("%s(%d) ", cit.c_str(), ++i);
-        pcl::console::print_info("\n");
+          pcl::console::print_value ("%s(%d) ", cit.c_str(), ++i);
+        pcl::console::print_info ("\n");
       }
     }
 
@@ -834,10 +843,10 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown()
   case 'P': {
     vtkSmartPointer<vtkActorCollection> ac = CurrentRenderer->GetActors();
     vtkCollectionSimpleIterator ait;
-    for (ac->InitTraversal(ait); vtkActor* actor = ac->GetNextActor(ait);) {
+    for (ac->InitTraversal (ait); vtkActor* actor = ac->GetNextActor (ait);) {
       for (actor->InitPathTraversal(); vtkAssemblyPath* path = actor->GetNextPath();) {
         vtkSmartPointer<vtkActor> apart =
-            reinterpret_cast<vtkActor*>(path->GetLastNode()->GetViewProp());
+            reinterpret_cast<vtkActor*> (path->GetLastNode()->GetViewProp());
         apart->GetProperty()->SetRepresentationToPoints();
       }
     }
@@ -849,12 +858,12 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown()
   case 'W': {
     vtkSmartPointer<vtkActorCollection> ac = CurrentRenderer->GetActors();
     vtkCollectionSimpleIterator ait;
-    for (ac->InitTraversal(ait); vtkActor* actor = ac->GetNextActor(ait);) {
+    for (ac->InitTraversal (ait); vtkActor* actor = ac->GetNextActor (ait);) {
       for (actor->InitPathTraversal(); vtkAssemblyPath* path = actor->GetNextPath();) {
         vtkSmartPointer<vtkActor> apart =
-            reinterpret_cast<vtkActor*>(path->GetLastNode()->GetViewProp());
+            reinterpret_cast<vtkActor*> (path->GetLastNode()->GetViewProp());
         apart->GetProperty()->SetRepresentationToWireframe();
-        apart->GetProperty()->SetLighting(false);
+        apart->GetProperty()->SetLighting (false);
       }
     }
     break;
@@ -864,14 +873,14 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown()
   case 'j':
   case 'J': {
     char cam_fn[80], snapshot_fn[80];
-    auto t = static_cast<unsigned>(time(nullptr));
-    sprintf(snapshot_fn, "screenshot-%u.png", t);
-    saveScreenshot(snapshot_fn);
+    auto t = static_cast<unsigned> (time (nullptr));
+    sprintf (snapshot_fn, "screenshot-%u.png", t);
+    saveScreenshot (snapshot_fn);
 
-    sprintf(cam_fn, "screenshot-%u.cam", t);
-    saveCameraParameters(cam_fn);
+    sprintf (cam_fn, "screenshot-%u.cam", t);
+    saveCameraParameters (cam_fn);
 
-    pcl::console::print_info(
+    pcl::console::print_info (
         "Screenshot (%s) and camera information (%s) successfully captured.\n",
         snapshot_fn,
         cam_fn);
@@ -880,7 +889,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown()
   // display current camera settings/parameters
   case 'c':
   case 'C': {
-    Camera cam(*CurrentRenderer->GetActiveCamera(), *Interactor->GetRenderWindow());
+    Camera cam (*CurrentRenderer->GetActiveCamera(), *Interactor->GetRenderWindow());
     std::cerr << "Clipping plane [near,far] " << cam.clip[0] << ", " << cam.clip[1]
               << std::endl
               << "Focal point [x,y,z] " << cam.focal[0] << ", " << cam.focal[1] << ", "
@@ -889,7 +898,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown()
               << cam.pos[2] << std::endl
               << "View up [x,y,z] " << cam.view[0] << ", " << cam.view[1] << ", "
               << cam.view[2] << std::endl
-              << "Camera view angle [degrees] " << rad2deg(cam.fovy) << std::endl
+              << "Camera view angle [degrees] " << rad2deg (cam.fovy) << std::endl
               << "Window size [x,y] " << cam.window_size[0] << ", "
               << cam.window_size[1] << std::endl
               << "Window position [x,y] " << cam.window_pos[0] << ", "
@@ -907,14 +916,14 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown()
     else {
       vtkSmartPointer<vtkActorCollection> ac = CurrentRenderer->GetActors();
       vtkCollectionSimpleIterator ait;
-      for (ac->InitTraversal(ait); vtkActor* actor = ac->GetNextActor(ait);) {
+      for (ac->InitTraversal (ait); vtkActor* actor = ac->GetNextActor (ait);) {
         for (actor->InitPathTraversal();
              vtkAssemblyPath* path = actor->GetNextPath();) {
           vtkSmartPointer<vtkActor> apart =
-              reinterpret_cast<vtkActor*>(path->GetLastNode()->GetViewProp());
+              reinterpret_cast<vtkActor*> (path->GetLastNode()->GetViewProp());
           float psize = apart->GetProperty()->GetPointSize();
           if (psize < 63.0f)
-            apart->GetProperty()->SetPointSize(psize + 1.0f);
+            apart->GetProperty()->SetPointSize (psize + 1.0f);
         }
       }
     }
@@ -927,14 +936,14 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown()
     else {
       vtkSmartPointer<vtkActorCollection> ac = CurrentRenderer->GetActors();
       vtkCollectionSimpleIterator ait;
-      for (ac->InitTraversal(ait); vtkActor* actor = ac->GetNextActor(ait);) {
+      for (ac->InitTraversal (ait); vtkActor* actor = ac->GetNextActor (ait);) {
         for (actor->InitPathTraversal();
              vtkAssemblyPath* path = actor->GetNextPath();) {
           vtkSmartPointer<vtkActor> apart =
-              dynamic_cast<vtkActor*>(path->GetLastNode()->GetViewProp());
+              dynamic_cast<vtkActor*> (path->GetLastNode()->GetViewProp());
           float psize = apart->GetProperty()->GetPointSize();
           if (psize > 1.0f)
-            apart->GetProperty()->SetPointSize(psize - 1.0f);
+            apart->GetProperty()->SetPointSize (psize - 1.0f);
         }
       }
     }
@@ -958,9 +967,9 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown()
       // Is window size = max?
       if (win_size[0] == max_win_height_ && win_size[1] == max_win_width_) {
         // Set the previously saved 'current' window size
-        Interactor->GetRenderWindow()->SetSize(win_height_, win_width_);
+        Interactor->GetRenderWindow()->SetSize (win_height_, win_width_);
         // Set the previously saved window position
-        Interactor->GetRenderWindow()->SetPosition(win_pos_x_, win_pos_y_);
+        Interactor->GetRenderWindow()->SetPosition (win_pos_x_, win_pos_y_);
         Interactor->GetRenderWindow()->Render();
         Interactor->Render();
       }
@@ -974,7 +983,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown()
         win_height_ = win_size[0];
         win_width_ = win_size[1];
         // Set the maximum window size
-        Interactor->GetRenderWindow()->SetSize(scr_size[0], scr_size[1]);
+        Interactor->GetRenderWindow()->SetSize (scr_size[0], scr_size[1]);
         Interactor->GetRenderWindow()->Render();
         Interactor->Render();
         int* win_size = Interactor->GetRenderWindow()->GetSize();
@@ -986,15 +995,15 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown()
     else {
       AnimState = VTKIS_ANIM_ON;
       vtkAssemblyPath* path = nullptr;
-      Interactor->GetPicker()->Pick(Interactor->GetEventPosition()[0],
-                                    Interactor->GetEventPosition()[1],
-                                    0.0,
-                                    CurrentRenderer);
+      Interactor->GetPicker()->Pick (Interactor->GetEventPosition()[0],
+                                     Interactor->GetEventPosition()[1],
+                                     0.0,
+                                     CurrentRenderer);
       vtkAbstractPropPicker* picker;
-      if ((picker = vtkAbstractPropPicker::SafeDownCast(Interactor->GetPicker())))
+      if ((picker = vtkAbstractPropPicker::SafeDownCast (Interactor->GetPicker())))
         path = picker->GetPath();
       if (path)
-        Interactor->FlyTo(CurrentRenderer, picker->GetPickPosition());
+        Interactor->FlyTo (CurrentRenderer, picker->GetPickPosition());
       AnimState = VTKIS_ANIM_OFF;
     }
     break;
@@ -1006,15 +1015,15 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown()
       int stereo_render = Interactor->GetRenderWindow()->GetStereoRender();
       if (!stereo_render) {
         if (stereo_anaglyph_mask_default_) {
-          Interactor->GetRenderWindow()->SetAnaglyphColorMask(4, 3);
+          Interactor->GetRenderWindow()->SetAnaglyphColorMask (4, 3);
           stereo_anaglyph_mask_default_ = false;
         }
         else {
-          Interactor->GetRenderWindow()->SetAnaglyphColorMask(2, 5);
+          Interactor->GetRenderWindow()->SetAnaglyphColorMask (2, 5);
           stereo_anaglyph_mask_default_ = true;
         }
       }
-      Interactor->GetRenderWindow()->SetStereoRender(!stereo_render);
+      Interactor->GetRenderWindow()->SetStereoRender (!stereo_render);
       Interactor->GetRenderWindow()->Render();
       Interactor->Render();
     }
@@ -1022,13 +1031,13 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown()
       Superclass::OnKeyDown();
       vtkSmartPointer<vtkActorCollection> ac = CurrentRenderer->GetActors();
       vtkCollectionSimpleIterator ait;
-      for (ac->InitTraversal(ait); vtkActor* actor = ac->GetNextActor(ait);) {
+      for (ac->InitTraversal (ait); vtkActor* actor = ac->GetNextActor (ait);) {
         for (actor->InitPathTraversal();
              vtkAssemblyPath* path = actor->GetNextPath();) {
           vtkSmartPointer<vtkActor> apart =
-              reinterpret_cast<vtkActor*>(path->GetLastNode()->GetViewProp());
+              reinterpret_cast<vtkActor*> (path->GetLastNode()->GetViewProp());
           apart->GetProperty()->SetRepresentationToSurface();
-          apart->GetProperty()->SetLighting(true);
+          apart->GetProperty()->SetLighting (true);
         }
       }
     }
@@ -1040,11 +1049,11 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown()
   case 'G': {
     if (!grid_enabled_) {
       grid_actor_->TopAxisVisibilityOn();
-      CurrentRenderer->AddViewProp(grid_actor_);
+      CurrentRenderer->AddViewProp (grid_actor_);
       grid_enabled_ = true;
     }
     else {
-      CurrentRenderer->RemoveViewProp(grid_actor_);
+      CurrentRenderer->RemoveViewProp (grid_actor_);
       grid_enabled_ = false;
     }
     break;
@@ -1054,16 +1063,16 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown()
   case 'O': {
     vtkSmartPointer<vtkCamera> cam = CurrentRenderer->GetActiveCamera();
     int flag = cam->GetParallelProjection();
-    cam->SetParallelProjection(!flag);
+    cam->SetParallelProjection (!flag);
 
-    CurrentRenderer->SetActiveCamera(cam);
+    CurrentRenderer->SetActiveCamera (cam);
     CurrentRenderer->Render();
     break;
   }
   // Display a LUT actor on screen
   case 'u':
   case 'U': {
-    updateLookUpTableDisplay(true);
+    updateLookUpTableDisplay (true);
     break;
   }
 
@@ -1071,14 +1080,14 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown()
   case 'r':
   case 'R': {
     if (!keymod) {
-      FindPokedRenderer(Interactor->GetEventPosition()[0],
-                        Interactor->GetEventPosition()[1]);
+      FindPokedRenderer (Interactor->GetEventPosition()[0],
+                         Interactor->GetEventPosition()[1]);
       if (CurrentRenderer) {
         CurrentRenderer->ResetCamera();
         CurrentRenderer->Render();
       }
       else {
-        PCL_WARN("no current renderer on the interactor style.\n");
+        PCL_WARN ("no current renderer on the interactor style.\n");
       }
       break;
     }
@@ -1104,25 +1113,25 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown()
     // point.
     if (found_transformation) {
       const CloudActor& actor = it->second;
-      cam->SetPosition(actor.viewpoint_transformation_->GetElement(0, 3),
-                       actor.viewpoint_transformation_->GetElement(1, 3),
-                       actor.viewpoint_transformation_->GetElement(2, 3));
+      cam->SetPosition (actor.viewpoint_transformation_->GetElement (0, 3),
+                        actor.viewpoint_transformation_->GetElement (1, 3),
+                        actor.viewpoint_transformation_->GetElement (2, 3));
 
-      cam->SetFocalPoint(actor.viewpoint_transformation_->GetElement(0, 3) -
-                             actor.viewpoint_transformation_->GetElement(0, 2),
-                         actor.viewpoint_transformation_->GetElement(1, 3) -
-                             actor.viewpoint_transformation_->GetElement(1, 2),
-                         actor.viewpoint_transformation_->GetElement(2, 3) -
-                             actor.viewpoint_transformation_->GetElement(2, 2));
+      cam->SetFocalPoint (actor.viewpoint_transformation_->GetElement (0, 3) -
+                              actor.viewpoint_transformation_->GetElement (0, 2),
+                          actor.viewpoint_transformation_->GetElement (1, 3) -
+                              actor.viewpoint_transformation_->GetElement (1, 2),
+                          actor.viewpoint_transformation_->GetElement (2, 3) -
+                              actor.viewpoint_transformation_->GetElement (2, 2));
 
-      cam->SetViewUp(actor.viewpoint_transformation_->GetElement(0, 1),
-                     actor.viewpoint_transformation_->GetElement(1, 1),
-                     actor.viewpoint_transformation_->GetElement(2, 1));
+      cam->SetViewUp (actor.viewpoint_transformation_->GetElement (0, 1),
+                      actor.viewpoint_transformation_->GetElement (1, 1),
+                      actor.viewpoint_transformation_->GetElement (2, 1));
     }
     else {
-      cam->SetPosition(0, 0, 0);
-      cam->SetFocalPoint(0, 0, 1);
-      cam->SetViewUp(0, -1, 0);
+      cam->SetPosition (0, 0, 0);
+      cam->SetFocalPoint (0, 0, 1);
+      cam->SetViewUp (0, -1, 0);
     }
 
     // go to the next actor for the next key-press event.
@@ -1131,7 +1140,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown()
     else
       it = cloud_actors_->begin();
 
-    CurrentRenderer->SetActiveCamera(cam);
+    CurrentRenderer->SetActiveCamera (cam);
     CurrentRenderer->ResetCameraClippingRange();
     CurrentRenderer->Render();
     break;
@@ -1142,15 +1151,15 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown()
     CurrentMode = (CurrentMode == ORIENT_MODE) ? SELECT_MODE : ORIENT_MODE;
     if (CurrentMode == SELECT_MODE) {
       // Save the point picker
-      point_picker_ = dynamic_cast<vtkPointPicker*>(Interactor->GetPicker());
+      point_picker_ = dynamic_cast<vtkPointPicker*> (Interactor->GetPicker());
       // Switch for an area picker
       vtkSmartPointer<vtkAreaPicker> area_picker =
           vtkSmartPointer<vtkAreaPicker>::New();
-      Interactor->SetPicker(area_picker);
+      Interactor->SetPicker (area_picker);
     }
     else {
       // Restore point picker
-      Interactor->SetPicker(point_picker_);
+      Interactor->SetPicker (point_picker_);
     }
     break;
   }
@@ -1166,13 +1175,13 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown()
   }
   }
 
-  KeyboardEvent event(true,
-                      Interactor->GetKeySym(),
-                      Interactor->GetKeyCode(),
-                      Interactor->GetAltKey(),
-                      Interactor->GetControlKey(),
-                      Interactor->GetShiftKey());
-  keyboard_signal_(event);
+  KeyboardEvent event (true,
+                       Interactor->GetKeySym(),
+                       Interactor->GetKeyCode(),
+                       Interactor->GetAltKey(),
+                       Interactor->GetControlKey(),
+                       Interactor->GetShiftKey());
+  keyboard_signal_ (event);
 
   rens_->Render();
   Interactor->Render();
@@ -1181,7 +1190,8 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown()
 //////////////////////////////////////////////////////////////////////////////////////////////
 // Update the look up table displayed when 'u' is pressed
 void
-pcl::visualization::PCLVisualizerInteractorStyle::updateLookUpTableDisplay(bool add_lut)
+pcl::visualization::PCLVisualizerInteractorStyle::updateLookUpTableDisplay (
+    bool add_lut)
 {
   bool actor_found = false;
 
@@ -1191,14 +1201,14 @@ pcl::visualization::PCLVisualizerInteractorStyle::updateLookUpTableDisplay(bool 
   if (!lut_actor_id_
            .empty()) // Search if provided actor id is in CloudActorMap or ShapeActorMap
   {
-    auto am_it = cloud_actors_->find(lut_actor_id_);
+    auto am_it = cloud_actors_->find (lut_actor_id_);
     if (am_it == cloud_actors_->end()) {
-      auto sm_it = shape_actors_->find(lut_actor_id_);
+      auto sm_it = shape_actors_->find (lut_actor_id_);
       if (sm_it == shape_actors_->end()) {
-        PCL_WARN("[updateLookUpTableDisplay] Could not find any actor with id <%s>!\n",
-                 lut_actor_id_.c_str());
+        PCL_WARN ("[updateLookUpTableDisplay] Could not find any actor with id <%s>!\n",
+                  lut_actor_id_.c_str());
         if (lut_enabled_) { // Remove LUT and exit
-          CurrentRenderer->RemoveActor(lut_actor_);
+          CurrentRenderer->RemoveActor (lut_actor_);
           lut_enabled_ = false;
         }
         return;
@@ -1206,19 +1216,19 @@ pcl::visualization::PCLVisualizerInteractorStyle::updateLookUpTableDisplay(bool 
 
       // ShapeActor found
       vtkSmartPointer<vtkProp>* act = &(*sm_it).second;
-      vtkSmartPointer<vtkActor> actor = vtkActor::SafeDownCast(*act);
+      vtkSmartPointer<vtkActor> actor = vtkActor::SafeDownCast (*act);
       if (!actor || !actor->GetMapper()->GetInput()->GetPointData()->GetScalars()) {
-        PCL_WARN(
+        PCL_WARN (
             "[updateLookUpTableDisplay] id <%s> does not hold any color information!\n",
             lut_actor_id_.c_str());
         if (lut_enabled_) { // Remove LUT and exit
-          CurrentRenderer->RemoveActor(lut_actor_);
+          CurrentRenderer->RemoveActor (lut_actor_);
           lut_enabled_ = false;
         }
         return;
       }
 
-      lut_actor_->SetLookupTable(actor->GetMapper()->GetLookupTable());
+      lut_actor_->SetLookupTable (actor->GetMapper()->GetLookupTable());
       lut_actor_->Modified();
       actor_found = true;
     }
@@ -1227,18 +1237,18 @@ pcl::visualization::PCLVisualizerInteractorStyle::updateLookUpTableDisplay(bool 
       CloudActor* act = &(*am_it).second;
       if (!act->actor->GetMapper()->GetLookupTable() &&
           !act->actor->GetMapper()->GetInput()->GetPointData()->GetScalars()) {
-        PCL_WARN(
+        PCL_WARN (
             "[updateLookUpTableDisplay] id <%s> does not hold any color information!\n",
             lut_actor_id_.c_str());
         if (lut_enabled_) { // Remove LUT and exit
-          CurrentRenderer->RemoveActor(lut_actor_);
+          CurrentRenderer->RemoveActor (lut_actor_);
           lut_enabled_ = false;
         }
         return;
       }
 
       vtkScalarsToColors* lut = act->actor->GetMapper()->GetLookupTable();
-      lut_actor_->SetLookupTable(lut);
+      lut_actor_->SetLookupTable (lut);
       lut_actor_->Modified();
       actor_found = true;
     }
@@ -1256,7 +1266,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::updateLookUpTableDisplay(bool 
         continue;
 
       vtkScalarsToColors* lut = act.actor->GetMapper()->GetLookupTable();
-      lut_actor_->SetLookupTable(lut);
+      lut_actor_->SetLookupTable (lut);
       lut_actor_->Modified();
       actor_found = true;
       break;
@@ -1265,7 +1275,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::updateLookUpTableDisplay(bool 
     if (!actor_found) {
       for (const auto& shape_actor : *shape_actors_) {
         const vtkSmartPointer<vtkProp>* act = &shape_actor.second;
-        const vtkSmartPointer<vtkActor> actor = vtkActor::SafeDownCast(*act);
+        const vtkSmartPointer<vtkActor> actor = vtkActor::SafeDownCast (*act);
         if (!actor)
           continue;
 
@@ -1274,7 +1284,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::updateLookUpTableDisplay(bool 
                  ->GetPointData()
                  ->GetScalars()) // Check if actor has scalars
           continue;
-        lut_actor_->SetLookupTable(actor->GetMapper()->GetLookupTable());
+        lut_actor_->SetLookupTable (actor->GetMapper()->GetLookupTable());
         lut_actor_->Modified();
         actor_found = true;
         break;
@@ -1284,19 +1294,19 @@ pcl::visualization::PCLVisualizerInteractorStyle::updateLookUpTableDisplay(bool 
 
   if ((!actor_found && lut_enabled_) || (lut_enabled_ && add_lut)) // Remove actor
   {
-    CurrentRenderer->RemoveActor(lut_actor_);
+    CurrentRenderer->RemoveActor (lut_actor_);
     lut_enabled_ = false;
   }
   else if (!lut_enabled_ && add_lut && actor_found) // Add actor
   {
-    CurrentRenderer->AddActor(lut_actor_);
-    lut_actor_->SetVisibility(true);
+    CurrentRenderer->AddActor (lut_actor_);
+    lut_actor_->SetVisibility (true);
     lut_enabled_ = true;
   }
   else if (lut_enabled_) // Update actor (if displayed)
   {
-    CurrentRenderer->RemoveActor(lut_actor_);
-    CurrentRenderer->AddActor(lut_actor_);
+    CurrentRenderer->RemoveActor (lut_actor_);
+    CurrentRenderer->AddActor (lut_actor_);
   }
   else
     return;
@@ -1309,13 +1319,13 @@ pcl::visualization::PCLVisualizerInteractorStyle::updateLookUpTableDisplay(bool 
 void
 pcl::visualization::PCLVisualizerInteractorStyle::OnKeyUp()
 {
-  KeyboardEvent event(false,
-                      Interactor->GetKeySym(),
-                      Interactor->GetKeyCode(),
-                      Interactor->GetAltKey(),
-                      Interactor->GetControlKey(),
-                      Interactor->GetShiftKey());
-  keyboard_signal_(event);
+  KeyboardEvent event (false,
+                       Interactor->GetKeySym(),
+                       Interactor->GetKeyCode(),
+                       Interactor->GetAltKey(),
+                       Interactor->GetControlKey(),
+                       Interactor->GetShiftKey());
+  keyboard_signal_ (event);
   Superclass::OnKeyUp();
 }
 
@@ -1325,15 +1335,15 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnMouseMove()
 {
   int x = this->Interactor->GetEventPosition()[0];
   int y = this->Interactor->GetEventPosition()[1];
-  MouseEvent event(MouseEvent::MouseMove,
-                   MouseEvent::NoButton,
-                   x,
-                   y,
-                   Interactor->GetAltKey(),
-                   Interactor->GetControlKey(),
-                   Interactor->GetShiftKey(),
-                   Superclass::CurrentMode);
-  mouse_signal_(event);
+  MouseEvent event (MouseEvent::MouseMove,
+                    MouseEvent::NoButton,
+                    x,
+                    y,
+                    Interactor->GetAltKey(),
+                    Interactor->GetControlKey(),
+                    Interactor->GetShiftKey(),
+                    Superclass::CurrentMode);
+  mouse_signal_ (event);
   Superclass::OnMouseMove();
 }
 
@@ -1346,26 +1356,26 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnLeftButtonDown()
   int y = this->Interactor->GetEventPosition()[1];
 
   if (Interactor->GetRepeatCount() == 0) {
-    MouseEvent event(MouseEvent::MouseButtonPress,
-                     MouseEvent::LeftButton,
-                     x,
-                     y,
-                     Interactor->GetAltKey(),
-                     Interactor->GetControlKey(),
-                     Interactor->GetShiftKey(),
-                     Superclass::CurrentMode);
-    mouse_signal_(event);
+    MouseEvent event (MouseEvent::MouseButtonPress,
+                      MouseEvent::LeftButton,
+                      x,
+                      y,
+                      Interactor->GetAltKey(),
+                      Interactor->GetControlKey(),
+                      Interactor->GetShiftKey(),
+                      Superclass::CurrentMode);
+    mouse_signal_ (event);
   }
   else {
-    MouseEvent event(MouseEvent::MouseDblClick,
-                     MouseEvent::LeftButton,
-                     x,
-                     y,
-                     Interactor->GetAltKey(),
-                     Interactor->GetControlKey(),
-                     Interactor->GetShiftKey(),
-                     Superclass::CurrentMode);
-    mouse_signal_(event);
+    MouseEvent event (MouseEvent::MouseDblClick,
+                      MouseEvent::LeftButton,
+                      x,
+                      y,
+                      Interactor->GetAltKey(),
+                      Interactor->GetControlKey(),
+                      Interactor->GetShiftKey(),
+                      Superclass::CurrentMode);
+    mouse_signal_ (event);
   }
   Superclass::OnLeftButtonDown();
 }
@@ -1376,15 +1386,15 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnLeftButtonUp()
 {
   int x = this->Interactor->GetEventPosition()[0];
   int y = this->Interactor->GetEventPosition()[1];
-  MouseEvent event(MouseEvent::MouseButtonRelease,
-                   MouseEvent::LeftButton,
-                   x,
-                   y,
-                   Interactor->GetAltKey(),
-                   Interactor->GetControlKey(),
-                   Interactor->GetShiftKey(),
-                   Superclass::CurrentMode);
-  mouse_signal_(event);
+  MouseEvent event (MouseEvent::MouseButtonRelease,
+                    MouseEvent::LeftButton,
+                    x,
+                    y,
+                    Interactor->GetAltKey(),
+                    Interactor->GetControlKey(),
+                    Interactor->GetShiftKey(),
+                    Superclass::CurrentMode);
+  mouse_signal_ (event);
   Superclass::OnLeftButtonUp();
 }
 
@@ -1395,26 +1405,26 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnMiddleButtonDown()
   int x = this->Interactor->GetEventPosition()[0];
   int y = this->Interactor->GetEventPosition()[1];
   if (Interactor->GetRepeatCount() == 0) {
-    MouseEvent event(MouseEvent::MouseButtonPress,
-                     MouseEvent::MiddleButton,
-                     x,
-                     y,
-                     Interactor->GetAltKey(),
-                     Interactor->GetControlKey(),
-                     Interactor->GetShiftKey(),
-                     Superclass::CurrentMode);
-    mouse_signal_(event);
+    MouseEvent event (MouseEvent::MouseButtonPress,
+                      MouseEvent::MiddleButton,
+                      x,
+                      y,
+                      Interactor->GetAltKey(),
+                      Interactor->GetControlKey(),
+                      Interactor->GetShiftKey(),
+                      Superclass::CurrentMode);
+    mouse_signal_ (event);
   }
   else {
-    MouseEvent event(MouseEvent::MouseDblClick,
-                     MouseEvent::MiddleButton,
-                     x,
-                     y,
-                     Interactor->GetAltKey(),
-                     Interactor->GetControlKey(),
-                     Interactor->GetShiftKey(),
-                     Superclass::CurrentMode);
-    mouse_signal_(event);
+    MouseEvent event (MouseEvent::MouseDblClick,
+                      MouseEvent::MiddleButton,
+                      x,
+                      y,
+                      Interactor->GetAltKey(),
+                      Interactor->GetControlKey(),
+                      Interactor->GetShiftKey(),
+                      Superclass::CurrentMode);
+    mouse_signal_ (event);
   }
   Superclass::OnMiddleButtonDown();
 }
@@ -1425,15 +1435,15 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnMiddleButtonUp()
 {
   int x = this->Interactor->GetEventPosition()[0];
   int y = this->Interactor->GetEventPosition()[1];
-  MouseEvent event(MouseEvent::MouseButtonRelease,
-                   MouseEvent::MiddleButton,
-                   x,
-                   y,
-                   Interactor->GetAltKey(),
-                   Interactor->GetControlKey(),
-                   Interactor->GetShiftKey(),
-                   Superclass::CurrentMode);
-  mouse_signal_(event);
+  MouseEvent event (MouseEvent::MouseButtonRelease,
+                    MouseEvent::MiddleButton,
+                    x,
+                    y,
+                    Interactor->GetAltKey(),
+                    Interactor->GetControlKey(),
+                    Interactor->GetShiftKey(),
+                    Superclass::CurrentMode);
+  mouse_signal_ (event);
   Superclass::OnMiddleButtonUp();
 }
 
@@ -1444,26 +1454,26 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnRightButtonDown()
   int x = this->Interactor->GetEventPosition()[0];
   int y = this->Interactor->GetEventPosition()[1];
   if (Interactor->GetRepeatCount() == 0) {
-    MouseEvent event(MouseEvent::MouseButtonPress,
-                     MouseEvent::RightButton,
-                     x,
-                     y,
-                     Interactor->GetAltKey(),
-                     Interactor->GetControlKey(),
-                     Interactor->GetShiftKey(),
-                     Superclass::CurrentMode);
-    mouse_signal_(event);
+    MouseEvent event (MouseEvent::MouseButtonPress,
+                      MouseEvent::RightButton,
+                      x,
+                      y,
+                      Interactor->GetAltKey(),
+                      Interactor->GetControlKey(),
+                      Interactor->GetShiftKey(),
+                      Superclass::CurrentMode);
+    mouse_signal_ (event);
   }
   else {
-    MouseEvent event(MouseEvent::MouseDblClick,
-                     MouseEvent::RightButton,
-                     x,
-                     y,
-                     Interactor->GetAltKey(),
-                     Interactor->GetControlKey(),
-                     Interactor->GetShiftKey(),
-                     Superclass::CurrentMode);
-    mouse_signal_(event);
+    MouseEvent event (MouseEvent::MouseDblClick,
+                      MouseEvent::RightButton,
+                      x,
+                      y,
+                      Interactor->GetAltKey(),
+                      Interactor->GetControlKey(),
+                      Interactor->GetShiftKey(),
+                      Superclass::CurrentMode);
+    mouse_signal_ (event);
   }
   Superclass::OnRightButtonDown();
 }
@@ -1474,15 +1484,15 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnRightButtonUp()
 {
   int x = this->Interactor->GetEventPosition()[0];
   int y = this->Interactor->GetEventPosition()[1];
-  MouseEvent event(MouseEvent::MouseButtonRelease,
-                   MouseEvent::RightButton,
-                   x,
-                   y,
-                   Interactor->GetAltKey(),
-                   Interactor->GetControlKey(),
-                   Interactor->GetShiftKey(),
-                   Superclass::CurrentMode);
-  mouse_signal_(event);
+  MouseEvent event (MouseEvent::MouseButtonRelease,
+                    MouseEvent::RightButton,
+                    x,
+                    y,
+                    Interactor->GetAltKey(),
+                    Interactor->GetControlKey(),
+                    Interactor->GetShiftKey(),
+                    Superclass::CurrentMode);
+  mouse_signal_ (event);
   Superclass::OnRightButtonUp();
 }
 
@@ -1492,17 +1502,17 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnMouseWheelForward()
 {
   int x = this->Interactor->GetEventPosition()[0];
   int y = this->Interactor->GetEventPosition()[1];
-  MouseEvent event(MouseEvent::MouseScrollUp,
-                   MouseEvent::VScroll,
-                   x,
-                   y,
-                   Interactor->GetAltKey(),
-                   Interactor->GetControlKey(),
-                   Interactor->GetShiftKey(),
-                   Superclass::CurrentMode);
-  mouse_signal_(event);
+  MouseEvent event (MouseEvent::MouseScrollUp,
+                    MouseEvent::VScroll,
+                    x,
+                    y,
+                    Interactor->GetAltKey(),
+                    Interactor->GetControlKey(),
+                    Interactor->GetShiftKey(),
+                    Superclass::CurrentMode);
+  mouse_signal_ (event);
   if (Interactor->GetRepeatCount())
-    mouse_signal_(event);
+    mouse_signal_ (event);
 
   if (Interactor->GetAltKey()) {
     // zoom
@@ -1511,9 +1521,9 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnMouseWheelForward()
     if (opening_angle > 15.0)
       opening_angle -= 1.0;
 
-    cam->SetViewAngle(opening_angle);
+    cam->SetViewAngle (opening_angle);
     cam->Modified();
-    CurrentRenderer->SetActiveCamera(cam);
+    CurrentRenderer->SetActiveCamera (cam);
     CurrentRenderer->ResetCameraClippingRange();
     CurrentRenderer->Modified();
     CurrentRenderer->Render();
@@ -1530,17 +1540,17 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnMouseWheelBackward()
 {
   int x = this->Interactor->GetEventPosition()[0];
   int y = this->Interactor->GetEventPosition()[1];
-  MouseEvent event(MouseEvent::MouseScrollDown,
-                   MouseEvent::VScroll,
-                   x,
-                   y,
-                   Interactor->GetAltKey(),
-                   Interactor->GetControlKey(),
-                   Interactor->GetShiftKey(),
-                   Superclass::CurrentMode);
-  mouse_signal_(event);
+  MouseEvent event (MouseEvent::MouseScrollDown,
+                    MouseEvent::VScroll,
+                    x,
+                    y,
+                    Interactor->GetAltKey(),
+                    Interactor->GetControlKey(),
+                    Interactor->GetShiftKey(),
+                    Superclass::CurrentMode);
+  mouse_signal_ (event);
   if (Interactor->GetRepeatCount())
-    mouse_signal_(event);
+    mouse_signal_ (event);
 
   if (Interactor->GetAltKey()) {
     // zoom
@@ -1549,9 +1559,9 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnMouseWheelBackward()
     if (opening_angle < 170.0)
       opening_angle += 1.0;
 
-    cam->SetViewAngle(opening_angle);
+    cam->SetViewAngle (opening_angle);
     cam->Modified();
-    CurrentRenderer->SetActiveCamera(cam);
+    CurrentRenderer->SetActiveCamera (cam);
     CurrentRenderer->ResetCameraClippingRange();
     CurrentRenderer->Modified();
     CurrentRenderer->Render();
@@ -1567,14 +1577,14 @@ void
 pcl::visualization::PCLVisualizerInteractorStyle::OnTimer()
 {
   if (!init_) {
-    pcl::console::print_error(
+    pcl::console::print_error (
         "[PCLVisualizerInteractorStyle] Interactor style not initialized. Please call "
         "Initialize () before continuing.\n");
     return;
   }
 
   if (!rens_) {
-    pcl::console::print_error(
+    pcl::console::print_error (
         "[PCLVisualizerInteractorStyle] No renderer collection given! Use "
         "SetRendererCollection () before continuing.\n");
     return;
@@ -1596,14 +1606,14 @@ void
 pcl::visualization::PCLHistogramVisualizerInteractorStyle::OnKeyDown()
 {
   if (!init_) {
-    pcl::console::print_error(
+    pcl::console::print_error (
         "[PCLHistogramVisualizerInteractorStyle] Interactor style not initialized. "
         "Please call Initialize () before continuing.\n");
     return;
   }
 
-  FindPokedRenderer(Interactor->GetEventPosition()[0],
-                    Interactor->GetEventPosition()[1]);
+  FindPokedRenderer (Interactor->GetEventPosition()[0],
+                     Interactor->GetEventPosition()[1]);
 
   // fprintf (stderr, "Key sym: %s\n", Interactor->GetKeySym ());
   //  ---[ Check the rest of the key codes
@@ -1626,7 +1636,7 @@ void
 pcl::visualization::PCLHistogramVisualizerInteractorStyle::OnTimer()
 {
   if (!init_) {
-    pcl::console::print_error(
+    pcl::console::print_error (
         "[PCLHistogramVisualizerInteractorStyle] Interactor style not initialized. "
         "Please call Initialize () before continuing.\n");
     return;
@@ -1639,7 +1649,7 @@ pcl::visualization::PCLHistogramVisualizerInteractorStyle::OnTimer()
 namespace pcl {
 namespace visualization {
 // Standard VTK macro for *New ()
-vtkStandardNewMacro(PCLVisualizerInteractorStyle);
-vtkStandardNewMacro(PCLHistogramVisualizerInteractorStyle);
+vtkStandardNewMacro (PCLVisualizerInteractorStyle);
+vtkStandardNewMacro (PCLHistogramVisualizerInteractorStyle);
 } // namespace visualization
 } // namespace pcl

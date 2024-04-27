@@ -29,11 +29,11 @@ ON_SimpleFixedSizePool<T>::~ON_SimpleFixedSizePool()
 
 template <class T>
 bool
-ON_SimpleFixedSizePool<T>::Create(std::size_t element_count_estimate,
-                                  std::size_t block_element_count)
+ON_SimpleFixedSizePool<T>::Create (std::size_t element_count_estimate,
+                                   std::size_t block_element_count)
 {
-  return ON_FixedSizePool::Create(
-      sizeof(T), element_count_estimate, block_element_count);
+  return ON_FixedSizePool::Create (
+      sizeof (T), element_count_estimate, block_element_count);
 }
 
 template <class T>
@@ -52,9 +52,9 @@ ON_SimpleFixedSizePool<T>::AllocateElement()
 
 template <class T>
 void
-ON_SimpleFixedSizePool<T>::ReturnElement(T* p)
+ON_SimpleFixedSizePool<T>::ReturnElement (T* p)
 {
-  ON_FixedSizePool::ReturnElement(p);
+  ON_FixedSizePool::ReturnElement (p);
 }
 
 template <class T>
@@ -101,30 +101,30 @@ ON_SimpleFixedSizePool<T>::NextElement()
 
 template <class T>
 T*
-ON_SimpleFixedSizePool<T>::FirstBlock(std::size_t* block_element_count)
+ON_SimpleFixedSizePool<T>::FirstBlock (std::size_t* block_element_count)
 {
-  return (T*)ON_FixedSizePool::FirstBlock(block_element_count);
+  return (T*)ON_FixedSizePool::FirstBlock (block_element_count);
 }
 
 template <class T>
 T*
-ON_SimpleFixedSizePool<T>::NextBlock(std::size_t* block_element_count)
+ON_SimpleFixedSizePool<T>::NextBlock (std::size_t* block_element_count)
 {
-  return (T*)ON_FixedSizePool::NextBlock(block_element_count);
+  return (T*)ON_FixedSizePool::NextBlock (block_element_count);
 }
 
 template <class T>
 T*
-ON_SimpleFixedSizePool<T>::Element(std::size_t element_index) const
+ON_SimpleFixedSizePool<T>::Element (std::size_t element_index) const
 {
-  return (T*)ON_FixedSizePool::Element(element_index);
+  return (T*)ON_FixedSizePool::Element (element_index);
 }
 
 template <class T>
 void
-ON_SimpleFixedSizePool<T>::SetHeap(ON_MEMORY_POOL* heap)
+ON_SimpleFixedSizePool<T>::SetHeap (ON_MEMORY_POOL* heap)
 {
-  ON_FixedSizePool::SetHeap(heap);
+  ON_FixedSizePool::SetHeap (heap);
 }
 
 template <class T>

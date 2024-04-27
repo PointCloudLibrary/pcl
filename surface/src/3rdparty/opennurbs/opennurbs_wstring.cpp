@@ -42,9 +42,9 @@ w2c_size (int w_count, const wchar_t* w)
   int rc = 0;
   if (w) {
     unsigned int error_status = 0;
-    rc = ON_ConvertWideCharToUTF8(false, w, w_count, 0, 0, &error_status, 0, 0, 0);
+    rc = ON_ConvertWideCharToUTF8 (false, w, w_count, 0, 0, &error_status, 0, 0, 0);
     if (error_status) {
-      ON_ERROR("Wide char string is not valid.");
+      ON_ERROR ("Wide char string is not valid.");
     }
     if (rc < 0)
       rc = 0;
@@ -71,18 +71,19 @@ w2c (int w_count,
       unsigned int error_mask = 0xFFFFFFFF;
       ON__UINT32 error_code_point = 0xFFFD;
       const wchar_t* p1 = 0;
-      rc = ON_ConvertWideCharToUTF8(false,
-                                    w,
-                                    w_count,
-                                    c,
-                                    c_count,
-                                    &error_status,
-                                    error_mask,
-                                    error_code_point,
-                                    &p1);
+      rc = ON_ConvertWideCharToUTF8 (false,
+                                     w,
+                                     w_count,
+                                     c,
+                                     c_count,
+                                     &error_status,
+                                     error_mask,
+                                     error_code_point,
+                                     &p1);
       if (error_status) {
-        ON_ERROR("Error converting UTF-16 encoded wchar_t string to UTF-8 encoded char "
-                 "string.");
+        ON_ERROR (
+            "Error converting UTF-16 encoded wchar_t string to UTF-8 encoded char "
+            "string.");
       }
       if (rc > 0 && rc <= c_count)
         c[rc] = 0;
@@ -125,7 +126,7 @@ c2w (int c_count,
       unsigned int error_mask = 0xFFFFFFFF;
       ON__UINT32 error_code_point = 0xFFFD;
       const char* p1 = 0;
-      rc = ON_ConvertUTF8ToWideChar(
+      rc = ON_ConvertUTF8ToWideChar (
           c, c_count, w, w_count, &error_status, error_mask, error_code_point, &p1);
       if (rc > 0 && rc <= w_count)
         w[rc] = 0;
@@ -134,8 +135,9 @@ c2w (int c_count,
         rc = 0;
       }
       if (0 != error_status) {
-        ON_ERROR("Error converting UTF-8 encoded char string to UTF-16 encoded wchar_t "
-                 "string.");
+        ON_ERROR (
+            "Error converting UTF-8 encoded char string to UTF-16 encoded wchar_t "
+            "string.");
       }
     }
   }
@@ -143,17 +145,17 @@ c2w (int c_count,
 }
 
 void
-ON_String::CopyToArray(int w_count, const wchar_t* w)
+ON_String::CopyToArray (int w_count, const wchar_t* w)
 {
   // if sizeof(wchar_t) is 2, this converts a UTF-16 string to UTF-8 string
   // if sizeof(wchar_t) is 4, this converts a UTF-32 string to UTF-8 string
-  int c_count = w2c_size(w_count, w);
-  char* c = (char*)onmalloc(c_count + 1);
-  memset(c, 0, c_count + 1);
-  const int c_length = w2c(w_count, w, c_count, c);
+  int c_count = w2c_size (w_count, w);
+  char* c = (char*)onmalloc (c_count + 1);
+  memset (c, 0, c_count + 1);
+  const int c_length = w2c (w_count, w, c_count, c);
   c[c_length] = 0;
-  CopyToArray(c_count, c);
-  onfree(c);
+  CopyToArray (c_count, c);
+  onfree (c);
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -198,17 +200,17 @@ ON_wString::Header() const
 }
 
 void
-ON_wString::CreateArray(int capacity)
+ON_wString::CreateArray (int capacity)
 {
   Destroy();
   if (capacity > 0) {
-    ON_wStringHeader* p = (ON_wStringHeader*)onmalloc(sizeof(ON_wStringHeader) +
-                                                      (capacity + 1) * sizeof(*m_s));
+    ON_wStringHeader* p = (ON_wStringHeader*)onmalloc (sizeof (ON_wStringHeader) +
+                                                       (capacity + 1) * sizeof (*m_s));
     p->ref_count = 1;
     p->string_length = 0;
     p->string_capacity = capacity;
     m_s = p->string_array();
-    memset(m_s, 0, (capacity + 1) * sizeof(*m_s));
+    memset (m_s, 0, (capacity + 1) * sizeof (*m_s));
   }
 }
 
@@ -219,7 +221,7 @@ ON_wString::Destroy()
   if (p != pEmptyStringHeader && p->ref_count > 0) {
     p->ref_count--;
     if (p->ref_count == 0)
-      onfree(p);
+      onfree (p);
   }
   Create();
 }
@@ -242,7 +244,7 @@ ON_wString::Empty()
     }
     else {
       // should not happen
-      ON_ERROR("ON_wString::Empty() encountered invalid header - fixed.");
+      ON_ERROR ("ON_wString::Empty() encountered invalid header - fixed.");
       Create();
     }
   }
@@ -259,7 +261,7 @@ ON_wString::EmergencyDestroy()
 }
 
 void
-ON_wString::EnableReferenceCounting(bool)
+ON_wString::EnableReferenceCounting (bool)
 {
   // TODO fill this in;
 }
@@ -283,7 +285,7 @@ ON_wString::CopyArray()
     // will happen.
     Destroy();
     Create();
-    CopyToArray(p->string_capacity, s);
+    CopyToArray (p->string_capacity, s);
     if (p->string_length < p->string_capacity) {
       Header()->string_length = p->string_length;
     }
@@ -291,29 +293,29 @@ ON_wString::CopyArray()
 }
 
 void
-ON_wString::ReserveArray(std::size_t array_capacity)
+ON_wString::ReserveArray (std::size_t array_capacity)
 {
   ON_wStringHeader* p = Header();
   const int capacity = (int)array_capacity; // for 64 bit compiler
   if (p == pEmptyStringHeader) {
-    CreateArray(capacity);
+    CreateArray (capacity);
   }
   else if (p->ref_count > 1) {
-    CreateArray(capacity);
+    CreateArray (capacity);
     ON_wStringHeader* p1 = Header();
     const int size = (capacity < p->string_length) ? capacity : p->string_length;
     if (size > 0) {
-      memcpy(p1->string_array(), p->string_array(), size * sizeof(*m_s));
+      memcpy (p1->string_array(), p->string_array(), size * sizeof (*m_s));
       p1->string_length = size;
     }
   }
   else if (capacity > p->string_capacity) {
-    p = (ON_wStringHeader*)onrealloc(
-        p, sizeof(ON_wStringHeader) + (capacity + 1) * sizeof(*m_s));
+    p = (ON_wStringHeader*)onrealloc (
+        p, sizeof (ON_wStringHeader) + (capacity + 1) * sizeof (*m_s));
     m_s = p->string_array();
-    memset(&m_s[p->string_capacity],
-           0,
-           (1 + capacity - p->string_capacity) * sizeof(*m_s));
+    memset (&m_s[p->string_capacity],
+            0,
+            (1 + capacity - p->string_capacity) * sizeof (*m_s));
     p->string_capacity = capacity;
   }
 }
@@ -328,16 +330,16 @@ ON_wString::ShrinkArray()
     }
     else if (p->ref_count > 1) {
       // shared string
-      CreateArray(p->string_length);
+      CreateArray (p->string_length);
       ON_wStringHeader* p1 = Header();
-      memcpy(m_s, p->string_array(), p->string_length * sizeof(*m_s));
+      memcpy (m_s, p->string_array(), p->string_length * sizeof (*m_s));
       p1->string_length = p->string_length;
       m_s[p1->string_length] = 0;
     }
     else if (p->string_length < p->string_capacity) {
       // onrealloc string
-      p = (ON_wStringHeader*)onrealloc(
-          p, sizeof(ON_wStringHeader) + (p->string_length + 1) * sizeof(*m_s));
+      p = (ON_wStringHeader*)onrealloc (
+          p, sizeof (ON_wStringHeader) + (p->string_length + 1) * sizeof (*m_s));
       p->string_capacity = p->string_length;
       m_s = p->string_array();
       m_s[p->string_length] = 0;
@@ -346,17 +348,17 @@ ON_wString::ShrinkArray()
 }
 
 void
-ON_wString::CopyToArray(const ON_wString& s)
+ON_wString::CopyToArray (const ON_wString& s)
 {
-  CopyToArray(s.Length(), s.Array());
+  CopyToArray (s.Length(), s.Array());
 }
 
 void
-ON_wString::CopyToArray(int size, const char* s)
+ON_wString::CopyToArray (int size, const char* s)
 {
   if (size > 0 && s && s[0]) {
-    ReserveArray(size);
-    Header()->string_length = c2w(size, s, Header()->string_capacity, m_s);
+    ReserveArray (size);
+    Header()->string_length = c2w (size, s, Header()->string_capacity, m_s);
     m_s[Header()->string_length] = 0;
   }
   else {
@@ -370,17 +372,17 @@ ON_wString::CopyToArray(int size, const char* s)
 }
 
 void
-ON_wString::CopyToArray(int size, const unsigned char* s)
+ON_wString::CopyToArray (int size, const unsigned char* s)
 {
-  CopyToArray(size, ((char*)s));
+  CopyToArray (size, ((char*)s));
 }
 
 void
-ON_wString::CopyToArray(int size, const wchar_t* s)
+ON_wString::CopyToArray (int size, const wchar_t* s)
 {
   if (size > 0 && s && s[0]) {
-    ReserveArray(size);
-    memcpy(m_s, s, size * sizeof(*m_s));
+    ReserveArray (size);
+    memcpy (m_s, s, size * sizeof (*m_s));
     Header()->string_length = size;
     m_s[Header()->string_length] = 0;
   }
@@ -395,45 +397,45 @@ ON_wString::CopyToArray(int size, const wchar_t* s)
 }
 
 void
-ON_wString::AppendToArray(const ON_wString& s)
+ON_wString::AppendToArray (const ON_wString& s)
 {
-  AppendToArray(s.Length(), s.Array());
+  AppendToArray (s.Length(), s.Array());
 }
 
 void
-ON_wString::AppendToArray(int size, const char* s)
+ON_wString::AppendToArray (int size, const char* s)
 {
   if (size > 0 && s && s[0]) {
-    ReserveArray(size + Header()->string_length);
-    Header()->string_length += c2w(size,
-                                   s,
-                                   Header()->string_capacity - Header()->string_length,
-                                   &m_s[Header()->string_length]);
+    ReserveArray (size + Header()->string_length);
+    Header()->string_length += c2w (size,
+                                    s,
+                                    Header()->string_capacity - Header()->string_length,
+                                    &m_s[Header()->string_length]);
     m_s[Header()->string_length] = 0;
   }
 }
 
 void
-ON_wString::AppendToArray(int size, const unsigned char* s)
+ON_wString::AppendToArray (int size, const unsigned char* s)
 {
-  AppendToArray(size, ((char*)s));
+  AppendToArray (size, ((char*)s));
 }
 
 void
-ON_wString::AppendToArray(int size, const wchar_t* s)
+ON_wString::AppendToArray (int size, const wchar_t* s)
 {
   if (size > 0 && s && s[0]) {
-    ReserveArray(size + Header()->string_length);
-    memcpy(&m_s[Header()->string_length], s, size * sizeof(*m_s));
+    ReserveArray (size + Header()->string_length);
+    memcpy (&m_s[Header()->string_length], s, size * sizeof (*m_s));
     Header()->string_length += size;
     m_s[Header()->string_length] = 0;
   }
 }
 
 int
-ON_wString::Length(const char* s)
+ON_wString::Length (const char* s)
 {
-  std::size_t slen = s ? strlen(s) : 0;
+  std::size_t slen = s ? strlen (s) : 0;
   int n = ((0 < slen && slen <= 2147483645)
                ? ((int)slen)
                : 0); // the (int) cast is for 64 bit std::size_t conversion
@@ -441,15 +443,15 @@ ON_wString::Length(const char* s)
 }
 
 int
-ON_wString::Length(const unsigned char* s)
+ON_wString::Length (const unsigned char* s)
 {
-  return ON_wString::Length((const char*)s);
+  return ON_wString::Length ((const char*)s);
 }
 
 int
-ON_wString::Length(const wchar_t* s)
+ON_wString::Length (const wchar_t* s)
 {
-  std::size_t slen = s ? wcslen(s) : 0;
+  std::size_t slen = s ? wcslen (s) : 0;
   int n = ((0 < slen && slen <= 2147483645)
                ? ((int)slen)
                : 0); // the (int) cast is for 64 bit std::size_t conversion
@@ -463,7 +465,7 @@ ON_wString::ON_wString() { Create(); }
 
 ON_wString::~ON_wString() { Destroy(); }
 
-ON_wString::ON_wString(const ON_wString& src)
+ON_wString::ON_wString (const ON_wString& src)
 {
   if (src.Header()->ref_count > 0 && 0 == ON_WorkerMemoryPool()) {
     m_s = src.m_s;
@@ -475,95 +477,95 @@ ON_wString::ON_wString(const ON_wString& src)
   }
 }
 
-ON_wString::ON_wString(const ON_String& src)
+ON_wString::ON_wString (const ON_String& src)
 {
   Create();
   *this = src;
 }
 
-ON_wString::ON_wString(const char* s)
+ON_wString::ON_wString (const char* s)
 {
   Create();
   if (s && s[0]) {
-    CopyToArray((int)strlen(s), s); // the (int) is for 64 bit std::size_t conversion
+    CopyToArray ((int)strlen (s), s); // the (int) is for 64 bit std::size_t conversion
   }
 }
 
-ON_wString::ON_wString(const char* s, int length)
+ON_wString::ON_wString (const char* s, int length)
 {
   Create();
   if (s && length > 0) {
-    CopyToArray(length, s);
+    CopyToArray (length, s);
   }
 }
 
-ON_wString::ON_wString(char c, int repeat_count)
+ON_wString::ON_wString (char c, int repeat_count)
 {
   Create();
   if (repeat_count > 0) {
-    char* s = (char*)onmalloc((repeat_count + 1) * sizeof(*s));
+    char* s = (char*)onmalloc ((repeat_count + 1) * sizeof (*s));
     s[repeat_count] = 0;
-    memset(s, c, repeat_count * sizeof(*s));
-    CopyToArray(repeat_count, s);
-    onfree(s);
+    memset (s, c, repeat_count * sizeof (*s));
+    CopyToArray (repeat_count, s);
+    onfree (s);
     m_s[repeat_count] = 0;
     Header()->string_length = repeat_count;
   }
 }
 
-ON_wString::ON_wString(const unsigned char* s)
+ON_wString::ON_wString (const unsigned char* s)
 {
   Create();
   if (s && s[0]) {
-    CopyToArray((int)strlen((const char*)s),
-                (const char*)s); // the (int) is for 64 bit std::size_t conversion
+    CopyToArray ((int)strlen ((const char*)s),
+                 (const char*)s); // the (int) is for 64 bit std::size_t conversion
   }
 }
 
-ON_wString::ON_wString(const unsigned char* s, int length)
+ON_wString::ON_wString (const unsigned char* s, int length)
 {
   Create();
   if (s && length > 0) {
-    CopyToArray(length, s);
+    CopyToArray (length, s);
   }
 }
 
-ON_wString::ON_wString(unsigned char c, int repeat_count)
+ON_wString::ON_wString (unsigned char c, int repeat_count)
 {
   Create();
   if (repeat_count > 0) {
-    char* s = (char*)onmalloc((repeat_count + 1) * sizeof(*s));
+    char* s = (char*)onmalloc ((repeat_count + 1) * sizeof (*s));
     s[repeat_count] = 0;
-    memset(s, c, repeat_count * sizeof(*s));
-    CopyToArray(repeat_count, s);
-    onfree(s);
+    memset (s, c, repeat_count * sizeof (*s));
+    CopyToArray (repeat_count, s);
+    onfree (s);
     m_s[repeat_count] = 0;
     Header()->string_length = repeat_count;
   }
 }
 
-ON_wString::ON_wString(const wchar_t* s)
+ON_wString::ON_wString (const wchar_t* s)
 {
   Create();
   if (s && s[0]) {
-    CopyToArray((int)wcslen(s), s); // the (int) is for 64 bit std::size_t conversion
+    CopyToArray ((int)wcslen (s), s); // the (int) is for 64 bit std::size_t conversion
   }
 }
 
-ON_wString::ON_wString(const wchar_t* s, int length)
+ON_wString::ON_wString (const wchar_t* s, int length)
 {
   Create();
   if (s && length > 0) {
-    CopyToArray(length, s);
+    CopyToArray (length, s);
   }
 }
 
-ON_wString::ON_wString(wchar_t c, int repeat_count)
+ON_wString::ON_wString (wchar_t c, int repeat_count)
 {
   int i;
   Create();
   if (repeat_count > 0) {
-    ReserveArray(repeat_count);
+    ReserveArray (repeat_count);
     for (i = 0; i < repeat_count; i++)
       m_s[i] = c;
     m_s[repeat_count] = 0;
@@ -573,16 +575,16 @@ ON_wString::ON_wString(wchar_t c, int repeat_count)
 
 #if defined(ON_OS_WINDOWS)
 bool
-ON_wString::LoadResourceString(HINSTANCE instance, UINT id)
+ON_wString::LoadResourceString (HINSTANCE instance, UINT id)
 {
   bool rc = false;
   wchar_t s[2048]; // room for 2047 characters
   int length;
 
   Destroy();
-  length = ::LoadStringW(instance, id, s, 2047);
+  length = ::LoadStringW (instance, id, s, 2047);
   if (length > 0 && length < 2048) {
-    CopyToArray(length, s);
+    CopyToArray (length, s);
     rc = true;
   }
   return rc;
@@ -596,14 +598,14 @@ ON_wString::Length() const
 }
 
 wchar_t&
-ON_wString::operator[](int i)
+ON_wString::operator[] (int i)
 {
   CopyArray();
   return m_s[i];
 }
 
 wchar_t
-ON_wString::operator[](int i) const
+ON_wString::operator[] (int i) const
 {
   return m_s[i];
 }
@@ -615,7 +617,7 @@ ON_wString::IsEmpty() const
 }
 
 const ON_wString&
-ON_wString::operator=(const ON_wString& src)
+ON_wString::operator= (const ON_wString& src)
 {
   if (m_s != src.m_s) {
     if (src.IsEmpty()) {
@@ -628,8 +630,8 @@ ON_wString::operator=(const ON_wString& src)
       m_s = src.m_s;
     }
     else {
-      ReserveArray(src.Length());
-      memcpy(m_s, src.Array(), src.Length() * sizeof(*m_s));
+      ReserveArray (src.Length());
+      memcpy (m_s, src.Array(), src.Length() * sizeof (*m_s));
       Header()->string_length = src.Length();
     }
   }
@@ -637,118 +639,118 @@ ON_wString::operator=(const ON_wString& src)
 }
 
 const ON_wString&
-ON_wString::operator=(const ON_String& src)
+ON_wString::operator= (const ON_String& src)
 {
   *this = src.Array();
   return *this;
 }
 
 const ON_wString&
-ON_wString::operator=(char c)
+ON_wString::operator= (char c)
 {
-  CopyToArray(1, &c);
+  CopyToArray (1, &c);
   return *this;
 }
 
 const ON_wString&
-ON_wString::operator=(const char* s)
+ON_wString::operator= (const char* s)
 {
   if ((void*)s != (void*)m_s)
-    CopyToArray(Length(s), s);
+    CopyToArray (Length (s), s);
   return *this;
 }
 
 const ON_wString&
-ON_wString::operator=(unsigned char c)
+ON_wString::operator= (unsigned char c)
 {
-  CopyToArray(1, &c);
+  CopyToArray (1, &c);
   return *this;
 }
 
 const ON_wString&
-ON_wString::operator=(const unsigned char* s)
+ON_wString::operator= (const unsigned char* s)
 {
   if ((void*)s != (void*)m_s)
-    CopyToArray(Length(s), s);
+    CopyToArray (Length (s), s);
   return *this;
 }
 
 const ON_wString&
-ON_wString::operator=(wchar_t c)
+ON_wString::operator= (wchar_t c)
 {
-  CopyToArray(1, &c);
+  CopyToArray (1, &c);
   return *this;
 }
 
 const ON_wString&
-ON_wString::operator=(const wchar_t* s)
+ON_wString::operator= (const wchar_t* s)
 {
   if ((void*)s != (void*)m_s)
-    CopyToArray(Length(s), s);
+    CopyToArray (Length (s), s);
   return *this;
 }
 
 ON_wString
-ON_wString::operator+(const ON_wString& s2) const
+ON_wString::operator+ (const ON_wString& s2) const
 {
-  ON_wString s(*this);
-  s.AppendToArray(s2);
+  ON_wString s (*this);
+  s.AppendToArray (s2);
   return s;
 }
 
 ON_wString
-ON_wString::operator+(const ON_String& s2) const
+ON_wString::operator+ (const ON_String& s2) const
 {
-  ON_wString s(*this);
-  s.AppendToArray(s2.Length(), s2.Array());
+  ON_wString s (*this);
+  s.AppendToArray (s2.Length(), s2.Array());
   return s;
 }
 
 ON_wString
-ON_wString::operator+(char s2) const
+ON_wString::operator+ (char s2) const
 {
-  ON_wString s(*this);
-  s.AppendToArray(1, &s2);
+  ON_wString s (*this);
+  s.AppendToArray (1, &s2);
   return s;
 }
 
 ON_wString
-ON_wString::operator+(unsigned char s2) const
+ON_wString::operator+ (unsigned char s2) const
 {
-  ON_wString s(*this);
-  s.AppendToArray(1, &s2);
+  ON_wString s (*this);
+  s.AppendToArray (1, &s2);
   return s;
 }
 
 ON_wString
-ON_wString::operator+(wchar_t s2) const
+ON_wString::operator+ (wchar_t s2) const
 {
-  ON_wString s(*this);
-  s.AppendToArray(1, &s2);
+  ON_wString s (*this);
+  s.AppendToArray (1, &s2);
   return s;
 }
 
 ON_wString
-ON_wString::operator+(const char* s2) const
+ON_wString::operator+ (const char* s2) const
 {
-  ON_wString s(*this);
-  s.AppendToArray(ON_wString::Length(s2), s2);
+  ON_wString s (*this);
+  s.AppendToArray (ON_wString::Length (s2), s2);
   return s;
 }
 
 ON_wString
-ON_wString::operator+(const unsigned char* s2) const
+ON_wString::operator+ (const unsigned char* s2) const
 {
-  ON_wString s(*this);
-  s.AppendToArray(ON_wString::Length(s2), s2);
+  ON_wString s (*this);
+  s.AppendToArray (ON_wString::Length (s2), s2);
   return s;
 }
 
 ON_wString
-ON_wString::operator+(const wchar_t* s2) const
+ON_wString::operator+ (const wchar_t* s2) const
 {
-  ON_wString s(*this);
-  s.AppendToArray(ON_wString::Length(s2), s2);
+  ON_wString s (*this);
+  s.AppendToArray (ON_wString::Length (s2), s2);
   return s;
 }
 
@@ -756,91 +758,91 @@ ON_wString::operator+(const wchar_t* s2) const
 // operator+=()
 
 void
-ON_wString::Append(const char* s, int count)
+ON_wString::Append (const char* s, int count)
 {
   // append specified number of characters
   if (s && count > 0)
-    AppendToArray(count, s);
+    AppendToArray (count, s);
 }
 
 void
-ON_wString::Append(const unsigned char* s, int count)
+ON_wString::Append (const unsigned char* s, int count)
 {
   // append specified number of characters
   if (s && count > 0)
-    AppendToArray(count, s);
+    AppendToArray (count, s);
 }
 
 void
-ON_wString::Append(const wchar_t* s, int count)
+ON_wString::Append (const wchar_t* s, int count)
 {
   // append specified number of characters
   if (s && count > 0)
-    AppendToArray(count, s);
+    AppendToArray (count, s);
 }
 
 const ON_wString&
-ON_wString::operator+=(const ON_wString& s)
+ON_wString::operator+= (const ON_wString& s)
 {
-  AppendToArray(s);
+  AppendToArray (s);
   return *this;
 }
 
 const ON_wString&
-ON_wString::operator+=(const ON_String& s)
+ON_wString::operator+= (const ON_String& s)
 {
-  AppendToArray(s.Length(), s.Array());
+  AppendToArray (s.Length(), s.Array());
   return *this;
 }
 
 const ON_wString&
-ON_wString::operator+=(char s)
+ON_wString::operator+= (char s)
 {
-  AppendToArray(1, &s);
+  AppendToArray (1, &s);
   return *this;
 }
 
 const ON_wString&
-ON_wString::operator+=(unsigned char s)
+ON_wString::operator+= (unsigned char s)
 {
-  AppendToArray(1, &s);
+  AppendToArray (1, &s);
   return *this;
 }
 
 const ON_wString&
-ON_wString::operator+=(wchar_t s)
+ON_wString::operator+= (wchar_t s)
 {
-  AppendToArray(1, &s);
+  AppendToArray (1, &s);
   return *this;
 }
 
 const ON_wString&
-ON_wString::operator+=(const char* s)
+ON_wString::operator+= (const char* s)
 {
-  AppendToArray(Length(s), s);
+  AppendToArray (Length (s), s);
   return *this;
 }
 
 const ON_wString&
-ON_wString::operator+=(const unsigned char* s)
+ON_wString::operator+= (const unsigned char* s)
 {
-  AppendToArray(Length(s), s);
+  AppendToArray (Length (s), s);
   return *this;
 }
 
 const ON_wString&
-ON_wString::operator+=(const wchar_t* s)
+ON_wString::operator+= (const wchar_t* s)
 {
-  AppendToArray(Length(s), s);
+  AppendToArray (Length (s), s);
   return *this;
 }
 
 void
-ON_wString::SetLength(std::size_t string_length)
+ON_wString::SetLength (std::size_t string_length)
 {
   int length = (int)string_length; // for 64 bit compilers
   if (length >= Header()->string_capacity) {
-    ReserveArray(length);
+    ReserveArray (length);
   }
   if (length >= 0 && length <= Header()->string_capacity) {
     CopyArray();
@@ -870,37 +872,38 @@ Returns:
 unsigned int
 ON_wString::SizeOf() const
 {
-  std::size_t sz = sizeof(*this);
+  std::size_t sz = sizeof (*this);
   if (((const void*)m_s) != ((const void*)pEmptywString))
-    sz +=
-        (sizeof(ON_wStringHeader) + sizeof(wchar_t) * (Header()->string_capacity + 1));
+    sz += (sizeof (ON_wStringHeader) +
+           sizeof (wchar_t) * (Header()->string_capacity + 1));
   return ((unsigned int)sz);
 }
 
 ON__UINT32
-ON_wString::DataCRC(ON__UINT32 current_remainder) const
+ON_wString::DataCRC (ON__UINT32 current_remainder) const
 {
   int string_length = Header()->string_length;
   if (string_length > 0) {
-    current_remainder = ON_CRC32(current_remainder, string_length * sizeof(*m_s), m_s);
+    current_remainder =
+        ON_CRC32 (current_remainder, string_length * sizeof (*m_s), m_s);
   }
   return current_remainder;
 }
 
 ON__UINT32
-ON_wString::DataCRCLower(ON__UINT32 current_remainder) const
+ON_wString::DataCRCLower (ON__UINT32 current_remainder) const
 {
   int string_length = Header()->string_length;
   if (string_length > 0) {
-    ON_wString s(*this);
+    ON_wString s (*this);
     s.MakeLower();
-    current_remainder = s.DataCRC(current_remainder);
+    current_remainder = s.DataCRC (current_remainder);
   }
   return current_remainder;
 }
 
 int
-ON_wString::Compare(const char* s) const
+ON_wString::Compare (const char* s) const
 {
   int rc = 0;
   if (s && s[0]) {
@@ -908,12 +911,12 @@ ON_wString::Compare(const char* s) const
       rc = -1;
     }
     else {
-      int c_count = w2c_size(Length(m_s), m_s);
-      char* c = (char*)onmalloc((c_count + 1) * sizeof(*c));
-      w2c(Length(m_s), m_s, c_count, c);
+      int c_count = w2c_size (Length (m_s), m_s);
+      char* c = (char*)onmalloc ((c_count + 1) * sizeof (*c));
+      w2c (Length (m_s), m_s, c_count, c);
       c[c_count] = 0;
-      rc = strcmp(c, s);
-      onfree(c);
+      rc = strcmp (c, s);
+      onfree (c);
     }
   }
   else {
@@ -923,13 +926,13 @@ ON_wString::Compare(const char* s) const
 }
 
 int
-ON_wString::Compare(const unsigned char* s) const
+ON_wString::Compare (const unsigned char* s) const
 {
-  return ON_wString::Compare((const char*)s);
+  return ON_wString::Compare ((const char*)s);
 }
 
 int
-ON_wString::Compare(const wchar_t* s) const
+ON_wString::Compare (const wchar_t* s) const
 {
   int rc = 0;
   if (s && s[0]) {
@@ -937,7 +940,7 @@ ON_wString::Compare(const wchar_t* s) const
       rc = -1;
     }
     else {
-      rc = wcscmp(m_s, s);
+      rc = wcscmp (m_s, s);
     }
   }
   else {
@@ -947,7 +950,7 @@ ON_wString::Compare(const wchar_t* s) const
 }
 
 int
-ON_wString::CompareNoCase(const char* s) const
+ON_wString::CompareNoCase (const char* s) const
 {
   int rc = 0;
   if (s && s[0]) {
@@ -955,12 +958,12 @@ ON_wString::CompareNoCase(const char* s) const
       rc = -1;
     }
     else {
-      int c_count = w2c_size(Length(m_s), m_s);
-      char* c = (char*)onmalloc((c_count + 1) * sizeof(*c));
-      w2c(Length(m_s), m_s, c_count, c);
+      int c_count = w2c_size (Length (m_s), m_s);
+      char* c = (char*)onmalloc ((c_count + 1) * sizeof (*c));
+      w2c (Length (m_s), m_s, c_count, c);
       c[c_count] = 0;
-      rc = on_stricmp(c, s);
-      onfree(c);
+      rc = on_stricmp (c, s);
+      onfree (c);
     }
   }
   else {
@@ -970,13 +973,13 @@ ON_wString::CompareNoCase(const char* s) const
 }
 
 int
-ON_wString::CompareNoCase(const unsigned char* s) const
+ON_wString::CompareNoCase (const unsigned char* s) const
 {
-  return ON_wString::CompareNoCase((const char*)s);
+  return ON_wString::CompareNoCase ((const char*)s);
 }
 
 int
-ON_wString::CompareNoCase(const wchar_t* s) const
+ON_wString::CompareNoCase (const wchar_t* s) const
 {
   int rc = 0;
   if (s && s[0]) {
@@ -984,7 +987,7 @@ ON_wString::CompareNoCase(const wchar_t* s) const
       rc = -1;
     }
     else {
-      rc = on_wcsicmp(m_s, s);
+      rc = on_wcsicmp (m_s, s);
     }
   }
   else {
@@ -1009,7 +1012,7 @@ ON_WildCardMatch (const wchar_t* s, const wchar_t* pattern)
       return true;
 
     while (*s) {
-      if (ON_WildCardMatch(s, pattern))
+      if (ON_WildCardMatch (s, pattern))
         return true;
       s++;
     }
@@ -1046,7 +1049,7 @@ ON_WildCardMatch (const wchar_t* s, const wchar_t* pattern)
     s++;
   }
 
-  return ON_WildCardMatch(s, pattern);
+  return ON_WildCardMatch (s, pattern);
 }
 
 bool
@@ -1065,7 +1068,7 @@ ON_WildCardMatchNoCase (const wchar_t* s, const wchar_t* pattern)
       return true;
 
     while (*s) {
-      if (ON_WildCardMatchNoCase(s, pattern))
+      if (ON_WildCardMatchNoCase (s, pattern))
         return true;
       s++;
     }
@@ -1091,7 +1094,7 @@ ON_WildCardMatchNoCase (const wchar_t* s, const wchar_t* pattern)
         break;
       }
     }
-    if (towupper(*pattern) != towupper(*s)) {
+    if (towupper (*pattern) != towupper (*s)) {
       return false;
     }
 
@@ -1102,19 +1105,19 @@ ON_WildCardMatchNoCase (const wchar_t* s, const wchar_t* pattern)
     s++;
   }
 
-  return ON_WildCardMatchNoCase(s, pattern);
+  return ON_WildCardMatchNoCase (s, pattern);
 }
 
 bool
-ON_wString::WildCardMatch(const wchar_t* pattern) const
+ON_wString::WildCardMatch (const wchar_t* pattern) const
 {
-  return ON_WildCardMatch(m_s, pattern);
+  return ON_WildCardMatch (m_s, pattern);
 }
 
 bool
-ON_wString::WildCardMatchNoCase(const wchar_t* pattern) const
+ON_wString::WildCardMatchNoCase (const wchar_t* pattern) const
 {
-  return ON_WildCardMatchNoCase(m_s, pattern);
+  return ON_WildCardMatchNoCase (m_s, pattern);
 }
 
 /*
@@ -1206,29 +1209,29 @@ chars)\n",str.Array(),repcount,replen);
 */
 
 int
-ON_wString::Replace(const wchar_t* token1, const wchar_t* token2)
+ON_wString::Replace (const wchar_t* token1, const wchar_t* token2)
 {
   int count = 0;
 
   if (0 != token1 && 0 != token1[0]) {
     if (0 == token2)
       token2 = L"";
-    const int len1 = (int)wcslen(token1);
+    const int len1 = (int)wcslen (token1);
     if (len1 > 0) {
-      const int len2 = (int)wcslen(token2);
+      const int len2 = (int)wcslen (token2);
       int len = Length();
       if (len >= len1) {
         // in-place
-        ON_SimpleArray<int> n(32);
+        ON_SimpleArray<int> n (32);
         const wchar_t* s = m_s;
         int i;
         for (i = 0; i <= len - len1; /*empty*/) {
-          if (wcsncmp(s, token1, len1)) {
+          if (wcsncmp (s, token1, len1)) {
             s++;
             i++;
           }
           else {
-            n.Append(i);
+            n.Append (i);
             i += len1;
             s += len1;
           }
@@ -1252,7 +1255,7 @@ ON_wString::Replace(const wchar_t* token1, const wchar_t* token2)
         //    but when newlen < len and the string had multiple
         //    references, the ReserveArray(newlen) call truncated
         //    the input array.
-        ReserveArray((newlen < len) ? len : newlen);
+        ReserveArray ((newlen < len) ? len : newlen);
 
         int i0, i1, ni, j;
 
@@ -1271,16 +1274,16 @@ ON_wString::Replace(const wchar_t* token1, const wchar_t* token2)
             }
             i1 -= len2;
             i0 -= len1;
-            memcpy(&m_s[i1], token2, len2 * sizeof(m_s[0]));
+            memcpy (&m_s[i1], token2, len2 * sizeof (m_s[0]));
           }
         }
         else {
           // copy from front to back
           i0 = i1 = n[0];
-          n.Append(len);
+          n.Append (len);
           for (ni = 0; ni < count; ni++) {
             if (len2 > 0) {
-              memcpy(&m_s[i1], token2, len2 * sizeof(m_s[0]));
+              memcpy (&m_s[i1], token2, len2 * sizeof (m_s[0]));
               i1 += len2;
             }
             i0 += len1;
@@ -1300,7 +1303,7 @@ ON_wString::Replace(const wchar_t* token1, const wchar_t* token2)
 }
 
 int
-ON_wString::Replace(wchar_t token1, wchar_t token2)
+ON_wString::Replace (wchar_t token1, wchar_t token2)
 {
   int count = 0;
   int i = Length();
@@ -1352,9 +1355,9 @@ ON_wString::UrlEncode()
 
     // convert this character to %xx
     if (!s1) {
-      buffer = (wchar_t*)onmalloc((count * 3 + 1) * sizeof(buffer[0]));
+      buffer = (wchar_t*)onmalloc ((count * 3 + 1) * sizeof (buffer[0]));
       if (i > 0)
-        memcpy(buffer, Array(), i * sizeof(buffer[0]));
+        memcpy (buffer, Array(), i * sizeof (buffer[0]));
       s1 = buffer + i;
     }
     c0 = ((c / 16) % 16) + '0';
@@ -1370,7 +1373,7 @@ ON_wString::UrlEncode()
   if (s1) {
     *s1 = 0;
     *this = buffer;
-    onfree(buffer);
+    onfree (buffer);
   }
 }
 
@@ -1468,7 +1471,7 @@ ON_wString::UrlDecode()
     c = *s0++;
     if (0 == c)
       break;
-    if (i >= 3 && '%' == c && UrlDecodeHelper(s0)) {
+    if (i >= 3 && '%' == c && UrlDecodeHelper (s0)) {
       s0++;
       *s1++ = *s0++;
       i -= 2;
@@ -1476,11 +1479,11 @@ ON_wString::UrlDecode()
     else {
       *s1++ = c;
       if (rc)
-        rc = IsValidUrlChar(c);
+        rc = IsValidUrlChar (c);
     }
   }
   *s1 = 0;
-  SetLength(s1 - Array());
+  SetLength (s1 - Array());
   return rc;
 }
 
@@ -1495,7 +1498,7 @@ IsWhiteSpaceHelper (wchar_t c, const wchar_t* whitespace)
 }
 
 int
-ON_wString::ReplaceWhiteSpace(wchar_t token, const wchar_t* whitespace)
+ON_wString::ReplaceWhiteSpace (wchar_t token, const wchar_t* whitespace)
 {
   wchar_t* s0;
   wchar_t* s1;
@@ -1507,7 +1510,7 @@ ON_wString::ReplaceWhiteSpace(wchar_t token, const wchar_t* whitespace)
   s1 = s0 + Length();
   if (whitespace && *whitespace) {
     while (s0 < s1) {
-      if (IsWhiteSpaceHelper(*s0++, whitespace)) {
+      if (IsWhiteSpaceHelper (*s0++, whitespace)) {
         // need to modify this string
         n = ((int)(s0 - m_s)); // keep win64 happy with (int) cast
         CopyArray();           // may change m_s if string has multiple refs
@@ -1516,7 +1519,7 @@ ON_wString::ReplaceWhiteSpace(wchar_t token, const wchar_t* whitespace)
         s0[-1] = token;
         n = 1;
         while (s0 < s1) {
-          if (IsWhiteSpaceHelper(*s0++, whitespace)) {
+          if (IsWhiteSpaceHelper (*s0++, whitespace)) {
             s0[-1] = token;
             n++;
           }
@@ -1551,7 +1554,7 @@ ON_wString::ReplaceWhiteSpace(wchar_t token, const wchar_t* whitespace)
 }
 
 int
-ON_wString::RemoveWhiteSpace(const wchar_t* whitespace)
+ON_wString::RemoveWhiteSpace (const wchar_t* whitespace)
 {
   wchar_t* s0;
   wchar_t* s1;
@@ -1564,7 +1567,7 @@ ON_wString::RemoveWhiteSpace(const wchar_t* whitespace)
   s1 = s0 + Length();
   if (whitespace && *whitespace) {
     while (s0 < s1) {
-      if (IsWhiteSpaceHelper(*s0++, whitespace)) {
+      if (IsWhiteSpaceHelper (*s0++, whitespace)) {
         // need to modify this string
         n = ((int)(s0 - m_s)); // keep win64 happy with (int) cast
         CopyArray();           // may change m_s if string has multiple refs
@@ -1572,7 +1575,7 @@ ON_wString::RemoveWhiteSpace(const wchar_t* whitespace)
         s = s0 - 1;
         s1 = m_s + Length();
         while (s0 < s1) {
-          if (!IsWhiteSpaceHelper(*s0, whitespace)) {
+          if (!IsWhiteSpaceHelper (*s0, whitespace)) {
             *s++ = *s0;
           }
           s0++;
@@ -1619,47 +1622,47 @@ ON_wString::operator const wchar_t*() const
 }
 
 int
-ON_wString::Find(char c) const
+ON_wString::Find (char c) const
 {
   // find first single character
   char s[2];
   s[0] = c;
   s[1] = 0;
-  return Find(s);
+  return Find (s);
 }
 
 int
-ON_wString::Find(unsigned char c) const
+ON_wString::Find (unsigned char c) const
 {
-  return Find((char)c);
+  return Find ((char)c);
 }
 
 int
-ON_wString::Find(wchar_t c) const
+ON_wString::Find (wchar_t c) const
 {
   // find first single character
   wchar_t s[2];
   s[0] = c;
   s[1] = 0;
-  return Find(s);
+  return Find (s);
 }
 
 int
-ON_wString::ReverseFind(char c) const
+ON_wString::ReverseFind (char c) const
 {
-  wchar_t w = c2w(c);
-  return ReverseFind(w);
+  wchar_t w = c2w (c);
+  return ReverseFind (w);
 }
 
 int
-ON_wString::ReverseFind(unsigned char c) const
+ON_wString::ReverseFind (unsigned char c) const
 {
-  wchar_t w = c2w((char)c);
-  return ReverseFind(w);
+  wchar_t w = c2w ((char)c);
+  return ReverseFind (w);
 }
 
 int
-ON_wString::ReverseFind(wchar_t c) const
+ON_wString::ReverseFind (wchar_t c) const
 {
   // find first single character
   if (IsEmpty())
@@ -1674,37 +1677,37 @@ ON_wString::ReverseFind(wchar_t c) const
 }
 
 int
-ON_wString::Find(const char* s) const
+ON_wString::Find (const char* s) const
 {
   int rc = -1;
   if (s && s[0] && !IsEmpty()) {
     const int s_count =
-        (int)strlen(s); // the (int) is for 64 bit std::size_t conversion
-    wchar_t* w = (wchar_t*)onmalloc((s_count + 2) * sizeof(w[0]));
-    c2w(s_count, s, s_count + 1, w);
+        (int)strlen (s); // the (int) is for 64 bit std::size_t conversion
+    wchar_t* w = (wchar_t*)onmalloc ((s_count + 2) * sizeof (w[0]));
+    c2w (s_count, s, s_count + 1, w);
     const wchar_t* p;
-    p = wcsstr(m_s, w);
+    p = wcsstr (m_s, w);
     if (p) {
       rc = ((int)(p - m_s)); // the (int) cast is for 64 bit compilers
     }
-    onfree(w);
+    onfree (w);
   }
   return rc;
 }
 
 int
-ON_wString::Find(const unsigned char* s) const
+ON_wString::Find (const unsigned char* s) const
 {
-  return Find((const char*)s);
+  return Find ((const char*)s);
 }
 
 int
-ON_wString::Find(const wchar_t* s) const
+ON_wString::Find (const wchar_t* s) const
 {
   int rc = -1;
   if (s && s[0] && !IsEmpty()) {
     const wchar_t* p;
-    p = wcsstr(m_s, s);
+    p = wcsstr (m_s, s);
     if (p) {
       rc = ((int)(p - m_s)); // the (int) is for 64 bit std::size_t conversion
     }
@@ -1717,12 +1720,12 @@ ON_wString::MakeReverse()
 {
   if (!IsEmpty()) {
     CopyArray();
-    on_wcsrev(m_s);
+    on_wcsrev (m_s);
   }
 }
 
 void
-ON_wString::TrimLeft(const wchar_t* s)
+ON_wString::TrimLeft (const wchar_t* s)
 {
   wchar_t c;
   const wchar_t* sc;
@@ -1755,7 +1758,7 @@ ON_wString::TrimLeft(const wchar_t* s)
 }
 
 void
-ON_wString::TrimRight(const wchar_t* s)
+ON_wString::TrimRight (const wchar_t* s)
 {
   wchar_t c;
   const wchar_t* sc;
@@ -1782,14 +1785,14 @@ ON_wString::TrimRight(const wchar_t* s)
 }
 
 void
-ON_wString::TrimLeftAndRight(const wchar_t* s)
+ON_wString::TrimLeftAndRight (const wchar_t* s)
 {
-  TrimRight(s);
-  TrimLeft(s);
+  TrimRight (s);
+  TrimLeft (s);
 }
 
 int
-ON_wString::Remove(wchar_t c)
+ON_wString::Remove (wchar_t c)
 {
   wchar_t* s0;
   wchar_t* s1;
@@ -1823,28 +1826,28 @@ ON_wString::Remove(wchar_t c)
 }
 
 wchar_t
-ON_wString::GetAt(int i) const
+ON_wString::GetAt (int i) const
 {
   return m_s[i];
 }
 
 void
-ON_wString::SetAt(int i, char c)
+ON_wString::SetAt (int i, char c)
 {
   if (i >= 0 && i < Header()->string_length) {
     CopyArray();
-    m_s[i] = c2w(c);
+    m_s[i] = c2w (c);
   }
 }
 
 void
-ON_wString::SetAt(int i, unsigned char c)
+ON_wString::SetAt (int i, unsigned char c)
 {
-  SetAt(i, (char)c);
+  SetAt (i, (char)c);
 }
 
 void
-ON_wString::SetAt(int i, wchar_t c)
+ON_wString::SetAt (int i, wchar_t c)
 {
   if (i >= 0 && i < Header()->string_length) {
     CopyArray();
@@ -1853,221 +1856,221 @@ ON_wString::SetAt(int i, wchar_t c)
 }
 
 ON_wString
-ON_wString::Mid(int i, int count) const
+ON_wString::Mid (int i, int count) const
 {
   ON_wString s;
   if (i >= 0 && i < Length() && count > 0) {
     if (count > Length() - i)
       count = Length() - i;
-    s.CopyToArray(count, &m_s[i]);
+    s.CopyToArray (count, &m_s[i]);
   }
   return s;
 }
 
 ON_wString
-ON_wString::Mid(int i) const
+ON_wString::Mid (int i) const
 {
-  return Mid(i, Length() - i);
+  return Mid (i, Length() - i);
 }
 
 ON_wString
-ON_wString::Left(int count) const
+ON_wString::Left (int count) const
 {
   ON_wString s;
   if (count > Length())
     count = Length();
   if (count > 0) {
-    s.CopyToArray(count, m_s);
+    s.CopyToArray (count, m_s);
   }
   return s;
 }
 
 ON_wString
-ON_wString::Right(int count) const
+ON_wString::Right (int count) const
 {
   ON_wString s;
   if (count > Length())
     count = Length();
   if (count > 0) {
-    s.CopyToArray(count, &m_s[Length() - count]);
+    s.CopyToArray (count, &m_s[Length() - count]);
   }
   return s;
 }
 
 void ON_MSC_CDECL
-ON_wString::Format(const char* sFormat, ...)
+ON_wString::Format (const char* sFormat, ...)
 {
 #define MAX_MSG_LENGTH 2048
   char sMessage[MAX_MSG_LENGTH];
   va_list args;
 
   /* put formatted message in sMessage */
-  memset(sMessage, 0, sizeof(sMessage));
+  memset (sMessage, 0, sizeof (sMessage));
   if (sFormat) {
-    va_start(args, sFormat);
-    on_vsnprintf(sMessage, MAX_MSG_LENGTH - 1, sFormat, args);
+    va_start (args, sFormat);
+    on_vsnprintf (sMessage, MAX_MSG_LENGTH - 1, sFormat, args);
     sMessage[MAX_MSG_LENGTH - 1] = 0;
-    va_end(args);
+    va_end (args);
   }
-  const int len = Length(sMessage);
+  const int len = Length (sMessage);
   if (len < 1) {
     Destroy();
     Create();
   }
   else {
-    ReserveArray(len);
-    CopyToArray(len, sMessage);
+    ReserveArray (len);
+    CopyToArray (len, sMessage);
   }
 }
 
 void ON_MSC_CDECL
-ON_wString::Format(const unsigned char* sFormat, ...)
+ON_wString::Format (const unsigned char* sFormat, ...)
 {
 #define MAX_MSG_LENGTH 2048
   char sMessage[MAX_MSG_LENGTH];
   va_list args;
 
   /* put formatted message in sMessage */
-  memset(sMessage, 0, sizeof(sMessage));
+  memset (sMessage, 0, sizeof (sMessage));
   if (sFormat) {
-    va_start(args, sFormat);
-    on_vsnprintf(sMessage, MAX_MSG_LENGTH - 1, (const char*)sFormat, args);
+    va_start (args, sFormat);
+    on_vsnprintf (sMessage, MAX_MSG_LENGTH - 1, (const char*)sFormat, args);
     sMessage[MAX_MSG_LENGTH - 1] = 0;
-    va_end(args);
+    va_end (args);
   }
-  const int len = Length(sMessage);
+  const int len = Length (sMessage);
   if (len < 1) {
     Destroy();
     Create();
   }
   else {
-    ReserveArray(len);
-    CopyToArray(len, sMessage);
+    ReserveArray (len);
+    CopyToArray (len, sMessage);
   }
 }
 
 void ON_MSC_CDECL
-ON_wString::Format(const wchar_t* sFormat, ...)
+ON_wString::Format (const wchar_t* sFormat, ...)
 {
 #define MAX_MSG_LENGTH 2048
   wchar_t sMessage[MAX_MSG_LENGTH];
   va_list args;
 
   /* put formatted message in sMessage */
-  memset(sMessage, 0, sizeof(sMessage));
+  memset (sMessage, 0, sizeof (sMessage));
   if (sFormat) {
-    va_start(args, sFormat);
-    on_vsnwprintf(sMessage, MAX_MSG_LENGTH - 1, sFormat, args);
+    va_start (args, sFormat);
+    on_vsnwprintf (sMessage, MAX_MSG_LENGTH - 1, sFormat, args);
     sMessage[MAX_MSG_LENGTH - 1] = 0;
-    va_end(args);
+    va_end (args);
   }
-  const int len = Length(sMessage);
+  const int len = Length (sMessage);
   if (len < 1) {
     Destroy();
     Create();
   }
   else {
-    ReserveArray(len);
-    CopyToArray(len, sMessage);
+    ReserveArray (len);
+    CopyToArray (len, sMessage);
   }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
 bool
-ON_wString::operator==(const ON_wString& s2) const
+ON_wString::operator== (const ON_wString& s2) const
 {
-  return (Compare(s2) == 0) ? true : false;
+  return (Compare (s2) == 0) ? true : false;
 }
 
 bool
-ON_wString::operator==(const wchar_t* s2) const
+ON_wString::operator== (const wchar_t* s2) const
 {
-  return (Compare(s2) == 0) ? true : false;
+  return (Compare (s2) == 0) ? true : false;
 }
 
 bool
-ON_wString::operator!=(const ON_wString& s2) const
+ON_wString::operator!= (const ON_wString& s2) const
 {
-  return (Compare(s2) != 0) ? true : false;
+  return (Compare (s2) != 0) ? true : false;
 }
 
 bool
-ON_wString::operator!=(const wchar_t* s2) const
+ON_wString::operator!= (const wchar_t* s2) const
 {
-  return (Compare(s2) != 0) ? true : false;
+  return (Compare (s2) != 0) ? true : false;
 }
 
 bool
-ON_wString::operator<(const ON_wString& s2) const
+ON_wString::operator< (const ON_wString& s2) const
 {
-  return (Compare(s2) < 0) ? true : false;
+  return (Compare (s2) < 0) ? true : false;
 }
 
 bool
-ON_wString::operator<(const wchar_t* s2) const
+ON_wString::operator< (const wchar_t* s2) const
 {
-  return (Compare(s2) < 0) ? true : false;
+  return (Compare (s2) < 0) ? true : false;
 }
 
 bool
-ON_wString::operator>(const ON_wString& s2) const
+ON_wString::operator> (const ON_wString& s2) const
 {
-  return (Compare(s2) > 0) ? true : false;
+  return (Compare (s2) > 0) ? true : false;
 }
 
 bool
-ON_wString::operator>(const wchar_t* s2) const
+ON_wString::operator> (const wchar_t* s2) const
 {
-  return (Compare(s2) > 0) ? true : false;
+  return (Compare (s2) > 0) ? true : false;
 }
 
 bool
-ON_wString::operator<=(const ON_wString& s2) const
+ON_wString::operator<= (const ON_wString& s2) const
 {
-  return (Compare(s2) <= 0) ? true : false;
+  return (Compare (s2) <= 0) ? true : false;
 }
 
 bool
-ON_wString::operator<=(const wchar_t* s2) const
+ON_wString::operator<= (const wchar_t* s2) const
 {
-  return (Compare(s2) <= 0) ? true : false;
+  return (Compare (s2) <= 0) ? true : false;
 }
 
 bool
-ON_wString::operator>=(const ON_wString& s2) const
+ON_wString::operator>= (const ON_wString& s2) const
 {
-  return (Compare(s2) >= 0) ? true : false;
+  return (Compare (s2) >= 0) ? true : false;
 }
 
 bool
-ON_wString::operator>=(const wchar_t* s2) const
+ON_wString::operator>= (const wchar_t* s2) const
 {
-  return (Compare(s2) >= 0) ? true : false;
+  return (Compare (s2) >= 0) ? true : false;
 }
 
 void
-ON_String::SplitPath(const char* path,
-                     ON_String* drive,
-                     ON_String* dir,
-                     ON_String* fname,
-                     ON_String* ext)
+ON_String::SplitPath (const char* path,
+                      ON_String* drive,
+                      ON_String* dir,
+                      ON_String* fname,
+                      ON_String* ext)
 {
   const char* dr = 0;
   const char* d = 0;
   const char* f = 0;
   const char* e = 0;
 
-  on_splitpath(path, &dr, &d, &f, &e);
+  on_splitpath (path, &dr, &d, &f, &e);
 
   if (0 != drive) {
     if (0 != dr) {
       if (0 != d)
-        drive->CopyToArray((int)(d - dr), dr);
+        drive->CopyToArray ((int)(d - dr), dr);
       else if (0 != f)
-        drive->CopyToArray((int)(f - dr), dr);
+        drive->CopyToArray ((int)(f - dr), dr);
       else if (0 != e)
-        drive->CopyToArray((int)(e - dr), dr);
+        drive->CopyToArray ((int)(e - dr), dr);
       else
         *drive = dr;
     }
@@ -2078,9 +2081,9 @@ ON_String::SplitPath(const char* path,
   if (0 != dir) {
     if (0 != d) {
       if (0 != f)
-        dir->CopyToArray((int)(f - d), d);
+        dir->CopyToArray ((int)(f - d), d);
       else if (0 != e)
-        dir->CopyToArray((int)(e - d), d);
+        dir->CopyToArray ((int)(e - d), d);
       else
         *dir = d;
     }
@@ -2091,7 +2094,7 @@ ON_String::SplitPath(const char* path,
   if (0 != fname) {
     if (0 != f) {
       if (0 != e)
-        fname->CopyToArray((int)(e - f), f);
+        fname->CopyToArray ((int)(e - f), f);
       else
         *fname = f;
     }
@@ -2105,27 +2108,27 @@ ON_String::SplitPath(const char* path,
 }
 
 void
-ON_wString::SplitPath(const char* path,
-                      ON_wString* drive,
-                      ON_wString* dir,
-                      ON_wString* fname,
-                      ON_wString* ext)
+ON_wString::SplitPath (const char* path,
+                       ON_wString* drive,
+                       ON_wString* dir,
+                       ON_wString* fname,
+                       ON_wString* ext)
 {
   const char* dr = 0;
   const char* d = 0;
   const char* f = 0;
   const char* e = 0;
 
-  on_splitpath(path, &dr, &d, &f, &e);
+  on_splitpath (path, &dr, &d, &f, &e);
 
   if (0 != drive) {
     if (0 != dr) {
       if (0 != d)
-        drive->CopyToArray((int)(d - dr), dr);
+        drive->CopyToArray ((int)(d - dr), dr);
       else if (0 != f)
-        drive->CopyToArray((int)(f - dr), dr);
+        drive->CopyToArray ((int)(f - dr), dr);
       else if (0 != e)
-        drive->CopyToArray((int)(e - dr), dr);
+        drive->CopyToArray ((int)(e - dr), dr);
       else
         *drive = dr;
     }
@@ -2136,9 +2139,9 @@ ON_wString::SplitPath(const char* path,
   if (0 != dir) {
     if (0 != d) {
       if (0 != f)
-        dir->CopyToArray((int)(f - d), d);
+        dir->CopyToArray ((int)(f - d), d);
       else if (0 != e)
-        dir->CopyToArray((int)(e - d), d);
+        dir->CopyToArray ((int)(e - d), d);
       else
         *dir = d;
     }
@@ -2149,7 +2152,7 @@ ON_wString::SplitPath(const char* path,
   if (0 != fname) {
     if (0 != f) {
       if (0 != e)
-        fname->CopyToArray((int)(e - f), f);
+        fname->CopyToArray ((int)(e - f), f);
       else
         *fname = f;
     }
@@ -2163,27 +2166,27 @@ ON_wString::SplitPath(const char* path,
 }
 
 void
-ON_wString::SplitPath(const wchar_t* path,
-                      ON_wString* drive,
-                      ON_wString* dir,
-                      ON_wString* fname,
-                      ON_wString* ext)
+ON_wString::SplitPath (const wchar_t* path,
+                       ON_wString* drive,
+                       ON_wString* dir,
+                       ON_wString* fname,
+                       ON_wString* ext)
 {
   const wchar_t* dr = 0;
   const wchar_t* d = 0;
   const wchar_t* f = 0;
   const wchar_t* e = 0;
 
-  on_wsplitpath(path, &dr, &d, &f, &e);
+  on_wsplitpath (path, &dr, &d, &f, &e);
 
   if (0 != drive) {
     if (0 != dr) {
       if (0 != d)
-        drive->CopyToArray((int)(d - dr), dr);
+        drive->CopyToArray ((int)(d - dr), dr);
       else if (0 != f)
-        drive->CopyToArray((int)(f - dr), dr);
+        drive->CopyToArray ((int)(f - dr), dr);
       else if (0 != e)
-        drive->CopyToArray((int)(e - dr), dr);
+        drive->CopyToArray ((int)(e - dr), dr);
       else
         *drive = dr;
     }
@@ -2194,9 +2197,9 @@ ON_wString::SplitPath(const wchar_t* path,
   if (0 != dir) {
     if (0 != d) {
       if (0 != f)
-        dir->CopyToArray((int)(f - d), d);
+        dir->CopyToArray ((int)(f - d), d);
       else if (0 != e)
-        dir->CopyToArray((int)(e - d), d);
+        dir->CopyToArray ((int)(e - d), d);
       else
         *dir = d;
     }
@@ -2207,7 +2210,7 @@ ON_wString::SplitPath(const wchar_t* path,
   if (0 != fname) {
     if (0 != f) {
       if (0 != e)
-        fname->CopyToArray((int)(e - f), f);
+        fname->CopyToArray ((int)(e - f), f);
       else
         *fname = f;
     }

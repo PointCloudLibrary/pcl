@@ -41,54 +41,54 @@
 #include <cassert>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-pcl::MaskMap::MaskMap(const std::size_t width, const std::size_t height)
-: data_(width * height), width_(width), height_(height)
+pcl::MaskMap::MaskMap (const std::size_t width, const std::size_t height)
+: data_ (width * height), width_ (width), height_ (height)
 {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::MaskMap::resize(const std::size_t width, const std::size_t height)
+pcl::MaskMap::resize (const std::size_t width, const std::size_t height)
 {
-  data_.resize(width * height);
+  data_.resize (width * height);
   width_ = width;
   height_ = height;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 pcl::MaskMap
-pcl::MaskMap::getDifferenceMask(const MaskMap& mask0, const MaskMap& mask1)
+pcl::MaskMap::getDifferenceMask (const MaskMap& mask0, const MaskMap& mask1)
 {
-  assert(mask0.getWidth() == mask1.getWidth());
-  assert(mask0.getHeight() == mask1.getHeight());
+  assert (mask0.getWidth() == mask1.getWidth());
+  assert (mask0.getHeight() == mask1.getHeight());
 
   pcl::MaskMap diff_mask{mask0.getWidth(), mask0.getHeight()};
 
-  std::transform(std::cbegin(mask0.data_),
-                 std::cend(mask0.data_),
-                 std::cbegin(mask1.data_),
-                 std::begin(diff_mask.data_),
-                 [] (const char& b0, const char& b1) { return b0 == b1 ? 0 : 255; });
+  std::transform (std::cbegin (mask0.data_),
+                  std::cend (mask0.data_),
+                  std::cbegin (mask1.data_),
+                  std::begin (diff_mask.data_),
+                  [] (const char& b0, const char& b1) { return b0 == b1 ? 0 : 255; });
 
   return diff_mask;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::MaskMap::erode(MaskMap& eroded_mask) const
+pcl::MaskMap::erode (MaskMap& eroded_mask) const
 {
   const MaskMap& mask_in = *this;
-  eroded_mask.resize(width_, height_);
+  eroded_mask.resize (width_, height_);
 
   for (std::size_t row_index = 1; row_index < height_ - 1; ++row_index) {
     for (std::size_t col_index = 1; col_index < width_ - 1; ++col_index) {
-      if (!mask_in.isSet(col_index, row_index - 1) ||
-          !mask_in.isSet(col_index - 1, row_index) ||
-          !mask_in.isSet(col_index + 1, row_index) ||
-          !mask_in.isSet(col_index, row_index + 1)) {
-        eroded_mask.unset(col_index, row_index);
+      if (!mask_in.isSet (col_index, row_index - 1) ||
+          !mask_in.isSet (col_index - 1, row_index) ||
+          !mask_in.isSet (col_index + 1, row_index) ||
+          !mask_in.isSet (col_index, row_index + 1)) {
+        eroded_mask.unset (col_index, row_index);
       }
       else {
-        eroded_mask.set(col_index, row_index);
+        eroded_mask.set (col_index, row_index);
       }
     }
   }

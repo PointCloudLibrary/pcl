@@ -60,7 +60,7 @@ public:
   /** \brief Equal comparison operator
    */
   virtual bool
-  operator==(const OctreeContainerBase&) const
+  operator== (const OctreeContainerBase&) const
   {
     return false;
   }
@@ -69,9 +69,9 @@ public:
    * \param[in] other OctreeContainerBase to compare with
    */
   bool
-  operator!=(const OctreeContainerBase& other) const
+  operator!= (const OctreeContainerBase& other) const
   {
-    return (!operator==(other));
+    return (!operator== (other));
   }
 
   /** \brief Pure abstract method to get size of container (number of indices)
@@ -107,7 +107,7 @@ public:
   virtual index_t
   getPointIndex () const
   {
-    assert("getPointIndex: undefined point index");
+    assert ("getPointIndex: undefined point index");
     return -1;
   }
 
@@ -132,7 +132,7 @@ public:
   virtual OctreeContainerEmpty*
   deepCopy () const
   {
-    return (new OctreeContainerEmpty(*this));
+    return (new OctreeContainerEmpty (*this));
   }
 
   /** \brief Abstract get size of container (number of DataT objects)
@@ -162,7 +162,7 @@ public:
   index_t
   getPointIndex () const override
   {
-    PCL_ERROR(
+    PCL_ERROR (
         "[pcl::octree::OctreeContainerBase::getPointIndex] Undefined point index!\n");
     return -1;
   }
@@ -189,16 +189,16 @@ public:
   virtual OctreeContainerPointIndex*
   deepCopy () const
   {
-    return (new OctreeContainerPointIndex(*this));
+    return (new OctreeContainerPointIndex (*this));
   }
 
   /** \brief Equal comparison operator
    * \param[in] other OctreeContainerBase to compare with
    */
   bool
-  operator==(const OctreeContainerBase& other) const override
+  operator== (const OctreeContainerBase& other) const override
   {
-    const auto* otherConDataT = dynamic_cast<const OctreeContainerPointIndex*>(&other);
+    const auto* otherConDataT = dynamic_cast<const OctreeContainerPointIndex*> (&other);
 
     return (this->data_ == otherConDataT->data_);
   }
@@ -231,8 +231,8 @@ public:
   void
   getPointIndices (Indices& data_vector_arg) const override
   {
-    if (data_ != static_cast<index_t>(-1))
-      data_vector_arg.push_back(data_);
+    if (data_ != static_cast<index_t> (-1))
+      data_vector_arg.push_back (data_);
   }
 
   /** \brief Get size of container (number of DataT objects)
@@ -241,14 +241,14 @@ public:
   uindex_t
   getSize () const override
   {
-    return data_ == static_cast<index_t>(-1) ? 0 : 1;
+    return data_ == static_cast<index_t> (-1) ? 0 : 1;
   }
 
   /** \brief Reset leaf node memory to zero. */
   void
   reset () override
   {
-    data_ = static_cast<index_t>(-1);
+    data_ = static_cast<index_t> (-1);
   }
 
 protected:
@@ -267,17 +267,17 @@ public:
   virtual OctreeContainerPointIndices*
   deepCopy () const
   {
-    return (new OctreeContainerPointIndices(*this));
+    return (new OctreeContainerPointIndices (*this));
   }
 
   /** \brief Equal comparison operator
    * \param[in] other OctreeContainerDataTVector to compare with
    */
   bool
-  operator==(const OctreeContainerBase& other) const override
+  operator== (const OctreeContainerBase& other) const override
   {
     const auto* otherConDataTVec =
-        dynamic_cast<const OctreeContainerPointIndices*>(&other);
+        dynamic_cast<const OctreeContainerPointIndices*> (&other);
 
     return (this->leafDataTVector_ == otherConDataTVec->leafDataTVector_);
   }
@@ -289,7 +289,7 @@ public:
   void
   addPointIndex (index_t data_arg) override
   {
-    leafDataTVector_.push_back(data_arg);
+    leafDataTVector_.push_back (data_arg);
   }
 
   /** \brief Retrieve point index from container. This container stores a vector of
@@ -310,7 +310,7 @@ public:
   void
   getPointIndices (Indices& data_vector_arg) const override
   {
-    data_vector_arg.insert(
+    data_vector_arg.insert (
         data_vector_arg.end(), leafDataTVector_.begin(), leafDataTVector_.end());
   }
 
@@ -330,7 +330,7 @@ public:
   uindex_t
   getSize () const override
   {
-    return static_cast<uindex_t>(leafDataTVector_.size());
+    return static_cast<uindex_t> (leafDataTVector_.size());
   }
 
   /** \brief Reset leaf node. Clear DataT vector.*/

@@ -69,7 +69,7 @@ namespace people {
  */
 struct Tree2 {
   // Inline constructor
-  Tree2() : id(NO_CHILD), lid(NO_CHILD), nr_parts(0)
+  Tree2() : id (NO_CHILD), lid (NO_CHILD), nr_parts (0)
   {
     for (int& part : parts_lid)
       part = NO_CHILD;
@@ -94,22 +94,22 @@ struct Tree2 {
 };
 
 inline std::ostream&
-operator<<(std::ostream& os, const Tree2& t)
+operator<< (std::ostream& os, const Tree2& t)
 {
   os << " Tree2 id " << t.id << " label " << t.label << " lid " << t.lid << " nr_parts "
      << t.nr_parts << std::endl;
   os << " total_dist_error " << t.total_dist_error << " norm_dist_error "
      << t.norm_dist_error << std::endl;
-  os << " mean " << t.mean(0) << " , " << t.mean(1) << " , " << t.mean(2) << " , "
-     << t.mean(3) << std::endl;
+  os << " mean " << t.mean (0) << " , " << t.mean (1) << " , " << t.mean (2) << " , "
+     << t.mean (3) << std::endl;
   os << " cov " << std::endl << t.cov << std::endl;
-  os << " eigenval " << t.eigenval(0) << " , " << t.eigenval(1) << " , "
-     << t.eigenval(2) << std::endl;
+  os << " eigenval " << t.eigenval (0) << " , " << t.eigenval (1) << " , "
+     << t.eigenval (2) << std::endl;
   os << " eigenvect " << std::endl << t.eigenvect << std::endl;
-  os << " min " << t.min(0) << " , " << t.min(1) << " , " << t.min(2) << " , "
-     << t.min(3) << std::endl;
-  os << " max " << t.max(0) << " , " << t.max(1) << " , " << t.max(2) << " , "
-     << t.max(3) << std::endl;
+  os << " min " << t.min (0) << " , " << t.min (1) << " , " << t.min (2) << " , "
+     << t.min (3) << std::endl;
+  os << " max " << t.max (0) << " , " << t.max (1) << " , " << t.max (2) << " , "
+     << t.max (3) << std::endl;
   os << " indices length " << t.indices.indices.size() << std::endl;
   return (os);
 }
@@ -188,10 +188,10 @@ hasThisLabelChildren (
 inline float
 evaluateBlobs (Blob2& parent, Blob2& child, int child_nr)
 {
-  float root = sqrt(pow(parent.mean(0) - child.mean(0), 2) +
-                    pow(parent.mean(1) - child.mean(1), 2) +
-                    pow(parent.mean(2) - child.mean(2), 2));
-  float offset = std::fabs(LUT_ideal_length[(int)parent.label][child_nr] - root);
+  float root = sqrt (pow (parent.mean (0) - child.mean (0), 2) +
+                     pow (parent.mean (1) - child.mean (1), 2) +
+                     pow (parent.mean (2) - child.mean (2), 2));
+  float offset = std::fabs (LUT_ideal_length[(int)parent.label][child_nr] - root);
   if (offset > LUT_max_length_offset[(int)parent.label][child_nr])
     return -1.0;
   return offset;
@@ -214,11 +214,11 @@ evaluateBlobs (Blob2& parent,
                int child_nr,
                PersonAttribs::Ptr person_attribs)
 {
-  float root = sqrt(pow(parent.mean(0) - child.mean(0), 2) +
-                    pow(parent.mean(1) - child.mean(1), 2) +
-                    pow(parent.mean(2) - child.mean(2), 2));
-  float offset =
-      std::fabs(person_attribs->part_ideal_length_[(int)parent.label][child_nr] - root);
+  float root = sqrt (pow (parent.mean (0) - child.mean (0), 2) +
+                     pow (parent.mean (1) - child.mean (1), 2) +
+                     pow (parent.mean (2) - child.mean (2), 2));
+  float offset = std::fabs (
+      person_attribs->part_ideal_length_[(int)parent.label][child_nr] - root);
   if (offset > person_attribs->max_length_offset_[(int)parent.label][child_nr])
     return -1.0;
   return offset;
@@ -244,16 +244,16 @@ evaluateBlobVector (
     int child_number)
 {
   // Check the input data
-  assert(parent_label < NUM_PARTS);
-  assert(child_label >= 0);
-  assert(child_number >= 0);
-  assert(child_number < MAX_CHILD);
+  assert (parent_label < NUM_PARTS);
+  assert (child_label >= 0);
+  assert (child_number >= 0);
+  assert (child_number < MAX_CHILD);
 
   if (sorted[parent_label].empty()) {
     return 0; // if my size is 0, this is solved by my parent in his iteration
   }
   if (sorted[child_label].empty()) {
-    noChildBlobVector(sorted, parent_label, child_number);
+    noChildBlobVector (sorted, parent_label, child_number);
     return 0;
   }
   // go over all parents in this vector
@@ -266,7 +266,7 @@ evaluateBlobVector (
     // go over all children in this vector
     for (std::size_t c = 0; c < sorted[child_label].size(); c++) {
       value =
-          evaluateBlobs(sorted[parent_label][p], sorted[child_label][c], child_number);
+          evaluateBlobs (sorted[parent_label][p], sorted[child_label][c], child_number);
       // Value should contain offset from the ideal position
       // Is -1 if it goes above threshold
       if (value < best_value && value != -1.0) {
@@ -275,9 +275,9 @@ evaluateBlobVector (
         best_value = value;
       }
     }
-    assert(parent_label < sorted.size());
-    assert(p < sorted[parent_label].size());
-    assert(child_label < (int)sorted.size());
+    assert (parent_label < sorted.size());
+    assert (p < sorted[parent_label].size());
+    assert (child_label < (int)sorted.size());
     // Set the correct child in the parent
     sorted[parent_label][p].child_id[child_number] = best_child_id;
     sorted[parent_label][p].child_lid[child_number] = best_child_lid;
@@ -309,16 +309,16 @@ evaluateBlobVector (
     PersonAttribs::Ptr person_attribs)
 {
   // Check the input data
-  assert(parent_label < NUM_PARTS);
-  assert(child_label >= 0);
-  assert(child_number >= 0);
-  assert(child_number < MAX_CHILD);
+  assert (parent_label < NUM_PARTS);
+  assert (child_label >= 0);
+  assert (child_number >= 0);
+  assert (child_number < MAX_CHILD);
 
   if (sorted[parent_label].empty()) {
     return 0; // if my size is 0, this is solved by my parent in his iteration
   }
   if (sorted[child_label].empty()) {
-    noChildBlobVector(sorted, parent_label, child_number);
+    noChildBlobVector (sorted, parent_label, child_number);
     return 0;
   }
   // go over all parents in this vector
@@ -330,10 +330,10 @@ evaluateBlobVector (
 
     // go over all children in this vector
     for (std::size_t c = 0; c < sorted[child_label].size(); c++) {
-      value = evaluateBlobs(sorted[parent_label][p],
-                            sorted[child_label][c],
-                            child_number,
-                            person_attribs);
+      value = evaluateBlobs (sorted[parent_label][p],
+                             sorted[child_label][c],
+                             child_number,
+                             person_attribs);
       // Value should contain offset from the ideal position
       // Is -1 if it goes above threshold
       if (value < best_value && value != -1.0) {
@@ -342,9 +342,9 @@ evaluateBlobVector (
         best_value = value;
       }
     }
-    assert(parent_label < sorted.size());
-    assert(p < sorted[parent_label].size());
-    assert(child_label < (int)sorted.size());
+    assert (parent_label < sorted.size());
+    assert (p < sorted[parent_label].size());
+    assert (child_label < (int)sorted.size());
     // Set the correct child in the parent
     sorted[parent_label][p].child_id[child_number] = best_child_id;
     sorted[parent_label][p].child_lid[child_number] = best_child_lid;
@@ -370,7 +370,7 @@ buildRelations (
     std::vector<std::vector<Blob2, Eigen::aligned_allocator<pcl::gpu::people::Blob2>>>&
         sorted)
 {
-  PCL_VERBOSE(
+  PCL_VERBOSE (
       "[pcl::gpu::people::buildRelations] : (I) : buildRelations : regular version\n");
   if (sorted.empty()) {
     std::cout << "(E) : Damn you, you gave me an empty matrix!" << std::endl;
@@ -381,79 +381,79 @@ buildRelations (
     switch (p) {
     // These are multinodes and end nodes ///
     case Neck:
-      evaluateBlobVector(sorted, p, FaceRB, 0);
-      evaluateBlobVector(sorted, p, FaceLB, 1);
-      evaluateBlobVector(sorted, p, Rchest, 2);
-      evaluateBlobVector(sorted, p, Lchest, 3);
+      evaluateBlobVector (sorted, p, FaceRB, 0);
+      evaluateBlobVector (sorted, p, FaceLB, 1);
+      evaluateBlobVector (sorted, p, Rchest, 2);
+      evaluateBlobVector (sorted, p, Lchest, 3);
       break;
-    case 0:                      // this is the Lfoot
-    case 4:                      // this is the Rfoot
-    case 14:                     // this is the Rhand
-    case 18:                     // this is the Lhand
-    case 21:                     // this is the FaceLT
-    case 22:                     // this is the FaceRT
-      leafBlobVector(sorted, p); // fill in the children of leafs
+    case 0:                       // this is the Lfoot
+    case 4:                       // this is the Rfoot
+    case 14:                      // this is the Rhand
+    case 18:                      // this is the Lhand
+    case 21:                      // this is the FaceLT
+    case 22:                      // this is the FaceRT
+      leafBlobVector (sorted, p); // fill in the children of leafs
       break;
-    case 23:                                // this is the Rchest
-      evaluateBlobVector(sorted, p, 11, 0); // Child 0 is Rarm
-      evaluateBlobVector(sorted, p, 8, 1);  // Child 1 is Rhips
+    case 23:                                 // this is the Rchest
+      evaluateBlobVector (sorted, p, 11, 0); // Child 0 is Rarm
+      evaluateBlobVector (sorted, p, 8, 1);  // Child 1 is Rhips
       break;
-    case 24:                                // this is the Lchest
-      evaluateBlobVector(sorted, p, 15, 0); // Child 0 is Larm
-      evaluateBlobVector(sorted, p, 9, 1);  // Child 1 is Lhips
+    case 24:                                 // this is the Lchest
+      evaluateBlobVector (sorted, p, 15, 0); // Child 0 is Larm
+      evaluateBlobVector (sorted, p, 9, 1);  // Child 1 is Lhips
       break;
     // FROM HERE ALL THE REGULAR MIDDLE NODES  ///
-    case 1:                                // this is the Lleg
-      evaluateBlobVector(sorted, p, 0, 0); // Child 0 is Lfeet
+    case 1:                                 // this is the Lleg
+      evaluateBlobVector (sorted, p, 0, 0); // Child 0 is Lfeet
       break;
-    case 2:                                // this is the Lknee
-      evaluateBlobVector(sorted, p, 1, 0); // Child 0 is Lleg
+    case 2:                                 // this is the Lknee
+      evaluateBlobVector (sorted, p, 1, 0); // Child 0 is Lleg
       break;
-    case 3:                                // this is the Lthigh
-      evaluateBlobVector(sorted, p, 2, 0); // Child 0 is Lknee
+    case 3:                                 // this is the Lthigh
+      evaluateBlobVector (sorted, p, 2, 0); // Child 0 is Lknee
       break;
-    case 5:                                // this is the Rleg
-      evaluateBlobVector(sorted, p, 4, 0); // Child Rfoot
+    case 5:                                 // this is the Rleg
+      evaluateBlobVector (sorted, p, 4, 0); // Child Rfoot
       break;
-    case 6:                                // this is the Rknee
-      evaluateBlobVector(sorted, p, 5, 0); // Child Rleg
+    case 6:                                 // this is the Rknee
+      evaluateBlobVector (sorted, p, 5, 0); // Child Rleg
       break;
-    case 7:                                // this is the Rthigh
-      evaluateBlobVector(sorted, p, 6, 0); // Child Rknee
+    case 7:                                 // this is the Rthigh
+      evaluateBlobVector (sorted, p, 6, 0); // Child Rknee
       break;
-    case 8:                                // this is the Rhips
-      evaluateBlobVector(sorted, p, 7, 0); // Child Rthigh
+    case 8:                                 // this is the Rhips
+      evaluateBlobVector (sorted, p, 7, 0); // Child Rthigh
       break;
-    case 9:                                // this is the Lhips
-      evaluateBlobVector(sorted, p, 3, 0); // Child Lthigh
+    case 9:                                 // this is the Lhips
+      evaluateBlobVector (sorted, p, 3, 0); // Child Lthigh
       break;
     case Rarm:
-      evaluateBlobVector(sorted, p, Relbow, 0);
-      if (!hasThisLabelChildren(sorted, Rarm, 0))
-        evaluateBlobVector(sorted, p, Rforearm, 0);
+      evaluateBlobVector (sorted, p, Relbow, 0);
+      if (!hasThisLabelChildren (sorted, Rarm, 0))
+        evaluateBlobVector (sorted, p, Rforearm, 0);
       break;
-    case 12:                                // this is the Relbow
-      evaluateBlobVector(sorted, p, 13, 0); // Child Rforearm
+    case 12:                                 // this is the Relbow
+      evaluateBlobVector (sorted, p, 13, 0); // Child Rforearm
       break;
-    case 13:                                // this is the Rforearm
-      evaluateBlobVector(sorted, p, 14, 0); // Child Rhand
+    case 13:                                 // this is the Rforearm
+      evaluateBlobVector (sorted, p, 14, 0); // Child Rhand
       break;
     case Larm:
-      evaluateBlobVector(sorted, p, Lelbow, 0);
-      if (!hasThisLabelChildren(sorted, Larm, 0))
-        evaluateBlobVector(sorted, p, Lforearm, 0);
+      evaluateBlobVector (sorted, p, Lelbow, 0);
+      if (!hasThisLabelChildren (sorted, Larm, 0))
+        evaluateBlobVector (sorted, p, Lforearm, 0);
       break;
-    case 16:                                // this is the Lelbow
-      evaluateBlobVector(sorted, p, 17, 0); // Child Lforearm
+    case 16:                                 // this is the Lelbow
+      evaluateBlobVector (sorted, p, 17, 0); // Child Lforearm
       break;
-    case 17:                                // this is the Lforearm
-      evaluateBlobVector(sorted, p, 18, 0); // Child Lhand
+    case 17:                                 // this is the Lforearm
+      evaluateBlobVector (sorted, p, 18, 0); // Child Lhand
       break;
-    case 19:                                // this is the FaceLB
-      evaluateBlobVector(sorted, p, 21, 0); // Child FaceLT
+    case 19:                                 // this is the FaceLB
+      evaluateBlobVector (sorted, p, 21, 0); // Child FaceLT
       break;
-    case 20:                                // this is the FaceRB
-      evaluateBlobVector(sorted, p, 22, 0); // Child FaceRT
+    case 20:                                 // this is the FaceRB
+      evaluateBlobVector (sorted, p, 22, 0); // Child FaceRT
       break;
     default:
       break;
@@ -480,10 +480,10 @@ buildRelations (
         sorted,
     PersonAttribs::Ptr person_attribs)
 {
-  PCL_DEBUG("[pcl::gpu::people::buildRelations] : (D) : person specific version\n");
+  PCL_DEBUG ("[pcl::gpu::people::buildRelations] : (D) : person specific version\n");
   if (sorted.empty()) {
-    PCL_ERROR("[pcl::gpu::people::buildRelations] : (E) : Damn you, you gave me an "
-              "empty matrix!\n");
+    PCL_ERROR ("[pcl::gpu::people::buildRelations] : (E) : Damn you, you gave me an "
+               "empty matrix!\n");
     return (-1);
   }
   // Iterate over all parts
@@ -491,79 +491,79 @@ buildRelations (
     switch (p) {
     // These are multinodes and end nodes ///
     case Neck:
-      evaluateBlobVector(sorted, p, FaceRB, 0, person_attribs);
-      evaluateBlobVector(sorted, p, FaceLB, 1, person_attribs);
-      evaluateBlobVector(sorted, p, Rchest, 2, person_attribs);
-      evaluateBlobVector(sorted, p, Lchest, 3, person_attribs);
+      evaluateBlobVector (sorted, p, FaceRB, 0, person_attribs);
+      evaluateBlobVector (sorted, p, FaceLB, 1, person_attribs);
+      evaluateBlobVector (sorted, p, Rchest, 2, person_attribs);
+      evaluateBlobVector (sorted, p, Lchest, 3, person_attribs);
       break;
-    case 0:                      // this is the Lfoot
-    case 4:                      // this is the Rfoot
-    case 14:                     // this is the Rhand
-    case 18:                     // this is the Lhand
-    case 21:                     // this is the FaceLT
-    case 22:                     // this is the FaceRT
-      leafBlobVector(sorted, p); // fill in the children of leafs
+    case 0:                       // this is the Lfoot
+    case 4:                       // this is the Rfoot
+    case 14:                      // this is the Rhand
+    case 18:                      // this is the Lhand
+    case 21:                      // this is the FaceLT
+    case 22:                      // this is the FaceRT
+      leafBlobVector (sorted, p); // fill in the children of leafs
       break;
-    case 23:                                                // this is the Rchest
-      evaluateBlobVector(sorted, p, 11, 0, person_attribs); // Child 0 is Rarm
-      evaluateBlobVector(sorted, p, 8, 1, person_attribs);  // Child 1 is Rhips
+    case 23:                                                 // this is the Rchest
+      evaluateBlobVector (sorted, p, 11, 0, person_attribs); // Child 0 is Rarm
+      evaluateBlobVector (sorted, p, 8, 1, person_attribs);  // Child 1 is Rhips
       break;
-    case 24:                                                // this is the Lchest
-      evaluateBlobVector(sorted, p, 15, 0, person_attribs); // Child 0 is Larm
-      evaluateBlobVector(sorted, p, 9, 1, person_attribs);  // Child 1 is Lhips
+    case 24:                                                 // this is the Lchest
+      evaluateBlobVector (sorted, p, 15, 0, person_attribs); // Child 0 is Larm
+      evaluateBlobVector (sorted, p, 9, 1, person_attribs);  // Child 1 is Lhips
       break;
     // FROM HERE ALL THE REGULAR MIDDLE NODES  ///
-    case 1:                                                // this is the Lleg
-      evaluateBlobVector(sorted, p, 0, 0, person_attribs); // Child 0 is Lfeet
+    case 1:                                                 // this is the Lleg
+      evaluateBlobVector (sorted, p, 0, 0, person_attribs); // Child 0 is Lfeet
       break;
-    case 2:                                                // this is the Lknee
-      evaluateBlobVector(sorted, p, 1, 0, person_attribs); // Child 0 is Lleg
+    case 2:                                                 // this is the Lknee
+      evaluateBlobVector (sorted, p, 1, 0, person_attribs); // Child 0 is Lleg
       break;
-    case 3:                                                // this is the Lthigh
-      evaluateBlobVector(sorted, p, 2, 0, person_attribs); // Child 0 is Lknee
+    case 3:                                                 // this is the Lthigh
+      evaluateBlobVector (sorted, p, 2, 0, person_attribs); // Child 0 is Lknee
       break;
-    case 5:                                                // this is the Rleg
-      evaluateBlobVector(sorted, p, 4, 0, person_attribs); // Child Rfoot
+    case 5:                                                 // this is the Rleg
+      evaluateBlobVector (sorted, p, 4, 0, person_attribs); // Child Rfoot
       break;
-    case 6:                                                // this is the Rknee
-      evaluateBlobVector(sorted, p, 5, 0, person_attribs); // Child Rleg
+    case 6:                                                 // this is the Rknee
+      evaluateBlobVector (sorted, p, 5, 0, person_attribs); // Child Rleg
       break;
-    case 7:                                                // this is the Rthigh
-      evaluateBlobVector(sorted, p, 6, 0, person_attribs); // Child Rknee
+    case 7:                                                 // this is the Rthigh
+      evaluateBlobVector (sorted, p, 6, 0, person_attribs); // Child Rknee
       break;
-    case 8:                                                // this is the Rhips
-      evaluateBlobVector(sorted, p, 7, 0, person_attribs); // Child Rthigh
+    case 8:                                                 // this is the Rhips
+      evaluateBlobVector (sorted, p, 7, 0, person_attribs); // Child Rthigh
       break;
-    case 9:                                                // this is the Lhips
-      evaluateBlobVector(sorted, p, 3, 0, person_attribs); // Child Lthigh
+    case 9:                                                 // this is the Lhips
+      evaluateBlobVector (sorted, p, 3, 0, person_attribs); // Child Lthigh
       break;
     case Rarm:
-      evaluateBlobVector(sorted, p, Relbow, 0, person_attribs);
-      if (!hasThisLabelChildren(sorted, Rarm, 0))
-        evaluateBlobVector(sorted, p, Rforearm, 0, person_attribs);
+      evaluateBlobVector (sorted, p, Relbow, 0, person_attribs);
+      if (!hasThisLabelChildren (sorted, Rarm, 0))
+        evaluateBlobVector (sorted, p, Rforearm, 0, person_attribs);
       break;
-    case 12:                                                // this is the Relbow
-      evaluateBlobVector(sorted, p, 13, 0, person_attribs); // Child Rforearm
+    case 12:                                                 // this is the Relbow
+      evaluateBlobVector (sorted, p, 13, 0, person_attribs); // Child Rforearm
       break;
-    case 13:                                                // this is the Rforearm
-      evaluateBlobVector(sorted, p, 14, 0, person_attribs); // Child Rhand
+    case 13:                                                 // this is the Rforearm
+      evaluateBlobVector (sorted, p, 14, 0, person_attribs); // Child Rhand
       break;
     case Larm:
-      evaluateBlobVector(sorted, p, Lelbow, 0, person_attribs);
-      if (!hasThisLabelChildren(sorted, Larm, 0))
-        evaluateBlobVector(sorted, p, Lforearm, 0, person_attribs);
+      evaluateBlobVector (sorted, p, Lelbow, 0, person_attribs);
+      if (!hasThisLabelChildren (sorted, Larm, 0))
+        evaluateBlobVector (sorted, p, Lforearm, 0, person_attribs);
       break;
-    case 16:                                                // this is the Lelbow
-      evaluateBlobVector(sorted, p, 17, 0, person_attribs); // Child Lforearm
+    case 16:                                                 // this is the Lelbow
+      evaluateBlobVector (sorted, p, 17, 0, person_attribs); // Child Lforearm
       break;
-    case 17:                                                // this is the Lforearm
-      evaluateBlobVector(sorted, p, 18, 0, person_attribs); // Child Lhand
+    case 17:                                                 // this is the Lforearm
+      evaluateBlobVector (sorted, p, 18, 0, person_attribs); // Child Lhand
       break;
-    case 19:                                                // this is the FaceLB
-      evaluateBlobVector(sorted, p, 21, 0, person_attribs); // Child FaceLT
+    case 19:                                                 // this is the FaceLB
+      evaluateBlobVector (sorted, p, 21, 0, person_attribs); // Child FaceLT
       break;
-    case 20:                                                // this is the FaceRB
-      evaluateBlobVector(sorted, p, 22, 0, person_attribs); // Child FaceRT
+    case 20:                                                 // this is the FaceRB
+      evaluateBlobVector (sorted, p, 22, 0, person_attribs); // Child FaceRT
       break;
     default:
       break;
@@ -587,7 +587,7 @@ browseTree (
 
   // iterate over the number of pixels that are part of this label
   const auto& indices = blob.indices.indices;
-  tree.indices.indices.insert(
+  tree.indices.indices.insert (
       tree.indices.indices.end(), indices.begin(), indices.end());
 
   if (nr_children == 0)
@@ -598,7 +598,7 @@ browseTree (
     // check if this child has a valid child_id, leaf test should be redundant
     if (blob.child_id[i] != NO_CHILD && blob.child_id[i] != LEAF) {
       tree.total_dist_error += blob.child_dist[i];
-      browseTree(sorted, tree, blob.child_label[i], blob.child_lid[i]);
+      browseTree (sorted, tree, blob.child_label[i], blob.child_lid[i]);
     }
   }
   return 0;
@@ -620,7 +620,7 @@ browseTree (
 
   // iterate over the number of pixels that are part of this label
   const auto& indices = blob.indices.indices;
-  tree.indices.indices.insert(
+  tree.indices.indices.insert (
       tree.indices.indices.end(), indices.begin(), indices.end());
 
   if (nr_children == 0)
@@ -631,7 +631,7 @@ browseTree (
     // check if this child has a valid child_id, leaf test should be redundant
     if (blob.child_id[i] != NO_CHILD && blob.child_id[i] != LEAF) {
       tree.total_dist_error += blob.child_dist[i];
-      browseTree(sorted, tree, blob.child_label[i], blob.child_lid[i]);
+      browseTree (sorted, tree, blob.child_label[i], blob.child_lid[i]);
     }
   }
   return 0;
@@ -656,13 +656,13 @@ buildTree (
   tree.total_dist_error = 0;
   tree.nr_parts = 0;
 
-  browseTree(sorted, tree, part_label, part_lid);
+  browseTree (sorted, tree, part_label, part_lid);
 
-  pcl::getMinMax3D(cloud_in, tree.indices, tree.min, tree.max);
-  pcl::compute3DCentroid(cloud_in, tree.indices, tree.mean);
-  pcl::computeCovarianceMatrixNormalized(cloud_in, tree.indices, tree.mean, tree.cov);
+  pcl::getMinMax3D (cloud_in, tree.indices, tree.min, tree.max);
+  pcl::compute3DCentroid (cloud_in, tree.indices, tree.mean);
+  pcl::computeCovarianceMatrixNormalized (cloud_in, tree.indices, tree.mean, tree.cov);
 
-  pcl::eigen33(tree.cov, tree.eigenvect, tree.eigenval);
+  pcl::eigen33 (tree.cov, tree.eigenvect, tree.eigenval);
 
   tree.norm_dist_error = tree.total_dist_error / tree.nr_parts;
 
@@ -689,13 +689,13 @@ buildTree (
   tree.total_dist_error = 0;
   tree.nr_parts = 0;
 
-  browseTree(sorted, tree, part_label, part_lid, person_attribs);
+  browseTree (sorted, tree, part_label, part_lid, person_attribs);
 
-  pcl::getMinMax3D(cloud_in, tree.indices, tree.min, tree.max);
-  pcl::compute3DCentroid(cloud_in, tree.indices, tree.mean);
-  pcl::computeCovarianceMatrixNormalized(cloud_in, tree.indices, tree.mean, tree.cov);
+  pcl::getMinMax3D (cloud_in, tree.indices, tree.min, tree.max);
+  pcl::compute3DCentroid (cloud_in, tree.indices, tree.mean);
+  pcl::computeCovarianceMatrixNormalized (cloud_in, tree.indices, tree.mean, tree.cov);
 
-  pcl::eigen33(tree.cov, tree.eigenvect, tree.eigenval);
+  pcl::eigen33 (tree.cov, tree.eigenvect, tree.eigenval);
 
   tree.norm_dist_error = tree.total_dist_error / tree.nr_parts;
 

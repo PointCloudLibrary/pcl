@@ -8,8 +8,8 @@
 #include <pcl/apps/3d_rec_framework/pipeline/impl/global_nn_recognizer_crh.hpp>
 #include <pcl/apps/3d_rec_framework/utils/metrics.h>
 
-POINT_CLOUD_REGISTER_POINT_STRUCT(pcl::Histogram<90>,
-                                  (float[90], histogram, histogram90))
+POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::Histogram<90>,
+                                   (float[90], histogram, histogram90))
 
 // Instantiation
 template class pcl::rec_3d_framework::

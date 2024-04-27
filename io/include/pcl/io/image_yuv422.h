@@ -49,8 +49,8 @@ namespace io {
  */
 class PCL_EXPORTS ImageYUV422 : public pcl::io::Image {
 public:
-  ImageYUV422(FrameWrapper::Ptr image_metadata);
-  ImageYUV422(FrameWrapper::Ptr image_metadata, Timestamp timestamp);
+  ImageYUV422 (FrameWrapper::Ptr image_metadata);
+  ImageYUV422 (FrameWrapper::Ptr image_metadata, Timestamp timestamp);
 
   ~ImageYUV422() noexcept override;
 

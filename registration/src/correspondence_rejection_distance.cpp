@@ -41,15 +41,15 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::registration::CorrespondenceRejectorDistance::getRemainingCorrespondences(
+pcl::registration::CorrespondenceRejectorDistance::getRemainingCorrespondences (
     const pcl::Correspondences& original_correspondences,
     pcl::Correspondences& remaining_correspondences)
 {
   unsigned int number_valid_correspondences = 0;
-  remaining_correspondences.resize(original_correspondences.size());
+  remaining_correspondences.resize (original_correspondences.size());
   for (const auto& original_correspondence : original_correspondences) {
     if (data_container_) {
-      if (data_container_->getCorrespondenceScore(original_correspondence) <
+      if (data_container_->getCorrespondenceScore (original_correspondence) <
           max_distance_) {
         remaining_correspondences[number_valid_correspondences] =
             original_correspondence;
@@ -64,5 +64,5 @@ pcl::registration::CorrespondenceRejectorDistance::getRemainingCorrespondences(
       }
     }
   }
-  remaining_correspondences.resize(number_valid_correspondences);
+  remaining_correspondences.resize (number_valid_correspondences);
 }

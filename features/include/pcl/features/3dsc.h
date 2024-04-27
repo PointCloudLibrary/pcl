@@ -95,14 +95,14 @@ public:
    * \param[in] random If true the random seed is set to current time, else it is
    * set to 12345 prior to computing the descriptor (used to select X axis)
    */
-  ShapeContext3DEstimation(bool random = false)
-  : radii_interval_(0)
-  , theta_divisions_(0)
-  , phi_divisions_(0)
-  , volume_lut_(0)
+  ShapeContext3DEstimation (bool random = false)
+  : radii_interval_ (0)
+  , theta_divisions_ (0)
+  , phi_divisions_ (0)
+  , volume_lut_ (0)
   ,
 
-  rng_dist_(0.0f, 1.0f)
+  rng_dist_ (0.0f, 1.0f)
   {
     feature_name_ = "ShapeContext3DEstimation";
     search_radius_ = 2.5;
@@ -110,10 +110,10 @@ public:
     // Create a random number generator object
     if (random) {
       std::random_device rd;
-      rng_.seed(rd());
+      rng_.seed (rd());
     }
     else
-      rng_.seed(12345u);
+      rng_.seed (12345u);
   }
 
   ~ShapeContext3DEstimation() override = default;
@@ -255,7 +255,7 @@ protected:
   inline float
   rnd ()
   {
-    return (rng_dist_(rng_));
+    return (rng_dist_ (rng_));
   }
 };
 } // namespace pcl

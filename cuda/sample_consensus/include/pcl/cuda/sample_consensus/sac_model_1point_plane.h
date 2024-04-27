@@ -50,12 +50,13 @@ struct CountPlanarInlier {
   float4 coefficients;
   float threshold;
 
-  CountPlanarInlier(float4 coeff, float thresh) : coefficients(coeff), threshold(thresh)
+  CountPlanarInlier (float4 coeff, float thresh)
+  : coefficients (coeff), threshold (thresh)
   {}
 
   template <typename Tuple>
   __inline__ __host__ __device__ bool
-  operator()(const Tuple& t);
+  operator() (const Tuple& t);
 };
 
 /** \brief Check if a certain tuple is a point inlier. */
@@ -65,14 +66,14 @@ struct NewCheckPlanarInlier {
   float threshold;
   const typename Storage<PointXYZRGB>::type& input_;
 
-  NewCheckPlanarInlier(float4 coeff,
-                       float thresh,
-                       const typename Storage<PointXYZRGB>::type& input)
-  : coefficients(coeff), threshold(thresh), input_(input)
+  NewCheckPlanarInlier (float4 coeff,
+                        float thresh,
+                        const typename Storage<PointXYZRGB>::type& input)
+  : coefficients (coeff), threshold (thresh), input_ (input)
   {}
 
   __inline__ __host__ __device__ int
-  operator()(const int& idx);
+  operator() (const int& idx);
 };
 
 /** \brief Check if a certain tuple is a point inlier. */
@@ -80,12 +81,13 @@ struct CheckPlanarInlier {
   float4 coefficients;
   float threshold;
 
-  CheckPlanarInlier(float4 coeff, float thresh) : coefficients(coeff), threshold(thresh)
+  CheckPlanarInlier (float4 coeff, float thresh)
+  : coefficients (coeff), threshold (thresh)
   {}
 
   template <typename Tuple>
   __inline__ __host__ __device__ int
-  operator()(const Tuple& t);
+  operator() (const Tuple& t);
 };
 
 /** \brief Check if a certain tuple is a point inlier. */
@@ -93,12 +95,12 @@ struct CheckPlanarInlierIndices {
   float4 coefficients;
   float threshold;
 
-  CheckPlanarInlierIndices(float4 coeff, float thresh)
-  : coefficients(coeff), threshold(thresh)
+  CheckPlanarInlierIndices (float4 coeff, float thresh)
+  : coefficients (coeff), threshold (thresh)
   {}
 
   __inline__ __host__ __device__ int
-  operator()(const PointXYZRGB& pt, const int& idx);
+  operator() (const PointXYZRGB& pt, const int& idx);
 };
 
 /** \brief Check if a certain tuple is a point inlier. */
@@ -107,13 +109,13 @@ struct CheckPlanarInlierKinectNormalIndices {
   float threshold;
   float angle_threshold;
 
-  CheckPlanarInlierKinectNormalIndices(float4 coeff, float thresh, float angle_thresh)
-  : coefficients(coeff), threshold(thresh), angle_threshold(angle_thresh)
+  CheckPlanarInlierKinectNormalIndices (float4 coeff, float thresh, float angle_thresh)
+  : coefficients (coeff), threshold (thresh), angle_threshold (angle_thresh)
   {}
 
   template <typename Tuple>
   __inline__ __host__ __device__ int
-  operator()(const Tuple& t, const int& idx);
+  operator() (const Tuple& t, const int& idx);
 };
 
 /** \brief Check if a certain tuple is a point inlier. */
@@ -122,12 +124,12 @@ struct CheckPlanarInlierKinectIndices {
   float threshold;
   float angle_threshold;
 
-  CheckPlanarInlierKinectIndices(float4 coeff, float thresh, float angle_thresh)
-  : coefficients(coeff), threshold(thresh), angle_threshold(angle_thresh)
+  CheckPlanarInlierKinectIndices (float4 coeff, float thresh, float angle_thresh)
+  : coefficients (coeff), threshold (thresh), angle_threshold (angle_thresh)
   {}
 
   __inline__ __host__ __device__ int
-  operator()(const PointXYZRGB& pt, const int& idx);
+  operator() (const PointXYZRGB& pt, const int& idx);
 };
 
 /** \brief Check if a certain tuple is a point inlier. */
@@ -136,13 +138,13 @@ struct CheckPlanarInlierNormalIndices {
   float threshold;
   float angle_threshold;
 
-  CheckPlanarInlierNormalIndices(float4 coeff, float thresh, float angle_thresh)
-  : coefficients(coeff), threshold(thresh), angle_threshold(angle_thresh)
+  CheckPlanarInlierNormalIndices (float4 coeff, float thresh, float angle_thresh)
+  : coefficients (coeff), threshold (thresh), angle_threshold (angle_thresh)
   {}
 
   template <typename Tuple>
   __inline__ __host__ __device__ int
-  operator()(const Tuple& pt, const int& idx);
+  operator() (const Tuple& pt, const int& idx);
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -175,7 +177,7 @@ public:
   /** \brief Constructor for base SampleConsensusModel1PointPlane.
    * \param cloud the input point cloud dataset
    */
-  SampleConsensusModel1PointPlane(const PointCloudConstPtr& cloud);
+  SampleConsensusModel1PointPlane (const PointCloudConstPtr& cloud);
 
   /** \brief Get 3 random non-collinear points as data samples and return them as point
    * indices. \param iterations the internal number of iterations used by SAC methods
@@ -247,17 +249,17 @@ struct Create1PointPlaneHypothesis {
   int nr_indices;
   float bad_value;
 
-  Create1PointPlaneHypothesis(const PointXYZRGB* _input,
-                              const int* _indices,
-                              int _nr_indices,
-                              float bad)
-  : input(_input), indices(_indices), nr_indices(_nr_indices), bad_value(bad)
+  Create1PointPlaneHypothesis (const PointXYZRGB* _input,
+                               const int* _indices,
+                               int _nr_indices,
+                               float bad)
+  : input (_input), indices (_indices), nr_indices (_nr_indices), bad_value (bad)
   {}
 
   // template <typename Tuple>
   __inline__ __host__ __device__ float4
   // operator () (const Tuple &t);
-  operator()(int t);
+  operator() (int t);
 };
 
 /** \brief Check if a certain tuple is a point inlier. */
@@ -277,26 +279,26 @@ struct Create1PointPlaneSampleHypothesis {
   float bad_value;
   thrust::default_random_engine rng;
 
-  Create1PointPlaneSampleHypothesis(const PointXYZRGB* _input,
-                                    const float4* normals,
-                                    const int* _indices,
-                                    int width,
-                                    int height,
-                                    int _nr_indices,
-                                    float bad)
-  : input(_input)
-  , normals_(normals)
-  , indices(_indices)
-  , width_(width)
-  , height_(height)
-  , nr_indices(_nr_indices)
-  , bad_value(bad)
+  Create1PointPlaneSampleHypothesis (const PointXYZRGB* _input,
+                                     const float4* normals,
+                                     const int* _indices,
+                                     int width,
+                                     int height,
+                                     int _nr_indices,
+                                     float bad)
+  : input (_input)
+  , normals_ (normals)
+  , indices (_indices)
+  , width_ (width)
+  , height_ (height)
+  , nr_indices (_nr_indices)
+  , bad_value (bad)
   {}
 
   // template <typename Tuple>
   __inline__ __host__ __device__ thrust::tuple<int, float4>
   // operator () (const Tuple &t);
-  operator()(int t);
+  operator() (int t);
 };
 
 struct parallel_random_generator {
@@ -308,11 +310,11 @@ struct parallel_random_generator {
   }
 
   __inline__ __host__ __device__ unsigned int
-  operator()(const unsigned int n) const
+  operator() (const unsigned int n) const
   {
-    thrust::default_random_engine rng(m_seed);
+    thrust::default_random_engine rng (m_seed);
     // discard n numbers to avoid correlation
-    rng.discard(n);
+    rng.discard (n);
     // return a random number
     return rng();
   }

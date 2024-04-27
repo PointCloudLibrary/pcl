@@ -63,62 +63,62 @@ public:
   using CloudPtr = typename Cloud::Ptr;
   using CloudConstPtr = typename Cloud::ConstPtr;
 
-  AGASTDemo(Grabber& grabber)
-  : cloud_viewer_("AGAST 2D Keypoints -- PointCloud")
-  , grabber_(grabber)
-  , image_viewer_("AGAST 2D Keypoints -- Image")
-  , bmax_(255)
-  , threshold_(30)
-  , detector_type_(0)
+  AGASTDemo (Grabber& grabber)
+  : cloud_viewer_ ("AGAST 2D Keypoints -- PointCloud")
+  , grabber_ (grabber)
+  , image_viewer_ ("AGAST 2D Keypoints -- Image")
+  , bmax_ (255)
+  , threshold_ (30)
+  , detector_type_ (0)
   {}
 
   /////////////////////////////////////////////////////////////////////////
   void
   cloud_callback (const CloudConstPtr& cloud)
   {
-    FPS_CALC("cloud callback");
-    std::lock_guard<std::mutex> lock(cloud_mutex_);
+    FPS_CALC ("cloud callback");
+    std::lock_guard<std::mutex> lock (cloud_mutex_);
 
     // Compute AGAST keypoints
     AgastKeypoint2D<PointT> agast;
-    agast.setNonMaxSuppression(true);
-    agast.setThreshold(threshold_);
-    agast.setMaxDataValue(bmax_);
-    agast.setInputCloud(cloud);
+    agast.setNonMaxSuppression (true);
+    agast.setThreshold (threshold_);
+    agast.setMaxDataValue (bmax_);
+    agast.setInputCloud (cloud);
 
-    keypoints_.reset(new PointCloud<KeyPointT>);
+    keypoints_.reset (new PointCloud<KeyPointT>);
 
     // Select the detector type
     switch (detector_type_) {
     case 1:
     default: {
       timer_.reset();
-      pcl::keypoints::agast::AgastDetector7_12s::Ptr detector(
-          new pcl::keypoints::agast::AgastDetector7_12s(
+      pcl::keypoints::agast::AgastDetector7_12s::Ptr detector (
+          new pcl::keypoints::agast::AgastDetector7_12s (
               cloud->width, cloud->height, threshold_, bmax_));
-      agast.setAgastDetector(detector);
-      agast.compute(*keypoints_);
-      PCL_DEBUG("AGAST 7_12s computation took %f ms.\n", timer_.getTime());
+      agast.setAgastDetector (detector);
+      agast.compute (*keypoints_);
+      PCL_DEBUG ("AGAST 7_12s computation took %f ms.\n", timer_.getTime());
       break;
     }
     case 2: {
       timer_.reset();
-      pcl::keypoints::agast::AgastDetector5_8::Ptr detector(
-          new pcl::keypoints::agast::AgastDetector5_8(
+      pcl::keypoints::agast::AgastDetector5_8::Ptr detector (
+          new pcl::keypoints::agast::AgastDetector5_8 (
               cloud->width, cloud->height, threshold_, bmax_));
-      agast.setAgastDetector(detector);
-      agast.compute(*keypoints_);
-      PCL_DEBUG("AGAST 5_8 computation took %f ms.\n", timer_.getTime());
+      agast.setAgastDetector (detector);
+      agast.compute (*keypoints_);
+      PCL_DEBUG ("AGAST 5_8 computation took %f ms.\n", timer_.getTime());
       break;
     }
     case 3: {
       timer_.reset();
-      pcl::keypoints::agast::OastDetector9_16::Ptr detector(
-          new pcl::keypoints::agast::OastDetector9_16(
+      pcl::keypoints::agast::OastDetector9_16::Ptr detector (
+          new pcl::keypoints::agast::OastDetector9_16 (
               cloud->width, cloud->height, threshold_, bmax_));
-      agast.setAgastDetector(detector);
-      agast.compute(*keypoints_);
-      PCL_DEBUG("OAST 9_6 computation took %f ms.\n", timer_.getTime());
+      agast.setAgastDetector (detector);
+      agast.compute (*keypoints_);
+      PCL_DEBUG ("OAST 9_6 computation took %f ms.\n", timer_.getTime());
       break;
     }
     }
@@ -129,26 +129,26 @@ public:
   void
   keyboard_callback (const pcl::visualization::KeyboardEvent& event, void* cookie)
   {
-    AGASTDemo* obj = static_cast<AGASTDemo*>(cookie);
+    AGASTDemo* obj = static_cast<AGASTDemo*> (cookie);
 
     if (event.getKeyCode()) {
       std::stringstream ss;
       ss << event.getKeyCode();
-      obj->detector_type_ = atoi(ss.str().c_str());
+      obj->detector_type_ = atoi (ss.str().c_str());
       return;
     }
 
     if (event.getKeySym() == "Up") {
       if (obj->threshold_ <= 0.9) {
-        PCL_INFO("[keyboard_callback] Increase AGAST threshold from %f to %f.\n",
-                 obj->threshold_,
-                 obj->threshold_ + 0.01);
+        PCL_INFO ("[keyboard_callback] Increase AGAST threshold from %f to %f.\n",
+                  obj->threshold_,
+                  obj->threshold_ + 0.01);
         obj->threshold_ += 0.01;
         return;
       }
-      PCL_INFO("[keyboard_callback] Increase AGAST threshold from %f to %f.\n",
-               obj->threshold_,
-               obj->threshold_ + 1);
+      PCL_INFO ("[keyboard_callback] Increase AGAST threshold from %f to %f.\n",
+                obj->threshold_,
+                obj->threshold_ + 1);
       obj->threshold_ += 1;
       return;
     }
@@ -157,23 +157,23 @@ public:
       if (obj->threshold_ <= 0)
         return;
       if (obj->threshold_ <= 1) {
-        PCL_INFO("[keyboard_callback] Decrease AGAST threshold from %f to %f.\n",
-                 obj->threshold_,
-                 obj->threshold_ - 0.01);
+        PCL_INFO ("[keyboard_callback] Decrease AGAST threshold from %f to %f.\n",
+                  obj->threshold_,
+                  obj->threshold_ - 0.01);
         obj->threshold_ -= 0.01;
         return;
       }
-      PCL_INFO("[keyboard_callback] Decrease AGAST threshold from %f to %f.\n",
-               obj->threshold_,
-               obj->threshold_ - 1);
+      PCL_INFO ("[keyboard_callback] Decrease AGAST threshold from %f to %f.\n",
+                obj->threshold_,
+                obj->threshold_ - 1);
       obj->threshold_ -= 1;
       return;
     }
 
     if (event.getKeySym() == "Right") {
-      PCL_INFO("[keyboard_callback] Increase AGAST BMAX from %f to %f.\n",
-               obj->bmax_,
-               obj->bmax_ + 1);
+      PCL_INFO ("[keyboard_callback] Increase AGAST BMAX from %f to %f.\n",
+                obj->bmax_,
+                obj->bmax_ + 1);
       obj->bmax_ += 1;
       return;
     }
@@ -181,9 +181,9 @@ public:
     if (event.getKeySym() == "Left") {
       if (obj->bmax_ <= 0)
         return;
-      PCL_INFO("[keyboard_callback] Decrease AGAST BMAX from %f to %f.\n",
-               obj->bmax_,
-               obj->bmax_ - 1);
+      PCL_INFO ("[keyboard_callback] Decrease AGAST BMAX from %f to %f.\n",
+                obj->bmax_,
+                obj->bmax_ - 1);
       obj->bmax_ -= 1;
       return;
     }
@@ -193,9 +193,9 @@ public:
   void
   init ()
   {
-    std::function<void(const CloudConstPtr&)> cloud_cb =
-        [this] (const CloudConstPtr& cloud) { cloud_callback(cloud); };
-    cloud_connection = grabber_.registerCallback(cloud_cb);
+    std::function<void (const CloudConstPtr&)> cloud_cb =
+        [this] (const CloudConstPtr& cloud) { cloud_callback (cloud); };
+    cloud_connection = grabber_.registerCallback (cloud_cb);
   }
 
   /////////////////////////////////////////////////////////////////////////
@@ -214,16 +214,16 @@ public:
     if (!cloud || !keypoints || cloud->points.empty() || keypoints->points.empty())
       return;
 
-    keypoints3d.resize(keypoints->size());
+    keypoints3d.resize (keypoints->size());
     keypoints3d.width = keypoints->width;
     keypoints3d.height = keypoints->height;
     keypoints3d.is_dense = true;
 
     std::size_t j = 0;
     for (std::size_t i = 0; i < keypoints->size(); ++i) {
-      const PointT& pt = (*cloud)(static_cast<long unsigned int>((*keypoints)[i].u),
-                                  static_cast<long unsigned int>((*keypoints)[i].v));
-      if (!std::isfinite(pt.x) || !std::isfinite(pt.y) || !std::isfinite(pt.z))
+      const PointT& pt = (*cloud) (static_cast<long unsigned int> ((*keypoints)[i].u),
+                                   static_cast<long unsigned int> ((*keypoints)[i].v));
+      if (!std::isfinite (pt.x) || !std::isfinite (pt.y) || !std::isfinite (pt.z))
         continue;
 
       keypoints3d[j].x = pt.x;
@@ -233,7 +233,7 @@ public:
     }
 
     if (j != keypoints->size()) {
-      keypoints3d.resize(j);
+      keypoints3d.resize (j);
       keypoints3d.width = j;
       keypoints3d.height = 1;
     }
@@ -243,78 +243,78 @@ public:
   void
   run ()
   {
-    cloud_viewer_.registerKeyboardCallback(
-        &AGASTDemo::keyboard_callback, *this, static_cast<AGASTDemo*>(this));
-    image_viewer_.registerKeyboardCallback(
-        &AGASTDemo::keyboard_callback, *this, static_cast<AGASTDemo*>(this));
+    cloud_viewer_.registerKeyboardCallback (
+        &AGASTDemo::keyboard_callback, *this, static_cast<AGASTDemo*> (this));
+    image_viewer_.registerKeyboardCallback (
+        &AGASTDemo::keyboard_callback, *this, static_cast<AGASTDemo*> (this));
 
     grabber_.start();
 
     bool image_init = false, cloud_init = false;
     bool keypts = true;
 
-    CloudPtr keypoints3d(new Cloud);
+    CloudPtr keypoints3d (new Cloud);
 
     while (!cloud_viewer_.wasStopped() && !image_viewer_.wasStopped()) {
       PointCloud<KeyPointT>::Ptr keypoints;
       CloudConstPtr cloud;
 
       if (cloud_mutex_.try_lock()) {
-        cloud_.swap(cloud);
-        keypoints_.swap(keypoints);
+        cloud_.swap (cloud);
+        keypoints_.swap (keypoints);
 
         cloud_mutex_.unlock();
       }
 
       if (cloud) {
         if (!cloud_init) {
-          cloud_viewer_.setPosition(0, 0);
-          cloud_viewer_.setSize(cloud->width, cloud->height);
+          cloud_viewer_.setPosition (0, 0);
+          cloud_viewer_.setSize (cloud->width, cloud->height);
           cloud_init = true;
         }
 
-        if (!cloud_viewer_.updatePointCloud(cloud, "OpenNICloud")) {
-          cloud_viewer_.addPointCloud(cloud, "OpenNICloud");
-          cloud_viewer_.resetCameraViewpoint("OpenNICloud");
+        if (!cloud_viewer_.updatePointCloud (cloud, "OpenNICloud")) {
+          cloud_viewer_.addPointCloud (cloud, "OpenNICloud");
+          cloud_viewer_.resetCameraViewpoint ("OpenNICloud");
         }
 
         if (!image_init) {
-          image_viewer_.setPosition(cloud->width, 0);
-          image_viewer_.setSize(cloud->width, cloud->height);
+          image_viewer_.setPosition (cloud->width, 0);
+          image_viewer_.setSize (cloud->width, cloud->height);
           image_init = true;
         }
 
-        image_viewer_.addRGBImage<PointT>(cloud);
+        image_viewer_.addRGBImage<PointT> (cloud);
 
         if (keypoints && !keypoints->empty()) {
-          image_viewer_.removeLayer(getStrBool(keypts));
+          image_viewer_.removeLayer (getStrBool (keypts));
           for (std::size_t i = 0; i < keypoints->size(); ++i) {
-            int u = int((*keypoints)[i].u);
-            int v = int((*keypoints)[i].v);
-            image_viewer_.markPoint(u,
-                                    v,
-                                    visualization::red_color,
-                                    visualization::blue_color,
-                                    10,
-                                    getStrBool(!keypts));
+            int u = int ((*keypoints)[i].u);
+            int v = int ((*keypoints)[i].v);
+            image_viewer_.markPoint (u,
+                                     v,
+                                     visualization::red_color,
+                                     visualization::blue_color,
+                                     10,
+                                     getStrBool (!keypts));
           }
           keypts = !keypts;
 
-          get3DKeypoints(cloud, keypoints, *keypoints3d);
-          visualization::PointCloudColorHandlerCustom<PointT> blue(
+          get3DKeypoints (cloud, keypoints, *keypoints3d);
+          visualization::PointCloudColorHandlerCustom<PointT> blue (
               keypoints3d, 0, 0, 255);
-          if (!cloud_viewer_.updatePointCloud(keypoints3d, blue, "keypoints"))
-            cloud_viewer_.addPointCloud(keypoints3d, blue, "keypoints");
-          cloud_viewer_.setPointCloudRenderingProperties(
+          if (!cloud_viewer_.updatePointCloud (keypoints3d, blue, "keypoints"))
+            cloud_viewer_.addPointCloud (keypoints3d, blue, "keypoints");
+          cloud_viewer_.setPointCloudRenderingProperties (
               visualization::PCL_VISUALIZER_POINT_SIZE, 20, "keypoints");
-          cloud_viewer_.setPointCloudRenderingProperties(
+          cloud_viewer_.setPointCloudRenderingProperties (
               visualization::PCL_VISUALIZER_OPACITY, 0.5, "keypoints");
         }
       }
 
       cloud_viewer_.spinOnce();
       image_viewer_.spinOnce();
-      std::this_thread::sleep_for(100us);
+      std::this_thread::sleep_for (100us);
     }
 
     grabber_.stop();
@@ -344,15 +344,15 @@ int
 main (int argc, char** argv)
 {
   bool debug = false;
-  pcl::console::parse_argument(argc, argv, "-debug", debug);
+  pcl::console::parse_argument (argc, argv, "-debug", debug);
   if (debug)
-    pcl::console::setVerbosityLevel(pcl::console::L_DEBUG);
+    pcl::console::setVerbosityLevel (pcl::console::L_DEBUG);
   else
-    pcl::console::setVerbosityLevel(pcl::console::L_INFO);
+    pcl::console::setVerbosityLevel (pcl::console::L_INFO);
 
-  std::string device_id("#1");
-  OpenNIGrabber grabber(device_id);
-  AGASTDemo<PointXYZRGBA> openni_viewer(grabber);
+  std::string device_id ("#1");
+  OpenNIGrabber grabber (device_id);
+  AGASTDemo<PointXYZRGBA> openni_viewer (grabber);
 
   openni_viewer.init();
   openni_viewer.run();

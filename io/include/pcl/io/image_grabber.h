@@ -64,24 +64,24 @@ public:
    * publishing the next PCD in the list. \param[in] repeat whether to play PCD file in
    * an endless loop or not. \param pclzf_mode
    */
-  ImageGrabberBase(const std::string& directory,
-                   float frames_per_second,
-                   bool repeat,
-                   bool pclzf_mode);
+  ImageGrabberBase (const std::string& directory,
+                    float frames_per_second,
+                    bool repeat,
+                    bool pclzf_mode);
 
-  ImageGrabberBase(const std::string& depth_directory,
-                   const std::string& rgb_directory,
-                   float frames_per_second,
-                   bool repeat);
+  ImageGrabberBase (const std::string& depth_directory,
+                    const std::string& rgb_directory,
+                    float frames_per_second,
+                    bool repeat);
   /** \brief Constructor taking a list of paths to PCD files, that are played in the
    * order they appear in the list. \param[in] depth_image_files Path to the depth image
    * files files. \param[in] frames_per_second frames per second. If 0, start()
    * functions like a trigger, publishing the next PCD in the list. \param[in] repeat
    * whether to play PCD file in an endless loop or not.
    */
-  ImageGrabberBase(const std::vector<std::string>& depth_image_files,
-                   float frames_per_second,
-                   bool repeat);
+  ImageGrabberBase (const std::vector<std::string>& depth_image_files,
+                    float frames_per_second,
+                    bool repeat);
 
   /** \brief Virtual destructor. */
   ~ImageGrabberBase() noexcept override;
@@ -223,26 +223,26 @@ public:
   using Ptr = shared_ptr<ImageGrabber>;
   using ConstPtr = shared_ptr<const ImageGrabber>;
 
-  ImageGrabber(const std::string& dir,
-               float frames_per_second = 0,
-               bool repeat = false,
-               bool pclzf_mode = false);
+  ImageGrabber (const std::string& dir,
+                float frames_per_second = 0,
+                bool repeat = false,
+                bool pclzf_mode = false);
 
-  ImageGrabber(const std::string& depth_dir,
-               const std::string& rgb_dir,
-               float frames_per_second = 0,
-               bool repeat = false);
+  ImageGrabber (const std::string& depth_dir,
+                const std::string& rgb_dir,
+                float frames_per_second = 0,
+                bool repeat = false);
 
-  ImageGrabber(const std::vector<std::string>& depth_image_files,
-               float frames_per_second = 0,
-               bool repeat = false);
+  ImageGrabber (const std::vector<std::string>& depth_image_files,
+                float frames_per_second = 0,
+                bool repeat = false);
 
   /** \brief Empty destructor */
   ~ImageGrabber() noexcept override = default;
 
   // Inherited from FileGrabber
   const typename pcl::PointCloud<PointT>::ConstPtr
-  operator[](std::size_t idx) const override;
+  operator[] (std::size_t idx) const override;
 
   // Inherited from FileGrabber
   std::size_t
@@ -253,53 +253,53 @@ protected:
   publish (const pcl::PCLPointCloud2& blob,
            const Eigen::Vector4f& origin,
            const Eigen::Quaternionf& orientation) const override;
-  boost::signals2::signal<void(const typename pcl::PointCloud<PointT>::ConstPtr&)>*
+  boost::signals2::signal<void (const typename pcl::PointCloud<PointT>::ConstPtr&)>*
       signal_;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
-ImageGrabber<PointT>::ImageGrabber(const std::string& dir,
-                                   float frames_per_second,
-                                   bool repeat,
-                                   bool pclzf_mode)
-: ImageGrabberBase(dir, frames_per_second, repeat, pclzf_mode)
+ImageGrabber<PointT>::ImageGrabber (const std::string& dir,
+                                    float frames_per_second,
+                                    bool repeat,
+                                    bool pclzf_mode)
+: ImageGrabberBase (dir, frames_per_second, repeat, pclzf_mode)
 {
-  signal_ = createSignal<void(const typename pcl::PointCloud<PointT>::ConstPtr&)>();
+  signal_ = createSignal<void (const typename pcl::PointCloud<PointT>::ConstPtr&)>();
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
-ImageGrabber<PointT>::ImageGrabber(const std::string& depth_dir,
-                                   const std::string& rgb_dir,
-                                   float frames_per_second,
-                                   bool repeat)
-: ImageGrabberBase(depth_dir, rgb_dir, frames_per_second, repeat)
+ImageGrabber<PointT>::ImageGrabber (const std::string& depth_dir,
+                                    const std::string& rgb_dir,
+                                    float frames_per_second,
+                                    bool repeat)
+: ImageGrabberBase (depth_dir, rgb_dir, frames_per_second, repeat)
 {
-  signal_ = createSignal<void(const typename pcl::PointCloud<PointT>::ConstPtr&)>();
+  signal_ = createSignal<void (const typename pcl::PointCloud<PointT>::ConstPtr&)>();
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
-ImageGrabber<PointT>::ImageGrabber(const std::vector<std::string>& depth_image_files,
-                                   float frames_per_second,
-                                   bool repeat)
-: ImageGrabberBase(depth_image_files, frames_per_second, repeat), signal_()
+ImageGrabber<PointT>::ImageGrabber (const std::vector<std::string>& depth_image_files,
+                                    float frames_per_second,
+                                    bool repeat)
+: ImageGrabberBase (depth_image_files, frames_per_second, repeat), signal_()
 {
-  signal_ = createSignal<void(const typename pcl::PointCloud<PointT>::ConstPtr&)>();
+  signal_ = createSignal<void (const typename pcl::PointCloud<PointT>::ConstPtr&)>();
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 const typename pcl::PointCloud<PointT>::ConstPtr
-ImageGrabber<PointT>::operator[](std::size_t idx) const
+ImageGrabber<PointT>::operator[] (std::size_t idx) const
 {
   pcl::PCLPointCloud2 blob;
   Eigen::Vector4f origin;
   Eigen::Quaternionf orientation;
-  getCloudAt(idx, blob, origin, orientation);
-  typename pcl::PointCloud<PointT>::Ptr cloud(new pcl::PointCloud<PointT>());
-  pcl::fromPCLPointCloud2(blob, *cloud);
+  getCloudAt (idx, blob, origin, orientation);
+  typename pcl::PointCloud<PointT>::Ptr cloud (new pcl::PointCloud<PointT>());
+  pcl::fromPCLPointCloud2 (blob, *cloud);
   cloud->sensor_origin_ = origin;
   cloud->sensor_orientation_ = orientation;
   return (cloud);
@@ -316,15 +316,15 @@ ImageGrabber<PointT>::size() const
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 void
-ImageGrabber<PointT>::publish(const pcl::PCLPointCloud2& blob,
-                              const Eigen::Vector4f& origin,
-                              const Eigen::Quaternionf& orientation) const
+ImageGrabber<PointT>::publish (const pcl::PCLPointCloud2& blob,
+                               const Eigen::Vector4f& origin,
+                               const Eigen::Quaternionf& orientation) const
 {
-  typename pcl::PointCloud<PointT>::Ptr cloud(new pcl::PointCloud<PointT>());
-  pcl::fromPCLPointCloud2(blob, *cloud);
+  typename pcl::PointCloud<PointT>::Ptr cloud (new pcl::PointCloud<PointT>());
+  pcl::fromPCLPointCloud2 (blob, *cloud);
   cloud->sensor_origin_ = origin;
   cloud->sensor_orientation_ = orientation;
 
-  signal_->operator()(cloud);
+  signal_->operator() (cloud);
 }
 } // namespace pcl

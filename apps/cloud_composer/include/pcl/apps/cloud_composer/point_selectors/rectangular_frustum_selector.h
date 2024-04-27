@@ -50,7 +50,7 @@ class RectangularFrustumSelector : public vtkInteractorStyleRubberBandPick {
 public:
   static RectangularFrustumSelector*
   New ();
-  vtkTypeMacro(RectangularFrustumSelector, vtkInteractorStyleRubberBandPick);
+  vtkTypeMacro (RectangularFrustumSelector, vtkInteractorStyleRubberBandPick);
 
   RectangularFrustumSelector();
 

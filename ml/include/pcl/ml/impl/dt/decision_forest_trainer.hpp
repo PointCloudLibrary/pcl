@@ -63,14 +63,14 @@ template <class FeatureType,
           class ExampleIndex,
           class NodeType>
 void
-DecisionForestTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::train(
+DecisionForestTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::train (
     pcl::DecisionForest<NodeType>& forest)
 {
   for (std::size_t tree_index = 0; tree_index < num_of_trees_to_train_; ++tree_index) {
     pcl::DecisionTree<NodeType> tree;
-    decision_tree_trainer_.train(tree);
+    decision_tree_trainer_.train (tree);
 
-    forest.push_back(tree);
+    forest.push_back (tree);
   }
 }
 

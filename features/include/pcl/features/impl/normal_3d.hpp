@@ -46,12 +46,12 @@
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT>
 void
-pcl::NormalEstimation<PointInT, PointOutT>::computeFeature(PointCloudOut& output)
+pcl::NormalEstimation<PointInT, PointOutT>::computeFeature (PointCloudOut& output)
 {
   // Allocate enough space to hold the results
   // \note This resize is irrelevant for a radiusSearch ().
-  pcl::Indices nn_indices(k_);
-  std::vector<float> nn_dists(k_);
+  pcl::Indices nn_indices (k_);
+  std::vector<float> nn_dists (k_);
 
   output.is_dense = true;
   // Save a few cycles by not checking every point for NaN/Inf values if the cloud is
@@ -59,14 +59,14 @@ pcl::NormalEstimation<PointInT, PointOutT>::computeFeature(PointCloudOut& output
   if (input_->is_dense) {
     // Iterating over the entire index vector
     for (std::size_t idx = 0; idx < indices_->size(); ++idx) {
-      if (this->searchForNeighbors(
+      if (this->searchForNeighbors (
               (*indices_)[idx], search_parameter_, nn_indices, nn_dists) == 0 ||
-          !computePointNormal(*surface_,
-                              nn_indices,
-                              output[idx].normal[0],
-                              output[idx].normal[1],
-                              output[idx].normal[2],
-                              output[idx].curvature)) {
+          !computePointNormal (*surface_,
+                               nn_indices,
+                               output[idx].normal[0],
+                               output[idx].normal[1],
+                               output[idx].normal[2],
+                               output[idx].curvature)) {
         output[idx].normal[0] = output[idx].normal[1] = output[idx].normal[2] =
             output[idx].curvature = std::numeric_limits<float>::quiet_NaN();
 
@@ -74,27 +74,27 @@ pcl::NormalEstimation<PointInT, PointOutT>::computeFeature(PointCloudOut& output
         continue;
       }
 
-      flipNormalTowardsViewpoint((*input_)[(*indices_)[idx]],
-                                 vpx_,
-                                 vpy_,
-                                 vpz_,
-                                 output[idx].normal[0],
-                                 output[idx].normal[1],
-                                 output[idx].normal[2]);
+      flipNormalTowardsViewpoint ((*input_)[(*indices_)[idx]],
+                                  vpx_,
+                                  vpy_,
+                                  vpz_,
+                                  output[idx].normal[0],
+                                  output[idx].normal[1],
+                                  output[idx].normal[2]);
     }
   }
   else {
     // Iterating over the entire index vector
     for (std::size_t idx = 0; idx < indices_->size(); ++idx) {
-      if (!isFinite((*input_)[(*indices_)[idx]]) ||
-          this->searchForNeighbors(
+      if (!isFinite ((*input_)[(*indices_)[idx]]) ||
+          this->searchForNeighbors (
               (*indices_)[idx], search_parameter_, nn_indices, nn_dists) == 0 ||
-          !computePointNormal(*surface_,
-                              nn_indices,
-                              output[idx].normal[0],
-                              output[idx].normal[1],
-                              output[idx].normal[2],
-                              output[idx].curvature)) {
+          !computePointNormal (*surface_,
+                               nn_indices,
+                               output[idx].normal[0],
+                               output[idx].normal[1],
+                               output[idx].normal[2],
+                               output[idx].curvature)) {
         output[idx].normal[0] = output[idx].normal[1] = output[idx].normal[2] =
             output[idx].curvature = std::numeric_limits<float>::quiet_NaN();
 
@@ -102,13 +102,13 @@ pcl::NormalEstimation<PointInT, PointOutT>::computeFeature(PointCloudOut& output
         continue;
       }
 
-      flipNormalTowardsViewpoint((*input_)[(*indices_)[idx]],
-                                 vpx_,
-                                 vpy_,
-                                 vpz_,
-                                 output[idx].normal[0],
-                                 output[idx].normal[1],
-                                 output[idx].normal[2]);
+      flipNormalTowardsViewpoint ((*input_)[(*indices_)[idx]],
+                                  vpx_,
+                                  vpy_,
+                                  vpz_,
+                                  output[idx].normal[0],
+                                  output[idx].normal[1],
+                                  output[idx].normal[2]);
     }
   }
 }

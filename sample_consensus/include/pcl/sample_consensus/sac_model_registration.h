@@ -76,11 +76,12 @@ public:
    * \param[in] random if true set the random seed to the current time, else set to
    * 12345 (default: false)
    */
-  SampleConsensusModelRegistration(const PointCloudConstPtr& cloud, bool random = false)
-  : SampleConsensusModel<PointT>(cloud, random), target_(), sample_dist_thresh_(0)
+  SampleConsensusModelRegistration (const PointCloudConstPtr& cloud,
+                                    bool random = false)
+  : SampleConsensusModel<PointT> (cloud, random), target_(), sample_dist_thresh_ (0)
   {
     // Call our own setInputCloud
-    setInputCloud(cloud);
+    setInputCloud (cloud);
     model_name_ = "SampleConsensusModelRegistration";
     sample_size_ = 3;
     model_size_ = 16;
@@ -92,15 +93,15 @@ public:
    * \param[in] random if true set the random seed to the current time, else set to
    * 12345 (default: false)
    */
-  SampleConsensusModelRegistration(const PointCloudConstPtr& cloud,
-                                   const Indices& indices,
-                                   bool random = false)
-  : SampleConsensusModel<PointT>(cloud, indices, random)
+  SampleConsensusModelRegistration (const PointCloudConstPtr& cloud,
+                                    const Indices& indices,
+                                    bool random = false)
+  : SampleConsensusModel<PointT> (cloud, indices, random)
   , target_()
-  , sample_dist_thresh_(0)
+  , sample_dist_thresh_ (0)
   {
     computeOriginalIndexMapping();
-    computeSampleDistanceThreshold(cloud, indices);
+    computeSampleDistanceThreshold (cloud, indices);
     model_name_ = "SampleConsensusModelRegistration";
     sample_size_ = 3;
     model_size_ = 16;
@@ -115,9 +116,9 @@ public:
   inline void
   setInputCloud (const PointCloudConstPtr& cloud) override
   {
-    SampleConsensusModel<PointT>::setInputCloud(cloud);
+    SampleConsensusModel<PointT>::setInputCloud (cloud);
     computeOriginalIndexMapping();
-    computeSampleDistanceThreshold(cloud);
+    computeSampleDistanceThreshold (cloud);
   }
 
   /** \brief Set the input point cloud target.
@@ -128,9 +129,9 @@ public:
   {
     target_ = target;
     // Cache the size and fill the target indices
-    const auto target_size = static_cast<index_t>(target->size());
-    indices_tgt_.reset(new Indices(target_size));
-    std::iota(indices_tgt_->begin(), indices_tgt_->end(), 0);
+    const auto target_size = static_cast<index_t> (target->size());
+    indices_tgt_.reset (new Indices (target_size));
+    std::iota (indices_tgt_->begin(), indices_tgt_->end(), 0);
     computeOriginalIndexMapping();
   }
 
@@ -142,7 +143,7 @@ public:
   setInputTarget (const PointCloudConstPtr& target, const Indices& indices_tgt)
   {
     target_ = target;
-    indices_tgt_.reset(new Indices(indices_tgt));
+    indices_tgt_.reset (new Indices (indices_tgt));
     computeOriginalIndexMapping();
   }
 
@@ -235,29 +236,29 @@ protected:
     Eigen::Vector4f xyz_centroid;
     Eigen::Matrix3f covariance_matrix;
 
-    if (computeMeanAndCovarianceMatrix(*cloud, covariance_matrix, xyz_centroid) == 0) {
-      PCL_ERROR("[pcl::SampleConsensusModelRegistration::"
-                "computeSampleDistanceThreshold] No valid points in cloud!\n");
+    if (computeMeanAndCovarianceMatrix (*cloud, covariance_matrix, xyz_centroid) == 0) {
+      PCL_ERROR ("[pcl::SampleConsensusModelRegistration::"
+                 "computeSampleDistanceThreshold] No valid points in cloud!\n");
       return;
     }
 
     // Check if the covariance matrix is finite or not.
     for (int i = 0; i < 3; ++i)
       for (int j = 0; j < 3; ++j)
-        if (!std::isfinite(covariance_matrix.coeffRef(i, j)))
-          PCL_ERROR(
+        if (!std::isfinite (covariance_matrix.coeffRef (i, j)))
+          PCL_ERROR (
               "[pcl::SampleConsensusModelRegistration::computeSampleDistanceThreshold] "
               "Covariance matrix has NaN values! Is the input cloud finite?\n");
 
     Eigen::Vector3f eigen_values;
-    pcl::eigen33(covariance_matrix, eigen_values);
+    pcl::eigen33 (covariance_matrix, eigen_values);
 
     // Compute the distance threshold for sample selection
     sample_dist_thresh_ = eigen_values.array().sqrt().sum() / 3.0;
     sample_dist_thresh_ *= sample_dist_thresh_;
-    PCL_DEBUG("[pcl::SampleConsensusModelRegistration::setInputCloud] Estimated a "
-              "sample selection distance threshold of: %f\n",
-              sample_dist_thresh_);
+    PCL_DEBUG ("[pcl::SampleConsensusModelRegistration::setInputCloud] Estimated a "
+               "sample selection distance threshold of: %f\n",
+               sample_dist_thresh_);
   }
 
   /** \brief Computes an "optimal" sample distance threshold based on the
@@ -272,9 +273,9 @@ protected:
     // Compute the principal directions via PCA
     Eigen::Vector4f xyz_centroid;
     Eigen::Matrix3f covariance_matrix;
-    if (computeMeanAndCovarianceMatrix(
+    if (computeMeanAndCovarianceMatrix (
             *cloud, indices, covariance_matrix, xyz_centroid) == 0) {
-      PCL_ERROR(
+      PCL_ERROR (
           "[pcl::SampleConsensusModelRegistration::computeSampleDistanceThreshold] No "
           "valid points given by cloud and indices!\n");
       return;
@@ -283,20 +284,20 @@ protected:
     // Check if the covariance matrix is finite or not.
     for (int i = 0; i < 3; ++i)
       for (int j = 0; j < 3; ++j)
-        if (!std::isfinite(covariance_matrix.coeffRef(i, j)))
-          PCL_ERROR(
+        if (!std::isfinite (covariance_matrix.coeffRef (i, j)))
+          PCL_ERROR (
               "[pcl::SampleConsensusModelRegistration::computeSampleDistanceThreshold] "
               "Covariance matrix has NaN values! Is the input cloud finite?\n");
 
     Eigen::Vector3f eigen_values;
-    pcl::eigen33(covariance_matrix, eigen_values);
+    pcl::eigen33 (covariance_matrix, eigen_values);
 
     // Compute the distance threshold for sample selection
     sample_dist_thresh_ = eigen_values.array().sqrt().sum() / 3.0;
     sample_dist_thresh_ *= sample_dist_thresh_;
-    PCL_DEBUG("[pcl::SampleConsensusModelRegistration::setInputCloud] Estimated a "
-              "sample selection distance threshold of: %f\n",
-              sample_dist_thresh_);
+    PCL_DEBUG ("[pcl::SampleConsensusModelRegistration::setInputCloud] Estimated a "
+               "sample selection distance threshold of: %f\n",
+               sample_dist_thresh_);
   }
 
   /** \brief Estimate a rigid transformation between a source and a target point cloud
@@ -323,32 +324,32 @@ protected:
   computeOriginalIndexMapping ()
   {
     if (!indices_tgt_) {
-      PCL_DEBUG("[pcl::SampleConsensusModelRegistration::computeOriginalIndexMapping] "
-                "Cannot compute mapping: indices_tgt_ is null.\n");
+      PCL_DEBUG ("[pcl::SampleConsensusModelRegistration::computeOriginalIndexMapping] "
+                 "Cannot compute mapping: indices_tgt_ is null.\n");
       return;
     }
     if (!indices_) {
-      PCL_DEBUG("[pcl::SampleConsensusModelRegistration::computeOriginalIndexMapping] "
-                "Cannot compute mapping: indices_ is null.\n");
+      PCL_DEBUG ("[pcl::SampleConsensusModelRegistration::computeOriginalIndexMapping] "
+                 "Cannot compute mapping: indices_ is null.\n");
       return;
     }
     if (indices_->empty()) {
-      PCL_DEBUG("[pcl::SampleConsensusModelRegistration::computeOriginalIndexMapping] "
-                "Cannot compute mapping: indices_ is empty.\n");
+      PCL_DEBUG ("[pcl::SampleConsensusModelRegistration::computeOriginalIndexMapping] "
+                 "Cannot compute mapping: indices_ is empty.\n");
       return;
     }
     if (indices_->size() != indices_tgt_->size()) {
-      PCL_DEBUG("[pcl::SampleConsensusModelRegistration::computeOriginalIndexMapping] "
-                "Cannot compute mapping: indices_ and indices_tgt_ are not the same "
-                "size (%zu vs %zu).\n",
-                indices_->size(),
-                indices_tgt_->size());
+      PCL_DEBUG ("[pcl::SampleConsensusModelRegistration::computeOriginalIndexMapping] "
+                 "Cannot compute mapping: indices_ and indices_tgt_ are not the same "
+                 "size (%zu vs %zu).\n",
+                 indices_->size(),
+                 indices_tgt_->size());
       return;
     }
     for (std::size_t i = 0; i < indices_->size(); ++i)
       correspondences_[(*indices_)[i]] = (*indices_tgt_)[i];
-    PCL_DEBUG("[pcl::SampleConsensusModelRegistration::computeOriginalIndexMapping] "
-              "Successfully computed mapping.\n");
+    PCL_DEBUG ("[pcl::SampleConsensusModelRegistration::computeOriginalIndexMapping] "
+               "Successfully computed mapping.\n");
   }
 
   /** \brief A boost shared pointer to the target point cloud data array. */

@@ -43,7 +43,7 @@ using namespace pcl;
 using namespace on_nurbs;
 
 void
-SparseMat::get(std::vector<int>& i, std::vector<int>& j, std::vector<double>& v)
+SparseMat::get (std::vector<int>& i, std::vector<int>& j, std::vector<double>& v)
 {
   std::map<int, std::map<int, double>>::iterator it_row;
   std::map<int, double>::iterator it_col;
@@ -56,9 +56,9 @@ SparseMat::get(std::vector<int>& i, std::vector<int>& j, std::vector<double>& v)
   while (it_row != m_mat.end()) {
     it_col = it_row->second.begin();
     while (it_col != it_row->second.end()) {
-      i.push_back(it_row->first);
-      j.push_back(it_col->first);
-      v.push_back(it_col->second);
+      i.push_back (it_row->first);
+      j.push_back (it_col->first);
+      v.push_back (it_col->second);
       ++it_col;
     }
     ++it_row;
@@ -66,16 +66,16 @@ SparseMat::get(std::vector<int>& i, std::vector<int>& j, std::vector<double>& v)
 }
 
 double
-SparseMat::get(int i, int j)
+SparseMat::get (int i, int j)
 {
   std::map<int, std::map<int, double>>::iterator it_row;
   std::map<int, double>::iterator it_col;
 
-  it_row = m_mat.find(i);
+  it_row = m_mat.find (i);
   if (it_row == m_mat.end())
     return 0.0;
 
-  it_col = it_row->second.find(j);
+  it_col = it_row->second.find (j);
   if (it_col == it_row->second.end())
     return 0.0;
 
@@ -83,11 +83,11 @@ SparseMat::get(int i, int j)
 }
 
 void
-SparseMat::set(int i, int j, double v)
+SparseMat::set (int i, int j, double v)
 {
 
   if (i < 0 || j < 0) {
-    printf("[SparseMat::set] Warning index out of bounds (%d,%d)\n", i, j);
+    printf ("[SparseMat::set] Warning index out of bounds (%d,%d)\n", i, j);
     return;
   }
 
@@ -97,18 +97,18 @@ SparseMat::set(int i, int j, double v)
     std::map<int, std::map<int, double>>::iterator it_row;
     std::map<int, double>::iterator it_col;
 
-    it_row = m_mat.find(i);
+    it_row = m_mat.find (i);
     if (it_row == m_mat.end())
       return;
 
-    it_col = it_row->second.find(j);
+    it_col = it_row->second.find (j);
     if (it_col == it_row->second.end())
       return;
 
-    it_row->second.erase(it_col);
+    it_row->second.erase (it_col);
     if (it_row->second.empty()) {
     }
-    m_mat.erase(it_row);
+    m_mat.erase (it_row);
   }
   else {
     // update entry
@@ -117,33 +117,33 @@ SparseMat::set(int i, int j, double v)
 }
 
 void
-SparseMat::deleteRow(int i)
+SparseMat::deleteRow (int i)
 {
 
   std::map<int, std::map<int, double>>::iterator it_row;
 
-  it_row = m_mat.find(i);
+  it_row = m_mat.find (i);
   if (it_row != m_mat.end())
-    m_mat.erase(it_row);
+    m_mat.erase (it_row);
 }
 
 void
-SparseMat::deleteColumn(int j)
+SparseMat::deleteColumn (int j)
 {
   std::map<int, std::map<int, double>>::iterator it_row;
   std::map<int, double>::iterator it_col;
 
   it_row = m_mat.begin();
   while (it_row != m_mat.end()) {
-    it_col = it_row->second.find(j);
+    it_col = it_row->second.find (j);
     if (it_col != it_row->second.end())
-      it_row->second.erase(it_col);
+      it_row->second.erase (it_col);
     ++it_row;
   }
 }
 
 void
-SparseMat::size(int& si, int& sj)
+SparseMat::size (int& si, int& sj)
 {
   std::map<int, std::map<int, double>>::iterator it_row;
   std::map<int, double>::iterator it_col;
@@ -180,7 +180,7 @@ SparseMat::nonzeros()
 
   it_row = m_mat.begin();
   while (it_row != m_mat.end()) {
-    s += int(it_row->second.size());
+    s += int (it_row->second.size());
 
     ++it_row;
   }
@@ -192,13 +192,13 @@ void
 SparseMat::printLong()
 {
   int si, sj;
-  size(si, sj);
+  size (si, sj);
 
   for (int i = 0; i < si; i++) {
     for (int j = 0; j < sj; j++) {
-      printf("%f ", get(i, j));
+      printf ("%f ", get (i, j));
     }
-    printf("\n");
+    printf ("\n");
   }
 }
 
@@ -212,10 +212,10 @@ SparseMat::print()
   while (it_row != m_mat.end()) {
     it_col = it_row->second.begin();
     while (it_col != it_row->second.end()) {
-      printf("[%d,%d] %f ", it_row->first, it_col->first, it_col->second);
+      printf ("[%d,%d] %f ", it_row->first, it_col->first, it_col->second);
       ++it_col;
     }
-    printf("\n");
+    printf ("\n");
     ++it_row;
   }
 }

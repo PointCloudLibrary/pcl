@@ -77,8 +77,8 @@ public:
    * \param[in] random if true set the random seed to the current time, else set to
    * 12345 (default: false)
    */
-  SampleConsensusModelLine(const PointCloudConstPtr& cloud, bool random = false)
-  : SampleConsensusModel<PointT>(cloud, random)
+  SampleConsensusModelLine (const PointCloudConstPtr& cloud, bool random = false)
+  : SampleConsensusModel<PointT> (cloud, random)
   {
     model_name_ = "SampleConsensusModelLine";
     sample_size_ = 2;
@@ -91,10 +91,10 @@ public:
    * \param[in] random if true set the random seed to the current time, else set to
    * 12345 (default: false)
    */
-  SampleConsensusModelLine(const PointCloudConstPtr& cloud,
-                           const Indices& indices,
-                           bool random = false)
-  : SampleConsensusModel<PointT>(cloud, indices, random)
+  SampleConsensusModelLine (const PointCloudConstPtr& cloud,
+                            const Indices& indices,
+                            bool random = false)
+  : SampleConsensusModel<PointT> (cloud, indices, random)
   {
     model_name_ = "SampleConsensusModelLine";
     sample_size_ = 2;

@@ -16,27 +16,27 @@
 
 #include "pcl/surface/3rdparty/opennurbs/opennurbs.h"
 
-const ON_Color ON_Color::UnsetColor(ON_UNSET_COLOR);
+const ON_Color ON_Color::UnsetColor (ON_UNSET_COLOR);
 
-ON_Color::ON_Color() : m_color(0) {}
+ON_Color::ON_Color() : m_color (0) {}
 
-ON_Color::ON_Color(unsigned int colorref) : m_color(colorref) {}
+ON_Color::ON_Color (unsigned int colorref) : m_color (colorref) {}
 
-ON_Color::ON_Color(int r, int g, int b) : m_color(0) { SetRGB(r, g, b); }
+ON_Color::ON_Color (int r, int g, int b) : m_color (0) { SetRGB (r, g, b); }
 
-ON_Color::ON_Color(int r, int g, int b, int a) : m_color(0) { SetRGBA(r, g, b, a); }
+ON_Color::ON_Color (int r, int g, int b, int a) : m_color (0) { SetRGBA (r, g, b, a); }
 
 unsigned int
 ON_Color::WindowsRGB() const
 {
-  unsigned int RGB = ON_Color(Red(), Green(), Blue());
+  unsigned int RGB = ON_Color (Red(), Green(), Blue());
   return RGB;
 }
 
 ON_Color::operator unsigned int() const { return m_color; }
 
 int
-ON_Color::Compare(const ON_Color& b) const
+ON_Color::Compare (const ON_Color& b) const
 {
   unsigned int bc = b;
   return (((int)m_color) - ((int)bc));
@@ -99,19 +99,19 @@ ON_Color::FractionAlpha() const
 }
 
 void
-ON_Color::SetRGB(int r, int g, int b) // 0 to 255
+ON_Color::SetRGB (int r, int g, int b) // 0 to 255
 {
-  SetRGBA(r, g, b, 0);
+  SetRGBA (r, g, b, 0);
 }
 
 void
-ON_Color::SetFractionalRGB(double r, double g, double b)
+ON_Color::SetFractionalRGB (double r, double g, double b)
 {
-  SetFractionalRGBA(r, g, b, 0.0);
+  SetFractionalRGBA (r, g, b, 0.0);
 }
 
 void
-ON_Color::SetAlpha(int alpha)
+ON_Color::SetAlpha (int alpha)
 {
   if (alpha < 0)
     alpha = 0;
@@ -121,17 +121,17 @@ ON_Color::SetAlpha(int alpha)
 }
 
 void
-ON_Color::SetFractionalAlpha(double alpha)
+ON_Color::SetFractionalAlpha (double alpha)
 {
   if (alpha < 0.0)
     alpha = 0.0;
   else if (alpha > 1.0)
     alpha = 1.0;
-  SetAlpha((int)(alpha * 255.0));
+  SetAlpha ((int)(alpha * 255.0));
 }
 
 void
-ON_Color::SetRGBA(int red, int green, int blue, int alpha)
+ON_Color::SetRGBA (int red, int green, int blue, int alpha)
 {
   if (red < 0)
     red = 0;
@@ -153,7 +153,7 @@ ON_Color::SetRGBA(int red, int green, int blue, int alpha)
 }
 
 void
-ON_Color::SetFractionalRGBA(double red, double green, double blue, double alpha)
+ON_Color::SetFractionalRGBA (double red, double green, double blue, double alpha)
 {
   int r, g, b, a;
   if (red < 0.0)
@@ -193,7 +193,7 @@ ON_Color::SetFractionalRGBA(double red, double green, double blue, double alpha)
   if ((alpha - a) >= 0.5)
     a++;
 
-  SetRGBA(r, g, b, a);
+  SetRGBA (r, g, b, a);
 }
 
 double
@@ -281,9 +281,9 @@ ON_Color::Value() const
 }
 
 void
-ON_Color::SetHSV(double hue,        // hue in radians
-                 double saturation, // satuation 0.0 = gray, 1.0 = saturated
-                 double value       // value
+ON_Color::SetHSV (double hue,        // hue in radians
+                  double saturation, // satuation 0.0 = gray, 1.0 = saturated
+                  double value       // value
 )
 {
   int i;
@@ -295,12 +295,12 @@ ON_Color::SetHSV(double hue,        // hue in radians
   }
   else {
     hue *= 3.0 / ON_PI; // (6.0 / 2.0 * ON_PI);
-    i = (int)floor(hue);
+    i = (int)floor (hue);
     if (i < 0 || i > 5) {
-      hue = fmod(hue, 6.0);
+      hue = fmod (hue, 6.0);
       if (hue < 0.0)
         hue += 6.0;
-      i = (int)floor(hue);
+      i = (int)floor (hue);
     }
     f = hue - i;
     p = value * (1.0 - saturation);
@@ -344,5 +344,5 @@ ON_Color::SetHSV(double hue,        // hue in radians
       break; // to keep lint quiet
     }
   }
-  SetFractionalRGB(r, g, b);
+  SetFractionalRGB (r, g, b);
 }

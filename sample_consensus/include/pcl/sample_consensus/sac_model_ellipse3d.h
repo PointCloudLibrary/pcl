@@ -58,8 +58,8 @@ public:
    * \param[in] random if true set the random seed to the current time, else set to
    * 12345 (default: false)
    */
-  SampleConsensusModelEllipse3D(const PointCloudConstPtr& cloud, bool random = false)
-  : SampleConsensusModel<PointT>(cloud, random)
+  SampleConsensusModelEllipse3D (const PointCloudConstPtr& cloud, bool random = false)
+  : SampleConsensusModel<PointT> (cloud, random)
   {
     model_name_ = "SampleConsensusModelEllipse3D";
     sample_size_ = 6;
@@ -72,10 +72,10 @@ public:
    * \param[in] random if true set the random seed to the current time, else set to
    * 12345 (default: false)
    */
-  SampleConsensusModelEllipse3D(const PointCloudConstPtr& cloud,
-                                const Indices& indices,
-                                bool random = false)
-  : SampleConsensusModel<PointT>(cloud, indices, random)
+  SampleConsensusModelEllipse3D (const PointCloudConstPtr& cloud,
+                                 const Indices& indices,
+                                 bool random = false)
+  : SampleConsensusModel<PointT> (cloud, indices, random)
   {
     model_name_ = "SampleConsensusModelEllipse3D";
     sample_size_ = 6;
@@ -88,7 +88,7 @@ public:
   /** \brief Copy constructor.
    * \param[in] source the model to copy into this
    */
-  SampleConsensusModelEllipse3D(const SampleConsensusModelEllipse3D& source)
+  SampleConsensusModelEllipse3D (const SampleConsensusModelEllipse3D& source)
   : SampleConsensusModel<PointT>()
   {
     *this = source;
@@ -99,9 +99,9 @@ public:
    * \param[in] source the model to copy into this
    */
   inline SampleConsensusModelEllipse3D&
-  operator=(const SampleConsensusModelEllipse3D& source)
+  operator= (const SampleConsensusModelEllipse3D& source)
   {
-    SampleConsensusModel<PointT>::operator=(source);
+    SampleConsensusModel<PointT>::operator= (source);
     return (*this);
   }
 
@@ -210,9 +210,9 @@ private:
      * \param[in] indices the indices of data points to evaluate
      * \param[in] estimator pointer to the estimator object
      */
-    OptimizationFunctor(const pcl::SampleConsensusModelEllipse3D<PointT>* model,
-                        const Indices& indices)
-    : pcl::Functor<double>(indices.size()), model_(model), indices_(indices)
+    OptimizationFunctor (const pcl::SampleConsensusModelEllipse3D<PointT>* model,
+                         const Indices& indices)
+    : pcl::Functor<double> (indices.size()), model_ (model), indices_ (indices)
     {}
 
     /** Cost function to be minimized
@@ -221,31 +221,31 @@ private:
      * \return 0
      */
     int
-    operator()(const Eigen::VectorXd& x, Eigen::VectorXd& fvec) const
+    operator() (const Eigen::VectorXd& x, Eigen::VectorXd& fvec) const
     {
       // c : Ellipse Center
-      const Eigen::Vector3f c(x[0], x[1], x[2]);
+      const Eigen::Vector3f c (x[0], x[1], x[2]);
       // n : Ellipse (Plane) Normal
-      const Eigen::Vector3f n_axis(x[5], x[6], x[7]);
+      const Eigen::Vector3f n_axis (x[5], x[6], x[7]);
       // x : Ellipse (Plane) X-Axis
-      const Eigen::Vector3f x_axis(x[8], x[9], x[10]);
+      const Eigen::Vector3f x_axis (x[8], x[9], x[10]);
       // y : Ellipse (Plane) Y-Axis
-      const Eigen::Vector3f y_axis = n_axis.cross(x_axis).normalized();
+      const Eigen::Vector3f y_axis = n_axis.cross (x_axis).normalized();
       // a : Ellipse semi-major axis (X) length
-      const float par_a(x[3]);
+      const float par_a (x[3]);
       // b : Ellipse semi-minor axis (Y) length
-      const float par_b(x[4]);
+      const float par_b (x[4]);
 
       // Compute the rotation matrix and its transpose
-      const Eigen::Matrix3f Rot = (Eigen::Matrix3f(3, 3) << x_axis(0),
-                                   y_axis(0),
-                                   n_axis(0),
-                                   x_axis(1),
-                                   y_axis(1),
-                                   n_axis(1),
-                                   x_axis(2),
-                                   y_axis(2),
-                                   n_axis(2))
+      const Eigen::Matrix3f Rot = (Eigen::Matrix3f (3, 3) << x_axis (0),
+                                   y_axis (0),
+                                   n_axis (0),
+                                   x_axis (1),
+                                   y_axis (1),
+                                   n_axis (1),
+                                   x_axis (2),
+                                   y_axis (2),
+                                   n_axis (2))
                                       .finished();
       const Eigen::Matrix3f Rot_T = Rot.transpose();
 
@@ -263,10 +263,10 @@ private:
         // given by the norm of a vector that is normal to the ellipse tangent
         // calculated at the point it intersects the tangent.
         const Eigen::VectorXf params =
-            (Eigen::VectorXf(5) << par_a, par_b, 0.0, 0.0, 0.0).finished();
+            (Eigen::VectorXf (5) << par_a, par_b, 0.0, 0.0, 0.0).finished();
         float th_opt;
         const Eigen::Vector2f distanceVector =
-            dvec2ellipse(params, p_(0), p_(1), th_opt);
+            dvec2ellipse (params, p_ (0), p_ (1), th_opt);
         fvec[i] = distanceVector.norm();
       }
       return (0);

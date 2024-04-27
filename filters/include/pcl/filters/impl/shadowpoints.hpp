@@ -45,20 +45,20 @@
 ///////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename NormalT>
 void
-pcl::ShadowPoints<PointT, NormalT>::applyFilter(PointCloud& output)
+pcl::ShadowPoints<PointT, NormalT>::applyFilter (PointCloud& output)
 {
-  assert(input_normals_ != nullptr);
-  output.resize(input_->size());
+  assert (input_normals_ != nullptr);
+  output.resize (input_->size());
   if (extract_removed_indices_)
-    removed_indices_->resize(input_->size());
+    removed_indices_->resize (input_->size());
 
   std::size_t cp = 0;
   std::size_t ri = 0;
   for (std::size_t i = 0; i < input_->size(); i++) {
     const NormalT& normal = (*input_normals_)[i];
     const PointT& pt = (*input_)[i];
-    const float val = std::abs(normal.normal_x * pt.x + normal.normal_y * pt.y +
-                               normal.normal_z * pt.z);
+    const float val = std::abs (normal.normal_x * pt.x + normal.normal_y * pt.y +
+                                normal.normal_z * pt.z);
 
     if ((val >= threshold_) ^ negative_)
       output[cp++] = pt;
@@ -71,8 +71,8 @@ pcl::ShadowPoints<PointT, NormalT>::applyFilter(PointCloud& output)
       }
     }
   }
-  output.resize(cp);
-  removed_indices_->resize(ri);
+  output.resize (cp);
+  removed_indices_->resize (ri);
   output.height = 1;
   output.width = output.size();
 }
@@ -80,12 +80,12 @@ pcl::ShadowPoints<PointT, NormalT>::applyFilter(PointCloud& output)
 ///////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename NormalT>
 void
-pcl::ShadowPoints<PointT, NormalT>::applyFilter(Indices& indices)
+pcl::ShadowPoints<PointT, NormalT>::applyFilter (Indices& indices)
 {
-  assert(input_normals_ != nullptr);
-  indices.resize(input_->size());
+  assert (input_normals_ != nullptr);
+  indices.resize (input_->size());
   if (extract_removed_indices_)
-    removed_indices_->resize(indices_->size());
+    removed_indices_->resize (indices_->size());
 
   unsigned int k = 0;
   unsigned int z = 0;
@@ -93,16 +93,16 @@ pcl::ShadowPoints<PointT, NormalT>::applyFilter(Indices& indices)
     const NormalT& normal = (*input_normals_)[idx];
     const PointT& pt = (*input_)[idx];
 
-    float val = std::abs(normal.normal_x * pt.x + normal.normal_y * pt.y +
-                         normal.normal_z * pt.z);
+    float val = std::abs (normal.normal_x * pt.x + normal.normal_y * pt.y +
+                          normal.normal_z * pt.z);
 
     if ((val >= threshold_) ^ negative_)
       indices[k++] = idx;
     else if (extract_removed_indices_)
       (*removed_indices_)[z++] = idx;
   }
-  indices.resize(k);
-  removed_indices_->resize(z);
+  indices.resize (k);
+  removed_indices_->resize (z);
 }
 
 #define PCL_INSTANTIATE_ShadowPoints(T, NT)                                            \

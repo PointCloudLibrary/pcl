@@ -25,7 +25,7 @@ using HeaderPtr = PCLHeader::Ptr;
 using HeaderConstPtr = PCLHeader::ConstPtr;
 
 inline std::ostream&
-operator<<(std::ostream& out, const PCLHeader& h)
+operator<< (std::ostream& out, const PCLHeader& h)
 {
   out << "seq: " << h.seq;
   out << " stamp: " << h.stamp;
@@ -34,7 +34,7 @@ operator<<(std::ostream& out, const PCLHeader& h)
 }
 
 inline bool
-operator==(const PCLHeader& lhs, const PCLHeader& rhs)
+operator== (const PCLHeader& lhs, const PCLHeader& rhs)
 {
   return (&lhs == &rhs) ||
          (lhs.seq == rhs.seq && lhs.stamp == rhs.stamp && lhs.frame_id == rhs.frame_id);

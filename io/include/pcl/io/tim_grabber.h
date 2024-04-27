@@ -28,12 +28,12 @@ namespace pcl {
 
 //// note: Protocol named CoLaA (used by SICK) has some information.
 ////       In this Grabber, only the amount_of_data is used, so other information is
-///truncated. /       Details of the protocol can be found at the following URL.
+/// truncated. /       Details of the protocol can be found at the following URL.
 
 //// pp.87~89 (table)
 
 ////
-///https://cdn.sickcn.com/media/docs/7/27/927/technical_information_telegram_listing_ranging_sensors_lms1xx_lms5xx_tim2xx_tim5xx_tim7xx_lms1000_mrs1000_mrs6000_nav310_ld_oem15xx_ld_lrs36xx_lms4000_en_im0045927.pdf
+/// https://cdn.sickcn.com/media/docs/7/27/927/technical_information_telegram_listing_ranging_sensors_lms1xx_lms5xx_tim2xx_tim5xx_tim7xx_lms1000_mrs1000_mrs6000_nav310_ld_oem15xx_ld_lrs36xx_lms4000_en_im0045927.pdf
 
 //// By this PDF, the header contains the following information in order
 
@@ -71,10 +71,10 @@ namespace pcl {
 class PCL_EXPORTS TimGrabber : public Grabber {
 public:
   using sig_cb_sick_tim_scan_point_cloud_xyz =
-      void(const pcl::PointCloud<pcl::PointXYZ>::ConstPtr&);
+      void (const pcl::PointCloud<pcl::PointXYZ>::ConstPtr&);
 
   TimGrabber();
-  TimGrabber(const boost::asio::ip::address& ipAddress, const std::uint16_t port);
+  TimGrabber (const boost::asio::ip::address& ipAddress, const std::uint16_t port);
   ~TimGrabber() noexcept override;
 
   void

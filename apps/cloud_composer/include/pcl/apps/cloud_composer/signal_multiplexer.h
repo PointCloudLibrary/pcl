@@ -52,7 +52,7 @@ class SignalMultiplexer : public QObject {
   Q_OBJECT
 
 public:
-  SignalMultiplexer(QObject* parent = nullptr);
+  SignalMultiplexer (QObject* parent = nullptr);
 
   /**
           Use this connect function instead of QObject::connect() to connect

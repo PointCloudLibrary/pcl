@@ -65,7 +65,7 @@ public:
   // =====CONSTRUCTOR & DESTRUCTOR=====
   /** Constructor */
   PCL_EXPORTS
-  RangeImage ();
+  RangeImage();
   /** Destructor */
   PCL_EXPORTS virtual ~RangeImage() = default;
 
@@ -122,7 +122,7 @@ public:
   inline Ptr
   makeShared ()
   {
-    return Ptr(new RangeImage(*this));
+    return Ptr (new RangeImage (*this));
   }
 
   /** \brief Reset all values to an empty range image */
@@ -147,9 +147,9 @@ public:
   void
   createFromPointCloud (
       const PointCloudType& point_cloud,
-      float angular_resolution = pcl::deg2rad(0.5f),
-      float max_angle_width = pcl::deg2rad(360.0f),
-      float max_angle_height = pcl::deg2rad(180.0f),
+      float angular_resolution = pcl::deg2rad (0.5f),
+      float max_angle_width = pcl::deg2rad (360.0f),
+      float max_angle_height = pcl::deg2rad (180.0f),
       const Eigen::Affine3f& sensor_pose = Eigen::Affine3f::Identity(),
       CoordinateFrame coordinate_frame = CAMERA_FRAME,
       float noise_level = 0.0f,
@@ -177,10 +177,10 @@ public:
   void
   createFromPointCloud (
       const PointCloudType& point_cloud,
-      float angular_resolution_x = pcl::deg2rad(0.5f),
-      float angular_resolution_y = pcl::deg2rad(0.5f),
-      float max_angle_width = pcl::deg2rad(360.0f),
-      float max_angle_height = pcl::deg2rad(180.0f),
+      float angular_resolution_x = pcl::deg2rad (0.5f),
+      float angular_resolution_y = pcl::deg2rad (0.5f),
+      float max_angle_width = pcl::deg2rad (360.0f),
+      float max_angle_height = pcl::deg2rad (180.0f),
       const Eigen::Affine3f& sensor_pose = Eigen::Affine3f::Identity(),
       CoordinateFrame coordinate_frame = CAMERA_FRAME,
       float noise_level = 0.0f,
@@ -314,8 +314,8 @@ public:
   createEmpty (float angular_resolution,
                const Eigen::Affine3f& sensor_pose = Eigen::Affine3f::Identity(),
                RangeImage::CoordinateFrame coordinate_frame = CAMERA_FRAME,
-               float angle_width = pcl::deg2rad(360.0f),
-               float angle_height = pcl::deg2rad(180.0f));
+               float angle_width = pcl::deg2rad (360.0f),
+               float angle_height = pcl::deg2rad (180.0f));
 
   /** \brief Create an empty depth image (filled with unobserved points)
    * \param angular_resolution_x the angular difference (in radians) between the
@@ -334,8 +334,8 @@ public:
                float angular_resolution_y,
                const Eigen::Affine3f& sensor_pose = Eigen::Affine3f::Identity(),
                RangeImage::CoordinateFrame coordinate_frame = CAMERA_FRAME,
-               float angle_width = pcl::deg2rad(360.0f),
-               float angle_height = pcl::deg2rad(180.0f));
+               float angle_width = pcl::deg2rad (360.0f),
+               float angle_height = pcl::deg2rad (180.0f));
 
   /** \brief Integrate the given point cloud into the current range image using a
    * z-buffer \param point_cloud the input point cloud \param noise_level - The distance
@@ -848,16 +848,15 @@ public:
    * integral image*/
   PCL_EXPORTS void // Template necessary so that this function also works in derived
                    // classes
-                   getBlurredImageUsingIntegralImage (int blur_radius,
-                                                      float* integral_image,
-                                                      int* valid_points_num_image,
-                                                      RangeImage& range_image) const;
+  getBlurredImageUsingIntegralImage (int blur_radius,
+                                     float* integral_image,
+                                     int* valid_points_num_image,
+                                     RangeImage& range_image) const;
 
   /** Get a blurred version of the range image using box filters */
   PCL_EXPORTS virtual void // Template necessary so that this function also works in
                            // derived classes
-                           getBlurredImage (int blur_radius,
-                                            RangeImage& range_image) const;
+  getBlurredImage (int blur_radius, RangeImage& range_image) const;
 
   /** Get the squared euclidean distance between the two image points.
    *  Returns -INFINITY if one of the points was not observed */
@@ -979,7 +978,7 @@ public:
  * /ingroup range_image
  */
 inline std::ostream&
-operator<<(std::ostream& os, const RangeImage& r)
+operator<< (std::ostream& os, const RangeImage& r)
 {
   os << "header: " << std::endl;
   os << r.header;
@@ -992,8 +991,8 @@ operator<<(std::ostream& os, const RangeImage& r)
      << r.sensor_orientation_.y() << ' ' << r.sensor_orientation_.z() << ' '
      << r.sensor_orientation_.w() << std::endl;
   os << "is_dense: " << r.is_dense << std::endl;
-  os << "angular resolution: " << RAD2DEG(r.getAngularResolutionX())
-     << "deg/pixel in x and " << RAD2DEG(r.getAngularResolutionY())
+  os << "angular resolution: " << RAD2DEG (r.getAngularResolutionX())
+     << "deg/pixel in x and " << RAD2DEG (r.getAngularResolutionY())
      << "deg/pixel in y.\n"
      << std::endl;
   return (os);

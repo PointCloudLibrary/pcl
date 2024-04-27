@@ -22,20 +22,20 @@ ON_Cylinder::ON_Cylinder()
   height[1] = 0.0;
 }
 
-ON_Cylinder::ON_Cylinder(const ON_Circle& c) { Create(c); }
+ON_Cylinder::ON_Cylinder (const ON_Circle& c) { Create (c); }
 
-ON_Cylinder::ON_Cylinder(const ON_Circle& c, double h) { Create(c, h); }
+ON_Cylinder::ON_Cylinder (const ON_Circle& c, double h) { Create (c, h); }
 
 ON_Cylinder::~ON_Cylinder() {}
 
 bool
-ON_Cylinder::Create(const ON_Circle& c)
+ON_Cylinder::Create (const ON_Circle& c)
 {
-  return Create(c, 0.0);
+  return Create (c, 0.0);
 }
 
 bool
-ON_Cylinder::Create(const ON_Circle& c, double h)
+ON_Cylinder::Create (const ON_Circle& c, double h)
 {
   circle = c;
   if (h > 0.0) {
@@ -80,20 +80,20 @@ ON_Cylinder::Height() const
 }
 
 ON_Circle
-ON_Cylinder::CircleAt(double t // linear parameter
+ON_Cylinder::CircleAt (double t // linear parameter
 ) const
 {
   ON_Circle c = circle;
   if (t != 0.0)
-    c.Translate(t * circle.plane.zaxis);
+    c.Translate (t * circle.plane.zaxis);
   return c;
 }
 
 ON_Line
-ON_Cylinder::LineAt(double s // angular parameter
+ON_Cylinder::LineAt (double s // angular parameter
 ) const
 {
-  ON_3dPoint p = circle.PointAt(s);
+  ON_3dPoint p = circle.PointAt (s);
   ON_Line line;
   line.from = p + height[0] * circle.plane.zaxis;
   line.to = p + height[1] * circle.plane.zaxis;
@@ -101,31 +101,31 @@ ON_Cylinder::LineAt(double s // angular parameter
 }
 
 ON_3dPoint
-ON_Cylinder::PointAt(double s, double t) const
+ON_Cylinder::PointAt (double s, double t) const
 {
-  return (circle.PointAt(s) + t * circle.plane.zaxis);
+  return (circle.PointAt (s) + t * circle.plane.zaxis);
 }
 
 ON_3dPoint
-ON_Cylinder::NormalAt(double s, double) const
+ON_Cylinder::NormalAt (double s, double) const
 {
-  ON_3dVector N = ON_CrossProduct(circle.TangentAt(s), circle.plane.zaxis);
+  ON_3dVector N = ON_CrossProduct (circle.TangentAt (s), circle.plane.zaxis);
   N.Unitize();
   return N;
 }
 
 // returns parameters of point on cylinder that is closest to given point
 bool
-ON_Cylinder::ClosestPointTo(ON_3dPoint point,
-                            double* s, // angular parameter
-                            double* t  // linear parameter
+ON_Cylinder::ClosestPointTo (ON_3dPoint point,
+                             double* s, // angular parameter
+                             double* t  // linear parameter
 ) const
 {
   bool rc = true;
   // const ON_3dVector v = point - circle.plane.origin;
   double h = (point - circle.plane.origin) * circle.plane.zaxis;
   if (s)
-    rc = circle.ClosestPointTo(point - h * circle.plane.zaxis, s);
+    rc = circle.ClosestPointTo (point - h * circle.plane.zaxis, s);
   if (t) {
     if (height[0] < height[1]) {
       if (h < height[0])
@@ -146,81 +146,81 @@ ON_Cylinder::ClosestPointTo(ON_3dPoint point,
 
 // returns point on cylinder that is closest to given point
 ON_3dPoint
-ON_Cylinder::ClosestPointTo(ON_3dPoint point) const
+ON_Cylinder::ClosestPointTo (ON_3dPoint point) const
 {
   double s, t;
-  ClosestPointTo(point, &s, &t);
-  return PointAt(s, t);
+  ClosestPointTo (point, &s, &t);
+  return PointAt (s, t);
 }
 
 // rotate plane about its origin
 bool
-ON_Cylinder::Rotate(double sin_angle,
-                    double cos_angle,
-                    const ON_3dVector& axis // axis of rotation
+ON_Cylinder::Rotate (double sin_angle,
+                     double cos_angle,
+                     const ON_3dVector& axis // axis of rotation
 )
 {
-  return Rotate(sin_angle, cos_angle, axis, circle.plane.origin);
+  return Rotate (sin_angle, cos_angle, axis, circle.plane.origin);
 }
 
 bool
-ON_Cylinder::Rotate(double angle,           // angle in radians
-                    const ON_3dVector& axis // axis of rotation
+ON_Cylinder::Rotate (double angle,           // angle in radians
+                     const ON_3dVector& axis // axis of rotation
 )
 {
-  return Rotate(sin(angle), cos(angle), axis, circle.plane.origin);
+  return Rotate (sin (angle), cos (angle), axis, circle.plane.origin);
 }
 
 // rotate plane about a point and axis
 bool
-ON_Cylinder::Rotate(double sin_angle,        // sin(angle)
-                    double cos_angle,        // cos(angle)
-                    const ON_3dVector& axis, // axis of rotation
-                    const ON_3dPoint& point  // center of rotation
+ON_Cylinder::Rotate (double sin_angle,        // sin(angle)
+                     double cos_angle,        // cos(angle)
+                     const ON_3dVector& axis, // axis of rotation
+                     const ON_3dPoint& point  // center of rotation
 )
 {
-  return circle.Rotate(sin_angle, cos_angle, axis, point);
+  return circle.Rotate (sin_angle, cos_angle, axis, point);
 }
 
 bool
-ON_Cylinder::Rotate(double angle,            // angle in radians
-                    const ON_3dVector& axis, // axis of rotation
-                    const ON_3dPoint& point  // center of rotation
+ON_Cylinder::Rotate (double angle,            // angle in radians
+                     const ON_3dVector& axis, // axis of rotation
+                     const ON_3dPoint& point  // center of rotation
 )
 {
-  return Rotate(sin(angle), cos(angle), axis, point);
+  return Rotate (sin (angle), cos (angle), axis, point);
 }
 
 bool
-ON_Cylinder::Translate(const ON_3dVector& delta)
+ON_Cylinder::Translate (const ON_3dVector& delta)
 {
-  return circle.Translate(delta);
+  return circle.Translate (delta);
 }
 
 int
-ON_Cylinder::GetNurbForm(ON_NurbsSurface& s) const
+ON_Cylinder::GetNurbForm (ON_NurbsSurface& s) const
 {
   int rc = 0;
   if (IsValid() && height[0] != height[1]) {
     ON_NurbsCurve n0, n1;
     int i;
-    ON_Circle c0 = CircleAt(height[0]);
-    ON_Circle c1 = CircleAt(height[1]);
+    ON_Circle c0 = CircleAt (height[0]);
+    ON_Circle c1 = CircleAt (height[1]);
 
     if (height[0] <= height[1]) {
-      c0.GetNurbForm(n0);
-      c1.GetNurbForm(n1);
+      c0.GetNurbForm (n0);
+      c1.GetNurbForm (n1);
     }
     else {
-      c0.GetNurbForm(n1);
-      c1.GetNurbForm(n0);
+      c0.GetNurbForm (n1);
+      c1.GetNurbForm (n0);
     }
 
     if (n0.m_dim != n1.m_dim || n0.m_is_rat != n1.m_is_rat ||
         n0.m_order != n1.m_order || n0.m_cv_count != n1.m_cv_count)
       return 0;
 
-    s.Create(3, true, n0.m_order, 2, n0.m_cv_count, 2);
+    s.Create (3, true, n0.m_order, 2, n0.m_cv_count, 2);
     if (height[0] <= height[1]) {
       s.m_knot[1][0] = height[0];
       s.m_knot[1][1] = height[1];
@@ -234,8 +234,8 @@ ON_Cylinder::GetNurbForm(ON_NurbsSurface& s) const
       s.m_knot[0][i] = n0.m_knot[i];
 
     for (i = 0; i < n0.m_cv_count; i++) {
-      s.SetCV(i, 0, ON::homogeneous_rational, n0.CV(i));
-      s.SetCV(i, 1, ON::homogeneous_rational, n1.CV(i));
+      s.SetCV (i, 0, ON::homogeneous_rational, n0.CV (i));
+      s.SetCV (i, 1, ON::homogeneous_rational, n1.CV (i));
     }
     rc = 2;
   }
@@ -243,36 +243,36 @@ ON_Cylinder::GetNurbForm(ON_NurbsSurface& s) const
 }
 
 ON_RevSurface*
-ON_Cylinder::RevSurfaceForm(ON_RevSurface* srf) const
+ON_Cylinder::RevSurfaceForm (ON_RevSurface* srf) const
 {
   if (srf)
     srf->Destroy();
   ON_RevSurface* pRevSurface = NULL;
   if (IsFinite() && IsValid()) {
     ON_Line line;
-    line.from = PointAt(0.0, height[0]);
-    line.to = PointAt(0.0, height[1]);
-    ON_Interval h(height[0],
-                  height[1]); // h = evaluation domain for line (must be increasing)
+    line.from = PointAt (0.0, height[0]);
+    line.to = PointAt (0.0, height[1]);
+    ON_Interval h (height[0],
+                   height[1]); // h = evaluation domain for line (must be increasing)
     if (h.IsDecreasing())
       h.Swap();
-    ON_LineCurve* line_curve = new ON_LineCurve(line, h[0], h[1]);
+    ON_LineCurve* line_curve = new ON_LineCurve (line, h[0], h[1]);
     if (srf)
       pRevSurface = srf;
     else
       pRevSurface = new ON_RevSurface();
-    pRevSurface->m_angle.Set(0.0, 2.0 * ON_PI);
+    pRevSurface->m_angle.Set (0.0, 2.0 * ON_PI);
     pRevSurface->m_t = pRevSurface->m_angle;
     pRevSurface->m_curve = line_curve;
     pRevSurface->m_axis.from = circle.plane.origin;
     pRevSurface->m_axis.to = circle.plane.origin + circle.plane.zaxis;
     pRevSurface->m_bTransposed = false;
-    ON_Circle c0(circle);
-    c0.Translate(height[0] * circle.plane.zaxis);
-    ON_Circle c1(circle);
-    c1.Translate(height[1] * circle.plane.zaxis);
+    ON_Circle c0 (circle);
+    c0.Translate (height[0] * circle.plane.zaxis);
+    ON_Circle c1 (circle);
+    c1.Translate (height[1] * circle.plane.zaxis);
     pRevSurface->m_bbox = c0.BoundingBox();
-    pRevSurface->m_bbox.Union(c1.BoundingBox());
+    pRevSurface->m_bbox.Union (c1.BoundingBox());
   }
   return pRevSurface;
 }

@@ -54,7 +54,7 @@ public:
   /** \brief Parameters for fitting */
   struct Parameter {
     double smoothness;
-    Parameter() : smoothness(0.1) {}
+    Parameter() : smoothness (0.1) {}
   };
 
 protected:
@@ -153,22 +153,22 @@ public:
   int
   grc2gl (int I, int J)
   {
-    return m_nurbs.CVCount(1) * I + J;
+    return m_nurbs.CVCount (1) * I + J;
   } // global row/col index to global lexicographic index
   int
   lrc2gl (int E, int F, int i, int j)
   {
-    return grc2gl(E + i, F + j);
+    return grc2gl (E + i, F + j);
   } // local row/col index to global lexicographic index
   int
   gl2gr (int A)
   {
-    return (static_cast<int>(A / m_nurbs.CVCount(1)));
+    return (static_cast<int> (A / m_nurbs.CVCount (1)));
   } // global lexicographic in global row index
   int
   gl2gc (int A)
   {
-    return (static_cast<int>(A % m_nurbs.CVCount(1)));
+    return (static_cast<int> (A % m_nurbs.CVCount (1)));
   } // global lexicographic in global col index
 };
 } // namespace on_nurbs

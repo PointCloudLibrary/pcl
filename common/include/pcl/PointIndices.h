@@ -22,7 +22,7 @@ using PointIndicesPtr = PointIndices::Ptr;
 using PointIndicesConstPtr = PointIndices::ConstPtr;
 
 inline std::ostream&
-operator<<(std::ostream& s, const ::pcl::PointIndices& v)
+operator<< (std::ostream& s, const ::pcl::PointIndices& v)
 {
   s << "header: " << std::endl;
   s << "  " << v.header;

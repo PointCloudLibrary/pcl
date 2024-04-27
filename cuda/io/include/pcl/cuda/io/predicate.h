@@ -49,7 +49,7 @@ namespace cuda {
 template <class T>
 struct isNotZero {
   __inline__ __host__ __device__ bool
-  operator()(T x)
+  operator() (T x)
   {
     return (x != 0);
   }
@@ -57,7 +57,7 @@ struct isNotZero {
 
 struct isInlier {
   __inline__ __host__ __device__ bool
-  operator()(int x)
+  operator() (int x)
   {
     return (x != -1);
   }
@@ -65,16 +65,16 @@ struct isInlier {
 
 struct isNotInlier {
   __inline__ __host__ __device__ bool
-  operator()(int x)
+  operator() (int x)
   {
     return (x == -1);
   }
 };
 
 struct SetColor {
-  SetColor(const OpenNIRGB& color) : color_(color) {}
+  SetColor (const OpenNIRGB& color) : color_ (color) {}
   __inline__ __host__ __device__ void
-  operator()(PointXYZRGB& point)
+  operator() (PointXYZRGB& point)
   {
     point.rgb.r = color_.r;
     point.rgb.g = color_.g;
@@ -84,9 +84,9 @@ struct SetColor {
 };
 
 struct ChangeColor {
-  ChangeColor(const OpenNIRGB& color) : color_(color) {}
+  ChangeColor (const OpenNIRGB& color) : color_ (color) {}
   __inline__ __host__ __device__ PointXYZRGB&
-  operator()(PointXYZRGB& point)
+  operator() (PointXYZRGB& point)
   {
     point.rgb.r = color_.r;
     point.rgb.g = color_.g;

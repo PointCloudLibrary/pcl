@@ -56,7 +56,7 @@ class MeshIndex;
 
 template <class IndexTagT>
 std::istream&
-operator>>(std::istream& is, MeshIndex<IndexTagT>&);
+operator>> (std::istream& is, MeshIndex<IndexTagT>&);
 
 template <class IndexTagT>
 class MeshIndex
@@ -75,12 +75,12 @@ public:
   using Self = MeshIndex<IndexTagT>;
 
   /** \brief Constructor. Initializes with an invalid index. */
-  MeshIndex() : index_(-1) {}
+  MeshIndex() : index_ (-1) {}
 
   /** \brief Constructor.
    * \param[in] index The integer index.
    */
-  explicit MeshIndex(const int index) : index_(index) {}
+  explicit MeshIndex (const int index) : index_ (index) {}
 
   /** \brief Returns true if the index is valid. */
   inline bool
@@ -112,14 +112,14 @@ public:
 
   /** \brief Comparison operators (with boost::operators): < > <= >= */
   inline bool
-  operator<(const Self& other) const
+  operator< (const Self& other) const
   {
     return (this->get() < other.get());
   }
 
   /** \brief Comparison operators (with boost::operators): == != */
   inline bool
-  operator==(const Self& other) const
+  operator== (const Self& other) const
   {
     return (this->get() == other.get());
   }
@@ -142,7 +142,7 @@ public:
 
   /** \brief Addition operators (with boost::operators): + += */
   inline Self&
-  operator+=(const Self& other)
+  operator+= (const Self& other)
   {
     index_ += other.get();
     return (*this);
@@ -150,7 +150,7 @@ public:
 
   /** \brief Subtraction operators (with boost::operators): - -= */
   inline Self&
-  operator-=(const Self& other)
+  operator-= (const Self& other)
   {
     index_ -= other.get();
     return (*this);
@@ -161,13 +161,13 @@ private:
   int index_;
 
   friend std::istream&
-  operator>><>(std::istream& is, MeshIndex<IndexTagT>& index);
+  operator>><> (std::istream& is, MeshIndex<IndexTagT>& index);
 };
 
 /** \brief ostream operator. */
 template <class IndexTagT>
 inline std::ostream&
-operator<<(std::ostream& os, const MeshIndex<IndexTagT>& index)
+operator<< (std::ostream& os, const MeshIndex<IndexTagT>& index)
 {
   return (os << index.get());
 }
@@ -175,7 +175,7 @@ operator<<(std::ostream& os, const MeshIndex<IndexTagT>& index)
 /** \brief istream operator. */
 template <class IndexTagT>
 inline std::istream&
-operator>>(std::istream& is, MeshIndex<IndexTagT>& index)
+operator>> (std::istream& is, MeshIndex<IndexTagT>& index)
 {
   return (is >> index.index_);
 }
@@ -223,7 +223,7 @@ namespace geometry {
 inline EdgeIndex
 toEdgeIndex (const HalfEdgeIndex& index)
 {
-  return (index.isValid() ? EdgeIndex(index.get() / 2) : EdgeIndex());
+  return (index.isValid() ? EdgeIndex (index.get() / 2) : EdgeIndex());
 }
 
 /** \brief Convert the given edge index to a half-edge index.
@@ -235,7 +235,7 @@ inline HalfEdgeIndex
 toHalfEdgeIndex (const EdgeIndex& index, const bool get_first = true)
 {
   return (index.isValid()
-              ? HalfEdgeIndex(index.get() * 2 + static_cast<int>(!get_first))
+              ? HalfEdgeIndex (index.get() * 2 + static_cast<int> (!get_first))
               : HalfEdgeIndex());
 }
 } // End namespace geometry

@@ -42,9 +42,10 @@
 #include <cuda_runtime_api.h>
 
 #if defined(__GNUC__)
-#define cudaSafeCall(expr) pcl::gpu::___cudaSafeCall(expr, __FILE__, __LINE__, __func__)
+#define cudaSafeCall(expr)                                                             \
+  pcl::gpu::___cudaSafeCall (expr, __FILE__, __LINE__, __func__)
 #else /* defined(__CUDACC__) || defined(__MSVC__) */
-#define cudaSafeCall(expr) pcl::gpu::___cudaSafeCall(expr, __FILE__, __LINE__)
+#define cudaSafeCall(expr) pcl::gpu::___cudaSafeCall (expr, __FILE__, __LINE__)
 #endif
 
 namespace pcl {
@@ -56,7 +57,7 @@ ___cudaSafeCall (cudaError_t err,
                  const char* func = "")
 {
   if (cudaSuccess != err)
-    error(cudaGetErrorString(err), file, line, func);
+    error (cudaGetErrorString (err), file, line, func);
 }
 
 static inline int

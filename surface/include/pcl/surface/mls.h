@@ -85,17 +85,17 @@ struct MLSResult {
     PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
 
-  inline MLSResult() : num_neighbors(0), curvature(0.0f), order(0), valid(false) {}
+  inline MLSResult() : num_neighbors (0), curvature (0.0f), order (0), valid (false) {}
 
-  inline MLSResult(const Eigen::Vector3d& a_query_point,
-                   const Eigen::Vector3d& a_mean,
-                   const Eigen::Vector3d& a_plane_normal,
-                   const Eigen::Vector3d& a_u,
-                   const Eigen::Vector3d& a_v,
-                   const Eigen::VectorXd& a_c_vec,
-                   const int a_num_neighbors,
-                   const float a_curvature,
-                   const int a_order);
+  inline MLSResult (const Eigen::Vector3d& a_query_point,
+                    const Eigen::Vector3d& a_mean,
+                    const Eigen::Vector3d& a_plane_normal,
+                    const Eigen::Vector3d& a_u,
+                    const Eigen::Vector3d& a_v,
+                    const Eigen::VectorXd& a_c_vec,
+                    const int a_num_neighbors,
+                    const float a_curvature,
+                    const int a_order);
 
   /** \brief Given a point calculate its 3D location in the MLS frame.
    * \param[in] pt The point
@@ -145,11 +145,11 @@ struct MLSResult {
    * \return The principal curvature [k1, k2] at the provided uv coordinates.
    * \note If an error occurs then 1e-5 is returned.
    */
-  PCL_DEPRECATED(1, 15, "use calculatePrincipalCurvatures() instead")
+  PCL_DEPRECATED (1, 15, "use calculatePrincipalCurvatures() instead")
   inline Eigen::Vector2f
   calculatePrincipleCurvatures (const double u, const double v) const
   {
-    return calculatePrincipalCurvatures(u, v);
+    return calculatePrincipalCurvatures (u, v);
   };
 
   /** \brief Project a point orthogonal to the polynomial surface.
@@ -225,7 +225,7 @@ struct MLSResult {
                      const pcl::Indices& nn_indices,
                      double search_radius,
                      int polynomial_order = 2,
-                     std::function<double(const double)> weight_func = {});
+                     std::function<double (const double)> weight_func = {});
 
   Eigen::Vector3d query_point; /**< \brief The query point about which the mls surface
                                   was generated */
@@ -256,7 +256,7 @@ private:
   inline double
   computeMLSWeight (const double sq_dist, const double sq_mls_radius)
   {
-    return (std::exp(-sq_dist / sq_mls_radius));
+    return (std::exp (-sq_dist / sq_mls_radius));
   }
 };
 
@@ -299,7 +299,7 @@ public:
   using PointCloudInConstPtr = typename PointCloudIn::ConstPtr;
 
   using SearchMethod =
-      std::function<int(pcl::index_t, double, pcl::Indices&, std::vector<float>&)>;
+      std::function<int (pcl::index_t, double, pcl::Indices&, std::vector<float>&)>;
 
   enum UpsamplingMethod {
     NONE, /**< \brief No upsampling will be done, only the input points will be
@@ -329,7 +329,7 @@ public:
   , tree_()
   ,
 
-  upsample_method_(NONE)
+  upsample_method_ (NONE)
   ,
 
   rng_uniform_distribution_(){};
@@ -358,7 +358,7 @@ public:
                              double radius,
                              pcl::Indices& k_indices,
                              std::vector<float>& k_sqr_distances) {
-      return tree_->radiusSearch(index, radius, k_indices, k_sqr_distances, 0);
+      return tree_->radiusSearch (index, radius, k_indices, k_sqr_distances, 0);
     };
   }
 
@@ -688,10 +688,10 @@ protected:
       bool valid{true};
     };
 
-    MLSVoxelGrid(PointCloudInConstPtr& cloud,
-                 IndicesPtr& indices,
-                 float voxel_size,
-                 int dilation_iteration_num);
+    MLSVoxelGrid (PointCloudInConstPtr& cloud,
+                  IndicesPtr& indices,
+                  float voxel_size,
+                  int dilation_iteration_num);
 
     void
     dilate ();
@@ -706,28 +706,28 @@ protected:
     getIndexIn3D (std::uint64_t index_1d, Eigen::Vector3i& index_3d) const
     {
       index_3d[0] =
-          static_cast<Eigen::Vector3i::Scalar>(index_1d / (data_size_ * data_size_));
+          static_cast<Eigen::Vector3i::Scalar> (index_1d / (data_size_ * data_size_));
       index_1d -= index_3d[0] * data_size_ * data_size_;
-      index_3d[1] = static_cast<Eigen::Vector3i::Scalar>(index_1d / data_size_);
+      index_3d[1] = static_cast<Eigen::Vector3i::Scalar> (index_1d / data_size_);
       index_1d -= index_3d[1] * data_size_;
-      index_3d[2] = static_cast<Eigen::Vector3i::Scalar>(index_1d);
+      index_3d[2] = static_cast<Eigen::Vector3i::Scalar> (index_1d);
     }
 
     inline void
     getCellIndex (const Eigen::Vector3f& p, Eigen::Vector3i& index) const
     {
       for (int i = 0; i < 3; ++i)
-        index[i] = static_cast<Eigen::Vector3i::Scalar>((p[i] - bounding_min_(i)) /
-                                                        voxel_size_);
+        index[i] = static_cast<Eigen::Vector3i::Scalar> ((p[i] - bounding_min_ (i)) /
+                                                         voxel_size_);
     }
 
     inline void
     getPosition (const std::uint64_t& index_1d, Eigen::Vector3f& point) const
     {
       Eigen::Vector3i index_3d;
-      getIndexIn3D(index_1d, index_3d);
+      getIndexIn3D (index_1d, index_3d);
       for (int i = 0; i < 3; ++i)
-        point[i] = static_cast<Eigen::Vector3f::Scalar>(index_3d[i]) * voxel_size_ +
+        point[i] = static_cast<Eigen::Vector3f::Scalar> (index_3d[i]) * voxel_size_ +
                    bounding_min_[i];
     }
 
@@ -762,7 +762,7 @@ protected:
                       pcl::Indices& indices,
                       std::vector<float>& sqr_distances) const
   {
-    return (search_method_(index, search_radius_, indices, sqr_distances));
+    return (search_method_ (index, search_radius_, indices, sqr_distances));
   }
 
   /** \brief Smooth a given point and its neighborghood using Moving Least Squares.

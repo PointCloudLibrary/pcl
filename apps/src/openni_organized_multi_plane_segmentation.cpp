@@ -59,17 +59,17 @@ public:
   pcl::visualization::PCLVisualizer::Ptr
   cloudViewer (const pcl::PointCloud<PointT>::ConstPtr& cloud)
   {
-    pcl::visualization::PCLVisualizer::Ptr viewer(
-        new pcl::visualization::PCLVisualizer("Viewer"));
-    viewer->setBackgroundColor(0, 0, 0);
-    pcl::visualization::PointCloudColorHandlerCustom<PointT> single_color(
+    pcl::visualization::PCLVisualizer::Ptr viewer (
+        new pcl::visualization::PCLVisualizer ("Viewer"));
+    viewer->setBackgroundColor (0, 0, 0);
+    pcl::visualization::PointCloudColorHandlerCustom<PointT> single_color (
         cloud, 0, 255, 0);
-    viewer->addPointCloud<PointT>(cloud, single_color, "cloud");
-    viewer->setPointCloudRenderingProperties(
+    viewer->addPointCloud<PointT> (cloud, single_color, "cloud");
+    viewer->setPointCloudRenderingProperties (
         pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 1, "cloud");
-    viewer->setPointCloudRenderingProperties(
+    viewer->setPointCloudRenderingProperties (
         pcl::visualization::PCL_VISUALIZER_OPACITY, 0.15, "cloud");
-    viewer->addCoordinateSystem(1.0, "global");
+    viewer->addCoordinateSystem (1.0, "global");
     viewer->initCameraParameters();
     return viewer;
   }
@@ -89,11 +89,11 @@ public:
   {
     char name[1024];
     for (std::size_t i = 0; i < prev_models_size; i++) {
-      sprintf(name, "normal_%lu", i);
-      viewer->removeShape(name);
+      sprintf (name, "normal_%lu", i);
+      viewer->removeShape (name);
 
-      sprintf(name, "plane_%02zu", i);
-      viewer->removePointCloud(name);
+      sprintf (name, "plane_%02zu", i);
+      viewer->removePointCloud (name);
     }
   }
 
@@ -102,13 +102,13 @@ public:
   {
     pcl::OpenNIGrabber interface;
 
-    std::function<void(const pcl::PointCloud<PointT>::ConstPtr&)> f =
-        [this] (const pcl::PointCloud<PointT>::ConstPtr& cloud) { cloud_cb_(cloud); };
+    std::function<void (const pcl::PointCloud<PointT>::ConstPtr&)> f =
+        [this] (const pcl::PointCloud<PointT>::ConstPtr& cloud) { cloud_cb_ (cloud); };
 
     // make a viewer
-    pcl::PointCloud<PointT>::Ptr init_cloud_ptr(new pcl::PointCloud<PointT>);
-    viewer = cloudViewer(init_cloud_ptr);
-    boost::signals2::connection c = interface.registerCallback(f);
+    pcl::PointCloud<PointT>::Ptr init_cloud_ptr (new pcl::PointCloud<PointT>);
+    viewer = cloudViewer (init_cloud_ptr);
+    boost::signals2::connection c = interface.registerCallback (f);
 
     interface.start();
 
@@ -117,69 +117,69 @@ public:
     unsigned char blu[6] = {0, 0, 255, 0, 255, 255};
 
     pcl::IntegralImageNormalEstimation<PointT, pcl::Normal> ne;
-    ne.setNormalEstimationMethod(ne.COVARIANCE_MATRIX);
-    ne.setMaxDepthChangeFactor(0.03f);
-    ne.setNormalSmoothingSize(20.0f);
+    ne.setNormalEstimationMethod (ne.COVARIANCE_MATRIX);
+    ne.setMaxDepthChangeFactor (0.03f);
+    ne.setNormalSmoothingSize (20.0f);
 
     pcl::OrganizedMultiPlaneSegmentation<PointT, pcl::Normal, pcl::Label> mps;
-    mps.setMinInliers(10000);
-    mps.setAngularThreshold(0.017453 * 2.0); // 3 degrees
-    mps.setDistanceThreshold(0.02);          // 2cm
+    mps.setMinInliers (10000);
+    mps.setAngularThreshold (0.017453 * 2.0); // 3 degrees
+    mps.setDistanceThreshold (0.02);          // 2cm
 
     std::vector<pcl::PlanarRegion<PointT>,
                 Eigen::aligned_allocator<pcl::PlanarRegion<PointT>>>
         regions;
-    pcl::PointCloud<PointT>::Ptr contour(new pcl::PointCloud<PointT>);
+    pcl::PointCloud<PointT>::Ptr contour (new pcl::PointCloud<PointT>);
     std::size_t prev_models_size = 0;
     char name[1024];
 
     while (!viewer->wasStopped()) {
-      viewer->spinOnce(100);
+      viewer->spinOnce (100);
 
       if (prev_cloud && cloud_mutex.try_lock()) {
         regions.clear();
-        pcl::PointCloud<pcl::Normal>::Ptr normal_cloud(
+        pcl::PointCloud<pcl::Normal>::Ptr normal_cloud (
             new pcl::PointCloud<pcl::Normal>);
         double normal_start = pcl::getTime();
-        ne.setInputCloud(prev_cloud);
-        ne.compute(*normal_cloud);
+        ne.setInputCloud (prev_cloud);
+        ne.compute (*normal_cloud);
         double normal_end = pcl::getTime();
-        std::cout << "Normal Estimation took " << double(normal_end - normal_start)
+        std::cout << "Normal Estimation took " << double (normal_end - normal_start)
                   << std::endl;
 
         double plane_extract_start = pcl::getTime();
-        mps.setInputNormals(normal_cloud);
-        mps.setInputCloud(prev_cloud);
-        mps.segmentAndRefine(regions);
+        mps.setInputNormals (normal_cloud);
+        mps.setInputCloud (prev_cloud);
+        mps.segmentAndRefine (regions);
         double plane_extract_end = pcl::getTime();
         std::cout << "Plane extraction took "
-                  << double(plane_extract_end - plane_extract_start) << std::endl;
-        std::cout << "Frame took " << double(plane_extract_end - normal_start)
+                  << double (plane_extract_end - plane_extract_start) << std::endl;
+        std::cout << "Frame took " << double (plane_extract_end - normal_start)
                   << std::endl;
 
-        pcl::PointCloud<PointT>::Ptr cluster(new pcl::PointCloud<PointT>);
+        pcl::PointCloud<PointT>::Ptr cluster (new pcl::PointCloud<PointT>);
 
-        if (!viewer->updatePointCloud<PointT>(prev_cloud, "cloud"))
-          viewer->addPointCloud<PointT>(prev_cloud, "cloud");
+        if (!viewer->updatePointCloud<PointT> (prev_cloud, "cloud"))
+          viewer->addPointCloud<PointT> (prev_cloud, "cloud");
 
-        removePreviousDataFromScreen(prev_models_size);
+        removePreviousDataFromScreen (prev_models_size);
         // Draw Visualization
         for (std::size_t i = 0; i < regions.size(); i++) {
           Eigen::Vector3f centroid = regions[i].getCentroid();
           Eigen::Vector4f model = regions[i].getCoefficients();
-          pcl::PointXYZ pt1 = pcl::PointXYZ(centroid[0], centroid[1], centroid[2]);
-          pcl::PointXYZ pt2 = pcl::PointXYZ(centroid[0] + (0.5f * model[0]),
-                                            centroid[1] + (0.5f * model[1]),
-                                            centroid[2] + (0.5f * model[2]));
-          sprintf(name, "normal_%lu", i);
-          viewer->addArrow(pt2, pt1, 1.0, 0, 0, false, name);
+          pcl::PointXYZ pt1 = pcl::PointXYZ (centroid[0], centroid[1], centroid[2]);
+          pcl::PointXYZ pt2 = pcl::PointXYZ (centroid[0] + (0.5f * model[0]),
+                                             centroid[1] + (0.5f * model[1]),
+                                             centroid[2] + (0.5f * model[2]));
+          sprintf (name, "normal_%lu", i);
+          viewer->addArrow (pt2, pt1, 1.0, 0, 0, false, name);
 
           contour->points = regions[i].getContour();
-          sprintf(name, "plane_%02zu", i);
-          pcl::visualization::PointCloudColorHandlerCustom<PointT> color(
+          sprintf (name, "plane_%02zu", i);
+          pcl::visualization::PointCloudColorHandlerCustom<PointT> color (
               contour, red[i], grn[i], blu[i]);
-          viewer->addPointCloud(contour, color, name);
-          viewer->setPointCloudRenderingProperties(
+          viewer->addPointCloud (contour, color, name);
+          viewer->setPointCloudRenderingProperties (
               pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 4, name);
         }
         prev_models_size = regions.size();

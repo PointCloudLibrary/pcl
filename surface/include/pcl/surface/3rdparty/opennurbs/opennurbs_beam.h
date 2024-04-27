@@ -33,15 +33,15 @@ ON_GetEndCapTransformation (ON_3dPoint P,
                             ON_Xform* rot2d);
 
 class ON_CLASS ON_Extrusion : public ON_Surface {
-  ON_OBJECT_DECLARE(ON_Extrusion);
+  ON_OBJECT_DECLARE (ON_Extrusion);
 
 public:
   ON_Extrusion();
-  ON_Extrusion(const ON_Extrusion& src);
+  ON_Extrusion (const ON_Extrusion& src);
   ~ON_Extrusion();
 
   ON_Extrusion&
-  operator=(const ON_Extrusion&);
+  operator= (const ON_Extrusion&);
 
   ////////////////////////////////////////////////////////////
   //
@@ -217,7 +217,7 @@ public:
   ON_BOOL32
   Reverse (int dir);
   ON_BOOL32
-  Transpose ();
+  Transpose();
   ON_BOOL32
   Evaluate (double u,
             double v,

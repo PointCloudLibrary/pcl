@@ -12,7 +12,7 @@ main ()
       point.x = 2.0f - y;
       point.y = y;
       point.z = z;
-      pointCloud.push_back(point);
+      pointCloud.push_back (point);
     }
   }
   pointCloud.width = pointCloud.size();
@@ -23,22 +23,22 @@ main ()
   float angularResolution = (float)(1.0f * (M_PI / 180.0f)); //   1.0 degree in radians
   float maxAngleWidth = (float)(360.0f * (M_PI / 180.0f));   // 360.0 degree in radians
   float maxAngleHeight = (float)(180.0f * (M_PI / 180.0f));  // 180.0 degree in radians
-  Eigen::Affine3f sensorPose = (Eigen::Affine3f)Eigen::Translation3f(0.0f, 0.0f, 0.0f);
+  Eigen::Affine3f sensorPose = (Eigen::Affine3f)Eigen::Translation3f (0.0f, 0.0f, 0.0f);
   pcl::RangeImage::CoordinateFrame coordinate_frame = pcl::RangeImage::CAMERA_FRAME;
   float noiseLevel = 0.00;
   float minRange = 0.0f;
   int borderSize = 1;
 
   pcl::RangeImage rangeImage;
-  rangeImage.createFromPointCloud(pointCloud,
-                                  angularResolution,
-                                  maxAngleWidth,
-                                  maxAngleHeight,
-                                  sensorPose,
-                                  coordinate_frame,
-                                  noiseLevel,
-                                  minRange,
-                                  borderSize);
+  rangeImage.createFromPointCloud (pointCloud,
+                                   angularResolution,
+                                   maxAngleWidth,
+                                   maxAngleHeight,
+                                   sensorPose,
+                                   coordinate_frame,
+                                   noiseLevel,
+                                   minRange,
+                                   borderSize);
 
   std::cout << rangeImage << "\n";
 }

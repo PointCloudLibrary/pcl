@@ -49,80 +49,81 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::modeler::ParameterDialog::addParameter(pcl::modeler::Parameter* parameter)
+pcl::modeler::ParameterDialog::addParameter (pcl::modeler::Parameter* parameter)
 {
-  if (name_parameter_map_.find(parameter->getName()) == name_parameter_map_.end()) {
-    name_parameter_map_.insert(std::make_pair(parameter->getName(), parameter));
+  if (name_parameter_map_.find (parameter->getName()) == name_parameter_map_.end()) {
+    name_parameter_map_.insert (std::make_pair (parameter->getName(), parameter));
   }
   else {
-    assert(false);
+    assert (false);
   }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-pcl::modeler::ParameterDialog::ParameterDialog(const std::string& title,
-                                               QWidget* parent)
-: QDialog(parent), parameter_model_(nullptr)
+pcl::modeler::ParameterDialog::ParameterDialog (const std::string& title,
+                                                QWidget* parent)
+: QDialog (parent), parameter_model_ (nullptr)
 {
-  setModal(false);
-  setWindowTitle(QString(title.c_str()) + " Parameters");
+  setModal (false);
+  setWindowTitle (QString (title.c_str()) + " Parameters");
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 int
 pcl::modeler::ParameterDialog::exec()
 {
-  pcl::modeler::ParameterModel parameterModel(int(name_parameter_map_.size()), 2, this);
+  pcl::modeler::ParameterModel parameterModel (
+      int (name_parameter_map_.size()), 2, this);
   parameter_model_ = &parameterModel;
 
   QStringList headerLabels;
-  headerLabels.push_back("Variable Name");
-  headerLabels.push_back("Variable Value");
-  parameterModel.setHorizontalHeaderLabels(headerLabels);
+  headerLabels.push_back ("Variable Name");
+  headerLabels.push_back ("Variable Value");
+  parameterModel.setHorizontalHeaderLabels (headerLabels);
 
-  QTableView tableView(this);
-  tableView.setModel(&parameterModel);
+  QTableView tableView (this);
+  tableView.setModel (&parameterModel);
 
   std::size_t currentRow = 0;
   for (const auto& name_parameter : name_parameter_map_) {
-    QModelIndex name = parameterModel.index(int(currentRow), 0, QModelIndex());
-    parameterModel.setData(name, QVariant(name_parameter.first.c_str()));
+    QModelIndex name = parameterModel.index (int (currentRow), 0, QModelIndex());
+    parameterModel.setData (name, QVariant (name_parameter.first.c_str()));
 
-    QModelIndex value = parameterModel.index(int(currentRow), 1, QModelIndex());
+    QModelIndex value = parameterModel.index (int (currentRow), 1, QModelIndex());
     std::pair<QVariant, int> model_data = name_parameter.second->toModelData();
-    parameterModel.setData(value, model_data.first, model_data.second);
+    parameterModel.setData (value, model_data.first, model_data.second);
 
     currentRow++;
   }
 
-  ParameterDelegate parameterDelegate(name_parameter_map_);
-  tableView.setItemDelegate(&parameterDelegate);
+  ParameterDelegate parameterDelegate (name_parameter_map_);
+  tableView.setItemDelegate (&parameterDelegate);
 
-  tableView.horizontalHeader()->setStretchLastSection(true);
-  tableView.horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
-  tableView.setShowGrid(true);
+  tableView.horizontalHeader()->setStretchLastSection (true);
+  tableView.horizontalHeader()->setSectionResizeMode (QHeaderView::ResizeToContents);
+  tableView.setShowGrid (true);
   tableView.verticalHeader()->hide();
-  tableView.setSelectionBehavior(QAbstractItemView::SelectRows);
+  tableView.setSelectionBehavior (QAbstractItemView::SelectRows);
   tableView.resizeColumnsToContents();
 
   int totlen =
-      tableView.columnWidth(0) + tableView.columnWidth(1) + frameSize().width();
-  setMinimumWidth(totlen);
+      tableView.columnWidth (0) + tableView.columnWidth (1) + frameSize().width();
+  setMinimumWidth (totlen);
 
-  QPushButton* pushButtonReset = new QPushButton("Reset", this);
-  QPushButton* pushButtonApply = new QPushButton("Apply", this);
-  QPushButton* pushButtonCancel = new QPushButton("Cancel", this);
+  QPushButton* pushButtonReset = new QPushButton ("Reset", this);
+  QPushButton* pushButtonApply = new QPushButton ("Apply", this);
+  QPushButton* pushButtonCancel = new QPushButton ("Cancel", this);
 
-  connect(pushButtonReset, SIGNAL(clicked()), this, SLOT(reset()));
-  connect(pushButtonApply, SIGNAL(clicked()), this, SLOT(accept()));
-  connect(pushButtonCancel, SIGNAL(clicked()), this, SLOT(reject()));
+  connect (pushButtonReset, SIGNAL (clicked()), this, SLOT (reset()));
+  connect (pushButtonApply, SIGNAL (clicked()), this, SLOT (accept()));
+  connect (pushButtonCancel, SIGNAL (clicked()), this, SLOT (reject()));
 
-  QGridLayout gridLayout(this);
-  gridLayout.addWidget(&tableView, 0, 0, 1, 3);
-  gridLayout.addWidget(pushButtonReset, 1, 0);
-  gridLayout.addWidget(pushButtonApply, 1, 1);
-  gridLayout.addWidget(pushButtonCancel, 1, 2);
-  setLayout(&gridLayout);
+  QGridLayout gridLayout (this);
+  gridLayout.addWidget (&tableView, 0, 0, 1, 3);
+  gridLayout.addWidget (pushButtonReset, 1, 0);
+  gridLayout.addWidget (pushButtonApply, 1, 1);
+  gridLayout.addWidget (pushButtonCancel, 1, 2);
+  setLayout (&gridLayout);
 
   int result = QDialog::exec();
 
@@ -137,9 +138,9 @@ pcl::modeler::ParameterDialog::reset()
   for (auto& name_parameter : name_parameter_map_) {
     name_parameter.second->reset();
 
-    QModelIndex value = parameter_model_->index(int(currentRow), 1, QModelIndex());
+    QModelIndex value = parameter_model_->index (int (currentRow), 1, QModelIndex());
     std::pair<QVariant, int> model_data = name_parameter.second->toModelData();
-    parameter_model_->setData(value, model_data.first, model_data.second);
+    parameter_model_->setData (value, model_data.first, model_data.second);
 
     currentRow++;
   }
@@ -147,7 +148,7 @@ pcl::modeler::ParameterDialog::reset()
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 pcl::modeler::Parameter*
-pcl::modeler::ParameterDelegate::getCurrentParameter(const QModelIndex& index) const
+pcl::modeler::ParameterDelegate::getCurrentParameter (const QModelIndex& index) const
 {
   std::map<std::string, Parameter*>::iterator currentParameter = parameter_map_.begin();
 
@@ -158,56 +159,56 @@ pcl::modeler::ParameterDelegate::getCurrentParameter(const QModelIndex& index) c
     ++currentRow;
   }
 
-  assert(currentParameter != parameter_map_.end());
+  assert (currentParameter != parameter_map_.end());
 
   return currentParameter->second;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-pcl::modeler::ParameterDelegate::ParameterDelegate(
+pcl::modeler::ParameterDelegate::ParameterDelegate (
     std::map<std::string, Parameter*>& parameterMap, QObject* parent)
-: QStyledItemDelegate(parent), parameter_map_(parameterMap)
+: QStyledItemDelegate (parent), parameter_map_ (parameterMap)
 {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 QWidget*
-pcl::modeler::ParameterDelegate::createEditor(QWidget* parent,
-                                              const QStyleOptionViewItem&,
-                                              const QModelIndex& index) const
-{
-  return getCurrentParameter(index)->createEditor(parent);
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-void
-pcl::modeler::ParameterDelegate::setEditorData(QWidget* editor,
+pcl::modeler::ParameterDelegate::createEditor (QWidget* parent,
+                                               const QStyleOptionViewItem&,
                                                const QModelIndex& index) const
 {
-  getCurrentParameter(index)->setEditorData(editor);
+  return getCurrentParameter (index)->createEditor (parent);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::modeler::ParameterDelegate::setModelData(QWidget* editor,
-                                              QAbstractItemModel* model,
-                                              const QModelIndex& index) const
+pcl::modeler::ParameterDelegate::setEditorData (QWidget* editor,
+                                                const QModelIndex& index) const
 {
-  getCurrentParameter(index)->setModelData(editor, model, index);
+  getCurrentParameter (index)->setEditorData (editor);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::modeler::ParameterDelegate::updateEditorGeometry(
+pcl::modeler::ParameterDelegate::setModelData (QWidget* editor,
+                                               QAbstractItemModel* model,
+                                               const QModelIndex& index) const
+{
+  getCurrentParameter (index)->setModelData (editor, model, index);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::modeler::ParameterDelegate::updateEditorGeometry (
     QWidget* editor, const QStyleOptionViewItem& option, const QModelIndex&) const
 {
-  editor->setGeometry(option.rect);
+  editor->setGeometry (option.rect);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::modeler::ParameterDelegate::initStyleOption(QStyleOptionViewItem* option,
-                                                 const QModelIndex& index) const
+pcl::modeler::ParameterDelegate::initStyleOption (QStyleOptionViewItem* option,
+                                                  const QModelIndex& index) const
 {
   option->displayAlignment |= Qt::AlignHCenter;
-  QStyledItemDelegate::initStyleOption(option, index);
+  QStyledItemDelegate::initStyleOption (option, index);
 }

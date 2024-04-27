@@ -48,12 +48,13 @@ struct CountPlanarInlier {
   float4 coefficients;
   float threshold;
 
-  CountPlanarInlier(float4 coeff, float thresh) : coefficients(coeff), threshold(thresh)
+  CountPlanarInlier (float4 coeff, float thresh)
+  : coefficients (coeff), threshold (thresh)
   {}
 
   template <typename Tuple>
   __inline__ __host__ __device__ bool
-  operator()(const Tuple& t);
+  operator() (const Tuple& t);
 };
 
 /** \brief Check if a certain tuple is a point inlier. */
@@ -61,12 +62,13 @@ struct CheckPlanarInlier {
   float4 coefficients;
   float threshold;
 
-  CheckPlanarInlier(float4 coeff, float thresh) : coefficients(coeff), threshold(thresh)
+  CheckPlanarInlier (float4 coeff, float thresh)
+  : coefficients (coeff), threshold (thresh)
   {}
 
   template <typename Tuple>
   __inline__ __host__ __device__ int
-  operator()(const Tuple& t);
+  operator() (const Tuple& t);
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -97,7 +99,7 @@ public:
   /** \brief Constructor for base SampleConsensusModelPlane.
    * \param cloud the input point cloud dataset
    */
-  SampleConsensusModelPlane(const PointCloudConstPtr& cloud);
+  SampleConsensusModelPlane (const PointCloudConstPtr& cloud);
 
   /*  \brief Constructor for base SampleConsensusModelPlane.
    * \param cloud the input point cloud dataset
@@ -130,7 +132,7 @@ public:
   generateModelHypotheses (Hypotheses& h, Samples& s, int max_iterations)
   {
     // TODO: hack.. Samples should be std::vector<int>, not int..
-    return generateModelHypotheses(h, max_iterations);
+    return generateModelHypotheses (h, max_iterations);
   };
 
   /*  \brief Compute all distances from the cloud data to a given plane model.
@@ -244,17 +246,17 @@ struct CreatePlaneHypothesis {
   int nr_indices;
   float bad_value;
 
-  CreatePlaneHypothesis(const PointXYZRGB* _input,
-                        const int* _indices,
-                        int _nr_indices,
-                        float bad)
-  : input(_input), indices(_indices), nr_indices(_nr_indices), bad_value(bad)
+  CreatePlaneHypothesis (const PointXYZRGB* _input,
+                         const int* _indices,
+                         int _nr_indices,
+                         float bad)
+  : input (_input), indices (_indices), nr_indices (_nr_indices), bad_value (bad)
   {}
 
   // template <typename Tuple>
   __inline__ __host__ __device__ float4
   // operator () (const Tuple &t);
-  operator()(int t);
+  operator() (int t);
 };
 
 struct parallel_random_generator {
@@ -266,11 +268,11 @@ struct parallel_random_generator {
   }
 
   __inline__ __host__ __device__ unsigned int
-  operator()(const unsigned int n) const
+  operator() (const unsigned int n) const
   {
-    thrust::default_random_engine rng(m_seed);
+    thrust::default_random_engine rng (m_seed);
     // discard n numbers to avoid correlation
-    rng.discard(n);
+    rng.discard (n);
     // return a random number
     return rng();
   }

@@ -52,62 +52,62 @@ private:
 
 public:
   OpenNIOrganizedEdgeDetection()
-  : viewer(new pcl::visualization::PCLVisualizer("PCL Organized Edge Detection"))
+  : viewer (new pcl::visualization::PCLVisualizer ("PCL Organized Edge Detection"))
   {}
   ~OpenNIOrganizedEdgeDetection() = default;
 
   pcl::visualization::PCLVisualizer::Ptr
   initCloudViewer (const pcl::PointCloud<PointT>::ConstPtr& cloud)
   {
-    viewer->setSize(640, 480);
-    viewer->addPointCloud<PointT>(cloud, "cloud");
-    viewer->setPointCloudRenderingProperties(
+    viewer->setSize (640, 480);
+    viewer->addPointCloud<PointT> (cloud, "cloud");
+    viewer->setPointCloudRenderingProperties (
         pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 1, "cloud");
-    viewer->addCoordinateSystem(0.2f, "global");
+    viewer->addCoordinateSystem (0.2f, "global");
     viewer->initCameraParameters();
-    viewer->registerKeyboardCallback(&OpenNIOrganizedEdgeDetection::keyboard_callback,
-                                     *this);
-    viewer->resetCameraViewpoint("cloud");
+    viewer->registerKeyboardCallback (&OpenNIOrganizedEdgeDetection::keyboard_callback,
+                                      *this);
+    viewer->resetCameraViewpoint ("cloud");
 
     constexpr int point_size = 2;
-    viewer->addPointCloud<PointT>(cloud, "nan boundary edges");
-    viewer->setPointCloudRenderingProperties(
+    viewer->addPointCloud<PointT> (cloud, "nan boundary edges");
+    viewer->setPointCloudRenderingProperties (
         pcl::visualization::PCL_VISUALIZER_POINT_SIZE,
         point_size,
         "nan boundary edges");
-    viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_COLOR,
-                                             0.0f,
-                                             0.0f,
-                                             1.0f,
-                                             "nan boundary edges");
+    viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_COLOR,
+                                              0.0f,
+                                              0.0f,
+                                              1.0f,
+                                              "nan boundary edges");
 
-    viewer->addPointCloud<PointT>(cloud, "occluding edges");
-    viewer->setPointCloudRenderingProperties(
+    viewer->addPointCloud<PointT> (cloud, "occluding edges");
+    viewer->setPointCloudRenderingProperties (
         pcl::visualization::PCL_VISUALIZER_POINT_SIZE, point_size, "occluding edges");
-    viewer->setPointCloudRenderingProperties(
+    viewer->setPointCloudRenderingProperties (
         pcl::visualization::PCL_VISUALIZER_COLOR, 0.0f, 1.0f, 0.0f, "occluding edges");
 
-    viewer->addPointCloud<PointT>(cloud, "occluded edges");
-    viewer->setPointCloudRenderingProperties(
+    viewer->addPointCloud<PointT> (cloud, "occluded edges");
+    viewer->setPointCloudRenderingProperties (
         pcl::visualization::PCL_VISUALIZER_POINT_SIZE, point_size, "occluded edges");
-    viewer->setPointCloudRenderingProperties(
+    viewer->setPointCloudRenderingProperties (
         pcl::visualization::PCL_VISUALIZER_COLOR, 1.0f, 0.0f, 0.0f, "occluded edges");
 
-    viewer->addPointCloud<PointT>(cloud, "high curvature edges");
-    viewer->setPointCloudRenderingProperties(
+    viewer->addPointCloud<PointT> (cloud, "high curvature edges");
+    viewer->setPointCloudRenderingProperties (
         pcl::visualization::PCL_VISUALIZER_POINT_SIZE,
         point_size,
         "high curvature edges");
-    viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_COLOR,
-                                             1.0f,
-                                             1.0f,
-                                             0.0f,
-                                             "high curvature edges");
+    viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_COLOR,
+                                              1.0f,
+                                              1.0f,
+                                              0.0f,
+                                              "high curvature edges");
 
-    viewer->addPointCloud<PointT>(cloud, "rgb edges");
-    viewer->setPointCloudRenderingProperties(
+    viewer->addPointCloud<PointT> (cloud, "rgb edges");
+    viewer->setPointCloudRenderingProperties (
         pcl::visualization::PCL_VISUALIZER_POINT_SIZE, point_size, "rgb edges");
-    viewer->setPointCloudRenderingProperties(
+    viewer->setPointCloudRenderingProperties (
         pcl::visualization::PCL_VISUALIZER_COLOR, 0.0f, 1.0f, 1.0f, "rgb edges");
 
     return viewer;
@@ -120,43 +120,43 @@ public:
       double opacity;
       switch (event.getKeyCode()) {
       case '1':
-        viewer->getPointCloudRenderingProperties(
+        viewer->getPointCloudRenderingProperties (
             pcl::visualization::PCL_VISUALIZER_OPACITY, opacity, "nan boundary edges");
-        viewer->setPointCloudRenderingProperties(
+        viewer->setPointCloudRenderingProperties (
             pcl::visualization::PCL_VISUALIZER_OPACITY,
             1.0 - opacity,
             "nan boundary edges");
         break;
       case '2':
-        viewer->getPointCloudRenderingProperties(
+        viewer->getPointCloudRenderingProperties (
             pcl::visualization::PCL_VISUALIZER_OPACITY, opacity, "occluding edges");
-        viewer->setPointCloudRenderingProperties(
+        viewer->setPointCloudRenderingProperties (
             pcl::visualization::PCL_VISUALIZER_OPACITY,
             1.0 - opacity,
             "occluding edges");
         break;
       case '3':
-        viewer->getPointCloudRenderingProperties(
+        viewer->getPointCloudRenderingProperties (
             pcl::visualization::PCL_VISUALIZER_OPACITY, opacity, "occluded edges");
-        viewer->setPointCloudRenderingProperties(
+        viewer->setPointCloudRenderingProperties (
             pcl::visualization::PCL_VISUALIZER_OPACITY,
             1.0 - opacity,
             "occluded edges");
         break;
       case '4':
-        viewer->getPointCloudRenderingProperties(
+        viewer->getPointCloudRenderingProperties (
             pcl::visualization::PCL_VISUALIZER_OPACITY,
             opacity,
             "high curvature edges");
-        viewer->setPointCloudRenderingProperties(
+        viewer->setPointCloudRenderingProperties (
             pcl::visualization::PCL_VISUALIZER_OPACITY,
             1.0 - opacity,
             "high curvature edges");
         break;
       case '5':
-        viewer->getPointCloudRenderingProperties(
+        viewer->getPointCloudRenderingProperties (
             pcl::visualization::PCL_VISUALIZER_OPACITY, opacity, "rgb edges");
-        viewer->setPointCloudRenderingProperties(
+        viewer->setPointCloudRenderingProperties (
             pcl::visualization::PCL_VISUALIZER_OPACITY, 1.0 - opacity, "rgb edges");
         break;
       }
@@ -178,29 +178,29 @@ public:
   {
     pcl::OpenNIGrabber interface;
 
-    std::function<void(const pcl::PointCloud<PointT>::ConstPtr&)> f =
-        [this] (const pcl::PointCloud<PointT>::ConstPtr& cloud) { cloud_cb_(cloud); };
+    std::function<void (const pcl::PointCloud<PointT>::ConstPtr&)> f =
+        [this] (const pcl::PointCloud<PointT>::ConstPtr& cloud) { cloud_cb_ (cloud); };
 
     // Make and initialize a cloud viewer
-    pcl::PointCloud<PointT>::Ptr init_cloud_ptr(new pcl::PointCloud<PointT>);
-    viewer = initCloudViewer(init_cloud_ptr);
-    boost::signals2::connection c = interface.registerCallback(f);
+    pcl::PointCloud<PointT>::Ptr init_cloud_ptr (new pcl::PointCloud<PointT>);
+    viewer = initCloudViewer (init_cloud_ptr);
+    boost::signals2::connection c = interface.registerCallback (f);
 
     interface.start();
 
     pcl::IntegralImageNormalEstimation<PointT, pcl::Normal> ne;
-    ne.setNormalEstimationMethod(ne.COVARIANCE_MATRIX);
-    ne.setNormalSmoothingSize(10.0f);
-    ne.setBorderPolicy(ne.BORDER_POLICY_MIRROR);
+    ne.setNormalEstimationMethod (ne.COVARIANCE_MATRIX);
+    ne.setNormalSmoothingSize (10.0f);
+    ne.setBorderPolicy (ne.BORDER_POLICY_MIRROR);
 
     float th_dd = 0.04f;
     int max_search = 100;
     pcl::OrganizedEdgeFromRGBNormals<PointT, pcl::Normal, pcl::Label> oed;
-    oed.setDepthDisconThreshold(th_dd);
-    oed.setMaxSearchNeighbors(max_search);
+    oed.setDepthDisconThreshold (th_dd);
+    oed.setMaxSearchNeighbors (max_search);
 
-    oed.setEdgeType(oed.EDGELABEL_NAN_BOUNDARY | oed.EDGELABEL_OCCLUDING |
-                    oed.EDGELABEL_OCCLUDED);
+    oed.setEdgeType (oed.EDGELABEL_NAN_BOUNDARY | oed.EDGELABEL_OCCLUDING |
+                     oed.EDGELABEL_OCCLUDED);
     // oed.setEdgeType (oed.EDGELABEL_NAN_BOUNDARY | oed.EDGELABEL_OCCLUDING |
     // oed.EDGELABEL_OCCLUDED | oed.EDGELABEL_HIGH_CURVATURE | oed.EDGELABEL_RGB_CANNY);
 
@@ -217,64 +217,66 @@ public:
         double normal_start = pcl::getTime();
 
         if (oed.getEdgeType() & oed.EDGELABEL_HIGH_CURVATURE) {
-          pcl::PointCloud<pcl::Normal>::Ptr normal_cloud(
+          pcl::PointCloud<pcl::Normal>::Ptr normal_cloud (
               new pcl::PointCloud<pcl::Normal>);
-          ne.setInputCloud(cloud_.makeShared());
-          ne.compute(*normal_cloud);
+          ne.setInputCloud (cloud_.makeShared());
+          ne.compute (*normal_cloud);
           double normal_end = pcl::getTime();
-          std::cout << "Normal Estimation took " << double(normal_end - normal_start)
+          std::cout << "Normal Estimation took " << double (normal_end - normal_start)
                     << std::endl;
 
-          oed.setInputNormals(normal_cloud);
+          oed.setInputNormals (normal_cloud);
         }
 
         double oed_start = pcl::getTime();
 
-        oed.setInputCloud(cloud_.makeShared());
-        oed.compute(labels, label_indices);
+        oed.setInputCloud (cloud_.makeShared());
+        oed.compute (labels, label_indices);
 
         double oed_end = pcl::getTime();
-        std::cout << "Edge Detection took " << double(oed_end - oed_start) << std::endl;
-        std::cout << "Frame took " << double(oed_end - normal_start) << std::endl;
+        std::cout << "Edge Detection took " << double (oed_end - oed_start)
+                  << std::endl;
+        std::cout << "Frame took " << double (oed_end - normal_start) << std::endl;
 
         // Make gray point cloud
         for (auto& point : cloud_.points) {
-          std::uint8_t gray = std::uint8_t((point.r + point.g + point.b) / 3);
+          std::uint8_t gray = std::uint8_t ((point.r + point.g + point.b) / 3);
           point.r = point.g = point.b = gray;
         }
 
         // Show the gray point cloud
-        if (!viewer->updatePointCloud(cloud_.makeShared(), "cloud"))
-          viewer->addPointCloud(cloud_.makeShared(), "cloud");
+        if (!viewer->updatePointCloud (cloud_.makeShared(), "cloud"))
+          viewer->addPointCloud (cloud_.makeShared(), "cloud");
 
         // Show edges
-        pcl::PointCloud<PointT>::Ptr occluding_edges(new pcl::PointCloud<PointT>),
-            occluded_edges(new pcl::PointCloud<PointT>),
-            nan_boundary_edges(new pcl::PointCloud<PointT>),
-            high_curvature_edges(new pcl::PointCloud<PointT>),
-            rgb_edges(new pcl::PointCloud<PointT>);
+        pcl::PointCloud<PointT>::Ptr occluding_edges (new pcl::PointCloud<PointT>),
+            occluded_edges (new pcl::PointCloud<PointT>),
+            nan_boundary_edges (new pcl::PointCloud<PointT>),
+            high_curvature_edges (new pcl::PointCloud<PointT>),
+            rgb_edges (new pcl::PointCloud<PointT>);
 
-        pcl::copyPointCloud(cloud_, label_indices[0].indices, *nan_boundary_edges);
-        pcl::copyPointCloud(cloud_, label_indices[1].indices, *occluding_edges);
-        pcl::copyPointCloud(cloud_, label_indices[2].indices, *occluded_edges);
-        pcl::copyPointCloud(cloud_, label_indices[3].indices, *high_curvature_edges);
-        pcl::copyPointCloud(cloud_, label_indices[4].indices, *rgb_edges);
+        pcl::copyPointCloud (cloud_, label_indices[0].indices, *nan_boundary_edges);
+        pcl::copyPointCloud (cloud_, label_indices[1].indices, *occluding_edges);
+        pcl::copyPointCloud (cloud_, label_indices[2].indices, *occluded_edges);
+        pcl::copyPointCloud (cloud_, label_indices[3].indices, *high_curvature_edges);
+        pcl::copyPointCloud (cloud_, label_indices[4].indices, *rgb_edges);
 
-        if (!viewer->updatePointCloud<PointT>(nan_boundary_edges, "nan boundary edges"))
-          viewer->addPointCloud<PointT>(nan_boundary_edges, "nan boundary edges");
+        if (!viewer->updatePointCloud<PointT> (nan_boundary_edges,
+                                               "nan boundary edges"))
+          viewer->addPointCloud<PointT> (nan_boundary_edges, "nan boundary edges");
 
-        if (!viewer->updatePointCloud<PointT>(occluding_edges, "occluding edges"))
-          viewer->addPointCloud<PointT>(occluding_edges, "occluding edges");
+        if (!viewer->updatePointCloud<PointT> (occluding_edges, "occluding edges"))
+          viewer->addPointCloud<PointT> (occluding_edges, "occluding edges");
 
-        if (!viewer->updatePointCloud<PointT>(occluded_edges, "occluded edges"))
-          viewer->addPointCloud<PointT>(occluded_edges, "occluded edges");
+        if (!viewer->updatePointCloud<PointT> (occluded_edges, "occluded edges"))
+          viewer->addPointCloud<PointT> (occluded_edges, "occluded edges");
 
-        if (!viewer->updatePointCloud<PointT>(high_curvature_edges,
-                                              "high curvature edges"))
-          viewer->addPointCloud<PointT>(high_curvature_edges, "high curvature edges");
+        if (!viewer->updatePointCloud<PointT> (high_curvature_edges,
+                                               "high curvature edges"))
+          viewer->addPointCloud<PointT> (high_curvature_edges, "high curvature edges");
 
-        if (!viewer->updatePointCloud<PointT>(rgb_edges, "rgb edges"))
-          viewer->addPointCloud<PointT>(rgb_edges, "rgb edges");
+        if (!viewer->updatePointCloud<PointT> (rgb_edges, "rgb edges"))
+          viewer->addPointCloud<PointT> (rgb_edges, "rgb edges");
 
         cloud_mutex.unlock();
       }
@@ -319,14 +321,14 @@ int
 main (int argc, char** argv)
 {
   /////////////////////////////////////////////////////////////////////
-  if (pcl::console::find_argument(argc, argv, "-h") != -1 ||
-      pcl::console::find_argument(argc, argv, "--help") != -1) {
-    usage(argv);
+  if (pcl::console::find_argument (argc, argv, "-h") != -1 ||
+      pcl::console::find_argument (argc, argv, "--help") != -1) {
+    usage (argv);
     return 1;
   }
 
   std::string device_id = "";
-  if (pcl::console::parse_argument(argc, argv, "-device_id", device_id) == -1 &&
+  if (pcl::console::parse_argument (argc, argv, "-device_id", device_id) == -1 &&
       argc > 1 && argv[1][0] != '-')
     device_id = argv[1];
   /////////////////////////////////////////////////////////////////////
@@ -340,13 +342,13 @@ main (int argc, char** argv)
   //std::cout << "<5> EDGELABEL_RGB_CANNY edge" << std::endl;
   std::cout << "<Q,q> quit" << std::endl;
   // clang-format on
-  pcl::OpenNIGrabber grabber(device_id);
+  pcl::OpenNIGrabber grabber (device_id);
   if (grabber.providesCallback<pcl::OpenNIGrabber::sig_cb_openni_point_cloud_rgb>()) {
     OpenNIOrganizedEdgeDetection app;
     app.run();
   }
   else
-    PCL_ERROR("The input device does not provide a PointXYZRGBA mode.\n");
+    PCL_ERROR ("The input device does not provide a PointXYZRGBA mode.\n");
 
   return 0;
 }

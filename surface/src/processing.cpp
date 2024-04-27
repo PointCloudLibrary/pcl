@@ -56,7 +56,7 @@ pcl::MeshProcessing::deinitCompute()
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::MeshProcessing::process(pcl::PolygonMesh& output)
+pcl::MeshProcessing::process (pcl::PolygonMesh& output)
 {
   // Copy the header
   output.header = input_mesh_->header;
@@ -73,12 +73,12 @@ pcl::MeshProcessing::process(pcl::PolygonMesh& output)
   // \TODO: Double check if this is needed
   {
     output.polygons.clear();
-    output.polygons.reserve(
+    output.polygons.reserve (
         2 * input_mesh_->polygons.size()); /// NOTE: usually the number of triangles is
                                            /// around twice the number of vertices
   }
   // Perform the actual surface reconstruction
-  performProcessing(output);
+  performProcessing (output);
 
   deinitCompute();
 }

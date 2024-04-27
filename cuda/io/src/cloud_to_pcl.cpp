@@ -48,7 +48,7 @@ toPCL (const PointCloudAOS<Host>& input,
        const thrust::host_vector<float4>& normals,
        pcl::PointCloud<pcl::PointXYZRGBNormal>& output)
 {
-  output.resize(input.points.size());
+  output.resize (input.points.size());
   for (std::size_t i = 0; i < input.points.size(); ++i) {
     output[i].x = input.points[i].x;
     output[i].y = input.points[i].y;
@@ -77,14 +77,14 @@ toPCL (const PointCloudAOS<Device>& d_input,
   input << d_input;
   thrust::host_vector<float4> normals = d_normals;
 
-  toPCL(input, normals, output);
+  toPCL (input, normals, output);
 }
 
 //////////////////////////////////////////////////////////////////////////
 void
 toPCL (const PointCloudAOS<Host>& input, pcl::PointCloud<pcl::PointXYZRGB>& output)
 {
-  output.resize(input.points.size());
+  output.resize (input.points.size());
   for (std::size_t i = 0; i < input.points.size(); ++i) {
     output[i].x = input.points[i].x;
     output[i].y = input.points[i].y;
@@ -111,7 +111,7 @@ toPCL (const PointCloudAOS<Device>& input, pcl::PointCloud<pcl::PointXYZRGB>& ou
   PointCloudAOS<Host> cloud;
   cloud << input;
 
-  toPCL(cloud, output);
+  toPCL (cloud, output);
 }
 } // namespace cuda
 } // namespace pcl

@@ -158,20 +158,20 @@ public:
    *
    * By setting sorted to false, the \ref radiusSearch operations will be faster.
    */
-  KdTreeFLANN(bool sorted = true);
+  KdTreeFLANN (bool sorted = true);
 
   /** \brief Copy constructor
    * \param[in] k the tree to copy into this
    */
-  KdTreeFLANN(const KdTreeFLANN<PointT, Dist>& k);
+  KdTreeFLANN (const KdTreeFLANN<PointT, Dist>& k);
 
   /** \brief Copy operator
    * \param[in] k the tree to copy into this
    */
   inline KdTreeFLANN<PointT, Dist>&
-  operator=(const KdTreeFLANN<PointT, Dist>& k)
+  operator= (const KdTreeFLANN<PointT, Dist>& k)
   {
-    KdTree<PointT>::operator=(k);
+    KdTree<PointT>::operator= (k);
     flann_index_ = k.flann_index_;
     cloud_ = k.cloud_;
     index_mapping_ = k.index_mapping_;
@@ -195,7 +195,7 @@ public:
   inline Ptr
   makeShared ()
   {
-    return Ptr(new KdTreeFLANN<PointT, Dist>(*this));
+    return Ptr (new KdTreeFLANN<PointT, Dist> (*this));
   }
 
   /** \brief Destructor for KdTreeFLANN.

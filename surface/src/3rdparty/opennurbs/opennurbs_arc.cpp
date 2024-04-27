@@ -16,77 +16,78 @@
 
 #include "pcl/surface/3rdparty/opennurbs/opennurbs.h"
 
-ON_Arc::ON_Arc() : m_angle(0.0, 2.0 * ON_PI) { radius = 1.0; }
+ON_Arc::ON_Arc() : m_angle (0.0, 2.0 * ON_PI) { radius = 1.0; }
 
-ON_Arc::ON_Arc(const ON_Circle& c, double angle_in_radians) : m_angle(0.0, 2.0 * ON_PI)
+ON_Arc::ON_Arc (const ON_Circle& c, double angle_in_radians)
+: m_angle (0.0, 2.0 * ON_PI)
 {
-  Create(c, angle_in_radians);
+  Create (c, angle_in_radians);
 }
 
-ON_Arc::ON_Arc(const ON_Circle& c, ON_Interval angle_interval_in_radians)
-: m_angle(0.0, 2.0 * ON_PI)
+ON_Arc::ON_Arc (const ON_Circle& c, ON_Interval angle_interval_in_radians)
+: m_angle (0.0, 2.0 * ON_PI)
 {
-  Create(c, angle_interval_in_radians);
+  Create (c, angle_interval_in_radians);
 }
 
-ON_Arc::ON_Arc(const ON_Plane& p, double r, double angle_in_radians)
-: m_angle(0.0, 2.0 * ON_PI)
+ON_Arc::ON_Arc (const ON_Plane& p, double r, double angle_in_radians)
+: m_angle (0.0, 2.0 * ON_PI)
 {
-  Create(p, r, angle_in_radians);
+  Create (p, r, angle_in_radians);
 }
 
-ON_Arc::ON_Arc(const ON_3dPoint& C, double r, double angle_in_radians)
-: m_angle(0.0, 2.0 * ON_PI)
+ON_Arc::ON_Arc (const ON_3dPoint& C, double r, double angle_in_radians)
+: m_angle (0.0, 2.0 * ON_PI)
 {
-  Create(C, r, angle_in_radians);
+  Create (C, r, angle_in_radians);
 }
 
-ON_Arc::ON_Arc(const ON_Plane& pln,
-               const ON_3dPoint& C,
-               double r,
-               double angle_in_radians)
-: m_angle(0.0, 2.0 * ON_PI)
+ON_Arc::ON_Arc (const ON_Plane& pln,
+                const ON_3dPoint& C,
+                double r,
+                double angle_in_radians)
+: m_angle (0.0, 2.0 * ON_PI)
 {
-  Create(pln, C, r, angle_in_radians);
+  Create (pln, C, r, angle_in_radians);
 }
 
-ON_Arc::ON_Arc(const ON_2dPoint& P, const ON_2dPoint& Q, const ON_2dPoint& R)
-: m_angle(0.0, 2.0 * ON_PI)
+ON_Arc::ON_Arc (const ON_2dPoint& P, const ON_2dPoint& Q, const ON_2dPoint& R)
+: m_angle (0.0, 2.0 * ON_PI)
 {
-  Create(P, Q, R);
+  Create (P, Q, R);
 }
 
-ON_Arc::ON_Arc(const ON_3dPoint& P, const ON_3dPoint& Q, const ON_3dPoint& R)
-: m_angle(0.0, 2.0 * ON_PI)
+ON_Arc::ON_Arc (const ON_3dPoint& P, const ON_3dPoint& Q, const ON_3dPoint& R)
+: m_angle (0.0, 2.0 * ON_PI)
 {
-  Create(P, Q, R);
+  Create (P, Q, R);
 }
 
 ON_Arc&
-ON_Arc::operator=(const ON_Circle& c)
+ON_Arc::operator= (const ON_Circle& c)
 {
 
 #if defined(ON_COMPILER_IRIX)
   plane = c.plane;
   radius = c.radius;
 #else
-  ON_Circle::operator=(c);
+  ON_Circle::operator= (c);
 #endif
 
-  m_angle.Set(0.0, 2.0 * ON_PI);
+  m_angle.Set (0.0, 2.0 * ON_PI);
   return *this;
 }
 
 bool
-ON_Arc::Create(const ON_Circle& circle,
-               double angle_radians // angle in radians
+ON_Arc::Create (const ON_Circle& circle,
+                double angle_radians // angle in radians
 )
 {
-  return Create(circle, ON_Interval(0.0, angle_radians));
+  return Create (circle, ON_Interval (0.0, angle_radians));
 }
 
 bool
-ON_Arc::Create(const ON_Circle& circle, ON_Interval angle_interval_in_radians)
+ON_Arc::Create (const ON_Circle& circle, ON_Interval angle_interval_in_radians)
 {
   bool rc = true;
   plane = circle.plane;
@@ -109,28 +110,28 @@ ON_Arc::Create(const ON_Circle& circle, ON_Interval angle_interval_in_radians)
 }
 
 bool
-ON_Arc::Create(const ON_Plane& pl,  // circle is in this plane with center at m_origin
-               double r,            // radius
-               double angle_radians // angle in radians
+ON_Arc::Create (const ON_Plane& pl,  // circle is in this plane with center at m_origin
+                double r,            // radius
+                double angle_radians // angle in radians
 )
 {
-  return Create(ON_Circle(pl, r), ON_Interval(0.0, angle_radians));
+  return Create (ON_Circle (pl, r), ON_Interval (0.0, angle_radians));
 }
 
 bool
-ON_Arc::Create(               // arc is parallel to XY plane
+ON_Arc::Create (              // arc is parallel to XY plane
     const ON_3dPoint& center, // center
     double r,                 // radius
     double angle_radians      // angle in radians
 )
 {
   ON_Plane p;
-  p.CreateFromNormal(center, ON_zaxis);
-  return Create(ON_Circle(p, r), ON_Interval(0.0, angle_radians));
+  p.CreateFromNormal (center, ON_zaxis);
+  return Create (ON_Circle (p, r), ON_Interval (0.0, angle_radians));
 }
 
 bool
-ON_Arc::Create(               // arc parallel to a plane
+ON_Arc::Create (              // arc parallel to a plane
     const ON_Plane& pl,       // circle will be parallel to this plane
     const ON_3dPoint& center, // center
     double r,                 // radius
@@ -140,24 +141,24 @@ ON_Arc::Create(               // arc parallel to a plane
   ON_Plane p = pl;
   p.origin = center;
   p.UpdateEquation();
-  return Create(ON_Circle(p, r), ON_Interval(0.0, angle_radians));
+  return Create (ON_Circle (p, r), ON_Interval (0.0, angle_radians));
 }
 
 bool
-ON_Arc::Create(          // arc through 3 2d points
+ON_Arc::Create (         // arc through 3 2d points
     const ON_2dPoint& P, // point P
     const ON_2dPoint& Q, // point Q
     const ON_2dPoint& R  // point R
 )
 {
-  ON_Circle c(P, Q, R);
+  ON_Circle c (P, Q, R);
   double a = 0.0;
-  c.ClosestPointTo(R, &a);
-  return Create(c, ON_Interval(0.0, a));
+  c.ClosestPointTo (R, &a);
+  return Create (c, ON_Interval (0.0, a));
 }
 
 bool
-ON_Arc::Create(          // arc through 3 3d points
+ON_Arc::Create (         // arc through 3 3d points
     const ON_3dPoint& P, // point P
     const ON_3dPoint& Q, // point Q
     const ON_3dPoint& R  // point R
@@ -168,16 +169,16 @@ ON_Arc::Create(          // arc through 3 3d points
 
   for (;;) {
 
-    if (!c.Create(P, Q, R))
+    if (!c.Create (P, Q, R))
       break;
 
-    if (!c.ClosestPointTo(R, &a))
+    if (!c.ClosestPointTo (R, &a))
       break;
 
     if (!(a > 0.0))
       break;
 
-    if (!Create(c, ON_Interval(0.0, a)))
+    if (!Create (c, ON_Interval (0.0, a)))
       break;
 
     return true;
@@ -185,7 +186,7 @@ ON_Arc::Create(          // arc through 3 3d points
 
   plane = ON_Plane::World_xy;
   radius = 0.0;
-  m_angle.Set(0.0, 0.0);
+  m_angle.Set (0.0, 0.0);
 
   return false;
 }
@@ -193,27 +194,27 @@ ON_Arc::Create(          // arc through 3 3d points
 //////////
 // Create an arc from a 2d start point, 2d start direction, and 2d end point.
 bool
-ON_Arc::Create(const ON_2dPoint& P,     // [IN] start point
-               const ON_2dVector& Pdir, // [IN] arc direction at start
-               const ON_2dPoint& Q      // [IN] end point
+ON_Arc::Create (const ON_2dPoint& P,     // [IN] start point
+                const ON_2dVector& Pdir, // [IN] arc direction at start
+                const ON_2dPoint& Q      // [IN] end point
 )
 {
-  return Create(ON_3dPoint(P), ON_3dVector(Pdir), ON_3dPoint(Q));
+  return Create (ON_3dPoint (P), ON_3dVector (Pdir), ON_3dPoint (Q));
 }
 
 //////////
 // Create an arc from a 3d start point, 3d start direction, and 3d end point.
 bool
-ON_Arc::Create(const ON_3dPoint& P,     // [IN] start point
-               const ON_3dVector& Pdir, // [IN] arc direction at start
-               const ON_3dPoint& Q      // [IN] end point
+ON_Arc::Create (const ON_3dPoint& P,     // [IN] start point
+                const ON_3dVector& Pdir, // [IN] arc direction at start
+                const ON_3dPoint& Q      // [IN] end point
 )
 {
   double a = 0.0;
-  bool rc = ON_Circle::Create(P, Pdir, Q);
+  bool rc = ON_Circle::Create (P, Pdir, Q);
   if (rc) {
     m_angle.m_t[0] = 0.0;
-    rc = ON_Circle::ClosestPointTo(Q, &a);
+    rc = ON_Circle::ClosestPointTo (Q, &a);
     m_angle.m_t[1] = a;
     if (a <= ON_ZERO_TOLERANCE || a >= 2.0 * ON_PI - ON_ZERO_TOLERANCE)
       rc = false;
@@ -224,41 +225,41 @@ ON_Arc::Create(const ON_3dPoint& P,     // [IN] start point
 ON_Arc::~ON_Arc() {}
 
 void
-ON_Arc::Dump(ON_TextLog& dump) const
+ON_Arc::Dump (ON_TextLog& dump) const
 {
-  dump.Print("Arc: normal = ");
-  dump.Print(plane.zaxis);
-  dump.Print(" center = ");
-  dump.Print(plane.origin);
-  dump.Print(" start = ");
-  dump.Print(StartPoint());
-  dump.Print(" end = ");
-  dump.Print(EndPoint());
-  dump.Print(" radius = ");
-  dump.Print(Radius());
-  dump.Print(" angle = [");
-  dump.Print(m_angle[0]);
-  dump.Print(",");
-  dump.Print(m_angle[1]);
-  dump.Print("]\n");
+  dump.Print ("Arc: normal = ");
+  dump.Print (plane.zaxis);
+  dump.Print (" center = ");
+  dump.Print (plane.origin);
+  dump.Print (" start = ");
+  dump.Print (StartPoint());
+  dump.Print (" end = ");
+  dump.Print (EndPoint());
+  dump.Print (" radius = ");
+  dump.Print (Radius());
+  dump.Print (" angle = [");
+  dump.Print (m_angle[0]);
+  dump.Print (",");
+  dump.Print (m_angle[1]);
+  dump.Print ("]\n");
 }
 
 ON_3dPoint
 ON_Arc::StartPoint() const
 {
-  return PointAt(m_angle[0]);
+  return PointAt (m_angle[0]);
 }
 
 ON_3dPoint
 ON_Arc::MidPoint() const
 {
-  return PointAt(m_angle.Mid());
+  return PointAt (m_angle.Mid());
 }
 
 ON_3dPoint
 ON_Arc::EndPoint() const
 {
-  return PointAt(m_angle[1]);
+  return PointAt (m_angle[1]);
 }
 
 bool
@@ -283,17 +284,17 @@ ON_Arc::BoundingBox() const
   ON_NurbsCurve c;
   c.m_knot = knot;
   c.m_cv = &cv[0].x;
-  if (GetNurbForm(c))
+  if (GetNurbForm (c))
     return c.BoundingBox();
   return ON_Circle::BoundingBox();
 }
 
 bool
-ON_Arc::GetBoundingBox(ON_BoundingBox& bbox, int bGrowBox) const
+ON_Arc::GetBoundingBox (ON_BoundingBox& bbox, int bGrowBox) const
 {
   if (bGrowBox) {
     ON_BoundingBox arc_bbox = BoundingBox();
-    bbox.Union(arc_bbox);
+    bbox.Union (arc_bbox);
   }
   else
     bbox = BoundingBox();
@@ -303,7 +304,8 @@ ON_Arc::GetBoundingBox(ON_BoundingBox& bbox, int bGrowBox) const
 bool
 ON_Arc::IsCircle() const
 {
-  return (fabs(fabs(AngleRadians()) - 2.0 * ON_PI) <= ON_ZERO_TOLERANCE) ? true : false;
+  return (fabs (fabs (AngleRadians()) - 2.0 * ON_PI) <= ON_ZERO_TOLERANCE) ? true
+                                                                           : false;
 }
 
 double
@@ -341,21 +343,21 @@ ON_Arc::DomainDegrees() const
 }
 
 bool
-ON_Arc::SetAngleRadians(double a)
+ON_Arc::SetAngleRadians (double a)
 {
   if (a < 0.0) {
     double a0 = m_angle.m_t[0];
-    m_angle.Set(a0 + a, a0);
+    m_angle.Set (a0 + a, a0);
     Reverse();
   }
   else {
     m_angle.m_t[1] = m_angle.m_t[0] + a;
   }
-  return (fabs(m_angle.Length()) <= 2.0 * ON_PI) ? true : false;
+  return (fabs (m_angle.Length()) <= 2.0 * ON_PI) ? true : false;
 }
 
 bool
-ON_Arc::SetAngleIntervalRadians(ON_Interval angle_in_radians)
+ON_Arc::SetAngleIntervalRadians (ON_Interval angle_in_radians)
 {
   bool rc = angle_in_radians.IsIncreasing() &&
             angle_in_radians.Length() < (1.0 + ON_SQRT_EPSILON) * 2.0 * ON_PI;
@@ -366,13 +368,13 @@ ON_Arc::SetAngleIntervalRadians(ON_Interval angle_in_radians)
 }
 
 bool
-ON_Arc::SetAngleDegrees(double a)
+ON_Arc::SetAngleDegrees (double a)
 {
-  return SetAngleRadians((a / 180.0) * ON_PI);
+  return SetAngleRadians ((a / 180.0) * ON_PI);
 }
 
 bool
-ON_Arc::Trim(ON_Interval domain)
+ON_Arc::Trim (ON_Interval domain)
 {
   bool ok = false;
 
@@ -387,20 +389,20 @@ ON_Arc::Trim(ON_Interval domain)
 }
 
 bool
-ON_ArcCurve::IsContinuous(ON::continuity c,
-                          double t,
-                          int*, // hint                - formal parameter intentionally
-                                // ignored in this virtual function
-                          double, // point_tolerance     - formal parameter
-                                  // intentionally ignored in this virtual function
-                          double, // d1_tolerance        - formal parameter
-                                  // intentionally ignored in this virtual function
-                          double, // d2_tolerance        - formal parameter
-                                  // intentionally ignored in this virtual function
-                          double, // cos_angle_tolerance - formal parameter
-                                  // intentionally ignored in this virtual function
-                          double // curvature_tolerance - formal parameter intentionally
+ON_ArcCurve::IsContinuous (ON::continuity c,
+                           double t,
+                           int*, // hint                - formal parameter intentionally
                                  // ignored in this virtual function
+                           double, // point_tolerance     - formal parameter
+                                   // intentionally ignored in this virtual function
+                           double, // d1_tolerance        - formal parameter
+                                   // intentionally ignored in this virtual function
+                           double, // d2_tolerance        - formal parameter
+                                   // intentionally ignored in this virtual function
+                           double, // cos_angle_tolerance - formal parameter
+                                   // intentionally ignored in this virtual function
+                           double  // curvature_tolerance - formal parameter
+                                  // intentionally ignored in this virtual function
 ) const
 {
   // 20 March 2003 Dale Lear
@@ -453,43 +455,43 @@ ON_Arc::Reverse()
 double
 ON_Arc::Length() const
 {
-  return fabs(AngleRadians() * radius);
+  return fabs (AngleRadians() * radius);
 }
 
 double
 ON_Arc::SectorArea() const
 {
-  return fabs(0.5 * AngleRadians() * radius * radius);
+  return fabs (0.5 * AngleRadians() * radius * radius);
 }
 
 ON_3dPoint
 ON_Arc::SectorAreaCentroid() const
 {
-  double a = 0.5 * fabs(AngleRadians());
-  double d = (a > 0.0) ? sin(a) / a : 0.0;
+  double a = 0.5 * fabs (AngleRadians());
+  double d = (a > 0.0) ? sin (a) / a : 0.0;
   d *= 2.0 * radius / 3.0;
   a = 0.5 * (m_angle[1] + m_angle[0]);
-  return plane.PointAt(d * cos(a), d * sin(a));
+  return plane.PointAt (d * cos (a), d * sin (a));
 }
 
 double
 ON_Arc::SegmentArea() const
 {
-  double a = fabs(AngleRadians());
-  return (0.5 * (a - sin(a)) * radius * radius);
+  double a = fabs (AngleRadians());
+  return (0.5 * (a - sin (a)) * radius * radius);
 }
 
 ON_3dPoint
 ON_Arc::SegmentAreaCentroid() const
 {
-  double a = fabs(AngleRadians());
-  double sin_halfa = sin(0.5 * a);
-  double d = 3.0 * (a - sin(a));
+  double a = fabs (AngleRadians());
+  double sin_halfa = sin (0.5 * a);
+  double d = 3.0 * (a - sin (a));
   if (d > 0.0)
     d = (sin_halfa * sin_halfa * sin_halfa) / d;
   d *= 4.0 * radius;
   a = 0.5 * (m_angle[1] + m_angle[0]);
-  return plane.PointAt(d * cos(a), d * sin(a));
+  return plane.PointAt (d * cos (a), d * sin (a));
 }
 
 /* moved to opennurbs_arccurve.cpp
@@ -569,7 +571,7 @@ int ON_Arc::GetNurbForm( ON_NurbsCurve& nurbscurve ) const
 
 // returns parameters of point on arc that is closest to given point
 bool
-ON_Arc::ClosestPointTo(const ON_3dPoint& pt, double* t) const
+ON_Arc::ClosestPointTo (const ON_3dPoint& pt, double* t) const
 {
   /*
   double tt, a;
@@ -595,7 +597,7 @@ ON_Arc::ClosestPointTo(const ON_3dPoint& pt, double* t) const
   */
   double s;
   double twopi = 2.0 * ON_PI;
-  bool rc = ON_Circle::ClosestPointTo(pt, &s);
+  bool rc = ON_Circle::ClosestPointTo (pt, &s);
   if (rc) {
     s -= m_angle[0];
     while (s < 0.0)
@@ -626,9 +628,9 @@ ON_Arc::ClosestPointTo(const ON_3dPoint& pt, double* t) const
 
 // returns point on circle that is arc to given point
 ON_3dPoint
-ON_Arc::ClosestPointTo(const ON_3dPoint& pt) const
+ON_Arc::ClosestPointTo (const ON_3dPoint& pt) const
 {
   double t = m_angle[0];
-  ClosestPointTo(pt, &t);
-  return PointAt(t);
+  ClosestPointTo (pt, &t);
+  return PointAt (t);
 }

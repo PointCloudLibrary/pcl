@@ -47,11 +47,11 @@
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 bool
-pcl::LeastMedianSquares<PointT>::computeModel(int debug_verbosity_level)
+pcl::LeastMedianSquares<PointT>::computeModel (int debug_verbosity_level)
 {
   // Warn and exit if no threshold was set
   if (threshold_ == std::numeric_limits<double>::max()) {
-    PCL_ERROR("[pcl::LeastMedianSquares::computeModel] No threshold set!\n");
+    PCL_ERROR ("[pcl::LeastMedianSquares::computeModel] No threshold set!\n");
     return (false);
   }
 
@@ -59,7 +59,7 @@ pcl::LeastMedianSquares<PointT>::computeModel(int debug_verbosity_level)
   double d_best_penalty = std::numeric_limits<double>::max();
 
   Indices selection;
-  Eigen::VectorXf model_coefficients(sac_model_->getModelSize());
+  Eigen::VectorXf model_coefficients (sac_model_->getModelSize());
   std::vector<double> distances;
 
   unsigned skipped_count = 0;
@@ -70,20 +70,20 @@ pcl::LeastMedianSquares<PointT>::computeModel(int debug_verbosity_level)
   // Iterate
   while ((iterations_ < max_iterations_) && (skipped_count < max_skip)) {
     // Get X samples which satisfy the model criteria
-    sac_model_->getSamples(iterations_, selection);
+    sac_model_->getSamples (iterations_, selection);
 
     if (selection.empty()) {
-      PCL_ERROR(
+      PCL_ERROR (
           "[pcl::LeastMedianSquares::computeModel] No samples could be selected!\n");
       break;
     }
 
     // Search for inliers in the point cloud for the current plane model M
-    if (!sac_model_->computeModelCoefficients(selection, model_coefficients)) {
+    if (!sac_model_->computeModelCoefficients (selection, model_coefficients)) {
       // iterations_++;
       ++skipped_count;
-      PCL_DEBUG("[pcl::LeastMedianSquares::computeModel] The function "
-                "computeModelCoefficients failed, so continue with next iteration.\n");
+      PCL_DEBUG ("[pcl::LeastMedianSquares::computeModel] The function "
+                 "computeModelCoefficients failed, so continue with next iteration.\n");
       continue;
     }
 
@@ -91,7 +91,7 @@ pcl::LeastMedianSquares<PointT>::computeModel(int debug_verbosity_level)
     // d_cur_penalty = sum (min (dist, threshold))
 
     // Iterate through the 3d points and calculate the distances from them to the model
-    sac_model_->getDistancesToModel(model_coefficients, distances);
+    sac_model_->getDistancesToModel (model_coefficients, distances);
 
     // No distances? The model must not respect the user given constraints
     if (distances.empty()) {
@@ -103,22 +103,22 @@ pcl::LeastMedianSquares<PointT>::computeModel(int debug_verbosity_level)
     const auto new_end =
         (sac_model_->getInputCloud()->is_dense
              ? distances.end()
-             : std::partition(distances.begin(), distances.end(), [] (double d) {
-                 return !std::isnan(d);
+             : std::partition (distances.begin(), distances.end(), [] (double d) {
+                 return !std::isnan (d);
                }));
-    const auto nr_valid_dists = std::distance(distances.begin(), new_end);
+    const auto nr_valid_dists = std::distance (distances.begin(), new_end);
 
     // d_cur_penalty = median (distances)
-    PCL_DEBUG("[pcl::LeastMedianSquares::computeModel] There are %lu valid distances "
-              "remaining after removing NaN values.\n",
-              nr_valid_dists);
+    PCL_DEBUG ("[pcl::LeastMedianSquares::computeModel] There are %lu valid distances "
+               "remaining after removing NaN values.\n",
+               nr_valid_dists);
     if (nr_valid_dists == 0) {
       // iterations_++;
       ++skipped_count;
       continue;
     }
-    d_cur_penalty = pcl::computeMedian(
-        distances.begin(), new_end, static_cast<double (*)(double)>(std::sqrt));
+    d_cur_penalty = pcl::computeMedian (
+        distances.begin(), new_end, static_cast<double (*) (double)> (std::sqrt));
 
     // Better match ?
     if (d_cur_penalty < d_best_penalty) {
@@ -131,17 +131,18 @@ pcl::LeastMedianSquares<PointT>::computeModel(int debug_verbosity_level)
 
     ++iterations_;
     if (debug_verbosity_level > 1) {
-      PCL_DEBUG("[pcl::LeastMedianSquares::computeModel] Trial %d out of %d. Best "
-                "penalty is %f.\n",
-                iterations_,
-                max_iterations_,
-                d_best_penalty);
+      PCL_DEBUG ("[pcl::LeastMedianSquares::computeModel] Trial %d out of %d. Best "
+                 "penalty is %f.\n",
+                 iterations_,
+                 max_iterations_,
+                 d_best_penalty);
     }
   }
 
   if (model_.empty()) {
     if (debug_verbosity_level > 0) {
-      PCL_DEBUG("[pcl::LeastMedianSquares::computeModel] Unable to find a solution!\n");
+      PCL_DEBUG (
+          "[pcl::LeastMedianSquares::computeModel] Unable to find a solution!\n");
     }
     return (false);
   }
@@ -154,25 +155,25 @@ pcl::LeastMedianSquares<PointT>::computeModel(int debug_verbosity_level)
 
   // Iterate through the 3d points and calculate the distances from them to the model
   // again
-  sac_model_->getDistancesToModel(model_coefficients_, distances);
+  sac_model_->getDistancesToModel (model_coefficients_, distances);
   // No distances? The model must not respect the user given constraints
   if (distances.empty()) {
-    PCL_ERROR("[pcl::LeastMedianSquares::computeModel] The model found failed to "
-              "verify against the given constraints!\n");
+    PCL_ERROR ("[pcl::LeastMedianSquares::computeModel] The model found failed to "
+               "verify against the given constraints!\n");
     return (false);
   }
 
   Indices& indices = *sac_model_->getIndices();
 
   if (distances.size() != indices.size()) {
-    PCL_ERROR("[pcl::LeastMedianSquares::computeModel] Estimated distances (%lu) "
-              "differs than the normal of indices (%lu).\n",
-              distances.size(),
-              indices.size());
+    PCL_ERROR ("[pcl::LeastMedianSquares::computeModel] Estimated distances (%lu) "
+               "differs than the normal of indices (%lu).\n",
+               distances.size(),
+               indices.size());
     return (false);
   }
 
-  inliers_.resize(distances.size());
+  inliers_.resize (distances.size());
   // Get the inliers for the best model found
   std::size_t n_inliers_count = 0;
   for (std::size_t i = 0; i < distances.size(); ++i) {
@@ -182,12 +183,13 @@ pcl::LeastMedianSquares<PointT>::computeModel(int debug_verbosity_level)
   }
 
   // Resize the inliers vector
-  inliers_.resize(n_inliers_count);
+  inliers_.resize (n_inliers_count);
 
   if (debug_verbosity_level > 0) {
-    PCL_DEBUG("[pcl::LeastMedianSquares::computeModel] Model: %lu size, %lu inliers.\n",
-              model_.size(),
-              n_inliers_count);
+    PCL_DEBUG (
+        "[pcl::LeastMedianSquares::computeModel] Model: %lu size, %lu inliers.\n",
+        model_.size(),
+        n_inliers_count);
   }
 
   return (true);

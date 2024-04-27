@@ -293,16 +293,16 @@ public:
   {
     pcl::PCLPointCloud2 blob;
     int pcd_version;
-    int res = read(file_name,
-                   blob,
-                   cloud.sensor_origin_,
-                   cloud.sensor_orientation_,
-                   pcd_version,
-                   offset);
+    int res = read (file_name,
+                    blob,
+                    cloud.sensor_origin_,
+                    cloud.sensor_orientation_,
+                    pcd_version,
+                    offset);
 
     // If no error, convert the data
     if (res == 0)
-      pcl::fromPCLPointCloud2(blob, cloud);
+      pcl::fromPCLPointCloud2 (blob, cloud);
 
     return (res);
   }
@@ -497,8 +497,8 @@ public:
          const bool binary = false) override
   {
     if (binary)
-      return (writeBinary(file_name, cloud, origin, orientation));
-    return (writeASCII(file_name, cloud, origin, orientation, 8));
+      return (writeBinary (file_name, cloud, origin, orientation));
+    return (writeASCII (file_name, cloud, origin, orientation, 8));
   }
 
   /** \brief Save point cloud data to a PCD file containing n-D points
@@ -523,7 +523,7 @@ public:
          const Eigen::Quaternionf& orientation = Eigen::Quaternionf::Identity(),
          const bool binary = false)
   {
-    return (write(file_name, *cloud, origin, orientation, binary));
+    return (write (file_name, *cloud, origin, orientation, binary));
   }
 
   /** \brief Save point cloud data to a PCD file containing n-D points, in BINARY format
@@ -602,8 +602,8 @@ public:
          const bool binary = false)
   {
     if (binary)
-      return (writeBinary<PointT>(file_name, cloud));
-    return (writeASCII<PointT>(file_name, cloud));
+      return (writeBinary<PointT> (file_name, cloud));
+    return (writeASCII<PointT> (file_name, cloud));
   }
 
   /** \brief Save point cloud data to a PCD file containing n-D points
@@ -628,8 +628,8 @@ public:
          bool binary = false)
   {
     if (binary)
-      return (writeBinary<PointT>(file_name, cloud, indices));
-    return (writeASCII<PointT>(file_name, cloud, indices));
+      return (writeBinary<PointT> (file_name, cloud, indices));
+    return (writeASCII<PointT> (file_name, cloud, indices));
   }
 
 protected:
@@ -669,7 +669,7 @@ inline int
 loadPCDFile (const std::string& file_name, pcl::PCLPointCloud2& cloud)
 {
   pcl::PCDReader p;
-  return (p.read(file_name, cloud));
+  return (p.read (file_name, cloud));
 }
 
 /** \brief Load any PCD file into a templated PointCloud type.
@@ -688,7 +688,7 @@ loadPCDFile (const std::string& file_name,
 {
   pcl::PCDReader p;
   int pcd_version;
-  return (p.read(file_name, cloud, origin, orientation, pcd_version));
+  return (p.read (file_name, cloud, origin, orientation, pcd_version));
 }
 
 /** \brief Load any PCD file into a templated PointCloud type
@@ -701,7 +701,7 @@ inline int
 loadPCDFile (const std::string& file_name, pcl::PointCloud<PointT>& cloud)
 {
   pcl::PCDReader p;
-  return (p.read(file_name, cloud));
+  return (p.read (file_name, cloud));
 }
 
 /** \brief Save point cloud data to a PCD file containing n-D points
@@ -727,7 +727,7 @@ savePCDFile (const std::string& file_name,
              const bool binary_mode = false)
 {
   PCDWriter w;
-  return (w.write(file_name, cloud, origin, orientation, binary_mode));
+  return (w.write (file_name, cloud, origin, orientation, binary_mode));
 }
 
 /** \brief Templated version for saving point cloud data to a PCD file
@@ -751,7 +751,7 @@ savePCDFile (const std::string& file_name,
              bool binary_mode = false)
 {
   PCDWriter w;
-  return (w.write<PointT>(file_name, cloud, binary_mode));
+  return (w.write<PointT> (file_name, cloud, binary_mode));
 }
 
 /**
@@ -775,7 +775,7 @@ inline int
 savePCDFileASCII (const std::string& file_name, const pcl::PointCloud<PointT>& cloud)
 {
   PCDWriter w;
-  return (w.write<PointT>(file_name, cloud, false));
+  return (w.write<PointT> (file_name, cloud, false));
 }
 
 /**
@@ -793,7 +793,7 @@ inline int
 savePCDFileBinary (const std::string& file_name, const pcl::PointCloud<PointT>& cloud)
 {
   PCDWriter w;
-  return (w.write<PointT>(file_name, cloud, true));
+  return (w.write<PointT> (file_name, cloud, true));
 }
 
 /**
@@ -822,7 +822,7 @@ savePCDFile (const std::string& file_name,
 {
   // Save the data
   PCDWriter w;
-  return (w.write<PointT>(file_name, cloud, indices, binary_mode));
+  return (w.write<PointT> (file_name, cloud, indices, binary_mode));
 }
 
 /**
@@ -841,7 +841,7 @@ savePCDFileBinaryCompressed (const std::string& file_name,
                              const pcl::PointCloud<PointT>& cloud)
 {
   PCDWriter w;
-  return (w.writeBinaryCompressed<PointT>(file_name, cloud));
+  return (w.writeBinaryCompressed<PointT> (file_name, cloud));
 }
 
 } // namespace io

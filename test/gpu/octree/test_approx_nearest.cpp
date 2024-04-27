@@ -20,7 +20,7 @@
 #include <fstream>
 #include <iostream>
 
-TEST(PCL_OctreeGPU, approxNearesSearch)
+TEST (PCL_OctreeGPU, approxNearesSearch)
 {
 
   /*
@@ -61,11 +61,11 @@ TEST(PCL_OctreeGPU, approxNearesSearch)
   // affect the results. Therefore results would only tally if depths match.
   // generate custom pointcloud
   constexpr pcl::index_t point_size = 1000 * coords.size();
-  auto cloud = pcl::make_shared<pcl::PointCloud<pcl::PointXYZ>>(point_size, 1);
+  auto cloud = pcl::make_shared<pcl::PointCloud<pcl::PointXYZ>> (point_size, 1);
 
   // copy chunks of 10 points at the same time
   for (auto it = cloud->begin(); it != cloud->cend(); it += coords.size())
-    std::copy(coords.cbegin(), coords.cend(), it);
+    std::copy (coords.cbegin(), coords.cend(), it);
 
   const std::vector<pcl::PointXYZ> queries = {
       {-0.4, -0.2, -0.75}, // should be different across CPU and GPU if different
@@ -76,55 +76,56 @@ TEST(PCL_OctreeGPU, approxNearesSearch)
 
   // prepare device cloud
   pcl::gpu::Octree::PointCloud cloud_device;
-  cloud_device.upload(cloud->points);
+  cloud_device.upload (cloud->points);
 
   // gpu build
   pcl::gpu::Octree octree_device;
-  octree_device.setCloud(cloud_device);
+  octree_device.setCloud (cloud_device);
   octree_device.build();
 
   // build host octree
   constexpr float host_octree_resolution = 0.05;
-  pcl::octree::OctreePointCloudSearch<pcl::PointXYZ> octree_host(
+  pcl::octree::OctreePointCloudSearch<pcl::PointXYZ> octree_host (
       host_octree_resolution);
-  octree_host.setInputCloud(cloud);
+  octree_host.setInputCloud (cloud);
   octree_host.addPointsFromInputCloud();
 
   // upload queries
   pcl::gpu::Octree::Queries queries_device;
-  queries_device.upload(queries);
+  queries_device.upload (queries);
 
   // prepare output buffers on device
-  pcl::gpu::NeighborIndices result_device(queries.size(), 1);
-  pcl::Indices result_host_pcl(queries.size());
-  std::vector<int> result_host_gpu(queries.size());
-  std::vector<float> dists_pcl(queries.size());
-  std::vector<float> dists_gpu(queries.size());
+  pcl::gpu::NeighborIndices result_device (queries.size(), 1);
+  pcl::Indices result_host_pcl (queries.size());
+  std::vector<int> result_host_gpu (queries.size());
+  std::vector<float> dists_pcl (queries.size());
+  std::vector<float> dists_gpu (queries.size());
   pcl::gpu::Octree::ResultSqrDists dists_device;
 
   // search GPU shared
-  octree_device.approxNearestSearch(queries_device, result_device, dists_device);
+  octree_device.approxNearestSearch (queries_device, result_device, dists_device);
   std::vector<int> downloaded;
   std::vector<float> dists_device_downloaded;
-  result_device.data.download(downloaded);
-  dists_device.download(dists_device_downloaded);
+  result_device.data.download (downloaded);
+  dists_device.download (dists_device_downloaded);
 
   for (size_t i = 0; i < queries.size(); ++i) {
-    octree_host.approxNearestSearch(queries[i], result_host_pcl[i], dists_pcl[i]);
-    octree_device.approxNearestSearchHost(queries[i], result_host_gpu[i], dists_gpu[i]);
+    octree_host.approxNearestSearch (queries[i], result_host_pcl[i], dists_pcl[i]);
+    octree_device.approxNearestSearchHost (
+        queries[i], result_host_gpu[i], dists_gpu[i]);
   }
 
-  ASSERT_EQ(downloaded, result_host_gpu);
+  ASSERT_EQ (downloaded, result_host_gpu);
 
   const std::array<float, 3> expected_sqr_dists{
-      pcl::squaredEuclideanDistance(coords[8], queries[0]),
-      pcl::squaredEuclideanDistance(coords[8], queries[1]),
-      pcl::squaredEuclideanDistance(coords[7], queries[2])};
+      pcl::squaredEuclideanDistance (coords[8], queries[0]),
+      pcl::squaredEuclideanDistance (coords[8], queries[1]),
+      pcl::squaredEuclideanDistance (coords[7], queries[2])};
 
   for (size_t i = 0; i < queries.size(); ++i) {
-    ASSERT_EQ(dists_pcl[i], dists_gpu[i]);
-    ASSERT_NEAR(dists_gpu[i], dists_device_downloaded[i], 0.001);
-    ASSERT_NEAR(dists_device_downloaded[i], expected_sqr_dists[i], 0.001);
+    ASSERT_EQ (dists_pcl[i], dists_gpu[i]);
+    ASSERT_NEAR (dists_gpu[i], dists_device_downloaded[i], 0.001);
+    ASSERT_NEAR (dists_device_downloaded[i], expected_sqr_dists[i], 0.001);
   }
 }
 
@@ -132,7 +133,7 @@ TEST(PCL_OctreeGPU, approxNearesSearch)
 int
 main (int argc, char** argv)
 {
-  testing::InitGoogleTest(&argc, argv);
+  testing::InitGoogleTest (&argc, argv);
   return (RUN_ALL_TESTS());
 }
 /* ]--- */

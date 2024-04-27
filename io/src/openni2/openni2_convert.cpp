@@ -43,7 +43,7 @@ const OpenNI2DeviceInfo
 openni2_convert (const openni::DeviceInfo* pInfo)
 {
   if (!pInfo)
-    THROW_IO_EXCEPTION("openni2_convert called with zero pointer\n");
+    THROW_IO_EXCEPTION ("openni2_convert called with zero pointer\n");
 
   OpenNI2DeviceInfo output;
 
@@ -62,9 +62,9 @@ grabberModeToOpenniMode (const OpenNI2VideoMode& input)
 
   openni::VideoMode output;
 
-  output.setResolution(input.x_resolution_, input.y_resolution_);
-  output.setFps(input.frame_rate_);
-  output.setPixelFormat(static_cast<openni::PixelFormat>(input.pixel_format_));
+  output.setResolution (input.x_resolution_, input.y_resolution_);
+  output.setFps (input.frame_rate_);
+  output.setPixelFormat (static_cast<openni::PixelFormat> (input.pixel_format_));
 
   return (output);
 }
@@ -77,7 +77,7 @@ openniModeToGrabberMode (const openni::VideoMode& input)
   output.x_resolution_ = input.getResolutionX();
   output.y_resolution_ = input.getResolutionY();
   output.frame_rate_ = input.getFps();
-  output.pixel_format_ = static_cast<PixelFormat>(input.getPixelFormat());
+  output.pixel_format_ = static_cast<PixelFormat> (input.getPixelFormat());
 
   return (output);
 }
@@ -89,10 +89,10 @@ openniModeToGrabberMode (const openni::Array<openni::VideoMode>& input)
 
   int size = input.getSize();
 
-  output.reserve(size);
+  output.reserve (size);
 
   for (int i = 0; i < size; ++i)
-    output.push_back(openniModeToGrabberMode(input[i]));
+    output.push_back (openniModeToGrabberMode (input[i]));
 
   return (output);
 }

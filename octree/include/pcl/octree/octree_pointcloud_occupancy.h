@@ -85,11 +85,11 @@ public:
   /** \brief Constructor.
    *  \param resolution_arg:  octree resolution at lowest octree level
    * */
-  OctreePointCloudOccupancy(const double resolution_arg)
+  OctreePointCloudOccupancy (const double resolution_arg)
   : OctreePointCloud<PointT,
                      LeafContainerT,
                      BranchContainerT,
-                     OctreeBase<LeafContainerT, BranchContainerT>>(resolution_arg)
+                     OctreeBase<LeafContainerT, BranchContainerT>> (resolution_arg)
   {}
 
   /** \brief Empty class constructor. */
@@ -105,13 +105,13 @@ public:
     OctreeKey key;
 
     // make sure bounding box is big enough
-    this->adoptBoundingBoxToPoint(point_arg);
+    this->adoptBoundingBoxToPoint (point_arg);
 
     // generate key
-    this->genOctreeKeyforPoint(point_arg, key);
+    this->genOctreeKeyforPoint (point_arg, key);
 
     // add point to octree at key
-    this->createLeaf(key);
+    this->createLeaf (key);
   }
 
   /** \brief Set occupied voxels at all points from point cloud.
@@ -122,9 +122,9 @@ public:
   {
     for (const auto& point : *cloud_arg) {
       // check for NaNs
-      if (isFinite(point)) {
+      if (isFinite (point)) {
         // set voxel at point
-        this->setOccupiedVoxelAtPoint(point);
+        this->setOccupiedVoxelAtPoint (point);
       }
     }
   }

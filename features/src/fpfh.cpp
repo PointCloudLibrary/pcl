@@ -44,19 +44,19 @@
 #include <pcl/point_types.h>
 // Instantiations of specific point types
 #ifdef PCL_ONLY_CORE_POINT_TYPES
-PCL_INSTANTIATE_PRODUCT(
+PCL_INSTANTIATE_PRODUCT (
     FPFHEstimation,
-    ((pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGB)(pcl::PointXYZRGBA)(
-        pcl::PointNormal))((pcl::Normal)(pcl::PointNormal))((pcl::FPFHSignature33)))
-PCL_INSTANTIATE_PRODUCT(
+    ((pcl::PointXYZ) (pcl::PointXYZI) (pcl::PointXYZRGB) (pcl::PointXYZRGBA) (
+        pcl::PointNormal)) ((pcl::Normal) (pcl::PointNormal)) ((pcl::FPFHSignature33)))
+PCL_INSTANTIATE_PRODUCT (
     FPFHEstimationOMP,
-    ((pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGB)(pcl::PointXYZRGBA)(
-        pcl::PointNormal))((pcl::Normal)(pcl::PointNormal))((pcl::FPFHSignature33)))
+    ((pcl::PointXYZ) (pcl::PointXYZI) (pcl::PointXYZRGB) (pcl::PointXYZRGBA) (
+        pcl::PointNormal)) ((pcl::Normal) (pcl::PointNormal)) ((pcl::FPFHSignature33)))
 #else
-PCL_INSTANTIATE_PRODUCT(
+PCL_INSTANTIATE_PRODUCT (
     FPFHEstimation,
     (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES)((pcl::FPFHSignature33)))
-PCL_INSTANTIATE_PRODUCT(
+PCL_INSTANTIATE_PRODUCT (
     FPFHEstimationOMP,
     (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES)((pcl::FPFHSignature33)))
 #endif

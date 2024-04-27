@@ -44,6 +44,6 @@
 #include <pcl/impl/instantiate.hpp>
 #include <pcl/point_types.h>
 
-PCL_INSTANTIATE(BilateralFilter, (pcl::PointXYZI)(pcl::PointXYZINormal))
+PCL_INSTANTIATE (BilateralFilter, (pcl::PointXYZI) (pcl::PointXYZINormal))
 
 #endif // PCL_NO_PRECOMPILE

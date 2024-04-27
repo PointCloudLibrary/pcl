@@ -51,8 +51,8 @@ class Allocator {
   std::vector<T*> memory;
 
 public:
-  Allocator(void) { blockSize = index = remains = 0; }
-  ~Allocator(void) { reset(); }
+  Allocator (void) { blockSize = index = remains = 0; }
+  ~Allocator (void) { reset(); }
 
   /** This method is the allocators destructor. It frees up any of the memory that
    * it has allocated. */
@@ -154,20 +154,20 @@ public:
       return NULL;
     }
     if (elements > blockSize) {
-      fprintf(stderr,
-              "Allocator Error, elements bigger than block-size: %d>%d\n",
-              elements,
-              blockSize);
+      fprintf (stderr,
+               "Allocator Error, elements bigger than block-size: %d>%d\n",
+               elements,
+               blockSize);
       return NULL;
     }
     if (remains < elements) {
       if (index == memory.size() - 1) {
         mem = new T[blockSize];
         if (!mem) {
-          fprintf(stderr, "Failed to allocate memory\n");
-          exit(0);
+          fprintf (stderr, "Failed to allocate memory\n");
+          exit (0);
         }
-        memory.push_back(mem);
+        memory.push_back (mem);
       }
       index++;
       remains = blockSize;

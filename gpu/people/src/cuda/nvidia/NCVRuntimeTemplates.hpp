@@ -148,16 +148,16 @@ struct KernelCaller {
 
     // Variable argument list manipulation
     va_list listPointer;
-    va_start(listPointer, functor);
+    va_start (listPointer, functor);
     // Collect parameters into the list
     for (int i = 0; i < NumArguments; i++) {
-      int val = va_arg(listPointer, int);
-      templateParamList.push_back(val);
+      int val = va_arg (listPointer, int);
+      templateParamList.push_back (val);
     }
-    va_end(listPointer);
+    va_end (listPointer);
 
     // Call the actual typelist building function
-    call(*functor, templateParamList);
+    call (*functor, templateParamList);
   }
 
   // Actual function called recursively to build a typelist based
@@ -175,12 +175,12 @@ struct KernelCaller {
     if (val) {
       KernelCaller<Loki::Typelist<typename Loki::Int2Type<1>, TList>,
                    NumArguments - 1,
-                   Func>::call(functor, templateParamList);
+                   Func>::call (functor, templateParamList);
     }
     else {
       KernelCaller<Loki::Typelist<typename Loki::Int2Type<0>, TList>,
                    NumArguments - 1,
-                   Func>::call(functor, templateParamList);
+                   Func>::call (functor, templateParamList);
     }
   }
 };
@@ -193,14 +193,14 @@ struct KernelCaller<TList, 0, Func> {
   call (Func& functor)
   {
     // Call to the functor's kernel call method
-    functor.call(
+    functor.call (
         TList()); // TList instantiated to get the method template parameter resolved
   }
 
   static void
   call (Func& functor, std::vector<int>& templateParams)
   {
-    functor.call(TList());
+    functor.call (TList());
   }
 };
 } // namespace NCVRuntimeTemplateBool

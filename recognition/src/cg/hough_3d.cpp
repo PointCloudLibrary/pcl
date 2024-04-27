@@ -43,21 +43,21 @@
 #include "pcl/point_types.h"
 #include "pcl/recognition/impl/cg/hough_3d.hpp"
 
-PCL_INSTANTIATE_PRODUCT(
+PCL_INSTANTIATE_PRODUCT (
     Hough3DGrouping,
-    ((pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGB)(pcl::PointXYZRGBA))(
-        (pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGB)(pcl::PointXYZRGBA))(
-        (pcl::ReferenceFrame))((pcl::ReferenceFrame)))
+    ((pcl::PointXYZ) (pcl::PointXYZI) (pcl::PointXYZRGB) (pcl::PointXYZRGBA)) (
+        (pcl::PointXYZ) (pcl::PointXYZI) (pcl::PointXYZRGB) (pcl::PointXYZRGBA)) (
+        (pcl::ReferenceFrame)) ((pcl::ReferenceFrame)))
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-pcl::recognition::HoughSpace3D::HoughSpace3D(const Eigen::Vector3d& min_coord,
-                                             const Eigen::Vector3d& bin_size,
-                                             const Eigen::Vector3d& max_coord)
-: min_coord_(min_coord), bin_size_(bin_size)
+pcl::recognition::HoughSpace3D::HoughSpace3D (const Eigen::Vector3d& min_coord,
+                                              const Eigen::Vector3d& bin_size,
+                                              const Eigen::Vector3d& max_coord)
+: min_coord_ (min_coord), bin_size_ (bin_size)
 {
   for (int i = 0; i < 3; ++i) {
     bin_count_[i] =
-        static_cast<int>(std::ceil((max_coord[i] - min_coord_[i]) / bin_size_[i]));
+        static_cast<int> (std::ceil ((max_coord[i] - min_coord_[i]) / bin_size_[i]));
   }
 
   partial_bin_products_[0] = 1;
@@ -67,7 +67,7 @@ pcl::recognition::HoughSpace3D::HoughSpace3D(const Eigen::Vector3d& min_coord,
   total_bins_count_ = partial_bin_products_[3];
 
   hough_space_.clear();
-  hough_space_.resize(total_bins_count_, 0.0);
+  hough_space_.resize (total_bins_count_, 0.0);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -75,22 +75,22 @@ void
 pcl::recognition::HoughSpace3D::reset()
 {
   hough_space_.clear();
-  hough_space_.resize(total_bins_count_, 0.0);
+  hough_space_.resize (total_bins_count_, 0.0);
 
   voter_ids_.clear();
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 int
-pcl::recognition::HoughSpace3D::vote(const Eigen::Vector3d& single_vote_coord,
-                                     double weight,
-                                     int voter_id)
+pcl::recognition::HoughSpace3D::vote (const Eigen::Vector3d& single_vote_coord,
+                                      double weight,
+                                      int voter_id)
 {
   int index = 0;
 
   for (int i = 0; i < 3; ++i) {
-    int currentBin = static_cast<int>(
-        std::floor((single_vote_coord[i] - min_coord_[i]) / bin_size_[i]));
+    int currentBin = static_cast<int> (
+        std::floor ((single_vote_coord[i] - min_coord_[i]) / bin_size_[i]));
     if (currentBin < 0 || currentBin >= bin_count_[i]) {
       // PCL_ERROR("Current Vote goes out of bounds in the Hough Table!\nDimension: %d,
       // Value inserted: %f, Min value: %f, Max value: %f\n", i,
@@ -103,16 +103,16 @@ pcl::recognition::HoughSpace3D::vote(const Eigen::Vector3d& single_vote_coord,
   }
 
   hough_space_[index] += weight;
-  voter_ids_[index].push_back(voter_id);
+  voter_ids_[index].push_back (voter_id);
 
   return (index);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 int
-pcl::recognition::HoughSpace3D::voteInt(const Eigen::Vector3d& single_vote_coord,
-                                        double weight,
-                                        int voter_id)
+pcl::recognition::HoughSpace3D::voteInt (const Eigen::Vector3d& single_vote_coord,
+                                         double weight,
+                                         int voter_id)
 {
   int central_bin_index = 0;
 
@@ -122,15 +122,15 @@ pcl::recognition::HoughSpace3D::voteInt(const Eigen::Vector3d& single_vote_coord
   Eigen::Vector3f bin_centroid;
   Eigen::Vector3f central_bin_weight;
   Eigen::Vector3i interp_bin;
-  std::vector<float> interp_weight(n_neigh);
+  std::vector<float> interp_weight (n_neigh);
 
   for (int n = 0; n < n_neigh; ++n)
     interp_weight[n] = 1.0;
 
   for (int d = 0; d < 3; ++d) {
     // Compute coordinates of central bin
-    central_bin_coord[d] = static_cast<int>(
-        std::floor((single_vote_coord[d] - min_coord_[d]) / bin_size_[d]));
+    central_bin_coord[d] = static_cast<int> (
+        std::floor ((single_vote_coord[d] - min_coord_[d]) / bin_size_[d]));
     if (central_bin_coord[d] < 0 || central_bin_coord[d] >= bin_count_[d]) {
       // PCL_ERROR("Current Vote goes out of bounds in the Hough Table!\nDimension: %d,
       // Value inserted: %f, Min value: %f, Max value: %f\n", d,
@@ -142,13 +142,13 @@ pcl::recognition::HoughSpace3D::voteInt(const Eigen::Vector3d& single_vote_coord
     central_bin_index += partial_bin_products_[d] * central_bin_coord[d];
 
     // Compute coordinates of the centroid of the bin
-    bin_centroid[d] = static_cast<float>(
-        (2 * static_cast<double>(central_bin_coord[d]) * bin_size_[d] + bin_size_[d]) /
+    bin_centroid[d] = static_cast<float> (
+        (2 * static_cast<double> (central_bin_coord[d]) * bin_size_[d] + bin_size_[d]) /
         2.0);
 
     // Compute interpolated weight for each coordinate of the central bin
-    central_bin_weight[d] = static_cast<float>(
-        1 - (std::abs(single_vote_coord[d] - min_coord_[d] - bin_centroid[d]) /
+    central_bin_weight[d] = static_cast<float> (
+        1 - (std::abs (single_vote_coord[d] - min_coord_[d] - bin_centroid[d]) /
              bin_size_[d]));
 
     // Compute the neighbor bins where the weight has to be interpolated
@@ -200,7 +200,7 @@ pcl::recognition::HoughSpace3D::voteInt(const Eigen::Vector3d& single_vote_coord
 
     if (!invalid) {
       hough_space_[final_bin_index] += weight * interp_weight[n];
-      voter_ids_[final_bin_index].push_back(voter_id);
+      voter_ids_[final_bin_index].push_back (voter_id);
     }
   }
 
@@ -209,7 +209,7 @@ pcl::recognition::HoughSpace3D::voteInt(const Eigen::Vector3d& single_vote_coord
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 double
-pcl::recognition::HoughSpace3D::findMaxima(
+pcl::recognition::HoughSpace3D::findMaxima (
     double min_threshold,
     std::vector<double>& maxima_values,
     std::vector<std::vector<int>>& maxima_voter_ids)
@@ -264,8 +264,8 @@ pcl::recognition::HoughSpace3D::findMaxima(
     }
 
     if (is_maximum) {
-      maxima_values.push_back(hough_space_[i]);
-      maxima_voter_ids.push_back(voter_ids_[i]);
+      maxima_values.push_back (hough_space_[i]);
+      maxima_voter_ids.push_back (voter_ids_[i]);
     }
   }
 

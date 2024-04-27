@@ -54,12 +54,12 @@ struct OctreeGlobal {
   int* parent;
 
   OctreeGlobal()
-  : nodes(nullptr)
-  , codes(nullptr)
-  , begs(nullptr)
-  , ends(nullptr)
-  , nodes_num(nullptr)
-  , parent(nullptr)
+  : nodes (nullptr)
+  , codes (nullptr)
+  , begs (nullptr)
+  , ends (nullptr)
+  , nodes_num (nullptr)
+  , parent (nullptr)
   {}
 };
 

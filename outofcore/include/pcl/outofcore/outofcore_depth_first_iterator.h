@@ -58,7 +58,7 @@ public:
   using LeafNode = pcl::outofcore::OutofcoreOctreeBaseNode<ContainerT, PointT>;
   using BranchNode = pcl::outofcore::OutofcoreOctreeBaseNode<ContainerT, PointT>;
 
-  explicit OutofcoreDepthFirstIterator(OctreeDisk& octree_arg);
+  explicit OutofcoreDepthFirstIterator (OctreeDisk& octree_arg);
 
   ~OutofcoreDepthFirstIterator() override;
 
@@ -66,7 +66,7 @@ public:
   operator++();
 
   inline OutofcoreDepthFirstIterator
-  operator++(int)
+  operator++ (int)
   {
     OutofcoreDepthFirstIterator _Tmp = *this;
     ++*this;

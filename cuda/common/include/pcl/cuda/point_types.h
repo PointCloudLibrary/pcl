@@ -50,7 +50,7 @@ struct /*__align__(16)*/ PointXYZRGB {
   {}
   inline __host__ __device__
   PointXYZRGB (float _x, float _y, float _z, int _rgb)
-  : x(_x), y(_y), z(_z), rgb(_rgb)
+  : x (_x), y (_y), z (_z), rgb (_rgb)
   {}
 
   // Declare a union for XYZ
@@ -65,7 +65,7 @@ struct /*__align__(16)*/ PointXYZRGB {
   RGB rgb;
 
   inline __host__ __device__ bool
-  operator==(const PointXYZRGB& rhs)
+  operator== (const PointXYZRGB& rhs)
   {
     return (x == rhs.x && y == rhs.y && z == rhs.z && rgb == rhs.rgb);
   }
@@ -74,7 +74,7 @@ struct /*__align__(16)*/ PointXYZRGB {
   inline __host__ __device__ operator float3() const { return xyz; }
 
   const inline __host__ __device__ PointXYZRGB
-  operator-(const PointXYZRGB& rhs) const
+  operator- (const PointXYZRGB& rhs) const
   {
     PointXYZRGB res = *this;
     res -= rhs;
@@ -85,7 +85,7 @@ struct /*__align__(16)*/ PointXYZRGB {
   }
 
   inline __host__ __device__ PointXYZRGB&
-  operator+=(const PointXYZRGB& rhs)
+  operator+= (const PointXYZRGB& rhs)
   {
     xyz += rhs.xyz;
     rgb += rhs.rgb;
@@ -93,7 +93,7 @@ struct /*__align__(16)*/ PointXYZRGB {
   }
 
   inline __host__ __device__ PointXYZRGB&
-  operator-=(const PointXYZRGB& rhs)
+  operator-= (const PointXYZRGB& rhs)
   {
     xyz -= rhs.xyz;
     rgb -= rhs.rgb;
@@ -101,7 +101,7 @@ struct /*__align__(16)*/ PointXYZRGB {
   }
 
   inline __host__ __device__ PointXYZRGB&
-  operator*=(const PointXYZRGB& rhs)
+  operator*= (const PointXYZRGB& rhs)
   {
     xyz *= rhs.xyz;
     rgb *= rhs.rgb;
@@ -109,7 +109,7 @@ struct /*__align__(16)*/ PointXYZRGB {
   }
 
   inline __host__ __device__ PointXYZRGB&
-  operator/=(const PointXYZRGB& rhs)
+  operator/= (const PointXYZRGB& rhs)
   {
     xyz /= rhs.xyz;
     rgb /= rhs.rgb;
@@ -118,11 +118,11 @@ struct /*__align__(16)*/ PointXYZRGB {
 };
 
 /** \brief Default point xyz-rgb structure. */
-struct __align__(16) PointXYZRGBNormal
+struct __align__ (16) PointXYZRGBNormal
 {
   inline __host__ __device__ PointXYZRGBNormal() {}
-  inline __host__ __device__ PointXYZRGBNormal(float _x, float _y, float _z, int _rgb)
-  : x(_x), y(_y), z(_z), rgb(_rgb)
+  inline __host__ __device__ PointXYZRGBNormal (float _x, float _y, float _z, int _rgb)
+  : x (_x), y (_y), z (_z), rgb (_rgb)
   {}
 
   // Declare a union for XYZ
@@ -145,7 +145,7 @@ struct __align__(16) PointXYZRGBNormal
     };
   };
 
-  inline __host__ __device__ bool operator==(const PointXYZRGBNormal& rhs)
+  inline __host__ __device__ bool operator== (const PointXYZRGBNormal& rhs)
   {
     return (x == rhs.x && y == rhs.y && z == rhs.z && rgb == rhs.rgb &&
             normal_x == rhs.normal_x && normal_y == rhs.normal_y &&
@@ -155,7 +155,7 @@ struct __align__(16) PointXYZRGBNormal
   // this allows direct assignment of a PointXYZRGBNormal to float3...
   inline __host__ __device__ operator float3() const { return xyz; }
 
-  const inline __host__ __device__ PointXYZRGBNormal operator-(
+  const inline __host__ __device__ PointXYZRGBNormal operator- (
       const PointXYZRGBNormal& rhs) const
   {
     PointXYZRGBNormal res = *this;
@@ -166,7 +166,8 @@ struct __align__(16) PointXYZRGBNormal
     //      return (*this -= rhs);
   }
 
-  inline __host__ __device__ PointXYZRGBNormal& operator+=(const PointXYZRGBNormal& rhs)
+  inline __host__ __device__ PointXYZRGBNormal& operator+= (
+      const PointXYZRGBNormal& rhs)
   {
     xyz += rhs.xyz;
     rgb += rhs.rgb;
@@ -174,7 +175,8 @@ struct __align__(16) PointXYZRGBNormal
     return (*this);
   }
 
-  inline __host__ __device__ PointXYZRGBNormal& operator-=(const PointXYZRGBNormal& rhs)
+  inline __host__ __device__ PointXYZRGBNormal& operator-= (
+      const PointXYZRGBNormal& rhs)
   {
     xyz -= rhs.xyz;
     rgb -= rhs.rgb;
@@ -182,7 +184,8 @@ struct __align__(16) PointXYZRGBNormal
     return (*this);
   }
 
-  inline __host__ __device__ PointXYZRGBNormal& operator*=(const PointXYZRGBNormal& rhs)
+  inline __host__ __device__ PointXYZRGBNormal& operator*= (
+      const PointXYZRGBNormal& rhs)
   {
     xyz *= rhs.xyz;
     rgb *= rhs.rgb;
@@ -190,7 +193,8 @@ struct __align__(16) PointXYZRGBNormal
     return (*this);
   }
 
-  inline __host__ __device__ PointXYZRGBNormal& operator/=(const PointXYZRGBNormal& rhs)
+  inline __host__ __device__ PointXYZRGBNormal& operator/= (
+      const PointXYZRGBNormal& rhs)
   {
     xyz /= rhs.xyz;
     rgb /= rhs.rgb;

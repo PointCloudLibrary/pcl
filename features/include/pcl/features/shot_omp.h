@@ -99,10 +99,10 @@ public:
   using PointCloudIn = typename Feature<PointInT, PointOutT>::PointCloudIn;
 
   /** \brief Empty constructor. */
-  SHOTEstimationOMP(unsigned int nr_threads = 0)
+  SHOTEstimationOMP (unsigned int nr_threads = 0)
   : SHOTEstimation<PointInT, PointNT, PointOutT, PointRFT>()
   {
-    setNumberOfThreads(nr_threads);
+    setNumberOfThreads (nr_threads);
   };
 
   /** \brief Initialize the scheduler and set the number of threads to use.
@@ -188,13 +188,13 @@ public:
   using PointCloudIn = typename Feature<PointInT, PointOutT>::PointCloudIn;
 
   /** \brief Empty constructor. */
-  SHOTColorEstimationOMP(bool describe_shape = true,
-                         bool describe_color = true,
-                         unsigned int nr_threads = 0)
-  : SHOTColorEstimation<PointInT, PointNT, PointOutT, PointRFT>(describe_shape,
-                                                                describe_color)
+  SHOTColorEstimationOMP (bool describe_shape = true,
+                          bool describe_color = true,
+                          unsigned int nr_threads = 0)
+  : SHOTColorEstimation<PointInT, PointNT, PointOutT, PointRFT> (describe_shape,
+                                                                 describe_color)
   {
-    setNumberOfThreads(nr_threads);
+    setNumberOfThreads (nr_threads);
   }
 
   /** \brief Initialize the scheduler and set the number of threads to use.

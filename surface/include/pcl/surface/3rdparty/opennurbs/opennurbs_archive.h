@@ -263,7 +263,7 @@ public:
   CurrentFileName () const;
 
   ON__UINT64
-  CurrentFileSize () const;
+  CurrentFileSize() const;
 
   /*
   Returns
@@ -289,28 +289,28 @@ public:
     File creation time in seconds since January 1, 1970
   */
   ON__UINT64
-  CurrentFileCreateTime () const;
+  CurrentFileCreateTime() const;
 
   /*
   Returns:
     File last modified time in seconds since January 1, 1970
   */
   ON__UINT64
-  CurrentFileLastModifiedTime () const;
+  CurrentFileLastModifiedTime() const;
 
   /*
   Returns:
     File last access time in seconds since January 1, 1970
   */
   ON__UINT64
-  CurrentFileLastAccessTime () const;
+  CurrentFileLastAccessTime() const;
 
   /*
   Returns:
     Number of matching files returned so far.
   */
   ON__UINT64
-  Count () const;
+  Count() const;
 
 private:
   // Used by Windows ::Find
@@ -344,16 +344,16 @@ private:
 // ON_Buffer
 //
 
-typedef void (*ON_Buffer_ErrorHandler)(class ON_Buffer*);
+typedef void (*ON_Buffer_ErrorHandler) (class ON_Buffer*);
 
 class ON_CLASS ON_Buffer {
 public:
   ON_Buffer();
   ~ON_Buffer();
 
-  ON_Buffer(const ON_Buffer& src);
+  ON_Buffer (const ON_Buffer& src);
   ON_Buffer&
-  operator=(const ON_Buffer& src);
+  operator= (const ON_Buffer& src);
 
   /*
   Description:
@@ -395,7 +395,7 @@ public:
     Size().
   */
   ON__UINT64
-  Size () const;
+  Size() const;
 
   /*
   Returns:
@@ -416,7 +416,7 @@ public:
     Size().
   */
   ON__UINT64
-  CurrentPosition () const;
+  CurrentPosition() const;
 
   /*
   Parameters:
@@ -569,7 +569,7 @@ public:
     1: attempt to seek to a negative position
   */
   ON__UINT32
-  LastError () const;
+  LastError() const;
 
   void
   ClearLastError ();
@@ -714,7 +714,7 @@ struct ON_3DM_BIG_CHUNK {
                            // position of first byte after chunk's length.
 
   ON__UINT64
-  Length () const; // 0 for short chunks
+  Length() const; // 0 for short chunks
 
   ON__INT64 m_big_value;
   ON__UINT32 m_typecode;
@@ -768,7 +768,7 @@ ON_SetBinaryArchiveOpenNURBSVersion (ON_BinaryArchive&, int);
 class ON_CLASS ON_BinaryArchive // use for generic serialization of binary data
 {
 public:
-  ON_BinaryArchive(ON::archive_mode);
+  ON_BinaryArchive (ON::archive_mode);
   virtual ~ON_BinaryArchive();
 
   virtual std::size_t
@@ -778,8 +778,8 @@ public:
   SeekFromCurrentPosition ( // seek from current position ( like fseek( ,SEEK_CUR) )
       int                   // byte offset ( >= -CurrentPostion() )
       ) = 0;
-  virtual bool SeekFromStart( // seek from current position ( like fseek( ,SEEK_SET) )
-      std::size_t             // byte offset ( >= 0 )
+  virtual bool SeekFromStart ( // seek from current position ( like fseek( ,SEEK_SET) )
+      std::size_t              // byte offset ( >= 0 )
       ) = 0;
   virtual bool
   AtEnd () const = 0; // true if at end of file
@@ -1304,9 +1304,9 @@ public:
   WriteBigInt (    // Write an array of 64 bit integers
       std::size_t, // number of ints to write
       const ON__UINT64*);
-  bool WriteBigInt( // Write a single 64 bit integer
+  bool WriteBigInt ( // Write a single 64 bit integer
       ON__INT64);
-  bool WriteBigInt( // Write a single 64 bit unsigned integer
+  bool WriteBigInt ( // Write a single 64 bit unsigned integer
       ON__UINT64);
 
   bool
@@ -1323,12 +1323,12 @@ public:
   bool
   WriteLong ( // Write a single 32 bit unsigned integer
       unsigned long);
-  bool WriteSize( // Write a single std::size_t
+  bool WriteSize ( // Write a single std::size_t
       std::size_t);
 
-  bool WriteBigSize(std::size_t); // 64 bits
+  bool WriteBigSize (std::size_t); // 64 bits
 
-  bool WriteBigTime(time_t); // UCT seconds since 1 January 1970 (64 bits)
+  bool WriteBigTime (time_t); // UCT seconds since 1 January 1970 (64 bits)
 
   bool
   WriteFloat (     // Write a number of IEEE floats
@@ -1589,15 +1589,15 @@ public:
   //                 for writing 3dm archives is available for
   //                 any type of serialization device.
   //
-  bool EnableSave3dmRenderMeshes(ON_BOOL32 = true); // returns previous state
+  bool EnableSave3dmRenderMeshes (ON_BOOL32 = true); // returns previous state
   bool
   Save3dmRenderMeshes () const;
 
-  bool EnableSave3dmAnalysisMeshes(ON_BOOL32 = true); // returns previous state
+  bool EnableSave3dmAnalysisMeshes (ON_BOOL32 = true); // returns previous state
   bool
   Save3dmAnalysisMeshes () const;
 
-  bool EnableSaveUserData(ON_BOOL32 = true); // returns previous state
+  bool EnableSaveUserData (ON_BOOL32 = true); // returns previous state
   bool
   SaveUserData () const;
 
@@ -2854,12 +2854,12 @@ private:
   bool
   PushBigChunk (ON__UINT32 typecode, ON__INT64 value);
 
-  bool WriteChunkTypecode(ON__UINT32);
+  bool WriteChunkTypecode (ON__UINT32);
   bool
   ReadChunkTypecode (ON__UINT32*);
   bool
   WriteChunkValue (ON__UINT32 typecode, ON__INT64);
-  bool WriteChunkLength(ON__UINT64);
+  bool WriteChunkLength (ON__UINT64);
   bool
   ReadChunkValue (ON__UINT32 typecode, ON__INT64* value64);
   bool
@@ -2880,7 +2880,7 @@ public:
   SizeofChunkLength () const;
 
 private:
-  bool WriteEOFSizeOfFile(ON__UINT64);
+  bool WriteEOFSizeOfFile (ON__UINT64);
   bool
   ReadEOFSizeOfFile (ON__UINT64*);
 
@@ -2938,9 +2938,9 @@ private:
 
   // prohibit default construction, copy construction, and operator=
   ON_BinaryArchive();
-  ON_BinaryArchive(const ON_BinaryArchive&); // no implementation
+  ON_BinaryArchive (const ON_BinaryArchive&); // no implementation
   ON_BinaryArchive&
-  operator=(const ON_BinaryArchive&); // no implementation
+  operator= (const ON_BinaryArchive&); // no implementation
 };
 
 class ON_CLASS ON_3dmGoo {
@@ -2948,9 +2948,9 @@ class ON_CLASS ON_3dmGoo {
 public:
   ON_3dmGoo();
   ~ON_3dmGoo();
-  ON_3dmGoo(const ON_3dmGoo&);
+  ON_3dmGoo (const ON_3dmGoo&);
   ON_3dmGoo&
-  operator=(const ON_3dmGoo&);
+  operator= (const ON_3dmGoo&);
 
   void
   Dump (ON_TextLog&) const;
@@ -2964,7 +2964,7 @@ public:
 
 class ON_CLASS ON_BinaryFile : public ON_BinaryArchive {
 public:
-  ON_BinaryFile(ON::archive_mode);
+  ON_BinaryFile (ON::archive_mode);
 
   /*
   Description:
@@ -2977,7 +2977,7 @@ public:
       If a file is being written, fp is the pointer returned
       from ON_FileStream::Open(...,"wb").
   */
-  ON_BinaryFile(ON::archive_mode, FILE* fp);
+  ON_BinaryFile (ON::archive_mode, FILE* fp);
 
   virtual ~ON_BinaryFile();
 
@@ -2986,7 +2986,7 @@ public:
   CurrentPosition () const;
   bool
   SeekFromCurrentPosition (int);
-  bool SeekFromStart(std::size_t);
+  bool SeekFromStart (std::size_t);
   bool
   AtEnd () const;
 
@@ -3031,10 +3031,10 @@ private:
 
 private:
   // prohibit default construction, copy construction, and operator=
-  ON_BinaryFile();                     // no implementation
-  ON_BinaryFile(const ON_BinaryFile&); // no implementation
+  ON_BinaryFile();                      // no implementation
+  ON_BinaryFile (const ON_BinaryFile&); // no implementation
   ON_BinaryFile&
-  operator=(const ON_BinaryFile&); // no implementation
+  operator= (const ON_BinaryFile&); // no implementation
 };
 
 class ON_CLASS ON_BinaryArchiveBuffer : public ON_BinaryArchive {
@@ -3048,7 +3048,7 @@ public:
   Remarks:
     If a non-null buffer is specifed, then do not call SetBuffer()
   */
-  ON_BinaryArchiveBuffer(ON::archive_mode, ON_Buffer* buffer);
+  ON_BinaryArchiveBuffer (ON::archive_mode, ON_Buffer* buffer);
 
   virtual ~ON_BinaryArchiveBuffer();
 
@@ -3079,11 +3079,11 @@ public:
   CurrentPosition () const;
   bool
   SeekFromCurrentPosition (int);
-  bool SeekFromStart(std::size_t);
+  bool SeekFromStart (std::size_t);
   bool
   AtEnd () const;
 
-  bool SeekFromEnd(ON__INT64);
+  bool SeekFromEnd (ON__INT64);
 
 protected:
   std::size_t
@@ -3099,14 +3099,14 @@ private:
 
 private:
   // prohibit use - you should specify a buffer.
-  ON_BinaryArchiveBuffer(ON::archive_mode);
+  ON_BinaryArchiveBuffer (ON::archive_mode);
 
 private:
   // prohibit default construction, copy construction, and operator=
-  ON_BinaryArchiveBuffer();                              // no implementation
-  ON_BinaryArchiveBuffer(const ON_BinaryArchiveBuffer&); // no implementation
+  ON_BinaryArchiveBuffer();                               // no implementation
+  ON_BinaryArchiveBuffer (const ON_BinaryArchiveBuffer&); // no implementation
   ON_BinaryArchiveBuffer&
-  operator=(const ON_BinaryArchiveBuffer&); // no implementation
+  operator= (const ON_BinaryArchiveBuffer&); // no implementation
 };
 
 class ON_CLASS ON_Read3dmBufferArchive : public ON_BinaryArchive {
@@ -3126,11 +3126,11 @@ public:
     archive_3dm_version  - [in] (1,2,3,4 or 5)
     archive_opennurbs_version - [in] YYYYMMDDn
   */
-  ON_Read3dmBufferArchive(std::size_t sizeof_buffer,
-                          const void* buffer,
-                          bool bCopyBuffer,
-                          int archive_3dm_version,
-                          int archive_opennurbs_version);
+  ON_Read3dmBufferArchive (std::size_t sizeof_buffer,
+                           const void* buffer,
+                           bool bCopyBuffer,
+                           int archive_3dm_version,
+                           int archive_opennurbs_version);
 
   ~ON_Read3dmBufferArchive();
 
@@ -3153,7 +3153,7 @@ public:
   CurrentPosition () const;
   bool
   SeekFromCurrentPosition (int);
-  bool SeekFromStart(std::size_t);
+  bool SeekFromStart (std::size_t);
   bool
   AtEnd () const;
 
@@ -3179,9 +3179,9 @@ private:
 private:
   // prohibit use - no implementation
   ON_Read3dmBufferArchive();
-  ON_Read3dmBufferArchive(const ON_Read3dmBufferArchive&);
+  ON_Read3dmBufferArchive (const ON_Read3dmBufferArchive&);
   ON_Read3dmBufferArchive&
-  operator=(const ON_Read3dmBufferArchive&);
+  operator= (const ON_Read3dmBufferArchive&);
 };
 
 class ON_CLASS ON_Write3dmBufferArchive : public ON_BinaryArchive {
@@ -3203,10 +3203,10 @@ public:
       version of opennurbs archives used by lastest version of Rhino.
     archive_opennurbs_version - [in] YYYYMMDDn
   */
-  ON_Write3dmBufferArchive(std::size_t initial_sizeof_buffer,
-                           std::size_t max_sizeof_buffer,
-                           int archive_3dm_version,
-                           int archive_opennurbs_version);
+  ON_Write3dmBufferArchive (std::size_t initial_sizeof_buffer,
+                            std::size_t max_sizeof_buffer,
+                            int archive_3dm_version,
+                            int archive_opennurbs_version);
 
   ~ON_Write3dmBufferArchive();
 
@@ -3251,7 +3251,7 @@ public:
   CurrentPosition () const;
   bool
   SeekFromCurrentPosition (int);
-  bool SeekFromStart(std::size_t);
+  bool SeekFromStart (std::size_t);
   bool
   AtEnd () const;
 
@@ -3266,7 +3266,7 @@ protected:
   Flush ();
 
 private:
-  void AllocBuffer(std::size_t);
+  void AllocBuffer (std::size_t);
   void* m_p;
   unsigned char* m_buffer;
   std::size_t m_sizeof_buffer;
@@ -3281,9 +3281,9 @@ private:
 private:
   // prohibit use - no implementation
   ON_Write3dmBufferArchive();
-  ON_Write3dmBufferArchive(const ON_Write3dmBufferArchive&);
+  ON_Write3dmBufferArchive (const ON_Write3dmBufferArchive&);
   ON_Write3dmBufferArchive&
-  operator=(const ON_Write3dmBufferArchive&);
+  operator= (const ON_Write3dmBufferArchive&);
 };
 
 /*

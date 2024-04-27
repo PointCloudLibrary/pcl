@@ -84,7 +84,8 @@ struct ImageType<pcl_cuda::Host> {
 
 class MultiRansac {
 public:
-  MultiRansac() : viewer("PCL CUDA - MultiSac"), new_cloud(false), use_viewer(true) {}
+  MultiRansac() : viewer ("PCL CUDA - MultiSac"), new_cloud (false), use_viewer (true)
+  {}
 
   void
   logo_cb (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr& cloud)
@@ -97,24 +98,24 @@ public:
   void
   viz_cb (pcl::visualization::PCLVisualizer& viz)
   {
-    std::lock_guard<std::mutex> l(m_mutex);
+    std::lock_guard<std::mutex> l (m_mutex);
     if (new_cloud) {
       using ColorHandler =
           pcl::visualization::PointCloudColorHandlerRGBField<pcl::PointXYZRGBNormal>;
 
-      ColorHandler Color_handler(normal_cloud);
+      ColorHandler Color_handler (normal_cloud);
       static bool first_time = true;
       if (!first_time) {
-        viz.removePointCloud("normalcloud");
-        viz.removePointCloud("cloud");
+        viz.removePointCloud ("normalcloud");
+        viz.removePointCloud ("cloud");
       }
       else
         first_time = false;
 
-      viz.addPointCloudNormals<pcl::PointXYZRGBNormal>(
+      viz.addPointCloudNormals<pcl::PointXYZRGBNormal> (
           normal_cloud, 200, 0.1, "normalcloud");
-      viz.addPointCloud<pcl::PointXYZRGBNormal>(
-          normal_cloud, Color_handler, std::string("cloud"), 0);
+      viz.addPointCloud<pcl::PointXYZRGBNormal> (
+          normal_cloud, Color_handler, std::string ("cloud"), 0);
       new_cloud = false;
     }
   }
@@ -129,8 +130,8 @@ public:
     static double last = pcl::getTime();
     double now = pcl::getTime();
     if (++count == 30 || (now - last) > 5) {
-      std::cerr << "Average framerate: " << double(count) / double(now - last) << " Hz"
-                << std::endl;
+      std::cerr << "Average framerate: " << double (count) / double (now - last)
+                << " Hz" << std::endl;
       count = 0;
       last = now;
     }
@@ -140,23 +141,24 @@ public:
     typename PointCloudAOS<Storage>::Ptr data;
     typename SampleConsensusModel1PointPlane<Storage>::Ptr sac_model;
     {
-      pcl::ScopeTime timer("All: ");
+      pcl::ScopeTime timer ("All: ");
       // Compute the PointCloud on the device
-      d2c.compute<Storage>(depth_image, image, constant, data, true, 2);
+      d2c.compute<Storage> (depth_image, image, constant, data, true, 2);
 
       {
-        pcl::ScopeTime t("creating sac_model");
-        sac_model.reset(new SampleConsensusModel1PointPlane<Storage>(data));
+        pcl::ScopeTime t ("creating sac_model");
+        sac_model.reset (new SampleConsensusModel1PointPlane<Storage> (data));
       }
-      MultiRandomSampleConsensus<Storage> sac(sac_model);
-      sac.setMinimumCoverage(0.90); // at least 95% points should be explained by planes
-      sac.setMaximumBatches(5);
-      sac.setIerationsPerBatch(1000);
-      sac.setDistanceThreshold(0.05);
+      MultiRandomSampleConsensus<Storage> sac (sac_model);
+      sac.setMinimumCoverage (
+          0.90); // at least 95% points should be explained by planes
+      sac.setMaximumBatches (5);
+      sac.setIerationsPerBatch (1000);
+      sac.setDistanceThreshold (0.05);
 
       {
-        pcl::ScopeTime timer("computeModel: ");
-        if (!sac.computeModel(0)) {
+        pcl::ScopeTime timer ("computeModel: ");
+        if (!sac.computeModel (0)) {
           std::cerr << "Failed to compute model" << std::endl;
         }
         else {
@@ -169,27 +171,28 @@ public:
             //            std::copy (regions_host.begin (), regions_host.end(),
             //            std::ostream_iterator<int>(std::cerr, " "));
             {
-              ScopeTime t("retrieving inliers");
+              ScopeTime t ("retrieving inliers");
               planes = sac.getAllInliers();
             }
 
             typename Storage<int>::type region_mask;
-            markInliers<Storage>(data, region_mask, planes);
+            markInliers<Storage> (data, region_mask, planes);
             std::cerr << "image_size: " << data->width << " x " << data->height << " = "
                       << region_mask.size() << std::endl;
 
             typename StoragePointer<Storage, uchar>::type ptr =
-                StorageAllocator<Storage, uchar>::alloc(data->width * data->height);
+                StorageAllocator<Storage, uchar>::alloc (data->width * data->height);
 
-            createIndicesImage<Storage>(ptr, region_mask);
+            createIndicesImage<Storage> (ptr, region_mask);
 
-            typename ImageType<Storage>::type dst(data->height,
-                                                  data->width,
-                                                  CV_8UC1,
-                                                  thrust::raw_pointer_cast<char4>(ptr),
-                                                  data->width);
-            cv::imshow("Result", cv::Mat(dst));
-            cv::waitKey(2);
+            typename ImageType<Storage>::type dst (
+                data->height,
+                data->width,
+                CV_8UC1,
+                thrust::raw_pointer_cast<char4> (ptr),
+                data->width);
+            cv::imshow ("Result", cv::Mat (dst));
+            cv::waitKey (2);
 
             std::vector<int> planes_inlier_counts = sac.getAllInlierCounts();
             std::vector<float4> coeffs = sac.getAllModelCoefficients();
@@ -215,8 +218,8 @@ public:
               color.g = (int)(rand() * trand);
               color.b = (int)(rand() * trand);
               {
-                ScopeTime t("coloring planes");
-                colorIndices<Storage>(data, inliers_stencil, color);
+                ScopeTime t ("coloring planes");
+                colorIndices<Storage> (data, inliers_stencil, color);
               }
             }
           }
@@ -226,9 +229,9 @@ public:
     if (use_viewer) {
       typename Storage<float4>::type normals = sac_model->getNormals();
 
-      std::lock_guard<std::mutex> l(m_mutex);
-      normal_cloud.reset(new pcl::PointCloud<pcl::PointXYZRGBNormal>);
-      pcl_cuda::toPCL(*data, normals, *normal_cloud);
+      std::lock_guard<std::mutex> l (m_mutex);
+      normal_cloud.reset (new pcl::PointCloud<pcl::PointXYZRGBNormal>);
+      pcl_cuda::toPCL (*data, normals, *normal_cloud);
       new_cloud = true;
     }
   }
@@ -242,29 +245,29 @@ public:
 
     if (use_device) {
       std::cerr << "[RANSAC] Using GPU..." << std::endl;
-      std::function<void(const openni_wrapper::Image::Ptr& image,
-                         const openni_wrapper::DepthImage::Ptr& depth_image,
-                         float)>
-          f = std::bind(&MultiRansac::cloud_cb<pcl_cuda::Device>, this, _1, _2, _3);
-      interface.registerCallback(f);
+      std::function<void (const openni_wrapper::Image::Ptr& image,
+                          const openni_wrapper::DepthImage::Ptr& depth_image,
+                          float)>
+          f = std::bind (&MultiRansac::cloud_cb<pcl_cuda::Device>, this, _1, _2, _3);
+      interface.registerCallback (f);
     }
     else {
       std::cerr << "[RANSAC] Using CPU..." << std::endl;
-      std::function<void(const openni_wrapper::Image::Ptr& image,
-                         const openni_wrapper::DepthImage::Ptr& depth_image,
-                         float)>
-          f = std::bind(&MultiRansac::cloud_cb<pcl_cuda::Host>, this, _1, _2, _3);
-      interface.registerCallback(f);
+      std::function<void (const openni_wrapper::Image::Ptr& image,
+                          const openni_wrapper::DepthImage::Ptr& depth_image,
+                          float)>
+          f = std::bind (&MultiRansac::cloud_cb<pcl_cuda::Host>, this, _1, _2, _3);
+      interface.registerCallback (f);
     }
 
     if (use_viewer)
-      viewer.runOnVisualizationThread(std::bind(&MultiRansac::viz_cb, this, _1),
-                                      "viz_cb");
+      viewer.runOnVisualizationThread (std::bind (&MultiRansac::viz_cb, this, _1),
+                                       "viz_cb");
 
     interface.start();
 
     while (!viewer.wasStopped()) {
-      sleep(1);
+      sleep (1);
     }
 
     interface.stop();
@@ -283,7 +286,7 @@ public:
 int
 main (int argc, char** argv)
 {
-  sleep(1);
+  sleep (1);
   bool use_device = false;
   bool use_viewer = true;
   if (argc >= 2)
@@ -291,6 +294,6 @@ main (int argc, char** argv)
   if (argc >= 3)
     use_viewer = false;
   MultiRansac v;
-  v.run(use_device, use_viewer);
+  v.run (use_device, use_viewer);
   return 0;
 }

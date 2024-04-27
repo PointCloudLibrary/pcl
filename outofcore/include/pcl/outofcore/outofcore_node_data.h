@@ -91,7 +91,7 @@ public:
   ~OutofcoreOctreeNodeMetadata();
 
   /** \brief Copy constructor */
-  OutofcoreOctreeNodeMetadata(const OutofcoreOctreeNodeMetadata& orig);
+  OutofcoreOctreeNodeMetadata (const OutofcoreOctreeNodeMetadata& orig);
 
   /** \brief Get the lower bounding box corner */
   const Eigen::Vector3d&
@@ -159,7 +159,7 @@ public:
   loadMetadataFromDisk (const boost::filesystem::path& path_to_metadata);
 
   friend std::ostream&
-  operator<<(std::ostream& os, const OutofcoreOctreeNodeMetadata& metadata_arg);
+  operator<< (std::ostream& os, const OutofcoreOctreeNodeMetadata& metadata_arg);
 
 protected:
   /** \brief The X,Y,Z axes-aligned minimum corner for the bounding box */
@@ -181,7 +181,7 @@ protected:
   inline void
   updateVoxelCenter ()
   {
-    midpoint_xyz_ = (this->max_bb_ + this->min_bb_) / static_cast<double>(2.0);
+    midpoint_xyz_ = (this->max_bb_ + this->min_bb_) / static_cast<double> (2.0);
   }
 };
 } // namespace outofcore

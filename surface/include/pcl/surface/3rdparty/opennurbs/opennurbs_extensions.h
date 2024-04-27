@@ -29,27 +29,27 @@ public:
   // See comments at the top of opennurbs_extensions.cpp for details.
 
   // new/delete
-  void* operator new(std::size_t);
+  void* operator new (std::size_t);
   void
-  operator delete(void*);
+  operator delete (void*);
 
   // array new/delete
-  void* operator new[](std::size_t);
+  void* operator new[] (std::size_t);
   void
-  operator delete[](void*);
+  operator delete[] (void*);
 
   // in place new/delete
   void*
-  operator new(std::size_t, void*);
+  operator new (std::size_t, void*);
   void
-  operator delete(void*, void*);
+  operator delete (void*, void*);
 #endif
 
   ONX_Model_UserData();
   ~ONX_Model_UserData();
-  ONX_Model_UserData(const ONX_Model_UserData&);
+  ONX_Model_UserData (const ONX_Model_UserData&);
   ONX_Model_UserData&
-  operator=(const ONX_Model_UserData&);
+  operator= (const ONX_Model_UserData&);
 
   void
   Dump (ON_TextLog&) const;
@@ -77,27 +77,27 @@ public:
   // See comments at the top of opennurbs_extensions.cpp for details.
 
   // new/delete
-  void* operator new(std::size_t);
+  void* operator new (std::size_t);
   void
-  operator delete(void*);
+  operator delete (void*);
 
   // array new/delete
-  void* operator new[](std::size_t);
+  void* operator new[] (std::size_t);
   void
-  operator delete[](void*);
+  operator delete[] (void*);
 
   // in place new/delete
   void*
-  operator new(std::size_t, void*);
+  operator new (std::size_t, void*);
   void
-  operator delete(void*, void*);
+  operator delete (void*, void*);
 #endif
 
   ONX_Model_Object();
   ~ONX_Model_Object();
-  ONX_Model_Object(const ONX_Model_Object&);
+  ONX_Model_Object (const ONX_Model_Object&);
   ONX_Model_Object&
-  operator=(const ONX_Model_Object&);
+  operator= (const ONX_Model_Object&);
 
   void
   Dump (ON_TextLog&) const;
@@ -125,27 +125,27 @@ public:
   // See comments at the top of opennurbs_extensions.cpp for details.
 
   // new/delete
-  void* operator new(std::size_t);
+  void* operator new (std::size_t);
   void
-  operator delete(void*);
+  operator delete (void*);
 
   // array new/delete
-  void* operator new[](std::size_t);
+  void* operator new[] (std::size_t);
   void
-  operator delete[](void*);
+  operator delete[] (void*);
 
   // in place new/delete
   void*
-  operator new(std::size_t, void*);
+  operator new (std::size_t, void*);
   void
-  operator delete(void*, void*);
+  operator delete (void*, void*);
 #endif
 
   ONX_Model_RenderLight();
   ~ONX_Model_RenderLight();
-  ONX_Model_RenderLight(const ONX_Model_RenderLight&);
+  ONX_Model_RenderLight (const ONX_Model_RenderLight&);
   ONX_Model_RenderLight&
-  operator=(const ONX_Model_RenderLight&);
+  operator= (const ONX_Model_RenderLight&);
 
   ON_Light m_light;
   ON_3dmObjectAttributes m_attributes;
@@ -194,20 +194,20 @@ public:
   // See comments at the top of opennurbs_extensions.cpp for details.
 
   // new/delete
-  void* operator new(std::size_t);
+  void* operator new (std::size_t);
   void
-  operator delete(void*);
+  operator delete (void*);
 
   // array new/delete
-  void* operator new[](std::size_t);
+  void* operator new[] (std::size_t);
   void
-  operator delete[](void*);
+  operator delete[] (void*);
 
   // in place new/delete
   void*
-  operator new(std::size_t, void*);
+  operator new (std::size_t, void*);
   void
-  operator delete(void*, void*);
+  operator delete (void*, void*);
 #endif
 
   ONX_Model();
@@ -812,9 +812,9 @@ public:
 
 private:
   // prohibit use of copy construction and operator=
-  ONX_Model(const ONX_Model&);
+  ONX_Model (const ONX_Model&);
   ONX_Model&
-  operator=(const ONX_Model&);
+  operator= (const ONX_Model&);
 
 private:
   // This bounding box contains all objects in the object table.

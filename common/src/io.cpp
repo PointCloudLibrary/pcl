@@ -46,16 +46,16 @@ getFieldsSizes (const std::vector<pcl::PCLPointField>& fields,
                 std::vector<int>& fields_sizes)
 {
   int valid = 0;
-  fields_sizes.resize(fields.size());
+  fields_sizes.resize (fields.size());
   for (std::size_t i = 0; i < fields.size(); ++i) {
     if (fields[i].name == "_")
       continue;
 
-    int fs = fields[i].count * pcl::getFieldSize(fields[i].datatype);
+    int fs = fields[i].count * pcl::getFieldSize (fields[i].datatype);
     fields_sizes[i] = fs;
     valid++;
   }
-  fields_sizes.resize(valid);
+  fields_sizes.resize (valid);
 }
 
 bool
@@ -66,23 +66,23 @@ fieldComp (const pcl::PCLPointField* i, const pcl::PCLPointField* j)
 
 //////////////////////////////////////////////////////////////////////////
 bool
-pcl::concatenateFields(const pcl::PCLPointCloud2& cloud1,
-                       const pcl::PCLPointCloud2& cloud2,
-                       pcl::PCLPointCloud2& cloud_out)
+pcl::concatenateFields (const pcl::PCLPointCloud2& cloud1,
+                        const pcl::PCLPointCloud2& cloud2,
+                        pcl::PCLPointCloud2& cloud_out)
 {
   // If the cloud's sizes differ (points wise), then exit with error
   if (cloud1.width != cloud2.width || cloud1.height != cloud2.height) {
-    PCL_ERROR("[pcl::concatenateFields] Dimensions of input clouds do not match: "
-              "cloud1 (w, %d, h, %d), cloud2 (w, %d, h, %d)\n",
-              cloud1.width,
-              cloud1.height,
-              cloud2.width,
-              cloud2.height);
+    PCL_ERROR ("[pcl::concatenateFields] Dimensions of input clouds do not match: "
+               "cloud1 (w, %d, h, %d), cloud2 (w, %d, h, %d)\n",
+               cloud1.width,
+               cloud1.height,
+               cloud2.width,
+               cloud2.height);
     return (false);
   }
 
   if (cloud1.is_bigendian != cloud2.is_bigendian) {
-    PCL_ERROR("[pcl::concatenateFields] Endianness of clouds does not match\n");
+    PCL_ERROR ("[pcl::concatenateFields] Endianness of clouds does not match\n");
     return (false);
   }
 
@@ -105,9 +105,9 @@ pcl::concatenateFields(const pcl::PCLPointCloud2& cloud1,
   // guarantee that the fields are in the correct order when they come in
   std::vector<const pcl::PCLPointField*> cloud1_fields_sorted;
   for (const auto& field : cloud1.fields)
-    cloud1_fields_sorted.push_back(&field);
+    cloud1_fields_sorted.push_back (&field);
 
-  std::sort(cloud1_fields_sorted.begin(), cloud1_fields_sorted.end(), fieldComp);
+  std::sort (cloud1_fields_sorted.begin(), cloud1_fields_sorted.end(), fieldComp);
 
   for (std::size_t i = 0; i < cloud1_fields_sorted.size(); ++i) {
     bool match = false;
@@ -118,7 +118,7 @@ pcl::concatenateFields(const pcl::PCLPointCloud2& cloud1,
 
     // if the field is new, we'll increment out total fields
     if (!match && cloud1_fields_sorted[i]->name != "_") {
-      cloud1_unique_fields.push_back(cloud1_fields_sorted[i]);
+      cloud1_unique_fields.push_back (cloud1_fields_sorted[i]);
 
       int size = 0;
       std::size_t next_valid_field = i + 1;
@@ -137,7 +137,7 @@ pcl::concatenateFields(const pcl::PCLPointCloud2& cloud1,
         // for the last point, we'll just use the point step to compute the size
         size = cloud1.point_step - cloud1_fields_sorted[i]->offset;
 
-      field_sizes.push_back(size);
+      field_sizes.push_back (size);
     }
   }
 
@@ -157,10 +157,10 @@ pcl::concatenateFields(const pcl::PCLPointCloud2& cloud1,
   cloud_out.row_step = cloud_out.point_step * cloud_out.width;
 
   // Resize data to hold all clouds
-  cloud_out.data.resize(cloud2.data.size() + cloud1_unique_data_size);
+  cloud_out.data.resize (cloud2.data.size() + cloud1_unique_data_size);
 
   // Concatenate fields
-  cloud_out.fields.resize(cloud2.fields.size() + cloud1_unique_fields.size());
+  cloud_out.fields.resize (cloud2.fields.size() + cloud1_unique_fields.size());
   int offset = cloud2.point_step;
 
   for (std::size_t d = 0; d < cloud1_unique_fields.size(); ++d) {
@@ -176,26 +176,26 @@ pcl::concatenateFields(const pcl::PCLPointCloud2& cloud1,
   // Iterate over each point and perform the appropriate memcpys
   int point_offset = 0;
   for (uindex_t cp = 0; cp < cloud_out.width * cloud_out.height; ++cp) {
-    memcpy(&cloud_out.data[point_offset],
-           &cloud2.data[cp * cloud2.point_step],
-           cloud2.point_step);
+    memcpy (&cloud_out.data[point_offset],
+            &cloud2.data[cp * cloud2.point_step],
+            cloud2.point_step);
     int field_offset = cloud2.point_step;
 
     // Copy each individual point, we have to do this on a per-field basis
     // since some fields are not unique
     for (std::size_t i = 0; i < cloud1_unique_fields.size(); ++i) {
       const pcl::PCLPointField& f = *cloud1_unique_fields[i];
-      int local_data_size = f.count * pcl::getFieldSize(f.datatype);
+      int local_data_size = f.count * pcl::getFieldSize (f.datatype);
       int padding_size = field_sizes[i] - local_data_size;
 
-      memcpy(&cloud_out.data[point_offset + field_offset],
-             &cloud1.data[cp * cloud1.point_step + f.offset],
-             local_data_size);
+      memcpy (&cloud_out.data[point_offset + field_offset],
+              &cloud1.data[cp * cloud1.point_step + f.offset],
+              local_data_size);
       field_offset += local_data_size;
 
       // make sure that we add padding when its needed
       if (padding_size > 0) {
-        std::fill_n(&cloud_out.data[point_offset + field_offset], padding_size, 0);
+        std::fill_n (&cloud_out.data[point_offset + field_offset], padding_size, 0);
       }
       field_offset += padding_size;
     }
@@ -209,15 +209,15 @@ pcl::concatenateFields(const pcl::PCLPointCloud2& cloud1,
 
 //////////////////////////////////////////////////////////////////////////
 bool
-pcl::getPointCloudAsEigen(const pcl::PCLPointCloud2& in, Eigen::MatrixXf& out)
+pcl::getPointCloudAsEigen (const pcl::PCLPointCloud2& in, Eigen::MatrixXf& out)
 {
   // Get X-Y-Z indices
-  int x_idx = getFieldIndex(in, "x");
-  int y_idx = getFieldIndex(in, "y");
-  int z_idx = getFieldIndex(in, "z");
+  int x_idx = getFieldIndex (in, "x");
+  int y_idx = getFieldIndex (in, "y");
+  int z_idx = getFieldIndex (in, "z");
 
   if (x_idx == -1 || y_idx == -1 || z_idx == -1) {
-    PCL_ERROR(
+    PCL_ERROR (
         "Input dataset has no X-Y-Z coordinates! Cannot convert to Eigen format.\n");
     return (false);
   }
@@ -225,22 +225,22 @@ pcl::getPointCloudAsEigen(const pcl::PCLPointCloud2& in, Eigen::MatrixXf& out)
   if (in.fields[x_idx].datatype != pcl::PCLPointField::FLOAT32 ||
       in.fields[y_idx].datatype != pcl::PCLPointField::FLOAT32 ||
       in.fields[z_idx].datatype != pcl::PCLPointField::FLOAT32) {
-    PCL_ERROR("X-Y-Z coordinates not floats. Currently only floats are supported.\n");
+    PCL_ERROR ("X-Y-Z coordinates not floats. Currently only floats are supported.\n");
     return (false);
   }
 
   std::size_t npts = in.width * in.height;
-  out = Eigen::MatrixXf::Ones(4, npts);
+  out = Eigen::MatrixXf::Ones (4, npts);
 
-  Eigen::Array4i xyz_offset(
+  Eigen::Array4i xyz_offset (
       in.fields[x_idx].offset, in.fields[y_idx].offset, in.fields[z_idx].offset, 0);
 
   // Copy the input dataset into Eigen format
   for (std::size_t i = 0; i < npts; ++i) {
     // Unoptimized memcpys: assume fields x, y, z are in random order
-    memcpy(&out(0, i), &in.data[xyz_offset[0]], sizeof(float));
-    memcpy(&out(1, i), &in.data[xyz_offset[1]], sizeof(float));
-    memcpy(&out(2, i), &in.data[xyz_offset[2]], sizeof(float));
+    memcpy (&out (0, i), &in.data[xyz_offset[0]], sizeof (float));
+    memcpy (&out (1, i), &in.data[xyz_offset[1]], sizeof (float));
+    memcpy (&out (2, i), &in.data[xyz_offset[2]], sizeof (float));
 
     xyz_offset += in.point_step;
   }
@@ -250,43 +250,43 @@ pcl::getPointCloudAsEigen(const pcl::PCLPointCloud2& in, Eigen::MatrixXf& out)
 
 //////////////////////////////////////////////////////////////////////////
 bool
-pcl::getEigenAsPointCloud(Eigen::MatrixXf& in, pcl::PCLPointCloud2& out)
+pcl::getEigenAsPointCloud (Eigen::MatrixXf& in, pcl::PCLPointCloud2& out)
 {
   // Get X-Y-Z indices
-  int x_idx = getFieldIndex(out, "x");
-  int y_idx = getFieldIndex(out, "y");
-  int z_idx = getFieldIndex(out, "z");
+  int x_idx = getFieldIndex (out, "x");
+  int y_idx = getFieldIndex (out, "y");
+  int z_idx = getFieldIndex (out, "z");
 
   if (x_idx == -1 || y_idx == -1 || z_idx == -1) {
-    PCL_ERROR("Output dataset has no X-Y-Z coordinates set up as fields! Cannot "
-              "convert from Eigen format.\n");
+    PCL_ERROR ("Output dataset has no X-Y-Z coordinates set up as fields! Cannot "
+               "convert from Eigen format.\n");
     return (false);
   }
 
   if (out.fields[x_idx].datatype != pcl::PCLPointField::FLOAT32 ||
       out.fields[y_idx].datatype != pcl::PCLPointField::FLOAT32 ||
       out.fields[z_idx].datatype != pcl::PCLPointField::FLOAT32) {
-    PCL_ERROR("X-Y-Z coordinates not floats. Currently only floats are supported.\n");
+    PCL_ERROR ("X-Y-Z coordinates not floats. Currently only floats are supported.\n");
     return (false);
   }
 
-  if (in.cols() != static_cast<int>(out.width * out.height)) {
-    PCL_ERROR("Number of points in the point cloud differs from the Eigen matrix. "
-              "Cannot continue.\n");
+  if (in.cols() != static_cast<int> (out.width * out.height)) {
+    PCL_ERROR ("Number of points in the point cloud differs from the Eigen matrix. "
+               "Cannot continue.\n");
     return (false);
   }
 
   std::size_t npts = in.cols();
 
-  Eigen::Array4i xyz_offset(
+  Eigen::Array4i xyz_offset (
       out.fields[x_idx].offset, out.fields[y_idx].offset, out.fields[z_idx].offset, 0);
 
   // Copy the input dataset into Eigen format
   for (std::size_t i = 0; i < npts; ++i) {
     // Unoptimized memcpys: assume fields x, y, z are in random order
-    memcpy(&out.data[xyz_offset[0]], &in(0, i), sizeof(float));
-    memcpy(&out.data[xyz_offset[1]], &in(1, i), sizeof(float));
-    memcpy(&out.data[xyz_offset[2]], &in(2, i), sizeof(float));
+    memcpy (&out.data[xyz_offset[0]], &in (0, i), sizeof (float));
+    memcpy (&out.data[xyz_offset[1]], &in (1, i), sizeof (float));
+    memcpy (&out.data[xyz_offset[2]], &in (2, i), sizeof (float));
 
     xyz_offset += out.point_step;
   }
@@ -296,9 +296,9 @@ pcl::getEigenAsPointCloud(Eigen::MatrixXf& in, pcl::PCLPointCloud2& out)
 
 //////////////////////////////////////////////////////////////////////////
 void
-pcl::copyPointCloud(const pcl::PCLPointCloud2& cloud_in,
-                    const Indices& indices,
-                    pcl::PCLPointCloud2& cloud_out)
+pcl::copyPointCloud (const pcl::PCLPointCloud2& cloud_in,
+                     const Indices& indices,
+                     pcl::PCLPointCloud2& cloud_out)
 {
   cloud_out.header = cloud_in.header;
   cloud_out.height = 1;
@@ -306,23 +306,24 @@ pcl::copyPointCloud(const pcl::PCLPointCloud2& cloud_in,
   cloud_out.fields = cloud_in.fields;
   cloud_out.is_bigendian = cloud_in.is_bigendian;
   cloud_out.point_step = cloud_in.point_step;
-  cloud_out.row_step = cloud_in.point_step * static_cast<std::uint32_t>(indices.size());
+  cloud_out.row_step =
+      cloud_in.point_step * static_cast<std::uint32_t> (indices.size());
   cloud_out.is_dense = cloud_in.is_dense;
 
-  cloud_out.data.resize(cloud_out.width * cloud_out.height * cloud_out.point_step);
+  cloud_out.data.resize (cloud_out.width * cloud_out.height * cloud_out.point_step);
 
   // Iterate over each point
   for (std::size_t i = 0; i < indices.size(); ++i)
-    memcpy(&cloud_out.data[i * cloud_out.point_step],
-           &cloud_in.data[indices[i] * cloud_in.point_step],
-           cloud_in.point_step);
+    memcpy (&cloud_out.data[i * cloud_out.point_step],
+            &cloud_in.data[indices[i] * cloud_in.point_step],
+            cloud_in.point_step);
 }
 
 //////////////////////////////////////////////////////////////////////////
 void
-pcl::copyPointCloud(const pcl::PCLPointCloud2& cloud_in,
-                    const IndicesAllocator<Eigen::aligned_allocator<index_t>>& indices,
-                    pcl::PCLPointCloud2& cloud_out)
+pcl::copyPointCloud (const pcl::PCLPointCloud2& cloud_in,
+                     const IndicesAllocator<Eigen::aligned_allocator<index_t>>& indices,
+                     pcl::PCLPointCloud2& cloud_out)
 {
   cloud_out.header = cloud_in.header;
   cloud_out.height = 1;
@@ -330,21 +331,23 @@ pcl::copyPointCloud(const pcl::PCLPointCloud2& cloud_in,
   cloud_out.fields = cloud_in.fields;
   cloud_out.is_bigendian = cloud_in.is_bigendian;
   cloud_out.point_step = cloud_in.point_step;
-  cloud_out.row_step = cloud_in.point_step * static_cast<std::uint32_t>(indices.size());
+  cloud_out.row_step =
+      cloud_in.point_step * static_cast<std::uint32_t> (indices.size());
   cloud_out.is_dense = cloud_in.is_dense;
 
-  cloud_out.data.resize(cloud_out.width * cloud_out.height * cloud_out.point_step);
+  cloud_out.data.resize (cloud_out.width * cloud_out.height * cloud_out.point_step);
 
   // Iterate over each point
   for (std::size_t i = 0; i < indices.size(); ++i)
-    memcpy(&cloud_out.data[i * cloud_out.point_step],
-           &cloud_in.data[indices[i] * cloud_in.point_step],
-           cloud_in.point_step);
+    memcpy (&cloud_out.data[i * cloud_out.point_step],
+            &cloud_in.data[indices[i] * cloud_in.point_step],
+            cloud_in.point_step);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void
-pcl::copyPointCloud(const pcl::PCLPointCloud2& cloud_in, pcl::PCLPointCloud2& cloud_out)
+pcl::copyPointCloud (const pcl::PCLPointCloud2& cloud_in,
+                     pcl::PCLPointCloud2& cloud_out)
 {
   cloud_out.header = cloud_in.header;
   cloud_out.height = cloud_in.height;
@@ -359,9 +362,9 @@ pcl::copyPointCloud(const pcl::PCLPointCloud2& cloud_in, pcl::PCLPointCloud2& cl
 
 ////////////////////////////////////////////////////////////////////////////////
 int
-pcl::interpolatePointIndex(int p, int len, InterpolationType type)
+pcl::interpolatePointIndex (int p, int len, InterpolationType type)
 {
-  if (static_cast<unsigned>(p) >= static_cast<unsigned>(len)) {
+  if (static_cast<unsigned> (p) >= static_cast<unsigned> (len)) {
     if (type == BORDER_REPLICATE)
       p = p < 0 ? 0 : len - 1;
     else if (type == BORDER_REFLECT || type == BORDER_REFLECT_101) {
@@ -373,7 +376,7 @@ pcl::interpolatePointIndex(int p, int len, InterpolationType type)
           p = -p - 1 + delta;
         else
           p = len - 1 - (p - len) - delta;
-      } while (static_cast<unsigned>(p) >= static_cast<unsigned>(len));
+      } while (static_cast<unsigned> (p) >= static_cast<unsigned> (len));
     }
     else if (type == BORDER_WRAP) {
       if (p < 0)
@@ -384,7 +387,7 @@ pcl::interpolatePointIndex(int p, int len, InterpolationType type)
     else if (type == BORDER_CONSTANT)
       p = -1;
     else {
-      PCL_THROW_EXCEPTION(
+      PCL_THROW_EXCEPTION (
           BadArgumentException,
           "[pcl::interpolate_point_index] error: Unhandled interpolation type "
               << type << " !");

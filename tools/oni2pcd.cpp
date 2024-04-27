@@ -53,7 +53,7 @@ char buf[4096];
 void
 printHelp (int, char** argv)
 {
-  print_error("Syntax is: %s input.oni\n", argv[0]);
+  print_error ("Syntax is: %s input.oni\n", argv[0]);
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -61,13 +61,13 @@ void
 cloud_cb (const CloudConstPtr& cloud)
 {
   PCDWriter w;
-  sprintf(buf, "frame_%06d.pcd", i);
-  w.writeBinaryCompressed(buf, *cloud);
-  PCL_INFO("Wrote a cloud with %lu (%ux%u) points in %s.\n",
-           cloud->size(),
-           cloud->width,
-           cloud->height,
-           buf);
+  sprintf (buf, "frame_%06d.pcd", i);
+  w.writeBinaryCompressed (buf, *cloud);
+  PCL_INFO ("Wrote a cloud with %lu (%ux%u) points in %s.\n",
+            cloud->size(),
+            cloud->width,
+            cloud->height,
+            buf);
   ++i;
 }
 
@@ -75,24 +75,24 @@ cloud_cb (const CloudConstPtr& cloud)
 int
 main (int argc, char** argv)
 {
-  print_info("Convert an ONI file to PCD format. For more information, use: %s -h\n",
-             argv[0]);
+  print_info ("Convert an ONI file to PCD format. For more information, use: %s -h\n",
+              argv[0]);
 
   if (argc < 2) {
-    printHelp(argc, argv);
+    printHelp (argc, argv);
     return (-1);
   }
 
-  auto* grabber = new pcl::ONIGrabber(argv[1], false, false);
-  std::function<void(const CloudConstPtr&)> f = [] (const CloudConstPtr& cloud) {
-    cloud_cb(cloud);
+  auto* grabber = new pcl::ONIGrabber (argv[1], false, false);
+  std::function<void (const CloudConstPtr&)> f = [] (const CloudConstPtr& cloud) {
+    cloud_cb (cloud);
   };
-  boost::signals2::connection c = grabber->registerCallback(f);
+  boost::signals2::connection c = grabber->registerCallback (f);
 
   while (grabber->hasDataLeft()) {
     grabber->start();
   }
-  PCL_INFO("Successfully processed %d frames.\n", i);
+  PCL_INFO ("Successfully processed %d frames.\n", i);
 
   delete grabber;
   return (0);

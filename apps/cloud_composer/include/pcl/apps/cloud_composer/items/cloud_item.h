@@ -73,13 +73,13 @@ public:
   // This is needed because we have members which are Vector4f and Quaternionf
   PCL_MAKE_ALIGNED_OPERATOR_NEW
 
-  CloudItem(const QString name,
-            const pcl::PCLPointCloud2::Ptr& cloud_ptr,
-            const Eigen::Vector4f& origin = Eigen::Vector4f(),
-            const Eigen::Quaternionf& orientation = Eigen::Quaternionf(),
-            bool make_templated_cloud = true);
+  CloudItem (const QString name,
+             const pcl::PCLPointCloud2::Ptr& cloud_ptr,
+             const Eigen::Vector4f& origin = Eigen::Vector4f(),
+             const Eigen::Quaternionf& orientation = Eigen::Quaternionf(),
+             bool make_templated_cloud = true);
 
-  CloudItem(const CloudItem& to_copy);
+  CloudItem (const CloudItem& to_copy);
 
   /** \brief This creates a CloudItem from a templated cloud type */
   template <typename PointT>
@@ -192,16 +192,16 @@ CloudItem::setPointType<PointXYZRGBA>()
 } // namespace pcl
 
 // Add PointCloud types to QT MetaType System
-Q_DECLARE_METATYPE(pcl::PCLPointCloud2::ConstPtr);
-Q_DECLARE_METATYPE(GeometryHandler::ConstPtr);
-Q_DECLARE_METATYPE(ColorHandler::ConstPtr);
-Q_DECLARE_METATYPE(Eigen::Vector4f);
-Q_DECLARE_METATYPE(Eigen::Quaternionf);
+Q_DECLARE_METATYPE (pcl::PCLPointCloud2::ConstPtr);
+Q_DECLARE_METATYPE (GeometryHandler::ConstPtr);
+Q_DECLARE_METATYPE (ColorHandler::ConstPtr);
+Q_DECLARE_METATYPE (Eigen::Vector4f);
+Q_DECLARE_METATYPE (Eigen::Quaternionf);
 
-Q_DECLARE_METATYPE(pcl::search::KdTree<pcl::PointXYZ>::Ptr);
-Q_DECLARE_METATYPE(pcl::search::KdTree<pcl::PointXYZRGB>::Ptr);
-Q_DECLARE_METATYPE(pcl::search::KdTree<pcl::PointXYZRGBA>::Ptr);
+Q_DECLARE_METATYPE (pcl::search::KdTree<pcl::PointXYZ>::Ptr);
+Q_DECLARE_METATYPE (pcl::search::KdTree<pcl::PointXYZRGB>::Ptr);
+Q_DECLARE_METATYPE (pcl::search::KdTree<pcl::PointXYZRGBA>::Ptr);
 
-Q_DECLARE_METATYPE(pcl::PointCloud<pcl::PointXYZ>::Ptr);
-Q_DECLARE_METATYPE(pcl::PointCloud<pcl::PointXYZRGB>::Ptr);
-Q_DECLARE_METATYPE(pcl::PointCloud<pcl::PointXYZRGBA>::Ptr);
+Q_DECLARE_METATYPE (pcl::PointCloud<pcl::PointXYZ>::Ptr);
+Q_DECLARE_METATYPE (pcl::PointCloud<pcl::PointXYZRGB>::Ptr);
+Q_DECLARE_METATYPE (pcl::PointCloud<pcl::PointXYZRGBA>::Ptr);

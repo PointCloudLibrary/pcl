@@ -40,13 +40,13 @@
 #include <random>
 
 double
-pcl::tracking::sampleNormal(double mean, double sigma)
+pcl::tracking::sampleNormal (double mean, double sigma)
 {
-  static std::mt19937 rng([] {
+  static std::mt19937 rng ([] {
     std::random_device rd;
     return rd();
   }());
-  std::normal_distribution<> nd(mean, sqrt(sigma));
+  std::normal_distribution<> nd (mean, sqrt (sigma));
 
-  return (nd(rng));
+  return (nd (rng));
 }

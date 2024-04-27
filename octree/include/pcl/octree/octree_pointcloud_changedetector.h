@@ -77,11 +77,11 @@ public:
   /** \brief Constructor.
    *  \param resolution_arg:  octree resolution at lowest octree level
    * */
-  OctreePointCloudChangeDetector(const double resolution_arg)
+  OctreePointCloudChangeDetector (const double resolution_arg)
   : OctreePointCloud<PointT,
                      LeafContainerT,
                      BranchContainerT,
-                     Octree2BufBase<LeafContainerT, BranchContainerT>>(resolution_arg)
+                     Octree2BufBase<LeafContainerT, BranchContainerT>> (resolution_arg)
   {}
 
   /** \brief Get a indices from all leaf nodes that did not exist in previous buffer.
@@ -96,11 +96,11 @@ public:
   {
 
     std::vector<OctreeContainerPointIndices*> leaf_containers;
-    this->serializeNewLeafs(leaf_containers);
+    this->serializeNewLeafs (leaf_containers);
 
     for (const auto& leaf_container : leaf_containers) {
-      if (static_cast<uindex_t>(leaf_container->getSize()) >= minPointsPerLeaf_arg)
-        leaf_container->getPointIndices(indicesVector_arg);
+      if (static_cast<uindex_t> (leaf_container->getSize()) >= minPointsPerLeaf_arg)
+        leaf_container->getPointIndices (indicesVector_arg);
     }
 
     return (indicesVector_arg.size());

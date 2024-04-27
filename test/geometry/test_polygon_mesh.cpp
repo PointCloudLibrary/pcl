@@ -77,16 +77,16 @@ protected:
   using Mesh = MeshT;
 };
 
-TYPED_TEST_SUITE(TestPolygonMesh, PolygonMeshTypes);
+TYPED_TEST_SUITE (TestPolygonMesh, PolygonMeshTypes);
 
 ////////////////////////////////////////////////////////////////////////////////
 
-TYPED_TEST(TestPolygonMesh, CorrectMeshTag)
+TYPED_TEST (TestPolygonMesh, CorrectMeshTag)
 {
   using Mesh = typename TestFixture::Mesh;
   using MeshTag = typename Mesh::MeshTag;
 
-  ASSERT_EQ(typeid(pcl::geometry::PolygonMeshTag), typeid(MeshTag));
+  ASSERT_EQ (typeid (pcl::geometry::PolygonMeshTag), typeid (MeshTag));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -118,7 +118,7 @@ TYPED_TEST(TestPolygonMesh, CorrectMeshTag)
 
 ////////////////////////////////////////////////////////////////////////////////
 
-TYPED_TEST(TestPolygonMesh, CorrectNumberOfVertices)
+TYPED_TEST (TestPolygonMesh, CorrectNumberOfVertices)
 {
   // Make sure that only quads can be added
   using Mesh = typename TestFixture::Mesh;
@@ -127,21 +127,21 @@ TYPED_TEST(TestPolygonMesh, CorrectNumberOfVertices)
     Mesh mesh;
     VertexIndices vi;
     for (unsigned int i = 0; i < n; ++i) {
-      vi.push_back(VertexIndex(i));
-      mesh.addVertex(i);
+      vi.push_back (VertexIndex (i));
+      mesh.addVertex (i);
     }
 
-    const FaceIndex index = mesh.addFace(vi);
+    const FaceIndex index = mesh.addFace (vi);
     if (n >= 3)
-      EXPECT_TRUE(index.isValid()) << "Number of vertices in the face: " << n;
+      EXPECT_TRUE (index.isValid()) << "Number of vertices in the face: " << n;
     else
-      EXPECT_FALSE(index.isValid()) << "Number of vertices in the face: " << n;
+      EXPECT_FALSE (index.isValid()) << "Number of vertices in the face: " << n;
   }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
-TYPED_TEST(TestPolygonMesh, ThreePolygons)
+TYPED_TEST (TestPolygonMesh, ThreePolygons)
 {
   using Mesh = typename TestFixture::Mesh;
 
@@ -152,65 +152,65 @@ TYPED_TEST(TestPolygonMesh, ThreePolygons)
   //   3 - 4   //
   Mesh mesh;
   for (unsigned int i = 0; i < 7; ++i)
-    mesh.addVertex(i);
+    mesh.addVertex (i);
 
   std::vector<VertexIndices> faces;
   VertexIndices vi;
-  vi.push_back(VertexIndex(0));
-  vi.push_back(VertexIndex(1));
-  vi.push_back(VertexIndex(2));
-  faces.push_back(vi);
+  vi.push_back (VertexIndex (0));
+  vi.push_back (VertexIndex (1));
+  vi.push_back (VertexIndex (2));
+  faces.push_back (vi);
   vi.clear();
 
-  vi.push_back(VertexIndex(0));
-  vi.push_back(VertexIndex(2));
-  vi.push_back(VertexIndex(3));
-  vi.push_back(VertexIndex(4));
-  faces.push_back(vi);
+  vi.push_back (VertexIndex (0));
+  vi.push_back (VertexIndex (2));
+  vi.push_back (VertexIndex (3));
+  vi.push_back (VertexIndex (4));
+  faces.push_back (vi);
   vi.clear();
 
-  vi.push_back(VertexIndex(0));
-  vi.push_back(VertexIndex(4));
-  vi.push_back(VertexIndex(5));
-  vi.push_back(VertexIndex(6));
-  vi.push_back(VertexIndex(1));
-  faces.push_back(vi);
+  vi.push_back (VertexIndex (0));
+  vi.push_back (VertexIndex (4));
+  vi.push_back (VertexIndex (5));
+  vi.push_back (VertexIndex (6));
+  vi.push_back (VertexIndex (1));
+  faces.push_back (vi);
   vi.clear();
 
   for (const auto& face : faces) {
-    ASSERT_TRUE(mesh.addFace(face).isValid());
+    ASSERT_TRUE (mesh.addFace (face).isValid());
   }
 
-  ASSERT_TRUE(hasFaces(mesh, faces));
+  ASSERT_TRUE (hasFaces (mesh, faces));
 
-  mesh.deleteFace(FaceIndex(1));
+  mesh.deleteFace (FaceIndex (1));
   mesh.cleanUp();
 
   std::vector<std::vector<int>> expected;
   std::vector<int> tmp;
-  tmp.push_back(0);
-  tmp.push_back(1);
-  tmp.push_back(2);
-  expected.push_back(tmp);
+  tmp.push_back (0);
+  tmp.push_back (1);
+  tmp.push_back (2);
+  expected.push_back (tmp);
   tmp.clear();
 
-  tmp.push_back(0);
-  tmp.push_back(4);
-  tmp.push_back(5);
-  tmp.push_back(6);
-  tmp.push_back(1);
-  expected.push_back(tmp);
+  tmp.push_back (0);
+  tmp.push_back (4);
+  tmp.push_back (5);
+  tmp.push_back (6);
+  tmp.push_back (1);
+  expected.push_back (tmp);
   tmp.clear();
 
-  ASSERT_TRUE(hasFaces(mesh, expected));
+  ASSERT_TRUE (hasFaces (mesh, expected));
   std::vector<int> expected_boundary;
-  expected_boundary.push_back(2);
-  expected_boundary.push_back(1);
-  expected_boundary.push_back(6);
-  expected_boundary.push_back(5);
-  expected_boundary.push_back(4);
-  expected_boundary.push_back(0);
-  ASSERT_EQ(expected_boundary, getBoundaryVertices(mesh, 0));
+  expected_boundary.push_back (2);
+  expected_boundary.push_back (1);
+  expected_boundary.push_back (6);
+  expected_boundary.push_back (5);
+  expected_boundary.push_back (4);
+  expected_boundary.push_back (0);
+  ASSERT_EQ (expected_boundary, getBoundaryVertices (mesh, 0));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -218,6 +218,6 @@ TYPED_TEST(TestPolygonMesh, ThreePolygons)
 int
 main (int argc, char** argv)
 {
-  testing::InitGoogleTest(&argc, argv);
+  testing::InitGoogleTest (&argc, argv);
   return (RUN_ALL_TESTS());
 }

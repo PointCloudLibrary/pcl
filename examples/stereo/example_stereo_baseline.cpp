@@ -29,16 +29,16 @@ main (int argc, char** argv)
     return (-1);
   }
 
-  pcl::PointCloud<pcl::RGB>::Ptr left_cloud(new pcl::PointCloud<pcl::RGB>);
-  pcl::PointCloud<pcl::RGB>::Ptr right_cloud(new pcl::PointCloud<pcl::RGB>);
+  pcl::PointCloud<pcl::RGB>::Ptr left_cloud (new pcl::PointCloud<pcl::RGB>);
+  pcl::PointCloud<pcl::RGB>::Ptr right_cloud (new pcl::PointCloud<pcl::RGB>);
 
   // Read pcd files
   pcl::PCDReader pcd;
 
-  if (pcd.read(argv[1], *left_cloud) == -1)
+  if (pcd.read (argv[1], *left_cloud) == -1)
     return (-1);
 
-  if (pcd.read(argv[2], *right_cloud) == -1)
+  if (pcd.read (argv[2], *right_cloud) == -1)
     return (-1);
 
   if (!left_cloud->isOrganized() || !right_cloud->isOrganized() ||
@@ -52,9 +52,9 @@ main (int argc, char** argv)
   // pcl::AdaptiveCostSOStereoMatching stereo;
   pcl::BlockBasedStereoMatching stereo;
 
-  stereo.setMaxDisparity(60);
-  stereo.setXOffset(0);
-  stereo.setRadius(5);
+  stereo.setMaxDisparity (60);
+  stereo.setXOffset (0);
+  stereo.setRadius (5);
 
   // only needed for AdaptiveCostSOStereoMatching:
   // stereo.setSmoothWeak(20);
@@ -62,48 +62,48 @@ main (int argc, char** argv)
   // stereo.setGammaC(25);
   // stereo.setGammaS(10);
 
-  stereo.setRatioFilter(20);
-  stereo.setPeakFilter(0);
+  stereo.setRatioFilter (20);
+  stereo.setPeakFilter (0);
 
-  stereo.setLeftRightCheck(true);
-  stereo.setLeftRightCheckThreshold(1);
+  stereo.setLeftRightCheck (true);
+  stereo.setLeftRightCheckThreshold (1);
 
-  stereo.setPreProcessing(true);
+  stereo.setPreProcessing (true);
 
-  stereo.compute(*left_cloud, *right_cloud);
+  stereo.compute (*left_cloud, *right_cloud);
 
-  stereo.medianFilter(4);
+  stereo.medianFilter (4);
 
-  pcl::PointCloud<pcl::PointXYZRGB>::Ptr out_cloud(
+  pcl::PointCloud<pcl::PointXYZRGB>::Ptr out_cloud (
       new pcl::PointCloud<pcl::PointXYZRGB>);
 
-  stereo.getPointCloud(
+  stereo.getPointCloud (
       318.112200, 224.334900, 368.534700, 0.8387445, out_cloud, left_cloud);
 
-  pcl::PointCloud<pcl::RGB>::Ptr vmap(new pcl::PointCloud<pcl::RGB>);
-  stereo.getVisualMap(vmap);
+  pcl::PointCloud<pcl::RGB>::Ptr vmap (new pcl::PointCloud<pcl::RGB>);
+  stereo.getVisualMap (vmap);
 
-  pcl::visualization::ImageViewer iv("My viewer");
-  iv.addRGBImage<pcl::RGB>(vmap);
+  pcl::visualization::ImageViewer iv ("My viewer");
+  iv.addRGBImage<pcl::RGB> (vmap);
   // iv.addRGBImage<pcl::RGB> (left_cloud);
   // iv.spin (); // press 'q' to exit
 
-  pcl::visualization::PCLVisualizer::Ptr viewer(
-      new pcl::visualization::PCLVisualizer("3D Viewer"));
-  viewer->setBackgroundColor(0, 0, 0);
+  pcl::visualization::PCLVisualizer::Ptr viewer (
+      new pcl::visualization::PCLVisualizer ("3D Viewer"));
+  viewer->setBackgroundColor (0, 0, 0);
 
   // viewer->addPointCloud<pcl::PointXYZRGB> (out_cloud, "stereo");
-  pcl::visualization::PointCloudColorHandlerRGBField<pcl::PointXYZRGB> intensity(
+  pcl::visualization::PointCloudColorHandlerRGBField<pcl::PointXYZRGB> intensity (
       out_cloud);
-  viewer->addPointCloud<pcl::PointXYZRGB>(out_cloud, intensity, "stereo");
+  viewer->addPointCloud<pcl::PointXYZRGB> (out_cloud, intensity, "stereo");
 
   // viewer->setPointCloudRenderingProperties
   // (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 1, "stereo");
   viewer->initCameraParameters();
   // viewer->spin();
   while (!viewer->wasStopped()) {
-    viewer->spinOnce(100);
-    iv.spinOnce(100); // press 'q' to exit
-    std::this_thread::sleep_for(100ms);
+    viewer->spinOnce (100);
+    iv.spinOnce (100); // press 'q' to exit
+    std::this_thread::sleep_for (100ms);
   }
 }

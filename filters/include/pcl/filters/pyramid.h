@@ -64,7 +64,7 @@ public:
   using Ptr = shared_ptr<Pyramid<PointT>>;
   using ConstPtr = shared_ptr<const Pyramid<PointT>>;
 
-  Pyramid(int levels = 4) : levels_(levels), name_("Pyramid") {}
+  Pyramid (int levels = 4) : levels_ (levels), name_ ("Pyramid") {}
 
   /** \brief Provide a pointer to the input dataset
    * \param cloud the const boost shared pointer to a PointCloud message

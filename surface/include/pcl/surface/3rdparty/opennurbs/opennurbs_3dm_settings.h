@@ -25,10 +25,10 @@
 class ON_CLASS ON_3dmUnitsAndTolerances {
 public:
   ON_3dmUnitsAndTolerances();
-  ON_3dmUnitsAndTolerances(const ON_3dmUnitsAndTolerances&);
+  ON_3dmUnitsAndTolerances (const ON_3dmUnitsAndTolerances&);
   ~ON_3dmUnitsAndTolerances();
   ON_3dmUnitsAndTolerances&
-  operator=(const ON_3dmUnitsAndTolerances&);
+  operator= (const ON_3dmUnitsAndTolerances&);
 
   void
   Default ();
@@ -48,7 +48,7 @@ public:
   // Scale(us) = ON::UnitScale(us,m_unit_system).  When Scale(us)
   // When m_unit_system is ON::custom_unit_system,
   // Scale(us) = ON::UnitScale(us,ON::meters)*m_custom_unit_scale.
-  double Scale(ON::unit_system) const;
+  double Scale (ON::unit_system) const;
 
   // ON::unit_system m_unit_system;
   ON_UnitSystem m_unit_system;
@@ -82,9 +82,9 @@ class ON_CLASS ON_3dmAnnotationSettings {
 public:
   ON_3dmAnnotationSettings();
   ~ON_3dmAnnotationSettings();
-  ON_3dmAnnotationSettings(const ON_3dmAnnotationSettings&);
+  ON_3dmAnnotationSettings (const ON_3dmAnnotationSettings&);
   ON_3dmAnnotationSettings&
-  operator=(const ON_3dmAnnotationSettings&);
+  operator= (const ON_3dmAnnotationSettings&);
 
   void
   Default ();
@@ -235,9 +235,9 @@ class ON_CLASS ON_3dmConstructionPlaneGridDefaults {
 public:
   ON_3dmConstructionPlaneGridDefaults();
   ~ON_3dmConstructionPlaneGridDefaults();
-  ON_3dmConstructionPlaneGridDefaults(const ON_3dmConstructionPlaneGridDefaults&);
+  ON_3dmConstructionPlaneGridDefaults (const ON_3dmConstructionPlaneGridDefaults&);
   ON_3dmConstructionPlaneGridDefaults&
-  operator=(const ON_3dmConstructionPlaneGridDefaults&);
+  operator= (const ON_3dmConstructionPlaneGridDefaults&);
 
   void
   Default ();
@@ -327,9 +327,9 @@ public:
   // view window relative position and state in parent frame
   ON_3dmViewPosition();
   ~ON_3dmViewPosition();
-  ON_3dmViewPosition(const ON_3dmViewPosition&);
+  ON_3dmViewPosition (const ON_3dmViewPosition&);
   ON_3dmViewPosition&
-  operator=(const ON_3dmViewPosition&);
+  operator= (const ON_3dmViewPosition&);
 
   void
   Default ();
@@ -370,9 +370,9 @@ public:
   ON_3dmViewTraceImage();
   ~ON_3dmViewTraceImage();
   bool
-  operator==(const ON_3dmViewTraceImage&) const;
+  operator== (const ON_3dmViewTraceImage&) const;
   bool
-  operator!=(const ON_3dmViewTraceImage&) const;
+  operator!= (const ON_3dmViewTraceImage&) const;
 
   void
   Default ();
@@ -402,9 +402,9 @@ public:
   ON_3dmWallpaperImage();
   ~ON_3dmWallpaperImage();
   bool
-  operator==(const ON_3dmWallpaperImage&) const;
+  operator== (const ON_3dmWallpaperImage&) const;
   bool
-  operator!=(const ON_3dmWallpaperImage&) const;
+  operator!= (const ON_3dmWallpaperImage&) const;
 
   void
   Default ();
@@ -596,9 +596,9 @@ class ON_CLASS ON_3dmRenderSettings {
 public:
   ON_3dmRenderSettings();
   ~ON_3dmRenderSettings();
-  ON_3dmRenderSettings(const ON_3dmRenderSettings&);
+  ON_3dmRenderSettings (const ON_3dmRenderSettings&);
   ON_3dmRenderSettings&
-  operator=(const ON_3dmRenderSettings&);
+  operator= (const ON_3dmRenderSettings&);
 
   void
   Default ();

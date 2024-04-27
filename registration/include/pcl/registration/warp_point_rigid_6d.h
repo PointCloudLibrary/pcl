@@ -64,7 +64,7 @@ public:
   using ConstPtr =
       shared_ptr<const WarpPointRigid6D<PointSourceT, PointTargetT, Scalar>>;
 
-  WarpPointRigid6D() : WarpPointRigid<PointSourceT, PointTargetT, Scalar>(6) {}
+  WarpPointRigid6D() : WarpPointRigid<PointSourceT, PointTargetT, Scalar> (6) {}
 
   /** \brief Empty destructor */
   ~WarpPointRigid6D() override = default;
@@ -76,18 +76,18 @@ public:
   void
   setParam (const VectorX& p) override
   {
-    assert(p.rows() == this->getDimension());
+    assert (p.rows() == this->getDimension());
 
     // Copy the rotation and translation components
     transform_matrix_.setZero();
-    transform_matrix_(0, 3) = p[0];
-    transform_matrix_(1, 3) = p[1];
-    transform_matrix_(2, 3) = p[2];
-    transform_matrix_(3, 3) = 1;
+    transform_matrix_ (0, 3) = p[0];
+    transform_matrix_ (1, 3) = p[1];
+    transform_matrix_ (2, 3) = p[2];
+    transform_matrix_ (3, 3) = 1;
 
     // Compute w from the unit quaternion
-    Eigen::Quaternion<Scalar> q(0, p[3], p[4], p[5]);
-    q.w() = static_cast<Scalar>(std::sqrt(1 - q.dot(q)));
+    Eigen::Quaternion<Scalar> q (0, p[3], p[4], p[5]);
+    q.w() = static_cast<Scalar> (std::sqrt (1 - q.dot (q)));
     q.normalize();
     transform_matrix_.template topLeftCorner<3, 3>() = q.toRotationMatrix();
   }

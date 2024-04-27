@@ -47,7 +47,7 @@ template <typename PointT>
 void
 pcl::cloud_composer::CloudItem::printNumPoints() const
 {
-  QVariant variant = this->data(ItemDataRole::CLOUD_TEMPLATED);
+  QVariant variant = this->data (ItemDataRole::CLOUD_TEMPLATED);
   typename PointCloud<PointT>::Ptr cloud;
   if (variant.canConvert<typename PointCloud<PointT>::Ptr>()) {
     cloud = variant.value<typename PointCloud<PointT>::Ptr>();
@@ -63,21 +63,21 @@ pcl::cloud_composer::CloudItem::printNumPoints() const
 
 template <typename PointT>
 pcl::cloud_composer::CloudItem*
-pcl::cloud_composer::CloudItem::createCloudItemFromTemplate(
+pcl::cloud_composer::CloudItem::createCloudItemFromTemplate (
     const QString& name, typename PointCloud<PointT>::Ptr cloud_ptr)
 {
   pcl::PCLPointCloud2::Ptr cloud_blob = pcl::make_shared<pcl::PCLPointCloud2>();
-  toPCLPointCloud2(*cloud_ptr, *cloud_blob);
+  toPCLPointCloud2 (*cloud_ptr, *cloud_blob);
   CloudItem* cloud_item =
-      new CloudItem(name, cloud_blob, Eigen::Vector4f(), Eigen::Quaternionf(), false);
-  cloud_item->setData(QVariant::fromValue(cloud_ptr), ItemDataRole::CLOUD_TEMPLATED);
+      new CloudItem (name, cloud_blob, Eigen::Vector4f(), Eigen::Quaternionf(), false);
+  cloud_item->setData (QVariant::fromValue (cloud_ptr), ItemDataRole::CLOUD_TEMPLATED);
   cloud_item->setPointType<PointT>();
   return cloud_item;
 }
 
 #define PCL_INSTANTIATE_createCloudItemFromTemplate(T)                                 \
   template pcl::cloud_composer::CloudItem*                                             \
-  pcl::cloud_composer::CloudItem::createCloudItemFromTemplate<T>(                      \
+  pcl::cloud_composer::CloudItem::createCloudItemFromTemplate<T> (                     \
       const QString, typename PointCloud<PointT>::Ptr);
 
 #define PCL_INSTANTIATE_printNumPoints(T)                                              \

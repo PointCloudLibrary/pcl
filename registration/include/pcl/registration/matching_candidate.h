@@ -56,12 +56,12 @@ namespace registration {
 struct MatchingCandidate {
   /** \brief Constructor. */
   MatchingCandidate()
-  : fitness_score(std::numeric_limits<float>::max())
-  , transformation(Eigen::Matrix4f::Identity()){};
+  : fitness_score (std::numeric_limits<float>::max())
+  , transformation (Eigen::Matrix4f::Identity()){};
 
   /** \brief Value constructor. */
-  MatchingCandidate(float s, const pcl::Correspondences& c, const Eigen::Matrix4f& m)
-  : fitness_score(s), correspondences(c), transformation(m){};
+  MatchingCandidate (float s, const pcl::Correspondences& c, const Eigen::Matrix4f& m)
+  : fitness_score (s), correspondences (c), transformation (m){};
 
   /** \brief Destructor. */
   ~MatchingCandidate() = default;
@@ -85,7 +85,7 @@ using MatchingCandidates =
 struct by_score {
   /** \brief Operator used to sort candidates based on fitness score. */
   bool
-  operator()(MatchingCandidate const& left, MatchingCandidate const& right)
+  operator() (MatchingCandidate const& left, MatchingCandidate const& right)
   {
     return (left.fitness_score < right.fitness_score);
   }

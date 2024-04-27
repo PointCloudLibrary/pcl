@@ -109,8 +109,8 @@ public:
   using IsManifold = typename MeshTraitsT::IsManifold;
 
   // Check if the mesh traits are defined correctly.
-  static_assert(std::is_convertible<IsManifold, bool>::value,
-                "MeshTraitsT::IsManifold is not convertible to bool");
+  static_assert (std::is_convertible<IsManifold, bool>::value,
+                 "MeshTraitsT::IsManifold is not convertible to bool");
 
   using MeshTag = MeshTagT;
 
@@ -182,9 +182,9 @@ public:
   inline VertexIndex
   addVertex (const VertexData& vertex_data = VertexData())
   {
-    vertices_.push_back(Vertex());
-    this->addData(vertex_data_cloud_, vertex_data, HasVertexData());
-    return (static_cast<VertexIndex>(this->sizeVertices() - 1));
+    vertices_.push_back (Vertex());
+    this->addData (vertex_data_cloud_, vertex_data, HasVertexData());
+    return (static_cast<VertexIndex> (this->sizeVertices() - 1));
   }
 
   /**
@@ -207,7 +207,7 @@ public:
   {
     // NOTE: The derived class has to implement addFaceImpl. If needed it can use the
     // general method addFaceImplBase.
-    return (static_cast<Derived*>(this)->addFaceImpl(
+    return (static_cast<Derived*> (this)->addFaceImpl (
         vertices, face_data, edge_data, half_edge_data));
   }
 
@@ -218,22 +218,22 @@ public:
   void
   deleteVertex (const VertexIndex& idx_vertex)
   {
-    assert(this->isValid(idx_vertex));
-    if (this->isDeleted(idx_vertex))
+    assert (this->isValid (idx_vertex));
+    if (this->isDeleted (idx_vertex))
       return;
 
     delete_faces_vertex_.clear();
-    FaceAroundVertexCirculator circ = this->getFaceAroundVertexCirculator(idx_vertex);
+    FaceAroundVertexCirculator circ = this->getFaceAroundVertexCirculator (idx_vertex);
     const FaceAroundVertexCirculator circ_end = circ;
     do {
       if (circ.getTargetIndex().isValid()) // Check for boundary.
       {
-        delete_faces_vertex_.push_back(circ.getTargetIndex());
+        delete_faces_vertex_.push_back (circ.getTargetIndex());
       }
     } while (++circ != circ_end);
 
     for (const auto& delete_me : delete_faces_vertex_) {
-      this->deleteFace(delete_me);
+      this->deleteFace (delete_me);
     }
   }
 
@@ -245,20 +245,20 @@ public:
   void
   deleteEdge (const HalfEdgeIndex& idx_he)
   {
-    assert(this->isValid(idx_he));
-    if (this->isDeleted(idx_he))
+    assert (this->isValid (idx_he));
+    if (this->isDeleted (idx_he))
       return;
 
-    HalfEdgeIndex opposite = this->getOppositeHalfEdgeIndex(idx_he);
+    HalfEdgeIndex opposite = this->getOppositeHalfEdgeIndex (idx_he);
 
-    if (this->isBoundary(idx_he))
-      this->markDeleted(idx_he);
+    if (this->isBoundary (idx_he))
+      this->markDeleted (idx_he);
     else
-      this->deleteFace(this->getFaceIndex(idx_he));
-    if (this->isBoundary(opposite))
-      this->markDeleted(opposite);
+      this->deleteFace (this->getFaceIndex (idx_he));
+    if (this->isBoundary (opposite))
+      this->markDeleted (opposite);
     else
-      this->deleteFace(this->getFaceIndex(opposite));
+      this->deleteFace (this->getFaceIndex (opposite));
   }
 
   /**
@@ -268,10 +268,10 @@ public:
   inline void
   deleteEdge (const EdgeIndex& idx_edge)
   {
-    assert(this->isValid(idx_edge));
-    this->deleteEdge(pcl::geometry::toHalfEdgeIndex(idx_edge));
-    assert(this->isDeleted(
-        pcl::geometry::toHalfEdgeIndex(idx_edge, false))); // Bug in this class!
+    assert (this->isValid (idx_edge));
+    this->deleteEdge (pcl::geometry::toHalfEdgeIndex (idx_edge));
+    assert (this->isDeleted (
+        pcl::geometry::toHalfEdgeIndex (idx_edge, false))); // Bug in this class!
   }
 
   /**
@@ -282,11 +282,11 @@ public:
   inline void
   deleteFace (const FaceIndex& idx_face)
   {
-    assert(this->isValid(idx_face));
-    if (this->isDeleted(idx_face))
+    assert (this->isValid (idx_face));
+    if (this->isDeleted (idx_face))
       return;
 
-    this->deleteFace(idx_face, IsManifold());
+    this->deleteFace (idx_face, IsManifold());
   }
 
   /**
@@ -298,14 +298,14 @@ public:
   {
     // Copy the non-deleted mesh elements and store the index to their new position
     const VertexIndices new_vertex_indices =
-        this->remove<Vertices, VertexDataCloud, VertexIndices, HasVertexData>(
+        this->remove<Vertices, VertexDataCloud, VertexIndices, HasVertexData> (
             vertices_, vertex_data_cloud_);
     const HalfEdgeIndices new_half_edge_indices =
-        this->remove<HalfEdges, HalfEdgeDataCloud, HalfEdgeIndices, HasHalfEdgeData>(
+        this->remove<HalfEdges, HalfEdgeDataCloud, HalfEdgeIndices, HasHalfEdgeData> (
             half_edges_, half_edge_data_cloud_);
     const FaceIndices new_face_indices =
-        this->remove<Faces, FaceDataCloud, FaceIndices, HasFaceData>(faces_,
-                                                                     face_data_cloud_);
+        this->remove<Faces, FaceDataCloud, FaceIndices, HasFaceData> (faces_,
+                                                                      face_data_cloud_);
 
     // Remove deleted edge data
     if (HasEdgeData::value) {
@@ -320,7 +320,7 @@ public:
           *it_ed_new++ = *it_ed_old;
         }
       }
-      edge_data_cloud_.resize(this->sizeEdges());
+      edge_data_cloud_.resize (this->sizeEdges());
     }
 
     // Adjust the indices
@@ -357,16 +357,17 @@ public:
   inline HalfEdgeIndex
   getOutgoingHalfEdgeIndex (const VertexIndex& idx_vertex) const
   {
-    assert(this->isValid(idx_vertex));
-    return (this->getVertex(idx_vertex).idx_outgoing_half_edge_);
+    assert (this->isValid (idx_vertex));
+    return (this->getVertex (idx_vertex).idx_outgoing_half_edge_);
   }
 
   /** \brief Get the incoming half-edge index to a given vertex. */
   inline HalfEdgeIndex
   getIncomingHalfEdgeIndex (const VertexIndex& idx_vertex) const
   {
-    assert(this->isValid(idx_vertex));
-    return (this->getOppositeHalfEdgeIndex(this->getOutgoingHalfEdgeIndex(idx_vertex)));
+    assert (this->isValid (idx_vertex));
+    return (
+        this->getOppositeHalfEdgeIndex (this->getOutgoingHalfEdgeIndex (idx_vertex)));
   }
 
   ////////////////////////////////////////////////////////////////////////
@@ -377,59 +378,59 @@ public:
   inline VertexIndex
   getTerminatingVertexIndex (const HalfEdgeIndex& idx_half_edge) const
   {
-    assert(this->isValid(idx_half_edge));
-    return (this->getHalfEdge(idx_half_edge).idx_terminating_vertex_);
+    assert (this->isValid (idx_half_edge));
+    return (this->getHalfEdge (idx_half_edge).idx_terminating_vertex_);
   }
 
   /** \brief Get the originating vertex index to a given half-edge. */
   inline VertexIndex
   getOriginatingVertexIndex (const HalfEdgeIndex& idx_half_edge) const
   {
-    assert(this->isValid(idx_half_edge));
-    return (
-        this->getTerminatingVertexIndex(this->getOppositeHalfEdgeIndex(idx_half_edge)));
+    assert (this->isValid (idx_half_edge));
+    return (this->getTerminatingVertexIndex (
+        this->getOppositeHalfEdgeIndex (idx_half_edge)));
   }
 
   /** \brief Get the opposite half-edge index to a given half-edge. */
   inline HalfEdgeIndex
   getOppositeHalfEdgeIndex (const HalfEdgeIndex& idx_half_edge) const
   {
-    assert(this->isValid(idx_half_edge));
+    assert (this->isValid (idx_half_edge));
     // Check if the index is even or odd and return the other index.
-    return (HalfEdgeIndex(idx_half_edge.get() & 1 ? idx_half_edge.get() - 1
-                                                  : idx_half_edge.get() + 1));
+    return (HalfEdgeIndex (idx_half_edge.get() & 1 ? idx_half_edge.get() - 1
+                                                   : idx_half_edge.get() + 1));
   }
 
   /** \brief Get the next half-edge index to a given half-edge. */
   inline HalfEdgeIndex
   getNextHalfEdgeIndex (const HalfEdgeIndex& idx_half_edge) const
   {
-    assert(this->isValid(idx_half_edge));
-    return (this->getHalfEdge(idx_half_edge).idx_next_half_edge_);
+    assert (this->isValid (idx_half_edge));
+    return (this->getHalfEdge (idx_half_edge).idx_next_half_edge_);
   }
 
   /** \brief Get the previous half-edge index to a given half-edge. */
   inline HalfEdgeIndex
   getPrevHalfEdgeIndex (const HalfEdgeIndex& idx_half_edge) const
   {
-    assert(this->isValid(idx_half_edge));
-    return (this->getHalfEdge(idx_half_edge).idx_prev_half_edge_);
+    assert (this->isValid (idx_half_edge));
+    return (this->getHalfEdge (idx_half_edge).idx_prev_half_edge_);
   }
 
   /** \brief Get the face index to a given half-edge. */
   inline FaceIndex
   getFaceIndex (const HalfEdgeIndex& idx_half_edge) const
   {
-    assert(this->isValid(idx_half_edge));
-    return (this->getHalfEdge(idx_half_edge).idx_face_);
+    assert (this->isValid (idx_half_edge));
+    return (this->getHalfEdge (idx_half_edge).idx_face_);
   }
 
   /** \brief Get the face index to a given half-edge. */
   inline FaceIndex
   getOppositeFaceIndex (const HalfEdgeIndex& idx_half_edge) const
   {
-    assert(this->isValid(idx_half_edge));
-    return (this->getFaceIndex(this->getOppositeHalfEdgeIndex(idx_half_edge)));
+    assert (this->isValid (idx_half_edge));
+    return (this->getFaceIndex (this->getOppositeHalfEdgeIndex (idx_half_edge)));
   }
 
   ////////////////////////////////////////////////////////////////////////
@@ -440,16 +441,16 @@ public:
   inline HalfEdgeIndex
   getInnerHalfEdgeIndex (const FaceIndex& idx_face) const
   {
-    assert(this->isValid(idx_face));
-    return (this->getFace(idx_face).idx_inner_half_edge_);
+    assert (this->isValid (idx_face));
+    return (this->getFace (idx_face).idx_inner_half_edge_);
   }
 
   /** \brief Get the outer half-edge inex to a given face. */
   inline HalfEdgeIndex
   getOuterHalfEdgeIndex (const FaceIndex& idx_face) const
   {
-    assert(this->isValid(idx_face));
-    return (this->getOppositeHalfEdgeIndex(this->getInnerHalfEdgeIndex(idx_face)));
+    assert (this->isValid (idx_face));
+    return (this->getOppositeHalfEdgeIndex (this->getInnerHalfEdgeIndex (idx_face)));
   }
 
   ////////////////////////////////////////////////////////////////////////
@@ -460,24 +461,24 @@ public:
   inline VertexAroundVertexCirculator
   getVertexAroundVertexCirculator (const VertexIndex& idx_vertex) const
   {
-    assert(this->isValid(idx_vertex));
-    return (VertexAroundVertexCirculator(idx_vertex, this));
+    assert (this->isValid (idx_vertex));
+    return (VertexAroundVertexCirculator (idx_vertex, this));
   }
 
   /** \see pcl::geometry::VertexAroundVertexCirculator */
   inline VertexAroundVertexCirculator
   getVertexAroundVertexCirculator (const HalfEdgeIndex& idx_outgoing_half_edge) const
   {
-    assert(this->isValid(idx_outgoing_half_edge));
-    return (VertexAroundVertexCirculator(idx_outgoing_half_edge, this));
+    assert (this->isValid (idx_outgoing_half_edge));
+    return (VertexAroundVertexCirculator (idx_outgoing_half_edge, this));
   }
 
   /** \see pcl::geometry::OutgoingHalfEdgeAroundVertexCirculator */
   inline OutgoingHalfEdgeAroundVertexCirculator
   getOutgoingHalfEdgeAroundVertexCirculator (const VertexIndex& idx_vertex) const
   {
-    assert(this->isValid(idx_vertex));
-    return (OutgoingHalfEdgeAroundVertexCirculator(idx_vertex, this));
+    assert (this->isValid (idx_vertex));
+    return (OutgoingHalfEdgeAroundVertexCirculator (idx_vertex, this));
   }
 
   /** \see pcl::geometry::OutgoingHalfEdgeAroundVertexCirculator */
@@ -485,16 +486,16 @@ public:
   getOutgoingHalfEdgeAroundVertexCirculator (
       const HalfEdgeIndex& idx_outgoing_half_edge) const
   {
-    assert(this->isValid(idx_outgoing_half_edge));
-    return (OutgoingHalfEdgeAroundVertexCirculator(idx_outgoing_half_edge, this));
+    assert (this->isValid (idx_outgoing_half_edge));
+    return (OutgoingHalfEdgeAroundVertexCirculator (idx_outgoing_half_edge, this));
   }
 
   /** \see pcl::geometry::IncomingHalfEdgeAroundVertexCirculator */
   inline IncomingHalfEdgeAroundVertexCirculator
   getIncomingHalfEdgeAroundVertexCirculator (const VertexIndex& idx_vertex) const
   {
-    assert(this->isValid(idx_vertex));
-    return (IncomingHalfEdgeAroundVertexCirculator(idx_vertex, this));
+    assert (this->isValid (idx_vertex));
+    return (IncomingHalfEdgeAroundVertexCirculator (idx_vertex, this));
   }
 
   /** \see pcl::geometry::IncomingHalfEdgeAroundVertexCirculator */
@@ -502,88 +503,88 @@ public:
   getIncomingHalfEdgeAroundVertexCirculator (
       const HalfEdgeIndex& idx_incoming_half_edge) const
   {
-    assert(this->isValid(idx_incoming_half_edge));
-    return (IncomingHalfEdgeAroundVertexCirculator(idx_incoming_half_edge, this));
+    assert (this->isValid (idx_incoming_half_edge));
+    return (IncomingHalfEdgeAroundVertexCirculator (idx_incoming_half_edge, this));
   }
 
   /** \see pcl::geometry::FaceAroundVertexCirculator */
   inline FaceAroundVertexCirculator
   getFaceAroundVertexCirculator (const VertexIndex& idx_vertex) const
   {
-    assert(this->isValid(idx_vertex));
-    return (FaceAroundVertexCirculator(idx_vertex, this));
+    assert (this->isValid (idx_vertex));
+    return (FaceAroundVertexCirculator (idx_vertex, this));
   }
 
   /** \see pcl::geometry::FaceAroundVertexCirculator */
   inline FaceAroundVertexCirculator
   getFaceAroundVertexCirculator (const HalfEdgeIndex& idx_outgoing_half_edge) const
   {
-    assert(this->isValid(idx_outgoing_half_edge));
-    return (FaceAroundVertexCirculator(idx_outgoing_half_edge, this));
+    assert (this->isValid (idx_outgoing_half_edge));
+    return (FaceAroundVertexCirculator (idx_outgoing_half_edge, this));
   }
 
   /** \see pcl::geometry::VertexAroundFaceCirculator */
   inline VertexAroundFaceCirculator
   getVertexAroundFaceCirculator (const FaceIndex& idx_face) const
   {
-    assert(this->isValid(idx_face));
-    return (VertexAroundFaceCirculator(idx_face, this));
+    assert (this->isValid (idx_face));
+    return (VertexAroundFaceCirculator (idx_face, this));
   }
 
   /** \see pcl::geometry::VertexAroundFaceCirculator */
   inline VertexAroundFaceCirculator
   getVertexAroundFaceCirculator (const HalfEdgeIndex& idx_inner_half_edge) const
   {
-    assert(this->isValid(idx_inner_half_edge));
-    return (VertexAroundFaceCirculator(idx_inner_half_edge, this));
+    assert (this->isValid (idx_inner_half_edge));
+    return (VertexAroundFaceCirculator (idx_inner_half_edge, this));
   }
 
   /** \see pcl::geometry::InnerHalfEdgeAroundFaceCirculator */
   inline InnerHalfEdgeAroundFaceCirculator
   getInnerHalfEdgeAroundFaceCirculator (const FaceIndex& idx_face) const
   {
-    assert(this->isValid(idx_face));
-    return (InnerHalfEdgeAroundFaceCirculator(idx_face, this));
+    assert (this->isValid (idx_face));
+    return (InnerHalfEdgeAroundFaceCirculator (idx_face, this));
   }
 
   /** \see pcl::geometry::InnerHalfEdgeAroundFaceCirculator */
   inline InnerHalfEdgeAroundFaceCirculator
   getInnerHalfEdgeAroundFaceCirculator (const HalfEdgeIndex& idx_inner_half_edge) const
   {
-    assert(this->isValid(idx_inner_half_edge));
-    return (InnerHalfEdgeAroundFaceCirculator(idx_inner_half_edge, this));
+    assert (this->isValid (idx_inner_half_edge));
+    return (InnerHalfEdgeAroundFaceCirculator (idx_inner_half_edge, this));
   }
 
   /** \see pcl::geometry::OuterHalfEdgeAroundFaceCirculator */
   inline OuterHalfEdgeAroundFaceCirculator
   getOuterHalfEdgeAroundFaceCirculator (const FaceIndex& idx_face) const
   {
-    assert(this->isValid(idx_face));
-    return (OuterHalfEdgeAroundFaceCirculator(idx_face, this));
+    assert (this->isValid (idx_face));
+    return (OuterHalfEdgeAroundFaceCirculator (idx_face, this));
   }
 
   /** \see pcl::geometry::OuterHalfEdgeAroundFaceCirculator */
   inline OuterHalfEdgeAroundFaceCirculator
   getOuterHalfEdgeAroundFaceCirculator (const HalfEdgeIndex& idx_inner_half_edge) const
   {
-    assert(this->isValid(idx_inner_half_edge));
-    return (OuterHalfEdgeAroundFaceCirculator(idx_inner_half_edge, this));
+    assert (this->isValid (idx_inner_half_edge));
+    return (OuterHalfEdgeAroundFaceCirculator (idx_inner_half_edge, this));
   }
 
   /** \see pcl::geometry::FaceAroundFaceCirculator */
   inline FaceAroundFaceCirculator
   getFaceAroundFaceCirculator (const FaceIndex& idx_face) const
   {
-    assert(this->isValid(idx_face));
-    return (FaceAroundFaceCirculator(idx_face, this));
+    assert (this->isValid (idx_face));
+    return (FaceAroundFaceCirculator (idx_face, this));
   }
 
   /** \see pcl::geometry::FaceAroundFaceCirculator */
   inline FaceAroundFaceCirculator
   getFaceAroundFaceCirculator (const HalfEdgeIndex& idx_inner_half_edge) const
   {
-    assert(this->isValid(idx_inner_half_edge));
-    return (FaceAroundFaceCirculator(idx_inner_half_edge, this));
+    assert (this->isValid (idx_inner_half_edge));
+    return (FaceAroundFaceCirculator (idx_inner_half_edge, this));
   }
 
   //////////////////////////////////////////////////////////////////////////
@@ -602,31 +603,32 @@ public:
       return (false);
 
     for (std::size_t i = 0; i < this->sizeVertices(); ++i) {
-      if (this->getOutgoingHalfEdgeIndex(VertexIndex(i)) !=
-          other.getOutgoingHalfEdgeIndex(VertexIndex(i)))
+      if (this->getOutgoingHalfEdgeIndex (VertexIndex (i)) !=
+          other.getOutgoingHalfEdgeIndex (VertexIndex (i)))
         return (false);
     }
 
     for (std::size_t i = 0; i < this->sizeHalfEdges(); ++i) {
-      if (this->getTerminatingVertexIndex(HalfEdgeIndex(i)) !=
-          other.getTerminatingVertexIndex(HalfEdgeIndex(i)))
+      if (this->getTerminatingVertexIndex (HalfEdgeIndex (i)) !=
+          other.getTerminatingVertexIndex (HalfEdgeIndex (i)))
         return (false);
 
-      if (this->getNextHalfEdgeIndex(HalfEdgeIndex(i)) !=
-          other.getNextHalfEdgeIndex(HalfEdgeIndex(i)))
+      if (this->getNextHalfEdgeIndex (HalfEdgeIndex (i)) !=
+          other.getNextHalfEdgeIndex (HalfEdgeIndex (i)))
         return (false);
 
-      if (this->getPrevHalfEdgeIndex(HalfEdgeIndex(i)) !=
-          other.getPrevHalfEdgeIndex(HalfEdgeIndex(i)))
+      if (this->getPrevHalfEdgeIndex (HalfEdgeIndex (i)) !=
+          other.getPrevHalfEdgeIndex (HalfEdgeIndex (i)))
         return (false);
 
-      if (this->getFaceIndex(HalfEdgeIndex(i)) != other.getFaceIndex(HalfEdgeIndex(i)))
+      if (this->getFaceIndex (HalfEdgeIndex (i)) !=
+          other.getFaceIndex (HalfEdgeIndex (i)))
         return (false);
     }
 
     for (std::size_t i = 0; i < this->sizeFaces(); ++i) {
-      if (this->getInnerHalfEdgeIndex(FaceIndex(i)) !=
-          other.getInnerHalfEdgeIndex(FaceIndex(i)))
+      if (this->getInnerHalfEdgeIndex (FaceIndex (i)) !=
+          other.getInnerHalfEdgeIndex (FaceIndex (i)))
         return (false);
     }
 
@@ -641,32 +643,32 @@ public:
   inline bool
   isValid (const VertexIndex& idx_vertex) const
   {
-    return (idx_vertex >= static_cast<VertexIndex>(0) &&
-            idx_vertex < static_cast<VertexIndex>(vertices_.size()));
+    return (idx_vertex >= static_cast<VertexIndex> (0) &&
+            idx_vertex < static_cast<VertexIndex> (vertices_.size()));
   }
 
   /** \brief Check if the given half-edge index is a valid index into the mesh.  */
   inline bool
   isValid (const HalfEdgeIndex& idx_he) const
   {
-    return (idx_he >= static_cast<HalfEdgeIndex>(0) &&
-            idx_he < static_cast<HalfEdgeIndex>(half_edges_.size()));
+    return (idx_he >= static_cast<HalfEdgeIndex> (0) &&
+            idx_he < static_cast<HalfEdgeIndex> (half_edges_.size()));
   }
 
   /** \brief Check if the given edge index is a valid index into the mesh. */
   inline bool
   isValid (const EdgeIndex& idx_edge) const
   {
-    return (idx_edge >= static_cast<EdgeIndex>(0) &&
-            idx_edge < static_cast<EdgeIndex>(half_edges_.size() / 2));
+    return (idx_edge >= static_cast<EdgeIndex> (0) &&
+            idx_edge < static_cast<EdgeIndex> (half_edges_.size() / 2));
   }
 
   /** \brief Check if the given face index is a valid index into the mesh.  */
   inline bool
   isValid (const FaceIndex& idx_face) const
   {
-    return (idx_face >= static_cast<FaceIndex>(0) &&
-            idx_face < static_cast<FaceIndex>(faces_.size()));
+    return (idx_face >= static_cast<FaceIndex> (0) &&
+            idx_face < static_cast<FaceIndex> (faces_.size()));
   }
 
   ////////////////////////////////////////////////////////////////////////
@@ -677,16 +679,16 @@ public:
   inline bool
   isDeleted (const VertexIndex& idx_vertex) const
   {
-    assert(this->isValid(idx_vertex));
-    return (!this->getOutgoingHalfEdgeIndex(idx_vertex).isValid());
+    assert (this->isValid (idx_vertex));
+    return (!this->getOutgoingHalfEdgeIndex (idx_vertex).isValid());
   }
 
   /** \brief Check if the given half-edge is marked as deleted. */
   inline bool
   isDeleted (const HalfEdgeIndex& idx_he) const
   {
-    assert(this->isValid(idx_he));
-    return (!this->getTerminatingVertexIndex(idx_he).isValid());
+    assert (this->isValid (idx_he));
+    return (!this->getTerminatingVertexIndex (idx_he).isValid());
   }
 
   /** \brief Check if the given edge (any of the two half-edges) is marked as deleted.
@@ -694,17 +696,17 @@ public:
   inline bool
   isDeleted (const EdgeIndex& idx_edge) const
   {
-    assert(this->isValid(idx_edge));
-    return (this->isDeleted(pcl::geometry::toHalfEdgeIndex(idx_edge, true)) ||
-            this->isDeleted(pcl::geometry::toHalfEdgeIndex(idx_edge, false)));
+    assert (this->isValid (idx_edge));
+    return (this->isDeleted (pcl::geometry::toHalfEdgeIndex (idx_edge, true)) ||
+            this->isDeleted (pcl::geometry::toHalfEdgeIndex (idx_edge, false)));
   }
 
   /** \brief Check if the given face is marked as deleted. */
   inline bool
   isDeleted (const FaceIndex& idx_face) const
   {
-    assert(this->isValid(idx_face));
-    return (!this->getInnerHalfEdgeIndex(idx_face).isValid());
+    assert (this->isValid (idx_face));
+    return (!this->getInnerHalfEdgeIndex (idx_face).isValid());
   }
 
   ////////////////////////////////////////////////////////////////////////
@@ -715,8 +717,8 @@ public:
   inline bool
   isIsolated (const VertexIndex& idx_vertex) const
   {
-    assert(this->isValid(idx_vertex));
-    return (!this->getOutgoingHalfEdgeIndex(idx_vertex).isValid());
+    assert (this->isValid (idx_vertex));
+    return (!this->getOutgoingHalfEdgeIndex (idx_vertex).isValid());
   }
 
   ////////////////////////////////////////////////////////////////////////
@@ -728,18 +730,18 @@ public:
   inline bool
   isBoundary (const VertexIndex& idx_vertex) const
   {
-    assert(this->isValid(idx_vertex));
-    if (this->isIsolated(idx_vertex))
+    assert (this->isValid (idx_vertex));
+    if (this->isIsolated (idx_vertex))
       return (true);
-    return (this->isBoundary(this->getOutgoingHalfEdgeIndex(idx_vertex)));
+    return (this->isBoundary (this->getOutgoingHalfEdgeIndex (idx_vertex)));
   }
 
   /** \brief Check if the given half-edge lies on the boundary. */
   inline bool
   isBoundary (const HalfEdgeIndex& idx_he) const
   {
-    assert(this->isValid(idx_he));
-    return (!this->getFaceIndex(idx_he).isValid());
+    assert (this->isValid (idx_he));
+    return (!this->getFaceIndex (idx_he).isValid());
   }
 
   /** \brief Check if the given edge lies on the boundary (any of the two half-edges
@@ -747,10 +749,10 @@ public:
   inline bool
   isBoundary (const EdgeIndex& idx_edge) const
   {
-    assert(this->isValid(idx_edge));
-    const HalfEdgeIndex& idx = pcl::geometry::toHalfEdgeIndex(idx_edge);
-    return (this->isBoundary(idx) ||
-            this->isBoundary(this->getOppositeHalfEdgeIndex(idx)));
+    assert (this->isValid (idx_edge));
+    const HalfEdgeIndex& idx = pcl::geometry::toHalfEdgeIndex (idx_edge);
+    return (this->isBoundary (idx) ||
+            this->isBoundary (this->getOppositeHalfEdgeIndex (idx)));
   }
 
   /**
@@ -763,8 +765,9 @@ public:
   inline bool
   isBoundary (const FaceIndex& idx_face) const
   {
-    assert(this->isValid(idx_face));
-    return (this->isBoundary(idx_face, std::integral_constant<bool, CheckVerticesT>()));
+    assert (this->isValid (idx_face));
+    return (
+        this->isBoundary (idx_face, std::integral_constant<bool, CheckVerticesT>()));
   }
 
   /** \brief Check if the given face lies on the boundary. This method uses isBoundary
@@ -772,8 +775,8 @@ public:
   inline bool
   isBoundary (const FaceIndex& idx_face) const
   {
-    assert(this->isValid(idx_face));
-    return (this->isBoundary(idx_face, std::true_type()));
+    assert (this->isValid (idx_face));
+    return (this->isBoundary (idx_face, std::true_type()));
   }
 
   ////////////////////////////////////////////////////////////////////////
@@ -784,17 +787,17 @@ public:
   inline bool
   isManifold (const VertexIndex& idx_vertex) const
   {
-    assert(this->isValid(idx_vertex));
-    if (this->isIsolated(idx_vertex))
+    assert (this->isValid (idx_vertex));
+    if (this->isIsolated (idx_vertex))
       return (true);
-    return (this->isManifold(idx_vertex, IsManifold()));
+    return (this->isManifold (idx_vertex, IsManifold()));
   }
 
   /** \brief Check if the mesh is manifold. */
   inline bool
   isManifold () const
   {
-    return (this->isManifold(IsManifold()));
+    return (this->isManifold (IsManifold()));
   }
 
   ////////////////////////////////////////////////////////////////////////
@@ -812,7 +815,7 @@ public:
   inline std::size_t
   sizeHalfEdges () const
   {
-    assert(half_edges_.size() % 2 == 0); // This would be a bug in the mesh.
+    assert (half_edges_.size() % 2 == 0); // This would be a bug in the mesh.
     return (half_edges_.size());
   }
 
@@ -820,7 +823,7 @@ public:
   inline std::size_t
   sizeEdges () const
   {
-    assert(half_edges_.size() % 2 == 0); // This would be a bug in the mesh.
+    assert (half_edges_.size() % 2 == 0); // This would be a bug in the mesh.
     return (half_edges_.size() / 2);
   }
 
@@ -871,8 +874,8 @@ public:
   inline void
   reserveVertices (const std::size_t n)
   {
-    vertices_.reserve(n);
-    this->reserveData(vertex_data_cloud_, n, HasVertexData());
+    vertices_.reserve (n);
+    this->reserveData (vertex_data_cloud_, n, HasVertexData());
   }
 
   /** \brief Reserve storage space for n edges (2*n storage space is reserved for the
@@ -880,17 +883,17 @@ public:
   inline void
   reserveEdges (const std::size_t n)
   {
-    half_edges_.reserve(2 * n);
-    this->reserveData(half_edge_data_cloud_, 2 * n, HasHalfEdgeData());
-    this->reserveData(edge_data_cloud_, n, HasEdgeData());
+    half_edges_.reserve (2 * n);
+    this->reserveData (half_edge_data_cloud_, 2 * n, HasHalfEdgeData());
+    this->reserveData (edge_data_cloud_, n, HasEdgeData());
   }
 
   /** \brief Reserve storage space for n faces. */
   inline void
   reserveFaces (const std::size_t n)
   {
-    faces_.reserve(n);
-    this->reserveData(face_data_cloud_, n, HasFaceData());
+    faces_.reserve (n);
+    this->reserveData (face_data_cloud_, n, HasFaceData());
   }
 
   ////////////////////////////////////////////////////////////////////////
@@ -901,8 +904,8 @@ public:
   inline void
   resizeVertices (const std::size_t n, const VertexData& data = VertexData())
   {
-    vertices_.resize(n, Vertex());
-    this->resizeData(vertex_data_cloud_, n, data, HasVertexData());
+    vertices_.resize (n, Vertex());
+    this->resizeData (vertex_data_cloud_, n, data, HasVertexData());
   }
 
   /** \brief Resize the edges to n elements (half-edges will hold 2*n elements). */
@@ -911,17 +914,17 @@ public:
                const EdgeData& edge_data = EdgeData(),
                const HalfEdgeData he_data = HalfEdgeData())
   {
-    half_edges_.resize(2 * n, HalfEdge());
-    this->resizeData(half_edge_data_cloud_, 2 * n, he_data, HasHalfEdgeData());
-    this->resizeData(edge_data_cloud_, n, edge_data, HasEdgeData());
+    half_edges_.resize (2 * n, HalfEdge());
+    this->resizeData (half_edge_data_cloud_, 2 * n, he_data, HasHalfEdgeData());
+    this->resizeData (edge_data_cloud_, n, edge_data, HasEdgeData());
   }
 
   /** \brief Resize the faces to n elements. */
   inline void
   resizeFaces (const std::size_t n, const FaceData& data = FaceData())
   {
-    faces_.resize(n, Face());
-    this->resizeData(face_data_cloud_, n, data, HasFaceData());
+    faces_.resize (n, Face());
+    this->resizeData (face_data_cloud_, n, data, HasFaceData());
   }
 
   ////////////////////////////////////////////////////////////////////////
@@ -936,10 +939,10 @@ public:
     half_edges_.clear();
     faces_.clear();
 
-    this->clearData(vertex_data_cloud_, HasVertexData());
-    this->clearData(half_edge_data_cloud_, HasHalfEdgeData());
-    this->clearData(edge_data_cloud_, HasEdgeData());
-    this->clearData(face_data_cloud_, HasFaceData());
+    this->clearData (vertex_data_cloud_, HasVertexData());
+    this->clearData (half_edge_data_cloud_, HasHalfEdgeData());
+    this->clearData (edge_data_cloud_, HasEdgeData());
+    this->clearData (face_data_cloud_, HasFaceData());
   }
 
   ////////////////////////////////////////////////////////////////////////
@@ -1091,9 +1094,9 @@ public:
   getVertexIndex (const VertexData& vertex_data) const
   {
     if (HasVertexData::value) {
-      assert(&vertex_data >= &vertex_data_cloud_.front() &&
-             &vertex_data <= &vertex_data_cloud_.back());
-      return (VertexIndex(std::distance(&vertex_data_cloud_.front(), &vertex_data)));
+      assert (&vertex_data >= &vertex_data_cloud_.front() &&
+              &vertex_data <= &vertex_data_cloud_.back());
+      return (VertexIndex (std::distance (&vertex_data_cloud_.front(), &vertex_data)));
     }
     return {};
   }
@@ -1103,10 +1106,10 @@ public:
   getHalfEdgeIndex (const HalfEdgeData& half_edge_data) const
   {
     if (HasHalfEdgeData::value) {
-      assert(&half_edge_data >= &half_edge_data_cloud_.front() &&
-             &half_edge_data <= &half_edge_data_cloud_.back());
-      return (HalfEdgeIndex(
-          std::distance(&half_edge_data_cloud_.front(), &half_edge_data)));
+      assert (&half_edge_data >= &half_edge_data_cloud_.front() &&
+              &half_edge_data <= &half_edge_data_cloud_.back());
+      return (HalfEdgeIndex (
+          std::distance (&half_edge_data_cloud_.front(), &half_edge_data)));
     }
     return {};
   }
@@ -1116,9 +1119,9 @@ public:
   getEdgeIndex (const EdgeData& edge_data) const
   {
     if (HasEdgeData::value) {
-      assert(&edge_data >= &edge_data_cloud_.front() &&
-             &edge_data <= &edge_data_cloud_.back());
-      return (EdgeIndex(std::distance(&edge_data_cloud_.front(), &edge_data)));
+      assert (&edge_data >= &edge_data_cloud_.front() &&
+              &edge_data <= &edge_data_cloud_.back());
+      return (EdgeIndex (std::distance (&edge_data_cloud_.front(), &edge_data)));
     }
     return {};
   }
@@ -1128,9 +1131,9 @@ public:
   getFaceIndex (const FaceData& face_data) const
   {
     if (HasFaceData::value) {
-      assert(&face_data >= &face_data_cloud_.front() &&
-             &face_data <= &face_data_cloud_.back());
-      return (FaceIndex(std::distance(&face_data_cloud_.front(), &face_data)));
+      assert (&face_data >= &face_data_cloud_.front() &&
+              &face_data <= &face_data_cloud_.back());
+      return (FaceIndex (std::distance (&face_data_cloud_.front(), &face_data)));
     }
     return {};
   }
@@ -1164,34 +1167,34 @@ protected:
                    const EdgeData& edge_data,
                    const HalfEdgeData& half_edge_data)
   {
-    const int n = static_cast<int>(vertices.size());
+    const int n = static_cast<int> (vertices.size());
     if (n < 3)
       return {};
 
     // Check for topological errors
-    inner_he_.resize(n);
-    free_he_.resize(n);
-    is_new_.resize(n);
-    make_adjacent_.resize(n);
+    inner_he_.resize (n);
+    free_he_.resize (n);
+    is_new_.resize (n);
+    make_adjacent_.resize (n);
     for (int i = 0; i < n; ++i) {
-      if (!this->checkTopology1(vertices[i],
-                                vertices[(i + 1) % n],
-                                inner_he_[i],
-                                is_new_[i],
-                                IsManifold())) {
+      if (!this->checkTopology1 (vertices[i],
+                                 vertices[(i + 1) % n],
+                                 inner_he_[i],
+                                 is_new_[i],
+                                 IsManifold())) {
         return {};
       }
     }
     for (int i = 0; i < n; ++i) {
       int j = (i + 1) % n;
-      if (!this->checkTopology2(inner_he_[i],
-                                inner_he_[j],
-                                is_new_[i],
-                                is_new_[j],
-                                this->isIsolated(vertices[j]),
-                                make_adjacent_[i],
-                                free_he_[i],
-                                IsManifold())) {
+      if (!this->checkTopology2 (inner_he_[i],
+                                 inner_he_[j],
+                                 is_new_[i],
+                                 is_new_[j],
+                                 this->isIsolated (vertices[j]),
+                                 make_adjacent_[i],
+                                 free_he_[i],
+                                 IsManifold())) {
         return {};
       }
     }
@@ -1200,7 +1203,7 @@ protected:
     if (!IsManifold::value) {
       for (int i = 0; i < n; ++i) {
         if (make_adjacent_[i]) {
-          this->makeAdjacent(inner_he_[i], inner_he_[(i + 1) % n], free_he_[i]);
+          this->makeAdjacent (inner_he_[i], inner_he_[(i + 1) % n], free_he_[i]);
         }
       }
     }
@@ -1208,7 +1211,7 @@ protected:
     // Add new half-edges if needed
     for (int i = 0; i < n; ++i) {
       if (is_new_[i]) {
-        inner_he_[i] = this->addEdge(
+        inner_he_[i] = this->addEdge (
             vertices[i], vertices[(i + 1) % n], half_edge_data, edge_data);
       }
     }
@@ -1217,15 +1220,15 @@ protected:
     for (int i = 0; i < n; ++i) {
       int j = (i + 1) % n;
       if (is_new_[i] && is_new_[j])
-        this->connectNewNew(inner_he_[i], inner_he_[j], vertices[j], IsManifold());
+        this->connectNewNew (inner_he_[i], inner_he_[j], vertices[j], IsManifold());
       else if (is_new_[i] && !is_new_[j])
-        this->connectNewOld(inner_he_[i], inner_he_[j], vertices[j]);
+        this->connectNewOld (inner_he_[i], inner_he_[j], vertices[j]);
       else if (!is_new_[i] && is_new_[j])
-        this->connectOldNew(inner_he_[i], inner_he_[j], vertices[j]);
+        this->connectOldNew (inner_he_[i], inner_he_[j], vertices[j]);
       else
-        this->connectOldOld(inner_he_[i], inner_he_[j], vertices[j], IsManifold());
+        this->connectOldOld (inner_he_[i], inner_he_[j], vertices[j], IsManifold());
     }
-    return (this->connectFace(inner_he_, face_data));
+    return (this->connectFace (inner_he_, face_data));
   }
 
   ////////////////////////////////////////////////////////////////////////
@@ -1248,14 +1251,14 @@ protected:
            const HalfEdgeData& he_data,
            const EdgeData& edge_data)
   {
-    half_edges_.push_back(HalfEdge(idx_v_b));
-    half_edges_.push_back(HalfEdge(idx_v_a));
+    half_edges_.push_back (HalfEdge (idx_v_b));
+    half_edges_.push_back (HalfEdge (idx_v_a));
 
-    this->addData(half_edge_data_cloud_, he_data, HasHalfEdgeData());
-    this->addData(half_edge_data_cloud_, he_data, HasHalfEdgeData());
-    this->addData(edge_data_cloud_, edge_data, HasEdgeData());
+    this->addData (half_edge_data_cloud_, he_data, HasHalfEdgeData());
+    this->addData (half_edge_data_cloud_, he_data, HasHalfEdgeData());
+    this->addData (edge_data_cloud_, edge_data, HasEdgeData());
 
-    return (static_cast<HalfEdgeIndex>(half_edges_.size() - 2));
+    return (static_cast<HalfEdgeIndex> (half_edges_.size() - 2));
   }
 
   ////////////////////////////////////////////////////////////////////////
@@ -1278,14 +1281,14 @@ protected:
                   std::true_type /*is_manifold*/) const
   {
     is_new_ab = true;
-    if (this->isIsolated(idx_v_a))
+    if (this->isIsolated (idx_v_a))
       return (true);
 
-    idx_he_ab = this->getOutgoingHalfEdgeIndex(idx_v_a);
+    idx_he_ab = this->getOutgoingHalfEdgeIndex (idx_v_a);
 
-    if (!this->isBoundary(idx_he_ab))
+    if (!this->isBoundary (idx_he_ab))
       return (false);
-    if (this->getTerminatingVertexIndex(idx_he_ab) == idx_v_b)
+    if (this->getTerminatingVertexIndex (idx_he_ab) == idx_v_b)
       is_new_ab = false;
     return (true);
   }
@@ -1299,19 +1302,19 @@ protected:
                   std::false_type /*is_manifold*/) const
   {
     is_new_ab = true;
-    if (this->isIsolated(idx_v_a))
+    if (this->isIsolated (idx_v_a))
       return (true);
-    if (!this->isBoundary(this->getOutgoingHalfEdgeIndex(idx_v_a)))
+    if (!this->isBoundary (this->getOutgoingHalfEdgeIndex (idx_v_a)))
       return (false);
 
-    VertexAroundVertexCirculator circ =
-        this->getVertexAroundVertexCirculator(this->getOutgoingHalfEdgeIndex(idx_v_a));
+    VertexAroundVertexCirculator circ = this->getVertexAroundVertexCirculator (
+        this->getOutgoingHalfEdgeIndex (idx_v_a));
     const VertexAroundVertexCirculator circ_end = circ;
 
     do {
       if (circ.getTargetIndex() == idx_v_b) {
         idx_he_ab = circ.getCurrentHalfEdgeIndex();
-        if (!this->isBoundary(idx_he_ab))
+        if (!this->isBoundary (idx_he_ab))
           return (false);
 
         is_new_ab = false;
@@ -1360,7 +1363,7 @@ protected:
       return (true); // Make adjacent is only needed for two old half-edges
     }
 
-    if (this->getNextHalfEdgeIndex(idx_he_ab) == idx_he_bc) {
+    if (this->getNextHalfEdgeIndex (idx_he_ab) == idx_he_bc) {
       make_adjacent_ab_bc = false;
       return (true); // already adjacent
     }
@@ -1369,12 +1372,12 @@ protected:
 
     // Find the next boundary half edge
     IncomingHalfEdgeAroundVertexCirculator circ =
-        this->getIncomingHalfEdgeAroundVertexCirculator(
-            this->getOppositeHalfEdgeIndex(idx_he_bc));
+        this->getIncomingHalfEdgeAroundVertexCirculator (
+            this->getOppositeHalfEdgeIndex (idx_he_bc));
 
     do
       ++circ;
-    while (!this->isBoundary(circ.getTargetIndex()));
+    while (!this->isBoundary (circ.getTargetIndex()));
     idx_free_half_edge = circ.getTargetIndex();
 
     // This would detach the faces around the vertex from each other.
@@ -1395,14 +1398,14 @@ protected:
                 HalfEdgeIndex& idx_free_half_edge)
   {
     // Re-link. No references!
-    const HalfEdgeIndex idx_he_ab_next = this->getNextHalfEdgeIndex(idx_he_ab);
-    const HalfEdgeIndex idx_he_bc_prev = this->getPrevHalfEdgeIndex(idx_he_bc);
+    const HalfEdgeIndex idx_he_ab_next = this->getNextHalfEdgeIndex (idx_he_ab);
+    const HalfEdgeIndex idx_he_bc_prev = this->getPrevHalfEdgeIndex (idx_he_bc);
     const HalfEdgeIndex idx_he_free_next =
-        this->getNextHalfEdgeIndex(idx_free_half_edge);
+        this->getNextHalfEdgeIndex (idx_free_half_edge);
 
-    this->connectPrevNext(idx_he_ab, idx_he_bc);
-    this->connectPrevNext(idx_free_half_edge, idx_he_ab_next);
-    this->connectPrevNext(idx_he_bc_prev, idx_he_free_next);
+    this->connectPrevNext (idx_he_ab, idx_he_bc);
+    this->connectPrevNext (idx_free_half_edge, idx_he_ab_next);
+    this->connectPrevNext (idx_he_bc_prev, idx_he_free_next);
   }
 
   ////////////////////////////////////////////////////////////////////////
@@ -1418,13 +1421,13 @@ protected:
   FaceIndex
   connectFace (const HalfEdgeIndices& inner_he, const FaceData& face_data)
   {
-    faces_.push_back(Face(inner_he.back()));
-    this->addData(face_data_cloud_, face_data, HasFaceData());
+    faces_.push_back (Face (inner_he.back()));
+    this->addData (face_data_cloud_, face_data, HasFaceData());
 
-    const FaceIndex idx_face(static_cast<int>(this->sizeFaces() - 1));
+    const FaceIndex idx_face (static_cast<int> (this->sizeFaces() - 1));
 
     for (const auto& idx_half_edge : inner_he) {
-      this->setFaceIndex(idx_half_edge, idx_face);
+      this->setFaceIndex (idx_half_edge, idx_face);
     }
 
     return (idx_face);
@@ -1434,8 +1437,8 @@ protected:
   inline void
   connectPrevNext (const HalfEdgeIndex& idx_he_ab, const HalfEdgeIndex& idx_he_bc)
   {
-    this->setNextHalfEdgeIndex(idx_he_ab, idx_he_bc);
-    this->setPrevHalfEdgeIndex(idx_he_bc, idx_he_ab);
+    this->setNextHalfEdgeIndex (idx_he_ab, idx_he_bc);
+    this->setPrevHalfEdgeIndex (idx_he_bc, idx_he_ab);
   }
 
   /** \brief Both half-edges are new (manifold version). */
@@ -1445,13 +1448,13 @@ protected:
                  const VertexIndex& idx_v_b,
                  std::true_type /*is_manifold*/)
   {
-    const HalfEdgeIndex idx_he_ba = this->getOppositeHalfEdgeIndex(idx_he_ab);
-    const HalfEdgeIndex idx_he_cb = this->getOppositeHalfEdgeIndex(idx_he_bc);
+    const HalfEdgeIndex idx_he_ba = this->getOppositeHalfEdgeIndex (idx_he_ab);
+    const HalfEdgeIndex idx_he_cb = this->getOppositeHalfEdgeIndex (idx_he_bc);
 
-    this->connectPrevNext(idx_he_ab, idx_he_bc);
-    this->connectPrevNext(idx_he_cb, idx_he_ba);
+    this->connectPrevNext (idx_he_ab, idx_he_bc);
+    this->connectPrevNext (idx_he_cb, idx_he_ba);
 
-    this->setOutgoingHalfEdgeIndex(idx_v_b, idx_he_ba);
+    this->setOutgoingHalfEdgeIndex (idx_v_b, idx_he_ba);
   }
 
   /** \brief Both half-edges are new (non-manifold version). */
@@ -1461,20 +1464,20 @@ protected:
                  const VertexIndex& idx_v_b,
                  std::false_type /*is_manifold*/)
   {
-    if (this->isIsolated(idx_v_b)) {
-      this->connectNewNew(idx_he_ab, idx_he_bc, idx_v_b, std::true_type());
+    if (this->isIsolated (idx_v_b)) {
+      this->connectNewNew (idx_he_ab, idx_he_bc, idx_v_b, std::true_type());
     }
     else {
-      const HalfEdgeIndex idx_he_ba = this->getOppositeHalfEdgeIndex(idx_he_ab);
-      const HalfEdgeIndex idx_he_cb = this->getOppositeHalfEdgeIndex(idx_he_bc);
+      const HalfEdgeIndex idx_he_ba = this->getOppositeHalfEdgeIndex (idx_he_ab);
+      const HalfEdgeIndex idx_he_cb = this->getOppositeHalfEdgeIndex (idx_he_bc);
 
       // No references!
-      const HalfEdgeIndex idx_he_b_out = this->getOutgoingHalfEdgeIndex(idx_v_b);
-      const HalfEdgeIndex idx_he_b_out_prev = this->getPrevHalfEdgeIndex(idx_he_b_out);
+      const HalfEdgeIndex idx_he_b_out = this->getOutgoingHalfEdgeIndex (idx_v_b);
+      const HalfEdgeIndex idx_he_b_out_prev = this->getPrevHalfEdgeIndex (idx_he_b_out);
 
-      this->connectPrevNext(idx_he_ab, idx_he_bc);
-      this->connectPrevNext(idx_he_cb, idx_he_b_out);
-      this->connectPrevNext(idx_he_b_out_prev, idx_he_ba);
+      this->connectPrevNext (idx_he_ab, idx_he_bc);
+      this->connectPrevNext (idx_he_cb, idx_he_b_out);
+      this->connectPrevNext (idx_he_b_out_prev, idx_he_ba);
     }
   }
 
@@ -1484,14 +1487,14 @@ protected:
                  const HalfEdgeIndex& idx_he_bc,
                  const VertexIndex& idx_v_b)
   {
-    const HalfEdgeIndex idx_he_ba = this->getOppositeHalfEdgeIndex(idx_he_ab);
+    const HalfEdgeIndex idx_he_ba = this->getOppositeHalfEdgeIndex (idx_he_ab);
     const HalfEdgeIndex idx_he_bc_prev =
-        this->getPrevHalfEdgeIndex(idx_he_bc); // No reference!
+        this->getPrevHalfEdgeIndex (idx_he_bc); // No reference!
 
-    this->connectPrevNext(idx_he_ab, idx_he_bc);
-    this->connectPrevNext(idx_he_bc_prev, idx_he_ba);
+    this->connectPrevNext (idx_he_ab, idx_he_bc);
+    this->connectPrevNext (idx_he_bc_prev, idx_he_ba);
 
-    this->setOutgoingHalfEdgeIndex(idx_v_b, idx_he_ba);
+    this->setOutgoingHalfEdgeIndex (idx_v_b, idx_he_ba);
   }
 
   /** \brief The second half-edge is new. */
@@ -1500,14 +1503,14 @@ protected:
                  const HalfEdgeIndex& idx_he_bc,
                  const VertexIndex& idx_v_b)
   {
-    const HalfEdgeIndex idx_he_cb = this->getOppositeHalfEdgeIndex(idx_he_bc);
+    const HalfEdgeIndex idx_he_cb = this->getOppositeHalfEdgeIndex (idx_he_bc);
     const HalfEdgeIndex idx_he_ab_next =
-        this->getNextHalfEdgeIndex(idx_he_ab); // No reference!
+        this->getNextHalfEdgeIndex (idx_he_ab); // No reference!
 
-    this->connectPrevNext(idx_he_ab, idx_he_bc);
-    this->connectPrevNext(idx_he_cb, idx_he_ab_next);
+    this->connectPrevNext (idx_he_ab, idx_he_bc);
+    this->connectPrevNext (idx_he_cb, idx_he_ab_next);
 
-    this->setOutgoingHalfEdgeIndex(idx_v_b, idx_he_ab_next);
+    this->setOutgoingHalfEdgeIndex (idx_v_b, idx_he_ab_next);
   }
 
   /** \brief Both half-edges are old (manifold version). */
@@ -1525,18 +1528,18 @@ protected:
                  const VertexIndex& idx_v_b,
                  std::false_type /*is_manifold*/)
   {
-    const HalfEdgeIndex& idx_he_b_out = this->getOutgoingHalfEdgeIndex(idx_v_b);
+    const HalfEdgeIndex& idx_he_b_out = this->getOutgoingHalfEdgeIndex (idx_v_b);
 
     // The outgoing half edge MUST be a boundary half-edge (if there is one)
     if (idx_he_b_out == idx_he_bc) // he_bc is no longer on the boundary
     {
       OutgoingHalfEdgeAroundVertexCirculator circ =
-          this->getOutgoingHalfEdgeAroundVertexCirculator(idx_he_b_out);
+          this->getOutgoingHalfEdgeAroundVertexCirculator (idx_he_b_out);
       const OutgoingHalfEdgeAroundVertexCirculator circ_end = circ;
 
       while (++circ != circ_end) {
-        if (this->isBoundary(circ.getTargetIndex())) {
-          this->setOutgoingHalfEdgeIndex(idx_v_b, circ.getTargetIndex());
+        if (this->isBoundary (circ.getTargetIndex())) {
+          this->setOutgoingHalfEdgeIndex (idx_v_b, circ.getTargetIndex());
           return;
         }
       }
@@ -1554,7 +1557,7 @@ protected:
            const DataT& data,
            std::true_type /*has_data*/)
   {
-    cloud.push_back(data);
+    cloud.push_back (data);
   }
 
   /** \brief Does nothing. */
@@ -1575,9 +1578,9 @@ protected:
   void
   deleteFace (const FaceIndex& idx_face, std::true_type /*is_manifold*/)
   {
-    assert(this->isValid(idx_face));
+    assert (this->isValid (idx_face));
     delete_faces_face_.clear();
-    delete_faces_face_.push_back(idx_face);
+    delete_faces_face_.push_back (idx_face);
 
     while (!delete_faces_face_.empty()) {
       const FaceIndex idx_face_cur = delete_faces_face_.back();
@@ -1585,7 +1588,7 @@ protected:
 
       // This calls the non-manifold version of deleteFace, which will call the manifold
       // version of reconnect.
-      this->deleteFace(idx_face_cur, std::false_type());
+      this->deleteFace (idx_face_cur, std::false_type());
     }
   }
 
@@ -1593,44 +1596,44 @@ protected:
   void
   deleteFace (const FaceIndex& idx_face, std::false_type /*is_manifold*/)
   {
-    assert(this->isValid(idx_face));
-    if (this->isDeleted(idx_face))
+    assert (this->isValid (idx_face));
+    if (this->isDeleted (idx_face))
       return;
 
     // Store all half-edges in the face
     inner_he_.clear();
     is_boundary_.clear();
     InnerHalfEdgeAroundFaceCirculator circ =
-        this->getInnerHalfEdgeAroundFaceCirculator(idx_face);
+        this->getInnerHalfEdgeAroundFaceCirculator (idx_face);
     const InnerHalfEdgeAroundFaceCirculator circ_end = circ;
     do {
-      inner_he_.push_back(circ.getTargetIndex());
-      is_boundary_.push_back(
-          this->isBoundary(this->getOppositeHalfEdgeIndex(circ.getTargetIndex())));
+      inner_he_.push_back (circ.getTargetIndex());
+      is_boundary_.push_back (
+          this->isBoundary (this->getOppositeHalfEdgeIndex (circ.getTargetIndex())));
     } while (++circ != circ_end);
-    assert(inner_he_.size() >= 3); // Minimum should be a triangle.
+    assert (inner_he_.size() >= 3); // Minimum should be a triangle.
 
-    const int n = static_cast<int>(inner_he_.size());
+    const int n = static_cast<int> (inner_he_.size());
     int j;
 
     if (IsManifold::value) {
       for (int i = 0; i < n; ++i) {
         j = (i + 1) % n;
-        this->reconnect(inner_he_[i], inner_he_[j], is_boundary_[i], is_boundary_[j]);
+        this->reconnect (inner_he_[i], inner_he_[j], is_boundary_[i], is_boundary_[j]);
       }
       for (int i = 0; i < n; ++i) {
-        this->getHalfEdge(inner_he_[i]).idx_face_.invalidate();
+        this->getHalfEdge (inner_he_[i]).idx_face_.invalidate();
       }
     }
     else {
       for (int i = 0; i < n; ++i) {
         j = (i + 1) % n;
-        this->reconnect(inner_he_[i], inner_he_[j], is_boundary_[i], is_boundary_[j]);
-        this->getHalfEdge(inner_he_[i]).idx_face_.invalidate();
+        this->reconnect (inner_he_[i], inner_he_[j], is_boundary_[i], is_boundary_[j]);
+        this->getHalfEdge (inner_he_[i]).idx_face_.invalidate();
       }
     }
 
-    this->markDeleted(idx_face);
+    this->markDeleted (idx_face);
   }
 
   ////////////////////////////////////////////////////////////////////////
@@ -1645,43 +1648,43 @@ protected:
              const bool is_boundary_ba,
              const bool is_boundary_cb)
   {
-    const HalfEdgeIndex idx_he_ba = this->getOppositeHalfEdgeIndex(idx_he_ab);
-    const HalfEdgeIndex idx_he_cb = this->getOppositeHalfEdgeIndex(idx_he_bc);
-    const VertexIndex idx_v_b = this->getTerminatingVertexIndex(idx_he_ab);
+    const HalfEdgeIndex idx_he_ba = this->getOppositeHalfEdgeIndex (idx_he_ab);
+    const HalfEdgeIndex idx_he_cb = this->getOppositeHalfEdgeIndex (idx_he_bc);
+    const VertexIndex idx_v_b = this->getTerminatingVertexIndex (idx_he_ab);
 
     if (is_boundary_ba && is_boundary_cb) // boundary - boundary
     {
-      const HalfEdgeIndex& idx_he_cb_next = this->getNextHalfEdgeIndex(idx_he_cb);
+      const HalfEdgeIndex& idx_he_cb_next = this->getNextHalfEdgeIndex (idx_he_cb);
 
       if (idx_he_cb_next == idx_he_ba) // Vertex b is isolated
       {
-        this->markDeleted(idx_v_b);
+        this->markDeleted (idx_v_b);
       }
       else {
-        this->connectPrevNext(this->getPrevHalfEdgeIndex(idx_he_ba), idx_he_cb_next);
-        this->setOutgoingHalfEdgeIndex(idx_v_b, idx_he_cb_next);
+        this->connectPrevNext (this->getPrevHalfEdgeIndex (idx_he_ba), idx_he_cb_next);
+        this->setOutgoingHalfEdgeIndex (idx_v_b, idx_he_cb_next);
       }
 
-      this->markDeleted(idx_he_ab);
-      this->markDeleted(idx_he_ba);
+      this->markDeleted (idx_he_ab);
+      this->markDeleted (idx_he_ba);
     }
     else if (is_boundary_ba && !is_boundary_cb) // boundary - no boundary
     {
-      this->connectPrevNext(this->getPrevHalfEdgeIndex(idx_he_ba), idx_he_bc);
-      this->setOutgoingHalfEdgeIndex(idx_v_b, idx_he_bc);
+      this->connectPrevNext (this->getPrevHalfEdgeIndex (idx_he_ba), idx_he_bc);
+      this->setOutgoingHalfEdgeIndex (idx_v_b, idx_he_bc);
 
-      this->markDeleted(idx_he_ab);
-      this->markDeleted(idx_he_ba);
+      this->markDeleted (idx_he_ab);
+      this->markDeleted (idx_he_ba);
     }
     else if (!is_boundary_ba && is_boundary_cb) // no boundary - boundary
     {
-      const HalfEdgeIndex& idx_he_cb_next = this->getNextHalfEdgeIndex(idx_he_cb);
-      this->connectPrevNext(idx_he_ab, idx_he_cb_next);
-      this->setOutgoingHalfEdgeIndex(idx_v_b, idx_he_cb_next);
+      const HalfEdgeIndex& idx_he_cb_next = this->getNextHalfEdgeIndex (idx_he_cb);
+      this->connectPrevNext (idx_he_ab, idx_he_cb_next);
+      this->setOutgoingHalfEdgeIndex (idx_v_b, idx_he_cb_next);
     }
     else // no boundary - no boundary
     {
-      this->reconnectNBNB(idx_he_bc, idx_he_cb, idx_v_b, IsManifold());
+      this->reconnectNBNB (idx_he_bc, idx_he_cb, idx_v_b, IsManifold());
     }
   }
 
@@ -1692,17 +1695,17 @@ protected:
                  const VertexIndex& idx_v_b,
                  std::true_type /*is_manifold*/)
   {
-    if (this->isBoundary(idx_v_b)) {
+    if (this->isBoundary (idx_v_b)) {
       // Deletion of this face makes the mesh non-manifold
       // -> delete the neighboring faces until it is manifold again
       IncomingHalfEdgeAroundVertexCirculator circ =
-          this->getIncomingHalfEdgeAroundVertexCirculator(idx_he_cb);
+          this->getIncomingHalfEdgeAroundVertexCirculator (idx_he_cb);
 
-      while (!this->isBoundary(circ.getTargetIndex())) {
-        delete_faces_face_.push_back(this->getFaceIndex((circ++).getTargetIndex()));
+      while (!this->isBoundary (circ.getTargetIndex())) {
+        delete_faces_face_.push_back (this->getFaceIndex ((circ++).getTargetIndex()));
 
 #ifdef PCL_GEOMETRY_MESH_BASE_TEST_DELETE_FACE_MANIFOLD_2
-        if (circ == this->getIncomingHalfEdgeAroundVertexCirculator(
+        if (circ == this->getIncomingHalfEdgeAroundVertexCirculator (
                         idx_he_cb)) // Abort infinity loop
         {
           // In a manifold mesh we can't invalidate the face while reconnecting!
@@ -1717,7 +1720,7 @@ protected:
       }
     }
     else {
-      this->setOutgoingHalfEdgeIndex(idx_v_b, idx_he_bc);
+      this->setOutgoingHalfEdgeIndex (idx_v_b, idx_he_bc);
     }
   }
 
@@ -1728,8 +1731,8 @@ protected:
                  const VertexIndex& idx_v_b,
                  std::false_type /*is_manifold*/)
   {
-    if (!this->isBoundary(idx_v_b)) {
-      this->setOutgoingHalfEdgeIndex(idx_v_b, idx_he_bc);
+    if (!this->isBoundary (idx_v_b)) {
+      this->setOutgoingHalfEdgeIndex (idx_v_b, idx_he_bc);
     }
   }
 
@@ -1741,33 +1744,33 @@ protected:
   inline void
   markDeleted (const VertexIndex& idx_vertex)
   {
-    assert(this->isValid(idx_vertex));
-    this->getVertex(idx_vertex).idx_outgoing_half_edge_.invalidate();
+    assert (this->isValid (idx_vertex));
+    this->getVertex (idx_vertex).idx_outgoing_half_edge_.invalidate();
   }
 
   /** \brief Mark the given half-edge as deleted. */
   inline void
   markDeleted (const HalfEdgeIndex& idx_he)
   {
-    assert(this->isValid(idx_he));
-    this->getHalfEdge(idx_he).idx_terminating_vertex_.invalidate();
+    assert (this->isValid (idx_he));
+    this->getHalfEdge (idx_he).idx_terminating_vertex_.invalidate();
   }
 
   /** \brief Mark the given edge (both half-edges) as deleted. */
   inline void
   markDeleted (const EdgeIndex& idx_edge)
   {
-    assert(this->isValid(idx_edge));
-    this->markDeleted(pcl::geometry::toHalfEdgeIndex(idx_edge, true));
-    this->markDeleted(pcl::geometry::toHalfEdgeIndex(idx_edge, false));
+    assert (this->isValid (idx_edge));
+    this->markDeleted (pcl::geometry::toHalfEdgeIndex (idx_edge, true));
+    this->markDeleted (pcl::geometry::toHalfEdgeIndex (idx_edge, false));
   }
 
   /** \brief Mark the given face as deleted. */
   inline void
   markDeleted (const FaceIndex& idx_face)
   {
-    assert(this->isValid(idx_face));
-    this->getFace(idx_face).idx_inner_half_edge_.invalidate();
+    assert (this->isValid (idx_face));
+    this->getFace (idx_face).idx_inner_half_edge_.invalidate();
   }
 
   ////////////////////////////////////////////////////////////////////////
@@ -1798,13 +1801,13 @@ protected:
     using Element = typename ElementContainerT::value_type;
 
     if (HasDataT::value)
-      assert(elements.size() == data_cloud.size());
+      assert (elements.size() == data_cloud.size());
     else
-      assert(data_cloud.empty()); // Bug in this class!
+      assert (data_cloud.empty()); // Bug in this class!
 
-    IndexContainerT new_indices(elements.size(),
-                                typename IndexContainerT::value_type());
-    Index ind_old(0), ind_new(0);
+    IndexContainerT new_indices (elements.size(),
+                                 typename IndexContainerT::value_type());
+    Index ind_old (0), ind_new (0);
 
     typename ElementContainerT::const_iterator it_e_old = elements.begin();
     auto it_e_new = elements.begin();
@@ -1816,28 +1819,28 @@ protected:
     typename IndexContainerT::const_iterator it_ind_new_end = new_indices.end();
 
     while (it_ind_new != it_ind_new_end) {
-      if (!this->isDeleted(ind_old)) {
+      if (!this->isDeleted (ind_old)) {
         *it_ind_new = ind_new++;
 
         // TODO: Test for self assignment?
         *it_e_new++ = *it_e_old;
-        this->assignIf(it_d_old, it_d_new, HasDataT());
-        this->incrementIf(it_d_new, HasDataT());
+        this->assignIf (it_d_old, it_d_new, HasDataT());
+        this->incrementIf (it_d_new, HasDataT());
       }
       ++ind_old;
       ++it_e_old;
-      this->incrementIf(it_d_old, HasDataT());
+      this->incrementIf (it_d_old, HasDataT());
       ++it_ind_new;
     }
 
-    elements.resize(ind_new.get(), Element());
+    elements.resize (ind_new.get(), Element());
     if (HasDataT::value) {
-      data_cloud.resize(ind_new.get());
+      data_cloud.resize (ind_new.get());
     }
     else if (it_d_old != data_cloud.begin() || it_d_new != data_cloud.begin()) {
       std::cerr << "TODO: Bug in MeshBase::remove!\n";
-      assert(false);
-      exit(EXIT_FAILURE);
+      assert (false);
+      exit (EXIT_FAILURE);
     }
 
     return (new_indices);
@@ -1884,8 +1887,8 @@ protected:
   setOutgoingHalfEdgeIndex (const VertexIndex& idx_vertex,
                             const HalfEdgeIndex& idx_outgoing_half_edge)
   {
-    assert(this->isValid(idx_vertex));
-    this->getVertex(idx_vertex).idx_outgoing_half_edge_ = idx_outgoing_half_edge;
+    assert (this->isValid (idx_vertex));
+    this->getVertex (idx_vertex).idx_outgoing_half_edge_ = idx_outgoing_half_edge;
   }
 
   /** \brief Set the terminating vertex index to a given half-edge. */
@@ -1893,8 +1896,8 @@ protected:
   setTerminatingVertexIndex (const HalfEdgeIndex& idx_half_edge,
                              const VertexIndex& idx_terminating_vertex)
   {
-    assert(this->isValid(idx_half_edge));
-    this->getHalfEdge(idx_half_edge).idx_terminating_vertex_ = idx_terminating_vertex;
+    assert (this->isValid (idx_half_edge));
+    this->getHalfEdge (idx_half_edge).idx_terminating_vertex_ = idx_terminating_vertex;
   }
 
   /** \brief Set the next half_edge index to a given half-edge. */
@@ -1902,8 +1905,8 @@ protected:
   setNextHalfEdgeIndex (const HalfEdgeIndex& idx_half_edge,
                         const HalfEdgeIndex& idx_next_half_edge)
   {
-    assert(this->isValid(idx_half_edge));
-    this->getHalfEdge(idx_half_edge).idx_next_half_edge_ = idx_next_half_edge;
+    assert (this->isValid (idx_half_edge));
+    this->getHalfEdge (idx_half_edge).idx_next_half_edge_ = idx_next_half_edge;
   }
 
   /** \brief Set the previous half-edge index to a given half-edge. */
@@ -1911,16 +1914,16 @@ protected:
   setPrevHalfEdgeIndex (const HalfEdgeIndex& idx_half_edge,
                         const HalfEdgeIndex& idx_prev_half_edge)
   {
-    assert(this->isValid(idx_half_edge));
-    this->getHalfEdge(idx_half_edge).idx_prev_half_edge_ = idx_prev_half_edge;
+    assert (this->isValid (idx_half_edge));
+    this->getHalfEdge (idx_half_edge).idx_prev_half_edge_ = idx_prev_half_edge;
   }
 
   /** \brief Set the face index to a given half-edge. */
   inline void
   setFaceIndex (const HalfEdgeIndex& idx_half_edge, const FaceIndex& idx_face)
   {
-    assert(this->isValid(idx_half_edge));
-    this->getHalfEdge(idx_half_edge).idx_face_ = idx_face;
+    assert (this->isValid (idx_half_edge));
+    this->getHalfEdge (idx_half_edge).idx_face_ = idx_face;
   }
 
   /** \brief Set the inner half-edge index to a given face. */
@@ -1928,8 +1931,8 @@ protected:
   setInnerHalfEdgeIndex (const FaceIndex& idx_face,
                          const HalfEdgeIndex& idx_inner_half_edge)
   {
-    assert(this->isValid(idx_face));
-    this->getFace(idx_face).idx_inner_half_edge_ = idx_inner_half_edge;
+    assert (this->isValid (idx_face));
+    this->getFace (idx_face).idx_inner_half_edge_ = idx_inner_half_edge;
   }
 
   ////////////////////////////////////////////////////////////////////////
@@ -1940,11 +1943,11 @@ protected:
   bool
   isBoundary (const FaceIndex& idx_face, std::true_type /*check_vertices*/) const
   {
-    VertexAroundFaceCirculator circ = this->getVertexAroundFaceCirculator(idx_face);
+    VertexAroundFaceCirculator circ = this->getVertexAroundFaceCirculator (idx_face);
     const VertexAroundFaceCirculator circ_end = circ;
 
     do {
-      if (this->isBoundary(circ.getTargetIndex())) {
+      if (this->isBoundary (circ.getTargetIndex())) {
         return (true);
       }
     } while (++circ != circ_end);
@@ -1957,11 +1960,11 @@ protected:
   isBoundary (const FaceIndex& idx_face, std::false_type /*check_vertices*/) const
   {
     OuterHalfEdgeAroundFaceCirculator circ =
-        this->getOuterHalfEdgeAroundFaceCirculator(idx_face);
+        this->getOuterHalfEdgeAroundFaceCirculator (idx_face);
     const OuterHalfEdgeAroundFaceCirculator circ_end = circ;
 
     do {
-      if (this->isBoundary(circ.getTargetIndex())) {
+      if (this->isBoundary (circ.getTargetIndex())) {
         return (true);
       }
     } while (++circ != circ_end);
@@ -1981,13 +1984,13 @@ protected:
   isManifold (const VertexIndex& idx_vertex, std::false_type /*is_manifold*/) const
   {
     OutgoingHalfEdgeAroundVertexCirculator circ =
-        this->getOutgoingHalfEdgeAroundVertexCirculator(idx_vertex);
+        this->getOutgoingHalfEdgeAroundVertexCirculator (idx_vertex);
     const OutgoingHalfEdgeAroundVertexCirculator circ_end = circ;
 
-    if (!this->isBoundary((circ++).getTargetIndex()))
+    if (!this->isBoundary ((circ++).getTargetIndex()))
       return (true);
     do {
-      if (this->isBoundary(circ.getTargetIndex()))
+      if (this->isBoundary (circ.getTargetIndex()))
         return (false);
     } while (++circ != circ_end);
 
@@ -2006,7 +2009,7 @@ protected:
   isManifold (std::false_type /*is_manifold*/) const
   {
     for (std::size_t i = 0; i < this->sizeVertices(); ++i) {
-      if (!this->isManifold(VertexIndex(i)))
+      if (!this->isManifold (VertexIndex (i)))
         return (false);
     }
     return (true);
@@ -2023,7 +2026,7 @@ protected:
                const std::size_t n,
                std::true_type /*has_data*/) const
   {
-    cloud.reserve(n);
+    cloud.reserve (n);
   }
 
   /** \brief Does nothing */
@@ -2042,7 +2045,7 @@ protected:
               const typename DataCloudT::value_type& data,
               std::true_type /*has_data*/) const
   {
-    data_cloud.resize(n, data);
+    data_cloud.resize (n, data);
   }
 
   /** \brief Does nothing. */
@@ -2076,7 +2079,7 @@ protected:
   inline Vertex&
   getVertex (const VertexIndex& idx_vertex)
   {
-    assert(this->isValid(idx_vertex));
+    assert (this->isValid (idx_vertex));
     return (vertices_[idx_vertex.get()]);
   }
 
@@ -2084,7 +2087,7 @@ protected:
   inline Vertex
   getVertex (const VertexIndex& idx_vertex) const
   {
-    assert(this->isValid(idx_vertex));
+    assert (this->isValid (idx_vertex));
     return (vertices_[idx_vertex.get()]);
   }
 
@@ -2092,7 +2095,7 @@ protected:
   inline void
   setVertex (const VertexIndex& idx_vertex, const Vertex& vertex)
   {
-    assert(this->isValid(idx_vertex));
+    assert (this->isValid (idx_vertex));
     vertices_[idx_vertex.get()] = vertex;
   }
 
@@ -2104,7 +2107,7 @@ protected:
   inline HalfEdge&
   getHalfEdge (const HalfEdgeIndex& idx_he)
   {
-    assert(this->isValid(idx_he));
+    assert (this->isValid (idx_he));
     return (half_edges_[idx_he.get()]);
   }
 
@@ -2112,7 +2115,7 @@ protected:
   inline HalfEdge
   getHalfEdge (const HalfEdgeIndex& idx_he) const
   {
-    assert(this->isValid(idx_he));
+    assert (this->isValid (idx_he));
     return (half_edges_[idx_he.get()]);
   }
 
@@ -2120,7 +2123,7 @@ protected:
   inline void
   setHalfEdge (const HalfEdgeIndex& idx_he, const HalfEdge& half_edge)
   {
-    assert(this->isValid(idx_he));
+    assert (this->isValid (idx_he));
     half_edges_[idx_he.get()] = half_edge;
   }
 
@@ -2132,7 +2135,7 @@ protected:
   inline Face&
   getFace (const FaceIndex& idx_face)
   {
-    assert(this->isValid(idx_face));
+    assert (this->isValid (idx_face));
     return (faces_[idx_face.get()]);
   }
 
@@ -2140,7 +2143,7 @@ protected:
   inline Face
   getFace (const FaceIndex& idx_face) const
   {
-    assert(this->isValid(idx_face));
+    assert (this->isValid (idx_face));
     return (faces_[idx_face.get()]);
   }
 
@@ -2148,7 +2151,7 @@ protected:
   inline void
   setFace (const FaceIndex& idx_face, const Face& face)
   {
-    assert(this->isValid(idx_face));
+    assert (this->isValid (idx_face));
     faces_[idx_face.get()] = face;
   }
 

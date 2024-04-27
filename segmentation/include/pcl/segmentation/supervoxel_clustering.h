@@ -64,7 +64,7 @@ template <typename PointT>
 class Supervoxel {
 public:
   Supervoxel()
-  : voxels_(new pcl::PointCloud<PointT>()), normals_(new pcl::PointCloud<Normal>())
+  : voxels_ (new pcl::PointCloud<PointT>()), normals_ (new pcl::PointCloud<Normal>())
   {}
 
   using Ptr = shared_ptr<Supervoxel<PointT>>;
@@ -132,12 +132,12 @@ public:
   class VoxelData {
   public:
     VoxelData()
-    : xyz_(0.0f, 0.0f, 0.0f)
-    , rgb_(0.0f, 0.0f, 0.0f)
-    , normal_(0.0f, 0.0f, 0.0f, 0.0f)
+    : xyz_ (0.0f, 0.0f, 0.0f)
+    , rgb_ (0.0f, 0.0f, 0.0f)
+    , normal_ (0.0f, 0.0f, 0.0f, 0.0f)
     ,
 
-    owner_(nullptr)
+    owner_ (nullptr)
     {}
 
     /** \brief Gets the data of in the form of a point
@@ -193,7 +193,7 @@ public:
    *  \param[in] voxel_resolution The resolution (in meters) of voxels used
    *  \param[in] seed_resolution The average size (in meters) of resulting supervoxels
    */
-  SupervoxelClustering(float voxel_resolution, float seed_resolution);
+  SupervoxelClustering (float voxel_resolution, float seed_resolution);
 
   /** \brief This destructor destroys the cloud, normals and search method used for
    * finding neighbors. In other words it frees memory.
@@ -412,7 +412,7 @@ private:
      */
     struct compareLeaves {
       bool
-      operator()(LeafContainerT* const& left, LeafContainerT* const& right) const
+      operator() (LeafContainerT* const& left, LeafContainerT* const& right) const
       {
         const VoxelData& leaf_data_left = left->getData();
         const VoxelData& leaf_data_right = right->getData();
@@ -424,8 +424,8 @@ private:
     using iterator = typename LeafSetT::iterator;
     using const_iterator = typename LeafSetT::const_iterator;
 
-    SupervoxelHelper(std::uint32_t label, SupervoxelClustering* parent_arg)
-    : label_(label), parent_(parent_arg)
+    SupervoxelHelper (std::uint32_t label, SupervoxelClustering* parent_arg)
+    : label_ (label), parent_ (parent_arg)
     {}
 
     void
@@ -452,8 +452,8 @@ private:
     void
     getNormals (typename pcl::PointCloud<Normal>::Ptr& normals) const;
 
-    using DistFuncPtr = float (SupervoxelClustering<PointT>::*)(const VoxelData&,
-                                                                const VoxelData&);
+    using DistFuncPtr = float (SupervoxelClustering<PointT>::*) (const VoxelData&,
+                                                                 const VoxelData&);
 
     std::uint32_t
     getLabel () const
@@ -490,9 +490,9 @@ private:
     void
     getRGB (std::uint32_t& rgba) const
     {
-      rgba = static_cast<std::uint32_t>(centroid_.rgb_[0]) << 16 |
-             static_cast<std::uint32_t>(centroid_.rgb_[1]) << 8 |
-             static_cast<std::uint32_t>(centroid_.rgb_[2]);
+      rgba = static_cast<std::uint32_t> (centroid_.rgb_[0]) << 16 |
+             static_cast<std::uint32_t> (centroid_.rgb_[1]) << 8 |
+             static_cast<std::uint32_t> (centroid_.rgb_[2]);
     }
 
     void
@@ -534,12 +534,12 @@ private:
   // Make boost::ptr_list can access the private class SupervoxelHelper
 #if BOOST_VERSION >= 107000
   friend void
-  boost::checked_delete<>(
+  boost::checked_delete<> (
       const typename pcl::SupervoxelClustering<PointT>::SupervoxelHelper*)
       BOOST_NOEXCEPT;
 #else
   friend void
-  boost::checked_delete<>(
+  boost::checked_delete<> (
       const typename pcl::SupervoxelClustering<PointT>::SupervoxelHelper*);
 #endif
 

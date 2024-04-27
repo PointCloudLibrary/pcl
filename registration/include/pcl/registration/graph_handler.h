@@ -93,13 +93,13 @@ public:
   using Edge = typename boost::graph_traits<GraphT>::edge_descriptor;
 
   /** \brief Empty constructor. */
-  GraphHandler() : graph_impl_(new GraphT())
+  GraphHandler() : graph_impl_ (new GraphT())
   {
     if (!init())
-      throw InitFailedException("Graph Initialization Failed",
-                                __FILE__,
-                                "pcl::registration::GraphHandler::GraphHandler ()",
-                                __LINE__);
+      throw InitFailedException ("Graph Initialization Failed",
+                                 __FILE__,
+                                 "pcl::registration::GraphHandler::GraphHandler ()",
+                                 __LINE__);
   }
 
   /** \brief Destructor. */
@@ -110,12 +110,12 @@ public:
   clear ()
   {
     deinit();
-    graph_impl_.reset(new GraphT());
+    graph_impl_.reset (new GraphT());
     if (!init())
-      throw InitFailedException("Graph Initialization Failed",
-                                __FILE__,
-                                "pcl::registration::GraphHandler::clear ()",
-                                __LINE__);
+      throw InitFailedException ("Graph Initialization Failed",
+                                 __FILE__,
+                                 "pcl::registration::GraphHandler::clear ()",
+                                 __LINE__);
   }
 
   /** \brief Get a pointer to the BGL graph */
@@ -142,7 +142,7 @@ public:
   addPointCloud (const typename pcl::PointCloud<PointT>::ConstPtr& cloud,
                  const Eigen::Matrix4f& pose)
   {
-    return add_vertex(PoseEstimate<PointT>(cloud, pose), *graph_impl_);
+    return add_vertex (PoseEstimate<PointT> (cloud, pose), *graph_impl_);
   }
 
   /** \brief Add a new generic vertex created according to the given estimate
@@ -153,7 +153,7 @@ public:
   inline Vertex
   addGenericVertex (const EstimateT& estimate)
   {
-    return add_vertex(estimate, *graph_impl_);
+    return add_vertex (estimate, *graph_impl_);
   }
 
   /** \brief Add a new constraint between two poses
@@ -170,9 +170,9 @@ public:
                      const Eigen::Matrix4f& relative_transformation,
                      const InformationT& information_matrix)
   {
-    return add_edge(PoseMeasurement<Vertex, InformationT>(
-                        v_start, v_end, relative_transformation, information_matrix),
-                    *graph_impl_);
+    return add_edge (PoseMeasurement<Vertex, InformationT> (
+                         v_start, v_end, relative_transformation, information_matrix),
+                     *graph_impl_);
   }
 
   /** \brief Add a generic constraint created according to the given measurement
@@ -183,7 +183,7 @@ public:
   inline Edge
   addGenericConstraint (const MeasurementT& measurement)
   {
-    return add_edge(measurement, *graph_impl_);
+    return add_edge (measurement, *graph_impl_);
   }
 
   /** \brief Remove a vertex from the graph
@@ -192,7 +192,7 @@ public:
   inline void
   removeVertex (const Vertex& v)
   {
-    remove_vertex(v.v_, *graph_impl_);
+    remove_vertex (v.v_, *graph_impl_);
   }
 
   /** \brief Remove a constraint from the graph
@@ -201,7 +201,7 @@ public:
   inline void
   removeConstraint (const Edge& e)
   {
-    remove_edge(e.e_, *graph_impl_);
+    remove_edge (e.e_, *graph_impl_);
   }
 
 protected:

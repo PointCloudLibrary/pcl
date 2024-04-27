@@ -49,7 +49,7 @@ template <class DATA_TYPE, std::size_t NUM_OF_CHANNELS>
 class PCL_EXPORTS MultiChannel2DData {
 public:
   /** Constructor. */
-  inline MultiChannel2DData() : data_(NULL), width_(0), height_(0) {}
+  inline MultiChannel2DData() : data_ (NULL), width_ (0), height_ (0) {}
 
   /** Resizes the internal data storage.
    *
@@ -59,7 +59,7 @@ public:
   inline void
   resize (std::size_t width, std::size_t height)
   {
-    data_.resize(NUM_OF_CHANNELS * width * height);
+    data_.resize (NUM_OF_CHANNELS * width * height);
     width_ = width;
     height_ = height;
   }
@@ -79,7 +79,7 @@ public:
    * \param[in] row_index the row index
    */
   inline DATA_TYPE*
-  operator()(const std::size_t col_index, const std::size_t row_index)
+  operator() (const std::size_t col_index, const std::size_t row_index)
   {
     return &(data_[NUM_OF_CHANNELS * (row_index * width_ + col_index)]);
   };
@@ -90,7 +90,7 @@ public:
    * \param[in] row_index the row index
    */
   inline const DATA_TYPE*
-  operator()(const std::size_t col_index, const std::size_t row_index) const
+  operator() (const std::size_t col_index, const std::size_t row_index) const
   {
     return &(data_[NUM_OF_CHANNELS * (row_index * width_ + col_index)]);
   };
@@ -102,9 +102,9 @@ public:
    * \param[in] channel the channel index
    */
   inline DATA_TYPE&
-  operator()(const std::size_t col_index,
-             const std::size_t row_index,
-             const std::size_t channel)
+  operator() (const std::size_t col_index,
+              const std::size_t row_index,
+              const std::size_t channel)
   {
     return data_[NUM_OF_CHANNELS * (row_index * width_ + col_index) + channel];
   };
@@ -116,9 +116,9 @@ public:
    * \param[in] channel the channel index
    */
   inline const DATA_TYPE&
-  operator()(const std::size_t col_index,
-             const std::size_t row_index,
-             const std::size_t channel) const
+  operator() (const std::size_t col_index,
+              const std::size_t row_index,
+              const std::size_t channel) const
   {
     return data_[NUM_OF_CHANNELS * (row_index * width_ + col_index) + channel];
   };
@@ -149,9 +149,9 @@ public:
   {
     MultiChannel2DData<DATA_TYPE, NUM_OF_CHANNELS>* data =
         new MultiChannel2DData<DATA_TYPE, NUM_OF_CHANNELS>();
-    data->resize(width, height);
+    data->resize (width, height);
 
-    data_set_.push_back(data);
+    data_set_.push_back (data);
   };
 
   /** Releases the data stored in the data set. */
@@ -178,11 +178,11 @@ public:
    * \param[in] row the row of the desired location
    */
   inline DATA_TYPE*
-  operator()(const std::size_t data_set_id,
-             const std::size_t col,
-             const std::size_t row)
+  operator() (const std::size_t data_set_id,
+              const std::size_t col,
+              const std::size_t row)
   {
-    return (*data_set_[data_set_id])(col, row);
+    return (*data_set_[data_set_id]) (col, row);
   };
 
   /** Returns a pointer to the specified data block at the specified location.
@@ -192,11 +192,11 @@ public:
    * \param[in] row the row of the desired location
    */
   inline const DATA_TYPE*
-  operator()(const std::size_t data_set_id,
-             const std::size_t col,
-             const std::size_t row) const
+  operator() (const std::size_t data_set_id,
+              const std::size_t col,
+              const std::size_t row) const
   {
-    return (*data_set_[data_set_id])(col, row);
+    return (*data_set_[data_set_id]) (col, row);
   };
 
   /** Returns a reference to the specified data block at the specified location.
@@ -207,12 +207,12 @@ public:
    * \param[in] channel the channel index
    */
   inline DATA_TYPE&
-  operator()(const std::size_t data_set_id,
-             const std::size_t col,
-             const std::size_t row,
-             const std::size_t channel)
+  operator() (const std::size_t data_set_id,
+              const std::size_t col,
+              const std::size_t row,
+              const std::size_t channel)
   {
-    return (*data_set_[data_set_id])(col, row, channel);
+    return (*data_set_[data_set_id]) (col, row, channel);
   };
 
   /** Returns a reference to the specified data block at the specified location.
@@ -223,12 +223,12 @@ public:
    * \param[in] channel the channel index
    */
   inline const DATA_TYPE&
-  operator()(const std::size_t data_set_id,
-             const std::size_t col,
-             const std::size_t row,
-             const std::size_t channel) const
+  operator() (const std::size_t data_set_id,
+              const std::size_t col,
+              const std::size_t row,
+              const std::size_t channel) const
   {
-    return (*data_set_[data_set_id])(col, row, channel);
+    return (*data_set_[data_set_id]) (col, row, channel);
   };
 
 private:

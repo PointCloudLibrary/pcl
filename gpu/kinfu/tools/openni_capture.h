@@ -52,8 +52,8 @@ public:
   enum { PROP_OPENNI_REGISTRATION_ON = 104 };
 
   CaptureOpenNI();
-  CaptureOpenNI(int device);
-  CaptureOpenNI(const std::string& oni_filename);
+  CaptureOpenNI (int device);
+  CaptureOpenNI (const std::string& oni_filename);
 
   void
   open (int device);

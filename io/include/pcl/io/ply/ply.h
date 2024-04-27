@@ -87,14 +87,14 @@ struct type_traits;
     }                                                                                  \
   };
 
-PLY_TYPE_TRAITS(int8, int16, "int8", "char")
-PLY_TYPE_TRAITS(int16, int16, "int16", "short")
-PLY_TYPE_TRAITS(int32, int32, "int32", "int")
-PLY_TYPE_TRAITS(uint8, uint16, "uint8", "uchar")
-PLY_TYPE_TRAITS(uint16, uint16, "uint16", "ushort")
-PLY_TYPE_TRAITS(uint32, uint32, "uint32", "uint")
-PLY_TYPE_TRAITS(float32, float32, "float32", "float")
-PLY_TYPE_TRAITS(float64, float64, "float64", "double")
+PLY_TYPE_TRAITS (int8, int16, "int8", "char")
+PLY_TYPE_TRAITS (int16, int16, "int16", "short")
+PLY_TYPE_TRAITS (int32, int32, "int32", "int")
+PLY_TYPE_TRAITS (uint8, uint16, "uint8", "uchar")
+PLY_TYPE_TRAITS (uint16, uint16, "uint16", "ushort")
+PLY_TYPE_TRAITS (uint32, uint32, "uint32", "uint")
+PLY_TYPE_TRAITS (float32, float32, "float32", "float")
+PLY_TYPE_TRAITS (float64, float64, "float64", "double")
 
 #undef PLY_TYPE_TRAITS
 

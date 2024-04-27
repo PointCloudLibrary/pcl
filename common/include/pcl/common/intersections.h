@@ -98,7 +98,8 @@ planeWithPlaneIntersection (const Eigen::Vector4f& plane_a,
                             Eigen::VectorXf& line,
                             double angular_tolerance = 0.1)
 {
-  return (planeWithPlaneIntersection<float>(plane_a, plane_b, line, angular_tolerance));
+  return (
+      planeWithPlaneIntersection<float> (plane_a, plane_b, line, angular_tolerance));
 }
 
 PCL_EXPORTS inline bool
@@ -108,7 +109,7 @@ planeWithPlaneIntersection (const Eigen::Vector4d& plane_a,
                             double angular_tolerance = 0.1)
 {
   return (
-      planeWithPlaneIntersection<double>(plane_a, plane_b, line, angular_tolerance));
+      planeWithPlaneIntersection<double> (plane_a, plane_b, line, angular_tolerance));
 }
 
 /** \brief Determine the point of intersection of three non-parallel planes by solving
@@ -137,7 +138,7 @@ threePlanesIntersection (const Eigen::Vector4f& plane_a,
                          Eigen::Vector3f& intersection_point,
                          double determinant_tolerance = 1e-6)
 {
-  return (threePlanesIntersection<float>(
+  return (threePlanesIntersection<float> (
       plane_a, plane_b, plane_c, intersection_point, determinant_tolerance));
 }
 
@@ -148,7 +149,7 @@ threePlanesIntersection (const Eigen::Vector4d& plane_a,
                          Eigen::Vector3d& intersection_point,
                          double determinant_tolerance = 1e-6)
 {
-  return (threePlanesIntersection<double>(
+  return (threePlanesIntersection<double> (
       plane_a, plane_b, plane_c, intersection_point, determinant_tolerance));
 }
 

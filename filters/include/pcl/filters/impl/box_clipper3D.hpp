@@ -38,17 +38,17 @@
 #include <pcl/filters/box_clipper3D.h>
 
 template <typename PointT>
-pcl::BoxClipper3D<PointT>::BoxClipper3D(const Eigen::Affine3f& transformation)
-: transformation_(transformation)
+pcl::BoxClipper3D<PointT>::BoxClipper3D (const Eigen::Affine3f& transformation)
+: transformation_ (transformation)
 {}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
-pcl::BoxClipper3D<PointT>::BoxClipper3D(const Eigen::Vector3f& rodrigues,
-                                        const Eigen::Vector3f& translation,
-                                        const Eigen::Vector3f& box_size)
+pcl::BoxClipper3D<PointT>::BoxClipper3D (const Eigen::Vector3f& rodrigues,
+                                         const Eigen::Vector3f& translation,
+                                         const Eigen::Vector3f& box_size)
 {
-  setTransformation(rodrigues, translation, box_size);
+  setTransformation (rodrigues, translation, box_size);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -58,7 +58,7 @@ pcl::BoxClipper3D<PointT>::~BoxClipper3D() noexcept = default;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 void
-pcl::BoxClipper3D<PointT>::setTransformation(const Eigen::Affine3f& transformation)
+pcl::BoxClipper3D<PointT>::setTransformation (const Eigen::Affine3f& transformation)
 {
   transformation_ = transformation;
 }
@@ -66,13 +66,13 @@ pcl::BoxClipper3D<PointT>::setTransformation(const Eigen::Affine3f& transformati
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 void
-pcl::BoxClipper3D<PointT>::setTransformation(const Eigen::Vector3f& rodrigues,
-                                             const Eigen::Vector3f& translation,
-                                             const Eigen::Vector3f& box_size)
+pcl::BoxClipper3D<PointT>::setTransformation (const Eigen::Vector3f& rodrigues,
+                                              const Eigen::Vector3f& translation,
+                                              const Eigen::Vector3f& box_size)
 {
-  transformation_ = (Eigen::Translation3f(translation) *
-                     Eigen::AngleAxisf(rodrigues.norm(), rodrigues.normalized()) *
-                     Eigen::Scaling(0.5f * box_size))
+  transformation_ = (Eigen::Translation3f (translation) *
+                     Eigen::AngleAxisf (rodrigues.norm(), rodrigues.normalized()) *
+                     Eigen::Scaling (0.5f * box_size))
                         .inverse();
 }
 
@@ -81,13 +81,14 @@ template <typename PointT>
 pcl::Clipper3D<PointT>*
 pcl::BoxClipper3D<PointT>::clone() const
 {
-  return new BoxClipper3D<PointT>(transformation_);
+  return new BoxClipper3D<PointT> (transformation_);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 void
-pcl::BoxClipper3D<PointT>::transformPoint(const PointT& pointIn, PointT& pointOut) const
+pcl::BoxClipper3D<PointT>::transformPoint (const PointT& pointIn,
+                                           PointT& pointOut) const
 {
   const Eigen::Vector4f& point = pointIn.getVector4fMap();
   pointOut.getVector4fMap() = transformation_ * point;
@@ -111,9 +112,9 @@ pcl::BoxClipper3D<PointT>::transformPoint(const PointT& pointIn, PointT& pointOu
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 bool
-pcl::BoxClipper3D<PointT>::clipPoint3D(const PointT& point) const
+pcl::BoxClipper3D<PointT>::clipPoint3D (const PointT& point) const
 {
-  Eigen::Vector4f point_coordinates(transformation_.matrix() * point.getVector4fMap());
+  Eigen::Vector4f point_coordinates (transformation_.matrix() * point.getVector4fMap());
   return (point_coordinates.array().abs() <= 1).all();
 }
 
@@ -123,7 +124,7 @@ pcl::BoxClipper3D<PointT>::clipPoint3D(const PointT& point) const
  */
 template <typename PointT>
 bool
-pcl::BoxClipper3D<PointT>::clipLineSegment3D(PointT&, PointT&) const
+pcl::BoxClipper3D<PointT>::clipLineSegment3D (PointT&, PointT&) const
 {
   /*
   PointT pt1, pt2;
@@ -169,7 +170,7 @@ pcl::BoxClipper3D<PointT>::clipLineSegment3D(PointT&, PointT&) const
     return true;
   }
   */
-  throw std::logic_error("Not implemented");
+  throw std::logic_error ("Not implemented");
   return false;
 }
 
@@ -179,13 +180,13 @@ pcl::BoxClipper3D<PointT>::clipLineSegment3D(PointT&, PointT&) const
  */
 template <typename PointT>
 void
-pcl::BoxClipper3D<PointT>::clipPlanarPolygon3D(
+pcl::BoxClipper3D<PointT>::clipPlanarPolygon3D (
     const std::vector<PointT, Eigen::aligned_allocator<PointT>>&,
     std::vector<PointT, Eigen::aligned_allocator<PointT>>& clipped_polygon) const
 {
   // not implemented -> clip everything
   clipped_polygon.clear();
-  throw std::logic_error("Not implemented");
+  throw std::logic_error ("Not implemented");
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -194,12 +195,12 @@ pcl::BoxClipper3D<PointT>::clipPlanarPolygon3D(
  */
 template <typename PointT>
 void
-pcl::BoxClipper3D<PointT>::clipPlanarPolygon3D(
+pcl::BoxClipper3D<PointT>::clipPlanarPolygon3D (
     std::vector<PointT, Eigen::aligned_allocator<PointT>>& polygon) const
 {
   // not implemented -> clip everything
   polygon.clear();
-  throw std::logic_error("Not implemented");
+  throw std::logic_error ("Not implemented");
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -207,21 +208,21 @@ pcl::BoxClipper3D<PointT>::clipPlanarPolygon3D(
 // that uses advantages of eigens SSE operations.
 template <typename PointT>
 void
-pcl::BoxClipper3D<PointT>::clipPointCloud3D(const pcl::PointCloud<PointT>& cloud_in,
-                                            Indices& clipped,
-                                            const Indices& indices) const
+pcl::BoxClipper3D<PointT>::clipPointCloud3D (const pcl::PointCloud<PointT>& cloud_in,
+                                             Indices& clipped,
+                                             const Indices& indices) const
 {
   clipped.clear();
   if (indices.empty()) {
-    clipped.reserve(cloud_in.size());
+    clipped.reserve (cloud_in.size());
     for (std::size_t pIdx = 0; pIdx < cloud_in.size(); ++pIdx)
-      if (clipPoint3D(cloud_in[pIdx]))
-        clipped.push_back(pIdx);
+      if (clipPoint3D (cloud_in[pIdx]))
+        clipped.push_back (pIdx);
   }
   else {
     for (const auto& index : indices)
-      if (clipPoint3D(cloud_in[index]))
-        clipped.push_back(index);
+      if (clipPoint3D (cloud_in[index]))
+        clipped.push_back (index);
   }
 }
 #endif // PCL_FILTERS_IMPL_BOX_CLIPPER3D_HPP

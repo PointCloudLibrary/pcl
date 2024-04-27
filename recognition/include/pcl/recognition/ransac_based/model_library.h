@@ -62,15 +62,15 @@ public:
   /** \brief Stores some information about the model. */
   class Model {
   public:
-    Model(const PointCloudIn& points,
-          const PointCloudN& normals,
-          float voxel_size,
-          const std::string& object_name,
-          float frac_of_points_for_registration,
-          void* user_data = nullptr)
-    : obj_name_(object_name), user_data_(user_data)
+    Model (const PointCloudIn& points,
+           const PointCloudN& normals,
+           float voxel_size,
+           const std::string& object_name,
+           float frac_of_points_for_registration,
+           void* user_data = nullptr)
+    : obj_name_ (object_name), user_data_ (user_data)
     {
-      octree_.build(points, voxel_size, &normals);
+      octree_.build (points, voxel_size, &normals);
 
       const std::vector<ORROctree::Node*>& full_leaves = octree_.getFullLeaves();
       if (full_leaves.empty())
@@ -79,48 +79,49 @@ public:
       // Initialize
       auto it = full_leaves.begin();
       const float* p = (*it)->getData()->getPoint();
-      aux::copy3(p, octree_center_of_mass_);
+      aux::copy3 (p, octree_center_of_mass_);
       bounds_of_octree_points_[0] = bounds_of_octree_points_[1] = p[0];
       bounds_of_octree_points_[2] = bounds_of_octree_points_[3] = p[1];
       bounds_of_octree_points_[4] = bounds_of_octree_points_[5] = p[2];
 
       // Compute both the bounds and the center of mass of the octree points
       for (++it; it != full_leaves.end(); ++it) {
-        aux::add3(octree_center_of_mass_, (*it)->getData()->getPoint());
-        aux::expandBoundingBoxToContainPoint(bounds_of_octree_points_,
-                                             (*it)->getData()->getPoint());
+        aux::add3 (octree_center_of_mass_, (*it)->getData()->getPoint());
+        aux::expandBoundingBoxToContainPoint (bounds_of_octree_points_,
+                                              (*it)->getData()->getPoint());
       }
 
-      int num_octree_points = static_cast<int>(full_leaves.size());
+      int num_octree_points = static_cast<int> (full_leaves.size());
       // Finalize the center of mass computation
-      aux::mult3(octree_center_of_mass_, 1.0f / static_cast<float>(num_octree_points));
+      aux::mult3 (octree_center_of_mass_,
+                  1.0f / static_cast<float> (num_octree_points));
 
-      int num_points_for_registration = static_cast<int>(
-          static_cast<float>(num_octree_points) * frac_of_points_for_registration);
-      points_for_registration_.resize(
-          static_cast<std::size_t>(num_points_for_registration));
+      int num_points_for_registration = static_cast<int> (
+          static_cast<float> (num_octree_points) * frac_of_points_for_registration);
+      points_for_registration_.resize (
+          static_cast<std::size_t> (num_points_for_registration));
 
       // Prepare for random point sampling
-      std::vector<int> ids(num_octree_points);
+      std::vector<int> ids (num_octree_points);
       for (int i = 0; i < num_octree_points; ++i)
         ids[i] = i;
 
       // The random generator
-      pcl::common::UniformGenerator<int> randgen(
-          0, num_octree_points - 1, static_cast<std::uint32_t>(time(nullptr)));
+      pcl::common::UniformGenerator<int> randgen (
+          0, num_octree_points - 1, static_cast<std::uint32_t> (time (nullptr)));
 
       // Randomly sample some points from the octree
       for (int i = 0; i < num_points_for_registration; ++i) {
         // Choose a random position within the array of ids
-        randgen.setParameters(0, static_cast<int>(ids.size()) - 1);
+        randgen.setParameters (0, static_cast<int> (ids.size()) - 1);
         int rand_pos = randgen.run();
 
         // Copy the randomly selected octree point
-        aux::copy3(octree_.getFullLeaves()[ids[rand_pos]]->getData()->getPoint(),
-                   points_for_registration_[i]);
+        aux::copy3 (octree_.getFullLeaves()[ids[rand_pos]]->getData()->getPoint(),
+                    points_for_registration_[i]);
 
         // Delete the selected id
-        ids.erase(ids.begin() + rand_pos);
+        ids.erase (ids.begin() + rand_pos);
       }
     }
 
@@ -179,9 +180,9 @@ public:
 public:
   /** \brief This class is used by 'ObjRecRANSAC' to maintain the object models to be
    * recognized. Normally, you do not need to use this class directly. */
-  ModelLibrary(float pair_width,
-               float voxel_size,
-               float max_coplanarity_angle = 3.0f * AUX_DEG_TO_RADIANS /*3 degrees*/);
+  ModelLibrary (float pair_width,
+                float voxel_size,
+                float max_coplanarity_angle = 3.0f * AUX_DEG_TO_RADIANS /*3 degrees*/);
   virtual ~ModelLibrary() { this->clear(); }
 
   /** \brief Removes all models from the library and clears the hash table. */
@@ -242,7 +243,7 @@ public:
   inline const Model*
   getModel (const std::string& name) const
   {
-    auto it = models_.find(name);
+    auto it = models_.find (name);
     if (it != models_.end())
       return (it->second);
 

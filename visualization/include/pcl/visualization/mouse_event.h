@@ -71,14 +71,14 @@ public:
    * got fired \param[in] shift  whether the Shift key was pressed at that time where
    * event got fired \param[in] selection_mode whether we are in selection mode
    */
-  inline MouseEvent(const Type& type,
-                    const MouseButton& button,
-                    unsigned int x,
-                    unsigned int y,
-                    bool alt,
-                    bool ctrl,
-                    bool shift,
-                    bool selection_mode = false);
+  inline MouseEvent (const Type& type,
+                     const MouseButton& button,
+                     unsigned int x,
+                     unsigned int y,
+                     bool alt,
+                     bool ctrl,
+                     bool shift,
+                     bool selection_mode = false);
 
   /**
    * \return type of mouse event
@@ -135,19 +135,19 @@ protected:
   bool selection_mode_;
 };
 
-MouseEvent::MouseEvent(const Type& type,
-                       const MouseButton& button,
-                       unsigned x,
-                       unsigned y,
-                       bool alt,
-                       bool ctrl,
-                       bool shift,
-                       bool selection_mode)
-: type_(type)
-, button_(button)
-, pointer_x_(x)
-, pointer_y_(y)
-, selection_mode_(selection_mode)
+MouseEvent::MouseEvent (const Type& type,
+                        const MouseButton& button,
+                        unsigned x,
+                        unsigned y,
+                        bool alt,
+                        bool ctrl,
+                        bool shift,
+                        bool selection_mode)
+: type_ (type)
+, button_ (button)
+, pointer_x_ (x)
+, pointer_y_ (y)
+, selection_mode_ (selection_mode)
 {
   if (alt)
     key_state_ = KeyboardEvent::Alt;
@@ -166,7 +166,7 @@ MouseEvent::getType() const
 }
 
 void
-MouseEvent::setType(const Type& type)
+MouseEvent::setType (const Type& type)
 {
   type_ = type;
 }
@@ -178,7 +178,7 @@ MouseEvent::getButton() const
 }
 
 void
-MouseEvent::setButton(const MouseButton& button)
+MouseEvent::setButton (const MouseButton& button)
 {
   button_ = button;
 }

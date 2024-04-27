@@ -48,33 +48,33 @@ public:
   {
 
     if (!feature_estimator_) {
-      PCL_ERROR("CRHEstimation needs a global estimator... please provide one\n");
+      PCL_ERROR ("CRHEstimation needs a global estimator... please provide one\n");
       return;
     }
 
-    feature_estimator_->estimate(in, processed, signatures, centroids);
+    feature_estimator_->estimate (in, processed, signatures, centroids);
 
     if (!feature_estimator_->computedNormals()) {
-      normals_.reset(new pcl::PointCloud<pcl::Normal>);
-      normal_estimator_->estimate(in, processed, normals_);
+      normals_.reset (new pcl::PointCloud<pcl::Normal>);
+      normal_estimator_->estimate (in, processed, normals_);
     }
     else {
-      feature_estimator_->getNormals(normals_);
+      feature_estimator_->getNormals (normals_);
     }
 
-    crh_histograms_.resize(signatures.size());
+    crh_histograms_.resize (signatures.size());
 
     using CRHEstimation = pcl::CRHEstimation<PointInT, pcl::Normal, pcl::Histogram<90>>;
     CRHEstimation crh;
-    crh.setInputCloud(processed);
-    crh.setInputNormals(normals_);
+    crh.setInputCloud (processed);
+    crh.setInputNormals (normals_);
 
     for (std::size_t idx = 0; idx < signatures.size(); idx++) {
-      Eigen::Vector4f centroid4f(
+      Eigen::Vector4f centroid4f (
           centroids[idx][0], centroids[idx][1], centroids[idx][2], 0);
-      crh.setCentroid(centroid4f);
-      crh_histograms_[idx].reset(new CRHPointCloud());
-      crh.compute(*crh_histograms_[idx]);
+      crh.setCentroid (centroid4f);
+      crh_histograms_[idx].reset (new CRHPointCloud());
+      crh.compute (*crh_histograms_[idx]);
     }
   }
 

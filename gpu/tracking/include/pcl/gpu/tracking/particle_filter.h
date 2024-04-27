@@ -70,8 +70,8 @@ public:
   rows ();
 
   virtual bool
-  operator()(const DeviceArray2D<PointType>& input,
-             const DeviceArray2D<PixelRGB>& input_colors)
+  operator() (const DeviceArray2D<PointType>& input,
+              const DeviceArray2D<PixelRGB>& input_colors)
   {}
 
   virtual void
@@ -101,9 +101,9 @@ protected:
   virtual void
   allocateBuffers ()
   {
-    particles_.create(particle_num_);
+    particles_.create (particle_num_);
 
-    random_number_generator_.create(particle_num_);
+    random_number_generator_.create (particle_num_);
   }
 
   // reference point cloud

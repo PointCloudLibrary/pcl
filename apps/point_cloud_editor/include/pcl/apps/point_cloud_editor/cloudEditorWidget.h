@@ -64,7 +64,7 @@ public:
 
   /// @brief Constructor
   /// @param parent a pointer which points to the parent widget
-  CloudEditorWidget(QWidget* parent = nullptr);
+  CloudEditorWidget (QWidget* parent = nullptr);
 
   /// @brief Destructor
   ~CloudEditorWidget() override;
@@ -249,15 +249,15 @@ private:
 
   struct ExtCompare {
     bool
-    operator()(std::string lhs, std::string rhs) const
+    operator() (std::string lhs, std::string rhs) const
     {
-      stringToLower(lhs);
-      stringToLower(rhs);
-      return lhs.compare(rhs) < 0;
+      stringToLower (lhs);
+      stringToLower (rhs);
+      return lhs.compare (rhs) < 0;
     }
   };
 
-  using FileLoadFunc = std::function<void(CloudEditorWidget*, const std::string&)>;
+  using FileLoadFunc = std::function<void (CloudEditorWidget*, const std::string&)>;
   using FileLoadMap = std::map<std::string, FileLoadFunc, ExtCompare>;
 
   /// a map of file type extensions to loader functions.
@@ -307,7 +307,7 @@ private:
   /// A flag indicates whether the cloud is initially colored or not.
   bool is_colored_;
 
-  using KeyMapFunc = std::function<void(CloudEditorWidget*)>;
+  using KeyMapFunc = std::function<void (CloudEditorWidget*)>;
 
   /// map between pressed key and the corresponding functor
   std::map<int, KeyMapFunc> key_map_;

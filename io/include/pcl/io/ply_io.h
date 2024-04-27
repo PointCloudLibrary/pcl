@@ -81,17 +81,17 @@ public:
   enum { PLY_V0 = 0, PLY_V1 = 1 };
 
   PLYReader()
-  : origin_(Eigen::Vector4f::Zero()), orientation_(Eigen::Matrix3f::Identity())
+  : origin_ (Eigen::Vector4f::Zero()), orientation_ (Eigen::Matrix3f::Identity())
   {}
 
-  PLYReader(const PLYReader& p)
-  : origin_(Eigen::Vector4f::Zero()), orientation_(Eigen::Matrix3f::Identity())
+  PLYReader (const PLYReader& p)
+  : origin_ (Eigen::Vector4f::Zero()), orientation_ (Eigen::Matrix3f::Identity())
   {
     *this = p;
   }
 
   PLYReader&
-  operator=(const PLYReader& p)
+  operator= (const PLYReader& p)
   {
     origin_ = p.origin_;
     orientation_ = p.orientation_;
@@ -168,7 +168,7 @@ public:
     Eigen::Vector4f origin;
     Eigen::Quaternionf orientation;
     int ply_version;
-    return read(file_name, cloud, origin, orientation, ply_version, offset);
+    return read (file_name, cloud, origin, orientation, ply_version, offset);
   }
 
   /** \brief Read a point cloud data from any PLY file, and convert it to the given
@@ -188,17 +188,17 @@ public:
   {
     pcl::PCLPointCloud2 blob;
     int ply_version;
-    int res = read(file_name,
-                   blob,
-                   cloud.sensor_origin_,
-                   cloud.sensor_orientation_,
-                   ply_version,
-                   offset);
+    int res = read (file_name,
+                    blob,
+                    cloud.sensor_origin_,
+                    cloud.sensor_orientation_,
+                    ply_version,
+                    offset);
 
     // Exit in case of error
     if (res < 0)
       return (res);
-    pcl::fromPCLPointCloud2(blob, cloud);
+    pcl::fromPCLPointCloud2 (blob, cloud);
     return (0);
   }
 
@@ -254,10 +254,10 @@ private:
                 std::size_t line_number,
                 const std::string& message)
   {
-    PCL_DEBUG("[pcl::PLYReader] %s:%lu: %s\n",
-              filename.c_str(),
-              line_number,
-              message.c_str());
+    PCL_DEBUG ("[pcl::PLYReader] %s:%lu: %s\n",
+               filename.c_str(),
+               line_number,
+               message.c_str());
   }
 
   /** \brief Warning callback function
@@ -270,10 +270,10 @@ private:
                    std::size_t line_number,
                    const std::string& message)
   {
-    PCL_WARN("[pcl::PLYReader] %s:%lu: %s\n",
-             filename.c_str(),
-             line_number,
-             message.c_str());
+    PCL_WARN ("[pcl::PLYReader] %s:%lu: %s\n",
+              filename.c_str(),
+              line_number,
+              message.c_str());
   }
 
   /** \brief Error callback function
@@ -286,10 +286,10 @@ private:
                  std::size_t line_number,
                  const std::string& message)
   {
-    PCL_ERROR("[pcl::PLYReader] %s:%lu: %s\n",
-              filename.c_str(),
-              line_number,
-              message.c_str());
+    PCL_ERROR ("[pcl::PLYReader] %s:%lu: %s\n",
+               filename.c_str(),
+               line_number,
+               message.c_str());
   }
 
   /** \brief function called when the keyword element is parsed
@@ -307,7 +307,7 @@ private:
    * \param[in] property_name property name
    */
   template <typename ScalarType>
-  std::function<void(ScalarType)>
+  std::function<void (ScalarType)>
   scalarPropertyDefinitionCallback (const std::string& element_name,
                                     const std::string& property_name);
 
@@ -316,8 +316,8 @@ private:
    * \param[in] property_name list property name
    */
   template <typename SizeType, typename ScalarType>
-  std::tuple<std::function<void(SizeType)>,
-             std::function<void(ScalarType)>,
+  std::tuple<std::function<void (SizeType)>,
+             std::function<void (ScalarType)>,
              std::function<void()>>
   listPropertyDefinitionCallback (const std::string& element_name,
                                   const std::string& property_name);
@@ -404,7 +404,7 @@ private:
   inline void
   orientationXaxisXCallback (const float& value)
   {
-    orientation_(0, 0) = value;
+    orientation_ (0, 0) = value;
   }
 
   /** Callback function for orientation x axis y component.
@@ -413,7 +413,7 @@ private:
   inline void
   orientationXaxisYCallback (const float& value)
   {
-    orientation_(0, 1) = value;
+    orientation_ (0, 1) = value;
   }
 
   /** Callback function for orientation x axis z component.
@@ -422,7 +422,7 @@ private:
   inline void
   orientationXaxisZCallback (const float& value)
   {
-    orientation_(0, 2) = value;
+    orientation_ (0, 2) = value;
   }
 
   /** Callback function for orientation y axis x component.
@@ -431,7 +431,7 @@ private:
   inline void
   orientationYaxisXCallback (const float& value)
   {
-    orientation_(1, 0) = value;
+    orientation_ (1, 0) = value;
   }
 
   /** Callback function for orientation y axis y component.
@@ -440,7 +440,7 @@ private:
   inline void
   orientationYaxisYCallback (const float& value)
   {
-    orientation_(1, 1) = value;
+    orientation_ (1, 1) = value;
   }
 
   /** Callback function for orientation y axis z component.
@@ -449,7 +449,7 @@ private:
   inline void
   orientationYaxisZCallback (const float& value)
   {
-    orientation_(1, 2) = value;
+    orientation_ (1, 2) = value;
   }
 
   /** Callback function for orientation z axis x component.
@@ -458,7 +458,7 @@ private:
   inline void
   orientationZaxisXCallback (const float& value)
   {
-    orientation_(2, 0) = value;
+    orientation_ (2, 0) = value;
   }
 
   /** Callback function for orientation z axis y component.
@@ -467,7 +467,7 @@ private:
   inline void
   orientationZaxisYCallback (const float& value)
   {
-    orientation_(2, 1) = value;
+    orientation_ (2, 1) = value;
   }
 
   /** Callback function for orientation z axis z component.
@@ -476,7 +476,7 @@ private:
   inline void
   orientationZaxisZCallback (const float& value)
   {
-    orientation_(2, 2) = value;
+    orientation_ (2, 2) = value;
   }
 
   /** Callback function to set the cloud height
@@ -634,7 +634,8 @@ public:
                         int valid_points,
                         bool use_camera = true)
   {
-    return (generateHeader(cloud, origin, orientation, true, use_camera, valid_points));
+    return (
+        generateHeader (cloud, origin, orientation, true, use_camera, valid_points));
   }
 
   /** \brief Generate the header of a PLY v.7 file format
@@ -654,7 +655,7 @@ public:
                        bool use_camera = true)
   {
     return (
-        generateHeader(cloud, origin, orientation, false, use_camera, valid_points));
+        generateHeader (cloud, origin, orientation, false, use_camera, valid_points));
   }
 
   /** \brief Save point cloud data to a PLY file containing n-D points, in ASCII format
@@ -718,8 +719,8 @@ public:
          const bool binary = false) override
   {
     if (binary)
-      return (this->writeBinary(file_name, cloud, origin, orientation, true));
-    return (this->writeASCII(file_name, cloud, origin, orientation, 8, true));
+      return (this->writeBinary (file_name, cloud, origin, orientation, true));
+    return (this->writeASCII (file_name, cloud, origin, orientation, 8, true));
   }
 
   /** \brief Save point cloud data to a PLY file containing n-D points
@@ -741,8 +742,8 @@ public:
          bool use_camera = true)
   {
     if (binary)
-      return (this->writeBinary(file_name, cloud, origin, orientation, use_camera));
-    return (this->writeASCII(file_name, cloud, origin, orientation, 8, use_camera));
+      return (this->writeBinary (file_name, cloud, origin, orientation, use_camera));
+    return (this->writeASCII (file_name, cloud, origin, orientation, 8, use_camera));
   }
 
   /** \brief Save point cloud data to a PLY file containing n-D points
@@ -763,7 +764,7 @@ public:
          bool binary = false,
          bool use_camera = true)
   {
-    return (write(file_name, *cloud, origin, orientation, binary, use_camera));
+    return (write (file_name, *cloud, origin, orientation, binary, use_camera));
   }
 
   /** \brief Save point cloud data to a PLY file containing n-D points
@@ -785,10 +786,10 @@ public:
     Eigen::Quaternionf orientation = cloud.sensor_orientation_;
 
     pcl::PCLPointCloud2 blob;
-    pcl::toPCLPointCloud2(cloud, blob);
+    pcl::toPCLPointCloud2 (cloud, blob);
 
     // Save the data
-    return (this->write(file_name, blob, origin, orientation, binary, use_camera));
+    return (this->write (file_name, blob, origin, orientation, binary, use_camera));
   }
 
 private:
@@ -833,7 +834,7 @@ inline int
 loadPLYFile (const std::string& file_name, pcl::PCLPointCloud2& cloud)
 {
   pcl::PLYReader p;
-  return (p.read(file_name, cloud));
+  return (p.read (file_name, cloud));
 }
 
 /** \brief Load any PLY file into a PCLPointCloud2 type.
@@ -852,7 +853,7 @@ loadPLYFile (const std::string& file_name,
 {
   pcl::PLYReader p;
   int ply_version;
-  return (p.read(file_name, cloud, origin, orientation, ply_version));
+  return (p.read (file_name, cloud, origin, orientation, ply_version));
 }
 
 /** \brief Load any PLY file into a templated PointCloud type
@@ -865,7 +866,7 @@ inline int
 loadPLYFile (const std::string& file_name, pcl::PointCloud<PointT>& cloud)
 {
   pcl::PLYReader p;
-  return (p.read(file_name, cloud));
+  return (p.read (file_name, cloud));
 }
 
 /** \brief Load a PLY file into a PolygonMesh type.
@@ -881,7 +882,7 @@ inline int
 loadPLYFile (const std::string& file_name, pcl::PolygonMesh& mesh)
 {
   pcl::PLYReader p;
-  return (p.read(file_name, mesh));
+  return (p.read (file_name, mesh));
 }
 
 /** \brief Save point cloud data to a PLY file containing n-D points
@@ -902,7 +903,7 @@ savePLYFile (const std::string& file_name,
              bool use_camera = true)
 {
   PLYWriter w;
-  return (w.write(file_name, cloud, origin, orientation, binary_mode, use_camera));
+  return (w.write (file_name, cloud, origin, orientation, binary_mode, use_camera));
 }
 
 /** \brief Templated version for saving point cloud data to a PLY file
@@ -919,7 +920,7 @@ savePLYFile (const std::string& file_name,
              bool binary_mode = false)
 {
   PLYWriter w;
-  return (w.write<PointT>(file_name, cloud, binary_mode));
+  return (w.write<PointT> (file_name, cloud, binary_mode));
 }
 
 /** \brief Templated version for saving point cloud data to a PLY file
@@ -933,7 +934,7 @@ inline int
 savePLYFileASCII (const std::string& file_name, const pcl::PointCloud<PointT>& cloud)
 {
   PLYWriter w;
-  return (w.write<PointT>(file_name, cloud, false));
+  return (w.write<PointT> (file_name, cloud, false));
 }
 
 /** \brief Templated version for saving point cloud data to a PLY file containing a
@@ -945,7 +946,7 @@ inline int
 savePLYFileBinary (const std::string& file_name, const pcl::PointCloud<PointT>& cloud)
 {
   PLYWriter w;
-  return (w.write<PointT>(file_name, cloud, true));
+  return (w.write<PointT> (file_name, cloud, true));
 }
 
 /** \brief Templated version for saving point cloud data to a PLY file containing a
@@ -963,10 +964,10 @@ savePLYFile (const std::string& file_name,
 {
   // Copy indices to a new point cloud
   pcl::PointCloud<PointT> cloud_out;
-  copyPointCloud(cloud, indices, cloud_out);
+  copyPointCloud (cloud, indices, cloud_out);
   // Save the data
   PLYWriter w;
-  return (w.write<PointT>(file_name, cloud_out, binary_mode));
+  return (w.write<PointT> (file_name, cloud_out, binary_mode));
 }
 
 /** \brief Saves a PolygonMesh in ascii PLY format.

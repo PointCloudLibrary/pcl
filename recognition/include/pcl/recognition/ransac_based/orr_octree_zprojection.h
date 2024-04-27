@@ -57,7 +57,7 @@ class PCL_EXPORTS ORROctreeZProjection {
 public:
   class Pixel {
   public:
-    Pixel(int id) : id_(id) {}
+    Pixel (int id) : id_ (id) {}
 
     inline void
     set_z1 (float z1)
@@ -97,7 +97,7 @@ public:
 public:
   class Set {
   public:
-    Set(int x, int y) : nodes_(compare_nodes_z), x_(x), y_(y) {}
+    Set (int x, int y) : nodes_ (compare_nodes_z), x_ (x), y_ (y) {}
 
     static inline bool
     compare_nodes_z (ORROctree::Node* node1, ORROctree::Node* node2)
@@ -108,10 +108,10 @@ public:
     inline void
     insert (ORROctree::Node* leaf)
     {
-      nodes_.insert(leaf);
+      nodes_.insert (leaf);
     }
 
-    inline std::set<ORROctree::Node*, bool (*)(ORROctree::Node*, ORROctree::Node*)>&
+    inline std::set<ORROctree::Node*, bool (*) (ORROctree::Node*, ORROctree::Node*)>&
     get_nodes ()
     {
       return nodes_;
@@ -130,7 +130,7 @@ public:
     }
 
   protected:
-    std::set<ORROctree::Node*, bool (*)(ORROctree::Node*, ORROctree::Node*)> nodes_;
+    std::set<ORROctree::Node*, bool (*) (ORROctree::Node*, ORROctree::Node*)> nodes_;
     int x_, y_;
   };
 
@@ -148,15 +148,15 @@ public:
   inline void
   getPixelCoordinates (const float* p, int& x, int& y) const
   {
-    x = static_cast<int>((p[0] - bounds_[0]) * inv_pixel_size_);
-    y = static_cast<int>((p[1] - bounds_[2]) * inv_pixel_size_);
+    x = static_cast<int> ((p[0] - bounds_[0]) * inv_pixel_size_);
+    y = static_cast<int> ((p[1] - bounds_[2]) * inv_pixel_size_);
   }
 
   inline const Pixel*
   getPixel (const float* p) const
   {
     int x, y;
-    this->getPixelCoordinates(p, x, y);
+    this->getPixelCoordinates (p, x, y);
 
     if (x < 0 || x >= num_pixels_x_)
       return (nullptr);
@@ -170,7 +170,7 @@ public:
   getPixel (const float* p)
   {
     int x, y;
-    this->getPixelCoordinates(p, x, y);
+    this->getPixelCoordinates (p, x, y);
 
     if (x < 0 || x >= num_pixels_x_)
       return (nullptr);
@@ -180,11 +180,12 @@ public:
     return (pixels_[x][y]);
   }
 
-  inline const std::set<ORROctree::Node*, bool (*)(ORROctree::Node*, ORROctree::Node*)>*
+  inline const std::set<ORROctree::Node*,
+                        bool (*) (ORROctree::Node*, ORROctree::Node*)>*
   getOctreeNodes (const float* p) const
   {
     int x, y;
-    this->getPixelCoordinates(p, x, y);
+    this->getPixelCoordinates (p, x, y);
 
     if (x < 0 || x >= num_pixels_x_)
       return (nullptr);

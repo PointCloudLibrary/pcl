@@ -47,46 +47,46 @@
 using namespace pcl;
 using namespace pcl::io;
 
-search::KdTree<PointXYZ>::Ptr tree(new search::KdTree<PointXYZ>());
-PointCloud<PointXYZ>::Ptr cloud(new PointCloud<PointXYZ>());
+search::KdTree<PointXYZ>::Ptr tree (new search::KdTree<PointXYZ>());
+PointCloud<PointXYZ>::Ptr cloud (new PointCloud<PointXYZ>());
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TEST(PCL, GRSDEstimation)
+TEST (PCL, GRSDEstimation)
 {
   // Estimate normals first
   double rad = 0.02;
   NormalEstimation<PointXYZ, Normal> n;
-  PointCloud<Normal>::Ptr normals(new PointCloud<Normal>());
+  PointCloud<Normal>::Ptr normals (new PointCloud<Normal>());
   // set parameters
-  n.setInputCloud(cloud);
-  n.setSearchMethod(tree);
-  n.setRadiusSearch(rad);
-  n.compute(*normals);
+  n.setInputCloud (cloud);
+  n.setSearchMethod (tree);
+  n.setRadiusSearch (rad);
+  n.compute (*normals);
 
-  EXPECT_NEAR((*normals)[103].normal_x, 0.694, 0.1);
-  EXPECT_NEAR((*normals)[103].normal_y, -0.562, 0.1);
-  EXPECT_NEAR((*normals)[103].normal_z, -0.448, 0.1);
+  EXPECT_NEAR ((*normals)[103].normal_x, 0.694, 0.1);
+  EXPECT_NEAR ((*normals)[103].normal_y, -0.562, 0.1);
+  EXPECT_NEAR ((*normals)[103].normal_z, -0.448, 0.1);
 
   // GRSDEstimation
   double rsd_radius = 0.03;
   GRSDEstimation<PointXYZ, Normal, GRSDSignature21> grsd;
-  grsd.setInputNormals(normals);
-  PointCloud<GRSDSignature21>::Ptr grsd_desc(new PointCloud<GRSDSignature21>());
-  grsd.setInputCloud(cloud);
-  grsd.setSearchMethod(tree);
-  grsd.setRadiusSearch(rsd_radius);
-  grsd.compute(*grsd_desc);
+  grsd.setInputNormals (normals);
+  PointCloud<GRSDSignature21>::Ptr grsd_desc (new PointCloud<GRSDSignature21>());
+  grsd.setInputCloud (cloud);
+  grsd.setSearchMethod (tree);
+  grsd.setRadiusSearch (rsd_radius);
+  grsd.compute (*grsd_desc);
 
-  EXPECT_EQ(12, (*grsd_desc)[0].histogram[2]);
-  EXPECT_EQ(104, (*grsd_desc)[0].histogram[4]);
-  EXPECT_EQ(0, (*grsd_desc)[0].histogram[6]);
-  EXPECT_EQ(0, (*grsd_desc)[0].histogram[8]);
-  EXPECT_EQ(0, (*grsd_desc)[0].histogram[10]);
-  EXPECT_EQ(34, (*grsd_desc)[0].histogram[12]);
-  EXPECT_EQ(167, (*grsd_desc)[0].histogram[14]);
-  EXPECT_EQ(68, (*grsd_desc)[0].histogram[16]);
-  EXPECT_EQ(204, (*grsd_desc)[0].histogram[18]);
-  EXPECT_EQ(0, (*grsd_desc)[0].histogram[20]);
+  EXPECT_EQ (12, (*grsd_desc)[0].histogram[2]);
+  EXPECT_EQ (104, (*grsd_desc)[0].histogram[4]);
+  EXPECT_EQ (0, (*grsd_desc)[0].histogram[6]);
+  EXPECT_EQ (0, (*grsd_desc)[0].histogram[8]);
+  EXPECT_EQ (0, (*grsd_desc)[0].histogram[10]);
+  EXPECT_EQ (34, (*grsd_desc)[0].histogram[12]);
+  EXPECT_EQ (167, (*grsd_desc)[0].histogram[14]);
+  EXPECT_EQ (68, (*grsd_desc)[0].histogram[16]);
+  EXPECT_EQ (204, (*grsd_desc)[0].histogram[18]);
+  EXPECT_EQ (0, (*grsd_desc)[0].histogram[20]);
 }
 
 /* ---[ */
@@ -100,14 +100,14 @@ main (int argc, char** argv)
     return (-1);
   }
 
-  if (loadPCDFile<PointXYZ>(argv[1], *cloud) < 0) {
+  if (loadPCDFile<PointXYZ> (argv[1], *cloud) < 0) {
     std::cerr << "Failed to read test file. Please download `bun0.pcd` and pass its "
                  "path to the test."
               << std::endl;
     return (-1);
   }
 
-  testing::InitGoogleTest(&argc, argv);
+  testing::InitGoogleTest (&argc, argv);
   return (RUN_ALL_TESTS());
 }
 /* ]--- */

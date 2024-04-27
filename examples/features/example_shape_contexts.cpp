@@ -48,49 +48,49 @@ main (int, char** argv)
 {
   std::string filename = argv[1];
   std::cout << "Reading " << filename << std::endl;
-  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
+  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
 
-  if (pcl::io::loadPCDFile<pcl::PointXYZ>(filename, *cloud) == -1)
+  if (pcl::io::loadPCDFile<pcl::PointXYZ> (filename, *cloud) == -1)
   // load the file
   {
-    PCL_ERROR("Couldn't read file\n");
+    PCL_ERROR ("Couldn't read file\n");
     return (-1);
   }
   std::cout << "Loaded " << cloud->size() << " points." << std::endl;
 
   // Compute the normals
   pcl::NormalEstimation<pcl::PointXYZ, pcl::Normal> normal_estimation;
-  normal_estimation.setInputCloud(cloud);
+  normal_estimation.setInputCloud (cloud);
 
-  pcl::search::KdTree<pcl::PointXYZ>::Ptr kdtree(
+  pcl::search::KdTree<pcl::PointXYZ>::Ptr kdtree (
       new pcl::search::KdTree<pcl::PointXYZ>);
-  normal_estimation.setSearchMethod(kdtree);
+  normal_estimation.setSearchMethod (kdtree);
 
-  pcl::PointCloud<pcl::Normal>::Ptr normals(new pcl::PointCloud<pcl::Normal>);
-  normal_estimation.setRadiusSearch(0.03);
-  normal_estimation.compute(*normals);
+  pcl::PointCloud<pcl::Normal>::Ptr normals (new pcl::PointCloud<pcl::Normal>);
+  normal_estimation.setRadiusSearch (0.03);
+  normal_estimation.compute (*normals);
 
   // Setup the shape context computation
   pcl::ShapeContext3DEstimation<pcl::PointXYZ, pcl::Normal, pcl::ShapeContext1980>
       shape_context;
 
   // Provide the point cloud
-  shape_context.setInputCloud(cloud);
+  shape_context.setInputCloud (cloud);
   // Provide normals
-  shape_context.setInputNormals(normals);
+  shape_context.setInputNormals (normals);
   // Use the same KdTree from the normal estimation
-  shape_context.setSearchMethod(kdtree);
-  pcl::PointCloud<pcl::ShapeContext1980>::Ptr shape_context_features(
+  shape_context.setSearchMethod (kdtree);
+  pcl::PointCloud<pcl::ShapeContext1980>::Ptr shape_context_features (
       new pcl::PointCloud<pcl::ShapeContext1980>);
 
   // The minimal radius is generally set to approx. 1/10 of the search radius, while the
   // pt. density radius is generally set to 1/5
-  shape_context.setRadiusSearch(0.2);
-  shape_context.setPointDensityRadius(0.04);
-  shape_context.setMinimalRadius(0.02);
+  shape_context.setRadiusSearch (0.2);
+  shape_context.setPointDensityRadius (0.04);
+  shape_context.setMinimalRadius (0.02);
 
   // Actually compute the shape contexts
-  shape_context.compute(*shape_context_features);
+  shape_context.compute (*shape_context_features);
   std::cout << "3DSC output size (): " << shape_context_features->size() << std::endl;
 
   // Display and retrieve the shape context descriptor vector for the 0th point.

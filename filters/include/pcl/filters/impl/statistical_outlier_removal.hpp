@@ -47,18 +47,18 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 void
-pcl::StatisticalOutlierRemoval<PointT>::applyFilterIndices(Indices& indices)
+pcl::StatisticalOutlierRemoval<PointT>::applyFilterIndices (Indices& indices)
 {
   // Initialize the search class
   if (!searcher_) {
     if (input_->isOrganized())
-      searcher_.reset(new pcl::search::OrganizedNeighbor<PointT>());
+      searcher_.reset (new pcl::search::OrganizedNeighbor<PointT>());
     else
-      searcher_.reset(new pcl::search::KdTree<PointT>(false));
+      searcher_.reset (new pcl::search::KdTree<PointT> (false));
   }
-  if (!searcher_->setInputCloud(input_)) {
-    PCL_ERROR("[pcl::%s::applyFilter] Error when initializing search method!\n",
-              getClassName().c_str());
+  if (!searcher_->setInputCloud (input_)) {
+    PCL_ERROR ("[pcl::%s::applyFilter] Error when initializing search method!\n",
+               getClassName().c_str());
     indices.clear();
     removed_indices_->clear();
     return;
@@ -67,31 +67,31 @@ pcl::StatisticalOutlierRemoval<PointT>::applyFilterIndices(Indices& indices)
   // The arrays to be used
   const int searcher_k =
       mean_k_ + 1; // Find one more, since results include the query point.
-  Indices nn_indices(searcher_k);
-  std::vector<float> nn_dists(searcher_k);
-  std::vector<float> distances(indices_->size());
-  indices.resize(indices_->size());
-  removed_indices_->resize(indices_->size());
+  Indices nn_indices (searcher_k);
+  std::vector<float> nn_dists (searcher_k);
+  std::vector<float> distances (indices_->size());
+  indices.resize (indices_->size());
+  removed_indices_->resize (indices_->size());
   int oii = 0, rii = 0; // oii = output indices iterator, rii = removed indices iterator
 
   // First pass: Compute the mean distances for all points with respect to their k
   // nearest neighbors
   int valid_distances = 0;
-  for (int iii = 0; iii < static_cast<int>(indices_->size());
+  for (int iii = 0; iii < static_cast<int> (indices_->size());
        ++iii) // iii = input indices iterator
   {
-    if (!std::isfinite((*input_)[(*indices_)[iii]].x) ||
-        !std::isfinite((*input_)[(*indices_)[iii]].y) ||
-        !std::isfinite((*input_)[(*indices_)[iii]].z)) {
+    if (!std::isfinite ((*input_)[(*indices_)[iii]].x) ||
+        !std::isfinite ((*input_)[(*indices_)[iii]].y) ||
+        !std::isfinite ((*input_)[(*indices_)[iii]].z)) {
       distances[iii] = 0.0;
       continue;
     }
 
     // Perform the nearest k search
-    if (searcher_->nearestKSearch((*indices_)[iii], searcher_k, nn_indices, nn_dists) ==
-        0) {
+    if (searcher_->nearestKSearch (
+            (*indices_)[iii], searcher_k, nn_indices, nn_dists) == 0) {
       distances[iii] = 0.0;
-      PCL_WARN(
+      PCL_WARN (
           "[pcl::%s::applyFilter] Searching for the closest %d neighbors failed.\n",
           getClassName().c_str(),
           mean_k_);
@@ -101,8 +101,8 @@ pcl::StatisticalOutlierRemoval<PointT>::applyFilterIndices(Indices& indices)
     // Calculate the mean distance to its neighbors.
     double dist_sum = 0.0;
     for (std::size_t k = 1; k < nn_dists.size(); ++k) // k = 0 is the query point
-      dist_sum += sqrt(nn_dists[k]);
-    distances[iii] = static_cast<float>(dist_sum / (nn_dists.size() - 1));
+      dist_sum += sqrt (nn_dists[k]);
+    distances[iii] = static_cast<float> (dist_sum / (nn_dists.size() - 1));
     valid_distances++;
   }
 
@@ -112,16 +112,16 @@ pcl::StatisticalOutlierRemoval<PointT>::applyFilterIndices(Indices& indices)
     sum += distance;
     sq_sum += distance * distance;
   }
-  double mean = sum / static_cast<double>(valid_distances);
-  double variance = (sq_sum - sum * sum / static_cast<double>(valid_distances)) /
-                    (static_cast<double>(valid_distances) - 1);
-  double stddev = sqrt(variance);
+  double mean = sum / static_cast<double> (valid_distances);
+  double variance = (sq_sum - sum * sum / static_cast<double> (valid_distances)) /
+                    (static_cast<double> (valid_distances) - 1);
+  double stddev = sqrt (variance);
   // getMeanStd (distances, mean, stddev);
 
   double distance_threshold = mean + std_mul_ * stddev;
 
   // Second pass: Classify the points on the computed distance threshold
-  for (int iii = 0; iii < static_cast<int>(indices_->size());
+  for (int iii = 0; iii < static_cast<int> (indices_->size());
        ++iii) // iii = input indices iterator
   {
     // Points having a too high average distance are outliers and are passed to removed
@@ -138,8 +138,8 @@ pcl::StatisticalOutlierRemoval<PointT>::applyFilterIndices(Indices& indices)
   }
 
   // Resize the output arrays
-  indices.resize(oii);
-  removed_indices_->resize(rii);
+  indices.resize (oii);
+  removed_indices_->resize (rii);
 }
 
 #define PCL_INSTANTIATE_StatisticalOutlierRemoval(T)                                   \

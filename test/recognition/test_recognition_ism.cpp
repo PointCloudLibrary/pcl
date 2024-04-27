@@ -54,60 +54,60 @@ pcl::PointCloud<pcl::Normal>::Ptr training_normals;
 pcl::PointCloud<pcl::Normal>::Ptr testing_normals;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TEST(ISM, TrainRecognize)
+TEST (ISM, TrainRecognize)
 {
   std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> clouds;
   std::vector<pcl::PointCloud<pcl::Normal>::Ptr> normals;
   std::vector<unsigned int> classes;
 
-  clouds.push_back(training_cloud);
-  normals.push_back(training_normals);
-  classes.push_back(0);
+  clouds.push_back (training_cloud);
+  normals.push_back (training_normals);
+  classes.push_back (0);
 
-  pcl::FPFHEstimation<pcl::PointXYZ, pcl::Normal, pcl::Histogram<153>>::Ptr fpfh(
+  pcl::FPFHEstimation<pcl::PointXYZ, pcl::Normal, pcl::Histogram<153>>::Ptr fpfh (
       new pcl::FPFHEstimation<pcl::PointXYZ, pcl::Normal, pcl::Histogram<153>>);
-  fpfh->setRadiusSearch(30.0);
-  pcl::Feature<pcl::PointXYZ, pcl::Histogram<153>>::Ptr feature_estimator(fpfh);
+  fpfh->setRadiusSearch (30.0);
+  pcl::Feature<pcl::PointXYZ, pcl::Histogram<153>>::Ptr feature_estimator (fpfh);
 
   pcl::ism::ImplicitShapeModelEstimation<153, pcl::PointXYZ, pcl::Normal>::ISMModelPtr
-      model(new pcl::features::ISMModel);
+      model (new pcl::features::ISMModel);
 
   pcl::ism::ImplicitShapeModelEstimation<153, pcl::PointXYZ, pcl::Normal> ism;
-  ism.setFeatureEstimator(feature_estimator);
-  ism.setTrainingClouds(clouds);
-  ism.setTrainingClasses(classes);
-  ism.setTrainingNormals(normals);
-  ism.setSamplingSize(2.0f);
-  ism.trainISM(model);
+  ism.setFeatureEstimator (feature_estimator);
+  ism.setTrainingClouds (clouds);
+  ism.setTrainingClasses (classes);
+  ism.setTrainingNormals (normals);
+  ism.setSamplingSize (2.0f);
+  ism.trainISM (model);
 
   int _class = 0;
   double radius = model->sigmas_[_class] * 10.0;
   double sigma = model->sigmas_[_class];
 
-  auto vote_list = ism.findObjects(model, testing_cloud, testing_normals, _class);
-  EXPECT_NE(vote_list->getNumberOfVotes(), 0);
+  auto vote_list = ism.findObjects (model, testing_cloud, testing_normals, _class);
+  EXPECT_NE (vote_list->getNumberOfVotes(), 0);
   std::vector<pcl::ISMPeak, Eigen::aligned_allocator<pcl::ISMPeak>> strongest_peaks;
-  vote_list->findStrongestPeaks(strongest_peaks, _class, radius, sigma);
+  vote_list->findStrongestPeaks (strongest_peaks, _class, radius, sigma);
 
-  EXPECT_NE(strongest_peaks.size(), 0);
+  EXPECT_NE (strongest_peaks.size(), 0);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TEST(ISM, TrainWithWrongParameters)
+TEST (ISM, TrainWithWrongParameters)
 {
   pcl::ism::ImplicitShapeModelEstimation<153, pcl::PointXYZ, pcl::Normal> ism;
 
   float prev_sampling_size = ism.getSamplingSize();
-  EXPECT_NE(prev_sampling_size, 0.0);
-  ism.setSamplingSize(0.0f);
+  EXPECT_NE (prev_sampling_size, 0.0);
+  ism.setSamplingSize (0.0f);
   float curr_sampling_size = ism.getSamplingSize();
-  EXPECT_EQ(curr_sampling_size, prev_sampling_size);
+  EXPECT_EQ (curr_sampling_size, prev_sampling_size);
 
   unsigned int prev_number_of_clusters = ism.getNumberOfClusters();
-  EXPECT_NE(prev_number_of_clusters, 0);
-  ism.setNumberOfClusters(0);
+  EXPECT_NE (prev_number_of_clusters, 0);
+  ism.setNumberOfClusters (0);
   unsigned int curr_number_of_clusters = ism.getNumberOfClusters();
-  EXPECT_EQ(curr_number_of_clusters, prev_number_of_clusters);
+  EXPECT_EQ (curr_number_of_clusters, prev_number_of_clusters);
 }
 
 /* ---[ */
@@ -123,31 +123,31 @@ main (int argc, char** argv)
     return (-1);
   }
 
-  training_cloud.reset(new pcl::PointCloud<pcl::PointXYZ>);
-  if (pcl::io::loadPCDFile(argv[1], *training_cloud) < 0) {
+  training_cloud.reset (new pcl::PointCloud<pcl::PointXYZ>);
+  if (pcl::io::loadPCDFile (argv[1], *training_cloud) < 0) {
     std::cerr << "Failed to read test file. Please download `ism_train.pcd` and pass "
                  "its path to the test."
               << std::endl;
     return (-1);
   }
-  testing_cloud.reset(new pcl::PointCloud<pcl::PointXYZ>);
-  if (pcl::io::loadPCDFile(argv[2], *testing_cloud) < 0) {
+  testing_cloud.reset (new pcl::PointCloud<pcl::PointXYZ>);
+  if (pcl::io::loadPCDFile (argv[2], *testing_cloud) < 0) {
     std::cerr << "Failed to read test file. Please download `ism_test.pcd` and pass "
                  "its path to the test."
               << std::endl;
     return (-1);
   }
 
-  training_normals.reset(new pcl::PointCloud<pcl::Normal>);
-  testing_normals.reset(new pcl::PointCloud<pcl::Normal>);
+  training_normals.reset (new pcl::PointCloud<pcl::Normal>);
+  testing_normals.reset (new pcl::PointCloud<pcl::Normal>);
   pcl::NormalEstimation<pcl::PointXYZ, pcl::Normal> normal_estimator;
-  normal_estimator.setRadiusSearch(25.0);
-  normal_estimator.setInputCloud(training_cloud);
-  normal_estimator.compute(*training_normals);
-  normal_estimator.setInputCloud(testing_cloud);
-  normal_estimator.compute(*testing_normals);
+  normal_estimator.setRadiusSearch (25.0);
+  normal_estimator.setInputCloud (training_cloud);
+  normal_estimator.compute (*training_normals);
+  normal_estimator.setInputCloud (testing_cloud);
+  normal_estimator.compute (*testing_normals);
 
-  testing::InitGoogleTest(&argc, argv);
+  testing::InitGoogleTest (&argc, argv);
   return (RUN_ALL_TESTS());
 }
 /* ]--- */

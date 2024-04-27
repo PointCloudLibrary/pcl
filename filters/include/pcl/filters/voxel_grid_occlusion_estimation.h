@@ -76,7 +76,7 @@ public:
   VoxelGridOcclusionEstimation()
   {
     initialized_ = false;
-    this->setSaveLeafLayout(true);
+    this->setSaveLeafLayout (true);
   }
 
   /** \brief Destructor. */
@@ -161,17 +161,17 @@ public:
   getCentroidCoordinate (const Eigen::Vector3i& ijk)
   {
     int i, j, k;
-    i = ((b_min_[0] < 0) ? (std::abs(min_b_[0]) + ijk[0]) : (ijk[0] - min_b_[0]));
-    j = ((b_min_[1] < 0) ? (std::abs(min_b_[1]) + ijk[1]) : (ijk[1] - min_b_[1]));
-    k = ((b_min_[2] < 0) ? (std::abs(min_b_[2]) + ijk[2]) : (ijk[2] - min_b_[2]));
+    i = ((b_min_[0] < 0) ? (std::abs (min_b_[0]) + ijk[0]) : (ijk[0] - min_b_[0]));
+    j = ((b_min_[1] < 0) ? (std::abs (min_b_[1]) + ijk[1]) : (ijk[1] - min_b_[1]));
+    k = ((b_min_[2] < 0) ? (std::abs (min_b_[2]) + ijk[2]) : (ijk[2] - min_b_[2]));
 
     Eigen::Vector4f xyz;
     xyz[0] =
-        b_min_[0] + (leaf_size_[0] * 0.5f) + (static_cast<float>(i) * leaf_size_[0]);
+        b_min_[0] + (leaf_size_[0] * 0.5f) + (static_cast<float> (i) * leaf_size_[0]);
     xyz[1] =
-        b_min_[1] + (leaf_size_[1] * 0.5f) + (static_cast<float>(j) * leaf_size_[1]);
+        b_min_[1] + (leaf_size_[1] * 0.5f) + (static_cast<float> (j) * leaf_size_[1]);
     xyz[2] =
-        b_min_[2] + (leaf_size_[2] * 0.5f) + (static_cast<float>(k) * leaf_size_[2]);
+        b_min_[2] + (leaf_size_[2] * 0.5f) + (static_cast<float> (k) * leaf_size_[2]);
     xyz[3] = 0;
     return xyz;
   }
@@ -229,7 +229,7 @@ protected:
   inline float
   round (float d)
   {
-    return static_cast<float>(std::floor(d + 0.5f));
+    return static_cast<float> (std::floor (d + 0.5f));
   }
 
   /** \brief Returns the corresponding (i,j,k) coordinates in the grid of point (x,y,z).
@@ -240,9 +240,9 @@ protected:
   inline Eigen::Vector3i
   getGridCoordinatesRound (float x, float y, float z)
   {
-    return {static_cast<int>(round(x * inverse_leaf_size_[0])),
-            static_cast<int>(round(y * inverse_leaf_size_[1])),
-            static_cast<int>(round(z * inverse_leaf_size_[2]))};
+    return {static_cast<int> (round (x * inverse_leaf_size_[0])),
+            static_cast<int> (round (y * inverse_leaf_size_[1])),
+            static_cast<int> (round (z * inverse_leaf_size_[2]))};
   }
 
   // initialization flag

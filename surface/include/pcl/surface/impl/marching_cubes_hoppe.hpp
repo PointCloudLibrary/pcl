@@ -56,23 +56,23 @@ pcl::MarchingCubesHoppe<PointNT>::voxelizeData()
       const int z_start = y_start + y * res_z_;
 
       for (int z = 0; z < res_z_; ++z) {
-        pcl::Indices nn_indices(1, 0);
-        std::vector<float> nn_sqr_dists(1, 0.0f);
+        pcl::Indices nn_indices (1, 0);
+        std::vector<float> nn_sqr_dists (1, 0.0f);
         const Eigen::Vector3f point =
-            (lower_boundary_ + size_voxel_ * Eigen::Array3f(x, y, z)).matrix();
+            (lower_boundary_ + size_voxel_ * Eigen::Array3f (x, y, z)).matrix();
         PointNT p;
 
         p.getVector3fMap() = point;
 
-        tree_->nearestKSearch(p, 1, nn_indices, nn_sqr_dists);
+        tree_->nearestKSearch (p, 1, nn_indices, nn_sqr_dists);
 
         if (!is_far_ignored || nn_sqr_dists[0] < dist_ignore_) {
           const Eigen::Vector3f normal =
               (*input_)[nn_indices[0]].getNormalVector3fMap();
 
-          if (!std::isnan(normal(0)) && normal.norm() > 0.5f)
+          if (!std::isnan (normal (0)) && normal.norm() > 0.5f)
             grid_[z_start + z] =
-                normal.dot(point - (*input_)[nn_indices[0]].getVector3fMap());
+                normal.dot (point - (*input_)[nn_indices[0]].getVector3fMap());
         }
       }
     }

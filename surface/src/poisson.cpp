@@ -40,5 +40,5 @@
 #include <pcl/point_types.h>
 
 // Instantiations of specific point types
-PCL_INSTANTIATE(Poisson,
-                (pcl::PointNormal)(pcl::PointXYZRGBNormal)(pcl::PointXYZINormal))
+PCL_INSTANTIATE (Poisson,
+                 (pcl::PointNormal) (pcl::PointXYZRGBNormal) (pcl::PointXYZINormal))

@@ -71,7 +71,7 @@ public:
   using Centroids = std::vector<Point>;
 
   /** Empty constructor. */
-  Kmeans(unsigned int num_points, unsigned int num_dimensions);
+  Kmeans (unsigned int num_points, unsigned int num_dimensions);
 
   /** This method sets the k-means cluster size.
    *
@@ -115,7 +115,7 @@ public:
     if (num_dimensions_ != data_point.size())
       std::cout << "Dimensions not the same" << std::endl;
 
-    data_.push_back(data_point);
+    data_.push_back (data_point);
   }
 
   // Initial partition points among available clusters

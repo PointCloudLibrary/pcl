@@ -49,36 +49,36 @@ reduce_block (volatile T* data, BinaryFunction op, unsigned int tid = threadIdx.
   // 512]); } __syncthreads(); }
   if (CTA_SIZE >= 512) {
     if (tid < 256) {
-      data[tid] = val = op(val, data[tid + 256]);
+      data[tid] = val = op (val, data[tid + 256]);
     }
     __syncthreads();
   }
   if (CTA_SIZE >= 256) {
     if (tid < 128) {
-      data[tid] = val = op(val, data[tid + 128]);
+      data[tid] = val = op (val, data[tid + 128]);
     }
     __syncthreads();
   }
   if (CTA_SIZE >= 128) {
     if (tid < 64) {
-      data[tid] = val = op(val, data[tid + 64]);
+      data[tid] = val = op (val, data[tid + 64]);
     }
     __syncthreads();
   }
 
   if (tid < 32) {
     if (CTA_SIZE >= 64)
-      data[tid] = val = op(val, data[tid + 32]);
+      data[tid] = val = op (val, data[tid + 32]);
     if (CTA_SIZE >= 32)
-      data[tid] = val = op(val, data[tid + 16]);
+      data[tid] = val = op (val, data[tid + 16]);
     if (CTA_SIZE >= 16)
-      data[tid] = val = op(val, data[tid + 8]);
+      data[tid] = val = op (val, data[tid + 8]);
     if (CTA_SIZE >= 8)
-      data[tid] = val = op(val, data[tid + 4]);
+      data[tid] = val = op (val, data[tid + 4]);
     if (CTA_SIZE >= 4)
-      data[tid] = val = op(val, data[tid + 2]);
+      data[tid] = val = op (val, data[tid + 2]);
     if (CTA_SIZE >= 2)
-      data[tid] = val = op(val, data[tid + 1]);
+      data[tid] = val = op (val, data[tid + 1]);
   }
 };
 } // namespace device

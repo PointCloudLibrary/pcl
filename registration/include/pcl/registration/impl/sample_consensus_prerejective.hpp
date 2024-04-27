@@ -45,11 +45,11 @@ namespace pcl {
 
 template <typename PointSource, typename PointTarget, typename FeatureT>
 void
-SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::setSourceFeatures(
+SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::setSourceFeatures (
     const FeatureCloudConstPtr& features)
 {
   if (features == nullptr || features->empty()) {
-    PCL_ERROR(
+    PCL_ERROR (
         "[pcl::%s::setSourceFeatures] Invalid or empty point cloud dataset given!\n",
         getClassName().c_str());
     return;
@@ -59,40 +59,40 @@ SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::setSourceFeatur
 
 template <typename PointSource, typename PointTarget, typename FeatureT>
 void
-SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::setTargetFeatures(
+SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::setTargetFeatures (
     const FeatureCloudConstPtr& features)
 {
   if (features == nullptr || features->empty()) {
-    PCL_ERROR(
+    PCL_ERROR (
         "[pcl::%s::setTargetFeatures] Invalid or empty point cloud dataset given!\n",
         getClassName().c_str());
     return;
   }
   target_features_ = features;
-  feature_tree_->setInputCloud(target_features_);
+  feature_tree_->setInputCloud (target_features_);
 }
 
 template <typename PointSource, typename PointTarget, typename FeatureT>
 void
-SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::selectSamples(
+SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::selectSamples (
     const PointCloudSource& cloud, int nr_samples, pcl::Indices& sample_indices)
 {
-  if (nr_samples > static_cast<int>(cloud.size())) {
-    PCL_ERROR("[pcl::%s::selectSamples] ", getClassName().c_str());
-    PCL_ERROR("The number of samples (%d) must not be greater than the number of "
-              "points (%zu)!\n",
-              nr_samples,
-              static_cast<std::size_t>(cloud.size()));
+  if (nr_samples > static_cast<int> (cloud.size())) {
+    PCL_ERROR ("[pcl::%s::selectSamples] ", getClassName().c_str());
+    PCL_ERROR ("The number of samples (%d) must not be greater than the number of "
+               "points (%zu)!\n",
+               nr_samples,
+               static_cast<std::size_t> (cloud.size()));
     return;
   }
 
-  sample_indices.resize(nr_samples);
+  sample_indices.resize (nr_samples);
   int temp_sample;
 
   // Draw random samples until n samples is reached
   for (int i = 0; i < nr_samples; i++) {
     // Select a random number
-    sample_indices[i] = getRandomIndex(static_cast<int>(cloud.size()) - i);
+    sample_indices[i] = getRandomIndex (static_cast<int> (cloud.size()) - i);
 
     // Run through list of numbers, starting at the lowest, to avoid duplicates
     for (int j = 0; j < i; j++) {
@@ -117,14 +117,14 @@ SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::selectSamples(
 
 template <typename PointSource, typename PointTarget, typename FeatureT>
 void
-SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::findSimilarFeatures(
+SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::findSimilarFeatures (
     const pcl::Indices& sample_indices,
     std::vector<pcl::Indices>& similar_features,
     pcl::Indices& corresponding_indices)
 {
   // Allocate results
-  corresponding_indices.resize(sample_indices.size());
-  std::vector<float> nn_distances(k_correspondences_);
+  corresponding_indices.resize (sample_indices.size());
+  std::vector<float> nn_distances (k_correspondences_);
 
   // Loop over the sampled features
   for (std::size_t i = 0; i < sample_indices.size(); ++i) {
@@ -134,85 +134,85 @@ SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::findSimilarFeat
     // Find the k nearest feature neighbors to the sampled input feature if they are not
     // in the cache already
     if (similar_features[idx].empty())
-      feature_tree_->nearestKSearch(*input_features_,
-                                    idx,
-                                    k_correspondences_,
-                                    similar_features[idx],
-                                    nn_distances);
+      feature_tree_->nearestKSearch (*input_features_,
+                                     idx,
+                                     k_correspondences_,
+                                     similar_features[idx],
+                                     nn_distances);
 
     // Select one at random and add it to corresponding_indices
     if (k_correspondences_ == 1)
       corresponding_indices[i] = similar_features[idx][0];
     else
       corresponding_indices[i] =
-          similar_features[idx][getRandomIndex(k_correspondences_)];
+          similar_features[idx][getRandomIndex (k_correspondences_)];
   }
 }
 
 template <typename PointSource, typename PointTarget, typename FeatureT>
 void
-SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::computeTransformation(
+SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::computeTransformation (
     PointCloudSource& output, const Eigen::Matrix4f& guess)
 {
   // Some sanity checks first
   if (!input_features_) {
-    PCL_ERROR("[pcl::%s::computeTransformation] ", getClassName().c_str());
-    PCL_ERROR(
+    PCL_ERROR ("[pcl::%s::computeTransformation] ", getClassName().c_str());
+    PCL_ERROR (
         "No source features were given! Call setSourceFeatures before aligning.\n");
     return;
   }
   if (!target_features_) {
-    PCL_ERROR("[pcl::%s::computeTransformation] ", getClassName().c_str());
-    PCL_ERROR(
+    PCL_ERROR ("[pcl::%s::computeTransformation] ", getClassName().c_str());
+    PCL_ERROR (
         "No target features were given! Call setTargetFeatures before aligning.\n");
     return;
   }
 
   if (input_->size() != input_features_->size()) {
-    PCL_ERROR("[pcl::%s::computeTransformation] ", getClassName().c_str());
-    PCL_ERROR("The source points and source feature points need to be in a one-to-one "
-              "relationship! Current input cloud sizes: %ld vs %ld.\n",
-              input_->size(),
-              input_features_->size());
+    PCL_ERROR ("[pcl::%s::computeTransformation] ", getClassName().c_str());
+    PCL_ERROR ("The source points and source feature points need to be in a one-to-one "
+               "relationship! Current input cloud sizes: %ld vs %ld.\n",
+               input_->size(),
+               input_features_->size());
     return;
   }
 
   if (target_->size() != target_features_->size()) {
-    PCL_ERROR("[pcl::%s::computeTransformation] ", getClassName().c_str());
-    PCL_ERROR("The target points and target feature points need to be in a one-to-one "
-              "relationship! Current input cloud sizes: %ld vs %ld.\n",
-              target_->size(),
-              target_features_->size());
+    PCL_ERROR ("[pcl::%s::computeTransformation] ", getClassName().c_str());
+    PCL_ERROR ("The target points and target feature points need to be in a one-to-one "
+               "relationship! Current input cloud sizes: %ld vs %ld.\n",
+               target_->size(),
+               target_features_->size());
     return;
   }
 
   if (inlier_fraction_ < 0.0f || inlier_fraction_ > 1.0f) {
-    PCL_ERROR("[pcl::%s::computeTransformation] ", getClassName().c_str());
-    PCL_ERROR("Illegal inlier fraction %f, must be in [0,1]!\n", inlier_fraction_);
+    PCL_ERROR ("[pcl::%s::computeTransformation] ", getClassName().c_str());
+    PCL_ERROR ("Illegal inlier fraction %f, must be in [0,1]!\n", inlier_fraction_);
     return;
   }
 
   const float similarity_threshold =
       correspondence_rejector_poly_->getSimilarityThreshold();
   if (similarity_threshold < 0.0f || similarity_threshold >= 1.0f) {
-    PCL_ERROR("[pcl::%s::computeTransformation] ", getClassName().c_str());
-    PCL_ERROR("Illegal prerejection similarity threshold %f, must be in [0,1[!\n",
-              similarity_threshold);
+    PCL_ERROR ("[pcl::%s::computeTransformation] ", getClassName().c_str());
+    PCL_ERROR ("Illegal prerejection similarity threshold %f, must be in [0,1[!\n",
+               similarity_threshold);
     return;
   }
 
   if (k_correspondences_ <= 0) {
-    PCL_ERROR("[pcl::%s::computeTransformation] ", getClassName().c_str());
-    PCL_ERROR("Illegal correspondence randomness %d, must be > 0!\n",
-              k_correspondences_);
+    PCL_ERROR ("[pcl::%s::computeTransformation] ", getClassName().c_str());
+    PCL_ERROR ("Illegal correspondence randomness %d, must be > 0!\n",
+               k_correspondences_);
     return;
   }
 
   // Initialize prerejector (similarity threshold already set to default value in
   // constructor)
-  correspondence_rejector_poly_->setInputSource(input_);
-  correspondence_rejector_poly_->setInputTarget(target_);
-  correspondence_rejector_poly_->setCardinality(nr_samples_);
+  correspondence_rejector_poly_->setInputSource (input_);
+  correspondence_rejector_poly_->setInputTarget (target_);
+  correspondence_rejector_poly_->setCardinality (nr_samples_);
   int num_rejections = 0; // For debugging
 
   // Initialize results
@@ -227,10 +227,10 @@ SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::computeTransfor
   float error;
 
   // If guess is not the Identity matrix we check it
-  if (!guess.isApprox(Eigen::Matrix4f::Identity(), 0.01f)) {
-    getFitness(inliers, error);
+  if (!guess.isApprox (Eigen::Matrix4f::Identity(), 0.01f)) {
+    getFitness (inliers, error);
     inlier_fraction =
-        static_cast<float>(inliers.size()) / static_cast<float>(input_->size());
+        static_cast<float> (inliers.size()) / static_cast<float> (input_->size());
 
     if (inlier_fraction >= inlier_fraction_ && error < lowest_error) {
       inliers_ = inliers;
@@ -240,7 +240,7 @@ SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::computeTransfor
   }
 
   // Feature correspondence cache
-  std::vector<pcl::Indices> similar_features(input_->size());
+  std::vector<pcl::Indices> similar_features (input_->size());
 
   // Start
   for (int i = 0; i < max_iterations_; ++i) {
@@ -249,20 +249,20 @@ SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::computeTransfor
     pcl::Indices corresponding_indices;
 
     // Draw nr_samples_ random samples
-    selectSamples(*input_, nr_samples_, sample_indices);
+    selectSamples (*input_, nr_samples_, sample_indices);
 
     // Find corresponding features in the target cloud
-    findSimilarFeatures(sample_indices, similar_features, corresponding_indices);
+    findSimilarFeatures (sample_indices, similar_features, corresponding_indices);
 
     // Apply prerejection
-    if (!correspondence_rejector_poly_->thresholdPolygon(sample_indices,
-                                                         corresponding_indices)) {
+    if (!correspondence_rejector_poly_->thresholdPolygon (sample_indices,
+                                                          corresponding_indices)) {
       ++num_rejections;
       continue;
     }
 
     // Estimate the transform from the correspondences, write to transformation_
-    transformation_estimation_->estimateRigidTransformation(
+    transformation_estimation_->estimateRigidTransformation (
         *input_, sample_indices, *target_, corresponding_indices, transformation_);
 
     // Take a backup of previous result
@@ -272,14 +272,14 @@ SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::computeTransfor
     final_transformation_ = transformation_;
 
     // Transform the input and compute the error (uses input_ and final_transformation_)
-    getFitness(inliers, error);
+    getFitness (inliers, error);
 
     // Restore previous result
     final_transformation_ = final_transformation_prev;
 
     // If the new fit is better, update results
     inlier_fraction =
-        static_cast<float>(inliers.size()) / static_cast<float>(input_->size());
+        static_cast<float> (inliers.size()) / static_cast<float> (input_->size());
 
     // Update result if pose hypothesis is better
     if (inlier_fraction >= inlier_fraction_ && error < lowest_error) {
@@ -292,24 +292,24 @@ SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::computeTransfor
 
   // Apply the final transformation
   if (converged_)
-    transformPointCloud(*input_, output, final_transformation_);
+    transformPointCloud (*input_, output, final_transformation_);
 
   // Debug output
-  PCL_DEBUG("[pcl::%s::computeTransformation] Rejected %i out of %i generated pose "
-            "hypotheses.\n",
-            getClassName().c_str(),
-            num_rejections,
-            max_iterations_);
+  PCL_DEBUG ("[pcl::%s::computeTransformation] Rejected %i out of %i generated pose "
+             "hypotheses.\n",
+             getClassName().c_str(),
+             num_rejections,
+             max_iterations_);
 }
 
 template <typename PointSource, typename PointTarget, typename FeatureT>
 void
-SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::getFitness(
+SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::getFitness (
     pcl::Indices& inliers, float& fitness_score)
 {
   // Initialize variables
   inliers.clear();
-  inliers.reserve(input_->size());
+  inliers.reserve (input_->size());
   fitness_score = 0.0f;
 
   // Use squared distance for comparison with NN search results
@@ -317,20 +317,20 @@ SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::getFitness(
 
   // Transform the input dataset using the final transformation
   PointCloudSource input_transformed;
-  input_transformed.resize(input_->size());
-  transformPointCloud(*input_, input_transformed, final_transformation_);
+  input_transformed.resize (input_->size());
+  transformPointCloud (*input_, input_transformed, final_transformation_);
 
   // For each point in the source dataset
   for (std::size_t i = 0; i < input_transformed.size(); ++i) {
     // Find its nearest neighbor in the target
-    pcl::Indices nn_indices(1);
-    std::vector<float> nn_dists(1);
-    tree_->nearestKSearch(input_transformed[i], 1, nn_indices, nn_dists);
+    pcl::Indices nn_indices (1);
+    std::vector<float> nn_dists (1);
+    tree_->nearestKSearch (input_transformed[i], 1, nn_indices, nn_dists);
 
     // Check if point is an inlier
     if (nn_dists[0] < max_range) {
       // Update inliers
-      inliers.push_back(i);
+      inliers.push_back (i);
 
       // Update fitness score
       fitness_score += nn_dists[0];
@@ -339,7 +339,7 @@ SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::getFitness(
 
   // Calculate MSE
   if (!inliers.empty())
-    fitness_score /= static_cast<float>(inliers.size());
+    fitness_score /= static_cast<float> (inliers.size());
   else
     fitness_score = std::numeric_limits<float>::max();
 }

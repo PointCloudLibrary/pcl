@@ -56,13 +56,13 @@ namespace cuda {
 struct DeleteIndices {
   template <typename Tuple>
   __inline__ __host__ __device__ int
-  operator()(const Tuple& t);
+  operator() (const Tuple& t);
 };
 
 /** \brief Check if a certain tuple is a point inlier. */
 struct isInlier {
   __inline__ __host__ __device__ bool
-  operator()(int x)
+  operator() (int x)
   {
     return (x != -1);
   }
@@ -70,12 +70,12 @@ struct isInlier {
 
 struct isNaNPoint {
   __inline__ __host__ __device__ bool
-  operator()(PointXYZRGB pt)
+  operator() (PointXYZRGB pt)
   {
 #ifdef __CUDACC__
-    return (isnan(pt.x) | isnan(pt.y) | isnan(pt.z)) == 1;
+    return (isnan (pt.x) | isnan (pt.y) | isnan (pt.z)) == 1;
 #else
-    return (std::isnan(pt.x) | std::isnan(pt.y) | std::isnan(pt.z)) == 1;
+    return (std::isnan (pt.x) | std::isnan (pt.y) | std::isnan (pt.z)) == 1;
 #endif
   }
 };
@@ -109,19 +109,19 @@ public:
 private:
   /** \brief Empty constructor for base SampleConsensusModel. */
   SampleConsensusModel()
-  : radius_min_(std::numeric_limits<float>::lowest())
-  , radius_max_(std::numeric_limits<float>::max()){};
+  : radius_min_ (std::numeric_limits<float>::lowest())
+  , radius_max_ (std::numeric_limits<float>::max()){};
 
 public:
   /** \brief Constructor for base SampleConsensusModel.
    * \param cloud the input point cloud dataset
    */
-  SampleConsensusModel(const PointCloudConstPtr& cloud)
-  : radius_min_(std::numeric_limits<float>::lowest())
-  , radius_max_(std::numeric_limits<float>::max())
+  SampleConsensusModel (const PointCloudConstPtr& cloud)
+  : radius_min_ (std::numeric_limits<float>::lowest())
+  , radius_max_ (std::numeric_limits<float>::max())
   {
     // Sets the input cloud and creates a vector of "fake" indices
-    setInputCloud(cloud);
+    setInputCloud (cloud);
   }
 
   /* \brief Constructor for base SampleConsensusModel.
@@ -303,9 +303,9 @@ public:
   getIndices () const
   {
     if (nr_indices_in_stencil_ != indices_->size()) {
-      typename Indices::iterator last = thrust::remove_copy(
+      typename Indices::iterator last = thrust::remove_copy (
           indices_stencil_->begin(), indices_stencil_->end(), indices_->begin(), -1);
-      indices_->erase(last, indices_->end());
+      indices_->erase (last, indices_->end());
     }
 
     return (indices_);

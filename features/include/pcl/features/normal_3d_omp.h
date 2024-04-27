@@ -73,12 +73,12 @@ public:
    * Setting it too low will lead to more parallelization overhead. Setting it too high
    * will lead to a worse balancing between the threads.
    */
-  NormalEstimationOMP(unsigned int nr_threads = 0, int chunk_size = 256)
-  : chunk_size_(chunk_size)
+  NormalEstimationOMP (unsigned int nr_threads = 0, int chunk_size = 256)
+  : chunk_size_ (chunk_size)
   {
     feature_name_ = "NormalEstimationOMP";
 
-    setNumberOfThreads(nr_threads);
+    setNumberOfThreads (nr_threads);
   }
 
   /** \brief Initialize the scheduler and set the number of threads to use.

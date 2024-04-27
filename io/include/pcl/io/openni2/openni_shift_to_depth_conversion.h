@@ -63,7 +63,7 @@ public:
     constexpr std::size_t table_size = 1 << 10;
 
     lookupTable_.clear();
-    lookupTable_.resize(table_size);
+    lookupTable_.resize (table_size);
 
     // constants taken from openni driver
     constexpr std::int16_t nConstShift = 800;
@@ -75,9 +75,9 @@ public:
 
     for (std::size_t i = 0; i < table_size; ++i) {
       // shift to depth calculation from opnni
-      double dFixedRefX = (static_cast<double>(i - nConstShift) / nParamCoeff) - 0.375;
+      double dFixedRefX = (static_cast<double> (i - nConstShift) / nParamCoeff) - 0.375;
       double dMetric = dFixedRefX * dPlanePixelSize;
-      lookupTable_[i] = static_cast<float>(
+      lookupTable_[i] = static_cast<float> (
           (nShiftScale * ((dMetric * dPlaneDsr / (dPlaneDcl - dMetric)) + dPlaneDsr)) /
           1000.0f);
     }
@@ -90,7 +90,7 @@ public:
   inline float
   shiftToDepth (std::uint16_t shift_val)
   {
-    assert(init_);
+    assert (init_);
 
     static const float bad_point = std::numeric_limits<float>::quiet_NaN();
 

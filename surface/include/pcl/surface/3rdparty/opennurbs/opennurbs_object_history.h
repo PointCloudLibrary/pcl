@@ -88,7 +88,7 @@ private:
 };
 
 class ON_CLASS ON_HistoryRecord : public ON_Object {
-  ON_OBJECT_DECLARE(ON_HistoryRecord);
+  ON_OBJECT_DECLARE (ON_HistoryRecord);
 
 public:
   ON_HistoryRecord();
@@ -96,9 +96,9 @@ public:
 
   // The copy constructor and operator= create duplicates
   // of the linked list of ON_Value classes.
-  ON_HistoryRecord(const ON_HistoryRecord& src);
+  ON_HistoryRecord (const ON_HistoryRecord& src);
   ON_HistoryRecord&
-  operator=(const ON_HistoryRecord& src);
+  operator= (const ON_HistoryRecord& src);
 
   // virtual ON_Object::IsValid override
   ON_BOOL32
@@ -114,7 +114,7 @@ public:
   Read (ON_BinaryArchive& binary_archive);
   // virtual
   ON_UUID
-  ModelObjectId () const;
+  ModelObjectId() const;
 
   //////////
   // If history becomes invalid, call Destroy()

@@ -90,12 +90,12 @@ public:
    * \param[in] extract_removed_indices Set to true if you want to be able to extract
    * the indices of points being removed (default = false).
    */
-  PassThrough(bool extract_removed_indices = false)
-  : FilterIndices<PointT>(extract_removed_indices)
+  PassThrough (bool extract_removed_indices = false)
+  : FilterIndices<PointT> (extract_removed_indices)
   ,
 
-  filter_limit_min_(std::numeric_limits<float>::lowest())
-  , filter_limit_max_(std::numeric_limits<float>::max())
+  filter_limit_min_ (std::numeric_limits<float>::lowest())
+  , filter_limit_max_ (std::numeric_limits<float>::max())
   {
     filter_name_ = "PassThrough";
   }
@@ -174,7 +174,7 @@ protected:
   void
   applyFilter (Indices& indices) override
   {
-    applyFilterIndices(indices);
+    applyFilterIndices (indices);
   }
 
   /** \brief Filtered results are indexed by an indices array.
@@ -212,10 +212,10 @@ class PCL_EXPORTS PassThrough<pcl::PCLPointCloud2>
 
 public:
   /** \brief Constructor. */
-  PassThrough(bool extract_removed_indices = false)
-  : FilterIndices<pcl::PCLPointCloud2>::FilterIndices(extract_removed_indices)
-  , filter_limit_min_(std::numeric_limits<float>::lowest())
-  , filter_limit_max_(std::numeric_limits<float>::max())
+  PassThrough (bool extract_removed_indices = false)
+  : FilterIndices<pcl::PCLPointCloud2>::FilterIndices (extract_removed_indices)
+  , filter_limit_min_ (std::numeric_limits<float>::lowest())
+  , filter_limit_max_ (std::numeric_limits<float>::max())
   {
     filter_name_ = "PassThrough";
   }

@@ -71,29 +71,29 @@ public:
   using CloudPtr = typename Cloud::Ptr;
   using CloudConstPtr = typename Cloud::ConstPtr;
 
-  OpenNIFastMesh(const std::string& device_id = "") : device_id_(device_id)
+  OpenNIFastMesh (const std::string& device_id = "") : device_id_ (device_id)
   {
-    ofm.setTrianglePixelSize(3);
-    ofm.setTriangulationType(pcl::OrganizedFastMesh<PointType>::QUAD_MESH);
+    ofm.setTrianglePixelSize (3);
+    ofm.setTriangulationType (pcl::OrganizedFastMesh<PointType>::QUAD_MESH);
   }
 
   void
   cloud_cb (const CloudConstPtr& cloud)
   {
     // Computation goes here
-    FPS_CALC("computation");
+    FPS_CALC ("computation");
 
     // Prepare input
-    ofm.setInputCloud(cloud);
+    ofm.setInputCloud (cloud);
 
     // Store the results in a temporary object
     std::vector<pcl::Vertices> temp_verts;
-    ofm.reconstruct(temp_verts);
+    ofm.reconstruct (temp_verts);
 
     // Lock and copy
     {
-      std::lock_guard<std::mutex> lock(mtx_);
-      vertices_ = std::move(temp_verts);
+      std::lock_guard<std::mutex> lock (mtx_);
+      vertices_ = std::move (temp_verts);
       cloud_ = cloud; // reset (new Cloud (*cloud));
     }
   }
@@ -101,15 +101,15 @@ public:
   void
   run (int argc, char** argv)
   {
-    pcl::OpenNIGrabber interface(device_id_);
+    pcl::OpenNIGrabber interface (device_id_);
 
-    std::function<void(const CloudConstPtr&)> f = [this] (const CloudConstPtr& cloud) {
-      cloud_cb(cloud);
+    std::function<void (const CloudConstPtr&)> f = [this] (const CloudConstPtr& cloud) {
+      cloud_cb (cloud);
     };
-    boost::signals2::connection c = interface.registerCallback(f);
+    boost::signals2::connection c = interface.registerCallback (f);
 
-    view.reset(
-        new pcl::visualization::PCLVisualizer(argc, argv, "PCL OpenNI Mesh Viewer"));
+    view.reset (
+        new pcl::visualization::PCLVisualizer (argc, argv, "PCL OpenNI Mesh Viewer"));
 
     interface.start();
 
@@ -118,21 +118,21 @@ public:
 
     while (!view->wasStopped()) {
       if (!cloud_ || !mtx_.try_lock()) {
-        std::this_thread::sleep_for(1ms);
+        std::this_thread::sleep_for (1ms);
         continue;
       }
 
       temp_cloud = cloud_;
-      temp_verts = std::move(vertices_);
+      temp_verts = std::move (vertices_);
       mtx_.unlock();
 
-      if (!view->updatePolygonMesh<PointType>(temp_cloud, temp_verts, "surface")) {
-        view->addPolygonMesh<PointType>(temp_cloud, temp_verts, "surface");
-        view->resetCameraViewpoint("surface");
+      if (!view->updatePolygonMesh<PointType> (temp_cloud, temp_verts, "surface")) {
+        view->addPolygonMesh<PointType> (temp_cloud, temp_verts, "surface");
+        view->resetCameraViewpoint ("surface");
       }
 
-      FPS_CALC("visualization");
-      view->spinOnce(1);
+      FPS_CALC ("visualization");
+      view->spinOnce (1);
     }
 
     interface.stop();
@@ -184,28 +184,28 @@ int
 main (int argc, char** argv)
 {
   /////////////////////////////////////////////////////////////////////
-  if (pcl::console::find_argument(argc, argv, "-h") != -1 ||
-      pcl::console::find_argument(argc, argv, "--help") != -1) {
-    usage(argv);
+  if (pcl::console::find_argument (argc, argv, "-h") != -1 ||
+      pcl::console::find_argument (argc, argv, "--help") != -1) {
+    usage (argv);
     return 1;
   }
 
   std::string device_id = "";
-  if (pcl::console::parse_argument(argc, argv, "-device_id", device_id) == -1 &&
+  if (pcl::console::parse_argument (argc, argv, "-device_id", device_id) == -1 &&
       argc > 1 && argv[1][0] != '-')
     device_id = argv[1];
   /////////////////////////////////////////////////////////////////////
 
-  pcl::OpenNIGrabber grabber(device_id);
+  pcl::OpenNIGrabber grabber (device_id);
   if (grabber.providesCallback<pcl::OpenNIGrabber::sig_cb_openni_point_cloud_rgba>()) {
-    PCL_INFO("PointXYZRGBA mode enabled.\n");
-    OpenNIFastMesh<pcl::PointXYZRGBA> v(device_id);
-    v.run(argc, argv);
+    PCL_INFO ("PointXYZRGBA mode enabled.\n");
+    OpenNIFastMesh<pcl::PointXYZRGBA> v (device_id);
+    v.run (argc, argv);
   }
   else {
-    PCL_INFO("PointXYZ mode enabled.\n");
-    OpenNIFastMesh<pcl::PointXYZ> v(device_id);
-    v.run(argc, argv);
+    PCL_INFO ("PointXYZ mode enabled.\n");
+    OpenNIFastMesh<pcl::PointXYZ> v (device_id);
+    v.run (argc, argv);
   }
   return 0;
 }

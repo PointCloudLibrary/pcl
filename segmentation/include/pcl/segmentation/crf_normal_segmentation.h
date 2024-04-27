@@ -46,7 +46,7 @@ namespace pcl {
  * \author Christian Potthast
  */
 template <typename PointT>
-class PCL_DEPRECATED(
+class PCL_DEPRECATED (
     1, 17, "CrfNormalSegmentation is not implemented and does not do anything useful")
     CrfNormalSegmentation {
 public:

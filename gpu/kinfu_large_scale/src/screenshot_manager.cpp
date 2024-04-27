@@ -45,8 +45,8 @@ namespace pcl {
 namespace kinfuLS {
 ScreenshotManager::ScreenshotManager()
 {
-  pcl_fs::path p("KinFuSnapshots");
-  pcl_fs::create_directory(p);
+  pcl_fs::path p ("KinFuSnapshots");
+  pcl_fs::create_directory (p);
   screenshot_counter = 0;
   setCameraIntrinsics();
 }
@@ -54,11 +54,11 @@ ScreenshotManager::ScreenshotManager()
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
-ScreenshotManager::saveImage(const Eigen::Affine3f& camPose,
-                             pcl::gpu::PtrStepSz<const PixelRGB> rgb24)
+ScreenshotManager::saveImage (const Eigen::Affine3f& camPose,
+                              pcl::gpu::PtrStepSz<const PixelRGB> rgb24)
 {
 
-  PCL_WARN("[o] [o] [o] [o] Saving screenshot [o] [o] [o] [o]\n");
+  PCL_WARN ("[o] [o] [o] [o] Saving screenshot [o] [o] [o] [o]\n");
 
   std::string file_extension_image = ".png";
   std::string file_extension_pose = ".txt";
@@ -70,14 +70,14 @@ ScreenshotManager::saveImage(const Eigen::Affine3f& camPose,
   Eigen::Vector3f teVecs = camPose.translation();
 
   // Create filenames
-  filename_pose += std::to_string(screenshot_counter) + file_extension_pose;
-  filename_image += std::to_string(screenshot_counter) + file_extension_image;
+  filename_pose += std::to_string (screenshot_counter) + file_extension_pose;
+  filename_image += std::to_string (screenshot_counter) + file_extension_image;
 
   // Write files
-  writePose(filename_pose, teVecs, erreMats);
+  writePose (filename_pose, teVecs, erreMats);
 
   // Save Image
-  pcl::io::saveRgbPNGFile(filename_image, (unsigned char*)rgb24.data, 640, 480);
+  pcl::io::saveRgbPNGFile (filename_image, (unsigned char*)rgb24.data, 640, 480);
 
   screenshot_counter++;
 }
@@ -85,7 +85,7 @@ ScreenshotManager::saveImage(const Eigen::Affine3f& camPose,
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
-ScreenshotManager::setCameraIntrinsics(float focal, float height, float width)
+ScreenshotManager::setCameraIntrinsics (float focal, float height, float width)
 {
   focal_ = focal;
   height_ = height;
@@ -95,13 +95,13 @@ ScreenshotManager::setCameraIntrinsics(float focal, float height, float width)
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
-ScreenshotManager::writePose(
+ScreenshotManager::writePose (
     const std::string& filename_pose,
     const Eigen::Vector3f& teVecs,
     const Eigen::Matrix<float, 3, 3, Eigen::RowMajor>& erreMats) const
 {
   std::ofstream poseFile;
-  poseFile.open(filename_pose.c_str());
+  poseFile.open (filename_pose.c_str());
 
   if (poseFile.is_open()) {
     poseFile << "TVector" << std::endl
@@ -116,7 +116,7 @@ ScreenshotManager::writePose(
     poseFile.close();
   }
   else {
-    PCL_WARN("Unable to open/create output file for camera pose!\n");
+    PCL_WARN ("Unable to open/create output file for camera pose!\n");
   }
 }
 

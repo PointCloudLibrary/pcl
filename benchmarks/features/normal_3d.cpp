@@ -8,16 +8,16 @@ static void
 BM_NormalEstimation (benchmark::State& state, const std::string& file)
 {
   // Perform setup here
-  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
+  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
   pcl::PCDReader reader;
-  reader.read(file, *cloud);
+  reader.read (file, *cloud);
   pcl::NormalEstimation<pcl::PointXYZ, pcl::Normal> ne;
-  ne.setInputCloud(cloud);
-  ne.setKSearch(state.range(0));
-  pcl::PointCloud<pcl::Normal>::Ptr cloud_normals(new pcl::PointCloud<pcl::Normal>);
+  ne.setInputCloud (cloud);
+  ne.setKSearch (state.range (0));
+  pcl::PointCloud<pcl::Normal>::Ptr cloud_normals (new pcl::PointCloud<pcl::Normal>);
   for (auto _ : state) {
     // This code gets timed
-    ne.compute(*cloud_normals);
+    ne.compute (*cloud_normals);
   }
 }
 
@@ -26,16 +26,16 @@ static void
 BM_NormalEstimationOMP (benchmark::State& state, const std::string& file)
 {
   // Perform setup here
-  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
+  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
   pcl::PCDReader reader;
-  reader.read(file, *cloud);
+  reader.read (file, *cloud);
   pcl::NormalEstimationOMP<pcl::PointXYZ, pcl::Normal> ne;
-  ne.setInputCloud(cloud);
-  ne.setKSearch(100);
-  pcl::PointCloud<pcl::Normal>::Ptr cloud_normals(new pcl::PointCloud<pcl::Normal>);
+  ne.setInputCloud (cloud);
+  ne.setKSearch (100);
+  pcl::PointCloud<pcl::Normal>::Ptr cloud_normals (new pcl::PointCloud<pcl::Normal>);
   for (auto _ : state) {
     // This code gets timed
-    ne.compute(*cloud_normals);
+    ne.compute (*cloud_normals);
   }
 }
 #endif
@@ -50,20 +50,21 @@ main (int argc, char** argv)
         << std::endl;
     return (-1);
   }
-  benchmark::RegisterBenchmark("BM_NormalEstimation_mug", &BM_NormalEstimation, argv[1])
-      ->Arg(50)
-      ->Arg(100)
-      ->Unit(benchmark::kMillisecond);
-  benchmark::RegisterBenchmark(
+  benchmark::RegisterBenchmark (
+      "BM_NormalEstimation_mug", &BM_NormalEstimation, argv[1])
+      ->Arg (50)
+      ->Arg (100)
+      ->Unit (benchmark::kMillisecond);
+  benchmark::RegisterBenchmark (
       "BM_NormalEstimation_milk", &BM_NormalEstimation, argv[2])
-      ->Arg(50)
-      ->Arg(100)
-      ->Unit(benchmark::kMillisecond);
+      ->Arg (50)
+      ->Arg (100)
+      ->Unit (benchmark::kMillisecond);
 #ifdef _OPENMP
-  benchmark::RegisterBenchmark(
+  benchmark::RegisterBenchmark (
       "BM_NormalEstimationOMP", &BM_NormalEstimationOMP, argv[1])
-      ->Unit(benchmark::kMillisecond);
+      ->Unit (benchmark::kMillisecond);
 #endif
-  benchmark::Initialize(&argc, argv);
+  benchmark::Initialize (&argc, argv);
   benchmark::RunSpecifiedBenchmarks();
 }

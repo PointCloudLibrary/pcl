@@ -85,21 +85,21 @@ public:
    * \param[in] extract_removed_indices Set to true if you want to be able to extract
    * the indices of points being removed (default = false).
    */
-  inline ModelOutlierRemoval(bool extract_removed_indices = false)
-  : FilterIndices<PointT>(extract_removed_indices)
+  inline ModelOutlierRemoval (bool extract_removed_indices = false)
+  : FilterIndices<PointT> (extract_removed_indices)
   {
     thresh_ = 0;
     normals_distance_weight_ = 0;
     filter_name_ = "ModelOutlierRemoval";
-    setThresholdFunction(&pcl::ModelOutlierRemoval<PointT>::checkSingleThreshold,
-                         *this);
+    setThresholdFunction (&pcl::ModelOutlierRemoval<PointT>::checkSingleThreshold,
+                          *this);
   }
 
   /** \brief sets the models coefficients */
   inline void
   setModelCoefficients (const pcl::ModelCoefficients& model_coefficients)
   {
-    model_coefficients_.resize(model_coefficients.values.size());
+    model_coefficients_.resize (model_coefficients.values.size());
     for (std::size_t i = 0; i < model_coefficients.values.size(); i++) {
       model_coefficients_[i] = model_coefficients.values[i];
     }
@@ -111,7 +111,7 @@ public:
   getModelCoefficients () const
   {
     pcl::ModelCoefficients mc;
-    mc.values.resize(model_coefficients_.size());
+    mc.values.resize (model_coefficients_.size());
     for (std::size_t i = 0; i < mc.values.size(); i++)
       mc.values[i] = model_coefficients_[i];
     return (mc);
@@ -177,7 +177,7 @@ public:
    * \param[in] thresh pointer to a threshold function
    */
   void
-  setThresholdFunction (std::function<bool(double)> thresh)
+  setThresholdFunction (std::function<bool (double)> thresh)
   {
     threshold_function_ = thresh;
   }
@@ -188,10 +188,10 @@ public:
    */
   template <typename T>
   void
-  setThresholdFunction (bool (T::*thresh_function)(double), T& instance)
+  setThresholdFunction (bool (T::*thresh_function) (double), T& instance)
   {
-    setThresholdFunction([=, &instance] (double threshold) {
-      return (instance.*thresh_function)(threshold);
+    setThresholdFunction ([=, &instance] (double threshold) {
+      return (instance.*thresh_function) (threshold);
     });
   }
 
@@ -212,7 +212,7 @@ protected:
   void
   applyFilter (Indices& indices) override
   {
-    applyFilterIndices(indices);
+    applyFilterIndices (indices);
   }
 
   /** \brief Filtered results are indexed by an indices array.
@@ -237,7 +237,7 @@ protected:
 
   /** \brief The type of model to use (user given parameter). */
   pcl::SacModel model_type_;
-  std::function<bool(double)> threshold_function_;
+  std::function<bool (double)> threshold_function_;
 
   inline bool
   checkSingleThreshold (double value)

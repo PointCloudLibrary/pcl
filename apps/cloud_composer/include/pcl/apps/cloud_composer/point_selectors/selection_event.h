@@ -52,16 +52,16 @@ class RectangularFrustumSelector;
 class SelectionEvent {
 
 public:
-  SelectionEvent(vtkSmartPointer<vtkPolyData> selected_points,
-                 vtkSmartPointer<vtkActor> selected_actor,
-                 vtkSmartPointer<vtkDataSetMapper> selected_mapper,
-                 QMap<QString, vtkPolyData*> id_selected_map,
-                 vtkRenderer* renderer)
-  : selected_points_(std::move(selected_points))
-  , selected_actor_(std::move(selected_actor))
-  , selected_mapper_(std::move(selected_mapper))
-  , id_selected_data_map_(std::move(id_selected_map))
-  , renderer_(renderer)
+  SelectionEvent (vtkSmartPointer<vtkPolyData> selected_points,
+                  vtkSmartPointer<vtkActor> selected_actor,
+                  vtkSmartPointer<vtkDataSetMapper> selected_mapper,
+                  QMap<QString, vtkPolyData*> id_selected_map,
+                  vtkRenderer* renderer)
+  : selected_points_ (std::move (selected_points))
+  , selected_actor_ (std::move (selected_actor))
+  , selected_mapper_ (std::move (selected_mapper))
+  , id_selected_data_map_ (std::move (id_selected_map))
+  , renderer_ (renderer)
   {}
 
   ~SelectionEvent();

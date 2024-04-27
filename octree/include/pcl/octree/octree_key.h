@@ -54,22 +54,26 @@ namespace octree {
 class OctreeKey {
 public:
   /** \brief Empty constructor. */
-  OctreeKey() : x(0), y(0), z(0) {}
+  OctreeKey() : x (0), y (0), z (0) {}
 
   /** \brief Constructor for key initialization. */
-  OctreeKey(uindex_t keyX, uindex_t keyY, uindex_t keyZ) : x(keyX), y(keyY), z(keyZ) {}
+  OctreeKey (uindex_t keyX, uindex_t keyY, uindex_t keyZ) : x (keyX), y (keyY), z (keyZ)
+  {}
 
   /** \brief Copy constructor. */
-  OctreeKey(const OctreeKey& source) { std::memcpy(key_, source.key_, sizeof(key_)); }
+  OctreeKey (const OctreeKey& source)
+  {
+    std::memcpy (key_, source.key_, sizeof (key_));
+  }
 
   OctreeKey&
-  operator=(const OctreeKey&) = default;
+  operator= (const OctreeKey&) = default;
 
   /** \brief Operator== for comparing octree keys with each other.
    *  \return "true" if leaf node indices are identical; "false" otherwise.
    * */
   bool
-  operator==(const OctreeKey& b) const
+  operator== (const OctreeKey& b) const
   {
     return ((b.x == this->x) && (b.y == this->y) && (b.z == this->z));
   }
@@ -80,9 +84,9 @@ public:
    * otherwise.
    */
   bool
-  operator!=(const OctreeKey& other) const
+  operator!= (const OctreeKey& other) const
   {
-    return !operator==(other);
+    return !operator== (other);
   }
 
   /** \brief Operator<= for comparing octree keys with each other.
@@ -90,7 +94,7 @@ public:
    * otherwise.
    * */
   bool
-  operator<=(const OctreeKey& b) const
+  operator<= (const OctreeKey& b) const
   {
     return ((b.x >= this->x) && (b.y >= this->y) && (b.z >= this->z));
   }
@@ -100,7 +104,7 @@ public:
    * otherwise.
    * */
   bool
-  operator>=(const OctreeKey& b) const
+  operator>= (const OctreeKey& b) const
   {
     return ((b.x <= this->x) && (b.y <= this->y) && (b.z <= this->z));
   }
@@ -133,14 +137,14 @@ public:
   inline unsigned char
   getChildIdxWithDepthMask (uindex_t depthMask) const
   {
-    return static_cast<unsigned char>(((!!(this->x & depthMask)) << 2) |
-                                      ((!!(this->y & depthMask)) << 1) |
-                                      (!!(this->z & depthMask)));
+    return static_cast<unsigned char> (((!!(this->x & depthMask)) << 2) |
+                                       ((!!(this->y & depthMask)) << 1) |
+                                       (!!(this->z & depthMask)));
   }
 
   /* \brief maximum depth that can be addressed */
   static const unsigned char maxDepth =
-      static_cast<unsigned char>(sizeof(uindex_t) * 8);
+      static_cast<unsigned char> (sizeof (uindex_t) * 8);
 
   // Indices addressing a voxel at (X, Y, Z)
   // NOLINTBEGIN(modernize-use-default-member-init)

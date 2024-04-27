@@ -54,36 +54,36 @@ public:
   void
   cloud_cb_ (const openni_wrapper::Image::Ptr& image)
   {
-    thrust::host_vector<pcl_cuda::OpenNIRGB> rgb_image(image->getWidth() *
-                                                       image->getHeight());
-    cv::Mat cv_image(image->getHeight(), image->getWidth(), CV_8UC3);
+    thrust::host_vector<pcl_cuda::OpenNIRGB> rgb_image (image->getWidth() *
+                                                        image->getHeight());
+    cv::Mat cv_image (image->getHeight(), image->getWidth(), CV_8UC3);
     {
-      pcl::ScopeTime t("computeBilinear+memcpy");
-      debayering.computeBilinear(image, rgb_image);
+      pcl::ScopeTime t ("computeBilinear+memcpy");
+      debayering.computeBilinear (image, rgb_image);
       // debayering.computeEdgeAware (image, rgb_image);
       //  now fill image and show!
-      pcl::ScopeTime t2("memcpy");
-      memcpy(cv_image.data, &rgb_image[0], image->getWidth() * image->getHeight() * 3);
+      pcl::ScopeTime t2 ("memcpy");
+      memcpy (cv_image.data, &rgb_image[0], image->getWidth() * image->getHeight() * 3);
     }
-    imshow("test", cv_image);
+    imshow ("test", cv_image);
   }
 
   void
   run (const std::string& device_id)
   {
-    cv::namedWindow("test", CV_WINDOW_AUTOSIZE);
-    pcl::Grabber* interface = new pcl::OpenNIGrabber(device_id);
+    cv::namedWindow ("test", CV_WINDOW_AUTOSIZE);
+    pcl::Grabber* interface = new pcl::OpenNIGrabber (device_id);
 
-    std::function<void(const openni_wrapper::Image::Ptr& image)> f =
-        std::bind(&SimpleKinectTool::cloud_cb_, this, _1);
+    std::function<void (const openni_wrapper::Image::Ptr& image)> f =
+        std::bind (&SimpleKinectTool::cloud_cb_, this, _1);
 
-    interface->registerCallback(f);
+    interface->registerCallback (f);
 
     interface->start();
 
     while (true) {
       // sleep (1);
-      cv::waitKey(10);
+      cv::waitKey (10);
     }
 
     interface->stop();
@@ -102,6 +102,6 @@ main (int argc, char** argv)
     device_id = argv[1];
   }
   SimpleKinectTool v;
-  v.run(device_id);
+  v.run (device_id);
   return 0;
 }

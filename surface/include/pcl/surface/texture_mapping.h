@@ -130,9 +130,9 @@ public:
   inline void
   setVectorField (float x, float y, float z)
   {
-    vector_field_ = Eigen::Vector3f(x, y, z);
+    vector_field_ = Eigen::Vector3f (x, y, z);
     // normalize vector field
-    vector_field_ /= std::sqrt(vector_field_.dot(vector_field_));
+    vector_field_ /= std::sqrt (vector_field_.dot (vector_field_));
   }
 
   /** \brief Set texture files
@@ -214,10 +214,10 @@ public:
 
       // project point on image frame
       UV_coordinates[0] =
-          static_cast<float>((focal_x * (pt.x / pt.z) + cx) / sizeX); // horizontal
+          static_cast<float> ((focal_x * (pt.x / pt.z) + cx) / sizeX); // horizontal
       UV_coordinates[1] =
           1.0f -
-          static_cast<float>(((focal_y * (pt.y / pt.z) + cy) / sizeY)); // vertical
+          static_cast<float> (((focal_y * (pt.y / pt.z) + cy) / sizeY)); // vertical
 
       // point is visible!
       if (UV_coordinates[0] >= 0.0 && UV_coordinates[0] <= 1.0 &&

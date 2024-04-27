@@ -65,22 +65,22 @@ parseFileExtensionArgument (int argc, char** argv, std::string extension)
 {
   std::vector<int> indices;
   for (int i = 1; i < argc; ++i) {
-    std::string fname = std::string(argv[i]);
+    std::string fname = std::string (argv[i]);
 
     // Needs to be at least 4: .ext
     if (fname.size() <= 4)
       continue;
 
     // For being case insensitive
-    std::transform(fname.begin(), fname.end(), fname.begin(), tolower);
-    std::transform(extension.begin(), extension.end(), extension.begin(), tolower);
+    std::transform (fname.begin(), fname.end(), fname.begin(), tolower);
+    std::transform (extension.begin(), extension.end(), extension.begin(), tolower);
 
     // Check if found
     std::string::size_type it;
-    if ((it = fname.find(extension)) != std::string::npos) {
+    if ((it = fname.find (extension)) != std::string::npos) {
       // Additional check: we want to be able to differentiate between .p and .png
       if ((extension.size() - (fname.size() - it)) == 0)
-        indices.push_back(i);
+        indices.push_back (i);
     }
   }
   return (indices);
@@ -91,19 +91,19 @@ loadCloud (const std::string& filename, pcl::PCLPointCloud2& cloud)
 {
   using namespace pcl::console;
   TicToc tt;
-  print_highlight("Loading ");
-  print_value("%s ", filename.c_str());
+  print_highlight ("Loading ");
+  print_value ("%s ", filename.c_str());
 
   tt.tic();
-  if (pcl::io::loadPCDFile(filename, cloud, translation, orientation) < 0)
+  if (pcl::io::loadPCDFile (filename, cloud, translation, orientation) < 0)
     return (false);
-  print_info("[done, ");
-  print_value("%g", tt.toc());
-  print_info(" ms : ");
-  print_value("%d", cloud.width * cloud.height);
-  print_info(" points]\n");
-  print_info("Available dimensions: ");
-  print_value("%s\n", pcl::getFieldsList(cloud).c_str());
+  print_info ("[done, ");
+  print_value ("%g", tt.toc());
+  print_info (" ms : ");
+  print_value ("%d", cloud.width * cloud.height);
+  print_info (" points]\n");
+  print_info ("Available dimensions: ");
+  print_value ("%s\n", pcl::getFieldsList (cloud).c_str());
 
   return (true);
 }
@@ -115,17 +115,17 @@ saveCloud (const std::string& filename, const pcl::PCLPointCloud2& output)
   TicToc tt;
   tt.tic();
 
-  print_highlight("Saving ");
-  print_value("%s ", filename.c_str());
+  print_highlight ("Saving ");
+  print_value ("%s ", filename.c_str());
 
   pcl::PCDWriter w;
-  w.writeBinaryCompressed(filename, output, translation, orientation);
+  w.writeBinaryCompressed (filename, output, translation, orientation);
 
-  print_info("[done, ");
-  print_value("%g", tt.toc());
-  print_info(" ms : ");
-  print_value("%d", output.width * output.height);
-  print_info(" points]\n");
+  print_info ("[done, ");
+  print_value ("%g", tt.toc());
+  print_info (" ms : ");
+  print_value ("%d", output.width * output.height);
+  print_info (" points]\n");
 }
 
 /* ---[ */
@@ -138,24 +138,24 @@ main (int argc, char** argv)
     return (-1);
   }
 
-  std::vector<int> file_indices = parseFileExtensionArgument(argc, argv, ".pcd");
+  std::vector<int> file_indices = parseFileExtensionArgument (argc, argv, ".pcd");
 
   // pcl::PointCloud<pcl::PointXYZ> cloud_all;
   pcl::PCLPointCloud2 cloud_all;
   for (const int& file_index : file_indices) {
     // Load the Point Cloud
     pcl::PCLPointCloud2 cloud;
-    loadCloud(argv[file_index], cloud);
+    loadCloud (argv[file_index], cloud);
     // pcl::PointCloud<pcl::PointXYZ> cloud;
     // pcl::io::loadPCDFile (argv[file_indices[i]], cloud);
     // cloud_all += cloud;
-    pcl::concatenate(cloud_all, cloud, cloud_all);
-    PCL_INFO("Total number of points so far: %u. Total data size: %lu bytes.\n",
-             cloud_all.width * cloud_all.height,
-             cloud_all.data.size());
+    pcl::concatenate (cloud_all, cloud, cloud_all);
+    PCL_INFO ("Total number of points so far: %u. Total data size: %lu bytes.\n",
+              cloud_all.width * cloud_all.height,
+              cloud_all.data.size());
   }
 
-  saveCloud("output.pcd", cloud_all);
+  saveCloud ("output.pcd", cloud_all);
 
   return (0);
 }

@@ -118,7 +118,7 @@ public:
    *   spin-image. If at some point the support contains less points, exception is
    * thrown
    */
-  SpinImageEstimation(
+  SpinImageEstimation (
       unsigned int image_width = 8,
       double support_angle_cos = 0.0, // when 0, this is bogus, so not applied
       unsigned int min_pts_neighb = 0);
@@ -134,7 +134,7 @@ public:
   setImageWidth (unsigned int bin_count)
   {
     const unsigned int necessary_desc_size = (bin_count + 1) * (2 * bin_count + 1);
-    if (necessary_desc_size > static_cast<unsigned int>(PointOutT::descriptorSize())) {
+    if (necessary_desc_size > static_cast<unsigned int> (PointOutT::descriptorSize())) {
       for (int i = 0;; ++i) { // Find the biggest possible image_width_
         if (((i + 1) * (2 * i + 1)) <= PointOutT::descriptorSize()) {
           image_width_ = i;
@@ -143,7 +143,7 @@ public:
           break;
         }
       }
-      PCL_ERROR(
+      PCL_ERROR (
           "[pcl::SpinImageEstimation] The chosen image width is too large, setting it "
           "to %u instead. "
           "Consider using pcl::Histogram<%u> as output type of SpinImageEstimation "
@@ -152,9 +152,9 @@ public:
           ((bin_count + 1) * (2 * bin_count + 1)));
     }
     else if (necessary_desc_size <
-             static_cast<unsigned int>(PointOutT::descriptorSize())) {
+             static_cast<unsigned int> (PointOutT::descriptorSize())) {
       image_width_ = bin_count;
-      PCL_WARN(
+      PCL_WARN (
           "[pcl::SpinImageEstimation] The chosen image width is smaller than the "
           "output histogram allows. "
           "This is not an error, but the last few histogram bins will not be set. "
@@ -179,9 +179,9 @@ public:
     if (0.0 > support_angle_cos ||
         support_angle_cos > 1.0) // may be permit negative cosine?
     {
-      throw PCLException("Cosine of support angle should be between 0 and 1",
-                         "spin_image.h",
-                         "setSupportAngle");
+      throw PCLException ("Cosine of support angle should be between 0 and 1",
+                          "spin_image.h",
+                          "setSupportAngle");
     }
 
     support_angle_cos_ = support_angle_cos;

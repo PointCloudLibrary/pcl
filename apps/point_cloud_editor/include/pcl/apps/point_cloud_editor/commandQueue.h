@@ -62,7 +62,7 @@ public:
   /// @details Create a command queue with specified depth limit.
   /// @param max_size the value to be used to set the depth limit of this
   /// object.
-  CommandQueue(unsigned int max_size);
+  CommandQueue (unsigned int max_size);
 
   /// @brief Destructor
   ~CommandQueue() = default;
@@ -94,13 +94,13 @@ public:
 
 private:
   /// @brief Copy constructor - object is non-copyable
-  CommandQueue(const CommandQueue&) { assert(false); }
+  CommandQueue (const CommandQueue&) { assert (false); }
 
   /// @brief Equal operator - object is non-copyable
   CommandQueue&
-  operator=(const CommandQueue&)
+  operator= (const CommandQueue&)
   {
-    assert(false);
+    assert (false);
     return (*this);
   }
 

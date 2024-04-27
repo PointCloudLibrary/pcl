@@ -361,8 +361,9 @@ public:
   using KdTreePtr = typename KdTree::Ptr;
 
   /** \brief Constructor. */
-  MarchingCubes(const float percentage_extend_grid = 0.0f, const float iso_level = 0.0f)
-  : percentage_extend_grid_(percentage_extend_grid), iso_level_(iso_level)
+  MarchingCubes (const float percentage_extend_grid = 0.0f,
+                 const float iso_level = 0.0f)
+  : percentage_extend_grid_ (percentage_extend_grid), iso_level_ (iso_level)
   {}
 
   /** \brief Destructor. */

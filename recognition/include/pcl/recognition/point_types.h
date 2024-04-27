@@ -60,13 +60,13 @@ struct EIGEN_ALIGN16 GradientXY {
   PCL_MAKE_ALIGNED_OPERATOR_NEW
 
   inline bool
-  operator<(const GradientXY& rhs) const
+  operator< (const GradientXY& rhs) const
   {
     return (magnitude > rhs.magnitude);
   }
 };
 inline std::ostream&
-operator<<(std::ostream& os, const GradientXY& p)
+operator<< (std::ostream& os, const GradientXY& p)
 {
   os << "(" << p.x << "," << p.y << " - " << p.magnitude << ")";
   return (os);

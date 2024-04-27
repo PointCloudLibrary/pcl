@@ -94,11 +94,11 @@ public:
    * \param[in] nr_threads the number of hardware threads to use (0 sets the value back
    * to automatic)
    */
-  FPFHEstimationOMP(unsigned int nr_threads = 0)
+  FPFHEstimationOMP (unsigned int nr_threads = 0)
   {
     feature_name_ = "FPFHEstimationOMP";
 
-    setNumberOfThreads(nr_threads);
+    setNumberOfThreads (nr_threads);
   }
 
   /** \brief Initialize the scheduler and set the number of threads to use.

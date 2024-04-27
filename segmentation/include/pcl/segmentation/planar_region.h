@@ -64,8 +64,8 @@ public:
    * \param[in] region a Region3D for the input data
    * \param[in] polygon a PlanarPolygon for the input region
    */
-  PlanarRegion(const pcl::Region3D<PointT>& region,
-               const pcl::PlanarPolygon<PointT>& polygon)
+  PlanarRegion (const pcl::Region3D<PointT>& region,
+                const pcl::PlanarPolygon<PointT>& polygon)
   {
     centroid_ = region.centroid;
     covariance_ = region.covariance;
@@ -84,11 +84,11 @@ public:
    * \param[in] contour the contour / boundary for the region
    * \param[in] coefficients the model coefficients (a,b,c,d) for the plane
    */
-  PlanarRegion(const Eigen::Vector3f& centroid,
-               const Eigen::Matrix3f& covariance,
-               unsigned count,
-               const typename pcl::PointCloud<PointT>::VectorType& contour,
-               const Eigen::Vector4f& coefficients)
+  PlanarRegion (const Eigen::Vector3f& centroid,
+                const Eigen::Matrix3f& covariance,
+                unsigned count,
+                const typename pcl::PointCloud<PointT>::VectorType& contour,
+                const Eigen::Vector4f& coefficients)
   {
     centroid_ = centroid;
     covariance_ = covariance;

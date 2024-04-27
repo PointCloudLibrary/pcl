@@ -34,7 +34,9 @@
  *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
  */
 
-PCL_DEPRECATED_HEADER(1, 15, "pcl::device::Static will be removed at PCL release 1.15");
+PCL_DEPRECATED_HEADER (1,
+                       15,
+                       "pcl::device::Static will be removed at PCL release 1.15");
 
 #ifndef PCL_GPU_DEVICE_STATIC_CHECK_HPP_
 #define PCL_GPU_DEVICE_STATIC_CHECK_HPP_
@@ -51,8 +53,8 @@ template <bool expr>
 struct Static {};
 
 template <>
-struct [[deprecated("This class will be replaced at PCL release 1.15  by "
-                    "c++11's static_assert instead")]] Static<true> {
+struct [[deprecated ("This class will be replaced at PCL release 1.15  by "
+                     "c++11's static_assert instead")]] Static<true> {
   __PCL_GPU_HOST_DEVICE__ static void
   check (){};
 };

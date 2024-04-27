@@ -31,19 +31,19 @@ public:
     pcl::PointCloud<FeatureT> ESF_signature;
 
     ESFEstimation esf;
-    esf.setInputCloud(in);
-    esf.compute(ESF_signature);
+    esf.setInputCloud (in);
+    esf.compute (ESF_signature);
 
-    signatures.resize(1);
-    centroids.resize(1);
+    signatures.resize (1);
+    centroids.resize (1);
 
     signatures[0] = ESF_signature;
 
     Eigen::Vector4f centroid4f;
-    pcl::compute3DCentroid(*in, centroid4f);
-    centroids[0] = Eigen::Vector3f(centroid4f[0], centroid4f[1], centroid4f[2]);
+    pcl::compute3DCentroid (*in, centroid4f);
+    centroids[0] = Eigen::Vector3f (centroid4f[0], centroid4f[1], centroid4f[2]);
 
-    pcl::copyPointCloud(*in, *processed);
+    pcl::copyPointCloud (*in, *processed);
   }
 
   bool

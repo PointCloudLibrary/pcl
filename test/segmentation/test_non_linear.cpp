@@ -53,27 +53,27 @@ using namespace pcl::io;
 PointCloud<PointXYZ>::Ptr cloud_;
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-TEST(SACSegmentation, Segmentation)
+TEST (SACSegmentation, Segmentation)
 {
-  ModelCoefficients::Ptr sphere_coefficients(new ModelCoefficients);
-  PointIndices::Ptr inliers(new PointIndices);
+  ModelCoefficients::Ptr sphere_coefficients (new ModelCoefficients);
+  PointIndices::Ptr inliers (new PointIndices);
 
   SACSegmentation<PointXYZ> seg;
-  seg.setOptimizeCoefficients(true);
-  seg.setModelType(SACMODEL_SPHERE);
-  seg.setMethodType(SAC_RANSAC);
-  seg.setMaxIterations(10000);
-  seg.setDistanceThreshold(0.01);
-  seg.setRadiusLimits(0.03, 0.07); // true radius is 0.05
-  seg.setInputCloud(cloud_);
-  seg.segment(*inliers, *sphere_coefficients);
+  seg.setOptimizeCoefficients (true);
+  seg.setModelType (SACMODEL_SPHERE);
+  seg.setMethodType (SAC_RANSAC);
+  seg.setMaxIterations (10000);
+  seg.setDistanceThreshold (0.01);
+  seg.setRadiusLimits (0.03, 0.07); // true radius is 0.05
+  seg.setInputCloud (cloud_);
+  seg.segment (*inliers, *sphere_coefficients);
 
-  EXPECT_NEAR(sphere_coefficients->values[0], 0.998776, 1e-2);
-  EXPECT_NEAR(sphere_coefficients->values[1], 0.752023, 1e-2);
-  EXPECT_NEAR(sphere_coefficients->values[2], 1.24558, 1e-2);
-  EXPECT_NEAR(sphere_coefficients->values[3], 0.0536238, 1e-2);
+  EXPECT_NEAR (sphere_coefficients->values[0], 0.998776, 1e-2);
+  EXPECT_NEAR (sphere_coefficients->values[1], 0.752023, 1e-2);
+  EXPECT_NEAR (sphere_coefficients->values[2], 1.24558, 1e-2);
+  EXPECT_NEAR (sphere_coefficients->values[3], 0.0536238, 1e-2);
 
-  EXPECT_NEAR(static_cast<int>(inliers->indices.size()), 3516, 15);
+  EXPECT_NEAR (static_cast<int> (inliers->indices.size()), 3516, 15);
 }
 
 //* ---[ */
@@ -89,7 +89,7 @@ main (int argc, char** argv)
 
   // Load a standard PCD file from disk
   PointCloud<PointXYZ> cloud;
-  if (loadPCDFile(argv[1], cloud) < 0) {
+  if (loadPCDFile (argv[1], cloud) < 0) {
     std::cerr << "Failed to read test file. Please download "
                  "`noisy_slice_displaced.pcd` and pass its path to the test."
               << std::endl;
@@ -98,7 +98,7 @@ main (int argc, char** argv)
 
   cloud_ = cloud.makeShared();
 
-  testing::InitGoogleTest(&argc, argv);
+  testing::InitGoogleTest (&argc, argv);
   return (RUN_ALL_TESTS());
 }
 /* ]--- */

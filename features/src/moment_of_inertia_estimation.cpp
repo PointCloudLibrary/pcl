@@ -45,9 +45,10 @@
 #include <pcl/point_types.h>
 // Instantiations of specific point types
 #ifdef PCL_ONLY_CORE_POINT_TYPES
-PCL_INSTANTIATE(MomentOfInertiaEstimation,
-                (pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA)(pcl::PointNormal))
+PCL_INSTANTIATE (
+    MomentOfInertiaEstimation,
+    (pcl::PointXYZ) (pcl::PointXYZI) (pcl::PointXYZRGBA) (pcl::PointNormal))
 #else
-PCL_INSTANTIATE(MomentOfInertiaEstimation, PCL_XYZ_POINT_TYPES)
+PCL_INSTANTIATE (MomentOfInertiaEstimation, PCL_XYZ_POINT_TYPES)
 #endif
 #endif // PCL_NO_PRECOMPILE

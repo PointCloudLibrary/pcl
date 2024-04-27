@@ -51,34 +51,34 @@ public:
     double interior_tangent_weight;
     double boundary_tangent_weight;
 
-    ParameterTDM(double intW = 1.0,
-                 double intS = 0.000001,
-                 double intR = 0.0,
-                 double intTW = 0.1,
-                 double bndW = 1.0,
-                 double bndS = 0.000001,
-                 double bndR = 0.0,
-                 double bndTW = 0.1,
-                 unsigned regU = 0,
-                 unsigned regV = 0)
-    : Parameter(intW, intS, intR, bndW, bndS, bndR, regU, regV)
-    , interior_tangent_weight(intTW)
-    , boundary_tangent_weight(bndTW)
+    ParameterTDM (double intW = 1.0,
+                  double intS = 0.000001,
+                  double intR = 0.0,
+                  double intTW = 0.1,
+                  double bndW = 1.0,
+                  double bndS = 0.000001,
+                  double bndR = 0.0,
+                  double bndTW = 0.1,
+                  unsigned regU = 0,
+                  unsigned regV = 0)
+    : Parameter (intW, intS, intR, bndW, bndS, bndR, regU, regV)
+    , interior_tangent_weight (intTW)
+    , boundary_tangent_weight (bndTW)
     {}
   };
 
   /** \brief Constructor initializing with the B-Spline surface given in argument 2.
    * \param[in] data pointer to the 3D point-cloud data to be fit.
    * \param[in] ns B-Spline surface used for fitting.        */
-  FittingSurfaceTDM(NurbsDataSurface* data, const ON_NurbsSurface& ns);
+  FittingSurfaceTDM (NurbsDataSurface* data, const ON_NurbsSurface& ns);
 
   /** \brief Constructor initializing B-Spline surface using initNurbsPCA(...).
    * \param[in] order the polynomial order of the B-Spline surface.
    * \param[in] data pointer to the 2D point-cloud data to be fit.
    * \param[in] z vector defining front face of surface.        */
-  FittingSurfaceTDM(int order,
-                    NurbsDataSurface* data,
-                    Eigen::Vector3d z = Eigen::Vector3d(0.0, 0.0, 1.0));
+  FittingSurfaceTDM (int order,
+                     NurbsDataSurface* data,
+                     Eigen::Vector3d z = Eigen::Vector3d (0.0, 0.0, 1.0));
 
   /** \brief Assemble the system of equations for fitting
    * - for large point-clouds this is time consuming.

@@ -45,14 +45,14 @@
 #include <vtkPolyData.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-pcl::modeler::NormalsActorItem::NormalsActorItem(
+pcl::modeler::NormalsActorItem::NormalsActorItem (
     QTreeWidgetItem* parent,
     const CloudMesh::Ptr& cloud_mesh,
     const vtkSmartPointer<vtkRenderWindow>& render_window)
-: ChannelActorItem(
+: ChannelActorItem (
       parent, cloud_mesh, render_window, vtkSmartPointer<vtkLODActor>::New(), "Normals")
-, level_(10)
-, scale_(0.1)
+, level_ (10)
+, scale_ (0.1)
 {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -68,48 +68,48 @@ pcl::modeler::NormalsActorItem::createNormalLines()
     return;
 
   if (points->GetData() == nullptr)
-    points->SetData(vtkSmartPointer<vtkFloatArray>::New());
+    points->SetData (vtkSmartPointer<vtkFloatArray>::New());
 
-  vtkFloatArray* data = dynamic_cast<vtkFloatArray*>(points->GetData());
-  data->SetNumberOfComponents(3);
+  vtkFloatArray* data = dynamic_cast<vtkFloatArray*> (points->GetData());
+  data->SetNumberOfComponents (3);
 
   if (cloud->is_dense) {
-    vtkIdType nr_normals = static_cast<vtkIdType>((cloud->size() - 1) / level_ + 1);
-    data->SetNumberOfValues(2 * 3 * nr_normals);
+    vtkIdType nr_normals = static_cast<vtkIdType> ((cloud->size() - 1) / level_ + 1);
+    data->SetNumberOfValues (2 * 3 * nr_normals);
     for (vtkIdType i = 0, j = 0; j < nr_normals;
-         j++, i = static_cast<vtkIdType>(j * level_)) {
+         j++, i = static_cast<vtkIdType> (j * level_)) {
       const CloudMesh::PointT& p = (*cloud)[i];
-      data->SetValue(2 * j * 3 + 0, p.x);
-      data->SetValue(2 * j * 3 + 1, p.y);
-      data->SetValue(2 * j * 3 + 2, p.z);
-      data->SetValue(2 * j * 3 + 3, float(p.x + p.normal_x * scale_));
-      data->SetValue(2 * j * 3 + 4, float(p.y + p.normal_y * scale_));
-      data->SetValue(2 * j * 3 + 5, float(p.z + p.normal_z * scale_));
+      data->SetValue (2 * j * 3 + 0, p.x);
+      data->SetValue (2 * j * 3 + 1, p.y);
+      data->SetValue (2 * j * 3 + 2, p.z);
+      data->SetValue (2 * j * 3 + 3, float (p.x + p.normal_x * scale_));
+      data->SetValue (2 * j * 3 + 4, float (p.y + p.normal_y * scale_));
+      data->SetValue (2 * j * 3 + 5, float (p.z + p.normal_z * scale_));
 
-      lines->InsertNextCell(2);
-      lines->InsertCellPoint(2 * j);
-      lines->InsertCellPoint(2 * j + 1);
+      lines->InsertNextCell (2);
+      lines->InsertCellPoint (2 * j);
+      lines->InsertCellPoint (2 * j + 1);
     }
   }
   else {
-    pcl::IndicesPtr indices(new pcl::Indices());
-    pcl::removeNaNFromPointCloud(*cloud, *indices);
+    pcl::IndicesPtr indices (new pcl::Indices());
+    pcl::removeNaNFromPointCloud (*cloud, *indices);
 
-    vtkIdType nr_normals = static_cast<vtkIdType>((indices->size() - 1) / level_ + 1);
-    data->SetNumberOfValues(2 * 3 * nr_normals);
+    vtkIdType nr_normals = static_cast<vtkIdType> ((indices->size() - 1) / level_ + 1);
+    data->SetNumberOfValues (2 * 3 * nr_normals);
     for (vtkIdType i = 0, j = 0; j < nr_normals;
-         j++, i = static_cast<vtkIdType>(j * level_)) {
+         j++, i = static_cast<vtkIdType> (j * level_)) {
       const CloudMesh::PointT& p = (*cloud)[(*indices)[i]];
-      data->SetValue(2 * j * 3 + 0, p.x);
-      data->SetValue(2 * j * 3 + 1, p.y);
-      data->SetValue(2 * j * 3 + 2, p.z);
-      data->SetValue(2 * j * 3 + 3, float(p.x + p.normal_x * scale_));
-      data->SetValue(2 * j * 3 + 4, float(p.y + p.normal_y * scale_));
-      data->SetValue(2 * j * 3 + 5, float(p.z + p.normal_z * scale_));
+      data->SetValue (2 * j * 3 + 0, p.x);
+      data->SetValue (2 * j * 3 + 1, p.y);
+      data->SetValue (2 * j * 3 + 2, p.z);
+      data->SetValue (2 * j * 3 + 3, float (p.x + p.normal_x * scale_));
+      data->SetValue (2 * j * 3 + 4, float (p.y + p.normal_y * scale_));
+      data->SetValue (2 * j * 3 + 5, float (p.z + p.normal_z * scale_));
 
-      lines->InsertNextCell(2);
-      lines->InsertCellPoint(2 * j);
-      lines->InsertCellPoint(2 * j + 1);
+      lines->InsertNextCell (2);
+      lines->InsertCellPoint (2 * j);
+      lines->InsertCellPoint (2 * j + 1);
     }
   }
 }
@@ -122,27 +122,27 @@ pcl::modeler::NormalsActorItem::initImpl()
   points->SetDataTypeToFloat();
   vtkSmartPointer<vtkCellArray> lines = vtkSmartPointer<vtkCellArray>::New();
 
-  poly_data_->SetPoints(points);
-  poly_data_->SetLines(lines);
+  poly_data_->SetPoints (points);
+  poly_data_->SetLines (lines);
 
   createNormalLines();
 
   vtkSmartPointer<vtkDataSetMapper> mapper = vtkSmartPointer<vtkDataSetMapper>::New();
-  mapper->SetInputData(poly_data_);
+  mapper->SetInputData (poly_data_);
 
   vtkSmartPointer<vtkDataArray> scalars;
-  cloud_mesh_->getColorScalarsFromField(scalars, color_scheme_);
-  poly_data_->GetPointData()->SetScalars(scalars);
+  cloud_mesh_->getColorScalarsFromField (scalars, color_scheme_);
+  poly_data_->GetPointData()->SetScalars (scalars);
   double minmax[2];
-  scalars->GetRange(minmax);
-  mapper->SetScalarRange(minmax);
+  scalars->GetRange (minmax);
+  mapper->SetScalarRange (minmax);
 
   mapper->SetColorModeToMapScalars();
   mapper->SetScalarModeToUsePointData();
 
   vtkSmartPointer<vtkLODActor> actor =
-      vtkSmartPointer<vtkLODActor>(dynamic_cast<vtkLODActor*>(actor_.GetPointer()));
-  actor->SetMapper(mapper);
+      vtkSmartPointer<vtkLODActor> (dynamic_cast<vtkLODActor*> (actor_.GetPointer()));
+  actor->SetMapper (mapper);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -152,21 +152,21 @@ pcl::modeler::NormalsActorItem::updateImpl()
   createNormalLines();
 
   vtkSmartPointer<vtkDataArray> scalars;
-  cloud_mesh_->getColorScalarsFromField(scalars, color_scheme_);
-  poly_data_->GetPointData()->SetScalars(scalars);
+  cloud_mesh_->getColorScalarsFromField (scalars, color_scheme_);
+  poly_data_->GetPointData()->SetScalars (scalars);
   double minmax[2];
-  scalars->GetRange(minmax);
-  actor_->GetMapper()->SetScalarRange(minmax);
+  scalars->GetRange (minmax);
+  actor_->GetMapper()->SetScalarRange (minmax);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::modeler::NormalsActorItem::prepareContextMenu(QMenu*) const
+pcl::modeler::NormalsActorItem::prepareContextMenu (QMenu*) const
 {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::modeler::NormalsActorItem::prepareProperties(ParameterDialog*)
+pcl::modeler::NormalsActorItem::prepareProperties (ParameterDialog*)
 {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////

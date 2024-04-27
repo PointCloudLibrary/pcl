@@ -19,23 +19,23 @@
 
 class ON_LineCurve;
 class ON_CLASS ON_LineCurve : public ON_Curve {
-  ON_OBJECT_DECLARE(ON_LineCurve);
+  ON_OBJECT_DECLARE (ON_LineCurve);
 
 public:
   ON_LineCurve();
-  ON_LineCurve(const ON_2dPoint&, const ON_2dPoint&); // creates a 2d line curve
-  ON_LineCurve(const ON_3dPoint&, const ON_3dPoint&); // creates a 3d line curve
-  ON_LineCurve(const ON_Line&);
-  ON_LineCurve(const ON_Line&, double, double // domain
+  ON_LineCurve (const ON_2dPoint&, const ON_2dPoint&); // creates a 2d line curve
+  ON_LineCurve (const ON_3dPoint&, const ON_3dPoint&); // creates a 3d line curve
+  ON_LineCurve (const ON_Line&);
+  ON_LineCurve (const ON_Line&, double, double // domain
   );
-  ON_LineCurve(const ON_LineCurve&);
+  ON_LineCurve (const ON_LineCurve&);
 
   virtual ~ON_LineCurve();
 
   ON_LineCurve&
-  operator=(const ON_LineCurve&);
+  operator= (const ON_LineCurve&);
   ON_LineCurve&
-  operator=(const ON_Line&);
+  operator= (const ON_Line&);
 
   /////////////////////////////////////////////////////////////////
   // ON_Object overrides
@@ -254,8 +254,8 @@ public:
   SetEndPoint (ON_3dPoint end_point);
 
   ON_BOOL32
-  Reverse (); // reverse parameterizatrion
-              // Domain changes from [a,b] to [-b,-a]
+  Reverse(); // reverse parameterizatrion
+             // Domain changes from [a,b] to [-b,-a]
 
   ON_BOOL32
   Evaluate (   // returns false if unable to evaluate

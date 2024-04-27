@@ -105,7 +105,7 @@ public:
   inline void
   addPointCoherence (PointCoherencePtr coherence)
   {
-    point_coherences_.push_back(coherence);
+    point_coherences_.push_back (coherence);
   }
 
   /** \brief add a PointCoherence to the PointCloudCoherence.

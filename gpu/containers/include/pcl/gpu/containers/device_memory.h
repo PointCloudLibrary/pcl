@@ -62,21 +62,21 @@ public:
   /** \brief Allocates internal buffer in GPU memory
    * \param sizeBytes_arg amount of memory to allocate
    * */
-  DeviceMemory(std::size_t sizeBytes_arg);
+  DeviceMemory (std::size_t sizeBytes_arg);
 
   /** \brief Initializes with user allocated buffer. Reference counting is disabled in
    * this case.
    * \param ptr_arg pointer to buffer
    * \param sizeBytes_arg buffer size
    * */
-  DeviceMemory(void* ptr_arg, std::size_t sizeBytes_arg);
+  DeviceMemory (void* ptr_arg, std::size_t sizeBytes_arg);
 
   /** \brief Copy constructor. Just increments reference counter. */
-  DeviceMemory(const DeviceMemory& other_arg);
+  DeviceMemory (const DeviceMemory& other_arg);
 
   /** \brief Assignment operator. Just increments reference counter. */
   DeviceMemory&
-  operator=(const DeviceMemory& other_arg);
+  operator= (const DeviceMemory& other_arg);
 
   /** \brief Allocates internal buffer in GPU memory. If internal buffer was created
    * before the function recreates it with new size. If new and old sizes are equal it
@@ -192,7 +192,7 @@ public:
    * \param rows_arg number of rows to allocate
    * \param colsBytes_arg width of the buffer in bytes
    * */
-  DeviceMemory2D(int rows_arg, int colsBytes_arg);
+  DeviceMemory2D (int rows_arg, int colsBytes_arg);
 
   /** \brief Initializes with user allocated buffer. Reference counting is disabled in
    * this case.
@@ -201,14 +201,17 @@ public:
    * \param data_arg pointer to buffer
    * \param step_arg stride between two consecutive rows in bytes
    * */
-  DeviceMemory2D(int rows_arg, int colsBytes_arg, void* data_arg, std::size_t step_arg);
+  DeviceMemory2D (int rows_arg,
+                  int colsBytes_arg,
+                  void* data_arg,
+                  std::size_t step_arg);
 
   /** \brief Copy constructor. Just increments reference counter. */
-  DeviceMemory2D(const DeviceMemory2D& other_arg);
+  DeviceMemory2D (const DeviceMemory2D& other_arg);
 
   /** \brief Assignment operator. Just increments reference counter. */
   DeviceMemory2D&
-  operator=(const DeviceMemory2D& other_arg);
+  operator= (const DeviceMemory2D& other_arg);
 
   /** \brief Allocates internal buffer in GPU memory. If internal buffer was created
    * before the function recreates it with new size. If new and old sizes are equal it

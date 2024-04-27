@@ -91,12 +91,12 @@ public:
    * transformation evaluation \param[in] correspondences a reference to the current set
    * of point correspondences between source and target
    */
-  DefaultConvergenceCriteria(const int& iterations,
-                             const Matrix4& transform,
-                             const pcl::Correspondences& correspondences)
-  : iterations_(iterations)
-  , transformation_(transform)
-  , correspondences_(correspondences)
+  DefaultConvergenceCriteria (const int& iterations,
+                              const Matrix4& transform,
+                              const pcl::Correspondences& correspondences)
+  : iterations_ (iterations)
+  , transformation_ (transform)
+  , correspondences_ (correspondences)
   {}
 
   /** \brief Empty destructor */
@@ -264,7 +264,7 @@ protected:
     double mse = 0;
     for (const auto& correspondence : correspondences)
       mse += correspondence.distance;
-    mse /= static_cast<double>(correspondences.size());
+    mse /= static_cast<double> (correspondences.size());
     return (mse);
   }
 

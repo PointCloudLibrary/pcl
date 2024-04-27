@@ -42,7 +42,7 @@
 
 /////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::AgastKeypoint2D<pcl::PointXYZ, pcl::PointUV>::detectKeypoints(
+pcl::AgastKeypoint2D<pcl::PointXYZ, pcl::PointUV>::detectKeypoints (
     pcl::PointCloud<pcl::PointUV>& output)
 {
   // image size
@@ -50,25 +50,25 @@ pcl::AgastKeypoint2D<pcl::PointXYZ, pcl::PointUV>::detectKeypoints(
   const std::size_t height = input_->height;
 
   // destination for intensity data; will be forwarded to AGAST
-  std::vector<float> image_data(width * height);
+  std::vector<float> image_data (width * height);
 
   for (std::size_t i = 0; i < image_data.size(); ++i)
-    image_data[i] = static_cast<float>(intensity_((*input_)[i]));
+    image_data[i] = static_cast<float> (intensity_ ((*input_)[i]));
 
   if (!detector_)
-    detector_.reset(new pcl::keypoints::agast::AgastDetector7_12s(
+    detector_.reset (new pcl::keypoints::agast::AgastDetector7_12s (
         width, height, threshold_, bmax_));
 
-  detector_->setMaxKeypoints(nr_max_keypoints_);
+  detector_->setMaxKeypoints (nr_max_keypoints_);
 
   if (apply_non_max_suppression_) {
     pcl::PointCloud<pcl::PointUV> tmp_cloud;
 
-    detector_->detectKeypoints(image_data, tmp_cloud);
-    detector_->applyNonMaxSuppression(image_data, tmp_cloud, output);
+    detector_->detectKeypoints (image_data, tmp_cloud);
+    detector_->applyNonMaxSuppression (image_data, tmp_cloud, output);
   }
   else {
-    detector_->detectKeypoints(image_data, output);
+    detector_->detectKeypoints (image_data, output);
   }
 
   // we don not change the denseness
@@ -77,11 +77,11 @@ pcl::AgastKeypoint2D<pcl::PointXYZ, pcl::PointUV>::detectKeypoints(
 
 /////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::keypoints::agast::AbstractAgastDetector::detectKeypoints(
+pcl::keypoints::agast::AbstractAgastDetector::detectKeypoints (
     const std::vector<unsigned char>& intensity_data,
     pcl::PointCloud<pcl::PointUV>& output) const
 {
-  detect(intensity_data.data(), output.points);
+  detect (intensity_data.data(), output.points);
 
   output.height = 1;
   output.width = output.size();
@@ -89,11 +89,11 @@ pcl::keypoints::agast::AbstractAgastDetector::detectKeypoints(
 
 /////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::keypoints::agast::AbstractAgastDetector::detectKeypoints(
+pcl::keypoints::agast::AbstractAgastDetector::detectKeypoints (
     const std::vector<float>& intensity_data,
     pcl::PointCloud<pcl::PointUV>& output) const
 {
-  detect(intensity_data.data(), output.points);
+  detect (intensity_data.data(), output.points);
 
   output.height = 1;
   output.width = output.size();
@@ -101,7 +101,7 @@ pcl::keypoints::agast::AbstractAgastDetector::detectKeypoints(
 
 /////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::keypoints::agast::AbstractAgastDetector::applyNonMaxSuppression(
+pcl::keypoints::agast::AbstractAgastDetector::applyNonMaxSuppression (
     const pcl::PointCloud<pcl::PointUV>& input,
     const std::vector<ScoreIndex>& scores,
     pcl::PointCloud<pcl::PointUV>& output)
@@ -118,27 +118,27 @@ pcl::keypoints::agast::AbstractAgastDetector::applyNonMaxSuppression(
       curr_corner;
   int lastRowCorner_ind = 0, next_lastRowCorner_ind = 0;
   std::vector<int>::iterator nms_flags_p;
-  int num_corners_all = static_cast<int>(corners_all.size());
-  int n_max_corners = static_cast<int>(corners_nms.capacity());
+  int num_corners_all = static_cast<int> (corners_all.size());
+  int n_max_corners = static_cast<int> (corners_nms.capacity());
 
   curr_corner = corners_all.begin();
 
   if (num_corners_all > n_max_corners) {
     if (n_max_corners == 0) {
       n_max_corners = 512 > num_corners_all ? 512 : num_corners_all;
-      corners_nms.reserve(n_max_corners);
-      nms_flags.reserve(n_max_corners);
+      corners_nms.reserve (n_max_corners);
+      nms_flags.reserve (n_max_corners);
     }
     else {
       n_max_corners *= 2;
       if (num_corners_all > n_max_corners)
         n_max_corners = num_corners_all;
-      corners_nms.reserve(n_max_corners);
-      nms_flags.reserve(n_max_corners);
+      corners_nms.reserve (n_max_corners);
+      nms_flags.reserve (n_max_corners);
     }
   }
-  corners_nms.resize(num_corners_all);
-  nms_flags.resize(num_corners_all);
+  corners_nms.resize (num_corners_all);
+  nms_flags.resize (num_corners_all);
 
   nms_flags_p = nms_flags.begin();
 
@@ -156,7 +156,7 @@ pcl::keypoints::agast::AbstractAgastDetector::applyNonMaxSuppression(
       lastRowCorner_ind = next_lastRowCorner_ind;
     }
     if (next_lastRow != curr_corner->v) {
-      next_lastRow = static_cast<int>(curr_corner->v);
+      next_lastRow = static_cast<int> (curr_corner->v);
       next_lastRowCorner_ind = curr_corner_ind;
     }
     if (lastRow + 1 == curr_corner->v) {
@@ -216,10 +216,10 @@ pcl::keypoints::agast::AbstractAgastDetector::applyNonMaxSuppression(
   }
 
   // collecting maximum corners
-  corners_nms.resize(0);
+  corners_nms.resize (0);
   for (int curr_corner_ind = 0; curr_corner_ind < num_corners_all; curr_corner_ind++) {
     if (*nms_flags_p++ == -1)
-      corners_nms.push_back(corners_all[curr_corner_ind]);
+      corners_nms.push_back (corners_all[curr_corner_ind]);
   }
 
   output.height = 1;
@@ -229,117 +229,117 @@ pcl::keypoints::agast::AbstractAgastDetector::applyNonMaxSuppression(
 
 /////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::keypoints::agast::AbstractAgastDetector::applyNonMaxSuppression(
+pcl::keypoints::agast::AbstractAgastDetector::applyNonMaxSuppression (
     const std::vector<unsigned char>& intensity_data,
     const pcl::PointCloud<pcl::PointUV>& input,
     pcl::PointCloud<pcl::PointUV>& output)
 {
   std::vector<ScoreIndex> scores;
-  computeCornerScores(intensity_data.data(), input.points, scores);
+  computeCornerScores (intensity_data.data(), input.points, scores);
 
   // If a threshold for the maximum number of keypoints is given
   if (nr_max_keypoints_ <= scores.size()) // std::numeric_limits<unsigned int>::max ())
   {
-    std::sort(scores.begin(), scores.end(), CompareScoreIndex());
+    std::sort (scores.begin(), scores.end(), CompareScoreIndex());
 
-    scores.resize(nr_max_keypoints_);
+    scores.resize (nr_max_keypoints_);
 
     // Need to copy the points
     pcl::PointCloud<pcl::PointUV> best_input;
-    best_input.resize(nr_max_keypoints_);
+    best_input.resize (nr_max_keypoints_);
     for (std::size_t i = 0; i < scores.size(); ++i)
       best_input[i] = input[scores[i].idx];
-    applyNonMaxSuppression(best_input, scores, output);
+    applyNonMaxSuppression (best_input, scores, output);
   }
   else
-    applyNonMaxSuppression(input, scores, output);
+    applyNonMaxSuppression (input, scores, output);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::keypoints::agast::AbstractAgastDetector::applyNonMaxSuppression(
+pcl::keypoints::agast::AbstractAgastDetector::applyNonMaxSuppression (
     const std::vector<float>& intensity_data,
     const pcl::PointCloud<pcl::PointUV>& input,
     pcl::PointCloud<pcl::PointUV>& output)
 {
   std::vector<ScoreIndex> scores;
-  computeCornerScores(intensity_data.data(), input.points, scores);
+  computeCornerScores (intensity_data.data(), input.points, scores);
 
   // If a threshold for the maximum number of keypoints is given
   if (nr_max_keypoints_ <= scores.size()) // std::numeric_limits<unsigned int>::max ())
   {
-    std::sort(scores.begin(), scores.end(), CompareScoreIndex());
+    std::sort (scores.begin(), scores.end(), CompareScoreIndex());
 
-    scores.resize(nr_max_keypoints_);
+    scores.resize (nr_max_keypoints_);
 
     // Need to copy the points
     pcl::PointCloud<pcl::PointUV> best_input;
-    best_input.resize(nr_max_keypoints_);
+    best_input.resize (nr_max_keypoints_);
     for (std::size_t i = 0; i < scores.size(); ++i)
       best_input[i] = input[scores[i].idx];
-    applyNonMaxSuppression(best_input, scores, output);
+    applyNonMaxSuppression (best_input, scores, output);
   }
   else
-    applyNonMaxSuppression(input, scores, output);
+    applyNonMaxSuppression (input, scores, output);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::keypoints::agast::AbstractAgastDetector::computeCornerScores(
+pcl::keypoints::agast::AbstractAgastDetector::computeCornerScores (
     const unsigned char* im,
     const std::vector<pcl::PointUV, Eigen::aligned_allocator<pcl::PointUV>>&
         corners_all,
     std::vector<ScoreIndex>& scores) const
 {
-  auto num_corners = static_cast<unsigned int>(corners_all.size());
+  auto num_corners = static_cast<unsigned int> (corners_all.size());
 
   if (num_corners > scores.capacity()) {
     if (scores.capacity() == 0)
-      scores.reserve(512 > num_corners ? 512 : num_corners);
+      scores.reserve (512 > num_corners ? 512 : num_corners);
     else {
-      unsigned int nScores = static_cast<unsigned int>(scores.capacity()) * 2;
+      unsigned int nScores = static_cast<unsigned int> (scores.capacity()) * 2;
       if (num_corners > nScores)
         nScores = num_corners;
-      scores.reserve(nScores);
+      scores.reserve (nScores);
     }
   }
-  scores.resize(num_corners);
+  scores.resize (num_corners);
 
   for (unsigned int n = 0; n < num_corners; n++) {
     scores[n].idx = n;
     scores[n].score =
-        computeCornerScore(im + static_cast<std::size_t>(corners_all[n].v) * width_ +
-                           static_cast<std::size_t>(corners_all[n].u));
+        computeCornerScore (im + static_cast<std::size_t> (corners_all[n].v) * width_ +
+                            static_cast<std::size_t> (corners_all[n].u));
   }
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::keypoints::agast::AbstractAgastDetector::computeCornerScores(
+pcl::keypoints::agast::AbstractAgastDetector::computeCornerScores (
     const float* im,
     const std::vector<pcl::PointUV, Eigen::aligned_allocator<pcl::PointUV>>&
         corners_all,
     std::vector<ScoreIndex>& scores) const
 {
-  auto num_corners = static_cast<unsigned int>(corners_all.size());
+  auto num_corners = static_cast<unsigned int> (corners_all.size());
 
   if (num_corners > scores.capacity()) {
     if (scores.capacity() == 0)
-      scores.reserve(512 > num_corners ? 512 : num_corners);
+      scores.reserve (512 > num_corners ? 512 : num_corners);
     else {
-      unsigned int nScores = static_cast<unsigned int>(scores.capacity()) * 2;
+      unsigned int nScores = static_cast<unsigned int> (scores.capacity()) * 2;
       if (num_corners > nScores)
         nScores = num_corners;
-      scores.reserve(nScores);
+      scores.reserve (nScores);
     }
   }
-  scores.resize(num_corners);
+  scores.resize (num_corners);
 
   for (unsigned int n = 0; n < num_corners; n++) {
     scores[n].idx = n;
     scores[n].score =
-        computeCornerScore(im + static_cast<std::size_t>(corners_all[n].v) * width_ +
-                           static_cast<std::size_t>(corners_all[n].u));
+        computeCornerScore (im + static_cast<std::size_t> (corners_all[n].v) * width_ +
+                            static_cast<std::size_t> (corners_all[n].u));
   }
 }
 
@@ -362,7 +362,7 @@ AgastDetector7_12s_detect (
     std::vector<pcl::PointUV, Eigen::aligned_allocator<pcl::PointUV>>& corners)
 {
   int total = 0;
-  int n_expected_corners = static_cast<int>(corners.capacity());
+  int n_expected_corners = static_cast<int> (corners.capacity());
   pcl::PointUV h;
   int width_b = img_width - 3; // 2, +1 due to faster test x>width_b
   int height_b = img_height - 2;
@@ -370,7 +370,7 @@ AgastDetector7_12s_detect (
       offset7, offset8, offset9, offset10, offset11;
   int width;
 
-  corners.resize(0);
+  corners.resize (0);
 
   offset0 = offset[0];
   offset1 = offset[1];
@@ -395,8 +395,8 @@ AgastDetector7_12s_detect (
         break;
       else {
         const T1* const p = im + y * width + x;
-        const T2 cb = *p + static_cast<T2>(threshold);
-        const T2 c_b = *p - static_cast<T2>(threshold);
+        const T2 cb = *p + static_cast<T2> (threshold);
+        const T2 c_b = *p - static_cast<T2> (threshold);
         if (p[offset0] > cb)
           if (p[offset2] > cb)
             if (p[offset5] > cb)
@@ -1316,8 +1316,8 @@ AgastDetector7_12s_detect (
         break;
       else {
         const T1* const p = im + y * width + x;
-        const T2 cb = *p + static_cast<T2>(threshold);
-        const T2 c_b = *p - static_cast<T2>(threshold);
+        const T2 cb = *p + static_cast<T2> (threshold);
+        const T2 c_b = *p - static_cast<T2> (threshold);
         if (p[offset0] > cb)
           if (p[offset2] > cb)
             if (p[offset5] > cb)
@@ -2173,32 +2173,32 @@ AgastDetector7_12s_detect (
       if (total == n_expected_corners) {
         if (n_expected_corners == 0) {
           n_expected_corners = 512;
-          corners.reserve(n_expected_corners);
+          corners.reserve (n_expected_corners);
         }
         else {
           n_expected_corners *= 2;
-          corners.reserve(n_expected_corners);
+          corners.reserve (n_expected_corners);
         }
       }
-      h.u = static_cast<float>(x);
-      h.v = static_cast<float>(y);
-      corners.push_back(h);
+      h.u = static_cast<float> (x);
+      h.v = static_cast<float> (y);
+      corners.push_back (h);
       total++;
       goto homogeneous;
     success_structured:
       if (total == n_expected_corners) {
         if (n_expected_corners == 0) {
           n_expected_corners = 512;
-          corners.reserve(n_expected_corners);
+          corners.reserve (n_expected_corners);
         }
         else {
           n_expected_corners *= 2;
-          corners.reserve(n_expected_corners);
+          corners.reserve (n_expected_corners);
         }
       }
-      h.u = static_cast<float>(x);
-      h.v = static_cast<float>(y);
-      corners.push_back(h);
+      h.u = static_cast<float> (x);
+      h.v = static_cast<float> (y);
+      corners.push_back (h);
       total++;
       goto structured;
     }
@@ -3186,38 +3186,38 @@ AgastDetector7_12s_computeCornerScore (const T1* p,
                                        double score_threshold,
                                        const std::array<std::int_fast16_t, 12>& offset)
 {
-  T2 bmin = static_cast<T2>(score_threshold);
-  T2 bmax = static_cast<T2>(im_bmax); // 255;
-  int b_test = static_cast<int>((bmax + bmin) / 2);
+  T2 bmin = static_cast<T2> (score_threshold);
+  T2 bmax = static_cast<T2> (im_bmax); // 255;
+  int b_test = static_cast<int> ((bmax + bmin) / 2);
 
   while (true) {
-    const T2 cb = *p + static_cast<T2>(b_test);
-    const T2 c_b = *p - static_cast<T2>(b_test);
+    const T2 cb = *p + static_cast<T2> (b_test);
+    const T2 c_b = *p - static_cast<T2> (b_test);
 
-    if (AgastDetector7_12s_is_a_corner(p,
-                                       cb,
-                                       c_b,
-                                       offset[0],
-                                       offset[1],
-                                       offset[2],
-                                       offset[3],
-                                       offset[4],
-                                       offset[5],
-                                       offset[6],
-                                       offset[7],
-                                       offset[8],
-                                       offset[9],
-                                       offset[10],
-                                       offset[11])) {
-      bmin = static_cast<T2>(b_test);
+    if (AgastDetector7_12s_is_a_corner (p,
+                                        cb,
+                                        c_b,
+                                        offset[0],
+                                        offset[1],
+                                        offset[2],
+                                        offset[3],
+                                        offset[4],
+                                        offset[5],
+                                        offset[6],
+                                        offset[7],
+                                        offset[8],
+                                        offset[9],
+                                        offset[10],
+                                        offset[11])) {
+      bmin = static_cast<T2> (b_test);
     }
     else {
-      bmax = static_cast<T2>(b_test);
+      bmax = static_cast<T2> (b_test);
     }
 
     if (bmin == bmax - 1 || bmin == bmax)
-      return (static_cast<int>(bmin));
-    b_test = static_cast<int>((bmin + bmax) / 2);
+      return (static_cast<int> (bmin));
+    b_test = static_cast<int> ((bmin + bmax) / 2);
   }
 }
 } // namespace agast
@@ -3230,62 +3230,62 @@ AgastDetector7_12s_computeCornerScore (const T1* p,
 void
 pcl::keypoints::agast::AgastDetector7_12s::initPattern()
 {
-  offset_[0] = static_cast<std::int_fast16_t>((-2) + (0) * width_);
-  offset_[1] = static_cast<std::int_fast16_t>((-2) + (-1) * width_);
-  offset_[2] = static_cast<std::int_fast16_t>((-1) + (-2) * width_);
-  offset_[3] = static_cast<std::int_fast16_t>((0) + (-2) * width_);
-  offset_[4] = static_cast<std::int_fast16_t>((1) + (-2) * width_);
-  offset_[5] = static_cast<std::int_fast16_t>((2) + (-1) * width_);
-  offset_[6] = static_cast<std::int_fast16_t>((2) + (0) * width_);
-  offset_[7] = static_cast<std::int_fast16_t>((2) + (1) * width_);
-  offset_[8] = static_cast<std::int_fast16_t>((1) + (2) * width_);
-  offset_[9] = static_cast<std::int_fast16_t>((0) + (2) * width_);
-  offset_[10] = static_cast<std::int_fast16_t>((-1) + (2) * width_);
-  offset_[11] = static_cast<std::int_fast16_t>((-2) + (1) * width_);
+  offset_[0] = static_cast<std::int_fast16_t> ((-2) + (0) * width_);
+  offset_[1] = static_cast<std::int_fast16_t> ((-2) + (-1) * width_);
+  offset_[2] = static_cast<std::int_fast16_t> ((-1) + (-2) * width_);
+  offset_[3] = static_cast<std::int_fast16_t> ((0) + (-2) * width_);
+  offset_[4] = static_cast<std::int_fast16_t> ((1) + (-2) * width_);
+  offset_[5] = static_cast<std::int_fast16_t> ((2) + (-1) * width_);
+  offset_[6] = static_cast<std::int_fast16_t> ((2) + (0) * width_);
+  offset_[7] = static_cast<std::int_fast16_t> ((2) + (1) * width_);
+  offset_[8] = static_cast<std::int_fast16_t> ((1) + (2) * width_);
+  offset_[9] = static_cast<std::int_fast16_t> ((0) + (2) * width_);
+  offset_[10] = static_cast<std::int_fast16_t> ((-1) + (2) * width_);
+  offset_[11] = static_cast<std::int_fast16_t> ((-2) + (1) * width_);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::keypoints::agast::AgastDetector7_12s::detect(
+pcl::keypoints::agast::AgastDetector7_12s::detect (
     const unsigned char* im,
     std::vector<pcl::PointUV, Eigen::aligned_allocator<pcl::PointUV>>& corners) const
 {
-  return (AgastDetector7_12s_detect<unsigned char, int>(im,
-                                                        static_cast<int>(width_),
-                                                        static_cast<int>(height_),
-                                                        threshold_,
-                                                        offset_,
-                                                        corners));
+  return (AgastDetector7_12s_detect<unsigned char, int> (im,
+                                                         static_cast<int> (width_),
+                                                         static_cast<int> (height_),
+                                                         threshold_,
+                                                         offset_,
+                                                         corners));
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::keypoints::agast::AgastDetector7_12s::detect(
+pcl::keypoints::agast::AgastDetector7_12s::detect (
     const float* im,
     std::vector<pcl::PointUV, Eigen::aligned_allocator<pcl::PointUV>>& corners) const
 {
-  return (AgastDetector7_12s_detect<float, float>(im,
-                                                  static_cast<int>(width_),
-                                                  static_cast<int>(height_),
-                                                  threshold_,
-                                                  offset_,
-                                                  corners));
+  return (AgastDetector7_12s_detect<float, float> (im,
+                                                   static_cast<int> (width_),
+                                                   static_cast<int> (height_),
+                                                   threshold_,
+                                                   offset_,
+                                                   corners));
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
 int
-pcl::keypoints::agast::AgastDetector7_12s::computeCornerScore(
+pcl::keypoints::agast::AgastDetector7_12s::computeCornerScore (
     const unsigned char* p) const
 {
-  return (AgastDetector7_12s_computeCornerScore<unsigned char, int>(
+  return (AgastDetector7_12s_computeCornerScore<unsigned char, int> (
       p, bmax_, threshold_, offset_));
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
 int
-pcl::keypoints::agast::AgastDetector7_12s::computeCornerScore(const float* p) const
+pcl::keypoints::agast::AgastDetector7_12s::computeCornerScore (const float* p) const
 {
-  return (AgastDetector7_12s_computeCornerScore<float, float>(
+  return (AgastDetector7_12s_computeCornerScore<float, float> (
       p, bmax_, threshold_, offset_));
 }
 
@@ -3308,7 +3308,7 @@ AgastDetector5_8_detect (
     std::vector<pcl::PointUV, Eigen::aligned_allocator<pcl::PointUV>>& corners)
 {
   int total = 0;
-  int n_expected_corners = static_cast<int>(corners.capacity());
+  int n_expected_corners = static_cast<int> (corners.capacity());
   pcl::PointUV h;
   int xsize_b = (img_width)-2;
   int ysize_b = (img_height)-1;
@@ -3316,7 +3316,7 @@ AgastDetector5_8_detect (
       offset7;
   int width;
 
-  corners.resize(0);
+  corners.resize (0);
 
   offset0 = offset[0];
   offset1 = offset[1];
@@ -3337,8 +3337,8 @@ AgastDetector5_8_detect (
         break;
       else {
         const T1* const p = im + y * width + x;
-        const T2 cb = *p + static_cast<T2>(threshold);
-        const T2 c_b = *p - static_cast<T2>(threshold);
+        const T2 cb = *p + static_cast<T2> (threshold);
+        const T2 c_b = *p - static_cast<T2> (threshold);
         if (p[offset0] > cb)
           if (p[offset2] > cb)
             if (p[offset3] > cb)
@@ -3635,8 +3635,8 @@ AgastDetector5_8_detect (
         break;
       else {
         const T1* const p = im + y * width + x;
-        const T2 cb = *p + static_cast<T2>(threshold);
-        const T2 c_b = *p - static_cast<T2>(threshold);
+        const T2 cb = *p + static_cast<T2> (threshold);
+        const T2 c_b = *p - static_cast<T2> (threshold);
         if (p[offset0] > cb)
           if (p[offset2] > cb)
             if (p[offset3] > cb)
@@ -3942,32 +3942,32 @@ AgastDetector5_8_detect (
       if (total == n_expected_corners) {
         if (n_expected_corners == 0) {
           n_expected_corners = 512;
-          corners.reserve(n_expected_corners);
+          corners.reserve (n_expected_corners);
         }
         else {
           n_expected_corners *= 2;
-          corners.reserve(n_expected_corners);
+          corners.reserve (n_expected_corners);
         }
       }
-      h.u = static_cast<float>(x);
-      h.v = static_cast<float>(y);
-      corners.push_back(h);
+      h.u = static_cast<float> (x);
+      h.v = static_cast<float> (y);
+      corners.push_back (h);
       total++;
       goto homogeneous;
     success_structured:
       if (total == n_expected_corners) {
         if (n_expected_corners == 0) {
           n_expected_corners = 512;
-          corners.reserve(n_expected_corners);
+          corners.reserve (n_expected_corners);
         }
         else {
           n_expected_corners *= 2;
-          corners.reserve(n_expected_corners);
+          corners.reserve (n_expected_corners);
         }
       }
-      h.u = static_cast<float>(x);
-      h.v = static_cast<float>(y);
-      corners.push_back(h);
+      h.u = static_cast<float> (x);
+      h.v = static_cast<float> (y);
+      corners.push_back (h);
       total++;
       goto structured;
     }
@@ -4092,34 +4092,34 @@ AgastDetector5_8_computeCornerScore (const T1* p,
                                      double score_threshold,
                                      const std::array<std::int_fast16_t, 8>& offset)
 {
-  T2 bmin = static_cast<T2>(score_threshold);
-  T2 bmax = static_cast<T2>(im_bmax);
-  int b_test = static_cast<int>((bmax + bmin) / 2);
+  T2 bmin = static_cast<T2> (score_threshold);
+  T2 bmax = static_cast<T2> (im_bmax);
+  int b_test = static_cast<int> ((bmax + bmin) / 2);
 
   while (true) {
-    const T2 cb = *p + static_cast<T2>(b_test);
-    const T2 c_b = *p - static_cast<T2>(b_test);
+    const T2 cb = *p + static_cast<T2> (b_test);
+    const T2 c_b = *p - static_cast<T2> (b_test);
 
-    if (AgastDetector5_8_is_a_corner(p,
-                                     cb,
-                                     c_b,
-                                     offset[0],
-                                     offset[1],
-                                     offset[2],
-                                     offset[3],
-                                     offset[4],
-                                     offset[5],
-                                     offset[6],
-                                     offset[7])) {
-      bmin = static_cast<T2>(b_test);
+    if (AgastDetector5_8_is_a_corner (p,
+                                      cb,
+                                      c_b,
+                                      offset[0],
+                                      offset[1],
+                                      offset[2],
+                                      offset[3],
+                                      offset[4],
+                                      offset[5],
+                                      offset[6],
+                                      offset[7])) {
+      bmin = static_cast<T2> (b_test);
     }
     else {
-      bmax = static_cast<T2>(b_test);
+      bmax = static_cast<T2> (b_test);
     }
 
     if (bmin == bmax - 1 || bmin == bmax)
-      return (static_cast<int>(bmin));
-    b_test = static_cast<int>((bmin + bmax) / 2);
+      return (static_cast<int> (bmin));
+    b_test = static_cast<int> ((bmin + bmax) / 2);
   }
 }
 } // namespace agast
@@ -4131,59 +4131,59 @@ AgastDetector5_8_computeCornerScore (const T1* p,
 void
 pcl::keypoints::agast::AgastDetector5_8::initPattern()
 {
-  offset_[0] = static_cast<std::int_fast16_t>((-1) + (0) * width_);
-  offset_[1] = static_cast<std::int_fast16_t>((-1) + (-1) * width_);
-  offset_[2] = static_cast<std::int_fast16_t>((0) + (-1) * width_);
-  offset_[3] = static_cast<std::int_fast16_t>((1) + (-1) * width_);
-  offset_[4] = static_cast<std::int_fast16_t>((1) + (0) * width_);
-  offset_[5] = static_cast<std::int_fast16_t>((1) + (1) * width_);
-  offset_[6] = static_cast<std::int_fast16_t>((0) + (1) * width_);
-  offset_[7] = static_cast<std::int_fast16_t>((-1) + (1) * width_);
+  offset_[0] = static_cast<std::int_fast16_t> ((-1) + (0) * width_);
+  offset_[1] = static_cast<std::int_fast16_t> ((-1) + (-1) * width_);
+  offset_[2] = static_cast<std::int_fast16_t> ((0) + (-1) * width_);
+  offset_[3] = static_cast<std::int_fast16_t> ((1) + (-1) * width_);
+  offset_[4] = static_cast<std::int_fast16_t> ((1) + (0) * width_);
+  offset_[5] = static_cast<std::int_fast16_t> ((1) + (1) * width_);
+  offset_[6] = static_cast<std::int_fast16_t> ((0) + (1) * width_);
+  offset_[7] = static_cast<std::int_fast16_t> ((-1) + (1) * width_);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::keypoints::agast::AgastDetector5_8::detect(
+pcl::keypoints::agast::AgastDetector5_8::detect (
     const unsigned char* im,
     std::vector<pcl::PointUV, Eigen::aligned_allocator<pcl::PointUV>>& corners) const
 {
-  return (AgastDetector5_8_detect<unsigned char, int>(im,
-                                                      static_cast<int>(width_),
-                                                      static_cast<int>(height_),
-                                                      threshold_,
-                                                      offset_,
-                                                      corners));
+  return (AgastDetector5_8_detect<unsigned char, int> (im,
+                                                       static_cast<int> (width_),
+                                                       static_cast<int> (height_),
+                                                       threshold_,
+                                                       offset_,
+                                                       corners));
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::keypoints::agast::AgastDetector5_8::detect(
+pcl::keypoints::agast::AgastDetector5_8::detect (
     const float* im,
     std::vector<pcl::PointUV, Eigen::aligned_allocator<pcl::PointUV>>& corners) const
 {
-  return (AgastDetector5_8_detect<float, float>(im,
-                                                static_cast<int>(width_),
-                                                static_cast<int>(height_),
-                                                threshold_,
-                                                offset_,
-                                                corners));
+  return (AgastDetector5_8_detect<float, float> (im,
+                                                 static_cast<int> (width_),
+                                                 static_cast<int> (height_),
+                                                 threshold_,
+                                                 offset_,
+                                                 corners));
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
 int
-pcl::keypoints::agast::AgastDetector5_8::computeCornerScore(
+pcl::keypoints::agast::AgastDetector5_8::computeCornerScore (
     const unsigned char* p) const
 {
-  return (AgastDetector5_8_computeCornerScore<unsigned char, int>(
+  return (AgastDetector5_8_computeCornerScore<unsigned char, int> (
       p, bmax_, threshold_, offset_));
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
 int
-pcl::keypoints::agast::AgastDetector5_8::computeCornerScore(const float* p) const
+pcl::keypoints::agast::AgastDetector5_8::computeCornerScore (const float* p) const
 {
-  return (
-      AgastDetector5_8_computeCornerScore<float, float>(p, bmax_, threshold_, offset_));
+  return (AgastDetector5_8_computeCornerScore<float, float> (
+      p, bmax_, threshold_, offset_));
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -4205,7 +4205,7 @@ OastDetector9_16_detect (
     std::vector<pcl::PointUV, Eigen::aligned_allocator<pcl::PointUV>>& corners)
 {
   int total = 0;
-  int n_expected_corners = static_cast<int>(corners.capacity());
+  int n_expected_corners = static_cast<int> (corners.capacity());
   pcl::PointUV h;
   int xsize_b = (img_width)-4;
   int ysize_b = (img_height)-3;
@@ -4214,7 +4214,7 @@ OastDetector9_16_detect (
       offset15;
   int width;
 
-  corners.resize(0);
+  corners.resize (0);
 
   offset0 = offset[0];
   offset1 = offset[1];
@@ -4242,8 +4242,8 @@ OastDetector9_16_detect (
         break;
       else {
         const T1* const p = im + y * width + x;
-        const T2 cb = *p + static_cast<T2>(threshold);
-        const T2 c_b = *p - static_cast<T2>(threshold);
+        const T2 cb = *p + static_cast<T2> (threshold);
+        const T2 c_b = *p - static_cast<T2> (threshold);
         if (p[offset0] > cb)
           if (p[offset2] > cb)
             if (p[offset4] > cb)
@@ -6146,16 +6146,16 @@ OastDetector9_16_detect (
       if (total == n_expected_corners) {
         if (n_expected_corners == 0) {
           n_expected_corners = 512;
-          corners.reserve(n_expected_corners);
+          corners.reserve (n_expected_corners);
         }
         else {
           n_expected_corners *= 2;
-          corners.reserve(n_expected_corners);
+          corners.reserve (n_expected_corners);
         }
       }
-      h.u = static_cast<float>(x);
-      h.v = static_cast<float>(y);
-      corners.push_back(h);
+      h.u = static_cast<float> (x);
+      h.v = static_cast<float> (y);
+      corners.push_back (h);
       total++;
     }
   }
@@ -6170,9 +6170,9 @@ OastDetector9_16_computeCornerScore (const T1* p,
                                      double score_threshold,
                                      const std::array<std::int_fast16_t, 16>& offset)
 {
-  T2 bmin = static_cast<T2>(score_threshold);
-  T2 bmax = static_cast<T2>(im_bmax);
-  int b_test = static_cast<int>((bmax + bmin) / 2);
+  T2 bmin = static_cast<T2> (score_threshold);
+  T2 bmax = static_cast<T2> (im_bmax);
+  int b_test = static_cast<int> ((bmax + bmin) / 2);
 
   std::int_fast16_t offset0 = offset[0];
   std::int_fast16_t offset1 = offset[1];
@@ -6192,8 +6192,8 @@ OastDetector9_16_computeCornerScore (const T1* p,
   std::int_fast16_t offset15 = offset[15];
 
   while (true) {
-    const T2 cb = *p + static_cast<T2>(b_test);
-    const T2 c_b = *p - static_cast<T2>(b_test);
+    const T2 cb = *p + static_cast<T2> (b_test);
+    const T2 c_b = *p - static_cast<T2> (b_test);
     if (p[offset0] > cb)
       if (p[offset2] > cb)
         if (p[offset4] > cb)
@@ -8094,18 +8094,18 @@ OastDetector9_16_computeCornerScore (const T1* p,
       goto is_not_a_corner;
 
   is_a_corner:
-    bmin = static_cast<T2>(b_test);
+    bmin = static_cast<T2> (b_test);
     goto end;
 
   is_not_a_corner:
-    bmax = static_cast<T2>(b_test);
+    bmax = static_cast<T2> (b_test);
     goto end;
 
   end:
 
     if (bmin == bmax - 1 || bmin == bmax)
-      return (static_cast<int>(bmin));
-    b_test = static_cast<int>((bmin + bmax) / 2);
+      return (static_cast<int> (bmin));
+    b_test = static_cast<int> ((bmin + bmax) / 2);
   }
 }
 } // namespace agast
@@ -8118,65 +8118,65 @@ OastDetector9_16_computeCornerScore (const T1* p,
 void
 pcl::keypoints::agast::OastDetector9_16::initPattern()
 {
-  offset_[0] = static_cast<std::int_fast16_t>((-3) + (0) * width_);
-  offset_[1] = static_cast<std::int_fast16_t>((-3) + (-1) * width_);
-  offset_[2] = static_cast<std::int_fast16_t>((-2) + (-2) * width_);
-  offset_[3] = static_cast<std::int_fast16_t>((-1) + (-3) * width_);
-  offset_[4] = static_cast<std::int_fast16_t>((0) + (-3) * width_);
-  offset_[5] = static_cast<std::int_fast16_t>((1) + (-3) * width_);
-  offset_[6] = static_cast<std::int_fast16_t>((2) + (-2) * width_);
-  offset_[7] = static_cast<std::int_fast16_t>((3) + (-1) * width_);
-  offset_[8] = static_cast<std::int_fast16_t>((3) + (0) * width_);
-  offset_[9] = static_cast<std::int_fast16_t>((3) + (1) * width_);
-  offset_[10] = static_cast<std::int_fast16_t>((2) + (2) * width_);
-  offset_[11] = static_cast<std::int_fast16_t>((1) + (3) * width_);
-  offset_[12] = static_cast<std::int_fast16_t>((0) + (3) * width_);
-  offset_[13] = static_cast<std::int_fast16_t>((-1) + (3) * width_);
-  offset_[14] = static_cast<std::int_fast16_t>((-2) + (2) * width_);
-  offset_[15] = static_cast<std::int_fast16_t>((-3) + (1) * width_);
+  offset_[0] = static_cast<std::int_fast16_t> ((-3) + (0) * width_);
+  offset_[1] = static_cast<std::int_fast16_t> ((-3) + (-1) * width_);
+  offset_[2] = static_cast<std::int_fast16_t> ((-2) + (-2) * width_);
+  offset_[3] = static_cast<std::int_fast16_t> ((-1) + (-3) * width_);
+  offset_[4] = static_cast<std::int_fast16_t> ((0) + (-3) * width_);
+  offset_[5] = static_cast<std::int_fast16_t> ((1) + (-3) * width_);
+  offset_[6] = static_cast<std::int_fast16_t> ((2) + (-2) * width_);
+  offset_[7] = static_cast<std::int_fast16_t> ((3) + (-1) * width_);
+  offset_[8] = static_cast<std::int_fast16_t> ((3) + (0) * width_);
+  offset_[9] = static_cast<std::int_fast16_t> ((3) + (1) * width_);
+  offset_[10] = static_cast<std::int_fast16_t> ((2) + (2) * width_);
+  offset_[11] = static_cast<std::int_fast16_t> ((1) + (3) * width_);
+  offset_[12] = static_cast<std::int_fast16_t> ((0) + (3) * width_);
+  offset_[13] = static_cast<std::int_fast16_t> ((-1) + (3) * width_);
+  offset_[14] = static_cast<std::int_fast16_t> ((-2) + (2) * width_);
+  offset_[15] = static_cast<std::int_fast16_t> ((-3) + (1) * width_);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::keypoints::agast::OastDetector9_16::detect(
+pcl::keypoints::agast::OastDetector9_16::detect (
     const unsigned char* im,
     std::vector<pcl::PointUV, Eigen::aligned_allocator<pcl::PointUV>>& corners) const
 {
-  return (OastDetector9_16_detect<unsigned char, int>(im,
-                                                      static_cast<int>(width_),
-                                                      static_cast<int>(height_),
-                                                      threshold_,
-                                                      offset_,
-                                                      corners));
+  return (OastDetector9_16_detect<unsigned char, int> (im,
+                                                       static_cast<int> (width_),
+                                                       static_cast<int> (height_),
+                                                       threshold_,
+                                                       offset_,
+                                                       corners));
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::keypoints::agast::OastDetector9_16::detect(
+pcl::keypoints::agast::OastDetector9_16::detect (
     const float* im,
     std::vector<pcl::PointUV, Eigen::aligned_allocator<pcl::PointUV>>& corners) const
 {
-  return (OastDetector9_16_detect<float, float>(im,
-                                                static_cast<int>(width_),
-                                                static_cast<int>(height_),
-                                                threshold_,
-                                                offset_,
-                                                corners));
+  return (OastDetector9_16_detect<float, float> (im,
+                                                 static_cast<int> (width_),
+                                                 static_cast<int> (height_),
+                                                 threshold_,
+                                                 offset_,
+                                                 corners));
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
 int
-pcl::keypoints::agast::OastDetector9_16::computeCornerScore(
+pcl::keypoints::agast::OastDetector9_16::computeCornerScore (
     const unsigned char* p) const
 {
-  return (OastDetector9_16_computeCornerScore<unsigned char, int>(
+  return (OastDetector9_16_computeCornerScore<unsigned char, int> (
       p, bmax_, threshold_, offset_));
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
 int
-pcl::keypoints::agast::OastDetector9_16::computeCornerScore(const float* p) const
+pcl::keypoints::agast::OastDetector9_16::computeCornerScore (const float* p) const
 {
-  return (
-      OastDetector9_16_computeCornerScore<float, float>(p, bmax_, threshold_, offset_));
+  return (OastDetector9_16_computeCornerScore<float, float> (
+      p, bmax_, threshold_, offset_));
 }

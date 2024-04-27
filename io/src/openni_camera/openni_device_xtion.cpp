@@ -49,38 +49,38 @@
 #include <sstream>
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-openni_wrapper::DeviceXtionPro::DeviceXtionPro(xn::Context& context,
-                                               const xn::NodeInfo& device_node,
-                                               const xn::NodeInfo& depth_node,
-                                               const xn::NodeInfo& ir_node)
-: OpenNIDevice(context, device_node, depth_node, ir_node)
+openni_wrapper::DeviceXtionPro::DeviceXtionPro (xn::Context& context,
+                                                const xn::NodeInfo& device_node,
+                                                const xn::NodeInfo& depth_node,
+                                                const xn::NodeInfo& ir_node)
+: OpenNIDevice (context, device_node, depth_node, ir_node)
 {
   // setup stream modes
   enumAvailableModes();
-  setDepthOutputMode(getDefaultDepthMode());
-  setIROutputMode(getDefaultIRMode());
+  setDepthOutputMode (getDefaultDepthMode());
+  setIROutputMode (getDefaultIRMode());
 
-  std::lock_guard<std::mutex> depth_lock(depth_mutex_);
-  XnStatus status = depth_generator_.SetIntProperty("RegistrationType", 1);
+  std::lock_guard<std::mutex> depth_lock (depth_mutex_);
+  XnStatus status = depth_generator_.SetIntProperty ("RegistrationType", 1);
   if (status != XN_STATUS_OK)
-    THROW_OPENNI_EXCEPTION("Error setting the registration type. Reason: %s",
-                           xnGetStatusString(status));
+    THROW_OPENNI_EXCEPTION ("Error setting the registration type. Reason: %s",
+                            xnGetStatusString (status));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 openni_wrapper::DeviceXtionPro::~DeviceXtionPro() noexcept
 {
   depth_mutex_.lock();
-  depth_generator_.UnregisterFromNewDataAvailable(depth_callback_handle_);
+  depth_generator_.UnregisterFromNewDataAvailable (depth_callback_handle_);
   depth_mutex_.unlock();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 bool
-openni_wrapper::DeviceXtionPro::isImageResizeSupported(unsigned,
-                                                       unsigned,
-                                                       unsigned,
-                                                       unsigned) const noexcept
+openni_wrapper::DeviceXtionPro::isImageResizeSupported (unsigned,
+                                                        unsigned,
+                                                        unsigned,
+                                                        unsigned) const noexcept
 {
   return (false);
 }
@@ -97,35 +97,35 @@ openni_wrapper::DeviceXtionPro::enumAvailableModes() noexcept
   output_mode.nFPS = 30;
   output_mode.nXRes = XN_VGA_X_RES;
   output_mode.nYRes = XN_VGA_Y_RES;
-  available_depth_modes_.push_back(output_mode);
+  available_depth_modes_.push_back (output_mode);
 
   output_mode.nFPS = 25;
   output_mode.nXRes = XN_VGA_X_RES;
   output_mode.nYRes = XN_VGA_Y_RES;
-  available_depth_modes_.push_back(output_mode);
+  available_depth_modes_.push_back (output_mode);
 
   output_mode.nFPS = 25;
   output_mode.nXRes = XN_QVGA_X_RES;
   output_mode.nYRes = XN_QVGA_Y_RES;
-  available_depth_modes_.push_back(output_mode);
+  available_depth_modes_.push_back (output_mode);
 
   output_mode.nFPS = 30;
   output_mode.nXRes = XN_QVGA_X_RES;
   output_mode.nYRes = XN_QVGA_Y_RES;
-  available_depth_modes_.push_back(output_mode);
+  available_depth_modes_.push_back (output_mode);
 
   output_mode.nFPS = 60;
   output_mode.nXRes = XN_QVGA_X_RES;
   output_mode.nYRes = XN_QVGA_Y_RES;
-  available_depth_modes_.push_back(output_mode);
+  available_depth_modes_.push_back (output_mode);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 openni_wrapper::Image::Ptr
-openni_wrapper::DeviceXtionPro::getCurrentImage(
+openni_wrapper::DeviceXtionPro::getCurrentImage (
     pcl::shared_ptr<xn::ImageMetaData>) const noexcept
 {
-  return (Image::Ptr(reinterpret_cast<Image*>(0)));
+  return (Image::Ptr (reinterpret_cast<Image*> (0)));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -134,13 +134,13 @@ openni_wrapper::DeviceXtionPro::startDepthStream()
 {
   if (isDepthRegistered()) {
     // Reset the view point
-    setDepthRegistration(false);
+    setDepthRegistration (false);
 
     // Start the stream
     OpenNIDevice::startDepthStream();
 
     // Register the stream
-    setDepthRegistration(true);
+    setDepthRegistration (true);
   }
   else
     // Start the stream

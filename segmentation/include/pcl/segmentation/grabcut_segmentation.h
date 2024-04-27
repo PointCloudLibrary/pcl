@@ -64,7 +64,7 @@ public:
   using edge_capacity_type = double;
 
   /// construct a maxflow/mincut problem with estimated max_nodes
-  BoykovKolmogorov(std::size_t max_nodes = 0);
+  BoykovKolmogorov (std::size_t max_nodes = 0);
   /// destructor
   virtual ~BoykovKolmogorov() = default;
   /// get number of nodes in the graph
@@ -116,7 +116,7 @@ public:
   /// returns the residual capacity for an edge (use -1 for terminal (-1,-1) is the
   /// current flow
   double
-  operator()(int u, int v) const;
+  operator() (int u, int v) const;
 
   double
   getSourceEdgeCapacity (int u) const;
@@ -190,12 +190,12 @@ private:
 
 /**\brief Structure to save RGB colors into floats */
 struct Color {
-  Color() : r(0), g(0), b(0) {}
-  Color(float _r, float _g, float _b) : r(_r), g(_g), b(_b) {}
-  Color(const pcl::RGB& color) : r(color.r), g(color.g), b(color.b) {}
+  Color() : r (0), g (0), b (0) {}
+  Color (float _r, float _g, float _b) : r (_r), g (_g), b (_b) {}
+  Color (const pcl::RGB& color) : r (color.r), g (color.g), b (color.b) {}
 
   template <typename PointT>
-  Color(const PointT& p);
+  Color (const PointT& p);
 
   template <typename PointT>
   operator PointT() const;
@@ -237,9 +237,9 @@ struct Gaussian {
 class PCL_EXPORTS GMM {
 public:
   /// Initialize GMM with ddesired number of gaussians.
-  GMM() : gaussians_(0) {}
+  GMM() : gaussians_ (0) {}
   /// Initialize GMM with ddesired number of gaussians.
-  GMM(std::size_t K) : gaussians_(K) {}
+  GMM (std::size_t K) : gaussians_ (K) {}
   /// Destructor
   ~GMM() = default;
   /// \return K
@@ -252,17 +252,17 @@ public:
   void
   resize (std::size_t K)
   {
-    gaussians_.resize(K);
+    gaussians_.resize (K);
   }
   /// \return a reference to the gaussian at a given position
   Gaussian&
-  operator[](std::size_t pos)
+  operator[] (std::size_t pos)
   {
     return (gaussians_[pos]);
   }
   /// \return a const reference to the gaussian at a given position
   const Gaussian&
-  operator[](std::size_t pos) const
+  operator[] (std::size_t pos) const
   {
     return (gaussians_[pos]);
   }
@@ -281,7 +281,7 @@ private:
 /** Helper class that fits a single Gaussian to color samples */
 class GaussianFitter {
 public:
-  GaussianFitter(float epsilon = 0.0001f) : epsilon_(epsilon) {}
+  GaussianFitter (float epsilon = 0.0001f) : epsilon_ (epsilon) {}
 
   /// Add a color sample
   void
@@ -355,7 +355,7 @@ public:
   using PCLBase<PointT>::fake_indices_;
 
   /// Constructor
-  GrabCut(std::uint32_t K = 5, float lambda = 50.f) : K_(K), lambda_(lambda) {}
+  GrabCut (std::uint32_t K = 5, float lambda = 50.f) : K_ (K), lambda_ (lambda) {}
 
   /// Destructor
   ~GrabCut() override = default;
@@ -497,7 +497,7 @@ protected:
   inline bool
   isSource (vertex_descriptor v)
   {
-    return (graph_.inSourceTree(v));
+    return (graph_.inSourceTree (v));
   }
   /// image width
   std::uint32_t width_{0};

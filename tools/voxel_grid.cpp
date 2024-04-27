@@ -48,49 +48,50 @@ using namespace pcl::io;
 using namespace pcl::console;
 
 float default_leaf_size = 0.01f;
-std::string default_field("z");
+std::string default_field ("z");
 double default_filter_min = -std::numeric_limits<double>::max();
 double default_filter_max = std::numeric_limits<double>::max();
 
 void
 printHelp (int, char** argv)
 {
-  print_error("Syntax is: %s input.pcd output.pcd <options>\n", argv[0]);
-  print_info("  where options are:\n");
-  print_info("                     -leaf x,y,z   = the VoxelGrid leaf size (default: ");
-  print_value("%f, %f, %f", default_leaf_size, default_leaf_size, default_leaf_size);
-  print_info(")\n");
-  print_info("                     -field X      = filter data along this field name "
-             "(default: ");
-  print_value("%s", default_field.c_str());
-  print_info(")\n");
-  print_info("                     -fmin  X      = filter all data with values along "
-             "the specified field smaller than this value (default: ");
-  print_value("-inf");
-  print_info(")\n");
-  print_info("                     -fmax  X      = filter all data with values along "
-             "the specified field larger than this value (default: ");
-  print_value("inf");
-  print_info(")\n");
+  print_error ("Syntax is: %s input.pcd output.pcd <options>\n", argv[0]);
+  print_info ("  where options are:\n");
+  print_info (
+      "                     -leaf x,y,z   = the VoxelGrid leaf size (default: ");
+  print_value ("%f, %f, %f", default_leaf_size, default_leaf_size, default_leaf_size);
+  print_info (")\n");
+  print_info ("                     -field X      = filter data along this field name "
+              "(default: ");
+  print_value ("%s", default_field.c_str());
+  print_info (")\n");
+  print_info ("                     -fmin  X      = filter all data with values along "
+              "the specified field smaller than this value (default: ");
+  print_value ("-inf");
+  print_info (")\n");
+  print_info ("                     -fmax  X      = filter all data with values along "
+              "the specified field larger than this value (default: ");
+  print_value ("inf");
+  print_info (")\n");
 }
 
 bool
 loadCloud (const std::string& filename, pcl::PCLPointCloud2& cloud)
 {
   TicToc tt;
-  print_highlight("Loading ");
-  print_value("%s ", filename.c_str());
+  print_highlight ("Loading ");
+  print_value ("%s ", filename.c_str());
 
   tt.tic();
-  if (loadPCDFile(filename, cloud) < 0)
+  if (loadPCDFile (filename, cloud) < 0)
     return (false);
-  print_info("[done, ");
-  print_value("%g", tt.toc());
-  print_info(" ms : ");
-  print_value("%d", cloud.width * cloud.height);
-  print_info(" points]\n");
-  print_info("Available dimensions: ");
-  print_value("%s\n", pcl::getFieldsList(cloud).c_str());
+  print_info ("[done, ");
+  print_value ("%g", tt.toc());
+  print_info (" ms : ");
+  print_value ("%d", cloud.width * cloud.height);
+  print_info (" points]\n");
+  print_info ("Available dimensions: ");
+  print_value ("%s\n", pcl::getFieldsList (cloud).c_str());
 
   return (true);
 }
@@ -108,20 +109,20 @@ compute (const pcl::PCLPointCloud2::ConstPtr& input,
   TicToc tt;
   tt.tic();
 
-  print_highlight("Computing ");
+  print_highlight ("Computing ");
 
   VoxelGrid<pcl::PCLPointCloud2> grid;
-  grid.setInputCloud(input);
-  grid.setFilterFieldName(field);
-  grid.setFilterLimits(fmin, fmax);
-  grid.setLeafSize(leaf_x, leaf_y, leaf_z);
-  grid.filter(output);
+  grid.setInputCloud (input);
+  grid.setFilterFieldName (field);
+  grid.setFilterLimits (fmin, fmax);
+  grid.setLeafSize (leaf_x, leaf_y, leaf_z);
+  grid.filter (output);
 
-  print_info("[done, ");
-  print_value("%g", tt.toc());
-  print_info(" ms : ");
-  print_value("%d", output.width * output.height);
-  print_info(" points]\n");
+  print_info ("[done, ");
+  print_value ("%g", tt.toc());
+  print_info (" ms : ");
+  print_value ("%d", output.width * output.height);
+  print_info (" points]\n");
 }
 
 void
@@ -130,37 +131,37 @@ saveCloud (const std::string& filename, const pcl::PCLPointCloud2& output)
   TicToc tt;
   tt.tic();
 
-  print_highlight("Saving ");
-  print_value("%s ", filename.c_str());
+  print_highlight ("Saving ");
+  print_value ("%s ", filename.c_str());
 
   PCDWriter w;
-  w.writeBinaryCompressed(filename, output);
+  w.writeBinaryCompressed (filename, output);
 
-  print_info("[done, ");
-  print_value("%g", tt.toc());
-  print_info(" ms : ");
-  print_value("%d", output.width * output.height);
-  print_info(" points]\n");
+  print_info ("[done, ");
+  print_value ("%g", tt.toc());
+  print_info (" ms : ");
+  print_value ("%d", output.width * output.height);
+  print_info (" points]\n");
 }
 
 /* ---[ */
 int
 main (int argc, char** argv)
 {
-  print_info(
+  print_info (
       "Downsample a cloud using pcl::VoxelGrid. For more information, use: %s -h\n",
       argv[0]);
 
   if (argc < 3) {
-    printHelp(argc, argv);
+    printHelp (argc, argv);
     return (-1);
   }
 
   // Parse the command line arguments for .pcd files
   std::vector<int> p_file_indices;
-  p_file_indices = parse_file_extension_argument(argc, argv, ".pcd");
+  p_file_indices = parse_file_extension_argument (argc, argv, ".pcd");
   if (p_file_indices.size() != 2) {
-    print_error("Need one input PCD file and one output PCD file to continue.\n");
+    print_error ("Need one input PCD file and one output PCD file to continue.\n");
     return (-1);
   }
 
@@ -169,50 +170,51 @@ main (int argc, char** argv)
         leaf_z = default_leaf_size;
 
   std::vector<double> values;
-  parse_x_arguments(argc, argv, "-leaf", values);
+  parse_x_arguments (argc, argv, "-leaf", values);
   if (values.size() == 1) {
-    leaf_x = static_cast<float>(values[0]);
-    leaf_y = static_cast<float>(values[0]);
-    leaf_z = static_cast<float>(values[0]);
+    leaf_x = static_cast<float> (values[0]);
+    leaf_y = static_cast<float> (values[0]);
+    leaf_z = static_cast<float> (values[0]);
   }
   else if (values.size() == 3) {
-    leaf_x = static_cast<float>(values[0]);
-    leaf_y = static_cast<float>(values[1]);
-    leaf_z = static_cast<float>(values[2]);
+    leaf_x = static_cast<float> (values[0]);
+    leaf_y = static_cast<float> (values[1]);
+    leaf_z = static_cast<float> (values[2]);
   }
   else {
-    print_error("Leaf size must be specified with either 1 or 3 numbers (%lu given).\n",
-                values.size());
+    print_error (
+        "Leaf size must be specified with either 1 or 3 numbers (%lu given).\n",
+        values.size());
   }
-  print_info("Using a leaf size of: ");
-  print_value("%f, %f, %f\n", leaf_x, leaf_y, leaf_z);
+  print_info ("Using a leaf size of: ");
+  print_value ("%f, %f, %f\n", leaf_x, leaf_y, leaf_z);
 
-  std::string field(default_field);
-  parse_argument(argc, argv, "-field", field);
+  std::string field (default_field);
+  parse_argument (argc, argv, "-field", field);
   double fmin = default_filter_min, fmax = default_filter_max;
-  parse_argument(argc, argv, "-fmin", fmin);
-  parse_argument(argc, argv, "-fmax", fmax);
-  print_info("Filtering data on field: ");
-  print_value("%s", field.c_str());
-  print_info(" between: ");
+  parse_argument (argc, argv, "-fmin", fmin);
+  parse_argument (argc, argv, "-fmax", fmax);
+  print_info ("Filtering data on field: ");
+  print_value ("%s", field.c_str());
+  print_info (" between: ");
   if (fmin == -std::numeric_limits<double>::max())
-    print_value("-inf ->");
+    print_value ("-inf ->");
   else
-    print_value("%f ->", fmin);
+    print_value ("%f ->", fmin);
   if (fmax == std::numeric_limits<double>::max())
-    print_value("inf\n");
+    print_value ("inf\n");
   else
-    print_value("%f\n", fmax);
+    print_value ("%f\n", fmax);
 
   // Load the first file
-  pcl::PCLPointCloud2::Ptr cloud(new pcl::PCLPointCloud2);
-  if (!loadCloud(argv[p_file_indices[0]], *cloud))
+  pcl::PCLPointCloud2::Ptr cloud (new pcl::PCLPointCloud2);
+  if (!loadCloud (argv[p_file_indices[0]], *cloud))
     return (-1);
 
   // Apply the voxel grid
   pcl::PCLPointCloud2 output;
-  compute(cloud, output, leaf_x, leaf_y, leaf_z, field, fmin, fmax);
+  compute (cloud, output, leaf_x, leaf_y, leaf_z, field, fmin, fmax);
 
   // Save into the second file
-  saveCloud(argv[p_file_indices[1]], output);
+  saveCloud (argv[p_file_indices[1]], output);
 }

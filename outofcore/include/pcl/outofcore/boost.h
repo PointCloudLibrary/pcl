@@ -41,7 +41,7 @@
 #if defined __GNUC__
 #pragma GCC system_header
 #endif
-PCL_DEPRECATED_HEADER(1, 16, "Please include the needed boost headers directly.")
+PCL_DEPRECATED_HEADER (1, 16, "Please include the needed boost headers directly.")
 
 #include <boost/filesystem.hpp>
 #include <boost/foreach.hpp>

@@ -38,19 +38,19 @@
 #include <pcl/ml/point_xy_32f.h>
 
 pcl::PointXY32f
-pcl::PointXY32f::randomPoint(const int min_x,
-                             const int max_x,
-                             const int min_y,
-                             const int max_y)
+pcl::PointXY32f::randomPoint (const int min_x,
+                              const int max_x,
+                              const int min_y,
+                              const int max_y)
 {
-  const float width = static_cast<float>(max_x - min_x);
-  const float height = static_cast<float>(max_y - min_y);
+  const float width = static_cast<float> (max_x - min_x);
+  const float height = static_cast<float> (max_y - min_y);
 
   PointXY32f point;
-  point.x = width * static_cast<float>(rand()) / static_cast<float>(RAND_MAX) +
-            static_cast<float>(min_x);
-  point.y = height * static_cast<float>(rand()) / static_cast<float>(RAND_MAX) +
-            static_cast<float>(min_y);
+  point.x = width * static_cast<float> (rand()) / static_cast<float> (RAND_MAX) +
+            static_cast<float> (min_x);
+  point.y = height * static_cast<float> (rand()) / static_cast<float> (RAND_MAX) +
+            static_cast<float> (min_y);
 
   return point;
 }

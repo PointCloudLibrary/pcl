@@ -17,7 +17,7 @@
 #include "pcl/surface/3rdparty/opennurbs/opennurbs.h"
 
 bool
-ON_Brep::IsValidForV2(const ON_BrepTrim& trim) const
+ON_Brep::IsValidForV2 (const ON_BrepTrim& trim) const
 {
   int ti = trim.m_trim_index;
   if (ti < 0 || ti >= m_T.Count())
@@ -31,10 +31,10 @@ ON_Brep::IsValidForV2(const ON_BrepTrim& trim) const
   const ON_Curve* curve = trim.TrimCurveOf();
   if (curve != trim.ProxyCurve())
     return false;
-  const ON_NurbsCurve* nurbs_curve = ON_NurbsCurve::Cast(curve);
+  const ON_NurbsCurve* nurbs_curve = ON_NurbsCurve::Cast (curve);
   if (0 == nurbs_curve)
     return false;
-  if (!nurbs_curve->IsClamped(2))
+  if (!nurbs_curve->IsClamped (2))
     return false;
   if (nurbs_curve->m_dim != 2)
     return false;
@@ -42,20 +42,20 @@ ON_Brep::IsValidForV2(const ON_BrepTrim& trim) const
     // 2 June 2003 Dale Lear - RR 8809 fix
     //    V2 likes end weights to be 1.0
     if (nurbs_curve->m_cv[2] != 1.0 ||
-        nurbs_curve->CV(nurbs_curve->m_cv_count - 1)[2] != 1.0) {
+        nurbs_curve->CV (nurbs_curve->m_cv_count - 1)[2] != 1.0) {
       return false;
     }
   }
 
   if (nurbs_curve->m_cv_count >= 4 &&
-      0 == ON_ComparePoint(nurbs_curve->m_dim,
-                           nurbs_curve->m_is_rat,
-                           nurbs_curve->m_cv,
-                           nurbs_curve->CV(nurbs_curve->m_cv_count - 1))) {
+      0 == ON_ComparePoint (nurbs_curve->m_dim,
+                            nurbs_curve->m_is_rat,
+                            nurbs_curve->m_cv,
+                            nurbs_curve->CV (nurbs_curve->m_cv_count - 1))) {
     // 14 April 2003 Dale Lear
     //     RR 8843 - V2 wants ends of this trim farther apart
     if (trim.m_vi[0] != trim.m_vi[1]) {
-      const ON_BrepLoop* loop = Loop(trim.m_li);
+      const ON_BrepLoop* loop = Loop (trim.m_li);
       if (0 != loop && loop->m_ti.Count() > 1)
         return false;
     }
@@ -68,7 +68,7 @@ ON_Brep::IsValidForV2(const ON_BrepTrim& trim) const
 }
 
 bool
-ON_Brep::IsValidForV2(const ON_BrepEdge& edge) const
+ON_Brep::IsValidForV2 (const ON_BrepEdge& edge) const
 {
   int ei = edge.m_edge_index;
   if (ei < 0 || ei >= m_E.Count())
@@ -82,10 +82,10 @@ ON_Brep::IsValidForV2(const ON_BrepEdge& edge) const
   const ON_Curve* curve = edge.EdgeCurveOf();
   if (curve != edge.ProxyCurve())
     return false;
-  const ON_NurbsCurve* nurbs_curve = ON_NurbsCurve::Cast(curve);
+  const ON_NurbsCurve* nurbs_curve = ON_NurbsCurve::Cast (curve);
   if (0 == nurbs_curve)
     return false;
-  if (!nurbs_curve->IsClamped(2))
+  if (!nurbs_curve->IsClamped (2))
     return false;
   if (nurbs_curve->m_dim != 3)
     return false;
@@ -93,7 +93,7 @@ ON_Brep::IsValidForV2(const ON_BrepEdge& edge) const
     // 2 June 2003 Dale Lear - RR 8809 fix
     //    V2 likes end weights to be 1.0
     if (nurbs_curve->m_cv[3] != 1.0 ||
-        nurbs_curve->CV(nurbs_curve->m_cv_count - 1)[3] != 1.0) {
+        nurbs_curve->CV (nurbs_curve->m_cv_count - 1)[3] != 1.0) {
       return false;
     }
   }
@@ -104,10 +104,10 @@ ON_Brep::IsValidForV2(const ON_BrepEdge& edge) const
   // 14 April 2003 Dale Lear
   //     RR 8808 - V2 requires edges to be strictly closed/open
   if (nurbs_curve->m_cv_count >= 4 &&
-      0 == ON_ComparePoint(nurbs_curve->m_dim,
-                           nurbs_curve->m_is_rat,
-                           nurbs_curve->m_cv,
-                           nurbs_curve->CV(nurbs_curve->m_cv_count - 1))) {
+      0 == ON_ComparePoint (nurbs_curve->m_dim,
+                            nurbs_curve->m_is_rat,
+                            nurbs_curve->m_cv,
+                            nurbs_curve->CV (nurbs_curve->m_cv_count - 1))) {
     if (edge.m_vi[0] != edge.m_vi[1])
       return false;
   }
@@ -137,19 +137,19 @@ ON_Brep::IsValidForV2() const
 
     for (c2i = 0; c2i < c2_count; c2i++) {
       // v2 3dm files expect NURBS curves
-      if (!ON_NurbsCurve::Cast(m_C2[c2i]))
+      if (!ON_NurbsCurve::Cast (m_C2[c2i]))
         return false;
     }
 
     for (c3i = 0; c3i < c3_count; c3i++) {
       // v2 3dm files expect NURBS curves
-      if (!ON_NurbsCurve::Cast(m_C3[c3i]))
+      if (!ON_NurbsCurve::Cast (m_C3[c3i]))
         return false;
     }
 
     for (si = 0; si < s_count; si++) {
       // v2 3dm files expect NURBS surfaces
-      if (!ON_NurbsSurface::Cast(m_S[si]))
+      if (!ON_NurbsSurface::Cast (m_S[si]))
         return false;
     }
 
@@ -166,12 +166,12 @@ ON_Brep::IsValidForV2() const
     }
 
     for (ti = 0; ti < trim_count; ti++) {
-      if (!IsValidForV2(m_T[ti]))
+      if (!IsValidForV2 (m_T[ti]))
         return false;
     }
 
     for (ei = 0; ei < edge_count; ei++) {
-      if (!IsValidForV2(m_E[ei]))
+      if (!IsValidForV2 (m_E[ei]))
         return false;
     }
 
@@ -190,7 +190,7 @@ ON_Brep::IsValidForV2() const
           return false;
         P0 = m_T[ti].PointAtEnd();
         P1 = m_T[next_ti].PointAtStart();
-        if (P0.DistanceTo(P1) > ON_ZERO_TOLERANCE)
+        if (P0.DistanceTo (P1) > ON_ZERO_TOLERANCE)
           return false;
       }
     }

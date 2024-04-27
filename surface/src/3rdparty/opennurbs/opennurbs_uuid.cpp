@@ -25,15 +25,15 @@
 // need to be explicitly defined.
 
 bool
-ON_UUID::operator==(const ON_UUID& other) const
+ON_UUID::operator== (const ON_UUID& other) const
 {
-  return (0 == memcmp(this, &other, sizeof(*this)));
+  return (0 == memcmp (this, &other, sizeof (*this)));
 }
 
 bool
-ON_UUID::operator!=(const ON_UUID& other) const
+ON_UUID::operator!= (const ON_UUID& other) const
 {
-  return (0 != memcmp(this, &other, sizeof(*this)));
+  return (0 != memcmp (this, &other, sizeof (*this)));
 }
 
 #endif
@@ -75,7 +75,7 @@ ON_CreateUuid (ON_UUID& new_uuid)
 #if defined(ON_OS_WINDOWS)
   // Header: Declared in Rpcdce.h.
   // Library: Use Rpcrt4.lib
-  ::UuidCreate(&new_uuid);
+  ::UuidCreate (&new_uuid);
   //::UuidCreateSequential(&new_uuid); // faster but computer MAC address
   // identifies the user and some
   // customers may object.
@@ -89,7 +89,7 @@ ON_CreateUuid (ON_UUID& new_uuid)
     // is stored in native byte order, so we switch the byte order
     // of the UUID.
     uuid_t apple_osx_uuid;
-    uuid_generate(apple_osx_uuid);
+    uuid_generate (apple_osx_uuid);
     unsigned char* dst = (unsigned char*)&new_uuid;
     const unsigned char* src = (const unsigned char*)&apple_osx_uuid;
     *dst++ = src[little_endian_rho[0]];
@@ -111,7 +111,7 @@ ON_CreateUuid (ON_UUID& new_uuid)
   }
   else {
     // Motorola cpu mac
-    uuid_generate((unsigned char*)&new_uuid);
+    uuid_generate ((unsigned char*)&new_uuid);
   }
 
   // #if defined (ON_DEBUG)
@@ -125,7 +125,7 @@ ON_CreateUuid (ON_UUID& new_uuid)
 #else
   // You must supply a way to create unique ids or you
   // will not be able to write 3dm files.
-  memset(&new_uuid, 0, sizeof(ON_UUID));
+  memset (&new_uuid, 0, sizeof (ON_UUID));
   return false;
 #endif
 
@@ -171,7 +171,7 @@ ON_UuidFromString (const char* sUUID)
   unsigned char c;
   unsigned char byte_value[2];
 
-  memset(&u, 0, sizeof(u));
+  memset (&u, 0, sizeof (u));
   // for ( bi = 0; bi < 16; bi++ )
   //   u.b[bi] = 0;
 
@@ -267,13 +267,13 @@ ON_UuidFromString (const wchar_t* sUUID)
   }
   s[i] = 0;
 
-  return ON_UuidFromString(s);
+  return ON_UuidFromString (s);
 }
 
-ON_UuidIndex::ON_UuidIndex() { memset(this, 0, sizeof(*this)); }
+ON_UuidIndex::ON_UuidIndex() { memset (this, 0, sizeof (*this)); }
 
 int
-ON_UuidIndex::CompareIdAndIndex(const ON_UuidIndex* a, const ON_UuidIndex* b)
+ON_UuidIndex::CompareIdAndIndex (const ON_UuidIndex* a, const ON_UuidIndex* b)
 {
   int i;
   if (!a)
@@ -282,14 +282,14 @@ ON_UuidIndex::CompareIdAndIndex(const ON_UuidIndex* a, const ON_UuidIndex* b)
     return 1;
 
   // compare id first
-  if (0 == (i = ON_UuidCompare(&a->m_id, &b->m_id)))
+  if (0 == (i = ON_UuidCompare (&a->m_id, &b->m_id)))
     i = a->m_i - b->m_i;
 
   return i;
 }
 
 int
-ON_UuidIndex::CompareIndexAndId(const ON_UuidIndex* a, const ON_UuidIndex* b)
+ON_UuidIndex::CompareIndexAndId (const ON_UuidIndex* a, const ON_UuidIndex* b)
 {
   int i;
   if (!a)
@@ -299,23 +299,23 @@ ON_UuidIndex::CompareIndexAndId(const ON_UuidIndex* a, const ON_UuidIndex* b)
 
   // compare index first
   if (0 == (i = a->m_i - b->m_i))
-    i = ON_UuidCompare(&a->m_id, &b->m_id);
+    i = ON_UuidCompare (&a->m_id, &b->m_id);
 
   return i;
 }
 
 int
-ON_UuidIndex::CompareId(const ON_UuidIndex* a, const ON_UuidIndex* b)
+ON_UuidIndex::CompareId (const ON_UuidIndex* a, const ON_UuidIndex* b)
 {
   if (!a)
     return (b ? -1 : 0);
   if (!b)
     return 1;
-  return ON_UuidCompare(&a->m_id, &b->m_id);
+  return ON_UuidCompare (&a->m_id, &b->m_id);
 }
 
 int
-ON_UuidIndex::CompareIndex(const ON_UuidIndex* a, const ON_UuidIndex* b)
+ON_UuidIndex::CompareIndex (const ON_UuidIndex* a, const ON_UuidIndex* b)
 {
   if (!a)
     return (b ? -1 : 0);
@@ -387,13 +387,13 @@ ON_UuidCompare (const ON_UUID* a, const ON_UUID* b)
     return -1;
   if (a->Data3 > b->Data3)
     return 1;
-  return memcmp(a->Data4, b->Data4, sizeof(a->Data4));
+  return memcmp (a->Data4, b->Data4, sizeof (a->Data4));
 }
 
 int
 ON_UuidCompare (const ON_UUID& a, const ON_UUID& b)
 {
-  return ON_UuidCompare(&a, &b);
+  return ON_UuidCompare (&a, &b);
 }
 
 bool
@@ -462,9 +462,9 @@ ON_UuidToString (const ON_UUID& uuid, char* s)
 
 #if defined(ON_DEBUG)
   {
-    ON_UUID u = ON_UuidFromString(s);
-    if (ON_UuidCompare(&u, &uuid)) {
-      ON_ERROR("ON_UuidToString() bug"); // <- breakpoint here
+    ON_UUID u = ON_UuidFromString (s);
+    if (ON_UuidCompare (&u, &uuid)) {
+      ON_ERROR ("ON_UuidToString() bug"); // <- breakpoint here
     }
   }
 #endif
@@ -484,7 +484,7 @@ ON_UuidToString (const ON_UUID& uuid, wchar_t* s)
   //   little endian CPUs.  The result must satisfy
   //   uuid == ON_UuidFromString(ON_UuidToString(uuid,s))
   char x[37];
-  if (s && ON_UuidToString(uuid, x)) {
+  if (s && ON_UuidToString (uuid, x)) {
     int i;
     for (i = 0; i < 37; i++) {
       s[i] = (wchar_t)x[i];
@@ -500,7 +500,7 @@ const char*
 ON_UuidToString (const ON_UUID& uuid, ON_String& s)
 {
   char x[37];
-  s = ON_UuidToString(uuid, x);
+  s = ON_UuidToString (uuid, x);
   return s.Array();
 }
 
@@ -508,6 +508,6 @@ const wchar_t*
 ON_UuidToString (const ON_UUID& uuid, ON_wString& s)
 {
   wchar_t x[37];
-  s = ON_UuidToString(uuid, x);
+  s = ON_UuidToString (uuid, x);
   return s.Array();
 }

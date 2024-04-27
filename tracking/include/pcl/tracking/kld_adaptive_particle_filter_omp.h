@@ -69,12 +69,12 @@ public:
    * \param nr_threads the number of hardware threads to use (0 sets the value
    * back to automatic)
    */
-  KLDAdaptiveParticleFilterOMPTracker(unsigned int nr_threads = 0)
+  KLDAdaptiveParticleFilterOMPTracker (unsigned int nr_threads = 0)
   : KLDAdaptiveParticleFilterTracker<PointInT, StateT>()
   {
     tracker_name_ = "KLDAdaptiveParticleFilterOMPTracker";
 
-    setNumberOfThreads(nr_threads);
+    setNumberOfThreads (nr_threads);
   }
 
   /** \brief Initialize the scheduler and set the number of threads to use.

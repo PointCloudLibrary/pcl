@@ -48,7 +48,7 @@ namespace pcl {
 
 template <typename PointInT>
 void
-SurfaceReconstruction<PointInT>::reconstruct(pcl::PolygonMesh& output)
+SurfaceReconstruction<PointInT>::reconstruct (pcl::PolygonMesh& output)
 {
   // Copy the header
   output.header = input_->header;
@@ -64,33 +64,33 @@ SurfaceReconstruction<PointInT>::reconstruct(pcl::PolygonMesh& output)
   if (check_tree_) {
     if (!tree_) {
       if (input_->isOrganized())
-        tree_.reset(new pcl::search::OrganizedNeighbor<PointInT>());
+        tree_.reset (new pcl::search::OrganizedNeighbor<PointInT>());
       else
-        tree_.reset(new pcl::search::KdTree<PointInT>(false));
+        tree_.reset (new pcl::search::KdTree<PointInT> (false));
     }
 
     // Send the surface dataset to the spatial locator
-    tree_->setInputCloud(input_, indices_);
+    tree_->setInputCloud (input_, indices_);
   }
 
   // Set up the output dataset
-  pcl::toPCLPointCloud2(*input_,
-                        output.cloud); /// NOTE: passing in boost shared pointer with *
-                                       /// as const& should be OK here
+  pcl::toPCLPointCloud2 (*input_,
+                         output.cloud); /// NOTE: passing in boost shared pointer with *
+                                        /// as const& should be OK here
   output.polygons.clear();
-  output.polygons.reserve(2 *
-                          indices_->size()); /// NOTE: usually the number of triangles
-                                             /// is around twice the number of vertices
+  output.polygons.reserve (2 *
+                           indices_->size()); /// NOTE: usually the number of triangles
+                                              /// is around twice the number of vertices
   // Perform the actual surface reconstruction
-  performReconstruction(output);
+  performReconstruction (output);
 
   deinitCompute();
 }
 
 template <typename PointInT>
 void
-SurfaceReconstruction<PointInT>::reconstruct(pcl::PointCloud<PointInT>& points,
-                                             std::vector<pcl::Vertices>& polygons)
+SurfaceReconstruction<PointInT>::reconstruct (pcl::PointCloud<PointInT>& points,
+                                              std::vector<pcl::Vertices>& polygons)
 {
   // Copy the header
   points.header = input_->header;
@@ -106,28 +106,28 @@ SurfaceReconstruction<PointInT>::reconstruct(pcl::PointCloud<PointInT>& points,
   if (check_tree_) {
     if (!tree_) {
       if (input_->isOrganized())
-        tree_.reset(new pcl::search::OrganizedNeighbor<PointInT>());
+        tree_.reset (new pcl::search::OrganizedNeighbor<PointInT>());
       else
-        tree_.reset(new pcl::search::KdTree<PointInT>(false));
+        tree_.reset (new pcl::search::KdTree<PointInT> (false));
     }
 
     // Send the surface dataset to the spatial locator
-    tree_->setInputCloud(input_, indices_);
+    tree_->setInputCloud (input_, indices_);
   }
 
   // Set up the output dataset
   polygons.clear();
-  polygons.reserve(2 * indices_->size()); /// NOTE: usually the number of triangles is
-                                          /// around twice the number of vertices
+  polygons.reserve (2 * indices_->size()); /// NOTE: usually the number of triangles is
+                                           /// around twice the number of vertices
   // Perform the actual surface reconstruction
-  performReconstruction(points, polygons);
+  performReconstruction (points, polygons);
 
   deinitCompute();
 }
 
 template <typename PointInT>
 void
-MeshConstruction<PointInT>::reconstruct(pcl::PolygonMesh& output)
+MeshConstruction<PointInT>::reconstruct (pcl::PolygonMesh& output)
 {
   // Copy the header
   output.header = input_->header;
@@ -143,31 +143,31 @@ MeshConstruction<PointInT>::reconstruct(pcl::PolygonMesh& output)
   if (check_tree_) {
     if (!tree_) {
       if (input_->isOrganized())
-        tree_.reset(new pcl::search::OrganizedNeighbor<PointInT>());
+        tree_.reset (new pcl::search::OrganizedNeighbor<PointInT>());
       else
-        tree_.reset(new pcl::search::KdTree<PointInT>(false));
+        tree_.reset (new pcl::search::KdTree<PointInT> (false));
     }
 
     // Send the surface dataset to the spatial locator
-    tree_->setInputCloud(input_, indices_);
+    tree_->setInputCloud (input_, indices_);
   }
 
   // Set up the output dataset
-  pcl::toPCLPointCloud2(*input_,
-                        output.cloud); /// NOTE: passing in boost shared pointer with *
-                                       /// as const& should be OK here
+  pcl::toPCLPointCloud2 (*input_,
+                         output.cloud); /// NOTE: passing in boost shared pointer with *
+                                        /// as const& should be OK here
   //  output.polygons.clear ();
   //  output.polygons.reserve (2*indices_->size ()); /// NOTE: usually the number of
   //  triangles is around twice the number of vertices
   // Perform the actual surface reconstruction
-  performReconstruction(output);
+  performReconstruction (output);
 
   deinitCompute();
 }
 
 template <typename PointInT>
 void
-MeshConstruction<PointInT>::reconstruct(std::vector<pcl::Vertices>& polygons)
+MeshConstruction<PointInT>::reconstruct (std::vector<pcl::Vertices>& polygons)
 {
   if (!initCompute()) {
     polygons.clear();
@@ -178,13 +178,13 @@ MeshConstruction<PointInT>::reconstruct(std::vector<pcl::Vertices>& polygons)
   if (check_tree_) {
     if (!tree_) {
       if (input_->isOrganized())
-        tree_.reset(new pcl::search::OrganizedNeighbor<PointInT>());
+        tree_.reset (new pcl::search::OrganizedNeighbor<PointInT>());
       else
-        tree_.reset(new pcl::search::KdTree<PointInT>(false));
+        tree_.reset (new pcl::search::KdTree<PointInT> (false));
     }
 
     // Send the surface dataset to the spatial locator
-    tree_->setInputCloud(input_, indices_);
+    tree_->setInputCloud (input_, indices_);
   }
 
   // Set up the output dataset
@@ -192,7 +192,7 @@ MeshConstruction<PointInT>::reconstruct(std::vector<pcl::Vertices>& polygons)
   // polygons.reserve (2 * indices_->size ()); /// NOTE: usually the number of triangles
   // is around twice the number of vertices
   // Perform the actual surface reconstruction
-  performReconstruction(polygons);
+  performReconstruction (polygons);
 
   deinitCompute();
 }

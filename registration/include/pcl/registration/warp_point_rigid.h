@@ -65,9 +65,9 @@ public:
   /** \brief Constructor
    * \param[in] nr_dim the number of dimensions
    */
-  WarpPointRigid(int nr_dim) : nr_dim_(nr_dim), transform_matrix_(Matrix4::Zero())
+  WarpPointRigid (int nr_dim) : nr_dim_ (nr_dim), transform_matrix_ (Matrix4::Zero())
   {
-    transform_matrix_(3, 3) = 1.0;
+    transform_matrix_ (3, 3) = 1.0;
   };
 
   /** \brief Destructor. */
@@ -86,15 +86,15 @@ public:
   inline void
   warpPoint (const PointSourceT& pnt_in, PointSourceT& pnt_out) const
   {
-    pnt_out.x = static_cast<float>(
-        transform_matrix_(0, 0) * pnt_in.x + transform_matrix_(0, 1) * pnt_in.y +
-        transform_matrix_(0, 2) * pnt_in.z + transform_matrix_(0, 3));
-    pnt_out.y = static_cast<float>(
-        transform_matrix_(1, 0) * pnt_in.x + transform_matrix_(1, 1) * pnt_in.y +
-        transform_matrix_(1, 2) * pnt_in.z + transform_matrix_(1, 3));
-    pnt_out.z = static_cast<float>(
-        transform_matrix_(2, 0) * pnt_in.x + transform_matrix_(2, 1) * pnt_in.y +
-        transform_matrix_(2, 2) * pnt_in.z + transform_matrix_(2, 3));
+    pnt_out.x = static_cast<float> (
+        transform_matrix_ (0, 0) * pnt_in.x + transform_matrix_ (0, 1) * pnt_in.y +
+        transform_matrix_ (0, 2) * pnt_in.z + transform_matrix_ (0, 3));
+    pnt_out.y = static_cast<float> (
+        transform_matrix_ (1, 0) * pnt_in.x + transform_matrix_ (1, 1) * pnt_in.y +
+        transform_matrix_ (1, 2) * pnt_in.z + transform_matrix_ (1, 3));
+    pnt_out.z = static_cast<float> (
+        transform_matrix_ (2, 0) * pnt_in.x + transform_matrix_ (2, 1) * pnt_in.y +
+        transform_matrix_ (2, 2) * pnt_in.z + transform_matrix_ (2, 3));
     // pnt_out.getVector3fMap () = transform_matrix_.topLeftCorner<3, 3> () *
     //                            pnt_in.getVector3fMap () +
     //                            transform_matrix_.block<3, 1> (0, 3);
@@ -108,15 +108,15 @@ public:
   inline void
   warpPoint (const PointSourceT& pnt_in, Vector4& pnt_out) const
   {
-    pnt_out[0] = static_cast<Scalar>(
-        transform_matrix_(0, 0) * pnt_in.x + transform_matrix_(0, 1) * pnt_in.y +
-        transform_matrix_(0, 2) * pnt_in.z + transform_matrix_(0, 3));
-    pnt_out[1] = static_cast<Scalar>(
-        transform_matrix_(1, 0) * pnt_in.x + transform_matrix_(1, 1) * pnt_in.y +
-        transform_matrix_(1, 2) * pnt_in.z + transform_matrix_(1, 3));
-    pnt_out[2] = static_cast<Scalar>(
-        transform_matrix_(2, 0) * pnt_in.x + transform_matrix_(2, 1) * pnt_in.y +
-        transform_matrix_(2, 2) * pnt_in.z + transform_matrix_(2, 3));
+    pnt_out[0] = static_cast<Scalar> (
+        transform_matrix_ (0, 0) * pnt_in.x + transform_matrix_ (0, 1) * pnt_in.y +
+        transform_matrix_ (0, 2) * pnt_in.z + transform_matrix_ (0, 3));
+    pnt_out[1] = static_cast<Scalar> (
+        transform_matrix_ (1, 0) * pnt_in.x + transform_matrix_ (1, 1) * pnt_in.y +
+        transform_matrix_ (1, 2) * pnt_in.z + transform_matrix_ (1, 3));
+    pnt_out[2] = static_cast<Scalar> (
+        transform_matrix_ (2, 0) * pnt_in.x + transform_matrix_ (2, 1) * pnt_in.y +
+        transform_matrix_ (2, 2) * pnt_in.z + transform_matrix_ (2, 3));
     pnt_out[3] = 0.0;
   }
 

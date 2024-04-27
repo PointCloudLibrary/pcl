@@ -67,76 +67,77 @@ using std::string;
 using std::to_string;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
-ManualRegistration::ManualRegistration(float voxel_size) : voxel_size_(voxel_size)
+ManualRegistration::ManualRegistration (float voxel_size) : voxel_size_ (voxel_size)
 {
   ui_ = new Ui::MainWindow;
-  ui_->setupUi(this);
+  ui_->setupUi (this);
 
-  this->setWindowTitle("PCL Manual Registration");
+  this->setWindowTitle ("PCL Manual Registration");
 
   // Set up the source window
 #if VTK_MAJOR_VERSION > 8
   auto renderer_src = vtkSmartPointer<vtkRenderer>::New();
   auto renderWindow_src = vtkSmartPointer<vtkGenericOpenGLRenderWindow>::New();
-  renderWindow_src->AddRenderer(renderer_src);
-  vis_src_.reset(
-      new pcl::visualization::PCLVisualizer(renderer_src, renderWindow_src, "", false));
+  renderWindow_src->AddRenderer (renderer_src);
+  vis_src_.reset (new pcl::visualization::PCLVisualizer (
+      renderer_src, renderWindow_src, "", false));
 #else
-  vis_src_.reset(new pcl::visualization::PCLVisualizer("", false));
+  vis_src_.reset (new pcl::visualization::PCLVisualizer ("", false));
 #endif // VTK_MAJOR_VERSION > 8
-  setRenderWindowCompat(*(ui_->qvtk_widget_src), *(vis_src_->getRenderWindow()));
-  vis_src_->setupInteractor(getInteractorCompat(*(ui_->qvtk_widget_src)),
-                            getRenderWindowCompat(*(ui_->qvtk_widget_src)));
+  setRenderWindowCompat (*(ui_->qvtk_widget_src), *(vis_src_->getRenderWindow()));
+  vis_src_->setupInteractor (getInteractorCompat (*(ui_->qvtk_widget_src)),
+                             getRenderWindowCompat (*(ui_->qvtk_widget_src)));
 
-  vis_src_->getInteractorStyle()->setKeyboardModifier(
+  vis_src_->getInteractorStyle()->setKeyboardModifier (
       pcl::visualization::INTERACTOR_KB_MOD_SHIFT);
 
-  vis_src_->registerPointPickingCallback(&ManualRegistration::SrcPointPickCallback,
-                                         *this);
+  vis_src_->registerPointPickingCallback (&ManualRegistration::SrcPointPickCallback,
+                                          *this);
 
   // Set up the destination window
 #if VTK_MAJOR_VERSION > 8
   auto renderer_dst = vtkSmartPointer<vtkRenderer>::New();
   auto renderWindow_dst = vtkSmartPointer<vtkGenericOpenGLRenderWindow>::New();
-  renderWindow_dst->AddRenderer(renderer_dst);
-  vis_dst_.reset(
-      new pcl::visualization::PCLVisualizer(renderer_dst, renderWindow_dst, "", false));
+  renderWindow_dst->AddRenderer (renderer_dst);
+  vis_dst_.reset (new pcl::visualization::PCLVisualizer (
+      renderer_dst, renderWindow_dst, "", false));
 #else
-  vis_dst_.reset(new pcl::visualization::PCLVisualizer("", false));
+  vis_dst_.reset (new pcl::visualization::PCLVisualizer ("", false));
 #endif // VTK_MAJOR_VERSION > 8
-  setRenderWindowCompat(*(ui_->qvtk_widget_dst), *(vis_dst_->getRenderWindow()));
-  vis_dst_->setupInteractor(getInteractorCompat(*(ui_->qvtk_widget_dst)),
-                            getRenderWindowCompat(*(ui_->qvtk_widget_dst)));
+  setRenderWindowCompat (*(ui_->qvtk_widget_dst), *(vis_dst_->getRenderWindow()));
+  vis_dst_->setupInteractor (getInteractorCompat (*(ui_->qvtk_widget_dst)),
+                             getRenderWindowCompat (*(ui_->qvtk_widget_dst)));
 
-  vis_dst_->getInteractorStyle()->setKeyboardModifier(
+  vis_dst_->getInteractorStyle()->setKeyboardModifier (
       pcl::visualization::INTERACTOR_KB_MOD_SHIFT);
 
-  vis_dst_->registerPointPickingCallback(&ManualRegistration::DstPointPickCallback,
-                                         *this);
+  vis_dst_->registerPointPickingCallback (&ManualRegistration::DstPointPickCallback,
+                                          *this);
   // Render view
   refreshView();
 
   // Connect all buttons
-  connect(ui_->confirmSrcPointButton,
-          SIGNAL(clicked()),
-          this,
-          SLOT(confirmSrcPointPressed()));
-  connect(ui_->confirmDstPointButton,
-          SIGNAL(clicked()),
-          this,
-          SLOT(confirmDstPointPressed()));
-  connect(ui_->calculateButton, SIGNAL(clicked()), this, SLOT(calculatePressed()));
-  connect(ui_->clearButton, SIGNAL(clicked()), this, SLOT(clearPressed()));
-  connect(ui_->orthoButton, SIGNAL(stateChanged(int)), this, SLOT(orthoChanged(int)));
-  connect(ui_->applyTransformButton,
-          SIGNAL(clicked()),
-          this,
-          SLOT(applyTransformPressed()));
-  connect(ui_->refineButton, SIGNAL(clicked()), this, SLOT(refinePressed()));
+  connect (ui_->confirmSrcPointButton,
+           SIGNAL (clicked()),
+           this,
+           SLOT (confirmSrcPointPressed()));
+  connect (ui_->confirmDstPointButton,
+           SIGNAL (clicked()),
+           this,
+           SLOT (confirmDstPointPressed()));
+  connect (ui_->calculateButton, SIGNAL (clicked()), this, SLOT (calculatePressed()));
+  connect (ui_->clearButton, SIGNAL (clicked()), this, SLOT (clearPressed()));
+  connect (
+      ui_->orthoButton, SIGNAL (stateChanged (int)), this, SLOT (orthoChanged (int)));
+  connect (ui_->applyTransformButton,
+           SIGNAL (clicked()),
+           this,
+           SLOT (applyTransformPressed()));
+  connect (ui_->refineButton, SIGNAL (clicked()), this, SLOT (refinePressed()));
 }
 
 void
-ManualRegistration::SrcPointPickCallback(
+ManualRegistration::SrcPointPickCallback (
     const pcl::visualization::PointPickingEvent& event, void*)
 {
   // Check to see if we got a valid point. Early exit.
@@ -145,17 +146,17 @@ ManualRegistration::SrcPointPickCallback(
     return;
 
   // Get the point that was picked
-  event.getPoint(src_point_.x, src_point_.y, src_point_.z);
-  PCL_INFO("Src Window: Clicked point %d with X:%f Y:%f Z:%f\n",
-           idx,
-           src_point_.x,
-           src_point_.y,
-           src_point_.z);
+  event.getPoint (src_point_.x, src_point_.y, src_point_.z);
+  PCL_INFO ("Src Window: Clicked point %d with X:%f Y:%f Z:%f\n",
+            idx,
+            src_point_.x,
+            src_point_.y,
+            src_point_.z);
   src_point_selected_ = true;
 }
 
 void
-ManualRegistration::DstPointPickCallback(
+ManualRegistration::DstPointPickCallback (
     const pcl::visualization::PointPickingEvent& event, void*)
 {
   // Check to see if we got a valid point. Early exit.
@@ -164,12 +165,12 @@ ManualRegistration::DstPointPickCallback(
     return;
 
   // Get the point that was picked
-  event.getPoint(dst_point_.x, dst_point_.y, dst_point_.z);
-  PCL_INFO("Dst Window: Clicked point %d with X:%f Y:%f Z:%f\n",
-           idx,
-           dst_point_.x,
-           dst_point_.y,
-           dst_point_.z);
+  event.getPoint (dst_point_.x, dst_point_.y, dst_point_.z);
+  PCL_INFO ("Dst Window: Clicked point %d with X:%f Y:%f Z:%f\n",
+            idx,
+            dst_point_.x,
+            dst_point_.y,
+            dst_point_.z);
   dst_point_selected_ = true;
 }
 
@@ -177,22 +178,23 @@ void
 ManualRegistration::confirmSrcPointPressed()
 {
   if (src_point_selected_) {
-    src_pc_.push_back(src_point_);
-    PCL_INFO("Selected %zu source points\n", static_cast<std::size_t>(src_pc_.size()));
+    src_pc_.push_back (src_point_);
+    PCL_INFO ("Selected %zu source points\n",
+              static_cast<std::size_t> (src_pc_.size()));
     src_point_selected_ = false;
     src_pc_.width = src_pc_.size();
-    const string annotation = "marker-" + to_string(annotations_src_.size());
-    vis_src_->addSphere(src_point_, 0.02, annotation);
-    vis_src_->setShapeRenderingProperties(PCL_VISUALIZER_OPACITY, 0.2, annotation);
-    vis_src_->setShapeRenderingProperties(
+    const string annotation = "marker-" + to_string (annotations_src_.size());
+    vis_src_->addSphere (src_point_, 0.02, annotation);
+    vis_src_->setShapeRenderingProperties (PCL_VISUALIZER_OPACITY, 0.2, annotation);
+    vis_src_->setShapeRenderingProperties (
         PCL_VISUALIZER_COLOR, 0.5, 0.25, 0.25, annotation);
-    vis_src_->getShapeActorMap()->at(annotation)->SetPickable(false);
-    annotations_src_.emplace(annotation);
+    vis_src_->getShapeActorMap()->at (annotation)->SetPickable (false);
+    annotations_src_.emplace (annotation);
 
     refreshView();
   }
   else {
-    PCL_INFO("Please select a point in the source window first\n");
+    PCL_INFO ("Please select a point in the source window first\n");
   }
 }
 
@@ -200,24 +202,24 @@ void
 ManualRegistration::confirmDstPointPressed()
 {
   if (dst_point_selected_) {
-    dst_pc_.push_back(dst_point_);
-    PCL_INFO("Selected %zu destination points\n",
-             static_cast<std::size_t>(dst_pc_.size()));
+    dst_pc_.push_back (dst_point_);
+    PCL_INFO ("Selected %zu destination points\n",
+              static_cast<std::size_t> (dst_pc_.size()));
     dst_point_selected_ = false;
     dst_pc_.width = dst_pc_.size();
 
-    const string annotation = "marker-" + std::to_string(annotations_dst_.size());
-    vis_dst_->addSphere(dst_point_, 0.02, annotation);
-    vis_dst_->setShapeRenderingProperties(PCL_VISUALIZER_OPACITY, 0.2, annotation);
-    vis_dst_->setShapeRenderingProperties(
+    const string annotation = "marker-" + std::to_string (annotations_dst_.size());
+    vis_dst_->addSphere (dst_point_, 0.02, annotation);
+    vis_dst_->setShapeRenderingProperties (PCL_VISUALIZER_OPACITY, 0.2, annotation);
+    vis_dst_->setShapeRenderingProperties (
         PCL_VISUALIZER_COLOR, 0.5, 0.25, 0.25, annotation);
-    vis_dst_->getShapeActorMap()->at(annotation)->SetPickable(false);
-    annotations_dst_.emplace(annotation);
+    vis_dst_->getShapeActorMap()->at (annotation)->SetPickable (false);
+    annotations_dst_.emplace (annotation);
 
     refreshView();
   }
   else {
-    PCL_INFO("Please select a point in the destination window first\n");
+    PCL_INFO ("Please select a point in the destination window first\n");
   }
 }
 
@@ -225,18 +227,18 @@ void
 ManualRegistration::calculatePressed()
 {
   if (dst_pc_.size() != src_pc_.size()) {
-    PCL_INFO("You haven't selected an equal amount of points, please do so\n");
+    PCL_INFO ("You haven't selected an equal amount of points, please do so\n");
     return;
   }
   pcl::registration::TransformationEstimationSVD<pcl::PointXYZ, pcl::PointXYZ> tfe;
-  tfe.estimateRigidTransformation(src_pc_, dst_pc_, transform_);
-  PCL_INFO_STREAM("Calculated transform:\n" << transform_ << std::endl);
+  tfe.estimateRigidTransformation (src_pc_, dst_pc_, transform_);
+  PCL_INFO_STREAM ("Calculated transform:\n" << transform_ << std::endl);
 }
 
 void
 ManualRegistration::clearPressed()
 {
-  PCL_INFO("Clearing points.");
+  PCL_INFO ("Clearing points.");
   dst_point_selected_ = false;
   src_point_selected_ = false;
   src_pc_.clear();
@@ -247,12 +249,12 @@ ManualRegistration::clearPressed()
   dst_pc_.width = 0;
 
   for (const string& annotation : annotations_src_) {
-    vis_src_->removeShape(annotation);
+    vis_src_->removeShape (annotation);
   }
   annotations_src_.clear();
 
   for (const string& annotation : annotations_dst_) {
-    vis_dst_->removeShape(annotation);
+    vis_dst_->removeShape (annotation);
   }
   annotations_dst_.clear();
 
@@ -260,21 +262,21 @@ ManualRegistration::clearPressed()
 }
 
 void
-ManualRegistration::orthoChanged(int state)
+ManualRegistration::orthoChanged (int state)
 {
-  PCL_INFO("Ortho state %d\n", state);
+  PCL_INFO ("Ortho state %d\n", state);
   if (state == 0) // Not selected
   {
     vis_src_->getRenderWindow()
         ->GetRenderers()
         ->GetFirstRenderer()
         ->GetActiveCamera()
-        ->SetParallelProjection(0);
+        ->SetParallelProjection (0);
     vis_dst_->getRenderWindow()
         ->GetRenderers()
         ->GetFirstRenderer()
         ->GetActiveCamera()
-        ->SetParallelProjection(0);
+        ->SetParallelProjection (0);
   }
   if (state == 2) // Selected
   {
@@ -282,12 +284,12 @@ ManualRegistration::orthoChanged(int state)
         ->GetRenderers()
         ->GetFirstRenderer()
         ->GetActiveCamera()
-        ->SetParallelProjection(1);
+        ->SetParallelProjection (1);
     vis_dst_->getRenderWindow()
         ->GetRenderers()
         ->GetFirstRenderer()
         ->GetActiveCamera()
-        ->SetParallelProjection(1);
+        ->SetParallelProjection (1);
   }
 
   refreshView();
@@ -297,41 +299,41 @@ ManualRegistration::orthoChanged(int state)
 void
 ManualRegistration::applyTransformPressed()
 {
-  PCLViewerDialog* diag = new PCLViewerDialog(this);
-  diag->setModal(true);
-  diag->setGeometry(this->x(), this->y(), this->width(), this->height());
-  diag->setPointClouds(cloud_src_, cloud_dst_, Eigen::Affine3f(transform_));
+  PCLViewerDialog* diag = new PCLViewerDialog (this);
+  diag->setModal (true);
+  diag->setGeometry (this->x(), this->y(), this->width(), this->height());
+  diag->setPointClouds (cloud_src_, cloud_dst_, Eigen::Affine3f (transform_));
   diag->show();
 }
 
 void
 ManualRegistration::refinePressed()
 {
-  PCL_INFO("Refining transform ...\n");
+  PCL_INFO ("Refining transform ...\n");
   VoxelGrid<PointT> grid_filter;
-  grid_filter.setLeafSize(voxel_size_, voxel_size_, voxel_size_);
-  PointCloud<PointT>::Ptr src_copy{new PointCloud<PointT>(*cloud_src_)};
-  PointCloud<PointT>::Ptr dst_copy{new PointCloud<PointT>(*cloud_dst_)};
-  grid_filter.setInputCloud(src_copy);
-  grid_filter.filter(*src_copy);
-  grid_filter.setInputCloud(dst_copy);
-  grid_filter.filter(*dst_copy);
+  grid_filter.setLeafSize (voxel_size_, voxel_size_, voxel_size_);
+  PointCloud<PointT>::Ptr src_copy{new PointCloud<PointT> (*cloud_src_)};
+  PointCloud<PointT>::Ptr dst_copy{new PointCloud<PointT> (*cloud_dst_)};
+  grid_filter.setInputCloud (src_copy);
+  grid_filter.filter (*src_copy);
+  grid_filter.setInputCloud (dst_copy);
+  grid_filter.filter (*dst_copy);
 
   using ICP = GeneralizedIterativeClosestPoint<PointT, PointT>;
   ICP::Ptr icp = pcl::make_shared<ICP>();
-  icp->setInputSource(src_copy);
-  icp->setInputTarget(dst_copy);
+  icp->setInputSource (src_copy);
+  icp->setInputTarget (dst_copy);
 
-  icp->setMaximumIterations(100);
-  icp->setMaxCorrespondenceDistance(0.3);
-  icp->setEuclideanFitnessEpsilon(0.01);
-  icp->setTransformationEpsilon(0.01);
-  icp->setTransformationRotationEpsilon(0.01);
+  icp->setMaximumIterations (100);
+  icp->setMaxCorrespondenceDistance (0.3);
+  icp->setEuclideanFitnessEpsilon (0.01);
+  icp->setTransformationEpsilon (0.01);
+  icp->setTransformationRotationEpsilon (0.01);
   PointCloud<PointT>::Ptr aligned{new PointCloud<PointT>};
-  icp->align(*aligned, transform_);
+  icp->align (*aligned, transform_);
   transform_ = icp->getFinalTransformation();
 
-  PCL_INFO_STREAM("Calculated transform:\n" << transform_ << std::endl);
+  PCL_INFO_STREAM ("Calculated transform:\n" << transform_ << std::endl);
 }
 
 void
@@ -349,47 +351,47 @@ ManualRegistration::refreshView()
 void
 print_usage ()
 {
-  PCL_INFO("manual_registration cloud1.pcd cloud2.pcd\n");
-  PCL_INFO("\t cloud1 \t source cloud\n");
-  PCL_INFO("\t cloud2 \t destination cloud\n");
-  PCL_INFO("\t voxel_size \t voxel size for automatic refinement\n");
+  PCL_INFO ("manual_registration cloud1.pcd cloud2.pcd\n");
+  PCL_INFO ("\t cloud1 \t source cloud\n");
+  PCL_INFO ("\t cloud2 \t destination cloud\n");
+  PCL_INFO ("\t voxel_size \t voxel size for automatic refinement\n");
 }
 
 int
 main (int argc, char** argv)
 {
 #ifdef HAS_QVTKOPENGLWINDOW_H
-  QSurfaceFormat::setDefaultFormat(QVTKOpenGLWindow::defaultFormat());
+  QSurfaceFormat::setDefaultFormat (QVTKOpenGLWindow::defaultFormat());
 #endif
-  QApplication app(argc, argv);
+  QApplication app (argc, argv);
 
-  pcl::PointCloud<PointT>::Ptr cloud_src(new pcl::PointCloud<PointT>);
-  pcl::PointCloud<PointT>::Ptr cloud_dst(new pcl::PointCloud<PointT>);
+  pcl::PointCloud<PointT>::Ptr cloud_src (new pcl::PointCloud<PointT>);
+  pcl::PointCloud<PointT>::Ptr cloud_dst (new pcl::PointCloud<PointT>);
 
   if (argc < 4) {
-    PCL_ERROR("Incorrect usage\n");
+    PCL_ERROR ("Incorrect usage\n");
     print_usage();
     return -1;
   }
 
   // TODO do this with PCL console
-  if (pcl::io::loadPCDFile<PointT>(argv[1], *cloud_src) == -1) //* load the file
+  if (pcl::io::loadPCDFile<PointT> (argv[1], *cloud_src) == -1) //* load the file
   {
-    PCL_ERROR("Couldn't read file %s \n", argv[1]);
+    PCL_ERROR ("Couldn't read file %s \n", argv[1]);
     return -1;
   }
-  if (pcl::io::loadPCDFile<PointT>(argv[2], *cloud_dst) == -1) //* load the file
+  if (pcl::io::loadPCDFile<PointT> (argv[2], *cloud_dst) == -1) //* load the file
   {
-    PCL_ERROR("Couldn't read file %s \n", argv[2]);
+    PCL_ERROR ("Couldn't read file %s \n", argv[2]);
     return -1;
   }
 
-  const float voxel_size = std::atof(argv[3]);
+  const float voxel_size = std::atof (argv[3]);
 
-  ManualRegistration man_reg(voxel_size);
+  ManualRegistration man_reg (voxel_size);
 
-  man_reg.setSrcCloud(cloud_src);
-  man_reg.setDstCloud(cloud_dst);
+  man_reg.setSrcCloud (cloud_src);
+  man_reg.setDstCloud (cloud_dst);
 
   man_reg.show();
 

@@ -39,11 +39,11 @@
 
 #include <pcl/ml/densecrf.h>
 
-pcl::DenseCrf::DenseCrf(int N, int m) : N_(N), M_(m)
+pcl::DenseCrf::DenseCrf (int N, int m) : N_ (N), M_ (m)
 {
-  current_.resize(N_ * M_, 0.0f);
-  next_.resize(N_ * M_, 0.0f);
-  tmp_.resize(2 * N_ * M_, 0.0f);
+  current_.resize (N_ * M_, 0.0f);
+  next_.resize (N_ * M_, 0.0f);
+  tmp_.resize (2 * N_ * M_, 0.0f);
 }
 
 pcl::DenseCrf::~DenseCrf()
@@ -53,7 +53,7 @@ pcl::DenseCrf::~DenseCrf()
 }
 
 void
-pcl::DenseCrf::setDataVector(
+pcl::DenseCrf::setDataVector (
     const std::vector<Eigen::Vector3i, Eigen::aligned_allocator<Eigen::Vector3i>> data)
 {
   xyz_ = true;
@@ -61,7 +61,7 @@ pcl::DenseCrf::setDataVector(
 }
 
 void
-pcl::DenseCrf::setColorVector(
+pcl::DenseCrf::setColorVector (
     const std::vector<Eigen::Vector3i, Eigen::aligned_allocator<Eigen::Vector3i>> color)
 {
   rgb_ = true;
@@ -69,62 +69,62 @@ pcl::DenseCrf::setColorVector(
 }
 
 void
-pcl::DenseCrf::setUnaryEnergy(const std::vector<float> unary)
+pcl::DenseCrf::setUnaryEnergy (const std::vector<float> unary)
 {
   unary_ = unary;
 }
 
 void
-pcl::DenseCrf::addPairwiseEnergy(const std::vector<float>& feature,
-                                 const int feature_dimension,
-                                 const float w)
+pcl::DenseCrf::addPairwiseEnergy (const std::vector<float>& feature,
+                                  const int feature_dimension,
+                                  const float w)
 {
-  pairwise_potential_.push_back(
-      new PairwisePotential(feature, feature_dimension, N_, w));
+  pairwise_potential_.push_back (
+      new PairwisePotential (feature, feature_dimension, N_, w));
 }
 
 void
-pcl::DenseCrf::addPairwiseGaussian(float sx, float sy, float sz, float w)
+pcl::DenseCrf::addPairwiseGaussian (float sx, float sy, float sz, float w)
 {
   // create feature vector
   std::vector<float> feature;
   // reserve space for the three-dimensional Gaussian kernel
-  feature.resize(N_ * 3);
+  feature.resize (N_ * 3);
 
   // fill the feature vector
   for (std::size_t i = 0; i < data_.size(); i++) {
-    feature[i * 3] = static_cast<float>(data_[i].x()) / sx;
-    feature[i * 3 + 1] = static_cast<float>(data_[i].y()) / sy;
-    feature[i * 3 + 2] = static_cast<float>(data_[i].z()) / sz;
+    feature[i * 3] = static_cast<float> (data_[i].x()) / sx;
+    feature[i * 3 + 1] = static_cast<float> (data_[i].y()) / sy;
+    feature[i * 3 + 2] = static_cast<float> (data_[i].z()) / sz;
   }
   // add kernel
-  addPairwiseEnergy(feature, 3, w);
+  addPairwiseEnergy (feature, 3, w);
 }
 
 void
-pcl::DenseCrf::addPairwiseBilateral(
+pcl::DenseCrf::addPairwiseBilateral (
     float sx, float sy, float sz, float sr, float sg, float sb, float w)
 {
   // create feature vector
   std::vector<float> feature;
   // reserve space for the six-dimensional Gaussian kernel
-  feature.resize(N_ * 6);
+  feature.resize (N_ * 6);
 
   // fill the feature vector
   for (std::size_t i = 0; i < color_.size(); i++) {
-    feature[i * 6] = static_cast<float>(data_[i].x()) / sx;
-    feature[i * 6 + 1] = static_cast<float>(data_[i].y()) / sy;
-    feature[i * 6 + 2] = static_cast<float>(data_[i].z()) / sz;
-    feature[i * 6 + 3] = static_cast<float>(color_[i].x()) / sr;
-    feature[i * 6 + 4] = static_cast<float>(color_[i].y()) / sg;
-    feature[i * 6 + 5] = static_cast<float>(color_[i].z()) / sb;
+    feature[i * 6] = static_cast<float> (data_[i].x()) / sx;
+    feature[i * 6 + 1] = static_cast<float> (data_[i].y()) / sy;
+    feature[i * 6 + 2] = static_cast<float> (data_[i].z()) / sz;
+    feature[i * 6 + 3] = static_cast<float> (color_[i].x()) / sr;
+    feature[i * 6 + 4] = static_cast<float> (color_[i].y()) / sg;
+    feature[i * 6 + 5] = static_cast<float> (color_[i].z()) / sb;
   }
   // add kernel
-  addPairwiseEnergy(feature, 6, w);
+  addPairwiseEnergy (feature, 6, w);
 }
 
 void
-pcl::DenseCrf::addPairwiseNormals(
+pcl::DenseCrf::addPairwiseNormals (
     std::vector<Eigen::Vector3i, Eigen::aligned_allocator<Eigen::Vector3i>>& coord,
     std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f>>& normals,
     float sx,
@@ -141,11 +141,11 @@ pcl::DenseCrf::addPairwiseNormals(
   // create feature vector
   std::vector<float> feature;
   // reserve space for the six-dimensional Gaussian kernel
-  feature.resize(N_ * 6);
+  feature.resize (N_ * 6);
 
   // fill the feature vector
   for (std::size_t i = 0; i < coord.size(); i++) {
-    if (std::isnan(normals[i].x())) {
+    if (std::isnan (normals[i].x())) {
       if (i > 0) {
         normals[i].x() = normals[i - 1].x();
         normals[i].y() = normals[i - 1].y();
@@ -155,31 +155,31 @@ pcl::DenseCrf::addPairwiseNormals(
       // std::cout << "NaN" << std::endl;
     }
 
-    feature[i * 6] = static_cast<float>(coord[i].x()) / sx;
-    feature[i * 6 + 1] = static_cast<float>(coord[i].y()) / sy;
-    feature[i * 6 + 2] = static_cast<float>(coord[i].z()) / sz;
-    feature[i * 6 + 3] = static_cast<float>(normals[i].x()) / snx;
-    feature[i * 6 + 4] = static_cast<float>(normals[i].y()) / sny;
-    feature[i * 6 + 5] = static_cast<float>(normals[i].z()) / snz;
+    feature[i * 6] = static_cast<float> (coord[i].x()) / sx;
+    feature[i * 6 + 1] = static_cast<float> (coord[i].y()) / sy;
+    feature[i * 6 + 2] = static_cast<float> (coord[i].z()) / sz;
+    feature[i * 6 + 3] = static_cast<float> (normals[i].x()) / snx;
+    feature[i * 6 + 4] = static_cast<float> (normals[i].y()) / sny;
+    feature[i * 6 + 5] = static_cast<float> (normals[i].z()) / snz;
   }
   // add kernel
 
   std::cout << "TEEEEST" << std::endl;
 
-  addPairwiseEnergy(feature, 6, w);
+  addPairwiseEnergy (feature, 6, w);
 
   std::cout << "TEEEEST2" << std::endl;
 }
 
 void
-pcl::DenseCrf::inference(int n_iterations, std::vector<float>& result, float relax)
+pcl::DenseCrf::inference (int n_iterations, std::vector<float>& result, float relax)
 {
   // Start inference
   // Initialize using the unary energies
-  expAndNormalize(current_, unary_, -1);
+  expAndNormalize (current_, unary_, -1);
 
   for (int i = 0; i < n_iterations; i++) {
-    runInference(relax);
+    runInference (relax);
     std::cout << "iteration: " << i + 1 << " - DONE" << std::endl;
   }
 
@@ -188,14 +188,14 @@ pcl::DenseCrf::inference(int n_iterations, std::vector<float>& result, float rel
 }
 
 void
-pcl::DenseCrf::mapInference(int n_iterations, std::vector<int>& result, float relax)
+pcl::DenseCrf::mapInference (int n_iterations, std::vector<int>& result, float relax)
 {
   // Start inference
   // Initialize using the unary energies
-  expAndNormalize(current_, unary_, -1);
+  expAndNormalize (current_, unary_, -1);
 
   for (int i = 0; i < n_iterations; i++) {
-    runInference(relax);
+    runInference (relax);
     std::cout << "iteration: " << i + 1 << " - DONE" << std::endl;
   }
 
@@ -231,12 +231,12 @@ pcl::DenseCrf::mapInference(int n_iterations, std::vector<int>& result, float re
 }
 
 void
-pcl::DenseCrf::expAndNormalize(std::vector<float>& out,
-                               const std::vector<float>& in,
-                               float scale,
-                               float relax) const
+pcl::DenseCrf::expAndNormalize (std::vector<float>& out,
+                                const std::vector<float>& in,
+                                float scale,
+                                float relax) const
 {
-  std::vector<float> V(N_ + 10);
+  std::vector<float> V (N_ + 10);
   for (int i = 0; i < N_; i++) {
     int b_idx = i * M_;
     // Find the max and subtract it so that the std::exp doesn't explode
@@ -246,7 +246,7 @@ pcl::DenseCrf::expAndNormalize(std::vector<float>& out,
         mx = scale * in[b_idx + j];
     float tt = 0;
     for (int j = 0; j < M_; j++) {
-      V[j] = std::exp(scale * in[b_idx + j] - mx);
+      V[j] = std::exp (scale * in[b_idx + j] - mx);
       tt += V[j];
     }
     // Make it a probability
@@ -263,7 +263,7 @@ pcl::DenseCrf::expAndNormalize(std::vector<float>& out,
 }
 
 void
-pcl::DenseCrf::runInference(float relax)
+pcl::DenseCrf::runInference (float relax)
 {
   // set the unary potentials
   for (std::size_t i = 0; i < unary_.size(); i++)
@@ -271,21 +271,21 @@ pcl::DenseCrf::runInference(float relax)
 
   // Add up all pairwise potentials
   for (auto& p : pairwise_potential_) {
-    p->compute(next_, current_, tmp_, M_);
+    p->compute (next_, current_, tmp_, M_);
   }
 
   // Exponentiate and normalize
-  expAndNormalize(current_, next_, 1.0, relax);
+  expAndNormalize (current_, next_, 1.0, relax);
 }
 
 void
-pcl::DenseCrf::getBarycentric(int idx, std::vector<float>& bary)
+pcl::DenseCrf::getBarycentric (int idx, std::vector<float>& bary)
 {
   bary = pairwise_potential_[idx]->bary_;
 }
 
 void
-pcl::DenseCrf::getFeatures(int idx, std::vector<float>& features)
+pcl::DenseCrf::getFeatures (int idx, std::vector<float>& features)
 {
   features = pairwise_potential_[idx]->features_;
 }

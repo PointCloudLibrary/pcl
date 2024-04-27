@@ -42,20 +42,20 @@
 
 namespace openni_wrapper {
 void
-IRImage::fillRaw(unsigned width,
-                 unsigned height,
-                 unsigned short* ir_buffer,
-                 unsigned line_step) const
+IRImage::fillRaw (unsigned width,
+                  unsigned height,
+                  unsigned short* ir_buffer,
+                  unsigned line_step) const
 {
   if (width > ir_md_->XRes() || height > ir_md_->YRes())
-    THROW_OPENNI_EXCEPTION("upsampling not supported: %d x %d -> %d x %d",
-                           ir_md_->XRes(),
-                           ir_md_->YRes(),
-                           width,
-                           height);
+    THROW_OPENNI_EXCEPTION ("upsampling not supported: %d x %d -> %d x %d",
+                            ir_md_->XRes(),
+                            ir_md_->YRes(),
+                            width,
+                            height);
 
   if (ir_md_->XRes() % width != 0 || ir_md_->YRes() % height != 0)
-    THROW_OPENNI_EXCEPTION(
+    THROW_OPENNI_EXCEPTION (
         "downsampling only supported for integer scale: %d x %d -> %d x %d",
         ir_md_->XRes(),
         ir_md_->YRes(),
@@ -63,18 +63,18 @@ IRImage::fillRaw(unsigned width,
         height);
 
   if (line_step == 0)
-    line_step = width * static_cast<unsigned>(sizeof(unsigned short));
+    line_step = width * static_cast<unsigned> (sizeof (unsigned short));
 
   // special case no sclaing, no padding => memcopy!
   if (width == ir_md_->XRes() && height == ir_md_->YRes() &&
-      (line_step == width * sizeof(unsigned short))) {
-    memcpy(ir_buffer, ir_md_->Data(), ir_md_->DataSize());
+      (line_step == width * sizeof (unsigned short))) {
+    memcpy (ir_buffer, ir_md_->Data(), ir_md_->DataSize());
     return;
   }
 
   // padding skip for destination image
   unsigned bufferSkip =
-      line_step - width * static_cast<unsigned>(sizeof(unsigned short));
+      line_step - width * static_cast<unsigned> (sizeof (unsigned short));
 
   // step and padding skip for source image
   unsigned xStep = ir_md_->XRes() / width;
@@ -84,12 +84,12 @@ IRImage::fillRaw(unsigned width,
 
   for (unsigned yIdx = 0; yIdx < height; ++yIdx, irIdx += ySkip) {
     for (unsigned xIdx = 0; xIdx < width; ++xIdx, irIdx += xStep, ++ir_buffer)
-      *ir_buffer = static_cast<unsigned short>(ir_md_->Data()[irIdx]);
+      *ir_buffer = static_cast<unsigned short> (ir_md_->Data()[irIdx]);
 
     // if we have padding
     if (bufferSkip > 0) {
-      char* cBuffer = reinterpret_cast<char*>(ir_buffer);
-      ir_buffer = reinterpret_cast<unsigned short*>(cBuffer + bufferSkip);
+      char* cBuffer = reinterpret_cast<char*> (ir_buffer);
+      ir_buffer = reinterpret_cast<unsigned short*> (cBuffer + bufferSkip);
     }
   }
 }

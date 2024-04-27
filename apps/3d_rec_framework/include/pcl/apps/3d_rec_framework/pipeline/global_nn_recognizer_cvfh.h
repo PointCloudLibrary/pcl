@@ -38,7 +38,7 @@ protected:
 
   struct sortIndexScores {
     bool
-    operator()(const index_score& d1, const index_score& d2)
+    operator() (const index_score& d1, const index_score& d2)
     {
       return d1.score_ < d2.score_;
     }
@@ -81,9 +81,9 @@ protected:
     std::vector<float> descr;
 
     bool
-    operator<(const flann_model& other) const
+    operator< (const flann_model& other) const
     {
-      if ((this->model.id_.compare(other.model.id_) < 0)) {
+      if ((this->model.id_.compare (other.model.id_) < 0)) {
         return true;
       }
 
@@ -103,7 +103,7 @@ protected:
     }
 
     bool
-    operator==(const flann_model& other) const
+    operator== (const flann_model& other) const
     {
       return (model.id_ == other.model.id_) && (view_id == other.view_id) &&
              (descriptor_id == other.descriptor_id);
@@ -144,9 +144,9 @@ protected:
     data.rows = models.size();
     data.cols = models[0].descr.size(); // number of histogram bins
 
-    flann::Matrix<float> flann_data(new float[models.size() * models[0].descr.size()],
-                                    models.size(),
-                                    models[0].descr.size());
+    flann::Matrix<float> flann_data (new float[models.size() * models[0].descr.size()],
+                                     models.size(),
+                                     models[0].descr.size());
 
     for (std::size_t i = 0; i < data.rows; ++i)
       for (std::size_t j = 0; j < data.cols; ++j) {
@@ -164,13 +164,14 @@ protected:
     data.rows = indices->size();
     data.cols = models[0].descr.size(); // number of histogram bins
 
-    flann::Matrix<float> flann_data(new float[indices->size() * models[0].descr.size()],
-                                    indices->size(),
-                                    models[0].descr.size());
+    flann::Matrix<float> flann_data (
+        new float[indices->size() * models[0].descr.size()],
+        indices->size(),
+        models[0].descr.size());
 
     for (std::size_t i = 0; i < data.rows; ++i)
       for (std::size_t j = 0; j < data.cols; ++j) {
-        flann_data.ptr()[i * data.cols + j] = models[indices->at(i)].descr[j];
+        flann_data.ptr()[i * data.cols + j] = models[indices->at (i)].descr[j];
       }
 
     data = flann_data;

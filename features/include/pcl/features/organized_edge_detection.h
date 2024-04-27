@@ -77,8 +77,8 @@ public:
 
   /** \brief Constructor for OrganizedEdgeBase */
   OrganizedEdgeBase()
-  : detecting_edge_types_(EDGELABEL_NAN_BOUNDARY | EDGELABEL_OCCLUDING |
-                          EDGELABEL_OCCLUDED)
+  : detecting_edge_types_ (EDGELABEL_NAN_BOUNDARY | EDGELABEL_OCCLUDING |
+                           EDGELABEL_OCCLUDED)
   {}
 
   /** \brief Destructor for OrganizedEdgeBase */
@@ -164,7 +164,7 @@ protected:
                       std::vector<pcl::PointIndices>& label_indices) const;
 
   struct Neighbor {
-    Neighbor(int dx, int dy, int didx) : d_x(dx), d_y(dy), d_index(didx) {}
+    Neighbor (int dx, int dy, int didx) : d_x (dx), d_y (dy), d_index (didx) {}
 
     int d_x;
     int d_y;
@@ -208,8 +208,8 @@ public:
   /** \brief Constructor for OrganizedEdgeFromRGB */
   OrganizedEdgeFromRGB() : OrganizedEdgeBase<PointT, PointLT>()
   {
-    this->setEdgeType(EDGELABEL_NAN_BOUNDARY | EDGELABEL_OCCLUDING |
-                      EDGELABEL_OCCLUDED | EDGELABEL_RGB_CANNY);
+    this->setEdgeType (EDGELABEL_NAN_BOUNDARY | EDGELABEL_OCCLUDING |
+                       EDGELABEL_OCCLUDED | EDGELABEL_RGB_CANNY);
   }
 
   /** \brief Destructor for OrganizedEdgeFromRGB */
@@ -295,8 +295,8 @@ public:
   /** \brief Constructor for OrganizedEdgeFromNormals */
   OrganizedEdgeFromNormals() : OrganizedEdgeBase<PointT, PointLT>(), normals_()
   {
-    this->setEdgeType(EDGELABEL_NAN_BOUNDARY | EDGELABEL_OCCLUDING |
-                      EDGELABEL_OCCLUDED | EDGELABEL_HIGH_CURVATURE);
+    this->setEdgeType (EDGELABEL_NAN_BOUNDARY | EDGELABEL_OCCLUDING |
+                       EDGELABEL_OCCLUDED | EDGELABEL_HIGH_CURVATURE);
   }
 
   /** \brief Destructor for OrganizedEdgeFromNormals */
@@ -408,9 +408,9 @@ public:
   : OrganizedEdgeFromRGB<PointT, PointLT>()
   , OrganizedEdgeFromNormals<PointT, PointNT, PointLT>()
   {
-    this->setEdgeType(EDGELABEL_NAN_BOUNDARY | EDGELABEL_OCCLUDING |
-                      EDGELABEL_OCCLUDED | EDGELABEL_RGB_CANNY |
-                      EDGELABEL_HIGH_CURVATURE);
+    this->setEdgeType (EDGELABEL_NAN_BOUNDARY | EDGELABEL_OCCLUDING |
+                       EDGELABEL_OCCLUDED | EDGELABEL_RGB_CANNY |
+                       EDGELABEL_HIGH_CURVATURE);
   }
 
   /** \brief Destructor for OrganizedEdgeFromRGBNormals */

@@ -80,23 +80,24 @@ protected:
    * \param[in] random if true set the random seed to the current time, else set to
    * 12345 (default: false)
    */
-  SampleConsensusModel(bool random = false)
+  SampleConsensusModel (bool random = false)
   : input_()
-  , radius_min_(-std::numeric_limits<double>::max())
-  , radius_max_(std::numeric_limits<double>::max())
-  , samples_radius_(0.)
+  , radius_min_ (-std::numeric_limits<double>::max())
+  , radius_max_ (std::numeric_limits<double>::max())
+  , samples_radius_ (0.)
   , samples_radius_search_()
-  , rng_dist_(new boost::uniform_int<>(0, std::numeric_limits<int>::max()))
-  , custom_model_constraints_([] (auto) { return true; })
+  , rng_dist_ (new boost::uniform_int<> (0, std::numeric_limits<int>::max()))
+  , custom_model_constraints_ ([] (auto) { return true; })
   {
     // Create a random number generator object
     if (random)
-      rng_alg_.seed(std::random_device()());
+      rng_alg_.seed (std::random_device()());
     else
-      rng_alg_.seed(12345u);
+      rng_alg_.seed (12345u);
 
-    rng_gen_.reset(new boost::variate_generator<boost::mt19937&, boost::uniform_int<>>(
-        rng_alg_, *rng_dist_));
+    rng_gen_.reset (
+        new boost::variate_generator<boost::mt19937&, boost::uniform_int<>> (
+            rng_alg_, *rng_dist_));
   }
 
 public:
@@ -105,26 +106,27 @@ public:
    * \param[in] random if true set the random seed to the current time, else set to
    * 12345 (default: false)
    */
-  SampleConsensusModel(const PointCloudConstPtr& cloud, bool random = false)
+  SampleConsensusModel (const PointCloudConstPtr& cloud, bool random = false)
   : input_()
-  , radius_min_(-std::numeric_limits<double>::max())
-  , radius_max_(std::numeric_limits<double>::max())
-  , samples_radius_(0.)
+  , radius_min_ (-std::numeric_limits<double>::max())
+  , radius_max_ (std::numeric_limits<double>::max())
+  , samples_radius_ (0.)
   , samples_radius_search_()
-  , rng_dist_(new boost::uniform_int<>(0, std::numeric_limits<int>::max()))
-  , custom_model_constraints_([] (auto) { return true; })
+  , rng_dist_ (new boost::uniform_int<> (0, std::numeric_limits<int>::max()))
+  , custom_model_constraints_ ([] (auto) { return true; })
   {
     if (random)
-      rng_alg_.seed(std::random_device()());
+      rng_alg_.seed (std::random_device()());
     else
-      rng_alg_.seed(12345u);
+      rng_alg_.seed (12345u);
 
     // Sets the input cloud and creates a vector of "fake" indices
-    setInputCloud(cloud);
+    setInputCloud (cloud);
 
     // Create a random number generator object
-    rng_gen_.reset(new boost::variate_generator<boost::mt19937&, boost::uniform_int<>>(
-        rng_alg_, *rng_dist_));
+    rng_gen_.reset (
+        new boost::variate_generator<boost::mt19937&, boost::uniform_int<>> (
+            rng_alg_, *rng_dist_));
   }
 
   /** \brief Constructor for base SampleConsensusModel.
@@ -133,35 +135,36 @@ public:
    * \param[in] random if true set the random seed to the current time, else set to
    * 12345 (default: false)
    */
-  SampleConsensusModel(const PointCloudConstPtr& cloud,
-                       const Indices& indices,
-                       bool random = false)
-  : input_(cloud)
-  , indices_(new Indices(indices))
-  , radius_min_(-std::numeric_limits<double>::max())
-  , radius_max_(std::numeric_limits<double>::max())
-  , samples_radius_(0.)
+  SampleConsensusModel (const PointCloudConstPtr& cloud,
+                        const Indices& indices,
+                        bool random = false)
+  : input_ (cloud)
+  , indices_ (new Indices (indices))
+  , radius_min_ (-std::numeric_limits<double>::max())
+  , radius_max_ (std::numeric_limits<double>::max())
+  , samples_radius_ (0.)
   , samples_radius_search_()
-  , rng_dist_(new boost::uniform_int<>(0, std::numeric_limits<int>::max()))
-  , custom_model_constraints_([] (auto) { return true; })
+  , rng_dist_ (new boost::uniform_int<> (0, std::numeric_limits<int>::max()))
+  , custom_model_constraints_ ([] (auto) { return true; })
   {
     if (random)
-      rng_alg_.seed(std::random_device()());
+      rng_alg_.seed (std::random_device()());
     else
-      rng_alg_.seed(12345u);
+      rng_alg_.seed (12345u);
 
     if (indices_->size() > input_->size()) {
-      PCL_ERROR("[pcl::SampleConsensusModel] Invalid index vector given with size "
-                "%zu while the input PointCloud has size %zu!\n",
-                indices_->size(),
-                static_cast<std::size_t>(input_->size()));
+      PCL_ERROR ("[pcl::SampleConsensusModel] Invalid index vector given with size "
+                 "%zu while the input PointCloud has size %zu!\n",
+                 indices_->size(),
+                 static_cast<std::size_t> (input_->size()));
       indices_->clear();
     }
     shuffled_indices_ = *indices_;
 
     // Create a random number generator object
-    rng_gen_.reset(new boost::variate_generator<boost::mt19937&, boost::uniform_int<>>(
-        rng_alg_, *rng_dist_));
+    rng_gen_.reset (
+        new boost::variate_generator<boost::mt19937&, boost::uniform_int<>> (
+            rng_alg_, *rng_dist_));
   };
 
   /** \brief Destructor for base SampleConsensusModel. */
@@ -177,10 +180,10 @@ public:
   {
     // We're assuming that indices_ have already been set in the constructor
     if (indices_->size() < getSampleSize()) {
-      PCL_ERROR("[pcl::SampleConsensusModel::getSamples] Can not select %lu unique "
-                "points out of %lu!\n",
-                samples.size(),
-                indices_->size());
+      PCL_ERROR ("[pcl::SampleConsensusModel::getSamples] Can not select %lu unique "
+                 "points out of %lu!\n",
+                 samples.size(),
+                 indices_->size());
       // one of these will make it stop :)
       samples.clear();
       iterations = std::numeric_limits<int>::max() - 1;
@@ -188,25 +191,25 @@ public:
     }
 
     // Get a second point which is different than the first
-    samples.resize(getSampleSize());
+    samples.resize (getSampleSize());
     for (unsigned int iter = 0; iter < max_sample_checks_; ++iter) {
       // Choose the random indices
       if (samples_radius_ < std::numeric_limits<double>::epsilon())
-        SampleConsensusModel<PointT>::drawIndexSample(samples);
+        SampleConsensusModel<PointT>::drawIndexSample (samples);
       else
-        SampleConsensusModel<PointT>::drawIndexSampleRadius(samples);
+        SampleConsensusModel<PointT>::drawIndexSampleRadius (samples);
 
       // If it's a good sample, stop here
-      if (isSampleGood(samples)) {
-        PCL_DEBUG("[pcl::SampleConsensusModel::getSamples] Selected %lu samples.\n",
-                  samples.size());
+      if (isSampleGood (samples)) {
+        PCL_DEBUG ("[pcl::SampleConsensusModel::getSamples] Selected %lu samples.\n",
+                   samples.size());
         return;
       }
     }
-    PCL_DEBUG("[pcl::SampleConsensusModel::getSamples] WARNING: Could not select %d "
-              "sample points in %d iterations!\n",
-              getSampleSize(),
-              max_sample_checks_);
+    PCL_DEBUG ("[pcl::SampleConsensusModel::getSamples] WARNING: Could not select %d "
+               "sample points in %d iterations!\n",
+               getSampleSize(),
+               max_sample_checks_);
     samples.clear();
   }
 
@@ -308,12 +311,12 @@ public:
   {
     input_ = cloud;
     if (!indices_)
-      indices_.reset(new Indices());
+      indices_.reset (new Indices());
     if (indices_->empty()) {
       // Prepare a set of indices to be used (entire cloud)
-      indices_->resize(cloud->size());
+      indices_->resize (cloud->size());
       for (std::size_t i = 0; i < cloud->size(); ++i)
-        (*indices_)[i] = static_cast<index_t>(i);
+        (*indices_)[i] = static_cast<index_t> (i);
     }
     shuffled_indices_ = *indices_;
   }
@@ -342,7 +345,7 @@ public:
   inline void
   setIndices (const Indices& indices)
   {
-    indices_.reset(new Indices(indices));
+    indices_.reset (new Indices (indices));
     shuffled_indices_ = indices;
   }
 
@@ -410,14 +413,14 @@ public:
    * model is acceptable or not.
    */
   inline void
-  setModelConstraints (std::function<bool(const Eigen::VectorXf&)> function)
+  setModelConstraints (std::function<bool (const Eigen::VectorXf&)> function)
   {
     if (!function) {
-      PCL_ERROR("[pcl::SampleConsensusModel::setModelConstraints] The given function "
-                "is empty (i.e. does not contain a callable target)!\n");
+      PCL_ERROR ("[pcl::SampleConsensusModel::setModelConstraints] The given function "
+                 "is empty (i.e. does not contain a callable target)!\n");
       return;
     }
-    custom_model_constraints_ = std::move(function);
+    custom_model_constraints_ = std::move (function);
   }
 
   /** \brief Set the maximum distance allowed when drawing random samples
@@ -449,9 +452,9 @@ public:
   inline double
   computeVariance (const std::vector<double>& error_sqr_dists) const
   {
-    std::vector<double> dists(error_sqr_dists);
+    std::vector<double> dists (error_sqr_dists);
     const std::size_t medIdx = dists.size() >> 1;
-    std::nth_element(dists.begin(), dists.begin() + medIdx, dists.end());
+    std::nth_element (dists.begin(), dists.begin() + medIdx, dists.end());
     double median_error_sqr = dists[medIdx];
     return (2.1981 * median_error_sqr);
   }
@@ -464,13 +467,14 @@ public:
   computeVariance () const
   {
     if (error_sqr_dists_.empty()) {
-      PCL_ERROR("[pcl::SampleConsensusModel::computeVariance] The variance of the "
-                "Sample Consensus model distances cannot be estimated, as the model "
-                "has not been computed yet. Please compute the model first or at least "
-                "run selectWithinDistance before continuing. Returning NAN!\n");
+      PCL_ERROR (
+          "[pcl::SampleConsensusModel::computeVariance] The variance of the "
+          "Sample Consensus model distances cannot be estimated, as the model "
+          "has not been computed yet. Please compute the model first or at least "
+          "run selectWithinDistance before continuing. Returning NAN!\n");
       return (std::numeric_limits<double>::quiet_NaN());
     }
-    return (computeVariance(error_sqr_dists_));
+    return (computeVariance (error_sqr_dists_));
   }
 
 protected:
@@ -488,11 +492,11 @@ protected:
       // random number generators are good)
       // std::swap (shuffled_indices_[i], shuffled_indices_[i + (rand () % (index_size -
       // i))]);
-      std::swap(shuffled_indices_[i],
-                shuffled_indices_[i + (rnd() % (index_size - i))]);
-    std::copy(shuffled_indices_.cbegin(),
-              shuffled_indices_.cbegin() + sample_size,
-              sample.begin());
+      std::swap (shuffled_indices_[i],
+                 shuffled_indices_[i + (rnd() % (index_size - i))]);
+    std::copy (shuffled_indices_.cbegin(),
+               shuffled_indices_.cbegin() + sample_size,
+               sample.begin());
   }
 
   /** \brief Fills a sample array with one random sample from the indices_ vector
@@ -505,7 +509,7 @@ protected:
     std::size_t sample_size = sample.size();
     std::size_t index_size = shuffled_indices_.size();
 
-    std::swap(shuffled_indices_[0], shuffled_indices_[0 + (rnd() % (index_size - 0))]);
+    std::swap (shuffled_indices_[0], shuffled_indices_[0 + (rnd() % (index_size - 0))]);
     // const PointT& pt0 = (*input_)[shuffled_indices_[0]];
 
     Indices indices;
@@ -516,8 +520,8 @@ protected:
     // first parameter. This can't be determined efficiently, so we use
     // the point instead of the index.
     // Returned indices are converted automatically.
-    samples_radius_search_->radiusSearch(
-        input_->at(shuffled_indices_[0]), samples_radius_, indices, sqr_dists);
+    samples_radius_search_->radiusSearch (
+        input_->at (shuffled_indices_[0]), samples_radius_, indices, sqr_dists);
 
     if (indices.size() < sample_size - 1) {
       // radius search failed, make an invalid model
@@ -526,14 +530,14 @@ protected:
     }
     else {
       for (std::size_t i = 0; i < sample_size - 1; ++i)
-        std::swap(indices[i], indices[i + (rnd() % (indices.size() - i))]);
+        std::swap (indices[i], indices[i + (rnd() % (indices.size() - i))]);
       for (std::size_t i = 1; i < sample_size; ++i)
         shuffled_indices_[i] = indices[i - 1];
     }
 
-    std::copy(shuffled_indices_.cbegin(),
-              shuffled_indices_.cbegin() + sample_size,
-              sample.begin());
+    std::copy (shuffled_indices_.cbegin(),
+               shuffled_indices_.cbegin() + sample_size,
+               sample.begin());
   }
 
   /** \brief Check whether a model is valid given the user constraints.
@@ -548,17 +552,17 @@ protected:
   isModelValid (const Eigen::VectorXf& model_coefficients) const
   {
     if (model_coefficients.size() != model_size_) {
-      PCL_ERROR("[pcl::%s::isModelValid] Invalid number of model coefficients given "
-                "(is %lu, should be %lu)!\n",
-                getClassName().c_str(),
-                model_coefficients.size(),
-                model_size_);
+      PCL_ERROR ("[pcl::%s::isModelValid] Invalid number of model coefficients given "
+                 "(is %lu, should be %lu)!\n",
+                 getClassName().c_str(),
+                 model_coefficients.size(),
+                 model_size_);
       return (false);
     }
-    if (!custom_model_constraints_(model_coefficients)) {
-      PCL_DEBUG("[pcl::%s::isModelValid] The user defined isModelValid function "
-                "returned false.\n",
-                getClassName().c_str());
+    if (!custom_model_constraints_ (model_coefficients)) {
+      PCL_DEBUG ("[pcl::%s::isModelValid] The user defined isModelValid function "
+                 "returned false.\n",
+                 getClassName().c_str());
       return (false);
     }
     return (true);
@@ -629,7 +633,7 @@ protected:
 
   /** \brief A user defined function that takes model coefficients and returns whether
    * the model is acceptable or not. */
-  std::function<bool(const Eigen::VectorXf&)> custom_model_constraints_;
+  std::function<bool (const Eigen::VectorXf&)> custom_model_constraints_;
 
 public:
   PCL_MAKE_ALIGNED_OPERATOR_NEW
@@ -664,9 +668,9 @@ public:
   setNormalDistanceWeight (const double w)
   {
     if (w < 0.0 || w > 1.0) {
-      PCL_ERROR("[pcl::SampleConsensusModel::setNormalDistanceWeight] w is %g, but "
-                "should be in [0; 1]. Weight will not be set.",
-                w);
+      PCL_ERROR ("[pcl::SampleConsensusModel::setNormalDistanceWeight] w is %g, but "
+                 "should be in [0; 1]. Weight will not be set.",
+                 w);
       return;
     }
     normal_distance_weight_ = w;
@@ -724,12 +728,12 @@ struct Functor {
   using JacobianType = Eigen::Matrix<Scalar, ValuesAtCompileTime, InputsAtCompileTime>;
 
   /** \brief Empty Constructor. */
-  Functor() : m_data_points_(ValuesAtCompileTime) {}
+  Functor() : m_data_points_ (ValuesAtCompileTime) {}
 
   /** \brief Constructor
    * \param[in] m_data_points number of data points to evaluate.
    */
-  Functor(int m_data_points) : m_data_points_(m_data_points) {}
+  Functor (int m_data_points) : m_data_points_ (m_data_points) {}
 
   virtual ~Functor() = default;
 

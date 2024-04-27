@@ -58,7 +58,7 @@ public:
   toc () const
   {
     auto end_time = std::chrono::steady_clock::now();
-    return std::chrono::duration<double, std::ratio<1, 1000>>(end_time - tictic_)
+    return std::chrono::duration<double, std::ratio<1, 1000>> (end_time - tictic_)
         .count();
   };
 
@@ -73,8 +73,8 @@ public:
     //   print_value ("%i", minutes);
     //   print_info (" minutes, ");
     // }
-    print_value("%g", milliseconds);
-    print_info(" ms\n");
+    print_value ("%g", milliseconds);
+    print_info (" ms\n");
   };
 
 private:

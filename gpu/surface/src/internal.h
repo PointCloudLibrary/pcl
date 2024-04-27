@@ -60,7 +60,7 @@ struct InitalSimplex {
 
 struct FacetStream {
 public:
-  FacetStream(std::size_t buffer_size);
+  FacetStream (std::size_t buffer_size);
 
   // indeces: in each col indeces of vertexes for single facet
   DeviceArray2D<int> verts_inds;
@@ -93,7 +93,7 @@ private:
 
 struct PointStream {
 public:
-  PointStream(const Cloud& cloud);
+  PointStream (const Cloud& cloud);
 
   const Cloud cloud;
   FacetsDists facets_dists;

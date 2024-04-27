@@ -36,7 +36,7 @@ struct SinglePoly {
 struct Vertex {
   Vertex() = default;
   // Vertex(Eigen::Vector3f pos, Eigen::Vector3f norm) : pos(pos), norm(norm) {}
-  Vertex(Eigen::Vector3f pos, Eigen::Vector3f rgb) : pos(pos), rgb(rgb) {}
+  Vertex (Eigen::Vector3f pos, Eigen::Vector3f rgb) : pos (pos), rgb (rgb) {}
   Eigen::Vector3f pos;
   Eigen::Vector3f rgb;
   // Eigen::Vector3f norm;
@@ -69,7 +69,7 @@ public:
   using Ptr = shared_ptr<TriangleMeshModel>;
   using ConstPtr = shared_ptr<const TriangleMeshModel>;
 
-  TriangleMeshModel(pcl::PolygonMesh::Ptr plg);
+  TriangleMeshModel (pcl::PolygonMesh::Ptr plg);
 
   virtual ~TriangleMeshModel();
 
@@ -86,7 +86,7 @@ private:
 
 class PCL_EXPORTS PolygonMeshModel : public Model {
 public:
-  PolygonMeshModel(GLenum mode, pcl::PolygonMesh::Ptr plg);
+  PolygonMeshModel (GLenum mode, pcl::PolygonMesh::Ptr plg);
   virtual ~PolygonMeshModel();
   void
   draw () override;
@@ -117,7 +117,7 @@ public:
   using Ptr = shared_ptr<PointCloudModel>;
   using ConstPtr = shared_ptr<const PointCloudModel>;
 
-  PointCloudModel(GLenum mode, pcl::PointCloud<pcl::PointXYZRGB>::Ptr pc);
+  PointCloudModel (GLenum mode, pcl::PointCloud<pcl::PointXYZRGB>::Ptr pc);
 
   virtual ~PointCloudModel();
 
@@ -172,7 +172,7 @@ public:
   using Ptr = shared_ptr<TexturedQuad>;
   using ConstPtr = shared_ptr<const TexturedQuad>;
 
-  TexturedQuad(int width, int height);
+  TexturedQuad (int width, int height);
   ~TexturedQuad();
 
   void

@@ -55,7 +55,7 @@ extern const char* const z_errmsg[10]; /* indexed by 2-zlib_error */
 
 #define ERR_MSG(err) z_errmsg[Z_NEED_DICT - (err)]
 
-#define ERR_RETURN(strm, err) return (strm->msg = (char*)ERR_MSG(err), (err))
+#define ERR_RETURN(strm, err) return (strm->msg = (char*)ERR_MSG (err), (err))
 /* To be used only when the state is known to be valid */
 
 /* common constants */
@@ -109,7 +109,7 @@ farmalloc (unsigned int nbytes);
 #if defined(VAXC) || defined(VMS)
 #define OS_CODE 0x02
 #define F_OPEN(name, mode)                                                             \
-  fopen((name), (mode), "mbc=60", "ctx=stm", "rfm=fix", "mrs=512")
+  fopen ((name), (mode), "mbc=60", "ctx=stm", "rfm=fix", "mrs=512")
 #endif
 
 #if defined(ATARI) || defined(atarist)
@@ -160,7 +160,7 @@ typedef int ptrdiff_t;
 #define _PTRDIFF_T_DEFINED
 #endif
 #else
-#define fdopen(fd, type) _fdopen(fd, type)
+#define fdopen(fd, type) _fdopen (fd, type)
 #endif
 #endif
 
@@ -171,7 +171,7 @@ typedef int ptrdiff_t;
 #endif
 
 #ifndef F_OPEN
-#define F_OPEN(name, mode) fopen((name), (mode))
+#define F_OPEN(name, mode) fopen ((name), (mode))
 #endif
 
 /* functions */
@@ -226,27 +226,27 @@ typedef int ptrdiff_t;
 #ifdef SMALL_MEDIUM /* MSDOS small or medium model */
 #define zmemcpy _fmemcpy
 #define zmemcmp _fmemcmp
-#define zmemzero(dest, len) _fmemset(dest, 0, len)
+#define zmemzero(dest, len) _fmemset (dest, 0, len)
 #else
 #define zmemcpy memcpy
 #define zmemcmp memcmp
-#define zmemzero(dest, len) memset(dest, 0, len)
+#define zmemzero(dest, len) memset (dest, 0, len)
 #endif
 #else
-extern void zmemcpy OF((Bytef * dest, const Bytef* source, uInt len));
-extern int zmemcmp OF((const Bytef* s1, const Bytef* s2, uInt len));
-extern void zmemzero OF((Bytef * dest, uInt len));
+extern void zmemcpy OF ((Bytef * dest, const Bytef* source, uInt len));
+extern int zmemcmp OF ((const Bytef* s1, const Bytef* s2, uInt len));
+extern void zmemzero OF ((Bytef * dest, uInt len));
 #endif
 
 /* Diagnostic functions */
 #ifdef DEBUG
 #include <stdio.h>
 extern int z_verbose;
-extern void z_error OF((char* m));
+extern void z_error OF ((char* m));
 #define Assert(cond, msg)                                                              \
   {                                                                                    \
     if (!(cond))                                                                       \
-      z_error(msg);                                                                    \
+      z_error (msg);                                                                   \
   }
 #define Trace(x)                                                                       \
   {                                                                                    \
@@ -282,15 +282,15 @@ extern void z_error OF((char* m));
 #define Tracecv(c, x)
 #endif
 
-voidpf zcalloc OF((voidpf opaque, unsigned items, unsigned size));
-void zcfree OF((voidpf opaque, voidpf ptr));
+voidpf zcalloc OF ((voidpf opaque, unsigned items, unsigned size));
+void zcfree OF ((voidpf opaque, voidpf ptr));
 
-#define ZALLOC(strm, items, size) (*((strm)->zalloc))((strm)->opaque, (items), (size))
-#define ZFREE(strm, addr) (*((strm)->zfree))((strm)->opaque, (voidpf)(addr))
+#define ZALLOC(strm, items, size) (*((strm)->zalloc)) ((strm)->opaque, (items), (size))
+#define ZFREE(strm, addr) (*((strm)->zfree)) ((strm)->opaque, (voidpf)(addr))
 #define TRY_FREE(s, p)                                                                 \
   {                                                                                    \
     if (p)                                                                             \
-      ZFREE(s, p);                                                                     \
+      ZFREE (s, p);                                                                    \
   }
 
 #endif /* ZUTIL_H */

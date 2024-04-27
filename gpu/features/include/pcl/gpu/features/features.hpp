@@ -284,7 +284,7 @@ class PCL_EXPORTS SpinImageEstimation : public FeatureFromNormals {
 public:
   using SpinImage = Histogram<153>;
 
-  SpinImageEstimation(
+  SpinImageEstimation (
       unsigned int image_width = 8,
       double support_angle_cos = 0.0, // when 0, this is bogus, so not applied
       unsigned int min_pts_neighb = 0);

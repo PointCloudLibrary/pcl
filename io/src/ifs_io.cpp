@@ -47,10 +47,10 @@
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 int
-pcl::IFSReader::readHeader(const std::string& file_name,
-                           pcl::PCLPointCloud2& cloud,
-                           int& ifs_version,
-                           unsigned int& data_idx)
+pcl::IFSReader::readHeader (const std::string& file_name,
+                            pcl::PCLPointCloud2& cloud,
+                            int& ifs_version,
+                            unsigned int& data_idx)
 {
   // Default values
   data_idx = 0;
@@ -64,59 +64,59 @@ pcl::IFSReader::readHeader(const std::string& file_name,
   std::uint32_t nr_points = 0;
 
   if (file_name.empty()) {
-    PCL_ERROR("[pcl::IFSReader::readHeader] No file name given!\n");
+    PCL_ERROR ("[pcl::IFSReader::readHeader] No file name given!\n");
     return (-1);
   }
 
   std::ifstream fs;
-  fs.open(file_name.c_str(), std::ios::binary);
+  fs.open (file_name.c_str(), std::ios::binary);
 
   if (!fs.good()) {
-    PCL_ERROR("[pcl::IFSReader::readHeader] Could not find file '%s'.\n",
-              file_name.c_str());
+    PCL_ERROR ("[pcl::IFSReader::readHeader] Could not find file '%s'.\n",
+               file_name.c_str());
     return (-1);
   }
 
   if (!fs.is_open() || fs.fail()) {
-    PCL_ERROR("[pcl::IFSReader::readHeader] Could not open file '%s'! Error : %s\n",
-              file_name.c_str(),
-              strerror(errno));
+    PCL_ERROR ("[pcl::IFSReader::readHeader] Could not open file '%s'! Error : %s\n",
+               file_name.c_str(),
+               strerror (errno));
     fs.close();
     return (-1);
   }
 
   // Read the magic
   std::uint32_t length_of_magic;
-  fs.read(reinterpret_cast<char*>(&length_of_magic), sizeof(std::uint32_t));
+  fs.read (reinterpret_cast<char*> (&length_of_magic), sizeof (std::uint32_t));
   char* magic = new char[length_of_magic];
-  fs.read(magic, sizeof(char) * length_of_magic);
-  const bool file_is_ifs_file = (strcmp(magic, "IFS") == 0);
+  fs.read (magic, sizeof (char) * length_of_magic);
+  const bool file_is_ifs_file = (strcmp (magic, "IFS") == 0);
   delete[] magic;
   if (!file_is_ifs_file) {
-    PCL_ERROR("[pcl::IFSReader::readHeader] File %s is not an IFS file!\n",
-              file_name.c_str());
+    PCL_ERROR ("[pcl::IFSReader::readHeader] File %s is not an IFS file!\n",
+               file_name.c_str());
     fs.close();
     return (-1);
   }
 
   // Read IFS version
   float version;
-  fs.read(reinterpret_cast<char*>(&version), sizeof(float));
+  fs.read (reinterpret_cast<char*> (&version), sizeof (float));
   if (version == 1.0f)
     ifs_version = IFS_V1_0;
   else if (version == 1.1f)
     ifs_version = IFS_V1_1;
   else {
-    PCL_ERROR("[pcl::IFSReader::readHeader] Bad IFS file %f!\n", version);
+    PCL_ERROR ("[pcl::IFSReader::readHeader] Bad IFS file %f!\n", version);
     fs.close();
     return (-1);
   }
 
   // Read the name
   std::uint32_t length_of_name;
-  fs.read(reinterpret_cast<char*>(&length_of_name), sizeof(std::uint32_t));
+  fs.read (reinterpret_cast<char*> (&length_of_name), sizeof (std::uint32_t));
   char* name = new char[length_of_name];
-  fs.read(name, sizeof(char) * length_of_name);
+  fs.read (name, sizeof (char) * length_of_name);
   delete[] name;
 
   // Read the header and fill it in with wonderful values
@@ -124,22 +124,22 @@ pcl::IFSReader::readHeader(const std::string& file_name,
     while (!fs.eof()) {
       // Read the keyword
       std::uint32_t length_of_keyword;
-      fs.read(reinterpret_cast<char*>(&length_of_keyword), sizeof(std::uint32_t));
+      fs.read (reinterpret_cast<char*> (&length_of_keyword), sizeof (std::uint32_t));
       char* keyword = new char[length_of_keyword];
-      fs.read(keyword, sizeof(char) * length_of_keyword);
+      fs.read (keyword, sizeof (char) * length_of_keyword);
 
-      const bool keyword_is_vertices = (strcmp(keyword, "VERTICES") == 0);
+      const bool keyword_is_vertices = (strcmp (keyword, "VERTICES") == 0);
       delete[] keyword;
       if (keyword_is_vertices) {
-        fs.read(reinterpret_cast<char*>(&nr_points), sizeof(std::uint32_t));
+        fs.read (reinterpret_cast<char*> (&nr_points), sizeof (std::uint32_t));
         if ((nr_points == 0) || (nr_points > 10000000)) {
-          PCL_ERROR("[pcl::IFSReader::readHeader] Bad number of vertices %lu!\n",
-                    nr_points);
+          PCL_ERROR ("[pcl::IFSReader::readHeader] Bad number of vertices %lu!\n",
+                     nr_points);
           fs.close();
           return (-1);
         }
 
-        cloud.fields.resize(3);
+        cloud.fields.resize (3);
         cloud.fields[0].name = "x";
         cloud.fields[1].name = "y";
         cloud.fields[2].name = "z";
@@ -151,13 +151,13 @@ pcl::IFSReader::readHeader(const std::string& file_name,
           cloud.fields[i].count = 1;
         }
         cloud.point_step = offset;
-        cloud.data.resize(nr_points * cloud.point_step);
+        cloud.data.resize (nr_points * cloud.point_step);
         data_idx = fs.tellg();
         break;
       }
     }
   } catch (const char* exception) {
-    PCL_ERROR("[pcl::IFSReader::readHeader] %s\n", exception);
+    PCL_ERROR ("[pcl::IFSReader::readHeader] %s\n", exception);
     fs.close();
     return (-1);
   }
@@ -175,16 +175,16 @@ pcl::IFSReader::readHeader(const std::string& file_name,
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 int
-pcl::IFSReader::read(const std::string& file_name,
-                     pcl::PCLPointCloud2& cloud,
-                     int& ifs_version)
+pcl::IFSReader::read (const std::string& file_name,
+                      pcl::PCLPointCloud2& cloud,
+                      int& ifs_version)
 {
   pcl::console::TicToc tt;
   tt.tic();
 
   unsigned int data_idx;
 
-  int res = readHeader(file_name, cloud, ifs_version, data_idx);
+  int res = readHeader (file_name, cloud, ifs_version, data_idx);
 
   if (res < 0)
     return (res);
@@ -197,47 +197,47 @@ pcl::IFSReader::read(const std::string& file_name,
   std::size_t data_size = data_idx + cloud.data.size();
 
   try {
-    mapped_file.open(file_name, data_size, 0);
+    mapped_file.open (file_name, data_size, 0);
   } catch (const char* exception) {
-    PCL_ERROR("[pcl::IFSReader::read] Error : %s!\n", file_name.c_str(), exception);
+    PCL_ERROR ("[pcl::IFSReader::read] Error : %s!\n", file_name.c_str(), exception);
     mapped_file.close();
     return (-1);
   }
 
   if (!mapped_file.is_open()) {
-    PCL_ERROR("[pcl::IFSReader::read] File mapping failure\n");
+    PCL_ERROR ("[pcl::IFSReader::read] File mapping failure\n");
     mapped_file.close();
     return (-1);
   }
 
   // Copy the data
-  memcpy(cloud.data.data(), mapped_file.data() + data_idx, cloud.data.size());
+  memcpy (cloud.data.data(), mapped_file.data() + data_idx, cloud.data.size());
 
   mapped_file.close();
 
   double total_time = tt.toc();
-  PCL_DEBUG("[pcl::IFSReader::read] Loaded %s as a %s cloud in %g ms with %d points. "
-            "Available dimensions: %s.\n",
-            file_name.c_str(),
-            cloud.is_dense ? "dense" : "non-dense",
-            total_time,
-            cloud.width * cloud.height,
-            pcl::getFieldsList(cloud).c_str());
+  PCL_DEBUG ("[pcl::IFSReader::read] Loaded %s as a %s cloud in %g ms with %d points. "
+             "Available dimensions: %s.\n",
+             file_name.c_str(),
+             cloud.is_dense ? "dense" : "non-dense",
+             total_time,
+             cloud.width * cloud.height,
+             pcl::getFieldsList (cloud).c_str());
   return (0);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 int
-pcl::IFSReader::read(const std::string& file_name,
-                     pcl::PolygonMesh& mesh,
-                     int& ifs_version)
+pcl::IFSReader::read (const std::string& file_name,
+                      pcl::PolygonMesh& mesh,
+                      int& ifs_version)
 {
   pcl::console::TicToc tt;
   tt.tic();
 
   unsigned int data_idx;
 
-  int res = readHeader(file_name, mesh.cloud, ifs_version, data_idx);
+  int res = readHeader (file_name, mesh.cloud, ifs_version, data_idx);
 
   if (res < 0)
     return (res);
@@ -250,94 +250,95 @@ pcl::IFSReader::read(const std::string& file_name,
   std::size_t data_size = data_idx + mesh.cloud.data.size();
 
   try {
-    mapped_file.open(file_name, data_size, 0);
+    mapped_file.open (file_name, data_size, 0);
   } catch (const char* exception) {
-    PCL_ERROR("[pcl::IFSReader::read] Error : %s!\n", file_name.c_str(), exception);
+    PCL_ERROR ("[pcl::IFSReader::read] Error : %s!\n", file_name.c_str(), exception);
     mapped_file.close();
     return (-1);
   }
 
   if (!mapped_file.is_open()) {
-    PCL_ERROR("[pcl::IFSReader::read] File mapping failure\n");
+    PCL_ERROR ("[pcl::IFSReader::read] File mapping failure\n");
     mapped_file.close();
     return (-1);
   }
 
   // Copy the data
-  memcpy(mesh.cloud.data.data(), mapped_file.data() + data_idx, mesh.cloud.data.size());
+  memcpy (
+      mesh.cloud.data.data(), mapped_file.data() + data_idx, mesh.cloud.data.size());
 
   mapped_file.close();
 
   // Reopen the file to load the facets
   std::ifstream fs;
-  fs.open(file_name.c_str(), std::ios::binary);
+  fs.open (file_name.c_str(), std::ios::binary);
   if (!fs.is_open() || fs.fail()) {
-    PCL_ERROR("[pcl::IFSReader::read] Could not open file '%s'! Error : %s\n",
-              file_name.c_str(),
-              strerror(errno));
+    PCL_ERROR ("[pcl::IFSReader::read] Could not open file '%s'! Error : %s\n",
+               file_name.c_str(),
+               strerror (errno));
     fs.close();
     return (-1);
   }
   // Jump to the end of cloud data
-  fs.seekg(data_size);
+  fs.seekg (data_size);
   // Read the TRIANGLES keyword
   std::uint32_t length_of_keyword;
-  fs.read(reinterpret_cast<char*>(&length_of_keyword), sizeof(std::uint32_t));
+  fs.read (reinterpret_cast<char*> (&length_of_keyword), sizeof (std::uint32_t));
   char* keyword = new char[length_of_keyword];
-  fs.read(keyword, sizeof(char) * length_of_keyword);
-  const bool keyword_is_triangles = (strcmp(keyword, "TRIANGLES") == 0);
+  fs.read (keyword, sizeof (char) * length_of_keyword);
+  const bool keyword_is_triangles = (strcmp (keyword, "TRIANGLES") == 0);
   delete[] keyword;
   if (!keyword_is_triangles) {
-    PCL_ERROR("[pcl::IFSReader::read] File %s is does not contain facets!\n",
-              file_name.c_str());
+    PCL_ERROR ("[pcl::IFSReader::read] File %s is does not contain facets!\n",
+               file_name.c_str());
     fs.close();
     return (-1);
   }
   // Read the number of facets
   std::uint32_t nr_facets;
-  fs.read(reinterpret_cast<char*>(&nr_facets), sizeof(std::uint32_t));
+  fs.read (reinterpret_cast<char*> (&nr_facets), sizeof (std::uint32_t));
   if ((nr_facets == 0) || (nr_facets > 10000000)) {
-    PCL_ERROR("[pcl::IFSReader::read] Bad number of facets %lu!\n", nr_facets);
+    PCL_ERROR ("[pcl::IFSReader::read] Bad number of facets %lu!\n", nr_facets);
     fs.close();
     return (-1);
   }
   // Resize the mesh polygons
-  mesh.polygons.resize(nr_facets);
+  mesh.polygons.resize (nr_facets);
   // Fill each polygon
   for (std::uint32_t i = 0; i < nr_facets; ++i) {
     pcl::Vertices& facet = mesh.polygons[i];
-    facet.vertices.resize(3);
+    facet.vertices.resize (3);
     // NOLINTNEXTLINE(readability-container-data-pointer)
-    fs.read(reinterpret_cast<char*>(&(facet.vertices[0])), sizeof(std::uint32_t));
-    fs.read(reinterpret_cast<char*>(&(facet.vertices[1])), sizeof(std::uint32_t));
-    fs.read(reinterpret_cast<char*>(&(facet.vertices[2])), sizeof(std::uint32_t));
+    fs.read (reinterpret_cast<char*> (&(facet.vertices[0])), sizeof (std::uint32_t));
+    fs.read (reinterpret_cast<char*> (&(facet.vertices[1])), sizeof (std::uint32_t));
+    fs.read (reinterpret_cast<char*> (&(facet.vertices[2])), sizeof (std::uint32_t));
   }
   // We are done, close the file
   fs.close();
   // Display statistics
   double total_time = tt.toc();
-  PCL_DEBUG("[pcl::IFSReader::read] Loaded %s as a polygon mesh in %g ms with %d "
-            "points and %d facets.\n",
-            file_name.c_str(),
-            total_time,
-            mesh.cloud.width * mesh.cloud.height,
-            mesh.polygons.size());
+  PCL_DEBUG ("[pcl::IFSReader::read] Loaded %s as a polygon mesh in %g ms with %d "
+             "points and %d facets.\n",
+             file_name.c_str(),
+             total_time,
+             mesh.cloud.width * mesh.cloud.height,
+             mesh.polygons.size());
   return (0);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 int
-pcl::IFSWriter::write(const std::string& file_name,
-                      const pcl::PCLPointCloud2& cloud,
-                      const std::string& cloud_name)
+pcl::IFSWriter::write (const std::string& file_name,
+                       const pcl::PCLPointCloud2& cloud,
+                       const std::string& cloud_name)
 {
   if (cloud.data.empty()) {
-    PCL_ERROR("[pcl::IFSWriter::write] Input point cloud has no data!\n");
+    PCL_ERROR ("[pcl::IFSWriter::write] Input point cloud has no data!\n");
     return (-1);
   }
 
   if (!cloud.is_dense) {
-    PCL_ERROR(
+    PCL_ERROR (
         "[pcl::IFSWriter::write] Non dense cloud are not allowed by IFS format!\n");
     return (-1);
   }
@@ -345,31 +346,31 @@ pcl::IFSWriter::write(const std::string& file_name,
   const std::string magic = "IFS";
   const float version = 1.0f;
   const std::string vertices = "VERTICES";
-  std::vector<char> header(sizeof(std::uint32_t) + magic.size() + 1 + sizeof(float) +
-                           sizeof(std::uint32_t) + cloud_name.size() + 1 +
-                           sizeof(std::uint32_t) + vertices.size() + 1 +
-                           sizeof(std::uint32_t));
+  std::vector<char> header (sizeof (std::uint32_t) + magic.size() + 1 + sizeof (float) +
+                            sizeof (std::uint32_t) + cloud_name.size() + 1 +
+                            sizeof (std::uint32_t) + vertices.size() + 1 +
+                            sizeof (std::uint32_t));
   char* addr = header.data();
-  const std::uint32_t magic_size = static_cast<std::uint32_t>(magic.size()) + 1;
-  memcpy(addr, &magic_size, sizeof(std::uint32_t));
-  addr += sizeof(std::uint32_t);
-  memcpy(addr, magic.c_str(), magic_size * sizeof(char));
-  addr += magic_size * sizeof(char);
-  memcpy(addr, &version, sizeof(float));
-  addr += sizeof(float);
+  const std::uint32_t magic_size = static_cast<std::uint32_t> (magic.size()) + 1;
+  memcpy (addr, &magic_size, sizeof (std::uint32_t));
+  addr += sizeof (std::uint32_t);
+  memcpy (addr, magic.c_str(), magic_size * sizeof (char));
+  addr += magic_size * sizeof (char);
+  memcpy (addr, &version, sizeof (float));
+  addr += sizeof (float);
   const std::uint32_t cloud_name_size =
-      static_cast<std::uint32_t>(cloud_name.size()) + 1;
-  memcpy(addr, &cloud_name_size, sizeof(std::uint32_t));
-  addr += sizeof(std::uint32_t);
-  memcpy(addr, cloud_name.c_str(), cloud_name_size * sizeof(char));
-  addr += cloud_name_size * sizeof(char);
-  const std::uint32_t vertices_size = static_cast<std::uint32_t>(vertices.size()) + 1;
-  memcpy(addr, &vertices_size, sizeof(std::uint32_t));
-  addr += sizeof(std::uint32_t);
-  memcpy(addr, vertices.c_str(), vertices_size * sizeof(char));
-  addr += vertices_size * sizeof(char);
+      static_cast<std::uint32_t> (cloud_name.size()) + 1;
+  memcpy (addr, &cloud_name_size, sizeof (std::uint32_t));
+  addr += sizeof (std::uint32_t);
+  memcpy (addr, cloud_name.c_str(), cloud_name_size * sizeof (char));
+  addr += cloud_name_size * sizeof (char);
+  const std::uint32_t vertices_size = static_cast<std::uint32_t> (vertices.size()) + 1;
+  memcpy (addr, &vertices_size, sizeof (std::uint32_t));
+  addr += sizeof (std::uint32_t);
+  memcpy (addr, vertices.c_str(), vertices_size * sizeof (char));
+  addr += vertices_size * sizeof (char);
   const std::uint32_t nb_vertices = cloud.data.size() / cloud.point_step;
-  memcpy(addr, &nb_vertices, sizeof(std::uint32_t));
+  memcpy (addr, &nb_vertices, sizeof (std::uint32_t));
   /*addr+= sizeof (std::uint32_t);*/
 
   std::size_t data_idx = header.size();
@@ -383,26 +384,26 @@ pcl::IFSWriter::write(const std::string& file_name,
   params.length = data_idx + cloud.data.size();
 
   try {
-    sink.open(params);
+    sink.open (params);
   } catch (const char* exception) {
-    PCL_ERROR("[pcl::IFSWriter::write] Error : %s!\n", file_name.c_str(), exception);
+    PCL_ERROR ("[pcl::IFSWriter::write] Error : %s!\n", file_name.c_str(), exception);
     sink.close();
     return (-1);
   }
 
   if (!sink.is_open()) {
-    PCL_ERROR("[pcl::IFSWriter::write] Could not open file '%s'! Error : %s\n",
-              file_name.c_str(),
-              strerror(errno));
+    PCL_ERROR ("[pcl::IFSWriter::write] Could not open file '%s'! Error : %s\n",
+               file_name.c_str(),
+               strerror (errno));
     sink.close();
     return (-1);
   }
 
   // copy header
-  memcpy(sink.data(), header.data(), data_idx);
+  memcpy (sink.data(), header.data(), data_idx);
 
   // Copy the data
-  memcpy(sink.data() + data_idx, cloud.data.data(), cloud.data.size());
+  memcpy (sink.data() + data_idx, cloud.data.data(), cloud.data.size());
 
   sink.close();
 

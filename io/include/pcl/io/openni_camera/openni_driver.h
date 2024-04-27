@@ -230,12 +230,12 @@ public:
 
 protected:
   struct PCL_EXPORTS DeviceContext {
-    DeviceContext(const xn::NodeInfo& device_node,
-                  xn::NodeInfo* image_node,
-                  xn::NodeInfo* depth_node,
-                  xn::NodeInfo* ir_node);
-    DeviceContext(const xn::NodeInfo& device_node);
-    DeviceContext(const DeviceContext&);
+    DeviceContext (const xn::NodeInfo& device_node,
+                   xn::NodeInfo* image_node,
+                   xn::NodeInfo* depth_node,
+                   xn::NodeInfo* ir_node);
+    DeviceContext (const xn::NodeInfo& device_node);
+    DeviceContext (const DeviceContext&);
     xn::NodeInfo device_node;
     std::shared_ptr<xn::NodeInfo> image_node;
     std::shared_ptr<xn::NodeInfo> depth_node;
@@ -272,7 +272,7 @@ OpenNIDriver::getInstance()
 unsigned
 OpenNIDriver::getNumberDevices() const noexcept
 {
-  return static_cast<unsigned>(device_context_.size());
+  return static_cast<unsigned> (device_context_.size());
 }
 
 } // namespace openni_wrapper

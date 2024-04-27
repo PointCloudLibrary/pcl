@@ -106,10 +106,10 @@ RGB2HSV (int r, int g, int b, float& fh, float& fs, float& fv)
   int vmin = b, diff;
   int vr, vg;
 
-  v = std::max<int>(v, g);
-  v = std::max<int>(v, r);
-  vmin = std::min<int>(vmin, g);
-  vmin = std::min<int>(vmin, r);
+  v = std::max<int> (v, g);
+  v = std::max<int> (v, r);
+  vmin = std::min<int> (vmin, g);
+  vmin = std::min<int> (vmin, r);
 
   diff = v - vmin;
   vr = v == r ? -1 : 0;
@@ -121,15 +121,15 @@ RGB2HSV (int r, int g, int b, float& fh, float& fs, float& fv)
   h = (h * div_table[diff] * hscale + (1 << (hsv_shift + 6))) >> (7 + hsv_shift);
 
   h += h < 0 ? hr : 0;
-  fh = static_cast<float>(h) / 180.0f;
-  fs = static_cast<float>(s) / 255.0f;
-  fv = static_cast<float>(v) / 255.0f;
+  fh = static_cast<float> (h) / 180.0f;
+  fs = static_cast<float> (s) / 255.0f;
+  fv = static_cast<float> (v) / 255.0f;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT>
 double
-HSVColorCoherence<PointInT>::computeCoherence(PointInT& source, PointInT& target)
+HSVColorCoherence<PointInT>::computeCoherence (PointInT& source, PointInT& target)
 {
   // convert color space from RGB to HSV
   RGBValue source_rgb, target_rgb;
@@ -137,33 +137,33 @@ HSVColorCoherence<PointInT>::computeCoherence(PointInT& source, PointInT& target
   target_rgb.int_value = target.rgba;
 
   float source_h, source_s, source_v, target_h, target_s, target_v;
-  RGB2HSV(
+  RGB2HSV (
       source_rgb.Red, source_rgb.Blue, source_rgb.Green, source_h, source_s, source_v);
-  RGB2HSV(
+  RGB2HSV (
       target_rgb.Red, target_rgb.Blue, target_rgb.Green, target_h, target_s, target_v);
   // hue value is in 0 ~ 2pi, but circulated.
-  const float _h_diff = std::abs(source_h - target_h);
+  const float _h_diff = std::abs (source_h - target_h);
   // Also need to compute distance other way around circle - but need to check which is
   // closer to 0
   float _h_diff2;
   if (source_h < target_h)
     _h_diff2 =
-        std::abs(1.0f + source_h - target_h); // Add 2pi to source, subtract target
+        std::abs (1.0f + source_h - target_h); // Add 2pi to source, subtract target
   else
     _h_diff2 =
-        std::abs(1.0f + target_h - source_h); // Add 2pi to target, subtract source
+        std::abs (1.0f + target_h - source_h); // Add 2pi to target, subtract source
 
   float h_diff;
   // Now we need to choose the smaller distance
   if (_h_diff < _h_diff2)
-    h_diff = static_cast<float>(h_weight_) * _h_diff * _h_diff;
+    h_diff = static_cast<float> (h_weight_) * _h_diff * _h_diff;
   else
-    h_diff = static_cast<float>(h_weight_) * _h_diff2 * _h_diff2;
+    h_diff = static_cast<float> (h_weight_) * _h_diff2 * _h_diff2;
 
   const float s_diff =
-      static_cast<float>(s_weight_) * (source_s - target_s) * (source_s - target_s);
+      static_cast<float> (s_weight_) * (source_s - target_s) * (source_s - target_s);
   const float v_diff =
-      static_cast<float>(v_weight_) * (source_v - target_v) * (source_v - target_v);
+      static_cast<float> (v_weight_) * (source_v - target_v) * (source_v - target_v);
   const float diff2 = h_diff + s_diff + v_diff;
 
   return (1.0 / (1.0 + weight_ * diff2));

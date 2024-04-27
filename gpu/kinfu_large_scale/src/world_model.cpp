@@ -40,4 +40,4 @@
 #include <pcl/gpu/kinfu_large_scale/world_model.h>
 #include <pcl/impl/instantiate.hpp>
 
-PCL_INSTANTIATE(WorldModel, (pcl::PointXYZ)(pcl::PointXYZI));
+PCL_INSTANTIATE (WorldModel, (pcl::PointXYZ) (pcl::PointXYZI));

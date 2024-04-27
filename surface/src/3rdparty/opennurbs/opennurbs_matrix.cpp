@@ -48,91 +48,91 @@ ON_Matrix::ThisM()
 }
 
 double*
-ON_Matrix::operator[](int i)
+ON_Matrix::operator[] (int i)
 {
   return m[i];
 }
 
 const double*
-ON_Matrix::operator[](int i) const
+ON_Matrix::operator[] (int i) const
 {
   return m[i];
 }
 
 ON_Matrix::ON_Matrix()
-: m(0)
-, m_row_count(0)
-, m_col_count(0)
-, m_Mmem(0)
-, m_row_offset(0)
-, m_col_offset(0)
-, m_cmem(0)
+: m (0)
+, m_row_count (0)
+, m_col_count (0)
+, m_Mmem (0)
+, m_row_offset (0)
+, m_col_offset (0)
+, m_cmem (0)
 {}
 
-ON_Matrix::ON_Matrix(int row_size, int col_size)
-: m(0)
-, m_row_count(0)
-, m_col_count(0)
-, m_Mmem(0)
-, m_row_offset(0)
-, m_col_offset(0)
-, m_cmem(0)
+ON_Matrix::ON_Matrix (int row_size, int col_size)
+: m (0)
+, m_row_count (0)
+, m_col_count (0)
+, m_Mmem (0)
+, m_row_offset (0)
+, m_col_offset (0)
+, m_cmem (0)
 {
-  Create(row_size, col_size);
+  Create (row_size, col_size);
 }
 
-ON_Matrix::ON_Matrix(int row0, int row1, int col0, int col1)
-: m(0)
-, m_row_count(0)
-, m_col_count(0)
-, m_Mmem(0)
-, m_row_offset(0)
-, m_col_offset(0)
-, m_cmem(0)
+ON_Matrix::ON_Matrix (int row0, int row1, int col0, int col1)
+: m (0)
+, m_row_count (0)
+, m_col_count (0)
+, m_Mmem (0)
+, m_row_offset (0)
+, m_col_offset (0)
+, m_cmem (0)
 {
-  Create(row0, row1, col0, col1);
+  Create (row0, row1, col0, col1);
 }
 
-ON_Matrix::ON_Matrix(const ON_Xform& x)
-: m(0)
-, m_row_count(0)
-, m_col_count(0)
-, m_Mmem(0)
-, m_row_offset(0)
-, m_col_offset(0)
-, m_cmem(0)
+ON_Matrix::ON_Matrix (const ON_Xform& x)
+: m (0)
+, m_row_count (0)
+, m_col_count (0)
+, m_Mmem (0)
+, m_row_offset (0)
+, m_col_offset (0)
+, m_cmem (0)
 {
   *this = x;
 }
 
-ON_Matrix::ON_Matrix(const ON_Matrix& src)
-: m(0)
-, m_row_count(0)
-, m_col_count(0)
-, m_Mmem(0)
-, m_row_offset(0)
-, m_col_offset(0)
-, m_cmem(0)
+ON_Matrix::ON_Matrix (const ON_Matrix& src)
+: m (0)
+, m_row_count (0)
+, m_col_count (0)
+, m_Mmem (0)
+, m_row_offset (0)
+, m_col_offset (0)
+, m_cmem (0)
 {
   *this = src;
 }
 
-ON_Matrix::ON_Matrix(int row_count, int col_count, double** M, bool bDestructorFreeM)
-: m(0)
-, m_row_count(0)
-, m_col_count(0)
-, m_Mmem(0)
-, m_row_offset(0)
-, m_col_offset(0)
-, m_cmem(0)
+ON_Matrix::ON_Matrix (int row_count, int col_count, double** M, bool bDestructorFreeM)
+: m (0)
+, m_row_count (0)
+, m_col_count (0)
+, m_Mmem (0)
+, m_row_offset (0)
+, m_col_offset (0)
+, m_cmem (0)
 {
-  Create(row_count, col_count, M, bDestructorFreeM);
+  Create (row_count, col_count, M, bDestructorFreeM);
 }
 
 ON_Matrix::~ON_Matrix()
 {
   if (0 != m_Mmem) {
-    onfree(m_Mmem);
+    onfree (m_Mmem);
     m_Mmem = 0;
   }
   m_row_offset = 0;
@@ -141,7 +141,7 @@ ON_Matrix::~ON_Matrix()
   m_cmem = 0;
   while (0 != p) {
     struct DBLBLK* next = p->next;
-    onfree(p);
+    onfree (p);
     p = next;
   }
 }
@@ -171,14 +171,14 @@ ON_Matrix::MaxCount() const
 }
 
 bool
-ON_Matrix::Create(int row_count, int col_count)
+ON_Matrix::Create (int row_count, int col_count)
 {
   bool b = false;
   Destroy();
   if (row_count > 0 && col_count > 0) {
-    m_rowmem.Reserve(row_count);
+    m_rowmem.Reserve (row_count);
     if (0 != m_rowmem.Array()) {
-      m_rowmem.SetCount(row_count);
+      m_rowmem.SetCount (row_count);
       // In general, allocate coefficient memory in chunks
       // of <= max_dblblk_size bytes.  The value of max_dblblk_size
       // is tuned to maximize speed on calculations involving
@@ -192,7 +192,7 @@ ON_Matrix::Create(int row_count, int col_count)
       // const int max_dblblk_size = 1024*1024*8;
       const int max_dblblk_size = 512 * 1024;
 
-      int rows_per_block = max_dblblk_size / (col_count * sizeof(double));
+      int rows_per_block = max_dblblk_size / (col_count * sizeof (double));
       if (rows_per_block > row_count)
         rows_per_block = row_count;
       else if (rows_per_block < 1)
@@ -208,7 +208,7 @@ ON_Matrix::Create(int row_count, int col_count)
           rows_per_block = i;
         int dblblk_count = rows_per_block * col_count;
         struct DBLBLK* p =
-            (struct DBLBLK*)onmalloc(sizeof(*p) + dblblk_count * sizeof(p->a[0]));
+            (struct DBLBLK*)onmalloc (sizeof (*p) + dblblk_count * sizeof (p->a[0]));
         p->a = (double*)(p + 1);
         p->count = dblblk_count;
         p->next = (struct DBLBLK*)m_cmem;
@@ -230,20 +230,20 @@ ON_Matrix::Create(int row_count, int col_count)
 }
 
 bool
-ON_Matrix::Create( // E.g., Create(1,5,1,7) creates a 5x7 sized matrix that with
-                   // "top" row = m[1][1],...,m[1][7] and "bottom" row
-                   // = m[5][1],...,m[5][7].  The result of Create(0,m,0,n) is
-                   // identical to the result of Create(m+1,n+1).
-    int ri0,       // first valid row index
-    int ri1,       // last valid row index
-    int ci0,       // first valid column index
-    int ci1        // last valid column index
+ON_Matrix::Create ( // E.g., Create(1,5,1,7) creates a 5x7 sized matrix that with
+                    // "top" row = m[1][1],...,m[1][7] and "bottom" row
+                    // = m[5][1],...,m[5][7].  The result of Create(0,m,0,n) is
+                    // identical to the result of Create(m+1,n+1).
+    int ri0,        // first valid row index
+    int ri1,        // last valid row index
+    int ci0,        // first valid column index
+    int ci1         // last valid column index
 )
 {
   bool b = false;
   if (ri1 > ri0 && ci1 > ci0) {
     // juggle m[] pointers so that m[ri0+i][ci0+j] = m_row[i][j];
-    b = Create(ri1 - ri0, ci1 - ci0);
+    b = Create (ri1 - ri0, ci1 - ci0);
     if (b) {
       m_row_offset = ri0; // this is the only line of code where m_row_offset should be
                           // set to a non-zero value
@@ -263,7 +263,7 @@ ON_Matrix::Create( // E.g., Create(1,5,1,7) creates a 5x7 sized matrix that with
 }
 
 bool
-ON_Matrix::Create(int row_count, int col_count, double** M, bool bDestructorFreeM)
+ON_Matrix::Create (int row_count, int col_count, double** M, bool bDestructorFreeM)
 {
   Destroy();
   if (row_count < 1 || col_count < 1 || 0 == M)
@@ -282,11 +282,11 @@ ON_Matrix::Destroy()
   m = 0;
   m_row_count = 0;
   m_col_count = 0;
-  m_rowmem.SetCount(0);
+  m_rowmem.SetCount (0);
   if (0 != m_Mmem) {
     // pointer passed to Create( row_count, col_count, M, bDestructorFreeM )
     // when bDestructorFreeM = true.
-    onfree(m_Mmem);
+    onfree (m_Mmem);
     m_Mmem = 0;
   }
   m_row_offset = 0;
@@ -295,7 +295,7 @@ ON_Matrix::Destroy()
   m_cmem = 0;
   while (0 != cmem) {
     struct DBLBLK* next_cmem = cmem->next;
-    onfree(cmem);
+    onfree (cmem);
     cmem = next_cmem;
   }
 }
@@ -315,21 +315,21 @@ ON_Matrix::EmergencyDestroy()
 }
 
 ON_Matrix&
-ON_Matrix::operator=(const ON_Matrix& src)
+ON_Matrix::operator= (const ON_Matrix& src)
 {
   if (this != &src) {
     if (src.m_row_count != m_row_count || src.m_col_count != m_col_count || 0 == m) {
       Destroy();
-      Create(src.RowCount(), src.ColCount());
+      Create (src.RowCount(), src.ColCount());
     }
     if (src.m_row_count == m_row_count && src.m_col_count == m_col_count && 0 != m) {
       int i;
       // src rows may be permuted - copy row by row
       double** m_dest = ThisM();
       double const* const* m_src = src.ThisM();
-      const int sizeof_row = m_col_count * sizeof(m_dest[0][0]);
+      const int sizeof_row = m_col_count * sizeof (m_dest[0][0]);
       for (i = 0; i < m_row_count; i++) {
-        memcpy(m_dest[i], m_src[i], sizeof_row);
+        memcpy (m_dest[i], m_src[i], sizeof_row);
       }
       m_row_offset = src.m_row_offset;
       m_col_offset = src.m_col_offset;
@@ -339,21 +339,21 @@ ON_Matrix::operator=(const ON_Matrix& src)
 }
 
 ON_Matrix&
-ON_Matrix::operator=(const ON_Xform& src)
+ON_Matrix::operator= (const ON_Xform& src)
 {
   m_row_offset = 0;
   m_col_offset = 0;
   if (4 != m_row_count || 4 != m_col_count || 0 == m) {
     Destroy();
-    Create(4, 4);
+    Create (4, 4);
   }
   if (4 == m_row_count && 4 == m_col_count && 0 != m) {
     double** this_m = ThisM();
     if (this_m) {
-      memcpy(this_m[0], &src.m_xform[0][0], 4 * sizeof(this_m[0][0]));
-      memcpy(this_m[1], &src.m_xform[1][0], 4 * sizeof(this_m[0][0]));
-      memcpy(this_m[2], &src.m_xform[2][0], 4 * sizeof(this_m[0][0]));
-      memcpy(this_m[3], &src.m_xform[3][0], 4 * sizeof(this_m[0][0]));
+      memcpy (this_m[0], &src.m_xform[0][0], 4 * sizeof (this_m[0][0]));
+      memcpy (this_m[1], &src.m_xform[1][0], 4 * sizeof (this_m[0][0]));
+      memcpy (this_m[2], &src.m_xform[2][0], 4 * sizeof (this_m[0][0]));
+      memcpy (this_m[3], &src.m_xform[3][0], 4 * sizeof (this_m[0][0]));
     }
   }
   return *this;
@@ -379,8 +379,8 @@ ON_Matrix::Transpose()
         }
     }
     else if (this_m == m_rowmem.Array()) {
-      ON_Matrix A(*this);
-      rc = Create(col_count, row_count) && m_row_count == A.ColCount() &&
+      ON_Matrix A (*this);
+      rc = Create (col_count, row_count) && m_row_count == A.ColCount() &&
            m_col_count == A.RowCount();
       if (rc) {
         double const* const* Am = A.ThisM();
@@ -402,7 +402,7 @@ ON_Matrix::Transpose()
 }
 
 bool
-ON_Matrix::SwapRows(int row0, int row1)
+ON_Matrix::SwapRows (int row0, int row1)
 {
   bool b = false;
   double** this_m = ThisM();
@@ -420,7 +420,7 @@ ON_Matrix::SwapRows(int row0, int row1)
 }
 
 bool
-ON_Matrix::SwapCols(int col0, int col1)
+ON_Matrix::SwapCols (int col0, int col1)
 {
   bool b = false;
   int i;
@@ -442,25 +442,25 @@ ON_Matrix::SwapCols(int col0, int col1)
 }
 
 void
-ON_Matrix::RowScale(int dest_row, double s)
+ON_Matrix::RowScale (int dest_row, double s)
 {
   double** this_m = ThisM();
   dest_row -= m_row_offset;
-  ON_ArrayScale(m_col_count, s, this_m[dest_row], this_m[dest_row]);
+  ON_ArrayScale (m_col_count, s, this_m[dest_row], this_m[dest_row]);
 }
 
 void
-ON_Matrix::RowOp(int dest_row, double s, int src_row)
+ON_Matrix::RowOp (int dest_row, double s, int src_row)
 {
   double** this_m = ThisM();
   dest_row -= m_row_offset;
   src_row -= m_row_offset;
-  ON_Array_aA_plus_B(
+  ON_Array_aA_plus_B (
       m_col_count, s, this_m[src_row], this_m[dest_row], this_m[dest_row]);
 }
 
 void
-ON_Matrix::ColScale(int dest_col, double s)
+ON_Matrix::ColScale (int dest_col, double s)
 {
   int i;
   double** this_m = ThisM();
@@ -471,7 +471,7 @@ ON_Matrix::ColScale(int dest_col, double s)
 }
 
 void
-ON_Matrix::ColOp(int dest_col, double s, int src_col)
+ON_Matrix::ColOp (int dest_col, double s, int src_col)
 {
   int i;
   double** this_m = ThisM();
@@ -483,7 +483,7 @@ ON_Matrix::ColOp(int dest_col, double s, int src_col)
 }
 
 int
-ON_Matrix::RowReduce(double zero_tolerance, double& determinant, double& pivot)
+ON_Matrix::RowReduce (double zero_tolerance, double& determinant, double& pivot)
 {
   double x, piv, det;
   int i, k, ix, rank;
@@ -494,11 +494,11 @@ ON_Matrix::RowReduce(double zero_tolerance, double& determinant, double& pivot)
   const int n = m_row_count <= m_col_count ? m_row_count : m_col_count;
   for (k = 0; k < n; k++) {
     ix = k;
-    x = fabs(this_m[ix][k]);
+    x = fabs (this_m[ix][k]);
     for (i = k + 1; i < m_row_count; i++) {
-      if (fabs(this_m[i][k]) > x) {
+      if (fabs (this_m[i][k]) > x) {
         ix = i;
-        x = fabs(this_m[ix][k]);
+        x = fabs (this_m[ix][k]);
       }
     }
     if (x < piv || k == 0) {
@@ -511,25 +511,25 @@ ON_Matrix::RowReduce(double zero_tolerance, double& determinant, double& pivot)
     rank++;
 
     // swap rows
-    SwapRows(ix, k);
+    SwapRows (ix, k);
     det = -det;
 
     // scale row k of matrix and B
     det *= this_m[k][k];
     x = 1.0 / this_m[k][k];
     this_m[k][k] = 1.0;
-    ON_ArrayScale(m_col_count - 1 - k, x, &this_m[k][k + 1], &this_m[k][k + 1]);
+    ON_ArrayScale (m_col_count - 1 - k, x, &this_m[k][k + 1], &this_m[k][k + 1]);
 
     // zero column k for rows below this_m[k][k]
     for (i = k + 1; i < m_row_count; i++) {
       x = -this_m[i][k];
       this_m[i][k] = 0.0;
-      if (fabs(x) > zero_tolerance) {
-        ON_Array_aA_plus_B(m_col_count - 1 - k,
-                           x,
-                           &this_m[k][k + 1],
-                           &this_m[i][k + 1],
-                           &this_m[i][k + 1]);
+      if (fabs (x) > zero_tolerance) {
+        ON_Array_aA_plus_B (m_col_count - 1 - k,
+                            x,
+                            &this_m[k][k + 1],
+                            &this_m[i][k + 1],
+                            &this_m[i][k + 1]);
       }
     }
   }
@@ -541,7 +541,7 @@ ON_Matrix::RowReduce(double zero_tolerance, double& determinant, double& pivot)
 }
 
 int
-ON_Matrix::RowReduce(double zero_tolerance, double* B, double* pivot)
+ON_Matrix::RowReduce (double zero_tolerance, double* B, double* pivot)
 {
   double t;
   double x, piv;
@@ -553,11 +553,11 @@ ON_Matrix::RowReduce(double zero_tolerance, double* B, double* pivot)
   const int n = m_row_count <= m_col_count ? m_row_count : m_col_count;
   for (k = 0; k < n; k++) {
     ix = k;
-    x = fabs(this_m[ix][k]);
+    x = fabs (this_m[ix][k]);
     for (i = k + 1; i < m_row_count; i++) {
-      if (fabs(this_m[i][k]) > x) {
+      if (fabs (this_m[i][k]) > x) {
         ix = i;
-        x = fabs(this_m[ix][k]);
+        x = fabs (this_m[ix][k]);
       }
     }
     if (x < piv || k == 0) {
@@ -568,7 +568,7 @@ ON_Matrix::RowReduce(double zero_tolerance, double* B, double* pivot)
     rank++;
 
     // swap rows of matrix and B
-    SwapRows(ix, k);
+    SwapRows (ix, k);
     t = B[ix];
     B[ix] = B[k];
     B[k] = t;
@@ -576,19 +576,19 @@ ON_Matrix::RowReduce(double zero_tolerance, double* B, double* pivot)
     // scale row k of matrix and B
     x = 1.0 / this_m[k][k];
     this_m[k][k] = 1.0;
-    ON_ArrayScale(m_col_count - 1 - k, x, &this_m[k][k + 1], &this_m[k][k + 1]);
+    ON_ArrayScale (m_col_count - 1 - k, x, &this_m[k][k + 1], &this_m[k][k + 1]);
     B[k] *= x;
 
     // zero column k for rows below this_m[k][k]
     for (i = k + 1; i < m_row_count; i++) {
       x = -this_m[i][k];
       this_m[i][k] = 0.0;
-      if (fabs(x) > zero_tolerance) {
-        ON_Array_aA_plus_B(m_col_count - 1 - k,
-                           x,
-                           &this_m[k][k + 1],
-                           &this_m[i][k + 1],
-                           &this_m[i][k + 1]);
+      if (fabs (x) > zero_tolerance) {
+        ON_Array_aA_plus_B (m_col_count - 1 - k,
+                            x,
+                            &this_m[k][k + 1],
+                            &this_m[i][k + 1],
+                            &this_m[i][k + 1]);
         B[i] += x * B[k];
       }
     }
@@ -601,7 +601,7 @@ ON_Matrix::RowReduce(double zero_tolerance, double* B, double* pivot)
 }
 
 int
-ON_Matrix::RowReduce(double zero_tolerance, ON_3dPoint* B, double* pivot)
+ON_Matrix::RowReduce (double zero_tolerance, ON_3dPoint* B, double* pivot)
 {
   ON_3dPoint t;
   double x, piv;
@@ -613,13 +613,13 @@ ON_Matrix::RowReduce(double zero_tolerance, ON_3dPoint* B, double* pivot)
   const int n = m_row_count <= m_col_count ? m_row_count : m_col_count;
   for (k = 0; k < n; k++) {
     // onfree( onmalloc( 1)); // 8-06-03 lw for cancel thread responsiveness
-    onmalloc(0); // 9-4-03 lw changed to 0
+    onmalloc (0); // 9-4-03 lw changed to 0
     ix = k;
-    x = fabs(this_m[ix][k]);
+    x = fabs (this_m[ix][k]);
     for (i = k + 1; i < m_row_count; i++) {
-      if (fabs(this_m[i][k]) > x) {
+      if (fabs (this_m[i][k]) > x) {
         ix = i;
-        x = fabs(this_m[ix][k]);
+        x = fabs (this_m[ix][k]);
       }
     }
     if (x < piv || k == 0) {
@@ -630,7 +630,7 @@ ON_Matrix::RowReduce(double zero_tolerance, ON_3dPoint* B, double* pivot)
     rank++;
 
     // swap rows of matrix and B
-    SwapRows(ix, k);
+    SwapRows (ix, k);
     t = B[ix];
     B[ix] = B[k];
     B[k] = t;
@@ -638,19 +638,19 @@ ON_Matrix::RowReduce(double zero_tolerance, ON_3dPoint* B, double* pivot)
     // scale row k of matrix and B
     x = 1.0 / this_m[k][k];
     this_m[k][k] = 1.0;
-    ON_ArrayScale(m_col_count - 1 - k, x, &this_m[k][k + 1], &this_m[k][k + 1]);
+    ON_ArrayScale (m_col_count - 1 - k, x, &this_m[k][k + 1], &this_m[k][k + 1]);
     B[k] *= x;
 
     // zero column k for rows below this_m[k][k]
     for (i = k + 1; i < m_row_count; i++) {
       x = -this_m[i][k];
       this_m[i][k] = 0.0;
-      if (fabs(x) > zero_tolerance) {
-        ON_Array_aA_plus_B(m_col_count - 1 - k,
-                           x,
-                           &this_m[k][k + 1],
-                           &this_m[i][k + 1],
-                           &this_m[i][k + 1]);
+      if (fabs (x) > zero_tolerance) {
+        ON_Array_aA_plus_B (m_col_count - 1 - k,
+                            x,
+                            &this_m[k][k + 1],
+                            &this_m[i][k + 1],
+                            &this_m[i][k + 1]);
         B[i] += x * B[k];
       }
     }
@@ -663,11 +663,11 @@ ON_Matrix::RowReduce(double zero_tolerance, ON_3dPoint* B, double* pivot)
 }
 
 int
-ON_Matrix::RowReduce(
+ON_Matrix::RowReduce (
     double zero_tolerance, int pt_dim, int pt_stride, double* pt, double* pivot)
 {
-  const int sizeof_pt = pt_dim * sizeof(pt[0]);
-  double* tmp_pt = (double*)onmalloc(pt_dim * sizeof(tmp_pt[0]));
+  const int sizeof_pt = pt_dim * sizeof (pt[0]);
+  double* tmp_pt = (double*)onmalloc (pt_dim * sizeof (tmp_pt[0]));
   double *ptA, *ptB;
   double x, piv;
   int i, k, ix, rank, pti;
@@ -678,13 +678,13 @@ ON_Matrix::RowReduce(
   const int n = m_row_count <= m_col_count ? m_row_count : m_col_count;
   for (k = 0; k < n; k++) {
     //    onfree( onmalloc( 1)); //  8-06-03 lw for cancel thread responsiveness
-    onmalloc(0); // 9-4-03 lw changed to 0
+    onmalloc (0); // 9-4-03 lw changed to 0
     ix = k;
-    x = fabs(this_m[ix][k]);
+    x = fabs (this_m[ix][k]);
     for (i = k + 1; i < m_row_count; i++) {
-      if (fabs(this_m[i][k]) > x) {
+      if (fabs (this_m[i][k]) > x) {
         ix = i;
-        x = fabs(this_m[ix][k]);
+        x = fabs (this_m[ix][k]);
       }
     }
     if (x < piv || k == 0) {
@@ -696,19 +696,19 @@ ON_Matrix::RowReduce(
 
     // swap rows of matrix and B
     if (ix != k) {
-      SwapRows(ix, k);
+      SwapRows (ix, k);
       ptA = pt + (ix * pt_stride);
       ptB = pt + (k * pt_stride);
-      memcpy(tmp_pt, ptA, sizeof_pt);
-      memcpy(ptA, ptB, sizeof_pt);
-      memcpy(ptB, tmp_pt, sizeof_pt);
+      memcpy (tmp_pt, ptA, sizeof_pt);
+      memcpy (ptA, ptB, sizeof_pt);
+      memcpy (ptB, tmp_pt, sizeof_pt);
     }
 
     // scale row k of matrix and B
     x = 1.0 / this_m[k][k];
     if (x != 1.0) {
       this_m[k][k] = 1.0;
-      ON_ArrayScale(m_col_count - 1 - k, x, &this_m[k][k + 1], &this_m[k][k + 1]);
+      ON_ArrayScale (m_col_count - 1 - k, x, &this_m[k][k + 1], &this_m[k][k + 1]);
       ptA = pt + (k * pt_stride);
       for (pti = 0; pti < pt_dim; pti++)
         ptA[pti] *= x;
@@ -719,12 +719,12 @@ ON_Matrix::RowReduce(
     for (i = k + 1; i < m_row_count; i++) {
       x = -this_m[i][k];
       this_m[i][k] = 0.0;
-      if (fabs(x) > zero_tolerance) {
-        ON_Array_aA_plus_B(m_col_count - 1 - k,
-                           x,
-                           &this_m[k][k + 1],
-                           &this_m[i][k + 1],
-                           &this_m[i][k + 1]);
+      if (fabs (x) > zero_tolerance) {
+        ON_Array_aA_plus_B (m_col_count - 1 - k,
+                            x,
+                            &this_m[k][k + 1],
+                            &this_m[i][k + 1],
+                            &this_m[i][k + 1]);
         ptA = pt + (i * pt_stride);
         for (pti = 0; pti < pt_dim; pti++) {
           ptA[pti] += x * ptB[pti];
@@ -736,13 +736,16 @@ ON_Matrix::RowReduce(
   if (pivot)
     *pivot = piv;
 
-  onfree(tmp_pt);
+  onfree (tmp_pt);
 
   return rank;
 }
 
 bool
-ON_Matrix::BackSolve(double zero_tolerance, int Bsize, const double* B, double* X) const
+ON_Matrix::BackSolve (double zero_tolerance,
+                      int Bsize,
+                      const double* B,
+                      double* X) const
 {
   int i;
 
@@ -753,7 +756,7 @@ ON_Matrix::BackSolve(double zero_tolerance, int Bsize, const double* B, double* 
     return false; // under determined
 
   for (i = m_col_count; i < Bsize; i++) {
-    if (fabs(B[i]) > zero_tolerance)
+    if (fabs (B[i]) > zero_tolerance)
       return false; // over determined
   }
 
@@ -763,17 +766,17 @@ ON_Matrix::BackSolve(double zero_tolerance, int Bsize, const double* B, double* 
   if (X != B)
     X[n] = B[n];
   for (i = n - 1; i >= 0; i--) {
-    X[i] = B[i] - ON_ArrayDotProduct(n - i, &this_m[i][i + 1], &X[i + 1]);
+    X[i] = B[i] - ON_ArrayDotProduct (n - i, &this_m[i][i + 1], &X[i + 1]);
   }
 
   return true;
 }
 
 bool
-ON_Matrix::BackSolve(double zero_tolerance,
-                     int Bsize,
-                     const ON_3dPoint* B,
-                     ON_3dPoint* X) const
+ON_Matrix::BackSolve (double zero_tolerance,
+                      int Bsize,
+                      const ON_3dPoint* B,
+                      ON_3dPoint* X) const
 {
   int i, j;
 
@@ -811,15 +814,15 @@ ON_Matrix::BackSolve(double zero_tolerance,
 }
 
 bool
-ON_Matrix::BackSolve(double zero_tolerance,
-                     int pt_dim,
-                     int Bsize,
-                     int Bpt_stride,
-                     const double* Bpt,
-                     int Xpt_stride,
-                     double* Xpt) const
+ON_Matrix::BackSolve (double zero_tolerance,
+                      int pt_dim,
+                      int Bsize,
+                      int Bpt_stride,
+                      const double* Bpt,
+                      int Xpt_stride,
+                      double* Xpt) const
 {
-  const int sizeof_pt = pt_dim * sizeof(double);
+  const int sizeof_pt = pt_dim * sizeof (double);
   double mij;
   int i, j, k;
   const double* Bi;
@@ -835,7 +838,7 @@ ON_Matrix::BackSolve(double zero_tolerance,
   for (i = m_col_count; i < Bsize; i++) {
     Bi = Bpt + i * Bpt_stride;
     for (j = 0; j < pt_dim; j++) {
-      if (fabs(Bi[j]) > zero_tolerance)
+      if (fabs (Bi[j]) > zero_tolerance)
         return false; // over determined
     }
   }
@@ -845,11 +848,11 @@ ON_Matrix::BackSolve(double zero_tolerance,
   if (Xpt != Bpt) {
     Xi = Xpt + (m_col_count - 1) * Xpt_stride;
     Bi = Bpt + (m_col_count - 1) * Bpt_stride;
-    memcpy(Xi, Bi, sizeof_pt);
+    memcpy (Xi, Bi, sizeof_pt);
     for (i = m_col_count - 2; i >= 0; i--) {
       Xi = Xpt + i * Xpt_stride;
       Bi = Bpt + i * Bpt_stride;
-      memcpy(Xi, Bi, sizeof_pt);
+      memcpy (Xi, Bi, sizeof_pt);
       for (j = i + 1; j < m_col_count; j++) {
         Xj = Xpt + j * Xpt_stride;
         mij = this_m[i][j];
@@ -879,7 +882,7 @@ ON_Matrix::Zero()
   struct DBLBLK* cmem = (struct DBLBLK*)m_cmem;
   while (0 != cmem) {
     if (0 != cmem->a && cmem->count > 0) {
-      memset(cmem->a, 0, cmem->count * sizeof(cmem->a[0]));
+      memset (cmem->a, 0, cmem->count * sizeof (cmem->a[0]));
     }
     cmem = cmem->next;
   }
@@ -888,7 +891,7 @@ ON_Matrix::Zero()
 }
 
 void
-ON_Matrix::SetDiagonal(double d)
+ON_Matrix::SetDiagonal (double d)
 {
   const int n = MinCount();
   int i;
@@ -900,7 +903,7 @@ ON_Matrix::SetDiagonal(double d)
 }
 
 void
-ON_Matrix::SetDiagonal(const double* d)
+ON_Matrix::SetDiagonal (const double* d)
 {
   Zero();
   if (d) {
@@ -914,17 +917,17 @@ ON_Matrix::SetDiagonal(const double* d)
 }
 
 void
-ON_Matrix::SetDiagonal(int count, const double* d)
+ON_Matrix::SetDiagonal (int count, const double* d)
 {
-  Create(count, count);
+  Create (count, count);
   Zero();
-  SetDiagonal(d);
+  SetDiagonal (d);
 }
 
 void
-ON_Matrix::SetDiagonal(const ON_SimpleArray<double>& a)
+ON_Matrix::SetDiagonal (const ON_SimpleArray<double>& a)
 {
-  SetDiagonal(a.Count(), a.Array());
+  SetDiagonal (a.Count(), a.Array());
 }
 
 bool
@@ -954,11 +957,11 @@ ON_Matrix::IsRowOrthoganal() const
     for (i1 = i0 + 1; i1 < m_row_count && rc; i1++) {
       d0 = d1 = d = 0.0;
       for (j = 0; j < m_col_count; j++) {
-        d0 += fabs(this_m[i0][j]);
-        d1 += fabs(this_m[i0][j]);
+        d0 += fabs (this_m[i0][j]);
+        d1 += fabs (this_m[i0][j]);
         d += this_m[i0][j] * this_m[i1][j];
       }
-      if (d0 <= ON_EPSILON || d1 <= ON_EPSILON || fabs(d) >= d0 * d1 * ON_SQRT_EPSILON)
+      if (d0 <= ON_EPSILON || d1 <= ON_EPSILON || fabs (d) >= d0 * d1 * ON_SQRT_EPSILON)
         rc = false;
     }
   return rc;
@@ -977,7 +980,7 @@ ON_Matrix::IsRowOrthoNormal() const
       for (j = 0; j < m_col_count; j++) {
         d += this_m[i][j] * this_m[i][j];
       }
-      if (fabs(1.0 - d) >= ON_SQRT_EPSILON)
+      if (fabs (1.0 - d) >= ON_SQRT_EPSILON)
         rc = false;
     }
   }
@@ -995,11 +998,11 @@ ON_Matrix::IsColOrthoganal() const
     for (j1 = j0 + 1; j1 < m_col_count && rc; j1++) {
       d0 = d1 = d = 0.0;
       for (i = 0; i < m_row_count; i++) {
-        d0 += fabs(this_m[i][j0]);
-        d1 += fabs(this_m[i][j0]);
+        d0 += fabs (this_m[i][j0]);
+        d1 += fabs (this_m[i][j0]);
         d += this_m[i][j0] * this_m[i][j1];
       }
-      if (d0 <= ON_EPSILON || d1 <= ON_EPSILON || fabs(d) > ON_SQRT_EPSILON)
+      if (d0 <= ON_EPSILON || d1 <= ON_EPSILON || fabs (d) > ON_SQRT_EPSILON)
         rc = false;
     }
   return rc;
@@ -1018,7 +1021,7 @@ ON_Matrix::IsColOrthoNormal() const
       for (i = 0; i < m_row_count; i++) {
         d += this_m[i][j] * this_m[i][j];
       }
-      if (fabs(1.0 - d) >= ON_SQRT_EPSILON)
+      if (fabs (1.0 - d) >= ON_SQRT_EPSILON)
         rc = false;
     }
   }
@@ -1026,7 +1029,7 @@ ON_Matrix::IsColOrthoNormal() const
 }
 
 bool
-ON_Matrix::Invert(double zero_tolerance)
+ON_Matrix::Invert (double zero_tolerance)
 {
   ON_Workspace ws;
   int i, j, k, ix, jx;
@@ -1035,32 +1038,32 @@ ON_Matrix::Invert(double zero_tolerance)
   if (n < 1)
     return false;
 
-  ON_Matrix I(m_col_count, m_row_count);
+  ON_Matrix I (m_col_count, m_row_count);
 
-  int* col = ws.GetIntMemory(n);
+  int* col = ws.GetIntMemory (n);
 
-  I.SetDiagonal(1.0);
+  I.SetDiagonal (1.0);
 
   double** this_m = ThisM();
 
   for (k = 0; k < n; k++) {
     // find largest value in sub matrix
     ix = jx = k;
-    x = fabs(this_m[ix][jx]);
+    x = fabs (this_m[ix][jx]);
     for (i = k; i < n; i++) {
       for (j = k; j < n; j++) {
-        if (fabs(this_m[i][j]) > x) {
+        if (fabs (this_m[i][j]) > x) {
           ix = i;
           jx = j;
-          x = fabs(this_m[ix][jx]);
+          x = fabs (this_m[ix][jx]);
         }
       }
     }
 
-    SwapRows(k, ix);
-    I.SwapRows(k, ix);
+    SwapRows (k, ix);
+    I.SwapRows (k, ix);
 
-    SwapCols(k, jx);
+    SwapCols (k, jx);
     col[k] = jx;
 
     if (x <= zero_tolerance) {
@@ -1068,21 +1071,21 @@ ON_Matrix::Invert(double zero_tolerance)
     }
     x = 1.0 / this_m[k][k];
     this_m[k][k] = 1.0;
-    ON_ArrayScale(m_col_count - k - 1, x, &this_m[k][k + 1], &this_m[k][k + 1]);
-    I.RowScale(k, x);
+    ON_ArrayScale (m_col_count - k - 1, x, &this_m[k][k + 1], &this_m[k][k + 1]);
+    I.RowScale (k, x);
 
     // zero this_m[!=k][k]'s
     for (i = 0; i < n; i++) {
       if (i != k) {
         x = -this_m[i][k];
         this_m[i][k] = 0.0;
-        if (fabs(x) > zero_tolerance) {
-          ON_Array_aA_plus_B(m_col_count - k - 1,
-                             x,
-                             &this_m[k][k + 1],
-                             &this_m[i][k + 1],
-                             &this_m[i][k + 1]);
-          I.RowOp(i, x, k);
+        if (fabs (x) > zero_tolerance) {
+          ON_Array_aA_plus_B (m_col_count - k - 1,
+                              x,
+                              &this_m[k][k + 1],
+                              &this_m[i][k + 1],
+                              &this_m[i][k + 1]);
+          I.RowOp (i, x, k);
         }
       }
     }
@@ -1091,7 +1094,7 @@ ON_Matrix::Invert(double zero_tolerance)
   // take care of column swaps
   for (i = k - 1; i >= 0; i--) {
     if (i != col[i])
-      I.SwapRows(i, col[i]);
+      I.SwapRows (i, col[i]);
   }
 
   *this = I;
@@ -1100,7 +1103,7 @@ ON_Matrix::Invert(double zero_tolerance)
 }
 
 bool
-ON_Matrix::Multiply(const ON_Matrix& a, const ON_Matrix& b)
+ON_Matrix::Multiply (const ON_Matrix& a, const ON_Matrix& b)
 {
   int i, j, k, mult_count;
   double x;
@@ -1109,14 +1112,14 @@ ON_Matrix::Multiply(const ON_Matrix& a, const ON_Matrix& b)
   if (a.RowCount() < 1 || a.ColCount() < 1 || b.ColCount() < 1)
     return false;
   if (this == &a) {
-    ON_Matrix tmp(a);
-    return Multiply(tmp, b);
+    ON_Matrix tmp (a);
+    return Multiply (tmp, b);
   }
   if (this == &b) {
-    ON_Matrix tmp(b);
-    return Multiply(a, tmp);
+    ON_Matrix tmp (b);
+    return Multiply (a, tmp);
   }
-  Create(a.RowCount(), b.ColCount());
+  Create (a.RowCount(), b.ColCount());
   mult_count = a.ColCount();
   double const* const* am = a.ThisM();
   double const* const* bm = b.ThisM();
@@ -1133,7 +1136,7 @@ ON_Matrix::Multiply(const ON_Matrix& a, const ON_Matrix& b)
 }
 
 bool
-ON_Matrix::Add(const ON_Matrix& a, const ON_Matrix& b)
+ON_Matrix::Add (const ON_Matrix& a, const ON_Matrix& b)
 {
   int i, j;
   if (a.ColCount() != b.ColCount())
@@ -1143,7 +1146,7 @@ ON_Matrix::Add(const ON_Matrix& a, const ON_Matrix& b)
   if (a.RowCount() < 1 || a.ColCount() < 1)
     return false;
   if (this != &a && this != &b) {
-    Create(a.RowCount(), b.ColCount());
+    Create (a.RowCount(), b.ColCount());
   }
   double const* const* am = a.ThisM();
   double const* const* bm = b.ThisM();
@@ -1156,7 +1159,7 @@ ON_Matrix::Add(const ON_Matrix& a, const ON_Matrix& b)
 }
 
 bool
-ON_Matrix::Scale(double s)
+ON_Matrix::Scale (double s)
 {
   bool rc = false;
   if (m_row_count > 0 && m_col_count > 0) {
@@ -1197,7 +1200,7 @@ ON_RowReduce (int row_count,
   // returned A is identity, B = inverse of input A
   const int M = row_count;
   const int N = col_count;
-  const std::size_t sizeof_row = N * sizeof(A[0][0]);
+  const std::size_t sizeof_row = N * sizeof (A[0][0]);
   int i, j, ii;
   double a, p, p0, p1;
   const double* ptr0;
@@ -1208,11 +1211,11 @@ ON_RowReduce (int row_count,
     pivots[1] = 0.0;
   }
 
-  if (zero_pivot <= 0.0 || !ON_IsValid(zero_pivot))
+  if (zero_pivot <= 0.0 || !ON_IsValid (zero_pivot))
     zero_pivot = 0.0;
 
   for (i = 0; i < M; i++) {
-    memset(B[i], 0, sizeof_row);
+    memset (B[i], 0, sizeof_row);
     if (i < N)
       B[i][i] = 1.0;
   }
@@ -1220,13 +1223,13 @@ ON_RowReduce (int row_count,
   p0 = p1 = A[0][0];
 
   for (i = 0; i < M; i++) {
-    p = fabs(a = A[i][i]);
+    p = fabs (a = A[i][i]);
     if (p < p0)
       p0 = p;
     else if (p > p1)
       p1 = p;
     if (1.0 != a) {
-      if (p <= zero_pivot || !ON_IsValid(a)) {
+      if (p <= zero_pivot || !ON_IsValid (a)) {
         break;
       }
       a = 1.0 / a;
@@ -1330,24 +1333,24 @@ ON_InvertSVDW (int count, const double* W, double*& invW)
     return -1;
 
   if (0 == invW) {
-    invW = (double*)onmalloc(count * sizeof(invW[0]));
+    invW = (double*)onmalloc (count * sizeof (invW[0]));
   }
-  maxw = fabs(W[0]);
+  maxw = fabs (W[0]);
   for (i = 1; i < count; i++) {
-    w = fabs(W[i]);
+    w = fabs (W[i]);
     if (w > maxw)
       maxw = w;
   }
   if (maxw == 0.0) {
     if (W != invW)
-      memset(invW, 0, count * sizeof(invW[0]));
+      memset (invW, 0, count * sizeof (invW[0]));
     return 0;
   }
 
   i = 0;
   maxw *= ON_SQRT_EPSILON;
   while (count--) {
-    if (fabs(W[count]) > maxw) {
+    if (fabs (W[count]) > maxw) {
       i++;
       invW[count] = 1.0 / W[count];
     }
@@ -1375,8 +1378,8 @@ ON_SolveSVD (int row_count,
     return false;
 
   if (0 == X)
-    X = (double*)onmalloc(col_count * sizeof(X[0]));
-  Y = (col_count > 128) ? ((double*)onmalloc(col_count * sizeof(*Y))) : workY;
+    X = (double*)onmalloc (col_count * sizeof (X[0]));
+  Y = (col_count > 128) ? ((double*)onmalloc (col_count * sizeof (*Y))) : workY;
   for (i = 0; i < col_count; i++) {
     double y = 0.0;
     for (j = 0; j < row_count; j++)
@@ -1394,7 +1397,7 @@ ON_SolveSVD (int row_count,
     X[i] = x;
   }
   if (Y != workY)
-    onfree(Y);
+    onfree (Y);
 
   return true;
 }

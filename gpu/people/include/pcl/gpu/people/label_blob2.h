@@ -74,19 +74,19 @@ struct Blob2 {
 };
 
 inline std::ostream&
-operator<<(std::ostream& os, const Blob2& b)
+operator<< (std::ostream& os, const Blob2& b)
 {
   os << " Blob2 id " << b.id << " label " << b.label << " lid " << b.lid << std::endl;
-  os << " mean " << b.mean(0) << " , " << b.mean(1) << " , " << b.mean(2) << " , "
-     << b.mean(3) << std::endl;
+  os << " mean " << b.mean (0) << " , " << b.mean (1) << " , " << b.mean (2) << " , "
+     << b.mean (3) << std::endl;
   os << " cov " << std::endl << b.cov << std::endl;
-  os << " eigenval " << b.eigenval(0) << " , " << b.eigenval(1) << " , "
-     << b.eigenval(2) << std::endl;
+  os << " eigenval " << b.eigenval (0) << " , " << b.eigenval (1) << " , "
+     << b.eigenval (2) << std::endl;
   os << " eigenvect " << std::endl << b.eigenvect << std::endl;
-  os << " min " << b.min(0) << " , " << b.min(1) << " , " << b.min(2) << " , "
-     << b.min(3) << std::endl;
-  os << " max " << b.max(0) << " , " << b.max(1) << " , " << b.max(2) << " , "
-     << b.max(3) << std::endl;
+  os << " min " << b.min (0) << " , " << b.min (1) << " , " << b.min (2) << " , "
+     << b.min (3) << std::endl;
+  os << " max " << b.max (0) << " , " << b.max (1) << " , " << b.max (2) << " , "
+     << b.max (3) << std::endl;
   os << " indices length " << b.indices.indices.size() << std::endl;
   for (int i = 0; i < MAX_CHILD; i++) {
     os << " child " << i << " id " << b.child_id[i] << " lid " << b.child_lid[i]

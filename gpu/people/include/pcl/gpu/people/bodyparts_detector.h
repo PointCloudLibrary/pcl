@@ -69,9 +69,9 @@ public:
   using Image = DeviceArray2D<pcl::RGB>;
 
   /** \brief This is the constructor **/
-  RDFBodyPartsDetector(const std::vector<std::string>& tree_files,
-                       int default_buffer_rows = 480,
-                       int default_buffer_cols = 640);
+  RDFBodyPartsDetector (const std::vector<std::string>& tree_files,
+                        int default_buffer_rows = 480,
+                        int default_buffer_cols = 640);
 
   /**
    * \brief This function does the complete RDF evaluation in a discrete manner and

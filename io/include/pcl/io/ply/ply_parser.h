@@ -70,14 +70,14 @@ namespace ply {
  */
 class PCL_EXPORTS ply_parser {
 public:
-  using info_callback_type = std::function<void(std::size_t, const std::string&)>;
-  using warning_callback_type = std::function<void(std::size_t, const std::string&)>;
-  using error_callback_type = std::function<void(std::size_t, const std::string&)>;
+  using info_callback_type = std::function<void (std::size_t, const std::string&)>;
+  using warning_callback_type = std::function<void (std::size_t, const std::string&)>;
+  using error_callback_type = std::function<void (std::size_t, const std::string&)>;
 
   using magic_callback_type = std::function<void()>;
-  using format_callback_type = std::function<void(format_type, const std::string&)>;
-  using comment_callback_type = std::function<void(const std::string&)>;
-  using obj_info_callback_type = std::function<void(const std::string&)>;
+  using format_callback_type = std::function<void (format_type, const std::string&)>;
+  using comment_callback_type = std::function<void (const std::string&)>;
+  using obj_info_callback_type = std::function<void (const std::string&)>;
   using end_header_callback_type = std::function<bool()>;
 
   using begin_element_callback_type = std::function<void()>;
@@ -85,19 +85,19 @@ public:
   using element_callbacks_type =
       std::tuple<begin_element_callback_type, end_element_callback_type>;
   using element_definition_callback_type =
-      std::function<element_callbacks_type(const std::string&, std::size_t)>;
+      std::function<element_callbacks_type (const std::string&, std::size_t)>;
 
   template <typename ScalarType>
   struct scalar_property_callback_type {
-    using type = std::function<void(ScalarType)>;
+    using type = std::function<void (ScalarType)>;
   };
 
   template <typename ScalarType>
   struct scalar_property_definition_callback_type {
     using scalar_property_callback_type =
         typename scalar_property_callback_type<ScalarType>::type;
-    using type = std::function<scalar_property_callback_type(const std::string&,
-                                                             const std::string&)>;
+    using type = std::function<scalar_property_callback_type (const std::string&,
+                                                              const std::string&)>;
   };
 
   using scalar_types =
@@ -122,14 +122,14 @@ public:
     const typename scalar_property_definition_callback_type<ScalarType>::type&
     get () const
     {
-      return (static_cast<const callbacks_element<ScalarType>&>(callbacks_).callback);
+      return (static_cast<const callbacks_element<ScalarType>&> (callbacks_).callback);
     }
 
     template <typename ScalarType>
     typename scalar_property_definition_callback_type<ScalarType>::type&
     get ()
     {
-      return (static_cast<callbacks_element<ScalarType>&>(callbacks_).callback);
+      return (static_cast<callbacks_element<ScalarType>&> (callbacks_).callback);
     }
 
     template <typename ScalarType>
@@ -160,12 +160,12 @@ public:
 
   template <typename SizeType, typename ScalarType>
   struct list_property_begin_callback_type {
-    using type = std::function<void(SizeType)>;
+    using type = std::function<void (SizeType)>;
   };
 
   template <typename SizeType, typename ScalarType>
   struct list_property_element_callback_type {
-    using type = std::function<void(ScalarType)>;
+    using type = std::function<void (ScalarType)>;
   };
 
   template <typename SizeType, typename ScalarType>
@@ -183,7 +183,7 @@ public:
         typename list_property_end_callback_type<SizeType, ScalarType>::type;
     using type = std::function<std::tuple<list_property_begin_callback_type,
                                           list_property_element_callback_type,
-                                          list_property_end_callback_type>(
+                                          list_property_end_callback_type> (
         const std::string&, const std::string&)>;
   };
 
@@ -221,7 +221,7 @@ public:
     typename list_property_definition_callback_type<SizeType, ScalarType>::type&
     get ()
     {
-      return (static_cast<callbacks_element<boost::mpl::pair<SizeType, ScalarType>>&>(
+      return (static_cast<callbacks_element<boost::mpl::pair<SizeType, ScalarType>>&> (
                   callbacks_)
                   .callback);
     }
@@ -230,10 +230,10 @@ public:
     const typename list_property_definition_callback_type<SizeType, ScalarType>::type&
     get () const
     {
-      return (
-          static_cast<const callbacks_element<boost::mpl::pair<SizeType, ScalarType>>&>(
-              callbacks_)
-              .callback);
+      return (static_cast<
+                  const callbacks_element<boost::mpl::pair<SizeType, ScalarType>>&> (
+                  callbacks_)
+                  .callback);
     }
 
     template <typename SizeType, typename ScalarType>
@@ -309,7 +309,7 @@ public:
 
 private:
   struct property {
-    property(const std::string& name) : name(name) {}
+    property (const std::string& name) : name (name) {}
     virtual ~property() = default;
     virtual bool
     parse (class ply_parser& ply_parser, format_type format, std::istream& istream) = 0;
@@ -320,15 +320,15 @@ private:
   struct scalar_property : public property {
     using scalar_type = ScalarType;
     using callback_type = typename scalar_property_callback_type<scalar_type>::type;
-    scalar_property(const std::string& name, callback_type callback)
-    : property(name), callback(callback)
+    scalar_property (const std::string& name, callback_type callback)
+    : property (name), callback (callback)
     {}
     bool
     parse (class ply_parser& ply_parser,
            format_type format,
            std::istream& istream) override
     {
-      return ply_parser.parse_scalar_property<scalar_type>(format, istream, callback);
+      return ply_parser.parse_scalar_property<scalar_type> (format, istream, callback);
     }
     callback_type callback;
   };
@@ -343,21 +343,21 @@ private:
         typename list_property_element_callback_type<size_type, scalar_type>::type;
     using end_callback_type =
         typename list_property_end_callback_type<size_type, scalar_type>::type;
-    list_property(const std::string& name,
-                  begin_callback_type begin_callback,
-                  element_callback_type element_callback,
-                  end_callback_type end_callback)
-    : property(name)
-    , begin_callback(begin_callback)
-    , element_callback(element_callback)
-    , end_callback(end_callback)
+    list_property (const std::string& name,
+                   begin_callback_type begin_callback,
+                   element_callback_type element_callback,
+                   end_callback_type end_callback)
+    : property (name)
+    , begin_callback (begin_callback)
+    , element_callback (element_callback)
+    , end_callback (end_callback)
     {}
     bool
     parse (class ply_parser& ply_parser,
            format_type format,
            std::istream& istream) override
     {
-      return ply_parser.parse_list_property<size_type, scalar_type>(
+      return ply_parser.parse_list_property<size_type, scalar_type> (
           format, istream, begin_callback, element_callback, end_callback);
     }
     begin_callback_type begin_callback;
@@ -366,14 +366,14 @@ private:
   };
 
   struct element {
-    element(const std::string& name,
-            std::size_t count,
-            const begin_element_callback_type& begin_element_callback,
-            const end_element_callback_type& end_element_callback)
-    : name(name)
-    , count(count)
-    , begin_element_callback(begin_element_callback)
-    , end_element_callback(end_element_callback)
+    element (const std::string& name,
+             std::size_t count,
+             const begin_element_callback_type& begin_element_callback,
+             const end_element_callback_type& end_element_callback)
+    : name (name)
+    , count (count)
+    , begin_element_callback (begin_element_callback)
+    , end_element_callback (end_element_callback)
     {}
     std::string name;
     std::size_t count;
@@ -394,7 +394,7 @@ private:
 
   element_definition_callback_type element_definition_callbacks_ =
       [] (const std::string&, std::size_t) {
-        return std::make_tuple([] () {}, [] () {});
+        return std::make_tuple ([] () {}, [] () {});
       };
   scalar_property_definition_callbacks_type scalar_property_definition_callbacks_;
   list_property_definition_callbacks_type list_property_definition_callbacks_;
@@ -440,45 +440,45 @@ private:
 /* } */
 
 inline void
-pcl::io::ply::ply_parser::info_callback(const info_callback_type& info_callback)
+pcl::io::ply::ply_parser::info_callback (const info_callback_type& info_callback)
 {
   info_callback_ = info_callback;
 }
 
 inline void
-pcl::io::ply::ply_parser::warning_callback(
+pcl::io::ply::ply_parser::warning_callback (
     const warning_callback_type& warning_callback)
 {
   warning_callback_ = warning_callback;
 }
 
 inline void
-pcl::io::ply::ply_parser::error_callback(const error_callback_type& error_callback)
+pcl::io::ply::ply_parser::error_callback (const error_callback_type& error_callback)
 {
   error_callback_ = error_callback;
 }
 
 inline void
-pcl::io::ply::ply_parser::magic_callback(const magic_callback_type& magic_callback)
+pcl::io::ply::ply_parser::magic_callback (const magic_callback_type& magic_callback)
 {
   magic_callback_ = magic_callback;
 }
 
 inline void
-pcl::io::ply::ply_parser::format_callback(const format_callback_type& format_callback)
+pcl::io::ply::ply_parser::format_callback (const format_callback_type& format_callback)
 {
   format_callback_ = format_callback;
 }
 
 inline void
-pcl::io::ply::ply_parser::element_definition_callback(
+pcl::io::ply::ply_parser::element_definition_callback (
     const element_definition_callback_type& element_definition_callback)
 {
   element_definition_callbacks_ = element_definition_callback;
 }
 
 inline void
-pcl::io::ply::ply_parser::scalar_property_definition_callbacks(
+pcl::io::ply::ply_parser::scalar_property_definition_callbacks (
     const scalar_property_definition_callbacks_type&
         scalar_property_definition_callbacks)
 {
@@ -486,28 +486,28 @@ pcl::io::ply::ply_parser::scalar_property_definition_callbacks(
 }
 
 inline void
-pcl::io::ply::ply_parser::list_property_definition_callbacks(
+pcl::io::ply::ply_parser::list_property_definition_callbacks (
     const list_property_definition_callbacks_type& list_property_definition_callbacks)
 {
   list_property_definition_callbacks_ = list_property_definition_callbacks;
 }
 
 inline void
-pcl::io::ply::ply_parser::comment_callback(
+pcl::io::ply::ply_parser::comment_callback (
     const comment_callback_type& comment_callback)
 {
   comment_callback_ = comment_callback;
 }
 
 inline void
-pcl::io::ply::ply_parser::obj_info_callback(
+pcl::io::ply::ply_parser::obj_info_callback (
     const obj_info_callback_type& obj_info_callback)
 {
   obj_info_callback_ = obj_info_callback;
 }
 
 inline void
-pcl::io::ply::ply_parser::end_header_callback(
+pcl::io::ply::ply_parser::end_header_callback (
     const end_header_callback_type& end_header_callback)
 {
   end_header_callback_ = end_header_callback;
@@ -515,7 +515,7 @@ pcl::io::ply::ply_parser::end_header_callback(
 
 template <typename ScalarType>
 inline void
-pcl::io::ply::ply_parser::parse_scalar_property_definition(
+pcl::io::ply::ply_parser::parse_scalar_property_definition (
     const std::string& property_name)
 {
   using scalar_type = ScalarType;
@@ -525,23 +525,23 @@ pcl::io::ply::ply_parser::parse_scalar_property_definition(
   typename scalar_property_callback_type<scalar_type>::type scalar_property_callback;
   if (scalar_property_definition_callback) {
     scalar_property_callback =
-        scalar_property_definition_callback(current_element_->name, property_name);
+        scalar_property_definition_callback (current_element_->name, property_name);
   }
   if (!scalar_property_callback) {
     if (warning_callback_) {
-      warning_callback_(line_number_,
-                        "property '" + std::string(type_traits<scalar_type>::name()) +
-                            " " + property_name + "' of element '" +
-                            current_element_->name + "' is not handled");
+      warning_callback_ (line_number_,
+                         "property '" + std::string (type_traits<scalar_type>::name()) +
+                             " " + property_name + "' of element '" +
+                             current_element_->name + "' is not handled");
     }
   }
-  current_element_->properties.emplace_back(
-      new scalar_property<scalar_type>(property_name, scalar_property_callback));
+  current_element_->properties.emplace_back (
+      new scalar_property<scalar_type> (property_name, scalar_property_callback));
 }
 
 template <typename SizeType, typename ScalarType>
 inline void
-pcl::io::ply::ply_parser::parse_list_property_definition(
+pcl::io::ply::ply_parser::parse_list_property_definition (
     const std::string& property_name)
 {
   using size_type = SizeType;
@@ -562,28 +562,29 @@ pcl::io::ply::ply_parser::parse_list_property_definition(
       list_property_callbacks;
   if (list_property_definition_callback) {
     list_property_callbacks =
-        list_property_definition_callback(current_element_->name, property_name);
+        list_property_definition_callback (current_element_->name, property_name);
   }
-  if (!std::get<0>(list_property_callbacks) || !std::get<1>(list_property_callbacks) ||
-      !std::get<2>(list_property_callbacks)) {
+  if (!std::get<0> (list_property_callbacks) ||
+      !std::get<1> (list_property_callbacks) ||
+      !std::get<2> (list_property_callbacks)) {
     if (warning_callback_) {
-      warning_callback_(
+      warning_callback_ (
           line_number_,
-          "property 'list " + std::string(type_traits<size_type>::name()) + " " +
-              std::string(type_traits<scalar_type>::name()) + " " + property_name +
+          "property 'list " + std::string (type_traits<size_type>::name()) + " " +
+              std::string (type_traits<scalar_type>::name()) + " " + property_name +
               "' of element '" + current_element_->name + "' is not handled");
     }
   }
-  current_element_->properties.emplace_back(
-      new list_property<size_type, scalar_type>(property_name,
-                                                std::get<0>(list_property_callbacks),
-                                                std::get<1>(list_property_callbacks),
-                                                std::get<2>(list_property_callbacks)));
+  current_element_->properties.emplace_back (new list_property<size_type, scalar_type> (
+      property_name,
+      std::get<0> (list_property_callbacks),
+      std::get<1> (list_property_callbacks),
+      std::get<2> (list_property_callbacks)));
 }
 
 template <typename ScalarType>
 inline bool
-pcl::io::ply::ply_parser::parse_scalar_property(
+pcl::io::ply::ply_parser::parse_scalar_property (
     format_type format,
     std::istream& istream,
     const typename scalar_property_callback_type<ScalarType>::type&
@@ -597,46 +598,46 @@ pcl::io::ply::ply_parser::parse_scalar_property(
     char space = ' ';
     istream >> value_s;
     try {
-      value = static_cast<scalar_type>(
+      value = static_cast<scalar_type> (
           boost::lexical_cast<
-              typename pcl::io::ply::type_traits<scalar_type>::parse_type>(value_s));
+              typename pcl::io::ply::type_traits<scalar_type>::parse_type> (value_s));
     } catch (boost::bad_lexical_cast&) {
       value = std::numeric_limits<scalar_type>::quiet_NaN();
     }
 
     if (!istream.eof())
       istream >> space >> std::ws;
-    if (!istream || !isspace(space)) {
+    if (!istream || !isspace (space)) {
       if (error_callback_)
-        error_callback_(line_number_,
-                        "error while parsing scalar property (file format: ascii)");
+        error_callback_ (line_number_,
+                         "error while parsing scalar property (file format: ascii)");
       return (false);
     }
     if (scalar_property_callback)
-      scalar_property_callback(value);
+      scalar_property_callback (value);
     return (true);
   }
   scalar_type value = std::numeric_limits<scalar_type>::quiet_NaN();
-  istream.read(reinterpret_cast<char*>(&value), sizeof(scalar_type));
+  istream.read (reinterpret_cast<char*> (&value), sizeof (scalar_type));
   if (!istream) {
     if (error_callback_)
-      error_callback_(line_number_,
-                      "error while parsing scalar property (file format: binary)");
+      error_callback_ (line_number_,
+                       "error while parsing scalar property (file format: binary)");
     return (false);
   }
   if (((format == binary_big_endian_format) &&
        (host_byte_order == little_endian_byte_order)) ||
       ((format == binary_little_endian_format) &&
        (host_byte_order == big_endian_byte_order)))
-    swap_byte_order(value);
+    swap_byte_order (value);
   if (scalar_property_callback)
-    scalar_property_callback(value);
+    scalar_property_callback (value);
   return (true);
 }
 
 template <typename SizeType, typename ScalarType>
 inline bool
-pcl::io::ply::ply_parser::parse_list_property(
+pcl::io::ply::ply_parser::parse_list_property (
     format_type format,
     std::istream& istream,
     const typename list_property_begin_callback_type<SizeType, ScalarType>::type&
@@ -656,14 +657,14 @@ pcl::io::ply::ply_parser::parse_list_property(
     if (!istream.eof()) {
       istream >> space >> std::ws;
     }
-    if (!istream || !isspace(space)) {
+    if (!istream || !isspace (space)) {
       if (error_callback_) {
-        error_callback_(line_number_, "error while parsing list (file format: ascii)");
+        error_callback_ (line_number_, "error while parsing list (file format: ascii)");
       }
       return (false);
     }
     if (list_property_begin_callback) {
-      list_property_begin_callback(size);
+      list_property_begin_callback (size);
     }
     for (std::size_t index = 0; index < size; ++index) {
       std::string value_s;
@@ -671,9 +672,9 @@ pcl::io::ply::ply_parser::parse_list_property(
       char space = ' ';
       istream >> value_s;
       try {
-        value = static_cast<scalar_type>(
+        value = static_cast<scalar_type> (
             boost::lexical_cast<
-                typename pcl::io::ply::type_traits<scalar_type>::parse_type>(value_s));
+                typename pcl::io::ply::type_traits<scalar_type>::parse_type> (value_s));
       } catch (boost::bad_lexical_cast&) {
         value = std::numeric_limits<scalar_type>::quiet_NaN();
       }
@@ -681,15 +682,15 @@ pcl::io::ply::ply_parser::parse_list_property(
       if (!istream.eof()) {
         istream >> space >> std::ws;
       }
-      if (!istream || !isspace(space)) {
+      if (!istream || !isspace (space)) {
         if (error_callback_) {
-          error_callback_(line_number_,
-                          "error while parsing list (file format: ascii)");
+          error_callback_ (line_number_,
+                           "error while parsing list (file format: ascii)");
         }
         return (false);
       }
       if (list_property_element_callback) {
-        list_property_element_callback(value);
+        list_property_element_callback (value);
       }
     }
     if (list_property_end_callback) {
@@ -698,28 +699,29 @@ pcl::io::ply::ply_parser::parse_list_property(
     return (true);
   }
   size_type size = std::numeric_limits<size_type>::infinity();
-  istream.read(reinterpret_cast<char*>(&size), sizeof(size_type));
+  istream.read (reinterpret_cast<char*> (&size), sizeof (size_type));
   if (((format == binary_big_endian_format) &&
        (host_byte_order == little_endian_byte_order)) ||
       ((format == binary_little_endian_format) &&
        (host_byte_order == big_endian_byte_order))) {
-    swap_byte_order(size);
+    swap_byte_order (size);
   }
   if (!istream) {
     if (error_callback_) {
-      error_callback_(line_number_, "error while parsing list (file format: binary)");
+      error_callback_ (line_number_, "error while parsing list (file format: binary)");
     }
     return (false);
   }
   if (list_property_begin_callback) {
-    list_property_begin_callback(size);
+    list_property_begin_callback (size);
   }
   for (std::size_t index = 0; index < size; ++index) {
     scalar_type value = std::numeric_limits<scalar_type>::quiet_NaN();
-    istream.read(reinterpret_cast<char*>(&value), sizeof(scalar_type));
+    istream.read (reinterpret_cast<char*> (&value), sizeof (scalar_type));
     if (!istream) {
       if (error_callback_) {
-        error_callback_(line_number_, "error while parsing list (file format: binary)");
+        error_callback_ (line_number_,
+                         "error while parsing list (file format: binary)");
       }
       return (false);
     }
@@ -727,10 +729,10 @@ pcl::io::ply::ply_parser::parse_list_property(
          (host_byte_order == little_endian_byte_order)) ||
         ((format == binary_little_endian_format) &&
          (host_byte_order == big_endian_byte_order))) {
-      swap_byte_order(value);
+      swap_byte_order (value);
     }
     if (list_property_element_callback) {
-      list_property_element_callback(value);
+      list_property_element_callback (value);
     }
   }
   if (list_property_end_callback) {

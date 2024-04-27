@@ -73,21 +73,22 @@ struct Morton {
   __device__ __host__ __forceinline__ static code_t
   createCode (int cell_x, int cell_y, int cell_z)
   {
-    return spreadBits(cell_x, 0) | spreadBits(cell_y, 1) | spreadBits(cell_z, 2);
+    return spreadBits (cell_x, 0) | spreadBits (cell_y, 1) | spreadBits (cell_z, 2);
   }
 
   __device__ __host__ __forceinline__ static void
   decomposeCode (code_t code, int& cell_x, int& cell_y, int& cell_z)
   {
-    cell_x = compactBits(code, 0);
-    cell_y = compactBits(code, 1);
-    cell_z = compactBits(code, 2);
+    cell_x = compactBits (code, 0);
+    cell_y = compactBits (code, 1);
+    cell_z = compactBits (code, 2);
   }
 
   __device__ __host__ __forceinline__ static uint3
   decomposeCode (code_t code)
   {
-    return make_uint3(compactBits(code, 0), compactBits(code, 1), compactBits(code, 2));
+    return make_uint3 (
+        compactBits (code, 0), compactBits (code, 1), compactBits (code, 2));
   }
 
   __host__ __device__ __forceinline__ static code_t
@@ -111,7 +112,7 @@ struct CalcMorton {
 
   __device__ __host__ __forceinline__
   CalcMorton (float3 minp, float3 maxp)
-  : minp_(minp)
+  : minp_ (minp)
   {
     dims_.x = maxp.x - minp.x;
     dims_.y = maxp.y - minp.y;
@@ -119,27 +120,27 @@ struct CalcMorton {
   }
 
   __device__ __host__ __forceinline__ Morton::code_t
-  operator()(const float3& p) const
+  operator() (const float3& p) const
   {
     // Using floorf due to changes to MSVC 16.9. See details here:
     // https://devtalk.blender.org/t/cuda-compile-error-windows-10/17886/4 floorf is
     // without std:: see why here: https://gcc.gnu.org/bugzilla/show_bug.cgi?id=79700
     const int cellx =
-        min((int)floorf(depth_mult * min(1.f, max(0.f, (p.x - minp_.x) / dims_.x))),
-            depth_mult - 1);
+        min ((int)floorf (depth_mult * min (1.f, max (0.f, (p.x - minp_.x) / dims_.x))),
+             depth_mult - 1);
     const int celly =
-        min((int)floorf(depth_mult * min(1.f, max(0.f, (p.y - minp_.y) / dims_.y))),
-            depth_mult - 1);
+        min ((int)floorf (depth_mult * min (1.f, max (0.f, (p.y - minp_.y) / dims_.y))),
+             depth_mult - 1);
     const int cellz =
-        min((int)floorf(depth_mult * min(1.f, max(0.f, (p.z - minp_.z) / dims_.z))),
-            depth_mult - 1);
+        min ((int)floorf (depth_mult * min (1.f, max (0.f, (p.z - minp_.z) / dims_.z))),
+             depth_mult - 1);
 
-    return Morton::createCode(cellx, celly, cellz);
+    return Morton::createCode (cellx, celly, cellz);
   }
   __device__ __host__ __forceinline__ Morton::code_t
-  operator()(const float4& p) const
+  operator() (const float4& p) const
   {
-    return (*this)(make_float3(p.x, p.y, p.z));
+    return (*this) (make_float3 (p.x, p.y, p.z));
   }
 };
 
@@ -148,14 +149,14 @@ struct CompareByLevelCode {
 
   __device__ __host__ __forceinline__
   CompareByLevelCode (int level_arg)
-  : level(level_arg)
+  : level (level_arg)
   {}
 
   __device__ __host__ __forceinline__ bool
-  operator()(Morton::code_t code1, Morton::code_t code2) const
+  operator() (Morton::code_t code1, Morton::code_t code2) const
   {
-    return Morton::extractLevelCode(code1, level) <
-           Morton::extractLevelCode(code2, level);
+    return Morton::extractLevelCode (code1, level) <
+           Morton::extractLevelCode (code2, level);
   }
 };
 } // namespace device

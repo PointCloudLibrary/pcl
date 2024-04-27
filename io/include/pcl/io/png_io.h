@@ -131,39 +131,40 @@ savePNGFile (const std::string& file_name,
   using PointCloudImageExtractorPtr = typename PointCloudImageExtractor<PointT>::Ptr;
   PointCloudImageExtractorPtr pcie;
   if (field_name == "normal") {
-    pcie = PointCloudImageExtractorPtr(
+    pcie = PointCloudImageExtractorPtr (
         new PointCloudImageExtractorFromNormalField<PointT>);
   }
   else if (field_name == "rgb") {
     pcie =
-        PointCloudImageExtractorPtr(new PointCloudImageExtractorFromRGBField<PointT>);
+        PointCloudImageExtractorPtr (new PointCloudImageExtractorFromRGBField<PointT>);
   }
   else if (field_name == "label") {
-    pcie =
-        PointCloudImageExtractorPtr(new PointCloudImageExtractorFromLabelField<PointT>);
+    pcie = PointCloudImageExtractorPtr (
+        new PointCloudImageExtractorFromLabelField<PointT>);
   }
   else if (field_name == "z") {
-    pcie = PointCloudImageExtractorPtr(new PointCloudImageExtractorFromZField<PointT>);
+    pcie = PointCloudImageExtractorPtr (new PointCloudImageExtractorFromZField<PointT>);
   }
   else if (field_name == "curvature") {
-    pcie = PointCloudImageExtractorPtr(
+    pcie = PointCloudImageExtractorPtr (
         new PointCloudImageExtractorFromCurvatureField<PointT>);
   }
   else if (field_name == "intensity") {
-    pcie = PointCloudImageExtractorPtr(
+    pcie = PointCloudImageExtractorPtr (
         new PointCloudImageExtractorFromIntensityField<PointT>);
   }
   else {
-    PCL_ERROR("[pcl::io::savePNGFile] Unsupported field \"%s\".\n", field_name.c_str());
+    PCL_ERROR ("[pcl::io::savePNGFile] Unsupported field \"%s\".\n",
+               field_name.c_str());
     return;
   }
   pcl::PCLImage image;
-  if (pcie->extract(cloud, image)) {
-    savePNGFile(file_name, image);
+  if (pcie->extract (cloud, image)) {
+    savePNGFile (file_name, image);
   }
   else {
-    PCL_ERROR("[pcl::io::savePNGFile] Failed to extract an image from \"%s\" field.\n",
-              field_name.c_str());
+    PCL_ERROR ("[pcl::io::savePNGFile] Failed to extract an image from \"%s\" field.\n",
+               field_name.c_str());
   }
 }
 

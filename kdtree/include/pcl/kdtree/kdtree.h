@@ -72,10 +72,10 @@ public:
    * \param[in] sorted set to true if the application that the tree will be used for
    * requires sorted nearest neighbor indices (default). False otherwise.
    */
-  KdTree(bool sorted = true)
+  KdTree (bool sorted = true)
   : input_()
-  , sorted_(sorted)
-  , point_representation_(new DefaultPointRepresentation<PointT>){};
+  , sorted_ (sorted)
+  , point_representation_ (new DefaultPointRepresentation<PointT>){};
 
   /** \brief Provide a pointer to the input dataset.
    * \param[in] cloud the const boost shared pointer to a PointCloud message
@@ -114,8 +114,8 @@ public:
     point_representation_ = point_representation;
     if (!input_)
       return;
-    setInputCloud(input_,
-                  indices_); // Makes sense in derived classes to reinitialize the tree
+    setInputCloud (input_,
+                   indices_); // Makes sense in derived classes to reinitialize the tree
   }
 
   /** \brief Get a pointer to the point representation used when converting points into
@@ -168,9 +168,9 @@ public:
                   Indices& k_indices,
                   std::vector<float>& k_sqr_distances) const
   {
-    assert(index >= 0 && index < static_cast<int>(cloud.size()) &&
-           "Out-of-bounds error in nearestKSearch!");
-    return (nearestKSearch(cloud[index], k, k_indices, k_sqr_distances));
+    assert (index >= 0 && index < static_cast<int> (cloud.size()) &&
+            "Out-of-bounds error in nearestKSearch!");
+    return (nearestKSearch (cloud[index], k, k_indices, k_sqr_distances));
   }
 
   /** \brief Search for k-nearest neighbors for the given query point.
@@ -190,8 +190,8 @@ public:
                    std::vector<float>& k_sqr_distances) const
   {
     PointT p;
-    copyPoint(point, p);
-    return (nearestKSearch(p, k, k_indices, k_sqr_distances));
+    copyPoint (point, p);
+    return (nearestKSearch (p, k, k_indices, k_sqr_distances));
   }
 
   /** \brief Search for k-nearest neighbors for the given query point (zero-copy).
@@ -219,15 +219,15 @@ public:
                   std::vector<float>& k_sqr_distances) const
   {
     if (indices_ == nullptr) {
-      assert(index >= 0 && index < static_cast<int>(input_->size()) &&
-             "Out-of-bounds error in nearestKSearch!");
-      return (nearestKSearch((*input_)[index], k, k_indices, k_sqr_distances));
+      assert (index >= 0 && index < static_cast<int> (input_->size()) &&
+              "Out-of-bounds error in nearestKSearch!");
+      return (nearestKSearch ((*input_)[index], k, k_indices, k_sqr_distances));
     }
-    assert(index >= 0 && index < static_cast<int>(indices_->size()) &&
-           "Out-of-bounds error in nearestKSearch!");
+    assert (index >= 0 && index < static_cast<int> (indices_->size()) &&
+            "Out-of-bounds error in nearestKSearch!");
 
     return (
-        nearestKSearch((*input_)[(*indices_)[index]], k, k_indices, k_sqr_distances));
+        nearestKSearch ((*input_)[(*indices_)[index]], k, k_indices, k_sqr_distances));
   }
 
   /** \brief Search for all the nearest neighbors of the query point in a given radius.
@@ -273,9 +273,9 @@ public:
                 std::vector<float>& k_sqr_distances,
                 unsigned int max_nn = 0) const
   {
-    assert(index >= 0 && index < static_cast<int>(cloud.size()) &&
-           "Out-of-bounds error in radiusSearch!");
-    return (radiusSearch(cloud[index], radius, k_indices, k_sqr_distances, max_nn));
+    assert (index >= 0 && index < static_cast<int> (cloud.size()) &&
+            "Out-of-bounds error in radiusSearch!");
+    return (radiusSearch (cloud[index], radius, k_indices, k_sqr_distances, max_nn));
   }
 
   /** \brief Search for all the nearest neighbors of the query point in a given radius.
@@ -297,8 +297,8 @@ public:
                  unsigned int max_nn = 0) const
   {
     PointT p;
-    copyPoint(point, p);
-    return (radiusSearch(p, radius, k_indices, k_sqr_distances, max_nn));
+    copyPoint (point, p);
+    return (radiusSearch (p, radius, k_indices, k_sqr_distances, max_nn));
   }
 
   /** \brief Search for all the nearest neighbors of the query point in a given radius
@@ -330,14 +330,14 @@ public:
                 unsigned int max_nn = 0) const
   {
     if (indices_ == nullptr) {
-      assert(index >= 0 && index < static_cast<int>(input_->size()) &&
-             "Out-of-bounds error in radiusSearch!");
+      assert (index >= 0 && index < static_cast<int> (input_->size()) &&
+              "Out-of-bounds error in radiusSearch!");
       return (
-          radiusSearch((*input_)[index], radius, k_indices, k_sqr_distances, max_nn));
+          radiusSearch ((*input_)[index], radius, k_indices, k_sqr_distances, max_nn));
     }
-    assert(index >= 0 && index < static_cast<int>(indices_->size()) &&
-           "Out-of-bounds error in radiusSearch!");
-    return (radiusSearch(
+    assert (index >= 0 && index < static_cast<int> (indices_->size()) &&
+            "Out-of-bounds error in radiusSearch!");
+    return (radiusSearch (
         (*input_)[(*indices_)[index]], radius, k_indices, k_sqr_distances, max_nn));
   }
 

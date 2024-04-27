@@ -53,9 +53,9 @@ CorrespondenceEstimationNormalShooting<PointSource, PointTarget, NormalT, Scalar
     initCompute()
 {
   if (!source_normals_) {
-    PCL_WARN("[pcl::registration::%s::initCompute] Datasets containing normals for "
-             "source have not been given!\n",
-             getClassName().c_str());
+    PCL_WARN ("[pcl::registration::%s::initCompute] Datasets containing normals for "
+              "source have not been given!\n",
+              getClassName().c_str());
     return (false);
   }
 
@@ -66,15 +66,16 @@ CorrespondenceEstimationNormalShooting<PointSource, PointTarget, NormalT, Scalar
 template <typename PointSource, typename PointTarget, typename NormalT, typename Scalar>
 void
 CorrespondenceEstimationNormalShooting<PointSource, PointTarget, NormalT, Scalar>::
-    determineCorrespondences(pcl::Correspondences& correspondences, double max_distance)
+    determineCorrespondences (pcl::Correspondences& correspondences,
+                              double max_distance)
 {
   if (!initCompute())
     return;
 
-  correspondences.resize(indices_->size());
+  correspondences.resize (indices_->size());
 
-  pcl::Indices nn_indices(k_);
-  std::vector<float> nn_dists(k_);
+  pcl::Indices nn_indices (k_);
+  std::vector<float> nn_dists (k_);
 
   int min_index = 0;
 
@@ -87,8 +88,8 @@ CorrespondenceEstimationNormalShooting<PointSource, PointTarget, NormalT, Scalar
     // Check if the template types are the same. If true, avoid a copy.
     // Both point types MUST be registered using the POINT_CLOUD_REGISTER_POINT_STRUCT
     // macro!
-    tree_->nearestKSearch(
-        detail::pointCopyOrRef<PointTarget, PointSource>(input_, idx_i),
+    tree_->nearestKSearch (
+        detail::pointCopyOrRef<PointTarget, PointSource> (input_, idx_i),
         k_,
         nn_indices,
         nn_dists);
@@ -106,15 +107,15 @@ CorrespondenceEstimationNormalShooting<PointSource, PointTarget, NormalT, Scalar
       pt.z = (*target_)[nn_indices[j]].z - (*input_)[idx_i].z;
 
       const NormalT& normal = (*source_normals_)[idx_i];
-      Eigen::Vector3d N(normal.normal_x, normal.normal_y, normal.normal_z);
-      Eigen::Vector3d V(pt.x, pt.y, pt.z);
-      Eigen::Vector3d C = N.cross(V);
+      Eigen::Vector3d N (normal.normal_x, normal.normal_y, normal.normal_z);
+      Eigen::Vector3d V (pt.x, pt.y, pt.z);
+      Eigen::Vector3d C = N.cross (V);
 
       // Check if we have a better correspondence
-      double dist = C.dot(C);
+      double dist = C.dot (C);
       if (dist < min_dist) {
         min_dist = dist;
-        min_index = static_cast<int>(j);
+        min_index = static_cast<int> (j);
       }
     }
     if (min_dist > max_distance)
@@ -125,15 +126,15 @@ CorrespondenceEstimationNormalShooting<PointSource, PointTarget, NormalT, Scalar
     corr.distance = nn_dists[min_index]; // min_dist;
     correspondences[nr_valid_correspondences++] = corr;
   }
-  correspondences.resize(nr_valid_correspondences);
+  correspondences.resize (nr_valid_correspondences);
   deinitCompute();
 }
 
 template <typename PointSource, typename PointTarget, typename NormalT, typename Scalar>
 void
 CorrespondenceEstimationNormalShooting<PointSource, PointTarget, NormalT, Scalar>::
-    determineReciprocalCorrespondences(pcl::Correspondences& correspondences,
-                                       double max_distance)
+    determineReciprocalCorrespondences (pcl::Correspondences& correspondences,
+                                        double max_distance)
 {
   if (!initCompute())
     return;
@@ -143,12 +144,12 @@ CorrespondenceEstimationNormalShooting<PointSource, PointTarget, NormalT, Scalar
   if (!initComputeReciprocal())
     return;
 
-  correspondences.resize(indices_->size());
+  correspondences.resize (indices_->size());
 
-  pcl::Indices nn_indices(k_);
-  std::vector<float> nn_dists(k_);
-  pcl::Indices index_reciprocal(1);
-  std::vector<float> distance_reciprocal(1);
+  pcl::Indices nn_indices (k_);
+  std::vector<float> nn_dists (k_);
+  pcl::Indices index_reciprocal (1);
+  std::vector<float> distance_reciprocal (1);
 
   int min_index = 0;
 
@@ -162,8 +163,8 @@ CorrespondenceEstimationNormalShooting<PointSource, PointTarget, NormalT, Scalar
     // Check if the template types are the same. If true, avoid a copy.
     // Both point types MUST be registered using the POINT_CLOUD_REGISTER_POINT_STRUCT
     // macro!
-    tree_->nearestKSearch(
-        detail::pointCopyOrRef<PointTarget, PointSource>(input_, idx_i),
+    tree_->nearestKSearch (
+        detail::pointCopyOrRef<PointTarget, PointSource> (input_, idx_i),
         k_,
         nn_indices,
         nn_dists);
@@ -181,15 +182,15 @@ CorrespondenceEstimationNormalShooting<PointSource, PointTarget, NormalT, Scalar
       pt.z = (*target_)[nn_indices[j]].z - (*input_)[idx_i].z;
 
       const NormalT& normal = (*source_normals_)[idx_i];
-      Eigen::Vector3d N(normal.normal_x, normal.normal_y, normal.normal_z);
-      Eigen::Vector3d V(pt.x, pt.y, pt.z);
-      Eigen::Vector3d C = N.cross(V);
+      Eigen::Vector3d N (normal.normal_x, normal.normal_y, normal.normal_z);
+      Eigen::Vector3d V (pt.x, pt.y, pt.z);
+      Eigen::Vector3d C = N.cross (V);
 
       // Check if we have a better correspondence
-      double dist = C.dot(C);
+      double dist = C.dot (C);
       if (dist < min_dist) {
         min_dist = dist;
-        min_index = static_cast<int>(j);
+        min_index = static_cast<int> (j);
       }
     }
     if (min_dist > max_distance)
@@ -197,8 +198,8 @@ CorrespondenceEstimationNormalShooting<PointSource, PointTarget, NormalT, Scalar
 
     // Check if the correspondence is reciprocal
     target_idx = nn_indices[min_index];
-    tree_reciprocal_->nearestKSearch(
-        detail::pointCopyOrRef<PointSource, PointTarget>(target_, target_idx),
+    tree_reciprocal_->nearestKSearch (
+        detail::pointCopyOrRef<PointSource, PointTarget> (target_, target_idx),
         1,
         index_reciprocal,
         distance_reciprocal);
@@ -212,7 +213,7 @@ CorrespondenceEstimationNormalShooting<PointSource, PointTarget, NormalT, Scalar
     corr.distance = nn_dists[min_index]; // min_dist;
     correspondences[nr_valid_correspondences++] = corr;
   }
-  correspondences.resize(nr_valid_correspondences);
+  correspondences.resize (nr_valid_correspondences);
   deinitCompute();
 }
 

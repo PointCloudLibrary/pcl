@@ -26,7 +26,7 @@ ON_DomainTolerance (double a, double b)
 {
   if (a == b)
     return 0.0;
-  double tol = (fabs(a) + fabs(b) + fabs(a - b)) * ON_SQRT_EPSILON;
+  double tol = (fabs (a) + fabs (b) + fabs (a - b)) * ON_SQRT_EPSILON;
   if (tol < ON_EPSILON)
     tol = ON_EPSILON;
   return tol;
@@ -40,7 +40,7 @@ ON_DomainTolerance (double a, double b)
 double
 ON_KnotTolerance (int order, int cv_count, const double* knot, int knot_index)
 {
-  const int knot_count = ON_KnotCount(order, cv_count);
+  const int knot_count = ON_KnotCount (order, cv_count);
   int i0, i1, j;
   double a, b, tol;
   i0 = knot_index - order + 1;
@@ -53,14 +53,14 @@ ON_KnotTolerance (int order, int cv_count, const double* knot, int knot_index)
     if (knot[j] != knot[knot_index])
       break;
   }
-  a = fabs(knot[knot_index] - knot[j]);
+  a = fabs (knot[knot_index] - knot[j]);
   for (j = knot_index; j < i1; j++) {
     if (knot[j] != knot[knot_index])
       break;
   }
-  b = fabs(knot[knot_index] - knot[j]);
-  tol =
-      (a == 0.0 && b == 0.0) ? 0.0 : (a + b + fabs(knot[knot_index])) * ON_SQRT_EPSILON;
+  b = fabs (knot[knot_index] - knot[j]);
+  tol = (a == 0.0 && b == 0.0) ? 0.0
+                               : (a + b + fabs (knot[knot_index])) * ON_SQRT_EPSILON;
   return tol;
 }
 
@@ -73,7 +73,7 @@ double
 ON_SpanTolerance (int order, int, const double* knot, int span_index)
 {
   const int i0 = span_index + order - 2;
-  return ON_DomainTolerance(knot[i0], knot[i0 + 1]);
+  return ON_DomainTolerance (knot[i0], knot[i0 + 1]);
 }
 
 /////////////////////////////////////////////////////////////////
@@ -126,7 +126,7 @@ ON_KnotVectorSpanCount (int order,         // order (>=2)
 {
   if (0 == knot) {
     if (0 != order || 0 != cv_count) {
-      ON_ERROR("NULL knot[] passed to ON_KnotVectorSpanCount.");
+      ON_ERROR ("NULL knot[] passed to ON_KnotVectorSpanCount.");
     }
     return 0;
   }
@@ -152,7 +152,7 @@ ON_GetKnotVectorSpanVector (int order,          // order (>=2)
 {
   if (0 == knot || 0 == s) {
     if (0 != order || 0 != cv_count) {
-      ON_ERROR("NULL knot[] or s[] passed to ON_KnotVectorSpanCount.");
+      ON_ERROR ("NULL knot[] or s[] passed to ON_KnotVectorSpanCount.");
       return false;
     }
     return true;
@@ -209,7 +209,7 @@ ON_NurbsSpanIndex (
   else
     hint = 0;
 
-  j = ON_SearchMonotoneArray(knot, len, t);
+  j = ON_SearchMonotoneArray (knot, len, t);
   if (j < 0)
     j = 0;
   else if (j >= len - 1)
@@ -307,7 +307,7 @@ ON_GetSpanIndices (int order, int cv_count, const double* knot, int* span_indice
   while (span_index != next_span_index) {
     span_index = next_span_index;
     span_indices[j] = span_index + order - 2;
-    next_span_index = ON_NextNurbsSpanIndex(order, cv_count, knot, span_index);
+    next_span_index = ON_NextNurbsSpanIndex (order, cv_count, knot, span_index);
     if (next_span_index < 0)
       return next_span_index;
     j++;
@@ -358,7 +358,7 @@ ON_IsKnotVectorPeriodic (int order, int cv_count, const double* knot)
   int i;
 
   if (order < 2 || cv_count < order || !knot) {
-    ON_ERROR("ON_IsKnotVectorPeriodic(): illegal input");
+    ON_ERROR ("ON_IsKnotVectorPeriodic(): illegal input");
     return false;
   }
 
@@ -373,13 +373,13 @@ ON_IsKnotVectorPeriodic (int order, int cv_count, const double* knot)
     return false;
   }
 
-  tol = fabs(knot[order - 1] - knot[order - 3]) * ON_SQRT_EPSILON;
-  if (tol < fabs(knot[cv_count - 1] - knot[order - 2]) * ON_SQRT_EPSILON)
-    tol = fabs(knot[cv_count - 1] - knot[order - 2]) * ON_SQRT_EPSILON;
+  tol = fabs (knot[order - 1] - knot[order - 3]) * ON_SQRT_EPSILON;
+  if (tol < fabs (knot[cv_count - 1] - knot[order - 2]) * ON_SQRT_EPSILON)
+    tol = fabs (knot[cv_count - 1] - knot[order - 2]) * ON_SQRT_EPSILON;
   k1 = knot + cv_count - order + 1;
   i = 2 * (order - 2);
   while (i--) {
-    if (fabs(knot[1] - knot[0] + k1[0] - k1[1]) > tol)
+    if (fabs (knot[1] - knot[0] + k1[0] - k1[1]) > tol)
       return false;
     knot++;
     k1++;
@@ -419,17 +419,17 @@ ON_IsKnotVectorUniform (int order, int cv_count, const double* knot)
     const double delta_tol = ON_SQRT_EPSILON * delta;
     int i0, i1;
     double d;
-    if (ON_IsKnotVectorClamped(order, cv_count, knot)) {
+    if (ON_IsKnotVectorClamped (order, cv_count, knot)) {
       i0 = order;
       i1 = cv_count;
     }
     else {
       i0 = 1;
-      i1 = ON_KnotCount(order, cv_count);
+      i1 = ON_KnotCount (order, cv_count);
     }
     for (/*empty*/; i0 < i1 && rc; i0++) {
       d = knot[i0] - knot[i0 - 1];
-      if (fabs(d - delta) > delta_tol)
+      if (fabs (d - delta) > delta_tol)
         rc = false;
     }
   }
@@ -447,10 +447,10 @@ ON_KnotVectorHasBezierSpans (int order,         // order (>=2)
                              const double* knot // knot[] array
 )
 {
-  int knot_count = ON_KnotCount(order, cv_count);
+  int knot_count = ON_KnotCount (order, cv_count);
   if (knot_count < 2)
     return false;
-  int span_count = ON_KnotVectorSpanCount(order, cv_count, knot);
+  int span_count = ON_KnotVectorSpanCount (order, cv_count, knot);
   if (span_count < 1)
     return false;
   if (order >= 2 && cv_count >= order && knot_count == (span_count + 1) * (order - 1) &&
@@ -474,14 +474,14 @@ ON_KnotVectorStyle (int order, int cv_count, const double* knot)
                                 (knot[cv_count - 1] - knot[cv_count - 2]));
     const double ktol = delta * 1.0e-6;
     int i;
-    if (ON_IsKnotVectorClamped(order, cv_count, knot)) {
+    if (ON_IsKnotVectorClamped (order, cv_count, knot)) {
       if (order == cv_count) {
         s = ON::piecewise_bezier_knots;
       }
       else {
         s = ON::clamped_end_knots;
         for (i = order - 1; i <= cv_count - 1; i++) {
-          if (fabs(knot[i] - knot[i - 1] - delta) > ktol) {
+          if (fabs (knot[i] - knot[i - 1] - delta) > ktol) {
             break;
           }
         }
@@ -503,7 +503,7 @@ ON_KnotVectorStyle (int order, int cv_count, const double* knot)
       // check for uniform knots
       s = ON::non_uniform_knots;
       for (i = 1; i < knot_count; i++) {
-        if (fabs(knot[i] - knot[i - 1] - delta) > ktol) {
+        if (fabs (knot[i] - knot[i - 1] - delta) > ktol) {
           break;
         }
       }
@@ -523,21 +523,21 @@ bool
 ON_SetKnotVectorDomain (int order, int cv_count, double* knot, double t0, double t1)
 {
   bool rc = false;
-  if (order < 2 || cv_count < order || 0 == knot || t0 >= t1 || !ON_IsValid(t0) ||
-      !ON_IsValid(t1)) {
-    ON_ERROR("ON_SetKnotVectorDomain - invalid input");
+  if (order < 2 || cv_count < order || 0 == knot || t0 >= t1 || !ON_IsValid (t0) ||
+      !ON_IsValid (t1)) {
+    ON_ERROR ("ON_SetKnotVectorDomain - invalid input");
   }
-  else if (knot[order - 2] >= knot[cv_count - 1] || !ON_IsValid(knot[order - 2]) ||
-           !ON_IsValid(knot[cv_count - 2])) {
-    ON_ERROR("ON_SetKnotVectorDomain - invalid input knot vector");
+  else if (knot[order - 2] >= knot[cv_count - 1] || !ON_IsValid (knot[order - 2]) ||
+           !ON_IsValid (knot[cv_count - 2])) {
+    ON_ERROR ("ON_SetKnotVectorDomain - invalid input knot vector");
   }
   else {
-    const ON_Interval oldd(knot[order - 2], knot[cv_count - 1]);
-    const ON_Interval newd(t0, t1);
+    const ON_Interval oldd (knot[order - 2], knot[cv_count - 1]);
+    const ON_Interval newd (t0, t1);
     if (oldd != newd) {
-      int i, knot_count = ON_KnotCount(order, cv_count);
+      int i, knot_count = ON_KnotCount (order, cv_count);
       for (i = 0; i < knot_count; i++) {
-        knot[i] = newd.ParameterAt(oldd.NormalizedParameterAt(knot[i]));
+        knot[i] = newd.ParameterAt (oldd.NormalizedParameterAt (knot[i]));
       }
     }
     rc = true;
@@ -601,7 +601,7 @@ ON_CompareKnotVector ( // returns
     int cv_countB,
     const double* knotB)
 {
-  const int knot_count = ON_KnotCount(orderA, cv_countA);
+  const int knot_count = ON_KnotCount (orderA, cv_countA);
   int i;
   double a, b, atol, btol, ktol, tol;
   if (orderA < orderB)
@@ -613,12 +613,12 @@ ON_CompareKnotVector ( // returns
   if (cv_countA > cv_countB)
     return 1;
 
-  if (!ON_GetKnotVectorDomain(orderA, cv_countA, knotA, &a, &b))
+  if (!ON_GetKnotVectorDomain (orderA, cv_countA, knotA, &a, &b))
     return -1;
-  atol = ON_DomainTolerance(a, b);
-  if (!ON_GetKnotVectorDomain(orderA, cv_countA, knotA, &a, &b))
+  atol = ON_DomainTolerance (a, b);
+  if (!ON_GetKnotVectorDomain (orderA, cv_countA, knotA, &a, &b))
     return 1;
-  btol = ON_DomainTolerance(a, b);
+  btol = ON_DomainTolerance (a, b);
   tol = (atol <= btol) ? atol : btol;
 
   for (i = 0; i < knot_count; i++) {
@@ -630,8 +630,8 @@ ON_CompareKnotVector ( // returns
       return -1;
     if (b < a - tol)
       return 1;
-    atol = ON_KnotTolerance(orderA, cv_countA, knotA, i);
-    btol = ON_KnotTolerance(orderB, cv_countB, knotB, i);
+    atol = ON_KnotTolerance (orderA, cv_countA, knotA, i);
+    btol = ON_KnotTolerance (orderB, cv_countB, knotB, i);
     ktol = (atol <= btol) ? atol : btol;
     if (a < b - ktol)
       return -1;
@@ -669,56 +669,56 @@ ON_IsValidKnotVector (int order,
   int i;
   if (order < 2) {
     if (text_log) {
-      text_log->Print("Knot vector order = %d (should be >= 2 )\n", order);
+      text_log->Print ("Knot vector order = %d (should be >= 2 )\n", order);
     }
-    return ON_KnotVectorIsNotValid(bSilentError);
+    return ON_KnotVectorIsNotValid (bSilentError);
   }
   if (cv_count < order) {
     if (text_log) {
-      text_log->Print(
+      text_log->Print (
           "Knot vector cv_count = %d (should be >= order=%d )\n", cv_count, order);
     }
-    return ON_KnotVectorIsNotValid(bSilentError);
+    return ON_KnotVectorIsNotValid (bSilentError);
   }
   if (knot == NULL) {
     if (text_log) {
-      text_log->Print("Knot vector knot array = NULL.\n");
+      text_log->Print ("Knot vector knot array = NULL.\n");
     }
-    return ON_KnotVectorIsNotValid(bSilentError);
+    return ON_KnotVectorIsNotValid (bSilentError);
   }
 
   for (i = 0; i < cv_count + order - 2; i++) {
-    if (!ON_IsValid(knot[i])) {
+    if (!ON_IsValid (knot[i])) {
       if (text_log) {
-        text_log->Print("Knot vector knot[%d]=%g is not valid.\n", i, knot[i]);
+        text_log->Print ("Knot vector knot[%d]=%g is not valid.\n", i, knot[i]);
       }
-      return ON_KnotVectorIsNotValid(bSilentError);
+      return ON_KnotVectorIsNotValid (bSilentError);
     }
   }
 
   if (!(knot[order - 2] < knot[order - 1])) {
     if (text_log) {
-      text_log->Print("Knot vector order=%d and knot[%d]=%g >= knot[%d]=%g (should "
-                      "have knot[order-2] < knot[order-1]).\n",
-                      order,
-                      order - 2,
-                      knot[order - 2],
-                      order - 1,
-                      knot[order - 1]);
+      text_log->Print ("Knot vector order=%d and knot[%d]=%g >= knot[%d]=%g (should "
+                       "have knot[order-2] < knot[order-1]).\n",
+                       order,
+                       order - 2,
+                       knot[order - 2],
+                       order - 1,
+                       knot[order - 1]);
     }
-    return ON_KnotVectorIsNotValid(bSilentError);
+    return ON_KnotVectorIsNotValid (bSilentError);
   }
   if (!(knot[cv_count - 2] < knot[cv_count - 1])) {
     if (text_log) {
-      text_log->Print("Knot vector cv_count=%d and knot[%d]=%g >= knot[%d]=%g (should "
-                      "have knot[cv_count-2] < knot[cv_count-1]).\n",
-                      cv_count,
-                      cv_count - 2,
-                      knot[cv_count - 2],
-                      cv_count - 1,
-                      knot[cv_count - 1]);
+      text_log->Print ("Knot vector cv_count=%d and knot[%d]=%g >= knot[%d]=%g (should "
+                       "have knot[cv_count-2] < knot[cv_count-1]).\n",
+                       cv_count,
+                       cv_count - 2,
+                       knot[cv_count - 2],
+                       cv_count - 1,
+                       knot[cv_count - 1]);
     }
-    return ON_KnotVectorIsNotValid(bSilentError);
+    return ON_KnotVectorIsNotValid (bSilentError);
   }
 
   // entire array must be monotone increasing
@@ -728,14 +728,14 @@ ON_IsValidKnotVector (int order,
   while (i--) {
     if (!(*k1 >= *k0)) {
       if (text_log) {
-        text_log->Print(
+        text_log->Print (
             "Knot vector must be increasing but knot[%d]=%g > knot[%d]=%g\n",
             order + cv_count - 4 - i,
             *k0,
             order + cv_count - 3 - i,
             *k1);
       }
-      return ON_KnotVectorIsNotValid(bSilentError);
+      return ON_KnotVectorIsNotValid (bSilentError);
     }
     k0++;
     k1++;
@@ -748,14 +748,14 @@ ON_IsValidKnotVector (int order,
   while (i--) {
     if (!(*k1 > *k0)) {
       if (text_log) {
-        text_log->Print("Knot vector order = %d but knot[%d]=%g >= knot[%d]=%g\n",
-                        order,
-                        cv_count - 2 - i,
-                        *k0,
-                        cv_count - 1 - i,
-                        *k1);
+        text_log->Print ("Knot vector order = %d but knot[%d]=%g >= knot[%d]=%g\n",
+                         order,
+                         cv_count - 2 - i,
+                         *k0,
+                         cv_count - 1 - i,
+                         *k1);
       }
-      return ON_KnotVectorIsNotValid(bSilentError);
+      return ON_KnotVectorIsNotValid (bSilentError);
     }
     k0++;
     k1++;
@@ -783,7 +783,7 @@ ON_ClampKnotVector (int order,    // order (>=2)
       rc = true;
     }
     if (end == 1 || end == 2) {
-      const int knot_count = ON_KnotCount(order, cv_count);
+      const int knot_count = ON_KnotCount (order, cv_count);
       i0 = cv_count - 1;
       for (i = i0 + 1; i < knot_count; i++) {
         knot[i] = knot[i0];
@@ -804,14 +804,14 @@ ON_MakeKnotVectorPeriodic (int order,    // order (>=2)
   int i;
 
   if (order < 2 || cv_count < order || !knot) {
-    ON_ERROR("ON_MakePeriodicKnotVector(): illegal input");
+    ON_ERROR ("ON_MakePeriodicKnotVector(): illegal input");
     return false;
   }
 
   switch (order) {
   case 2:
     if (cv_count < 4) {
-      ON_ERROR("ON_MakePeriodicKnotVector(): illegal input degree=1, cv_count<4");
+      ON_ERROR ("ON_MakePeriodicKnotVector(): illegal input degree=1, cv_count<4");
       return false;
     }
     else {
@@ -820,13 +820,13 @@ ON_MakeKnotVectorPeriodic (int order,    // order (>=2)
     break;
   case 3:
     if (cv_count < 4) {
-      ON_ERROR("ON_MakePeriodicKnotVector(): illegal input degree=2, cv_count<5");
+      ON_ERROR ("ON_MakePeriodicKnotVector(): illegal input degree=2, cv_count<5");
       return false;
     }
     break;
   default:
     if (cv_count < 2 * order - 2) {
-      ON_ERROR(
+      ON_ERROR (
           "ON_MakePeriodicKnotVector(): illegal input degree>=3, cv_count<2*degree");
       return false;
     }
@@ -862,7 +862,7 @@ ON_MakeClampedUniformKnotVector (int order, int cv_count, double* knot, double d
     int i;
     for (i = order - 2, k = 0.0; i < cv_count; i++, k += delta)
       knot[i] = k;
-    ON_ClampKnotVector(order, cv_count, knot, 2);
+    ON_ClampKnotVector (order, cv_count, knot, 2);
     rc = true;
   }
   return rc;
@@ -889,7 +889,7 @@ ON_MakePeriodicUniformKnotVector (int order, int cv_count, double* knot, double 
   bool rc = false;
   if (order >= 2 && cv_count >= order && knot != NULL && delta > 0.0) {
     double k = 0.0;
-    int i, knot_count = ON_KnotCount(order, cv_count);
+    int i, knot_count = ON_KnotCount (order, cv_count);
     for (i = order - 2, k = 0.0; i < knot_count; i++, k += delta)
       knot[i] = k;
     for (i = order - 3, k = -delta; i >= 0; i--, k -= delta)
@@ -919,7 +919,7 @@ ON_GrevilleAbcissa (   // get Greville abcissa
       g += *knot++;
     }
     g *= d;
-    if (fabs(g - k) <= (fabs(g) + tol) * ON_SQRT_EPSILON)
+    if (fabs (g - k) <= (fabs (g) + tol) * ON_SQRT_EPSILON)
       g = k; // sets g to exact value when knot vector is uniform
   }
   return g;
@@ -946,7 +946,7 @@ ON_GetGrevilleAbcissae ( // get Greville abcissa from knots
 
   if (order == 2) {
     // g[i] = knot[i] in degree 1 case
-    memcpy(g, knot, g_count * sizeof(*g));
+    memcpy (g, knot, g_count * sizeof (*g));
   }
   else {
     // g = (knot[i]+...+knot[i+degree-1])/degree
@@ -954,7 +954,7 @@ ON_GetGrevilleAbcissae ( // get Greville abcissa from knots
     gi = 0;
     periodic_check = (bPeriodic) ? order - 2 : 0;
     while (gi < g_count) {
-      x = ON_GrevilleAbcissa(order, knot++);
+      x = ON_GrevilleAbcissa (order, knot++);
       if (periodic_check) {
         periodic_check--;
         if (x < t0)
@@ -998,13 +998,13 @@ ON_GetGrevilleKnotVector ( // get knots from Greville abcissa
     return true;
   }
   dd = 1.0 / degree;
-  knot_count = ON_KnotCount(order, cv_count);
+  knot_count = ON_KnotCount (order, cv_count);
   g_count = (bPeriodic) ? cv_count - order + 2 : cv_count;
 
   if (bPeriodic) {
     int half_degree = (degree % 2) ? degree / 2 : 0;
     // step 1: set p[] = fully periodic list of abcissa
-    p = (double*)onmalloc((g_count + 2 * degree) * sizeof(*p));
+    p = (double*)onmalloc ((g_count + 2 * degree) * sizeof (*p));
     for (j = 0, gi = g_count - order; j < degree; j++, gi++) {
       p[j] = g[0] - g[g_count - 1] + g[gi];
     }
@@ -1023,7 +1023,7 @@ ON_GetGrevilleKnotVector ( // get knots from Greville abcissa
       k *= dd;
       if (half_degree) {
         // if g[]'s are uniform and degree is odd, then knots = g[]'s
-        if (fabs(k - p[j + half_degree]) <=
+        if (fabs (k - p[j + half_degree]) <=
             ON_SQRT_EPSILON * (p[j + degree - 1] - p[j]))
           k = p[j + half_degree];
       }
@@ -1032,7 +1032,7 @@ ON_GetGrevilleKnotVector ( // get knots from Greville abcissa
 
     // step 3: determine where g[0] maximizes NURBS basis functions
     {
-      double* B = (double*)alloca(order * order * sizeof(B[0]));
+      double* B = (double*)alloca (order * order * sizeof (B[0]));
       double maxB = 0.0;
       int maxBj = 0;
       for (j = 0; j < 2 * degree; j++) {
@@ -1040,22 +1040,22 @@ ON_GetGrevilleKnotVector ( // get knots from Greville abcissa
           continue;
         if (g[0] < p[j + degree - 1])
           break;
-        ON_EvaluateNurbsBasis(order, p + j, g[0], B);
+        ON_EvaluateNurbsBasis (order, p + j, g[0], B);
         if (B[0] > maxB) {
           maxB = B[0];
           maxBj = j;
         }
       }
-      memcpy(knot, &p[maxBj], knot_count * sizeof(*knot));
+      memcpy (knot, &p[maxBj], knot_count * sizeof (*knot));
     }
 
-    rc = ON_MakeKnotVectorPeriodic(order, cv_count, knot);
+    rc = ON_MakeKnotVectorPeriodic (order, cv_count, knot);
   }
   else {
     // clamped knots
     rc = true;
     if (g > knot && g < knot + knot_count) {
-      p = (double*)onmalloc(cv_count * sizeof(*p));
+      p = (double*)onmalloc (cv_count * sizeof (*p));
       for (j = 0; j < cv_count; j++) {
         p[j] = g[j * g_stride];
       }
@@ -1081,7 +1081,7 @@ ON_GetGrevilleKnotVector ( // get knots from Greville abcissa
   }
 
   if (p)
-    onfree(p);
+    onfree (p);
   return rc;
 }
 
@@ -1103,7 +1103,7 @@ ON_ClampKnotVector (
   if (knot && order >= 2 && cv_count >= order) {
     if (end == 0 || end == 2) {
       if (cv) {
-        ON_EvaluateNurbsDeBoor(
+        ON_EvaluateNurbsDeBoor (
             cv_dim, order, cv_stride, cv, knot, 1, 0.0, knot[order - 2]);
       }
       i0 = order - 2;
@@ -1116,7 +1116,7 @@ ON_ClampKnotVector (
       knot += i0;
       if (cv) {
         cv += i0 * cv_stride;
-        ON_EvaluateNurbsDeBoor(
+        ON_EvaluateNurbsDeBoor (
             cv_dim, order, cv_stride, cv, knot, -1, 0.0, knot[order - 1]);
       }
       i0 = order - 1;
@@ -1146,13 +1146,13 @@ ON_InsertSingleKnot (
 
   if (order < 2 || !knot || knot_value < knot[order - 2] ||
       knot[order - 1] <= knot_value) {
-    ON_ERROR("ON_InsertSingleKnot() - illegal knot input");
+    ON_ERROR ("ON_InsertSingleKnot() - illegal knot input");
     return false;
   }
 
   if (cv) {
     if (cv_dim < 1 || cv_stride < cv_dim) {
-      ON_ERROR("ON_InsertSingleKnot() - illegal cv input");
+      ON_ERROR ("ON_InsertSingleKnot() - illegal cv input");
       return false;
     }
   }
@@ -1171,7 +1171,7 @@ ON_InsertSingleKnot (
 
   if (cv) {
     // move last cv over one spot
-    memcpy(cv + cv_dim * order, cv + cv_dim * degree, cv_dim * sizeof(*cv));
+    memcpy (cv + cv_dim * order, cv + cv_dim * degree, cv_dim * sizeof (*cv));
 
     // compute new cv values
     k0 = knot + degree - 1;
@@ -1234,37 +1234,37 @@ ON_InsertKnot (
   int rc = 0; // return code = number of knots added
 
   if (order < 2 || cv_count < order || !knot) {
-    ON_ERROR("ON_InsertKnot(): illegal input");
+    ON_ERROR ("ON_InsertKnot(): illegal input");
     return 0;
   }
 
   if (cv) {
     if (cv_dim < 1 || cv_stride < cv_dim) {
-      ON_ERROR("ON_InsertKnot(): illegal input");
+      ON_ERROR ("ON_InsertKnot(): illegal input");
       return 0;
     }
   }
 
   if (knot_multiplicity >= order) {
-    ON_ERROR("ON_InsertKnot(): requested knot_multiplicity > degree");
+    ON_ERROR ("ON_InsertKnot(): requested knot_multiplicity > degree");
     return 0;
   }
 
   // shift knot vector and cv array so that knot_value lies in first span
   int span_index =
-      ON_NurbsSpanIndex(order, cv_count, knot, knot_value, 1, hint ? *hint : 0);
+      ON_NurbsSpanIndex (order, cv_count, knot, knot_value, 1, hint ? *hint : 0);
   knot += span_index;
   if (cv)
     cv += (span_index * cv_stride);
   cv_count -= span_index;
 
-  const double knot_tolerance = ON_SpanTolerance(order, cv_count, knot, 0);
+  const double knot_tolerance = ON_SpanTolerance (order, cv_count, knot, 0);
 
   // check that knot_value is interior to NURBS domain
   if (span_index == 0) {
     if (knot_value < knot[order - 1]) {
       if (knot_value <= knot[order - 2] + knot_tolerance) {
-        ON_ERROR("ON_InsertKnot(): requested knot_value at start of NURBS domain");
+        ON_ERROR ("ON_InsertKnot(): requested knot_value at start of NURBS domain");
         return 0;
       }
     }
@@ -1272,17 +1272,17 @@ ON_InsertKnot (
   if (span_index == cv_count - order) {
     if (knot_value > knot[order - 2] &&
         knot_value >= knot[order - 1] - knot_tolerance) {
-      ON_ERROR("ON_InsertKnot(): requested knot_value at end of NURBS domain");
+      ON_ERROR ("ON_InsertKnot(): requested knot_value at end of NURBS domain");
       return 0;
     }
   }
 
   // if knot_value is nearly equal to an existing knot, make it exactly equal
   if (knot_value <= 0.5 * (knot[order - 2] + knot[order - 1]) &&
-      fabs(knot_value - knot[order - 2]) <= knot_tolerance) {
+      fabs (knot_value - knot[order - 2]) <= knot_tolerance) {
     knot_value = knot[order - 2];
   }
-  else if (fabs(knot_value - knot[order - 1]) <= knot_tolerance) {
+  else if (fabs (knot_value - knot[order - 1]) <= knot_tolerance) {
     knot_value = knot[order - 1];
   }
 
@@ -1306,25 +1306,25 @@ ON_InsertKnot (
   if (m <= 0)
     return 0; // no knots need to be added
 
-  double* new_knot =
-      (double*)onmalloc(((2 * degree + m) + (order + m) * cv_dim) * sizeof(*new_knot));
+  double* new_knot = (double*)onmalloc (((2 * degree + m) + (order + m) * cv_dim) *
+                                        sizeof (*new_knot));
   if (!new_knot) {
-    ON_ERROR("ON_InsertKnot(): out of memory");
+    ON_ERROR ("ON_InsertKnot(): out of memory");
     return 0;
   }
   double* new_cv = 0;
-  memcpy(new_knot, knot, 2 * degree * sizeof(*new_knot));
+  memcpy (new_knot, knot, 2 * degree * sizeof (*new_knot));
   if (cv) {
     new_cv = new_knot + (2 * degree + m);
     for (j = 0; j < order; j++) {
-      memcpy(new_cv + j * cv_dim, cv + j * cv_stride, cv_dim * sizeof(*new_cv));
+      memcpy (new_cv + j * cv_dim, cv + j * cv_stride, cv_dim * sizeof (*new_cv));
     }
   }
 
   // add m more knots at knot_value
   rc = 0;
   while (m > 0) {
-    if (!ON_InsertSingleKnot(cv_dim, order, cv_dim, new_cv, new_knot, knot_value))
+    if (!ON_InsertSingleKnot (cv_dim, order, cv_dim, new_cv, new_knot, knot_value))
       break;
     m--;
     if (new_cv)
@@ -1337,14 +1337,14 @@ ON_InsertKnot (
 
   if (rc > 0) {
     // make room for rc many new knots
-    int i0 = ON_KnotCount(order, cv_count) - 1; // knot[i0] = last input knot
+    int i0 = ON_KnotCount (order, cv_count) - 1; // knot[i0] = last input knot
     int i1 = i0 + rc;
     int j = (cv_count - order);
     while (j--)
       knot[i1--] = knot[i0--];
 
     // update knot vector
-    memcpy(knot + degree, new_knot + degree, (degree + rc) * sizeof(*new_knot));
+    memcpy (knot + degree, new_knot + degree, (degree + rc) * sizeof (*new_knot));
 
     if (cv) {
       // make room for rc many new CVs
@@ -1352,21 +1352,21 @@ ON_InsertKnot (
       i1 = i0 + rc * cv_stride;
       j = cv_count - order;
       while (j--) {
-        memcpy(cv + i1, cv + i0, cv_dim * sizeof(*cv));
+        memcpy (cv + i1, cv + i0, cv_dim * sizeof (*cv));
         i1 -= cv_stride;
         i0 -= cv_stride;
       }
 
       // update cv values
       for (j = 0; j < order + rc; j++) {
-        memcpy(cv, new_cv, cv_dim * sizeof(*new_cv));
+        memcpy (cv, new_cv, cv_dim * sizeof (*new_cv));
         cv += cv_stride;
         new_cv += cv_dim;
       }
     }
   }
 
-  onfree(new_knot);
+  onfree (new_knot);
 
   return rc;
 }

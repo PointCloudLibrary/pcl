@@ -60,13 +60,13 @@ public:
     double smooth_concavity;
     double rScale;
     Parameter()
-    : interior_sigma2(0.1)
-    , smoothness(0.1)
-    , closest_point_weight(0.1)
-    , closest_point_sigma2(0.1)
-    , closest_point_resolution(0)
-    , smooth_concavity(1.0)
-    , rScale(1.0)
+    : interior_sigma2 (0.1)
+    , smoothness (0.1)
+    , closest_point_weight (0.1)
+    , closest_point_sigma2 (0.1)
+    , closest_point_resolution (0)
+    , smooth_concavity (1.0)
+    , rScale (1.0)
     {}
   };
 
@@ -87,12 +87,12 @@ public:
   /** \brief Constructor initializing B-Spline curve using initNurbsCurve2D(...).
    * \param[in] order the polynomial order of the B-Spline curve.
    * \param[in] data pointer to the 2D point-cloud data to be fit.        */
-  FittingCurve2dAPDM(int order, NurbsDataCurve2d* data);
+  FittingCurve2dAPDM (int order, NurbsDataCurve2d* data);
 
   /** \brief Constructor initializing with the B-Spline curve given in argument 2.
    * \param[in] data pointer to the 2D point-cloud data to be fit.
    * \param[in] nc B-Spline curve used for fitting.        */
-  FittingCurve2dAPDM(NurbsDataCurve2d* data, const ON_NurbsCurve& nc);
+  FittingCurve2dAPDM (NurbsDataCurve2d* data, const ON_NurbsCurve& nc);
 
   /** \brief Default virtual destructor. */
   virtual ~FittingCurve2dAPDM() = default;
@@ -216,7 +216,7 @@ public:
   setQuiet (bool val)
   {
     m_quiet = val;
-    m_solver.setQuiet(val);
+    m_solver.setQuiet (val);
   }
 
   /** \brief Set parameters for inverse mapping. */

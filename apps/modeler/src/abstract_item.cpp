@@ -43,11 +43,11 @@ pcl::modeler::AbstractItem::AbstractItem() {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::modeler::AbstractItem::showContextMenu(const QPoint* position)
+pcl::modeler::AbstractItem::showContextMenu (const QPoint* position)
 {
-  QMenu menu(&MainWindow::getInstance());
-  prepareContextMenu(&menu);
-  menu.exec(*position);
+  QMenu menu (&MainWindow::getInstance());
+  prepareContextMenu (&menu);
+  menu.exec (*position);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -62,8 +62,8 @@ void
 pcl::modeler::AbstractItem::showPropertyEditor()
 {
   ParameterDialog* parameter_dialog =
-      new ParameterDialog(getItemName() + " Properties", &MainWindow::getInstance());
-  prepareProperties(parameter_dialog);
+      new ParameterDialog (getItemName() + " Properties", &MainWindow::getInstance());
+  prepareProperties (parameter_dialog);
 
   if (parameter_dialog->exec() == QDialog::Accepted)
     setProperties();

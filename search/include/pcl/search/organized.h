@@ -85,15 +85,15 @@ public:
    * pyramid_level the level of the down sampled point cloud to be used for projection
    * matrix estimation
    */
-  OrganizedNeighbor(bool sorted_results = false,
-                    float eps = 1e-4f,
-                    unsigned pyramid_level = 5)
-  : Search<PointT>("OrganizedNeighbor", sorted_results)
-  , projection_matrix_(Eigen::Matrix<float, 3, 4, Eigen::RowMajor>::Zero())
-  , KR_(Eigen::Matrix<float, 3, 3, Eigen::RowMajor>::Zero())
-  , KR_KRT_(Eigen::Matrix<float, 3, 3, Eigen::RowMajor>::Zero())
-  , eps_(eps)
-  , pyramid_level_(pyramid_level)
+  OrganizedNeighbor (bool sorted_results = false,
+                     float eps = 1e-4f,
+                     unsigned pyramid_level = 5)
+  : Search<PointT> ("OrganizedNeighbor", sorted_results)
+  , projection_matrix_ (Eigen::Matrix<float, 3, 4, Eigen::RowMajor>::Zero())
+  , KR_ (Eigen::Matrix<float, 3, 3, Eigen::RowMajor>::Zero())
+  , KR_KRT_ (Eigen::Matrix<float, 3, 3, Eigen::RowMajor>::Zero())
+  , eps_ (eps)
+  , pyramid_level_ (pyramid_level)
   {}
 
   /** \brief Empty deconstructor. */
@@ -111,11 +111,11 @@ public:
     // determinant (KR) = determinant (K) * determinant (R) = determinant (K) = f_x *
     // f_y. If we expect at max an opening angle of 170degree in x-direction -> f_x
     // = 2.0 * width / tan (85 degree); 2 * tan (85 degree) ~ 22.86
-    float min_f = 0.043744332f * static_cast<float>(input_->width);
+    float min_f = 0.043744332f * static_cast<float> (input_->width);
     // std::cout << "isValid: " << determinant3x3Matrix<Eigen::Matrix3f> (KR_ / sqrt
     // (KR_KRT_.coeff (8))) << " >= " << (min_f * min_f) << std::endl;
-    return (determinant3x3Matrix<Eigen::Matrix3f>(KR_ / std::sqrt(KR_KRT_.coeff(8))) >=
-            (min_f * min_f));
+    return (determinant3x3Matrix<Eigen::Matrix3f> (
+                KR_ / std::sqrt (KR_KRT_.coeff (8))) >= (min_f * min_f));
   }
 
   /** \brief Compute the camera matrix
@@ -135,17 +135,17 @@ public:
   {
     input_ = cloud;
 
-    mask_.resize(input_->size());
+    mask_.resize (input_->size());
     input_ = cloud;
     indices_ = indices;
 
     if (indices_ && !indices_->empty()) {
-      mask_.assign(input_->size(), 0);
+      mask_.assign (input_->size(), 0);
       for (const auto& idx : *indices_)
         mask_[idx] = 1;
     }
     else
-      mask_.assign(input_->size(), 1);
+      mask_.assign (input_->size(), 1);
 
     return estimateProjectionMatrix() && isValid();
   }
@@ -197,13 +197,13 @@ public:
 
 protected:
   struct Entry {
-    Entry(index_t idx, float dist) : index(idx), distance(dist) {}
-    Entry() : index(0), distance(0) {}
+    Entry (index_t idx, float dist) : index (idx), distance (dist) {}
+    Entry() : index (0), distance (0) {}
     index_t index;
     float distance;
 
     inline bool
-    operator<(const Entry& other) const
+    operator< (const Entry& other) const
     {
       return (distance < other.distance);
     }
@@ -222,7 +222,7 @@ protected:
              index_t index) const
   {
     const PointT& point = input_->points[index];
-    if (mask_[index] && std::isfinite(point.x)) {
+    if (mask_[index] && std::isfinite (point.x)) {
       // float squared_distance = (point.getVector3fMap () - query.getVector3fMap
       // ()).squaredNorm ();
       float dist_x = point.x - query.x;
@@ -231,14 +231,14 @@ protected:
       float squared_distance = dist_x * dist_x + dist_y * dist_y + dist_z * dist_z;
       const auto queue_size = queue.size();
       const auto insert_into_queue = [&] {
-        queue.emplace(std::upper_bound(queue.begin(),
-                                       queue.end(),
-                                       squared_distance,
-                                       [] (float dist, const Entry& ent) {
-                                         return dist < ent.distance;
-                                       }),
-                      index,
-                      squared_distance);
+        queue.emplace (std::upper_bound (queue.begin(),
+                                         queue.end(),
+                                         squared_distance,
+                                         [] (float dist, const Entry& ent) {
+                                           return dist < ent.distance;
+                                         }),
+                       index,
+                       squared_distance);
       };
       if (queue_size < k) {
         insert_into_queue();
@@ -256,8 +256,8 @@ protected:
   inline void
   clipRange (int& begin, int& end, int min, int max) const
   {
-    begin = std::max(std::min(begin, max), min);
-    end = std::min(std::max(end, min), max);
+    begin = std::max (std::min (begin, max), min);
+    end = std::min (std::max (end, min), max);
   }
 
   /** \brief Obtain a search box in 2D from a sphere with a radius in 3D

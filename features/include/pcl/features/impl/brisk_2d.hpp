@@ -53,7 +53,7 @@ BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::BRISK2DEstimation
 , short_pairs_()
 , long_pairs_()
 , intensity_()
-, name_("BRISK2Destimation")
+, name_ ("BRISK2Destimation")
 {
   // Since we do not assume pattern_scale_ should be changed by the user, we
   // can initialize the kernel in the constructor
@@ -61,8 +61,8 @@ BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::BRISK2DEstimation
   std::vector<int> n_list;
 
   // this is the standard pattern found to be suitable also
-  r_list.resize(5);
-  n_list.resize(5);
+  r_list.resize (5);
+  n_list.resize (5);
   const float f = 0.85f * pattern_scale_;
 
   r_list[0] = f * 0.0f;
@@ -77,7 +77,7 @@ BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::BRISK2DEstimation
   n_list[3] = 15;
   n_list[4] = 20;
 
-  generateKernel(r_list, n_list, 5.85f * pattern_scale_, 8.2f * pattern_scale_);
+  generateKernel (r_list, n_list, 5.85f * pattern_scale_, 8.2f * pattern_scale_);
 }
 
 template <typename PointInT,
@@ -98,7 +98,7 @@ template <typename PointInT,
           typename KeypointT,
           typename IntensityT>
 void
-BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::generateKernel(
+BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::generateKernel (
     std::vector<float>& radius_list,
     std::vector<int>& number_list,
     float d_max,
@@ -110,7 +110,7 @@ BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::generateKernel(
 
   // get the total number of points
   const auto rings = radius_list.size();
-  assert(radius_list.size() != 0 && radius_list.size() == number_list.size());
+  assert (radius_list.size() != 0 && radius_list.size() == number_list.size());
   points_ = 0; // remember the total number of points
   for (const auto number : number_list)
     points_ += number;
@@ -120,8 +120,8 @@ BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::generateKernel(
   BriskPatternPoint* pattern_iterator = pattern_points_;
 
   // define the scale discretization:
-  static const float lb_scale = std::log(scalerange_) / std::log(2.0);
-  static const float lb_scale_step = lb_scale / (static_cast<float>(scales_));
+  static const float lb_scale = std::log (scalerange_) / std::log (2.0);
+  static const float lb_scale_step = lb_scale / (static_cast<float> (scales_));
 
   scale_list_ = new float[scales_];
   size_list_ = new unsigned int[scales_];
@@ -129,38 +129,39 @@ BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::generateKernel(
   constexpr float sigma_scale = 1.3f;
 
   for (unsigned int scale = 0; scale < scales_; ++scale) {
-    scale_list_[scale] = static_cast<float>(
-        pow((2.0), static_cast<double>(static_cast<float>(scale) * lb_scale_step)));
+    scale_list_[scale] = static_cast<float> (
+        pow ((2.0), static_cast<double> (static_cast<float> (scale) * lb_scale_step)));
     size_list_[scale] = 0;
 
     // generate the pattern points look-up
     for (std::size_t rot = 0; rot < n_rot_; ++rot) {
       // this is the rotation of the feature
-      double theta = static_cast<double>(rot) * 2 * M_PI / static_cast<double>(n_rot_);
-      for (int ring = 0; ring < static_cast<int>(rings); ++ring) {
+      double theta =
+          static_cast<double> (rot) * 2 * M_PI / static_cast<double> (n_rot_);
+      for (int ring = 0; ring < static_cast<int> (rings); ++ring) {
         for (int num = 0; num < number_list[ring]; ++num) {
           // the actual coordinates on the circle
-          double alpha = static_cast<double>(num) * 2 * M_PI /
-                         static_cast<double>(number_list[ring]);
+          double alpha = static_cast<double> (num) * 2 * M_PI /
+                         static_cast<double> (number_list[ring]);
 
           // feature rotation plus angle of the point
           pattern_iterator->x = scale_list_[scale] * radius_list[ring] *
-                                static_cast<float>(std::cos(alpha + theta));
+                                static_cast<float> (std::cos (alpha + theta));
           pattern_iterator->y = scale_list_[scale] * radius_list[ring] *
-                                static_cast<float>(sin(alpha + theta));
+                                static_cast<float> (sin (alpha + theta));
           // and the gaussian kernel sigma
           if (ring == 0)
             pattern_iterator->sigma = sigma_scale * scale_list_[scale] * 0.5f;
           else
-            pattern_iterator->sigma =
-                static_cast<float>(sigma_scale * scale_list_[scale] *
-                                   (static_cast<double>(radius_list[ring])) *
-                                   sin(M_PI / static_cast<double>(number_list[ring])));
+            pattern_iterator->sigma = static_cast<float> (
+                sigma_scale * scale_list_[scale] *
+                (static_cast<double> (radius_list[ring])) *
+                sin (M_PI / static_cast<double> (number_list[ring])));
 
           // adapt the sizeList if necessary
-          const auto size = static_cast<unsigned int>(
-              std::ceil(((scale_list_[scale] * radius_list[ring]) +
-                         pattern_iterator->sigma)) +
+          const auto size = static_cast<unsigned int> (
+              std::ceil (((scale_list_[scale] * radius_list[ring]) +
+                          pattern_iterator->sigma)) +
               1);
 
           if (size_list_[scale] < size)
@@ -181,9 +182,9 @@ BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::generateKernel(
 
   // fill index_change with 0..n if empty
   if (index_change.empty()) {
-    index_change.resize(points_ * (points_ - 1) / 2);
+    index_change.resize (points_ * (points_ - 1) / 2);
   }
-  std::iota(index_change.begin(), index_change.end(), 0);
+  std::iota (index_change.begin(), index_change.end(), 0);
 
   const float d_min_sq = d_min_ * d_min_;
   const float d_max_sq = d_max_ * d_max_;
@@ -196,16 +197,16 @@ BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::generateKernel(
       if (norm_sq > d_min_sq) {
         // save to long pairs
         BriskLongPair& longPair = long_pairs_[no_long_pairs_];
-        longPair.weighted_dx = static_cast<int>((dx / (norm_sq)) * 2048.0 + 0.5);
-        longPair.weighted_dy = static_cast<int>((dy / (norm_sq)) * 2048.0 + 0.5);
+        longPair.weighted_dx = static_cast<int> ((dx / (norm_sq)) * 2048.0 + 0.5);
+        longPair.weighted_dy = static_cast<int> ((dy / (norm_sq)) * 2048.0 + 0.5);
         longPair.i = i;
         longPair.j = j;
         ++no_long_pairs_;
       }
       else if (norm_sq < d_max_sq) {
         // save to short pairs
-        assert(no_short_pairs_ <
-               index_change.size()); // make sure the user passes something sensible
+        assert (no_short_pairs_ <
+                index_change.size()); // make sure the user passes something sensible
         BriskShortPair& shortPair = short_pairs_[index_change[no_short_pairs_]];
         shortPair.j = j;
         shortPair.i = i;
@@ -216,8 +217,8 @@ BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::generateKernel(
 
   // no bits:
   strings_ =
-      static_cast<int>(std::ceil((static_cast<float>(no_short_pairs_)) / 128.0)) * 4 *
-      4;
+      static_cast<int> (std::ceil ((static_cast<float> (no_short_pairs_)) / 128.0)) *
+      4 * 4;
 }
 
 template <typename PointInT,
@@ -225,7 +226,7 @@ template <typename PointInT,
           typename KeypointT,
           typename IntensityT>
 inline int
-BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::smoothedIntensity(
+BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::smoothedIntensity (
     const std::vector<unsigned char>& image,
     int image_width,
     int,
@@ -242,8 +243,8 @@ BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::smoothedIntensity
       pattern_points_[scale * n_rot_ * points_ + rot * points_ + point];
   const float xf = brisk_point.x + key_x;
   const float yf = brisk_point.y + key_y;
-  const int x = static_cast<int>(xf);
-  const int y = static_cast<int>(yf);
+  const int x = static_cast<int> (xf);
+  const int y = static_cast<int> (yf);
   const int& imagecols = image_width;
 
   // get the sigma:
@@ -256,41 +257,41 @@ BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::smoothedIntensity
   int ret_val;
   if (sigma_half < 0.5) {
     // interpolation multipliers:
-    const int r_x = static_cast<int>((xf - static_cast<float>(x)) * 1024);
-    const int r_y = static_cast<int>((yf - static_cast<float>(y)) * 1024);
+    const int r_x = static_cast<int> ((xf - static_cast<float> (x)) * 1024);
+    const int r_y = static_cast<int> ((yf - static_cast<float> (y)) * 1024);
     const int r_x_1 = (1024 - r_x);
     const int r_y_1 = (1024 - r_y);
 
     //+const unsigned char* ptr = static_cast<const unsigned char*> (&image[0].r) + x +
-    //y * imagecols;
+    // y * imagecols;
     const unsigned char* ptr =
-        static_cast<const unsigned char*>(image.data()) + x + y * imagecols;
+        static_cast<const unsigned char*> (image.data()) + x + y * imagecols;
 
     // just interpolate:
-    ret_val = (r_x_1 * r_y_1 * static_cast<int>(*ptr));
+    ret_val = (r_x_1 * r_y_1 * static_cast<int> (*ptr));
 
     //+ptr += sizeof (PointInT);
     ptr++;
 
-    ret_val += (r_x * r_y_1 * static_cast<int>(*ptr));
+    ret_val += (r_x * r_y_1 * static_cast<int> (*ptr));
 
     //+ptr += (imagecols * sizeof (PointInT));
     ptr += imagecols;
 
-    ret_val += (r_x * r_y * static_cast<int>(*ptr));
+    ret_val += (r_x * r_y * static_cast<int> (*ptr));
 
     //+ptr -= sizeof (PointInT);
     ptr--;
 
-    ret_val += (r_x_1 * r_y * static_cast<int>(*ptr));
+    ret_val += (r_x_1 * r_y * static_cast<int> (*ptr));
     return (ret_val + 512) / 1024;
   }
 
   // this is the standard case (simple, not speed optimized yet):
 
   // scaling:
-  const int scaling = static_cast<int>(4194304.0f / area);
-  const int scaling2 = static_cast<int>(static_cast<float>(scaling) * area / 1024.0f);
+  const int scaling = static_cast<int> (4194304.0f / area);
+  const int scaling2 = static_cast<int> (static_cast<float> (scaling) * area / 1024.0f);
 
   // the integral image is larger:
   const int integralcols = imagecols + 1;
@@ -301,57 +302,57 @@ BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::smoothedIntensity
   const float y_1 = yf - sigma_half;
   const float y1 = yf + sigma_half;
 
-  const int x_left = static_cast<int>(x_1 + 0.5);
-  const int y_top = static_cast<int>(y_1 + 0.5);
-  const int x_right = static_cast<int>(x1 + 0.5);
-  const int y_bottom = static_cast<int>(y1 + 0.5);
+  const int x_left = static_cast<int> (x_1 + 0.5);
+  const int y_top = static_cast<int> (y_1 + 0.5);
+  const int x_right = static_cast<int> (x1 + 0.5);
+  const int y_bottom = static_cast<int> (y1 + 0.5);
 
   // overlap area - multiplication factors:
-  const float r_x_1 = static_cast<float>(x_left) - x_1 + 0.5f;
-  const float r_y_1 = static_cast<float>(y_top) - y_1 + 0.5f;
-  const float r_x1 = x1 - static_cast<float>(x_right) + 0.5f;
-  const float r_y1 = y1 - static_cast<float>(y_bottom) + 0.5f;
+  const float r_x_1 = static_cast<float> (x_left) - x_1 + 0.5f;
+  const float r_y_1 = static_cast<float> (y_top) - y_1 + 0.5f;
+  const float r_x1 = x1 - static_cast<float> (x_right) + 0.5f;
+  const float r_y1 = y1 - static_cast<float> (y_bottom) + 0.5f;
   const int dx = x_right - x_left - 1;
   const int dy = y_bottom - y_top - 1;
-  const int A = static_cast<int>((r_x_1 * r_y_1) * static_cast<float>(scaling));
-  const int B = static_cast<int>((r_x1 * r_y_1) * static_cast<float>(scaling));
-  const int C = static_cast<int>((r_x1 * r_y1) * static_cast<float>(scaling));
-  const int D = static_cast<int>((r_x_1 * r_y1) * static_cast<float>(scaling));
-  const int r_x_1_i = static_cast<int>(r_x_1 * static_cast<float>(scaling));
-  const int r_y_1_i = static_cast<int>(r_y_1 * static_cast<float>(scaling));
-  const int r_x1_i = static_cast<int>(r_x1 * static_cast<float>(scaling));
-  const int r_y1_i = static_cast<int>(r_y1 * static_cast<float>(scaling));
+  const int A = static_cast<int> ((r_x_1 * r_y_1) * static_cast<float> (scaling));
+  const int B = static_cast<int> ((r_x1 * r_y_1) * static_cast<float> (scaling));
+  const int C = static_cast<int> ((r_x1 * r_y1) * static_cast<float> (scaling));
+  const int D = static_cast<int> ((r_x_1 * r_y1) * static_cast<float> (scaling));
+  const int r_x_1_i = static_cast<int> (r_x_1 * static_cast<float> (scaling));
+  const int r_y_1_i = static_cast<int> (r_y_1 * static_cast<float> (scaling));
+  const int r_x1_i = static_cast<int> (r_x1 * static_cast<float> (scaling));
+  const int r_y1_i = static_cast<int> (r_y1 * static_cast<float> (scaling));
 
   if (dx + dy > 2) {
     // now the calculation:
 
     //+const unsigned char* ptr = static_cast<const unsigned char*> (&image[0].r) +
-    //x_left + imagecols * y_top;
+    // x_left + imagecols * y_top;
     const unsigned char* ptr =
-        static_cast<const unsigned char*>(image.data()) + x_left + imagecols * y_top;
+        static_cast<const unsigned char*> (image.data()) + x_left + imagecols * y_top;
 
     // first the corners:
-    ret_val = A * static_cast<int>(*ptr);
+    ret_val = A * static_cast<int> (*ptr);
 
     //+ptr += (dx + 1) * sizeof (PointInT);
     ptr += dx + 1;
 
-    ret_val += B * static_cast<int>(*ptr);
+    ret_val += B * static_cast<int> (*ptr);
 
     //+ptr += (dy * imagecols + 1) * sizeof (PointInT);
     ptr += dy * imagecols + 1;
 
-    ret_val += C * static_cast<int>(*ptr);
+    ret_val += C * static_cast<int> (*ptr);
 
     //+ptr -= (dx + 1) * sizeof (PointInT);
     ptr -= dx + 1;
 
-    ret_val += D * static_cast<int>(*ptr);
+    ret_val += D * static_cast<int> (*ptr);
 
     // next the edges:
     //+int* ptr_integral;// = static_cast<int*> (integral.data) + x_left + integralcols
     //* y_top + 1;
-    const int* ptr_integral = static_cast<const int*>(integral_image.data()) + x_left +
+    const int* ptr_integral = static_cast<const int*> (integral_image.data()) + x_left +
                               integralcols * y_top + 1;
 
     // find a simple path through the different surface corners
@@ -394,10 +395,10 @@ BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::smoothedIntensity
   // const unsigned char* ptr = static_cast<const unsigned char*> (&image[0].r) + x_left
   // + imagecols * y_top;
   const unsigned char* ptr =
-      static_cast<const unsigned char*>(image.data()) + x_left + imagecols * y_top;
+      static_cast<const unsigned char*> (image.data()) + x_left + imagecols * y_top;
 
   // first row:
-  ret_val = A * static_cast<int>(*ptr);
+  ret_val = A * static_cast<int> (*ptr);
 
   //+ptr += sizeof (PointInT);
   ptr++;
@@ -407,8 +408,8 @@ BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::smoothedIntensity
 
   //+for (; ptr < end1; ptr += sizeof (PointInT))
   for (; ptr < end1; ptr++)
-    ret_val += r_y_1_i * static_cast<int>(*ptr);
-  ret_val += B * static_cast<int>(*ptr);
+    ret_val += r_y_1_i * static_cast<int> (*ptr);
+  ret_val += B * static_cast<int> (*ptr);
 
   // middle ones:
   //+ptr += (imagecols - dx - 1) * sizeof (PointInT);
@@ -419,7 +420,7 @@ BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::smoothedIntensity
 
   //+for (; ptr < end_j; ptr += (imagecols - dx - 1) * sizeof (PointInT))
   for (; ptr < end_j; ptr += imagecols - dx - 1) {
-    ret_val += r_x_1_i * static_cast<int>(*ptr);
+    ret_val += r_x_1_i * static_cast<int> (*ptr);
 
     //+ptr += sizeof (PointInT);
     ptr++;
@@ -429,12 +430,12 @@ BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::smoothedIntensity
 
     //+for (; ptr < end2; ptr += sizeof (PointInT))
     for (; ptr < end2; ptr++)
-      ret_val += static_cast<int>(*ptr) * scaling;
+      ret_val += static_cast<int> (*ptr) * scaling;
 
-    ret_val += r_x1_i * static_cast<int>(*ptr);
+    ret_val += r_x1_i * static_cast<int> (*ptr);
   }
   // last row:
-  ret_val += D * static_cast<int>(*ptr);
+  ret_val += D * static_cast<int> (*ptr);
 
   //+ptr += sizeof (PointInT);
   ptr++;
@@ -444,9 +445,9 @@ BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::smoothedIntensity
 
   //+for (; ptr<end3; ptr += sizeof (PointInT))
   for (; ptr < end3; ptr++)
-    ret_val += r_y1_i * static_cast<int>(*ptr);
+    ret_val += r_y1_i * static_cast<int> (*ptr);
 
-  ret_val += C * static_cast<int>(*ptr);
+  ret_val += C * static_cast<int> (*ptr);
 
   return (ret_val + scaling2 / 2) / scaling2;
 }
@@ -456,7 +457,7 @@ template <typename PointInT,
           typename KeypointT,
           typename IntensityT>
 bool
-BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::RoiPredicate(
+BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::RoiPredicate (
     const float min_x,
     const float min_y,
     const float max_x,
@@ -471,32 +472,32 @@ template <typename PointInT,
           typename KeypointT,
           typename IntensityT>
 void
-BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::compute(
+BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::compute (
     PointCloudOutT& output)
 {
   if (!input_cloud_->isOrganized()) {
-    PCL_ERROR("[pcl::%s::initCompute] %s doesn't support non organized clouds!\n",
-              name_.c_str());
+    PCL_ERROR ("[pcl::%s::initCompute] %s doesn't support non organized clouds!\n",
+               name_.c_str());
     return;
   }
 
   // image size
-  const auto width = static_cast<index_t>(input_cloud_->width);
-  const auto height = static_cast<index_t>(input_cloud_->height);
+  const auto width = static_cast<index_t> (input_cloud_->width);
+  const auto height = static_cast<index_t> (input_cloud_->height);
 
   // destination for intensity data; will be forwarded to BRISK
-  std::vector<unsigned char> image_data(width * height);
+  std::vector<unsigned char> image_data (width * height);
 
   for (std::size_t i = 0; i < image_data.size(); ++i)
-    image_data[i] = static_cast<unsigned char>(intensity_((*input_cloud_)[i]));
+    image_data[i] = static_cast<unsigned char> (intensity_ ((*input_cloud_)[i]));
 
   // Remove keypoints very close to the border
   auto ksize = keypoints_->size();
   std::vector<int> kscales; // remember the scale per keypoint
-  kscales.resize(ksize);
+  kscales.resize (ksize);
 
   // initialize constants
-  static const float lb_scalerange = std::log2(scalerange_);
+  static const float lb_scalerange = std::log2 (scalerange_);
 
   auto beginning = keypoints_->points.begin();
   auto beginningkscales = kscales.begin();
@@ -505,19 +506,19 @@ BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::compute(
   unsigned int basicscale = 0;
 
   if (!scale_invariance_enabled_)
-    basicscale = std::max(
-        static_cast<int>(static_cast<float>(scales_) / lb_scalerange *
-                             (std::log2(1.45f * basic_size_ / (basic_size_06))) +
-                         0.5f),
+    basicscale = std::max (
+        static_cast<int> (static_cast<float> (scales_) / lb_scalerange *
+                              (std::log2 (1.45f * basic_size_ / (basic_size_06))) +
+                          0.5f),
         0);
 
   for (std::size_t k = 0; k < ksize; k++) {
     unsigned int scale;
     if (scale_invariance_enabled_) {
-      scale = std::max(
-          static_cast<int>(static_cast<float>(scales_) / lb_scalerange *
-                               (std::log2((*keypoints_)[k].size / (basic_size_06))) +
-                           0.5f),
+      scale = std::max (
+          static_cast<int> (static_cast<float> (scales_) / lb_scalerange *
+                                (std::log2 ((*keypoints_)[k].size / (basic_size_06))) +
+                            0.5f),
           0);
       // saturate
       if (scale >= scales_)
@@ -533,14 +534,14 @@ BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::compute(
     const int border_x = width - border;
     const int border_y = height - border;
 
-    if (RoiPredicate(static_cast<float>(border),
-                     static_cast<float>(border),
-                     static_cast<float>(border_x),
-                     static_cast<float>(border_y),
-                     (*keypoints_)[k])) {
+    if (RoiPredicate (static_cast<float> (border),
+                      static_cast<float> (border),
+                      static_cast<float> (border_x),
+                      static_cast<float> (border_y),
+                      (*keypoints_)[k])) {
       // std::cerr << "remove keypoint" << std::endl;
-      keypoints_->points.erase(beginning + k);
-      kscales.erase(beginningkscales + k);
+      keypoints_->points.erase (beginning + k);
+      kscales.erase (beginningkscales + k);
       if (k == 0) {
         beginning = keypoints_->points.begin();
         beginningkscales = kscales.begin();
@@ -555,14 +556,14 @@ BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::compute(
 
   // first, calculate the integral image over the whole image:
   // current integral image
-  std::vector<int> integral((width + 1) * (height + 1), 0); // the integral image
+  std::vector<int> integral ((width + 1) * (height + 1), 0); // the integral image
 
   for (index_t row_index = 1; row_index < height; ++row_index) {
     for (index_t col_index = 1; col_index < width; ++col_index) {
       const std::size_t index = row_index * width + col_index;
       const std::size_t index2 = (row_index) * (width + 1) + (col_index);
 
-      integral[index2] = static_cast<int>(image_data[index]) -
+      integral[index2] = static_cast<int> (image_data[index]) -
                          integral[index2 - 1 - (width + 1)] +
                          integral[index2 - (width + 1)] + integral[index2 - 1];
     }
@@ -583,7 +584,7 @@ BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::compute(
   int direction0;
   int direction1;
 
-  output.resize(ksize);
+  output.resize (ksize);
   // output.width = ksize;
   // output.height = 1;
   for (std::size_t k = 0; k < ksize; k++) {
@@ -605,8 +606,8 @@ BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::compute(
       else {
         // get the gray values in the unrotated pattern
         for (unsigned int i = 0; i < points_; i++)
-          *(pvalues++) =
-              smoothedIntensity(image_data, width, height, integral, x, y, scale, 0, i);
+          *(pvalues++) = smoothedIntensity (
+              image_data, width, height, integral, x, y, scale, 0, i);
 
         direction0 = 0;
         direction1 = 0;
@@ -624,14 +625,14 @@ BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::compute(
           direction0 += tmp0;
           direction1 += tmp1;
         }
-        kp.angle =
-            std::atan2(static_cast<float>(direction1), static_cast<float>(direction0)) /
-            static_cast<float>(M_PI) * 180.0f;
-        theta =
-            static_cast<int>((static_cast<float>(n_rot_) * kp.angle) / (360.0f) + 0.5f);
+        kp.angle = std::atan2 (static_cast<float> (direction1),
+                               static_cast<float> (direction0)) /
+                   static_cast<float> (M_PI) * 180.0f;
+        theta = static_cast<int> ((static_cast<float> (n_rot_) * kp.angle) / (360.0f) +
+                                  0.5f);
         if (theta < 0)
           theta += n_rot_;
-        if (theta >= static_cast<int>(n_rot_))
+        if (theta >= static_cast<int> (n_rot_))
           theta -= n_rot_;
       }
     }
@@ -642,10 +643,10 @@ BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::compute(
       if (!rotation_invariance_enabled_)
         theta = 0;
       else {
-        theta = static_cast<int>(n_rot_ * (kp.angle / (360.0)) + 0.5);
+        theta = static_cast<int> (n_rot_ * (kp.angle / (360.0)) + 0.5);
         if (theta < 0)
           theta += n_rot_;
-        if (theta >= static_cast<int>(n_rot_))
+        if (theta >= static_cast<int> (n_rot_))
           theta -= n_rot_;
       }
     }
@@ -658,8 +659,8 @@ BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::compute(
     pvalues = values;
     // get the gray values in the rotated pattern
     for (unsigned int i = 0; i < points_; i++)
-      *(pvalues++) =
-          smoothedIntensity(image_data, width, height, integral, x, y, scale, theta, i);
+      *(pvalues++) = smoothedIntensity (
+          image_data, width, height, integral, x, y, scale, theta, i);
 
 #ifdef __GNUC__
     using UINT32_ALIAS = std::uint32_t;
@@ -671,7 +672,7 @@ BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::compute(
 #endif
 
     // now iterate through all the pairings
-    auto* ptr2 = reinterpret_cast<UINT32_ALIAS*>(ptr);
+    auto* ptr2 = reinterpret_cast<UINT32_ALIAS*> (ptr);
     const BriskShortPair* max = short_pairs_ + no_short_pairs_;
 
     for (BriskShortPair* iter = short_pairs_; iter < max; ++iter) {

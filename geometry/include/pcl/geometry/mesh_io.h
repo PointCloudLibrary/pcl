@@ -84,7 +84,7 @@ public:
   bool
   read (const std::string& filename, Mesh& mesh) const
   {
-    std::ifstream file(filename.c_str());
+    std::ifstream file (filename.c_str());
 
     if (!file.is_open()) {
       std::cerr << "Error in MeshIO::read: Could not open the file '" << filename
@@ -97,20 +97,20 @@ public:
     unsigned int line_number = 1;
     int n_v = -1, n_he = -1, n_f = -1;
 
-    if (!std::getline(file, line) || line != "PCL half-edge mesh") {
+    if (!std::getline (file, line) || line != "PCL half-edge mesh") {
       std::cerr << "Error loading '" << filename << "' (line " << line_number
                 << "): Wrong file format.\n";
       return (false);
     }
     ++line_number;
 
-    if (!std::getline(file, line)) {
+    if (!std::getline (file, line)) {
       std::cerr << "Error loading '" << filename << "'' (line " << line_number
                 << "): Number of vertices / half-edges / faces not found.\n";
       return (false);
     }
     {
-      std::istringstream iss(line);
+      std::istringstream iss (line);
       if (!(iss >> n_v >> n_he >> n_f) || iss.good()) // Don't allow more than 3 en
       {
         std::cerr << "Error loading '" << filename << "'' (line " << line_number
@@ -127,82 +127,82 @@ public:
 
     // Read the vertices.
     {
-      mesh.vertices_.reserve(n_v);
+      mesh.vertices_.reserve (n_v);
       HalfEdgeIndex idx_ohe; // Outgoing half-edge;
 
       for (int i = 0; i < n_v; ++i, ++line_number) {
-        if (!std::getline(file, line)) {
+        if (!std::getline (file, line)) {
           std::cerr << "Error loading '" << filename << "'' (line " << line_number
                     << "): Could not read the line.\n";
           return (false);
         }
 
-        std::istringstream iss(line);
+        std::istringstream iss (line);
         if (!(iss >> idx_ohe) || iss.good()) {
           std::cerr << "Error loading '" << filename << "'' (line " << line_number
                     << "): Could not read the vertex.\n";
           return (false);
         }
-        mesh.vertices_.push_back(Vertex(idx_ohe));
+        mesh.vertices_.push_back (Vertex (idx_ohe));
       }
     }
 
     // Read the half-edges.
     {
-      mesh.half_edges_.reserve(n_he);
+      mesh.half_edges_.reserve (n_he);
       VertexIndex idx_tv;    // Terminating vertex.
       HalfEdgeIndex idx_nhe; // Next half-edge;
       HalfEdgeIndex idx_phe; // Previous half-edge.
       FaceIndex idx_f;       // Face.
 
       for (int i = 0; i < n_he; ++i, ++line_number) {
-        if (!std::getline(file, line)) {
+        if (!std::getline (file, line)) {
           std::cerr << "Error loading '" << filename << "'' (line " << line_number
                     << "): Could not read the line.\n";
           return (false);
         }
 
-        std::istringstream iss(line);
+        std::istringstream iss (line);
         if (!(iss >> idx_tv >> idx_nhe >> idx_phe >> idx_f) || iss.good()) {
           std::cerr << "Error loading '" << filename << "'' (line " << line_number
                     << "): Could not read the half-edge.\n";
           return (false);
         }
-        mesh.half_edges_.push_back(HalfEdge(idx_tv, idx_nhe, idx_phe, idx_f));
+        mesh.half_edges_.push_back (HalfEdge (idx_tv, idx_nhe, idx_phe, idx_f));
       }
     }
 
     // Read the faces.
     {
-      mesh.faces_.reserve(n_f);
+      mesh.faces_.reserve (n_f);
       HalfEdgeIndex idx_ihe; // Inner half-edge.
 
       for (int i = 0; i < n_f; ++i, ++line_number) {
-        if (!std::getline(file, line)) {
+        if (!std::getline (file, line)) {
           std::cerr << "Error loading '" << filename << "'' (line " << line_number
                     << "): Could not read the line.\n";
           return (false);
         }
 
-        std::istringstream iss(line);
+        std::istringstream iss (line);
         if (!(iss >> idx_ihe) || iss.good()) {
           std::cerr << "Error loading '" << filename << "'' (line " << line_number
                     << "): Could not read the face.\n";
           return (false);
         }
-        mesh.faces_.push_back(Face(idx_ihe));
+        mesh.faces_.push_back (Face (idx_ihe));
       }
     }
 
     // Set the data
     if (Mesh::HasVertexData::value)
-      mesh.vertex_data_cloud_.resize(n_v);
+      mesh.vertex_data_cloud_.resize (n_v);
     if (Mesh::HasHalfEdgeData::value)
-      mesh.half_edge_data_cloud_.resize(n_he);
+      mesh.half_edge_data_cloud_.resize (n_he);
     if (Mesh::HasEdgeData::value)
-      mesh.edge_data_cloud_.resize(n_he / 2);
+      mesh.edge_data_cloud_.resize (n_he / 2);
     if (Mesh::HasFaceData::value)
-      mesh.face_data_cloud_.resize(n_f);
+      mesh.face_data_cloud_.resize (n_f);
 
     return (true);
   }
@@ -215,7 +215,7 @@ public:
   bool
   write (const std::string& filename, const Mesh& mesh) const
   {
-    std::ofstream file(filename.c_str());
+    std::ofstream file (filename.c_str());
 
     // Write the header
     if (!file.is_open()) {

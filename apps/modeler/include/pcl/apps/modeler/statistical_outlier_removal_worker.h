@@ -46,8 +46,8 @@ class DoubleParameter;
 
 class StatisticalOutlierRemovalWorker : public AbstractWorker {
 public:
-  StatisticalOutlierRemovalWorker(const QList<CloudMeshItem*>& cloud_mesh_items,
-                                  QWidget* parent = nullptr);
+  StatisticalOutlierRemovalWorker (const QList<CloudMeshItem*>& cloud_mesh_items,
+                                   QWidget* parent = nullptr);
   ~StatisticalOutlierRemovalWorker();
 
 protected:

@@ -26,16 +26,16 @@ fitPlane (const PointCloudPtr& input, float distance_threshold, float max_iterat
 {
   // Initialize the SACSegmentation object
   pcl::SACSegmentation<PointT> seg;
-  seg.setOptimizeCoefficients(true);
-  seg.setModelType(pcl::SACMODEL_PLANE);
-  seg.setMethodType(pcl::SAC_RANSAC);
-  seg.setDistanceThreshold(distance_threshold);
-  seg.setMaxIterations(max_iterations);
+  seg.setOptimizeCoefficients (true);
+  seg.setModelType (pcl::SACMODEL_PLANE);
+  seg.setMethodType (pcl::SAC_RANSAC);
+  seg.setDistanceThreshold (distance_threshold);
+  seg.setMaxIterations (max_iterations);
 
-  seg.setInputCloud(input);
-  pcl::ModelCoefficients::Ptr coefficients(new pcl::ModelCoefficients());
-  pcl::PointIndices::Ptr inliers(new pcl::PointIndices());
-  seg.segment(*inliers, *coefficients);
+  seg.setInputCloud (input);
+  pcl::ModelCoefficients::Ptr coefficients (new pcl::ModelCoefficients());
+  pcl::PointIndices::Ptr inliers (new pcl::PointIndices());
+  seg.segment (*inliers, *coefficients);
 
   return (coefficients);
 }
@@ -53,23 +53,23 @@ findAndSubtractPlane (const PointCloudPtr& input,
 {
   // Find the dominant plane
   pcl::SACSegmentation<PointT> seg;
-  seg.setOptimizeCoefficients(false);
-  seg.setModelType(pcl::SACMODEL_PLANE);
-  seg.setMethodType(pcl::SAC_RANSAC);
-  seg.setDistanceThreshold(distance_threshold);
-  seg.setMaxIterations(max_iterations);
-  seg.setInputCloud(input);
-  pcl::ModelCoefficients::Ptr coefficients(new pcl::ModelCoefficients());
-  pcl::PointIndices::Ptr inliers(new pcl::PointIndices());
-  seg.segment(*inliers, *coefficients);
+  seg.setOptimizeCoefficients (false);
+  seg.setModelType (pcl::SACMODEL_PLANE);
+  seg.setMethodType (pcl::SAC_RANSAC);
+  seg.setDistanceThreshold (distance_threshold);
+  seg.setMaxIterations (max_iterations);
+  seg.setInputCloud (input);
+  pcl::ModelCoefficients::Ptr coefficients (new pcl::ModelCoefficients());
+  pcl::PointIndices::Ptr inliers (new pcl::PointIndices());
+  seg.segment (*inliers, *coefficients);
 
   // Extract the inliers
   pcl::ExtractIndices<PointT> extract;
-  extract.setInputCloud(input);
-  extract.setIndices(inliers);
-  extract.setNegative(true);
-  PointCloudPtr output(new PointCloud);
-  extract.filter(*output);
+  extract.setInputCloud (input);
+  extract.setIndices (inliers);
+  extract.setNegative (true);
+  PointCloudPtr output (new PointCloud);
+  extract.filter (*output);
 
   return (output);
 }
@@ -93,10 +93,10 @@ clusterObjects (const PointCloudPtr& input,
                 std::vector<pcl::PointIndices>& cluster_indices_out)
 {
   pcl::EuclideanClusterExtraction<PointT> ec;
-  ec.setClusterTolerance(cluster_tolerance);
-  ec.setMinClusterSize(min_cluster_size);
-  ec.setMaxClusterSize(max_cluster_size);
+  ec.setClusterTolerance (cluster_tolerance);
+  ec.setMinClusterSize (min_cluster_size);
+  ec.setMaxClusterSize (max_cluster_size);
 
-  ec.setInputCloud(input);
-  ec.extract(cluster_indices_out);
+  ec.setInputCloud (input);
+  ec.extract (cluster_indices_out);
 }

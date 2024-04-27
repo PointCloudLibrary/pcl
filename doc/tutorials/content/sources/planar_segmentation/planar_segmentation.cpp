@@ -10,12 +10,12 @@
 int
 main ()
 {
-  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
+  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
 
   // Fill in the cloud data
   cloud->width = 15;
   cloud->height = 1;
-  cloud->points.resize(cloud->width * cloud->height);
+  cloud->points.resize (cloud->width * cloud->height);
 
   // Generate the data
   for (auto& point : *cloud) {
@@ -33,22 +33,22 @@ main ()
   for (const auto& point : *cloud)
     std::cerr << "    " << point.x << " " << point.y << " " << point.z << std::endl;
 
-  pcl::ModelCoefficients::Ptr coefficients(new pcl::ModelCoefficients);
-  pcl::PointIndices::Ptr inliers(new pcl::PointIndices);
+  pcl::ModelCoefficients::Ptr coefficients (new pcl::ModelCoefficients);
+  pcl::PointIndices::Ptr inliers (new pcl::PointIndices);
   // Create the segmentation object
   pcl::SACSegmentation<pcl::PointXYZ> seg;
   // Optional
-  seg.setOptimizeCoefficients(true);
+  seg.setOptimizeCoefficients (true);
   // Mandatory
-  seg.setModelType(pcl::SACMODEL_PLANE);
-  seg.setMethodType(pcl::SAC_RANSAC);
-  seg.setDistanceThreshold(0.01);
+  seg.setModelType (pcl::SACMODEL_PLANE);
+  seg.setMethodType (pcl::SAC_RANSAC);
+  seg.setDistanceThreshold (0.01);
 
-  seg.setInputCloud(cloud);
-  seg.segment(*inliers, *coefficients);
+  seg.setInputCloud (cloud);
+  seg.segment (*inliers, *coefficients);
 
   if (inliers->indices.size() == 0) {
-    PCL_ERROR("Could not estimate a planar model for the given dataset.\n");
+    PCL_ERROR ("Could not estimate a planar model for the given dataset.\n");
     return (-1);
   }
 

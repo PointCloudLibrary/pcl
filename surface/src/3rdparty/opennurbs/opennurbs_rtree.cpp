@@ -41,7 +41,7 @@ struct ON_RTreePartitionVars {
   double m_coverSplitArea;
 };
 
-using ON_RTreeSearchCallback = bool (*)(void*, ON__INT_PTR);
+using ON_RTreeSearchCallback = bool (*) (void*, ON__INT_PTR);
 
 struct ON_RTreeSearchResultCallback {
   void* m_context;
@@ -120,8 +120,8 @@ ON_MemoryPageSize ()
   static std::size_t pagesize = 0;
   if (0 == pagesize) {
     SYSTEM_INFO system_info;
-    memset(&system_info, 0, sizeof(system_info));
-    ::GetSystemInfo(&system_info);
+    memset (&system_info, 0, sizeof (system_info));
+    ::GetSystemInfo (&system_info);
     pagesize = system_info.dwPageSize;
     if (pagesize <= 0)
       pagesize = 4096;
@@ -176,7 +176,7 @@ MemPoolBlkSize (std::size_t leaf_count)
 
   // Set "sz" to an multiple of pagesize that is big enough
   // to hold node_count nodes.
-  const std::size_t sizeof_node = sizeof(ON_RTreeNode);
+  const std::size_t sizeof_node = sizeof (ON_RTreeNode);
   std::size_t sz = pagesize;
   std::size_t nodes_per_blk =
       (node_count < 32) ? node_count : (sz - sizeof_blklink) / sizeof_node;
@@ -190,7 +190,7 @@ MemPoolBlkSize (std::size_t leaf_count)
   // for up to two pointers of "lame" system overhead per allocation.  The goal
   // is to prevent the "real" allocation from being just a hair bigger that a
   // multiple of pagesize.
-  if (sz < sizeof_blklink + nodes_per_blk * sizeof_node + 2 * sizeof(void*))
+  if (sz < sizeof_blklink + nodes_per_blk * sizeof_node + 2 * sizeof (void*))
     nodes_per_blk--; // prevent memory manager overhead from allocating another page
 
   // Return the minimum number of bytes we need for each block. An decent
@@ -198,17 +198,17 @@ MemPoolBlkSize (std::size_t leaf_count)
   return (sizeof_blklink + nodes_per_blk * sizeof_node);
 }
 
-ON_RTreeMemPool::ON_RTreeMemPool(ON_MEMORY_POOL* heap, std::size_t leaf_count)
-: m_nodes(0)
-, m_list_nodes(0)
-, m_buffer(0)
-, m_buffer_capacity(0)
-, m_blk_list(0)
-, m_sizeof_blk(0)
-, m_heap(heap)
-, m_sizeof_heap(0)
+ON_RTreeMemPool::ON_RTreeMemPool (ON_MEMORY_POOL* heap, std::size_t leaf_count)
+: m_nodes (0)
+, m_list_nodes (0)
+, m_buffer (0)
+, m_buffer_capacity (0)
+, m_blk_list (0)
+, m_sizeof_blk (0)
+, m_heap (heap)
+, m_sizeof_heap (0)
 {
-  m_sizeof_blk = MemPoolBlkSize(leaf_count);
+  m_sizeof_blk = MemPoolBlkSize (leaf_count);
 }
 
 ON_RTreeMemPool::~ON_RTreeMemPool() { DeallocateAll(); }
@@ -225,10 +225,10 @@ ON_RTreeMemPool::GrowBuffer()
     // if the caller passed in a leaf_count estimate.  For the second
     // (0 != m_blk_list && 0 == m_blk_list->m_next) and subsequent calls
     // to GrowBuffer(), we use the default block size.
-    m_sizeof_blk = MemPoolBlkSize(0);
+    m_sizeof_blk = MemPoolBlkSize (0);
   }
 
-  struct Blk* blk = (struct Blk*)onmalloc_from_pool(m_heap, m_sizeof_blk);
+  struct Blk* blk = (struct Blk*)onmalloc_from_pool (m_heap, m_sizeof_blk);
   if (blk) {
     m_sizeof_heap += m_sizeof_blk;
     blk->m_next = m_blk_list;
@@ -240,7 +240,7 @@ ON_RTreeMemPool::GrowBuffer()
   else {
     m_buffer = 0;
     m_buffer_capacity = 0;
-    ON_ERROR("ON_RTreeMemPool::GrowBuffer - out of memory");
+    ON_ERROR ("ON_RTreeMemPool::GrowBuffer - out of memory");
   }
 }
 
@@ -252,12 +252,12 @@ ON_RTreeMemPool::AllocNode()
     m_nodes = m_nodes->m_next;
   }
   else {
-    const std::size_t node_sz = sizeof(*node);
+    const std::size_t node_sz = sizeof (*node);
     if (m_buffer_capacity < node_sz)
       GrowBuffer();
 
     if (0 == (node = (ON_RTreeNode*)m_buffer)) {
-      ON_ERROR("ON_RTreeMemPool::AllocNode() - out of memory");
+      ON_ERROR ("ON_RTreeMemPool::AllocNode() - out of memory");
       return 0;
     }
 
@@ -273,7 +273,7 @@ ON_RTreeMemPool::AllocNode()
 }
 
 void
-ON_RTreeMemPool::FreeNode(ON_RTreeNode* node)
+ON_RTreeMemPool::FreeNode (ON_RTreeNode* node)
 {
   if (node) {
     struct Blk* blk = (struct Blk*)node;
@@ -290,7 +290,7 @@ ON_RTreeMemPool::AllocListNode()
     m_list_nodes = m_list_nodes->m_next;
   }
   else {
-    std::size_t list_node_sz = sizeof(*list_node);
+    std::size_t list_node_sz = sizeof (*list_node);
     if (m_buffer_capacity < list_node_sz) {
       GrowBuffer();
     }
@@ -304,7 +304,7 @@ ON_RTreeMemPool::AllocListNode()
 }
 
 void
-ON_RTreeMemPool::FreeListNode(struct ON_RTreeListNode* list_node)
+ON_RTreeMemPool::FreeListNode (struct ON_RTreeListNode* list_node)
 {
   if (list_node) {
     struct Blk* blk = (struct Blk*)list_node;
@@ -325,10 +325,10 @@ ON_RTreeMemPool::SizeOfUnusedBuffer() const
   const struct Blk* blk;
   std::size_t sz = m_buffer_capacity;
   for (blk = m_nodes; blk; blk = blk->m_next) {
-    sz += sizeof(struct ON_RTreeNode);
+    sz += sizeof (struct ON_RTreeNode);
   }
   for (blk = m_list_nodes; blk; blk = blk->m_next) {
-    sz += sizeof(struct ON_RTreeListNode);
+    sz += sizeof (struct ON_RTreeListNode);
   }
   return sz;
 }
@@ -348,7 +348,7 @@ ON_RTreeMemPool::DeallocateAll()
 
   while (p) {
     struct Blk* next = p->m_next;
-    onfree(p);
+    onfree (p);
     p = next;
   }
 }
@@ -358,9 +358,9 @@ ON_RTreeMemPool::DeallocateAll()
 // ON_RTreeIterator
 //
 
-ON_RTreeIterator::ON_RTreeIterator() { Initialize(0); }
+ON_RTreeIterator::ON_RTreeIterator() { Initialize (0); }
 
-ON_RTreeIterator::ON_RTreeIterator(const class ON_RTree& rtree) { Initialize(rtree); }
+ON_RTreeIterator::ON_RTreeIterator (const class ON_RTree& rtree) { Initialize (rtree); }
 
 ON_RTreeIterator::~ON_RTreeIterator() {}
 
@@ -371,13 +371,13 @@ ON_RTreeIterator::Value() const
 }
 
 bool
-ON_RTreeIterator::Initialize(const ON_RTree& a_rtree)
+ON_RTreeIterator::Initialize (const ON_RTree& a_rtree)
 {
-  return Initialize(a_rtree.Root());
+  return Initialize (a_rtree.Root());
 }
 
 bool
-ON_RTreeIterator::Initialize(const ON_RTreeNode* a_node)
+ON_RTreeIterator::Initialize (const ON_RTreeNode* a_node)
 {
   m_sp = 0;
   m_root = (0 != a_node && a_node->m_count > 0) ? a_node : 0;
@@ -385,7 +385,7 @@ ON_RTreeIterator::Initialize(const ON_RTreeNode* a_node)
 }
 
 bool
-ON_RTreeIterator::PushChildren(StackElement* sp, bool bFirstChild)
+ON_RTreeIterator::PushChildren (StackElement* sp, bool bFirstChild)
 {
   StackElement* spmax = &m_stack[0] + MAX_STACK;
   const ON_RTreeNode* node = sp->m_node;
@@ -402,7 +402,7 @@ ON_RTreeIterator::PushChildren(StackElement* sp, bool bFirstChild)
       // a bug in the code that creates the R-tree and this R-tree
       // is horribly unbalanced. If the case is valid, then we must
       // increase MAX_STACK and ship a service release.
-      ON_ERROR("ON_RTreeIterator::PushFirstChild - stack overflow");
+      ON_ERROR ("ON_RTreeIterator::PushFirstChild - stack overflow");
       return false;
     }
     sp->m_node = node;
@@ -419,7 +419,7 @@ ON_RTreeIterator::First()
     return false;
   m_stack[0].m_node = m_root;
   m_stack[0].m_branchIndex = 0;
-  return PushChildren(&m_stack[0], true);
+  return PushChildren (&m_stack[0], true);
 }
 
 bool
@@ -430,7 +430,7 @@ ON_RTreeIterator::Last()
     return false;
   m_stack[0].m_node = m_root;
   m_stack[0].m_branchIndex = m_root->m_count - 1;
-  return PushChildren(&m_stack[0], false);
+  return PushChildren (&m_stack[0], false);
 }
 
 bool
@@ -456,7 +456,7 @@ ON_RTreeIterator::Next()
     // Since we've popped the stack, we cannot be at the leaf level.
     // PushFirst() pushes the first child onto the stack until
     // it reaches the leaf level.
-    return PushChildren(sp, true);
+    return PushChildren (sp, true);
   }
   return false; // we were at the last element and now there are no more.
 }
@@ -484,7 +484,7 @@ ON_RTreeIterator::Prev()
     // Since we've popped the stack, we cannot be at the leaf level.
     // PushFirst() pushes the first child onto the stack until
     // it reaches the leaf level.
-    return PushChildren(sp, false);
+    return PushChildren (sp, false);
   }
   return false; // we were at the last element and now there are no more.
 }
@@ -494,14 +494,14 @@ ON_RTreeIterator::Prev()
 // ON_RTree
 //
 
-ON_RTree::ON_RTree(ON_MEMORY_POOL* heap, std::size_t leaf_count)
-: m_root(0), m_reserved(0), m_mem_pool(heap, leaf_count)
+ON_RTree::ON_RTree (ON_MEMORY_POOL* heap, std::size_t leaf_count)
+: m_root (0), m_reserved (0), m_mem_pool (heap, leaf_count)
 {}
 
 ON_RTree::~ON_RTree() { RemoveAll(); }
 
 bool
-ON_RTree::CreateMeshFaceTree(const ON_Mesh* mesh)
+ON_RTree::CreateMeshFaceTree (const ON_Mesh* mesh)
 {
   double fmin[3], fmax[3];
   ON_3dPoint V;
@@ -635,7 +635,7 @@ ON_RTree::CreateMeshFaceTree(const ON_Mesh* mesh)
             fmax[2] = V.z;
         }
 
-        if (!Insert(fmin, fmax, fi)) {
+        if (!Insert (fmin, fmax, fi)) {
           RemoveAll();
           return false;
         }
@@ -694,7 +694,7 @@ ON_RTree::CreateMeshFaceTree(const ON_Mesh* mesh)
             fmax[2] = V.z;
         }
 
-        if (!Insert(fmin, fmax, fi)) {
+        if (!Insert (fmin, fmax, fi)) {
           RemoveAll();
           return false;
         }
@@ -754,7 +754,7 @@ ON_RTree::CreateMeshFaceTree(const ON_Mesh* mesh)
           fmax[2] = V.z;
       }
 
-      if (!Insert(fmin, fmax, fi)) {
+      if (!Insert (fmin, fmax, fi)) {
         RemoveAll();
         return false;
       }
@@ -769,56 +769,56 @@ ON_RTree::CreateMeshFaceTree(const ON_Mesh* mesh)
 }
 
 bool
-ON_RTree::Insert2d(const double a_min[2], const double a_max[2], int a_element_id)
+ON_RTree::Insert2d (const double a_min[2], const double a_max[2], int a_element_id)
 {
   const double min3d[3] = {a_min[0], a_min[1], 0.0};
   const double max3d[3] = {a_max[0], a_max[1], 0.0};
-  return Insert(min3d, max3d, a_element_id);
+  return Insert (min3d, max3d, a_element_id);
 }
 
 bool
-ON_RTree::Insert(const double a_min[ON_RTree_NODE_DIM],
-                 const double a_max[ON_RTree_NODE_DIM],
-                 int a_element_id)
+ON_RTree::Insert (const double a_min[ON_RTree_NODE_DIM],
+                  const double a_max[ON_RTree_NODE_DIM],
+                  int a_element_id)
 {
   bool rc;
   ON_RTreeBBox rect;
-  memcpy(rect.m_min, a_min, sizeof(rect.m_min));
-  memcpy(rect.m_max, a_max, sizeof(rect.m_max));
+  memcpy (rect.m_min, a_min, sizeof (rect.m_min));
+  memcpy (rect.m_max, a_max, sizeof (rect.m_max));
   if (rect.m_min[0] <= rect.m_max[0] && rect.m_min[1] <= rect.m_max[1] &&
       rect.m_min[2] <= rect.m_max[2]) {
     if (0 == m_root) {
       m_root = m_mem_pool.AllocNode();
       m_root->m_level = 0;
     }
-    InsertRect(&rect, a_element_id, &m_root, 0);
+    InsertRect (&rect, a_element_id, &m_root, 0);
     rc = true;
   }
   else {
     // invalid bounding box - don't let this corrupt the tree
     rc = false;
-    ON_ERROR("ON_RTree::Insert - invalid a_min[] or a_max[] input.");
+    ON_ERROR ("ON_RTree::Insert - invalid a_min[] or a_max[] input.");
   }
   return rc;
 }
 
 bool
-ON_RTree::Insert2d(const double a_min[2], const double a_max[2], void* a_element_id)
+ON_RTree::Insert2d (const double a_min[2], const double a_max[2], void* a_element_id)
 {
   const double min3d[3] = {a_min[0], a_min[1], 0.0};
   const double max3d[3] = {a_max[0], a_max[1], 0.0};
-  return Insert(min3d, max3d, a_element_id);
+  return Insert (min3d, max3d, a_element_id);
 }
 
 bool
-ON_RTree::Insert(const double a_min[ON_RTree_NODE_DIM],
-                 const double a_max[ON_RTree_NODE_DIM],
-                 void* a_element_id)
+ON_RTree::Insert (const double a_min[ON_RTree_NODE_DIM],
+                  const double a_max[ON_RTree_NODE_DIM],
+                  void* a_element_id)
 {
   bool rc;
   ON_RTreeBBox rect;
-  memcpy(rect.m_min, a_min, sizeof(rect.m_min));
-  memcpy(rect.m_max, a_max, sizeof(rect.m_max));
+  memcpy (rect.m_min, a_min, sizeof (rect.m_min));
+  memcpy (rect.m_max, a_max, sizeof (rect.m_max));
   if (rect.m_min[0] <= rect.m_max[0] && rect.m_min[1] <= rect.m_max[1] &&
       rect.m_min[2] <= rect.m_max[2]) {
     if (0 == m_root) {
@@ -833,7 +833,7 @@ ON_RTree::Insert(const double a_min[ON_RTree_NODE_DIM],
 // 'ON__INT_PTR'
 #pragma warning(disable : 4311)
 #endif
-    InsertRect(&rect, (ON__INT_PTR)a_element_id, &m_root, 0);
+    InsertRect (&rect, (ON__INT_PTR)a_element_id, &m_root, 0);
 #if defined(ON_COMPILER_MSC) && 4 == ON_SIZEOF_POINTER
 #pragma warning(pop)
 #endif
@@ -843,60 +843,60 @@ ON_RTree::Insert(const double a_min[ON_RTree_NODE_DIM],
   else {
     // invalid bounding box - don't let this corrupt the tree
     rc = false;
-    ON_ERROR("ON_RTree::Insert - invalid a_min[] or a_max[] input.");
+    ON_ERROR ("ON_RTree::Insert - invalid a_min[] or a_max[] input.");
   }
   return rc;
 }
 
 bool
-ON_RTree::Remove2d(const double a_min[2], const double a_max[2], int a_dataId)
+ON_RTree::Remove2d (const double a_min[2], const double a_max[2], int a_dataId)
 {
   const double min3d[3] = {a_min[0], a_min[1], 0.0};
   const double max3d[3] = {a_max[0], a_max[1], 0.0};
-  return Remove(min3d, max3d, a_dataId);
+  return Remove (min3d, max3d, a_dataId);
 }
 
 bool
-ON_RTree::Remove(const double a_min[ON_RTree_NODE_DIM],
-                 const double a_max[ON_RTree_NODE_DIM],
-                 int a_dataId)
+ON_RTree::Remove (const double a_min[ON_RTree_NODE_DIM],
+                  const double a_max[ON_RTree_NODE_DIM],
+                  int a_dataId)
 {
   bool rc = false;
   if (0 != m_root) {
     ON_RTreeBBox rect;
-    memcpy(rect.m_min, a_min, sizeof(rect.m_min));
-    memcpy(rect.m_max, a_max, sizeof(rect.m_max));
+    memcpy (rect.m_min, a_min, sizeof (rect.m_min));
+    memcpy (rect.m_max, a_max, sizeof (rect.m_max));
     if (rect.m_min[0] <= rect.m_max[0] && rect.m_min[1] <= rect.m_max[1] &&
         rect.m_min[2] <= rect.m_max[2]) {
       // RemoveRect() returns 0 on success
-      rc = (0 == RemoveRect(&rect, a_dataId, &m_root));
+      rc = (0 == RemoveRect (&rect, a_dataId, &m_root));
     }
     else {
       // invalid bounding box - don't let this corrupt the tree
-      ON_ERROR("ON_RTree::Remove - invalid a_min[] or a_max[] input.");
+      ON_ERROR ("ON_RTree::Remove - invalid a_min[] or a_max[] input.");
     }
   }
   return rc;
 }
 
 bool
-ON_RTree::Remove2d(const double a_min[2], const double a_max[2], void* a_dataId)
+ON_RTree::Remove2d (const double a_min[2], const double a_max[2], void* a_dataId)
 {
   const double min3d[3] = {a_min[0], a_min[1], 0.0};
   const double max3d[3] = {a_max[0], a_max[1], 0.0};
-  return Remove(min3d, max3d, a_dataId);
+  return Remove (min3d, max3d, a_dataId);
 }
 
 bool
-ON_RTree::Remove(const double a_min[ON_RTree_NODE_DIM],
-                 const double a_max[ON_RTree_NODE_DIM],
-                 void* a_dataId)
+ON_RTree::Remove (const double a_min[ON_RTree_NODE_DIM],
+                  const double a_max[ON_RTree_NODE_DIM],
+                  void* a_dataId)
 {
   bool rc = false;
   if (0 != m_root) {
     ON_RTreeBBox rect;
-    memcpy(rect.m_min, a_min, sizeof(rect.m_min));
-    memcpy(rect.m_max, a_max, sizeof(rect.m_max));
+    memcpy (rect.m_min, a_min, sizeof (rect.m_min));
+    memcpy (rect.m_max, a_max, sizeof (rect.m_max));
     if (rect.m_min[0] <= rect.m_max[0] && rect.m_min[1] <= rect.m_max[1] &&
         rect.m_min[2] <= rect.m_max[2]) {
       // RemoveRect() returns 0 on success
@@ -907,62 +907,62 @@ ON_RTree::Remove(const double a_min[ON_RTree_NODE_DIM],
 // 'ON__INT_PTR'
 #pragma warning(disable : 4311)
 #endif
-      rc = (0 == RemoveRect(&rect, (ON__INT_PTR)a_dataId, &m_root));
+      rc = (0 == RemoveRect (&rect, (ON__INT_PTR)a_dataId, &m_root));
 #if defined(ON_COMPILER_MSC) && 4 == ON_SIZEOF_POINTER
 #pragma warning(pop)
 #endif
     }
     else {
       // invalid bounding box - don't let this corrupt the tree
-      ON_ERROR("ON_RTree::Remove - invalid a_min[] or a_max[] input.");
+      ON_ERROR ("ON_RTree::Remove - invalid a_min[] or a_max[] input.");
     }
   }
   return rc;
 }
 
 bool
-ON_RTree::Search2d(const double a_min[2],
-                   const double a_max[2],
-                   bool ON_MSC_CDECL a_resultCallback(void* a_context,
-                                                      ON__INT_PTR a_data),
-                   void* a_context) const
+ON_RTree::Search2d (const double a_min[2],
+                    const double a_max[2],
+                    bool ON_MSC_CDECL a_resultCallback (void* a_context,
+                                                        ON__INT_PTR a_data),
+                    void* a_context) const
 {
   if (0 == m_root)
     return false;
 
   ON_RTreeBBox rect;
-  memcpy(rect.m_min, a_min, 2 * sizeof(a_min[0]));
+  memcpy (rect.m_min, a_min, 2 * sizeof (a_min[0]));
   rect.m_min[2] = 0.0;
-  memcpy(rect.m_max, a_max, 2 * sizeof(a_max[0]));
+  memcpy (rect.m_max, a_max, 2 * sizeof (a_max[0]));
   rect.m_max[2] = 0.0;
 
   ON_RTreeSearchResultCallback result;
   result.m_context = a_context;
   result.m_resultCallback = a_resultCallback;
-  return SearchHelper(m_root, &rect, result);
+  return SearchHelper (m_root, &rect, result);
 }
 
 bool
-ON_RTree::Search(const double a_min[ON_RTree_NODE_DIM],
-                 const double a_max[ON_RTree_NODE_DIM],
-                 bool ON_MSC_CDECL a_resultCallback(void* a_context,
-                                                    ON__INT_PTR a_data),
-                 void* a_context) const
+ON_RTree::Search (const double a_min[ON_RTree_NODE_DIM],
+                  const double a_max[ON_RTree_NODE_DIM],
+                  bool ON_MSC_CDECL a_resultCallback (void* a_context,
+                                                      ON__INT_PTR a_data),
+                  void* a_context) const
 {
   if (0 == m_root)
     return false;
 
   ON_RTreeBBox rect;
-  memcpy(rect.m_min, a_min, sizeof(rect.m_min));
-  memcpy(rect.m_max, a_max, sizeof(rect.m_max));
-  return Search(&rect, a_resultCallback, a_context);
+  memcpy (rect.m_min, a_min, sizeof (rect.m_min));
+  memcpy (rect.m_max, a_max, sizeof (rect.m_max));
+  return Search (&rect, a_resultCallback, a_context);
 }
 
 bool
-ON_RTree::Search(ON_RTreeBBox* a_rect,
-                 bool ON_MSC_CDECL a_resultCallback(void* a_context,
-                                                    ON__INT_PTR a_data),
-                 void* a_context) const
+ON_RTree::Search (ON_RTreeBBox* a_rect,
+                  bool ON_MSC_CDECL a_resultCallback (void* a_context,
+                                                      ON__INT_PTR a_data),
+                  void* a_context) const
 {
   if (0 == m_root || 0 == a_rect)
     return false;
@@ -970,13 +970,14 @@ ON_RTree::Search(ON_RTreeBBox* a_rect,
   ON_RTreeSearchResultCallback result;
   result.m_context = a_context;
   result.m_resultCallback = a_resultCallback;
-  return SearchHelper(m_root, a_rect, result);
+  return SearchHelper (m_root, a_rect, result);
 }
 
 bool
-ON_RTree::Search(struct ON_RTreeSphere* a_sphere,
-                 bool ON_MSC_CDECL a_resultCallback(void* a_context, ON__INT_PTR a_id),
-                 void* a_context) const
+ON_RTree::Search (struct ON_RTreeSphere* a_sphere,
+                  bool ON_MSC_CDECL a_resultCallback (void* a_context,
+                                                      ON__INT_PTR a_id),
+                  void* a_context) const
 {
   if (0 == m_root || 0 == a_sphere)
     return false;
@@ -985,13 +986,14 @@ ON_RTree::Search(struct ON_RTreeSphere* a_sphere,
   result.m_context = a_context;
   result.m_resultCallback = a_resultCallback;
 
-  return SearchHelper(m_root, a_sphere, result);
+  return SearchHelper (m_root, a_sphere, result);
 }
 
 bool
-ON_RTree::Search(struct ON_RTreeCapsule* a_capsule,
-                 bool ON_MSC_CDECL a_resultCallback(void* a_context, ON__INT_PTR a_id),
-                 void* a_context) const
+ON_RTree::Search (struct ON_RTreeCapsule* a_capsule,
+                  bool ON_MSC_CDECL a_resultCallback (void* a_context,
+                                                      ON__INT_PTR a_id),
+                  void* a_context) const
 {
 
   if (0 == m_root || 0 == a_capsule)
@@ -1001,135 +1003,135 @@ ON_RTree::Search(struct ON_RTreeCapsule* a_capsule,
   result.m_context = a_context;
   result.m_resultCallback = a_resultCallback;
 
-  return SearchHelper(m_root, a_capsule, result);
+  return SearchHelper (m_root, a_capsule, result);
 }
 
 bool
-ON_RTree::Search2d(const double a_min[2],
-                   const double a_max[2],
-                   ON_SimpleArray<ON_RTreeLeaf>& a_result) const
+ON_RTree::Search2d (const double a_min[2],
+                    const double a_max[2],
+                    ON_SimpleArray<ON_RTreeLeaf>& a_result) const
 {
   if (0 == m_root)
     return false;
 
   ON_RTreeBBox rect;
-  memcpy(rect.m_min, a_min, 2 * sizeof(a_min[0]));
+  memcpy (rect.m_min, a_min, 2 * sizeof (a_min[0]));
   rect.m_min[2] = 0.0;
-  memcpy(rect.m_max, a_max, 2 * sizeof(a_max[0]));
+  memcpy (rect.m_max, a_max, 2 * sizeof (a_max[0]));
   rect.m_max[2] = 0.0;
 
-  return SearchHelper(m_root, &rect, a_result);
+  return SearchHelper (m_root, &rect, a_result);
 }
 
 bool
-ON_RTree::Search(const double a_min[ON_RTree_NODE_DIM],
-                 const double a_max[ON_RTree_NODE_DIM],
-                 ON_SimpleArray<ON_RTreeLeaf>& a_result) const
+ON_RTree::Search (const double a_min[ON_RTree_NODE_DIM],
+                  const double a_max[ON_RTree_NODE_DIM],
+                  ON_SimpleArray<ON_RTreeLeaf>& a_result) const
 {
   if (0 == m_root)
     return false;
 
   ON_RTreeBBox rect;
-  memcpy(rect.m_min, a_min, sizeof(rect.m_min));
-  memcpy(rect.m_max, a_max, sizeof(rect.m_max));
+  memcpy (rect.m_min, a_min, sizeof (rect.m_min));
+  memcpy (rect.m_max, a_max, sizeof (rect.m_max));
 
-  return SearchHelper(m_root, &rect, a_result);
+  return SearchHelper (m_root, &rect, a_result);
 }
 
 bool
-ON_RTree::Search2d(const double a_min[2],
-                   const double a_max[2],
-                   ON_SimpleArray<void*>& a_result) const
+ON_RTree::Search2d (const double a_min[2],
+                    const double a_max[2],
+                    ON_SimpleArray<void*>& a_result) const
 {
   if (0 == m_root)
     return false;
 
   ON_RTreeBBox rect;
-  memcpy(rect.m_min, a_min, 2 * sizeof(a_min[0]));
+  memcpy (rect.m_min, a_min, 2 * sizeof (a_min[0]));
   rect.m_min[2] = 0.0;
-  memcpy(rect.m_max, a_max, 2 * sizeof(a_max[0]));
+  memcpy (rect.m_max, a_max, 2 * sizeof (a_max[0]));
   rect.m_max[2] = 0.0;
 
-  return SearchHelper(m_root, &rect, a_result);
+  return SearchHelper (m_root, &rect, a_result);
 }
 
 bool
-ON_RTree::Search(const double a_min[ON_RTree_NODE_DIM],
-                 const double a_max[ON_RTree_NODE_DIM],
-                 ON_SimpleArray<void*>& a_result) const
+ON_RTree::Search (const double a_min[ON_RTree_NODE_DIM],
+                  const double a_max[ON_RTree_NODE_DIM],
+                  ON_SimpleArray<void*>& a_result) const
 {
   if (0 == m_root)
     return false;
 
   ON_RTreeBBox rect;
-  memcpy(rect.m_min, a_min, sizeof(rect.m_min));
-  memcpy(rect.m_max, a_max, sizeof(rect.m_max));
+  memcpy (rect.m_min, a_min, sizeof (rect.m_min));
+  memcpy (rect.m_max, a_max, sizeof (rect.m_max));
 
-  return SearchHelper(m_root, &rect, a_result);
+  return SearchHelper (m_root, &rect, a_result);
 }
 
 bool
-ON_RTree::Search2d(const double a_min[2],
-                   const double a_max[2],
-                   ON_SimpleArray<int>& a_result) const
+ON_RTree::Search2d (const double a_min[2],
+                    const double a_max[2],
+                    ON_SimpleArray<int>& a_result) const
 {
   if (0 == m_root)
     return false;
 
   ON_RTreeBBox rect;
-  memcpy(rect.m_min, a_min, 2 * sizeof(a_min[0]));
+  memcpy (rect.m_min, a_min, 2 * sizeof (a_min[0]));
   rect.m_min[2] = 0.0;
-  memcpy(rect.m_max, a_max, 2 * sizeof(a_max[0]));
+  memcpy (rect.m_max, a_max, 2 * sizeof (a_max[0]));
   rect.m_max[2] = 0.0;
 
-  return SearchHelper(m_root, &rect, a_result);
+  return SearchHelper (m_root, &rect, a_result);
 }
 
 bool
-ON_RTree::Search(const double a_min[ON_RTree_NODE_DIM],
-                 const double a_max[ON_RTree_NODE_DIM],
-                 ON_SimpleArray<int>& a_result) const
+ON_RTree::Search (const double a_min[ON_RTree_NODE_DIM],
+                  const double a_max[ON_RTree_NODE_DIM],
+                  ON_SimpleArray<int>& a_result) const
 {
   if (0 == m_root)
     return false;
 
   ON_RTreeBBox rect;
-  memcpy(rect.m_min, a_min, sizeof(rect.m_min));
-  memcpy(rect.m_max, a_max, sizeof(rect.m_max));
+  memcpy (rect.m_min, a_min, sizeof (rect.m_min));
+  memcpy (rect.m_max, a_max, sizeof (rect.m_max));
 
-  return SearchHelper(m_root, &rect, a_result);
+  return SearchHelper (m_root, &rect, a_result);
 }
 
 bool
-ON_RTree::Search2d(const double a_min[2],
-                   const double a_max[2],
-                   ON_RTreeSearchResult& a_result) const
+ON_RTree::Search2d (const double a_min[2],
+                    const double a_max[2],
+                    ON_RTreeSearchResult& a_result) const
 {
   if (0 == m_root)
     return false;
 
   ON_RTreeBBox rect;
-  memcpy(rect.m_min, a_min, 2 * sizeof(a_min[0]));
+  memcpy (rect.m_min, a_min, 2 * sizeof (a_min[0]));
   rect.m_min[2] = 0.0;
-  memcpy(rect.m_max, a_max, 2 * sizeof(a_max[0]));
+  memcpy (rect.m_max, a_max, 2 * sizeof (a_max[0]));
   rect.m_max[2] = 0.0;
 
-  return SearchHelper(m_root, &rect, a_result);
+  return SearchHelper (m_root, &rect, a_result);
 }
 
 bool
-ON_RTree::Search(const double a_min[ON_RTree_NODE_DIM],
-                 const double a_max[ON_RTree_NODE_DIM],
-                 ON_RTreeSearchResult& a_result) const
+ON_RTree::Search (const double a_min[ON_RTree_NODE_DIM],
+                  const double a_max[ON_RTree_NODE_DIM],
+                  ON_RTreeSearchResult& a_result) const
 {
   if (0 == m_root)
     return false;
 
   ON_RTreeBBox rect;
-  memcpy(rect.m_min, a_min, sizeof(rect.m_min));
-  memcpy(rect.m_max, a_max, sizeof(rect.m_max));
+  memcpy (rect.m_min, a_min, sizeof (rect.m_min));
+  memcpy (rect.m_max, a_max, sizeof (rect.m_max));
 
-  return SearchHelper(m_root, &rect, a_result);
+  return SearchHelper (m_root, &rect, a_result);
 }
 
 struct ON_RTreePairSearchResult {
@@ -1194,10 +1196,10 @@ PairSearchHelper (const ON_RTreeBranch* a_branchA,
   branchB = a_nodeB->m_branch;
   branchBmax = branchB + a_nodeB->m_count;
   while (branchB < branchBmax) {
-    if (PairSearchOverlapHelper(
+    if (PairSearchOverlapHelper (
             &a_branchA->m_rect, &branchB->m_rect, a_result->m_tolerance)) {
       if (a_nodeB->m_level > 0) {
-        PairSearchHelper(a_branchA, branchB->m_child, a_result);
+        PairSearchHelper (a_branchA, branchB->m_child, a_result);
       }
       else {
         ON_2dex& r = a_result->m_result->AppendNew();
@@ -1220,10 +1222,10 @@ PairSearchHelper (const ON_RTreeNode* a_nodeA,
   branchA = a_nodeA->m_branch;
   branchAmax = branchA + a_nodeA->m_count;
   while (branchA < branchAmax) {
-    if (PairSearchOverlapHelper(
+    if (PairSearchOverlapHelper (
             &branchA->m_rect, &a_branchB->m_rect, a_result->m_tolerance)) {
       if (a_nodeA->m_level > 0) {
-        PairSearchHelper(branchA->m_child, a_branchB, a_result);
+        PairSearchHelper (branchA->m_child, a_branchB, a_result);
       }
       else {
         ON_2dex& r = a_result->m_result->AppendNew();
@@ -1248,16 +1250,16 @@ PairSearchHelper (const ON_RTreeNode* a_nodeA,
   branchBmax = a_nodeB->m_branch + a_nodeB->m_count;
   while (branchA < branchAmax) {
     for (branchB = a_nodeB->m_branch; branchB < branchBmax; branchB++) {
-      if (PairSearchOverlapHelper(
+      if (PairSearchOverlapHelper (
               &branchA->m_rect, &branchB->m_rect, a_result->m_tolerance)) {
         if (a_nodeA->m_level > 0) {
           if (a_nodeB->m_level > 0)
-            PairSearchHelper(branchA->m_child, branchB->m_child, a_result);
+            PairSearchHelper (branchA->m_child, branchB->m_child, a_result);
           else
-            PairSearchHelper(branchA->m_child, branchB, a_result);
+            PairSearchHelper (branchA->m_child, branchB, a_result);
         }
         else if (a_nodeB->m_level > 0) {
-          PairSearchHelper(branchA, branchB->m_child, a_result);
+          PairSearchHelper (branchA, branchB->m_child, a_result);
         }
         else {
           ON_2dex& r = a_result->m_result->AppendNew();
@@ -1271,23 +1273,23 @@ PairSearchHelper (const ON_RTreeNode* a_nodeA,
 }
 
 bool
-ON_RTree::Search(const ON_RTree& a_rtreeA,
-                 const ON_RTree& a_rtreeB,
-                 double tolerance,
-                 ON_SimpleArray<ON_2dex>& a_result)
+ON_RTree::Search (const ON_RTree& a_rtreeA,
+                  const ON_RTree& a_rtreeB,
+                  double tolerance,
+                  ON_SimpleArray<ON_2dex>& a_result)
 {
   if (0 == a_rtreeA.m_root)
     return false;
   if (0 == a_rtreeB.m_root)
     return false;
   ON_RTreePairSearchResult r;
-  r.m_tolerance = (ON_IsValid(tolerance) && tolerance > 0.0) ? tolerance : 0.0;
+  r.m_tolerance = (ON_IsValid (tolerance) && tolerance > 0.0) ? tolerance : 0.0;
   r.m_result = &a_result;
-  PairSearchHelper(a_rtreeA.m_root, a_rtreeB.m_root, &r);
+  PairSearchHelper (a_rtreeA.m_root, a_rtreeB.m_root, &r);
   return true;
 }
 
-using ON_RTreePairSearchCallback = void (*)(void*, ON__INT_PTR, ON__INT_PTR);
+using ON_RTreePairSearchCallback = void (*) (void*, ON__INT_PTR, ON__INT_PTR);
 
 struct ON_RTreePairSearchCallbackResult {
   double m_tolerance;
@@ -1295,7 +1297,7 @@ struct ON_RTreePairSearchCallbackResult {
   ON_RTreePairSearchCallback m_resultCallback;
 };
 
-using ON_RTreePairSearchCallbackBool = bool (*)(void*, ON__INT_PTR, ON__INT_PTR);
+using ON_RTreePairSearchCallbackBool = bool (*) (void*, ON__INT_PTR, ON__INT_PTR);
 
 struct ON_RTreePairSearchCallbackResultBool {
   double m_tolerance;
@@ -1314,13 +1316,14 @@ PairSearchHelper (const ON_RTreeBranch* a_branchA,
   branchB = a_nodeB->m_branch;
   branchBmax = branchB + a_nodeB->m_count;
   while (branchB < branchBmax) {
-    if (PairSearchOverlapHelper(
+    if (PairSearchOverlapHelper (
             &a_branchA->m_rect, &branchB->m_rect, a_result->m_tolerance)) {
       if (a_nodeB->m_level > 0) {
-        PairSearchHelper(a_branchA, branchB->m_child, a_result);
+        PairSearchHelper (a_branchA, branchB->m_child, a_result);
       }
       else {
-        a_result->m_resultCallback(a_result->m_context, a_branchA->m_id, branchB->m_id);
+        a_result->m_resultCallback (
+            a_result->m_context, a_branchA->m_id, branchB->m_id);
       }
     }
     branchB++;
@@ -1338,14 +1341,14 @@ PairSearchHelperBool (const ON_RTreeBranch* a_branchA,
   branchB = a_nodeB->m_branch;
   branchBmax = branchB + a_nodeB->m_count;
   while (branchB < branchBmax) {
-    if (PairSearchOverlapHelper(
+    if (PairSearchOverlapHelper (
             &a_branchA->m_rect, &branchB->m_rect, a_result->m_tolerance)) {
       if (a_nodeB->m_level > 0) {
-        if (!PairSearchHelperBool(a_branchA, branchB->m_child, a_result))
+        if (!PairSearchHelperBool (a_branchA, branchB->m_child, a_result))
           return false;
       }
       else {
-        if (!a_result->m_resultCallbackBool(
+        if (!a_result->m_resultCallbackBool (
                 a_result->m_context, a_branchA->m_id, branchB->m_id))
           return false;
       }
@@ -1366,13 +1369,14 @@ PairSearchHelper (const ON_RTreeNode* a_nodeA,
   branchA = a_nodeA->m_branch;
   branchAmax = branchA + a_nodeA->m_count;
   while (branchA < branchAmax) {
-    if (PairSearchOverlapHelper(
+    if (PairSearchOverlapHelper (
             &branchA->m_rect, &a_branchB->m_rect, a_result->m_tolerance)) {
       if (a_nodeA->m_level > 0) {
-        PairSearchHelper(branchA->m_child, a_branchB, a_result);
+        PairSearchHelper (branchA->m_child, a_branchB, a_result);
       }
       else {
-        a_result->m_resultCallback(a_result->m_context, branchA->m_id, a_branchB->m_id);
+        a_result->m_resultCallback (
+            a_result->m_context, branchA->m_id, a_branchB->m_id);
       }
     }
     branchA++;
@@ -1390,14 +1394,14 @@ PairSearchHelperBool (const ON_RTreeNode* a_nodeA,
   branchA = a_nodeA->m_branch;
   branchAmax = branchA + a_nodeA->m_count;
   while (branchA < branchAmax) {
-    if (PairSearchOverlapHelper(
+    if (PairSearchOverlapHelper (
             &branchA->m_rect, &a_branchB->m_rect, a_result->m_tolerance)) {
       if (a_nodeA->m_level > 0) {
-        if (!PairSearchHelperBool(branchA->m_child, a_branchB, a_result))
+        if (!PairSearchHelperBool (branchA->m_child, a_branchB, a_result))
           return false;
       }
       else {
-        if (!a_result->m_resultCallbackBool(
+        if (!a_result->m_resultCallbackBool (
                 a_result->m_context, branchA->m_id, a_branchB->m_id))
           return false;
       }
@@ -1420,19 +1424,20 @@ PairSearchHelper (const ON_RTreeNode* a_nodeA,
   branchBmax = a_nodeB->m_branch + a_nodeB->m_count;
   while (branchA < branchAmax) {
     for (branchB = a_nodeB->m_branch; branchB < branchBmax; branchB++) {
-      if (PairSearchOverlapHelper(
+      if (PairSearchOverlapHelper (
               &branchA->m_rect, &branchB->m_rect, a_result->m_tolerance)) {
         if (a_nodeA->m_level > 0) {
           if (a_nodeB->m_level > 0)
-            PairSearchHelper(branchA->m_child, branchB->m_child, a_result);
+            PairSearchHelper (branchA->m_child, branchB->m_child, a_result);
           else
-            PairSearchHelper(branchA->m_child, branchB, a_result);
+            PairSearchHelper (branchA->m_child, branchB, a_result);
         }
         else if (a_nodeB->m_level > 0) {
-          PairSearchHelper(branchA, branchB->m_child, a_result);
+          PairSearchHelper (branchA, branchB->m_child, a_result);
         }
         else {
-          a_result->m_resultCallback(a_result->m_context, branchA->m_id, branchB->m_id);
+          a_result->m_resultCallback (
+              a_result->m_context, branchA->m_id, branchB->m_id);
         }
       }
     }
@@ -1453,24 +1458,24 @@ PairSearchHelperBool (const ON_RTreeNode* a_nodeA,
   branchBmax = a_nodeB->m_branch + a_nodeB->m_count;
   while (branchA < branchAmax) {
     for (branchB = a_nodeB->m_branch; branchB < branchBmax; branchB++) {
-      if (PairSearchOverlapHelper(
+      if (PairSearchOverlapHelper (
               &branchA->m_rect, &branchB->m_rect, a_result->m_tolerance)) {
         if (a_nodeA->m_level > 0) {
           if (a_nodeB->m_level > 0) {
-            if (!PairSearchHelperBool(branchA->m_child, branchB->m_child, a_result))
+            if (!PairSearchHelperBool (branchA->m_child, branchB->m_child, a_result))
               return false;
           }
           else {
-            if (!PairSearchHelperBool(branchA->m_child, branchB, a_result))
+            if (!PairSearchHelperBool (branchA->m_child, branchB, a_result))
               return false;
           }
         }
         else if (a_nodeB->m_level > 0) {
-          if (!PairSearchHelperBool(branchA, branchB->m_child, a_result))
+          if (!PairSearchHelperBool (branchA, branchB->m_child, a_result))
             return false;
         }
         else {
-          if (!a_result->m_resultCallbackBool(
+          if (!a_result->m_resultCallbackBool (
                   a_result->m_context, branchA->m_id, branchB->m_id))
             return false;
         }
@@ -1482,41 +1487,41 @@ PairSearchHelperBool (const ON_RTreeNode* a_nodeA,
 }
 
 bool
-ON_RTree::Search(const ON_RTree& a_rtreeA,
-                 const ON_RTree& a_rtreeB,
-                 double tolerance,
-                 void ON_MSC_CDECL resultCallback(void* a_context,
-                                                  ON__INT_PTR a_idA,
-                                                  ON__INT_PTR a_idB),
-                 void* a_context)
+ON_RTree::Search (const ON_RTree& a_rtreeA,
+                  const ON_RTree& a_rtreeB,
+                  double tolerance,
+                  void ON_MSC_CDECL resultCallback (void* a_context,
+                                                    ON__INT_PTR a_idA,
+                                                    ON__INT_PTR a_idB),
+                  void* a_context)
 {
   if (0 == a_rtreeA.m_root)
     return false;
   if (0 == a_rtreeB.m_root)
     return false;
   ON_RTreePairSearchCallbackResult r;
-  r.m_tolerance = (ON_IsValid(tolerance) && tolerance > 0.0) ? tolerance : 0.0;
+  r.m_tolerance = (ON_IsValid (tolerance) && tolerance > 0.0) ? tolerance : 0.0;
   r.m_context = a_context;
   r.m_resultCallback = resultCallback;
-  PairSearchHelper(a_rtreeA.m_root, a_rtreeB.m_root, &r);
+  PairSearchHelper (a_rtreeA.m_root, a_rtreeB.m_root, &r);
   return true;
 }
 
 bool
-ON_RTree::Search(const ON_RTree& a_rtreeA,
-                 const ON_RTree& a_rtreeB,
-                 double tolerance,
-                 bool ON_MSC_CDECL resultCallback(void* a_context,
-                                                  ON__INT_PTR a_idA,
-                                                  ON__INT_PTR a_idB),
-                 void* a_context)
+ON_RTree::Search (const ON_RTree& a_rtreeA,
+                  const ON_RTree& a_rtreeB,
+                  double tolerance,
+                  bool ON_MSC_CDECL resultCallback (void* a_context,
+                                                    ON__INT_PTR a_idA,
+                                                    ON__INT_PTR a_idB),
+                  void* a_context)
 {
   if (0 == a_rtreeA.m_root)
     return false;
   if (0 == a_rtreeB.m_root)
     return false;
   ON_RTreePairSearchCallbackResultBool r;
-  r.m_tolerance = (ON_IsValid(tolerance) && tolerance > 0.0) ? tolerance : 0.0;
+  r.m_tolerance = (ON_IsValid (tolerance) && tolerance > 0.0) ? tolerance : 0.0;
   r.m_context = a_context;
   r.m_resultCallbackBool = resultCallback;
 
@@ -1525,7 +1530,7 @@ ON_RTree::Search(const ON_RTree& a_rtreeA,
   // terminated the search. This way a programmer with the ability to reason can
   // distinguish between a terminiation and a failure to start because input is
   // missing.
-  PairSearchHelperBool(a_rtreeA.m_root, a_rtreeB.m_root, &r);
+  PairSearchHelperBool (a_rtreeA.m_root, a_rtreeB.m_root, &r);
 
   return true;
 }
@@ -1536,7 +1541,7 @@ ON_RTree::ElementCount()
   int count = 0;
 
   if (0 != m_root)
-    CountRec(m_root, count);
+    CountRec (m_root, count);
 
   return count;
 }
@@ -1579,7 +1584,7 @@ CountRec (ON_RTreeNode* a_node, int& a_count)
   if (a_node->IsInternalNode()) // not a leaf node
   {
     for (int index = 0; index < a_node->m_count; ++index) {
-      CountRec(a_node->m_branch[index].m_child, a_count);
+      CountRec (a_node->m_branch[index].m_child, a_count);
     }
   }
   else // A leaf node
@@ -1606,7 +1611,7 @@ NodeCountHelper (const ON_RTreeNode* node,
   wasted_branch_count += (ON_RTree_MAX_NODE_COUNT - node->m_count);
   if (node->m_level > 0) {
     for (int i = 0; i < node->m_count; i++) {
-      NodeCountHelper(
+      NodeCountHelper (
           node->m_branch[i].m_child, node_count, wasted_branch_count, leaf_count);
     }
   }
@@ -1622,15 +1627,15 @@ ON_RTree::RemoveAll()
 }
 
 void
-ON_RTree::RemoveAllRec(ON_RTreeNode* a_node)
+ON_RTree::RemoveAllRec (ON_RTreeNode* a_node)
 {
   if (a_node->IsInternalNode()) // This is an internal node in the tree
   {
     for (int index = 0; index < a_node->m_count; ++index) {
-      RemoveAllRec(a_node->m_branch[index].m_child);
+      RemoveAllRec (a_node->m_branch[index].m_child);
     }
   }
-  m_mem_pool.FreeNode(a_node);
+  m_mem_pool.FreeNode (a_node);
 }
 
 static void
@@ -1651,11 +1656,11 @@ InitRect (ON_RTreeBBox* a_rect)
 // level to insert; e.g. a data rectangle goes in at level = 0.
 
 bool
-ON_RTree::InsertRectRec(ON_RTreeBBox* a_rect,
-                        ON__INT_PTR a_id,
-                        ON_RTreeNode* a_node,
-                        ON_RTreeNode** a_newNode,
-                        int a_level)
+ON_RTree::InsertRectRec (ON_RTreeBBox* a_rect,
+                         ON__INT_PTR a_id,
+                         ON_RTreeNode* a_node,
+                         ON_RTreeNode** a_newNode,
+                         int a_level)
 {
   int index;
   ON_RTreeBranch branch;
@@ -1663,23 +1668,23 @@ ON_RTree::InsertRectRec(ON_RTreeBBox* a_rect,
 
   // Still above level for insertion, go down tree recursively
   if (a_node->m_level > a_level) {
-    index = PickBranch(a_rect, a_node);
+    index = PickBranch (a_rect, a_node);
     if (index < 0) {
       return false;
     }
-    if (!InsertRectRec(
+    if (!InsertRectRec (
             a_rect, a_id, a_node->m_branch[index].m_child, &otherNode, a_level)) {
       // Child was not split
       a_node->m_branch[index].m_rect =
-          CombineRectHelper(a_rect, &(a_node->m_branch[index].m_rect));
+          CombineRectHelper (a_rect, &(a_node->m_branch[index].m_rect));
       return false;
     }
     else // Child was split
     {
-      a_node->m_branch[index].m_rect = NodeCover(a_node->m_branch[index].m_child);
+      a_node->m_branch[index].m_rect = NodeCover (a_node->m_branch[index].m_child);
       branch.m_child = otherNode;
-      branch.m_rect = NodeCover(otherNode);
-      return AddBranch(&branch, a_node, a_newNode);
+      branch.m_rect = NodeCover (otherNode);
+      return AddBranch (&branch, a_node, a_newNode);
     }
   }
   else if (a_node->m_level ==
@@ -1700,11 +1705,11 @@ ON_RTree::InsertRectRec(ON_RTreeBBox* a_rect,
 #endif
 
     // Child field of leaves contains id of data record
-    return AddBranch(&branch, a_node, a_newNode);
+    return AddBranch (&branch, a_node, a_newNode);
   }
 
   // We should never get here
-  ON_ERROR("ON_RTree::InsertRectRec - bug in algorithm");
+  ON_ERROR ("ON_RTree::InsertRectRec - bug in algorithm");
   return false;
 }
 
@@ -1717,25 +1722,25 @@ ON_RTree::InsertRectRec(ON_RTreeBBox* a_rect,
 //
 
 bool
-ON_RTree::InsertRect(ON_RTreeBBox* a_rect,
-                     ON__INT_PTR a_id,
-                     ON_RTreeNode** a_root,
-                     int a_level)
+ON_RTree::InsertRect (ON_RTreeBBox* a_rect,
+                      ON__INT_PTR a_id,
+                      ON_RTreeNode** a_root,
+                      int a_level)
 {
   ON_RTreeNode* newRoot;
   ON_RTreeNode* newNode;
   ON_RTreeBranch branch;
 
-  if (InsertRectRec(a_rect, a_id, *a_root, &newNode, a_level)) // Root split
+  if (InsertRectRec (a_rect, a_id, *a_root, &newNode, a_level)) // Root split
   {
     newRoot = m_mem_pool.AllocNode(); // Grow tree taller and new root
     newRoot->m_level = (*a_root)->m_level + 1;
-    branch.m_rect = NodeCover(*a_root);
+    branch.m_rect = NodeCover (*a_root);
     branch.m_child = *a_root;
-    AddBranch(&branch, newRoot, NULL);
-    branch.m_rect = NodeCover(newNode);
+    AddBranch (&branch, newRoot, NULL);
+    branch.m_rect = NodeCover (newNode);
     branch.m_child = newNode;
-    AddBranch(&branch, newRoot, NULL);
+    AddBranch (&branch, newRoot, NULL);
     *a_root = newRoot;
     return true;
   }
@@ -1779,7 +1784,7 @@ NodeCover (ON_RTreeNode* a_node)
     }
   }
   else {
-    InitRect(&rect);
+    InitRect (&rect);
   }
 
   return rect;
@@ -1791,9 +1796,9 @@ NodeCover (ON_RTreeNode* a_node)
 // Old node updated, becomes one of two.
 
 bool
-ON_RTree::AddBranch(ON_RTreeBranch* a_branch,
-                    ON_RTreeNode* a_node,
-                    ON_RTreeNode** a_newNode)
+ON_RTree::AddBranch (ON_RTreeBranch* a_branch,
+                     ON_RTreeNode* a_node,
+                     ON_RTreeNode** a_newNode)
 {
   if (a_node->m_count < ON_RTree_MAX_NODE_COUNT) // Split won't be necessary
   {
@@ -1803,7 +1808,7 @@ ON_RTree::AddBranch(ON_RTreeBranch* a_branch,
     return false;
   }
   else {
-    SplitNode(a_node, a_branch, a_newNode);
+    SplitNode (a_node, a_branch, a_newNode);
     return true;
   }
 }
@@ -1842,9 +1847,9 @@ PickBranch (ON_RTreeBBox* a_rect, ON_RTreeNode* a_node)
 
   for (int index = 0; index < a_node->m_count; ++index) {
     ON_RTreeBBox* curRect = &a_node->m_branch[index].m_rect;
-    area = CalcRectVolumeHelper(curRect);
-    tempRect = CombineRectHelper(a_rect, curRect);
-    increase = CalcRectVolumeHelper(&tempRect) - area;
+    area = CalcRectVolumeHelper (curRect);
+    tempRect = CombineRectHelper (a_rect, curRect);
+    increase = CalcRectVolumeHelper (&tempRect) - area;
     if ((increase < bestIncr) || firstTime) {
       best = index;
       bestArea = area;
@@ -1898,9 +1903,9 @@ CombineRectHelper (const ON_RTreeBBox* a_rectA, const ON_RTreeBBox* a_rectB)
 // Tries more than one method for choosing a partition, uses best result.
 
 void
-ON_RTree::SplitNode(ON_RTreeNode* a_node,
-                    ON_RTreeBranch* a_branch,
-                    ON_RTreeNode** a_newNode)
+ON_RTree::SplitNode (ON_RTreeNode* a_node,
+                     ON_RTreeBranch* a_branch,
+                     ON_RTreeNode** a_newNode)
 {
   ON_RTreePartitionVars localVars;
   int level;
@@ -1908,15 +1913,15 @@ ON_RTree::SplitNode(ON_RTreeNode* a_node,
   // Load all the branches into a buffer, initialize a_node to be empty
   level = a_node->m_level; // save m_level (The InitNode() call in GetBranches will set
                            // it to -1)
-  GetBranches(a_node, a_branch, &localVars);
+  GetBranches (a_node, a_branch, &localVars);
 
   // Find partition
-  ChoosePartition(&localVars, ON_RTree_MIN_NODE_COUNT);
+  ChoosePartition (&localVars, ON_RTree_MIN_NODE_COUNT);
 
   // Put branches from buffer into 2 nodes according to chosen partition
   *a_newNode = m_mem_pool.AllocNode();
   (*a_newNode)->m_level = a_node->m_level = level; // restore m_level
-  LoadNodes(a_node, *a_newNode, &localVars);
+  LoadNodes (a_node, *a_newNode, &localVars);
 }
 
 double
@@ -1933,7 +1938,7 @@ CalcRectVolumeHelper (const ON_RTreeBBox* a_rect)
   r += d * d;
   d = (a_rect->m_max[2] - a_rect->m_min[2]);
   r += d * d;
-  r = sqrt(r * 0.5); // r = sqrt((dx^2 + dy^2 + dz^2)/2);
+  r = sqrt (r * 0.5); // r = sqrt((dx^2 + dy^2 + dz^2)/2);
   return (r * r * r * 4.1887902047863909846168578443727); // 4/3 pi r^3
 #elif (2 == ON_RTree_NODE_DIM)
   // 2d bounding circle volume
@@ -1941,7 +1946,7 @@ CalcRectVolumeHelper (const ON_RTreeBBox* a_rect)
   r = d * d;
   d = (a_rect->m_max[1] - a_rect->m_min[1]);
   r += d * d;
-  r = sqrt(r * 0.5); // r = sqrt((dx^2 + dy^2)/2);
+  r = sqrt (r * 0.5); // r = sqrt((dx^2 + dy^2)/2);
   return (r * r * ON_PI);
 #else
 
@@ -1981,10 +1986,10 @@ GetBranches (ON_RTreeNode* a_node,
   // Calculate rect containing all in the set
   a_parVars->m_coverSplit = a_parVars->m_branchBuf[0].m_rect;
   for (int index = 1; index < ON_RTree_MAX_NODE_COUNT + 1; ++index) {
-    a_parVars->m_coverSplit = CombineRectHelper(&a_parVars->m_coverSplit,
-                                                &a_parVars->m_branchBuf[index].m_rect);
+    a_parVars->m_coverSplit = CombineRectHelper (&a_parVars->m_coverSplit,
+                                                 &a_parVars->m_branchBuf[index].m_rect);
   }
-  a_parVars->m_coverSplitArea = CalcRectVolumeHelper(&a_parVars->m_coverSplit);
+  a_parVars->m_coverSplitArea = CalcRectVolumeHelper (&a_parVars->m_coverSplit);
 
   a_node->m_count = 0;
   a_node->m_level = -1;
@@ -2008,8 +2013,8 @@ ChoosePartition (ON_RTreePartitionVars* a_parVars, int a_minFill)
   double biggestDiff;
   int group, chosen, betterGroup;
 
-  InitParVars(a_parVars, a_parVars->m_branchCount, a_minFill);
-  PickSeeds(a_parVars);
+  InitParVars (a_parVars, a_parVars->m_branchCount, a_minFill);
+  PickSeeds (a_parVars);
 
   while (((a_parVars->m_count[0] + a_parVars->m_count[1]) < a_parVars->m_total) &&
          (a_parVars->m_count[0] < (a_parVars->m_total - a_parVars->m_minFill)) &&
@@ -2020,10 +2025,10 @@ ChoosePartition (ON_RTreePartitionVars* a_parVars, int a_minFill)
     for (int index = 0; index < a_parVars->m_total; ++index) {
       if (!a_parVars->m_taken[index]) {
         ON_RTreeBBox* curRect = &a_parVars->m_branchBuf[index].m_rect;
-        ON_RTreeBBox rect0 = CombineRectHelper(curRect, &a_parVars->m_cover[0]);
-        ON_RTreeBBox rect1 = CombineRectHelper(curRect, &a_parVars->m_cover[1]);
-        double growth0 = CalcRectVolumeHelper(&rect0) - a_parVars->m_area[0];
-        double growth1 = CalcRectVolumeHelper(&rect1) - a_parVars->m_area[1];
+        ON_RTreeBBox rect0 = CombineRectHelper (curRect, &a_parVars->m_cover[0]);
+        ON_RTreeBBox rect1 = CombineRectHelper (curRect, &a_parVars->m_cover[1]);
+        double growth0 = CalcRectVolumeHelper (&rect0) - a_parVars->m_area[0];
+        double growth1 = CalcRectVolumeHelper (&rect1) - a_parVars->m_area[1];
         double diff = growth1 - growth0;
         if (diff >= 0) {
           group = 0;
@@ -2045,7 +2050,7 @@ ChoosePartition (ON_RTreePartitionVars* a_parVars, int a_minFill)
         }
       }
     }
-    ClassifyHelper(chosen, betterGroup, a_parVars);
+    ClassifyHelper (chosen, betterGroup, a_parVars);
   }
 
   // If one group too full, put remaining rects in the other
@@ -2058,7 +2063,7 @@ ChoosePartition (ON_RTreePartitionVars* a_parVars, int a_minFill)
     }
     for (int index = 0; index < a_parVars->m_total; ++index) {
       if (!a_parVars->m_taken[index]) {
-        ClassifyHelper(index, group, a_parVars);
+        ClassifyHelper (index, group, a_parVars);
       }
     }
   }
@@ -2067,16 +2072,16 @@ ChoosePartition (ON_RTreePartitionVars* a_parVars, int a_minFill)
 // Copy branches from the buffer into two nodes according to the partition.
 
 void
-ON_RTree::LoadNodes(ON_RTreeNode* a_nodeA,
-                    ON_RTreeNode* a_nodeB,
-                    ON_RTreePartitionVars* a_parVars)
+ON_RTree::LoadNodes (ON_RTreeNode* a_nodeA,
+                     ON_RTreeNode* a_nodeB,
+                     ON_RTreePartitionVars* a_parVars)
 {
   for (int index = 0; index < a_parVars->m_total; ++index) {
     if (a_parVars->m_partition[index] == 0) {
-      AddBranch(&a_parVars->m_branchBuf[index], a_nodeA, NULL);
+      AddBranch (&a_parVars->m_branchBuf[index], a_nodeA, NULL);
     }
     else if (a_parVars->m_partition[index] == 1) {
-      AddBranch(&a_parVars->m_branchBuf[index], a_nodeB, NULL);
+      AddBranch (&a_parVars->m_branchBuf[index], a_nodeB, NULL);
     }
   }
 }
@@ -2104,15 +2109,15 @@ PickSeeds (ON_RTreePartitionVars* a_parVars)
   double area[ON_RTree_MAX_NODE_COUNT + 1];
 
   for (int index = 0; index < a_parVars->m_total; ++index) {
-    area[index] = CalcRectVolumeHelper(&a_parVars->m_branchBuf[index].m_rect);
+    area[index] = CalcRectVolumeHelper (&a_parVars->m_branchBuf[index].m_rect);
   }
 
   worst = -a_parVars->m_coverSplitArea - 1;
   for (int indexA = 0; indexA < a_parVars->m_total - 1; ++indexA) {
     for (int indexB = indexA + 1; indexB < a_parVars->m_total; ++indexB) {
-      ON_RTreeBBox oneRect = CombineRectHelper(&a_parVars->m_branchBuf[indexA].m_rect,
-                                               &a_parVars->m_branchBuf[indexB].m_rect);
-      waste = CalcRectVolumeHelper(&oneRect) - area[indexA] - area[indexB];
+      ON_RTreeBBox oneRect = CombineRectHelper (&a_parVars->m_branchBuf[indexA].m_rect,
+                                                &a_parVars->m_branchBuf[indexB].m_rect);
+      waste = CalcRectVolumeHelper (&oneRect) - area[indexA] - area[indexB];
       if (waste > worst) {
         worst = waste;
         seed0 = indexA;
@@ -2120,8 +2125,8 @@ PickSeeds (ON_RTreePartitionVars* a_parVars)
       }
     }
   }
-  ClassifyHelper(seed0, 0, a_parVars);
-  ClassifyHelper(seed1, 1, a_parVars);
+  ClassifyHelper (seed0, 0, a_parVars);
+  ClassifyHelper (seed1, 1, a_parVars);
 }
 
 // Put a branch in one of the groups.
@@ -2136,10 +2141,10 @@ ClassifyHelper (int a_index, int a_group, ON_RTreePartitionVars* a_parVars)
     a_parVars->m_cover[a_group] = a_parVars->m_branchBuf[a_index].m_rect;
   }
   else {
-    a_parVars->m_cover[a_group] = CombineRectHelper(
+    a_parVars->m_cover[a_group] = CombineRectHelper (
         &a_parVars->m_branchBuf[a_index].m_rect, &a_parVars->m_cover[a_group]);
   }
-  a_parVars->m_area[a_group] = CalcRectVolumeHelper(&a_parVars->m_cover[a_group]);
+  a_parVars->m_area[a_group] = CalcRectVolumeHelper (&a_parVars->m_cover[a_group]);
   ++a_parVars->m_count[a_group];
 }
 
@@ -2149,35 +2154,35 @@ ClassifyHelper (int a_index, int a_group, ON_RTreePartitionVars* a_parVars)
 // RemoveRect provides for eliminating the root.
 
 bool
-ON_RTree::RemoveRect(ON_RTreeBBox* a_rect, ON__INT_PTR a_id, ON_RTreeNode** a_root)
+ON_RTree::RemoveRect (ON_RTreeBBox* a_rect, ON__INT_PTR a_id, ON_RTreeNode** a_root)
 {
   ON_RTreeNode* tempNode;
   ON_RTreeListNode* reInsertList = NULL;
 
-  if (!RemoveRectRec(a_rect, a_id, *a_root, &reInsertList)) {
+  if (!RemoveRectRec (a_rect, a_id, *a_root, &reInsertList)) {
     // Found and deleted a data item
     // Reinsert any branches from eliminated nodes
     while (reInsertList) {
       tempNode = reInsertList->m_node;
 
       for (int index = 0; index < tempNode->m_count; ++index) {
-        InsertRect(&(tempNode->m_branch[index].m_rect),
-                   tempNode->m_branch[index].m_id,
-                   a_root,
-                   tempNode->m_level);
+        InsertRect (&(tempNode->m_branch[index].m_rect),
+                    tempNode->m_branch[index].m_id,
+                    a_root,
+                    tempNode->m_level);
       }
 
       ON_RTreeListNode* remLNode = reInsertList;
       reInsertList = reInsertList->m_next;
 
-      m_mem_pool.FreeNode(remLNode->m_node);
-      m_mem_pool.FreeListNode(remLNode);
+      m_mem_pool.FreeNode (remLNode->m_node);
+      m_mem_pool.FreeListNode (remLNode);
     }
 
     // Check for redundant root (not leaf, 1 child) and eliminate
     if ((*a_root)->m_count == 1 && (*a_root)->IsInternalNode()) {
       tempNode = (*a_root)->m_branch[0].m_child;
-      m_mem_pool.FreeNode(*a_root);
+      m_mem_pool.FreeNode (*a_root);
       *a_root = tempNode;
     }
     return false;
@@ -2193,25 +2198,28 @@ ON_RTree::RemoveRect(ON_RTreeBBox* a_rect, ON__INT_PTR a_id, ON_RTreeNode** a_ro
 // Returns 1 if record not found, 0 if success.
 
 bool
-ON_RTree::RemoveRectRec(ON_RTreeBBox* a_rect,
-                        ON__INT_PTR a_id,
-                        ON_RTreeNode* a_node,
-                        ON_RTreeListNode** a_listNode)
+ON_RTree::RemoveRectRec (ON_RTreeBBox* a_rect,
+                         ON__INT_PTR a_id,
+                         ON_RTreeNode* a_node,
+                         ON_RTreeListNode** a_listNode)
 {
   if (a_node->IsInternalNode()) // not a leaf node
   {
     for (int index = 0; index < a_node->m_count; ++index) {
-      if (OverlapHelper(a_rect, &(a_node->m_branch[index].m_rect))) {
-        if (!RemoveRectRec(a_rect, a_id, a_node->m_branch[index].m_child, a_listNode)) {
+      if (OverlapHelper (a_rect, &(a_node->m_branch[index].m_rect))) {
+        if (!RemoveRectRec (
+                a_rect, a_id, a_node->m_branch[index].m_child, a_listNode)) {
           if (a_node->m_branch[index].m_child->m_count >= ON_RTree_MIN_NODE_COUNT) {
             // child removed, just resize parent rect
-            a_node->m_branch[index].m_rect = NodeCover(a_node->m_branch[index].m_child);
+            a_node->m_branch[index].m_rect =
+                NodeCover (a_node->m_branch[index].m_child);
           }
           else {
             // child removed, not enough entries in node, eliminate node
-            ReInsert(a_node->m_branch[index].m_child, a_listNode);
-            DisconnectBranch(a_node,
-                             index); // Must return after this call as count has changed
+            ReInsert (a_node->m_branch[index].m_child, a_listNode);
+            DisconnectBranch (
+                a_node,
+                index); // Must return after this call as count has changed
           }
           return false;
         }
@@ -2223,8 +2231,8 @@ ON_RTree::RemoveRectRec(ON_RTreeBBox* a_rect,
   {
     for (int index = 0; index < a_node->m_count; ++index) {
       if (a_node->m_branch[index].m_id == a_id) {
-        DisconnectBranch(a_node,
-                         index); // Must return after this call as count has changed
+        DisconnectBranch (a_node,
+                          index); // Must return after this call as count has changed
         return false;
       }
     }
@@ -2444,7 +2452,7 @@ DistanceToBoxHelper (const double* pt, double r, const ON_RTreeBBox* a_rect)
   if (d[0] > 0.0) {
     d[1] /= d[0];
     d[2] /= d[0];
-    d[0] *= sqrt(1.0 + d[1] * d[1] + d[2] * d[2]);
+    d[0] *= sqrt (1.0 + d[1] * d[1] + d[2] * d[2]);
   }
 
   return d[0];
@@ -2457,7 +2465,7 @@ DistanceToCapsuleAxisHelper (const struct ON_RTreeCapsule* a_capsule,
   double L[2][3], s[2];
   if (0.0 == a_capsule->m_domain[0] && 1.0 == a_capsule->m_domain[1])
     return ((const ON_BoundingBox*)a_rect->m_min)
-        ->MinimumDistanceTo(*((const ON_Line*)a_capsule->m_point[0]));
+        ->MinimumDistanceTo (*((const ON_Line*)a_capsule->m_point[0]));
 
   if (0.0 == a_capsule->m_domain[0]) {
     L[0][0] = a_capsule->m_point[0][0];
@@ -2486,14 +2494,14 @@ DistanceToCapsuleAxisHelper (const struct ON_RTreeCapsule* a_capsule,
   }
 
   return ((const ON_BoundingBox*)a_rect->m_min)
-      ->MinimumDistanceTo(*((const ON_Line*)L[0]));
+      ->MinimumDistanceTo (*((const ON_Line*)L[0]));
 }
 
 // Add a node to the reinsertion list.  All its branches will later
 // be reinserted into the index structure.
 
 void
-ON_RTree::ReInsert(ON_RTreeNode* a_node, ON_RTreeListNode** a_listNode)
+ON_RTree::ReInsert (ON_RTreeNode* a_node, ON_RTreeListNode** a_listNode)
 {
   ON_RTreeListNode* newListNode;
 
@@ -2657,8 +2665,8 @@ SearchBoundedPlaneXYZHelper (const ON_RTreeNode* a_node,
     if (a_node->IsInternalNode()) {
       // a_node is an internal node - search m_branch[].m_child as needed
       for (i = 0; i < count; ++i) {
-        if (OverlapBoundedPlaneXYZHelper(a_bounded_plane, &branch[i].m_rect)) {
-          if (!SearchBoundedPlaneXYZHelper(
+        if (OverlapBoundedPlaneXYZHelper (a_bounded_plane, &branch[i].m_rect)) {
+          if (!SearchBoundedPlaneXYZHelper (
                   branch[i].m_child, a_bounded_plane, a_result)) {
             return false; // Don't continue searching
           }
@@ -2668,8 +2676,8 @@ SearchBoundedPlaneXYZHelper (const ON_RTreeNode* a_node,
     else {
       // a_node is a leaf node - return m_branch[].m_id values
       for (i = 0; i < count; ++i) {
-        if (OverlapBoundedPlaneXYZHelper(a_bounded_plane, &branch[i].m_rect)) {
-          if (!a_result.m_resultCallback(a_result.m_context, branch[i].m_id)) {
+        if (OverlapBoundedPlaneXYZHelper (a_bounded_plane, &branch[i].m_rect)) {
+          if (!a_result.m_resultCallback (a_result.m_context, branch[i].m_id)) {
             // callback canceled search
             return false;
           }
@@ -2682,11 +2690,12 @@ SearchBoundedPlaneXYZHelper (const ON_RTreeNode* a_node,
 }
 
 bool
-ON_RTree::Search(const double a_plane_eqn[4],
-                 double a_min,
-                 double a_max,
-                 bool ON_MSC_CDECL a_resultCallback(void* a_context, ON__INT_PTR a_id),
-                 void* a_context) const
+ON_RTree::Search (const double a_plane_eqn[4],
+                  double a_min,
+                  double a_max,
+                  bool ON_MSC_CDECL a_resultCallback (void* a_context,
+                                                      ON__INT_PTR a_id),
+                  void* a_context) const
 {
   if (0 == m_root || 0 == a_plane_eqn || !(a_min <= a_max) ||
       (0.0 == a_plane_eqn[0] && 0.0 == a_plane_eqn[1] && 0.0 == a_plane_eqn[2]))
@@ -2704,7 +2713,7 @@ ON_RTree::Search(const double a_plane_eqn[4],
   result.m_context = a_context;
   result.m_resultCallback = a_resultCallback;
 
-  return SearchBoundedPlaneXYZHelper(m_root, bounded_plane, result);
+  return SearchBoundedPlaneXYZHelper (m_root, bounded_plane, result);
 }
 
 // Search in an index tree or subtree for all data retangles that overlap the argument
@@ -2724,8 +2733,8 @@ SearchHelper (const ON_RTreeNode* a_node,
     if (a_node->IsInternalNode()) {
       // a_node is an internal node - search m_branch[].m_child as needed
       for (i = 0; i < count; ++i) {
-        if (OverlapHelper(a_rect, &branch[i].m_rect)) {
-          if (!SearchHelper(branch[i].m_child, a_rect, a_result)) {
+        if (OverlapHelper (a_rect, &branch[i].m_rect)) {
+          if (!SearchHelper (branch[i].m_child, a_rect, a_result)) {
             return false; // Don't continue searching
           }
         }
@@ -2734,8 +2743,8 @@ SearchHelper (const ON_RTreeNode* a_node,
     else {
       // a_node is a leaf node - return m_branch[].m_id values
       for (i = 0; i < count; ++i) {
-        if (OverlapHelper(a_rect, &branch[i].m_rect)) {
-          if (!a_result.m_resultCallback(a_result.m_context, branch[i].m_id)) {
+        if (OverlapHelper (a_rect, &branch[i].m_rect)) {
+          if (!a_result.m_resultCallback (a_result.m_context, branch[i].m_id)) {
             // callback canceled search
             return false;
           }
@@ -2770,7 +2779,7 @@ SearchHelper (const ON_RTreeNode* a_node,
       // The radius parameter passed to DistanceToBoxHelper()
       // needs to be sphere_radius and not closest_d in order
       // for the for() loops below to work correctly.
-      r[i] = DistanceToBoxHelper(sphere_center, sphere_radius, &branch[i].m_rect);
+      r[i] = DistanceToBoxHelper (sphere_center, sphere_radius, &branch[i].m_rect);
       if (r[i] <= closest_d) {
         closest_d = r[i];
         closest_i = i;
@@ -2786,7 +2795,7 @@ SearchHelper (const ON_RTreeNode* a_node,
         // in calculations where the calls to a_result.m_resultCallback()
         // reduce a_sphere->m_radius as results are found.  Closest point
         // calculations are an example.
-        if (!SearchHelper(branch[closest_i].m_child, a_sphere, a_result)) {
+        if (!SearchHelper (branch[closest_i].m_child, a_sphere, a_result)) {
           // callback canceled search
           return false;
         }
@@ -2795,7 +2804,7 @@ SearchHelper (const ON_RTreeNode* a_node,
           // Note that the calls to SearchHelper() can reduce the
           // value of a_sphere->m_radius.
           if (i != closest_i && r[i] <= a_sphere->m_radius) {
-            if (!SearchHelper(branch[i].m_child, a_sphere, a_result)) {
+            if (!SearchHelper (branch[i].m_child, a_sphere, a_result)) {
               return false; // Don't continue searching
             }
           }
@@ -2807,7 +2816,7 @@ SearchHelper (const ON_RTreeNode* a_node,
         // in calculations where the calls to a_result.m_resultCallback()
         // reduce a_sphere->m_radius as results are found.  Closest point
         // calculations are an example.
-        if (!a_result.m_resultCallback(a_result.m_context, branch[closest_i].m_id)) {
+        if (!a_result.m_resultCallback (a_result.m_context, branch[closest_i].m_id)) {
           // callback canceled search
           return false;
         }
@@ -2816,7 +2825,7 @@ SearchHelper (const ON_RTreeNode* a_node,
           // Note that the calls to a_result.m_resultCallback() can reduce
           // the value of a_sphere->m_radius.
           if (i != closest_i && r[i] <= a_sphere->m_radius) {
-            if (!a_result.m_resultCallback(a_result.m_context, branch[i].m_id)) {
+            if (!a_result.m_resultCallback (a_result.m_context, branch[i].m_id)) {
               // callback canceled search
               return false;
             }
@@ -2846,13 +2855,13 @@ SearchHelper (const ON_RTreeNode* a_node,
       if (count > 1) {
         // search a closer node first to avoid worst case search times
         // in closest point style calculations
-        r[0] = DistanceToCapsuleAxisHelper(a_capsule, &branch[0].m_rect);
-        r[1] = DistanceToCapsuleAxisHelper(a_capsule, &branch[count - 1].m_rect);
+        r[0] = DistanceToCapsuleAxisHelper (a_capsule, &branch[0].m_rect);
+        r[1] = DistanceToCapsuleAxisHelper (a_capsule, &branch[count - 1].m_rect);
         i = (r[0] <= r[1]) ? 0 : count - 1;
         if ((r[i ? 1 : 0] <= a_capsule->m_radius &&
-             !SearchHelper(branch[i].m_child, a_capsule, a_result)) ||
+             !SearchHelper (branch[i].m_child, a_capsule, a_result)) ||
             (r[i ? 0 : 1] <= a_capsule->m_radius &&
-             !SearchHelper(branch[count - 1 - i].m_child, a_capsule, a_result))) {
+             !SearchHelper (branch[count - 1 - i].m_child, a_capsule, a_result))) {
           // callback canceled search
           return false;
         }
@@ -2862,9 +2871,9 @@ SearchHelper (const ON_RTreeNode* a_node,
 
       r[1] = a_capsule->m_radius;
       for (i = 0; i < count; ++i) {
-        r[0] = DistanceToCapsuleAxisHelper(a_capsule, &branch[i].m_rect);
+        r[0] = DistanceToCapsuleAxisHelper (a_capsule, &branch[i].m_rect);
         if (r[0] <= r[1]) {
-          if (!SearchHelper(branch[i].m_child, a_capsule, a_result)) {
+          if (!SearchHelper (branch[i].m_child, a_capsule, a_result)) {
             return false; // Don't continue searching
           }
           // a_result.m_resultCallback can shrink the capsule
@@ -2877,14 +2886,14 @@ SearchHelper (const ON_RTreeNode* a_node,
       if (count > 1) {
         // search a closer node first to avoid worst case search times
         // in closest point style calculations
-        r[0] = DistanceToCapsuleAxisHelper(a_capsule, &branch[0].m_rect);
-        r[1] = DistanceToCapsuleAxisHelper(a_capsule, &branch[count - 1].m_rect);
+        r[0] = DistanceToCapsuleAxisHelper (a_capsule, &branch[0].m_rect);
+        r[1] = DistanceToCapsuleAxisHelper (a_capsule, &branch[count - 1].m_rect);
         i = (r[0] <= r[1]) ? 0 : count - 1;
         if ((r[i ? 1 : 0] <= a_capsule->m_radius &&
-             !a_result.m_resultCallback(a_result.m_context, branch[i].m_id)) ||
+             !a_result.m_resultCallback (a_result.m_context, branch[i].m_id)) ||
             (r[i ? 0 : 1] <= a_capsule->m_radius &&
-             !a_result.m_resultCallback(a_result.m_context,
-                                        branch[count - 1 - i].m_id))) {
+             !a_result.m_resultCallback (a_result.m_context,
+                                         branch[count - 1 - i].m_id))) {
           // callback canceled search
           return false;
         }
@@ -2894,9 +2903,9 @@ SearchHelper (const ON_RTreeNode* a_node,
 
       r[1] = a_capsule->m_radius;
       for (i = 0; i < count; ++i) {
-        r[0] = DistanceToCapsuleAxisHelper(a_capsule, &branch[i].m_rect);
+        r[0] = DistanceToCapsuleAxisHelper (a_capsule, &branch[i].m_rect);
         if (r[0] <= r[1]) {
-          if (!a_result.m_resultCallback(a_result.m_context, branch[i].m_id)) {
+          if (!a_result.m_resultCallback (a_result.m_context, branch[i].m_id)) {
             // callback canceled search
             return false;
           }
@@ -2925,8 +2934,8 @@ SearchHelper (const ON_RTreeNode* a_node,
     if (a_node->IsInternalNode()) {
       // a_node is an internal node - search m_branch[].m_child as needed
       for (i = 0; i < count; ++i) {
-        if (OverlapHelper(a_rect, &branch[i].m_rect)) {
-          if (!SearchHelper(branch[i].m_child, a_rect, a_result)) {
+        if (OverlapHelper (a_rect, &branch[i].m_rect)) {
+          if (!SearchHelper (branch[i].m_child, a_rect, a_result)) {
             return false; // Don't continue searching
           }
         }
@@ -2935,7 +2944,7 @@ SearchHelper (const ON_RTreeNode* a_node,
     else {
       // a_node is a leaf node - return point to the branch
       for (i = 0; i < count; ++i) {
-        if (OverlapHelper(a_rect, &branch[i].m_rect)) {
+        if (OverlapHelper (a_rect, &branch[i].m_rect)) {
           ON_RTreeLeaf& leaf = a_result.AppendNew();
           leaf.m_rect = branch[i].m_rect;
           leaf.m_id = branch[i].m_id;
@@ -2959,8 +2968,8 @@ SearchHelper (const ON_RTreeNode* a_node,
     if (a_node->IsInternalNode()) {
       // a_node is an internal node - search m_branch[].m_child as needed
       for (i = 0; i < count; ++i) {
-        if (OverlapHelper(a_rect, &branch[i].m_rect)) {
-          if (!SearchHelper(branch[i].m_child, a_rect, a_result)) {
+        if (OverlapHelper (a_rect, &branch[i].m_rect)) {
+          if (!SearchHelper (branch[i].m_child, a_rect, a_result)) {
             return false; // Don't continue searching
           }
         }
@@ -2969,7 +2978,7 @@ SearchHelper (const ON_RTreeNode* a_node,
     else {
       // a_node is a leaf node - return m_branch[].m_id values
       for (i = 0; i < count; ++i) {
-        if (OverlapHelper(a_rect, &branch[i].m_rect)) {
+        if (OverlapHelper (a_rect, &branch[i].m_rect)) {
           // The (void*) cast is safe because branch[i].m_id is an ON__INT_PTR
 #if defined(ON_COMPILER_MSC) && 4 == ON_SIZEOF_POINTER
 #pragma warning(push)
@@ -2977,7 +2986,7 @@ SearchHelper (const ON_RTreeNode* a_node,
 // of greater size
 #pragma warning(disable : 4312)
 #endif
-          a_result.Append((void*)branch[i].m_id);
+          a_result.Append ((void*)branch[i].m_id);
 #if defined(ON_COMPILER_MSC) && 4 == ON_SIZEOF_POINTER
 #pragma warning(pop)
 #endif
@@ -3001,8 +3010,8 @@ SearchHelper (const ON_RTreeNode* a_node,
     if (a_node->IsInternalNode()) {
       // a_node is an internal node - search m_branch[].m_child as needed
       for (i = 0; i < count; ++i) {
-        if (OverlapHelper(a_rect, &branch[i].m_rect)) {
-          if (!SearchHelper(branch[i].m_child, a_rect, a_result)) {
+        if (OverlapHelper (a_rect, &branch[i].m_rect)) {
+          if (!SearchHelper (branch[i].m_child, a_rect, a_result)) {
             return false; // Don't continue searching
           }
         }
@@ -3011,8 +3020,8 @@ SearchHelper (const ON_RTreeNode* a_node,
     else {
       // a_node is a leaf node - return m_branch[].m_id values
       for (i = 0; i < count; ++i) {
-        if (OverlapHelper(a_rect, &branch[i].m_rect)) {
-          a_result.Append((int)branch[i].m_id);
+        if (OverlapHelper (a_rect, &branch[i].m_rect)) {
+          a_result.Append ((int)branch[i].m_id);
         }
       }
     }
@@ -3033,8 +3042,8 @@ SearchHelper (const ON_RTreeNode* a_node,
     if (a_node->IsInternalNode()) {
       // a_node is an internal node - search m_branch[].m_child as needed
       for (i = 0; i < count; ++i) {
-        if (OverlapHelper(a_rect, &branch[i].m_rect)) {
-          if (!SearchHelper(branch[i].m_child, a_rect, a_result)) {
+        if (OverlapHelper (a_rect, &branch[i].m_rect)) {
+          if (!SearchHelper (branch[i].m_child, a_rect, a_result)) {
             return false; // Don't continue searching
           }
         }
@@ -3043,7 +3052,7 @@ SearchHelper (const ON_RTreeNode* a_node,
     else {
       // a_node is a leaf node - return m_branch[].m_id values
       for (i = 0; i < count; ++i) {
-        if (OverlapHelper(a_rect, &branch[i].m_rect)) {
+        if (OverlapHelper (a_rect, &branch[i].m_rect)) {
           if (a_result.m_count >= a_result.m_capacity)
             return false; // No more space for results
           a_result.m_id[a_result.m_count++] = branch[i].m_id;

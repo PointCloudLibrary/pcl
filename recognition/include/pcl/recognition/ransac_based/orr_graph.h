@@ -60,7 +60,7 @@ public:
   public:
     enum State { ON, OFF, UNDEF };
 
-    Node(int id) : id_(id), state_(UNDEF) {}
+    Node (int id) : id_ (id), state_ (UNDEF) {}
 
     virtual ~Node() = default;
 
@@ -139,16 +139,16 @@ public:
     for (auto nit = nodes_.begin(); nit != nodes_.end(); ++nit)
       delete *nit;
 
-    nodes_.resize(static_cast<std::size_t>(n));
+    nodes_.resize (static_cast<std::size_t> (n));
 
     for (int i = 0; i < n; ++i)
-      nodes_[i] = new Node(i);
+      nodes_[i] = new Node (i);
   }
 
   inline void
   computeMaximalOnOffPartition (std::list<Node*>& on_nodes, std::list<Node*>& off_nodes)
   {
-    std::vector<Node*> sorted_nodes(nodes_.size());
+    std::vector<Node*> sorted_nodes (nodes_.size());
     int i = 0;
 
     // Set all nodes to undefined
@@ -158,7 +158,7 @@ public:
     }
 
     // Now sort the nodes according to the fitness
-    std::sort(sorted_nodes.begin(), sorted_nodes.end(), Node::compare);
+    std::sort (sorted_nodes.begin(), sorted_nodes.end(), Node::compare);
 
     // Now run through the array and start switching nodes on and off
     for (auto it = sorted_nodes.begin(); it != sorted_nodes.end(); ++it) {
@@ -173,38 +173,38 @@ public:
       for (auto neigh = (*it)->neighbors_.begin(); neigh != (*it)->neighbors_.end();
            ++neigh) {
         (*neigh)->state_ = Node::OFF;
-        off_nodes.push_back(*neigh);
+        off_nodes.push_back (*neigh);
       }
 
       // Output the node
-      on_nodes.push_back(*it);
+      on_nodes.push_back (*it);
     }
   }
 
   inline void
   insertUndirectedEdge (int id1, int id2)
   {
-    nodes_[id1]->neighbors_.insert(nodes_[id2]);
-    nodes_[id2]->neighbors_.insert(nodes_[id1]);
+    nodes_[id1]->neighbors_.insert (nodes_[id2]);
+    nodes_[id2]->neighbors_.insert (nodes_[id1]);
   }
 
   inline void
   insertDirectedEdge (int id1, int id2)
   {
-    nodes_[id1]->neighbors_.insert(nodes_[id2]);
+    nodes_[id1]->neighbors_.insert (nodes_[id2]);
   }
 
   inline void
   deleteUndirectedEdge (int id1, int id2)
   {
-    nodes_[id1]->neighbors_.erase(nodes_[id2]);
-    nodes_[id2]->neighbors_.erase(nodes_[id1]);
+    nodes_[id1]->neighbors_.erase (nodes_[id2]);
+    nodes_[id2]->neighbors_.erase (nodes_[id1]);
   }
 
   inline void
   deleteDirectedEdge (int id1, int id2)
   {
-    nodes_[id1]->neighbors_.erase(nodes_[id2]);
+    nodes_[id1]->neighbors_.erase (nodes_[id2]);
   }
 
   inline typename std::vector<Node*>&

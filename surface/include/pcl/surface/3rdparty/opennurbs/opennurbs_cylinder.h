@@ -29,11 +29,11 @@ class ON_CLASS ON_Cylinder {
 public:
   ON_Cylinder(); // zeros all fields - cylinder is invalid
 
-  ON_Cylinder(         // infinte cylinder
+  ON_Cylinder (        // infinte cylinder
       const ON_Circle& // point on the bottom plane
   );
 
-  ON_Cylinder(          // infinte cylinder
+  ON_Cylinder (         // infinte cylinder
       const ON_Circle&, // point on the bottom plane
       double            // height
   );
@@ -88,7 +88,7 @@ public:
                   double*  // linear parameter (height from base circle's plane)
   ) const;
   // returns point on cylinder that is closest to given point
-  ON_3dPoint ClosestPointTo(ON_3dPoint) const;
+  ON_3dPoint ClosestPointTo (ON_3dPoint) const;
 
   // For intersections see ON_Intersect();
 

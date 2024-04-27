@@ -48,10 +48,10 @@ namespace pcl {
 class PairwisePotential {
 public:
   /** Constructor for PairwisePotential class. */
-  PairwisePotential(const std::vector<float>& feature,
-                    const int D,
-                    const int N,
-                    const float w);
+  PairwisePotential (const std::vector<float>& feature,
+                     const int D,
+                     const int N,
+                     const float w);
 
   /** Deconstructor for PairwisePotential class. */
   ~PairwisePotential() = default;

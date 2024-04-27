@@ -72,31 +72,31 @@ public:
   using CloudPtr = typename Cloud::Ptr;
   using CloudConstPtr = typename Cloud::ConstPtr;
 
-  OpenNI3DConcaveHull(const std::string& device_id = "")
-  : viewer("PCL OpenNI 3D Concave Hull Viewer"), device_id_(device_id)
+  OpenNI3DConcaveHull (const std::string& device_id = "")
+  : viewer ("PCL OpenNI 3D Concave Hull Viewer"), device_id_ (device_id)
   {
-    grid.setFilterFieldName("z");
-    grid.setFilterLimits(0.0, 1.0);
-    grid.setLeafSize(0.01f, 0.01f, 0.01f);
+    grid.setFilterFieldName ("z");
+    grid.setFilterLimits (0.0, 1.0);
+    grid.setLeafSize (0.01f, 0.01f, 0.01f);
   }
 
   void
   cloud_cb (const CloudConstPtr& cloud)
   {
-    std::lock_guard<std::mutex> lock(mtx_);
-    FPS_CALC("computation");
+    std::lock_guard<std::mutex> lock (mtx_);
+    FPS_CALC ("computation");
 
-    cloud_pass_.reset(new Cloud);
+    cloud_pass_.reset (new Cloud);
     // Computation goes here
-    grid.setInputCloud(cloud);
-    grid.filter(*cloud_pass_);
+    grid.setInputCloud (cloud);
+    grid.filter (*cloud_pass_);
 
     // Estimate 3D convex hull
     pcl::ConcaveHull<PointType> hr;
-    hr.setAlpha(0.1);
-    hr.setInputCloud(cloud_pass_);
-    cloud_hull_.reset(new Cloud);
-    hr.reconstruct(*cloud_hull_, vertices_);
+    hr.setAlpha (0.1);
+    hr.setInputCloud (cloud_pass_);
+    cloud_hull_.reset (new Cloud);
+    hr.reconstruct (*cloud_hull_, vertices_);
 
     cloud_ = cloud;
     new_cloud_ = true;
@@ -106,24 +106,24 @@ public:
   viz_cb (pcl::visualization::PCLVisualizer& viz)
   {
     if (!cloud_ || !new_cloud_) {
-      std::this_thread::sleep_for(1ms);
+      std::this_thread::sleep_for (1ms);
       return;
     }
 
     {
-      std::lock_guard<std::mutex> lock(mtx_);
-      FPS_CALC("visualization");
+      std::lock_guard<std::mutex> lock (mtx_);
+      FPS_CALC ("visualization");
       CloudPtr temp_cloud;
-      temp_cloud.swap(cloud_pass_);
+      temp_cloud.swap (cloud_pass_);
 
-      if (!viz.updatePointCloud(temp_cloud, "OpenNICloud")) {
-        viz.addPointCloud(temp_cloud, "OpenNICloud");
-        viz.resetCameraViewpoint("OpenNICloud");
+      if (!viz.updatePointCloud (temp_cloud, "OpenNICloud")) {
+        viz.addPointCloud (temp_cloud, "OpenNICloud");
+        viz.resetCameraViewpoint ("OpenNICloud");
       }
       // Render the data
       if (new_cloud_ && cloud_hull_) {
-        viz.removePointCloud("hull");
-        viz.addPolygonMesh<PointType>(cloud_hull_, vertices_, "hull");
+        viz.removePointCloud ("hull");
+        viz.addPolygonMesh<PointType> (cloud_hull_, vertices_, "hull");
       }
       new_cloud_ = false;
     }
@@ -132,20 +132,20 @@ public:
   void
   run ()
   {
-    pcl::OpenNIGrabber interface(device_id_);
+    pcl::OpenNIGrabber interface (device_id_);
 
-    std::function<void(const CloudConstPtr&)> f = [this] (const CloudConstPtr& cloud) {
-      cloud_cb(cloud);
+    std::function<void (const CloudConstPtr&)> f = [this] (const CloudConstPtr& cloud) {
+      cloud_cb (cloud);
     };
-    boost::signals2::connection c = interface.registerCallback(f);
+    boost::signals2::connection c = interface.registerCallback (f);
 
-    viewer.runOnVisualizationThread(
-        [this] (pcl::visualization::PCLVisualizer& viz) { viz_cb(viz); }, "viz_cb");
+    viewer.runOnVisualizationThread (
+        [this] (pcl::visualization::PCLVisualizer& viz) { viz_cb (viz); }, "viz_cb");
 
     interface.start();
 
     while (!viewer.wasStopped()) {
-      std::this_thread::sleep_for(1ms);
+      std::this_thread::sleep_for (1ms);
     }
 
     interface.stop();
@@ -198,27 +198,27 @@ int
 main (int argc, char** argv)
 {
   /////////////////////////////////////////////////////////////////////
-  if (pcl::console::find_argument(argc, argv, "-h") != -1 ||
-      pcl::console::find_argument(argc, argv, "--help") != -1) {
-    usage(argv);
+  if (pcl::console::find_argument (argc, argv, "-h") != -1 ||
+      pcl::console::find_argument (argc, argv, "--help") != -1) {
+    usage (argv);
     return 1;
   }
 
   std::string device_id = "";
-  if (pcl::console::parse_argument(argc, argv, "-device_id", device_id) == -1 &&
+  if (pcl::console::parse_argument (argc, argv, "-device_id", device_id) == -1 &&
       argc > 1 && argv[1][0] != '-')
     device_id = argv[1];
   /////////////////////////////////////////////////////////////////////
 
-  pcl::OpenNIGrabber grabber(device_id);
+  pcl::OpenNIGrabber grabber (device_id);
   if (grabber.providesCallback<pcl::OpenNIGrabber::sig_cb_openni_point_cloud_rgba>()) {
-    PCL_INFO("PointXYZRGBA mode enabled.\n");
-    OpenNI3DConcaveHull<pcl::PointXYZRGBA> v(device_id);
+    PCL_INFO ("PointXYZRGBA mode enabled.\n");
+    OpenNI3DConcaveHull<pcl::PointXYZRGBA> v (device_id);
     v.run();
   }
   else {
-    PCL_INFO("PointXYZ mode enabled.\n");
-    OpenNI3DConcaveHull<pcl::PointXYZ> v(device_id);
+    PCL_INFO ("PointXYZ mode enabled.\n");
+    OpenNI3DConcaveHull<pcl::PointXYZ> v (device_id);
     v.run();
   }
   return 0;

@@ -67,24 +67,24 @@ public:
   /**
    * \brief No copy ctor since Grabber can't be copied
    */
-  Grabber(const Grabber&) = delete;
+  Grabber (const Grabber&) = delete;
 
   /**
    * \brief No copy assign operator since Grabber can't be copied
    */
   Grabber&
-  operator=(const Grabber&) = delete;
+  operator= (const Grabber&) = delete;
 
   /**
    * \brief Move ctor
    */
-  Grabber(Grabber&&) = default;
+  Grabber (Grabber&&) = default;
 
   /**
    * \brief Move assign operator
    */
   Grabber&
-  operator=(Grabber&&) = default;
+  operator= (Grabber&&) = default;
 
   /** \brief virtual destructor. */
   virtual inline ~Grabber() noexcept = default;
@@ -199,9 +199,9 @@ Grabber::find_signal() const noexcept
 {
   using Signal = boost::signals2::signal<T>;
 
-  const auto signal_it = signals_.find(typeid(T).name());
+  const auto signal_it = signals_.find (typeid (T).name());
   if (signal_it != signals_.end()) {
-    return (static_cast<Signal*>(signal_it->second.get()));
+    return (static_cast<Signal*> (signal_it->second.get()));
   }
   return nullptr;
 }
@@ -220,8 +220,8 @@ template <typename T>
 void
 Grabber::block_signal()
 {
-  if (connections_.find(typeid(T).name()) != connections_.end())
-    for (auto& connection : shared_connections_[typeid(T).name()])
+  if (connections_.find (typeid (T).name()) != connections_.end())
+    for (auto& connection : shared_connections_[typeid (T).name()])
       connection.block();
 }
 
@@ -229,8 +229,8 @@ template <typename T>
 void
 Grabber::unblock_signal()
 {
-  if (connections_.find(typeid(T).name()) != connections_.end())
-    for (auto& connection : shared_connections_[typeid(T).name()])
+  if (connections_.find (typeid (T).name()) != connections_.end())
+    for (auto& connection : shared_connections_[typeid (T).name()])
       connection.unblock();
 }
 
@@ -256,7 +256,7 @@ Grabber::num_slots() const noexcept
 {
   const auto signal = find_signal<T>();
   if (signal != nullptr) {
-    return static_cast<int>(signal->num_slots());
+    return static_cast<int> (signal->num_slots());
   }
   return 0;
 }
@@ -276,46 +276,46 @@ Grabber::createSignal()
     operator std::unique_ptr<Base>() const { return std::make_unique<Signal>(); }
   };
   // TODO: remove later for C++17 features: structured bindings and try_emplace
-  std::string signame{typeid(T).name()};
+  std::string signame{typeid (T).name()};
 #ifdef __cpp_structured_bindings
   const auto [iterator, success] =
 #else
-  typename decltype(signals_)::const_iterator iterator;
+  typename decltype (signals_)::const_iterator iterator;
   bool success;
-  std::tie(iterator, success) =
+  std::tie (iterator, success) =
 #endif
 
 #ifdef __cpp_lib_map_try_emplace
-      signals_.try_emplace(
+      signals_.try_emplace (
 #else
-      signals_.emplace(
+      signals_.emplace (
 #endif
           signame, DefferedPtr());
   if (!success) {
     return nullptr;
   }
-  return static_cast<Signal*>(iterator->second.get());
+  return static_cast<Signal*> (iterator->second.get());
 }
 
 template <typename T>
 boost::signals2::connection
-Grabber::registerCallback(const std::function<T>& callback)
+Grabber::registerCallback (const std::function<T>& callback)
 {
   const auto signal = find_signal<T>();
   if (signal == nullptr) {
     std::stringstream sstream;
 
-    sstream << "no callback for type:" << typeid(T).name();
+    sstream << "no callback for type:" << typeid (T).name();
 
-    PCL_THROW_EXCEPTION(pcl::IOException, "[" << getName() << "] " << sstream.str());
+    PCL_THROW_EXCEPTION (pcl::IOException, "[" << getName() << "] " << sstream.str());
     // return (boost::signals2::connection ());
   }
-  boost::signals2::connection ret = signal->connect(callback);
+  boost::signals2::connection ret = signal->connect (callback);
 
-  connections_[typeid(T).name()].push_back(ret);
-  shared_connections_[typeid(T).name()].push_back(
-      boost::signals2::shared_connection_block(connections_[typeid(T).name()].back(),
-                                               false));
+  connections_[typeid (T).name()].push_back (ret);
+  shared_connections_[typeid (T).name()].push_back (
+      boost::signals2::shared_connection_block (connections_[typeid (T).name()].back(),
+                                                false));
   signalsChanged();
   return (ret);
 }

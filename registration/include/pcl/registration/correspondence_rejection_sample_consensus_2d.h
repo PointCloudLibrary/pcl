@@ -74,7 +74,7 @@ public:
    * and the maximum number of iterations to 1000.
    */
   CorrespondenceRejectorSampleConsensus2D()
-  : projection_matrix_(Eigen::Matrix3f::Identity())
+  : projection_matrix_ (Eigen::Matrix3f::Identity())
   {
     rejection_name_ = "CorrespondenceRejectorSampleConsensus2D";
     // Put the projection matrix together
@@ -100,8 +100,8 @@ public:
   inline void
   setFocalLengths (const float fx, const float fy)
   {
-    projection_matrix_(0, 0) = fx;
-    projection_matrix_(1, 1) = fy;
+    projection_matrix_ (0, 0) = fx;
+    projection_matrix_ (1, 1) = fy;
   }
 
   /** \brief Reads back the focal length parameters of the target camera.
@@ -111,8 +111,8 @@ public:
   inline void
   getFocalLengths (float& fx, float& fy) const
   {
-    fx = projection_matrix_(0, 0);
-    fy = projection_matrix_(1, 1);
+    fx = projection_matrix_ (0, 0);
+    fy = projection_matrix_ (1, 1);
   }
 
   /** \brief Sets the camera center parameters of the target camera.
@@ -122,8 +122,8 @@ public:
   inline void
   setCameraCenters (const float cx, const float cy)
   {
-    projection_matrix_(0, 2) = cx;
-    projection_matrix_(1, 2) = cy;
+    projection_matrix_ (0, 2) = cx;
+    projection_matrix_ (1, 2) = cy;
   }
 
   /** \brief Reads back the camera center parameters of the target camera.
@@ -133,8 +133,8 @@ public:
   inline void
   getCameraCenters (float& cx, float& cy) const
   {
-    cx = projection_matrix_(0, 2);
-    cy = projection_matrix_(1, 2);
+    cx = projection_matrix_ (0, 2);
+    cy = projection_matrix_ (1, 2);
   }
 
 protected:
@@ -144,7 +144,7 @@ protected:
   inline void
   applyRejection (pcl::Correspondences& correspondences)
   {
-    getRemainingCorrespondences(*input_correspondences_, correspondences);
+    getRemainingCorrespondences (*input_correspondences_, correspondences);
   }
 
   /** \brief Camera projection matrix. */

@@ -31,25 +31,25 @@ class ON_Line;
 class ON_BrepFace;
 class ON_3dPoint;
 
-typedef int (*TEXMAP_INTERSECT_LINE_SURFACE)(const ON_Line*,
-                                             const ON_BrepFace*,
-                                             ON_SimpleArray<ON_X_EVENT>&);
-typedef bool (*TEXMAP_BREP_FACE_CLOSEST_POINT)(const ON_BrepFace*,
-                                               const ON_3dPoint*,
-                                               ON_3dPoint&);
+typedef int (*TEXMAP_INTERSECT_LINE_SURFACE) (const ON_Line*,
+                                              const ON_BrepFace*,
+                                              ON_SimpleArray<ON_X_EVENT>&);
+typedef bool (*TEXMAP_BREP_FACE_CLOSEST_POINT) (const ON_BrepFace*,
+                                                const ON_3dPoint*,
+                                                ON_3dPoint&);
 
 class ON_CLASS ON_TextureMapping : public ON_Object {
 public:
-  ON_OBJECT_DECLARE(ON_TextureMapping);
+  ON_OBJECT_DECLARE (ON_TextureMapping);
 
   ON_TextureMapping();
   ~ON_TextureMapping();
 
   // The copy constructor and operator= overrides are needed
   // to ensure m_geometry is properly copied.
-  ON_TextureMapping(const ON_TextureMapping& src);
+  ON_TextureMapping (const ON_TextureMapping& src);
   ON_TextureMapping&
-  operator=(const ON_TextureMapping& src);
+  operator= (const ON_TextureMapping& src);
 
   // overrides virtual ON_Object::IsValid
   ON_BOOL32
@@ -655,7 +655,7 @@ public:
   TextureSpaceFromInt (int i);
 
   ON__UINT32
-  MappingCRC () const;
+  MappingCRC() const;
 };
 
 #if defined(ON_DLL_TEMPLATE)

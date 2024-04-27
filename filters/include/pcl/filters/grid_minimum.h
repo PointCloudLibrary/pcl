@@ -69,9 +69,9 @@ protected:
 
 public:
   /** \brief Empty constructor. */
-  GridMinimum(const float resolution)
+  GridMinimum (const float resolution)
   {
-    setResolution(resolution);
+    setResolution (resolution);
     filter_name_ = "GridMinimum";
   }
 
@@ -115,7 +115,7 @@ protected:
   void
   applyFilter (Indices& indices) override
   {
-    applyFilterIndices(indices);
+    applyFilterIndices (indices);
   }
 
   /** \brief Filtered results are indexed by an indices array.

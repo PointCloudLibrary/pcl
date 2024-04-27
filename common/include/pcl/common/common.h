@@ -319,20 +319,20 @@ template <typename IteratorT, typename Functor>
 inline auto
 computeMedian (IteratorT begin, IteratorT end, Functor f) noexcept ->
 #if __cpp_lib_is_invocable
-    std::invoke_result_t<Functor, decltype(*begin)>
+    std::invoke_result_t<Functor, decltype (*begin)>
 #else
-    std::result_of_t<Functor(decltype(*begin))>
+    std::result_of_t<Functor (decltype (*begin))>
 #endif
 {
-  const std::size_t size = std::distance(begin, end);
+  const std::size_t size = std::distance (begin, end);
   const std::size_t mid = size / 2;
   if (size % 2 == 0) { // Even number of values
-    std::nth_element(begin, begin + (mid - 1), end);
-    return (f(begin[mid - 1]) + f(*(std::min_element(begin + mid, end)))) / 2.0;
+    std::nth_element (begin, begin + (mid - 1), end);
+    return (f (begin[mid - 1]) + f (*(std::min_element (begin + mid, end)))) / 2.0;
   }
   else { // Odd number of values
-    std::nth_element(begin, begin + mid, end);
-    return f(begin[mid]);
+    std::nth_element (begin, begin + mid, end);
+    return f (begin[mid]);
   }
 }
 
@@ -344,7 +344,7 @@ inline auto
 computeMedian (IteratorT begin, IteratorT end) noexcept ->
     typename std::iterator_traits<IteratorT>::value_type
 {
-  return computeMedian(begin, end, [] (const auto& x) { return x; });
+  return computeMedian (begin, end, [] (const auto& x) { return x; });
 }
 } // namespace pcl
 /*@}*/

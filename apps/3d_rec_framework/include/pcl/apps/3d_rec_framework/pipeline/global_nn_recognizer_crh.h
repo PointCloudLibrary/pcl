@@ -38,7 +38,7 @@ protected:
 
   struct sortIndexScores {
     bool
-    operator()(const index_score& d1, const index_score& d2)
+    operator() (const index_score& d1, const index_score& d2)
     {
       return d1.score_ < d2.score_;
     }
@@ -107,9 +107,9 @@ protected:
     data.rows = models.size();
     data.cols = models[0].descr.size(); // number of histogram bins
 
-    flann::Matrix<float> flann_data(new float[models.size() * models[0].descr.size()],
-                                    models.size(),
-                                    models[0].descr.size());
+    flann::Matrix<float> flann_data (new float[models.size() * models[0].descr.size()],
+                                     models.size(),
+                                     models[0].descr.size());
 
     for (std::size_t i = 0; i < data.rows; ++i)
       for (std::size_t j = 0; j < data.cols; ++j) {

@@ -60,17 +60,17 @@ getFeaturePointCloud (
         histograms2D,
     PointCloud<Histogram<N>>& histogramsPC)
 {
-  histogramsPC.resize(histograms2D.size());
+  histogramsPC.resize (histograms2D.size());
   histogramsPC.width = histograms2D.size();
   histogramsPC.height = 1;
   histogramsPC.is_dense = true;
 
-  const int rows = histograms2D.at(0).rows();
-  const int cols = histograms2D.at(0).cols();
+  const int rows = histograms2D.at (0).rows();
+  const int cols = histograms2D.at (0).cols();
 
   typename PointCloud<Histogram<N>>::VectorType::iterator it = histogramsPC.begin();
   for (const Eigen::MatrixXf& h : histograms2D) {
-    Eigen::Map<Eigen::MatrixXf> histogram(&(it->histogram[0]), rows, cols);
+    Eigen::Map<Eigen::MatrixXf> histogram (&(it->histogram[0]), rows, cols);
     histogram = h;
     ++it;
   }
@@ -209,9 +209,10 @@ public:
   inline void
   setKSearch (int)
   {
-    PCL_ERROR("[pcl::%s::setKSearch] RSD does not work with k nearest neighbor search. "
-              "Use setRadiusSearch() instead!\n",
-              getClassName().c_str());
+    PCL_ERROR (
+        "[pcl::%s::setKSearch] RSD does not work with k nearest neighbor search. "
+        "Use setRadiusSearch() instead!\n",
+        getClassName().c_str());
   }
 
   /** \brief Set whether the full distance-angle histograms should be saved.

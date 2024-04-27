@@ -59,10 +59,10 @@ public:
   using GraphHandlerVertex = typename pcl::registration::GraphHandler<GraphT>::Vertex;
 
   /** \brief Empty constructor */
-  PairwiseGraphRegistration() : registration_method_(), incremental_(true) {}
+  PairwiseGraphRegistration() : registration_method_(), incremental_ (true) {}
   /** \brief Constructor */
-  PairwiseGraphRegistration(const RegistrationPtr& reg, bool incremental)
-  : registration_method_(reg), incremental_(incremental)
+  PairwiseGraphRegistration (const RegistrationPtr& reg, bool incremental)
+  : registration_method_ (reg), incremental_ (incremental)
   {}
 
   /** \brief Set the registration object */

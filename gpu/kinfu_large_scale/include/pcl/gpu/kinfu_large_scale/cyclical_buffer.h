@@ -64,9 +64,9 @@ public:
    * volume (here, a cube) represented by the TSDF buffer. \param[in] nb_voxels_per_axis
    * number of voxels per axis of the volume represented by the TSDF buffer.
    */
-  CyclicalBuffer(const double distance_threshold,
-                 const double cube_size = 3.f,
-                 const int nb_voxels_per_axis = 512)
+  CyclicalBuffer (const double distance_threshold,
+                  const double cube_size = 3.f,
+                  const int nb_voxels_per_axis = 512)
   {
     distance_threshold_ = distance_threshold;
     buffer_.volume_size.x = cube_size;
@@ -87,13 +87,13 @@ public:
    * represented by the TSDF buffer. \param[in] nb_voxels_z number of voxels for Z axis
    * of the volume represented by the TSDF buffer.
    */
-  CyclicalBuffer(const double distance_threshold,
-                 const double volume_size_x,
-                 const double volume_size_y,
-                 const double volume_size_z,
-                 const int nb_voxels_x,
-                 const int nb_voxels_y,
-                 const int nb_voxels_z)
+  CyclicalBuffer (const double distance_threshold,
+                  const double volume_size_x,
+                  const double volume_size_y,
+                  const double volume_size_z,
+                  const int nb_voxels_x,
+                  const int nb_voxels_y,
+                  const int nb_voxels_z)
   {
     distance_threshold_ = distance_threshold;
     buffer_.volume_size.x = volume_size_x;
@@ -218,10 +218,10 @@ public:
   {
     PtrStep<short2> localVolume = tsdf_volume->data();
 
-    buffer_.tsdf_memory_start = &(localVolume.ptr(0)[0]);
+    buffer_.tsdf_memory_start = &(localVolume.ptr (0)[0]);
     buffer_.tsdf_memory_end =
-        &(localVolume.ptr(buffer_.voxels_size.y * (buffer_.voxels_size.z - 1) +
-                          (buffer_.voxels_size.y - 1))[buffer_.voxels_size.x - 1]);
+        &(localVolume.ptr (buffer_.voxels_size.y * (buffer_.voxels_size.z - 1) +
+                           (buffer_.voxels_size.y - 1))[buffer_.voxels_size.x - 1]);
     buffer_.tsdf_rolling_buff_origin = buffer_.tsdf_memory_start;
   }
 
@@ -240,7 +240,7 @@ public:
     buffer_.origin_metric.x = 0.f;
     buffer_.origin_metric.y = 0.f;
     buffer_.origin_metric.z = 0.f;
-    initBuffer(tsdf_volume);
+    initBuffer (tsdf_volume);
   }
 
   /** \brief Return a pointer to the world model
@@ -300,13 +300,13 @@ private:
 
     // update memory pointers
     PtrStep<short2> localVolume = tsdf_volume->data();
-    buffer_.tsdf_memory_start = &(localVolume.ptr(0)[0]);
+    buffer_.tsdf_memory_start = &(localVolume.ptr (0)[0]);
     buffer_.tsdf_memory_end =
-        &(localVolume.ptr(buffer_.voxels_size.y * (buffer_.voxels_size.z - 1) +
-                          (buffer_.voxels_size.y - 1))[buffer_.voxels_size.x - 1]);
+        &(localVolume.ptr (buffer_.voxels_size.y * (buffer_.voxels_size.z - 1) +
+                           (buffer_.voxels_size.y - 1))[buffer_.voxels_size.x - 1]);
     buffer_.tsdf_rolling_buff_origin =
-        &(localVolume.ptr(buffer_.voxels_size.y * (buffer_.origin_GRID.z) +
-                          (buffer_.origin_GRID.y))[buffer_.origin_GRID.x]);
+        &(localVolume.ptr (buffer_.voxels_size.y * (buffer_.origin_GRID.z) +
+                           (buffer_.origin_GRID.y))[buffer_.origin_GRID.x]);
 
     // update global origin
     buffer_.origin_GRID_global.x += offset_x;

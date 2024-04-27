@@ -43,7 +43,7 @@ public:
     circle - [in]
     angle_in_radians - [in]
   */
-  ON_Arc(const ON_Circle& circle, double angle_in_radians);
+  ON_Arc (const ON_Circle& circle, double angle_in_radians);
 
   /*
   Parameters:
@@ -51,7 +51,7 @@ public:
     angle_interval_in_radians - [in] increasing angle interval
        in radians with angle_interval_in_radians.Length() <= 2.0*ON_PI.
   */
-  ON_Arc(const ON_Circle& circle, ON_Interval angle_interval_in_radians);
+  ON_Arc (const ON_Circle& circle, ON_Interval angle_interval_in_radians);
 
   /*
   Description:
@@ -65,7 +65,7 @@ public:
     radius - [in]
     angle_in_radians - [in]
   */
-  ON_Arc(const ON_Plane& plane, double radius, double angle_in_radians);
+  ON_Arc (const ON_Plane& plane, double radius, double angle_in_radians);
 
   /*
   Description:
@@ -77,7 +77,7 @@ public:
     radius - [in]
     angle_in_radians - [in]
   */
-  ON_Arc(const ON_3dPoint& center, double radius, double angle_in_radians);
+  ON_Arc (const ON_3dPoint& center, double radius, double angle_in_radians);
 
   /*
   Description:
@@ -93,10 +93,10 @@ public:
     radius - [in]
     angle_in_radians - [in]
   */
-  ON_Arc(const ON_Plane& plane,
-         const ON_3dPoint& center,
-         double radius,
-         double angle_in_radians);
+  ON_Arc (const ON_Plane& plane,
+          const ON_3dPoint& center,
+          double radius,
+          double angle_in_radians);
 
   /*
   Description:
@@ -106,9 +106,9 @@ public:
     interior_point - [in]
     end_point - [in]
   */
-  ON_Arc(const ON_2dPoint& start_point,
-         const ON_2dPoint& interior_point,
-         const ON_2dPoint& end_point);
+  ON_Arc (const ON_2dPoint& start_point,
+          const ON_2dPoint& interior_point,
+          const ON_2dPoint& end_point);
 
   /*
   Description:
@@ -118,9 +118,9 @@ public:
     interior_point - [in]
     end_point - [in]
   */
-  ON_Arc(const ON_3dPoint& start_point,
-         const ON_3dPoint& interior_point,
-         const ON_3dPoint& end_point);
+  ON_Arc (const ON_3dPoint& start_point,
+          const ON_3dPoint& interior_point,
+          const ON_3dPoint& end_point);
 
   /*
   Description:
@@ -250,7 +250,7 @@ public:
           const ON_3dPoint& end_point);
 
   ON_Arc&
-  operator=(const ON_Circle&);
+  operator= (const ON_Circle&);
 
   ~ON_Arc();
 
@@ -557,9 +557,9 @@ public:
 
 private:
   friend bool
-  ON_BinaryArchive::ReadArc(ON_Arc&);
+  ON_BinaryArchive::ReadArc (ON_Arc&);
   friend bool
-  ON_BinaryArchive::WriteArc(const ON_Arc&);
+  ON_BinaryArchive::WriteArc (const ON_Arc&);
 
   // increasing interval with start and end angle in radians
   ON_Interval m_angle;

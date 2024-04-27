@@ -11,7 +11,7 @@
 
 class Mesh {
 public:
-  Mesh() : points(new PointCloud) {}
+  Mesh() : points (new PointCloud) {}
   PointCloudPtr points;
   std::vector<pcl::Vertices> faces;
 };
@@ -23,7 +23,7 @@ smoothPointCloud (const PointCloudPtr& /*input*/,
                   float /*radius*/,
                   int /*polynomial_order*/)
 {
-  PointCloudPtr output(new PointCloud);
+  PointCloudPtr output (new PointCloud);
   return (output);
 }
 
@@ -32,21 +32,21 @@ computeSurfaceElements (const PointCloudPtr& /*input*/,
                         float /*radius*/,
                         int /*polynomial_order*/)
 {
-  SurfaceElementsPtr surfels(new SurfaceElements);
+  SurfaceElementsPtr surfels (new SurfaceElements);
   return (surfels);
 }
 
 MeshPtr
 computeConvexHull (const PointCloudPtr& /*input*/)
 {
-  MeshPtr output(new Mesh);
+  MeshPtr output (new Mesh);
   return (output);
 }
 
 MeshPtr
 computeConcaveHull (const PointCloudPtr& /*input*/, float /*alpha*/)
 {
-  MeshPtr output(new Mesh);
+  MeshPtr output (new Mesh);
   return (output);
 }
 
@@ -60,7 +60,7 @@ greedyTriangulation (const SurfaceElementsPtr& /*surfels*/,
                      float /*max_angle*/)
 
 {
-  pcl::PolygonMesh::Ptr output(new pcl::PolygonMesh);
+  pcl::PolygonMesh::Ptr output (new pcl::PolygonMesh);
   return (output);
 }
 
@@ -69,6 +69,6 @@ marchingCubesTriangulation (const SurfaceElementsPtr& /*surfels*/,
                             float /*leaf_size*/,
                             float /*iso_level*/)
 {
-  pcl::PolygonMesh::Ptr output(new pcl::PolygonMesh);
+  pcl::PolygonMesh::Ptr output (new pcl::PolygonMesh);
   return (output);
 }

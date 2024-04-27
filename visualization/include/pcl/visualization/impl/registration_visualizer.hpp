@@ -47,7 +47,7 @@ void
 RegistrationVisualizer<PointSource, PointTarget, Scalar>::startDisplay()
 {
   // Create and start the rendering thread. This will open the display window.
-  viewer_thread_ = std::thread(
+  viewer_thread_ = std::thread (
       &pcl::RegistrationVisualizer<PointSource, PointTarget, Scalar>::runDisplay, this);
 }
 
@@ -66,61 +66,61 @@ void
 RegistrationVisualizer<PointSource, PointTarget, Scalar>::runDisplay()
 {
   // Open 3D viewer
-  viewer_ = pcl::visualization::PCLVisualizer::Ptr(
-      new pcl::visualization::PCLVisualizer("3D Viewer"));
+  viewer_ = pcl::visualization::PCLVisualizer::Ptr (
+      new pcl::visualization::PCLVisualizer ("3D Viewer"));
   viewer_->initCameraParameters();
 
   // Create the handlers for the three point clouds buffers: cloud_source_,
   // cloud_target_ and cloud_intermediate_
-  pcl::visualization::PointCloudColorHandlerCustom<PointSource> cloud_source_handler_(
+  pcl::visualization::PointCloudColorHandlerCustom<PointSource> cloud_source_handler_ (
       cloud_source_.makeShared(), 255, 0, 0);
-  pcl::visualization::PointCloudColorHandlerCustom<PointTarget> cloud_target_handler_(
+  pcl::visualization::PointCloudColorHandlerCustom<PointTarget> cloud_target_handler_ (
       cloud_target_.makeShared(), 0, 0, 255);
   pcl::visualization::PointCloudColorHandlerCustom<PointSource>
-      cloud_intermediate_handler_(cloud_intermediate_.makeShared(), 255, 255, 0);
+      cloud_intermediate_handler_ (cloud_intermediate_.makeShared(), 255, 255, 0);
 
   // Create the view port for displaying initial source and target point clouds
-  int v1(0);
-  viewer_->createViewPort(0.0, 0.0, 0.5, 1.0, v1);
-  viewer_->setBackgroundColor(0, 0, 0, v1);
-  viewer_->addText(
+  int v1 (0);
+  viewer_->createViewPort (0.0, 0.0, 0.5, 1.0, v1);
+  viewer_->setBackgroundColor (0, 0, 0, v1);
+  viewer_->addText (
       "Initial position of source and target point clouds", 10, 50, "title v1", v1);
-  viewer_->addText("Blue -> target", 10, 30, 0.0, 0.0, 1.0, "legend target v1", v1);
-  viewer_->addText("Red  -> source", 10, 10, 1.0, 0.0, 0.0, "legend source v1", v1);
+  viewer_->addText ("Blue -> target", 10, 30, 0.0, 0.0, 1.0, "legend target v1", v1);
+  viewer_->addText ("Red  -> source", 10, 10, 1.0, 0.0, 0.0, "legend source v1", v1);
   //
-  viewer_->addPointCloud<PointSource>(
+  viewer_->addPointCloud<PointSource> (
       cloud_source_.makeShared(), cloud_source_handler_, "cloud source v1", v1);
-  viewer_->addPointCloud<PointTarget>(
+  viewer_->addPointCloud<PointTarget> (
       cloud_target_.makeShared(), cloud_target_handler_, "cloud target v1", v1);
 
   // Create the view port for displaying the registration process of source to target
   // point cloud
-  int v2(0);
-  viewer_->createViewPort(0.5, 0.0, 1.0, 1.0, v2);
-  viewer_->setBackgroundColor(0.1, 0.1, 0.1, v2);
+  int v2 (0);
+  viewer_->createViewPort (0.5, 0.0, 1.0, 1.0, v2);
+  viewer_->setBackgroundColor (0.1, 0.1, 0.1, v2);
   std::string registration_port_title_ =
       "Registration using " + registration_method_name_;
-  viewer_->addText(registration_port_title_, 10, 90, "title v2", v2);
+  viewer_->addText (registration_port_title_, 10, 90, "title v2", v2);
 
-  viewer_->addText(
+  viewer_->addText (
       "Yellow -> intermediate", 10, 50, 1.0, 1.0, 0.0, "legend intermediate v2", v2);
-  viewer_->addText("Blue   -> target", 10, 30, 0.0, 0.0, 1.0, "legend target v2", v2);
-  viewer_->addText("Red    -> source", 10, 10, 1.0, 0.0, 0.0, "legend source v2", v1);
+  viewer_->addText ("Blue   -> target", 10, 30, 0.0, 0.0, 1.0, "legend target v2", v2);
+  viewer_->addText ("Red    -> source", 10, 10, 1.0, 0.0, 0.0, "legend source v2", v1);
 
   //    viewer_->addPointCloud<PointSource> (cloud_source_.makeShared (),
   //    cloud_source_handler_, "cloud source v2", v2);
-  viewer_->addPointCloud<PointTarget>(
+  viewer_->addPointCloud<PointTarget> (
       cloud_target_.makeShared(), cloud_target_handler_, "cloud target v2", v2);
-  viewer_->addPointCloud<PointSource>(cloud_intermediate_.makeShared(),
-                                      cloud_intermediate_handler_,
-                                      "cloud intermediate v2",
-                                      v2);
+  viewer_->addPointCloud<PointSource> (cloud_intermediate_.makeShared(),
+                                       cloud_intermediate_handler_,
+                                       "cloud intermediate v2",
+                                       v2);
 
   // Used to remove all old correspondences
   std::size_t correspondeces_old_size = 0;
 
   // Add coordinate system to both ports
-  viewer_->addCoordinateSystem(1.0, "global");
+  viewer_->addCoordinateSystem (1.0, "global");
 
   // The root name of correspondence lines
   std::string line_root_ = "line";
@@ -132,13 +132,13 @@ RegistrationVisualizer<PointSource, PointTarget, Scalar>::runDisplay()
 
     // Updating intermediate point cloud
     // Remove old point cloud
-    viewer_->removePointCloud("cloud intermediate v2", v2);
+    viewer_->removePointCloud ("cloud intermediate v2", v2);
 
     // Add the new point cloud
-    viewer_->addPointCloud<PointSource>(cloud_intermediate_.makeShared(),
-                                        cloud_intermediate_handler_,
-                                        "cloud intermediate v2",
-                                        v2);
+    viewer_->addPointCloud<PointSource> (cloud_intermediate_.makeShared(),
+                                         cloud_intermediate_handler_,
+                                         "cloud intermediate v2",
+                                         v2);
 
     // Updating the correspondece lines
 
@@ -147,19 +147,19 @@ RegistrationVisualizer<PointSource, PointTarget, Scalar>::runDisplay()
     for (std::size_t correspondence_id = 0; correspondence_id < correspondeces_old_size;
          ++correspondence_id) {
       // Generate the line name
-      line_name_ = getIndexedName(line_root_, correspondence_id);
+      line_name_ = getIndexedName (line_root_, correspondence_id);
 
       // Remove the current line according to it's name
-      viewer_->removeShape(line_name_, v2);
+      viewer_->removeShape (line_name_, v2);
     }
 
     // Display the new correspondences lines
     std::size_t correspondences_new_size = cloud_intermediate_indices_.size();
 
     const std::string correspondences_text =
-        "Random -> correspondences " + std::to_string(correspondences_new_size);
-    viewer_->removeShape("correspondences_size", 0);
-    viewer_->addText(
+        "Random -> correspondences " + std::to_string (correspondences_new_size);
+    viewer_->removeShape ("correspondences_size", 0);
+    viewer_->addText (
         correspondences_text, 10, 70, 0.0, 1.0, 0.0, "correspondences_size", v2);
 
     // Display entire set of correspondece lines if no maximum displayed correspondences
@@ -181,10 +181,10 @@ RegistrationVisualizer<PointSource, PointTarget, Scalar>::runDisplay()
       double random_blue = 255 * rand() / (RAND_MAX + 1.0);
 
       // Generate the name for current line
-      line_name_ = getIndexedName(line_root_, correspondence_id);
+      line_name_ = getIndexedName (line_root_, correspondence_id);
 
       // Add the new correspondence line.
-      viewer_->addLine(
+      viewer_->addLine (
           cloud_intermediate_[cloud_intermediate_indices_[correspondence_id]],
           cloud_target_[cloud_target_indices_[correspondence_id]],
           random_red,
@@ -198,15 +198,15 @@ RegistrationVisualizer<PointSource, PointTarget, Scalar>::runDisplay()
     visualizer_updating_mutex_.unlock();
 
     // Render visualizer updated buffers
-    viewer_->spinOnce(100);
+    viewer_->spinOnce (100);
     using namespace std::chrono_literals;
-    std::this_thread::sleep_for(100ms);
+    std::this_thread::sleep_for (100ms);
   }
 }
 
 template <typename PointSource, typename PointTarget, typename Scalar>
 void
-RegistrationVisualizer<PointSource, PointTarget, Scalar>::updateIntermediateCloud(
+RegistrationVisualizer<PointSource, PointTarget, Scalar>::updateIntermediateCloud (
     const pcl::PointCloud<PointSource>& cloud_src,
     const pcl::Indices& indices_src,
     const pcl::PointCloud<PointTarget>& cloud_tgt,

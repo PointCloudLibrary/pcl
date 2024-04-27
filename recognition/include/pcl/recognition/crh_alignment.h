@@ -31,7 +31,7 @@ private:
   /** \brief Sorts peaks */
   struct peaks_ordering {
     bool
-    operator()(std::pair<float, int> const& a, std::pair<float, int> const& b)
+    operator() (std::pair<float, int> const& a, std::pair<float, int> const& b)
     {
       return a.first > b.first;
     }
@@ -71,10 +71,11 @@ private:
     plane_normal[2] = -centroid[2];
     Eigen::Vector3f z_vector = Eigen::Vector3f::UnitZ();
     plane_normal.normalize();
-    Eigen::Vector3f axis = plane_normal.cross(z_vector);
-    double rotation = -asin(axis.norm());
+    Eigen::Vector3f axis = plane_normal.cross (z_vector);
+    double rotation = -asin (axis.norm());
     axis.normalize();
-    transform = Eigen::Affine3f(Eigen::AngleAxisf(static_cast<float>(rotation), axis));
+    transform =
+        Eigen::Affine3f (Eigen::AngleAxisf (static_cast<float> (rotation), axis));
   }
 
   /** \brief computes the roll transformation
@@ -90,13 +91,13 @@ private:
                         Eigen::Affine3f& final_trans)
   {
     Eigen::Affine3f transformInputToZ;
-    computeTransformToZAxes(centroidInput, transformInputToZ);
+    computeTransformToZAxes (centroidInput, transformInputToZ);
 
     transformInputToZ = transformInputToZ.inverse();
-    Eigen::Affine3f transformRoll(Eigen::AngleAxisf(
-        -static_cast<float>(roll_angle * M_PI / 180), Eigen::Vector3f::UnitZ()));
+    Eigen::Affine3f transformRoll (Eigen::AngleAxisf (
+        -static_cast<float> (roll_angle * M_PI / 180), Eigen::Vector3f::UnitZ()));
     Eigen::Affine3f transformDBResultToZ;
-    computeTransformToZAxes(centroidResult, transformDBResultToZ);
+    computeTransformToZAxes (centroidResult, transformDBResultToZ);
 
     final_trans = transformInputToZ * transformRoll * transformDBResultToZ;
   }
@@ -154,28 +155,28 @@ public:
     transforms_.clear(); // clear from last round...
 
     std::vector<float> peaks;
-    computeRollAngle(input_ftt, target_ftt, peaks);
+    computeRollAngle (input_ftt, target_ftt, peaks);
 
     // if the number of peaks is too big, we should try to reduce using siluette
     // matching
 
     for (const float& peak : peaks) {
       Eigen::Affine3f rollToRot;
-      computeRollTransform(centroid_input_, centroid_target_, peak, rollToRot);
+      computeRollTransform (centroid_input_, centroid_target_, peak, rollToRot);
 
       Eigen::Matrix4f rollHomMatrix = Eigen::Matrix4f();
-      rollHomMatrix.setIdentity(4, 4);
+      rollHomMatrix.setIdentity (4, 4);
       rollHomMatrix = rollToRot.matrix();
 
       Eigen::Matrix4f translation2;
-      translation2.setIdentity(4, 4);
+      translation2.setIdentity (4, 4);
       Eigen::Vector3f centr = rollToRot * centroid_target_;
-      translation2(0, 3) = centroid_input_[0] - centr[0];
-      translation2(1, 3) = centroid_input_[1] - centr[1];
-      translation2(2, 3) = centroid_input_[2] - centr[2];
+      translation2 (0, 3) = centroid_input_[0] - centr[0];
+      translation2 (1, 3) = centroid_input_[1] - centr[1];
+      translation2 (2, 3) = centroid_input_[2] - centr[2];
 
-      Eigen::Matrix4f resultHom(translation2 * rollHomMatrix);
-      transforms_.push_back(resultHom.inverse());
+      Eigen::Matrix4f resultHom (translation2 * rollHomMatrix);
+      transforms_.push_back (resultHom.inverse());
     }
   }
 
@@ -190,7 +191,7 @@ public:
                     std::vector<float>& peaks)
   {
 
-    pcl::PointCloud<pcl::Histogram<nbins_>> input_ftt_negate(input_ftt);
+    pcl::PointCloud<pcl::Histogram<nbins_>> input_ftt_negate (input_ftt);
 
     for (int i = 2; i < (nbins_); i += 2)
       input_ftt_negate[0].histogram[i] = -input_ftt_negate[0].histogram[i];
@@ -216,7 +217,7 @@ public:
       multAB[k].r = a * c - b * d;
       multAB[k].i = b * c + a * d;
 
-      float tmp = std::sqrt(multAB[k].r * multAB[k].r + multAB[k].i * multAB[k].i);
+      float tmp = std::sqrt (multAB[k].r * multAB[k].r + multAB[k].i * multAB[k].i);
 
       multAB[k].r /= tmp;
       multAB[k].i /= tmp;
@@ -225,15 +226,15 @@ public:
     multAB[nbins_ - 1].r =
         input_ftt_negate[0].histogram[nbins_ - 1] * target_ftt[0].histogram[nbins_ - 1];
 
-    kiss_fft_cfg mycfg = kiss_fft_alloc(nr_bins_after_padding, 1, nullptr, nullptr);
+    kiss_fft_cfg mycfg = kiss_fft_alloc (nr_bins_after_padding, 1, nullptr, nullptr);
     kiss_fft_cpx* invAB = new kiss_fft_cpx[nr_bins_after_padding];
-    kiss_fft(mycfg, multAB, invAB);
+    kiss_fft (mycfg, multAB, invAB);
 
-    std::vector<std::pair<float, int>> scored_peaks(nr_bins_after_padding);
+    std::vector<std::pair<float, int>> scored_peaks (nr_bins_after_padding);
     for (int i = 0; i < nr_bins_after_padding; i++)
-      scored_peaks[i] = std::make_pair(invAB[i].r, i);
+      scored_peaks[i] = std::make_pair (invAB[i].r, i);
 
-    std::sort(scored_peaks.begin(), scored_peaks.end(), peaks_ordering());
+    std::sort (scored_peaks.begin(), scored_peaks.end(), peaks_ordering());
 
     std::vector<int> peaks_indices;
     std::vector<float> peaks_values;
@@ -244,28 +245,28 @@ public:
 
     int inserted = 0;
     bool stop = false;
-    for (int i = 0;
-         (i < static_cast<int>(quantile * static_cast<float>(nr_bins_after_padding))) &&
-         !stop;
+    for (int i = 0; (i < static_cast<int> (
+                             quantile * static_cast<float> (nr_bins_after_padding))) &&
+                    !stop;
          i++) {
       if (scored_peaks[i].first >= scored_peaks[0].first * accept_threshold_) {
         bool insert = true;
 
         for (const int& peaks_index :
              peaks_indices) { // check inserted peaks, first pick always inserted
-          if ((std::abs(peaks_index - scored_peaks[i].second) <= peak_distance) ||
-              (std::abs(peaks_index - (scored_peaks[i].second -
-                                       nr_bins_after_padding)) <= peak_distance)) {
+          if ((std::abs (peaks_index - scored_peaks[i].second) <= peak_distance) ||
+              (std::abs (peaks_index - (scored_peaks[i].second -
+                                        nr_bins_after_padding)) <= peak_distance)) {
             insert = false;
             break;
           }
         }
 
         if (insert) {
-          peaks_indices.push_back(scored_peaks[i].second);
-          peaks_values.push_back(scored_peaks[i].first);
-          peaks.push_back(static_cast<float>(scored_peaks[i].second *
-                                             (360 / nr_bins_after_padding)));
+          peaks_indices.push_back (scored_peaks[i].second);
+          peaks_values.push_back (scored_peaks[i].first);
+          peaks.push_back (static_cast<float> (scored_peaks[i].second *
+                                               (360 / nr_bins_after_padding)));
           inserted++;
           if (inserted >= max_inserted)
             stop = true;

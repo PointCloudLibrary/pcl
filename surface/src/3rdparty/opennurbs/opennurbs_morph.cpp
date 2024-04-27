@@ -25,7 +25,7 @@ ON_Localizer::ON_Localizer()
 
 ON_Localizer::~ON_Localizer() { Destroy(); }
 
-ON_Localizer::ON_Localizer(const ON_Localizer& src)
+ON_Localizer::ON_Localizer (const ON_Localizer& src)
 {
   m_nurbs_curve = 0;
   m_nurbs_surface = 0;
@@ -34,7 +34,7 @@ ON_Localizer::ON_Localizer(const ON_Localizer& src)
 }
 
 ON_Localizer&
-ON_Localizer::operator=(const ON_Localizer& src)
+ON_Localizer::operator= (const ON_Localizer& src)
 {
   if (this != &src) {
     Destroy();
@@ -54,9 +54,9 @@ void
 ON_Localizer::Destroy()
 {
   m_type = no_type;
-  m_P.Set(0.0, 0.0, 0.0);
-  m_V.Set(0.0, 0.0, 0.0);
-  m_d.Set(0.0, 0.0);
+  m_P.Set (0.0, 0.0, 0.0);
+  m_V.Set (0.0, 0.0, 0.0);
+  m_d.Set (0.0, 0.0);
   if (m_nurbs_curve) {
     delete m_nurbs_curve;
     m_nurbs_curve = 0;
@@ -68,43 +68,43 @@ ON_Localizer::Destroy()
 }
 
 bool
-ON_Localizer::Write(ON_BinaryArchive& archive) const
+ON_Localizer::Write (ON_BinaryArchive& archive) const
 {
-  bool rc = archive.BeginWrite3dmChunk(TCODE_ANONYMOUS_CHUNK, 1, 0);
+  bool rc = archive.BeginWrite3dmChunk (TCODE_ANONYMOUS_CHUNK, 1, 0);
   if (!rc)
     return false;
 
   for (;;) {
-    rc = archive.WriteInt(m_type);
+    rc = archive.WriteInt (m_type);
     if (!rc)
       break;
-    rc = archive.WritePoint(m_P);
+    rc = archive.WritePoint (m_P);
     if (!rc)
       break;
-    rc = archive.WriteVector(m_V);
+    rc = archive.WriteVector (m_V);
     if (!rc)
       break;
-    rc = archive.WriteInterval(m_d);
+    rc = archive.WriteInterval (m_d);
     if (!rc)
       break;
 
-    rc = archive.BeginWrite3dmChunk(TCODE_ANONYMOUS_CHUNK, 1, 0);
+    rc = archive.BeginWrite3dmChunk (TCODE_ANONYMOUS_CHUNK, 1, 0);
     if (!rc)
       break;
-    rc = archive.WriteBool(m_nurbs_curve ? true : false);
+    rc = archive.WriteBool (m_nurbs_curve ? true : false);
     if (rc && m_nurbs_curve)
-      rc = m_nurbs_curve->Write(archive) ? true : false;
+      rc = m_nurbs_curve->Write (archive) ? true : false;
     if (!archive.EndWrite3dmChunk())
       rc = false;
     if (!rc)
       break;
 
-    rc = archive.BeginWrite3dmChunk(TCODE_ANONYMOUS_CHUNK, 1, 0);
+    rc = archive.BeginWrite3dmChunk (TCODE_ANONYMOUS_CHUNK, 1, 0);
     if (!rc)
       break;
-    rc = archive.WriteBool(m_nurbs_surface ? true : false);
+    rc = archive.WriteBool (m_nurbs_surface ? true : false);
     if (rc && m_nurbs_surface)
-      rc = m_nurbs_surface->Write(archive) ? true : false;
+      rc = m_nurbs_surface->Write (archive) ? true : false;
     if (!archive.EndWrite3dmChunk())
       rc = false;
     if (!rc)
@@ -120,14 +120,14 @@ ON_Localizer::Write(ON_BinaryArchive& archive) const
 }
 
 bool
-ON_Localizer::Read(ON_BinaryArchive& archive)
+ON_Localizer::Read (ON_BinaryArchive& archive)
 {
   Destroy();
 
   int major_version = 0;
   int minor_version = 0;
   bool rc =
-      archive.BeginRead3dmChunk(TCODE_ANONYMOUS_CHUNK, &major_version, &minor_version);
+      archive.BeginRead3dmChunk (TCODE_ANONYMOUS_CHUNK, &major_version, &minor_version);
   if (!rc)
     return false;
 
@@ -137,7 +137,7 @@ ON_Localizer::Read(ON_BinaryArchive& archive)
       break;
 
     int i = no_type;
-    rc = archive.ReadInt(&i);
+    rc = archive.ReadInt (&i);
     if (!rc)
       break;
 
@@ -162,42 +162,42 @@ ON_Localizer::Read(ON_BinaryArchive& archive)
       break;
     }
 
-    rc = archive.ReadPoint(m_P);
+    rc = archive.ReadPoint (m_P);
     if (!rc)
       break;
-    rc = archive.ReadVector(m_V);
+    rc = archive.ReadVector (m_V);
     if (!rc)
       break;
-    rc = archive.ReadInterval(m_d);
+    rc = archive.ReadInterval (m_d);
     if (!rc)
       break;
 
     int mjv = 0, mnv = 0;
-    rc = archive.BeginRead3dmChunk(TCODE_ANONYMOUS_CHUNK, &mjv, &mnv);
+    rc = archive.BeginRead3dmChunk (TCODE_ANONYMOUS_CHUNK, &mjv, &mnv);
     if (!rc)
       break;
     rc = (1 == mjv);
     bool bReadCurve = false;
     if (rc)
-      rc = archive.ReadBool(&bReadCurve);
+      rc = archive.ReadBool (&bReadCurve);
     if (rc && bReadCurve) {
       m_nurbs_curve = new ON_NurbsCurve();
-      rc = m_nurbs_curve->Read(archive) ? true : false;
+      rc = m_nurbs_curve->Read (archive) ? true : false;
     }
     if (!archive.EndRead3dmChunk())
       rc = false;
     if (!rc)
       break;
 
-    rc = archive.BeginRead3dmChunk(TCODE_ANONYMOUS_CHUNK, &mjv, &mnv);
+    rc = archive.BeginRead3dmChunk (TCODE_ANONYMOUS_CHUNK, &mjv, &mnv);
     if (!rc)
       break;
     rc = (1 == mjv);
     bool bReadSurface = false;
-    rc = archive.ReadBool(&bReadSurface);
+    rc = archive.ReadBool (&bReadSurface);
     if (rc && bReadSurface) {
       m_nurbs_surface = new ON_NurbsSurface();
-      rc = m_nurbs_surface->Read(archive) ? true : false;
+      rc = m_nurbs_surface->Read (archive) ? true : false;
     }
     if (!archive.EndRead3dmChunk())
       rc = false;
@@ -214,53 +214,56 @@ ON_Localizer::Read(ON_BinaryArchive& archive)
 }
 
 bool
-ON_Localizer::CreateCylinderLocalizer(ON_3dPoint P, ON_3dVector V, double r0, double r1)
+ON_Localizer::CreateCylinderLocalizer (ON_3dPoint P,
+                                       ON_3dVector V,
+                                       double r0,
+                                       double r1)
 {
   Destroy();
-  if (P.IsValid() && V.IsValid() && V.Length() > 0.0 && ON_IsValid(r0) &&
-      ON_IsValid(r1) && r0 > 0.0 && r1 > 0.0 && r0 != r1) {
+  if (P.IsValid() && V.IsValid() && V.Length() > 0.0 && ON_IsValid (r0) &&
+      ON_IsValid (r1) && r0 > 0.0 && r1 > 0.0 && r0 != r1) {
     m_P = P;
     m_V = V;
     m_V.Unitize();
-    m_d.Set(r0, r1);
+    m_d.Set (r0, r1);
     m_type = cylinder_type;
   }
   return (cylinder_type == m_type);
 }
 
 bool
-ON_Localizer::CreatePlaneLocalizer(ON_3dPoint P, ON_3dVector N, double h0, double h1)
+ON_Localizer::CreatePlaneLocalizer (ON_3dPoint P, ON_3dVector N, double h0, double h1)
 {
   Destroy();
-  if (P.IsValid() && N.IsValid() && N.Length() > 0.0 && ON_IsValid(h0) &&
-      ON_IsValid(h1) && h0 != h1) {
+  if (P.IsValid() && N.IsValid() && N.Length() > 0.0 && ON_IsValid (h0) &&
+      ON_IsValid (h1) && h0 != h1) {
     m_V = N;
     m_V.Unitize();
-    m_P.Set(-(m_V.x * P.x + m_V.y * P.y + m_V.z * P.z), 0.0, 0.0);
-    m_d.Set(h0, h1);
+    m_P.Set (-(m_V.x * P.x + m_V.y * P.y + m_V.z * P.z), 0.0, 0.0);
+    m_d.Set (h0, h1);
     m_type = plane_type;
   }
   return (plane_type == m_type);
 }
 
 bool
-ON_Localizer::CreateSphereLocalizer(ON_3dPoint P, double r0, double r1)
+ON_Localizer::CreateSphereLocalizer (ON_3dPoint P, double r0, double r1)
 {
   Destroy();
-  if (P.IsValid() && ON_IsValid(r0) && ON_IsValid(r1) && r0 > 0.0 && r1 > 0.0 &&
+  if (P.IsValid() && ON_IsValid (r0) && ON_IsValid (r1) && r0 > 0.0 && r1 > 0.0 &&
       r0 != r1) {
     m_P = P;
     m_V.Zero();
-    m_d.Set(r0, r1);
+    m_d.Set (r0, r1);
     m_type = sphere_type;
   }
   return (sphere_type == m_type);
 }
 
 double
-ON_Localizer::Value(double t) const
+ON_Localizer::Value (double t) const
 {
-  double s = m_d.NormalizedParameterAt(t);
+  double s = m_d.NormalizedParameterAt (t);
   if (s <= 0.0)
     s = 0.0;
   else if (s >= 1.0)
@@ -272,14 +275,14 @@ ON_Localizer::Value(double t) const
 }
 
 double
-ON_Localizer::Value(ON_3dPoint P) const
+ON_Localizer::Value (ON_3dPoint P) const
 {
   double t = m_d.m_t[1];
 
   switch (m_type) {
   case cylinder_type:
     // t = distance from P to axis
-    t = ON_CrossProduct(P - m_P, m_V).Length();
+    t = ON_CrossProduct (P - m_P, m_V).Length();
     break;
 
   case plane_type:
@@ -307,11 +310,11 @@ ON_Localizer::Value(ON_3dPoint P) const
     return 1.0; // default must be one
   }
 
-  return Value(t);
+  return Value (t);
 }
 
 bool
-ON_Localizer::IsZero(const ON_BoundingBox& bbox) const
+ON_Localizer::IsZero (const ON_BoundingBox& bbox) const
 {
   bool rc = false;
 
@@ -322,7 +325,7 @@ ON_Localizer::IsZero(const ON_BoundingBox& bbox) const
   switch (m_type) {
   case cylinder_type: {
     ON_3dPointArray corners;
-    bbox.GetCorners(corners);
+    bbox.GetCorners (corners);
     int i;
     double t0, t1;
     t0 = t1 = (corners[0] - m_P) * m_V;
@@ -333,16 +336,16 @@ ON_Localizer::IsZero(const ON_BoundingBox& bbox) const
       else if (d > t1)
         t1 = d;
     }
-    ON_Line L(m_P + t0 * m_V, m_P + t1 * m_V);
+    ON_Line L (m_P + t0 * m_V, m_P + t1 * m_V);
     if (m_d[0] > m_d[1]) {
       // function is supported along the line
-      d = bbox.MinimumDistanceTo(L);
+      d = bbox.MinimumDistanceTo (L);
       if (d >= m_d[0])
         rc = true;
     }
     else {
       // function is supported outside cylinder
-      d = bbox.MaximumDistanceTo(L);
+      d = bbox.MaximumDistanceTo (L);
       if (d <= m_d[0])
         rc = true;
     }
@@ -361,7 +364,7 @@ ON_Localizer::IsZero(const ON_BoundingBox& bbox) const
       e.z = -e.z;
       e.d = -e.d;
     }
-    if (e.MaximumValueAt(bbox) <= 0.0)
+    if (e.MaximumValueAt (bbox) <= 0.0)
       rc = true;
   } break;
 
@@ -396,7 +399,7 @@ ON_Localizer::IsZero(const ON_BoundingBox& bbox) const
   if (bTestLocBox) {
     if (m_d[1] < m_d[0] && m_d[0] > 0.0) {
       // function is zero outside loc_bbox + m_d[0]
-      double d = loc_bbox.MinimumDistanceTo(bbox);
+      double d = loc_bbox.MinimumDistanceTo (bbox);
       if (d > m_d[0])
         rc = true;
     }
@@ -408,7 +411,7 @@ ON_Localizer::IsZero(const ON_BoundingBox& bbox) const
       loc_bbox.m_max.x -= m_d[0];
       loc_bbox.m_max.y -= m_d[0];
       loc_bbox.m_max.z -= m_d[0];
-      if (loc_bbox.IsValid() && loc_bbox.Includes(bbox))
+      if (loc_bbox.IsValid() && loc_bbox.Includes (bbox))
         rc = true;
     }
   }
@@ -431,9 +434,9 @@ ON_SpaceMorph::Tolerance() const
 }
 
 void
-ON_SpaceMorph::SetTolerance(double tolerance)
+ON_SpaceMorph::SetTolerance (double tolerance)
 {
-  m_tolerance = (ON_IsValid(tolerance) && tolerance > 0.0) ? tolerance : 0.0;
+  m_tolerance = (ON_IsValid (tolerance) && tolerance > 0.0) ? tolerance : 0.0;
 }
 
 bool
@@ -443,13 +446,13 @@ ON_SpaceMorph::QuickPreview() const
 }
 
 void
-ON_SpaceMorph::SetQuickPreview(bool bQuickPreview)
+ON_SpaceMorph::SetQuickPreview (bool bQuickPreview)
 {
   m_bQuickPreview = bQuickPreview ? true : false;
 }
 
 bool
-ON_SpaceMorph::IsIdentity(const ON_BoundingBox&) const
+ON_SpaceMorph::IsIdentity (const ON_BoundingBox&) const
 {
   return false;
 }
@@ -461,13 +464,13 @@ ON_SpaceMorph::PreserveStructure() const
 }
 
 void
-ON_SpaceMorph::SetPreserveStructure(bool bPreserveStructure)
+ON_SpaceMorph::SetPreserveStructure (bool bPreserveStructure)
 {
   m_bPreserveStructure = bPreserveStructure ? true : false;
 }
 
 bool
-ON_Mesh::EvaluatePoint(const class ON_ObjRef& objref, ON_3dPoint& P) const
+ON_Mesh::EvaluatePoint (const class ON_ObjRef& objref, ON_3dPoint& P) const
 {
   // virtual function default
   P = ON_UNSET_POINT;
@@ -492,18 +495,18 @@ ON_Mesh::EvaluatePoint(const class ON_ObjRef& objref, ON_3dPoint& P) const
 
   case ON_COMPONENT_INDEX::meshtop_edge:
     if (5 == objref.m_evp.m_t_type &&
-        fabs(objref.m_evp.m_t[0] + objref.m_evp.m_t[1] - 1.0) <= ON_SQRT_EPSILON) {
-      ON_Line L = m_top.TopEdgeLine(ci.m_index);
+        fabs (objref.m_evp.m_t[0] + objref.m_evp.m_t[1] - 1.0) <= ON_SQRT_EPSILON) {
+      ON_Line L = m_top.TopEdgeLine (ci.m_index);
       if (L.IsValid()) {
-        P = L.PointAt(objref.m_evp.m_t[0]);
+        P = L.PointAt (objref.m_evp.m_t[0]);
       }
     }
     break;
 
   case ON_COMPONENT_INDEX::mesh_face:
     if (4 == objref.m_evp.m_t_type &&
-        fabs(objref.m_evp.m_t[0] + objref.m_evp.m_t[1] + objref.m_evp.m_t[2] +
-             objref.m_evp.m_t[3] - 1.0) <= ON_SQRT_EPSILON) {
+        fabs (objref.m_evp.m_t[0] + objref.m_evp.m_t[1] + objref.m_evp.m_t[2] +
+              objref.m_evp.m_t[3] - 1.0) <= ON_SQRT_EPSILON) {
       if (ci.m_index >= 0 && ci.m_index < m_F.Count()) {
         const int* fvi = m_F[ci.m_index].vi;
         if (fvi[0] < 0 || fvi[0] >= m_V.Count())

@@ -79,7 +79,7 @@ public:
    * \param[in] random if true set the random seed to the current time, else set to
    * 12345 (default: false)
    */
-  SACSegmentation(bool random = false) : random_(random) {}
+  SACSegmentation (bool random = false) : random_ (random) {}
 
   /** \brief Empty destructor. */
   ~SACSegmentation() override = default;
@@ -397,7 +397,7 @@ public:
    * \param[in] random if true set the random seed to the current time, else set to
    * 12345 (default: false)
    */
-  SACSegmentationFromNormals(bool random = false) : SACSegmentation<PointT>(random){};
+  SACSegmentationFromNormals (bool random = false) : SACSegmentation<PointT> (random){};
 
   /** \brief Provide a pointer to the input dataset that contains the point normals of
    * the XYZ dataset.

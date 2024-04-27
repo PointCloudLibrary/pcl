@@ -16,16 +16,16 @@
 
 #include "pcl/surface/3rdparty/opennurbs/opennurbs.h"
 
-ON_OBJECT_IMPLEMENT(ON_SumSurface, ON_Surface, "C4CD5359-446D-4690-9FF5-29059732472B");
+ON_OBJECT_IMPLEMENT (ON_SumSurface, ON_Surface, "C4CD5359-446D-4690-9FF5-29059732472B");
 
 void
-ON_SumSurface::DestroyRuntimeCache(bool bDelete)
+ON_SumSurface::DestroyRuntimeCache (bool bDelete)
 {
-  ON_Surface::DestroyRuntimeCache(bDelete);
+  ON_Surface::DestroyRuntimeCache (bDelete);
   if (0 != m_curve[0])
-    m_curve[0]->DestroyRuntimeCache(bDelete);
+    m_curve[0]->DestroyRuntimeCache (bDelete);
   if (0 != m_curve[1])
-    m_curve[1]->DestroyRuntimeCache(bDelete);
+    m_curve[1]->DestroyRuntimeCache (bDelete);
   // 15 August 2003 Dale Lear:
   //    Added the call to destroy the cached bounding box
   m_bbox.Destroy();
@@ -38,14 +38,14 @@ ON_SumSurface::New()
 }
 
 ON_SumSurface*
-ON_SumSurface::New(const ON_SumSurface& rev_surface)
+ON_SumSurface::New (const ON_SumSurface& rev_surface)
 {
-  return new ON_SumSurface(rev_surface);
+  return new ON_SumSurface (rev_surface);
 }
 
-ON_SumSurface::ON_SumSurface() : m_basepoint(0.0, 0.0, 0.0)
+ON_SumSurface::ON_SumSurface() : m_basepoint (0.0, 0.0, 0.0)
 {
-  ON__SET__THIS__PTR(m_s_ON_SumSurface_ptr);
+  ON__SET__THIS__PTR (m_s_ON_SumSurface_ptr);
   m_curve[0] = 0;
   m_curve[1] = 0;
 }
@@ -65,7 +65,7 @@ ON_SumSurface::Destroy()
     }
   }
   m_bbox.Destroy();
-  m_basepoint.Set(0.0, 0.0, 0.0);
+  m_basepoint.Set (0.0, 0.0, 0.0);
 }
 
 void
@@ -75,9 +75,9 @@ ON_SumSurface::EmergencyDestroy()
   m_curve[1] = 0;
 }
 
-ON_SumSurface::ON_SumSurface(const ON_SumSurface& src) : ON_Surface(src)
+ON_SumSurface::ON_SumSurface (const ON_SumSurface& src) : ON_Surface (src)
 {
-  ON__SET__THIS__PTR(m_s_ON_SumSurface_ptr);
+  ON__SET__THIS__PTR (m_s_ON_SumSurface_ptr);
   m_curve[0] = 0;
   m_curve[1] = 0;
   *this = src;
@@ -95,24 +95,24 @@ ON_SumSurface::SizeOf() const
 }
 
 ON__UINT32
-ON_SumSurface::DataCRC(ON__UINT32 current_remainder) const
+ON_SumSurface::DataCRC (ON__UINT32 current_remainder) const
 {
   if (m_curve[0])
-    current_remainder = m_curve[0]->DataCRC(current_remainder);
+    current_remainder = m_curve[0]->DataCRC (current_remainder);
   if (m_curve[1])
-    current_remainder = m_curve[1]->DataCRC(current_remainder);
+    current_remainder = m_curve[1]->DataCRC (current_remainder);
   return current_remainder;
 }
 
 ON_SumSurface&
-ON_SumSurface::operator=(const ON_SumSurface& src)
+ON_SumSurface::operator= (const ON_SumSurface& src)
 {
   if (this != &src) {
     Destroy();
     for (int i = 0; i < 2; i++) {
       if (src.m_curve[i]) {
         ON_Object* obj = src.m_curve[i]->DuplicateCurve();
-        m_curve[i] = ON_Curve::Cast(obj);
+        m_curve[i] = ON_Curve::Cast (obj);
         if (!m_curve[i])
           delete obj;
       }
@@ -124,50 +124,50 @@ ON_SumSurface::operator=(const ON_SumSurface& src)
 }
 
 ON_BOOL32
-ON_SumSurface::Create(const ON_Curve& curve, ON_3dVector vector)
+ON_SumSurface::Create (const ON_Curve& curve, ON_3dVector vector)
 {
   Destroy();
   ON_BOOL32 rc = false;
   if (!vector.IsZero()) {
     ON_Curve* pCurve = curve.DuplicateCurve();
-    rc = Create(pCurve, vector);
+    rc = Create (pCurve, vector);
   }
   return rc;
 }
 
 ON_BOOL32
-ON_SumSurface::Create(ON_Curve* pCurve, ON_3dVector vector)
+ON_SumSurface::Create (ON_Curve* pCurve, ON_3dVector vector)
 {
   Destroy();
   ON_BOOL32 rc = false;
   if (!vector.IsZero()) {
-    ON_LineCurve* pLineCurve = new ON_LineCurve(ON_Line(ON_origin, vector));
-    pLineCurve->SetDomain(0.0, vector.Length());
+    ON_LineCurve* pLineCurve = new ON_LineCurve (ON_Line (ON_origin, vector));
+    pLineCurve->SetDomain (0.0, vector.Length());
     m_curve[0] = pCurve;
     m_curve[1] = pLineCurve;
-    m_basepoint.Set(0.0, 0.0, 0.0);
+    m_basepoint.Set (0.0, 0.0, 0.0);
     ON_BoundingBox bbox0 = pCurve->BoundingBox();
     ON_BoundingBox bbox1 = bbox0;
     bbox1.m_min += vector;
     bbox1.m_max += vector;
-    m_bbox.Union(bbox0, bbox1);
+    m_bbox.Union (bbox0, bbox1);
     rc = true;
   }
   return rc;
 }
 
 ON_BOOL32
-ON_SumSurface::Create(const ON_Curve& curve, const ON_Curve& path_curve)
+ON_SumSurface::Create (const ON_Curve& curve, const ON_Curve& path_curve)
 {
   Destroy();
   ON_Curve* pCurve = curve.DuplicateCurve();
   ON_Curve* pPathCurve = path_curve.DuplicateCurve();
-  ON_BOOL32 rc = Create(pCurve, pPathCurve);
+  ON_BOOL32 rc = Create (pCurve, pPathCurve);
   return rc;
 }
 
 ON_BOOL32
-ON_SumSurface::Create(ON_Curve* pCurve, ON_Curve* pPathCurve)
+ON_SumSurface::Create (ON_Curve* pCurve, ON_Curve* pPathCurve)
 {
   Destroy();
   ON_BOOL32 rc = false;
@@ -187,95 +187,95 @@ ON_SumSurface::Create(ON_Curve* pCurve, ON_Curve* pPathCurve)
 // overrides of virtual ON_Object functions
 //
 ON_BOOL32
-ON_SumSurface::IsValid(ON_TextLog* text_log) const
+ON_SumSurface::IsValid (ON_TextLog* text_log) const
 {
   for (int i = 0; i < 2; i++) {
     if (!m_curve[i]) {
       if (text_log)
-        text_log->Print("ON_SumSurface.m_curve[%d] is NULL.\n", i);
+        text_log->Print ("ON_SumSurface.m_curve[%d] is NULL.\n", i);
       return false;
     }
     if (m_curve[i]->Dimension() != 3) {
       if (text_log)
-        text_log->Print("ON_SumSurface.m_curve[%d]->m_dim = %d (should be 3).\n",
-                        i,
-                        m_curve[i]->Dimension());
+        text_log->Print ("ON_SumSurface.m_curve[%d]->m_dim = %d (should be 3).\n",
+                         i,
+                         m_curve[i]->Dimension());
       return false;
     }
-    if (!m_curve[i]->IsValid(text_log)) {
+    if (!m_curve[i]->IsValid (text_log)) {
       if (text_log)
-        text_log->Print("ON_SumSurface.m_curve[%d] is not valid.\n", i);
+        text_log->Print ("ON_SumSurface.m_curve[%d] is not valid.\n", i);
       return false;
     }
   }
   if (!m_basepoint.IsValid()) {
     if (text_log)
-      text_log->Print("ON_SumSurface.m_basepoint is not valid.\n");
+      text_log->Print ("ON_SumSurface.m_basepoint is not valid.\n");
     return false;
   }
   return true;
 }
 
 void
-ON_SumSurface::Dump(ON_TextLog& dump) const
+ON_SumSurface::Dump (ON_TextLog& dump) const
 {
-  ON_Object::Dump(dump);
+  ON_Object::Dump (dump);
   dump.PushIndent();
-  dump.Print("basepoint = ");
-  dump.Print(m_basepoint);
-  dump.Print("\n");
+  dump.Print ("basepoint = ");
+  dump.Print (m_basepoint);
+  dump.Print ("\n");
   for (int i = 0; i < 2; i++) {
     if (m_curve[i]) {
-      dump.Print("m_curve[%d]:\n", i);
+      dump.Print ("m_curve[%d]:\n", i);
       dump.PushIndent();
-      m_curve[i]->Dump(dump);
+      m_curve[i]->Dump (dump);
       dump.PopIndent();
     }
     else
-      dump.Print("m_curve[%d] = NULL\n", i);
+      dump.Print ("m_curve[%d] = NULL\n", i);
   }
 }
 
 ON_BOOL32
-ON_SumSurface::Write(ON_BinaryArchive& file) const
+ON_SumSurface::Write (ON_BinaryArchive& file) const
 {
-  ON_BOOL32 rc = file.Write3dmChunkVersion(1, 0);
+  ON_BOOL32 rc = file.Write3dmChunkVersion (1, 0);
   if (rc) {
-    rc = file.WriteVector(m_basepoint);
-    rc = file.WriteBoundingBox(m_bbox);
+    rc = file.WriteVector (m_basepoint);
+    rc = file.WriteBoundingBox (m_bbox);
     if (rc)
-      rc = file.WriteObject(m_curve[0]);
+      rc = file.WriteObject (m_curve[0]);
     if (rc)
-      rc = file.WriteObject(m_curve[1]);
+      rc = file.WriteObject (m_curve[1]);
   }
   return rc;
 }
 
 ON_BOOL32
-ON_SumSurface::Read(ON_BinaryArchive& file)
+ON_SumSurface::Read (ON_BinaryArchive& file)
 {
   Destroy();
   int major_version = 0;
   int minor_version = 0;
-  ON_BOOL32 rc = file.Read3dmChunkVersion(&major_version, &minor_version);
+  ON_BOOL32 rc = file.Read3dmChunkVersion (&major_version, &minor_version);
   if (rc && major_version == 1) {
     ON_Object* obj;
-    rc = file.ReadVector(m_basepoint);
+    rc = file.ReadVector (m_basepoint);
     if (rc)
-      rc = file.ReadBoundingBox(m_bbox);
+      rc = file.ReadBoundingBox (m_bbox);
     obj = 0;
     if (rc)
-      rc = file.ReadObject(&obj);
+      rc = file.ReadObject (&obj);
     if (rc) {
-      m_curve[0] = ON_Curve::Cast(obj);
+      m_curve[0] = ON_Curve::Cast (obj);
       if (!m_curve[0])
         delete obj;
     }
     obj = 0;
     if (rc)
-      rc = file.ReadObject(&obj);
+      rc = file.ReadObject (&obj);
     if (rc) {
-      m_curve[1] = ON_Curve::Cast(obj);
+      m_curve[1] = ON_Curve::Cast (obj);
       if (!m_curve[1])
         delete obj;
     }
@@ -308,9 +308,9 @@ ON_SumSurface::ClearBoundingBox()
 }
 
 ON_BOOL32
-ON_SumSurface::GetBBox( // returns true if successful
-    double* boxmin,     // boxmin[dim]
-    double* boxmax,     // boxmax[dim]
+ON_SumSurface::GetBBox ( // returns true if successful
+    double* boxmin,      // boxmin[dim]
+    double* boxmax,      // boxmax[dim]
     ON_BOOL32 bGrowBox) const
 {
   ON_BOOL32 rc = m_bbox.IsValid();
@@ -322,7 +322,7 @@ ON_SumSurface::GetBBox( // returns true if successful
     if (m_curve[1])
       bboxB = m_curve[1]->BoundingBox();
     if (bboxA.IsValid() && bboxB.IsValid()) {
-      ON_SumSurface* pS = const_cast<ON_SumSurface*>(this);
+      ON_SumSurface* pS = const_cast<ON_SumSurface*> (this);
       pS->m_bbox.m_min = bboxA.m_min + bboxB.m_min + m_basepoint;
       pS->m_bbox.m_max = bboxA.m_max + bboxB.m_max + m_basepoint;
     }
@@ -341,7 +341,7 @@ ON_SumSurface::GetBBox( // returns true if successful
       if (!bbox.IsValid())
         bbox = m_bbox;
       else
-        bbox.Union(m_bbox);
+        bbox.Union (m_bbox);
     }
     else
       bbox = m_bbox;
@@ -389,20 +389,20 @@ ON_SumSurface::MakeDeformable()
 }
 
 ON_BOOL32
-ON_SumSurface::Transform(const ON_Xform& xform)
+ON_SumSurface::Transform (const ON_Xform& xform)
 {
   DestroyRuntimeCache();
-  TransformUserData(xform);
+  TransformUserData (xform);
   ON_BOOL32 rc = false;
 
   ON_3dPoint A0, A1, A2;
   if (m_curve[0]) {
     A0 = m_curve[0]->PointAtStart();
-    rc = m_curve[0]->Transform(xform);
+    rc = m_curve[0]->Transform (xform);
   }
   if (m_curve[1]) {
     A1 = m_curve[1]->PointAtStart();
-    if (!m_curve[1]->Transform(xform))
+    if (!m_curve[1]->Transform (xform))
       rc = false;
   }
   else
@@ -423,7 +423,7 @@ ON_SumSurface::Transform(const ON_Xform& xform)
 //
 
 ON_BOOL32
-ON_SumSurface::SetDomain(
+ON_SumSurface::SetDomain (
     int dir, // 0 sets first parameter's domain, 1 gets second parameter's domain
     double t0,
     double t1)
@@ -431,7 +431,7 @@ ON_SumSurface::SetDomain(
   bool rc = false;
   if (t0 < t1 && dir >= 0 && dir <= 1) {
     if (0 != m_curve[dir]) {
-      rc = m_curve[dir]->SetDomain(t0, t1) ? true : false;
+      rc = m_curve[dir]->SetDomain (t0, t1) ? true : false;
       DestroyRuntimeCache();
     }
   }
@@ -439,7 +439,7 @@ ON_SumSurface::SetDomain(
 }
 
 ON_Interval
-ON_SumSurface::Domain(int dir) const
+ON_SumSurface::Domain (int dir) const
 {
   ON_Interval domain;
   if (dir == 0 && m_curve[0])
@@ -450,7 +450,7 @@ ON_SumSurface::Domain(int dir) const
 }
 
 ON_BOOL32
-ON_SumSurface::GetSurfaceSize(double* width, double* height) const
+ON_SumSurface::GetSurfaceSize (double* width, double* height) const
 {
   ON_BOOL32 rc = true;
   double* ptr[2];
@@ -471,9 +471,9 @@ ON_SumSurface::GetSurfaceSize(double* width, double* height) const
       ON_3dPoint pt0 = ON_UNSET_POINT;
       ON_3dPoint pt;
       for (i = 0; i <= imax; i++) {
-        if (m_curve[j]->EvPoint(cdom.ParameterAt(i * d), pt, 0, &hint)) {
+        if (m_curve[j]->EvPoint (cdom.ParameterAt (i * d), pt, 0, &hint)) {
           if (pt0 != ON_UNSET_POINT)
-            length_estimate += pt0.DistanceTo(pt);
+            length_estimate += pt0.DistanceTo (pt);
           pt0 = pt;
         }
       }
@@ -485,7 +485,7 @@ ON_SumSurface::GetSurfaceSize(double* width, double* height) const
 }
 
 int
-ON_SumSurface::SpanCount(int dir) const
+ON_SumSurface::SpanCount (int dir) const
 {
   int span_count = 0;
   if (dir == 0 && m_curve[0])
@@ -496,18 +496,18 @@ ON_SumSurface::SpanCount(int dir) const
 }
 
 ON_BOOL32
-ON_SumSurface::GetSpanVector(int dir, double* s) const
+ON_SumSurface::GetSpanVector (int dir, double* s) const
 {
   ON_BOOL32 rc = false;
   if (dir == 0 && m_curve[0])
-    rc = m_curve[0]->GetSpanVector(s);
+    rc = m_curve[0]->GetSpanVector (s);
   else if (dir == 1 && m_curve[1])
-    rc = m_curve[1]->GetSpanVector(s);
+    rc = m_curve[1]->GetSpanVector (s);
   return rc;
 }
 
 int
-ON_SumSurface::Degree(int dir) const
+ON_SumSurface::Degree (int dir) const
 {
   int degree = 0;
   if (dir == 0 && m_curve[0])
@@ -518,52 +518,52 @@ ON_SumSurface::Degree(int dir) const
 }
 
 ON_BOOL32
-ON_SumSurface::GetParameterTolerance( // returns tminus < tplus: parameters tminus <= s
-                                      // <= tplus
-    int dir,                          // 0 gets first parameter, 1 gets second parameter
-    double t,                         // t = parameter in domain
-    double* tminus,                   // tminus
-    double* tplus                     // tplus
+ON_SumSurface::GetParameterTolerance ( // returns tminus < tplus: parameters tminus <= s
+                                       // <= tplus
+    int dir,        // 0 gets first parameter, 1 gets second parameter
+    double t,       // t = parameter in domain
+    double* tminus, // tminus
+    double* tplus   // tplus
 ) const
 {
   ON_BOOL32 rc = false;
   if (dir == 0 && m_curve[0])
-    rc = m_curve[0]->GetParameterTolerance(t, tminus, tplus);
+    rc = m_curve[0]->GetParameterTolerance (t, tminus, tplus);
   else if (dir == 1 && m_curve[1])
-    rc = m_curve[1]->GetParameterTolerance(t, tminus, tplus);
+    rc = m_curve[1]->GetParameterTolerance (t, tminus, tplus);
   return rc;
 }
 
 ON_BOOL32
-ON_SumSurface::IsPlanar(ON_Plane* plane, double tolerance) const
+ON_SumSurface::IsPlanar (ON_Plane* plane, double tolerance) const
 {
   ON_Plane pln;
   ON_3dPoint center;
   ON_3dVector normal, du, dv;
-  ON_Interval udom = Domain(0);
-  ON_Interval vdom = Domain(1);
+  ON_Interval udom = Domain (0);
+  ON_Interval vdom = Domain (1);
   ON_BOOL32 rc =
-      EvNormal(udom.ParameterAt(0.5), vdom.ParameterAt(0.5), center, du, dv, normal);
+      EvNormal (udom.ParameterAt (0.5), vdom.ParameterAt (0.5), center, du, dv, normal);
   if (rc) {
-    if (fabs(normal.Length() - 1.0) > 0.01)
+    if (fabs (normal.Length() - 1.0) > 0.01)
       rc = false;
     else {
       pln.origin = center;
       pln.zaxis = normal;
       if (du.Unitize()) {
         pln.xaxis = du;
-        pln.yaxis = ON_CrossProduct(pln.zaxis, pln.xaxis);
+        pln.yaxis = ON_CrossProduct (pln.zaxis, pln.xaxis);
         pln.yaxis.Unitize();
         pln.UpdateEquation();
       }
       else if (dv.Unitize()) {
         pln.yaxis = dv;
-        pln.xaxis = ON_CrossProduct(pln.yaxis, pln.zaxis);
+        pln.xaxis = ON_CrossProduct (pln.yaxis, pln.zaxis);
         pln.xaxis.Unitize();
         pln.UpdateEquation();
       }
       else {
-        pln.CreateFromNormal(center, normal);
+        pln.CreateFromNormal (center, normal);
       }
       if (plane)
         *plane = pln;
@@ -572,7 +572,7 @@ ON_SumSurface::IsPlanar(ON_Plane* plane, double tolerance) const
       for (j = 0; j < 2 && rc; j++) {
         pln.origin = m_curve[j]->PointAtStart();
         pln.UpdateEquation();
-        rc = m_curve[j]->IsInPlane(pln, tolerance);
+        rc = m_curve[j]->IsInPlane (pln, tolerance);
       }
 
       if (rc && plane) {
@@ -586,7 +586,7 @@ ON_SumSurface::IsPlanar(ON_Plane* plane, double tolerance) const
 }
 
 ON_BOOL32
-ON_SumSurface::IsClosed(int dir) const
+ON_SumSurface::IsClosed (int dir) const
 {
   ON_BOOL32 rc = false;
   if (dir == 0 && m_curve[0])
@@ -597,7 +597,7 @@ ON_SumSurface::IsClosed(int dir) const
 }
 
 ON_BOOL32
-ON_SumSurface::IsPeriodic(int dir) const
+ON_SumSurface::IsPeriodic (int dir) const
 {
   ON_BOOL32 rc = false;
   if (dir == 0 && m_curve[0])
@@ -608,41 +608,38 @@ ON_SumSurface::IsPeriodic(int dir) const
 }
 
 ON_BOOL32
-ON_SumSurface::IsSingular(int) const
-{
-  return false;
-}
+ON_SumSurface::IsSingular (int) const { return false; }
 
 bool
-ON_SumSurface::GetNextDiscontinuity(int dir,
-                                    ON::continuity c,
-                                    double t0,
-                                    double t1,
-                                    double* t,
-                                    int* hint,
-                                    int* dtype,
-                                    double cos_angle_tolerance,
-                                    double curvature_tolerance) const
+ON_SumSurface::GetNextDiscontinuity (int dir,
+                                     ON::continuity c,
+                                     double t0,
+                                     double t1,
+                                     double* t,
+                                     int* hint,
+                                     int* dtype,
+                                     double cos_angle_tolerance,
+                                     double curvature_tolerance) const
 {
   // 28 Jan 2005 - untested code
   bool rc = false;
   if (0 == dir || 1 == dir) {
     if (0 != m_curve[dir]) {
-      rc = m_curve[dir]->GetNextDiscontinuity(c,
-                                              t0,
-                                              t1,
-                                              t,
-                                              (hint ? &hint[dir] : 0),
-                                              dtype,
-                                              cos_angle_tolerance,
-                                              curvature_tolerance);
+      rc = m_curve[dir]->GetNextDiscontinuity (c,
+                                               t0,
+                                               t1,
+                                               t,
+                                               (hint ? &hint[dir] : 0),
+                                               dtype,
+                                               cos_angle_tolerance,
+                                               curvature_tolerance);
     }
   }
   return rc;
 }
 
 bool
-ON_SumSurface::IsContinuous(
+ON_SumSurface::IsContinuous (
     ON::continuity desired_continuity,
     double s,
     double t,
@@ -661,23 +658,23 @@ ON_SumSurface::IsContinuous(
       crv_hint[0] = (*hint) & 0xFFFF;
       crv_hint[1] = ((*hint) & 0xFFFF0000) >> 16;
     }
-    rc = m_curve[0]->IsContinuous(desired_continuity,
-                                  s,
-                                  &crv_hint[0],
-                                  point_tolerance,
-                                  d1_tolerance,
-                                  d2_tolerance,
-                                  cos_angle_tolerance,
-                                  curvature_tolerance);
+    rc = m_curve[0]->IsContinuous (desired_continuity,
+                                   s,
+                                   &crv_hint[0],
+                                   point_tolerance,
+                                   d1_tolerance,
+                                   d2_tolerance,
+                                   cos_angle_tolerance,
+                                   curvature_tolerance);
     if (rc)
-      rc = m_curve[1]->IsContinuous(desired_continuity,
-                                    t,
-                                    &crv_hint[1],
-                                    point_tolerance,
-                                    d1_tolerance,
-                                    d2_tolerance,
-                                    cos_angle_tolerance,
-                                    curvature_tolerance);
+      rc = m_curve[1]->IsContinuous (desired_continuity,
+                                     t,
+                                     &crv_hint[1],
+                                     point_tolerance,
+                                     d1_tolerance,
+                                     d2_tolerance,
+                                     cos_angle_tolerance,
+                                     curvature_tolerance);
     if (hint) {
       *hint = ((crv_hint[0] & 0xFFFF) | (crv_hint[1] << 16));
     }
@@ -686,7 +683,7 @@ ON_SumSurface::IsContinuous(
 }
 
 ON_BOOL32
-ON_SumSurface::Reverse(int dir)
+ON_SumSurface::Reverse (int dir)
 {
   ON_BOOL32 rc = false;
   if (dir == 0 && m_curve[0])
@@ -708,7 +705,7 @@ ON_SumSurface::Transpose()
 }
 
 ON_BOOL32
-ON_SumSurface::Evaluate( // returns false if unable to evaluate
+ON_SumSurface::Evaluate ( // returns false if unable to evaluate
     double s,
     double t,     // evaluation parameters
     int nder,     // number of derivatives (>=0)
@@ -732,7 +729,7 @@ ON_SumSurface::Evaluate( // returns false if unable to evaluate
       crv_hint[0] = (*hint) & 0xFFFF;
       crv_hint[1] = ((*hint) & 0xFFFF0000) >> 16;
     }
-    double* v0 = (double*)onmalloc(2 * (nder + 1) * dim * sizeof(*v0));
+    double* v0 = (double*)onmalloc (2 * (nder + 1) * dim * sizeof (*v0));
     double* v1 = v0 + (nder + 1) * dim;
     int side0, side1;
     switch (side) {
@@ -757,9 +754,9 @@ ON_SumSurface::Evaluate( // returns false if unable to evaluate
       side1 = 1;
       break;
     }
-    rc = m_curve[0]->Evaluate(s, nder, dim, v0, side0, hint ? &crv_hint[0] : 0);
+    rc = m_curve[0]->Evaluate (s, nder, dim, v0, side0, hint ? &crv_hint[0] : 0);
     if (rc)
-      rc = m_curve[1]->Evaluate(t, nder, dim, v1, side1, hint ? &crv_hint[1] : 0);
+      rc = m_curve[1]->Evaluate (t, nder, dim, v1, side1, hint ? &crv_hint[1] : 0);
     if (rc) {
       int j, ds, dt, der;
       for (j = 0; j < dim; j++) {
@@ -790,21 +787,21 @@ ON_SumSurface::Evaluate( // returns false if unable to evaluate
     if (hint) {
       *hint = crv_hint[0] | (crv_hint[1] << 16);
     }
-    onfree(v0);
+    onfree (v0);
   }
   return rc;
 }
 
 ON_Curve*
-ON_SumSurface::IsoCurve(int dir, double c) const
+ON_SumSurface::IsoCurve (int dir, double c) const
 {
   ON_Curve* iso_curve = 0;
   if (dir >= 0 && dir <= 1 && m_curve[0] && m_curve[1]) {
     iso_curve = m_curve[dir]->Duplicate();
-    ON_3dPoint p = m_curve[1 - dir]->PointAt(c);
+    ON_3dPoint p = m_curve[1 - dir]->PointAt (c);
     ON_3dVector v = p + m_basepoint;
     if (!v.IsZero()) {
-      if (!iso_curve->Translate(v)) {
+      if (!iso_curve->Translate (v)) {
         delete iso_curve;
         iso_curve = 0;
       }
@@ -851,7 +848,7 @@ ON_SumTensor::DimensionC() const
 }
 
 bool
-ON_SumTensor::Evaluate(
+ON_SumTensor::Evaluate (
     double a, const double* CurveA, double b, const double* CurveB, double* SrfPoint)
 {
   SrfPoint[0] = a * CurveA[0] + b * CurveB[0] + basepoint.x;
@@ -861,7 +858,7 @@ ON_SumTensor::Evaluate(
 }
 
 int
-ON_SumSurface::GetNurbForm(ON_NurbsSurface& nurbs_surface, double tolerance) const
+ON_SumSurface::GetNurbForm (ON_NurbsSurface& nurbs_surface, double tolerance) const
 {
   nurbs_surface.Destroy();
   int rc = 0;
@@ -872,18 +869,18 @@ ON_SumSurface::GetNurbForm(ON_NurbsSurface& nurbs_surface, double tolerance) con
     int rcB = 0;
     const ON_NurbsCurve* nurbs_curveA = 0;
     const ON_NurbsCurve* nurbs_curveB = 0;
-    nurbs_curveA = ON_NurbsCurve::Cast(m_curve[0]);
+    nurbs_curveA = ON_NurbsCurve::Cast (m_curve[0]);
     if (!nurbs_curveA) {
       rcA = 1;
-      rcA = m_curve[0]->GetNurbForm(tmpA, tolerance);
+      rcA = m_curve[0]->GetNurbForm (tmpA, tolerance);
       if (rcA > 0)
         nurbs_curveA = &tmpA;
     }
     if (nurbs_curveA) {
       rcB = 1;
-      nurbs_curveB = ON_NurbsCurve::Cast(m_curve[1]);
+      nurbs_curveB = ON_NurbsCurve::Cast (m_curve[1]);
       if (!nurbs_curveB) {
-        rcB = m_curve[1]->GetNurbForm(tmpB, tolerance);
+        rcB = m_curve[1]->GetNurbForm (tmpB, tolerance);
         if (rcB > 0)
           nurbs_curveB = &tmpB;
       }
@@ -892,7 +889,7 @@ ON_SumSurface::GetNurbForm(ON_NurbsSurface& nurbs_surface, double tolerance) con
       ON_SumTensor sum_tensor;
       sum_tensor.dim = dim;
       sum_tensor.basepoint = m_basepoint;
-      if (!nurbs_surface.TensorProduct(*nurbs_curveA, *nurbs_curveB, sum_tensor))
+      if (!nurbs_surface.TensorProduct (*nurbs_curveA, *nurbs_curveB, sum_tensor))
         nurbs_surface.Destroy();
       else
         rc = (rcA >= rcB) ? rcA : rcB;
@@ -921,22 +918,22 @@ ON_SumSurface::HasNurbForm() const
 }
 
 bool
-ON_SumSurface::GetSurfaceParameterFromNurbFormParameter(double nurbs_s,
-                                                        double nurbs_t,
-                                                        double* surface_s,
-                                                        double* surface_t) const
+ON_SumSurface::GetSurfaceParameterFromNurbFormParameter (double nurbs_s,
+                                                         double nurbs_t,
+                                                         double* surface_s,
+                                                         double* surface_t) const
 {
   // NOTE: overrides ON_Surface virtual function
   bool rc = (m_curve[0] && m_curve[1]) ? true : false;
   *surface_s = nurbs_s;
   *surface_t = nurbs_t;
   if (m_curve[0]) {
-    if (!m_curve[0]->GetCurveParameterFromNurbFormParameter(nurbs_s, surface_s))
+    if (!m_curve[0]->GetCurveParameterFromNurbFormParameter (nurbs_s, surface_s))
       rc = false;
   }
 
   if (m_curve[1]) {
-    if (!m_curve[1]->GetCurveParameterFromNurbFormParameter(nurbs_t, surface_t))
+    if (!m_curve[1]->GetCurveParameterFromNurbFormParameter (nurbs_t, surface_t))
       rc = false;
   }
 
@@ -944,58 +941,58 @@ ON_SumSurface::GetSurfaceParameterFromNurbFormParameter(double nurbs_s,
 }
 
 bool
-ON_SumSurface::GetNurbFormParameterFromSurfaceParameter(double surface_s,
-                                                        double surface_t,
-                                                        double* nurbs_s,
-                                                        double* nurbs_t) const
+ON_SumSurface::GetNurbFormParameterFromSurfaceParameter (double surface_s,
+                                                         double surface_t,
+                                                         double* nurbs_s,
+                                                         double* nurbs_t) const
 {
   // NOTE: overrides ON_Surface virtual function
   bool rc = (m_curve[0] && m_curve[1]) ? true : false;
   *nurbs_s = surface_s;
   *nurbs_t = surface_t;
   if (m_curve[0]) {
-    if (!m_curve[0]->GetNurbFormParameterFromCurveParameter(surface_s, nurbs_s))
+    if (!m_curve[0]->GetNurbFormParameterFromCurveParameter (surface_s, nurbs_s))
       rc = false;
   }
 
   if (m_curve[1]) {
-    if (!m_curve[1]->GetNurbFormParameterFromCurveParameter(surface_t, nurbs_t))
+    if (!m_curve[1]->GetNurbFormParameterFromCurveParameter (surface_t, nurbs_t))
       rc = false;
   }
   return rc;
 }
 
 ON_BOOL32
-ON_SumSurface::Trim(int dir, const ON_Interval& domain)
+ON_SumSurface::Trim (int dir, const ON_Interval& domain)
 
 {
   if (dir < 0 || dir > 1)
     return false;
-  ON_Interval current_domain = Domain(dir);
+  ON_Interval current_domain = Domain (dir);
   if (current_domain[0] == ON_UNSET_VALUE && current_domain[1] == ON_UNSET_VALUE)
     current_domain = domain;
   ON_Interval trim_domain;
-  trim_domain.Intersection(domain, Domain(dir));
+  trim_domain.Intersection (domain, Domain (dir));
   if (!trim_domain.IsIncreasing())
     return false;
   if (trim_domain[0] == current_domain[0] && trim_domain[1] == current_domain[1])
     return true;
   m_bbox.Destroy();
   DestroySurfaceTree();
-  return m_curve[dir]->Trim(trim_domain);
+  return m_curve[dir]->Trim (trim_domain);
 }
 
 bool
-ON_SumSurface::Extend(int dir, const ON_Interval& domain)
+ON_SumSurface::Extend (int dir, const ON_Interval& domain)
 {
   if (dir < 0 || dir > 1)
     return false;
-  if (IsClosed(dir))
+  if (IsClosed (dir))
     return false;
-  ON_Interval current_domain = Domain(dir);
+  ON_Interval current_domain = Domain (dir);
   if (!m_curve[dir])
     return false;
-  bool rc = m_curve[dir]->Extend(domain);
+  bool rc = m_curve[dir]->Extend (domain);
   if (rc) {
     DestroySurfaceTree();
     m_bbox.Destroy();
@@ -1004,21 +1001,21 @@ ON_SumSurface::Extend(int dir, const ON_Interval& domain)
 }
 
 ON_BOOL32
-ON_SumSurface::Split(int dir,
-                     double c,
-                     ON_Surface*& west_or_south_side,
-                     ON_Surface*& east_or_north_side) const
+ON_SumSurface::Split (int dir,
+                      double c,
+                      ON_Surface*& west_or_south_side,
+                      ON_Surface*& east_or_north_side) const
 
 {
   if (dir < 0 || dir > 1)
     return false;
-  if (!Domain(dir).Includes(c, true))
+  if (!Domain (dir).Includes (c, true))
     return false;
   ON_SumSurface* left_srf = 0;
   ON_SumSurface* right_srf = 0;
 
   if (west_or_south_side) {
-    left_srf = ON_SumSurface::Cast(west_or_south_side);
+    left_srf = ON_SumSurface::Cast (west_or_south_side);
     if (!left_srf)
       return false;
     left_srf->DestroySurfaceTree();
@@ -1026,7 +1023,7 @@ ON_SumSurface::Split(int dir,
   }
 
   if (east_or_north_side) {
-    right_srf = ON_SumSurface::Cast(east_or_north_side);
+    right_srf = ON_SumSurface::Cast (east_or_north_side);
     if (!right_srf)
       return false;
     right_srf->DestroySurfaceTree();
@@ -1034,12 +1031,12 @@ ON_SumSurface::Split(int dir,
   }
 
   if (!left_srf)
-    left_srf = ON_SumSurface::New(*this);
+    left_srf = ON_SumSurface::New (*this);
   else if (left_srf != this)
     *left_srf = *this;
 
   if (!right_srf)
-    right_srf = ON_SumSurface::New(*this);
+    right_srf = ON_SumSurface::New (*this);
   else if (right_srf != this)
     *right_srf = *this;
 
@@ -1056,7 +1053,7 @@ ON_SumSurface::Split(int dir,
     right_srf->m_curve[dir] = 0;
   }
 
-  if (!m_curve[dir]->Split(c, left_srf->m_curve[dir], right_srf->m_curve[dir])) {
+  if (!m_curve[dir]->Split (c, left_srf->m_curve[dir], right_srf->m_curve[dir])) {
     if (!west_or_south_side)
       delete left_srf;
     if (!east_or_north_side)

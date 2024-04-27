@@ -32,11 +32,11 @@ Details:
   and a strictly increasing Domain().
 */
 class ON_CLASS ON_ArcCurve : public ON_Curve {
-  ON_OBJECT_DECLARE(ON_ArcCurve);
+  ON_OBJECT_DECLARE (ON_ArcCurve);
 
 public:
   ON_ArcCurve();
-  ON_ArcCurve(const ON_ArcCurve&);
+  ON_ArcCurve (const ON_ArcCurve&);
   virtual ~ON_ArcCurve();
 
   // virtual ON_Object::SizeOf override
@@ -51,36 +51,36 @@ public:
   Description:
     Create an arc curve with domain (0,arc.Length()).
   */
-  ON_ArcCurve(const ON_Arc& arc);
+  ON_ArcCurve (const ON_Arc& arc);
 
   /*
   Description:
     Create an arc curve with domain (t0,t1)
   */
-  ON_ArcCurve(const ON_Arc& arc, double t0, double t1);
+  ON_ArcCurve (const ON_Arc& arc, double t0, double t1);
 
   /*
   Description:
     Creates a curve that is a complete circle with
     domain (0,circle.Length()).
   */
-  ON_ArcCurve(const ON_Circle& circle);
+  ON_ArcCurve (const ON_Circle& circle);
 
   /*
   Description:
     Creates a curve that is a complete circle with domain (t0,t1).
   */
-  ON_ArcCurve(const ON_Circle& circle, double t0, double t1);
+  ON_ArcCurve (const ON_Circle& circle, double t0, double t1);
 
   ON_ArcCurve&
-  operator=(const ON_ArcCurve&);
+  operator= (const ON_ArcCurve&);
 
   /*
   Description:
     Create an arc curve with domain (0,arc.Length()).
   */
   ON_ArcCurve&
-  operator=(const ON_Arc& arc);
+  operator= (const ON_Arc& arc);
 
   /*
   Description:
@@ -88,7 +88,7 @@ public:
     domain (0,circle.Length()).
   */
   ON_ArcCurve&
-  operator=(const ON_Circle& circle);
+  operator= (const ON_Circle& circle);
 
   /////////////////////////////////////////////////////////////////
   // ON_Object overrides
@@ -245,8 +245,8 @@ public:
                 double curvature_tolerance = ON_SQRT_EPSILON) const;
 
   ON_BOOL32
-  Reverse (); // reverse parameterizatrion
-              // Domain changes from [a,b] to [-b,-a]
+  Reverse(); // reverse parameterizatrion
+             // Domain changes from [a,b] to [-b,-a]
 
   /*
   Description:

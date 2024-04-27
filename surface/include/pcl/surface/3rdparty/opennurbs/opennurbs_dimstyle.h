@@ -18,7 +18,7 @@
 #define OPENNURBS_DIMSTYLE_INC_
 
 class ON_CLASS ON_DimStyle : public ON_Object {
-  ON_OBJECT_DECLARE(ON_DimStyle);
+  ON_OBJECT_DECLARE (ON_DimStyle);
 
 public:
   enum eArrowType {
@@ -37,7 +37,7 @@ public:
   // C++ default copy construction and operator= work fine.-
 
   ON_DimStyle&
-  operator=(const ON_3dmAnnotationSettings& src);
+  operator= (const ON_3dmAnnotationSettings& src);
 
   //////////////////////////////////////////////////////////////////////
   //
@@ -84,7 +84,7 @@ public:
 
   // virtual
   ON_UUID
-  ModelObjectId () const;
+  ModelObjectId() const;
 
   //////////////////////////////////////////////////////////////////////
   //
@@ -137,15 +137,15 @@ public:
 
   int
   TextAlignment () const;
-  void SetTextAlignment(ON::eTextDisplayMode);
+  void SetTextAlignment (ON::eTextDisplayMode);
 
   int
   ArrowType () const;
-  void SetArrowType(eArrowType);
+  void SetArrowType (eArrowType);
 
   int
   LeaderArrowType () const;
-  void SetLeaderArrowType(eArrowType);
+  void SetLeaderArrowType (eArrowType);
 
   int
   AngularUnits () const;
@@ -370,7 +370,7 @@ public:
   InvalidateAllFields ();
   ON_DEPRECATED void
   ValidateField (eField field);
-  ON_DEPRECATED bool IsFieldValid(eField) const;
+  ON_DEPRECATED bool IsFieldValid (eField) const;
 
   // added version 1.3
   double
@@ -421,7 +421,7 @@ public:
   IsChildOf (ON_UUID& parent_uuid) const; // decl error - const forgotten
 
   ON_UUID
-  ParentId () const;
+  ParentId() const;
 
   // Set the parent of this dimstyle
   void
@@ -509,7 +509,7 @@ public:
   void
   SetSourceDimstyle (ON_UUID source_uuid);
   ON_UUID
-  SourceDimstyle () const;
+  SourceDimstyle() const;
 
   // Defaults for values stored in Userdata extension
   static int

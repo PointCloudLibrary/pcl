@@ -119,14 +119,14 @@ public:
    * \param[in] random if true set the random seed to the current time, else set to
    * 12345 (default: false)
    */
-  SampleConsensusModelNormalParallelPlane(const PointCloudConstPtr& cloud,
-                                          bool random = false)
-  : SampleConsensusModelNormalPlane<PointT, PointNT>(cloud, random)
-  , axis_(Eigen::Vector4f::Zero())
-  , distance_from_origin_(0)
-  , eps_angle_(-1.0)
-  , cos_angle_(-1.0)
-  , eps_dist_(0.0)
+  SampleConsensusModelNormalParallelPlane (const PointCloudConstPtr& cloud,
+                                           bool random = false)
+  : SampleConsensusModelNormalPlane<PointT, PointNT> (cloud, random)
+  , axis_ (Eigen::Vector4f::Zero())
+  , distance_from_origin_ (0)
+  , eps_angle_ (-1.0)
+  , cos_angle_ (-1.0)
+  , eps_dist_ (0.0)
   {
     model_name_ = "SampleConsensusModelNormalParallelPlane";
     sample_size_ = 3;
@@ -139,15 +139,15 @@ public:
    * \param[in] random if true set the random seed to the current time, else set to
    * 12345 (default: false)
    */
-  SampleConsensusModelNormalParallelPlane(const PointCloudConstPtr& cloud,
-                                          const Indices& indices,
-                                          bool random = false)
-  : SampleConsensusModelNormalPlane<PointT, PointNT>(cloud, indices, random)
-  , axis_(Eigen::Vector4f::Zero())
-  , distance_from_origin_(0)
-  , eps_angle_(-1.0)
-  , cos_angle_(-1.0)
-  , eps_dist_(0.0)
+  SampleConsensusModelNormalParallelPlane (const PointCloudConstPtr& cloud,
+                                           const Indices& indices,
+                                           bool random = false)
+  : SampleConsensusModelNormalPlane<PointT, PointNT> (cloud, indices, random)
+  , axis_ (Eigen::Vector4f::Zero())
+  , distance_from_origin_ (0)
+  , eps_angle_ (-1.0)
+  , cos_angle_ (-1.0)
+  , eps_dist_ (0.0)
   {
     model_name_ = "SampleConsensusModelNormalParallelPlane";
     sample_size_ = 3;
@@ -183,7 +183,7 @@ public:
   setEpsAngle (const double ea)
   {
     eps_angle_ = ea;
-    cos_angle_ = std::abs(std::cos(ea));
+    cos_angle_ = std::abs (std::cos (ea));
   }
 
   /** \brief Get the angle epsilon (delta) threshold. */

@@ -80,25 +80,25 @@ public:
   static inline Real
   CornerIndexPosition (int index, int maxDepth)
   {
-    return Real(index) / (1 << maxDepth);
+    return Real (index) / (1 << maxDepth);
   }
   static inline Real
   Width (int depth)
   {
-    return Real(1.0 / (1 << depth));
+    return Real (1.0 / (1 << depth));
   }
   static inline void
   CenterAndWidth (int depth, int offset, Real& center, Real& width)
   {
-    width = Real(1.0 / (1 << depth));
-    center = Real((0.5 + offset) * width);
+    width = Real (1.0 / (1 << depth));
+    center = Real ((0.5 + offset) * width);
   }
   static inline void
   CenterAndWidth (int idx, Real& center, Real& width)
   {
     int depth, offset;
-    DepthAndOffset(idx, depth, offset);
-    CenterAndWidth(depth, offset, center, width);
+    DepthAndOffset (idx, depth, offset);
+    CenterAndWidth (depth, offset, center, width);
   }
   static inline void
   DepthAndOffset (int idx, int& depth, int& offset)

@@ -16,32 +16,32 @@
 
 #include "pcl/surface/3rdparty/opennurbs/opennurbs.h"
 
-ON_OBJECT_IMPLEMENT(ON_OffsetSurface,
-                    ON_SurfaceProxy,
-                    "00C61749-D430-4ecc-83A8-29130A20CF9C");
+ON_OBJECT_IMPLEMENT (ON_OffsetSurface,
+                     ON_SurfaceProxy,
+                     "00C61749-D430-4ecc-83A8-29130A20CF9C");
 
-ON_OffsetSurface::ON_OffsetSurface() : m__pSrf(0) {}
+ON_OffsetSurface::ON_OffsetSurface() : m__pSrf (0) {}
 
 ON_OffsetSurface::~ON_OffsetSurface()
 {
-  m_offset_function.SetBaseSurface(0);
+  m_offset_function.SetBaseSurface (0);
   if (0 != m__pSrf && this != m__pSrf)
     delete m__pSrf;
   m__pSrf = 0;
 }
 
-ON_OffsetSurface::ON_OffsetSurface(const ON_OffsetSurface& src)
-: ON_SurfaceProxy(src), m__pSrf(0), m_offset_function(src.m_offset_function)
+ON_OffsetSurface::ON_OffsetSurface (const ON_OffsetSurface& src)
+: ON_SurfaceProxy (src), m__pSrf (0), m_offset_function (src.m_offset_function)
 {
   if (0 != src.m__pSrf) {
     m__pSrf = src.ON_SurfaceProxy::DuplicateSurface();
-    SetProxySurface(m__pSrf);
+    SetProxySurface (m__pSrf);
   }
-  m_offset_function.SetBaseSurface(BaseSurface());
+  m_offset_function.SetBaseSurface (BaseSurface());
 }
 
 ON_OffsetSurface&
-ON_OffsetSurface::operator=(const ON_OffsetSurface& src)
+ON_OffsetSurface::operator= (const ON_OffsetSurface& src)
 {
   if (this != &src) {
     if (0 != m__pSrf && this != m__pSrf)
@@ -49,13 +49,13 @@ ON_OffsetSurface::operator=(const ON_OffsetSurface& src)
     m__pSrf = 0;
     if (0 != src.m__pSrf) {
       m__pSrf = src.ON_SurfaceProxy::DuplicateSurface();
-      SetProxySurface(m__pSrf);
+      SetProxySurface (m__pSrf);
     }
     else {
-      ON_SurfaceProxy::operator=(src);
+      ON_SurfaceProxy::operator= (src);
     }
     m_offset_function = src.m_offset_function;
-    m_offset_function.SetBaseSurface(BaseSurface());
+    m_offset_function.SetBaseSurface (BaseSurface());
   }
   return *this;
 }
@@ -73,7 +73,7 @@ ON_OffsetSurface::OffsetFunction() const
 }
 
 bool
-ON_OffsetSurface::SetBaseSurface(const ON_Surface* base_surface)
+ON_OffsetSurface::SetBaseSurface (const ON_Surface* base_surface)
 {
   bool rc = false;
   if (this != base_surface) {
@@ -82,24 +82,24 @@ ON_OffsetSurface::SetBaseSurface(const ON_Surface* base_surface)
       if (0 != m__pSrf && this != m__pSrf)
         delete m__pSrf;
       m__pSrf = 0;
-      ON_SurfaceProxy::SetProxySurface(0);
-      m_offset_function.SetBaseSurface(0);
+      ON_SurfaceProxy::SetProxySurface (0);
+      m_offset_function.SetBaseSurface (0);
     }
     else if (BaseSurface() != base_surface) {
       if (0 != m__pSrf && this != m__pSrf)
         delete m__pSrf;
       m__pSrf = 0;
-      ON_SurfaceProxy::SetProxySurface(base_surface);
+      ON_SurfaceProxy::SetProxySurface (base_surface);
     }
-    m_offset_function.SetBaseSurface(BaseSurface());
+    m_offset_function.SetBaseSurface (BaseSurface());
   }
   return rc;
 }
 
 bool
-ON_OffsetSurface::SetBaseSurface(ON_Surface* base_surface, bool bManage)
+ON_OffsetSurface::SetBaseSurface (ON_Surface* base_surface, bool bManage)
 {
-  bool rc = SetBaseSurface(base_surface);
+  bool rc = SetBaseSurface (base_surface);
   if (rc && bManage)
     m__pSrf = base_surface;
   return rc;
@@ -112,14 +112,14 @@ ON_OffsetSurface::BaseSurface() const
 }
 
 ON_BOOL32
-ON_OffsetSurface::GetBBox(double* bbox_min, double* bbox_max, ON_BOOL32) const
+ON_OffsetSurface::GetBBox (double* bbox_min, double* bbox_max, ON_BOOL32) const
 {
-  ON_BOOL32 rc = ON_SurfaceProxy::GetBBox(bbox_min, bbox_max);
+  ON_BOOL32 rc = ON_SurfaceProxy::GetBBox (bbox_min, bbox_max);
   if (rc) {
     double d, distance = 0.0;
     int i, count = m_offset_function.m_offset_value.Count();
     for (i = 0; i < count; i++) {
-      d = fabs(m_offset_function.m_offset_value[i].m_distance);
+      d = fabs (m_offset_function.m_offset_value[i].m_distance);
       if (distance < d)
         distance = d;
     }
@@ -139,13 +139,13 @@ ON_OffsetSurface::GetBBox(double* bbox_min, double* bbox_max, ON_BOOL32) const
 }
 
 ON_BOOL32
-ON_OffsetSurface::Evaluate(double s,
-                           double t,
-                           int der_count,
-                           int v_stride,
-                           double* v,
-                           int side,
-                           int* hint) const
+ON_OffsetSurface::Evaluate (double s,
+                            double t,
+                            int der_count,
+                            int v_stride,
+                            double* v,
+                            int side,
+                            int* hint) const
 {
   int vv_stride = v_stride;
   double* vv = v;
@@ -155,7 +155,7 @@ ON_OffsetSurface::Evaluate(double s,
     vv_stride = 3;
   }
 
-  ON_BOOL32 rc = ON_SurfaceProxy::Evaluate(
+  ON_BOOL32 rc = ON_SurfaceProxy::Evaluate (
       s, t, (der_count > 2 ? der_count : 2), vv_stride, vv, side, hint);
 
   if (v != vv) {
@@ -183,33 +183,33 @@ ON_OffsetSurface::Evaluate(double s,
 
   if (rc) {
     double darray[21]; // 21 = ((5+1)*(5+2)/2) = enough room for der_count <= 5
-    double* d =
-        (der_count > 5)
-            ? (double*)onmalloc(((der_count + 1) * (der_count + 2)) / 2 * sizeof(d[0]))
-            : darray;
-    rc = m_offset_function.EvaluateDistance(s, t, der_count, d);
+    double* d = (der_count > 5)
+                    ? (double*)onmalloc (((der_count + 1) * (der_count + 2)) / 2 *
+                                         sizeof (d[0]))
+                    : darray;
+    rc = m_offset_function.EvaluateDistance (s, t, der_count, d);
     if (rc) {
       ON_3dVector N;
-      ON_EvNormal(side,
-                  srf_value[1],
-                  srf_value[2],
-                  srf_value[3],
-                  srf_value[4],
-                  srf_value[5],
-                  N);
+      ON_EvNormal (side,
+                   srf_value[1],
+                   srf_value[2],
+                   srf_value[3],
+                   srf_value[4],
+                   srf_value[5],
+                   N);
       v[0] += d[0] * N.x;
       v[1] += d[0] * N.y;
       v[2] += d[0] * N.z;
 
       if (der_count > 0) {
         ON_3dVector Ns, Nt;
-        ON_EvNormalPartials(srf_value[1],
-                            srf_value[2],
-                            srf_value[3],
-                            srf_value[4],
-                            srf_value[5],
-                            Ns,
-                            Nt);
+        ON_EvNormalPartials (srf_value[1],
+                             srf_value[2],
+                             srf_value[3],
+                             srf_value[4],
+                             srf_value[5],
+                             Ns,
+                             Nt);
         v[v_stride] += d[0] * Ns.x + d[1] * N.x;
         v[v_stride + 1] += d[0] * Ns.y + d[1] * N.y;
         v[v_stride + 2] += d[0] * Ns.z + d[1] * N.z;
@@ -220,17 +220,17 @@ ON_OffsetSurface::Evaluate(double s,
       }
     }
     if (d != darray)
-      onfree(d);
+      onfree (d);
   }
 
   return rc;
 }
 
 void
-ON_BumpFunction::EvaluateHelperLinearBump(double t,
-                                          double dt,
-                                          int der_count,
-                                          double* value) const
+ON_BumpFunction::EvaluateHelperLinearBump (double t,
+                                           double dt,
+                                           int der_count,
+                                           double* value) const
 {
   value[0] = t;
   if (der_count > 0) {
@@ -245,15 +245,15 @@ ON_BumpFunction::EvaluateHelperLinearBump(double t,
 }
 
 void
-ON_BumpFunction::EvaluateHelperQuinticBump(double t,
-                                           double dt,
-                                           int der_count,
-                                           double* value) const
+ON_BumpFunction::EvaluateHelperQuinticBump (double t,
+                                            double dt,
+                                            int der_count,
+                                            double* value) const
 {
   // c(t) = (1-t)^3 * (1 + 3t + 6t^2)
   // bool neg = (t<0.0);
   // t = fabs(t);
-  if (fabs(t) < 1.0) {
+  if (fabs (t) < 1.0) {
     double a2 = (1 - t);
     double a1 = a2 * a2;
     double a = a1 * a2;
@@ -319,13 +319,13 @@ double EvaluateCubicBump(double t, double* d, double* dd) const
 */
 
 void
-ON_BumpFunction::Evaluate(double s, double t, int der_count, double* value) const
+ON_BumpFunction::Evaluate (double s, double t, int der_count, double* value) const
 {
   double tmp[20];
   double* xvalue;
   double* yvalue;
   xvalue = (der_count > 9)
-               ? ((double*)onmalloc((der_count + 1) * 2 * sizeof(xvalue[0])))
+               ? ((double*)onmalloc ((der_count + 1) * 2 * sizeof (xvalue[0])))
                : &tmp[0];
   yvalue = xvalue + (der_count + 1);
   double x = s - m_x0;
@@ -336,16 +336,16 @@ ON_BumpFunction::Evaluate(double s, double t, int der_count, double* value) cons
   y *= dy;
 
   if (5 == m_type[0]) {
-    EvaluateHelperQuinticBump(x, dx, der_count, xvalue);
+    EvaluateHelperQuinticBump (x, dx, der_count, xvalue);
   }
   else {
-    EvaluateHelperLinearBump(x, dx, der_count, xvalue);
+    EvaluateHelperLinearBump (x, dx, der_count, xvalue);
   }
   if (5 == m_type[1]) {
-    EvaluateHelperQuinticBump(y, dy, der_count, yvalue);
+    EvaluateHelperQuinticBump (y, dy, der_count, yvalue);
   }
   else {
-    EvaluateHelperLinearBump(y, dy, der_count, yvalue);
+    EvaluateHelperLinearBump (y, dy, der_count, yvalue);
   }
 
   int n, i, j;
@@ -357,14 +357,14 @@ ON_BumpFunction::Evaluate(double s, double t, int der_count, double* value) cons
 }
 
 bool
-ON_OffsetSurfaceFunction::SetBaseSurface(const ON_Surface* srf)
+ON_OffsetSurfaceFunction::SetBaseSurface (const ON_Surface* srf)
 {
   bool rc = false;
   Destroy();
   m_srf = srf;
   if (0 != m_srf) {
-    m_domain[0] = m_srf->Domain(0);
-    m_domain[1] = m_srf->Domain(1);
+    m_domain[0] = m_srf->Domain (0);
+    m_domain[1] = m_srf->Domain (1);
     rc = m_domain[0].IsIncreasing() && m_domain[1].IsIncreasing();
     if (!rc)
       Destroy();
@@ -373,7 +373,7 @@ ON_OffsetSurfaceFunction::SetBaseSurface(const ON_Surface* srf)
 }
 
 bool
-ON_OffsetSurfaceFunction::SetSideTangency(int side, bool bEnable)
+ON_OffsetSurfaceFunction::SetSideTangency (int side, bool bEnable)
 {
   bool rc = false;
   if (0 <= side && side < 4) {
@@ -385,7 +385,7 @@ ON_OffsetSurfaceFunction::SetSideTangency(int side, bool bEnable)
 }
 
 bool
-ON_OffsetSurfaceFunction::SideTangency(int side) const
+ON_OffsetSurfaceFunction::SideTangency (int side) const
 {
   bool rc = (0 <= side && side < 4) ? m_bZeroSideDerivative[side] : false;
   return rc;
@@ -398,18 +398,18 @@ ON_OffsetSurfaceFunction::OffsetPointCount() const
 }
 
 double
-ON_OffsetSurfaceFunction::DistanceAt(double s, double t) const
+ON_OffsetSurfaceFunction::DistanceAt (double s, double t) const
 {
   double d = 0.0;
-  EvaluateDistance(s, t, 0, &d);
+  EvaluateDistance (s, t, 0, &d);
   return d;
 }
 
 bool
-ON_OffsetSurfaceFunction::EvaluateDistance(double s,
-                                           double t,
-                                           int num_der,
-                                           double* value) const
+ON_OffsetSurfaceFunction::EvaluateDistance (double s,
+                                            double t,
+                                            int num_der,
+                                            double* value) const
 {
   const int vcnt = ((num_der + 1) * (num_der + 2)) / 2;
   int vi;
@@ -417,44 +417,44 @@ ON_OffsetSurfaceFunction::EvaluateDistance(double s,
     value[vi] = 0;
   }
 
-  bool rc = const_cast<ON_OffsetSurfaceFunction*>(this)->Initialize();
+  bool rc = const_cast<ON_OffsetSurfaceFunction*> (this)->Initialize();
 
   if (rc) {
     double barray[21];
     double* bump_value =
-        (vcnt > 21) ? (double*)onmalloc(vcnt * sizeof(bump_value[0])) : barray;
+        (vcnt > 21) ? (double*)onmalloc (vcnt * sizeof (bump_value[0])) : barray;
     const int bump_count = m_bumps.Count();
     int bump_index, vi;
     for (bump_index = 0; bump_index < bump_count; bump_index++) {
-      m_bumps[bump_index].Evaluate(s, t, num_der, bump_value);
+      m_bumps[bump_index].Evaluate (s, t, num_der, bump_value);
       for (vi = 0; vi < vcnt; vi++) {
         value[vi] += bump_value[vi];
       }
     }
     if (bump_value != barray)
-      onfree(bump_value);
+      onfree (bump_value);
   }
   return rc;
 }
 
 ON_3dPoint
-ON_OffsetSurfaceFunction::PointAt(double s, double t) const
+ON_OffsetSurfaceFunction::PointAt (double s, double t) const
 {
   // double d = 0.0;
   ON_3dPoint P;
   ON_3dVector N;
   if (0 != m_srf) {
-    if (m_srf->EvNormal(s, t, P, N)) {
-      P = P + DistanceAt(s, t) * N;
+    if (m_srf->EvNormal (s, t, P, N)) {
+      P = P + DistanceAt (s, t) * N;
     }
   }
   return P;
 }
 
 ON_2dPoint
-ON_OffsetSurfaceFunction::OffsetSurfaceParameter(int i) const
+ON_OffsetSurfaceFunction::OffsetSurfaceParameter (int i) const
 {
-  ON_2dPoint p(ON_UNSET_VALUE, ON_UNSET_VALUE);
+  ON_2dPoint p (ON_UNSET_VALUE, ON_UNSET_VALUE);
   if (0 != m_srf && i >= 0 && i < m_offset_value.Count()) {
     p.x = m_offset_value[i].m_s;
     p.y = m_offset_value[i].m_t;
@@ -469,7 +469,7 @@ ON_OffsetSurfaceFunction::BaseSurface() const
 }
 
 double
-ON_OffsetSurfaceFunction::OffsetDistance(int i) const
+ON_OffsetSurfaceFunction::OffsetDistance (int i) const
 {
   double d = ON_UNSET_VALUE;
   if (0 != m_srf && i >= 0 && i < m_offset_value.Count()) {
@@ -479,14 +479,15 @@ ON_OffsetSurfaceFunction::OffsetDistance(int i) const
 }
 
 bool
-ON_OffsetSurfaceFunction::SetOffsetPoint(double s,
-                                         double t,
-                                         double distance,
-                                         double radius)
+ON_OffsetSurfaceFunction::SetOffsetPoint (double s,
+                                          double t,
+                                          double distance,
+                                          double radius)
 {
   bool rc = false;
-  if (ON_IsValid(s) && ON_IsValid(t) && ON_IsValid(distance) && ON_IsValid(radius)) {
-    double u = m_domain[0].NormalizedParameterAt(s);
+  if (ON_IsValid (s) && ON_IsValid (t) && ON_IsValid (distance) &&
+      ON_IsValid (radius)) {
+    double u = m_domain[0].NormalizedParameterAt (s);
 
     // 14 Jan 2008, Mikko, TRR 29861:
     // Changing the clamping to happen when the
@@ -502,7 +503,7 @@ ON_OffsetSurfaceFunction::SetOffsetPoint(double s,
       u = 1.0;
     }
 
-    double v = m_domain[1].NormalizedParameterAt(t);
+    double v = m_domain[1].NormalizedParameterAt (t);
     if (v < dTol) {
       t = m_domain[1][0];
       v = 0.0;
@@ -527,8 +528,8 @@ ON_OffsetSurfaceFunction::SetOffsetPoint(double s,
         }
       }
       if (i == m_offset_value.Count()) {
-        m_offset_value.Append(offset_value);
-        m_bumps.SetCount(0);
+        m_offset_value.Append (offset_value);
+        m_bumps.SetCount (0);
         m_bValid = false;
       }
       rc = true;
@@ -538,7 +539,7 @@ ON_OffsetSurfaceFunction::SetOffsetPoint(double s,
 }
 
 bool
-ON_OffsetSurfaceFunction::SetDistance(int index, double distance)
+ON_OffsetSurfaceFunction::SetDistance (int index, double distance)
 {
   int count = m_offset_value.Count();
   if (index < 0 || index > count - 1)
@@ -551,7 +552,7 @@ ON_OffsetSurfaceFunction::SetDistance(int index, double distance)
 }
 
 bool
-ON_OffsetSurfaceFunction::SetPoint(int index, double s, double t)
+ON_OffsetSurfaceFunction::SetPoint (int index, double s, double t)
 {
   int count = m_offset_value.Count();
   if (index < 0 || index > count - 1)
@@ -575,7 +576,7 @@ ON_OffsetSurfaceFunction::Destroy()
 
   m_domain[0].Destroy();
   m_domain[1].Destroy();
-  m_bumps.SetCount(0);
+  m_bumps.SetCount (0);
   m_bValid = false;
 }
 
@@ -589,8 +590,8 @@ ON_OffsetSurfaceFunction::Initialize()
   const int count = m_offset_value.Count();
   if (!m_bValid && 0 != m_srf && count > 0) {
     ON_Workspace ws;
-    m_bumps.SetCount(0);
-    m_bumps.Reserve(count);
+    m_bumps.SetCount (0);
+    m_bumps.Reserve (count);
     int i;
     double a, b, ds, dt;
 
@@ -628,7 +629,7 @@ ON_OffsetSurfaceFunction::Initialize()
         // user specified cubic bump size
         ON_3dPoint Pt;
         ON_3dVector Ds, Dt;
-        if (m_srf->Ev1Der(offset_value.m_s, offset_value.m_t, Pt, Ds, Dt)) {
+        if (m_srf->Ev1Der (offset_value.m_s, offset_value.m_t, Pt, Ds, Dt)) {
           ds = (ds0 > ds1) ? ds0 : ds1;
           dt = (dt0 > dt1) ? dt0 : dt1;
           a = Ds.Length();
@@ -719,20 +720,20 @@ ON_OffsetSurfaceFunction::Initialize()
       }
     }
 
-    ON_Matrix M(count, count);
-    double* B = (double*)onmalloc(2 * count * sizeof(*B));
+    ON_Matrix M (count, count);
+    double* B = (double*)onmalloc (2 * count * sizeof (*B));
     double* X = B + count;
     int j;
     for (i = 0; i < count; i++) {
       ON_2dPoint p = m_bumps[i].m_point;
       B[i] = m_offset_value[i].m_distance;
       for (j = 0; j < count; j++) {
-        M[i][j] = m_bumps[j].ValueAt(p.x, p.y);
+        M[i][j] = m_bumps[j].ValueAt (p.x, p.y);
       }
     }
-    int rank = M.RowReduce(ON_ZERO_TOLERANCE, B);
+    int rank = M.RowReduce (ON_ZERO_TOLERANCE, B);
     if (count == rank) {
-      if (M.BackSolve(ON_ZERO_TOLERANCE, count, B, X)) {
+      if (M.BackSolve (ON_ZERO_TOLERANCE, count, B, X)) {
         m_bValid = true;
       }
     }
@@ -772,7 +773,7 @@ ON_OffsetSurfaceFunction::Initialize()
       }
     }
 
-    onfree(B);
+    onfree (B);
   }
   return m_bValid;
 }
@@ -793,29 +794,29 @@ ON_BumpFunction::ON_BumpFunction()
 }
 
 bool
-ON_BumpFunction::operator==(const ON_BumpFunction& other) const
+ON_BumpFunction::operator== (const ON_BumpFunction& other) const
 {
   return (m_point.x == other.m_point.x && m_point.y == other.m_point.y);
 }
 
 bool
-ON_BumpFunction::operator<(const ON_BumpFunction& other) const
+ON_BumpFunction::operator< (const ON_BumpFunction& other) const
 {
   return ((m_point.x < other.m_point.x) ||
           (m_point.x == other.m_point.x && m_point.y < other.m_point.y));
 }
 
 bool
-ON_BumpFunction::operator>(const ON_BumpFunction& other) const
+ON_BumpFunction::operator> (const ON_BumpFunction& other) const
 {
   return ((m_point.x > other.m_point.x) ||
           (m_point.x == other.m_point.x && m_point.y > other.m_point.y));
 }
 
 double
-ON_BumpFunction::ValueAt(double s, double t) const
+ON_BumpFunction::ValueAt (double s, double t) const
 {
   double v;
-  Evaluate(s, t, 0, &v);
+  Evaluate (s, t, 0, &v);
   return v;
 }

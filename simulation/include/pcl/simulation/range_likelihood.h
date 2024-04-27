@@ -41,7 +41,7 @@ public:
    * \param scene a pointer to the scene that should be rendered when computing
    *        likelihoods
    */
-  RangeLikelihood(int rows, int cols, int row_height, int col_width, Scene::Ptr scene);
+  RangeLikelihood (int rows, int cols, int row_height, int col_width, Scene::Ptr scene);
 
   /** Destroy the RangeLikelihood object and release any memory allocated. */
   ~RangeLikelihood();

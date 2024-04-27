@@ -78,8 +78,8 @@ struct Correspondence {
   inline Correspondence() = default;
 
   /** \brief Constructor. */
-  inline Correspondence(index_t _index_query, index_t _index_match, float _distance)
-  : index_query(_index_query), index_match(_index_match), distance(_distance)
+  inline Correspondence (index_t _index_query, index_t _index_match, float _distance)
+  : index_query (_index_query), index_match (_index_match), distance (_distance)
   {}
 
   PCL_MAKE_ALIGNED_OPERATOR_NEW
@@ -87,7 +87,7 @@ struct Correspondence {
 
 /** \brief overloaded << operator */
 PCL_EXPORTS std::ostream&
-operator<<(std::ostream& os, const Correspondence& c);
+operator<< (std::ostream& os, const Correspondence& c);
 
 using Correspondences =
     std::vector<pcl::Correspondence, Eigen::aligned_allocator<pcl::Correspondence>>;

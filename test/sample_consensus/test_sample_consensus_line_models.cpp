@@ -50,11 +50,11 @@ using SampleConsensusModelParallelLinePtr =
     SampleConsensusModelParallelLine<PointXYZ>::Ptr;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TEST(SampleConsensusModelLine, RANSAC)
+TEST (SampleConsensusModelLine, RANSAC)
 {
   // Use a custom point cloud for these tests until we need something better
   PointCloud<PointXYZ> cloud;
-  cloud.resize(10);
+  cloud.resize (10);
 
   cloud[0].getVector3fMap() << 1.0f, 2.00f, 3.00f;
   cloud[1].getVector3fMap() << 4.0f, 5.00f, 6.00f;
@@ -68,49 +68,49 @@ TEST(SampleConsensusModelLine, RANSAC)
   cloud[9].getVector3fMap() << 4.0f, 2.00f, 3.00f;
 
   // Create a shared line model pointer directly
-  SampleConsensusModelLinePtr model(
-      new SampleConsensusModelLine<PointXYZ>(cloud.makeShared()));
+  SampleConsensusModelLinePtr model (
+      new SampleConsensusModelLine<PointXYZ> (cloud.makeShared()));
 
   // Create the RANSAC object
-  RandomSampleConsensus<PointXYZ> sac(model, 0.001);
+  RandomSampleConsensus<PointXYZ> sac (model, 0.001);
 
   // Algorithm tests
   bool result = sac.computeModel();
-  ASSERT_TRUE(result);
+  ASSERT_TRUE (result);
 
   pcl::Indices sample;
-  sac.getModel(sample);
-  EXPECT_EQ(2, sample.size());
+  sac.getModel (sample);
+  EXPECT_EQ (2, sample.size());
 
   pcl::Indices inliers;
-  sac.getInliers(inliers);
-  EXPECT_EQ(8, inliers.size());
+  sac.getInliers (inliers);
+  EXPECT_EQ (8, inliers.size());
 
   Eigen::VectorXf coeff;
-  sac.getModelCoefficients(coeff);
-  EXPECT_EQ(6, coeff.size());
-  EXPECT_NEAR(1, coeff[4] / coeff[3], 1e-4);
-  EXPECT_NEAR(1, coeff[5] / coeff[3], 1e-4);
+  sac.getModelCoefficients (coeff);
+  EXPECT_EQ (6, coeff.size());
+  EXPECT_NEAR (1, coeff[4] / coeff[3], 1e-4);
+  EXPECT_NEAR (1, coeff[5] / coeff[3], 1e-4);
 
   Eigen::VectorXf coeff_refined;
-  model->optimizeModelCoefficients(inliers, coeff, coeff_refined);
-  EXPECT_EQ(6, coeff_refined.size());
-  EXPECT_NEAR(1, coeff[4] / coeff[3], 1e-4);
-  EXPECT_NEAR(1, coeff[5] / coeff[3], 1e-4);
+  model->optimizeModelCoefficients (inliers, coeff, coeff_refined);
+  EXPECT_EQ (6, coeff_refined.size());
+  EXPECT_NEAR (1, coeff[4] / coeff[3], 1e-4);
+  EXPECT_NEAR (1, coeff[5] / coeff[3], 1e-4);
 
   // Projection tests
   PointCloud<PointXYZ> proj_points;
-  model->projectPoints(inliers, coeff_refined, proj_points);
+  model->projectPoints (inliers, coeff_refined, proj_points);
 
-  EXPECT_XYZ_NEAR(PointXYZ(7.0, 8.0, 9.0), proj_points[2], 1e-4);
-  EXPECT_XYZ_NEAR(PointXYZ(10.0, 11.0, 12.0), proj_points[3], 1e-4);
-  EXPECT_XYZ_NEAR(PointXYZ(16.0, 17.0, 18.0), proj_points[5], 1e-4);
+  EXPECT_XYZ_NEAR (PointXYZ (7.0, 8.0, 9.0), proj_points[2], 1e-4);
+  EXPECT_XYZ_NEAR (PointXYZ (10.0, 11.0, 12.0), proj_points[3], 1e-4);
+  EXPECT_XYZ_NEAR (PointXYZ (16.0, 17.0, 18.0), proj_points[5], 1e-4);
 }
 
-TEST(SampleConsensusModelLine, OnGroundPlane)
+TEST (SampleConsensusModelLine, OnGroundPlane)
 {
   PointCloud<PointXYZ> cloud;
-  cloud.resize(10);
+  cloud.resize (10);
 
   // All the points are on the ground plane (z=0).
   // The line is parallel to the x axis, so all the inlier points have the same z and y
@@ -128,33 +128,33 @@ TEST(SampleConsensusModelLine, OnGroundPlane)
   cloud[9].getVector3fMap() << 3.3f, 0.1f, 0.0f;
 
   // Create a shared line model pointer directly
-  SampleConsensusModelLinePtr model(
-      new SampleConsensusModelLine<PointXYZ>(cloud.makeShared()));
+  SampleConsensusModelLinePtr model (
+      new SampleConsensusModelLine<PointXYZ> (cloud.makeShared()));
 
   // Create the RANSAC object
-  RandomSampleConsensus<PointXYZ> sac(model, 0.001);
+  RandomSampleConsensus<PointXYZ> sac (model, 0.001);
 
   // Algorithm tests
   bool result = sac.computeModel();
-  ASSERT_TRUE(result);
+  ASSERT_TRUE (result);
 
   pcl::Indices inliers;
-  sac.getInliers(inliers);
-  EXPECT_EQ(6, inliers.size());
+  sac.getInliers (inliers);
+  EXPECT_EQ (6, inliers.size());
 
   Eigen::VectorXf coeff;
-  sac.getModelCoefficients(coeff);
-  EXPECT_EQ(6, coeff.size());
+  sac.getModelCoefficients (coeff);
+  EXPECT_EQ (6, coeff.size());
 
-  EXPECT_NE(0, coeff[3]);
-  EXPECT_NEAR(0, coeff[4], 1e-4);
-  EXPECT_NEAR(0, coeff[5], 1e-4);
+  EXPECT_NE (0, coeff[3]);
+  EXPECT_NEAR (0, coeff[4], 1e-4);
+  EXPECT_NEAR (0, coeff[5], 1e-4);
 }
 
-TEST(SampleConsensusModelLine, SampleValidationPointsEqual)
+TEST (SampleConsensusModelLine, SampleValidationPointsEqual)
 {
   PointCloud<PointXYZ> cloud;
-  cloud.resize(3);
+  cloud.resize (3);
 
   // The "cheat point" makes it possible to find a set of valid samples and
   // therefore avoids the log message of an unsuccessful sample validation
@@ -171,29 +171,29 @@ TEST(SampleConsensusModelLine, SampleValidationPointsEqual)
 
   // Create a shared line model pointer directly and explicitly disable the
   // random seed for the reasons mentioned above
-  SampleConsensusModelLinePtr model(
-      new SampleConsensusModelLine<PointXYZ>(cloud.makeShared(), /* random = */ false));
+  SampleConsensusModelLinePtr model (new SampleConsensusModelLine<PointXYZ> (
+      cloud.makeShared(), /* random = */ false));
 
   // Algorithm tests
   pcl::Indices samples;
   int iterations = 0;
-  model->getSamples(iterations, samples);
-  EXPECT_EQ(samples.size(), 2);
+  model->getSamples (iterations, samples);
+  EXPECT_EQ (samples.size(), 2);
   // The "cheat point" has to be part of the sample, otherwise something is wrong.
   // The best option would be to assert on stderr output here, but that doesn't
   // seem to be that simple.
-  EXPECT_TRUE(std::find(samples.begin(), samples.end(), cheatPointIndex) !=
-              samples.end());
+  EXPECT_TRUE (std::find (samples.begin(), samples.end(), cheatPointIndex) !=
+               samples.end());
 
   pcl::Indices forcedSamples = {firstKnownEqualPoint, secondKnownEqualPoint};
   Eigen::VectorXf modelCoefficients;
-  EXPECT_FALSE(model->computeModelCoefficients(forcedSamples, modelCoefficients));
+  EXPECT_FALSE (model->computeModelCoefficients (forcedSamples, modelCoefficients));
 }
 
-TEST(SampleConsensusModelLine, SampleValidationPointsValid)
+TEST (SampleConsensusModelLine, SampleValidationPointsValid)
 {
   PointCloud<PointXYZ> cloud;
-  cloud.resize(2);
+  cloud.resize (2);
 
   // These two points only differ in one coordinate so this also acts as a
   // regression test for 36c2bd6209f87dc7c6f56e2c0314e19f9cab95ec
@@ -201,48 +201,48 @@ TEST(SampleConsensusModelLine, SampleValidationPointsValid)
   cloud[1].getVector3fMap() << 0.1f, 0.0f, 0.0f;
 
   // Create a shared line model pointer directly
-  SampleConsensusModelLinePtr model(
-      new SampleConsensusModelLine<PointXYZ>(cloud.makeShared()));
+  SampleConsensusModelLinePtr model (
+      new SampleConsensusModelLine<PointXYZ> (cloud.makeShared()));
 
   // Algorithm tests
   pcl::Indices samples;
   int iterations = 0;
-  model->getSamples(iterations, samples);
-  EXPECT_EQ(samples.size(), 2);
+  model->getSamples (iterations, samples);
+  EXPECT_EQ (samples.size(), 2);
 
   pcl::Indices forcedSamples = {0, 1};
   Eigen::VectorXf modelCoefficients;
-  EXPECT_TRUE(model->computeModelCoefficients(forcedSamples, modelCoefficients));
+  EXPECT_TRUE (model->computeModelCoefficients (forcedSamples, modelCoefficients));
 }
 
-TEST(SampleConsensusModelLine, SampleValidationNotEnoughSamples)
+TEST (SampleConsensusModelLine, SampleValidationNotEnoughSamples)
 {
   PointCloud<PointXYZ> cloud;
-  cloud.resize(1);
+  cloud.resize (1);
 
   cloud[0].getVector3fMap() << 0.1f, 0.0f, 0.0f;
 
   // Create a shared line model pointer directly
-  SampleConsensusModelLinePtr model(
-      new SampleConsensusModelLine<PointXYZ>(cloud.makeShared()));
+  SampleConsensusModelLinePtr model (
+      new SampleConsensusModelLine<PointXYZ> (cloud.makeShared()));
 
   // Algorithm tests
   pcl::Indices samples;
   int iterations = 0;
-  model->getSamples(iterations, samples);
-  EXPECT_EQ(samples.size(), 0);
+  model->getSamples (iterations, samples);
+  EXPECT_EQ (samples.size(), 0);
 
   pcl::Indices forcedSamples = {
       0,
   };
   Eigen::VectorXf modelCoefficients;
-  EXPECT_FALSE(model->computeModelCoefficients(forcedSamples, modelCoefficients));
+  EXPECT_FALSE (model->computeModelCoefficients (forcedSamples, modelCoefficients));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TEST(SampleConsensusModelParallelLine, RANSAC)
+TEST (SampleConsensusModelParallelLine, RANSAC)
 {
-  PointCloud<PointXYZ> cloud(16, 1);
+  PointCloud<PointXYZ> cloud (16, 1);
 
   // Line 1
   cloud[0].getVector3fMap() << 1.0f, 2.00f, 3.00f;
@@ -266,47 +266,47 @@ TEST(SampleConsensusModelParallelLine, RANSAC)
 
   // Create a shared line model pointer directly
   constexpr double eps = 0.1; // angle eps in radians
-  const Eigen::Vector3f axis(0, 0, 1);
-  SampleConsensusModelParallelLinePtr model(
-      new SampleConsensusModelParallelLine<PointXYZ>(cloud.makeShared()));
-  model->setAxis(axis);
-  model->setEpsAngle(eps);
+  const Eigen::Vector3f axis (0, 0, 1);
+  SampleConsensusModelParallelLinePtr model (
+      new SampleConsensusModelParallelLine<PointXYZ> (cloud.makeShared()));
+  model->setAxis (axis);
+  model->setEpsAngle (eps);
 
   // Create the RANSAC object
-  RandomSampleConsensus<PointXYZ> sac(model, 0.1);
+  RandomSampleConsensus<PointXYZ> sac (model, 0.1);
 
   // Algorithm tests
   bool result = sac.computeModel();
-  ASSERT_TRUE(result);
+  ASSERT_TRUE (result);
 
   pcl::Indices sample;
-  sac.getModel(sample);
-  EXPECT_EQ(2, sample.size());
+  sac.getModel (sample);
+  EXPECT_EQ (2, sample.size());
 
   pcl::Indices inliers;
-  sac.getInliers(inliers);
-  EXPECT_EQ(6, inliers.size());
+  sac.getInliers (inliers);
+  EXPECT_EQ (6, inliers.size());
 
   Eigen::VectorXf coeff;
-  sac.getModelCoefficients(coeff);
-  EXPECT_EQ(6, coeff.size());
+  sac.getModelCoefficients (coeff);
+  EXPECT_EQ (6, coeff.size());
 
   // Make sure the returned direction respects the angular constraint
-  double angle_diff = getAngle3D(axis, coeff.tail<3>());
-  angle_diff = std::min(angle_diff, M_PI - angle_diff);
-  EXPECT_GT(eps, angle_diff);
+  double angle_diff = getAngle3D (axis, coeff.tail<3>());
+  angle_diff = std::min (angle_diff, M_PI - angle_diff);
+  EXPECT_GT (eps, angle_diff);
 
   // Projection tests
   PointCloud<PointXYZ> proj_points;
-  model->projectPoints(inliers, coeff, proj_points);
+  model->projectPoints (inliers, coeff, proj_points);
 
-  EXPECT_XYZ_NEAR(PointXYZ(-1.05, 5.05, 3.0), proj_points[13], 0.1);
-  EXPECT_XYZ_NEAR(PointXYZ(-1.05, 5.05, 4.0), proj_points[14], 0.1);
+  EXPECT_XYZ_NEAR (PointXYZ (-1.05, 5.05, 3.0), proj_points[13], 0.1);
+  EXPECT_XYZ_NEAR (PointXYZ (-1.05, 5.05, 4.0), proj_points[14], 0.1);
 }
 
 int
 main (int argc, char** argv)
 {
-  testing::InitGoogleTest(&argc, argv);
+  testing::InitGoogleTest (&argc, argv);
   return (RUN_ALL_TESTS());
 }

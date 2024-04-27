@@ -100,15 +100,15 @@ public:
    */
   class Output {
   public:
-    Output(const std::string& object_name,
-           const float rigid_transform[12],
-           float match_confidence,
-           void* user_data)
-    : object_name_(object_name)
-    , match_confidence_(match_confidence)
-    , user_data_(user_data)
+    Output (const std::string& object_name,
+            const float rigid_transform[12],
+            float match_confidence,
+            void* user_data)
+    : object_name_ (object_name)
+    , match_confidence_ (match_confidence)
+    , user_data_ (user_data)
     {
-      std::copy(rigid_transform, rigid_transform + 12, this->rigid_transform_);
+      std::copy (rigid_transform, rigid_transform + 12, this->rigid_transform_);
     }
     virtual ~Output() = default;
 
@@ -121,11 +121,11 @@ public:
 
   class OrientedPointPair {
   public:
-    OrientedPointPair(const float* p1,
-                      const float* n1,
-                      const float* p2,
-                      const float* n2)
-    : p1_(p1), n1_(n1), p2_(p2), n2_(n2)
+    OrientedPointPair (const float* p1,
+                       const float* n1,
+                       const float* p2,
+                       const float* n2)
+    : p1_ (p1), n1_ (n1), p2_ (p2), n2_ (n2)
     {}
 
     virtual ~OrientedPointPair() = default;
@@ -164,7 +164,7 @@ public:
    * object details. Small values allow to better distinguish between objects, but will
    * introduce more holes in the resulting "voxel-surface" (especially for a sparsely
    * sampled scene). */
-  ObjRecRANSAC(float pair_width, float voxel_size);
+  ObjRecRANSAC (float pair_width, float voxel_size);
   virtual ~ObjRecRANSAC()
   {
     this->clear();
@@ -192,7 +192,7 @@ public:
   setMaxCoplanarityAngleDegrees (float max_coplanarity_angle_degrees)
   {
     max_coplanarity_angle_ = max_coplanarity_angle_degrees * AUX_DEG_TO_RADIANS;
-    model_library_.setMaxCoplanarityAngleDegrees(max_coplanarity_angle_degrees);
+    model_library_.setMaxCoplanarityAngleDegrees (max_coplanarity_angle_degrees);
   }
 
   inline void
@@ -249,7 +249,7 @@ public:
             const std::string& object_name,
             void* user_data = nullptr)
   {
-    return (model_library_.addModel(
+    return (model_library_.addModel (
         points, normals, object_name, frac_of_points_for_icp_refinement_, user_data));
   }
 
@@ -331,7 +331,7 @@ public:
   inline const ModelLibrary::Model*
   getModel (const std::string& name) const
   {
-    return (model_library_.getModel(name));
+    return (model_library_.getModel (name));
   }
 
   inline const ORROctree&
@@ -373,8 +373,8 @@ protected:
     if (1.0 - p <= 0.0)
       return 1;
 
-    return static_cast<int>(std::log(1.0 - success_probability) / std::log(1.0 - p) +
-                            1.0);
+    return static_cast<int> (std::log (1.0 - success_probability) / std::log (1.0 - p) +
+                             1.0);
   }
 
   inline void
@@ -455,27 +455,27 @@ protected:
     o2[2] = 0.5f * (a2[2] + b2[2]);
 
     // Compute the x-axes
-    aux::diff3(b1, a1, x1);
-    aux::normalize3(x1);
-    aux::diff3(b2, a2, x2);
-    aux::normalize3(x2);
+    aux::diff3 (b1, a1, x1);
+    aux::normalize3 (x1);
+    aux::diff3 (b2, a2, x2);
+    aux::normalize3 (x2);
     // Compute the y-axes. First y-axis
-    aux::projectOnPlane3(a1_n, x1, tmp1);
-    aux::normalize3(tmp1);
-    aux::projectOnPlane3(b1_n, x1, tmp2);
-    aux::normalize3(tmp2);
-    aux::sum3(tmp1, tmp2, y1);
-    aux::normalize3(y1);
+    aux::projectOnPlane3 (a1_n, x1, tmp1);
+    aux::normalize3 (tmp1);
+    aux::projectOnPlane3 (b1_n, x1, tmp2);
+    aux::normalize3 (tmp2);
+    aux::sum3 (tmp1, tmp2, y1);
+    aux::normalize3 (y1);
     // Second y-axis
-    aux::projectOnPlane3(a2_n, x2, tmp1);
-    aux::normalize3(tmp1);
-    aux::projectOnPlane3(b2_n, x2, tmp2);
-    aux::normalize3(tmp2);
-    aux::sum3(tmp1, tmp2, y2);
-    aux::normalize3(y2);
+    aux::projectOnPlane3 (a2_n, x2, tmp1);
+    aux::normalize3 (tmp1);
+    aux::projectOnPlane3 (b2_n, x2, tmp2);
+    aux::normalize3 (tmp2);
+    aux::sum3 (tmp1, tmp2, y2);
+    aux::normalize3 (y2);
     // Compute the z-axes
-    aux::cross3(x1, y1, z1);
-    aux::cross3(x2, y2, z2);
+    aux::cross3 (x1, y1, z1);
+    aux::cross3 (x2, y2, z2);
 
     // 1. Invert the matrix [x1|y1|z1] (note that x1, y1, and z1 are treated as
     // columns!)
@@ -489,10 +489,10 @@ protected:
     invFrame1[2][1] = z1[1];
     invFrame1[2][2] = z1[2];
     // 2. Compute the desired rotation as rigid_transform = [x2|y2|z2]*invFrame1
-    aux::mult3x3(x2, y2, z2, invFrame1, rigid_transform);
+    aux::mult3x3 (x2, y2, z2, invFrame1, rigid_transform);
 
     // Construct the translation which is the difference between the rotated o1 and o2
-    aux::mult3x3(rigid_transform, o1, Ro1);
+    aux::mult3x3 (rigid_transform, o1, Ro1);
     rigid_transform[9] = o2[0] - Ro1[0];
     rigid_transform[10] = o2[1] - Ro1[1];
     rigid_transform[11] = o2[2] - Ro1[2];
@@ -511,14 +511,14 @@ protected:
   {
     // Get the line from p1 to p2
     float cl[3] = {p2[0] - p1[0], p2[1] - p1[1], p2[2] - p1[2]};
-    aux::normalize3(cl);
+    aux::normalize3 (cl);
 
-    signature[0] = std::acos(aux::clamp(aux::dot3(n1, cl), -1.0f, 1.0f));
+    signature[0] = std::acos (aux::clamp (aux::dot3 (n1, cl), -1.0f, 1.0f));
     cl[0] = -cl[0];
     cl[1] = -cl[1];
     cl[2] = -cl[2];
-    signature[1] = std::acos(aux::clamp(aux::dot3(n2, cl), -1.0f, 1.0f));
-    signature[2] = std::acos(aux::clamp(aux::dot3(n1, n2), -1.0f, 1.0f));
+    signature[1] = std::acos (aux::clamp (aux::dot3 (n2, cl), -1.0f, 1.0f));
+    signature[2] = std::acos (aux::clamp (aux::dot3 (n1, n2), -1.0f, 1.0f));
   }
 
 protected:

@@ -61,7 +61,8 @@ using namespace std::chrono_literals;
     ++count;                                                                           \
     if (now - last >= 1.0) {                                                           \
       std::cerr << "Average framerate(" << _WHAT_                                      \
-                << "): " << double(count) / double(now - last) << " Hz" << std::endl;  \
+                << "): " << double (count) / double (now - last) << " Hz"              \
+                << std::endl;                                                          \
       count = 0;                                                                       \
       last = now;                                                                      \
     }                                                                                  \
@@ -90,8 +91,8 @@ public:
 
   MapsBuffer() {}
 
-  bool pushBack(MapsRgb::ConstPtr); // thread-save wrapper for push_back() method of
-                                    // ciruclar_buffer
+  bool pushBack (MapsRgb::ConstPtr); // thread-save wrapper for push_back() method of
+                                     // ciruclar_buffer
 
   MapsRgb::ConstPtr
   getFront (bool); // thread-save wrapper for front() method of ciruclar_buffer
@@ -99,41 +100,41 @@ public:
   inline bool
   isFull ()
   {
-    std::lock_guard<std::mutex> buff_lock(bmutex_);
+    std::lock_guard<std::mutex> buff_lock (bmutex_);
     return (buffer_.full());
   }
 
   inline bool
   isEmpty ()
   {
-    std::lock_guard<std::mutex> buff_lock(bmutex_);
+    std::lock_guard<std::mutex> buff_lock (bmutex_);
     return (buffer_.empty());
   }
 
   inline int
   getSize ()
   {
-    std::lock_guard<std::mutex> buff_lock(bmutex_);
-    return (int(buffer_.size()));
+    std::lock_guard<std::mutex> buff_lock (bmutex_);
+    return (int (buffer_.size()));
   }
 
   inline int
   getCapacity ()
   {
-    return (int(buffer_.capacity()));
+    return (int (buffer_.capacity()));
   }
 
   inline void
   setCapacity (int buff_size)
   {
-    std::lock_guard<std::mutex> buff_lock(bmutex_);
-    buffer_.set_capacity(buff_size);
+    std::lock_guard<std::mutex> buff_lock (bmutex_);
+    buffer_.set_capacity (buff_size);
   }
 
 private:
-  MapsBuffer(const MapsBuffer&) = delete; // Disabled copy constructor
+  MapsBuffer (const MapsBuffer&) = delete; // Disabled copy constructor
   MapsBuffer&
-  operator=(const MapsBuffer&) = delete; // Disabled assignment operator
+  operator= (const MapsBuffer&) = delete; // Disabled assignment operator
 
   std::mutex bmutex_;
   std::condition_variable buff_empty_;
@@ -142,14 +143,14 @@ private:
 
 //////////////////////////////////////////////////////////////////////////////////////////
 bool
-MapsBuffer::pushBack(MapsRgb::ConstPtr maps_rgb)
+MapsBuffer::pushBack (MapsRgb::ConstPtr maps_rgb)
 {
   bool retVal = false;
   {
-    std::lock_guard<std::mutex> buff_lock(bmutex_);
+    std::lock_guard<std::mutex> buff_lock (bmutex_);
     if (!buffer_.full())
       retVal = true;
-    buffer_.push_back(maps_rgb);
+    buffer_.push_back (maps_rgb);
   }
   buff_empty_.notify_one();
   return (retVal);
@@ -157,26 +158,26 @@ MapsBuffer::pushBack(MapsRgb::ConstPtr maps_rgb)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 MapsBuffer::MapsRgb::ConstPtr
-MapsBuffer::getFront(bool print)
+MapsBuffer::getFront (bool print)
 {
   MapsBuffer::MapsRgb::ConstPtr depth_rgb;
   {
-    std::unique_lock<std::mutex> buff_lock(bmutex_);
+    std::unique_lock<std::mutex> buff_lock (bmutex_);
     while (buffer_.empty()) {
       if (is_done)
         break;
       {
-        std::lock_guard<std::mutex> io_lock(io_mutex);
+        std::lock_guard<std::mutex> io_lock (io_mutex);
         // std::cout << "No data in buffer_ yet or buffer is empty." << std::endl;
       }
-      buff_empty_.wait(buff_lock);
+      buff_empty_.wait (buff_lock);
     }
     depth_rgb = buffer_.front();
     buffer_.pop_front();
   }
 
   if (print)
-    PCL_INFO("%d maps left in the buffer...\n", buffer_.size());
+    PCL_INFO ("%d maps left in the buffer...\n", buffer_.size());
 
   return (depth_rgb);
 }
@@ -191,23 +192,23 @@ writeToDisk (const MapsBuffer::MapsRgb::ConstPtr& map_rbg)
 {
   // save rgb
   std::stringstream ss;
-  ss.precision(std::numeric_limits<double>::digits10 + 2);
-  ss.width(20);
+  ss.precision (std::numeric_limits<double>::digits10 + 2);
+  ss.width (20);
   ss << map_rbg->time_stamp_;
 
   std::string prefix = "./frame-";
   std::string ext = " -rgb.png";
   std::string fname = prefix + ss.str() + ext;
-  pcl::io::saveRgbPNGFile(fname, (unsigned char*)map_rbg->rgb_.data, 640, 480);
+  pcl::io::saveRgbPNGFile (fname, (unsigned char*)map_rbg->rgb_.data, 640, 480);
 
   // save depth map
   ext = " -depth.png";
   fname = prefix + ss.str() + ext;
-  pcl::io::saveShortPNGFile(
+  pcl::io::saveShortPNGFile (
       fname, (short unsigned int*)map_rbg->depth_.data, 640, 480, 1);
 
   counter++;
-  FPS_CALC("maps write");
+  FPS_CALC ("maps write");
 }
 
 void
@@ -222,8 +223,8 @@ grabberMapsCallBack (const openni_wrapper::Image::Ptr& image_wrapper,
   rgb_depth.depth_.cols = depth_wrapper->getWidth();
   rgb_depth.depth_.rows = depth_wrapper->getHeight();
   rgb_depth.depth_.step = rgb_depth.depth_.cols * rgb_depth.depth_.elemSize();
-  source_depth_data_.resize(rgb_depth.depth_.cols * rgb_depth.depth_.rows);
-  depth_wrapper->fillDepthImageRaw(
+  source_depth_data_.resize (rgb_depth.depth_.cols * rgb_depth.depth_.rows);
+  depth_wrapper->fillDepthImageRaw (
       rgb_depth.depth_.cols, rgb_depth.depth_.rows, &source_depth_data_[0]);
   rgb_depth.depth_.data = &source_depth_data_[0];
 
@@ -231,19 +232,19 @@ grabberMapsCallBack (const openni_wrapper::Image::Ptr& image_wrapper,
   rgb_depth.rgb_.cols = image_wrapper->getWidth();
   rgb_depth.rgb_.rows = image_wrapper->getHeight();
   rgb_depth.rgb_.step = rgb_depth.rgb_.cols * rgb_depth.rgb_.elemSize();
-  source_image_data_.resize(rgb_depth.rgb_.cols * rgb_depth.rgb_.rows);
-  image_wrapper->fillRGB(
+  source_image_data_.resize (rgb_depth.rgb_.cols * rgb_depth.rgb_.rows);
+  image_wrapper->fillRGB (
       rgb_depth.rgb_.cols, rgb_depth.rgb_.rows, (unsigned char*)&source_image_data_[0]);
   rgb_depth.rgb_.data = &source_image_data_[0];
 
   // push to buffer
-  if (!buff.pushBack(pcl::make_shared<MapsBuffer::MapsRgb>(rgb_depth))) {
+  if (!buff.pushBack (pcl::make_shared<MapsBuffer::MapsRgb> (rgb_depth))) {
     {
-      std::lock_guard<std::mutex> io_lock(io_mutex);
-      PCL_WARN("Warning! Buffer was full, overwriting data\n");
+      std::lock_guard<std::mutex> io_lock (io_mutex);
+      PCL_WARN ("Warning! Buffer was full, overwriting data\n");
     }
   }
-  FPS_CALC("kinect callback");
+  FPS_CALC ("kinect callback");
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -253,19 +254,19 @@ grabAndSend ()
 {
   pcl::Grabber* interface = new pcl::OpenNIGrabber();
 
-  std::function<void(
+  std::function<void (
       const openni_wrapper::Image::Ptr&, const openni_wrapper::DepthImage::Ptr&, float)>
       f = [] (const openni_wrapper::Image::Ptr& img,
               const openni_wrapper::DepthImage::Ptr& depth,
-              float constant) { grabberMapsCallBack(img, depth, constant); };
+              float constant) { grabberMapsCallBack (img, depth, constant); };
 
-  interface->registerCallback(f);
+  interface->registerCallback (f);
   interface->start();
 
   while (true) {
     if (is_done)
       break;
-    std::this_thread::sleep_for(1s);
+    std::this_thread::sleep_for (1s);
   }
   interface->stop();
 }
@@ -278,15 +279,15 @@ receiveAndProcess ()
   while (true) {
     if (is_done)
       break;
-    writeToDisk(buff.getFront(false));
+    writeToDisk (buff.getFront (false));
   }
 
   {
-    std::lock_guard<std::mutex> io_lock(io_mutex);
-    PCL_INFO("Writing remaining %d maps in the buffer to disk...\n", buff.getSize());
+    std::lock_guard<std::mutex> io_lock (io_mutex);
+    PCL_INFO ("Writing remaining %d maps in the buffer to disk...\n", buff.getSize());
   }
   while (!buff.isEmpty()) {
-    writeToDisk(buff.getFront(true));
+    writeToDisk (buff.getFront (true));
   }
 }
 
@@ -294,9 +295,9 @@ receiveAndProcess ()
 void
 ctrlC (int)
 {
-  std::lock_guard<std::mutex> io_lock(io_mutex);
+  std::lock_guard<std::mutex> io_lock (io_mutex);
   std::cout << std::endl;
-  PCL_WARN("Ctrl-C detected, exit condition set to true\n");
+  PCL_WARN ("Ctrl-C detected, exit condition set to true\n");
   is_done = true;
 }
 
@@ -306,31 +307,31 @@ main (int argc, char** argv)
 {
   int buff_size = BUFFER_SIZE;
   if (argc == 2) {
-    buff_size = atoi(argv[1]);
+    buff_size = atoi (argv[1]);
     std::cout << "Setting buffer size to " << buff_size << " frames " << std::endl;
   }
   else {
     std::cout << "Using default buffer size of " << buff_size << " frames "
               << std::endl;
   }
-  buff.setCapacity(buff_size);
+  buff.setCapacity (buff_size);
   std::cout << "Starting the producer and consumer threads..." << std::endl;
   std::cout << "Press Ctrl-C to end" << std::endl;
-  std::thread producer(grabAndSend);
-  std::this_thread::sleep_for(2s);
-  std::thread consumer(receiveAndProcess);
-  std::thread consumer2(receiveAndProcess);
-  std::thread consumer3(receiveAndProcess);
-  signal(SIGINT, ctrlC);
+  std::thread producer (grabAndSend);
+  std::this_thread::sleep_for (2s);
+  std::thread consumer (receiveAndProcess);
+  std::thread consumer2 (receiveAndProcess);
+  std::thread consumer3 (receiveAndProcess);
+  signal (SIGINT, ctrlC);
   producer.join();
   {
-    std::lock_guard<std::mutex> io_lock(io_mutex);
-    PCL_WARN("Producer done\n");
+    std::lock_guard<std::mutex> io_lock (io_mutex);
+    PCL_WARN ("Producer done\n");
   }
   consumer.join();
   consumer2.join();
   consumer3.join();
 
-  PCL_WARN("Consumers done\n");
+  PCL_WARN ("Consumers done\n");
   return (0);
 }

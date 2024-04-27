@@ -46,7 +46,7 @@ template <class T>
 std::string
 EnumParameter<T>::valueTip()
 {
-  std::string tip("possible values: {");
+  std::string tip ("possible values: {");
   typename std::map<T, std::string>::const_iterator it = candidates_.begin();
   do {
     tip += it->second;
@@ -62,13 +62,13 @@ EnumParameter<T>::valueTip()
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <class T>
 QWidget*
-EnumParameter<T>::createEditor(QWidget* parent)
+EnumParameter<T>::createEditor (QWidget* parent)
 {
-  QComboBox* editor = new QComboBox(parent);
+  QComboBox* editor = new QComboBox (parent);
   for (typename std::map<T, std::string>::const_iterator it = candidates_.begin();
        it != candidates_.end();
        ++it) {
-    editor->addItem(it->second.c_str());
+    editor->addItem (it->second.c_str());
   }
 
   return editor;
@@ -77,21 +77,21 @@ EnumParameter<T>::createEditor(QWidget* parent)
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <class T>
 void
-EnumParameter<T>::setEditorData(QWidget* editor)
+EnumParameter<T>::setEditorData (QWidget* editor)
 {
-  QComboBox* comboBox = static_cast<QComboBox*>(editor);
+  QComboBox* comboBox = static_cast<QComboBox*> (editor);
 
-  T value = T(*this);
-  comboBox->setCurrentIndex(value);
+  T value = T (*this);
+  comboBox->setCurrentIndex (value);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <class T>
 void
-EnumParameter<T>::getEditorData(QWidget* editor)
+EnumParameter<T>::getEditorData (QWidget* editor)
 {
-  QComboBox* comboBox = static_cast<QComboBox*>(editor);
-  T value = T(comboBox->currentIndex());
+  QComboBox* comboBox = static_cast<QComboBox*> (editor);
+  T value = T (comboBox->currentIndex());
   current_value_ = value;
 }
 

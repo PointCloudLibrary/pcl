@@ -52,66 +52,67 @@
 using namespace std::chrono_literals;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-OpenNIPassthrough::OpenNIPassthrough(pcl::OpenNIGrabber& grabber)
-: grabber_(grabber), ui_(new Ui::MainWindow), vis_timer_(new QTimer(this))
+OpenNIPassthrough::OpenNIPassthrough (pcl::OpenNIGrabber& grabber)
+: grabber_ (grabber), ui_ (new Ui::MainWindow), vis_timer_ (new QTimer (this))
 {
   // Create a timer and fire it up every 5ms
-  vis_timer_->start(5);
+  vis_timer_->start (5);
 
-  connect(vis_timer_, SIGNAL(timeout()), this, SLOT(timeoutSlot()));
+  connect (vis_timer_, SIGNAL (timeout()), this, SLOT (timeoutSlot()));
 
-  ui_->setupUi(this);
+  ui_->setupUi (this);
 
-  this->setWindowTitle("PCL OpenNI PassThrough Viewer");
+  this->setWindowTitle ("PCL OpenNI PassThrough Viewer");
   // Create the QVTKWidget
 #if VTK_MAJOR_VERSION > 8
   auto renderer = vtkSmartPointer<vtkRenderer>::New();
   auto renderWindow = vtkSmartPointer<vtkGenericOpenGLRenderWindow>::New();
-  renderWindow->AddRenderer(renderer);
-  vis_.reset(new pcl::visualization::PCLVisualizer(renderer, renderWindow, "", false));
+  renderWindow->AddRenderer (renderer);
+  vis_.reset (
+      new pcl::visualization::PCLVisualizer (renderer, renderWindow, "", false));
 #else
-  vis_.reset(new pcl::visualization::PCLVisualizer("", false));
+  vis_.reset (new pcl::visualization::PCLVisualizer ("", false));
 #endif // VTK_MAJOR_VERSION > 8
-  setRenderWindowCompat(*(ui_->qvtk_widget), *(vis_->getRenderWindow()));
-  vis_->setupInteractor(getInteractorCompat(*(ui_->qvtk_widget)),
-                        getRenderWindowCompat(*(ui_->qvtk_widget)));
+  setRenderWindowCompat (*(ui_->qvtk_widget), *(vis_->getRenderWindow()));
+  vis_->setupInteractor (getInteractorCompat (*(ui_->qvtk_widget)),
+                         getRenderWindowCompat (*(ui_->qvtk_widget)));
 
-  vis_->getInteractorStyle()->setKeyboardModifier(
+  vis_->getInteractorStyle()->setKeyboardModifier (
       pcl::visualization::INTERACTOR_KB_MOD_SHIFT);
 
   refreshView();
 
   // Start the OpenNI data acquision
-  std::function<void(const CloudConstPtr&)> f = [this] (const CloudConstPtr& cloud) {
-    cloud_cb(cloud);
+  std::function<void (const CloudConstPtr&)> f = [this] (const CloudConstPtr& cloud) {
+    cloud_cb (cloud);
   };
-  boost::signals2::connection c = grabber_.registerCallback(f);
+  boost::signals2::connection c = grabber_.registerCallback (f);
 
   grabber_.start();
 
   // Set defaults
-  pass_.setFilterFieldName("z");
-  pass_.setFilterLimits(0.5, 5.0);
+  pass_.setFilterFieldName ("z");
+  pass_.setFilterLimits (0.5, 5.0);
 
-  ui_->fieldValueSlider->setRange(5, 50);
-  ui_->fieldValueSlider->setValue(50);
-  connect(ui_->fieldValueSlider,
-          SIGNAL(valueChanged(int)),
-          this,
-          SLOT(adjustPassThroughValues(int)));
+  ui_->fieldValueSlider->setRange (5, 50);
+  ui_->fieldValueSlider->setValue (50);
+  connect (ui_->fieldValueSlider,
+           SIGNAL (valueChanged (int)),
+           this,
+           SLOT (adjustPassThroughValues (int)));
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
-OpenNIPassthrough::cloud_cb(const CloudConstPtr& cloud)
+OpenNIPassthrough::cloud_cb (const CloudConstPtr& cloud)
 {
-  QMutexLocker locker(&mtx_);
-  FPS_CALC("computation");
+  QMutexLocker locker (&mtx_);
+  FPS_CALC ("computation");
 
   // Computation goes here
-  cloud_pass_.reset(new Cloud);
-  pass_.setInputCloud(cloud);
-  pass_.filter(*cloud_pass_);
+  cloud_pass_.reset (new Cloud);
+  pass_.setInputCloud (cloud);
+  pass_.filter (*cloud_pass_);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -119,21 +120,21 @@ void
 OpenNIPassthrough::timeoutSlot()
 {
   if (!cloud_pass_) {
-    std::this_thread::sleep_for(1ms);
+    std::this_thread::sleep_for (1ms);
     return;
   }
 
   CloudPtr temp_cloud;
   {
-    QMutexLocker locker(&mtx_);
-    temp_cloud.swap(cloud_pass_);
+    QMutexLocker locker (&mtx_);
+    temp_cloud.swap (cloud_pass_);
   }
   // Add to the 3D viewer
-  if (!vis_->updatePointCloud(temp_cloud, "cloud_pass")) {
-    vis_->addPointCloud(temp_cloud, "cloud_pass");
-    vis_->resetCameraViewpoint("cloud_pass");
+  if (!vis_->updatePointCloud (temp_cloud, "cloud_pass")) {
+    vis_->addPointCloud (temp_cloud, "cloud_pass");
+    vis_->resetCameraViewpoint ("cloud_pass");
   }
-  FPS_CALC("visualization");
+  FPS_CALC ("visualization");
   ui_->qvtk_widget->update();
 }
 
@@ -151,17 +152,17 @@ int
 main (int argc, char** argv)
 {
   // Initialize QT
-  QApplication app(argc, argv);
+  QApplication app (argc, argv);
 
   // Open the first available camera
-  pcl::OpenNIGrabber grabber("#1");
+  pcl::OpenNIGrabber grabber ("#1");
   // Check if an RGB stream is provided
   if (!grabber.providesCallback<pcl::OpenNIGrabber::sig_cb_openni_point_cloud_rgb>()) {
-    PCL_ERROR("Device #1 does not provide an RGB stream!\n");
+    PCL_ERROR ("Device #1 does not provide an RGB stream!\n");
     return -1;
   }
 
-  OpenNIPassthrough v(grabber);
+  OpenNIPassthrough v (grabber);
   v.show();
   return QApplication::exec();
 }

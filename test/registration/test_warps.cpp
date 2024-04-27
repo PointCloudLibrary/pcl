@@ -46,58 +46,58 @@ using namespace pcl;
 using namespace pcl::registration;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TEST(PCL, WarpPointRigid6DFloat)
+TEST (PCL, WarpPointRigid6DFloat)
 {
   WarpPointRigid6D<PointXYZ, PointXYZ, float> warp;
-  Eigen::Quaternionf q(0.4455f, 0.9217f, 0.3382f, 0.3656f);
+  Eigen::Quaternionf q (0.4455f, 0.9217f, 0.3382f, 0.3656f);
   q.normalize();
-  Eigen::Vector3f t(0.82550f, 0.11697f, 0.44864f);
+  Eigen::Vector3f t (0.82550f, 0.11697f, 0.44864f);
 
-  Eigen::VectorXf p(6);
+  Eigen::VectorXf p (6);
   p[0] = t.x();
   p[1] = t.y();
   p[2] = t.z();
   p[3] = q.x();
   p[4] = q.y();
   p[5] = q.z();
-  warp.setParam(p);
+  warp.setParam (p);
 
-  PointXYZ pin(1, 2, 3), pout;
-  warp.warpPoint(pin, pout);
-  EXPECT_NEAR(pout.x, 4.15963f, 1e-5);
-  EXPECT_NEAR(pout.y, -1.51363f, 1e-5);
-  EXPECT_NEAR(pout.z, 0.922648f, 1e-5);
+  PointXYZ pin (1, 2, 3), pout;
+  warp.warpPoint (pin, pout);
+  EXPECT_NEAR (pout.x, 4.15963f, 1e-5);
+  EXPECT_NEAR (pout.y, -1.51363f, 1e-5);
+  EXPECT_NEAR (pout.z, 0.922648f, 1e-5);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TEST(PCL, WarpPointRigid6DDouble)
+TEST (PCL, WarpPointRigid6DDouble)
 {
   WarpPointRigid6D<PointXYZ, PointXYZ, double> warp;
-  Eigen::Quaterniond q(0.4455, 0.9217, 0.3382, 0.3656);
+  Eigen::Quaterniond q (0.4455, 0.9217, 0.3382, 0.3656);
   q.normalize();
-  Eigen::Vector3d t(0.82550, 0.11697, 0.44864);
+  Eigen::Vector3d t (0.82550, 0.11697, 0.44864);
 
-  Eigen::VectorXd p(6);
+  Eigen::VectorXd p (6);
   p[0] = t.x();
   p[1] = t.y();
   p[2] = t.z();
   p[3] = q.x();
   p[4] = q.y();
   p[5] = q.z();
-  warp.setParam(p);
+  warp.setParam (p);
 
-  PointXYZ pin(1, 2, 3), pout;
-  warp.warpPoint(pin, pout);
-  EXPECT_NEAR(pout.x, 4.15963, 1e-5);
-  EXPECT_NEAR(pout.y, -1.51363, 1e-5);
-  EXPECT_NEAR(pout.z, 0.922648, 1e-5);
+  PointXYZ pin (1, 2, 3), pout;
+  warp.warpPoint (pin, pout);
+  EXPECT_NEAR (pout.x, 4.15963, 1e-5);
+  EXPECT_NEAR (pout.y, -1.51363, 1e-5);
+  EXPECT_NEAR (pout.z, 0.922648, 1e-5);
 }
 
 /* ---[ */
 int
 main (int argc, char** argv)
 {
-  testing::InitGoogleTest(&argc, argv);
+  testing::InitGoogleTest (&argc, argv);
   return (RUN_ALL_TESTS());
 }
 /* ]--- */

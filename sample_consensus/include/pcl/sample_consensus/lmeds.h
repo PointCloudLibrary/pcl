@@ -75,8 +75,8 @@ public:
   /** \brief LMedS (Least Median of Squares) main constructor
    * \param[in] model a Sample Consensus model
    */
-  LeastMedianSquares(const SampleConsensusModelPtr& model)
-  : SampleConsensus<PointT>(model)
+  LeastMedianSquares (const SampleConsensusModelPtr& model)
+  : SampleConsensus<PointT> (model)
   {
     // Maximum number of trials before we give up.
     max_iterations_ = 50;
@@ -86,8 +86,8 @@ public:
    * \param[in] model a Sample Consensus model
    * \param[in] threshold distance to model threshold
    */
-  LeastMedianSquares(const SampleConsensusModelPtr& model, double threshold)
-  : SampleConsensus<PointT>(model, threshold)
+  LeastMedianSquares (const SampleConsensusModelPtr& model, double threshold)
+  : SampleConsensus<PointT> (model, threshold)
   {
     // Maximum number of trials before we give up.
     max_iterations_ = 50;

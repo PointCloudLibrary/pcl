@@ -63,9 +63,9 @@ public:
   using ConstPtr = shared_ptr<const DepthSenseGrabber>;
 
   using sig_cb_depth_sense_point_cloud =
-      void(const pcl::PointCloud<pcl::PointXYZ>::ConstPtr&);
+      void (const pcl::PointCloud<pcl::PointXYZ>::ConstPtr&);
   using sig_cb_depth_sense_point_cloud_rgba =
-      void(const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&);
+      void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&);
 
   enum Mode {
     DepthSense_QVGA_30Hz = 0,
@@ -90,7 +90,7 @@ public:
    * number, an index (with '#' prefix), or an empty string (to select the
    * first available device)
    */
-  DepthSenseGrabber(const std::string& device_id = "");
+  DepthSenseGrabber (const std::string& device_id = "");
 
   virtual ~DepthSenseGrabber() noexcept;
 
@@ -106,7 +106,7 @@ public:
   virtual std::string
   getName () const
   {
-    return (std::string("DepthSenseGrabber"));
+    return (std::string ("DepthSenseGrabber"));
   }
 
   virtual float

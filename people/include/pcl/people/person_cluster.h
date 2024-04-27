@@ -52,7 +52,7 @@ template <typename PointT>
 class PersonCluster;
 template <typename PointT>
 bool
-operator<(const PersonCluster<PointT>& c1, const PersonCluster<PointT>& c2);
+operator< (const PersonCluster<PointT>& c1, const PersonCluster<PointT>& c2);
 
 template <typename PointT>
 class PersonCluster {
@@ -137,12 +137,12 @@ public:
   using PointCloudConstPtr = typename PointCloud::ConstPtr;
 
   /** \brief Constructor. */
-  PersonCluster(const PointCloudPtr& input_cloud,
-                const pcl::PointIndices& indices,
-                const Eigen::VectorXf& ground_coeffs,
-                float sqrt_ground_coeffs,
-                bool head_centroid,
-                bool vertical = false);
+  PersonCluster (const PointCloudPtr& input_cloud,
+                 const pcl::PointIndices& indices,
+                 const Eigen::VectorXf& ground_coeffs,
+                 float sqrt_ground_coeffs,
+                 bool head_centroid,
+                 bool vertical = false);
 
   /** \brief Destructor. */
   virtual ~PersonCluster();
@@ -309,7 +309,7 @@ public:
    * \brief For sorting purpose: sort by distance.
    */
   friend bool
-  operator< <>(const PersonCluster<PointT>& c1, const PersonCluster<PointT>& c2);
+  operator< <> (const PersonCluster<PointT>& c1, const PersonCluster<PointT>& c2);
 
 protected:
   /**

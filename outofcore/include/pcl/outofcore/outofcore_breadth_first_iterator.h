@@ -62,7 +62,7 @@ public:
   using LeafNode = pcl::outofcore::OutofcoreOctreeBaseNode<ContainerT, PointT>;
   using BranchNode = pcl::outofcore::OutofcoreOctreeBaseNode<ContainerT, PointT>;
 
-  explicit OutofcoreBreadthFirstIterator(OctreeDisk& octree_arg);
+  explicit OutofcoreBreadthFirstIterator (OctreeDisk& octree_arg);
 
   ~OutofcoreBreadthFirstIterator() override;
 
@@ -70,7 +70,7 @@ public:
   operator++();
 
   inline OutofcoreBreadthFirstIterator
-  operator++(int)
+  operator++ (int)
   {
     OutofcoreBreadthFirstIterator _Tmp = *this;
     ++*this;
@@ -84,7 +84,7 @@ public:
 
     // Clear the FIFO queue and add the root as the first node
     FIFO_.clear();
-    FIFO_.push_back(this->currentNode_);
+    FIFO_.push_back (this->currentNode_);
 
     // Don't skip children
     skip_child_voxels_ = false;

@@ -56,10 +56,10 @@ enum PixelFormat {
 };
 
 struct OpenNI2VideoMode {
-  OpenNI2VideoMode() : x_resolution_(0), y_resolution_(0), frame_rate_(0) {}
+  OpenNI2VideoMode() : x_resolution_ (0), y_resolution_ (0), frame_rate_ (0) {}
 
-  OpenNI2VideoMode(int xResolution, int yResolution, int frameRate)
-  : x_resolution_(xResolution), y_resolution_(yResolution), frame_rate_(frameRate)
+  OpenNI2VideoMode (int xResolution, int yResolution, int frameRate)
+  : x_resolution_ (xResolution), y_resolution_ (yResolution), frame_rate_ (frameRate)
   {}
 
   int x_resolution_;
@@ -69,13 +69,13 @@ struct OpenNI2VideoMode {
 };
 
 std::ostream&
-operator<<(std::ostream& stream, const OpenNI2VideoMode& video_mode);
+operator<< (std::ostream& stream, const OpenNI2VideoMode& video_mode);
 
 bool
-operator==(const OpenNI2VideoMode& video_mode_a, const OpenNI2VideoMode& video_mode_b);
+operator== (const OpenNI2VideoMode& video_mode_a, const OpenNI2VideoMode& video_mode_b);
 
 bool
-operator!=(const OpenNI2VideoMode& video_mode_a, const OpenNI2VideoMode& video_mode_b);
+operator!= (const OpenNI2VideoMode& video_mode_a, const OpenNI2VideoMode& video_mode_b);
 
 } // namespace openni2
 } // namespace io

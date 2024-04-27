@@ -36,7 +36,7 @@ ON_HairlinePrintWidth ();
 // class ON_Linetype
 
 class ON_CLASS ON_Linetype : public ON_Object {
-  ON_OBJECT_DECLARE(ON_Linetype);
+  ON_OBJECT_DECLARE (ON_Linetype);
 
 public:
   /*
@@ -82,7 +82,7 @@ public:
 
   // virtual
   ON_UUID
-  ModelObjectId () const;
+  ModelObjectId() const;
 
   //////////////////////////////////////////////////////////////////////
   //

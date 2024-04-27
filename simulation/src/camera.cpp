@@ -4,11 +4,11 @@ using namespace Eigen;
 using namespace pcl::simulation;
 
 void
-pcl::simulation::Camera::move(double vx, double vy, double vz)
+pcl::simulation::Camera::move (double vx, double vy, double vz)
 {
   Vector3d v;
   v << vx, vy, vz;
-  pose_.pretranslate(pose_.rotation() * v);
+  pose_.pretranslate (pose_.rotation() * v);
   x_ = pose_.translation().x();
   y_ = pose_.translation().y();
   z_ = pose_.translation().z();
@@ -18,8 +18,8 @@ void
 pcl::simulation::Camera::updatePose()
 {
   Matrix3d m;
-  m = AngleAxisd(yaw_, Vector3d::UnitZ()) * AngleAxisd(pitch_, Vector3d::UnitY()) *
-      AngleAxisd(roll_, Vector3d::UnitX());
+  m = AngleAxisd (yaw_, Vector3d::UnitZ()) * AngleAxisd (pitch_, Vector3d::UnitY()) *
+      AngleAxisd (roll_, Vector3d::UnitX());
 
   pose_.setIdentity();
   pose_ *= m;
@@ -30,14 +30,14 @@ pcl::simulation::Camera::updatePose()
 }
 
 void
-pcl::simulation::Camera::setParameters(int width,
-                                       int height,
-                                       float fx,
-                                       float fy,
-                                       float cx,
-                                       float cy,
-                                       float z_near,
-                                       float z_far)
+pcl::simulation::Camera::setParameters (int width,
+                                        int height,
+                                        float fx,
+                                        float fy,
+                                        float cx,
+                                        float cy,
+                                        float z_near,
+                                        float z_far)
 {
   width_ = width;
   height_ = height;
@@ -60,12 +60,12 @@ pcl::simulation::Camera::setParameters(int width,
 void
 pcl::simulation::Camera::initializeCameraParameters()
 {
-  setParameters(640,
-                480,
-                576.09757860f,
-                576.09757860f,
-                321.06398107f,
-                242.97676897f,
-                0.7f,
-                20.0f);
+  setParameters (640,
+                 480,
+                 576.09757860f,
+                 576.09757860f,
+                 321.06398107f,
+                 242.97676897f,
+                 0.7f,
+                 20.0f);
 }

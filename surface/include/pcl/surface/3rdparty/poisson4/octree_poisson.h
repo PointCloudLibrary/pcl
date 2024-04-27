@@ -157,8 +157,8 @@ public:
   short d, off[DIMENSION];
   NodeData nodeData;
 
-  OctNode(void);
-  ~OctNode(void);
+  OctNode (void);
+  ~OctNode (void);
   int
   initChildren (void);
 
@@ -383,7 +383,7 @@ public:
 
   template <class NodeData2>
   OctNode&
-  operator=(const OctNode<NodeData2, Real>& node);
+  operator= (const OctNode<NodeData2, Real>& node);
 
   static inline int
   Overlap2 (const int& depth1,
@@ -405,7 +405,7 @@ public:
   class Neighbors3 {
   public:
     OctNode* neighbors[3][3][3];
-    Neighbors3(void);
+    Neighbors3 (void);
     void
     clear (void);
   };
@@ -413,8 +413,8 @@ public:
   public:
     Neighbors3* neighbors;
 
-    NeighborKey3(void);
-    ~NeighborKey3(void);
+    NeighborKey3 (void);
+    ~NeighborKey3 (void);
 
     void
     set (int depth);
@@ -432,7 +432,7 @@ public:
   class ConstNeighbors3 {
   public:
     const OctNode* neighbors[3][3][3];
-    ConstNeighbors3(void);
+    ConstNeighbors3 (void);
     void
     clear (void);
   };
@@ -440,8 +440,8 @@ public:
   public:
     ConstNeighbors3* neighbors;
 
-    ConstNeighborKey3(void);
-    ~ConstNeighborKey3(void);
+    ConstNeighborKey3 (void);
+    ~ConstNeighborKey3 (void);
 
     void
     set (int depth);
@@ -453,14 +453,14 @@ public:
   class Neighbors5 {
   public:
     OctNode* neighbors[5][5][5];
-    Neighbors5(void);
+    Neighbors5 (void);
     void
     clear (void);
   };
   class ConstNeighbors5 {
   public:
     const OctNode* neighbors[5][5][5];
-    ConstNeighbors5(void);
+    ConstNeighbors5 (void);
     void
     clear (void);
   };
@@ -471,8 +471,8 @@ public:
   public:
     Neighbors5* neighbors;
 
-    NeighborKey5(void);
-    ~NeighborKey5(void);
+    NeighborKey5 (void);
+    ~NeighborKey5 (void);
 
     void
     set (int depth);
@@ -493,8 +493,8 @@ public:
   public:
     ConstNeighbors5* neighbors;
 
-    ConstNeighborKey5(void);
-    ~ConstNeighborKey5(void);
+    ConstNeighborKey5 (void);
+    ~ConstNeighborKey5 (void);
 
     void
     set (int depth);

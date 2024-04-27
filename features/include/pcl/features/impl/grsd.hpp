@@ -44,7 +44,7 @@
 ///////// STATIC /////////
 template <typename PointInT, typename PointNT, typename PointOutT>
 int
-pcl::GRSDEstimation<PointInT, PointNT, PointOutT>::getSimpleType(
+pcl::GRSDEstimation<PointInT, PointNT, PointOutT>::getSimpleType (
     float min_radius,
     float max_radius,
     double min_radius_plane,
@@ -66,72 +66,74 @@ pcl::GRSDEstimation<PointInT, PointNT, PointOutT>::getSimpleType(
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointNT, typename PointOutT>
 void
-pcl::GRSDEstimation<PointInT, PointNT, PointOutT>::computeFeature(PointCloudOut& output)
+pcl::GRSDEstimation<PointInT, PointNT, PointOutT>::computeFeature (
+    PointCloudOut& output)
 {
   // Check if search_radius_ was set
   if (width_ <= 0.0) {
-    PCL_ERROR("[pcl::%s::computeFeature] A voxel cell width needs to be set!\n",
-              getClassName().c_str());
+    PCL_ERROR ("[pcl::%s::computeFeature] A voxel cell width needs to be set!\n",
+               getClassName().c_str());
     output.width = output.height = 0;
     output.clear();
     return;
   }
 
   // Create the voxel grid
-  PointCloudInPtr cloud_downsampled(new PointCloudIn());
+  PointCloudInPtr cloud_downsampled (new PointCloudIn());
   pcl::VoxelGrid<PointInT> grid;
-  grid.setLeafSize(width_, width_, width_);
-  grid.setInputCloud(input_);
-  grid.setSaveLeafLayout(true); // TODO maybe avoid this using nearest neighbor search
-  grid.filter(*cloud_downsampled);
+  grid.setLeafSize (width_, width_, width_);
+  grid.setInputCloud (input_);
+  grid.setSaveLeafLayout (true); // TODO maybe avoid this using nearest neighbor search
+  grid.filter (*cloud_downsampled);
 
   // Compute RSD
-  pcl::PointCloud<pcl::PrincipalRadiiRSD>::Ptr radii(
+  pcl::PointCloud<pcl::PrincipalRadiiRSD>::Ptr radii (
       new pcl::PointCloud<pcl::PrincipalRadiiRSD>());
   pcl::RSDEstimation<PointInT, PointNT, pcl::PrincipalRadiiRSD> rsd;
-  rsd.setInputCloud(cloud_downsampled);
-  rsd.setSearchSurface(input_);
-  rsd.setInputNormals(normals_);
-  rsd.setRadiusSearch(search_radius_);
+  rsd.setInputCloud (cloud_downsampled);
+  rsd.setSearchSurface (input_);
+  rsd.setInputNormals (normals_);
+  rsd.setRadiusSearch (search_radius_);
   if (rsd_nr_subdiv_ != 0) // if not set, use default from RSDEstimation
-    rsd.setNrSubdivisions(rsd_nr_subdiv_);
+    rsd.setNrSubdivisions (rsd_nr_subdiv_);
   if (rsd_plane_radius_ != 0.0)
-    rsd.setPlaneRadius(rsd_plane_radius_);
-  rsd.compute(*radii);
+    rsd.setPlaneRadius (rsd_plane_radius_);
+  rsd.compute (*radii);
 
   // Save the type of each point
   int NR_CLASS = 5; // TODO make this nicer
-  std::vector<int> types(radii->size());
-  std::transform(radii->points.cbegin(),
-                 radii->points.cend(),
-                 types.begin(),
-                 [] (const auto& point) {
-                   // GCC 5.4 can't find unqualified getSimpleType
-                   return GRSDEstimation<PointInT, PointNT, PointOutT>::getSimpleType(
-                       point.r_min, point.r_max);
-                 });
+  std::vector<int> types (radii->size());
+  std::transform (radii->points.cbegin(),
+                  radii->points.cend(),
+                  types.begin(),
+                  [] (const auto& point) {
+                    // GCC 5.4 can't find unqualified getSimpleType
+                    return GRSDEstimation<PointInT, PointNT, PointOutT>::getSimpleType (
+                        point.r_min, point.r_max);
+                  });
 
   // Get the transitions between surface types between neighbors of occupied cells
-  Eigen::MatrixXi transition_matrix = Eigen::MatrixXi::Zero(NR_CLASS + 1, NR_CLASS + 1);
+  Eigen::MatrixXi transition_matrix =
+      Eigen::MatrixXi::Zero (NR_CLASS + 1, NR_CLASS + 1);
   for (std::size_t idx = 0; idx < cloud_downsampled->size(); ++idx) {
     const int source_type = types[idx];
-    std::vector<int> neighbors = grid.getNeighborCentroidIndices(
+    std::vector<int> neighbors = grid.getNeighborCentroidIndices (
         (*cloud_downsampled)[idx], relative_coordinates_all_);
     for (const int& neighbor : neighbors) {
       int neighbor_type = NR_CLASS;
       if (neighbor != -1) // not empty
         neighbor_type = types[neighbor];
-      transition_matrix(source_type, neighbor_type)++;
+      transition_matrix (source_type, neighbor_type)++;
     }
   }
 
   // Save feature values
-  output.resize(1);
+  output.resize (1);
   output.height = output.width = 1;
   int nrf = 0;
   for (int i = 0; i < NR_CLASS + 1; i++)
     for (int j = i; j < NR_CLASS + 1; j++)
-      output[0].histogram[nrf++] = transition_matrix(i, j) + transition_matrix(j, i);
+      output[0].histogram[nrf++] = transition_matrix (i, j) + transition_matrix (j, i);
 }
 
 #define PCL_INSTANTIATE_GRSDEstimation(T, NT, OutT)                                    \

@@ -66,7 +66,7 @@ public:
    * \param[in] max_weight max weight for running average. Can be less than 255.
    * Negative means default.
    */
-  ColorVolume(const TsdfVolume& tsdf, int max_weight = -1);
+  ColorVolume (const TsdfVolume& tsdf, int max_weight = -1);
 
   /** \brief Resets color volume to uninitialized state */
   void

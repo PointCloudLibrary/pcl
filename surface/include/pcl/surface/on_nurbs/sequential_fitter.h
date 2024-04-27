@@ -73,18 +73,18 @@ public:
     double stiffnessBoundary;
     double stiffnessInterior;
     int resolution;
-    Parameter(int order = 3,
-              int refinement = 1,
-              int iterationsQuad = 5,
-              int iterationsBoundary = 5,
-              int iterationsAdjust = 5,
-              int iterationsInterior = 2,
-              double forceBoundary = 200.0,
-              double forceBoundaryInside = 400.0,
-              double forceInterior = 1.0,
-              double stiffnessBoundary = 20.0,
-              double stiffnessInterior = 0.1,
-              int resolution = 16);
+    Parameter (int order = 3,
+               int refinement = 1,
+               int iterationsQuad = 5,
+               int iterationsBoundary = 5,
+               int iterationsAdjust = 5,
+               int iterationsInterior = 2,
+               double forceBoundary = 200.0,
+               double forceBoundaryInside = 400.0,
+               double forceInterior = 1.0,
+               double stiffnessBoundary = 20.0,
+               double stiffnessInterior = 0.1,
+               int resolution = 16);
   };
 
 private:
@@ -125,7 +125,7 @@ private:
                   const Eigen::Vector3d& v3);
 
 public:
-  SequentialFitter(Parameter p = Parameter());
+  SequentialFitter (Parameter p = Parameter());
 
   inline void
   setParams (const Parameter& p)

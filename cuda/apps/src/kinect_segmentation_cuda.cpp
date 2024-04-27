@@ -74,7 +74,7 @@ struct ImageType<Device> {
   static void
   createContinuous (int h, int w, int typ, type& mat)
   {
-    cv::gpu::createContinuous(h, w, typ, mat);
+    cv::gpu::createContinuous (h, w, typ, mat);
   }
 };
 
@@ -84,71 +84,71 @@ struct ImageType<Host> {
   static void
   createContinuous (int h, int w, int typ, type& mat)
   {
-    mat = cv::Mat(h, w, typ); // assume no padding at the end of line
+    mat = cv::Mat (h, w, typ); // assume no padding at the end of line
   }
 };
 
 class Segmentation {
 public:
   Segmentation()
-  : viewer("PCL CUDA - Segmentation")
-  , new_cloud(false)
-  , go_on(true)
-  , enable_color(1)
-  , normal_method(0)
-  , nr_neighbors(36)
-  , radius_cm(5)
-  , normal_viz_step(200)
-  , enable_normal_viz(false)
+  : viewer ("PCL CUDA - Segmentation")
+  , new_cloud (false)
+  , go_on (true)
+  , enable_color (1)
+  , normal_method (0)
+  , nr_neighbors (36)
+  , radius_cm (5)
+  , normal_viz_step (200)
+  , enable_normal_viz (false)
   {}
 
   void
   viz_cb (pcl::visualization::PCLVisualizer& viz)
   {
     static bool last_enable_normal_viz = enable_normal_viz;
-    std::lock_guard<std::mutex> l(m_mutex);
+    std::lock_guard<std::mutex> l (m_mutex);
     if (new_cloud) {
       double psize = 1.0, opacity = 1.0, linesize = 1.0;
-      std::string cloud_name("cloud");
+      std::string cloud_name ("cloud");
 
       static bool first_time = true;
       if (!first_time) {
-        viz.getPointCloudRenderingProperties(
+        viz.getPointCloudRenderingProperties (
             pcl::visualization::PCL_VISUALIZER_LINE_WIDTH, linesize, cloud_name);
-        viz.getPointCloudRenderingProperties(
+        viz.getPointCloudRenderingProperties (
             pcl::visualization::PCL_VISUALIZER_OPACITY, opacity, cloud_name);
-        viz.getPointCloudRenderingProperties(
+        viz.getPointCloudRenderingProperties (
             pcl::visualization::PCL_VISUALIZER_POINT_SIZE, psize, cloud_name);
         if (last_enable_normal_viz)
-          viz.removePointCloud("normalcloud");
-        viz.removePointCloud("cloud");
+          viz.removePointCloud ("normalcloud");
+        viz.removePointCloud ("cloud");
       }
       else
         first_time = false;
 
       if (enable_normal_viz)
-        viz.addPointCloudNormals<pcl::PointXYZRGBNormal>(
+        viz.addPointCloudNormals<pcl::PointXYZRGBNormal> (
             normal_cloud, normal_viz_step, 0.1, "normalcloud");
 
       if (enable_color == 1) {
         using ColorHandler =
             pcl::visualization::PointCloudColorHandlerRGBField<pcl::PointXYZRGBNormal>;
-        ColorHandler Color_handler(normal_cloud);
-        viz.addPointCloud<pcl::PointXYZRGBNormal>(
-            normal_cloud, Color_handler, std::string(cloud_name));
+        ColorHandler Color_handler (normal_cloud);
+        viz.addPointCloud<pcl::PointXYZRGBNormal> (
+            normal_cloud, Color_handler, std::string (cloud_name));
       }
       else {
         using ColorHandler = pcl::visualization::PointCloudColorHandlerGenericField<
             pcl::PointXYZRGBNormal>;
-        ColorHandler Color_handler(normal_cloud, "curvature");
-        viz.addPointCloud<pcl::PointXYZRGBNormal>(
+        ColorHandler Color_handler (normal_cloud, "curvature");
+        viz.addPointCloud<pcl::PointXYZRGBNormal> (
             normal_cloud, Color_handler, cloud_name, 0);
       }
-      viz.setPointCloudRenderingProperties(
+      viz.setPointCloudRenderingProperties (
           pcl::visualization::PCL_VISUALIZER_LINE_WIDTH, linesize, cloud_name);
-      viz.setPointCloudRenderingProperties(
+      viz.setPointCloudRenderingProperties (
           pcl::visualization::PCL_VISUALIZER_OPACITY, opacity, cloud_name);
-      viz.setPointCloudRenderingProperties(
+      viz.setPointCloudRenderingProperties (
           pcl::visualization::PCL_VISUALIZER_POINT_SIZE, psize, cloud_name);
       new_cloud = false;
     }
@@ -159,10 +159,10 @@ public:
   void
   file_cloud_cb (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr& cloud)
   {
-    pcl::PointCloud<pcl::PointXYZRGB>::Ptr output(
+    pcl::PointCloud<pcl::PointXYZRGB>::Ptr output (
         new pcl::PointCloud<pcl::PointXYZRGB>);
     PointCloudAOS<Host> data_host;
-    data_host.resize(cloud->points.size());
+    data_host.resize (cloud->points.size());
     for (std::size_t i = 0; i < cloud->points.size(); ++i) {
       PointXYZRGB pt;
       pt.x = (*cloud)[i].x;
@@ -175,23 +175,24 @@ public:
     data_host.width = cloud->width;
     data_host.height = cloud->height;
     data_host.is_dense = cloud->is_dense;
-    typename PointCloudAOS<Storage>::Ptr data = toStorage<Host, Storage>(data_host);
+    typename PointCloudAOS<Storage>::Ptr data = toStorage<Host, Storage> (data_host);
 
     // we got a cloud in device..
 
     shared_ptr<typename Storage<float4>::type> normals;
     {
-      ScopeTimeCPU time("Normal Estimation");
+      ScopeTimeCPU time ("Normal Estimation");
       constexpr float focallength = 580 / 2.0;
-      normals = computePointNormals<Storage,
-                                    typename PointIterator<Storage, PointXYZRGB>::type>(
-          data->points.begin(), data->points.end(), focallength, data, 0.05, 30);
+      normals =
+          computePointNormals<Storage,
+                              typename PointIterator<Storage, PointXYZRGB>::type> (
+              data->points.begin(), data->points.end(), focallength, data, 0.05, 30);
     }
     go_on = false;
 
-    std::lock_guard<std::mutex> l(m_mutex);
-    normal_cloud.reset(new pcl::PointCloud<pcl::PointXYZRGBNormal>);
-    toPCL(*data, *normals, *normal_cloud);
+    std::lock_guard<std::mutex> l (m_mutex);
+    normal_cloud.reset (new pcl::PointCloud<pcl::PointXYZRGBNormal>);
+    toPCL (*data, *normals, *normal_cloud);
     new_cloud = true;
   }
 
@@ -205,7 +206,7 @@ public:
     double now = getTime();
     {
       std::cout << std::endl;
-      std::cout << "Average framerate: " << 1.0 / double(now - last) << " Hz --- ";
+      std::cout << "Average framerate: " << 1.0 / double (now - last) << " Hz --- ";
       last = now;
     }
 
@@ -218,38 +219,38 @@ public:
     static int meanshift_sr = 20;
     static int meanshift_minsize = 100;
 
-    pcl::PointCloud<pcl::PointXYZRGB>::Ptr output(
+    pcl::PointCloud<pcl::PointXYZRGB>::Ptr output (
         new pcl::PointCloud<pcl::PointXYZRGB>);
     typename PointCloudAOS<Storage>::Ptr data;
 
     // ScopeTimeCPU timer ("All: ");
-    ScopeTimeCPU time("everything");
+    ScopeTimeCPU time ("everything");
     // Compute the PointCloud on the device
     {
-      ScopeTimeCPU time("disparity smoothing");
-      d2c.compute<Storage>(depth_image,
-                           image,
-                           constant,
-                           data,
-                           false,
-                           1,
-                           smoothing_nr_iterations,
-                           smoothing_filter_size);
+      ScopeTimeCPU time ("disparity smoothing");
+      d2c.compute<Storage> (depth_image,
+                            image,
+                            constant,
+                            data,
+                            false,
+                            1,
+                            smoothing_nr_iterations,
+                            smoothing_filter_size);
     }
 
     shared_ptr<typename Storage<float4>::type> normals;
     {
-      ScopeTimeCPU time("Normal Estimation");
+      ScopeTimeCPU time ("Normal Estimation");
       if (normal_method == 1)
-        normals = computeFastPointNormals<Storage>(data);
+        normals = computeFastPointNormals<Storage> (data);
       else {
         constexpr float focallength = 580 / 2.0;
-        normals = computePointNormals<Storage>(data->points.begin(),
-                                               data->points.end(),
-                                               focallength,
-                                               data,
-                                               radius_cm / 100.0f,
-                                               nr_neighbors);
+        normals = computePointNormals<Storage> (data->points.begin(),
+                                                data->points.end(),
+                                                focallength,
+                                                data,
+                                                radius_cm / 100.0f,
+                                                nr_neighbors);
       }
       cudaDeviceSynchronize();
     }
@@ -258,23 +259,23 @@ public:
     typename ImageType<Storage>::type normal_image;
     typename StoragePointer<Storage, char4>::type ptr;
     {
-      ScopeTimeCPU time("Matrix Creation");
-      ImageType<Storage>::createContinuous(
+      ScopeTimeCPU time ("Matrix Creation");
+      ImageType<Storage>::createContinuous (
           (int)data->height, (int)data->width, CV_8UC4, normal_image);
-      ptr = typename StoragePointer<Storage, char4>::type((char4*)normal_image.data);
-      createNormalsImage<Storage>(ptr, *normals);
+      ptr = typename StoragePointer<Storage, char4>::type ((char4*)normal_image.data);
+      createNormalsImage<Storage> (ptr, *normals);
     }
 
     // TODO: this breaks for pcl::cuda::Host
     cv::Mat seg;
     {
-      ScopeTimeCPU time("Mean Shift");
+      ScopeTimeCPU time ("Mean Shift");
       if (enable_mean_shift == 1) {
-        cv::gpu::meanShiftSegmentation(
+        cv::gpu::meanShiftSegmentation (
             normal_image, seg, meanshift_sp, meanshift_sr, meanshift_minsize);
-        typename Storage<char4>::type new_colors((char4*)seg.datastart,
-                                                 (char4*)seg.dataend);
-        colorCloud<Storage>(data, new_colors);
+        typename Storage<char4>::type new_colors ((char4*)seg.datastart,
+                                                  (char4*)seg.dataend);
+        colorCloud<Storage> (data, new_colors);
       }
     }
 
@@ -282,20 +283,21 @@ public:
     if (enable_plane_fitting == 1) {
       // Create sac_model
       {
-        ScopeTimeCPU t("creating sac_model");
-        sac_model.reset(new SampleConsensusModel1PointPlane<Storage>(data));
+        ScopeTimeCPU t ("creating sac_model");
+        sac_model.reset (new SampleConsensusModel1PointPlane<Storage> (data));
       }
-      sac_model->setNormals(normals);
+      sac_model->setNormals (normals);
 
-      MultiRandomSampleConsensus<Storage> sac(sac_model);
-      sac.setMinimumCoverage(0.90); // at least 95% points should be explained by planes
-      sac.setMaximumBatches(1);
-      sac.setIerationsPerBatch(1024);
-      sac.setDistanceThreshold(0.05);
+      MultiRandomSampleConsensus<Storage> sac (sac_model);
+      sac.setMinimumCoverage (
+          0.90); // at least 95% points should be explained by planes
+      sac.setMaximumBatches (1);
+      sac.setIerationsPerBatch (1024);
+      sac.setDistanceThreshold (0.05);
 
       {
-        ScopeTimeCPU timer("computeModel: ");
-        if (!sac.computeModel(0)) {
+        ScopeTimeCPU timer ("computeModel: ");
+        if (!sac.computeModel (0)) {
           std::cerr << "Failed to compute model" << std::endl;
         }
         else {
@@ -305,13 +307,13 @@ public:
             std::vector<typename SampleConsensusModel1PointPlane<Storage>::IndicesPtr>
                 planes;
             typename Storage<int>::type region_mask;
-            markInliers<Storage>(data, region_mask, planes);
+            markInliers<Storage> (data, region_mask, planes);
             thrust::host_vector<int> regions_host;
-            std::copy(regions_host.cbegin(),
-                      regions_host.cend(),
-                      std::ostream_iterator<int>(std::cerr, " "));
+            std::copy (regions_host.cbegin(),
+                       regions_host.cend(),
+                       std::ostream_iterator<int> (std::cerr, " "));
             {
-              ScopeTimeCPU t("retrieving inliers");
+              ScopeTimeCPU t ("retrieving inliers");
               planes = sac.getAllInliers();
             }
             std::vector<int> planes_inlier_counts = sac.getAllInlierCounts();
@@ -334,8 +336,8 @@ public:
               color.g = (1.0f + coeffs[i].y) * 128;
               color.b = (1.0f + coeffs[i].z) * 128;
               {
-                ScopeTimeCPU t("coloring planes");
-                colorIndices<Storage>(data, inliers_stencil, color);
+                ScopeTimeCPU t ("coloring planes");
+                colorIndices<Storage> (data, inliers_stencil, color);
               }
             }
           }
@@ -344,41 +346,41 @@ public:
     }
 
     {
-      ScopeTimeCPU time("Vis");
-      cv::namedWindow("NormalImage", CV_WINDOW_NORMAL);
-      cv::namedWindow("Parameters", CV_WINDOW_NORMAL);
-      cvCreateTrackbar("iterations", "Parameters", &smoothing_nr_iterations, 50, NULL);
-      cvCreateTrackbar("filter_size", "Parameters", &smoothing_filter_size, 10, NULL);
-      cvCreateTrackbar(
+      ScopeTimeCPU time ("Vis");
+      cv::namedWindow ("NormalImage", CV_WINDOW_NORMAL);
+      cv::namedWindow ("Parameters", CV_WINDOW_NORMAL);
+      cvCreateTrackbar ("iterations", "Parameters", &smoothing_nr_iterations, 50, NULL);
+      cvCreateTrackbar ("filter_size", "Parameters", &smoothing_filter_size, 10, NULL);
+      cvCreateTrackbar (
           "enable_visualization", "Parameters", &enable_visualization, 1, NULL);
-      cvCreateTrackbar("enable_color", "Parameters", &enable_color, 1, NULL);
-      cvCreateTrackbar("normal_method", "Parameters", &normal_method, 1, NULL);
-      cvCreateTrackbar("neighborhood_radius", "Parameters", &radius_cm, 50, NULL);
-      cvCreateTrackbar("nr_neighbors", "Parameters", &nr_neighbors, 400, NULL);
-      cvCreateTrackbar("normal_viz_step", "Parameters", &normal_viz_step, 1000, NULL);
-      cvCreateTrackbar("enable_mean_shift", "Parameters", &enable_mean_shift, 1, NULL);
-      cvCreateTrackbar("meanshift_sp", "Parameters", &meanshift_sp, 100, NULL);
-      cvCreateTrackbar("meanshift_sr", "Parameters", &meanshift_sr, 100, NULL);
-      cvCreateTrackbar(
+      cvCreateTrackbar ("enable_color", "Parameters", &enable_color, 1, NULL);
+      cvCreateTrackbar ("normal_method", "Parameters", &normal_method, 1, NULL);
+      cvCreateTrackbar ("neighborhood_radius", "Parameters", &radius_cm, 50, NULL);
+      cvCreateTrackbar ("nr_neighbors", "Parameters", &nr_neighbors, 400, NULL);
+      cvCreateTrackbar ("normal_viz_step", "Parameters", &normal_viz_step, 1000, NULL);
+      cvCreateTrackbar ("enable_mean_shift", "Parameters", &enable_mean_shift, 1, NULL);
+      cvCreateTrackbar ("meanshift_sp", "Parameters", &meanshift_sp, 100, NULL);
+      cvCreateTrackbar ("meanshift_sr", "Parameters", &meanshift_sr, 100, NULL);
+      cvCreateTrackbar (
           "meanshift_minsize", "Parameters", &meanshift_minsize, 500, NULL);
-      cvCreateTrackbar(
+      cvCreateTrackbar (
           "enable_plane_fitting", "Parameters", &enable_plane_fitting, 1, NULL);
-      cvCreateTrackbar("enable_normal_viz", "Parameters", &enable_normal_viz, 1, NULL);
+      cvCreateTrackbar ("enable_normal_viz", "Parameters", &enable_normal_viz, 1, NULL);
       if (enable_visualization == 1) {
 
         cv::Mat temp;
         if (enable_mean_shift == 1)
-          cv::cvtColor(seg, temp, CV_BGR2RGB);
+          cv::cvtColor (seg, temp, CV_BGR2RGB);
         else
-          cv::cvtColor(cv::Mat(normal_image), temp, CV_BGR2RGB);
-        cv::imshow("NormalImage", temp);
+          cv::cvtColor (cv::Mat (normal_image), temp, CV_BGR2RGB);
+        cv::imshow ("NormalImage", temp);
 
-        std::lock_guard<std::mutex> l(m_mutex);
-        normal_cloud.reset(new pcl::PointCloud<pcl::PointXYZRGBNormal>);
-        toPCL(*data, *normals, *normal_cloud);
+        std::lock_guard<std::mutex> l (m_mutex);
+        normal_cloud.reset (new pcl::PointCloud<pcl::PointXYZRGBNormal>);
+        toPCL (*data, *normals, *normal_cloud);
         new_cloud = true;
       }
-      cv::waitKey(2);
+      cv::waitKey (2);
     }
   }
 
@@ -395,9 +397,9 @@ public:
 
       if (use_device) {
         std::cerr << "[Segmentation] Using GPU..." << std::endl;
-        std::function<void(const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr&)> f =
-            std::bind(&Segmentation::file_cloud_cb<Device>, this, _1);
-        filegrabber.registerCallback(f);
+        std::function<void (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr&)> f =
+            std::bind (&Segmentation::file_cloud_cb<Device>, this, _1);
+        filegrabber.registerCallback (f);
       }
       else {
         //          std::cerr << "[Segmentation] Using CPU..." << std::endl;
@@ -410,7 +412,7 @@ public:
       filegrabber.start();
       while (go_on) //! viewer.wasStopped () && go_on)
       {
-        pcl_sleep(1);
+        pcl_sleep (1);
       }
       filegrabber.stop();
     }
@@ -419,11 +421,11 @@ public:
 
       if (use_device) {
         std::cerr << "[Segmentation] Using GPU..." << std::endl;
-        std::function<void(const openni_wrapper::Image::Ptr& image,
-                           const openni_wrapper::DepthImage::Ptr& depth_image,
-                           float)>
-            f = std::bind(&Segmentation::cloud_cb<Device>, this, _1, _2, _3);
-        grabber.registerCallback(f);
+        std::function<void (const openni_wrapper::Image::Ptr& image,
+                            const openni_wrapper::DepthImage::Ptr& depth_image,
+                            float)>
+            f = std::bind (&Segmentation::cloud_cb<Device>, this, _1, _2, _3);
+        grabber.registerCallback (f);
       }
       else {
         //          std::cerr << "[Segmentation] Using CPU..." << std::endl;
@@ -433,13 +435,13 @@ public:
         //          grabber.registerCallback (f);
       }
 
-      viewer.runOnVisualizationThread(std::bind(&Segmentation::viz_cb, this, _1),
-                                      "viz_cb");
+      viewer.runOnVisualizationThread (std::bind (&Segmentation::viz_cb, this, _1),
+                                       "viz_cb");
 
       grabber.start();
 
       while (!viewer.wasStopped()) {
-        pcl_sleep(1);
+        pcl_sleep (1);
       }
 
       grabber.stop();
@@ -469,6 +471,6 @@ main (int argc, char** argv)
   if (argc >= 3)
     use_file = true;
   Segmentation s;
-  s.run(use_device, use_file);
+  s.run (use_device, use_file);
   return 0;
 }

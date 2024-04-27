@@ -21,12 +21,12 @@ SurfaceNormalsPtr
 estimateSurfaceNormals (const PointCloudPtr& input, float radius)
 {
   pcl::NormalEstimation<PointT, NormalT> normal_estimation;
-  normal_estimation.setSearchMethod(
-      pcl::search::KdTree<PointT>::Ptr(new pcl::search::KdTree<PointT>));
-  normal_estimation.setRadiusSearch(radius);
-  normal_estimation.setInputCloud(input);
-  SurfaceNormalsPtr normals(new SurfaceNormals);
-  normal_estimation.compute(*normals);
+  normal_estimation.setSearchMethod (
+      pcl::search::KdTree<PointT>::Ptr (new pcl::search::KdTree<PointT>));
+  normal_estimation.setRadiusSearch (radius);
+  normal_estimation.setInputCloud (input);
+  SurfaceNormalsPtr normals (new SurfaceNormals);
+  normal_estimation.compute (*normals);
 
   return (normals);
 }
@@ -56,15 +56,15 @@ detectKeypoints (const PointCloudPtr& points,
                  float min_contrast)
 {
   pcl::SIFTKeypoint<PointT, pcl::PointWithScale> sift_detect;
-  sift_detect.setSearchMethod(
-      pcl::search::KdTree<PointT>::Ptr(new pcl::search::KdTree<PointT>));
-  sift_detect.setScales(min_scale, nr_octaves, nr_scales_per_octave);
-  sift_detect.setMinimumContrast(min_contrast);
-  sift_detect.setInputCloud(points);
+  sift_detect.setSearchMethod (
+      pcl::search::KdTree<PointT>::Ptr (new pcl::search::KdTree<PointT>));
+  sift_detect.setScales (min_scale, nr_octaves, nr_scales_per_octave);
+  sift_detect.setMinimumContrast (min_contrast);
+  sift_detect.setInputCloud (points);
   pcl::PointCloud<pcl::PointWithScale> keypoints_temp;
-  sift_detect.compute(keypoints_temp);
-  PointCloudPtr keypoints(new PointCloud);
-  pcl::copyPointCloud(keypoints_temp, *keypoints);
+  sift_detect.compute (keypoints_temp);
+  PointCloudPtr keypoints (new PointCloud);
+  pcl::copyPointCloud (keypoints_temp, *keypoints);
 
   return (keypoints);
 }
@@ -88,14 +88,14 @@ computeLocalDescriptors (const PointCloudPtr& points,
                          float feature_radius)
 {
   pcl::FPFHEstimation<PointT, NormalT, LocalDescriptorT> fpfh_estimation;
-  fpfh_estimation.setSearchMethod(
-      pcl::search::KdTree<PointT>::Ptr(new pcl::search::KdTree<PointT>));
-  fpfh_estimation.setRadiusSearch(feature_radius);
-  fpfh_estimation.setSearchSurface(points);
-  fpfh_estimation.setInputNormals(normals);
-  fpfh_estimation.setInputCloud(keypoints);
-  LocalDescriptorsPtr local_descriptors(new LocalDescriptors);
-  fpfh_estimation.compute(*local_descriptors);
+  fpfh_estimation.setSearchMethod (
+      pcl::search::KdTree<PointT>::Ptr (new pcl::search::KdTree<PointT>));
+  fpfh_estimation.setRadiusSearch (feature_radius);
+  fpfh_estimation.setSearchSurface (points);
+  fpfh_estimation.setInputNormals (normals);
+  fpfh_estimation.setInputCloud (keypoints);
+  LocalDescriptorsPtr local_descriptors (new LocalDescriptors);
+  fpfh_estimation.compute (*local_descriptors);
 
   return (local_descriptors);
 }
@@ -113,12 +113,12 @@ GlobalDescriptorsPtr
 computeGlobalDescriptor (const PointCloudPtr& points, const SurfaceNormalsPtr& normals)
 {
   pcl::VFHEstimation<PointT, NormalT, GlobalDescriptorT> vfh_estimation;
-  vfh_estimation.setSearchMethod(
-      pcl::search::KdTree<PointT>::Ptr(new pcl::search::KdTree<PointT>));
-  vfh_estimation.setInputCloud(points);
-  vfh_estimation.setInputNormals(normals);
-  GlobalDescriptorsPtr global_descriptor(new GlobalDescriptors);
-  vfh_estimation.compute(*global_descriptor);
+  vfh_estimation.setSearchMethod (
+      pcl::search::KdTree<PointT>::Ptr (new pcl::search::KdTree<PointT>));
+  vfh_estimation.setInputCloud (points);
+  vfh_estimation.setInputNormals (normals);
+  GlobalDescriptorsPtr global_descriptor (new GlobalDescriptors);
+  vfh_estimation.compute (*global_descriptor);
 
   return (global_descriptor);
 }
@@ -140,11 +140,11 @@ computeFeatures (const PointCloudPtr& input)
 {
   ObjectFeatures features;
   features.points = input;
-  features.normals = estimateSurfaceNormals(input, 0.05);
-  features.keypoints = detectKeypoints(input, features.normals, 0.005, 10, 8, 1.5);
+  features.normals = estimateSurfaceNormals (input, 0.05);
+  features.keypoints = detectKeypoints (input, features.normals, 0.005, 10, 8, 1.5);
   features.local_descriptors =
-      computeLocalDescriptors(input, features.normals, features.keypoints, 0.1);
-  features.global_descriptor = computeGlobalDescriptor(input, features.normals);
+      computeLocalDescriptors (input, features.normals, features.keypoints, 0.1);
+  features.global_descriptor = computeGlobalDescriptor (input, features.normals);
 
   return (features);
 }

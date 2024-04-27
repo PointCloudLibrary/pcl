@@ -83,8 +83,8 @@ public:
   /** \brief RANSAC (RANdom SAmple Consensus) main constructor
    * \param[in] model a Sample Consensus model
    */
-  RandomSampleConsensus(const SampleConsensusModelPtr& model)
-  : SampleConsensus<PointT>(model)
+  RandomSampleConsensus (const SampleConsensusModelPtr& model)
+  : SampleConsensus<PointT> (model)
   {
     // Maximum number of trials before we give up.
     max_iterations_ = 10000;
@@ -94,8 +94,8 @@ public:
    * \param[in] model a Sample Consensus model
    * \param[in] threshold distance to model threshold
    */
-  RandomSampleConsensus(const SampleConsensusModelPtr& model, double threshold)
-  : SampleConsensus<PointT>(model, threshold)
+  RandomSampleConsensus (const SampleConsensusModelPtr& model, double threshold)
+  : SampleConsensus<PointT> (model, threshold)
   {
     // Maximum number of trials before we give up.
     max_iterations_ = 10000;

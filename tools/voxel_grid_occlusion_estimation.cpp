@@ -70,9 +70,9 @@ createDataSetFromVTKPoints (vtkPoints* points)
   // Iterate through the points
 
   for (vtkIdType i = 0; i < points->GetNumberOfPoints(); i++)
-    verts->InsertNextCell(static_cast<vtkIdType>(1), &i);
-  data->SetPoints(points);
-  data->SetVerts(verts);
+    verts->InsertNextCell (static_cast<vtkIdType> (1), &i);
+  data->SetPoints (points);
+  data->SetVerts (verts);
   return data;
 }
 
@@ -80,7 +80,7 @@ vtkSmartPointer<vtkPolyData>
 getCuboid (double minX, double maxX, double minY, double maxY, double minZ, double maxZ)
 {
   vtkSmartPointer<vtkCubeSource> cube = vtkSmartPointer<vtkCubeSource>::New();
-  cube->SetBounds(minX, maxX, minY, maxY, minZ, maxZ);
+  cube->SetBounds (minX, maxX, minY, maxY, minZ, maxZ);
   cube->Update();
   return cube->GetOutput();
 }
@@ -101,21 +101,21 @@ getVoxelActors (pcl::PointCloud<pcl::PointXYZ>& voxelCenters,
     double y = point.y;
     double z = point.z;
 
-    treeWireframe->AddInputData(getCuboid(x - s, x + s, y - s, y + s, z - s, z + s));
+    treeWireframe->AddInputData (getCuboid (x - s, x + s, y - s, y + s, z - s, z + s));
   }
   treeWireframe->Update();
 
   vtkSmartPointer<vtkLODActor> treeActor = vtkSmartPointer<vtkLODActor>::New();
 
   vtkSmartPointer<vtkDataSetMapper> mapper = vtkSmartPointer<vtkDataSetMapper>::New();
-  mapper->SetInputData(treeWireframe->GetOutput());
+  mapper->SetInputData (treeWireframe->GetOutput());
 
-  treeActor->SetMapper(mapper);
+  treeActor->SetMapper (mapper);
 
   treeActor->GetProperty()->SetRepresentationToWireframe();
-  treeActor->GetProperty()->SetColor(color[0], color[1], color[2]);
-  treeActor->GetProperty()->SetLineWidth(4);
-  coll->AddItem(treeActor);
+  treeActor->GetProperty()->SetColor (color[0], color[1], color[2]);
+  treeActor->GetProperty()->SetLineWidth (4);
+  coll->AddItem (treeActor);
 }
 
 void
@@ -125,41 +125,42 @@ displayBoundingBox (Eigen::Vector3f& min_b,
 {
   vtkSmartPointer<vtkAppendPolyData> treeWireframe =
       vtkSmartPointer<vtkAppendPolyData>::New();
-  treeWireframe->AddInputData(
-      getCuboid(min_b[0], max_b[0], min_b[1], max_b[1], min_b[2], max_b[2]));
+  treeWireframe->AddInputData (
+      getCuboid (min_b[0], max_b[0], min_b[1], max_b[1], min_b[2], max_b[2]));
   treeWireframe->Update();
 
   vtkSmartPointer<vtkActor> treeActor = vtkSmartPointer<vtkActor>::New();
 
   vtkSmartPointer<vtkDataSetMapper> mapper = vtkSmartPointer<vtkDataSetMapper>::New();
-  mapper->SetInputData(treeWireframe->GetOutput());
-  treeActor->SetMapper(mapper);
+  mapper->SetInputData (treeWireframe->GetOutput());
+  treeActor->SetMapper (mapper);
 
   treeActor->GetProperty()->SetRepresentationToWireframe();
-  treeActor->GetProperty()->SetColor(0.0, 0.0, 1.0);
-  treeActor->GetProperty()->SetLineWidth(2);
-  coll->AddItem(treeActor);
+  treeActor->GetProperty()->SetColor (0.0, 0.0, 1.0);
+  treeActor->GetProperty()->SetLineWidth (2);
+  coll->AddItem (treeActor);
 }
 
 void
 printHelp (int, char** argv)
 {
-  print_error("Syntax is: %s input.pcd <options>\n", argv[0]);
-  print_info("  where options are:\n");
-  print_info("                     -leaf x,y,z   = the VoxelGrid leaf size (default: ");
-  print_value("%f, %f, %f", default_leaf_size, default_leaf_size, default_leaf_size);
-  print_info(")\n");
+  print_error ("Syntax is: %s input.pcd <options>\n", argv[0]);
+  print_info ("  where options are:\n");
+  print_info (
+      "                     -leaf x,y,z   = the VoxelGrid leaf size (default: ");
+  print_value ("%f, %f, %f", default_leaf_size, default_leaf_size, default_leaf_size);
+  print_info (")\n");
 }
 
 int
 main (int argc, char** argv)
 {
-  print_info("Estimate occlusion using pcl::VoxelGridOcclusionEstimation. For more "
-             "information, use: %s -h\n",
-             argv[0]);
+  print_info ("Estimate occlusion using pcl::VoxelGridOcclusionEstimation. For more "
+              "information, use: %s -h\n",
+              argv[0]);
 
   if (argc < 2) {
-    printHelp(argc, argv);
+    printHelp (argc, argv);
     return (-1);
   }
 
@@ -168,35 +169,36 @@ main (int argc, char** argv)
         leaf_z = default_leaf_size;
 
   std::vector<double> values;
-  parse_x_arguments(argc, argv, "-leaf", values);
+  parse_x_arguments (argc, argv, "-leaf", values);
   if (values.size() == 1) {
-    leaf_x = static_cast<float>(values[0]);
-    leaf_y = static_cast<float>(values[0]);
-    leaf_z = static_cast<float>(values[0]);
+    leaf_x = static_cast<float> (values[0]);
+    leaf_y = static_cast<float> (values[0]);
+    leaf_z = static_cast<float> (values[0]);
   }
   else if (values.size() == 3) {
-    leaf_x = static_cast<float>(values[0]);
-    leaf_y = static_cast<float>(values[1]);
-    leaf_z = static_cast<float>(values[2]);
+    leaf_x = static_cast<float> (values[0]);
+    leaf_y = static_cast<float> (values[1]);
+    leaf_z = static_cast<float> (values[2]);
   }
   else {
-    print_error("Leaf size must be specified with either 1 or 3 numbers (%lu given).\n",
-                values.size());
+    print_error (
+        "Leaf size must be specified with either 1 or 3 numbers (%lu given).\n",
+        values.size());
   }
-  print_info("Using a leaf size of: ");
-  print_value("%f, %f, %f\n", leaf_x, leaf_y, leaf_z);
+  print_info ("Using a leaf size of: ");
+  print_value ("%f, %f, %f\n", leaf_x, leaf_y, leaf_z);
 
   // input cloud
-  CloudT::Ptr input_cloud(new CloudT);
-  loadPCDFile(argv[1], *input_cloud);
+  CloudT::Ptr input_cloud (new CloudT);
+  loadPCDFile (argv[1], *input_cloud);
 
   // VTK actors
   vtkSmartPointer<vtkActorCollection> coll = vtkActorCollection::New();
 
   // voxel grid
   VoxelGridOcclusionEstimation<PointT> vg;
-  vg.setInputCloud(input_cloud);
-  vg.setLeafSize(leaf_x, leaf_y, leaf_z);
+  vg.setInputCloud (input_cloud);
+  vg.setLeafSize (leaf_x, leaf_y, leaf_z);
   vg.initializeVoxelGrid();
 
   Eigen::Vector3f b_min, b_max;
@@ -204,27 +206,27 @@ main (int argc, char** argv)
   b_max = vg.getMaxBoundCoordinates();
 
   TicToc tt;
-  print_highlight("Ray-Traversal ");
+  print_highlight ("Ray-Traversal ");
   tt.tic();
 
   // estimate the occluded space
   std::vector<Eigen::Vector3i, Eigen::aligned_allocator<Eigen::Vector3i>>
       occluded_voxels;
-  vg.occlusionEstimationAll(occluded_voxels);
+  vg.occlusionEstimationAll (occluded_voxels);
 
-  print_info("[done, ");
-  print_value("%g", tt.toc());
-  print_info(" ms : ");
-  print_value("%d", static_cast<int>(occluded_voxels.size()));
-  print_info(" occluded voxels]\n");
+  print_info ("[done, ");
+  print_value ("%g", tt.toc());
+  print_info (" ms : ");
+  print_value ("%d", static_cast<int> (occluded_voxels.size()));
+  print_info (" occluded voxels]\n");
 
-  CloudT::Ptr occ_centroids(new CloudT);
+  CloudT::Ptr occ_centroids (new CloudT);
   occ_centroids->width = occluded_voxels.size();
   occ_centroids->height = 1;
   occ_centroids->is_dense = false;
-  occ_centroids->points.resize(occluded_voxels.size());
+  occ_centroids->points.resize (occluded_voxels.size());
   for (std::size_t i = 0; i < occluded_voxels.size(); ++i) {
-    Eigen::Vector4f xyz = vg.getCentroidCoordinate(occluded_voxels[i]);
+    Eigen::Vector4f xyz = vg.getCentroidCoordinate (occluded_voxels[i]);
     PointT point;
     point.x = xyz[0];
     point.y = xyz[1];
@@ -235,18 +237,18 @@ main (int argc, char** argv)
   // we use the filtered cloud because it contains exactly one point per occupied voxel
   // (avoids drawing the same voxel box multiple times)
   CloudT filtered_cloud = vg.getFilteredPointCloud();
-  CloudT::Ptr cloud_centroids(new CloudT);
+  CloudT::Ptr cloud_centroids (new CloudT);
   cloud_centroids->width = filtered_cloud.size();
   cloud_centroids->height = 1;
   cloud_centroids->is_dense = false;
-  cloud_centroids->points.resize(filtered_cloud.size());
+  cloud_centroids->points.resize (filtered_cloud.size());
 
   for (std::size_t i = 0; i < filtered_cloud.size(); ++i) {
     float x = filtered_cloud[i].x;
     float y = filtered_cloud[i].y;
     float z = filtered_cloud[i].z;
-    Eigen::Vector3i c = vg.getGridCoordinates(x, y, z);
-    Eigen::Vector4f xyz = vg.getCentroidCoordinate(c);
+    Eigen::Vector3i c = vg.getGridCoordinates (x, y, z);
+    Eigen::Vector4f xyz = vg.getCentroidCoordinate (c);
     PointT point;
     point.x = xyz[0];
     point.y = xyz[1];
@@ -255,34 +257,34 @@ main (int argc, char** argv)
   }
 
   // visualization
-  Eigen::Vector3f red(1.0, 0.0, 0.0);
-  Eigen::Vector3f blue(0.0, 0.0, 1.0);
+  Eigen::Vector3f red (1.0, 0.0, 0.0);
+  Eigen::Vector3f blue (0.0, 0.0, 1.0);
   // draw point cloud voxels
-  getVoxelActors(*cloud_centroids, leaf_x, red, coll);
+  getVoxelActors (*cloud_centroids, leaf_x, red, coll);
   // draw the bounding box of the voxel grid
-  displayBoundingBox(b_min, b_max, coll);
+  displayBoundingBox (b_min, b_max, coll);
   // draw the occluded voxels
-  getVoxelActors(*occ_centroids, leaf_x, blue, coll);
+  getVoxelActors (*occ_centroids, leaf_x, blue, coll);
 
   // Create the RenderWindow, Renderer and RenderWindowInteractor
   vtkSmartPointer<vtkRenderer> renderer = vtkSmartPointer<vtkRenderer>::New();
   vtkSmartPointer<vtkRenderWindow> renderWindow =
       vtkSmartPointer<vtkRenderWindow>::New();
-  renderWindow->AddRenderer(renderer);
+  renderWindow->AddRenderer (renderer);
   vtkSmartPointer<vtkRenderWindowInteractor> renderWindowInteractor =
-      vtkSmartPointer<vtkRenderWindowInteractor>::Take(
+      vtkSmartPointer<vtkRenderWindowInteractor>::Take (
           vtkRenderWindowInteractorFixNew());
-  renderWindowInteractor->SetRenderWindow(renderWindow);
+  renderWindowInteractor->SetRenderWindow (renderWindow);
 
   // Add the actors to the renderer, set the background and size
-  renderer->SetBackground(1.0, 1.0, 1.0);
-  renderWindow->SetSize(640, 480);
+  renderer->SetBackground (1.0, 1.0, 1.0);
+  renderWindow->SetSize (640, 480);
 
   vtkActor* a;
   coll->InitTraversal();
   a = coll->GetNextActor();
   while (a != nullptr) {
-    renderer->AddActor(a);
+    renderer->AddActor (a);
     a = coll->GetNextActor();
   }
 

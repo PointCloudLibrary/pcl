@@ -108,19 +108,19 @@ class OutofcoreOctreeBaseNode : public pcl::octree::OctreeNode {
 
   // these methods can be rewritten with the iterators.
   friend OutofcoreOctreeBaseNode<ContainerT, PointT>*
-  makenode_norec<ContainerT, PointT>(
+  makenode_norec<ContainerT, PointT> (
       const boost::filesystem::path& path,
       OutofcoreOctreeBaseNode<ContainerT, PointT>* super);
 
   friend void
-  queryBBIntersects_noload<ContainerT, PointT>(const boost::filesystem::path& rootnode,
-                                               const Eigen::Vector3d& min,
-                                               const Eigen::Vector3d& max,
-                                               const std::uint32_t query_depth,
-                                               std::list<std::string>& bin_name);
+  queryBBIntersects_noload<ContainerT, PointT> (const boost::filesystem::path& rootnode,
+                                                const Eigen::Vector3d& min,
+                                                const Eigen::Vector3d& max,
+                                                const std::uint32_t query_depth,
+                                                std::list<std::string>& bin_name);
 
   friend void
-  queryBBIntersects_noload<ContainerT, PointT>(
+  queryBBIntersects_noload<ContainerT, PointT> (
       OutofcoreOctreeBaseNode<ContainerT, PointT>* current,
       const Eigen::Vector3d& min,
       const Eigen::Vector3d& max,
@@ -147,10 +147,10 @@ public:
   OutofcoreOctreeBaseNode();
 
   /** \brief Create root node and directory */
-  OutofcoreOctreeBaseNode(const Eigen::Vector3d& bb_min,
-                          const Eigen::Vector3d& bb_max,
-                          OutofcoreOctreeBase<ContainerT, PointT>* const tree,
-                          const boost::filesystem::path& root_name);
+  OutofcoreOctreeBaseNode (const Eigen::Vector3d& bb_min,
+                           const Eigen::Vector3d& bb_max,
+                           OutofcoreOctreeBase<ContainerT, PointT>* const tree,
+                           const boost::filesystem::path& root_name);
 
   /** \brief Will recursively delete all children calling recFreeChildrein */
 
@@ -165,7 +165,7 @@ public:
   virtual inline void
   getBoundingBox (Eigen::Vector3d& min_bb, Eigen::Vector3d& max_bb) const
   {
-    node_metadata_->getBoundingBox(min_bb, max_bb);
+    node_metadata_->getBoundingBox (min_bb, max_bb);
   }
 
   const boost::filesystem::path&
@@ -323,7 +323,7 @@ public:
   deepCopy () const override
   {
     OutofcoreOctreeBaseNode* res = nullptr;
-    PCL_THROW_EXCEPTION(PCLException, "Not implemented\n");
+    PCL_THROW_EXCEPTION (PCLException, "Not implemented\n");
     return (res);
   }
 
@@ -378,9 +378,9 @@ protected:
    * \throws PCLException if directory is missing
    * \throws PCLException if node index is missing
    */
-  OutofcoreOctreeBaseNode(const boost::filesystem::path& directory_path,
-                          OutofcoreOctreeBaseNode<ContainerT, PointT>* super,
-                          bool load_all);
+  OutofcoreOctreeBaseNode (const boost::filesystem::path& directory_path,
+                           OutofcoreOctreeBaseNode<ContainerT, PointT>* super,
+                           bool load_all);
 
   /** \brief Create root node and directory
    *
@@ -402,11 +402,11 @@ protected:
                   const boost::filesystem::path& rootname);
 
   /** \brief no copy construction right now */
-  OutofcoreOctreeBaseNode(const OutofcoreOctreeBaseNode& rval);
+  OutofcoreOctreeBaseNode (const OutofcoreOctreeBaseNode& rval);
 
   /** \brief Operator= is not implemented */
   OutofcoreOctreeBaseNode&
-  operator=(const OutofcoreOctreeBaseNode& rval);
+  operator= (const OutofcoreOctreeBaseNode& rval);
 
   /** \brief Counts the number of child directories on disk; used to update
    * num_children_ */
@@ -565,10 +565,10 @@ protected:
 
   /** \brief Private constructor used for children
    */
-  OutofcoreOctreeBaseNode(const Eigen::Vector3d& bb_min,
-                          const Eigen::Vector3d& bb_max,
-                          const char* dir,
-                          OutofcoreOctreeBaseNode<ContainerT, PointT>* super);
+  OutofcoreOctreeBaseNode (const Eigen::Vector3d& bb_min,
+                           const Eigen::Vector3d& bb_max,
+                           const char* dir,
+                           OutofcoreOctreeBaseNode<ContainerT, PointT>* super);
 
   /** \brief Copies points from this and all children into a single point container
    * (std::list)

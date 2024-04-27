@@ -41,10 +41,10 @@
 
 #include <pcl/registration/transformation_estimation.h>
 #include <pcl/cloud_iterator.h>
-PCL_DEPRECATED_HEADER(1,
-                      15,
-                      "TransformationEstimationDQ has been renamed to "
-                      "TransformationEstimationDualQuaternion.");
+PCL_DEPRECATED_HEADER (1,
+                       15,
+                       "TransformationEstimationDQ has been renamed to "
+                       "TransformationEstimationDualQuaternion.");
 
 namespace pcl {
 namespace registration {

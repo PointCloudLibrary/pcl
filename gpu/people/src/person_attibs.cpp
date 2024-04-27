@@ -46,59 +46,59 @@
 
 pcl::gpu::people::PersonAttribs::PersonAttribs()
 {
-  PCL_DEBUG("[pcl::gpu::people::PersonAttribs] : (D) : Constructor called\n");
+  PCL_DEBUG ("[pcl::gpu::people::PersonAttribs] : (D) : Constructor called\n");
 
   // INIT
-  max_part_size_.resize(pcl::gpu::people::NUM_PARTS);
+  max_part_size_.resize (pcl::gpu::people::NUM_PARTS);
 
-  part_ideal_length_.resize(pcl::gpu::people::NUM_PARTS);
+  part_ideal_length_.resize (pcl::gpu::people::NUM_PARTS);
   for (int i = 0; i < pcl::gpu::people::NUM_PARTS; i++)
-    part_ideal_length_[i].resize(pcl::gpu::people::MAX_CHILD);
+    part_ideal_length_[i].resize (pcl::gpu::people::MAX_CHILD);
 
-  max_length_offset_.resize(pcl::gpu::people::NUM_PARTS);
+  max_length_offset_.resize (pcl::gpu::people::NUM_PARTS);
   for (int i = 0; i < pcl::gpu::people::NUM_PARTS; i++)
-    max_length_offset_[i].resize(pcl::gpu::people::MAX_CHILD);
+    max_length_offset_[i].resize (pcl::gpu::people::MAX_CHILD);
 
-  nr_of_children_.resize(pcl::gpu::people::NUM_PARTS);
+  nr_of_children_.resize (pcl::gpu::people::NUM_PARTS);
 
   name_ = "generic";
 }
 
 int
-pcl::gpu::people::PersonAttribs::readPersonXMLConfig(std::istream& is)
+pcl::gpu::people::PersonAttribs::readPersonXMLConfig (std::istream& is)
 {
-  PCL_DEBUG("[pcl::gpu::people::PersonAttribs::readPersonXMLConfig] : (D) : called\n");
+  PCL_DEBUG ("[pcl::gpu::people::PersonAttribs::readPersonXMLConfig] : (D) : called\n");
   // Read in the property tree
   boost::property_tree::ptree pt;
-  read_xml(is, pt);
+  read_xml (is, pt);
 
   // Check file version
-  int version = pt.get<int>("version");
+  int version = pt.get<int> ("version");
   if (version != pcl::gpu::people::XML_VERSION) {
-    PCL_ERROR("[pcl::gpu::people::PersonAttribs::readPersonXMLConfig] : (E) : "
-              "Incompatible XML_VERSIONS\n");
+    PCL_ERROR ("[pcl::gpu::people::PersonAttribs::readPersonXMLConfig] : (E) : "
+               "Incompatible XML_VERSIONS\n");
     return -1;
   }
 
   // Check num_parts
-  int num_parts = pt.get<int>("num_parts");
+  int num_parts = pt.get<int> ("num_parts");
   if (num_parts != pcl::gpu::people::NUM_PARTS) {
-    PCL_ERROR("[pcl::gpu::people::PersonAttribs::readPersonXMLConfig] : (E) : "
-              "num_parts doesn't match\n");
+    PCL_ERROR ("[pcl::gpu::people::PersonAttribs::readPersonXMLConfig] : (E) : "
+               "num_parts doesn't match\n");
     return -1;
   }
 
   // Check num_labels
-  int num_labels = pt.get<int>("num_labels");
+  int num_labels = pt.get<int> ("num_labels");
   if (num_labels != pcl::gpu::people::NUM_LABELS) {
-    PCL_ERROR("[pcl::gpu::people::PersonAttribs::readPersonXMLConfig] : (E) : "
-              "num_labels doesn't match\n");
+    PCL_ERROR ("[pcl::gpu::people::PersonAttribs::readPersonXMLConfig] : (E) : "
+               "num_labels doesn't match\n");
     return -1;
   }
 
-  name_ = pt.get<std::string>("person.name");
+  name_ = pt.get<std::string> ("person.name");
 
-  PCL_DEBUG(
+  PCL_DEBUG (
       "[pcl::gpu::people::PersonAttribs::readPersonXMLConfig] : (D) : loaded %s\n",
       name_.c_str());
 
@@ -106,7 +106,7 @@ pcl::gpu::people::PersonAttribs::readPersonXMLConfig(std::istream& is)
   for (int i = 0; i < pcl::gpu::people::NUM_PARTS; i++) {
     std::stringstream path;
     path << "person.max_part_size.value_" << i;
-    max_part_size_[i] = pt.get<float>(path.str());
+    max_part_size_[i] = pt.get<float> (path.str());
   }
 
   // Get part_ideal_length
@@ -114,7 +114,7 @@ pcl::gpu::people::PersonAttribs::readPersonXMLConfig(std::istream& is)
     for (int j = 0; j < pcl::gpu::people::MAX_CHILD; j++) {
       std::stringstream path;
       path << "person.part_ideal_length.value_" << i << ".child_" << j;
-      part_ideal_length_[i][j] = pt.get<float>(path.str());
+      part_ideal_length_[i][j] = pt.get<float> (path.str());
     }
   }
 
@@ -123,7 +123,7 @@ pcl::gpu::people::PersonAttribs::readPersonXMLConfig(std::istream& is)
     for (int j = 0; j < pcl::gpu::people::MAX_CHILD; j++) {
       std::stringstream path;
       path << "person.max_length_offset.value_" << i << ".child_" << j;
-      max_length_offset_[i][j] = pt.get<float>(path.str());
+      max_length_offset_[i][j] = pt.get<float> (path.str());
     }
   }
 
@@ -131,34 +131,35 @@ pcl::gpu::people::PersonAttribs::readPersonXMLConfig(std::istream& is)
   for (int i = 0; i < pcl::gpu::people::NUM_PARTS; i++) {
     std::stringstream path;
     path << "person.nr_of_children.value_" << i;
-    nr_of_children_[i] = pt.get<float>(path.str());
+    nr_of_children_[i] = pt.get<float> (path.str());
   }
 
   return 0;
 }
 
 void
-pcl::gpu::people::PersonAttribs::writePersonXMLConfig(std::ostream& os)
+pcl::gpu::people::PersonAttribs::writePersonXMLConfig (std::ostream& os)
 {
-  PCL_DEBUG("[pcl::gpu::people::PersonAttribs::writePersonXMLConfig] : (D) : called\n");
+  PCL_DEBUG (
+      "[pcl::gpu::people::PersonAttribs::writePersonXMLConfig] : (D) : called\n");
   boost::property_tree::ptree pt;
 
   // Write global information which is not person specific
-  pt.add("version", static_cast<int>(pcl::gpu::people::XML_VERSION));
-  pt.add("num_parts", static_cast<int>(pcl::gpu::people::NUM_PARTS));
-  pt.add("num_labels", static_cast<int>(NUM_LABELS));
+  pt.add ("version", static_cast<int> (pcl::gpu::people::XML_VERSION));
+  pt.add ("num_parts", static_cast<int> (pcl::gpu::people::NUM_PARTS));
+  pt.add ("num_labels", static_cast<int> (NUM_LABELS));
 
   //  boost::property_tree::ptree& node = pt.add("person", "");
   //  node.put("name", name_);
 
   // FROM HERE PERSON SPECIFIC STUFF
-  pt.add("person.name", name_);
+  pt.add ("person.name", name_);
 
   // Add max_part_size_
   for (int i = 0; i < pcl::gpu::people::NUM_PARTS; i++) {
     std::stringstream path;
     path << "person.max_part_size.value_" << i;
-    pt.add(path.str(), max_part_size_[i]);
+    pt.add (path.str(), max_part_size_[i]);
   }
 
   // Add part_ideal_length
@@ -166,7 +167,7 @@ pcl::gpu::people::PersonAttribs::writePersonXMLConfig(std::ostream& os)
     for (int j = 0; j < pcl::gpu::people::MAX_CHILD; j++) {
       std::stringstream path;
       path << "person.part_ideal_length.value_" << i << ".child_" << j;
-      pt.add(path.str(), part_ideal_length_[i][j]);
+      pt.add (path.str(), part_ideal_length_[i][j]);
     }
   }
 
@@ -175,7 +176,7 @@ pcl::gpu::people::PersonAttribs::writePersonXMLConfig(std::ostream& os)
     for (int j = 0; j < pcl::gpu::people::MAX_CHILD; j++) {
       std::stringstream path;
       path << "person.max_length_offset.value_" << i << ".child_" << j;
-      pt.add(path.str(), max_length_offset_[i][j]);
+      pt.add (path.str(), max_length_offset_[i][j]);
     }
   }
 
@@ -183,8 +184,8 @@ pcl::gpu::people::PersonAttribs::writePersonXMLConfig(std::ostream& os)
   for (int i = 0; i < pcl::gpu::people::NUM_PARTS; i++) {
     std::stringstream path;
     path << "person.nr_of_children.value_" << i;
-    pt.add(path.str(), nr_of_children_[i]);
+    pt.add (path.str(), nr_of_children_[i]);
   }
 
-  write_xml(os, pt);
+  write_xml (os, pt);
 }

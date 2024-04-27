@@ -89,10 +89,10 @@ public:
 
   /** \brief Empty constructor. */
   VFHEstimation()
-  : nr_bins_f_({45, 45, 45, 45}), d_pi_(1.0f / (2.0f * static_cast<float>(M_PI)))
+  : nr_bins_f_ ({45, 45, 45, 45}), d_pi_ (1.0f / (2.0f * static_cast<float> (M_PI)))
   {
     for (int i = 0; i < 4; ++i) {
-      hist_f_[i].setZero(nr_bins_f_[i]);
+      hist_f_[i].setZero (nr_bins_f_[i]);
     }
     search_radius_ = 0;
     k_ = 0;
@@ -153,7 +153,7 @@ public:
   inline void
   setNormalToUse (const Eigen::Vector3f& normal)
   {
-    normal_to_use_ = Eigen::Vector4f(normal[0], normal[1], normal[2], 0);
+    normal_to_use_ = Eigen::Vector4f (normal[0], normal[1], normal[2], 0);
   }
 
   /** \brief Set use_given_centroid_
@@ -173,7 +173,7 @@ public:
   inline void
   setCentroidToUse (const Eigen::Vector3f& centroid)
   {
-    centroid_to_use_ = Eigen::Vector4f(centroid[0], centroid[1], centroid[2], 0);
+    centroid_to_use_ = Eigen::Vector4f (centroid[0], centroid[1], centroid[2], 0);
   }
 
   /** \brief set normalize_bins_

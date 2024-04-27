@@ -46,22 +46,22 @@ namespace pcl {
 namespace cuda {
 
 struct DisparityBoundSmoothing {
-  DisparityBoundSmoothing(int width,
-                          int height,
-                          int window_size,
-                          float focal_length,
-                          float baseline,
-                          float disparity_threshold,
-                          float* data,
-                          float* raw_data)
-  : width_(width)
-  , height_(height)
-  , window_size_(window_size)
-  , focal_length_(focal_length)
-  , baseline_(baseline)
-  , disparity_threshold_(disparity_threshold)
-  , data_(data)
-  , raw_data_(raw_data)
+  DisparityBoundSmoothing (int width,
+                           int height,
+                           int window_size,
+                           float focal_length,
+                           float baseline,
+                           float disparity_threshold,
+                           float* data,
+                           float* raw_data)
+  : width_ (width)
+  , height_ (height)
+  , window_size_ (window_size)
+  , focal_length_ (focal_length)
+  , baseline_ (baseline)
+  , disparity_threshold_ (disparity_threshold)
+  , data_ (data)
+  , raw_data_ (raw_data)
   {}
 
   int width_, height_;
@@ -90,45 +90,45 @@ struct DisparityBoundSmoothing {
   inline __host__ __device__ float
   clampToDisparityBounds (float avg_depth, float depth)
   {
-    float disparity = depth2disparity(depth);
-    float avg_disparity = depth2disparity(avg_depth);
+    float disparity = depth2disparity (depth);
+    float avg_disparity = depth2disparity (avg_depth);
     float min_disparity = disparity - disparity_threshold_;
     float max_disparity = disparity + disparity_threshold_;
 
     if (avg_disparity > max_disparity)
-      return disparity2depth(max_disparity);
+      return disparity2depth (max_disparity);
     if (avg_disparity < min_disparity)
-      return disparity2depth(min_disparity);
+      return disparity2depth (min_disparity);
 
     return avg_depth;
   }
 
   // actual kernel operator
   inline __host__ __device__ float
-  operator()(int idx)
+  operator() (int idx)
   {
     float depth = data_[idx];
 #ifdef __CUDACC__
-    if (depth == 0 | isnan(depth) | isinf(depth))
+    if (depth == 0 | isnan (depth) | isinf (depth))
       return 0;
 #else
-    if (depth == 0 | std::isnan(depth) | std::isinf(depth))
+    if (depth == 0 | std::isnan (depth) | std::isinf (depth))
       return 0;
 #endif
     int xIdx = idx % width_;
     int yIdx = idx / width_;
     // TODO: test median
     // This implements a fixed window size in image coordinates (pixels)
-    int4 bounds = make_int4(xIdx - window_size_,
-                            xIdx + window_size_,
-                            yIdx - window_size_,
-                            yIdx + window_size_);
+    int4 bounds = make_int4 (xIdx - window_size_,
+                             xIdx + window_size_,
+                             yIdx - window_size_,
+                             yIdx + window_size_);
 
     // clamp the coordinates to fit to depth image size
-    bounds.x = clamp(bounds.x, 0, width_ - 1);
-    bounds.y = clamp(bounds.y, 0, width_ - 1);
-    bounds.z = clamp(bounds.z, 0, height_ - 1);
-    bounds.w = clamp(bounds.w, 0, height_ - 1);
+    bounds.x = clamp (bounds.x, 0, width_ - 1);
+    bounds.y = clamp (bounds.y, 0, width_ - 1);
+    bounds.z = clamp (bounds.z, 0, height_ - 1);
+    bounds.w = clamp (bounds.w, 0, height_ - 1);
 
     float average_depth = depth;
     int counter = 1;
@@ -142,7 +142,7 @@ struct DisparityBoundSmoothing {
         // ignore invalid points
         if (otherDepth == 0)
           continue;
-        if (std::abs(otherDepth - depth) > 200)
+        if (std::abs (otherDepth - depth) > 200)
           continue;
 
         ++counter;
@@ -150,20 +150,20 @@ struct DisparityBoundSmoothing {
       }
     }
 
-    return clampToDisparityBounds(average_depth / counter, raw_data_[idx]);
+    return clampToDisparityBounds (average_depth / counter, raw_data_[idx]);
   }
 };
 
 // This version requires a pre-computed map of float3 (nr_valid_points,
 // min_allowable_depth, max_allowable_depth);
 struct DisparityClampedSmoothing {
-  DisparityClampedSmoothing(
+  DisparityClampedSmoothing (
       float* data, float3* disparity_helper_map, int width, int height, int window_size)
-  : data_(data)
-  , disparity_helper_map_(disparity_helper_map)
-  , width_(width)
-  , height_(height)
-  , window_size_(window_size)
+  : data_ (data)
+  , disparity_helper_map_ (disparity_helper_map)
+  , width_ (width)
+  , height_ (height)
+  , window_size_ (window_size)
   {}
 
   float* data_;
@@ -174,35 +174,35 @@ struct DisparityClampedSmoothing {
 
   template <typename Tuple>
   inline __host__ __device__ float
-  operator()(Tuple t)
+  operator() (Tuple t)
   {
-    float depth = thrust::get<0>(t);
-    int idx = thrust::get<1>(t);
+    float depth = thrust::get<0> (t);
+    int idx = thrust::get<1> (t);
     float3 dhel = disparity_helper_map_[idx];
     int nr = (int)dhel.x;
     float min_d = dhel.y;
     float max_d = dhel.z;
 #ifdef __CUDACC__
-    if (depth == 0 | isnan(depth) | isinf(depth))
+    if (depth == 0 | isnan (depth) | isinf (depth))
       return 0.0f;
 #else
-    if (depth == 0 | std::isnan(depth) | std::isinf(depth))
+    if (depth == 0 | std::isnan (depth) | std::isinf (depth))
       return 0.0f;
 #endif
     int xIdx = idx % width_;
     int yIdx = idx / width_;
 
     // This implements a fixed window size in image coordinates (pixels)
-    int4 bounds = make_int4(xIdx - window_size_,
-                            xIdx + window_size_,
-                            yIdx - window_size_,
-                            yIdx + window_size_);
+    int4 bounds = make_int4 (xIdx - window_size_,
+                             xIdx + window_size_,
+                             yIdx - window_size_,
+                             yIdx + window_size_);
 
     // clamp the coordinates to fit to disparity image size
-    bounds.x = clamp(bounds.x, 0, width_ - 1);
-    bounds.y = clamp(bounds.y, 0, width_ - 1);
-    bounds.z = clamp(bounds.z, 0, height_ - 1);
-    bounds.w = clamp(bounds.w, 0, height_ - 1);
+    bounds.x = clamp (bounds.x, 0, width_ - 1);
+    bounds.y = clamp (bounds.y, 0, width_ - 1);
+    bounds.z = clamp (bounds.z, 0, height_ - 1);
+    bounds.w = clamp (bounds.w, 0, height_ - 1);
 
     // iterate over all pixels in the rectangular region
     for (int y = bounds.z; y <= bounds.w; ++y) {
@@ -213,25 +213,25 @@ struct DisparityClampedSmoothing {
       }
     }
 
-    return clamp(depth / nr, min_d, max_d);
+    return clamp (depth / nr, min_d, max_d);
   }
 };
 
 struct DisparityHelperMap {
-  DisparityHelperMap(float* data,
-                     int width,
-                     int height,
-                     int window_size,
-                     float baseline,
-                     float focal_length,
-                     float disp_thresh)
-  : data_(data)
-  , width_(width)
-  , height_(height)
-  , window_size_(window_size)
-  , baseline_(baseline)
-  , focal_length_(focal_length)
-  , disp_thresh_(disp_thresh)
+  DisparityHelperMap (float* data,
+                      int width,
+                      int height,
+                      int window_size,
+                      float baseline,
+                      float focal_length,
+                      float disp_thresh)
+  : data_ (data)
+  , width_ (width)
+  , height_ (height)
+  , window_size_ (window_size)
+  , baseline_ (baseline)
+  , focal_length_ (focal_length)
+  , disp_thresh_ (disp_thresh)
   {}
 
   float* data_;
@@ -257,30 +257,30 @@ struct DisparityHelperMap {
   }
 
   inline __host__ __device__ float3
-  operator()(int idx)
+  operator() (int idx)
   {
-    float disparity = depth2disparity(data_[idx]);
+    float disparity = depth2disparity (data_[idx]);
 #ifdef __CUDACC__
-    if (disparity == 0 | isnan(disparity) | isinf(disparity))
-      return make_float3(0, 0, 0);
+    if (disparity == 0 | isnan (disparity) | isinf (disparity))
+      return make_float3 (0, 0, 0);
 #else
-    if (disparity == 0 | std::isnan(disparity) | std::isinf(disparity))
-      return make_float3(0, 0, 0);
+    if (disparity == 0 | std::isnan (disparity) | std::isinf (disparity))
+      return make_float3 (0, 0, 0);
 #endif
     int xIdx = idx % width_;
     int yIdx = idx / width_;
 
     // This implements a fixed window size in image coordinates (pixels)
-    int4 bounds = make_int4(xIdx - window_size_,
-                            xIdx + window_size_,
-                            yIdx - window_size_,
-                            yIdx + window_size_);
+    int4 bounds = make_int4 (xIdx - window_size_,
+                             xIdx + window_size_,
+                             yIdx - window_size_,
+                             yIdx + window_size_);
 
     // clamp the coordinates to fit to disparity image size
-    bounds.x = clamp(bounds.x, 0, width_ - 1);
-    bounds.y = clamp(bounds.y, 0, width_ - 1);
-    bounds.z = clamp(bounds.z, 0, height_ - 1);
-    bounds.w = clamp(bounds.w, 0, height_ - 1);
+    bounds.x = clamp (bounds.x, 0, width_ - 1);
+    bounds.y = clamp (bounds.y, 0, width_ - 1);
+    bounds.z = clamp (bounds.z, 0, height_ - 1);
+    bounds.w = clamp (bounds.w, 0, height_ - 1);
 
     int counter = 1;
     // iterate over all pixels in the rectangular region
@@ -296,9 +296,9 @@ struct DisparityHelperMap {
       }
     }
 
-    return make_float3((float)counter,
-                       disparity2depth(disparity + disp_thresh_),
-                       disparity2depth(disparity - disp_thresh_));
+    return make_float3 ((float)counter,
+                        disparity2depth (disparity + disp_thresh_),
+                        disparity2depth (disparity - disp_thresh_));
   }
 };
 

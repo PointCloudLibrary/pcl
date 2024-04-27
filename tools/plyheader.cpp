@@ -81,7 +81,7 @@ main (int argc, char* argv[])
       }
     }
 
-    if ((short_opt == 'h') || (strcmp(long_opt, "help") == 0)) {
+    if ((short_opt == 'h') || (strcmp (long_opt, "help") == 0)) {
       std::cout << "Usage: plyheader [OPTION] [[INFILE] OUTFILE]\n";
       std::cout << "Extract the header from a PLY file.\n";
       std::cout << "\n";
@@ -95,7 +95,7 @@ main (int argc, char* argv[])
       return EXIT_SUCCESS;
     }
 
-    if ((short_opt == 'v') || (strcmp(long_opt, "version") == 0)) {
+    if ((short_opt == 'v') || (strcmp (long_opt, "version") == 0)) {
       std::cout << "plyheader \n";
       std::cout << " Point Cloud Library (PCL) - www.pointclouds.org\n";
       std::cout << " Copyright (c) 2007-2012, Ares Lagae\n";
@@ -164,8 +164,8 @@ main (int argc, char* argv[])
   std::ifstream ifstream;
   if (parc > 0) {
     const char* ifilename = parv[0];
-    if (strcmp(ifilename, "-") != 0) {
-      ifstream.open(ifilename);
+    if (strcmp (ifilename, "-") != 0) {
+      ifstream.open (ifilename);
       if (!ifstream.is_open()) {
         std::cerr << "plyheader: " << ifilename << ": "
                   << "no such file or directory"
@@ -178,8 +178,8 @@ main (int argc, char* argv[])
   std::ofstream ofstream;
   if (parc > 1) {
     const char* ofilename = parv[1];
-    if (strcmp(ofilename, "-") != 0) {
-      ofstream.open(ofilename);
+    if (strcmp (ofilename, "-") != 0) {
+      ofstream.open (ofilename);
       if (!ofstream.is_open()) {
         std::cerr << "plyheader: " << ofilename << ": "
                   << "could not open file"
@@ -193,14 +193,14 @@ main (int argc, char* argv[])
   std::ostream& ostream = ofstream.is_open() ? ofstream : std::cout;
 
   char magic[3];
-  istream.read(magic, 3);
+  istream.read (magic, 3);
   if (!istream || (magic[0] != 'p') || (magic[1] != 'l') || (magic[2] != 'y')) {
     return EXIT_FAILURE;
   }
-  istream.ignore(1);
+  istream.ignore (1);
   ostream << magic[0] << magic[1] << magic[2] << "\n";
   std::string line;
-  while (std::getline(istream, line)) {
+  while (std::getline (istream, line)) {
     ostream << line << "\n";
     if (line == "end_header") {
       break;

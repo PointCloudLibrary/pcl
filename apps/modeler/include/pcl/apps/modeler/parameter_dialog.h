@@ -47,23 +47,23 @@ class Parameter;
 
 class ParameterModel : public QStandardItemModel {
 public:
-  ParameterModel(QObject* parent = nullptr) : QStandardItemModel(parent) {}
-  ParameterModel(int rows, int columns, QObject* parent = nullptr)
-  : QStandardItemModel(rows, columns, parent)
+  ParameterModel (QObject* parent = nullptr) : QStandardItemModel (parent) {}
+  ParameterModel (int rows, int columns, QObject* parent = nullptr)
+  : QStandardItemModel (rows, columns, parent)
   {}
 
   Qt::ItemFlags
   flags (const QModelIndex& index) const override
   {
     return (index.column() == 0) ? (Qt::ItemIsEnabled | Qt::ItemIsSelectable)
-                                 : QStandardItemModel::flags(index);
+                                 : QStandardItemModel::flags (index);
   }
 };
 
 class ParameterDialog : public QDialog {
   Q_OBJECT
 public:
-  ParameterDialog(const std::string& title, QWidget* parent = nullptr);
+  ParameterDialog (const std::string& title, QWidget* parent = nullptr);
 
   void
   addParameter (Parameter* parameter);
@@ -83,8 +83,8 @@ protected Q_SLOTS:
 class ParameterDelegate : public QStyledItemDelegate {
   Q_OBJECT
 public:
-  ParameterDelegate(std::map<std::string, Parameter*>& parameterMap,
-                    QObject* parent = nullptr);
+  ParameterDelegate (std::map<std::string, Parameter*>& parameterMap,
+                     QObject* parent = nullptr);
 
   QWidget*
   createEditor (QWidget* parent,

@@ -62,9 +62,9 @@ public:
   /// @param selection_ptr a shared pointer pointing to the selection object.
   /// @param cloud_ptr a shared pointer pointing to the cloud object.
   /// @param command_queue_ptr a shared pointer pointing to the command queue.
-  SelectionTransformTool(ConstSelectionPtr selection_ptr,
-                         CloudPtr cloud_ptr,
-                         CommandQueuePtr command_queue_ptr);
+  SelectionTransformTool (ConstSelectionPtr selection_ptr,
+                          CloudPtr cloud_ptr,
+                          CommandQueuePtr command_queue_ptr);
 
   /// @brief Destructor
   ~SelectionTransformTool() override = default;

@@ -111,7 +111,7 @@ public:
    * \param[in] create_interactor if true (default), create an interactor, false
    * otherwise
    */
-  PCLVisualizer(const std::string& name = "", const bool create_interactor = true);
+  PCLVisualizer (const std::string& name = "", const bool create_interactor = true);
 
   /** \brief PCL Visualizer constructor. It looks through the passed argv arguments to
    * find the "-cam *.cam" argument. If the search failed, the name for cam file is
@@ -123,7 +123,7 @@ public:
    * \param[in] create_interactor if true (default), create an interactor, false
    * otherwise
    */
-  PCLVisualizer(
+  PCLVisualizer (
       int& argc,
       char** argv,
       const std::string& name = "",
@@ -136,10 +136,10 @@ public:
    * \param[in] create_interactor if true (default), create an interactor, false
    * otherwise
    */
-  PCLVisualizer(vtkSmartPointer<vtkRenderer> ren,
-                vtkSmartPointer<vtkRenderWindow> wind,
-                const std::string& name = "",
-                const bool create_interactor = true);
+  PCLVisualizer (vtkSmartPointer<vtkRenderer> ren,
+                 vtkSmartPointer<vtkRenderWindow> wind,
+                 const std::string& name = "",
+                 const bool create_interactor = true);
 
   /** \brief PCL Visualizer constructor.
    * \param[in] argc
@@ -150,7 +150,7 @@ public:
    * \param[in] create_interactor if true (default), create an interactor, false
    * otherwise
    */
-  PCLVisualizer(
+  PCLVisualizer (
       int& argc,
       char** argv,
       vtkSmartPointer<vtkRenderer> ren,
@@ -190,7 +190,7 @@ public:
    */
   boost::signals2::connection
   registerKeyboardCallback (
-      std::function<void(const pcl::visualization::KeyboardEvent&)> cb);
+      std::function<void (const pcl::visualization::KeyboardEvent&)> cb);
 
   /** \brief Register a callback function for keyboard events
    * \param[in] callback  the function that will be registered as a callback for a
@@ -198,12 +198,12 @@ public:
    * \return a connection object that allows to disconnect the callback function.
    */
   inline boost::signals2::connection
-  registerKeyboardCallback (void (*callback)(const pcl::visualization::KeyboardEvent&,
-                                             void*),
+  registerKeyboardCallback (void (*callback) (const pcl::visualization::KeyboardEvent&,
+                                              void*),
                             void* cookie = nullptr)
   {
-    return (registerKeyboardCallback(
-        [=] (const pcl::visualization::KeyboardEvent& e) { (*callback)(e, cookie); }));
+    return (registerKeyboardCallback (
+        [=] (const pcl::visualization::KeyboardEvent& e) { (*callback) (e, cookie); }));
   }
 
   /** \brief Register a callback function for keyboard events
@@ -215,13 +215,13 @@ public:
   template <typename T>
   inline boost::signals2::connection
   registerKeyboardCallback (
-      void (T::*callback)(const pcl::visualization::KeyboardEvent&, void*),
+      void (T::*callback) (const pcl::visualization::KeyboardEvent&, void*),
       T& instance,
       void* cookie = nullptr)
   {
-    return (registerKeyboardCallback(
+    return (registerKeyboardCallback (
         [=, &instance] (const pcl::visualization::KeyboardEvent& e) {
-          (instance.*callback)(e, cookie);
+          (instance.*callback) (e, cookie);
         }));
   }
 
@@ -230,7 +230,8 @@ public:
    * event \return a connection object that allows to disconnect the callback function.
    */
   boost::signals2::connection
-  registerMouseCallback (std::function<void(const pcl::visualization::MouseEvent&)> cb);
+  registerMouseCallback (
+      std::function<void (const pcl::visualization::MouseEvent&)> cb);
 
   /** \brief Register a callback function for mouse events
    * \param[in] callback  the function that will be registered as a callback for a mouse
@@ -238,11 +239,12 @@ public:
    * connection object that allows to disconnect the callback function.
    */
   inline boost::signals2::connection
-  registerMouseCallback (void (*callback)(const pcl::visualization::MouseEvent&, void*),
+  registerMouseCallback (void (*callback) (const pcl::visualization::MouseEvent&,
+                                           void*),
                          void* cookie = nullptr)
   {
-    return (registerMouseCallback(
-        [=] (const pcl::visualization::MouseEvent& e) { (*callback)(e, cookie); }));
+    return (registerMouseCallback (
+        [=] (const pcl::visualization::MouseEvent& e) { (*callback) (e, cookie); }));
   }
 
   /** \brief Register a callback function for mouse events
@@ -253,14 +255,14 @@ public:
    */
   template <typename T>
   inline boost::signals2::connection
-  registerMouseCallback (void (T::*callback)(const pcl::visualization::MouseEvent&,
-                                             void*),
+  registerMouseCallback (void (T::*callback) (const pcl::visualization::MouseEvent&,
+                                              void*),
                          T& instance,
                          void* cookie = nullptr)
   {
-    return (
-        registerMouseCallback([=, &instance] (const pcl::visualization::MouseEvent& e) {
-          (instance.*callback)(e, cookie);
+    return (registerMouseCallback (
+        [=, &instance] (const pcl::visualization::MouseEvent& e) {
+          (instance.*callback) (e, cookie);
         }));
   }
 
@@ -271,7 +273,7 @@ public:
    */
   boost::signals2::connection
   registerPointPickingCallback (
-      std::function<void(const pcl::visualization::PointPickingEvent&)> cb);
+      std::function<void (const pcl::visualization::PointPickingEvent&)> cb);
 
   /** \brief Register a callback function for point picking events
    * \param[in] callback  the function that will be registered as a callback for a point
@@ -280,7 +282,7 @@ public:
    */
   boost::signals2::connection
   registerPointPickingCallback (
-      void (*callback)(const pcl::visualization::PointPickingEvent&, void*),
+      void (*callback) (const pcl::visualization::PointPickingEvent&, void*),
       void* cookie = nullptr);
 
   /** \brief Register a callback function for point picking events
@@ -292,13 +294,13 @@ public:
   template <typename T>
   inline boost::signals2::connection
   registerPointPickingCallback (
-      void (T::*callback)(const pcl::visualization::PointPickingEvent&, void*),
+      void (T::*callback) (const pcl::visualization::PointPickingEvent&, void*),
       T& instance,
       void* cookie = nullptr)
   {
-    return (registerPointPickingCallback(
+    return (registerPointPickingCallback (
         [=, &instance] (const pcl::visualization::PointPickingEvent& e) {
-          (instance.*callback)(e, cookie);
+          (instance.*callback) (e, cookie);
         }));
   }
 
@@ -309,7 +311,7 @@ public:
    */
   boost::signals2::connection
   registerAreaPickingCallback (
-      std::function<void(const pcl::visualization::AreaPickingEvent&)> cb);
+      std::function<void (const pcl::visualization::AreaPickingEvent&)> cb);
 
   /** \brief Register a callback function for area picking events
    * \param[in] callback  the function that will be registered as a callback for an area
@@ -318,7 +320,7 @@ public:
    */
   boost::signals2::connection
   registerAreaPickingCallback (
-      void (*callback)(const pcl::visualization::AreaPickingEvent&, void*),
+      void (*callback) (const pcl::visualization::AreaPickingEvent&, void*),
       void* cookie = nullptr);
 
   /** \brief Register a callback function for area picking events
@@ -330,13 +332,13 @@ public:
   template <typename T>
   inline boost::signals2::connection
   registerAreaPickingCallback (
-      void (T::*callback)(const pcl::visualization::AreaPickingEvent&, void*),
+      void (T::*callback) (const pcl::visualization::AreaPickingEvent&, void*),
       T& instance,
       void* cookie = nullptr)
   {
-    return (registerAreaPickingCallback(
+    return (registerAreaPickingCallback (
         [=, &instance] (const pcl::visualization::AreaPickingEvent& e) {
-          (instance.*callback)(e, cookie);
+          (instance.*callback) (e, cookie);
         }));
   }
 
@@ -462,7 +464,7 @@ public:
   {
     // Polygon Meshes are represented internally as point clouds with special cell array
     // structures since 1.4
-    return (removePointCloud(id, viewport));
+    return (removePointCloud (id, viewport));
   }
 
   /** \brief Removes an added shape from screen (line, polygon, etc.), based on a given
@@ -709,9 +711,9 @@ public:
   inline bool
   contains (const std::string& id) const
   {
-    return (cloud_actor_map_->find(id) != cloud_actor_map_->end() ||
-            shape_actor_map_->find(id) != shape_actor_map_->end() ||
-            coordinate_actor_map_->find(id) != coordinate_actor_map_->end());
+    return (cloud_actor_map_->find (id) != cloud_actor_map_->end() ||
+            shape_actor_map_->find (id) != shape_actor_map_->end() ||
+            coordinate_actor_map_->find (id) != coordinate_actor_map_->end());
   }
 
   /** \brief Add the estimated surface normals of a Point Cloud to screen.
@@ -1039,7 +1041,7 @@ public:
                  const std::string& id = "cloud",
                  int viewport = 0)
   {
-    return (addPointCloud<pcl::PointXYZ>(cloud, id, viewport));
+    return (addPointCloud<pcl::PointXYZ> (cloud, id, viewport));
   }
 
   /** \brief Add a PointXYZRGB Point Cloud to screen.
@@ -1053,9 +1055,9 @@ public:
                  const std::string& id = "cloud",
                  int viewport = 0)
   {
-    pcl::visualization::PointCloudColorHandlerRGBField<pcl::PointXYZRGB> color_handler(
+    pcl::visualization::PointCloudColorHandlerRGBField<pcl::PointXYZRGB> color_handler (
         cloud);
-    return (addPointCloud<pcl::PointXYZRGB>(cloud, color_handler, id, viewport));
+    return (addPointCloud<pcl::PointXYZRGB> (cloud, color_handler, id, viewport));
   }
 
   /** \brief Add a PointXYZRGBA Point Cloud to screen.
@@ -1070,8 +1072,8 @@ public:
                  int viewport = 0)
   {
     pcl::visualization::PointCloudColorHandlerRGBAField<pcl::PointXYZRGBA>
-        color_handler(cloud);
-    return (addPointCloud<pcl::PointXYZRGBA>(cloud, color_handler, id, viewport));
+        color_handler (cloud);
+    return (addPointCloud<pcl::PointXYZRGBA> (cloud, color_handler, id, viewport));
   }
 
   /** \brief Add a PointXYZL Point Cloud to screen.
@@ -1085,9 +1087,9 @@ public:
                  const std::string& id = "cloud",
                  int viewport = 0)
   {
-    pcl::visualization::PointCloudColorHandlerLabelField<pcl::PointXYZL> color_handler(
+    pcl::visualization::PointCloudColorHandlerLabelField<pcl::PointXYZL> color_handler (
         cloud);
-    return (addPointCloud<pcl::PointXYZL>(cloud, color_handler, id, viewport));
+    return (addPointCloud<pcl::PointXYZL> (cloud, color_handler, id, viewport));
   }
 
   /** \brief Updates the XYZ data for an existing cloud object id on screen.
@@ -1099,7 +1101,7 @@ public:
   updatePointCloud (const pcl::PointCloud<pcl::PointXYZ>::ConstPtr& cloud,
                     const std::string& id = "cloud")
   {
-    return (updatePointCloud<pcl::PointXYZ>(cloud, id));
+    return (updatePointCloud<pcl::PointXYZ> (cloud, id));
   }
 
   /** \brief Updates the XYZRGB data for an existing cloud object id on screen.
@@ -1111,9 +1113,9 @@ public:
   updatePointCloud (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr& cloud,
                     const std::string& id = "cloud")
   {
-    pcl::visualization::PointCloudColorHandlerRGBField<pcl::PointXYZRGB> color_handler(
+    pcl::visualization::PointCloudColorHandlerRGBField<pcl::PointXYZRGB> color_handler (
         cloud);
-    return (updatePointCloud<pcl::PointXYZRGB>(cloud, color_handler, id));
+    return (updatePointCloud<pcl::PointXYZRGB> (cloud, color_handler, id));
   }
 
   /** \brief Updates the XYZRGBA data for an existing cloud object id on screen.
@@ -1126,8 +1128,8 @@ public:
                     const std::string& id = "cloud")
   {
     pcl::visualization::PointCloudColorHandlerRGBAField<pcl::PointXYZRGBA>
-        color_handler(cloud);
-    return (updatePointCloud<pcl::PointXYZRGBA>(cloud, color_handler, id));
+        color_handler (cloud);
+    return (updatePointCloud<pcl::PointXYZRGBA> (cloud, color_handler, id));
   }
 
   /** \brief Updates the XYZL data for an existing cloud object id on screen.
@@ -1139,9 +1141,9 @@ public:
   updatePointCloud (const pcl::PointCloud<pcl::PointXYZL>::ConstPtr& cloud,
                     const std::string& id = "cloud")
   {
-    pcl::visualization::PointCloudColorHandlerLabelField<pcl::PointXYZL> color_handler(
+    pcl::visualization::PointCloudColorHandlerLabelField<pcl::PointXYZL> color_handler (
         cloud);
-    return (updatePointCloud<pcl::PointXYZL>(cloud, color_handler, id));
+    return (updatePointCloud<pcl::PointXYZL> (cloud, color_handler, id));
   }
 
   /** \brief Add a PolygonMesh object to screen
@@ -1265,7 +1267,7 @@ public:
                       int viewport = 0)
   {
     // If Nth not given, display all correspondences
-    return (addCorrespondences<PointT>(
+    return (addCorrespondences<PointT> (
         source_points, target_points, correspondences, 1, id, viewport));
   }
 
@@ -1306,7 +1308,7 @@ public:
       int viewport = 0)
   {
     // If Nth not given, display all correspondences
-    return (updateCorrespondences<PointT>(
+    return (updateCorrespondences<PointT> (
         source_points, target_points, correspondences, 1, id, viewport));
   }
 
@@ -1856,7 +1858,7 @@ public:
            const char* id = "line",
            int viewport = 0)
   {
-    return addLine(coefficients, std::string(id), viewport);
+    return addLine (coefficients, std::string (id), viewport);
   }
 
   /** \brief Add a plane from a set of given model coefficients
@@ -2118,7 +2120,7 @@ public:
   getCameraFile () const;
 
   /** \brief Update camera parameters and render. */
-  PCL_DEPRECATED(1, 15, "updateCamera will be removed, as it does nothing.")
+  PCL_DEPRECATED (1, 15, "updateCamera will be removed, as it does nothing.")
   inline void
   updateCamera (){};
 
@@ -2397,9 +2399,9 @@ private:
     }
 
     FPSCallback() = default;
-    FPSCallback(const FPSCallback& src) = default;
+    FPSCallback (const FPSCallback& src) = default;
     FPSCallback&
-    operator=(const FPSCallback& src)
+    operator= (const FPSCallback& src)
     {
       actor = src.actor;
       pcl_visualizer = src.pcl_visualizer;
@@ -2585,9 +2587,9 @@ private:
       const PointCloudColorHandler<PointT>& color_handler,
       const std::string& id,
       int viewport,
-      const Eigen::Vector4f& sensor_origin = Eigen::Vector4f(0, 0, 0, 0),
+      const Eigen::Vector4f& sensor_origin = Eigen::Vector4f (0, 0, 0, 0),
       const Eigen::Quaternion<float>& sensor_orientation =
-          Eigen::Quaternion<float>(1, 0, 0, 0));
+          Eigen::Quaternion<float> (1, 0, 0, 0));
 
   /** \brief Internal function which converts the information present in the geometric
    * and color handlers into VTK PolyData+Scalars, constructs a vtkActor object, and
@@ -2607,9 +2609,9 @@ private:
       const ColorHandlerConstPtr& color_handler,
       const std::string& id,
       int viewport,
-      const Eigen::Vector4f& sensor_origin = Eigen::Vector4f(0, 0, 0, 0),
+      const Eigen::Vector4f& sensor_origin = Eigen::Vector4f (0, 0, 0, 0),
       const Eigen::Quaternion<float>& sensor_orientation =
-          Eigen::Quaternion<float>(1, 0, 0, 0));
+          Eigen::Quaternion<float> (1, 0, 0, 0));
 
   /** \brief Internal function which converts the information present in the geometric
    * and color handlers into VTK PolyData+Scalars, constructs a vtkActor object, and
@@ -2628,9 +2630,9 @@ private:
       const ColorHandlerConstPtr& color_handler,
       const std::string& id,
       int viewport,
-      const Eigen::Vector4f& sensor_origin = Eigen::Vector4f(0, 0, 0, 0),
+      const Eigen::Vector4f& sensor_origin = Eigen::Vector4f (0, 0, 0, 0),
       const Eigen::Quaternion<float>& sensor_orientation =
-          Eigen::Quaternion<float>(1, 0, 0, 0));
+          Eigen::Quaternion<float> (1, 0, 0, 0));
 
   /** \brief Internal function which converts the information present in the geometric
    * and color handlers into VTK PolyData+Scalars, constructs a vtkActor object, and
@@ -2650,9 +2652,9 @@ private:
       const PointCloudColorHandler<PointT>& color_handler,
       const std::string& id,
       int viewport,
-      const Eigen::Vector4f& sensor_origin = Eigen::Vector4f(0, 0, 0, 0),
+      const Eigen::Vector4f& sensor_origin = Eigen::Vector4f (0, 0, 0, 0),
       const Eigen::Quaternion<float>& sensor_orientation =
-          Eigen::Quaternion<float>(1, 0, 0, 0));
+          Eigen::Quaternion<float> (1, 0, 0, 0));
 
   /** \brief Allocate a new polydata smartpointer. Internal
    * \param[out] polydata the resultant poly data

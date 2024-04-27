@@ -51,16 +51,16 @@ public:
   // These constructors create an array that uses onrealloc() to manage
   // the array memory.
   ON_SimpleArray();
-  ON_SimpleArray(int); // int = initial capacity
+  ON_SimpleArray (int); // int = initial capacity
 
   // Copy constructor
-  ON_SimpleArray(const ON_SimpleArray<T>&);
+  ON_SimpleArray (const ON_SimpleArray<T>&);
 
   virtual ~ON_SimpleArray();
 
   // Assignment operator
   virtual ON_SimpleArray<T>&
-  operator=(const ON_SimpleArray<T>&);
+  operator= (const ON_SimpleArray<T>&);
 
   // emergency bailout ///////////////////////////////////////////////////
   void
@@ -92,17 +92,17 @@ public:
   // The operator[] does to not check for valid indices.
   // The caller is responsibile for insuring that 0 <= i < Capacity()
   T&
-  operator[](int);
+  operator[] (int);
   T&
-  operator[](unsigned int);
-  T& operator[](ON__INT64);
-  T& operator[](ON__UINT64);
+  operator[] (unsigned int);
+  T& operator[] (ON__INT64);
+  T& operator[] (ON__UINT64);
   const T&
-  operator[](int) const;
+  operator[] (int) const;
   const T&
-  operator[](unsigned int) const;
-  const T& operator[](ON__INT64) const;
-  const T& operator[](ON__UINT64) const;
+  operator[] (unsigned int) const;
+  const T& operator[] (ON__INT64) const;
+  const T& operator[] (ON__UINT64) const;
 
   operator T*();             // The cast operators return a pointer
   operator const T*() const; // to the array.  If Count() is zero,
@@ -118,14 +118,14 @@ public:
   At (int);
   T*
   At (unsigned int);
-  T* At(ON__INT64);
-  T* At(ON__UINT64);
+  T* At (ON__INT64);
+  T* At (ON__UINT64);
   const T*
   At (int) const;
   const T*
   At (unsigned int) const;
-  const T* At(ON__INT64) const;
-  const T* At(ON__UINT64) const;
+  const T* At (ON__INT64) const;
+  const T* At (ON__UINT64) const;
 
   T*
   Last ();
@@ -192,7 +192,7 @@ public:
   // array and use BinarySearch() for performing efficient searches.
   // See Also: ON_CompareIncreasing<T> and ON_CompareDeccreasing<T>
   int
-  Search (const T*, int (*)(const T*, const T*)) const;
+  Search (const T*, int (*) (const T*, const T*)) const;
 
   //////////
   // BinarySearch( p, compare ) does a fast search of a sorted array
@@ -213,21 +213,21 @@ public:
   // HeapSort( compare ) to sort the array.
   // See Also: ON_CompareIncreasing<T> and ON_CompareDeccreasing<T>
   int
-  BinarySearch (const T*, int (*)(const T*, const T*)) const;
+  BinarySearch (const T*, int (*) (const T*, const T*)) const;
   int
-  BinarySearch (const T*, int (*)(const T*, const T*), int) const;
+  BinarySearch (const T*, int (*) (const T*, const T*), int) const;
 
   //////////
   // Sorts the array using the heap sort algorithm.
   // QuickSort() is generally the better choice.
   bool
-  HeapSort (int (*)(const T*, const T*));
+  HeapSort (int (*) (const T*, const T*));
 
   //////////
   // Sorts the array using the quick sort algorithm.
   // See Also: ON_CompareIncreasing<T> and ON_CompareDeccreasing<T>
   bool
-  QuickSort (int (*)(const T*, const T*));
+  QuickSort (int (*) (const T*, const T*));
 
   /*
   Description:
@@ -251,7 +251,7 @@ public:
   bool
   Sort (ON::sort_algorithm sort_algorithm,
         int* /* index[] */,
-        int (*)(const T*, const T*)) const;
+        int (*) (const T*, const T*)) const;
 
   /*
   Description:
@@ -276,9 +276,9 @@ public:
   */
   bool
   Sort (ON::sort_algorithm sort_algorithm,
-        int*,                               // index[]
-        int (*)(const T*, const T*, void*), // int compare(const T*,const T*,void* p)
-        void*                               // p
+        int*,                                // index[]
+        int (*) (const T*, const T*, void*), // int compare(const T*,const T*,void* p)
+        void*                                // p
   ) const;
 
   //////////
@@ -457,10 +457,10 @@ class ON_CLASS ON_2dPointArray : public ON_SimpleArray<ON_2dPoint> {
 public:
   // see ON_SimpleArray class definition comments for constructor documentation
   ON_2dPointArray();
-  ON_2dPointArray(int);
-  ON_2dPointArray(const ON_2dPointArray&);
+  ON_2dPointArray (int);
+  ON_2dPointArray (const ON_2dPointArray&);
   ON_2dPointArray&
-  operator=(const ON_2dPointArray&);
+  operator= (const ON_2dPointArray&);
 
   bool
   GetBBox ( // returns true if successful
@@ -482,10 +482,10 @@ class ON_CLASS ON_2fPointArray : public ON_SimpleArray<ON_2fPoint> {
 public:
   // see ON_SimpleArray class definition comments for constructor documentation
   ON_2fPointArray();
-  ON_2fPointArray(int);
-  ON_2fPointArray(const ON_2fPointArray&);
+  ON_2fPointArray (int);
+  ON_2fPointArray (const ON_2fPointArray&);
   ON_2fPointArray&
-  operator=(const ON_2fPointArray&);
+  operator= (const ON_2fPointArray&);
 
   bool
   GetBBox ( // returns true if successful
@@ -506,13 +506,13 @@ class ON_CLASS ON_3dPointArray : public ON_SimpleArray<ON_3dPoint> {
 public:
   // see ON_SimpleArray class definition comments for constructor documentation
   ON_3dPointArray();
-  ON_3dPointArray(int);
-  ON_3dPointArray(const ON_SimpleArray<ON_3dPoint>&);
+  ON_3dPointArray (int);
+  ON_3dPointArray (const ON_SimpleArray<ON_3dPoint>&);
   ON_3dPointArray&
-  operator=(const ON_3dPointArray&);
-  ON_3dPointArray(const ON_SimpleArray<ON_3fPoint>&);
+  operator= (const ON_3dPointArray&);
+  ON_3dPointArray (const ON_SimpleArray<ON_3fPoint>&);
   ON_3dPointArray&
-  operator=(const ON_SimpleArray<ON_3fPoint>&);
+  operator= (const ON_SimpleArray<ON_3fPoint>&);
 
   // Description:
   //   Create 3d point list
@@ -695,10 +695,10 @@ class ON_CLASS ON_3fPointArray : public ON_SimpleArray<ON_3fPoint> {
 public:
   // see ON_SimpleArray class definition comments for constructor documentation
   ON_3fPointArray();
-  ON_3fPointArray(int);
-  ON_3fPointArray(const ON_3fPointArray&);
+  ON_3fPointArray (int);
+  ON_3fPointArray (const ON_3fPointArray&);
   ON_3fPointArray&
-  operator=(const ON_3fPointArray&);
+  operator= (const ON_3fPointArray&);
 
   bool
   GetBBox (float boxmin[3], float boxmax[3], int bGrowBox = false) const;
@@ -717,10 +717,10 @@ class ON_CLASS ON_4dPointArray : public ON_SimpleArray<ON_4dPoint> {
 public:
   // see ON_SimpleArray class definition comments for constructor documentation
   ON_4dPointArray();
-  ON_4dPointArray(int);
-  ON_4dPointArray(const ON_4dPointArray&);
+  ON_4dPointArray (int);
+  ON_4dPointArray (const ON_4dPointArray&);
   ON_4dPointArray&
-  operator=(const ON_4dPointArray&);
+  operator= (const ON_4dPointArray&);
 
   bool
   Transform (const ON_Xform&);
@@ -735,10 +735,10 @@ class ON_CLASS ON_4fPointArray : public ON_SimpleArray<ON_4fPoint> {
 public:
   // see ON_SimpleArray class definition comments for constructor documentation
   ON_4fPointArray();
-  ON_4fPointArray(int);
-  ON_4fPointArray(const ON_4fPointArray&);
+  ON_4fPointArray (int);
+  ON_4fPointArray (const ON_4fPointArray&);
   ON_4fPointArray&
-  operator=(const ON_4fPointArray&);
+  operator= (const ON_4fPointArray&);
 
   bool
   Transform (const ON_Xform&);
@@ -753,10 +753,10 @@ class ON_CLASS ON_2dVectorArray : public ON_SimpleArray<ON_2dVector> {
 public:
   // see ON_SimpleArray class definition comments for constructor documentation
   ON_2dVectorArray();
-  ON_2dVectorArray(int);
-  ON_2dVectorArray(const ON_2dVectorArray&);
+  ON_2dVectorArray (int);
+  ON_2dVectorArray (const ON_2dVectorArray&);
   ON_2dVectorArray&
-  operator=(const ON_2dVectorArray&);
+  operator= (const ON_2dVectorArray&);
 
   bool
   GetBBox (double boxmin[2], double boxmax[2], int bGrowBox = false) const;
@@ -774,10 +774,10 @@ class ON_CLASS ON_2fVectorArray : public ON_SimpleArray<ON_2fVector> {
 public:
   // see ON_SimpleArray class definition comments for constructor documentation
   ON_2fVectorArray();
-  ON_2fVectorArray(int);
-  ON_2fVectorArray(const ON_2fVectorArray&);
+  ON_2fVectorArray (int);
+  ON_2fVectorArray (const ON_2fVectorArray&);
   ON_2fVectorArray&
-  operator=(const ON_2fVectorArray&);
+  operator= (const ON_2fVectorArray&);
 
   bool
   GetBBox (float boxmin[2], float boxmax[2], bool = false) const;
@@ -794,10 +794,10 @@ public:
 class ON_CLASS ON_3dVectorArray : public ON_SimpleArray<ON_3dVector> {
 public:
   ON_3dVectorArray();
-  ON_3dVectorArray(int);
-  ON_3dVectorArray(const ON_3dVectorArray&);
+  ON_3dVectorArray (int);
+  ON_3dVectorArray (const ON_3dVectorArray&);
   ON_3dVectorArray&
-  operator=(const ON_3dVectorArray&);
+  operator= (const ON_3dVectorArray&);
 
   bool
   GetBBox (double boxmin[3], double boxmax[3], bool bGrowBow = false) const;
@@ -814,10 +814,10 @@ public:
 class ON_CLASS ON_3fVectorArray : public ON_SimpleArray<ON_3fVector> {
 public:
   ON_3fVectorArray();
-  ON_3fVectorArray(int);
-  ON_3fVectorArray(const ON_3fVectorArray&);
+  ON_3fVectorArray (int);
+  ON_3fVectorArray (const ON_3fVectorArray&);
   ON_3fVectorArray&
-  operator=(const ON_3fVectorArray&);
+  operator= (const ON_3fVectorArray&);
 
   bool
   GetBBox (float boxmin[3], float boxmax[3], int bGrowBox = false) const;
@@ -848,16 +848,16 @@ class ON_ClassArray {
 public:
   // construction ////////////////////////////////////////////////////////
   ON_ClassArray();
-  ON_ClassArray(int); // int = initial capacity
+  ON_ClassArray (int); // int = initial capacity
 
   // Copy constructor
-  ON_ClassArray(const ON_ClassArray<T>&);
+  ON_ClassArray (const ON_ClassArray<T>&);
 
   virtual ~ON_ClassArray(); // override for struct member deallocation, etc.
 
   // Assignment operator
   ON_ClassArray<T>&
-  operator=(const ON_ClassArray<T>&);
+  operator= (const ON_ClassArray<T>&);
 
   // emergency bailout ///////////////////////////////////////////////////
   void
@@ -886,17 +886,17 @@ public:
   // The operator[] does to not check for valid indices.
   // The caller is responsibile for insuring that 0 <= i < Capacity()
   T&
-  operator[](int);
+  operator[] (int);
   T&
-  operator[](unsigned int);
-  T& operator[](ON__INT64);
-  T& operator[](ON__UINT64);
+  operator[] (unsigned int);
+  T& operator[] (ON__INT64);
+  T& operator[] (ON__UINT64);
   const T&
-  operator[](int) const;
+  operator[] (int) const;
   const T&
-  operator[](unsigned int) const;
-  const T& operator[](ON__INT64) const;
-  const T& operator[](ON__UINT64) const;
+  operator[] (unsigned int) const;
+  const T& operator[] (ON__INT64) const;
+  const T& operator[] (ON__UINT64) const;
 
   operator T*();             // The cast operators return a pointer
   operator const T*() const; // to the array.  If Count() is zero,
@@ -911,14 +911,14 @@ public:
   At (int);
   T*
   At (unsigned int);
-  T* At(ON__INT64);
-  T* At(ON__UINT64);
+  T* At (ON__INT64);
+  T* At (ON__UINT64);
   const T*
   At (int) const;
   const T*
   At (unsigned int) const;
-  const T* At(ON__INT64) const;
-  const T* At(ON__UINT64) const;
+  const T* At (ON__INT64) const;
+  const T* At (ON__UINT64) const;
 
   T*
   Last ();
@@ -971,7 +971,7 @@ public:
   // for performing infrequent searches of small arrays.  Sort the
   // array and use BinarySearch() for performing efficient searches.
   int
-  Search (const T*, int (*)(const T*, const T*)) const;
+  Search (const T*, int (*) (const T*, const T*)) const;
 
   //////////
   // BinarySearch( p, compare ) does a fast search of a sorted array
@@ -992,21 +992,21 @@ public:
   // HeapSort( compare ) to sort the array.
   // See Also: ON_CompareIncreasing<T> and ON_CompareDeccreasing<T>
   int
-  BinarySearch (const T*, int (*)(const T*, const T*)) const;
+  BinarySearch (const T*, int (*) (const T*, const T*)) const;
   int
-  BinarySearch (const T*, int (*)(const T*, const T*), int) const;
+  BinarySearch (const T*, int (*) (const T*, const T*), int) const;
 
   //////////
   // Sorts the array using the heap sort algorithm.
   // See Also: ON_CompareIncreasing<T> and ON_CompareDeccreasing<T>
   // QuickSort() is generally the better choice.
   virtual bool
-  HeapSort (int (*)(const T*, const T*));
+  HeapSort (int (*) (const T*, const T*));
 
   //////////
   // Sorts the array using the heap sort algorithm.
   virtual bool
-  QuickSort (int (*)(const T*, const T*));
+  QuickSort (int (*) (const T*, const T*));
 
   /*
   Description:
@@ -1031,7 +1031,7 @@ public:
   bool
   Sort (ON::sort_algorithm sort_algorithm,
         int* /* index[] */,
-        int (*)(const T*, const T*)) const;
+        int (*) (const T*, const T*)) const;
 
   /*
   Description:
@@ -1056,9 +1056,9 @@ public:
   */
   bool
   Sort (ON::sort_algorithm sort_algorithm,
-        int*,                               // index[]
-        int (*)(const T*, const T*, void*), // int compare(const T*,const T*,void* p)
-        void*                               // p
+        int*,                                // index[]
+        int (*) (const T*, const T*, void*), // int compare(const T*,const T*,void* p)
+        void*                                // p
   ) const;
 
   //////////
@@ -1189,11 +1189,11 @@ template <class T>
 class ON_ObjectArray : public ON_ClassArray<T> {
 public:
   ON_ObjectArray();
-  ~ON_ObjectArray();   // override for struct member deallocation, etc.
-  ON_ObjectArray(int); // int = initial capacity
-  ON_ObjectArray(const ON_ObjectArray<T>&);
+  ~ON_ObjectArray();    // override for struct member deallocation, etc.
+  ON_ObjectArray (int); // int = initial capacity
+  ON_ObjectArray (const ON_ObjectArray<T>&);
   ON_ObjectArray<T>&
-  operator=(const ON_ObjectArray<T>&);
+  operator= (const ON_ObjectArray<T>&);
 
   ON__UINT32
   DataCRC (ON__UINT32 current_remainder) const;
@@ -1209,13 +1209,13 @@ public:
   // the heap sort.
   // QuickSort() is generally the better choice.
   bool
-  HeapSort (int (*)(const T*, const T*));
+  HeapSort (int (*) (const T*, const T*));
 
   // virtual ON_ClassArray<T> override that
   // calls MemoryRelocate on each element after
   // the quick sort.
   bool
-  QuickSort (int (*)(const T*, const T*));
+  QuickSort (int (*) (const T*, const T*));
 };
 
 class ON_CLASS ON_UuidPair {
@@ -1273,11 +1273,11 @@ Description:
 class ON_CLASS ON_UuidList : private ON_SimpleArray<ON_UUID> {
 public:
   ON_UuidList();
-  ON_UuidList(int capacity);
+  ON_UuidList (int capacity);
   ~ON_UuidList();
-  ON_UuidList(const ON_UuidList& src);
+  ON_UuidList (const ON_UuidList& src);
   ON_UuidList&
-  operator=(const ON_UuidList& src);
+  operator= (const ON_UuidList& src);
 
   /*
   Description:
@@ -1438,11 +1438,11 @@ Description:
 class ON_CLASS ON_UuidIndexList : private ON_SimpleArray<ON_UuidIndex> {
 public:
   ON_UuidIndexList();
-  ON_UuidIndexList(int capacity);
+  ON_UuidIndexList (int capacity);
   ~ON_UuidIndexList();
-  ON_UuidIndexList(const ON_UuidIndexList& src);
+  ON_UuidIndexList (const ON_UuidIndexList& src);
   ON_UuidIndexList&
-  operator=(const ON_UuidIndexList& src);
+  operator= (const ON_UuidIndexList& src);
 
   /*
   Returns:
@@ -1562,11 +1562,11 @@ Description:
 class ON_CLASS ON_UuidPairList : private ON_SimpleArray<ON_UuidPair> {
 public:
   ON_UuidPairList();
-  ON_UuidPairList(int capacity);
+  ON_UuidPairList (int capacity);
   ~ON_UuidPairList();
-  ON_UuidPairList(const ON_UuidPairList& src);
+  ON_UuidPairList (const ON_UuidPairList& src);
   ON_UuidPairList&
-  operator=(const ON_UuidPairList& src);
+  operator= (const ON_UuidPairList& src);
 
   /*
   Returns:
@@ -1693,7 +1693,7 @@ private:
 class ON_CLASS ON_2dexMap : private ON_SimpleArray<ON_2dex> {
 public:
   ON_2dexMap();
-  ON_2dexMap(int capacity);
+  ON_2dexMap (int capacity);
   ~ON_2dexMap();
 
   int
@@ -1706,7 +1706,7 @@ public:
   Array () const;
 
   ON_2dex
-  operator[](int i) const;
+  operator[] (int i) const;
 
   /*
   Description:

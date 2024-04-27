@@ -21,7 +21,7 @@ class PCLViewer : public QMainWindow {
   Q_OBJECT
 
 public:
-  explicit PCLViewer(QWidget* parent = 0);
+  explicit PCLViewer (QWidget* parent = 0);
   ~PCLViewer();
 
 public Q_SLOTS:

@@ -55,33 +55,33 @@ public:
   using CloudPtr = typename Cloud::Ptr;
   using CloudConstPtr = typename Cloud::ConstPtr;
 
-  OpenNIPlanarSegmentation(const std::string& device_id = "", double threshold = 0.01)
-  : viewer("PCL OpenNI Planar Hull Segmentation Viewer"), device_id_(device_id)
+  OpenNIPlanarSegmentation (const std::string& device_id = "", double threshold = 0.01)
+  : viewer ("PCL OpenNI Planar Hull Segmentation Viewer"), device_id_ (device_id)
   {
-    grid_.setFilterFieldName("z");
-    grid_.setFilterLimits(0.0, 3.0);
-    grid_.setLeafSize(0.01f, 0.01f, 0.01f);
+    grid_.setFilterFieldName ("z");
+    grid_.setFilterLimits (0.0, 3.0);
+    grid_.setLeafSize (0.01f, 0.01f, 0.01f);
 
-    seg_.setOptimizeCoefficients(true);
-    seg_.setModelType(pcl::SACMODEL_PLANE);
-    seg_.setMethodType(pcl::SAC_RANSAC);
-    seg_.setMaxIterations(1000);
-    seg_.setDistanceThreshold(threshold);
+    seg_.setOptimizeCoefficients (true);
+    seg_.setModelType (pcl::SACMODEL_PLANE);
+    seg_.setMethodType (pcl::SAC_RANSAC);
+    seg_.setMaxIterations (1000);
+    seg_.setDistanceThreshold (threshold);
 
-    proj_.setModelType(pcl::SACMODEL_PLANE);
+    proj_.setModelType (pcl::SACMODEL_PLANE);
   }
 
   void
   cloud_cb_ (const CloudConstPtr& cloud)
   {
-    set(cloud);
+    set (cloud);
   }
 
   void
   set (const CloudConstPtr& cloud)
   {
     // lock while we set our cloud;
-    std::lock_guard<std::mutex> lock(mtx_);
+    std::lock_guard<std::mutex> lock (mtx_);
     cloud_ = cloud;
   }
 
@@ -89,27 +89,27 @@ public:
   get ()
   {
     // lock while we swap our cloud and reset it.
-    std::lock_guard<std::mutex> lock(mtx_);
-    CloudPtr temp_cloud(new Cloud);
-    CloudPtr temp_cloud2(new Cloud);
+    std::lock_guard<std::mutex> lock (mtx_);
+    CloudPtr temp_cloud (new Cloud);
+    CloudPtr temp_cloud2 (new Cloud);
 
-    grid_.setInputCloud(cloud_);
-    grid_.filter(*temp_cloud);
+    grid_.setInputCloud (cloud_);
+    grid_.filter (*temp_cloud);
 
-    pcl::ModelCoefficients::Ptr coefficients(new pcl::ModelCoefficients());
-    pcl::PointIndices::Ptr inliers(new pcl::PointIndices());
+    pcl::ModelCoefficients::Ptr coefficients (new pcl::ModelCoefficients());
+    pcl::PointIndices::Ptr inliers (new pcl::PointIndices());
 
-    seg_.setInputCloud(temp_cloud);
-    seg_.segment(*inliers, *coefficients);
+    seg_.setInputCloud (temp_cloud);
+    seg_.segment (*inliers, *coefficients);
 
     // Project the model inliers
-    proj_.setInputCloud(temp_cloud);
-    proj_.setModelCoefficients(coefficients);
-    proj_.filter(*temp_cloud2);
+    proj_.setInputCloud (temp_cloud);
+    proj_.setModelCoefficients (coefficients);
+    proj_.filter (*temp_cloud2);
 
     // Create a Convex Hull representation of the projected inliers
-    chull_.setInputCloud(temp_cloud2);
-    chull_.reconstruct(*temp_cloud);
+    chull_.setInputCloud (temp_cloud2);
+    chull_.reconstruct (*temp_cloud);
 
     return temp_cloud;
   }
@@ -117,19 +117,19 @@ public:
   void
   run ()
   {
-    pcl::OpenNIGrabber interface(device_id_);
+    pcl::OpenNIGrabber interface (device_id_);
 
-    std::function<void(const CloudConstPtr&)> f = [this] (const CloudConstPtr& cloud) {
-      cloud_cb_(cloud);
+    std::function<void (const CloudConstPtr&)> f = [this] (const CloudConstPtr& cloud) {
+      cloud_cb_ (cloud);
     };
-    boost::signals2::connection c = interface.registerCallback(f);
+    boost::signals2::connection c = interface.registerCallback (f);
 
     interface.start();
 
     while (!viewer.wasStopped()) {
       if (cloud_) {
         // the call to get() sets the cloud_ to null;
-        viewer.showCloud(get());
+        viewer.showCloud (get());
       }
     }
 
@@ -186,28 +186,28 @@ int
 main (int argc, char** argv)
 {
   /////////////////////////////////////////////////////////////////////
-  if (pcl::console::find_argument(argc, argv, "-h") != -1 ||
-      pcl::console::find_argument(argc, argv, "--help") != -1) {
-    usage(argv);
+  if (pcl::console::find_argument (argc, argv, "-h") != -1 ||
+      pcl::console::find_argument (argc, argv, "--help") != -1) {
+    usage (argv);
     return 1;
   }
 
   std::string device_id = "";
   double threshold = 0.05;
 
-  if (pcl::console::parse_argument(argc, argv, "-device_id", device_id) == -1 &&
+  if (pcl::console::parse_argument (argc, argv, "-device_id", device_id) == -1 &&
       argc > 1 && argv[1][0] != '-')
     device_id = argv[1];
-  pcl::console::parse_argument(argc, argv, "-thresh", threshold);
+  pcl::console::parse_argument (argc, argv, "-thresh", threshold);
   /////////////////////////////////////////////////////////////////////
 
-  pcl::OpenNIGrabber grabber(device_id);
+  pcl::OpenNIGrabber grabber (device_id);
   if (grabber.providesCallback<pcl::OpenNIGrabber::sig_cb_openni_point_cloud_rgba>()) {
-    OpenNIPlanarSegmentation<pcl::PointXYZRGBA> v(device_id, threshold);
+    OpenNIPlanarSegmentation<pcl::PointXYZRGBA> v (device_id, threshold);
     v.run();
   }
   else {
-    OpenNIPlanarSegmentation<pcl::PointXYZ> v(device_id, threshold);
+    OpenNIPlanarSegmentation<pcl::PointXYZ> v (device_id, threshold);
     v.run();
   }
 

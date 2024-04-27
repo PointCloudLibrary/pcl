@@ -44,150 +44,150 @@
 template <typename PointSource, typename PointTarget, typename Scalar>
 inline void
 pcl::registration::TransformationEstimation3Point<PointSource, PointTarget, Scalar>::
-    estimateRigidTransformation(const pcl::PointCloud<PointSource>& cloud_src,
-                                const pcl::PointCloud<PointTarget>& cloud_tgt,
-                                Matrix4& transformation_matrix) const
+    estimateRigidTransformation (const pcl::PointCloud<PointSource>& cloud_src,
+                                 const pcl::PointCloud<PointTarget>& cloud_tgt,
+                                 Matrix4& transformation_matrix) const
 {
   if (cloud_src.size() != 3 || cloud_tgt.size() != 3) {
-    PCL_ERROR("[pcl::TransformationEstimation3Point::estimateRigidTransformation] "
-              "Number of points in source (%zu) and target (%zu) must be 3!\n",
-              static_cast<std::size_t>(cloud_src.size()),
-              static_cast<std::size_t>(cloud_tgt.size()));
+    PCL_ERROR ("[pcl::TransformationEstimation3Point::estimateRigidTransformation] "
+               "Number of points in source (%zu) and target (%zu) must be 3!\n",
+               static_cast<std::size_t> (cloud_src.size()),
+               static_cast<std::size_t> (cloud_tgt.size()));
     return;
   }
 
-  ConstCloudIterator<PointSource> source_it(cloud_src);
-  ConstCloudIterator<PointTarget> target_it(cloud_tgt);
-  estimateRigidTransformation(source_it, target_it, transformation_matrix);
+  ConstCloudIterator<PointSource> source_it (cloud_src);
+  ConstCloudIterator<PointTarget> target_it (cloud_tgt);
+  estimateRigidTransformation (source_it, target_it, transformation_matrix);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget, typename Scalar>
 void
 pcl::registration::TransformationEstimation3Point<PointSource, PointTarget, Scalar>::
-    estimateRigidTransformation(const pcl::PointCloud<PointSource>& cloud_src,
-                                const pcl::Indices& indices_src,
-                                const pcl::PointCloud<PointTarget>& cloud_tgt,
-                                Matrix4& transformation_matrix) const
+    estimateRigidTransformation (const pcl::PointCloud<PointSource>& cloud_src,
+                                 const pcl::Indices& indices_src,
+                                 const pcl::PointCloud<PointTarget>& cloud_tgt,
+                                 Matrix4& transformation_matrix) const
 {
   if (indices_src.size() != 3 || cloud_tgt.size() != 3) {
-    PCL_ERROR(
+    PCL_ERROR (
         "[pcl::TransformationEstimation3Point::estimateRigidTransformation] Number of "
         "indices in source (%zu) and points in target (%zu) must be 3!\n",
         indices_src.size(),
-        static_cast<std::size_t>(cloud_tgt.size()));
+        static_cast<std::size_t> (cloud_tgt.size()));
     return;
   }
 
-  ConstCloudIterator<PointSource> source_it(cloud_src, indices_src);
-  ConstCloudIterator<PointTarget> target_it(cloud_tgt);
-  estimateRigidTransformation(source_it, target_it, transformation_matrix);
+  ConstCloudIterator<PointSource> source_it (cloud_src, indices_src);
+  ConstCloudIterator<PointTarget> target_it (cloud_tgt);
+  estimateRigidTransformation (source_it, target_it, transformation_matrix);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget, typename Scalar>
 inline void
 pcl::registration::TransformationEstimation3Point<PointSource, PointTarget, Scalar>::
-    estimateRigidTransformation(const pcl::PointCloud<PointSource>& cloud_src,
-                                const pcl::Indices& indices_src,
-                                const pcl::PointCloud<PointTarget>& cloud_tgt,
-                                const pcl::Indices& indices_tgt,
-                                Matrix4& transformation_matrix) const
+    estimateRigidTransformation (const pcl::PointCloud<PointSource>& cloud_src,
+                                 const pcl::Indices& indices_src,
+                                 const pcl::PointCloud<PointTarget>& cloud_tgt,
+                                 const pcl::Indices& indices_tgt,
+                                 Matrix4& transformation_matrix) const
 {
   if (indices_src.size() != 3 || indices_tgt.size() != 3) {
-    PCL_ERROR("[pcl::TransformationEstimation3Point::estimateRigidTransformation] "
-              "Number of indices in source (%lu) and target (%lu) must be 3!\n",
-              indices_src.size(),
-              indices_tgt.size());
+    PCL_ERROR ("[pcl::TransformationEstimation3Point::estimateRigidTransformation] "
+               "Number of indices in source (%lu) and target (%lu) must be 3!\n",
+               indices_src.size(),
+               indices_tgt.size());
     return;
   }
 
-  ConstCloudIterator<PointSource> source_it(cloud_src, indices_src);
-  ConstCloudIterator<PointTarget> target_it(cloud_tgt, indices_tgt);
-  estimateRigidTransformation(source_it, target_it, transformation_matrix);
+  ConstCloudIterator<PointSource> source_it (cloud_src, indices_src);
+  ConstCloudIterator<PointTarget> target_it (cloud_tgt, indices_tgt);
+  estimateRigidTransformation (source_it, target_it, transformation_matrix);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget, typename Scalar>
 void
 pcl::registration::TransformationEstimation3Point<PointSource, PointTarget, Scalar>::
-    estimateRigidTransformation(const pcl::PointCloud<PointSource>& cloud_src,
-                                const pcl::PointCloud<PointTarget>& cloud_tgt,
-                                const pcl::Correspondences& correspondences,
-                                Matrix4& transformation_matrix) const
+    estimateRigidTransformation (const pcl::PointCloud<PointSource>& cloud_src,
+                                 const pcl::PointCloud<PointTarget>& cloud_tgt,
+                                 const pcl::Correspondences& correspondences,
+                                 Matrix4& transformation_matrix) const
 {
   if (correspondences.size() != 3) {
-    PCL_ERROR("[pcl::TransformationEstimation3Point::estimateRigidTransformation] "
-              "Number of correspondences (%lu) must be 3!\n",
-              correspondences.size());
+    PCL_ERROR ("[pcl::TransformationEstimation3Point::estimateRigidTransformation] "
+               "Number of correspondences (%lu) must be 3!\n",
+               correspondences.size());
     return;
   }
 
-  ConstCloudIterator<PointSource> source_it(cloud_src, correspondences, true);
-  ConstCloudIterator<PointTarget> target_it(cloud_tgt, correspondences, false);
-  estimateRigidTransformation(source_it, target_it, transformation_matrix);
+  ConstCloudIterator<PointSource> source_it (cloud_src, correspondences, true);
+  ConstCloudIterator<PointTarget> target_it (cloud_tgt, correspondences, false);
+  estimateRigidTransformation (source_it, target_it, transformation_matrix);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget, typename Scalar>
 inline void
 pcl::registration::TransformationEstimation3Point<PointSource, PointTarget, Scalar>::
-    estimateRigidTransformation(ConstCloudIterator<PointSource>& source_it,
-                                ConstCloudIterator<PointTarget>& target_it,
-                                Matrix4& transformation_matrix) const
+    estimateRigidTransformation (ConstCloudIterator<PointSource>& source_it,
+                                 ConstCloudIterator<PointTarget>& target_it,
+                                 Matrix4& transformation_matrix) const
 {
   transformation_matrix.setIdentity();
   source_it.reset();
   target_it.reset();
 
   Eigen::Matrix<Scalar, 4, 1> source_mean, target_mean;
-  pcl::compute3DCentroid(source_it, source_mean);
-  pcl::compute3DCentroid(target_it, target_mean);
+  pcl::compute3DCentroid (source_it, source_mean);
+  pcl::compute3DCentroid (target_it, target_mean);
 
   source_it.reset();
   target_it.reset();
 
   Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic> source_demean, target_demean;
-  pcl::demeanPointCloud(source_it, source_mean, source_demean, 3);
-  pcl::demeanPointCloud(target_it, target_mean, target_demean, 3);
+  pcl::demeanPointCloud (source_it, source_mean, source_demean, 3);
+  pcl::demeanPointCloud (target_it, target_mean, target_demean, 3);
 
   source_it.reset();
   target_it.reset();
 
-  Eigen::Matrix<Scalar, 3, 1> s1 =
-      source_demean.col(1).template head<3>() - source_demean.col(0).template head<3>();
+  Eigen::Matrix<Scalar, 3, 1> s1 = source_demean.col (1).template head<3>() -
+                                   source_demean.col (0).template head<3>();
   s1.normalize();
 
-  Eigen::Matrix<Scalar, 3, 1> s2 =
-      source_demean.col(2).template head<3>() - source_demean.col(0).template head<3>();
-  s2 -= s2.dot(s1) * s1;
+  Eigen::Matrix<Scalar, 3, 1> s2 = source_demean.col (2).template head<3>() -
+                                   source_demean.col (0).template head<3>();
+  s2 -= s2.dot (s1) * s1;
   s2.normalize();
 
   Eigen::Matrix<Scalar, 3, 3> source_rot;
-  source_rot.col(0) = s1;
-  source_rot.col(1) = s2;
-  source_rot.col(2) = s1.cross(s2);
+  source_rot.col (0) = s1;
+  source_rot.col (1) = s2;
+  source_rot.col (2) = s1.cross (s2);
 
-  Eigen::Matrix<Scalar, 3, 1> t1 =
-      target_demean.col(1).template head<3>() - target_demean.col(0).template head<3>();
+  Eigen::Matrix<Scalar, 3, 1> t1 = target_demean.col (1).template head<3>() -
+                                   target_demean.col (0).template head<3>();
   t1.normalize();
 
-  Eigen::Matrix<Scalar, 3, 1> t2 =
-      target_demean.col(2).template head<3>() - target_demean.col(0).template head<3>();
-  t2 -= t2.dot(t1) * t1;
+  Eigen::Matrix<Scalar, 3, 1> t2 = target_demean.col (2).template head<3>() -
+                                   target_demean.col (0).template head<3>();
+  t2 -= t2.dot (t1) * t1;
   t2.normalize();
 
   Eigen::Matrix<Scalar, 3, 3> target_rot;
-  target_rot.col(0) = t1;
-  target_rot.col(1) = t2;
-  target_rot.col(2) = t1.cross(t2);
+  target_rot.col (0) = t1;
+  target_rot.col (1) = t2;
+  target_rot.col (2) = t1.cross (t2);
 
   // Eigen::Matrix <Scalar, 3, 3> R = source_rot * target_rot.transpose ();
   Eigen::Matrix<Scalar, 3, 3> R = target_rot * source_rot.transpose();
   transformation_matrix.template topLeftCorner<3, 3>() = R;
   // transformation_matrix.block<3, 1>(0, 3) = source_mean.head<3>() - R *
   // target_mean.head<3>();
-  transformation_matrix.template block<3, 1>(0, 3) =
+  transformation_matrix.template block<3, 1> (0, 3) =
       target_mean.template head<3>() - R * source_mean.template head<3>();
 }
 

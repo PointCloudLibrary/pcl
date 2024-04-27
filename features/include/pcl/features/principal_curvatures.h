@@ -79,11 +79,11 @@ public:
 
   /** \brief Empty constructor. */
   PrincipalCurvaturesEstimation()
-  : xyz_centroid_(Eigen::Vector3f::Zero())
-  , demean_(Eigen::Vector3f::Zero())
-  , covariance_matrix_(Eigen::Matrix3f::Zero())
-  , eigenvector_(Eigen::Vector3f::Zero())
-  , eigenvalues_(Eigen::Vector3f::Zero())
+  : xyz_centroid_ (Eigen::Vector3f::Zero())
+  , demean_ (Eigen::Vector3f::Zero())
+  , covariance_matrix_ (Eigen::Matrix3f::Zero())
+  , eigenvector_ (Eigen::Vector3f::Zero())
+  , eigenvalues_ (Eigen::Vector3f::Zero())
   {
     feature_name_ = "PrincipalCurvaturesEstimation";
   };

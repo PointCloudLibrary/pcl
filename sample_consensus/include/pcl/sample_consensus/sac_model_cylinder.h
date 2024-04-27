@@ -93,11 +93,11 @@ public:
    * \param[in] random if true set the random seed to the current time, else set to
    * 12345 (default: false)
    */
-  SampleConsensusModelCylinder(const PointCloudConstPtr& cloud, bool random = false)
-  : SampleConsensusModel<PointT>(cloud, random)
+  SampleConsensusModelCylinder (const PointCloudConstPtr& cloud, bool random = false)
+  : SampleConsensusModel<PointT> (cloud, random)
   , SampleConsensusModelFromNormals<PointT, PointNT>()
-  , axis_(Eigen::Vector3f::Zero())
-  , eps_angle_(0)
+  , axis_ (Eigen::Vector3f::Zero())
+  , eps_angle_ (0)
   {
     model_name_ = "SampleConsensusModelCylinder";
     sample_size_ = 2;
@@ -110,13 +110,13 @@ public:
    * \param[in] random if true set the random seed to the current time, else set to
    * 12345 (default: false)
    */
-  SampleConsensusModelCylinder(const PointCloudConstPtr& cloud,
-                               const Indices& indices,
-                               bool random = false)
-  : SampleConsensusModel<PointT>(cloud, indices, random)
+  SampleConsensusModelCylinder (const PointCloudConstPtr& cloud,
+                                const Indices& indices,
+                                bool random = false)
+  : SampleConsensusModel<PointT> (cloud, indices, random)
   , SampleConsensusModelFromNormals<PointT, PointNT>()
-  , axis_(Eigen::Vector3f::Zero())
-  , eps_angle_(0)
+  , axis_ (Eigen::Vector3f::Zero())
+  , eps_angle_ (0)
   {
     model_name_ = "SampleConsensusModelCylinder";
     sample_size_ = 2;
@@ -126,11 +126,11 @@ public:
   /** \brief Copy constructor.
    * \param[in] source the model to copy into this
    */
-  SampleConsensusModelCylinder(const SampleConsensusModelCylinder& source)
+  SampleConsensusModelCylinder (const SampleConsensusModelCylinder& source)
   : SampleConsensusModel<PointT>()
   , SampleConsensusModelFromNormals<PointT, PointNT>()
-  , axis_(Eigen::Vector3f::Zero())
-  , eps_angle_(0)
+  , axis_ (Eigen::Vector3f::Zero())
+  , eps_angle_ (0)
   {
     *this = source;
     model_name_ = "SampleConsensusModelCylinder";
@@ -143,10 +143,10 @@ public:
    * \param[in] source the model to copy into this
    */
   inline SampleConsensusModelCylinder&
-  operator=(const SampleConsensusModelCylinder& source)
+  operator= (const SampleConsensusModelCylinder& source)
   {
-    SampleConsensusModel<PointT>::operator=(source);
-    SampleConsensusModelFromNormals<PointT, PointNT>::operator=(source);
+    SampleConsensusModel<PointT>::operator= (source);
+    SampleConsensusModelFromNormals<PointT, PointNT>::operator= (source);
     axis_ = source.axis_;
     eps_angle_ = source.eps_angle_;
     return (*this);
@@ -293,7 +293,7 @@ protected:
                       const Eigen::Vector4f& line_dir,
                       Eigen::Vector4f& pt_proj) const
   {
-    float k = (pt.dot(line_dir) - line_pt.dot(line_dir)) / line_dir.dot(line_dir);
+    float k = (pt.dot (line_dir) - line_pt.dot (line_dir)) / line_dir.dot (line_dir);
     // Calculate the projection of the point on the line
     pt_proj = line_pt + k * line_dir;
   }

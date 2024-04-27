@@ -135,7 +135,7 @@ enum ColorScheme {
 /// Simple functor that produces sequential integers from an initial value
 struct IncIndex {
   unsigned int val_;
-  IncIndex(int v = 0) { val_ = v; }
+  IncIndex (int v = 0) { val_ = v; }
   unsigned int
   operator()()
   {

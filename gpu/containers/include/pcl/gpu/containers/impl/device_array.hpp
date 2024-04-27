@@ -48,31 +48,31 @@ inline DeviceArray<T>::DeviceArray()
 {}
 
 template <class T>
-inline DeviceArray<T>::DeviceArray(std::size_t size) : DeviceMemory(size * elem_size)
+inline DeviceArray<T>::DeviceArray (std::size_t size) : DeviceMemory (size * elem_size)
 {}
 
 template <class T>
-inline DeviceArray<T>::DeviceArray(T* ptr, std::size_t size)
-: DeviceMemory(ptr, size * elem_size)
+inline DeviceArray<T>::DeviceArray (T* ptr, std::size_t size)
+: DeviceMemory (ptr, size * elem_size)
 {}
 
 template <class T>
-inline DeviceArray<T>::DeviceArray(const DeviceArray& other) : DeviceMemory(other)
+inline DeviceArray<T>::DeviceArray (const DeviceArray& other) : DeviceMemory (other)
 {}
 
 template <class T>
 inline DeviceArray<T>&
-DeviceArray<T>::operator=(const DeviceArray& other)
+DeviceArray<T>::operator= (const DeviceArray& other)
 {
-  DeviceMemory::operator=(other);
+  DeviceMemory::operator= (other);
   return *this;
 }
 
 template <class T>
 inline void
-DeviceArray<T>::create(std::size_t size)
+DeviceArray<T>::create (std::size_t size)
 {
-  DeviceMemory::create(size * elem_size);
+  DeviceMemory::create (size * elem_size);
 }
 
 template <class T>
@@ -84,52 +84,52 @@ DeviceArray<T>::release()
 
 template <class T>
 inline void
-DeviceArray<T>::copyTo(DeviceArray& other) const
+DeviceArray<T>::copyTo (DeviceArray& other) const
 {
-  DeviceMemory::copyTo(other);
+  DeviceMemory::copyTo (other);
 }
 
 template <class T>
 inline void
-DeviceArray<T>::upload(const T* host_ptr, std::size_t size)
+DeviceArray<T>::upload (const T* host_ptr, std::size_t size)
 {
-  DeviceMemory::upload(host_ptr, size * elem_size);
+  DeviceMemory::upload (host_ptr, size * elem_size);
 }
 
 template <class T>
 inline bool
-DeviceArray<T>::upload(const T* host_ptr,
-                       std::size_t device_begin_offset,
-                       std::size_t num_elements)
+DeviceArray<T>::upload (const T* host_ptr,
+                        std::size_t device_begin_offset,
+                        std::size_t num_elements)
 {
-  std::size_t begin_byte_offset = device_begin_offset * sizeof(T);
-  std::size_t num_bytes = num_elements * sizeof(T);
-  return DeviceMemory::upload(host_ptr, begin_byte_offset, num_bytes);
+  std::size_t begin_byte_offset = device_begin_offset * sizeof (T);
+  std::size_t num_bytes = num_elements * sizeof (T);
+  return DeviceMemory::upload (host_ptr, begin_byte_offset, num_bytes);
 }
 
 template <class T>
 inline void
-DeviceArray<T>::download(T* host_ptr) const
+DeviceArray<T>::download (T* host_ptr) const
 {
-  DeviceMemory::download(host_ptr);
+  DeviceMemory::download (host_ptr);
 }
 
 template <class T>
 inline bool
-DeviceArray<T>::download(T* host_ptr,
-                         std::size_t device_begin_offset,
-                         std::size_t num_elements) const
+DeviceArray<T>::download (T* host_ptr,
+                          std::size_t device_begin_offset,
+                          std::size_t num_elements) const
 {
-  std::size_t begin_byte_offset = device_begin_offset * sizeof(T);
-  std::size_t num_bytes = num_elements * sizeof(T);
-  return DeviceMemory::download(host_ptr, begin_byte_offset, num_bytes);
+  std::size_t begin_byte_offset = device_begin_offset * sizeof (T);
+  std::size_t num_bytes = num_elements * sizeof (T);
+  return DeviceMemory::download (host_ptr, begin_byte_offset, num_bytes);
 }
 
 template <class T>
 void
-DeviceArray<T>::swap(DeviceArray& other_arg)
+DeviceArray<T>::swap (DeviceArray& other_arg)
 {
-  DeviceMemory::swap(other_arg);
+  DeviceMemory::swap (other_arg);
 }
 
 template <class T>
@@ -168,19 +168,19 @@ DeviceArray<T>::ptr() const
 template <class T>
 template <class A>
 inline void
-DeviceArray<T>::upload(const std::vector<T, A>& data)
+DeviceArray<T>::upload (const std::vector<T, A>& data)
 {
-  upload(&data[0], data.size());
+  upload (&data[0], data.size());
 }
 
 template <class T>
 template <class A>
 inline void
-DeviceArray<T>::download(std::vector<T, A>& data) const
+DeviceArray<T>::download (std::vector<T, A>& data) const
 {
-  data.resize(size());
+  data.resize (size());
   if (!data.empty())
-    download(&data[0]);
+    download (&data[0]);
 }
 
 ///////////////////  Inline implementations of DeviceArray2D //////////////////
@@ -190,36 +190,36 @@ inline DeviceArray2D<T>::DeviceArray2D()
 {}
 
 template <class T>
-inline DeviceArray2D<T>::DeviceArray2D(int rows, int cols)
-: DeviceMemory2D(rows, cols * elem_size)
+inline DeviceArray2D<T>::DeviceArray2D (int rows, int cols)
+: DeviceMemory2D (rows, cols * elem_size)
 {}
 
 template <class T>
-inline DeviceArray2D<T>::DeviceArray2D(int rows,
-                                       int cols,
-                                       void* data,
-                                       std::size_t stepBytes)
-: DeviceMemory2D(rows, cols * elem_size, data, stepBytes)
+inline DeviceArray2D<T>::DeviceArray2D (int rows,
+                                        int cols,
+                                        void* data,
+                                        std::size_t stepBytes)
+: DeviceMemory2D (rows, cols * elem_size, data, stepBytes)
 {}
 
 template <class T>
-inline DeviceArray2D<T>::DeviceArray2D(const DeviceArray2D& other)
-: DeviceMemory2D(other)
+inline DeviceArray2D<T>::DeviceArray2D (const DeviceArray2D& other)
+: DeviceMemory2D (other)
 {}
 
 template <class T>
 inline DeviceArray2D<T>&
-DeviceArray2D<T>::operator=(const DeviceArray2D& other)
+DeviceArray2D<T>::operator= (const DeviceArray2D& other)
 {
-  DeviceMemory2D::operator=(other);
+  DeviceMemory2D::operator= (other);
   return *this;
 }
 
 template <class T>
 inline void
-DeviceArray2D<T>::create(int rows, int cols)
+DeviceArray2D<T>::create (int rows, int cols)
 {
-  DeviceMemory2D::create(rows, cols * elem_size);
+  DeviceMemory2D::create (rows, cols * elem_size);
 }
 
 template <class T>
@@ -231,66 +231,66 @@ DeviceArray2D<T>::release()
 
 template <class T>
 inline void
-DeviceArray2D<T>::copyTo(DeviceArray2D& other) const
+DeviceArray2D<T>::copyTo (DeviceArray2D& other) const
 {
-  DeviceMemory2D::copyTo(other);
+  DeviceMemory2D::copyTo (other);
 }
 
 template <class T>
 inline void
-DeviceArray2D<T>::upload(const void* host_ptr,
-                         std::size_t host_step,
-                         int rows,
-                         int cols)
+DeviceArray2D<T>::upload (const void* host_ptr,
+                          std::size_t host_step,
+                          int rows,
+                          int cols)
 {
-  DeviceMemory2D::upload(host_ptr, host_step, rows, cols * elem_size);
+  DeviceMemory2D::upload (host_ptr, host_step, rows, cols * elem_size);
 }
 
 template <class T>
 inline void
-DeviceArray2D<T>::download(void* host_ptr, std::size_t host_step) const
+DeviceArray2D<T>::download (void* host_ptr, std::size_t host_step) const
 {
-  DeviceMemory2D::download(host_ptr, host_step);
-}
-
-template <class T>
-template <class A>
-inline void
-DeviceArray2D<T>::upload(const std::vector<T, A>& data, int cols)
-{
-  upload(&data[0], cols * elem_size, data.size() / cols, cols);
+  DeviceMemory2D::download (host_ptr, host_step);
 }
 
 template <class T>
 template <class A>
 inline void
-DeviceArray2D<T>::download(std::vector<T, A>& data, int& elem_step) const
+DeviceArray2D<T>::upload (const std::vector<T, A>& data, int cols)
+{
+  upload (&data[0], cols * elem_size, data.size() / cols, cols);
+}
+
+template <class T>
+template <class A>
+inline void
+DeviceArray2D<T>::download (std::vector<T, A>& data, int& elem_step) const
 {
   elem_step = cols();
-  data.resize(cols() * rows());
+  data.resize (cols() * rows());
   if (!data.empty())
-    download(&data[0], colsBytes());
+    download (&data[0], colsBytes());
 }
 
 template <class T>
 void
-DeviceArray2D<T>::swap(DeviceArray2D& other_arg)
+DeviceArray2D<T>::swap (DeviceArray2D& other_arg)
 {
-  DeviceMemory2D::swap(other_arg);
+  DeviceMemory2D::swap (other_arg);
 }
 
 template <class T>
 inline T*
-DeviceArray2D<T>::ptr(int y)
+DeviceArray2D<T>::ptr (int y)
 {
-  return DeviceMemory2D::ptr<T>(y);
+  return DeviceMemory2D::ptr<T> (y);
 }
 
 template <class T>
 inline const T*
-DeviceArray2D<T>::ptr(int y) const
+DeviceArray2D<T>::ptr (int y) const
 {
-  return DeviceMemory2D::ptr<T>(y);
+  return DeviceMemory2D::ptr<T> (y);
 }
 
 template <class T>

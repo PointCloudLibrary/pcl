@@ -71,20 +71,20 @@ public:
    * \param[in] random if true set the random seed to the current time, else set to
    * 12345 (default: false)
    */
-  SampleConsensus(const SampleConsensusModelPtr& model, bool random = false)
-  : sac_model_(model)
-  , probability_(0.99)
-  , iterations_(0)
-  , threshold_(std::numeric_limits<double>::max())
-  , max_iterations_(1000)
-  , threads_(-1)
-  , rng_(new boost::uniform_01<boost::mt19937>(rng_alg_))
+  SampleConsensus (const SampleConsensusModelPtr& model, bool random = false)
+  : sac_model_ (model)
+  , probability_ (0.99)
+  , iterations_ (0)
+  , threshold_ (std::numeric_limits<double>::max())
+  , max_iterations_ (1000)
+  , threads_ (-1)
+  , rng_ (new boost::uniform_01<boost::mt19937> (rng_alg_))
   {
     // Create a random number generator object
     if (random)
-      rng_->base().seed(static_cast<unsigned>(std::time(nullptr)));
+      rng_->base().seed (static_cast<unsigned> (std::time (nullptr)));
     else
-      rng_->base().seed(12345u);
+      rng_->base().seed (12345u);
   };
 
   /** \brief Constructor for base SAC.
@@ -93,22 +93,22 @@ public:
    * \param[in] random if true set the random seed to the current time, else set to
    * 12345 (default: false)
    */
-  SampleConsensus(const SampleConsensusModelPtr& model,
-                  double threshold,
-                  bool random = false)
-  : sac_model_(model)
-  , probability_(0.99)
-  , iterations_(0)
-  , threshold_(threshold)
-  , max_iterations_(1000)
-  , threads_(-1)
-  , rng_(new boost::uniform_01<boost::mt19937>(rng_alg_))
+  SampleConsensus (const SampleConsensusModelPtr& model,
+                   double threshold,
+                   bool random = false)
+  : sac_model_ (model)
+  , probability_ (0.99)
+  , iterations_ (0)
+  , threshold_ (threshold)
+  , max_iterations_ (1000)
+  , threads_ (-1)
+  , rng_ (new boost::uniform_01<boost::mt19937> (rng_alg_))
   {
     // Create a random number generator object
     if (random)
-      rng_->base().seed(static_cast<unsigned>(std::time(nullptr)));
+      rng_->base().seed (static_cast<unsigned> (std::time (nullptr)));
     else
-      rng_->base().seed(12345u);
+      rng_->base().seed (12345u);
   };
 
   /** \brief Set the Sample Consensus model to use.
@@ -215,7 +215,7 @@ public:
   refineModel (const double sigma = 3.0, const unsigned int max_iterations = 1000)
   {
     if (!sac_model_) {
-      PCL_ERROR("[pcl::SampleConsensus::refineModel] Critical error: NULL model!\n");
+      PCL_ERROR ("[pcl::SampleConsensus::refineModel] Critical error: NULL model!\n");
       return (false);
     }
 
@@ -229,18 +229,18 @@ public:
     Eigen::VectorXf new_model_coefficients = model_coefficients_;
     do {
       // Optimize the model coefficients
-      sac_model_->optimizeModelCoefficients(
+      sac_model_->optimizeModelCoefficients (
           prev_inliers, new_model_coefficients, new_model_coefficients);
-      inliers_sizes.push_back(prev_inliers.size());
+      inliers_sizes.push_back (prev_inliers.size());
 
       // Select the new inliers based on the optimized coefficients and new threshold
-      sac_model_->selectWithinDistance(
+      sac_model_->selectWithinDistance (
           new_model_coefficients, error_threshold, new_inliers);
-      PCL_DEBUG("[pcl::SampleConsensus::refineModel] Number of inliers found "
-                "(before/after): %lu/%lu, with an error threshold of %g.\n",
-                prev_inliers.size(),
-                new_inliers.size(),
-                error_threshold);
+      PCL_DEBUG ("[pcl::SampleConsensus::refineModel] Number of inliers found "
+                 "(before/after): %lu/%lu, with an error threshold of %g.\n",
+                 prev_inliers.size(),
+                 new_inliers.size(),
+                 error_threshold);
 
       if (new_inliers.empty()) {
         refine_iterations++;
@@ -253,15 +253,16 @@ public:
       // Estimate the variance and the new threshold
       double variance = sac_model_->computeVariance();
       error_threshold =
-          sqrt(std::min(inlier_distance_threshold_sqr, sigma_sqr * variance));
+          sqrt (std::min (inlier_distance_threshold_sqr, sigma_sqr * variance));
 
-      PCL_DEBUG("[pcl::SampleConsensus::refineModel] New estimated error threshold: %g "
-                "on iteration %d out of %d.\n",
-                error_threshold,
-                refine_iterations,
-                max_iterations);
+      PCL_DEBUG (
+          "[pcl::SampleConsensus::refineModel] New estimated error threshold: %g "
+          "on iteration %d out of %d.\n",
+          error_threshold,
+          refine_iterations,
+          max_iterations);
       inlier_changed = false;
-      std::swap(prev_inliers, new_inliers);
+      std::swap (prev_inliers, new_inliers);
       // If the number of inliers changed, then we are still optimizing
       if (new_inliers.size() != prev_inliers.size()) {
         // Check if the number of inliers is oscillating in between two values
@@ -290,20 +291,20 @@ public:
 
     // If the new set of inliers is empty, we didn't do a good job refining
     if (new_inliers.empty()) {
-      PCL_ERROR("[pcl::SampleConsensus::refineModel] Refinement failed: got an empty "
-                "set of inliers!\n");
+      PCL_ERROR ("[pcl::SampleConsensus::refineModel] Refinement failed: got an empty "
+                 "set of inliers!\n");
       return (false);
     }
 
     if (oscillating) {
-      PCL_DEBUG("[pcl::SampleConsensus::refineModel] Detected oscillations in the "
-                "model refinement.\n");
+      PCL_DEBUG ("[pcl::SampleConsensus::refineModel] Detected oscillations in the "
+                 "model refinement.\n");
       return (true);
     }
 
     // If no inliers have been changed anymore, then the refinement was successful
     if (!inlier_changed) {
-      std::swap(inliers_, new_inliers);
+      std::swap (inliers_, new_inliers);
       model_coefficients_ = new_model_coefficients;
       return (true);
     }
@@ -324,8 +325,8 @@ public:
     while (indices_subset.size() < nr_samples)
       // indices_subset.insert ((*indices)[(index_t) (indices->size () * (rand () /
       // (RAND_MAX + 1.0)))]);
-      indices_subset.insert((*indices)[static_cast<index_t>(
-          static_cast<double>(indices->size()) * rnd())]);
+      indices_subset.insert ((*indices)[static_cast<index_t> (
+          static_cast<double> (indices->size()) * rnd())]);
   }
 
   /** \brief Return the best model found so far.

@@ -60,12 +60,12 @@ public:
    * \param width width of the organized structure e.g. image/cloud/map etc..
    * \param neighborhood connectivity of the neighborhood
    */
-  LineIterator(unsigned x_start,
-               unsigned y_start,
-               unsigned x_end,
-               unsigned y_end,
-               unsigned width,
-               const Neighborhood& neighborhood = Neighbor8);
+  LineIterator (unsigned x_start,
+                unsigned y_start,
+                unsigned x_end,
+                unsigned y_end,
+                unsigned width,
+                const Neighborhood& neighborhood = Neighbor8);
 
   /** \brief Destructor*/
   ~LineIterator() override;
@@ -145,19 +145,19 @@ protected:
 ////////////////////////////////////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////////////////////////////////
-inline LineIterator::LineIterator(unsigned x_start,
-                                  unsigned y_start,
-                                  unsigned x_end,
-                                  unsigned y_end,
-                                  unsigned width,
-                                  const Neighborhood& neighborhood)
-: OrganizedIndexIterator(width)
-, x_start_(x_start)
-, y_start_(y_start)
-, x_end_(x_end)
-, y_end_(y_end)
+inline LineIterator::LineIterator (unsigned x_start,
+                                   unsigned y_start,
+                                   unsigned x_end,
+                                   unsigned y_end,
+                                   unsigned width,
+                                   const Neighborhood& neighborhood)
+: OrganizedIndexIterator (width)
+, x_start_ (x_start)
+, y_start_ (y_start)
+, x_end_ (x_end)
+, y_end_ (y_end)
 {
-  init(neighborhood);
+  init (neighborhood);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -165,7 +165,7 @@ inline LineIterator::~LineIterator() = default;
 
 ////////////////////////////////////////////////////////////////////////////////
 inline void
-LineIterator::init(const Neighborhood& neighborhood)
+LineIterator::init (const Neighborhood& neighborhood)
 {
   x_ = x_start_;
   y_ = y_start_;

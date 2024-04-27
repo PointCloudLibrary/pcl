@@ -49,13 +49,13 @@ bool
 BriskKeypoint2D<PointInT, PointOutT, IntensityT>::initCompute()
 {
   if (!pcl::Keypoint<PointInT, PointOutT>::initCompute()) {
-    PCL_ERROR("[pcl::%s::initCompute] init failed.!\n", name_.c_str());
+    PCL_ERROR ("[pcl::%s::initCompute] init failed.!\n", name_.c_str());
     return (false);
   }
 
   if (!input_->isOrganized()) {
-    PCL_ERROR("[pcl::%s::initCompute] %s doesn't support non organized clouds!\n",
-              name_.c_str());
+    PCL_ERROR ("[pcl::%s::initCompute] %s doesn't support non organized clouds!\n",
+               name_.c_str());
     return (false);
   }
 
@@ -64,23 +64,24 @@ BriskKeypoint2D<PointInT, PointOutT, IntensityT>::initCompute()
 
 template <typename PointInT, typename PointOutT, typename IntensityT>
 void
-BriskKeypoint2D<PointInT, PointOutT, IntensityT>::detectKeypoints(PointCloudOut& output)
+BriskKeypoint2D<PointInT, PointOutT, IntensityT>::detectKeypoints (
+    PointCloudOut& output)
 {
   // image size
-  const int width = static_cast<int>(input_->width);
-  const int height = static_cast<int>(input_->height);
+  const int width = static_cast<int> (input_->width);
+  const int height = static_cast<int> (input_->height);
 
   // destination for intensity data; will be forwarded to BRISK
-  std::vector<unsigned char> image_data(width * height);
+  std::vector<unsigned char> image_data (width * height);
 
   for (std::size_t i = 0; i < image_data.size(); ++i)
-    image_data[i] = static_cast<unsigned char>(intensity_((*input_)[i]));
+    image_data[i] = static_cast<unsigned char> (intensity_ ((*input_)[i]));
 
-  pcl::keypoints::brisk::ScaleSpace brisk_scale_space(octaves_);
-  brisk_scale_space.constructPyramid(image_data, width, height);
+  pcl::keypoints::brisk::ScaleSpace brisk_scale_space (octaves_);
+  brisk_scale_space.constructPyramid (image_data, width, height);
   pcl::PointCloud<pcl::PointWithScale> output_temp;
-  brisk_scale_space.getKeypoints(threshold_, output_temp.points);
-  pcl::copyPointCloud(output_temp, output);
+  brisk_scale_space.getKeypoints (threshold_, output_temp.points);
+  pcl::copyPointCloud (output_temp, output);
 
   // we do not change the denseness
   output.width = output.size();
@@ -93,11 +94,11 @@ BriskKeypoint2D<PointInT, PointOutT, IntensityT>::detectKeypoints(PointCloudOut&
     for (std::size_t i = 0; i < output.size(); ++i) {
       PointOutT pt;
       // Interpolate its position in 3D, as the "u" and "v" are subpixel accurate
-      bilinearInterpolation(input_, output[i].x, output[i].y, pt);
+      bilinearInterpolation (input_, output[i].x, output[i].y, pt);
 
       // Check if the point is finite
-      if (pcl::isFinite(pt))
-        output_clean.push_back(output[i]);
+      if (pcl::isFinite (pt))
+        output_clean.push_back (output[i]);
     }
     output = output_clean;
     output.is_dense = true; // set to true as there's no keypoint at an invalid XYZ

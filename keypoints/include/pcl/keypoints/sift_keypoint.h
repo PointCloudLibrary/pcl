@@ -41,7 +41,7 @@ namespace pcl {
 template <typename PointT>
 struct SIFTKeypointFieldSelector {
   inline float
-  operator()(const PointT& p) const
+  operator() (const PointT& p) const
   {
     return p.intensity;
   }
@@ -49,7 +49,7 @@ struct SIFTKeypointFieldSelector {
 template <>
 struct SIFTKeypointFieldSelector<PointNormal> {
   inline float
-  operator()(const PointNormal& p) const
+  operator() (const PointNormal& p) const
   {
     return p.curvature;
   }
@@ -57,17 +57,17 @@ struct SIFTKeypointFieldSelector<PointNormal> {
 template <>
 struct SIFTKeypointFieldSelector<PointXYZRGB> {
   inline float
-  operator()(const PointXYZRGB& p) const
+  operator() (const PointXYZRGB& p) const
   {
-    return (static_cast<float>(299 * p.r + 587 * p.g + 114 * p.b) / 1000.0f);
+    return (static_cast<float> (299 * p.r + 587 * p.g + 114 * p.b) / 1000.0f);
   }
 };
 template <>
 struct SIFTKeypointFieldSelector<PointXYZRGBA> {
   inline float
-  operator()(const PointXYZRGBA& p) const
+  operator() (const PointXYZRGBA& p) const
   {
-    return (static_cast<float>(299 * p.r + 587 * p.g + 114 * p.b) / 1000.0f);
+    return (static_cast<float> (299 * p.r + 587 * p.g + 114 * p.b) / 1000.0f);
   }
 };
 
@@ -102,7 +102,7 @@ public:
   using Keypoint<PointInT, PointOutT>::initCompute;
 
   /** \brief Empty constructor. */
-  SIFTKeypoint() : min_contrast_(-std::numeric_limits<float>::max()), getFieldValue_()
+  SIFTKeypoint() : min_contrast_ (-std::numeric_limits<float>::max()), getFieldValue_()
   {
     name_ = "SIFTKeypoint";
   }

@@ -130,7 +130,7 @@ vtkSmartPointer<vtkRenderWindow> window;
 
 class KeyboardCallback : public vtkCommand {
 public:
-  vtkTypeMacro(KeyboardCallback, vtkCommand);
+  vtkTypeMacro (KeyboardCallback, vtkCommand);
 
   static KeyboardCallback*
   New ()
@@ -140,22 +140,22 @@ public:
 
   void
   Execute (vtkObject* caller,
-           unsigned long vtkNotUsed(eventId),
-           void* vtkNotUsed(callData)) override
+           unsigned long vtkNotUsed (eventId),
+           void* vtkNotUsed (callData)) override
   {
     vtkRenderWindowInteractor* interactor =
-        vtkRenderWindowInteractor::SafeDownCast(caller);
-    vtkRenderer* renderer = interactor->FindPokedRenderer(
+        vtkRenderWindowInteractor::SafeDownCast (caller);
+    vtkRenderer* renderer = interactor->FindPokedRenderer (
         interactor->GetEventPosition()[0], interactor->GetEventPosition()[1]);
 
-    std::string key(interactor->GetKeySym());
+    std::string key (interactor->GetKeySym());
     bool shift_down = interactor->GetShiftKey();
 
     std::cout << "Key Pressed: " << key << std::endl;
 
     Scene* scene = Scene::instance();
     OutofcoreCloud* cloud =
-        dynamic_cast<OutofcoreCloud*>(scene->getObjectByName("my_octree"));
+        dynamic_cast<OutofcoreCloud*> (scene->getObjectByName ("my_octree"));
 
     if (key == "Up" || key == "Down") {
       if (key == "Up" && cloud) {
@@ -163,7 +163,7 @@ public:
           cloud->increaseLodPixelThreshold();
         }
         else {
-          cloud->setDisplayDepth(cloud->getDisplayDepth() + 1);
+          cloud->setDisplayDepth (cloud->getDisplayDepth() + 1);
         }
       }
       else if (key == "Down" && cloud) {
@@ -171,48 +171,48 @@ public:
           cloud->decreaseLodPixelThreshold();
         }
         else {
-          cloud->setDisplayDepth(cloud->getDisplayDepth() - 1);
+          cloud->setDisplayDepth (cloud->getDisplayDepth() - 1);
         }
       }
     }
 
     if (key == "o") {
-      cloud->setDisplayVoxels(1 - static_cast<int>(cloud->getDisplayVoxels()));
+      cloud->setDisplayVoxels (1 - static_cast<int> (cloud->getDisplayVoxels()));
     }
 
     if (key == "Escape") {
-      Eigen::Vector3d min(cloud->getBoundingBoxMin());
-      Eigen::Vector3d max(cloud->getBoundingBoxMax());
-      renderer->ResetCamera(min.x(), max.x(), min.y(), max.y(), min.z(), max.z());
+      Eigen::Vector3d min (cloud->getBoundingBoxMin());
+      Eigen::Vector3d max (cloud->getBoundingBoxMax());
+      renderer->ResetCamera (min.x(), max.x(), min.y(), max.y(), min.z(), max.z());
     }
   }
 };
 
 void
 renderTimerCallback (vtkObject* caller,
-                     unsigned long int vtkNotUsed(eventId),
-                     void* vtkNotUsed(clientData),
-                     void* vtkNotUsed(callData))
+                     unsigned long int vtkNotUsed (eventId),
+                     void* vtkNotUsed (clientData),
+                     void* vtkNotUsed (callData))
 {
   vtkRenderWindowInteractor* interactor =
-      vtkRenderWindowInteractor::SafeDownCast(caller);
+      vtkRenderWindowInteractor::SafeDownCast (caller);
   interactor->Render();
 }
 
 void
-renderStartCallback (vtkObject* vtkNotUsed(caller),
-                     unsigned long int vtkNotUsed(eventId),
-                     void* vtkNotUsed(clientData),
-                     void* vtkNotUsed(callData))
+renderStartCallback (vtkObject* vtkNotUsed (caller),
+                     unsigned long int vtkNotUsed (eventId),
+                     void* vtkNotUsed (clientData),
+                     void* vtkNotUsed (callData))
 {
   // std::cout << "Start...";
 }
 
 void
-renderEndCallback (vtkObject* vtkNotUsed(caller),
-                   unsigned long int vtkNotUsed(eventId),
-                   void* vtkNotUsed(clientData),
-                   void* vtkNotUsed(callData))
+renderEndCallback (vtkObject* vtkNotUsed (caller),
+                   unsigned long int vtkNotUsed (eventId),
+                   void* vtkNotUsed (clientData),
+                   void* vtkNotUsed (callData))
 {
   // std::cout << "End" << std::endl;
 }
@@ -223,17 +223,17 @@ outofcoreViewer (boost::filesystem::path tree_root,
                  bool display_octree = true,
                  unsigned int gpu_cache_size = 512)
 {
-  std::cout << boost::filesystem::absolute(tree_root) << std::endl;
+  std::cout << boost::filesystem::absolute (tree_root) << std::endl;
 
   // Create top level scene
   Scene* scene = Scene::instance();
 
   // Clouds
-  auto* cloud = new OutofcoreCloud("my_octree", tree_root);
-  cloud->setDisplayDepth(depth);
-  cloud->setDisplayVoxels(display_octree);
-  OutofcoreCloud::cloud_data_cache.setCapacity(gpu_cache_size * 1024);
-  scene->addObject(cloud);
+  auto* cloud = new OutofcoreCloud ("my_octree", tree_root);
+  cloud->setDisplayDepth (depth);
+  cloud->setDisplayVoxels (display_octree);
+  OutofcoreCloud::cloud_data_cache.setCapacity (gpu_cache_size * 1024);
+  scene->addObject (cloud);
 
   //  OutofcoreCloud *cloud2 = new OutofcoreCloud ("my_octree2", tree_root);
   //  cloud2->setDisplayDepth (depth);
@@ -241,10 +241,10 @@ outofcoreViewer (boost::filesystem::path tree_root,
   //  scene->addObject (cloud2);
 
   // Add Scene Renderables
-  Grid* grid = new Grid("origin_grid");
-  Axes* axes = new Axes("origin_axes");
-  scene->addObject(grid);
-  scene->addObject(axes);
+  Grid* grid = new Grid ("origin_grid");
+  Axes* axes = new Axes ("origin_axes");
+  scene->addObject (grid);
+  scene->addObject (axes);
 
   // Create smart pointer with arguments
   //  Grid *grid_raw = new Grid("origin_grid");
@@ -255,70 +255,70 @@ outofcoreViewer (boost::filesystem::path tree_root,
   vtkSmartPointer<vtkRenderWindowInteractor> interactor =
       vtkSmartPointer<vtkRenderWindowInteractor>::New();
   window = vtkSmartPointer<vtkRenderWindow>::New();
-  window->SetSize(1000, 500);
+  window->SetSize (1000, 500);
 
-  interactor->SetRenderWindow(window);
+  interactor->SetRenderWindow (window);
   interactor->Initialize();
-  interactor->CreateRepeatingTimer(100);
+  interactor->CreateRepeatingTimer (100);
 
   // Viewports
-  Viewport octree_viewport(window, 0.0, 0.0, 0.5, 1.0);
-  Viewport persp_viewport(window, 0.5, 0.0, 1.0, 1.0);
+  Viewport octree_viewport (window, 0.0, 0.0, 0.5, 1.0);
+  Viewport persp_viewport (window, 0.5, 0.0, 1.0, 1.0);
 
   // Cameras
   Camera* persp_camera =
-      new Camera("persp", persp_viewport.getRenderer()->GetActiveCamera());
+      new Camera ("persp", persp_viewport.getRenderer()->GetActiveCamera());
   Camera* octree_camera =
-      new Camera("octree", octree_viewport.getRenderer()->GetActiveCamera());
-  scene->addCamera(persp_camera);
-  scene->addCamera(octree_camera);
-  octree_camera->setDisplay(true);
+      new Camera ("octree", octree_viewport.getRenderer()->GetActiveCamera());
+  scene->addCamera (persp_camera);
+  scene->addCamera (octree_camera);
+  octree_camera->setDisplay (true);
 
   // Set viewport cameras
-  persp_viewport.setCamera(persp_camera);
-  octree_viewport.setCamera(octree_camera);
+  persp_viewport.setCamera (persp_camera);
+  octree_viewport.setCamera (octree_camera);
 
   // Render once
   window->Render();
 
   // Frame cameras
-  Eigen::Vector3d min(cloud->getBoundingBoxMin());
-  Eigen::Vector3d max(cloud->getBoundingBoxMax());
-  octree_viewport.getRenderer()->ResetCamera(
+  Eigen::Vector3d min (cloud->getBoundingBoxMin());
+  Eigen::Vector3d max (cloud->getBoundingBoxMax());
+  octree_viewport.getRenderer()->ResetCamera (
       min.x(), max.x(), min.y(), max.y(), min.z(), max.z());
-  persp_viewport.getRenderer()->ResetCamera(
+  persp_viewport.getRenderer()->ResetCamera (
       min.x(), max.x(), min.y(), max.y(), min.z(), max.z());
 
-  cloud->setRenderCamera(octree_camera);
+  cloud->setRenderCamera (octree_camera);
 
   // Interactor
   // -------------------------------------------------------------------------
   vtkSmartPointer<vtkInteractorStyleTrackballCamera> style =
       vtkSmartPointer<vtkInteractorStyleTrackballCamera>::New();
-  style->SetAutoAdjustCameraClippingRange(false);
-  interactor->SetInteractorStyle(style);
+  style->SetAutoAdjustCameraClippingRange (false);
+  interactor->SetInteractorStyle (style);
 
   // Callbacks
   // -------------------------------------------------------------------------
   vtkSmartPointer<vtkCallbackCommand> render_start_callback =
       vtkSmartPointer<vtkCallbackCommand>::New();
-  render_start_callback->SetCallback(renderStartCallback);
-  window->AddObserver(vtkCommand::StartEvent, render_start_callback);
+  render_start_callback->SetCallback (renderStartCallback);
+  window->AddObserver (vtkCommand::StartEvent, render_start_callback);
 
   vtkSmartPointer<vtkCallbackCommand> render_end_callback =
       vtkSmartPointer<vtkCallbackCommand>::New();
-  render_end_callback->SetCallback(renderEndCallback);
-  window->AddObserver(vtkCommand::EndEvent, render_end_callback);
+  render_end_callback->SetCallback (renderEndCallback);
+  window->AddObserver (vtkCommand::EndEvent, render_end_callback);
 
   vtkSmartPointer<KeyboardCallback> keyboard_callback =
       vtkSmartPointer<KeyboardCallback>::New();
-  interactor->AddObserver(vtkCommand::KeyPressEvent, keyboard_callback);
+  interactor->AddObserver (vtkCommand::KeyPressEvent, keyboard_callback);
 
-  interactor->CreateRepeatingTimer(1000);
+  interactor->CreateRepeatingTimer (1000);
   vtkSmartPointer<vtkCallbackCommand> render_timer_callback =
       vtkSmartPointer<vtkCallbackCommand>::New();
-  render_timer_callback->SetCallback(renderTimerCallback);
-  interactor->AddObserver(vtkCommand::TimerEvent, render_timer_callback);
+  render_timer_callback->SetCallback (renderTimerCallback);
+  interactor->AddObserver (vtkCommand::TimerEvent, render_timer_callback);
 
   interactor->Start();
 
@@ -328,23 +328,23 @@ outofcoreViewer (boost::filesystem::path tree_root,
 void
 print_help (int, char** argv)
 {
-  print_info("This program is used to visualize outofcore data structure");
-  print_info("%s <options> <input_tree_dir> \n", argv[0]);
-  print_info("\n");
-  print_info("Options:\n");
-  print_info("\t -depth <depth>                \t Octree depth\n");
-  print_info("\t -display_octree               \t Toggles octree display\n");
+  print_info ("This program is used to visualize outofcore data structure");
+  print_info ("%s <options> <input_tree_dir> \n", argv[0]);
+  print_info ("\n");
+  print_info ("Options:\n");
+  print_info ("\t -depth <depth>                \t Octree depth\n");
+  print_info ("\t -display_octree               \t Toggles octree display\n");
   //  print_info ("\t -mem_cache_size <size>        \t Size of pointcloud memory cache
   //  in MB (Defaults to 1024MB)\n");
-  print_info("\t -gpu_cache_size <size>        \t Size of pointcloud gpu cache in MB "
-             "(512MB)\n");
-  print_info("\t -lod_threshold <pixels>       \t Bounding box screen projection "
-             "threshold (10000)\n");
-  print_info("\t -v                            \t Print more verbosity\n");
-  print_info("\t -h                            \t Display help\n");
-  print_info("\n");
+  print_info ("\t -gpu_cache_size <size>        \t Size of pointcloud gpu cache in MB "
+              "(512MB)\n");
+  print_info ("\t -lod_threshold <pixels>       \t Bounding box screen projection "
+              "threshold (10000)\n");
+  print_info ("\t -v                            \t Print more verbosity\n");
+  print_info ("\t -h                            \t Display help\n");
+  print_info ("\n");
 
-  exit(1);
+  exit (1);
 }
 
 int
@@ -353,44 +353,44 @@ main (int argc, char* argv[])
 
   // Check for help (-h) flag
   if (argc > 1) {
-    if (find_switch(argc, argv, "-h")) {
-      print_help(argc, argv);
+    if (find_switch (argc, argv, "-h")) {
+      print_help (argc, argv);
       return (-1);
     }
   }
 
   // If no arguments specified
   if (argc - 1 < 1) {
-    print_help(argc, argv);
+    print_help (argc, argv);
     return (-1);
   }
 
-  if (find_switch(argc, argv, "-v"))
-    console::setVerbosityLevel(console::L_DEBUG);
+  if (find_switch (argc, argv, "-v"))
+    console::setVerbosityLevel (console::L_DEBUG);
 
   // Defaults
   int depth = 4;
   //  unsigned int mem_cache_size = 1024;
   unsigned int gpu_cache_size = 512;
   unsigned int lod_threshold = 10000;
-  bool display_octree = find_switch(argc, argv, "-display_octree");
+  bool display_octree = find_switch (argc, argv, "-display_octree");
 
   // Parse options
-  parse_argument(argc, argv, "-depth", depth);
+  parse_argument (argc, argv, "-depth", depth);
   //  parse_argument (argc, argv, "-mem_cache_size", mem_cache_size);
-  parse_argument(argc, argv, "-gpu_cache_size", gpu_cache_size);
-  parse_argument(argc, argv, "-lod_threshold", lod_threshold);
+  parse_argument (argc, argv, "-gpu_cache_size", gpu_cache_size);
+  parse_argument (argc, argv, "-lod_threshold", lod_threshold);
 
   // Parse non-option arguments
-  boost::filesystem::path tree_root(argv[argc - 1]);
+  boost::filesystem::path tree_root (argv[argc - 1]);
 
   // Check if a root directory was specified, use directory of pcd file
-  if (boost::filesystem::is_directory(tree_root)) {
+  if (boost::filesystem::is_directory (tree_root)) {
     boost::filesystem::directory_iterator diterend;
-    for (boost::filesystem::directory_iterator diter(tree_root); diter != diterend;
+    for (boost::filesystem::directory_iterator diter (tree_root); diter != diterend;
          ++diter) {
       const boost::filesystem::path& file = *diter;
-      if (!boost::filesystem::is_directory(file)) {
+      if (!boost::filesystem::is_directory (file)) {
         if (file.extension().string() == octree_disk_node::node_index_extension) {
           tree_root = file;
         }
@@ -398,5 +398,5 @@ main (int argc, char* argv[])
     }
   }
 
-  return outofcoreViewer(tree_root, depth, display_octree, gpu_cache_size);
+  return outofcoreViewer (tree_root, depth, display_octree, gpu_cache_size);
 }

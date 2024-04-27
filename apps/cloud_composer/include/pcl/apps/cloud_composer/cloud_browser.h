@@ -52,7 +52,7 @@ class ProjectModel;
 class CloudBrowser : public QTreeView {
   Q_OBJECT
 public:
-  CloudBrowser(QWidget* parent = nullptr);
+  CloudBrowser (QWidget* parent = nullptr);
 
   void
   setModel (QAbstractItemModel* new_model) override;
@@ -63,7 +63,7 @@ private:
 
 class BackgroundDelegate : public QStyledItemDelegate {
 public:
-  explicit BackgroundDelegate(QObject* parent = nullptr) : QStyledItemDelegate(parent)
+  explicit BackgroundDelegate (QObject* parent = nullptr) : QStyledItemDelegate (parent)
   {}
 
   void

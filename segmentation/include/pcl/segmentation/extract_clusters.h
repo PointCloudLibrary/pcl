@@ -118,27 +118,27 @@ extractEuclideanClusters (
     unsigned int max_pts_per_cluster = (std::numeric_limits<int>::max)())
 {
   if (tree->getInputCloud()->size() != cloud.size()) {
-    PCL_ERROR("[pcl::extractEuclideanClusters] Tree built for a different point "
-              "cloud dataset (%zu) than the input cloud (%zu)!\n",
-              static_cast<std::size_t>(tree->getInputCloud()->size()),
-              static_cast<std::size_t>(cloud.size()));
+    PCL_ERROR ("[pcl::extractEuclideanClusters] Tree built for a different point "
+               "cloud dataset (%zu) than the input cloud (%zu)!\n",
+               static_cast<std::size_t> (tree->getInputCloud()->size()),
+               static_cast<std::size_t> (cloud.size()));
     return;
   }
   if (cloud.size() != normals.size()) {
-    PCL_ERROR("[pcl::extractEuclideanClusters] Number of points in the input point "
-              "cloud (%zu) different than normals (%zu)!\n",
-              static_cast<std::size_t>(cloud.size()),
-              static_cast<std::size_t>(normals.size()));
+    PCL_ERROR ("[pcl::extractEuclideanClusters] Number of points in the input point "
+               "cloud (%zu) different than normals (%zu)!\n",
+               static_cast<std::size_t> (cloud.size()),
+               static_cast<std::size_t> (normals.size()));
     return;
   }
   // If tree gives sorted results, we can skip the first one because it is the query
   // point itself
   const std::size_t nn_start_idx = tree->getSortedResults() ? 1 : 0;
   const double cos_eps_angle =
-      std::cos(eps_angle); // compute this once instead of acos many times (faster)
+      std::cos (eps_angle); // compute this once instead of acos many times (faster)
 
   // Create a bool vector of processed point indices, and initialize it to false
-  std::vector<bool> processed(cloud.size(), false);
+  std::vector<bool> processed (cloud.size(), false);
 
   Indices nn_indices;
   std::vector<float> nn_distances;
@@ -149,13 +149,13 @@ extractEuclideanClusters (
 
     Indices seed_queue;
     int sq_idx = 0;
-    seed_queue.push_back(static_cast<index_t>(i));
+    seed_queue.push_back (static_cast<index_t> (i));
 
     processed[i] = true;
 
-    while (sq_idx < static_cast<int>(seed_queue.size())) {
+    while (sq_idx < static_cast<int> (seed_queue.size())) {
       // Search for sq_idx
-      if (!tree->radiusSearch(
+      if (!tree->radiusSearch (
               seed_queue[sq_idx], tolerance, nn_indices, nn_distances)) {
         sq_idx++;
         continue;
@@ -171,9 +171,9 @@ extractEuclideanClusters (
             normals[seed_queue[sq_idx]].normal[0] * normals[nn_indices[j]].normal[0] +
             normals[seed_queue[sq_idx]].normal[1] * normals[nn_indices[j]].normal[1] +
             normals[seed_queue[sq_idx]].normal[2] * normals[nn_indices[j]].normal[2];
-        if (std::abs(dot_p) > cos_eps_angle) {
+        if (std::abs (dot_p) > cos_eps_angle) {
           processed[nn_indices[j]] = true;
-          seed_queue.push_back(nn_indices[j]);
+          seed_queue.push_back (nn_indices[j]);
         }
       }
 
@@ -184,22 +184,23 @@ extractEuclideanClusters (
     if (seed_queue.size() >= min_pts_per_cluster &&
         seed_queue.size() <= max_pts_per_cluster) {
       pcl::PointIndices r;
-      r.indices.resize(seed_queue.size());
+      r.indices.resize (seed_queue.size());
       for (std::size_t j = 0; j < seed_queue.size(); ++j)
         r.indices[j] = seed_queue[j];
 
       // After clustering, indices are out of order, so sort them
-      std::sort(r.indices.begin(), r.indices.end());
+      std::sort (r.indices.begin(), r.indices.end());
 
       r.header = cloud.header;
-      clusters.push_back(r); // We could avoid a copy by working directly in the vector
+      clusters.push_back (r); // We could avoid a copy by working directly in the vector
     }
     else {
-      PCL_DEBUG("[pcl::extractEuclideanClusters] This cluster has %zu points, which is "
-                "not between %u and %u points, so it is not a final cluster\n",
-                seed_queue.size(),
-                min_pts_per_cluster,
-                max_pts_per_cluster);
+      PCL_DEBUG (
+          "[pcl::extractEuclideanClusters] This cluster has %zu points, which is "
+          "not between %u and %u points, so it is not a final cluster\n",
+          seed_queue.size(),
+          min_pts_per_cluster,
+          max_pts_per_cluster);
     }
   }
 }
@@ -239,33 +240,33 @@ extractEuclideanClusters (
   // between what the tree returns
   // and indices[i]
   if (tree->getInputCloud()->size() != cloud.size()) {
-    PCL_ERROR("[pcl::extractEuclideanClusters] Tree built for a different point "
-              "cloud dataset (%zu) than the input cloud (%zu)!\n",
-              static_cast<std::size_t>(tree->getInputCloud()->size()),
-              static_cast<std::size_t>(cloud.size()));
+    PCL_ERROR ("[pcl::extractEuclideanClusters] Tree built for a different point "
+               "cloud dataset (%zu) than the input cloud (%zu)!\n",
+               static_cast<std::size_t> (tree->getInputCloud()->size()),
+               static_cast<std::size_t> (cloud.size()));
     return;
   }
   if (tree->getIndices()->size() != indices.size()) {
-    PCL_ERROR("[pcl::extractEuclideanClusters] Tree built for a different set of "
-              "indices (%zu) than the input set (%zu)!\n",
-              static_cast<std::size_t>(tree->getIndices()->size()),
-              indices.size());
+    PCL_ERROR ("[pcl::extractEuclideanClusters] Tree built for a different set of "
+               "indices (%zu) than the input set (%zu)!\n",
+               static_cast<std::size_t> (tree->getIndices()->size()),
+               indices.size());
     return;
   }
   if (cloud.size() != normals.size()) {
-    PCL_ERROR("[pcl::extractEuclideanClusters] Number of points in the input point "
-              "cloud (%zu) different than normals (%zu)!\n",
-              static_cast<std::size_t>(cloud.size()),
-              static_cast<std::size_t>(normals.size()));
+    PCL_ERROR ("[pcl::extractEuclideanClusters] Number of points in the input point "
+               "cloud (%zu) different than normals (%zu)!\n",
+               static_cast<std::size_t> (cloud.size()),
+               static_cast<std::size_t> (normals.size()));
     return;
   }
   // If tree gives sorted results, we can skip the first one because it is the query
   // point itself
   const std::size_t nn_start_idx = tree->getSortedResults() ? 1 : 0;
   const double cos_eps_angle =
-      std::cos(eps_angle); // compute this once instead of acos many times (faster)
+      std::cos (eps_angle); // compute this once instead of acos many times (faster)
   // Create a bool vector of processed point indices, and initialize it to false
-  std::vector<bool> processed(cloud.size(), false);
+  std::vector<bool> processed (cloud.size(), false);
 
   Indices nn_indices;
   std::vector<float> nn_distances;
@@ -276,13 +277,13 @@ extractEuclideanClusters (
 
     Indices seed_queue;
     int sq_idx = 0;
-    seed_queue.push_back(point_idx);
+    seed_queue.push_back (point_idx);
 
     processed[point_idx] = true;
 
-    while (sq_idx < static_cast<int>(seed_queue.size())) {
+    while (sq_idx < static_cast<int> (seed_queue.size())) {
       // Search for sq_idx
-      if (!tree->radiusSearch(
+      if (!tree->radiusSearch (
               cloud[seed_queue[sq_idx]], tolerance, nn_indices, nn_distances)) {
         sq_idx++;
         continue;
@@ -298,9 +299,9 @@ extractEuclideanClusters (
             normals[seed_queue[sq_idx]].normal[0] * normals[nn_indices[j]].normal[0] +
             normals[seed_queue[sq_idx]].normal[1] * normals[nn_indices[j]].normal[1] +
             normals[seed_queue[sq_idx]].normal[2] * normals[nn_indices[j]].normal[2];
-        if (std::abs(dot_p) > cos_eps_angle) {
+        if (std::abs (dot_p) > cos_eps_angle) {
           processed[nn_indices[j]] = true;
-          seed_queue.push_back(nn_indices[j]);
+          seed_queue.push_back (nn_indices[j]);
         }
       }
 
@@ -311,22 +312,23 @@ extractEuclideanClusters (
     if (seed_queue.size() >= min_pts_per_cluster &&
         seed_queue.size() <= max_pts_per_cluster) {
       pcl::PointIndices r;
-      r.indices.resize(seed_queue.size());
+      r.indices.resize (seed_queue.size());
       for (std::size_t j = 0; j < seed_queue.size(); ++j)
         r.indices[j] = seed_queue[j];
 
       // After clustering, indices are out of order, so sort them
-      std::sort(r.indices.begin(), r.indices.end());
+      std::sort (r.indices.begin(), r.indices.end());
 
       r.header = cloud.header;
-      clusters.push_back(r);
+      clusters.push_back (r);
     }
     else {
-      PCL_DEBUG("[pcl::extractEuclideanClusters] This cluster has %zu points, which is "
-                "not between %u and %u points, so it is not a final cluster\n",
-                seed_queue.size(),
-                min_pts_per_cluster,
-                max_pts_per_cluster);
+      PCL_DEBUG (
+          "[pcl::extractEuclideanClusters] This cluster has %zu points, which is "
+          "not between %u and %u points, so it is not a final cluster\n",
+          seed_queue.size(),
+          min_pts_per_cluster,
+          max_pts_per_cluster);
     }
   }
 }

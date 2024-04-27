@@ -57,7 +57,7 @@ namespace visualization {
  * \author Nizar Sallem
  */
 struct PCL_EXPORTS PCLContextItem : public vtkContextItem {
-  vtkTypeMacro(PCLContextItem, vtkContextItem);
+  vtkTypeMacro (PCLContextItem, vtkContextItem);
   static PCLContextItem*
   New ();
   bool
@@ -70,12 +70,12 @@ struct PCL_EXPORTS PCLContextItem : public vtkContextItem {
   void
   setColors (unsigned char rgb[3])
   {
-    std::copy(rgb, rgb + 3, colors);
+    std::copy (rgb, rgb + 3, colors);
   }
   void
   setOpacity (double opacity)
   {
-    SetOpacity(opacity);
+    SetOpacity (opacity);
   };
   unsigned char colors[3];
   std::vector<float> params;
@@ -87,7 +87,7 @@ struct PCL_EXPORTS PCLContextItem : public vtkContextItem {
  * \author Nizar Sallem
  */
 struct PCL_EXPORTS PCLContextImageItem : public vtkContextItem {
-  vtkTypeMacro(PCLContextImageItem, vtkContextItem);
+  vtkTypeMacro (PCLContextImageItem, vtkContextItem);
   PCLContextImageItem();
 
   static PCLContextImageItem*
@@ -102,7 +102,7 @@ struct PCL_EXPORTS PCLContextImageItem : public vtkContextItem {
 
 namespace context_items {
 struct PCL_EXPORTS Point : public PCLContextItem {
-  vtkTypeMacro(Point, PCLContextItem);
+  vtkTypeMacro (Point, PCLContextItem);
   static Point*
   New ();
   bool
@@ -112,7 +112,7 @@ struct PCL_EXPORTS Point : public PCLContextItem {
 };
 
 struct PCL_EXPORTS Line : public PCLContextItem {
-  vtkTypeMacro(Line, PCLContextItem);
+  vtkTypeMacro (Line, PCLContextItem);
   static Line*
   New ();
   bool
@@ -122,7 +122,7 @@ struct PCL_EXPORTS Line : public PCLContextItem {
 };
 
 struct PCL_EXPORTS Circle : public PCLContextItem {
-  vtkTypeMacro(Circle, PCLContextItem);
+  vtkTypeMacro (Circle, PCLContextItem);
   static Circle*
   New ();
   bool
@@ -132,7 +132,7 @@ struct PCL_EXPORTS Circle : public PCLContextItem {
 };
 
 struct PCL_EXPORTS Disk : public Circle {
-  vtkTypeMacro(Disk, Circle);
+  vtkTypeMacro (Disk, Circle);
   static Disk*
   New ();
   bool
@@ -140,7 +140,7 @@ struct PCL_EXPORTS Disk : public Circle {
 };
 
 struct PCL_EXPORTS Rectangle : public PCLContextItem {
-  vtkTypeMacro(Rectangle, Point);
+  vtkTypeMacro (Rectangle, Point);
   static Rectangle*
   New ();
   bool
@@ -150,7 +150,7 @@ struct PCL_EXPORTS Rectangle : public PCLContextItem {
 };
 
 struct PCL_EXPORTS FilledRectangle : public Rectangle {
-  vtkTypeMacro(FilledRectangle, Rectangle);
+  vtkTypeMacro (FilledRectangle, Rectangle);
   static FilledRectangle*
   New ();
   bool
@@ -158,7 +158,7 @@ struct PCL_EXPORTS FilledRectangle : public Rectangle {
 };
 
 struct PCL_EXPORTS Points : public PCLContextItem {
-  vtkTypeMacro(Points, PCLContextItem);
+  vtkTypeMacro (Points, PCLContextItem);
   static Points*
   New ();
   bool
@@ -171,7 +171,7 @@ struct PCL_EXPORTS Points : public PCLContextItem {
 };
 
 struct PCL_EXPORTS Polygon : public Points {
-  vtkTypeMacro(Polygon, Points);
+  vtkTypeMacro (Polygon, Points);
   static Polygon*
   New ();
   bool
@@ -179,7 +179,7 @@ struct PCL_EXPORTS Polygon : public Points {
 };
 
 struct PCL_EXPORTS Text : public PCLContextItem {
-  vtkTypeMacro(Text, PCLContextItem);
+  vtkTypeMacro (Text, PCLContextItem);
   static Text*
   New ();
   bool
@@ -190,7 +190,7 @@ struct PCL_EXPORTS Text : public PCLContextItem {
 };
 
 struct PCL_EXPORTS Markers : public Points {
-  vtkTypeMacro(Markers, Points);
+  vtkTypeMacro (Markers, Points);
   static Markers*
   New ();
   bool

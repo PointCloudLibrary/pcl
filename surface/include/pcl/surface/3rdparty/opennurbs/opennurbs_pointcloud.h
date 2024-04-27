@@ -24,21 +24,21 @@
 //
 
 class ON_CLASS ON_PointCloud : public ON_Geometry {
-  ON_OBJECT_DECLARE(ON_PointCloud);
+  ON_OBJECT_DECLARE (ON_PointCloud);
 
 public:
   ON_PointCloud();
-  ON_PointCloud(int // initial point array capacity
+  ON_PointCloud (int // initial point array capacity
   );
-  ON_PointCloud(const ON_PointCloud&);
+  ON_PointCloud (const ON_PointCloud&);
   ~ON_PointCloud();
   ON_PointCloud&
-  operator=(const ON_PointCloud&);
+  operator= (const ON_PointCloud&);
 
   ON_3dPoint&
-  operator[](int);
+  operator[] (int);
   const ON_3dPoint&
-  operator[](int) const;
+  operator[] (int) const;
 
   /*
   Description:

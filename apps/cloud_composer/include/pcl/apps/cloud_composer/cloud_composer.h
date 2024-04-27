@@ -68,7 +68,7 @@ class SignalMultiplexer;
 class ComposerMainWindow : public QMainWindow, private Ui::ComposerMainWindow {
   Q_OBJECT
 public:
-  explicit ComposerMainWindow(QWidget* parent = nullptr);
+  explicit ComposerMainWindow (QWidget* parent = nullptr);
   ~ComposerMainWindow();
 
 Q_SIGNALS:

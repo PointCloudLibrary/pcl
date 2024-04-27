@@ -55,26 +55,26 @@ using namespace std::chrono_literals;
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 pcl::visualization::PCLHistogramVisualizer::PCLHistogramVisualizer()
-: exit_main_loop_timer_callback_(vtkSmartPointer<ExitMainLoopTimerCallback>::New())
-, exit_callback_(vtkSmartPointer<ExitCallback>::New())
+: exit_main_loop_timer_callback_ (vtkSmartPointer<ExitMainLoopTimerCallback>::New())
+, exit_callback_ (vtkSmartPointer<ExitCallback>::New())
 {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 /** \brief Spin once method. Calls the interactor and updates the screen once. */
 void
-pcl::visualization::PCLHistogramVisualizer::spinOnce(int time)
+pcl::visualization::PCLHistogramVisualizer::spinOnce (int time)
 {
   for (auto& win : wins_) {
-    DO_EVERY(1.0 / win.second.interactor_->GetDesiredUpdateRate(),
-             win.second.interactor_->Render();
-             exit_main_loop_timer_callback_->right_timer_id =
-                 win.second.interactor_->CreateRepeatingTimer(time);
+    DO_EVERY (1.0 / win.second.interactor_->GetDesiredUpdateRate(),
+              win.second.interactor_->Render();
+              exit_main_loop_timer_callback_->right_timer_id =
+                  win.second.interactor_->CreateRepeatingTimer (time);
 
-             // Set the correct interactor for callbacks
-             exit_main_loop_timer_callback_->interact = win.second.interactor_;
-             win.second.interactor_->Start();
-             win.second.interactor_->DestroyTimer(
-                 exit_main_loop_timer_callback_->right_timer_id););
+              // Set the correct interactor for callbacks
+              exit_main_loop_timer_callback_->interact = win.second.interactor_;
+              win.second.interactor_->Start();
+              win.second.interactor_->DestroyTimer (
+                  exit_main_loop_timer_callback_->right_timer_id););
   }
 }
 
@@ -87,15 +87,15 @@ pcl::visualization::PCLHistogramVisualizer::spin()
     spinOnce();
     if (stopped_)
       break;
-    std::this_thread::sleep_for(1s);
+    std::this_thread::sleep_for (1s);
   } while (true);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::visualization::PCLHistogramVisualizer::setBackgroundColor(const double& r,
-                                                               const double& g,
-                                                               const double& b)
+pcl::visualization::PCLHistogramVisualizer::setBackgroundColor (const double& r,
+                                                                const double& g,
+                                                                const double& b)
 {
   /*
   rens_->InitTraversal ();
@@ -119,17 +119,17 @@ pcl::visualization::PCLHistogramVisualizer::setBackgroundColor(const double& r,
   }
   */
   for (auto& win : wins_) {
-    win.second.ren_->SetBackground(r, g, b);
+    win.second.ren_->SetBackground (r, g, b);
     win.second.ren_->Render();
   }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::visualization::PCLHistogramVisualizer::setGlobalYRange(float minp, float maxp)
+pcl::visualization::PCLHistogramVisualizer::setGlobalYRange (float minp, float maxp)
 {
   for (auto& win : wins_) {
-    win.second.xy_plot_->SetYRange(minp, maxp);
+    win.second.xy_plot_->SetYRange (minp, maxp);
     win.second.xy_plot_->Modified();
   }
 }
@@ -145,7 +145,7 @@ pcl::visualization::PCLHistogramVisualizer::updateWindowPositions()
     int* win_size = win.second.win_->GetActualSize();
 
     // Update the position of the current window
-    win.second.win_->SetPosition(posx, posy);
+    win.second.win_->SetPosition (posx, posy);
     win.second.win_->Modified();
     // If there is space on Y, go on Y first
     if ((posy + win_size[1]) <= scr_size[1])
@@ -163,36 +163,36 @@ pcl::visualization::PCLHistogramVisualizer::updateWindowPositions()
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::visualization::PCLHistogramVisualizer::reCreateActor(
+pcl::visualization::PCLHistogramVisualizer::reCreateActor (
     const vtkSmartPointer<vtkDoubleArray>& xy_array,
     RenWinInteract* renwinupd,
     const int hsize)
 {
-  renwinupd->ren_->RemoveActor2D(renwinupd->xy_plot_);
+  renwinupd->ren_->RemoveActor2D (renwinupd->xy_plot_);
   renwinupd->xy_plot_->RemoveAllDataSetInputConnections();
 
   double min_max[2];
-  xy_array->GetRange(min_max, 1);
+  xy_array->GetRange (min_max, 1);
 
   // Create the data structures
   vtkSmartPointer<vtkFieldData> field_values = vtkSmartPointer<vtkFieldData>::New();
-  field_values->AddArray(xy_array);
+  field_values->AddArray (xy_array);
 
   vtkSmartPointer<vtkDataObject> field_data = vtkSmartPointer<vtkDataObject>::New();
-  field_data->SetFieldData(field_values);
+  field_data->SetFieldData (field_values);
 
-  renwinupd->xy_plot_->AddDataObjectInput(field_data);
-  renwinupd->ren_->AddActor2D(renwinupd->xy_plot_);
+  renwinupd->xy_plot_->AddDataObjectInput (field_data);
+  renwinupd->ren_->AddActor2D (renwinupd->xy_plot_);
 
-  renwinupd->xy_plot_->SetYTitle("");
-  renwinupd->xy_plot_->SetXTitle("");
-  renwinupd->xy_plot_->SetYRange(min_max[0], min_max[1]);
-  renwinupd->xy_plot_->SetXRange(0, hsize - 1);
+  renwinupd->xy_plot_->SetYTitle ("");
+  renwinupd->xy_plot_->SetXTitle ("");
+  renwinupd->xy_plot_->SetYRange (min_max[0], min_max[1]);
+  renwinupd->xy_plot_->SetXRange (0, hsize - 1);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::visualization::PCLHistogramVisualizer::createActor(
+pcl::visualization::PCLHistogramVisualizer::createActor (
     const vtkSmartPointer<vtkDoubleArray>& xy_array,
     pcl::visualization::RenWinInteract& renwinint,
     const std::string& id,
@@ -205,17 +205,17 @@ pcl::visualization::PCLHistogramVisualizer::createActor(
 
   // Create the data structures
   vtkSmartPointer<vtkFieldData> field_values = vtkSmartPointer<vtkFieldData>::New();
-  field_values->AddArray(xy_array);
+  field_values->AddArray (xy_array);
 
   vtkSmartPointer<vtkDataObject> field_data = vtkSmartPointer<vtkDataObject>::New();
-  field_data->SetFieldData(field_values);
+  field_data->SetFieldData (field_values);
 
-  renwinint.xy_plot_->AddDataObjectInput(field_data);
+  renwinint.xy_plot_->AddDataObjectInput (field_data);
   // Set the plot color
-  renwinint.xy_plot_->SetPlotColor(0, 1.0, 0.0, 0.0);
+  renwinint.xy_plot_->SetPlotColor (0, 1.0, 0.0, 0.0);
 
-  renwinint.xy_plot_->SetDataObjectXComponent(0, 0);
-  renwinint.xy_plot_->SetDataObjectYComponent(0, 1);
+  renwinint.xy_plot_->SetDataObjectXComponent (0, 0);
+  renwinint.xy_plot_->SetDataObjectYComponent (0, 1);
   renwinint.xy_plot_->PlotPointsOn();
   // renwinint.xy_plot_->PlotCurvePointsOn ();
   // renwinint.xy_plot_->PlotLinesOn ();
@@ -223,42 +223,42 @@ pcl::visualization::PCLHistogramVisualizer::createActor(
 
   // Get min-max range
   double min_max[2];
-  xy_array->GetRange(min_max, 1);
+  xy_array->GetRange (min_max, 1);
 
-  renwinint.xy_plot_->SetYTitle("");
-  renwinint.xy_plot_->SetXTitle("");
-  renwinint.xy_plot_->SetYRange(min_max[0], min_max[1]);
-  renwinint.xy_plot_->SetXRange(0,
-                                static_cast<double>(xy_array->GetNumberOfTuples() - 1));
+  renwinint.xy_plot_->SetYTitle ("");
+  renwinint.xy_plot_->SetXTitle ("");
+  renwinint.xy_plot_->SetYRange (min_max[0], min_max[1]);
+  renwinint.xy_plot_->SetXRange (
+      0, static_cast<double> (xy_array->GetNumberOfTuples() - 1));
 
   // renwinint.xy_plot_->SetTitle (id.c_str ());
-  renwinint.xy_plot_->GetProperty()->SetColor(0, 0, 0);
+  renwinint.xy_plot_->GetProperty()->SetColor (0, 0, 0);
 
   // Adjust text properties
   vtkSmartPointer<vtkTextProperty> tprop = renwinint.xy_plot_->GetTitleTextProperty();
   renwinint.xy_plot_->AdjustTitlePositionOn();
-  tprop->SetFontSize(8);
+  tprop->SetFontSize (8);
   tprop->ShadowOff();
   tprop->ItalicOff();
-  tprop->SetColor(renwinint.xy_plot_->GetProperty()->GetColor());
+  tprop->SetColor (renwinint.xy_plot_->GetProperty()->GetColor());
 
-  renwinint.xy_plot_->SetAxisLabelTextProperty(tprop);
-  renwinint.xy_plot_->SetAxisTitleTextProperty(tprop);
-  renwinint.xy_plot_->SetNumberOfXLabels(8);
-  renwinint.xy_plot_->GetProperty()->SetPointSize(3);
-  renwinint.xy_plot_->GetProperty()->SetLineWidth(2);
+  renwinint.xy_plot_->SetAxisLabelTextProperty (tprop);
+  renwinint.xy_plot_->SetAxisTitleTextProperty (tprop);
+  renwinint.xy_plot_->SetNumberOfXLabels (8);
+  renwinint.xy_plot_->GetProperty()->SetPointSize (3);
+  renwinint.xy_plot_->GetProperty()->SetLineWidth (2);
 
-  renwinint.xy_plot_->SetPosition(0, 0);
-  renwinint.xy_plot_->SetWidth(1);
-  renwinint.xy_plot_->SetHeight(1);
+  renwinint.xy_plot_->SetPosition (0, 0);
+  renwinint.xy_plot_->SetWidth (1);
+  renwinint.xy_plot_->SetHeight (1);
 
   // Create the new window with its interactor and renderer
-  renwinint.ren_->AddActor2D(renwinint.xy_plot_);
-  renwinint.ren_->SetBackground(1, 1, 1);
-  renwinint.win_->SetWindowName(id.c_str());
-  renwinint.win_->AddRenderer(renwinint.ren_);
-  renwinint.win_->SetSize(win_width, win_height);
-  renwinint.win_->SetBorders(1);
+  renwinint.ren_->AddActor2D (renwinint.xy_plot_);
+  renwinint.ren_->SetBackground (1, 1, 1);
+  renwinint.win_->SetWindowName (id.c_str());
+  renwinint.win_->AddRenderer (renwinint.ren_);
+  renwinint.win_->SetSize (win_width, win_height);
+  renwinint.win_->SetBorders (1);
 
   // Create the interactor style
   vtkSmartPointer<pcl::visualization::PCLHistogramVisualizerInteractorStyle> style_ =
@@ -267,22 +267,22 @@ pcl::visualization::PCLHistogramVisualizer::createActor(
   renwinint.style_ = style_;
   renwinint.style_->UseTimersOn();
   renwinint.interactor_ = vtkSmartPointer<vtkRenderWindowInteractor>::New();
-  renwinint.interactor_->SetRenderWindow(renwinint.win_);
-  renwinint.interactor_->SetInteractorStyle(renwinint.style_);
+  renwinint.interactor_->SetRenderWindow (renwinint.win_);
+  renwinint.interactor_->SetInteractorStyle (renwinint.style_);
   // Initialize and create timer
   renwinint.interactor_->Initialize();
-  renwinint.interactor_->CreateRepeatingTimer(5000L);
+  renwinint.interactor_->CreateRepeatingTimer (5000L);
 
   exit_main_loop_timer_callback_->right_timer_id = -1;
-  renwinint.interactor_->AddObserver(vtkCommand::TimerEvent,
-                                     exit_main_loop_timer_callback_);
+  renwinint.interactor_->AddObserver (vtkCommand::TimerEvent,
+                                      exit_main_loop_timer_callback_);
   exit_callback_->his = this;
-  renwinint.interactor_->AddObserver(vtkCommand::ExitEvent, exit_callback_);
+  renwinint.interactor_->AddObserver (vtkCommand::ExitEvent, exit_callback_);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 bool
-pcl::visualization::PCLHistogramVisualizer::addFeatureHistogram(
+pcl::visualization::PCLHistogramVisualizer::addFeatureHistogram (
     const pcl::PCLPointCloud2& cloud,
     const std::string& field_name,
     const std::string& id,
@@ -290,83 +290,23 @@ pcl::visualization::PCLHistogramVisualizer::addFeatureHistogram(
     int win_height)
 {
   // Get the field
-  int field_idx = pcl::getFieldIndex(cloud, field_name);
+  int field_idx = pcl::getFieldIndex (cloud, field_name);
   if (field_idx == -1) {
-    PCL_ERROR("[addFeatureHistogram] Invalid field (%s) given!\n", field_name.c_str());
+    PCL_ERROR ("[addFeatureHistogram] Invalid field (%s) given!\n", field_name.c_str());
     return (false);
   }
 
-  auto am_it = wins_.find(id);
+  auto am_it = wins_.find (id);
   if (am_it != wins_.end()) {
-    PCL_WARN("[addFeatureHistogram] A window with id <%s> already exists! Please "
-             "choose a different id and retry.\n",
-             id.c_str());
-    return (false);
-  }
-
-  vtkSmartPointer<vtkDoubleArray> xy_array = vtkSmartPointer<vtkDoubleArray>::New();
-  xy_array->SetNumberOfComponents(2);
-  xy_array->SetNumberOfTuples(cloud.fields[field_idx].count);
-
-  // Parse the cloud data and store it in the array
-  double xy[2];
-  for (uindex_t d = 0; d < cloud.fields[field_idx].count; ++d) {
-    xy[0] = d;
-    float data;
-    // TODO: replace float with the real data type
-    memcpy(&data,
-           &cloud.data[cloud.fields[field_idx].offset + d * sizeof(float)],
-           sizeof(float));
-    xy[1] = data;
-    xy_array->SetTuple(d, xy);
-  }
-  RenWinInteract renwinint;
-  createActor(xy_array, renwinint, id, win_width, win_height);
-
-  // Save the pointer/ID pair to the global window map
-  wins_[id] = renwinint;
-  return (true);
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////
-bool
-pcl::visualization::PCLHistogramVisualizer::addFeatureHistogram(
-    const pcl::PCLPointCloud2& cloud,
-    const std::string& field_name,
-    const pcl::index_t index,
-    const std::string& id,
-    int win_width,
-    int win_height)
-{
-  if (index < 0 || index >= static_cast<pcl::index_t>(cloud.width * cloud.height)) {
-    PCL_ERROR("[addFeatureHistogram] Invalid point index (%d) given!\n", index);
-    return (false);
-  }
-
-  // Get the field
-  int field_idx = pcl::getFieldIndex(cloud, field_name);
-  if (field_idx == -1) {
-    PCL_ERROR("[addFeatureHistogram] The specified field <%s> does not exist!\n",
-              field_name.c_str());
-    return (false);
-  }
-
-  auto am_it = wins_.find(id);
-  if (am_it != wins_.end()) {
-    PCL_ERROR("[addFeatureHistogram] A window with id <%s> already exists! Please "
+    PCL_WARN ("[addFeatureHistogram] A window with id <%s> already exists! Please "
               "choose a different id and retry.\n",
               id.c_str());
     return (false);
   }
 
   vtkSmartPointer<vtkDoubleArray> xy_array = vtkSmartPointer<vtkDoubleArray>::New();
-  xy_array->SetNumberOfComponents(2);
-  xy_array->SetNumberOfTuples(cloud.fields[field_idx].count);
-
-  // Compute the total size of the fields
-  unsigned int fsize = 0;
-  for (const auto& field : cloud.fields)
-    fsize += field.count * pcl::getFieldSize(field.datatype);
+  xy_array->SetNumberOfComponents (2);
+  xy_array->SetNumberOfTuples (cloud.fields[field_idx].count);
 
   // Parse the cloud data and store it in the array
   double xy[2];
@@ -374,15 +314,75 @@ pcl::visualization::PCLHistogramVisualizer::addFeatureHistogram(
     xy[0] = d;
     float data;
     // TODO: replace float with the real data type
-    memcpy(
-        &data,
-        &cloud.data[index * fsize + cloud.fields[field_idx].offset + d * sizeof(float)],
-        sizeof(float));
+    memcpy (&data,
+            &cloud.data[cloud.fields[field_idx].offset + d * sizeof (float)],
+            sizeof (float));
     xy[1] = data;
-    xy_array->SetTuple(d, xy);
+    xy_array->SetTuple (d, xy);
   }
   RenWinInteract renwinint;
-  createActor(xy_array, renwinint, id, win_width, win_height);
+  createActor (xy_array, renwinint, id, win_width, win_height);
+
+  // Save the pointer/ID pair to the global window map
+  wins_[id] = renwinint;
+  return (true);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////
+bool
+pcl::visualization::PCLHistogramVisualizer::addFeatureHistogram (
+    const pcl::PCLPointCloud2& cloud,
+    const std::string& field_name,
+    const pcl::index_t index,
+    const std::string& id,
+    int win_width,
+    int win_height)
+{
+  if (index < 0 || index >= static_cast<pcl::index_t> (cloud.width * cloud.height)) {
+    PCL_ERROR ("[addFeatureHistogram] Invalid point index (%d) given!\n", index);
+    return (false);
+  }
+
+  // Get the field
+  int field_idx = pcl::getFieldIndex (cloud, field_name);
+  if (field_idx == -1) {
+    PCL_ERROR ("[addFeatureHistogram] The specified field <%s> does not exist!\n",
+               field_name.c_str());
+    return (false);
+  }
+
+  auto am_it = wins_.find (id);
+  if (am_it != wins_.end()) {
+    PCL_ERROR ("[addFeatureHistogram] A window with id <%s> already exists! Please "
+               "choose a different id and retry.\n",
+               id.c_str());
+    return (false);
+  }
+
+  vtkSmartPointer<vtkDoubleArray> xy_array = vtkSmartPointer<vtkDoubleArray>::New();
+  xy_array->SetNumberOfComponents (2);
+  xy_array->SetNumberOfTuples (cloud.fields[field_idx].count);
+
+  // Compute the total size of the fields
+  unsigned int fsize = 0;
+  for (const auto& field : cloud.fields)
+    fsize += field.count * pcl::getFieldSize (field.datatype);
+
+  // Parse the cloud data and store it in the array
+  double xy[2];
+  for (uindex_t d = 0; d < cloud.fields[field_idx].count; ++d) {
+    xy[0] = d;
+    float data;
+    // TODO: replace float with the real data type
+    memcpy (&data,
+            &cloud.data[index * fsize + cloud.fields[field_idx].offset +
+                        d * sizeof (float)],
+            sizeof (float));
+    xy[1] = data;
+    xy_array->SetTuple (d, xy);
+  }
+  RenWinInteract renwinint;
+  createActor (xy_array, renwinint, id, win_width, win_height);
 
   // Save the pointer/ID pair to the global window map
   wins_[id] = renwinint;
@@ -391,105 +391,105 @@ pcl::visualization::PCLHistogramVisualizer::addFeatureHistogram(
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 bool
-pcl::visualization::PCLHistogramVisualizer::updateFeatureHistogram(
+pcl::visualization::PCLHistogramVisualizer::updateFeatureHistogram (
     const pcl::PCLPointCloud2& cloud,
     const std::string& field_name,
     const std::string& id)
 {
-  auto am_it = wins_.find(id);
+  auto am_it = wins_.find (id);
   if (am_it == wins_.end()) {
-    PCL_WARN("[updateFeatureHistogram] A window with id <%s> does not exists!.\n",
-             id.c_str());
+    PCL_WARN ("[updateFeatureHistogram] A window with id <%s> does not exists!.\n",
+              id.c_str());
     return (false);
   }
   RenWinInteract* renwinupd = &wins_[id];
   vtkSmartPointer<vtkDoubleArray> xy_array = vtkSmartPointer<vtkDoubleArray>::New();
-  xy_array->SetNumberOfComponents(2);
+  xy_array->SetNumberOfComponents (2);
 
   // Get the field
-  int field_idx = pcl::getFieldIndex(cloud, field_name);
+  int field_idx = pcl::getFieldIndex (cloud, field_name);
   if (field_idx == -1) {
-    pcl::console::print_error("[updateFeatureHistogram] Invalid field (%s) given!",
-                              field_name.c_str());
+    pcl::console::print_error ("[updateFeatureHistogram] Invalid field (%s) given!",
+                               field_name.c_str());
     return (false);
   }
-  xy_array->SetNumberOfTuples(cloud.fields[field_idx].count);
+  xy_array->SetNumberOfTuples (cloud.fields[field_idx].count);
 
   // Parse the cloud data and store it in the array
   double xy[2];
   for (uindex_t d = 0; d < cloud.fields[field_idx].count; ++d) {
     xy[0] = d;
     float data;
-    memcpy(&data,
-           &cloud.data[cloud.fields[field_idx].offset + d * sizeof(float)],
-           sizeof(float));
+    memcpy (&data,
+            &cloud.data[cloud.fields[field_idx].offset + d * sizeof (float)],
+            sizeof (float));
     xy[1] = data;
-    xy_array->SetTuple(d, xy);
+    xy_array->SetTuple (d, xy);
   }
-  reCreateActor(xy_array, renwinupd, cloud.fields[field_idx].count - 1);
+  reCreateActor (xy_array, renwinupd, cloud.fields[field_idx].count - 1);
   return (true);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 bool
-pcl::visualization::PCLHistogramVisualizer::updateFeatureHistogram(
+pcl::visualization::PCLHistogramVisualizer::updateFeatureHistogram (
     const pcl::PCLPointCloud2& cloud,
     const std::string& field_name,
     const pcl::index_t index,
     const std::string& id)
 {
-  if (index < 0 || index >= static_cast<pcl::index_t>(cloud.width * cloud.height)) {
-    PCL_ERROR("[updateFeatureHistogram] Invalid point index (%d) given!\n", index);
+  if (index < 0 || index >= static_cast<pcl::index_t> (cloud.width * cloud.height)) {
+    PCL_ERROR ("[updateFeatureHistogram] Invalid point index (%d) given!\n", index);
     return (false);
   }
-  auto am_it = wins_.find(id);
+  auto am_it = wins_.find (id);
   if (am_it == wins_.end()) {
-    PCL_WARN("[updateFeatureHistogram] A window with id <%s> does not exists!.\n",
-             id.c_str());
+    PCL_WARN ("[updateFeatureHistogram] A window with id <%s> does not exists!.\n",
+              id.c_str());
     return (false);
   }
   RenWinInteract* renwinupd = &wins_[id];
   vtkSmartPointer<vtkDoubleArray> xy_array = vtkSmartPointer<vtkDoubleArray>::New();
-  xy_array->SetNumberOfComponents(2);
+  xy_array->SetNumberOfComponents (2);
 
   // Get the field
-  int field_idx = pcl::getFieldIndex(cloud, field_name);
+  int field_idx = pcl::getFieldIndex (cloud, field_name);
   if (field_idx == -1) {
-    pcl::console::print_error("[updateFeatureHistogram] Invalid field (%s) given!",
-                              field_name.c_str());
+    pcl::console::print_error ("[updateFeatureHistogram] Invalid field (%s) given!",
+                               field_name.c_str());
     return (false);
   }
-  xy_array->SetNumberOfTuples(cloud.fields[field_idx].count);
+  xy_array->SetNumberOfTuples (cloud.fields[field_idx].count);
 
   // Compute the total size of the fields
   unsigned int fsize = 0;
   for (const auto& field : cloud.fields)
-    fsize += field.count * pcl::getFieldSize(field.datatype);
+    fsize += field.count * pcl::getFieldSize (field.datatype);
 
   // Parse the cloud data and store it in the array
   double xy[2];
   for (uindex_t d = 0; d < cloud.fields[field_idx].count; ++d) {
     xy[0] = d;
     float data;
-    memcpy(
-        &data,
-        &cloud.data[index * fsize + cloud.fields[field_idx].offset + d * sizeof(float)],
-        sizeof(float));
+    memcpy (&data,
+            &cloud.data[index * fsize + cloud.fields[field_idx].offset +
+                        d * sizeof (float)],
+            sizeof (float));
     xy[1] = data;
-    xy_array->SetTuple(d, xy);
+    xy_array->SetTuple (d, xy);
   }
-  reCreateActor(xy_array, renwinupd, cloud.fields[field_idx].count - 1);
+  reCreateActor (xy_array, renwinupd, cloud.fields[field_idx].count - 1);
   return (true);
 }
 
 //////////////////////////////////////////////////////////////////////////////
 void
-pcl::visualization::PCLHistogramVisualizer::ExitMainLoopTimerCallback::Execute(
+pcl::visualization::PCLHistogramVisualizer::ExitMainLoopTimerCallback::Execute (
     vtkObject*, unsigned long event_id, void* call_data)
 {
   if (event_id != vtkCommand::TimerEvent)
     return;
-  int timer_id = *(reinterpret_cast<int*>(call_data));
+  int timer_id = *(reinterpret_cast<int*> (call_data));
 
   if (timer_id != right_timer_id)
     return;
@@ -500,7 +500,7 @@ pcl::visualization::PCLHistogramVisualizer::ExitMainLoopTimerCallback::Execute(
 
 //////////////////////////////////////////////////////////////////////////////
 void
-pcl::visualization::PCLHistogramVisualizer::ExitCallback::Execute(
+pcl::visualization::PCLHistogramVisualizer::ExitCallback::Execute (
     vtkObject*, unsigned long event_id, void*)
 {
   if (event_id != vtkCommand::ExitEvent)

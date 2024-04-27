@@ -45,22 +45,22 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 int
-pcl::io::saveVTKFile(const std::string& file_name,
-                     const pcl::PolygonMesh& triangles,
-                     unsigned precision)
+pcl::io::saveVTKFile (const std::string& file_name,
+                      const pcl::PolygonMesh& triangles,
+                      unsigned precision)
 {
   if (triangles.cloud.data.empty()) {
-    PCL_ERROR("[pcl::io::saveVTKFile] Input point cloud has no data!\n");
+    PCL_ERROR ("[pcl::io::saveVTKFile] Input point cloud has no data!\n");
     return (-1);
   }
 
   // Open file
   std::ofstream fs;
-  fs.precision(precision);
-  fs.open(file_name.c_str());
+  fs.precision (precision);
+  fs.open (file_name.c_str());
 
   unsigned int nr_points = triangles.cloud.width * triangles.cloud.height;
-  auto point_size = static_cast<unsigned int>(triangles.cloud.data.size() / nr_points);
+  auto point_size = static_cast<unsigned int> (triangles.cloud.data.size() / nr_points);
 
   // Write the header information
   fs << "# vtk DataFile Version 3.0\nvtk output\nASCII\nDATASET POLYDATA\nPOINTS "
@@ -75,9 +75,10 @@ pcl::io::saveVTKFile(const std::string& file_name,
            triangles.cloud.fields[d].name == "y" ||
            triangles.cloud.fields[d].name == "z")) {
         float value;
-        memcpy(&value,
-               &triangles.cloud.data[i * point_size + triangles.cloud.fields[d].offset],
-               sizeof(float));
+        memcpy (
+            &value,
+            &triangles.cloud.data[i * point_size + triangles.cloud.fields[d].offset],
+            sizeof (float));
         fs << value;
         if (++xyz == 3)
           break;
@@ -85,7 +86,7 @@ pcl::io::saveVTKFile(const std::string& file_name,
       fs << " ";
     }
     if (xyz != 3) {
-      PCL_ERROR("[pcl::io::saveVTKFile] Input point cloud has no XYZ data!\n");
+      PCL_ERROR ("[pcl::io::saveVTKFile] Input point cloud has no XYZ data!\n");
       return (-2);
     }
     fs << '\n';
@@ -111,21 +112,21 @@ pcl::io::saveVTKFile(const std::string& file_name,
   }
 
   // Write RGB values
-  int field_index = getFieldIndex(triangles.cloud, "rgb");
+  int field_index = getFieldIndex (triangles.cloud, "rgb");
   if (field_index != -1) {
     fs << "\nPOINT_DATA " << nr_points << "\nCOLOR_SCALARS scalars 3\n";
     for (unsigned int i = 0; i < nr_points; ++i) {
       if (triangles.cloud.fields[field_index].datatype == pcl::PCLPointField::FLOAT32) {
         pcl::RGB color;
-        memcpy(&color,
-               &triangles.cloud
-                    .data[i * point_size + triangles.cloud.fields[field_index].offset],
-               sizeof(RGB));
+        memcpy (&color,
+                &triangles.cloud
+                     .data[i * point_size + triangles.cloud.fields[field_index].offset],
+                sizeof (RGB));
         int r = color.r;
         int g = color.g;
         int b = color.b;
-        fs << static_cast<float>(r) / 255.0f << " " << static_cast<float>(g) / 255.0f
-           << " " << static_cast<float>(b) / 255.0f;
+        fs << static_cast<float> (r) / 255.0f << " " << static_cast<float> (g) / 255.0f
+           << " " << static_cast<float> (b) / 255.0f;
       }
       fs << '\n';
     }
@@ -138,22 +139,22 @@ pcl::io::saveVTKFile(const std::string& file_name,
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 int
-pcl::io::saveVTKFile(const std::string& file_name,
-                     const pcl::PCLPointCloud2& cloud,
-                     unsigned precision)
+pcl::io::saveVTKFile (const std::string& file_name,
+                      const pcl::PCLPointCloud2& cloud,
+                      unsigned precision)
 {
   if (cloud.data.empty()) {
-    PCL_ERROR("[pcl::io::saveVTKFile] Input point cloud has no data!\n");
+    PCL_ERROR ("[pcl::io::saveVTKFile] Input point cloud has no data!\n");
     return (-1);
   }
 
   // Open file
   std::ofstream fs;
-  fs.precision(precision);
-  fs.open(file_name.c_str());
+  fs.precision (precision);
+  fs.open (file_name.c_str());
 
   unsigned int nr_points = cloud.width * cloud.height;
-  auto point_size = static_cast<unsigned int>(cloud.data.size() / nr_points);
+  auto point_size = static_cast<unsigned int> (cloud.data.size() / nr_points);
 
   // Write the header information
   fs << "# vtk DataFile Version 3.0\nvtk output\nASCII\nDATASET POLYDATA\nPOINTS "
@@ -167,9 +168,9 @@ pcl::io::saveVTKFile(const std::string& file_name,
           (cloud.fields[d].name == "x" || cloud.fields[d].name == "y" ||
            cloud.fields[d].name == "z")) {
         float value;
-        memcpy(&value,
-               &cloud.data[i * point_size + cloud.fields[d].offset],
-               sizeof(float));
+        memcpy (&value,
+                &cloud.data[i * point_size + cloud.fields[d].offset],
+                sizeof (float));
         fs << value;
         if (++xyz == 3)
           break;
@@ -177,7 +178,7 @@ pcl::io::saveVTKFile(const std::string& file_name,
       fs << " ";
     }
     if (xyz != 3) {
-      PCL_ERROR("[pcl::io::saveVTKFile] Input point cloud has no XYZ data!\n");
+      PCL_ERROR ("[pcl::io::saveVTKFile] Input point cloud has no XYZ data!\n");
       return (-2);
     }
     fs << '\n';
@@ -189,20 +190,20 @@ pcl::io::saveVTKFile(const std::string& file_name,
     fs << "1 " << i << '\n';
 
   // Write RGB values
-  int field_index = getFieldIndex(cloud, "rgb");
+  int field_index = getFieldIndex (cloud, "rgb");
   if (field_index != -1) {
     fs << "\nPOINT_DATA " << nr_points << "\nCOLOR_SCALARS scalars 3\n";
     for (unsigned int i = 0; i < nr_points; ++i) {
       if (cloud.fields[field_index].datatype == pcl::PCLPointField::FLOAT32) {
         pcl::RGB color;
-        memcpy(&color,
-               &cloud.data[i * point_size + cloud.fields[field_index].offset],
-               sizeof(RGB));
+        memcpy (&color,
+                &cloud.data[i * point_size + cloud.fields[field_index].offset],
+                sizeof (RGB));
         int r = color.r;
         int g = color.g;
         int b = color.b;
-        fs << static_cast<float>(r) / 255.0f << " " << static_cast<float>(g) / 255.0f
-           << " " << static_cast<float>(b) / 255.0f;
+        fs << static_cast<float> (r) / 255.0f << " " << static_cast<float> (g) / 255.0f
+           << " " << static_cast<float> (b) / 255.0f;
       }
       fs << '\n';
     }

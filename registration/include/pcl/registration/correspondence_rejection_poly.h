@@ -122,9 +122,9 @@ public:
   void
   setSourcePoints (pcl::PCLPointCloud2::ConstPtr cloud2) override
   {
-    PointCloudSourcePtr cloud(new PointCloudSource);
-    fromPCLPointCloud2(*cloud2, *cloud);
-    setInputSource(cloud);
+    PointCloudSourcePtr cloud (new PointCloudSource);
+    fromPCLPointCloud2 (*cloud2, *cloud);
+    setInputSource (cloud);
   }
 
   /** \brief See if this rejector requires a target cloud */
@@ -138,9 +138,9 @@ public:
   void
   setTargetPoints (pcl::PCLPointCloud2::ConstPtr cloud2) override
   {
-    PointCloudTargetPtr cloud(new PointCloudTarget);
-    fromPCLPointCloud2(*cloud2, *cloud);
-    setInputTarget(cloud);
+    PointCloudTargetPtr cloud (new PointCloudTarget);
+    fromPCLPointCloud2 (*cloud2, *cloud);
+    setInputTarget (cloud);
   }
 
   /** \brief Set the polygon cardinality
@@ -211,19 +211,19 @@ public:
     if (cardinality_ ==
         2) // Special case: when two points are considered, we only have one edge
     {
-      return (thresholdEdgeLength(corr[idx[0]].index_query,
-                                  corr[idx[1]].index_query,
-                                  corr[idx[0]].index_match,
-                                  corr[idx[1]].index_match,
-                                  similarity_threshold_squared_));
+      return (thresholdEdgeLength (corr[idx[0]].index_query,
+                                   corr[idx[1]].index_query,
+                                   corr[idx[0]].index_match,
+                                   corr[idx[1]].index_match,
+                                   similarity_threshold_squared_));
     }
     // Otherwise check all edges
     for (int i = 0; i < cardinality_; ++i) {
-      if (!thresholdEdgeLength(corr[idx[i]].index_query,
-                               corr[idx[(i + 1) % cardinality_]].index_query,
-                               corr[idx[i]].index_match,
-                               corr[idx[(i + 1) % cardinality_]].index_match,
-                               similarity_threshold_squared_)) {
+      if (!thresholdEdgeLength (corr[idx[i]].index_query,
+                                corr[idx[(i + 1) % cardinality_]].index_query,
+                                corr[idx[i]].index_match,
+                                corr[idx[(i + 1) % cardinality_]].index_match,
+                                similarity_threshold_squared_)) {
         return (false);
       }
     }
@@ -243,15 +243,15 @@ public:
                     const pcl::Indices& target_indices)
   {
     // Convert indices to correspondences and an index vector pointing to each element
-    pcl::Correspondences corr(cardinality_);
-    std::vector<int> idx(cardinality_);
+    pcl::Correspondences corr (cardinality_);
+    std::vector<int> idx (cardinality_);
     for (int i = 0; i < cardinality_; ++i) {
       corr[i].index_query = source_indices[i];
       corr[i].index_match = target_indices[i];
       idx[i] = i;
     }
 
-    return (thresholdPolygon(corr, idx));
+    return (thresholdPolygon (corr, idx));
   }
 
 protected:
@@ -261,7 +261,7 @@ protected:
   inline void
   applyRejection (pcl::Correspondences& correspondences) override
   {
-    getRemainingCorrespondences(*input_correspondences_, correspondences);
+    getRemainingCorrespondences (*input_correspondences_, correspondences);
   }
 
   /** \brief Get k unique random indices in range {0,...,n-1} (sampling without
@@ -274,11 +274,11 @@ protected:
   getUniqueRandomIndices (int n, int k)
   {
     // Marked sampled indices and sample counter
-    std::vector<bool> sampled(n, false);
+    std::vector<bool> sampled (n, false);
     int samples = 0;
     // Resulting unique indices
     std::vector<int> result;
-    result.reserve(k);
+    result.reserve (k);
     do {
       // Pick a random index in the range
       const int idx = (std::rand() % n);
@@ -288,7 +288,7 @@ protected:
         sampled[idx] = true;
         ++samples;
         // Store
-        result.push_back(idx);
+        result.push_back (idx);
       }
     } while (samples < k);
 
@@ -327,10 +327,10 @@ protected:
   {
     // Distance between source points
     const float dist_src =
-        computeSquaredDistance((*input_)[index_query_1], (*input_)[index_query_2]);
+        computeSquaredDistance ((*input_)[index_query_1], (*input_)[index_query_2]);
     // Distance between target points
     const float dist_tgt =
-        computeSquaredDistance((*target_)[index_match_1], (*target_)[index_match_2]);
+        computeSquaredDistance ((*target_)[index_match_1], (*target_)[index_match_2]);
     // Edge length similarity [0,1] where 1 is a perfect match
     const float edge_sim =
         (dist_src < dist_tgt ? dist_src / dist_tgt : dist_tgt / dist_src);

@@ -58,9 +58,9 @@ public:
   //////ON_BOOL32 Archive() const;
 
   ON_Annotation2Text&
-  operator=(const char*);
+  operator= (const char*);
   ON_Annotation2Text&
-  operator=(const wchar_t*);
+  operator= (const wchar_t*);
 
   void
   SetText (const char* s);
@@ -81,7 +81,7 @@ public:
 
 // Extension to ON_TextEntity added 12/10/2009 for Text background drawing
 class ON_CLASS ON_TextExtra : public ON_UserData {
-  ON_OBJECT_DECLARE(ON_TextExtra);
+  ON_OBJECT_DECLARE (ON_TextExtra);
 
 public:
   ON_TextExtra();
@@ -117,10 +117,10 @@ public:
 
   // override virtual ON_UserData::Archive function
   ON_BOOL32
-  Archive () const;
+  Archive() const;
 
   ON_UUID
-  ParentUUID () const;
+  ParentUUID() const;
   void
   SetParentUUID (ON_UUID parent_uuid);
 
@@ -161,7 +161,7 @@ public:
 };
 
 class ON_CLASS ON_DimensionExtra : public ON_UserData {
-  ON_OBJECT_DECLARE(ON_DimensionExtra);
+  ON_OBJECT_DECLARE (ON_DimensionExtra);
 
 public:
   ON_DimensionExtra();
@@ -205,10 +205,10 @@ public:
 
   // override virtual ON_UserData::Archive function
   ON_BOOL32
-  Archive () const;
+  Archive() const;
 
   ON_UUID
-  ParentUUID () const;
+  ParentUUID() const;
   void
   SetParentUUID (ON_UUID parent_uuid);
 
@@ -289,7 +289,7 @@ public:
   etc.). Virtual base class for annotation objects Replaces ON_Annotation
 */
 class ON_CLASS ON_Annotation2 : public ON_Geometry {
-  ON_OBJECT_DECLARE(ON_Annotation2);
+  ON_OBJECT_DECLARE (ON_Annotation2);
 
   // UNICODE symbol code to use for degrees, radius, diameter and plus/minus in
   // dimensions
@@ -308,9 +308,9 @@ public:
   // ON_Annotation2& operator=(const ON_Annotation2&);
 
   // convert from old style annotation
-  ON_Annotation2(const ON_Annotation&);
+  ON_Annotation2 (const ON_Annotation&);
   ON_Annotation2&
-  operator=(const ON_Annotation&);
+  operator= (const ON_Annotation&);
 
   // Description:
   //   Sets initial defaults
@@ -498,7 +498,7 @@ public:
     Returns:
       ON::eAnnotationType of the object
   */
-  void SetType(ON::eAnnotationType);
+  void SetType (ON::eAnnotationType);
   ON::eAnnotationType
   Type () const;
 
@@ -703,7 +703,7 @@ public:
       This is the way the text is oriented with respect to the dimension line or screen:
       Above line, In LIne, Horizontal
   */
-  void SetTextDisplayMode(ON::eTextDisplayMode);
+  void SetTextDisplayMode (ON::eTextDisplayMode);
   ON::eTextDisplayMode
   TextDisplayMode () const;
 
@@ -1061,7 +1061,7 @@ public:
 
 // Subclass of ON_Annotation2 to provide linear dimensions
 class ON_CLASS ON_LinearDimension2 : public ON_Annotation2 {
-  ON_OBJECT_DECLARE(ON_LinearDimension2);
+  ON_OBJECT_DECLARE (ON_LinearDimension2);
 
 public:
   /*
@@ -1266,7 +1266,7 @@ public:
 //////////
 // class ON_RadialDimension2
 class ON_CLASS ON_RadialDimension2 : public ON_Annotation2 {
-  ON_OBJECT_DECLARE(ON_RadialDimension2);
+  ON_OBJECT_DECLARE (ON_RadialDimension2);
 
 public:
   /*
@@ -1434,7 +1434,7 @@ public:
 //////////
 // class ON_AngularDimension2
 class ON_CLASS ON_AngularDimension2 : public ON_Annotation2 {
-  ON_OBJECT_DECLARE(ON_AngularDimension2);
+  ON_OBJECT_DECLARE (ON_AngularDimension2);
 
 public:
   /*
@@ -1727,7 +1727,7 @@ public:
     Override od ON_Annotation2 to provide linear dimensions
 */
 class ON_CLASS ON_OrdinateDimension2 : public ON_Annotation2 {
-  ON_OBJECT_DECLARE(ON_OrdinateDimension2);
+  ON_OBJECT_DECLARE (ON_OrdinateDimension2);
 
 public:
   /*
@@ -1975,7 +1975,7 @@ public:
 //////////
 // class ON_TextEntity2
 class ON_CLASS ON_TextEntity2 : public ON_Annotation2 {
-  ON_OBJECT_DECLARE(ON_TextEntity2);
+  ON_OBJECT_DECLARE (ON_TextEntity2);
 
 public:
   ON_TextEntity2();
@@ -2079,7 +2079,7 @@ public:
 //////////
 // class ON_Leader2
 class ON_CLASS ON_Leader2 : public ON_Annotation2 {
-  ON_OBJECT_DECLARE(ON_Leader2);
+  ON_OBJECT_DECLARE (ON_Leader2);
 
 public:
   /*
@@ -2220,7 +2220,7 @@ public:
   A simple dot with text that doesn't rotate witn the world axes
 */
 class ON_CLASS ON_TextDot : public ON_Geometry {
-  ON_OBJECT_DECLARE(ON_TextDot);
+  ON_OBJECT_DECLARE (ON_TextDot);
 
 public:
   ON_TextDot();

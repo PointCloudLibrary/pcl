@@ -53,7 +53,7 @@ public:
 
   OutofcoreAbstractNodeContainer() : container_() {}
 
-  OutofcoreAbstractNodeContainer(const boost::filesystem::path&) {}
+  OutofcoreAbstractNodeContainer (const boost::filesystem::path&) {}
 
   virtual ~OutofcoreAbstractNodeContainer() = default;
 
@@ -87,10 +87,10 @@ public:
   convertToXYZ (const boost::filesystem::path& path) = 0;
 
   virtual PointT
-  operator[](std::uint64_t idx) const = 0;
+  operator[] (std::uint64_t idx) const = 0;
 
 protected:
-  OutofcoreAbstractNodeContainer(const OutofcoreAbstractNodeContainer& rval);
+  OutofcoreAbstractNodeContainer (const OutofcoreAbstractNodeContainer& rval);
 
   AlignedPointTVector container_;
 

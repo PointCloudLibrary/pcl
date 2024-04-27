@@ -35,10 +35,10 @@ class FarthestPointSampling : public FilterIndices<PointT> {
 
 public:
   /** \brief Empty constructor. */
-  FarthestPointSampling(bool extract_removed_indices = false)
-  : FilterIndices<PointT>(extract_removed_indices)
-  , sample_size_(std::numeric_limits<int>::max())
-  , seed_(std::random_device()())
+  FarthestPointSampling (bool extract_removed_indices = false)
+  : FilterIndices<PointT> (extract_removed_indices)
+  , sample_size_ (std::numeric_limits<int>::max())
+  , seed_ (std::random_device()())
   {
     filter_name_ = "FarthestPointSamping";
   }

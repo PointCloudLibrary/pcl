@@ -107,7 +107,7 @@ public:
   reset ();
 
   /** \brief Set registration instance used to align clouds */
-  inline void setRegistration(RegistrationPtr);
+  inline void setRegistration (RegistrationPtr);
 
   /** \brief get accumulated meta point cloud */
   inline PointCloudConstPtr

@@ -84,8 +84,8 @@ public:
   OctreeLeafNode() : OctreeNode() {}
 
   /** \brief Copy constructor. */
-  OctreeLeafNode(const OctreeLeafNode& source)
-  : OctreeNode(), container_(source.container_)
+  OctreeLeafNode (const OctreeLeafNode& source)
+  : OctreeNode(), container_ (source.container_)
   {}
 
   /** \brief Empty deconstructor. */
@@ -96,7 +96,7 @@ public:
   OctreeLeafNode<ContainerT>*
   deepCopy () const override
   {
-    return new OctreeLeafNode<ContainerT>(*this);
+    return new OctreeLeafNode<ContainerT> (*this);
   }
 
   /** \brief Get the type of octree node. Returns LEAVE_NODE type */
@@ -182,7 +182,7 @@ public:
   OctreeBranchNode() : OctreeNode() {}
 
   /** \brief Copy constructor. */
-  OctreeBranchNode(const OctreeBranchNode& source) : OctreeNode()
+  OctreeBranchNode (const OctreeBranchNode& source) : OctreeNode()
   {
     for (unsigned char i = 0; i < 8; ++i)
       if (source.child_node_array_[i]) {
@@ -192,7 +192,7 @@ public:
 
   /** \brief Copy operator. */
   inline OctreeBranchNode&
-  operator=(const OctreeBranchNode& source)
+  operator= (const OctreeBranchNode& source)
   {
     child_node_array_ = {};
 
@@ -208,7 +208,7 @@ public:
   OctreeBranchNode*
   deepCopy () const override
   {
-    return (new OctreeBranchNode<ContainerT>(*this));
+    return (new OctreeBranchNode<ContainerT> (*this));
   }
 
   /** \brief Empty deconstructor. */
@@ -220,9 +220,9 @@ public:
    *  \return OctreeNode pointer
    * */
   inline OctreeNode*&
-  operator[](unsigned char child_idx_arg)
+  operator[] (unsigned char child_idx_arg)
   {
-    assert(child_idx_arg < 8);
+    assert (child_idx_arg < 8);
     return child_node_array_[child_idx_arg];
   }
 
@@ -233,7 +233,7 @@ public:
   inline OctreeNode*
   getChildPtr (unsigned char child_idx_arg) const
   {
-    assert(child_idx_arg < 8);
+    assert (child_idx_arg < 8);
     return child_node_array_[child_idx_arg];
   }
 
@@ -244,7 +244,7 @@ public:
   inline void
   setChildPtr (OctreeNode* child, unsigned char index)
   {
-    assert(index < 8);
+    assert (index < 8);
     child_node_array_[index] = child;
   }
 

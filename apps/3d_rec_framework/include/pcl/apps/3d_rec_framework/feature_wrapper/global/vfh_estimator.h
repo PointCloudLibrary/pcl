@@ -31,34 +31,34 @@ public:
   {
 
     if (!normal_estimator_) {
-      PCL_ERROR("This feature needs normals... please provide a normal estimator\n");
+      PCL_ERROR ("This feature needs normals... please provide a normal estimator\n");
       return;
     }
 
-    normals_.reset(new pcl::PointCloud<pcl::Normal>);
-    normal_estimator_->estimate(in, processed, normals_);
+    normals_.reset (new pcl::PointCloud<pcl::Normal>);
+    normal_estimator_->estimate (in, processed, normals_);
 
     using VFHEstimation = pcl::VFHEstimation<PointInT, pcl::Normal, FeatureT>;
     pcl::PointCloud<FeatureT> vfh_signature;
 
     VFHEstimation vfh;
-    typename pcl::search::KdTree<PointInT>::Ptr vfh_tree(
+    typename pcl::search::KdTree<PointInT>::Ptr vfh_tree (
         new pcl::search::KdTree<PointInT>);
-    vfh.setSearchMethod(vfh_tree);
-    vfh.setInputCloud(processed);
-    vfh.setInputNormals(normals_);
-    vfh.setNormalizeBins(true);
-    vfh.setNormalizeDistance(true);
-    vfh.compute(vfh_signature);
+    vfh.setSearchMethod (vfh_tree);
+    vfh.setInputCloud (processed);
+    vfh.setInputNormals (normals_);
+    vfh.setNormalizeBins (true);
+    vfh.setNormalizeDistance (true);
+    vfh.compute (vfh_signature);
 
-    signatures.resize(1);
-    centroids.resize(1);
+    signatures.resize (1);
+    centroids.resize (1);
 
     signatures[0] = vfh_signature;
 
     Eigen::Vector4f centroid4f;
-    pcl::compute3DCentroid(*in, centroid4f);
-    centroids[0] = Eigen::Vector3f(centroid4f[0], centroid4f[1], centroid4f[2]);
+    pcl::compute3DCentroid (*in, centroid4f);
+    centroids[0] = Eigen::Vector3f (centroid4f[0], centroid4f[1], centroid4f[2]);
   }
 
   bool

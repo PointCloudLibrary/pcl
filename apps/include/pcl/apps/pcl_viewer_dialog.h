@@ -20,7 +20,7 @@ class PCLViewerDialog : public QDialog {
   pcl::visualization::PCLVisualizer::Ptr vis_;
 
 public:
-  PCLViewerDialog(QWidget* parent = 0);
+  PCLViewerDialog (QWidget* parent = 0);
 
   void
   setPointClouds (CloudT::ConstPtr src_cloud,

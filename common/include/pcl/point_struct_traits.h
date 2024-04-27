@@ -66,7 +66,7 @@ struct asEnum;
 template <typename T>
 struct decomposeArray {
   using type = std::remove_all_extents_t<T>;
-  static const std::uint32_t value = sizeof(T) / sizeof(type);
+  static const std::uint32_t value = sizeof (T) / sizeof (type);
 };
 
 // For non-POD point types, this is specialized to return the corresponding POD type.
@@ -109,9 +109,9 @@ struct name /** \cond NO_WARN_RECURSIVE */ : name<typename POD<PointT>::type,
   // static const char value[];
 
   // Avoid infinite compile-time recursion
-  BOOST_MPL_ASSERT_MSG((!std::is_same<PointT, typename POD<PointT>::type>::value),
-                       POINT_TYPE_NOT_PROPERLY_REGISTERED,
-                       (PointT&));
+  BOOST_MPL_ASSERT_MSG ((!std::is_same<PointT, typename POD<PointT>::type>::value),
+                        POINT_TYPE_NOT_PROPERLY_REGISTERED,
+                        (PointT&));
 };
 } // namespace traits
 } // namespace pcl
@@ -119,14 +119,14 @@ struct name /** \cond NO_WARN_RECURSIVE */ : name<typename POD<PointT>::type,
 #define POINT_CLOUD_REGISTER_FIELD_NAME(r, point, elem)                                \
   template <int dummy>                                                                 \
   struct name<point,                                                                   \
-              pcl::fields::BOOST_PP_TUPLE_ELEM(3, 2, elem),                            \
+              pcl::fields::BOOST_PP_TUPLE_ELEM (3, 2, elem),                           \
               dummy> { /** \endcond */                                                 \
     static const char value[];                                                         \
   };                                                                                   \
                                                                                        \
   template <int dummy>                                                                 \
   const char                                                                           \
-      name<point, pcl::fields::BOOST_PP_TUPLE_ELEM(3, 2, elem), dummy>::value[] =      \
+      name<point, pcl::fields::BOOST_PP_TUPLE_ELEM (3, 2, elem), dummy>::value[] =     \
           BOOST_PP_STRINGIZE(BOOST_PP_TUPLE_ELEM(3, 2, elem));
 
 namespace pcl {
@@ -140,17 +140,18 @@ struct offset /** \cond NO_WARN_RECURSIVE */ : offset<typename POD<PointT>::type
   // static const std::size_t value;
 
   // Avoid infinite compile-time recursion
-  BOOST_MPL_ASSERT_MSG((!std::is_same<PointT, typename POD<PointT>::type>::value),
-                       POINT_TYPE_NOT_PROPERLY_REGISTERED,
-                       (PointT&));
+  BOOST_MPL_ASSERT_MSG ((!std::is_same<PointT, typename POD<PointT>::type>::value),
+                        POINT_TYPE_NOT_PROPERLY_REGISTERED,
+                        (PointT&));
 };
 } // namespace traits
 } // namespace pcl
 
 #define POINT_CLOUD_REGISTER_FIELD_OFFSET(r, name, elem)                               \
   template <>                                                                          \
-  struct offset<name, pcl::fields::BOOST_PP_TUPLE_ELEM(3, 2, elem)> { /** \endcond */  \
-    static const std::size_t value = offsetof(name, BOOST_PP_TUPLE_ELEM(3, 1, elem));  \
+  struct offset<name, pcl::fields::BOOST_PP_TUPLE_ELEM (3, 2, elem)> { /** \endcond */ \
+    static const std::size_t value =                                                   \
+        offsetof (name, BOOST_PP_TUPLE_ELEM (3, 1, elem));                             \
   };
 
 namespace pcl {
@@ -166,9 +167,9 @@ struct datatype /** \cond NO_WARN_RECURSIVE */ : datatype<typename POD<PointT>::
   // static const std::uint32_t size;
 
   // Avoid infinite compile-time recursion
-  BOOST_MPL_ASSERT_MSG((!std::is_same<PointT, typename POD<PointT>::type>::value),
-                       POINT_TYPE_NOT_PROPERLY_REGISTERED,
-                       (PointT&));
+  BOOST_MPL_ASSERT_MSG ((!std::is_same<PointT, typename POD<PointT>::type>::value),
+                        POINT_TYPE_NOT_PROPERLY_REGISTERED,
+                        (PointT&));
 };
 } // namespace traits
 } // namespace pcl
@@ -176,8 +177,8 @@ struct datatype /** \cond NO_WARN_RECURSIVE */ : datatype<typename POD<PointT>::
 #define POINT_CLOUD_REGISTER_FIELD_DATATYPE(r, name, elem)                             \
   template <>                                                                          \
   struct datatype<name,                                                                \
-                  pcl::fields::BOOST_PP_TUPLE_ELEM(3, 2, elem)> { /** \endcond */      \
-    using type = boost::mpl::identity<BOOST_PP_TUPLE_ELEM(3, 0, elem)>::type;          \
+                  pcl::fields::BOOST_PP_TUPLE_ELEM (3, 2, elem)> { /** \endcond */     \
+    using type = boost::mpl::identity<BOOST_PP_TUPLE_ELEM (3, 0, elem)>::type;         \
     using decomposed = decomposeArray<type>;                                           \
     static const std::uint8_t value = asEnum<decomposed::type>::value;                 \
     static const std::uint32_t size = decomposed::value;                               \
@@ -194,9 +195,9 @@ struct fieldList /** \cond NO_WARN_RECURSIVE */ : fieldList<typename POD<
   // using type = boost::mpl::vector<...>;
 
   // Avoid infinite compile-time recursion
-  BOOST_MPL_ASSERT_MSG((!std::is_same<PointT, typename POD<PointT>::type>::value),
-                       POINT_TYPE_NOT_PROPERLY_REGISTERED,
-                       (PointT&));
+  BOOST_MPL_ASSERT_MSG ((!std::is_same<PointT, typename POD<PointT>::type>::value),
+                        POINT_TYPE_NOT_PROPERLY_REGISTERED,
+                        (PointT&));
 };
 } // namespace traits
 } // namespace pcl
@@ -204,5 +205,5 @@ struct fieldList /** \cond NO_WARN_RECURSIVE */ : fieldList<typename POD<
 #define POINT_CLOUD_REGISTER_POINT_FIELD_LIST(name, seq)                               \
   template <>                                                                          \
   struct fieldList<name> { /** \endcond */                                             \
-    using type = boost::mpl::vector<BOOST_PP_SEQ_ENUM(seq)>;                           \
+    using type = boost::mpl::vector<BOOST_PP_SEQ_ENUM (seq)>;                          \
   };

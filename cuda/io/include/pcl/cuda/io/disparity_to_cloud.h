@@ -55,15 +55,15 @@ struct ComputeXYZ {
   float constant;
   float bad_point;
 
-  ComputeXYZ(int w, int h, int cx, int cy, float con)
-  : width(w), height(h), center_x(cx), center_y(cy), constant(con)
+  ComputeXYZ (int w, int h, int cx, int cy, float con)
+  : width (w), height (h), center_x (cx), center_y (cy), constant (con)
   {
     bad_point = std::numeric_limits<float>::quiet_NaN();
   }
 
   template <typename Tuple>
   __inline__ __host__ __device__ PointXYZRGB
-  operator()(const Tuple& t);
+  operator() (const Tuple& t);
 };
 
 /** \brief Compute the XYZ and RGB values for a point based on disparity information. */
@@ -73,15 +73,15 @@ struct ComputeXYZRGB {
   float constant;
   float bad_point;
 
-  ComputeXYZRGB(int w, int h, int cx, int cy, float con)
-  : width(w), height(h), center_x(cx), center_y(cy), constant(con)
+  ComputeXYZRGB (int w, int h, int cx, int cy, float con)
+  : width (w), height (h), center_x (cx), center_y (cy), constant (con)
   {
     bad_point = std::numeric_limits<float>::quiet_NaN();
   }
 
   template <typename Tuple>
   __inline__ __host__ __device__ PointXYZRGB
-  operator()(const Tuple& t);
+  operator() (const Tuple& t);
 };
 
 /** \brief Disparity to PointCloudAOS generator.

@@ -52,27 +52,27 @@ CoredVectorMeshData::resetIterator()
   oocPointIndex = polygonIndex = 0;
 }
 int
-CoredVectorMeshData::addOutOfCorePoint(const Point3D<float>& p)
+CoredVectorMeshData::addOutOfCorePoint (const Point3D<float>& p)
 {
-  oocPoints.push_back(p);
-  return static_cast<int>(oocPoints.size()) - 1;
+  oocPoints.push_back (p);
+  return static_cast<int> (oocPoints.size()) - 1;
 }
 int
-CoredVectorMeshData::addPolygon(const std::vector<CoredVertexIndex>& vertices)
+CoredVectorMeshData::addPolygon (const std::vector<CoredVertexIndex>& vertices)
 {
-  std::vector<int> polygon(vertices.size());
-  for (int i = 0; i < static_cast<int>(vertices.size()); i++)
+  std::vector<int> polygon (vertices.size());
+  for (int i = 0; i < static_cast<int> (vertices.size()); i++)
     if (vertices[i].inCore)
       polygon[i] = vertices[i].idx;
     else
       polygon[i] = -vertices[i].idx - 1;
-  polygons.push_back(polygon);
-  return static_cast<int>(polygons.size()) - 1;
+  polygons.push_back (polygon);
+  return static_cast<int> (polygons.size()) - 1;
 }
 int
-CoredVectorMeshData::nextOutOfCorePoint(Point3D<float>& p)
+CoredVectorMeshData::nextOutOfCorePoint (Point3D<float>& p)
 {
-  if (oocPointIndex < static_cast<int>(oocPoints.size())) {
+  if (oocPointIndex < static_cast<int> (oocPoints.size())) {
     p = oocPoints[oocPointIndex++];
     return 1;
   }
@@ -81,12 +81,12 @@ CoredVectorMeshData::nextOutOfCorePoint(Point3D<float>& p)
   }
 }
 int
-CoredVectorMeshData::nextPolygon(std::vector<CoredVertexIndex>& vertices)
+CoredVectorMeshData::nextPolygon (std::vector<CoredVertexIndex>& vertices)
 {
-  if (polygonIndex < static_cast<int>(polygons.size())) {
+  if (polygonIndex < static_cast<int> (polygons.size())) {
     std::vector<int>& polygon = polygons[polygonIndex++];
-    vertices.resize(polygon.size());
-    for (int i = 0; i < static_cast<int>(polygon.size()); i++)
+    vertices.resize (polygon.size());
+    for (int i = 0; i < static_cast<int> (polygon.size()); i++)
       if (polygon[i] < 0)
         vertices[i].idx = -polygon[i] - 1, vertices[i].inCore = false;
       else
@@ -99,12 +99,12 @@ CoredVectorMeshData::nextPolygon(std::vector<CoredVertexIndex>& vertices)
 int
 CoredVectorMeshData::outOfCorePointCount()
 {
-  return static_cast<int>(oocPoints.size());
+  return static_cast<int> (oocPoints.size());
 }
 int
 CoredVectorMeshData::polygonCount()
 {
-  return static_cast<int>(polygons.size());
+  return static_cast<int> (polygons.size());
 }
 
 /////////////////////////
@@ -117,27 +117,27 @@ CoredVectorMeshData2::resetIterator()
   oocPointIndex = polygonIndex = 0;
 }
 int
-CoredVectorMeshData2::addOutOfCorePoint(const CoredMeshData2::Vertex& v)
+CoredVectorMeshData2::addOutOfCorePoint (const CoredMeshData2::Vertex& v)
 {
-  oocPoints.push_back(v);
-  return static_cast<int>(oocPoints.size()) - 1;
+  oocPoints.push_back (v);
+  return static_cast<int> (oocPoints.size()) - 1;
 }
 int
-CoredVectorMeshData2::addPolygon(const std::vector<CoredVertexIndex>& vertices)
+CoredVectorMeshData2::addPolygon (const std::vector<CoredVertexIndex>& vertices)
 {
-  std::vector<int> polygon(vertices.size());
-  for (int i = 0; i < static_cast<int>(vertices.size()); i++)
+  std::vector<int> polygon (vertices.size());
+  for (int i = 0; i < static_cast<int> (vertices.size()); i++)
     if (vertices[i].inCore)
       polygon[i] = vertices[i].idx;
     else
       polygon[i] = -vertices[i].idx - 1;
-  polygons.push_back(polygon);
-  return static_cast<int>(polygons.size()) - 1;
+  polygons.push_back (polygon);
+  return static_cast<int> (polygons.size()) - 1;
 }
 int
-CoredVectorMeshData2::nextOutOfCorePoint(CoredMeshData2::Vertex& v)
+CoredVectorMeshData2::nextOutOfCorePoint (CoredMeshData2::Vertex& v)
 {
-  if (oocPointIndex < static_cast<int>(oocPoints.size())) {
+  if (oocPointIndex < static_cast<int> (oocPoints.size())) {
     v = oocPoints[oocPointIndex++];
     return 1;
   }
@@ -146,12 +146,12 @@ CoredVectorMeshData2::nextOutOfCorePoint(CoredMeshData2::Vertex& v)
   }
 }
 int
-CoredVectorMeshData2::nextPolygon(std::vector<CoredVertexIndex>& vertices)
+CoredVectorMeshData2::nextPolygon (std::vector<CoredVertexIndex>& vertices)
 {
-  if (polygonIndex < static_cast<int>(polygons.size())) {
+  if (polygonIndex < static_cast<int> (polygons.size())) {
     std::vector<int>& polygon = polygons[polygonIndex++];
-    vertices.resize(polygon.size());
-    for (int i = 0; i < static_cast<int>(polygon.size()); i++)
+    vertices.resize (polygon.size());
+    for (int i = 0; i < static_cast<int> (polygon.size()); i++)
       if (polygon[i] < 0)
         vertices[i].idx = -polygon[i] - 1, vertices[i].inCore = false;
       else
@@ -164,12 +164,12 @@ CoredVectorMeshData2::nextPolygon(std::vector<CoredVertexIndex>& vertices)
 int
 CoredVectorMeshData2::outOfCorePointCount()
 {
-  return static_cast<int>(oocPoints.size());
+  return static_cast<int> (oocPoints.size());
 }
 int
 CoredVectorMeshData2::polygonCount()
 {
-  return static_cast<int>(polygons.size());
+  return static_cast<int> (polygons.size());
 }
 
 } // namespace poisson

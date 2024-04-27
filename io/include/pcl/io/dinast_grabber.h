@@ -60,13 +60,13 @@ namespace pcl {
 class PCL_EXPORTS DinastGrabber : public Grabber {
   // Define callback signature typedefs
   using sig_cb_dinast_point_cloud =
-      void(const pcl::PointCloud<pcl::PointXYZI>::ConstPtr&);
+      void (const pcl::PointCloud<pcl::PointXYZI>::ConstPtr&);
 
 public:
   /** \brief Constructor that sets up the grabber constants.
    * \param[in] device_position Number corresponding the device to grab
    */
-  DinastGrabber(const int device_position = 1);
+  DinastGrabber (const int device_position = 1);
 
   /** \brief Destructor. It never throws. */
   ~DinastGrabber() noexcept override;

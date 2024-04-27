@@ -74,11 +74,11 @@ public:
   /** \brief MLESAC (Maximum Likelihood Estimator SAmple Consensus) main constructor
    * \param[in] model a Sample Consensus model
    */
-  MaximumLikelihoodSampleConsensus(const SampleConsensusModelPtr& model)
-  : SampleConsensus<PointT>(model)
-  , iterations_EM_(3)
+  MaximumLikelihoodSampleConsensus (const SampleConsensusModelPtr& model)
+  : SampleConsensus<PointT> (model)
+  , iterations_EM_ (3)
   , // Max number of EM (Expectation Maximization) iterations
-  sigma_(0)
+  sigma_ (0)
   {
     max_iterations_ = 10000; // Maximum number of trials before we give up.
   }
@@ -87,12 +87,12 @@ public:
    * \param[in] model a Sample Consensus model
    * \param[in] threshold distance to model threshold
    */
-  MaximumLikelihoodSampleConsensus(const SampleConsensusModelPtr& model,
-                                   double threshold)
-  : SampleConsensus<PointT>(model, threshold)
-  , iterations_EM_(3)
+  MaximumLikelihoodSampleConsensus (const SampleConsensusModelPtr& model,
+                                    double threshold)
+  : SampleConsensus<PointT> (model, threshold)
+  , iterations_EM_ (3)
   , // Max number of EM (Expectation Maximization) iterations
-  sigma_(0)
+  sigma_ (0)
   {
     max_iterations_ = 10000; // Maximum number of trials before we give up.
   }

@@ -75,13 +75,13 @@ public:
    * \param[in] random if true set the random seed to the current time, else set to
    * 12345 (default: false)
    */
-  SampleConsensusModelRegistration2D(const PointCloudConstPtr& cloud,
-                                     bool random = false)
-  : pcl::SampleConsensusModelRegistration<PointT>(cloud, random)
-  , projection_matrix_(Eigen::Matrix3f::Identity())
+  SampleConsensusModelRegistration2D (const PointCloudConstPtr& cloud,
+                                      bool random = false)
+  : pcl::SampleConsensusModelRegistration<PointT> (cloud, random)
+  , projection_matrix_ (Eigen::Matrix3f::Identity())
   {
     // Call our own setInputCloud
-    setInputCloud(cloud);
+    setInputCloud (cloud);
     model_name_ = "SampleConsensusModelRegistration2D";
     sample_size_ = 3;
     model_size_ = 16;
@@ -93,14 +93,14 @@ public:
    * \param[in] random if true set the random seed to the current time, else set to
    * 12345 (default: false)
    */
-  SampleConsensusModelRegistration2D(const PointCloudConstPtr& cloud,
-                                     const Indices& indices,
-                                     bool random = false)
-  : pcl::SampleConsensusModelRegistration<PointT>(cloud, indices, random)
-  , projection_matrix_(Eigen::Matrix3f::Identity())
+  SampleConsensusModelRegistration2D (const PointCloudConstPtr& cloud,
+                                      const Indices& indices,
+                                      bool random = false)
+  : pcl::SampleConsensusModelRegistration<PointT> (cloud, indices, random)
+  , projection_matrix_ (Eigen::Matrix3f::Identity())
   {
     computeOriginalIndexMapping();
-    computeSampleDistanceThreshold(cloud, indices);
+    computeSampleDistanceThreshold (cloud, indices);
     model_name_ = "SampleConsensusModelRegistration2D";
     sample_size_ = 3;
     model_size_ = 16;

@@ -34,7 +34,7 @@ namespace pcl {
 namespace poisson {
 
 template <int Degree, class Real>
-FunctionData<Degree, Real>::FunctionData(void)
+FunctionData<Degree, Real>::FunctionData (void)
 {
   dotTable = dDotTable = d2DotTable = NULL;
   valueTables = dValueTables = NULL;
@@ -42,7 +42,7 @@ FunctionData<Degree, Real>::FunctionData(void)
 }
 
 template <int Degree, class Real>
-FunctionData<Degree, Real>::~FunctionData(void)
+FunctionData<Degree, Real>::~FunctionData (void)
 {
   if (res) {
     delete[] dotTable;
@@ -59,17 +59,17 @@ FunctionData<Degree, Real>::~FunctionData(void)
 template <int Degree, class Real>
 #if BOUNDARY_CONDITIONS
 void
-FunctionData<Degree, Real>::set(const int& maxDepth,
-                                const PPolynomial<Degree>& F,
-                                const int& normalize,
-                                bool useDotRatios,
-                                bool reflectBoundary)
+FunctionData<Degree, Real>::set (const int& maxDepth,
+                                 const PPolynomial<Degree>& F,
+                                 const int& normalize,
+                                 bool useDotRatios,
+                                 bool reflectBoundary)
 #else  // !BOUNDARY_CONDITIONS
 void
-FunctionData<Degree, Real>::set(const int& maxDepth,
-                                const PPolynomial<Degree>& F,
-                                const int& normalize,
-                                bool useDotRatios)
+FunctionData<Degree, Real>::set (const int& maxDepth,
+                                 const PPolynomial<Degree>& F,
+                                 const int& normalize,
+                                 bool useDotRatios)
 #endif // BOUNDARY_CONDITIONS
 {
   this->normalize = normalize;
@@ -79,7 +79,7 @@ FunctionData<Degree, Real>::set(const int& maxDepth,
 #endif // BOUNDARY_CONDITIONS
 
   depth = maxDepth;
-  res = BinaryNode<double>::CumulativeCenterCount(depth);
+  res = BinaryNode<double>::CumulativeCenterCount (depth);
   res2 = (1 << (depth + 1)) + 1;
   baseFunctions = new PPolynomial<Degree + 1>[res];
   // Scale the function so that it has:
@@ -89,44 +89,44 @@ FunctionData<Degree, Real>::set(const int& maxDepth,
   switch (normalize) {
   case 2:
     baseFunction =
-        F / sqrt((F * F).integral(F.polys[0].start, F.polys[F.polyCount - 1].start));
+        F / sqrt ((F * F).integral (F.polys[0].start, F.polys[F.polyCount - 1].start));
     break;
   case 1:
-    baseFunction = F / F.integral(F.polys[0].start, F.polys[F.polyCount - 1].start);
+    baseFunction = F / F.integral (F.polys[0].start, F.polys[F.polyCount - 1].start);
     break;
   default:
-    baseFunction = F / F(0);
+    baseFunction = F / F (0);
   }
   dBaseFunction = baseFunction.derivative();
 #if BOUNDARY_CONDITIONS
-  leftBaseFunction = baseFunction + baseFunction.shift(-1);
-  rightBaseFunction = baseFunction + baseFunction.shift(1);
+  leftBaseFunction = baseFunction + baseFunction.shift (-1);
+  rightBaseFunction = baseFunction + baseFunction.shift (1);
   dLeftBaseFunction = leftBaseFunction.derivative();
   dRightBaseFunction = rightBaseFunction.derivative();
 #endif // BOUNDARY_CONDITIONS
   double c1, w1;
   for (int i = 0; i < res; i++) {
-    BinaryNode<double>::CenterAndWidth(i, c1, w1);
+    BinaryNode<double>::CenterAndWidth (i, c1, w1);
 #if BOUNDARY_CONDITIONS
     if (reflectBoundary) {
       int d, off;
-      BinaryNode<double>::DepthAndOffset(i, d, off);
+      BinaryNode<double>::DepthAndOffset (i, d, off);
       if (off == 0)
-        baseFunctions[i] = leftBaseFunction.scale(w1).shift(c1);
+        baseFunctions[i] = leftBaseFunction.scale (w1).shift (c1);
       else if (off == ((1 << d) - 1))
-        baseFunctions[i] = rightBaseFunction.scale(w1).shift(c1);
+        baseFunctions[i] = rightBaseFunction.scale (w1).shift (c1);
       else
-        baseFunctions[i] = baseFunction.scale(w1).shift(c1);
+        baseFunctions[i] = baseFunction.scale (w1).shift (c1);
     }
     else
-      baseFunctions[i] = baseFunction.scale(w1).shift(c1);
+      baseFunctions[i] = baseFunction.scale (w1).shift (c1);
 #else  // !BOUNDARY_CONDITIONS
-    baseFunctions[i] = baseFunction.scale(w1).shift(c1);
+    baseFunctions[i] = baseFunction.scale (w1).shift (c1);
 #endif // BOUNDARY_CONDITIONS
        // Scale the function so that it has L2-norm equal to one
     switch (normalize) {
     case 2:
-      baseFunctions[i] /= sqrt(w1);
+      baseFunctions[i] /= sqrt (w1);
       break;
     case 1:
       baseFunctions[i] /= w1;
@@ -136,32 +136,32 @@ FunctionData<Degree, Real>::set(const int& maxDepth,
 }
 template <int Degree, class Real>
 void
-FunctionData<Degree, Real>::setDotTables(const int& flags)
+FunctionData<Degree, Real>::setDotTables (const int& flags)
 {
-  clearDotTables(flags);
+  clearDotTables (flags);
   int size;
   size = (res * res + res) >> 1;
   if (flags & DOT_FLAG) {
     dotTable = new Real[size];
-    memset(dotTable, 0, sizeof(Real) * size);
+    memset (dotTable, 0, sizeof (Real) * size);
   }
   if (flags & D_DOT_FLAG) {
     dDotTable = new Real[size];
-    memset(dDotTable, 0, sizeof(Real) * size);
+    memset (dDotTable, 0, sizeof (Real) * size);
   }
   if (flags & D2_DOT_FLAG) {
     d2DotTable = new Real[size];
-    memset(d2DotTable, 0, sizeof(Real) * size);
+    memset (d2DotTable, 0, sizeof (Real) * size);
   }
   double t1, t2;
   t1 = baseFunction.polys[0].start;
   t2 = baseFunction.polys[baseFunction.polyCount - 1].start;
   for (int i = 0; i < res; i++) {
     double c1, c2, w1, w2;
-    BinaryNode<double>::CenterAndWidth(i, c1, w1);
+    BinaryNode<double>::CenterAndWidth (i, c1, w1);
 #if BOUNDARY_CONDITIONS
     int d1, d2, off1, off2;
-    BinaryNode<double>::DepthAndOffset(i, d1, off1);
+    BinaryNode<double>::DepthAndOffset (i, d1, off1);
     int boundary1 = 0;
     if (reflectBoundary && off1 == 0)
       boundary1 = -1;
@@ -171,16 +171,16 @@ FunctionData<Degree, Real>::setDotTables(const int& flags)
     double start1 = t1 * w1 + c1;
     double end1 = t2 * w1 + c1;
     for (int j = 0; j <= i; j++) {
-      BinaryNode<double>::CenterAndWidth(j, c2, w2);
+      BinaryNode<double>::CenterAndWidth (j, c2, w2);
 #if BOUNDARY_CONDITIONS
-      BinaryNode<double>::DepthAndOffset(j, d2, off2);
+      BinaryNode<double>::DepthAndOffset (j, d2, off2);
       int boundary2 = 0;
       if (reflectBoundary && off2 == 0)
         boundary2 = -1;
       else if (reflectBoundary && off2 == ((1 << d2) - 1))
         boundary2 = 1;
 #endif // BOUNDARY_CONDITIONS
-      int idx = SymmetricIndex(i, j);
+      int idx = SymmetricIndex (i, j);
 
       double start = t1 * w2 + c2;
       double end = t2 * w2 + c2;
@@ -205,38 +205,38 @@ FunctionData<Degree, Real>::setDotTables(const int& flags)
         continue;
 
 #if BOUNDARY_CONDITIONS
-      Real dot = dotProduct(c1, w1, c2, w2, boundary1, boundary2);
+      Real dot = dotProduct (c1, w1, c2, w2, boundary1, boundary2);
 #else  // !BOUNDARY_CONDITIONS
-      Real dot = dotProduct(c1, w1, c2, w2);
+      Real dot = dotProduct (c1, w1, c2, w2);
 #endif // BOUNDARY_CONDITIONS
-      if (fabs(dot) < 1e-15)
+      if (fabs (dot) < 1e-15)
         continue;
       if (flags & DOT_FLAG)
         dotTable[idx] = dot;
       if (useDotRatios) {
 #if BOUNDARY_CONDITIONS
         if (flags & D_DOT_FLAG)
-          dDotTable[idx] = -dDotProduct(c1, w1, c2, w2, boundary1, boundary2) / dot;
+          dDotTable[idx] = -dDotProduct (c1, w1, c2, w2, boundary1, boundary2) / dot;
         if (flags & D2_DOT_FLAG)
-          d2DotTable[idx] = d2DotProduct(c1, w1, c2, w2, boundary1, boundary2) / dot;
+          d2DotTable[idx] = d2DotProduct (c1, w1, c2, w2, boundary1, boundary2) / dot;
 #else  // !BOUNDARY_CONDITIONS
         if (flags & D_DOT_FLAG)
-          dDotTable[idx] = -dDotProduct(c1, w1, c2, w2) / dot;
+          dDotTable[idx] = -dDotProduct (c1, w1, c2, w2) / dot;
         if (flags & D2_DOT_FLAG)
-          d2DotTable[idx] = d2DotProduct(c1, w1, c2, w2) / dot;
+          d2DotTable[idx] = d2DotProduct (c1, w1, c2, w2) / dot;
 #endif // BOUNDARY_CONDITIONS
       }
       else {
 #if BOUNDARY_CONDITIONS
         if (flags & D_DOT_FLAG)
-          dDotTable[idx] = dDotProduct(c1, w1, c2, w2, boundary1, boundary2);
+          dDotTable[idx] = dDotProduct (c1, w1, c2, w2, boundary1, boundary2);
         if (flags & D2_DOT_FLAG)
-          d2DotTable[idx] = d2DotProduct(c1, w1, c2, w2, boundary1, boundary2);
+          d2DotTable[idx] = d2DotProduct (c1, w1, c2, w2, boundary1, boundary2);
 #else  // !BOUNDARY_CONDTIONS
         if (flags & D_DOT_FLAG)
-          dDotTable[idx] = dDotProduct(c1, w1, c2, w2);
+          dDotTable[idx] = dDotProduct (c1, w1, c2, w2);
         if (flags & D2_DOT_FLAG)
-          d2DotTable[idx] = d2DotProduct(c1, w1, c2, w2);
+          d2DotTable[idx] = d2DotProduct (c1, w1, c2, w2);
 #endif // BOUNDARY_CONDITIONS
       }
     }
@@ -244,7 +244,7 @@ FunctionData<Degree, Real>::setDotTables(const int& flags)
 }
 template <int Degree, class Real>
 void
-FunctionData<Degree, Real>::clearDotTables(const int& flags)
+FunctionData<Degree, Real>::clearDotTables (const int& flags)
 {
   if (flags & DOT_FLAG) {
     delete[] dotTable;
@@ -257,7 +257,7 @@ FunctionData<Degree, Real>::clearDotTables(const int& flags)
 }
 template <int Degree, class Real>
 void
-FunctionData<Degree, Real>::setValueTables(const int& flags, const double& smooth)
+FunctionData<Degree, Real>::setValueTables (const int& flags, const double& smooth)
 {
   clearValueTables();
   if (flags & VALUE_FLAG)
@@ -268,29 +268,29 @@ FunctionData<Degree, Real>::setValueTables(const int& flags, const double& smoot
   PPolynomial<Degree> dFunction;
   for (int i = 0; i < res; i++) {
     if (smooth > 0) {
-      function = baseFunctions[i].MovingAverage(smooth);
-      dFunction = baseFunctions[i].derivative().MovingAverage(smooth);
+      function = baseFunctions[i].MovingAverage (smooth);
+      dFunction = baseFunctions[i].derivative().MovingAverage (smooth);
     }
     else {
       function = baseFunctions[i];
       dFunction = baseFunctions[i].derivative();
     }
     for (int j = 0; j < res2; j++) {
-      double x = double(j) / (res2 - 1);
+      double x = double (j) / (res2 - 1);
       if (flags & VALUE_FLAG) {
-        valueTables[j * res + i] = Real(function(x));
+        valueTables[j * res + i] = Real (function (x));
       }
       if (flags & D_VALUE_FLAG) {
-        dValueTables[j * res + i] = Real(dFunction(x));
+        dValueTables[j * res + i] = Real (dFunction (x));
       }
     }
   }
 }
 template <int Degree, class Real>
 void
-FunctionData<Degree, Real>::setValueTables(const int& flags,
-                                           const double& valueSmooth,
-                                           const double& normalSmooth)
+FunctionData<Degree, Real>::setValueTables (const int& flags,
+                                            const double& valueSmooth,
+                                            const double& normalSmooth)
 {
   clearValueTables();
   if (flags & VALUE_FLAG) {
@@ -303,25 +303,25 @@ FunctionData<Degree, Real>::setValueTables(const int& flags,
   PPolynomial<Degree> dFunction;
   for (int i = 0; i < res; i++) {
     if (valueSmooth > 0) {
-      function = baseFunctions[i].MovingAverage(valueSmooth);
+      function = baseFunctions[i].MovingAverage (valueSmooth);
     }
     else {
       function = baseFunctions[i];
     }
     if (normalSmooth > 0) {
-      dFunction = baseFunctions[i].derivative().MovingAverage(normalSmooth);
+      dFunction = baseFunctions[i].derivative().MovingAverage (normalSmooth);
     }
     else {
       dFunction = baseFunctions[i].derivative();
     }
 
     for (int j = 0; j < res2; j++) {
-      double x = double(j) / (res2 - 1);
+      double x = double (j) / (res2 - 1);
       if (flags & VALUE_FLAG) {
-        valueTables[j * res + i] = Real(function(x));
+        valueTables[j * res + i] = Real (function (x));
       }
       if (flags & D_VALUE_FLAG) {
-        dValueTables[j * res + i] = Real(dFunction(x));
+        dValueTables[j * res + i] = Real (dFunction (x));
       }
     }
   }
@@ -329,7 +329,7 @@ FunctionData<Degree, Real>::setValueTables(const int& flags,
 
 template <int Degree, class Real>
 void
-FunctionData<Degree, Real>::clearValueTables(void)
+FunctionData<Degree, Real>::clearValueTables (void)
 {
   delete[] valueTables;
   delete[] dValueTables;
@@ -339,12 +339,12 @@ FunctionData<Degree, Real>::clearValueTables(void)
 #if BOUNDARY_CONDITIONS
 template <int Degree, class Real>
 Real
-FunctionData<Degree, Real>::dotProduct(const double& center1,
-                                       const double& width1,
-                                       const double& center2,
-                                       const double& width2,
-                                       int boundary1,
-                                       int boundary2) const
+FunctionData<Degree, Real>::dotProduct (const double& center1,
+                                        const double& width1,
+                                        const double& center2,
+                                        const double& width2,
+                                        int boundary1,
+                                        int boundary2) const
 {
   const PPolynomial<Degree>*b1, *b2;
   if (boundary1 == -1)
@@ -359,30 +359,33 @@ FunctionData<Degree, Real>::dotProduct(const double& center1,
     b2 = &baseFunction;
   else if (boundary2 == 1)
     b2 = &rightBaseFunction;
-  double r = fabs(baseFunction.polys[0].start);
+  double r = fabs (baseFunction.polys[0].start);
   switch (normalize) {
   case 2:
-    return Real(((*b1) * b2->scale(width2 / width1).shift((center2 - center1) / width1))
-                    .integral(-2 * r, 2 * r) *
-                width1 / sqrt(width1 * width2));
+    return Real (
+        ((*b1) * b2->scale (width2 / width1).shift ((center2 - center1) / width1))
+            .integral (-2 * r, 2 * r) *
+        width1 / sqrt (width1 * width2));
   case 1:
-    return Real(((*b1) * b2->scale(width2 / width1).shift((center2 - center1) / width1))
-                    .integral(-2 * r, 2 * r) *
-                width1 / (width1 * width2));
+    return Real (
+        ((*b1) * b2->scale (width2 / width1).shift ((center2 - center1) / width1))
+            .integral (-2 * r, 2 * r) *
+        width1 / (width1 * width2));
   default:
-    return Real(((*b1) * b2->scale(width2 / width1).shift((center2 - center1) / width1))
-                    .integral(-2 * r, 2 * r) *
-                width1);
+    return Real (
+        ((*b1) * b2->scale (width2 / width1).shift ((center2 - center1) / width1))
+            .integral (-2 * r, 2 * r) *
+        width1);
   }
 }
 template <int Degree, class Real>
 Real
-FunctionData<Degree, Real>::dDotProduct(const double& center1,
-                                        const double& width1,
-                                        const double& center2,
-                                        const double& width2,
-                                        int boundary1,
-                                        int boundary2) const
+FunctionData<Degree, Real>::dDotProduct (const double& center1,
+                                         const double& width1,
+                                         const double& center2,
+                                         const double& width2,
+                                         int boundary1,
+                                         int boundary2) const
 {
   const PPolynomial<Degree - 1>* b1;
   const PPolynomial<Degree>* b2;
@@ -398,29 +401,32 @@ FunctionData<Degree, Real>::dDotProduct(const double& center1,
     b2 = &baseFunction;
   else if (boundary2 == 1)
     b2 = &rightBaseFunction;
-  double r = fabs(baseFunction.polys[0].start);
+  double r = fabs (baseFunction.polys[0].start);
   switch (normalize) {
   case 2:
-    return Real(((*b1) * b2->scale(width2 / width1).shift((center2 - center1) / width1))
-                    .integral(-2 * r, 2 * r) /
-                sqrt(width1 * width2));
+    return Real (
+        ((*b1) * b2->scale (width2 / width1).shift ((center2 - center1) / width1))
+            .integral (-2 * r, 2 * r) /
+        sqrt (width1 * width2));
   case 1:
-    return Real(((*b1) * b2->scale(width2 / width1).shift((center2 - center1) / width1))
-                    .integral(-2 * r, 2 * r) /
-                (width1 * width2));
+    return Real (
+        ((*b1) * b2->scale (width2 / width1).shift ((center2 - center1) / width1))
+            .integral (-2 * r, 2 * r) /
+        (width1 * width2));
   default:
-    return Real(((*b1) * b2->scale(width2 / width1).shift((center2 - center1) / width1))
-                    .integral(-2 * r, 2 * r));
+    return Real (
+        ((*b1) * b2->scale (width2 / width1).shift ((center2 - center1) / width1))
+            .integral (-2 * r, 2 * r));
   }
 }
 template <int Degree, class Real>
 Real
-FunctionData<Degree, Real>::d2DotProduct(const double& center1,
-                                         const double& width1,
-                                         const double& center2,
-                                         const double& width2,
-                                         int boundary1,
-                                         int boundary2) const
+FunctionData<Degree, Real>::d2DotProduct (const double& center1,
+                                          const double& width1,
+                                          const double& center2,
+                                          const double& width2,
+                                          int boundary1,
+                                          int boundary2) const
 {
   const PPolynomial<Degree - 1>*b1, *b2;
   if (boundary1 == -1)
@@ -435,113 +441,116 @@ FunctionData<Degree, Real>::d2DotProduct(const double& center1,
     b2 = &dBaseFunction;
   else if (boundary2 == 1)
     b2 = &dRightBaseFunction;
-  double r = fabs(baseFunction.polys[0].start);
+  double r = fabs (baseFunction.polys[0].start);
   switch (normalize) {
   case 2:
-    return Real(((*b1) * b2->scale(width2 / width1).shift((center2 - center1) / width1))
-                    .integral(-2 * r, 2 * r) /
-                width2 / sqrt(width1 * width2));
+    return Real (
+        ((*b1) * b2->scale (width2 / width1).shift ((center2 - center1) / width1))
+            .integral (-2 * r, 2 * r) /
+        width2 / sqrt (width1 * width2));
   case 1:
-    return Real(((*b1) * b2->scale(width2 / width1).shift((center2 - center1) / width1))
-                    .integral(-2 * r, 2 * r) /
-                width2 / (width1 * width2));
+    return Real (
+        ((*b1) * b2->scale (width2 / width1).shift ((center2 - center1) / width1))
+            .integral (-2 * r, 2 * r) /
+        width2 / (width1 * width2));
   default:
-    return Real(((*b1) * b2->scale(width2 / width1).shift((center2 - center1) / width1))
-                    .integral(-2 * r, 2 * r) /
-                width2);
+    return Real (
+        ((*b1) * b2->scale (width2 / width1).shift ((center2 - center1) / width1))
+            .integral (-2 * r, 2 * r) /
+        width2);
   }
 }
 #else  // !BOUNDARY_CONDITIONS
 template <int Degree, class Real>
 Real
-FunctionData<Degree, Real>::dotProduct(const double& center1,
-                                       const double& width1,
-                                       const double& center2,
-                                       const double& width2) const
+FunctionData<Degree, Real>::dotProduct (const double& center1,
+                                        const double& width1,
+                                        const double& center2,
+                                        const double& width2) const
 {
-  double r = fabs(baseFunction.polys[0].start);
+  double r = fabs (baseFunction.polys[0].start);
   switch (normalize) {
   case 2:
-    return Real(
+    return Real (
         (baseFunction *
-         baseFunction.scale(width2 / width1).shift((center2 - center1) / width1))
-            .integral(-2 * r, 2 * r) *
-        width1 / sqrt(width1 * width2));
+         baseFunction.scale (width2 / width1).shift ((center2 - center1) / width1))
+            .integral (-2 * r, 2 * r) *
+        width1 / sqrt (width1 * width2));
   case 1:
-    return Real(
+    return Real (
         (baseFunction *
-         baseFunction.scale(width2 / width1).shift((center2 - center1) / width1))
-            .integral(-2 * r, 2 * r) *
+         baseFunction.scale (width2 / width1).shift ((center2 - center1) / width1))
+            .integral (-2 * r, 2 * r) *
         width1 / (width1 * width2));
   default:
-    return Real(
+    return Real (
         (baseFunction *
-         baseFunction.scale(width2 / width1).shift((center2 - center1) / width1))
-            .integral(-2 * r, 2 * r) *
+         baseFunction.scale (width2 / width1).shift ((center2 - center1) / width1))
+            .integral (-2 * r, 2 * r) *
         width1);
   }
 }
 template <int Degree, class Real>
 Real
-FunctionData<Degree, Real>::dDotProduct(const double& center1,
-                                        const double& width1,
-                                        const double& center2,
-                                        const double& width2) const
-{
-  double r = fabs(baseFunction.polys[0].start);
-  switch (normalize) {
-  case 2:
-    return Real(
-        (dBaseFunction *
-         baseFunction.scale(width2 / width1).shift((center2 - center1) / width1))
-            .integral(-2 * r, 2 * r) /
-        sqrt(width1 * width2));
-  case 1:
-    return Real(
-        (dBaseFunction *
-         baseFunction.scale(width2 / width1).shift((center2 - center1) / width1))
-            .integral(-2 * r, 2 * r) /
-        (width1 * width2));
-  default:
-    return Real(
-        (dBaseFunction *
-         baseFunction.scale(width2 / width1).shift((center2 - center1) / width1))
-            .integral(-2 * r, 2 * r));
-  }
-}
-template <int Degree, class Real>
-Real
-FunctionData<Degree, Real>::d2DotProduct(const double& center1,
+FunctionData<Degree, Real>::dDotProduct (const double& center1,
                                          const double& width1,
                                          const double& center2,
                                          const double& width2) const
 {
-  double r = fabs(baseFunction.polys[0].start);
+  double r = fabs (baseFunction.polys[0].start);
   switch (normalize) {
   case 2:
-    return Real(
+    return Real (
         (dBaseFunction *
-         dBaseFunction.scale(width2 / width1).shift((center2 - center1) / width1))
-            .integral(-2 * r, 2 * r) /
-        width2 / sqrt(width1 * width2));
+         baseFunction.scale (width2 / width1).shift ((center2 - center1) / width1))
+            .integral (-2 * r, 2 * r) /
+        sqrt (width1 * width2));
   case 1:
-    return Real(
+    return Real (
         (dBaseFunction *
-         dBaseFunction.scale(width2 / width1).shift((center2 - center1) / width1))
-            .integral(-2 * r, 2 * r) /
+         baseFunction.scale (width2 / width1).shift ((center2 - center1) / width1))
+            .integral (-2 * r, 2 * r) /
+        (width1 * width2));
+  default:
+    return Real (
+        (dBaseFunction *
+         baseFunction.scale (width2 / width1).shift ((center2 - center1) / width1))
+            .integral (-2 * r, 2 * r));
+  }
+}
+template <int Degree, class Real>
+Real
+FunctionData<Degree, Real>::d2DotProduct (const double& center1,
+                                          const double& width1,
+                                          const double& center2,
+                                          const double& width2) const
+{
+  double r = fabs (baseFunction.polys[0].start);
+  switch (normalize) {
+  case 2:
+    return Real (
+        (dBaseFunction *
+         dBaseFunction.scale (width2 / width1).shift ((center2 - center1) / width1))
+            .integral (-2 * r, 2 * r) /
+        width2 / sqrt (width1 * width2));
+  case 1:
+    return Real (
+        (dBaseFunction *
+         dBaseFunction.scale (width2 / width1).shift ((center2 - center1) / width1))
+            .integral (-2 * r, 2 * r) /
         width2 / (width1 * width2));
   default:
-    return Real(
+    return Real (
         (dBaseFunction *
-         dBaseFunction.scale(width2 / width1).shift((center2 - center1) / width1))
-            .integral(-2 * r, 2 * r) /
+         dBaseFunction.scale (width2 / width1).shift ((center2 - center1) / width1))
+            .integral (-2 * r, 2 * r) /
         width2);
   }
 }
 #endif // BOUNDARY_CONDITIONS
 template <int Degree, class Real>
 inline int
-FunctionData<Degree, Real>::SymmetricIndex(const int& i1, const int& i2)
+FunctionData<Degree, Real>::SymmetricIndex (const int& i1, const int& i2)
 {
   if (i1 > i2)
     return ((i1 * i1 + i1) >> 1) + i2;
@@ -550,7 +559,7 @@ FunctionData<Degree, Real>::SymmetricIndex(const int& i1, const int& i2)
 }
 template <int Degree, class Real>
 inline int
-FunctionData<Degree, Real>::SymmetricIndex(const int& i1, const int& i2, int& index)
+FunctionData<Degree, Real>::SymmetricIndex (const int& i1, const int& i2, int& index)
 {
   if (i1 < i2) {
     index = ((i2 * i2 + i2) >> 1) + i1;

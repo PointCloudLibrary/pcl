@@ -56,22 +56,22 @@ public:
   /// @param copy_buffer_ptr a shared pointer pointing to the copy buffer.
   /// @param selection_ptr a shared pointer pointing to the selection object.
   /// @param cloud_ptr a shared pointer pointing to the cloud object.
-  CopyCommand(CopyBufferPtr copy_buffer_ptr,
-              ConstSelectionPtr selection_ptr,
-              ConstCloudPtr cloud_ptr)
-  : copy_buffer_ptr_(std::move(copy_buffer_ptr))
-  , selection_ptr_(std::move(selection_ptr))
-  , cloud_ptr_(std::move(cloud_ptr))
+  CopyCommand (CopyBufferPtr copy_buffer_ptr,
+               ConstSelectionPtr selection_ptr,
+               ConstCloudPtr cloud_ptr)
+  : copy_buffer_ptr_ (std::move (copy_buffer_ptr))
+  , selection_ptr_ (std::move (selection_ptr))
+  , cloud_ptr_ (std::move (cloud_ptr))
   {
     has_undo_ = false;
   }
 
   /// @brief Copy constructor - commands are non-copyable
-  CopyCommand(const CopyCommand&) = delete;
+  CopyCommand (const CopyCommand&) = delete;
 
   /// @brief Equal operator - commands are non-copyable
   CopyCommand&
-  operator=(const CopyCommand&) = delete;
+  operator= (const CopyCommand&) = delete;
 
 protected:
   /// @brief Copy the selected points into the copy buffer.
@@ -82,14 +82,14 @@ protected:
   {
     if (!cloud_ptr_)
       return;
-    copy_buffer_ptr_->set(cloud_ptr_, *selection_ptr_);
+    copy_buffer_ptr_->set (cloud_ptr_, *selection_ptr_);
   }
 
   /// @brief undo is not supported for this command.
   void
   undo () override
   {
-    assert(false);
+    assert (false);
   }
 
 private:

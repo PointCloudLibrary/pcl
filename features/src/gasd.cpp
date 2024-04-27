@@ -42,11 +42,12 @@
 #include <pcl/impl/instantiate.hpp>
 #include <pcl/point_types.h>
 // Instantiations of specific point types
-PCL_INSTANTIATE_PRODUCT(
+PCL_INSTANTIATE_PRODUCT (
     GASDEstimation,
-    ((pcl::PointXYZ)(pcl::PointXYZRGB)(pcl::PointXYZRGBA))(
-        (pcl::GASDSignature512)(pcl::GASDSignature984)(pcl::GASDSignature7992)))
-PCL_INSTANTIATE_PRODUCT(GASDColorEstimation,
-                        ((pcl::PointXYZRGB)(pcl::PointXYZRGBA))((pcl::GASDSignature512)(
-                            pcl::GASDSignature984)(pcl::GASDSignature7992)))
+    ((pcl::PointXYZ) (pcl::PointXYZRGB) (pcl::PointXYZRGBA)) (
+        (pcl::GASDSignature512) (pcl::GASDSignature984) (pcl::GASDSignature7992)))
+PCL_INSTANTIATE_PRODUCT (
+    GASDColorEstimation,
+    ((pcl::PointXYZRGB) (pcl::PointXYZRGBA)) (
+        (pcl::GASDSignature512) (pcl::GASDSignature984) (pcl::GASDSignature7992)))
 #endif // PCL_NO_PRECOMPILE

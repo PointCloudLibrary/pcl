@@ -53,8 +53,8 @@ public:
   /// @brief Constructor.
   /// @param cloud_ptr A pointer to the const cloud object for which this
   /// object is to maintain selections.
-  Selection(ConstCloudPtr cloud_ptr, bool register_stats = false)
-  : cloud_ptr_(std::move(cloud_ptr))
+  Selection (ConstCloudPtr cloud_ptr, bool register_stats = false)
+  : cloud_ptr_ (std::move (cloud_ptr))
   {
     if (register_stats)
       registerStats();
@@ -63,13 +63,13 @@ public:
   /// @brief Copy constructor.
   /// @param selection a const reference to a selection object whose
   /// properties will be copied.
-  Selection(const Selection& selection) = default;
+  Selection (const Selection& selection) = default;
 
   /// @brief Equal operator
   /// @param selection a const reference to a selection object whose
   /// properties will be copied.
   Selection&
-  operator=(const Selection& selection);
+  operator= (const Selection& selection);
 
   /// @brief Adds the index of the selected point to the selection table.
   /// @param index The index of the point that is selected.

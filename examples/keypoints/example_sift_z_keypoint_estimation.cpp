@@ -52,7 +52,7 @@ namespace pcl {
 template <>
 struct SIFTKeypointFieldSelector<PointXYZ> {
   inline float
-  operator()(const PointXYZ& p) const
+  operator() (const PointXYZ& p) const
   {
     return p.z;
   }
@@ -64,10 +64,10 @@ main (int, char** argv)
 {
   std::string filename = argv[1];
   std::cout << "Reading " << filename << std::endl;
-  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_xyz(new pcl::PointCloud<pcl::PointXYZ>);
-  if (pcl::io::loadPCDFile<pcl::PointXYZ>(filename, *cloud_xyz) == -1) // load the file
+  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_xyz (new pcl::PointCloud<pcl::PointXYZ>);
+  if (pcl::io::loadPCDFile<pcl::PointXYZ> (filename, *cloud_xyz) == -1) // load the file
   {
-    PCL_ERROR("Couldn't read file\n");
+    PCL_ERROR ("Couldn't read file\n");
     return -1;
   }
   std::cout << "points: " << cloud_xyz->size() << std::endl;
@@ -81,13 +81,13 @@ main (int, char** argv)
   // Estimate the sift interest points using z values from xyz as the Intensity variants
   pcl::SIFTKeypoint<pcl::PointXYZ, pcl::PointWithScale> sift;
   pcl::PointCloud<pcl::PointWithScale> result;
-  pcl::search::KdTree<pcl::PointXYZ>::Ptr tree(
+  pcl::search::KdTree<pcl::PointXYZ>::Ptr tree (
       new pcl::search::KdTree<pcl::PointXYZ>());
-  sift.setSearchMethod(tree);
-  sift.setScales(min_scale, n_octaves, n_scales_per_octave);
-  sift.setMinimumContrast(min_contrast);
-  sift.setInputCloud(cloud_xyz);
-  sift.compute(result);
+  sift.setSearchMethod (tree);
+  sift.setScales (min_scale, n_octaves, n_scales_per_octave);
+  sift.setMinimumContrast (min_contrast);
+  sift.setInputCloud (cloud_xyz);
+  sift.compute (result);
 
   std::cout << "No of SIFT points in the result are " << result.size() << std::endl;
 

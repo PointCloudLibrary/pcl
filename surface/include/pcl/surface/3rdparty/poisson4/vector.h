@@ -38,19 +38,19 @@ template <class T>
 class Vector {
 public:
   Vector();
-  Vector(const Vector<T>& V);
-  Vector(std::size_t N);
-  Vector(std::size_t N, T* pV);
+  Vector (const Vector<T>& V);
+  Vector (std::size_t N);
+  Vector (std::size_t N, T* pV);
   ~Vector();
 
   const T&
-  operator()(std::size_t i) const;
+  operator() (std::size_t i) const;
   T&
-  operator()(std::size_t i);
+  operator() (std::size_t i);
   const T&
-  operator[](std::size_t i) const;
+  operator[] (std::size_t i) const;
   T&
-  operator[](std::size_t i);
+  operator[] (std::size_t i);
 
   void
   SetZero ();
@@ -61,22 +61,22 @@ public:
   Resize (std::size_t N);
 
   Vector
-  operator*(const T& A) const;
+  operator* (const T& A) const;
   Vector
-  operator/(const T& A) const;
+  operator/ (const T& A) const;
   Vector
-  operator-(const Vector& V) const;
+  operator- (const Vector& V) const;
   Vector
-  operator+(const Vector& V) const;
+  operator+ (const Vector& V) const;
 
   Vector&
-  operator*=(const T& A);
+  operator*= (const T& A);
   Vector&
-  operator/=(const T& A);
+  operator/= (const T& A);
   Vector&
-  operator+=(const Vector& V);
+  operator+= (const Vector& V);
   Vector&
-  operator-=(const Vector& V);
+  operator-= (const Vector& V);
 
   Vector&
   AddScaled (const Vector& V, const T& scale);
@@ -95,7 +95,7 @@ public:
   operator-() const;
 
   Vector&
-  operator=(const Vector& V);
+  operator= (const Vector& V);
 
   T
   Dot (const Vector& V) const;
@@ -127,19 +127,19 @@ template <class T, int Dim>
 class NVector {
 public:
   NVector();
-  NVector(const NVector& V);
-  NVector(std::size_t N);
-  NVector(std::size_t N, T* pV);
+  NVector (const NVector& V);
+  NVector (std::size_t N);
+  NVector (std::size_t N, T* pV);
   ~NVector();
 
   const T*
-  operator()(std::size_t i) const;
+  operator() (std::size_t i) const;
   T*
-  operator()(std::size_t i);
+  operator() (std::size_t i);
   const T*
-  operator[](std::size_t i) const;
+  operator[] (std::size_t i) const;
   T*
-  operator[](std::size_t i);
+  operator[] (std::size_t i);
 
   void
   SetZero ();
@@ -150,22 +150,22 @@ public:
   Resize (std::size_t N);
 
   NVector
-  operator*(const T& A) const;
+  operator* (const T& A) const;
   NVector
-  operator/(const T& A) const;
+  operator/ (const T& A) const;
   NVector
-  operator-(const NVector& V) const;
+  operator- (const NVector& V) const;
   NVector
-  operator+(const NVector& V) const;
+  operator+ (const NVector& V) const;
 
   NVector&
-  operator*=(const T& A);
+  operator*= (const T& A);
   NVector&
-  operator/=(const T& A);
+  operator/= (const T& A);
   NVector&
-  operator+=(const NVector& V);
+  operator+= (const NVector& V);
   NVector&
-  operator-=(const NVector& V);
+  operator-= (const NVector& V);
 
   NVector&
   AddScaled (const NVector& V, const T& scale);
@@ -184,7 +184,7 @@ public:
   operator-() const;
 
   NVector&
-  operator=(const NVector& V);
+  operator= (const NVector& V);
 
   T
   Dot (const NVector& V) const;

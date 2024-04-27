@@ -76,21 +76,21 @@ protected:
   using Mesh = MeshT;
 };
 
-TYPED_TEST_SUITE(TestTriangleMesh, TriangleMeshTypes);
+TYPED_TEST_SUITE (TestTriangleMesh, TriangleMeshTypes);
 
 ////////////////////////////////////////////////////////////////////////////////
 
-TYPED_TEST(TestTriangleMesh, CorrectMeshTag)
+TYPED_TEST (TestTriangleMesh, CorrectMeshTag)
 {
   using Mesh = typename TestFixture::Mesh;
   using MeshTag = typename Mesh::MeshTag;
 
-  ASSERT_EQ(typeid(pcl::geometry::TriangleMeshTag), typeid(MeshTag));
+  ASSERT_EQ (typeid (pcl::geometry::TriangleMeshTag), typeid (MeshTag));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
-TYPED_TEST(TestTriangleMesh, CorrectNumberOfVertices)
+TYPED_TEST (TestTriangleMesh, CorrectNumberOfVertices)
 {
   // Make sure that only quads can be added
   using Mesh = typename TestFixture::Mesh;
@@ -99,21 +99,21 @@ TYPED_TEST(TestTriangleMesh, CorrectNumberOfVertices)
     Mesh mesh;
     VertexIndices vi;
     for (unsigned int i = 0; i < n; ++i) {
-      vi.push_back(VertexIndex(i));
-      mesh.addVertex(i);
+      vi.push_back (VertexIndex (i));
+      mesh.addVertex (i);
     }
 
-    const FaceIndex index = mesh.addFace(vi);
+    const FaceIndex index = mesh.addFace (vi);
     if (n == 3)
-      EXPECT_TRUE(index.isValid()) << "Number of vertices in the face: " << n;
+      EXPECT_TRUE (index.isValid()) << "Number of vertices in the face: " << n;
     else
-      EXPECT_FALSE(index.isValid()) << "Number of vertices in the face: " << n;
+      EXPECT_FALSE (index.isValid()) << "Number of vertices in the face: " << n;
   }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
-TYPED_TEST(TestTriangleMesh, OneTriangle)
+TYPED_TEST (TestTriangleMesh, OneTriangle)
 {
   using Mesh = typename TestFixture::Mesh;
 
@@ -123,84 +123,84 @@ TYPED_TEST(TestTriangleMesh, OneTriangle)
   Mesh mesh;
   VertexIndices vi;
   for (unsigned int i = 0; i < 3; ++i)
-    vi.push_back(mesh.addVertex(i));
+    vi.push_back (mesh.addVertex (i));
 
-  const FaceIndex fi = mesh.addFace(vi);
-  ASSERT_TRUE(fi.isValid());
+  const FaceIndex fi = mesh.addFace (vi);
+  ASSERT_TRUE (fi.isValid());
 
-  const HalfEdgeIndex he_10 = mesh.getOutgoingHalfEdgeIndex(vi[1]);
-  const HalfEdgeIndex he_21 = mesh.getOutgoingHalfEdgeIndex(vi[2]);
-  const HalfEdgeIndex he_02 = mesh.getOutgoingHalfEdgeIndex(vi[0]);
+  const HalfEdgeIndex he_10 = mesh.getOutgoingHalfEdgeIndex (vi[1]);
+  const HalfEdgeIndex he_21 = mesh.getOutgoingHalfEdgeIndex (vi[2]);
+  const HalfEdgeIndex he_02 = mesh.getOutgoingHalfEdgeIndex (vi[0]);
 
-  const HalfEdgeIndex he_01 = mesh.getOppositeHalfEdgeIndex(he_10);
-  const HalfEdgeIndex he_12 = mesh.getOppositeHalfEdgeIndex(he_21);
-  const HalfEdgeIndex he_20 = mesh.getOppositeHalfEdgeIndex(he_02);
+  const HalfEdgeIndex he_01 = mesh.getOppositeHalfEdgeIndex (he_10);
+  const HalfEdgeIndex he_12 = mesh.getOppositeHalfEdgeIndex (he_21);
+  const HalfEdgeIndex he_20 = mesh.getOppositeHalfEdgeIndex (he_02);
 
-  EXPECT_TRUE(checkHalfEdge(mesh, he_10, vi[1], vi[0]));
-  EXPECT_TRUE(checkHalfEdge(mesh, he_21, vi[2], vi[1]));
-  EXPECT_TRUE(checkHalfEdge(mesh, he_02, vi[0], vi[2]));
+  EXPECT_TRUE (checkHalfEdge (mesh, he_10, vi[1], vi[0]));
+  EXPECT_TRUE (checkHalfEdge (mesh, he_21, vi[2], vi[1]));
+  EXPECT_TRUE (checkHalfEdge (mesh, he_02, vi[0], vi[2]));
 
-  EXPECT_TRUE(checkHalfEdge(mesh, he_01, vi[0], vi[1]));
-  EXPECT_TRUE(checkHalfEdge(mesh, he_12, vi[1], vi[2]));
-  EXPECT_TRUE(checkHalfEdge(mesh, he_20, vi[2], vi[0]));
+  EXPECT_TRUE (checkHalfEdge (mesh, he_01, vi[0], vi[1]));
+  EXPECT_TRUE (checkHalfEdge (mesh, he_12, vi[1], vi[2]));
+  EXPECT_TRUE (checkHalfEdge (mesh, he_20, vi[2], vi[0]));
 
-  EXPECT_EQ(he_01, mesh.getIncomingHalfEdgeIndex(vi[1]));
-  EXPECT_EQ(he_12, mesh.getIncomingHalfEdgeIndex(vi[2]));
-  EXPECT_EQ(he_20, mesh.getIncomingHalfEdgeIndex(vi[0]));
+  EXPECT_EQ (he_01, mesh.getIncomingHalfEdgeIndex (vi[1]));
+  EXPECT_EQ (he_12, mesh.getIncomingHalfEdgeIndex (vi[2]));
+  EXPECT_EQ (he_20, mesh.getIncomingHalfEdgeIndex (vi[0]));
 
-  EXPECT_EQ(he_12, mesh.getNextHalfEdgeIndex(he_01));
-  EXPECT_EQ(he_20, mesh.getNextHalfEdgeIndex(he_12));
-  EXPECT_EQ(he_01, mesh.getNextHalfEdgeIndex(he_20));
+  EXPECT_EQ (he_12, mesh.getNextHalfEdgeIndex (he_01));
+  EXPECT_EQ (he_20, mesh.getNextHalfEdgeIndex (he_12));
+  EXPECT_EQ (he_01, mesh.getNextHalfEdgeIndex (he_20));
 
-  EXPECT_EQ(he_20, mesh.getPrevHalfEdgeIndex(he_01));
-  EXPECT_EQ(he_01, mesh.getPrevHalfEdgeIndex(he_12));
-  EXPECT_EQ(he_12, mesh.getPrevHalfEdgeIndex(he_20));
+  EXPECT_EQ (he_20, mesh.getPrevHalfEdgeIndex (he_01));
+  EXPECT_EQ (he_01, mesh.getPrevHalfEdgeIndex (he_12));
+  EXPECT_EQ (he_12, mesh.getPrevHalfEdgeIndex (he_20));
 
-  EXPECT_EQ(he_02, mesh.getNextHalfEdgeIndex(he_10));
-  EXPECT_EQ(he_21, mesh.getNextHalfEdgeIndex(he_02));
-  EXPECT_EQ(he_10, mesh.getNextHalfEdgeIndex(he_21));
+  EXPECT_EQ (he_02, mesh.getNextHalfEdgeIndex (he_10));
+  EXPECT_EQ (he_21, mesh.getNextHalfEdgeIndex (he_02));
+  EXPECT_EQ (he_10, mesh.getNextHalfEdgeIndex (he_21));
 
-  EXPECT_EQ(he_21, mesh.getPrevHalfEdgeIndex(he_10));
-  EXPECT_EQ(he_10, mesh.getPrevHalfEdgeIndex(he_02));
-  EXPECT_EQ(he_02, mesh.getPrevHalfEdgeIndex(he_21));
+  EXPECT_EQ (he_21, mesh.getPrevHalfEdgeIndex (he_10));
+  EXPECT_EQ (he_10, mesh.getPrevHalfEdgeIndex (he_02));
+  EXPECT_EQ (he_02, mesh.getPrevHalfEdgeIndex (he_21));
 
-  EXPECT_EQ(fi, mesh.getFaceIndex(he_01));
-  EXPECT_EQ(fi, mesh.getFaceIndex(he_12));
-  EXPECT_EQ(fi, mesh.getFaceIndex(he_20));
+  EXPECT_EQ (fi, mesh.getFaceIndex (he_01));
+  EXPECT_EQ (fi, mesh.getFaceIndex (he_12));
+  EXPECT_EQ (fi, mesh.getFaceIndex (he_20));
 
-  EXPECT_FALSE(mesh.getOppositeFaceIndex(he_01).isValid());
-  EXPECT_FALSE(mesh.getOppositeFaceIndex(he_12).isValid());
-  EXPECT_FALSE(mesh.getOppositeFaceIndex(he_20).isValid());
+  EXPECT_FALSE (mesh.getOppositeFaceIndex (he_01).isValid());
+  EXPECT_FALSE (mesh.getOppositeFaceIndex (he_12).isValid());
+  EXPECT_FALSE (mesh.getOppositeFaceIndex (he_20).isValid());
 
-  EXPECT_FALSE(mesh.getFaceIndex(he_10).isValid());
-  EXPECT_FALSE(mesh.getFaceIndex(he_21).isValid());
-  EXPECT_FALSE(mesh.getFaceIndex(he_02).isValid());
+  EXPECT_FALSE (mesh.getFaceIndex (he_10).isValid());
+  EXPECT_FALSE (mesh.getFaceIndex (he_21).isValid());
+  EXPECT_FALSE (mesh.getFaceIndex (he_02).isValid());
 
-  EXPECT_EQ(fi, mesh.getOppositeFaceIndex(he_10));
-  EXPECT_EQ(fi, mesh.getOppositeFaceIndex(he_21));
-  EXPECT_EQ(fi, mesh.getOppositeFaceIndex(he_02));
+  EXPECT_EQ (fi, mesh.getOppositeFaceIndex (he_10));
+  EXPECT_EQ (fi, mesh.getOppositeFaceIndex (he_21));
+  EXPECT_EQ (fi, mesh.getOppositeFaceIndex (he_02));
 
-  EXPECT_EQ(he_20, mesh.getInnerHalfEdgeIndex(fi));
-  EXPECT_EQ(he_02, mesh.getOuterHalfEdgeIndex(fi));
+  EXPECT_EQ (he_20, mesh.getInnerHalfEdgeIndex (fi));
+  EXPECT_EQ (he_02, mesh.getOuterHalfEdgeIndex (fi));
 
-  EXPECT_FALSE(mesh.isBoundary(he_01));
-  EXPECT_FALSE(mesh.isBoundary(he_12));
-  EXPECT_FALSE(mesh.isBoundary(he_20));
+  EXPECT_FALSE (mesh.isBoundary (he_01));
+  EXPECT_FALSE (mesh.isBoundary (he_12));
+  EXPECT_FALSE (mesh.isBoundary (he_20));
 
-  EXPECT_TRUE(mesh.isBoundary(he_10));
-  EXPECT_TRUE(mesh.isBoundary(he_21));
-  EXPECT_TRUE(mesh.isBoundary(he_02));
+  EXPECT_TRUE (mesh.isBoundary (he_10));
+  EXPECT_TRUE (mesh.isBoundary (he_21));
+  EXPECT_TRUE (mesh.isBoundary (he_02));
 
-  EXPECT_TRUE(mesh.isBoundary(vi[0]));
-  EXPECT_TRUE(mesh.isBoundary(vi[1]));
-  EXPECT_TRUE(mesh.isBoundary(vi[2]));
+  EXPECT_TRUE (mesh.isBoundary (vi[0]));
+  EXPECT_TRUE (mesh.isBoundary (vi[1]));
+  EXPECT_TRUE (mesh.isBoundary (vi[2]));
 
-  EXPECT_TRUE(mesh.isBoundary(fi));
+  EXPECT_TRUE (mesh.isBoundary (fi));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
-TYPED_TEST(TestTriangleMesh, TwoTriangles)
+TYPED_TEST (TestTriangleMesh, TwoTriangles)
 {
   using Mesh = typename TestFixture::Mesh;
 
@@ -208,135 +208,135 @@ TYPED_TEST(TestTriangleMesh, TwoTriangles)
   //  \ / \  //
   //   0 - 1 //
   Mesh mesh;
-  VertexIndex vi_0 = mesh.addVertex(0);
-  VertexIndex vi_1 = mesh.addVertex(1);
-  VertexIndex vi_2 = mesh.addVertex(2);
-  VertexIndex vi_3 = mesh.addVertex(3);
+  VertexIndex vi_0 = mesh.addVertex (0);
+  VertexIndex vi_1 = mesh.addVertex (1);
+  VertexIndex vi_2 = mesh.addVertex (2);
+  VertexIndex vi_3 = mesh.addVertex (3);
 
   // First face
   VertexIndices vi;
-  vi.push_back(vi_0);
-  vi.push_back(vi_1);
-  vi.push_back(vi_2);
-  const FaceIndex fi_0 = mesh.addFace(vi);
-  ASSERT_TRUE(fi_0.isValid());
+  vi.push_back (vi_0);
+  vi.push_back (vi_1);
+  vi.push_back (vi_2);
+  const FaceIndex fi_0 = mesh.addFace (vi);
+  ASSERT_TRUE (fi_0.isValid());
 
-  const HalfEdgeIndex he_10 = mesh.getOutgoingHalfEdgeIndex(vi_1);
-  const HalfEdgeIndex he_21 = mesh.getOutgoingHalfEdgeIndex(vi_2);
-  const HalfEdgeIndex he_02 = mesh.getOutgoingHalfEdgeIndex(vi_0);
+  const HalfEdgeIndex he_10 = mesh.getOutgoingHalfEdgeIndex (vi_1);
+  const HalfEdgeIndex he_21 = mesh.getOutgoingHalfEdgeIndex (vi_2);
+  const HalfEdgeIndex he_02 = mesh.getOutgoingHalfEdgeIndex (vi_0);
 
-  const HalfEdgeIndex he_01 = mesh.getOppositeHalfEdgeIndex(he_10);
-  const HalfEdgeIndex he_12 = mesh.getOppositeHalfEdgeIndex(he_21);
-  const HalfEdgeIndex he_20 = mesh.getOppositeHalfEdgeIndex(he_02);
+  const HalfEdgeIndex he_01 = mesh.getOppositeHalfEdgeIndex (he_10);
+  const HalfEdgeIndex he_12 = mesh.getOppositeHalfEdgeIndex (he_21);
+  const HalfEdgeIndex he_20 = mesh.getOppositeHalfEdgeIndex (he_02);
 
   // Second face
   vi.clear();
-  vi.push_back(vi_0);
-  vi.push_back(vi_2);
-  vi.push_back(vi_3);
-  const FaceIndex fi_1 = mesh.addFace(vi);
-  ASSERT_TRUE(fi_1.isValid());
+  vi.push_back (vi_0);
+  vi.push_back (vi_2);
+  vi.push_back (vi_3);
+  const FaceIndex fi_1 = mesh.addFace (vi);
+  ASSERT_TRUE (fi_1.isValid());
 
-  const HalfEdgeIndex he_03 = mesh.getOutgoingHalfEdgeIndex(vi_0);
-  const HalfEdgeIndex he_32 = mesh.getOutgoingHalfEdgeIndex(vi_3);
+  const HalfEdgeIndex he_03 = mesh.getOutgoingHalfEdgeIndex (vi_0);
+  const HalfEdgeIndex he_32 = mesh.getOutgoingHalfEdgeIndex (vi_3);
 
-  const HalfEdgeIndex he_30 = mesh.getOppositeHalfEdgeIndex(he_03);
-  const HalfEdgeIndex he_23 = mesh.getOppositeHalfEdgeIndex(he_32);
+  const HalfEdgeIndex he_30 = mesh.getOppositeHalfEdgeIndex (he_03);
+  const HalfEdgeIndex he_23 = mesh.getOppositeHalfEdgeIndex (he_32);
 
   // Tests
-  EXPECT_TRUE(checkHalfEdge(mesh, he_01, vi_0, vi_1));
-  EXPECT_TRUE(checkHalfEdge(mesh, he_12, vi_1, vi_2));
-  EXPECT_TRUE(checkHalfEdge(mesh, he_20, vi_2, vi_0));
+  EXPECT_TRUE (checkHalfEdge (mesh, he_01, vi_0, vi_1));
+  EXPECT_TRUE (checkHalfEdge (mesh, he_12, vi_1, vi_2));
+  EXPECT_TRUE (checkHalfEdge (mesh, he_20, vi_2, vi_0));
 
-  EXPECT_TRUE(checkHalfEdge(mesh, he_02, vi_0, vi_2));
-  EXPECT_TRUE(checkHalfEdge(mesh, he_23, vi_2, vi_3));
-  EXPECT_TRUE(checkHalfEdge(mesh, he_30, vi_3, vi_0));
+  EXPECT_TRUE (checkHalfEdge (mesh, he_02, vi_0, vi_2));
+  EXPECT_TRUE (checkHalfEdge (mesh, he_23, vi_2, vi_3));
+  EXPECT_TRUE (checkHalfEdge (mesh, he_30, vi_3, vi_0));
 
-  EXPECT_TRUE(checkHalfEdge(mesh, he_03, vi_0, vi_3));
-  EXPECT_TRUE(checkHalfEdge(mesh, he_32, vi_3, vi_2));
-  EXPECT_TRUE(checkHalfEdge(mesh, he_21, vi_2, vi_1));
-  EXPECT_TRUE(checkHalfEdge(mesh, he_10, vi_1, vi_0));
+  EXPECT_TRUE (checkHalfEdge (mesh, he_03, vi_0, vi_3));
+  EXPECT_TRUE (checkHalfEdge (mesh, he_32, vi_3, vi_2));
+  EXPECT_TRUE (checkHalfEdge (mesh, he_21, vi_2, vi_1));
+  EXPECT_TRUE (checkHalfEdge (mesh, he_10, vi_1, vi_0));
 
-  EXPECT_EQ(he_12, mesh.getNextHalfEdgeIndex(he_01));
-  EXPECT_EQ(he_20, mesh.getNextHalfEdgeIndex(he_12));
-  EXPECT_EQ(he_01, mesh.getNextHalfEdgeIndex(he_20));
+  EXPECT_EQ (he_12, mesh.getNextHalfEdgeIndex (he_01));
+  EXPECT_EQ (he_20, mesh.getNextHalfEdgeIndex (he_12));
+  EXPECT_EQ (he_01, mesh.getNextHalfEdgeIndex (he_20));
 
-  EXPECT_EQ(he_20, mesh.getPrevHalfEdgeIndex(he_01));
-  EXPECT_EQ(he_01, mesh.getPrevHalfEdgeIndex(he_12));
-  EXPECT_EQ(he_12, mesh.getPrevHalfEdgeIndex(he_20));
+  EXPECT_EQ (he_20, mesh.getPrevHalfEdgeIndex (he_01));
+  EXPECT_EQ (he_01, mesh.getPrevHalfEdgeIndex (he_12));
+  EXPECT_EQ (he_12, mesh.getPrevHalfEdgeIndex (he_20));
 
-  EXPECT_EQ(he_23, mesh.getNextHalfEdgeIndex(he_02));
-  EXPECT_EQ(he_30, mesh.getNextHalfEdgeIndex(he_23));
-  EXPECT_EQ(he_02, mesh.getNextHalfEdgeIndex(he_30));
+  EXPECT_EQ (he_23, mesh.getNextHalfEdgeIndex (he_02));
+  EXPECT_EQ (he_30, mesh.getNextHalfEdgeIndex (he_23));
+  EXPECT_EQ (he_02, mesh.getNextHalfEdgeIndex (he_30));
 
-  EXPECT_EQ(he_30, mesh.getPrevHalfEdgeIndex(he_02));
-  EXPECT_EQ(he_02, mesh.getPrevHalfEdgeIndex(he_23));
-  EXPECT_EQ(he_23, mesh.getPrevHalfEdgeIndex(he_30));
+  EXPECT_EQ (he_30, mesh.getPrevHalfEdgeIndex (he_02));
+  EXPECT_EQ (he_02, mesh.getPrevHalfEdgeIndex (he_23));
+  EXPECT_EQ (he_23, mesh.getPrevHalfEdgeIndex (he_30));
 
-  EXPECT_EQ(he_03, mesh.getNextHalfEdgeIndex(he_10));
-  EXPECT_EQ(he_32, mesh.getNextHalfEdgeIndex(he_03));
-  EXPECT_EQ(he_21, mesh.getNextHalfEdgeIndex(he_32));
-  EXPECT_EQ(he_10, mesh.getNextHalfEdgeIndex(he_21));
+  EXPECT_EQ (he_03, mesh.getNextHalfEdgeIndex (he_10));
+  EXPECT_EQ (he_32, mesh.getNextHalfEdgeIndex (he_03));
+  EXPECT_EQ (he_21, mesh.getNextHalfEdgeIndex (he_32));
+  EXPECT_EQ (he_10, mesh.getNextHalfEdgeIndex (he_21));
 
-  EXPECT_EQ(he_21, mesh.getPrevHalfEdgeIndex(he_10));
-  EXPECT_EQ(he_10, mesh.getPrevHalfEdgeIndex(he_03));
-  EXPECT_EQ(he_03, mesh.getPrevHalfEdgeIndex(he_32));
-  EXPECT_EQ(he_32, mesh.getPrevHalfEdgeIndex(he_21));
+  EXPECT_EQ (he_21, mesh.getPrevHalfEdgeIndex (he_10));
+  EXPECT_EQ (he_10, mesh.getPrevHalfEdgeIndex (he_03));
+  EXPECT_EQ (he_03, mesh.getPrevHalfEdgeIndex (he_32));
+  EXPECT_EQ (he_32, mesh.getPrevHalfEdgeIndex (he_21));
 
-  EXPECT_EQ(fi_0, mesh.getFaceIndex(he_01));
-  EXPECT_EQ(fi_0, mesh.getFaceIndex(he_12));
-  EXPECT_EQ(fi_0, mesh.getFaceIndex(he_20));
+  EXPECT_EQ (fi_0, mesh.getFaceIndex (he_01));
+  EXPECT_EQ (fi_0, mesh.getFaceIndex (he_12));
+  EXPECT_EQ (fi_0, mesh.getFaceIndex (he_20));
 
-  EXPECT_EQ(fi_1, mesh.getFaceIndex(he_02));
-  EXPECT_EQ(fi_1, mesh.getFaceIndex(he_23));
-  EXPECT_EQ(fi_1, mesh.getFaceIndex(he_30));
+  EXPECT_EQ (fi_1, mesh.getFaceIndex (he_02));
+  EXPECT_EQ (fi_1, mesh.getFaceIndex (he_23));
+  EXPECT_EQ (fi_1, mesh.getFaceIndex (he_30));
 
-  EXPECT_FALSE(mesh.getFaceIndex(he_10).isValid());
-  EXPECT_FALSE(mesh.getFaceIndex(he_03).isValid());
-  EXPECT_FALSE(mesh.getFaceIndex(he_32).isValid());
-  EXPECT_FALSE(mesh.getFaceIndex(he_21).isValid());
+  EXPECT_FALSE (mesh.getFaceIndex (he_10).isValid());
+  EXPECT_FALSE (mesh.getFaceIndex (he_03).isValid());
+  EXPECT_FALSE (mesh.getFaceIndex (he_32).isValid());
+  EXPECT_FALSE (mesh.getFaceIndex (he_21).isValid());
 
-  EXPECT_FALSE(mesh.getOppositeFaceIndex(he_01).isValid());
-  EXPECT_FALSE(mesh.getOppositeFaceIndex(he_12).isValid());
-  EXPECT_FALSE(mesh.getOppositeFaceIndex(he_23).isValid());
-  EXPECT_FALSE(mesh.getOppositeFaceIndex(he_30).isValid());
+  EXPECT_FALSE (mesh.getOppositeFaceIndex (he_01).isValid());
+  EXPECT_FALSE (mesh.getOppositeFaceIndex (he_12).isValid());
+  EXPECT_FALSE (mesh.getOppositeFaceIndex (he_23).isValid());
+  EXPECT_FALSE (mesh.getOppositeFaceIndex (he_30).isValid());
 
-  EXPECT_EQ(fi_0, mesh.getOppositeFaceIndex(he_21));
-  EXPECT_EQ(fi_0, mesh.getOppositeFaceIndex(he_10));
-  EXPECT_EQ(fi_1, mesh.getOppositeFaceIndex(he_03));
-  EXPECT_EQ(fi_1, mesh.getOppositeFaceIndex(he_32));
+  EXPECT_EQ (fi_0, mesh.getOppositeFaceIndex (he_21));
+  EXPECT_EQ (fi_0, mesh.getOppositeFaceIndex (he_10));
+  EXPECT_EQ (fi_1, mesh.getOppositeFaceIndex (he_03));
+  EXPECT_EQ (fi_1, mesh.getOppositeFaceIndex (he_32));
 
-  EXPECT_EQ(he_20, mesh.getInnerHalfEdgeIndex(fi_0));
-  EXPECT_EQ(he_30, mesh.getInnerHalfEdgeIndex(fi_1));
+  EXPECT_EQ (he_20, mesh.getInnerHalfEdgeIndex (fi_0));
+  EXPECT_EQ (he_30, mesh.getInnerHalfEdgeIndex (fi_1));
 
-  EXPECT_EQ(he_02, mesh.getOuterHalfEdgeIndex(fi_0));
-  EXPECT_EQ(he_03, mesh.getOuterHalfEdgeIndex(fi_1));
+  EXPECT_EQ (he_02, mesh.getOuterHalfEdgeIndex (fi_0));
+  EXPECT_EQ (he_03, mesh.getOuterHalfEdgeIndex (fi_1));
 
-  EXPECT_FALSE(mesh.isBoundary(he_01));
-  EXPECT_FALSE(mesh.isBoundary(he_12));
-  EXPECT_FALSE(mesh.isBoundary(he_20));
+  EXPECT_FALSE (mesh.isBoundary (he_01));
+  EXPECT_FALSE (mesh.isBoundary (he_12));
+  EXPECT_FALSE (mesh.isBoundary (he_20));
 
-  EXPECT_FALSE(mesh.isBoundary(he_02));
-  EXPECT_FALSE(mesh.isBoundary(he_23));
-  EXPECT_FALSE(mesh.isBoundary(he_30));
+  EXPECT_FALSE (mesh.isBoundary (he_02));
+  EXPECT_FALSE (mesh.isBoundary (he_23));
+  EXPECT_FALSE (mesh.isBoundary (he_30));
 
-  EXPECT_TRUE(mesh.isBoundary(he_10));
-  EXPECT_TRUE(mesh.isBoundary(he_03));
-  EXPECT_TRUE(mesh.isBoundary(he_32));
-  EXPECT_TRUE(mesh.isBoundary(he_21));
+  EXPECT_TRUE (mesh.isBoundary (he_10));
+  EXPECT_TRUE (mesh.isBoundary (he_03));
+  EXPECT_TRUE (mesh.isBoundary (he_32));
+  EXPECT_TRUE (mesh.isBoundary (he_21));
 
-  EXPECT_TRUE(mesh.isBoundary(vi_0));
-  EXPECT_TRUE(mesh.isBoundary(vi_1));
-  EXPECT_TRUE(mesh.isBoundary(vi_2));
-  EXPECT_TRUE(mesh.isBoundary(vi_3));
+  EXPECT_TRUE (mesh.isBoundary (vi_0));
+  EXPECT_TRUE (mesh.isBoundary (vi_1));
+  EXPECT_TRUE (mesh.isBoundary (vi_2));
+  EXPECT_TRUE (mesh.isBoundary (vi_3));
 
-  EXPECT_TRUE(mesh.isBoundary(fi_0));
-  EXPECT_TRUE(mesh.isBoundary(fi_1));
+  EXPECT_TRUE (mesh.isBoundary (fi_0));
+  EXPECT_TRUE (mesh.isBoundary (fi_1));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
-TYPED_TEST(TestTriangleMesh, ThreeTriangles)
+TYPED_TEST (TestTriangleMesh, ThreeTriangles)
 {
   using Mesh = typename TestFixture::Mesh;
 
@@ -346,176 +346,176 @@ TYPED_TEST(TestTriangleMesh, ThreeTriangles)
   //    \ | /    //
   //      2      //
   Mesh mesh;
-  VertexIndex vi_0 = mesh.addVertex(0);
-  VertexIndex vi_1 = mesh.addVertex(1);
-  VertexIndex vi_2 = mesh.addVertex(2);
-  VertexIndex vi_3 = mesh.addVertex(3);
+  VertexIndex vi_0 = mesh.addVertex (0);
+  VertexIndex vi_1 = mesh.addVertex (1);
+  VertexIndex vi_2 = mesh.addVertex (2);
+  VertexIndex vi_3 = mesh.addVertex (3);
 
   // First face
   VertexIndices vi;
-  vi.push_back(vi_0);
-  vi.push_back(vi_1);
-  vi.push_back(vi_2);
-  const FaceIndex fi_0 = mesh.addFace(vi);
-  ASSERT_TRUE(fi_0.isValid());
+  vi.push_back (vi_0);
+  vi.push_back (vi_1);
+  vi.push_back (vi_2);
+  const FaceIndex fi_0 = mesh.addFace (vi);
+  ASSERT_TRUE (fi_0.isValid());
 
-  const HalfEdgeIndex he_10 = mesh.getOutgoingHalfEdgeIndex(vi_1);
-  const HalfEdgeIndex he_21 = mesh.getOutgoingHalfEdgeIndex(vi_2);
-  const HalfEdgeIndex he_02 = mesh.getOutgoingHalfEdgeIndex(vi_0);
+  const HalfEdgeIndex he_10 = mesh.getOutgoingHalfEdgeIndex (vi_1);
+  const HalfEdgeIndex he_21 = mesh.getOutgoingHalfEdgeIndex (vi_2);
+  const HalfEdgeIndex he_02 = mesh.getOutgoingHalfEdgeIndex (vi_0);
 
-  const HalfEdgeIndex he_01 = mesh.getOppositeHalfEdgeIndex(he_10);
-  const HalfEdgeIndex he_12 = mesh.getOppositeHalfEdgeIndex(he_21);
-  const HalfEdgeIndex he_20 = mesh.getOppositeHalfEdgeIndex(he_02);
+  const HalfEdgeIndex he_01 = mesh.getOppositeHalfEdgeIndex (he_10);
+  const HalfEdgeIndex he_12 = mesh.getOppositeHalfEdgeIndex (he_21);
+  const HalfEdgeIndex he_20 = mesh.getOppositeHalfEdgeIndex (he_02);
 
   // Second face
   vi.clear();
-  vi.push_back(vi_0);
-  vi.push_back(vi_2);
-  vi.push_back(vi_3);
-  const FaceIndex fi_1 = mesh.addFace(vi);
-  ASSERT_TRUE(fi_1.isValid());
+  vi.push_back (vi_0);
+  vi.push_back (vi_2);
+  vi.push_back (vi_3);
+  const FaceIndex fi_1 = mesh.addFace (vi);
+  ASSERT_TRUE (fi_1.isValid());
 
-  const HalfEdgeIndex he_03 = mesh.getOutgoingHalfEdgeIndex(vi_0);
-  const HalfEdgeIndex he_32 = mesh.getOutgoingHalfEdgeIndex(vi_3);
+  const HalfEdgeIndex he_03 = mesh.getOutgoingHalfEdgeIndex (vi_0);
+  const HalfEdgeIndex he_32 = mesh.getOutgoingHalfEdgeIndex (vi_3);
 
-  const HalfEdgeIndex he_30 = mesh.getOppositeHalfEdgeIndex(he_03);
-  const HalfEdgeIndex he_23 = mesh.getOppositeHalfEdgeIndex(he_32);
+  const HalfEdgeIndex he_30 = mesh.getOppositeHalfEdgeIndex (he_03);
+  const HalfEdgeIndex he_23 = mesh.getOppositeHalfEdgeIndex (he_32);
 
   // Third face
   vi.clear();
-  vi.push_back(vi_0);
-  vi.push_back(vi_3);
-  vi.push_back(vi_1);
-  const FaceIndex fi_2 = mesh.addFace(vi);
-  ASSERT_TRUE(fi_2.isValid());
+  vi.push_back (vi_0);
+  vi.push_back (vi_3);
+  vi.push_back (vi_1);
+  const FaceIndex fi_2 = mesh.addFace (vi);
+  ASSERT_TRUE (fi_2.isValid());
 
-  const HalfEdgeIndex he_13 = mesh.getOutgoingHalfEdgeIndex(vi_1);
+  const HalfEdgeIndex he_13 = mesh.getOutgoingHalfEdgeIndex (vi_1);
 
-  const HalfEdgeIndex he_31 = mesh.getOppositeHalfEdgeIndex(he_13);
+  const HalfEdgeIndex he_31 = mesh.getOppositeHalfEdgeIndex (he_13);
 
   // Tests
-  EXPECT_TRUE(checkHalfEdge(mesh, he_01, vi_0, vi_1));
-  EXPECT_TRUE(checkHalfEdge(mesh, he_12, vi_1, vi_2));
-  EXPECT_TRUE(checkHalfEdge(mesh, he_20, vi_2, vi_0));
+  EXPECT_TRUE (checkHalfEdge (mesh, he_01, vi_0, vi_1));
+  EXPECT_TRUE (checkHalfEdge (mesh, he_12, vi_1, vi_2));
+  EXPECT_TRUE (checkHalfEdge (mesh, he_20, vi_2, vi_0));
 
-  EXPECT_TRUE(checkHalfEdge(mesh, he_02, vi_0, vi_2));
-  EXPECT_TRUE(checkHalfEdge(mesh, he_23, vi_2, vi_3));
-  EXPECT_TRUE(checkHalfEdge(mesh, he_30, vi_3, vi_0));
+  EXPECT_TRUE (checkHalfEdge (mesh, he_02, vi_0, vi_2));
+  EXPECT_TRUE (checkHalfEdge (mesh, he_23, vi_2, vi_3));
+  EXPECT_TRUE (checkHalfEdge (mesh, he_30, vi_3, vi_0));
 
-  EXPECT_TRUE(checkHalfEdge(mesh, he_03, vi_0, vi_3));
-  EXPECT_TRUE(checkHalfEdge(mesh, he_31, vi_3, vi_1));
-  EXPECT_TRUE(checkHalfEdge(mesh, he_10, vi_1, vi_0));
+  EXPECT_TRUE (checkHalfEdge (mesh, he_03, vi_0, vi_3));
+  EXPECT_TRUE (checkHalfEdge (mesh, he_31, vi_3, vi_1));
+  EXPECT_TRUE (checkHalfEdge (mesh, he_10, vi_1, vi_0));
 
-  EXPECT_TRUE(checkHalfEdge(mesh, he_32, vi_3, vi_2));
-  EXPECT_TRUE(checkHalfEdge(mesh, he_21, vi_2, vi_1));
-  EXPECT_TRUE(checkHalfEdge(mesh, he_13, vi_1, vi_3));
+  EXPECT_TRUE (checkHalfEdge (mesh, he_32, vi_3, vi_2));
+  EXPECT_TRUE (checkHalfEdge (mesh, he_21, vi_2, vi_1));
+  EXPECT_TRUE (checkHalfEdge (mesh, he_13, vi_1, vi_3));
 
-  EXPECT_EQ(he_12, mesh.getNextHalfEdgeIndex(he_01));
-  EXPECT_EQ(he_20, mesh.getNextHalfEdgeIndex(he_12));
-  EXPECT_EQ(he_01, mesh.getNextHalfEdgeIndex(he_20));
+  EXPECT_EQ (he_12, mesh.getNextHalfEdgeIndex (he_01));
+  EXPECT_EQ (he_20, mesh.getNextHalfEdgeIndex (he_12));
+  EXPECT_EQ (he_01, mesh.getNextHalfEdgeIndex (he_20));
 
-  EXPECT_EQ(he_23, mesh.getNextHalfEdgeIndex(he_02));
-  EXPECT_EQ(he_30, mesh.getNextHalfEdgeIndex(he_23));
-  EXPECT_EQ(he_02, mesh.getNextHalfEdgeIndex(he_30));
+  EXPECT_EQ (he_23, mesh.getNextHalfEdgeIndex (he_02));
+  EXPECT_EQ (he_30, mesh.getNextHalfEdgeIndex (he_23));
+  EXPECT_EQ (he_02, mesh.getNextHalfEdgeIndex (he_30));
 
-  EXPECT_EQ(he_31, mesh.getNextHalfEdgeIndex(he_03));
-  EXPECT_EQ(he_10, mesh.getNextHalfEdgeIndex(he_31));
-  EXPECT_EQ(he_03, mesh.getNextHalfEdgeIndex(he_10));
+  EXPECT_EQ (he_31, mesh.getNextHalfEdgeIndex (he_03));
+  EXPECT_EQ (he_10, mesh.getNextHalfEdgeIndex (he_31));
+  EXPECT_EQ (he_03, mesh.getNextHalfEdgeIndex (he_10));
 
-  EXPECT_EQ(he_21, mesh.getNextHalfEdgeIndex(he_32));
-  EXPECT_EQ(he_13, mesh.getNextHalfEdgeIndex(he_21));
-  EXPECT_EQ(he_32, mesh.getNextHalfEdgeIndex(he_13));
+  EXPECT_EQ (he_21, mesh.getNextHalfEdgeIndex (he_32));
+  EXPECT_EQ (he_13, mesh.getNextHalfEdgeIndex (he_21));
+  EXPECT_EQ (he_32, mesh.getNextHalfEdgeIndex (he_13));
 
-  EXPECT_EQ(he_20, mesh.getPrevHalfEdgeIndex(he_01));
-  EXPECT_EQ(he_01, mesh.getPrevHalfEdgeIndex(he_12));
-  EXPECT_EQ(he_12, mesh.getPrevHalfEdgeIndex(he_20));
+  EXPECT_EQ (he_20, mesh.getPrevHalfEdgeIndex (he_01));
+  EXPECT_EQ (he_01, mesh.getPrevHalfEdgeIndex (he_12));
+  EXPECT_EQ (he_12, mesh.getPrevHalfEdgeIndex (he_20));
 
-  EXPECT_EQ(he_30, mesh.getPrevHalfEdgeIndex(he_02));
-  EXPECT_EQ(he_02, mesh.getPrevHalfEdgeIndex(he_23));
-  EXPECT_EQ(he_23, mesh.getPrevHalfEdgeIndex(he_30));
+  EXPECT_EQ (he_30, mesh.getPrevHalfEdgeIndex (he_02));
+  EXPECT_EQ (he_02, mesh.getPrevHalfEdgeIndex (he_23));
+  EXPECT_EQ (he_23, mesh.getPrevHalfEdgeIndex (he_30));
 
-  EXPECT_EQ(he_10, mesh.getPrevHalfEdgeIndex(he_03));
-  EXPECT_EQ(he_03, mesh.getPrevHalfEdgeIndex(he_31));
-  EXPECT_EQ(he_31, mesh.getPrevHalfEdgeIndex(he_10));
+  EXPECT_EQ (he_10, mesh.getPrevHalfEdgeIndex (he_03));
+  EXPECT_EQ (he_03, mesh.getPrevHalfEdgeIndex (he_31));
+  EXPECT_EQ (he_31, mesh.getPrevHalfEdgeIndex (he_10));
 
-  EXPECT_EQ(he_13, mesh.getPrevHalfEdgeIndex(he_32));
-  EXPECT_EQ(he_32, mesh.getPrevHalfEdgeIndex(he_21));
-  EXPECT_EQ(he_21, mesh.getPrevHalfEdgeIndex(he_13));
+  EXPECT_EQ (he_13, mesh.getPrevHalfEdgeIndex (he_32));
+  EXPECT_EQ (he_32, mesh.getPrevHalfEdgeIndex (he_21));
+  EXPECT_EQ (he_21, mesh.getPrevHalfEdgeIndex (he_13));
 
-  EXPECT_EQ(fi_0, mesh.getFaceIndex(he_01));
-  EXPECT_EQ(fi_0, mesh.getFaceIndex(he_12));
-  EXPECT_EQ(fi_0, mesh.getFaceIndex(he_20));
+  EXPECT_EQ (fi_0, mesh.getFaceIndex (he_01));
+  EXPECT_EQ (fi_0, mesh.getFaceIndex (he_12));
+  EXPECT_EQ (fi_0, mesh.getFaceIndex (he_20));
 
-  EXPECT_EQ(fi_1, mesh.getFaceIndex(he_02));
-  EXPECT_EQ(fi_1, mesh.getFaceIndex(he_23));
-  EXPECT_EQ(fi_1, mesh.getFaceIndex(he_30));
+  EXPECT_EQ (fi_1, mesh.getFaceIndex (he_02));
+  EXPECT_EQ (fi_1, mesh.getFaceIndex (he_23));
+  EXPECT_EQ (fi_1, mesh.getFaceIndex (he_30));
 
-  EXPECT_EQ(fi_2, mesh.getFaceIndex(he_03));
-  EXPECT_EQ(fi_2, mesh.getFaceIndex(he_31));
-  EXPECT_EQ(fi_2, mesh.getFaceIndex(he_10));
+  EXPECT_EQ (fi_2, mesh.getFaceIndex (he_03));
+  EXPECT_EQ (fi_2, mesh.getFaceIndex (he_31));
+  EXPECT_EQ (fi_2, mesh.getFaceIndex (he_10));
 
-  EXPECT_FALSE(mesh.getFaceIndex(he_32).isValid());
-  EXPECT_FALSE(mesh.getFaceIndex(he_21).isValid());
-  EXPECT_FALSE(mesh.getFaceIndex(he_13).isValid());
+  EXPECT_FALSE (mesh.getFaceIndex (he_32).isValid());
+  EXPECT_FALSE (mesh.getFaceIndex (he_21).isValid());
+  EXPECT_FALSE (mesh.getFaceIndex (he_13).isValid());
 
-  EXPECT_EQ(fi_2, mesh.getOppositeFaceIndex(he_01));
-  EXPECT_FALSE(mesh.getOppositeFaceIndex(he_12).isValid());
-  EXPECT_EQ(fi_1, mesh.getOppositeFaceIndex(he_20));
+  EXPECT_EQ (fi_2, mesh.getOppositeFaceIndex (he_01));
+  EXPECT_FALSE (mesh.getOppositeFaceIndex (he_12).isValid());
+  EXPECT_EQ (fi_1, mesh.getOppositeFaceIndex (he_20));
 
-  EXPECT_EQ(fi_0, mesh.getOppositeFaceIndex(he_02));
-  EXPECT_FALSE(mesh.getOppositeFaceIndex(he_23).isValid());
-  EXPECT_EQ(fi_2, mesh.getOppositeFaceIndex(he_30));
+  EXPECT_EQ (fi_0, mesh.getOppositeFaceIndex (he_02));
+  EXPECT_FALSE (mesh.getOppositeFaceIndex (he_23).isValid());
+  EXPECT_EQ (fi_2, mesh.getOppositeFaceIndex (he_30));
 
-  EXPECT_EQ(fi_1, mesh.getOppositeFaceIndex(he_03));
-  EXPECT_FALSE(mesh.getOppositeFaceIndex(he_31).isValid());
-  EXPECT_EQ(fi_0, mesh.getOppositeFaceIndex(he_10));
+  EXPECT_EQ (fi_1, mesh.getOppositeFaceIndex (he_03));
+  EXPECT_FALSE (mesh.getOppositeFaceIndex (he_31).isValid());
+  EXPECT_EQ (fi_0, mesh.getOppositeFaceIndex (he_10));
 
-  EXPECT_EQ(fi_1, mesh.getOppositeFaceIndex(he_32));
-  EXPECT_EQ(fi_0, mesh.getOppositeFaceIndex(he_21));
-  EXPECT_EQ(fi_2, mesh.getOppositeFaceIndex(he_13));
+  EXPECT_EQ (fi_1, mesh.getOppositeFaceIndex (he_32));
+  EXPECT_EQ (fi_0, mesh.getOppositeFaceIndex (he_21));
+  EXPECT_EQ (fi_2, mesh.getOppositeFaceIndex (he_13));
 
-  EXPECT_EQ(he_20, mesh.getInnerHalfEdgeIndex(fi_0));
-  EXPECT_EQ(he_30, mesh.getInnerHalfEdgeIndex(fi_1));
-  EXPECT_EQ(he_10, mesh.getInnerHalfEdgeIndex(fi_2));
+  EXPECT_EQ (he_20, mesh.getInnerHalfEdgeIndex (fi_0));
+  EXPECT_EQ (he_30, mesh.getInnerHalfEdgeIndex (fi_1));
+  EXPECT_EQ (he_10, mesh.getInnerHalfEdgeIndex (fi_2));
 
-  EXPECT_EQ(he_02, mesh.getOuterHalfEdgeIndex(fi_0));
-  EXPECT_EQ(he_03, mesh.getOuterHalfEdgeIndex(fi_1));
-  EXPECT_EQ(he_01, mesh.getOuterHalfEdgeIndex(fi_2));
+  EXPECT_EQ (he_02, mesh.getOuterHalfEdgeIndex (fi_0));
+  EXPECT_EQ (he_03, mesh.getOuterHalfEdgeIndex (fi_1));
+  EXPECT_EQ (he_01, mesh.getOuterHalfEdgeIndex (fi_2));
 
-  EXPECT_FALSE(mesh.isBoundary(he_01));
-  EXPECT_FALSE(mesh.isBoundary(he_12));
-  EXPECT_FALSE(mesh.isBoundary(he_20));
+  EXPECT_FALSE (mesh.isBoundary (he_01));
+  EXPECT_FALSE (mesh.isBoundary (he_12));
+  EXPECT_FALSE (mesh.isBoundary (he_20));
 
-  EXPECT_FALSE(mesh.isBoundary(he_02));
-  EXPECT_FALSE(mesh.isBoundary(he_23));
-  EXPECT_FALSE(mesh.isBoundary(he_30));
+  EXPECT_FALSE (mesh.isBoundary (he_02));
+  EXPECT_FALSE (mesh.isBoundary (he_23));
+  EXPECT_FALSE (mesh.isBoundary (he_30));
 
-  EXPECT_FALSE(mesh.isBoundary(he_03));
-  EXPECT_FALSE(mesh.isBoundary(he_31));
-  EXPECT_FALSE(mesh.isBoundary(he_10));
+  EXPECT_FALSE (mesh.isBoundary (he_03));
+  EXPECT_FALSE (mesh.isBoundary (he_31));
+  EXPECT_FALSE (mesh.isBoundary (he_10));
 
-  EXPECT_TRUE(mesh.isBoundary(he_32));
-  EXPECT_TRUE(mesh.isBoundary(he_21));
-  EXPECT_TRUE(mesh.isBoundary(he_13));
+  EXPECT_TRUE (mesh.isBoundary (he_32));
+  EXPECT_TRUE (mesh.isBoundary (he_21));
+  EXPECT_TRUE (mesh.isBoundary (he_13));
 
-  EXPECT_FALSE(mesh.isBoundary(vi_0));
-  EXPECT_TRUE(mesh.isBoundary(vi_1));
-  EXPECT_TRUE(mesh.isBoundary(vi_2));
-  EXPECT_TRUE(mesh.isBoundary(vi_3));
+  EXPECT_FALSE (mesh.isBoundary (vi_0));
+  EXPECT_TRUE (mesh.isBoundary (vi_1));
+  EXPECT_TRUE (mesh.isBoundary (vi_2));
+  EXPECT_TRUE (mesh.isBoundary (vi_3));
 
-  EXPECT_TRUE(mesh.isBoundary(fi_0));
-  EXPECT_TRUE(mesh.isBoundary(fi_1));
-  EXPECT_TRUE(mesh.isBoundary(fi_2));
+  EXPECT_TRUE (mesh.isBoundary (fi_0));
+  EXPECT_TRUE (mesh.isBoundary (fi_1));
+  EXPECT_TRUE (mesh.isBoundary (fi_2));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
-TEST(TestManifoldTriangleMesh, addTrianglePair)
+TEST (TestManifoldTriangleMesh, addTrianglePair)
 {
   ManifoldTriangleMesh mesh;
   VertexIndices vi;
   for (unsigned int i = 0; i < 16; ++i) {
-    vi.push_back(mesh.addVertex());
+    vi.push_back (mesh.addVertex());
   }
 
   // 00 - 01 - 02 - 03 // X means that both connections / and \ are possible.
@@ -527,107 +527,107 @@ TEST(TestManifoldTriangleMesh, addTrianglePair)
   // 12 - 13 - 14 - 15 //
   VertexIndices tmp;
   std::vector<VertexIndices> faces;
-  tmp.push_back(vi[0]);
-  tmp.push_back(vi[4]);
-  tmp.push_back(vi[5]);
-  tmp.push_back(vi[1]);
-  faces.push_back(tmp);
+  tmp.push_back (vi[0]);
+  tmp.push_back (vi[4]);
+  tmp.push_back (vi[5]);
+  tmp.push_back (vi[1]);
+  faces.push_back (tmp);
   tmp.clear();
-  tmp.push_back(vi[2]);
-  tmp.push_back(vi[6]);
-  tmp.push_back(vi[7]);
-  tmp.push_back(vi[3]);
-  faces.push_back(tmp);
+  tmp.push_back (vi[2]);
+  tmp.push_back (vi[6]);
+  tmp.push_back (vi[7]);
+  tmp.push_back (vi[3]);
+  faces.push_back (tmp);
   tmp.clear();
-  tmp.push_back(vi[1]);
-  tmp.push_back(vi[5]);
-  tmp.push_back(vi[6]);
-  tmp.push_back(vi[2]);
-  faces.push_back(tmp);
+  tmp.push_back (vi[1]);
+  tmp.push_back (vi[5]);
+  tmp.push_back (vi[6]);
+  tmp.push_back (vi[2]);
+  faces.push_back (tmp);
   tmp.clear();
-  tmp.push_back(vi[8]);
-  tmp.push_back(vi[12]);
-  tmp.push_back(vi[13]);
-  tmp.push_back(vi[9]);
-  faces.push_back(tmp);
+  tmp.push_back (vi[8]);
+  tmp.push_back (vi[12]);
+  tmp.push_back (vi[13]);
+  tmp.push_back (vi[9]);
+  faces.push_back (tmp);
   tmp.clear();
-  tmp.push_back(vi[10]);
-  tmp.push_back(vi[14]);
-  tmp.push_back(vi[15]);
-  tmp.push_back(vi[11]);
-  faces.push_back(tmp);
+  tmp.push_back (vi[10]);
+  tmp.push_back (vi[14]);
+  tmp.push_back (vi[15]);
+  tmp.push_back (vi[11]);
+  faces.push_back (tmp);
   tmp.clear();
-  tmp.push_back(vi[9]);
-  tmp.push_back(vi[13]);
-  tmp.push_back(vi[14]);
-  tmp.push_back(vi[10]);
-  faces.push_back(tmp);
+  tmp.push_back (vi[9]);
+  tmp.push_back (vi[13]);
+  tmp.push_back (vi[14]);
+  tmp.push_back (vi[10]);
+  faces.push_back (tmp);
   tmp.clear();
-  tmp.push_back(vi[4]);
-  tmp.push_back(vi[8]);
-  tmp.push_back(vi[9]);
-  tmp.push_back(vi[5]);
-  faces.push_back(tmp);
+  tmp.push_back (vi[4]);
+  tmp.push_back (vi[8]);
+  tmp.push_back (vi[9]);
+  tmp.push_back (vi[5]);
+  faces.push_back (tmp);
   tmp.clear();
-  tmp.push_back(vi[6]);
-  tmp.push_back(vi[10]);
-  tmp.push_back(vi[11]);
-  tmp.push_back(vi[7]);
-  faces.push_back(tmp);
+  tmp.push_back (vi[6]);
+  tmp.push_back (vi[10]);
+  tmp.push_back (vi[11]);
+  tmp.push_back (vi[7]);
+  faces.push_back (tmp);
   tmp.clear();
-  tmp.push_back(vi[5]);
-  tmp.push_back(vi[9]);
-  tmp.push_back(vi[10]);
-  tmp.push_back(vi[6]);
-  faces.push_back(tmp);
+  tmp.push_back (vi[5]);
+  tmp.push_back (vi[9]);
+  tmp.push_back (vi[10]);
+  tmp.push_back (vi[6]);
+  faces.push_back (tmp);
   tmp.clear();
 
   for (const auto& face : faces) {
     std::pair<FaceIndex, FaceIndex> fip;
-    fip = mesh.addTrianglePair(face);
-    ASSERT_TRUE(fip.first.isValid());
-    ASSERT_TRUE(fip.second.isValid());
+    fip = mesh.addTrianglePair (face);
+    ASSERT_TRUE (fip.first.isValid());
+    ASSERT_TRUE (fip.second.isValid());
   }
 
   for (std::size_t i = 0; i < faces.size(); ++i) {
     VertexIndices actual_1, actual_2;
 
     ManifoldTriangleMesh::VertexAroundFaceCirculator circ =
-        mesh.getVertexAroundFaceCirculator(FaceIndex(2 * i));
+        mesh.getVertexAroundFaceCirculator (FaceIndex (2 * i));
     ManifoldTriangleMesh::VertexAroundFaceCirculator circ_end = circ;
     do {
-      actual_1.push_back(circ.getTargetIndex());
+      actual_1.push_back (circ.getTargetIndex());
     } while (++circ != circ_end);
 
-    circ = mesh.getVertexAroundFaceCirculator(FaceIndex(2 * i + 1));
+    circ = mesh.getVertexAroundFaceCirculator (FaceIndex (2 * i + 1));
     circ_end = circ;
     do {
-      actual_2.push_back(circ.getTargetIndex());
+      actual_2.push_back (circ.getTargetIndex());
     } while (++circ != circ_end);
 
     VertexIndices expected_1, expected_2, expected_3, expected_4;
     tmp = faces[i];
-    expected_1.push_back(tmp[0]);
-    expected_1.push_back(tmp[1]);
-    expected_1.push_back(tmp[2]);
-    expected_2.push_back(tmp[0]);
-    expected_2.push_back(tmp[2]);
-    expected_2.push_back(tmp[3]);
-    expected_3.push_back(tmp[0]);
-    expected_3.push_back(tmp[1]);
-    expected_3.push_back(tmp[3]);
-    expected_4.push_back(tmp[1]);
-    expected_4.push_back(tmp[2]);
-    expected_4.push_back(tmp[3]);
+    expected_1.push_back (tmp[0]);
+    expected_1.push_back (tmp[1]);
+    expected_1.push_back (tmp[2]);
+    expected_2.push_back (tmp[0]);
+    expected_2.push_back (tmp[2]);
+    expected_2.push_back (tmp[3]);
+    expected_3.push_back (tmp[0]);
+    expected_3.push_back (tmp[1]);
+    expected_3.push_back (tmp[3]);
+    expected_4.push_back (tmp[1]);
+    expected_4.push_back (tmp[2]);
+    expected_4.push_back (tmp[3]);
 
-    EXPECT_TRUE((isCircularPermutation(expected_1, actual_1) &&
-                 isCircularPermutation(expected_2, actual_2)) ||
-                (isCircularPermutation(expected_2, actual_1) &&
-                 isCircularPermutation(expected_1, actual_2)) ||
-                (isCircularPermutation(expected_3, actual_1) &&
-                 isCircularPermutation(expected_4, actual_2)) ||
-                (isCircularPermutation(expected_4, actual_1) &&
-                 isCircularPermutation(expected_3, actual_2)));
+    EXPECT_TRUE ((isCircularPermutation (expected_1, actual_1) &&
+                  isCircularPermutation (expected_2, actual_2)) ||
+                 (isCircularPermutation (expected_2, actual_1) &&
+                  isCircularPermutation (expected_1, actual_2)) ||
+                 (isCircularPermutation (expected_3, actual_1) &&
+                  isCircularPermutation (expected_4, actual_2)) ||
+                 (isCircularPermutation (expected_4, actual_1) &&
+                  isCircularPermutation (expected_3, actual_2)));
   }
 }
 
@@ -636,6 +636,6 @@ TEST(TestManifoldTriangleMesh, addTrianglePair)
 int
 main (int argc, char** argv)
 {
-  testing::InitGoogleTest(&argc, argv);
+  testing::InitGoogleTest (&argc, argv);
   return (RUN_ALL_TESTS());
 }

@@ -46,7 +46,7 @@ class PCL_EXPORTS MaskMap {
 public:
   MaskMap() = default;
 
-  MaskMap(std::size_t width, std::size_t height);
+  MaskMap (std::size_t width, std::size_t height);
 
   virtual ~MaskMap() = default;
 
@@ -102,17 +102,17 @@ public:
   inline void
   reset ()
   {
-    data_.assign(data_.size(), 0);
+    data_.assign (data_.size(), 0);
   }
 
   inline unsigned char&
-  operator()(const std::size_t x, const std::size_t y)
+  operator() (const std::size_t x, const std::size_t y)
   {
     return (data_[y * width_ + x]);
   }
 
   inline const unsigned char&
-  operator()(const std::size_t x, const std::size_t y) const
+  operator() (const std::size_t x, const std::size_t y) const
   {
     return (data_[y * width_ + x]);
   }

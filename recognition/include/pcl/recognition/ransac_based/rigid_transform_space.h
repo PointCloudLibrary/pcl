@@ -61,22 +61,22 @@ public:
   public:
     Entry()
     {
-      aux::set3(axis_angle_, 0.0f);
-      aux::set3(translation_, 0.0f);
+      aux::set3 (axis_angle_, 0.0f);
+      aux::set3 (translation_, 0.0f);
     }
 
-    Entry(const Entry& src) : num_transforms_(src.num_transforms_)
+    Entry (const Entry& src) : num_transforms_ (src.num_transforms_)
     {
-      aux::copy3(src.axis_angle_, this->axis_angle_);
-      aux::copy3(src.translation_, this->translation_);
+      aux::copy3 (src.axis_angle_, this->axis_angle_);
+      aux::copy3 (src.translation_, this->translation_);
     }
 
     const Entry&
-    operator=(const Entry& src)
+    operator= (const Entry& src)
     {
       num_transforms_ = src.num_transforms_;
-      aux::copy3(src.axis_angle_, this->axis_angle_);
-      aux::copy3(src.translation_, this->translation_);
+      aux::copy3 (src.axis_angle_, this->axis_angle_);
+      aux::copy3 (src.translation_, this->translation_);
 
       return *this;
     }
@@ -84,8 +84,8 @@ public:
     inline const Entry&
     addRigidTransform (const float axis_angle[3], const float translation[3])
     {
-      aux::add3(this->axis_angle_, axis_angle);
-      aux::add3(this->translation_, translation);
+      aux::add3 (this->axis_angle_, axis_angle);
+      aux::add3 (this->translation_, translation);
       ++num_transforms_;
 
       return *this;
@@ -95,17 +95,17 @@ public:
     computeAverageRigidTransform (float* rigid_transform = nullptr)
     {
       if (num_transforms_ >= 2) {
-        float factor = 1.0f / static_cast<float>(num_transforms_);
-        aux::mult3(axis_angle_, factor);
-        aux::mult3(translation_, factor);
+        float factor = 1.0f / static_cast<float> (num_transforms_);
+        aux::mult3 (axis_angle_, factor);
+        aux::mult3 (translation_, factor);
         num_transforms_ = 1;
       }
 
       if (rigid_transform) {
         // Save the rotation (in matrix form)
-        aux::axisAngleToRotationMatrix(axis_angle_, rigid_transform);
+        aux::axisAngleToRotationMatrix (axis_angle_, rigid_transform);
         // Save the translation
-        aux::copy3(translation_, rigid_transform + 9);
+        aux::copy3 (translation_, rigid_transform + 9);
       }
     }
 
@@ -145,7 +145,7 @@ public:
   inline const RotationSpaceCell::Entry*
   getEntry (const ModelLibrary::Model* model) const
   {
-    auto res = model_to_entry_.find(model);
+    auto res = model_to_entry_.find (model);
 
     if (res != model_to_entry_.end())
       return (&res->second);
@@ -158,7 +158,7 @@ public:
                      const float axis_angle[3],
                      const float translation[3])
   {
-    return model_to_entry_[model].addRigidTransform(axis_angle, translation);
+    return model_to_entry_[model].addRigidTransform (axis_angle, translation);
   }
 
 protected:
@@ -191,13 +191,13 @@ public:
   /** \brief We use the axis-angle representation for rotations. The axis is encoded in
    * the vector and the angle is its magnitude. This is represented in an octree with
    * bounds [-pi, pi]^3. */
-  RotationSpace(float discretization)
+  RotationSpace (float discretization)
   {
     float min = -(AUX_PI_FLOAT + 0.000000001f), max = AUX_PI_FLOAT + 0.000000001f;
     float bounds[6] = {min, max, min, max, min, max};
 
     // Build the voxel structure
-    octree_.build(bounds, discretization, &cell_creator_);
+    octree_.build (bounds, discretization, &cell_creator_);
   }
 
   virtual ~RotationSpace() { octree_.clear(); }
@@ -227,7 +227,7 @@ public:
     // For each full leaf
     for (const auto& full_leaf : full_leaves) {
       // Is there an entry for 'model' in the current cell
-      const RotationSpaceCell::Entry* entry = full_leaf->getData().getEntry(model);
+      const RotationSpaceCell::Entry* entry = full_leaf->getData().getEntry (model);
       if (!entry)
         continue;
 
@@ -236,7 +236,7 @@ public:
 
       // For each neighbor
       for (const auto& neigh : neighs) {
-        const RotationSpaceCell::Entry* neigh_entry = neigh->getData().getEntry(model);
+        const RotationSpaceCell::Entry* neigh_entry = neigh->getData().getEntry (model);
         if (!neigh_entry)
           continue;
 
@@ -252,7 +252,7 @@ public:
     if (!max_num_transforms)
       return false;
 
-    with_most_votes.computeAverageRigidTransform(rigid_transform);
+    with_most_votes.computeAverageRigidTransform (rigid_transform);
 
     return true;
   }
@@ -263,28 +263,29 @@ public:
                      const float translation[3])
   {
     CellOctree::Node* cell =
-        octree_.createLeaf(axis_angle[0], axis_angle[1], axis_angle[2]);
+        octree_.createLeaf (axis_angle[0], axis_angle[1], axis_angle[2]);
 
     if (!cell) {
       const float* b = octree_.getBounds();
-      printf("WARNING in 'RotationSpace::%s()': the provided axis-angle input (%f, %f, "
-             "%f) is "
-             "out of the rotation space bounds ([%f, %f], [%f, %f], [%f, %f]).\n",
-             __func__,
-             axis_angle[0],
-             axis_angle[1],
-             axis_angle[2],
-             b[0],
-             b[1],
-             b[2],
-             b[3],
-             b[4],
-             b[5]);
+      printf (
+          "WARNING in 'RotationSpace::%s()': the provided axis-angle input (%f, %f, "
+          "%f) is "
+          "out of the rotation space bounds ([%f, %f], [%f, %f], [%f, %f]).\n",
+          __func__,
+          axis_angle[0],
+          axis_angle[1],
+          axis_angle[2],
+          b[0],
+          b[1],
+          b[2],
+          b[3],
+          b[4],
+          b[5]);
       return (false);
     }
 
     // Add the rigid transform to the cell
-    cell->getData().addRigidTransform(model, axis_angle, translation);
+    cell->getData().addRigidTransform (model, axis_angle, translation);
 
     return (true);
   }
@@ -304,9 +305,9 @@ public:
   RotationSpace*
   create (const SimpleOctree<RotationSpace, RotationSpaceCreator, float>::Node* leaf)
   {
-    auto* rot_space = new RotationSpace(discretization_);
-    rot_space->setCenter(leaf->getCenter());
-    rotation_spaces_.push_back(rot_space);
+    auto* rot_space = new RotationSpace (discretization_);
+    rot_space->setCenter (leaf->getCenter());
+    rotation_spaces_.push_back (rot_space);
 
     ++counter_;
 
@@ -362,9 +363,9 @@ public:
   {
     this->clear();
 
-    rotation_space_creator_.setDiscretization(rotation_cell_size);
+    rotation_space_creator_.setDiscretization (rotation_cell_size);
 
-    pos_octree_.build(pos_bounds, translation_cell_size, &rotation_space_creator_);
+    pos_octree_.build (pos_bounds, translation_cell_size, &rotation_space_creator_);
   }
 
   inline void
@@ -399,26 +400,26 @@ public:
   {
     // Get the leaf 'position' ends up in
     RotationSpaceOctree::Node* leaf =
-        pos_octree_.createLeaf(position[0], position[1], position[2]);
+        pos_octree_.createLeaf (position[0], position[1], position[2]);
 
     if (!leaf) {
-      printf("WARNING in 'RigidTransformSpace::%s()': the input position (%f, %f, %f) "
-             "is out of bounds.\n",
-             __func__,
-             position[0],
-             position[1],
-             position[2]);
+      printf ("WARNING in 'RigidTransformSpace::%s()': the input position (%f, %f, %f) "
+              "is out of bounds.\n",
+              __func__,
+              position[0],
+              position[1],
+              position[2]);
       return (false);
     }
 
     float rot_angle, axis_angle[3];
     // Extract the axis-angle representation from the rotation matrix
-    aux::rotationMatrixToAxisAngle(rigid_transform, axis_angle, rot_angle);
+    aux::rotationMatrixToAxisAngle (rigid_transform, axis_angle, rot_angle);
     // Multiply the axis by the angle to get the final representation
-    aux::mult3(axis_angle, rot_angle);
+    aux::mult3 (axis_angle, rot_angle);
 
     // Now, add the rigid transform to the rotation space
-    leaf->getData().addRigidTransform(model, axis_angle, rigid_transform + 9);
+    leaf->getData().addRigidTransform (model, axis_angle, rigid_transform + 9);
 
     return (true);
   }

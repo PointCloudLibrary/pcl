@@ -30,20 +30,20 @@ public:
   // delete in another DLL.
 
   // new/delete
-  void* operator new(std::size_t);
+  void* operator new (std::size_t);
   void
-  operator delete(void*);
+  operator delete (void*);
 
   // array new/delete
-  void* operator new[](std::size_t);
+  void* operator new[] (std::size_t);
   void
-  operator delete[](void*);
+  operator delete[] (void*);
 
   // in place new/delete
   void*
-  operator new(std::size_t, void*);
+  operator new (std::size_t, void*);
   void
-  operator delete(void*, void*);
+  operator delete (void*, void*);
 #endif
 
   enum eLoopType {
@@ -52,12 +52,12 @@ public:
   };
 
   ON_HatchLoop();
-  ON_HatchLoop(ON_Curve* pCurve2d, eLoopType type = ltOuter);
-  ON_HatchLoop(const ON_HatchLoop& src);
+  ON_HatchLoop (ON_Curve* pCurve2d, eLoopType type = ltOuter);
+  ON_HatchLoop (const ON_HatchLoop& src);
   ~ON_HatchLoop();
 
   ON_HatchLoop&
-  operator=(const ON_HatchLoop& src);
+  operator= (const ON_HatchLoop& src);
 
   ON_BOOL32
   IsValid (ON_TextLog* text_log = NULL) const;
@@ -147,15 +147,15 @@ public:
   ON_HatchLine();
   // C++ default copy construction and operator= work fine.
 
-  ON_HatchLine(double angle,
-               const ON_2dPoint& base,
-               const ON_2dVector& offset,
-               const ON_SimpleArray<double> dashes);
+  ON_HatchLine (double angle,
+                const ON_2dPoint& base,
+                const ON_2dVector& offset,
+                const ON_SimpleArray<double> dashes);
 
   bool
-  operator==(const ON_HatchLine&) const;
+  operator== (const ON_HatchLine&) const;
   bool
-  operator!=(const ON_HatchLine&) const;
+  operator!= (const ON_HatchLine&) const;
 
   ON_BOOL32
   IsValid (ON_TextLog* text_log = NULL) const;
@@ -330,7 +330,7 @@ ON_DLL_TEMPLATE template class ON_CLASS ON_ClassArray<ON_HatchLine>;
 
 */
 class ON_CLASS ON_HatchPattern : public ON_Object {
-  ON_OBJECT_DECLARE(ON_HatchPattern);
+  ON_OBJECT_DECLARE (ON_HatchPattern);
 
 public:
   enum eFillType {
@@ -357,7 +357,7 @@ public:
 
   // virtual
   ON_UUID
-  ModelObjectId () const;
+  ModelObjectId() const;
 
   //////////////////////////////////////////////////////////////////////
   // Interface
@@ -561,14 +561,14 @@ public:
 
 */
 class ON_CLASS ON_Hatch : public ON_Geometry {
-  ON_OBJECT_DECLARE(ON_Hatch);
+  ON_OBJECT_DECLARE (ON_Hatch);
 
 public:
   // Default constructor
   ON_Hatch();
-  ON_Hatch(const ON_Hatch&);
+  ON_Hatch (const ON_Hatch&);
   ON_Hatch&
-  operator=(const ON_Hatch&);
+  operator= (const ON_Hatch&);
   ~ON_Hatch();
 
   virtual ON_Hatch*

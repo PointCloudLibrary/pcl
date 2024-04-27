@@ -76,8 +76,8 @@ public:
   /** \brief MSAC (M-estimator SAmple Consensus) main constructor
    * \param[in] model a Sample Consensus model
    */
-  MEstimatorSampleConsensus(const SampleConsensusModelPtr& model)
-  : SampleConsensus<PointT>(model)
+  MEstimatorSampleConsensus (const SampleConsensusModelPtr& model)
+  : SampleConsensus<PointT> (model)
   {
     // Maximum number of trials before we give up.
     max_iterations_ = 10000;
@@ -87,8 +87,8 @@ public:
    * \param[in] model a Sample Consensus model
    * \param[in] threshold distance to model threshold
    */
-  MEstimatorSampleConsensus(const SampleConsensusModelPtr& model, double threshold)
-  : SampleConsensus<PointT>(model, threshold)
+  MEstimatorSampleConsensus (const SampleConsensusModelPtr& model, double threshold)
+  : SampleConsensus<PointT> (model, threshold)
   {
     // Maximum number of trials before we give up.
     max_iterations_ = 10000;

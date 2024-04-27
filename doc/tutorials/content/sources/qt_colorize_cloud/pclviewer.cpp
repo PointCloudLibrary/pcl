@@ -6,21 +6,21 @@
 #include <vtkGenericOpenGLRenderWindow.h>
 #endif
 
-PCLViewer::PCLViewer(QWidget* parent)
-: QMainWindow(parent)
-, filtering_axis_(1)
+PCLViewer::PCLViewer (QWidget* parent)
+: QMainWindow (parent)
+, filtering_axis_ (1)
 , // = y
-color_mode_(4)
+color_mode_ (4)
 , // = Rainbow
-ui(new Ui::PCLViewer)
+ui (new Ui::PCLViewer)
 {
-  ui->setupUi(this);
-  this->setWindowTitle("PCL viewer");
+  ui->setupUi (this);
+  this->setWindowTitle ("PCL viewer");
 
   // Setup the cloud pointer
-  cloud_.reset(new PointCloudT);
+  cloud_.reset (new PointCloudT);
   // The number of points in the cloud
-  cloud_->resize(500);
+  cloud_->resize (500);
 
   // Fill the cloud with random points
   for (std::size_t i = 0; i < cloud_->size(); ++i) {
@@ -33,39 +33,47 @@ ui(new Ui::PCLViewer)
 #if VTK_MAJOR_VERSION > 8
   auto renderer = vtkSmartPointer<vtkRenderer>::New();
   auto renderWindow = vtkSmartPointer<vtkGenericOpenGLRenderWindow>::New();
-  renderWindow->AddRenderer(renderer);
-  viewer_.reset(
-      new pcl::visualization::PCLVisualizer(renderer, renderWindow, "viewer", false));
-  ui->qvtkWidget->setRenderWindow(viewer_->getRenderWindow());
-  viewer_->setupInteractor(ui->qvtkWidget->interactor(),
-                           ui->qvtkWidget->renderWindow());
+  renderWindow->AddRenderer (renderer);
+  viewer_.reset (
+      new pcl::visualization::PCLVisualizer (renderer, renderWindow, "viewer", false));
+  ui->qvtkWidget->setRenderWindow (viewer_->getRenderWindow());
+  viewer_->setupInteractor (ui->qvtkWidget->interactor(),
+                            ui->qvtkWidget->renderWindow());
 #else
-  viewer_.reset(new pcl::visualization::PCLVisualizer("viewer", false));
-  ui->qvtkWidget->SetRenderWindow(viewer_->getRenderWindow());
-  viewer_->setupInteractor(ui->qvtkWidget->GetInteractor(),
-                           ui->qvtkWidget->GetRenderWindow());
+  viewer_.reset (new pcl::visualization::PCLVisualizer ("viewer", false));
+  ui->qvtkWidget->SetRenderWindow (viewer_->getRenderWindow());
+  viewer_->setupInteractor (ui->qvtkWidget->GetInteractor(),
+                            ui->qvtkWidget->GetRenderWindow());
 #endif
 
   // Connect "Load" and "Save" buttons and their functions
-  connect(ui->pushButton_load, SIGNAL(clicked()), this, SLOT(loadFileButtonPressed()));
-  connect(ui->pushButton_save, SIGNAL(clicked()), this, SLOT(saveFileButtonPressed()));
+  connect (
+      ui->pushButton_load, SIGNAL (clicked()), this, SLOT (loadFileButtonPressed()));
+  connect (
+      ui->pushButton_save, SIGNAL (clicked()), this, SLOT (saveFileButtonPressed()));
 
   // Connect X,Y,Z radio buttons and their functions
-  connect(ui->radioButton_x, SIGNAL(clicked()), this, SLOT(axisChosen()));
-  connect(ui->radioButton_y, SIGNAL(clicked()), this, SLOT(axisChosen()));
-  connect(ui->radioButton_z, SIGNAL(clicked()), this, SLOT(axisChosen()));
+  connect (ui->radioButton_x, SIGNAL (clicked()), this, SLOT (axisChosen()));
+  connect (ui->radioButton_y, SIGNAL (clicked()), this, SLOT (axisChosen()));
+  connect (ui->radioButton_z, SIGNAL (clicked()), this, SLOT (axisChosen()));
 
-  connect(ui->radioButton_BlueRed, SIGNAL(clicked()), this, SLOT(lookUpTableChosen()));
-  connect(
-      ui->radioButton_GreenMagenta, SIGNAL(clicked()), this, SLOT(lookUpTableChosen()));
-  connect(ui->radioButton_WhiteRed, SIGNAL(clicked()), this, SLOT(lookUpTableChosen()));
-  connect(ui->radioButton_GreyRed, SIGNAL(clicked()), this, SLOT(lookUpTableChosen()));
-  connect(ui->radioButton_Rainbow, SIGNAL(clicked()), this, SLOT(lookUpTableChosen()));
+  connect (
+      ui->radioButton_BlueRed, SIGNAL (clicked()), this, SLOT (lookUpTableChosen()));
+  connect (ui->radioButton_GreenMagenta,
+           SIGNAL (clicked()),
+           this,
+           SLOT (lookUpTableChosen()));
+  connect (
+      ui->radioButton_WhiteRed, SIGNAL (clicked()), this, SLOT (lookUpTableChosen()));
+  connect (
+      ui->radioButton_GreyRed, SIGNAL (clicked()), this, SLOT (lookUpTableChosen()));
+  connect (
+      ui->radioButton_Rainbow, SIGNAL (clicked()), this, SLOT (lookUpTableChosen()));
 
   // Color the randomly generated cloud
   colorCloudDistances();
-  viewer_->setBackgroundColor(0.1, 0.1, 0.1);
-  viewer_->addPointCloud(cloud_, "cloud");
+  viewer_->setBackgroundColor (0.1, 0.1, 0.1);
+  viewer_->addPointCloud (cloud_, "cloud");
   viewer_->resetCamera();
 
   refreshView();
@@ -87,38 +95,38 @@ void
 PCLViewer::loadFileButtonPressed()
 {
   // You might want to change "/home/" if you're not on an *nix platform
-  QString filename = QFileDialog::getOpenFileName(
-      this, tr("Open point cloud"), "/home/", tr("Point cloud data (*.pcd *.ply)"));
+  QString filename = QFileDialog::getOpenFileName (
+      this, tr ("Open point cloud"), "/home/", tr ("Point cloud data (*.pcd *.ply)"));
 
-  PCL_INFO("File chosen: %s\n", filename.toStdString().c_str());
-  PointCloudT::Ptr cloud_tmp(new PointCloudT);
+  PCL_INFO ("File chosen: %s\n", filename.toStdString().c_str());
+  PointCloudT::Ptr cloud_tmp (new PointCloudT);
 
   if (filename.isEmpty())
     return;
 
   int return_status;
-  if (filename.endsWith(".pcd", Qt::CaseInsensitive))
-    return_status = pcl::io::loadPCDFile(filename.toStdString(), *cloud_tmp);
+  if (filename.endsWith (".pcd", Qt::CaseInsensitive))
+    return_status = pcl::io::loadPCDFile (filename.toStdString(), *cloud_tmp);
   else
-    return_status = pcl::io::loadPLYFile(filename.toStdString(), *cloud_tmp);
+    return_status = pcl::io::loadPLYFile (filename.toStdString(), *cloud_tmp);
 
   if (return_status != 0) {
-    PCL_ERROR("Error reading point cloud %s\n", filename.toStdString().c_str());
+    PCL_ERROR ("Error reading point cloud %s\n", filename.toStdString().c_str());
     return;
   }
 
   // If point cloud contains NaN values, remove them before updating the visualizer
   // point cloud
   if (cloud_tmp->is_dense)
-    pcl::copyPointCloud(*cloud_tmp, *cloud_);
+    pcl::copyPointCloud (*cloud_tmp, *cloud_);
   else {
-    PCL_WARN("Cloud is not dense! Non finite points will be removed\n");
+    PCL_WARN ("Cloud is not dense! Non finite points will be removed\n");
     std::vector<int> vec;
-    pcl::removeNaNFromPointCloud(*cloud_tmp, *cloud_, vec);
+    pcl::removeNaNFromPointCloud (*cloud_tmp, *cloud_, vec);
   }
 
   colorCloudDistances();
-  viewer_->updatePointCloud(cloud_, "cloud");
+  viewer_->updatePointCloud (cloud_, "cloud");
   viewer_->resetCamera();
 
   refreshView();
@@ -128,26 +136,26 @@ void
 PCLViewer::saveFileButtonPressed()
 {
   // You might want to change "/home/" if you're not on an *nix platform
-  QString filename = QFileDialog::getSaveFileName(
-      this, tr("Open point cloud"), "/home/", tr("Point cloud data (*.pcd *.ply)"));
+  QString filename = QFileDialog::getSaveFileName (
+      this, tr ("Open point cloud"), "/home/", tr ("Point cloud data (*.pcd *.ply)"));
 
-  PCL_INFO("File chosen: %s\n", filename.toStdString().c_str());
+  PCL_INFO ("File chosen: %s\n", filename.toStdString().c_str());
 
   if (filename.isEmpty())
     return;
 
   int return_status;
-  if (filename.endsWith(".pcd", Qt::CaseInsensitive))
-    return_status = pcl::io::savePCDFileBinary(filename.toStdString(), *cloud_);
-  else if (filename.endsWith(".ply", Qt::CaseInsensitive))
-    return_status = pcl::io::savePLYFileBinary(filename.toStdString(), *cloud_);
+  if (filename.endsWith (".pcd", Qt::CaseInsensitive))
+    return_status = pcl::io::savePCDFileBinary (filename.toStdString(), *cloud_);
+  else if (filename.endsWith (".ply", Qt::CaseInsensitive))
+    return_status = pcl::io::savePLYFileBinary (filename.toStdString(), *cloud_);
   else {
-    filename.append(".ply");
-    return_status = pcl::io::savePLYFileBinary(filename.toStdString(), *cloud_);
+    filename.append (".ply");
+    return_status = pcl::io::savePLYFileBinary (filename.toStdString(), *cloud_);
   }
 
   if (return_status != 0) {
-    PCL_ERROR("Error writing point cloud %s\n", filename.toStdString().c_str());
+    PCL_ERROR ("Error writing point cloud %s\n", filename.toStdString().c_str());
     return;
   }
 }
@@ -158,20 +166,20 @@ PCLViewer::axisChosen()
   // Only 1 of the button can be checked at the time (mutual exclusivity) in a group of
   // radio buttons
   if (ui->radioButton_x->isChecked()) {
-    PCL_INFO("x filtering chosen\n");
+    PCL_INFO ("x filtering chosen\n");
     filtering_axis_ = 0;
   }
   else if (ui->radioButton_y->isChecked()) {
-    PCL_INFO("y filtering chosen\n");
+    PCL_INFO ("y filtering chosen\n");
     filtering_axis_ = 1;
   }
   else {
-    PCL_INFO("z filtering chosen\n");
+    PCL_INFO ("z filtering chosen\n");
     filtering_axis_ = 2;
   }
 
   colorCloudDistances();
-  viewer_->updatePointCloud(cloud_, "cloud");
+  viewer_->updatePointCloud (cloud_, "cloud");
 
   refreshView();
 }
@@ -182,28 +190,28 @@ PCLViewer::lookUpTableChosen()
   // Only 1 of the button can be checked at the time (mutual exclusivity) in a group of
   // radio buttons
   if (ui->radioButton_BlueRed->isChecked()) {
-    PCL_INFO("Blue -> Red LUT chosen\n");
+    PCL_INFO ("Blue -> Red LUT chosen\n");
     color_mode_ = 0;
   }
   else if (ui->radioButton_GreenMagenta->isChecked()) {
-    PCL_INFO("Green -> Magenta LUT chosen\n");
+    PCL_INFO ("Green -> Magenta LUT chosen\n");
     color_mode_ = 1;
   }
   else if (ui->radioButton_WhiteRed->isChecked()) {
-    PCL_INFO("White -> Red LUT chosen\n");
+    PCL_INFO ("White -> Red LUT chosen\n");
     color_mode_ = 2;
   }
   else if (ui->radioButton_GreyRed->isChecked()) {
-    PCL_INFO("Grey / Red LUT chosen\n");
+    PCL_INFO ("Grey / Red LUT chosen\n");
     color_mode_ = 3;
   }
   else {
-    PCL_INFO("Rainbow LUT chosen\n");
+    PCL_INFO ("Rainbow LUT chosen\n");
     color_mode_ = 4;
   }
 
   colorCloudDistances();
-  viewer_->updatePointCloud(cloud_, "cloud");
+  viewer_->updatePointCloud (cloud_, "cloud");
 
   refreshView();
 }
@@ -268,14 +276,14 @@ PCLViewer::colorCloudDistances()
     int value;
     switch (filtering_axis_) {
     case 0: // x
-      value = std::lround((cloud_it->x - min) *
-                          lut_scale); // Round the number to the closest integer
+      value = std::lround ((cloud_it->x - min) *
+                           lut_scale); // Round the number to the closest integer
       break;
     case 1: // y
-      value = std::lround((cloud_it->y - min) * lut_scale);
+      value = std::lround ((cloud_it->y - min) * lut_scale);
       break;
     default: // z
-      value = std::lround((cloud_it->z - min) * lut_scale);
+      value = std::lround ((cloud_it->z - min) * lut_scale);
       break;
     }
 

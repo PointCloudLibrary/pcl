@@ -66,7 +66,7 @@ using namespace pcl;
 
 struct SampledScopeTime : public StopWatch {
   enum { EACH = 33 };
-  SampledScopeTime(int& time_ms) : time_ms_(time_ms) {}
+  SampledScopeTime (int& time_ms) : time_ms_ (time_ms) {}
   ~SampledScopeTime()
   {
     static int i_ = 0;
@@ -89,7 +89,7 @@ std::string
 make_name (int counter, const char* suffix)
 {
   char buf[4096];
-  sprintf(buf, "./people%04d_%s.png", counter, suffix);
+  sprintf (buf, "./people%04d_%s.png", counter, suffix);
   return buf;
 }
 
@@ -98,16 +98,16 @@ void
 savePNGFile (const std::string& filename, const pcl::gpu::DeviceArray2D<T>& arr)
 {
   int c;
-  pcl::PointCloud<T> cloud(arr.cols(), arr.rows());
-  arr.download(cloud.points, c);
-  pcl::io::savePNGFile(filename, cloud);
+  pcl::PointCloud<T> cloud (arr.cols(), arr.rows());
+  arr.download (cloud.points, c);
+  pcl::io::savePNGFile (filename, cloud);
 }
 
 template <typename T>
 void
 savePNGFile (const std::string& filename, const pcl::PointCloud<T>& cloud)
 {
-  pcl::io::savePNGFile(filename, cloud);
+  pcl::io::savePNGFile (filename, cloud);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -117,69 +117,69 @@ public:
 
   enum { COLS = 640, ROWS = 480 };
 
-  PeoplePCDApp(pcl::Grabber& capture)
-  : capture_(capture)
-  , exit_(false)
-  , time_ms_(0)
-  , cloud_cb_(true)
-  , counter_(0)
-  , final_view_("Final labeling")
-  , depth_view_("Depth")
+  PeoplePCDApp (pcl::Grabber& capture)
+  : capture_ (capture)
+  , exit_ (false)
+  , time_ms_ (0)
+  , cloud_cb_ (true)
+  , counter_ (0)
+  , final_view_ ("Final labeling")
+  , depth_view_ ("Depth")
   {
-    final_view_.setSize(COLS, ROWS);
-    depth_view_.setSize(COLS, ROWS);
+    final_view_.setSize (COLS, ROWS);
+    depth_view_.setSize (COLS, ROWS);
 
-    final_view_.setPosition(0, 0);
-    depth_view_.setPosition(650, 0);
+    final_view_.setPosition (0, 0);
+    depth_view_.setPosition (650, 0);
 
-    cmap_device_.create(ROWS, COLS);
-    cmap_host_.resize(COLS * ROWS);
-    depth_device_.create(ROWS, COLS);
-    image_device_.create(ROWS, COLS);
+    cmap_device_.create (ROWS, COLS);
+    cmap_host_.resize (COLS * ROWS);
+    depth_device_.create (ROWS, COLS);
+    image_device_.create (ROWS, COLS);
 
-    depth_host_.resize(COLS * ROWS);
+    depth_host_.resize (COLS * ROWS);
 
-    rgba_host_.resize(COLS * ROWS);
-    rgb_host_.resize(COLS * ROWS * 3);
+    rgba_host_.resize (COLS * ROWS);
+    rgb_host_.resize (COLS * ROWS * 3);
 
-    people::uploadColorMap(color_map_);
+    people::uploadColorMap (color_map_);
   }
 
   void
   visualizeAndWrite (bool write = false)
   {
     const PeopleDetector::Labels& labels = people_detector_.rdf_detector_->getLabels();
-    people::colorizeLabels(color_map_, labels, cmap_device_);
+    people::colorizeLabels (color_map_, labels, cmap_device_);
 
     int c;
     cmap_host_.width = cmap_device_.cols();
     cmap_host_.height = cmap_device_.rows();
-    cmap_host_.resize(cmap_host_.width * cmap_host_.height);
-    cmap_device_.download(cmap_host_.points, c);
+    cmap_host_.resize (cmap_host_.width * cmap_host_.height);
+    cmap_device_.download (cmap_host_.points, c);
 
-    final_view_.showRGBImage<pcl::RGB>(cmap_host_);
-    final_view_.spinOnce(1, true);
+    final_view_.showRGBImage<pcl::RGB> (cmap_host_);
+    final_view_.spinOnce (1, true);
 
     if (cloud_cb_) {
       depth_host_.width = people_detector_.depth_device1_.cols();
       depth_host_.height = people_detector_.depth_device1_.rows();
-      depth_host_.resize(depth_host_.width * depth_host_.height);
-      people_detector_.depth_device1_.download(depth_host_.points, c);
+      depth_host_.resize (depth_host_.width * depth_host_.height);
+      people_detector_.depth_device1_.download (depth_host_.points, c);
     }
 
-    depth_view_.showShortImage(
+    depth_view_.showShortImage (
         &depth_host_[0], depth_host_.width, depth_host_.height, 0, 5000, true);
-    depth_view_.spinOnce(1, true);
+    depth_view_.spinOnce (1, true);
 
     if (write) {
       if (cloud_cb_)
-        savePNGFile(make_name(counter_, "ii"), cloud_host_);
+        savePNGFile (make_name (counter_, "ii"), cloud_host_);
       else
-        savePNGFile(make_name(counter_, "ii"), rgba_host_);
-      savePNGFile(make_name(counter_, "c2"), cmap_host_);
-      savePNGFile(make_name(counter_, "s2"), labels);
-      savePNGFile(make_name(counter_, "d1"), people_detector_.depth_device1_);
-      savePNGFile(make_name(counter_, "d2"), people_detector_.depth_device2_);
+        savePNGFile (make_name (counter_, "ii"), rgba_host_);
+      savePNGFile (make_name (counter_, "c2"), cmap_host_);
+      savePNGFile (make_name (counter_, "s2"), labels);
+      savePNGFile (make_name (counter_, "d1"), people_detector_.depth_device1_);
+      savePNGFile (make_name (counter_, "d2"), people_detector_.depth_device2_);
     }
   }
 
@@ -187,11 +187,11 @@ public:
   source_cb1 (const PointCloud<PointXYZRGBA>::ConstPtr& cloud)
   {
     {
-      std::lock_guard<std::mutex> lock(data_ready_mutex_);
+      std::lock_guard<std::mutex> lock (data_ready_mutex_);
       if (exit_)
         return;
 
-      pcl::copyPointCloud(*cloud, cloud_host_);
+      pcl::copyPointCloud (*cloud, cloud_host_);
     }
     data_ready_cond_.notify_one();
   }
@@ -202,7 +202,7 @@ public:
               float)
   {
     {
-      std::unique_lock<std::mutex> lock(data_ready_mutex_, std::try_to_lock);
+      std::unique_lock<std::mutex> lock (data_ready_mutex_, std::try_to_lock);
 
       if (exit_ || !lock)
         return;
@@ -212,12 +212,12 @@ public:
       int h = depth_wrapper->getHeight();
       int s = w * PeopleDetector::Depth::elem_size;
       const unsigned short* data = depth_wrapper->getDepthMetaData().Data();
-      depth_device_.upload(data, s, h, w);
+      depth_device_.upload (data, s, h, w);
 
-      depth_host_.resize(w * h);
+      depth_host_.resize (w * h);
       depth_host_.width = w;
       depth_host_.height = h;
-      std::copy(data, data + w * h, &depth_host_[0]);
+      std::copy (data, data + w * h, &depth_host_[0]);
 
       // getting image
       w = image_wrapper->getWidth();
@@ -225,11 +225,11 @@ public:
       s = w * PeopleDetector::Image::elem_size;
 
       // fill rgb array
-      rgb_host_.resize(w * h * 3);
-      image_wrapper->fillRGB(w, h, (unsigned char*)&rgb_host_[0]);
+      rgb_host_.resize (w * h * 3);
+      image_wrapper->fillRGB (w, h, (unsigned char*)&rgb_host_[0]);
 
       // convert to rgba, TODO image_wrapper should be updated to support rgba directly
-      rgba_host_.resize(w * h);
+      rgba_host_.resize (w * h);
       rgba_host_.width = w;
       rgba_host_.height = h;
       for (int i = 0; i < rgba_host_.size(); ++i) {
@@ -239,7 +239,7 @@ public:
         rgba.g = pixel[1];
         rgba.b = pixel[2];
       }
-      image_device_.upload(&rgba_host_[0], s, h, w);
+      image_device_.upload (&rgba_host_[0], s, h, w);
     }
     data_ready_cond_.notify_one();
   }
@@ -249,37 +249,39 @@ public:
   {
     cloud_cb_ = false;
 
-    PCDGrabberBase* ispcd = dynamic_cast<pcl::PCDGrabberBase*>(&capture_);
+    PCDGrabberBase* ispcd = dynamic_cast<pcl::PCDGrabberBase*> (&capture_);
     if (ispcd)
       cloud_cb_ = true;
 
     typedef openni_wrapper::DepthImage::Ptr DepthImagePtr;
     typedef openni_wrapper::Image::Ptr ImagePtr;
 
-    std::function<void(const PointCloud<PointXYZRGBA>::ConstPtr&)> func1 =
-        [this] (const PointCloud<PointXYZRGBA>::ConstPtr& cloud) { source_cb1(cloud); };
-    std::function<void(const ImagePtr&, const DepthImagePtr&, float)> func2 =
-        [this] (const ImagePtr& img, const DepthImagePtr& depth, float constant) {
-          source_cb2(img, depth, constant);
+    std::function<void (const PointCloud<PointXYZRGBA>::ConstPtr&)> func1 =
+        [this] (const PointCloud<PointXYZRGBA>::ConstPtr& cloud) {
+          source_cb1 (cloud);
         };
-    boost::signals2::connection c =
-        cloud_cb_ ? capture_.registerCallback(func1) : capture_.registerCallback(func2);
+    std::function<void (const ImagePtr&, const DepthImagePtr&, float)> func2 =
+        [this] (const ImagePtr& img, const DepthImagePtr& depth, float constant) {
+          source_cb2 (img, depth, constant);
+        };
+    boost::signals2::connection c = cloud_cb_ ? capture_.registerCallback (func1)
+                                              : capture_.registerCallback (func2);
 
     {
-      std::unique_lock<std::mutex> lock(data_ready_mutex_);
+      std::unique_lock<std::mutex> lock (data_ready_mutex_);
 
       try {
         capture_.start();
         while (!exit_ && !final_view_.wasStopped()) {
           bool has_data =
-              (data_ready_cond_.wait_for(lock, 100ms) == std::cv_status::no_timeout);
+              (data_ready_cond_.wait_for (lock, 100ms) == std::cv_status::no_timeout);
           if (has_data) {
-            SampledScopeTime fps(time_ms_);
+            SampledScopeTime fps (time_ms_);
 
             if (cloud_cb_)
-              process_return_ = people_detector_.process(cloud_host_.makeShared());
+              process_return_ = people_detector_.process (cloud_host_.makeShared());
             else
-              process_return_ = people_detector_.process(depth_device_, image_device_);
+              process_return_ = people_detector_.process (depth_device_, image_device_);
 
             ++counter_;
           }
@@ -287,7 +289,7 @@ public:
           if (has_data && (process_return_ == 2))
             visualizeAndWrite();
         }
-        final_view_.spinOnce(3);
+        final_view_.spinOnce (3);
       } catch (const std::bad_alloc& /*e*/) {
         std::cout << "Bad alloc" << std::endl;
       } catch (const std::exception& /*e*/) {
@@ -333,40 +335,40 @@ main (int argc, char** argv)
 {
   // selecting GPU and printing info
   int device = 0;
-  pc::parse_argument(argc, argv, "-gpu", device);
-  pcl::gpu::setDevice(device);
-  pcl::gpu::printShortCudaDeviceInfo(device);
+  pc::parse_argument (argc, argv, "-gpu", device);
+  pcl::gpu::setDevice (device);
+  pcl::gpu::printShortCudaDeviceInfo (device);
 
   // selecting data source
-  pcl::Grabber::Ptr capture(new pcl::OpenNIGrabber());
+  pcl::Grabber::Ptr capture (new pcl::OpenNIGrabber());
 
   // selecting tree files
   std::vector<std::string> tree_files;
-  tree_files.push_back("Data/forest1/tree_20.txt");
-  tree_files.push_back("Data/forest2/tree_20.txt");
-  tree_files.push_back("Data/forest3/tree_20.txt");
-  tree_files.push_back("Data/forest4/tree_20.txt");
+  tree_files.push_back ("Data/forest1/tree_20.txt");
+  tree_files.push_back ("Data/forest2/tree_20.txt");
+  tree_files.push_back ("Data/forest3/tree_20.txt");
+  tree_files.push_back ("Data/forest4/tree_20.txt");
 
-  pc::parse_argument(argc, argv, "-tree0", tree_files[0]);
-  pc::parse_argument(argc, argv, "-tree1", tree_files[1]);
-  pc::parse_argument(argc, argv, "-tree2", tree_files[2]);
-  pc::parse_argument(argc, argv, "-tree3", tree_files[3]);
+  pc::parse_argument (argc, argv, "-tree0", tree_files[0]);
+  pc::parse_argument (argc, argv, "-tree1", tree_files[1]);
+  pc::parse_argument (argc, argv, "-tree2", tree_files[2]);
+  pc::parse_argument (argc, argv, "-tree3", tree_files[3]);
 
   int num_trees = (int)tree_files.size();
-  pc::parse_argument(argc, argv, "-numTrees", num_trees);
+  pc::parse_argument (argc, argv, "-numTrees", num_trees);
 
-  tree_files.resize(num_trees);
+  tree_files.resize (num_trees);
   if (num_trees == 0 || num_trees > 4)
     return std::cout << "Invalid number of trees" << std::endl, -1;
 
   try {
     // loading trees
     typedef pcl::gpu::people::RDFBodyPartsDetector RDFBodyPartsDetector;
-    RDFBodyPartsDetector::Ptr rdf(new RDFBodyPartsDetector(tree_files));
-    PCL_INFO("Loaded files into rdf");
+    RDFBodyPartsDetector::Ptr rdf (new RDFBodyPartsDetector (tree_files));
+    PCL_INFO ("Loaded files into rdf");
 
     // Create the app
-    PeoplePCDApp app(*capture);
+    PeoplePCDApp app (*capture);
     app.people_detector_.rdf_detector_ = rdf;
 
     // executing

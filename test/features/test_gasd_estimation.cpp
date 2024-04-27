@@ -52,18 +52,18 @@ createColorCloud (pcl::PointCloud<pcl::PointXYZRGBA>& colorCloud)
     p.getVector3fMap() = (*cloud)[i].getVector3fMap();
 
     p.rgba = ((i % 255) << 16) + (((255 - i) % 255) << 8) + ((i * 37) % 255);
-    colorCloud.push_back(p);
+    colorCloud.push_back (p);
   }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TEST(PCL, GASDTransformEstimation)
+TEST (PCL, GASDTransformEstimation)
 {
   pcl::GASDEstimation<pcl::PointXYZ, pcl::GASDSignature512> gasd;
-  gasd.setInputCloud(cloud);
+  gasd.setInputCloud (cloud);
 
   pcl::PointCloud<pcl::GASDSignature512> descriptor;
-  gasd.compute(descriptor);
+  gasd.compute (descriptor);
 
   Eigen::Matrix4f trans = gasd.getTransform();
 
@@ -73,20 +73,20 @@ TEST(PCL, GASDTransformEstimation)
 
   for (Eigen::Index i = 0; i < trans.rows(); ++i) {
     for (Eigen::Index j = 0; j < trans.cols(); ++j) {
-      EXPECT_NEAR(trans(i, j), ref_trans(i, j), 1e-5);
+      EXPECT_NEAR (trans (i, j), ref_trans (i, j), 1e-5);
     }
   }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TEST(PCL, GASDShapeEstimationNoInterp)
+TEST (PCL, GASDShapeEstimationNoInterp)
 {
   pcl::GASDEstimation<pcl::PointXYZ, pcl::GASDSignature512> gasd;
-  gasd.setInputCloud(cloud);
-  gasd.setShapeHistsInterpMethod(pcl::INTERP_NONE);
+  gasd.setInputCloud (cloud);
+  gasd.setShapeHistsInterpMethod (pcl::INTERP_NONE);
 
   pcl::PointCloud<pcl::GASDSignature512> descriptor;
-  gasd.compute(descriptor);
+  gasd.compute (descriptor);
 
   const float ref_values[512] = {0, 0, 0,      0,        0,        0,        0, 0,
                                  0, 0, 0,      0,        0,        0,        0, 0,
@@ -153,21 +153,21 @@ TEST(PCL, GASDShapeEstimationNoInterp)
                                  0, 0, 0,      0,        0,        0,        0, 0,
                                  0, 0, 0,      0,        0,        0,        0, 0};
 
-  EXPECT_EQ(descriptor.size(), 1);
-  for (std::size_t i = 0; i < static_cast<std::size_t>(descriptor[0].descriptorSize());
+  EXPECT_EQ (descriptor.size(), 1);
+  for (std::size_t i = 0; i < static_cast<std::size_t> (descriptor[0].descriptorSize());
        ++i) {
-    EXPECT_NEAR(descriptor[0].histogram[i], ref_values[i], 1e-5);
+    EXPECT_NEAR (descriptor[0].histogram[i], ref_values[i], 1e-5);
   }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TEST(PCL, GASDShapeEstimationTrilinearInterp)
+TEST (PCL, GASDShapeEstimationTrilinearInterp)
 {
   pcl::GASDEstimation<pcl::PointXYZ, pcl::GASDSignature512> gasd;
-  gasd.setInputCloud(cloud);
+  gasd.setInputCloud (cloud);
 
   pcl::PointCloud<pcl::GASDSignature512> descriptor;
-  gasd.compute(descriptor);
+  gasd.compute (descriptor);
 
   const float ref_values[512] = {0,
                                  0,
@@ -682,26 +682,26 @@ TEST(PCL, GASDShapeEstimationTrilinearInterp)
                                  0,
                                  0};
 
-  EXPECT_EQ(descriptor.size(), 1);
-  for (std::size_t i = 0; i < static_cast<std::size_t>(descriptor[0].descriptorSize());
+  EXPECT_EQ (descriptor.size(), 1);
+  for (std::size_t i = 0; i < static_cast<std::size_t> (descriptor[0].descriptorSize());
        ++i) {
-    EXPECT_NEAR(descriptor[0].histogram[i], ref_values[i], 1e-5);
+    EXPECT_NEAR (descriptor[0].histogram[i], ref_values[i], 1e-5);
   }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TEST(PCL, GASDShapeAndColorEstimationNoInterp)
+TEST (PCL, GASDShapeAndColorEstimationNoInterp)
 {
   // Create fake point cloud with colors
-  pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloudWithColors(
+  pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloudWithColors (
       new pcl::PointCloud<pcl::PointXYZRGBA>);
-  createColorCloud(*cloudWithColors);
+  createColorCloud (*cloudWithColors);
 
   pcl::GASDColorEstimation<pcl::PointXYZRGBA, pcl::GASDSignature984> gasd;
-  gasd.setInputCloud(cloudWithColors);
+  gasd.setInputCloud (cloudWithColors);
 
   pcl::PointCloud<pcl::GASDSignature984> descriptor;
-  gasd.compute(descriptor);
+  gasd.compute (descriptor);
 
   const float ref_values[984] = {
       0,        0,        0,        0,        0,        0,        0,        0,
@@ -828,27 +828,27 @@ TEST(PCL, GASDShapeAndColorEstimationNoInterp)
       0,        0,        0,        0,        0,        0,        0,        0,
       0,        0,        0,        0,        0,        0,        0,        0};
 
-  EXPECT_EQ(descriptor.size(), 1);
-  for (std::size_t i = 0; i < static_cast<std::size_t>(descriptor[0].descriptorSize());
+  EXPECT_EQ (descriptor.size(), 1);
+  for (std::size_t i = 0; i < static_cast<std::size_t> (descriptor[0].descriptorSize());
        ++i) {
-    EXPECT_NEAR(descriptor[0].histogram[i], ref_values[i], 1e-5);
+    EXPECT_NEAR (descriptor[0].histogram[i], ref_values[i], 1e-5);
   }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TEST(PCL, GASDShapeAndColorEstimationQuadrilinearInterp)
+TEST (PCL, GASDShapeAndColorEstimationQuadrilinearInterp)
 {
   // Create fake point cloud with colors
-  pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloudWithColors(
+  pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloudWithColors (
       new pcl::PointCloud<pcl::PointXYZRGBA>);
-  createColorCloud(*cloudWithColors);
+  createColorCloud (*cloudWithColors);
 
   pcl::GASDColorEstimation<pcl::PointXYZRGBA, pcl::GASDSignature984> gasd;
-  gasd.setInputCloud(cloudWithColors);
-  gasd.setColorHistsInterpMethod(pcl::INTERP_QUADRILINEAR);
+  gasd.setInputCloud (cloudWithColors);
+  gasd.setColorHistsInterpMethod (pcl::INTERP_QUADRILINEAR);
 
   pcl::PointCloud<pcl::GASDSignature984> descriptor;
-  gasd.compute(descriptor);
+  gasd.compute (descriptor);
 
   const float ref_values[984] = {0,
                                  0,
@@ -1835,10 +1835,10 @@ TEST(PCL, GASDShapeAndColorEstimationQuadrilinearInterp)
                                  0,
                                  0};
 
-  EXPECT_EQ(descriptor.size(), 1);
-  for (std::size_t i = 0; i < static_cast<std::size_t>(descriptor[0].descriptorSize());
+  EXPECT_EQ (descriptor.size(), 1);
+  for (std::size_t i = 0; i < static_cast<std::size_t> (descriptor[0].descriptorSize());
        ++i) {
-    EXPECT_NEAR(descriptor[0].histogram[i], ref_values[i], 1e-5);
+    EXPECT_NEAR (descriptor[0].histogram[i], ref_values[i], 1e-5);
   }
 }
 
@@ -1853,16 +1853,16 @@ main (int argc, char** argv)
     return (-1);
   }
 
-  cloud.reset(new pcl::PointCloud<pcl::PointXYZ>);
+  cloud.reset (new pcl::PointCloud<pcl::PointXYZ>);
 
-  if (pcl::io::loadPCDFile<pcl::PointXYZ>(argv[1], *cloud) < 0) {
+  if (pcl::io::loadPCDFile<pcl::PointXYZ> (argv[1], *cloud) < 0) {
     std::cerr << "Failed to read test file. Please download `bun0.pcd` and pass its "
                  "path to the test."
               << std::endl;
     return (-1);
   }
 
-  testing::InitGoogleTest(&argc, argv);
+  testing::InitGoogleTest (&argc, argv);
   return (RUN_ALL_TESTS());
 }
 /* ]--- */

@@ -24,7 +24,7 @@ using VerticesPtr = Vertices::Ptr;
 using VerticesConstPtr = Vertices::ConstPtr;
 
 inline std::ostream&
-operator<<(std::ostream& s, const ::pcl::Vertices& v)
+operator<< (std::ostream& s, const ::pcl::Vertices& v)
 {
   s << "vertices[]" << std::endl;
   for (std::size_t i = 0; i < v.vertices.size(); ++i) {

@@ -50,7 +50,7 @@ public:
   using PointType = pcl::PointXYZ;
   using Cloud = pcl::gpu::DeviceArray<PointType>;
 
-  PseudoConvexHull3D(std::size_t buffer_size);
+  PseudoConvexHull3D (std::size_t buffer_size);
 
   void
   reconstruct (const Cloud& points, Cloud& output);

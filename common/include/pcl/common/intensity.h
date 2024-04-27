@@ -52,7 +52,7 @@ struct IntensityFieldAccessor {
    * \return p.intensity
    */
   inline float
-  operator()(const PointT& p) const
+  operator() (const PointT& p) const
   {
     return p.intensity;
   }

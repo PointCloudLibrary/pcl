@@ -64,16 +64,16 @@ class ProjectModel : public QStandardItemModel {
   Q_OBJECT
 
 public:
-  ProjectModel(QObject* parent = nullptr);
-  ProjectModel(const ProjectModel& to_copy);
+  ProjectModel (QObject* parent = nullptr);
+  ProjectModel (const ProjectModel& to_copy);
   ~ProjectModel();
 
-  ProjectModel(QString project_name, QObject* parent = nullptr);
+  ProjectModel (QString project_name, QObject* parent = nullptr);
 
   inline const QString
   getName ()
   {
-    return horizontalHeaderItem(0)->text();
+    return horizontalHeaderItem (0)->text();
   }
 
   inline QUndoStack*
@@ -178,7 +178,7 @@ Q_SIGNALS:
   void
   newCloudFromSelectionAvailable (bool can_create);
 
-  void mouseStyleState(interactor_styles::INTERACTOR_STYLES);
+  void mouseStyleState (interactor_styles::INTERACTOR_STYLES);
 
 private:
   /** \brief Checks to see if selection contains only CloudItem s */
@@ -211,5 +211,5 @@ private:
 } // namespace cloud_composer
 } // namespace pcl
 
-Q_DECLARE_METATYPE(pcl::cloud_composer::ProjectModel);
-Q_DECLARE_METATYPE(pcl::cloud_composer::interactor_styles::INTERACTOR_STYLES);
+Q_DECLARE_METATYPE (pcl::cloud_composer::ProjectModel);
+Q_DECLARE_METATYPE (pcl::cloud_composer::interactor_styles::INTERACTOR_STYLES);

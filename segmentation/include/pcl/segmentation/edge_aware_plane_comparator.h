@@ -72,19 +72,19 @@ public:
 
   /** \brief Empty constructor for PlaneCoefficientComparator. */
   EdgeAwarePlaneComparator()
-  : distance_map_threshold_(5)
-  , curvature_threshold_(0.04f)
-  , euclidean_distance_threshold_(0.04f)
+  : distance_map_threshold_ (5)
+  , curvature_threshold_ (0.04f)
+  , euclidean_distance_threshold_ (0.04f)
   {}
 
   /** \brief Empty constructor for PlaneCoefficientComparator.
    * \param[in] distance_map the distance map to use
    */
-  EdgeAwarePlaneComparator(const float* distance_map)
-  : distance_map_(distance_map)
-  , distance_map_threshold_(5)
-  , curvature_threshold_(0.04f)
-  , euclidean_distance_threshold_(0.04f)
+  EdgeAwarePlaneComparator (const float* distance_map)
+  : distance_map_ (distance_map)
+  , distance_map_threshold_ (5)
+  , curvature_threshold_ (0.04f)
+  , euclidean_distance_threshold_ (0.04f)
   {}
 
   /** \brief Destructor for PlaneCoefficientComparator. */
@@ -174,7 +174,7 @@ protected:
     float euclidean_dist_threshold = euclidean_distance_threshold_;
     if (depth_dependent_) {
       Eigen::Vector3f vec = (*input_)[idx1].getVector3fMap();
-      float z = vec.dot(z_axis_);
+      float z = vec.dot (z_axis_);
       dist_threshold *= z * z;
       euclidean_dist_threshold *= z * z;
     }
@@ -182,16 +182,16 @@ protected:
     float dx = (*input_)[idx1].x - (*input_)[idx2].x;
     float dy = (*input_)[idx1].y - (*input_)[idx2].y;
     float dz = (*input_)[idx1].z - (*input_)[idx2].z;
-    float dist = std::sqrt(dx * dx + dy * dy + dz * dz);
+    float dist = std::sqrt (dx * dx + dy * dy + dz * dz);
 
     bool normal_ok =
-        ((*normals_)[idx1].getNormalVector3fMap().dot(
+        ((*normals_)[idx1].getNormalVector3fMap().dot (
              (*normals_)[idx2].getNormalVector3fMap()) > angular_threshold_);
     bool dist_ok = (dist < euclidean_dist_threshold);
 
     bool curvature_ok = (*normals_)[idx1].curvature < curvature_threshold_;
     bool plane_d_ok =
-        std::abs((*plane_coeff_d_)[idx1] - (*plane_coeff_d_)[idx2]) < dist_threshold;
+        std::abs ((*plane_coeff_d_)[idx1] - (*plane_coeff_d_)[idx2]) < dist_threshold;
 
     if (distance_map_[idx1] < distance_map_threshold_)
       curvature_ok = false;

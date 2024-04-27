@@ -63,7 +63,7 @@ public:
       shared_ptr<const WarpPointRigid3D<PointSourceT, PointTargetT, Scalar>>;
 
   /** \brief Constructor. */
-  WarpPointRigid3D() : WarpPointRigid<PointSourceT, PointTargetT, Scalar>(3) {}
+  WarpPointRigid3D() : WarpPointRigid<PointSourceT, PointTargetT, Scalar> (3) {}
 
   /** \brief Empty destructor */
   ~WarpPointRigid3D() override = default;
@@ -74,18 +74,19 @@ public:
   void
   setParam (const VectorX& p) override
   {
-    assert(p.rows() == this->getDimension());
+    assert (p.rows() == this->getDimension());
     Matrix4& trans = this->transform_matrix_;
 
     trans = Matrix4::Zero();
-    trans(3, 3) = 1;
-    trans(2, 2) = 1; // Rotation around the Z-axis
+    trans (3, 3) = 1;
+    trans (2, 2) = 1; // Rotation around the Z-axis
 
     // Copy the rotation and translation components
-    trans.template block<4, 1>(0, 3) = Eigen::Matrix<Scalar, 4, 1>(p[0], p[1], 0, 1.0);
+    trans.template block<4, 1> (0, 3) =
+        Eigen::Matrix<Scalar, 4, 1> (p[0], p[1], 0, 1.0);
 
     // Compute w from the unit quaternion
-    Eigen::Rotation2D<Scalar> r(p[2]);
+    Eigen::Rotation2D<Scalar> r (p[2]);
     trans.template topLeftCorner<2, 2>() = r.toRotationMatrix();
   }
 };

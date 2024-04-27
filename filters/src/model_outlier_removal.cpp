@@ -43,10 +43,11 @@
 
 // Instantiations of specific point types
 #ifdef PCL_ONLY_CORE_POINT_TYPES
-PCL_INSTANTIATE(ModelOutlierRemoval,
-                (pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA)(pcl::PointXYZRGB))
+PCL_INSTANTIATE (
+    ModelOutlierRemoval,
+    (pcl::PointXYZ) (pcl::PointXYZI) (pcl::PointXYZRGBA) (pcl::PointXYZRGB))
 #else
-PCL_INSTANTIATE(ModelOutlierRemoval, PCL_XYZ_POINT_TYPES)
+PCL_INSTANTIATE (ModelOutlierRemoval, PCL_XYZ_POINT_TYPES)
 #endif
 
 #endif // PCL_NO_PRECOMPILE

@@ -44,7 +44,7 @@ namespace pcl {
 
 template <typename real>
 inline void
-PolynomialCalculationsT<real>::Parameters::setZeroValue(real new_zero_value)
+PolynomialCalculationsT<real>::Parameters::setZeroValue (real new_zero_value)
 {
   zero_value = new_zero_value;
   sqr_zero_value = zero_value * zero_value;
@@ -52,17 +52,17 @@ PolynomialCalculationsT<real>::Parameters::setZeroValue(real new_zero_value)
 
 template <typename real>
 inline void
-PolynomialCalculationsT<real>::solveLinearEquation(real a,
-                                                   real b,
-                                                   std::vector<real>& roots) const
+PolynomialCalculationsT<real>::solveLinearEquation (real a,
+                                                    real b,
+                                                    std::vector<real>& roots) const
 {
   // std::cout << "Trying to solve "<<a<<"x + "<<b<<" = 0\n";
 
-  if (isNearlyZero(b)) {
-    roots.push_back(0.0);
+  if (isNearlyZero (b)) {
+    roots.push_back (0.0);
   }
-  if (!isNearlyZero(a / b)) {
-    roots.push_back(-b / a);
+  if (!isNearlyZero (a / b)) {
+    roots.push_back (-b / a);
   }
 
 #if 0
@@ -83,40 +83,40 @@ PolynomialCalculationsT<real>::solveLinearEquation(real a,
 
 template <typename real>
 inline void
-PolynomialCalculationsT<real>::solveQuadraticEquation(real a,
-                                                      real b,
-                                                      real c,
-                                                      std::vector<real>& roots) const
+PolynomialCalculationsT<real>::solveQuadraticEquation (real a,
+                                                       real b,
+                                                       real c,
+                                                       std::vector<real>& roots) const
 {
   // std::cout << "Trying to solve "<<a<<"x^2 + "<<b<<"x + "<<c<<" = 0\n";
 
-  if (isNearlyZero(a)) {
+  if (isNearlyZero (a)) {
     // std::cout << "Highest order element is 0 => Calling solveLineaqrEquation.\n";
-    solveLinearEquation(b, c, roots);
+    solveLinearEquation (b, c, roots);
     return;
   }
 
-  if (isNearlyZero(c)) {
-    roots.push_back(0.0);
+  if (isNearlyZero (c)) {
+    roots.push_back (0.0);
     // std::cout << "Constant element is 0 => Adding root 0 and calling
     // solveLinearEquation.\n";
     std::vector<real> tmpRoots;
-    solveLinearEquation(a, b, tmpRoots);
+    solveLinearEquation (a, b, tmpRoots);
     for (const auto& tmpRoot : tmpRoots)
-      if (!isNearlyZero(tmpRoot))
-        roots.push_back(tmpRoot);
+      if (!isNearlyZero (tmpRoot))
+        roots.push_back (tmpRoot);
     return;
   }
 
   real tmp = b * b - 4 * a * c;
   if (tmp > 0) {
-    tmp = sqrt(tmp);
+    tmp = sqrt (tmp);
     real tmp2 = 1.0 / (2 * a);
-    roots.push_back((-b + tmp) * tmp2);
-    roots.push_back((-b - tmp) * tmp2);
+    roots.push_back ((-b + tmp) * tmp2);
+    roots.push_back ((-b - tmp) * tmp2);
   }
-  else if (sqrtIsNearlyZero(tmp)) {
-    roots.push_back(-b / (2 * a));
+  else if (sqrtIsNearlyZero (tmp)) {
+    roots.push_back (-b / (2 * a));
   }
 
 #if 0
@@ -137,26 +137,26 @@ PolynomialCalculationsT<real>::solveQuadraticEquation(real a,
 
 template <typename real>
 inline void
-PolynomialCalculationsT<real>::solveCubicEquation(
+PolynomialCalculationsT<real>::solveCubicEquation (
     real a, real b, real c, real d, std::vector<real>& roots) const
 {
   // std::cout << "Trying to solve "<<a<<"x^3 + "<<b<<"x^2 + "<<c<<"x + "<<d<<" = 0\n";
 
-  if (isNearlyZero(a)) {
+  if (isNearlyZero (a)) {
     // std::cout << "Highest order element is 0 => Calling solveQuadraticEquation.\n";
-    solveQuadraticEquation(b, c, d, roots);
+    solveQuadraticEquation (b, c, d, roots);
     return;
   }
 
-  if (isNearlyZero(d)) {
-    roots.push_back(0.0);
+  if (isNearlyZero (d)) {
+    roots.push_back (0.0);
     // std::cout << "Constant element is 0 => Adding root 0 and calling
     // solveQuadraticEquation.\n";
     std::vector<real> tmpRoots;
-    solveQuadraticEquation(a, b, c, tmpRoots);
+    solveQuadraticEquation (a, b, c, tmpRoots);
     for (const auto& tmpRoot : tmpRoots)
-      if (!isNearlyZero(tmpRoot))
-        roots.push_back(tmpRoot);
+      if (!isNearlyZero (tmpRoot))
+        roots.push_back (tmpRoot);
     return;
   }
 
@@ -174,37 +174,37 @@ PolynomialCalculationsT<real>::solveCubicEquation(
 
   // std::cout << "Discriminant is "<<discriminant<<"\n";
 
-  if (isNearlyZero(discriminant)) {
-    if (!isNearlyZero(alpha) || !isNearlyZero(beta)) {
-      roots.push_back((-3.0 * beta) / (2.0 * alpha) - resubValue);
-      roots.push_back((3.0 * beta) / alpha - resubValue);
+  if (isNearlyZero (discriminant)) {
+    if (!isNearlyZero (alpha) || !isNearlyZero (beta)) {
+      roots.push_back ((-3.0 * beta) / (2.0 * alpha) - resubValue);
+      roots.push_back ((3.0 * beta) / alpha - resubValue);
     }
     else {
-      roots.push_back(-resubValue);
+      roots.push_back (-resubValue);
     }
   }
   else if (discriminant > 0) {
-    double sqrtDiscriminant = sqrt(discriminant);
+    double sqrtDiscriminant = sqrt (discriminant);
     double d1 = -0.5 * beta + sqrtDiscriminant, d2 = -0.5 * beta - sqrtDiscriminant;
     if (d1 < 0)
-      d1 = -pow(-d1, 1.0 / 3.0);
+      d1 = -pow (-d1, 1.0 / 3.0);
     else
-      d1 = pow(d1, 1.0 / 3.0);
+      d1 = pow (d1, 1.0 / 3.0);
 
     if (d2 < 0)
-      d2 = -pow(-d2, 1.0 / 3.0);
+      d2 = -pow (-d2, 1.0 / 3.0);
     else
-      d2 = pow(d2, 1.0 / 3.0);
+      d2 = pow (d2, 1.0 / 3.0);
 
     // std::cout << PVAR (d1)<<", "<<PVAR (d2)<<"\n";
-    roots.push_back(d1 + d2 - resubValue);
+    roots.push_back (d1 + d2 - resubValue);
   }
   else {
-    double tmp1 = sqrt(-(4.0 / 3.0) * alpha),
-           tmp2 = std::acos(-sqrt(-27.0 / alpha3) * 0.5 * beta) / 3.0;
-    roots.push_back(tmp1 * std::cos(tmp2) - resubValue);
-    roots.push_back(-tmp1 * std::cos(tmp2 + M_PI / 3.0) - resubValue);
-    roots.push_back(-tmp1 * std::cos(tmp2 - M_PI / 3.0) - resubValue);
+    double tmp1 = sqrt (-(4.0 / 3.0) * alpha),
+           tmp2 = std::acos (-sqrt (-27.0 / alpha3) * 0.5 * beta) / 3.0;
+    roots.push_back (tmp1 * std::cos (tmp2) - resubValue);
+    roots.push_back (-tmp1 * std::cos (tmp2 + M_PI / 3.0) - resubValue);
+    roots.push_back (-tmp1 * std::cos (tmp2 - M_PI / 3.0) - resubValue);
   }
 
 #if 0
@@ -226,27 +226,27 @@ PolynomialCalculationsT<real>::solveCubicEquation(
 
 template <typename real>
 inline void
-PolynomialCalculationsT<real>::solveQuarticEquation(
+PolynomialCalculationsT<real>::solveQuarticEquation (
     real a, real b, real c, real d, real e, std::vector<real>& roots) const
 {
   // std::cout << "Trying to solve "<<a<<"x^4 + "<<b<<"x^3 + "<<c<<"x^2 + "<<d<<"x +
   // "<<e<<" = 0\n";
 
-  if (isNearlyZero(a)) {
+  if (isNearlyZero (a)) {
     // std::cout << "Highest order element is 0 => Calling solveCubicEquation.\n";
-    solveCubicEquation(b, c, d, e, roots);
+    solveCubicEquation (b, c, d, e, roots);
     return;
   }
 
-  if (isNearlyZero(e)) {
-    roots.push_back(0.0);
+  if (isNearlyZero (e)) {
+    roots.push_back (0.0);
     // std::cout << "Constant element is 0 => Adding root 0 and calling
     // solveCubicEquation.\n";
     std::vector<real> tmpRoots;
-    solveCubicEquation(a, b, c, d, tmpRoots);
+    solveCubicEquation (a, b, c, d, tmpRoots);
     for (const auto& tmpRoot : tmpRoots)
-      if (!isNearlyZero(tmpRoot))
-        roots.push_back(tmpRoot);
+      if (!isNearlyZero (tmpRoot))
+        roots.push_back (tmpRoot);
     return;
   }
 
@@ -262,18 +262,18 @@ PolynomialCalculationsT<real>::solveQuarticEquation(
 
   // std::cout << "Trying to solve y^4 + "<<alpha<<"y^2 + "<<beta<<"y + "<<gamma<<"\n";
 
-  if (isNearlyZero(beta)) { // y^4 + alpha*y^2 + gamma\n";
+  if (isNearlyZero (beta)) { // y^4 + alpha*y^2 + gamma\n";
     // std::cout << "Using beta=0 condition\n";
     std::vector<real> tmpRoots;
-    solveQuadraticEquation(1.0, alpha, gamma, tmpRoots);
+    solveQuadraticEquation (1.0, alpha, gamma, tmpRoots);
     for (const auto& quadraticRoot : tmpRoots) {
-      if (sqrtIsNearlyZero(quadraticRoot)) {
-        roots.push_back(-resubValue);
+      if (sqrtIsNearlyZero (quadraticRoot)) {
+        roots.push_back (-resubValue);
       }
       else if (quadraticRoot > 0.0) {
-        double root1 = sqrt(quadraticRoot);
-        roots.push_back(root1 - resubValue);
-        roots.push_back(-root1 - resubValue);
+        double root1 = sqrt (quadraticRoot);
+        roots.push_back (root1 - resubValue);
+        roots.push_back (-root1 - resubValue);
       }
     }
   }
@@ -281,24 +281,24 @@ PolynomialCalculationsT<real>::solveQuarticEquation(
     // std::cout << "beta != 0\n";
     double alpha3 = alpha2 * alpha, beta2 = beta * beta, p = (-alpha2 / 12.0) - gamma,
            q = (-alpha3 / 108.0) + ((alpha * gamma) / 3.0) - (beta2 / 8.0), q2 = q * q,
-           p3 = p * p * p, u = (0.5 * q) + sqrt((0.25 * q2) + (p3 / 27.0));
+           p3 = p * p * p, u = (0.5 * q) + sqrt ((0.25 * q2) + (p3 / 27.0));
     if (u > 0.0)
-      u = pow(u, 1.0 / 3.0);
-    else if (isNearlyZero(u))
+      u = pow (u, 1.0 / 3.0);
+    else if (isNearlyZero (u))
       u = 0.0;
     else
-      u = -pow(-u, 1.0 / 3.0);
+      u = -pow (-u, 1.0 / 3.0);
 
     double y = (-5.0 / 6.0) * alpha - u;
-    if (!isNearlyZero(u))
+    if (!isNearlyZero (u))
       y += p / (3.0 * u);
 
     double w = alpha + 2.0 * y;
 
     if (w > 0) {
-      w = sqrt(w);
+      w = sqrt (w);
     }
-    else if (isNearlyZero(w)) {
+    else if (isNearlyZero (w)) {
       w = 0;
     }
     else {
@@ -310,27 +310,27 @@ PolynomialCalculationsT<real>::solveQuarticEquation(
            tmp2 = -(3.0 * alpha + 2.0 * y - 2.0 * (beta / w));
 
     if (tmp1 > 0) {
-      tmp1 = sqrt(tmp1);
+      tmp1 = sqrt (tmp1);
       double root1 = -(b / (4.0 * a)) + 0.5 * (w + tmp1);
       double root2 = -(b / (4.0 * a)) + 0.5 * (w - tmp1);
-      roots.push_back(root1);
-      roots.push_back(root2);
+      roots.push_back (root1);
+      roots.push_back (root2);
     }
-    else if (isNearlyZero(tmp1)) {
+    else if (isNearlyZero (tmp1)) {
       double root1 = -(b / (4.0 * a)) + 0.5 * w;
-      roots.push_back(root1);
+      roots.push_back (root1);
     }
 
     if (tmp2 > 0) {
-      tmp2 = sqrt(tmp2);
+      tmp2 = sqrt (tmp2);
       double root3 = -(b / (4.0 * a)) + 0.5 * (-w + tmp2);
       double root4 = -(b / (4.0 * a)) + 0.5 * (-w - tmp2);
-      roots.push_back(root3);
-      roots.push_back(root4);
+      roots.push_back (root3);
+      roots.push_back (root4);
     }
-    else if (isNearlyZero(tmp2)) {
+    else if (isNearlyZero (tmp2)) {
       double root3 = -(b / (4.0 * a)) - 0.5 * w;
-      roots.push_back(root3);
+      roots.push_back (root3);
     }
 
     // std::cout << "Test: " << alpha<<", "<<beta<<", "<<gamma<<", "<<p<<", "<<q<<",
@@ -357,27 +357,27 @@ PolynomialCalculationsT<real>::solveQuarticEquation(
 
 template <typename real>
 inline pcl::BivariatePolynomialT<real>
-PolynomialCalculationsT<real>::bivariatePolynomialApproximation(
+PolynomialCalculationsT<real>::bivariatePolynomialApproximation (
     std::vector<Eigen::Matrix<real, 3, 1>,
                 Eigen::aligned_allocator<Eigen::Matrix<real, 3, 1>>>& samplePoints,
     unsigned int polynomial_degree,
     bool& error) const
 {
   pcl::BivariatePolynomialT<real> ret;
-  error = bivariatePolynomialApproximation(samplePoints, polynomial_degree, ret);
+  error = bivariatePolynomialApproximation (samplePoints, polynomial_degree, ret);
   return ret;
 }
 
 template <typename real>
 inline bool
-PolynomialCalculationsT<real>::bivariatePolynomialApproximation(
+PolynomialCalculationsT<real>::bivariatePolynomialApproximation (
     std::vector<Eigen::Matrix<real, 3, 1>,
                 Eigen::aligned_allocator<Eigen::Matrix<real, 3, 1>>>& samplePoints,
     unsigned int polynomial_degree,
     pcl::BivariatePolynomialT<real>& ret) const
 {
   const auto parameters_size =
-      BivariatePolynomialT<real>::getNoOfParametersFromDegree(polynomial_degree);
+      BivariatePolynomialT<real>::getNoOfParametersFromDegree (polynomial_degree);
 
   // Too many parameters for this number of equations (points)?
   if (parameters_size > samplePoints.size()) {
@@ -391,17 +391,17 @@ PolynomialCalculationsT<real>::bivariatePolynomialApproximation(
     //     parameters)\n";
   }
 
-  ret.setDegree(polynomial_degree);
+  ret.setDegree (polynomial_degree);
 
   // A is a symmetric matrix
-  Eigen::Matrix<real, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> A(
+  Eigen::Matrix<real, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> A (
       parameters_size, parameters_size);
   A.setZero();
-  Eigen::Matrix<real, Eigen::Dynamic, 1> b(parameters_size);
+  Eigen::Matrix<real, Eigen::Dynamic, 1> b (parameters_size);
   b.setZero();
 
   {
-    std::vector<real> C(parameters_size);
+    std::vector<real> C (parameters_size);
     for (const auto& point : samplePoints) {
       real currentX = point[0], currentY = point[1], currentZ = point[2];
 
@@ -423,7 +423,7 @@ PolynomialCalculationsT<real>::bivariatePolynomialApproximation(
         b[i] += currentZ * C[i];
         // fill the upper right triangular matrix
         for (std::size_t j = i; j < parameters_size; ++j) {
-          A(i, j) += C[i] * C[j];
+          A (i, j) += C[i] * C[j];
         }
       }
       // A += DMatrix<real>::outProd (C);
@@ -436,7 +436,7 @@ PolynomialCalculationsT<real>::bivariatePolynomialApproximation(
   // copy upper-right elements to lower-left
   for (std::size_t i = 0; i < parameters_size; ++i) {
     for (std::size_t j = 0; j < i; ++j) {
-      A(i, j) = A(j, i);
+      A (i, j) = A (j, i);
     }
   }
 
@@ -458,7 +458,7 @@ PolynomialCalculationsT<real>::bivariatePolynomialApproximation(
     return false;
   }
 
-  std::copy_n(parameters.data(), parameters_size, ret.parameters);
+  std::copy_n (parameters.data(), parameters_size, ret.parameters);
 
   // std::cout << "Resulting polynomial is "<<ret<<"\n";
 

@@ -58,8 +58,8 @@ public:
   inline void
   serialize (std::ostream& stream) const
   {
-    stream.write(reinterpret_cast<const char*>(&x), sizeof(x));
-    stream.write(reinterpret_cast<const char*>(&y), sizeof(y));
+    stream.write (reinterpret_cast<const char*> (&x), sizeof (x));
+    stream.write (reinterpret_cast<const char*> (&y), sizeof (y));
   }
 
   /** Deserializes the point from the specified stream.
@@ -69,8 +69,8 @@ public:
   inline void
   deserialize (std::istream& stream)
   {
-    stream.read(reinterpret_cast<char*>(&x), sizeof(x));
-    stream.read(reinterpret_cast<char*>(&y), sizeof(y));
+    stream.read (reinterpret_cast<char*> (&x), sizeof (x));
+    stream.read (reinterpret_cast<char*> (&y), sizeof (y));
   }
 
   /** Creates a random point within the specified window.

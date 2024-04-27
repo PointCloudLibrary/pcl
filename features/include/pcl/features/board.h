@@ -66,7 +66,7 @@ public:
   BOARDLocalReferenceFrameEstimation()
   {
     feature_name_ = "BOARDLocalReferenceFrameEstimation";
-    setCheckMarginArraySize(check_margin_array_size_);
+    setCheckMarginArraySize (check_margin_array_size_);
   }
 
   /** \brief Empty destructor */
@@ -155,19 +155,19 @@ public:
     check_margin_array_size_ = size;
 
     check_margin_array_.clear();
-    check_margin_array_.resize(check_margin_array_size_);
+    check_margin_array_.resize (check_margin_array_size_);
 
     margin_array_min_angle_.clear();
-    margin_array_min_angle_.resize(check_margin_array_size_);
+    margin_array_min_angle_.resize (check_margin_array_size_);
 
     margin_array_max_angle_.clear();
-    margin_array_max_angle_.resize(check_margin_array_size_);
+    margin_array_max_angle_.resize (check_margin_array_size_);
 
     margin_array_min_angle_normal_.clear();
-    margin_array_min_angle_normal_.resize(check_margin_array_size_);
+    margin_array_min_angle_normal_.resize (check_margin_array_size_);
 
     margin_array_max_angle_normal_.clear();
-    margin_array_max_angle_normal_.resize(check_margin_array_size_);
+    margin_array_max_angle_normal_.resize (check_margin_array_size_);
   }
 
   /** \brief Gets the number of slices in which is divided the margin for the search of
@@ -251,7 +251,7 @@ protected:
   void
   resetData ()
   {
-    setCheckMarginArraySize(check_margin_array_size_);
+    setCheckMarginArraySize (check_margin_array_size_);
   }
 
   /** \brief Estimate the LRF descriptor for a given point based on its spatial
@@ -353,7 +353,7 @@ protected:
   inline bool
   areEquals (float val1, float val2, float zero_float_eps = 1E-8f) const
   {
-    return (std::abs(val1 - val2) < zero_float_eps);
+    return (std::abs (val1 - val2) < zero_float_eps);
   }
 
 private:

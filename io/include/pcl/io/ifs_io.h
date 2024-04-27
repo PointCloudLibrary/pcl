@@ -123,11 +123,11 @@ public:
     int ifs_version;
     cloud.sensor_origin_ = Eigen::Vector4f::Zero();
     cloud.sensor_orientation_ = Eigen::Quaternionf::Identity();
-    int res = read(file_name, blob, ifs_version);
+    int res = read (file_name, blob, ifs_version);
 
     // If no error, convert the data
     if (res == 0)
-      pcl::fromPCLPointCloud2(blob, cloud);
+      pcl::fromPCLPointCloud2 (blob, cloud);
     return (res);
   }
 };
@@ -171,8 +171,8 @@ public:
          const std::string& cloud_name = "cloud")
   {
     pcl::PCLPointCloud2 blob;
-    pcl::toPCLPointCloud2<PointT>(cloud, blob);
-    return (write(file_name, blob, cloud_name));
+    pcl::toPCLPointCloud2<PointT> (cloud, blob);
+    return (write (file_name, blob, cloud_name));
   }
 };
 
@@ -189,7 +189,7 @@ loadIFSFile (const std::string& file_name, pcl::PCLPointCloud2& cloud)
 {
   pcl::IFSReader p;
   int ifs_version;
-  return (p.read(file_name, cloud, ifs_version));
+  return (p.read (file_name, cloud, ifs_version));
 }
 
 /** \brief Load any IFS file into a templated PointCloud type.
@@ -204,7 +204,7 @@ inline int
 loadIFSFile (const std::string& file_name, pcl::PointCloud<PointT>& cloud)
 {
   pcl::IFSReader p;
-  return (p.read<PointT>(file_name, cloud));
+  return (p.read<PointT> (file_name, cloud));
 }
 
 /** \brief Load any IFS file into a PolygonMesh type.
@@ -219,7 +219,7 @@ loadIFSFile (const std::string& file_name, pcl::PolygonMesh& mesh)
 {
   pcl::IFSReader p;
   int ifs_version;
-  return (p.read(file_name, mesh, ifs_version));
+  return (p.read (file_name, mesh, ifs_version));
 }
 
 /** \brief Save point cloud data to an IFS file containing 3D points
@@ -233,7 +233,7 @@ inline int
 saveIFSFile (const std::string& file_name, const pcl::PCLPointCloud2& cloud)
 {
   pcl::IFSWriter w;
-  return (w.write(file_name, cloud));
+  return (w.write (file_name, cloud));
 }
 
 /** \brief Save point cloud data to an IFS file containing 3D points
@@ -248,7 +248,7 @@ int
 saveIFSFile (const std::string& file_name, const pcl::PointCloud<PointT>& cloud)
 {
   pcl::IFSWriter w;
-  return (w.write<PointT>(file_name, cloud));
+  return (w.write<PointT> (file_name, cloud));
 }
 } // namespace io
 } // namespace pcl

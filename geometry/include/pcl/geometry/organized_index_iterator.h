@@ -47,7 +47,7 @@ public:
    * \brief constructor
    * \param[in] width the width of the image/organized cloud
    */
-  OrganizedIndexIterator(unsigned width);
+  OrganizedIndexIterator (unsigned width);
 
   /** \brief virtual destructor*/
   virtual ~OrganizedIndexIterator();
@@ -58,7 +58,7 @@ public:
 
   /** \brief go to next pixel/point in image/cloud*/
   virtual void
-  operator++(int);
+  operator++ (int);
 
   /** \brief returns the pixel/point index in the linearized memory of the image/cloud
    * \return the pixel/point index in the linearized memory of the image/cloud
@@ -109,14 +109,15 @@ protected:
 ////////////////////////////////////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////////////////////////////////
-inline OrganizedIndexIterator::OrganizedIndexIterator(unsigned width) : width_(width) {}
+inline OrganizedIndexIterator::OrganizedIndexIterator (unsigned width) : width_ (width)
+{}
 
 ////////////////////////////////////////////////////////////////////////////////
 inline OrganizedIndexIterator::~OrganizedIndexIterator() = default;
 
 ////////////////////////////////////////////////////////////////////////////////
 inline void
-OrganizedIndexIterator::operator++(int)
+OrganizedIndexIterator::operator++ (int)
 {
   return operator++();
 }

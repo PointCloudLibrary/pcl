@@ -62,9 +62,9 @@ class vtkImageFlip;
 namespace pcl {
 namespace visualization {
 using Vector3ub = Eigen::Array<unsigned char, 3, 1>;
-static const Vector3ub green_color(0, 255, 0);
-static const Vector3ub red_color(255, 0, 0);
-static const Vector3ub blue_color(0, 0, 255);
+static const Vector3ub green_color (0, 255, 0);
+static const Vector3ub red_color (255, 0, 0);
+static const Vector3ub blue_color (0, 0, 255);
 
 /** \brief An image viewer interactor style, tailored for ImageViewer.
  * \author Radu B. Rusu
@@ -132,7 +132,7 @@ public:
   /** \brief Constructor.
    * \param[in] window_title the title of the window
    */
-  ImageViewer(const std::string& window_title = "");
+  ImageViewer (const std::string& window_title = "");
 
   /** \brief Destructor. */
   virtual ~ImageViewer();
@@ -144,7 +144,7 @@ public:
   void
   setInteractorStyle (vtkInteractorObserver* style)
   {
-    interactor_->SetInteractorStyle(style);
+    interactor_->SetInteractorStyle (style);
   }
 
   /** \brief Show a monochrome 2D image on screen.
@@ -184,7 +184,7 @@ public:
                  const std::string& layer_id = "mono_image",
                  double opacity = 1.0)
   {
-    return (showMonoImage(*cloud, layer_id, opacity));
+    return (showMonoImage (*cloud, layer_id, opacity));
   }
 
   /** \brief Add a monochrome 2D image layer, but do not render it (use spin/spinOnce to
@@ -197,7 +197,7 @@ public:
                 const std::string& layer_id = "mono_image",
                 double opacity = 1.0)
   {
-    return (addMonoImage(*cloud, layer_id, opacity));
+    return (addMonoImage (*cloud, layer_id, opacity));
   }
 
   /** \brief Show a monochrome 2D image on screen.
@@ -230,7 +230,7 @@ public:
                  const std::string& layer_id = "mono_image",
                  double opacity = 1.0)
   {
-    return (showMonoImage(*cloud, layer_id, opacity));
+    return (showMonoImage (*cloud, layer_id, opacity));
   }
 
   /** \brief Add a monochrome 2D image layer, but do not render it (use spin/spinOnce to
@@ -243,7 +243,7 @@ public:
                 const std::string& layer_id = "mono_image",
                 double opacity = 1.0)
   {
-    return (addMonoImage(*cloud, layer_id, opacity));
+    return (addMonoImage (*cloud, layer_id, opacity));
   }
 
   /** \brief Show a monochrome 2D image on screen.
@@ -306,7 +306,7 @@ public:
                 const std::string& layer_id = "rgb_image",
                 double opacity = 1.0)
   {
-    return (showRGBImage<T>(*cloud, layer_id, opacity));
+    return (showRGBImage<T> (*cloud, layer_id, opacity));
   }
 
   /** \brief Add an RGB 2D image layer, but do not render it (use spin/spinOnce to
@@ -320,7 +320,7 @@ public:
                const std::string& layer_id = "rgb_image",
                double opacity = 1.0)
   {
-    return (addRGBImage<T>(*cloud, layer_id, opacity));
+    return (addRGBImage<T> (*cloud, layer_id, opacity));
   }
 
   /** \brief Show a 2D image on screen, obtained from the RGB channel of a point cloud.
@@ -548,12 +548,12 @@ public:
    * \return a connection object that allows to disconnect the callback function.
    */
   boost::signals2::connection
-  registerKeyboardCallback (void (*callback)(const pcl::visualization::KeyboardEvent&,
-                                             void*),
+  registerKeyboardCallback (void (*callback) (const pcl::visualization::KeyboardEvent&,
+                                              void*),
                             void* cookie = nullptr)
   {
-    return (registerKeyboardCallback(
-        [=] (const pcl::visualization::KeyboardEvent& e) { (*callback)(e, cookie); }));
+    return (registerKeyboardCallback (
+        [=] (const pcl::visualization::KeyboardEvent& e) { (*callback) (e, cookie); }));
   }
 
   /** \brief Register a callback function for keyboard events
@@ -565,13 +565,13 @@ public:
   template <typename T>
   boost::signals2::connection
   registerKeyboardCallback (
-      void (T::*callback)(const pcl::visualization::KeyboardEvent&, void*),
+      void (T::*callback) (const pcl::visualization::KeyboardEvent&, void*),
       T& instance,
       void* cookie = nullptr)
   {
-    return (registerKeyboardCallback(
+    return (registerKeyboardCallback (
         [=, &instance] (const pcl::visualization::KeyboardEvent& e) {
-          (instance.*callback)(e, cookie);
+          (instance.*callback) (e, cookie);
         }));
   }
 
@@ -582,7 +582,7 @@ public:
    */
   boost::signals2::connection
   registerKeyboardCallback (
-      std::function<void(const pcl::visualization::KeyboardEvent&)> cb);
+      std::function<void (const pcl::visualization::KeyboardEvent&)> cb);
 
   /** \brief Register a callback std::function for mouse events
    * \param[in] callback  the function that will be registered as a callback for a mouse
@@ -590,11 +590,12 @@ public:
    * connection object that allows to disconnect the callback function.
    */
   boost::signals2::connection
-  registerMouseCallback (void (*callback)(const pcl::visualization::MouseEvent&, void*),
+  registerMouseCallback (void (*callback) (const pcl::visualization::MouseEvent&,
+                                           void*),
                          void* cookie = nullptr)
   {
-    return (registerMouseCallback(
-        [=] (const pcl::visualization::MouseEvent& e) { (*callback)(e, cookie); }));
+    return (registerMouseCallback (
+        [=] (const pcl::visualization::MouseEvent& e) { (*callback) (e, cookie); }));
   }
 
   /** \brief Register a callback function for mouse events
@@ -605,14 +606,14 @@ public:
    */
   template <typename T>
   boost::signals2::connection
-  registerMouseCallback (void (T::*callback)(const pcl::visualization::MouseEvent&,
-                                             void*),
+  registerMouseCallback (void (T::*callback) (const pcl::visualization::MouseEvent&,
+                                              void*),
                          T& instance,
                          void* cookie = nullptr)
   {
-    return (
-        registerMouseCallback([=, &instance] (const pcl::visualization::MouseEvent& e) {
-          (instance.*callback)(e, cookie);
+    return (registerMouseCallback (
+        [=, &instance] (const pcl::visualization::MouseEvent& e) {
+          (instance.*callback) (e, cookie);
         }));
   }
 
@@ -621,7 +622,8 @@ public:
    * event \return a connection object that allows to disconnect the callback function.
    */
   boost::signals2::connection
-  registerMouseCallback (std::function<void(const pcl::visualization::MouseEvent&)> cb);
+  registerMouseCallback (
+      std::function<void (const pcl::visualization::MouseEvent&)> cb);
 
   /** \brief Set the position in screen coordinates.
    * \param[in] x where to move the window to (X)
@@ -1125,13 +1127,13 @@ protected: // types
       return (new ExitMainLoopTimerCallback);
     }
     void
-    Execute (vtkObject* vtkNotUsed(caller),
+    Execute (vtkObject* vtkNotUsed (caller),
              unsigned long event_id,
              void* call_data) override
     {
       if (event_id != vtkCommand::TimerEvent)
         return;
-      int timer_id = *static_cast<int*>(call_data);
+      int timer_id = *static_cast<int*> (call_data);
       if (timer_id != right_timer_id)
         return;
       window->interactor_->TerminateApp();
@@ -1183,8 +1185,8 @@ private:
                double opacity = 0.5,
                bool fill_box = true);
 
-  boost::signals2::signal<void(const pcl::visualization::MouseEvent&)> mouse_signal_;
-  boost::signals2::signal<void(const pcl::visualization::KeyboardEvent&)>
+  boost::signals2::signal<void (const pcl::visualization::MouseEvent&)> mouse_signal_;
+  boost::signals2::signal<void (const pcl::visualization::KeyboardEvent&)>
       keyboard_signal_;
 
   vtkSmartPointer<vtkRenderWindowInteractor> interactor_;
@@ -1237,11 +1239,11 @@ private:
   std::vector<unsigned char*> image_data_{};
 
   struct LayerComparator {
-    LayerComparator(const std::string& str) : str_(str) {}
+    LayerComparator (const std::string& str) : str_ (str) {}
     const std::string& str_;
 
     bool
-    operator()(const Layer& layer)
+    operator() (const Layer& layer)
     {
       return (layer.layer_name == str_);
     }

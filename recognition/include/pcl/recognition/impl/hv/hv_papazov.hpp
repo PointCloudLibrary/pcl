@@ -51,31 +51,31 @@ pcl::PapazovHV<ModelT, SceneT>::initialize()
   points_explained_by_rm_.clear();
 
   // initialize mask...
-  mask_.resize(complete_models_.size());
+  mask_.resize (complete_models_.size());
   for (std::size_t i = 0; i < complete_models_.size(); i++)
     mask_[i] = true;
 
   // initialize explained_by_RM
-  explained_by_RM_.resize(scene_cloud_downsampled_->size());
-  points_explained_by_rm_.resize(scene_cloud_downsampled_->size());
+  explained_by_RM_.resize (scene_cloud_downsampled_->size());
+  points_explained_by_rm_.resize (scene_cloud_downsampled_->size());
 
   // initialize model
   for (std::size_t m = 0; m < complete_models_.size(); m++) {
-    RecognitionModelPtr recog_model(new RecognitionModel);
+    RecognitionModelPtr recog_model (new RecognitionModel);
     // voxelize model cloud
-    recog_model->cloud_.reset(new pcl::PointCloud<ModelT>);
-    recog_model->complete_cloud_.reset(new pcl::PointCloud<ModelT>);
-    recog_model->id_ = static_cast<int>(m);
+    recog_model->cloud_.reset (new pcl::PointCloud<ModelT>);
+    recog_model->complete_cloud_.reset (new pcl::PointCloud<ModelT>);
+    recog_model->id_ = static_cast<int> (m);
 
     pcl::VoxelGrid<ModelT> voxel_grid;
-    voxel_grid.setInputCloud(visible_models_[m]);
-    voxel_grid.setLeafSize(resolution_, resolution_, resolution_);
-    voxel_grid.filter(*(recog_model->cloud_));
+    voxel_grid.setInputCloud (visible_models_[m]);
+    voxel_grid.setLeafSize (resolution_, resolution_, resolution_);
+    voxel_grid.filter (*(recog_model->cloud_));
 
     pcl::VoxelGrid<ModelT> voxel_grid_complete;
-    voxel_grid_complete.setInputCloud(complete_models_[m]);
-    voxel_grid_complete.setLeafSize(resolution_, resolution_, resolution_);
-    voxel_grid_complete.filter(*(recog_model->complete_cloud_));
+    voxel_grid_complete.setInputCloud (complete_models_[m]);
+    voxel_grid_complete.setLeafSize (resolution_, resolution_, resolution_);
+    voxel_grid_complete.filter (*(recog_model->complete_cloud_));
 
     std::vector<int> explained_indices;
     std::vector<int> outliers;
@@ -83,41 +83,41 @@ pcl::PapazovHV<ModelT, SceneT>::initialize()
     std::vector<float> nn_distances;
 
     for (std::size_t i = 0; i < recog_model->cloud_->size(); i++) {
-      if (!scene_downsampled_tree_->radiusSearch((*recog_model->cloud_)[i],
-                                                 inliers_threshold_,
-                                                 nn_indices,
-                                                 nn_distances,
-                                                 std::numeric_limits<int>::max())) {
-        outliers.push_back(static_cast<int>(i));
+      if (!scene_downsampled_tree_->radiusSearch ((*recog_model->cloud_)[i],
+                                                  inliers_threshold_,
+                                                  nn_indices,
+                                                  nn_distances,
+                                                  std::numeric_limits<int>::max())) {
+        outliers.push_back (static_cast<int> (i));
       }
       else {
         for (std::size_t k = 0; k < nn_distances.size(); k++) {
-          explained_indices.push_back(
+          explained_indices.push_back (
               nn_indices[k]); // nn_indices[k] points to the scene
         }
       }
     }
 
-    std::sort(explained_indices.begin(), explained_indices.end());
-    explained_indices.erase(
-        std::unique(explained_indices.begin(), explained_indices.end()),
+    std::sort (explained_indices.begin(), explained_indices.end());
+    explained_indices.erase (
+        std::unique (explained_indices.begin(), explained_indices.end()),
         explained_indices.end());
 
-    recog_model->bad_information_ = static_cast<int>(outliers.size());
+    recog_model->bad_information_ = static_cast<int> (outliers.size());
 
-    if ((static_cast<float>(recog_model->bad_information_) /
-         static_cast<float>(recog_model->complete_cloud_->size())) <=
+    if ((static_cast<float> (recog_model->bad_information_) /
+         static_cast<float> (recog_model->complete_cloud_->size())) <=
             penalty_threshold_ &&
-        (static_cast<float>(explained_indices.size()) /
-         static_cast<float>(recog_model->complete_cloud_->size())) >=
+        (static_cast<float> (explained_indices.size()) /
+         static_cast<float> (recog_model->complete_cloud_->size())) >=
             support_threshold_) {
       recog_model->explained_ = explained_indices;
-      recognition_models_.push_back(recog_model);
+      recognition_models_.push_back (recog_model);
 
       // update explained_by_RM_, add 1
       for (const int& explained_index : explained_indices) {
         explained_by_RM_[explained_index]++;
-        points_explained_by_rm_[explained_index].push_back(recog_model);
+        points_explained_by_rm_[explained_index].push_back (recog_model);
       }
     }
     else {
@@ -135,22 +135,22 @@ pcl::PapazovHV<ModelT, SceneT>::nonMaximaSuppresion()
   // then remove that vertex
   using VertexIterator = typename boost::graph_traits<Graph>::vertex_iterator;
   VertexIterator vi, vi_end;
-  boost::tie(vi, vi_end) = boost::vertices(conflict_graph_);
+  boost::tie (vi, vi_end) = boost::vertices (conflict_graph_);
 
   for (auto next = vi; next != vi_end; next++) {
-    const typename Graph::vertex_descriptor v = boost::vertex(*next, conflict_graph_);
+    const typename Graph::vertex_descriptor v = boost::vertex (*next, conflict_graph_);
     typename boost::graph_traits<Graph>::adjacency_iterator ai;
     typename boost::graph_traits<Graph>::adjacency_iterator ai_end;
 
-    auto current = std::static_pointer_cast<RecognitionModel>(
-        graph_id_model_map_[static_cast<int>(v)]);
+    auto current = std::static_pointer_cast<RecognitionModel> (
+        graph_id_model_map_[static_cast<int> (v)]);
 
     bool a_better_one = false;
-    for (boost::tie(ai, ai_end) = boost::adjacent_vertices(v, conflict_graph_);
+    for (boost::tie (ai, ai_end) = boost::adjacent_vertices (v, conflict_graph_);
          (ai != ai_end) && !a_better_one;
          ++ai) {
-      auto neighbour = std::static_pointer_cast<RecognitionModel>(
-          graph_id_model_map_[static_cast<int>(*ai)]);
+      auto neighbour = std::static_pointer_cast<RecognitionModel> (
+          graph_id_model_map_[static_cast<int> (*ai)]);
       if ((neighbour->explained_.size() >= current->explained_.size()) &&
           mask_[neighbour->id_]) {
         a_better_one = true;
@@ -171,9 +171,9 @@ pcl::PapazovHV<ModelT, SceneT>::buildConflictGraph()
   // create vertices for the graph
   for (std::size_t i = 0; i < (recognition_models_.size()); i++) {
     const typename Graph::vertex_descriptor v =
-        boost::add_vertex(recognition_models_[i], conflict_graph_);
-    graph_id_model_map_[static_cast<int>(v)] =
-        std::static_pointer_cast<RecognitionModel>(recognition_models_[i]);
+        boost::add_vertex (recognition_models_[i], conflict_graph_);
+    graph_id_model_map_[static_cast<int> (v)] =
+        std::static_pointer_cast<RecognitionModel> (recognition_models_[i]);
   }
 
   // iterate over the remaining models and check for each one if there is a conflict
@@ -211,14 +211,14 @@ pcl::PapazovHV<ModelT, SceneT>::buildConflictGraph()
         bool add_conflict = false;
         add_conflict =
             ((n_conflicts /
-              static_cast<float>(recognition_models_[i]->complete_cloud_->size())) >
+              static_cast<float> (recognition_models_[i]->complete_cloud_->size())) >
              conflict_threshold_size_) ||
             ((n_conflicts /
-              static_cast<float>(recognition_models_[j]->complete_cloud_->size())) >
+              static_cast<float> (recognition_models_[j]->complete_cloud_->size())) >
              conflict_threshold_size_);
 
         if (add_conflict) {
-          boost::add_edge(i, j, conflict_graph_);
+          boost::add_edge (i, j, conflict_graph_);
         }
       }
     }

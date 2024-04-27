@@ -113,10 +113,10 @@ public:
     bool is_valid = true;
 
     if (trivial_) {
-      const float* temp = reinterpret_cast<const float*>(&p);
+      const float* temp = reinterpret_cast<const float*> (&p);
 
       for (int i = 0; i < nr_dimensions_; ++i) {
-        if (!std::isfinite(temp[i])) {
+        if (!std::isfinite (temp[i])) {
           is_valid = false;
           break;
         }
@@ -124,10 +124,10 @@ public:
     }
     else {
       float* temp = new float[nr_dimensions_];
-      copyToFloatArray(p, temp);
+      copyToFloatArray (p, temp);
 
       for (int i = 0; i < nr_dimensions_; ++i) {
-        if (!std::isfinite(temp[i])) {
+        if (!std::isfinite (temp[i])) {
           is_valid = false;
           break;
         }
@@ -147,7 +147,7 @@ public:
   vectorize (const PointT& p, OutputType& out) const
   {
     float* temp = new float[nr_dimensions_];
-    copyToFloatArray(p, temp);
+    copyToFloatArray (p, temp);
     if (alpha_.empty()) {
       for (int i = 0; i < nr_dimensions_; ++i)
         out[i] = temp[i];
@@ -162,7 +162,7 @@ public:
   void
   vectorize (const PointT& p, float* out) const
   {
-    copyToFloatArray(p, out);
+    copyToFloatArray (p, out);
     if (!alpha_.empty())
       for (int i = 0; i < nr_dimensions_; ++i)
         out[i] *= alpha_[i];
@@ -171,7 +171,7 @@ public:
   void
   vectorize (const PointT& p, std::vector<float>& out) const
   {
-    copyToFloatArray(p, out.data());
+    copyToFloatArray (p, out.data());
     if (!alpha_.empty())
       for (int i = 0; i < nr_dimensions_; ++i)
         out[i] *= alpha_[i];
@@ -184,8 +184,8 @@ public:
   void
   setRescaleValues (const float* rescale_array)
   {
-    alpha_.resize(nr_dimensions_);
-    std::copy(rescale_array, rescale_array + nr_dimensions_, alpha_.begin());
+    alpha_.resize (nr_dimensions_);
+    std::copy (rescale_array, rescale_array + nr_dimensions_, alpha_.begin());
   }
 
   /** \brief Return the number of dimensions in the point's vector representation. */
@@ -214,7 +214,7 @@ public:
   {
     // If point type is unknown, assume it's a struct/array of floats, and compute the
     // number of dimensions
-    nr_dimensions_ = sizeof(PointDefault) / sizeof(float);
+    nr_dimensions_ = sizeof (PointDefault) / sizeof (float);
     // Limit the default representation to the first 3 elements
     if (nr_dimensions_ > 3)
       nr_dimensions_ = 3;
@@ -227,15 +227,15 @@ public:
   inline Ptr
   makeShared () const
   {
-    return (Ptr(new DefaultPointRepresentation<PointDefault>(*this)));
+    return (Ptr (new DefaultPointRepresentation<PointDefault> (*this)));
   }
 
   void
   copyToFloatArray (const PointDefault& p, float* out) const override
   {
     // If point type is unknown, treat it as a struct/array of floats
-    const float* ptr = reinterpret_cast<const float*>(&p);
-    std::copy(ptr, ptr + nr_dimensions_, out);
+    const float* ptr = reinterpret_cast<const float*> (&p);
+    std::copy (ptr, ptr + nr_dimensions_, out);
   }
 };
 
@@ -251,7 +251,7 @@ protected:
 
 private:
   struct IncrementFunctor {
-    IncrementFunctor(int& n) : n_(n) { n_ = 0; }
+    IncrementFunctor (int& n) : n_ (n) { n_ = 0; }
 
     template <typename Key>
     inline void
@@ -267,8 +267,8 @@ private:
   struct NdCopyPointFunctor {
     using Pod = typename traits::POD<PointDefault>::type;
 
-    NdCopyPointFunctor(const PointDefault& p1, float* p2)
-    : p1_(reinterpret_cast<const Pod&>(p1)), p2_(p2)
+    NdCopyPointFunctor (const PointDefault& p1, float* p2)
+    : p1_ (reinterpret_cast<const Pod&> (p1)), p2_ (p2)
     {}
 
     template <typename Key>
@@ -277,7 +277,7 @@ private:
     {
       using FieldT = typename pcl::traits::datatype<PointDefault, Key>::type;
       constexpr int NrDims = pcl::traits::datatype<PointDefault, Key>::size;
-      Helper<Key, FieldT, NrDims>::copyPoint(p1_, p2_, f_idx_);
+      Helper<Key, FieldT, NrDims>::copyPoint (p1_, p2_, f_idx_);
     }
 
     // Copy helper for scalar fields
@@ -286,9 +286,9 @@ private:
       static void
       copyPoint (const Pod& p1, float* p2, int& f_idx)
       {
-        const std::uint8_t* data_ptr = reinterpret_cast<const std::uint8_t*>(&p1) +
+        const std::uint8_t* data_ptr = reinterpret_cast<const std::uint8_t*> (&p1) +
                                        pcl::traits::offset<PointDefault, Key>::value;
-        p2[f_idx++] = *reinterpret_cast<const FieldT*>(data_ptr);
+        p2[f_idx++] = *reinterpret_cast<const FieldT*> (data_ptr);
       }
     };
     // Copy helper for array fields
@@ -297,10 +297,10 @@ private:
       static void
       copyPoint (const Pod& p1, float* p2, int& f_idx)
       {
-        const std::uint8_t* data_ptr = reinterpret_cast<const std::uint8_t*>(&p1) +
+        const std::uint8_t* data_ptr = reinterpret_cast<const std::uint8_t*> (&p1) +
                                        pcl::traits::offset<PointDefault, Key>::value;
         int nr_dims = NrDims;
-        const FieldT* array = reinterpret_cast<const FieldT*>(data_ptr);
+        const FieldT* array = reinterpret_cast<const FieldT*> (data_ptr);
         for (int i = 0; i < nr_dims; ++i) {
           p2[f_idx++] = array[i];
         }
@@ -322,19 +322,19 @@ public:
   DefaultFeatureRepresentation()
   {
     nr_dimensions_ = 0; // zero-out the nr_dimensions_ before it gets incremented
-    pcl::for_each_type<FieldList>(IncrementFunctor(nr_dimensions_));
+    pcl::for_each_type<FieldList> (IncrementFunctor (nr_dimensions_));
   }
 
   inline Ptr
   makeShared () const
   {
-    return (Ptr(new DefaultFeatureRepresentation<PointDefault>(*this)));
+    return (Ptr (new DefaultFeatureRepresentation<PointDefault> (*this)));
   }
 
   void
   copyToFloatArray (const PointDefault& p, float* out) const override
   {
-    pcl::for_each_type<FieldList>(NdCopyPointFunctor(p, out));
+    pcl::for_each_type<FieldList> (NdCopyPointFunctor (p, out));
   }
 };
 
@@ -550,13 +550,13 @@ public:
    * \param[in] max_dim the maximum number of dimensions to use
    * \param[in] start_dim the starting dimension
    */
-  CustomPointRepresentation(const int max_dim = 3, const int start_dim = 0)
-  : max_dim_(max_dim), start_dim_(start_dim)
+  CustomPointRepresentation (const int max_dim = 3, const int start_dim = 0)
+  : max_dim_ (max_dim), start_dim_ (start_dim)
   {
     // If point type is unknown, assume it's a struct/array of floats, and compute the
     // number of dimensions
     nr_dimensions_ =
-        static_cast<int>(sizeof(PointDefault) / sizeof(float)) - start_dim_;
+        static_cast<int> (sizeof (PointDefault) / sizeof (float)) - start_dim_;
     // Limit the default representation to the first 3 elements
     if (nr_dimensions_ > max_dim_)
       nr_dimensions_ = max_dim_;
@@ -565,7 +565,7 @@ public:
   inline Ptr
   makeShared () const
   {
-    return Ptr(new CustomPointRepresentation<PointDefault>(*this));
+    return Ptr (new CustomPointRepresentation<PointDefault> (*this));
   }
 
   /** \brief Copy the point data into a float array
@@ -576,8 +576,8 @@ public:
   copyToFloatArray (const PointDefault& p, float* out) const override
   {
     // If point type is unknown, treat it as a struct/array of floats
-    const float* ptr = (reinterpret_cast<const float*>(&p)) + start_dim_;
-    std::copy(ptr, ptr + nr_dimensions_, out);
+    const float* ptr = (reinterpret_cast<const float*> (&p)) + start_dim_;
+    std::copy (ptr, ptr + nr_dimensions_, out);
   }
 
 protected:

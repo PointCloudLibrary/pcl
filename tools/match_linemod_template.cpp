@@ -55,34 +55,34 @@ using PointCloudXYZRGBA = pcl::PointCloud<pcl::PointXYZRGBA>;
 void
 printHelp (int, char** argv)
 {
-  print_error("Syntax is: %s input_cloud.pcd input_template.lmt\n", argv[0]);
+  print_error ("Syntax is: %s input_cloud.pcd input_template.lmt\n", argv[0]);
 }
 
 void
 printElapsedTimeAndNumberOfPoints (double t, int w, int h = 1)
 {
-  print_info("[done, ");
-  print_value("%g", t);
-  print_info(" ms : ");
-  print_value("%d", w * h);
-  print_info(" points]\n");
+  print_info ("[done, ");
+  print_value ("%g", t);
+  print_info (" ms : ");
+  print_value ("%d", w * h);
+  print_info (" points]\n");
 }
 
 bool
 loadCloud (const std::string& filename, PointCloudXYZRGBA& cloud)
 {
   TicToc tt;
-  print_highlight("Loading ");
-  print_value("%s ", filename.c_str());
+  print_highlight ("Loading ");
+  print_value ("%s ", filename.c_str());
 
   tt.tic();
-  if (loadPCDFile(filename, cloud) < 0)
+  if (loadPCDFile (filename, cloud) < 0)
     return (false);
 
-  printElapsedTimeAndNumberOfPoints(tt.toc(), cloud.width, cloud.height);
+  printElapsedTimeAndNumberOfPoints (tt.toc(), cloud.width, cloud.height);
 
-  print_info("Available dimensions: ");
-  print_value("%s\n", pcl::getFieldsList(cloud).c_str());
+  print_info ("Available dimensions: ");
+  print_value ("%s\n", pcl::getFieldsList (cloud).c_str());
 
   return (true);
 }
@@ -91,19 +91,19 @@ std::vector<pcl::LINEMODDetection>
 matchTemplates (const PointCloudXYZRGBA::ConstPtr& input, const pcl::LINEMOD& linemod)
 {
   pcl::ColorGradientModality<pcl::PointXYZRGBA> color_grad_mod;
-  color_grad_mod.setInputCloud(input);
+  color_grad_mod.setInputCloud (input);
   color_grad_mod.processInputData();
 
   pcl::SurfaceNormalModality<pcl::PointXYZRGBA> surface_norm_mod;
-  surface_norm_mod.setInputCloud(input);
+  surface_norm_mod.setInputCloud (input);
   surface_norm_mod.processInputData();
 
-  std::vector<pcl::QuantizableModality*> modalities(2);
+  std::vector<pcl::QuantizableModality*> modalities (2);
   modalities[0] = &color_grad_mod;
   modalities[1] = &surface_norm_mod;
 
   std::vector<pcl::LINEMODDetection> detections;
-  linemod.matchTemplates(modalities, detections);
+  linemod.matchTemplates (modalities, detections);
 
   return (detections);
 }
@@ -114,15 +114,15 @@ compute (const PointCloudXYZRGBA::ConstPtr& input, const char* templates_filenam
   pcl::LINEMOD linemod;
 
   // Load the templates from disk
-  linemod.loadTemplates(templates_filename);
+  linemod.loadTemplates (templates_filename);
 
   // Match the templates to the provided image
-  std::vector<pcl::LINEMODDetection> detections = matchTemplates(input, linemod);
+  std::vector<pcl::LINEMODDetection> detections = matchTemplates (input, linemod);
 
   // Output the position and score of the best match for each template
   for (std::size_t i = 0; i < detections.size(); ++i) {
     const LINEMODDetection& d = detections[i];
-    printf("%lu: %d %d %d %f\n", i, d.x, d.y, d.template_id, d.score);
+    printf ("%lu: %d %d %d %f\n", i, d.x, d.y, d.template_id, d.score);
   }
 
   /*// Visualization code for testing purposes (requires libpng++)
@@ -164,20 +164,20 @@ compute (const PointCloudXYZRGBA::ConstPtr& input, const char* templates_filenam
 int
 main (int argc, char** argv)
 {
-  print_info("Match a LINE-MOD template to an organized point cloud. For more "
-             "information, use: %s -h\n",
-             argv[0]);
+  print_info ("Match a LINE-MOD template to an organized point cloud. For more "
+              "information, use: %s -h\n",
+              argv[0]);
 
   if (argc < 2) {
-    printHelp(argc, argv);
+    printHelp (argc, argv);
     return (-1);
   }
 
   // Load the input point cloud from the provided PCD file
-  PointCloudXYZRGBA::Ptr cloud(new PointCloudXYZRGBA);
-  if (!loadCloud(argv[1], *cloud))
+  PointCloudXYZRGBA::Ptr cloud (new PointCloudXYZRGBA);
+  if (!loadCloud (argv[1], *cloud))
     return (-1);
 
   // Load the specified templates and match them to the provided input cloud
-  compute(cloud, argv[2]);
+  compute (cloud, argv[2]);
 }

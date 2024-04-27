@@ -109,7 +109,7 @@ public:
   /** \brief Constructor.
    * \param in_resolution set the resolution of the grid
    */
-  GridProjection(double in_resolution);
+  GridProjection (double in_resolution);
 
   /** \brief Destructor. */
   ~GridProjection() override;
@@ -256,7 +256,7 @@ protected:
   getCellIndex (const Eigen::Vector4f& p, Eigen::Vector3i& index) const
   {
     for (int i = 0; i < 3; ++i)
-      index[i] = static_cast<int>((p[i] - min_p_(i)) / leaf_size_);
+      index[i] = static_cast<int> ((p[i] - min_p_ (i)) / leaf_size_);
   }
 
   /** \brief Given the 3d index (x, y, z) of the cell, get the
@@ -269,8 +269,8 @@ protected:
   {
     for (int i = 0; i < 3; ++i)
       center[i] = min_p_[i] +
-                  static_cast<float>(index[i]) * static_cast<float>(leaf_size_) +
-                  static_cast<float>(leaf_size_) / 2.0f;
+                  static_cast<float> (index[i]) * static_cast<float> (leaf_size_) +
+                  static_cast<float> (leaf_size_) / 2.0f;
   }
 
   /** \brief Given cell center, caluate the coordinates of the eight vertices of the

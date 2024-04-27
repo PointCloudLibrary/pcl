@@ -54,7 +54,7 @@ struct ActionPair {
 class WorkQueue : public QObject {
   Q_OBJECT
 public:
-  WorkQueue(QObject* parent = nullptr);
+  WorkQueue (QObject* parent = nullptr);
 public Q_SLOTS:
   void
   enqueueNewAction (AbstractTool* new_tool, ConstItemList input_data);

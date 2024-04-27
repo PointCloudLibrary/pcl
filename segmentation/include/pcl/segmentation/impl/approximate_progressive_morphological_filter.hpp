@@ -60,7 +60,7 @@ pcl::ApproximateProgressiveMorphologicalFilter<
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 void
-pcl::ApproximateProgressiveMorphologicalFilter<PointT>::extract(Indices& ground)
+pcl::ApproximateProgressiveMorphologicalFilter<PointT>::extract (Indices& ground)
 {
   bool segmentation_is_possible = initCompute();
   if (!segmentation_is_possible) {
@@ -79,7 +79,7 @@ pcl::ApproximateProgressiveMorphologicalFilter<PointT>::extract(Indices& ground)
     // Determine the initial window size.
     int half_size =
         (exponential_)
-            ? (static_cast<int>(std::pow(static_cast<float>(base_), iteration)))
+            ? (static_cast<int> (std::pow (static_cast<float> (base_), iteration)))
             : ((iteration + 1) * base_);
 
     window_size = 2 * half_size + 1;
@@ -95,56 +95,56 @@ pcl::ApproximateProgressiveMorphologicalFilter<PointT>::extract(Indices& ground)
     if (height_threshold > max_distance_)
       height_threshold = max_distance_;
 
-    half_sizes.push_back(half_size);
-    window_sizes.push_back(window_size);
-    height_thresholds.push_back(height_threshold);
+    half_sizes.push_back (half_size);
+    window_sizes.push_back (window_size);
+    height_thresholds.push_back (height_threshold);
 
     iteration++;
   }
 
   // setup grid based on scale and extents
   Eigen::Vector4f global_max, global_min;
-  pcl::getMinMax3D<PointT>(*input_, global_min, global_max);
+  pcl::getMinMax3D<PointT> (*input_, global_min, global_max);
 
   float xextent = global_max.x() - global_min.x();
   float yextent = global_max.y() - global_min.y();
 
-  int rows = static_cast<int>(std::floor(yextent / cell_size_) + 1);
-  int cols = static_cast<int>(std::floor(xextent / cell_size_) + 1);
+  int rows = static_cast<int> (std::floor (yextent / cell_size_) + 1);
+  int cols = static_cast<int> (std::floor (xextent / cell_size_) + 1);
 
-  Eigen::MatrixXf A(rows, cols);
-  A.setConstant(std::numeric_limits<float>::quiet_NaN());
+  Eigen::MatrixXf A (rows, cols);
+  A.setConstant (std::numeric_limits<float>::quiet_NaN());
 
-  Eigen::MatrixXf Z(rows, cols);
-  Z.setConstant(std::numeric_limits<float>::quiet_NaN());
+  Eigen::MatrixXf Z (rows, cols);
+  Z.setConstant (std::numeric_limits<float>::quiet_NaN());
 
-  Eigen::MatrixXf Zf(rows, cols);
-  Zf.setConstant(std::numeric_limits<float>::quiet_NaN());
+  Eigen::MatrixXf Zf (rows, cols);
+  Zf.setConstant (std::numeric_limits<float>::quiet_NaN());
 
   if (input_->is_dense) {
 #pragma omp parallel for default(none) shared(A, global_min) num_threads(threads_)
-    for (int i = 0; i < static_cast<int>(input_->size()); ++i) {
+    for (int i = 0; i < static_cast<int> (input_->size()); ++i) {
       // ...then test for lower points within the cell
       const PointT& p = (*input_)[i];
-      int row = std::floor((p.y - global_min.y()) / cell_size_);
-      int col = std::floor((p.x - global_min.x()) / cell_size_);
+      int row = std::floor ((p.y - global_min.y()) / cell_size_);
+      int col = std::floor ((p.x - global_min.x()) / cell_size_);
 
-      if (p.z < A(row, col) || std::isnan(A(row, col)))
-        A(row, col) = p.z;
+      if (p.z < A (row, col) || std::isnan (A (row, col)))
+        A (row, col) = p.z;
     }
   }
   else {
 #pragma omp parallel for default(none) shared(A, global_min) num_threads(threads_)
-    for (int i = 0; i < static_cast<int>(input_->size()); ++i) {
+    for (int i = 0; i < static_cast<int> (input_->size()); ++i) {
       // ...then test for lower points within the cell
       const PointT& p = (*input_)[i];
-      if (!pcl::isFinite(p))
+      if (!pcl::isFinite (p))
         continue;
-      int row = std::floor((p.y - global_min.y()) / cell_size_);
-      int col = std::floor((p.x - global_min.x()) / cell_size_);
+      int row = std::floor ((p.y - global_min.y()) / cell_size_);
+      int col = std::floor ((p.x - global_min.x()) / cell_size_);
 
-      if (p.z < A(row, col) || std::isnan(A(row, col)))
-        A(row, col) = p.z;
+      if (p.z < A (row, col) || std::isnan (A (row, col)))
+        A (row, col) = p.z;
     }
   }
 
@@ -155,24 +155,24 @@ pcl::ApproximateProgressiveMorphologicalFilter<PointT>::extract(Indices& ground)
   }
   else {
     ground.clear();
-    ground.reserve(indices_->size());
+    ground.reserve (indices_->size());
     for (const auto& index : *indices_)
-      if (pcl::isFinite((*input_)[index]))
-        ground.push_back(index);
+      if (pcl::isFinite ((*input_)[index]))
+        ground.push_back (index);
   }
 
   // Progressively filter ground returns using morphological open
   for (std::size_t i = 0; i < window_sizes.size(); ++i) {
-    PCL_DEBUG("      Iteration %d (height threshold = %f, window size = %f, half size "
-              "= %d)...",
-              i,
-              height_thresholds[i],
-              window_sizes[i],
-              half_sizes[i]);
+    PCL_DEBUG ("      Iteration %d (height threshold = %f, window size = %f, half size "
+               "= %d)...",
+               i,
+               height_thresholds[i],
+               window_sizes[i],
+               half_sizes[i]);
 
     // Limit filtering to those points currently considered ground returns
-    typename pcl::PointCloud<PointT>::Ptr cloud(new pcl::PointCloud<PointT>);
-    pcl::copyPointCloud<PointT>(*input_, ground, *cloud);
+    typename pcl::PointCloud<PointT>::Ptr cloud (new pcl::PointCloud<PointT>);
+    pcl::copyPointCloud<PointT> (*input_, ground, *cloud);
 
     // Apply the morphological opening operation at the current window size.
 #pragma omp parallel for default(none) shared(A, cols, half_sizes, i, rows, Z)         \
@@ -191,15 +191,15 @@ pcl::ApproximateProgressiveMorphologicalFilter<PointT>::extract(Indices& ground)
 
         for (int j = rs; j < (re + 1); ++j) {
           for (int k = cs; k < (ce + 1); ++k) {
-            if (A(j, k) != std::numeric_limits<float>::quiet_NaN()) {
-              if (A(j, k) < min_coeff)
-                min_coeff = A(j, k);
+            if (A (j, k) != std::numeric_limits<float>::quiet_NaN()) {
+              if (A (j, k) < min_coeff)
+                min_coeff = A (j, k);
             }
           }
         }
 
         if (min_coeff != std::numeric_limits<float>::max())
-          Z(row, col) = min_coeff;
+          Z (row, col) = min_coeff;
       }
     }
 
@@ -219,15 +219,15 @@ pcl::ApproximateProgressiveMorphologicalFilter<PointT>::extract(Indices& ground)
 
         for (int j = rs; j < (re + 1); ++j) {
           for (int k = cs; k < (ce + 1); ++k) {
-            if (Z(j, k) != std::numeric_limits<float>::quiet_NaN()) {
-              if (Z(j, k) > max_coeff)
-                max_coeff = Z(j, k);
+            if (Z (j, k) != std::numeric_limits<float>::quiet_NaN()) {
+              if (Z (j, k) > max_coeff)
+                max_coeff = Z (j, k);
             }
           }
         }
 
         if (max_coeff != -std::numeric_limits<float>::max())
-          Zf(row, col) = max_coeff;
+          Zf (row, col) = max_coeff;
       }
     }
 
@@ -236,20 +236,20 @@ pcl::ApproximateProgressiveMorphologicalFilter<PointT>::extract(Indices& ground)
     Indices pt_indices;
     for (std::size_t p_idx = 0; p_idx < ground.size(); ++p_idx) {
       const PointT& p = (*cloud)[p_idx];
-      int erow = static_cast<int>(std::floor((p.y - global_min.y()) / cell_size_));
-      int ecol = static_cast<int>(std::floor((p.x - global_min.x()) / cell_size_));
+      int erow = static_cast<int> (std::floor ((p.y - global_min.y()) / cell_size_));
+      int ecol = static_cast<int> (std::floor ((p.x - global_min.x()) / cell_size_));
 
-      float diff = p.z - Zf(erow, ecol);
+      float diff = p.z - Zf (erow, ecol);
       if (diff < height_thresholds[i])
-        pt_indices.push_back(ground[p_idx]);
+        pt_indices.push_back (ground[p_idx]);
     }
 
-    A.swap(Zf);
+    A.swap (Zf);
 
     // Ground is now limited to pt_indices
-    ground.swap(pt_indices);
+    ground.swap (pt_indices);
 
-    PCL_DEBUG("ground now has %d points\n", ground.size());
+    PCL_DEBUG ("ground now has %d points\n", ground.size());
   }
 
   deinitCompute();

@@ -48,76 +48,76 @@
 using namespace pcl;
 using namespace pcl::io;
 
-PointCloud<PointXYZ>::Ptr cloud(new PointCloud<PointXYZ>);
-PointCloud<PointNormal>::Ptr cloud_with_normals(new PointCloud<PointNormal>);
+PointCloud<PointXYZ>::Ptr cloud (new PointCloud<PointXYZ>);
+PointCloud<PointNormal>::Ptr cloud_with_normals (new PointCloud<PointNormal>);
 search::KdTree<PointXYZ>::Ptr tree;
 search::KdTree<PointNormal>::Ptr tree2;
 
 // add by ktran to test update functions
-PointCloud<PointXYZ>::Ptr cloud1(new PointCloud<PointXYZ>);
-PointCloud<PointNormal>::Ptr cloud_with_normals1(new PointCloud<PointNormal>);
+PointCloud<PointXYZ>::Ptr cloud1 (new PointCloud<PointXYZ>);
+PointCloud<PointNormal>::Ptr cloud_with_normals1 (new PointCloud<PointNormal>);
 search::KdTree<PointXYZ>::Ptr tree3;
 search::KdTree<PointNormal>::Ptr tree4;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TEST(PCL, EarClipping)
+TEST (PCL, EarClipping)
 {
-  PointCloud<PointXYZ>::Ptr cloud(new PointCloud<PointXYZ>());
+  PointCloud<PointXYZ>::Ptr cloud (new PointCloud<PointXYZ>());
   cloud->height = 1;
-  cloud->points.emplace_back(0.f, 0.f, 0.5f);
-  cloud->points.emplace_back(5.f, 0.f, 0.6f);
-  cloud->points.emplace_back(9.f, 4.f, 0.5f);
-  cloud->points.emplace_back(4.f, 7.f, 0.5f);
-  cloud->points.emplace_back(2.f, 5.f, 0.5f);
-  cloud->points.emplace_back(-1.f, 8.f, 0.5f);
+  cloud->points.emplace_back (0.f, 0.f, 0.5f);
+  cloud->points.emplace_back (5.f, 0.f, 0.6f);
+  cloud->points.emplace_back (9.f, 4.f, 0.5f);
+  cloud->points.emplace_back (4.f, 7.f, 0.5f);
+  cloud->points.emplace_back (2.f, 5.f, 0.5f);
+  cloud->points.emplace_back (-1.f, 8.f, 0.5f);
   cloud->width = cloud->size();
 
   Vertices vertices;
-  vertices.vertices.resize(cloud->size());
-  for (int i = 0; i < static_cast<int>(vertices.vertices.size()); ++i)
+  vertices.vertices.resize (cloud->size());
+  for (int i = 0; i < static_cast<int> (vertices.vertices.size()); ++i)
     vertices.vertices[i] = i;
 
-  PolygonMesh::Ptr mesh(new PolygonMesh);
-  toPCLPointCloud2(*cloud, mesh->cloud);
-  mesh->polygons.push_back(vertices);
+  PolygonMesh::Ptr mesh (new PolygonMesh);
+  toPCLPointCloud2 (*cloud, mesh->cloud);
+  mesh->polygons.push_back (vertices);
 
   EarClipping clipper;
-  PolygonMesh::ConstPtr mesh_aux(mesh);
-  clipper.setInputMesh(mesh_aux);
+  PolygonMesh::ConstPtr mesh_aux (mesh);
+  clipper.setInputMesh (mesh_aux);
 
   PolygonMesh triangulated_mesh;
-  clipper.process(triangulated_mesh);
+  clipper.process (triangulated_mesh);
 
-  EXPECT_EQ(triangulated_mesh.polygons.size(), 4);
+  EXPECT_EQ (triangulated_mesh.polygons.size(), 4);
   for (const auto& polygon : triangulated_mesh.polygons)
-    EXPECT_EQ(polygon.vertices.size(), 3);
+    EXPECT_EQ (polygon.vertices.size(), 3);
 
   const int truth[][3] = {{5, 0, 1}, {2, 3, 4}, {4, 5, 1}, {1, 2, 4}};
 
-  for (int pi = 0; pi < static_cast<int>(triangulated_mesh.polygons.size()); ++pi)
+  for (int pi = 0; pi < static_cast<int> (triangulated_mesh.polygons.size()); ++pi)
     for (int vi = 0; vi < 3; ++vi) {
-      EXPECT_EQ(triangulated_mesh.polygons[pi].vertices[vi], truth[pi][vi]);
+      EXPECT_EQ (triangulated_mesh.polygons[pi].vertices[vi], truth[pi][vi]);
     }
 }
 
-TEST(PCL, EarClippingCubeTest)
+TEST (PCL, EarClippingCubeTest)
 {
-  PointCloud<PointXYZ>::Ptr cloud(new PointCloud<PointXYZ>());
+  PointCloud<PointXYZ>::Ptr cloud (new PointCloud<PointXYZ>());
   cloud->height = 1;
   // bottom of cube (z=0)
-  cloud->points.emplace_back(0.f, 0.f, 0.f);
-  cloud->points.emplace_back(1.f, 0.f, 0.f);
-  cloud->points.emplace_back(1.f, 1.f, 0.f);
-  cloud->points.emplace_back(0.f, 1.f, 0.f);
+  cloud->points.emplace_back (0.f, 0.f, 0.f);
+  cloud->points.emplace_back (1.f, 0.f, 0.f);
+  cloud->points.emplace_back (1.f, 1.f, 0.f);
+  cloud->points.emplace_back (0.f, 1.f, 0.f);
   // top of cube (z=1.0)
-  cloud->points.emplace_back(0.f, 0.f, 1.f);
-  cloud->points.emplace_back(1.f, 0.f, 1.f);
-  cloud->points.emplace_back(1.f, 1.f, 1.f);
-  cloud->points.emplace_back(0.f, 1.f, 1.f);
+  cloud->points.emplace_back (0.f, 0.f, 1.f);
+  cloud->points.emplace_back (1.f, 0.f, 1.f);
+  cloud->points.emplace_back (1.f, 1.f, 1.f);
+  cloud->points.emplace_back (0.f, 1.f, 1.f);
   cloud->width = cloud->size();
 
   Vertices vertices;
-  vertices.vertices.resize(4);
+  vertices.vertices.resize (4);
 
   const int squares[][4] = {{1, 5, 6, 2},
                             {2, 6, 7, 3},
@@ -139,31 +139,31 @@ TEST(PCL, EarClippingCubeTest)
                           {3, 0, 1},
                           {2, 3, 1}};
 
-  PolygonMesh::Ptr mesh(new PolygonMesh);
-  toPCLPointCloud2(*cloud, mesh->cloud);
+  PolygonMesh::Ptr mesh (new PolygonMesh);
+  toPCLPointCloud2 (*cloud, mesh->cloud);
 
   for (const auto& square : squares) {
     vertices.vertices[0] = square[0];
     vertices.vertices[1] = square[1];
     vertices.vertices[2] = square[2];
     vertices.vertices[3] = square[3];
-    mesh->polygons.push_back(vertices);
+    mesh->polygons.push_back (vertices);
   }
 
   EarClipping clipper;
-  PolygonMesh::ConstPtr mesh_aux(mesh);
-  clipper.setInputMesh(mesh_aux);
+  PolygonMesh::ConstPtr mesh_aux (mesh);
+  clipper.setInputMesh (mesh_aux);
 
   PolygonMesh triangulated_mesh;
-  clipper.process(triangulated_mesh);
+  clipper.process (triangulated_mesh);
 
-  EXPECT_EQ(triangulated_mesh.polygons.size(), 12);
+  EXPECT_EQ (triangulated_mesh.polygons.size(), 12);
   for (const auto& polygon : triangulated_mesh.polygons)
-    EXPECT_EQ(polygon.vertices.size(), 3);
+    EXPECT_EQ (polygon.vertices.size(), 3);
 
-  for (int pi = 0; pi < static_cast<int>(triangulated_mesh.polygons.size()); ++pi) {
+  for (int pi = 0; pi < static_cast<int> (triangulated_mesh.polygons.size()); ++pi) {
     for (int vi = 0; vi < 3; ++vi) {
-      EXPECT_EQ(triangulated_mesh.polygons[pi].vertices[vi], truth[pi][vi]);
+      EXPECT_EQ (triangulated_mesh.polygons[pi].vertices[vi], truth[pi][vi]);
     }
   }
 }
@@ -181,56 +181,56 @@ main (int argc, char** argv)
 
   // Load file
   pcl::PCLPointCloud2 cloud_blob;
-  loadPCDFile(argv[1], cloud_blob);
-  fromPCLPointCloud2(cloud_blob, *cloud);
+  loadPCDFile (argv[1], cloud_blob);
+  fromPCLPointCloud2 (cloud_blob, *cloud);
 
   // Create search tree
-  tree.reset(new search::KdTree<PointXYZ>(false));
-  tree->setInputCloud(cloud);
+  tree.reset (new search::KdTree<PointXYZ> (false));
+  tree->setInputCloud (cloud);
 
   // Normal estimation
   NormalEstimation<PointXYZ, Normal> n;
-  PointCloud<Normal>::Ptr normals(new PointCloud<Normal>());
-  n.setInputCloud(cloud);
+  PointCloud<Normal>::Ptr normals (new PointCloud<Normal>());
+  n.setInputCloud (cloud);
   // n.setIndices (indices[B);
-  n.setSearchMethod(tree);
-  n.setKSearch(20);
-  n.compute(*normals);
+  n.setSearchMethod (tree);
+  n.setKSearch (20);
+  n.compute (*normals);
 
   // Concatenate XYZ and normal information
-  pcl::concatenateFields(*cloud, *normals, *cloud_with_normals);
+  pcl::concatenateFields (*cloud, *normals, *cloud_with_normals);
 
   // Create search tree
-  tree2.reset(new search::KdTree<PointNormal>);
-  tree2->setInputCloud(cloud_with_normals);
+  tree2.reset (new search::KdTree<PointNormal>);
+  tree2->setInputCloud (cloud_with_normals);
 
   // Process for update cloud
   if (argc == 3) {
     pcl::PCLPointCloud2 cloud_blob1;
-    loadPCDFile(argv[2], cloud_blob1);
-    fromPCLPointCloud2(cloud_blob1, *cloud1);
+    loadPCDFile (argv[2], cloud_blob1);
+    fromPCLPointCloud2 (cloud_blob1, *cloud1);
     // Create search tree
-    tree3.reset(new search::KdTree<PointXYZ>(false));
-    tree3->setInputCloud(cloud1);
+    tree3.reset (new search::KdTree<PointXYZ> (false));
+    tree3->setInputCloud (cloud1);
 
     // Normal estimation
     NormalEstimation<PointXYZ, Normal> n1;
-    PointCloud<Normal>::Ptr normals1(new PointCloud<Normal>());
-    n1.setInputCloud(cloud1);
+    PointCloud<Normal>::Ptr normals1 (new PointCloud<Normal>());
+    n1.setInputCloud (cloud1);
 
-    n1.setSearchMethod(tree3);
-    n1.setKSearch(20);
-    n1.compute(*normals1);
+    n1.setSearchMethod (tree3);
+    n1.setKSearch (20);
+    n1.compute (*normals1);
 
     // Concatenate XYZ and normal information
-    pcl::concatenateFields(*cloud1, *normals1, *cloud_with_normals1);
+    pcl::concatenateFields (*cloud1, *normals1, *cloud_with_normals1);
     // Create search tree
-    tree4.reset(new search::KdTree<PointNormal>);
-    tree4->setInputCloud(cloud_with_normals1);
+    tree4.reset (new search::KdTree<PointNormal>);
+    tree4->setInputCloud (cloud_with_normals1);
   }
 
   // Testing
-  testing::InitGoogleTest(&argc, argv);
+  testing::InitGoogleTest (&argc, argv);
   return (RUN_ALL_TESTS());
 }
 /* ]--- */

@@ -53,24 +53,24 @@ main (int, char** argv)
   //  pcl::console::setVerbosityLevel (pcl::console::L_VERBOSE);
 
   int depth = 3;
-  Eigen::Vector3d min(-10.0, -10.0, -10.0);
-  Eigen::Vector3d max(10.0, 10.0, 10.0);
+  Eigen::Vector3d min (-10.0, -10.0, -10.0);
+  Eigen::Vector3d max (10.0, 10.0, 10.0);
 
   // specify the destination of the tree
-  boost::filesystem::path file_location("tree/tree.oct_idx");
+  boost::filesystem::path file_location ("tree/tree.oct_idx");
 
   // create the tree with bounding box that will encompass the region of points in the
   // PCD files
   OctreeDisk* octree;
-  octree = new OctreeDisk(depth, min, max, file_location, "ECEF");
+  octree = new OctreeDisk (depth, min, max, file_location, "ECEF");
 
-  pcl::PCLPointCloud2::Ptr cloud(new pcl::PCLPointCloud2());
+  pcl::PCLPointCloud2::Ptr cloud (new pcl::PCLPointCloud2());
 
-  pcl::io::loadPCDFile(argv[1], *cloud);
-  octree->addPointCloud(cloud, false);
+  pcl::io::loadPCDFile (argv[1], *cloud);
+  octree->addPointCloud (cloud, false);
 
-  pcl::io::loadPCDFile(argv[2], *cloud);
-  octree->addPointCloud(cloud, false);
+  pcl::io::loadPCDFile (argv[2], *cloud);
+  octree->addPointCloud (cloud, false);
 
   octree->buildLOD();
 
@@ -78,11 +78,11 @@ main (int, char** argv)
   OutofcoreDepthFirstIterator<
       pcl::PointXYZ,
       pcl::outofcore::OutofcoreOctreeDiskContainer<pcl::PointXYZ>>
-      it(*octree);
-  OctreeDisk::Iterator myit(*octree);
+      it (*octree);
+  OctreeDisk::Iterator myit (*octree);
 
   while (*myit != nullptr) {
-    octree->printBoundingBox(**myit);
+    octree->printBoundingBox (**myit);
     myit++;
   }
 

@@ -100,7 +100,8 @@ template <typename T, std::uint8_t bits = 8>
 PCL_EXPORTS inline std::array<T, 1 << bits>
 RGB2sRGB_LUT () noexcept
 {
-  static_assert(std::is_floating_point<T>::value, "LUT value must be a floating point");
+  static_assert (std::is_floating_point<T>::value,
+                 "LUT value must be a floating point");
 
   constexpr const std::size_t size = 1 << bits;
 
@@ -108,15 +109,16 @@ RGB2sRGB_LUT () noexcept
     // MSVC wouldn't take `size` here instead of the expression
     std::array<T, 1 << bits> LUT;
     for (std::size_t i = 0; i < size; ++i) {
-      T f = static_cast<T>(i) / static_cast<T>(size - 1);
+      T f = static_cast<T> (i) / static_cast<T> (size - 1);
       if (f > 0.04045) {
         // ((f + 0.055)/1.055)^2.4
-        LUT[i] = static_cast<T>(std::pow(
-            (f + static_cast<T>(0.055)) / static_cast<T>(1.055), static_cast<T>(2.4)));
+        LUT[i] = static_cast<T> (
+            std::pow ((f + static_cast<T> (0.055)) / static_cast<T> (1.055),
+                      static_cast<T> (2.4)));
       }
       else {
         // f / 12.92
-        LUT[i] = f / static_cast<T>(12.92);
+        LUT[i] = f / static_cast<T> (12.92);
       }
     }
     return LUT;
@@ -145,19 +147,22 @@ template <typename T, std::size_t discretizations = 4000>
 PCL_EXPORTS inline const std::array<T, discretizations>&
 XYZ2LAB_LUT () noexcept
 {
-  static_assert(std::is_floating_point<T>::value, "LUT value must be a floating point");
+  static_assert (std::is_floating_point<T>::value,
+                 "LUT value must be a floating point");
 
   static const auto f_LUT = [&] () {
     std::array<T, discretizations> LUT;
     for (std::size_t i = 0; i < discretizations; ++i) {
-      T f = static_cast<T>(i) / static_cast<T>(discretizations);
-      if (f > static_cast<T>(0.008856)) {
+      T f = static_cast<T> (i) / static_cast<T> (discretizations);
+      if (f > static_cast<T> (0.008856)) {
         // f^(1/3)
-        LUT[i] = static_cast<T>(std::pow(f, (static_cast<T>(1) / static_cast<T>(3))));
+        LUT[i] =
+            static_cast<T> (std::pow (f, (static_cast<T> (1) / static_cast<T> (3))));
       }
       else {
         // 7.87 * f + 16/116
-        LUT[i] = static_cast<T>(7.87) * f + (static_cast<T>(16) / static_cast<T>(116));
+        LUT[i] =
+            static_cast<T> (7.87) * f + (static_cast<T> (16) / static_cast<T> (116));
       }
     }
     return LUT;

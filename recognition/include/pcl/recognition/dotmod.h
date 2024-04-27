@@ -62,7 +62,7 @@ struct DOTMODDetection {
 class PCL_EXPORTS DOTMOD {
 public:
   /** \brief Constructor */
-  DOTMOD(std::size_t template_width, std::size_t template_height);
+  DOTMOD (std::size_t template_width, std::size_t template_height);
 
   /** \brief Destructor */
   virtual ~DOTMOD();

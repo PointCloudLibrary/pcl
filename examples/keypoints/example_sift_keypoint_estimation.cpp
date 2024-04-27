@@ -48,10 +48,10 @@ main (int, char** argv)
 {
   std::string filename = argv[1];
   std::cout << "Reading " << filename << std::endl;
-  pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZRGB>);
-  if (pcl::io::loadPCDFile<pcl::PointXYZRGB>(filename, *cloud) == -1) // load the file
+  pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZRGB>);
+  if (pcl::io::loadPCDFile<pcl::PointXYZRGB> (filename, *cloud) == -1) // load the file
   {
-    PCL_ERROR("Couldn't read file\n");
+    PCL_ERROR ("Couldn't read file\n");
     return -1;
   }
   std::cout << "points: " << cloud->size() << std::endl;
@@ -65,21 +65,21 @@ main (int, char** argv)
   // Estimate the sift interest points using Intensity values from RGB values
   pcl::SIFTKeypoint<pcl::PointXYZRGB, pcl::PointWithScale> sift;
   pcl::PointCloud<pcl::PointWithScale> result;
-  pcl::search::KdTree<pcl::PointXYZRGB>::Ptr tree(
+  pcl::search::KdTree<pcl::PointXYZRGB>::Ptr tree (
       new pcl::search::KdTree<pcl::PointXYZRGB>());
-  sift.setSearchMethod(tree);
-  sift.setScales(min_scale, n_octaves, n_scales_per_octave);
-  sift.setMinimumContrast(min_contrast);
-  sift.setInputCloud(cloud);
-  sift.compute(result);
+  sift.setSearchMethod (tree);
+  sift.setScales (min_scale, n_octaves, n_scales_per_octave);
+  sift.setMinimumContrast (min_contrast);
+  sift.setInputCloud (cloud);
+  sift.compute (result);
 
   // Copying the pointwithscale to pointxyz so as visualize the cloud
-  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_temp(new pcl::PointCloud<pcl::PointXYZ>);
-  copyPointCloud(result, *cloud_temp);
+  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_temp (new pcl::PointCloud<pcl::PointXYZ>);
+  copyPointCloud (result, *cloud_temp);
 
   // Saving the resultant cloud
   std::cout << "Resulting sift points are of size: " << cloud_temp->size() << std::endl;
-  pcl::io::savePCDFileASCII("sift_points.pcd", *cloud_temp);
+  pcl::io::savePCDFileASCII ("sift_points.pcd", *cloud_temp);
 
   /*
     // Visualization of keypoints along with the original cloud

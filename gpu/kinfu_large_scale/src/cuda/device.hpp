@@ -50,28 +50,28 @@ namespace kinfuLS {
 __device__ __forceinline__ void
 pack_tsdf (float tsdf, int weight, short2& value)
 {
-  int fixedp = max(-DIVISOR, min(DIVISOR, __float2int_rz(tsdf * DIVISOR)));
+  int fixedp = max (-DIVISOR, min (DIVISOR, __float2int_rz (tsdf * DIVISOR)));
   // int fixedp = __float2int_rz(tsdf * DIVISOR);
-  value = make_short2(fixedp, weight);
+  value = make_short2 (fixedp, weight);
 }
 
 __device__ __forceinline__ void
 unpack_tsdf (short2 value, float& tsdf, int& weight)
 {
   weight = value.y;
-  tsdf = __int2float_rn(value.x) / DIVISOR; //*/ * INV_DIV;
+  tsdf = __int2float_rn (value.x) / DIVISOR; //*/ * INV_DIV;
 }
 
 __device__ __forceinline__ float
 unpack_tsdf (short2 value)
 {
-  return static_cast<float>(value.x) / DIVISOR; //*/ * INV_DIV;
+  return static_cast<float> (value.x) / DIVISOR; //*/ * INV_DIV;
 }
 
 __device__ __forceinline__ float3
-operator*(const Mat33& m, const float3& vec)
+operator* (const Mat33& m, const float3& vec)
 {
-  return make_float3(dot(m.data[0], vec), dot(m.data[1], vec), dot(m.data[2], vec));
+  return make_float3 (dot (m.data[0], vec), dot (m.data[1], vec), dot (m.data[2], vec));
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////

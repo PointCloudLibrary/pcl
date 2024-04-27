@@ -69,7 +69,7 @@ public:
   /** \brief Inherits from TransformationEstimationSVD, but forces it to not use the
    * Umeyama method */
   TransformationEstimationSVDScale()
-  : TransformationEstimationSVD<PointSource, PointTarget, Scalar>(false)
+  : TransformationEstimationSVD<PointSource, PointTarget, Scalar> (false)
   {}
 
 protected:

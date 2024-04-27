@@ -121,7 +121,7 @@ public:
   inline LeafContainerT*
   at (std::size_t idx)
   {
-    return leaf_vector_.at(idx);
+    return leaf_vector_.at (idx);
   }
 
   // Size of neighbors
@@ -134,7 +134,7 @@ public:
   /** \brief Constructor.
    *
    * \param[in] resolution_arg Octree resolution at lowest octree level (voxel size) */
-  OctreePointCloudAdjacency(const double resolution_arg);
+  OctreePointCloudAdjacency (const double resolution_arg);
 
   /** \brief Adds points from cloud to the octree.
    *
@@ -170,7 +170,7 @@ public:
    * \param[in] transform_func A boost:function pointer to the transform to be used. The
    * transform must have one parameter (a point) which it modifies in place. */
   void
-  setTransformFunction (std::function<void(PointT& p)> transform_func)
+  setTransformFunction (std::function<void (PointT& p)> transform_func)
   {
     transform_func_ = transform_func;
   }
@@ -184,7 +184,7 @@ public:
    * \returns True if path to camera is blocked by a voxel, false otherwise. */
   bool
   testForOcclusion (const PointT& point_arg,
-                    const PointXYZ& camera_pos = PointXYZ(0, 0, 0));
+                    const PointXYZ& camera_pos = PointXYZ (0, 0, 0));
 
 protected:
   /** \brief Add point at index from input pointcloud dataset to octree.
@@ -236,7 +236,7 @@ private:
   /// Local leaf pointer vector used to make iterating through leaves fast.
   LeafVectorT leaf_vector_;
 
-  std::function<void(PointT& p)> transform_func_;
+  std::function<void (PointT& p)> transform_func_;
 };
 
 } // namespace octree

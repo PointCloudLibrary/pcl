@@ -36,19 +36,19 @@ public:
   //   dim - [in] dimension of the curve
   //   bIsRational - [in] true if rational
   //   order - [in] (>=2) order = degree+1
-  ON_PolynomialCurve(int dim, ON_BOOL32 bIsRational, int order);
+  ON_PolynomialCurve (int dim, ON_BOOL32 bIsRational, int order);
 
   ~ON_PolynomialCurve();
 
-  ON_PolynomialCurve(const ON_PolynomialCurve&);
+  ON_PolynomialCurve (const ON_PolynomialCurve&);
 
-  ON_PolynomialCurve(const ON_BezierCurve&);
-
-  ON_PolynomialCurve&
-  operator=(const ON_PolynomialCurve&);
+  ON_PolynomialCurve (const ON_BezierCurve&);
 
   ON_PolynomialCurve&
-  operator=(const ON_BezierCurve&);
+  operator= (const ON_PolynomialCurve&);
+
+  ON_PolynomialCurve&
+  operator= (const ON_BezierCurve&);
 
   // Description:
   //   Initializes fields and allocates the m_cv array.
@@ -99,18 +99,18 @@ public:
 class ON_CLASS ON_PolynomialSurface {
 public:
   ON_PolynomialSurface();
-  ON_PolynomialSurface(int,       // dim,
-                       ON_BOOL32, // true if rational
-                       int,       // "u" order
-                       int        // "v" order
+  ON_PolynomialSurface (int,       // dim,
+                        ON_BOOL32, // true if rational
+                        int,       // "u" order
+                        int        // "v" order
   );
   ~ON_PolynomialSurface();
-  ON_PolynomialSurface(const ON_PolynomialSurface&);
-  ON_PolynomialSurface(const ON_BezierSurface&);
+  ON_PolynomialSurface (const ON_PolynomialSurface&);
+  ON_PolynomialSurface (const ON_BezierSurface&);
   ON_PolynomialSurface&
-  operator=(const ON_PolynomialSurface&);
+  operator= (const ON_PolynomialSurface&);
   ON_PolynomialSurface&
-  operator=(const ON_BezierSurface&);
+  operator= (const ON_BezierSurface&);
 
   ON_BOOL32
   Create (int,       // dim,
@@ -148,25 +148,25 @@ public:
   //   dim - [in] (>0) dimension of bezier curve
   //   bIsRational - [in] true for a rational bezier
   //   order - [in] (>=2) order (=degree+1) of bezier curve
-  ON_BezierCurve(int dim, ON_BOOL32 bIsRational, int order);
+  ON_BezierCurve (int dim, ON_BOOL32 bIsRational, int order);
 
   ~ON_BezierCurve();
-  ON_BezierCurve(const ON_BezierCurve&);
-  ON_BezierCurve(const ON_PolynomialCurve&);
-  ON_BezierCurve(const ON_2dPointArray&); // sets control points
-  ON_BezierCurve(const ON_3dPointArray&); // sets control points
-  ON_BezierCurve(const ON_4dPointArray&); // sets control points
+  ON_BezierCurve (const ON_BezierCurve&);
+  ON_BezierCurve (const ON_PolynomialCurve&);
+  ON_BezierCurve (const ON_2dPointArray&); // sets control points
+  ON_BezierCurve (const ON_3dPointArray&); // sets control points
+  ON_BezierCurve (const ON_4dPointArray&); // sets control points
   ON_BezierCurve&
-  operator=(const ON_BezierCurve&);
+  operator= (const ON_BezierCurve&);
   ON_BezierCurve&
-  operator=(const ON_PolynomialCurve&);
+  operator= (const ON_PolynomialCurve&);
 
   ON_BezierCurve&
-  operator=(const ON_2dPointArray&); // sets control points
+  operator= (const ON_2dPointArray&); // sets control points
   ON_BezierCurve&
-  operator=(const ON_3dPointArray&); // sets control points
+  operator= (const ON_3dPointArray&); // sets control points
   ON_BezierCurve&
-  operator=(const ON_4dPointArray&); // sets control points
+  operator= (const ON_4dPointArray&); // sets control points
 
   bool
   IsValid () const;
@@ -937,15 +937,15 @@ public:
 class ON_CLASS ON_BezierSurface {
 public:
   ON_BezierSurface();
-  ON_BezierSurface(int dim, int is_rat, int order0, int order1);
+  ON_BezierSurface (int dim, int is_rat, int order0, int order1);
 
   ~ON_BezierSurface();
-  ON_BezierSurface(const ON_BezierSurface&);
-  ON_BezierSurface(const ON_PolynomialSurface&);
+  ON_BezierSurface (const ON_BezierSurface&);
+  ON_BezierSurface (const ON_PolynomialSurface&);
   ON_BezierSurface&
-  operator=(const ON_BezierSurface&);
+  operator= (const ON_BezierSurface&);
   ON_BezierSurface&
-  operator=(const ON_PolynomialSurface&);
+  operator= (const ON_PolynomialSurface&);
 
   bool
   IsValid () const;
@@ -1270,7 +1270,7 @@ class ON_CLASS ON_BezierCage {
 public:
   ON_BezierCage();
 
-  ON_BezierCage(int dim, bool is_rat, int order0, int order1, int order2);
+  ON_BezierCage (int dim, bool is_rat, int order0, int order1, int order2);
 
   /*
   Description:
@@ -1282,7 +1282,7 @@ public:
     order1 - [in]
     order2 - [in]
   */
-  ON_BezierCage(const ON_BoundingBox& bbox, int order0, int order1, int order2);
+  ON_BezierCage (const ON_BoundingBox& bbox, int order0, int order1, int order2);
 
   /*
   Description:
@@ -1310,14 +1310,14 @@ public:
     order1 - [in]
     order2 - [in]
   */
-  ON_BezierCage(const ON_3dPoint* box_corners, int order0, int order1, int order2);
+  ON_BezierCage (const ON_3dPoint* box_corners, int order0, int order1, int order2);
 
   ~ON_BezierCage();
 
-  ON_BezierCage(const ON_BezierCage& src);
+  ON_BezierCage (const ON_BezierCage& src);
 
   ON_BezierCage&
-  operator=(const ON_BezierCage& src);
+  operator= (const ON_BezierCage& src);
 
   /*
   Description:

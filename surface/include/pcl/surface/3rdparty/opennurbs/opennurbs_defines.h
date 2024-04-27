@@ -93,9 +93,9 @@
 
 /* compiling OpenNurbs as a Windows DLL - export classes, functions, templates, and
  * globals */
-#define ON_CLASS __declspec(dllexport)
-#define ON_DECL __declspec(dllexport)
-#define ON_EXTERN_DECL __declspec(dllexport)
+#define ON_CLASS __declspec (dllexport)
+#define ON_DECL __declspec (dllexport)
+#define ON_EXTERN_DECL __declspec (dllexport)
 #define ON_DLL_TEMPLATE
 
 #elif defined(ON_DLL_IMPORTS)
@@ -106,9 +106,9 @@
 
 /* using OpenNurbs as a Windows DLL - import classes, functions, templates, and globals
  */
-#define ON_CLASS __declspec(dllimport)
-#define ON_DECL __declspec(dllimport)
-#define ON_EXTERN_DECL __declspec(dllimport)
+#define ON_CLASS __declspec (dllimport)
+#define ON_DECL __declspec (dllimport)
+#define ON_EXTERN_DECL __declspec (dllimport)
 #define ON_DLL_TEMPLATE extern
 
 #else
@@ -126,7 +126,7 @@
 
 // ON_DEPRECATED is used to mark deprecated functions.
 #if defined(ON_COMPILER_MSC)
-#define ON_DEPRECATED __declspec(deprecated)
+#define ON_DEPRECATED __declspec (deprecated)
 #else
 #define ON_DEPRECATED
 #endif
@@ -150,7 +150,7 @@
 #define ON_LOG2 0.6931471805599453094172321
 #define ON_LOG10 2.302585092994045684017991
 
-#define ON_ArrayCount(a) (sizeof(a) / sizeof((a)[0]))
+#define ON_ArrayCount(a) (sizeof (a) / sizeof ((a)[0]))
 
 #if defined(DBL_MAX)
 #define ON_DBL_MAX DBL_MAX
@@ -538,17 +538,16 @@ public:
 
     // astronomical distances
     astronomical =
-        23, // 1.4959787e+11 // http://en.wikipedia.org/wiki/Astronomical_unit
-            // 1.495979e+11  // http://units.nist.gov/Pubs/SP811/appenB9.htm
-            //    An astronomical unit (au) is the mean distance from the
-            //    center of the earth to the center of the sun.
-    lightyears =
-        24,       // 9.4607304725808e+15 // http://en.wikipedia.org/wiki/Light_year
-                  // 9.46073e+15 meters  // http://units.nist.gov/Pubs/SP811/appenB9.htm
-                  //    A light year is the distance light travels in one Julian year.
-                  //    The speed of light is exactly 299792458 meters/second.
-                  //    A Julian year is exactly 365.25 * 86400 seconds and is
-                  //    approximately the time it takes for one earth orbit.
+        23,          // 1.4959787e+11 // http://en.wikipedia.org/wiki/Astronomical_unit
+                     // 1.495979e+11  // http://units.nist.gov/Pubs/SP811/appenB9.htm
+                     //    An astronomical unit (au) is the mean distance from the
+                     //    center of the earth to the center of the sun.
+    lightyears = 24, // 9.4607304725808e+15 // http://en.wikipedia.org/wiki/Light_year
+    // 9.46073e+15 meters  // http://units.nist.gov/Pubs/SP811/appenB9.htm
+    //    A light year is the distance light travels in one Julian year.
+    //    The speed of light is exactly 299792458 meters/second.
+    //    A Julian year is exactly 365.25 * 86400 seconds and is
+    //    approximately the time it takes for one earth orbit.
     parsecs = 25, // 3.08567758e+16  // http://en.wikipedia.org/wiki/Parsec
                   // 3.085678e+16    // http://units.nist.gov/Pubs/SP811/appenB9.htm
 
@@ -1268,20 +1267,20 @@ public:
   Description:
     Sets m_type = type and m_index = index.
   */
-  ON_COMPONENT_INDEX(TYPE type, int index);
+  ON_COMPONENT_INDEX (TYPE type, int index);
 
   bool
-  operator==(const ON_COMPONENT_INDEX& other) const;
+  operator== (const ON_COMPONENT_INDEX& other) const;
   bool
-  operator!=(const ON_COMPONENT_INDEX& other) const;
+  operator!= (const ON_COMPONENT_INDEX& other) const;
   bool
-  operator<(const ON_COMPONENT_INDEX& other) const;
+  operator< (const ON_COMPONENT_INDEX& other) const;
   bool
-  operator<=(const ON_COMPONENT_INDEX& other) const;
+  operator<= (const ON_COMPONENT_INDEX& other) const;
   bool
-  operator>(const ON_COMPONENT_INDEX& other) const;
+  operator> (const ON_COMPONENT_INDEX& other) const;
   bool
-  operator>=(const ON_COMPONENT_INDEX& other) const;
+  operator>= (const ON_COMPONENT_INDEX& other) const;
 
   void
   Set (TYPE type, int index);

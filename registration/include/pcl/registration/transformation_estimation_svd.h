@@ -67,7 +67,7 @@ public:
 
   /** \brief Constructor
    * \param[in] use_umeyama Toggles whether or not to use 3rd party software*/
-  TransformationEstimationSVD(bool use_umeyama = true) : use_umeyama_(use_umeyama) {}
+  TransformationEstimationSVD (bool use_umeyama = true) : use_umeyama_ (use_umeyama) {}
 
   ~TransformationEstimationSVD() override = default;
 

@@ -51,57 +51,57 @@ main (int, char** argv)
   std::string filename = argv[1];
   std::cout << "Reading " << filename << std::endl;
 
-  pcl::PointCloud<pcl::PointXYZI>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZI>);
+  pcl::PointCloud<pcl::PointXYZI>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZI>);
 
-  if (pcl::io::loadPCDFile<pcl::PointXYZI>(filename, *cloud) == -1) // load the file
+  if (pcl::io::loadPCDFile<pcl::PointXYZI> (filename, *cloud) == -1) // load the file
   {
-    PCL_ERROR("Couldn't read file\n");
+    PCL_ERROR ("Couldn't read file\n");
     return -1;
   }
 
   std::cout << "points: " << cloud->size() << std::endl;
 
   // Estimate the surface normals
-  pcl::PointCloud<pcl::Normal>::Ptr cloud_n(new pcl::PointCloud<pcl::Normal>);
+  pcl::PointCloud<pcl::Normal>::Ptr cloud_n (new pcl::PointCloud<pcl::Normal>);
   pcl::NormalEstimation<pcl::PointXYZI, pcl::Normal> norm_est;
-  norm_est.setInputCloud(cloud);
-  pcl::search::KdTree<pcl::PointXYZI>::Ptr treept1(
-      new pcl::search::KdTree<pcl::PointXYZI>(false));
-  norm_est.setSearchMethod(treept1);
-  norm_est.setRadiusSearch(0.25);
-  norm_est.compute(*cloud_n);
+  norm_est.setInputCloud (cloud);
+  pcl::search::KdTree<pcl::PointXYZI>::Ptr treept1 (
+      new pcl::search::KdTree<pcl::PointXYZI> (false));
+  norm_est.setSearchMethod (treept1);
+  norm_est.setRadiusSearch (0.25);
+  norm_est.compute (*cloud_n);
 
   std::cout << " Surface normals estimated";
   std::cout << " with size " << cloud_n->size() << std::endl;
 
   // Estimate the Intensity Gradient
-  pcl::PointCloud<pcl::IntensityGradient>::Ptr cloud_ig(
+  pcl::PointCloud<pcl::IntensityGradient>::Ptr cloud_ig (
       new pcl::PointCloud<pcl::IntensityGradient>);
   pcl::IntensityGradientEstimation<pcl::PointXYZI, pcl::Normal, pcl::IntensityGradient>
       gradient_est;
-  gradient_est.setInputCloud(cloud);
-  gradient_est.setInputNormals(cloud_n);
-  pcl::search::KdTree<pcl::PointXYZI>::Ptr treept2(
-      new pcl::search::KdTree<pcl::PointXYZI>(false));
-  gradient_est.setSearchMethod(treept2);
-  gradient_est.setRadiusSearch(0.25);
-  gradient_est.compute(*cloud_ig);
+  gradient_est.setInputCloud (cloud);
+  gradient_est.setInputNormals (cloud_n);
+  pcl::search::KdTree<pcl::PointXYZI>::Ptr treept2 (
+      new pcl::search::KdTree<pcl::PointXYZI> (false));
+  gradient_est.setSearchMethod (treept2);
+  gradient_est.setRadiusSearch (0.25);
+  gradient_est.compute (*cloud_ig);
   std::cout << " Intensity Gradient estimated";
   std::cout << " with size " << cloud_ig->size() << std::endl;
 
   // Estimate the RIFT feature
   pcl::RIFTEstimation<pcl::PointXYZI, pcl::IntensityGradient, pcl::Histogram<32>>
       rift_est;
-  pcl::search::KdTree<pcl::PointXYZI>::Ptr treept3(
-      new pcl::search::KdTree<pcl::PointXYZI>(false));
-  rift_est.setSearchMethod(treept3);
-  rift_est.setRadiusSearch(10.0);
-  rift_est.setNrDistanceBins(4);
-  rift_est.setNrGradientBins(8);
-  rift_est.setInputCloud(cloud);
-  rift_est.setInputGradient(cloud_ig);
+  pcl::search::KdTree<pcl::PointXYZI>::Ptr treept3 (
+      new pcl::search::KdTree<pcl::PointXYZI> (false));
+  rift_est.setSearchMethod (treept3);
+  rift_est.setRadiusSearch (10.0);
+  rift_est.setNrDistanceBins (4);
+  rift_est.setNrGradientBins (8);
+  rift_est.setInputCloud (cloud);
+  rift_est.setInputGradient (cloud_ig);
   pcl::PointCloud<pcl::Histogram<32>> rift_output;
-  rift_est.compute(rift_output);
+  rift_est.compute (rift_output);
 
   std::cout << " RIFT feature estimated";
   std::cout << " with size " << rift_output.size() << std::endl;

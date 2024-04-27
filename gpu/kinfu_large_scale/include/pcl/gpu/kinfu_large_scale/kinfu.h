@@ -79,7 +79,7 @@ public:
   performLastScan ()
   {
     perform_last_scan_ = true;
-    PCL_WARN("Kinfu will exit after next shift\n");
+    PCL_WARN ("Kinfu will exit after next shift\n");
   }
 
   bool
@@ -96,10 +96,10 @@ public:
    * \param[in] rows height of depth image
    * \param[in] cols width of depth image
    */
-  KinfuTracker(const Eigen::Vector3f& volumeSize,
-               const float shiftingDistance,
-               int rows = 480,
-               int cols = 640);
+  KinfuTracker (const Eigen::Vector3f& volumeSize,
+                const float shiftingDistance,
+                int rows = 480,
+                int cols = 640);
 
   /** \brief Sets Depth camera intrinsics
    * \param[in] fx focal length x
@@ -160,7 +160,7 @@ public:
    * \return true if can render 3D view.
    */
   bool
-  operator()(const DepthMap& depth);
+  operator() (const DepthMap& depth);
 
   /** \brief Processes next frame (both depth and color integration). Please call
    * initColorIntegration before invpoking this. \param[in] depth next depth frame with
@@ -168,7 +168,7 @@ public:
    * 3D view.
    */
   bool
-  operator()(const DepthMap& depth, const View& colors);
+  operator() (const DepthMap& depth, const View& colors);
 
   /** \brief Returns camera pose at given time, default the last pose
    * \param[in] time Index of frame for which camera pose is returned.
@@ -247,7 +247,7 @@ public:
   setDisableICP ()
   {
     disable_icp_ = !disable_icp_;
-    PCL_WARN("ICP is %s\n", !disable_icp_ ? "ENABLED" : "DISABLED");
+    PCL_WARN ("ICP is %s\n", !disable_icp_ ? "ENABLED" : "DISABLED");
   }
 
   /** \brief Return whether the last update resulted in a shift */

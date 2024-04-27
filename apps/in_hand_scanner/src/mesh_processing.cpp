@@ -50,7 +50,7 @@ pcl::ihs::MeshProcessing::MeshProcessing() = default;
 ////////////////////////////////////////////////////////////////////////////////
 
 void
-pcl::ihs::MeshProcessing::processBoundary(
+pcl::ihs::MeshProcessing::processBoundary (
     Mesh& mesh,
     const std::vector<HalfEdgeIndices>& boundary_collection,
     const bool cleanup) const
@@ -61,18 +61,18 @@ pcl::ihs::MeshProcessing::processBoundary(
 
   for (const auto& boundary : boundary_collection) {
     if (boundary.size() == 3) {
-      opposite_face = mesh.getOppositeFaceIndex(boundary[0]);
+      opposite_face = mesh.getOppositeFaceIndex (boundary[0]);
 
-      if (mesh.getOppositeFaceIndex(boundary[1]) == opposite_face &&
-          mesh.getOppositeFaceIndex(boundary[2]) == opposite_face) {
+      if (mesh.getOppositeFaceIndex (boundary[1]) == opposite_face &&
+          mesh.getOppositeFaceIndex (boundary[2]) == opposite_face) {
         // Isolated face.
-        mesh.deleteFace(opposite_face);
+        mesh.deleteFace (opposite_face);
       }
       else {
         // Close triangular hole.
-        mesh.addFace(mesh.getTerminatingVertexIndex(boundary[0]),
-                     mesh.getTerminatingVertexIndex(boundary[1]),
-                     mesh.getTerminatingVertexIndex(boundary[2]));
+        mesh.addFace (mesh.getTerminatingVertexIndex (boundary[0]),
+                      mesh.getTerminatingVertexIndex (boundary[1]),
+                      mesh.getTerminatingVertexIndex (boundary[2]));
       }
     }
     else // size != 3
@@ -91,9 +91,9 @@ pcl::ihs::MeshProcessing::processBoundary(
 
       for (std::size_t i = 0; i < boundary.size(); ++i) {
         // The vertices on the boundary
-        vi_a = mesh.getOriginatingVertexIndex(boundary[i]);
-        vi_b = mesh.getTerminatingVertexIndex(boundary[i]);
-        vi_c = mesh.getTerminatingVertexIndex(boundary[(i + 1) % boundary.size()]);
+        vi_a = mesh.getOriginatingVertexIndex (boundary[i]);
+        vi_b = mesh.getTerminatingVertexIndex (boundary[i]);
+        vi_c = mesh.getTerminatingVertexIndex (boundary[(i + 1) % boundary.size()]);
 
         const Eigen::Vector4f& v_a =
             mesh.getVertexDataCloud()[vi_a.get()].getVector4fMap();
@@ -106,25 +106,25 @@ pcl::ihs::MeshProcessing::processBoundary(
         bc = (v_c - v_b).head<3>();
         ac = (v_c - v_a).head<3>();
 
-        const float angle =
-            std::acos(pcl::ihs::clamp(-ab.dot(bc) / ab.norm() / bc.norm(), -1.f, 1.f));
+        const float angle = std::acos (
+            pcl::ihs::clamp (-ab.dot (bc) / ab.norm() / bc.norm(), -1.f, 1.f));
 
         if (angle < 1.047197551196598f) // 60 * pi / 180
         {
           // Third vertex belonging to the face of edge ab
-          vi_d = mesh.getTerminatingVertexIndex(
-              mesh.getNextHalfEdgeIndex(mesh.getOppositeHalfEdgeIndex(boundary[i])));
+          vi_d = mesh.getTerminatingVertexIndex (
+              mesh.getNextHalfEdgeIndex (mesh.getOppositeHalfEdgeIndex (boundary[i])));
           const Eigen::Vector4f& v_d =
               mesh.getVertexDataCloud()[vi_d.get()].getVector4fMap();
 
           // n_adb is the normal of triangle a-d-b.
           // The plane goes through edge a-b and is perpendicular to the plane through
           // a-d-b.
-          n_adb = (v_d - v_a).head<3>().cross(ab) /*.normalized()*/;
-          n_plane = n_adb.cross(ab /*.nomalized()*/);
+          n_adb = (v_d - v_a).head<3>().cross (ab) /*.normalized()*/;
+          n_plane = n_adb.cross (ab /*.nomalized()*/);
 
-          if (n_plane.dot(ac) > 0.f) {
-            mesh.addFace(vi_a, vi_b, vi_c);
+          if (n_plane.dot (ac) > 0.f) {
+            mesh.addFace (vi_a, vi_b, vi_c);
           }
         }
       }

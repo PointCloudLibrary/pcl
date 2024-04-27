@@ -50,16 +50,16 @@ public:
   //   create - [in] function to create a new object(like CreateNewON_Geometry())
   //   copy - [in] function to copy
   //   sUUID - [in] UUID in registry format from Windows guidgen.exe
-  ON_ClassId(const char* sClassName,
-             const char* sBaseClassName,
-             ON_Object* (*create)(),
-             const char* sUUID);
+  ON_ClassId (const char* sClassName,
+              const char* sBaseClassName,
+              ON_Object* (*create)(),
+              const char* sUUID);
 
-  ON_ClassId(const char* sClassName,
-             const char* sBaseClassName,
-             ON_Object* (*create)(),
-             bool (*copy)(const ON_Object*, ON_Object*),
-             const char* sUUID);
+  ON_ClassId (const char* sClassName,
+              const char* sBaseClassName,
+              ON_Object* (*create)(),
+              bool (*copy) (const ON_Object*, ON_Object*),
+              const char* sUUID);
 
   ~ON_ClassId();
 
@@ -170,7 +170,7 @@ public:
   // Returns:
   //   class uuid
   ON_UUID
-  Uuid () const;
+  Uuid() const;
 
   /*
   Description:
@@ -201,9 +201,9 @@ private:
 private:
   // no implementaion to prohibit use
   ON_ClassId();
-  ON_ClassId(const ON_ClassId&);
+  ON_ClassId (const ON_ClassId&);
   ON_ClassId&
-  operator=(const ON_ClassId&);
+  operator= (const ON_ClassId&);
 
   void
   ConstructorHelper (const char* sClassName,
@@ -215,7 +215,7 @@ private:
   // be redone to be ordinary virtual functions.
   friend class ON_Object;
   unsigned int m_class_id_version;
-  bool (*m_copy)(const ON_Object*, ON_Object*); // on version 1 class ids
+  bool (*m_copy) (const ON_Object*, ON_Object*); // on version 1 class ids
   void* m_f2;
   void* m_f3;
   void* m_f4;
@@ -233,7 +233,7 @@ private:
 //
 //          const ON_ClassId* brep_class_id = ON_CLASS_ID("ON_Brep");
 //
-#define ON_CLASS_ID(cls) ON_ClassId::ClassId(#cls)
+#define ON_CLASS_ID(cls) ON_ClassId::ClassId (#cls)
 
 /*
 Description:
@@ -248,7 +248,7 @@ Returns:
 */
 ON_DECL
 ON_UUID
-ON_GetMostRecentClassIdCreateUuid ();
+ON_GetMostRecentClassIdCreateUuid();
 
 /*
 All classes derived from ON_Object must have
@@ -273,11 +273,11 @@ public:                                                                         
   static const ON_ClassId m_##cls##_class_id;                                          \
   /*record used for ON_Object runtime type information*/                               \
                                                                                        \
-  static cls* Cast(ON_Object*);                                                        \
+  static cls* Cast (ON_Object*);                                                       \
   /*Description: Similar to C++ dynamic_cast*/                                         \
   /*Returns: object on success. NULL on failure*/                                      \
                                                                                        \
-  static const cls* Cast(const ON_Object*);                                            \
+  static const cls* Cast (const ON_Object*);                                           \
   /*Description: Similar to C++ dynamic_cast*/                                         \
   /*Returns: object on success. NULL on failure*/                                      \
                                                                                        \
@@ -288,7 +288,7 @@ private:                                                                        
   virtual ON_Object* DuplicateObject() const;                                          \
   /*used by Duplicate to create copy of an object.*/                                   \
                                                                                        \
-  static bool Copy##cls(const ON_Object*, ON_Object*);                                 \
+  static bool Copy##cls (const ON_Object*, ON_Object*);                                \
   /* used by ON_Object::CopyFrom copy object into this. */                             \
   /* In V6 Copy##cls will vanish and be replaced with   */                             \
   /* virtual bool CopyFrom( const ON_Object* src )      */                             \
@@ -309,16 +309,16 @@ public:                                                                         
 // ON_VIRTUAL_OBJECT_IMPLEMENT or ON_OBJECT_IMPLEMENT.
 #define ON_VIRTUAL_OBJECT_IMPLEMENT(cls, basecls, uuid)                                \
   void* cls::m_s_##cls##_ptr = 0;                                                      \
-  const ON_ClassId cls::m_##cls##_class_id(#cls, #basecls, 0, 0, uuid);                \
-  cls* cls::Cast(ON_Object* p) { return (cls*)Cast((const ON_Object*)p); }             \
-  const cls* cls::Cast(const ON_Object* p)                                             \
+  const ON_ClassId cls::m_##cls##_class_id (#cls, #basecls, 0, 0, uuid);               \
+  cls* cls::Cast (ON_Object* p) { return (cls*)Cast ((const ON_Object*)p); }           \
+  const cls* cls::Cast (const ON_Object* p)                                            \
   {                                                                                    \
-    return (p && p->IsKindOf(&cls::m_##cls##_class_id)) ? (const cls*)p : 0;           \
+    return (p && p->IsKindOf (&cls::m_##cls##_class_id)) ? (const cls*)p : 0;          \
   }                                                                                    \
   const ON_ClassId* cls::ClassId() const { return &cls::m_##cls##_class_id; }          \
   ON_Object* cls::DuplicateObject() const { return 0; }                                \
-  bool cls::Copy##cls(const ON_Object*, ON_Object*) { return false; }                  \
-  cls* cls::Duplicate() const { return static_cast<cls*>(DuplicateObject()); }
+  bool cls::Copy##cls (const ON_Object*, ON_Object*) { return false; }                 \
+  cls* cls::Duplicate() const { return static_cast<cls*> (DuplicateObject()); }
 
 // Objects derived from ON_Object that use ON_OBJECT_IMPLEMENT must
 // have a valid operator= and copy constructor.  Objects defined with
@@ -328,12 +328,12 @@ public:                                                                         
 #define ON_OBJECT_IMPLEMENT(cls, basecls, uuid)                                        \
   void* cls::m_s_##cls##_ptr = 0;                                                      \
   static ON_Object* CreateNew##cls() { return new cls(); }                             \
-  const ON_ClassId cls::m_##cls##_class_id(                                            \
+  const ON_ClassId cls::m_##cls##_class_id (                                           \
       #cls, #basecls, CreateNew##cls, cls::Copy##cls, uuid);                           \
-  cls* cls::Cast(ON_Object* p) { return (cls*)Cast((const ON_Object*)p); }             \
-  const cls* cls::Cast(const ON_Object* p)                                             \
+  cls* cls::Cast (ON_Object* p) { return (cls*)Cast ((const ON_Object*)p); }           \
+  const cls* cls::Cast (const ON_Object* p)                                            \
   {                                                                                    \
-    return (p && p->IsKindOf(&cls::m_##cls##_class_id)) ? (const cls*)p : 0;           \
+    return (p && p->IsKindOf (&cls::m_##cls##_class_id)) ? (const cls*)p : 0;          \
   }                                                                                    \
   const ON_ClassId* cls::ClassId() const { return &cls::m_##cls##_class_id; }          \
   ON_Object* cls::DuplicateObject() const                                              \
@@ -343,17 +343,17 @@ public:                                                                         
       *p = *this;                                                                      \
     return p;                                                                          \
   }                                                                                    \
-  bool cls::Copy##cls(const ON_Object* src, ON_Object* dst)                            \
+  bool cls::Copy##cls (const ON_Object* src, ON_Object* dst)                           \
   {                                                                                    \
     cls* d;                                                                            \
     const cls* s;                                                                      \
-    if (0 != (s = cls::Cast(src)) && 0 != (d = cls::Cast(dst))) {                      \
-      d->cls::operator=(*s);                                                           \
+    if (0 != (s = cls::Cast (src)) && 0 != (d = cls::Cast (dst))) {                    \
+      d->cls::operator= (*s);                                                          \
       return true;                                                                     \
     }                                                                                  \
     return false;                                                                      \
   }                                                                                    \
-  cls* cls::Duplicate() const { return static_cast<cls*>(DuplicateObject()); }
+  cls* cls::Duplicate() const { return static_cast<cls*> (DuplicateObject()); }
 
 #define ON__SET__THIS__PTR(ptr)                                                        \
   if (ptr)                                                                             \
@@ -419,7 +419,7 @@ class ON_CLASS ON_Object {
   // static cls * Cast( ON_Object* );
   // static const cls * Cast( const ON_Object* );
   // virtual const ON_ClassId* ClassId() const;
-  ON_OBJECT_DECLARE(ON_Object);
+  ON_OBJECT_DECLARE (ON_Object);
 
 public:
   /*
@@ -441,9 +441,9 @@ public:
 
 public:
   ON_Object();
-  ON_Object(const ON_Object&);
+  ON_Object (const ON_Object&);
   ON_Object&
-  operator=(const ON_Object&);
+  operator= (const ON_Object&);
   virtual ~ON_Object();
 
   /*
@@ -867,13 +867,13 @@ public:
 
 private:
   friend int
-  ON_BinaryArchive::ReadObject(ON_Object**);
+  ON_BinaryArchive::ReadObject (ON_Object**);
   friend bool
-  ON_BinaryArchive::WriteObject(const ON_Object&);
+  ON_BinaryArchive::WriteObject (const ON_Object&);
   friend bool
-  ON_BinaryArchive::ReadObjectUserData(ON_Object&);
+  ON_BinaryArchive::ReadObjectUserData (ON_Object&);
   friend bool
-  ON_BinaryArchive::WriteObjectUserData(const ON_Object&);
+  ON_BinaryArchive::WriteObjectUserData (const ON_Object&);
   friend class ON_UserData;
   ON_UserData* m_userdata_list;
 };

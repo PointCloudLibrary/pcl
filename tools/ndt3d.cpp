@@ -53,22 +53,22 @@ main (int argc, char** argv)
 {
 
   int iter = 35;
-  pcl::console::parse_argument(argc, argv, "-i", iter);
+  pcl::console::parse_argument (argc, argv, "-i", iter);
 
   float ndt_res = 1.0f;
-  pcl::console::parse_argument(argc, argv, "-r", ndt_res);
+  pcl::console::parse_argument (argc, argv, "-r", ndt_res);
 
   double step_size = 0.1;
-  pcl::console::parse_argument(argc, argv, "-s", step_size);
+  pcl::console::parse_argument (argc, argv, "-s", step_size);
 
   double trans_eps = 0.01;
-  pcl::console::parse_argument(argc, argv, "-t", trans_eps);
+  pcl::console::parse_argument (argc, argv, "-t", trans_eps);
 
   float filter_res = 0.2f;
-  pcl::console::parse_argument(argc, argv, "-f", filter_res);
+  pcl::console::parse_argument (argc, argv, "-f", filter_res);
 
   bool display_help = false;
-  pcl::console::parse_argument(argc, argv, "--help", display_help);
+  pcl::console::parse_argument (argc, argv, "--help", display_help);
 
   if (display_help || argc <= 1) {
     std::cout << "Usage: ndt3d [OPTION]... [FILE]..." << std::endl;
@@ -90,29 +90,29 @@ main (int argc, char** argv)
   }
 
   std::vector<int> pcd_indices;
-  pcd_indices = pcl::console::parse_file_extension_argument(argc, argv, ".pcd");
+  pcd_indices = pcl::console::parse_file_extension_argument (argc, argv, ".pcd");
 
-  CloudPtr model(new Cloud);
-  if (pcl::io::loadPCDFile(argv[pcd_indices[0]], *model) == -1) {
+  CloudPtr model (new Cloud);
+  if (pcl::io::loadPCDFile (argv[pcd_indices[0]], *model) == -1) {
     std::cout << "Could not read file" << std::endl;
     return -1;
   }
   std::cout << argv[pcd_indices[0]] << " width: " << model->width
             << " height: " << model->height << std::endl;
 
-  std::string result_filename(argv[pcd_indices[0]]);
-  result_filename = result_filename.substr(result_filename.rfind('/') + 1);
-  pcl::io::savePCDFile(result_filename, *model);
+  std::string result_filename (argv[pcd_indices[0]]);
+  result_filename = result_filename.substr (result_filename.rfind ('/') + 1);
+  pcl::io::savePCDFile (result_filename, *model);
   std::cout << "saving first model to " << result_filename << std::endl;
 
-  Eigen::Matrix4f t(Eigen::Matrix4f::Identity());
+  Eigen::Matrix4f t (Eigen::Matrix4f::Identity());
 
   pcl::ApproximateVoxelGrid<PointType> voxel_filter;
-  voxel_filter.setLeafSize(filter_res, filter_res, filter_res);
+  voxel_filter.setLeafSize (filter_res, filter_res, filter_res);
 
   for (std::size_t i = 1; i < pcd_indices.size(); i++) {
-    CloudPtr data(new Cloud);
-    if (pcl::io::loadPCDFile(argv[pcd_indices[i]], *data) == -1) {
+    CloudPtr data (new Cloud);
+    if (pcl::io::loadPCDFile (argv[pcd_indices[i]], *data) == -1) {
       std::cout << "Could not read file" << std::endl;
       return -1;
     }
@@ -121,33 +121,33 @@ main (int argc, char** argv)
 
     auto* ndt = new pcl::NormalDistributionsTransform<PointType, PointType>();
 
-    ndt->setMaximumIterations(iter);
-    ndt->setResolution(ndt_res);
-    ndt->setStepSize(step_size);
-    ndt->setTransformationEpsilon(trans_eps);
+    ndt->setMaximumIterations (iter);
+    ndt->setResolution (ndt_res);
+    ndt->setStepSize (step_size);
+    ndt->setTransformationEpsilon (trans_eps);
 
-    ndt->setInputTarget(model);
+    ndt->setInputTarget (model);
 
-    CloudPtr filtered_data(new Cloud);
-    voxel_filter.setInputCloud(data);
-    voxel_filter.filter(*filtered_data);
+    CloudPtr filtered_data (new Cloud);
+    voxel_filter.setInputCloud (data);
+    voxel_filter.filter (*filtered_data);
 
-    ndt->setInputSource(filtered_data);
+    ndt->setInputSource (filtered_data);
 
-    CloudPtr tmp(new Cloud);
-    ndt->align(*tmp);
+    CloudPtr tmp (new Cloud);
+    ndt->align (*tmp);
 
     t *= ndt->getFinalTransformation();
 
-    pcl::transformPointCloud(*data, *tmp, t);
+    pcl::transformPointCloud (*data, *tmp, t);
 
     std::cout << ndt->getFinalTransformation() << std::endl;
 
     *model = *data;
 
-    std::string result_filename(argv[pcd_indices[i]]);
-    result_filename = result_filename.substr(result_filename.rfind('/') + 1);
-    pcl::io::savePCDFileBinary(result_filename, *tmp);
+    std::string result_filename (argv[pcd_indices[i]]);
+    result_filename = result_filename.substr (result_filename.rfind ('/') + 1);
+    pcl::io::savePCDFileBinary (result_filename, *tmp);
     std::cout << "saving result to " << result_filename << std::endl;
   }
 

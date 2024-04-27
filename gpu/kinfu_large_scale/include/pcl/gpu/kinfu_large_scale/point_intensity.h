@@ -55,4 +55,4 @@ struct EIGEN_ALIGN16 PointIntensity {
   };
 };
 
-POINT_CLOUD_REGISTER_POINT_STRUCT(PointIntensity, (float, intensity, intensity))
+POINT_CLOUD_REGISTER_POINT_STRUCT (PointIntensity, (float, intensity, intensity))

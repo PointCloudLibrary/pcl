@@ -56,9 +56,9 @@ public:
    *                              trigger, publishing the next pair in the list.
    * \param[in] repeat whether to play files in an endless loop or not.
    */
-  StereoGrabberBase(const std::pair<std::string, std::string>& pair_files,
-                    float frames_per_second,
-                    bool repeat);
+  StereoGrabberBase (const std::pair<std::string, std::string>& pair_files,
+                     float frames_per_second,
+                     bool repeat);
 
   /** \brief Constructor taking a list of paths to Stereo pair files, that are played in
    * the order they appear in the list.
@@ -68,9 +68,9 @@ public:
    *            trigger, publishing the next pair in the list.
    * \param[in] repeat whether to play files in an endless loop or not.
    */
-  StereoGrabberBase(const std::vector<std::pair<std::string, std::string>>& files,
-                    float frames_per_second,
-                    bool repeat);
+  StereoGrabberBase (const std::vector<std::pair<std::string, std::string>>& files,
+                     float frames_per_second,
+                     bool repeat);
 
   /** \brief Virtual destructor. */
   ~StereoGrabberBase() noexcept override;
@@ -126,12 +126,12 @@ private:
 template <typename PointT>
 class StereoGrabber : public StereoGrabberBase {
 public:
-  StereoGrabber(const std::pair<std::string, std::string>& pair_files,
-                float frames_per_second = 0,
-                bool repeat = false);
-  StereoGrabber(const std::vector<std::pair<std::string, std::string>>& files,
-                float frames_per_second = 0,
-                bool repeat = false);
+  StereoGrabber (const std::pair<std::string, std::string>& pair_files,
+                 float frames_per_second = 0,
+                 bool repeat = false);
+  StereoGrabber (const std::vector<std::pair<std::string, std::string>>& files,
+                 float frames_per_second = 0,
+                 bool repeat = false);
 
 protected:
   void
@@ -139,45 +139,45 @@ protected:
            const Eigen::Vector4f& origin,
            const Eigen::Quaternionf& orientation) const override;
 
-  boost::signals2::signal<void(const typename pcl::PointCloud<PointT>::ConstPtr&)>*
+  boost::signals2::signal<void (const typename pcl::PointCloud<PointT>::ConstPtr&)>*
       signal_;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
-StereoGrabber<PointT>::StereoGrabber(
+StereoGrabber<PointT>::StereoGrabber (
     const std::pair<std::string, std::string>& pair_files,
     float frames_per_second,
     bool repeat)
-: StereoGrabberBase(pair_files, frames_per_second, repeat)
+: StereoGrabberBase (pair_files, frames_per_second, repeat)
 {
-  signal_ = createSignal<void(const typename pcl::PointCloud<PointT>::ConstPtr&)>();
+  signal_ = createSignal<void (const typename pcl::PointCloud<PointT>::ConstPtr&)>();
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
-StereoGrabber<PointT>::StereoGrabber(
+StereoGrabber<PointT>::StereoGrabber (
     const std::vector<std::pair<std::string, std::string>>& files,
     float frames_per_second,
     bool repeat)
-: StereoGrabberBase(files, frames_per_second, repeat), signal_()
+: StereoGrabberBase (files, frames_per_second, repeat), signal_()
 {
-  signal_ = createSignal<void(const typename pcl::PointCloud<PointT>::ConstPTr&)>();
+  signal_ = createSignal<void (const typename pcl::PointCloud<PointT>::ConstPTr&)>();
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 void
-StereoGrabber<PointT>::publish(const pcl::PCLPointCloud2& blob,
-                               const Eigen::Vector4f& origin,
-                               const Eigen::Quaternionf& orientation) const
+StereoGrabber<PointT>::publish (const pcl::PCLPointCloud2& blob,
+                                const Eigen::Vector4f& origin,
+                                const Eigen::Quaternionf& orientation) const
 {
-  typename pcl::PointCloud<PointT>::Ptr cloud(new pcl::PointCloud<PointT>());
-  pcl::fromPCLPointCloud2(blob, *cloud);
+  typename pcl::PointCloud<PointT>::Ptr cloud (new pcl::PointCloud<PointT>());
+  pcl::fromPCLPointCloud2 (blob, *cloud);
   cloud->sensor_origin_ = origin;
   cloud->sensor_orientation_ = orientation;
 
-  signal_->operator()(cloud);
+  signal_->operator() (cloud);
 }
 
 } // namespace pcl

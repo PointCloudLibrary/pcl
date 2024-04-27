@@ -58,7 +58,7 @@ public:
     int side;
     double hint;
 
-    myvec(int side, double hint)
+    myvec (int side, double hint)
     {
       this->side = side;
       this->hint = hint;
@@ -78,22 +78,22 @@ public:
     unsigned regularisation_resU;
     unsigned regularisation_resV;
 
-    Parameter(double intW = 1.0,
-              double intS = 0.000001,
-              double intR = 0.0,
-              double bndW = 1.0,
-              double bndS = 0.000001,
-              double bndR = 0.0,
-              unsigned regU = 0,
-              unsigned regV = 0)
-    : interior_weight(intW)
-    , interior_smoothness(intS)
-    , interior_regularisation(intR)
-    , boundary_weight(bndW)
-    , boundary_smoothness(bndS)
-    , boundary_regularisation(bndR)
-    , regularisation_resU(regU)
-    , regularisation_resV(regV)
+    Parameter (double intW = 1.0,
+               double intS = 0.000001,
+               double intR = 0.0,
+               double bndW = 1.0,
+               double bndS = 0.000001,
+               double bndR = 0.0,
+               unsigned regU = 0,
+               unsigned regV = 0)
+    : interior_weight (intW)
+    , interior_smoothness (intS)
+    , interior_regularisation (intR)
+    , boundary_weight (bndW)
+    , boundary_smoothness (bndS)
+    , boundary_regularisation (bndR)
+    , regularisation_resU (regU)
+    , regularisation_resV (regV)
     {}
   };
 
@@ -101,16 +101,16 @@ public:
    * \param[in] data pointer to the 3D point-cloud data to be fit.
    * \param[in] ns B-Spline surface used for fitting.
    */
-  FittingSurface(NurbsDataSurface* data, const ON_NurbsSurface& ns);
+  FittingSurface (NurbsDataSurface* data, const ON_NurbsSurface& ns);
 
   /** \brief Constructor initializing B-Spline surface using initNurbsPCA(...).
    * \param[in] order the polynomial order of the B-Spline surface.
    * \param[in] data pointer to the 2D point-cloud data to be fit.
    * \param[in] z vector defining front face of surface.
    */
-  FittingSurface(int order,
-                 NurbsDataSurface* data,
-                 Eigen::Vector3d z = Eigen::Vector3d(0.0, 0.0, 1.0));
+  FittingSurface (int order,
+                  NurbsDataSurface* data,
+                  Eigen::Vector3d z = Eigen::Vector3d (0.0, 0.0, 1.0));
 
   /** \brief Default virtual destructor */
   virtual ~FittingSurface() = default;
@@ -255,21 +255,21 @@ public:
   static ON_NurbsSurface
   initNurbsPCA (int order,
                 NurbsDataSurface* data,
-                Eigen::Vector3d z = Eigen::Vector3d(0.0, 0.0, 1.0));
+                Eigen::Vector3d z = Eigen::Vector3d (0.0, 0.0, 1.0));
 
   /** \brief Initializing a B-Spline surface using principal-component-analysis and
    * bounding box of points */
   static ON_NurbsSurface
   initNurbsPCABoundingBox (int order,
                            NurbsDataSurface* data,
-                           Eigen::Vector3d z = Eigen::Vector3d(0.0, 0.0, 1.0));
+                           Eigen::Vector3d z = Eigen::Vector3d (0.0, 0.0, 1.0));
 
   /** \brief Enable/Disable debug outputs in console. */
   inline void
   setQuiet (bool val)
   {
     m_quiet = val;
-    m_solver.setQuiet(val);
+    m_solver.setQuiet (val);
   }
 
 protected:
@@ -341,22 +341,22 @@ protected:
   int
   grc2gl (int I, int J) const
   {
-    return m_nurbs.CVCount(1) * I + J;
+    return m_nurbs.CVCount (1) * I + J;
   } // global row/col index to global lexicographic index
   int
   lrc2gl (int E, int F, int i, int j)
   {
-    return grc2gl(E + i, F + j);
+    return grc2gl (E + i, F + j);
   } // local row/col index to global lexicographic index
   int
   gl2gr (int A) const
   {
-    return (static_cast<int>(A / m_nurbs.CVCount(1)));
+    return (static_cast<int> (A / m_nurbs.CVCount (1)));
   } // global lexicographic in global row index
   int
   gl2gc (int A) const
   {
-    return (static_cast<int>(A % m_nurbs.CVCount(1)));
+    return (static_cast<int> (A % m_nurbs.CVCount (1)));
   } // global lexicographic in global col index
 };
 

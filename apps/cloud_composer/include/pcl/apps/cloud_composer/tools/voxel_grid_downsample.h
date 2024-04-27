@@ -45,7 +45,7 @@ namespace cloud_composer {
 class VoxelGridDownsampleTool : public ModifyItemTool {
   Q_OBJECT
 public:
-  VoxelGridDownsampleTool(PropertiesModel* parameter_model, QObject* parent);
+  VoxelGridDownsampleTool (PropertiesModel* parameter_model, QObject* parent);
 
   QList<CloudComposerItem*>
   performAction (QList<const CloudComposerItem*> input_data,
@@ -60,13 +60,13 @@ public:
 
 class VoxelGridDownsampleToolFactory : public QObject, public ToolFactory {
   Q_OBJECT
-  Q_INTERFACES(pcl::cloud_composer::ToolFactory)
-  Q_PLUGIN_METADATA(IID "cloud_composer.ToolFactory/1.0")
+  Q_INTERFACES (pcl::cloud_composer::ToolFactory)
+  Q_PLUGIN_METADATA (IID "cloud_composer.ToolFactory/1.0")
 public:
   ModifyItemTool*
   createTool (PropertiesModel* parameter_model, QObject* parent = nullptr) override
   {
-    return new VoxelGridDownsampleTool(parameter_model, parent);
+    return new VoxelGridDownsampleTool (parameter_model, parent);
   }
 
   PropertiesModel*

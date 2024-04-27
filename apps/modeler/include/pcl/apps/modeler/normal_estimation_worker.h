@@ -45,8 +45,8 @@ class DoubleParameter;
 
 class NormalEstimationWorker : public AbstractWorker {
 public:
-  NormalEstimationWorker(const QList<CloudMeshItem*>& cloud_mesh_items,
-                         QWidget* parent = nullptr);
+  NormalEstimationWorker (const QList<CloudMeshItem*>& cloud_mesh_items,
+                          QWidget* parent = nullptr);
   ~NormalEstimationWorker();
 
 protected:

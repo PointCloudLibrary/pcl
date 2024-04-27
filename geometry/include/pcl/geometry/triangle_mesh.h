@@ -112,7 +112,7 @@ public:
   using FaceAroundFaceCirculator = typename Base::FaceAroundFaceCirculator;
 
   /** \brief Constructor. */
-  TriangleMesh() : Base(), add_triangle_(3), inner_he_atp_(4), is_new_atp_(4) {}
+  TriangleMesh() : Base(), add_triangle_ (3), inner_he_atp_ (4), is_new_atp_ (4) {}
 
   /** \brief The base method of addFace is hidden because of the overloads in this
    * class. */
@@ -143,7 +143,8 @@ public:
     add_triangle_[1] = idx_v_1;
     add_triangle_[2] = idx_v_2;
 
-    return (this->addFaceImplBase(add_triangle_, face_data, edge_data, half_edge_data));
+    return (
+        this->addFaceImplBase (add_triangle_, face_data, edge_data, half_edge_data));
   }
 
   /** \brief Add two triangles for the four given input vertices. When using a manifold
@@ -168,15 +169,15 @@ public:
                    const HalfEdgeData& half_edge_data = HalfEdgeData())
   {
     if (vertices.size() != 4) {
-      return (std::make_pair(FaceIndex(), FaceIndex()));
+      return (std::make_pair (FaceIndex(), FaceIndex()));
     }
-    return (this->addTrianglePair(vertices[0],
-                                  vertices[1],
-                                  vertices[2],
-                                  vertices[3],
-                                  face_data,
-                                  edge_data,
-                                  half_edge_data));
+    return (this->addTrianglePair (vertices[0],
+                                   vertices[1],
+                                   vertices[2],
+                                   vertices[3],
+                                   face_data,
+                                   edge_data,
+                                   half_edge_data));
   }
 
   /** \brief Add two triangles for the four given input vertices. When using a manifold
@@ -209,74 +210,74 @@ public:
     // 3 - 2
     // | / |
     // 0 - 1
-    FaceIndex idx_face_0 = this->addFace(idx_v_0, idx_v_1, idx_v_2, face_data);
-    FaceIndex idx_face_1 = this->addFace(idx_v_0, idx_v_2, idx_v_3, face_data);
+    FaceIndex idx_face_0 = this->addFace (idx_v_0, idx_v_1, idx_v_2, face_data);
+    FaceIndex idx_face_1 = this->addFace (idx_v_0, idx_v_2, idx_v_3, face_data);
 
     if (idx_face_0.isValid()) {
-      return (std::make_pair(idx_face_0, idx_face_1));
+      return (std::make_pair (idx_face_0, idx_face_1));
     }
     if (idx_face_1.isValid()) {
-      idx_face_0 = this->addFace(
+      idx_face_0 = this->addFace (
           idx_v_0, idx_v_1, idx_v_2, face_data); // might be possible to add now
-      return (std::make_pair(idx_face_1, idx_face_0));
+      return (std::make_pair (idx_face_1, idx_face_0));
     }
 
     // Try to add two faces
     // 3 - 2
     // | \ |
     // 0 - 1
-    idx_face_0 = this->addFace(idx_v_1, idx_v_2, idx_v_3, face_data);
-    idx_face_1 = this->addFace(idx_v_0, idx_v_1, idx_v_3, face_data);
+    idx_face_0 = this->addFace (idx_v_1, idx_v_2, idx_v_3, face_data);
+    idx_face_1 = this->addFace (idx_v_0, idx_v_1, idx_v_3, face_data);
 
     if (idx_face_0.isValid()) {
-      return (std::make_pair(idx_face_0, idx_face_1));
+      return (std::make_pair (idx_face_0, idx_face_1));
     }
     if (idx_face_1.isValid()) {
-      idx_face_0 = this->addFace(
+      idx_face_0 = this->addFace (
           idx_v_1, idx_v_2, idx_v_3, face_data); // might be possible to add now
-      return (std::make_pair(idx_face_1, idx_face_0));
+      return (std::make_pair (idx_face_1, idx_face_0));
     }
 
     if (!IsManifold::value) {
-      return (std::make_pair(FaceIndex(), FaceIndex()));
+      return (std::make_pair (FaceIndex(), FaceIndex()));
     }
 
     // Check manifoldness
-    if (!Base::checkTopology1(
+    if (!Base::checkTopology1 (
             idx_v_0, idx_v_1, inner_he_atp_[0], is_new_atp_[0], IsManifold()) ||
-        !Base::checkTopology1(
+        !Base::checkTopology1 (
             idx_v_1, idx_v_2, inner_he_atp_[1], is_new_atp_[1], IsManifold()) ||
-        !Base::checkTopology1(
+        !Base::checkTopology1 (
             idx_v_2, idx_v_3, inner_he_atp_[2], is_new_atp_[2], IsManifold()) ||
-        !Base::checkTopology1(
+        !Base::checkTopology1 (
             idx_v_3, idx_v_0, inner_he_atp_[3], is_new_atp_[3], IsManifold())) {
-      return (std::make_pair(FaceIndex(), FaceIndex()));
+      return (std::make_pair (FaceIndex(), FaceIndex()));
     }
 
     // Connect the triangle pair
     if (!is_new_atp_[0] && is_new_atp_[1] && !is_new_atp_[2] && is_new_atp_[3]) {
-      return (this->connectTrianglePair(inner_he_atp_[0],
-                                        inner_he_atp_[2],
-                                        idx_v_0,
-                                        idx_v_1,
-                                        idx_v_2,
-                                        idx_v_3,
-                                        face_data,
-                                        edge_data,
-                                        half_edge_data));
+      return (this->connectTrianglePair (inner_he_atp_[0],
+                                         inner_he_atp_[2],
+                                         idx_v_0,
+                                         idx_v_1,
+                                         idx_v_2,
+                                         idx_v_3,
+                                         face_data,
+                                         edge_data,
+                                         half_edge_data));
     }
     if (is_new_atp_[0] && !is_new_atp_[1] && is_new_atp_[2] && !is_new_atp_[3]) {
-      return (this->connectTrianglePair(inner_he_atp_[1],
-                                        inner_he_atp_[3],
-                                        idx_v_1,
-                                        idx_v_2,
-                                        idx_v_3,
-                                        idx_v_0,
-                                        face_data,
-                                        edge_data,
-                                        half_edge_data));
+      return (this->connectTrianglePair (inner_he_atp_[1],
+                                         inner_he_atp_[3],
+                                         idx_v_1,
+                                         idx_v_2,
+                                         idx_v_3,
+                                         idx_v_0,
+                                         face_data,
+                                         edge_data,
+                                         half_edge_data));
     }
-    return (std::make_pair(FaceIndex(), FaceIndex()));
+    return (std::make_pair (FaceIndex(), FaceIndex()));
   }
 
 private:
@@ -292,7 +293,7 @@ private:
                const HalfEdgeData& half_edge_data)
   {
     if (vertices.size() == 3)
-      return (this->addFaceImplBase(vertices, face_data, edge_data, half_edge_data));
+      return (this->addFaceImplBase (vertices, face_data, edge_data, half_edge_data));
     return (FaceIndex());
   }
 
@@ -313,63 +314,66 @@ private:
                        const HalfEdgeData& he_data)
   {
     // Add new half-edges
-    const HalfEdgeIndex idx_he_bc = Base::addEdge(idx_v_b, idx_v_c, he_data, edge_data);
-    const HalfEdgeIndex idx_he_da = Base::addEdge(idx_v_d, idx_v_a, he_data, edge_data);
-    const HalfEdgeIndex idx_he_ca = Base::addEdge(idx_v_c, idx_v_a, he_data, edge_data);
+    const HalfEdgeIndex idx_he_bc =
+        Base::addEdge (idx_v_b, idx_v_c, he_data, edge_data);
+    const HalfEdgeIndex idx_he_da =
+        Base::addEdge (idx_v_d, idx_v_a, he_data, edge_data);
+    const HalfEdgeIndex idx_he_ca =
+        Base::addEdge (idx_v_c, idx_v_a, he_data, edge_data);
 
-    const HalfEdgeIndex idx_he_cb = Base::getOppositeHalfEdgeIndex(idx_he_bc);
-    const HalfEdgeIndex idx_he_ad = Base::getOppositeHalfEdgeIndex(idx_he_da);
-    const HalfEdgeIndex idx_he_ac = Base::getOppositeHalfEdgeIndex(idx_he_ca);
+    const HalfEdgeIndex idx_he_cb = Base::getOppositeHalfEdgeIndex (idx_he_bc);
+    const HalfEdgeIndex idx_he_ad = Base::getOppositeHalfEdgeIndex (idx_he_da);
+    const HalfEdgeIndex idx_he_ac = Base::getOppositeHalfEdgeIndex (idx_he_ca);
 
     // Get the existing half-edges
     const HalfEdgeIndex idx_he_ab_prev =
-        Base::getPrevHalfEdgeIndex(idx_he_ab); // No reference!
+        Base::getPrevHalfEdgeIndex (idx_he_ab); // No reference!
     const HalfEdgeIndex idx_he_ab_next =
-        Base::getNextHalfEdgeIndex(idx_he_ab); // No reference!
+        Base::getNextHalfEdgeIndex (idx_he_ab); // No reference!
 
     const HalfEdgeIndex idx_he_cd_prev =
-        Base::getPrevHalfEdgeIndex(idx_he_cd); // No reference!
+        Base::getPrevHalfEdgeIndex (idx_he_cd); // No reference!
     const HalfEdgeIndex idx_he_cd_next =
-        Base::getNextHalfEdgeIndex(idx_he_cd); // No reference!
+        Base::getNextHalfEdgeIndex (idx_he_cd); // No reference!
 
     // Connect the outer half-edges
-    Base::connectPrevNext(idx_he_ab_prev, idx_he_ad);
-    Base::connectPrevNext(idx_he_ad, idx_he_cd_next);
-    Base::connectPrevNext(idx_he_cd_prev, idx_he_cb);
-    Base::connectPrevNext(idx_he_cb, idx_he_ab_next);
+    Base::connectPrevNext (idx_he_ab_prev, idx_he_ad);
+    Base::connectPrevNext (idx_he_ad, idx_he_cd_next);
+    Base::connectPrevNext (idx_he_cd_prev, idx_he_cb);
+    Base::connectPrevNext (idx_he_cb, idx_he_ab_next);
 
     // Connect the inner half-edges
-    Base::connectPrevNext(idx_he_ab, idx_he_bc);
-    Base::connectPrevNext(idx_he_bc, idx_he_ca);
-    Base::connectPrevNext(idx_he_ca, idx_he_ab);
+    Base::connectPrevNext (idx_he_ab, idx_he_bc);
+    Base::connectPrevNext (idx_he_bc, idx_he_ca);
+    Base::connectPrevNext (idx_he_ca, idx_he_ab);
 
-    Base::connectPrevNext(idx_he_ac, idx_he_cd);
-    Base::connectPrevNext(idx_he_cd, idx_he_da);
-    Base::connectPrevNext(idx_he_da, idx_he_ac);
+    Base::connectPrevNext (idx_he_ac, idx_he_cd);
+    Base::connectPrevNext (idx_he_cd, idx_he_da);
+    Base::connectPrevNext (idx_he_da, idx_he_ac);
 
     // Connect the vertices to the boundary half-edges
-    Base::setOutgoingHalfEdgeIndex(idx_v_a, idx_he_ad);
-    Base::setOutgoingHalfEdgeIndex(idx_v_b, idx_he_ab_next);
-    Base::setOutgoingHalfEdgeIndex(idx_v_c, idx_he_cb);
-    Base::setOutgoingHalfEdgeIndex(idx_v_d, idx_he_cd_next);
+    Base::setOutgoingHalfEdgeIndex (idx_v_a, idx_he_ad);
+    Base::setOutgoingHalfEdgeIndex (idx_v_b, idx_he_ab_next);
+    Base::setOutgoingHalfEdgeIndex (idx_v_c, idx_he_cb);
+    Base::setOutgoingHalfEdgeIndex (idx_v_d, idx_he_cd_next);
 
     // Add and connect the faces
     HalfEdgeIndices inner_he_abc;
-    inner_he_abc.reserve(3);
-    inner_he_abc.push_back(idx_he_ab);
-    inner_he_abc.push_back(idx_he_bc);
-    inner_he_abc.push_back(idx_he_ca);
+    inner_he_abc.reserve (3);
+    inner_he_abc.push_back (idx_he_ab);
+    inner_he_abc.push_back (idx_he_bc);
+    inner_he_abc.push_back (idx_he_ca);
 
     HalfEdgeIndices inner_he_acd;
-    inner_he_acd.reserve(3);
-    inner_he_acd.push_back(idx_he_ac);
-    inner_he_acd.push_back(idx_he_cd);
-    inner_he_acd.push_back(idx_he_da);
+    inner_he_acd.reserve (3);
+    inner_he_acd.push_back (idx_he_ac);
+    inner_he_acd.push_back (idx_he_cd);
+    inner_he_acd.push_back (idx_he_da);
 
-    const FaceIndex idx_f_abc = Base::connectFace(inner_he_abc, face_data);
-    const FaceIndex idx_f_acd = Base::connectFace(inner_he_acd, face_data);
+    const FaceIndex idx_f_abc = Base::connectFace (inner_he_abc, face_data);
+    const FaceIndex idx_f_acd = Base::connectFace (inner_he_acd, face_data);
 
-    return (std::make_pair(idx_f_abc, idx_f_acd));
+    return (std::make_pair (idx_f_abc, idx_f_acd));
   }
 
   ////////////////////////////////////////////////////////////////////////

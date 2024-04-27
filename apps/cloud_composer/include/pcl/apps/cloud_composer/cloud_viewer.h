@@ -54,7 +54,7 @@ class CloudViewer : public QTabWidget {
   Q_OBJECT
 
 public:
-  CloudViewer(QWidget* parent = nullptr);
+  CloudViewer (QWidget* parent = nullptr);
   ProjectModel*
   getModel () const;
 

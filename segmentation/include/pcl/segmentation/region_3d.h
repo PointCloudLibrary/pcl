@@ -51,9 +51,9 @@ class Region3D {
 public:
   /** \brief Empty constructor for Region3D. */
   Region3D()
-  : centroid_(Eigen::Vector3f::Zero())
-  , covariance_(Eigen::Matrix3f::Identity())
-  , count_(0)
+  : centroid_ (Eigen::Vector3f::Zero())
+  , covariance_ (Eigen::Matrix3f::Identity())
+  , count_ (0)
   {}
 
   /** \brief Constructor for Region3D.
@@ -61,8 +61,8 @@ public:
    * \param[in] covariance The covariance of the region.
    * \param[in] count The number of points in the region.
    */
-  Region3D(Eigen::Vector3f& centroid, Eigen::Matrix3f& covariance, unsigned count)
-  : centroid_(centroid), covariance_(covariance), count_(count)
+  Region3D (Eigen::Vector3f& centroid, Eigen::Matrix3f& covariance, unsigned count)
+  : centroid_ (centroid), covariance_ (covariance), count_ (count)
   {}
 
   /** \brief Destructor. */

@@ -51,7 +51,7 @@ class PCL_EXPORTS RangeImageVisualizer : public ImageViewer {
 public:
   // =====CONSTRUCTOR & DESTRUCTOR=====
   //! Constructor
-  RangeImageVisualizer(const std::string& name = "Range Image");
+  RangeImageVisualizer (const std::string& name = "Range Image");
   //! Destructor
   ~RangeImageVisualizer() override;
 

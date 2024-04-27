@@ -29,7 +29,7 @@
 //	This object represents a viewing frustum
 ///////////////////////////////////////////////////////////////////////////////
 class ON_CLASS ON_Viewport : public ON_Geometry {
-  ON_OBJECT_DECLARE(ON_Viewport);
+  ON_OBJECT_DECLARE (ON_Viewport);
 
 public:
   // Default z=up perspective camera direction
@@ -39,7 +39,7 @@ public:
   ON_Viewport();
   ~ON_Viewport();
   ON_Viewport&
-  operator=(const ON_Viewport&);
+  operator= (const ON_Viewport&);
 
   bool
   IsValidCamera () const;

@@ -79,14 +79,14 @@ bool
 pcl::filters::GaussianKernel<PointInT, PointOutT>::initCompute()
 {
   if (sigma_ == 0) {
-    PCL_ERROR("Sigma is not set or equal to 0!\n", sigma_);
+    PCL_ERROR ("Sigma is not set or equal to 0!\n", sigma_);
     return (false);
   }
   sigma_sqr_ = sigma_ * sigma_;
 
   if (sigma_coefficient_) {
     if ((*sigma_coefficient_) > 6 || (*sigma_coefficient_) < 3) {
-      PCL_ERROR("Sigma coefficient (%f) out of [3..6]!\n", (*sigma_coefficient_));
+      PCL_ERROR ("Sigma coefficient (%f) out of [3..6]!\n", (*sigma_coefficient_));
       return (false);
     }
     else
@@ -99,7 +99,7 @@ pcl::filters::GaussianKernel<PointInT, PointOutT>::initCompute()
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT>
 PointOutT
-pcl::filters::GaussianKernel<PointInT, PointOutT>::operator()(
+pcl::filters::GaussianKernel<PointInT, PointOutT>::operator() (
     const Indices& indices, const std::vector<float>& distances)
 {
   using namespace pcl::common;
@@ -109,8 +109,8 @@ pcl::filters::GaussianKernel<PointInT, PointOutT>::operator()(
 
   for (Indices::const_iterator idx_it = indices.begin(); idx_it != indices.end();
        ++idx_it, ++dist_it) {
-    if (*dist_it <= threshold_ && isFinite((*input_)[*idx_it])) {
-      float weight = std::exp(-0.5f * (*dist_it) / sigma_sqr_);
+    if (*dist_it <= threshold_ && isFinite ((*input_)[*idx_it])) {
+      float weight = std::exp (-0.5f * (*dist_it) / sigma_sqr_);
       result += weight * (*input_)[*idx_it];
       total_weight += weight;
     }
@@ -118,7 +118,7 @@ pcl::filters::GaussianKernel<PointInT, PointOutT>::operator()(
   if (total_weight != 0)
     result /= total_weight;
   else
-    makeInfinite(result);
+    makeInfinite (result);
 
   return (result);
 }
@@ -126,7 +126,7 @@ pcl::filters::GaussianKernel<PointInT, PointOutT>::operator()(
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT>
 PointOutT
-pcl::filters::GaussianKernelRGB<PointInT, PointOutT>::operator()(
+pcl::filters::GaussianKernelRGB<PointInT, PointOutT>::operator() (
     const Indices& indices, const std::vector<float>& distances)
 {
   using namespace pcl::common;
@@ -137,14 +137,14 @@ pcl::filters::GaussianKernelRGB<PointInT, PointOutT>::operator()(
 
   for (Indices::const_iterator idx_it = indices.begin(); idx_it != indices.end();
        ++idx_it, ++dist_it) {
-    if (*dist_it <= threshold_ && isFinite((*input_)[*idx_it])) {
-      float weight = std::exp(-0.5f * (*dist_it) / sigma_sqr_);
+    if (*dist_it <= threshold_ && isFinite ((*input_)[*idx_it])) {
+      float weight = std::exp (-0.5f * (*dist_it) / sigma_sqr_);
       result.x += weight * (*input_)[*idx_it].x;
       result.y += weight * (*input_)[*idx_it].y;
       result.z += weight * (*input_)[*idx_it].z;
-      r += weight * static_cast<float>((*input_)[*idx_it].r);
-      g += weight * static_cast<float>((*input_)[*idx_it].g);
-      b += weight * static_cast<float>((*input_)[*idx_it].b);
+      r += weight * static_cast<float> ((*input_)[*idx_it].r);
+      g += weight * static_cast<float> ((*input_)[*idx_it].g);
+      b += weight * static_cast<float> ((*input_)[*idx_it].b);
       total_weight += weight;
     }
   }
@@ -156,12 +156,12 @@ pcl::filters::GaussianKernelRGB<PointInT, PointOutT>::operator()(
     result.x *= total_weight;
     result.y *= total_weight;
     result.z *= total_weight;
-    result.r = static_cast<std::uint8_t>(r);
-    result.g = static_cast<std::uint8_t>(g);
-    result.b = static_cast<std::uint8_t>(b);
+    result.r = static_cast<std::uint8_t> (r);
+    result.g = static_cast<std::uint8_t> (g);
+    result.b = static_cast<std::uint8_t> (b);
   }
   else
-    makeInfinite(result);
+    makeInfinite (result);
 
   return (result);
 }
@@ -169,7 +169,7 @@ pcl::filters::GaussianKernelRGB<PointInT, PointOutT>::operator()(
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT, typename KernelT>
 pcl::filters::Convolution3D<PointInT, PointOutT, KernelT>::Convolution3D()
-: PCLBase<PointInT>(), surface_(), tree_(), search_radius_(0)
+: PCLBase<PointInT>(), surface_(), tree_(), search_radius_ (0)
 {}
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -178,39 +178,39 @@ bool
 pcl::filters::Convolution3D<PointInT, PointOutT, KernelT>::initCompute()
 {
   if (!PCLBase<PointInT>::initCompute()) {
-    PCL_ERROR("[pcl::filters::Convlution3D::initCompute] init failed!\n");
+    PCL_ERROR ("[pcl::filters::Convlution3D::initCompute] init failed!\n");
     return (false);
   }
   // Initialize the spatial locator
   if (!tree_) {
     if (input_->isOrganized())
-      tree_.reset(new pcl::search::OrganizedNeighbor<PointInT>());
+      tree_.reset (new pcl::search::OrganizedNeighbor<PointInT>());
     else
-      tree_.reset(new pcl::search::KdTree<PointInT>(false));
+      tree_.reset (new pcl::search::KdTree<PointInT> (false));
   }
   // If no search surface has been defined, use the input dataset as the search surface
   // itself
   if (!surface_)
     surface_ = input_;
   // Send the surface dataset to the spatial locator
-  tree_->setInputCloud(surface_);
+  tree_->setInputCloud (surface_);
   // Do a fast check to see if the search parameters are well defined
   if (search_radius_ <= 0.0) {
-    PCL_ERROR(
+    PCL_ERROR (
         "[pcl::filters::Convlution3D::initCompute] search radius (%f) must be > 0\n",
         search_radius_);
     return (false);
   }
   // Make sure the provided kernel implements the required interface
-  if (dynamic_cast<ConvolvingKernel<PointInT, PointOutT>*>(&kernel_) == 0) {
-    PCL_ERROR("[pcl::filters::Convlution3D::initCompute] init failed : ");
-    PCL_ERROR("kernel_ must implement ConvolvingKernel interface\n!");
+  if (dynamic_cast<ConvolvingKernel<PointInT, PointOutT>*> (&kernel_) == 0) {
+    PCL_ERROR ("[pcl::filters::Convlution3D::initCompute] init failed : ");
+    PCL_ERROR ("kernel_ must implement ConvolvingKernel interface\n!");
     return (false);
   }
-  kernel_.setInputCloud(surface_);
+  kernel_.setInputCloud (surface_);
   // Initialize convolving kernel
   if (!kernel_.initCompute()) {
-    PCL_ERROR(
+    PCL_ERROR (
         "[pcl::filters::Convlution3D::initCompute] kernel initialization failed!\n");
     return (false);
   }
@@ -220,14 +220,14 @@ pcl::filters::Convolution3D<PointInT, PointOutT, KernelT>::initCompute()
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT, typename KernelT>
 void
-pcl::filters::Convolution3D<PointInT, PointOutT, KernelT>::convolve(
+pcl::filters::Convolution3D<PointInT, PointOutT, KernelT>::convolve (
     PointCloudOut& output)
 {
   if (!initCompute()) {
-    PCL_ERROR("[pcl::filters::Convlution3D::convolve] init failed!\n");
+    PCL_ERROR ("[pcl::filters::Convlution3D::convolve] init failed!\n");
     return;
   }
-  output.resize(surface_->size());
+  output.resize (surface_->size());
   output.width = surface_->width;
   output.height = surface_->height;
   output.is_dense = surface_->is_dense;
@@ -237,16 +237,16 @@ pcl::filters::Convolution3D<PointInT, PointOutT, KernelT>::convolve(
 #pragma omp parallel for default(none) shared(output)                                  \
     firstprivate(nn_indices, nn_distances) num_threads(threads_)
   for (std::int64_t point_idx = 0;
-       point_idx < static_cast<std::int64_t>(surface_->size());
+       point_idx < static_cast<std::int64_t> (surface_->size());
        ++point_idx) {
     const PointInT& point_in = surface_->points[point_idx];
     PointOutT& point_out = output[point_idx];
-    if (isFinite(point_in) &&
-        tree_->radiusSearch(point_in, search_radius_, nn_indices, nn_distances)) {
-      point_out = kernel_(nn_indices, nn_distances);
+    if (isFinite (point_in) &&
+        tree_->radiusSearch (point_in, search_radius_, nn_indices, nn_distances)) {
+      point_out = kernel_ (nn_indices, nn_distances);
     }
     else {
-      kernel_.makeInfinite(point_out);
+      kernel_.makeInfinite (point_out);
       output.is_dense = false;
     }
   }

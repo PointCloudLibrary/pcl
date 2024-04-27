@@ -46,9 +46,9 @@ namespace modeler {
 
 class PointsActorItem : public ChannelActorItem {
 public:
-  PointsActorItem(QTreeWidgetItem* parent,
-                  const CloudMesh::Ptr& cloud_mesh,
-                  const vtkSmartPointer<vtkRenderWindow>& render_window);
+  PointsActorItem (QTreeWidgetItem* parent,
+                   const CloudMesh::Ptr& cloud_mesh,
+                   const vtkSmartPointer<vtkRenderWindow>& render_window);
 
   std::string
   getItemName () const override

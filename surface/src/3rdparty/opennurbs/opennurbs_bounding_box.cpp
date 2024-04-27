@@ -16,12 +16,12 @@
 
 #include "pcl/surface/3rdparty/opennurbs/opennurbs.h"
 
-ON_BoundingBox::ON_BoundingBox() : m_min(1.0, 0.0, 0.0), m_max(-1.0, 0.0, 0.0) {}
+ON_BoundingBox::ON_BoundingBox() : m_min (1.0, 0.0, 0.0), m_max (-1.0, 0.0, 0.0) {}
 
 const ON_BoundingBox ON_BoundingBox::EmptyBoundingBox;
 
-ON_BoundingBox::ON_BoundingBox(const ON_3dPoint& min_pt, const ON_3dPoint& max_pt)
-: m_min(min_pt), m_max(max_pt)
+ON_BoundingBox::ON_BoundingBox (const ON_3dPoint& min_pt, const ON_3dPoint& max_pt)
+: m_min (min_pt), m_max (max_pt)
 {}
 
 ON_BoundingBox::~ON_BoundingBox() {}
@@ -41,14 +41,14 @@ ON_BoundingBox::Destroy()
 // the transform of the eight corner points of the input
 // bounding box.
 bool
-ON_BoundingBox::Transform(const ON_Xform& xform)
+ON_BoundingBox::Transform (const ON_Xform& xform)
 {
   ON_3dPointArray corners;
-  bool rc = GetCorners(corners);
+  bool rc = GetCorners (corners);
   if (rc) {
-    rc = corners.Transform(xform);
+    rc = corners.Transform (xform);
     if (rc)
-      rc = Set(corners);
+      rc = Set (corners);
   }
   return rc;
 }
@@ -57,17 +57,17 @@ double
 ON_BoundingBox::Tolerance() const
 {
   // rough guess at a tolerance to use for comparing
-  return ON_BoundingBoxTolerance(3, m_min, m_max);
+  return ON_BoundingBoxTolerance (3, m_min, m_max);
 }
 
 ON_3dPoint&
-ON_BoundingBox::operator[](int i)
+ON_BoundingBox::operator[] (int i)
 {
   return (i > 0) ? m_max : m_min;
 }
 
 const ON_3dPoint&
-ON_BoundingBox::operator[](int i) const
+ON_BoundingBox::operator[] (int i) const
 {
   return (i > 0) ? m_max : m_min;
 }
@@ -97,7 +97,7 @@ ON_BoundingBox::Center() const
 }
 
 ON_3dPoint
-ON_BoundingBox::Corner(int x_index, int y_index, int z_index) const
+ON_BoundingBox::Corner (int x_index, int y_index, int z_index) const
 {
   // 8 corners of box
   // x_index   0 = Min().x, 1 = Max().x
@@ -111,7 +111,7 @@ ON_BoundingBox::Corner(int x_index, int y_index, int z_index) const
 }
 
 bool
-ON_BoundingBox::GetCorners(ON_3dPoint corners[8] // returns list of 8 corner points
+ON_BoundingBox::GetCorners (ON_3dPoint corners[8] // returns list of 8 corner points
 ) const
 {
   int n = 0;
@@ -133,21 +133,21 @@ ON_BoundingBox::GetCorners(ON_3dPoint corners[8] // returns list of 8 corner poi
 }
 
 bool
-ON_BoundingBox::GetCorners(ON_3dPointArray& corners // returns list of 8 corner points
+ON_BoundingBox::GetCorners (ON_3dPointArray& corners // returns list of 8 corner points
 ) const
 {
   ON_3dPoint c[8];
   corners.Empty();
-  bool rc = GetCorners(c);
+  bool rc = GetCorners (c);
   if (rc)
-    corners.Append(8, c);
+    corners.Append (8, c);
   return rc;
 }
 
-ON_ClippingRegion::ON_ClippingRegion() { memset(this, 0, sizeof(*this)); }
+ON_ClippingRegion::ON_ClippingRegion() { memset (this, 0, sizeof (*this)); }
 
 void
-ON_ClippingRegion::SetClipPlaneTolerance(double clip_plane_tolerance)
+ON_ClippingRegion::SetClipPlaneTolerance (double clip_plane_tolerance)
 {
   if (clip_plane_tolerance > 0.0 && clip_plane_tolerance < 3.402823466e+38)
     m_clip_plane_tolerance = (float)clip_plane_tolerance;
@@ -162,15 +162,15 @@ ON_ClippingRegion::ClipPlaneTolerance() const
 }
 
 int
-ON_ClippingRegion::InViewFrustum(ON_3dPoint P) const
+ON_ClippingRegion::InViewFrustum (ON_3dPoint P) const
 {
-  return InViewFrustum(1, &P);
+  return InViewFrustum (1, &P);
 }
 
 int
-ON_ClippingRegion::InViewFrustum(const ON_BoundingBox& bbox) const
+ON_ClippingRegion::InViewFrustum (const ON_BoundingBox& bbox) const
 {
-  if (!ON_IsValid(bbox.m_min.x) || !ON_IsValid(bbox.m_max.x) ||
+  if (!ON_IsValid (bbox.m_min.x) || !ON_IsValid (bbox.m_max.x) ||
       bbox.m_min.x > bbox.m_max.x) {
     return 0;
   }
@@ -197,11 +197,11 @@ ON_ClippingRegion::InViewFrustum(const ON_BoundingBox& bbox) const
   P[7].y = bbox.m_max.y;
   P[7].z = bbox.m_min.z;
 
-  return InViewFrustum(8, P);
+  return InViewFrustum (8, P);
 }
 
 int
-ON_ClippingRegion::InViewFrustum(int count, const ON_3fPoint* p) const
+ON_ClippingRegion::InViewFrustum (int count, const ON_3fPoint* p) const
 {
   const double* xform;
   const float* cv;
@@ -250,7 +250,7 @@ ON_ClippingRegion::InViewFrustum(int count, const ON_3fPoint* p) const
 }
 
 int
-ON_ClippingRegion::InViewFrustum(int count, const ON_3dPoint* p) const
+ON_ClippingRegion::InViewFrustum (int count, const ON_3dPoint* p) const
 {
   const double* xform;
   const double* cv;
@@ -299,7 +299,7 @@ ON_ClippingRegion::InViewFrustum(int count, const ON_3dPoint* p) const
 }
 
 int
-ON_ClippingRegion::InViewFrustum(int count, const ON_4dPoint* p) const
+ON_ClippingRegion::InViewFrustum (int count, const ON_4dPoint* p) const
 {
   const double* xform;
   const double* cv;
@@ -348,15 +348,15 @@ ON_ClippingRegion::InViewFrustum(int count, const ON_4dPoint* p) const
 }
 
 int
-ON_ClippingRegion::InClipPlaneRegion(ON_3dPoint P) const
+ON_ClippingRegion::InClipPlaneRegion (ON_3dPoint P) const
 {
-  return InClipPlaneRegion(1, &P);
+  return InClipPlaneRegion (1, &P);
 }
 
 int
-ON_ClippingRegion::InClipPlaneRegion(const ON_BoundingBox& bbox) const
+ON_ClippingRegion::InClipPlaneRegion (const ON_BoundingBox& bbox) const
 {
-  if (!ON_IsValid(bbox.m_min.x) || !ON_IsValid(bbox.m_max.x) ||
+  if (!ON_IsValid (bbox.m_min.x) || !ON_IsValid (bbox.m_max.x) ||
       bbox.m_min.x > bbox.m_max.x) {
     return 0;
   }
@@ -387,11 +387,11 @@ ON_ClippingRegion::InClipPlaneRegion(const ON_BoundingBox& bbox) const
   P[7].y = bbox.m_max.y;
   P[7].z = bbox.m_min.z;
 
-  return InClipPlaneRegion(8, P);
+  return InClipPlaneRegion (8, P);
 }
 
 int
-ON_ClippingRegion::InClipPlaneRegion(int count, const ON_3fPoint* p) const
+ON_ClippingRegion::InClipPlaneRegion (int count, const ON_3fPoint* p) const
 {
   const ON_PlaneEquation* cpeqn;
   const float* cv;
@@ -451,7 +451,7 @@ ON_ClippingRegion::InClipPlaneRegion(int count, const ON_3fPoint* p) const
 }
 
 int
-ON_ClippingRegion::InClipPlaneRegion(int count, const ON_3dPoint* p) const
+ON_ClippingRegion::InClipPlaneRegion (int count, const ON_3dPoint* p) const
 {
   const ON_PlaneEquation* cpeqn;
   const double* cv;
@@ -511,7 +511,7 @@ ON_ClippingRegion::InClipPlaneRegion(int count, const ON_3dPoint* p) const
 }
 
 int
-ON_ClippingRegion::InClipPlaneRegion(int count, const ON_4dPoint* p) const
+ON_ClippingRegion::InClipPlaneRegion (int count, const ON_4dPoint* p) const
 {
   const ON_PlaneEquation* cpeqn;
   const double* cv;
@@ -571,15 +571,15 @@ ON_ClippingRegion::InClipPlaneRegion(int count, const ON_4dPoint* p) const
 }
 
 int
-ON_ClippingRegion::IsVisible(ON_3dPoint P) const
+ON_ClippingRegion::IsVisible (ON_3dPoint P) const
 {
-  return IsVisible(1, &P);
+  return IsVisible (1, &P);
 }
 
 int
-ON_ClippingRegion::IsVisible(const ON_BoundingBox& bbox) const
+ON_ClippingRegion::IsVisible (const ON_BoundingBox& bbox) const
 {
-  if (!ON_IsValid(bbox.m_min.x) || !ON_IsValid(bbox.m_max.x) ||
+  if (!ON_IsValid (bbox.m_min.x) || !ON_IsValid (bbox.m_max.x) ||
       bbox.m_min.x > bbox.m_max.x) {
     return 0;
   }
@@ -606,11 +606,11 @@ ON_ClippingRegion::IsVisible(const ON_BoundingBox& bbox) const
   P[7].y = bbox.m_max.y;
   P[7].z = bbox.m_min.z;
 
-  return IsVisible(8, P);
+  return IsVisible (8, P);
 }
 
 int
-ON_ClippingRegion::IsVisible(int count, const ON_3fPoint* p) const
+ON_ClippingRegion::IsVisible (int count, const ON_3fPoint* p) const
 {
   const double* xform;
   const ON_PlaneEquation* cpeqn;
@@ -681,7 +681,7 @@ ON_ClippingRegion::IsVisible(int count, const ON_3fPoint* p) const
 }
 
 int
-ON_ClippingRegion::IsVisible(int count, const ON_3dPoint* p) const
+ON_ClippingRegion::IsVisible (int count, const ON_3dPoint* p) const
 {
   const double* xform;
   const ON_PlaneEquation* cpeqn;
@@ -752,7 +752,7 @@ ON_ClippingRegion::IsVisible(int count, const ON_3dPoint* p) const
 }
 
 int
-ON_ClippingRegion::IsVisible(int count, const ON_4dPoint* p) const
+ON_ClippingRegion::IsVisible (int count, const ON_4dPoint* p) const
 {
   const double* xform;
   const ON_PlaneEquation* cpeqn;
@@ -822,7 +822,7 @@ ON_ClippingRegion::IsVisible(int count, const ON_4dPoint* p) const
 }
 
 unsigned int
-ON_ClippingRegion::TransformPoint(const ON_4dPoint& P, ON_4dPoint& Q) const
+ON_ClippingRegion::TransformPoint (const ON_4dPoint& P, ON_4dPoint& Q) const
 {
   unsigned int out, cpbit;
   const double* xform = &m_xform.m_xform[0][0];
@@ -878,7 +878,7 @@ ON_ClippingRegion::TransformPoint(const ON_4dPoint& P, ON_4dPoint& Q) const
 }
 
 unsigned int
-ON_ClippingRegion::TransformPoint(const ON_3dPoint& P, ON_3dPoint& Q) const
+ON_ClippingRegion::TransformPoint (const ON_3dPoint& P, ON_3dPoint& Q) const
 {
   unsigned int out, cpbit;
   const double* xform = &m_xform.m_xform[0][0];
@@ -938,14 +938,16 @@ ON_ClippingRegion::TransformPoint(const ON_3dPoint& P, ON_3dPoint& Q) const
 }
 
 unsigned int
-ON_ClippingRegion::TransformPoint(const ON_3fPoint& P, ON_3dPoint& Q) const
+ON_ClippingRegion::TransformPoint (const ON_3fPoint& P, ON_3dPoint& Q) const
 {
-  ON_3dPoint PP(P.x, P.y, P.z);
-  return TransformPoint(PP, Q);
+  ON_3dPoint PP (P.x, P.y, P.z);
+  return TransformPoint (PP, Q);
 }
 
 int
-ON_ClippingRegion::TransformPoints(int count, ON_4dPoint* p, unsigned int* pflags) const
+ON_ClippingRegion::TransformPoints (int count,
+                                    ON_4dPoint* p,
+                                    unsigned int* pflags) const
 {
   // transforms cv's to pick coordinates
   const double* xform;
@@ -1021,7 +1023,7 @@ ON_ClippingRegion::TransformPoints(int count, ON_4dPoint* p, unsigned int* pflag
 }
 
 int
-ON_ClippingRegion::TransformPoints(int count, ON_4dPoint* p) const
+ON_ClippingRegion::TransformPoints (int count, ON_4dPoint* p) const
 {
   // transforms cv's to pick coordinates
   const double* xform;
@@ -1109,10 +1111,10 @@ ON_ClippingRegion::TransformPoints(int count, ON_4dPoint* p) const
 }
 
 bool
-ON_ClippingRegion::GetLineClipPlaneParamters(ON_4dPoint P0,
-                                             ON_4dPoint P1,
-                                             double* t0,
-                                             double* t1) const
+ON_ClippingRegion::GetLineClipPlaneParamters (ON_4dPoint P0,
+                                              ON_4dPoint P1,
+                                              double* t0,
+                                              double* t1) const
 {
   double s0, s1, x0, x1, s;
   const ON_PlaneEquation* eqn;
@@ -1165,14 +1167,14 @@ ON_ClippingRegion::GetLineClipPlaneParamters(ON_4dPoint P0,
 }
 
 int
-ON_BoundingBox::IsVisible(const ON_Xform& bbox2c) const
+ON_BoundingBox::IsVisible (const ON_Xform& bbox2c) const
 {
   int i, j, k;
   unsigned int all_out, some_out, out;
   double bx, by, bz, x, w;
   const double* p;
 
-  if (!ON_IsValid(m_min.x) || !ON_IsValid(m_max.x) || m_min.x > m_max.x)
+  if (!ON_IsValid (m_min.x) || !ON_IsValid (m_max.x) || m_min.x > m_max.x)
     return 0;
 
   some_out = 0;         // will be != 0 if some portion of box is outside visible region
@@ -1222,7 +1224,7 @@ ON_BoundingBox::IsVisible(const ON_Xform& bbox2c) const
 }
 
 bool
-ON_BoundingBox::IsPointIn(const ON_3dPoint& p, int bStrictlyIn) const
+ON_BoundingBox::IsPointIn (const ON_3dPoint& p, int bStrictlyIn) const
 {
   bool bIn = false;
   if (bStrictlyIn) {
@@ -1237,7 +1239,7 @@ ON_BoundingBox::IsPointIn(const ON_3dPoint& p, int bStrictlyIn) const
 };
 
 ON_3dPoint
-ON_BoundingBox::ClosestPoint(const ON_3dPoint& test_point) const
+ON_BoundingBox::ClosestPoint (const ON_3dPoint& test_point) const
 {
   ON_3dPoint near_point = test_point;
   // GBA  30 March 04.  For performance reasons in closest point to surface
@@ -1258,10 +1260,10 @@ ON_BoundingBox::ClosestPoint(const ON_3dPoint& test_point) const
 }
 
 int
-ON_BoundingBox::GetClosestPoint(const ON_Line& line,
-                                ON_3dPoint& box_point,
-                                double* t0,
-                                double* t1) const
+ON_BoundingBox::GetClosestPoint (const ON_Line& line,
+                                 ON_3dPoint& box_point,
+                                 double* t0,
+                                 double* t1) const
 {
   if (!IsValid() || !line.IsValid())
     return 0;
@@ -1269,43 +1271,43 @@ ON_BoundingBox::GetClosestPoint(const ON_Line& line,
   ON_3dPoint closest;
 
   if (line.Direction().Length() <= ON_SQRT_EPSILON) {
-    ON_3dPoint center = line.PointAt(.5);
+    ON_3dPoint center = line.PointAt (.5);
     if (t0)
       *t0 = 0.0;
     if (t1)
       *t1 = 1.0;
-    box_point = ClosestPoint(center);
-    return IsPointIn(center) ? 3 : 1;
+    box_point = ClosestPoint (center);
+    return IsPointIn (center) ? 3 : 1;
   }
 
   ON_Interval over[3]; // parameter overlap for each direction
 
   for (int j = 0; j < 3; j++) {
-    ON_Interval pl(line[0][j], line[1][j]);
+    ON_Interval pl (line[0][j], line[1][j]);
     if (pl[0] != pl[1])
-      over[j] = ON_Interval(pl.NormalizedParameterAt(Min()[j]),
-                            pl.NormalizedParameterAt(Max()[j]));
+      over[j] = ON_Interval (pl.NormalizedParameterAt (Min()[j]),
+                             pl.NormalizedParameterAt (Max()[j]));
     else if (Min()[j] <= pl[0] && pl[0] <= Max()[j])
-      over[j] = ON_Interval(-ON_DBL_MAX, ON_DBL_MAX);
+      over[j] = ON_Interval (-ON_DBL_MAX, ON_DBL_MAX);
     else
-      over[j] = ON_Interval(ON_UNSET_VALUE, ON_UNSET_VALUE);
+      over[j] = ON_Interval (ON_UNSET_VALUE, ON_UNSET_VALUE);
   }
 
   // Step 1.  Check for an intersection of the infinte line with the box
-  ON_Interval overlap(-ON_DBL_MAX, ON_DBL_MAX);
+  ON_Interval overlap (-ON_DBL_MAX, ON_DBL_MAX);
   bool nonempty = true;
   int i;
   for (i = 0; i < 3 && nonempty; i++)
-    nonempty = overlap.Intersection(over[i]);
+    nonempty = overlap.Intersection (over[i]);
 
   if (nonempty) { // infinte line intersects box
-    if (overlap.Intersection(ON_Interval(0, 1))) {
+    if (overlap.Intersection (ON_Interval (0, 1))) {
       // Box & Line segment  intersect
       if (t0)
         *t0 = overlap[0];
       if (t1)
         *t1 = overlap[1];
-      box_point = line.PointAt(overlap[0]);
+      box_point = line.PointAt (overlap[0]);
       return (overlap.Length() > 0) ? 3 : 2;
     }
     // closest point is at end of line segment
@@ -1325,12 +1327,12 @@ ON_BoundingBox::GetClosestPoint(const ON_Line& line,
   for (i = 0; i < 3; i++) {
     // Project box and line onto coord plane with normal Unit(i).
 
-    if (!overlap.Intersection(over[(i + 1) % 3], over[(i + 2) % 3])) {
+    if (!overlap.Intersection (over[(i + 1) % 3], over[(i + 2) % 3])) {
       // Projected line doesnt intersect the projexted box.
       // Find the closest  vertex of the projected box.
-      ON_3dVector StdUnit(0, 0, 0);
+      ON_3dVector StdUnit (0, 0, 0);
       StdUnit[i] = 1.0;
-      ON_3dVector n = ON_CrossProduct(line.Direction(), StdUnit);
+      ON_3dVector n = ON_CrossProduct (line.Direction(), StdUnit);
       if (n.Length() == 0)
         continue;
       n.Unitize();
@@ -1342,8 +1344,8 @@ ON_BoundingBox::GetClosestPoint(const ON_Line& line,
       for (k[0] = ilo[0]; k[0] <= ihi[0]; k[0]++)
         for (k[1] = ilo[1]; k[1] <= ihi[1]; k[1]++)
           for (k[2] = ilo[2]; k[2] <= ihi[2]; k[2]++) {
-            double a = n * (Corner(k[0], k[1], k[2]) - line.from);
-            if (amin == 0.0 || fabs(a) < fabs(amin)) {
+            double a = n * (Corner (k[0], k[1], k[2]) - line.from);
+            if (amin == 0.0 || fabs (a) < fabs (amin)) {
               amin = a;
               imin[0] = k[0];
               imin[1] = k[1];
@@ -1353,13 +1355,13 @@ ON_BoundingBox::GetClosestPoint(const ON_Line& line,
       if (imin[0] < 0) {
         return 0;
       }
-      ON_3dPoint vertex = Corner(imin[0], imin[1], imin[2]);
+      ON_3dPoint vertex = Corner (imin[0], imin[1], imin[2]);
       vertex[i] = line.from[i];
       // Solve for 2d-closest point between closest corner and projected line
       ON_3dVector ProjDir = line.Direction();
       ProjDir[i] = 0.0;
       double t = (vertex - line.from) * ProjDir / ProjDir.LengthSquared();
-      ON_3dPoint cp = line.PointAt(t);
+      ON_3dPoint cp = line.PointAt (t);
       if (0 <= t && t <= 1 && m_min[i] <= cp[i] && cp[i] <= m_max[i]) {
         if (t0)
           *t0 = t; // found the  closest point
@@ -1376,10 +1378,10 @@ ON_BoundingBox::GetClosestPoint(const ON_Line& line,
   for (k[0] = 0; k[0] < 2; k[0]++)
     for (k[1] = 0; k[1] < 2; k[1]++)
       for (k[2] = 0; k[2] < 2; k[2]++) {
-        ON_3dPoint corner = Corner(k[0], k[1], k[2]);
+        ON_3dPoint corner = Corner (k[0], k[1], k[2]);
         double tstar;
-        line.ClosestPointTo(corner, &tstar);
-        ON_3dPoint cp = line.PointAt(tstar);
+        line.ClosestPointTo (corner, &tstar);
+        ON_3dPoint cp = line.PointAt (tstar);
         ON_3dVector disp = cp - corner;
         bool InNCone = true;
         for (int j = 0; j < 2 && InNCone; j++) {
@@ -1397,7 +1399,7 @@ ON_BoundingBox::GetClosestPoint(const ON_Line& line,
 
   // Step 4. Closest point is at a line end
   for (i = 0; i < 2; i++) {
-    closest = ClosestPoint(line[i]);
+    closest = ClosestPoint (line[i]);
     double dot = (closest - line[i]) * line.Direction();
     if ((i == 0 && dot <= 0) || (i == 1 && dot >= 0)) {
       if (t0)
@@ -1409,22 +1411,22 @@ ON_BoundingBox::GetClosestPoint(const ON_Line& line,
     }
   }
 
-  ON_ASSERT(false); // Should never get here
+  ON_ASSERT (false); // Should never get here
   return 0;
 }
 
 ON_3dPoint
-ON_BoundingBox::FarPoint(const ON_3dPoint& test_point) const
+ON_BoundingBox::FarPoint (const ON_3dPoint& test_point) const
 {
   ON_3dPoint far_point = test_point;
   // if ( IsValid() ) {
-  far_point.x = (fabs(m_min.x - test_point.x) >= fabs(m_max.x - test_point.x))
+  far_point.x = (fabs (m_min.x - test_point.x) >= fabs (m_max.x - test_point.x))
                     ? m_min.x
                     : m_max.x;
-  far_point.y = (fabs(m_min.y - test_point.y) >= fabs(m_max.y - test_point.y))
+  far_point.y = (fabs (m_min.y - test_point.y) >= fabs (m_max.y - test_point.y))
                     ? m_min.y
                     : m_max.y;
-  far_point.z = (fabs(m_min.z - test_point.z) >= fabs(m_max.z - test_point.z))
+  far_point.z = (fabs (m_min.z - test_point.z) >= fabs (m_max.z - test_point.z))
                     ? m_min.z
                     : m_max.z;
   //  }
@@ -1450,19 +1452,19 @@ Intersect (ON_Interval A, ON_Interval B, ON_Interval& AB)
 
   bool NotEmpty = true;
   if (A.m_t[0] <= B.m_t[0] && B.m_t[0] <= A.m_t[1] && A.m_t[1] <= B.m_t[1]) {
-    AB.Set(B.m_t[0], A.m_t[1]);
+    AB.Set (B.m_t[0], A.m_t[1]);
   }
   else if (B.m_t[0] <= A.m_t[0] && A.m_t[0] <= B.m_t[1] && B.m_t[1] <= A.m_t[1]) {
-    AB.Set(A.m_t[0], B.m_t[1]);
+    AB.Set (A.m_t[0], B.m_t[1]);
   }
   else if (A.m_t[0] <= B.m_t[0] && B.m_t[0] <= B.m_t[1] && B.m_t[1] <= A.m_t[1]) {
-    AB.Set(B.m_t[0], B.m_t[1]);
+    AB.Set (B.m_t[0], B.m_t[1]);
   }
   else if (B.m_t[0] <= A.m_t[0] && A.m_t[0] <= A.m_t[1] && A.m_t[1] <= B.m_t[1]) {
-    AB.Set(A.m_t[0], A.m_t[1]);
+    AB.Set (A.m_t[0], A.m_t[1]);
   }
   else if (B.m_t[0] <= A.m_t[0] && A.m_t[0] <= A.m_t[1] && A.m_t[1] <= B.m_t[1]) {
-    AB.Set(A.m_t[0], A.m_t[1]);
+    AB.Set (A.m_t[0], A.m_t[1]);
   }
   else if (A.m_t[1] < B.m_t[0] || B.m_t[1] < A.m_t[0]) {
     AB.Destroy();
@@ -1472,7 +1474,7 @@ Intersect (ON_Interval A, ON_Interval B, ON_Interval& AB)
 }
 
 bool
-ON_BoundingBox::GetClosestPoint(
+ON_BoundingBox::GetClosestPoint (
     const ON_BoundingBox& other_box, // "other" bounding box
     ON_3dPoint& this_point, // point on "this" box that is closest to "other" box
     ON_3dPoint& other_point // point on "other" box that is closest to "this" box
@@ -1483,10 +1485,10 @@ ON_BoundingBox::GetClosestPoint(
     return false;
 
   for (int i = 0; i < 3; i++) {
-    ON_Interval It(m_min[i], m_max[i]);
-    ON_Interval Io(other_box.m_min[i], other_box.m_max[i]);
+    ON_Interval It (m_min[i], m_max[i]);
+    ON_Interval Io (other_box.m_min[i], other_box.m_max[i]);
     ON_Interval intersect;
-    bool NotEmpty = Intersect(It, Io, intersect);
+    bool NotEmpty = Intersect (It, Io, intersect);
     if (NotEmpty) {
       this_point[i] = other_point[i] = intersect.Mid();
     }
@@ -1507,19 +1509,19 @@ ON_BoundingBox::GetClosestPoint(
 //////////
 // Get points on bounding boxes that are farthest from each other.
 bool
-ON_BoundingBox::GetFarPoint(const ON_BoundingBox& other_box, // "other" bounding box
-                            ON_3dPoint& this_point, // point on "this" box that is
-                                                    // farthest from "other" box point
-                            ON_3dPoint& other_point // point on "other" box that is
-                                                    // farthest from "this" box point
+ON_BoundingBox::GetFarPoint (const ON_BoundingBox& other_box, // "other" bounding box
+                             ON_3dPoint& this_point, // point on "this" box that is
+                                                     // farthest from "other" box point
+                             ON_3dPoint& other_point // point on "other" box that is
+                                                     // farthest from "this" box point
 ) const
 {
   if (!IsValid() || !other_box.IsValid())
     return false;
   for (int i = 0; i < 3; i++) {
-    ON_Interval It(m_min[i], m_max[i]);
-    ON_Interval Io(other_box.m_min[i], other_box.m_max[i]);
-    if (It.Includes(Io) || Io.Includes(It)) {
+    ON_Interval It (m_min[i], m_max[i]);
+    ON_Interval Io (other_box.m_min[i], other_box.m_max[i]);
+    if (It.Includes (Io) || Io.Includes (It)) {
       if (m_max[i] - other_box.m_min[i] > other_box.m_max[i] - m_min[i]) {
         this_point[i] = m_max[i];
         other_point[i] = other_box.m_min[i];
@@ -1548,7 +1550,7 @@ ON_BoundingBox::GetFarPoint(const ON_BoundingBox& other_box, // "other" bounding
 }
 
 bool
-ON_BoundingBox::SwapCoordinates(int i, int j)
+ON_BoundingBox::SwapCoordinates (int i, int j)
 {
   bool rc = false;
   if (IsValid() && 0 <= i && i < 3 && 0 <= j && j < 3) {
@@ -1566,7 +1568,7 @@ ON_BoundingBox::SwapCoordinates(int i, int j)
 }
 
 bool
-ON_BoundingBox::IsDisjoint(const ON_BoundingBox& other_bbox) const
+ON_BoundingBox::IsDisjoint (const ON_BoundingBox& other_bbox) const
 {
   if (m_min.x > m_max.x || other_bbox.m_min.x > other_bbox.m_max.x ||
       m_min.x > other_bbox.m_max.x || m_max.x < other_bbox.m_min.x) {
@@ -1584,7 +1586,7 @@ ON_BoundingBox::IsDisjoint(const ON_BoundingBox& other_bbox) const
 }
 
 bool
-ON_BoundingBox::Intersection(const ON_BoundingBox& a)
+ON_BoundingBox::Intersection (const ON_BoundingBox& a)
 {
   if (IsValid() && a.IsValid()) {
     if (a.m_min.x > m_min.x)
@@ -1607,13 +1609,13 @@ ON_BoundingBox::Intersection(const ON_BoundingBox& a)
 }
 
 bool
-ON_BoundingBox::Intersection( // Returns true when intersect is non-empty.
-    const ON_Line& line,      // Infinite Line segment to intersect with
-    double* t0,               // t0  parameter of first intersection point
-    double* t1                // t1  parameter of last intersection point (t0<=t1)
+ON_BoundingBox::Intersection ( // Returns true when intersect is non-empty.
+    const ON_Line& line,       // Infinite Line segment to intersect with
+    double* t0,                // t0  parameter of first intersection point
+    double* t1                 // t1  parameter of last intersection point (t0<=t1)
 ) const
 {
-  ON_Interval t(-ON_DBL_MAX, ON_DBL_MAX), ti, Li;
+  ON_Interval t (-ON_DBL_MAX, ON_DBL_MAX), ti, Li;
   const double* boxmin = &m_min.x;
   const double* boxmax = &m_max.x;
   const double* from = &line.from.x;
@@ -1626,9 +1628,9 @@ ON_BoundingBox::Intersection( // Returns true when intersect is non-empty.
     else {
       Li.m_t[0] = from[i];
       Li.m_t[1] = to[i];
-      ti.m_t[0] = Li.NormalizedParameterAt(boxmin[i]);
-      ti.m_t[1] = Li.NormalizedParameterAt(boxmax[i]);
-      if (!t.Intersection(ti))
+      ti.m_t[0] = Li.NormalizedParameterAt (boxmin[i]);
+      ti.m_t[1] = Li.NormalizedParameterAt (boxmax[i]);
+      if (!t.Intersection (ti))
         return false;
     }
   }
@@ -1641,7 +1643,7 @@ ON_BoundingBox::Intersection( // Returns true when intersect is non-empty.
 }
 
 bool
-ON_BoundingBox::Union(const ON_BoundingBox& a)
+ON_BoundingBox::Union (const ON_BoundingBox& a)
 {
   if (IsValid()) {
     if (a.IsValid()) {
@@ -1669,7 +1671,7 @@ ON_BoundingBox::Union(const ON_BoundingBox& a)
 }
 
 bool
-ON_BoundingBox::Intersection(const ON_BoundingBox& a, const ON_BoundingBox& b)
+ON_BoundingBox::Intersection (const ON_BoundingBox& a, const ON_BoundingBox& b)
 {
   if (a.IsValid() && b.IsValid()) {
     m_min.x = (a.m_min.x >= b.m_min.x) ? a.m_min.x : b.m_min.x;
@@ -1686,14 +1688,14 @@ ON_BoundingBox::Intersection(const ON_BoundingBox& a, const ON_BoundingBox& b)
 }
 
 bool
-ON_BoundingBox::Includes(const ON_BoundingBox& other, bool bProperSubSet) const
+ON_BoundingBox::Includes (const ON_BoundingBox& other, bool bProperSubSet) const
 {
   bool rc = true;
   bool proper = false;
   for (int i = 0; i < 3 && rc; i++) {
-    ON_Interval thisI(m_min[i], m_max[i]);
-    ON_Interval otherI(other.m_min[i], other.m_max[i]);
-    rc = thisI.Includes(otherI);
+    ON_Interval thisI (m_min[i], m_max[i]);
+    ON_Interval otherI (other.m_min[i], other.m_max[i]);
+    rc = thisI.Includes (otherI);
     if (bProperSubSet && !proper) {
       proper = (other.m_min[i] > m_min[i]) || (other.m_max[i] < m_max[i]);
     }
@@ -1706,7 +1708,7 @@ ON_BoundingBox::Includes(const ON_BoundingBox& other, bool bProperSubSet) const
 }
 
 bool
-ON_BoundingBox::Union(const ON_BoundingBox& a, const ON_BoundingBox& b)
+ON_BoundingBox::Union (const ON_BoundingBox& a, const ON_BoundingBox& b)
 {
   if (a.IsValid()) {
     if (b.IsValid()) {
@@ -1750,15 +1752,15 @@ ON_BoundingBox::Area() const
 }
 
 bool
-ON_BoundingBox::Set(
+ON_BoundingBox::Set (
     int dim, int is_rat, int count, int stride, const double* points, int bGrowBox)
 {
-  return ON_GetPointListBoundingBox(
+  return ON_GetPointListBoundingBox (
       dim, is_rat, count, stride, points, *this, bGrowBox != 0, 0);
 }
 
 bool
-ON_BoundingBox::Set(const ON_3dPoint& P, int bGrowBox)
+ON_BoundingBox::Set (const ON_3dPoint& P, int bGrowBox)
 {
   if (!bGrowBox || !IsValid()) {
     m_min = P;
@@ -1782,27 +1784,27 @@ ON_BoundingBox::Set(const ON_3dPoint& P, int bGrowBox)
 }
 
 bool
-ON_BoundingBox::Set(const ON_SimpleArray<ON_4dPoint>& a, int bGrowBox)
+ON_BoundingBox::Set (const ON_SimpleArray<ON_4dPoint>& a, int bGrowBox)
 {
   const int count = a.Count();
   const double* p = (count > 0) ? &a.Array()->x : 0;
-  return ON_GetPointListBoundingBox(3, 1, count, 4, p, *this, bGrowBox != 0, 0);
+  return ON_GetPointListBoundingBox (3, 1, count, 4, p, *this, bGrowBox != 0, 0);
 }
 
 bool
-ON_BoundingBox::Set(const ON_SimpleArray<ON_3dPoint>& a, int bGrowBox)
+ON_BoundingBox::Set (const ON_SimpleArray<ON_3dPoint>& a, int bGrowBox)
 {
   const int count = a.Count();
   const double* p = (count > 0) ? &a.Array()->x : 0;
-  return ON_GetPointListBoundingBox(3, 0, count, 3, p, *this, bGrowBox != 0, 0);
+  return ON_GetPointListBoundingBox (3, 0, count, 3, p, *this, bGrowBox != 0, 0);
 }
 
 bool
-ON_BoundingBox::Set(const ON_SimpleArray<ON_2dPoint>& a, int bGrowBox)
+ON_BoundingBox::Set (const ON_SimpleArray<ON_2dPoint>& a, int bGrowBox)
 {
   const int count = a.Count();
   const double* p = (count > 0) ? &a.Array()->x : 0;
-  return ON_GetPointListBoundingBox(2, 0, count, 2, p, *this, bGrowBox != 0, 0);
+  return ON_GetPointListBoundingBox (2, 0, count, 2, p, *this, bGrowBox != 0, 0);
 }
 
 ON_BoundingBox
@@ -1810,7 +1812,7 @@ ON_PointListBoundingBox (
     int dim, int is_rat, int count, int stride, const double* points)
 {
   ON_BoundingBox bbox;
-  ON_GetPointListBoundingBox(dim, is_rat, count, stride, points, bbox, false, 0);
+  ON_GetPointListBoundingBox (dim, is_rat, count, stride, points, bbox, false, 0);
   return bbox;
 }
 
@@ -1838,7 +1840,7 @@ ON_GetPointListBoundingBox (int dim,
 
   if (count > 0 && dim > 0 && points && (count == 1 || stride >= dim + is_rat)) {
     ON_BoundingBox bbox;
-    ON_3dPoint P(0.0, 0.0, 0.0);
+    ON_3dPoint P (0.0, 0.0, 0.0);
     double w;
     int i, wi;
 
@@ -1862,7 +1864,7 @@ ON_GetPointListBoundingBox (int dim,
         return false;
     }
 
-    memcpy(&bbox.m_min.x, points, dim * sizeof(bbox.m_min.x));
+    memcpy (&bbox.m_min.x, points, dim * sizeof (bbox.m_min.x));
     if (is_rat) {
       w = 1.0 / points[wi];
       bbox.m_min.x *= w;
@@ -1870,7 +1872,7 @@ ON_GetPointListBoundingBox (int dim,
       bbox.m_min.z *= w;
     }
     if (xform) {
-      bbox.m_min.Transform(*xform);
+      bbox.m_min.Transform (*xform);
     }
     bbox.m_max = bbox.m_min;
     points += stride;
@@ -1885,12 +1887,12 @@ ON_GetPointListBoundingBox (int dim,
               rc = false;
               continue;
             }
-            memcpy(&P.x, points, dim * sizeof(P.x));
+            memcpy (&P.x, points, dim * sizeof (P.x));
             w = 1.0 / w;
             P.x *= w;
             P.y *= w;
             P.z *= w;
-            P.Transform(*xform);
+            P.Transform (*xform);
             if (bbox.m_min.x > P.x)
               bbox.m_min.x = P.x;
             else if (bbox.m_max.x < P.x)
@@ -1917,7 +1919,7 @@ ON_GetPointListBoundingBox (int dim,
               rc = false;
               continue;
             }
-            memcpy(&P.x, points, dim * sizeof(P.x));
+            memcpy (&P.x, points, dim * sizeof (P.x));
             w = 1.0 / w;
             P.x *= w;
             P.y *= w;
@@ -1941,8 +1943,8 @@ ON_GetPointListBoundingBox (int dim,
         // bounding box of non-rational points
         if (xform) {
           for (/*empty*/; count--; points += stride) {
-            memcpy(&P.x, points, dim * sizeof(P.x));
-            P.Transform(*xform);
+            memcpy (&P.x, points, dim * sizeof (P.x));
+            P.Transform (*xform);
             if (bbox.m_min.x > P.x)
               bbox.m_min.x = P.x;
             else if (bbox.m_max.x < P.x)
@@ -1965,7 +1967,7 @@ ON_GetPointListBoundingBox (int dim,
         }
         else {
           for (/*empty*/; count--; points += stride) {
-            memcpy(&P.x, points, dim * sizeof(P.x));
+            memcpy (&P.x, points, dim * sizeof (P.x));
             if (bbox.m_min.x > P.x)
               bbox.m_min.x = P.x;
             else if (bbox.m_max.x < P.x)
@@ -1983,7 +1985,7 @@ ON_GetPointListBoundingBox (int dim,
       }
     }
 
-    tight_bbox.Union(bbox);
+    tight_bbox.Union (bbox);
   }
   else if (bGrowBox) {
     // result is still valid if no points are added to a valid input box
@@ -2005,8 +2007,8 @@ ON_GetPointListBoundingBox (int dim,
 {
   // bounding box workhorse
   ON_BoundingBox bbox;
-  ON_3dPoint P(0.0, 0.0, 0.0);
-  ON_3fPoint Q(0.0, 0.0, 0.0);
+  ON_3dPoint P (0.0, 0.0, 0.0);
+  ON_3fPoint Q (0.0, 0.0, 0.0);
   double w;
   int i, wi;
   bool rc = false;
@@ -2042,7 +2044,7 @@ ON_GetPointListBoundingBox (int dim,
     }
 
     if (!bGrowBox) {
-      memcpy(&Q.x, points, dim * sizeof(Q.x));
+      memcpy (&Q.x, points, dim * sizeof (Q.x));
       bbox.m_min = Q;
       if (is_rat) {
         w = 1.0 / points[wi];
@@ -2051,7 +2053,7 @@ ON_GetPointListBoundingBox (int dim,
         bbox.m_min.z *= w;
       }
       if (xform) {
-        bbox.m_min.Transform(*xform);
+        bbox.m_min.Transform (*xform);
       }
       bbox.m_max = bbox.m_min;
       points += stride;
@@ -2068,12 +2070,12 @@ ON_GetPointListBoundingBox (int dim,
               rc = false;
               continue;
             }
-            memcpy(&Q.x, points, dim * sizeof(Q.x));
+            memcpy (&Q.x, points, dim * sizeof (Q.x));
             w = 1.0 / w;
             P.x = w * Q.x;
             P.y = w * Q.y;
             P.z = w * Q.z;
-            P.Transform(*xform);
+            P.Transform (*xform);
             if (bbox.m_min.x > P.x)
               bbox.m_min.x = P.x;
             else if (bbox.m_max.x < P.x)
@@ -2100,7 +2102,7 @@ ON_GetPointListBoundingBox (int dim,
               rc = false;
               continue;
             }
-            memcpy(&Q.x, points, dim * sizeof(Q.x));
+            memcpy (&Q.x, points, dim * sizeof (Q.x));
             w = 1.0 / w;
             P.x = w * Q.x;
             P.y = w * Q.y;
@@ -2124,11 +2126,11 @@ ON_GetPointListBoundingBox (int dim,
         // bounding box of non-rational points
         if (xform) {
           for (/*empty*/; count--; points += stride) {
-            memcpy(&Q.x, points, dim * sizeof(Q.x));
+            memcpy (&Q.x, points, dim * sizeof (Q.x));
             P.x = Q.x;
             P.y = Q.y;
             P.z = Q.z;
-            P.Transform(*xform);
+            P.Transform (*xform);
             if (bbox.m_min.x > P.x)
               bbox.m_min.x = P.x;
             else if (bbox.m_max.x < P.x)
@@ -2151,7 +2153,7 @@ ON_GetPointListBoundingBox (int dim,
         }
         else {
           for (/*empty*/; count--; points += stride) {
-            memcpy(&Q.x, points, dim * sizeof(Q.x));
+            memcpy (&Q.x, points, dim * sizeof (Q.x));
             P.x = Q.x;
             P.y = Q.y;
             P.z = Q.z;
@@ -2172,7 +2174,7 @@ ON_GetPointListBoundingBox (int dim,
       }
     }
 
-    tight_bbox.Union(bbox);
+    tight_bbox.Union (bbox);
   }
   else if (bGrowBox) {
     // result is still valid if no points are added to a valid input box
@@ -2236,8 +2238,8 @@ OUTPUT:
         }
         if (count > 0) {
           if (!bGrowBox) {
-            ON_ArrayScale(dim, 1.0 / points[dim], points, boxmin);
-            memcpy(boxmax, boxmin, dim * sizeof(*boxmax));
+            ON_ArrayScale (dim, 1.0 / points[dim], points, boxmin);
+            memcpy (boxmax, boxmin, dim * sizeof (*boxmax));
             points += stride;
             count--;
             bGrowBox = true;
@@ -2265,8 +2267,8 @@ OUTPUT:
         rc = true;
         if (!bGrowBox) {
           // use first point to initialize box
-          memcpy(boxmin, points, dim * sizeof(*boxmin));
-          memcpy(boxmax, boxmin, dim * sizeof(*boxmax));
+          memcpy (boxmin, points, dim * sizeof (*boxmin));
+          memcpy (boxmax, boxmin, dim * sizeof (*boxmax));
           points += stride;
           count--;
           bGrowBox = true;
@@ -2298,7 +2300,7 @@ ON_PointListBoundingBox (
     int dim, int is_rat, int count, int stride, const float* points)
 {
   ON_BoundingBox bbox;
-  ON_GetPointListBoundingBox(dim, is_rat, count, stride, points, bbox, false, 0);
+  ON_GetPointListBoundingBox (dim, is_rat, count, stride, points, bbox, false, 0);
   return bbox;
 }
 
@@ -2351,8 +2353,8 @@ OUTPUT:
         }
         if (count > 0) {
           if (!bGrowBox) {
-            ON_ArrayScale(dim, 1.0f / points[dim], points, boxmin);
-            memcpy(boxmax, boxmin, dim * sizeof(*boxmax));
+            ON_ArrayScale (dim, 1.0f / points[dim], points, boxmin);
+            memcpy (boxmax, boxmin, dim * sizeof (*boxmax));
             points += stride;
             count--;
             bGrowBox = true;
@@ -2374,8 +2376,8 @@ OUTPUT:
       else {
         rc = true;
         if (!bGrowBox) {
-          memcpy(boxmin, points, dim * sizeof(*boxmin));
-          memcpy(boxmax, boxmin, dim * sizeof(*boxmax));
+          memcpy (boxmin, points, dim * sizeof (*boxmin));
+          memcpy (boxmax, boxmin, dim * sizeof (*boxmax));
           points += stride;
           count--;
           bGrowBox = true;
@@ -2412,16 +2414,16 @@ ON_PointGridBoundingBox (int dim,
     // strides control stepping - no need to waste time on coordinates we don't return
     dim = 3;
   }
-  ON_GetPointGridBoundingBox(dim,
-                             is_rat,
-                             point_count0,
-                             point_count1,
-                             point_stride0,
-                             point_stride1,
-                             p,
-                             &bbox.m_min.x,
-                             &bbox.m_max.x,
-                             false);
+  ON_GetPointGridBoundingBox (dim,
+                              is_rat,
+                              point_count0,
+                              point_count1,
+                              point_stride0,
+                              point_stride1,
+                              p,
+                              &bbox.m_min.x,
+                              &bbox.m_max.x,
+                              false);
   return bbox;
 }
 
@@ -2444,14 +2446,14 @@ ON_GetPointGridBoundingBox (int dim,
   }
   bool rc = bGrowBox ? true : false;
   for (i = 0; i < point_count0; i++) {
-    if (!ON_GetPointListBoundingBox(dim,
-                                    is_rat,
-                                    point_count1,
-                                    point_stride1,
-                                    p + i * point_stride0,
-                                    boxmin,
-                                    boxmax,
-                                    bGrowBox)) {
+    if (!ON_GetPointListBoundingBox (dim,
+                                     is_rat,
+                                     point_count1,
+                                     point_stride1,
+                                     p + i * point_stride0,
+                                     boxmin,
+                                     boxmax,
+                                     bGrowBox)) {
       rc = false;
       break;
     }
@@ -2502,16 +2504,16 @@ ON_BeyondSinglePrecision (const ON_BoundingBox& bbox, ON_Xform* xform)
         // remove small components of translations that
         // do not help matters and may add more fuzz to
         // calculations.
-        if (fabs(C.x) <= 100.0)
+        if (fabs (C.x) <= 100.0)
           C.x = 0.0;
-        if (fabs(C.y) <= 100.0)
+        if (fabs (C.y) <= 100.0)
           C.y = 0.0;
-        if (fabs(C.z) <= 100.0)
+        if (fabs (C.z) <= 100.0)
           C.z = 0.0;
-        double r = 0.5 * bbox.m_max.DistanceTo(bbox.m_min);
+        double r = 0.5 * bbox.m_max.DistanceTo (bbox.m_min);
         // T = translate center of bbox to origin
         ON_Xform T;
-        T.Translation(-C);
+        T.Translation (-C);
 
         // S = scale to shrink things that are too big
         //     to have a maximum coordinate of 1024.
@@ -2526,7 +2528,7 @@ ON_BeyondSinglePrecision (const ON_BoundingBox& bbox, ON_Xform* xform)
             s *= 2.0;
           s = 1.0 / s;
         }
-        ON_Xform S(s);
+        ON_Xform S (s);
 
         // xform positions bbox in a region of space
         // where single precision coordinates should
@@ -2555,21 +2557,21 @@ ON_BoundingBoxTolerance (int dim, const double* bboxmin, const double* bboxmax)
 #pragma warning(disable : 4127)
 #endif
 
-  ON_ASSERT_OR_RETURN(dim > 0 && bboxmin != NULL && bboxmax != NULL, tolerance);
+  ON_ASSERT_OR_RETURN (dim > 0 && bboxmin != NULL && bboxmax != NULL, tolerance);
   for (i = 0; i < dim; i++) {
-    ON_ASSERT_OR_RETURN(bboxmin[i] <= bboxmax[i], tolerance);
+    ON_ASSERT_OR_RETURN (bboxmin[i] <= bboxmax[i], tolerance);
   }
 
 #if defined(ON_COMPILER_MSC)
 #pragma warning(pop)
 #endif
 
-  tolerance = ON_ArrayDistance(dim, bboxmin, bboxmax) * ON_EPSILON;
+  tolerance = ON_ArrayDistance (dim, bboxmin, bboxmax) * ON_EPSILON;
   for (i = 0; i < dim; i++) {
     x = (bboxmax[i] - bboxmin[i]) * ON_SQRT_EPSILON;
     if (x > tolerance)
       tolerance = x;
-    x = (fabs(bboxmax[i]) - fabs(bboxmin[i])) * ON_EPSILON;
+    x = (fabs (bboxmax[i]) - fabs (bboxmin[i])) * ON_EPSILON;
     if (x > tolerance)
       tolerance = x;
   }
@@ -2579,7 +2581,7 @@ ON_BoundingBoxTolerance (int dim, const double* bboxmin, const double* bboxmax)
 }
 
 int
-ON_BoundingBox::IsDegenerate(double tolerance) const
+ON_BoundingBox::IsDegenerate (double tolerance) const
 {
   ON_3dVector diag = Diagonal();
   if (tolerance < 0.0) {
@@ -2603,7 +2605,7 @@ ON_BoundingBox::IsDegenerate(double tolerance) const
 }
 
 double
-ON_BoundingBox::MinimumDistanceTo(const ON_3dPoint& P) const
+ON_BoundingBox::MinimumDistanceTo (const ON_3dPoint& P) const
 {
   // 8 Feb 2005 - new function - not tested yet
 
@@ -2637,7 +2639,7 @@ ON_BoundingBox::MinimumDistanceTo(const ON_3dPoint& P) const
 }
 
 double
-ON_BoundingBox::MaximumDistanceTo(const ON_3dPoint& P) const
+ON_BoundingBox::MaximumDistanceTo (const ON_3dPoint& P) const
 {
   // this function must be fast
   // If Q = any point in box, then
@@ -2686,9 +2688,9 @@ ON_BBoxMinimumDistanceToHelper (const ON_BoundingBox& bbox, ON_Line line)
   }
 
   ON_BoundingBox line_bbox;
-  line_bbox.Set(3, false, 2, 3, &line.from.x, false);
+  line_bbox.Set (3, false, 2, 3, &line.from.x, false);
 
-  d = bbox.MinimumDistanceTo(line_bbox);
+  d = bbox.MinimumDistanceTo (line_bbox);
   if (d > 0.0)
     return d;
 
@@ -2721,7 +2723,7 @@ ON_BBoxMinimumDistanceToHelper (const ON_BoundingBox& bbox, ON_Line line)
     d = 1.0 / d;
     t = (bbox.m_min.x - line.from.x) * d;
     if (0.0 < t && t < 1.0) {
-      line.from = line.PointAt(t);
+      line.from = line.PointAt (t);
       line.from.x = bbox.m_min.x;
       d = line.to.x - line.from.x;
       if (d != 0.0)
@@ -2730,7 +2732,7 @@ ON_BBoxMinimumDistanceToHelper (const ON_BoundingBox& bbox, ON_Line line)
     }
     t = (bbox.m_max.x - line.from.x) * d;
     if (0.0 < t && t < 1.0) {
-      line.to = line.PointAt(t);
+      line.to = line.PointAt (t);
       line.to.x = bbox.m_max.x;
       bTrimmed = true;
     }
@@ -2755,7 +2757,7 @@ ON_BBoxMinimumDistanceToHelper (const ON_BoundingBox& bbox, ON_Line line)
     d = 1.0 / d;
     t = (bbox.m_min.y - line.from.y) * d;
     if (0.0 < t && t < 1.0) {
-      line.from = line.PointAt(t);
+      line.from = line.PointAt (t);
       line.from.y = bbox.m_min.y;
       d = line.to.y - line.from.y;
       if (d != 0.0)
@@ -2763,7 +2765,7 @@ ON_BBoxMinimumDistanceToHelper (const ON_BoundingBox& bbox, ON_Line line)
     }
     t = (bbox.m_max.y - line.from.y) * d;
     if (0.0 < t && t < 1.0) {
-      line.to = line.PointAt(t);
+      line.to = line.PointAt (t);
       line.to.y = bbox.m_max.y;
     }
   }
@@ -2778,22 +2780,22 @@ ON_BBoxMinimumDistanceToHelper (const ON_BoundingBox& bbox, ON_Line line)
 }
 
 double
-ON_BoundingBox::MinimumDistanceTo(const ON_Plane& plane) const
+ON_BoundingBox::MinimumDistanceTo (const ON_Plane& plane) const
 {
   ON_PlaneEquation e;
-  e.Create(plane.origin, plane.zaxis);
-  return MinimumDistanceTo(e);
+  e.Create (plane.origin, plane.zaxis);
+  return MinimumDistanceTo (e);
 }
 
 double
-ON_BoundingBox::MinimumDistanceTo(const ON_PlaneEquation& e) const
+ON_BoundingBox::MinimumDistanceTo (const ON_PlaneEquation& e) const
 {
   double t, t0, t1;
-  ON_3dPoint P(m_min); // min, min, min
-  t0 = t1 = e.ValueAt(P);
+  ON_3dPoint P (m_min); // min, min, min
+  t0 = t1 = e.ValueAt (P);
 
   P.z = m_max.z; // min, min, max
-  t = e.ValueAt(P);
+  t = e.ValueAt (P);
   if (t < t0) {
     t0 = t;
     if (t0 <= 0.0 && t1 >= 0.0)
@@ -2806,7 +2808,7 @@ ON_BoundingBox::MinimumDistanceTo(const ON_PlaneEquation& e) const
   }
 
   P.y = m_max.y; // min, max, max
-  t = e.ValueAt(P);
+  t = e.ValueAt (P);
   if (t < t0) {
     t0 = t;
     if (t0 <= 0.0 && t1 >= 0.0)
@@ -2819,7 +2821,7 @@ ON_BoundingBox::MinimumDistanceTo(const ON_PlaneEquation& e) const
   }
 
   P.z = m_min.z; // min, max, min
-  t = e.ValueAt(P);
+  t = e.ValueAt (P);
   if (t < t0) {
     t0 = t;
     if (t0 <= 0.0 && t1 >= 0.0)
@@ -2832,7 +2834,7 @@ ON_BoundingBox::MinimumDistanceTo(const ON_PlaneEquation& e) const
   }
 
   P.x = m_max.x; // max, max, min
-  t = e.ValueAt(P);
+  t = e.ValueAt (P);
   if (t < t0) {
     t0 = t;
     if (t0 <= 0.0 && t1 >= 0.0)
@@ -2845,7 +2847,7 @@ ON_BoundingBox::MinimumDistanceTo(const ON_PlaneEquation& e) const
   }
 
   P.y = m_min.y; // max, min, min
-  t = e.ValueAt(P);
+  t = e.ValueAt (P);
   if (t < t0) {
     t0 = t;
     if (t0 <= 0.0 && t1 >= 0.0)
@@ -2858,7 +2860,7 @@ ON_BoundingBox::MinimumDistanceTo(const ON_PlaneEquation& e) const
   }
 
   P.z = m_max.z; // max, min, max
-  t = e.ValueAt(P);
+  t = e.ValueAt (P);
   if (t < t0) {
     t0 = t;
     if (t0 <= 0.0 && t1 >= 0.0)
@@ -2871,7 +2873,7 @@ ON_BoundingBox::MinimumDistanceTo(const ON_PlaneEquation& e) const
   }
 
   P.y = m_max.y; // max, max, max
-  t = e.ValueAt(P);
+  t = e.ValueAt (P);
   if (t < t0) {
     t0 = t;
   }
@@ -2887,52 +2889,52 @@ ON_BoundingBox::MinimumDistanceTo(const ON_PlaneEquation& e) const
 }
 
 double
-ON_BoundingBox::MaximumDistanceTo(const ON_Plane& plane) const
+ON_BoundingBox::MaximumDistanceTo (const ON_Plane& plane) const
 {
   ON_PlaneEquation e;
-  e.Create(plane.origin, plane.zaxis);
-  return MinimumDistanceTo(e);
+  e.Create (plane.origin, plane.zaxis);
+  return MinimumDistanceTo (e);
 }
 
 double
-ON_BoundingBox::MaximumDistanceTo(const ON_PlaneEquation& e) const
+ON_BoundingBox::MaximumDistanceTo (const ON_PlaneEquation& e) const
 {
   double t, t0;
-  ON_3dPoint P(m_min); // min, min, min
-  t0 = fabs(e.ValueAt(P));
+  ON_3dPoint P (m_min); // min, min, min
+  t0 = fabs (e.ValueAt (P));
 
   P.z = m_max.z; // min, min, max
-  t = fabs(e.ValueAt(P));
+  t = fabs (e.ValueAt (P));
   if (t > t0)
     t0 = t;
 
   P.y = m_max.y; // min, max, max
-  t = fabs(e.ValueAt(P));
+  t = fabs (e.ValueAt (P));
   if (t > t0)
     t0 = t;
 
   P.z = m_min.z; // min, max, min
-  t = fabs(e.ValueAt(P));
+  t = fabs (e.ValueAt (P));
   if (t > t0)
     t0 = t;
 
   P.x = m_max.x; // max, max, min
-  t = fabs(e.ValueAt(P));
+  t = fabs (e.ValueAt (P));
   if (t > t0)
     t0 = t;
 
   P.y = m_min.y; // max, min, min
-  t = fabs(e.ValueAt(P));
+  t = fabs (e.ValueAt (P));
   if (t > t0)
     t0 = t;
 
   P.z = m_max.z; // max, min, max
-  t = fabs(e.ValueAt(P));
+  t = fabs (e.ValueAt (P));
   if (t > t0)
     t0 = t;
 
   P.y = m_max.y; // max, max, max
-  t = fabs(e.ValueAt(P));
+  t = fabs (e.ValueAt (P));
   if (t > t0)
     t0 = t;
 
@@ -2940,24 +2942,24 @@ ON_BoundingBox::MaximumDistanceTo(const ON_PlaneEquation& e) const
 }
 
 bool
-ON_BoundingBox::IsFartherThan(double d, const ON_Plane& plane) const
+ON_BoundingBox::IsFartherThan (double d, const ON_Plane& plane) const
 {
   ON_PlaneEquation e;
-  e.Create(plane.origin, plane.zaxis);
-  return IsFartherThan(d, e);
+  e.Create (plane.origin, plane.zaxis);
+  return IsFartherThan (d, e);
 }
 
 bool
-ON_BoundingBox::IsFartherThan(double d, const ON_PlaneEquation& e) const
+ON_BoundingBox::IsFartherThan (double d, const ON_PlaneEquation& e) const
 {
   double t, t0, t1;
-  ON_3dPoint P(m_min); // min, min, min
-  t0 = t1 = e.ValueAt(P);
+  ON_3dPoint P (m_min); // min, min, min
+  t0 = t1 = e.ValueAt (P);
   if (t0 <= d && t1 >= -d)
     return false;
 
   P.z = m_max.z; // min, min, max
-  t = e.ValueAt(P);
+  t = e.ValueAt (P);
   if (t < t0) {
     t0 = t;
     if (t0 <= d && t1 >= -d)
@@ -2970,7 +2972,7 @@ ON_BoundingBox::IsFartherThan(double d, const ON_PlaneEquation& e) const
   }
 
   P.y = m_max.y; // min, max, max
-  t = e.ValueAt(P);
+  t = e.ValueAt (P);
   if (t < t0) {
     t0 = t;
     if (t0 <= d && t1 >= -d)
@@ -2983,7 +2985,7 @@ ON_BoundingBox::IsFartherThan(double d, const ON_PlaneEquation& e) const
   }
 
   P.z = m_min.z; // min, max, min
-  t = e.ValueAt(P);
+  t = e.ValueAt (P);
   if (t < t0) {
     t0 = t;
     if (t0 <= d && t1 >= -d)
@@ -2996,7 +2998,7 @@ ON_BoundingBox::IsFartherThan(double d, const ON_PlaneEquation& e) const
   }
 
   P.x = m_max.x; // max, max, min
-  t = e.ValueAt(P);
+  t = e.ValueAt (P);
   if (t < t0) {
     t0 = t;
     if (t0 <= d && t1 >= -d)
@@ -3009,7 +3011,7 @@ ON_BoundingBox::IsFartherThan(double d, const ON_PlaneEquation& e) const
   }
 
   P.y = m_min.y; // max, min, min
-  t = e.ValueAt(P);
+  t = e.ValueAt (P);
   if (t < t0) {
     t0 = t;
     if (t0 <= d && t1 >= -d)
@@ -3049,16 +3051,16 @@ ON_BoundingBox::IsFartherThan(double d, const ON_PlaneEquation& e) const
 }
 
 double
-ON_BoundingBox::MinimumDistanceTo(const ON_Line& line) const
+ON_BoundingBox::MinimumDistanceTo (const ON_Line& line) const
 {
-  double d = ON_BBoxMinimumDistanceToHelper(*this, line);
+  double d = ON_BBoxMinimumDistanceToHelper (*this, line);
   if (d < 0.0) {
     // At this point we know the line does not intersect the box.
     // To get a lower bound on the shortest distance between the
     // line and the box, we need to compare the line to the
     // edges of the box.
 
-    const ON_BoundingBox line_bbox(line.BoundingBox());
+    const ON_BoundingBox line_bbox (line.BoundingBox());
     ON_Line edge;
     double e, t;
     int i, j;
@@ -3083,7 +3085,7 @@ ON_BoundingBox::MinimumDistanceTo(const ON_Line& line) const
             continue;
         }
         edge.to.y = edge.from.y;
-        if (ON_Intersect(edge, line, &e, &t)) {
+        if (ON_Intersect (edge, line, &e, &t)) {
           if (e < 0.0)
             e = 0.0;
           else if (e > 1.0)
@@ -3092,7 +3094,7 @@ ON_BoundingBox::MinimumDistanceTo(const ON_Line& line) const
             t = 0.0;
           else if (t > 1.0)
             t = 1.0;
-          e = edge.PointAt(e).DistanceTo(line.PointAt(t));
+          e = edge.PointAt (e).DistanceTo (line.PointAt (t));
           if (d < 0.0 || e < d)
             d = e;
         }
@@ -3119,7 +3121,7 @@ ON_BoundingBox::MinimumDistanceTo(const ON_Line& line) const
             continue;
         }
         edge.to.x = edge.from.x;
-        if (ON_Intersect(edge, line, &e, &t)) {
+        if (ON_Intersect (edge, line, &e, &t)) {
           if (e < 0.0)
             e = 0.0;
           else if (e > 1.0)
@@ -3128,7 +3130,7 @@ ON_BoundingBox::MinimumDistanceTo(const ON_Line& line) const
             t = 0.0;
           else if (t > 1.0)
             t = 1.0;
-          e = edge.PointAt(e).DistanceTo(line.PointAt(t));
+          e = edge.PointAt (e).DistanceTo (line.PointAt (t));
           if (d < 0.0 || e < d)
             d = e;
         }
@@ -3155,7 +3157,7 @@ ON_BoundingBox::MinimumDistanceTo(const ON_Line& line) const
           if (edge.from.z - line_bbox.m_max.z > d)
             continue;
         }
-        if (ON_Intersect(edge, line, &e, &t)) {
+        if (ON_Intersect (edge, line, &e, &t)) {
           if (e < 0.0)
             e = 0.0;
           else if (e > 1.0)
@@ -3164,7 +3166,7 @@ ON_BoundingBox::MinimumDistanceTo(const ON_Line& line) const
             t = 0.0;
           else if (t > 1.0)
             t = 1.0;
-          e = edge.PointAt(e).DistanceTo(line.PointAt(t));
+          e = edge.PointAt (e).DistanceTo (line.PointAt (t));
           if (d < 0.0 || e < d)
             d = e;
         }
@@ -3179,7 +3181,7 @@ ON_BoundingBox::MinimumDistanceTo(const ON_Line& line) const
 }
 
 double
-ON_BoundingBox::MaximumDistanceTo(const ON_Line& line) const
+ON_BoundingBox::MaximumDistanceTo (const ON_Line& line) const
 {
   // 8 Feb 2005 - new function - not tested yet
 
@@ -3195,17 +3197,17 @@ ON_BoundingBox::MaximumDistanceTo(const ON_Line& line) const
   d = 0.0;
   a = &line.from.x;
   for (i = 0; i < 2; i++) {
-    dx = fabs(a[0] - (i ? m_max.x : m_min.x));
+    dx = fabs (a[0] - (i ? m_max.x : m_min.x));
     dx = dx * dx;
     if (dx <= d)
       continue;
     for (j = 0; j < 2; j++) {
-      dy = fabs(a[1] - (j ? m_max.y : m_min.y));
+      dy = fabs (a[1] - (j ? m_max.y : m_min.y));
       dy = dx + dy * dy;
       if (dy <= d)
         continue;
       for (k = 0; k < 2; k++) {
-        dz = fabs(a[2] - (k ? m_max.z : m_min.z));
+        dz = fabs (a[2] - (k ? m_max.z : m_min.z));
         dz = dz * dz + dy;
         if (dz > d)
           d = dz;
@@ -3215,17 +3217,17 @@ ON_BoundingBox::MaximumDistanceTo(const ON_Line& line) const
 
   a = &line.to.x;
   for (i = 0; i < 2; i++) {
-    dx = fabs(a[0] - (i ? m_max.x : m_min.x));
+    dx = fabs (a[0] - (i ? m_max.x : m_min.x));
     dx = dx * dx;
     if (dx <= d)
       continue;
     for (j = 0; j < 2; j++) {
-      dy = fabs(a[1] - (j ? m_max.y : m_min.y));
+      dy = fabs (a[1] - (j ? m_max.y : m_min.y));
       dy = dx + dy * dy;
       if (dy <= d)
         continue;
       for (k = 0; k < 2; k++) {
-        dz = fabs(a[2] - (k ? m_max.z : m_min.z));
+        dz = fabs (a[2] - (k ? m_max.z : m_min.z));
         dz = dz * dz + dy;
         if (dz > d)
           d = dz;
@@ -3233,11 +3235,11 @@ ON_BoundingBox::MaximumDistanceTo(const ON_Line& line) const
     }
   }
 
-  return sqrt(d);
+  return sqrt (d);
 }
 
 double
-ON_BoundingBox::MinimumDistanceTo(const ON_BoundingBox& other) const
+ON_BoundingBox::MinimumDistanceTo (const ON_BoundingBox& other) const
 {
   // this must be fast
   ON_3dVector V;
@@ -3267,24 +3269,24 @@ ON_BoundingBox::MinimumDistanceTo(const ON_BoundingBox& other) const
 }
 
 double
-ON_BoundingBox::MaximumDistanceTo(const ON_BoundingBox& other) const
+ON_BoundingBox::MaximumDistanceTo (const ON_BoundingBox& other) const
 {
   // this must be fast
   ON_3dVector V;
   double d;
 
-  V.x = fabs(m_min.x - other.m_max.x);
-  d = fabs(m_max.x - other.m_min.x);
+  V.x = fabs (m_min.x - other.m_max.x);
+  d = fabs (m_max.x - other.m_min.x);
   if (d > V.x)
     V.x = d;
 
-  V.y = fabs(m_min.y - other.m_max.y);
-  d = fabs(m_max.y - other.m_min.y);
+  V.y = fabs (m_min.y - other.m_max.y);
+  d = fabs (m_max.y - other.m_min.y);
   if (d > V.y)
     V.y = d;
 
-  V.z = fabs(m_min.z - other.m_max.z);
-  d = fabs(m_max.z - other.m_min.z);
+  V.z = fabs (m_min.z - other.m_max.z);
+  d = fabs (m_max.z - other.m_min.z);
   if (d > V.z)
     V.z = d;
 
@@ -3292,13 +3294,13 @@ ON_BoundingBox::MaximumDistanceTo(const ON_BoundingBox& other) const
 }
 
 bool
-ON_BoundingBox::IsFartherThan(double d, const ON_3dPoint& P) const
+ON_BoundingBox::IsFartherThan (double d, const ON_3dPoint& P) const
 {
-  return (d < MinimumDistanceTo(P));
+  return (d < MinimumDistanceTo (P));
 }
 
 bool
-ON_BoundingBox::IsFartherThan(double d, const ON_Line& line) const
+ON_BoundingBox::IsFartherThan (double d, const ON_Line& line) const
 {
   ON_BoundingBox bbox = *this;
   bbox.m_min.x -= d;
@@ -3307,13 +3309,13 @@ ON_BoundingBox::IsFartherThan(double d, const ON_Line& line) const
   bbox.m_max.x += d;
   bbox.m_max.y += d;
   bbox.m_max.z += d;
-  d = ON_BBoxMinimumDistanceToHelper(bbox, line);
+  d = ON_BBoxMinimumDistanceToHelper (bbox, line);
   // d != 0.0 if and only if line misses the enlarged box
   return (d != 0.0);
 }
 
 bool
-ON_BoundingBox::IsFartherThan(double d, const ON_BoundingBox& other) const
+ON_BoundingBox::IsFartherThan (double d, const ON_BoundingBox& other) const
 {
-  return (d < MinimumDistanceTo(other));
+  return (d < MinimumDistanceTo (other));
 }

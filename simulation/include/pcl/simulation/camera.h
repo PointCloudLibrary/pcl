@@ -14,14 +14,14 @@ public:
   using Ptr = shared_ptr<Camera>;
   using ConstPtr = shared_ptr<const Camera>;
 
-  Camera() : x_(0), y_(0), z_(0), roll_(0), pitch_(0), yaw_(0)
+  Camera() : x_ (0), y_ (0), z_ (0), roll_ (0), pitch_ (0), yaw_ (0)
   {
     updatePose();
     initializeCameraParameters();
   }
 
-  Camera(double x, double y, double z, double roll, double pitch, double yaw)
-  : x_(x), y_(y), z_(z), roll_(roll), pitch_(pitch), yaw_(yaw)
+  Camera (double x, double y, double z, double roll, double pitch, double yaw)
+  : x_ (x), y_ (y), z_ (z), roll_ (roll), pitch_ (pitch), yaw_ (yaw)
   {
     updatePose();
     initializeCameraParameters();

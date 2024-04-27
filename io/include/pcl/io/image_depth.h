@@ -68,17 +68,17 @@ public:
    * change, depending whether the depth stream is registered/mapped to the RGB stream
    * or not.
    */
-  DepthImage(FrameWrapper::Ptr depth_metadata,
-             float baseline,
-             float focal_length,
-             std::uint64_t shadow_value,
-             std::uint64_t no_sample_value);
-  DepthImage(FrameWrapper::Ptr depth_metadata,
-             float baseline,
-             float focal_length,
-             std::uint64_t shadow_value,
-             std::uint64_t no_sample_value,
-             Timestamp time);
+  DepthImage (FrameWrapper::Ptr depth_metadata,
+              float baseline,
+              float focal_length,
+              std::uint64_t shadow_value,
+              std::uint64_t no_sample_value);
+  DepthImage (FrameWrapper::Ptr depth_metadata,
+              float baseline,
+              float focal_length,
+              std::uint64_t shadow_value,
+              std::uint64_t no_sample_value,
+              Timestamp time);
 
   /** \brief Destructor. Never throws an exception. */
   ~DepthImage();

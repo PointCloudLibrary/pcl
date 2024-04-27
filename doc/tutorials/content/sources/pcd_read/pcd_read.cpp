@@ -6,12 +6,12 @@
 int
 main ()
 {
-  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
+  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
 
-  if (pcl::io::loadPCDFile<pcl::PointXYZ>("test_pcd.pcd", *cloud) ==
+  if (pcl::io::loadPCDFile<pcl::PointXYZ> ("test_pcd.pcd", *cloud) ==
       -1) //* load the file
   {
-    PCL_ERROR("Couldn't read file test_pcd.pcd \n");
+    PCL_ERROR ("Couldn't read file test_pcd.pcd \n");
     return (-1);
   }
   std::cout << "Loaded " << cloud->width * cloud->height

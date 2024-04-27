@@ -55,9 +55,9 @@ public:
   using Ptr = shared_ptr<PointCloudColorHandlerRGBHack<PointT>>;
   using ConstPtr = shared_ptr<const PointCloudColorHandlerRGBHack<PointT>>;
 
-  PointCloudColorHandlerRGBHack(const PointCloudConstPtr& cloud,
-                                const RgbCloudConstPtr& colors)
-  : PointCloudColorHandler<PointT>(cloud), rgb_(colors)
+  PointCloudColorHandlerRGBHack (const PointCloudConstPtr& cloud,
+                                 const RgbCloudConstPtr& colors)
+  : PointCloudColorHandler<PointT> (cloud), rgb_ (colors)
   {
     capable_ = true;
   }
@@ -69,16 +69,17 @@ public:
       return nullptr;
 
     auto scalars = vtkSmartPointer<vtkUnsignedCharArray>::New();
-    scalars->SetNumberOfComponents(3);
+    scalars->SetNumberOfComponents (3);
 
-    vtkIdType nr_points = static_cast<vtkIdType>(cloud_->size());
-    reinterpret_cast<vtkUnsignedCharArray*>(&(*scalars))->SetNumberOfTuples(nr_points);
+    vtkIdType nr_points = static_cast<vtkIdType> (cloud_->size());
+    reinterpret_cast<vtkUnsignedCharArray*> (&(*scalars))
+        ->SetNumberOfTuples (nr_points);
     unsigned char* colors =
-        reinterpret_cast<vtkUnsignedCharArray*>(&(*scalars))->GetPointer(0);
+        reinterpret_cast<vtkUnsignedCharArray*> (&(*scalars))->GetPointer (0);
 
     // Color every point
-    if (nr_points != static_cast<vtkIdType>(rgb_->size()))
-      std::fill_n(colors, nr_points * 3, (unsigned char)0xFF);
+    if (nr_points != static_cast<vtkIdType> (rgb_->size()))
+      std::fill_n (colors, nr_points * 3, (unsigned char)0xFF);
     else
       for (vtkIdType cp = 0; cp < nr_points; ++cp) {
         int idx = cp * 3;

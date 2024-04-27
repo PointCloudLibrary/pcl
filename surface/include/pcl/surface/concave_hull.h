@@ -144,8 +144,8 @@ public:
     if ((dimension == 2) || (dimension == 3))
       dim_ = dimension;
     else
-      PCL_ERROR("[pcl::%s::setDimension] Invalid input dimension specified!\n",
-                getClassName().c_str());
+      PCL_ERROR ("[pcl::%s::setDimension] Invalid input dimension specified!\n",
+                 getClassName().c_str());
   }
 
   /** \brief Retrieve the indices of the input point cloud that for the convex hull.

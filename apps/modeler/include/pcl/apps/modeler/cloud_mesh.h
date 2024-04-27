@@ -58,7 +58,7 @@ public:
   using Ptr = std::shared_ptr<CloudMesh>;
 
   CloudMesh();
-  CloudMesh(PointCloudPtr cloud);
+  CloudMesh (PointCloudPtr cloud);
 
   PointCloudPtr&
   getCloud ()

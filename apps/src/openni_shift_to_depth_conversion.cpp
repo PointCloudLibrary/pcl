@@ -56,10 +56,10 @@ using namespace std::chrono_literals;
 class SimpleOpenNIViewer {
 public:
   SimpleOpenNIViewer()
-  : viewer_("Input Point Cloud - Shift-to-depth conversion viewer")
-  , grabber_("",
-             pcl::OpenNIGrabber::OpenNI_Default_Mode,
-             pcl::OpenNIGrabber::OpenNI_Default_Mode)
+  : viewer_ ("Input Point Cloud - Shift-to-depth conversion viewer")
+  , grabber_ ("",
+              pcl::OpenNIGrabber::OpenNI_Default_Mode,
+              pcl::OpenNIGrabber::OpenNI_Default_Mode)
   {}
 
   void
@@ -77,38 +77,39 @@ public:
     std::uint32_t height = depth_image->getHeight();
 
     // copy raw shift data from depth_image
-    raw_shift_data.resize(width * height);
-    depth_image->fillDepthImageRaw(
+    raw_shift_data.resize (width * height);
+    depth_image->fillDepthImageRaw (
         width,
         height,
         &raw_shift_data[0],
-        static_cast<unsigned int>(width * sizeof(std::uint16_t)));
+        static_cast<unsigned int> (width * sizeof (std::uint16_t)));
 
     // convert raw shift data to raw depth data
-    raw_depth_data.resize(width * height);
-    grabber_.convertShiftToDepth(
+    raw_depth_data.resize (width * height);
+    grabber_.convertShiftToDepth (
         &raw_shift_data[0], &raw_depth_data[0], raw_shift_data.size());
 
     // check for color data
     if (image->getEncoding() != openni_wrapper::Image::RGB) {
       // copy raw rgb data from image
-      rgb_data.resize(width * height * 3);
-      image->fillRGB(width,
-                     height,
-                     &rgb_data[0],
-                     static_cast<unsigned int>(width * sizeof(std::uint8_t) * 3));
+      rgb_data.resize (width * height * 3);
+      image->fillRGB (width,
+                      height,
+                      &rgb_data[0],
+                      static_cast<unsigned int> (width * sizeof (std::uint8_t) * 3));
     }
 
     // empty pointcloud
     pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud =
-        pcl::PointCloud<pcl::PointXYZRGB>::Ptr(new pcl::PointCloud<pcl::PointXYZRGB>());
+        pcl::PointCloud<pcl::PointXYZRGB>::Ptr (
+            new pcl::PointCloud<pcl::PointXYZRGB>());
 
     // convert raw depth and rgb data to pointcloud
-    convert(
+    convert (
         raw_depth_data, rgb_data, width, height, depth_image->getFocalLength(), *cloud);
 
     // display pointcloud
-    viewer_.showCloud(cloud);
+    viewer_.showCloud (cloud);
   }
 
   void
@@ -118,22 +119,22 @@ public:
     int depthformat = openni_wrapper::OpenNIDevice::OpenNI_shift_values;
 
     // Set the depth output format
-    grabber_.getDevice()->setDepthOutputFormat(
-        static_cast<openni_wrapper::OpenNIDevice::DepthMode>(depthformat));
+    grabber_.getDevice()->setDepthOutputFormat (
+        static_cast<openni_wrapper::OpenNIDevice::DepthMode> (depthformat));
 
     // define image callback
-    std::function<void(const openni_wrapper::Image::Ptr&,
-                       const openni_wrapper::DepthImage::Ptr&,
-                       float)>
+    std::function<void (const openni_wrapper::Image::Ptr&,
+                        const openni_wrapper::DepthImage::Ptr&,
+                        float)>
         image_cb = [this] (const openni_wrapper::Image::Ptr& img,
                            const openni_wrapper::DepthImage::Ptr& depth,
-                           float f) { image_callback(img, depth, f); };
-    grabber_.registerCallback(image_cb);
+                           float f) { image_callback (img, depth, f); };
+    grabber_.registerCallback (image_cb);
 
     // start grabber thread
     grabber_.start();
     while (true) {
-      std::this_thread::sleep_for(1s);
+      std::this_thread::sleep_for (1s);
     }
     grabber_.stop();
   }
@@ -152,16 +153,16 @@ protected:
 
     // Reset point cloud
     cloud_arg.clear();
-    cloud_arg.reserve(cloud_size);
+    cloud_arg.reserve (cloud_size);
 
     // Define point cloud parameters
-    cloud_arg.width = static_cast<std::uint32_t>(width_arg);
-    cloud_arg.height = static_cast<std::uint32_t>(height_arg);
+    cloud_arg.width = static_cast<std::uint32_t> (width_arg);
+    cloud_arg.height = static_cast<std::uint32_t> (height_arg);
     cloud_arg.is_dense = false;
 
     // Calculate center of disparity image
-    int centerX = static_cast<int>(width_arg / 2);
-    int centerY = static_cast<int>(height_arg / 2);
+    int centerX = static_cast<int> (width_arg / 2);
+    int centerY = static_cast<int> (height_arg / 2);
 
     const float fl_const = 1.0f / focalLength_arg;
     constexpr float bad_point = std::numeric_limits<float>::quiet_NaN();
@@ -178,8 +179,8 @@ protected:
 
           // Define point location
           newPoint.z = depth;
-          newPoint.x = static_cast<float>(x) * depth * fl_const;
-          newPoint.y = static_cast<float>(y) * depth * fl_const;
+          newPoint.x = static_cast<float> (x) * depth * fl_const;
+          newPoint.y = static_cast<float> (y) * depth * fl_const;
 
           // Define point color
           newPoint.r = rgbData_arg[i * 3 + 0];
@@ -193,7 +194,7 @@ protected:
         }
 
         // Add point to cloud
-        cloud_arg.push_back(newPoint);
+        cloud_arg.push_back (newPoint);
         // Increment point iterator
         ++i;
       }

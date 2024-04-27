@@ -45,55 +45,55 @@ using namespace pcl;
 using namespace pcl::gpu;
 
 // TEST(PCL_FeaturesGPU, DISABLED_PrincipalCurvatures)
-TEST(PCL_FeaturesGPU, PrincipalCurvatures)
+TEST (PCL_FeaturesGPU, PrincipalCurvatures)
 {
   DataSource source;
 
   source.estimateNormals();
 
-  std::vector<PointXYZ> normals_for_gpu(source.normals->size());
-  std::transform(source.normals->points.begin(),
-                 source.normals->points.end(),
-                 normals_for_gpu.begin(),
-                 DataSource::Normal2PointXYZ());
+  std::vector<PointXYZ> normals_for_gpu (source.normals->size());
+  std::transform (source.normals->points.begin(),
+                  source.normals->points.end(),
+                  normals_for_gpu.begin(),
+                  DataSource::Normal2PointXYZ());
 
   // uploading data to GPU
 
   //////////////////////////////////////////////////////////////////////////////////////////////
 
   pcl::gpu::PrincipalCurvaturesEstimation::PointCloud cloud_gpu;
-  cloud_gpu.upload(source.cloud->points);
+  cloud_gpu.upload (source.cloud->points);
 
   pcl::gpu::PrincipalCurvaturesEstimation::Normals normals_gpu;
-  normals_gpu.upload(normals_for_gpu);
+  normals_gpu.upload (normals_for_gpu);
 
   DeviceArray<PrincipalCurvatures> pc_features;
 
   gpu::PrincipalCurvaturesEstimation pc_gpu;
-  pc_gpu.setInputCloud(cloud_gpu);
-  pc_gpu.setInputNormals(normals_gpu);
-  pc_gpu.setRadiusSearch(source.radius, source.max_elements);
-  pc_gpu.compute(pc_features);
+  pc_gpu.setInputCloud (cloud_gpu);
+  pc_gpu.setInputNormals (normals_gpu);
+  pc_gpu.setRadiusSearch (source.radius, source.max_elements);
+  pc_gpu.compute (pc_features);
 
   std::vector<PrincipalCurvatures> downloaded;
-  pc_features.download(downloaded);
+  pc_features.download (downloaded);
 
   pcl::PrincipalCurvaturesEstimation<PointXYZ, Normal, PrincipalCurvatures> fe;
-  fe.setInputCloud(source.cloud);
-  fe.setInputNormals(source.normals);
-  fe.setRadiusSearch(source.radius);
+  fe.setInputCloud (source.cloud);
+  fe.setInputNormals (source.normals);
+  fe.setRadiusSearch (source.radius);
 
   PointCloud<PrincipalCurvatures> pc;
-  fe.compute(pc);
+  fe.compute (pc);
 
   for (std::size_t i = 0; i < downloaded.size(); ++i) {
     PrincipalCurvatures& gpu = downloaded[i];
     PrincipalCurvatures& cpu = pc[i];
 
-    ASSERT_NEAR(gpu.principal_curvature_x, cpu.principal_curvature_x, 0.01f);
-    ASSERT_NEAR(gpu.principal_curvature_y, cpu.principal_curvature_y, 0.01f);
-    ASSERT_NEAR(gpu.principal_curvature_z, cpu.principal_curvature_z, 0.01f);
-    ASSERT_NEAR(gpu.pc1, cpu.pc1, 0.01f);
-    ASSERT_NEAR(gpu.pc2, cpu.pc2, 0.01f);
+    ASSERT_NEAR (gpu.principal_curvature_x, cpu.principal_curvature_x, 0.01f);
+    ASSERT_NEAR (gpu.principal_curvature_y, cpu.principal_curvature_y, 0.01f);
+    ASSERT_NEAR (gpu.principal_curvature_z, cpu.principal_curvature_z, 0.01f);
+    ASSERT_NEAR (gpu.pc1, cpu.pc1, 0.01f);
+    ASSERT_NEAR (gpu.pc2, cpu.pc2, 0.01f);
   }
 }

@@ -86,7 +86,7 @@ public:
   inline void
   setPointCount (unsigned int pointCount_arg)
   {
-    pointDiffDataVector_.reserve(pointCount_arg * 3);
+    pointDiffDataVector_.reserve (pointCount_arg * 3);
   }
 
   /** \brief Initialize encoding of differential point */
@@ -128,26 +128,26 @@ public:
       const PointT& idxPoint = (*inputCloud_arg)[idx];
 
       // differentially encode point coordinates and truncate overflow
-      diffX = static_cast<unsigned char>(
-          std::max(-127,
-                   std::min<int>(127,
-                                 static_cast<int>((idxPoint.x - referencePoint_arg[0]) /
-                                                  pointCompressionResolution_))));
-      diffY = static_cast<unsigned char>(
-          std::max(-127,
-                   std::min<int>(127,
-                                 static_cast<int>((idxPoint.y - referencePoint_arg[1]) /
-                                                  pointCompressionResolution_))));
-      diffZ = static_cast<unsigned char>(
-          std::max(-127,
-                   std::min<int>(127,
-                                 static_cast<int>((idxPoint.z - referencePoint_arg[2]) /
-                                                  pointCompressionResolution_))));
+      diffX = static_cast<unsigned char> (std::max (
+          -127,
+          std::min<int> (127,
+                         static_cast<int> ((idxPoint.x - referencePoint_arg[0]) /
+                                           pointCompressionResolution_))));
+      diffY = static_cast<unsigned char> (std::max (
+          -127,
+          std::min<int> (127,
+                         static_cast<int> ((idxPoint.y - referencePoint_arg[1]) /
+                                           pointCompressionResolution_))));
+      diffZ = static_cast<unsigned char> (std::max (
+          -127,
+          std::min<int> (127,
+                         static_cast<int> ((idxPoint.z - referencePoint_arg[2]) /
+                                           pointCompressionResolution_))));
 
       // store information in differential point vector
-      pointDiffDataVector_.push_back(diffX);
-      pointDiffDataVector_.push_back(diffY);
-      pointDiffDataVector_.push_back(diffZ);
+      pointDiffDataVector_.push_back (diffX);
+      pointDiffDataVector_.push_back (diffY);
+      pointDiffDataVector_.push_back (diffZ);
     }
   }
 
@@ -164,7 +164,7 @@ public:
                 uindex_t beginIdx_arg,
                 uindex_t endIdx_arg)
   {
-    assert(beginIdx_arg <= endIdx_arg);
+    assert (beginIdx_arg <= endIdx_arg);
 
     const uindex_t pointCount = endIdx_arg - beginIdx_arg;
 
@@ -172,22 +172,22 @@ public:
     for (uindex_t i = 0; i < pointCount; i++) {
       // retrieve differential point information
       const unsigned char& diffX =
-          static_cast<unsigned char>(*(pointDiffDataVectorIterator_++));
+          static_cast<unsigned char> (*(pointDiffDataVectorIterator_++));
       const unsigned char& diffY =
-          static_cast<unsigned char>(*(pointDiffDataVectorIterator_++));
+          static_cast<unsigned char> (*(pointDiffDataVectorIterator_++));
       const unsigned char& diffZ =
-          static_cast<unsigned char>(*(pointDiffDataVectorIterator_++));
+          static_cast<unsigned char> (*(pointDiffDataVectorIterator_++));
 
       // retrieve point from point cloud
       PointT& point = (*outputCloud_arg)[beginIdx_arg + i];
 
       // decode point position
-      point.x = static_cast<float>(referencePoint_arg[0] +
-                                   diffX * pointCompressionResolution_);
-      point.y = static_cast<float>(referencePoint_arg[1] +
-                                   diffY * pointCompressionResolution_);
-      point.z = static_cast<float>(referencePoint_arg[2] +
-                                   diffZ * pointCompressionResolution_);
+      point.x = static_cast<float> (referencePoint_arg[0] +
+                                    diffX * pointCompressionResolution_);
+      point.y = static_cast<float> (referencePoint_arg[1] +
+                                    diffY * pointCompressionResolution_);
+      point.z = static_cast<float> (referencePoint_arg[2] +
+                                    diffZ * pointCompressionResolution_);
     }
   }
 

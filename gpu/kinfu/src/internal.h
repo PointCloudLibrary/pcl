@@ -65,14 +65,15 @@ constexpr float VOLUME_SIZE = 3.0f; // in meters
 struct Intr {
   float fx, fy, cx, cy;
   Intr() {}
-  Intr(float fx_, float fy_, float cx_, float cy_) : fx(fx_), fy(fy_), cx(cx_), cy(cy_)
+  Intr (float fx_, float fy_, float cx_, float cy_)
+  : fx (fx_), fy (fy_), cx (cx_), cy (cy_)
   {}
 
   Intr
-  operator()(int level_index) const
+  operator() (int level_index) const
   {
     int div = 1 << level_index;
-    return (Intr(fx / div, fy / div, cx / div, cy / div));
+    return (Intr (fx / div, fy / div, cx / div, cy / div));
   }
 };
 
@@ -463,21 +464,21 @@ mergePointNormal (const DeviceArray<float4>& cloud,
 inline bool
 valid_host (float value)
 {
-  return *reinterpret_cast<int*>(&value) != 0x7fffffff; // QNAN
+  return *reinterpret_cast<int*> (&value) != 0x7fffffff; // QNAN
 }
 
 /** \brief synchronizes CUDA execution */
 inline void
 sync ()
 {
-  cudaSafeCall(cudaDeviceSynchronize());
+  cudaSafeCall (cudaDeviceSynchronize());
 }
 
 template <class D, class Matx>
 D&
 device_cast (Matx& matx)
 {
-  return (*reinterpret_cast<D*>(matx.data()));
+  return (*reinterpret_cast<D*> (matx.data()));
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////

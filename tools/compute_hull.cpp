@@ -53,13 +53,13 @@ float default_alpha = 0.15f;
 void
 printHelp (int, char** argv)
 {
-  print_error("Syntax is: %s input.pcd output.vtk [optional_arguments]\n", argv[0]);
-  print_info("  where the optional arguments are:\n");
-  print_info("                     -alpha X = the alpha value for the ConcaveHull "
-             "(Alpha Shapes) algorithm. If alpha is not specified, the tool will run "
-             "the ConvexHull method (default: ");
-  print_value("%f", default_alpha);
-  print_info(")\n");
+  print_error ("Syntax is: %s input.pcd output.vtk [optional_arguments]\n", argv[0]);
+  print_info ("  where the optional arguments are:\n");
+  print_info ("                     -alpha X = the alpha value for the ConcaveHull "
+              "(Alpha Shapes) algorithm. If alpha is not specified, the tool will run "
+              "the ConvexHull method (default: ");
+  print_value ("%f", default_alpha);
+  print_info (")\n");
 }
 
 void
@@ -69,21 +69,21 @@ compute (PointCloud<PointXYZ>::ConstPtr cloud_in,
          PolygonMesh& mesh_out)
 {
   if (!convex_concave_hull) {
-    print_info("Computing the convex hull of a cloud with %lu points.\n",
-               cloud_in->size());
+    print_info ("Computing the convex hull of a cloud with %lu points.\n",
+                cloud_in->size());
     ConvexHull<PointXYZ> convex_hull;
-    convex_hull.setInputCloud(cloud_in);
-    convex_hull.reconstruct(mesh_out);
+    convex_hull.setInputCloud (cloud_in);
+    convex_hull.reconstruct (mesh_out);
   }
   else {
-    print_info("Computing the concave hull (alpha shapes) with alpha %f of a cloud "
-               "with %lu points.\n",
-               alpha,
-               cloud_in->size());
+    print_info ("Computing the concave hull (alpha shapes) with alpha %f of a cloud "
+                "with %lu points.\n",
+                alpha,
+                cloud_in->size());
     ConcaveHull<PointXYZ> concave_hull;
-    concave_hull.setInputCloud(cloud_in);
-    concave_hull.setAlpha(alpha);
-    concave_hull.reconstruct(mesh_out);
+    concave_hull.setInputCloud (cloud_in);
+    concave_hull.setAlpha (alpha);
+    concave_hull.reconstruct (mesh_out);
   }
 }
 
@@ -91,12 +91,12 @@ compute (PointCloud<PointXYZ>::ConstPtr cloud_in,
 int
 main (int argc, char** argv)
 {
-  print_info("Compute the convex or concave hull of a point cloud. For more "
-             "information, use: %s -h\n",
-             argv[0]);
+  print_info ("Compute the convex or concave hull of a point cloud. For more "
+              "information, use: %s -h\n",
+              argv[0]);
 
   if (argc < 3) {
-    printHelp(argc, argv);
+    printHelp (argc, argv);
     return (-1);
   }
 
@@ -104,36 +104,36 @@ main (int argc, char** argv)
   bool convex_concave_hull = false;
   float alpha = default_alpha;
 
-  if (parse_argument(argc, argv, "-alpha", alpha) != -1)
+  if (parse_argument (argc, argv, "-alpha", alpha) != -1)
     convex_concave_hull = true;
 
   std::vector<int> pcd_file_indices;
-  pcd_file_indices = parse_file_extension_argument(argc, argv, ".pcd");
+  pcd_file_indices = parse_file_extension_argument (argc, argv, ".pcd");
   if (pcd_file_indices.size() != 1) {
-    print_error("Need one input PCD file to continue.\n");
+    print_error ("Need one input PCD file to continue.\n");
     return (-1);
   }
 
   std::vector<int> vtk_file_indices;
-  vtk_file_indices = parse_file_extension_argument(argc, argv, ".vtk");
+  vtk_file_indices = parse_file_extension_argument (argc, argv, ".vtk");
   if (vtk_file_indices.size() != 1) {
-    print_error("Need one output VTK file to continue.\n");
+    print_error ("Need one output VTK file to continue.\n");
     return (-1);
   }
 
   // Load in the point cloud
-  PointCloud<PointXYZ>::Ptr cloud_in(new PointCloud<PointXYZ>());
-  if (loadPCDFile(argv[pcd_file_indices[0]], *cloud_in) != 0) {
-    print_error("Could not load input file %s\n", argv[pcd_file_indices[0]]);
+  PointCloud<PointXYZ>::Ptr cloud_in (new PointCloud<PointXYZ>());
+  if (loadPCDFile (argv[pcd_file_indices[0]], *cloud_in) != 0) {
+    print_error ("Could not load input file %s\n", argv[pcd_file_indices[0]]);
     return (-1);
   }
 
   // Compute the hull
   PolygonMesh mesh_out;
-  compute(cloud_in, convex_concave_hull, alpha, mesh_out);
+  compute (cloud_in, convex_concave_hull, alpha, mesh_out);
 
   // Save the mesh
-  io::saveVTKFile(argv[vtk_file_indices[0]], mesh_out);
+  io::saveVTKFile (argv[vtk_file_indices[0]], mesh_out);
 
   return (0);
 }

@@ -46,12 +46,12 @@ public:
   struct BSplineComponents {
     Polynomial<Degree> polys[Degree + 1];
     Polynomial<Degree>&
-    operator[](int idx)
+    operator[] (int idx)
     {
       return polys[idx];
     }
     const Polynomial<Degree>&
-    operator[](int idx) const
+    operator[] (int idx) const
     {
       return polys[idx];
     }
@@ -66,7 +66,7 @@ public:
     {
       BSplineComponents b;
       for (int d = 0; d <= Degree; d++)
-        b[d] = polys[d].scale(s);
+        b[d] = polys[d].scale (s);
       return b;
     }
     BSplineComponents
@@ -74,7 +74,7 @@ public:
     {
       BSplineComponents b;
       for (int d = 0; d <= Degree; d++)
-        b[d] = polys[d].shift(s);
+        b[d] = polys[d].shift (s);
       return b;
     }
   };
@@ -136,12 +136,12 @@ struct BSplineElementCoefficients {
   int coeffs[Degree + 1] = {};
   BSplineElementCoefficients() = default;
   int&
-  operator[](int idx)
+  operator[] (int idx)
   {
     return coeffs[idx];
   }
   const int&
-  operator[](int idx) const
+  operator[] (int idx) const
   {
     return coeffs[idx];
   }
@@ -160,7 +160,7 @@ public:
   int denominator;
 
   BSplineElements() { denominator = 1; }
-  BSplineElements(int res, int offset, int boundary = NONE);
+  BSplineElements (int res, int offset, int boundary = NONE);
 
   void
   upSample (BSplineElements& high) const;
@@ -171,10 +171,10 @@ public:
   print (FILE*) const
   {
     for (int i = 0; i < this->size(); i++) {
-      printf("%d]", i);
+      printf ("%d]", i);
       for (int j = 0; j <= Degree; j++)
-        printf(" %d", (*this)[i][j]);
-      printf(" (%d)\n", denominator);
+        printf (" %d", (*this)[i][j]);
+      printf (" (%d)\n", denominator);
     }
   }
 };

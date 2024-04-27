@@ -82,7 +82,7 @@ public:
     inline void
     getBounds (Scalar b[6]) const
     {
-      std::copy(bounds_, bounds_ + 6, b);
+      std::copy (bounds_, bounds_ + 6, b);
     }
 
     inline Node*
@@ -130,13 +130,13 @@ public:
     inline bool
     hasData ()
     {
-      return static_cast<bool>(data_);
+      return static_cast<bool> (data_);
     }
 
     inline bool
     hasChildren ()
     {
-      return static_cast<bool>(children_);
+      return static_cast<bool> (children_);
     }
 
     inline const std::set<Node*>&
@@ -247,7 +247,7 @@ public:
   inline void
   getBounds (Scalar b[6]) const
   {
-    std::copy(bounds_, bounds_ + 6, b);
+    std::copy (bounds_, bounds_ + 6, b);
   }
 
   inline Scalar

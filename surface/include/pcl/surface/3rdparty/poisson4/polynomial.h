@@ -39,18 +39,18 @@ class Polynomial {
 public:
   double coefficients[Degree + 1];
 
-  Polynomial(void);
+  Polynomial (void);
   template <int Degree2>
-  Polynomial(const Polynomial<Degree2>& P);
+  Polynomial (const Polynomial<Degree2>& P);
   double
-  operator()(double t) const;
+  operator() (double t) const;
   double
   integral (double tMin, double tMax) const;
 
   int
-  operator==(const Polynomial& p) const;
+  operator== (const Polynomial& p) const;
   int
-  operator!=(const Polynomial& p) const;
+  operator!= (const Polynomial& p) const;
   int
   isZero (void) const;
   void
@@ -58,37 +58,37 @@ public:
 
   template <int Degree2>
   Polynomial&
-  operator=(const Polynomial<Degree2>& p);
+  operator= (const Polynomial<Degree2>& p);
   Polynomial&
-  operator+=(const Polynomial& p);
+  operator+= (const Polynomial& p);
   Polynomial&
-  operator-=(const Polynomial& p);
+  operator-= (const Polynomial& p);
   Polynomial
-  operator-(void) const;
+  operator- (void) const;
   Polynomial
-  operator+(const Polynomial& p) const;
+  operator+ (const Polynomial& p) const;
   Polynomial
-  operator-(const Polynomial& p) const;
+  operator- (const Polynomial& p) const;
   template <int Degree2>
   Polynomial<Degree + Degree2>
-  operator*(const Polynomial<Degree2>& p) const;
+  operator* (const Polynomial<Degree2>& p) const;
 
   Polynomial&
-  operator+=(double s);
+  operator+= (double s);
   Polynomial&
-  operator-=(double s);
+  operator-= (double s);
   Polynomial&
-  operator*=(double s);
+  operator*= (double s);
   Polynomial&
-  operator/=(double s);
+  operator/= (double s);
   Polynomial
-  operator+(double s) const;
+  operator+ (double s) const;
   Polynomial
-  operator-(double s) const;
+  operator- (double s) const;
   Polynomial
-  operator*(double s) const;
+  operator* (double s) const;
   Polynomial
-  operator/(double s) const;
+  operator/ (double s) const;
 
   Polynomial
   scale (double s) const;

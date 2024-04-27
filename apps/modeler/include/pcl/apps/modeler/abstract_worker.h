@@ -48,8 +48,8 @@ class AbstractWorker : public QObject {
   Q_OBJECT
 
 public:
-  AbstractWorker(const QList<CloudMeshItem*>& cloud_mesh_items,
-                 QWidget* parent = nullptr);
+  AbstractWorker (const QList<CloudMeshItem*>& cloud_mesh_items,
+                  QWidget* parent = nullptr);
   ~AbstractWorker();
 
   int

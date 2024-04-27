@@ -33,47 +33,48 @@ public:
   {
 
     if (!normal_estimator_) {
-      PCL_ERROR("FPFHLocalEstimation :: This feature needs normals... "
-                "please provide a normal estimator\n");
+      PCL_ERROR ("FPFHLocalEstimation :: This feature needs normals... "
+                 "please provide a normal estimator\n");
       return false;
     }
 
     if (keypoint_extractor_.empty()) {
-      PCL_ERROR("FPFHLocalEstimation :: This feature needs a keypoint extractor... "
-                "please provide one\n");
+      PCL_ERROR ("FPFHLocalEstimation :: This feature needs a keypoint extractor... "
+                 "please provide one\n");
       return false;
     }
 
     // compute normals
-    pcl::PointCloud<pcl::Normal>::Ptr normals(new pcl::PointCloud<pcl::Normal>);
-    normal_estimator_->estimate(in, processed, normals);
+    pcl::PointCloud<pcl::Normal>::Ptr normals (new pcl::PointCloud<pcl::Normal>);
+    normal_estimator_->estimate (in, processed, normals);
 
-    this->computeKeypoints(processed, keypoints, normals);
+    this->computeKeypoints (processed, keypoints, normals);
     std::cout << " " << normals->size() << " " << processed->size() << std::endl;
 
     if (keypoints->points.empty()) {
-      PCL_WARN("FPFHLocalEstimation :: No keypoints were found\n");
+      PCL_WARN ("FPFHLocalEstimation :: No keypoints were found\n");
       return false;
     }
 
-    assert(processed->size() == normals->size());
+    assert (processed->size() == normals->size());
 
     // compute signatures
     using FPFHEstimator =
         pcl::FPFHEstimation<PointInT, pcl::Normal, pcl::FPFHSignature33>;
-    typename pcl::search::KdTree<PointInT>::Ptr tree(new pcl::search::KdTree<PointInT>);
+    typename pcl::search::KdTree<PointInT>::Ptr tree (
+        new pcl::search::KdTree<PointInT>);
 
-    pcl::PointCloud<pcl::FPFHSignature33>::Ptr fpfhs(
+    pcl::PointCloud<pcl::FPFHSignature33>::Ptr fpfhs (
         new pcl::PointCloud<pcl::FPFHSignature33>);
     FPFHEstimator fpfh_estimate;
-    fpfh_estimate.setSearchMethod(tree);
-    fpfh_estimate.setInputCloud(keypoints);
-    fpfh_estimate.setSearchSurface(processed);
-    fpfh_estimate.setInputNormals(normals);
-    fpfh_estimate.setRadiusSearch(support_radius_);
-    fpfh_estimate.compute(*fpfhs);
+    fpfh_estimate.setSearchMethod (tree);
+    fpfh_estimate.setInputCloud (keypoints);
+    fpfh_estimate.setSearchSurface (processed);
+    fpfh_estimate.setInputNormals (normals);
+    fpfh_estimate.setRadiusSearch (support_radius_);
+    fpfh_estimate.compute (*fpfhs);
 
-    signatures->resize(fpfhs->size());
+    signatures->resize (fpfhs->size());
     signatures->width = fpfhs->size();
     signatures->height = 1;
 

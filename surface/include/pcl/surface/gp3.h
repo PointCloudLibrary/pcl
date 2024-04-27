@@ -505,13 +505,13 @@ private:
                pcl::index_t c,
                std::vector<pcl::Vertices>& polygons)
   {
-    triangle_.vertices.resize(3);
+    triangle_.vertices.resize (3);
     if (consistent_ordering_) {
-      const PointInT p = input_->at(indices_->at(a));
+      const PointInT p = input_->at (indices_->at (a));
       const Eigen::Vector3f pv = p.getVector3fMap();
-      if (p.getNormalVector3fMap().dot(
-              (pv - input_->at(indices_->at(b)).getVector3fMap())
-                  .cross(pv - input_->at(indices_->at(c)).getVector3fMap())) > 0) {
+      if (p.getNormalVector3fMap().dot (
+              (pv - input_->at (indices_->at (b)).getVector3fMap())
+                  .cross (pv - input_->at (indices_->at (c)).getVector3fMap())) > 0) {
         triangle_.vertices[0] = a;
         triangle_.vertices[1] = b;
         triangle_.vertices[2] = c;
@@ -527,7 +527,7 @@ private:
       triangle_.vertices[1] = b;
       triangle_.vertices[2] = c;
     }
-    polygons.push_back(triangle_);
+    polygons.push_back (triangle_);
   }
 
   /** \brief Add a new vertex to the advancing edge front and set its source point
@@ -539,7 +539,7 @@ private:
   {
     source_[v] = s;
     part_[v] = part_[s];
-    fringe_queue_.push_back(v);
+    fringe_queue_.push_back (v);
   }
 
   /** \brief Function for ascending sort of nnAngle, taking visibility into account

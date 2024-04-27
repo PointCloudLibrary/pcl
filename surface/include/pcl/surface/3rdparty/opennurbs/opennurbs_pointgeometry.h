@@ -26,14 +26,14 @@ public:
   ON_3dPoint point;
 
   ON_Point();
-  ON_Point(const ON_Point&);
-  ON_Point(const ON_3dPoint&);
-  ON_Point(double, double, double);
+  ON_Point (const ON_Point&);
+  ON_Point (const ON_3dPoint&);
+  ON_Point (double, double, double);
   ~ON_Point();
   ON_Point&
-  operator=(const ON_Point&);
+  operator= (const ON_Point&);
   ON_Point&
-  operator=(const ON_3dPoint&);
+  operator= (const ON_3dPoint&);
 
   operator double*();
   operator const double*() const;
@@ -114,7 +114,7 @@ public:
   );
 
 private:
-  ON_OBJECT_DECLARE(ON_Point);
+  ON_OBJECT_DECLARE (ON_Point);
 };
 
 #endif

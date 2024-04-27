@@ -54,7 +54,7 @@ namespace cloud_composer {
 class ItemInspector : public QTabWidget {
   Q_OBJECT
 public:
-  ItemInspector(QWidget* parent = nullptr);
+  ItemInspector (QWidget* parent = nullptr);
 
 public Q_SLOTS:
   void

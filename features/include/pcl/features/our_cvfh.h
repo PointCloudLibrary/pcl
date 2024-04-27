@@ -74,7 +74,7 @@ public:
   using PointInTPtr = typename pcl::PointCloud<PointInT>::Ptr;
   /** \brief Empty constructor. */
   OURCVFHEstimation()
-  : cluster_tolerance_(leaf_size_ * 3), radius_normals_(leaf_size_ * 3)
+  : cluster_tolerance_ (leaf_size_ * 3), radius_normals_ (leaf_size_ * 3)
   {
     search_radius_ = 0;
     k_ = 1;
@@ -99,19 +99,19 @@ public:
                        Eigen::Matrix4f& center_mat)
   {
     Eigen::Matrix4f trans;
-    trans.setIdentity(4, 4);
-    trans(0, 0) = evx(0, 0);
-    trans(1, 0) = evx(1, 0);
-    trans(2, 0) = evx(2, 0);
-    trans(0, 1) = evy(0, 0);
-    trans(1, 1) = evy(1, 0);
-    trans(2, 1) = evy(2, 0);
-    trans(0, 2) = evz(0, 0);
-    trans(1, 2) = evz(1, 0);
-    trans(2, 2) = evz(2, 0);
+    trans.setIdentity (4, 4);
+    trans (0, 0) = evx (0, 0);
+    trans (1, 0) = evx (1, 0);
+    trans (2, 0) = evx (2, 0);
+    trans (0, 1) = evy (0, 0);
+    trans (1, 1) = evy (1, 0);
+    trans (2, 1) = evy (2, 0);
+    trans (0, 2) = evz (0, 0);
+    trans (1, 2) = evz (1, 0);
+    trans (2, 2) = evz (2, 0);
 
     Eigen::Matrix4f homMatrix = Eigen::Matrix4f();
-    homMatrix.setIdentity(4, 4);
+    homMatrix.setIdentity (4, 4);
     homMatrix = transformPC.matrix();
 
     Eigen::Matrix4f trans_copy = trans.inverse();
@@ -204,7 +204,7 @@ public:
           centroids)
   {
     for (const auto& centroids_dominant_orientation : centroids_dominant_orientations_)
-      centroids.push_back(centroids_dominant_orientation);
+      centroids.push_back (centroids_dominant_orientation);
   }
 
   /** \brief Get the normal centroids used to compute different CVFH descriptors
@@ -216,7 +216,7 @@ public:
           centroids)
   {
     for (const auto& dominant_normal : dominant_normals_)
-      centroids.push_back(dominant_normal);
+      centroids.push_back (dominant_normal);
   }
 
   /** \brief Sets max. Euclidean distance between points to be added to the cluster

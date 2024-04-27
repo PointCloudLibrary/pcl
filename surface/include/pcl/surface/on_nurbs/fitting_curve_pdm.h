@@ -55,7 +55,7 @@ class PCL_EXPORTS FittingCurve {
 public:
   struct Parameter {
     double smoothness;
-    Parameter(double smoothness = 0.000001) : smoothness(smoothness) {}
+    Parameter (double smoothness = 0.000001) : smoothness (smoothness) {}
   };
 
   ON_TextLog m_out;
@@ -66,13 +66,13 @@ public:
    * \param[in] order the polynomial order of the B-Spline curve.
    * \param[in] data pointer to the 3D point-cloud data to be fit
    */
-  FittingCurve(int order, NurbsDataCurve* data);
+  FittingCurve (int order, NurbsDataCurve* data);
 
   /** \brief Constructor initializing with the B-Spline curve given in argument 2.
    * \param[in] data pointer to the 3D point-cloud data to be fit.
    * \param[in] nc B-Spline curve used for fitting.
    */
-  FittingCurve(NurbsDataCurve* data, const ON_NurbsCurve& ns);
+  FittingCurve (NurbsDataCurve* data, const ON_NurbsCurve& ns);
 
   /** \brief Find the element in which the parameter xi lies.
    * \param[in] xi value in parameter domain of the B-Spline curve.
@@ -158,7 +158,7 @@ public:
   setQuiet (bool val)
   {
     m_quiet = val;
-    m_solver.setQuiet(val);
+    m_solver.setQuiet (val);
   }
 
 private:

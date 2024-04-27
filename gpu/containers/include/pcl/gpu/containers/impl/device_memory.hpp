@@ -61,21 +61,21 @@ inline DeviceMemory::operator PtrSz<U>() const
 {
   PtrSz<U> result;
   result.data = (U*)ptr<U>();
-  result.size = sizeBytes_ / sizeof(U);
+  result.size = sizeBytes_ / sizeof (U);
   return result;
 }
 
 ////////////////////  Inline implementations of DeviceMemory2D ////////////////
 template <class T>
 T*
-DeviceMemory2D::ptr(int y_arg)
+DeviceMemory2D::ptr (int y_arg)
 {
   return (T*)((char*)data_ + y_arg * step_);
 }
 
 template <class T>
 const T*
-DeviceMemory2D::ptr(int y_arg) const
+DeviceMemory2D::ptr (int y_arg) const
 {
   return (const T*)((const char*)data_ + y_arg * step_);
 }
@@ -95,7 +95,7 @@ DeviceMemory2D::operator PtrStepSz<U>() const
   PtrStepSz<U> result;
   result.data = (U*)ptr<U>();
   result.step = step_;
-  result.cols = colsBytes_ / sizeof(U);
+  result.cols = colsBytes_ / sizeof (U);
   result.rows = rows_;
   return result;
 }

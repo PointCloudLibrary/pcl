@@ -49,36 +49,37 @@ namespace filters {
 
 template <typename PointIn, typename PointOut>
 Convolution<PointIn, PointOut>::Convolution()
-: borders_policy_(BORDERS_POLICY_IGNORE)
-, distance_threshold_(std::numeric_limits<float>::infinity())
+: borders_policy_ (BORDERS_POLICY_IGNORE)
+, distance_threshold_ (std::numeric_limits<float>::infinity())
 , input_()
 {}
 
 template <typename PointIn, typename PointOut>
 void
-Convolution<PointIn, PointOut>::initCompute(PointCloud<PointOut>& output)
+Convolution<PointIn, PointOut>::initCompute (PointCloud<PointOut>& output)
 {
   if (borders_policy_ != BORDERS_POLICY_IGNORE &&
       borders_policy_ != BORDERS_POLICY_MIRROR &&
       borders_policy_ != BORDERS_POLICY_DUPLICATE)
-    PCL_THROW_EXCEPTION(
+    PCL_THROW_EXCEPTION (
         InitFailedException,
         "[pcl::filters::Convolution::initCompute] unknown borders policy.");
 
   if (kernel_.size() % 2 == 0)
-    PCL_THROW_EXCEPTION(InitFailedException,
-                        "[pcl::filters::Convolution::initCompute] convolving element "
-                        "width must be odd.");
+    PCL_THROW_EXCEPTION (InitFailedException,
+                         "[pcl::filters::Convolution::initCompute] convolving element "
+                         "width must be odd.");
 
   if (distance_threshold_ != std::numeric_limits<float>::infinity())
-    distance_threshold_ *= static_cast<float>(kernel_.size() % 2) * distance_threshold_;
+    distance_threshold_ *=
+        static_cast<float> (kernel_.size() % 2) * distance_threshold_;
 
-  half_width_ = static_cast<int>(kernel_.size()) / 2;
-  kernel_width_ = static_cast<int>(kernel_.size() - 1);
+  half_width_ = static_cast<int> (kernel_.size()) / 2;
+  kernel_width_ = static_cast<int> (kernel_.size() - 1);
 
   if (&(*input_) != &output) {
     if (output.height != input_->height || output.width != input_->width) {
-      output.resize(input_->width * input_->height);
+      output.resize (input_->width * input_->height);
       output.width = input_->width;
       output.height = input_->height;
     }
@@ -88,121 +89,121 @@ Convolution<PointIn, PointOut>::initCompute(PointCloud<PointOut>& output)
 
 template <typename PointIn, typename PointOut>
 inline void
-Convolution<PointIn, PointOut>::convolveRows(PointCloudOut& output)
+Convolution<PointIn, PointOut>::convolveRows (PointCloudOut& output)
 {
   try {
-    initCompute(output);
+    initCompute (output);
     switch (borders_policy_) {
     case BORDERS_POLICY_MIRROR:
-      convolve_rows_mirror(output);
+      convolve_rows_mirror (output);
       break;
     case BORDERS_POLICY_DUPLICATE:
-      convolve_rows_duplicate(output);
+      convolve_rows_duplicate (output);
       break;
     case BORDERS_POLICY_IGNORE:
-      convolve_rows(output);
+      convolve_rows (output);
     }
   } catch (InitFailedException& e) {
-    PCL_THROW_EXCEPTION(InitFailedException,
-                        "[pcl::filters::Convolution::convolveRows] init failed "
-                            << e.what());
+    PCL_THROW_EXCEPTION (InitFailedException,
+                         "[pcl::filters::Convolution::convolveRows] init failed "
+                             << e.what());
   }
 }
 
 template <typename PointIn, typename PointOut>
 inline void
-Convolution<PointIn, PointOut>::convolveCols(PointCloudOut& output)
+Convolution<PointIn, PointOut>::convolveCols (PointCloudOut& output)
 {
   try {
-    initCompute(output);
+    initCompute (output);
     switch (borders_policy_) {
     case BORDERS_POLICY_MIRROR:
-      convolve_cols_mirror(output);
+      convolve_cols_mirror (output);
       break;
     case BORDERS_POLICY_DUPLICATE:
-      convolve_cols_duplicate(output);
+      convolve_cols_duplicate (output);
       break;
     case BORDERS_POLICY_IGNORE:
-      convolve_cols(output);
+      convolve_cols (output);
     }
   } catch (InitFailedException& e) {
-    PCL_THROW_EXCEPTION(InitFailedException,
-                        "[pcl::filters::Convolution::convolveCols] init failed "
-                            << e.what());
+    PCL_THROW_EXCEPTION (InitFailedException,
+                         "[pcl::filters::Convolution::convolveCols] init failed "
+                             << e.what());
   }
 }
 
 template <typename PointIn, typename PointOut>
 inline void
-Convolution<PointIn, PointOut>::convolve(const Eigen::ArrayXf& h_kernel,
-                                         const Eigen::ArrayXf& v_kernel,
-                                         PointCloud<PointOut>& output)
+Convolution<PointIn, PointOut>::convolve (const Eigen::ArrayXf& h_kernel,
+                                          const Eigen::ArrayXf& v_kernel,
+                                          PointCloud<PointOut>& output)
 {
   try {
-    PointCloudInPtr tmp(new PointCloud<PointIn>());
-    setKernel(h_kernel);
-    convolveRows(*tmp);
-    setInputCloud(tmp);
-    setKernel(v_kernel);
-    convolveCols(output);
+    PointCloudInPtr tmp (new PointCloud<PointIn>());
+    setKernel (h_kernel);
+    convolveRows (*tmp);
+    setInputCloud (tmp);
+    setKernel (v_kernel);
+    convolveCols (output);
   } catch (InitFailedException& e) {
-    PCL_THROW_EXCEPTION(InitFailedException,
-                        "[pcl::filters::Convolution::convolve] init failed "
-                            << e.what());
+    PCL_THROW_EXCEPTION (InitFailedException,
+                         "[pcl::filters::Convolution::convolve] init failed "
+                             << e.what());
   }
 }
 
 template <typename PointIn, typename PointOut>
 inline void
-Convolution<PointIn, PointOut>::convolve(PointCloud<PointOut>& output)
+Convolution<PointIn, PointOut>::convolve (PointCloud<PointOut>& output)
 {
   try {
-    PointCloudInPtr tmp(new PointCloud<PointIn>());
-    convolveRows(*tmp);
-    setInputCloud(tmp);
-    convolveCols(output);
+    PointCloudInPtr tmp (new PointCloud<PointIn>());
+    convolveRows (*tmp);
+    setInputCloud (tmp);
+    convolveCols (output);
   } catch (InitFailedException& e) {
-    PCL_THROW_EXCEPTION(InitFailedException,
-                        "[pcl::filters::Convolution::convolve] init failed "
-                            << e.what());
+    PCL_THROW_EXCEPTION (InitFailedException,
+                         "[pcl::filters::Convolution::convolve] init failed "
+                             << e.what());
   }
 }
 
 template <typename PointIn, typename PointOut>
 inline PointOut
-Convolution<PointIn, PointOut>::convolveOneRowDense(int i, int j)
+Convolution<PointIn, PointOut>::convolveOneRowDense (int i, int j)
 {
   using namespace pcl::common;
   PointOut result;
   for (int k = kernel_width_, l = i - half_width_; k > -1; --k, ++l)
-    result += (*input_)(l, j) * kernel_[k];
+    result += (*input_) (l, j) * kernel_[k];
   return (result);
 }
 
 template <typename PointIn, typename PointOut>
 inline PointOut
-Convolution<PointIn, PointOut>::convolveOneColDense(int i, int j)
+Convolution<PointIn, PointOut>::convolveOneColDense (int i, int j)
 {
   using namespace pcl::common;
   PointOut result;
   for (int k = kernel_width_, l = j - half_width_; k > -1; --k, ++l)
-    result += (*input_)(i, l) * kernel_[k];
+    result += (*input_) (i, l) * kernel_[k];
   return (result);
 }
 
 template <typename PointIn, typename PointOut>
 inline PointOut
-Convolution<PointIn, PointOut>::convolveOneRowNonDense(int i, int j)
+Convolution<PointIn, PointOut>::convolveOneRowNonDense (int i, int j)
 {
   using namespace pcl::common;
   PointOut result;
   float weight = 0;
   for (int k = kernel_width_, l = i - half_width_; k > -1; --k, ++l) {
-    if (!isFinite((*input_)(l, j)))
+    if (!isFinite ((*input_) (l, j)))
       continue;
-    if (pcl::squaredEuclideanDistance((*input_)(i, j), (*input_)(l, j)) <
+    if (pcl::squaredEuclideanDistance ((*input_) (i, j), (*input_) (l, j)) <
         distance_threshold_) {
-      result += (*input_)(l, j) * kernel_[k];
+      result += (*input_) (l, j) * kernel_[k];
       weight += kernel_[k];
     }
   }
@@ -217,17 +218,17 @@ Convolution<PointIn, PointOut>::convolveOneRowNonDense(int i, int j)
 
 template <typename PointIn, typename PointOut>
 inline PointOut
-Convolution<PointIn, PointOut>::convolveOneColNonDense(int i, int j)
+Convolution<PointIn, PointOut>::convolveOneColNonDense (int i, int j)
 {
   using namespace pcl::common;
   PointOut result;
   float weight = 0;
   for (int k = kernel_width_, l = j - half_width_; k > -1; --k, ++l) {
-    if (!isFinite((*input_)(i, l)))
+    if (!isFinite ((*input_) (i, l)))
       continue;
-    if (pcl::squaredEuclideanDistance((*input_)(i, j), (*input_)(i, l)) <
+    if (pcl::squaredEuclideanDistance ((*input_) (i, j), (*input_) (i, l)) <
         distance_threshold_) {
-      result += (*input_)(i, l) * kernel_[k];
+      result += (*input_) (i, l) * kernel_[k];
       weight += kernel_[k];
     }
   }
@@ -242,45 +243,45 @@ Convolution<PointIn, PointOut>::convolveOneColNonDense(int i, int j)
 
 template <>
 pcl::PointXYZRGB PCL_EXPORTS
-Convolution<pcl::PointXYZRGB, pcl::PointXYZRGB>::convolveOneRowDense(int i, int j);
+Convolution<pcl::PointXYZRGB, pcl::PointXYZRGB>::convolveOneRowDense (int i, int j);
 
 template <>
 pcl::PointXYZRGB PCL_EXPORTS
-Convolution<pcl::PointXYZRGB, pcl::PointXYZRGB>::convolveOneColDense(int i, int j);
+Convolution<pcl::PointXYZRGB, pcl::PointXYZRGB>::convolveOneColDense (int i, int j);
 
 template <>
 pcl::PointXYZRGB PCL_EXPORTS
-Convolution<pcl::PointXYZRGB, pcl::PointXYZRGB>::convolveOneRowNonDense(int i, int j);
+Convolution<pcl::PointXYZRGB, pcl::PointXYZRGB>::convolveOneRowNonDense (int i, int j);
 
 template <>
 pcl::PointXYZRGB PCL_EXPORTS
-Convolution<pcl::PointXYZRGB, pcl::PointXYZRGB>::convolveOneColNonDense(int i, int j);
+Convolution<pcl::PointXYZRGB, pcl::PointXYZRGB>::convolveOneColNonDense (int i, int j);
 
 template <>
 pcl::RGB PCL_EXPORTS
-Convolution<pcl::RGB, pcl::RGB>::convolveOneRowDense(int i, int j);
+Convolution<pcl::RGB, pcl::RGB>::convolveOneRowDense (int i, int j);
 
 template <>
 pcl::RGB PCL_EXPORTS
-Convolution<pcl::RGB, pcl::RGB>::convolveOneColDense(int i, int j);
+Convolution<pcl::RGB, pcl::RGB>::convolveOneColDense (int i, int j);
 
 template <>
 inline pcl::RGB
-Convolution<pcl::RGB, pcl::RGB>::convolveOneRowNonDense(int i, int j)
+Convolution<pcl::RGB, pcl::RGB>::convolveOneRowNonDense (int i, int j)
 {
-  return (convolveOneRowDense(i, j));
+  return (convolveOneRowDense (i, j));
 }
 
 template <>
 inline pcl::RGB
-Convolution<pcl::RGB, pcl::RGB>::convolveOneColNonDense(int i, int j)
+Convolution<pcl::RGB, pcl::RGB>::convolveOneColNonDense (int i, int j)
 {
-  return (convolveOneColDense(i, j));
+  return (convolveOneColDense (i, j));
 }
 
 template <>
 inline void
-Convolution<pcl::RGB, pcl::RGB>::makeInfinite(pcl::RGB& p)
+Convolution<pcl::RGB, pcl::RGB>::makeInfinite (pcl::RGB& p)
 {
   p.r = 0;
   p.g = 0;
@@ -289,7 +290,7 @@ Convolution<pcl::RGB, pcl::RGB>::makeInfinite(pcl::RGB& p)
 
 template <typename PointIn, typename PointOut>
 void
-Convolution<PointIn, PointOut>::convolve_rows(PointCloudOut& output)
+Convolution<PointIn, PointOut>::convolve_rows (PointCloudOut& output)
 {
   using namespace pcl::common;
 
@@ -301,13 +302,13 @@ Convolution<PointIn, PointOut>::convolve_rows(PointCloudOut& output)
     num_threads(threads_)
     for (int j = 0; j < height; ++j) {
       for (int i = 0; i < half_width_; ++i)
-        makeInfinite(output(i, j));
+        makeInfinite (output (i, j));
 
       for (int i = half_width_; i < last; ++i)
-        output(i, j) = convolveOneRowDense(i, j);
+        output (i, j) = convolveOneRowDense (i, j);
 
       for (int i = last; i < width; ++i)
-        makeInfinite(output(i, j));
+        makeInfinite (output (i, j));
     }
   }
   else {
@@ -315,60 +316,20 @@ Convolution<PointIn, PointOut>::convolve_rows(PointCloudOut& output)
     num_threads(threads_)
     for (int j = 0; j < height; ++j) {
       for (int i = 0; i < half_width_; ++i)
-        makeInfinite(output(i, j));
+        makeInfinite (output (i, j));
 
       for (int i = half_width_; i < last; ++i)
-        output(i, j) = convolveOneRowNonDense(i, j);
+        output (i, j) = convolveOneRowNonDense (i, j);
 
       for (int i = last; i < width; ++i)
-        makeInfinite(output(i, j));
+        makeInfinite (output (i, j));
     }
   }
 }
 
 template <typename PointIn, typename PointOut>
 void
-Convolution<PointIn, PointOut>::convolve_rows_duplicate(PointCloudOut& output)
-{
-  using namespace pcl::common;
-
-  int width = input_->width;
-  int height = input_->height;
-  int last = input_->width - half_width_;
-  int w = last - 1;
-  if (input_->is_dense) {
-#pragma omp parallel for default(none) shared(height, last, output, w, width)          \
-    num_threads(threads_)
-    for (int j = 0; j < height; ++j) {
-      for (int i = half_width_; i < last; ++i)
-        output(i, j) = convolveOneRowDense(i, j);
-
-      for (int i = last; i < width; ++i)
-        output(i, j) = output(w, j);
-
-      for (int i = 0; i < half_width_; ++i)
-        output(i, j) = output(half_width_, j);
-    }
-  }
-  else {
-#pragma omp parallel for default(none) shared(height, last, output, w, width)          \
-    num_threads(threads_)
-    for (int j = 0; j < height; ++j) {
-      for (int i = half_width_; i < last; ++i)
-        output(i, j) = convolveOneRowNonDense(i, j);
-
-      for (int i = last; i < width; ++i)
-        output(i, j) = output(w, j);
-
-      for (int i = 0; i < half_width_; ++i)
-        output(i, j) = output(half_width_, j);
-    }
-  }
-}
-
-template <typename PointIn, typename PointOut>
-void
-Convolution<PointIn, PointOut>::convolve_rows_mirror(PointCloudOut& output)
+Convolution<PointIn, PointOut>::convolve_rows_duplicate (PointCloudOut& output)
 {
   using namespace pcl::common;
 
@@ -381,13 +342,13 @@ Convolution<PointIn, PointOut>::convolve_rows_mirror(PointCloudOut& output)
     num_threads(threads_)
     for (int j = 0; j < height; ++j) {
       for (int i = half_width_; i < last; ++i)
-        output(i, j) = convolveOneRowDense(i, j);
+        output (i, j) = convolveOneRowDense (i, j);
 
-      for (int i = last, l = 0; i < width; ++i, ++l)
-        output(i, j) = output(w - l, j);
+      for (int i = last; i < width; ++i)
+        output (i, j) = output (w, j);
 
       for (int i = 0; i < half_width_; ++i)
-        output(i, j) = output(half_width_ + 1 - i, j);
+        output (i, j) = output (half_width_, j);
     }
   }
   else {
@@ -395,20 +356,60 @@ Convolution<PointIn, PointOut>::convolve_rows_mirror(PointCloudOut& output)
     num_threads(threads_)
     for (int j = 0; j < height; ++j) {
       for (int i = half_width_; i < last; ++i)
-        output(i, j) = convolveOneRowNonDense(i, j);
+        output (i, j) = convolveOneRowNonDense (i, j);
 
-      for (int i = last, l = 0; i < width; ++i, ++l)
-        output(i, j) = output(w - l, j);
+      for (int i = last; i < width; ++i)
+        output (i, j) = output (w, j);
 
       for (int i = 0; i < half_width_; ++i)
-        output(i, j) = output(half_width_ + 1 - i, j);
+        output (i, j) = output (half_width_, j);
     }
   }
 }
 
 template <typename PointIn, typename PointOut>
 void
-Convolution<PointIn, PointOut>::convolve_cols(PointCloudOut& output)
+Convolution<PointIn, PointOut>::convolve_rows_mirror (PointCloudOut& output)
+{
+  using namespace pcl::common;
+
+  int width = input_->width;
+  int height = input_->height;
+  int last = input_->width - half_width_;
+  int w = last - 1;
+  if (input_->is_dense) {
+#pragma omp parallel for default(none) shared(height, last, output, w, width)          \
+    num_threads(threads_)
+    for (int j = 0; j < height; ++j) {
+      for (int i = half_width_; i < last; ++i)
+        output (i, j) = convolveOneRowDense (i, j);
+
+      for (int i = last, l = 0; i < width; ++i, ++l)
+        output (i, j) = output (w - l, j);
+
+      for (int i = 0; i < half_width_; ++i)
+        output (i, j) = output (half_width_ + 1 - i, j);
+    }
+  }
+  else {
+#pragma omp parallel for default(none) shared(height, last, output, w, width)          \
+    num_threads(threads_)
+    for (int j = 0; j < height; ++j) {
+      for (int i = half_width_; i < last; ++i)
+        output (i, j) = convolveOneRowNonDense (i, j);
+
+      for (int i = last, l = 0; i < width; ++i, ++l)
+        output (i, j) = output (w - l, j);
+
+      for (int i = 0; i < half_width_; ++i)
+        output (i, j) = output (half_width_ + 1 - i, j);
+    }
+  }
+}
+
+template <typename PointIn, typename PointOut>
+void
+Convolution<PointIn, PointOut>::convolve_cols (PointCloudOut& output)
 {
   using namespace pcl::common;
 
@@ -420,13 +421,13 @@ Convolution<PointIn, PointOut>::convolve_cols(PointCloudOut& output)
     num_threads(threads_)
     for (int i = 0; i < width; ++i) {
       for (int j = 0; j < half_width_; ++j)
-        makeInfinite(output(i, j));
+        makeInfinite (output (i, j));
 
       for (int j = half_width_; j < last; ++j)
-        output(i, j) = convolveOneColDense(i, j);
+        output (i, j) = convolveOneColDense (i, j);
 
       for (int j = last; j < height; ++j)
-        makeInfinite(output(i, j));
+        makeInfinite (output (i, j));
     }
   }
   else {
@@ -434,20 +435,20 @@ Convolution<PointIn, PointOut>::convolve_cols(PointCloudOut& output)
     num_threads(threads_)
     for (int i = 0; i < width; ++i) {
       for (int j = 0; j < half_width_; ++j)
-        makeInfinite(output(i, j));
+        makeInfinite (output (i, j));
 
       for (int j = half_width_; j < last; ++j)
-        output(i, j) = convolveOneColNonDense(i, j);
+        output (i, j) = convolveOneColNonDense (i, j);
 
       for (int j = last; j < height; ++j)
-        makeInfinite(output(i, j));
+        makeInfinite (output (i, j));
     }
   }
 }
 
 template <typename PointIn, typename PointOut>
 void
-Convolution<PointIn, PointOut>::convolve_cols_duplicate(PointCloudOut& output)
+Convolution<PointIn, PointOut>::convolve_cols_duplicate (PointCloudOut& output)
 {
   using namespace pcl::common;
 
@@ -460,13 +461,13 @@ Convolution<PointIn, PointOut>::convolve_cols_duplicate(PointCloudOut& output)
     num_threads(threads_)
     for (int i = 0; i < width; ++i) {
       for (int j = half_width_; j < last; ++j)
-        output(i, j) = convolveOneColDense(i, j);
+        output (i, j) = convolveOneColDense (i, j);
 
       for (int j = last; j < height; ++j)
-        output(i, j) = output(i, h);
+        output (i, j) = output (i, h);
 
       for (int j = 0; j < half_width_; ++j)
-        output(i, j) = output(i, half_width_);
+        output (i, j) = output (i, half_width_);
     }
   }
   else {
@@ -474,20 +475,20 @@ Convolution<PointIn, PointOut>::convolve_cols_duplicate(PointCloudOut& output)
     num_threads(threads_)
     for (int i = 0; i < width; ++i) {
       for (int j = half_width_; j < last; ++j)
-        output(i, j) = convolveOneColNonDense(i, j);
+        output (i, j) = convolveOneColNonDense (i, j);
 
       for (int j = last; j < height; ++j)
-        output(i, j) = output(i, h);
+        output (i, j) = output (i, h);
 
       for (int j = 0; j < half_width_; ++j)
-        output(i, j) = output(i, half_width_);
+        output (i, j) = output (i, half_width_);
     }
   }
 }
 
 template <typename PointIn, typename PointOut>
 void
-Convolution<PointIn, PointOut>::convolve_cols_mirror(PointCloudOut& output)
+Convolution<PointIn, PointOut>::convolve_cols_mirror (PointCloudOut& output)
 {
   using namespace pcl::common;
 
@@ -500,13 +501,13 @@ Convolution<PointIn, PointOut>::convolve_cols_mirror(PointCloudOut& output)
     num_threads(threads_)
     for (int i = 0; i < width; ++i) {
       for (int j = half_width_; j < last; ++j)
-        output(i, j) = convolveOneColDense(i, j);
+        output (i, j) = convolveOneColDense (i, j);
 
       for (int j = last, l = 0; j < height; ++j, ++l)
-        output(i, j) = output(i, h - l);
+        output (i, j) = output (i, h - l);
 
       for (int j = 0; j < half_width_; ++j)
-        output(i, j) = output(i, half_width_ + 1 - j);
+        output (i, j) = output (i, half_width_ + 1 - j);
     }
   }
   else {
@@ -514,13 +515,13 @@ Convolution<PointIn, PointOut>::convolve_cols_mirror(PointCloudOut& output)
     num_threads(threads_)
     for (int i = 0; i < width; ++i) {
       for (int j = half_width_; j < last; ++j)
-        output(i, j) = convolveOneColNonDense(i, j);
+        output (i, j) = convolveOneColNonDense (i, j);
 
       for (int j = last, l = 0; j < height; ++j, ++l)
-        output(i, j) = output(i, h - l);
+        output (i, j) = output (i, h - l);
 
       for (int j = 0; j < half_width_; ++j)
-        output(i, j) = output(i, half_width_ + 1 - j);
+        output (i, j) = output (i, half_width_ + 1 - j);
     }
   }
 }

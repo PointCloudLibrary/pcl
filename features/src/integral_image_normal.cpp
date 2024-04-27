@@ -43,12 +43,12 @@
 #include <pcl/point_types.h>
 // Instantiations of specific point types
 #ifdef PCL_ONLY_CORE_POINT_TYPES
-PCL_INSTANTIATE_PRODUCT(
+PCL_INSTANTIATE_PRODUCT (
     IntegralImageNormalEstimation,
-    ((pcl::PointXYZ)(pcl::PointXYZRGB)(pcl::PointXYZRGBA)(pcl::PointXYZRGBNormal))(
-        (pcl::Normal)(pcl::PointXYZRGBNormal)))
+    ((pcl::PointXYZ) (pcl::PointXYZRGB) (pcl::PointXYZRGBA) (pcl::PointXYZRGBNormal)) (
+        (pcl::Normal) (pcl::PointXYZRGBNormal)))
 #else
-PCL_INSTANTIATE_PRODUCT(IntegralImageNormalEstimation,
-                        (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES))
+PCL_INSTANTIATE_PRODUCT (IntegralImageNormalEstimation,
+                         (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES))
 #endif
 #endif // PCL_NO_PRECOMPILE

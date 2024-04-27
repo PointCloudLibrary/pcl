@@ -16,96 +16,97 @@
 
 #include "pcl/surface/3rdparty/opennurbs/opennurbs.h"
 
-const ON_Plane ON_xy_plane(ON_3dPoint(0.0, 0.0, 0.0),
-                           ON_3dVector(1.0, 0.0, 0.0),
-                           ON_3dVector(0.0, 1.0, 0.0));
+const ON_Plane ON_xy_plane (ON_3dPoint (0.0, 0.0, 0.0),
+                            ON_3dVector (1.0, 0.0, 0.0),
+                            ON_3dVector (0.0, 1.0, 0.0));
 
-const ON_Plane ON_yz_plane(ON_3dPoint(0.0, 0.0, 0.0),
-                           ON_3dVector(0.0, 1.0, 0.0),
-                           ON_3dVector(0.0, 0.0, 1.0));
+const ON_Plane ON_yz_plane (ON_3dPoint (0.0, 0.0, 0.0),
+                            ON_3dVector (0.0, 1.0, 0.0),
+                            ON_3dVector (0.0, 0.0, 1.0));
 
-const ON_Plane ON_zx_plane(ON_3dPoint(0.0, 0.0, 0.0),
-                           ON_3dVector(0.0, 0.0, 1.0),
-                           ON_3dVector(1.0, 0.0, 0.0));
+const ON_Plane ON_zx_plane (ON_3dPoint (0.0, 0.0, 0.0),
+                            ON_3dVector (0.0, 0.0, 1.0),
+                            ON_3dVector (1.0, 0.0, 0.0));
 
 const ON_Plane ON_Plane::World_xy = ON_xy_plane;
 
 ON_Plane::ON_Plane()
-: origin(0.0, 0.0, 0.0)
-, xaxis(1.0, 0.0, 0.0)
-, yaxis(0.0, 1.0, 0.0)
-, zaxis(0.0, 0.0, 1.0)
+: origin (0.0, 0.0, 0.0)
+, xaxis (1.0, 0.0, 0.0)
+, yaxis (0.0, 1.0, 0.0)
+, zaxis (0.0, 0.0, 1.0)
 {
   plane_equation.x = plane_equation.y = plane_equation.d = 0.0;
   plane_equation.z = 1.0;
 }
 
-ON_Plane::ON_Plane(const ON_3dPoint& P, // point on the plane
-                   const ON_3dVector& N // non-zero normal to the plane
+ON_Plane::ON_Plane (const ON_3dPoint& P, // point on the plane
+                    const ON_3dVector& N // non-zero normal to the plane
 )
 {
-  CreateFromNormal(P, N);
+  CreateFromNormal (P, N);
 }
 
-ON_Plane::ON_Plane(const ON_3dPoint& P,  // point on the plane
-                   const ON_3dVector& X, // non-zero vector in plane
-                   const ON_3dVector& Y // another vector in the plane not parallel to X
+ON_Plane::ON_Plane (
+    const ON_3dPoint& P,  // point on the plane
+    const ON_3dVector& X, // non-zero vector in plane
+    const ON_3dVector& Y  // another vector in the plane not parallel to X
 )
 {
-  CreateFromFrame(P, X, Y);
+  CreateFromFrame (P, X, Y);
 }
 
-ON_Plane::ON_Plane(const ON_3dPoint& P, // point on the plane
-                   const ON_3dPoint& Q, // point on the plane
-                   const ON_3dPoint& R  // point on the plane
+ON_Plane::ON_Plane (const ON_3dPoint& P, // point on the plane
+                    const ON_3dPoint& Q, // point on the plane
+                    const ON_3dPoint& R  // point on the plane
 )
 {
-  CreateFromPoints(P, Q, R);
+  CreateFromPoints (P, Q, R);
 }
 
-ON_Plane::ON_Plane(const double e[4] // equation of plane
+ON_Plane::ON_Plane (const double e[4] // equation of plane
 )
 {
-  CreateFromEquation(e);
+  CreateFromEquation (e);
 }
 
 ON_Plane::~ON_Plane() {}
 
 ON_3dPoint
-ON_Plane::PointAt(double s, double t) const
+ON_Plane::PointAt (double s, double t) const
 {
   return (origin + s * xaxis + t * yaxis);
 }
 
 ON_3dPoint
-ON_Plane::PointAt(double s, double t, double c) const
+ON_Plane::PointAt (double s, double t, double c) const
 {
   return (origin + s * xaxis + t * yaxis + c * zaxis);
 }
 
 ON_Line
-ON_Plane::IsoLine( // iso parametric line
-    int dir,       // 0 first parameter varies and second parameter is constant
-                   //   e.g., line(t) = plane(t,c)
-                   // 1 first parameter is constant and second parameter varies
-                   //   e.g., line(t) = plane(c,t)
-    double c       // c = value of constant parameter
+ON_Plane::IsoLine ( // iso parametric line
+    int dir,        // 0 first parameter varies and second parameter is constant
+                    //   e.g., line(t) = plane(t,c)
+                    // 1 first parameter is constant and second parameter varies
+                    //   e.g., line(t) = plane(c,t)
+    double c        // c = value of constant parameter
 ) const
 {
   ON_Line line;
   if (dir) {
-    line.from = PointAt(0.0, c);
-    line.to = PointAt(1.0, c);
+    line.from = PointAt (0.0, c);
+    line.to = PointAt (1.0, c);
   }
   else {
-    line.from = PointAt(c, 0.0);
-    line.to = PointAt(c, 1.0);
+    line.from = PointAt (c, 0.0);
+    line.to = PointAt (c, 1.0);
   }
   return line;
 }
 
 double
-ON_Plane::DistanceTo(const ON_3dPoint& point) const
+ON_Plane::DistanceTo (const ON_3dPoint& point) const
 {
   // signed distance
   // N.B. equation may not be normalized
@@ -113,9 +114,9 @@ ON_Plane::DistanceTo(const ON_3dPoint& point) const
 }
 
 bool
-ON_Plane::GetDistanceToBoundingBox(const ON_BoundingBox& Box,
-                                   double* min,
-                                   double* max) const
+ON_Plane::GetDistanceToBoundingBox (const ON_BoundingBox& Box,
+                                    double* min,
+                                    double* max) const
 {
   // min and max signed distance.  Returns false if plane normal has zero length.
 
@@ -163,7 +164,7 @@ bool
 ON_Plane::UpdateEquation()
 {
   // computes equation[] from origin and zaxis.
-  return plane_equation.Create(origin, zaxis);
+  return plane_equation.Create (origin, zaxis);
 }
 
 const ON_3dPoint&
@@ -191,14 +192,14 @@ ON_Plane::Normal() const
 }
 
 void
-ON_Plane::SetOrigin(const ON_3dPoint& origin_point)
+ON_Plane::SetOrigin (const ON_3dPoint& origin_point)
 {
   origin = origin_point;
   UpdateEquation();
 }
 
 bool
-ON_Plane::ClosestPointTo(ON_3dPoint p, double* s, double* t) const
+ON_Plane::ClosestPointTo (ON_3dPoint p, double* s, double* t) const
 {
   const ON_3dVector v = p - origin;
   if (s)
@@ -209,15 +210,15 @@ ON_Plane::ClosestPointTo(ON_3dPoint p, double* s, double* t) const
 }
 
 ON_3dPoint
-ON_Plane::ClosestPointTo(ON_3dPoint p) const
+ON_Plane::ClosestPointTo (ON_3dPoint p) const
 {
   double s, t;
-  ClosestPointTo(p, &s, &t);
-  return PointAt(s, t);
+  ClosestPointTo (p, &s, &t);
+  return PointAt (s, t);
 }
 
 bool
-ON_Plane::operator==(const ON_Plane& other) const
+ON_Plane::operator== (const ON_Plane& other) const
 {
   return (origin == other.origin && xaxis == other.xaxis && yaxis == other.yaxis &&
           zaxis == other.zaxis)
@@ -226,22 +227,22 @@ ON_Plane::operator==(const ON_Plane& other) const
 }
 
 bool
-ON_Plane::operator!=(const ON_Plane& other) const
+ON_Plane::operator!= (const ON_Plane& other) const
 {
-  return ON_Plane::operator==(other) ? false : true;
+  return ON_Plane::operator== (other) ? false : true;
 }
 
 bool
-ON_Plane::CreateFromNormal(const ON_3dPoint& P, // point on the plane
-                           const ON_3dVector& N // non-zero normal to the plane
+ON_Plane::CreateFromNormal (const ON_3dPoint& P, // point on the plane
+                            const ON_3dVector& N // non-zero normal to the plane
 )
 {
   origin = P;
   zaxis = N;
   bool b = zaxis.Unitize();
-  xaxis.PerpendicularTo(zaxis);
+  xaxis.PerpendicularTo (zaxis);
   xaxis.Unitize();
-  yaxis = ON_CrossProduct(zaxis, xaxis);
+  yaxis = ON_CrossProduct (zaxis, xaxis);
   yaxis.Unitize();
 
   UpdateEquation();
@@ -250,18 +251,18 @@ ON_Plane::CreateFromNormal(const ON_3dPoint& P, // point on the plane
 }
 
 bool
-ON_Plane::CreateFromFrame(const ON_3dPoint& P,  // point on the plane
-                          const ON_3dVector& X, // non-zero vector in plane
-                          const ON_3dVector& Y  // another non-zero vector in the plane
+ON_Plane::CreateFromFrame (const ON_3dPoint& P,  // point on the plane
+                           const ON_3dVector& X, // non-zero vector in plane
+                           const ON_3dVector& Y  // another non-zero vector in the plane
 )
 {
   origin = P;
 
   xaxis = X;
   xaxis.Unitize();
-  yaxis = Y - ON_DotProduct(Y, xaxis) * xaxis;
+  yaxis = Y - ON_DotProduct (Y, xaxis) * xaxis;
   yaxis.Unitize();
-  zaxis = ON_CrossProduct(xaxis, yaxis);
+  zaxis = ON_CrossProduct (xaxis, yaxis);
   bool b = zaxis.Unitize();
   UpdateEquation();
   if (b) {
@@ -270,7 +271,7 @@ ON_Plane::CreateFromFrame(const ON_3dPoint& P,  // point on the plane
     b = IsValid();
     if (b) {
       // make sure zaxis is perp to Y
-      if (fabs(Y * zaxis) > ON_SQRT_EPSILON * Y.Length())
+      if (fabs (Y * zaxis) > ON_SQRT_EPSILON * Y.Length())
         b = false;
     }
   }
@@ -278,7 +279,7 @@ ON_Plane::CreateFromFrame(const ON_3dPoint& P,  // point on the plane
 }
 
 bool
-ON_Plane::CreateFromEquation(const double e[4] // equation of plane
+ON_Plane::CreateFromEquation (const double e[4] // equation of plane
 )
 {
   bool b = false;
@@ -297,27 +298,27 @@ ON_Plane::CreateFromEquation(const double e[4] // equation of plane
     origin = (-d * plane_equation.d) * zaxis;
     b = true;
   }
-  xaxis.PerpendicularTo(zaxis);
+  xaxis.PerpendicularTo (zaxis);
   xaxis.Unitize();
-  yaxis = ON_CrossProduct(zaxis, xaxis);
+  yaxis = ON_CrossProduct (zaxis, xaxis);
   yaxis.Unitize();
   return b;
 }
 
 bool
-ON_Plane::CreateFromPoints(const ON_3dPoint& P, // point on the plane
-                           const ON_3dPoint& Q, // point on the plane
-                           const ON_3dPoint& R  // point on the plane
+ON_Plane::CreateFromPoints (const ON_3dPoint& P, // point on the plane
+                            const ON_3dPoint& Q, // point on the plane
+                            const ON_3dPoint& R  // point on the plane
 )
 {
   origin = P;
-  bool rc = zaxis.PerpendicularTo(P, Q, R);
+  bool rc = zaxis.PerpendicularTo (P, Q, R);
   xaxis = Q - P;
   xaxis.Unitize();
-  yaxis = ON_CrossProduct(zaxis, xaxis);
+  yaxis = ON_CrossProduct (zaxis, xaxis);
   yaxis.Unitize();
 
-  if (!plane_equation.Create(origin, zaxis))
+  if (!plane_equation.Create (origin, zaxis))
     rc = false;
 
   return rc;
@@ -329,9 +330,9 @@ ON_Plane::IsValid() const
   if (!plane_equation.IsValid())
     return false;
 
-  double x = plane_equation.ValueAt(origin);
-  if (fabs(x) > ON_ZERO_TOLERANCE) {
-    double tol = fabs(origin.MaximumCoordinate()) + fabs(plane_equation.d);
+  double x = plane_equation.ValueAt (origin);
+  if (fabs (x) > ON_ZERO_TOLERANCE) {
+    double tol = fabs (origin.MaximumCoordinate()) + fabs (plane_equation.d);
     if (tol > 1000.0 && origin.IsValid()) {
       // 8 September 2003 Chuck and Dale:
       //   Fixing discrepancy between optimized and debug behavior.
@@ -342,27 +343,27 @@ ON_Plane::IsValid() const
       //   the best we can hope for is to kill the first 15 or so decimal
       //   places.
       tol *= (ON_EPSILON * 10.0);
-      if (fabs(x) > tol)
+      if (fabs (x) > tol)
         return false;
     }
     else
       return false;
   }
 
-  if (!ON_IsRightHandFrame(xaxis, yaxis, zaxis))
+  if (!ON_IsRightHandFrame (xaxis, yaxis, zaxis))
     return false;
 
   ON_3dVector N = plane_equation;
   N.Unitize();
-  x = ON_DotProduct(N, zaxis);
-  if (fabs(x - 1.0) > ON_SQRT_EPSILON)
+  x = ON_DotProduct (N, zaxis);
+  if (fabs (x - 1.0) > ON_SQRT_EPSILON)
     return false;
 
   return true;
 }
 
 bool
-ON_Plane::Transform(const ON_Xform& xform)
+ON_Plane::Transform (const ON_Xform& xform)
 {
   if (xform.IsIdentity()) {
     // 27 October 2011 Dale Lear
@@ -388,29 +389,29 @@ ON_Plane::Transform(const ON_Xform& xform)
   ON_3dVector yaxis_vec =
       bUseVectorXform ? (xform * yaxis) : ((xform * (origin + yaxis)) - origin_pt);
 
-  return CreateFromFrame(origin_pt, xaxis_vec, yaxis_vec);
+  return CreateFromFrame (origin_pt, xaxis_vec, yaxis_vec);
 }
 
 bool
-ON_Plane::SwapCoordinates(int i, int j)
+ON_Plane::SwapCoordinates (int i, int j)
 {
   bool rc = false;
   if (0 <= i && i < 3 && 0 <= j && j < 3) {
-    ON_Xform xform(1);
+    ON_Xform xform (1);
     xform[i][i] = 0.0;
     xform[j][j] = 0.0;
     xform[i][j] = 1.0;
     xform[j][i] = 1.0;
-    rc = Transform(xform);
+    rc = Transform (xform);
   }
   return rc;
 }
 
 // rotate plane about its origin_pt
 bool
-ON_Plane::Rotate(double s,               // sin(angle)
-                 double c,               // cos(angle)
-                 const ON_3dVector& axis // axis of rotation
+ON_Plane::Rotate (double s,               // sin(angle)
+                  double c,               // cos(angle)
+                  const ON_3dVector& axis // axis of rotation
 )
 {
   bool rc = true;
@@ -422,59 +423,59 @@ ON_Plane::Rotate(double s,               // sin(angle)
   }
   else {
     ON_3dPoint origin_pt = origin;
-    rc = Rotate(s, c, axis, origin);
+    rc = Rotate (s, c, axis, origin);
     origin = origin_pt; // to kill any fuzz
   }
   return rc;
 }
 
 bool
-ON_Plane::Rotate(double angle,           // angle in radians
-                 const ON_3dVector& axis // axis of rotation
+ON_Plane::Rotate (double angle,           // angle in radians
+                  const ON_3dVector& axis // axis of rotation
 )
 {
-  return Rotate(sin(angle), cos(angle), axis);
+  return Rotate (sin (angle), cos (angle), axis);
 }
 
 // rotate plane about a point and axis
 bool
-ON_Plane::Rotate(double sin_angle,        // sin(angle)
-                 double cos_angle,        // cos(angle)
-                 const ON_3dVector& axis, // axis of rotation
-                 const ON_3dPoint& center // center of rotation
+ON_Plane::Rotate (double sin_angle,        // sin(angle)
+                  double cos_angle,        // cos(angle)
+                  const ON_3dVector& axis, // axis of rotation
+                  const ON_3dPoint& center // center of rotation
 )
 {
   bool rc = false;
   ON_Xform rot;
   if (center == origin) {
-    rot.Rotation(sin_angle, cos_angle, axis, ON_origin);
+    rot.Rotation (sin_angle, cos_angle, axis, ON_origin);
     xaxis = rot * xaxis;
     yaxis = rot * yaxis;
     zaxis = rot * zaxis;
     rc = UpdateEquation();
   }
   else {
-    rot.Rotation(sin_angle, cos_angle, axis, center);
-    rc = Transform(rot);
+    rot.Rotation (sin_angle, cos_angle, axis, center);
+    rc = Transform (rot);
   }
   return rc;
 }
 
 bool
-ON_Plane::Rotate(double a,                   // angle in radians
-                 const ON_3dVector& axis,    // axis of rotation
-                 const ON_3dPoint& origin_pt // center of rotation
+ON_Plane::Rotate (double a,                   // angle in radians
+                  const ON_3dVector& axis,    // axis of rotation
+                  const ON_3dPoint& origin_pt // center of rotation
 )
 {
-  return Rotate(sin(a), cos(a), axis, origin_pt);
+  return Rotate (sin (a), cos (a), axis, origin_pt);
 }
 
 bool
-ON_Plane::Translate(const ON_3dVector& delta)
+ON_Plane::Translate (const ON_3dVector& delta)
 {
   ON_Xform tr;
-  tr.Translation(delta);
-  return Transform(tr);
+  tr.Translation (delta);
+  return Transform (tr);
 }
 
 bool
@@ -507,27 +508,27 @@ ON_ArePointsOnPlane ( // returns 0=no, 1 = yes, 2 = pointset is (to tolerance) a
   if (count < 1)
     return 0;
   if (!plane.IsValid()) {
-    ON_ERROR("plane parameter is not valid");
+    ON_ERROR ("plane parameter is not valid");
     return 0;
   }
   if (!bbox.IsValid()) {
-    ON_ERROR("bbox parameter is not valid");
+    ON_ERROR ("bbox parameter is not valid");
     return 0;
   }
-  if (!ON_IsValid(tolerance) || tolerance < 0.0) {
-    ON_ERROR("tolerance must be >= 0.0");
+  if (!ON_IsValid (tolerance) || tolerance < 0.0) {
+    ON_ERROR ("tolerance must be >= 0.0");
     return 0;
   }
   if (dim < 2 || dim > 3) {
-    ON_ERROR("dim must be 2 or 3");
+    ON_ERROR ("dim must be 2 or 3");
     return 0;
   }
   if (stride < (is_rat ? (dim + 1) : dim)) {
-    ON_ERROR("stride parameter is too small");
+    ON_ERROR ("stride parameter is too small");
     return 0;
   }
   if (0 == point) {
-    ON_ERROR("point parameter is null");
+    ON_ERROR ("point parameter is null");
     return 0;
   }
 
@@ -547,7 +548,7 @@ ON_ArePointsOnPlane ( // returns 0=no, 1 = yes, 2 = pointset is (to tolerance) a
       Q.y = bbox[j].y;
       for (k = 0; rc && k < 2; k++) {
         Q.z = bbox[k].z;
-        if (Q.DistanceTo(plane.ClosestPointTo(Q)) > tolerance)
+        if (Q.DistanceTo (plane.ClosestPointTo (Q)) > tolerance)
           rc = 0;
       }
     }
@@ -561,11 +562,11 @@ ON_ArePointsOnPlane ( // returns 0=no, 1 = yes, 2 = pointset is (to tolerance) a
       for (i = 0; i < count; i++) {
         w = point[dim];
         if (w == 0.0) {
-          ON_ERROR("rational point has zero weight");
+          ON_ERROR ("rational point has zero weight");
           return 0;
         }
-        ON_ArrayScale(dim, 1.0 / w, point, &Q.x);
-        if (Q.DistanceTo(plane.ClosestPointTo(Q)) > tolerance) {
+        ON_ArrayScale (dim, 1.0 / w, point, &Q.x);
+        if (Q.DistanceTo (plane.ClosestPointTo (Q)) > tolerance) {
           rc = 0;
           break;
         }
@@ -574,8 +575,8 @@ ON_ArePointsOnPlane ( // returns 0=no, 1 = yes, 2 = pointset is (to tolerance) a
     }
     else {
       for (i = 0; i < count; i++) {
-        memcpy(&Q.x, point, dim * sizeof(Q.x));
-        if (Q.DistanceTo(plane.ClosestPointTo(Q)) > tolerance) {
+        memcpy (&Q.x, point, dim * sizeof (Q.x));
+        if (Q.DistanceTo (plane.ClosestPointTo (Q)) > tolerance) {
           rc = 0;
           break;
         }

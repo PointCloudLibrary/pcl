@@ -125,11 +125,11 @@ struct Device {
 template <template <typename> class Storage>
 class PointCloudAOS {
 public:
-  PointCloudAOS() : width(0), height(0), is_dense(true) {}
+  PointCloudAOS() : width (0), height (0), is_dense (true) {}
 
   //////////////////////////////////////////////////////////////////////////////////////
   inline PointCloudAOS&
-  operator=(const PointCloudAOS& rhs)
+  operator= (const PointCloudAOS& rhs)
   {
     points = rhs.points;
     width = rhs.width;
@@ -141,7 +141,7 @@ public:
   //////////////////////////////////////////////////////////////////////////////////////
   template <typename OtherStorage>
   inline PointCloudAOS&
-  operator<<(const OtherStorage& rhs)
+  operator<< (const OtherStorage& rhs)
   {
     points = rhs.points;
     // TODO: Test speed on operator () = vs resize+copy
@@ -159,21 +159,21 @@ public:
   {
     if (this->height > 1)
       return (points[v * this->width + u]);
-    return (PointXYZRGB(std::numeric_limits<float>::quiet_NaN(),
-                        std::numeric_limits<float>::quiet_NaN(),
-                        std::numeric_limits<float>::quiet_NaN(),
-                        0));
+    return (PointXYZRGB (std::numeric_limits<float>::quiet_NaN(),
+                         std::numeric_limits<float>::quiet_NaN(),
+                         std::numeric_limits<float>::quiet_NaN(),
+                         0));
     // throw IsNotDenseException ("Can't use 2D indexing with a sparse point cloud");
   }
 
   //////////////////////////////////////////////////////////////////////////////////////
   inline PointXYZRGB&
-  operator()(int u, int v)
+  operator() (int u, int v)
   {
     return (points[v * this->width + u]);
   }
   inline const PointXYZRGB&
-  operator()(int u, int v) const
+  operator() (int u, int v) const
   {
     return (points[v * this->width + u]);
   }
@@ -202,11 +202,11 @@ public:
 template <template <typename> class Storage>
 class PointCloudSOA {
 public:
-  PointCloudSOA() : width(0), height(0), is_dense(true) {}
+  PointCloudSOA() : width (0), height (0), is_dense (true) {}
 
   //////////////////////////////////////////////////////////////////////////////////////
   inline PointCloudSOA&
-  operator=(const PointCloudSOA& rhs)
+  operator= (const PointCloudSOA& rhs)
   {
     points_x = rhs.points_x;
     points_y = rhs.points_y;
@@ -220,7 +220,7 @@ public:
   //////////////////////////////////////////////////////////////////////////////////////
   template <typename OtherStorage>
   inline PointCloudSOA&
-  operator<<(const OtherStorage& rhs)
+  operator<< (const OtherStorage& rhs)
   {
     points_x = rhs.points_x;
     points_y = rhs.points_y;
@@ -237,17 +237,17 @@ public:
   void
   resize (std::size_t newsize)
   {
-    assert(sane());
-    points_x.resize(newsize);
-    points_y.resize(newsize);
-    points_z.resize(newsize);
+    assert (sane());
+    points_x.resize (newsize);
+    points_y.resize (newsize);
+    points_z.resize (newsize);
   }
 
   /** \brief Return the size of the internal vectors */
   std::size_t
   size () const
   {
-    assert(sane());
+    assert (sane());
     return (points_x.size());
   }
 
@@ -285,15 +285,15 @@ public:
   zip_iterator
   zip_begin ()
   {
-    return (thrust::make_zip_iterator(
-        thrust::make_tuple(points_x.begin(), points_y.begin(), points_z.begin())));
+    return (thrust::make_zip_iterator (
+        thrust::make_tuple (points_x.begin(), points_y.begin(), points_z.begin())));
   }
 
   zip_iterator
   zip_end ()
   {
-    return (thrust::make_zip_iterator(
-        thrust::make_tuple(points_x.end(), points_y.end(), points_z.end())));
+    return (thrust::make_zip_iterator (
+        thrust::make_tuple (points_x.end(), points_y.end(), points_z.end())));
   }
 };
 
@@ -324,13 +324,13 @@ struct StoragePointer<Device, T> {
   static thrust::device_ptr<U>
   cast (type ptr)
   {
-    return thrust::device_ptr<U>((U*)ptr.get());
+    return thrust::device_ptr<U> ((U*)ptr.get());
   }
   template <typename U>
   static thrust::device_ptr<U>
   cast (T* ptr)
   {
-    return thrust::device_ptr<U>((U*)ptr);
+    return thrust::device_ptr<U> ((U*)ptr);
   }
 };
 
@@ -352,7 +352,7 @@ struct StorageAllocator<Device, T> {
   static thrust::device_ptr<T>
   alloc (int size)
   {
-    return thrust::device_malloc<T>(size);
+    return thrust::device_malloc<T> (size);
   }
 };
 
@@ -361,7 +361,7 @@ struct StorageAllocator<Host, T> {
   static T*
   alloc (int size)
   {
-    return (T*)malloc(size);
+    return (T*)malloc (size);
   }
 };
 

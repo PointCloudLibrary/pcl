@@ -30,11 +30,11 @@
 voidpf
 zcalloc (voidpf, unsigned items, unsigned size)
 {
-  return oncalloc(items, size);
+  return oncalloc (items, size);
 }
 
 void
 zcfree (voidpf, voidpf ptr)
 {
-  onfree(ptr);
+  onfree (ptr);
 }

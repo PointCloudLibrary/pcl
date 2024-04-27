@@ -47,11 +47,11 @@
 class TrackBall {
 public:
   TrackBall();
-  TrackBall(const TrackBall& copy);
+  TrackBall (const TrackBall& copy);
   ~TrackBall();
 
   TrackBall&
-  operator=(const TrackBall& rhs);
+  operator= (const TrackBall& rhs);
 
   void
   start (int s_x, int s_y);

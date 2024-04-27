@@ -81,7 +81,7 @@ public:
   init (const PointCloudConstPtr& target)
   {
     target_points_ = target;
-    kdtree_.setInputCloud(target);
+    kdtree_.setInputCloud (target);
   }
 
   /** \brief The method performs trimmed ICP, i.e., it rigidly registers the source to
@@ -101,10 +101,10 @@ public:
          Matrix4& guess_and_result) const
   {
     int num_trimmed_source_points = num_source_points_to_use,
-        num_source_points = static_cast<int>(source_points.size());
+        num_source_points = static_cast<int> (source_points.size());
 
     if (num_trimmed_source_points >= num_source_points) {
-      printf(
+      printf (
           "WARNING in 'TrimmedICP::%s()': the user-defined number of source points of "
           "interest is greater or equal to "
           "the total number of source points. Trimmed ICP will work correctly but "
@@ -115,13 +115,13 @@ public:
     }
 
     // These are vectors containing source to target correspondences
-    pcl::Correspondences full_src_to_tgt(num_source_points),
-        trimmed_src_to_tgt(num_trimmed_source_points);
+    pcl::Correspondences full_src_to_tgt (num_source_points),
+        trimmed_src_to_tgt (num_trimmed_source_points);
 
     // Some variables for the closest point search
     pcl::PointXYZ transformed_source_point;
-    pcl::Indices target_index(1);
-    std::vector<float> sqr_dist_to_target(1);
+    pcl::Indices target_index (1);
+    std::vector<float> sqr_dist_to_target (1);
     float old_energy, energy = std::numeric_limits<float>::max();
 
     //          printf ("\nalign\n");
@@ -130,10 +130,10 @@ public:
       // Update the correspondences
       for (int i = 0; i < num_source_points; ++i) {
         // Transform the i-th source point based on the current transform matrix
-        aux::transform(guess_and_result, source_points[i], transformed_source_point);
+        aux::transform (guess_and_result, source_points[i], transformed_source_point);
 
         // Perform the closest point search
-        kdtree_.nearestKSearch(
+        kdtree_.nearestKSearch (
             transformed_source_point, 1, target_index, sqr_dist_to_target);
 
         // Update the i-th correspondence
@@ -143,9 +143,9 @@ public:
       }
 
       // Sort in ascending order according to the squared distance
-      std::sort(full_src_to_tgt.begin(),
-                full_src_to_tgt.end(),
-                TrimmedICP::compareCorrespondences);
+      std::sort (full_src_to_tgt.begin(),
+                 full_src_to_tgt.end(),
+                 TrimmedICP::compareCorrespondences);
 
       old_energy = energy;
       energy = 0.0f;
@@ -157,7 +157,7 @@ public:
         energy += full_src_to_tgt[i].distance;
       }
 
-      this->estimateRigidTransformation(
+      this->estimateRigidTransformation (
           source_points, *target_points_, trimmed_src_to_tgt, guess_and_result);
 
       //            printf ("energy = %f, energy diff. = %f, ratio = %f\n", energy,

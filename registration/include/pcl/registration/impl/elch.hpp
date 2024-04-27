@@ -53,18 +53,18 @@
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 void
-pcl::registration::ELCH<PointT>::loopOptimizerAlgorithm(LOAGraph& g, double* weights)
+pcl::registration::ELCH<PointT>::loopOptimizerAlgorithm (LOAGraph& g, double* weights)
 {
   std::list<int> crossings, branches;
-  crossings.push_back(static_cast<int>(loop_start_));
-  crossings.push_back(static_cast<int>(loop_end_));
+  crossings.push_back (static_cast<int> (loop_start_));
+  crossings.push_back (static_cast<int> (loop_end_));
   weights[loop_start_] = 0;
   weights[loop_end_] = 1;
 
-  int* p = new int[num_vertices(g)];
-  int* p_min = new int[num_vertices(g)];
-  double* d = new double[num_vertices(g)];
-  double* d_min = new double[num_vertices(g)];
+  int* p = new int[num_vertices (g)];
+  int* p_min = new int[num_vertices (g)];
+  double* d = new double[num_vertices (g)];
+  double* d_min = new double[num_vertices (g)];
   bool do_swap = false;
   std::list<int>::iterator start_min, end_min;
 
@@ -73,12 +73,12 @@ pcl::registration::ELCH<PointT>::loopOptimizerAlgorithm(LOAGraph& g, double* wei
     double dist = -1;
     // find shortest crossing for all vertices on the loop
     for (auto crossings_it = crossings.begin(); crossings_it != crossings.end();) {
-      dijkstra_shortest_paths(g,
-                              *crossings_it,
-                              predecessor_map(boost::make_iterator_property_map(
-                                                  p, get(boost::vertex_index, g)))
-                                  .distance_map(boost::make_iterator_property_map(
-                                      d, get(boost::vertex_index, g))));
+      dijkstra_shortest_paths (g,
+                               *crossings_it,
+                               predecessor_map (boost::make_iterator_property_map (
+                                                    p, get (boost::vertex_index, g)))
+                                   .distance_map (boost::make_iterator_property_map (
+                                       d, get (boost::vertex_index, g))));
 
       auto end_it = crossings_it;
       end_it++;
@@ -92,36 +92,36 @@ pcl::registration::ELCH<PointT>::loopOptimizerAlgorithm(LOAGraph& g, double* wei
         }
       }
       if (do_swap) {
-        std::swap(p, p_min);
-        std::swap(d, d_min);
+        std::swap (p, p_min);
+        std::swap (d, d_min);
         do_swap = false;
       }
       // vertex starts a branch
       if (dist < 0) {
-        branches.push_back(static_cast<int>(*crossings_it));
-        crossings_it = crossings.erase(crossings_it);
+        branches.push_back (static_cast<int> (*crossings_it));
+        crossings_it = crossings.erase (crossings_it);
       }
       else
         crossings_it++;
     }
 
     if (dist > -1) {
-      remove_edge(*end_min, p_min[*end_min], g);
+      remove_edge (*end_min, p_min[*end_min], g);
       for (int i = p_min[*end_min]; i != *start_min; i = p_min[i]) {
         // even right with weights[*start_min] > weights[*end_min]! (math works)
         weights[i] = weights[*start_min] + (weights[*end_min] - weights[*start_min]) *
                                                d_min[i] / d_min[*end_min];
-        remove_edge(i, p_min[i], g);
-        if (degree(i, g) > 0) {
-          crossings.push_back(i);
+        remove_edge (i, p_min[i], g);
+        if (degree (i, g) > 0) {
+          crossings.push_back (i);
         }
       }
 
-      if (degree(*start_min, g) == 0)
-        crossings.erase(start_min);
+      if (degree (*start_min, g) == 0)
+        crossings.erase (start_min);
 
-      if (degree(*end_min, g) == 0)
-        crossings.erase(end_min);
+      if (degree (*end_min, g) == 0)
+        crossings.erase (end_min);
     }
   }
 
@@ -137,14 +137,14 @@ pcl::registration::ELCH<PointT>::loopOptimizerAlgorithm(LOAGraph& g, double* wei
     int s = branches.front();
     branches.pop_front();
 
-    for (std::tie(adjacent_it, adjacent_it_end) = adjacent_vertices(s, g);
+    for (std::tie (adjacent_it, adjacent_it_end) = adjacent_vertices (s, g);
          adjacent_it != adjacent_it_end;
          ++adjacent_it) {
       weights[*adjacent_it] = weights[s];
-      if (degree(*adjacent_it, g) > 1)
-        branches.push_back(static_cast<int>(*adjacent_it));
+      if (degree (*adjacent_it, g) > 1)
+        branches.push_back (static_cast<int> (*adjacent_it));
     }
-    clear_vertex(s, g);
+    clear_vertex (s, g);
   }
 }
 
@@ -160,25 +160,25 @@ pcl::registration::ELCH<PointT>::initCompute()
   }*/ //TODO
 
   if (loop_end_ == 0) {
-    PCL_ERROR("[pcl::registration::ELCH::initCompute] no end of loop defined!\n");
+    PCL_ERROR ("[pcl::registration::ELCH::initCompute] no end of loop defined!\n");
     deinitCompute();
     return (false);
   }
 
   // compute transformation if it's not given
   if (compute_loop_) {
-    PointCloudPtr meta_start(new PointCloud);
-    PointCloudPtr meta_end(new PointCloud);
+    PointCloudPtr meta_start (new PointCloud);
+    PointCloudPtr meta_end (new PointCloud);
     *meta_start = *(*loop_graph_)[loop_start_].cloud;
     *meta_end = *(*loop_graph_)[loop_end_].cloud;
 
     typename boost::graph_traits<LoopGraph>::adjacency_iterator si, si_end;
-    for (std::tie(si, si_end) = adjacent_vertices(loop_start_, *loop_graph_);
+    for (std::tie (si, si_end) = adjacent_vertices (loop_start_, *loop_graph_);
          si != si_end;
          si++)
       *meta_start += *(*loop_graph_)[*si].cloud;
 
-    for (std::tie(si, si_end) = adjacent_vertices(loop_end_, *loop_graph_);
+    for (std::tie (si, si_end) = adjacent_vertices (loop_end_, *loop_graph_);
          si != si_end;
          si++)
       *meta_end += *(*loop_graph_)[*si].cloud;
@@ -190,17 +190,17 @@ pcl::registration::ELCH<PointT>::initCompute()
     // Eigen::Vector4f pose_end;
     // pcl::compute3DCentroid (*(*loop_graph_)[loop_end_].cloud, pose_end);
 
-    PointCloudPtr tmp(new PointCloud);
+    PointCloudPtr tmp (new PointCloud);
     // Eigen::Vector4f diff = pose_start - pose_end;
     // Eigen::Translation3f translation (diff.head<3> ());
     // Eigen::Affine3f trans = translation * Eigen::Quaternionf::Identity ();
     // pcl::transformPointCloud (*(*loop_graph_)[loop_end_].cloud, *tmp, trans);
 
-    reg_->setInputTarget(meta_start);
+    reg_->setInputTarget (meta_start);
 
-    reg_->setInputSource(meta_end);
+    reg_->setInputSource (meta_end);
 
-    reg_->align(*tmp);
+    reg_->align (*tmp);
 
     loop_transform_ = reg_->getFinalTransformation();
     // TODO hack
@@ -222,19 +222,19 @@ pcl::registration::ELCH<PointT>::compute()
   LOAGraph grb[4];
 
   typename boost::graph_traits<LoopGraph>::edge_iterator edge_it, edge_it_end;
-  for (std::tie(edge_it, edge_it_end) = edges(*loop_graph_); edge_it != edge_it_end;
+  for (std::tie (edge_it, edge_it_end) = edges (*loop_graph_); edge_it != edge_it_end;
        edge_it++) {
     for (auto& j : grb)
-      add_edge(source(*edge_it, *loop_graph_),
-               target(*edge_it, *loop_graph_),
-               1,
-               j); // TODO add variance
+      add_edge (source (*edge_it, *loop_graph_),
+                target (*edge_it, *loop_graph_),
+                1,
+                j); // TODO add variance
   }
 
   double* weights[4];
   for (int i = 0; i < 4; i++) {
-    weights[i] = new double[num_vertices(*loop_graph_)];
-    loopOptimizerAlgorithm(grb[i], weights[i]);
+    weights[i] = new double[num_vertices (*loop_graph_)];
+    loopOptimizerAlgorithm (grb[i], weights[i]);
   }
 
   // TODO use pose
@@ -248,27 +248,27 @@ pcl::registration::ELCH<PointT>::compute()
   // typename boost::graph_traits<LoopGraph>::vertex_iterator vertex_it, vertex_it_end;
   // for (std::tie (vertex_it, vertex_it_end) = vertices (*loop_graph_); vertex_it !=
   // vertex_it_end; vertex_it++)
-  for (std::size_t i = 0; i < num_vertices(*loop_graph_); i++) {
+  for (std::size_t i = 0; i < num_vertices (*loop_graph_); i++) {
     Eigen::Vector3f t2;
-    t2[0] = loop_transform_(0, 3) * static_cast<float>(weights[0][i]);
-    t2[1] = loop_transform_(1, 3) * static_cast<float>(weights[1][i]);
-    t2[2] = loop_transform_(2, 3) * static_cast<float>(weights[2][i]);
+    t2[0] = loop_transform_ (0, 3) * static_cast<float> (weights[0][i]);
+    t2[1] = loop_transform_ (1, 3) * static_cast<float> (weights[1][i]);
+    t2[2] = loop_transform_ (2, 3) * static_cast<float> (weights[2][i]);
 
-    Eigen::Affine3f bl(loop_transform_);
-    Eigen::Quaternionf q(bl.rotation());
+    Eigen::Affine3f bl (loop_transform_);
+    Eigen::Quaternionf q (bl.rotation());
     Eigen::Quaternionf q2;
-    q2 = Eigen::Quaternionf::Identity().slerp(static_cast<float>(weights[3][i]), q);
+    q2 = Eigen::Quaternionf::Identity().slerp (static_cast<float> (weights[3][i]), q);
 
     // TODO use rotation from branch start
-    Eigen::Translation3f t3(t2);
-    Eigen::Affine3f a(t3 * q2);
+    Eigen::Translation3f t3 (t2);
+    Eigen::Affine3f a (t3 * q2);
     // a = aend * a * aendI;
 
-    pcl::transformPointCloud(*(*loop_graph_)[i].cloud, *(*loop_graph_)[i].cloud, a);
+    pcl::transformPointCloud (*(*loop_graph_)[i].cloud, *(*loop_graph_)[i].cloud, a);
     (*loop_graph_)[i].transform = a;
   }
 
-  add_edge(loop_start_, loop_end_, *loop_graph_);
+  add_edge (loop_start_, loop_end_, *loop_graph_);
 
   deinitCompute();
 }

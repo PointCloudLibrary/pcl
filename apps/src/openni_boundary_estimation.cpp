@@ -77,40 +77,40 @@ public:
   using CloudPtr = Cloud::Ptr;
   using CloudConstPtr = Cloud::ConstPtr;
 
-  OpenNIIntegralImageNormalEstimation(const std::string& device_id = "")
-  : viewer("PCL OpenNI NormalEstimation Viewer"), device_id_(device_id)
+  OpenNIIntegralImageNormalEstimation (const std::string& device_id = "")
+  : viewer ("PCL OpenNI NormalEstimation Viewer"), device_id_ (device_id)
   {
-    ne_.setNormalEstimationMethod(ne_.AVERAGE_3D_GRADIENT);
-    ne_.setRectSize(10, 10);
+    ne_.setNormalEstimationMethod (ne_.AVERAGE_3D_GRADIENT);
+    ne_.setRectSize (10, 10);
     new_cloud_ = false;
 
-    pass_.setDownsampleAllData(true);
-    pass_.setLeafSize(0.005f, 0.005f, 0.005f);
+    pass_.setDownsampleAllData (true);
+    pass_.setLeafSize (0.005f, 0.005f, 0.005f);
 
-    pcl::search::OrganizedNeighbor<pcl::PointXYZRGBNormal>::Ptr tree(
+    pcl::search::OrganizedNeighbor<pcl::PointXYZRGBNormal>::Ptr tree (
         new pcl::search::OrganizedNeighbor<pcl::PointXYZRGBNormal>);
-    be_.setRadiusSearch(0.02);
-    be_.setSearchMethod(tree);
+    be_.setRadiusSearch (0.02);
+    be_.setSearchMethod (tree);
   }
 
   void
   cloud_cb (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr& cloud)
   {
-    std::lock_guard<std::mutex> lock(mtx_);
+    std::lock_guard<std::mutex> lock (mtx_);
     // lock while we set our cloud;
-    FPS_CALC("computation");
+    FPS_CALC ("computation");
 
-    cloud_.reset(new pcl::PointCloud<pcl::PointXYZRGBNormal>);
+    cloud_.reset (new pcl::PointCloud<pcl::PointXYZRGBNormal>);
 
     // Estimate surface normals
-    ne_.setInputCloud(cloud);
-    ne_.compute(*cloud_);
-    copyPointCloud(*cloud, *cloud_);
+    ne_.setInputCloud (cloud);
+    ne_.compute (*cloud_);
+    copyPointCloud (*cloud, *cloud_);
 
-    be_.setInputCloud(cloud_);
-    be_.setInputNormals(cloud_);
-    boundaries_.reset(new pcl::PointCloud<pcl::Boundary>);
-    be_.compute(*boundaries_);
+    be_.setInputCloud (cloud_);
+    be_.setInputNormals (cloud_);
+    boundaries_.reset (new pcl::PointCloud<pcl::Boundary>);
+    be_.compute (*boundaries_);
 
     new_cloud_ = true;
   }
@@ -118,26 +118,26 @@ public:
   void
   viz_cb (pcl::visualization::PCLVisualizer& viz)
   {
-    std::lock_guard<std::mutex> lock(mtx_);
+    std::lock_guard<std::mutex> lock (mtx_);
     if (!cloud_) {
-      std::this_thread::sleep_for(1s);
+      std::this_thread::sleep_for (1s);
       return;
     }
 
     // Render the data
     if (new_cloud_ && cloud_ && boundaries_) {
       CloudPtr temp_cloud;
-      temp_cloud.swap(cloud_); // here we set cloud_ to null, so that
+      temp_cloud.swap (cloud_); // here we set cloud_ to null, so that
 
-      viz.removePointCloud("normalcloud");
-      pcl::PCLPointCloud2::Ptr cloud2(new pcl::PCLPointCloud2);
-      pcl::toPCLPointCloud2(*boundaries_, *cloud2);
-      ColorHandlerConstPtr color_handler(
+      viz.removePointCloud ("normalcloud");
+      pcl::PCLPointCloud2::Ptr cloud2 (new pcl::PCLPointCloud2);
+      pcl::toPCLPointCloud2 (*boundaries_, *cloud2);
+      ColorHandlerConstPtr color_handler (
           new pcl::visualization::PointCloudColorHandlerGenericField<
-              pcl::PCLPointCloud2>(cloud2, "boundary_point"));
-      viz.addPointCloud<pcl::PointXYZRGBNormal>(
+              pcl::PCLPointCloud2> (cloud2, "boundary_point"));
+      viz.addPointCloud<pcl::PointXYZRGBNormal> (
           temp_cloud, color_handler, "normalcloud");
-      viz.resetCameraViewpoint("normalcloud");
+      viz.resetCameraViewpoint ("normalcloud");
       new_cloud_ = false;
     }
   }
@@ -145,21 +145,21 @@ public:
   void
   run ()
   {
-    pcl::OpenNIGrabber interface(device_id_);
+    pcl::OpenNIGrabber interface (device_id_);
 
-    std::function<void(const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr&)> f =
+    std::function<void (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr&)> f =
         [this] (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr& cloud) {
-          cloud_cb(cloud);
+          cloud_cb (cloud);
         };
-    boost::signals2::connection c = interface.registerCallback(f);
+    boost::signals2::connection c = interface.registerCallback (f);
 
-    viewer.runOnVisualizationThread(
-        [this] (pcl::visualization::PCLVisualizer& viz) { viz_cb(viz); }, "viz_cb");
+    viewer.runOnVisualizationThread (
+        [this] (pcl::visualization::PCLVisualizer& viz) { viz_cb (viz); }, "viz_cb");
 
     interface.start();
 
     while (!viewer.wasStopped()) {
-      std::this_thread::sleep_for(1s);
+      std::this_thread::sleep_for (1s);
     }
 
     interface.stop();
@@ -213,25 +213,25 @@ int
 main (int argc, char** argv)
 {
   /////////////////////////////////////////////////////////////////////
-  if (pcl::console::find_argument(argc, argv, "-h") != -1 ||
-      pcl::console::find_argument(argc, argv, "--help") != -1) {
-    usage(argv);
+  if (pcl::console::find_argument (argc, argv, "-h") != -1 ||
+      pcl::console::find_argument (argc, argv, "--help") != -1) {
+    usage (argv);
     return 1;
   }
 
   std::string device_id = "";
-  if (pcl::console::parse_argument(argc, argv, "-device_id", device_id) == -1 &&
+  if (pcl::console::parse_argument (argc, argv, "-device_id", device_id) == -1 &&
       argc > 1 && argv[1][0] != '-')
     device_id = argv[1];
   /////////////////////////////////////////////////////////////////////
 
-  pcl::OpenNIGrabber grabber(device_id);
+  pcl::OpenNIGrabber grabber (device_id);
   if (grabber.providesCallback<pcl::OpenNIGrabber::sig_cb_openni_point_cloud_rgb>()) {
-    OpenNIIntegralImageNormalEstimation v(device_id);
+    OpenNIIntegralImageNormalEstimation v (device_id);
     v.run();
   }
   else
-    PCL_ERROR("The input device does not provide a PointXYZRGB mode.\n");
+    PCL_ERROR ("The input device does not provide a PointXYZRGB mode.\n");
 
   return 0;
 }

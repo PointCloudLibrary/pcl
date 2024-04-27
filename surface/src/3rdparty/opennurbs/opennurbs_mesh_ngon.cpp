@@ -28,19 +28,19 @@ ON_MeshNgonList::Destroy()
   m_ngons_count = 0;
   m_ngons_capacity = 0;
   if (0 != m_ngons) {
-    onfree(m_ngons);
+    onfree (m_ngons);
     m_ngons = 0;
   }
   struct ON_NGON_MEMBLK* p = m_memblk_list;
   m_memblk_list = 0;
   while (p) {
     struct ON_NGON_MEMBLK* next = p->next;
-    onfree(p);
+    onfree (p);
     p = next;
   }
 }
 
-ON_MeshNgonList::ON_MeshNgonList(const ON_MeshNgonList& src)
+ON_MeshNgonList::ON_MeshNgonList (const ON_MeshNgonList& src)
 {
   m_ngons_count = 0;
   m_ngons_capacity = 0;
@@ -52,25 +52,25 @@ ON_MeshNgonList::ON_MeshNgonList(const ON_MeshNgonList& src)
 }
 
 ON_MeshNgonList&
-ON_MeshNgonList::operator=(const ON_MeshNgonList& src)
+ON_MeshNgonList::operator= (const ON_MeshNgonList& src)
 {
   if (this != &src) {
     Destroy();
-    ReserveNgonCapacity(src.m_ngons_count);
+    ReserveNgonCapacity (src.m_ngons_count);
     for (int i = 0; i < src.m_ngons_count; i++) {
       const ON_MeshNgon& ngon = src.m_ngons[i];
-      AddNgon(ngon.N, ngon.vi, ngon.fi);
+      AddNgon (ngon.N, ngon.vi, ngon.fi);
     }
   }
   return *this;
 }
 
 bool
-ON_MeshNgonList::ReserveNgonCapacity(int capacity)
+ON_MeshNgonList::ReserveNgonCapacity (int capacity)
 {
   bool rc = true;
   if (capacity > m_ngons_capacity) {
-    m_ngons = (ON_MeshNgon*)onrealloc(m_ngons, capacity * sizeof(m_ngons[0]));
+    m_ngons = (ON_MeshNgon*)onrealloc (m_ngons, capacity * sizeof (m_ngons[0]));
     if (0 == m_ngons) {
       m_ngons_capacity = 0;
       m_ngons_count = 0;
@@ -84,7 +84,7 @@ ON_MeshNgonList::ReserveNgonCapacity(int capacity)
 }
 
 struct ON_MeshNgon*
-ON_MeshNgonList::AddNgon(int N)
+ON_MeshNgonList::AddNgon (int N)
 {
   if (N < 3 || N > 100000)
     return 0;
@@ -93,34 +93,34 @@ ON_MeshNgonList::AddNgon(int N)
     int capacity = 2 * m_ngons_count;
     if (capacity < m_ngons_count + 16)
       capacity = m_ngons_count + 16;
-    if (!ReserveNgonCapacity(capacity))
+    if (!ReserveNgonCapacity (capacity))
       return 0;
   }
   ON_MeshNgon& ngon = m_ngons[m_ngons_count++];
 
   ngon.N = N;
   struct ON_NGON_MEMBLK* blk =
-      (struct ON_NGON_MEMBLK*)onmalloc(sizeof(*blk) + (2 * N) * sizeof(int));
+      (struct ON_NGON_MEMBLK*)onmalloc (sizeof (*blk) + (2 * N) * sizeof (int));
   if (0 == blk)
     return 0;
   ngon.vi = (int*)(blk + 1);
   ngon.fi = ngon.vi + N;
-  memset(ngon.vi, 0xFF, (2 * N) * sizeof(int)); // set all indicies to -1
+  memset (ngon.vi, 0xFF, (2 * N) * sizeof (int)); // set all indicies to -1
   blk->next = m_memblk_list;
   m_memblk_list = blk;
   return &ngon;
 }
 
 bool
-ON_MeshNgonList::AddNgon(int N, const int* vi, const int* fi)
+ON_MeshNgonList::AddNgon (int N, const int* vi, const int* fi)
 {
   if (0 == vi || 0 == fi)
     return false;
-  struct ON_MeshNgon* ngon = AddNgon(N);
+  struct ON_MeshNgon* ngon = AddNgon (N);
   if (0 == ngon)
     return false;
-  memcpy(ngon->vi, vi, N * sizeof(ngon->vi[0]));
-  memcpy(ngon->fi, fi, (N - 2) * sizeof(ngon->fi[0]));
+  memcpy (ngon->vi, vi, N * sizeof (ngon->vi[0]));
+  memcpy (ngon->fi, fi, (N - 2) * sizeof (ngon->fi[0]));
   return true;
 }
 
@@ -131,7 +131,7 @@ ON_MeshNgonList::NgonCount() const
 }
 
 ON_MeshNgon*
-ON_MeshNgonList::Ngon(int Ngon_index) const
+ON_MeshNgonList::Ngon (int Ngon_index) const
 {
   return (Ngon_index < 0 || Ngon_index >= m_ngons_count) ? 0 : m_ngons + Ngon_index;
 }
@@ -140,14 +140,14 @@ class /* DO NOT EXPORT THIS CLASS */ ON_MeshNgonUserData : public ON_UserData {
 #if !defined(ON_NGON_BOZO_VACCINE)
 #error You are a bozo!  Read the comments.
 #endif
-  ON_OBJECT_DECLARE(ON_MeshNgonUserData);
+  ON_OBJECT_DECLARE (ON_MeshNgonUserData);
 
 public:
   ON_MeshNgonUserData();
   ~ON_MeshNgonUserData();
-  ON_MeshNgonUserData(const ON_MeshNgonUserData&);
+  ON_MeshNgonUserData (const ON_MeshNgonUserData&);
   ON_MeshNgonUserData&
-  operator=(const ON_MeshNgonUserData&);
+  operator= (const ON_MeshNgonUserData&);
 
   // vitual ON_UserData override
   ON_BOOL32
@@ -163,7 +163,7 @@ public:
   ON_BOOL32
   GetDescription (ON_wString&);
   ON_BOOL32
-  Archive () const;
+  Archive() const;
 
 public:
   ON_MeshNgonList* m_ngon_list;
@@ -176,9 +176,9 @@ public:
   int m_mesh_V_count;
 };
 
-ON_OBJECT_IMPLEMENT(ON_MeshNgonUserData,
-                    ON_UserData,
-                    "31F55AA3-71FB-49f5-A975-757584D937FF");
+ON_OBJECT_IMPLEMENT (ON_MeshNgonUserData,
+                     ON_UserData,
+                     "31F55AA3-71FB-49f5-A975-757584D937FF");
 
 ON_MeshNgonUserData::ON_MeshNgonUserData()
 {
@@ -198,25 +198,25 @@ ON_MeshNgonUserData::~ON_MeshNgonUserData()
   }
 }
 
-ON_MeshNgonUserData::ON_MeshNgonUserData(const ON_MeshNgonUserData& src)
-: ON_UserData(src)
-, m_mesh_F_count(src.m_mesh_F_count)
-, m_mesh_V_count(src.m_mesh_V_count)
+ON_MeshNgonUserData::ON_MeshNgonUserData (const ON_MeshNgonUserData& src)
+: ON_UserData (src)
+, m_mesh_F_count (src.m_mesh_F_count)
+, m_mesh_V_count (src.m_mesh_V_count)
 {
-  m_ngon_list = (0 != src.m_ngon_list) ? new ON_MeshNgonList(*src.m_ngon_list) : 0;
+  m_ngon_list = (0 != src.m_ngon_list) ? new ON_MeshNgonList (*src.m_ngon_list) : 0;
 }
 
 ON_MeshNgonUserData&
-ON_MeshNgonUserData::operator=(const ON_MeshNgonUserData& src)
+ON_MeshNgonUserData::operator= (const ON_MeshNgonUserData& src)
 {
   if (this != &src) {
     if (0 != m_ngon_list) {
       delete m_ngon_list;
       m_ngon_list = 0;
     }
-    ON_UserData::operator=(src);
+    ON_UserData::operator= (src);
     if (0 != src.m_ngon_list) {
-      m_ngon_list = new ON_MeshNgonList(*src.m_ngon_list);
+      m_ngon_list = new ON_MeshNgonList (*src.m_ngon_list);
     }
     m_mesh_F_count = src.m_mesh_F_count;
     m_mesh_V_count = src.m_mesh_V_count;
@@ -225,21 +225,18 @@ ON_MeshNgonUserData::operator=(const ON_MeshNgonUserData& src)
 }
 
 ON_BOOL32
-ON_MeshNgonUserData::IsValid(ON_TextLog*) const
-{
-  return true;
-}
+ON_MeshNgonUserData::IsValid (ON_TextLog*) const { return true; }
 
 unsigned int
 ON_MeshNgonList::SizeOf() const
 {
-  unsigned int sz = sizeof(*this);
+  unsigned int sz = sizeof (*this);
   int icount = 0;
   for (int i = 0; i < m_ngons_count; i++) {
     icount += 2 * m_ngons[i].N;
   }
-  sz += m_ngons_capacity * sizeof(m_ngons[0]);
-  sz += icount * sizeof(int);
+  sz += m_ngons_capacity * sizeof (m_ngons[0]);
+  sz += icount * sizeof (int);
   return sz;
 }
 
@@ -253,28 +250,28 @@ ON_MeshNgonUserData::SizeOf() const
 }
 
 ON_BOOL32
-ON_MeshNgonUserData::Write(ON_BinaryArchive& archive) const
+ON_MeshNgonUserData::Write (ON_BinaryArchive& archive) const
 {
-  bool rc = archive.BeginWrite3dmChunk(TCODE_ANONYMOUS_CHUNK, 1, 1);
+  bool rc = archive.BeginWrite3dmChunk (TCODE_ANONYMOUS_CHUNK, 1, 1);
   if (!rc)
     return false;
   for (;;) {
     int count = (0 == m_ngon_list) ? 0 : m_ngon_list->NgonCount();
-    const ON_MeshNgon* ngon_array = (count > 0) ? m_ngon_list->Ngon(0) : 0;
+    const ON_MeshNgon* ngon_array = (count > 0) ? m_ngon_list->Ngon (0) : 0;
     if (0 == ngon_array)
       count = 0;
-    rc = archive.WriteInt(count);
+    rc = archive.WriteInt (count);
     if (count <= 0 || !rc)
       break;
     for (int i = 0; i < count; i++) {
       const struct ON_MeshNgon& ngon = ngon_array[i];
-      rc = archive.WriteInt(ngon.N);
+      rc = archive.WriteInt (ngon.N);
       if (!rc)
         break;
-      rc = archive.WriteInt(ngon.N, ngon.vi);
+      rc = archive.WriteInt (ngon.N, ngon.vi);
       if (!rc)
         break;
-      rc = archive.WriteInt(ngon.N, ngon.fi);
+      rc = archive.WriteInt (ngon.N, ngon.fi);
       if (!rc)
         break;
     }
@@ -282,10 +279,10 @@ ON_MeshNgonUserData::Write(ON_BinaryArchive& archive) const
       break;
 
     // chunk version 1.1 added face and vertex validation counts.
-    rc = archive.WriteInt(m_mesh_F_count);
+    rc = archive.WriteInt (m_mesh_F_count);
     if (!rc)
       break;
-    rc = archive.WriteInt(m_mesh_V_count);
+    rc = archive.WriteInt (m_mesh_V_count);
     if (!rc)
       break;
 
@@ -297,7 +294,7 @@ ON_MeshNgonUserData::Write(ON_BinaryArchive& archive) const
 }
 
 ON_BOOL32
-ON_MeshNgonUserData::Read(ON_BinaryArchive& archive)
+ON_MeshNgonUserData::Read (ON_BinaryArchive& archive)
 {
   if (0 != m_ngon_list) {
     delete m_ngon_list;
@@ -306,7 +303,7 @@ ON_MeshNgonUserData::Read(ON_BinaryArchive& archive)
   int major_version = 0;
   int minor_version = 0;
   bool rc =
-      archive.BeginRead3dmChunk(TCODE_ANONYMOUS_CHUNK, &major_version, &minor_version);
+      archive.BeginRead3dmChunk (TCODE_ANONYMOUS_CHUNK, &major_version, &minor_version);
   if (!rc)
     return false;
   for (;;) {
@@ -314,7 +311,7 @@ ON_MeshNgonUserData::Read(ON_BinaryArchive& archive)
     if (!rc)
       break;
     int count = 0;
-    rc = archive.ReadInt(&count);
+    rc = archive.ReadInt (&count);
     if (count <= 0 || !rc)
       break;
 
@@ -322,23 +319,23 @@ ON_MeshNgonUserData::Read(ON_BinaryArchive& archive)
     if (0 == m_ngon_list)
       break;
 
-    m_ngon_list->ReserveNgonCapacity(count);
+    m_ngon_list->ReserveNgonCapacity (count);
 
     for (int i = 0; i < count; i++) {
       int N = 0;
-      rc = archive.ReadInt(&N);
+      rc = archive.ReadInt (&N);
       if (!rc)
         break;
       if (N <= 0)
         continue;
-      struct ON_MeshNgon* ngon = m_ngon_list->AddNgon(N);
+      struct ON_MeshNgon* ngon = m_ngon_list->AddNgon (N);
       if (0 == ngon)
         break;
 
-      rc = archive.ReadInt(N, ngon->vi);
+      rc = archive.ReadInt (N, ngon->vi);
       if (!rc)
         break;
-      rc = archive.ReadInt(N, ngon->fi);
+      rc = archive.ReadInt (N, ngon->fi);
       if (!rc)
         break;
       ngon->N = N;
@@ -348,10 +345,10 @@ ON_MeshNgonUserData::Read(ON_BinaryArchive& archive)
 
     if (minor_version >= 1) {
       // chunk version 1.1 added face and vertex validation counts.
-      rc = archive.ReadInt(&m_mesh_F_count);
+      rc = archive.ReadInt (&m_mesh_F_count);
       if (!rc)
         break;
-      rc = archive.ReadInt(&m_mesh_V_count);
+      rc = archive.ReadInt (&m_mesh_V_count);
       if (!rc)
         break;
     }
@@ -365,7 +362,7 @@ ON_MeshNgonUserData::Read(ON_BinaryArchive& archive)
 
 // vitual ON_UserData override
 ON_BOOL32
-ON_MeshNgonUserData::GetDescription(ON_wString& description)
+ON_MeshNgonUserData::GetDescription (ON_wString& description)
 {
   description = L"Mesh N-gon list";
   return true;
@@ -414,7 +411,7 @@ ON_ValidateMeshNgonUserData (ON_MeshNgonUserData* ngud, const ON_Mesh& mesh)
     const int ngon_count = ngud->m_ngon_list->NgonCount();
 
     for (i = 0; i < ngon_count; i++) {
-      if (!ON_ValidateNgon(ngud->m_ngon_list->Ngon(i), mesh_V_count, mesh_F_count))
+      if (!ON_ValidateNgon (ngud->m_ngon_list->Ngon (i), mesh_V_count, mesh_F_count))
         return false;
     }
 
@@ -433,10 +430,10 @@ const class ON_MeshNgonList*
 ON_Mesh::NgonList() const
 {
   ON_UserData* ud =
-      GetUserData(ON_MeshNgonUserData::m_ON_MeshNgonUserData_class_id.Uuid());
-  ON_MeshNgonUserData* ngud = ON_MeshNgonUserData::Cast(ud);
+      GetUserData (ON_MeshNgonUserData::m_ON_MeshNgonUserData_class_id.Uuid());
+  ON_MeshNgonUserData* ngud = ON_MeshNgonUserData::Cast (ud);
 
-  if (0 != ngud && !ON_ValidateMeshNgonUserData(ngud, *this)) {
+  if (0 != ngud && !ON_ValidateMeshNgonUserData (ngud, *this)) {
     delete ngud;
     ngud = 0;
   }
@@ -448,8 +445,8 @@ class ON_MeshNgonList*
 ON_Mesh::ModifyNgonList()
 {
   ON_UserData* ud =
-      GetUserData(ON_MeshNgonUserData::m_ON_MeshNgonUserData_class_id.Uuid());
-  ON_MeshNgonUserData* ngud = ON_MeshNgonUserData::Cast(ud);
+      GetUserData (ON_MeshNgonUserData::m_ON_MeshNgonUserData_class_id.Uuid());
+  ON_MeshNgonUserData* ngud = ON_MeshNgonUserData::Cast (ud);
   if (0 == ngud) {
     if (ud) {
       delete ud;
@@ -458,9 +455,9 @@ ON_Mesh::ModifyNgonList()
     ngud = new ON_MeshNgonUserData();
     ngud->m_mesh_F_count = m_F.Count();
     ngud->m_mesh_V_count = m_V.Count();
-    AttachUserData(ngud);
+    AttachUserData (ngud);
   }
-  else if (0 != ngud->m_ngon_list && !ON_ValidateMeshNgonUserData(ngud, *this)) {
+  else if (0 != ngud->m_ngon_list && !ON_ValidateMeshNgonUserData (ngud, *this)) {
     delete ngud->m_ngon_list;
     ngud->m_ngon_list = 0;
   }
@@ -478,7 +475,7 @@ void
 ON_Mesh::DestroyNgonList()
 {
   ON_UserData* ud =
-      GetUserData(ON_MeshNgonUserData::m_ON_MeshNgonUserData_class_id.Uuid());
+      GetUserData (ON_MeshNgonUserData::m_ON_MeshNgonUserData_class_id.Uuid());
   if (0 != ud) {
     delete ud;
     ud = 0;

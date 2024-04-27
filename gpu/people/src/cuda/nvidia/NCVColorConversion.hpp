@@ -60,7 +60,7 @@ struct __pixColorConv<NCVColorSpaceRGBA, NCVColorSpaceGray, Tin, Tout> {
   _pixColorConv (const Tin& pixIn, Tout& pixOut)
   {
     Ncv32f luma = 0.299f * pixIn.x + 0.587f * pixIn.y + 0.114f * pixIn.z;
-    _TDemoteClampNN(luma, pixOut.x);
+    _TDemoteClampNN (luma, pixOut.x);
   }
 };
 
@@ -69,9 +69,9 @@ struct __pixColorConv<NCVColorSpaceGray, NCVColorSpaceRGBA, Tin, Tout> {
   static void
   _pixColorConv (const Tin& pixIn, Tout& pixOut)
   {
-    _TDemoteClampNN(pixIn.x, pixOut.x);
-    _TDemoteClampNN(pixIn.x, pixOut.y);
-    _TDemoteClampNN(pixIn.x, pixOut.z);
+    _TDemoteClampNN (pixIn.x, pixOut.x);
+    _TDemoteClampNN (pixIn.x, pixOut.y);
+    _TDemoteClampNN (pixIn.x, pixOut.z);
     pixOut.w = 0;
   }
 };
@@ -80,18 +80,18 @@ template <NCVColorSpace CSin, NCVColorSpace CSout, typename Tin, typename Tout>
 static NCVStatus
 _ncvColorConv_host (const NCVMatrix<Tin>& h_imgIn, const NCVMatrix<Tout>& h_imgOut)
 {
-  ncvAssertReturn(h_imgIn.size() == h_imgOut.size(), NCV_DIMENSIONS_INVALID);
-  ncvAssertReturn(h_imgIn.memType() == h_imgOut.memType() &&
-                      (h_imgIn.memType() == NCVMemoryTypeHostPinned ||
-                       h_imgIn.memType() == NCVMemoryTypeNone),
-                  NCV_MEM_RESIDENCE_ERROR);
-  NCV_SET_SKIP_COND(h_imgIn.memType() == NCVMemoryTypeNone);
+  ncvAssertReturn (h_imgIn.size() == h_imgOut.size(), NCV_DIMENSIONS_INVALID);
+  ncvAssertReturn (h_imgIn.memType() == h_imgOut.memType() &&
+                       (h_imgIn.memType() == NCVMemoryTypeHostPinned ||
+                        h_imgIn.memType() == NCVMemoryTypeNone),
+                   NCV_MEM_RESIDENCE_ERROR);
+  NCV_SET_SKIP_COND (h_imgIn.memType() == NCVMemoryTypeNone);
   NCV_SKIP_COND_BEGIN
 
   for (Ncv32u i = 0; i < h_imgIn.height(); i++) {
     for (Ncv32u j = 0; j < h_imgIn.width(); j++) {
-      __pixColorConv<CSin, CSout, Tin, Tout>::_pixColorConv(h_imgIn.at(j, i),
-                                                            h_imgOut.at(j, i));
+      __pixColorConv<CSin, CSout, Tin, Tout>::_pixColorConv (h_imgIn.at (j, i),
+                                                             h_imgOut.at (j, i));
     }
   }
 

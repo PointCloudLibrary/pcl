@@ -90,7 +90,7 @@ public:
               const std::size_t height,
               const std::size_t nr_bins)
   {
-    maps_.resize(nr_bins, nullptr);
+    maps_.resize (nr_bins, nullptr);
     width_ = width;
     height_ = height;
     nr_bins_ = nr_bins;
@@ -99,8 +99,8 @@ public:
 
     for (auto& map : maps_) {
       // maps_[map_index] = new unsigned char[mapsSize];
-      map = reinterpret_cast<unsigned char*>(aligned_malloc(mapsSize));
-      std::fill_n(map, mapsSize, 0);
+      map = reinterpret_cast<unsigned char*> (aligned_malloc (mapsSize));
+      std::fill_n (map, mapsSize, 0);
     }
   }
 
@@ -111,7 +111,7 @@ public:
     for (auto& map : maps_)
       // if (maps_[map_index] != NULL) delete[] maps_[map_index];
       if (map != nullptr)
-        aligned_free(map);
+        aligned_free (map);
 
     maps_.clear();
     width_ = 0;
@@ -125,9 +125,9 @@ public:
    * \param[in] row_index the row index within the specified energy map.
    */
   inline unsigned char&
-  operator()(const std::size_t bin_index,
-             const std::size_t col_index,
-             const std::size_t row_index)
+  operator() (const std::size_t bin_index,
+              const std::size_t col_index,
+              const std::size_t row_index)
   {
     return (maps_[bin_index][row_index * width_ + col_index]);
   }
@@ -137,7 +137,7 @@ public:
    * access). \param[in] index the element index within the specified energy map.
    */
   inline unsigned char&
-  operator()(const std::size_t bin_index, const std::size_t index)
+  operator() (const std::size_t bin_index, const std::size_t index)
   {
     return (maps_[bin_index][index]);
   }
@@ -147,7 +147,7 @@ public:
    * bin).
    */
   inline unsigned char*
-  operator()(const std::size_t bin_index)
+  operator() (const std::size_t bin_index)
   {
     return (maps_[bin_index]);
   }
@@ -158,9 +158,9 @@ public:
    * \param[in] row_index the row index within the specified energy map.
    */
   inline const unsigned char&
-  operator()(const std::size_t bin_index,
-             const std::size_t col_index,
-             const std::size_t row_index) const
+  operator() (const std::size_t bin_index,
+              const std::size_t col_index,
+              const std::size_t row_index) const
   {
     return (maps_[bin_index][row_index * width_ + col_index]);
   }
@@ -170,7 +170,7 @@ public:
    * access). \param[in] index the element index within the specified energy map.
    */
   inline const unsigned char&
-  operator()(const std::size_t bin_index, const std::size_t index) const
+  operator() (const std::size_t bin_index, const std::size_t index) const
   {
     return (maps_[bin_index][index]);
   }
@@ -180,7 +180,7 @@ public:
    * bin).
    */
   inline const unsigned char*
-  operator()(const std::size_t bin_index) const
+  operator() (const std::size_t bin_index) const
   {
     return (maps_[bin_index]);
   }
@@ -246,7 +246,7 @@ public:
               const std::size_t height,
               const std::size_t step_size)
   {
-    maps_.resize(step_size * step_size, nullptr);
+    maps_.resize (step_size * step_size, nullptr);
     width_ = width;
     height_ = height;
     mem_width_ = width / step_size;
@@ -257,8 +257,8 @@ public:
 
     for (auto& map : maps_) {
       // maps_[map_index] = new unsigned char[2*mapsSize];
-      map = reinterpret_cast<unsigned char*>(aligned_malloc(2 * mapsSize));
-      std::fill_n(map, 2 * mapsSize, 0);
+      map = reinterpret_cast<unsigned char*> (aligned_malloc (2 * mapsSize));
+      std::fill_n (map, 2 * mapsSize, 0);
     }
   }
 
@@ -269,7 +269,7 @@ public:
     for (auto& map : maps_)
       // if (maps_[map_index] != NULL) delete[] maps_[map_index];
       if (map != nullptr)
-        aligned_free(map);
+        aligned_free (map);
 
     maps_.clear();
     width_ = 0;
@@ -284,7 +284,7 @@ public:
    * \param[in] row_index the row index.
    */
   inline unsigned char*
-  operator()(const std::size_t col_index, const std::size_t row_index)
+  operator() (const std::size_t col_index, const std::size_t row_index)
   {
     return (maps_[row_index * step_size_ + col_index]);
   }

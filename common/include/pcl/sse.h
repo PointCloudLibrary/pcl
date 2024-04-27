@@ -50,180 +50,180 @@ namespace pcl {
 RETf
 sse_set (const float& x)
 {
-  return _mm_set1_ps(x);
+  return _mm_set1_ps (x);
 }
 RETf
 sse_set (float x, float y, float z, float w)
 {
-  return _mm_set_ps(x, y, z, w);
+  return _mm_set_ps (x, y, z, w);
 }
 RETi
 sse_set (const int& x)
 {
-  return _mm_set1_epi32(x);
+  return _mm_set1_epi32 (x);
 }
 RETf
 sse_ld (const float& x)
 {
-  return _mm_load_ps(&x);
+  return _mm_load_ps (&x);
 }
 RETf
 sse_ldu (const float& x)
 {
-  return _mm_loadu_ps(&x);
+  return _mm_loadu_ps (&x);
 }
 RETf
 sse_str (float& x, const __m128 y)
 {
-  _mm_store_ps(&x, y);
+  _mm_store_ps (&x, y);
   return y;
 }
 RETf
 sse_str1 (float& x, const __m128 y)
 {
-  _mm_store_ss(&x, y);
+  _mm_store_ss (&x, y);
   return y;
 }
 RETf
 sse_stru (float& x, const __m128 y)
 {
-  _mm_storeu_ps(&x, y);
+  _mm_storeu_ps (&x, y);
   return y;
 }
 RETf
 sse_str (float& x, const float y)
 {
-  return sse_str(x, sse_set(y));
+  return sse_str (x, sse_set (y));
 }
 
 // arithmetic operators
 RETi
 sse_add (const __m128i x, const __m128i y)
 {
-  return _mm_add_epi32(x, y);
+  return _mm_add_epi32 (x, y);
 }
 RETf
 sse_add (const __m128 x, const __m128 y)
 {
-  return _mm_add_ps(x, y);
+  return _mm_add_ps (x, y);
 }
 RETf
 sse_add (const __m128 x, const __m128 y, const __m128 z)
 {
-  return sse_add(sse_add(x, y), z);
+  return sse_add (sse_add (x, y), z);
 }
 RETf
 sse_add (const __m128 a, const __m128 b, const __m128 c, const __m128& d)
 {
-  return sse_add(sse_add(sse_add(a, b), c), d);
+  return sse_add (sse_add (sse_add (a, b), c), d);
 }
 RETf
 sse_sub (const __m128 x, const __m128 y)
 {
-  return _mm_sub_ps(x, y);
+  return _mm_sub_ps (x, y);
 }
 RETf
 sse_mul (const __m128 x, const __m128 y)
 {
-  return _mm_mul_ps(x, y);
+  return _mm_mul_ps (x, y);
 }
 RETf
 sse_mul (const __m128 x, const float y)
 {
-  return sse_mul(x, sse_set(y));
+  return sse_mul (x, sse_set (y));
 }
 RETf
 sse_mul (const float x, const __m128 y)
 {
-  return sse_mul(sse_set(x), y);
+  return sse_mul (sse_set (x), y);
 }
 RETf
 sse_inc (__m128& x, const __m128 y)
 {
-  return x = sse_add(x, y);
+  return x = sse_add (x, y);
 }
 RETf
 sse_inc (float& x, const __m128 y)
 {
-  __m128 t = sse_add(sse_ld(x), y);
-  return sse_str(x, t);
+  __m128 t = sse_add (sse_ld (x), y);
+  return sse_str (x, t);
 }
 RETf
 sse_dec (__m128& x, const __m128 y)
 {
-  return x = sse_sub(x, y);
+  return x = sse_sub (x, y);
 }
 RETf
 sse_dec (float& x, const __m128 y)
 {
-  __m128 t = sse_sub(sse_ld(x), y);
-  return sse_str(x, t);
+  __m128 t = sse_sub (sse_ld (x), y);
+  return sse_str (x, t);
 }
 RETf
 sse_min (const __m128 x, const __m128 y)
 {
-  return _mm_min_ps(x, y);
+  return _mm_min_ps (x, y);
 }
 RETf
 sse_rcp (const __m128 x)
 {
-  return _mm_rcp_ps(x);
+  return _mm_rcp_ps (x);
 }
 RETf
 sse_rcpsqrt (const __m128 x)
 {
-  return _mm_rsqrt_ps(x);
+  return _mm_rsqrt_ps (x);
 }
 
 // logical operators
 RETf
 sse_and (const __m128 x, const __m128 y)
 {
-  return _mm_and_ps(x, y);
+  return _mm_and_ps (x, y);
 }
 RETi
 sse_and (const __m128i x, const __m128i y)
 {
-  return _mm_and_si128(x, y);
+  return _mm_and_si128 (x, y);
 }
 RETf
 sse_andnot (const __m128 x, const __m128 y)
 {
-  return _mm_andnot_ps(x, y);
+  return _mm_andnot_ps (x, y);
 }
 RETf
 sse_or (const __m128 x, const __m128 y)
 {
-  return _mm_or_ps(x, y);
+  return _mm_or_ps (x, y);
 }
 RETf
 sse_xor (const __m128 x, const __m128 y)
 {
-  return _mm_xor_ps(x, y);
+  return _mm_xor_ps (x, y);
 }
 
 // comparison operators
 RETf
 sse_cmpgt (const __m128 x, const __m128 y)
 {
-  return _mm_cmpgt_ps(x, y);
+  return _mm_cmpgt_ps (x, y);
 }
 RETi
 sse_cmpgt (const __m128i x, const __m128i y)
 {
-  return _mm_cmpgt_epi32(x, y);
+  return _mm_cmpgt_epi32 (x, y);
 }
 
 // conversion operators
 RETf
 sse_cvt (const __m128i x)
 {
-  return _mm_cvtepi32_ps(x);
+  return _mm_cvtepi32_ps (x);
 }
 RETi
 sse_cvt (const __m128 x)
 {
-  return _mm_cvttps_epi32(x);
+  return _mm_cvttps_epi32 (x);
 }
 
 } // namespace pcl

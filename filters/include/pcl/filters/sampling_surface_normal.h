@@ -71,7 +71,7 @@ public:
   SamplingSurfaceNormal()
   {
     filter_name_ = "SamplingSurfaceNormal";
-    srand(seed_);
+    srand (seed_);
   }
 
   /** \brief Set maximum number of samples in each grid
@@ -97,7 +97,7 @@ public:
   setSeed (unsigned int seed)
   {
     seed_ = seed;
-    srand(seed_);
+    srand (seed_);
   }
 
   /** \brief Get the value of the internal \a seed parameter. */
@@ -127,7 +127,7 @@ protected:
   /** \brief Maximum number of samples in each grid. */
   unsigned int sample_{10};
   /** \brief Random number seed. */
-  unsigned int seed_{static_cast<unsigned int>(time(nullptr))};
+  unsigned int seed_{static_cast<unsigned int> (time (nullptr))};
   /** \brief Ratio of points to be sampled in each grid */
   float ratio_{0.0f};
 
@@ -148,13 +148,13 @@ private:
     const pcl::PointCloud<PointT>& cloud;
 
     /** \brief Constructor. */
-    CompareDim(const int dim, const pcl::PointCloud<PointT>& cloud)
-    : dim(dim), cloud(cloud)
+    CompareDim (const int dim, const pcl::PointCloud<PointT>& cloud)
+    : dim (dim), cloud (cloud)
     {}
 
     /** \brief The operator function for sorting. */
     bool
-    operator()(const int& p0, const int& p1)
+    operator() (const int& p0, const int& p1)
     {
       if (dim == 0)
         return (cloud[p0].x < cloud[p1].x);

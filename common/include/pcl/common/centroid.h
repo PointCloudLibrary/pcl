@@ -71,7 +71,7 @@ inline unsigned int
 compute3DCentroid (ConstCloudIterator<PointT>& cloud_iterator,
                    Eigen::Vector4f& centroid)
 {
-  return (compute3DCentroid<PointT, float>(cloud_iterator, centroid));
+  return (compute3DCentroid<PointT, float> (cloud_iterator, centroid));
 }
 
 template <typename PointT>
@@ -79,7 +79,7 @@ inline unsigned int
 compute3DCentroid (ConstCloudIterator<PointT>& cloud_iterator,
                    Eigen::Vector4d& centroid)
 {
-  return (compute3DCentroid<PointT, double>(cloud_iterator, centroid));
+  return (compute3DCentroid<PointT, double> (cloud_iterator, centroid));
 }
 
 /** \brief Compute the 3D (X-Y-Z) centroid of a set of points and return it as a 3D
@@ -99,14 +99,14 @@ template <typename PointT>
 inline unsigned int
 compute3DCentroid (const pcl::PointCloud<PointT>& cloud, Eigen::Vector4f& centroid)
 {
-  return (compute3DCentroid<PointT, float>(cloud, centroid));
+  return (compute3DCentroid<PointT, float> (cloud, centroid));
 }
 
 template <typename PointT>
 inline unsigned int
 compute3DCentroid (const pcl::PointCloud<PointT>& cloud, Eigen::Vector4d& centroid)
 {
-  return (compute3DCentroid<PointT, double>(cloud, centroid));
+  return (compute3DCentroid<PointT, double> (cloud, centroid));
 }
 
 /** \brief Compute the 3D (X-Y-Z) centroid of a set of points using their indices and
@@ -131,7 +131,7 @@ compute3DCentroid (const pcl::PointCloud<PointT>& cloud,
                    const Indices& indices,
                    Eigen::Vector4f& centroid)
 {
-  return (compute3DCentroid<PointT, float>(cloud, indices, centroid));
+  return (compute3DCentroid<PointT, float> (cloud, indices, centroid));
 }
 
 template <typename PointT>
@@ -140,7 +140,7 @@ compute3DCentroid (const pcl::PointCloud<PointT>& cloud,
                    const Indices& indices,
                    Eigen::Vector4d& centroid)
 {
-  return (compute3DCentroid<PointT, double>(cloud, indices, centroid));
+  return (compute3DCentroid<PointT, double> (cloud, indices, centroid));
 }
 
 /** \brief Compute the 3D (X-Y-Z) centroid of a set of points using their indices and
@@ -165,7 +165,7 @@ compute3DCentroid (const pcl::PointCloud<PointT>& cloud,
                    const pcl::PointIndices& indices,
                    Eigen::Vector4f& centroid)
 {
-  return (compute3DCentroid<PointT, float>(cloud, indices, centroid));
+  return (compute3DCentroid<PointT, float> (cloud, indices, centroid));
 }
 
 template <typename PointT>
@@ -174,7 +174,7 @@ compute3DCentroid (const pcl::PointCloud<PointT>& cloud,
                    const pcl::PointIndices& indices,
                    Eigen::Vector4d& centroid)
 {
-  return (compute3DCentroid<PointT, double>(cloud, indices, centroid));
+  return (compute3DCentroid<PointT, double> (cloud, indices, centroid));
 }
 
 /** \brief Compute the 3x3 covariance matrix of a given set of points.
@@ -202,7 +202,7 @@ computeCovarianceMatrix (const pcl::PointCloud<PointT>& cloud,
                          const Eigen::Vector4f& centroid,
                          Eigen::Matrix3f& covariance_matrix)
 {
-  return (computeCovarianceMatrix<PointT, float>(cloud, centroid, covariance_matrix));
+  return (computeCovarianceMatrix<PointT, float> (cloud, centroid, covariance_matrix));
 }
 
 template <typename PointT>
@@ -211,7 +211,7 @@ computeCovarianceMatrix (const pcl::PointCloud<PointT>& cloud,
                          const Eigen::Vector4d& centroid,
                          Eigen::Matrix3d& covariance_matrix)
 {
-  return (computeCovarianceMatrix<PointT, double>(cloud, centroid, covariance_matrix));
+  return (computeCovarianceMatrix<PointT, double> (cloud, centroid, covariance_matrix));
 }
 
 /** \brief Compute normalized the 3x3 covariance matrix of a given set of points.
@@ -238,7 +238,7 @@ computeCovarianceMatrixNormalized (const pcl::PointCloud<PointT>& cloud,
                                    const Eigen::Vector4f& centroid,
                                    Eigen::Matrix3f& covariance_matrix)
 {
-  return (computeCovarianceMatrixNormalized<PointT, float>(
+  return (computeCovarianceMatrixNormalized<PointT, float> (
       cloud, centroid, covariance_matrix));
 }
 
@@ -248,7 +248,7 @@ computeCovarianceMatrixNormalized (const pcl::PointCloud<PointT>& cloud,
                                    const Eigen::Vector4d& centroid,
                                    Eigen::Matrix3d& covariance_matrix)
 {
-  return (computeCovarianceMatrixNormalized<PointT, double>(
+  return (computeCovarianceMatrixNormalized<PointT, double> (
       cloud, centroid, covariance_matrix));
 }
 
@@ -278,7 +278,7 @@ computeCovarianceMatrix (const pcl::PointCloud<PointT>& cloud,
                          const Eigen::Vector4f& centroid,
                          Eigen::Matrix3f& covariance_matrix)
 {
-  return (computeCovarianceMatrix<PointT, float>(
+  return (computeCovarianceMatrix<PointT, float> (
       cloud, indices, centroid, covariance_matrix));
 }
 
@@ -289,7 +289,7 @@ computeCovarianceMatrix (const pcl::PointCloud<PointT>& cloud,
                          const Eigen::Vector4d& centroid,
                          Eigen::Matrix3d& covariance_matrix)
 {
-  return (computeCovarianceMatrix<PointT, double>(
+  return (computeCovarianceMatrix<PointT, double> (
       cloud, indices, centroid, covariance_matrix));
 }
 
@@ -319,7 +319,7 @@ computeCovarianceMatrix (const pcl::PointCloud<PointT>& cloud,
                          const Eigen::Vector4f& centroid,
                          Eigen::Matrix3f& covariance_matrix)
 {
-  return (computeCovarianceMatrix<PointT, float>(
+  return (computeCovarianceMatrix<PointT, float> (
       cloud, indices, centroid, covariance_matrix));
 }
 
@@ -330,7 +330,7 @@ computeCovarianceMatrix (const pcl::PointCloud<PointT>& cloud,
                          const Eigen::Vector4d& centroid,
                          Eigen::Matrix3d& covariance_matrix)
 {
-  return (computeCovarianceMatrix<PointT, double>(
+  return (computeCovarianceMatrix<PointT, double> (
       cloud, indices, centroid, covariance_matrix));
 }
 
@@ -363,7 +363,7 @@ computeCovarianceMatrixNormalized (const pcl::PointCloud<PointT>& cloud,
                                    const Eigen::Vector4f& centroid,
                                    Eigen::Matrix3f& covariance_matrix)
 {
-  return (computeCovarianceMatrixNormalized<PointT, float>(
+  return (computeCovarianceMatrixNormalized<PointT, float> (
       cloud, indices, centroid, covariance_matrix));
 }
 
@@ -374,7 +374,7 @@ computeCovarianceMatrixNormalized (const pcl::PointCloud<PointT>& cloud,
                                    const Eigen::Vector4d& centroid,
                                    Eigen::Matrix3d& covariance_matrix)
 {
-  return (computeCovarianceMatrixNormalized<PointT, double>(
+  return (computeCovarianceMatrixNormalized<PointT, double> (
       cloud, indices, centroid, covariance_matrix));
 }
 
@@ -406,7 +406,7 @@ computeCovarianceMatrixNormalized (const pcl::PointCloud<PointT>& cloud,
                                    const Eigen::Vector4f& centroid,
                                    Eigen::Matrix3f& covariance_matrix)
 {
-  return (computeCovarianceMatrixNormalized<PointT, float>(
+  return (computeCovarianceMatrixNormalized<PointT, float> (
       cloud, indices, centroid, covariance_matrix));
 }
 
@@ -417,7 +417,7 @@ computeCovarianceMatrixNormalized (const pcl::PointCloud<PointT>& cloud,
                                    const Eigen::Vector4d& centroid,
                                    Eigen::Matrix3d& covariance_matrix)
 {
-  return (computeCovarianceMatrixNormalized<PointT, double>(
+  return (computeCovarianceMatrixNormalized<PointT, double> (
       cloud, indices, centroid, covariance_matrix));
 }
 
@@ -447,7 +447,7 @@ computeMeanAndCovarianceMatrix (const pcl::PointCloud<PointT>& cloud,
                                 Eigen::Matrix3f& covariance_matrix,
                                 Eigen::Vector4f& centroid)
 {
-  return (computeMeanAndCovarianceMatrix<PointT, float>(
+  return (computeMeanAndCovarianceMatrix<PointT, float> (
       cloud, covariance_matrix, centroid));
 }
 
@@ -457,7 +457,7 @@ computeMeanAndCovarianceMatrix (const pcl::PointCloud<PointT>& cloud,
                                 Eigen::Matrix3d& covariance_matrix,
                                 Eigen::Vector4d& centroid)
 {
-  return (computeMeanAndCovarianceMatrix<PointT, double>(
+  return (computeMeanAndCovarianceMatrix<PointT, double> (
       cloud, covariance_matrix, centroid));
 }
 
@@ -489,7 +489,7 @@ computeMeanAndCovarianceMatrix (const pcl::PointCloud<PointT>& cloud,
                                 Eigen::Matrix3f& covariance_matrix,
                                 Eigen::Vector4f& centroid)
 {
-  return (computeMeanAndCovarianceMatrix<PointT, float>(
+  return (computeMeanAndCovarianceMatrix<PointT, float> (
       cloud, indices, covariance_matrix, centroid));
 }
 
@@ -500,7 +500,7 @@ computeMeanAndCovarianceMatrix (const pcl::PointCloud<PointT>& cloud,
                                 Eigen::Matrix3d& covariance_matrix,
                                 Eigen::Vector4d& centroid)
 {
-  return (computeMeanAndCovarianceMatrix<PointT, double>(
+  return (computeMeanAndCovarianceMatrix<PointT, double> (
       cloud, indices, covariance_matrix, centroid));
 }
 
@@ -532,7 +532,7 @@ computeMeanAndCovarianceMatrix (const pcl::PointCloud<PointT>& cloud,
                                 Eigen::Matrix3f& covariance_matrix,
                                 Eigen::Vector4f& centroid)
 {
-  return (computeMeanAndCovarianceMatrix<PointT, float>(
+  return (computeMeanAndCovarianceMatrix<PointT, float> (
       cloud, indices, covariance_matrix, centroid));
 }
 
@@ -543,7 +543,7 @@ computeMeanAndCovarianceMatrix (const pcl::PointCloud<PointT>& cloud,
                                 Eigen::Matrix3d& covariance_matrix,
                                 Eigen::Vector4d& centroid)
 {
-  return (computeMeanAndCovarianceMatrix<PointT, double>(
+  return (computeMeanAndCovarianceMatrix<PointT, double> (
       cloud, indices, covariance_matrix, centroid));
 }
 
@@ -569,7 +569,7 @@ inline unsigned int
 computeCovarianceMatrix (const pcl::PointCloud<PointT>& cloud,
                          Eigen::Matrix3f& covariance_matrix)
 {
-  return (computeCovarianceMatrix<PointT, float>(cloud, covariance_matrix));
+  return (computeCovarianceMatrix<PointT, float> (cloud, covariance_matrix));
 }
 
 template <typename PointT>
@@ -577,7 +577,7 @@ inline unsigned int
 computeCovarianceMatrix (const pcl::PointCloud<PointT>& cloud,
                          Eigen::Matrix3d& covariance_matrix)
 {
-  return (computeCovarianceMatrix<PointT, double>(cloud, covariance_matrix));
+  return (computeCovarianceMatrix<PointT, double> (cloud, covariance_matrix));
 }
 
 /** \brief Compute the normalized 3x3 covariance matrix for a already demeaned point
@@ -605,7 +605,7 @@ computeCovarianceMatrix (const pcl::PointCloud<PointT>& cloud,
                          const Indices& indices,
                          Eigen::Matrix3f& covariance_matrix)
 {
-  return (computeCovarianceMatrix<PointT, float>(cloud, indices, covariance_matrix));
+  return (computeCovarianceMatrix<PointT, float> (cloud, indices, covariance_matrix));
 }
 
 template <typename PointT>
@@ -614,7 +614,7 @@ computeCovarianceMatrix (const pcl::PointCloud<PointT>& cloud,
                          const Indices& indices,
                          Eigen::Matrix3d& covariance_matrix)
 {
-  return (computeCovarianceMatrix<PointT, double>(cloud, indices, covariance_matrix));
+  return (computeCovarianceMatrix<PointT, double> (cloud, indices, covariance_matrix));
 }
 
 /** \brief Compute the normalized 3x3 covariance matrix for a already demeaned point
@@ -642,7 +642,7 @@ computeCovarianceMatrix (const pcl::PointCloud<PointT>& cloud,
                          const pcl::PointIndices& indices,
                          Eigen::Matrix3f& covariance_matrix)
 {
-  return (computeCovarianceMatrix<PointT, float>(cloud, indices, covariance_matrix));
+  return (computeCovarianceMatrix<PointT, float> (cloud, indices, covariance_matrix));
 }
 
 template <typename PointT>
@@ -651,7 +651,7 @@ computeCovarianceMatrix (const pcl::PointCloud<PointT>& cloud,
                          const pcl::PointIndices& indices,
                          Eigen::Matrix3d& covariance_matrix)
 {
-  return (computeCovarianceMatrix<PointT, double>(cloud, indices, covariance_matrix));
+  return (computeCovarianceMatrix<PointT, double> (cloud, indices, covariance_matrix));
 }
 
 /** \brief Compute centroid, OBB (Oriented Bounding Box), PCA axes of a given set of
@@ -724,7 +724,7 @@ demeanPointCloud (ConstCloudIterator<PointT>& cloud_iterator,
                   pcl::PointCloud<PointT>& cloud_out,
                   int npts = 0)
 {
-  return (demeanPointCloud<PointT, float>(cloud_iterator, centroid, cloud_out, npts));
+  return (demeanPointCloud<PointT, float> (cloud_iterator, centroid, cloud_out, npts));
 }
 
 template <typename PointT>
@@ -734,7 +734,7 @@ demeanPointCloud (ConstCloudIterator<PointT>& cloud_iterator,
                   pcl::PointCloud<PointT>& cloud_out,
                   int npts = 0)
 {
-  return (demeanPointCloud<PointT, double>(cloud_iterator, centroid, cloud_out, npts));
+  return (demeanPointCloud<PointT, double> (cloud_iterator, centroid, cloud_out, npts));
 }
 
 /** \brief Subtract a centroid from a point cloud and return the de-meaned
@@ -754,7 +754,7 @@ demeanPointCloud (ConstCloudIterator<PointT>& cloud_iterator,
                   const Eigen::Vector4f& centroid,
                   pcl::PointCloud<PointT>& cloud_out)
 {
-  return (demeanPointCloud<PointT, float>(cloud_iterator, centroid, cloud_out));
+  return (demeanPointCloud<PointT, float> (cloud_iterator, centroid, cloud_out));
 }
 
 template <typename PointT>
@@ -763,7 +763,7 @@ demeanPointCloud (ConstCloudIterator<PointT>& cloud_iterator,
                   const Eigen::Vector4d& centroid,
                   pcl::PointCloud<PointT>& cloud_out)
 {
-  return (demeanPointCloud<PointT, double>(cloud_iterator, centroid, cloud_out));
+  return (demeanPointCloud<PointT, double> (cloud_iterator, centroid, cloud_out));
 }
 
 /** \brief Subtract a centroid from a point cloud and return the de-meaned
@@ -785,7 +785,7 @@ demeanPointCloud (const pcl::PointCloud<PointT>& cloud_in,
                   const Eigen::Vector4f& centroid,
                   pcl::PointCloud<PointT>& cloud_out)
 {
-  return (demeanPointCloud<PointT, float>(cloud_in, indices, centroid, cloud_out));
+  return (demeanPointCloud<PointT, float> (cloud_in, indices, centroid, cloud_out));
 }
 
 template <typename PointT>
@@ -795,7 +795,7 @@ demeanPointCloud (const pcl::PointCloud<PointT>& cloud_in,
                   const Eigen::Vector4d& centroid,
                   pcl::PointCloud<PointT>& cloud_out)
 {
-  return (demeanPointCloud<PointT, double>(cloud_in, indices, centroid, cloud_out));
+  return (demeanPointCloud<PointT, double> (cloud_in, indices, centroid, cloud_out));
 }
 
 /** \brief Subtract a centroid from a point cloud and return the de-meaned
@@ -817,7 +817,7 @@ demeanPointCloud (const pcl::PointCloud<PointT>& cloud_in,
                   const Eigen::Vector4f& centroid,
                   pcl::PointCloud<PointT>& cloud_out)
 {
-  return (demeanPointCloud<PointT, float>(cloud_in, indices, centroid, cloud_out));
+  return (demeanPointCloud<PointT, float> (cloud_in, indices, centroid, cloud_out));
 }
 
 template <typename PointT>
@@ -827,7 +827,7 @@ demeanPointCloud (const pcl::PointCloud<PointT>& cloud_in,
                   const Eigen::Vector4d& centroid,
                   pcl::PointCloud<PointT>& cloud_out)
 {
-  return (demeanPointCloud<PointT, double>(cloud_in, indices, centroid, cloud_out));
+  return (demeanPointCloud<PointT, double> (cloud_in, indices, centroid, cloud_out));
 }
 
 /** \brief Subtract a centroid from a point cloud and return the de-meaned
@@ -853,7 +853,7 @@ demeanPointCloud (ConstCloudIterator<PointT>& cloud_iterator,
                   Eigen::MatrixXf& cloud_out,
                   int npts = 0)
 {
-  return (demeanPointCloud<PointT, float>(cloud_iterator, centroid, cloud_out, npts));
+  return (demeanPointCloud<PointT, float> (cloud_iterator, centroid, cloud_out, npts));
 }
 
 template <typename PointT>
@@ -863,7 +863,7 @@ demeanPointCloud (ConstCloudIterator<PointT>& cloud_iterator,
                   Eigen::MatrixXd& cloud_out,
                   int npts = 0)
 {
-  return (demeanPointCloud<PointT, double>(cloud_iterator, centroid, cloud_out, npts));
+  return (demeanPointCloud<PointT, double> (cloud_iterator, centroid, cloud_out, npts));
 }
 
 /** \brief Subtract a centroid from a point cloud and return the de-meaned
@@ -886,7 +886,7 @@ demeanPointCloud (const pcl::PointCloud<PointT>& cloud_in,
                   const Eigen::Vector4f& centroid,
                   Eigen::MatrixXf& cloud_out)
 {
-  return (demeanPointCloud<PointT, float>(cloud_in, centroid, cloud_out));
+  return (demeanPointCloud<PointT, float> (cloud_in, centroid, cloud_out));
 }
 
 template <typename PointT>
@@ -895,43 +895,7 @@ demeanPointCloud (const pcl::PointCloud<PointT>& cloud_in,
                   const Eigen::Vector4d& centroid,
                   Eigen::MatrixXd& cloud_out)
 {
-  return (demeanPointCloud<PointT, double>(cloud_in, centroid, cloud_out));
-}
-
-/** \brief Subtract a centroid from a point cloud and return the de-meaned
- * representation as an Eigen matrix
- * \param[in] cloud_in the input point cloud
- * \param[in] indices the set of point indices to use from the input point cloud
- * \param[in] centroid the centroid of the point cloud
- * \param[out] cloud_out the resultant output XYZ0 dimensions of \a cloud_in as
- * an Eigen matrix (4 rows, N pts columns)
- * \ingroup common
- */
-template <typename PointT, typename Scalar>
-void
-demeanPointCloud (const pcl::PointCloud<PointT>& cloud_in,
-                  const Indices& indices,
-                  const Eigen::Matrix<Scalar, 4, 1>& centroid,
-                  Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic>& cloud_out);
-
-template <typename PointT>
-void
-demeanPointCloud (const pcl::PointCloud<PointT>& cloud_in,
-                  const Indices& indices,
-                  const Eigen::Vector4f& centroid,
-                  Eigen::MatrixXf& cloud_out)
-{
-  return (demeanPointCloud<PointT, float>(cloud_in, indices, centroid, cloud_out));
-}
-
-template <typename PointT>
-void
-demeanPointCloud (const pcl::PointCloud<PointT>& cloud_in,
-                  const Indices& indices,
-                  const Eigen::Vector4d& centroid,
-                  Eigen::MatrixXd& cloud_out)
-{
-  return (demeanPointCloud<PointT, double>(cloud_in, indices, centroid, cloud_out));
+  return (demeanPointCloud<PointT, double> (cloud_in, centroid, cloud_out));
 }
 
 /** \brief Subtract a centroid from a point cloud and return the de-meaned
@@ -946,6 +910,42 @@ demeanPointCloud (const pcl::PointCloud<PointT>& cloud_in,
 template <typename PointT, typename Scalar>
 void
 demeanPointCloud (const pcl::PointCloud<PointT>& cloud_in,
+                  const Indices& indices,
+                  const Eigen::Matrix<Scalar, 4, 1>& centroid,
+                  Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic>& cloud_out);
+
+template <typename PointT>
+void
+demeanPointCloud (const pcl::PointCloud<PointT>& cloud_in,
+                  const Indices& indices,
+                  const Eigen::Vector4f& centroid,
+                  Eigen::MatrixXf& cloud_out)
+{
+  return (demeanPointCloud<PointT, float> (cloud_in, indices, centroid, cloud_out));
+}
+
+template <typename PointT>
+void
+demeanPointCloud (const pcl::PointCloud<PointT>& cloud_in,
+                  const Indices& indices,
+                  const Eigen::Vector4d& centroid,
+                  Eigen::MatrixXd& cloud_out)
+{
+  return (demeanPointCloud<PointT, double> (cloud_in, indices, centroid, cloud_out));
+}
+
+/** \brief Subtract a centroid from a point cloud and return the de-meaned
+ * representation as an Eigen matrix
+ * \param[in] cloud_in the input point cloud
+ * \param[in] indices the set of point indices to use from the input point cloud
+ * \param[in] centroid the centroid of the point cloud
+ * \param[out] cloud_out the resultant output XYZ0 dimensions of \a cloud_in as
+ * an Eigen matrix (4 rows, N pts columns)
+ * \ingroup common
+ */
+template <typename PointT, typename Scalar>
+void
+demeanPointCloud (const pcl::PointCloud<PointT>& cloud_in,
                   const pcl::PointIndices& indices,
                   const Eigen::Matrix<Scalar, 4, 1>& centroid,
                   Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic>& cloud_out);
@@ -957,7 +957,7 @@ demeanPointCloud (const pcl::PointCloud<PointT>& cloud_in,
                   const Eigen::Vector4f& centroid,
                   Eigen::MatrixXf& cloud_out)
 {
-  return (demeanPointCloud<PointT, float>(cloud_in, indices, centroid, cloud_out));
+  return (demeanPointCloud<PointT, float> (cloud_in, indices, centroid, cloud_out));
 }
 
 template <typename PointT>
@@ -967,7 +967,7 @@ demeanPointCloud (const pcl::PointCloud<PointT>& cloud_in,
                   const Eigen::Vector4d& centroid,
                   Eigen::MatrixXd& cloud_out)
 {
-  return (demeanPointCloud<PointT, double>(cloud_in, indices, centroid, cloud_out));
+  return (demeanPointCloud<PointT, double> (cloud_in, indices, centroid, cloud_out));
 }
 
 /** \brief Helper functor structure for n-D centroid estimation. */
@@ -975,8 +975,9 @@ template <typename PointT, typename Scalar>
 struct NdCentroidFunctor {
   using Pod = typename traits::POD<PointT>::type;
 
-  NdCentroidFunctor(const PointT& p, Eigen::Matrix<Scalar, Eigen::Dynamic, 1>& centroid)
-  : centroid_(centroid), p_(reinterpret_cast<const Pod&>(p))
+  NdCentroidFunctor (const PointT& p,
+                     Eigen::Matrix<Scalar, Eigen::Dynamic, 1>& centroid)
+  : centroid_ (centroid), p_ (reinterpret_cast<const Pod&> (p))
   {}
 
   template <typename Key>
@@ -984,12 +985,12 @@ struct NdCentroidFunctor {
   operator()()
   {
     using T = typename pcl::traits::datatype<PointT, Key>::type;
-    const std::uint8_t* raw_ptr = reinterpret_cast<const std::uint8_t*>(&p_) +
+    const std::uint8_t* raw_ptr = reinterpret_cast<const std::uint8_t*> (&p_) +
                                   pcl::traits::offset<PointT, Key>::value;
-    const T* data_ptr = reinterpret_cast<const T*>(raw_ptr);
+    const T* data_ptr = reinterpret_cast<const T*> (raw_ptr);
 
     // Check if the value is invalid
-    if (!std::isfinite(*data_ptr)) {
+    if (!std::isfinite (*data_ptr)) {
       f_idx_++;
       return;
     }
@@ -1018,14 +1019,14 @@ template <typename PointT>
 inline void
 computeNDCentroid (const pcl::PointCloud<PointT>& cloud, Eigen::VectorXf& centroid)
 {
-  return (computeNDCentroid<PointT, float>(cloud, centroid));
+  return (computeNDCentroid<PointT, float> (cloud, centroid));
 }
 
 template <typename PointT>
 inline void
 computeNDCentroid (const pcl::PointCloud<PointT>& cloud, Eigen::VectorXd& centroid)
 {
-  return (computeNDCentroid<PointT, double>(cloud, centroid));
+  return (computeNDCentroid<PointT, double> (cloud, centroid));
 }
 
 /** \brief General, all purpose nD centroid estimation for a set of points using their
@@ -1047,7 +1048,7 @@ computeNDCentroid (const pcl::PointCloud<PointT>& cloud,
                    const Indices& indices,
                    Eigen::VectorXf& centroid)
 {
-  return (computeNDCentroid<PointT, float>(cloud, indices, centroid));
+  return (computeNDCentroid<PointT, float> (cloud, indices, centroid));
 }
 
 template <typename PointT>
@@ -1056,7 +1057,7 @@ computeNDCentroid (const pcl::PointCloud<PointT>& cloud,
                    const Indices& indices,
                    Eigen::VectorXd& centroid)
 {
-  return (computeNDCentroid<PointT, double>(cloud, indices, centroid));
+  return (computeNDCentroid<PointT, double> (cloud, indices, centroid));
 }
 
 /** \brief General, all purpose nD centroid estimation for a set of points using their
@@ -1078,7 +1079,7 @@ computeNDCentroid (const pcl::PointCloud<PointT>& cloud,
                    const pcl::PointIndices& indices,
                    Eigen::VectorXf& centroid)
 {
-  return (computeNDCentroid<PointT, float>(cloud, indices, centroid));
+  return (computeNDCentroid<PointT, float> (cloud, indices, centroid));
 }
 
 template <typename PointT>
@@ -1087,7 +1088,7 @@ computeNDCentroid (const pcl::PointCloud<PointT>& cloud,
                    const pcl::PointIndices& indices,
                    Eigen::VectorXd& centroid)
 {
-  return (computeNDCentroid<PointT, double>(cloud, indices, centroid));
+  return (computeNDCentroid<PointT, double> (cloud, indices, centroid));
 }
 
 } // namespace pcl

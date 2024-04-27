@@ -69,26 +69,26 @@ public:
     double interior_weight;
     Type type;
 
-    Parameter(double _max_dist = 0.02,
-              double _max_error = 0.02,
-              unsigned _samples = 10,
-              unsigned _iter = 10,
-              unsigned _fit_iter = 10,
-              double _accuracy = 1e-3,
-              double _smooth = 0.00001,
-              double _bnd_weight = 1.0,
-              double _int_weight = 1.0,
-              Type _type = COMMON_BOUNDARY_POINT_MEAN)
-    : max_dist(_max_dist)
-    , max_error(_max_error)
-    , samples(_samples)
-    , com_iter(_iter)
-    , fit_iter(_fit_iter)
-    , accuracy(_accuracy)
-    , smoothness(_smooth)
-    , boundary_weight(_bnd_weight)
-    , interior_weight(_int_weight)
-    , type(_type)
+    Parameter (double _max_dist = 0.02,
+               double _max_error = 0.02,
+               unsigned _samples = 10,
+               unsigned _iter = 10,
+               unsigned _fit_iter = 10,
+               double _accuracy = 1e-3,
+               double _smooth = 0.00001,
+               double _bnd_weight = 1.0,
+               double _int_weight = 1.0,
+               Type _type = COMMON_BOUNDARY_POINT_MEAN)
+    : max_dist (_max_dist)
+    , max_error (_max_error)
+    , samples (_samples)
+    , com_iter (_iter)
+    , fit_iter (_fit_iter)
+    , accuracy (_accuracy)
+    , smoothness (_smooth)
+    , boundary_weight (_bnd_weight)
+    , interior_weight (_int_weight)
+    , type (_type)
     {}
   };
 

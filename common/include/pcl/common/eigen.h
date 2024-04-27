@@ -297,7 +297,7 @@ inline void
 getTransformation (
     float x, float y, float z, float roll, float pitch, float yaw, Eigen::Affine3f& t)
 {
-  return (getTransformation<float>(x, y, z, roll, pitch, yaw, t));
+  return (getTransformation<float> (x, y, z, roll, pitch, yaw, t));
 }
 
 inline void
@@ -309,7 +309,7 @@ getTransformation (double x,
                    double yaw,
                    Eigen::Affine3d& t)
 {
-  return (getTransformation<double>(x, y, z, roll, pitch, yaw, t));
+  return (getTransformation<double> (x, y, z, roll, pitch, yaw, t));
 }
 
 /** \brief Create a transformation from the given translation and Euler angles
@@ -322,7 +322,7 @@ inline Eigen::Affine3f
 getTransformation (float x, float y, float z, float roll, float pitch, float yaw)
 {
   Eigen::Affine3f t;
-  getTransformation<float>(x, y, z, roll, pitch, yaw, t);
+  getTransformation<float> (x, y, z, roll, pitch, yaw, t);
   return (t);
 }
 
@@ -349,11 +349,11 @@ loadBinary (Eigen::MatrixBase<Derived> const& matrix, std::istream& file);
 // values. The reason for giving Dynamic the priority over finite values is that min(3,
 // Dynamic) should be Dynamic, since that could be anything between 0 and 3.
 #define PCL_EIGEN_SIZE_MIN_PREFER_DYNAMIC(a, b)                                        \
-  ((int(a) == 0 || int(b) == 0)                             ? 0                        \
-   : (int(a) == 1 || int(b) == 1)                           ? 1                        \
-   : (int(a) == Eigen::Dynamic || int(b) == Eigen::Dynamic) ? Eigen::Dynamic           \
-   : (int(a) <= int(b))                                     ? int(a)                   \
-                                                            : int(b))
+  ((int (a) == 0 || int (b) == 0)                             ? 0                      \
+   : (int (a) == 1 || int (b) == 1)                           ? 1                      \
+   : (int (a) == Eigen::Dynamic || int (b) == Eigen::Dynamic) ? Eigen::Dynamic         \
+   : (int (a) <= int (b))                                     ? int (a)                \
+                                                              : int (b))
 
 /** \brief Returns the transformation between two point sets.
  * The algorithm is based on:
@@ -520,11 +520,11 @@ checkCoordinateSystem (const Eigen::Matrix<Scalar, 3, 1>& origin,
 {
   Eigen::Matrix<Scalar, Eigen::Dynamic, 1> line_x;
   Eigen::Matrix<Scalar, Eigen::Dynamic, 1> line_y;
-  line_x.resize(6);
-  line_y.resize(6);
+  line_x.resize (6);
+  line_y.resize (6);
   line_x << origin, x_direction;
   line_y << origin, y_direction;
-  return (checkCoordinateSystem<Scalar>(line_x, line_y, norm_limit, dot_limit));
+  return (checkCoordinateSystem<Scalar> (line_x, line_y, norm_limit, dot_limit));
 }
 
 /** \brief Compute the transformation between two coordinate systems

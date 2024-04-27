@@ -62,36 +62,36 @@ public:
   using CloudPtr = Cloud::Ptr;
   using CloudConstPtr = Cloud::ConstPtr;
 
-  SUSANDemo(Grabber& grabber)
-  : cloud_viewer_("SUSAN 2D Keypoints -- PointCloud")
-  , grabber_(grabber)
-  , image_viewer_("SUSAN 2D Keypoints -- Image")
+  SUSANDemo (Grabber& grabber)
+  : cloud_viewer_ ("SUSAN 2D Keypoints -- PointCloud")
+  , grabber_ (grabber)
+  , image_viewer_ ("SUSAN 2D Keypoints -- Image")
   {}
 
   /////////////////////////////////////////////////////////////////////////
   void
   cloud_callback (const CloudConstPtr& cloud)
   {
-    FPS_CALC("cloud callback");
-    std::lock_guard<std::mutex> lock(cloud_mutex_);
+    FPS_CALC ("cloud callback");
+    std::lock_guard<std::mutex> lock (cloud_mutex_);
     cloud_ = cloud;
 
     // Compute SUSAN keypoints
     SUSANKeypoint<PointT, KeyPointT> susan;
-    susan.setInputCloud(cloud);
-    susan.setNumberOfThreads(6);
-    susan.setNonMaxSupression(true);
-    keypoints_.reset(new PointCloud<KeyPointT>);
-    susan.compute(*keypoints_);
+    susan.setInputCloud (cloud);
+    susan.setNumberOfThreads (6);
+    susan.setNonMaxSupression (true);
+    keypoints_.reset (new PointCloud<KeyPointT>);
+    susan.compute (*keypoints_);
   }
 
   /////////////////////////////////////////////////////////////////////////
   void
   init ()
   {
-    std::function<void(const CloudConstPtr&)> cloud_cb =
-        [this] (const CloudConstPtr& cloud) { cloud_callback(cloud); };
-    cloud_connection = grabber_.registerCallback(cloud_cb);
+    std::function<void (const CloudConstPtr&)> cloud_cb =
+        [this] (const CloudConstPtr& cloud) { cloud_callback (cloud); };
+    cloud_connection = grabber_.registerCallback (cloud_cb);
   }
 
   /////////////////////////////////////////////////////////////////////////
@@ -115,60 +115,60 @@ public:
       CloudConstPtr cloud;
 
       if (cloud_mutex_.try_lock()) {
-        cloud_.swap(cloud);
-        keypoints_.swap(keypoints);
+        cloud_.swap (cloud);
+        keypoints_.swap (keypoints);
 
         cloud_mutex_.unlock();
       }
 
       if (cloud) {
         if (!cloud_init) {
-          cloud_viewer_.setPosition(0, 0);
-          cloud_viewer_.setSize(cloud->width, cloud->height);
+          cloud_viewer_.setPosition (0, 0);
+          cloud_viewer_.setSize (cloud->width, cloud->height);
           cloud_init = true;
         }
 
-        if (!cloud_viewer_.updatePointCloud(cloud, "OpenNICloud")) {
-          cloud_viewer_.addPointCloud(cloud, "OpenNICloud");
-          cloud_viewer_.resetCameraViewpoint("OpenNICloud");
+        if (!cloud_viewer_.updatePointCloud (cloud, "OpenNICloud")) {
+          cloud_viewer_.addPointCloud (cloud, "OpenNICloud");
+          cloud_viewer_.resetCameraViewpoint ("OpenNICloud");
         }
 
         if (!image_init) {
-          image_viewer_.setPosition(cloud->width, 0);
-          image_viewer_.setSize(cloud->width, cloud->height);
+          image_viewer_.setPosition (cloud->width, 0);
+          image_viewer_.setSize (cloud->width, cloud->height);
           image_init = true;
         }
 
-        image_viewer_.addRGBImage<PointT>(cloud);
+        image_viewer_.addRGBImage<PointT> (cloud);
 
         if (keypoints && !keypoints->empty()) {
-          image_viewer_.removeLayer(getStrBool(keypts));
+          image_viewer_.removeLayer (getStrBool (keypts));
           for (std::size_t i = 0; i < keypoints->size(); ++i) {
-            int u = int((*keypoints)[i].label % cloud->width);
-            int v = cloud->height - int((*keypoints)[i].label / cloud->width);
-            image_viewer_.markPoint(u,
-                                    v,
-                                    visualization::red_color,
-                                    visualization::blue_color,
-                                    10,
-                                    getStrBool(!keypts));
+            int u = int ((*keypoints)[i].label % cloud->width);
+            int v = cloud->height - int ((*keypoints)[i].label / cloud->width);
+            image_viewer_.markPoint (u,
+                                     v,
+                                     visualization::red_color,
+                                     visualization::blue_color,
+                                     10,
+                                     getStrBool (!keypts));
           }
           keypts = !keypts;
 
-          visualization::PointCloudColorHandlerCustom<KeyPointT> blue(
+          visualization::PointCloudColorHandlerCustom<KeyPointT> blue (
               keypoints, 0, 0, 255);
-          if (!cloud_viewer_.updatePointCloud(keypoints, blue, "keypoints"))
-            cloud_viewer_.addPointCloud(keypoints, blue, "keypoints");
-          cloud_viewer_.setPointCloudRenderingProperties(
+          if (!cloud_viewer_.updatePointCloud (keypoints, blue, "keypoints"))
+            cloud_viewer_.addPointCloud (keypoints, blue, "keypoints");
+          cloud_viewer_.setPointCloudRenderingProperties (
               visualization::PCL_VISUALIZER_POINT_SIZE, 20, "keypoints");
-          cloud_viewer_.setPointCloudRenderingProperties(
+          cloud_viewer_.setPointCloudRenderingProperties (
               visualization::PCL_VISUALIZER_OPACITY, 0.5, "keypoints");
         }
       }
 
       cloud_viewer_.spinOnce();
       image_viewer_.spinOnce();
-      std::this_thread::sleep_for(100us);
+      std::this_thread::sleep_for (100us);
     }
 
     grabber_.stop();
@@ -192,9 +192,9 @@ private:
 int
 main (int, char**)
 {
-  std::string device_id("#1");
-  OpenNIGrabber grabber(device_id);
-  SUSANDemo openni_viewer(grabber);
+  std::string device_id ("#1");
+  OpenNIGrabber grabber (device_id);
+  SUSANDemo openni_viewer (grabber);
 
   openni_viewer.init();
   openni_viewer.run();

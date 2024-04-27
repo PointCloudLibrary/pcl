@@ -166,11 +166,11 @@ public:
 
   /** Construct a camera by copying parameters from a VTK camera.
    * Window position and size are initialized with (0, 0) and (1, 1) respectively.*/
-  Camera(vtkCamera& camera);
+  Camera (vtkCamera& camera);
 
   /** Construct a camera by copying parameters from a VTK camera and a VTK render
    * window. */
-  Camera(vtkCamera& camera, vtkRenderWindow& window);
+  Camera (vtkCamera& camera, vtkRenderWindow& window);
 
   /** \brief Focal point or lookAt.
    * \note The view direction can be obtained by (focal-pos).normalized ()

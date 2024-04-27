@@ -78,7 +78,7 @@ public:
   void
   serialize (::std::ostream& stream) const
   {
-    root_.serialize(stream);
+    root_.serialize (stream);
   }
 
   /** Deserializes the decision tree.
@@ -88,7 +88,7 @@ public:
   void
   deserialize (::std::istream& stream)
   {
-    root_.deserialize(stream);
+    root_.deserialize (stream);
   }
 
 private:

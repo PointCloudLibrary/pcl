@@ -52,20 +52,20 @@ template <typename PointT>
 int
 load (const std::string& file_name, pcl::PointCloud<PointT>& cloud)
 {
-  pcl_fs::path p(file_name.c_str());
+  pcl_fs::path p (file_name.c_str());
   std::string extension = p.extension().string();
   int result = -1;
   if (extension == ".pcd")
-    result = pcl::io::loadPCDFile(file_name, cloud);
+    result = pcl::io::loadPCDFile (file_name, cloud);
   else if (extension == ".ply")
-    result = pcl::io::loadPLYFile(file_name, cloud);
+    result = pcl::io::loadPLYFile (file_name, cloud);
   else if (extension == ".ifs")
-    result = pcl::io::loadIFSFile(file_name, cloud);
+    result = pcl::io::loadIFSFile (file_name, cloud);
   else if (extension == ".obj")
-    result = pcl::io::loadOBJFile(file_name, cloud);
+    result = pcl::io::loadOBJFile (file_name, cloud);
   else {
-    PCL_ERROR("[pcl::io::load] Don't know how to handle file with extension %s\n",
-              extension.c_str());
+    PCL_ERROR ("[pcl::io::load] Don't know how to handle file with extension %s\n",
+               extension.c_str());
     result = -1;
   }
   return (result);
@@ -75,18 +75,18 @@ template <typename PointT>
 int
 save (const std::string& file_name, const pcl::PointCloud<PointT>& cloud)
 {
-  pcl_fs::path p(file_name.c_str());
+  pcl_fs::path p (file_name.c_str());
   std::string extension = p.extension().string();
   int result = -1;
   if (extension == ".pcd")
-    result = pcl::io::savePCDFile(file_name, cloud, true);
+    result = pcl::io::savePCDFile (file_name, cloud, true);
   else if (extension == ".ply")
-    result = pcl::io::savePLYFile(file_name, cloud, true);
+    result = pcl::io::savePLYFile (file_name, cloud, true);
   else if (extension == ".ifs")
-    result = pcl::io::saveIFSFile(file_name, cloud);
+    result = pcl::io::saveIFSFile (file_name, cloud);
   else {
-    PCL_ERROR("[pcl::io::save] Don't know how to handle file with extension %s\n",
-              extension.c_str());
+    PCL_ERROR ("[pcl::io::save] Don't know how to handle file with extension %s\n",
+               extension.c_str());
     result = -1;
   }
   return (result);

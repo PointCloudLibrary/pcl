@@ -38,9 +38,9 @@
 #include <pcl/common/gaussian.h>
 #include <pcl/test/gtest.h>
 
-TEST(PCL, GaussianKernel)
+TEST (PCL, GaussianKernel)
 {
-  Eigen::VectorXf kernel(31);
+  Eigen::VectorXf kernel (31);
   kernel << 0.000888059f, 0.00158611f, 0.00272177f, 0.00448744f, 0.00710844f,
       0.0108188f, 0.0158201f, 0.0222264f, 0.0300025f, 0.0389112f, 0.0484864f,
       0.0580487f, 0.0667719f, 0.0737944f, 0.0783576f, 0.0799405f, 0.0783576f,
@@ -48,7 +48,7 @@ TEST(PCL, GaussianKernel)
       0.0222264f, 0.0158201f, 0.0108188f, 0.00710844f, 0.00448744f, 0.00272177f,
       0.00158611f, 0.000888059f;
 
-  Eigen::VectorXf derivative(35);
+  Eigen::VectorXf derivative (35);
   derivative << 0.000168673f, 0.000307151f, 0.000535285f, 0.000892304f, 0.00142183f,
       0.00216388f, 0.00314209f, 0.00434741f, 0.00572143f, 0.00714516f, 0.00843934f,
       0.00938163f, 0.00974186f, 0.0093305f, 0.00804947f, 0.0059307f, 0.00314871f, 0.0f,
@@ -60,24 +60,24 @@ TEST(PCL, GaussianKernel)
   Eigen::VectorXf computed_kernel, computed_derivative;
 
   // Test kernel only version
-  gk.compute(5, computed_kernel);
-  EXPECT_EQ(kernel.size(), computed_kernel.size());
+  gk.compute (5, computed_kernel);
+  EXPECT_EQ (kernel.size(), computed_kernel.size());
   for (Eigen::Index i = 0; i < kernel.size(); i++)
-    EXPECT_NEAR(kernel[i], computed_kernel[i], 1e-4);
+    EXPECT_NEAR (kernel[i], computed_kernel[i], 1e-4);
 
   // Test kernel and derivative version
-  gk.compute(5, computed_kernel, computed_derivative);
-  EXPECT_EQ(kernel.size(), computed_kernel.size());
+  gk.compute (5, computed_kernel, computed_derivative);
+  EXPECT_EQ (kernel.size(), computed_kernel.size());
   for (Eigen::Index i = 0; i < kernel.size(); i++)
-    EXPECT_NEAR(kernel[i], computed_kernel[i], 1e-4);
-  EXPECT_EQ(derivative.size(), computed_derivative.size());
+    EXPECT_NEAR (kernel[i], computed_kernel[i], 1e-4);
+  EXPECT_EQ (derivative.size(), computed_derivative.size());
   for (Eigen::Index i = 0; i < derivative.size(); i++)
-    EXPECT_NEAR(derivative[i], computed_derivative[i], 1e-4);
+    EXPECT_NEAR (derivative[i], computed_derivative[i], 1e-4);
 }
 
 int
 main (int argc, char** argv)
 {
-  testing::InitGoogleTest(&argc, argv);
+  testing::InitGoogleTest (&argc, argv);
   return (RUN_ALL_TESTS());
 }

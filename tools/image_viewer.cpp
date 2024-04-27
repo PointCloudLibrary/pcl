@@ -48,21 +48,22 @@ int
 main (int, char** argv)
 {
   pcl::PointCloud<pcl::PointXYZ> xyz;
-  pcl::io::loadPCDFile(argv[1], xyz);
+  pcl::io::loadPCDFile (argv[1], xyz);
 
   pcl::visualization::ImageViewer depth_image_viewer_;
   float* img = new float[xyz.width * xyz.height];
 
-  for (int i = 0; i < static_cast<int>(xyz.size()); ++i)
+  for (int i = 0; i < static_cast<int> (xyz.size()); ++i)
     img[i] = xyz[i].z;
 
-  depth_image_viewer_.showFloatImage(img,
-                                     xyz.width,
-                                     xyz.height,
-                                     std::numeric_limits<float>::min(),
-                                     // Scale so that the colors look brighter on screen
-                                     std::numeric_limits<float>::max() / 10,
-                                     true);
+  depth_image_viewer_.showFloatImage (
+      img,
+      xyz.width,
+      xyz.height,
+      std::numeric_limits<float>::min(),
+      // Scale so that the colors look brighter on screen
+      std::numeric_limits<float>::max() / 10,
+      true);
   depth_image_viewer_.spin();
   return (0);
 }

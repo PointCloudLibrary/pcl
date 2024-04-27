@@ -60,13 +60,13 @@ public:
    * \param[in] pcapFile Path to a file which contains previously captured data packets.
    * This parameter is optional
    */
-  VLPGrabber(const std::string& pcapFile = "");
+  VLPGrabber (const std::string& pcapFile = "");
 
   /** \brief Constructor taking a specified IP/port
    * \param[in] ipAddress IP Address that should be used to listen for VLP packets
    * \param[in] port UDP Port that should be used to listen for VLP packets
    */
-  VLPGrabber(const boost::asio::ip::address& ipAddress, const std::uint16_t port);
+  VLPGrabber (const boost::asio::ip::address& ipAddress, const std::uint16_t port);
 
   /** \brief virtual Destructor inherited from the Grabber interface. It never throws.
    */
@@ -94,7 +94,7 @@ public:
   void
   setLaserColorRGB (const IterT& begin, const IterT& end)
   {
-    std::copy(begin, end, laser_rgb_mapping_);
+    std::copy (begin, end, laser_rgb_mapping_);
   }
 
   /** \brief Returns the maximum number of lasers

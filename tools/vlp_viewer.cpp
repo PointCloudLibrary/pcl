@@ -66,7 +66,8 @@ using namespace pcl::visualization;
     ++count;                                                                           \
     if (now - last >= 1.0) {                                                           \
       std::cout << "Average framerate(" << _WHAT_                                      \
-                << "): " << double(count) / double(now - last) << " Hz" << std::endl;  \
+                << "): " << double (count) / double (now - last) << " Hz"              \
+                << std::endl;                                                          \
       count = 0;                                                                       \
       last = now;                                                                      \
     }                                                                                  \
@@ -85,17 +86,17 @@ public:
   using CloudConstPtr = typename Cloud::ConstPtr;
   using CloudPtr = typename Cloud::Ptr;
 
-  SimpleVLPViewer(Grabber& grabber, PointCloudColorHandler<PointType>* handler)
-  : cloud_viewer_(new PCLVisualizer("PCL VLP Cloud"))
-  , grabber_(grabber)
-  , handler_(handler)
+  SimpleVLPViewer (Grabber& grabber, PointCloudColorHandler<PointType>* handler)
+  : cloud_viewer_ (new PCLVisualizer ("PCL VLP Cloud"))
+  , grabber_ (grabber)
+  , handler_ (handler)
   {}
 
   void
   cloud_callback (const CloudConstPtr& cloud)
   {
-    FPS_CALC("cloud callback");
-    std::lock_guard<std::mutex> lock(cloud_mutex_);
+    FPS_CALC ("cloud callback");
+    std::lock_guard<std::mutex> lock (cloud_mutex_);
     cloud_ = cloud;
   }
 
@@ -106,27 +107,27 @@ public:
       switch (event.getKeyCode()) {
       case '0':
         delete handler_;
-        handler_ = new PointCloudColorHandlerCustom<PointXYZI>(255, 255, 255);
+        handler_ = new PointCloudColorHandlerCustom<PointXYZI> (255, 255, 255);
         break;
       case '1':
         delete handler_;
-        handler_ = new PointCloudColorHandlerGenericField<PointXYZI>("x");
+        handler_ = new PointCloudColorHandlerGenericField<PointXYZI> ("x");
         break;
       case '2':
         delete handler_;
-        handler_ = new PointCloudColorHandlerGenericField<PointXYZI>("y");
+        handler_ = new PointCloudColorHandlerGenericField<PointXYZI> ("y");
         break;
       case '3':
         delete handler_;
-        handler_ = new PointCloudColorHandlerGenericField<PointXYZI>("z");
+        handler_ = new PointCloudColorHandlerGenericField<PointXYZI> ("z");
         break;
       case '4':
         delete handler_;
-        handler_ = new PointCloudColorHandlerGenericField<PointXYZI>("intensity");
+        handler_ = new PointCloudColorHandlerGenericField<PointXYZI> ("intensity");
         break;
       case 'a':
         cloud_viewer_->removeAllCoordinateSystems();
-        cloud_viewer_->addCoordinateSystem(1.0, "global");
+        cloud_viewer_->addCoordinateSystem (1.0, "global");
         break;
       case 'A':
         cloud_viewer_->removeAllCoordinateSystems();
@@ -138,16 +139,17 @@ public:
   void
   run ()
   {
-    cloud_viewer_->addCoordinateSystem(1.0, "global");
-    cloud_viewer_->setBackgroundColor(0, 0, 0);
+    cloud_viewer_->addCoordinateSystem (1.0, "global");
+    cloud_viewer_->setBackgroundColor (0, 0, 0);
     cloud_viewer_->initCameraParameters();
-    cloud_viewer_->setCameraPosition(0.0, 0.0, 30.0, 0.0, 1.0, 0.0, 0);
-    cloud_viewer_->setCameraClipDistances(0.0, 50.0);
-    cloud_viewer_->registerKeyboardCallback(&SimpleVLPViewer::keyboard_callback, *this);
+    cloud_viewer_->setCameraPosition (0.0, 0.0, 30.0, 0.0, 1.0, 0.0, 0);
+    cloud_viewer_->setCameraClipDistances (0.0, 50.0);
+    cloud_viewer_->registerKeyboardCallback (&SimpleVLPViewer::keyboard_callback,
+                                             *this);
 
-    std::function<void(const CloudConstPtr&)> cloud_cb =
-        [this] (const CloudConstPtr& cloud) { cloud_callback(cloud); };
-    boost::signals2::connection cloud_connection = grabber_.registerCallback(cloud_cb);
+    std::function<void (const CloudConstPtr&)> cloud_cb =
+        [this] (const CloudConstPtr& cloud) { cloud_callback (cloud); };
+    boost::signals2::connection cloud_connection = grabber_.registerCallback (cloud_cb);
 
     grabber_.start();
 
@@ -155,15 +157,15 @@ public:
       CloudConstPtr tmp, cloud;
 
       if (cloud_mutex_.try_lock()) {
-        cloud_.swap(cloud);
+        cloud_.swap (cloud);
         cloud_mutex_.unlock();
       }
 
       if (cloud) {
-        FPS_CALC("drawing cloud");
-        handler_->setInputCloud(cloud);
-        if (!cloud_viewer_->updatePointCloud(cloud, *handler_, "VLP"))
-          cloud_viewer_->addPointCloud(cloud, *handler_, "VLP");
+        FPS_CALC ("drawing cloud");
+        handler_->setInputCloud (cloud);
+        if (!cloud_viewer_->updatePointCloud (cloud, *handler_, "VLP"))
+          cloud_viewer_->addPointCloud (cloud, *handler_, "VLP");
 
         cloud_viewer_->spinOnce();
       }
@@ -171,7 +173,7 @@ public:
       if (!grabber_.isRunning())
         cloud_viewer_->spin();
 
-      std::this_thread::sleep_for(100us);
+      std::this_thread::sleep_for (100us);
     }
 
     grabber_.stop();
@@ -204,18 +206,18 @@ main (int argc, char** argv)
 {
   std::string pcapFile;
 
-  if (find_switch(argc, argv, "-h") || find_switch(argc, argv, "--help")) {
-    usage(argv);
+  if (find_switch (argc, argv, "-h") || find_switch (argc, argv, "--help")) {
+    usage (argv);
     return (0);
   }
 
-  parse_argument(argc, argv, "-pcapFile", pcapFile);
+  parse_argument (argc, argv, "-pcapFile", pcapFile);
 
-  VLPGrabber grabber(pcapFile);
+  VLPGrabber grabber (pcapFile);
 
-  auto* color_handler = new PointCloudColorHandlerGenericField<PointXYZI>("intensity");
+  auto* color_handler = new PointCloudColorHandlerGenericField<PointXYZI> ("intensity");
 
-  SimpleVLPViewer<PointXYZI> v(grabber, color_handler);
+  SimpleVLPViewer<PointXYZI> v (grabber, color_handler);
   v.run();
 
   return (0);

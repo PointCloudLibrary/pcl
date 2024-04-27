@@ -28,8 +28,8 @@ public:
 
   ON_BoundingBox(); // creates EmptyBox
 
-  ON_BoundingBox(const ON_3dPoint&, // min corner of axis aligned bounding box
-                 const ON_3dPoint&  // max corner of axis aligned bounding box
+  ON_BoundingBox (const ON_3dPoint&, // min corner of axis aligned bounding box
+                  const ON_3dPoint&  // max corner of axis aligned bounding box
   );
   ~ON_BoundingBox();
 
@@ -42,9 +42,9 @@ public:
 
   // operator[] returns min if index <= 0 and max if indes >= 1
   ON_3dPoint&
-  operator[](int);
+  operator[] (int);
   const ON_3dPoint&
-  operator[](int) const;
+  operator[] (int) const;
 
   ON_3dPoint
   Min () const;

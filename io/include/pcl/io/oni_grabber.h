@@ -67,23 +67,23 @@ struct PointXYZI;
 class PCL_EXPORTS ONIGrabber : public Grabber {
 public:
   // define callback signature typedefs
-  using sig_cb_openni_image = void(const openni_wrapper::Image::Ptr&);
-  using sig_cb_openni_depth_image = void(const openni_wrapper::DepthImage::Ptr&);
-  using sig_cb_openni_ir_image = void(const openni_wrapper::IRImage::Ptr&);
-  using sig_cb_openni_image_depth_image = void(const openni_wrapper::Image::Ptr&,
-                                               const openni_wrapper::DepthImage::Ptr&,
-                                               float);
-  using sig_cb_openni_ir_depth_image = void(const openni_wrapper::IRImage::Ptr&,
-                                            const openni_wrapper::DepthImage::Ptr&,
-                                            float);
+  using sig_cb_openni_image = void (const openni_wrapper::Image::Ptr&);
+  using sig_cb_openni_depth_image = void (const openni_wrapper::DepthImage::Ptr&);
+  using sig_cb_openni_ir_image = void (const openni_wrapper::IRImage::Ptr&);
+  using sig_cb_openni_image_depth_image = void (const openni_wrapper::Image::Ptr&,
+                                                const openni_wrapper::DepthImage::Ptr&,
+                                                float);
+  using sig_cb_openni_ir_depth_image = void (const openni_wrapper::IRImage::Ptr&,
+                                             const openni_wrapper::DepthImage::Ptr&,
+                                             float);
   using sig_cb_openni_point_cloud =
-      void(const pcl::PointCloud<pcl::PointXYZ>::ConstPtr&);
+      void (const pcl::PointCloud<pcl::PointXYZ>::ConstPtr&);
   using sig_cb_openni_point_cloud_rgb =
-      void(const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr&);
+      void (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr&);
   using sig_cb_openni_point_cloud_rgba =
-      void(const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&);
+      void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&);
   using sig_cb_openni_point_cloud_i =
-      void(const pcl::PointCloud<pcl::PointXYZI>::ConstPtr&);
+      void (const pcl::PointCloud<pcl::PointXYZI>::ConstPtr&);
 
   /** \brief constructor
    * \param[in] file_name the path to the ONI file
@@ -91,7 +91,7 @@ public:
    * \param[in] stream whether the playback should be in streaming mode or in triggered
    * mode.
    */
-  ONIGrabber(const std::string& file_name, bool repeat, bool stream);
+  ONIGrabber (const std::string& file_name, bool repeat, bool stream);
 
   /** \brief destructor never throws an exception */
   ~ONIGrabber() noexcept override;

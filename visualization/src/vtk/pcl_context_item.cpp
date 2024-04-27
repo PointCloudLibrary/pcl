@@ -48,28 +48,28 @@
 namespace pcl {
 namespace visualization {
 // Standard VTK macro for *New ()
-vtkStandardNewMacro(PCLContextItem);
-vtkStandardNewMacro(PCLContextImageItem);
+vtkStandardNewMacro (PCLContextItem);
+vtkStandardNewMacro (PCLContextImageItem);
 namespace context_items {
-vtkStandardNewMacro(Point);
-vtkStandardNewMacro(Line);
-vtkStandardNewMacro(Circle);
-vtkStandardNewMacro(Disk);
-vtkStandardNewMacro(Rectangle);
-vtkStandardNewMacro(FilledRectangle);
-vtkStandardNewMacro(Points);
-vtkStandardNewMacro(Polygon);
-vtkStandardNewMacro(Text);
-vtkStandardNewMacro(Markers);
+vtkStandardNewMacro (Point);
+vtkStandardNewMacro (Line);
+vtkStandardNewMacro (Circle);
+vtkStandardNewMacro (Disk);
+vtkStandardNewMacro (Rectangle);
+vtkStandardNewMacro (FilledRectangle);
+vtkStandardNewMacro (Points);
+vtkStandardNewMacro (Polygon);
+vtkStandardNewMacro (Text);
+vtkStandardNewMacro (Markers);
 } // namespace context_items
 } // namespace visualization
 } // namespace pcl
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::visualization::PCLContextItem::setColors(unsigned char r,
-                                              unsigned char g,
-                                              unsigned char b)
+pcl::visualization::PCLContextItem::setColors (unsigned char r,
+                                               unsigned char g,
+                                               unsigned char b)
 {
   colors[0] = r;
   colors[1] = g;
@@ -78,36 +78,36 @@ pcl::visualization::PCLContextItem::setColors(unsigned char r,
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::visualization::PCLContextImageItem::set(float _x, float _y, vtkImageData* _image)
+pcl::visualization::PCLContextImageItem::set (float _x, float _y, vtkImageData* _image)
 {
   x = _x;
   y = _y;
-  image->DeepCopy(_image);
+  image->DeepCopy (_image);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 bool
-pcl::visualization::PCLContextImageItem::Paint(vtkContext2D* painter)
+pcl::visualization::PCLContextImageItem::Paint (vtkContext2D* painter)
 {
-  SetOpacity(1.0);
-  painter->DrawImage(x, y, image);
+  SetOpacity (1.0);
+  painter->DrawImage (x, y, image);
   return (true);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::visualization::context_items::Point::set(float x, float y)
+pcl::visualization::context_items::Point::set (float x, float y)
 {
-  params.resize(2);
+  params.resize (2);
   params[0] = x;
   params[1] = y;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::visualization::context_items::Circle::set(float x, float y, float radius)
+pcl::visualization::context_items::Circle::set (float x, float y, float radius)
 {
-  params.resize(4);
+  params.resize (4);
   params[0] = x;
   params[1] = y;
   params[2] = radius;
@@ -116,9 +116,9 @@ pcl::visualization::context_items::Circle::set(float x, float y, float radius)
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::visualization::context_items::Rectangle::set(float x, float y, float w, float h)
+pcl::visualization::context_items::Rectangle::set (float x, float y, float w, float h)
 {
-  params.resize(4);
+  params.resize (4);
   params[0] = x;
   params[1] = y;
   params[2] = w;
@@ -127,12 +127,12 @@ pcl::visualization::context_items::Rectangle::set(float x, float y, float w, flo
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::visualization::context_items::Line::set(float start_x,
-                                             float start_y,
-                                             float end_x,
-                                             float end_y)
+pcl::visualization::context_items::Line::set (float start_x,
+                                              float start_y,
+                                              float end_x,
+                                              float end_y)
 {
-  params.resize(4);
+  params.resize (4);
   params[0] = start_x;
   params[1] = start_y;
   params[2] = end_x;
@@ -141,9 +141,11 @@ pcl::visualization::context_items::Line::set(float start_x,
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::visualization::context_items::Text::set(float x, float y, const std::string& _text)
+pcl::visualization::context_items::Text::set (float x,
+                                              float y,
+                                              const std::string& _text)
 {
-  params.resize(2);
+  params.resize (2);
   params[0] = x;
   params[1] = y;
   text = _text;
@@ -151,44 +153,44 @@ pcl::visualization::context_items::Text::set(float x, float y, const std::string
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 bool
-pcl::visualization::context_items::Circle::Paint(vtkContext2D* painter)
+pcl::visualization::context_items::Circle::Paint (vtkContext2D* painter)
 {
-  painter->GetBrush()->SetColor(colors[0],
-                                colors[1],
-                                colors[2],
-                                static_cast<unsigned char>((255.0 * GetOpacity())));
-  painter->GetPen()->SetColor(colors[0],
-                              colors[1],
-                              colors[2],
-                              static_cast<unsigned char>((255.0 * GetOpacity())));
-  painter->DrawWedge(params[0], params[1], params[2], params[3], 0.0, 360.0);
+  painter->GetBrush()->SetColor (colors[0],
+                                 colors[1],
+                                 colors[2],
+                                 static_cast<unsigned char> ((255.0 * GetOpacity())));
+  painter->GetPen()->SetColor (colors[0],
+                               colors[1],
+                               colors[2],
+                               static_cast<unsigned char> ((255.0 * GetOpacity())));
+  painter->DrawWedge (params[0], params[1], params[2], params[3], 0.0, 360.0);
   return (true);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 bool
-pcl::visualization::context_items::Disk::Paint(vtkContext2D* painter)
+pcl::visualization::context_items::Disk::Paint (vtkContext2D* painter)
 {
-  painter->GetBrush()->SetColor(colors[0],
-                                colors[1],
-                                colors[2],
-                                static_cast<unsigned char>((255.0 * GetOpacity())));
-  painter->GetPen()->SetColor(colors[0],
-                              colors[1],
-                              colors[2],
-                              static_cast<unsigned char>((255.0 * GetOpacity())));
-  painter->DrawEllipse(params[0], params[1], params[2], params[2]);
+  painter->GetBrush()->SetColor (colors[0],
+                                 colors[1],
+                                 colors[2],
+                                 static_cast<unsigned char> ((255.0 * GetOpacity())));
+  painter->GetPen()->SetColor (colors[0],
+                               colors[1],
+                               colors[2],
+                               static_cast<unsigned char> ((255.0 * GetOpacity())));
+  painter->DrawEllipse (params[0], params[1], params[2], params[2]);
   return (true);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 bool
-pcl::visualization::context_items::Rectangle::Paint(vtkContext2D* painter)
+pcl::visualization::context_items::Rectangle::Paint (vtkContext2D* painter)
 {
-  painter->GetPen()->SetColor(colors[0],
-                              colors[1],
-                              colors[2],
-                              static_cast<unsigned char>((255.0 * GetOpacity())));
+  painter->GetPen()->SetColor (colors[0],
+                               colors[1],
+                               colors[2],
+                               static_cast<unsigned char> ((255.0 * GetOpacity())));
   float p[] = {params[0],
                params[1],
                params[2],
@@ -200,99 +202,99 @@ pcl::visualization::context_items::Rectangle::Paint(vtkContext2D* painter)
                params[0],
                params[1]};
 
-  painter->DrawPoly(p, 5);
+  painter->DrawPoly (p, 5);
   return (true);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 bool
-pcl::visualization::context_items::FilledRectangle::Paint(vtkContext2D* painter)
+pcl::visualization::context_items::FilledRectangle::Paint (vtkContext2D* painter)
 {
-  painter->GetBrush()->SetColor(colors[0],
-                                colors[1],
-                                colors[2],
-                                static_cast<unsigned char>((255.0 * GetOpacity())));
-  painter->GetPen()->SetColor(colors[0],
-                              colors[1],
-                              colors[2],
-                              static_cast<unsigned char>((255.0 * GetOpacity())));
-  painter->DrawRect(params[0], params[1], params[2], params[3]);
+  painter->GetBrush()->SetColor (colors[0],
+                                 colors[1],
+                                 colors[2],
+                                 static_cast<unsigned char> ((255.0 * GetOpacity())));
+  painter->GetPen()->SetColor (colors[0],
+                               colors[1],
+                               colors[2],
+                               static_cast<unsigned char> ((255.0 * GetOpacity())));
+  painter->DrawRect (params[0], params[1], params[2], params[3]);
   return (true);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 bool
-pcl::visualization::context_items::Line::Paint(vtkContext2D* painter)
+pcl::visualization::context_items::Line::Paint (vtkContext2D* painter)
 {
-  painter->GetPen()->SetColor(colors[0],
-                              colors[1],
-                              colors[2],
-                              static_cast<unsigned char>((255.0 * GetOpacity())));
-  painter->DrawLine(params[0], params[1], params[2], params[3]);
+  painter->GetPen()->SetColor (colors[0],
+                               colors[1],
+                               colors[2],
+                               static_cast<unsigned char> ((255.0 * GetOpacity())));
+  painter->DrawLine (params[0], params[1], params[2], params[3]);
   return (true);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 bool
-pcl::visualization::context_items::Polygon::Paint(vtkContext2D* painter)
+pcl::visualization::context_items::Polygon::Paint (vtkContext2D* painter)
 {
-  painter->GetBrush()->SetColor(colors[0],
-                                colors[1],
-                                colors[2],
-                                static_cast<unsigned char>((255.0 * GetOpacity())));
-  painter->GetPen()->SetColor(colors[0],
-                              colors[1],
-                              colors[2],
-                              static_cast<unsigned char>((255.0 * GetOpacity())));
-  painter->DrawPolygon(params.data(), static_cast<int>(params.size() / 2));
+  painter->GetBrush()->SetColor (colors[0],
+                                 colors[1],
+                                 colors[2],
+                                 static_cast<unsigned char> ((255.0 * GetOpacity())));
+  painter->GetPen()->SetColor (colors[0],
+                               colors[1],
+                               colors[2],
+                               static_cast<unsigned char> ((255.0 * GetOpacity())));
+  painter->DrawPolygon (params.data(), static_cast<int> (params.size() / 2));
   return (true);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 bool
-pcl::visualization::context_items::Point::Paint(vtkContext2D* painter)
+pcl::visualization::context_items::Point::Paint (vtkContext2D* painter)
 {
-  painter->GetPen()->SetColor(colors[0],
-                              colors[1],
-                              colors[2],
-                              static_cast<unsigned char>((255.0 * GetOpacity())));
-  painter->DrawPoint(params[0], params[1]);
+  painter->GetPen()->SetColor (colors[0],
+                               colors[1],
+                               colors[2],
+                               static_cast<unsigned char> ((255.0 * GetOpacity())));
+  painter->DrawPoint (params[0], params[1]);
   return (true);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 bool
-pcl::visualization::context_items::Points::Paint(vtkContext2D* painter)
+pcl::visualization::context_items::Points::Paint (vtkContext2D* painter)
 {
-  painter->GetPen()->SetColor(colors[0],
-                              colors[1],
-                              colors[2],
-                              static_cast<unsigned char>((255.0 * GetOpacity())));
-  painter->DrawPoints(params.data(), static_cast<int>(params.size() / 2));
+  painter->GetPen()->SetColor (colors[0],
+                               colors[1],
+                               colors[2],
+                               static_cast<unsigned char> ((255.0 * GetOpacity())));
+  painter->DrawPoints (params.data(), static_cast<int> (params.size() / 2));
   return (true);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 bool
-pcl::visualization::context_items::Text::Paint(vtkContext2D* painter)
+pcl::visualization::context_items::Text::Paint (vtkContext2D* painter)
 {
   vtkTextProperty* text_property = painter->GetTextProp();
-  text_property->SetColor(255.0 * colors[0], 255.0 * colors[1], 255.0 * colors[2]);
-  text_property->SetOpacity(GetOpacity());
+  text_property->SetColor (255.0 * colors[0], 255.0 * colors[1], 255.0 * colors[2]);
+  text_property->SetOpacity (GetOpacity());
   text_property->SetFontFamilyToArial();
-  text_property->SetFontSize(10);
+  text_property->SetFontSize (10);
   text_property->SetJustificationToLeft();
   text_property->BoldOff();
   text_property->ShadowOff();
-  painter->DrawString(params[0], params[1], text.c_str());
+  painter->DrawString (params[0], params[1], text.c_str());
   return (true);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::visualization::context_items::Markers::setPointColors(unsigned char r,
-                                                           unsigned char g,
-                                                           unsigned char b)
+pcl::visualization::context_items::Markers::setPointColors (unsigned char r,
+                                                            unsigned char g,
+                                                            unsigned char b)
 {
   point_colors[0] = r;
   point_colors[1] = g;
@@ -301,31 +303,31 @@ pcl::visualization::context_items::Markers::setPointColors(unsigned char r,
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::visualization::context_items::Markers::setPointColors(unsigned char rgb[3])
+pcl::visualization::context_items::Markers::setPointColors (unsigned char rgb[3])
 {
-  std::copy(rgb, rgb + 3, point_colors);
+  std::copy (rgb, rgb + 3, point_colors);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 bool
-pcl::visualization::context_items::Markers::Paint(vtkContext2D* painter)
+pcl::visualization::context_items::Markers::Paint (vtkContext2D* painter)
 {
-  int nb_points(params.size() / 2);
+  int nb_points (params.size() / 2);
   if (size <= 0)
     size = 2.3 * painter->GetPen()->GetWidth();
 
-  painter->GetPen()->SetWidth(size);
-  painter->GetPen()->SetColor(colors[0],
-                              colors[1],
-                              colors[2],
-                              static_cast<unsigned char>((255.0 * GetOpacity())));
-  painter->DrawPointSprites(nullptr, params.data(), nb_points);
-  painter->GetPen()->SetWidth(1);
-  painter->GetPen()->SetColor(point_colors[0],
-                              point_colors[1],
-                              point_colors[2],
-                              static_cast<unsigned char>((255.0 * GetOpacity())));
-  painter->DrawPointSprites(nullptr, params.data(), nb_points);
+  painter->GetPen()->SetWidth (size);
+  painter->GetPen()->SetColor (colors[0],
+                               colors[1],
+                               colors[2],
+                               static_cast<unsigned char> ((255.0 * GetOpacity())));
+  painter->DrawPointSprites (nullptr, params.data(), nb_points);
+  painter->GetPen()->SetWidth (1);
+  painter->GetPen()->SetColor (point_colors[0],
+                               point_colors[1],
+                               point_colors[2],
+                               static_cast<unsigned char> ((255.0 * GetOpacity())));
+  painter->DrawPointSprites (nullptr, params.data(), nb_points);
   return (true);
 }
 

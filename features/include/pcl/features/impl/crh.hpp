@@ -48,11 +48,11 @@
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointNT, typename PointOutT>
 void
-pcl::CRHEstimation<PointInT, PointNT, PointOutT>::computeFeature(PointCloudOut& output)
+pcl::CRHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut& output)
 {
   // Check if input was set
   if (!normals_) {
-    PCL_ERROR(
+    PCL_ERROR (
         "[pcl::%s::computeFeature] No input dataset containing normals was given!\n",
         getClassName().c_str());
     output.width = output.height = 0;
@@ -61,7 +61,7 @@ pcl::CRHEstimation<PointInT, PointNT, PointOutT>::computeFeature(PointCloudOut& 
   }
 
   if (normals_->size() != surface_->size()) {
-    PCL_ERROR(
+    PCL_ERROR (
         "[pcl::%s::computeFeature] The number of points in the input dataset differs "
         "from the number of points in the dataset containing the normals!\n",
         getClassName().c_str());
@@ -76,38 +76,38 @@ pcl::CRHEstimation<PointInT, PointNT, PointOutT>::computeFeature(PointCloudOut& 
   plane_normal[2] = -centroid_[2];
   Eigen::Vector3f z_vector = Eigen::Vector3f::UnitZ();
   plane_normal.normalize();
-  Eigen::Vector3f axis = plane_normal.cross(z_vector);
-  double rotation = -asin(axis.norm());
+  Eigen::Vector3f axis = plane_normal.cross (z_vector);
+  double rotation = -asin (axis.norm());
   axis.normalize();
 
   int nbins = nbins_;
   int bin_angle = 360 / nbins;
 
-  Eigen::Affine3f transformPC(Eigen::AngleAxisf(static_cast<float>(rotation), axis));
+  Eigen::Affine3f transformPC (Eigen::AngleAxisf (static_cast<float> (rotation), axis));
 
   pcl::PointCloud<pcl::PointNormal> grid;
-  grid.resize(indices_->size());
+  grid.resize (indices_->size());
 
   for (std::size_t i = 0; i < indices_->size(); i++) {
     grid[i].getVector4fMap() = (*surface_)[(*indices_)[i]].getVector4fMap();
     grid[i].getNormalVector4fMap() = (*normals_)[(*indices_)[i]].getNormalVector4fMap();
   }
 
-  pcl::transformPointCloudWithNormals(grid, grid, transformPC);
+  pcl::transformPointCloudWithNormals (grid, grid, transformPC);
 
   // fill spatial data vector and the zero-initialize or "value-initialize" an array on
   // c++,
   //  the initialization is made with () after the [nbins]
-  std::vector<kiss_fft_scalar> spatial_data(nbins);
+  std::vector<kiss_fft_scalar> spatial_data (nbins);
 
   float sum_w = 0;
   for (const auto& point : grid.points) {
-    int bin = static_cast<int>(
-                  (((std::atan2(point.normal_y, point.normal_x) + M_PI) * 180 / M_PI) /
+    int bin = static_cast<int> (
+                  (((std::atan2 (point.normal_y, point.normal_x) + M_PI) * 180 / M_PI) /
                    bin_angle)) %
               nbins;
     float w =
-        std::sqrt(point.normal_y * point.normal_y + point.normal_x * point.normal_x);
+        std::sqrt (point.normal_y * point.normal_y + point.normal_x * point.normal_x);
     sum_w += w;
     spatial_data[bin] += w;
   }
@@ -115,16 +115,16 @@ pcl::CRHEstimation<PointInT, PointNT, PointOutT>::computeFeature(PointCloudOut& 
   for (auto& data : spatial_data)
     data /= sum_w;
 
-  std::vector<kiss_fft_cpx> freq_data(nbins / 2 + 1);
-  kiss_fftr_cfg mycfg = kiss_fftr_alloc(nbins, 0, nullptr, nullptr);
-  kiss_fftr(mycfg, spatial_data.data(), freq_data.data());
+  std::vector<kiss_fft_cpx> freq_data (nbins / 2 + 1);
+  kiss_fftr_cfg mycfg = kiss_fftr_alloc (nbins, 0, nullptr, nullptr);
+  kiss_fftr (mycfg, spatial_data.data(), freq_data.data());
 
   for (auto& data : freq_data) {
     data.r /= freq_data[0].r;
     data.i /= freq_data[0].r;
   }
 
-  output.resize(1);
+  output.resize (1);
   output.width = output.height = 1;
 
   output[0].histogram[0] = freq_data[0].r; // dc

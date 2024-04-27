@@ -129,7 +129,7 @@ public:
   inline void
   setDetectionThreshold (float threshold)
   {
-    linemod_.setDetectionThreshold(threshold);
+    linemod_.setDetectionThreshold (threshold);
   }
 
   /** \brief Sets the threshold on the magnitude of color gradients. Color gradients
@@ -139,7 +139,7 @@ public:
   inline void
   setGradientMagnitudeThreshold (const float threshold)
   {
-    color_gradient_mod_.setGradientMagnitudeThreshold(threshold);
+    color_gradient_mod_.setGradientMagnitudeThreshold (threshold);
   }
 
   /** \brief Sets the threshold for the decision whether two detections of the same
@@ -164,7 +164,7 @@ public:
   {
     cloud_xyz_ = cloud;
 
-    surface_normal_mod_.setInputCloud(cloud);
+    surface_normal_mod_.setInputCloud (cloud);
     surface_normal_mod_.processInputData();
   }
 
@@ -176,7 +176,7 @@ public:
   {
     cloud_rgb_ = cloud;
 
-    color_gradient_mod_.setInputCloud(cloud);
+    color_gradient_mod_.setInputCloud (cloud);
     color_gradient_mod_.processInputData();
   }
 
@@ -231,8 +231,8 @@ public:
   findObjectPointIndices (const std::size_t detection_id)
   {
     if (detection_id >= detections_.size())
-      PCL_ERROR("ERROR pcl::LineRGBD::computeTransformedTemplatePoints - detection_id "
-                "is out of bounds\n");
+      PCL_ERROR ("ERROR pcl::LineRGBD::computeTransformedTemplatePoints - detection_id "
+                 "is out of bounds\n");
 
     // TODO: compute transform from detection
     // TODO: transform template points
@@ -250,8 +250,8 @@ protected:
   alignTemplatePoints (const std::size_t detection_id)
   {
     if (detection_id >= detections_.size())
-      PCL_ERROR("ERROR pcl::LineRGBD::computeTransformedTemplatePoints - detection_id "
-                "is out of bounds\n");
+      PCL_ERROR ("ERROR pcl::LineRGBD::computeTransformedTemplatePoints - detection_id "
+                 "is out of bounds\n");
 
     // TODO: compute transform from detection
     // TODO: transform template points

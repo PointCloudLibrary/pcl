@@ -47,9 +47,9 @@ class DoubleParameter;
 
 class ICPRegistrationWorker : public AbstractWorker {
 public:
-  ICPRegistrationWorker(CloudMesh::PointCloudPtr cloud,
-                        const QList<CloudMeshItem*>& cloud_mesh_items,
-                        QWidget* parent = nullptr);
+  ICPRegistrationWorker (CloudMesh::PointCloudPtr cloud,
+                         const QList<CloudMeshItem*>& cloud_mesh_items,
+                         QWidget* parent = nullptr);
 
 protected:
   std::string

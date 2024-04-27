@@ -63,7 +63,7 @@ public:
    * transformation that is used to describe the cube ([-1; +1] in each dimension). The
    * transformation is applied to the point(s)!
    */
-  BoxClipper3D(const Eigen::Affine3f& transformation);
+  BoxClipper3D (const Eigen::Affine3f& transformation);
 
   /**
    * \brief creates a BoxClipper object with a scaled box in general pose
@@ -71,9 +71,9 @@ public:
    * length respectively \param[in] translation the position of the box center
    * \param[in] box_size the size of the box for each dimension
    */
-  BoxClipper3D(const Eigen::Vector3f& rodrigues,
-               const Eigen::Vector3f& translation,
-               const Eigen::Vector3f& box_size);
+  BoxClipper3D (const Eigen::Vector3f& rodrigues,
+                const Eigen::Vector3f& translation,
+                const Eigen::Vector3f& box_size);
 
   /**
    * \brief Set the affine transformation

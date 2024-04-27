@@ -20,7 +20,7 @@
 class ON_PolyEdgeSegment;
 
 class ON_CLASS ON_PolyEdgeCurve : public ON_PolyCurve {
-  ON_OBJECT_DECLARE(ON_PolyEdgeCurve);
+  ON_OBJECT_DECLARE (ON_PolyEdgeCurve);
 
 public:
   ON_PolyEdgeCurve();
@@ -33,7 +33,7 @@ public:
 
   // virtual ON_Curve::IsClosed override
   ON_BOOL32
-  IsClosed () const;
+  IsClosed() const;
 
   // virtual ON_Curve::DuplicateCurve override
   ON_Curve*
@@ -62,7 +62,7 @@ public:
   SegmentCurve (int segment_index) const;
 
   ON_PolyEdgeSegment*
-  operator[](int) const;
+  operator[] (int) const;
 
   ON_BOOL32
   Prepend (ON_PolyEdgeSegment* new_segment); // Prepend curve.
@@ -151,13 +151,13 @@ public:
   // 7-1-03 lw added override to unset cached closed flag
   // when a segment is removed
   ON_BOOL32
-  Remove (); // remove last
+  Remove(); // remove last
   ON_BOOL32
   Remove (int index);
 };
 
 class ON_CLASS ON_PolyEdgeSegment : public ON_CurveProxy {
-  ON_OBJECT_DECLARE(ON_PolyEdgeSegment);
+  ON_OBJECT_DECLARE (ON_PolyEdgeSegment);
 
 public:
   // construction
@@ -178,7 +178,7 @@ public:
 
   // virtual ON_Curve::IsClosed override
   ON_BOOL32
-  IsClosed () const;
+  IsClosed() const;
 
   // virtual ON_Curve::DuplicateCurve override
   ON_Curve*

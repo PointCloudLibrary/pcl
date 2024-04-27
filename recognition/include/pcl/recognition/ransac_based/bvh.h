@@ -65,7 +65,7 @@ class PCL_EXPORTS BVH {
 public:
   class BoundedObject {
   public:
-    BoundedObject(const UserData& data) : data_(data) {}
+    BoundedObject (const UserData& data) : data_ (data) {}
 
     virtual ~BoundedObject() = default;
 
@@ -116,23 +116,23 @@ protected:
      * sorted in ascending order according to the objects' x-coordinates. The
      * constructor recursively calls itself with the right 'first_id' and 'last_id' and
      * with the same vector 'sorted_objects'.  */
-    Node(std::vector<BoundedObject*>& sorted_objects, int first_id, int last_id)
+    Node (std::vector<BoundedObject*>& sorted_objects, int first_id, int last_id)
     {
       // Initialize the bounds of the node
       auto firstBounds = sorted_objects[first_id]->getBounds();
-      std::copy(firstBounds, firstBounds + 6, bounds_);
+      std::copy (firstBounds, firstBounds + 6, bounds_);
 
       // Expand the bounds of the node
       for (int i = first_id + 1; i <= last_id; ++i) {
-        aux::expandBoundingBox(bounds_, sorted_objects[i]->getBounds());
+        aux::expandBoundingBox (bounds_, sorted_objects[i]->getBounds());
       }
 
       // Shall we create children?
       if (first_id != last_id) {
         // Division by 2
         int mid_id = (first_id + last_id) >> 1;
-        children_[0] = new Node(sorted_objects, first_id, mid_id);
-        children_[1] = new Node(sorted_objects, mid_id + 1, last_id);
+        children_[0] = new Node (sorted_objects, first_id, mid_id);
+        children_[1] = new Node (sorted_objects, mid_id + 1, last_id);
       }
       else {
         // We reached a leaf
@@ -150,7 +150,7 @@ protected:
     bool
     hasChildren () const
     {
-      return static_cast<bool>(children_[0]);
+      return static_cast<bool> (children_[0]);
     }
 
     Node*
@@ -174,7 +174,7 @@ protected:
     bool
     isLeaf () const
     {
-      return !static_cast<bool>(children_[0]);
+      return !static_cast<bool> (children_[0]);
     }
 
     /** \brief Returns true if 'box' intersects or touches (with a side or a vertex)
@@ -203,7 +203,7 @@ protected:
   };
 
 public:
-  BVH() : root_(nullptr), sorted_objects_(nullptr) {}
+  BVH() : root_ (nullptr), sorted_objects_ (nullptr) {}
 
   virtual ~BVH() { this->clear(); }
 
@@ -225,12 +225,12 @@ public:
     sorted_objects_ = &objects;
 
     // Now sort the objects according to the x-coordinates of their centroids
-    std::sort(
+    std::sort (
         objects.begin(), objects.end(), BoundedObject::compareCentroidsXCoordinates);
 
     // Create the root -> it recursively creates the children nodes until each leaf
     // contains exactly one object
-    root_ = new Node(objects, 0, static_cast<int>(objects.size() - 1));
+    root_ = new Node (objects, 0, static_cast<int> (objects.size() - 1));
   }
 
   /** \brief Frees the memory allocated by this object. After that, you have to call
@@ -260,22 +260,22 @@ public:
 
     // Start the intersection process at the root
     std::list<Node*> working_list;
-    working_list.push_back(root_);
+    working_list.push_back (root_);
 
     while (!working_list.empty()) {
       Node* node = working_list.front();
       working_list.pop_front();
 
       // Is 'node' intersected by the box?
-      if (node->intersect(box)) {
+      if (node->intersect (box)) {
         // We have to check the children of the intersected 'node'
         if (node->hasChildren()) {
-          working_list.push_back(node->getLeftChild());
-          working_list.push_back(node->getRightChild());
+          working_list.push_back (node->getLeftChild());
+          working_list.push_back (node->getRightChild());
         }
         else // 'node' is a leaf -> save it's object in the output list
         {
-          intersected_objects.push_back(node->getObject());
+          intersected_objects.push_back (node->getObject());
           got_intersection = true;
         }
       }

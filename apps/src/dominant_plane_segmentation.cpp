@@ -40,9 +40,10 @@
 #include <pcl/impl/instantiate.hpp>
 #include <pcl/point_types.h>
 #ifdef PCL_ONLY_CORE_POINT_TYPES
-PCL_INSTANTIATE(DominantPlaneSegmentation,
-                (pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA)(pcl::PointXYZRGB))
+PCL_INSTANTIATE (
+    DominantPlaneSegmentation,
+    (pcl::PointXYZ) (pcl::PointXYZI) (pcl::PointXYZRGBA) (pcl::PointXYZRGB))
 #else
-PCL_INSTANTIATE(DominantPlaneSegmentation, PCL_XYZ_POINT_TYPES)
+PCL_INSTANTIATE (DominantPlaneSegmentation, PCL_XYZ_POINT_TYPES)
 #endif // PCL_ONLY_CORE_POINT_TYPES
 #endif // PCL_NO_PRECOMPILE

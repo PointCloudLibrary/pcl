@@ -53,30 +53,30 @@ public:
     double boundary_tangent_weight;
     double closing_tangent_weight;
 
-    ParameterTDM(double intW = 1.0,
-                 double intS = 1e-6,
-                 double intTW = 0.01,
-                 double bndW = 0.0,
-                 double bndS = 1e-6,
-                 double bndTW = 0.01,
-                 double cloW = 0.0,
-                 double cloSi = 0.0,
-                 unsigned cloSa = 0,
-                 double cloTW = 0.0,
-                 double comW = 0.0)
-    : Parameter(intW, intS, bndW, bndS, cloW, cloSi, cloSa, comW)
-    , interior_tangent_weight(intTW)
-    , boundary_tangent_weight(bndTW)
-    , closing_tangent_weight(cloTW)
+    ParameterTDM (double intW = 1.0,
+                  double intS = 1e-6,
+                  double intTW = 0.01,
+                  double bndW = 0.0,
+                  double bndS = 1e-6,
+                  double bndTW = 0.01,
+                  double cloW = 0.0,
+                  double cloSi = 0.0,
+                  unsigned cloSa = 0,
+                  double cloTW = 0.0,
+                  double comW = 0.0)
+    : Parameter (intW, intS, bndW, bndS, cloW, cloSi, cloSa, comW)
+    , interior_tangent_weight (intTW)
+    , boundary_tangent_weight (bndTW)
+    , closing_tangent_weight (cloTW)
     {}
-    ParameterTDM(GlobalOptimization::Parameter params,
-                 double intTW = 0.01,
-                 double bndTW = 0.0,
-                 double cloTW = 0.0)
-    : Parameter(params)
-    , interior_tangent_weight(intTW)
-    , boundary_tangent_weight(bndTW)
-    , closing_tangent_weight(cloTW)
+    ParameterTDM (GlobalOptimization::Parameter params,
+                  double intTW = 0.01,
+                  double bndTW = 0.0,
+                  double cloTW = 0.0)
+    : Parameter (params)
+    , interior_tangent_weight (intTW)
+    , boundary_tangent_weight (bndTW)
+    , closing_tangent_weight (cloTW)
     {}
   };
 
@@ -84,8 +84,8 @@ public:
   /** \brief Constructor with a set of data and a set of B-Spline surfaces.
    * \param[in] data set of 3D point-cloud data to be fit.
    * \param[in] nurbs set of B-Spline surface used for fitting.        */
-  GlobalOptimizationTDM(const std::vector<NurbsDataSurface*>& data,
-                        const std::vector<ON_NurbsSurface*>& nurbs);
+  GlobalOptimizationTDM (const std::vector<NurbsDataSurface*>& data,
+                         const std::vector<ON_NurbsSurface*>& nurbs);
 
   /** \brief Assemble the system of equations for fitting
    * - for large point-clouds this is time consuming.

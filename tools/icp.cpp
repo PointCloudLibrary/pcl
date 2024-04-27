@@ -58,59 +58,59 @@ int
 main (int argc, char** argv)
 {
   double dist = 0.05;
-  pcl::console::parse_argument(argc, argv, "-d", dist);
+  pcl::console::parse_argument (argc, argv, "-d", dist);
 
   double rans = 0.05;
-  pcl::console::parse_argument(argc, argv, "-r", rans);
+  pcl::console::parse_argument (argc, argv, "-r", rans);
 
   int iter = 50;
-  pcl::console::parse_argument(argc, argv, "-i", iter);
+  pcl::console::parse_argument (argc, argv, "-i", iter);
 
   bool nonLinear = false;
-  pcl::console::parse_argument(argc, argv, "-n", nonLinear);
+  pcl::console::parse_argument (argc, argv, "-n", nonLinear);
 
   std::vector<int> pcd_indices;
-  pcd_indices = pcl::console::parse_file_extension_argument(argc, argv, ".pcd");
+  pcd_indices = pcl::console::parse_file_extension_argument (argc, argv, ".pcd");
 
   pcl::IterativeClosestPoint<PointType, PointType>::Ptr icp;
   if (nonLinear) {
     std::cout << "Using IterativeClosestPointNonLinear" << std::endl;
-    icp.reset(new pcl::IterativeClosestPointNonLinear<PointType, PointType>());
+    icp.reset (new pcl::IterativeClosestPointNonLinear<PointType, PointType>());
   }
   else {
     std::cout << "Using IterativeClosestPoint" << std::endl;
-    icp.reset(new pcl::IterativeClosestPoint<PointType, PointType>());
+    icp.reset (new pcl::IterativeClosestPoint<PointType, PointType>());
   }
-  icp->setMaximumIterations(iter);
-  icp->setMaxCorrespondenceDistance(dist);
-  icp->setRANSACOutlierRejectionThreshold(rans);
+  icp->setMaximumIterations (iter);
+  icp->setMaxCorrespondenceDistance (dist);
+  icp->setRANSACOutlierRejectionThreshold (rans);
 
   pcl::registration::IncrementalRegistration<PointType> iicp;
-  iicp.setRegistration(icp);
+  iicp.setRegistration (icp);
 
   for (const int& pcd_index : pcd_indices) {
-    CloudPtr data(new Cloud);
-    if (pcl::io::loadPCDFile(argv[pcd_index], *data) == -1) {
+    CloudPtr data (new Cloud);
+    if (pcl::io::loadPCDFile (argv[pcd_index], *data) == -1) {
       std::cout << "Could not read file" << std::endl;
       return -1;
     }
     pcl::Indices dummy_indices;
-    pcl::removeNaNFromPointCloud(*data, *data, dummy_indices);
+    pcl::removeNaNFromPointCloud (*data, *data, dummy_indices);
 
-    if (!iicp.registerCloud(data)) {
+    if (!iicp.registerCloud (data)) {
       std::cout << "Registration failed. Resetting transform" << std::endl;
       iicp.reset();
-      iicp.registerCloud(data);
+      iicp.registerCloud (data);
     };
 
-    CloudPtr tmp(new Cloud);
-    pcl::transformPointCloud(*data, *tmp, iicp.getAbsoluteTransform());
+    CloudPtr tmp (new Cloud);
+    pcl::transformPointCloud (*data, *tmp, iicp.getAbsoluteTransform());
 
     std::cout << iicp.getAbsoluteTransform() << std::endl;
 
-    std::string result_filename(argv[pcd_index]);
-    result_filename = result_filename.substr(result_filename.rfind('/') + 1);
-    pcl::io::savePCDFileBinary(result_filename, *tmp);
+    std::string result_filename (argv[pcd_index]);
+    result_filename = result_filename.substr (result_filename.rfind ('/') + 1);
+    pcl::io::savePCDFileBinary (result_filename, *tmp);
     std::cout << "saving result to " << result_filename << std::endl;
   }
 

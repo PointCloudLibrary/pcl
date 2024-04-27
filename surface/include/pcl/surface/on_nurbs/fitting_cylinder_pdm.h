@@ -60,12 +60,12 @@ public:
    * \param[in] order the polynomial order of the B-Spline surface.
    * \param[in] data pointer to the 2D point-cloud data to be fit.
    * \param[in] z vector defining front face of surface.        */
-  FittingCylinder(int order, NurbsDataSurface* data);
+  FittingCylinder (int order, NurbsDataSurface* data);
 
   /** \brief Constructor initializing with the B-Spline surface given in argument 2.
    * \param[in] data pointer to the 3D point-cloud data to be fit.
    * \param[in] ns B-Spline surface used for fitting.        */
-  FittingCylinder(NurbsDataSurface* data, const ON_NurbsSurface& ns);
+  FittingCylinder (NurbsDataSurface* data, const ON_NurbsSurface& ns);
 
   /** \brief Refines surface by inserting a knot in the middle of each element.
    *  \param[in] dim dimension of refinement (0,1)  */
@@ -111,7 +111,7 @@ public:
   setQuiet (bool val)
   {
     m_quiet = val;
-    m_solver.setQuiet(val);
+    m_solver.setQuiet (val);
   }
 
   /** \brief Initializing a cylindric B-Spline surface using
@@ -203,17 +203,17 @@ private:
   int
   lrc2gl (int E, int F, int i, int j)
   {
-    return grc2gl(E + i, F + j);
+    return grc2gl (E + i, F + j);
   } // local row/col index to global lexicographic index
   int
   gl2gr (int A) const
   {
-    return (A / m_nurbs.CVCount(1));
+    return (A / m_nurbs.CVCount (1));
   } // global lexicographic in global row index
   int
   gl2gc (int A) const
   {
-    return (A % m_nurbs.CVCount(1));
+    return (A % m_nurbs.CVCount (1));
   } // global lexicographic in global col index
 };
 

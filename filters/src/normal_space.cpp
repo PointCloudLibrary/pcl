@@ -42,7 +42,7 @@
 #include <pcl/impl/instantiate.hpp>
 #include <pcl/point_types.h>
 
-PCL_INSTANTIATE_PRODUCT(NormalSpaceSampling,
-                        (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES))
+PCL_INSTANTIATE_PRODUCT (NormalSpaceSampling,
+                         (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES))
 
 #endif // PCL_NO_PRECOMPILE

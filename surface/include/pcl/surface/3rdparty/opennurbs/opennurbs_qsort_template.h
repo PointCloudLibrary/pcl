@@ -19,7 +19,7 @@ to define type specific quick sort functions.
    1 + log2(num) - log2(CUTOFF) stack entries.  For a CUTOFF
    of 8, that means we need no more than 30 stack entries for
    32 bit platforms, and 62 for 64-bit platforms. */
-#define ON_QSORT_STKSIZ (8 * sizeof(void*) - 2)
+#define ON_QSORT_STKSIZ (8 * sizeof (void*) - 2)
 
 // ON_SORT_TEMPLATE_TYPE -> double, int, ....
 #if !defined(ON_SORT_TEMPLATE_TYPE)
@@ -32,9 +32,9 @@ to define type specific quick sort functions.
 
 #if defined(ON_SORT_TEMPLATE_COMPARE)
 // use a compare function like strcmp for char* strings
-#define ON_QSORT_GT(A, B) ON_SORT_TEMPLATE_COMPARE(A, B) > 0
-#define ON_QSORT_LE(A, B) ON_SORT_TEMPLATE_COMPARE(A, B) <= 0
-#define ON_QSORT_EQ(A, B) ON_SORT_TEMPLATE_COMPARE(A, B) == 0
+#define ON_QSORT_GT(A, B) ON_SORT_TEMPLATE_COMPARE (A, B) > 0
+#define ON_QSORT_LE(A, B) ON_SORT_TEMPLATE_COMPARE (A, B) <= 0
+#define ON_QSORT_EQ(A, B) ON_SORT_TEMPLATE_COMPARE (A, B) == 0
 #else
 // use type compares
 #define ON_QSORT_GT(A, B) *A > *B
@@ -44,9 +44,9 @@ to define type specific quick sort functions.
 
 #if defined(ON_SORT_TEMPLATE_USE_MEMCPY)
 #define ON_QSORT_SWAP(A, B)                                                            \
-  memcpy(&tmp, A, sizeof(tmp));                                                        \
-  memcpy(A, B, sizeof(tmp));                                                           \
-  memcpy(B, &tmp, sizeof(tmp))
+  memcpy (&tmp, A, sizeof (tmp));                                                      \
+  memcpy (A, B, sizeof (tmp));                                                         \
+  memcpy (B, &tmp, sizeof (tmp))
 #else
 #define ON_QSORT_SWAP(A, B)                                                            \
   tmp = *A;                                                                            \
@@ -71,7 +71,7 @@ ON_shortsort (ON_SORT_TEMPLATE_TYPE* lo, ON_SORT_TEMPLATE_TYPE* hi)
     max = lo;
     for (p = lo + 1; p <= hi; p++) {
       /* A[i] <= A[max] for lo <= i < p */
-      if (ON_QSORT_GT(p, max)) {
+      if (ON_QSORT_GT (p, max)) {
         max = p;
       }
       /* A[i] <= A[max] for lo <= i <= p */
@@ -79,7 +79,7 @@ ON_shortsort (ON_SORT_TEMPLATE_TYPE* lo, ON_SORT_TEMPLATE_TYPE* hi)
 
     /* A[i] <= A[max] for lo <= i <= hi */
 
-    ON_QSORT_SWAP(max, hi);
+    ON_QSORT_SWAP (max, hi);
 
     /* A[i] <= A[hi] for i <= hi, so A[i] <= A[j] for i <= j, j >= hi */
 
@@ -129,7 +129,7 @@ recurse:
 
   /* below a certain size, it is faster to use a O(n^2) sorting method */
   if (size <= ON_QSORT_CUTOFF) {
-    ON_shortsort(lo, hi);
+    ON_shortsort (lo, hi);
   }
   else {
     /* First we pick a partitioning element.  The efficiency of the
@@ -144,14 +144,14 @@ recurse:
     mid = lo + (size / 2); /* find middle element */
 
     /* Sort the first, middle, last elements into order */
-    if (ON_QSORT_GT(lo, mid)) {
-      ON_QSORT_SWAP(lo, mid);
+    if (ON_QSORT_GT (lo, mid)) {
+      ON_QSORT_SWAP (lo, mid);
     }
-    if (ON_QSORT_GT(lo, hi)) {
-      ON_QSORT_SWAP(lo, hi);
+    if (ON_QSORT_GT (lo, hi)) {
+      ON_QSORT_SWAP (lo, hi);
     }
-    if (ON_QSORT_GT(mid, hi)) {
-      ON_QSORT_SWAP(mid, hi);
+    if (ON_QSORT_GT (mid, hi)) {
+      ON_QSORT_SWAP (mid, hi);
     }
 
     /* We now wish to partition the array into three pieces, one consisting
@@ -177,12 +177,12 @@ recurse:
       if (mid > loguy) {
         do {
           loguy++;
-        } while (loguy < mid && ON_QSORT_LE(loguy, mid));
+        } while (loguy < mid && ON_QSORT_LE (loguy, mid));
       }
       if (mid <= loguy) {
         do {
           loguy++;
-        } while (loguy <= hi && ON_QSORT_LE(loguy, mid));
+        } while (loguy <= hi && ON_QSORT_LE (loguy, mid));
       }
 
       /* lo < loguy <= hi+1, A[i] <= A[mid] for lo <= i < loguy,
@@ -190,7 +190,7 @@ recurse:
 
       do {
         higuy--;
-      } while (higuy > mid && ON_QSORT_GT(higuy, mid));
+      } while (higuy > mid && ON_QSORT_GT (higuy, mid));
 
       /* lo <= higuy < hi, A[i] > A[mid] for higuy < i < hi,
           either higuy == lo or A[higuy] <= A[mid] */
@@ -202,7 +202,7 @@ recurse:
           A[loguy] > A[mid], A[higuy] <= A[mid],
           loguy <= hi, higuy > lo */
 
-      ON_QSORT_SWAP(loguy, higuy);
+      ON_QSORT_SWAP (loguy, higuy);
 
       /* If the partition element was moved, follow it.  Only need
           to check for mid == higuy, since before the swap,
@@ -232,12 +232,12 @@ recurse:
     if (mid < higuy) {
       do {
         higuy--;
-      } while (higuy > mid && ON_QSORT_EQ(higuy, mid));
+      } while (higuy > mid && ON_QSORT_EQ (higuy, mid));
     }
     if (mid >= higuy) {
       do {
         higuy--;
-      } while (higuy > lo && ON_QSORT_EQ(higuy, mid));
+      } while (higuy > lo && ON_QSORT_EQ (higuy, mid));
     }
 
     /* OK, now we have the following:

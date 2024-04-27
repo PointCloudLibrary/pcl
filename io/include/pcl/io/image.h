@@ -62,12 +62,12 @@ public:
 
   enum Encoding { BAYER_GRBG, YUV422, RGB };
 
-  Image(FrameWrapper::Ptr image_metadata)
-  : wrapper_(std::move(image_metadata)), timestamp_(Clock::now())
+  Image (FrameWrapper::Ptr image_metadata)
+  : wrapper_ (std::move (image_metadata)), timestamp_ (Clock::now())
   {}
 
-  Image(FrameWrapper::Ptr image_metadata, Timestamp time)
-  : wrapper_(std::move(image_metadata)), timestamp_(time)
+  Image (FrameWrapper::Ptr image_metadata, Timestamp time)
+  : wrapper_ (std::move (image_metadata)), timestamp_ (time)
   {}
 
   /**
@@ -117,7 +117,7 @@ public:
   virtual void
   fillRaw (unsigned char* rgb_buffer) const
   {
-    memcpy(rgb_buffer, wrapper_->getData(), wrapper_->getDataSize());
+    memcpy (rgb_buffer, wrapper_->getData(), wrapper_->getDataSize());
   }
 
   /**

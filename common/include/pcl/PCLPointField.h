@@ -38,7 +38,7 @@ using PCLPointFieldPtr = PCLPointField::Ptr;
 using PCLPointFieldConstPtr = PCLPointField::ConstPtr;
 
 inline std::ostream&
-operator<<(std::ostream& s, const ::pcl::PCLPointField& v)
+operator<< (std::ostream& s, const ::pcl::PCLPointField& v)
 {
   s << "name: ";
   s << "  " << v.name << std::endl;
@@ -71,7 +71,7 @@ operator<<(std::ostream& s, const ::pcl::PCLPointField& v)
     s << "  FLOAT64" << std::endl;
     break;
   default:
-    s << "  " << static_cast<int>(v.datatype) << std::endl;
+    s << "  " << static_cast<int> (v.datatype) << std::endl;
   }
   s << "count: ";
   s << "  " << v.count << std::endl;
@@ -83,7 +83,7 @@ operator<<(std::ostream& s, const ::pcl::PCLPointField& v)
 template <typename PointT, typename Tag>
 struct FieldMatches {
   bool
-  operator()(const PCLPointField& field)
+  operator() (const PCLPointField& field)
   {
     return ((field.name == traits::name<PointT, Tag>::value) &&
             (field.datatype == traits::datatype<PointT, Tag>::value) &&

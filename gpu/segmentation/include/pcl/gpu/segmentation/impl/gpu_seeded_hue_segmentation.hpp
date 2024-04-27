@@ -53,7 +53,7 @@ seededHueSegmentation (const pcl::PointCloud<pcl::PointXYZRGB>::Ptr& host_cloud_
 
   // Create a bool vector of processed point indices, and initialize it to false
   // cloud is a DeviceArray<PointType>
-  std::vector<bool> processed(host_cloud_->size(), false);
+  std::vector<bool> processed (host_cloud_->size(), false);
 
   const auto max_answers = host_cloud_->size();
 
@@ -69,14 +69,14 @@ seededHueSegmentation (const pcl::PointCloud<pcl::PointXYZRGB>::Ptr& host_cloud_
     PointXYZRGB p;
     p = (*host_cloud_)[i];
     PointXYZHSV h;
-    PointXYZRGBtoXYZHSV(p, h);
+    PointXYZRGBtoXYZHSV (p, h);
 
     // Create the query queue on the device, point based not indices
     pcl::gpu::Octree::Queries queries_device;
     // Create the query queue on the host
     pcl::PointCloud<pcl::PointXYZ>::VectorType queries_host;
     // Push the starting point in the vector
-    queries_host.push_back((*host_cloud_)[i]);
+    queries_host.push_back ((*host_cloud_)[i]);
 
     unsigned int found_points = queries_host.size();
     unsigned int previous_found_points = 0;
@@ -89,9 +89,9 @@ seededHueSegmentation (const pcl::PointCloud<pcl::PointXYZRGB>::Ptr& host_cloud_
     // once the area stop growing, stop also iterating.
     while (previous_found_points < found_points) {
       // Move queries to GPU
-      queries_device.upload(queries_host);
+      queries_device.upload (queries_host);
       // Execute search
-      tree->radiusSearch(queries_device, tolerance, max_answers, result_device);
+      tree->radiusSearch (queries_device, tolerance, max_answers, result_device);
 
       // Store the previously found number of points
       previous_found_points = found_points;
@@ -101,8 +101,8 @@ seededHueSegmentation (const pcl::PointCloud<pcl::PointXYZRGB>::Ptr& host_cloud_
       data.clear();
 
       // Copy results from GPU to Host
-      result_device.sizes.download(sizes);
-      result_device.data.download(data);
+      result_device.sizes.download (sizes);
+      result_device.data.download (data);
 
       for (std::size_t qp = 0; qp < sizes.size(); qp++) {
         for (int qp_r = 0; qp_r < sizes[qp]; qp_r++) {
@@ -112,11 +112,11 @@ seededHueSegmentation (const pcl::PointCloud<pcl::PointXYZRGB>::Ptr& host_cloud_
           PointXYZRGB p_l;
           p_l = (*host_cloud_)[data[qp_r + qp * max_answers]];
           PointXYZHSV h_l;
-          PointXYZRGBtoXYZHSV(p_l, h_l);
+          PointXYZRGBtoXYZHSV (p_l, h_l);
 
-          if (std::abs(h_l.h - h.h) < delta_hue) {
+          if (std::abs (h_l.h - h.h) < delta_hue) {
             processed[data[qp_r + qp * max_answers]] = true;
-            queries_host.push_back((*host_cloud_)[data[qp_r + qp * max_answers]]);
+            queries_host.push_back ((*host_cloud_)[data[qp_r + qp * max_answers]]);
             found_points++;
           }
         }
@@ -124,7 +124,7 @@ seededHueSegmentation (const pcl::PointCloud<pcl::PointXYZRGB>::Ptr& host_cloud_
     }
     for (std::size_t qp = 0; qp < sizes.size(); qp++) {
       for (int qp_r = 0; qp_r < sizes[qp]; qp_r++) {
-        indices_out.indices.push_back(data[qp_r + qp * max_answers]);
+        indices_out.indices.push_back (data[qp_r + qp * max_answers]);
       }
     }
   }
@@ -132,14 +132,14 @@ seededHueSegmentation (const pcl::PointCloud<pcl::PointXYZRGB>::Ptr& host_cloud_
 }
 
 void
-pcl::gpu::SeededHueSegmentation::segment(PointIndices& indices_in,
-                                         PointIndices& indices_out)
+pcl::gpu::SeededHueSegmentation::segment (PointIndices& indices_in,
+                                          PointIndices& indices_out)
 {
   // Initialize the GPU search tree
   if (!tree_) {
-    tree_.reset(new pcl::gpu::Octree());
+    tree_.reset (new pcl::gpu::Octree());
     ///@todo what do we do if input isn't a PointXYZ cloud?
-    tree_->setCloud(input_);
+    tree_->setCloud (input_);
   }
   if (!tree_->isBuild()) {
     tree_->build();
@@ -152,7 +152,7 @@ pcl::gpu::SeededHueSegmentation::segment(PointIndices& indices_in,
     }
   */
   // Extract the actual clusters
-  seededHueSegmentation(
+  seededHueSegmentation (
       host_cloud_, tree_, cluster_tolerance_, indices_in, indices_out, delta_hue_);
 }
 

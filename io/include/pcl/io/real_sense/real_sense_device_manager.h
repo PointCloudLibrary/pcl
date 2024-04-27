@@ -71,9 +71,9 @@ public:
   {
     static Ptr instance;
     if (!instance) {
-      std::lock_guard<std::mutex> lock(mutex_);
+      std::lock_guard<std::mutex> lock (mutex_);
       if (!instance)
-        instance.reset(new RealSenseDeviceManager);
+        instance.reset (new RealSenseDeviceManager);
     }
     return (instance);
   }
@@ -148,7 +148,7 @@ public:
   {
     std::string id = device->getSerialNumber();
     device.reset();
-    device = RealSenseDeviceManager::getInstance()->captureDevice(id);
+    device = RealSenseDeviceManager::getInstance()->captureDevice (id);
   }
 
 private:
@@ -158,7 +158,7 @@ private:
   std::shared_ptr<PXCCapture> capture_;
   std::shared_ptr<PXCCapture::Device> device_;
 
-  RealSenseDevice(const std::string& id) : device_id_(id){};
+  RealSenseDevice (const std::string& id) : device_id_ (id){};
 };
 
 } // namespace real_sense

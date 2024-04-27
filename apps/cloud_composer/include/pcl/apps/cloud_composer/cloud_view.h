@@ -63,9 +63,9 @@ class CloudView : public QWidget {
   Q_OBJECT
 
 public:
-  CloudView(QWidget* parent = nullptr);
-  CloudView(const CloudView& to_copy);
-  CloudView(ProjectModel* model, QWidget* parent = nullptr);
+  CloudView (QWidget* parent = nullptr);
+  CloudView (const CloudView& to_copy);
+  CloudView (ProjectModel* model, QWidget* parent = nullptr);
 
   void
   setModel (ProjectModel* new_model);
@@ -172,4 +172,4 @@ private:
 } // namespace cloud_composer
 } // namespace pcl
 
-Q_DECLARE_METATYPE(pcl::cloud_composer::CloudView);
+Q_DECLARE_METATYPE (pcl::cloud_composer::CloudView);

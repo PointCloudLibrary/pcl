@@ -136,7 +136,7 @@ public:
     Eigen::Vector4f origin;
     Eigen::Quaternionf orientation;
     int file_version;
-    return (read(file_name, cloud, origin, orientation, file_version, offset));
+    return (read (file_name, cloud, origin, orientation, file_version, offset));
   }
 
   /** \brief Read a point cloud data from any FILE file, and convert it to the given
@@ -156,17 +156,17 @@ public:
   {
     pcl::PCLPointCloud2 blob;
     int file_version;
-    int res = read(file_name,
-                   blob,
-                   cloud.sensor_origin_,
-                   cloud.sensor_orientation_,
-                   file_version,
-                   offset);
+    int res = read (file_name,
+                    blob,
+                    cloud.sensor_origin_,
+                    cloud.sensor_orientation_,
+                    file_version,
+                    offset);
 
     // Exit in case of error
     if (res < 0)
       return res;
-    pcl::fromPCLPointCloud2(blob, cloud);
+    pcl::fromPCLPointCloud2 (blob, cloud);
     return (0);
   }
 };
@@ -214,7 +214,7 @@ public:
          const Eigen::Quaternionf& orientation = Eigen::Quaternionf::Identity(),
          const bool binary = false)
   {
-    return (write(file_name, *cloud, origin, orientation, binary));
+    return (write (file_name, *cloud, origin, orientation, binary));
   }
 
   /** \brief Save point cloud data to a FILE file containing n-D points
@@ -233,10 +233,10 @@ public:
     Eigen::Quaternionf orientation = cloud.sensor_orientation_;
 
     pcl::PCLPointCloud2 blob;
-    pcl::toPCLPointCloud2(cloud, blob);
+    pcl::toPCLPointCloud2 (cloud, blob);
 
     // Save the data
-    return (write(file_name, blob, origin, orientation, binary));
+    return (write (file_name, blob, origin, orientation, binary));
   }
 };
 
@@ -262,11 +262,11 @@ copyValueString (const pcl::PCLPointCloud2& cloud,
                  std::ostream& stream)
 {
   Type value;
-  memcpy(&value,
-         &cloud.data[point_index * point_size + cloud.fields[field_idx].offset +
-                     fields_count * sizeof(Type)],
-         sizeof(Type));
-  if (std::isnan(value))
+  memcpy (&value,
+          &cloud.data[point_index * point_size + cloud.fields[field_idx].offset +
+                      fields_count * sizeof (Type)],
+          sizeof (Type));
+  if (std::isnan (value))
     stream << "nan";
   else
     stream << value;
@@ -282,47 +282,47 @@ copyValueString (const pcl::PCLPointCloud2& cloud,
                  std::ostream& stream)
 {
   Type value;
-  memcpy(&value,
-         &cloud.data[point_index * point_size + cloud.fields[field_idx].offset +
-                     fields_count * sizeof(Type)],
-         sizeof(Type));
+  memcpy (&value,
+          &cloud.data[point_index * point_size + cloud.fields[field_idx].offset +
+                      fields_count * sizeof (Type)],
+          sizeof (Type));
   stream << value;
 }
 
 template <>
 inline void
-copyValueString<std::int8_t>(const pcl::PCLPointCloud2& cloud,
-                             const pcl::index_t point_index,
-                             const int point_size,
-                             const unsigned int field_idx,
-                             const unsigned int fields_count,
-                             std::ostream& stream)
-{
-  std::int8_t value;
-  memcpy(&value,
-         &cloud.data[point_index * point_size + cloud.fields[field_idx].offset +
-                     fields_count * sizeof(std::int8_t)],
-         sizeof(std::int8_t));
-  // Cast to int to prevent value is handled as char
-  stream << boost::numeric_cast<int>(value);
-}
-
-template <>
-inline void
-copyValueString<std::uint8_t>(const pcl::PCLPointCloud2& cloud,
+copyValueString<std::int8_t> (const pcl::PCLPointCloud2& cloud,
                               const pcl::index_t point_index,
                               const int point_size,
                               const unsigned int field_idx,
                               const unsigned int fields_count,
                               std::ostream& stream)
 {
+  std::int8_t value;
+  memcpy (&value,
+          &cloud.data[point_index * point_size + cloud.fields[field_idx].offset +
+                      fields_count * sizeof (std::int8_t)],
+          sizeof (std::int8_t));
+  // Cast to int to prevent value is handled as char
+  stream << boost::numeric_cast<int> (value);
+}
+
+template <>
+inline void
+copyValueString<std::uint8_t> (const pcl::PCLPointCloud2& cloud,
+                               const pcl::index_t point_index,
+                               const int point_size,
+                               const unsigned int field_idx,
+                               const unsigned int fields_count,
+                               std::ostream& stream)
+{
   std::uint8_t value;
-  memcpy(&value,
-         &cloud.data[point_index * point_size + cloud.fields[field_idx].offset +
-                     fields_count * sizeof(std::uint8_t)],
-         sizeof(std::uint8_t));
+  memcpy (&value,
+          &cloud.data[point_index * point_size + cloud.fields[field_idx].offset +
+                      fields_count * sizeof (std::uint8_t)],
+          sizeof (std::uint8_t));
   // Cast to unsigned int to prevent value is handled as char
-  stream << boost::numeric_cast<unsigned int>(value);
+  stream << boost::numeric_cast<unsigned int> (value);
 }
 
 /** \brief Check whether a given value of type Type (uchar, char, uint, int, float,
@@ -345,11 +345,11 @@ isValueFinite (const pcl::PCLPointCloud2& cloud,
                const unsigned int fields_count)
 {
   Type value;
-  memcpy(&value,
-         &cloud.data[point_index * point_size + cloud.fields[field_idx].offset +
-                     fields_count * sizeof(Type)],
-         sizeof(Type));
-  return std::isfinite(value);
+  memcpy (&value,
+          &cloud.data[point_index * point_size + cloud.fields[field_idx].offset +
+                      fields_count * sizeof (Type)],
+          sizeof (Type));
+  return std::isfinite (value);
 }
 
 template <typename Type>
@@ -374,72 +374,72 @@ copyStringValue (const std::string& st,
                  std::istringstream& is)
 {
   Type value;
-  if (boost::iequals(st, "nan")) {
+  if (boost::iequals (st, "nan")) {
     value = std::numeric_limits<Type>::quiet_NaN();
     cloud.is_dense = false;
   }
   else {
-    is.str(st);
+    is.str (st);
     is.clear(); // clear error state flags
     if (!(is >> value))
-      value = static_cast<Type>(atof(st.c_str()));
+      value = static_cast<Type> (atof (st.c_str()));
   }
 
-  memcpy(&cloud.data[point_index * cloud.point_step + cloud.fields[field_idx].offset +
-                     fields_count * sizeof(Type)],
-         reinterpret_cast<char*>(&value),
-         sizeof(Type));
+  memcpy (&cloud.data[point_index * cloud.point_step + cloud.fields[field_idx].offset +
+                      fields_count * sizeof (Type)],
+          reinterpret_cast<char*> (&value),
+          sizeof (Type));
 }
 
 template <>
 inline void
-copyStringValue<std::int8_t>(const std::string& st,
-                             pcl::PCLPointCloud2& cloud,
-                             pcl::index_t point_index,
-                             unsigned int field_idx,
-                             unsigned int fields_count,
-                             std::istringstream& is)
-{
-  std::int8_t value;
-  int val;
-  is.str(st);
-  is.clear(); // clear error state flags
-  // is >> val;  -- unfortunately this fails on older GCC versions and CLANG on MacOS
-  if (!(is >> val)) {
-    val = static_cast<int>(atof(st.c_str()));
-  }
-  value = static_cast<std::int8_t>(val);
-
-  memcpy(&cloud.data[point_index * cloud.point_step + cloud.fields[field_idx].offset +
-                     fields_count * sizeof(std::int8_t)],
-         reinterpret_cast<char*>(&value),
-         sizeof(std::int8_t));
-}
-
-template <>
-inline void
-copyStringValue<std::uint8_t>(const std::string& st,
+copyStringValue<std::int8_t> (const std::string& st,
                               pcl::PCLPointCloud2& cloud,
                               pcl::index_t point_index,
                               unsigned int field_idx,
                               unsigned int fields_count,
                               std::istringstream& is)
 {
+  std::int8_t value;
+  int val;
+  is.str (st);
+  is.clear(); // clear error state flags
+  // is >> val;  -- unfortunately this fails on older GCC versions and CLANG on MacOS
+  if (!(is >> val)) {
+    val = static_cast<int> (atof (st.c_str()));
+  }
+  value = static_cast<std::int8_t> (val);
+
+  memcpy (&cloud.data[point_index * cloud.point_step + cloud.fields[field_idx].offset +
+                      fields_count * sizeof (std::int8_t)],
+          reinterpret_cast<char*> (&value),
+          sizeof (std::int8_t));
+}
+
+template <>
+inline void
+copyStringValue<std::uint8_t> (const std::string& st,
+                               pcl::PCLPointCloud2& cloud,
+                               pcl::index_t point_index,
+                               unsigned int field_idx,
+                               unsigned int fields_count,
+                               std::istringstream& is)
+{
   std::uint8_t value;
   int val;
-  is.str(st);
+  is.str (st);
   is.clear(); // clear error state flags
   // is >> val;  -- unfortunately this fails on older GCC versions and CLANG on
   // MacOS
   if (!(is >> val)) {
-    val = static_cast<int>(atof(st.c_str()));
+    val = static_cast<int> (atof (st.c_str()));
   }
-  value = static_cast<std::uint8_t>(val);
+  value = static_cast<std::uint8_t> (val);
 
-  memcpy(&cloud.data[point_index * cloud.point_step + cloud.fields[field_idx].offset +
-                     fields_count * sizeof(std::uint8_t)],
-         reinterpret_cast<char*>(&value),
-         sizeof(std::uint8_t));
+  memcpy (&cloud.data[point_index * cloud.point_step + cloud.fields[field_idx].offset +
+                      fields_count * sizeof (std::uint8_t)],
+          reinterpret_cast<char*> (&value),
+          sizeof (std::uint8_t));
 }
 } // namespace detail
 
@@ -463,8 +463,8 @@ copyStringValue (const std::string& st,
                  unsigned int fields_count)
 {
   std::istringstream is;
-  is.imbue(std::locale::classic());
-  detail::copyStringValue<Type>(st, cloud, point_index, field_idx, fields_count, is);
+  is.imbue (std::locale::classic());
+  detail::copyStringValue<Type> (st, cloud, point_index, field_idx, fields_count, is);
 }
 /**
  * \brief Copy one single value of type T (uchar, char, uint, int, float, double, ...)
@@ -487,6 +487,6 @@ copyStringValue (const std::string& st,
                  unsigned int fields_count,
                  std::istringstream& is)
 {
-  detail::copyStringValue<Type>(st, cloud, point_index, field_idx, fields_count, is);
+  detail::copyStringValue<Type> (st, cloud, point_index, field_idx, fields_count, is);
 }
 } // namespace pcl

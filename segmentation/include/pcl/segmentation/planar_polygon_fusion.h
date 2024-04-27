@@ -72,8 +72,8 @@ public:
       const std::vector<PlanarRegion<PointT>,
                         Eigen::aligned_allocator<PlanarRegion<PointT>>>& input)
   {
-    int start = static_cast<int>(regions_.size());
-    regions_.resize(regions_.size() + input.size());
+    int start = static_cast<int> (regions_.size());
+    regions_.resize (regions_.size() + input.size());
     for (std::size_t i = 0; i < input.size(); i++)
       regions_[start + i] = input[i];
   }

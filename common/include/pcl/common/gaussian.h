@@ -105,7 +105,7 @@ public:
   template <typename PointT>
   void
   convolveRows (const pcl::PointCloud<PointT>& input,
-                std::function<float(const PointT& p)> field_accessor,
+                std::function<float (const PointT& p)> field_accessor,
                 const Eigen::VectorXf& kernel,
                 pcl::PointCloud<float>& output) const;
 
@@ -132,7 +132,7 @@ public:
   template <typename PointT>
   void
   convolveCols (const pcl::PointCloud<PointT>& input,
-                std::function<float(const PointT& p)> field_accessor,
+                std::function<float (const PointT& p)> field_accessor,
                 const Eigen::VectorXf& kernel,
                 pcl::PointCloud<float>& output) const;
 
@@ -151,9 +151,9 @@ public:
             pcl::PointCloud<float>& output) const
   {
     std::cout << ">>> convolve cpp" << std::endl;
-    pcl::PointCloud<float> tmp(input.width, input.height);
-    convolveRows(input, horiz_kernel, tmp);
-    convolveCols(tmp, vert_kernel, output);
+    pcl::PointCloud<float> tmp (input.width, input.height);
+    convolveRows (input, horiz_kernel, tmp);
+    convolveCols (tmp, vert_kernel, output);
     std::cout << "<<< convolve cpp" << std::endl;
   }
 
@@ -169,15 +169,15 @@ public:
   template <typename PointT>
   inline void
   convolve (const pcl::PointCloud<PointT>& input,
-            std::function<float(const PointT& p)> field_accessor,
+            std::function<float (const PointT& p)> field_accessor,
             const Eigen::VectorXf& horiz_kernel,
             const Eigen::VectorXf& vert_kernel,
             pcl::PointCloud<float>& output) const
   {
     std::cout << ">>> convolve hpp" << std::endl;
-    pcl::PointCloud<float> tmp(input.width, input.height);
-    convolveRows<PointT>(input, field_accessor, horiz_kernel, tmp);
-    convolveCols(tmp, vert_kernel, output);
+    pcl::PointCloud<float> tmp (input.width, input.height);
+    convolveRows<PointT> (input, field_accessor, horiz_kernel, tmp);
+    convolveCols (tmp, vert_kernel, output);
     std::cout << "<<< convolve hpp" << std::endl;
   }
 
@@ -198,8 +198,8 @@ public:
                     pcl::PointCloud<float>& grad_x,
                     pcl::PointCloud<float>& grad_y) const
   {
-    convolve(input, gaussian_kernel_derivative, gaussian_kernel, grad_x);
-    convolve(input, gaussian_kernel, gaussian_kernel_derivative, grad_y);
+    convolve (input, gaussian_kernel_derivative, gaussian_kernel, grad_x);
+    convolve (input, gaussian_kernel, gaussian_kernel_derivative, grad_y);
   }
 
   /** Computes float image gradients using a gaussian kernel and gaussian kernel
@@ -216,15 +216,15 @@ public:
   template <typename PointT>
   inline void
   computeGradients (const pcl::PointCloud<PointT>& input,
-                    std::function<float(const PointT& p)> field_accessor,
+                    std::function<float (const PointT& p)> field_accessor,
                     const Eigen::VectorXf& gaussian_kernel,
                     const Eigen::VectorXf& gaussian_kernel_derivative,
                     pcl::PointCloud<float>& grad_x,
                     pcl::PointCloud<float>& grad_y) const
   {
-    convolve<PointT>(
+    convolve<PointT> (
         input, field_accessor, gaussian_kernel_derivative, gaussian_kernel, grad_x);
-    convolve<PointT>(
+    convolve<PointT> (
         input, field_accessor, gaussian_kernel, gaussian_kernel_derivative, grad_y);
   }
 
@@ -240,7 +240,7 @@ public:
           const Eigen::VectorXf& gaussian_kernel,
           pcl::PointCloud<float>& output) const
   {
-    convolve(input, gaussian_kernel, gaussian_kernel, output);
+    convolve (input, gaussian_kernel, gaussian_kernel, output);
   }
 
   /** Smooth image using a gaussian kernel.
@@ -254,11 +254,11 @@ public:
   template <typename PointT>
   inline void
   smooth (const pcl::PointCloud<PointT>& input,
-          std::function<float(const PointT& p)> field_accessor,
+          std::function<float (const PointT& p)> field_accessor,
           const Eigen::VectorXf& gaussian_kernel,
           pcl::PointCloud<float>& output) const
   {
-    convolve<PointT>(input, field_accessor, gaussian_kernel, gaussian_kernel, output);
+    convolve<PointT> (input, field_accessor, gaussian_kernel, gaussian_kernel, output);
   }
 };
 } // namespace pcl

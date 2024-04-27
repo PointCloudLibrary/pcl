@@ -81,7 +81,7 @@ public:
   setFeatureHandler (
       pcl::FeatureHandler<FeatureType, DataSet, ExampleIndex>& feature_handler)
   {
-    decision_tree_trainer_.setFeatureHandler(feature_handler);
+    decision_tree_trainer_.setFeatureHandler (feature_handler);
   }
 
   /** Sets the object for estimating the statistics for tree nodes.
@@ -92,7 +92,7 @@ public:
   setStatsEstimator (
       pcl::StatsEstimator<LabelType, NodeType, DataSet, ExampleIndex>& stats_estimator)
   {
-    decision_tree_trainer_.setStatsEstimator(stats_estimator);
+    decision_tree_trainer_.setStatsEstimator (stats_estimator);
   }
 
   /** Sets the maximum depth of the learned tree.
@@ -102,7 +102,7 @@ public:
   inline void
   setMaxTreeDepth (const std::size_t max_tree_depth)
   {
-    decision_tree_trainer_.setMaxTreeDepth(max_tree_depth);
+    decision_tree_trainer_.setMaxTreeDepth (max_tree_depth);
   }
 
   /** Sets the number of features used to find optimal decision features.
@@ -112,7 +112,7 @@ public:
   inline void
   setNumOfFeatures (const std::size_t num_of_features)
   {
-    decision_tree_trainer_.setNumOfFeatures(num_of_features);
+    decision_tree_trainer_.setNumOfFeatures (num_of_features);
   }
 
   /** Sets the number of thresholds tested for finding the optimal decision threshold on
@@ -123,7 +123,7 @@ public:
   inline void
   setNumOfThresholds (const std::size_t num_of_threshold)
   {
-    decision_tree_trainer_.setNumOfThresholds(num_of_threshold);
+    decision_tree_trainer_.setNumOfThresholds (num_of_threshold);
   }
 
   /** Sets the input data set used for training.
@@ -133,7 +133,7 @@ public:
   inline void
   setTrainingDataSet (DataSet& data_set)
   {
-    decision_tree_trainer_.setTrainingDataSet(data_set);
+    decision_tree_trainer_.setTrainingDataSet (data_set);
   }
 
   /** Example indices that specify the data used for training.
@@ -143,7 +143,7 @@ public:
   inline void
   setExamples (std::vector<ExampleIndex>& examples)
   {
-    decision_tree_trainer_.setExamples(examples);
+    decision_tree_trainer_.setExamples (examples);
   }
 
   /** Sets the label data corresponding to the example data.
@@ -153,7 +153,7 @@ public:
   inline void
   setLabelData (std::vector<LabelType>& label_data)
   {
-    decision_tree_trainer_.setLabelData(label_data);
+    decision_tree_trainer_.setLabelData (label_data);
   }
 
   /** Sets the minimum number of examples to continue growing a tree.
@@ -163,7 +163,7 @@ public:
   inline void
   setMinExamplesForSplit (std::size_t n)
   {
-    decision_tree_trainer_.setMinExamplesForSplit(n);
+    decision_tree_trainer_.setMinExamplesForSplit (n);
   }
 
   /** Specify the thresholds to be used when evaluating features.
@@ -173,7 +173,7 @@ public:
   void
   setThresholds (std::vector<float>& thres)
   {
-    decision_tree_trainer_.setThresholds(thres);
+    decision_tree_trainer_.setThresholds (thres);
   }
 
   /** Specify the data provider.
@@ -189,7 +189,7 @@ public:
                                                     ExampleIndex,
                                                     NodeType>::Ptr& dtdp)
   {
-    decision_tree_trainer_.setDecisionTreeDataProvider(dtdp);
+    decision_tree_trainer_.setDecisionTreeDataProvider (dtdp);
   }
 
   /** Specify if the features are randomly generated at each split node.
@@ -199,7 +199,7 @@ public:
   void
   setRandomFeaturesAtSplitNode (bool b)
   {
-    decision_tree_trainer_.setRandomFeaturesAtSplitNode(b);
+    decision_tree_trainer_.setRandomFeaturesAtSplitNode (b);
   }
 
   /** Trains a decision forest using the set training data and settings.

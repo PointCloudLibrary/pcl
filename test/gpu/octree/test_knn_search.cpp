@@ -66,20 +66,20 @@ struct PriorityPair {
   float dist2;
 
   bool
-  operator<(const PriorityPair& other) const
+  operator< (const PriorityPair& other) const
   {
     return dist2 < other.dist2;
   }
 
   bool
-  operator==(const PriorityPair& other) const
+  operator== (const PriorityPair& other) const
   {
     return dist2 == other.dist2 && index == other.index;
   }
 };
 
 // TEST(PCL_OctreeGPU, DISABLED_exactNeighbourSearch)
-TEST(PCL_OctreeGPU, exactNeighbourSearch)
+TEST (PCL_OctreeGPU, exactNeighbourSearch)
 {
   DataGenerator data;
   data.data_size = 871000;
@@ -97,39 +97,39 @@ TEST(PCL_OctreeGPU, exactNeighbourSearch)
 
   // prepare device cloud
   pcl::gpu::Octree::PointCloud cloud_device;
-  cloud_device.upload(data.points);
+  cloud_device.upload (data.points);
 
   // prepare host cloud
-  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_host(new pcl::PointCloud<pcl::PointXYZ>);
+  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_host (new pcl::PointCloud<pcl::PointXYZ>);
   cloud_host->width = data.points.size();
   cloud_host->height = 1;
-  cloud_host->points.resize(cloud_host->width * cloud_host->height);
-  std::transform(data.points.cbegin(),
-                 data.points.cend(),
-                 cloud_host->begin(),
-                 DataGenerator::ConvPoint<pcl::PointXYZ>());
+  cloud_host->points.resize (cloud_host->width * cloud_host->height);
+  std::transform (data.points.cbegin(),
+                  data.points.cend(),
+                  cloud_host->begin(),
+                  DataGenerator::ConvPoint<pcl::PointXYZ>());
 
   // gpu build
   pcl::gpu::Octree octree_device;
-  octree_device.setCloud(cloud_device);
+  octree_device.setCloud (cloud_device);
   octree_device.build();
 
   // build host octree
-  pcl::octree::OctreePointCloudSearch<pcl::PointXYZ> octree_host(
+  pcl::octree::OctreePointCloudSearch<pcl::PointXYZ> octree_host (
       host_octree_resolution);
-  octree_host.setInputCloud(cloud_host);
+  octree_host.setInputCloud (cloud_host);
   octree_host.addPointsFromInputCloud();
 
   // upload queries
   pcl::gpu::Octree::Queries queries_device;
-  queries_device.upload(data.queries);
+  queries_device.upload (data.queries);
 
   // prepare output buffers on host
-  std::vector<pcl::Indices> result_host(data.tests_num);
-  std::vector<std::vector<float>> dists_host(data.tests_num);
+  std::vector<pcl::Indices> result_host (data.tests_num);
+  std::vector<std::vector<float>> dists_host (data.tests_num);
   for (std::size_t i = 0; i < data.tests_num; ++i) {
-    result_host[i].reserve(k);
-    dists_host[i].reserve(k);
+    result_host[i].reserve (k);
+    dists_host[i].reserve (k);
   }
 
   // prepare output buffers on device
@@ -138,21 +138,21 @@ TEST(PCL_OctreeGPU, exactNeighbourSearch)
 
   // search GPU shared
   {
-    pcl::ScopeTime time("1nn-gpu");
-    octree_device.nearestKSearchBatch(
+    pcl::ScopeTime time ("1nn-gpu");
+    octree_device.nearestKSearchBatch (
         queries_device, k, result_device, result_sqr_distances);
   }
 
   std::vector<int> downloaded;
-  result_device.data.download(downloaded);
+  result_device.data.download (downloaded);
 
   std::vector<float> downloaded_sqr_dists;
-  result_sqr_distances.download(downloaded_sqr_dists);
+  result_sqr_distances.download (downloaded_sqr_dists);
 
   {
-    pcl::ScopeTime time("1nn-cpu");
+    pcl::ScopeTime time ("1nn-cpu");
     for (std::size_t i = 0; i < data.tests_num; ++i)
-      octree_host.nearestKSearch(data.queries[i], k, result_host[i], dists_host[i]);
+      octree_host.nearestKSearch (data.queries[i], k, result_host[i], dists_host[i]);
   }
 
   // verify results
@@ -167,9 +167,9 @@ TEST(PCL_OctreeGPU, exactNeighbourSearch)
     const auto beg_dist2 = downloaded_sqr_dists.cbegin() + beg;
     const auto end_dist2 = downloaded_sqr_dists.cbegin() + end;
 
-    const std::vector<int> downloaded_cur(downloaded.cbegin() + beg,
-                                          downloaded.cbegin() + end);
-    const std::vector<float> downloaded_sqr_dists_cur(beg_dist2, end_dist2);
+    const std::vector<int> downloaded_cur (downloaded.cbegin() + beg,
+                                           downloaded.cbegin() + end);
+    const std::vector<float> downloaded_sqr_dists_cur (beg_dist2, end_dist2);
 
     std::vector<PriorityPair> pairs_host;
     std::vector<PriorityPair> pairs_gpu;
@@ -177,20 +177,20 @@ TEST(PCL_OctreeGPU, exactNeighbourSearch)
       PriorityPair host;
       host.index = results_host_cur[n];
       host.dist2 = dists_host_cur[n];
-      pairs_host.push_back(host);
+      pairs_host.push_back (host);
 
       PriorityPair gpu;
       gpu.index = downloaded_cur[n];
       gpu.dist2 = downloaded_sqr_dists_cur[n];
-      pairs_gpu.push_back(gpu);
+      pairs_gpu.push_back (gpu);
     }
 
-    std::sort(pairs_host.begin(), pairs_host.end());
-    std::sort(pairs_gpu.begin(), pairs_gpu.end());
+    std::sort (pairs_host.begin(), pairs_host.end());
+    std::sort (pairs_gpu.begin(), pairs_gpu.end());
 
     while (pairs_host.size()) {
-      ASSERT_EQ(pairs_host.back().index, pairs_gpu.back().index);
-      EXPECT_NEAR(pairs_host.back().dist2, pairs_gpu.back().dist2, 1e-2);
+      ASSERT_EQ (pairs_host.back().index, pairs_gpu.back().index);
+      EXPECT_NEAR (pairs_host.back().dist2, pairs_gpu.back().dist2, 1e-2);
 
       pairs_host.pop_back();
       pairs_gpu.pop_back();
@@ -202,7 +202,7 @@ TEST(PCL_OctreeGPU, exactNeighbourSearch)
 int
 main (int argc, char** argv)
 {
-  testing::InitGoogleTest(&argc, argv);
+  testing::InitGoogleTest (&argc, argv);
   return (RUN_ALL_TESTS());
 }
 /* ]--- */

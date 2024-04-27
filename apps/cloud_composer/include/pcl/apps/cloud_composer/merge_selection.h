@@ -44,7 +44,7 @@ namespace cloud_composer {
 class MergeSelection : public MergeCloudTool {
   Q_OBJECT
 public:
-  MergeSelection(
+  MergeSelection (
       QMap<const CloudItem*, pcl::PointIndices::ConstPtr> selected_item_index_map,
       QObject* parent = nullptr);
 

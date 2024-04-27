@@ -52,16 +52,16 @@
 const int MAX_CLUST_SIZE = 25000;
 const float CLUST_TOL = 0.05f;
 
-pcl::gpu::people::RDFBodyPartsDetector::RDFBodyPartsDetector(
+pcl::gpu::people::RDFBodyPartsDetector::RDFBodyPartsDetector (
     const std::vector<std::string>& tree_files, int rows, int cols)
-: max_cluster_size_(MAX_CLUST_SIZE), cluster_tolerance_(CLUST_TOL)
+: max_cluster_size_ (MAX_CLUST_SIZE), cluster_tolerance_ (CLUST_TOL)
 {
-  PCL_DEBUG("[pcl::gpu::people::RDFBodyPartsDetector::RDFBodyPartsDetector] : (D) : "
-            "Constructor called\n");
+  PCL_DEBUG ("[pcl::gpu::people::RDFBodyPartsDetector::RDFBodyPartsDetector] : (D) : "
+             "Constructor called\n");
   // TODO replace all asserts with exceptions
-  assert(!tree_files.empty());
+  assert (!tree_files.empty());
 
-  impl_.reset(new device::MultiTreeLiveProc(rows, cols));
+  impl_.reset (new device::MultiTreeLiveProc (rows, cols));
 
   for (const auto& tree_file : tree_files) {
     // load the tree file
@@ -69,11 +69,11 @@ pcl::gpu::people::RDFBodyPartsDetector::RDFBodyPartsDetector(
     std::vector<trees::Label> leaves;
 
     // this might throw but we haven't done any malloc yet
-    int height = loadTree(tree_file, nodes, leaves);
-    impl_->trees.emplace_back(height, nodes, leaves);
+    int height = loadTree (tree_file, nodes, leaves);
+    impl_->trees.emplace_back (height, nodes, leaves);
   }
 
-  allocate_buffers(rows, cols);
+  allocate_buffers (rows, cols);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////
@@ -130,77 +130,77 @@ pcl::gpu::people::RDFBodyPartsDetector::getBlobMatrix() const
 ////////////////////////////////////////////////////////////////////////////////////
 
 void
-pcl::gpu::people::RDFBodyPartsDetector::allocate_buffers(int rows, int cols)
+pcl::gpu::people::RDFBodyPartsDetector::allocate_buffers (int rows, int cols)
 {
   // std::cout << "(I) : RDFBodyPartsDetector::allocate_buffers called with: " << cols
   // << "x" << rows << std::endl;
 
-  labels_.create(rows, cols);
-  labels_smoothed_.create(rows, cols);
+  labels_.create (rows, cols);
+  labels_smoothed_.create (rows, cols);
 
   // Create all the label probabilities
-  P_l_.create(rows, cols);
-  P_l_Gaus_.create(rows, cols);
-  P_l_Gaus_Temp_.create(rows, cols);
-  P_l_1_.create(rows, cols);
-  P_l_2_.create(rows, cols);
-  P_l_prev_1_.create(rows, cols);
-  P_l_prev_2_.create(rows, cols);
+  P_l_.create (rows, cols);
+  P_l_Gaus_.create (rows, cols);
+  P_l_Gaus_Temp_.create (rows, cols);
+  P_l_1_.create (rows, cols);
+  P_l_2_.create (rows, cols);
+  P_l_prev_1_.create (rows, cols);
+  P_l_prev_2_.create (rows, cols);
 
-  lmap_host_.resize(rows * cols);
+  lmap_host_.resize (rows * cols);
 
-  dst_labels_.resize(rows * cols);
-  region_sizes_.resize(rows * cols + 1);
-  remap_.resize(rows * cols);
+  dst_labels_.resize (rows * cols);
+  region_sizes_.resize (rows * cols + 1);
+  remap_.resize (rows * cols);
 
-  comps_.create(rows, cols);
-  device::ConnectedComponents::initEdges(rows, cols, edges_);
+  comps_.create (rows, cols);
+  device::ConnectedComponents::initEdges (rows, cols, edges_);
 
-  means_storage_.resize((cols * rows + 1) *
-                        3); // float3 * cols * rows and float3 for cc == -1.
+  means_storage_.resize ((cols * rows + 1) *
+                         3); // float3 * cols * rows and float3 for cc == -1.
 
-  blob_matrix_.resize(NUM_PARTS);
+  blob_matrix_.resize (NUM_PARTS);
   for (auto& matrix : blob_matrix_) {
     matrix.clear();
-    matrix.reserve(5000);
+    matrix.reserve (5000);
   }
 }
 
 void
-pcl::gpu::people::RDFBodyPartsDetector::process(const pcl::device::Depth& depth,
-                                                const PointCloud<PointXYZ>& cloud,
-                                                int min_pts_per_cluster)
+pcl::gpu::people::RDFBodyPartsDetector::process (const pcl::device::Depth& depth,
+                                                 const PointCloud<PointXYZ>& cloud,
+                                                 int min_pts_per_cluster)
 {
   // ScopeTime time("ev");
 
   int cols = depth.cols();
   int rows = depth.rows();
 
-  allocate_buffers(rows, cols);
+  allocate_buffers (rows, cols);
 
   {
     {
       // ScopeTime time("--");
       //  Process the depthimage (CUDA)
-      impl_->process(depth, labels_);
-      device::smoothLabelImage(labels_, depth, labels_smoothed_, NUM_PARTS, 5, 300);
+      impl_->process (depth, labels_);
+      device::smoothLabelImage (labels_, depth, labels_smoothed_, NUM_PARTS, 5, 300);
     }
 
     // AsyncCopy<unsigned char> async_labels_download(lmap_host_);
 
     int c;
-    labels_smoothed_.download(lmap_host_, c);
+    labels_smoothed_.download (lmap_host_, c);
     // async_labels_download.download(labels_smoothed_);
 
     // cc = generalized floodfill = approximation of euclidean clusterisation
-    device::ConnectedComponents::computeEdges(labels_smoothed_,
-                                              depth,
-                                              NUM_PARTS,
-                                              cluster_tolerance_ * cluster_tolerance_,
-                                              edges_);
-    device::ConnectedComponents::labelComponents(edges_, comps_);
+    device::ConnectedComponents::computeEdges (labels_smoothed_,
+                                               depth,
+                                               NUM_PARTS,
+                                               cluster_tolerance_ * cluster_tolerance_,
+                                               edges_);
+    device::ConnectedComponents::labelComponents (edges_, comps_);
 
-    comps_.download(dst_labels_, c);
+    comps_.download (dst_labels_, c);
 
     // async_labels_download.waitForCompeltion();
   }
@@ -208,10 +208,10 @@ pcl::gpu::people::RDFBodyPartsDetector::process(const pcl::device::Depth& depth,
   // This was sort indices to blob (sortIndicesToBlob2) method (till line 236)
   {
     // ScopeTime time("cvt");
-    std::fill(remap_.begin(), remap_.end(), -1);
-    std::fill(region_sizes_.begin(), region_sizes_.end(), 0);
+    std::fill (remap_.begin(), remap_.end(), -1);
+    std::fill (region_sizes_.begin(), region_sizes_.end(), 0);
 
-    std::fill(means_storage_.begin(), means_storage_.end(), 0);
+    std::fill (means_storage_.begin(), means_storage_.end(), 0);
     float3* means = (float3*)&means_storage_[3];
     int* rsizes = &region_sizes_[1];
 
@@ -237,20 +237,20 @@ pcl::gpu::people::RDFBodyPartsDetector::process(const pcl::device::Depth& depth,
           rsizes[cc] <= max_cluster_size_) {
         int ccindex = remap_[cc];
         if (ccindex == -1) {
-          ccindex = static_cast<int>(blob_matrix_[label].size());
-          blob_matrix_[label].resize(ccindex + 1);
+          ccindex = static_cast<int> (blob_matrix_[label].size());
+          blob_matrix_[label].resize (ccindex + 1);
           remap_[cc] = ccindex;
 
-          blob_matrix_[label][ccindex].label = static_cast<part_t>(label);
-          blob_matrix_[label][ccindex].mean.coeffRef(0) =
-              means[cc].x / static_cast<float>(rsizes[cc]);
-          blob_matrix_[label][ccindex].mean.coeffRef(1) =
-              means[cc].y / static_cast<float>(rsizes[cc]);
-          blob_matrix_[label][ccindex].mean.coeffRef(2) =
-              means[cc].z / static_cast<float>(rsizes[cc]);
-          blob_matrix_[label][ccindex].indices.indices.reserve(rsizes[cc]);
+          blob_matrix_[label][ccindex].label = static_cast<part_t> (label);
+          blob_matrix_[label][ccindex].mean.coeffRef (0) =
+              means[cc].x / static_cast<float> (rsizes[cc]);
+          blob_matrix_[label][ccindex].mean.coeffRef (1) =
+              means[cc].y / static_cast<float> (rsizes[cc]);
+          blob_matrix_[label][ccindex].mean.coeffRef (2) =
+              means[cc].z / static_cast<float> (rsizes[cc]);
+          blob_matrix_[label][ccindex].indices.indices.reserve (rsizes[cc]);
         }
-        blob_matrix_[label][ccindex].indices.indices.push_back(static_cast<int>(k));
+        blob_matrix_[label][ccindex].indices.indices.push_back (static_cast<int> (k));
       }
     }
 
@@ -258,60 +258,61 @@ pcl::gpu::people::RDFBodyPartsDetector::process(const pcl::device::Depth& depth,
     for (auto& matrix : blob_matrix_)
       for (std::size_t b = 0; b < matrix.size(); ++b) {
         matrix[b].id = id++;
-        matrix[b].lid = static_cast<int>(b);
+        matrix[b].lid = static_cast<int> (b);
       }
 
-    buildRelations(blob_matrix_);
+    buildRelations (blob_matrix_);
   }
 }
 
 void
-pcl::gpu::people::RDFBodyPartsDetector::processProb(const pcl::device::Depth& depth)
+pcl::gpu::people::RDFBodyPartsDetector::processProb (const pcl::device::Depth& depth)
 {
   int cols = depth.cols();
   int rows = depth.rows();
 
-  allocate_buffers(rows, cols);
+  allocate_buffers (rows, cols);
 
   // Process the depthimage into probabilities (CUDA)
   // impl_->process(depth, labels_);
   // impl_->processProb(depth, labels_, P_l_, (int)
   // std::numeric_limits<std::int16_t>::max());
-  impl_->processProb(depth, labels_, P_l_, std::numeric_limits<int>::max());
+  impl_->processProb (depth, labels_, P_l_, std::numeric_limits<int>::max());
 }
 
 void
-pcl::gpu::people::RDFBodyPartsDetector::processSmooth(const pcl::device::Depth& depth,
-                                                      const PointCloud<PointXYZ>& cloud,
-                                                      int min_pts_per_cluster)
+pcl::gpu::people::RDFBodyPartsDetector::processSmooth (
+    const pcl::device::Depth& depth,
+    const PointCloud<PointXYZ>& cloud,
+    int min_pts_per_cluster)
 {
-  device::smoothLabelImage(labels_, depth, labels_smoothed_, NUM_PARTS, 5, 300);
+  device::smoothLabelImage (labels_, depth, labels_smoothed_, NUM_PARTS, 5, 300);
 
   // AsyncCopy<unsigned char> async_labels_download(lmap_host_);
 
   int c;
-  labels_smoothed_.download(lmap_host_, c);
+  labels_smoothed_.download (lmap_host_, c);
   // async_labels_download.download(labels_smoothed_);
 
   // cc = generalized floodfill = approximation of euclidean clusterisation
-  device::ConnectedComponents::computeEdges(labels_smoothed_,
-                                            depth,
-                                            NUM_PARTS,
-                                            cluster_tolerance_ * cluster_tolerance_,
-                                            edges_);
-  device::ConnectedComponents::labelComponents(edges_, comps_);
+  device::ConnectedComponents::computeEdges (labels_smoothed_,
+                                             depth,
+                                             NUM_PARTS,
+                                             cluster_tolerance_ * cluster_tolerance_,
+                                             edges_);
+  device::ConnectedComponents::labelComponents (edges_, comps_);
 
-  comps_.download(dst_labels_, c);
+  comps_.download (dst_labels_, c);
 
   // async_labels_download.waitForCompeltion();
 
   // This was sort indices to blob (sortIndicesToBlob2) method (till line 236)
   {
-    ScopeTime time("[pcl::gpu::people::RDFBodyPartsDetector::processSmooth] : cvt");
-    std::fill(remap_.begin(), remap_.end(), -1);
-    std::fill(region_sizes_.begin(), region_sizes_.end(), 0);
+    ScopeTime time ("[pcl::gpu::people::RDFBodyPartsDetector::processSmooth] : cvt");
+    std::fill (remap_.begin(), remap_.end(), -1);
+    std::fill (region_sizes_.begin(), region_sizes_.end(), 0);
 
-    std::fill(means_storage_.begin(), means_storage_.end(), 0);
+    std::fill (means_storage_.begin(), means_storage_.end(), 0);
     float3* means = (float3*)&means_storage_[3];
     int* rsizes = &region_sizes_[1];
 
@@ -337,20 +338,20 @@ pcl::gpu::people::RDFBodyPartsDetector::processSmooth(const pcl::device::Depth& 
           rsizes[cc] <= max_cluster_size_) {
         int ccindex = remap_[cc];
         if (ccindex == -1) {
-          ccindex = static_cast<int>(blob_matrix_[label].size());
-          blob_matrix_[label].resize(ccindex + 1);
+          ccindex = static_cast<int> (blob_matrix_[label].size());
+          blob_matrix_[label].resize (ccindex + 1);
           remap_[cc] = ccindex;
 
-          blob_matrix_[label][ccindex].label = static_cast<part_t>(label);
-          blob_matrix_[label][ccindex].mean.coeffRef(0) =
-              means[cc].x / static_cast<float>(rsizes[cc]);
-          blob_matrix_[label][ccindex].mean.coeffRef(1) =
-              means[cc].y / static_cast<float>(rsizes[cc]);
-          blob_matrix_[label][ccindex].mean.coeffRef(2) =
-              means[cc].z / static_cast<float>(rsizes[cc]);
-          blob_matrix_[label][ccindex].indices.indices.reserve(rsizes[cc]);
+          blob_matrix_[label][ccindex].label = static_cast<part_t> (label);
+          blob_matrix_[label][ccindex].mean.coeffRef (0) =
+              means[cc].x / static_cast<float> (rsizes[cc]);
+          blob_matrix_[label][ccindex].mean.coeffRef (1) =
+              means[cc].y / static_cast<float> (rsizes[cc]);
+          blob_matrix_[label][ccindex].mean.coeffRef (2) =
+              means[cc].z / static_cast<float> (rsizes[cc]);
+          blob_matrix_[label][ccindex].indices.indices.reserve (rsizes[cc]);
         }
-        blob_matrix_[label][ccindex].indices.indices.push_back(static_cast<int>(k));
+        blob_matrix_[label][ccindex].indices.indices.push_back (static_cast<int> (k));
       }
     }
 
@@ -358,7 +359,7 @@ pcl::gpu::people::RDFBodyPartsDetector::processSmooth(const pcl::device::Depth& 
     for (auto& matrix : blob_matrix_)
       for (std::size_t b = 0; b < matrix.size(); ++b) {
         matrix[b].id = id++;
-        matrix[b].lid = static_cast<int>(b);
+        matrix[b].lid = static_cast<int> (b);
       }
   }
 }
@@ -366,12 +367,12 @@ pcl::gpu::people::RDFBodyPartsDetector::processSmooth(const pcl::device::Depth& 
 int
 pcl::gpu::people::RDFBodyPartsDetector::processRelations()
 {
-  return buildRelations(blob_matrix_);
+  return buildRelations (blob_matrix_);
 }
 
 int
-pcl::gpu::people::RDFBodyPartsDetector::processRelations(
+pcl::gpu::people::RDFBodyPartsDetector::processRelations (
     PersonAttribs::Ptr person_attribs)
 {
-  return buildRelations(blob_matrix_, person_attribs);
+  return buildRelations (blob_matrix_, person_attribs);
 }

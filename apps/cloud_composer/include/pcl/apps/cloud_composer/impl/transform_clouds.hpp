@@ -45,20 +45,20 @@
 
 template <typename PointT>
 QList<pcl::cloud_composer::CloudComposerItem*>
-pcl::cloud_composer::TransformClouds::performTemplatedAction(
+pcl::cloud_composer::TransformClouds::performTemplatedAction (
     const QList<const CloudComposerItem*>& input_data)
 {
   QList<CloudComposerItem*> output;
 
   foreach (const CloudComposerItem* input_item, input_data) {
-    QVariant variant = input_item->data(ItemDataRole::CLOUD_TEMPLATED);
+    QVariant variant = input_item->data (ItemDataRole::CLOUD_TEMPLATED);
     if (!variant.canConvert<typename PointCloud<PointT>::Ptr>()) {
       qWarning() << "Attempted to cast to template type which does not exist in this "
                     "item! (input list)";
       return output;
     }
-    if (!transform_map_.contains("AllSelectedClouds") &&
-        !transform_map_.contains(input_item->getId())) {
+    if (!transform_map_.contains ("AllSelectedClouds") &&
+        !transform_map_.contains (input_item->getId())) {
       qCritical() << "No transform found for id " << input_item->getId()
                   << " in TransformClouds::performTemplatedAction";
       return output;
@@ -67,32 +67,32 @@ pcl::cloud_composer::TransformClouds::performTemplatedAction(
 
   foreach (const CloudComposerItem* input_item, input_data) {
     qDebug() << "Transforming cloud " << input_item->getId();
-    QVariant variant = input_item->data(ItemDataRole::CLOUD_TEMPLATED);
+    QVariant variant = input_item->data (ItemDataRole::CLOUD_TEMPLATED);
     typename PointCloud<PointT>::Ptr input_cloud =
         variant.value<typename PointCloud<PointT>::Ptr>();
 
     Eigen::Matrix4f transform;
-    if (transform_map_.contains("AllSelectedClouds"))
-      pcl::visualization::PCLVisualizer::convertToEigenMatrix(
-          transform_map_.value("AllSelectedClouds"), transform);
+    if (transform_map_.contains ("AllSelectedClouds"))
+      pcl::visualization::PCLVisualizer::convertToEigenMatrix (
+          transform_map_.value ("AllSelectedClouds"), transform);
     else
-      pcl::visualization::PCLVisualizer::convertToEigenMatrix(
-          transform_map_.value(input_item->getId()), transform);
+      pcl::visualization::PCLVisualizer::convertToEigenMatrix (
+          transform_map_.value (input_item->getId()), transform);
 
-    typename PointCloud<PointT>::Ptr transformed_cloud(new PointCloud<PointT>);
+    typename PointCloud<PointT>::Ptr transformed_cloud (new PointCloud<PointT>);
 
-    transformPointCloud<PointT>(*input_cloud, *transformed_cloud, transform);
-    CloudItem* new_cloud_item = CloudItem::createCloudItemFromTemplate<PointT>(
+    transformPointCloud<PointT> (*input_cloud, *transformed_cloud, transform);
+    CloudItem* new_cloud_item = CloudItem::createCloudItemFromTemplate<PointT> (
         input_item->text(), transformed_cloud);
 
-    output.append(new_cloud_item);
+    output.append (new_cloud_item);
   }
 
   return output;
 }
 
 #define PCL_INSTANTIATE_performTemplatedAction(T)                                      \
-  template void pcl::cloud_composer::TransformClouds::performTemplatedAction<T>(       \
+  template void pcl::cloud_composer::TransformClouds::performTemplatedAction<T> (      \
       QList<const CloudComposerItem*>);
 
 #endif // IMPL_TRANSFORM_CLOUDS_HPP_

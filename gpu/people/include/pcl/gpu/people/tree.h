@@ -73,11 +73,11 @@ using Depth = std::uint16_t;
 
 struct AttribLocation {
   inline AttribLocation() { du1 = dv1 = du2 = dv2 = 0; }
-  inline AttribLocation(int u1, int v1, int u2, int v2)
-  : du1(static_cast<std::int16_t>(u1))
-  , dv1(static_cast<std::int16_t>(v1))
-  , du2(static_cast<std::int16_t>(u2))
-  , dv2(static_cast<std::int16_t>(v2))
+  inline AttribLocation (int u1, int v1, int u2, int v2)
+  : du1 (static_cast<std::int16_t> (u1))
+  , dv1 (static_cast<std::int16_t> (v1))
+  , du2 (static_cast<std::int16_t> (u2))
+  , dv2 (static_cast<std::int16_t> (v2))
   {}
 
   std::int16_t du1, dv1, du2, dv2;
@@ -87,7 +87,7 @@ struct AttribLocation {
 // Tree basic Structure
 struct Node {
   Node() {}
-  Node(const AttribLocation& l, const Attrib& t) : loc(l), thresh(t) {}
+  Node (const AttribLocation& l, const Attrib& t) : loc (l), thresh (t) {}
   AttribLocation loc;
   Attrib thresh;
 };
@@ -99,18 +99,18 @@ struct Histogram {
 ////////////////////////////////////////////////
 // tree_io - Reading and writing AttributeLocations
 inline std::ostream&
-operator<<(std::ostream& os, const AttribLocation& aloc)
+operator<< (std::ostream& os, const AttribLocation& aloc)
 {
   return os << aloc.du1 << " " << aloc.dv1 << " " << aloc.du2 << " " << aloc.dv2
             << "\n";
 }
 inline std::istream&
-operator>>(std::istream& is, AttribLocation& aloc)
+operator>> (std::istream& is, AttribLocation& aloc)
 {
   return is >> aloc.du1 >> aloc.dv1 >> aloc.du2 >> aloc.dv2;
 }
 inline std::istream&
-operator>>(std::istream& is, Node& n)
+operator>> (std::istream& is, Node& n)
 {
   return is >> n.loc >> n.thresh;
 }

@@ -55,13 +55,13 @@ public:
    * \param[in] order the polynomial order of the B-Spline curve.
    * \param[in] data pointer to the 2D point-cloud data to be fit.
    */
-  FittingCurve2dSDM(int order, NurbsDataCurve2d* data);
+  FittingCurve2dSDM (int order, NurbsDataCurve2d* data);
 
   /** \brief Constructor initializing with the B-Spline curve given in argument 2.
    * \param[in] data pointer to the 2D point-cloud data to be fit.
    * \param[in] nc B-Spline curve used for fitting.
    */
-  FittingCurve2dSDM(NurbsDataCurve2d* data, const ON_NurbsCurve& nc);
+  FittingCurve2dSDM (NurbsDataCurve2d* data, const ON_NurbsCurve& nc);
 
   /** \brief Assemble the system of equations for fitting
    * - for large point-clouds this is time consuming.

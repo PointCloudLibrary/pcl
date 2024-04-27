@@ -43,15 +43,15 @@ namespace pcl {
 
 template <typename PointT>
 void
-Convolution<PointT>::filter(pcl::PointCloud<PointT>& output)
+Convolution<PointT>::filter (pcl::PointCloud<PointT>& output)
 {
   int input_row = 0;
   int input_col = 0;
   // default boundary option : zero padding
   output = *input_;
 
-  int iw = static_cast<int>(input_->width), ih = static_cast<int>(input_->height),
-      kw = static_cast<int>(kernel_.width), kh = static_cast<int>(kernel_.height);
+  int iw = static_cast<int> (input_->width), ih = static_cast<int> (input_->height),
+      kw = static_cast<int> (kernel_.width), kh = static_cast<int> (kernel_.height);
   switch (boundary_options_) {
   default:
   case BOUNDARY_OPTION_CLAMP: {
@@ -76,10 +76,10 @@ Convolution<PointT>::filter(pcl::PointCloud<PointT>& output)
               input_col = jlkw;
 
             intensity +=
-                kernel_(l, k).intensity * (*input_)(input_col, input_row).intensity;
+                kernel_ (l, k).intensity * (*input_) (input_col, input_row).intensity;
           }
         }
-        output(j, i).intensity = intensity;
+        output (j, i).intensity = intensity;
       }
     }
     break;
@@ -107,10 +107,10 @@ Convolution<PointT>::filter(pcl::PointCloud<PointT>& output)
               input_col = jlkw;
 
             intensity +=
-                kernel_(l, k).intensity * ((*input_)(input_col, input_row).intensity);
+                kernel_ (l, k).intensity * ((*input_) (input_col, input_row).intensity);
           }
         }
-        output(j, i).intensity = intensity;
+        output (j, i).intensity = intensity;
       }
     }
     break;
@@ -125,10 +125,10 @@ Convolution<PointT>::filter(pcl::PointCloud<PointT>& output)
             int ikkh = i + k - kh / 2, jlkw = j + l - kw / 2;
             if (ikkh < 0 || ikkh >= ih || jlkw < 0 || jlkw >= iw)
               continue;
-            intensity += kernel_(l, k).intensity * ((*input_)(jlkw, ikkh).intensity);
+            intensity += kernel_ (l, k).intensity * ((*input_) (jlkw, ikkh).intensity);
           }
         }
-        output(j, i).intensity = intensity;
+        output (j, i).intensity = intensity;
       }
     }
     break;

@@ -35,7 +35,7 @@ private:
   pcl::PointCloud<pcl::PointXYZ>::Ptr
   generateSyntheticEdgeDetectionCloud ()
   {
-    auto organized_test_cloud = pcl::make_shared<pcl::PointCloud<pcl::PointXYZ>>(
+    auto organized_test_cloud = pcl::make_shared<pcl::PointCloud<pcl::PointXYZ>> (
         OUTER_SQUARE_EDGE_LENGTH, OUTER_SQUARE_EDGE_LENGTH);
 
     // Draw a smaller square in front of a larger square both centered on the
@@ -68,7 +68,7 @@ private:
             // correspond to the occluding edge points
             if ((col == left_col || col == right_col - 1) ||
                 (row == top_row || row == bottom_row - 1)) {
-              outer_perimeter_.insert(row * organized_test_cloud->width + col);
+              outer_perimeter_.insert (row * organized_test_cloud->width + col);
             }
           }
         }
@@ -79,12 +79,12 @@ private:
              (col >= left_col - 1 && col <= right_col)) ||
             ((row >= top_row && row < bottom_row) &&
              (col == left_col - 1 || col == right_col))) {
-          inner_perimeter_.insert(row * organized_test_cloud->width + col);
+          inner_perimeter_.insert (row * organized_test_cloud->width + col);
         }
 
-        organized_test_cloud->at(col, row).x = x * SYNTHETIC_CLOUD_RESOLUTION;
-        organized_test_cloud->at(col, row).y = y * SYNTHETIC_CLOUD_RESOLUTION;
-        organized_test_cloud->at(col, row).z = depth;
+        organized_test_cloud->at (col, row).x = x * SYNTHETIC_CLOUD_RESOLUTION;
+        organized_test_cloud->at (col, row).y = y * SYNTHETIC_CLOUD_RESOLUTION;
+        organized_test_cloud->at (col, row).z = depth;
       }
     }
 
@@ -104,7 +104,7 @@ regression introduced in PCL 1.10.1 was a logic bug that caused both occluding a
 occluded edges to be miscategorized as occluding edges.  This test should catch
 this and similar bugs.
 */
-TEST_F(OrganizedPlaneDetectionTestFixture, OccludedAndOccludingEdges)
+TEST_F (OrganizedPlaneDetectionTestFixture, OccludedAndOccludingEdges)
 {
   constexpr auto MAX_SEARCH_NEIGHBORS = 8;
 
@@ -122,26 +122,26 @@ TEST_F(OrganizedPlaneDetectionTestFixture, OccludedAndOccludingEdges)
   auto labels = pcl::PointCloud<pcl::Label>();
   auto label_indices = std::vector<pcl::PointIndices>();
 
-  oed.setEdgeType(oed.EDGELABEL_OCCLUDING | oed.EDGELABEL_OCCLUDED);
-  oed.setInputCloud(cloud_);
-  oed.setDepthDisconThreshold(DEPTH_DISCONTINUITY_THRESHOLD);
-  oed.setMaxSearchNeighbors(MAX_SEARCH_NEIGHBORS);
-  oed.compute(labels, label_indices);
+  oed.setEdgeType (oed.EDGELABEL_OCCLUDING | oed.EDGELABEL_OCCLUDED);
+  oed.setInputCloud (cloud_);
+  oed.setDepthDisconThreshold (DEPTH_DISCONTINUITY_THRESHOLD);
+  oed.setMaxSearchNeighbors (MAX_SEARCH_NEIGHBORS);
+  oed.compute (labels, label_indices);
 
-  const auto occluding_indices = std::set<pcl::index_t>(
+  const auto occluding_indices = std::set<pcl::index_t> (
       label_indices[1].indices.begin(), label_indices[1].indices.end());
-  EXPECT_EQ(occluding_indices, outer_perimeter_);
+  EXPECT_EQ (occluding_indices, outer_perimeter_);
 
-  const auto occluded_indices = std::set<pcl::index_t>(label_indices[2].indices.begin(),
-                                                       label_indices[2].indices.end());
-  EXPECT_EQ(occluded_indices, inner_perimeter_);
+  const auto occluded_indices = std::set<pcl::index_t> (
+      label_indices[2].indices.begin(), label_indices[2].indices.end());
+  EXPECT_EQ (occluded_indices, inner_perimeter_);
 }
 
 /* ---[ */
 int
 main (int argc, char** argv)
 {
-  testing::InitGoogleTest(&argc, argv);
+  testing::InitGoogleTest (&argc, argv);
   return (RUN_ALL_TESTS());
 }
 /* ]--- */

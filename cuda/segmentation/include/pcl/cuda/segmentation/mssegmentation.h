@@ -63,7 +63,7 @@ namespace detail {
 
 class DjSets {
 public:
-  DjSets(int n);
+  DjSets (int n);
   int
   find (int elem);
   int
@@ -77,15 +77,15 @@ public:
   std::vector<int> size;
 
 private:
-  DjSets(const DjSets&);
+  DjSets (const DjSets&);
   void
-  operator=(const DjSets&);
+  operator= (const DjSets&);
 };
 
 template <typename T>
 struct GraphEdge {
   GraphEdge() {}
-  GraphEdge(int to, int next, const T& val) : to(to), next(next), val(val) {}
+  GraphEdge (int to, int next, const T& val) : to (to), next (next), val (val) {}
   int to;
   int next;
   T val;
@@ -96,7 +96,7 @@ class Graph {
 public:
   using Edge = GraphEdge<T>;
 
-  Graph(int numv, int nume_max);
+  Graph (int numv, int nume_max);
 
   void
   addEdge (int from, int to, const T& val = T());
@@ -109,16 +109,16 @@ public:
   int nume;
 
 private:
-  Graph(const Graph&);
+  Graph (const Graph&);
   void
-  operator=(const Graph&);
+  operator= (const Graph&);
 };
 
 struct SegmLinkVal {
   SegmLinkVal() {}
-  SegmLinkVal(int dr, int dsp) : dr(dr), dsp(dsp) {}
+  SegmLinkVal (int dr, int dsp) : dr (dr), dsp (dsp) {}
   bool
-  operator<(const SegmLinkVal& other) const
+  operator< (const SegmLinkVal& other) const
   {
     return dr + dsp < other.dr + other.dsp;
   }
@@ -128,9 +128,10 @@ struct SegmLinkVal {
 
 struct SegmLink {
   SegmLink() {}
-  SegmLink(int from, int to, const SegmLinkVal& val) : from(from), to(to), val(val) {}
+  SegmLink (int from, int to, const SegmLinkVal& val) : from (from), to (to), val (val)
+  {}
   bool
-  operator<(const SegmLink& other) const
+  operator< (const SegmLink& other) const
   {
     return val < other.val;
   }
@@ -143,10 +144,10 @@ struct SegmLink {
 // Implementation
 //
 
-DjSets::DjSets(int n) { init(n); }
+DjSets::DjSets (int n) { init (n); }
 
 inline int
-DjSets::find(int elem)
+DjSets::find (int elem)
 {
   int set = elem;
   while (set != parent[set])
@@ -160,17 +161,17 @@ DjSets::find(int elem)
 }
 
 inline void
-DjSets::init(int n)
+DjSets::init (int n)
 {
-  parent.resize(n);
-  rank.resize(n, 0);
-  size.resize(n, 1);
+  parent.resize (n);
+  rank.resize (n, 0);
+  size.resize (n, 1);
   for (int i = 0; i < n; ++i)
     parent[i] = i;
 }
 
 inline int
-DjSets::merge(int set1, int set2)
+DjSets::merge (int set1, int set2)
 {
   if (rank[set1] < rank[set2]) {
     parent[set1] = set2;
@@ -189,7 +190,7 @@ DjSets::merge(int set1, int set2)
 }
 
 template <typename T>
-Graph<T>::Graph(int numv, int nume_max) : start(numv, -1), edges(nume_max)
+Graph<T>::Graph (int numv, int nume_max) : start (numv, -1), edges (nume_max)
 {
   this->numv = numv;
   this->nume_max = nume_max;
@@ -198,9 +199,9 @@ Graph<T>::Graph(int numv, int nume_max) : start(numv, -1), edges(nume_max)
 
 template <typename T>
 inline void
-Graph<T>::addEdge(int from, int to, const T& val)
+Graph<T>::addEdge (int from, int to, const T& val)
 {
-  edges[nume] = Edge(to, start[from], val);
+  edges[nume] = Edge (to, start[from], val);
   start[from] = nume;
   nume++;
 }
@@ -220,13 +221,13 @@ sqr (int x)
 inline int
 dist2 (const cv::Vec4b& lhs, const cv::Vec4b& rhs)
 {
-  return sqr(lhs[0] - rhs[0]) + sqr(lhs[1] - rhs[1]) + sqr(lhs[2] - rhs[2]);
+  return sqr (lhs[0] - rhs[0]) + sqr (lhs[1] - rhs[1]) + sqr (lhs[2] - rhs[2]);
 }
 
 inline int
 dist2 (const cv::Vec2s& lhs, const cv::Vec2s& rhs)
 {
-  return sqr(lhs[0] - rhs[0]) + sqr(lhs[1] - rhs[1]);
+  return sqr (lhs[0] - rhs[0]) + sqr (lhs[1] - rhs[1]);
 }
 
 } // namespace detail
@@ -238,7 +239,7 @@ meanShiftSegmentation (const cv::gpu::GpuMat& src,
                        int sr,
                        int minsize,
                        detail::DjSets& comps,
-                       cv::TermCriteria criteria = cv::TermCriteria(
+                       cv::TermCriteria criteria = cv::TermCriteria (
                            cv::TermCriteria::MAX_ITER + cv::TermCriteria::EPS, 5, 1));
 
 } // namespace cuda

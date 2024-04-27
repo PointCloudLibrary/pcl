@@ -58,20 +58,20 @@ template <typename PointInT>
 void
 pcl::ConvexHull<PointInT>::calculateInputDimension()
 {
-  PCL_DEBUG("[pcl::%s::calculateInputDimension] WARNING: Input dimension not "
-            "specified.  Automatically determining input dimension.\n",
-            getClassName().c_str());
+  PCL_DEBUG ("[pcl::%s::calculateInputDimension] WARNING: Input dimension not "
+             "specified.  Automatically determining input dimension.\n",
+             getClassName().c_str());
   Eigen::Vector4d xyz_centroid;
-  compute3DCentroid(*input_, *indices_, xyz_centroid);
+  compute3DCentroid (*input_, *indices_, xyz_centroid);
   EIGEN_ALIGN16 Eigen::Matrix3d covariance_matrix = Eigen::Matrix3d::Zero();
-  computeCovarianceMatrixNormalized(
+  computeCovarianceMatrixNormalized (
       *input_, *indices_, xyz_centroid, covariance_matrix);
 
   EIGEN_ALIGN16 Eigen::Vector3d eigen_values;
-  pcl::eigen33(covariance_matrix, eigen_values);
+  pcl::eigen33 (covariance_matrix, eigen_values);
 
-  if (std::abs(eigen_values[0]) < std::numeric_limits<double>::epsilon() ||
-      std::abs(eigen_values[0] / eigen_values[2]) < 1.0e-3)
+  if (std::abs (eigen_values[0]) < std::numeric_limits<double>::epsilon() ||
+      std::abs (eigen_values[0] / eigen_values[2]) < 1.0e-3)
     dimension_ = 2;
   else
     dimension_ = 3;
@@ -80,9 +80,8 @@ pcl::ConvexHull<PointInT>::calculateInputDimension()
 //////////////////////////////////////////////////////////////////////////
 template <typename PointInT>
 void
-pcl::ConvexHull<PointInT>::performReconstruction2D(PointCloud& hull,
-                                                   std::vector<pcl::Vertices>& polygons,
-                                                   bool)
+pcl::ConvexHull<PointInT>::performReconstruction2D (
+    PointCloud& hull, std::vector<pcl::Vertices>& polygons, bool)
 {
   int dimension = 2;
   bool xy_proj_safe = true;
@@ -104,24 +103,24 @@ pcl::ConvexHull<PointInT>::performReconstruction2D(PointCloud& hull,
   }
 
   pcl::PointCloud<PointInT> normal_calc_cloud;
-  normal_calc_cloud.resize(3);
+  normal_calc_cloud.resize (3);
   normal_calc_cloud[0] = p0;
   normal_calc_cloud[1] = p1;
   normal_calc_cloud[2] = p2;
 
   Eigen::Vector4d normal_calc_centroid;
   Eigen::Matrix3d normal_calc_covariance;
-  pcl::compute3DCentroid(normal_calc_cloud, normal_calc_centroid);
-  pcl::computeCovarianceMatrixNormalized(
+  pcl::compute3DCentroid (normal_calc_cloud, normal_calc_centroid);
+  pcl::computeCovarianceMatrixNormalized (
       normal_calc_cloud, normal_calc_centroid, normal_calc_covariance);
 
   // Need to set -1 here. See eigen33 for explanations.
   Eigen::Vector3d::Scalar eigen_value;
   Eigen::Vector3d plane_params;
-  pcl::eigen33(normal_calc_covariance, eigen_value, plane_params);
-  float theta_x = std::abs(static_cast<float>(plane_params.dot(x_axis_)));
-  float theta_y = std::abs(static_cast<float>(plane_params.dot(y_axis_)));
-  float theta_z = std::abs(static_cast<float>(plane_params.dot(z_axis_)));
+  pcl::eigen33 (normal_calc_covariance, eigen_value, plane_params);
+  float theta_x = std::abs (static_cast<float> (plane_params.dot (x_axis_)));
+  float theta_y = std::abs (static_cast<float> (plane_params.dot (y_axis_)));
+  float theta_z = std::abs (static_cast<float> (plane_params.dot (z_axis_)));
 
   // Check for degenerate cases of each projection
   // We must avoid projections in which the plane projects as a line
@@ -143,7 +142,7 @@ pcl::ConvexHull<PointInT>::performReconstruction2D(PointCloud& hull,
   // output from qh_produce_output(), use NULL to skip qh_produce_output()
   FILE* outfile = nullptr;
 
-  if (compute_area_ && pcl::console::isVerbosityLevelEnabled(pcl::console::L_DEBUG))
+  if (compute_area_ && pcl::console::isVerbosityLevelEnabled (pcl::console::L_DEBUG))
     outfile = stderr;
 
   // option flags for qhull, see qh_opt.htm
@@ -152,67 +151,67 @@ pcl::ConvexHull<PointInT>::performReconstruction2D(PointCloud& hull,
   FILE* errfile = stderr;
 
   // Array of coordinates for each point
-  coordT* points =
-      reinterpret_cast<coordT*>(calloc(indices_->size() * dimension, sizeof(coordT)));
+  coordT* points = reinterpret_cast<coordT*> (
+      calloc (indices_->size() * dimension, sizeof (coordT)));
 
   // Build input data, using appropriate projection
   int j = 0;
   if (xy_proj_safe) {
     for (std::size_t i = 0; i < indices_->size(); ++i, j += dimension) {
-      points[j + 0] = static_cast<coordT>((*input_)[(*indices_)[i]].x);
-      points[j + 1] = static_cast<coordT>((*input_)[(*indices_)[i]].y);
+      points[j + 0] = static_cast<coordT> ((*input_)[(*indices_)[i]].x);
+      points[j + 1] = static_cast<coordT> ((*input_)[(*indices_)[i]].y);
     }
   }
   else if (yz_proj_safe) {
     for (std::size_t i = 0; i < indices_->size(); ++i, j += dimension) {
-      points[j + 0] = static_cast<coordT>((*input_)[(*indices_)[i]].y);
-      points[j + 1] = static_cast<coordT>((*input_)[(*indices_)[i]].z);
+      points[j + 0] = static_cast<coordT> ((*input_)[(*indices_)[i]].y);
+      points[j + 1] = static_cast<coordT> ((*input_)[(*indices_)[i]].z);
     }
   }
   else if (xz_proj_safe) {
     for (std::size_t i = 0; i < indices_->size(); ++i, j += dimension) {
-      points[j + 0] = static_cast<coordT>((*input_)[(*indices_)[i]].x);
-      points[j + 1] = static_cast<coordT>((*input_)[(*indices_)[i]].z);
+      points[j + 0] = static_cast<coordT> ((*input_)[(*indices_)[i]].x);
+      points[j + 1] = static_cast<coordT> ((*input_)[(*indices_)[i]].z);
     }
   }
   else {
     // This should only happen if we had invalid input
-    PCL_ERROR("[pcl::%s::performReconstruction2D] Invalid input!\n",
-              getClassName().c_str());
+    PCL_ERROR ("[pcl::%s::performReconstruction2D] Invalid input!\n",
+               getClassName().c_str());
   }
 
   qhT qh_qh;
   qhT* qh = &qh_qh;
   QHULL_LIB_CHECK
-  qh_zero(qh, errfile);
+  qh_zero (qh, errfile);
 
   // Compute convex hull
-  int exitcode = qh_new_qhull(qh,
-                              dimension,
-                              static_cast<int>(indices_->size()),
-                              points,
-                              ismalloc,
-                              const_cast<char*>(flags),
-                              outfile,
-                              errfile);
+  int exitcode = qh_new_qhull (qh,
+                               dimension,
+                               static_cast<int> (indices_->size()),
+                               points,
+                               ismalloc,
+                               const_cast<char*> (flags),
+                               outfile,
+                               errfile);
   if (compute_area_) {
-    qh_prepare_output(qh);
+    qh_prepare_output (qh);
   }
 
   // 0 if no error from qhull or it doesn't find any vertices
   if (exitcode != 0 || qh->num_vertices == 0) {
-    PCL_ERROR("[pcl::%s::performReconstrution2D] ERROR: qhull was unable to compute a "
-              "convex hull for the given point cloud (%lu)!\n",
-              getClassName().c_str(),
-              indices_->size());
+    PCL_ERROR ("[pcl::%s::performReconstrution2D] ERROR: qhull was unable to compute a "
+               "convex hull for the given point cloud (%lu)!\n",
+               getClassName().c_str(),
+               indices_->size());
 
-    hull.resize(0);
+    hull.resize (0);
     hull.width = hull.height = 0;
-    polygons.resize(0);
+    polygons.resize (0);
 
-    qh_freeqhull(qh, !qh_ALL);
+    qh_freeqhull (qh, !qh_ALL);
     int curlong, totlong;
-    qh_memfreeshort(qh, &curlong, &totlong);
+    qh_memfreeshort (qh, &curlong, &totlong);
 
     return;
   }
@@ -226,23 +225,23 @@ pcl::ConvexHull<PointInT>::performReconstruction2D(PointCloud& hull,
   int num_vertices = qh->num_vertices;
 
   hull.clear();
-  hull.resize(num_vertices, PointInT{});
+  hull.resize (num_vertices, PointInT{});
 
   vertexT* vertex;
   int i = 0;
 
-  AlignedVector<std::pair<int, Eigen::Vector4f>> idx_points(num_vertices);
+  AlignedVector<std::pair<int, Eigen::Vector4f>> idx_points (num_vertices);
 
   FORALLvertices
   {
-    hull[i] = (*input_)[(*indices_)[qh_pointid(qh, vertex->point)]];
-    idx_points[i].first = qh_pointid(qh, vertex->point);
+    hull[i] = (*input_)[(*indices_)[qh_pointid (qh, vertex->point)]];
+    idx_points[i].first = qh_pointid (qh, vertex->point);
     ++i;
   }
 
   // Sort
   Eigen::Vector4f centroid;
-  pcl::compute3DCentroid(hull, centroid);
+  pcl::compute3DCentroid (hull, centroid);
   if (xy_proj_safe) {
     for (std::size_t j = 0; j < hull.size(); j++) {
       idx_points[j].second[0] = hull[j].x - centroid[0];
@@ -261,24 +260,24 @@ pcl::ConvexHull<PointInT>::performReconstruction2D(PointCloud& hull,
       idx_points[j].second[1] = hull[j].z - centroid[2];
     }
   }
-  std::sort(idx_points.begin(), idx_points.end(), comparePoints2D);
+  std::sort (idx_points.begin(), idx_points.end(), comparePoints2D);
 
-  polygons.resize(1);
-  polygons[0].vertices.resize(hull.size());
+  polygons.resize (1);
+  polygons[0].vertices.resize (hull.size());
 
   hull_indices_.header = input_->header;
   hull_indices_.indices.clear();
-  hull_indices_.indices.reserve(hull.size());
+  hull_indices_.indices.reserve (hull.size());
 
-  for (int j = 0; j < static_cast<int>(hull.size()); j++) {
-    hull_indices_.indices.push_back((*indices_)[idx_points[j].first]);
+  for (int j = 0; j < static_cast<int> (hull.size()); j++) {
+    hull_indices_.indices.push_back ((*indices_)[idx_points[j].first]);
     hull[j] = (*input_)[(*indices_)[idx_points[j].first]];
-    polygons[0].vertices[j] = static_cast<unsigned int>(j);
+    polygons[0].vertices[j] = static_cast<unsigned int> (j);
   }
 
-  qh_freeqhull(qh, !qh_ALL);
+  qh_freeqhull (qh, !qh_ALL);
   int curlong, totlong;
-  qh_memfreeshort(qh, &curlong, &totlong);
+  qh_memfreeshort (qh, &curlong, &totlong);
 
   hull.width = hull.size();
   hull.height = 1;
@@ -292,9 +291,8 @@ pcl::ConvexHull<PointInT>::performReconstruction2D(PointCloud& hull,
 //////////////////////////////////////////////////////////////////////////
 template <typename PointInT>
 void
-pcl::ConvexHull<PointInT>::performReconstruction3D(PointCloud& hull,
-                                                   std::vector<pcl::Vertices>& polygons,
-                                                   bool fill_polygon_data)
+pcl::ConvexHull<PointInT>::performReconstruction3D (
+    PointCloud& hull, std::vector<pcl::Vertices>& polygons, bool fill_polygon_data)
 {
   int dimension = 3;
 
@@ -303,7 +301,7 @@ pcl::ConvexHull<PointInT>::performReconstruction3D(PointCloud& hull,
   // output from qh_produce_output(), use NULL to skip qh_produce_output()
   FILE* outfile = nullptr;
 
-  if (compute_area_ && pcl::console::isVerbosityLevelEnabled(pcl::console::L_DEBUG))
+  if (compute_area_ && pcl::console::isVerbosityLevelEnabled (pcl::console::L_DEBUG))
     outfile = stderr;
 
   // option flags for qhull, see qh_opt.htm
@@ -312,58 +310,58 @@ pcl::ConvexHull<PointInT>::performReconstruction3D(PointCloud& hull,
   FILE* errfile = stderr;
 
   // Array of coordinates for each point
-  coordT* points =
-      reinterpret_cast<coordT*>(calloc(indices_->size() * dimension, sizeof(coordT)));
+  coordT* points = reinterpret_cast<coordT*> (
+      calloc (indices_->size() * dimension, sizeof (coordT)));
 
   int j = 0;
   for (std::size_t i = 0; i < indices_->size(); ++i, j += dimension) {
-    points[j + 0] = static_cast<coordT>((*input_)[(*indices_)[i]].x);
-    points[j + 1] = static_cast<coordT>((*input_)[(*indices_)[i]].y);
-    points[j + 2] = static_cast<coordT>((*input_)[(*indices_)[i]].z);
+    points[j + 0] = static_cast<coordT> ((*input_)[(*indices_)[i]].x);
+    points[j + 1] = static_cast<coordT> ((*input_)[(*indices_)[i]].y);
+    points[j + 2] = static_cast<coordT> ((*input_)[(*indices_)[i]].z);
   }
 
   qhT qh_qh;
   qhT* qh = &qh_qh;
   QHULL_LIB_CHECK
-  qh_zero(qh, errfile);
+  qh_zero (qh, errfile);
 
   // Compute convex hull
-  int exitcode = qh_new_qhull(qh,
-                              dimension,
-                              static_cast<int>(indices_->size()),
-                              points,
-                              ismalloc,
-                              const_cast<char*>(flags),
-                              outfile,
-                              errfile);
+  int exitcode = qh_new_qhull (qh,
+                               dimension,
+                               static_cast<int> (indices_->size()),
+                               points,
+                               ismalloc,
+                               const_cast<char*> (flags),
+                               outfile,
+                               errfile);
   if (compute_area_) {
-    qh_prepare_output(qh);
+    qh_prepare_output (qh);
   }
 
   // 0 if no error from qhull
   if (exitcode != 0) {
-    PCL_ERROR("[pcl::%s::performReconstrution3D] ERROR: qhull was unable to compute a "
-              "convex hull for the given point cloud (%zu)!\n",
-              getClassName().c_str(),
-              static_cast<std::size_t>(input_->size()));
+    PCL_ERROR ("[pcl::%s::performReconstrution3D] ERROR: qhull was unable to compute a "
+               "convex hull for the given point cloud (%zu)!\n",
+               getClassName().c_str(),
+               static_cast<std::size_t> (input_->size()));
 
-    hull.resize(0);
+    hull.resize (0);
     hull.width = hull.height = 0;
-    polygons.resize(0);
+    polygons.resize (0);
 
-    qh_freeqhull(qh, !qh_ALL);
+    qh_freeqhull (qh, !qh_ALL);
     int curlong, totlong;
-    qh_memfreeshort(qh, &curlong, &totlong);
+    qh_memfreeshort (qh, &curlong, &totlong);
 
     return;
   }
 
-  qh_triangulate(qh);
+  qh_triangulate (qh);
 
   int num_facets = qh->num_facets;
 
   int num_vertices = qh->num_vertices;
-  hull.resize(num_vertices);
+  hull.resize (num_vertices);
 
   vertexT* vertex;
   int i = 0;
@@ -376,16 +374,16 @@ pcl::ConvexHull<PointInT>::performReconstruction3D(PointCloud& hull,
   }
 
   ++max_vertex_id;
-  std::vector<int> qhid_to_pcidx(max_vertex_id);
+  std::vector<int> qhid_to_pcidx (max_vertex_id);
 
   hull_indices_.header = input_->header;
   hull_indices_.indices.clear();
-  hull_indices_.indices.reserve(num_vertices);
+  hull_indices_.indices.reserve (num_vertices);
 
   FORALLvertices
   {
     // Add vertices to hull point_cloud and store index
-    hull_indices_.indices.push_back((*indices_)[qh_pointid(qh, vertex->point)]);
+    hull_indices_.indices.push_back ((*indices_)[qh_pointid (qh, vertex->point)]);
     hull[i] = (*input_)[hull_indices_.indices.back()];
 
     qhid_to_pcidx[vertex->id] =
@@ -399,17 +397,17 @@ pcl::ConvexHull<PointInT>::performReconstruction3D(PointCloud& hull,
   }
 
   if (fill_polygon_data) {
-    polygons.resize(num_facets);
+    polygons.resize (num_facets);
     int dd = 0;
 
     facetT* facet;
     FORALLfacets
     {
-      polygons[dd].vertices.resize(3);
+      polygons[dd].vertices.resize (3);
 
       // Needed by FOREACHvertex_i_
       int vertex_n, vertex_i;
-      FOREACHvertex_i_(qh, (*facet).vertices)
+      FOREACHvertex_i_ (qh, (*facet).vertices)
           // facet_vertices.vertices.push_back (qhid_to_pcidx[vertex->id]);
           polygons[dd]
               .vertices[vertex_i] = qhid_to_pcidx[vertex->id];
@@ -417,9 +415,9 @@ pcl::ConvexHull<PointInT>::performReconstruction3D(PointCloud& hull,
     }
   }
   // Deallocates memory (also the points)
-  qh_freeqhull(qh, !qh_ALL);
+  qh_freeqhull (qh, !qh_ALL);
   int curlong, totlong;
-  qh_memfreeshort(qh, &curlong, &totlong);
+  qh_memfreeshort (qh, &curlong, &totlong);
 
   hull.width = hull.size();
   hull.height = 1;
@@ -432,27 +430,27 @@ pcl::ConvexHull<PointInT>::performReconstruction3D(PointCloud& hull,
 //////////////////////////////////////////////////////////////////////////
 template <typename PointInT>
 void
-pcl::ConvexHull<PointInT>::performReconstruction(PointCloud& hull,
-                                                 std::vector<pcl::Vertices>& polygons,
-                                                 bool fill_polygon_data)
+pcl::ConvexHull<PointInT>::performReconstruction (PointCloud& hull,
+                                                  std::vector<pcl::Vertices>& polygons,
+                                                  bool fill_polygon_data)
 {
   if (dimension_ == 0)
     calculateInputDimension();
   if (dimension_ == 2)
-    performReconstruction2D(hull, polygons, fill_polygon_data);
+    performReconstruction2D (hull, polygons, fill_polygon_data);
   else if (dimension_ == 3)
-    performReconstruction3D(hull, polygons, fill_polygon_data);
+    performReconstruction3D (hull, polygons, fill_polygon_data);
   else
-    PCL_ERROR("[pcl::%s::performReconstruction] Error: invalid input dimension "
-              "requested: %d\n",
-              getClassName().c_str(),
-              dimension_);
+    PCL_ERROR ("[pcl::%s::performReconstruction] Error: invalid input dimension "
+               "requested: %d\n",
+               getClassName().c_str(),
+               dimension_);
 }
 
 //////////////////////////////////////////////////////////////////////////
 template <typename PointInT>
 void
-pcl::ConvexHull<PointInT>::reconstruct(PointCloud& points)
+pcl::ConvexHull<PointInT>::reconstruct (PointCloud& points)
 {
   points.header = input_->header;
   if (!initCompute() || input_->points.empty() || indices_->empty()) {
@@ -462,7 +460,7 @@ pcl::ConvexHull<PointInT>::reconstruct(PointCloud& points)
 
   // Perform the actual surface reconstruction
   std::vector<pcl::Vertices> polygons;
-  performReconstruction(points, polygons, false);
+  performReconstruction (points, polygons, false);
 
   points.width = points.size();
   points.height = 1;
@@ -474,30 +472,30 @@ pcl::ConvexHull<PointInT>::reconstruct(PointCloud& points)
 //////////////////////////////////////////////////////////////////////////
 template <typename PointInT>
 void
-pcl::ConvexHull<PointInT>::performReconstruction(PolygonMesh& output)
+pcl::ConvexHull<PointInT>::performReconstruction (PolygonMesh& output)
 {
   // Perform reconstruction
   pcl::PointCloud<PointInT> hull_points;
-  performReconstruction(hull_points, output.polygons, true);
+  performReconstruction (hull_points, output.polygons, true);
 
   // Convert the PointCloud into a PCLPointCloud2
-  pcl::toPCLPointCloud2(hull_points, output.cloud);
+  pcl::toPCLPointCloud2 (hull_points, output.cloud);
 }
 
 //////////////////////////////////////////////////////////////////////////
 template <typename PointInT>
 void
-pcl::ConvexHull<PointInT>::performReconstruction(std::vector<pcl::Vertices>& polygons)
+pcl::ConvexHull<PointInT>::performReconstruction (std::vector<pcl::Vertices>& polygons)
 {
   pcl::PointCloud<PointInT> hull_points;
-  performReconstruction(hull_points, polygons, true);
+  performReconstruction (hull_points, polygons, true);
 }
 
 //////////////////////////////////////////////////////////////////////////
 template <typename PointInT>
 void
-pcl::ConvexHull<PointInT>::reconstruct(PointCloud& points,
-                                       std::vector<pcl::Vertices>& polygons)
+pcl::ConvexHull<PointInT>::reconstruct (PointCloud& points,
+                                        std::vector<pcl::Vertices>& polygons)
 {
   points.header = input_->header;
   if (!initCompute() || input_->points.empty() || indices_->empty()) {
@@ -506,7 +504,7 @@ pcl::ConvexHull<PointInT>::reconstruct(PointCloud& points,
   }
 
   // Perform the actual surface reconstruction
-  performReconstruction(points, polygons, true);
+  performReconstruction (points, polygons, true);
 
   points.width = points.size();
   points.height = 1;
@@ -517,7 +515,7 @@ pcl::ConvexHull<PointInT>::reconstruct(PointCloud& points,
 //////////////////////////////////////////////////////////////////////////
 template <typename PointInT>
 void
-pcl::ConvexHull<PointInT>::getHullPointIndices(
+pcl::ConvexHull<PointInT>::getHullPointIndices (
     pcl::PointIndices& hull_point_indices) const
 {
   hull_point_indices = hull_indices_;

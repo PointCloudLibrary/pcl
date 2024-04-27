@@ -72,7 +72,7 @@ public:
   using HelpWindow = pcl::ihs::HelpWindow;
   using RunningMode = InHandScanner::RunningMode;
 
-  explicit MainWindow(QWidget* parent = nullptr);
+  explicit MainWindow (QWidget* parent = nullptr);
   ~MainWindow() override;
 
 public Q_SLOTS:

@@ -43,4 +43,4 @@
 #include <pcl/point_types.h>
 
 // Instantiations of specific point types
-PCL_INSTANTIATE(RegionGrowing, PCL_XYZ_POINT_TYPES)
+PCL_INSTANTIATE (RegionGrowing, PCL_XYZ_POINT_TYPES)

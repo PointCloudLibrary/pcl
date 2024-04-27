@@ -112,12 +112,12 @@ public:
    * \param[in] compute_second_order_integral_images set to true if we want to compute a
    * second order image
    */
-  IntegralImage2D(bool compute_second_order_integral_images)
+  IntegralImage2D (bool compute_second_order_integral_images)
   : first_order_integral_image_()
   , second_order_integral_image_()
   ,
 
-  compute_second_order_integral_images_(compute_second_order_integral_images)
+  compute_second_order_integral_images_ (compute_second_order_integral_images)
   {}
 
   /** \brief Destructor */
@@ -261,12 +261,12 @@ public:
    * \param[in] compute_second_order_integral_images set to true if we want to compute a
    * second order image
    */
-  IntegralImage2D(bool compute_second_order_integral_images)
+  IntegralImage2D (bool compute_second_order_integral_images)
   : first_order_integral_image_()
   , second_order_integral_image_()
   ,
 
-  compute_second_order_integral_images_(compute_second_order_integral_images)
+  compute_second_order_integral_images_ (compute_second_order_integral_images)
   {}
 
   /** \brief Destructor */

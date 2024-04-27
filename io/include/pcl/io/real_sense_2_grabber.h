@@ -63,8 +63,8 @@ public:
    * device by serial number \param[in] repeat_playback whether to repeat playback when
    * reading from file
    */
-  RealSense2Grabber(const std::string& file_name_or_serial_number = "",
-                    const bool repeat_playback = true);
+  RealSense2Grabber (const std::string& file_name_or_serial_number = "",
+                     const bool repeat_playback = true);
 
   /** \brief virtual Destructor inherited from the Grabber interface. It never throws.
    */
@@ -110,13 +110,13 @@ public:
 
   // define callback signature typedefs
   using signal_librealsense_PointXYZ =
-      void(const pcl::PointCloud<pcl::PointXYZ>::ConstPtr&);
+      void (const pcl::PointCloud<pcl::PointXYZ>::ConstPtr&);
   using signal_librealsense_PointXYZI =
-      void(const pcl::PointCloud<pcl::PointXYZI>::ConstPtr&);
+      void (const pcl::PointCloud<pcl::PointXYZI>::ConstPtr&);
   using signal_librealsense_PointXYZRGB =
-      void(const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr&);
+      void (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr&);
   using signal_librealsense_PointXYZRGBA =
-      void(const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&);
+      void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&);
 
 protected:
   boost::signals2::signal<signal_librealsense_PointXYZ>* signal_PointXYZ;

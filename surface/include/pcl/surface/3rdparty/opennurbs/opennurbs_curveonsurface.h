@@ -19,7 +19,7 @@
 
 class ON_CurveOnSurface;
 class ON_CLASS ON_CurveOnSurface : public ON_Curve {
-  ON_OBJECT_DECLARE(ON_CurveOnSurface);
+  ON_OBJECT_DECLARE (ON_CurveOnSurface);
 
 public:
   ON_CurveOnSurface();
@@ -33,13 +33,13 @@ public:
     pSurface - [in] ~ON_CurveOnSurface() will delete this surface.
        Use an ON_SurfaceProxy if you don't want the original deleted.
   */
-  ON_CurveOnSurface(ON_Curve* p2dCurve,  // required 2d curve
-                    ON_Curve* p3dCurve,  // optional 3d curve
-                    ON_Surface* pSurface // required surface
+  ON_CurveOnSurface (ON_Curve* p2dCurve,  // required 2d curve
+                     ON_Curve* p3dCurve,  // optional 3d curve
+                     ON_Surface* pSurface // required surface
   );
-  ON_CurveOnSurface(const ON_CurveOnSurface&); // no implementation
+  ON_CurveOnSurface (const ON_CurveOnSurface&); // no implementation
   ON_CurveOnSurface&
-  operator=(const ON_CurveOnSurface&); // no implementation
+  operator= (const ON_CurveOnSurface&); // no implementation
 
   /*
   Remarks:
@@ -172,8 +172,8 @@ public:
       void) const;
 
   ON_BOOL32
-  Reverse (); // reverse parameterizatrion
-              // Domain changes from [a,b] to [-b,-a]
+  Reverse(); // reverse parameterizatrion
+             // Domain changes from [a,b] to [-b,-a]
 
   ON_BOOL32
   Evaluate (   // returns false if unable to evaluate

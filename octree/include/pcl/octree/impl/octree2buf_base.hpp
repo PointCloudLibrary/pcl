@@ -44,7 +44,7 @@ namespace octree {
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename LeafContainerT, typename BranchContainerT>
 Octree2BufBase<LeafContainerT, BranchContainerT>::Octree2BufBase()
-: root_node_(new BranchNode())
+: root_node_ (new BranchNode())
 {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -59,23 +59,23 @@ Octree2BufBase<LeafContainerT, BranchContainerT>::~Octree2BufBase()
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename LeafContainerT, typename BranchContainerT>
 void
-Octree2BufBase<LeafContainerT, BranchContainerT>::setMaxVoxelIndex(
+Octree2BufBase<LeafContainerT, BranchContainerT>::setMaxVoxelIndex (
     uindex_t max_voxel_index_arg)
 {
   uindex_t treeDepth;
 
   if (max_voxel_index_arg <= 0) {
-    PCL_ERROR("[pcl::octree::Octree2BufBase::setMaxVoxelIndex] Max voxel index (%lu) "
-              "must be > 0!\n",
-              max_voxel_index_arg);
+    PCL_ERROR ("[pcl::octree::Octree2BufBase::setMaxVoxelIndex] Max voxel index (%lu) "
+               "must be > 0!\n",
+               max_voxel_index_arg);
     return;
   }
 
   // tree depth == amount of bits of maxVoxels
-  treeDepth =
-      std::max<uindex_t>(std::min<uindex_t>(OctreeKey::maxDepth,
-                                            std::ceil(std::log2(max_voxel_index_arg))),
-                         0);
+  treeDepth = std::max<uindex_t> (
+      std::min<uindex_t> (OctreeKey::maxDepth,
+                          std::ceil (std::log2 (max_voxel_index_arg))),
+      0);
 
   // define depthMask_ by setting a single bit to 1 at bit position == tree depth
   depth_mask_ = (1 << (treeDepth - 1));
@@ -84,10 +84,10 @@ Octree2BufBase<LeafContainerT, BranchContainerT>::setMaxVoxelIndex(
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename LeafContainerT, typename BranchContainerT>
 void
-Octree2BufBase<LeafContainerT, BranchContainerT>::setTreeDepth(uindex_t depth_arg)
+Octree2BufBase<LeafContainerT, BranchContainerT>::setTreeDepth (uindex_t depth_arg)
 {
   if (depth_arg <= 0) {
-    PCL_ERROR(
+    PCL_ERROR (
         "[pcl::octree::Octree2BufBase::setTreeDepth] Tree depth (%lu) must be > 0!\n",
         depth_arg);
     return;
@@ -106,57 +106,57 @@ Octree2BufBase<LeafContainerT, BranchContainerT>::setTreeDepth(uindex_t depth_ar
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename LeafContainerT, typename BranchContainerT>
 LeafContainerT*
-Octree2BufBase<LeafContainerT, BranchContainerT>::findLeaf(uindex_t idx_x_arg,
-                                                           uindex_t idx_y_arg,
-                                                           uindex_t idx_z_arg)
+Octree2BufBase<LeafContainerT, BranchContainerT>::findLeaf (uindex_t idx_x_arg,
+                                                            uindex_t idx_y_arg,
+                                                            uindex_t idx_z_arg)
 {
   // generate key
-  OctreeKey key(idx_x_arg, idx_y_arg, idx_z_arg);
+  OctreeKey key (idx_x_arg, idx_y_arg, idx_z_arg);
 
   // check if key exist in octree
-  return (findLeaf(key));
+  return (findLeaf (key));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename LeafContainerT, typename BranchContainerT>
 LeafContainerT*
-Octree2BufBase<LeafContainerT, BranchContainerT>::createLeaf(uindex_t idx_x_arg,
-                                                             uindex_t idx_y_arg,
-                                                             uindex_t idx_z_arg)
+Octree2BufBase<LeafContainerT, BranchContainerT>::createLeaf (uindex_t idx_x_arg,
+                                                              uindex_t idx_y_arg,
+                                                              uindex_t idx_z_arg)
 {
   // generate key
-  OctreeKey key(idx_x_arg, idx_y_arg, idx_z_arg);
+  OctreeKey key (idx_x_arg, idx_y_arg, idx_z_arg);
 
   // check if key exist in octree
-  return (createLeaf(key));
+  return (createLeaf (key));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename LeafContainerT, typename BranchContainerT>
 bool
-Octree2BufBase<LeafContainerT, BranchContainerT>::existLeaf(uindex_t idx_x_arg,
-                                                            uindex_t idx_y_arg,
-                                                            uindex_t idx_z_arg) const
+Octree2BufBase<LeafContainerT, BranchContainerT>::existLeaf (uindex_t idx_x_arg,
+                                                             uindex_t idx_y_arg,
+                                                             uindex_t idx_z_arg) const
 {
   // generate key
-  OctreeKey key(idx_x_arg, idx_y_arg, idx_z_arg);
+  OctreeKey key (idx_x_arg, idx_y_arg, idx_z_arg);
 
   // check if key exist in octree
-  return existLeaf(key);
+  return existLeaf (key);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename LeafContainerT, typename BranchContainerT>
 void
-Octree2BufBase<LeafContainerT, BranchContainerT>::removeLeaf(uindex_t idx_x_arg,
-                                                             uindex_t idx_y_arg,
-                                                             uindex_t idx_z_arg)
+Octree2BufBase<LeafContainerT, BranchContainerT>::removeLeaf (uindex_t idx_x_arg,
+                                                              uindex_t idx_y_arg,
+                                                              uindex_t idx_z_arg)
 {
   // generate key
-  OctreeKey key(idx_x_arg, idx_y_arg, idx_z_arg);
+  OctreeKey key (idx_x_arg, idx_y_arg, idx_z_arg);
 
   // free voxel at key
-  return (this->removeLeaf(key));
+  return (this->removeLeaf (key));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -166,7 +166,7 @@ Octree2BufBase<LeafContainerT, BranchContainerT>::deleteTree()
 {
   if (root_node_) {
     // reset octree
-    deleteBranch(*root_node_);
+    deleteBranch (*root_node_);
     leaf_count_ = 0;
     branch_count_ = 1;
 
@@ -183,7 +183,7 @@ Octree2BufBase<LeafContainerT, BranchContainerT>::switchBuffers()
 {
   if (tree_dirty_flag_) {
     // make sure that all unused branch nodes from previous buffer are deleted
-    treeCleanUpRecursive(root_node_);
+    treeCleanUpRecursive (root_node_);
   }
 
   // switch butter selector
@@ -196,23 +196,23 @@ Octree2BufBase<LeafContainerT, BranchContainerT>::switchBuffers()
 
   // we can safely remove children references of root node
   for (unsigned char child_idx = 0; child_idx < 8; child_idx++) {
-    root_node_->setChildPtr(buffer_selector_, child_idx, nullptr);
+    root_node_->setChildPtr (buffer_selector_, child_idx, nullptr);
   }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename LeafContainerT, typename BranchContainerT>
 void
-Octree2BufBase<LeafContainerT, BranchContainerT>::serializeTree(
+Octree2BufBase<LeafContainerT, BranchContainerT>::serializeTree (
     std::vector<char>& binary_tree_out_arg, bool do_XOR_encoding_arg)
 {
   OctreeKey new_key;
 
   // clear binary vector
   binary_tree_out_arg.clear();
-  binary_tree_out_arg.reserve(this->branch_count_);
+  binary_tree_out_arg.reserve (this->branch_count_);
 
-  serializeTreeRecursive(
+  serializeTreeRecursive (
       root_node_, new_key, &binary_tree_out_arg, nullptr, do_XOR_encoding_arg, false);
 
   // serializeTreeRecursive cleans-up unused octree nodes in previous octree
@@ -222,7 +222,7 @@ Octree2BufBase<LeafContainerT, BranchContainerT>::serializeTree(
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename LeafContainerT, typename BranchContainerT>
 void
-Octree2BufBase<LeafContainerT, BranchContainerT>::serializeTree(
+Octree2BufBase<LeafContainerT, BranchContainerT>::serializeTree (
     std::vector<char>& binary_tree_out_arg,
     std::vector<LeafContainerT*>& leaf_container_vector_arg,
     bool do_XOR_encoding_arg)
@@ -233,15 +233,15 @@ Octree2BufBase<LeafContainerT, BranchContainerT>::serializeTree(
   binary_tree_out_arg.clear();
   leaf_container_vector_arg.clear();
 
-  leaf_container_vector_arg.reserve(leaf_count_);
-  binary_tree_out_arg.reserve(this->branch_count_);
+  leaf_container_vector_arg.reserve (leaf_count_);
+  binary_tree_out_arg.reserve (this->branch_count_);
 
-  serializeTreeRecursive(root_node_,
-                         new_key,
-                         &binary_tree_out_arg,
-                         &leaf_container_vector_arg,
-                         do_XOR_encoding_arg,
-                         false);
+  serializeTreeRecursive (root_node_,
+                          new_key,
+                          &binary_tree_out_arg,
+                          &leaf_container_vector_arg,
+                          do_XOR_encoding_arg,
+                          false);
 
   // serializeTreeRecursive cleans-up unused octree nodes in previous octree
   tree_dirty_flag_ = false;
@@ -250,7 +250,7 @@ Octree2BufBase<LeafContainerT, BranchContainerT>::serializeTree(
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename LeafContainerT, typename BranchContainerT>
 void
-Octree2BufBase<LeafContainerT, BranchContainerT>::serializeLeafs(
+Octree2BufBase<LeafContainerT, BranchContainerT>::serializeLeafs (
     std::vector<LeafContainerT*>& leaf_container_vector_arg)
 {
   OctreeKey new_key;
@@ -258,9 +258,9 @@ Octree2BufBase<LeafContainerT, BranchContainerT>::serializeLeafs(
   // clear output vector
   leaf_container_vector_arg.clear();
 
-  leaf_container_vector_arg.reserve(leaf_count_);
+  leaf_container_vector_arg.reserve (leaf_count_);
 
-  serializeTreeRecursive(
+  serializeTreeRecursive (
       root_node_, new_key, nullptr, &leaf_container_vector_arg, false, false);
 
   // serializeLeafsRecursive cleans-up unused octree nodes in previous octree
@@ -270,7 +270,7 @@ Octree2BufBase<LeafContainerT, BranchContainerT>::serializeLeafs(
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename LeafContainerT, typename BranchContainerT>
 void
-Octree2BufBase<LeafContainerT, BranchContainerT>::deserializeTree(
+Octree2BufBase<LeafContainerT, BranchContainerT>::deserializeTree (
     std::vector<char>& binary_tree_in_arg, bool do_XOR_decoding_arg)
 {
   OctreeKey new_key;
@@ -282,15 +282,15 @@ Octree2BufBase<LeafContainerT, BranchContainerT>::deserializeTree(
   std::vector<char>::const_iterator binary_tree_in_it = binary_tree_in_arg.begin();
   std::vector<char>::const_iterator binary_tree_in_it_end = binary_tree_in_arg.end();
 
-  deserializeTreeRecursive(root_node_,
-                           depth_mask_,
-                           new_key,
-                           binary_tree_in_it,
-                           binary_tree_in_it_end,
-                           nullptr,
-                           nullptr,
-                           false,
-                           do_XOR_decoding_arg);
+  deserializeTreeRecursive (root_node_,
+                            depth_mask_,
+                            new_key,
+                            binary_tree_in_it,
+                            binary_tree_in_it_end,
+                            nullptr,
+                            nullptr,
+                            false,
+                            do_XOR_decoding_arg);
 
   // we modified the octree structure -> clean-up/tree-reset might be required
   tree_dirty_flag_ = false;
@@ -299,7 +299,7 @@ Octree2BufBase<LeafContainerT, BranchContainerT>::deserializeTree(
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename LeafContainerT, typename BranchContainerT>
 void
-Octree2BufBase<LeafContainerT, BranchContainerT>::deserializeTree(
+Octree2BufBase<LeafContainerT, BranchContainerT>::deserializeTree (
     std::vector<char>& binary_tree_in_arg,
     std::vector<LeafContainerT*>& leaf_container_vector_arg,
     bool do_XOR_decoding_arg)
@@ -321,15 +321,15 @@ Octree2BufBase<LeafContainerT, BranchContainerT>::deserializeTree(
   std::vector<char>::const_iterator binary_tree_in_it = binary_tree_in_arg.begin();
   std::vector<char>::const_iterator binary_tree_in_it_end = binary_tree_in_arg.end();
 
-  deserializeTreeRecursive(root_node_,
-                           depth_mask_,
-                           new_key,
-                           binary_tree_in_it,
-                           binary_tree_in_it_end,
-                           &leaf_container_vector_it,
-                           &leaf_container_vector_it_end,
-                           false,
-                           do_XOR_decoding_arg);
+  deserializeTreeRecursive (root_node_,
+                            depth_mask_,
+                            new_key,
+                            binary_tree_in_it,
+                            binary_tree_in_it_end,
+                            &leaf_container_vector_it,
+                            &leaf_container_vector_it_end,
+                            false,
+                            do_XOR_decoding_arg);
 
   // we modified the octree structure -> clean-up/tree-reset might be required
   tree_dirty_flag_ = false;
@@ -338,16 +338,16 @@ Octree2BufBase<LeafContainerT, BranchContainerT>::deserializeTree(
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename LeafContainerT, typename BranchContainerT>
 void
-Octree2BufBase<LeafContainerT, BranchContainerT>::serializeNewLeafs(
+Octree2BufBase<LeafContainerT, BranchContainerT>::serializeNewLeafs (
     std::vector<LeafContainerT*>& leaf_container_vector_arg)
 {
   OctreeKey new_key;
 
   // clear output vector
   leaf_container_vector_arg.clear();
-  leaf_container_vector_arg.reserve(leaf_count_);
+  leaf_container_vector_arg.reserve (leaf_count_);
 
-  serializeTreeRecursive(
+  serializeTreeRecursive (
       root_node_, new_key, nullptr, &leaf_container_vector_arg, false, true);
 
   // serializeLeafsRecursive cleans-up unused octree nodes in previous octree buffer
@@ -357,7 +357,7 @@ Octree2BufBase<LeafContainerT, BranchContainerT>::serializeNewLeafs(
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename LeafContainerT, typename BranchContainerT>
 uindex_t
-Octree2BufBase<LeafContainerT, BranchContainerT>::createLeafRecursive(
+Octree2BufBase<LeafContainerT, BranchContainerT>::createLeafRecursive (
     const OctreeKey& key_arg,
     uindex_t depth_mask_arg,
     BranchNode* branch_arg,
@@ -369,12 +369,12 @@ Octree2BufBase<LeafContainerT, BranchContainerT>::createLeafRecursive(
   if (branch_reset_arg) {
     // we can safely remove children references
     for (unsigned char child_idx = 0; child_idx < 8; child_idx++) {
-      branch_arg->setChildPtr(buffer_selector_, child_idx, nullptr);
+      branch_arg->setChildPtr (buffer_selector_, child_idx, nullptr);
     }
   }
 
   // find branch child from key
-  unsigned char child_idx = key_arg.getChildIdxWithDepthMask(depth_mask_arg);
+  unsigned char child_idx = key_arg.getChildIdxWithDepthMask (depth_mask_arg);
 
   if (depth_mask_arg > 1) {
     // we have not reached maximum tree depth
@@ -384,20 +384,20 @@ Octree2BufBase<LeafContainerT, BranchContainerT>::createLeafRecursive(
     doNodeReset = false;
 
     // if required branch does not exist
-    if (!branch_arg->hasChild(buffer_selector_, child_idx)) {
+    if (!branch_arg->hasChild (buffer_selector_, child_idx)) {
       // check if we find a branch node reference in previous buffer
 
-      if (branch_arg->hasChild(!buffer_selector_, child_idx)) {
-        OctreeNode* child_node = branch_arg->getChildPtr(!buffer_selector_, child_idx);
+      if (branch_arg->hasChild (!buffer_selector_, child_idx)) {
+        OctreeNode* child_node = branch_arg->getChildPtr (!buffer_selector_, child_idx);
 
         if (child_node->getNodeType() == BRANCH_NODE) {
-          child_branch = static_cast<BranchNode*>(child_node);
-          branch_arg->setChildPtr(buffer_selector_, child_idx, child_node);
+          child_branch = static_cast<BranchNode*> (child_node);
+          branch_arg->setChildPtr (buffer_selector_, child_idx, child_node);
         }
         else {
           // depth has changed.. child in preceding buffer is a leaf node.
-          deleteBranchChild(*branch_arg, !buffer_selector_, child_idx);
-          child_branch = createBranchChild(*branch_arg, child_idx);
+          deleteBranchChild (*branch_arg, !buffer_selector_, child_idx);
+          child_branch = createBranchChild (*branch_arg, child_idx);
         }
 
         // take child branch from previous buffer
@@ -405,49 +405,49 @@ Octree2BufBase<LeafContainerT, BranchContainerT>::createLeafRecursive(
       }
       else {
         // if required branch does not exist -> create it
-        child_branch = createBranchChild(*branch_arg, child_idx);
+        child_branch = createBranchChild (*branch_arg, child_idx);
       }
 
       branch_count_++;
     }
     // required branch node already exists - use it
     else
-      child_branch = static_cast<BranchNode*>(
-          branch_arg->getChildPtr(buffer_selector_, child_idx));
+      child_branch = static_cast<BranchNode*> (
+          branch_arg->getChildPtr (buffer_selector_, child_idx));
 
     // recursively proceed with indexed child branch
-    return createLeafRecursive(key_arg,
-                               depth_mask_arg >> 1,
-                               child_branch,
-                               return_leaf_arg,
-                               parent_of_leaf_arg,
-                               doNodeReset);
+    return createLeafRecursive (key_arg,
+                                depth_mask_arg >> 1,
+                                child_branch,
+                                return_leaf_arg,
+                                parent_of_leaf_arg,
+                                doNodeReset);
   }
 
   // branch childs are leaf nodes
   LeafNode* child_leaf;
-  if (!branch_arg->hasChild(buffer_selector_, child_idx)) {
+  if (!branch_arg->hasChild (buffer_selector_, child_idx)) {
     // leaf node at child_idx does not exist
 
     // check if we can take copy a reference from previous buffer
-    if (branch_arg->hasChild(!buffer_selector_, child_idx)) {
+    if (branch_arg->hasChild (!buffer_selector_, child_idx)) {
 
-      OctreeNode* child_node = branch_arg->getChildPtr(!buffer_selector_, child_idx);
+      OctreeNode* child_node = branch_arg->getChildPtr (!buffer_selector_, child_idx);
       if (child_node->getNodeType() == LEAF_NODE) {
-        child_leaf = static_cast<LeafNode*>(child_node);
+        child_leaf = static_cast<LeafNode*> (child_node);
         child_leaf->getContainer() = LeafContainer(); // Clear contents of leaf
-        branch_arg->setChildPtr(buffer_selector_, child_idx, child_node);
+        branch_arg->setChildPtr (buffer_selector_, child_idx, child_node);
       }
       else {
         // depth has changed.. child in preceding buffer is a leaf node.
-        deleteBranchChild(*branch_arg, !buffer_selector_, child_idx);
-        child_leaf = createLeafChild(*branch_arg, child_idx);
+        deleteBranchChild (*branch_arg, !buffer_selector_, child_idx);
+        child_leaf = createLeafChild (*branch_arg, child_idx);
       }
       leaf_count_++;
     }
     else {
       // if required leaf does not exist -> create it
-      child_leaf = createLeafChild(*branch_arg, child_idx);
+      child_leaf = createLeafChild (*branch_arg, child_idx);
       leaf_count_++;
     }
 
@@ -458,7 +458,7 @@ Octree2BufBase<LeafContainerT, BranchContainerT>::createLeafRecursive(
   else {
     // leaf node already exist
     return_leaf_arg =
-        static_cast<LeafNode*>(branch_arg->getChildPtr(buffer_selector_, child_idx));
+        static_cast<LeafNode*> (branch_arg->getChildPtr (buffer_selector_, child_idx));
     parent_of_leaf_arg = branch_arg;
   }
 
@@ -468,7 +468,7 @@ Octree2BufBase<LeafContainerT, BranchContainerT>::createLeafRecursive(
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename LeafContainerT, typename BranchContainerT>
 void
-Octree2BufBase<LeafContainerT, BranchContainerT>::findLeafRecursive(
+Octree2BufBase<LeafContainerT, BranchContainerT>::findLeafRecursive (
     const OctreeKey& key_arg,
     uindex_t depth_mask_arg,
     BranchNode* branch_arg,
@@ -478,24 +478,24 @@ Octree2BufBase<LeafContainerT, BranchContainerT>::findLeafRecursive(
   unsigned char child_idx;
 
   // find branch child from key
-  child_idx = key_arg.getChildIdxWithDepthMask(depth_mask_arg);
+  child_idx = key_arg.getChildIdxWithDepthMask (depth_mask_arg);
 
   if (depth_mask_arg > 1) {
     // we have not reached maximum tree depth
     BranchNode* child_branch;
-    child_branch =
-        static_cast<BranchNode*>(branch_arg->getChildPtr(buffer_selector_, child_idx));
+    child_branch = static_cast<BranchNode*> (
+        branch_arg->getChildPtr (buffer_selector_, child_idx));
 
     if (child_branch)
       // recursively proceed with indexed child branch
-      findLeafRecursive(key_arg, depth_mask_arg >> 1, child_branch, result_arg);
+      findLeafRecursive (key_arg, depth_mask_arg >> 1, child_branch, result_arg);
   }
   else {
     // we reached leaf node level
-    if (branch_arg->hasChild(buffer_selector_, child_idx)) {
+    if (branch_arg->hasChild (buffer_selector_, child_idx)) {
       // return existing leaf node
-      auto* leaf_node =
-          static_cast<LeafNode*>(branch_arg->getChildPtr(buffer_selector_, child_idx));
+      auto* leaf_node = static_cast<LeafNode*> (
+          branch_arg->getChildPtr (buffer_selector_, child_idx));
       result_arg = leaf_node->getContainerPtr();
     }
   }
@@ -504,7 +504,7 @@ Octree2BufBase<LeafContainerT, BranchContainerT>::findLeafRecursive(
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename LeafContainerT, typename BranchContainerT>
 bool
-Octree2BufBase<LeafContainerT, BranchContainerT>::deleteLeafRecursive(
+Octree2BufBase<LeafContainerT, BranchContainerT>::deleteLeafRecursive (
     const OctreeKey& key_arg, uindex_t depth_mask_arg, BranchNode* branch_arg)
 {
   // index to branch child
@@ -513,38 +513,38 @@ Octree2BufBase<LeafContainerT, BranchContainerT>::deleteLeafRecursive(
   bool bNoChilds;
 
   // find branch child from key
-  child_idx = key_arg.getChildIdxWithDepthMask(depth_mask_arg);
+  child_idx = key_arg.getChildIdxWithDepthMask (depth_mask_arg);
 
   if (depth_mask_arg > 1) {
     // we have not reached maximum tree depth
     BranchNode* child_branch;
 
     // next branch child on our path through the tree
-    child_branch =
-        static_cast<BranchNode*>(branch_arg->getChildPtr(buffer_selector_, child_idx));
+    child_branch = static_cast<BranchNode*> (
+        branch_arg->getChildPtr (buffer_selector_, child_idx));
 
     if (child_branch) {
       // recursively explore the indexed child branch
       bool bBranchOccupied =
-          deleteLeafRecursive(key_arg, depth_mask_arg >> 1, child_branch);
+          deleteLeafRecursive (key_arg, depth_mask_arg >> 1, child_branch);
 
       if (!bBranchOccupied) {
         // child branch does not own any sub-child nodes anymore -> delete child branch
-        deleteBranchChild(*branch_arg, buffer_selector_, child_idx);
+        deleteBranchChild (*branch_arg, buffer_selector_, child_idx);
         branch_count_--;
       }
     }
   }
   else {
     // our child is a leaf node -> delete it
-    deleteBranchChild(*branch_arg, buffer_selector_, child_idx);
+    deleteBranchChild (*branch_arg, buffer_selector_, child_idx);
     leaf_count_--;
   }
 
   // check if current branch still owns childs
   bNoChilds = false;
   for (child_idx = 0; child_idx < 8; child_idx++) {
-    bNoChilds = branch_arg->hasChild(buffer_selector_, child_idx);
+    bNoChilds = branch_arg->hasChild (buffer_selector_, child_idx);
     if (bNoChilds)
       break;
   }
@@ -556,7 +556,7 @@ Octree2BufBase<LeafContainerT, BranchContainerT>::deleteLeafRecursive(
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename LeafContainerT, typename BranchContainerT>
 void
-Octree2BufBase<LeafContainerT, BranchContainerT>::serializeTreeRecursive(
+Octree2BufBase<LeafContainerT, BranchContainerT>::serializeTreeRecursive (
     BranchNode* branch_arg,
     OctreeKey& key_arg,
     std::vector<char>* binary_tree_out_arg,
@@ -567,59 +567,59 @@ Octree2BufBase<LeafContainerT, BranchContainerT>::serializeTreeRecursive(
   if (binary_tree_out_arg) {
     // occupancy bit patterns of branch node  (current octree buffer)
     const char branch_bit_pattern_curr_buffer =
-        getBranchBitPattern(*branch_arg, buffer_selector_);
+        getBranchBitPattern (*branch_arg, buffer_selector_);
     if (do_XOR_encoding_arg) {
       // occupancy bit patterns of branch node  (previous octree buffer)
       const char branch_bit_pattern_prev_buffer =
-          getBranchBitPattern(*branch_arg, !buffer_selector_);
+          getBranchBitPattern (*branch_arg, !buffer_selector_);
       // XOR of current and previous occupancy bit patterns
       const char node_XOR_bit_pattern =
           branch_bit_pattern_curr_buffer ^ branch_bit_pattern_prev_buffer;
       // write XOR bit pattern to output vector
-      binary_tree_out_arg->push_back(node_XOR_bit_pattern);
+      binary_tree_out_arg->push_back (node_XOR_bit_pattern);
     }
     else {
       // write bit pattern of current buffer to output vector
-      binary_tree_out_arg->push_back(branch_bit_pattern_curr_buffer);
+      binary_tree_out_arg->push_back (branch_bit_pattern_curr_buffer);
     }
   }
 
   // iterate over all children
   for (unsigned char child_idx = 0; child_idx < 8; child_idx++) {
-    if (branch_arg->hasChild(buffer_selector_, child_idx)) {
+    if (branch_arg->hasChild (buffer_selector_, child_idx)) {
       // add current branch voxel to key
-      key_arg.pushBranch(child_idx);
+      key_arg.pushBranch (child_idx);
 
-      OctreeNode* child_node = branch_arg->getChildPtr(buffer_selector_, child_idx);
+      OctreeNode* child_node = branch_arg->getChildPtr (buffer_selector_, child_idx);
 
       switch (child_node->getNodeType()) {
       case BRANCH_NODE: {
         // recursively proceed with indexed child branch
-        serializeTreeRecursive(static_cast<BranchNode*>(child_node),
-                               key_arg,
-                               binary_tree_out_arg,
-                               leaf_container_vector_arg,
-                               do_XOR_encoding_arg,
-                               new_leafs_filter_arg);
+        serializeTreeRecursive (static_cast<BranchNode*> (child_node),
+                                key_arg,
+                                binary_tree_out_arg,
+                                leaf_container_vector_arg,
+                                do_XOR_encoding_arg,
+                                new_leafs_filter_arg);
         break;
       }
       case LEAF_NODE: {
-        auto* child_leaf = static_cast<LeafNode*>(child_node);
+        auto* child_leaf = static_cast<LeafNode*> (child_node);
 
         if (new_leafs_filter_arg) {
-          if (!branch_arg->hasChild(!buffer_selector_, child_idx)) {
+          if (!branch_arg->hasChild (!buffer_selector_, child_idx)) {
             if (leaf_container_vector_arg)
-              leaf_container_vector_arg->push_back(child_leaf->getContainerPtr());
+              leaf_container_vector_arg->push_back (child_leaf->getContainerPtr());
 
-            serializeTreeCallback(**child_leaf, key_arg);
+            serializeTreeCallback (**child_leaf, key_arg);
           }
         }
         else {
 
           if (leaf_container_vector_arg)
-            leaf_container_vector_arg->push_back(child_leaf->getContainerPtr());
+            leaf_container_vector_arg->push_back (child_leaf->getContainerPtr());
 
-          serializeTreeCallback(**child_leaf, key_arg);
+          serializeTreeCallback (**child_leaf, key_arg);
         }
 
         break;
@@ -631,9 +631,9 @@ Octree2BufBase<LeafContainerT, BranchContainerT>::serializeTreeRecursive(
       // pop current branch voxel from key
       key_arg.popBranch();
     }
-    else if (branch_arg->hasChild(!buffer_selector_, child_idx)) {
+    else if (branch_arg->hasChild (!buffer_selector_, child_idx)) {
       // delete branch, free memory
-      deleteBranchChild(*branch_arg, !buffer_selector_, child_idx);
+      deleteBranchChild (*branch_arg, !buffer_selector_, child_idx);
     }
   }
 }
@@ -641,7 +641,7 @@ Octree2BufBase<LeafContainerT, BranchContainerT>::serializeTreeRecursive(
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename LeafContainerT, typename BranchContainerT>
 void
-Octree2BufBase<LeafContainerT, BranchContainerT>::deserializeTreeRecursive(
+Octree2BufBase<LeafContainerT, BranchContainerT>::deserializeTreeRecursive (
     BranchNode* branch_arg,
     uindex_t depth_mask_arg,
     OctreeKey& key_arg,
@@ -657,7 +657,7 @@ Octree2BufBase<LeafContainerT, BranchContainerT>::deserializeTreeRecursive(
   if (branch_reset_arg) {
     // we can safely remove children references
     for (unsigned char child_idx = 0; child_idx < 8; child_idx++) {
-      branch_arg->setChildPtr(buffer_selector_, child_idx, nullptr);
+      branch_arg->setChildPtr (buffer_selector_, child_idx, nullptr);
     }
   }
 
@@ -669,7 +669,7 @@ Octree2BufBase<LeafContainerT, BranchContainerT>::deserializeTreeRecursive(
     char recoveredNodeBits;
     if (do_XOR_decoding_arg) {
       recoveredNodeBits =
-          getBranchBitPattern(*branch_arg, !buffer_selector_) ^ nodeBits;
+          getBranchBitPattern (*branch_arg, !buffer_selector_) ^ nodeBits;
     }
     else {
       recoveredNodeBits = nodeBits;
@@ -680,7 +680,7 @@ Octree2BufBase<LeafContainerT, BranchContainerT>::deserializeTreeRecursive(
       // if occupancy bit for child_idx is set..
       if (recoveredNodeBits & (1 << child_idx)) {
         // add current branch voxel to key
-        key_arg.pushBranch(child_idx);
+        key_arg.pushBranch (child_idx);
 
         if (depth_mask_arg > 1) {
           // we have not reached maximum tree depth
@@ -690,20 +690,20 @@ Octree2BufBase<LeafContainerT, BranchContainerT>::deserializeTreeRecursive(
           BranchNode* child_branch;
 
           // check if we find a branch node reference in previous buffer
-          if (!branch_arg->hasChild(buffer_selector_, child_idx)) {
+          if (!branch_arg->hasChild (buffer_selector_, child_idx)) {
 
-            if (branch_arg->hasChild(!buffer_selector_, child_idx)) {
+            if (branch_arg->hasChild (!buffer_selector_, child_idx)) {
               OctreeNode* child_node =
-                  branch_arg->getChildPtr(!buffer_selector_, child_idx);
+                  branch_arg->getChildPtr (!buffer_selector_, child_idx);
 
               if (child_node->getNodeType() == BRANCH_NODE) {
-                child_branch = static_cast<BranchNode*>(child_node);
-                branch_arg->setChildPtr(buffer_selector_, child_idx, child_node);
+                child_branch = static_cast<BranchNode*> (child_node);
+                branch_arg->setChildPtr (buffer_selector_, child_idx, child_node);
               }
               else {
                 // depth has changed.. child in preceding buffer is a leaf node.
-                deleteBranchChild(*branch_arg, !buffer_selector_, child_idx);
-                child_branch = createBranchChild(*branch_arg, child_idx);
+                deleteBranchChild (*branch_arg, !buffer_selector_, child_idx);
+                child_branch = createBranchChild (*branch_arg, child_idx);
               }
 
               // take child branch from previous buffer
@@ -711,50 +711,50 @@ Octree2BufBase<LeafContainerT, BranchContainerT>::deserializeTreeRecursive(
             }
             else {
               // if required branch does not exist -> create it
-              child_branch = createBranchChild(*branch_arg, child_idx);
+              child_branch = createBranchChild (*branch_arg, child_idx);
             }
 
             branch_count_++;
           }
           else {
             // required branch node already exists - use it
-            child_branch = static_cast<BranchNode*>(
-                branch_arg->getChildPtr(buffer_selector_, child_idx));
+            child_branch = static_cast<BranchNode*> (
+                branch_arg->getChildPtr (buffer_selector_, child_idx));
           }
 
           // recursively proceed with indexed child branch
-          deserializeTreeRecursive(child_branch,
-                                   depth_mask_arg >> 1,
-                                   key_arg,
-                                   binaryTreeIT_arg,
-                                   binaryTreeIT_End_arg,
-                                   dataVectorIterator_arg,
-                                   dataVectorEndIterator_arg,
-                                   doNodeReset,
-                                   do_XOR_decoding_arg);
+          deserializeTreeRecursive (child_branch,
+                                    depth_mask_arg >> 1,
+                                    key_arg,
+                                    binaryTreeIT_arg,
+                                    binaryTreeIT_End_arg,
+                                    dataVectorIterator_arg,
+                                    dataVectorEndIterator_arg,
+                                    doNodeReset,
+                                    do_XOR_decoding_arg);
         }
         else {
           // branch childs are leaf nodes
           LeafNode* child_leaf;
 
           // check if we can take copy a reference pointer from previous buffer
-          if (branch_arg->hasChild(!buffer_selector_, child_idx)) {
+          if (branch_arg->hasChild (!buffer_selector_, child_idx)) {
             // take child leaf node from previous buffer
             OctreeNode* child_node =
-                branch_arg->getChildPtr(!buffer_selector_, child_idx);
+                branch_arg->getChildPtr (!buffer_selector_, child_idx);
             if (child_node->getNodeType() == LEAF_NODE) {
-              child_leaf = static_cast<LeafNode*>(child_node);
-              branch_arg->setChildPtr(buffer_selector_, child_idx, child_node);
+              child_leaf = static_cast<LeafNode*> (child_node);
+              branch_arg->setChildPtr (buffer_selector_, child_idx, child_node);
             }
             else {
               // depth has changed.. child in preceding buffer is a leaf node.
-              deleteBranchChild(*branch_arg, !buffer_selector_, child_idx);
-              child_leaf = createLeafChild(*branch_arg, child_idx);
+              deleteBranchChild (*branch_arg, !buffer_selector_, child_idx);
+              child_leaf = createLeafChild (*branch_arg, child_idx);
             }
           }
           else {
             // if required leaf does not exist -> create it
-            child_leaf = createLeafChild(*branch_arg, child_idx);
+            child_leaf = createLeafChild (*branch_arg, child_idx);
           }
 
           // we reached leaf node level
@@ -769,18 +769,18 @@ Octree2BufBase<LeafContainerT, BranchContainerT>::deserializeTreeRecursive(
           leaf_count_++;
 
           // execute deserialization callback
-          deserializeTreeCallback(**child_leaf, key_arg);
+          deserializeTreeCallback (**child_leaf, key_arg);
         }
 
         // pop current branch voxel from key
         key_arg.popBranch();
       }
-      else if (branch_arg->hasChild(!buffer_selector_, child_idx)) {
+      else if (branch_arg->hasChild (!buffer_selector_, child_idx)) {
         // remove old branch pointer information in current branch
-        branch_arg->setChildPtr(buffer_selector_, child_idx, nullptr);
+        branch_arg->setChildPtr (buffer_selector_, child_idx, nullptr);
 
         // remove unused branches in previous buffer
-        deleteBranchChild(*branch_arg, !buffer_selector_, child_idx);
+        deleteBranchChild (*branch_arg, !buffer_selector_, child_idx);
       }
     }
   }
@@ -789,15 +789,15 @@ Octree2BufBase<LeafContainerT, BranchContainerT>::deserializeTreeRecursive(
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename LeafContainerT, typename BranchContainerT>
 void
-Octree2BufBase<LeafContainerT, BranchContainerT>::treeCleanUpRecursive(
+Octree2BufBase<LeafContainerT, BranchContainerT>::treeCleanUpRecursive (
     BranchNode* branch_arg)
 {
   // occupancy bit pattern of branch node  (previous octree buffer)
   char occupied_children_bit_pattern_prev_buffer =
-      getBranchBitPattern(*branch_arg, !buffer_selector_);
+      getBranchBitPattern (*branch_arg, !buffer_selector_);
 
   // XOR of current and previous occupancy bit patterns
-  char node_XOR_bit_pattern = getBranchXORBitPattern(*branch_arg);
+  char node_XOR_bit_pattern = getBranchXORBitPattern (*branch_arg);
 
   // bit pattern indicating unused octree nodes in previous branch
   char unused_branches_bit_pattern =
@@ -805,13 +805,13 @@ Octree2BufBase<LeafContainerT, BranchContainerT>::treeCleanUpRecursive(
 
   // iterate over all children
   for (unsigned char child_idx = 0; child_idx < 8; child_idx++) {
-    if (branch_arg->hasChild(buffer_selector_, child_idx)) {
-      OctreeNode* child_node = branch_arg->getChildPtr(buffer_selector_, child_idx);
+    if (branch_arg->hasChild (buffer_selector_, child_idx)) {
+      OctreeNode* child_node = branch_arg->getChildPtr (buffer_selector_, child_idx);
 
       switch (child_node->getNodeType()) {
       case BRANCH_NODE: {
         // recursively proceed with indexed child branch
-        treeCleanUpRecursive(static_cast<BranchNode*>(child_node));
+        treeCleanUpRecursive (static_cast<BranchNode*> (child_node));
         break;
       }
       case LEAF_NODE:
@@ -825,7 +825,7 @@ Octree2BufBase<LeafContainerT, BranchContainerT>::treeCleanUpRecursive(
     // check for unused branches in previous buffer
     if (unused_branches_bit_pattern & (1 << child_idx)) {
       // delete branch, free memory
-      deleteBranchChild(*branch_arg, !buffer_selector_, child_idx);
+      deleteBranchChild (*branch_arg, !buffer_selector_, child_idx);
     }
   }
 }

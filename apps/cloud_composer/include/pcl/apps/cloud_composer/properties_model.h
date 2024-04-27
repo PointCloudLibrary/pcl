@@ -46,10 +46,10 @@ class PropertiesModel : public QStandardItemModel {
   Q_OBJECT
 public:
   /** \brief Constructor used for tool parameters */
-  PropertiesModel(QObject* parent = nullptr);
+  PropertiesModel (QObject* parent = nullptr);
   /** \brief Constructor used for item parameters */
-  PropertiesModel(CloudComposerItem* parent_item, QObject* parent = nullptr);
-  PropertiesModel(const PropertiesModel& to_copy);
+  PropertiesModel (CloudComposerItem* parent_item, QObject* parent = nullptr);
+  PropertiesModel (const PropertiesModel& to_copy);
 
   /** \brief Helper function for adding a new property */
   void
@@ -84,5 +84,5 @@ private:
 } // namespace cloud_composer
 } // namespace pcl
 
-Q_DECLARE_METATYPE(pcl::cloud_composer::PropertiesModel);
-Q_DECLARE_METATYPE(pcl::cloud_composer::PropertiesModel*);
+Q_DECLARE_METATYPE (pcl::cloud_composer::PropertiesModel);
+Q_DECLARE_METATYPE (pcl::cloud_composer::PropertiesModel*);

@@ -106,7 +106,7 @@ public:
   inline void
   initializeDataContainer ()
   {
-    data_container_.reset(new DataContainer<PointT, NormalT>);
+    data_container_.reset (new DataContainer<PointT, NormalT>);
   }
 
   /** \brief Provide a source point cloud dataset (must contain XYZ data!), used to
@@ -117,13 +117,14 @@ public:
   setInputSource (const typename pcl::PointCloud<PointT>::ConstPtr& input)
   {
     if (!data_container_) {
-      PCL_ERROR(
+      PCL_ERROR (
           "[pcl::registration::%s::setInputCloud] Initialize the data container object "
           "by calling intializeDataContainer () before using this function.\n",
           getClassName().c_str());
       return;
     }
-    static_pointer_cast<DataContainer<PointT>>(data_container_)->setInputSource(input);
+    static_pointer_cast<DataContainer<PointT>> (data_container_)
+        ->setInputSource (input);
   }
 
   /** \brief Get the target input point cloud */
@@ -132,14 +133,14 @@ public:
   getInputSource () const
   {
     if (!data_container_) {
-      PCL_ERROR(
+      PCL_ERROR (
           "[pcl::registration::%s::getInputSource] Initialize the data container "
           "object by calling intializeDataContainer () before using this function.\n",
           getClassName().c_str());
       return;
     }
     return (
-        static_pointer_cast<DataContainer<PointT>>(data_container_)->getInputSource());
+        static_pointer_cast<DataContainer<PointT>> (data_container_)->getInputSource());
   }
 
   /** \brief Provide a target point cloud dataset (must contain XYZ data!), used to
@@ -150,13 +151,14 @@ public:
   setInputTarget (const typename pcl::PointCloud<PointT>::ConstPtr& target)
   {
     if (!data_container_) {
-      PCL_ERROR(
+      PCL_ERROR (
           "[pcl::registration::%s::setInputTarget] Initialize the data container "
           "object by calling intializeDataContainer () before using this function.\n",
           getClassName().c_str());
       return;
     }
-    static_pointer_cast<DataContainer<PointT>>(data_container_)->setInputTarget(target);
+    static_pointer_cast<DataContainer<PointT>> (data_container_)
+        ->setInputTarget (target);
   }
 
   /** \brief Provide a pointer to the search object used to find correspondences in
@@ -171,8 +173,8 @@ public:
   setSearchMethodTarget (const typename pcl::search::KdTree<PointT>::Ptr& tree,
                          bool force_no_recompute = false)
   {
-    static_pointer_cast<DataContainer<PointT>>(data_container_)
-        ->setSearchMethodTarget(tree, force_no_recompute);
+    static_pointer_cast<DataContainer<PointT>> (data_container_)
+        ->setSearchMethodTarget (tree, force_no_recompute);
   }
 
   /** \brief Get the target input point cloud */
@@ -181,14 +183,14 @@ public:
   getInputTarget () const
   {
     if (!data_container_) {
-      PCL_ERROR(
+      PCL_ERROR (
           "[pcl::registration::%s::getInputTarget] Initialize the data container "
           "object by calling intializeDataContainer () before using this function.\n",
           getClassName().c_str());
       return;
     }
     return (
-        static_pointer_cast<DataContainer<PointT>>(data_container_)->getInputTarget());
+        static_pointer_cast<DataContainer<PointT>> (data_container_)->getInputTarget());
   }
 
   /** \brief Set the normals computed on the input point cloud
@@ -199,14 +201,14 @@ public:
   setInputNormals (const typename pcl::PointCloud<NormalT>::ConstPtr& normals)
   {
     if (!data_container_) {
-      PCL_ERROR(
+      PCL_ERROR (
           "[pcl::registration::%s::setInputNormals] Initialize the data container "
           "object by calling intializeDataContainer () before using this function.\n",
           getClassName().c_str());
       return;
     }
-    static_pointer_cast<DataContainer<PointT, NormalT>>(data_container_)
-        ->setInputNormals(normals);
+    static_pointer_cast<DataContainer<PointT, NormalT>> (data_container_)
+        ->setInputNormals (normals);
   }
 
   /** \brief Get the normals computed on the input point cloud */
@@ -215,13 +217,13 @@ public:
   getInputNormals () const
   {
     if (!data_container_) {
-      PCL_ERROR(
+      PCL_ERROR (
           "[pcl::registration::%s::getInputNormals] Initialize the data container "
           "object by calling intializeDataContainer () before using this function.\n",
           getClassName().c_str());
       return;
     }
-    return (static_pointer_cast<DataContainer<pcl::PointXYZ, NormalT>>(data_container_)
+    return (static_pointer_cast<DataContainer<pcl::PointXYZ, NormalT>> (data_container_)
                 ->getInputNormals());
   }
 
@@ -233,14 +235,14 @@ public:
   setTargetNormals (const typename pcl::PointCloud<NormalT>::ConstPtr& normals)
   {
     if (!data_container_) {
-      PCL_ERROR(
+      PCL_ERROR (
           "[pcl::registration::%s::setTargetNormals] Initialize the data container "
           "object by calling intializeDataContainer () before using this function.\n",
           getClassName().c_str());
       return;
     }
-    static_pointer_cast<DataContainer<PointT, NormalT>>(data_container_)
-        ->setTargetNormals(normals);
+    static_pointer_cast<DataContainer<PointT, NormalT>> (data_container_)
+        ->setTargetNormals (normals);
   }
 
   /** \brief Get the normals computed on the target point cloud */
@@ -249,13 +251,13 @@ public:
   getTargetNormals () const
   {
     if (!data_container_) {
-      PCL_ERROR(
+      PCL_ERROR (
           "[pcl::registration::%s::getTargetNormals] Initialize the data container "
           "object by calling intializeDataContainer () before using this function.\n",
           getClassName().c_str());
       return;
     }
-    return (static_pointer_cast<DataContainer<pcl::PointXYZ, NormalT>>(data_container_)
+    return (static_pointer_cast<DataContainer<pcl::PointXYZ, NormalT>> (data_container_)
                 ->getTargetNormals());
   }
 
@@ -272,9 +274,9 @@ public:
   {
     if (!data_container_)
       initializeDataContainer<PointXYZ, Normal>();
-    PointCloud<PointXYZ>::Ptr cloud(new PointCloud<PointXYZ>);
-    fromPCLPointCloud2(*cloud2, *cloud);
-    setInputSource<PointXYZ>(cloud);
+    PointCloud<PointXYZ>::Ptr cloud (new PointCloud<PointXYZ>);
+    fromPCLPointCloud2 (*cloud2, *cloud);
+    setInputSource<PointXYZ> (cloud);
   }
 
   /** \brief See if this rejector requires a target cloud */
@@ -290,9 +292,9 @@ public:
   {
     if (!data_container_)
       initializeDataContainer<PointXYZ, Normal>();
-    PointCloud<PointXYZ>::Ptr cloud(new PointCloud<PointXYZ>);
-    fromPCLPointCloud2(*cloud2, *cloud);
-    setInputTarget<PointXYZ>(cloud);
+    PointCloud<PointXYZ>::Ptr cloud (new PointCloud<PointXYZ>);
+    fromPCLPointCloud2 (*cloud2, *cloud);
+    setInputTarget<PointXYZ> (cloud);
   }
 
   /** \brief See if this rejector requires source normals */
@@ -308,9 +310,9 @@ public:
   {
     if (!data_container_)
       initializeDataContainer<PointXYZ, Normal>();
-    PointCloud<Normal>::Ptr cloud(new PointCloud<Normal>);
-    fromPCLPointCloud2(*cloud2, *cloud);
-    setInputNormals<PointXYZ, Normal>(cloud);
+    PointCloud<Normal>::Ptr cloud (new PointCloud<Normal>);
+    fromPCLPointCloud2 (*cloud2, *cloud);
+    setInputNormals<PointXYZ, Normal> (cloud);
   }
 
   /** \brief See if this rejector requires target normals*/
@@ -326,9 +328,9 @@ public:
   {
     if (!data_container_)
       initializeDataContainer<PointXYZ, Normal>();
-    PointCloud<Normal>::Ptr cloud(new PointCloud<Normal>);
-    fromPCLPointCloud2(*cloud2, *cloud);
-    setTargetNormals<PointXYZ, Normal>(cloud);
+    PointCloud<Normal>::Ptr cloud (new PointCloud<Normal>);
+    fromPCLPointCloud2 (*cloud2, *cloud);
+    setTargetNormals<PointXYZ, Normal> (cloud);
   }
 
 protected:
@@ -338,7 +340,7 @@ protected:
   inline void
   applyRejection (pcl::Correspondences& correspondences) override
   {
-    getRemainingCorrespondences(*input_correspondences_, correspondences);
+    getRemainingCorrespondences (*input_correspondences_, correspondences);
   }
 
   /** \brief The median distance threshold between two correspondent points in source

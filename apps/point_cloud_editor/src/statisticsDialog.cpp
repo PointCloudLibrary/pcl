@@ -40,20 +40,20 @@
 
 #include <pcl/apps/point_cloud_editor/statisticsDialog.h>
 
-StatisticsDialog::StatisticsDialog(QWidget*)
+StatisticsDialog::StatisticsDialog (QWidget*)
 {
   button_box_ = new QDialogButtonBox;
-  button_box_->addButton(tr("Hide"), QDialogButtonBox::AcceptRole);
-  connect(button_box_, SIGNAL(accepted()), this, SLOT(accept()));
+  button_box_->addButton (tr ("Hide"), QDialogButtonBox::AcceptRole);
+  connect (button_box_, SIGNAL (accepted()), this, SLOT (accept()));
 
-  stat_label_ = new QLabel(tr(""));
+  stat_label_ = new QLabel (tr (""));
   QVBoxLayout* main_layout_ = new QVBoxLayout;
-  main_layout_->addWidget(stat_label_);
-  main_layout_->addWidget(button_box_);
-  setLayout(main_layout_);
-  setWindowTitle(tr("Cloud Editor Statistics"));
-  connect(&timer_, SIGNAL(timeout()), this, SLOT(update()));
-  timer_.start(200);
+  main_layout_->addWidget (stat_label_);
+  main_layout_->addWidget (button_box_);
+  setLayout (main_layout_);
+  setWindowTitle (tr ("Cloud Editor Statistics"));
+  connect (&timer_, SIGNAL (timeout()), this, SLOT (update()));
+  timer_.start (200);
 }
 
 StatisticsDialog::~StatisticsDialog()
@@ -65,11 +65,11 @@ StatisticsDialog::~StatisticsDialog()
 void
 StatisticsDialog::update()
 {
-  stat_label_->setText(tr(Statistics::getStats().c_str()));
+  stat_label_->setText (tr (Statistics::getStats().c_str()));
 }
 
 void
 StatisticsDialog::accept()
 {
-  this->done(0);
+  this->done (0);
 }

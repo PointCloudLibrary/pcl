@@ -58,18 +58,18 @@ createPolygon (const typename pcl::PointCloud<PointT>::ConstPtr& cloud)
   vtkSmartPointer<vtkPoints> poly_points = vtkSmartPointer<vtkPoints>::New();
   vtkSmartPointer<vtkPolygon> polygon = vtkSmartPointer<vtkPolygon>::New();
 
-  poly_points->SetNumberOfPoints(cloud->size());
-  polygon->GetPointIds()->SetNumberOfIds(cloud->size());
+  poly_points->SetNumberOfPoints (cloud->size());
+  polygon->GetPointIds()->SetNumberOfIds (cloud->size());
 
   for (std::size_t i = 0; i < cloud->size(); ++i) {
-    poly_points->SetPoint(i, (*cloud)[i].x, (*cloud)[i].y, (*cloud)[i].z);
-    polygon->GetPointIds()->SetId(i, i);
+    poly_points->SetPoint (i, (*cloud)[i].x, (*cloud)[i].y, (*cloud)[i].z);
+    polygon->GetPointIds()->SetId (i, i);
   }
 
-  allocVtkUnstructuredGrid(poly_grid);
-  poly_grid->Allocate(1, 1);
-  poly_grid->InsertNextCell(polygon->GetCellType(), polygon->GetPointIds());
-  poly_grid->SetPoints(poly_points);
+  allocVtkUnstructuredGrid (poly_grid);
+  poly_grid->Allocate (1, 1);
+  poly_grid->InsertNextCell (polygon->GetCellType(), polygon->GetPointIds());
+  poly_grid->SetPoints (poly_points);
 
   return (poly_grid);
 }
@@ -85,27 +85,27 @@ createPolygon (const pcl::PlanarPolygon<PointT>& planar_polygon)
   vtkSmartPointer<vtkPoints> poly_points = vtkSmartPointer<vtkPoints>::New();
   vtkSmartPointer<vtkPolygon> polygon = vtkSmartPointer<vtkPolygon>::New();
 
-  poly_points->SetNumberOfPoints(planar_polygon.getContour().size() + 1);
-  polygon->GetPointIds()->SetNumberOfIds(planar_polygon.getContour().size() + 1);
+  poly_points->SetNumberOfPoints (planar_polygon.getContour().size() + 1);
+  polygon->GetPointIds()->SetNumberOfIds (planar_polygon.getContour().size() + 1);
 
   for (std::size_t i = 0; i < planar_polygon.getContour().size(); ++i) {
-    poly_points->SetPoint(i,
-                          planar_polygon.getContour()[i].x,
-                          planar_polygon.getContour()[i].y,
-                          planar_polygon.getContour()[i].z);
-    polygon->GetPointIds()->SetId(i, i);
+    poly_points->SetPoint (i,
+                           planar_polygon.getContour()[i].x,
+                           planar_polygon.getContour()[i].y,
+                           planar_polygon.getContour()[i].z);
+    polygon->GetPointIds()->SetId (i, i);
   }
 
   std::size_t closingContourId = planar_polygon.getContour().size();
   auto firstContour = planar_polygon.getContour()[0];
-  poly_points->SetPoint(
+  poly_points->SetPoint (
       closingContourId, firstContour.x, firstContour.y, firstContour.z);
-  polygon->GetPointIds()->SetId(closingContourId, closingContourId);
+  polygon->GetPointIds()->SetId (closingContourId, closingContourId);
 
-  allocVtkUnstructuredGrid(poly_grid);
-  poly_grid->Allocate(1, 1);
-  poly_grid->InsertNextCell(polygon->GetCellType(), polygon->GetPointIds());
-  poly_grid->SetPoints(poly_points);
+  allocVtkUnstructuredGrid (poly_grid);
+  poly_grid->Allocate (1, 1);
+  poly_grid->InsertNextCell (polygon->GetCellType(), polygon->GetPointIds());
+  poly_grid->SetPoints (poly_points);
 
   return (poly_grid);
 }

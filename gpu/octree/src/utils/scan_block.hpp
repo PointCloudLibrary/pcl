@@ -72,7 +72,7 @@ scan_block (volatile T* ptr, const unsigned int idx = threadIdx.x)
   const unsigned int warpid = idx >> 5;
 
   // Step 1: Intra - warp scan in each warp
-  T val = scan_warp<Kind>(ptr, idx);
+  T val = scan_warp<Kind> (ptr, idx);
 
   __syncthreads();
 
@@ -92,7 +92,7 @@ scan_block (volatile T* ptr, const unsigned int idx = threadIdx.x)
 
   // Step 3: Use 1st warp to scan per - warp results
   if (warpid == 0)
-    scan_warp<inclusive>(ptr, idx);
+    scan_warp<inclusive> (ptr, idx);
 
   __syncthreads();
 

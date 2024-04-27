@@ -46,9 +46,9 @@
 int
 main (int argc, char** argv)
 {
-  QApplication app(argc, argv);
+  QApplication app (argc, argv);
   pcl::ihs::OfflineIntegration oi;
-  QTimer::singleShot(0, &oi, SLOT(start()));
+  QTimer::singleShot (0, &oi, SLOT (start()));
   oi.show();
   return (QApplication::exec());
 }

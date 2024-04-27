@@ -77,10 +77,10 @@ public:
   /**
    * @param output_filename name of file to write
    */
-  CameraPoseWriter(const std::string& output_filename)
-  : output_filename_(output_filename)
+  CameraPoseWriter (const std::string& output_filename)
+  : output_filename_ (output_filename)
   {
-    out_stream_.open(output_filename_.c_str());
+    out_stream_.open (output_filename_.c_str());
   }
 
   ~CameraPoseWriter()
@@ -96,8 +96,8 @@ public:
   {
     if (out_stream_.good()) {
       // convert 3x4 affine transformation to quaternion and write to file
-      Eigen::Quaternionf q(pose.rotation());
-      Eigen::Vector3f t(pose.translation());
+      Eigen::Quaternionf q (pose.rotation());
+      Eigen::Vector3f t (pose.translation());
       // write translation , quaternion in a row
       out_stream_ << t[0] << "," << t[1] << "," << t[2] << "," << q.w() << "," << q.x()
                   << "," << q.y() << "," << q.z() << std::endl;

@@ -57,10 +57,10 @@ public:
   using CloudKdTree = pcl::search::Search<PointT>;
   using CloudKdTreePtr = typename pcl::search::Search<PointT>::Ptr;
 
-  SurfelSmoothing(float a_scale = 0.01)
+  SurfelSmoothing (float a_scale = 0.01)
   : PCLBase<PointT>()
-  , scale_(a_scale)
-  , scale_squared_(a_scale * a_scale)
+  , scale_ (a_scale)
+  , scale_squared_ (a_scale * a_scale)
   , normals_()
   , interm_cloud_()
   , interm_normals_()

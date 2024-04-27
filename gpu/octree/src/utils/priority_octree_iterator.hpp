@@ -47,7 +47,7 @@ struct OctreePriorityIteratorDevice {
 
   __device__ __forceinline__
   OctreePriorityIteratorDevice (const OctreeGlobalWithBox& octree_arg)
-  : octree(octree_arg)
+  : octree (octree_arg)
   {
     node_idx = 0;
     level = 0;
@@ -93,7 +93,7 @@ struct OctreePriorityIteratorDevice {
 
       int parent = octree.nodes[octree.parent[node_idx]];
       int parent_first = parent >> 8;
-      int parent_len = __popc(parent & 0xFF);
+      int parent_len = __popc (parent & 0xFF);
 
       int pos = node_idx - parent_first;
 

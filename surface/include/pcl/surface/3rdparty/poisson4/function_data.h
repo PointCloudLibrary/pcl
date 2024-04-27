@@ -66,8 +66,8 @@ public:
 #endif // BOUNDARY_CONDITIONS
   PPolynomial<Degree + 1>* baseFunctions;
 
-  FunctionData(void);
-  ~FunctionData(void);
+  FunctionData (void);
+  ~FunctionData (void);
 
   virtual void
   setDotTables (const int& flags);

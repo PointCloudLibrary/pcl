@@ -15,7 +15,7 @@ using PointCloudConstPtr = pcl::PointCloud<PointT>::ConstPtr;
 /* A simple class for capturing data from an OpenNI camera */
 class PCL_EXPORTS OpenNIFrameSource {
 public:
-  OpenNIFrameSource(const std::string& device_id = "");
+  OpenNIFrameSource (const std::string& device_id = "");
   ~OpenNIFrameSource();
 
   const PointCloudPtr

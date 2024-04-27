@@ -32,21 +32,21 @@ split (SequenceSequenceT& result, std::string const& in, const char* const delim
   result.clear();
   while (token_start < len) {
     // eat leading whitespace
-    token_start = in.find_first_not_of(delimiters, token_start);
+    token_start = in.find_first_not_of (delimiters, token_start);
     if (token_start == std::string::npos) {
       return; // nothing left but white space
     }
 
     // find the end of the token
-    const auto token_end = in.find_first_of(delimiters, token_start);
+    const auto token_end = in.find_first_of (delimiters, token_start);
 
     // push token
     if (token_end == std::string::npos) {
-      result.emplace_back(in.data() + token_start, len - token_start);
+      result.emplace_back (in.data() + token_start, len - token_start);
       return;
     }
     else {
-      result.emplace_back(in.data() + token_start, token_end - token_start);
+      result.emplace_back (in.data() + token_start, token_end - token_start);
     }
 
     // set up for next loop

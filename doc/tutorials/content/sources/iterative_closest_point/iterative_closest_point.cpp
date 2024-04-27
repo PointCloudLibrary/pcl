@@ -7,9 +7,9 @@
 int
 main ()
 {
-  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_in(
-      new pcl::PointCloud<pcl::PointXYZ>(5, 1));
-  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_out(new pcl::PointCloud<pcl::PointXYZ>);
+  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_in (
+      new pcl::PointCloud<pcl::PointXYZ> (5, 1));
+  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_out (new pcl::PointCloud<pcl::PointXYZ>);
 
   // Fill in the CloudIn data
   for (auto& point : *cloud_in) {
@@ -35,11 +35,11 @@ main ()
     std::cout << point << std::endl;
 
   pcl::IterativeClosestPoint<pcl::PointXYZ, pcl::PointXYZ> icp;
-  icp.setInputSource(cloud_in);
-  icp.setInputTarget(cloud_out);
+  icp.setInputSource (cloud_in);
+  icp.setInputTarget (cloud_out);
 
   pcl::PointCloud<pcl::PointXYZ> Final;
-  icp.align(Final);
+  icp.align (Final);
 
   std::cout << "has converged:" << icp.hasConverged()
             << " score: " << icp.getFitnessScore() << std::endl;

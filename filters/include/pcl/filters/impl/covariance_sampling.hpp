@@ -56,31 +56,31 @@ pcl::CovarianceSampling<PointT, PointNT>::initCompute()
     return false;
 
   if (num_samples_ > indices_->size()) {
-    PCL_ERROR("[pcl::CovarianceSampling::initCompute] The number of samples you asked "
-              "for (%d) is larger than the number of input indices (%lu)\n",
-              num_samples_,
-              indices_->size());
+    PCL_ERROR ("[pcl::CovarianceSampling::initCompute] The number of samples you asked "
+               "for (%d) is larger than the number of input indices (%lu)\n",
+               num_samples_,
+               indices_->size());
     return false;
   }
 
   // Prepare the point cloud by centering at the origin and then scaling the points such
   // that the average distance from the origin is 1.0 => rotations and translations will
   // have the same magnitude
-  Eigen::Vector3f centroid(0.f, 0.f, 0.f);
+  Eigen::Vector3f centroid (0.f, 0.f, 0.f);
   for (std::size_t p_i = 0; p_i < indices_->size(); ++p_i)
     centroid += (*input_)[(*indices_)[p_i]].getVector3fMap();
-  centroid /= static_cast<float>(indices_->size());
+  centroid /= static_cast<float> (indices_->size());
 
-  scaled_points_.resize(indices_->size());
+  scaled_points_.resize (indices_->size());
   double average_norm = 0.0;
   for (std::size_t p_i = 0; p_i < indices_->size(); ++p_i) {
     scaled_points_[p_i] = (*input_)[(*indices_)[p_i]].getVector3fMap() - centroid;
     average_norm += scaled_points_[p_i].norm();
   }
 
-  average_norm /= static_cast<double>(scaled_points_.size());
+  average_norm /= static_cast<double> (scaled_points_.size());
   for (auto& scaled_point : scaled_points_)
-    scaled_point /= static_cast<float>(average_norm);
+    scaled_point /= static_cast<float> (average_norm);
 
   return (true);
 }
@@ -91,19 +91,19 @@ double
 pcl::CovarianceSampling<PointT, PointNT>::computeConditionNumber()
 {
   Eigen::Matrix<double, 6, 6> covariance_matrix;
-  if (!computeCovarianceMatrix(covariance_matrix))
+  if (!computeCovarianceMatrix (covariance_matrix))
     return (-1.);
 
-  return computeConditionNumber(covariance_matrix);
+  return computeConditionNumber (covariance_matrix);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename PointNT>
 double
-pcl::CovarianceSampling<PointT, PointNT>::computeConditionNumber(
+pcl::CovarianceSampling<PointT, PointNT>::computeConditionNumber (
     const Eigen::Matrix<double, 6, 6>& covariance_matrix)
 {
-  const Eigen::SelfAdjointEigenSolver<Eigen::Matrix<double, 6, 6>> solver(
+  const Eigen::SelfAdjointEigenSolver<Eigen::Matrix<double, 6, 6>> solver (
       covariance_matrix, Eigen::EigenvaluesOnly);
   const double max_ev = solver.eigenvalues().maxCoeff();
   const double min_ev = solver.eigenvalues().minCoeff();
@@ -113,7 +113,7 @@ pcl::CovarianceSampling<PointT, PointNT>::computeConditionNumber(
 ///////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename PointNT>
 bool
-pcl::CovarianceSampling<PointT, PointNT>::computeCovarianceMatrix(
+pcl::CovarianceSampling<PointT, PointNT>::computeCovarianceMatrix (
     Eigen::Matrix<double, 6, 6>& covariance_matrix)
 {
   if (!initCompute())
@@ -122,15 +122,15 @@ pcl::CovarianceSampling<PointT, PointNT>::computeCovarianceMatrix(
   //--- Part A from the paper
   // Set up matrix F
   Eigen::Matrix<double, 6, Eigen::Dynamic> f_mat =
-      Eigen::Matrix<double, 6, Eigen::Dynamic>(6, indices_->size());
+      Eigen::Matrix<double, 6, Eigen::Dynamic> (6, indices_->size());
   for (std::size_t p_i = 0; p_i < scaled_points_.size(); ++p_i) {
-    f_mat.block<3, 1>(0, p_i) =
+    f_mat.block<3, 1> (0, p_i) =
         scaled_points_[p_i]
-            .cross((*input_normals_)[(*indices_)[p_i]].getNormalVector3fMap())
+            .cross ((*input_normals_)[(*indices_)[p_i]].getNormalVector3fMap())
             .template cast<double>();
-    f_mat.block<3, 1>(3, p_i) = (*input_normals_)[(*indices_)[p_i]]
-                                    .getNormalVector3fMap()
-                                    .template cast<double>();
+    f_mat.block<3, 1> (3, p_i) = (*input_normals_)[(*indices_)[p_i]]
+                                     .getNormalVector3fMap()
+                                     .template cast<double>();
   }
 
   // Compute the covariance matrix C and its 6 eigenvectors (initially complex, move
@@ -142,56 +142,57 @@ pcl::CovarianceSampling<PointT, PointNT>::computeCovarianceMatrix(
 ///////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename PointNT>
 void
-pcl::CovarianceSampling<PointT, PointNT>::applyFilter(Indices& sampled_indices)
+pcl::CovarianceSampling<PointT, PointNT>::applyFilter (Indices& sampled_indices)
 {
   Eigen::Matrix<double, 6, 6> c_mat;
   // Invokes initCompute()
-  if (!computeCovarianceMatrix(c_mat))
+  if (!computeCovarianceMatrix (c_mat))
     return;
 
-  const Eigen::SelfAdjointEigenSolver<Eigen::Matrix<double, 6, 6>> solver(c_mat);
+  const Eigen::SelfAdjointEigenSolver<Eigen::Matrix<double, 6, 6>> solver (c_mat);
   const Eigen::Matrix<double, 6, 6> x = solver.eigenvectors();
 
   //--- Part B from the paper
   /// TODO figure out how to fill the candidate_indices - see subsequent paper
   /// paragraphs
   std::vector<std::size_t> candidate_indices;
-  candidate_indices.resize(indices_->size());
+  candidate_indices.resize (indices_->size());
   for (std::size_t p_i = 0; p_i < candidate_indices.size(); ++p_i)
     candidate_indices[p_i] = p_i;
 
   // Compute the v 6-vectors
   using Vector6d = Eigen::Matrix<double, 6, 1>;
   std::vector<Vector6d, Eigen::aligned_allocator<Vector6d>> v;
-  v.resize(candidate_indices.size());
+  v.resize (candidate_indices.size());
   for (std::size_t p_i = 0; p_i < candidate_indices.size(); ++p_i) {
-    v[p_i].block<3, 1>(0, 0) =
+    v[p_i].block<3, 1> (0, 0) =
         scaled_points_[p_i]
-            .cross((*input_normals_)[(*indices_)[candidate_indices[p_i]]]
-                       .getNormalVector3fMap())
+            .cross ((*input_normals_)[(*indices_)[candidate_indices[p_i]]]
+                        .getNormalVector3fMap())
             .template cast<double>();
-    v[p_i].block<3, 1>(3, 0) = (*input_normals_)[(*indices_)[candidate_indices[p_i]]]
-                                   .getNormalVector3fMap()
-                                   .template cast<double>();
+    v[p_i].block<3, 1> (3, 0) = (*input_normals_)[(*indices_)[candidate_indices[p_i]]]
+                                    .getNormalVector3fMap()
+                                    .template cast<double>();
   }
 
   // Set up the lists to be sorted
   std::vector<std::list<std::pair<int, double>>> L;
-  L.resize(6);
+  L.resize (6);
 
   for (std::size_t i = 0; i < 6; ++i) {
     for (std::size_t p_i = 0; p_i < candidate_indices.size(); ++p_i)
-      L[i].push_back(std::make_pair(p_i, std::abs(v[p_i].dot(x.block<6, 1>(0, i)))));
+      L[i].push_back (
+          std::make_pair (p_i, std::abs (v[p_i].dot (x.block<6, 1> (0, i)))));
 
     // Sort in decreasing order
-    L[i].sort(sort_dot_list_function);
+    L[i].sort (sort_dot_list_function);
   }
 
   // Initialize the 6 t's
-  std::vector<double> t(6, 0.0);
+  std::vector<double> t (6, 0.0);
 
-  sampled_indices.resize(num_samples_);
-  std::vector<bool> point_sampled(candidate_indices.size(), false);
+  sampled_indices.resize (num_samples_);
+  std::vector<bool> point_sampled (candidate_indices.size(), false);
   // Now select the actual points
   for (std::size_t sample_i = 0; sample_i < num_samples_; ++sample_i) {
     // Find the most unconstrained dimension, i.e., the minimum t
@@ -212,7 +213,7 @@ pcl::CovarianceSampling<PointT, PointNT>::applyFilter(Indices& sampled_indices)
 
     // Update the running totals
     for (std::size_t i = 0; i < 6; ++i) {
-      double val = v[sampled_indices[sample_i]].dot(x.block<6, 1>(0, i));
+      double val = v[sampled_indices[sample_i]].dot (x.block<6, 1> (0, i));
       t[i] += val * val;
     }
   }
@@ -225,12 +226,12 @@ pcl::CovarianceSampling<PointT, PointNT>::applyFilter(Indices& sampled_indices)
 ///////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename PointNT>
 void
-pcl::CovarianceSampling<PointT, PointNT>::applyFilter(Cloud& output)
+pcl::CovarianceSampling<PointT, PointNT>::applyFilter (Cloud& output)
 {
   Indices sampled_indices;
-  applyFilter(sampled_indices);
+  applyFilter (sampled_indices);
 
-  output.resize(sampled_indices.size());
+  output.resize (sampled_indices.size());
   output.header = input_->header;
   output.height = 1;
   output.width = output.size();

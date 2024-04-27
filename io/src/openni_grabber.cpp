@@ -53,23 +53,23 @@
 using namespace std::chrono_literals;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-pcl::OpenNIGrabber::OpenNIGrabber(const std::string& device_id,
-                                  const Mode& depth_mode,
-                                  const Mode& image_mode)
-: rgb_focal_length_x_(std::numeric_limits<double>::quiet_NaN())
-, rgb_focal_length_y_(std::numeric_limits<double>::quiet_NaN())
-, rgb_principal_point_x_(std::numeric_limits<double>::quiet_NaN())
-, rgb_principal_point_y_(std::numeric_limits<double>::quiet_NaN())
-, depth_focal_length_x_(std::numeric_limits<double>::quiet_NaN())
-, depth_focal_length_y_(std::numeric_limits<double>::quiet_NaN())
-, depth_principal_point_x_(std::numeric_limits<double>::quiet_NaN())
-, depth_principal_point_y_(std::numeric_limits<double>::quiet_NaN())
+pcl::OpenNIGrabber::OpenNIGrabber (const std::string& device_id,
+                                   const Mode& depth_mode,
+                                   const Mode& image_mode)
+: rgb_focal_length_x_ (std::numeric_limits<double>::quiet_NaN())
+, rgb_focal_length_y_ (std::numeric_limits<double>::quiet_NaN())
+, rgb_principal_point_x_ (std::numeric_limits<double>::quiet_NaN())
+, rgb_principal_point_y_ (std::numeric_limits<double>::quiet_NaN())
+, depth_focal_length_x_ (std::numeric_limits<double>::quiet_NaN())
+, depth_focal_length_y_ (std::numeric_limits<double>::quiet_NaN())
+, depth_principal_point_x_ (std::numeric_limits<double>::quiet_NaN())
+, depth_principal_point_y_ (std::numeric_limits<double>::quiet_NaN())
 {
   // initialize driver
-  onInit(device_id, depth_mode, image_mode);
+  onInit (device_id, depth_mode, image_mode);
 
   if (!device_->hasDepthStream())
-    PCL_THROW_EXCEPTION(pcl::IOException, "Device does not provide 3D information.");
+    PCL_THROW_EXCEPTION (pcl::IOException, "Device does not provide 3D information.");
 
   depth_image_signal_ = createSignal<sig_cb_openni_depth_image>();
   ir_image_signal_ = createSignal<sig_cb_openni_ir_image>();
@@ -77,32 +77,32 @@ pcl::OpenNIGrabber::OpenNIGrabber(const std::string& device_id,
   point_cloud_i_signal_ = createSignal<sig_cb_openni_point_cloud_i>();
   ir_depth_image_signal_ = createSignal<sig_cb_openni_ir_depth_image>();
 
-  ir_sync_.addCallback(
+  ir_sync_.addCallback (
       [this] (const openni_wrapper::IRImage::Ptr& image,
               const openni_wrapper::DepthImage::Ptr& depth_image,
               unsigned long,
-              unsigned long) { irDepthImageCallback(image, depth_image); });
+              unsigned long) { irDepthImageCallback (image, depth_image); });
   if (device_->hasImageStream()) {
     // create callback signals
     image_signal_ = createSignal<sig_cb_openni_image>();
     image_depth_image_signal_ = createSignal<sig_cb_openni_image_depth_image>();
     point_cloud_rgb_signal_ = createSignal<sig_cb_openni_point_cloud_rgb>();
     point_cloud_rgba_signal_ = createSignal<sig_cb_openni_point_cloud_rgba>();
-    rgb_sync_.addCallback(
+    rgb_sync_.addCallback (
         [this] (const openni_wrapper::Image::Ptr& image,
                 const openni_wrapper::DepthImage::Ptr& depth_image,
                 unsigned long,
-                unsigned long) { imageDepthImageCallback(image, depth_image); });
-    auto* kinect = dynamic_cast<openni_wrapper::DeviceKinect*>(device_.get());
+                unsigned long) { imageDepthImageCallback (image, depth_image); });
+    auto* kinect = dynamic_cast<openni_wrapper::DeviceKinect*> (device_.get());
     if (kinect)
-      kinect->setDebayeringMethod(openni_wrapper::ImageBayerGRBG::EdgeAware);
+      kinect->setDebayeringMethod (openni_wrapper::ImageBayerGRBG::EdgeAware);
   }
 
   image_callback_handle =
-      device_->registerImageCallback(&OpenNIGrabber::imageCallback, *this);
+      device_->registerImageCallback (&OpenNIGrabber::imageCallback, *this);
   depth_callback_handle =
-      device_->registerDepthCallback(&OpenNIGrabber::depthCallback, *this);
-  ir_callback_handle = device_->registerIRCallback(&OpenNIGrabber::irCallback, *this);
+      device_->registerDepthCallback (&OpenNIGrabber::depthCallback, *this);
+  ir_callback_handle = device_->registerIRCallback (&OpenNIGrabber::irCallback, *this);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -112,13 +112,13 @@ pcl::OpenNIGrabber::~OpenNIGrabber() noexcept
     stop();
 
     // unregister callbacks
-    device_->unregisterDepthCallback(depth_callback_handle);
+    device_->unregisterDepthCallback (depth_callback_handle);
 
     if (device_->hasImageStream())
-      device_->unregisterImageCallback(image_callback_handle);
+      device_->unregisterImageCallback (image_callback_handle);
 
     if (device_->hasIRStream())
-      device_->unregisterIRCallback(ir_callback_handle);
+      device_->unregisterIRCallback (ir_callback_handle);
 
     // release the pointer to the device object
     device_.reset();
@@ -200,7 +200,7 @@ pcl::OpenNIGrabber::start()
       block_signals();
       if (device_->hasImageStream() && !device_->isDepthRegistered() &&
           device_->isDepthRegistrationSupported()) {
-        device_->setDepthRegistration(true);
+        device_->setDepthRegistration (true);
       }
       device_->startDepthStream();
       // startSynchronization ();
@@ -212,11 +212,11 @@ pcl::OpenNIGrabber::start()
     }
     running_ = true;
   } catch (openni_wrapper::OpenNIException& ex) {
-    PCL_THROW_EXCEPTION(pcl::IOException,
-                        "Could not start streams. Reason: " << ex.what());
+    PCL_THROW_EXCEPTION (pcl::IOException,
+                         "Could not start streams. Reason: " << ex.what());
   }
   // workaround, since the first frame is corrupted
-  std::this_thread::sleep_for(1s);
+  std::this_thread::sleep_for (1s);
   unblock_signals();
 }
 
@@ -236,8 +236,8 @@ pcl::OpenNIGrabber::stop()
 
     running_ = false;
   } catch (openni_wrapper::OpenNIException& ex) {
-    PCL_THROW_EXCEPTION(pcl::IOException,
-                        "Could not stop streams. Reason: " << ex.what());
+    PCL_THROW_EXCEPTION (pcl::IOException,
+                         "Could not stop streams. Reason: " << ex.what());
   }
 }
 
@@ -250,12 +250,12 @@ pcl::OpenNIGrabber::isRunning() const
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::OpenNIGrabber::onInit(const std::string& device_id,
-                           const Mode& depth_mode,
-                           const Mode& image_mode)
+pcl::OpenNIGrabber::onInit (const std::string& device_id,
+                            const Mode& depth_mode,
+                            const Mode& image_mode)
 {
   updateModeMaps(); // registering mapping from config modes to XnModes and vice versa
-  setupDevice(device_id, depth_mode, image_mode);
+  setupDevice (device_id, depth_mode, image_mode);
 
   rgb_frame_id_ = "/openni_rgb_optical_frame";
 
@@ -271,8 +271,8 @@ pcl::OpenNIGrabber::signalsChanged()
   checkDepthStreamRequired();
   checkIRStreamRequired();
   if (ir_required_ && image_required_)
-    PCL_THROW_EXCEPTION(pcl::IOException,
-                        "Can not provide IR stream and RGB stream at the same time.");
+    PCL_THROW_EXCEPTION (pcl::IOException,
+                         "Can not provide IR stream and RGB stream at the same time.");
 
   checkImageAndDepthSynchronizationRequired();
   if (running_)
@@ -288,73 +288,73 @@ pcl::OpenNIGrabber::getName() const
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::OpenNIGrabber::setupDevice(const std::string& device_id,
-                                const Mode& depth_mode,
-                                const Mode& image_mode)
+pcl::OpenNIGrabber::setupDevice (const std::string& device_id,
+                                 const Mode& depth_mode,
+                                 const Mode& image_mode)
 {
   // Initialize the openni device
   openni_wrapper::OpenNIDriver& driver = openni_wrapper::OpenNIDriver::getInstance();
 
   try {
-    if (pcl_fs::exists(device_id)) {
-      device_ = driver.createVirtualDevice(device_id, true, true);
+    if (pcl_fs::exists (device_id)) {
+      device_ = driver.createVirtualDevice (device_id, true, true);
     }
     else if (driver.getNumberDevices() == 0) {
-      PCL_THROW_EXCEPTION(pcl::IOException, "No devices connected.");
+      PCL_THROW_EXCEPTION (pcl::IOException, "No devices connected.");
     }
     else if (device_id[0] == '#') {
-      unsigned index = atoi(device_id.c_str() + 1);
+      unsigned index = atoi (device_id.c_str() + 1);
       // printf("[%s] searching for device with index = %d\n", getName().c_str(),
       // index);
-      device_ = driver.getDeviceByIndex(index - 1);
+      device_ = driver.getDeviceByIndex (index - 1);
     }
 #ifndef _WIN32
-    else if (device_id.find('@') != std::string::npos) {
-      std::size_t pos = device_id.find('@');
-      unsigned bus = atoi(device_id.substr(0, pos).c_str());
+    else if (device_id.find ('@') != std::string::npos) {
+      std::size_t pos = device_id.find ('@');
+      unsigned bus = atoi (device_id.substr (0, pos).c_str());
       unsigned address =
-          atoi(device_id.substr(pos + 1, device_id.length() - pos - 1).c_str());
+          atoi (device_id.substr (pos + 1, device_id.length() - pos - 1).c_str());
       // printf("[%s] searching for device with bus@address = %d@%d\n",
       // getName().c_str(), bus, address);
-      device_ = driver.getDeviceByAddress(static_cast<unsigned char>(bus),
-                                          static_cast<unsigned char>(address));
+      device_ = driver.getDeviceByAddress (static_cast<unsigned char> (bus),
+                                           static_cast<unsigned char> (address));
     }
 #endif
     else if (!device_id.empty()) {
       // printf("[%s] searching for device with serial number = %s\n",
       // getName().c_str(), device_id.c_str());
-      device_ = driver.getDeviceBySerialNumber(device_id);
+      device_ = driver.getDeviceBySerialNumber (device_id);
     }
     else {
-      device_ = driver.getDeviceByIndex(0);
+      device_ = driver.getDeviceByIndex (0);
     }
   } catch (const openni_wrapper::OpenNIException& exception) {
     if (!device_)
-      PCL_THROW_EXCEPTION(pcl::IOException,
-                          "No matching device found. " << exception.what())
+      PCL_THROW_EXCEPTION (pcl::IOException,
+                           "No matching device found. " << exception.what())
     else
-      PCL_THROW_EXCEPTION(pcl::IOException,
-                          "could not retrieve device. Reason " << exception.what())
+      PCL_THROW_EXCEPTION (pcl::IOException,
+                           "could not retrieve device. Reason " << exception.what())
   } catch (const pcl::IOException&) {
     throw;
   } catch (...) {
-    PCL_THROW_EXCEPTION(pcl::IOException, "unknown error occurred");
+    PCL_THROW_EXCEPTION (pcl::IOException, "unknown error occurred");
   }
 
   XnMapOutputMode depth_md;
   // Set the selected output mode
   if (depth_mode != OpenNI_Default_Mode) {
     XnMapOutputMode actual_depth_md;
-    if (!mapConfigMode2XnMode(depth_mode, depth_md) ||
-        !device_->findCompatibleDepthMode(depth_md, actual_depth_md))
-      PCL_THROW_EXCEPTION(pcl::IOException,
-                          "could not find compatible depth stream mode "
-                              << static_cast<int>(depth_mode));
+    if (!mapConfigMode2XnMode (depth_mode, depth_md) ||
+        !device_->findCompatibleDepthMode (depth_md, actual_depth_md))
+      PCL_THROW_EXCEPTION (pcl::IOException,
+                           "could not find compatible depth stream mode "
+                               << static_cast<int> (depth_mode));
 
     XnMapOutputMode current_depth_md = device_->getDepthOutputMode();
     if (current_depth_md.nXRes != actual_depth_md.nXRes ||
         current_depth_md.nYRes != actual_depth_md.nYRes)
-      device_->setDepthOutputMode(actual_depth_md);
+      device_->setDepthOutputMode (actual_depth_md);
   }
   else {
     depth_md = device_->getDefaultDepthMode();
@@ -367,16 +367,16 @@ pcl::OpenNIGrabber::setupDevice(const std::string& device_id,
     XnMapOutputMode image_md;
     if (image_mode != OpenNI_Default_Mode) {
       XnMapOutputMode actual_image_md;
-      if (!mapConfigMode2XnMode(image_mode, image_md) ||
-          !device_->findCompatibleImageMode(image_md, actual_image_md))
-        PCL_THROW_EXCEPTION(pcl::IOException,
-                            "could not find compatible image stream mode "
-                                << static_cast<int>(image_mode));
+      if (!mapConfigMode2XnMode (image_mode, image_md) ||
+          !device_->findCompatibleImageMode (image_md, actual_image_md))
+        PCL_THROW_EXCEPTION (pcl::IOException,
+                             "could not find compatible image stream mode "
+                                 << static_cast<int> (image_mode));
 
       XnMapOutputMode current_image_md = device_->getImageOutputMode();
       if (current_image_md.nXRes != actual_image_md.nXRes ||
           current_image_md.nYRes != actual_image_md.nYRes)
-        device_->setImageOutputMode(actual_image_md);
+        device_->setImageOutputMode (actual_image_md);
     }
     else {
       image_md = device_->getDefaultImageMode();
@@ -395,10 +395,10 @@ pcl::OpenNIGrabber::startSynchronization()
     if (device_->isSynchronizationSupported() && !device_->isSynchronized() &&
         device_->getImageOutputMode().nFPS == device_->getDepthOutputMode().nFPS &&
         device_->isImageStreamRunning() && device_->isDepthStreamRunning())
-      device_->setSynchronization(true);
+      device_->setSynchronization (true);
   } catch (const openni_wrapper::OpenNIException& exception) {
-    PCL_THROW_EXCEPTION(pcl::IOException,
-                        "Could not start synchronization " << exception.what());
+    PCL_THROW_EXCEPTION (pcl::IOException,
+                         "Could not start synchronization " << exception.what());
   }
 }
 
@@ -408,126 +408,126 @@ pcl::OpenNIGrabber::stopSynchronization()
 {
   try {
     if (device_->isSynchronizationSupported() && device_->isSynchronized())
-      device_->setSynchronization(false);
+      device_->setSynchronization (false);
   } catch (const openni_wrapper::OpenNIException& exception) {
-    PCL_THROW_EXCEPTION(pcl::IOException,
-                        "Could not start synchronization " << exception.what());
+    PCL_THROW_EXCEPTION (pcl::IOException,
+                         "Could not start synchronization " << exception.what());
   }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::OpenNIGrabber::imageCallback(openni_wrapper::Image::Ptr image, void*)
+pcl::OpenNIGrabber::imageCallback (openni_wrapper::Image::Ptr image, void*)
 {
   if (num_slots<sig_cb_openni_point_cloud_rgb>() > 0 ||
       num_slots<sig_cb_openni_point_cloud_rgba>() > 0 ||
       num_slots<sig_cb_openni_image_depth_image>() > 0)
-    rgb_sync_.add0(image, image->getTimeStamp());
+    rgb_sync_.add0 (image, image->getTimeStamp());
 
   if (image_signal_->num_slots() > 0)
-    image_signal_->operator()(image);
+    image_signal_->operator() (image);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::OpenNIGrabber::depthCallback(openni_wrapper::DepthImage::Ptr depth_image, void*)
+pcl::OpenNIGrabber::depthCallback (openni_wrapper::DepthImage::Ptr depth_image, void*)
 {
   if (num_slots<sig_cb_openni_point_cloud_rgb>() > 0 ||
       num_slots<sig_cb_openni_point_cloud_rgba>() > 0 ||
       num_slots<sig_cb_openni_image_depth_image>() > 0)
-    rgb_sync_.add1(depth_image, depth_image->getTimeStamp());
+    rgb_sync_.add1 (depth_image, depth_image->getTimeStamp());
 
   if (num_slots<sig_cb_openni_point_cloud_i>() > 0 ||
       num_slots<sig_cb_openni_ir_depth_image>() > 0)
-    ir_sync_.add1(depth_image, depth_image->getTimeStamp());
+    ir_sync_.add1 (depth_image, depth_image->getTimeStamp());
 
   if (depth_image_signal_->num_slots() > 0)
-    depth_image_signal_->operator()(depth_image);
+    depth_image_signal_->operator() (depth_image);
 
   if (point_cloud_signal_->num_slots() > 0)
-    point_cloud_signal_->operator()(convertToXYZPointCloud(depth_image));
+    point_cloud_signal_->operator() (convertToXYZPointCloud (depth_image));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::OpenNIGrabber::irCallback(openni_wrapper::IRImage::Ptr ir_image, void*)
+pcl::OpenNIGrabber::irCallback (openni_wrapper::IRImage::Ptr ir_image, void*)
 {
   if (num_slots<sig_cb_openni_point_cloud_i>() > 0 ||
       num_slots<sig_cb_openni_ir_depth_image>() > 0)
-    ir_sync_.add0(ir_image, ir_image->getTimeStamp());
+    ir_sync_.add0 (ir_image, ir_image->getTimeStamp());
 
   if (ir_image_signal_->num_slots() > 0)
-    ir_image_signal_->operator()(ir_image);
+    ir_image_signal_->operator() (ir_image);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::OpenNIGrabber::imageDepthImageCallback(
+pcl::OpenNIGrabber::imageDepthImageCallback (
     const openni_wrapper::Image::Ptr& image,
     const openni_wrapper::DepthImage::Ptr& depth_image)
 {
   // check if we have color point cloud slots
   if (point_cloud_rgb_signal_->num_slots() > 0) {
-    PCL_WARN("PointXYZRGB callbacks deprecated. Use PointXYZRGBA instead.\n");
-    point_cloud_rgb_signal_->operator()(
-        convertToXYZRGBPointCloud<pcl::PointXYZRGB>(image, depth_image));
+    PCL_WARN ("PointXYZRGB callbacks deprecated. Use PointXYZRGBA instead.\n");
+    point_cloud_rgb_signal_->operator() (
+        convertToXYZRGBPointCloud<pcl::PointXYZRGB> (image, depth_image));
   }
 
   if (point_cloud_rgba_signal_->num_slots() > 0)
-    point_cloud_rgba_signal_->operator()(
-        convertToXYZRGBPointCloud<pcl::PointXYZRGBA>(image, depth_image));
+    point_cloud_rgba_signal_->operator() (
+        convertToXYZRGBPointCloud<pcl::PointXYZRGBA> (image, depth_image));
 
   if (image_depth_image_signal_->num_slots() > 0) {
-    float constant = 1.0f / device_->getDepthFocalLength(depth_width_);
-    image_depth_image_signal_->operator()(image, depth_image, constant);
+    float constant = 1.0f / device_->getDepthFocalLength (depth_width_);
+    image_depth_image_signal_->operator() (image, depth_image, constant);
   }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::OpenNIGrabber::irDepthImageCallback(
+pcl::OpenNIGrabber::irDepthImageCallback (
     const openni_wrapper::IRImage::Ptr& ir_image,
     const openni_wrapper::DepthImage::Ptr& depth_image)
 {
   // check if we have color point cloud slots
   if (point_cloud_i_signal_->num_slots() > 0)
-    point_cloud_i_signal_->operator()(convertToXYZIPointCloud(ir_image, depth_image));
+    point_cloud_i_signal_->operator() (convertToXYZIPointCloud (ir_image, depth_image));
 
   if (ir_depth_image_signal_->num_slots() > 0) {
-    float constant = 1.0f / device_->getDepthFocalLength(depth_width_);
-    ir_depth_image_signal_->operator()(ir_image, depth_image, constant);
+    float constant = 1.0f / device_->getDepthFocalLength (depth_width_);
+    ir_depth_image_signal_->operator() (ir_image, depth_image, constant);
   }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 pcl::PointCloud<pcl::PointXYZ>::Ptr
-pcl::OpenNIGrabber::convertToXYZPointCloud(
+pcl::OpenNIGrabber::convertToXYZPointCloud (
     const openni_wrapper::DepthImage::Ptr& depth_image) const
 {
-  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
+  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
 
   cloud->height = depth_height_;
   cloud->width = depth_width_;
   cloud->is_dense = false;
 
-  cloud->points.resize(cloud->height * cloud->width);
+  cloud->points.resize (cloud->height * cloud->width);
 
-  float constant_x = 1.0f / device_->getDepthFocalLength(depth_width_);
-  float constant_y = 1.0f / device_->getDepthFocalLength(depth_width_);
-  float centerX = (static_cast<float>(cloud->width) - 1.f) / 2.f;
-  float centerY = (static_cast<float>(cloud->height) - 1.f) / 2.f;
+  float constant_x = 1.0f / device_->getDepthFocalLength (depth_width_);
+  float constant_y = 1.0f / device_->getDepthFocalLength (depth_width_);
+  float centerX = (static_cast<float> (cloud->width) - 1.f) / 2.f;
+  float centerY = (static_cast<float> (cloud->height) - 1.f) / 2.f;
 
-  if (std::isfinite(depth_focal_length_x_))
-    constant_x = 1.0f / static_cast<float>(depth_focal_length_x_);
+  if (std::isfinite (depth_focal_length_x_))
+    constant_x = 1.0f / static_cast<float> (depth_focal_length_x_);
 
-  if (std::isfinite(depth_focal_length_y_))
-    constant_y = 1.0f / static_cast<float>(depth_focal_length_y_);
+  if (std::isfinite (depth_focal_length_y_))
+    constant_y = 1.0f / static_cast<float> (depth_focal_length_y_);
 
-  if (std::isfinite(depth_principal_point_x_))
-    centerX = static_cast<float>(depth_principal_point_x_);
+  if (std::isfinite (depth_principal_point_x_))
+    centerX = static_cast<float> (depth_principal_point_x_);
 
-  if (std::isfinite(depth_principal_point_y_))
-    centerY = static_cast<float>(depth_principal_point_y_);
+  if (std::isfinite (depth_principal_point_y_))
+    centerY = static_cast<float> (depth_principal_point_y_);
 
   if (device_->isDepthRegistered())
     cloud->header.frame_id = rgb_frame_id_;
@@ -542,9 +542,9 @@ pcl::OpenNIGrabber::convertToXYZPointCloud(
       depth_image->getHeight() != depth_height_) {
     if (depth_buffer_size_ < depth_width_ * depth_height_) {
       depth_buffer_size_ = depth_width_ * depth_height_;
-      depth_buffer_.reset(new unsigned short[depth_buffer_size_]);
+      depth_buffer_.reset (new unsigned short[depth_buffer_size_]);
     }
-    depth_image->fillDepthImageRaw(depth_width_, depth_height_, depth_buffer_.get());
+    depth_image->fillDepthImageRaw (depth_width_, depth_height_, depth_buffer_.get());
     depth_map = depth_buffer_.get();
   }
 
@@ -561,8 +561,8 @@ pcl::OpenNIGrabber::convertToXYZPointCloud(
         continue;
       }
       pt.z = depth_map[depth_idx] * 0.001f;
-      pt.x = (static_cast<float>(u) - centerX) * pt.z * constant_x;
-      pt.y = (static_cast<float>(v) - centerY) * pt.z * constant_y;
+      pt.x = (static_cast<float> (u) - centerX) * pt.z * constant_x;
+      pt.y = (static_cast<float> (v) - centerY) * pt.z * constant_y;
     }
   }
   return (cloud);
@@ -571,57 +571,57 @@ pcl::OpenNIGrabber::convertToXYZPointCloud(
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 typename pcl::PointCloud<PointT>::Ptr
-pcl::OpenNIGrabber::convertToXYZRGBPointCloud(
+pcl::OpenNIGrabber::convertToXYZRGBPointCloud (
     const openni_wrapper::Image::Ptr& image,
     const openni_wrapper::DepthImage::Ptr& depth_image) const
 {
   unsigned char* rgb_buffer = rgb_array_.get();
-  typename pcl::PointCloud<PointT>::Ptr cloud(new pcl::PointCloud<PointT>);
+  typename pcl::PointCloud<PointT>::Ptr cloud (new pcl::PointCloud<PointT>);
 
   cloud->header.frame_id = rgb_frame_id_;
-  cloud->height = std::max(image_height_, depth_height_);
-  cloud->width = std::max(image_width_, depth_width_);
+  cloud->height = std::max (image_height_, depth_height_);
+  cloud->width = std::max (image_width_, depth_width_);
   cloud->is_dense = false;
 
-  cloud->points.resize(cloud->height * cloud->width);
+  cloud->points.resize (cloud->height * cloud->width);
 
   // float constant = 1.0f / device_->getImageFocalLength (depth_width_);
-  float constant_x = 1.0f / device_->getDepthFocalLength(depth_width_);
-  float constant_y = 1.0f / device_->getDepthFocalLength(depth_width_);
-  float centerX = (static_cast<float>(cloud->width) - 1.f) / 2.f;
-  float centerY = (static_cast<float>(cloud->height) - 1.f) / 2.f;
+  float constant_x = 1.0f / device_->getDepthFocalLength (depth_width_);
+  float constant_y = 1.0f / device_->getDepthFocalLength (depth_width_);
+  float centerX = (static_cast<float> (cloud->width) - 1.f) / 2.f;
+  float centerY = (static_cast<float> (cloud->height) - 1.f) / 2.f;
 
-  if (std::isfinite(depth_focal_length_x_))
-    constant_x = 1.0f / static_cast<float>(depth_focal_length_x_);
+  if (std::isfinite (depth_focal_length_x_))
+    constant_x = 1.0f / static_cast<float> (depth_focal_length_x_);
 
-  if (std::isfinite(depth_focal_length_y_))
-    constant_y = 1.0f / static_cast<float>(depth_focal_length_y_);
+  if (std::isfinite (depth_focal_length_y_))
+    constant_y = 1.0f / static_cast<float> (depth_focal_length_y_);
 
-  if (std::isfinite(depth_principal_point_x_))
-    centerX = static_cast<float>(depth_principal_point_x_);
+  if (std::isfinite (depth_principal_point_x_))
+    centerX = static_cast<float> (depth_principal_point_x_);
 
-  if (std::isfinite(depth_principal_point_y_))
-    centerY = static_cast<float>(depth_principal_point_y_);
+  if (std::isfinite (depth_principal_point_y_))
+    centerY = static_cast<float> (depth_principal_point_y_);
 
   const XnDepthPixel* depth_map = depth_image->getDepthMetaData().Data();
   if (depth_image->getWidth() != depth_width_ ||
       depth_image->getHeight() != depth_height_) {
     if (depth_buffer_size_ < depth_width_ * depth_height_) {
       depth_buffer_size_ = depth_width_ * depth_height_;
-      depth_buffer_.reset(new unsigned short[depth_buffer_size_]);
+      depth_buffer_.reset (new unsigned short[depth_buffer_size_]);
     }
 
-    depth_image->fillDepthImageRaw(depth_width_, depth_height_, depth_buffer_.get());
+    depth_image->fillDepthImageRaw (depth_width_, depth_height_, depth_buffer_.get());
     depth_map = depth_buffer_.get();
   }
 
   // here we need exact the size of the point cloud for a one-one correspondence!
   if (rgb_array_size_ < image_width_ * image_height_ * 3) {
     rgb_array_size_ = image_width_ * image_height_ * 3;
-    rgb_array_.reset(new unsigned char[rgb_array_size_]);
+    rgb_array_.reset (new unsigned char[rgb_array_size_]);
     rgb_buffer = rgb_array_.get();
   }
-  image->fillRGB(image_width_, image_height_, rgb_buffer, image_width_ * 3);
+  image->fillRGB (image_width_, image_height_, rgb_buffer, image_width_ * 3);
   float bad_point = std::numeric_limits<float>::quiet_NaN();
 
   // set xyz to Nan and rgb to 0 (black)
@@ -630,7 +630,7 @@ pcl::OpenNIGrabber::convertToXYZRGBPointCloud(
     pt.x = pt.y = pt.z = bad_point;
     pt.b = pt.g = pt.r = 0;
     pt.a = 0; // point has no color info -> alpha = min => transparent
-    cloud->points.assign(cloud->size(), pt);
+    cloud->points.assign (cloud->size(), pt);
   }
 
   // fill in XYZ values
@@ -649,8 +649,8 @@ pcl::OpenNIGrabber::convertToXYZRGBPointCloud(
           depth_map[value_idx] != depth_image->getNoSampleValue() &&
           depth_map[value_idx] != depth_image->getShadowValue()) {
         pt.z = depth_map[value_idx] * 0.001f;
-        pt.x = (static_cast<float>(u) - centerX) * pt.z * constant_x;
-        pt.y = (static_cast<float>(v) - centerY) * pt.z * constant_y;
+        pt.x = (static_cast<float> (u) - centerX) * pt.z * constant_x;
+        pt.y = (static_cast<float> (v) - centerY) * pt.z * constant_y;
       }
       else {
         pt.x = pt.y = pt.z = bad_point;
@@ -680,36 +680,36 @@ pcl::OpenNIGrabber::convertToXYZRGBPointCloud(
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 pcl::PointCloud<pcl::PointXYZI>::Ptr
-pcl::OpenNIGrabber::convertToXYZIPointCloud(
+pcl::OpenNIGrabber::convertToXYZIPointCloud (
     const openni_wrapper::IRImage::Ptr& ir_image,
     const openni_wrapper::DepthImage::Ptr& depth_image) const
 {
-  pcl::PointCloud<pcl::PointXYZI>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZI>);
+  pcl::PointCloud<pcl::PointXYZI>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZI>);
 
   cloud->header.frame_id = rgb_frame_id_;
   cloud->height = depth_height_;
   cloud->width = depth_width_;
   cloud->is_dense = false;
 
-  cloud->points.resize(cloud->height * cloud->width);
+  cloud->points.resize (cloud->height * cloud->width);
 
   // float constant = 1.0f / device_->getImageFocalLength (cloud->width);
-  float constant_x = 1.0f / device_->getImageFocalLength(cloud->width);
-  float constant_y = 1.0f / device_->getImageFocalLength(cloud->width);
-  float centerX = (static_cast<float>(cloud->width) - 1.f) / 2.f;
-  float centerY = (static_cast<float>(cloud->height) - 1.f) / 2.f;
+  float constant_x = 1.0f / device_->getImageFocalLength (cloud->width);
+  float constant_y = 1.0f / device_->getImageFocalLength (cloud->width);
+  float centerX = (static_cast<float> (cloud->width) - 1.f) / 2.f;
+  float centerY = (static_cast<float> (cloud->height) - 1.f) / 2.f;
 
-  if (std::isfinite(rgb_focal_length_x_))
-    constant_x = 1.0f / static_cast<float>(rgb_focal_length_x_);
+  if (std::isfinite (rgb_focal_length_x_))
+    constant_x = 1.0f / static_cast<float> (rgb_focal_length_x_);
 
-  if (std::isfinite(rgb_focal_length_y_))
-    constant_y = 1.0f / static_cast<float>(rgb_focal_length_y_);
+  if (std::isfinite (rgb_focal_length_y_))
+    constant_y = 1.0f / static_cast<float> (rgb_focal_length_y_);
 
-  if (std::isfinite(rgb_principal_point_x_))
-    centerX = static_cast<float>(rgb_principal_point_x_);
+  if (std::isfinite (rgb_principal_point_x_))
+    centerX = static_cast<float> (rgb_principal_point_x_);
 
-  if (std::isfinite(rgb_principal_point_y_))
-    centerY = static_cast<float>(rgb_principal_point_y_);
+  if (std::isfinite (rgb_principal_point_y_))
+    centerY = static_cast<float> (rgb_principal_point_y_);
 
   const XnDepthPixel* depth_map = depth_image->getDepthMetaData().Data();
   const XnIRPixel* ir_map = ir_image->getMetaData().Data();
@@ -718,14 +718,14 @@ pcl::OpenNIGrabber::convertToXYZIPointCloud(
       depth_image->getHeight() != depth_height_) {
     if (depth_buffer_size_ < depth_width_ * depth_height_) {
       depth_buffer_size_ = depth_width_ * depth_height_;
-      depth_buffer_.reset(new unsigned short[depth_buffer_size_]);
-      ir_buffer_.reset(new unsigned short[depth_buffer_size_]);
+      depth_buffer_.reset (new unsigned short[depth_buffer_size_]);
+      ir_buffer_.reset (new unsigned short[depth_buffer_size_]);
     }
 
-    depth_image->fillDepthImageRaw(depth_width_, depth_height_, depth_buffer_.get());
+    depth_image->fillDepthImageRaw (depth_width_, depth_height_, depth_buffer_.get());
     depth_map = depth_buffer_.get();
 
-    ir_image->fillRaw(depth_width_, depth_height_, ir_buffer_.get());
+    ir_image->fillRaw (depth_width_, depth_height_, ir_buffer_.get());
     ir_map = ir_buffer_.get();
   }
 
@@ -744,12 +744,12 @@ pcl::OpenNIGrabber::convertToXYZIPointCloud(
       }
       else {
         pt.z = depth_map[depth_idx] * 0.001f;
-        pt.x = (static_cast<float>(u) - centerX) * pt.z * constant_x;
-        pt.y = (static_cast<float>(v) - centerY) * pt.z * constant_y;
+        pt.x = (static_cast<float> (u) - centerX) * pt.z * constant_x;
+        pt.y = (static_cast<float> (v) - centerY) * pt.z * constant_y;
       }
 
       pt.data_c[0] = pt.data_c[1] = pt.data_c[2] = pt.data_c[3] = 0;
-      pt.intensity = static_cast<float>(ir_map[depth_idx]);
+      pt.intensity = static_cast<float> (ir_map[depth_idx]);
     }
   }
   return (cloud);
@@ -795,9 +795,9 @@ pcl::OpenNIGrabber::updateModeMaps()
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 bool
-pcl::OpenNIGrabber::mapConfigMode2XnMode(int mode, XnMapOutputMode& xnmode) const
+pcl::OpenNIGrabber::mapConfigMode2XnMode (int mode, XnMapOutputMode& xnmode) const
 {
-  auto it = config2xn_map_.find(mode);
+  auto it = config2xn_map_.find (mode);
   if (it != config2xn_map_.end()) {
     xnmode = it->second;
     return (true);
@@ -812,8 +812,8 @@ pcl::OpenNIGrabber::getAvailableDepthModes() const
   XnMapOutputMode dummy;
   std::vector<std::pair<int, XnMapOutputMode>> result;
   for (const auto& config2xn : config2xn_map_) {
-    if (device_->findCompatibleDepthMode(config2xn.second, dummy))
-      result.emplace_back(config2xn);
+    if (device_->findCompatibleDepthMode (config2xn.second, dummy))
+      result.emplace_back (config2xn);
   }
 
   return (result);
@@ -826,8 +826,8 @@ pcl::OpenNIGrabber::getAvailableImageModes() const
   XnMapOutputMode dummy;
   std::vector<std::pair<int, XnMapOutputMode>> result;
   for (const auto& config2xn : config2xn_map_) {
-    if (device_->findCompatibleImageMode(config2xn.second, dummy))
-      result.emplace_back(config2xn);
+    if (device_->findCompatibleImageMode (config2xn.second, dummy))
+      result.emplace_back (config2xn);
   }
 
   return (result);
@@ -837,7 +837,7 @@ pcl::OpenNIGrabber::getAvailableImageModes() const
 float
 pcl::OpenNIGrabber::getFramesPerSecond() const
 {
-  return (static_cast<float>(device_->getDepthOutputMode().nFPS));
+  return (static_cast<float> (device_->getDepthOutputMode().nFPS));
 }
 
 #endif

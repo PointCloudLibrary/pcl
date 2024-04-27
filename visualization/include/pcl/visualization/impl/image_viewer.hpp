@@ -53,7 +53,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename T>
 void
-pcl::visualization::ImageViewer::convertRGBCloudToUChar(
+pcl::visualization::ImageViewer::convertRGBCloudToUChar (
     const pcl::PointCloud<T>& cloud, boost::shared_array<unsigned char>& data)
 {
   int j = 0;
@@ -67,35 +67,35 @@ pcl::visualization::ImageViewer::convertRGBCloudToUChar(
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename T>
 void
-pcl::visualization::ImageViewer::addRGBImage(const pcl::PointCloud<T>& cloud,
-                                             const std::string& layer_id,
-                                             double opacity)
+pcl::visualization::ImageViewer::addRGBImage (const pcl::PointCloud<T>& cloud,
+                                              const std::string& layer_id,
+                                              double opacity)
 {
   if (data_size_ < cloud.width * cloud.height) {
     data_size_ = cloud.width * cloud.height * 3;
-    data_.reset(new unsigned char[data_size_]);
+    data_.reset (new unsigned char[data_size_]);
   }
 
-  convertRGBCloudToUChar(cloud, data_);
+  convertRGBCloudToUChar (cloud, data_);
 
-  return (addRGBImage(data_.get(), cloud.width, cloud.height, layer_id, opacity));
+  return (addRGBImage (data_.get(), cloud.width, cloud.height, layer_id, opacity));
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename T>
 void
-pcl::visualization::ImageViewer::showRGBImage(const pcl::PointCloud<T>& cloud,
-                                              const std::string& layer_id,
-                                              double opacity)
+pcl::visualization::ImageViewer::showRGBImage (const pcl::PointCloud<T>& cloud,
+                                               const std::string& layer_id,
+                                               double opacity)
 {
-  addRGBImage<T>(cloud, layer_id, opacity);
+  addRGBImage<T> (cloud, layer_id, opacity);
   render();
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename T>
 bool
-pcl::visualization::ImageViewer::addMask(
+pcl::visualization::ImageViewer::addMask (
     const typename pcl::PointCloud<T>::ConstPtr& image,
     const pcl::PointCloud<T>& mask,
     double r,
@@ -112,54 +112,55 @@ pcl::visualization::ImageViewer::addMask(
   // Check to see if this ID entry already exists (has it been already added to the
   // visualizer?)
   auto am_it =
-      std::find_if(layer_map_.begin(), layer_map_.end(), LayerComparator(layer_id));
+      std::find_if (layer_map_.begin(), layer_map_.end(), LayerComparator (layer_id));
   if (am_it == layer_map_.end()) {
-    PCL_DEBUG("[pcl::visualization::ImageViewer::addMask] No layer with ID'=%s' found. "
-              "Creating new one...\n",
-              layer_id.c_str());
-    am_it = createLayer(layer_id, getSize()[0] - 1, getSize()[1] - 1, opacity, false);
+    PCL_DEBUG (
+        "[pcl::visualization::ImageViewer::addMask] No layer with ID'=%s' found. "
+        "Creating new one...\n",
+        layer_id.c_str());
+    am_it = createLayer (layer_id, getSize()[0] - 1, getSize()[1] - 1, opacity, false);
   }
 
   // Construct a search object to get the camera parameters
   pcl::search::OrganizedNeighbor<T> search;
-  search.setInputCloud(image);
+  search.setInputCloud (image);
   std::vector<float> xy;
-  xy.reserve(mask.size() * 2);
+  xy.reserve (mask.size() * 2);
   for (std::size_t i = 0; i < mask.size(); ++i) {
     pcl::PointXY p_projected;
-    search.projectPoint(mask[i], p_projected);
+    search.projectPoint (mask[i], p_projected);
 
-    xy.push_back(p_projected.x);
-    xy.push_back(static_cast<float>(image->height) - p_projected.y);
+    xy.push_back (p_projected.x);
+    xy.push_back (static_cast<float> (image->height) - p_projected.y);
   }
 
   vtkSmartPointer<context_items::Points> points =
       vtkSmartPointer<context_items::Points>::New();
-  points->setColors(static_cast<unsigned char>(r * 255.0),
-                    static_cast<unsigned char>(g * 255.0),
-                    static_cast<unsigned char>(b * 255.0));
-  points->setOpacity(opacity);
-  points->set(xy);
-  am_it->actor->GetScene()->AddItem(points);
+  points->setColors (static_cast<unsigned char> (r * 255.0),
+                     static_cast<unsigned char> (g * 255.0),
+                     static_cast<unsigned char> (b * 255.0));
+  points->setOpacity (opacity);
+  points->set (xy);
+  am_it->actor->GetScene()->AddItem (points);
   return (true);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename T>
 bool
-pcl::visualization::ImageViewer::addMask(
+pcl::visualization::ImageViewer::addMask (
     const typename pcl::PointCloud<T>::ConstPtr& image,
     const pcl::PointCloud<T>& mask,
     const std::string& layer_id,
     double opacity)
 {
-  return (addMask(image, mask, 1.0, 0.0, 0.0, layer_id, opacity));
+  return (addMask (image, mask, 1.0, 0.0, 0.0, layer_id, opacity));
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename T>
 bool
-pcl::visualization::ImageViewer::addPlanarPolygon(
+pcl::visualization::ImageViewer::addPlanarPolygon (
     const typename pcl::PointCloud<T>::ConstPtr& image,
     const pcl::PlanarPolygon<T>& polygon,
     double r,
@@ -176,24 +177,24 @@ pcl::visualization::ImageViewer::addPlanarPolygon(
   // Check to see if this ID entry already exists (has it been already added to the
   // visualizer?)
   auto am_it =
-      std::find_if(layer_map_.begin(), layer_map_.end(), LayerComparator(layer_id));
+      std::find_if (layer_map_.begin(), layer_map_.end(), LayerComparator (layer_id));
   if (am_it == layer_map_.end()) {
-    PCL_DEBUG("[pcl::visualization::ImageViewer::addPlanarPolygon] No layer with "
-              "ID'=%s' found. Creating new one...\n",
-              layer_id.c_str());
-    am_it = createLayer(layer_id, getSize()[0] - 1, getSize()[1] - 1, opacity, false);
+    PCL_DEBUG ("[pcl::visualization::ImageViewer::addPlanarPolygon] No layer with "
+               "ID'=%s' found. Creating new one...\n",
+               layer_id.c_str());
+    am_it = createLayer (layer_id, getSize()[0] - 1, getSize()[1] - 1, opacity, false);
   }
 
   // Construct a search object to get the camera parameters and fill points
   pcl::search::OrganizedNeighbor<T> search;
-  search.setInputCloud(image);
+  search.setInputCloud (image);
   std::vector<float> xy;
-  xy.reserve((polygon.getContour().size() + 1) * 2);
+  xy.reserve ((polygon.getContour().size() + 1) * 2);
   for (std::size_t i = 0; i < polygon.getContour().size(); ++i) {
     pcl::PointXY p;
-    search.projectPoint(polygon.getContour()[i], p);
-    xy.push_back(p.x);
-    xy.push_back(p.y);
+    search.projectPoint (polygon.getContour()[i], p);
+    xy.push_back (p.x);
+    xy.push_back (p.y);
   }
 
   // Close the polygon
@@ -202,12 +203,12 @@ pcl::visualization::ImageViewer::addPlanarPolygon(
 
   vtkSmartPointer<context_items::Polygon> poly =
       vtkSmartPointer<context_items::Polygon>::New();
-  poly->setColors(static_cast<unsigned char>(r * 255.0),
-                  static_cast<unsigned char>(g * 255.0),
-                  static_cast<unsigned char>(b * 255.0));
-  poly->setOpacity(opacity);
-  poly->set(xy);
-  am_it->actor->GetScene()->AddItem(poly);
+  poly->setColors (static_cast<unsigned char> (r * 255.0),
+                   static_cast<unsigned char> (g * 255.0),
+                   static_cast<unsigned char> (b * 255.0));
+  poly->setOpacity (opacity);
+  poly->set (xy);
+  am_it->actor->GetScene()->AddItem (poly);
 
   return (true);
 }
@@ -215,19 +216,19 @@ pcl::visualization::ImageViewer::addPlanarPolygon(
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename T>
 bool
-pcl::visualization::ImageViewer::addPlanarPolygon(
+pcl::visualization::ImageViewer::addPlanarPolygon (
     const typename pcl::PointCloud<T>::ConstPtr& image,
     const pcl::PlanarPolygon<T>& polygon,
     const std::string& layer_id,
     double opacity)
 {
-  return (addPlanarPolygon(image, polygon, 1.0, 0.0, 0.0, layer_id, opacity));
+  return (addPlanarPolygon (image, polygon, 1.0, 0.0, 0.0, layer_id, opacity));
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename T>
 bool
-pcl::visualization::ImageViewer::addRectangle(
+pcl::visualization::ImageViewer::addRectangle (
     const typename pcl::PointCloud<T>::ConstPtr& image,
     const T& min_pt,
     const T& max_pt,
@@ -245,17 +246,17 @@ pcl::visualization::ImageViewer::addRectangle(
   // Check to see if this ID entry already exists (has it been already added to the
   // visualizer?)
   auto am_it =
-      std::find_if(layer_map_.begin(), layer_map_.end(), LayerComparator(layer_id));
+      std::find_if (layer_map_.begin(), layer_map_.end(), LayerComparator (layer_id));
   if (am_it == layer_map_.end()) {
-    PCL_DEBUG("[pcl::visualization::ImageViewer::addRectangle] No layer with ID'=%s' "
-              "found. Creating new one...\n",
-              layer_id.c_str());
-    am_it = createLayer(layer_id, getSize()[0] - 1, getSize()[1] - 1, opacity, false);
+    PCL_DEBUG ("[pcl::visualization::ImageViewer::addRectangle] No layer with ID'=%s' "
+               "found. Creating new one...\n",
+               layer_id.c_str());
+    am_it = createLayer (layer_id, getSize()[0] - 1, getSize()[1] - 1, opacity, false);
   }
 
   // Construct a search object to get the camera parameters
   pcl::search::OrganizedNeighbor<T> search;
-  search.setInputCloud(image);
+  search.setInputCloud (image);
   // Project the 8 corners
   T p1, p2, p3, p4, p5, p6, p7, p8;
   p1.x = min_pt.x;
@@ -283,15 +284,15 @@ pcl::visualization::ImageViewer::addRectangle(
   p8.y = max_pt.y;
   p8.z = max_pt.z;
 
-  std::vector<pcl::PointXY> pp_2d(8);
-  search.projectPoint(p1, pp_2d[0]);
-  search.projectPoint(p2, pp_2d[1]);
-  search.projectPoint(p3, pp_2d[2]);
-  search.projectPoint(p4, pp_2d[3]);
-  search.projectPoint(p5, pp_2d[4]);
-  search.projectPoint(p6, pp_2d[5]);
-  search.projectPoint(p7, pp_2d[6]);
-  search.projectPoint(p8, pp_2d[7]);
+  std::vector<pcl::PointXY> pp_2d (8);
+  search.projectPoint (p1, pp_2d[0]);
+  search.projectPoint (p2, pp_2d[1]);
+  search.projectPoint (p3, pp_2d[2]);
+  search.projectPoint (p4, pp_2d[3]);
+  search.projectPoint (p5, pp_2d[4]);
+  search.projectPoint (p6, pp_2d[5]);
+  search.projectPoint (p7, pp_2d[6]);
+  search.projectPoint (p8, pp_2d[7]);
 
   pcl::PointXY min_pt_2d, max_pt_2d;
   min_pt_2d.x = min_pt_2d.y = std::numeric_limits<float>::max();
@@ -307,17 +308,17 @@ pcl::visualization::ImageViewer::addRectangle(
     if (point.y > max_pt_2d.y)
       max_pt_2d.y = point.y;
   }
-  min_pt_2d.y = float(image->height) - min_pt_2d.y;
-  max_pt_2d.y = float(image->height) - max_pt_2d.y;
+  min_pt_2d.y = float (image->height) - min_pt_2d.y;
+  max_pt_2d.y = float (image->height) - max_pt_2d.y;
 
   vtkSmartPointer<context_items::Rectangle> rect =
       vtkSmartPointer<context_items::Rectangle>::New();
-  rect->setColors(static_cast<unsigned char>(255.0 * r),
-                  static_cast<unsigned char>(255.0 * g),
-                  static_cast<unsigned char>(255.0 * b));
-  rect->setOpacity(opacity);
-  rect->set(min_pt_2d.x, min_pt_2d.y, max_pt_2d.x, max_pt_2d.y);
-  am_it->actor->GetScene()->AddItem(rect);
+  rect->setColors (static_cast<unsigned char> (255.0 * r),
+                   static_cast<unsigned char> (255.0 * g),
+                   static_cast<unsigned char> (255.0 * b));
+  rect->setOpacity (opacity);
+  rect->set (min_pt_2d.x, min_pt_2d.y, max_pt_2d.x, max_pt_2d.y);
+  am_it->actor->GetScene()->AddItem (rect);
 
   return (true);
 }
@@ -325,20 +326,20 @@ pcl::visualization::ImageViewer::addRectangle(
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename T>
 bool
-pcl::visualization::ImageViewer::addRectangle(
+pcl::visualization::ImageViewer::addRectangle (
     const typename pcl::PointCloud<T>::ConstPtr& image,
     const T& min_pt,
     const T& max_pt,
     const std::string& layer_id,
     double opacity)
 {
-  return (addRectangle<T>(image, min_pt, max_pt, 0.0, 1.0, 0.0, layer_id, opacity));
+  return (addRectangle<T> (image, min_pt, max_pt, 0.0, 1.0, 0.0, layer_id, opacity));
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename T>
 bool
-pcl::visualization::ImageViewer::addRectangle(
+pcl::visualization::ImageViewer::addRectangle (
     const typename pcl::PointCloud<T>::ConstPtr& image,
     const pcl::PointCloud<T>& mask,
     double r,
@@ -355,20 +356,20 @@ pcl::visualization::ImageViewer::addRectangle(
   // Check to see if this ID entry already exists (has it been already added to the
   // visualizer?)
   auto am_it =
-      std::find_if(layer_map_.begin(), layer_map_.end(), LayerComparator(layer_id));
+      std::find_if (layer_map_.begin(), layer_map_.end(), LayerComparator (layer_id));
   if (am_it == layer_map_.end()) {
-    PCL_DEBUG("[pcl::visualization::ImageViewer::addRectangle] No layer with ID'=%s' "
-              "found. Creating new one...\n",
-              layer_id.c_str());
-    am_it = createLayer(layer_id, getSize()[0] - 1, getSize()[1] - 1, opacity, false);
+    PCL_DEBUG ("[pcl::visualization::ImageViewer::addRectangle] No layer with ID'=%s' "
+               "found. Creating new one...\n",
+               layer_id.c_str());
+    am_it = createLayer (layer_id, getSize()[0] - 1, getSize()[1] - 1, opacity, false);
   }
 
   // Construct a search object to get the camera parameters
   pcl::search::OrganizedNeighbor<T> search;
-  search.setInputCloud(image);
-  std::vector<pcl::PointXY> pp_2d(mask.size());
+  search.setInputCloud (image);
+  std::vector<pcl::PointXY> pp_2d (mask.size());
   for (std::size_t i = 0; i < mask.size(); ++i)
-    search.projectPoint(mask[i], pp_2d[i]);
+    search.projectPoint (mask[i], pp_2d[i]);
 
   pcl::PointXY min_pt_2d, max_pt_2d;
   min_pt_2d.x = min_pt_2d.y = std::numeric_limits<float>::max();
@@ -384,17 +385,17 @@ pcl::visualization::ImageViewer::addRectangle(
     if (point.y > max_pt_2d.y)
       max_pt_2d.y = point.y;
   }
-  min_pt_2d.y = float(image->height) - min_pt_2d.y;
-  max_pt_2d.y = float(image->height) - max_pt_2d.y;
+  min_pt_2d.y = float (image->height) - min_pt_2d.y;
+  max_pt_2d.y = float (image->height) - max_pt_2d.y;
 
   vtkSmartPointer<context_items::Rectangle> rect =
       vtkSmartPointer<context_items::Rectangle>::New();
-  rect->setColors(static_cast<unsigned char>(255.0 * r),
-                  static_cast<unsigned char>(255.0 * g),
-                  static_cast<unsigned char>(255.0 * b));
-  rect->setOpacity(opacity);
-  rect->set(min_pt_2d.x, min_pt_2d.y, max_pt_2d.x, max_pt_2d.y);
-  am_it->actor->GetScene()->AddItem(rect);
+  rect->setColors (static_cast<unsigned char> (255.0 * r),
+                   static_cast<unsigned char> (255.0 * g),
+                   static_cast<unsigned char> (255.0 * b));
+  rect->setOpacity (opacity);
+  rect->set (min_pt_2d.x, min_pt_2d.y, max_pt_2d.x, max_pt_2d.y);
+  am_it->actor->GetScene()->AddItem (rect);
 
   return (true);
 }
@@ -402,19 +403,19 @@ pcl::visualization::ImageViewer::addRectangle(
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename T>
 bool
-pcl::visualization::ImageViewer::addRectangle(
+pcl::visualization::ImageViewer::addRectangle (
     const typename pcl::PointCloud<T>::ConstPtr& image,
     const pcl::PointCloud<T>& mask,
     const std::string& layer_id,
     double opacity)
 {
-  return (addRectangle(image, mask, 0.0, 1.0, 0.0, layer_id, opacity));
+  return (addRectangle (image, mask, 0.0, 1.0, 0.0, layer_id, opacity));
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 bool
-pcl::visualization::ImageViewer::showCorrespondences(
+pcl::visualization::ImageViewer::showCorrespondences (
     const pcl::PointCloud<PointT>& source_img,
     const pcl::PointCloud<PointT>& target_img,
     const pcl::Correspondences& correspondences,
@@ -422,42 +423,42 @@ pcl::visualization::ImageViewer::showCorrespondences(
     const std::string& layer_id)
 {
   if (correspondences.empty()) {
-    PCL_DEBUG("[pcl::visualization::ImageViewer::addCorrespondences] An empty set of "
-              "correspondences given! Nothing to display.\n");
+    PCL_DEBUG ("[pcl::visualization::ImageViewer::addCorrespondences] An empty set of "
+               "correspondences given! Nothing to display.\n");
     return (false);
   }
 
   // Check to see if this ID entry already exists (has it been already added to the
   // visualizer?)
   auto am_it =
-      std::find_if(layer_map_.begin(), layer_map_.end(), LayerComparator(layer_id));
+      std::find_if (layer_map_.begin(), layer_map_.end(), LayerComparator (layer_id));
   if (am_it == layer_map_.end()) {
-    PCL_DEBUG("[pcl::visualization::ImageViewer::addCorrespondences] No layer with "
-              "ID='%s' found. Creating new one...\n",
-              layer_id.c_str());
-    am_it = createLayer(layer_id,
-                        source_img.width + target_img.width,
-                        std::max(source_img.height, target_img.height),
-                        1.0,
-                        false);
+    PCL_DEBUG ("[pcl::visualization::ImageViewer::addCorrespondences] No layer with "
+               "ID='%s' found. Creating new one...\n",
+               layer_id.c_str());
+    am_it = createLayer (layer_id,
+                         source_img.width + target_img.width,
+                         std::max (source_img.height, target_img.height),
+                         1.0,
+                         false);
   }
 
   int src_size = source_img.width * source_img.height * 3;
   int tgt_size = target_img.width * target_img.height * 3;
 
   // Set window size
-  setSize(source_img.width + target_img.width,
-          std::max(source_img.height, target_img.height));
+  setSize (source_img.width + target_img.width,
+           std::max (source_img.height, target_img.height));
 
   // Set data size
-  if (data_size_ < static_cast<std::size_t>(src_size + tgt_size)) {
+  if (data_size_ < static_cast<std::size_t> (src_size + tgt_size)) {
     data_size_ = src_size + tgt_size;
-    data_.reset(new unsigned char[data_size_]);
+    data_.reset (new unsigned char[data_size_]);
   }
 
   // Copy data in VTK format
   int j = 0;
-  for (std::size_t i = 0; i < std::max(source_img.height, target_img.height); ++i) {
+  for (std::size_t i = 0; i < std::max (source_img.height, target_img.height); ++i) {
     // Still need to copy the source?
     if (i < source_img.height) {
       for (std::size_t k = 0; k < source_img.width; ++k) {
@@ -467,7 +468,7 @@ pcl::visualization::ImageViewer::showCorrespondences(
       }
     }
     else {
-      std::fill_n(&data_[j], source_img.width * 3, 0);
+      std::fill_n (&data_[j], source_img.width * 3, 0);
       j += source_img.width * 3;
     }
 
@@ -480,42 +481,42 @@ pcl::visualization::ImageViewer::showCorrespondences(
       }
     }
     else {
-      std::fill_n(&data_[j], target_img.width * 3, 0);
+      std::fill_n (&data_[j], target_img.width * 3, 0);
       j += target_img.width * 3;
     }
   }
 
-  void* data = const_cast<void*>(reinterpret_cast<const void*>(data_.get()));
+  void* data = const_cast<void*> (reinterpret_cast<const void*> (data_.get()));
 
   vtkSmartPointer<vtkImageData> image = vtkSmartPointer<vtkImageData>::New();
-  image->SetDimensions(source_img.width + target_img.width,
-                       std::max(source_img.height, target_img.height),
-                       1);
-  image->AllocateScalars(VTK_UNSIGNED_CHAR, 3);
-  image->GetPointData()->GetScalars()->SetVoidArray(data, data_size_, 1);
+  image->SetDimensions (source_img.width + target_img.width,
+                        std::max (source_img.height, target_img.height),
+                        1);
+  image->AllocateScalars (VTK_UNSIGNED_CHAR, 3);
+  image->GetPointData()->GetScalars()->SetVoidArray (data, data_size_, 1);
   vtkSmartPointer<PCLContextImageItem> image_item =
       vtkSmartPointer<PCLContextImageItem>::New();
-  image_item->set(0, 0, image);
-  interactor_style_->adjustCamera(image, ren_);
-  am_it->actor->GetScene()->AddItem(image_item);
-  image_viewer_->SetSize(image->GetDimensions()[0], image->GetDimensions()[1]);
+  image_item->set (0, 0, image);
+  interactor_style_->adjustCamera (image, ren_);
+  am_it->actor->GetScene()->AddItem (image_item);
+  image_viewer_->SetSize (image->GetDimensions()[0], image->GetDimensions()[1]);
 
   // Draw lines between the best corresponding points
   for (std::size_t i = 0; i < correspondences.size(); i += nth) {
     double r, g, b;
-    getRandomColors(r, g, b);
-    auto u_r = static_cast<unsigned char>(255.0 * r);
-    auto u_g = static_cast<unsigned char>(255.0 * g);
-    auto u_b = static_cast<unsigned char>(255.0 * b);
+    getRandomColors (r, g, b);
+    auto u_r = static_cast<unsigned char> (255.0 * r);
+    auto u_g = static_cast<unsigned char> (255.0 * g);
+    auto u_b = static_cast<unsigned char> (255.0 * b);
     vtkSmartPointer<context_items::Circle> query_circle =
         vtkSmartPointer<context_items::Circle>::New();
-    query_circle->setColors(u_r, u_g, u_b);
+    query_circle->setColors (u_r, u_g, u_b);
     vtkSmartPointer<context_items::Circle> match_circle =
         vtkSmartPointer<context_items::Circle>::New();
-    match_circle->setColors(u_r, u_g, u_b);
+    match_circle->setColors (u_r, u_g, u_b);
     vtkSmartPointer<context_items::Line> line =
         vtkSmartPointer<context_items::Line>::New();
-    line->setColors(u_r, u_g, u_b);
+    line->setColors (u_r, u_g, u_b);
 
     float query_x = correspondences[i].index_query % source_img.width;
     float match_x =
@@ -523,13 +524,13 @@ pcl::visualization::ImageViewer::showCorrespondences(
     float query_y = getSize()[1] - correspondences[i].index_query / source_img.width;
     float match_y = getSize()[1] - correspondences[i].index_match / target_img.width;
 
-    query_circle->set(query_x, query_y, 3.0);
-    match_circle->set(match_x, match_y, 3.0);
-    line->set(query_x, query_y, match_x, match_y);
+    query_circle->set (query_x, query_y, 3.0);
+    match_circle->set (match_x, match_y, 3.0);
+    line->set (query_x, query_y, match_x, match_y);
 
-    am_it->actor->GetScene()->AddItem(query_circle);
-    am_it->actor->GetScene()->AddItem(match_circle);
-    am_it->actor->GetScene()->AddItem(line);
+    am_it->actor->GetScene()->AddItem (query_circle);
+    am_it->actor->GetScene()->AddItem (match_circle);
+    am_it->actor->GetScene()->AddItem (line);
   }
 
   return (true);

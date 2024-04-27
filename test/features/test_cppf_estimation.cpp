@@ -43,45 +43,45 @@
 #include <pcl/point_cloud.h>
 
 using PointT = pcl::PointXYZRGBNormal;
-static pcl::PointCloud<PointT>::Ptr cloud(new pcl::PointCloud<PointT>());
+static pcl::PointCloud<PointT>::Ptr cloud (new pcl::PointCloud<PointT>());
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TEST(PCL, CPPFEstimation)
+TEST (PCL, CPPFEstimation)
 {
   pcl::CPPFEstimation<PointT, PointT, pcl::CPPFSignature> cppf_estimation;
-  cppf_estimation.setInputCloud(cloud);
-  cppf_estimation.setInputNormals(cloud);
-  pcl::PointCloud<pcl::CPPFSignature>::Ptr feature_cloud(
+  cppf_estimation.setInputCloud (cloud);
+  cppf_estimation.setInputNormals (cloud);
+  pcl::PointCloud<pcl::CPPFSignature>::Ptr feature_cloud (
       new pcl::PointCloud<pcl::CPPFSignature>());
-  cppf_estimation.compute(*feature_cloud);
+  cppf_estimation.compute (*feature_cloud);
 
   // Check for size of output
-  EXPECT_EQ(feature_cloud->size(), cloud->size() * cloud->size());
+  EXPECT_EQ (feature_cloud->size(), cloud->size() * cloud->size());
 
   // Now check for a few values in the feature cloud
-  EXPECT_TRUE(std::isnan((*feature_cloud)[0].f1));
-  EXPECT_TRUE(std::isnan((*feature_cloud)[0].f2));
-  EXPECT_TRUE(std::isnan((*feature_cloud)[0].f3));
-  EXPECT_TRUE(std::isnan((*feature_cloud)[0].f4));
-  EXPECT_TRUE(std::isnan((*feature_cloud)[0].f5));
-  EXPECT_TRUE(std::isnan((*feature_cloud)[0].f6));
-  EXPECT_TRUE(std::isnan((*feature_cloud)[0].f7));
-  EXPECT_TRUE(std::isnan((*feature_cloud)[0].f8));
-  EXPECT_TRUE(std::isnan((*feature_cloud)[0].f9));
-  EXPECT_TRUE(std::isnan((*feature_cloud)[0].f10));
-  EXPECT_TRUE(std::isnan((*feature_cloud)[0].alpha_m));
+  EXPECT_TRUE (std::isnan ((*feature_cloud)[0].f1));
+  EXPECT_TRUE (std::isnan ((*feature_cloud)[0].f2));
+  EXPECT_TRUE (std::isnan ((*feature_cloud)[0].f3));
+  EXPECT_TRUE (std::isnan ((*feature_cloud)[0].f4));
+  EXPECT_TRUE (std::isnan ((*feature_cloud)[0].f5));
+  EXPECT_TRUE (std::isnan ((*feature_cloud)[0].f6));
+  EXPECT_TRUE (std::isnan ((*feature_cloud)[0].f7));
+  EXPECT_TRUE (std::isnan ((*feature_cloud)[0].f8));
+  EXPECT_TRUE (std::isnan ((*feature_cloud)[0].f9));
+  EXPECT_TRUE (std::isnan ((*feature_cloud)[0].f10));
+  EXPECT_TRUE (std::isnan ((*feature_cloud)[0].alpha_m));
 
-  EXPECT_NEAR((*feature_cloud)[2572].f1, 0.0568356, 1e-4);
-  EXPECT_NEAR((*feature_cloud)[2572].f2, -0.1988939, 1e-4);
-  EXPECT_NEAR((*feature_cloud)[2572].f3, 0.7854938, 1e-4);
-  EXPECT_NEAR((*feature_cloud)[2572].f4, 0.0533117, 1e-4);
-  EXPECT_NEAR((*feature_cloud)[2572].f5, 0.1875000, 1e-4);
-  EXPECT_NEAR((*feature_cloud)[2572].f6, 0.0733944, 1e-4);
-  EXPECT_NEAR((*feature_cloud)[2572].f7, 0.4274509, 1e-4);
-  EXPECT_NEAR((*feature_cloud)[2572].f8, 0.2380952, 1e-4);
-  EXPECT_NEAR((*feature_cloud)[2572].f9, 0.0619469, 1e-4);
-  EXPECT_NEAR((*feature_cloud)[2572].f10, 0.4431372, 1e-4);
-  EXPECT_NEAR((*feature_cloud)[2572].alpha_m, -1.847514, 1e-4);
+  EXPECT_NEAR ((*feature_cloud)[2572].f1, 0.0568356, 1e-4);
+  EXPECT_NEAR ((*feature_cloud)[2572].f2, -0.1988939, 1e-4);
+  EXPECT_NEAR ((*feature_cloud)[2572].f3, 0.7854938, 1e-4);
+  EXPECT_NEAR ((*feature_cloud)[2572].f4, 0.0533117, 1e-4);
+  EXPECT_NEAR ((*feature_cloud)[2572].f5, 0.1875000, 1e-4);
+  EXPECT_NEAR ((*feature_cloud)[2572].f6, 0.0733944, 1e-4);
+  EXPECT_NEAR ((*feature_cloud)[2572].f7, 0.4274509, 1e-4);
+  EXPECT_NEAR ((*feature_cloud)[2572].f8, 0.2380952, 1e-4);
+  EXPECT_NEAR ((*feature_cloud)[2572].f9, 0.0619469, 1e-4);
+  EXPECT_NEAR ((*feature_cloud)[2572].f10, 0.4431372, 1e-4);
+  EXPECT_NEAR ((*feature_cloud)[2572].alpha_m, -1.847514, 1e-4);
 }
 
 /* ---[ */
@@ -95,14 +95,14 @@ main (int argc, char** argv)
     return (1);
   }
 
-  if (pcl::io::loadPCDFile<PointT>(argv[1], *cloud) < 0) {
+  if (pcl::io::loadPCDFile<PointT> (argv[1], *cloud) < 0) {
     std::cerr << "Failed to read test file. Please download `colored_cloud.pcd` and "
                  "pass its path to the test."
               << std::endl;
     return (1);
   }
 
-  testing::InitGoogleTest(&argc, argv);
+  testing::InitGoogleTest (&argc, argv);
   return (RUN_ALL_TESTS());
 }
 /* ]--- */

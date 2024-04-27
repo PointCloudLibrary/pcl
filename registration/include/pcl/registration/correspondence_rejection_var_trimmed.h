@@ -104,8 +104,9 @@ public:
   setInputSource (const typename pcl::PointCloud<PointT>::ConstPtr& cloud)
   {
     if (!data_container_)
-      data_container_.reset(new DataContainer<PointT>);
-    static_pointer_cast<DataContainer<PointT>>(data_container_)->setInputSource(cloud);
+      data_container_.reset (new DataContainer<PointT>);
+    static_pointer_cast<DataContainer<PointT>> (data_container_)
+        ->setInputSource (cloud);
   }
 
   /** \brief Provide a target point cloud dataset (must contain XYZ
@@ -117,8 +118,9 @@ public:
   setInputTarget (const typename pcl::PointCloud<PointT>::ConstPtr& target)
   {
     if (!data_container_)
-      data_container_.reset(new DataContainer<PointT>);
-    static_pointer_cast<DataContainer<PointT>>(data_container_)->setInputTarget(target);
+      data_container_.reset (new DataContainer<PointT>);
+    static_pointer_cast<DataContainer<PointT>> (data_container_)
+        ->setInputTarget (target);
   }
 
   /** \brief See if this rejector requires source points */
@@ -132,9 +134,9 @@ public:
   void
   setSourcePoints (pcl::PCLPointCloud2::ConstPtr cloud2) override
   {
-    PointCloud<PointXYZ>::Ptr cloud(new PointCloud<PointXYZ>);
-    fromPCLPointCloud2(*cloud2, *cloud);
-    setInputSource<PointXYZ>(cloud);
+    PointCloud<PointXYZ>::Ptr cloud (new PointCloud<PointXYZ>);
+    fromPCLPointCloud2 (*cloud2, *cloud);
+    setInputSource<PointXYZ> (cloud);
   }
 
   /** \brief See if this rejector requires a target cloud */
@@ -148,9 +150,9 @@ public:
   void
   setTargetPoints (pcl::PCLPointCloud2::ConstPtr cloud2) override
   {
-    PointCloud<PointXYZ>::Ptr cloud(new PointCloud<PointXYZ>);
-    fromPCLPointCloud2(*cloud2, *cloud);
-    setInputTarget<PointXYZ>(cloud);
+    PointCloud<PointXYZ>::Ptr cloud (new PointCloud<PointXYZ>);
+    fromPCLPointCloud2 (*cloud2, *cloud);
+    setInputTarget<PointXYZ> (cloud);
   }
 
   /** \brief Provide a pointer to the search object used to find correspondences in
@@ -165,8 +167,8 @@ public:
   setSearchMethodTarget (const typename pcl::search::KdTree<PointT>::Ptr& tree,
                          bool force_no_recompute = false)
   {
-    static_pointer_cast<DataContainer<PointT>>(data_container_)
-        ->setSearchMethodTarget(tree, force_no_recompute);
+    static_pointer_cast<DataContainer<PointT>> (data_container_)
+        ->setSearchMethodTarget (tree, force_no_recompute);
   }
 
   /** \brief Get the computed inlier ratio used for thresholding in correspondence
@@ -218,7 +220,7 @@ protected:
   inline void
   applyRejection (pcl::Correspondences& correspondences) override
   {
-    getRemainingCorrespondences(*input_correspondences_, correspondences);
+    getRemainingCorrespondences (*input_correspondences_, correspondences);
   }
 
   /** \brief The inlier distance threshold (based on the computed trim factor) between

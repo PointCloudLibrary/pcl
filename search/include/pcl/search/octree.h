@@ -88,9 +88,9 @@ public:
   /** \brief Octree constructor.
    * \param[in] resolution octree resolution at lowest octree level
    */
-  Octree(const double resolution)
-  : Search<PointT>("Octree")
-  , tree_(new pcl::octree::OctreePointCloudSearch<PointT, LeafTWrap, BranchTWrap>(
+  Octree (const double resolution)
+  : Search<PointT> ("Octree")
+  , tree_ (new pcl::octree::OctreePointCloudSearch<PointT, LeafTWrap, BranchTWrap> (
         resolution))
   {}
 
@@ -105,7 +105,7 @@ public:
   setInputCloud (const PointCloudConstPtr& cloud)
   {
     tree_->deleteTree();
-    tree_->setInputCloud(cloud);
+    tree_->setInputCloud (cloud);
     tree_->addPointsFromInputCloud();
     input_ = cloud;
   }
@@ -119,7 +119,7 @@ public:
                  const IndicesConstPtr& indices) override
   {
     tree_->deleteTree();
-    tree_->setInputCloud(cloud, indices);
+    tree_->setInputCloud (cloud, indices);
     tree_->addPointsFromInputCloud();
     input_ = cloud;
     indices_ = indices;
@@ -142,7 +142,7 @@ public:
                   Indices& k_indices,
                   std::vector<float>& k_sqr_distances) const override
   {
-    return (tree_->nearestKSearch(cloud, index, k, k_indices, k_sqr_distances));
+    return (tree_->nearestKSearch (cloud, index, k, k_indices, k_sqr_distances));
   }
 
   /** \brief Search for the k-nearest neighbors for the given query point.
@@ -159,7 +159,7 @@ public:
                   Indices& k_indices,
                   std::vector<float>& k_sqr_distances) const override
   {
-    return (tree_->nearestKSearch(point, k, k_indices, k_sqr_distances));
+    return (tree_->nearestKSearch (point, k, k_indices, k_sqr_distances));
   }
 
   /** \brief Search for the k-nearest neighbors for the given query point (zero-copy).
@@ -179,7 +179,7 @@ public:
                   Indices& k_indices,
                   std::vector<float>& k_sqr_distances) const override
   {
-    return (tree_->nearestKSearch(index, k, k_indices, k_sqr_distances));
+    return (tree_->nearestKSearch (index, k, k_indices, k_sqr_distances));
   }
 
   /** \brief search for all neighbors of query point that are within a given radius.
@@ -199,10 +199,10 @@ public:
                 std::vector<float>& k_sqr_distances,
                 unsigned int max_nn = 0) const override
   {
-    tree_->radiusSearch(cloud, index, radius, k_indices, k_sqr_distances, max_nn);
+    tree_->radiusSearch (cloud, index, radius, k_indices, k_sqr_distances, max_nn);
     if (sorted_results_)
-      this->sortResults(k_indices, k_sqr_distances);
-    return (static_cast<int>(k_indices.size()));
+      this->sortResults (k_indices, k_sqr_distances);
+    return (static_cast<int> (k_indices.size()));
   }
 
   /** \brief search for all neighbors of query point that are within a given radius.
@@ -220,10 +220,10 @@ public:
                 std::vector<float>& k_sqr_distances,
                 unsigned int max_nn = 0) const override
   {
-    tree_->radiusSearch(p_q, radius, k_indices, k_sqr_distances, max_nn);
+    tree_->radiusSearch (p_q, radius, k_indices, k_sqr_distances, max_nn);
     if (sorted_results_)
-      this->sortResults(k_indices, k_sqr_distances);
-    return (static_cast<int>(k_indices.size()));
+      this->sortResults (k_indices, k_sqr_distances);
+    return (static_cast<int> (k_indices.size()));
   }
 
   /** \brief search for all neighbors of query point that are within a given radius.
@@ -242,10 +242,10 @@ public:
                 std::vector<float>& k_sqr_distances,
                 unsigned int max_nn = 0) const override
   {
-    tree_->radiusSearch(index, radius, k_indices, k_sqr_distances, max_nn);
+    tree_->radiusSearch (index, radius, k_indices, k_sqr_distances, max_nn);
     if (sorted_results_)
-      this->sortResults(k_indices, k_sqr_distances);
-    return (static_cast<int>(k_indices.size()));
+      this->sortResults (k_indices, k_sqr_distances);
+    return (static_cast<int> (k_indices.size()));
   }
 
   /** \brief Search for approximate nearest neighbor at the query point.
@@ -262,7 +262,7 @@ public:
                        float& sqr_distance)
   {
     return (
-        tree_->approxNearestSearch((*cloud)[query_index], result_index, sqr_distance));
+        tree_->approxNearestSearch ((*cloud)[query_index], result_index, sqr_distance));
   }
 
   /** \brief Search for approximate nearest neighbor at the query point.
@@ -273,7 +273,7 @@ public:
   inline void
   approxNearestSearch (const PointT& p_q, index_t& result_index, float& sqr_distance)
   {
-    return (tree_->approxNearestSearch(p_q, result_index, sqr_distance));
+    return (tree_->approxNearestSearch (p_q, result_index, sqr_distance));
   }
 
   /** \brief Search for approximate nearest neighbor at the query point.
@@ -286,7 +286,7 @@ public:
   inline void
   approxNearestSearch (index_t query_index, index_t& result_index, float& sqr_distance)
   {
-    return (tree_->approxNearestSearch(query_index, result_index, sqr_distance));
+    return (tree_->approxNearestSearch (query_index, result_index, sqr_distance));
   }
   /** \brief Search for points within rectangular search area
    * \param[in] min_pt lower corner of search area
@@ -299,7 +299,7 @@ public:
              const Eigen::Vector3f& max_pt,
              Indices& k_indices) const
   {
-    return (tree_->boxSearch(min_pt, max_pt, k_indices));
+    return (tree_->boxSearch (min_pt, max_pt, k_indices));
   }
 };
 } // namespace search

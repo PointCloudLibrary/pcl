@@ -55,16 +55,16 @@ public:
   /// @param copy_buffer_ptr a shared pointer pointing to the copy buffer.
   /// @param selection_ptr a shared pointer pointing to the selection object.
   /// @param cloud_ptr a shared pointer pointing to the cloud object.
-  CutCommand(CopyBufferPtr copy_buffer_ptr,
-             SelectionPtr selection_ptr,
-             const CloudPtr& cloud_ptr);
+  CutCommand (CopyBufferPtr copy_buffer_ptr,
+              SelectionPtr selection_ptr,
+              const CloudPtr& cloud_ptr);
 
   /// @brief Copy constructor - commands are non-copyable
-  CutCommand(const CutCommand&) = delete;
+  CutCommand (const CutCommand&) = delete;
 
   /// @brief Equal operator - commands are non-copyable
   CutCommand&
-  operator=(const CutCommand&) = delete;
+  operator= (const CutCommand&) = delete;
 
   /// @brief Destructor
   ~CutCommand() override;

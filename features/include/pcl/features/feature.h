@@ -122,12 +122,12 @@ public:
   using PointCloudOut = pcl::PointCloud<PointOutT>;
 
   using SearchMethod =
-      std::function<int(std::size_t, double, pcl::Indices&, std::vector<float>&)>;
-  using SearchMethodSurface = std::function<int(const PointCloudIn& cloud,
-                                                std::size_t index,
-                                                double,
-                                                pcl::Indices&,
-                                                std::vector<float>&)>;
+      std::function<int (std::size_t, double, pcl::Indices&, std::vector<float>&)>;
+  using SearchMethodSurface = std::function<int (const PointCloudIn& cloud,
+                                                 std::size_t index,
+                                                 double,
+                                                 pcl::Indices&,
+                                                 std::vector<float>&)>;
 
 public:
   /** \brief Empty constructor. */
@@ -136,10 +136,10 @@ public:
   , search_method_surface_()
   , surface_()
   , tree_()
-  , search_parameter_(0)
-  , search_radius_(0)
-  , k_(0)
-  , fake_surface_(false)
+  , search_parameter_ (0)
+  , search_radius_ (0)
+  , k_ (0)
+  , fake_surface_ (false)
   {}
 
   /** \brief Provide a pointer to a dataset to add additional information
@@ -288,7 +288,7 @@ protected:
                       pcl::Indices& indices,
                       std::vector<float>& distances) const
   {
-    return (search_method_surface_(*input_, index, parameter, indices, distances));
+    return (search_method_surface_ (*input_, index, parameter, indices, distances));
   }
 
   /** \brief Search for k-nearest neighbors using the spatial locator from
@@ -310,7 +310,7 @@ protected:
                       pcl::Indices& indices,
                       std::vector<float>& distances) const
   {
-    return (search_method_surface_(cloud, index, parameter, indices, distances));
+    return (search_method_surface_ (cloud, index, parameter, indices, distances));
   }
 
 private:
@@ -470,7 +470,7 @@ public:
   using PointCloudLRFConstPtr = typename PointCloudLRF::ConstPtr;
 
   /** \brief Empty constructor. */
-  FeatureWithLocalReferenceFrames() : frames_(), frames_never_defined_(true) {}
+  FeatureWithLocalReferenceFrames() : frames_(), frames_never_defined_ (true) {}
 
   /** \brief Default virtual destructor. */
   virtual ~FeatureWithLocalReferenceFrames() = default;

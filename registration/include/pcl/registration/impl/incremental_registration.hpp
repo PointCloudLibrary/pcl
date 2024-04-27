@@ -44,15 +44,15 @@ namespace registration {
 
 template <typename PointT, typename Scalar>
 IncrementalRegistration<PointT, Scalar>::IncrementalRegistration()
-: delta_transform_(Matrix4::Identity()), abs_transform_(Matrix4::Identity())
+: delta_transform_ (Matrix4::Identity()), abs_transform_ (Matrix4::Identity())
 {}
 
 template <typename PointT, typename Scalar>
 bool
-IncrementalRegistration<PointT, Scalar>::registerCloud(const PointCloudConstPtr& cloud,
-                                                       const Matrix4& delta_estimate)
+IncrementalRegistration<PointT, Scalar>::registerCloud (const PointCloudConstPtr& cloud,
+                                                        const Matrix4& delta_estimate)
 {
-  assert(registration_);
+  assert (registration_);
 
   if (!last_cloud_) {
     last_cloud_ = cloud;
@@ -60,12 +60,12 @@ IncrementalRegistration<PointT, Scalar>::registerCloud(const PointCloudConstPtr&
     return (true);
   }
 
-  registration_->setInputSource(cloud);
-  registration_->setInputTarget(last_cloud_);
+  registration_->setInputSource (cloud);
+  registration_->setInputTarget (last_cloud_);
 
   {
     pcl::PointCloud<PointT> p;
-    registration_->align(p, delta_estimate);
+    registration_->align (p, delta_estimate);
   }
 
   bool converged = registration_->hasConverged();
@@ -103,7 +103,7 @@ IncrementalRegistration<PointT, Scalar>::reset()
 
 template <typename PointT, typename Scalar>
 inline void
-IncrementalRegistration<PointT, Scalar>::setRegistration(RegistrationPtr registration)
+IncrementalRegistration<PointT, Scalar>::setRegistration (RegistrationPtr registration)
 {
   registration_ = registration;
 }

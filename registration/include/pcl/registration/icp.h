@@ -146,14 +146,14 @@ public:
   IterativeClosestPoint()
   {
     reg_name_ = "IterativeClosestPoint";
-    transformation_estimation_.reset(
+    transformation_estimation_.reset (
         new pcl::registration::
             TransformationEstimationSVD<PointSource, PointTarget, Scalar>());
-    correspondence_estimation_.reset(
+    correspondence_estimation_.reset (
         new pcl::registration::
             CorrespondenceEstimation<PointSource, PointTarget, Scalar>);
-    convergence_criteria_.reset(
-        new pcl::registration::DefaultConvergenceCriteria<Scalar>(
+    convergence_criteria_.reset (
+        new pcl::registration::DefaultConvergenceCriteria<Scalar> (
             nr_iterations_, transformation_, *correspondences_));
   };
 
@@ -165,12 +165,12 @@ public:
    *
    * \todo: remove deleted ctors and assignments operations after resolving the issue
    */
-  IterativeClosestPoint(const IterativeClosestPoint&) = delete;
-  IterativeClosestPoint(IterativeClosestPoint&&) = delete;
+  IterativeClosestPoint (const IterativeClosestPoint&) = delete;
+  IterativeClosestPoint (IterativeClosestPoint&&) = delete;
   IterativeClosestPoint&
-  operator=(const IterativeClosestPoint&) = delete;
+  operator= (const IterativeClosestPoint&) = delete;
   IterativeClosestPoint&
-  operator=(IterativeClosestPoint&&) = delete;
+  operator= (IterativeClosestPoint&&) = delete;
 
   /** \brief Empty destructor */
   ~IterativeClosestPoint() override = default;
@@ -198,7 +198,7 @@ public:
   void
   setInputSource (const PointCloudSourceConstPtr& cloud) override
   {
-    Registration<PointSource, PointTarget, Scalar>::setInputSource(cloud);
+    Registration<PointSource, PointTarget, Scalar>::setInputSource (cloud);
     const auto fields = pcl::getFields<PointSource>();
     source_has_normals_ = false;
     for (const auto& field : fields) {
@@ -231,7 +231,7 @@ public:
   void
   setInputTarget (const PointCloudTargetConstPtr& cloud) override
   {
-    Registration<PointSource, PointTarget, Scalar>::setInputTarget(cloud);
+    Registration<PointSource, PointTarget, Scalar>::setInputTarget (cloud);
     const auto fields = pcl::getFields<PointSource>();
     target_has_normals_ = false;
     for (const auto& field : fields) {
@@ -354,8 +354,8 @@ public:
   IterativeClosestPointWithNormals()
   {
     reg_name_ = "IterativeClosestPointWithNormals";
-    setUseSymmetricObjective(false);
-    setEnforceSameDirectionNormals(true);
+    setUseSymmetricObjective (false);
+    setEnforceSameDirectionNormals (true);
     // correspondence_rejectors_.add
   };
 
@@ -377,12 +377,12 @@ public:
               PointSource,
               PointTarget,
               Scalar>>();
-      symmetric_transformation_estimation->setEnforceSameDirectionNormals(
+      symmetric_transformation_estimation->setEnforceSameDirectionNormals (
           enforce_same_direction_normals_);
       transformation_estimation_ = symmetric_transformation_estimation;
     }
     else {
-      transformation_estimation_.reset(
+      transformation_estimation_.reset (
           new pcl::registration::TransformationEstimationPointToPlaneLLS<PointSource,
                                                                          PointTarget,
                                                                          Scalar>());
@@ -410,10 +410,10 @@ public:
     auto symmetric_transformation_estimation = dynamic_pointer_cast<
         pcl::registration::TransformationEstimationSymmetricPointToPlaneLLS<PointSource,
                                                                             PointTarget,
-                                                                            Scalar>>(
+                                                                            Scalar>> (
         transformation_estimation_);
     if (symmetric_transformation_estimation)
-      symmetric_transformation_estimation->setEnforceSameDirectionNormals(
+      symmetric_transformation_estimation->setEnforceSameDirectionNormals (
           enforce_same_direction_normals_);
   }
 

@@ -49,15 +49,15 @@ init ()
   for (int x = -20; x < 20; x++)
     for (int y = -20; y < 20; y++)
       for (int z = -20; z < 20; z++)
-        cloud.push_back(
-            Point(static_cast<float>(x), static_cast<float>(y), static_cast<float>(z)));
+        cloud.push_back (Point (
+            static_cast<float> (x), static_cast<float> (y), static_cast<float> (z)));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-TEST(PCL, Iterators)
+TEST (PCL, Iterators)
 {
-  Point mean(0, 0, 0);
+  Point mean (0, 0, 0);
 
   // Disable lint since this test is testing begin() and end()
   // NOLINTNEXTLINE(modernize-loop-convert)
@@ -66,16 +66,16 @@ TEST(PCL, Iterators)
       mean.data[i] += it->data[i];
   }
   for (int i = 0; i < 3; i++)
-    mean.data[i] /= static_cast<float>(cloud.size());
+    mean.data[i] /= static_cast<float> (cloud.size());
 
-  EXPECT_NEAR(mean.x, -0.5, 1e-4);
+  EXPECT_NEAR (mean.x, -0.5, 1e-4);
 }
 
 /* ---[ */
 int
 main (int argc, char** argv)
 {
-  testing::InitGoogleTest(&argc, argv);
+  testing::InitGoogleTest (&argc, argv);
   init();
   return (RUN_ALL_TESTS());
 }

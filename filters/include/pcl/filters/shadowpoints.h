@@ -67,8 +67,8 @@ public:
   using ConstPtr = shared_ptr<const ShadowPoints<PointT, NormalT>>;
 
   /** \brief Empty constructor. */
-  ShadowPoints(bool extract_removed_indices = false)
-  : FilterIndices<PointT>(extract_removed_indices), input_normals_()
+  ShadowPoints (bool extract_removed_indices = false)
+  : FilterIndices<PointT> (extract_removed_indices), input_normals_()
   {
     filter_name_ = "ShadowPoints";
   }

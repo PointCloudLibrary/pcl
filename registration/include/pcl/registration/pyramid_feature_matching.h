@@ -194,9 +194,9 @@ private:
   struct PyramidFeatureHistogramLevel {
     PyramidFeatureHistogramLevel() = default;
 
-    PyramidFeatureHistogramLevel(std::vector<std::size_t>& a_bins_per_dimension,
-                                 std::vector<float>& a_bin_step)
-    : bins_per_dimension(a_bins_per_dimension), bin_step(a_bin_step)
+    PyramidFeatureHistogramLevel (std::vector<std::size_t>& a_bins_per_dimension,
+                                  std::vector<float>& a_bin_step)
+    : bins_per_dimension (a_bins_per_dimension), bin_step (a_bin_step)
     {
       initializeHistogramLevel();
     }

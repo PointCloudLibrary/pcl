@@ -43,13 +43,13 @@
 namespace pcl {
 namespace device {
 __forceinline__ __device__ __host__ float3
-operator/(const float3& vec, float val)
+operator/ (const float3& vec, float val)
 {
-  return make_float3(vec.x / val, vec.y / val, vec.z / val);
+  return make_float3 (vec.x / val, vec.y / val, vec.z / val);
 }
 
 __device__ __host__ __forceinline__ float3&
-operator/=(float3& v, const float& value)
+operator/= (float3& v, const float& value)
 {
   v.x /= value;
   v.y /= value;
@@ -63,20 +63,20 @@ norm (const float3& v1, const float3& v2)
   float dx = v1.x - v2.x;
   float dy = v1.y - v2.y;
   float dz = v1.z - v2.z;
-  return sqrtf(dx * dx + dy * dy + dz * dz);
+  return sqrtf (dx * dx + dy * dy + dz * dz);
 }
 
 template <typename T>
 __device__ __forceinline__ float3
 tr (const T& v)
 {
-  return make_float3(v.x, v.y, v.z);
+  return make_float3 (v.x, v.y, v.z);
 }
 
 inline __host__ __device__ float3
 normalize (const float3& v)
 {
-  return v * inverse_norm(v);
+  return v * inverse_norm (v);
 }
 } // namespace device
 } // namespace pcl

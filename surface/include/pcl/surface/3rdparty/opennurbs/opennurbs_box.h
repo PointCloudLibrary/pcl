@@ -26,7 +26,7 @@ public:
   ON_Interval dz;
 
   ON_Box();
-  ON_Box(const ON_BoundingBox& bbox);
+  ON_Box (const ON_BoundingBox& bbox);
   ~ON_Box();
 
   bool

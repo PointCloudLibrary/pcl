@@ -17,9 +17,9 @@
 #if !defined(OPENNURBS_COMPRESS_INC_)
 #define OPENNURBS_COMPRESS_INC_
 
-typedef bool (*ON_StreamCallbackFunction)(void* context,
-                                          ON__UINT32 size,
-                                          const void* buffer);
+typedef bool (*ON_StreamCallbackFunction) (void* context,
+                                           ON__UINT32 size,
+                                           const void* buffer);
 
 class ON_CLASS ON_CompressStream {
 public:
@@ -144,7 +144,7 @@ public:
     input stream.
   */
   ON__UINT64
-  InSize () const;
+  InSize() const;
 
   /*
   Returns:
@@ -155,7 +155,7 @@ public:
     the total number of bytes in the entire output stream.
   */
   ON__UINT64
-  OutSize () const;
+  OutSize() const;
 
   /*
   Returns:
@@ -166,7 +166,7 @@ public:
     returned value is the 32-bit crc of the entire input stream.
   */
   ON__UINT32
-  InCRC () const;
+  InCRC() const;
 
   /*
   Returns:
@@ -177,7 +177,7 @@ public:
     the entire output stream.
   */
   ON__UINT32
-  OutCRC () const;
+  OutCRC() const;
 
 private:
   ON_StreamCallbackFunction m_out_callback_function;
@@ -194,9 +194,9 @@ private:
 
 private:
   // prohibit use - no implementation
-  ON_CompressStream(const ON_CompressStream&);
+  ON_CompressStream (const ON_CompressStream&);
   ON_CompressStream&
-  operator=(const ON_CompressStream&);
+  operator= (const ON_CompressStream&);
 };
 
 class ON_CLASS ON_UncompressStream {
@@ -322,7 +322,7 @@ public:
     input stream.
   */
   ON__UINT64
-  InSize () const;
+  InSize() const;
 
   /*
   Returns:
@@ -333,7 +333,7 @@ public:
     the total number of bytes in the entire output stream.
   */
   ON__UINT64
-  OutSize () const;
+  OutSize() const;
 
   /*
   Returns:
@@ -344,7 +344,7 @@ public:
     returned value is the 32-bit crc of the entire input stream.
   */
   ON__UINT32
-  InCRC () const;
+  InCRC() const;
 
   /*
   Returns:
@@ -355,7 +355,7 @@ public:
     the entire output stream.
   */
   ON__UINT32
-  OutCRC () const;
+  OutCRC() const;
 
 private:
   ON_StreamCallbackFunction m_out_callback_function;
@@ -372,9 +372,9 @@ private:
 
 private:
   // prohibit use - no implementation
-  ON_UncompressStream(const ON_UncompressStream&);
+  ON_UncompressStream (const ON_UncompressStream&);
   ON_UncompressStream&
-  operator=(const ON_UncompressStream&);
+  operator= (const ON_UncompressStream&);
 };
 
 #endif

@@ -40,18 +40,18 @@ private:
   bool compute_entropy_;
   vtkSmartPointer<vtkPolyData> polydata_;
   bool gen_organized_;
-  std::function<bool(const Eigen::Vector3f&)> campos_constraints_func_;
+  std::function<bool (const Eigen::Vector3f&)> campos_constraints_func_;
 
   struct camPosConstraintsAllTrue {
     bool
-    operator()(const Eigen::Vector3f& /*pos*/) const
+    operator() (const Eigen::Vector3f& /*pos*/) const
     {
       return true;
     };
   };
 
 public:
-  RenderViewsTesselatedSphere() : campos_constraints_func_(camPosConstraintsAllTrue())
+  RenderViewsTesselatedSphere() : campos_constraints_func_ (camPosConstraintsAllTrue())
   {
     resolution_ = 150;
     tesselation_level_ = 1;
@@ -63,7 +63,7 @@ public:
   }
 
   void
-  setCamPosConstraints (std::function<bool(const Eigen::Vector3f&)>& bb)
+  setCamPosConstraints (std::function<bool (const Eigen::Vector3f&)>& bb)
   {
     campos_constraints_func_ = bb;
   }

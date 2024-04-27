@@ -49,12 +49,12 @@ using namespace pcl::recognition;
 
 //============================================================================================================================================
 
-ModelLibrary::ModelLibrary(float pair_width,
-                           float voxel_size,
-                           float max_coplanarity_angle)
-: pair_width_(pair_width)
-, voxel_size_(voxel_size)
-, max_coplanarity_angle_(max_coplanarity_angle)
+ModelLibrary::ModelLibrary (float pair_width,
+                            float voxel_size,
+                            float max_coplanarity_angle)
+: pair_width_ (pair_width)
+, voxel_size_ (voxel_size)
+, max_coplanarity_angle_ (max_coplanarity_angle)
 {
   num_of_cells_[0] = 60;
   num_of_cells_[1] = 60;
@@ -64,13 +64,13 @@ ModelLibrary::ModelLibrary(float pair_width,
   float eps = 0.000001f; // To be sure that an angle of 0 or PI will not be excluded
                          // because it lies on the boundary of the voxel structure
   float bounds[6] = {-eps,
-                     static_cast<float>(M_PI) + eps,
+                     static_cast<float> (M_PI) + eps,
                      -eps,
-                     static_cast<float>(M_PI) + eps,
+                     static_cast<float> (M_PI) + eps,
                      -eps,
-                     static_cast<float>(M_PI) + eps};
+                     static_cast<float> (M_PI) + eps};
 
-  hash_table_.build(bounds, num_of_cells_);
+  hash_table_.build (bounds, num_of_cells_);
 }
 
 //============================================================================================================================================
@@ -106,33 +106,33 @@ ModelLibrary::removeAllModels()
 //============================================================================================================================================
 
 bool
-ModelLibrary::addModel(const PointCloudIn& points,
-                       const PointCloudN& normals,
-                       const std::string& object_name,
-                       float frac_of_points_for_registration,
-                       void* user_data)
+ModelLibrary::addModel (const PointCloudIn& points,
+                        const PointCloudN& normals,
+                        const std::string& object_name,
+                        float frac_of_points_for_registration,
+                        void* user_data)
 {
 #ifdef OBJ_REC_RANSAC_VERBOSE
-  printf("ModelLibrary::%s(): begin [%s]\n", __func__, object_name.c_str());
+  printf ("ModelLibrary::%s(): begin [%s]\n", __func__, object_name.c_str());
 #endif
 
   // Try to insert a new model entry
-  std::pair<std::map<std::string, Model*>::iterator, bool> result = models_.insert(
-      std::pair<std::string, Model*>(object_name, static_cast<Model*>(nullptr)));
+  std::pair<std::map<std::string, Model*>::iterator, bool> result = models_.insert (
+      std::pair<std::string, Model*> (object_name, static_cast<Model*> (nullptr)));
 
   // Check if 'object_name' is unique
   if (!result.second) {
-    print_error("'%s' already exists in the model library.\n", object_name.c_str());
+    print_error ("'%s' already exists in the model library.\n", object_name.c_str());
     return (false);
   }
 
   // It is unique -> create a new library model and save it
-  Model* new_model = new Model(points,
-                               normals,
-                               voxel_size_,
-                               object_name,
-                               frac_of_points_for_registration,
-                               user_data);
+  Model* new_model = new Model (points,
+                                normals,
+                                voxel_size_,
+                                object_name,
+                                frac_of_points_for_registration,
+                                user_data);
   result.first->second = new_model;
 
   const ORROctree& octree = new_model->getOctree();
@@ -146,18 +146,19 @@ ModelLibrary::addModel(const PointCloudIn& points,
 
     // Get all full leaves at the right distance to the current leaf
     inter_leaves.clear();
-    octree.getFullLeavesIntersectedBySphere(
+    octree.getFullLeavesIntersectedBySphere (
         node_data1->getPoint(), pair_width_, inter_leaves);
 
     for (const auto& inter_leaf : inter_leaves) {
       // Compute the hash table key
-      if (this->addToHashTable(new_model, node_data1, inter_leaf->getData()))
+      if (this->addToHashTable (new_model, node_data1, inter_leaf->getData()))
         ++num_of_pairs;
     }
   }
 
 #ifdef OBJ_REC_RANSAC_VERBOSE
-  printf("ModelLibrary::%s(): end [%i oriented point pairs]\n", __func__, num_of_pairs);
+  printf (
+      "ModelLibrary::%s(): end [%i oriented point pairs]\n", __func__, num_of_pairs);
 #endif
 
   return (true);
@@ -166,36 +167,36 @@ ModelLibrary::addModel(const PointCloudIn& points,
 //============================================================================================================================================
 
 bool
-ModelLibrary::addToHashTable(Model* model,
-                             const ORROctree::Node::Data* data1,
-                             const ORROctree::Node::Data* data2)
+ModelLibrary::addToHashTable (Model* model,
+                              const ORROctree::Node::Data* data1,
+                              const ORROctree::Node::Data* data2)
 {
   float key[3];
 
   // Compute the descriptor signature for the oriented point pair (i, j)
-  ObjRecRANSAC::compute_oriented_point_pair_signature(data1->getPoint(),
-                                                      data1->getNormal(),
-                                                      data2->getPoint(),
-                                                      data2->getNormal(),
-                                                      key);
+  ObjRecRANSAC::compute_oriented_point_pair_signature (data1->getPoint(),
+                                                       data1->getNormal(),
+                                                       data2->getPoint(),
+                                                       data2->getNormal(),
+                                                       key);
 
   if (ignore_coplanar_opps_) {
     // If the angle between one of the normals and the connecting vector is about 90°
     // and the angle between both normals is about 0° then the points are co-planar
     // ignore them!
-    if (std::fabs(key[0] - AUX_HALF_PI) < max_coplanarity_angle_ &&
+    if (std::fabs (key[0] - AUX_HALF_PI) < max_coplanarity_angle_ &&
         key[2] < max_coplanarity_angle_)
       return (false);
   }
 
   // Get the hash table cell containing 'key' (there is for sure such a cell since the
   // hash table bounds are large enough)
-  HashTableCell* cell = hash_table_.getVoxel(key);
+  HashTableCell* cell = hash_table_.getVoxel (key);
 
   // Insert the pair (data1,data2) belonging to 'model'
-  (*cell)[model].push_back(
-      std::pair<const ORROctree::Node::Data*, const ORROctree::Node::Data*>(data1,
-                                                                            data2));
+  (*cell)[model].push_back (
+      std::pair<const ORROctree::Node::Data*, const ORROctree::Node::Data*> (data1,
+                                                                             data2));
 
   return (true);
 }

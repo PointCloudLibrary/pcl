@@ -73,7 +73,7 @@ class OpenNISmoothing;
 void
 keyboardEventOccurred (const pcl::visualization::KeyboardEvent& event, void* stop_void)
 {
-  std::shared_ptr<bool> stop = *static_cast<std::shared_ptr<bool>*>(stop_void);
+  std::shared_ptr<bool> stop = *static_cast<std::shared_ptr<bool>*> (stop_void);
   if (event.getKeySym() == "s" && event.keyDown()) {
     *stop = !*stop;
     if (*stop)
@@ -90,42 +90,42 @@ public:
   using CloudPtr = typename Cloud::Ptr;
   using CloudConstPtr = typename Cloud::ConstPtr;
 
-  OpenNISmoothing(double search_radius,
-                  bool sqr_gauss_param_set,
-                  double sqr_gauss_param,
-                  int polynomial_order,
-                  const std::string& device_id = "")
-  : viewer("PCL OpenNI MLS Smoothing"), device_id_(device_id)
+  OpenNISmoothing (double search_radius,
+                   bool sqr_gauss_param_set,
+                   double sqr_gauss_param,
+                   int polynomial_order,
+                   const std::string& device_id = "")
+  : viewer ("PCL OpenNI MLS Smoothing"), device_id_ (device_id)
   {
     // Start 4 threads
-    smoother_.setSearchRadius(search_radius);
+    smoother_.setSearchRadius (search_radius);
     if (sqr_gauss_param_set)
-      smoother_.setSqrGaussParam(sqr_gauss_param);
-    smoother_.setPolynomialOrder(polynomial_order);
+      smoother_.setSqrGaussParam (sqr_gauss_param);
+    smoother_.setPolynomialOrder (polynomial_order);
 
-    typename pcl::search::KdTree<PointType>::Ptr tree(
+    typename pcl::search::KdTree<PointType>::Ptr tree (
         new typename pcl::search::KdTree<PointType>());
-    smoother_.setSearchMethod(tree);
+    smoother_.setSearchMethod (tree);
 
-    viewer.createViewPort(0.0, 0.0, 0.5, 1.0, viewport_input_);
-    viewer.setBackgroundColor(0, 0, 0, viewport_input_);
-    viewer.createViewPort(0.5, 0.0, 1.0, 1.0, viewport_smoothed_);
-    viewer.setBackgroundColor(0, 0, 0, viewport_smoothed_);
+    viewer.createViewPort (0.0, 0.0, 0.5, 1.0, viewport_input_);
+    viewer.setBackgroundColor (0, 0, 0, viewport_input_);
+    viewer.createViewPort (0.5, 0.0, 1.0, 1.0, viewport_smoothed_);
+    viewer.setBackgroundColor (0, 0, 0, viewport_smoothed_);
 
-    stop_computing_.reset(new bool(true));
+    stop_computing_.reset (new bool (true));
     cloud_.reset();
-    cloud_smoothed_.reset(new Cloud);
+    cloud_smoothed_.reset (new Cloud);
   }
 
   void
   cloud_cb_ (const CloudConstPtr& cloud)
   {
-    FPS_CALC("computation");
+    FPS_CALC ("computation");
 
     mtx_.lock();
     if (!*stop_computing_) {
-      smoother_.setInputCloud(cloud);
-      smoother_.process(*cloud_smoothed_);
+      smoother_.setInputCloud (cloud);
+      smoother_.process (*cloud_smoothed_);
     }
     cloud_ = cloud;
     mtx_.unlock();
@@ -134,28 +134,28 @@ public:
   void
   run ()
   {
-    pcl::OpenNIGrabber interface(device_id_);
+    pcl::OpenNIGrabber interface (device_id_);
 
-    std::function<void(const CloudConstPtr&)> f = [this] (const CloudConstPtr& cloud) {
-      cloud_cb_(cloud);
+    std::function<void (const CloudConstPtr&)> f = [this] (const CloudConstPtr& cloud) {
+      cloud_cb_ (cloud);
     };
-    boost::signals2::connection c = interface.registerCallback(f);
+    boost::signals2::connection c = interface.registerCallback (f);
 
-    viewer.registerKeyboardCallback(keyboardEventOccurred,
-                                    reinterpret_cast<void*>(&stop_computing_));
+    viewer.registerKeyboardCallback (keyboardEventOccurred,
+                                     reinterpret_cast<void*> (&stop_computing_));
 
     interface.start();
 
     while (!viewer.wasStopped()) {
-      FPS_CALC("visualization");
+      FPS_CALC ("visualization");
       viewer.spinOnce();
 
       if (cloud_ && mtx_.try_lock()) {
-        if (!viewer.updatePointCloud(cloud_, "input_cloud"))
-          viewer.addPointCloud(cloud_, "input_cloud", viewport_input_);
+        if (!viewer.updatePointCloud (cloud_, "input_cloud"))
+          viewer.addPointCloud (cloud_, "input_cloud", viewport_input_);
         if (!*stop_computing_ &&
-            !viewer.updatePointCloud(cloud_smoothed_, "smoothed_cloud"))
-          viewer.addPointCloud(cloud_smoothed_, "smoothed_cloud", viewport_smoothed_);
+            !viewer.updatePointCloud (cloud_smoothed_, "smoothed_cloud"))
+          viewer.addPointCloud (cloud_smoothed_, "smoothed_cloud", viewport_smoothed_);
         mtx_.unlock();
       }
     }
@@ -215,9 +215,9 @@ int
 main (int argc, char** argv)
 {
   /////////////////////////////////////////////////////////////////////
-  if (pcl::console::find_argument(argc, argv, "-h") != -1 ||
-      pcl::console::find_argument(argc, argv, "--help") != -1) {
-    usage(argv);
+  if (pcl::console::find_argument (argc, argv, "-h") != -1 ||
+      pcl::console::find_argument (argc, argv, "--help") != -1) {
+    usage (argv);
     return 1;
   }
 
@@ -227,31 +227,31 @@ main (int argc, char** argv)
   bool sqr_gauss_param_set = true;
   int polynomial_order = default_polynomial_order;
 
-  if (pcl::console::parse_argument(argc, argv, "-device_id", device_id) == -1 &&
+  if (pcl::console::parse_argument (argc, argv, "-device_id", device_id) == -1 &&
       argc > 1 && argv[1][0] != '-')
     device_id = argv[1];
-  pcl::console::parse_argument(argc, argv, "-search_radius", search_radius);
-  if (pcl::console::parse_argument(argc, argv, "-sqr_gauss_param", sqr_gauss_param) ==
+  pcl::console::parse_argument (argc, argv, "-search_radius", search_radius);
+  if (pcl::console::parse_argument (argc, argv, "-sqr_gauss_param", sqr_gauss_param) ==
       -1)
     sqr_gauss_param_set = false;
-  pcl::console::parse_argument(argc, argv, "-polynomial_order", polynomial_order);
+  pcl::console::parse_argument (argc, argv, "-polynomial_order", polynomial_order);
   /////////////////////////////////////////////////////////////////////
 
-  pcl::OpenNIGrabber grabber(device_id);
+  pcl::OpenNIGrabber grabber (device_id);
   if (grabber.providesCallback<pcl::OpenNIGrabber::sig_cb_openni_point_cloud_rgba>()) {
-    OpenNISmoothing<pcl::PointXYZRGBA> v(search_radius,
-                                         sqr_gauss_param_set,
-                                         sqr_gauss_param,
-                                         polynomial_order,
-                                         device_id);
+    OpenNISmoothing<pcl::PointXYZRGBA> v (search_radius,
+                                          sqr_gauss_param_set,
+                                          sqr_gauss_param,
+                                          polynomial_order,
+                                          device_id);
     v.run();
   }
   else {
-    OpenNISmoothing<pcl::PointXYZ> v(search_radius,
-                                     sqr_gauss_param_set,
-                                     sqr_gauss_param,
-                                     polynomial_order,
-                                     device_id);
+    OpenNISmoothing<pcl::PointXYZ> v (search_radius,
+                                      sqr_gauss_param_set,
+                                      sqr_gauss_param,
+                                      polynomial_order,
+                                      device_id);
     v.run();
   }
 

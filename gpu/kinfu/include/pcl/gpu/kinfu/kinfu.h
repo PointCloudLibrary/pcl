@@ -79,7 +79,7 @@ public:
    * \param[in] rows height of depth image
    * \param[in] cols width of depth image
    */
-  KinfuTracker(int rows = 480, int cols = 640);
+  KinfuTracker (int rows = 480, int cols = 640);
 
   /** \brief Sets Depth camera intrinsics
    * \param[in] fx focal length x
@@ -150,7 +150,7 @@ public:
    * \return true if can render 3D view.
    */
   bool
-  operator()(const DepthMap& depth, Eigen::Affine3f* hint = nullptr);
+  operator() (const DepthMap& depth, Eigen::Affine3f* hint = nullptr);
 
   /** \brief Processes next frame (both depth and color integration). Please call
    * initColorIntegration before invpoking this. \param[in] depth next depth frame with
@@ -158,7 +158,7 @@ public:
    * 3D view.
    */
   bool
-  operator()(const DepthMap& depth, const View& colors);
+  operator() (const DepthMap& depth, const View& colors);
 
   /** \brief Returns camera pose at given time, default the last pose
    * \param[in] time Index of frame for which camera pose is returned.

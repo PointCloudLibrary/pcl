@@ -66,7 +66,7 @@ public:
 
     struct IsBetter {
       bool
-      operator()(const PoseEstimate& pe1, const PoseEstimate& pe2) const
+      operator() (const PoseEstimate& pe1, const PoseEstimate& pe2) const
       {
         return pe1.score > pe2.score;
       }

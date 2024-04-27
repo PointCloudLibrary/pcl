@@ -67,7 +67,7 @@ public:
   float sigma_{1.0};
   KERNEL_ENUM kernel_type_;
 
-  kernel() : kernel_type_(GAUSSIAN) {}
+  kernel() : kernel_type_ (GAUSSIAN) {}
 
   /**
    *

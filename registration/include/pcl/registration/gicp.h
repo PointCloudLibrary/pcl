@@ -118,7 +118,7 @@ public:
   PCL_MAKE_ALIGNED_OPERATOR_NEW
 
   /** \brief Empty constructor. */
-  GeneralizedIterativeClosestPoint() : mahalanobis_(0)
+  GeneralizedIterativeClosestPoint() : mahalanobis_ (0)
   {
     min_number_correspondences_ = 4;
     reg_name_ = "GeneralizedIterativeClosestPoint";
@@ -130,7 +130,7 @@ public:
                                                const PointCloudTarget& cloud_tgt,
                                                const pcl::Indices& indices_tgt,
                                                Matrix4& transformation_matrix) {
-      estimateRigidTransformationNewton(
+      estimateRigidTransformationNewton (
           cloud_src, indices_src, cloud_tgt, indices_tgt, transformation_matrix);
     };
   }
@@ -143,7 +143,7 @@ public:
   {
 
     if (cloud->points.empty()) {
-      PCL_ERROR(
+      PCL_ERROR (
           "[pcl::%s::setInputSource] Invalid or empty point cloud dataset given!\n",
           getClassName().c_str());
       return;
@@ -153,7 +153,8 @@ public:
     for (std::size_t i = 0; i < input.size(); ++i)
       input[i].data[3] = 1.0;
 
-    pcl::IterativeClosestPoint<PointSource, PointTarget, Scalar>::setInputSource(cloud);
+    pcl::IterativeClosestPoint<PointSource, PointTarget, Scalar>::setInputSource (
+        cloud);
     input_covariances_.reset();
   }
 
@@ -175,7 +176,7 @@ public:
   inline void
   setInputTarget (const PointCloudTargetConstPtr& target) override
   {
-    pcl::IterativeClosestPoint<PointSource, PointTarget, Scalar>::setInputTarget(
+    pcl::IterativeClosestPoint<PointSource, PointTarget, Scalar>::setInputTarget (
         target);
     target_covariances_.reset();
   }
@@ -230,7 +231,7 @@ public:
   inline const Eigen::Matrix3d&
   mahalanobis (std::size_t index) const
   {
-    assert(index < mahalanobis_.size());
+    assert (index < mahalanobis_.size());
     return mahalanobis_[index];
   }
 
@@ -298,7 +299,7 @@ public:
                                                const PointCloudTarget& cloud_tgt,
                                                const pcl::Indices& indices_tgt,
                                                Matrix4& transformation_matrix) {
-      estimateRigidTransformationBFGS(
+      estimateRigidTransformationBFGS (
           cloud_src, indices_src, cloud_tgt, indices_tgt, transformation_matrix);
     };
   }
@@ -426,11 +427,11 @@ protected:
   matricesInnerProd (const Eigen::MatrixXd& mat1, const Eigen::MatrixXd& mat2) const
   {
     if (mat1.cols() != mat2.rows()) {
-      PCL_THROW_EXCEPTION(PCLException,
-                          "The two matrices' shapes don't match. "
-                          "They are ("
-                              << mat1.rows() << ", " << mat1.cols() << ") and ("
-                              << mat2.rows() << ", " << mat2.cols() << ")");
+      PCL_THROW_EXCEPTION (PCLException,
+                           "The two matrices' shapes don't match. "
+                           "They are ("
+                               << mat1.rows() << ", " << mat1.cols() << ") and ("
+                               << mat2.rows() << ", " << mat2.cols() << ")");
     }
     return (mat1 * mat2).trace();
   }
@@ -453,7 +454,7 @@ protected:
                       pcl::Indices& index,
                       std::vector<float>& distance)
   {
-    int k = tree_->nearestKSearch(query, 1, index, distance);
+    int k = tree_->nearestKSearch (query, 1, index, distance);
     if (k == 0)
       return (false);
     return (true);
@@ -465,11 +466,11 @@ protected:
 
   /// \brief optimization functor structure
   struct OptimizationFunctorWithIndices : public BFGSDummyFunctor<double, 6> {
-    OptimizationFunctorWithIndices(const GeneralizedIterativeClosestPoint* gicp)
-    : BFGSDummyFunctor<double, 6>(), gicp_(gicp)
+    OptimizationFunctorWithIndices (const GeneralizedIterativeClosestPoint* gicp)
+    : BFGSDummyFunctor<double, 6>(), gicp_ (gicp)
     {}
     double
-    operator()(const Vector6d& x) override;
+    operator() (const Vector6d& x) override;
     void
     df (const Vector6d& x, Vector6d& df) override;
     void
@@ -482,11 +483,11 @@ protected:
     const GeneralizedIterativeClosestPoint* gicp_;
   };
 
-  std::function<void(const pcl::PointCloud<PointSource>& cloud_src,
-                     const pcl::Indices& src_indices,
-                     const pcl::PointCloud<PointTarget>& cloud_tgt,
-                     const pcl::Indices& tgt_indices,
-                     Matrix4& transformation_matrix)>
+  std::function<void (const pcl::PointCloud<PointSource>& cloud_src,
+                      const pcl::Indices& src_indices,
+                      const pcl::PointCloud<PointTarget>& cloud_tgt,
+                      const pcl::Indices& tgt_indices,
+                      Matrix4& transformation_matrix)>
       rigid_transformation_estimation_;
 
 private:

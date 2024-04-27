@@ -64,10 +64,10 @@ public:
   using Ptr = pcl::shared_ptr<DeviceONI>;
   using ConstPtr = pcl::shared_ptr<const DeviceONI>;
 
-  DeviceONI(xn::Context& context,
-            const std::string& file_name,
-            bool repeat = false,
-            bool streaming = true);
+  DeviceONI (xn::Context& context,
+             const std::string& file_name,
+             bool repeat = false,
+             bool streaming = true);
   ~DeviceONI() noexcept override;
 
   void
@@ -121,12 +121,12 @@ protected:
 
   void
   PlayerThreadFunction ();
-  static void __stdcall NewONIDepthDataAvailable(xn::ProductionNode& node,
-                                                 void* cookie) noexcept;
-  static void __stdcall NewONIImageDataAvailable(xn::ProductionNode& node,
-                                                 void* cookie) noexcept;
-  static void __stdcall NewONIIRDataAvailable(xn::ProductionNode& node,
-                                              void* cookie) noexcept;
+  static void __stdcall NewONIDepthDataAvailable (xn::ProductionNode& node,
+                                                  void* cookie) noexcept;
+  static void __stdcall NewONIImageDataAvailable (xn::ProductionNode& node,
+                                                  void* cookie) noexcept;
+  static void __stdcall NewONIIRDataAvailable (xn::ProductionNode& node,
+                                               void* cookie) noexcept;
 
   xn::Player player_;
   std::thread player_thread_;

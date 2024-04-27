@@ -49,16 +49,16 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::visualization::getRandomColors(
+pcl::visualization::getRandomColors (
     double& r, double& g, double& b, double min, double max)
 {
   double sum;
   static unsigned stepRGBA = 100;
   do {
-    r = (rand() % stepRGBA) / static_cast<double>(stepRGBA);
-    while ((g = (rand() % stepRGBA) / static_cast<double>(stepRGBA)) == r) {
+    r = (rand() % stepRGBA) / static_cast<double> (stepRGBA);
+    while ((g = (rand() % stepRGBA) / static_cast<double> (stepRGBA)) == r) {
     }
-    while (((b = (rand() % stepRGBA) / static_cast<double>(stepRGBA)) == r) &&
+    while (((b = (rand() % stepRGBA) / static_cast<double> (stepRGBA)) == r) &&
            (b == g)) {
     }
     sum = r + g + b;
@@ -67,35 +67,35 @@ pcl::visualization::getRandomColors(
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::visualization::getRandomColors(pcl::RGB& rgb, double min, double max)
+pcl::visualization::getRandomColors (pcl::RGB& rgb, double min, double max)
 {
   double sum;
   static unsigned stepRGBA = 100;
   double r, g, b;
   do {
-    r = (rand() % stepRGBA) / static_cast<double>(stepRGBA);
-    while ((g = (rand() % stepRGBA) / static_cast<double>(stepRGBA)) == r) {
+    r = (rand() % stepRGBA) / static_cast<double> (stepRGBA);
+    while ((g = (rand() % stepRGBA) / static_cast<double> (stepRGBA)) == r) {
     }
-    while (((b = (rand() % stepRGBA) / static_cast<double>(stepRGBA)) == r) &&
+    while (((b = (rand() % stepRGBA) / static_cast<double> (stepRGBA)) == r) &&
            (b == g)) {
     }
     sum = r + g + b;
   } while (sum <= min || sum >= max);
-  rgb.r = static_cast<std::uint8_t>(r * 255.0);
-  rgb.g = static_cast<std::uint8_t>(g * 255.0);
-  rgb.b = static_cast<std::uint8_t>(b * 255.0);
+  rgb.r = static_cast<std::uint8_t> (r * 255.0);
+  rgb.g = static_cast<std::uint8_t> (g * 255.0);
+  rgb.b = static_cast<std::uint8_t> (b * 255.0);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 
 Eigen::Matrix4d
-pcl::visualization::vtkToEigen(vtkMatrix4x4* vtk_matrix)
+pcl::visualization::vtkToEigen (vtkMatrix4x4* vtk_matrix)
 {
   Eigen::Matrix4d eigen_matrix = Eigen::Matrix4d::Identity();
   for (int i = 0; i < 4; i++) {
     for (int j = 0; j < 4; j++) {
       // VTK
-      eigen_matrix(i, j) = vtk_matrix->GetElement(i, j);
+      eigen_matrix (i, j) = vtk_matrix->GetElement (i, j);
     }
   }
   return eigen_matrix;
@@ -103,19 +103,21 @@ pcl::visualization::vtkToEigen(vtkMatrix4x4* vtk_matrix)
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 Eigen::Vector2i
-pcl::visualization::worldToView(const Eigen::Vector4d& world_pt,
-                                const Eigen::Matrix4d& view_projection_matrix,
-                                int width,
-                                int height)
+pcl::visualization::worldToView (const Eigen::Vector4d& world_pt,
+                                 const Eigen::Matrix4d& view_projection_matrix,
+                                 int width,
+                                 int height)
 {
   // Transform world to clipping coordinates
-  Eigen::Vector4d world(view_projection_matrix * world_pt);
+  Eigen::Vector4d world (view_projection_matrix * world_pt);
   // Normalize w-component
   world /= world.w();
 
   // X/Y screen space coordinate
-  int screen_x = static_cast<int>(std::floor((((world.x() + 1) / 2.0) * width) + 0.5));
-  int screen_y = static_cast<int>(std::floor((((world.y() + 1) / 2.0) * height) + 0.5));
+  int screen_x =
+      static_cast<int> (std::floor ((((world.x() + 1) / 2.0) * width) + 0.5));
+  int screen_y =
+      static_cast<int> (std::floor ((((world.y() + 1) / 2.0) * height) + 0.5));
 
   // Calculate -world_pt.y () because the screen Y axis is oriented top->down, ie 0 is
   // top-left
@@ -127,13 +129,13 @@ pcl::visualization::worldToView(const Eigen::Vector4d& world_pt,
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::visualization::getViewFrustum(const Eigen::Matrix4d& view_projection_matrix,
-                                   double planes[24])
+pcl::visualization::getViewFrustum (const Eigen::Matrix4d& view_projection_matrix,
+                                    double planes[24])
 {
   // Set up the normals
   Eigen::Vector4d normals[6];
   for (int i = 0; i < 6; i++) {
-    normals[i] = Eigen::Vector4d(0.0, 0.0, 0.0, 1.0);
+    normals[i] = Eigen::Vector4d (0.0, 0.0, 0.0, 1.0);
 
     // if i is even set to -1, if odd set to +1
     normals[i](i / 2) = 1 - (i % 2) * 2;
@@ -147,8 +149,8 @@ pcl::visualization::getViewFrustum(const Eigen::Matrix4d& view_projection_matrix
     normals[i] = view_matrix * normals[i];
 
     double f =
-        1.0 / sqrt(normals[i].x() * normals[i].x() + normals[i].y() * normals[i].y() +
-                   normals[i].z() * normals[i].z());
+        1.0 / sqrt (normals[i].x() * normals[i].x() + normals[i].y() * normals[i].y() +
+                    normals[i].z() * normals[i].z());
 
     planes[4 * i + 0] = normals[i].x() * f;
     planes[4 * i + 1] = normals[i].y() * f;
@@ -158,9 +160,9 @@ pcl::visualization::getViewFrustum(const Eigen::Matrix4d& view_projection_matrix
 }
 
 int
-pcl::visualization::cullFrustum(double frustum[24],
-                                const Eigen::Vector3d& min_bb,
-                                const Eigen::Vector3d& max_bb)
+pcl::visualization::cullFrustum (double frustum[24],
+                                 const Eigen::Vector3d& min_bb,
+                                 const Eigen::Vector3d& max_bb)
 {
   int result = PCL_INSIDE_FRUSTUM;
 
@@ -174,17 +176,17 @@ pcl::visualization::cullFrustum(double frustum[24],
     // std::endl;
 
     //  Basic VFC algorithm
-    Eigen::Vector3d center((max_bb.x() - min_bb.x()) / 2 + min_bb.x(),
-                           (max_bb.y() - min_bb.y()) / 2 + min_bb.y(),
-                           (max_bb.z() - min_bb.z()) / 2 + min_bb.z());
+    Eigen::Vector3d center ((max_bb.x() - min_bb.x()) / 2 + min_bb.x(),
+                            (max_bb.y() - min_bb.y()) / 2 + min_bb.y(),
+                            (max_bb.z() - min_bb.z()) / 2 + min_bb.z());
 
-    Eigen::Vector3d radius(std::abs(static_cast<double>(max_bb.x() - center.x())),
-                           std::abs(static_cast<double>(max_bb.y() - center.y())),
-                           std::abs(static_cast<double>(max_bb.z() - center.z())));
+    Eigen::Vector3d radius (std::abs (static_cast<double> (max_bb.x() - center.x())),
+                            std::abs (static_cast<double> (max_bb.y() - center.y())),
+                            std::abs (static_cast<double> (max_bb.z() - center.z())));
 
     double m = (center.x() * a) + (center.y() * b) + (center.z() * c) + d;
-    double n = (radius.x() * std::abs(a)) + (radius.y() * std::abs(b)) +
-               (radius.z() * std::abs(c));
+    double n = (radius.x() * std::abs (a)) + (radius.y() * std::abs (b)) +
+               (radius.z() * std::abs (c));
 
     if (m + n < 0) {
       result = PCL_OUTSIDE_FRUSTUM;
@@ -257,22 +259,22 @@ int hull_vertex_table[43][7] = {
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 float
-pcl::visualization::viewScreenArea(const Eigen::Vector3d& eye,
-                                   const Eigen::Vector3d& min_bb,
-                                   const Eigen::Vector3d& max_bb,
-                                   const Eigen::Matrix4d& view_projection_matrix,
-                                   int width,
-                                   int height)
+pcl::visualization::viewScreenArea (const Eigen::Vector3d& eye,
+                                    const Eigen::Vector3d& min_bb,
+                                    const Eigen::Vector3d& max_bb,
+                                    const Eigen::Matrix4d& view_projection_matrix,
+                                    int width,
+                                    int height)
 {
   Eigen::Vector4d bounding_box[8];
-  bounding_box[0] = Eigen::Vector4d(min_bb.x(), min_bb.y(), min_bb.z(), 1.0);
-  bounding_box[1] = Eigen::Vector4d(max_bb.x(), min_bb.y(), min_bb.z(), 1.0);
-  bounding_box[2] = Eigen::Vector4d(max_bb.x(), max_bb.y(), min_bb.z(), 1.0);
-  bounding_box[3] = Eigen::Vector4d(min_bb.x(), max_bb.y(), min_bb.z(), 1.0);
-  bounding_box[4] = Eigen::Vector4d(min_bb.x(), min_bb.y(), max_bb.z(), 1.0);
-  bounding_box[5] = Eigen::Vector4d(max_bb.x(), min_bb.y(), max_bb.z(), 1.0);
-  bounding_box[6] = Eigen::Vector4d(max_bb.x(), max_bb.y(), max_bb.z(), 1.0);
-  bounding_box[7] = Eigen::Vector4d(min_bb.x(), max_bb.y(), max_bb.z(), 1.0);
+  bounding_box[0] = Eigen::Vector4d (min_bb.x(), min_bb.y(), min_bb.z(), 1.0);
+  bounding_box[1] = Eigen::Vector4d (max_bb.x(), min_bb.y(), min_bb.z(), 1.0);
+  bounding_box[2] = Eigen::Vector4d (max_bb.x(), max_bb.y(), min_bb.z(), 1.0);
+  bounding_box[3] = Eigen::Vector4d (min_bb.x(), max_bb.y(), min_bb.z(), 1.0);
+  bounding_box[4] = Eigen::Vector4d (min_bb.x(), min_bb.y(), max_bb.z(), 1.0);
+  bounding_box[5] = Eigen::Vector4d (max_bb.x(), min_bb.y(), max_bb.z(), 1.0);
+  bounding_box[6] = Eigen::Vector4d (max_bb.x(), max_bb.y(), max_bb.z(), 1.0);
+  bounding_box[7] = Eigen::Vector4d (min_bb.x(), max_bb.y(), max_bb.z(), 1.0);
 
   // Compute 6-bit code to classify eye with respect to the 6 defining planes
   int pos = ((eye.x() < bounding_box[0].x()))         // 1 = left
@@ -285,7 +287,7 @@ pcl::visualization::viewScreenArea(const Eigen::Vector3d& eye,
   // Look up number of vertices
   int num = hull_vertex_table[pos][6];
   if (num == 0) {
-    return (static_cast<float>(width * height));
+    return (static_cast<float> (width * height));
   }
   // return 0.0;
 
@@ -344,11 +346,11 @@ pcl::visualization::viewScreenArea(const Eigen::Vector3d& eye,
   Eigen::Vector2d dst[8];
   for (int i = 0; i < num; i++) {
     Eigen::Vector4d world_pt = bounding_box[hull_vertex_table[pos][i]];
-    Eigen::Vector2i screen_pt = pcl::visualization::worldToView(
+    Eigen::Vector2i screen_pt = pcl::visualization::worldToView (
         world_pt, view_projection_matrix, width, height);
     //    std::cout << "point[" << i << "]: " << screen_pt.x() << " " << screen_pt.y()
     //    << std::endl;
-    dst[i] = Eigen::Vector2d(screen_pt.x(), screen_pt.y());
+    dst[i] = Eigen::Vector2d (screen_pt.x(), screen_pt.y());
   }
 
   double sum = 0.0;
@@ -357,96 +359,96 @@ pcl::visualization::viewScreenArea(const Eigen::Vector3d& eye,
         (dst[i].x() - dst[(i + 1) % num].x()) * (dst[i].y() + dst[(i + 1) % num].y());
   }
 
-  return (std::abs(static_cast<float>(sum * 0.5f)));
+  return (std::abs (static_cast<float> (sum * 0.5f)));
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 bool
-pcl::visualization::getColormapLUT(LookUpTableRepresentationProperties colormap_type,
-                                   vtkSmartPointer<vtkLookupTable>& table)
+pcl::visualization::getColormapLUT (LookUpTableRepresentationProperties colormap_type,
+                                    vtkSmartPointer<vtkLookupTable>& table)
 {
   table = vtkSmartPointer<vtkLookupTable>::New();
   switch (colormap_type) {
   case PCL_VISUALIZER_LUT_JET: {
-    table->SetHueRange(0, 0.667);
-    table->SetSaturationRange(1, 1);
-    table->SetAlphaRange(1, 1);
+    table->SetHueRange (0, 0.667);
+    table->SetSaturationRange (1, 1);
+    table->SetAlphaRange (1, 1);
     break;
   }
 
   case PCL_VISUALIZER_LUT_JET_INVERSE: {
-    table->SetHueRange(0.667, 0);
-    table->SetSaturationRange(1, 1);
-    table->SetAlphaRange(1, 1);
+    table->SetHueRange (0.667, 0);
+    table->SetSaturationRange (1, 1);
+    table->SetAlphaRange (1, 1);
     break;
   }
 
   case PCL_VISUALIZER_LUT_HSV: {
-    table->SetHueRange(0, 1);
-    table->SetSaturationRange(1, 1);
-    table->SetAlphaRange(1, 1);
+    table->SetHueRange (0, 1);
+    table->SetSaturationRange (1, 1);
+    table->SetAlphaRange (1, 1);
     break;
   }
 
   case PCL_VISUALIZER_LUT_HSV_INVERSE: {
-    table->SetHueRange(1, 0);
-    table->SetSaturationRange(1, 1);
-    table->SetAlphaRange(1, 1);
+    table->SetHueRange (1, 0);
+    table->SetSaturationRange (1, 1);
+    table->SetAlphaRange (1, 1);
     break;
   }
 
   case PCL_VISUALIZER_LUT_GREY: {
-    table->SetValueRange(0, 1);
-    table->SetHueRange(0, 0);
-    table->SetSaturationRange(0, 0);
-    table->SetAlphaRange(1, 1);
+    table->SetValueRange (0, 1);
+    table->SetHueRange (0, 0);
+    table->SetSaturationRange (0, 0);
+    table->SetAlphaRange (1, 1);
     break;
   }
 
   case PCL_VISUALIZER_LUT_BLUE2RED: {
-    table->SetSaturationRange(1, 1);
-    table->SetAlphaRange(1, 1);
-    table->SetNumberOfTableValues(256);
+    table->SetSaturationRange (1, 1);
+    table->SetAlphaRange (1, 1);
+    table->SetNumberOfTableValues (256);
 
     double red[3] = {1.0, 0.0, 0.0};
     double white[3] = {1.0, 1.0, 1.0};
     double blue[3] = {0.0, 0.0, 1.0};
 
     for (std::size_t i = 0; i < 128; i++) {
-      double weight = static_cast<double>(i) / 128.0;
-      table->SetTableValue(i,
-                           white[0] * weight + blue[0] * (1 - weight),
-                           white[1] * weight + blue[1] * (1 - weight),
-                           white[2] * weight + blue[2] * (1 - weight));
+      double weight = static_cast<double> (i) / 128.0;
+      table->SetTableValue (i,
+                            white[0] * weight + blue[0] * (1 - weight),
+                            white[1] * weight + blue[1] * (1 - weight),
+                            white[2] * weight + blue[2] * (1 - weight));
     }
 
     for (std::size_t i = 128; i < 256; i++) {
-      double weight = (static_cast<double>(i) - 128.0) / 128.0;
-      table->SetTableValue(i,
-                           red[0] * weight + white[0] * (1 - weight),
-                           red[1] * weight + white[1] * (1 - weight),
-                           red[2] * weight + white[2] * (1 - weight));
+      double weight = (static_cast<double> (i) - 128.0) / 128.0;
+      table->SetTableValue (i,
+                            red[0] * weight + white[0] * (1 - weight),
+                            red[1] * weight + white[1] * (1 - weight),
+                            red[2] * weight + white[2] * (1 - weight));
     }
     break;
   }
 
   case PCL_VISUALIZER_LUT_VIRIDIS: {
-    table->SetSaturationRange(1, 1);
-    table->SetAlphaRange(1, 1);
-    table->SetNumberOfTableValues(pcl::ViridisLUT::size());
+    table->SetSaturationRange (1, 1);
+    table->SetAlphaRange (1, 1);
+    table->SetNumberOfTableValues (pcl::ViridisLUT::size());
     for (std::size_t i = 0; i < pcl::ViridisLUT::size(); i++) {
-      pcl::RGB c = pcl::ViridisLUT::at(i);
-      table->SetTableValue(i,
-                           static_cast<double>(c.r) / 255.0,
-                           static_cast<double>(c.g) / 255.0,
-                           static_cast<double>(c.b) / 255.0);
+      pcl::RGB c = pcl::ViridisLUT::at (i);
+      table->SetTableValue (i,
+                            static_cast<double> (c.r) / 255.0,
+                            static_cast<double> (c.g) / 255.0,
+                            static_cast<double> (c.b) / 255.0);
     }
     break;
   }
 
   default:
-    PCL_WARN("[pcl::visualization::getColormapLUT] Requested colormap type does not "
-             "exist!\n");
+    PCL_WARN ("[pcl::visualization::getColormapLUT] Requested colormap type does not "
+              "exist!\n");
     return false;
   }
   table->Build();
@@ -483,17 +485,17 @@ pcl::visualization::Camera::Camera()
   window_size[1] = 1;
 }
 
-pcl::visualization::Camera::Camera(vtkCamera& camera)
+pcl::visualization::Camera::Camera (vtkCamera& camera)
 {
-  camera.GetFocalPoint(focal);
-  camera.GetPosition(pos);
-  camera.GetViewUp(view);
-  camera.GetClippingRange(clip);
+  camera.GetFocalPoint (focal);
+  camera.GetPosition (pos);
+  camera.GetViewUp (view);
+  camera.GetClippingRange (clip);
   fovy = camera.GetViewAngle() / 180.0 * M_PI;
 }
 
-pcl::visualization::Camera::Camera(vtkCamera& camera, vtkRenderWindow& window)
-: Camera(camera)
+pcl::visualization::Camera::Camera (vtkCamera& camera, vtkRenderWindow& window)
+: Camera (camera)
 {
   int* win_pos = window.GetPosition();
   int* win_size = window.GetSize();
@@ -505,49 +507,49 @@ pcl::visualization::Camera::Camera(vtkCamera& camera, vtkRenderWindow& window)
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::visualization::Camera::computeViewMatrix(Eigen::Matrix4d& view_mat) const
+pcl::visualization::Camera::computeViewMatrix (Eigen::Matrix4d& view_mat) const
 {
   // constructs view matrix from camera pos, view up, and the point it is looking at
   // this code is based off of gluLookAt http://www.opengl.org/wiki/GluLookAt_code
-  Eigen::Vector3d focal_point(focal[0], focal[1], focal[2]);
-  Eigen::Vector3d posv(pos[0], pos[1], pos[2]);
-  Eigen::Vector3d up(view[0], view[1], view[2]);
+  Eigen::Vector3d focal_point (focal[0], focal[1], focal[2]);
+  Eigen::Vector3d posv (pos[0], pos[1], pos[2]);
+  Eigen::Vector3d up (view[0], view[1], view[2]);
 
   Eigen::Vector3d zAxis = (focal_point - posv).normalized();
-  Eigen::Vector3d xAxis = zAxis.cross(up).normalized();
+  Eigen::Vector3d xAxis = zAxis.cross (up).normalized();
   // make sure the y-axis is orthogonal to the other two
-  Eigen::Vector3d yAxis = xAxis.cross(zAxis);
+  Eigen::Vector3d yAxis = xAxis.cross (zAxis);
 
-  view_mat.block<1, 3>(0, 0) = xAxis;
-  view_mat.block<1, 3>(1, 0) = yAxis;
-  view_mat.block<1, 3>(2, 0) = -zAxis;
-  view_mat.row(3) << 0, 0, 0, 1;
+  view_mat.block<1, 3> (0, 0) = xAxis;
+  view_mat.block<1, 3> (1, 0) = yAxis;
+  view_mat.block<1, 3> (2, 0) = -zAxis;
+  view_mat.row (3) << 0, 0, 0, 1;
 
-  view_mat.block<3, 1>(0, 3) = view_mat.topLeftCorner<3, 3>() * (-posv);
+  view_mat.block<3, 1> (0, 3) = view_mat.topLeftCorner<3, 3>() * (-posv);
 }
 
 ///////////////////////////////////////////////////////////////////////
 void
-pcl::visualization::Camera::computeProjectionMatrix(Eigen::Matrix4d& proj) const
+pcl::visualization::Camera::computeProjectionMatrix (Eigen::Matrix4d& proj) const
 {
-  float top = static_cast<float>(clip[0]) * tanf(0.5f * static_cast<float>(fovy));
-  float left = -top * static_cast<float>(window_size[0] / window_size[1]);
+  float top = static_cast<float> (clip[0]) * tanf (0.5f * static_cast<float> (fovy));
+  float left = -top * static_cast<float> (window_size[0] / window_size[1]);
   float right = -left;
   float bottom = -top;
 
   float temp1, temp2, temp3, temp4;
-  temp1 = 2.0f * static_cast<float>(clip[0]);
+  temp1 = 2.0f * static_cast<float> (clip[0]);
   temp2 = 1.0f / (right - left);
   temp3 = 1.0f / (top - bottom);
-  temp4 = 1.0f / static_cast<float>(clip[1] - clip[0]);
+  temp4 = 1.0f / static_cast<float> (clip[1] - clip[0]);
 
   proj.setZero();
 
-  proj(0, 0) = temp1 * temp2;
-  proj(1, 1) = temp1 * temp3;
-  proj(0, 2) = (right + left) * temp2;
-  proj(1, 2) = (top + bottom) * temp3;
-  proj(2, 2) = (-clip[1] - clip[0]) * temp4;
-  proj(3, 2) = -1.0;
-  proj(2, 3) = (-temp1 * clip[1]) * temp4;
+  proj (0, 0) = temp1 * temp2;
+  proj (1, 1) = temp1 * temp3;
+  proj (0, 2) = (right + left) * temp2;
+  proj (1, 2) = (top + bottom) * temp3;
+  proj (2, 2) = (-clip[1] - clip[0]) * temp4;
+  proj (3, 2) = -1.0;
+  proj (2, 3) = (-temp1 * clip[1]) * temp4;
 }

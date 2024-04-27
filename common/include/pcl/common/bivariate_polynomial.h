@@ -53,18 +53,18 @@ class BivariatePolynomialT {
 public:
   //-----CONSTRUCTOR&DESTRUCTOR-----
   /** Constructor */
-  BivariatePolynomialT(int new_degree = 0);
+  BivariatePolynomialT (int new_degree = 0);
   /** Copy constructor */
-  BivariatePolynomialT(const BivariatePolynomialT& other);
+  BivariatePolynomialT (const BivariatePolynomialT& other);
   /** Destructor */
   ~BivariatePolynomialT();
 
   //-----OPERATORS-----
   /** = operator */
   BivariatePolynomialT&
-  operator=(const BivariatePolynomialT& other)
+  operator= (const BivariatePolynomialT& other)
   {
-    deepCopy(other);
+    deepCopy (other);
     return *this;
   }
 
@@ -77,7 +77,7 @@ public:
   unsigned int
   getNoOfParameters () const
   {
-    return getNoOfParametersFromDegree(degree);
+    return getNoOfParametersFromDegree (degree);
   }
 
   /** Calculate the value of the polynomial at the given point */
@@ -144,7 +144,7 @@ protected:
 
 template <typename real>
 std::ostream&
-operator<<(std::ostream& os, const BivariatePolynomialT<real>& p);
+operator<< (std::ostream& os, const BivariatePolynomialT<real>& p);
 
 using BivariatePolynomiald = BivariatePolynomialT<double>;
 using BivariatePolynomial = BivariatePolynomialT<float>;

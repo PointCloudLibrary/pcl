@@ -45,7 +45,7 @@ namespace pcl {
 namespace io {
 namespace openni2 {
 
-using StreamCallbackFunction = std::function<void(openni::VideoStream& stream)>;
+using StreamCallbackFunction = std::function<void (openni::VideoStream& stream)>;
 
 /* Each NewFrameListener may only listen to one VideoStream at a time.
  **/
@@ -53,7 +53,7 @@ class OpenNI2FrameListener : public openni::VideoStream::NewFrameListener {
 public:
   OpenNI2FrameListener() = default;
 
-  OpenNI2FrameListener(StreamCallbackFunction cb) : callback_(std::move(cb)) {}
+  OpenNI2FrameListener (StreamCallbackFunction cb) : callback_ (std::move (cb)) {}
 
   ~OpenNI2FrameListener() override = default;
 
@@ -61,13 +61,13 @@ public:
   onNewFrame (openni::VideoStream& stream) override
   {
     if (callback_)
-      callback_(stream);
+      callback_ (stream);
   }
 
   void
   setCallback (StreamCallbackFunction cb)
   {
-    callback_ = std::move(cb);
+    callback_ = std::move (cb);
   }
 
 private:

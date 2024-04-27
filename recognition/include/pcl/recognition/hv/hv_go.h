@@ -47,7 +47,7 @@ private:
         unexplained_in_neighborhood_weights; // weights for the points not being
                                              // explained in the neighborhood of a
                                              // hypothesis
-    std::vector<int> outlier_indices_; // outlier indices of this model
+    std::vector<int> outlier_indices_;       // outlier indices of this model
     std::vector<int> complete_cloud_occupancy_indices_;
     typename pcl::PointCloud<ModelT>::Ptr cloud_;
     typename pcl::PointCloud<ModelT>::Ptr complete_cloud_;
@@ -76,7 +76,7 @@ private:
     void
     copy_from (const mets::copyable& o) override
     {
-      const auto& s = dynamic_cast<const SAModel&>(o);
+      const auto& s = dynamic_cast<const SAModel&> (o);
       solution_ = s.solution_;
       opt_ = s.opt_;
       cost_ = s.cost_;
@@ -89,14 +89,14 @@ private:
       tmp[index] = val;
       mets::gol_type sol = opt_->evaluateSolution (solution_, index); //evaluate without
       updating status return sol;*/
-      return static_cast<mets::gol_type>(0);
+      return static_cast<mets::gol_type> (0);
     }
 
     mets::gol_type
     apply_and_evaluate (int index, bool val)
     {
       solution_[index] = val;
-      mets::gol_type sol = opt_->evaluateSolution(
+      mets::gol_type sol = opt_->evaluateSolution (
           solution_, index); // this will update the state of the solution
       cost_ = sol;
       return sol;
@@ -111,7 +111,7 @@ private:
     {
       solution_[index] = val;
       // update optimizer solution
-      cost_ = opt_->evaluateSolution(
+      cost_ = opt_->evaluateSolution (
           solution_, index); // this will update the cost function in opt_
     }
     void
@@ -135,19 +135,19 @@ private:
     int index_;
 
   public:
-    move(int i) : index_(i) {}
+    move (int i) : index_ (i) {}
 
     mets::gol_type
     evaluate (const mets::feasible_solution& /*cs*/) const override
     {
-      return static_cast<mets::gol_type>(0);
+      return static_cast<mets::gol_type> (0);
     }
 
     mets::gol_type
     apply_and_evaluate (mets::feasible_solution& cs)
     {
-      auto& model = dynamic_cast<SAModel&>(cs);
-      return model.apply_and_evaluate(index_, !model.solution_[index_]);
+      auto& model = dynamic_cast<SAModel&> (cs);
+      return model.apply_and_evaluate (index_, !model.solution_[index_]);
     }
 
     void
@@ -157,8 +157,8 @@ private:
     void
     unapply (mets::feasible_solution& s) const
     {
-      auto& model = dynamic_cast<SAModel&>(s);
-      model.unapply(index_, !model.solution_[index_]);
+      auto& model = dynamic_cast<SAModel&> (s);
+      model.unapply (index_, !model.solution_[index_]);
     }
   };
 
@@ -177,10 +177,10 @@ private:
       return moves_m.end();
     }
 
-    move_manager(int problem_size)
+    move_manager (int problem_size)
     {
       for (int ii = 0; ii != problem_size; ++ii)
-        moves_m.push_back(new move(ii));
+        moves_m.push_back (new move (ii));
     }
 
     ~move_manager()
@@ -193,8 +193,8 @@ private:
     void
     refresh (mets::feasible_solution& /*s*/)
     {
-      std::shuffle(
-          moves_m.begin(), moves_m.end(), std::mt19937(std::random_device()()));
+      std::shuffle (
+          moves_m.begin(), moves_m.end(), std::mt19937 (std::random_device()()));
     }
   };
 
@@ -378,14 +378,14 @@ private:
     for (std::size_t i = 0; i < vec.size(); i++) {
       bool prev_dup = explained_[vec[i]] > 1;
 
-      explained_[vec[i]] += static_cast<int>(sign);
+      explained_[vec[i]] += static_cast<int> (sign);
       explained_by_RM_distance_weighted[vec[i]] += vec_float[i] * sign;
 
       add_to_explained += vec_float[i] * sign;
 
-      if ((explained_[vec[i]] > 1) && prev_dup) { // its still a duplicate, we are
-                                                  // adding
-        add_to_duplicity_ += static_cast<int>(sign); // so, just add or remove one
+      if ((explained_[vec[i]] > 1) && prev_dup) {     // its still a duplicate, we are
+                                                      // adding
+        add_to_duplicity_ += static_cast<int> (sign); // so, just add or remove one
       }
       else if ((explained_[vec[i]] == 1) &&
                prev_dup) { // if was duplicate before, now its not, remove 2, we are
@@ -410,9 +410,9 @@ private:
     int add_to_duplicity_ = 0;
     for (const int& i : vec) {
       bool prev_dup = occupancy_vec[i] > 1;
-      occupancy_vec[i] += static_cast<int>(sign);
+      occupancy_vec[i] += static_cast<int> (sign);
       if ((occupancy_vec[i] > 1) && prev_dup) { // its still a duplicate, we are adding
-        add_to_duplicity_ += static_cast<int>(sign); // so, just add or remove one
+        add_to_duplicity_ += static_cast<int> (sign); // so, just add or remove one
       }
       else if ((occupancy_vec[i] == 1) &&
                prev_dup) { // if was duplicate before, now its not, remove 2, we are
@@ -456,7 +456,7 @@ private:
     float bad_info = 0;
     for (std::size_t i = 0; i < recog_models.size(); i++)
       bad_info += recog_models[i]->outliers_weight_ *
-                  static_cast<float>(recog_models[i]->bad_information_);
+                  static_cast<float> (recog_models[i]->bad_information_);
 
     return bad_info;
   }

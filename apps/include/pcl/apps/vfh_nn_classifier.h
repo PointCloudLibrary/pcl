@@ -63,29 +63,29 @@ computeVFH (typename PointCloud<PointT>::ConstPtr cloud, double radius)
   // Create an empty kdtree representation, and pass it to the objects.
   // Its content will be filled inside the object, based on the given input dataset
   // (as no other search surface is given).
-  typename pcl::search::KdTree<PointT>::Ptr tree(new pcl::search::KdTree<PointT>());
+  typename pcl::search::KdTree<PointT>::Ptr tree (new pcl::search::KdTree<PointT>());
 
   // Create the normal estimation class, and pass the input dataset to it
   NormalEstimation<PointT, Normal> ne;
-  ne.setInputCloud(cloud);
-  ne.setSearchMethod(tree);
+  ne.setInputCloud (cloud);
+  ne.setSearchMethod (tree);
 
   // Use all neighbors in a sphere of given radius to compute the normals
-  PointCloud<Normal>::Ptr normals(new PointCloud<Normal>());
-  ne.setRadiusSearch(radius);
-  ne.compute(*normals);
+  PointCloud<Normal>::Ptr normals (new PointCloud<Normal>());
+  ne.setRadiusSearch (radius);
+  ne.compute (*normals);
 
   // Create the VFH estimation class, and pass the input dataset+normals to it
   VFHEstimation<PointT, Normal, VFHSignature308> vfh;
-  vfh.setInputCloud(cloud);
-  vfh.setInputNormals(normals);
-  vfh.setSearchMethod(tree);
+  vfh.setInputCloud (cloud);
+  vfh.setInputNormals (normals);
+  vfh.setSearchMethod (tree);
 
   // Output datasets
-  PointCloud<VFHSignature308>::Ptr vfhs(new PointCloud<VFHSignature308>);
+  PointCloud<VFHSignature308>::Ptr vfhs (new PointCloud<VFHSignature308>);
 
   // Compute the features and return
-  vfh.compute(*vfhs);
+  vfh.compute (*vfhs);
   return vfhs;
 }
 
@@ -116,7 +116,7 @@ public:
   void
   reset ()
   {
-    training_features_.reset(new FeatureCloud);
+    training_features_.reset (new FeatureCloud);
     labels_.clear();
     classifier_ = NNClassification<pcl::VFHSignature308>();
   }
@@ -133,14 +133,14 @@ public:
   void
   finalizeTree ()
   {
-    classifier_.setTrainingFeatures(training_features_);
+    classifier_.setTrainingFeatures (training_features_);
   }
 
   /** \brief Set up the classifier with the current training example labels */
   void
   finalizeLabels ()
   {
-    classifier_.setTrainingLabels(labels_);
+    classifier_.setTrainingLabels (labels_);
   }
 
   /**
@@ -156,9 +156,9 @@ public:
                         const std::string& labels_file_name)
   {
     if (labels_.size() == training_features_->size()) {
-      if (pcl::io::savePCDFile(file_name, *training_features_) != 0)
+      if (pcl::io::savePCDFile (file_name, *training_features_) != 0)
         return false;
-      std::ofstream f(labels_file_name.c_str());
+      std::ofstream f (labels_file_name.c_str());
       for (const auto& s : labels_) {
         f << s << "\n";
       }
@@ -179,10 +179,10 @@ public:
                        const std::vector<std::string>& labels)
   {
     if (labels.size() == training_features->size()) {
-      labels_.insert(labels_.end(), labels.begin(), labels.end());
-      training_features_->points.insert(training_features_->points.end(),
-                                        training_features->points.begin(),
-                                        training_features->points.end());
+      labels_.insert (labels_.end(), labels.begin(), labels.end());
+      training_features_->points.insert (training_features_->points.end(),
+                                         training_features->points.begin(),
+                                         training_features->points.end());
       training_features_->header = training_features->header;
       training_features_->height = 1;
       training_features_->width = training_features_->size();
@@ -206,16 +206,16 @@ public:
   loadTrainingFeatures (const std::string& file_name,
                         const std::string& labels_file_name)
   {
-    FeatureCloudPtr cloud(new FeatureCloud);
-    if (pcl::io::loadPCDFile(file_name, *cloud) != 0)
+    FeatureCloudPtr cloud (new FeatureCloud);
+    if (pcl::io::loadPCDFile (file_name, *cloud) != 0)
       return false;
     std::vector<std::string> labels;
-    std::ifstream f(labels_file_name.c_str());
+    std::ifstream f (labels_file_name.c_str());
     std::string label;
-    while (getline(f, label))
+    while (getline (f, label))
       if (!label.empty())
-        labels.push_back(label);
-    return addTrainingFeatures(cloud, labels);
+        labels.push_back (label);
+    return addTrainingFeatures (cloud, labels);
   }
 
   /**
@@ -231,9 +231,9 @@ public:
   loadTrainingData (const std::string& file_name, std::string label)
   {
     pcl::PCLPointCloud2 cloud_blob;
-    if (pcl::io::loadPCDFile(file_name, cloud_blob) != 0)
+    if (pcl::io::loadPCDFile (file_name, cloud_blob) != 0)
       return false;
-    return addTrainingData(cloud_blob, label);
+    return addTrainingData (cloud_blob, label);
   }
 
   /**
@@ -250,11 +250,11 @@ public:
   {
     // Create label list containing the single label
     std::vector<std::string> labels;
-    labels.push_back(label);
+    labels.push_back (label);
 
     // Compute the feature from the cloud and add it as a training example
-    FeatureCloudPtr vfhs = computeFeature(training_data);
-    return addTrainingFeatures(vfhs, labels);
+    FeatureCloudPtr vfhs = computeFeature (training_data);
+    return addTrainingFeatures (vfhs, labels);
   }
 
   /**
@@ -271,12 +271,12 @@ public:
             double min_score = 0.002)
   {
     // compute the VFH feature for this point cloud
-    FeatureCloudPtr vfhs = computeFeature(testing_data);
+    FeatureCloudPtr vfhs = computeFeature (testing_data);
     // compute gaussian parameter producing the desired minimum score
     // (around 50 for the default values)
-    float gaussian_param = -static_cast<float>(radius / std::log(min_score));
+    float gaussian_param = -static_cast<float> (radius / std::log (min_score));
     // TODO accept result to be filled in by reference
-    return classifier_.classify(vfhs->points.at(0), radius, gaussian_param);
+    return classifier_.classify (vfhs->points.at (0), radius, gaussian_param);
   }
 
   /**
@@ -288,9 +288,9 @@ public:
   FeatureCloudPtr
   computeFeature (const pcl::PCLPointCloud2& points, double radius = 0.03)
   {
-    pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>());
-    pcl::fromPCLPointCloud2(points, *cloud);
-    return pcl::computeVFH<pcl::PointXYZ>(cloud, radius);
+    pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>());
+    pcl::fromPCLPointCloud2 (points, *cloud);
+    return pcl::computeVFH<pcl::PointXYZ> (cloud, radius);
   }
 };
 

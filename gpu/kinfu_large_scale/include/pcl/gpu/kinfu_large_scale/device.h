@@ -84,18 +84,19 @@ constexpr int SNAPSHOT_RATE =
 struct Intr {
   float fx, fy, cx, cy;
   Intr() {}
-  Intr(float fx_, float fy_, float cx_, float cy_) : fx(fx_), fy(fy_), cx(cx_), cy(cy_)
+  Intr (float fx_, float fy_, float cx_, float cy_)
+  : fx (fx_), fy (fy_), cx (cx_), cy (cy_)
   {}
 
   Intr
-  operator()(int level_index) const
+  operator() (int level_index) const
   {
     int div = 1 << level_index;
-    return (Intr(fx / div, fy / div, cx / div, cy / div));
+    return (Intr (fx / div, fy / div, cx / div, cy / div));
   }
 
   friend inline std::ostream&
-  operator<<(std::ostream& os, const Intr& intr)
+  operator<< (std::ostream& os, const Intr& intr)
   {
     os << "([f = " << intr.fx << ", " << intr.fy << "] [cp = " << intr.cx << ", "
        << intr.cy << "])";

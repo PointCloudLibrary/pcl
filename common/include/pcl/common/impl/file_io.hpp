@@ -55,13 +55,13 @@ void
 getAllPcdFilesInDirectory (const std::string& directory,
                            std::vector<std::string>& file_names)
 {
-  pcl_fs::path p(directory);
-  if (pcl_fs::is_directory(p)) {
+  pcl_fs::path p (directory);
+  if (pcl_fs::is_directory (p)) {
     for (const auto& entry :
-         boost::make_iterator_range(pcl_fs::directory_iterator(p), {})) {
-      if (pcl_fs::is_regular_file(entry)) {
+         boost::make_iterator_range (pcl_fs::directory_iterator (p), {})) {
+      if (pcl_fs::is_regular_file (entry)) {
         if (entry.path().extension() == ".pcd")
-          file_names.emplace_back(entry.path().filename().string());
+          file_names.emplace_back (entry.path().filename().string());
       }
     }
   }
@@ -69,29 +69,29 @@ getAllPcdFilesInDirectory (const std::string& directory,
     std::cerr << "Given path is not a directory\n";
     return;
   }
-  std::sort(file_names.begin(), file_names.end());
+  std::sort (file_names.begin(), file_names.end());
 }
 
 std::string
 getFilenameWithoutPath (const std::string& input)
 {
   std::size_t filename_start =
-      input.find_last_of('/', static_cast<std::size_t>(-1)) + 1;
-  return input.substr(filename_start, input.size() - filename_start);
+      input.find_last_of ('/', static_cast<std::size_t> (-1)) + 1;
+  return input.substr (filename_start, input.size() - filename_start);
 }
 
 std::string
 getFilenameWithoutExtension (const std::string& input)
 {
-  std::size_t dot_position = input.find_last_of('.', input.size());
-  return input.substr(0, dot_position);
+  std::size_t dot_position = input.find_last_of ('.', input.size());
+  return input.substr (0, dot_position);
 }
 
 std::string
 getFileExtension (const std::string& input)
 {
-  std::size_t dot_position = input.find_last_of('.', input.size());
-  return input.substr(dot_position + 1, input.size());
+  std::size_t dot_position = input.find_last_of ('.', input.size());
+  return input.substr (dot_position + 1, input.size());
 }
 
 } // namespace pcl

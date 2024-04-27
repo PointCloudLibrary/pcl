@@ -46,9 +46,9 @@ namespace modeler {
 
 class NormalsActorItem : public ChannelActorItem {
 public:
-  NormalsActorItem(QTreeWidgetItem* parent,
-                   const CloudMesh::Ptr& cloud_mesh,
-                   const vtkSmartPointer<vtkRenderWindow>& render_window);
+  NormalsActorItem (QTreeWidgetItem* parent,
+                    const CloudMesh::Ptr& cloud_mesh,
+                    const vtkSmartPointer<vtkRenderWindow>& render_window);
 
   std::string
   getItemName () const override

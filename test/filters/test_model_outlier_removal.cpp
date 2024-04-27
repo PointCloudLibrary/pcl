@@ -48,40 +48,40 @@
 
 using namespace pcl;
 
-PointCloud<PointXYZ>::Ptr cloud_in(new PointCloud<PointXYZ>);
+PointCloud<PointXYZ>::Ptr cloud_in (new PointCloud<PointXYZ>);
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TEST(ModelOutlierRemoval, Model_Outlier_Filter)
+TEST (ModelOutlierRemoval, Model_Outlier_Filter)
 {
-  PointCloud<PointXYZ>::Ptr cloud_filter_out(new PointCloud<PointXYZ>);
+  PointCloud<PointXYZ>::Ptr cloud_filter_out (new PointCloud<PointXYZ>);
   pcl::Indices ransac_inliers;
   float thresh = 0.01;
   // run ransac
   Eigen::VectorXf model_coefficients;
-  pcl::SampleConsensusModelPlane<pcl::PointXYZ>::Ptr model_p(
-      new pcl::SampleConsensusModelPlane<pcl::PointXYZ>(cloud_in));
-  RandomSampleConsensus<pcl::PointXYZ> ransac(model_p);
-  ransac.setDistanceThreshold(thresh);
+  pcl::SampleConsensusModelPlane<pcl::PointXYZ>::Ptr model_p (
+      new pcl::SampleConsensusModelPlane<pcl::PointXYZ> (cloud_in));
+  RandomSampleConsensus<pcl::PointXYZ> ransac (model_p);
+  ransac.setDistanceThreshold (thresh);
   ransac.computeModel();
-  ransac.getInliers(ransac_inliers);
-  ransac.getModelCoefficients(model_coefficients);
+  ransac.getInliers (ransac_inliers);
+  ransac.getModelCoefficients (model_coefficients);
   // test ransacs result
-  EXPECT_EQ(model_coefficients.size(), 4);
+  EXPECT_EQ (model_coefficients.size(), 4);
   if (model_coefficients.size() != 4)
     return;
   // run filter
   pcl::ModelCoefficients model_coeff;
-  model_coeff.values.resize(4);
+  model_coeff.values.resize (4);
   for (int i = 0; i < 4; i++)
     model_coeff.values[i] = model_coefficients[i];
   pcl::ModelOutlierRemoval<pcl::PointXYZ> filter;
-  filter.setModelCoefficients(model_coeff);
-  filter.setThreshold(thresh);
-  filter.setModelType(pcl::SACMODEL_PLANE);
-  filter.setInputCloud(cloud_in);
-  filter.filter(*cloud_filter_out);
+  filter.setModelCoefficients (model_coeff);
+  filter.setThreshold (thresh);
+  filter.setModelType (pcl::SACMODEL_PLANE);
+  filter.setInputCloud (cloud_in);
+  filter.filter (*cloud_filter_out);
   // compare results
-  EXPECT_EQ(cloud_filter_out->size(), ransac_inliers.size());
+  EXPECT_EQ (cloud_filter_out->size(), ransac_inliers.size());
   // TODO: also compare content
 }
 
@@ -99,9 +99,9 @@ main (int argc, char** argv)
 
   char* file_name = argv[1];
   // Load a standard PCD file from disk
-  io::loadPCDFile(file_name, *cloud_in);
+  io::loadPCDFile (file_name, *cloud_in);
 
-  testing::InitGoogleTest(&argc, argv);
+  testing::InitGoogleTest (&argc, argv);
   return (RUN_ALL_TESTS());
 }
 /* ]--- */

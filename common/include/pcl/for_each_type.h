@@ -75,14 +75,14 @@ struct for_each_type_impl<false> {
     using arg = typename boost::mpl::deref<Iterator>::type;
 
 #if (defined _WIN32 && defined _MSC_VER && !defined(__clang__))
-    boost::mpl::aux::unwrap(f, 0).operator()<arg>();
+    boost::mpl::aux::unwrap (f, 0).operator()<arg>();
 #else
-    boost::mpl::aux::unwrap(f, 0).template operator()<arg>();
+    boost::mpl::aux::unwrap (f, 0).template operator()<arg>();
 #endif
 
     using iter = typename boost::mpl::next<Iterator>::type;
     for_each_type_impl<std::is_same<iter, LastIterator>::value>::
-        template execute<iter, LastIterator, F>(f);
+        template execute<iter, LastIterator, F> (f);
   }
 };
 
@@ -91,11 +91,11 @@ template <typename Sequence, typename F>
 inline void
 for_each_type (F f)
 {
-  BOOST_MPL_ASSERT((boost::mpl::is_sequence<Sequence>));
+  BOOST_MPL_ASSERT ((boost::mpl::is_sequence<Sequence>));
   using first = typename boost::mpl::begin<Sequence>::type;
   using last = typename boost::mpl::end<Sequence>::type;
   for_each_type_impl<
-      std::is_same<first, last>::value>::template execute<first, last, F>(f);
+      std::is_same<first, last>::value>::template execute<first, last, F> (f);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////

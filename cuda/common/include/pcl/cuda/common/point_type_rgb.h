@@ -61,21 +61,21 @@ union RGB {
   {}
   inline __host__ __device__
   RGB (int _rgb)
-  : rgb(_rgb)
+  : rgb (_rgb)
   {}
   inline __host__ __device__
   RGB (char _r, char _g, char _b, char _alpha)
-  : r(_r), g(_g), b(_b), alpha(_alpha)
+  : r (_r), g (_g), b (_b), alpha (_alpha)
   {}
 
   inline __host__ __device__ bool
-  operator==(const RGB& rhs) const
+  operator== (const RGB& rhs) const
   {
     return (r == rhs.r && g == rhs.g && b == rhs.b && alpha == rhs.alpha);
   }
 
   inline __host__ __device__ RGB
-  operator-(RGB& rhs)
+  operator- (RGB& rhs)
   {
     RGB res = *this;
     res -= rhs;
@@ -83,7 +83,7 @@ union RGB {
   }
 
   inline __host__ __device__ RGB&
-  operator+=(const RGB& rhs)
+  operator+= (const RGB& rhs)
   {
     r += rhs.r;
     g += rhs.g;
@@ -93,7 +93,7 @@ union RGB {
   }
 
   inline __host__ __device__ RGB&
-  operator-=(const RGB& rhs)
+  operator-= (const RGB& rhs)
   {
     r -= rhs.r;
     g -= rhs.g;
@@ -103,7 +103,7 @@ union RGB {
   }
 
   inline __host__ __device__ RGB&
-  operator*=(const RGB& rhs)
+  operator*= (const RGB& rhs)
   {
     r *= rhs.r;
     g *= rhs.g;
@@ -113,7 +113,7 @@ union RGB {
   }
 
   inline __host__ __device__ RGB&
-  operator/=(const RGB& rhs)
+  operator/= (const RGB& rhs)
   {
     r /= rhs.r;
     g /= rhs.g;

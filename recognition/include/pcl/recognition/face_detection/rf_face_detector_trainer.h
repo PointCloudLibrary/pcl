@@ -176,7 +176,7 @@ public:
   void
   getVotes (pcl::PointCloud<pcl::PointXYZ>::Ptr& votes_cloud)
   {
-    votes_cloud->points.resize(head_center_votes_.size());
+    votes_cloud->points.resize (head_center_votes_.size());
     votes_cloud->width = head_center_votes_.size();
     votes_cloud->height = 1;
 
@@ -188,7 +188,7 @@ public:
   void
   getVotes (pcl::PointCloud<pcl::PointXYZI>::Ptr& votes_cloud)
   {
-    votes_cloud->points.resize(head_center_votes_.size());
+    votes_cloud->points.resize (head_center_votes_.size());
     votes_cloud->width = head_center_votes_.size();
     votes_cloud->height = 1;
 
@@ -196,17 +196,17 @@ public:
     for (std::size_t i = 0; i < head_center_votes_clustered_.size(); i++) {
       for (std::size_t j = 0; j < head_center_votes_clustered_[i].size(); j++, p++) {
         (*votes_cloud)[p].getVector3fMap() = head_center_votes_clustered_[i][j];
-        (*votes_cloud)[p].intensity = 0.1f * static_cast<float>(i);
+        (*votes_cloud)[p].intensity = 0.1f * static_cast<float> (i);
       }
     }
 
-    votes_cloud->points.resize(p);
+    votes_cloud->points.resize (p);
   }
 
   void
   getVotes2 (pcl::PointCloud<pcl::PointXYZI>::Ptr& votes_cloud)
   {
-    votes_cloud->points.resize(head_center_votes_.size());
+    votes_cloud->points.resize (head_center_votes_.size());
     votes_cloud->width = head_center_votes_.size();
     votes_cloud->height = 1;
 
@@ -216,11 +216,11 @@ public:
            j++, p++) {
         (*votes_cloud)[p].getVector3fMap() =
             head_center_original_votes_clustered_[i][j];
-        (*votes_cloud)[p].intensity = 0.1f * static_cast<float>(i);
+        (*votes_cloud)[p].intensity = 0.1f * static_cast<float> (i);
       }
     }
 
-    votes_cloud->points.resize(p);
+    votes_cloud->points.resize (p);
   }
 
   // get heads
@@ -228,14 +228,14 @@ public:
   getDetectedFaces (std::vector<Eigen::VectorXf>& faces)
   {
     for (std::size_t i = 0; i < head_clusters_centers_.size(); i++) {
-      Eigen::VectorXf head(6);
+      Eigen::VectorXf head (6);
       head[0] = head_clusters_centers_[i][0];
       head[1] = head_clusters_centers_[i][1];
       head[2] = head_clusters_centers_[i][2];
       head[3] = head_clusters_rotation_[i][0];
       head[4] = head_clusters_rotation_[i][1];
       head[5] = head_clusters_rotation_[i][2];
-      faces.push_back(head);
+      faces.push_back (head);
     }
   }
   /*

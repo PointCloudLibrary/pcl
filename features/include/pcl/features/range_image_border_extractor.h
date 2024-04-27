@@ -99,7 +99,7 @@ public:
 
   // =====CONSTRUCTOR & DESTRUCTOR=====
   /** Constructor */
-  RangeImageBorderExtractor(const RangeImage* range_image = nullptr);
+  RangeImageBorderExtractor (const RangeImage* range_image = nullptr);
   /** Destructor */
   ~RangeImageBorderExtractor() override;
 

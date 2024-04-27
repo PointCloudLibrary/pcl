@@ -14,7 +14,7 @@ main ()
   // Create a random generator to fill in the cloud
   pcl::common::CloudGenerator<pcl::PointXYZ, pcl::common::UniformGenerator<float>>
       generator{{-2.0, 2, 1234}};
-  generator.fill(10, 1, *cloud);
+  generator.fill (10, 1, *cloud);
 
   std::cerr << "Cloud before filtering: " << std::endl;
   for (const auto& pt : *cloud)
@@ -30,11 +30,11 @@ main ()
   };
 
   // build the filter
-  pcl::experimental::FunctionFilter<pcl::PointXYZ> func_filter(filter);
-  func_filter.setInputCloud(cloud);
+  pcl::experimental::FunctionFilter<pcl::PointXYZ> func_filter (filter);
+  func_filter.setInputCloud (cloud);
 
   // apply filter
-  func_filter.filter(*filtered_cloud);
+  func_filter.filter (*filtered_cloud);
 
   // display pointcloud after filtering
   std::cerr << "Cloud after filtering: " << std::endl;

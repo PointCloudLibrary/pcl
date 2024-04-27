@@ -46,18 +46,18 @@ pcl::QuantizableModality::QuantizableModality() = default;
 pcl::QuantizableModality::~QuantizableModality() = default;
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-pcl::QuantizedMap::QuantizedMap() : data_(0), width_(0), height_(0) {}
+pcl::QuantizedMap::QuantizedMap() : data_ (0), width_ (0), height_ (0) {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-pcl::QuantizedMap::QuantizedMap(const QuantizedMap& copy_me)
-: data_(0), width_(copy_me.width_), height_(copy_me.height_)
+pcl::QuantizedMap::QuantizedMap (const QuantizedMap& copy_me)
+: data_ (0), width_ (copy_me.width_), height_ (copy_me.height_)
 {
-  data_.insert(data_.begin(), copy_me.data_.begin(), copy_me.data_.end());
+  data_.insert (data_.begin(), copy_me.data_.begin(), copy_me.data_.end());
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-pcl::QuantizedMap::QuantizedMap(const std::size_t width, const std::size_t height)
-: data_(width * height), width_(width), height_(height)
+pcl::QuantizedMap::QuantizedMap (const std::size_t width, const std::size_t height)
+: data_ (width * height), width_ (width), height_ (height)
 {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -65,39 +65,39 @@ pcl::QuantizedMap::~QuantizedMap() = default;
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::QuantizedMap::resize(const std::size_t width, const std::size_t height)
+pcl::QuantizedMap::resize (const std::size_t width, const std::size_t height)
 {
-  data_.resize(width * height);
+  data_.resize (width * height);
   width_ = width;
   height_ = height;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::QuantizedMap::spreadQuantizedMap(const QuantizedMap& input_map,
-                                      QuantizedMap& output_map,
-                                      const std::size_t spreading_size)
+pcl::QuantizedMap::spreadQuantizedMap (const QuantizedMap& input_map,
+                                       QuantizedMap& output_map,
+                                       const std::size_t spreading_size)
 {
   // TODO: implement differently (as in opencv)
   const std::size_t width = input_map.getWidth();
   const std::size_t height = input_map.getHeight();
   const std::size_t half_spreading_size = spreading_size / 2;
 
-  QuantizedMap tmp_map(width, height);
-  output_map.resize(width, height);
+  QuantizedMap tmp_map (width, height);
+  output_map.resize (width, height);
 
   for (std::size_t row_index = 0; row_index < height - spreading_size - 1;
        ++row_index) {
     for (std::size_t col_index = 0; col_index < width - spreading_size - 1;
          ++col_index) {
       unsigned char value = 0;
-      const unsigned char* data_ptr = &(input_map(col_index, row_index));
+      const unsigned char* data_ptr = &(input_map (col_index, row_index));
       for (std::size_t spreading_index = 0; spreading_index < spreading_size;
            ++spreading_index, ++data_ptr) {
         value |= *data_ptr;
       }
 
-      tmp_map(col_index + half_spreading_size, row_index) = value;
+      tmp_map (col_index + half_spreading_size, row_index) = value;
     }
   }
 
@@ -106,13 +106,13 @@ pcl::QuantizedMap::spreadQuantizedMap(const QuantizedMap& input_map,
     for (std::size_t col_index = 0; col_index < width - spreading_size - 1;
          ++col_index) {
       unsigned char value = 0;
-      const unsigned char* data_ptr = &(tmp_map(col_index, row_index));
+      const unsigned char* data_ptr = &(tmp_map (col_index, row_index));
       for (std::size_t spreading_index = 0; spreading_index < spreading_size;
            ++spreading_index, data_ptr += width) {
         value |= *data_ptr;
       }
 
-      output_map(col_index, row_index + half_spreading_size) = value;
+      output_map (col_index, row_index + half_spreading_size) = value;
     }
   }
 }

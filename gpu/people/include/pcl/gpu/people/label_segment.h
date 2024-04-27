@@ -238,14 +238,14 @@ inline void
 smoothLabelImage (cv::Mat& lmap_in, cv::Mat& dmap, cv::Mat& lmap_out)
 {
   // check depth
-  assert(lmap_in.depth() == CV_8UC1);
-  assert(dmap.depth() == CV_16U);
-  assert(lmap_out.depth() == CV_8UC1);
+  assert (lmap_in.depth() == CV_8UC1);
+  assert (dmap.depth() == CV_16U);
+  assert (lmap_out.depth() == CV_8UC1);
   // check size
-  assert(lmap_in.rows == dmap.rows);
-  assert(lmap_in.cols == dmap.cols);
-  assert(lmap_out.rows == dmap.rows);
-  assert(lmap_out.cols == dmap.cols);
+  assert (lmap_in.rows == dmap.rows);
+  assert (lmap_in.cols == dmap.cols);
+  assert (lmap_out.rows == dmap.rows);
+  assert (lmap_out.cols == dmap.cols);
 
   // unsigned int patch_size = 5;
   unsigned int half_patch = 2;
@@ -266,8 +266,8 @@ smoothLabelImage (cv::Mat& lmap_in, cv::Mat& dmap, cv::Mat& lmap_out)
   for (unsigned int h = (0 + half_patch); h < endrow; h++) {
     endheight = (h + half_patch);
 
-    drow = dmap.ptr<short>(h);
-    loutrow = lmap_out.ptr<char>(h);
+    drow = dmap.ptr<short> (h);
+    loutrow = lmap_out.ptr<char> (h);
 
     // iterate over the width of the image (from 2 till 638)
     for (unsigned int w = (0 + half_patch); w < endcol; w++) {
@@ -280,17 +280,17 @@ smoothLabelImage (cv::Mat& lmap_in, cv::Mat& dmap, cv::Mat& lmap_out)
 
       // iterate over the size of the patch in the height
       for (unsigned int h_l = (h - half_patch); h_l <= endheight; h_l++) {
-        drow_offset = dmap.ptr<short>(h_l);
-        lrow_offset = lmap_in.ptr<char>(h_l);
+        drow_offset = dmap.ptr<short> (h_l);
+        lrow_offset = lmap_in.ptr<char> (h_l);
 
         // iterate over the size of the patch in the width
         for (unsigned int w_l = (w - half_patch); w_l <= endwidth; w_l++) {
           // get the depth of this part of the patch
           depth_l = drow_offset[w_l];
           // evaluate the difference to the centroid
-          if (std::abs(depth - depth_l) < static_cast<int>(depthThres)) {
+          if (std::abs (depth - depth_l) < static_cast<int> (depthThres)) {
             label = lrow_offset[w_l];
-            votes[static_cast<unsigned int>(label)]++;
+            votes[static_cast<unsigned int> (label)]++;
           }
         }
       }
@@ -299,8 +299,8 @@ smoothLabelImage (cv::Mat& lmap_in, cv::Mat& dmap, cv::Mat& lmap_out)
 
       // iterate over the bin to find the max
       for (char i = 0; i < NUM_PARTS; i++) {
-        if (votes[static_cast<unsigned int>(i)] > max) {
-          max = votes[static_cast<unsigned int>(i)];
+        if (votes[static_cast<unsigned int> (i)] > max) {
+          max = votes[static_cast<unsigned int> (i)];
           loutrow[w] = i;
         }
       }
@@ -326,7 +326,7 @@ sortIndicesToBlob2 (
     std::vector<std::vector<Blob2, Eigen::aligned_allocator<Blob2>>>& sorted,
     std::vector<std::vector<pcl::PointIndices>>& indices)
 {
-  assert(sorted.size() == indices.size());
+  assert (sorted.size() == indices.size());
 
   unsigned int id = 0;
   // Iterate over all labels
@@ -340,21 +340,21 @@ sortIndicesToBlob2 (
 
         b.indices = indices[lab][l];
 
-        pcl::compute3DCentroid(cloud_in, b.indices, b.mean);
+        pcl::compute3DCentroid (cloud_in, b.indices, b.mean);
 #ifdef NEED_STATS
-        pcl::computeCovarianceMatrixNormalized(cloud_in, b.indices, b.mean, b.cov);
-        pcl::getMinMax3D(cloud_in, b.indices, b.min, b.max);
-        pcl::eigen33(b.cov, b.eigenvect, b.eigenval);
+        pcl::computeCovarianceMatrixNormalized (cloud_in, b.indices, b.mean, b.cov);
+        pcl::getMinMax3D (cloud_in, b.indices, b.min, b.max);
+        pcl::eigen33 (b.cov, b.eigenvect, b.eigenval);
 #endif
         // Check if it is a valid blob
         // if((b.eigenval(0) < LUT_max_part_size[(int) lab]) && (b.mean(2) != 0))
-        if ((b.mean(2) != 0)) {
+        if ((b.mean (2) != 0)) {
           b.id = id;
           id++;
-          b.label = static_cast<part_t>(lab);
+          b.label = static_cast<part_t> (lab);
           b.lid = lid;
           lid++;
-          sorted[lab].push_back(b);
+          sorted[lab].push_back (b);
         }
       }
     }

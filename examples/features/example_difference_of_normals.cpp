@@ -59,23 +59,23 @@ main (int argc, char* argv[])
 
   // Load cloud in blob format
   pcl::PCLPointCloud2 blob;
-  pcl::io::loadPCDFile(infile, blob);
+  pcl::io::loadPCDFile (infile, blob);
 
-  pcl::PointCloud<PointT>::Ptr cloud(new pcl::PointCloud<PointT>);
+  pcl::PointCloud<PointT>::Ptr cloud (new pcl::PointCloud<PointT>);
   std::cout << "Loading point cloud...";
-  pcl::fromPCLPointCloud2(blob, *cloud);
+  pcl::fromPCLPointCloud2 (blob, *cloud);
   std::cout << "done." << std::endl;
 
   SearchPtr tree;
 
   if (cloud->isOrganized()) {
-    tree.reset(new pcl::search::OrganizedNeighbor<PointT>());
+    tree.reset (new pcl::search::OrganizedNeighbor<PointT>());
   }
   else {
-    tree.reset(new pcl::search::KdTree<PointT>(false));
+    tree.reset (new pcl::search::KdTree<PointT> (false));
   }
 
-  tree->setInputCloud(cloud);
+  tree->setInputCloud (cloud);
 
   PointCloud<PointT>::Ptr small_cloud_downsampled;
   PointCloud<PointT>::Ptr large_cloud_downsampled;
@@ -86,106 +86,106 @@ main (int argc, char* argv[])
 
     // Create the downsampling filtering object
     pcl::VoxelGrid<PointT> sor;
-    sor.setDownsampleAllData(false);
-    sor.setInputCloud(cloud);
+    sor.setDownsampleAllData (false);
+    sor.setInputCloud (cloud);
 
     // Create downsampled point cloud for DoN NN search with small scale
-    small_cloud_downsampled = PointCloud<PointT>::Ptr(new pcl::PointCloud<PointT>);
-    float smalldownsample = static_cast<float>(scale1 / decimation);
-    sor.setLeafSize(smalldownsample, smalldownsample, smalldownsample);
-    sor.filter(*small_cloud_downsampled);
+    small_cloud_downsampled = PointCloud<PointT>::Ptr (new pcl::PointCloud<PointT>);
+    float smalldownsample = static_cast<float> (scale1 / decimation);
+    sor.setLeafSize (smalldownsample, smalldownsample, smalldownsample);
+    sor.filter (*small_cloud_downsampled);
     std::cout << "Using leaf size of " << smalldownsample << " for small scale, "
               << small_cloud_downsampled->size() << " points" << std::endl;
 
     // Create downsampled point cloud for DoN NN search with large scale
-    large_cloud_downsampled = PointCloud<PointT>::Ptr(new pcl::PointCloud<PointT>);
-    constexpr float largedownsample = static_cast<float>(scale2 / decimation);
-    sor.setLeafSize(largedownsample, largedownsample, largedownsample);
-    sor.filter(*large_cloud_downsampled);
+    large_cloud_downsampled = PointCloud<PointT>::Ptr (new pcl::PointCloud<PointT>);
+    constexpr float largedownsample = static_cast<float> (scale2 / decimation);
+    sor.setLeafSize (largedownsample, largedownsample, largedownsample);
+    sor.filter (*large_cloud_downsampled);
     std::cout << "Using leaf size of " << largedownsample << " for large scale, "
               << large_cloud_downsampled->size() << " points" << std::endl;
   }
 
   // Compute normals using both small and large scales at each point
   pcl::NormalEstimationOMP<PointT, PointNT> ne;
-  ne.setInputCloud(cloud);
-  ne.setSearchMethod(tree);
+  ne.setInputCloud (cloud);
+  ne.setSearchMethod (tree);
 
   /**
    * NOTE: setting viewpoint is very important, so that we can ensure
    * normals are all pointed in the same direction!
    */
-  ne.setViewPoint(std::numeric_limits<float>::max(),
-                  std::numeric_limits<float>::max(),
-                  std::numeric_limits<float>::max());
+  ne.setViewPoint (std::numeric_limits<float>::max(),
+                   std::numeric_limits<float>::max(),
+                   std::numeric_limits<float>::max());
 
   if (scale1 >= scale2) {
     std::cerr << "Error: Large scale must be > small scale!" << std::endl;
-    exit(EXIT_FAILURE);
+    exit (EXIT_FAILURE);
   }
 
   // the normals calculated with the small scale
   std::cout << "Calculating normals for scale..." << scale1 << std::endl;
-  pcl::PointCloud<PointNT>::Ptr normals_small_scale(new pcl::PointCloud<PointNT>);
+  pcl::PointCloud<PointNT>::Ptr normals_small_scale (new pcl::PointCloud<PointNT>);
 
   if (approx) {
-    ne.setSearchSurface(small_cloud_downsampled);
+    ne.setSearchSurface (small_cloud_downsampled);
   }
 
-  ne.setRadiusSearch(scale1);
-  ne.compute(*normals_small_scale);
+  ne.setRadiusSearch (scale1);
+  ne.compute (*normals_small_scale);
 
   std::cout << "Calculating normals for scale..." << scale2 << std::endl;
   // the normals calculated with the large scale
-  pcl::PointCloud<PointNT>::Ptr normals_large_scale(new pcl::PointCloud<PointNT>);
+  pcl::PointCloud<PointNT>::Ptr normals_large_scale (new pcl::PointCloud<PointNT>);
 
   if (approx) {
-    ne.setSearchSurface(large_cloud_downsampled);
+    ne.setSearchSurface (large_cloud_downsampled);
   }
-  ne.setRadiusSearch(scale2);
-  ne.compute(*normals_large_scale);
+  ne.setRadiusSearch (scale2);
+  ne.compute (*normals_large_scale);
 
   // Create output cloud for DoN results
-  PointCloud<PointOutT>::Ptr doncloud(new pcl::PointCloud<PointOutT>);
-  copyPointCloud(*cloud, *doncloud);
+  PointCloud<PointOutT>::Ptr doncloud (new pcl::PointCloud<PointOutT>);
+  copyPointCloud (*cloud, *doncloud);
 
   std::cout << "Calculating DoN... " << std::endl;
   // Create DoN operator
   pcl::DifferenceOfNormalsEstimation<PointT, PointNT, PointOutT> don;
-  don.setInputCloud(cloud);
-  don.setNormalScaleLarge(normals_large_scale);
-  don.setNormalScaleSmall(normals_small_scale);
+  don.setInputCloud (cloud);
+  don.setNormalScaleLarge (normals_large_scale);
+  don.setNormalScaleSmall (normals_small_scale);
 
   if (!don.initCompute()) {
     std::cerr << "Error: Could not initialize DoN feature operator" << std::endl;
-    exit(EXIT_FAILURE);
+    exit (EXIT_FAILURE);
   }
 
   // Compute DoN
-  don.computeFeature(*doncloud);
+  don.computeFeature (*doncloud);
 
   pcl::PCDWriter writer;
 
   // Save DoN features
-  writer.write<PointOutT>(outfile, *doncloud, false);
+  writer.write<PointOutT> (outfile, *doncloud, false);
 
   // Filter by magnitude
   std::cout << "Filtering out DoN mag <= " << threshold << "..." << std::endl;
 
   // build the condition
-  pcl::ConditionOr<PointOutT>::Ptr range_cond(new pcl::ConditionOr<PointOutT>());
-  range_cond->addComparison(
-      pcl::FieldComparison<PointOutT>::ConstPtr(new pcl::FieldComparison<PointOutT>(
+  pcl::ConditionOr<PointOutT>::Ptr range_cond (new pcl::ConditionOr<PointOutT>());
+  range_cond->addComparison (
+      pcl::FieldComparison<PointOutT>::ConstPtr (new pcl::FieldComparison<PointOutT> (
           "curvature", pcl::ComparisonOps::GT, threshold)));
   // build the filter
   pcl::ConditionalRemoval<PointOutT> condrem;
-  condrem.setCondition(range_cond);
-  condrem.setInputCloud(doncloud);
+  condrem.setCondition (range_cond);
+  condrem.setInputCloud (doncloud);
 
-  pcl::PointCloud<PointOutT>::Ptr doncloud_filtered(new pcl::PointCloud<PointOutT>);
+  pcl::PointCloud<PointOutT>::Ptr doncloud_filtered (new pcl::PointCloud<PointOutT>);
 
   // apply filter
-  condrem.filter(*doncloud_filtered);
+  condrem.filter (*doncloud_filtered);
 
   doncloud = doncloud_filtered;
 
@@ -193,32 +193,32 @@ main (int argc, char* argv[])
   std::cout << "Filtered Pointcloud: " << doncloud->size() << " data points."
             << std::endl;
   std::stringstream ss;
-  ss << outfile.substr(0, outfile.length() - 4) << "_threshold_" << threshold
+  ss << outfile.substr (0, outfile.length() - 4) << "_threshold_" << threshold
      << "_.pcd";
-  writer.write<PointOutT>(ss.str(), *doncloud, false);
+  writer.write<PointOutT> (ss.str(), *doncloud, false);
 
   // Filter by magnitude
   std::cout << "Clustering using EuclideanClusterExtraction with tolerance <= "
             << segradius << "..." << std::endl;
 
-  pcl::search::KdTree<PointOutT>::Ptr segtree(new pcl::search::KdTree<PointOutT>);
-  segtree->setInputCloud(doncloud);
+  pcl::search::KdTree<PointOutT>::Ptr segtree (new pcl::search::KdTree<PointOutT>);
+  segtree->setInputCloud (doncloud);
 
   std::vector<pcl::PointIndices> cluster_indices;
   pcl::EuclideanClusterExtraction<PointOutT> ec;
 
-  ec.setClusterTolerance(segradius);
-  ec.setMinClusterSize(50);
-  ec.setMaxClusterSize(100000);
-  ec.setSearchMethod(segtree);
-  ec.setInputCloud(doncloud);
-  ec.extract(cluster_indices);
+  ec.setClusterTolerance (segradius);
+  ec.setMinClusterSize (50);
+  ec.setMaxClusterSize (100000);
+  ec.setSearchMethod (segtree);
+  ec.setInputCloud (doncloud);
+  ec.extract (cluster_indices);
 
   int j = 0;
   for (const auto& cluster : cluster_indices) {
-    pcl::PointCloud<PointOutT>::Ptr cloud_cluster_don(new pcl::PointCloud<PointOutT>);
+    pcl::PointCloud<PointOutT>::Ptr cloud_cluster_don (new pcl::PointCloud<PointOutT>);
     for (const auto& index : cluster.indices) {
-      cloud_cluster_don->points.push_back((*doncloud)[index]);
+      cloud_cluster_don->points.push_back ((*doncloud)[index]);
     }
 
     cloud_cluster_don->width = cloud_cluster_don->size();
@@ -228,9 +228,9 @@ main (int argc, char* argv[])
     std::cout << "PointCloud representing the Cluster: " << cloud_cluster_don->size()
               << " data points." << std::endl;
     std::stringstream ss;
-    ss << outfile.substr(0, outfile.length() - 4) << "_threshold_" << threshold
+    ss << outfile.substr (0, outfile.length() - 4) << "_threshold_" << threshold
        << "_cluster_" << j << ".pcd";
-    writer.write<PointOutT>(ss.str(), *cloud_cluster_don, false);
+    writer.write<PointOutT> (ss.str(), *cloud_cluster_don, false);
     ++j;
   }
 }

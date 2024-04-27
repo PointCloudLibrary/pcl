@@ -47,13 +47,13 @@ namespace visualization {
 /** /brief Class representing 3D area picking events. */
 class PCL_EXPORTS AreaPickingEvent {
 public:
-  AreaPickingEvent(std::map<std::string, pcl::Indices> cloud_indices)
-  : cloud_indices_(std::move(cloud_indices))
+  AreaPickingEvent (std::map<std::string, pcl::Indices> cloud_indices)
+  : cloud_indices_ (std::move (cloud_indices))
   {}
 
-  PCL_DEPRECATED(1, 16, "This constructor is deprecated!")
-  AreaPickingEvent(int /*nb_points*/, const pcl::Indices& indices)
-  : AreaPickingEvent({{"", indices}})
+  PCL_DEPRECATED (1, 16, "This constructor is deprecated!")
+  AreaPickingEvent (int /*nb_points*/, const pcl::Indices& indices)
+  : AreaPickingEvent ({{"", indices}})
   {}
 
   /** \brief For situations where a whole area is selected, return the points indices.
@@ -67,7 +67,7 @@ public:
       return (false);
 
     for (const auto& i : cloud_indices_)
-      indices.insert(indices.cend(), i.second.cbegin(), i.second.cend());
+      indices.insert (indices.cend(), i.second.cbegin(), i.second.cend());
 
     return (true);
   }
@@ -80,7 +80,7 @@ public:
   {
     std::vector<std::string> names;
     for (const auto& i : cloud_indices_)
-      names.push_back(i.first);
+      names.push_back (i.first);
     return names;
   }
   /** \brief For situations where a whole area is selected, return the points indices
@@ -91,7 +91,7 @@ public:
   inline Indices
   getPointsIndices (const std::string& name) const
   {
-    const auto cloud = cloud_indices_.find(name);
+    const auto cloud = cloud_indices_.find (name);
     if (cloud == cloud_indices_.cend())
       return {};
 

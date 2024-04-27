@@ -103,12 +103,12 @@
  */
 #if PCL_RUN_TESTS_AT_COMPILE_TIME == true
 #define PCL_CONSTEXPR constexpr
-#define PCL_EXPECT_TRUE(...) static_assert(__VA_ARGS__, #__VA_ARGS__)
-#define PCL_EXPECT_FLOAT_EQ(val1, val2) static_assert((val1) == (val2), "")
-#define PCL_EXPECT_INT_EQ(val1, val2) static_assert((val1) == (val2), "")
+#define PCL_EXPECT_TRUE(...) static_assert (__VA_ARGS__, #__VA_ARGS__)
+#define PCL_EXPECT_FLOAT_EQ(val1, val2) static_assert ((val1) == (val2), "")
+#define PCL_EXPECT_INT_EQ(val1, val2) static_assert ((val1) == (val2), "")
 #else
 #define PCL_CONSTEXPR
-#define PCL_EXPECT_TRUE(...) EXPECT_TRUE(__VA_ARGS__) << (#__VA_ARGS__);
-#define PCL_EXPECT_FLOAT_EQ(val1, val2) EXPECT_FLOAT_EQ((val1), (val2))
-#define PCL_EXPECT_INT_EQ(val1, val2) EXPECT_EQ((val1), (val2))
+#define PCL_EXPECT_TRUE(...) EXPECT_TRUE (__VA_ARGS__) << (#__VA_ARGS__);
+#define PCL_EXPECT_FLOAT_EQ(val1, val2) EXPECT_FLOAT_EQ ((val1), (val2))
+#define PCL_EXPECT_INT_EQ(val1, val2) EXPECT_EQ ((val1), (val2))
 #endif

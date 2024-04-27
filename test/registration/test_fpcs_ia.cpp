@@ -49,15 +49,15 @@ using namespace pcl::registration;
 PointCloud<PointXYZ> cloud_source, cloud_target;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TEST(PCL, FPCSInitialAlignment)
+TEST (PCL, FPCSInitialAlignment)
 {
   // transform the source cloud by a large amount
-  Eigen::Vector3f initial_offset(1.f, 0.f, 0.f);
-  float angle = static_cast<float>(M_PI) / 2.f;
-  Eigen::Quaternionf initial_rotation(
-      std::cos(angle / 2.f), 0, 0, std::sin(angle / 2.f));
+  Eigen::Vector3f initial_offset (1.f, 0.f, 0.f);
+  float angle = static_cast<float> (M_PI) / 2.f;
+  Eigen::Quaternionf initial_rotation (
+      std::cos (angle / 2.f), 0, 0, std::sin (angle / 2.f));
   PointCloud<PointXYZ> cloud_source_transformed;
-  transformPointCloud(
+  transformPointCloud (
       cloud_source, cloud_source_transformed, initial_offset, initial_rotation);
 
   // create shared pointers
@@ -68,17 +68,17 @@ TEST(PCL, FPCSInitialAlignment)
   // initialize fpcs
   PointCloud<PointXYZ> source_aligned;
   FPCSInitialAlignment<PointXYZ, PointXYZ> fpcs_ia;
-  fpcs_ia.setInputSource(cloud_source_ptr);
-  fpcs_ia.setInputTarget(cloud_target_ptr);
+  fpcs_ia.setInputSource (cloud_source_ptr);
+  fpcs_ia.setInputTarget (cloud_target_ptr);
 
-  fpcs_ia.setNumberOfThreads(nr_threads);
-  fpcs_ia.setApproxOverlap(approx_overlap);
-  fpcs_ia.setDelta(delta, true);
-  fpcs_ia.setNumberOfSamples(nr_samples);
+  fpcs_ia.setNumberOfThreads (nr_threads);
+  fpcs_ia.setApproxOverlap (approx_overlap);
+  fpcs_ia.setDelta (delta, true);
+  fpcs_ia.setNumberOfSamples (nr_samples);
 
   // align
-  fpcs_ia.align(source_aligned);
-  EXPECT_EQ(source_aligned.size(), cloud_source.size());
+  fpcs_ia.align (source_aligned);
+  EXPECT_EQ (source_aligned.size(), cloud_source.size());
 
   // check for correct coarse transformation matrix
   // Eigen::Matrix4f transform_res_from_fpcs = fpcs_ia.getFinalTransformation ();
@@ -99,20 +99,20 @@ main (int argc, char** argv)
   }
 
   // Input
-  if (loadPCDFile(argv[1], cloud_source) < 0) {
+  if (loadPCDFile (argv[1], cloud_source) < 0) {
     std::cerr << "Failed to read test file. Please download `bun0.pcd` and pass its "
                  "path to the test."
               << std::endl;
     return (-1);
   }
-  if (loadPCDFile(argv[2], cloud_target) < 0) {
+  if (loadPCDFile (argv[2], cloud_target) < 0) {
     std::cerr << "Failed to read test file. Please download `bun4.pcd` and pass its "
                  "path to the test."
               << std::endl;
     return (-1);
   }
 
-  testing::InitGoogleTest(&argc, argv);
+  testing::InitGoogleTest (&argc, argv);
   return (RUN_ALL_TESTS());
 }
 

@@ -54,14 +54,14 @@ public:
   /// @brief Constructor
   /// @param selection_ptr A shared pointer pointing to the selection object.
   /// @param cloud_ptr A shared pointer pointing to the cloud object.
-  DeleteCommand(SelectionPtr selection_ptr, const CloudPtr& cloud_ptr);
+  DeleteCommand (SelectionPtr selection_ptr, const CloudPtr& cloud_ptr);
 
   /// @brief Copy constructor - commands are non-copyable
-  DeleteCommand(const DeleteCommand& c) = delete;
+  DeleteCommand (const DeleteCommand& c) = delete;
 
   /// @brief Equal operator - commands are non-copyable
   DeleteCommand&
-  operator=(const DeleteCommand&) = delete;
+  operator= (const DeleteCommand&) = delete;
 
 protected:
   /// @brief Removes the selected points and maintains a backup for undo.

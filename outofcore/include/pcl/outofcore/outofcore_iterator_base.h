@@ -72,20 +72,20 @@ public:
 
   using OutofcoreNodeType = typename OctreeDisk::OutofcoreNodeType;
 
-  explicit OutofcoreIteratorBase(OctreeDisk& octree_arg)
-  : octree_(octree_arg), currentNode_(nullptr)
+  explicit OutofcoreIteratorBase (OctreeDisk& octree_arg)
+  : octree_ (octree_arg), currentNode_ (nullptr)
   {
     reset();
   }
 
   virtual ~OutofcoreIteratorBase() = default;
 
-  OutofcoreIteratorBase(const OutofcoreIteratorBase& src)
-  : octree_(src.octree_), currentNode_(src.currentNode_)
+  OutofcoreIteratorBase (const OutofcoreIteratorBase& src)
+  : octree_ (src.octree_), currentNode_ (src.currentNode_)
   {}
 
   inline OutofcoreIteratorBase&
-  operator=(const OutofcoreIteratorBase& src)
+  operator= (const OutofcoreIteratorBase& src)
   {
     octree_ = src.octree_;
     currentNode_ = src.currentNode_;
@@ -107,16 +107,16 @@ public:
   virtual inline void
   reset ()
   {
-    currentNode_ = static_cast<OctreeDiskNode*>(octree_.getRootNode());
+    currentNode_ = static_cast<OctreeDiskNode*> (octree_.getRootNode());
     currentOctreeDepth_ = 0;
-    max_depth_ = static_cast<unsigned int>(octree_.getDepth());
+    max_depth_ = static_cast<unsigned int> (octree_.getDepth());
   }
 
   inline void
   setMaxDepth (unsigned int max_depth)
   {
-    if (max_depth > static_cast<unsigned int>(octree_.getDepth())) {
-      max_depth = static_cast<unsigned int>(octree_.getDepth());
+    if (max_depth > static_cast<unsigned int> (octree_.getDepth())) {
+      max_depth = static_cast<unsigned int> (octree_.getDepth());
     }
 
     max_depth_ = max_depth;

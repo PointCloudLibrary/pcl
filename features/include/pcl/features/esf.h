@@ -75,11 +75,11 @@ public:
   ESFEstimation() : local_cloud_()
   {
     feature_name_ = "ESFEstimation";
-    lut_.resize(GRIDSIZE);
+    lut_.resize (GRIDSIZE);
     for (int i = 0; i < GRIDSIZE; ++i) {
-      lut_[i].resize(GRIDSIZE);
+      lut_[i].resize (GRIDSIZE);
       for (int j = 0; j < GRIDSIZE; ++j)
-        lut_[i][j].resize(GRIDSIZE);
+        lut_[i][j].resize (GRIDSIZE);
     }
     // lut_.resize (boost::extents[GRIDSIZE][GRIDSIZE][GRIDSIZE]);
     search_radius_ = 0;

@@ -54,34 +54,34 @@ bool
 PCA<PointT>::initCompute()
 {
   if (!Base::initCompute()) {
-    PCL_THROW_EXCEPTION(InitFailedException, "[pcl::PCA::initCompute] failed");
+    PCL_THROW_EXCEPTION (InitFailedException, "[pcl::PCA::initCompute] failed");
   }
   if (indices_->size() < 3) {
-    PCL_THROW_EXCEPTION(InitFailedException,
-                        "[pcl::PCA::initCompute] number of points < 3");
+    PCL_THROW_EXCEPTION (InitFailedException,
+                         "[pcl::PCA::initCompute] number of points < 3");
   }
 
   // Compute mean
   mean_ = Eigen::Vector4f::Zero();
-  compute3DCentroid(*input_, *indices_, mean_);
+  compute3DCentroid (*input_, *indices_, mean_);
   // Compute demeanished cloud
   Eigen::MatrixXf cloud_demean;
-  demeanPointCloud(*input_, *indices_, mean_, cloud_demean);
-  assert(cloud_demean.cols() == int(indices_->size()));
+  demeanPointCloud (*input_, *indices_, mean_, cloud_demean);
+  assert (cloud_demean.cols() == int (indices_->size()));
   // Compute the product cloud_demean * cloud_demean^T
-  const Eigen::Matrix3f alpha = (1.f / (static_cast<float>(indices_->size()) - 1.f)) *
+  const Eigen::Matrix3f alpha = (1.f / (static_cast<float> (indices_->size()) - 1.f)) *
                                 cloud_demean.topRows<3>() *
                                 cloud_demean.topRows<3>().transpose();
 
   // Compute eigen vectors and values
-  Eigen::SelfAdjointEigenSolver<Eigen::Matrix3f> evd(alpha);
+  Eigen::SelfAdjointEigenSolver<Eigen::Matrix3f> evd (alpha);
   // Organize eigenvectors and eigenvalues in ascendent order
   for (int i = 0; i < 3; ++i) {
     eigenvalues_[i] = evd.eigenvalues()[2 - i];
-    eigenvectors_.col(i) = evd.eigenvectors().col(2 - i);
+    eigenvectors_.col (i) = evd.eigenvectors().col (2 - i);
   }
   // Enforce right hand rule
-  eigenvectors_.col(2) = eigenvectors_.col(0).cross(eigenvectors_.col(1));
+  eigenvectors_.col (2) = eigenvectors_.col (0).cross (eigenvectors_.col (1));
   // If not basis only then compute the coefficients
   if (!basis_only_)
     coefficients_ = eigenvectors_.transpose() * cloud_demean.topRows<3>();
@@ -91,18 +91,18 @@ PCA<PointT>::initCompute()
 
 template <typename PointT>
 inline void
-PCA<PointT>::update(const PointT& input_point, FLAG flag)
+PCA<PointT>::update (const PointT& input_point, FLAG flag)
 {
   if (!compute_done_)
     initCompute();
   if (!compute_done_)
-    PCL_THROW_EXCEPTION(InitFailedException,
-                        "[pcl::PCA::update] PCA initCompute failed");
+    PCL_THROW_EXCEPTION (InitFailedException,
+                         "[pcl::PCA::update] PCA initCompute failed");
 
-  Eigen::Vector3f input(input_point.x, input_point.y, input_point.z);
+  Eigen::Vector3f input (input_point.x, input_point.y, input_point.z);
   const std::size_t n = eigenvectors_.cols(); // number of eigen vectors
   Eigen::VectorXf meanp =
-      (static_cast<float>(n) * (mean_.head<3>() + input)) / static_cast<float>(n + 1);
+      (static_cast<float> (n) * (mean_.head<3>() + input)) / static_cast<float> (n + 1);
   Eigen::VectorXf a = eigenvectors_.transpose() * (input - mean_.head<3>());
   Eigen::VectorXf y = (eigenvectors_ * a) + mean_.head<3>();
   Eigen::VectorXf h = y - input;
@@ -110,42 +110,42 @@ PCA<PointT>::update(const PointT& input_point, FLAG flag)
     h.normalize();
   else
     h.setZero();
-  float gamma = h.dot(input - mean_.head<3>());
-  Eigen::MatrixXf D = Eigen::MatrixXf::Zero(a.size() + 1, a.size() + 1);
-  D.block(0, 0, n, n) = a * a.transpose();
-  D /= static_cast<float>(n) / static_cast<float>((n + 1) * (n + 1));
+  float gamma = h.dot (input - mean_.head<3>());
+  Eigen::MatrixXf D = Eigen::MatrixXf::Zero (a.size() + 1, a.size() + 1);
+  D.block (0, 0, n, n) = a * a.transpose();
+  D /= static_cast<float> (n) / static_cast<float> ((n + 1) * (n + 1));
   for (std::size_t i = 0; i < a.size(); i++) {
-    D(i, i) += static_cast<float>(n) / static_cast<float>(n + 1) * eigenvalues_(i);
-    D(D.rows() - 1, i) =
-        static_cast<float>(n) / static_cast<float>((n + 1) * (n + 1)) * gamma * a(i);
-    D(i, D.cols() - 1) = D(D.rows() - 1, i);
-    D(D.rows() - 1, D.cols() - 1) =
-        static_cast<float>(n) / static_cast<float>((n + 1) * (n + 1)) * gamma * gamma;
+    D (i, i) += static_cast<float> (n) / static_cast<float> (n + 1) * eigenvalues_ (i);
+    D (D.rows() - 1, i) =
+        static_cast<float> (n) / static_cast<float> ((n + 1) * (n + 1)) * gamma * a (i);
+    D (i, D.cols() - 1) = D (D.rows() - 1, i);
+    D (D.rows() - 1, D.cols() - 1) =
+        static_cast<float> (n) / static_cast<float> ((n + 1) * (n + 1)) * gamma * gamma;
   }
 
-  Eigen::MatrixXf R(D.rows(), D.cols());
-  Eigen::EigenSolver<Eigen::MatrixXf> D_evd(D, false);
+  Eigen::MatrixXf R (D.rows(), D.cols());
+  Eigen::EigenSolver<Eigen::MatrixXf> D_evd (D, false);
   Eigen::VectorXf alphap = D_evd.eigenvalues().real();
-  eigenvalues_.resize(eigenvalues_.size() + 1);
+  eigenvalues_.resize (eigenvalues_.size() + 1);
   for (std::size_t i = 0; i < eigenvalues_.size(); i++) {
-    eigenvalues_(i) = alphap(eigenvalues_.size() - i - 1);
-    R.col(i) = D.col(D.cols() - i - 1);
+    eigenvalues_ (i) = alphap (eigenvalues_.size() - i - 1);
+    R.col (i) = D.col (D.cols() - i - 1);
   }
   Eigen::MatrixXf Up =
-      Eigen::MatrixXf::Zero(eigenvectors_.rows(), eigenvectors_.cols() + 1);
-  Up.topLeftCorner(eigenvectors_.rows(), eigenvectors_.cols()) = eigenvectors_;
+      Eigen::MatrixXf::Zero (eigenvectors_.rows(), eigenvectors_.cols() + 1);
+  Up.topLeftCorner (eigenvectors_.rows(), eigenvectors_.cols()) = eigenvectors_;
   Up.rightCols<1>() = h;
   eigenvectors_ = Up * R;
   if (!basis_only_) {
     Eigen::Vector3f etha = Up.transpose() * (mean_.head<3>() - meanp);
-    coefficients_.resize(coefficients_.rows() + 1, coefficients_.cols() + 1);
+    coefficients_.resize (coefficients_.rows() + 1, coefficients_.cols() + 1);
     for (std::size_t i = 0; i < (coefficients_.cols() - 1); i++) {
-      coefficients_(coefficients_.rows() - 1, i) = 0;
-      coefficients_.col(i) = (R.transpose() * coefficients_.col(i)) + etha;
+      coefficients_ (coefficients_.rows() - 1, i) = 0;
+      coefficients_.col (i) = (R.transpose() * coefficients_.col (i)) + etha;
     }
-    a.resize(a.size() + 1);
-    a(a.size() - 1) = 0;
-    coefficients_.col(coefficients_.cols() - 1) = (R.transpose() * a) + etha;
+    a.resize (a.size() + 1);
+    a (a.size() - 1) = 0;
+    coefficients_.col (coefficients_.cols() - 1) = (R.transpose() * a) + etha;
   }
   mean_.head<3>() = meanp;
   switch (flag) {
@@ -154,24 +154,24 @@ PCA<PointT>::update(const PointT& input_point, FLAG flag)
       break;
   case preserve:
     if (!basis_only_)
-      coefficients_ = coefficients_.topRows(coefficients_.rows() - 1);
-    eigenvectors_ = eigenvectors_.leftCols(eigenvectors_.cols() - 1);
-    eigenvalues_.resize(eigenvalues_.size() - 1);
+      coefficients_ = coefficients_.topRows (coefficients_.rows() - 1);
+    eigenvectors_ = eigenvectors_.leftCols (eigenvectors_.cols() - 1);
+    eigenvalues_.resize (eigenvalues_.size() - 1);
     break;
   default:
-    PCL_ERROR("[pcl::PCA] unknown flag\n");
+    PCL_ERROR ("[pcl::PCA] unknown flag\n");
   }
 }
 
 template <typename PointT>
 inline void
-PCA<PointT>::project(const PointT& input, PointT& projection)
+PCA<PointT>::project (const PointT& input, PointT& projection)
 {
   if (!compute_done_)
     initCompute();
   if (!compute_done_)
-    PCL_THROW_EXCEPTION(InitFailedException,
-                        "[pcl::PCA::project] PCA initCompute failed");
+    PCL_THROW_EXCEPTION (InitFailedException,
+                         "[pcl::PCA::project] PCA initCompute failed");
 
   Eigen::Vector3f demean_input = input.getVector3fMap() - mean_.head<3>();
   projection.getVector3fMap() = eigenvectors_.transpose() * demean_input;
@@ -179,38 +179,38 @@ PCA<PointT>::project(const PointT& input, PointT& projection)
 
 template <typename PointT>
 inline void
-PCA<PointT>::project(const PointCloud& input, PointCloud& projection)
+PCA<PointT>::project (const PointCloud& input, PointCloud& projection)
 {
   if (!compute_done_)
     initCompute();
   if (!compute_done_)
-    PCL_THROW_EXCEPTION(InitFailedException,
-                        "[pcl::PCA::project] PCA initCompute failed");
+    PCL_THROW_EXCEPTION (InitFailedException,
+                         "[pcl::PCA::project] PCA initCompute failed");
   if (input.is_dense) {
-    projection.resize(input.size());
+    projection.resize (input.size());
     for (std::size_t i = 0; i < input.size(); ++i)
-      project(input[i], projection[i]);
+      project (input[i], projection[i]);
   }
   else {
     PointT p;
     for (const auto& pt : input) {
-      if (!std::isfinite(pt.x) || !std::isfinite(pt.y) || !std::isfinite(pt.z))
+      if (!std::isfinite (pt.x) || !std::isfinite (pt.y) || !std::isfinite (pt.z))
         continue;
-      project(pt, p);
-      projection.push_back(p);
+      project (pt, p);
+      projection.push_back (p);
     }
   }
 }
 
 template <typename PointT>
 inline void
-PCA<PointT>::reconstruct(const PointT& projection, PointT& input)
+PCA<PointT>::reconstruct (const PointT& projection, PointT& input)
 {
   if (!compute_done_)
     initCompute();
   if (!compute_done_)
-    PCL_THROW_EXCEPTION(InitFailedException,
-                        "[pcl::PCA::reconstruct] PCA initCompute failed");
+    PCL_THROW_EXCEPTION (InitFailedException,
+                         "[pcl::PCA::reconstruct] PCA initCompute failed");
 
   input.getVector3fMap() = eigenvectors_ * projection.getVector3fMap();
   input.getVector3fMap() += mean_.head<3>();
@@ -218,26 +218,26 @@ PCA<PointT>::reconstruct(const PointT& projection, PointT& input)
 
 template <typename PointT>
 inline void
-PCA<PointT>::reconstruct(const PointCloud& projection, PointCloud& input)
+PCA<PointT>::reconstruct (const PointCloud& projection, PointCloud& input)
 {
   if (!compute_done_)
     initCompute();
   if (!compute_done_)
-    PCL_THROW_EXCEPTION(InitFailedException,
-                        "[pcl::PCA::reconstruct] PCA initCompute failed");
+    PCL_THROW_EXCEPTION (InitFailedException,
+                         "[pcl::PCA::reconstruct] PCA initCompute failed");
   if (input.is_dense) {
-    input.resize(projection.size());
+    input.resize (projection.size());
     for (std::size_t i = 0; i < projection.size(); ++i)
-      reconstruct(projection[i], input[i]);
+      reconstruct (projection[i], input[i]);
   }
   else {
     PointT p;
     for (std::size_t i = 0; i < input.size(); ++i) {
-      if (!std::isfinite(input[i].x) || !std::isfinite(input[i].y) ||
-          !std::isfinite(input[i].z))
+      if (!std::isfinite (input[i].x) || !std::isfinite (input[i].y) ||
+          !std::isfinite (input[i].z))
         continue;
-      reconstruct(projection[i], p);
-      input.push_back(p);
+      reconstruct (projection[i], p);
+      input.push_back (p);
     }
   }
 }

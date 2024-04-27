@@ -80,14 +80,14 @@ class InteractorStyleSwitch : public vtkInteractorStyle {
 public:
   static InteractorStyleSwitch*
   New ();
-  vtkTypeMacro(InteractorStyleSwitch, vtkInteractorStyle);
+  vtkTypeMacro (InteractorStyleSwitch, vtkInteractorStyle);
 
   InteractorStyleSwitch();
 
   void
   SetInteractor (vtkRenderWindowInteractor* iren) override;
 
-  vtkGetObjectMacro(current_style_, vtkInteractorStyle);
+  vtkGetObjectMacro (current_style_, vtkInteractorStyle);
 
   void
   initializeInteractorStyles (pcl::visualization::PCLVisualizer::Ptr vis,
@@ -108,7 +108,7 @@ public:
   inline vtkSmartPointer<vtkInteractorStyle>
   getInteractorStyle (const interactor_styles::INTERACTOR_STYLES interactor_style) const
   {
-    return name_to_style_map_.value(interactor_style);
+    return name_to_style_map_.value (interactor_style);
   }
 
   void
@@ -147,9 +147,9 @@ protected:
   pcl::visualization::PCLVisualizer::Ptr vis_;
 
 private:
-  InteractorStyleSwitch(const InteractorStyleSwitch&); // Not implemented.
+  InteractorStyleSwitch (const InteractorStyleSwitch&); // Not implemented.
   void
-  operator=(const InteractorStyleSwitch&); // Not implemented.
+  operator= (const InteractorStyleSwitch&); // Not implemented.
   ProjectModel* project_model_;
 };
 

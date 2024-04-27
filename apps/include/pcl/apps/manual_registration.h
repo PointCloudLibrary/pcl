@@ -61,21 +61,21 @@ public:
 
   PCL_MAKE_ALIGNED_OPERATOR_NEW
 
-  ManualRegistration(float voxel_size);
+  ManualRegistration (float voxel_size);
 
   ~ManualRegistration() override = default;
 
   void
   setSrcCloud (pcl::PointCloud<PointT>::Ptr cloud_src)
   {
-    cloud_src_ = std::move(cloud_src);
-    vis_src_->addPointCloud(cloud_src_, "cloud_src_");
+    cloud_src_ = std::move (cloud_src);
+    vis_src_->addPointCloud (cloud_src_, "cloud_src_");
   }
   void
   setDstCloud (pcl::PointCloud<PointT>::Ptr cloud_dst)
   {
-    cloud_dst_ = std::move(cloud_dst);
-    vis_dst_->addPointCloud(cloud_dst_, "cloud_dst_");
+    cloud_dst_ = std::move (cloud_dst);
+    vis_dst_->addPointCloud (cloud_dst_, "cloud_dst_");
   }
 
   void

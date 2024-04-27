@@ -29,25 +29,25 @@ struct PolygonMesh {
   {
     const auto point_offset = mesh1.cloud.width * mesh1.cloud.height;
 
-    bool success = pcl::PCLPointCloud2::concatenate(mesh1.cloud, mesh2.cloud);
+    bool success = pcl::PCLPointCloud2::concatenate (mesh1.cloud, mesh2.cloud);
     if (!success) {
       return false;
     }
     // Make the resultant polygon mesh take the newest stamp
-    mesh1.header.stamp = std::max(mesh1.header.stamp, mesh2.header.stamp);
+    mesh1.header.stamp = std::max (mesh1.header.stamp, mesh2.header.stamp);
 
-    std::transform(mesh2.polygons.begin(),
-                   mesh2.polygons.end(),
-                   std::back_inserter(mesh1.polygons),
-                   [point_offset] (auto polygon) {
-                     std::transform(polygon.vertices.begin(),
-                                    polygon.vertices.end(),
-                                    polygon.vertices.begin(),
-                                    [point_offset] (auto& point_idx) {
-                                      return point_idx + point_offset;
-                                    });
-                     return polygon;
-                   });
+    std::transform (mesh2.polygons.begin(),
+                    mesh2.polygons.end(),
+                    std::back_inserter (mesh1.polygons),
+                    [point_offset] (auto polygon) {
+                      std::transform (polygon.vertices.begin(),
+                                      polygon.vertices.end(),
+                                      polygon.vertices.begin(),
+                                      [point_offset] (auto& point_idx) {
+                                        return point_idx + point_offset;
+                                      });
+                      return polygon;
+                    });
 
     return true;
   }
@@ -64,7 +64,7 @@ struct PolygonMesh {
                PolygonMesh& mesh_out)
   {
     mesh_out = mesh1;
-    return concatenate(mesh_out, mesh2);
+    return concatenate (mesh_out, mesh2);
   }
 
   /** \brief Add another polygon mesh to the current mesh.
@@ -72,9 +72,9 @@ struct PolygonMesh {
    * \return the new mesh as a concatenation of the current mesh and the new given mesh
    */
   inline PolygonMesh&
-  operator+=(const PolygonMesh& rhs)
+  operator+= (const PolygonMesh& rhs)
   {
-    concatenate((*this), rhs);
+    concatenate ((*this), rhs);
     return (*this);
   }
 
@@ -83,9 +83,9 @@ struct PolygonMesh {
    * \return the new mesh as a concatenation of the current mesh and the new given mesh
    */
   inline const PolygonMesh
-  operator+(const PolygonMesh& rhs)
+  operator+ (const PolygonMesh& rhs)
   {
-    return (PolygonMesh(*this) += rhs);
+    return (PolygonMesh (*this) += rhs);
   }
 
 public:
@@ -97,7 +97,7 @@ using PolygonMeshPtr = PolygonMesh::Ptr;
 using PolygonMeshConstPtr = PolygonMesh::ConstPtr;
 
 inline std::ostream&
-operator<<(std::ostream& s, const ::pcl::PolygonMesh& v)
+operator<< (std::ostream& s, const ::pcl::PolygonMesh& v)
 {
   s << "header: " << std::endl;
   s << v.header;

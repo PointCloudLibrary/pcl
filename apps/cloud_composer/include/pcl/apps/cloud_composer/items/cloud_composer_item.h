@@ -41,10 +41,10 @@
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/point_types.h>
 
-static QStringList ITEM_TYPES_STRINGS(QStringList() << "Cloud Composer Item"
-                                                    << "Cloud Item"
-                                                    << "Normals Item"
-                                                    << "FPFH Item");
+static QStringList ITEM_TYPES_STRINGS (QStringList() << "Cloud Composer Item"
+                                                     << "Cloud Item"
+                                                     << "Normals Item"
+                                                     << "FPFH Item");
 
 namespace pcl {
 namespace cloud_composer {
@@ -71,8 +71,8 @@ public:
     FPFH_ITEM
   };
 
-  CloudComposerItem(const QString& name = "default item");
-  CloudComposerItem(const CloudComposerItem& to_copy);
+  CloudComposerItem (const QString& name = "default item");
+  CloudComposerItem (const CloudComposerItem& to_copy);
   ~CloudComposerItem();
 
   inline int
@@ -85,7 +85,7 @@ public:
   inline QString
   getId () const
   {
-    return data(ItemDataRole::ITEM_ID).toString();
+    return data (ItemDataRole::ITEM_ID).toString();
   }
 
   /** \brief Convenience function to get Item's Property Pointer */
@@ -151,13 +151,13 @@ public:
   static T*
   asPtr (const QVariant& v)
   {
-    return (static_cast<T*>(v.value<void*>()));
+    return (static_cast<T*> (v.value<void*>()));
   }
 
   static QVariant
   asQVariant (T* ptr)
   {
-    return (QVariant::fromValue(static_cast<void*>(ptr)));
+    return (QVariant::fromValue (static_cast<void*> (ptr)));
   }
 };
 
@@ -166,4 +166,4 @@ public:
 
 using ConstItemList = QList<const pcl::cloud_composer::CloudComposerItem*>;
 
-Q_DECLARE_METATYPE(pcl::cloud_composer::CloudComposerItem);
+Q_DECLARE_METATYPE (pcl::cloud_composer::CloudComposerItem);

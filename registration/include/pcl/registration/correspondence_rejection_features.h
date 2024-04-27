@@ -65,7 +65,7 @@ public:
   using ConstPtr = shared_ptr<const CorrespondenceRejectorFeatures>;
 
   /** \brief Empty constructor. */
-  CorrespondenceRejectorFeatures() : max_distance_(std::numeric_limits<float>::max())
+  CorrespondenceRejectorFeatures() : max_distance_ (std::numeric_limits<float>::max())
   {
     rejection_name_ = "CorrespondenceRejectorFeatures";
   }
@@ -151,7 +151,7 @@ protected:
   inline void
   applyRejection (pcl::Correspondences& correspondences) override
   {
-    getRemainingCorrespondences(*input_correspondences_, correspondences);
+    getRemainingCorrespondences (*input_correspondences_, correspondences);
   }
 
   /** \brief The maximum distance threshold between two correspondent points in source
@@ -191,14 +191,14 @@ protected:
                                FeatureContainerInterface {
   public:
     using FeatureCloudConstPtr = typename pcl::PointCloud<FeatureT>::ConstPtr;
-    using SearchMethod = std::function<int(
+    using SearchMethod = std::function<int (
         const pcl::PointCloud<FeatureT>&, int, pcl::Indices&, std::vector<float>&)>;
 
     using PointRepresentationConstPtr =
         typename pcl::PointRepresentation<FeatureT>::ConstPtr;
 
     FeatureContainer()
-    : thresh_(std::numeric_limits<double>::max()), feature_representation_()
+    : thresh_ (std::numeric_limits<double>::max()), feature_representation_()
     {}
 
     /** \brief Empty destructor */
@@ -261,28 +261,28 @@ protected:
       // If no feature representation was given, reset to the default implementation for
       // FeatureT
       if (!feature_representation_)
-        feature_representation_.reset(new DefaultFeatureRepresentation<FeatureT>);
+        feature_representation_.reset (new DefaultFeatureRepresentation<FeatureT>);
 
       // Get the source and the target feature from the list
       const FeatureT& feat_src = (*source_features_)[index];
       const FeatureT& feat_tgt = (*target_features_)[index];
 
       // Check if the representations are valid
-      if (!feature_representation_->isValid(feat_src) ||
-          !feature_representation_->isValid(feat_tgt)) {
-        PCL_ERROR("[pcl::registration::%s::getCorrespondenceScore] Invalid feature "
-                  "representation given!\n",
-                  this->getClassName().c_str());
+      if (!feature_representation_->isValid (feat_src) ||
+          !feature_representation_->isValid (feat_tgt)) {
+        PCL_ERROR ("[pcl::registration::%s::getCorrespondenceScore] Invalid feature "
+                   "representation given!\n",
+                   this->getClassName().c_str());
         return (std::numeric_limits<double>::max());
       }
 
       // Set the internal feature point representation of choice
       Eigen::VectorXf feat_src_ptr =
-          Eigen::VectorXf::Zero(feature_representation_->getNumberOfDimensions());
-      feature_representation_->vectorize(FeatureT(feat_src), feat_src_ptr);
+          Eigen::VectorXf::Zero (feature_representation_->getNumberOfDimensions());
+      feature_representation_->vectorize (FeatureT (feat_src), feat_src_ptr);
       Eigen::VectorXf feat_tgt_ptr =
-          Eigen::VectorXf::Zero(feature_representation_->getNumberOfDimensions());
-      feature_representation_->vectorize(FeatureT(feat_tgt), feat_tgt_ptr);
+          Eigen::VectorXf::Zero (feature_representation_->getNumberOfDimensions());
+      feature_representation_->vectorize (FeatureT (feat_tgt), feat_tgt_ptr);
 
       // Compute the L2 norm
       return ((feat_src_ptr - feat_tgt_ptr).squaredNorm());
@@ -296,7 +296,7 @@ protected:
     inline bool
     isCorrespondenceValid (int index) override
     {
-      return (getCorrespondenceScore(index) < thresh_ * thresh_);
+      return (getCorrespondenceScore (index) < thresh_ * thresh_);
     }
 
   private:

@@ -22,15 +22,15 @@ class ON_Xform;
 class ON_CLASS ON_Matrix {
 public:
   ON_Matrix();
-  ON_Matrix(int row_count, int col_count);
-  ON_Matrix( // see ON_Matrix::Create(int,int,int,int) for details
-      int,   // first valid row index
-      int,   // last valid row index
-      int,   // first valid column index
-      int    // last valid column index
+  ON_Matrix (int row_count, int col_count);
+  ON_Matrix ( // see ON_Matrix::Create(int,int,int,int) for details
+      int,    // first valid row index
+      int,    // last valid row index
+      int,    // first valid column index
+      int     // last valid column index
   );
-  ON_Matrix(const ON_Xform&);
-  ON_Matrix(const ON_Matrix&);
+  ON_Matrix (const ON_Xform&);
+  ON_Matrix (const ON_Matrix&);
 
   /*
   Description:
@@ -47,7 +47,7 @@ public:
     ON_Matrix functions that increase the value of row_count or col_count
     will fail on a matrix created with this constructor.
   */
-  ON_Matrix(int row_count, int col_count, double** M, bool bDestructorFreeM);
+  ON_Matrix (int row_count, int col_count, double** M, bool bDestructorFreeM);
 
   virtual ~ON_Matrix();
   void
@@ -57,14 +57,14 @@ public:
   //           0 <= i < RowCount()
   //           0 <= j < ColCount()
   double*
-  operator[](int);
+  operator[] (int);
   const double*
-  operator[](int) const;
+  operator[] (int) const;
 
   ON_Matrix&
-  operator=(const ON_Matrix&);
+  operator= (const ON_Matrix&);
   ON_Matrix&
-  operator=(const ON_Xform&);
+  operator= (const ON_Xform&);
 
   bool
   IsValid () const;

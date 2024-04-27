@@ -77,7 +77,7 @@
 #endif // !HAVE_ZLIB
 
 bool
-ON_BinaryArchive::WriteCompressedBuffer(
+ON_BinaryArchive::WriteCompressedBuffer (
     std::size_t sizeof__inbuffer, // sizeof uncompressed input data
     const void* inbuffer          // uncompressed input data
 )
@@ -92,14 +92,14 @@ ON_BinaryArchive::WriteCompressedBuffer(
 
   // number of bytes of uncompressed data
 
-  if (!WriteSize(sizeof__inbuffer))
+  if (!WriteSize (sizeof__inbuffer))
     return false;
   if (0 == sizeof__inbuffer)
     return true;
 
   // 32 bit crc of uncompressed data
-  const unsigned int buffer_crc = ON_CRC32(0, sizeof__inbuffer, inbuffer);
-  if (!WriteInt(buffer_crc))
+  const unsigned int buffer_crc = ON_CRC32 (0, sizeof__inbuffer, inbuffer);
+  if (!WriteInt (buffer_crc))
     return false;
 
   unsigned char method = (sizeof__inbuffer > 128) ? 1 : 0;
@@ -109,19 +109,19 @@ ON_BinaryArchive::WriteCompressedBuffer(
       method = 0;
     }
   }
-  if (!WriteChar(method))
+  if (!WriteChar (method))
     return false;
 
   switch (method) {
   case 0: // uncompressed
-    rc = WriteByte(sizeof__inbuffer, inbuffer);
+    rc = WriteByte (sizeof__inbuffer, inbuffer);
     if (rc) {
       compressed_size = sizeof__inbuffer;
     }
     break;
 
   case 1: // compressed
-    compressed_size = WriteDeflate(sizeof__inbuffer, inbuffer);
+    compressed_size = WriteDeflate (sizeof__inbuffer, inbuffer);
     rc = (compressed_size > 0) ? true : false;
     CompressionEnd();
     break;
@@ -131,15 +131,15 @@ ON_BinaryArchive::WriteCompressedBuffer(
 }
 
 bool
-ON_BinaryArchive::ReadCompressedBufferSize(std::size_t* sizeof__outbuffer)
+ON_BinaryArchive::ReadCompressedBufferSize (std::size_t* sizeof__outbuffer)
 {
-  return ReadSize(sizeof__outbuffer);
+  return ReadSize (sizeof__outbuffer);
 }
 
 bool
-ON_BinaryArchive::ReadCompressedBuffer( // read and uncompress
-    std::size_t sizeof__outbuffer,      // sizeof of uncompressed buffer to read
-    void* outbuffer,                    // uncompressed output data returned here
+ON_BinaryArchive::ReadCompressedBuffer ( // read and uncompress
+    std::size_t sizeof__outbuffer,       // sizeof of uncompressed buffer to read
+    void* outbuffer,                     // uncompressed output data returned here
     int* bFailedCRC)
 {
   bool rc = false;
@@ -156,10 +156,10 @@ ON_BinaryArchive::ReadCompressedBuffer( // read and uncompress
   if (0 == outbuffer)
     return false;
 
-  if (!ReadInt(&buffer_crc0)) // 32 bit crc of uncompressed buffer
+  if (!ReadInt (&buffer_crc0)) // 32 bit crc of uncompressed buffer
     return false;
 
-  if (!ReadChar(&method))
+  if (!ReadChar (&method))
     return false;
 
   if (method != 0 && method != 1)
@@ -167,20 +167,20 @@ ON_BinaryArchive::ReadCompressedBuffer( // read and uncompress
 
   switch (method) {
   case 0: // uncompressed
-    rc = ReadByte(sizeof__outbuffer, outbuffer);
+    rc = ReadByte (sizeof__outbuffer, outbuffer);
     break;
   case 1: // compressed
     rc = CompressionInit();
     if (rc)
-      rc = ReadInflate(sizeof__outbuffer, outbuffer);
+      rc = ReadInflate (sizeof__outbuffer, outbuffer);
     CompressionEnd();
     break;
   }
 
   if (rc) {
-    buffer_crc1 = ON_CRC32(0, sizeof__outbuffer, outbuffer);
+    buffer_crc1 = ON_CRC32 (0, sizeof__outbuffer, outbuffer);
     if (buffer_crc1 != buffer_crc0) {
-      ON_ERROR("ON_BinaryArchive::ReadCompressedBuffer() crc error");
+      ON_ERROR ("ON_BinaryArchive::ReadCompressedBuffer() crc error");
       if (bFailedCRC)
         *bFailedCRC = true;
     }
@@ -190,7 +190,7 @@ ON_BinaryArchive::ReadCompressedBuffer( // read and uncompress
 }
 
 std::size_t
-ON_BinaryArchive::WriteDeflate(    // returns number of bytes written
+ON_BinaryArchive::WriteDeflate (   // returns number of bytes written
     std::size_t sizeof___inbuffer, // sizeof uncompressed input data ( > 0 )
     const void* in___buffer        // uncompressed input data ( != NULL )
 )
@@ -255,7 +255,7 @@ ON_BinaryArchive::WriteDeflate(    // returns number of bytes written
   const std::size_t max_avail = 0x7FFFFFF0;
 
   //  Compressed information is saved in a chunk.
-  bool rc = BeginWrite3dmChunk(TCODE_ANONYMOUS_CHUNK, 0);
+  bool rc = BeginWrite3dmChunk (TCODE_ANONYMOUS_CHUNK, 0);
   if (!rc)
     return false;
 
@@ -290,10 +290,10 @@ ON_BinaryArchive::WriteDeflate(    // returns number of bytes written
       // no uncompressed input is left - switch to finish mode
       flush = Z_FINISH;
     }
-    zrc = z_deflate(&m_zlib.strm, flush);
+    zrc = z_deflate (&m_zlib.strm, flush);
     if (zrc < 0) {
       // Something went haywire - bail out.
-      ON_ERROR("ON_BinaryArchive::WriteDeflate - z_deflate failure");
+      ON_ERROR ("ON_BinaryArchive::WriteDeflate - z_deflate failure");
       rc = false;
       break;
     }
@@ -302,7 +302,7 @@ ON_BinaryArchive::WriteDeflate(    // returns number of bytes written
     if (deflate_output_count > 0) {
       // The last call to deflate created output.  Send
       // this output to the archive.
-      rc = WriteChar(deflate_output_count, m_zlib.buffer);
+      rc = WriteChar (deflate_output_count, m_zlib.buffer);
       if (!rc)
         break;
       out__count += deflate_output_count;
@@ -364,7 +364,7 @@ ON_BinaryArchive::WriteDeflate(    // returns number of bytes written
 }
 
 bool
-ON_BinaryArchive::ReadInflate(
+ON_BinaryArchive::ReadInflate (
     std::size_t sizeof___outbuffer, // sizeof uncompressed data
     void* out___buffer              // buffer for uncompressed data
 )
@@ -381,23 +381,23 @@ ON_BinaryArchive::ReadInflate(
   {
     ON__UINT32 tcode = 0;
     ON__INT64 big_value = 0;
-    rc = BeginRead3dmBigChunk(&tcode, &big_value);
+    rc = BeginRead3dmBigChunk (&tcode, &big_value);
     if (!rc) {
       if (0 != out___buffer && sizeof___outbuffer > 0)
-        memset(out___buffer, 0, sizeof___outbuffer);
+        memset (out___buffer, 0, sizeof___outbuffer);
       return false;
     }
     if (tcode == TCODE_ANONYMOUS_CHUNK && big_value > 4 && sizeof___outbuffer > 0 &&
         0 != out___buffer) {
       // read compressed buffer from the archive
-      sizeof__inbuffer = (std::size_t)(
+      sizeof__inbuffer = (std::size_t) (
           big_value - 4); // the last 4 bytes in this chunk are a 32 bit crc
-      in___buffer = onmalloc(sizeof__inbuffer);
+      in___buffer = onmalloc (sizeof__inbuffer);
       if (!in___buffer) {
         rc = false;
       }
       else {
-        rc = ReadByte(sizeof__inbuffer, in___buffer);
+        rc = ReadByte (sizeof__inbuffer, in___buffer);
       }
     }
     else {
@@ -415,12 +415,12 @@ ON_BinaryArchive::ReadInflate(
   if (!bValidCompressedBuffer && 0 != out___buffer && sizeof___outbuffer > 0) {
     // Decompression will fail, but we might get something valid
     // at the start if the data flaw was near the end of the buffer.
-    memset(out___buffer, 0, sizeof___outbuffer);
+    memset (out___buffer, 0, sizeof___outbuffer);
   }
 
   if (!rc) {
     if (in___buffer) {
-      onfree(in___buffer);
+      onfree (in___buffer);
       in___buffer = 0;
     }
     return false;
@@ -465,10 +465,10 @@ ON_BinaryArchive::ReadInflate(
       // no compressed input is left - switch to finish mode
       flush = Z_FINISH;
     }
-    zrc = z_inflate(&m_zlib.strm, flush);
+    zrc = z_inflate (&m_zlib.strm, flush);
     if (zrc < 0) {
       // Something went haywire - bail out.
-      ON_ERROR("ON_BinaryArchive::ReadInflate - z_inflate failure");
+      ON_ERROR ("ON_BinaryArchive::ReadInflate - z_inflate failure");
       rc = false;
       break;
     }
@@ -528,7 +528,7 @@ ON_BinaryArchive::ReadInflate(
   }
 
   if (in___buffer) {
-    onfree(in___buffer);
+    onfree (in___buffer);
     in___buffer = 0;
   }
 
@@ -548,12 +548,12 @@ ON_BinaryArchive::CompressionInit()
     rc = (m_zlib.mode == ON::write) ? true : false;
     if (!rc) {
       CompressionEnd();
-      if (Z_OK == deflateInit(&m_zlib.strm, Z_BEST_COMPRESSION)) {
+      if (Z_OK == deflateInit (&m_zlib.strm, Z_BEST_COMPRESSION)) {
         m_zlib.mode = ON::write;
         rc = true;
       }
       else {
-        memset(&m_zlib.strm, 0, sizeof(m_zlib.strm));
+        memset (&m_zlib.strm, 0, sizeof (m_zlib.strm));
       }
     }
   }
@@ -561,12 +561,12 @@ ON_BinaryArchive::CompressionInit()
     rc = (m_zlib.mode == ON::read) ? true : false;
     if (!rc) {
       CompressionEnd();
-      if (Z_OK == inflateInit(&m_zlib.strm)) {
+      if (Z_OK == inflateInit (&m_zlib.strm)) {
         m_zlib.mode = ON::read;
         rc = true;
       }
       else {
-        memset(&m_zlib.strm, 0, sizeof(m_zlib.strm));
+        memset (&m_zlib.strm, 0, sizeof (m_zlib.strm));
       }
     }
   }
@@ -583,16 +583,16 @@ ON_BinaryArchive::CompressionEnd()
   switch (m_zlib.mode) {
   case ON::read:
   case ON::read3dm:
-    inflateEnd(&m_zlib.strm);
+    inflateEnd (&m_zlib.strm);
     break;
   case ON::write:
   case ON::write3dm:
-    deflateEnd(&m_zlib.strm);
+    deflateEnd (&m_zlib.strm);
     break;
   default: // to quiet lint
     break;
   }
-  memset(&m_zlib.strm, 0, sizeof(m_zlib.strm));
+  memset (&m_zlib.strm, 0, sizeof (m_zlib.strm));
   m_zlib.mode = ON::unknown_archive_mode;
 }
 
@@ -614,33 +614,33 @@ struct ON_CompressedBufferHelper {
 };
 
 ON_CompressedBuffer::ON_CompressedBuffer()
-: m_sizeof_uncompressed(0)
-, m_sizeof_compressed(0)
-, m_crc_uncompressed(0)
-, m_crc_compressed(0)
-, m_method(0)
-, m_sizeof_element(0)
-, m_buffer_compressed_capacity(0)
-, m_buffer_compressed(0)
+: m_sizeof_uncompressed (0)
+, m_sizeof_compressed (0)
+, m_crc_uncompressed (0)
+, m_crc_compressed (0)
+, m_method (0)
+, m_sizeof_element (0)
+, m_buffer_compressed_capacity (0)
+, m_buffer_compressed (0)
 {}
 
 ON_CompressedBuffer::~ON_CompressedBuffer() { Destroy(); }
 
-ON_CompressedBuffer::ON_CompressedBuffer(const ON_CompressedBuffer& src)
-: m_sizeof_uncompressed(0)
-, m_sizeof_compressed(0)
-, m_crc_uncompressed(0)
-, m_crc_compressed(0)
-, m_method(0)
-, m_sizeof_element(0)
-, m_buffer_compressed_capacity(0)
-, m_buffer_compressed(0)
+ON_CompressedBuffer::ON_CompressedBuffer (const ON_CompressedBuffer& src)
+: m_sizeof_uncompressed (0)
+, m_sizeof_compressed (0)
+, m_crc_uncompressed (0)
+, m_crc_compressed (0)
+, m_method (0)
+, m_sizeof_element (0)
+, m_buffer_compressed_capacity (0)
+, m_buffer_compressed (0)
 {
   *this = src;
 }
 
 ON_CompressedBuffer&
-ON_CompressedBuffer::operator=(const ON_CompressedBuffer& src)
+ON_CompressedBuffer::operator= (const ON_CompressedBuffer& src)
 {
   if (this != &src) {
     Destroy();
@@ -652,10 +652,10 @@ ON_CompressedBuffer::operator=(const ON_CompressedBuffer& src)
       m_method = src.m_method;
       m_sizeof_element = src.m_sizeof_element;
 
-      m_buffer_compressed = onmalloc(m_sizeof_compressed);
+      m_buffer_compressed = onmalloc (m_sizeof_compressed);
       if (m_buffer_compressed) {
         m_buffer_compressed_capacity = m_sizeof_compressed;
-        memcpy(m_buffer_compressed, src.m_buffer_compressed, m_sizeof_compressed);
+        memcpy (m_buffer_compressed, src.m_buffer_compressed, m_sizeof_compressed);
       }
     }
   }
@@ -663,34 +663,34 @@ ON_CompressedBuffer::operator=(const ON_CompressedBuffer& src)
 }
 
 bool
-ON_CompressedBuffer::Write(ON_BinaryArchive& binary_archive) const
+ON_CompressedBuffer::Write (ON_BinaryArchive& binary_archive) const
 {
-  bool rc = binary_archive.BeginWrite3dmChunk(TCODE_ANONYMOUS_CHUNK, 1, 0);
+  bool rc = binary_archive.BeginWrite3dmChunk (TCODE_ANONYMOUS_CHUNK, 1, 0);
   if (!rc)
     return false;
 
   for (;;) {
-    rc = binary_archive.WriteSize(m_sizeof_uncompressed);
+    rc = binary_archive.WriteSize (m_sizeof_uncompressed);
     if (!rc)
       break;
-    rc = binary_archive.WriteSize(
+    rc = binary_archive.WriteSize (
         (m_buffer_compressed && m_sizeof_compressed > 0) ? m_sizeof_compressed : 0);
     if (!rc)
       break;
-    rc = binary_archive.WriteInt(m_crc_uncompressed);
+    rc = binary_archive.WriteInt (m_crc_uncompressed);
     if (!rc)
       break;
-    rc = binary_archive.WriteInt(m_crc_compressed);
+    rc = binary_archive.WriteInt (m_crc_compressed);
     if (!rc)
       break;
-    rc = binary_archive.WriteInt(m_method);
+    rc = binary_archive.WriteInt (m_method);
     if (!rc)
       break;
-    rc = binary_archive.WriteInt(m_sizeof_element);
+    rc = binary_archive.WriteInt (m_sizeof_element);
     if (!rc)
       break;
     if (m_buffer_compressed && m_sizeof_compressed > 0) {
-      rc = binary_archive.WriteByte(m_sizeof_compressed, m_buffer_compressed);
+      rc = binary_archive.WriteByte (m_sizeof_compressed, m_buffer_compressed);
       if (!rc)
         break;
     }
@@ -704,11 +704,11 @@ ON_CompressedBuffer::Write(ON_BinaryArchive& binary_archive) const
 }
 
 bool
-ON_CompressedBuffer::Read(ON_BinaryArchive& binary_archive)
+ON_CompressedBuffer::Read (ON_BinaryArchive& binary_archive)
 {
   int major_version = 0;
   int minor_version = 0;
-  bool rc = binary_archive.BeginRead3dmChunk(
+  bool rc = binary_archive.BeginRead3dmChunk (
       TCODE_ANONYMOUS_CHUNK, &major_version, &minor_version);
   if (!rc)
     return false;
@@ -717,29 +717,29 @@ ON_CompressedBuffer::Read(ON_BinaryArchive& binary_archive)
     rc = (1 == major_version);
     if (!rc)
       break;
-    rc = binary_archive.ReadSize(&m_sizeof_uncompressed);
+    rc = binary_archive.ReadSize (&m_sizeof_uncompressed);
     if (!rc)
       break;
-    rc = binary_archive.ReadSize(&m_sizeof_compressed);
+    rc = binary_archive.ReadSize (&m_sizeof_compressed);
     if (!rc)
       break;
-    rc = binary_archive.ReadInt(&m_crc_uncompressed);
+    rc = binary_archive.ReadInt (&m_crc_uncompressed);
     if (!rc)
       break;
-    rc = binary_archive.ReadInt(&m_crc_compressed);
+    rc = binary_archive.ReadInt (&m_crc_compressed);
     if (!rc)
       break;
-    rc = binary_archive.ReadInt(&m_method);
+    rc = binary_archive.ReadInt (&m_method);
     if (!rc)
       break;
-    rc = binary_archive.ReadInt(&m_sizeof_element);
+    rc = binary_archive.ReadInt (&m_sizeof_element);
     if (!rc)
       break;
     if (m_sizeof_compressed > 0) {
-      m_buffer_compressed = onmalloc(m_sizeof_compressed);
+      m_buffer_compressed = onmalloc (m_sizeof_compressed);
       if (m_buffer_compressed) {
         m_buffer_compressed_capacity = m_sizeof_compressed;
-        rc = binary_archive.ReadByte(m_sizeof_compressed, m_buffer_compressed);
+        rc = binary_archive.ReadByte (m_sizeof_compressed, m_buffer_compressed);
       }
       else {
         m_sizeof_compressed = 0;
@@ -761,7 +761,7 @@ void
 ON_CompressedBuffer::Destroy()
 {
   if (m_buffer_compressed)
-    onfree(m_buffer_compressed);
+    onfree (m_buffer_compressed);
 
   m_sizeof_uncompressed = 0;
   m_sizeof_compressed = 0;
@@ -774,7 +774,7 @@ ON_CompressedBuffer::Destroy()
 }
 
 bool
-ON_CompressedBuffer::Compress(
+ON_CompressedBuffer::Compress (
     std::size_t sizeof__inbuffer, // sizeof uncompressed input data
     const void* inbuffer,         // uncompressed input data
     int sizeof_element)
@@ -794,7 +794,7 @@ ON_CompressedBuffer::Compress(
   m_sizeof_uncompressed = sizeof__inbuffer;
 
   ON_CompressedBufferHelper helper;
-  memset(&helper, 0, sizeof(helper));
+  memset (&helper, 0, sizeof (helper));
   helper.action = 1;
 
   bool bToggleByteOrder = false;
@@ -810,30 +810,30 @@ ON_CompressedBuffer::Compress(
   };
 
   if (bToggleByteOrder) {
-    ON_BinaryFile::ToggleByteOrder((int)(sizeof__inbuffer / m_sizeof_element),
-                                   m_sizeof_element,
-                                   inbuffer,
-                                   (void*)inbuffer);
+    ON_BinaryFile::ToggleByteOrder ((int)(sizeof__inbuffer / m_sizeof_element),
+                                    m_sizeof_element,
+                                    inbuffer,
+                                    (void*)inbuffer);
   }
 
   m_method = (sizeof__inbuffer > 128) ? 1 : 0;
   if (m_method) {
-    if (!CompressionInit(&helper)) {
-      CompressionEnd(&helper);
+    if (!CompressionInit (&helper)) {
+      CompressionEnd (&helper);
       m_method = 0;
     }
     else {
-      m_buffer_compressed = onmalloc(sizeof__inbuffer / 4);
+      m_buffer_compressed = onmalloc (sizeof__inbuffer / 4);
       std::size_t sizeof_compressed =
-          DeflateHelper(&helper, sizeof__inbuffer, inbuffer);
-      CompressionEnd(&helper);
+          DeflateHelper (&helper, sizeof__inbuffer, inbuffer);
+      CompressionEnd (&helper);
       if (sizeof_compressed > 0 && sizeof_compressed == m_sizeof_compressed) {
         rc = true;
         if (2 * m_buffer_compressed_capacity > 3 * m_sizeof_compressed) {
           // release memory we don't need
           m_buffer_compressed_capacity = m_sizeof_compressed;
           m_buffer_compressed =
-              onrealloc(m_buffer_compressed, m_buffer_compressed_capacity);
+              onrealloc (m_buffer_compressed, m_buffer_compressed_capacity);
         }
       }
       else {
@@ -845,32 +845,32 @@ ON_CompressedBuffer::Compress(
 
   if (0 == m_method) {
     // uncompressed
-    m_buffer_compressed = onmalloc(sizeof__inbuffer);
+    m_buffer_compressed = onmalloc (sizeof__inbuffer);
     if (m_buffer_compressed) {
       m_sizeof_compressed = sizeof__inbuffer;
       m_buffer_compressed_capacity = sizeof__inbuffer;
-      memcpy(m_buffer_compressed, inbuffer, sizeof__inbuffer);
+      memcpy (m_buffer_compressed, inbuffer, sizeof__inbuffer);
       rc = true;
     }
   }
 
   if (bToggleByteOrder) {
-    ON_BinaryFile::ToggleByteOrder((int)(sizeof__inbuffer / m_sizeof_element),
-                                   m_sizeof_element,
-                                   inbuffer,
-                                   (void*)inbuffer);
+    ON_BinaryFile::ToggleByteOrder ((int)(sizeof__inbuffer / m_sizeof_element),
+                                    m_sizeof_element,
+                                    inbuffer,
+                                    (void*)inbuffer);
   }
 
   if (rc) {
-    m_crc_uncompressed = ON_CRC32(0, sizeof__inbuffer, inbuffer);
-    m_crc_compressed = ON_CRC32(0, m_sizeof_compressed, m_buffer_compressed);
+    m_crc_uncompressed = ON_CRC32 (0, sizeof__inbuffer, inbuffer);
+    m_crc_compressed = ON_CRC32 (0, m_sizeof_compressed, m_buffer_compressed);
   }
 
   return rc;
 }
 
 bool
-ON_CompressedBuffer::Uncompress(void* outbuffer, int* bFailedCRC) const
+ON_CompressedBuffer::Uncompress (void* outbuffer, int* bFailedCRC) const
 {
   bool rc = false;
 
@@ -884,12 +884,12 @@ ON_CompressedBuffer::Uncompress(void* outbuffer, int* bFailedCRC) const
   if (m_method != 0 && m_method != 1)
     return false;
 
-  ON__UINT32 compressed_crc = ON_CRC32(0, m_sizeof_compressed, m_buffer_compressed);
+  ON__UINT32 compressed_crc = ON_CRC32 (0, m_sizeof_compressed, m_buffer_compressed);
   if (compressed_crc != m_crc_compressed) {
     // m_buffer_compressed is corrupt - let's hope the corruption
     // is near the end and we ge something useful from the
     // beginning.
-    memset(outbuffer, 0, m_sizeof_uncompressed);
+    memset (outbuffer, 0, m_sizeof_uncompressed);
     if (bFailedCRC)
       *bFailedCRC = false;
   }
@@ -897,7 +897,7 @@ ON_CompressedBuffer::Uncompress(void* outbuffer, int* bFailedCRC) const
   switch (m_method) {
   case 0: // uncompressed
     if (m_buffer_compressed && m_sizeof_uncompressed == m_sizeof_compressed) {
-      memcpy(outbuffer, m_buffer_compressed, m_sizeof_uncompressed);
+      memcpy (outbuffer, m_buffer_compressed, m_sizeof_uncompressed);
       rc = true;
     }
     break;
@@ -905,12 +905,12 @@ ON_CompressedBuffer::Uncompress(void* outbuffer, int* bFailedCRC) const
   case 1: // compressed
   {
     ON_CompressedBufferHelper helper;
-    memset(&helper, 0, sizeof(helper));
+    memset (&helper, 0, sizeof (helper));
     helper.action = 2;
-    rc = CompressionInit(&helper);
+    rc = CompressionInit (&helper);
     if (rc) {
-      rc = InflateHelper(&helper, m_sizeof_uncompressed, outbuffer);
-      CompressionEnd(&helper);
+      rc = InflateHelper (&helper, m_sizeof_uncompressed, outbuffer);
+      CompressionEnd (&helper);
     }
   } break;
   }
@@ -921,19 +921,19 @@ ON_CompressedBuffer::Uncompress(void* outbuffer, int* bFailedCRC) const
   case 8:
     if (0 == (m_sizeof_uncompressed % m_sizeof_element)) {
       if (ON::big_endian == ON::Endian()) {
-        ON_BinaryFile::ToggleByteOrder((int)(m_sizeof_uncompressed / m_sizeof_element),
-                                       m_sizeof_element,
-                                       outbuffer,
-                                       outbuffer);
+        ON_BinaryFile::ToggleByteOrder ((int)(m_sizeof_uncompressed / m_sizeof_element),
+                                        m_sizeof_element,
+                                        outbuffer,
+                                        outbuffer);
       }
     }
     break;
   };
 
   if (rc) {
-    ON__UINT32 uncompressed_crc = ON_CRC32(0, m_sizeof_uncompressed, outbuffer);
+    ON__UINT32 uncompressed_crc = ON_CRC32 (0, m_sizeof_uncompressed, outbuffer);
     if (uncompressed_crc != m_crc_uncompressed) {
-      ON_ERROR("ON_CompressedBuffer::Uncompress() crc error");
+      ON_ERROR ("ON_CompressedBuffer::Uncompress() crc error");
       if (bFailedCRC)
         *bFailedCRC = true;
     }
@@ -943,7 +943,7 @@ ON_CompressedBuffer::Uncompress(void* outbuffer, int* bFailedCRC) const
 }
 
 bool
-ON_CompressedBuffer::WriteChar(std::size_t count, const void* buffer)
+ON_CompressedBuffer::WriteChar (std::size_t count, const void* buffer)
 {
   bool rc = true;
   if (count > 0 && buffer) {
@@ -955,14 +955,14 @@ ON_CompressedBuffer::WriteChar(std::size_t count, const void* buffer)
         delta = m_buffer_compressed_capacity / 4;
       m_buffer_compressed_capacity += delta;
       m_buffer_compressed =
-          onrealloc(m_buffer_compressed, m_buffer_compressed_capacity);
+          onrealloc (m_buffer_compressed, m_buffer_compressed_capacity);
       if (!m_buffer_compressed) {
         m_buffer_compressed_capacity = 0;
         m_sizeof_compressed = 0;
         return false;
       }
     }
-    memcpy(((char*)m_buffer_compressed) + m_sizeof_compressed, buffer, count);
+    memcpy (((char*)m_buffer_compressed) + m_sizeof_compressed, buffer, count);
     m_sizeof_compressed += count;
   }
   else {
@@ -972,7 +972,7 @@ ON_CompressedBuffer::WriteChar(std::size_t count, const void* buffer)
 }
 
 std::size_t
-ON_CompressedBuffer::DeflateHelper( // returns number of bytes written
+ON_CompressedBuffer::DeflateHelper ( // returns number of bytes written
     ON_CompressedBufferHelper* helper,
     std::size_t sizeof___inbuffer, // sizeof uncompressed input data ( > 0 )
     const void* in___buffer        // uncompressed input data ( != NULL )
@@ -1074,10 +1074,10 @@ ON_CompressedBuffer::DeflateHelper( // returns number of bytes written
       // no uncompressed input is left - switch to finish mode
       flush = Z_FINISH;
     }
-    zrc = z_deflate(&m_zlib.strm, flush);
+    zrc = z_deflate (&m_zlib.strm, flush);
     if (zrc < 0) {
       // Something went haywire - bail out.
-      ON_ERROR("ON_CompressedBuffer::DeflateHelper - z_deflate failure");
+      ON_ERROR ("ON_CompressedBuffer::DeflateHelper - z_deflate failure");
       rc = false;
       break;
     }
@@ -1086,7 +1086,7 @@ ON_CompressedBuffer::DeflateHelper( // returns number of bytes written
     if (deflate_output_count > 0) {
       // The last call to deflate created output.  Send
       // this output to the archive.
-      rc = WriteChar(deflate_output_count, m_zlib.buffer);
+      rc = WriteChar (deflate_output_count, m_zlib.buffer);
       if (!rc)
         break;
       out__count += deflate_output_count;
@@ -1144,7 +1144,7 @@ ON_CompressedBuffer::DeflateHelper( // returns number of bytes written
 }
 
 bool
-ON_CompressedBuffer::InflateHelper(
+ON_CompressedBuffer::InflateHelper (
     ON_CompressedBufferHelper* helper,
     std::size_t sizeof___outbuffer, // sizeof uncompressed data
     void* out___buffer              // buffer for uncompressed data
@@ -1197,10 +1197,10 @@ ON_CompressedBuffer::InflateHelper(
       // no compressed input is left - switch to finish mode
       flush = Z_FINISH;
     }
-    zrc = z_inflate(&m_zlib.strm, flush);
+    zrc = z_inflate (&m_zlib.strm, flush);
     if (zrc < 0) {
       // Something went haywire - bail out.
-      ON_ERROR("ON_CompressedBuffer::InflateHelper - z_inflate failure");
+      ON_ERROR ("ON_CompressedBuffer::InflateHelper - z_inflate failure");
       rc = false;
       break;
     }
@@ -1267,7 +1267,7 @@ ON_CompressedBuffer::InflateHelper(
 }
 
 bool
-ON_CompressedBuffer::CompressionInit(struct ON_CompressedBufferHelper* helper) const
+ON_CompressedBuffer::CompressionInit (struct ON_CompressedBufferHelper* helper) const
 {
   bool rc = false;
 
@@ -1275,21 +1275,21 @@ ON_CompressedBuffer::CompressionInit(struct ON_CompressedBufferHelper* helper) c
     // inflateInit() and deflateInit() are in zlib 1.3.3
     if (1 == helper->action) {
       // begin compression using zlib's deflate tool
-      if (Z_OK == deflateInit(&helper->strm, Z_BEST_COMPRESSION)) {
+      if (Z_OK == deflateInit (&helper->strm, Z_BEST_COMPRESSION)) {
         rc = true;
       }
       else {
-        memset(&helper->strm, 0, sizeof(helper->strm));
+        memset (&helper->strm, 0, sizeof (helper->strm));
         helper->action = 0;
       }
     }
     else if (2 == helper->action) {
       // begin uncompression using zlib's inflate tool
-      if (Z_OK == inflateInit(&helper->strm)) {
+      if (Z_OK == inflateInit (&helper->strm)) {
         rc = true;
       }
       else {
-        memset(&helper->strm, 0, sizeof(helper->strm));
+        memset (&helper->strm, 0, sizeof (helper->strm));
         helper->action = 0;
       }
     }
@@ -1299,7 +1299,7 @@ ON_CompressedBuffer::CompressionInit(struct ON_CompressedBufferHelper* helper) c
 }
 
 bool
-ON_CompressedBuffer::CompressionEnd(struct ON_CompressedBufferHelper* helper) const
+ON_CompressedBuffer::CompressionEnd (struct ON_CompressedBufferHelper* helper) const
 {
   bool rc = false;
 
@@ -1307,15 +1307,15 @@ ON_CompressedBuffer::CompressionEnd(struct ON_CompressedBufferHelper* helper) co
     // inflateEnd() and deflateEnd() are in zlib 1.3.3
     if (1 == helper->action) {
       // finish compression
-      deflateEnd(&helper->strm);
+      deflateEnd (&helper->strm);
       rc = true;
     }
     else if (2 == helper->action) {
       // finish decompression
-      inflateEnd(&helper->strm);
+      inflateEnd (&helper->strm);
       rc = true;
     }
-    memset(&helper->strm, 0, sizeof(helper->strm));
+    memset (&helper->strm, 0, sizeof (helper->strm));
     helper->action = 0;
   }
 

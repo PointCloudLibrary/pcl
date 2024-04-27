@@ -34,7 +34,7 @@ template <class Real>
 Real
 Random (void)
 {
-  return Real(rand()) / RAND_MAX;
+  return Real (rand()) / RAND_MAX;
 }
 
 template <class Real>
@@ -43,10 +43,10 @@ RandomBallPoint (void)
 {
   Point3D<Real> p;
   while (1) {
-    p.coords[0] = Real(1.0 - 2.0 * Random<Real>());
-    p.coords[1] = Real(1.0 - 2.0 * Random<Real>());
-    p.coords[2] = Real(1.0 - 2.0 * Random<Real>());
-    double l = SquareLength(p);
+    p.coords[0] = Real (1.0 - 2.0 * Random<Real>());
+    p.coords[1] = Real (1.0 - 2.0 * Random<Real>());
+    p.coords[2] = Real (1.0 - 2.0 * Random<Real>());
+    double l = SquareLength (p);
     if (l <= 1) {
       return p;
     }
@@ -57,7 +57,7 @@ Point3D<Real>
 RandomSpherePoint (void)
 {
   Point3D<Real> p = RandomBallPoint<Real>();
-  Real l = Real(Length(p));
+  Real l = Real (Length (p));
   p.coords[0] /= l;
   p.coords[1] /= l;
   p.coords[2] /= l;
@@ -76,7 +76,7 @@ template <class Real>
 double
 Length (const Point3D<Real>& p)
 {
-  return sqrt(SquareLength(p));
+  return sqrt (SquareLength (p));
 }
 
 template <class Real>
@@ -92,7 +92,7 @@ template <class Real>
 double
 Distance (const Point3D<Real>& p1, const Point3D<Real>& p2)
 {
-  return sqrt(SquareDistance(p1, p2));
+  return sqrt (SquareDistance (p1, p2));
 }
 
 template <class Real>
@@ -115,15 +115,15 @@ EdgeCollapse (const Real& edgeRatio,
   Point3D<Real> p[3], q[2], c;
   double d[3], a;
   double Ratio =
-      12.0 / sqrt(3.0); // (Sum of Squares Length / Area) for and equilateral triangle
+      12.0 / sqrt (3.0); // (Sum of Squares Length / Area) for and equilateral triangle
 
   remapTable = new int[positions.size()];
   pointCount = new int[positions.size()];
-  for (i = 0; i < int(positions.size()); i++) {
+  for (i = 0; i < int (positions.size()); i++) {
     remapTable[i] = i;
     pointCount[i] = 1;
   }
-  for (i = int(triangles.size() - 1); i >= 0; i--) {
+  for (i = int (triangles.size() - 1); i >= 0; i--) {
     for (j = 0; j < 3; j++) {
       idx[j] = triangles[i].idx[j];
       while (remapTable[idx[j]] < idx[j]) {
@@ -143,10 +143,10 @@ EdgeCollapse (const Real& edgeRatio,
     for (j = 0; j < 3; j++) {
       q[0].coords[j] = p[1].coords[j] - p[0].coords[j];
       q[1].coords[j] = p[2].coords[j] - p[0].coords[j];
-      d[j] = SquareDistance(p[j], p[(j + 1) % 3]);
+      d[j] = SquareDistance (p[j], p[(j + 1) % 3]);
     }
-    CrossProduct(q[0], q[1], c);
-    a = Length(c) / 2;
+    CrossProduct (q[0], q[1], c);
+    a = Length (c) / 2;
 
     if ((d[0] + d[1] + d[2]) * edgeRatio > a * Ratio) {
       // Find the smallest edge
@@ -182,12 +182,12 @@ EdgeCollapse (const Real& edgeRatio,
     }
   }
   int pCount = 0;
-  for (i = 0; i < int(positions.size()); i++) {
+  for (i = 0; i < int (positions.size()); i++) {
     for (j = 0; j < 3; j++) {
       positions[i].coords[j] /= pointCount[i];
     }
     if (normals) {
-      Real l = Real(Length((*normals)[i]));
+      Real l = Real (Length ((*normals)[i]));
       for (j = 0; j < 3; j++) {
         (*normals)[i].coords[j] /= l;
       }
@@ -201,8 +201,8 @@ EdgeCollapse (const Real& edgeRatio,
       pCount++;
     }
   }
-  positions.resize(pCount);
-  for (i = int(triangles.size() - 1); i >= 0; i--) {
+  positions.resize (pCount);
+  for (i = int (triangles.size() - 1); i >= 0; i--) {
     for (j = 0; j < 3; j++) {
       idx[j] = triangles[i].idx[j];
       while (remapTable[idx[j]] < idx[j]) {
@@ -231,15 +231,15 @@ TriangleCollapse (const Real& edgeRatio,
   Point3D<Real> p[3], q[2], c;
   double d[3], a;
   double Ratio =
-      12.0 / sqrt(3.0); // (Sum of Squares Length / Area) for and equilateral triangle
+      12.0 / sqrt (3.0); // (Sum of Squares Length / Area) for and equilateral triangle
 
   remapTable = new int[positions.size()];
   pointCount = new int[positions.size()];
-  for (i = 0; i < int(positions.size()); i++) {
+  for (i = 0; i < int (positions.size()); i++) {
     remapTable[i] = i;
     pointCount[i] = 1;
   }
-  for (i = int(triangles.size() - 1); i >= 0; i--) {
+  for (i = int (triangles.size() - 1); i >= 0; i--) {
     for (j = 0; j < 3; j++) {
       idx[j] = triangles[i].idx[j];
       while (remapTable[idx[j]] < idx[j]) {
@@ -259,10 +259,10 @@ TriangleCollapse (const Real& edgeRatio,
     for (j = 0; j < 3; j++) {
       q[0].coords[j] = p[1].coords[j] - p[0].coords[j];
       q[1].coords[j] = p[2].coords[j] - p[0].coords[j];
-      d[j] = SquareDistance(p[j], p[(j + 1) % 3]);
+      d[j] = SquareDistance (p[j], p[(j + 1) % 3]);
     }
-    CrossProduct(q[0], q[1], c);
-    a = Length(c) / 2;
+    CrossProduct (q[0], q[1], c);
+    a = Length (c) / 2;
 
     if ((d[0] + d[1] + d[2]) * edgeRatio > a * Ratio) {
       // Find the smallest edge
@@ -321,12 +321,12 @@ TriangleCollapse (const Real& edgeRatio,
     }
   }
   int pCount = 0;
-  for (i = 0; i < int(positions.size()); i++) {
+  for (i = 0; i < int (positions.size()); i++) {
     for (j = 0; j < 3; j++) {
       positions[i].coords[j] /= pointCount[i];
     }
     if (normals) {
-      Real l = Real(Length((*normals)[i]));
+      Real l = Real (Length ((*normals)[i]));
       for (j = 0; j < 3; j++) {
         (*normals)[i].coords[j] /= l;
       }
@@ -340,8 +340,8 @@ TriangleCollapse (const Real& edgeRatio,
       pCount++;
     }
   }
-  positions.resize(pCount);
-  for (i = int(triangles.size() - 1); i >= 0; i--) {
+  positions.resize (pCount);
+  for (i = int (triangles.size() - 1); i >= 0; i--) {
     for (j = 0; j < 3; j++) {
       idx[j] = triangles[i].idx[j];
       while (remapTable[idx[j]] < idx[j]) {
@@ -363,7 +363,7 @@ TriangleCollapse (const Real& edgeRatio,
 ///////////////////
 template <class Real>
 long long
-Triangulation<Real>::EdgeIndex(int p1, int p2)
+Triangulation<Real>::EdgeIndex (int p1, int p2)
 {
   if (p1 > p2) {
     return ((long long)(p1) << 32) | ((long long)(p2));
@@ -375,7 +375,7 @@ Triangulation<Real>::EdgeIndex(int p1, int p2)
 
 template <class Real>
 int
-Triangulation<Real>::factor(int tIndex, int& p1, int& p2, int& p3)
+Triangulation<Real>::factor (int tIndex, int& p1, int& p2, int& p3)
 {
   if (triangles[tIndex].eIndex[0] < 0 || triangles[tIndex].eIndex[1] < 0 ||
       triangles[tIndex].eIndex[2] < 0) {
@@ -404,56 +404,56 @@ Triangulation<Real>::factor(int tIndex, int& p1, int& p2, int& p3)
 
 template <class Real>
 double
-Triangulation<Real>::area(int p1, int p2, int p3)
+Triangulation<Real>::area (int p1, int p2, int p3)
 {
   Point3D<Real> q1, q2, q;
   for (int i = 0; i < 3; i++) {
     q1.coords[i] = points[p2].coords[i] - points[p1].coords[i];
     q2.coords[i] = points[p3].coords[i] - points[p1].coords[i];
   }
-  CrossProduct(q1, q2, q);
-  return Length(q);
+  CrossProduct (q1, q2, q);
+  return Length (q);
 }
 
 template <class Real>
 double
-Triangulation<Real>::area(int tIndex)
+Triangulation<Real>::area (int tIndex)
 {
   int p1, p2, p3;
-  factor(tIndex, p1, p2, p3);
-  return area(p1, p2, p3);
+  factor (tIndex, p1, p2, p3);
+  return area (p1, p2, p3);
 }
 
 template <class Real>
 double
-Triangulation<Real>::area(void)
+Triangulation<Real>::area (void)
 {
   double a = 0;
-  for (int i = 0; i < int(triangles.size()); i++) {
-    a += area(i);
+  for (int i = 0; i < int (triangles.size()); i++) {
+    a += area (i);
   }
   return a;
 }
 
 template <class Real>
 int
-Triangulation<Real>::addTriangle(int p1, int p2, int p3)
+Triangulation<Real>::addTriangle (int p1, int p2, int p3)
 {
   int tIdx, eIdx, p[3];
   p[0] = p1;
   p[1] = p2;
   p[2] = p3;
-  triangles.push_back(TriangulationTriangle());
-  tIdx = int(triangles.size()) - 1;
+  triangles.push_back (TriangulationTriangle());
+  tIdx = int (triangles.size()) - 1;
 
   for (int i = 0; i < 3; i++) {
-    long long e = EdgeIndex(p[i], p[(i + 1) % 3]);
-    if (edgeMap.count(e) == 0) {
+    long long e = EdgeIndex (p[i], p[(i + 1) % 3]);
+    if (edgeMap.count (e) == 0) {
       TriangulationEdge edge;
       edge.pIndex[0] = p[i];
       edge.pIndex[1] = p[(i + 1) % 3];
-      edges.push_back(edge);
-      eIdx = int(edges.size()) - 1;
+      edges.push_back (edge);
+      eIdx = int (edges.size()) - 1;
       edgeMap[e] = eIdx;
       edges[eIdx].tIndex[0] = tIdx;
     }
@@ -464,7 +464,7 @@ Triangulation<Real>::addTriangle(int p1, int p2, int p3)
           edges[eIdx].tIndex[0] = tIdx;
         }
         else {
-          PCL_DEBUG("Edge Triangle in use 1\n");
+          PCL_DEBUG ("Edge Triangle in use 1\n");
           return 0;
         }
       }
@@ -473,7 +473,7 @@ Triangulation<Real>::addTriangle(int p1, int p2, int p3)
           edges[eIdx].tIndex[1] = tIdx;
         }
         else {
-          PCL_DEBUG("Edge Triangle in use 2\n");
+          PCL_DEBUG ("Edge Triangle in use 2\n");
           return 0;
         }
       }
@@ -485,7 +485,7 @@ Triangulation<Real>::addTriangle(int p1, int p2, int p3)
 
 template <class Real>
 int
-Triangulation<Real>::flipMinimize(int eIndex)
+Triangulation<Real>::flipMinimize (int eIndex)
 {
   double oldArea, newArea;
   int oldP[3], oldQ[3], newP[3], newQ[3];
@@ -495,14 +495,14 @@ Triangulation<Real>::flipMinimize(int eIndex)
     return 0;
   }
 
-  if (!factor(edges[eIndex].tIndex[0], oldP[0], oldP[1], oldP[2])) {
+  if (!factor (edges[eIndex].tIndex[0], oldP[0], oldP[1], oldP[2])) {
     return 0;
   }
-  if (!factor(edges[eIndex].tIndex[1], oldQ[0], oldQ[1], oldQ[2])) {
+  if (!factor (edges[eIndex].tIndex[1], oldQ[0], oldQ[1], oldQ[2])) {
     return 0;
   }
 
-  oldArea = area(oldP[0], oldP[1], oldP[2]) + area(oldQ[0], oldQ[1], oldQ[2]);
+  oldArea = area (oldP[0], oldP[1], oldP[2]) + area (oldQ[0], oldQ[1], oldQ[2]);
   int idxP, idxQ;
   for (idxP = 0; idxP < 3; idxP++) {
     int i;
@@ -536,22 +536,22 @@ Triangulation<Real>::flipMinimize(int eIndex)
   newQ[1] = oldP[(idxP + 2) % 3];
   newQ[2] = oldP[idxP];
 
-  newArea = area(newP[0], newP[1], newP[2]) + area(newQ[0], newQ[1], newQ[2]);
+  newArea = area (newP[0], newP[1], newP[2]) + area (newQ[0], newQ[1], newQ[2]);
   if (oldArea <= newArea) {
     return 0;
   }
 
   // Remove the entry in the hash_table for the old edge
-  edgeMap.erase(EdgeIndex(edges[eIndex].pIndex[0], edges[eIndex].pIndex[1]));
+  edgeMap.erase (EdgeIndex (edges[eIndex].pIndex[0], edges[eIndex].pIndex[1]));
   // Set the new edge so that the zero-side is newQ
   edges[eIndex].pIndex[0] = newP[0];
   edges[eIndex].pIndex[1] = newQ[0];
   // Insert the entry into the hash_table for the new edge
-  edgeMap[EdgeIndex(newP[0], newQ[0])] = eIndex;
+  edgeMap[EdgeIndex (newP[0], newQ[0])] = eIndex;
   // Update the triangle information
   for (int i = 0; i < 3; i++) {
     int idx;
-    idx = edgeMap[EdgeIndex(newQ[i], newQ[(i + 1) % 3])];
+    idx = edgeMap[EdgeIndex (newQ[i], newQ[(i + 1) % 3])];
     triangles[edges[eIndex].tIndex[0]].eIndex[i] = idx;
     if (idx != eIndex) {
       if (edges[idx].tIndex[0] == edges[eIndex].tIndex[1]) {
@@ -562,7 +562,7 @@ Triangulation<Real>::flipMinimize(int eIndex)
       }
     }
 
-    idx = edgeMap[EdgeIndex(newP[i], newP[(i + 1) % 3])];
+    idx = edgeMap[EdgeIndex (newP[i], newP[(i + 1) % 3])];
     triangles[edges[eIndex].tIndex[1]].eIndex[i] = idx;
     if (idx != eIndex) {
       if (edges[idx].tIndex[0] == edges[eIndex].tIndex[0]) {

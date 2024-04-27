@@ -94,7 +94,7 @@ public:
 
     virtual ~ErrorFunctor() = default;
     virtual float
-    operator()(float d) const = 0;
+    operator() (float d) const = 0;
   };
 
   class HuberPenalty : public ErrorFunctor {
@@ -102,13 +102,13 @@ public:
     HuberPenalty() = default;
 
   public:
-    HuberPenalty(float threshold) : threshold_(threshold) {}
+    HuberPenalty (float threshold) : threshold_ (threshold) {}
     float
-    operator()(float e) const override
+    operator() (float e) const override
     {
       if (e <= threshold_)
         return (0.5 * e * e);
-      return (0.5 * threshold_ * (2.0 * std::fabs(e) - threshold_));
+      return (0.5 * threshold_ * (2.0 * std::fabs (e) - threshold_));
     }
 
   protected:
@@ -122,9 +122,9 @@ public:
   public:
     ~TruncatedError() override = default;
 
-    TruncatedError(float threshold) : threshold_(threshold) {}
+    TruncatedError (float threshold) : threshold_ (threshold) {}
     float
-    operator()(float e) const override
+    operator() (float e) const override
     {
       if (e <= threshold_)
         return (e / threshold_);
@@ -142,7 +142,7 @@ public:
   SampleConsensusInitialAlignment()
   : input_features_()
   , target_features_()
-  , feature_tree_(new pcl::KdTreeFLANN<FeatureT>)
+  , feature_tree_ (new pcl::KdTreeFLANN<FeatureT>)
   , error_functor_()
   {
     reg_name_ = "SampleConsensusInitialAlignment";
@@ -151,7 +151,7 @@ public:
     // Setting a non-std::numeric_limits<double>::max () value to corr_dist_threshold_
     // to make it play nicely with TruncatedError
     corr_dist_threshold_ = 100.0f;
-    transformation_estimation_.reset(
+    transformation_estimation_.reset (
         new pcl::registration::TransformationEstimationSVD<PointSource, PointTarget>);
   };
 
@@ -261,7 +261,7 @@ protected:
   inline pcl::index_t
   getRandomIndex (int n)
   {
-    return (static_cast<pcl::index_t>(n * (rand() / (RAND_MAX + 1.0))));
+    return (static_cast<pcl::index_t> (n * (rand() / (RAND_MAX + 1.0))));
   };
 
   /** \brief Select \a nr_samples sample points from cloud while making sure that their

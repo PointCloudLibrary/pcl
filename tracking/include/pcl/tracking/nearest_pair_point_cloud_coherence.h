@@ -60,7 +60,7 @@ public:
   setTargetCloud (const PointCloudInConstPtr& cloud) override
   {
     new_target_ = true;
-    PointCloudCoherence<PointInT>::setTargetCloud(cloud);
+    PointCloudCoherence<PointInT>::setTargetCloud (cloud);
   }
 
   /** \brief set maximum distance to be taken into account.

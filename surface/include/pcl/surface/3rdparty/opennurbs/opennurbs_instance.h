@@ -25,7 +25,7 @@ See Also:
   ON_InstanceRef
 */
 class ON_CLASS ON_InstanceDefinition : public ON_Geometry {
-  ON_OBJECT_DECLARE(ON_InstanceDefinition);
+  ON_OBJECT_DECLARE (ON_InstanceDefinition);
 
 public:
   // IDEF_UPDATE_TYPE lists the possible relationships between
@@ -117,7 +117,7 @@ public:
 
   // virtual
   ON_UUID
-  ModelObjectId () const;
+  ModelObjectId() const;
 
   // Interface
   const wchar_t*
@@ -141,7 +141,7 @@ public:
   SetURL_Tag (const wchar_t* url_tag);
 
   ON_UUID
-  Uuid () const;
+  Uuid() const;
   void
   SetUuid (ON_UUID uuid);
 
@@ -351,7 +351,7 @@ public:
   IDEF_UPDATE_TYPE m_idef_update_type;
 
   IDEF_UPDATE_TYPE
-  IdefUpdateType () const;
+  IdefUpdateType() const;
 
   int m_idef_update_depth; // Controls how much geometry is read when
                            // a linked idef is updated.
@@ -397,7 +397,7 @@ See Also:
   ON_InstanceRef
 */
 class ON_CLASS ON_InstanceRef : public ON_Geometry {
-  ON_OBJECT_DECLARE(ON_InstanceRef);
+  ON_OBJECT_DECLARE (ON_InstanceRef);
 
 public:
   ON_InstanceRef();

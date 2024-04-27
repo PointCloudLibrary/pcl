@@ -80,9 +80,9 @@ struct HaarFeature64 {
            Ncv32u /*clsWidth*/,
            Ncv32u /*clsHeight*/)
   {
-    ncvAssertReturn(rectWidth <= HaarFeature64_CreateCheck_MaxRectField &&
-                        rectHeight <= HaarFeature64_CreateCheck_MaxRectField,
-                    NCV_HAAR_TOO_LARGE_FEATURES);
+    ncvAssertReturn (rectWidth <= HaarFeature64_CreateCheck_MaxRectField &&
+                         rectHeight <= HaarFeature64_CreateCheck_MaxRectField,
+                     NCV_HAAR_TOO_LARGE_FEATURES);
     ((NcvRect8u*)&(this->_ui2.x))->x = (Ncv8u)rectX;
     ((NcvRect8u*)&(this->_ui2.x))->y = (Ncv8u)rectY;
     ((NcvRect8u*)&(this->_ui2.x))->width = (Ncv8u)rectWidth;
@@ -215,7 +215,7 @@ struct HaarClassifierNodeDescriptor32 {
   __device__ Ncv32f
   getLeafValue (void)
   {
-    return (__int_as_float(this->_ui1.x));
+    return (__int_as_float (this->_ui1.x));
   }
 #endif
 
@@ -337,11 +337,11 @@ struct HaarStage64 {
   }
 };
 
-NCV_CT_ASSERT(sizeof(HaarFeature64) == 8);
-NCV_CT_ASSERT(sizeof(HaarFeatureDescriptor32) == 4);
-NCV_CT_ASSERT(sizeof(HaarClassifierNodeDescriptor32) == 4);
-NCV_CT_ASSERT(sizeof(HaarClassifierNode128) == 16);
-NCV_CT_ASSERT(sizeof(HaarStage64) == 8);
+NCV_CT_ASSERT (sizeof (HaarFeature64) == 8);
+NCV_CT_ASSERT (sizeof (HaarFeatureDescriptor32) == 4);
+NCV_CT_ASSERT (sizeof (HaarClassifierNodeDescriptor32) == 4);
+NCV_CT_ASSERT (sizeof (HaarClassifierNode128) == 16);
+NCV_CT_ASSERT (sizeof (HaarStage64) == 8);
 
 /**
  * \brief Classifier cascade descriptor

@@ -90,8 +90,8 @@ public:
    * \param[in] extract_removed_indices set to true if the filtered data indices should
    * be saved in a separate list. Default: false.
    */
-  Filter(bool extract_removed_indices = false)
-  : removed_indices_(new Indices), extract_removed_indices_(extract_removed_indices)
+  Filter (bool extract_removed_indices = false)
+  : removed_indices_ (new Indices), extract_removed_indices_ (extract_removed_indices)
   {}
 
   /** \brief Get the point indices being removed */
@@ -122,17 +122,17 @@ public:
     if (input_.get() == &output) // cloud_in = cloud_out
     {
       PointCloud output_temp;
-      applyFilter(output_temp);
+      applyFilter (output_temp);
       output_temp.header = input_->header;
       output_temp.sensor_origin_ = input_->sensor_origin_;
       output_temp.sensor_orientation_ = input_->sensor_orientation_;
-      pcl::copyPointCloud(output_temp, output);
+      pcl::copyPointCloud (output_temp, output);
     }
     else {
       output.header = input_->header;
       output.sensor_origin_ = input_->sensor_origin_;
       output.sensor_orientation_ = input_->sensor_orientation_;
-      applyFilter(output);
+      applyFilter (output);
     }
 
     deinitCompute();
@@ -189,8 +189,8 @@ public:
    * \param[in] extract_removed_indices set to true if the filtered data indices should
    * be saved in a separate list. Default: false.
    */
-  Filter(bool extract_removed_indices = false)
-  : removed_indices_(new Indices), extract_removed_indices_(extract_removed_indices)
+  Filter (bool extract_removed_indices = false)
+  : removed_indices_ (new Indices), extract_removed_indices_ (extract_removed_indices)
   {}
 
   /** \brief Get the point indices being removed */

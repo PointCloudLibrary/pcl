@@ -44,14 +44,14 @@ namespace pcl {
 namespace cuda {
 
 struct downsampleIndices {
-  downsampleIndices(int width, int height, int stride)
-  : width(width), height(height), stride(stride)
+  downsampleIndices (int width, int height, int stride)
+  : width (width), height (height), stride (stride)
   {}
 
   int width, height, stride;
 
   __host__ __device__ bool
-  operator()(int i)
+  operator() (int i)
   {
     int xIdx = i % width;
     int yIdx = i / width;
@@ -68,11 +68,11 @@ struct DebayerBilinear {
   // static unsigned char* global_data; // has to be initialized only once!
   // unsigned char* data;
   unsigned char* data;
-  DebayerBilinear(unsigned char* bayer_image, unsigned width, unsigned height);
+  DebayerBilinear (unsigned char* bayer_image, unsigned width, unsigned height);
   // DebayerBilinear (const openni_wrapper::Image::Ptr& bayer_image);
 
   __inline__ __host__ __device__ OpenNIRGB
-  operator()(int index) const;
+  operator() (int index) const;
 };
 /*
   struct DebayerEdgeAware
@@ -102,10 +102,10 @@ struct YUV2RGBKernel {
   unsigned width;
   unsigned height;
   unsigned char* data;
-  YUV2RGBKernel(unsigned char* yuv_image, unsigned width, unsigned height);
+  YUV2RGBKernel (unsigned char* yuv_image, unsigned width, unsigned height);
 
   __inline__ __host__ __device__ OpenNIRGB
-  operator()(int index) const;
+  operator() (int index) const;
 };
 
 template <template <typename> class Storage>

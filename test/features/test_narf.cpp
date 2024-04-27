@@ -43,55 +43,55 @@
 
 using namespace pcl;
 
-TEST(PCL, Narf_save_load)
+TEST (PCL, Narf_save_load)
 {
   Narf narf;
-  getTransformation(1.0f,
-                    2.0f,
-                    3.0f,
-                    deg2rad(10.0f),
-                    deg2rad(20.0f),
-                    deg2rad(30.0f),
-                    narf.getTransformation());
+  getTransformation (1.0f,
+                     2.0f,
+                     3.0f,
+                     deg2rad (10.0f),
+                     deg2rad (20.0f),
+                     deg2rad (30.0f),
+                     narf.getTransformation());
   narf.getPosition() = narf.getTransformation().inverse().translation();
   narf.getSurfacePatchPixelSize() = 10;
-  narf.setSurfacePatch(
+  narf.setSurfacePatch (
       new float[narf.getSurfacePatchPixelSize() * narf.getSurfacePatchPixelSize()]);
   for (int i = 0; i < narf.getSurfacePatchPixelSize() * narf.getSurfacePatchPixelSize();
        ++i)
-    narf.getSurfacePatch()[i] = static_cast<float>(i);
+    narf.getSurfacePatch()[i] = static_cast<float> (i);
   narf.getSurfacePatchWorldSize() = 0.5f;
-  narf.getSurfacePatchRotation() = deg2rad(10.0f);
-  narf.extractDescriptor(36);
+  narf.getSurfacePatchRotation() = deg2rad (10.0f);
+  narf.extractDescriptor (36);
 
   std::stringstream test_stream;
-  narf.saveBinary(test_stream);
+  narf.saveBinary (test_stream);
 
   Narf narf2;
-  narf2.loadBinary(test_stream);
+  narf2.loadBinary (test_stream);
 
   //  EXPECT_EQ (narf.getTransformation().matrix(), narf2.getTransformation().matrix());
   // The above generates http://msdn.microsoft.com/en-us/library/sxe76d9e.aspx in VS2010
   // Therefore we use this:
   for (Eigen::Index i = 0; i < narf.getTransformation().matrix().size(); ++i)
-    EXPECT_EQ(narf.getTransformation().data()[i], narf2.getTransformation().data()[i]);
-  EXPECT_EQ(narf.getPosition(), narf2.getPosition());
-  EXPECT_EQ(narf.getSurfacePatchPixelSize(), narf2.getSurfacePatchPixelSize());
+    EXPECT_EQ (narf.getTransformation().data()[i], narf2.getTransformation().data()[i]);
+  EXPECT_EQ (narf.getPosition(), narf2.getPosition());
+  EXPECT_EQ (narf.getSurfacePatchPixelSize(), narf2.getSurfacePatchPixelSize());
   for (int i = 0; i < narf.getSurfacePatchPixelSize() * narf.getSurfacePatchPixelSize();
        ++i)
-    EXPECT_EQ(narf.getSurfacePatch()[i], narf2.getSurfacePatch()[i]);
-  EXPECT_EQ(narf.getSurfacePatchWorldSize(), narf2.getSurfacePatchWorldSize());
-  EXPECT_EQ(narf.getSurfacePatchRotation(), narf2.getSurfacePatchRotation());
-  EXPECT_EQ(narf.getDescriptorSize(), narf2.getDescriptorSize());
+    EXPECT_EQ (narf.getSurfacePatch()[i], narf2.getSurfacePatch()[i]);
+  EXPECT_EQ (narf.getSurfacePatchWorldSize(), narf2.getSurfacePatchWorldSize());
+  EXPECT_EQ (narf.getSurfacePatchRotation(), narf2.getSurfacePatchRotation());
+  EXPECT_EQ (narf.getDescriptorSize(), narf2.getDescriptorSize());
   for (int i = 0; i < narf.getDescriptorSize(); ++i)
-    EXPECT_EQ(narf.getDescriptor()[i], narf2.getDescriptor()[i]);
+    EXPECT_EQ (narf.getDescriptor()[i], narf2.getDescriptor()[i]);
 }
 
 /* ---[ */
 int
 main (int argc, char** argv)
 {
-  testing::InitGoogleTest(&argc, argv);
+  testing::InitGoogleTest (&argc, argv);
   return (RUN_ALL_TESTS());
 }
 /* ]--- */

@@ -77,10 +77,10 @@ public:
   /** \brief Empty constructor. */
   NormalDistributionsTransform2D()
   : Registration<PointSource, PointTarget>()
-  , grid_centre_(0, 0)
-  , grid_step_(1, 1)
-  , grid_extent_(20, 20)
-  , newton_lambda_(1, 1, 1)
+  , grid_centre_ (0, 0)
+  , grid_step_ (1, 1)
+  , grid_extent_ (20, 20)
+  , newton_lambda_ (1, 1, 1)
   {
     reg_name_ = "NormalDistributionsTransform2D";
   }
@@ -122,7 +122,7 @@ public:
   virtual void
   setOptimizationStepSize (const double& lambda)
   {
-    newton_lambda_ = Eigen::Vector3d(lambda, lambda, lambda);
+    newton_lambda_ = Eigen::Vector3d (lambda, lambda, lambda);
   }
 
   /** \brief NDT Newton optimisation step size parameter

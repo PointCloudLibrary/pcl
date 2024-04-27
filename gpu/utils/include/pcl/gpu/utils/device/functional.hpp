@@ -79,7 +79,7 @@ using thrust::bit_xor;
 template <typename T>
 struct bit_not : unary_function<T, T> {
   __forceinline__ __device__ T
-  operator()(const T& v) const
+  operator() (const T& v) const
   {
     return ~v;
   }
@@ -98,10 +98,10 @@ struct plusWeighted : public plus<T> {
   W w;
   __device__ __host__ __forceinline__
   plusWeighted (W weight)
-  : w(weight)
+  : w (weight)
   {}
   __device__ __host__ __forceinline__ float
-  operator()(const T& f1, const T& f2) const
+  operator() (const T& f1, const T& f2) const
   {
     return f1 + f2 * w;
   }

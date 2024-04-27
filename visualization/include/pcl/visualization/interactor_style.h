@@ -121,7 +121,7 @@ public:
   ~PCLVisualizerInteractorStyle() override = default;
 
   // this macro defines Superclass, the isA functionality and the safe downcast method
-  vtkTypeMacro(PCLVisualizerInteractorStyle, vtkInteractorStyleRubberBandPick);
+  vtkTypeMacro (PCLVisualizerInteractorStyle, vtkInteractorStyleRubberBandPick);
 
   /** \brief Initialization routine. Must be called before anything else. */
   virtual void
@@ -184,7 +184,8 @@ public:
    * event \return a connection object that allows to disconnect the callback function.
    */
   boost::signals2::connection
-  registerMouseCallback (std::function<void(const pcl::visualization::MouseEvent&)> cb);
+  registerMouseCallback (
+      std::function<void (const pcl::visualization::MouseEvent&)> cb);
 
   /** \brief Register a callback std::function for keyboard events
    * \param[in] cb a std function that will be registered as a callback for a keyboard
@@ -192,7 +193,7 @@ public:
    */
   boost::signals2::connection
   registerKeyboardCallback (
-      std::function<void(const pcl::visualization::KeyboardEvent&)> cb);
+      std::function<void (const pcl::visualization::KeyboardEvent&)> cb);
 
   /** \brief Register a callback function for point picking events
    * \param[in] cb a std function that will be registered as a callback for a point
@@ -201,7 +202,7 @@ public:
    */
   boost::signals2::connection
   registerPointPickingCallback (
-      std::function<void(const pcl::visualization::PointPickingEvent&)> cb);
+      std::function<void (const pcl::visualization::PointPickingEvent&)> cb);
 
   /** \brief Register a callback function for area picking events
    * \param[in] cb a std function that will be registered as a callback for a area
@@ -210,7 +211,7 @@ public:
    */
   boost::signals2::connection
   registerAreaPickingCallback (
-      std::function<void(const pcl::visualization::AreaPickingEvent&)> cb);
+      std::function<void (const pcl::visualization::AreaPickingEvent&)> cb);
 
   /** \brief Save the current rendered image to disk, as a PNG screenshot.
    * \param[in] file the name of the PNG file
@@ -324,12 +325,12 @@ protected:
   /** \brief Stores the point picker when switching to an area picker. */
   vtkSmartPointer<vtkPointPicker> point_picker_;
 
-  boost::signals2::signal<void(const pcl::visualization::MouseEvent&)> mouse_signal_;
-  boost::signals2::signal<void(const pcl::visualization::KeyboardEvent&)>
+  boost::signals2::signal<void (const pcl::visualization::MouseEvent&)> mouse_signal_;
+  boost::signals2::signal<void (const pcl::visualization::KeyboardEvent&)>
       keyboard_signal_;
-  boost::signals2::signal<void(const pcl::visualization::PointPickingEvent&)>
+  boost::signals2::signal<void (const pcl::visualization::PointPickingEvent&)>
       point_picking_signal_;
-  boost::signals2::signal<void(const pcl::visualization::AreaPickingEvent&)>
+  boost::signals2::signal<void (const pcl::visualization::AreaPickingEvent&)>
       area_picking_signal_;
 
   /** \brief Interactor style internal method. Gets called whenever a key is pressed. */

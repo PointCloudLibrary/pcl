@@ -31,7 +31,7 @@ public:
     render_mesh_fast = 1,    // Use ON_MeshParameters::FastRenderMesh
     render_mesh_quality = 2, // Use ON_MeshParameters::QualityRenderMesh
                              // 3 - 8 reserved for future predefined render mesh styles
-    render_mesh_custom = 9,     // Use ON_3dmSettings::m_CustomRenderMeshSettings
+    render_mesh_custom = 9,  // Use ON_3dmSettings::m_CustomRenderMeshSettings
     render_mesh_per_object = 10 // Use ON_Object::GetMeshParameters().
   };
 
@@ -88,15 +88,15 @@ public:
   // C++ default works fine // ON_MeshParameters& operator=(const ON_MeshParameters&);
 
   bool
-  operator!=(const ON_MeshParameters&) const;
+  operator!= (const ON_MeshParameters&) const;
   bool
-  operator==(const ON_MeshParameters&) const;
+  operator== (const ON_MeshParameters&) const;
 
   // compares with mesh's mesh parameters
   bool
-  operator==(const ON_Mesh&) const;
+  operator== (const ON_Mesh&) const;
   bool
-  operator!=(const ON_Mesh&) const;
+  operator!= (const ON_Mesh&) const;
 
   void
   Dump (ON_TextLog& test_log) const;
@@ -157,7 +157,7 @@ public:
   Write (ON_BinaryArchive&) const;
   bool
   Read (ON_BinaryArchive&);
-  ON__UINT32 DataCRC(ON__UINT32) const;
+  ON__UINT32 DataCRC (ON__UINT32) const;
 
   // Meshing happens in two stages.  The first stage creates a
   // rectangular grid.  The second stage refines the grid until
@@ -275,9 +275,9 @@ class ON_CLASS ON_MeshCurvatureStats {
 public:
   ON_MeshCurvatureStats();
   ~ON_MeshCurvatureStats();
-  ON_MeshCurvatureStats(const ON_MeshCurvatureStats&);
+  ON_MeshCurvatureStats (const ON_MeshCurvatureStats&);
   ON_MeshCurvatureStats&
-  operator=(const ON_MeshCurvatureStats&);
+  operator= (const ON_MeshCurvatureStats&);
 
   void
   Destroy ();
@@ -815,9 +815,9 @@ private:
 
 private:
   // no implementation
-  ON_MeshTopology(const ON_MeshTopology&);
+  ON_MeshTopology (const ON_MeshTopology&);
   ON_MeshTopology&
-  operator=(const ON_MeshTopology&);
+  operator= (const ON_MeshTopology&);
 };
 
 struct ON_MeshNgon {
@@ -844,9 +844,9 @@ class ON_CLASS ON_MeshNgonList {
 public:
   ON_MeshNgonList();
   ~ON_MeshNgonList();
-  ON_MeshNgonList(const ON_MeshNgonList&);
+  ON_MeshNgonList (const ON_MeshNgonList&);
   ON_MeshNgonList&
-  operator=(const ON_MeshNgonList&);
+  operator= (const ON_MeshNgonList&);
 
   /*
   Description:
@@ -1013,18 +1013,18 @@ ON_DLL_TEMPLATE template class ON_CLASS ON_ClassArray<ON_TextureCoordinates>;
 #endif
 
 class ON_CLASS ON_Mesh : public ON_Geometry {
-  ON_OBJECT_DECLARE(ON_Mesh);
+  ON_OBJECT_DECLARE (ON_Mesh);
 
 public:
   ON_Mesh();
-  ON_Mesh(int initial_face_array_capacity,   // initial face array capacity
-          int initial_vertex_array_capacity, // initial vertex array capacity
-          bool has_vertex_normals,           // true if mesh has vertex normals
-          bool has_texture_coordinates       // true if mesh has texture coordinates
+  ON_Mesh (int initial_face_array_capacity,   // initial face array capacity
+           int initial_vertex_array_capacity, // initial vertex array capacity
+           bool has_vertex_normals,           // true if mesh has vertex normals
+           bool has_texture_coordinates       // true if mesh has texture coordinates
   );
-  ON_Mesh(const ON_Mesh&);
+  ON_Mesh (const ON_Mesh&);
   ON_Mesh&
-  operator=(const ON_Mesh&);
+  operator= (const ON_Mesh&);
   ~ON_Mesh();
 
   // Override of virtual ON_Object::MemoryRelocate
@@ -1426,8 +1426,8 @@ public:
   /////////
   // Description:
   //		Reverse one coordinate direction of the texture coordinates, within texture
-  //domain m_tex_domain 	Parameters: 		dir  -[in]	-   dir=0  first texture coordinate is
-  //reversed 									  dir=1 second texture coordinate is reversed
+  // domain m_tex_domain 	Parameters: 		dir  -[in]	-   dir=0  first texture coordinate
+  // is reversed 									  dir=1 second texture coordinate is reversed
   //  Returns
   //			true  -  success
   bool
@@ -1478,7 +1478,7 @@ public:
                                           // to be coincident
                              double       // cosine normal angle tolerance in radians
                                           // if vertices are coincident, then they are
-                                    // combined if NormalA o NormalB >= this value
+                                          // combined if NormalA o NormalB >= this value
   );
 
   /*
@@ -2504,13 +2504,13 @@ private:
 };
 
 class ON_CLASS ON_MeshVertexRef : public ON_Geometry {
-  ON_OBJECT_DECLARE(ON_MeshVertexRef);
+  ON_OBJECT_DECLARE (ON_MeshVertexRef);
 
 public:
   ON_MeshVertexRef();
   ~ON_MeshVertexRef();
   ON_MeshVertexRef&
-  operator=(const ON_MeshVertexRef&);
+  operator= (const ON_MeshVertexRef&);
 
   // parent mesh
   const ON_Mesh* m_mesh;
@@ -2533,7 +2533,7 @@ public:
     ON_COMPONENT_INDEX::invalid_type.
   */
   ON_COMPONENT_INDEX
-  ComponentIndex () const;
+  ComponentIndex() const;
 
   /*
   Returns:
@@ -2581,13 +2581,13 @@ public:
 };
 
 class ON_CLASS ON_MeshEdgeRef : public ON_Geometry {
-  ON_OBJECT_DECLARE(ON_MeshEdgeRef);
+  ON_OBJECT_DECLARE (ON_MeshEdgeRef);
 
 public:
   ON_MeshEdgeRef();
   ~ON_MeshEdgeRef();
   ON_MeshEdgeRef&
-  operator=(const ON_MeshEdgeRef&);
+  operator= (const ON_MeshEdgeRef&);
 
   // parent mesh
   const ON_Mesh* m_mesh;
@@ -2604,7 +2604,7 @@ public:
     index into the ON_MeshTopology.m_tope[] array.
   */
   ON_COMPONENT_INDEX
-  ComponentIndex () const;
+  ComponentIndex() const;
 
   /*
   Returns:
@@ -2652,13 +2652,13 @@ public:
 };
 
 class ON_CLASS ON_MeshFaceRef : public ON_Geometry {
-  ON_OBJECT_DECLARE(ON_MeshFaceRef);
+  ON_OBJECT_DECLARE (ON_MeshFaceRef);
 
 public:
   ON_MeshFaceRef();
   ~ON_MeshFaceRef();
   ON_MeshFaceRef&
-  operator=(const ON_MeshFaceRef&);
+  operator= (const ON_MeshFaceRef&);
 
   // parent mesh
   const ON_Mesh* m_mesh;
@@ -2675,7 +2675,7 @@ public:
     index into the ON_Mesh.m_F[] array.
   */
   ON_COMPONENT_INDEX
-  ComponentIndex () const;
+  ComponentIndex() const;
 
   /*
   Returns:

@@ -52,30 +52,30 @@ namespace registration {
 
 template <typename PointT>
 void
-CorrespondenceRejectorSampleConsensus<PointT>::getRemainingCorrespondences(
+CorrespondenceRejectorSampleConsensus<PointT>::getRemainingCorrespondences (
     const pcl::Correspondences& original_correspondences,
     pcl::Correspondences& remaining_correspondences)
 {
   if (!input_) {
-    PCL_ERROR("[pcl::registration::%s::getRemainingCorrespondences] No input cloud "
-              "dataset was given!\n",
-              getClassName().c_str());
+    PCL_ERROR ("[pcl::registration::%s::getRemainingCorrespondences] No input cloud "
+               "dataset was given!\n",
+               getClassName().c_str());
     return;
   }
 
   if (!target_) {
-    PCL_ERROR("[pcl::registration::%s::getRemainingCorrespondences] No input target "
-              "dataset was given!\n",
-              getClassName().c_str());
+    PCL_ERROR ("[pcl::registration::%s::getRemainingCorrespondences] No input target "
+               "dataset was given!\n",
+               getClassName().c_str());
     return;
   }
 
   if (save_inliers_)
     inlier_indices_.clear();
 
-  int nr_correspondences = static_cast<int>(original_correspondences.size());
-  pcl::Indices source_indices(nr_correspondences);
-  pcl::Indices target_indices(nr_correspondences);
+  int nr_correspondences = static_cast<int> (original_correspondences.size());
+  pcl::Indices source_indices (nr_correspondences);
+  pcl::Indices target_indices (nr_correspondences);
 
   // Copy the query-match indices
   for (std::size_t i = 0; i < original_correspondences.size(); ++i) {
@@ -89,13 +89,13 @@ CorrespondenceRejectorSampleConsensus<PointT>::getRemainingCorrespondences(
     using SampleConsensusModelRegistrationPtr =
         typename pcl::SampleConsensusModelRegistration<PointT>::Ptr;
     SampleConsensusModelRegistrationPtr model;
-    model.reset(
-        new pcl::SampleConsensusModelRegistration<PointT>(input_, source_indices));
+    model.reset (
+        new pcl::SampleConsensusModelRegistration<PointT> (input_, source_indices));
     // Pass the target_indices
-    model->setInputTarget(target_, target_indices);
+    model->setInputTarget (target_, target_indices);
     // Create a RANSAC model
-    pcl::RandomSampleConsensus<PointT> sac(model, inlier_threshold_);
-    sac.setMaxIterations(max_iterations_);
+    pcl::RandomSampleConsensus<PointT> sac (model, inlier_threshold_);
+    sac.setMaxIterations (max_iterations_);
 
     // Compute the set of inliers
     if (!sac.computeModel()) {
@@ -104,14 +104,15 @@ CorrespondenceRejectorSampleConsensus<PointT>::getRemainingCorrespondences(
       return;
     }
     if (refine_ && !sac.refineModel()) {
-      PCL_ERROR("[pcl::registration::CorrespondenceRejectorSampleConsensus::"
-                "getRemainingCorrespondences] Could not refine the model! Returning an "
-                "empty solution.\n");
+      PCL_ERROR (
+          "[pcl::registration::CorrespondenceRejectorSampleConsensus::"
+          "getRemainingCorrespondences] Could not refine the model! Returning an "
+          "empty solution.\n");
       return;
     }
 
     pcl::Indices inliers;
-    sac.getInliers(inliers);
+    sac.getInliers (inliers);
 
     if (inliers.size() < 3) {
       remaining_correspondences = original_correspondences;
@@ -122,24 +123,24 @@ CorrespondenceRejectorSampleConsensus<PointT>::getRemainingCorrespondences(
     for (int i = 0; i < nr_correspondences; ++i)
       index_to_correspondence[original_correspondences[i].index_query] = i;
 
-    remaining_correspondences.resize(inliers.size());
+    remaining_correspondences.resize (inliers.size());
     for (std::size_t i = 0; i < inliers.size(); ++i)
       remaining_correspondences[i] =
           original_correspondences[index_to_correspondence[inliers[i]]];
 
     if (save_inliers_) {
-      inlier_indices_.reserve(inliers.size());
+      inlier_indices_.reserve (inliers.size());
       for (const auto& inlier : inliers)
-        inlier_indices_.push_back(index_to_correspondence[inlier]);
+        inlier_indices_.push_back (index_to_correspondence[inlier]);
     }
 
     // get best transformation
     Eigen::VectorXf model_coefficients;
-    sac.getModelCoefficients(model_coefficients);
-    best_transformation_.row(0) = model_coefficients.segment<4>(0);
-    best_transformation_.row(1) = model_coefficients.segment<4>(4);
-    best_transformation_.row(2) = model_coefficients.segment<4>(8);
-    best_transformation_.row(3) = model_coefficients.segment<4>(12);
+    sac.getModelCoefficients (model_coefficients);
+    best_transformation_.row (0) = model_coefficients.segment<4> (0);
+    best_transformation_.row (1) = model_coefficients.segment<4> (4);
+    best_transformation_.row (2) = model_coefficients.segment<4> (8);
+    best_transformation_.row (3) = model_coefficients.segment<4> (12);
   }
 }
 

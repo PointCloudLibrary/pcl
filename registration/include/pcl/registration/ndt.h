@@ -113,7 +113,7 @@ public:
   inline void
   setInputTarget (const PointCloudTargetConstPtr& cloud) override
   {
-    Registration<PointSource, PointTarget, Scalar>::setInputTarget(cloud);
+    Registration<PointSource, PointTarget, Scalar>::setInputTarget (cloud);
     init();
   }
 
@@ -141,7 +141,7 @@ public:
   inline void
   setMinPointPerVoxel (unsigned int min_points_per_voxel)
   {
-    target_cells_.setMinPointPerVoxel(min_points_per_voxel);
+    target_cells_.setMinPointPerVoxel (min_points_per_voxel);
   }
 
   /** \brief Get voxel grid resolution.
@@ -201,10 +201,10 @@ public:
   /** \brief Get the registration alignment probability.
    * \return transformation probability
    */
-  PCL_DEPRECATED(1,
-                 16,
-                 "The method `getTransformationProbability` has been renamed to "
-                 "`getTransformationLikelihood`.")
+  PCL_DEPRECATED (1,
+                  16,
+                  "The method `getTransformationProbability` has been renamed to "
+                  "`getTransformationLikelihood`.")
   inline double
   getTransformationProbability () const
   {
@@ -242,10 +242,10 @@ public:
   static void
   convertTransform (const Eigen::Matrix<double, 6, 1>& x, Affine3& trans)
   {
-    trans = Eigen::Translation<Scalar, 3>(x.head<3>().cast<Scalar>()) *
-            Eigen::AngleAxis<Scalar>(static_cast<Scalar>(x(3)), Vector3::UnitX()) *
-            Eigen::AngleAxis<Scalar>(static_cast<Scalar>(x(4)), Vector3::UnitY()) *
-            Eigen::AngleAxis<Scalar>(static_cast<Scalar>(x(5)), Vector3::UnitZ());
+    trans = Eigen::Translation<Scalar, 3> (x.head<3>().cast<Scalar>()) *
+            Eigen::AngleAxis<Scalar> (static_cast<Scalar> (x (3)), Vector3::UnitX()) *
+            Eigen::AngleAxis<Scalar> (static_cast<Scalar> (x (4)), Vector3::UnitY()) *
+            Eigen::AngleAxis<Scalar> (static_cast<Scalar> (x (5)), Vector3::UnitZ());
   }
 
   /** \brief Convert 6 element transformation vector to transformation matrix.
@@ -257,7 +257,7 @@ public:
   convertTransform (const Eigen::Matrix<double, 6, 1>& x, Matrix4& trans)
   {
     Affine3 _affine;
-    convertTransform(x, _affine);
+    convertTransform (x, _affine);
     trans = _affine.matrix();
   }
 
@@ -288,7 +288,7 @@ protected:
   virtual void
   computeTransformation (PointCloudSource& output)
   {
-    computeTransformation(output, Matrix4::Identity());
+    computeTransformation (output, Matrix4::Identity());
   }
 
   /** \brief Estimate the transformation and returns the transformed source
@@ -302,14 +302,14 @@ protected:
   /** \brief Initiate covariance voxel structure. */
   void inline init()
   {
-    target_cells_.setLeafSize(resolution_, resolution_, resolution_);
-    target_cells_.setInputCloud(target_);
+    target_cells_.setLeafSize (resolution_, resolution_, resolution_);
+    target_cells_.setInputCloud (target_);
     // Initiate voxel structure.
-    target_cells_.filter(true);
-    PCL_DEBUG("[pcl::%s::init] Computed voxel structure, got %zu voxels with valid "
-              "normal distributions.\n",
-              getClassName().c_str(),
-              target_cells_.getCentroids()->size());
+    target_cells_.filter (true);
+    PCL_DEBUG ("[pcl::%s::init] Computed voxel structure, got %zu voxels with valid "
+               "normal distributions.\n",
+               getClassName().c_str(),
+               target_cells_.getCentroids()->size());
   }
 
   /** \brief Compute derivatives of likelihood function w.r.t. the
@@ -389,14 +389,14 @@ protected:
    * \param[in] trans_cloud transformed point cloud
    * \param[in] transform the current transform vector
    */
-  PCL_DEPRECATED(1, 15, "Parameter `transform` is not required")
+  PCL_DEPRECATED (1, 15, "Parameter `transform` is not required")
   void
   computeHessian (Eigen::Matrix<double, 6, 6>& hessian,
                   const PointCloudSource& trans_cloud,
                   const Eigen::Matrix<double, 6, 1>& transform)
   {
-    pcl::utils::ignore(transform);
-    computeHessian(hessian, trans_cloud);
+    pcl::utils::ignore (transform);
+    computeHessian (hessian, trans_cloud);
   }
 
   /** \brief Compute individual point contributions to hessian of likelihood
@@ -591,9 +591,9 @@ protected:
   /** \brief The likelihood score of the transform applied to the input cloud,
    * Equation 6.9 and 6.10 [Magnusson 2009]. */
   union {
-    PCL_DEPRECATED(1,
-                   16,
-                   "`trans_probability_` has been renamed to `trans_likelihood_`.")
+    PCL_DEPRECATED (1,
+                    16,
+                    "`trans_probability_` has been renamed to `trans_likelihood_`.")
     double trans_probability_;
     double trans_likelihood_{0.0};
   };

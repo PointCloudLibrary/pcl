@@ -90,20 +90,20 @@ public:
   /// @details This constructor creates a copy of the passed cloud. The
   /// values of the member variables of the passed cloud are deep copied.
   /// @param copy The cloud object to be used to initialize this cloud object.
-  Cloud(const Cloud& copy);
+  Cloud (const Cloud& copy);
 
   /// @brief Construct a cloud from a Cloud3D.
   /// @details This constructor creates a cloud object with the passed
   /// cloud object stored with the internal representation. The member
   /// variables of this object are initialized but not set.
-  Cloud(const Cloud3D& cloud, bool register_stats = false);
+  Cloud (const Cloud3D& cloud, bool register_stats = false);
 
   /// @brief Equal Operator
   /// @details Deep copies all the state of the passed cloud to this cloud.
   /// @param cloud The cloud object whose status to be copied to this object
   /// @return A reference to this cloud containing the new values.
   Cloud&
-  operator=(const Cloud& cloud);
+  operator= (const Cloud& cloud);
 
   /// @brief Subscript Operator
   /// @details This operator returns a reference to the point with the
@@ -113,7 +113,7 @@ public:
   /// @param index The index of the point to be returned.
   /// @return A reference to the indexed point.
   Point3D&
-  operator[](unsigned int index);
+  operator[] (unsigned int index);
 
   /// @brief Subscript Operator
   /// @details This operator returns a const reference to the point with the
@@ -123,7 +123,7 @@ public:
   /// @param index The index of the point to be returned.
   /// @return A const reference to the indexed point.
   const Point3D&
-  operator[](unsigned int index) const;
+  operator[] (unsigned int index) const;
 
   /// @brief Returns the center of the point cloud
   /// @param x The x coordinate of the center (computed as the average point).

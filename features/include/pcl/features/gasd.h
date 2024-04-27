@@ -83,16 +83,16 @@ public:
    * \param[in] shape_hists_size shape histograms size
    * \param[in] shape_interp shape histograms interpolation method
    */
-  GASDEstimation(const Eigen::Vector3f& view_direction = Eigen::Vector3f(0.0f,
-                                                                         0.0f,
-                                                                         1.0f),
-                 const std::size_t shape_half_grid_size = 4,
-                 const std::size_t shape_hists_size = 1,
-                 const HistogramInterpolationMethod shape_interp = INTERP_TRILINEAR)
-  : view_direction_(view_direction)
-  , shape_half_grid_size_(shape_half_grid_size)
-  , shape_hists_size_(shape_hists_size)
-  , shape_interp_(shape_interp)
+  GASDEstimation (const Eigen::Vector3f& view_direction = Eigen::Vector3f (0.0f,
+                                                                           0.0f,
+                                                                           1.0f),
+                  const std::size_t shape_half_grid_size = 4,
+                  const std::size_t shape_hists_size = 1,
+                  const HistogramInterpolationMethod shape_interp = INTERP_TRILINEAR)
+  : view_direction_ (view_direction)
+  , shape_half_grid_size_ (shape_half_grid_size)
+  , shape_hists_size_ (shape_hists_size)
+  , shape_interp_ (shape_interp)
   {
     search_radius_ = 0;
     k_ = 1;
@@ -278,20 +278,20 @@ public:
    * \param[in] shape_interp shape histograms interpolation method
    * \param[in] color_interp color histograms interpolation method
    */
-  GASDColorEstimation(const Eigen::Vector3f& view_direction = Eigen::Vector3f(0.0f,
-                                                                              0.0f,
-                                                                              1.0f),
-                      const std::size_t shape_half_grid_size = 3,
-                      const std::size_t shape_hists_size = 1,
-                      const std::size_t color_half_grid_size = 2,
-                      const std::size_t color_hists_size = 12,
-                      const HistogramInterpolationMethod shape_interp = INTERP_NONE,
-                      const HistogramInterpolationMethod color_interp = INTERP_NONE)
-  : GASDEstimation<PointInT, PointOutT>(
+  GASDColorEstimation (const Eigen::Vector3f& view_direction = Eigen::Vector3f (0.0f,
+                                                                                0.0f,
+                                                                                1.0f),
+                       const std::size_t shape_half_grid_size = 3,
+                       const std::size_t shape_hists_size = 1,
+                       const std::size_t color_half_grid_size = 2,
+                       const std::size_t color_hists_size = 12,
+                       const HistogramInterpolationMethod shape_interp = INTERP_NONE,
+                       const HistogramInterpolationMethod color_interp = INTERP_NONE)
+  : GASDEstimation<PointInT, PointOutT> (
         view_direction, shape_half_grid_size, shape_hists_size, shape_interp)
-  , color_half_grid_size_(color_half_grid_size)
-  , color_hists_size_(color_hists_size)
-  , color_interp_(color_interp)
+  , color_half_grid_size_ (color_half_grid_size)
+  , color_hists_size_ (color_hists_size)
+  , color_interp_ (color_interp)
   {
     feature_name_ = "GASDColorEstimation";
   }

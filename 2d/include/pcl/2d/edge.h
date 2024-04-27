@@ -125,7 +125,7 @@ private:
   float non_max_suppression_radius_y_{3.0f};
 
 public:
-  Edge() : output_type_(OUTPUT_X), detector_kernel_type_(SOBEL) {}
+  Edge() : output_type_ (OUTPUT_X), detector_kernel_type_ (SOBEL) {}
 
   /** \brief Set the output type.
    * \param[in] output_type the output type

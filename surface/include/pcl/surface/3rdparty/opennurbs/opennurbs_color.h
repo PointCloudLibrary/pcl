@@ -31,19 +31,19 @@ public:
   ON_Color();
 
   // Sets A = 0
-  ON_Color(int red,   // ( 0 to 255 )
-           int green, // ( 0 to 255 )
-           int blue   // ( 0 to 255 )
+  ON_Color (int red,   // ( 0 to 255 )
+            int green, // ( 0 to 255 )
+            int blue   // ( 0 to 255 )
   );
 
-  ON_Color(int red,   // ( 0 to 255 )
-           int green, // ( 0 to 255 )
-           int blue,  // ( 0 to 255 )
-           int alpha  // ( 0 to 255 )  (0 = opaque, 255 = transparent)
+  ON_Color (int red,   // ( 0 to 255 )
+            int green, // ( 0 to 255 )
+            int blue,  // ( 0 to 255 )
+            int alpha  // ( 0 to 255 )  (0 = opaque, 255 = transparent)
   );
 
   // Construct from Windows COLORREF
-  ON_Color(unsigned int);
+  ON_Color (unsigned int);
 
   // Conversion to Windows COLORREF
   operator unsigned int() const;

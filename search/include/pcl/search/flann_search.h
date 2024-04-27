@@ -151,7 +151,8 @@ public:
      * a maximum of max_leaf_size points per leaf node. Higher values make index
      * creation cheaper, but search more costly (and the other way around).
      */
-    KdTreeIndexCreator(unsigned int max_leaf_size = 15) : max_leaf_size_(max_leaf_size)
+    KdTreeIndexCreator (unsigned int max_leaf_size = 15)
+    : max_leaf_size_ (max_leaf_size)
     {}
 
     /** \brief Empty destructor */
@@ -199,7 +200,7 @@ public:
   public:
     /** \param[in] trees Number of randomized trees to create.
      */
-    KdTreeMultiIndexCreator(int trees = 4) : trees_(trees) {}
+    KdTreeMultiIndexCreator (int trees = 4) : trees_ (trees) {}
 
     /** \brief Empty destructor */
     virtual ~KdTreeMultiIndexCreator() = default;
@@ -215,9 +216,9 @@ public:
     int trees_;
   };
 
-  FlannSearch(
+  FlannSearch (
       bool sorted = true,
-      FlannIndexCreatorPtr creator = FlannIndexCreatorPtr(new KdTreeIndexCreator()));
+      FlannIndexCreatorPtr creator = FlannIndexCreatorPtr (new KdTreeIndexCreator()));
 
   /** \brief Destructor for FlannSearch. */
 
@@ -348,7 +349,7 @@ public:
     dim_ = point_representation->getNumberOfDimensions();
     if (input_) // re-create the tree, since point_representation might change things
                 // such as the scaling of the point clouds.
-      setInputCloud(input_, indices_);
+      setInputCloud (input_, indices_);
   }
 
   /** \brief Get a pointer to the point representation used when converting points into

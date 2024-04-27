@@ -51,64 +51,64 @@
 #include <sstream>
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-openni_wrapper::DevicePrimesense::DevicePrimesense(xn::Context& context,
-                                                   const xn::NodeInfo& device_node,
-                                                   const xn::NodeInfo& image_node,
-                                                   const xn::NodeInfo& depth_node,
-                                                   const xn::NodeInfo& ir_node)
-: OpenNIDevice(context, device_node, image_node, depth_node, ir_node)
+openni_wrapper::DevicePrimesense::DevicePrimesense (xn::Context& context,
+                                                    const xn::NodeInfo& device_node,
+                                                    const xn::NodeInfo& image_node,
+                                                    const xn::NodeInfo& depth_node,
+                                                    const xn::NodeInfo& ir_node)
+: OpenNIDevice (context, device_node, image_node, depth_node, ir_node)
 {
   // setup stream modes
   enumAvailableModes();
-  setDepthOutputMode(getDefaultDepthMode());
-  setImageOutputMode(getDefaultImageMode());
-  setIROutputMode(getDefaultIRMode());
+  setDepthOutputMode (getDefaultDepthMode());
+  setImageOutputMode (getDefaultImageMode());
+  setIROutputMode (getDefaultIRMode());
 
-  std::unique_lock<std::mutex> image_lock(image_mutex_);
-  XnStatus status = image_generator_.SetIntProperty("InputFormat", 5);
+  std::unique_lock<std::mutex> image_lock (image_mutex_);
+  XnStatus status = image_generator_.SetIntProperty ("InputFormat", 5);
   if (status != XN_STATUS_OK)
-    THROW_OPENNI_EXCEPTION(
+    THROW_OPENNI_EXCEPTION (
         "Error setting the image input format to Uncompressed YUV422. Reason: %s",
-        xnGetStatusString(status));
+        xnGetStatusString (status));
 
-  status = image_generator_.SetPixelFormat(XN_PIXEL_FORMAT_YUV422);
+  status = image_generator_.SetPixelFormat (XN_PIXEL_FORMAT_YUV422);
   if (status != XN_STATUS_OK)
-    THROW_OPENNI_EXCEPTION("Failed to set image pixel format to YUV422. Reason: %s",
-                           xnGetStatusString(status));
+    THROW_OPENNI_EXCEPTION ("Failed to set image pixel format to YUV422. Reason: %s",
+                            xnGetStatusString (status));
 
   image_lock.unlock();
 
-  std::lock_guard<std::mutex> depth_lock(depth_mutex_);
-  status = depth_generator_.SetIntProperty("RegistrationType", 1);
+  std::lock_guard<std::mutex> depth_lock (depth_mutex_);
+  status = depth_generator_.SetIntProperty ("RegistrationType", 1);
   if (status != XN_STATUS_OK)
-    THROW_OPENNI_EXCEPTION("Error setting the registration type. Reason: %s",
-                           xnGetStatusString(status));
+    THROW_OPENNI_EXCEPTION ("Error setting the registration type. Reason: %s",
+                            xnGetStatusString (status));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 openni_wrapper::DevicePrimesense::~DevicePrimesense() noexcept
 {
-  setDepthRegistration(false);
-  setSynchronization(false);
+  setDepthRegistration (false);
+  setSynchronization (false);
 
   depth_mutex_.lock();
-  depth_generator_.UnregisterFromNewDataAvailable(depth_callback_handle_);
+  depth_generator_.UnregisterFromNewDataAvailable (depth_callback_handle_);
   depth_mutex_.unlock();
 
   image_mutex_.lock();
-  image_generator_.UnregisterFromNewDataAvailable(image_callback_handle_);
+  image_generator_.UnregisterFromNewDataAvailable (image_callback_handle_);
   image_mutex_.unlock();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 bool
-openni_wrapper::DevicePrimesense::isImageResizeSupported(
+openni_wrapper::DevicePrimesense::isImageResizeSupported (
     unsigned input_width,
     unsigned input_height,
     unsigned output_width,
     unsigned output_height) const noexcept
 {
-  return (ImageYUV422::resizingSupported(
+  return (ImageYUV422::resizingSupported (
       input_width, input_height, output_width, output_height));
 }
 
@@ -124,61 +124,61 @@ openni_wrapper::DevicePrimesense::enumAvailableModes() noexcept
   output_mode.nFPS = 30;
   output_mode.nXRes = XN_VGA_X_RES;
   output_mode.nYRes = XN_VGA_Y_RES;
-  available_depth_modes_.push_back(output_mode);
+  available_depth_modes_.push_back (output_mode);
 
   output_mode.nFPS = 25;
   output_mode.nXRes = XN_VGA_X_RES;
   output_mode.nYRes = XN_VGA_Y_RES;
-  available_depth_modes_.push_back(output_mode);
+  available_depth_modes_.push_back (output_mode);
 
   output_mode.nFPS = 25;
   output_mode.nXRes = XN_QVGA_X_RES;
   output_mode.nYRes = XN_QVGA_Y_RES;
-  available_depth_modes_.push_back(output_mode);
+  available_depth_modes_.push_back (output_mode);
 
   output_mode.nFPS = 30;
   output_mode.nXRes = XN_QVGA_X_RES;
   output_mode.nYRes = XN_QVGA_Y_RES;
-  available_depth_modes_.push_back(output_mode);
+  available_depth_modes_.push_back (output_mode);
 
   output_mode.nFPS = 60;
   output_mode.nXRes = XN_QVGA_X_RES;
   output_mode.nYRes = XN_QVGA_Y_RES;
-  available_depth_modes_.push_back(output_mode);
+  available_depth_modes_.push_back (output_mode);
 
   // RGB Modes
   output_mode.nFPS = 30;
   output_mode.nXRes = XN_VGA_X_RES;
   output_mode.nYRes = XN_VGA_Y_RES;
-  available_image_modes_.push_back(output_mode);
+  available_image_modes_.push_back (output_mode);
 
   output_mode.nFPS = 25;
   output_mode.nXRes = XN_VGA_X_RES;
   output_mode.nYRes = XN_VGA_Y_RES;
-  available_image_modes_.push_back(output_mode);
+  available_image_modes_.push_back (output_mode);
 
   output_mode.nFPS = 25;
   output_mode.nXRes = XN_QVGA_X_RES;
   output_mode.nYRes = XN_QVGA_Y_RES;
-  available_image_modes_.push_back(output_mode);
+  available_image_modes_.push_back (output_mode);
 
   output_mode.nFPS = 30;
   output_mode.nXRes = XN_QVGA_X_RES;
   output_mode.nYRes = XN_QVGA_Y_RES;
-  available_image_modes_.push_back(output_mode);
+  available_image_modes_.push_back (output_mode);
 
   output_mode.nFPS = 60;
   output_mode.nXRes = XN_QVGA_X_RES;
   output_mode.nYRes = XN_QVGA_Y_RES;
-  available_image_modes_.push_back(output_mode);
+  available_image_modes_.push_back (output_mode);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 openni_wrapper::Image::Ptr
-openni_wrapper::DevicePrimesense::getCurrentImage(
+openni_wrapper::DevicePrimesense::getCurrentImage (
     pcl::shared_ptr<xn::ImageMetaData> image_data) const noexcept
 {
-  return (openni_wrapper::Image::Ptr(new ImageYUV422(image_data)));
+  return (openni_wrapper::Image::Ptr (new ImageYUV422 (image_data)));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -192,25 +192,25 @@ openni_wrapper::DevicePrimesense::startImageStream()
   if (isDepthStreamRunning()) {
     if (isDepthRegistered()) {
       // Reset the view point
-      setDepthRegistration(false);
+      setDepthRegistration (false);
 
       // Reset the view point
-      setDepthRegistration(true);
+      setDepthRegistration (true);
 
       // Reset the view point
-      setDepthRegistration(false);
+      setDepthRegistration (false);
 
       // Start the stream
       OpenNIDevice::startImageStream();
 
       // Register the stream
-      setDepthRegistration(true);
+      setDepthRegistration (true);
     }
     else {
       // Reset the view point
-      setDepthRegistration(true);
+      setDepthRegistration (true);
       // Reset the view point
-      setDepthRegistration(false);
+      setDepthRegistration (false);
 
       // Start the stream
       OpenNIDevice::startImageStream();
@@ -227,13 +227,13 @@ openni_wrapper::DevicePrimesense::startDepthStream()
 {
   if (isDepthRegistered()) {
     // Reset the view point
-    setDepthRegistration(false);
+    setDepthRegistration (false);
 
     // Start the stream
     OpenNIDevice::startDepthStream();
 
     // Register the stream
-    setDepthRegistration(true);
+    setDepthRegistration (true);
   }
   else
     // Start the stream

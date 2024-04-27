@@ -18,7 +18,7 @@ callback ()
   std::cout << "global fn: " << pcl::getTime() - global_time << " :: " << elapsed
             << std::endl;
 
-  std::this_thread::sleep_for(1ms);
+  std::this_thread::sleep_for (1ms);
 }
 
 class Dummy {
@@ -37,14 +37,14 @@ public:
 int
 main ()
 {
-  TimeTrigger trigger(10.0, callback);
+  TimeTrigger trigger (10.0, callback);
   Dummy dummy;
   global_time = pcl::getTime();
   trigger.start();
-  std::this_thread::sleep_for(2s);
-  trigger.registerCallback([&] { dummy.myTimer(); });
-  std::this_thread::sleep_for(3s);
-  trigger.setInterval(0.2);
-  std::this_thread::sleep_for(2s);
+  std::this_thread::sleep_for (2s);
+  trigger.registerCallback ([&] { dummy.myTimer(); });
+  std::this_thread::sleep_for (3s);
+  trigger.setInterval (0.2);
+  std::this_thread::sleep_for (2s);
   return 0;
 }

@@ -42,11 +42,12 @@
 #include <pcl/point_types.h>
 // Instantiations of specific point types
 #ifdef PCL_ONLY_CORE_POINT_TYPES
-PCL_INSTANTIATE_PRODUCT(BOARDLocalReferenceFrameEstimation,
-                        ((pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGB)(
-                            pcl::PointXYZRGBA))((pcl::Normal))((pcl::ReferenceFrame)))
+PCL_INSTANTIATE_PRODUCT (
+    BOARDLocalReferenceFrameEstimation,
+    ((pcl::PointXYZ) (pcl::PointXYZI) (pcl::PointXYZRGB) (pcl::PointXYZRGBA)) (
+        (pcl::Normal)) ((pcl::ReferenceFrame)))
 #else
-PCL_INSTANTIATE_PRODUCT(
+PCL_INSTANTIATE_PRODUCT (
     BOARDLocalReferenceFrameEstimation,
     (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES)((pcl::ReferenceFrame)))
 #endif

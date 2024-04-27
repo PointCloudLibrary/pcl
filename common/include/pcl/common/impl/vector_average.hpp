@@ -55,14 +55,14 @@ VectorAverage<real, dimension>::reset()
 {
   noOfSamples_ = 0;
   accumulatedWeight_ = 0.0;
-  mean_.fill(0);
-  covariance_.fill(0);
+  mean_.fill (0);
+  covariance_.fill (0);
 }
 
 template <typename real, int dimension>
 inline void
-VectorAverage<real, dimension>::add(const Eigen::Matrix<real, dimension, 1>& sample,
-                                    real weight)
+VectorAverage<real, dimension>::add (const Eigen::Matrix<real, dimension, 1>& sample,
+                                     real weight)
 {
   if (weight == 0.0f)
     return;
@@ -85,7 +85,7 @@ VectorAverage<real, dimension>::add(const Eigen::Matrix<real, dimension, 1>& sam
 
 template <typename real, int dimension>
 inline void
-VectorAverage<real, dimension>::doPCA(
+VectorAverage<real, dimension>::doPCA (
     Eigen::Matrix<real, dimension, 1>& eigen_values,
     Eigen::Matrix<real, dimension, 1>& eigen_vector1,
     Eigen::Matrix<real, dimension, 1>& eigen_vector2,
@@ -104,19 +104,19 @@ VectorAverage<real, dimension>::doPCA(
   // std::cout << "My mean is \n"<<mean_<<"\n";
   // std::cout << "My Eigenvectors \n"<<eigen_vectors<<"\n";
 
-  Eigen::SelfAdjointEigenSolver<Eigen::Matrix<real, dimension, dimension>> ei_symm(
+  Eigen::SelfAdjointEigenSolver<Eigen::Matrix<real, dimension, dimension>> ei_symm (
       covariance_);
   eigen_values = ei_symm.eigenvalues();
   Eigen::Matrix<real, dimension, dimension> eigen_vectors = ei_symm.eigenvectors();
 
-  eigen_vector1 = eigen_vectors.col(0);
-  eigen_vector2 = eigen_vectors.col(1);
-  eigen_vector3 = eigen_vectors.col(2);
+  eigen_vector1 = eigen_vectors.col (0);
+  eigen_vector2 = eigen_vectors.col (1);
+  eigen_vector3 = eigen_vectors.col (2);
 }
 
 template <typename real, int dimension>
 inline void
-VectorAverage<real, dimension>::doPCA(
+VectorAverage<real, dimension>::doPCA (
     Eigen::Matrix<real, dimension, 1>& eigen_values) const
 {
   // The following step is necessary for cases where the values in the covariance matrix
@@ -127,14 +127,14 @@ VectorAverage<real, dimension>::doPCA(
   // dimension> > ei_symm(tmp_covariance, false); eigen_values =
   // ei_symm.eigenvalues().template cast<real>();
 
-  Eigen::SelfAdjointEigenSolver<Eigen::Matrix<real, dimension, dimension>> ei_symm(
+  Eigen::SelfAdjointEigenSolver<Eigen::Matrix<real, dimension, dimension>> ei_symm (
       covariance_, false);
   eigen_values = ei_symm.eigenvalues();
 }
 
 template <typename real, int dimension>
 inline void
-VectorAverage<real, dimension>::getEigenVector1(
+VectorAverage<real, dimension>::getEigenVector1 (
     Eigen::Matrix<real, dimension, 1>& eigen_vector1) const
 {
   // The following step is necessary for cases where the values in the covariance matrix
@@ -150,10 +150,10 @@ VectorAverage<real, dimension>::getEigenVector1(
   // std::cout << "My mean is \n"<<mean_<<"\n";
   // std::cout << "My Eigenvectors \n"<<eigen_vectors<<"\n";
 
-  Eigen::SelfAdjointEigenSolver<Eigen::Matrix<real, dimension, dimension>> ei_symm(
+  Eigen::SelfAdjointEigenSolver<Eigen::Matrix<real, dimension, dimension>> ei_symm (
       covariance_);
   Eigen::Matrix<real, dimension, dimension> eigen_vectors = ei_symm.eigenvectors();
-  eigen_vector1 = eigen_vectors.col(0);
+  eigen_vector1 = eigen_vectors.col (0);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -165,34 +165,34 @@ VectorAverage<real, dimension>::getEigenVector1(
 ///////////
 template <>
 inline void
-VectorAverage<float, 3>::doPCA(Eigen::Matrix<float, 3, 1>& eigen_values,
-                               Eigen::Matrix<float, 3, 1>& eigen_vector1,
-                               Eigen::Matrix<float, 3, 1>& eigen_vector2,
-                               Eigen::Matrix<float, 3, 1>& eigen_vector3) const
+VectorAverage<float, 3>::doPCA (Eigen::Matrix<float, 3, 1>& eigen_values,
+                                Eigen::Matrix<float, 3, 1>& eigen_vector1,
+                                Eigen::Matrix<float, 3, 1>& eigen_vector2,
+                                Eigen::Matrix<float, 3, 1>& eigen_vector3) const
 {
   // std::cout << "Using specialized 3x3 version of doPCA!\n";
   Eigen::Matrix<float, 3, 3> eigen_vectors;
-  eigen33(covariance_, eigen_vectors, eigen_values);
-  eigen_vector1 = eigen_vectors.col(0);
-  eigen_vector2 = eigen_vectors.col(1);
-  eigen_vector3 = eigen_vectors.col(2);
+  eigen33 (covariance_, eigen_vectors, eigen_values);
+  eigen_vector1 = eigen_vectors.col (0);
+  eigen_vector2 = eigen_vectors.col (1);
+  eigen_vector3 = eigen_vectors.col (2);
 }
 template <>
 inline void
-VectorAverage<float, 3>::doPCA(Eigen::Matrix<float, 3, 1>& eigen_values) const
+VectorAverage<float, 3>::doPCA (Eigen::Matrix<float, 3, 1>& eigen_values) const
 {
   // std::cout << "Using specialized 3x3 version of doPCA!\n";
-  computeRoots(covariance_, eigen_values);
+  computeRoots (covariance_, eigen_values);
 }
 template <>
 inline void
-VectorAverage<float, 3>::getEigenVector1(
+VectorAverage<float, 3>::getEigenVector1 (
     Eigen::Matrix<float, 3, 1>& eigen_vector1) const
 {
   // std::cout << "Using specialized 3x3 version of doPCA!\n";
   Eigen::Vector3f::Scalar eigen_value;
   Eigen::Vector3f eigen_vector;
-  eigen33(covariance_, eigen_value, eigen_vector);
+  eigen33 (covariance_, eigen_value, eigen_vector);
   eigen_vector1 = eigen_vector;
 }
 
@@ -201,34 +201,34 @@ VectorAverage<float, 3>::getEigenVector1(
 ////////////
 template <>
 inline void
-VectorAverage<double, 3>::doPCA(Eigen::Matrix<double, 3, 1>& eigen_values,
-                                Eigen::Matrix<double, 3, 1>& eigen_vector1,
-                                Eigen::Matrix<double, 3, 1>& eigen_vector2,
-                                Eigen::Matrix<double, 3, 1>& eigen_vector3) const
+VectorAverage<double, 3>::doPCA (Eigen::Matrix<double, 3, 1>& eigen_values,
+                                 Eigen::Matrix<double, 3, 1>& eigen_vector1,
+                                 Eigen::Matrix<double, 3, 1>& eigen_vector2,
+                                 Eigen::Matrix<double, 3, 1>& eigen_vector3) const
 {
   // std::cout << "Using specialized 3x3 version of doPCA!\n";
   Eigen::Matrix<double, 3, 3> eigen_vectors;
-  eigen33(covariance_, eigen_vectors, eigen_values);
-  eigen_vector1 = eigen_vectors.col(0);
-  eigen_vector2 = eigen_vectors.col(1);
-  eigen_vector3 = eigen_vectors.col(2);
+  eigen33 (covariance_, eigen_vectors, eigen_values);
+  eigen_vector1 = eigen_vectors.col (0);
+  eigen_vector2 = eigen_vectors.col (1);
+  eigen_vector3 = eigen_vectors.col (2);
 }
 template <>
 inline void
-VectorAverage<double, 3>::doPCA(Eigen::Matrix<double, 3, 1>& eigen_values) const
+VectorAverage<double, 3>::doPCA (Eigen::Matrix<double, 3, 1>& eigen_values) const
 {
   // std::cout << "Using specialized 3x3 version of doPCA!\n";
-  computeRoots(covariance_, eigen_values);
+  computeRoots (covariance_, eigen_values);
 }
 template <>
 inline void
-VectorAverage<double, 3>::getEigenVector1(
+VectorAverage<double, 3>::getEigenVector1 (
     Eigen::Matrix<double, 3, 1>& eigen_vector1) const
 {
   // std::cout << "Using specialized 3x3 version of doPCA!\n";
   Eigen::Vector3d::Scalar eigen_value;
   Eigen::Vector3d eigen_vector;
-  eigen33(covariance_, eigen_value, eigen_vector);
+  eigen33 (covariance_, eigen_value, eigen_vector);
   eigen_vector1 = eigen_vector;
 }
 } // namespace pcl

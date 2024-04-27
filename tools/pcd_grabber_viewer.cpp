@@ -61,20 +61,20 @@ void
 printHelp (int, char** argv)
 {
   // print_error ("Syntax is: %s <file_name 1..N>.pcd <options>\n", argv[0]);
-  print_error("Syntax is: %s <options>\n", argv[0]);
-  print_info("  where options are:\n");
-  print_info(
+  print_error ("Syntax is: %s <options>\n", argv[0]);
+  print_info ("  where options are:\n");
+  print_info (
       "                     -file file_name          = PCD file to be read from\n");
-  print_info("                     -dir directory_path      = directory path to PCD "
-             "file(s) to be read from\n");
-  print_info("                     -fps frequency           = frames per second\n");
-  print_info(
+  print_info ("                     -dir directory_path      = directory path to PCD "
+              "file(s) to be read from\n");
+  print_info ("                     -fps frequency           = frames per second\n");
+  print_info (
       "                     -repeat                  = optional parameter that tells "
       "whether the PCD file(s) should be \"grabbed\" in a endless loop.\n");
-  print_info("\n");
-  print_info("                     -cam (*)                 = use given camera "
-             "settings as initial view\n");
-  print_info(
+  print_info ("\n");
+  print_info ("                     -cam (*)                 = use given camera "
+              "settings as initial view\n");
+  print_info (
       stderr,
       " (*) [Clipping Range / Focal Point / Position / ViewUp / Distance / Window Size "
       "/ Window Pos] or use a <filename.cam> that contains the same information.\n");
@@ -112,7 +112,7 @@ keyboard_callback (const pcl::visualization::KeyboardEvent& event, void*)
 void
 mouse_callback (const pcl::visualization::MouseEvent& mouse_event, void* cookie)
 {
-  auto* message = static_cast<std::string*>(cookie);
+  auto* message = static_cast<std::string*> (cookie);
   if (mouse_event.getType() == pcl::visualization::MouseEvent::MouseButtonPress &&
       mouse_event.getButton() == pcl::visualization::MouseEvent::LeftButton) {
     std::cout << (*message) << " :: " << mouse_event.getX() << " , "
@@ -124,12 +124,12 @@ mouse_callback (const pcl::visualization::MouseEvent& mouse_event, void* cookie)
 int
 main (int argc, char** argv)
 {
-  srand(static_cast<unsigned>(time(nullptr)));
+  srand (static_cast<unsigned> (time (nullptr)));
 
   if (argc > 1) {
     for (int i = 1; i < argc; i++) {
-      if (std::string(argv[i]) == "-h") {
-        printHelp(argc, argv);
+      if (std::string (argv[i]) == "-h") {
+        printHelp (argc, argv);
         return (-1);
       }
     }
@@ -137,21 +137,21 @@ main (int argc, char** argv)
 
   // Command line parsing
   double bcolor[3] = {0, 0, 0};
-  pcl::console::parse_3x_arguments(argc, argv, "-bc", bcolor[0], bcolor[1], bcolor[2]);
+  pcl::console::parse_3x_arguments (argc, argv, "-bc", bcolor[0], bcolor[1], bcolor[2]);
 
-  fcolorparam = pcl::console::parse_multiple_3x_arguments(
+  fcolorparam = pcl::console::parse_multiple_3x_arguments (
       argc, argv, "-fc", fcolor_r, fcolor_g, fcolor_b);
 
   int psize = 0;
-  pcl::console::parse_argument(argc, argv, "-ps", psize);
+  pcl::console::parse_argument (argc, argv, "-ps", psize);
 
   double opaque;
-  pcl::console::parse_argument(argc, argv, "-opaque", opaque);
+  pcl::console::parse_argument (argc, argv, "-opaque", opaque);
 
-  cloud_viewer.reset(new pcl::visualization::PCLVisualizer(argc, argv, "PCD viewer"));
+  cloud_viewer.reset (new pcl::visualization::PCLVisualizer (argc, argv, "PCD viewer"));
 
 #ifdef DISPLAY_IMAGE
-  img_viewer.reset(new pcl::visualization::ImageViewer("OpenNI Viewer"));
+  img_viewer.reset (new pcl::visualization::ImageViewer ("OpenNI Viewer"));
 #endif
 
   //  // Change the cloud rendered point size
@@ -164,44 +164,44 @@ main (int argc, char** argv)
   //    p->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_OPACITY,
   //    opaque, "OpenNICloud");
 
-  cloud_viewer->setBackgroundColor(bcolor[0], bcolor[1], bcolor[2]);
+  cloud_viewer->setBackgroundColor (bcolor[0], bcolor[1], bcolor[2]);
 
   // Read axes settings
   double axes = 0.0;
-  pcl::console::parse_argument(argc, argv, "-ax", axes);
+  pcl::console::parse_argument (argc, argv, "-ax", axes);
   if (axes != 0.0 && cloud_viewer) {
     float ax_x = 0.0, ax_y = 0.0, ax_z = 0.0;
-    pcl::console::parse_3x_arguments(argc, argv, "-ax_pos", ax_x, ax_y, ax_z, false);
+    pcl::console::parse_3x_arguments (argc, argv, "-ax_pos", ax_x, ax_y, ax_z, false);
     // Draw XYZ axes if command-line enabled
-    cloud_viewer->addCoordinateSystem(axes, ax_x, ax_y, ax_z, "global");
+    cloud_viewer->addCoordinateSystem (axes, ax_x, ax_y, ax_z, "global");
   }
 
   float frames_per_second = 0; // 0 means only if triggered!
-  pcl::console::parse(argc, argv, "-fps", frames_per_second);
+  pcl::console::parse (argc, argv, "-fps", frames_per_second);
   if (frames_per_second < 0)
     frames_per_second = 0.0;
 
-  bool repeat = (pcl::console::find_argument(argc, argv, "-repeat") != -1);
+  bool repeat = (pcl::console::find_argument (argc, argv, "-repeat") != -1);
 
   std::cout << "fps: " << frames_per_second << " , repeat: " << repeat << std::endl;
   std::string path;
-  pcl::console::parse_argument(argc, argv, "-file", path);
+  pcl::console::parse_argument (argc, argv, "-file", path);
   std::cout << "path: " << path << std::endl;
-  if (!path.empty() && pcl_fs::exists(path)) {
-    grabber.reset(
-        new pcl::PCDGrabber<pcl::PointXYZRGBA>(path, frames_per_second, repeat));
+  if (!path.empty() && pcl_fs::exists (path)) {
+    grabber.reset (
+        new pcl::PCDGrabber<pcl::PointXYZRGBA> (path, frames_per_second, repeat));
   }
   else {
     std::vector<std::string> pcd_files;
-    pcl::console::parse_argument(argc, argv, "-dir", path);
+    pcl::console::parse_argument (argc, argv, "-dir", path);
     std::cout << "path: " << path << std::endl;
-    if (!path.empty() && pcl_fs::exists(path)) {
+    if (!path.empty() && pcl_fs::exists (path)) {
       pcl_fs::directory_iterator end_itr;
-      for (pcl_fs::directory_iterator itr(path); itr != end_itr; ++itr) {
-        if (!is_directory(itr->status()) &&
-            boost::algorithm::to_upper_copy(itr->path().extension().string()) ==
+      for (pcl_fs::directory_iterator itr (path); itr != end_itr; ++itr) {
+        if (!is_directory (itr->status()) &&
+            boost::algorithm::to_upper_copy (itr->path().extension().string()) ==
                 ".PCD") {
-          pcd_files.push_back(itr->path().string());
+          pcd_files.push_back (itr->path().string());
           std::cout << "added: " << itr->path().string() << std::endl;
         }
       }
@@ -213,33 +213,34 @@ main (int argc, char** argv)
     }
 
     // Sort the read files by name
-    sort(pcd_files.begin(), pcd_files.end());
-    grabber.reset(
-        new pcl::PCDGrabber<pcl::PointXYZRGBA>(pcd_files, frames_per_second, repeat));
+    sort (pcd_files.begin(), pcd_files.end());
+    grabber.reset (
+        new pcl::PCDGrabber<pcl::PointXYZRGBA> (pcd_files, frames_per_second, repeat));
   }
 
   EventHelper h;
-  std::function<void(const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)> f =
+  std::function<void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)> f =
       [&] (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr& cloud) {
-        h.cloud_cb(cloud);
+        h.cloud_cb (cloud);
       };
-  boost::signals2::connection c1 = grabber->registerCallback(f);
+  boost::signals2::connection c1 = grabber->registerCallback (f);
 
-  std::string mouse_msg_3D("Mouse coordinates in PCL Visualizer");
-  std::string key_msg_3D("Key event for PCL Visualizer");
+  std::string mouse_msg_3D ("Mouse coordinates in PCL Visualizer");
+  std::string key_msg_3D ("Key event for PCL Visualizer");
 
-  cloud_viewer->registerMouseCallback(&mouse_callback,
-                                      static_cast<void*>(&mouse_msg_3D));
-  cloud_viewer->registerKeyboardCallback(&keyboard_callback,
-                                         static_cast<void*>(&key_msg_3D));
+  cloud_viewer->registerMouseCallback (&mouse_callback,
+                                       static_cast<void*> (&mouse_msg_3D));
+  cloud_viewer->registerKeyboardCallback (&keyboard_callback,
+                                          static_cast<void*> (&key_msg_3D));
 
-  std::string mouse_msg_2D("Mouse coordinates in image viewer");
-  std::string key_msg_2D("Key event for image viewer");
+  std::string mouse_msg_2D ("Mouse coordinates in image viewer");
+  std::string key_msg_2D ("Key event for image viewer");
 
 #ifdef DISPLAY_IMAGE
-  img_viewer->registerMouseCallback(&mouse_callback, static_cast<void*>(&mouse_msg_2D));
-  img_viewer->registerKeyboardCallback(&keyboard_callback,
-                                       static_cast<void*>(&key_msg_2D));
+  img_viewer->registerMouseCallback (&mouse_callback,
+                                     static_cast<void*> (&mouse_msg_2D));
+  img_viewer->registerKeyboardCallback (&keyboard_callback,
+                                        static_cast<void*> (&key_msg_2D));
 #endif
 
   grabber->start();
@@ -251,21 +252,21 @@ main (int argc, char** argv)
 #endif
 
     if (!cloud_) {
-      std::this_thread::sleep_for(10ms);
+      std::this_thread::sleep_for (10ms);
       continue;
     }
     if (mutex_.try_lock()) {
       pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr temp_cloud;
-      temp_cloud.swap(cloud_);
+      temp_cloud.swap (cloud_);
       mutex_.unlock();
 
 #ifdef DISPLAY_IMAGE
-      img_viewer->showRGBImage(*temp_cloud);
+      img_viewer->showRGBImage (*temp_cloud);
 #endif
 
-      if (!cloud_viewer->updatePointCloud(temp_cloud, "PCDCloud")) {
-        cloud_viewer->addPointCloud(temp_cloud, "PCDCloud");
-        cloud_viewer->resetCameraViewpoint("PCDCloud");
+      if (!cloud_viewer->updatePointCloud (temp_cloud, "PCDCloud")) {
+        cloud_viewer->addPointCloud (temp_cloud, "PCDCloud");
+        cloud_viewer->resetCameraViewpoint ("PCDCloud");
       }
     }
   }

@@ -21,7 +21,7 @@ class ON_SumSurface;
 
 // surface of revolution
 class ON_CLASS ON_SumSurface : public ON_Surface {
-  ON_OBJECT_DECLARE(ON_SumSurface);
+  ON_OBJECT_DECLARE (ON_SumSurface);
 
 public:
   // virtual ON_Object::DestroyRuntimeCache override
@@ -53,9 +53,9 @@ public:
 
   ON_SumSurface();
   ~ON_SumSurface();
-  ON_SumSurface(const ON_SumSurface&);
+  ON_SumSurface (const ON_SumSurface&);
   ON_SumSurface&
-  operator=(const ON_SumSurface&);
+  operator= (const ON_SumSurface&);
 
   /*
   Description:
@@ -382,7 +382,7 @@ public:
   );
 
   ON_BOOL32
-  Transpose (); // transpose surface parameterization (swap "s" and "t")
+  Transpose(); // transpose surface parameterization (swap "s" and "t")
 
   ON_BOOL32
   Evaluate ( // returns false if unable to evaluate

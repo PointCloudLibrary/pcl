@@ -109,7 +109,7 @@ struct Block {
     OutIt o = out + (t - beg);
 
     for (; t < end; t += STRIDE, o += STRIDE)
-      *o = op(*t);
+      *o = op (*t);
   }
 
   template <typename InIt1, typename InIt2, typename OutIt, class BinOp>
@@ -122,7 +122,7 @@ struct Block {
     OutIt o = out + (t1 - beg1);
 
     for (; t1 < end1; t1 += STRIDE, t2 += STRIDE, o += STRIDE)
-      *o = op(*t1, *t2);
+      *o = op (*t1, *t2);
   }
 
   template <int CTA_SIZE, typename T, class BinOp>
@@ -134,43 +134,43 @@ struct Block {
 
     if (CTA_SIZE >= 1024) {
       if (tid < 512)
-        buffer[tid] = val = op(val, buffer[tid + 512]);
+        buffer[tid] = val = op (val, buffer[tid + 512]);
       __syncthreads();
     }
     if (CTA_SIZE >= 512) {
       if (tid < 256)
-        buffer[tid] = val = op(val, buffer[tid + 256]);
+        buffer[tid] = val = op (val, buffer[tid + 256]);
       __syncthreads();
     }
     if (CTA_SIZE >= 256) {
       if (tid < 128)
-        buffer[tid] = val = op(val, buffer[tid + 128]);
+        buffer[tid] = val = op (val, buffer[tid + 128]);
       __syncthreads();
     }
     if (CTA_SIZE >= 128) {
       if (tid < 64)
-        buffer[tid] = val = op(val, buffer[tid + 64]);
+        buffer[tid] = val = op (val, buffer[tid + 64]);
       __syncthreads();
     }
 
     if (tid < 32) {
       if (CTA_SIZE >= 64) {
-        buffer[tid] = val = op(val, buffer[tid + 32]);
+        buffer[tid] = val = op (val, buffer[tid + 32]);
       }
       if (CTA_SIZE >= 32) {
-        buffer[tid] = val = op(val, buffer[tid + 16]);
+        buffer[tid] = val = op (val, buffer[tid + 16]);
       }
       if (CTA_SIZE >= 16) {
-        buffer[tid] = val = op(val, buffer[tid + 8]);
+        buffer[tid] = val = op (val, buffer[tid + 8]);
       }
       if (CTA_SIZE >= 8) {
-        buffer[tid] = val = op(val, buffer[tid + 4]);
+        buffer[tid] = val = op (val, buffer[tid + 4]);
       }
       if (CTA_SIZE >= 4) {
-        buffer[tid] = val = op(val, buffer[tid + 2]);
+        buffer[tid] = val = op (val, buffer[tid + 2]);
       }
       if (CTA_SIZE >= 2) {
-        buffer[tid] = val = op(val, buffer[tid + 1]);
+        buffer[tid] = val = op (val, buffer[tid + 1]);
       }
     }
   }
@@ -185,43 +185,43 @@ struct Block {
 
     if (CTA_SIZE >= 1024) {
       if (tid < 512)
-        buffer[tid] = val = op(val, buffer[tid + 512]);
+        buffer[tid] = val = op (val, buffer[tid + 512]);
       __syncthreads();
     }
     if (CTA_SIZE >= 512) {
       if (tid < 256)
-        buffer[tid] = val = op(val, buffer[tid + 256]);
+        buffer[tid] = val = op (val, buffer[tid + 256]);
       __syncthreads();
     }
     if (CTA_SIZE >= 256) {
       if (tid < 128)
-        buffer[tid] = val = op(val, buffer[tid + 128]);
+        buffer[tid] = val = op (val, buffer[tid + 128]);
       __syncthreads();
     }
     if (CTA_SIZE >= 128) {
       if (tid < 64)
-        buffer[tid] = val = op(val, buffer[tid + 64]);
+        buffer[tid] = val = op (val, buffer[tid + 64]);
       __syncthreads();
     }
 
     if (tid < 32) {
       if (CTA_SIZE >= 64) {
-        buffer[tid] = val = op(val, buffer[tid + 32]);
+        buffer[tid] = val = op (val, buffer[tid + 32]);
       }
       if (CTA_SIZE >= 32) {
-        buffer[tid] = val = op(val, buffer[tid + 16]);
+        buffer[tid] = val = op (val, buffer[tid + 16]);
       }
       if (CTA_SIZE >= 16) {
-        buffer[tid] = val = op(val, buffer[tid + 8]);
+        buffer[tid] = val = op (val, buffer[tid + 8]);
       }
       if (CTA_SIZE >= 8) {
-        buffer[tid] = val = op(val, buffer[tid + 4]);
+        buffer[tid] = val = op (val, buffer[tid + 4]);
       }
       if (CTA_SIZE >= 4) {
-        buffer[tid] = val = op(val, buffer[tid + 2]);
+        buffer[tid] = val = op (val, buffer[tid + 2]);
       }
       if (CTA_SIZE >= 2) {
-        buffer[tid] = val = op(val, buffer[tid + 1]);
+        buffer[tid] = val = op (val, buffer[tid + 1]);
       }
     }
     __syncthreads();
@@ -237,7 +237,7 @@ struct Block {
 
     if (sft < n) {
       for (unsigned int i = sft + ftid; i < n; i += sft)
-        data[ftid] = op(data[ftid], data[i]);
+        data[ftid] = op (data[ftid], data[i]);
 
       __syncthreads();
 
@@ -248,7 +248,7 @@ struct Block {
       unsigned int half = n / 2;
 
       if (ftid < half)
-        data[ftid] = op(data[ftid], data[n - ftid - 1]);
+        data[ftid] = op (data[ftid], data[n - ftid - 1]);
 
       __syncthreads();
 

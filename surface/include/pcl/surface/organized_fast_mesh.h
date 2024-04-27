@@ -118,8 +118,8 @@ public:
   inline void
   setTrianglePixelSize (int triangle_size)
   {
-    setTrianglePixelSizeRows(triangle_size);
-    setTrianglePixelSizeColumns(triangle_size);
+    setTrianglePixelSizeRows (triangle_size);
+    setTrianglePixelSizeColumns (triangle_size);
   }
 
   /** \brief Set the edge length (in pixels) used for iterating over rows when
@@ -129,7 +129,7 @@ public:
   inline void
   setTrianglePixelSizeRows (int triangle_size)
   {
-    triangle_pixel_size_rows_ = std::max(1, (triangle_size - 1));
+    triangle_pixel_size_rows_ = std::max (1, (triangle_size - 1));
   }
 
   /** \brief Set the edge length (in pixels) used for iterating over columns when
@@ -139,7 +139,7 @@ public:
   inline void
   setTrianglePixelSizeColumns (int triangle_size)
   {
-    triangle_pixel_size_columns_ = std::max(1, (triangle_size - 1));
+    triangle_pixel_size_columns_ = std::max (1, (triangle_size - 1));
   }
 
   /** \brief Set the triangulation type (see \a TriangulationType)
@@ -187,7 +187,7 @@ public:
   setAngleTolerance (float angle_tolerance)
   {
     if (angle_tolerance > 0)
-      cos_angle_tolerance_ = std::abs(std::cos(angle_tolerance));
+      cos_angle_tolerance_ = std::abs (std::cos (angle_tolerance));
     else
       cos_angle_tolerance_ = -1.0f;
   }
@@ -245,7 +245,7 @@ protected:
 
   /** \brief (Cosine of the) angle tolerance used when checking whether or not an edge
    * between two points is shadowed. */
-  float cos_angle_tolerance_{std::abs(std::cos(pcl::deg2rad(12.5f)))};
+  float cos_angle_tolerance_{std::abs (std::cos (pcl::deg2rad (12.5f)))};
 
   /** \brief distance tolerance for filtering out shadowed/occluded edges */
   float distance_tolerance_{-1.0f};
@@ -293,8 +293,8 @@ protected:
   inline void
   addTriangle (int a, int b, int c, int idx, std::vector<pcl::Vertices>& polygons)
   {
-    assert(idx < static_cast<int>(polygons.size()));
-    polygons[idx].vertices.resize(3);
+    assert (idx < static_cast<int> (polygons.size()));
+    polygons[idx].vertices.resize (3);
     polygons[idx].vertices[0] = a;
     polygons[idx].vertices[1] = b;
     polygons[idx].vertices[2] = c;
@@ -311,8 +311,8 @@ protected:
   inline void
   addQuad (int a, int b, int c, int d, int idx, std::vector<pcl::Vertices>& polygons)
   {
-    assert(idx < static_cast<int>(polygons.size()));
-    polygons[idx].vertices.resize(4);
+    assert (idx < static_cast<int> (polygons.size()));
+    polygons[idx].vertices.resize (4);
     polygons[idx].vertices[0] = a;
     polygons[idx].vertices[1] = b;
     polygons[idx].vertices[2] = c;
@@ -336,18 +336,18 @@ protected:
                   int field_z_idx = 2)
   {
     float new_value = value;
-    memcpy(&mesh.cloud.data[point_index * mesh.cloud.point_step +
-                            mesh.cloud.fields[field_x_idx].offset],
-           &new_value,
-           sizeof(float));
-    memcpy(&mesh.cloud.data[point_index * mesh.cloud.point_step +
-                            mesh.cloud.fields[field_y_idx].offset],
-           &new_value,
-           sizeof(float));
-    memcpy(&mesh.cloud.data[point_index * mesh.cloud.point_step +
-                            mesh.cloud.fields[field_z_idx].offset],
-           &new_value,
-           sizeof(float));
+    memcpy (&mesh.cloud.data[point_index * mesh.cloud.point_step +
+                             mesh.cloud.fields[field_x_idx].offset],
+            &new_value,
+            sizeof (float));
+    memcpy (&mesh.cloud.data[point_index * mesh.cloud.point_step +
+                             mesh.cloud.fields[field_y_idx].offset],
+            &new_value,
+            sizeof (float));
+    memcpy (&mesh.cloud.data[point_index * mesh.cloud.point_step +
+                             mesh.cloud.fields[field_z_idx].offset],
+            &new_value,
+            sizeof (float));
   }
 
   /** \brief Check if a point is shadowed by another point
@@ -366,10 +366,10 @@ protected:
 
     if (cos_angle_tolerance_ > 0) {
       float cos_angle =
-          dir_a.dot(dir_b) / (distance_to_points * distance_between_points);
-      if (std::isnan(cos_angle))
+          dir_a.dot (dir_b) / (distance_to_points * distance_between_points);
+      if (std::isnan (cos_angle))
         cos_angle = 1.0f;
-      bool check_angle = std::fabs(cos_angle) >= cos_angle_tolerance_;
+      bool check_angle = std::fabs (cos_angle) >= cos_angle_tolerance_;
 
       bool check_distance = true;
       if (check_angle && (distance_tolerance_ > 0)) {
@@ -377,7 +377,7 @@ protected:
         if (distance_dependent_) {
           float d = distance_to_points;
           if (use_depth_as_distance_)
-            d = std::max(point_a.z, point_b.z);
+            d = std::max (point_a.z, point_b.z);
           dist_thresh *= d * d;
           dist_thresh *= dist_thresh; // distance_tolerance_ is already squared if
                                       // distance_dependent_ is false.
@@ -389,12 +389,12 @@ protected:
 
     // check if max. edge length is not exceeded
     if (max_edge_length_set_) {
-      float dist = (use_depth_as_distance_ ? std::max(point_a.z, point_b.z)
+      float dist = (use_depth_as_distance_ ? std::max (point_a.z, point_b.z)
                                            : distance_to_points);
       float dist_thresh = max_edge_length_a_;
-      if (std::fabs(max_edge_length_b_) > std::numeric_limits<float>::min())
+      if (std::fabs (max_edge_length_b_) > std::numeric_limits<float>::min())
         dist_thresh += max_edge_length_b_ * dist;
-      if (std::fabs(max_edge_length_c_) > std::numeric_limits<float>::min())
+      if (std::fabs (max_edge_length_c_) > std::numeric_limits<float>::min())
         dist_thresh += max_edge_length_c_ * dist * dist;
       valid = (distance_between_points <= dist_thresh);
     }
@@ -410,11 +410,11 @@ protected:
   inline bool
   isValidTriangle (const int& a, const int& b, const int& c)
   {
-    if (!pcl::isFinite((*input_)[a]))
+    if (!pcl::isFinite ((*input_)[a]))
       return (false);
-    if (!pcl::isFinite((*input_)[b]))
+    if (!pcl::isFinite ((*input_)[b]))
       return (false);
-    if (!pcl::isFinite((*input_)[c]))
+    if (!pcl::isFinite ((*input_)[c]))
       return (false);
     return (true);
   }
@@ -427,11 +427,11 @@ protected:
   inline bool
   isShadowedTriangle (const int& a, const int& b, const int& c)
   {
-    if (isShadowed((*input_)[a], (*input_)[b]))
+    if (isShadowed ((*input_)[a], (*input_)[b]))
       return (true);
-    if (isShadowed((*input_)[b], (*input_)[c]))
+    if (isShadowed ((*input_)[b], (*input_)[c]))
       return (true);
-    if (isShadowed((*input_)[c], (*input_)[a]))
+    if (isShadowed ((*input_)[c], (*input_)[a]))
       return (true);
     return (false);
   }
@@ -445,13 +445,13 @@ protected:
   inline bool
   isValidQuad (const int& a, const int& b, const int& c, const int& d)
   {
-    if (!pcl::isFinite((*input_)[a]))
+    if (!pcl::isFinite ((*input_)[a]))
       return (false);
-    if (!pcl::isFinite((*input_)[b]))
+    if (!pcl::isFinite ((*input_)[b]))
       return (false);
-    if (!pcl::isFinite((*input_)[c]))
+    if (!pcl::isFinite ((*input_)[c]))
       return (false);
-    if (!pcl::isFinite((*input_)[d]))
+    if (!pcl::isFinite ((*input_)[d]))
       return (false);
     return (true);
   }
@@ -465,13 +465,13 @@ protected:
   inline bool
   isShadowedQuad (const int& a, const int& b, const int& c, const int& d)
   {
-    if (isShadowed((*input_)[a], (*input_)[b]))
+    if (isShadowed ((*input_)[a], (*input_)[b]))
       return (true);
-    if (isShadowed((*input_)[b], (*input_)[c]))
+    if (isShadowed ((*input_)[b], (*input_)[c]))
       return (true);
-    if (isShadowed((*input_)[c], (*input_)[d]))
+    if (isShadowed ((*input_)[c], (*input_)[d]))
       return (true);
-    if (isShadowed((*input_)[d], (*input_)[a]))
+    if (isShadowed ((*input_)[d], (*input_)[a]))
       return (true);
     return (false);
   }

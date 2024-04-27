@@ -62,11 +62,11 @@ applyMorphologicalOperator (const typename pcl::PointCloud<PointT>::ConstPtr& cl
   if (cloud_in->empty())
     return;
 
-  pcl::copyPointCloud(*cloud_in, cloud_out);
+  pcl::copyPointCloud (*cloud_in, cloud_out);
 
-  pcl::octree::OctreePointCloudSearch<PointT> tree(resolution);
+  pcl::octree::OctreePointCloudSearch<PointT> tree (resolution);
 
-  tree.setInputCloud(cloud_in);
+  tree.setInputCloud (cloud_in);
   tree.addPointsFromInputCloud();
 
   float half_res = resolution / 2.0f;
@@ -83,13 +83,13 @@ applyMorphologicalOperator (const typename pcl::PointCloud<PointT>::ConstPtr& cl
       float maxx = (*cloud_in)[p_idx].x + half_res;
       float maxy = (*cloud_in)[p_idx].y + half_res;
       float maxz = std::numeric_limits<float>::max();
-      bbox_min = Eigen::Vector3f(minx, miny, minz);
-      bbox_max = Eigen::Vector3f(maxx, maxy, maxz);
-      tree.boxSearch(bbox_min, bbox_max, pt_indices);
+      bbox_min = Eigen::Vector3f (minx, miny, minz);
+      bbox_max = Eigen::Vector3f (maxx, maxy, maxz);
+      tree.boxSearch (bbox_min, bbox_max, pt_indices);
 
       if (!pt_indices.empty()) {
         Eigen::Vector4f min_pt, max_pt;
-        pcl::getMinMax3D<PointT>(*cloud_in, pt_indices, min_pt, max_pt);
+        pcl::getMinMax3D<PointT> (*cloud_in, pt_indices, min_pt, max_pt);
 
         switch (morphological_operator) {
         case MORPH_DILATE: {
@@ -109,7 +109,7 @@ applyMorphologicalOperator (const typename pcl::PointCloud<PointT>::ConstPtr& cl
   case MORPH_CLOSE: {
     pcl::PointCloud<PointT> cloud_temp;
 
-    pcl::copyPointCloud(*cloud_in, cloud_temp);
+    pcl::copyPointCloud (*cloud_in, cloud_temp);
 
     for (std::size_t p_idx = 0; p_idx < cloud_temp.size(); ++p_idx) {
       Eigen::Vector3f bbox_min, bbox_max;
@@ -120,13 +120,13 @@ applyMorphologicalOperator (const typename pcl::PointCloud<PointT>::ConstPtr& cl
       float maxx = cloud_temp[p_idx].x + half_res;
       float maxy = cloud_temp[p_idx].y + half_res;
       float maxz = std::numeric_limits<float>::max();
-      bbox_min = Eigen::Vector3f(minx, miny, minz);
-      bbox_max = Eigen::Vector3f(maxx, maxy, maxz);
-      tree.boxSearch(bbox_min, bbox_max, pt_indices);
+      bbox_min = Eigen::Vector3f (minx, miny, minz);
+      bbox_max = Eigen::Vector3f (maxx, maxy, maxz);
+      tree.boxSearch (bbox_min, bbox_max, pt_indices);
 
       if (!pt_indices.empty()) {
         Eigen::Vector4f min_pt, max_pt;
-        pcl::getMinMax3D<PointT>(cloud_temp, pt_indices, min_pt, max_pt);
+        pcl::getMinMax3D<PointT> (cloud_temp, pt_indices, min_pt, max_pt);
 
         switch (morphological_operator) {
         case MORPH_OPEN: {
@@ -141,7 +141,7 @@ applyMorphologicalOperator (const typename pcl::PointCloud<PointT>::ConstPtr& cl
       }
     }
 
-    cloud_temp.swap(cloud_out);
+    cloud_temp.swap (cloud_out);
 
     for (std::size_t p_idx = 0; p_idx < cloud_temp.size(); ++p_idx) {
       Eigen::Vector3f bbox_min, bbox_max;
@@ -152,13 +152,13 @@ applyMorphologicalOperator (const typename pcl::PointCloud<PointT>::ConstPtr& cl
       float maxx = cloud_temp[p_idx].x + half_res;
       float maxy = cloud_temp[p_idx].y + half_res;
       float maxz = std::numeric_limits<float>::max();
-      bbox_min = Eigen::Vector3f(minx, miny, minz);
-      bbox_max = Eigen::Vector3f(maxx, maxy, maxz);
-      tree.boxSearch(bbox_min, bbox_max, pt_indices);
+      bbox_min = Eigen::Vector3f (minx, miny, minz);
+      bbox_max = Eigen::Vector3f (maxx, maxy, maxz);
+      tree.boxSearch (bbox_min, bbox_max, pt_indices);
 
       if (!pt_indices.empty()) {
         Eigen::Vector4f min_pt, max_pt;
-        pcl::getMinMax3D<PointT>(cloud_temp, pt_indices, min_pt, max_pt);
+        pcl::getMinMax3D<PointT> (cloud_temp, pt_indices, min_pt, max_pt);
 
         switch (morphological_operator) {
         case MORPH_OPEN:
@@ -176,7 +176,7 @@ applyMorphologicalOperator (const typename pcl::PointCloud<PointT>::ConstPtr& cl
     break;
   }
   default: {
-    PCL_ERROR("Morphological operator is not supported!\n");
+    PCL_ERROR ("Morphological operator is not supported!\n");
     break;
   }
   }
@@ -187,7 +187,7 @@ applyMorphologicalOperator (const typename pcl::PointCloud<PointT>::ConstPtr& cl
 } // namespace pcl
 
 #define PCL_INSTANTIATE_applyMorphologicalOperator(T)                                  \
-  template PCL_EXPORTS void pcl::applyMorphologicalOperator<T>(                        \
+  template PCL_EXPORTS void pcl::applyMorphologicalOperator<T> (                       \
       const pcl::PointCloud<T>::ConstPtr&, float, const int, pcl::PointCloud<T>&);
 
 #endif // #ifndef PCL_FILTERS_IMPL_MORPHOLOGICAL_FILTER_H_

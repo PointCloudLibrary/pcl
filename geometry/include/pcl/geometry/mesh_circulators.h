@@ -79,17 +79,17 @@ public:
   using HalfEdgeIndex = typename Mesh::HalfEdgeIndex;
 
   /** \brief Constructor resulting in an invalid circulator. */
-  VertexAroundVertexCirculator() : mesh_(nullptr), idx_outgoing_half_edge_() {}
+  VertexAroundVertexCirculator() : mesh_ (nullptr), idx_outgoing_half_edge_() {}
 
   /** \brief Construct from the vertex around which we want to circulate. */
-  VertexAroundVertexCirculator(const VertexIndex& idx_vertex, Mesh* const mesh)
-  : mesh_(mesh), idx_outgoing_half_edge_(mesh->getOutgoingHalfEdgeIndex(idx_vertex))
+  VertexAroundVertexCirculator (const VertexIndex& idx_vertex, Mesh* const mesh)
+  : mesh_ (mesh), idx_outgoing_half_edge_ (mesh->getOutgoingHalfEdgeIndex (idx_vertex))
   {}
 
   /** \brief Construct directly from the outgoing half-edge. */
-  VertexAroundVertexCirculator(const HalfEdgeIndex& idx_outgoing_half_edge,
-                               Mesh* const mesh)
-  : mesh_(mesh), idx_outgoing_half_edge_(idx_outgoing_half_edge)
+  VertexAroundVertexCirculator (const HalfEdgeIndex& idx_outgoing_half_edge,
+                                Mesh* const mesh)
+  : mesh_ (mesh), idx_outgoing_half_edge_ (idx_outgoing_half_edge)
   {}
 
   /** \brief Check if the circulator is valid.
@@ -105,7 +105,7 @@ public:
    * \warning Does NOT check if the circulators belong to the same mesh. Please check
    * this yourself. */
   inline bool
-  operator==(const Self& other) const
+  operator== (const Self& other) const
   {
     return (idx_outgoing_half_edge_ == other.idx_outgoing_half_edge_);
   }
@@ -114,8 +114,8 @@ public:
   inline Self&
   operator++()
   {
-    idx_outgoing_half_edge_ = mesh_->getNextHalfEdgeIndex(
-        mesh_->getOppositeHalfEdgeIndex(idx_outgoing_half_edge_));
+    idx_outgoing_half_edge_ = mesh_->getNextHalfEdgeIndex (
+        mesh_->getOppositeHalfEdgeIndex (idx_outgoing_half_edge_));
     return (*this);
   }
 
@@ -123,8 +123,8 @@ public:
   inline Self&
   operator--()
   {
-    idx_outgoing_half_edge_ = mesh_->getOppositeHalfEdgeIndex(
-        mesh_->getPrevHalfEdgeIndex(idx_outgoing_half_edge_));
+    idx_outgoing_half_edge_ = mesh_->getOppositeHalfEdgeIndex (
+        mesh_->getPrevHalfEdgeIndex (idx_outgoing_half_edge_));
     return (*this);
   }
 
@@ -132,7 +132,7 @@ public:
   inline VertexIndex
   getTargetIndex () const
   {
-    return (mesh_->getTerminatingVertexIndex(idx_outgoing_half_edge_));
+    return (mesh_->getTerminatingVertexIndex (idx_outgoing_half_edge_));
   }
 
   /** \brief Get the half-edge that is currently stored in the circulator. */
@@ -184,19 +184,19 @@ public:
   using HalfEdgeIndex = typename Mesh::HalfEdgeIndex;
 
   /** \brief Constructor resulting in an invalid circulator. */
-  OutgoingHalfEdgeAroundVertexCirculator() : mesh_(nullptr), idx_outgoing_half_edge_()
+  OutgoingHalfEdgeAroundVertexCirculator() : mesh_ (nullptr), idx_outgoing_half_edge_()
   {}
 
   /** \brief Construct from the vertex around which we want to circulate. */
-  OutgoingHalfEdgeAroundVertexCirculator(const VertexIndex& idx_vertex,
-                                         Mesh* const mesh)
-  : mesh_(mesh), idx_outgoing_half_edge_(mesh->getOutgoingHalfEdgeIndex(idx_vertex))
+  OutgoingHalfEdgeAroundVertexCirculator (const VertexIndex& idx_vertex,
+                                          Mesh* const mesh)
+  : mesh_ (mesh), idx_outgoing_half_edge_ (mesh->getOutgoingHalfEdgeIndex (idx_vertex))
   {}
 
   /** \brief Construct directly from the outgoing half-edge. */
-  OutgoingHalfEdgeAroundVertexCirculator(const HalfEdgeIndex& idx_outgoing_half_edge,
-                                         Mesh* const mesh)
-  : mesh_(mesh), idx_outgoing_half_edge_(idx_outgoing_half_edge)
+  OutgoingHalfEdgeAroundVertexCirculator (const HalfEdgeIndex& idx_outgoing_half_edge,
+                                          Mesh* const mesh)
+  : mesh_ (mesh), idx_outgoing_half_edge_ (idx_outgoing_half_edge)
   {}
 
   /** \brief Check if the circulator is valid.
@@ -212,7 +212,7 @@ public:
    * \warning Does NOT check if the circulators belong to the same mesh. Please check
    * this yourself. */
   inline bool
-  operator==(const Self& other) const
+  operator== (const Self& other) const
   {
     return (idx_outgoing_half_edge_ == other.idx_outgoing_half_edge_);
   }
@@ -221,8 +221,8 @@ public:
   inline Self&
   operator++()
   {
-    idx_outgoing_half_edge_ = mesh_->getNextHalfEdgeIndex(
-        mesh_->getOppositeHalfEdgeIndex(idx_outgoing_half_edge_));
+    idx_outgoing_half_edge_ = mesh_->getNextHalfEdgeIndex (
+        mesh_->getOppositeHalfEdgeIndex (idx_outgoing_half_edge_));
     return (*this);
   }
 
@@ -230,8 +230,8 @@ public:
   inline Self&
   operator--()
   {
-    idx_outgoing_half_edge_ = mesh_->getOppositeHalfEdgeIndex(
-        mesh_->getPrevHalfEdgeIndex(idx_outgoing_half_edge_));
+    idx_outgoing_half_edge_ = mesh_->getOppositeHalfEdgeIndex (
+        mesh_->getPrevHalfEdgeIndex (idx_outgoing_half_edge_));
     return (*this);
   }
 
@@ -291,19 +291,19 @@ public:
   using HalfEdgeIndex = typename Mesh::HalfEdgeIndex;
 
   /** \brief Constructor resulting in an invalid circulator. */
-  IncomingHalfEdgeAroundVertexCirculator() : mesh_(nullptr), idx_incoming_half_edge_()
+  IncomingHalfEdgeAroundVertexCirculator() : mesh_ (nullptr), idx_incoming_half_edge_()
   {}
 
   /** \brief Construct from the vertex around which we want to circulate. */
-  IncomingHalfEdgeAroundVertexCirculator(const VertexIndex& idx_vertex,
-                                         Mesh* const mesh)
-  : mesh_(mesh), idx_incoming_half_edge_(mesh->getIncomingHalfEdgeIndex(idx_vertex))
+  IncomingHalfEdgeAroundVertexCirculator (const VertexIndex& idx_vertex,
+                                          Mesh* const mesh)
+  : mesh_ (mesh), idx_incoming_half_edge_ (mesh->getIncomingHalfEdgeIndex (idx_vertex))
   {}
 
   /** \brief Construct directly from the incoming half-edge. */
-  IncomingHalfEdgeAroundVertexCirculator(const HalfEdgeIndex& idx_incoming_half_edge,
-                                         Mesh* const mesh)
-  : mesh_(mesh), idx_incoming_half_edge_(idx_incoming_half_edge)
+  IncomingHalfEdgeAroundVertexCirculator (const HalfEdgeIndex& idx_incoming_half_edge,
+                                          Mesh* const mesh)
+  : mesh_ (mesh), idx_incoming_half_edge_ (idx_incoming_half_edge)
   {}
 
   /** \brief Check if the circulator is valid.
@@ -319,7 +319,7 @@ public:
    * \warning Does NOT check if the circulators belong to the same mesh. Please check
    * this yourself. */
   inline bool
-  operator==(const Self& other) const
+  operator== (const Self& other) const
   {
     return (idx_incoming_half_edge_ == other.idx_incoming_half_edge_);
   }
@@ -328,8 +328,8 @@ public:
   inline Self&
   operator++()
   {
-    idx_incoming_half_edge_ = mesh_->getOppositeHalfEdgeIndex(
-        mesh_->getNextHalfEdgeIndex(idx_incoming_half_edge_));
+    idx_incoming_half_edge_ = mesh_->getOppositeHalfEdgeIndex (
+        mesh_->getNextHalfEdgeIndex (idx_incoming_half_edge_));
     return (*this);
   }
 
@@ -337,8 +337,8 @@ public:
   inline Self&
   operator--()
   {
-    idx_incoming_half_edge_ = mesh_->getPrevHalfEdgeIndex(
-        mesh_->getOppositeHalfEdgeIndex(idx_incoming_half_edge_));
+    idx_incoming_half_edge_ = mesh_->getPrevHalfEdgeIndex (
+        mesh_->getOppositeHalfEdgeIndex (idx_incoming_half_edge_));
     return (*this);
   }
 
@@ -397,17 +397,17 @@ public:
   using HalfEdgeIndex = typename Mesh::HalfEdgeIndex;
 
   /** \brief Constructor resulting in an invalid circulator. */
-  FaceAroundVertexCirculator() : mesh_(nullptr), idx_outgoing_half_edge_() {}
+  FaceAroundVertexCirculator() : mesh_ (nullptr), idx_outgoing_half_edge_() {}
 
   /** \brief Construct from the vertex around which we want to circulate. */
-  FaceAroundVertexCirculator(const VertexIndex& idx_vertex, Mesh* const mesh)
-  : mesh_(mesh), idx_outgoing_half_edge_(mesh->getOutgoingHalfEdgeIndex(idx_vertex))
+  FaceAroundVertexCirculator (const VertexIndex& idx_vertex, Mesh* const mesh)
+  : mesh_ (mesh), idx_outgoing_half_edge_ (mesh->getOutgoingHalfEdgeIndex (idx_vertex))
   {}
 
   /** \brief Construct directly from the outgoing half-edge. */
-  FaceAroundVertexCirculator(const HalfEdgeIndex& idx_outgoing_half_edge,
-                             Mesh* const mesh)
-  : mesh_(mesh), idx_outgoing_half_edge_(idx_outgoing_half_edge)
+  FaceAroundVertexCirculator (const HalfEdgeIndex& idx_outgoing_half_edge,
+                              Mesh* const mesh)
+  : mesh_ (mesh), idx_outgoing_half_edge_ (idx_outgoing_half_edge)
   {}
 
   /** \brief Check if the circulator is valid.
@@ -423,7 +423,7 @@ public:
    * \warning Does NOT check if the circulators belong to the same mesh. Please check
    * this yourself. */
   inline bool
-  operator==(const Self& other) const
+  operator== (const Self& other) const
   {
     return (idx_outgoing_half_edge_ == other.idx_outgoing_half_edge_);
   }
@@ -432,8 +432,8 @@ public:
   inline Self&
   operator++()
   {
-    idx_outgoing_half_edge_ = mesh_->getNextHalfEdgeIndex(
-        mesh_->getOppositeHalfEdgeIndex(idx_outgoing_half_edge_));
+    idx_outgoing_half_edge_ = mesh_->getNextHalfEdgeIndex (
+        mesh_->getOppositeHalfEdgeIndex (idx_outgoing_half_edge_));
     return (*this);
   }
 
@@ -441,8 +441,8 @@ public:
   inline Self&
   operator--()
   {
-    idx_outgoing_half_edge_ = mesh_->getOppositeHalfEdgeIndex(
-        mesh_->getPrevHalfEdgeIndex(idx_outgoing_half_edge_));
+    idx_outgoing_half_edge_ = mesh_->getOppositeHalfEdgeIndex (
+        mesh_->getPrevHalfEdgeIndex (idx_outgoing_half_edge_));
     return (*this);
   }
 
@@ -450,7 +450,7 @@ public:
   inline FaceIndex
   getTargetIndex () const
   {
-    return (mesh_->getFaceIndex(idx_outgoing_half_edge_));
+    return (mesh_->getFaceIndex (idx_outgoing_half_edge_));
   }
 
   /** \brief Get the half-edge that is currently stored in the circulator. */
@@ -501,16 +501,17 @@ public:
   using HalfEdgeIndex = typename Mesh::HalfEdgeIndex;
 
   /** \brief Constructor resulting in an invalid circulator. */
-  VertexAroundFaceCirculator() : mesh_(nullptr), idx_inner_half_edge_() {}
+  VertexAroundFaceCirculator() : mesh_ (nullptr), idx_inner_half_edge_() {}
 
   /** \brief Construct from the face around which we want to circulate. */
-  VertexAroundFaceCirculator(const FaceIndex& idx_face, Mesh* const mesh)
-  : mesh_(mesh), idx_inner_half_edge_(mesh->getInnerHalfEdgeIndex(idx_face))
+  VertexAroundFaceCirculator (const FaceIndex& idx_face, Mesh* const mesh)
+  : mesh_ (mesh), idx_inner_half_edge_ (mesh->getInnerHalfEdgeIndex (idx_face))
   {}
 
   /** \brief Construct directly from the inner half-edge. */
-  VertexAroundFaceCirculator(const HalfEdgeIndex& idx_inner_half_edge, Mesh* const mesh)
-  : mesh_(mesh), idx_inner_half_edge_(idx_inner_half_edge)
+  VertexAroundFaceCirculator (const HalfEdgeIndex& idx_inner_half_edge,
+                              Mesh* const mesh)
+  : mesh_ (mesh), idx_inner_half_edge_ (idx_inner_half_edge)
   {}
 
   /** \brief Check if the circulator is valid.
@@ -526,7 +527,7 @@ public:
    * \warning Does NOT check if the circulators belong to the same mesh. Please check
    * this yourself. */
   inline bool
-  operator==(const Self& other) const
+  operator== (const Self& other) const
   {
     return (idx_inner_half_edge_ == other.idx_inner_half_edge_);
   }
@@ -535,7 +536,7 @@ public:
   inline Self&
   operator++()
   {
-    idx_inner_half_edge_ = mesh_->getNextHalfEdgeIndex(idx_inner_half_edge_);
+    idx_inner_half_edge_ = mesh_->getNextHalfEdgeIndex (idx_inner_half_edge_);
     return (*this);
   }
 
@@ -543,7 +544,7 @@ public:
   inline Self&
   operator--()
   {
-    idx_inner_half_edge_ = mesh_->getPrevHalfEdgeIndex(idx_inner_half_edge_);
+    idx_inner_half_edge_ = mesh_->getPrevHalfEdgeIndex (idx_inner_half_edge_);
     return (*this);
   }
 
@@ -551,7 +552,7 @@ public:
   inline VertexIndex
   getTargetIndex () const
   {
-    return (mesh_->getTerminatingVertexIndex(idx_inner_half_edge_));
+    return (mesh_->getTerminatingVertexIndex (idx_inner_half_edge_));
   }
 
   /** \brief Get the half-edge that is currently stored in the circulator. */
@@ -601,17 +602,17 @@ public:
   using HalfEdgeIndex = typename Mesh::HalfEdgeIndex;
 
   /** \brief Constructor resulting in an invalid circulator. */
-  InnerHalfEdgeAroundFaceCirculator() : mesh_(nullptr), idx_inner_half_edge_() {}
+  InnerHalfEdgeAroundFaceCirculator() : mesh_ (nullptr), idx_inner_half_edge_() {}
 
   /** \brief Construct from the face around which we want to circulate. */
-  InnerHalfEdgeAroundFaceCirculator(const FaceIndex& idx_face, Mesh* const mesh)
-  : mesh_(mesh), idx_inner_half_edge_(mesh->getInnerHalfEdgeIndex(idx_face))
+  InnerHalfEdgeAroundFaceCirculator (const FaceIndex& idx_face, Mesh* const mesh)
+  : mesh_ (mesh), idx_inner_half_edge_ (mesh->getInnerHalfEdgeIndex (idx_face))
   {}
 
   /** \brief Construct directly from the inner half-edge. */
-  InnerHalfEdgeAroundFaceCirculator(const HalfEdgeIndex& idx_inner_half_edge,
-                                    Mesh* const mesh)
-  : mesh_(mesh), idx_inner_half_edge_(idx_inner_half_edge)
+  InnerHalfEdgeAroundFaceCirculator (const HalfEdgeIndex& idx_inner_half_edge,
+                                     Mesh* const mesh)
+  : mesh_ (mesh), idx_inner_half_edge_ (idx_inner_half_edge)
   {}
 
   /** \brief Check if the circulator is valid.
@@ -627,7 +628,7 @@ public:
    * \warning Does NOT check if the circulators belong to the same mesh. Please check
    * this yourself. */
   inline bool
-  operator==(const Self& other) const
+  operator== (const Self& other) const
   {
     return (idx_inner_half_edge_ == other.idx_inner_half_edge_);
   }
@@ -636,7 +637,7 @@ public:
   inline Self&
   operator++()
   {
-    idx_inner_half_edge_ = mesh_->getNextHalfEdgeIndex(idx_inner_half_edge_);
+    idx_inner_half_edge_ = mesh_->getNextHalfEdgeIndex (idx_inner_half_edge_);
     return (*this);
   }
 
@@ -644,7 +645,7 @@ public:
   inline Self&
   operator--()
   {
-    idx_inner_half_edge_ = mesh_->getPrevHalfEdgeIndex(idx_inner_half_edge_);
+    idx_inner_half_edge_ = mesh_->getPrevHalfEdgeIndex (idx_inner_half_edge_);
     return (*this);
   }
 
@@ -702,17 +703,17 @@ public:
   using HalfEdgeIndex = typename Mesh::HalfEdgeIndex;
 
   /** \brief Constructor resulting in an invalid circulator. */
-  OuterHalfEdgeAroundFaceCirculator() : mesh_(nullptr), idx_inner_half_edge_() {}
+  OuterHalfEdgeAroundFaceCirculator() : mesh_ (nullptr), idx_inner_half_edge_() {}
 
   /** \brief Construct from the face around which we want to circulate. */
-  OuterHalfEdgeAroundFaceCirculator(const FaceIndex& idx_face, Mesh* const mesh)
-  : mesh_(mesh), idx_inner_half_edge_(mesh->getInnerHalfEdgeIndex(idx_face))
+  OuterHalfEdgeAroundFaceCirculator (const FaceIndex& idx_face, Mesh* const mesh)
+  : mesh_ (mesh), idx_inner_half_edge_ (mesh->getInnerHalfEdgeIndex (idx_face))
   {}
 
   /** \brief Construct directly from the inner half-edge. */
-  OuterHalfEdgeAroundFaceCirculator(const HalfEdgeIndex& idx_inner_half_edge,
-                                    Mesh* const mesh)
-  : mesh_(mesh), idx_inner_half_edge_(idx_inner_half_edge)
+  OuterHalfEdgeAroundFaceCirculator (const HalfEdgeIndex& idx_inner_half_edge,
+                                     Mesh* const mesh)
+  : mesh_ (mesh), idx_inner_half_edge_ (idx_inner_half_edge)
   {}
 
   /** \brief Check if the circulator is valid.
@@ -728,7 +729,7 @@ public:
    * \warning Does NOT check if the circulators belong to the same mesh. Please check
    * this yourself. */
   inline bool
-  operator==(const Self& other) const
+  operator== (const Self& other) const
   {
     return (idx_inner_half_edge_ == other.idx_inner_half_edge_);
   }
@@ -737,7 +738,7 @@ public:
   inline Self&
   operator++()
   {
-    idx_inner_half_edge_ = mesh_->getNextHalfEdgeIndex(idx_inner_half_edge_);
+    idx_inner_half_edge_ = mesh_->getNextHalfEdgeIndex (idx_inner_half_edge_);
     return (*this);
   }
 
@@ -745,7 +746,7 @@ public:
   inline Self&
   operator--()
   {
-    idx_inner_half_edge_ = mesh_->getPrevHalfEdgeIndex(idx_inner_half_edge_);
+    idx_inner_half_edge_ = mesh_->getPrevHalfEdgeIndex (idx_inner_half_edge_);
     return (*this);
   }
 
@@ -753,7 +754,7 @@ public:
   inline HalfEdgeIndex
   getTargetIndex () const
   {
-    return (mesh_->getOppositeHalfEdgeIndex(idx_inner_half_edge_));
+    return (mesh_->getOppositeHalfEdgeIndex (idx_inner_half_edge_));
   }
 
   /** \brief Get the half-edge that is currently stored in the circulator. */
@@ -803,16 +804,16 @@ public:
   using HalfEdgeIndex = typename Mesh::HalfEdgeIndex;
 
   /** \brief Constructor resulting in an invalid circulator. */
-  FaceAroundFaceCirculator() : mesh_(nullptr), idx_inner_half_edge_() {}
+  FaceAroundFaceCirculator() : mesh_ (nullptr), idx_inner_half_edge_() {}
 
   /** \brief Construct from the face around which we want to circulate. */
-  FaceAroundFaceCirculator(const FaceIndex& idx_face, Mesh* const mesh)
-  : mesh_(mesh), idx_inner_half_edge_(mesh->getInnerHalfEdgeIndex(idx_face))
+  FaceAroundFaceCirculator (const FaceIndex& idx_face, Mesh* const mesh)
+  : mesh_ (mesh), idx_inner_half_edge_ (mesh->getInnerHalfEdgeIndex (idx_face))
   {}
 
   /** \brief Construct directly from the inner half-edge. */
-  FaceAroundFaceCirculator(const HalfEdgeIndex& idx_inner_half_edge, Mesh* const mesh)
-  : mesh_(mesh), idx_inner_half_edge_(idx_inner_half_edge)
+  FaceAroundFaceCirculator (const HalfEdgeIndex& idx_inner_half_edge, Mesh* const mesh)
+  : mesh_ (mesh), idx_inner_half_edge_ (idx_inner_half_edge)
   {}
 
   /** \brief Check if the circulator is valid.
@@ -828,7 +829,7 @@ public:
    * \warning Does NOT check if the circulators belong to the same mesh. Please check
    * this yourself. */
   inline bool
-  operator==(const Self& other) const
+  operator== (const Self& other) const
   {
     return (idx_inner_half_edge_ == other.idx_inner_half_edge_);
   }
@@ -837,7 +838,7 @@ public:
   inline Self&
   operator++()
   {
-    idx_inner_half_edge_ = mesh_->getNextHalfEdgeIndex(idx_inner_half_edge_);
+    idx_inner_half_edge_ = mesh_->getNextHalfEdgeIndex (idx_inner_half_edge_);
     return (*this);
   }
 
@@ -845,7 +846,7 @@ public:
   inline Self&
   operator--()
   {
-    idx_inner_half_edge_ = mesh_->getPrevHalfEdgeIndex(idx_inner_half_edge_);
+    idx_inner_half_edge_ = mesh_->getPrevHalfEdgeIndex (idx_inner_half_edge_);
     return (*this);
   }
 
@@ -853,7 +854,7 @@ public:
   inline FaceIndex
   getTargetIndex () const
   {
-    return (mesh_->getOppositeFaceIndex(idx_inner_half_edge_));
+    return (mesh_->getOppositeFaceIndex (idx_inner_half_edge_));
   }
 
   /** \brief Get the half-edge that is currently stored in the circulator. */

@@ -70,10 +70,10 @@ public:
 
   /** \brief Empty constructor. */
   Filter()
-  : filter_field_name_("")
-  , filter_limit_min_(std::numeric_limits<float>::lowest())
-  , filter_limit_max_(std::numeric_limits<float>::max())
-  , filter_limit_negative_(false){};
+  : filter_field_name_ ("")
+  , filter_limit_min_ (std::numeric_limits<float>::lowest())
+  , filter_limit_max_ (std::numeric_limits<float>::max())
+  , filter_limit_negative_ (false){};
 
   /** \brief Provide the name of the field to be used for filtering data.
    * In conjunction with  \a setFilterLimits, points having values outside
@@ -131,7 +131,7 @@ public:
    * returned (true) or inside (false).
    * \param limit_negative the limit_negative flag
    */
-  PCL_DEPRECATED(1, 16, "use bool getFilterLimitsNegative() instead")
+  PCL_DEPRECATED (1, 16, "use bool getFilterLimitsNegative() instead")
   inline void
   getFilterLimitsNegative (bool& limit_negative)
   {
@@ -164,7 +164,7 @@ public:
     // output.sensor_orientation_ = input_->sensor_orientation_;
 
     // Apply the actual filter
-    applyFilter(output);
+    applyFilter (output);
 
     deinitCompute();
   }

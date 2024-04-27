@@ -37,69 +37,69 @@ public:
   // use implicit destructor, copy constructor
   ON_Xform(); // zero matrix
 
-  ON_Xform(int);    // diagonal matrix (d,d,d,1)
-  ON_Xform(double); // diagonal matrix (d,d,d,1)
+  ON_Xform (int);    // diagonal matrix (d,d,d,1)
+  ON_Xform (double); // diagonal matrix (d,d,d,1)
 
 #if defined(ON_COMPILER_MSC)
   // Microsoft's compiler won't pass double m[4][4] as a const double[4][4] arg.
   // Gnu's compiler handles this.
-  ON_Xform(double[4][4]); // from standard double m[4][4]
-  ON_Xform(float[4][4]);  // from standard float m[4][4]
+  ON_Xform (double[4][4]); // from standard double m[4][4]
+  ON_Xform (float[4][4]);  // from standard float m[4][4]
 #endif
 
-  ON_Xform(const double[4][4]); // from standard double m[4][4]
-  ON_Xform(const float[4][4]);  // from standard float m[4][4]
+  ON_Xform (const double[4][4]); // from standard double m[4][4]
+  ON_Xform (const float[4][4]);  // from standard float m[4][4]
 
-  ON_Xform(const double*); // from array of 16 doubles (row0,row1,row2,row3)
-  ON_Xform(const float*);  // from array of 16 floats (row0,row1,row2,row3)
+  ON_Xform (const double*); // from array of 16 doubles (row0,row1,row2,row3)
+  ON_Xform (const float*);  // from array of 16 floats (row0,row1,row2,row3)
 
-  ON_Xform(const ON_Matrix&);   // from upper left 4x4 of an
-                                // arbitrary matrix.  Any missing
-                                // rows/columns are set to identity.
-  ON_Xform(const ON_3dPoint& P, // as a frame.
-           const ON_3dVector& X,
-           const ON_3dVector& Y,
-           const ON_3dVector& Z);
+  ON_Xform (const ON_Matrix&);   // from upper left 4x4 of an
+                                 // arbitrary matrix.  Any missing
+                                 // rows/columns are set to identity.
+  ON_Xform (const ON_3dPoint& P, // as a frame.
+            const ON_3dVector& X,
+            const ON_3dVector& Y,
+            const ON_3dVector& Z);
 
   // use implicit operator=(const ON_3dVector&), operator==
 
   double*
-  operator[](int);
+  operator[] (int);
   const double*
-  operator[](int) const;
+  operator[] (int) const;
 
   // xform = scalar results in a diagonal 3x3 with bottom row = 0,0,0,1
   ON_Xform&
-  operator=(int);
+  operator= (int);
   ON_Xform&
-  operator=(float);
+  operator= (float);
   ON_Xform&
-  operator=(double);
+  operator= (double);
   ON_Xform&
-  operator=(const ON_Matrix&); // from upper left 4x4 of an
-                               // arbitrary matrix.  Any missing
-                               // rows/columns are set to identity.
+  operator= (const ON_Matrix&); // from upper left 4x4 of an
+                                // arbitrary matrix.  Any missing
+                                // rows/columns are set to identity.
 
   // All non-commutative operations have "this" as left hand side and
   // argument as right hand side.
   ON_2dPoint
-  operator*(const ON_2dPoint&) const;
+  operator* (const ON_2dPoint&) const;
   ON_3dPoint
-  operator*(const ON_3dPoint&) const;
+  operator* (const ON_3dPoint&) const;
   ON_4dPoint
-  operator*(const ON_4dPoint&) const;
+  operator* (const ON_4dPoint&) const;
 
   ON_2dVector
-  operator*(const ON_2dVector&) const;
+  operator* (const ON_2dVector&) const;
   ON_3dVector
-  operator*(const ON_3dVector&) const;
+  operator* (const ON_3dVector&) const;
 
   ON_Xform
-  operator*(const ON_Xform& /*rhs*/) const;
+  operator* (const ON_Xform& /*rhs*/) const;
   ON_Xform
-  operator+(const ON_Xform&) const;
+  operator+ (const ON_Xform&) const;
   ON_Xform
-  operator-(const ON_Xform& /*rhs*/) const;
+  operator- (const ON_Xform& /*rhs*/) const;
 
   /*
   Description:
@@ -1012,9 +1012,9 @@ public:
   ON_Localizer();
   ~ON_Localizer();
 
-  ON_Localizer(const ON_Localizer&);
+  ON_Localizer (const ON_Localizer&);
   ON_Localizer&
-  operator=(const ON_Localizer&);
+  operator= (const ON_Localizer&);
 
   void
   Destroy ();

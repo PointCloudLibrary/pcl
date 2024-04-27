@@ -47,7 +47,7 @@
 
 template <typename PointT>
 pcl::DisparityMapConverter<PointT>::DisparityMapConverter()
-: disparity_threshold_max_(std::numeric_limits<float>::max())
+: disparity_threshold_max_ (std::numeric_limits<float>::max())
 {}
 
 template <typename PointT>
@@ -55,7 +55,7 @@ pcl::DisparityMapConverter<PointT>::~DisparityMapConverter() = default;
 
 template <typename PointT>
 inline void
-pcl::DisparityMapConverter<PointT>::setImageCenterX(const float center_x)
+pcl::DisparityMapConverter<PointT>::setImageCenterX (const float center_x)
 {
   center_x_ = center_x;
 }
@@ -69,7 +69,7 @@ pcl::DisparityMapConverter<PointT>::getImageCenterX() const
 
 template <typename PointT>
 inline void
-pcl::DisparityMapConverter<PointT>::setImageCenterY(const float center_y)
+pcl::DisparityMapConverter<PointT>::setImageCenterY (const float center_y)
 {
   center_y_ = center_y;
 }
@@ -83,7 +83,7 @@ pcl::DisparityMapConverter<PointT>::getImageCenterY() const
 
 template <typename PointT>
 inline void
-pcl::DisparityMapConverter<PointT>::setFocalLength(const float focal_length)
+pcl::DisparityMapConverter<PointT>::setFocalLength (const float focal_length)
 {
   focal_length_ = focal_length;
 }
@@ -97,7 +97,7 @@ pcl::DisparityMapConverter<PointT>::getFocalLength() const
 
 template <typename PointT>
 inline void
-pcl::DisparityMapConverter<PointT>::setBaseline(const float baseline)
+pcl::DisparityMapConverter<PointT>::setBaseline (const float baseline)
 {
   baseline_ = baseline;
 }
@@ -111,7 +111,7 @@ pcl::DisparityMapConverter<PointT>::getBaseline() const
 
 template <typename PointT>
 inline void
-pcl::DisparityMapConverter<PointT>::setDisparityThresholdMin(
+pcl::DisparityMapConverter<PointT>::setDisparityThresholdMin (
     const float disparity_threshold_min)
 {
   disparity_threshold_min_ = disparity_threshold_min;
@@ -126,7 +126,7 @@ pcl::DisparityMapConverter<PointT>::getDisparityThresholdMin() const
 
 template <typename PointT>
 inline void
-pcl::DisparityMapConverter<PointT>::setDisparityThresholdMax(
+pcl::DisparityMapConverter<PointT>::setDisparityThresholdMax (
     const float disparity_threshold_max)
 {
   disparity_threshold_max_ = disparity_threshold_max;
@@ -141,7 +141,7 @@ pcl::DisparityMapConverter<PointT>::getDisparityThresholdMax() const
 
 template <typename PointT>
 void
-pcl::DisparityMapConverter<PointT>::setImage(
+pcl::DisparityMapConverter<PointT>::setImage (
     const pcl::PointCloud<pcl::RGB>::ConstPtr& image)
 {
   image_ = image;
@@ -157,26 +157,26 @@ template <typename PointT>
 pcl::PointCloud<pcl::RGB>::Ptr
 pcl::DisparityMapConverter<PointT>::getImage()
 {
-  pcl::PointCloud<pcl::RGB>::Ptr image_pointer(new pcl::PointCloud<pcl::RGB>);
+  pcl::PointCloud<pcl::RGB>::Ptr image_pointer (new pcl::PointCloud<pcl::RGB>);
   *image_pointer = *image_;
   return image_pointer;
 }
 
 template <typename PointT>
 bool
-pcl::DisparityMapConverter<PointT>::loadDisparityMap(const std::string& file_name)
+pcl::DisparityMapConverter<PointT>::loadDisparityMap (const std::string& file_name)
 {
   std::fstream disparity_file;
 
   // Open the disparity file
-  disparity_file.open(file_name.c_str(), std::fstream::in);
+  disparity_file.open (file_name.c_str(), std::fstream::in);
   if (!disparity_file.is_open()) {
-    PCL_ERROR("[pcl::DisparityMapConverter::loadDisparityMap] Can't load the file.\n");
+    PCL_ERROR ("[pcl::DisparityMapConverter::loadDisparityMap] Can't load the file.\n");
     return false;
   }
 
   // Allocate memory for the disparity map.
-  disparity_map_.resize(disparity_map_width_ * disparity_map_height_);
+  disparity_map_.resize (disparity_map_width_ * disparity_map_height_);
 
   // Reading the disparity map.
   for (std::size_t row = 0; row < disparity_map_height_; ++row) {
@@ -193,21 +193,21 @@ pcl::DisparityMapConverter<PointT>::loadDisparityMap(const std::string& file_nam
 
 template <typename PointT>
 bool
-pcl::DisparityMapConverter<PointT>::loadDisparityMap(const std::string& file_name,
-                                                     const std::size_t width,
-                                                     const std::size_t height)
+pcl::DisparityMapConverter<PointT>::loadDisparityMap (const std::string& file_name,
+                                                      const std::size_t width,
+                                                      const std::size_t height)
 {
   // Initialize disparity map's size.
   disparity_map_width_ = width;
   disparity_map_height_ = height;
 
   // Load the disparity map.
-  return loadDisparityMap(file_name);
+  return loadDisparityMap (file_name);
 }
 
 template <typename PointT>
 void
-pcl::DisparityMapConverter<PointT>::setDisparityMap(
+pcl::DisparityMapConverter<PointT>::setDisparityMap (
     const std::vector<float>& disparity_map)
 {
   disparity_map_ = disparity_map;
@@ -215,7 +215,7 @@ pcl::DisparityMapConverter<PointT>::setDisparityMap(
 
 template <typename PointT>
 void
-pcl::DisparityMapConverter<PointT>::setDisparityMap(
+pcl::DisparityMapConverter<PointT>::setDisparityMap (
     const std::vector<float>& disparity_map,
     const std::size_t width,
     const std::size_t height)
@@ -235,17 +235,17 @@ pcl::DisparityMapConverter<PointT>::getDisparityMap()
 
 template <typename PointT>
 void
-pcl::DisparityMapConverter<PointT>::compute(PointCloud& out_cloud)
+pcl::DisparityMapConverter<PointT>::compute (PointCloud& out_cloud)
 {
   // Initialize the output cloud.
   out_cloud.clear();
   out_cloud.width = disparity_map_width_;
   out_cloud.height = disparity_map_height_;
-  out_cloud.resize(out_cloud.width * out_cloud.height);
+  out_cloud.resize (out_cloud.width * out_cloud.height);
 
   if (is_color_ && !image_) {
-    PCL_ERROR("[pcl::DisparityMapConverter::compute] Memory for the image was not "
-              "allocated.\n");
+    PCL_ERROR ("[pcl::DisparityMapConverter::compute] Memory for the image was not "
+               "allocated.\n");
     return;
   }
 
@@ -263,18 +263,18 @@ pcl::DisparityMapConverter<PointT>::compute(PointCloud& out_cloud)
       // Init color
       if (is_color_) {
         pcl::common::IntensityFieldAccessor<PointT> intensity_accessor;
-        intensity_accessor.set(new_point,
-                               static_cast<float>((*image_)[disparity_point].r +
-                                                  (*image_)[disparity_point].g +
-                                                  (*image_)[disparity_point].b) /
-                                   3.0f);
+        intensity_accessor.set (new_point,
+                                static_cast<float> ((*image_)[disparity_point].r +
+                                                    (*image_)[disparity_point].g +
+                                                    (*image_)[disparity_point].b) /
+                                    3.0f);
       }
 
       // Init coordinates.
       if (disparity_threshold_min_ < disparity &&
           disparity < disparity_threshold_max_) {
         // Compute new coordinates.
-        PointXYZ point_3D(translateCoordinates(row, column, disparity));
+        PointXYZ point_3D (translateCoordinates (row, column, disparity));
         new_point.x = point_3D.x;
         new_point.y = point_3D.y;
         new_point.z = point_3D.z;
@@ -292,9 +292,9 @@ pcl::DisparityMapConverter<PointT>::compute(PointCloud& out_cloud)
 
 template <typename PointT>
 pcl::PointXYZ
-pcl::DisparityMapConverter<PointT>::translateCoordinates(std::size_t row,
-                                                         std::size_t column,
-                                                         float disparity) const
+pcl::DisparityMapConverter<PointT>::translateCoordinates (std::size_t row,
+                                                          std::size_t column,
+                                                          float disparity) const
 {
   // Returning point.
   PointXYZ point_3D;
@@ -304,8 +304,8 @@ pcl::DisparityMapConverter<PointT>::translateCoordinates(std::size_t row,
     // camera parameters.
     float z_value = focal_length_ * baseline_ / disparity;
     point_3D.z = z_value;
-    point_3D.x = (static_cast<float>(column) - center_x_) * (z_value / focal_length_);
-    point_3D.y = (static_cast<float>(row) - center_y_) * (z_value / focal_length_);
+    point_3D.x = (static_cast<float> (column) - center_x_) * (z_value / focal_length_);
+    point_3D.y = (static_cast<float> (row) - center_y_) * (z_value / focal_length_);
   }
 
   return point_3D;

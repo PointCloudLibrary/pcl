@@ -89,7 +89,7 @@ public:
     if (!input_correspondences_ || (input_correspondences_->empty()))
       return;
 
-    applyRejection(correspondences);
+    applyRejection (correspondences);
   }
 
   /** \brief Get a list of valid correspondences after rejection from the original set
@@ -117,13 +117,14 @@ public:
                            pcl::Indices& indices)
   {
     if (!input_correspondences_ || input_correspondences_->empty()) {
-      PCL_WARN("[pcl::registration::%s::getRejectedQueryIndices] Input correspondences "
-               "not set (lookup of rejected correspondences _not_ possible).\n",
-               getClassName().c_str());
+      PCL_WARN (
+          "[pcl::registration::%s::getRejectedQueryIndices] Input correspondences "
+          "not set (lookup of rejected correspondences _not_ possible).\n",
+          getClassName().c_str());
       return;
     }
 
-    pcl::getRejectedQueryIndices(*input_correspondences_, correspondences, indices);
+    pcl::getRejectedQueryIndices (*input_correspondences_, correspondences, indices);
   }
 
   /** \brief Get a string representation of the name of this class. */
@@ -144,9 +145,9 @@ public:
   virtual void
   setSourcePoints (pcl::PCLPointCloud2::ConstPtr /*cloud2*/)
   {
-    PCL_WARN("[pcl::registration::%s::setSourcePoints] This class does not require an "
-             "input source cloud\n",
-             getClassName().c_str());
+    PCL_WARN ("[pcl::registration::%s::setSourcePoints] This class does not require an "
+              "input source cloud\n",
+              getClassName().c_str());
   }
 
   /** \brief See if this rejector requires source normals */
@@ -160,9 +161,9 @@ public:
   virtual void
   setSourceNormals (pcl::PCLPointCloud2::ConstPtr /*cloud2*/)
   {
-    PCL_WARN("[pcl::registration::%s::setSourceNormals] This class does not require "
-             "input source normals\n",
-             getClassName().c_str());
+    PCL_WARN ("[pcl::registration::%s::setSourceNormals] This class does not require "
+              "input source normals\n",
+              getClassName().c_str());
   }
   /** \brief See if this rejector requires a target cloud */
   virtual bool
@@ -175,9 +176,9 @@ public:
   virtual void
   setTargetPoints (pcl::PCLPointCloud2::ConstPtr /*cloud2*/)
   {
-    PCL_WARN("[pcl::registration::%s::setTargetPoints] This class does not require an "
-             "input target cloud\n",
-             getClassName().c_str());
+    PCL_WARN ("[pcl::registration::%s::setTargetPoints] This class does not require an "
+              "input target cloud\n",
+              getClassName().c_str());
   }
 
   /** \brief See if this rejector requires target normals */
@@ -191,9 +192,9 @@ public:
   virtual void
   setTargetNormals (pcl::PCLPointCloud2::ConstPtr /*cloud2*/)
   {
-    PCL_WARN("[pcl::registration::%s::setTargetNormals] This class does not require "
-             "input target normals\n",
-             getClassName().c_str());
+    PCL_WARN ("[pcl::registration::%s::setTargetNormals] This class does not require "
+              "input target normals\n",
+              getClassName().c_str());
   }
 
 protected:
@@ -244,16 +245,16 @@ class DataContainer : public DataContainerInterface {
 
 public:
   /** \brief Empty constructor. */
-  DataContainer(bool needs_normals = false)
+  DataContainer (bool needs_normals = false)
   : input_()
   , input_transformed_()
   , target_()
   , input_normals_()
   , input_normals_transformed_()
   , target_normals_()
-  , tree_(new pcl::search::KdTree<PointT>)
-  , class_name_("DataContainer")
-  , needs_normals_(needs_normals)
+  , tree_ (new pcl::search::KdTree<PointT>)
+  , class_name_ ("DataContainer")
+  , needs_normals_ (needs_normals)
   {}
 
   /** \brief Empty destructor */
@@ -348,11 +349,11 @@ public:
   getCorrespondenceScore (int index) override
   {
     if (target_cloud_updated_ && !force_no_recompute_) {
-      tree_->setInputCloud(target_);
+      tree_->setInputCloud (target_);
     }
-    pcl::Indices indices(1);
-    std::vector<float> distances(1);
-    if (tree_->nearestKSearch((*input_)[index], 1, indices, distances))
+    pcl::Indices indices (1);
+    std::vector<float> distances (1);
+    if (tree_->nearestKSearch ((*input_)[index], 1, indices, distances))
       return (distances[0]);
     return (std::numeric_limits<double>::max());
   }
@@ -379,13 +380,13 @@ public:
   {
     // assert ( (input_normals_->size () != 0) && (target_normals_->size () != 0) &&
     // "Normals are not set for the input and target point clouds");
-    assert(input_normals_ && target_normals_ &&
-           "Normals are not set for the input and target point clouds");
+    assert (input_normals_ && target_normals_ &&
+            "Normals are not set for the input and target point clouds");
     const NormalT& src = (*input_normals_)[corr.index_query];
     const NormalT& tgt = (*target_normals_)[corr.index_match];
-    return (static_cast<double>((src.normal[0] * tgt.normal[0]) +
-                                (src.normal[1] * tgt.normal[1]) +
-                                (src.normal[2] * tgt.normal[2])));
+    return (static_cast<double> ((src.normal[0] * tgt.normal[0]) +
+                                 (src.normal[1] * tgt.normal[1]) +
+                                 (src.normal[2] * tgt.normal[2])));
   }
 
 private:

@@ -73,27 +73,27 @@ struct Figure2D {
   vtkBrush* brush_;
   vtkTransform2D* transform_;
 
-  Figure2D(std::vector<float> info, vtkPen* p, vtkBrush* b, vtkTransform2D* t)
+  Figure2D (std::vector<float> info, vtkPen* p, vtkBrush* b, vtkTransform2D* t)
   {
     this->pen_ = vtkPen::New();
     this->brush_ = vtkBrush::New();
     this->transform_ = vtkTransform2D::New();
 
-    this->pen_->DeepCopy(p);
-    this->brush_->DeepCopy(b);
-    this->transform_->SetMatrix(t->GetMatrix());
+    this->pen_->DeepCopy (p);
+    this->brush_->DeepCopy (b);
+    this->transform_->SetMatrix (t->GetMatrix());
     this->info_ = info; // note: it copies :-)
   }
 
-  Figure2D(vtkPen* p, vtkBrush* b, vtkTransform2D* t)
+  Figure2D (vtkPen* p, vtkBrush* b, vtkTransform2D* t)
   {
     this->pen_ = vtkPen::New();
     this->brush_ = vtkBrush::New();
     this->transform_ = vtkTransform2D::New();
 
-    this->pen_->DeepCopy(p);
-    this->brush_->DeepCopy(b);
-    this->transform_->SetMatrix(t->GetMatrix());
+    this->pen_->DeepCopy (p);
+    this->brush_->DeepCopy (b);
+    this->transform_->SetMatrix (t->GetMatrix());
   }
 
   virtual ~Figure2D()
@@ -106,9 +106,9 @@ struct Figure2D {
   void
   applyInternals (vtkContext2D* painter) const
   {
-    painter->ApplyPen(pen_);
-    painter->ApplyBrush(brush_);
-    painter->GetDevice()->SetMatrix(transform_->GetMatrix());
+    painter->ApplyPen (pen_);
+    painter->ApplyBrush (brush_);
+    painter->GetDevice()->SetMatrix (transform_->GetMatrix());
   }
 
   virtual void
@@ -120,15 +120,15 @@ struct Figure2D {
  */
 struct FPolyLine2D : public Figure2D {
 
-  FPolyLine2D(std::vector<float> info, vtkPen* p, vtkBrush* b, vtkTransform2D* t)
-  : Figure2D(info, p, b, t)
+  FPolyLine2D (std::vector<float> info, vtkPen* p, vtkBrush* b, vtkTransform2D* t)
+  : Figure2D (info, p, b, t)
   {}
 
   void
   draw (vtkContext2D* painter) override
   {
-    applyInternals(painter);
-    painter->DrawPoly(info_.data(), static_cast<unsigned int>(info_.size()) / 2);
+    applyInternals (painter);
+    painter->DrawPoly (info_.data(), static_cast<unsigned int> (info_.size()) / 2);
   }
 };
 
@@ -136,15 +136,15 @@ struct FPolyLine2D : public Figure2D {
  */
 struct FPoints2D : public Figure2D {
 
-  FPoints2D(std::vector<float> info, vtkPen* p, vtkBrush* b, vtkTransform2D* t)
-  : Figure2D(info, p, b, t)
+  FPoints2D (std::vector<float> info, vtkPen* p, vtkBrush* b, vtkTransform2D* t)
+  : Figure2D (info, p, b, t)
   {}
 
   void
   draw (vtkContext2D* painter) override
   {
-    applyInternals(painter);
-    painter->DrawPoints(info_.data(), static_cast<unsigned int>(info_.size()) / 2);
+    applyInternals (painter);
+    painter->DrawPoints (info_.data(), static_cast<unsigned int> (info_.size()) / 2);
   }
 };
 
@@ -152,15 +152,15 @@ struct FPoints2D : public Figure2D {
  */
 struct FQuad2D : public Figure2D {
 
-  FQuad2D(std::vector<float> info, vtkPen* p, vtkBrush* b, vtkTransform2D* t)
-  : Figure2D(info, p, b, t)
+  FQuad2D (std::vector<float> info, vtkPen* p, vtkBrush* b, vtkTransform2D* t)
+  : Figure2D (info, p, b, t)
   {}
 
   void
   draw (vtkContext2D* painter) override
   {
-    applyInternals(painter);
-    painter->DrawQuad(info_.data());
+    applyInternals (painter);
+    painter->DrawQuad (info_.data());
   }
 };
 
@@ -168,15 +168,15 @@ struct FQuad2D : public Figure2D {
  */
 struct FPolygon2D : public Figure2D {
 
-  FPolygon2D(std::vector<float> info, vtkPen* p, vtkBrush* b, vtkTransform2D* t)
-  : Figure2D(info, p, b, t)
+  FPolygon2D (std::vector<float> info, vtkPen* p, vtkBrush* b, vtkTransform2D* t)
+  : Figure2D (info, p, b, t)
   {}
 
   void
   draw (vtkContext2D* painter) override
   {
-    applyInternals(painter);
-    painter->DrawPolygon(info_.data(), static_cast<unsigned int>(info_.size()) / 2);
+    applyInternals (painter);
+    painter->DrawPolygon (info_.data(), static_cast<unsigned int> (info_.size()) / 2);
   }
 };
 
@@ -184,22 +184,22 @@ struct FPolygon2D : public Figure2D {
  */
 struct FEllipticArc2D : public Figure2D {
 
-  FEllipticArc2D(std::vector<float> info, vtkPen* p, vtkBrush* b, vtkTransform2D* t)
-  : Figure2D(info, p, b, t)
+  FEllipticArc2D (std::vector<float> info, vtkPen* p, vtkBrush* b, vtkTransform2D* t)
+  : Figure2D (info, p, b, t)
   {}
 
-  FEllipticArc2D(float x,
-                 float y,
-                 float rx,
-                 float ry,
-                 float sa,
-                 float ea,
-                 vtkPen* p,
-                 vtkBrush* b,
-                 vtkTransform2D* t)
-  : Figure2D(p, b, t)
+  FEllipticArc2D (float x,
+                  float y,
+                  float rx,
+                  float ry,
+                  float sa,
+                  float ea,
+                  vtkPen* p,
+                  vtkBrush* b,
+                  vtkTransform2D* t)
+  : Figure2D (p, b, t)
   {
-    info_.resize(6);
+    info_.resize (6);
     info_[0] = x;
     info_[1] = y;
     info_[2] = rx;
@@ -211,14 +211,14 @@ struct FEllipticArc2D : public Figure2D {
   void
   draw (vtkContext2D* painter) override
   {
-    applyInternals(painter);
-    painter->DrawEllipticArc(
+    applyInternals (painter);
+    painter->DrawEllipticArc (
         info_[0], info_[1], info_[2], info_[3], info_[4], info_[5]);
   }
 };
 
 ////////////////////////////////////The Main Painter Class begins
-///here//////////////////////////////////////
+/// here//////////////////////////////////////
 /** \brief PCL Painter2D main class. Class for drawing 2D figures
  * \author Kripasindhu Sarkar
  * \ingroup visualization
@@ -229,8 +229,8 @@ public:
 
   /** \brief Constructor of the class
    */
-  PCLPainter2D(char const* name = "PCLPainter2D");
-  vtkTypeMacro(PCLPainter2D, vtkContextItem);
+  PCLPainter2D (char const* name = "PCLPainter2D");
+  vtkTypeMacro (PCLPainter2D, vtkContextItem);
 
   /** \brief Paint event for the chart, called whenever the chart needs to be drawn
    *  \param[in] painter Name of the window
@@ -479,13 +479,13 @@ private:
       return (new ExitMainLoopTimerCallback);
     }
     void
-    Execute (vtkObject* vtkNotUsed(caller),
+    Execute (vtkObject* vtkNotUsed (caller),
              unsigned long event_id,
              void* call_data) override
     {
       if (event_id != vtkCommand::TimerEvent)
         return;
-      int timer_id = *(reinterpret_cast<int*>(call_data));
+      int timer_id = *(reinterpret_cast<int*> (call_data));
 
       if (timer_id != right_timer_id)
         return;

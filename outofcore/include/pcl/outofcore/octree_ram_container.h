@@ -64,7 +64,7 @@ public:
 
   /** \brief empty constructor (with a path parameter?)
    */
-  OutofcoreOctreeRamContainer(const boost::filesystem::path&) : container_() {}
+  OutofcoreOctreeRamContainer (const boost::filesystem::path&) : container_() {}
 
   /** \brief inserts count number of points into container; uses the container_ type's
    * insert function \param[in] start - address of first point in array \param[in] count
@@ -83,16 +83,16 @@ public:
   void
   insertRange (AlignedPointTVector& /*p*/)
   {
-    PCL_ERROR("[pcl::outofcore::OutofcoreOctreeRamContainer] Inserting eigen-aligned "
-              "point vectors is not implemented using the ram containers\n");
+    PCL_ERROR ("[pcl::outofcore::OutofcoreOctreeRamContainer] Inserting eigen-aligned "
+               "point vectors is not implemented using the ram containers\n");
     // insertRange (&(p.begin ()), p.size ());
   }
 
   void
   insertRange (const AlignedPointTVector& /*p*/)
   {
-    PCL_ERROR("[pcl::outofcore::OutofcoreOctreeRamContainer] Inserting eigen-aligned "
-              "point vectors is not implemented using the ram containers\n");
+    PCL_ERROR ("[pcl::outofcore::OutofcoreOctreeRamContainer] Inserting eigen-aligned "
+               "point vectors is not implemented using the ram containers\n");
   }
 
   /** \brief
@@ -148,18 +148,18 @@ public:
   convertToXYZ (const boost::filesystem::path& path);
 
   inline PointT
-  operator[](std::uint64_t index) const
+  operator[] (std::uint64_t index) const
   {
-    assert(index < container_.size());
+    assert (index < container_.size());
     return (container_[index]);
   }
 
 protected:
   // no copy construction
-  OutofcoreOctreeRamContainer(const OutofcoreOctreeRamContainer& /*rval*/) {}
+  OutofcoreOctreeRamContainer (const OutofcoreOctreeRamContainer& /*rval*/) {}
 
   OutofcoreOctreeRamContainer&
-  operator=(const OutofcoreOctreeRamContainer& /*rval*/)
+  operator= (const OutofcoreOctreeRamContainer& /*rval*/)
   {}
 
   // the actual container

@@ -62,7 +62,8 @@
     ++count;                                                                           \
     if (now - last >= 1.0) {                                                           \
       std::cout << "Average framerate(" << (_WHAT_)                                    \
-                << "): " << double(count) / double(now - last) << " Hz" << std::endl;  \
+                << "): " << double (count) / double (now - last) << " Hz"              \
+                << std::endl;                                                          \
       count = 0;                                                                       \
       last = now;                                                                      \
     }                                                                                  \
@@ -76,19 +77,19 @@
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 class SimpleOpenNIViewer {
 public:
-  SimpleOpenNIViewer(pcl::OpenNIGrabber& grabber)
-  : grabber_(grabber)
-  , importer_(vtkSmartPointer<vtkImageImport>::New())
-  , depth_importer_(vtkSmartPointer<vtkImageImport>::New())
-  , writer_(vtkSmartPointer<vtkTIFFWriter>::New())
-  , flipper_(vtkSmartPointer<vtkImageFlip>::New())
+  SimpleOpenNIViewer (pcl::OpenNIGrabber& grabber)
+  : grabber_ (grabber)
+  , importer_ (vtkSmartPointer<vtkImageImport>::New())
+  , depth_importer_ (vtkSmartPointer<vtkImageImport>::New())
+  , writer_ (vtkSmartPointer<vtkTIFFWriter>::New())
+  , flipper_ (vtkSmartPointer<vtkImageFlip>::New())
   {
-    importer_->SetNumberOfScalarComponents(3);
+    importer_->SetNumberOfScalarComponents (3);
     importer_->SetDataScalarTypeToUnsignedChar();
-    depth_importer_->SetNumberOfScalarComponents(1);
+    depth_importer_->SetNumberOfScalarComponents (1);
     depth_importer_->SetDataScalarTypeToUnsignedShort();
     writer_->SetCompressionToPackBits();
-    flipper_->SetFilteredAxes(1);
+    flipper_->SetFilteredAxes (1);
   }
 
   void
@@ -96,8 +97,8 @@ public:
                   const openni_wrapper::DepthImage::Ptr& depth_image,
                   float)
   {
-    FPS_CALC("image callback");
-    std::lock_guard<std::mutex> lock(image_mutex_);
+    FPS_CALC ("image callback");
+    std::lock_guard<std::mutex> lock (image_mutex_);
     image_ = image;
     depth_image_ = depth_image;
   }
@@ -105,13 +106,13 @@ public:
   void
   run ()
   {
-    std::function<void(const openni_wrapper::Image::Ptr&,
-                       const openni_wrapper::DepthImage::Ptr&,
-                       float)>
+    std::function<void (const openni_wrapper::Image::Ptr&,
+                        const openni_wrapper::DepthImage::Ptr&,
+                        float)>
         image_cb = [this] (const openni_wrapper::Image::Ptr& img,
                            const openni_wrapper::DepthImage::Ptr& depth,
-                           float f) { image_callback(img, depth, f); };
-    boost::signals2::connection image_connection = grabber_.registerCallback(image_cb);
+                           float f) { image_callback (img, depth, f); };
+    boost::signals2::connection image_connection = grabber_.registerCallback (image_cb);
 
     grabber_.start();
 
@@ -120,18 +121,18 @@ public:
     const void* data;
 
     while (true) {
-      std::lock_guard<std::mutex> lock(image_mutex_);
+      std::lock_guard<std::mutex> lock (image_mutex_);
 
       const auto timestamp = pcl::getTimestamp();
 
       if (image_) {
-        FPS_CALC("writer callback");
+        FPS_CALC ("writer callback");
         openni_wrapper::Image::Ptr image;
-        image.swap(image_);
+        image.swap (image_);
 
         if (image->getEncoding() == openni_wrapper::Image::RGB) {
-          data = reinterpret_cast<const void*>(image->getMetaData().Data());
-          importer_->SetWholeExtent(
+          data = reinterpret_cast<const void*> (image->getMetaData().Data());
+          importer_->SetWholeExtent (
               0, image->getWidth() - 1, 0, image->getHeight() - 1, 0, 0);
           importer_->SetDataExtentToWholeExtent();
         }
@@ -139,42 +140,42 @@ public:
           if (rgb_data_size < image->getWidth() * image->getHeight()) {
             rgb_data_size = image->getWidth() * image->getHeight();
             rgb_data = new unsigned char[rgb_data_size * 3];
-            importer_->SetWholeExtent(
+            importer_->SetWholeExtent (
                 0, image->getWidth() - 1, 0, image->getHeight() - 1, 0, 0);
             importer_->SetDataExtentToWholeExtent();
           }
-          image->fillRGB(image->getWidth(), image->getHeight(), rgb_data);
-          data = reinterpret_cast<const void*>(rgb_data);
+          image->fillRGB (image->getWidth(), image->getHeight(), rgb_data);
+          data = reinterpret_cast<const void*> (rgb_data);
         }
 
         const std::string filename = "frame_" + timestamp + "_rgb.tiff";
-        importer_->SetImportVoidPointer(const_cast<void*>(data), 1);
+        importer_->SetImportVoidPointer (const_cast<void*> (data), 1);
         importer_->Update();
-        flipper_->SetInputConnection(importer_->GetOutputPort());
+        flipper_->SetInputConnection (importer_->GetOutputPort());
         flipper_->Update();
-        writer_->SetFileName(filename.c_str());
-        writer_->SetInputConnection(flipper_->GetOutputPort());
+        writer_->SetFileName (filename.c_str());
+        writer_->SetInputConnection (flipper_->GetOutputPort());
         writer_->Write();
       }
 
       if (depth_image_) {
         openni_wrapper::DepthImage::Ptr depth_image;
-        depth_image.swap(depth_image_);
+        depth_image.swap (depth_image_);
 
         const std::string filename = "frame_" + timestamp + "_depth.tiff";
 
-        depth_importer_->SetWholeExtent(
+        depth_importer_->SetWholeExtent (
             0, depth_image->getWidth() - 1, 0, depth_image->getHeight() - 1, 0, 0);
         depth_importer_->SetDataExtentToWholeExtent();
-        depth_importer_->SetImportVoidPointer(
-            const_cast<void*>(
-                reinterpret_cast<const void*>(depth_image->getDepthMetaData().Data())),
+        depth_importer_->SetImportVoidPointer (
+            const_cast<void*> (
+                reinterpret_cast<const void*> (depth_image->getDepthMetaData().Data())),
             1);
         depth_importer_->Update();
-        flipper_->SetInputConnection(depth_importer_->GetOutputPort());
+        flipper_->SetInputConnection (depth_importer_->GetOutputPort());
         flipper_->Update();
-        writer_->SetFileName(filename.c_str());
-        writer_->SetInputConnection(flipper_->GetOutputPort());
+        writer_->SetFileName (filename.c_str());
+        writer_->SetInputConnection (flipper_->GetOutputPort());
         writer_->Write();
       }
     }
@@ -247,12 +248,12 @@ main (int argc, char** argv)
   if (argc >= 2) {
     device_id = argv[1];
     if (device_id == "--help" || device_id == "-h") {
-      usage(argv);
+      usage (argv);
       return 0;
     }
     if (device_id == "-l") {
       if (argc >= 3) {
-        pcl::OpenNIGrabber grabber(argv[2]);
+        pcl::OpenNIGrabber grabber (argv[2]);
         openni_wrapper::OpenNIDevice::Ptr device = grabber.getDevice();
         std::vector<std::pair<int, XnMapOutputMode>> modes;
 
@@ -274,11 +275,11 @@ main (int argc, char** argv)
           for (unsigned deviceIdx = 0; deviceIdx < driver.getNumberDevices();
                ++deviceIdx) {
             std::cout << "Device: " << deviceIdx + 1
-                      << ", vendor: " << driver.getVendorName(deviceIdx)
-                      << ", product: " << driver.getProductName(deviceIdx)
-                      << ", connected: " << driver.getBus(deviceIdx) << " @ "
-                      << driver.getAddress(deviceIdx) << ", serial number: \'"
-                      << driver.getSerialNumber(deviceIdx) << "\'" << std::endl;
+                      << ", vendor: " << driver.getVendorName (deviceIdx)
+                      << ", product: " << driver.getProductName (deviceIdx)
+                      << ", connected: " << driver.getBus (deviceIdx) << " @ "
+                      << driver.getAddress (deviceIdx) << ", serial number: \'"
+                      << driver.getSerialNumber (deviceIdx) << "\'" << std::endl;
           }
         }
         else
@@ -296,14 +297,14 @@ main (int argc, char** argv)
   }
 
   unsigned imagemode;
-  if (pcl::console::parse(argc, argv, "-imagemode", imagemode) != -1)
-    image_mode = static_cast<pcl::OpenNIGrabber::Mode>(imagemode);
+  if (pcl::console::parse (argc, argv, "-imagemode", imagemode) != -1)
+    image_mode = static_cast<pcl::OpenNIGrabber::Mode> (imagemode);
   unsigned depthmode;
-  if (pcl::console::parse(argc, argv, "-depthmode", depthmode) != -1)
-    depth_mode = static_cast<pcl::OpenNIGrabber::Mode>(depthmode);
+  if (pcl::console::parse (argc, argv, "-depthmode", depthmode) != -1)
+    depth_mode = static_cast<pcl::OpenNIGrabber::Mode> (depthmode);
 
-  pcl::OpenNIGrabber grabber(device_id, depth_mode, image_mode);
-  SimpleOpenNIViewer v(grabber);
+  pcl::OpenNIGrabber grabber (device_id, depth_mode, image_mode);
+  SimpleOpenNIViewer v (grabber);
   v.run();
 
   return (0);

@@ -69,16 +69,16 @@ template <class FeatureType,
           class NodeType>
 void
 DecisionTreeEvaluator<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::
-    evaluate(pcl::DecisionTree<NodeType>& tree,
-             pcl::FeatureHandler<FeatureType, DataSet, ExampleIndex>& feature_handler,
-             pcl::StatsEstimator<LabelType, NodeType, DataSet, ExampleIndex>&
-                 stats_estimator,
-             DataSet& data_set,
-             std::vector<ExampleIndex>& examples,
-             std::vector<LabelType>& label_data)
+    evaluate (pcl::DecisionTree<NodeType>& tree,
+              pcl::FeatureHandler<FeatureType, DataSet, ExampleIndex>& feature_handler,
+              pcl::StatsEstimator<LabelType, NodeType, DataSet, ExampleIndex>&
+                  stats_estimator,
+              DataSet& data_set,
+              std::vector<ExampleIndex>& examples,
+              std::vector<LabelType>& label_data)
 {
   const std::size_t num_of_examples = examples.size();
-  label_data.resize(num_of_examples);
+  label_data.resize (num_of_examples);
   for (int example_index = 0; example_index < num_of_examples; ++example_index) {
     NodeType* node = &(tree.getRoot());
 
@@ -87,15 +87,15 @@ DecisionTreeEvaluator<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::
       unsigned char flag = 0;
       unsigned char branch_index = 0;
 
-      feature_handler.evaluateFeature(
+      feature_handler.evaluateFeature (
           node->feature, data_set, examples[example_index], feature_result, flag);
-      stats_estimator.computeBranchIndex(
+      stats_estimator.computeBranchIndex (
           feature_result, flag, node->threshold, branch_index);
 
       node = &(node->sub_nodes[branch_index]);
     }
 
-    label_data[example_index] = stats_estimator.getLabelOfNode(*node);
+    label_data[example_index] = stats_estimator.getLabelOfNode (*node);
   }
 }
 
@@ -106,7 +106,7 @@ template <class FeatureType,
           class NodeType>
 void
 DecisionTreeEvaluator<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::
-    evaluateAndAdd(
+    evaluateAndAdd (
         pcl::DecisionTree<NodeType>& tree,
         pcl::FeatureHandler<FeatureType, DataSet, ExampleIndex>& feature_handler,
         pcl::StatsEstimator<LabelType, NodeType, DataSet, ExampleIndex>&
@@ -124,15 +124,15 @@ DecisionTreeEvaluator<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::
       unsigned char flag = 0;
       unsigned char branch_index = 0;
 
-      feature_handler.evaluateFeature(
+      feature_handler.evaluateFeature (
           node->feature, data_set, examples[example_index], feature_result, flag);
-      stats_estimator.computeBranchIndex(
+      stats_estimator.computeBranchIndex (
           feature_result, flag, node->threshold, branch_index);
 
       node = &(node->sub_nodes[branch_index]);
     }
 
-    label_data[example_index] += stats_estimator.getLabelOfNode(*node);
+    label_data[example_index] += stats_estimator.getLabelOfNode (*node);
   }
 }
 
@@ -143,13 +143,13 @@ template <class FeatureType,
           class NodeType>
 void
 DecisionTreeEvaluator<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::
-    evaluate(pcl::DecisionTree<NodeType>& tree,
-             pcl::FeatureHandler<FeatureType, DataSet, ExampleIndex>& feature_handler,
-             pcl::StatsEstimator<LabelType, NodeType, DataSet, ExampleIndex>&
-                 stats_estimator,
-             DataSet& data_set,
-             ExampleIndex example,
-             NodeType& leave)
+    evaluate (pcl::DecisionTree<NodeType>& tree,
+              pcl::FeatureHandler<FeatureType, DataSet, ExampleIndex>& feature_handler,
+              pcl::StatsEstimator<LabelType, NodeType, DataSet, ExampleIndex>&
+                  stats_estimator,
+              DataSet& data_set,
+              ExampleIndex example,
+              NodeType& leave)
 {
   NodeType* node = &(tree.getRoot());
 
@@ -158,9 +158,9 @@ DecisionTreeEvaluator<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::
     unsigned char flag = 0;
     unsigned char branch_index = 0;
 
-    feature_handler.evaluateFeature(
+    feature_handler.evaluateFeature (
         node->feature, data_set, example, feature_result, flag);
-    stats_estimator.computeBranchIndex(
+    stats_estimator.computeBranchIndex (
         feature_result, flag, node->threshold, branch_index);
 
     node = &(node->sub_nodes[branch_index]);
@@ -176,13 +176,13 @@ template <class FeatureType,
           class NodeType>
 void
 DecisionTreeEvaluator<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::
-    getNodes(pcl::DecisionTree<NodeType>& tree,
-             pcl::FeatureHandler<FeatureType, DataSet, ExampleIndex>& feature_handler,
-             pcl::StatsEstimator<LabelType, NodeType, DataSet, ExampleIndex>&
-                 stats_estimator,
-             DataSet& data_set,
-             std::vector<ExampleIndex>& examples,
-             std::vector<NodeType*>& nodes)
+    getNodes (pcl::DecisionTree<NodeType>& tree,
+              pcl::FeatureHandler<FeatureType, DataSet, ExampleIndex>& feature_handler,
+              pcl::StatsEstimator<LabelType, NodeType, DataSet, ExampleIndex>&
+                  stats_estimator,
+              DataSet& data_set,
+              std::vector<ExampleIndex>& examples,
+              std::vector<NodeType*>& nodes)
 {
   const std::size_t num_of_examples = examples.size();
   for (int example_index = 0; example_index < num_of_examples; ++example_index) {
@@ -193,15 +193,15 @@ DecisionTreeEvaluator<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::
       unsigned char flag = 0;
       unsigned char branch_index = 0;
 
-      feature_handler.evaluateFeature(
+      feature_handler.evaluateFeature (
           node->feature, data_set, examples[example_index], feature_result, flag);
-      stats_estimator.computeBranchIndex(
+      stats_estimator.computeBranchIndex (
           feature_result, node->threshold, flag, branch_index);
 
       node = &(node->subNodes[branch_index]);
     }
 
-    nodes.push_back(node);
+    nodes.push_back (node);
   }
 }
 

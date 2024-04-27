@@ -7,10 +7,10 @@ int
 main (int, char**)
 {
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud;
-  cloud = pcl::PointCloud<pcl::PointXYZ>::Ptr(new pcl::PointCloud<pcl::PointXYZ>);
-  pcl::io::loadPCDFile<pcl::PointXYZ>("your_pcd_file.pcd", *cloud);
+  cloud = pcl::PointCloud<pcl::PointXYZ>::Ptr (new pcl::PointCloud<pcl::PointXYZ>);
+  pcl::io::loadPCDFile<pcl::PointXYZ> ("your_pcd_file.pcd", *cloud);
   pcl::PointXYZ minPt, maxPt;
-  pcl::getMinMax3D(*cloud, minPt, maxPt);
+  pcl::getMinMax3D (*cloud, minPt, maxPt);
   std::cout << "Max x: " << maxPt.x << std::endl;
   std::cout << "Max y: " << maxPt.y << std::endl;
   std::cout << "Max z: " << maxPt.z << std::endl;

@@ -61,32 +61,32 @@ template <class FeatureType,
           class ExampleIndex,
           class NodeType>
 void
-DecisionTreeTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::train(
+DecisionTreeTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::train (
     pcl::DecisionTree<NodeType>& tree)
 {
   // create random features
   std::vector<FeatureType> features;
 
   if (!random_features_at_split_node_)
-    feature_handler_->createRandomFeatures(num_of_features_, features);
+    feature_handler_->createRandomFeatures (num_of_features_, features);
 
   // recursively build decision tree
   NodeType root_node;
-  tree.setRoot(root_node);
+  tree.setRoot (root_node);
 
   if (decision_tree_trainer_data_provider_) {
     std::cerr << "use decision_tree_trainer_data_provider_" << std::endl;
 
-    decision_tree_trainer_data_provider_->getDatasetAndLabels(
+    decision_tree_trainer_data_provider_->getDatasetAndLabels (
         data_set_, label_data_, examples_);
-    trainDecisionTreeNode(
+    trainDecisionTreeNode (
         features, examples_, label_data_, max_tree_depth_, tree.getRoot());
     label_data_.clear();
     data_set_.clear();
     examples_.clear();
   }
   else {
-    trainDecisionTreeNode(
+    trainDecisionTreeNode (
         features, examples_, label_data_, max_tree_depth_, tree.getRoot());
   }
 }
@@ -98,39 +98,39 @@ template <class FeatureType,
           class NodeType>
 void
 DecisionTreeTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::
-    trainDecisionTreeNode(std::vector<FeatureType>& features,
-                          std::vector<ExampleIndex>& examples,
-                          std::vector<LabelType>& label_data,
-                          const std::size_t max_depth,
-                          NodeType& node)
+    trainDecisionTreeNode (std::vector<FeatureType>& features,
+                           std::vector<ExampleIndex>& examples,
+                           std::vector<LabelType>& label_data,
+                           const std::size_t max_depth,
+                           NodeType& node)
 {
   const std::size_t num_of_examples = examples.size();
   if (num_of_examples == 0) {
-    PCL_ERROR(
+    PCL_ERROR (
         "Reached invalid point in decision tree training: Number of examples is 0!\n");
     return;
   };
 
   if (max_depth == 0) {
-    stats_estimator_->computeAndSetNodeStats(data_set_, examples, label_data, node);
+    stats_estimator_->computeAndSetNodeStats (data_set_, examples, label_data, node);
     return;
   };
 
   if (examples.size() < min_examples_for_split_) {
-    stats_estimator_->computeAndSetNodeStats(data_set_, examples, label_data, node);
+    stats_estimator_->computeAndSetNodeStats (data_set_, examples, label_data, node);
     return;
   }
 
   if (random_features_at_split_node_) {
     features.clear();
-    feature_handler_->createRandomFeatures(num_of_features_, features);
+    feature_handler_->createRandomFeatures (num_of_features_, features);
   }
 
   std::vector<float> feature_results;
   std::vector<unsigned char> flags;
 
-  feature_results.reserve(num_of_examples);
-  flags.reserve(num_of_examples);
+  feature_results.reserve (num_of_examples);
+  flags.reserve (num_of_examples);
 
   // find best feature for split
   int best_feature_index = -1;
@@ -141,7 +141,7 @@ DecisionTreeTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::
   for (std::size_t feature_index = 0; feature_index < num_of_features;
        ++feature_index) {
     // evaluate features
-    feature_handler_->evaluateFeature(
+    feature_handler_->evaluateFeature (
         features[feature_index], data_set_, examples, feature_results, flags);
 
     // get list of thresholds
@@ -150,20 +150,20 @@ DecisionTreeTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::
       // information gain
       for (const float& threshold : thresholds_) {
 
-        const float information_gain = stats_estimator_->computeInformationGain(
+        const float information_gain = stats_estimator_->computeInformationGain (
             data_set_, examples, label_data, feature_results, flags, threshold);
 
         if (information_gain > best_feature_information_gain) {
           best_feature_information_gain = information_gain;
-          best_feature_index = static_cast<int>(feature_index);
+          best_feature_index = static_cast<int> (feature_index);
           best_feature_threshold = threshold;
         }
       }
     }
     else {
       std::vector<float> thresholds;
-      thresholds.reserve(num_of_thresholds_);
-      createThresholdsUniform(num_of_thresholds_, feature_results, thresholds);
+      thresholds.reserve (num_of_thresholds_);
+      createThresholdsUniform (num_of_thresholds_, feature_results, thresholds);
 
       // compute information gain for each threshold and store threshold with highest
       // information gain
@@ -172,12 +172,12 @@ DecisionTreeTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::
         const float threshold = thresholds[threshold_index];
 
         // compute information gain
-        const float information_gain = stats_estimator_->computeInformationGain(
+        const float information_gain = stats_estimator_->computeInformationGain (
             data_set_, examples, label_data, feature_results, flags, threshold);
 
         if (information_gain > best_feature_information_gain) {
           best_feature_information_gain = information_gain;
-          best_feature_index = static_cast<int>(feature_index);
+          best_feature_index = static_cast<int> (feature_index);
           best_feature_threshold = threshold;
         }
       }
@@ -185,28 +185,28 @@ DecisionTreeTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::
   }
 
   if (best_feature_index == -1) {
-    stats_estimator_->computeAndSetNodeStats(data_set_, examples, label_data, node);
+    stats_estimator_->computeAndSetNodeStats (data_set_, examples, label_data, node);
     return;
   }
 
   // get branch indices for best feature and best threshold
   std::vector<unsigned char> branch_indices;
-  branch_indices.reserve(num_of_examples);
+  branch_indices.reserve (num_of_examples);
   {
-    feature_handler_->evaluateFeature(
+    feature_handler_->evaluateFeature (
         features[best_feature_index], data_set_, examples, feature_results, flags);
 
-    stats_estimator_->computeBranchIndices(
+    stats_estimator_->computeBranchIndices (
         feature_results, flags, best_feature_threshold, branch_indices);
   }
 
-  stats_estimator_->computeAndSetNodeStats(data_set_, examples, label_data, node);
+  stats_estimator_->computeAndSetNodeStats (data_set_, examples, label_data, node);
 
   // separate data
   {
     const std::size_t num_of_branches = stats_estimator_->getNumOfBranches();
 
-    std::vector<std::size_t> branch_counts(num_of_branches, 0);
+    std::vector<std::size_t> branch_counts (num_of_branches, 0);
     for (std::size_t example_index = 0; example_index < num_of_examples;
          ++example_index) {
       ++branch_counts[branch_indices[example_index]];
@@ -214,12 +214,12 @@ DecisionTreeTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::
 
     node.feature = features[best_feature_index];
     node.threshold = best_feature_threshold;
-    node.sub_nodes.resize(num_of_branches);
+    node.sub_nodes.resize (num_of_branches);
 
     for (std::size_t branch_index = 0; branch_index < num_of_branches; ++branch_index) {
       if (branch_counts[branch_index] == 0) {
         NodeType branch_node;
-        stats_estimator_->computeAndSetNodeStats(
+        stats_estimator_->computeAndSetNodeStats (
             data_set_, examples, label_data, branch_node);
         // branch_node->num_of_sub_nodes = 0;
 
@@ -230,22 +230,22 @@ DecisionTreeTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::
 
       std::vector<LabelType> branch_labels;
       std::vector<ExampleIndex> branch_examples;
-      branch_labels.reserve(branch_counts[branch_index]);
-      branch_examples.reserve(branch_counts[branch_index]);
+      branch_labels.reserve (branch_counts[branch_index]);
+      branch_examples.reserve (branch_counts[branch_index]);
 
       for (std::size_t example_index = 0; example_index < num_of_examples;
            ++example_index) {
         if (branch_indices[example_index] == branch_index) {
-          branch_examples.push_back(examples[example_index]);
-          branch_labels.push_back(label_data[example_index]);
+          branch_examples.push_back (examples[example_index]);
+          branch_labels.push_back (label_data[example_index]);
         }
       }
 
-      trainDecisionTreeNode(features,
-                            branch_examples,
-                            branch_labels,
-                            max_depth - 1,
-                            node.sub_nodes[branch_index]);
+      trainDecisionTreeNode (features,
+                             branch_examples,
+                             branch_labels,
+                             max_depth - 1,
+                             node.sub_nodes[branch_index]);
     }
   }
 }
@@ -257,9 +257,9 @@ template <class FeatureType,
           class NodeType>
 void
 DecisionTreeTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::
-    createThresholdsUniform(const std::size_t num_of_thresholds,
-                            std::vector<float>& values,
-                            std::vector<float>& thresholds)
+    createThresholdsUniform (const std::size_t num_of_thresholds,
+                             std::vector<float>& values,
+                             std::vector<float>& thresholds)
 {
   // estimate range of values
   float min_value = ::std::numeric_limits<float>::max();
@@ -276,15 +276,15 @@ DecisionTreeTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::
   }
 
   const float range = max_value - min_value;
-  const float step = range / static_cast<float>(num_of_thresholds + 2);
+  const float step = range / static_cast<float> (num_of_thresholds + 2);
 
   // compute thresholds
-  thresholds.resize(num_of_thresholds);
+  thresholds.resize (num_of_thresholds);
 
   for (std::size_t threshold_index = 0; threshold_index < num_of_thresholds;
        ++threshold_index) {
     thresholds[threshold_index] =
-        min_value + step * (static_cast<float>(threshold_index + 1));
+        min_value + step * (static_cast<float> (threshold_index + 1));
   }
 }
 

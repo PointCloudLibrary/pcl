@@ -87,7 +87,7 @@ protected:
 };
 
 std::ostream&
-operator<<(std::ostream& stream, const OpenNI2DeviceManager& device_manager);
+operator<< (std::ostream& stream, const OpenNI2DeviceManager& device_manager);
 
 } // namespace openni2
 } // namespace io

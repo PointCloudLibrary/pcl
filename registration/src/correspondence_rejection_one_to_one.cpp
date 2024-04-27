@@ -42,18 +42,18 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::registration::CorrespondenceRejectorOneToOne::getRemainingCorrespondences(
+pcl::registration::CorrespondenceRejectorOneToOne::getRemainingCorrespondences (
     const pcl::Correspondences& original_correspondences,
     pcl::Correspondences& remaining_correspondences)
 {
   /* not really an efficient implementation */
   pcl::Correspondences input = original_correspondences;
 
-  std::sort(input.begin(),
-            input.end(),
-            pcl::registration::sortCorrespondencesByMatchIndexAndDistance());
+  std::sort (input.begin(),
+             input.end(),
+             pcl::registration::sortCorrespondencesByMatchIndexAndDistance());
 
-  remaining_correspondences.resize(input.size());
+  remaining_correspondences.resize (input.size());
   pcl::index_t index_last = UNAVAILABLE;
   unsigned int number_valid_correspondences = 0;
   for (const auto& i : input) {
@@ -65,5 +65,5 @@ pcl::registration::CorrespondenceRejectorOneToOne::getRemainingCorrespondences(
       ++number_valid_correspondences;
     }
   }
-  remaining_correspondences.resize(number_valid_correspondences);
+  remaining_correspondences.resize (number_valid_correspondences);
 }

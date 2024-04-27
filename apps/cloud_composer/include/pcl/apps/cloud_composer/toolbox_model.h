@@ -64,10 +64,10 @@ class ToolBoxModel : public QStandardItemModel {
   Q_OBJECT
 
 public:
-  ToolBoxModel(QTreeView* tool_view = nullptr,
-               QTreeView* parameter_view = nullptr,
-               QObject* parent = nullptr);
-  ToolBoxModel(const ToolBoxModel& to_copy);
+  ToolBoxModel (QTreeView* tool_view = nullptr,
+                QTreeView* parameter_view = nullptr,
+                QObject* parent = nullptr);
+  ToolBoxModel (const ToolBoxModel& to_copy);
 
   void
   addTool (ToolFactory* tool_factory);
@@ -120,5 +120,5 @@ private:
 } // namespace cloud_composer
 } // namespace pcl
 
-Q_DECLARE_METATYPE(pcl::cloud_composer::ToolBoxModel);
-Q_DECLARE_METATYPE(QStandardItemModel*);
+Q_DECLARE_METATYPE (pcl::cloud_composer::ToolBoxModel);
+Q_DECLARE_METATYPE (QStandardItemModel*);

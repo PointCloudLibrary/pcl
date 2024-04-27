@@ -59,10 +59,10 @@ assignNormalWeights (const PointCloud<NormalT>& cloud,
                      const Indices& k_indices,
                      const std::vector<float>& k_sqr_distances)
 {
-  pcl::utils::ignore(cloud, index);
+  pcl::utils::ignore (cloud, index);
   // Check inputs
   if (k_indices.size() != k_sqr_distances.size())
-    PCL_ERROR(
+    PCL_ERROR (
         "[pcl::assignNormalWeights] inequal size of neighbor indices and distances!\n");
 
   // TODO: For now we use uniform weights
@@ -70,7 +70,7 @@ assignNormalWeights (const PointCloud<NormalT>& cloud,
   // since the compiler doesn't seem to recognize that
   // {k_indices.size (), 1.0f} is selecting the vector(size_type count, const T&)
   // constructor NOLINTNEXTLINE(modernize-return-braced-init-list)
-  return std::vector<float>(k_indices.size(), 1.0f);
+  return std::vector<float> (k_indices.size(), 1.0f);
 }
 
 /** \brief Refine an indexed point based on its neighbors, this function only writes to
@@ -103,13 +103,13 @@ refineNormal (const PointCloud<NormalT>& cloud,
 
   // Check inputs
   if (k_indices.size() != k_sqr_distances.size()) {
-    PCL_ERROR("[pcl::refineNormal] inequal size of neighbor indices and distances!\n");
+    PCL_ERROR ("[pcl::refineNormal] inequal size of neighbor indices and distances!\n");
     return (false);
   }
 
   // Get weights
   const std::vector<float> weights =
-      assignNormalWeights(cloud, index, k_indices, k_sqr_distances);
+      assignNormalWeights (cloud, index, k_indices, k_sqr_distances);
 
   // Loop over all neighbors and accumulate sum of normal components
   float nx = 0.0f;
@@ -120,8 +120,8 @@ refineNormal (const PointCloud<NormalT>& cloud,
     const NormalT& pointi = cloud[k_indices[i]];
 
     // Accumulate if not NaN
-    if (std::isfinite(pointi.normal_x) && std::isfinite(pointi.normal_y) &&
-        std::isfinite(pointi.normal_z)) {
+    if (std::isfinite (pointi.normal_x) && std::isfinite (pointi.normal_y) &&
+        std::isfinite (pointi.normal_z)) {
       const float& weighti = weights[i];
       nx += weighti * pointi.normal_x;
       ny += weighti * pointi.normal_y;
@@ -130,8 +130,8 @@ refineNormal (const PointCloud<NormalT>& cloud,
   }
 
   // Normalize if norm valid and non-zero
-  const float norm = std::sqrt(nx * nx + ny * ny + nz * nz);
-  if (std::isfinite(norm) && norm > std::numeric_limits<float>::epsilon()) {
+  const float norm = std::sqrt (nx * nx + ny * ny + nz * nz);
+  if (std::isfinite (norm) && norm > std::numeric_limits<float>::epsilon()) {
     point.normal_x = nx / norm;
     point.normal_y = ny / norm;
     point.normal_z = nz / norm;
@@ -213,8 +213,8 @@ public:
   NormalRefinement() : Filter<NormalT>::Filter()
   {
     filter_name_ = "NormalRefinement";
-    setMaxIterations(15);
-    setConvergenceThreshold(0.00001f);
+    setMaxIterations (15);
+    setConvergenceThreshold (0.00001f);
   }
 
   /** \brief Constructor for setting correspondences, sets default convergence
@@ -222,14 +222,14 @@ public:
    * @param k_indices indices of neighboring points
    * @param k_sqr_distances squared distances to the neighboring points
    */
-  NormalRefinement(const std::vector<Indices>& k_indices,
-                   const std::vector<std::vector<float>>& k_sqr_distances)
+  NormalRefinement (const std::vector<Indices>& k_indices,
+                    const std::vector<std::vector<float>>& k_sqr_distances)
   : Filter<NormalT>::Filter()
   {
     filter_name_ = "NormalRefinement";
-    setCorrespondences(k_indices, k_sqr_distances);
-    setMaxIterations(15);
-    setConvergenceThreshold(0.00001f);
+    setCorrespondences (k_indices, k_sqr_distances);
+    setMaxIterations (15);
+    setConvergenceThreshold (0.00001f);
   }
 
   /** \brief Set correspondences calculated from nearest neighbor search
@@ -252,8 +252,8 @@ public:
   getCorrespondences (std::vector<Indices>& k_indices,
                       std::vector<std::vector<float>>& k_sqr_distances)
   {
-    k_indices.assign(k_indices_.begin(), k_indices_.end());
-    k_sqr_distances.assign(k_sqr_distances_.begin(), k_sqr_distances_.end());
+    k_indices.assign (k_indices_.begin(), k_indices_.end());
+    k_sqr_distances.assign (k_sqr_distances_.begin(), k_sqr_distances_.end());
   }
 
   /** \brief Set maximum iterations

@@ -42,7 +42,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::ExtractIndices<pcl::PCLPointCloud2>::applyFilter(PCLPointCloud2& output)
+pcl::ExtractIndices<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2& output)
 {
   if (keep_organized_) {
     output = *input_;
@@ -50,37 +50,37 @@ pcl::ExtractIndices<pcl::PCLPointCloud2>::applyFilter(PCLPointCloud2& output)
       // Prepare the output and copy the data
       for (std::size_t i = 0; i < indices_->size(); ++i)
         for (std::size_t j = 0; j < output.fields.size(); ++j)
-          memcpy(&output.data[(*indices_)[i] * output.point_step +
-                              output.fields[j].offset],
-                 &user_filter_value_,
-                 sizeof(float));
+          memcpy (&output.data[(*indices_)[i] * output.point_step +
+                               output.fields[j].offset],
+                  &user_filter_value_,
+                  sizeof (float));
     }
     else {
       // Prepare a vector holding all indices
-      Indices all_indices(input_->width * input_->height);
-      for (index_t i = 0; i < static_cast<index_t>(all_indices.size()); ++i)
+      Indices all_indices (input_->width * input_->height);
+      for (index_t i = 0; i < static_cast<index_t> (all_indices.size()); ++i)
         all_indices[i] = i;
 
       Indices indices = *indices_;
-      std::sort(indices.begin(), indices.end());
+      std::sort (indices.begin(), indices.end());
 
       // Get the difference
       Indices remaining_indices;
-      set_difference(all_indices.begin(),
-                     all_indices.end(),
-                     indices.begin(),
-                     indices.end(),
-                     inserter(remaining_indices, remaining_indices.begin()));
+      set_difference (all_indices.begin(),
+                      all_indices.end(),
+                      indices.begin(),
+                      indices.end(),
+                      inserter (remaining_indices, remaining_indices.begin()));
 
       // Prepare the output and copy the data
       for (const auto& remaining_index : remaining_indices)
         for (std::size_t j = 0; j < output.fields.size(); ++j)
-          memcpy(&output.data[remaining_index * output.point_step +
-                              output.fields[j].offset],
-                 &user_filter_value_,
-                 sizeof(float));
+          memcpy (&output.data[remaining_index * output.point_step +
+                               output.fields[j].offset],
+                  &user_filter_value_,
+                  sizeof (float));
     }
-    if (!std::isfinite(user_filter_value_))
+    if (!std::isfinite (user_filter_value_))
       output.is_dense = false;
     return;
   }
@@ -114,47 +114,47 @@ pcl::ExtractIndices<pcl::PCLPointCloud2>::applyFilter(PCLPointCloud2& output)
 
   if (negative_) {
     // Prepare a vector holding all indices
-    Indices all_indices(input_->width * input_->height);
-    for (index_t i = 0; i < static_cast<index_t>(all_indices.size()); ++i)
+    Indices all_indices (input_->width * input_->height);
+    for (index_t i = 0; i < static_cast<index_t> (all_indices.size()); ++i)
       all_indices[i] = i;
 
     Indices indices = *indices_;
-    std::sort(indices.begin(), indices.end());
+    std::sort (indices.begin(), indices.end());
 
     // Get the difference
     Indices remaining_indices;
-    set_difference(all_indices.begin(),
-                   all_indices.end(),
-                   indices.begin(),
-                   indices.end(),
-                   inserter(remaining_indices, remaining_indices.begin()));
+    set_difference (all_indices.begin(),
+                    all_indices.end(),
+                    indices.begin(),
+                    indices.end(),
+                    inserter (remaining_indices, remaining_indices.begin()));
 
     // Prepare the output and copy the data
     output.width = remaining_indices.size();
-    output.data.resize(remaining_indices.size() * output.point_step);
+    output.data.resize (remaining_indices.size() * output.point_step);
     for (std::size_t i = 0; i < remaining_indices.size(); ++i)
-      memcpy(&output.data[i * output.point_step],
-             &input_->data[remaining_indices[i] * output.point_step],
-             output.point_step);
+      memcpy (&output.data[i * output.point_step],
+              &input_->data[remaining_indices[i] * output.point_step],
+              output.point_step);
   }
   else {
     // Prepare the output and copy the data
     output.width = indices_->size();
-    output.data.resize(indices_->size() * output.point_step);
+    output.data.resize (indices_->size() * output.point_step);
     for (std::size_t i = 0; i < indices_->size(); ++i)
-      memcpy(&output.data[i * output.point_step],
-             &input_->data[(*indices_)[i] * output.point_step],
-             output.point_step);
+      memcpy (&output.data[i * output.point_step],
+              &input_->data[(*indices_)[i] * output.point_step],
+              output.point_step);
   }
   output.row_step = output.point_step * output.width;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::ExtractIndices<pcl::PCLPointCloud2>::applyFilter(Indices& indices)
+pcl::ExtractIndices<pcl::PCLPointCloud2>::applyFilter (Indices& indices)
 {
   if (indices_->size() > (input_->width * input_->height)) {
-    PCL_ERROR(
+    PCL_ERROR (
         "[pcl::%s::applyFilter] The indices size exceeds the size of the input.\n",
         getClassName().c_str());
     indices.clear();
@@ -168,43 +168,44 @@ pcl::ExtractIndices<pcl::PCLPointCloud2>::applyFilter(Indices& indices)
 
     if (extract_removed_indices_) {
       // Set up the full indices set
-      Indices full_indices(input_->width * input_->height);
-      for (index_t fii = 0; fii < static_cast<index_t>(full_indices.size());
+      Indices full_indices (input_->width * input_->height);
+      for (index_t fii = 0; fii < static_cast<index_t> (full_indices.size());
            ++fii) // fii = full indices iterator
         full_indices[fii] = fii;
 
       // Set up the sorted input indices
       Indices sorted_input_indices = *indices_;
-      std::sort(sorted_input_indices.begin(), sorted_input_indices.end());
+      std::sort (sorted_input_indices.begin(), sorted_input_indices.end());
 
       // Store the difference in removed_indices
       removed_indices_->clear();
-      std::set_difference(full_indices.begin(),
-                          full_indices.end(),
-                          sorted_input_indices.begin(),
-                          sorted_input_indices.end(),
-                          std::inserter(*removed_indices_, removed_indices_->begin()));
+      std::set_difference (
+          full_indices.begin(),
+          full_indices.end(),
+          sorted_input_indices.begin(),
+          sorted_input_indices.end(),
+          std::inserter (*removed_indices_, removed_indices_->begin()));
     }
   }
   else // Inverted functionality
   {
     // Set up the full indices set
-    Indices full_indices(input_->width * input_->height);
-    for (index_t fii = 0; fii < static_cast<index_t>(full_indices.size());
+    Indices full_indices (input_->width * input_->height);
+    for (index_t fii = 0; fii < static_cast<index_t> (full_indices.size());
          ++fii) // fii = full indices iterator
       full_indices[fii] = fii;
 
     // Set up the sorted input indices
     Indices sorted_input_indices = *indices_;
-    std::sort(sorted_input_indices.begin(), sorted_input_indices.end());
+    std::sort (sorted_input_indices.begin(), sorted_input_indices.end());
 
     // Store the difference in indices
     indices.clear();
-    std::set_difference(full_indices.begin(),
-                        full_indices.end(),
-                        sorted_input_indices.begin(),
-                        sorted_input_indices.end(),
-                        std::inserter(indices, indices.begin()));
+    std::set_difference (full_indices.begin(),
+                         full_indices.end(),
+                         sorted_input_indices.begin(),
+                         sorted_input_indices.end(),
+                         std::inserter (indices, indices.begin()));
 
     if (extract_removed_indices_)
       removed_indices_ = indices_;
@@ -216,11 +217,12 @@ pcl::ExtractIndices<pcl::PCLPointCloud2>::applyFilter(Indices& indices)
 #include <pcl/point_types.h>
 
 #ifdef PCL_ONLY_CORE_POINT_TYPES
-PCL_INSTANTIATE(ExtractIndices,
-                (pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGB)(pcl::PointXYZRGBA)(
-                    pcl::Normal)(pcl::PointNormal)(pcl::PointXYZRGBNormal))
+PCL_INSTANTIATE (
+    ExtractIndices,
+    (pcl::PointXYZ) (pcl::PointXYZI) (pcl::PointXYZRGB) (pcl::PointXYZRGBA) (
+        pcl::Normal) (pcl::PointNormal) (pcl::PointXYZRGBNormal))
 #else
-PCL_INSTANTIATE(ExtractIndices, PCL_POINT_TYPES)
+PCL_INSTANTIATE (ExtractIndices, PCL_POINT_TYPES)
 #endif
 
 #endif // PCL_NO_PRECOMPILE

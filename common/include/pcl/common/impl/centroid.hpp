@@ -65,7 +65,7 @@ compute3DCentroid (ConstCloudIterator<PointT>& cloud_iterator,
   // If the data is dense, we don't need to check for NaN
   while (cloud_iterator.isValid()) {
     // Check if the point is invalid
-    if (pcl::isFinite(*cloud_iterator)) {
+    if (pcl::isFinite (*cloud_iterator)) {
       accumulator[0] += cloud_iterator->x;
       accumulator[1] += cloud_iterator->y;
       accumulator[2] += cloud_iterator->z;
@@ -76,7 +76,7 @@ compute3DCentroid (ConstCloudIterator<PointT>& cloud_iterator,
 
   if (cp > 0) {
     centroid = accumulator;
-    centroid /= static_cast<Scalar>(cp);
+    centroid /= static_cast<Scalar> (cp);
     centroid[3] = 1;
   }
   return (cp);
@@ -100,17 +100,17 @@ compute3DCentroid (const pcl::PointCloud<PointT>& cloud,
       centroid[1] += point.y;
       centroid[2] += point.z;
     }
-    centroid /= static_cast<Scalar>(cloud.size());
+    centroid /= static_cast<Scalar> (cloud.size());
     centroid[3] = 1;
 
-    return (static_cast<unsigned int>(cloud.size()));
+    return (static_cast<unsigned int> (cloud.size()));
   }
   // NaN or Inf values could exist => check for them
   unsigned int cp = 0;
   Eigen::Matrix<Scalar, 4, 1> accumulator{0, 0, 0, 0};
   for (const auto& point : cloud) {
     // Check if the point is invalid
-    if (!isFinite(point))
+    if (!isFinite (point))
       continue;
 
     accumulator[0] += point.x;
@@ -120,7 +120,7 @@ compute3DCentroid (const pcl::PointCloud<PointT>& cloud,
   }
   if (cp > 0) {
     centroid = accumulator;
-    centroid /= static_cast<Scalar>(cp);
+    centroid /= static_cast<Scalar> (cp);
     centroid[3] = 1;
   }
 
@@ -145,16 +145,16 @@ compute3DCentroid (const pcl::PointCloud<PointT>& cloud,
       centroid[1] += cloud[index].y;
       centroid[2] += cloud[index].z;
     }
-    centroid /= static_cast<Scalar>(indices.size());
+    centroid /= static_cast<Scalar> (indices.size());
     centroid[3] = 1;
-    return (static_cast<unsigned int>(indices.size()));
+    return (static_cast<unsigned int> (indices.size()));
   }
   // NaN or Inf values could exist => check for them
   Eigen::Matrix<Scalar, 4, 1> accumulator{0, 0, 0, 0};
   unsigned int cp = 0;
   for (const auto& index : indices) {
     // Check if the point is invalid
-    if (!isFinite(cloud[index]))
+    if (!isFinite (cloud[index]))
       continue;
 
     accumulator[0] += cloud[index].x;
@@ -164,7 +164,7 @@ compute3DCentroid (const pcl::PointCloud<PointT>& cloud,
   }
   if (cp > 0) {
     centroid = accumulator;
-    centroid /= static_cast<Scalar>(cp);
+    centroid /= static_cast<Scalar> (cp);
     centroid[3] = 1;
   }
   return (cp);
@@ -176,7 +176,7 @@ compute3DCentroid (const pcl::PointCloud<PointT>& cloud,
                    const pcl::PointIndices& indices,
                    Eigen::Matrix<Scalar, 4, 1>& centroid)
 {
-  return (pcl::compute3DCentroid(cloud, indices.indices, centroid));
+  return (pcl::compute3DCentroid (cloud, indices.indices, centroid));
 }
 
 template <typename PointT, typename Scalar>
@@ -192,7 +192,7 @@ computeCovarianceMatrix (const pcl::PointCloud<PointT>& cloud,
   // If the data is dense, we don't need to check for NaN
   if (cloud.is_dense) {
     covariance_matrix.setZero();
-    point_count = static_cast<unsigned>(cloud.size());
+    point_count = static_cast<unsigned> (cloud.size());
     // For each point in the cloud
     for (const auto& point : cloud) {
       Eigen::Matrix<Scalar, 4, 1> pt;
@@ -200,15 +200,15 @@ computeCovarianceMatrix (const pcl::PointCloud<PointT>& cloud,
       pt[1] = point.y - centroid[1];
       pt[2] = point.z - centroid[2];
 
-      covariance_matrix(1, 1) += pt.y() * pt.y();
-      covariance_matrix(1, 2) += pt.y() * pt.z();
+      covariance_matrix (1, 1) += pt.y() * pt.y();
+      covariance_matrix (1, 2) += pt.y() * pt.z();
 
-      covariance_matrix(2, 2) += pt.z() * pt.z();
+      covariance_matrix (2, 2) += pt.z() * pt.z();
 
       pt *= pt.x();
-      covariance_matrix(0, 0) += pt.x();
-      covariance_matrix(0, 1) += pt.y();
-      covariance_matrix(0, 2) += pt.z();
+      covariance_matrix (0, 0) += pt.x();
+      covariance_matrix (0, 1) += pt.y();
+      covariance_matrix (0, 2) += pt.z();
     }
   }
   // NaN or Inf values could exist => check for them
@@ -219,7 +219,7 @@ computeCovarianceMatrix (const pcl::PointCloud<PointT>& cloud,
     // For each point in the cloud
     for (const auto& point : cloud) {
       // Check if the point is invalid
-      if (!isFinite(point))
+      if (!isFinite (point))
         continue;
 
       Eigen::Matrix<Scalar, 4, 1> pt;
@@ -227,15 +227,15 @@ computeCovarianceMatrix (const pcl::PointCloud<PointT>& cloud,
       pt[1] = point.y - centroid[1];
       pt[2] = point.z - centroid[2];
 
-      temp_covariance_matrix(1, 1) += pt.y() * pt.y();
-      temp_covariance_matrix(1, 2) += pt.y() * pt.z();
+      temp_covariance_matrix (1, 1) += pt.y() * pt.y();
+      temp_covariance_matrix (1, 2) += pt.y() * pt.z();
 
-      temp_covariance_matrix(2, 2) += pt.z() * pt.z();
+      temp_covariance_matrix (2, 2) += pt.z() * pt.z();
 
       pt *= pt.x();
-      temp_covariance_matrix(0, 0) += pt.x();
-      temp_covariance_matrix(0, 1) += pt.y();
-      temp_covariance_matrix(0, 2) += pt.z();
+      temp_covariance_matrix (0, 0) += pt.x();
+      temp_covariance_matrix (0, 1) += pt.y();
+      temp_covariance_matrix (0, 2) += pt.z();
       ++point_count;
     }
     if (point_count > 0) {
@@ -245,9 +245,9 @@ computeCovarianceMatrix (const pcl::PointCloud<PointT>& cloud,
   if (point_count == 0) {
     return 0;
   }
-  covariance_matrix(1, 0) = covariance_matrix(0, 1);
-  covariance_matrix(2, 0) = covariance_matrix(0, 2);
-  covariance_matrix(2, 1) = covariance_matrix(1, 2);
+  covariance_matrix (1, 0) = covariance_matrix (0, 1);
+  covariance_matrix (2, 0) = covariance_matrix (0, 2);
+  covariance_matrix (2, 1) = covariance_matrix (1, 2);
 
   return (point_count);
 }
@@ -259,9 +259,9 @@ computeCovarianceMatrixNormalized (const pcl::PointCloud<PointT>& cloud,
                                    Eigen::Matrix<Scalar, 3, 3>& covariance_matrix)
 {
   unsigned point_count =
-      pcl::computeCovarianceMatrix(cloud, centroid, covariance_matrix);
+      pcl::computeCovarianceMatrix (cloud, centroid, covariance_matrix);
   if (point_count != 0)
-    covariance_matrix /= static_cast<Scalar>(point_count);
+    covariance_matrix /= static_cast<Scalar> (point_count);
   return (point_count);
 }
 
@@ -287,15 +287,15 @@ computeCovarianceMatrix (const pcl::PointCloud<PointT>& cloud,
       pt[1] = cloud[idx].y - centroid[1];
       pt[2] = cloud[idx].z - centroid[2];
 
-      covariance_matrix(1, 1) += pt.y() * pt.y();
-      covariance_matrix(1, 2) += pt.y() * pt.z();
+      covariance_matrix (1, 1) += pt.y() * pt.y();
+      covariance_matrix (1, 2) += pt.y() * pt.z();
 
-      covariance_matrix(2, 2) += pt.z() * pt.z();
+      covariance_matrix (2, 2) += pt.z() * pt.z();
 
       pt *= pt.x();
-      covariance_matrix(0, 0) += pt.x();
-      covariance_matrix(0, 1) += pt.y();
-      covariance_matrix(0, 2) += pt.z();
+      covariance_matrix (0, 0) += pt.x();
+      covariance_matrix (0, 1) += pt.y();
+      covariance_matrix (0, 2) += pt.z();
     }
   }
   // NaN or Inf values could exist => check for them
@@ -306,7 +306,7 @@ computeCovarianceMatrix (const pcl::PointCloud<PointT>& cloud,
     // For each point in the cloud
     for (const auto& index : indices) {
       // Check if the point is invalid
-      if (!isFinite(cloud[index]))
+      if (!isFinite (cloud[index]))
         continue;
 
       Eigen::Matrix<Scalar, 4, 1> pt;
@@ -314,15 +314,15 @@ computeCovarianceMatrix (const pcl::PointCloud<PointT>& cloud,
       pt[1] = cloud[index].y - centroid[1];
       pt[2] = cloud[index].z - centroid[2];
 
-      temp_covariance_matrix(1, 1) += pt.y() * pt.y();
-      temp_covariance_matrix(1, 2) += pt.y() * pt.z();
+      temp_covariance_matrix (1, 1) += pt.y() * pt.y();
+      temp_covariance_matrix (1, 2) += pt.y() * pt.z();
 
-      temp_covariance_matrix(2, 2) += pt.z() * pt.z();
+      temp_covariance_matrix (2, 2) += pt.z() * pt.z();
 
       pt *= pt.x();
-      temp_covariance_matrix(0, 0) += pt.x();
-      temp_covariance_matrix(0, 1) += pt.y();
-      temp_covariance_matrix(0, 2) += pt.z();
+      temp_covariance_matrix (0, 0) += pt.x();
+      temp_covariance_matrix (0, 1) += pt.y();
+      temp_covariance_matrix (0, 2) += pt.z();
       ++point_count;
     }
     if (point_count > 0) {
@@ -332,10 +332,10 @@ computeCovarianceMatrix (const pcl::PointCloud<PointT>& cloud,
   if (point_count == 0) {
     return 0;
   }
-  covariance_matrix(1, 0) = covariance_matrix(0, 1);
-  covariance_matrix(2, 0) = covariance_matrix(0, 2);
-  covariance_matrix(2, 1) = covariance_matrix(1, 2);
-  return (static_cast<unsigned int>(point_count));
+  covariance_matrix (1, 0) = covariance_matrix (0, 1);
+  covariance_matrix (2, 0) = covariance_matrix (0, 2);
+  covariance_matrix (2, 1) = covariance_matrix (1, 2);
+  return (static_cast<unsigned int> (point_count));
 }
 
 template <typename PointT, typename Scalar>
@@ -345,7 +345,7 @@ computeCovarianceMatrix (const pcl::PointCloud<PointT>& cloud,
                          const Eigen::Matrix<Scalar, 4, 1>& centroid,
                          Eigen::Matrix<Scalar, 3, 3>& covariance_matrix)
 {
-  return (pcl::computeCovarianceMatrix(
+  return (pcl::computeCovarianceMatrix (
       cloud, indices.indices, centroid, covariance_matrix));
 }
 
@@ -357,9 +357,9 @@ computeCovarianceMatrixNormalized (const pcl::PointCloud<PointT>& cloud,
                                    Eigen::Matrix<Scalar, 3, 3>& covariance_matrix)
 {
   unsigned point_count =
-      pcl::computeCovarianceMatrix(cloud, indices, centroid, covariance_matrix);
+      pcl::computeCovarianceMatrix (cloud, indices, centroid, covariance_matrix);
   if (point_count != 0)
-    covariance_matrix /= static_cast<Scalar>(point_count);
+    covariance_matrix /= static_cast<Scalar> (point_count);
 
   return (point_count);
 }
@@ -371,7 +371,7 @@ computeCovarianceMatrixNormalized (const pcl::PointCloud<PointT>& cloud,
                                    const Eigen::Matrix<Scalar, 4, 1>& centroid,
                                    Eigen::Matrix<Scalar, 3, 3>& covariance_matrix)
 {
-  return computeCovarianceMatrixNormalized(
+  return computeCovarianceMatrixNormalized (
       cloud, indices.indices, centroid, covariance_matrix);
 }
 
@@ -387,7 +387,7 @@ computeCovarianceMatrix (const pcl::PointCloud<PointT>& cloud,
 
   unsigned int point_count;
   if (cloud.is_dense) {
-    point_count = static_cast<unsigned int>(cloud.size());
+    point_count = static_cast<unsigned int> (cloud.size());
     // For each point in the cloud
     for (const auto& point : cloud) {
       accu[0] += point.x * point.x;
@@ -401,7 +401,7 @@ computeCovarianceMatrix (const pcl::PointCloud<PointT>& cloud,
   else {
     point_count = 0;
     for (const auto& point : cloud) {
-      if (!isFinite(point))
+      if (!isFinite (point))
         continue;
 
       accu[0] += point.x * point.x;
@@ -415,13 +415,13 @@ computeCovarianceMatrix (const pcl::PointCloud<PointT>& cloud,
   }
 
   if (point_count != 0) {
-    accu /= static_cast<Scalar>(point_count);
-    covariance_matrix.coeffRef(0) = accu[0];
-    covariance_matrix.coeffRef(1) = covariance_matrix.coeffRef(3) = accu[1];
-    covariance_matrix.coeffRef(2) = covariance_matrix.coeffRef(6) = accu[2];
-    covariance_matrix.coeffRef(4) = accu[3];
-    covariance_matrix.coeffRef(5) = covariance_matrix.coeffRef(7) = accu[4];
-    covariance_matrix.coeffRef(8) = accu[5];
+    accu /= static_cast<Scalar> (point_count);
+    covariance_matrix.coeffRef (0) = accu[0];
+    covariance_matrix.coeffRef (1) = covariance_matrix.coeffRef (3) = accu[1];
+    covariance_matrix.coeffRef (2) = covariance_matrix.coeffRef (6) = accu[2];
+    covariance_matrix.coeffRef (4) = accu[3];
+    covariance_matrix.coeffRef (5) = covariance_matrix.coeffRef (7) = accu[4];
+    covariance_matrix.coeffRef (8) = accu[5];
   }
   return (point_count);
 }
@@ -439,7 +439,7 @@ computeCovarianceMatrix (const pcl::PointCloud<PointT>& cloud,
 
   unsigned int point_count;
   if (cloud.is_dense) {
-    point_count = static_cast<unsigned int>(indices.size());
+    point_count = static_cast<unsigned int> (indices.size());
     for (const auto& index : indices) {
       // const PointT& point = cloud[*iIt];
       accu[0] += cloud[index].x * cloud[index].x;
@@ -453,7 +453,7 @@ computeCovarianceMatrix (const pcl::PointCloud<PointT>& cloud,
   else {
     point_count = 0;
     for (const auto& index : indices) {
-      if (!isFinite(cloud[index]))
+      if (!isFinite (cloud[index]))
         continue;
 
       ++point_count;
@@ -466,13 +466,13 @@ computeCovarianceMatrix (const pcl::PointCloud<PointT>& cloud,
     }
   }
   if (point_count != 0) {
-    accu /= static_cast<Scalar>(point_count);
-    covariance_matrix.coeffRef(0) = accu[0];
-    covariance_matrix.coeffRef(1) = covariance_matrix.coeffRef(3) = accu[1];
-    covariance_matrix.coeffRef(2) = covariance_matrix.coeffRef(6) = accu[2];
-    covariance_matrix.coeffRef(4) = accu[3];
-    covariance_matrix.coeffRef(5) = covariance_matrix.coeffRef(7) = accu[4];
-    covariance_matrix.coeffRef(8) = accu[5];
+    accu /= static_cast<Scalar> (point_count);
+    covariance_matrix.coeffRef (0) = accu[0];
+    covariance_matrix.coeffRef (1) = covariance_matrix.coeffRef (3) = accu[1];
+    covariance_matrix.coeffRef (2) = covariance_matrix.coeffRef (6) = accu[2];
+    covariance_matrix.coeffRef (4) = accu[3];
+    covariance_matrix.coeffRef (5) = covariance_matrix.coeffRef (7) = accu[4];
+    covariance_matrix.coeffRef (8) = accu[5];
   }
   return (point_count);
 }
@@ -483,7 +483,7 @@ computeCovarianceMatrix (const pcl::PointCloud<PointT>& cloud,
                          const pcl::PointIndices& indices,
                          Eigen::Matrix<Scalar, 3, 3>& covariance_matrix)
 {
-  return (computeCovarianceMatrix(cloud, indices.indices, covariance_matrix));
+  return (computeCovarianceMatrix (cloud, indices.indices, covariance_matrix));
 }
 
 template <typename PointT, typename Scalar>
@@ -497,9 +497,9 @@ computeMeanAndCovarianceMatrix (const pcl::PointCloud<PointT>& cloud,
   // cloud[indices[i]] and centroid as a buffer
   Eigen::Matrix<Scalar, 1, 9, Eigen::RowMajor> accu =
       Eigen::Matrix<Scalar, 1, 9, Eigen::RowMajor>::Zero();
-  Eigen::Matrix<Scalar, 3, 1> K(0.0, 0.0, 0.0);
+  Eigen::Matrix<Scalar, 3, 1> K (0.0, 0.0, 0.0);
   for (const auto& point : cloud)
-    if (isFinite(point)) {
+    if (isFinite (point)) {
       K.x() = point.x;
       K.y() = point.y;
       K.z() = point.z;
@@ -525,7 +525,7 @@ computeMeanAndCovarianceMatrix (const pcl::PointCloud<PointT>& cloud,
   else {
     point_count = 0;
     for (const auto& point : cloud) {
-      if (!isFinite(point))
+      if (!isFinite (point))
         continue;
 
       Scalar x = point.x - K.x(), y = point.y - K.y(), z = point.z - K.z();
@@ -542,28 +542,28 @@ computeMeanAndCovarianceMatrix (const pcl::PointCloud<PointT>& cloud,
     }
   }
   if (point_count != 0) {
-    accu /= static_cast<Scalar>(point_count);
+    accu /= static_cast<Scalar> (point_count);
     centroid[0] = accu[6] + K.x();
     centroid[1] = accu[7] + K.y();
     centroid[2] = accu[8] + K.z(); // effective mean E[P=(x,y,z)]
     centroid[3] = 1;
-    covariance_matrix.coeffRef(0) =
+    covariance_matrix.coeffRef (0) =
         accu[0] -
         accu[6] * accu[6]; //(0,0)xx : E[(x-E[x])^2]=E[x^2]-E[x]^2=E[(x-Kx)^2]-E[x-Kx]^2
-    covariance_matrix.coeffRef(1) =
+    covariance_matrix.coeffRef (1) =
         accu[1] -
         accu[6] *
             accu[7]; //(0,1)xy :
-                     //E[(x-E[x])(y-E[y])]=E[xy]-E[x]E[y]=E[(x-Kx)(y-Ky)]-E[x-Kx]E[y-Ky]
-    covariance_matrix.coeffRef(2) = accu[2] - accu[6] * accu[8]; //(0,2)xz
-    covariance_matrix.coeffRef(4) = accu[3] - accu[7] * accu[7]; //(1,1)yy
-    covariance_matrix.coeffRef(5) = accu[4] - accu[7] * accu[8]; //(1,2)yz
-    covariance_matrix.coeffRef(8) = accu[5] - accu[8] * accu[8]; //(2,2)zz
-    covariance_matrix.coeffRef(3) = covariance_matrix.coeff(1);  //(1,0)yx
-    covariance_matrix.coeffRef(6) = covariance_matrix.coeff(2);  //(2,0)zx
-    covariance_matrix.coeffRef(7) = covariance_matrix.coeff(5);  //(2,1)zy
+                     // E[(x-E[x])(y-E[y])]=E[xy]-E[x]E[y]=E[(x-Kx)(y-Ky)]-E[x-Kx]E[y-Ky]
+    covariance_matrix.coeffRef (2) = accu[2] - accu[6] * accu[8]; //(0,2)xz
+    covariance_matrix.coeffRef (4) = accu[3] - accu[7] * accu[7]; //(1,1)yy
+    covariance_matrix.coeffRef (5) = accu[4] - accu[7] * accu[8]; //(1,2)yz
+    covariance_matrix.coeffRef (8) = accu[5] - accu[8] * accu[8]; //(2,2)zz
+    covariance_matrix.coeffRef (3) = covariance_matrix.coeff (1); //(1,0)yx
+    covariance_matrix.coeffRef (6) = covariance_matrix.coeff (2); //(2,0)zx
+    covariance_matrix.coeffRef (7) = covariance_matrix.coeff (5); //(2,1)zy
   }
-  return (static_cast<unsigned int>(point_count));
+  return (static_cast<unsigned int> (point_count));
 }
 
 template <typename PointT, typename Scalar>
@@ -578,9 +578,9 @@ computeMeanAndCovarianceMatrix (const pcl::PointCloud<PointT>& cloud,
   // cloud[indices[i]] and centroid as a buffer
   Eigen::Matrix<Scalar, 1, 9, Eigen::RowMajor> accu =
       Eigen::Matrix<Scalar, 1, 9, Eigen::RowMajor>::Zero();
-  Eigen::Matrix<Scalar, 3, 1> K(0.0, 0.0, 0.0);
+  Eigen::Matrix<Scalar, 3, 1> K (0.0, 0.0, 0.0);
   for (const auto& index : indices)
-    if (isFinite(cloud[index])) {
+    if (isFinite (cloud[index])) {
       K.x() = cloud[index].x;
       K.y() = cloud[index].y;
       K.z() = cloud[index].z;
@@ -606,7 +606,7 @@ computeMeanAndCovarianceMatrix (const pcl::PointCloud<PointT>& cloud,
   else {
     point_count = 0;
     for (const auto& index : indices) {
-      if (!isFinite(cloud[index]))
+      if (!isFinite (cloud[index]))
         continue;
 
       ++point_count;
@@ -625,28 +625,28 @@ computeMeanAndCovarianceMatrix (const pcl::PointCloud<PointT>& cloud,
   }
 
   if (point_count != 0) {
-    accu /= static_cast<Scalar>(point_count);
+    accu /= static_cast<Scalar> (point_count);
     centroid[0] = accu[6] + K.x();
     centroid[1] = accu[7] + K.y();
     centroid[2] = accu[8] + K.z(); // effective mean E[P=(x,y,z)]
     centroid[3] = 1;
-    covariance_matrix.coeffRef(0) =
+    covariance_matrix.coeffRef (0) =
         accu[0] -
         accu[6] * accu[6]; //(0,0)xx : E[(x-E[x])^2]=E[x^2]-E[x]^2=E[(x-Kx)^2]-E[x-Kx]^2
-    covariance_matrix.coeffRef(1) =
+    covariance_matrix.coeffRef (1) =
         accu[1] -
         accu[6] *
             accu[7]; //(0,1)xy :
-                     //E[(x-E[x])(y-E[y])]=E[xy]-E[x]E[y]=E[(x-Kx)(y-Ky)]-E[x-Kx]E[y-Ky]
-    covariance_matrix.coeffRef(2) = accu[2] - accu[6] * accu[8]; //(0,2)xz
-    covariance_matrix.coeffRef(4) = accu[3] - accu[7] * accu[7]; //(1,1)yy
-    covariance_matrix.coeffRef(5) = accu[4] - accu[7] * accu[8]; //(1,2)yz
-    covariance_matrix.coeffRef(8) = accu[5] - accu[8] * accu[8]; //(2,2)zz
-    covariance_matrix.coeffRef(3) = covariance_matrix.coeff(1);  //(1,0)yx
-    covariance_matrix.coeffRef(6) = covariance_matrix.coeff(2);  //(2,0)zx
-    covariance_matrix.coeffRef(7) = covariance_matrix.coeff(5);  //(2,1)zy
+                     // E[(x-E[x])(y-E[y])]=E[xy]-E[x]E[y]=E[(x-Kx)(y-Ky)]-E[x-Kx]E[y-Ky]
+    covariance_matrix.coeffRef (2) = accu[2] - accu[6] * accu[8]; //(0,2)xz
+    covariance_matrix.coeffRef (4) = accu[3] - accu[7] * accu[7]; //(1,1)yy
+    covariance_matrix.coeffRef (5) = accu[4] - accu[7] * accu[8]; //(1,2)yz
+    covariance_matrix.coeffRef (8) = accu[5] - accu[8] * accu[8]; //(2,2)zz
+    covariance_matrix.coeffRef (3) = covariance_matrix.coeff (1); //(1,0)yx
+    covariance_matrix.coeffRef (6) = covariance_matrix.coeff (2); //(2,0)zx
+    covariance_matrix.coeffRef (7) = covariance_matrix.coeff (5); //(2,1)zy
   }
-  return (static_cast<unsigned int>(point_count));
+  return (static_cast<unsigned int> (point_count));
 }
 
 template <typename PointT, typename Scalar>
@@ -656,7 +656,7 @@ computeMeanAndCovarianceMatrix (const pcl::PointCloud<PointT>& cloud,
                                 Eigen::Matrix<Scalar, 3, 3>& covariance_matrix,
                                 Eigen::Matrix<Scalar, 4, 1>& centroid)
 {
-  return (computeMeanAndCovarianceMatrix(
+  return (computeMeanAndCovarianceMatrix (
       cloud, indices.indices, covariance_matrix, centroid));
 }
 
@@ -671,24 +671,25 @@ computeCentroidAndOBB (const pcl::PointCloud<PointT>& cloud,
   Eigen::Matrix<Scalar, 3, 3> covariance_matrix;
   Eigen::Matrix<Scalar, 4, 1> centroid4;
   const auto point_count =
-      computeMeanAndCovarianceMatrix(cloud, covariance_matrix, centroid4);
+      computeMeanAndCovarianceMatrix (cloud, covariance_matrix, centroid4);
   if (!point_count)
     return (0);
-  centroid(0) = centroid4(0);
-  centroid(1) = centroid4(1);
-  centroid(2) = centroid4(2);
+  centroid (0) = centroid4 (0);
+  centroid (1) = centroid4 (1);
+  centroid (2) = centroid4 (2);
 
-  const Eigen::SelfAdjointEigenSolver<Eigen::Matrix<Scalar, 3, 3>> evd(
+  const Eigen::SelfAdjointEigenSolver<Eigen::Matrix<Scalar, 3, 3>> evd (
       covariance_matrix);
   const Eigen::Matrix<Scalar, 3, 3> eigenvectors_ = evd.eigenvectors();
-  const Eigen::Matrix<Scalar, 3, 1> minor_axis = eigenvectors_.col(
+  const Eigen::Matrix<Scalar, 3, 1> minor_axis = eigenvectors_.col (
       0); // the eigenvectors do not need to be normalized (they are already)
-  const Eigen::Matrix<Scalar, 3, 1> middle_axis = eigenvectors_.col(1);
+  const Eigen::Matrix<Scalar, 3, 1> middle_axis = eigenvectors_.col (1);
   // Enforce right hand rule:
-  const Eigen::Matrix<Scalar, 3, 1> major_axis = middle_axis.cross(minor_axis);
+  const Eigen::Matrix<Scalar, 3, 1> major_axis = middle_axis.cross (minor_axis);
 
-  obb_rotational_matrix << major_axis(0), middle_axis(0), minor_axis(0), major_axis(1),
-      middle_axis(1), minor_axis(1), major_axis(2), middle_axis(2), minor_axis(2);
+  obb_rotational_matrix << major_axis (0), middle_axis (0), minor_axis (0),
+      major_axis (1), middle_axis (1), minor_axis (1), major_axis (2), middle_axis (2),
+      minor_axis (2);
   // obb_rotational_matrix.col(0)==major_axis
   // obb_rotational_matrix.col(1)==middle_axis
   // obb_rotational_matrix.col(2)==minor_axis
@@ -712,79 +713,79 @@ computeCentroidAndOBB (const pcl::PointCloud<PointT>& cloud,
 
   if (cloud.is_dense) {
     const auto& point = cloud[0];
-    Eigen::Matrix<Scalar, 4, 1> P0(static_cast<Scalar>(point.x),
-                                   static_cast<Scalar>(point.y),
-                                   static_cast<Scalar>(point.z),
-                                   1.0);
+    Eigen::Matrix<Scalar, 4, 1> P0 (static_cast<Scalar> (point.x),
+                                    static_cast<Scalar> (point.y),
+                                    static_cast<Scalar> (point.z),
+                                    1.0);
     Eigen::Matrix<Scalar, 4, 1> P = transform * P0;
 
-    obb_min_pointx = obb_max_pointx = P(0);
-    obb_min_pointy = obb_max_pointy = P(1);
-    obb_min_pointz = obb_max_pointz = P(2);
+    obb_min_pointx = obb_max_pointx = P (0);
+    obb_min_pointy = obb_max_pointy = P (1);
+    obb_min_pointz = obb_max_pointz = P (2);
 
     for (size_t i = 1; i < cloud.size(); ++i) {
       const auto& point = cloud[i];
-      Eigen::Matrix<Scalar, 4, 1> P0(static_cast<Scalar>(point.x),
-                                     static_cast<Scalar>(point.y),
-                                     static_cast<Scalar>(point.z),
-                                     1.0);
+      Eigen::Matrix<Scalar, 4, 1> P0 (static_cast<Scalar> (point.x),
+                                      static_cast<Scalar> (point.y),
+                                      static_cast<Scalar> (point.z),
+                                      1.0);
       Eigen::Matrix<Scalar, 4, 1> P = transform * P0;
 
-      if (P(0) < obb_min_pointx)
-        obb_min_pointx = P(0);
-      else if (P(0) > obb_max_pointx)
-        obb_max_pointx = P(0);
-      if (P(1) < obb_min_pointy)
-        obb_min_pointy = P(1);
-      else if (P(1) > obb_max_pointy)
-        obb_max_pointy = P(1);
-      if (P(2) < obb_min_pointz)
-        obb_min_pointz = P(2);
-      else if (P(2) > obb_max_pointz)
-        obb_max_pointz = P(2);
+      if (P (0) < obb_min_pointx)
+        obb_min_pointx = P (0);
+      else if (P (0) > obb_max_pointx)
+        obb_max_pointx = P (0);
+      if (P (1) < obb_min_pointy)
+        obb_min_pointy = P (1);
+      else if (P (1) > obb_max_pointy)
+        obb_max_pointy = P (1);
+      if (P (2) < obb_min_pointz)
+        obb_min_pointz = P (2);
+      else if (P (2) > obb_max_pointz)
+        obb_max_pointz = P (2);
     }
   }
   else {
     size_t i = 0;
     for (; i < cloud.size(); ++i) {
       const auto& point = cloud[i];
-      if (!isFinite(point))
+      if (!isFinite (point))
         continue;
-      Eigen::Matrix<Scalar, 4, 1> P0(static_cast<Scalar>(point.x),
-                                     static_cast<Scalar>(point.y),
-                                     static_cast<Scalar>(point.z),
-                                     1.0);
+      Eigen::Matrix<Scalar, 4, 1> P0 (static_cast<Scalar> (point.x),
+                                      static_cast<Scalar> (point.y),
+                                      static_cast<Scalar> (point.z),
+                                      1.0);
       Eigen::Matrix<Scalar, 4, 1> P = transform * P0;
 
-      obb_min_pointx = obb_max_pointx = P(0);
-      obb_min_pointy = obb_max_pointy = P(1);
-      obb_min_pointz = obb_max_pointz = P(2);
+      obb_min_pointx = obb_max_pointx = P (0);
+      obb_min_pointy = obb_max_pointy = P (1);
+      obb_min_pointz = obb_max_pointz = P (2);
       ++i;
       break;
     }
 
     for (; i < cloud.size(); ++i) {
       const auto& point = cloud[i];
-      if (!isFinite(point))
+      if (!isFinite (point))
         continue;
-      Eigen::Matrix<Scalar, 4, 1> P0(static_cast<Scalar>(point.x),
-                                     static_cast<Scalar>(point.y),
-                                     static_cast<Scalar>(point.z),
-                                     1.0);
+      Eigen::Matrix<Scalar, 4, 1> P0 (static_cast<Scalar> (point.x),
+                                      static_cast<Scalar> (point.y),
+                                      static_cast<Scalar> (point.z),
+                                      1.0);
       Eigen::Matrix<Scalar, 4, 1> P = transform * P0;
 
-      if (P(0) < obb_min_pointx)
-        obb_min_pointx = P(0);
-      else if (P(0) > obb_max_pointx)
-        obb_max_pointx = P(0);
-      if (P(1) < obb_min_pointy)
-        obb_min_pointy = P(1);
-      else if (P(1) > obb_max_pointy)
-        obb_max_pointy = P(1);
-      if (P(2) < obb_min_pointz)
-        obb_min_pointz = P(2);
-      else if (P(2) > obb_max_pointz)
-        obb_max_pointz = P(2);
+      if (P (0) < obb_min_pointx)
+        obb_min_pointx = P (0);
+      else if (P (0) > obb_max_pointx)
+        obb_max_pointx = P (0);
+      if (P (1) < obb_min_pointy)
+        obb_min_pointy = P (1);
+      else if (P (1) > obb_max_pointy)
+        obb_max_pointy = P (1);
+      if (P (2) < obb_min_pointz)
+        obb_min_pointz = P (2);
+      else if (P (2) > obb_max_pointz)
+        obb_max_pointz = P (2);
     }
   }
 
@@ -792,13 +793,13 @@ computeCentroidAndOBB (const pcl::PointCloud<PointT>& cloud,
                                     // (position of the OBB center relative to
                                     // (p.c.centroid, major_axis, middle_axis,
                                     // minor_axis))
-                                        shift((obb_max_pointx + obb_min_pointx) / 2.0f,
-                                              (obb_max_pointy + obb_min_pointy) / 2.0f,
-                                              (obb_max_pointz + obb_min_pointz) / 2.0f);
+      shift ((obb_max_pointx + obb_min_pointx) / 2.0f,
+             (obb_max_pointy + obb_min_pointy) / 2.0f,
+             (obb_max_pointz + obb_min_pointz) / 2.0f);
 
-  obb_dimensions(0) = obb_max_pointx - obb_min_pointx;
-  obb_dimensions(1) = obb_max_pointy - obb_min_pointy;
-  obb_dimensions(2) = obb_max_pointz - obb_min_pointz;
+  obb_dimensions (0) = obb_max_pointx - obb_min_pointx;
+  obb_dimensions (1) = obb_max_pointy - obb_min_pointy;
+  obb_dimensions (2) = obb_max_pointz - obb_min_pointz;
 
   obb_center = centroid +
                obb_rotational_matrix * shift; // position of the OBB center in the same
@@ -819,24 +820,25 @@ computeCentroidAndOBB (const pcl::PointCloud<PointT>& cloud,
   Eigen::Matrix<Scalar, 3, 3> covariance_matrix;
   Eigen::Matrix<Scalar, 4, 1> centroid4;
   const auto point_count =
-      computeMeanAndCovarianceMatrix(cloud, indices, covariance_matrix, centroid4);
+      computeMeanAndCovarianceMatrix (cloud, indices, covariance_matrix, centroid4);
   if (!point_count)
     return (0);
-  centroid(0) = centroid4(0);
-  centroid(1) = centroid4(1);
-  centroid(2) = centroid4(2);
+  centroid (0) = centroid4 (0);
+  centroid (1) = centroid4 (1);
+  centroid (2) = centroid4 (2);
 
-  const Eigen::SelfAdjointEigenSolver<Eigen::Matrix<Scalar, 3, 3>> evd(
+  const Eigen::SelfAdjointEigenSolver<Eigen::Matrix<Scalar, 3, 3>> evd (
       covariance_matrix);
   const Eigen::Matrix<Scalar, 3, 3> eigenvectors_ = evd.eigenvectors();
-  const Eigen::Matrix<Scalar, 3, 1> minor_axis = eigenvectors_.col(
+  const Eigen::Matrix<Scalar, 3, 1> minor_axis = eigenvectors_.col (
       0); // the eigenvectors do not need to be normalized (they are already)
-  const Eigen::Matrix<Scalar, 3, 1> middle_axis = eigenvectors_.col(1);
+  const Eigen::Matrix<Scalar, 3, 1> middle_axis = eigenvectors_.col (1);
   // Enforce right hand rule:
-  const Eigen::Matrix<Scalar, 3, 1> major_axis = middle_axis.cross(minor_axis);
+  const Eigen::Matrix<Scalar, 3, 1> major_axis = middle_axis.cross (minor_axis);
 
-  obb_rotational_matrix << major_axis(0), middle_axis(0), minor_axis(0), major_axis(1),
-      middle_axis(1), minor_axis(1), major_axis(2), middle_axis(2), minor_axis(2);
+  obb_rotational_matrix << major_axis (0), middle_axis (0), minor_axis (0),
+      major_axis (1), middle_axis (1), minor_axis (1), major_axis (2), middle_axis (2),
+      minor_axis (2);
   // obb_rotational_matrix.col(0)==major_axis
   // obb_rotational_matrix.col(1)==middle_axis
   // obb_rotational_matrix.col(2)==minor_axis
@@ -860,81 +862,81 @@ computeCentroidAndOBB (const pcl::PointCloud<PointT>& cloud,
 
   if (cloud.is_dense) {
     const auto& point = cloud[indices[0]];
-    Eigen::Matrix<Scalar, 4, 1> P0(static_cast<Scalar>(point.x),
-                                   static_cast<Scalar>(point.y),
-                                   static_cast<Scalar>(point.z),
-                                   1.0);
+    Eigen::Matrix<Scalar, 4, 1> P0 (static_cast<Scalar> (point.x),
+                                    static_cast<Scalar> (point.y),
+                                    static_cast<Scalar> (point.z),
+                                    1.0);
     Eigen::Matrix<Scalar, 4, 1> P = transform * P0;
 
-    obb_min_pointx = obb_max_pointx = P(0);
-    obb_min_pointy = obb_max_pointy = P(1);
-    obb_min_pointz = obb_max_pointz = P(2);
+    obb_min_pointx = obb_max_pointx = P (0);
+    obb_min_pointy = obb_max_pointy = P (1);
+    obb_min_pointz = obb_max_pointz = P (2);
 
     for (size_t i = 1; i < indices.size(); ++i) {
       const auto& point = cloud[indices[i]];
 
-      Eigen::Matrix<Scalar, 4, 1> P0(static_cast<Scalar>(point.x),
-                                     static_cast<Scalar>(point.y),
-                                     static_cast<Scalar>(point.z),
-                                     1.0);
+      Eigen::Matrix<Scalar, 4, 1> P0 (static_cast<Scalar> (point.x),
+                                      static_cast<Scalar> (point.y),
+                                      static_cast<Scalar> (point.z),
+                                      1.0);
       Eigen::Matrix<Scalar, 4, 1> P = transform * P0;
 
-      if (P(0) < obb_min_pointx)
-        obb_min_pointx = P(0);
-      else if (P(0) > obb_max_pointx)
-        obb_max_pointx = P(0);
-      if (P(1) < obb_min_pointy)
-        obb_min_pointy = P(1);
-      else if (P(1) > obb_max_pointy)
-        obb_max_pointy = P(1);
-      if (P(2) < obb_min_pointz)
-        obb_min_pointz = P(2);
-      else if (P(2) > obb_max_pointz)
-        obb_max_pointz = P(2);
+      if (P (0) < obb_min_pointx)
+        obb_min_pointx = P (0);
+      else if (P (0) > obb_max_pointx)
+        obb_max_pointx = P (0);
+      if (P (1) < obb_min_pointy)
+        obb_min_pointy = P (1);
+      else if (P (1) > obb_max_pointy)
+        obb_max_pointy = P (1);
+      if (P (2) < obb_min_pointz)
+        obb_min_pointz = P (2);
+      else if (P (2) > obb_max_pointz)
+        obb_max_pointz = P (2);
     }
   }
   else {
     size_t i = 0;
     for (; i < indices.size(); ++i) {
       const auto& point = cloud[indices[i]];
-      if (!isFinite(point))
+      if (!isFinite (point))
         continue;
-      Eigen::Matrix<Scalar, 4, 1> P0(static_cast<Scalar>(point.x),
-                                     static_cast<Scalar>(point.y),
-                                     static_cast<Scalar>(point.z),
-                                     1.0);
+      Eigen::Matrix<Scalar, 4, 1> P0 (static_cast<Scalar> (point.x),
+                                      static_cast<Scalar> (point.y),
+                                      static_cast<Scalar> (point.z),
+                                      1.0);
       Eigen::Matrix<Scalar, 4, 1> P = transform * P0;
 
-      obb_min_pointx = obb_max_pointx = P(0);
-      obb_min_pointy = obb_max_pointy = P(1);
-      obb_min_pointz = obb_max_pointz = P(2);
+      obb_min_pointx = obb_max_pointx = P (0);
+      obb_min_pointy = obb_max_pointy = P (1);
+      obb_min_pointz = obb_max_pointz = P (2);
       ++i;
       break;
     }
 
     for (; i < indices.size(); ++i) {
       const auto& point = cloud[indices[i]];
-      if (!isFinite(point))
+      if (!isFinite (point))
         continue;
 
-      Eigen::Matrix<Scalar, 4, 1> P0(static_cast<Scalar>(point.x),
-                                     static_cast<Scalar>(point.y),
-                                     static_cast<Scalar>(point.z),
-                                     1.0);
+      Eigen::Matrix<Scalar, 4, 1> P0 (static_cast<Scalar> (point.x),
+                                      static_cast<Scalar> (point.y),
+                                      static_cast<Scalar> (point.z),
+                                      1.0);
       Eigen::Matrix<Scalar, 4, 1> P = transform * P0;
 
-      if (P(0) < obb_min_pointx)
-        obb_min_pointx = P(0);
-      else if (P(0) > obb_max_pointx)
-        obb_max_pointx = P(0);
-      if (P(1) < obb_min_pointy)
-        obb_min_pointy = P(1);
-      else if (P(1) > obb_max_pointy)
-        obb_max_pointy = P(1);
-      if (P(2) < obb_min_pointz)
-        obb_min_pointz = P(2);
-      else if (P(2) > obb_max_pointz)
-        obb_max_pointz = P(2);
+      if (P (0) < obb_min_pointx)
+        obb_min_pointx = P (0);
+      else if (P (0) > obb_max_pointx)
+        obb_max_pointx = P (0);
+      if (P (1) < obb_min_pointy)
+        obb_min_pointy = P (1);
+      else if (P (1) > obb_max_pointy)
+        obb_max_pointy = P (1);
+      if (P (2) < obb_min_pointz)
+        obb_min_pointz = P (2);
+      else if (P (2) > obb_max_pointz)
+        obb_max_pointz = P (2);
     }
   }
 
@@ -942,13 +944,13 @@ computeCentroidAndOBB (const pcl::PointCloud<PointT>& cloud,
                                     // (position of the OBB center relative to
                                     // (p.c.centroid, major_axis, middle_axis,
                                     // minor_axis))
-                                        shift((obb_max_pointx + obb_min_pointx) / 2.0f,
-                                              (obb_max_pointy + obb_min_pointy) / 2.0f,
-                                              (obb_max_pointz + obb_min_pointz) / 2.0f);
+      shift ((obb_max_pointx + obb_min_pointx) / 2.0f,
+             (obb_max_pointy + obb_min_pointy) / 2.0f,
+             (obb_max_pointz + obb_min_pointz) / 2.0f);
 
-  obb_dimensions(0) = obb_max_pointx - obb_min_pointx;
-  obb_dimensions(1) = obb_max_pointy - obb_min_pointy;
-  obb_dimensions(2) = obb_max_pointz - obb_min_pointz;
+  obb_dimensions (0) = obb_max_pointx - obb_min_pointx;
+  obb_dimensions (1) = obb_max_pointy - obb_min_pointy;
+  obb_dimensions (2) = obb_max_pointz - obb_min_pointz;
 
   obb_center = centroid +
                obb_rotational_matrix * shift; // position of the OBB center in the same
@@ -974,7 +976,7 @@ demeanPointCloud (ConstCloudIterator<PointT>& cloud_iterator,
   }
 
   int i = 0;
-  cloud_out.resize(npts);
+  cloud_out.resize (npts);
   // Subtract the centroid from cloud_in
   while (cloud_iterator.isValid()) {
     cloud_out[i].x = cloud_iterator->x - centroid[0];
@@ -997,9 +999,9 @@ demeanPointCloud (const pcl::PointCloud<PointT>& cloud_in,
 
   // Subtract the centroid from cloud_in
   for (auto& point : cloud_out) {
-    point.x -= static_cast<float>(centroid[0]);
-    point.y -= static_cast<float>(centroid[1]);
-    point.z -= static_cast<float>(centroid[2]);
+    point.x -= static_cast<float> (centroid[0]);
+    point.y -= static_cast<float> (centroid[1]);
+    point.z -= static_cast<float> (centroid[2]);
   }
 }
 
@@ -1020,13 +1022,13 @@ demeanPointCloud (const pcl::PointCloud<PointT>& cloud_in,
     cloud_out.width = indices.size();
     cloud_out.height = 1;
   }
-  cloud_out.resize(indices.size());
+  cloud_out.resize (indices.size());
 
   // Subtract the centroid from cloud_in
   for (std::size_t i = 0; i < indices.size(); ++i) {
-    cloud_out[i].x = static_cast<float>(cloud_in[indices[i]].x - centroid[0]);
-    cloud_out[i].y = static_cast<float>(cloud_in[indices[i]].y - centroid[1]);
-    cloud_out[i].z = static_cast<float>(cloud_in[indices[i]].z - centroid[2]);
+    cloud_out[i].x = static_cast<float> (cloud_in[indices[i]].x - centroid[0]);
+    cloud_out[i].y = static_cast<float> (cloud_in[indices[i]].y - centroid[1]);
+    cloud_out[i].z = static_cast<float> (cloud_in[indices[i]].z - centroid[2]);
   }
 }
 
@@ -1037,7 +1039,7 @@ demeanPointCloud (const pcl::PointCloud<PointT>& cloud_in,
                   const Eigen::Matrix<Scalar, 4, 1>& centroid,
                   pcl::PointCloud<PointT>& cloud_out)
 {
-  return (demeanPointCloud(cloud_in, indices.indices, centroid, cloud_out));
+  return (demeanPointCloud (cloud_in, indices.indices, centroid, cloud_out));
 }
 
 template <typename PointT, typename Scalar>
@@ -1057,13 +1059,13 @@ demeanPointCloud (ConstCloudIterator<PointT>& cloud_iterator,
   }
 
   cloud_out =
-      Eigen::Matrix<Scalar, 4, Eigen::Dynamic>::Zero(4, npts); // keep the data aligned
+      Eigen::Matrix<Scalar, 4, Eigen::Dynamic>::Zero (4, npts); // keep the data aligned
 
   int i = 0;
   while (cloud_iterator.isValid()) {
-    cloud_out(0, i) = cloud_iterator->x - centroid[0];
-    cloud_out(1, i) = cloud_iterator->y - centroid[1];
-    cloud_out(2, i) = cloud_iterator->z - centroid[2];
+    cloud_out (0, i) = cloud_iterator->x - centroid[0];
+    cloud_out (1, i) = cloud_iterator->y - centroid[1];
+    cloud_out (2, i) = cloud_iterator->z - centroid[2];
     ++i;
     ++cloud_iterator;
   }
@@ -1078,12 +1080,12 @@ demeanPointCloud (const pcl::PointCloud<PointT>& cloud_in,
   std::size_t npts = cloud_in.size();
 
   cloud_out =
-      Eigen::Matrix<Scalar, 4, Eigen::Dynamic>::Zero(4, npts); // keep the data aligned
+      Eigen::Matrix<Scalar, 4, Eigen::Dynamic>::Zero (4, npts); // keep the data aligned
 
   for (std::size_t i = 0; i < npts; ++i) {
-    cloud_out(0, i) = cloud_in[i].x - centroid[0];
-    cloud_out(1, i) = cloud_in[i].y - centroid[1];
-    cloud_out(2, i) = cloud_in[i].z - centroid[2];
+    cloud_out (0, i) = cloud_in[i].x - centroid[0];
+    cloud_out (1, i) = cloud_in[i].y - centroid[1];
+    cloud_out (2, i) = cloud_in[i].z - centroid[2];
     // One column at a time
     // cloud_out.block<4, 1> (0, i) = cloud_in[i].getVector4fMap () - centroid;
   }
@@ -1102,12 +1104,12 @@ demeanPointCloud (const pcl::PointCloud<PointT>& cloud_in,
   std::size_t npts = indices.size();
 
   cloud_out =
-      Eigen::Matrix<Scalar, 4, Eigen::Dynamic>::Zero(4, npts); // keep the data aligned
+      Eigen::Matrix<Scalar, 4, Eigen::Dynamic>::Zero (4, npts); // keep the data aligned
 
   for (std::size_t i = 0; i < npts; ++i) {
-    cloud_out(0, i) = cloud_in[indices[i]].x - centroid[0];
-    cloud_out(1, i) = cloud_in[indices[i]].y - centroid[1];
-    cloud_out(2, i) = cloud_in[indices[i]].z - centroid[2];
+    cloud_out (0, i) = cloud_in[indices[i]].x - centroid[0];
+    cloud_out (1, i) = cloud_in[indices[i]].y - centroid[1];
+    cloud_out (2, i) = cloud_in[indices[i]].z - centroid[2];
     // One column at a time
     // cloud_out.block<4, 1> (0, i) = cloud_in[indices[i]].getVector4fMap () - centroid;
   }
@@ -1123,7 +1125,7 @@ demeanPointCloud (const pcl::PointCloud<PointT>& cloud_in,
                   const Eigen::Matrix<Scalar, 4, 1>& centroid,
                   Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic>& cloud_out)
 {
-  return (pcl::demeanPointCloud(cloud_in, indices.indices, centroid, cloud_out));
+  return (pcl::demeanPointCloud (cloud_in, indices.indices, centroid, cloud_out));
 }
 
 template <typename PointT, typename Scalar>
@@ -1134,7 +1136,7 @@ computeNDCentroid (const pcl::PointCloud<PointT>& cloud,
   using FieldList = typename pcl::traits::fieldList<PointT>::type;
 
   // Get the size of the fields
-  centroid.setZero(boost::mpl::size<FieldList>::value);
+  centroid.setZero (boost::mpl::size<FieldList>::value);
 
   if (cloud.empty())
     return;
@@ -1142,9 +1144,9 @@ computeNDCentroid (const pcl::PointCloud<PointT>& cloud,
   // Iterate over each point
   for (const auto& pt : cloud) {
     // Iterate over each dimension
-    pcl::for_each_type<FieldList>(NdCentroidFunctor<PointT, Scalar>(pt, centroid));
+    pcl::for_each_type<FieldList> (NdCentroidFunctor<PointT, Scalar> (pt, centroid));
   }
-  centroid /= static_cast<Scalar>(cloud.size());
+  centroid /= static_cast<Scalar> (cloud.size());
 }
 
 template <typename PointT, typename Scalar>
@@ -1156,7 +1158,7 @@ computeNDCentroid (const pcl::PointCloud<PointT>& cloud,
   using FieldList = typename pcl::traits::fieldList<PointT>::type;
 
   // Get the size of the fields
-  centroid.setZero(boost::mpl::size<FieldList>::value);
+  centroid.setZero (boost::mpl::size<FieldList>::value);
 
   if (indices.empty())
     return;
@@ -1164,10 +1166,10 @@ computeNDCentroid (const pcl::PointCloud<PointT>& cloud,
   // Iterate over each point
   for (const auto& index : indices) {
     // Iterate over each dimension
-    pcl::for_each_type<FieldList>(
-        NdCentroidFunctor<PointT, Scalar>(cloud[index], centroid));
+    pcl::for_each_type<FieldList> (
+        NdCentroidFunctor<PointT, Scalar> (cloud[index], centroid));
   }
-  centroid /= static_cast<Scalar>(indices.size());
+  centroid /= static_cast<Scalar> (indices.size());
 }
 
 template <typename PointT, typename Scalar>
@@ -1176,31 +1178,31 @@ computeNDCentroid (const pcl::PointCloud<PointT>& cloud,
                    const pcl::PointIndices& indices,
                    Eigen::Matrix<Scalar, Eigen::Dynamic, 1>& centroid)
 {
-  return (pcl::computeNDCentroid(cloud, indices.indices, centroid));
+  return (pcl::computeNDCentroid (cloud, indices.indices, centroid));
 }
 
 template <typename PointT>
 void
-CentroidPoint<PointT>::add(const PointT& point)
+CentroidPoint<PointT>::add (const PointT& point)
 {
   // Invoke add point on each accumulator
-  boost::fusion::for_each(accumulators_, detail::AddPoint<PointT>(point));
+  boost::fusion::for_each (accumulators_, detail::AddPoint<PointT> (point));
   ++num_points_;
 }
 
 template <typename PointT>
 template <typename PointOutT>
 void
-CentroidPoint<PointT>::get(PointOutT& point) const
+CentroidPoint<PointT>::get (PointOutT& point) const
 {
   if (num_points_ != 0) {
     // Filter accumulators so that only those that are compatible with
     // both PointT and requested point type remain
     auto ca =
-        boost::fusion::filter_if<detail::IsAccumulatorCompatible<PointT, PointOutT>>(
+        boost::fusion::filter_if<detail::IsAccumulatorCompatible<PointT, PointOutT>> (
             accumulators_);
     // Invoke get point on each accumulator in filtered list
-    boost::fusion::for_each(ca, detail::GetPoint<PointOutT>(point, num_points_));
+    boost::fusion::for_each (ca, detail::GetPoint<PointOutT> (point, num_points_));
   }
 }
 
@@ -1212,13 +1214,13 @@ computeCentroid (const pcl::PointCloud<PointInT>& cloud, PointOutT& centroid)
 
   if (cloud.is_dense)
     for (const auto& point : cloud)
-      cp.add(point);
+      cp.add (point);
   else
     for (const auto& point : cloud)
-      if (pcl::isFinite(point))
-        cp.add(point);
+      if (pcl::isFinite (point))
+        cp.add (point);
 
-  cp.get(centroid);
+  cp.get (centroid);
   return (cp.getSize());
 }
 
@@ -1232,13 +1234,13 @@ computeCentroid (const pcl::PointCloud<PointInT>& cloud,
 
   if (cloud.is_dense)
     for (const auto& index : indices)
-      cp.add(cloud[index]);
+      cp.add (cloud[index]);
   else
     for (const auto& index : indices)
-      if (pcl::isFinite(cloud[index]))
-        cp.add(cloud[index]);
+      if (pcl::isFinite (cloud[index]))
+        cp.add (cloud[index]);
 
-  cp.get(centroid);
+  cp.get (centroid);
   return (cp.getSize());
 }
 

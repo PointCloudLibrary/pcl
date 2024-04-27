@@ -46,8 +46,9 @@
 
 // Instantiations of specific point types
 #ifdef PCL_ONLY_CORE_POINT_TYPES
-PCL_INSTANTIATE(ApproximateProgressiveMorphologicalFilter,
-                (pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA)(pcl::PointXYZRGB))
+PCL_INSTANTIATE (
+    ApproximateProgressiveMorphologicalFilter,
+    (pcl::PointXYZ) (pcl::PointXYZI) (pcl::PointXYZRGBA) (pcl::PointXYZRGB))
 #else
-PCL_INSTANTIATE(ApproximateProgressiveMorphologicalFilter, PCL_XYZ_POINT_TYPES)
+PCL_INSTANTIATE (ApproximateProgressiveMorphologicalFilter, PCL_XYZ_POINT_TYPES)
 #endif

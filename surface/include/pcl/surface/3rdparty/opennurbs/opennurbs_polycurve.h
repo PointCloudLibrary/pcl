@@ -35,7 +35,7 @@
 */
 class ON_PolyCurve;
 class ON_CLASS ON_PolyCurve : public ON_Curve {
-  ON_OBJECT_DECLARE(ON_PolyCurve);
+  ON_OBJECT_DECLARE (ON_PolyCurve);
 
 public:
   // virtual ON_Object::DestroyRuntimeCache override
@@ -44,9 +44,9 @@ public:
 
 public:
   ON_PolyCurve();
-  ON_PolyCurve(int); // int = initial capacity - use when a good estimate
-                     // of the number of segments is known.
-  ON_PolyCurve(const ON_PolyCurve&);
+  ON_PolyCurve (int); // int = initial capacity - use when a good estimate
+                      // of the number of segments is known.
+  ON_PolyCurve (const ON_PolyCurve&);
 
   void
   Destroy ();
@@ -57,7 +57,7 @@ public:
   EmergencyDestroy (); // call if memory used by ON_PolyCurve becomes invalid
 
   ON_PolyCurve&
-  operator=(const ON_PolyCurve&);
+  operator= (const ON_PolyCurve&);
 
   /////////////////////////////////////////////////////////////////
   // ON_Object overrides
@@ -376,8 +376,8 @@ public:
                 double curvature_tolerance = ON_SQRT_EPSILON) const;
 
   ON_BOOL32
-  Reverse (); // reverse parameterizatrion
-              // Domain changes from [a,b] to [-b,-a]
+  Reverse(); // reverse parameterizatrion
+             // Domain changes from [a,b] to [-b,-a]
 
   /*
   Description:
@@ -529,7 +529,7 @@ public:
 
   // These operator[] functions return NULL if index is out of range
   ON_Curve*
-  operator[](int) const;
+  operator[] (int) const;
 
   /*
   Description:
@@ -718,7 +718,7 @@ public:
   AppendAndMatch (ON_Curve*); // Append and match start of curve to end of polycurve
 
   ON_BOOL32
-  Remove (); // delete last segment and reduce count by 1
+  Remove(); // delete last segment and reduce count by 1
   ON_BOOL32
   Remove (int); // delete specified segment and reduce count by 1
 

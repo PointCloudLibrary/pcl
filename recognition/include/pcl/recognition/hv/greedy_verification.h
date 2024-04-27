@@ -78,12 +78,12 @@ class PCL_EXPORTS GreedyVerification : public HypothesisVerification<ModelT, Sce
    */
   struct sortModelsClass {
     bool
-    operator()(const RecognitionModelPtr& n1, const RecognitionModelPtr& n2)
+    operator() (const RecognitionModelPtr& n1, const RecognitionModelPtr& n2)
     {
-      float val1 = static_cast<float>(n1->good_information_) -
-                   static_cast<float>(n1->bad_information_) * n1->regularizer_;
-      float val2 = static_cast<float>(n2->good_information_) -
-                   static_cast<float>(n2->bad_information_) * n2->regularizer_;
+      float val1 = static_cast<float> (n1->good_information_) -
+                   static_cast<float> (n1->bad_information_) * n1->regularizer_;
+      float val2 = static_cast<float> (n2->good_information_) -
+                   static_cast<float> (n2->bad_information_) * n2->regularizer_;
       return val1 > val2;
     }
   } sortModelsOp;
@@ -101,14 +101,14 @@ class PCL_EXPORTS GreedyVerification : public HypothesisVerification<ModelT, Sce
    */
   struct sortModelIndicesClass {
     bool
-    operator()(const modelIndices& n1, const modelIndices& n2)
+    operator() (const modelIndices& n1, const modelIndices& n2)
     {
       float val1 =
-          static_cast<float>(n1.model_->good_information_) -
-          static_cast<float>(n1.model_->bad_information_) * n1.model_->regularizer_;
+          static_cast<float> (n1.model_->good_information_) -
+          static_cast<float> (n1.model_->bad_information_) * n1.model_->regularizer_;
       float val2 =
-          static_cast<float>(n2.model_->good_information_) -
-          static_cast<float>(n2.model_->bad_information_) * n2.model_->regularizer_;
+          static_cast<float> (n2.model_->good_information_) -
+          static_cast<float> (n2.model_->bad_information_) * n2.model_->regularizer_;
       return val1 > val2;
     }
   } sortModelsIndicesOp;
@@ -136,14 +136,14 @@ class PCL_EXPORTS GreedyVerification : public HypothesisVerification<ModelT, Sce
     indices_models_.clear();
     for (std::size_t i = 0; i < recognition_models_.size(); i++) {
       modelIndices mi;
-      mi.index_ = static_cast<int>(i);
+      mi.index_ = static_cast<int> (i);
       mi.model_ = recognition_models_[i];
-      indices_models_.push_back(mi);
+      indices_models_.push_back (mi);
     }
 
-    std::sort(indices_models_.begin(), indices_models_.end(), sortModelsIndicesOp);
+    std::sort (indices_models_.begin(), indices_models_.end(), sortModelsIndicesOp);
     // sort also recognition models
-    std::sort(recognition_models_.begin(), recognition_models_.end(), sortModelsOp);
+    std::sort (recognition_models_.begin(), recognition_models_.end(), sortModelsOp);
   }
 
   /** \brief Updates conflicting recognition hypotheses when a hypothesis is accepted */
@@ -168,7 +168,7 @@ public:
   /** \brief Constructor
    * \param[in] reg Regularizer value
    **/
-  GreedyVerification(float reg = 1.5f) : HypothesisVerification<ModelT, SceneT>()
+  GreedyVerification (float reg = 1.5f) : HypothesisVerification<ModelT, SceneT>()
   {
     regularizer_ = reg;
   }

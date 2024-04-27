@@ -25,7 +25,7 @@ public:
   double radius;  // > 0
 
   ON_Sphere();
-  ON_Sphere(const ON_3dPoint& center, double radius); // center, radius
+  ON_Sphere (const ON_3dPoint& center, double radius); // center, radius
   ~ON_Sphere();
 
   bool

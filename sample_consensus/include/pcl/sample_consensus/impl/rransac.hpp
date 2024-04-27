@@ -46,11 +46,11 @@
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 bool
-pcl::RandomizedRandomSampleConsensus<PointT>::computeModel(int debug_verbosity_level)
+pcl::RandomizedRandomSampleConsensus<PointT>::computeModel (int debug_verbosity_level)
 {
   // Warn and exit if no threshold was set
   if (threshold_ == std::numeric_limits<double>::max()) {
-    PCL_ERROR(
+    PCL_ERROR (
         "[pcl::RandomizedRandomSampleConsensus::computeModel] No threshold set!\n");
     return (false);
   }
@@ -60,12 +60,12 @@ pcl::RandomizedRandomSampleConsensus<PointT>::computeModel(int debug_verbosity_l
   double k = std::numeric_limits<double>::max();
 
   Indices selection;
-  Eigen::VectorXf model_coefficients(sac_model_->getModelSize());
+  Eigen::VectorXf model_coefficients (sac_model_->getModelSize());
   std::set<index_t> indices_subset;
 
-  const double log_probability = std::log(1.0 - probability_);
+  const double log_probability = std::log (1.0 - probability_);
   const double one_over_indices =
-      1.0 / static_cast<double>(sac_model_->getIndices()->size());
+      1.0 / static_cast<double> (sac_model_->getIndices()->size());
 
   std::size_t n_inliers_count;
   unsigned skipped_count = 0;
@@ -75,52 +75,53 @@ pcl::RandomizedRandomSampleConsensus<PointT>::computeModel(int debug_verbosity_l
 
   // Number of samples to try randomly
   const std::size_t fraction_nr_points =
-      pcl_lrint(static_cast<double>(sac_model_->getIndices()->size()) *
-                fraction_nr_pretest_ / 100.0);
+      pcl_lrint (static_cast<double> (sac_model_->getIndices()->size()) *
+                 fraction_nr_pretest_ / 100.0);
 
   // Iterate
   while (iterations_ < k) {
     // Get X samples which satisfy the model criteria
-    sac_model_->getSamples(iterations_, selection);
+    sac_model_->getSamples (iterations_, selection);
 
     if (selection.empty()) {
-      PCL_ERROR("[pcl::RandomizedRandomSampleConsensus::computeModel] No samples could "
-                "be selected!\n");
+      PCL_ERROR (
+          "[pcl::RandomizedRandomSampleConsensus::computeModel] No samples could "
+          "be selected!\n");
       break;
     }
 
     // Search for inliers in the point cloud for the current plane model M
-    if (!sac_model_->computeModelCoefficients(selection, model_coefficients)) {
+    if (!sac_model_->computeModelCoefficients (selection, model_coefficients)) {
       // iterations_++;
       ++skipped_count;
       if (skipped_count < max_skip) {
-        PCL_DEBUG(
+        PCL_DEBUG (
             "[pcl::RandomizedRandomSampleConsensus::computeModel] The function "
             "computeModelCoefficients failed, so continue with next iteration.\n");
         continue;
       }
       else {
-        PCL_DEBUG("[pcl::RandomizedRandomSampleConsensus::computeModel] The function "
-                  "computeModelCoefficients failed, and RRANSAC reached the maximum "
-                  "number of trials.\n");
+        PCL_DEBUG ("[pcl::RandomizedRandomSampleConsensus::computeModel] The function "
+                   "computeModelCoefficients failed, and RRANSAC reached the maximum "
+                   "number of trials.\n");
         break;
       }
     }
 
     // RRANSAC addon: verify a random fraction of the data
     // Get X random samples which satisfy the model criterion
-    this->getRandomSamples(
+    this->getRandomSamples (
         sac_model_->getIndices(), fraction_nr_points, indices_subset);
-    if (!sac_model_->doSamplesVerifyModel(
+    if (!sac_model_->doSamplesVerifyModel (
             indices_subset, model_coefficients, threshold_)) {
       ++iterations_;
-      PCL_DEBUG("[pcl::RandomizedRandomSampleConsensus::computeModel] The function "
-                "doSamplesVerifyModel failed, so continue with next iteration.\n");
+      PCL_DEBUG ("[pcl::RandomizedRandomSampleConsensus::computeModel] The function "
+                 "doSamplesVerifyModel failed, so continue with next iteration.\n");
       continue;
     }
 
     // Select the inliers that are within threshold_ from the model
-    n_inliers_count = sac_model_->countWithinDistance(model_coefficients, threshold_);
+    n_inliers_count = sac_model_->countWithinDistance (model_coefficients, threshold_);
 
     // Better match ?
     if (n_inliers_count > n_best_inliers_count) {
@@ -131,51 +132,52 @@ pcl::RandomizedRandomSampleConsensus<PointT>::computeModel(int debug_verbosity_l
       model_coefficients_ = model_coefficients;
 
       // Compute the k parameter (k=std::log(z)/std::log(1-w^n))
-      const double w = static_cast<double>(n_best_inliers_count) * one_over_indices;
+      const double w = static_cast<double> (n_best_inliers_count) * one_over_indices;
       double p_outliers =
-          1.0 - std::pow(w,
-                         static_cast<double>(
-                             selection.size())); // Probability that selection is
-                                                 // contaminated by at least one outlier
-      p_outliers = (std::max)(std::numeric_limits<double>::epsilon(),
-                              p_outliers); // Avoid division by -Inf
-      p_outliers = (std::min)(1.0 - std::numeric_limits<double>::epsilon(),
-                              p_outliers); // Avoid division by 0.
-      k = log_probability / std::log(p_outliers);
+          1.0 -
+          std::pow (w,
+                    static_cast<double> (
+                        selection.size())); // Probability that selection is
+                                            // contaminated by at least one outlier
+      p_outliers = (std::max) (std::numeric_limits<double>::epsilon(),
+                               p_outliers); // Avoid division by -Inf
+      p_outliers = (std::min) (1.0 - std::numeric_limits<double>::epsilon(),
+                               p_outliers); // Avoid division by 0.
+      k = log_probability / std::log (p_outliers);
     }
 
     ++iterations_;
 
     if (debug_verbosity_level > 1)
-      PCL_DEBUG("[pcl::RandomizedRandomSampleConsensus::computeModel] Trial %d out of "
-                "%d: %u inliers (best is: %u so far).\n",
-                iterations_,
-                static_cast<int>(std::ceil(k)),
-                n_inliers_count,
-                n_best_inliers_count);
+      PCL_DEBUG ("[pcl::RandomizedRandomSampleConsensus::computeModel] Trial %d out of "
+                 "%d: %u inliers (best is: %u so far).\n",
+                 iterations_,
+                 static_cast<int> (std::ceil (k)),
+                 n_inliers_count,
+                 n_best_inliers_count);
     if (iterations_ > max_iterations_) {
       if (debug_verbosity_level > 0)
-        PCL_DEBUG("[pcl::RandomizedRandomSampleConsensus::computeModel] RRANSAC "
-                  "reached the maximum number of trials.\n");
+        PCL_DEBUG ("[pcl::RandomizedRandomSampleConsensus::computeModel] RRANSAC "
+                   "reached the maximum number of trials.\n");
       break;
     }
   }
 
   if (debug_verbosity_level > 0)
-    PCL_DEBUG("[pcl::RandomizedRandomSampleConsensus::computeModel] Model: %lu size, "
-              "%u inliers.\n",
-              model_.size(),
-              n_best_inliers_count);
+    PCL_DEBUG ("[pcl::RandomizedRandomSampleConsensus::computeModel] Model: %lu size, "
+               "%u inliers.\n",
+               model_.size(),
+               n_best_inliers_count);
 
   if (model_.empty()) {
-    PCL_ERROR("[pcl::RandomizedRandomSampleConsensus::computeModel] RRANSAC found no "
-              "model.\n");
+    PCL_ERROR ("[pcl::RandomizedRandomSampleConsensus::computeModel] RRANSAC found no "
+               "model.\n");
     inliers_.clear();
     return (false);
   }
 
   // Get the set of inliers that correspond to the best model found so far
-  sac_model_->selectWithinDistance(model_coefficients_, threshold_, inliers_);
+  sac_model_->selectWithinDistance (model_coefficients_, threshold_, inliers_);
   return (true);
 }
 

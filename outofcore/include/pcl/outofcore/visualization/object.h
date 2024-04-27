@@ -19,7 +19,7 @@ class Object {
 public:
   // Operators
   // -----------------------------------------------------------------------------
-  Object(std::string name);
+  Object (std::string name);
 
   virtual ~Object() = default;
 

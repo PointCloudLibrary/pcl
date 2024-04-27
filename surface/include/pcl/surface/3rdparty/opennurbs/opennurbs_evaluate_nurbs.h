@@ -347,10 +347,10 @@ ON_EvaluateNurbsDeBoor ( // for expert users only - no support available
                    //    table summarizes the restrictions on t:
                    //
                    //     value of side         condition t must satisfy
-           //        -2                    mult_k < t and mult_k < knots[order-1]
-           //        -1                    knots[order-2] < t
-           //        +1                    t < knots[order-1]
-           //        +2                    t < mult_k and knots[order-2] < mult_k
+    //        -2                    mult_k < t and mult_k < knots[order-1]
+    //        -1                    knots[order-2] < t
+    //        +1                    t < knots[order-1]
+    //        +2                    t < mult_k and knots[order-2] < mult_k
 );
 
 ON_DECL

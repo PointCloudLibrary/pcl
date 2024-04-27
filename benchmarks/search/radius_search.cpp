@@ -10,16 +10,16 @@
 static void
 BM_OrganizedNeighborSearch (benchmark::State& state, const std::string& file)
 {
-  pcl::PointCloud<pcl::PointXYZ>::Ptr cloudIn(new pcl::PointCloud<pcl::PointXYZ>);
+  pcl::PointCloud<pcl::PointXYZ>::Ptr cloudIn (new pcl::PointCloud<pcl::PointXYZ>);
   pcl::PCDReader reader;
-  reader.read(file, *cloudIn);
+  reader.read (file, *cloudIn);
 
   pcl::search::OrganizedNeighbor<pcl::PointXYZ> organizedNeighborSearch;
-  organizedNeighborSearch.setInputCloud(cloudIn);
+  organizedNeighborSearch.setInputCloud (cloudIn);
 
   double radiusSearchTime = 0;
-  std::vector<int> indices(cloudIn->size()); // Fixed indices from 0 to cloud size
-  std::iota(indices.begin(), indices.end(), 0);
+  std::vector<int> indices (cloudIn->size()); // Fixed indices from 0 to cloud size
+  std::iota (indices.begin(), indices.end(), 0);
   int radiusSearchIdx = 0;
 
   for (auto _ : state) {
@@ -30,17 +30,17 @@ BM_OrganizedNeighborSearch (benchmark::State& state, const std::string& file)
     std::vector<float> k_sqr_distances;
 
     auto start_time = std::chrono::high_resolution_clock::now();
-    organizedNeighborSearch.radiusSearch(
+    organizedNeighborSearch.radiusSearch (
         (*cloudIn)[searchIdx], searchRadius, k_indices, k_sqr_distances);
     auto end_time = std::chrono::high_resolution_clock::now();
 
     radiusSearchTime +=
-        std::chrono::duration_cast<std::chrono::nanoseconds>(end_time - start_time)
+        std::chrono::duration_cast<std::chrono::nanoseconds> (end_time - start_time)
             .count();
   }
 
-  state.SetItemsProcessed(state.iterations());
-  state.SetIterationTime(
+  state.SetItemsProcessed (state.iterations());
+  state.SetIterationTime (
       radiusSearchTime /
       (state.iterations() * indices.size())); // Normalize by total points processed
 }
@@ -54,9 +54,9 @@ main (int argc, char** argv)
     return -1;
   }
 
-  benchmark::RegisterBenchmark(
+  benchmark::RegisterBenchmark (
       "BM_OrganizedNeighborSearch", &BM_OrganizedNeighborSearch, argv[1])
-      ->Unit(benchmark::kMillisecond);
-  benchmark::Initialize(&argc, argv);
+      ->Unit (benchmark::kMillisecond);
+  benchmark::Initialize (&argc, argv);
   benchmark::RunSpecifiedBenchmarks();
 }

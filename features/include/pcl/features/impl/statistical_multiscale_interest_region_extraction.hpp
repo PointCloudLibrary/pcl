@@ -55,7 +55,7 @@ pcl::StatisticalMultiscaleInterestRegionExtraction<PointT>::generateCloudGraph()
 {
   // generate a K-NNG (K-nearest neighbors graph)
   pcl::KdTreeFLANN<PointT> kdtree;
-  kdtree.setInputCloud(input_);
+  kdtree.setInputCloud (input_);
 
   using namespace boost;
   using Weight = property<edge_weight_t, float>;
@@ -63,25 +63,25 @@ pcl::StatisticalMultiscaleInterestRegionExtraction<PointT>::generateCloudGraph()
   Graph cloud_graph;
 
   for (std::size_t point_i = 0; point_i < input_->size(); ++point_i) {
-    pcl::Indices k_indices(16);
-    std::vector<float> k_distances(16);
-    kdtree.nearestKSearch(static_cast<int>(point_i), 16, k_indices, k_distances);
+    pcl::Indices k_indices (16);
+    std::vector<float> k_distances (16);
+    kdtree.nearestKSearch (static_cast<int> (point_i), 16, k_indices, k_distances);
 
     for (std::size_t k_i = 0; k_i < k_indices.size(); ++k_i)
-      add_edge(
-          point_i, k_indices[k_i], Weight(std::sqrt(k_distances[k_i])), cloud_graph);
+      add_edge (
+          point_i, k_indices[k_i], Weight (std::sqrt (k_distances[k_i])), cloud_graph);
   }
 
-  const std::size_t E = num_edges(cloud_graph), V = num_vertices(cloud_graph);
-  PCL_INFO("The graph has %lu vertices and %lu edges.\n", V, E);
+  const std::size_t E = num_edges (cloud_graph), V = num_vertices (cloud_graph);
+  PCL_INFO ("The graph has %lu vertices and %lu edges.\n", V, E);
   geodesic_distances_.clear();
   for (std::size_t i = 0; i < V; ++i) {
-    std::vector<float> aux(V);
-    geodesic_distances_.push_back(aux);
+    std::vector<float> aux (V);
+    geodesic_distances_.push_back (aux);
   }
-  johnson_all_pairs_shortest_paths(cloud_graph, geodesic_distances_);
+  johnson_all_pairs_shortest_paths (cloud_graph, geodesic_distances_);
 
-  PCL_INFO("Done generating the graph\n");
+  PCL_INFO ("Done generating the graph\n");
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -90,13 +90,13 @@ bool
 pcl::StatisticalMultiscaleInterestRegionExtraction<PointT>::initCompute()
 {
   if (!PCLBase<PointT>::initCompute()) {
-    PCL_ERROR("[pcl::StatisticalMultiscaleInterestRegionExtraction::initCompute] "
-              "PCLBase::initCompute () failed - no input cloud was given.\n");
+    PCL_ERROR ("[pcl::StatisticalMultiscaleInterestRegionExtraction::initCompute] "
+               "PCLBase::initCompute () failed - no input cloud was given.\n");
     return (false);
   }
   if (scale_values_.empty()) {
-    PCL_ERROR("[pcl::StatisticalMultiscaleInterestRegionExtraction::initCompute] No "
-              "scale values were given\n");
+    PCL_ERROR ("[pcl::StatisticalMultiscaleInterestRegionExtraction::initCompute] No "
+               "scale values were given\n");
     return (false);
   }
 
@@ -106,22 +106,22 @@ pcl::StatisticalMultiscaleInterestRegionExtraction<PointT>::initCompute()
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 void
-pcl::StatisticalMultiscaleInterestRegionExtraction<PointT>::geodesicFixedRadiusSearch(
+pcl::StatisticalMultiscaleInterestRegionExtraction<PointT>::geodesicFixedRadiusSearch (
     std::size_t& query_index, float& radius, std::vector<int>& result_indices)
 {
   for (std::size_t i = 0; i < geodesic_distances_[query_index].size(); ++i)
     if (i != query_index && geodesic_distances_[query_index][i] < radius)
-      result_indices.push_back(static_cast<int>(i));
+      result_indices.push_back (static_cast<int> (i));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 void
-pcl::StatisticalMultiscaleInterestRegionExtraction<PointT>::computeRegionsOfInterest(
+pcl::StatisticalMultiscaleInterestRegionExtraction<PointT>::computeRegionsOfInterest (
     std::list<IndicesPtr>& rois)
 {
   if (!initCompute()) {
-    PCL_ERROR(
+    PCL_ERROR (
         "StatisticalMultiscaleInterestRegionExtraction: not completely initialized\n");
     return;
   }
@@ -130,7 +130,7 @@ pcl::StatisticalMultiscaleInterestRegionExtraction<PointT>::computeRegionsOfInte
 
   computeF();
 
-  extractExtrema(rois);
+  extractExtrema (rois);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -138,13 +138,13 @@ template <typename PointT>
 void
 pcl::StatisticalMultiscaleInterestRegionExtraction<PointT>::computeF()
 {
-  PCL_INFO("Calculating statistical information\n");
+  PCL_INFO ("Calculating statistical information\n");
 
   // declare and initialize data structure
-  F_scales_.resize(scale_values_.size());
-  std::vector<float> point_density(input_->size()), F(input_->size());
-  std::vector<std::vector<float>> phi(input_->size());
-  std::vector<float> phi_row(input_->size());
+  F_scales_.resize (scale_values_.size());
+  std::vector<float> point_density (input_->size()), F (input_->size());
+  std::vector<std::vector<float>> phi (input_->size());
+  std::vector<float> phi_row (input_->size());
 
   for (std::size_t scale_i = 0; scale_i < scale_values_.size(); ++scale_i) {
     float scale_squared = scale_values_[scale_i] * scale_values_[scale_i];
@@ -155,8 +155,8 @@ pcl::StatisticalMultiscaleInterestRegionExtraction<PointT>::computeF()
       for (std::size_t point_j = 0; point_j < input_->size(); ++point_j) {
         float d_g = geodesic_distances_[point_i][point_j];
         float phi_i_j = 1.0f /
-                        std::sqrt(2.0f * static_cast<float>(M_PI) * scale_squared) *
-                        std::exp((-1) * d_g * d_g / (2.0f * scale_squared));
+                        std::sqrt (2.0f * static_cast<float> (M_PI) * scale_squared) *
+                        std::exp ((-1) * d_g * d_g / (2.0f * scale_squared));
 
         point_density_i += phi_i_j;
         phi_row[point_j] = phi_i_j;
@@ -190,8 +190,8 @@ pcl::StatisticalMultiscaleInterestRegionExtraction<PointT>::computeF()
 
       // compute the invariant F
       float aux = 2.0f / scale_values_[scale_i] *
-                  euclideanDistance<PointT, PointT>(A_hat, (*input_)[point_i]);
-      F[point_i] = aux * std::exp(-aux);
+                  euclideanDistance<PointT, PointT> (A_hat, (*input_)[point_i]);
+      F[point_i] = aux * std::exp (-aux);
     }
 
     F_scales_[scale_i] = F;
@@ -201,18 +201,18 @@ pcl::StatisticalMultiscaleInterestRegionExtraction<PointT>::computeF()
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 void
-pcl::StatisticalMultiscaleInterestRegionExtraction<PointT>::extractExtrema(
+pcl::StatisticalMultiscaleInterestRegionExtraction<PointT>::extractExtrema (
     std::list<IndicesPtr>& rois)
 {
-  std::vector<std::vector<bool>> is_min(scale_values_.size()),
-      is_max(scale_values_.size());
+  std::vector<std::vector<bool>> is_min (scale_values_.size()),
+      is_max (scale_values_.size());
 
   // for each point, check if it is a local extrema on each scale
   for (std::size_t scale_i = 0; scale_i < scale_values_.size(); ++scale_i) {
-    std::vector<bool> is_min_scale(input_->size()), is_max_scale(input_->size());
+    std::vector<bool> is_min_scale (input_->size()), is_max_scale (input_->size());
     for (std::size_t point_i = 0; point_i < input_->size(); ++point_i) {
       std::vector<int> nn_indices;
-      geodesicFixedRadiusSearch(point_i, scale_values_[scale_i], nn_indices);
+      geodesicFixedRadiusSearch (point_i, scale_values_[scale_i], nn_indices);
       bool is_max_point = true, is_min_point = true;
       for (const auto& nn_index : nn_indices)
         if (F_scales_[scale_i][point_i] < F_scales_[scale_i][nn_index])
@@ -236,14 +236,14 @@ pcl::StatisticalMultiscaleInterestRegionExtraction<PointT>::extractExtrema(
           (is_max[scale_i - 1][point_i] && is_max[scale_i][point_i] &&
            is_max[scale_i + 1][point_i])) {
         // add the point to the result vector
-        IndicesPtr region(new pcl::Indices);
-        region->push_back(static_cast<int>(point_i));
+        IndicesPtr region (new pcl::Indices);
+        region->push_back (static_cast<int> (point_i));
 
         // and also add its scale-sized geodesic neighborhood
         std::vector<int> nn_indices;
-        geodesicFixedRadiusSearch(point_i, scale_values_[scale_i], nn_indices);
-        region->insert(region->end(), nn_indices.begin(), nn_indices.end());
-        rois.push_back(region);
+        geodesicFixedRadiusSearch (point_i, scale_values_[scale_i], nn_indices);
+        region->insert (region->end(), nn_indices.begin(), nn_indices.end());
+        rois.push_back (region);
       }
   }
 }

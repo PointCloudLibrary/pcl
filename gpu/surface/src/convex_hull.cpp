@@ -41,65 +41,65 @@
 
 #include "internal.h"
 
-pcl::device::FacetStream::FacetStream(std::size_t buffer_size)
+pcl::device::FacetStream::FacetStream (std::size_t buffer_size)
 {
-  verts_inds.create(3, buffer_size);
-  head_points.create(buffer_size);
+  verts_inds.create (3, buffer_size);
+  head_points.create (buffer_size);
 
-  scan_buffer.create(buffer_size);
+  scan_buffer.create (buffer_size);
   facet_count = 0;
 
-  verts_inds2.create(3, buffer_size);
-  head_points2.create(buffer_size);
+  verts_inds2.create (3, buffer_size);
+  head_points2.create (buffer_size);
 
-  empty_facets.create(3, buffer_size);
+  empty_facets.create (3, buffer_size);
 
   int zero = 0;
-  empty_count.upload(&zero, 1);
+  empty_count.upload (&zero, 1);
 }
 
 bool
 pcl::device::FacetStream::canSplit() const
 {
-  return static_cast<Eigen::Index>(facet_count * 3) < verts_inds.cols();
+  return static_cast<Eigen::Index> (facet_count * 3) < verts_inds.cols();
 }
 
 struct pcl::gpu::PseudoConvexHull3D::Impl {
-  Impl(std::size_t buffer_size) : fs(buffer_size) {}
+  Impl (std::size_t buffer_size) : fs (buffer_size) {}
 
   device::FacetStream fs;
 };
 
-pcl::gpu::PseudoConvexHull3D::PseudoConvexHull3D(std::size_t bsize)
+pcl::gpu::PseudoConvexHull3D::PseudoConvexHull3D (std::size_t bsize)
 {
-  impl_.reset(new Impl(bsize));
+  impl_.reset (new Impl (bsize));
 }
 
 void
-pcl::gpu::PseudoConvexHull3D::reconstruct(const Cloud& cloud,
-                                          DeviceArray2D<int>& vertexes)
+pcl::gpu::PseudoConvexHull3D::reconstruct (const Cloud& cloud,
+                                           DeviceArray2D<int>& vertexes)
 {
   const device::Cloud& c = (const device::Cloud&)cloud;
 
   device::FacetStream& fs = impl_->fs;
-  device::PointStream ps(c);
+  device::PointStream ps (c);
 
   ps.computeInitalSimplex();
 
-  fs.setInitialFacets(ps.simplex);
+  fs.setInitialFacets (ps.simplex);
   ps.initalClassify();
 
   for (;;) {
     // new external points number
-    ps.cloud_size = ps.searchFacetHeads(fs.facet_count, fs.head_points);
+    ps.cloud_size = ps.searchFacetHeads (fs.facet_count, fs.head_points);
     if (ps.cloud_size == 0)
       break;
 
     fs.compactFacets();
-    ps.classify(fs);
+    ps.classify (fs);
 
     if (!fs.canSplit())
-      throw PCLException(
+      throw PCLException (
           "Can't split facets, please enlarge default buffer", __FILE__, "", __LINE__);
 
     fs.splitFacets();
@@ -107,33 +107,35 @@ pcl::gpu::PseudoConvexHull3D::reconstruct(const Cloud& cloud,
 
   int ecount;
   int fcount = fs.facet_count;
-  fs.empty_count.download(&ecount);
+  fs.empty_count.download (&ecount);
 
-  vertexes.create(3, fcount + ecount);
-  DeviceArray2D<int> subf(3, fcount, vertexes.ptr(), vertexes.step());
-  DeviceArray2D<int> sube(3, ecount, vertexes.ptr() + fcount, vertexes.step());
+  vertexes.create (3, fcount + ecount);
+  DeviceArray2D<int> subf (3, fcount, vertexes.ptr(), vertexes.step());
+  DeviceArray2D<int> sube (3, ecount, vertexes.ptr() + fcount, vertexes.step());
 
-  DeviceArray2D<int>(3, fcount, fs.verts_inds.ptr(), fs.verts_inds.step()).copyTo(subf);
-  DeviceArray2D<int>(3, ecount, fs.empty_facets.ptr(), fs.empty_facets.step())
-      .copyTo(sube);
+  DeviceArray2D<int> (3, fcount, fs.verts_inds.ptr(), fs.verts_inds.step())
+      .copyTo (subf);
+  DeviceArray2D<int> (3, ecount, fs.empty_facets.ptr(), fs.empty_facets.step())
+      .copyTo (sube);
 }
 
 void
-pcl::gpu::PseudoConvexHull3D::reconstruct(const Cloud& points, Cloud& output)
+pcl::gpu::PseudoConvexHull3D::reconstruct (const Cloud& points, Cloud& output)
 {
   DeviceArray2D<int> vertexes;
-  reconstruct(points, vertexes);
+  reconstruct (points, vertexes);
 
-  DeviceArray<int> cont(vertexes.cols() * vertexes.rows());
-  DeviceArray2D<int> buf(3, vertexes.cols(), cont.ptr(), vertexes.cols() * sizeof(int));
-  vertexes.copyTo(buf);
+  DeviceArray<int> cont (vertexes.cols() * vertexes.rows());
+  DeviceArray2D<int> buf (
+      3, vertexes.cols(), cont.ptr(), vertexes.cols() * sizeof (int));
+  vertexes.copyTo (buf);
 
-  std::size_t new_size = device::remove_duplicates(cont);
-  DeviceArray<int> new_cont(cont.ptr(), new_size);
-  output.create(new_size);
+  std::size_t new_size = device::remove_duplicates (cont);
+  DeviceArray<int> new_cont (cont.ptr(), new_size);
+  output.create (new_size);
 
   const device::Cloud& c = (const device::Cloud&)points;
   device::Cloud& o = (device::Cloud&)output;
 
-  device::pack_hull(c, new_cont, o);
+  device::pack_hull (c, new_cont, o);
 }

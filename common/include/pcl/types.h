@@ -127,7 +127,7 @@ constexpr bool index_type_signed = PCL_INDEX_SIGNED;
  * Default index_t = int for PCL 1.11, std::int32_t for PCL >= 1.12
  */
 using index_t = detail::int_type_t<detail::index_type_size, detail::index_type_signed>;
-static_assert(!std::is_void<index_t>::value, "`index_t` can't have type `void`");
+static_assert (!std::is_void<index_t>::value, "`index_t` can't have type `void`");
 
 /**
  * \brief Type used for an unsigned index in PCL
@@ -135,7 +135,7 @@ static_assert(!std::is_void<index_t>::value, "`index_t` can't have type `void`")
  * Unsigned index that mirrors the type of the index_t
  */
 using uindex_t = detail::int_type_t<detail::index_type_size, false>;
-static_assert(!std::is_signed<uindex_t>::value, "`uindex_t` must be unsigned");
+static_assert (!std::is_signed<uindex_t>::value, "`uindex_t` must be unsigned");
 
 /**
  * \brief Type used for indices in PCL

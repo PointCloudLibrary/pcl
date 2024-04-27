@@ -53,7 +53,8 @@ using pcl::cuda::PointCloudAOS;
 
 class KinectViewerCuda {
 public:
-  KinectViewerCuda(bool downsample) : viewer("KinectGrabber"), downsample_(downsample)
+  KinectViewerCuda (bool downsample)
+  : viewer ("KinectGrabber"), downsample_ (downsample)
   {}
 
   void
@@ -63,35 +64,35 @@ public:
   {
     PointCloudAOS<Device>::Ptr data;
     {
-      pcl::cuda::ScopeTimeCPU t("time:");
-      d2c.compute<Device>(depth_image, image, constant, data, downsample_);
+      pcl::cuda::ScopeTimeCPU t ("time:");
+      d2c.compute<Device> (depth_image, image, constant, data, downsample_);
     }
 
-    pcl::PointCloud<pcl::PointXYZRGB>::Ptr output(
+    pcl::PointCloud<pcl::PointXYZRGB>::Ptr output (
         new pcl::PointCloud<pcl::PointXYZRGB>);
-    pcl::cuda::toPCL(*data, *output);
+    pcl::cuda::toPCL (*data, *output);
 
-    viewer.showCloud(output, "cloud");
+    viewer.showCloud (output, "cloud");
   }
 
   void
   run (const std::string& device_id)
   {
-    pcl::Grabber* interface = new pcl::OpenNIGrabber(device_id);
+    pcl::Grabber* interface = new pcl::OpenNIGrabber (device_id);
 
-    std::function<void(const openni_wrapper::Image::Ptr& image,
-                       const openni_wrapper::DepthImage::Ptr& depth_image,
-                       float)>
+    std::function<void (const openni_wrapper::Image::Ptr& image,
+                        const openni_wrapper::DepthImage::Ptr& depth_image,
+                        float)>
         f = [this] (const openni_wrapper::Image::Ptr& image,
                     const openni_wrapper::DepthImage::Ptr& depth_image,
-                    float constant) { cloud_cb_(image, depth_image, constant); };
+                    float constant) { cloud_cb_ (image, depth_image, constant); };
 
-    boost::signals2::connection c = interface->registerCallback(f);
+    boost::signals2::connection c = interface->registerCallback (f);
 
     interface->start();
 
     while (true) {
-      pcl_sleep(1);
+      pcl_sleep (1);
     }
 
     interface->stop();
@@ -112,9 +113,9 @@ main (int argc, char** argv)
     device_id = argv[1];
   }
   if (argc >= 3) {
-    downsample = atoi(argv[2]);
+    downsample = atoi (argv[2]);
   }
-  KinectViewerCuda v(downsample);
-  v.run(device_id);
+  KinectViewerCuda v (downsample);
+  v.run (device_id);
   return 0;
 }

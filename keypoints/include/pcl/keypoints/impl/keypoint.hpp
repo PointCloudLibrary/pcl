@@ -54,9 +54,9 @@ Keypoint<PointInT, PointOutT>::initCompute()
   // Initialize the spatial locator
   if (!tree_) {
     if (input_->isOrganized())
-      tree_.reset(new pcl::search::OrganizedNeighbor<PointInT>());
+      tree_.reset (new pcl::search::OrganizedNeighbor<PointInT>());
     else
-      tree_.reset(new pcl::search::KdTree<PointInT>(false));
+      tree_.reset (new pcl::search::KdTree<PointInT> (false));
   }
 
   // If no search surface has been defined, use the input dataset as the search surface
@@ -65,16 +65,16 @@ Keypoint<PointInT, PointOutT>::initCompute()
     surface_ = input_;
 
   // Send the surface dataset to the spatial locator
-  tree_->setInputCloud(surface_);
+  tree_->setInputCloud (surface_);
 
   // Do a fast check to see if the search parameters are well defined
   if (search_radius_ != 0.0) {
     if (k_ != 0) {
-      PCL_ERROR("[pcl::%s::initCompute] Both radius (%f) and K (%d) defined! Set one "
-                "of them to zero first and then re-run compute ().\n",
-                getClassName().c_str(),
-                search_radius_,
-                k_);
+      PCL_ERROR ("[pcl::%s::initCompute] Both radius (%f) and K (%d) defined! Set one "
+                 "of them to zero first and then re-run compute ().\n",
+                 getClassName().c_str(),
+                 search_radius_,
+                 k_);
       return (false);
     }
 
@@ -87,7 +87,7 @@ Keypoint<PointInT, PointOutT>::initCompute()
                                double radius,
                                pcl::Indices& k_indices,
                                std::vector<float>& k_distances) {
-        return tree_->radiusSearch(index, radius, k_indices, k_distances, 0);
+        return tree_->radiusSearch (index, radius, k_indices, k_distances, 0);
       };
     }
     else {
@@ -97,7 +97,7 @@ Keypoint<PointInT, PointOutT>::initCompute()
                                        double radius,
                                        pcl::Indices& k_indices,
                                        std::vector<float>& k_distances) {
-        return tree_->radiusSearch(cloud, index, radius, k_indices, k_distances, 0);
+        return tree_->radiusSearch (cloud, index, radius, k_indices, k_distances, 0);
       };
     }
   }
@@ -112,7 +112,7 @@ Keypoint<PointInT, PointOutT>::initCompute()
                                  int k,
                                  pcl::Indices& k_indices,
                                  std::vector<float>& k_distances) {
-          return tree_->nearestKSearch(index, k, k_indices, k_distances);
+          return tree_->nearestKSearch (index, k, k_indices, k_distances);
         };
       }
       else {
@@ -122,35 +122,35 @@ Keypoint<PointInT, PointOutT>::initCompute()
                                          int k,
                                          pcl::Indices& k_indices,
                                          std::vector<float>& k_distances) {
-          return tree_->nearestKSearch(cloud, index, k, k_indices, k_distances);
+          return tree_->nearestKSearch (cloud, index, k, k_indices, k_distances);
         };
       }
     }
     else {
-      PCL_ERROR("[pcl::%s::initCompute] Neither radius nor K defined! Set one of them "
-                "to a positive number first and then re-run compute ().\n",
-                getClassName().c_str());
+      PCL_ERROR ("[pcl::%s::initCompute] Neither radius nor K defined! Set one of them "
+                 "to a positive number first and then re-run compute ().\n",
+                 getClassName().c_str());
       return (false);
     }
   }
 
-  keypoints_indices_.reset(new pcl::PointIndices);
-  keypoints_indices_->indices.reserve(input_->size());
+  keypoints_indices_.reset (new pcl::PointIndices);
+  keypoints_indices_->indices.reserve (input_->size());
 
   return (true);
 }
 
 template <typename PointInT, typename PointOutT>
 inline void
-Keypoint<PointInT, PointOutT>::compute(PointCloudOut& output)
+Keypoint<PointInT, PointOutT>::compute (PointCloudOut& output)
 {
   if (!initCompute()) {
-    PCL_ERROR("[pcl::%s::compute] initCompute failed!\n", getClassName().c_str());
+    PCL_ERROR ("[pcl::%s::compute] initCompute failed!\n", getClassName().c_str());
     return;
   }
 
   // Perform the actual computation
-  detectKeypoints(output);
+  detectKeypoints (output);
 
   deinitCompute();
 

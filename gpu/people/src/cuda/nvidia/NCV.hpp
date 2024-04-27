@@ -42,7 +42,7 @@
 #define PCL_GPU_PEOPLE__NCV_HPP_
 
 #if (defined _WIN32 || defined WINCE) && defined CVAPI_EXPORTS
-#define NCV_EXPORTS __declspec(dllexport)
+#define NCV_EXPORTS __declspec (dllexport)
 #else
 #define NCV_EXPORTS
 #endif
@@ -79,14 +79,14 @@ struct assertTest {};
 } // namespace NcvCTprep
 
 #define NCV_CT_PREP_PASTE_AUX(a, b) a##b ///< Concatenation indirection macro
-#define NCV_CT_PREP_PASTE(a, b) NCV_CT_PREP_PASTE_AUX(a, b) ///< Concatenation macro
+#define NCV_CT_PREP_PASTE(a, b) NCV_CT_PREP_PASTE_AUX (a, b) ///< Concatenation macro
 
 /**
  * Performs compile-time assertion of a condition on the file scope
  */
 #define NCV_CT_ASSERT(X)                                                               \
-  typedef NcvCTprep::assertTest<sizeof(NcvCTprep::CT_ASSERT_FAILURE<(bool)(X)>)>       \
-  NCV_CT_PREP_PASTE(__ct_assert_typedef_, __LINE__)
+  typedef NcvCTprep::assertTest<sizeof (NcvCTprep::CT_ASSERT_FAILURE<(bool)(X)>)>      \
+  NCV_CT_PREP_PASTE (__ct_assert_typedef_, __LINE__)
 
 //==============================================================================
 //
@@ -96,9 +96,9 @@ struct assertTest {};
 
 #if !defined(__align__) && !defined(__CUDACC__)
 #if defined(_WIN32) || defined(_WIN64)
-#define __align__(n) __declspec(align(n))
+#define __align__(n) __declspec (align (n))
 #elif defined(__unix__)
-#define __align__(n) __attribute__((__aligned__(n)))
+#define __align__(n) __attribute__ ((__aligned__ (n)))
 #endif
 #endif
 
@@ -133,10 +133,10 @@ struct NcvRect8u {
   Ncv8u height;
   __host__ __device__
   NcvRect8u ()
-  : x(0), y(0), width(0), height(0){};
+  : x (0), y (0), width (0), height (0){};
   __host__ __device__
   NcvRect8u (Ncv8u x, Ncv8u y, Ncv8u width, Ncv8u height)
-  : x(x), y(y), width(width), height(height)
+  : x (x), y (y), width (width), height (height)
   {}
 };
 
@@ -147,10 +147,10 @@ struct NcvRect32s {
   Ncv32s height; ///< Rectangle height.
   __host__ __device__
   NcvRect32s ()
-  : x(0), y(0), width(0), height(0){};
+  : x (0), y (0), width (0), height (0){};
   __host__ __device__
   NcvRect32s (Ncv32s x, Ncv32s y, Ncv32s width, Ncv32s height)
-  : x(x), y(y), width(width), height(height)
+  : x (x), y (y), width (width), height (height)
   {}
 };
 
@@ -161,10 +161,10 @@ struct NcvRect32u {
   Ncv32u height; ///< Rectangle height.
   __host__ __device__
   NcvRect32u ()
-  : x(0), y(0), width(0), height(0){};
+  : x (0), y (0), width (0), height (0){};
   __host__ __device__
   NcvRect32u (Ncv32u x, Ncv32u y, Ncv32u width, Ncv32u height)
-  : x(x), y(y), width(width), height(height)
+  : x (x), y (y), width (width), height (height)
   {}
 };
 
@@ -173,10 +173,10 @@ struct NcvSize32s {
   Ncv32s height; ///< Rectangle height.
   __host__ __device__
   NcvSize32s ()
-  : width(0), height(0){};
+  : width (0), height (0){};
   __host__ __device__
   NcvSize32s (Ncv32s width, Ncv32s height)
-  : width(width), height(height)
+  : width (width), height (height)
   {}
 };
 
@@ -185,13 +185,13 @@ struct NcvSize32u {
   Ncv32u height; ///< Rectangle height.
   __host__ __device__
   NcvSize32u ()
-  : width(0), height(0){};
+  : width (0), height (0){};
   __host__ __device__
   NcvSize32u (Ncv32u width, Ncv32u height)
-  : width(width), height(height)
+  : width (width), height (height)
   {}
   __host__ __device__ bool
-  operator==(const NcvSize32u& another) const
+  operator== (const NcvSize32u& another) const
   {
     return this->width == another.width && this->height == another.height;
   }
@@ -202,10 +202,10 @@ struct NcvPoint2D32s {
   Ncv32s y; ///< Point Y.
   __host__ __device__
   NcvPoint2D32s ()
-  : x(0), y(0){};
+  : x (0), y (0){};
   __host__ __device__
   NcvPoint2D32s (Ncv32s x, Ncv32s y)
-  : x(x), y(y)
+  : x (x), y (y)
   {}
 };
 
@@ -214,29 +214,29 @@ struct NcvPoint2D32u {
   Ncv32u y; ///< Point Y.
   __host__ __device__
   NcvPoint2D32u ()
-  : x(0), y(0){};
+  : x (0), y (0){};
   __host__ __device__
   NcvPoint2D32u (Ncv32u x, Ncv32u y)
-  : x(x), y(y)
+  : x (x), y (y)
   {}
 };
 
-NCV_CT_ASSERT(sizeof(NcvBool) <= 4);
-NCV_CT_ASSERT(sizeof(Ncv64s) == 8);
-NCV_CT_ASSERT(sizeof(Ncv64u) == 8);
-NCV_CT_ASSERT(sizeof(Ncv32s) == 4);
-NCV_CT_ASSERT(sizeof(Ncv32u) == 4);
-NCV_CT_ASSERT(sizeof(Ncv16s) == 2);
-NCV_CT_ASSERT(sizeof(Ncv16u) == 2);
-NCV_CT_ASSERT(sizeof(Ncv8s) == 1);
-NCV_CT_ASSERT(sizeof(Ncv8u) == 1);
-NCV_CT_ASSERT(sizeof(Ncv32f) == 4);
-NCV_CT_ASSERT(sizeof(Ncv64f) == 8);
-NCV_CT_ASSERT(sizeof(NcvRect8u) == sizeof(Ncv32u));
-NCV_CT_ASSERT(sizeof(NcvRect32s) == 4 * sizeof(Ncv32s));
-NCV_CT_ASSERT(sizeof(NcvRect32u) == 4 * sizeof(Ncv32u));
-NCV_CT_ASSERT(sizeof(NcvSize32u) == 2 * sizeof(Ncv32u));
-NCV_CT_ASSERT(sizeof(NcvPoint2D32u) == 2 * sizeof(Ncv32u));
+NCV_CT_ASSERT (sizeof (NcvBool) <= 4);
+NCV_CT_ASSERT (sizeof (Ncv64s) == 8);
+NCV_CT_ASSERT (sizeof (Ncv64u) == 8);
+NCV_CT_ASSERT (sizeof (Ncv32s) == 4);
+NCV_CT_ASSERT (sizeof (Ncv32u) == 4);
+NCV_CT_ASSERT (sizeof (Ncv16s) == 2);
+NCV_CT_ASSERT (sizeof (Ncv16u) == 2);
+NCV_CT_ASSERT (sizeof (Ncv8s) == 1);
+NCV_CT_ASSERT (sizeof (Ncv8u) == 1);
+NCV_CT_ASSERT (sizeof (Ncv32f) == 4);
+NCV_CT_ASSERT (sizeof (Ncv64f) == 8);
+NCV_CT_ASSERT (sizeof (NcvRect8u) == sizeof (Ncv32u));
+NCV_CT_ASSERT (sizeof (NcvRect32s) == 4 * sizeof (Ncv32s));
+NCV_CT_ASSERT (sizeof (NcvRect32u) == 4 * sizeof (Ncv32u));
+NCV_CT_ASSERT (sizeof (NcvSize32u) == 2 * sizeof (Ncv32u));
+NCV_CT_ASSERT (sizeof (NcvPoint2D32u) == 2 * sizeof (Ncv32u));
 
 //==============================================================================
 //
@@ -256,7 +256,7 @@ constexpr Ncv32u K_LOG2_WARP_SIZE = 5;
 NCV_EXPORTS void
 ncvDebugOutput (const std::string& msg);
 
-using NCVDebugOutputHandler = void(const std::string&);
+using NCVDebugOutputHandler = void (const std::string&);
 
 NCV_EXPORTS void
 ncvSetDebugOutputHandler (NCVDebugOutputHandler* func);
@@ -267,37 +267,37 @@ ncvSetDebugOutputHandler (NCVDebugOutputHandler* func);
       std::ostringstream oss;                                                          \
       oss << "NCV Assertion Failed: " << msg << ", file=" << __FILE__                  \
           << ", line=" << __LINE__ << std::endl;                                       \
-      ncvDebugOutput(oss.str());                                                       \
+      ncvDebugOutput (oss.str());                                                      \
     }                                                                                  \
   } while (0)
 
 #define ncvAssertPrintReturn(pred, msg, err)                                           \
   do {                                                                                 \
-    ncvAssertPrintCheck(pred, msg);                                                    \
+    ncvAssertPrintCheck (pred, msg);                                                   \
     if (!(pred))                                                                       \
       return err;                                                                      \
   } while (0)
 
 #define ncvAssertReturn(pred, err)                                                     \
-  ncvAssertPrintReturn(pred, "retcode=" << (int)err, err)
+  ncvAssertPrintReturn (pred, "retcode=" << (int)err, err)
 
 #define ncvAssertReturnNcvStat(ncvOp)                                                  \
   do {                                                                                 \
     NCVStatus _ncvStat = ncvOp;                                                        \
-    ncvAssertPrintReturn(                                                              \
+    ncvAssertPrintReturn (                                                             \
         NCV_SUCCESS == _ncvStat, "NcvStat=" << (int)_ncvStat, _ncvStat);               \
   } while (0)
 
 #define ncvAssertCUDAReturn(cudacall, errCode)                                         \
   do {                                                                                 \
     cudaError_t res = cudacall;                                                        \
-    ncvAssertPrintReturn(cudaSuccess == res, "cudaError_t=" << res, errCode);          \
+    ncvAssertPrintReturn (cudaSuccess == res, "cudaError_t=" << res, errCode);         \
   } while (0)
 
 #define ncvAssertCUDALastErrorReturn(errCode)                                          \
   do {                                                                                 \
     cudaError_t res = cudaGetLastError();                                              \
-    ncvAssertPrintReturn(cudaSuccess == res, "cudaError_t=" << res, errCode);          \
+    ncvAssertPrintReturn (cudaSuccess == res, "cudaError_t=" << res, errCode);         \
   } while (0)
 
 /**
@@ -448,14 +448,14 @@ public:
  */
 class NCV_EXPORTS NCVMemStackAllocator : public INCVMemAllocator {
   NCVMemStackAllocator();
-  NCVMemStackAllocator(const NCVMemStackAllocator&);
+  NCVMemStackAllocator (const NCVMemStackAllocator&);
 
 public:
-  explicit NCVMemStackAllocator(Ncv32u alignment);
-  NCVMemStackAllocator(NCVMemoryType memT,
-                       std::size_t capacity,
-                       Ncv32u alignment,
-                       void* reusePtr = nullptr);
+  explicit NCVMemStackAllocator (Ncv32u alignment);
+  NCVMemStackAllocator (NCVMemoryType memT,
+                        std::size_t capacity,
+                        Ncv32u alignment,
+                        void* reusePtr = nullptr);
   virtual ~NCVMemStackAllocator();
 
   virtual NCVStatus
@@ -491,7 +491,7 @@ private:
  */
 class NCV_EXPORTS NCVMemNativeAllocator : public INCVMemAllocator {
 public:
-  NCVMemNativeAllocator(NCVMemoryType memT, Ncv32u alignment);
+  NCVMemNativeAllocator (NCVMemoryType memT, Ncv32u alignment);
   virtual ~NCVMemNativeAllocator();
 
   virtual NCVStatus
@@ -513,7 +513,7 @@ public:
 
 private:
   NCVMemNativeAllocator();
-  NCVMemNativeAllocator(const NCVMemNativeAllocator&);
+  NCVMemNativeAllocator (const NCVMemNativeAllocator&);
 
   NCVMemoryType _memType;
   Ncv32u _alignment;
@@ -548,7 +548,7 @@ memSegCopyHelper2D (void* dst,
  */
 template <class T>
 class NCVVector {
-  NCVVector(const NCVVector&) = delete;
+  NCVVector (const NCVVector&) = delete;
 
 public:
   NCVVector() { clear(); }
@@ -565,21 +565,21 @@ public:
   copySolid (NCVVector<T>& dst, cudaStream_t cuStream, std::size_t howMuch = 0) const
   {
     if (howMuch == 0) {
-      ncvAssertReturn(dst._length == this->_length, NCV_MEM_COPY_ERROR);
-      howMuch = this->_length * sizeof(T);
+      ncvAssertReturn (dst._length == this->_length, NCV_MEM_COPY_ERROR);
+      howMuch = this->_length * sizeof (T);
     }
     else {
-      ncvAssertReturn(dst._length * sizeof(T) >= howMuch &&
-                          this->_length * sizeof(T) >= howMuch && howMuch > 0,
-                      NCV_MEM_COPY_ERROR);
+      ncvAssertReturn (dst._length * sizeof (T) >= howMuch &&
+                           this->_length * sizeof (T) >= howMuch && howMuch > 0,
+                       NCV_MEM_COPY_ERROR);
     }
-    ncvAssertReturn((this->_ptr != nullptr || this->_memtype == NCVMemoryTypeNone) &&
-                        (dst._ptr != nullptr || dst._memtype == NCVMemoryTypeNone),
-                    NCV_NULL_PTR);
+    ncvAssertReturn ((this->_ptr != nullptr || this->_memtype == NCVMemoryTypeNone) &&
+                         (dst._ptr != nullptr || dst._memtype == NCVMemoryTypeNone),
+                     NCV_NULL_PTR);
 
     NCVStatus ncvStat = NCV_SUCCESS;
     if (this->_memtype != NCVMemoryTypeNone) {
-      ncvStat = memSegCopyHelper(
+      ncvStat = memSegCopyHelper (
           dst._ptr, dst._memtype, this->_ptr, this->_memtype, howMuch, cuStream);
     }
 
@@ -614,21 +614,21 @@ protected:
 template <class T>
 class NCVVectorAlloc : public NCVVector<T> {
   NCVVectorAlloc() = delete;
-  NCVVectorAlloc(const NCVVectorAlloc&) = delete;
+  NCVVectorAlloc (const NCVVectorAlloc&) = delete;
   NCVVectorAlloc&
-  operator=(const NCVVectorAlloc<T>&) = delete;
+  operator= (const NCVVectorAlloc<T>&) = delete;
 
 public:
-  NCVVectorAlloc(INCVMemAllocator& allocator, Ncv32u length) : allocator(allocator)
+  NCVVectorAlloc (INCVMemAllocator& allocator, Ncv32u length) : allocator (allocator)
   {
     NCVStatus ncvStat;
 
     this->clear();
     this->allocatedMem.clear();
 
-    ncvStat = allocator.alloc(this->allocatedMem, length * sizeof(T));
-    ncvAssertPrintReturn(ncvStat == NCV_SUCCESS,
-                         "NCVVectorAlloc ctor:: alloc failed", );
+    ncvStat = allocator.alloc (this->allocatedMem, length * sizeof (T));
+    ncvAssertPrintReturn (ncvStat == NCV_SUCCESS,
+                          "NCVVectorAlloc ctor:: alloc failed", );
 
     this->_ptr = (T*)this->allocatedMem.begin.ptr;
     this->_length = length;
@@ -639,8 +639,9 @@ public:
   {
     NCVStatus ncvStat;
 
-    ncvStat = allocator.dealloc(this->allocatedMem);
-    ncvAssertPrintCheck(ncvStat == NCV_SUCCESS, "NCVVectorAlloc dtor:: dealloc failed");
+    ncvStat = allocator.dealloc (this->allocatedMem);
+    ncvAssertPrintCheck (ncvStat == NCV_SUCCESS,
+                         "NCVVectorAlloc dtor:: dealloc failed");
 
     this->clear();
   }
@@ -674,28 +675,28 @@ private:
 template <class T>
 class NCVVectorReuse : public NCVVector<T> {
   NCVVectorReuse() = delete;
-  NCVVectorReuse(const NCVVectorReuse&) = delete;
+  NCVVectorReuse (const NCVVectorReuse&) = delete;
 
 public:
-  explicit NCVVectorReuse(const NCVMemSegment& memSegment)
+  explicit NCVVectorReuse (const NCVMemSegment& memSegment)
   {
     this->bReused = false;
     this->clear();
 
-    this->_length = memSegment.size / sizeof(T);
+    this->_length = memSegment.size / sizeof (T);
     this->_ptr = (T*)memSegment.begin.ptr;
     this->_memtype = memSegment.begin.memtype;
 
     this->bReused = true;
   }
 
-  NCVVectorReuse(const NCVMemSegment& memSegment, Ncv32u length)
+  NCVVectorReuse (const NCVMemSegment& memSegment, Ncv32u length)
   {
     this->bReused = false;
     this->clear();
 
-    ncvAssertPrintReturn(
-        length * sizeof(T) <= memSegment.size,
+    ncvAssertPrintReturn (
+        length * sizeof (T) <= memSegment.size,
         "NCVVectorReuse ctor:: memory binding failed due to size mismatch", );
 
     this->_length = length;
@@ -720,7 +721,7 @@ private:
  */
 template <class T>
 class NCVMatrix {
-  NCVMatrix(const NCVMatrix&) = delete;
+  NCVMatrix (const NCVMatrix&) = delete;
 
 public:
   NCVMatrix() { clear(); }
@@ -738,7 +739,7 @@ public:
   Ncv32u
   stride () const
   {
-    return _pitch / sizeof(T);
+    return _pitch / sizeof (T);
   }
 
   // a side effect of this function is that it copies everything in a single chunk, so
@@ -747,22 +748,22 @@ public:
   copySolid (NCVMatrix<T>& dst, cudaStream_t cuStream, std::size_t howMuch = 0) const
   {
     if (howMuch == 0) {
-      ncvAssertReturn(dst._pitch == this->_pitch && dst._height == this->_height,
-                      NCV_MEM_COPY_ERROR);
+      ncvAssertReturn (dst._pitch == this->_pitch && dst._height == this->_height,
+                       NCV_MEM_COPY_ERROR);
       howMuch = this->_pitch * this->_height;
     }
     else {
-      ncvAssertReturn(dst._pitch * dst._height >= howMuch &&
-                          this->_pitch * this->_height >= howMuch && howMuch > 0,
-                      NCV_MEM_COPY_ERROR);
+      ncvAssertReturn (dst._pitch * dst._height >= howMuch &&
+                           this->_pitch * this->_height >= howMuch && howMuch > 0,
+                       NCV_MEM_COPY_ERROR);
     }
-    ncvAssertReturn((this->_ptr != nullptr || this->_memtype == NCVMemoryTypeNone) &&
-                        (dst._ptr != nullptr || dst._memtype == NCVMemoryTypeNone),
-                    NCV_NULL_PTR);
+    ncvAssertReturn ((this->_ptr != nullptr || this->_memtype == NCVMemoryTypeNone) &&
+                         (dst._ptr != nullptr || dst._memtype == NCVMemoryTypeNone),
+                     NCV_NULL_PTR);
 
     NCVStatus ncvStat = NCV_SUCCESS;
     if (this->_memtype != NCVMemoryTypeNone) {
-      ncvStat = memSegCopyHelper(
+      ncvStat = memSegCopyHelper (
           dst._ptr, dst._memtype, this->_ptr, this->_memtype, howMuch, cuStream);
     }
 
@@ -772,24 +773,24 @@ public:
   NCVStatus
   copy2D (NCVMatrix<T>& dst, NcvSize32u roi, cudaStream_t cuStream) const
   {
-    ncvAssertReturn(this->width() >= roi.width && this->height() >= roi.height &&
-                        dst.width() >= roi.width && dst.height() >= roi.height,
-                    NCV_MEM_COPY_ERROR);
-    ncvAssertReturn((this->_ptr != NULL || this->_memtype == NCVMemoryTypeNone) &&
-                        (dst._ptr != NULL || dst._memtype == NCVMemoryTypeNone),
-                    NCV_NULL_PTR);
+    ncvAssertReturn (this->width() >= roi.width && this->height() >= roi.height &&
+                         dst.width() >= roi.width && dst.height() >= roi.height,
+                     NCV_MEM_COPY_ERROR);
+    ncvAssertReturn ((this->_ptr != NULL || this->_memtype == NCVMemoryTypeNone) &&
+                         (dst._ptr != NULL || dst._memtype == NCVMemoryTypeNone),
+                     NCV_NULL_PTR);
 
     NCVStatus ncvStat = NCV_SUCCESS;
     if (this->_memtype != NCVMemoryTypeNone) {
-      ncvStat = memSegCopyHelper2D(dst._ptr,
-                                   dst._pitch,
-                                   dst._memtype,
-                                   this->_ptr,
-                                   this->_pitch,
-                                   this->_memtype,
-                                   roi.width * sizeof(T),
-                                   roi.height,
-                                   cuStream);
+      ncvStat = memSegCopyHelper2D (dst._ptr,
+                                    dst._pitch,
+                                    dst._memtype,
+                                    this->_ptr,
+                                    this->_pitch,
+                                    this->_memtype,
+                                    roi.width * sizeof (T),
+                                    roi.height,
+                                    cuStream);
     }
 
     return ncvStat;
@@ -799,8 +800,8 @@ public:
   at (Ncv32u x, Ncv32u y) const
   {
     NcvBool bOutRange = (x >= this->_width || y >= this->_height);
-    ncvAssertPrintCheck(!bOutRange,
-                        "Error addressing matrix at [" << x << ", " << y << "]");
+    ncvAssertPrintCheck (!bOutRange,
+                         "Error addressing matrix at [" << x << ", " << y << "]");
     if (bOutRange) {
       return *this->_ptr;
     }
@@ -825,7 +826,7 @@ public:
   NcvSize32u
   size () const
   {
-    return NcvSize32u(this->_width, this->_height);
+    return NcvSize32u (this->_width, this->_height);
   }
   Ncv32u
   pitch () const
@@ -852,37 +853,37 @@ protected:
 template <class T>
 class NCVMatrixAlloc : public NCVMatrix<T> {
   NCVMatrixAlloc() = delete;
-  NCVMatrixAlloc(const NCVMatrixAlloc&) = delete;
+  NCVMatrixAlloc (const NCVMatrixAlloc&) = delete;
   NCVMatrixAlloc&
-  operator=(const NCVMatrixAlloc&) = delete;
+  operator= (const NCVMatrixAlloc&) = delete;
 
 public:
-  NCVMatrixAlloc(INCVMemAllocator& allocator,
-                 Ncv32u width,
-                 Ncv32u height,
-                 Ncv32u pitch = 0)
-  : allocator(allocator)
+  NCVMatrixAlloc (INCVMemAllocator& allocator,
+                  Ncv32u width,
+                  Ncv32u height,
+                  Ncv32u pitch = 0)
+  : allocator (allocator)
   {
     NCVStatus ncvStat;
 
     this->clear();
     this->allocatedMem.clear();
 
-    Ncv32u widthBytes = width * sizeof(T);
-    Ncv32u pitchBytes = alignUp(widthBytes, allocator.alignment());
+    Ncv32u widthBytes = width * sizeof (T);
+    Ncv32u pitchBytes = alignUp (widthBytes, allocator.alignment());
 
     if (pitch != 0) {
-      ncvAssertPrintReturn(pitch >= pitchBytes &&
-                               (pitch & (allocator.alignment() - 1)) == 0,
-                           "NCVMatrixAlloc ctor:: incorrect pitch passed", );
+      ncvAssertPrintReturn (pitch >= pitchBytes &&
+                                (pitch & (allocator.alignment() - 1)) == 0,
+                            "NCVMatrixAlloc ctor:: incorrect pitch passed", );
       pitchBytes = pitch;
     }
 
     Ncv32u requiredAllocSize = pitchBytes * height;
 
-    ncvStat = allocator.alloc(this->allocatedMem, requiredAllocSize);
-    ncvAssertPrintReturn(ncvStat == NCV_SUCCESS,
-                         "NCVMatrixAlloc ctor:: alloc failed", );
+    ncvStat = allocator.alloc (this->allocatedMem, requiredAllocSize);
+    ncvAssertPrintReturn (ncvStat == NCV_SUCCESS,
+                          "NCVMatrixAlloc ctor:: alloc failed", );
 
     this->_ptr = (T*)this->allocatedMem.begin.ptr;
     this->_width = width;
@@ -895,8 +896,9 @@ public:
   {
     NCVStatus ncvStat;
 
-    ncvStat = allocator.dealloc(this->allocatedMem);
-    ncvAssertPrintCheck(ncvStat == NCV_SUCCESS, "NCVMatrixAlloc dtor:: dealloc failed");
+    ncvStat = allocator.dealloc (this->allocatedMem);
+    ncvAssertPrintCheck (ncvStat == NCV_SUCCESS,
+                         "NCVMatrixAlloc dtor:: dealloc failed");
 
     this->clear();
   }
@@ -930,35 +932,35 @@ private:
 template <class T>
 class NCVMatrixReuse : public NCVMatrix<T> {
   NCVMatrixReuse() = delete;
-  NCVMatrixReuse(const NCVMatrixReuse&) = delete;
+  NCVMatrixReuse (const NCVMatrixReuse&) = delete;
 
 public:
-  NCVMatrixReuse(const NCVMemSegment& memSegment,
-                 Ncv32u alignment,
-                 Ncv32u width,
-                 Ncv32u height,
-                 Ncv32u pitch = 0,
-                 NcvBool bSkipPitchCheck = false)
+  NCVMatrixReuse (const NCVMemSegment& memSegment,
+                  Ncv32u alignment,
+                  Ncv32u width,
+                  Ncv32u height,
+                  Ncv32u pitch = 0,
+                  NcvBool bSkipPitchCheck = false)
   {
     this->bReused = false;
     this->clear();
 
-    Ncv32u widthBytes = width * sizeof(T);
-    Ncv32u pitchBytes = alignUp(widthBytes, alignment);
+    Ncv32u widthBytes = width * sizeof (T);
+    Ncv32u pitchBytes = alignUp (widthBytes, alignment);
 
     if (pitch != 0) {
       if (!bSkipPitchCheck) {
-        ncvAssertPrintReturn(pitch >= pitchBytes && (pitch & (alignment - 1)) == 0,
-                             "NCVMatrixReuse ctor:: incorrect pitch passed", );
+        ncvAssertPrintReturn (pitch >= pitchBytes && (pitch & (alignment - 1)) == 0,
+                              "NCVMatrixReuse ctor:: incorrect pitch passed", );
       }
       else {
-        ncvAssertPrintReturn(pitch >= widthBytes,
-                             "NCVMatrixReuse ctor:: incorrect pitch passed", );
+        ncvAssertPrintReturn (pitch >= widthBytes,
+                              "NCVMatrixReuse ctor:: incorrect pitch passed", );
       }
       pitchBytes = pitch;
     }
 
-    ncvAssertPrintReturn(
+    ncvAssertPrintReturn (
         pitchBytes * height <= memSegment.size,
         "NCVMatrixReuse ctor:: memory binding failed due to size mismatch", );
 
@@ -971,21 +973,21 @@ public:
     this->bReused = true;
   }
 
-  NCVMatrixReuse(const NCVMatrix<T>& mat, NcvRect32u roi)
+  NCVMatrixReuse (const NCVMatrix<T>& mat, NcvRect32u roi)
   {
     this->bReused = false;
     this->clear();
 
-    ncvAssertPrintReturn(roi.x < mat.width() && roi.y < mat.height() &&
-                             roi.x + roi.width <= mat.width() &&
-                             roi.y + roi.height <= mat.height(),
-                         "NCVMatrixReuse ctor:: memory binding failed due to "
-                         "mismatching ROI and source matrix dims", );
+    ncvAssertPrintReturn (roi.x < mat.width() && roi.y < mat.height() &&
+                              roi.x + roi.width <= mat.width() &&
+                              roi.y + roi.height <= mat.height(),
+                          "NCVMatrixReuse ctor:: memory binding failed due to "
+                          "mismatching ROI and source matrix dims", );
 
     this->_width = roi.width;
     this->_height = roi.height;
     this->_pitch = mat.pitch();
-    this->_ptr = &mat.at(roi.x, roi.y);
+    this->_ptr = &mat.at (roi.x, roi.y);
     this->_memtype = mat.memType();
 
     this->bReused = true;
@@ -1052,7 +1054,7 @@ ncvDrawRects_32u_device (Ncv32u* d_dst,
 #define CLAMP(x, a, b) ((x) > (b) ? (b) : ((x) < (a) ? (a) : (x)))
 #define CLAMP_TOP(x, a) (((x) > (a)) ? (a) : (x))
 #define CLAMP_BOTTOM(x, a) (((x) < (a)) ? (a) : (x))
-#define CLAMP_0_255(x) CLAMP(x, 0, 255)
+#define CLAMP_0_255(x) CLAMP (x, 0, 255)
 
 #define SUB_BEGIN(type, name)                                                          \
   struct {                                                                             \
@@ -1065,7 +1067,7 @@ ncvDrawRects_32u_device (Ncv32u* d_dst,
 #define SQR(x) ((x) * (x))
 
 #define ncvSafeMatAlloc(name, type, alloc, width, height, err)                         \
-  NCVMatrixAlloc<type> name(alloc, width, height);                                     \
-  ncvAssertReturn(name.isMemAllocated(), err);
+  NCVMatrixAlloc<type> name (alloc, width, height);                                    \
+  ncvAssertReturn (name.isMemAllocated(), err);
 
 #endif // PCL_GPU_PEOPLE__NCV_HPP_

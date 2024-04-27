@@ -17,123 +17,123 @@ readTextFile (const char* filename)
 {
   char* buf = nullptr;
   std::ifstream file;
-  file.open(filename, std::ios::in | std::ios::binary | std::ios::ate);
+  file.open (filename, std::ios::in | std::ios::binary | std::ios::ate);
   if (file.is_open()) {
     std::ifstream::pos_type size;
     size = file.tellg();
-    buf = new char[size + static_cast<std::ifstream::pos_type>(1)];
-    file.seekg(0, std::ios::beg);
-    file.read(buf, size);
+    buf = new char[size + static_cast<std::ifstream::pos_type> (1)];
+    file.seekg (0, std::ios::beg);
+    file.read (buf, size);
     file.close();
     buf[size] = 0;
   }
   return buf;
 }
 
-pcl::simulation::gllib::Program::Program() : program_id_(glCreateProgram()) {}
+pcl::simulation::gllib::Program::Program() : program_id_ (glCreateProgram()) {}
 
 pcl::simulation::gllib::Program::~Program() = default;
 
 int
-pcl::simulation::gllib::Program::getUniformLocation(const std::string& name) const
+pcl::simulation::gllib::Program::getUniformLocation (const std::string& name) const
 {
-  return glGetUniformLocation(program_id_, name.c_str());
+  return glGetUniformLocation (program_id_, name.c_str());
 }
 
 void
-pcl::simulation::gllib::Program::setUniform(const std::string& name,
-                                            const Eigen::Vector2f& v)
+pcl::simulation::gllib::Program::setUniform (const std::string& name,
+                                             const Eigen::Vector2f& v)
 {
-  GLuint loc = getUniformLocation(name);
-  glUniform2f(loc, v(0), v(1));
+  GLuint loc = getUniformLocation (name);
+  glUniform2f (loc, v (0), v (1));
 }
 
 void
-pcl::simulation::gllib::Program::setUniform(const std::string& name,
-                                            const Eigen::Vector3f& v)
+pcl::simulation::gllib::Program::setUniform (const std::string& name,
+                                             const Eigen::Vector3f& v)
 {
-  GLuint loc = getUniformLocation(name);
-  glUniform3f(loc, v(0), v(1), v(2));
+  GLuint loc = getUniformLocation (name);
+  glUniform3f (loc, v (0), v (1), v (2));
 }
 
 void
-pcl::simulation::gllib::Program::setUniform(const std::string& name,
-                                            const Eigen::Vector4f& v)
+pcl::simulation::gllib::Program::setUniform (const std::string& name,
+                                             const Eigen::Vector4f& v)
 {
-  GLuint loc = getUniformLocation(name);
-  glUniform4f(loc, v(0), v(1), v(2), v(4));
+  GLuint loc = getUniformLocation (name);
+  glUniform4f (loc, v (0), v (1), v (2), v (4));
 }
 
 void
-pcl::simulation::gllib::Program::setUniform(const std::string& name,
-                                            const Eigen::Matrix3f& v)
+pcl::simulation::gllib::Program::setUniform (const std::string& name,
+                                             const Eigen::Matrix3f& v)
 {
-  GLuint loc = getUniformLocation(name);
-  glUniformMatrix3fv(loc, 1, false, v.data());
+  GLuint loc = getUniformLocation (name);
+  glUniformMatrix3fv (loc, 1, false, v.data());
 }
 
 void
-pcl::simulation::gllib::Program::setUniform(const std::string& name,
-                                            const Eigen::Matrix4f& v)
+pcl::simulation::gllib::Program::setUniform (const std::string& name,
+                                             const Eigen::Matrix4f& v)
 {
-  GLuint loc = getUniformLocation(name);
-  glUniformMatrix4fv(loc, 1, false, v.data());
+  GLuint loc = getUniformLocation (name);
+  glUniformMatrix4fv (loc, 1, false, v.data());
 }
 
 void
-pcl::simulation::gllib::Program::setUniform(const std::string& name, float v)
+pcl::simulation::gllib::Program::setUniform (const std::string& name, float v)
 {
-  GLuint loc = getUniformLocation(name);
-  glUniform1f(loc, v);
+  GLuint loc = getUniformLocation (name);
+  glUniform1f (loc, v);
 }
 
 void
-pcl::simulation::gllib::Program::setUniform(const std::string& name, int v)
+pcl::simulation::gllib::Program::setUniform (const std::string& name, int v)
 {
-  GLuint loc = getUniformLocation(name);
-  glUniform1i(loc, v);
+  GLuint loc = getUniformLocation (name);
+  glUniform1i (loc, v);
 }
 
 void
-pcl::simulation::gllib::Program::setUniform(const std::string& name, bool v)
+pcl::simulation::gllib::Program::setUniform (const std::string& name, bool v)
 {
-  GLuint loc = getUniformLocation(name);
-  glUniform1i(loc, (v ? 1 : 0));
+  GLuint loc = getUniformLocation (name);
+  glUniform1i (loc, (v ? 1 : 0));
 }
 
 bool
-pcl::simulation::gllib::Program::addShaderText(const std::string& text,
-                                               ShaderType shader_type) const
+pcl::simulation::gllib::Program::addShaderText (const std::string& text,
+                                                ShaderType shader_type) const
 {
   GLuint id;
   GLint compile_status;
-  id = glCreateShader(shader_type);
+  id = glCreateShader (shader_type);
   const char* source_list = text.c_str();
 
-  glShaderSource(id, 1, &source_list, nullptr);
+  glShaderSource (id, 1, &source_list, nullptr);
 
-  glCompileShader(id);
-  printShaderInfoLog(id);
-  glGetShaderiv(id, GL_COMPILE_STATUS, &compile_status);
+  glCompileShader (id);
+  printShaderInfoLog (id);
+  glGetShaderiv (id, GL_COMPILE_STATUS, &compile_status);
   if (compile_status == GL_FALSE)
     return false;
 
   if (getGLError() != GL_NO_ERROR)
     return false;
 
-  glAttachShader(program_id_, id);
+  glAttachShader (program_id_, id);
   return true;
 }
 
 bool
-pcl::simulation::gllib::Program::addShaderFile(const std::string& filename,
-                                               ShaderType shader_type)
+pcl::simulation::gllib::Program::addShaderFile (const std::string& filename,
+                                                ShaderType shader_type)
 {
-  char* text = readTextFile(filename.c_str());
+  char* text = readTextFile (filename.c_str());
   if (text == nullptr)
     return (false);
 
-  bool rval = addShaderText(text, shader_type);
+  bool rval = addShaderText (text, shader_type);
   delete[] text;
   return rval;
 }
@@ -141,8 +141,8 @@ pcl::simulation::gllib::Program::addShaderFile(const std::string& filename,
 bool
 pcl::simulation::gllib::Program::link() const
 {
-  glLinkProgram(program_id_);
-  printProgramInfoLog(program_id_);
+  glLinkProgram (program_id_);
+  printProgramInfoLog (program_id_);
 
   return getGLError() == GL_NO_ERROR;
 }
@@ -150,7 +150,7 @@ pcl::simulation::gllib::Program::link() const
 void
 pcl::simulation::gllib::Program::use() const
 {
-  glUseProgram(program_id_);
+  glUseProgram (program_id_);
 }
 
 GLenum
@@ -160,24 +160,24 @@ pcl::simulation::gllib::getGLError()
   GLenum error = glGetError();
   while (error != GL_NO_ERROR) {
     last_error = error;
-    std::cout << "Error: OpenGL: " << gluErrorString(error) << std::endl;
+    std::cout << "Error: OpenGL: " << gluErrorString (error) << std::endl;
     error = glGetError();
   }
   return last_error;
 }
 
 void
-pcl::simulation::gllib::printShaderInfoLog(GLuint shader)
+pcl::simulation::gllib::printShaderInfoLog (GLuint shader)
 {
   GLsizei max_length;
   GLsizei length;
   GLchar* info_log;
 
-  glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &length);
+  glGetShaderiv (shader, GL_INFO_LOG_LENGTH, &length);
   max_length = length;
   info_log = new GLchar[length + 1];
 
-  glGetShaderInfoLog(shader, max_length, &length, info_log);
+  glGetShaderInfoLog (shader, max_length, &length, info_log);
 
   info_log[max_length] = 0;
 
@@ -187,17 +187,17 @@ pcl::simulation::gllib::printShaderInfoLog(GLuint shader)
 }
 
 void
-pcl::simulation::gllib::printProgramInfoLog(GLuint program)
+pcl::simulation::gllib::printProgramInfoLog (GLuint program)
 {
   GLsizei max_length;
   GLsizei length;
   GLchar* info_log;
 
-  glGetProgramiv(program, GL_INFO_LOG_LENGTH, &length);
+  glGetProgramiv (program, GL_INFO_LOG_LENGTH, &length);
   max_length = length;
   info_log = new GLchar[length + 1];
 
-  glGetProgramInfoLog(program, max_length, &length, info_log);
+  glGetProgramInfoLog (program, max_length, &length, info_log);
 
   info_log[max_length] = 0;
 
@@ -207,17 +207,17 @@ pcl::simulation::gllib::printProgramInfoLog(GLuint program)
 }
 
 Program::Ptr
-pcl::simulation::gllib::Program::loadProgramFromText(
+pcl::simulation::gllib::Program::loadProgramFromText (
     const std::string& vertex_shader_text, const std::string& fragment_shader_text)
 {
   // Load shader
-  Program::Ptr program = gllib::Program::Ptr(new gllib::Program());
-  if (!program->addShaderText(vertex_shader_text, gllib::VERTEX)) {
+  Program::Ptr program = gllib::Program::Ptr (new gllib::Program());
+  if (!program->addShaderText (vertex_shader_text, gllib::VERTEX)) {
     std::cerr << "Failed loading vertex shader" << std::endl;
   }
 
   // TODO: to remove file dependency include the shader source in the binary
-  if (!program->addShaderFile(fragment_shader_text, gllib::FRAGMENT)) {
+  if (!program->addShaderFile (fragment_shader_text, gllib::FRAGMENT)) {
     std::cerr << "Failed loading fragment shader" << std::endl;
   }
 
@@ -227,17 +227,17 @@ pcl::simulation::gllib::Program::loadProgramFromText(
 }
 
 Program::Ptr
-pcl::simulation::gllib::Program::loadProgramFromFile(
+pcl::simulation::gllib::Program::loadProgramFromFile (
     const std::string& vertex_shader_file, const std::string& fragment_shader_file)
 {
   // Load shader
-  Program::Ptr program = gllib::Program::Ptr(new gllib::Program());
-  if (!program->addShaderFile(vertex_shader_file, gllib::VERTEX)) {
+  Program::Ptr program = gllib::Program::Ptr (new gllib::Program());
+  if (!program->addShaderFile (vertex_shader_file, gllib::VERTEX)) {
     std::cerr << "Failed loading vertex shader" << std::endl;
   }
 
   // TODO: to remove file dependency include the shader source in the binary
-  if (!program->addShaderFile(fragment_shader_file, gllib::FRAGMENT)) {
+  if (!program->addShaderFile (fragment_shader_file, gllib::FRAGMENT)) {
     std::cerr << "Failed loading fragment shader" << std::endl;
   }
 

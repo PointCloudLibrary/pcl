@@ -98,29 +98,29 @@ public:
    * \param colorBitResolution_arg:  color bit depth
    * \param showStatistics_arg:  output compression statistics
    */
-  OctreePointCloudCompression(compression_Profiles_e compressionProfile_arg =
-                                  MED_RES_ONLINE_COMPRESSION_WITH_COLOR,
-                              bool showStatistics_arg = false,
-                              const double pointResolution_arg = 0.001,
-                              const double octreeResolution_arg = 0.01,
-                              bool doVoxelGridDownDownSampling_arg = false,
-                              const unsigned int iFrameRate_arg = 30,
-                              bool doColorEncoding_arg = true,
-                              const unsigned char colorBitResolution_arg = 6)
-  : OctreePointCloud<PointT, LeafT, BranchT, OctreeT>(octreeResolution_arg)
-  , output_(PointCloudPtr())
+  OctreePointCloudCompression (compression_Profiles_e compressionProfile_arg =
+                                   MED_RES_ONLINE_COMPRESSION_WITH_COLOR,
+                               bool showStatistics_arg = false,
+                               const double pointResolution_arg = 0.001,
+                               const double octreeResolution_arg = 0.01,
+                               bool doVoxelGridDownDownSampling_arg = false,
+                               const unsigned int iFrameRate_arg = 30,
+                               bool doColorEncoding_arg = true,
+                               const unsigned char colorBitResolution_arg = 6)
+  : OctreePointCloud<PointT, LeafT, BranchT, OctreeT> (octreeResolution_arg)
+  , output_ (PointCloudPtr())
   , color_coder_()
   , point_coder_()
-  , do_voxel_grid_enDecoding_(doVoxelGridDownDownSampling_arg)
-  , i_frame_rate_(iFrameRate_arg)
+  , do_voxel_grid_enDecoding_ (doVoxelGridDownDownSampling_arg)
+  , i_frame_rate_ (iFrameRate_arg)
   ,
 
-  do_color_encoding_(doColorEncoding_arg)
-  , b_show_statistics_(showStatistics_arg)
-  , selected_profile_(compressionProfile_arg)
-  , point_resolution_(pointResolution_arg)
-  , octree_resolution_(octreeResolution_arg)
-  , color_bit_resolution_(colorBitResolution_arg)
+  do_color_encoding_ (doColorEncoding_arg)
+  , b_show_statistics_ (showStatistics_arg)
+  , selected_profile_ (compressionProfile_arg)
+  , point_resolution_ (pointResolution_arg)
+  , octree_resolution_ (octreeResolution_arg)
+  , color_bit_resolution_ (colorBitResolution_arg)
   {
     initialization();
   }
@@ -143,15 +143,15 @@ public:
       // apply profile settings
       i_frame_rate_ = selectedProfile.iFrameRate;
       do_voxel_grid_enDecoding_ = selectedProfile.doVoxelGridDownSampling;
-      this->setResolution(selectedProfile.octreeResolution);
-      point_coder_.setPrecision(static_cast<float>(selectedProfile.pointResolution));
+      this->setResolution (selectedProfile.octreeResolution);
+      point_coder_.setPrecision (static_cast<float> (selectedProfile.pointResolution));
       do_color_encoding_ = selectedProfile.doColorEncoding;
-      color_coder_.setBitDepth(selectedProfile.colorBitResolution);
+      color_coder_.setBitDepth (selectedProfile.colorBitResolution);
     }
     else {
       // configure point & color coder
-      point_coder_.setPrecision(static_cast<float>(point_resolution_));
-      color_coder_.setBitDepth(color_bit_resolution_);
+      point_coder_.setPrecision (static_cast<float> (point_resolution_));
+      color_coder_.setBitDepth (color_bit_resolution_);
     }
 
     if (point_coder_.getPrecision() == this->getResolution())
@@ -167,7 +167,7 @@ public:
   addPointIdx (const uindex_t pointIdx_arg) override
   {
     ++object_count_;
-    OctreePointCloud<PointT, LeafT, BranchT, OctreeT>::addPointIdx(pointIdx_arg);
+    OctreePointCloud<PointT, LeafT, BranchT, OctreeT>::addPointIdx (pointIdx_arg);
   }
 
   /** \brief Provide a pointer to the output data set.

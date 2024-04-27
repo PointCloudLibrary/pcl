@@ -59,7 +59,7 @@ public:
   // using Image = DeviceArray2D<pcl::RGB>;
 
   /** \brief This is the constructor **/
-  FaceDetector(int cols, int rows);
+  FaceDetector (int cols, int rows);
 
   NCVStatus
   loadFromXML2 (const std::string& filename,

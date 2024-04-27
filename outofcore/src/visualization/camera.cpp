@@ -20,15 +20,15 @@
 
 // Operators
 // -----------------------------------------------------------------------------
-Camera::Camera(std::string name)
-: Object(name), camera_(vtkSmartPointer<vtkCamera>::New()), display_(false)
+Camera::Camera (std::string name)
+: Object (name), camera_ (vtkSmartPointer<vtkCamera>::New()), display_ (false)
 {
-  camera_->SetClippingRange(0.0001, 100000);
+  camera_->SetClippingRange (0.0001, 100000);
 
   camera_actor_ = vtkSmartPointer<vtkCameraActor>::New();
-  camera_actor_->SetCamera(camera_);
-  camera_actor_->GetProperty()->SetLighting(false);
-  camera_actor_->GetProperty()->SetLineStipplePattern(1010101010);
+  camera_actor_->SetCamera (camera_);
+  camera_actor_->GetProperty()->SetLighting (false);
+  camera_actor_->GetProperty()->SetLineStipplePattern (1010101010);
 
   for (double& f : frustum_)
     f = 0;
@@ -37,20 +37,20 @@ Camera::Camera(std::string name)
   vtkSmartPointer<vtkPolyDataMapper> hull_mapper =
       vtkSmartPointer<vtkPolyDataMapper>::New();
 
-  hull_actor_->SetMapper(hull_mapper);
-  hull_actor_->GetProperty()->SetLighting(false);
-  hull_actor_->GetProperty()->SetColor(1.0, 0.0, 0.0);
-  hull_actor_->GetProperty()->SetOpacity(0.25);
+  hull_actor_->SetMapper (hull_mapper);
+  hull_actor_->GetProperty()->SetLighting (false);
+  hull_actor_->GetProperty()->SetColor (1.0, 0.0, 0.0);
+  hull_actor_->GetProperty()->SetOpacity (0.25);
 }
 
-Camera::Camera(std::string name, vtkSmartPointer<vtkCamera> camera)
-: Object(name), camera_(camera), display_(false)
+Camera::Camera (std::string name, vtkSmartPointer<vtkCamera> camera)
+: Object (name), camera_ (camera), display_ (false)
 {
-  camera_->SetClippingRange(0.0001, 100000);
+  camera_->SetClippingRange (0.0001, 100000);
 
   camera_actor_ = vtkSmartPointer<vtkCameraActor>::New();
-  camera_actor_->SetCamera(camera_);
-  camera_actor_->GetProperty()->SetLighting(false);
+  camera_actor_->SetCamera (camera_);
+  camera_actor_->GetProperty()->SetLighting (false);
 
   for (double& f : frustum_)
     f = 0;
@@ -59,10 +59,10 @@ Camera::Camera(std::string name, vtkSmartPointer<vtkCamera> camera)
   vtkSmartPointer<vtkPolyDataMapper> hull_mapper =
       vtkSmartPointer<vtkPolyDataMapper>::New();
 
-  hull_actor_->SetMapper(hull_mapper);
-  hull_actor_->GetProperty()->SetLighting(false);
-  hull_actor_->GetProperty()->SetColor(1.0, 0.0, 0.0);
-  hull_actor_->GetProperty()->SetOpacity(0.25);
+  hull_actor_->SetMapper (hull_mapper);
+  hull_actor_->GetProperty()->SetLighting (false);
+  hull_actor_->GetProperty()->SetColor (1.0, 0.0, 0.0);
+  hull_actor_->GetProperty()->SetOpacity (0.25);
 
   prevUp_[0] = prevUp_[1] = prevUp_[2] = 0;
   prevFocal_[0] = prevFocal_[1] = prevFocal_[2] = 0;
@@ -85,7 +85,7 @@ Camera::computeFrustum()
   // given in the following order: -x,+x,-y,+y,-z,+z.
   // camera_->GetFrustumPlanes(aspect, frustum_);
 
-  pcl::visualization::getViewFrustum(getViewProjectionMatrix(), frustum_);
+  pcl::visualization::getViewFrustum (getViewProjectionMatrix(), frustum_);
 
   //  vtkSmartPointer<vtkHull> hull = vtkSmartPointer<vtkHull>::New ();
   //  vtkSmartPointer<vtkPlanes> planes = vtkSmartPointer<vtkPlanes>::New ();
@@ -113,7 +113,7 @@ Camera::printFrustum()
 }
 
 void
-Camera::render(vtkRenderer* renderer)
+Camera::render (vtkRenderer* renderer)
 {
   vtkSmartPointer<vtkCamera> active_camera = renderer->GetActiveCamera();
 
@@ -176,15 +176,16 @@ Camera::render(vtkRenderer* renderer)
       renderer->ComputeAspect();
       double* aspect = renderer->GetAspect();
 
-      projection_matrix_ = pcl::visualization::vtkToEigen(
-          active_camera->GetProjectionTransformMatrix(aspect[0] / aspect[1], 0.0, 1.0));
+      projection_matrix_ =
+          pcl::visualization::vtkToEigen (active_camera->GetProjectionTransformMatrix (
+              aspect[0] / aspect[1], 0.0, 1.0));
       model_view_matrix_ =
-          pcl::visualization::vtkToEigen(active_camera->GetModelViewTransformMatrix());
+          pcl::visualization::vtkToEigen (active_camera->GetModelViewTransformMatrix());
 
       // computeFrustum (renderer->GetTiledAspectRatio());
       computeFrustum();
     }
   }
 
-  Object::render(renderer);
+  Object::render (renderer);
 }

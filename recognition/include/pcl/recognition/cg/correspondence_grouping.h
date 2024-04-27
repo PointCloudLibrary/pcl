@@ -165,17 +165,17 @@ protected:
     }
 
     if (!scene_) {
-      PCL_ERROR("[initCompute] Scene not set.\n");
+      PCL_ERROR ("[initCompute] Scene not set.\n");
       return (false);
     }
 
     if (!input_) {
-      PCL_ERROR("[initCompute] Input not set.\n");
+      PCL_ERROR ("[initCompute] Input not set.\n");
       return (false);
     }
 
     if (!model_scene_corrs_) {
-      PCL_ERROR("[initCompute] Model-Scene Correspondences not set.\n");
+      PCL_ERROR ("[initCompute] Model-Scene Correspondences not set.\n");
       return (false);
     }
 

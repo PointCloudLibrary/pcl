@@ -54,20 +54,20 @@ void
 makeSymmetric (MatrixT& matrix, bool use_upper_triangular = true)
 {
   if (use_upper_triangular && (MatrixT::Flags & Eigen::RowMajorBit)) {
-    matrix.coeffRef(4) = matrix.coeff(1);
-    matrix.coeffRef(8) = matrix.coeff(2);
-    matrix.coeffRef(9) = matrix.coeff(6);
-    matrix.coeffRef(12) = matrix.coeff(3);
-    matrix.coeffRef(13) = matrix.coeff(7);
-    matrix.coeffRef(14) = matrix.coeff(11);
+    matrix.coeffRef (4) = matrix.coeff (1);
+    matrix.coeffRef (8) = matrix.coeff (2);
+    matrix.coeffRef (9) = matrix.coeff (6);
+    matrix.coeffRef (12) = matrix.coeff (3);
+    matrix.coeffRef (13) = matrix.coeff (7);
+    matrix.coeffRef (14) = matrix.coeff (11);
   }
   else {
-    matrix.coeffRef(1) = matrix.coeff(4);
-    matrix.coeffRef(2) = matrix.coeff(8);
-    matrix.coeffRef(6) = matrix.coeff(9);
-    matrix.coeffRef(3) = matrix.coeff(12);
-    matrix.coeffRef(7) = matrix.coeff(13);
-    matrix.coeffRef(11) = matrix.coeff(14);
+    matrix.coeffRef (1) = matrix.coeff (4);
+    matrix.coeffRef (2) = matrix.coeff (8);
+    matrix.coeffRef (6) = matrix.coeff (9);
+    matrix.coeffRef (3) = matrix.coeff (12);
+    matrix.coeffRef (7) = matrix.coeff (13);
+    matrix.coeffRef (11) = matrix.coeff (14);
   }
 }
 
@@ -85,7 +85,7 @@ estimateProjectionMatrix (
   using Scalar = double;
   projection_matrix.setZero();
   if (cloud->height == 1 || cloud->width == 1) {
-    PCL_ERROR("[pcl::estimateProjectionMatrix] Input dataset is not organized!\n");
+    PCL_ERROR ("[pcl::estimateProjectionMatrix] Input dataset is not organized!\n");
     return (-1.0);
   }
 
@@ -98,14 +98,14 @@ estimateProjectionMatrix (
   Eigen::Matrix<Scalar, 4, 4, Eigen::RowMajor> D =
       Eigen::Matrix<Scalar, 4, 4, Eigen::RowMajor>::Zero();
 
-  pcl::ConstCloudIterator<PointT> pointIt(*cloud, indices);
+  pcl::ConstCloudIterator<PointT> pointIt (*cloud, indices);
 
   while (pointIt) {
     unsigned yIdx = pointIt.getCurrentPointIndex() / cloud->width;
     unsigned xIdx = pointIt.getCurrentPointIndex() % cloud->width;
 
     const PointT& point = *pointIt;
-    if (std::isfinite(point.x)) {
+    if (std::isfinite (point.x)) {
       Scalar xx = point.x * point.x;
       Scalar xy = point.x * point.y;
       Scalar xz = point.x * point.z;
@@ -114,105 +114,105 @@ estimateProjectionMatrix (
       Scalar zz = point.z * point.z;
       Scalar xx_yy = xIdx * xIdx + yIdx * yIdx;
 
-      A.coeffRef(0) += xx;
-      A.coeffRef(1) += xy;
-      A.coeffRef(2) += xz;
-      A.coeffRef(3) += point.x;
+      A.coeffRef (0) += xx;
+      A.coeffRef (1) += xy;
+      A.coeffRef (2) += xz;
+      A.coeffRef (3) += point.x;
 
-      A.coeffRef(5) += yy;
-      A.coeffRef(6) += yz;
-      A.coeffRef(7) += point.y;
+      A.coeffRef (5) += yy;
+      A.coeffRef (6) += yz;
+      A.coeffRef (7) += point.y;
 
-      A.coeffRef(10) += zz;
-      A.coeffRef(11) += point.z;
-      A.coeffRef(15) += 1.0;
+      A.coeffRef (10) += zz;
+      A.coeffRef (11) += point.z;
+      A.coeffRef (15) += 1.0;
 
-      B.coeffRef(0) -= xx * xIdx;
-      B.coeffRef(1) -= xy * xIdx;
-      B.coeffRef(2) -= xz * xIdx;
-      B.coeffRef(3) -= point.x * static_cast<double>(xIdx);
+      B.coeffRef (0) -= xx * xIdx;
+      B.coeffRef (1) -= xy * xIdx;
+      B.coeffRef (2) -= xz * xIdx;
+      B.coeffRef (3) -= point.x * static_cast<double> (xIdx);
 
-      B.coeffRef(5) -= yy * xIdx;
-      B.coeffRef(6) -= yz * xIdx;
-      B.coeffRef(7) -= point.y * static_cast<double>(xIdx);
+      B.coeffRef (5) -= yy * xIdx;
+      B.coeffRef (6) -= yz * xIdx;
+      B.coeffRef (7) -= point.y * static_cast<double> (xIdx);
 
-      B.coeffRef(10) -= zz * xIdx;
-      B.coeffRef(11) -= point.z * static_cast<double>(xIdx);
+      B.coeffRef (10) -= zz * xIdx;
+      B.coeffRef (11) -= point.z * static_cast<double> (xIdx);
 
-      B.coeffRef(15) -= xIdx;
+      B.coeffRef (15) -= xIdx;
 
-      C.coeffRef(0) -= xx * yIdx;
-      C.coeffRef(1) -= xy * yIdx;
-      C.coeffRef(2) -= xz * yIdx;
-      C.coeffRef(3) -= point.x * static_cast<double>(yIdx);
+      C.coeffRef (0) -= xx * yIdx;
+      C.coeffRef (1) -= xy * yIdx;
+      C.coeffRef (2) -= xz * yIdx;
+      C.coeffRef (3) -= point.x * static_cast<double> (yIdx);
 
-      C.coeffRef(5) -= yy * yIdx;
-      C.coeffRef(6) -= yz * yIdx;
-      C.coeffRef(7) -= point.y * static_cast<double>(yIdx);
+      C.coeffRef (5) -= yy * yIdx;
+      C.coeffRef (6) -= yz * yIdx;
+      C.coeffRef (7) -= point.y * static_cast<double> (yIdx);
 
-      C.coeffRef(10) -= zz * yIdx;
-      C.coeffRef(11) -= point.z * static_cast<double>(yIdx);
+      C.coeffRef (10) -= zz * yIdx;
+      C.coeffRef (11) -= point.z * static_cast<double> (yIdx);
 
-      C.coeffRef(15) -= yIdx;
+      C.coeffRef (15) -= yIdx;
 
-      D.coeffRef(0) += xx * xx_yy;
-      D.coeffRef(1) += xy * xx_yy;
-      D.coeffRef(2) += xz * xx_yy;
-      D.coeffRef(3) += point.x * xx_yy;
+      D.coeffRef (0) += xx * xx_yy;
+      D.coeffRef (1) += xy * xx_yy;
+      D.coeffRef (2) += xz * xx_yy;
+      D.coeffRef (3) += point.x * xx_yy;
 
-      D.coeffRef(5) += yy * xx_yy;
-      D.coeffRef(6) += yz * xx_yy;
-      D.coeffRef(7) += point.y * xx_yy;
+      D.coeffRef (5) += yy * xx_yy;
+      D.coeffRef (6) += yz * xx_yy;
+      D.coeffRef (7) += point.y * xx_yy;
 
-      D.coeffRef(10) += zz * xx_yy;
-      D.coeffRef(11) += point.z * xx_yy;
+      D.coeffRef (10) += zz * xx_yy;
+      D.coeffRef (11) += point.z * xx_yy;
 
-      D.coeffRef(15) += xx_yy;
+      D.coeffRef (15) += xx_yy;
     }
 
     ++pointIt;
   } // while
 
-  common::internal::makeSymmetric(A);
-  common::internal::makeSymmetric(B);
-  common::internal::makeSymmetric(C);
-  common::internal::makeSymmetric(D);
+  common::internal::makeSymmetric (A);
+  common::internal::makeSymmetric (B);
+  common::internal::makeSymmetric (C);
+  common::internal::makeSymmetric (D);
 
   Eigen::Matrix<Scalar, 12, 12, Eigen::RowMajor> X =
       Eigen::Matrix<Scalar, 12, 12, Eigen::RowMajor>::Zero();
   X.topLeftCorner<4, 4>().matrix() = A;
-  X.block<4, 4>(0, 8).matrix() = B;
-  X.block<4, 4>(8, 0).matrix() = B;
-  X.block<4, 4>(4, 4).matrix() = A;
-  X.block<4, 4>(4, 8).matrix() = C;
-  X.block<4, 4>(8, 4).matrix() = C;
-  X.block<4, 4>(8, 8).matrix() = D;
+  X.block<4, 4> (0, 8).matrix() = B;
+  X.block<4, 4> (8, 0).matrix() = B;
+  X.block<4, 4> (4, 4).matrix() = A;
+  X.block<4, 4> (4, 8).matrix() = C;
+  X.block<4, 4> (8, 4).matrix() = C;
+  X.block<4, 4> (8, 8).matrix() = D;
 
-  Eigen::SelfAdjointEigenSolver<Eigen::Matrix<Scalar, 12, 12, Eigen::RowMajor>> ei_symm(
-      X);
+  Eigen::SelfAdjointEigenSolver<Eigen::Matrix<Scalar, 12, 12, Eigen::RowMajor>>
+      ei_symm (X);
   Eigen::Matrix<Scalar, 12, 12, Eigen::RowMajor> eigen_vectors = ei_symm.eigenvectors();
 
   // check whether the residual MSE is low. If its high, the cloud was not captured from
   // a projective device.
   Eigen::Matrix<Scalar, 1, 1> residual_sqr =
-      eigen_vectors.col(0).transpose() * X * eigen_vectors.col(0);
+      eigen_vectors.col (0).transpose() * X * eigen_vectors.col (0);
 
-  double residual = residual_sqr.coeff(0);
+  double residual = residual_sqr.coeff (0);
 
-  projection_matrix.coeffRef(0) = static_cast<float>(eigen_vectors.coeff(0));
-  projection_matrix.coeffRef(1) = static_cast<float>(eigen_vectors.coeff(12));
-  projection_matrix.coeffRef(2) = static_cast<float>(eigen_vectors.coeff(24));
-  projection_matrix.coeffRef(3) = static_cast<float>(eigen_vectors.coeff(36));
-  projection_matrix.coeffRef(4) = static_cast<float>(eigen_vectors.coeff(48));
-  projection_matrix.coeffRef(5) = static_cast<float>(eigen_vectors.coeff(60));
-  projection_matrix.coeffRef(6) = static_cast<float>(eigen_vectors.coeff(72));
-  projection_matrix.coeffRef(7) = static_cast<float>(eigen_vectors.coeff(84));
-  projection_matrix.coeffRef(8) = static_cast<float>(eigen_vectors.coeff(96));
-  projection_matrix.coeffRef(9) = static_cast<float>(eigen_vectors.coeff(108));
-  projection_matrix.coeffRef(10) = static_cast<float>(eigen_vectors.coeff(120));
-  projection_matrix.coeffRef(11) = static_cast<float>(eigen_vectors.coeff(132));
+  projection_matrix.coeffRef (0) = static_cast<float> (eigen_vectors.coeff (0));
+  projection_matrix.coeffRef (1) = static_cast<float> (eigen_vectors.coeff (12));
+  projection_matrix.coeffRef (2) = static_cast<float> (eigen_vectors.coeff (24));
+  projection_matrix.coeffRef (3) = static_cast<float> (eigen_vectors.coeff (36));
+  projection_matrix.coeffRef (4) = static_cast<float> (eigen_vectors.coeff (48));
+  projection_matrix.coeffRef (5) = static_cast<float> (eigen_vectors.coeff (60));
+  projection_matrix.coeffRef (6) = static_cast<float> (eigen_vectors.coeff (72));
+  projection_matrix.coeffRef (7) = static_cast<float> (eigen_vectors.coeff (84));
+  projection_matrix.coeffRef (8) = static_cast<float> (eigen_vectors.coeff (96));
+  projection_matrix.coeffRef (9) = static_cast<float> (eigen_vectors.coeff (108));
+  projection_matrix.coeffRef (10) = static_cast<float> (eigen_vectors.coeff (120));
+  projection_matrix.coeffRef (11) = static_cast<float> (eigen_vectors.coeff (132));
 
-  if (projection_matrix.coeff(0) < 0)
+  if (projection_matrix.coeff (0) < 0)
     projection_matrix *= -1.0;
 
   return (residual);

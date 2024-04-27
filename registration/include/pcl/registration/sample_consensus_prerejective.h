@@ -121,13 +121,13 @@ public:
   SampleConsensusPrerejective()
   : input_features_()
   , target_features_()
-  , feature_tree_(new pcl::KdTreeFLANN<FeatureT>)
-  , correspondence_rejector_poly_(new CorrespondenceRejectorPoly)
+  , feature_tree_ (new pcl::KdTreeFLANN<FeatureT>)
+  , correspondence_rejector_poly_ (new CorrespondenceRejectorPoly)
   {
     reg_name_ = "SampleConsensusPrerejective";
-    correspondence_rejector_poly_->setSimilarityThreshold(0.6f);
+    correspondence_rejector_poly_->setSimilarityThreshold (0.6f);
     max_iterations_ = 5000;
-    transformation_estimation_.reset(
+    transformation_estimation_.reset (
         new pcl::registration::TransformationEstimationSVD<PointSource, PointTarget>);
   };
 
@@ -203,7 +203,7 @@ public:
   inline void
   setSimilarityThreshold (float similarity_threshold)
   {
-    correspondence_rejector_poly_->setSimilarityThreshold(similarity_threshold);
+    correspondence_rejector_poly_->setSimilarityThreshold (similarity_threshold);
   }
 
   /** \brief Get the similarity threshold between edge lengths of the underlying
@@ -250,7 +250,7 @@ protected:
   inline int
   getRandomIndex (int n) const
   {
-    return (static_cast<int>(n * (rand() / (RAND_MAX + 1.0))));
+    return (static_cast<int> (n * (rand() / (RAND_MAX + 1.0))));
   };
 
   /** \brief Select \a nr_samples sample points from cloud while making sure that their

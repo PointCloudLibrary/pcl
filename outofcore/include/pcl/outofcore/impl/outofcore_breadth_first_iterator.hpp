@@ -43,9 +43,9 @@ namespace pcl {
 namespace outofcore {
 
 template <typename PointT, typename ContainerT>
-OutofcoreBreadthFirstIterator<PointT, ContainerT>::OutofcoreBreadthFirstIterator(
+OutofcoreBreadthFirstIterator<PointT, ContainerT>::OutofcoreBreadthFirstIterator (
     OutofcoreOctreeBase<ContainerT, PointT>& octree_arg)
-: OutofcoreIteratorBase<PointT, ContainerT>(octree_arg)
+: OutofcoreIteratorBase<PointT, ContainerT> (octree_arg)
 {
   reset();
 }
@@ -72,15 +72,15 @@ OutofcoreBreadthFirstIterator<PointT, ContainerT>::operator++()
     if (!skip_child_voxels_ && node->getDepth() < this->max_depth_ &&
         node->getNodeType() == pcl::octree::BRANCH_NODE) {
       // Get the branch node
-      auto* branch = static_cast<BranchNode*>(node);
+      auto* branch = static_cast<BranchNode*> (node);
       OctreeDiskNode* child = nullptr;
 
       // Iterate over the branches children
       for (unsigned char child_idx = 0; child_idx < 8; child_idx++) {
         // If child/index exists add it to FIFO queue
-        child = this->octree_.getBranchChildPtr(*branch, child_idx);
+        child = this->octree_.getBranchChildPtr (*branch, child_idx);
         if (child) {
-          FIFO_.push_back(child);
+          FIFO_.push_back (child);
         }
       }
     }

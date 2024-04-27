@@ -61,14 +61,14 @@ public:
   virtual OctreePointCloudVoxelCentroidContainer*
   deepCopy () const
   {
-    return (new OctreePointCloudVoxelCentroidContainer(*this));
+    return (new OctreePointCloudVoxelCentroidContainer (*this));
   }
 
   /** \brief Equal comparison operator - set to false
    */
   // param[in] OctreePointCloudVoxelCentroidContainer to compare with
   bool
-  operator==(const OctreeContainerBase&) const override
+  operator== (const OctreeContainerBase&) const override
   {
     return (false);
   }
@@ -96,7 +96,7 @@ public:
 
     if (point_counter_) {
       centroid_arg = point_sum_;
-      centroid_arg /= static_cast<float>(point_counter_);
+      centroid_arg /= static_cast<float> (point_counter_);
     }
     else {
       centroid_arg *= 0.0f;
@@ -144,8 +144,8 @@ public:
   /** \brief OctreePointCloudVoxelCentroids class constructor.
    * \param[in] resolution_arg octree resolution at lowest octree level
    */
-  OctreePointCloudVoxelCentroid(const double resolution_arg)
-  : OctreePointCloud<PointT, LeafContainerT, BranchContainerT>(resolution_arg)
+  OctreePointCloudVoxelCentroid (const double resolution_arg)
+  : OctreePointCloud<PointT, LeafContainerT, BranchContainerT> (resolution_arg)
   {}
 
   /** \brief Empty class deconstructor. */
@@ -160,19 +160,19 @@ public:
   {
     OctreeKey key;
 
-    assert(pointIdx_arg < this->input_->size());
+    assert (pointIdx_arg < this->input_->size());
 
     const PointT& point = (*this->input_)[pointIdx_arg];
 
     // make sure bounding box is big enough
-    this->adoptBoundingBoxToPoint(point);
+    this->adoptBoundingBoxToPoint (point);
 
     // generate key
-    this->genOctreeKeyforPoint(point, key);
+    this->genOctreeKeyforPoint (point, key);
 
     // add point to octree at key
-    LeafContainerT* container = this->createLeaf(key);
-    container->addPoint(point);
+    LeafContainerT* container = this->createLeaf (key);
+    container->addPoint (point);
   }
 
   /** \brief Get centroid for a single voxel addressed by a PointT point.
@@ -194,8 +194,8 @@ public:
                            PointT& voxel_centroid_arg) const
   {
     // get centroid at point
-    return (this->getVoxelCentroidAtPoint((*this->input_)[point_idx_arg],
-                                          voxel_centroid_arg));
+    return (this->getVoxelCentroidAtPoint ((*this->input_)[point_idx_arg],
+                                           voxel_centroid_arg));
   }
 
   /** \brief Get PointT vector of centroids for all occupied voxels.

@@ -80,10 +80,10 @@ public:
 
   /** \brief Constructor
    */
-  StandaloneMarchingCubes(int voxels_x = 512,
-                          int voxels_y = 512,
-                          int voxels_z = 512,
-                          float volume_size = 3.0f);
+  StandaloneMarchingCubes (int voxels_x = 512,
+                           int voxels_y = 512,
+                           int voxels_z = 512,
+                           float volume_size = 3.0f);
 
   /** \brief Run marching cubes in a TSDF cloud and returns a PolygonMesh. Input X,Y,Z
    * coordinates must be in indices of the TSDF volume grid, output is in meters.

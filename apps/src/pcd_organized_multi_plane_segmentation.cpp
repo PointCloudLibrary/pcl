@@ -55,19 +55,19 @@ private:
   bool polygon_refinement_;
 
 public:
-  PCDOrganizedMultiPlaneSegmentation(typename pcl::PointCloud<PointT>::ConstPtr cloud_,
-                                     bool refine)
-  : viewer("Viewer")
-  , cloud(cloud_)
-  , refine_(refine)
-  , threshold_(0.02f)
-  , depth_dependent_(true)
-  , polygon_refinement_(false)
+  PCDOrganizedMultiPlaneSegmentation (typename pcl::PointCloud<PointT>::ConstPtr cloud_,
+                                      bool refine)
+  : viewer ("Viewer")
+  , cloud (cloud_)
+  , refine_ (refine)
+  , threshold_ (0.02f)
+  , depth_dependent_ (true)
+  , polygon_refinement_ (false)
   {
-    viewer.setBackgroundColor(0, 0, 0);
-    viewer.addCoordinateSystem(1.0, "global");
+    viewer.setBackgroundColor (0, 0, 0);
+    viewer.addCoordinateSystem (1.0, "global");
     viewer.initCameraParameters();
-    viewer.registerKeyboardCallback(
+    viewer.registerKeyboardCallback (
         &PCDOrganizedMultiPlaneSegmentation::keyboard_callback, *this, nullptr);
   }
 
@@ -115,77 +115,78 @@ public:
     unsigned char blu[6] = {0, 0, 255, 0, 255, 255};
 
     pcl::IntegralImageNormalEstimation<PointT, pcl::Normal> ne;
-    ne.setNormalEstimationMethod(ne.COVARIANCE_MATRIX);
-    ne.setMaxDepthChangeFactor(0.02f);
-    ne.setNormalSmoothingSize(20.0f);
+    ne.setNormalEstimationMethod (ne.COVARIANCE_MATRIX);
+    ne.setMaxDepthChangeFactor (0.02f);
+    ne.setNormalSmoothingSize (20.0f);
 
     typename pcl::PlaneRefinementComparator<PointT, pcl::Normal, pcl::Label>::Ptr
-        refinement_compare(
+        refinement_compare (
             new pcl::PlaneRefinementComparator<PointT, pcl::Normal, pcl::Label>());
-    refinement_compare->setDistanceThreshold(threshold_, depth_dependent_);
+    refinement_compare->setDistanceThreshold (threshold_, depth_dependent_);
 
     pcl::OrganizedMultiPlaneSegmentation<PointT, pcl::Normal, pcl::Label> mps;
-    mps.setMinInliers(5000);
-    mps.setAngularThreshold(0.017453 * 3.0); // 3 degrees
-    mps.setDistanceThreshold(0.03);          // 2cm
-    mps.setRefinementComparator(refinement_compare);
+    mps.setMinInliers (5000);
+    mps.setAngularThreshold (0.017453 * 3.0); // 3 degrees
+    mps.setDistanceThreshold (0.03);          // 2cm
+    mps.setRefinementComparator (refinement_compare);
 
     std::vector<pcl::PlanarRegion<PointT>,
                 Eigen::aligned_allocator<pcl::PlanarRegion<PointT>>>
         regions;
-    typename pcl::PointCloud<PointT>::Ptr contour(new pcl::PointCloud<PointT>);
-    typename pcl::PointCloud<PointT>::Ptr approx_contour(new pcl::PointCloud<PointT>);
+    typename pcl::PointCloud<PointT>::Ptr contour (new pcl::PointCloud<PointT>);
+    typename pcl::PointCloud<PointT>::Ptr approx_contour (new pcl::PointCloud<PointT>);
     char name[1024];
 
-    typename pcl::PointCloud<pcl::Normal>::Ptr normal_cloud(
+    typename pcl::PointCloud<pcl::Normal>::Ptr normal_cloud (
         new pcl::PointCloud<pcl::Normal>);
     double normal_start = pcl::getTime();
-    ne.setInputCloud(cloud);
-    ne.compute(*normal_cloud);
+    ne.setInputCloud (cloud);
+    ne.compute (*normal_cloud);
     double normal_end = pcl::getTime();
-    std::cout << "Normal Estimation took " << double(normal_end - normal_start)
+    std::cout << "Normal Estimation took " << double (normal_end - normal_start)
               << std::endl;
 
     double plane_extract_start = pcl::getTime();
-    mps.setInputNormals(normal_cloud);
-    mps.setInputCloud(cloud);
+    mps.setInputNormals (normal_cloud);
+    mps.setInputCloud (cloud);
     if (refine_)
-      mps.segmentAndRefine(regions);
+      mps.segmentAndRefine (regions);
     else
-      mps.segment(regions);
+      mps.segment (regions);
     double plane_extract_end = pcl::getTime();
     std::cout << "Plane extraction took "
-              << double(plane_extract_end - plane_extract_start)
+              << double (plane_extract_end - plane_extract_start)
               << " with planar regions found: " << regions.size() << std::endl;
-    std::cout << "Frame took " << double(plane_extract_end - normal_start) << std::endl;
+    std::cout << "Frame took " << double (plane_extract_end - normal_start)
+              << std::endl;
 
-    typename pcl::PointCloud<PointT>::Ptr cluster(new pcl::PointCloud<PointT>);
+    typename pcl::PointCloud<PointT>::Ptr cluster (new pcl::PointCloud<PointT>);
 
-    viewer.removeAllPointClouds(0);
-    viewer.removeAllShapes(0);
-    pcl::visualization::PointCloudColorHandlerCustom<PointT> single_color(
+    viewer.removeAllPointClouds (0);
+    viewer.removeAllShapes (0);
+    pcl::visualization::PointCloudColorHandlerCustom<PointT> single_color (
         cloud, 0, 255, 0);
-    viewer.addPointCloud<PointT>(cloud, single_color, "cloud");
+    viewer.addPointCloud<PointT> (cloud, single_color, "cloud");
 
     pcl::PlanarPolygon<PointT> approx_polygon;
     // Draw Visualization
     for (std::size_t i = 0; i < regions.size(); i++) {
       Eigen::Vector3f centroid = regions[i].getCentroid();
       Eigen::Vector4f model = regions[i].getCoefficients();
-      pcl::PointXYZ pt1 = pcl::PointXYZ(centroid[0], centroid[1], centroid[2]);
-      pcl::PointXYZ pt2 = pcl::PointXYZ(centroid[0] + (0.5f * model[0]),
-                                        centroid[1] + (0.5f * model[1]),
-                                        centroid[2] + (0.5f * model[2]));
-      std::snprintf(name, sizeof(name), "normal_%zu", i);
-      viewer.addArrow(pt2, pt1, 1.0, 0, 0, std::string(name));
+      pcl::PointXYZ pt1 = pcl::PointXYZ (centroid[0], centroid[1], centroid[2]);
+      pcl::PointXYZ pt2 = pcl::PointXYZ (centroid[0] + (0.5f * model[0]),
+                                         centroid[1] + (0.5f * model[1]),
+                                         centroid[2] + (0.5f * model[2]));
+      std::snprintf (name, sizeof (name), "normal_%zu", i);
+      viewer.addArrow (pt2, pt1, 1.0, 0, 0, std::string (name));
 
       contour->points = regions[i].getContour();
-      std::snprintf(name, sizeof(name), "plane_%02zu", i);
-      pcl::visualization::PointCloudColorHandlerCustom<PointT> color(
+      std::snprintf (name, sizeof (name), "plane_%02zu", i);
+      pcl::visualization::PointCloudColorHandlerCustom<PointT> color (
           contour, red[i], grn[i], blu[i]);
-      viewer.addPointCloud(contour, color, name);
+      viewer.addPointCloud (contour, color, name);
 
-      pcl::approximatePolygon(
+      pcl::approximatePolygon (
           regions[i], approx_polygon, threshold_, polygon_refinement_);
       approx_contour->points = approx_polygon.getContour();
       std::cout << "polygon: " << contour->size() << " -> " << approx_contour->size()
@@ -193,17 +194,17 @@ public:
       typename pcl::PointCloud<PointT>::ConstPtr approx_contour_const = approx_contour;
 
       for (std::size_t idx = 0; idx < approx_contour->size(); ++idx) {
-        std::snprintf(name,
-                      sizeof(name),
-                      "approx_plane_%02zu_%03zu",
-                      static_cast<std::size_t>(i),
-                      static_cast<std::size_t>(idx));
-        viewer.addLine((*approx_contour)[idx],
-                       (*approx_contour)[(idx + 1) % approx_contour->size()],
-                       0.5 * red[i],
-                       0.5 * grn[i],
-                       0.5 * blu[i],
-                       name);
+        std::snprintf (name,
+                       sizeof (name),
+                       "approx_plane_%02zu_%03zu",
+                       static_cast<std::size_t> (i),
+                       static_cast<std::size_t> (idx));
+        viewer.addLine ((*approx_contour)[idx],
+                        (*approx_contour)[(idx + 1) % approx_contour->size()],
+                        0.5 * red[i],
+                        0.5 * grn[i],
+                        0.5 * blu[i],
+                        name);
       }
     }
   }
@@ -215,18 +216,18 @@ public:
     process();
 
     while (!viewer.wasStopped())
-      viewer.spinOnce(100);
+      viewer.spinOnce (100);
   }
 };
 
 int
 main (int argc, char** argv)
 {
-  bool refine = pcl::console::find_switch(argc, argv, "-refine");
+  bool refine = pcl::console::find_switch (argc, argv, "-refine");
 
-  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_xyz(new pcl::PointCloud<pcl::PointXYZ>);
-  pcl::io::loadPCDFile(argv[1], *cloud_xyz);
-  PCDOrganizedMultiPlaneSegmentation<pcl::PointXYZ> multi_plane_app(cloud_xyz, refine);
+  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_xyz (new pcl::PointCloud<pcl::PointXYZ>);
+  pcl::io::loadPCDFile (argv[1], *cloud_xyz);
+  PCDOrganizedMultiPlaneSegmentation<pcl::PointXYZ> multi_plane_app (cloud_xyz, refine);
   multi_plane_app.run();
   return 0;
 }

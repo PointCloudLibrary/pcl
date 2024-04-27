@@ -21,7 +21,7 @@ class Grid : public Object {
 public:
   // Operators
   // -----------------------------------------------------------------------------
-  Grid(std::string name, int size = 10, double spacing = 1.0);
+  Grid (std::string name, int size = 10, double spacing = 1.0);
   ~Grid() override = default;
 
   // Accessors

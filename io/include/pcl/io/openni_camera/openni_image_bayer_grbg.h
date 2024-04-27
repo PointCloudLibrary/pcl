@@ -55,8 +55,8 @@ class PCL_EXPORTS ImageBayerGRBG : public Image {
 public:
   enum DebayeringMethod { Bilinear = 0, EdgeAware, EdgeAwareWeighted };
 
-  ImageBayerGRBG(pcl::shared_ptr<xn::ImageMetaData> image_meta_data,
-                 DebayeringMethod method) noexcept;
+  ImageBayerGRBG (pcl::shared_ptr<xn::ImageMetaData> image_meta_data,
+                  DebayeringMethod method) noexcept;
   ~ImageBayerGRBG() noexcept override;
 
   inline Encoding
@@ -95,7 +95,7 @@ protected:
 };
 
 void
-ImageBayerGRBG::setDebayeringMethod(
+ImageBayerGRBG::setDebayeringMethod (
     const ImageBayerGRBG::DebayeringMethod& method) noexcept
 {
   debayering_method_ = method;
@@ -108,10 +108,10 @@ ImageBayerGRBG::getDebayeringMethod() const noexcept
 }
 
 bool
-ImageBayerGRBG::resizingSupported(unsigned input_width,
-                                  unsigned input_height,
-                                  unsigned output_width,
-                                  unsigned output_height)
+ImageBayerGRBG::resizingSupported (unsigned input_width,
+                                   unsigned input_height,
+                                   unsigned output_width,
+                                   unsigned output_height)
 {
   return (output_width <= input_width && output_height <= input_height &&
           input_width % output_width == 0 && input_height % output_height == 0);

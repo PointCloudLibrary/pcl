@@ -108,9 +108,9 @@ useColoredOutput (FILE* stream)
     // Use colored output if PCL_CLICOLOR_FORCE is set or if the output is an
     // interactive terminal
 #ifdef _WIN32
-    colored = getenv("PCL_CLICOLOR_FORCE") || _isatty(_fileno(stream));
+    colored = getenv ("PCL_CLICOLOR_FORCE") || _isatty (_fileno (stream));
 #else
-    colored = getenv("PCL_CLICOLOR_FORCE") || isatty(fileno(stream));
+    colored = getenv ("PCL_CLICOLOR_FORCE") || isatty (fileno (stream));
 #endif
   }
   return colored.get();
@@ -118,277 +118,277 @@ useColoredOutput (FILE* stream)
 
 ////////////////////////////////////////////////////////////////////////////////
 void
-pcl::console::enableColoredOutput(FILE* stream, bool enable)
+pcl::console::enableColoredOutput (FILE* stream, bool enable)
 {
   colored_output[stream] = enable;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void
-pcl::console::change_text_color(FILE* stream, int attribute, int fg, int bg)
+pcl::console::change_text_color (FILE* stream, int attribute, int fg, int bg)
 {
-  if (!useColoredOutput(stream))
+  if (!useColoredOutput (stream))
     return;
 
 #ifdef _WIN32
-  HANDLE h = GetStdHandle((stream == stdout) ? STD_OUTPUT_HANDLE : STD_ERROR_HANDLE);
-  SetConsoleTextAttribute(h, convertAttributesColor(attribute, fg, bg));
+  HANDLE h = GetStdHandle ((stream == stdout) ? STD_OUTPUT_HANDLE : STD_ERROR_HANDLE);
+  SetConsoleTextAttribute (h, convertAttributesColor (attribute, fg, bg));
 #else
   char command[40];
   // Command is the control command to the terminal
-  sprintf(command, "%c[%d;%d;%dm", 0x1B, attribute, fg + 30, bg + 40);
-  fprintf(stream, "%s", command);
+  sprintf (command, "%c[%d;%d;%dm", 0x1B, attribute, fg + 30, bg + 40);
+  fprintf (stream, "%s", command);
 #endif
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void
-pcl::console::change_text_color(FILE* stream, int attribute, int fg)
+pcl::console::change_text_color (FILE* stream, int attribute, int fg)
 {
-  if (!useColoredOutput(stream))
+  if (!useColoredOutput (stream))
     return;
 
 #ifdef _WIN32
-  HANDLE h = GetStdHandle((stream == stdout) ? STD_OUTPUT_HANDLE : STD_ERROR_HANDLE);
-  SetConsoleTextAttribute(h, convertAttributesColor(attribute, fg));
+  HANDLE h = GetStdHandle ((stream == stdout) ? STD_OUTPUT_HANDLE : STD_ERROR_HANDLE);
+  SetConsoleTextAttribute (h, convertAttributesColor (attribute, fg));
 #else
   char command[17];
   // Command is the control command to the terminal
-  sprintf(command, "%c[%d;%dm", 0x1B, attribute, fg + 30);
-  fprintf(stream, "%s", command);
+  sprintf (command, "%c[%d;%dm", 0x1B, attribute, fg + 30);
+  fprintf (stream, "%s", command);
 #endif
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void
-pcl::console::reset_text_color(FILE* stream)
+pcl::console::reset_text_color (FILE* stream)
 {
-  if (!useColoredOutput(stream))
+  if (!useColoredOutput (stream))
     return;
 
 #ifdef _WIN32
-  HANDLE h = GetStdHandle((stream == stdout) ? STD_OUTPUT_HANDLE : STD_ERROR_HANDLE);
-  SetConsoleTextAttribute(h, convertAttributesColor(0, TT_WHITE, TT_BLACK));
+  HANDLE h = GetStdHandle ((stream == stdout) ? STD_OUTPUT_HANDLE : STD_ERROR_HANDLE);
+  SetConsoleTextAttribute (h, convertAttributesColor (0, TT_WHITE, TT_BLACK));
 #else
   char command[13];
   // Command is the control command to the terminal
-  sprintf(command, "%c[0;m", 0x1B);
-  fprintf(stream, "%s", command);
+  sprintf (command, "%c[0;m", 0x1B);
+  fprintf (stream, "%s", command);
 #endif
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void
-pcl::console::print_color(FILE* stream, int attr, int fg, const char* format, ...)
+pcl::console::print_color (FILE* stream, int attr, int fg, const char* format, ...)
 {
-  change_text_color(stream, attr, fg);
+  change_text_color (stream, attr, fg);
   va_list ap;
 
-  va_start(ap, format);
-  vfprintf(stream, format, ap);
-  va_end(ap);
+  va_start (ap, format);
+  vfprintf (stream, format, ap);
+  va_end (ap);
 
-  reset_text_color(stream);
+  reset_text_color (stream);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void
-pcl::console::print_info(const char* format, ...)
+pcl::console::print_info (const char* format, ...)
 {
-  if (!isVerbosityLevelEnabled(L_INFO))
+  if (!isVerbosityLevelEnabled (L_INFO))
     return;
 
-  reset_text_color(stdout);
+  reset_text_color (stdout);
 
   va_list ap;
 
-  va_start(ap, format);
-  vfprintf(stdout, format, ap);
-  va_end(ap);
+  va_start (ap, format);
+  vfprintf (stdout, format, ap);
+  va_end (ap);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void
-pcl::console::print_info(FILE* stream, const char* format, ...)
+pcl::console::print_info (FILE* stream, const char* format, ...)
 {
-  if (!isVerbosityLevelEnabled(L_INFO))
+  if (!isVerbosityLevelEnabled (L_INFO))
     return;
 
-  reset_text_color(stream);
+  reset_text_color (stream);
 
   va_list ap;
 
-  va_start(ap, format);
-  vfprintf(stream, format, ap);
-  va_end(ap);
+  va_start (ap, format);
+  vfprintf (stream, format, ap);
+  va_end (ap);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void
-pcl::console::print_highlight(const char* format, ...)
+pcl::console::print_highlight (const char* format, ...)
 {
   // if (!isVerbosityLevelEnabled (L_ALWAYS)) return;
 
-  change_text_color(stdout, TT_BRIGHT, TT_GREEN);
-  fprintf(stdout, "> ");
-  reset_text_color(stdout);
+  change_text_color (stdout, TT_BRIGHT, TT_GREEN);
+  fprintf (stdout, "> ");
+  reset_text_color (stdout);
 
   va_list ap;
 
-  va_start(ap, format);
-  vfprintf(stdout, format, ap);
-  va_end(ap);
+  va_start (ap, format);
+  vfprintf (stdout, format, ap);
+  va_end (ap);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void
-pcl::console::print_highlight(FILE* stream, const char* format, ...)
+pcl::console::print_highlight (FILE* stream, const char* format, ...)
 {
   // if (!isVerbosityLevelEnabled (L_ALWAYS)) return;
 
-  change_text_color(stream, TT_BRIGHT, TT_GREEN);
-  fprintf(stream, "> ");
-  reset_text_color(stream);
+  change_text_color (stream, TT_BRIGHT, TT_GREEN);
+  fprintf (stream, "> ");
+  reset_text_color (stream);
 
   va_list ap;
 
-  va_start(ap, format);
-  vfprintf(stream, format, ap);
-  va_end(ap);
+  va_start (ap, format);
+  vfprintf (stream, format, ap);
+  va_end (ap);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void
-pcl::console::print_error(const char* format, ...)
+pcl::console::print_error (const char* format, ...)
 {
-  if (!isVerbosityLevelEnabled(L_ERROR))
+  if (!isVerbosityLevelEnabled (L_ERROR))
     return;
 
-  change_text_color(stderr, TT_BRIGHT, TT_RED);
+  change_text_color (stderr, TT_BRIGHT, TT_RED);
   va_list ap;
 
-  va_start(ap, format);
-  vfprintf(stderr, format, ap);
-  va_end(ap);
+  va_start (ap, format);
+  vfprintf (stderr, format, ap);
+  va_end (ap);
 
-  reset_text_color(stderr);
+  reset_text_color (stderr);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void
-pcl::console::print_error(FILE* stream, const char* format, ...)
+pcl::console::print_error (FILE* stream, const char* format, ...)
 {
-  if (!isVerbosityLevelEnabled(L_ERROR))
+  if (!isVerbosityLevelEnabled (L_ERROR))
     return;
 
-  change_text_color(stream, TT_BRIGHT, TT_RED);
+  change_text_color (stream, TT_BRIGHT, TT_RED);
   va_list ap;
 
-  va_start(ap, format);
-  vfprintf(stream, format, ap);
-  va_end(ap);
+  va_start (ap, format);
+  vfprintf (stream, format, ap);
+  va_end (ap);
 
-  reset_text_color(stream);
+  reset_text_color (stream);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void
-pcl::console::print_warn(const char* format, ...)
+pcl::console::print_warn (const char* format, ...)
 {
-  if (!isVerbosityLevelEnabled(L_WARN))
+  if (!isVerbosityLevelEnabled (L_WARN))
     return;
 
-  change_text_color(stderr, TT_BRIGHT, TT_YELLOW);
+  change_text_color (stderr, TT_BRIGHT, TT_YELLOW);
   va_list ap;
 
-  va_start(ap, format);
-  vfprintf(stderr, format, ap);
-  va_end(ap);
+  va_start (ap, format);
+  vfprintf (stderr, format, ap);
+  va_end (ap);
 
-  reset_text_color(stderr);
+  reset_text_color (stderr);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void
-pcl::console::print_warn(FILE* stream, const char* format, ...)
+pcl::console::print_warn (FILE* stream, const char* format, ...)
 {
-  if (!isVerbosityLevelEnabled(L_WARN))
+  if (!isVerbosityLevelEnabled (L_WARN))
     return;
 
-  change_text_color(stream, TT_BRIGHT, TT_YELLOW);
+  change_text_color (stream, TT_BRIGHT, TT_YELLOW);
   va_list ap;
 
-  va_start(ap, format);
-  vfprintf(stream, format, ap);
-  va_end(ap);
+  va_start (ap, format);
+  vfprintf (stream, format, ap);
+  va_end (ap);
 
-  reset_text_color(stream);
+  reset_text_color (stream);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void
-pcl::console::print_value(const char* format, ...)
+pcl::console::print_value (const char* format, ...)
 {
   // if (!isVerbosityLevelEnabled (L_ALWAYS)) return;
 
-  change_text_color(stdout, TT_RESET, TT_CYAN);
+  change_text_color (stdout, TT_RESET, TT_CYAN);
   va_list ap;
 
-  va_start(ap, format);
-  vfprintf(stdout, format, ap);
-  va_end(ap);
+  va_start (ap, format);
+  vfprintf (stdout, format, ap);
+  va_end (ap);
 
-  reset_text_color(stdout);
+  reset_text_color (stdout);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void
-pcl::console::print_value(FILE* stream, const char* format, ...)
+pcl::console::print_value (FILE* stream, const char* format, ...)
 {
   // if (!isVerbosityLevelEnabled (L_ALWAYS)) return;
 
-  change_text_color(stream, TT_RESET, TT_CYAN);
+  change_text_color (stream, TT_RESET, TT_CYAN);
   va_list ap;
 
-  va_start(ap, format);
-  vfprintf(stream, format, ap);
-  va_end(ap);
+  va_start (ap, format);
+  vfprintf (stream, format, ap);
+  va_end (ap);
 
-  reset_text_color(stream);
+  reset_text_color (stream);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void
-pcl::console::print_debug(const char* format, ...)
+pcl::console::print_debug (const char* format, ...)
 {
-  if (!isVerbosityLevelEnabled(L_DEBUG))
+  if (!isVerbosityLevelEnabled (L_DEBUG))
     return;
 
-  change_text_color(stdout, TT_RESET, TT_GREEN);
+  change_text_color (stdout, TT_RESET, TT_GREEN);
   va_list ap;
 
-  va_start(ap, format);
-  vfprintf(stdout, format, ap);
-  va_end(ap);
+  va_start (ap, format);
+  vfprintf (stdout, format, ap);
+  va_end (ap);
 
-  reset_text_color(stdout);
+  reset_text_color (stdout);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void
-pcl::console::print_debug(FILE* stream, const char* format, ...)
+pcl::console::print_debug (FILE* stream, const char* format, ...)
 {
-  if (!isVerbosityLevelEnabled(L_DEBUG))
+  if (!isVerbosityLevelEnabled (L_DEBUG))
     return;
 
-  change_text_color(stream, TT_RESET, TT_GREEN);
+  change_text_color (stream, TT_RESET, TT_GREEN);
   va_list ap;
 
-  va_start(ap, format);
-  vfprintf(stream, format, ap);
-  va_end(ap);
+  va_start (ap, format);
+  vfprintf (stream, format, ap);
+  va_end (ap);
 
-  reset_text_color(stream);
+  reset_text_color (stream);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -413,7 +413,7 @@ static VERBOSITY_LEVEL s_VerbosityLevel = pcl::console::L_INFO;
 
 ////////////////////////////////////////////////////////////////////////////////
 void
-pcl::console::setVerbosityLevel(pcl::console::VERBOSITY_LEVEL level)
+pcl::console::setVerbosityLevel (pcl::console::VERBOSITY_LEVEL level)
 {
   if (s_NeedVerbosityInit)
     pcl::console::initVerbosityLevel();
@@ -431,7 +431,7 @@ pcl::console::getVerbosityLevel()
 
 ////////////////////////////////////////////////////////////////////////////////
 bool
-pcl::console::isVerbosityLevelEnabled(pcl::console::VERBOSITY_LEVEL level)
+pcl::console::isVerbosityLevelEnabled (pcl::console::VERBOSITY_LEVEL level)
 {
   if (s_NeedVerbosityInit)
     pcl::console::initVerbosityLevel();
@@ -456,29 +456,29 @@ pcl::console::initVerbosityLevel()
   s_VerbosityLevel = pcl::console::L_INFO; // Default value
 #endif
 
-  char* pcl_verbosity_level = getenv("PCL_VERBOSITY_LEVEL");
+  char* pcl_verbosity_level = getenv ("PCL_VERBOSITY_LEVEL");
   if (pcl_verbosity_level) {
-    std::string s_pcl_verbosity_level(pcl_verbosity_level);
-    std::transform(s_pcl_verbosity_level.begin(),
-                   s_pcl_verbosity_level.end(),
-                   s_pcl_verbosity_level.begin(),
-                   toupper);
+    std::string s_pcl_verbosity_level (pcl_verbosity_level);
+    std::transform (s_pcl_verbosity_level.begin(),
+                    s_pcl_verbosity_level.end(),
+                    s_pcl_verbosity_level.begin(),
+                    toupper);
 
-    if (s_pcl_verbosity_level.find("ALWAYS") != std::string::npos)
+    if (s_pcl_verbosity_level.find ("ALWAYS") != std::string::npos)
       s_VerbosityLevel = L_ALWAYS;
-    else if (s_pcl_verbosity_level.find("ERROR") != std::string::npos)
+    else if (s_pcl_verbosity_level.find ("ERROR") != std::string::npos)
       s_VerbosityLevel = L_ERROR;
-    else if (s_pcl_verbosity_level.find("WARN") != std::string::npos)
+    else if (s_pcl_verbosity_level.find ("WARN") != std::string::npos)
       s_VerbosityLevel = L_WARN;
-    else if (s_pcl_verbosity_level.find("INFO") != std::string::npos)
+    else if (s_pcl_verbosity_level.find ("INFO") != std::string::npos)
       s_VerbosityLevel = L_INFO;
-    else if (s_pcl_verbosity_level.find("DEBUG") != std::string::npos)
+    else if (s_pcl_verbosity_level.find ("DEBUG") != std::string::npos)
       s_VerbosityLevel = L_DEBUG;
-    else if (s_pcl_verbosity_level.find("VERBOSE") != std::string::npos)
+    else if (s_pcl_verbosity_level.find ("VERBOSE") != std::string::npos)
       s_VerbosityLevel = L_VERBOSE;
     else
-      printf("Warning: invalid PCL_VERBOSITY_LEVEL set (%s)\n",
-             s_pcl_verbosity_level.c_str());
+      printf ("Warning: invalid PCL_VERBOSITY_LEVEL set (%s)\n",
+              s_pcl_verbosity_level.c_str());
   }
 
   s_NeedVerbosityInit = false;
@@ -487,22 +487,22 @@ pcl::console::initVerbosityLevel()
 
 ////////////////////////////////////////////////////////////////////////////////
 void
-pcl::console::print(pcl::console::VERBOSITY_LEVEL level,
-                    FILE* stream,
-                    const char* format,
-                    ...)
+pcl::console::print (pcl::console::VERBOSITY_LEVEL level,
+                     FILE* stream,
+                     const char* format,
+                     ...)
 {
-  if (!isVerbosityLevelEnabled(level))
+  if (!isVerbosityLevelEnabled (level))
     return;
   switch (level) {
   case L_DEBUG:
-    change_text_color(stream, TT_RESET, TT_GREEN);
+    change_text_color (stream, TT_RESET, TT_GREEN);
     break;
   case L_WARN:
-    change_text_color(stream, TT_BRIGHT, TT_YELLOW);
+    change_text_color (stream, TT_BRIGHT, TT_YELLOW);
     break;
   case L_ERROR:
-    change_text_color(stream, TT_BRIGHT, TT_RED);
+    change_text_color (stream, TT_BRIGHT, TT_RED);
     break;
   case L_ALWAYS:
   case L_INFO:
@@ -513,29 +513,29 @@ pcl::console::print(pcl::console::VERBOSITY_LEVEL level,
 
   va_list ap;
 
-  va_start(ap, format);
-  vfprintf(stream, format, ap);
-  va_end(ap);
+  va_start (ap, format);
+  vfprintf (stream, format, ap);
+  va_end (ap);
 
-  reset_text_color(stream);
+  reset_text_color (stream);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void
-pcl::console::print(pcl::console::VERBOSITY_LEVEL level, const char* format, ...)
+pcl::console::print (pcl::console::VERBOSITY_LEVEL level, const char* format, ...)
 {
-  if (!isVerbosityLevelEnabled(level))
+  if (!isVerbosityLevelEnabled (level))
     return;
   FILE* stream = (level == L_WARN || level == L_ERROR) ? stderr : stdout;
   switch (level) {
   case L_DEBUG:
-    change_text_color(stream, TT_RESET, TT_GREEN);
+    change_text_color (stream, TT_RESET, TT_GREEN);
     break;
   case L_WARN:
-    change_text_color(stream, TT_BRIGHT, TT_YELLOW);
+    change_text_color (stream, TT_BRIGHT, TT_YELLOW);
     break;
   case L_ERROR:
-    change_text_color(stream, TT_BRIGHT, TT_RED);
+    change_text_color (stream, TT_BRIGHT, TT_RED);
     break;
   case L_ALWAYS:
   case L_INFO:
@@ -546,9 +546,9 @@ pcl::console::print(pcl::console::VERBOSITY_LEVEL level, const char* format, ...
 
   va_list ap;
 
-  va_start(ap, format);
-  vfprintf(stream, format, ap);
-  va_end(ap);
+  va_start (ap, format);
+  vfprintf (stream, format, ap);
+  va_end (ap);
 
-  reset_text_color(stream);
+  reset_text_color (stream);
 }

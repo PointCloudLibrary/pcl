@@ -60,13 +60,13 @@ public:
    * interval_seconds interval in seconds \param[in] callback callback to be invoked
    * periodically
    */
-  TimeTrigger(double interval_seconds, const callback_type& callback);
+  TimeTrigger (double interval_seconds, const callback_type& callback);
 
   /** \brief Timer class that calls a callback method periodically. Due to possible
    * blocking calls, only one callback method can be registered per instance. \param[in]
    * interval_seconds interval in seconds
    */
-  TimeTrigger(double interval_seconds = 1.0);
+  TimeTrigger (double interval_seconds = 1.0);
 
   /** \brief Destructor. */
   ~TimeTrigger();

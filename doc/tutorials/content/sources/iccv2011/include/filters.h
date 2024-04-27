@@ -12,11 +12,11 @@ PointCloudPtr
 thresholdDepth (const PointCloudPtr& input, float min_depth, float max_depth)
 {
   pcl::PassThrough<PointT> pass_through;
-  pass_through.setInputCloud(input);
-  pass_through.setFilterFieldName("z");
-  pass_through.setFilterLimits(min_depth, max_depth);
-  PointCloudPtr thresholded(new PointCloud);
-  pass_through.filter(*thresholded);
+  pass_through.setInputCloud (input);
+  pass_through.setFilterFieldName ("z");
+  pass_through.setFilterLimits (min_depth, max_depth);
+  PointCloudPtr thresholded (new PointCloud);
+  pass_through.filter (*thresholded);
 
   return (thresholded);
 }
@@ -26,10 +26,10 @@ PointCloudPtr
 downsample (const PointCloudPtr& input, float leaf_size)
 {
   pcl::VoxelGrid<PointT> voxel_grid;
-  voxel_grid.setInputCloud(input);
-  voxel_grid.setLeafSize(leaf_size, leaf_size, leaf_size);
-  PointCloudPtr downsampled(new PointCloud);
-  voxel_grid.filter(*downsampled);
+  voxel_grid.setInputCloud (input);
+  voxel_grid.setLeafSize (leaf_size, leaf_size, leaf_size);
+  PointCloudPtr downsampled (new PointCloud);
+  voxel_grid.filter (*downsampled);
 
   return (downsampled);
 }
@@ -40,11 +40,11 @@ PointCloudPtr
 removeOutliers (const PointCloudPtr& input, float radius, int min_neighbors)
 {
   pcl::RadiusOutlierRemoval<pcl::PointXYZRGB> radius_outlier_removal;
-  radius_outlier_removal.setInputCloud(input);
-  radius_outlier_removal.setRadiusSearch(radius);
-  radius_outlier_removal.setMinNeighborsInRadius(min_neighbors);
-  PointCloudPtr inliers(new PointCloud);
-  radius_outlier_removal.filter(*inliers);
+  radius_outlier_removal.setInputCloud (input);
+  radius_outlier_removal.setRadiusSearch (radius);
+  radius_outlier_removal.setMinNeighborsInRadius (min_neighbors);
+  PointCloudPtr inliers (new PointCloud);
+  radius_outlier_removal.filter (*inliers);
 
   return (inliers);
 }
@@ -59,9 +59,9 @@ applyFilters (const PointCloudPtr& input,
               float min_neighbors)
 {
   PointCloudPtr filtered;
-  filtered = thresholdDepth(input, min_depth, max_depth);
-  filtered = downsample(filtered, leaf_size);
-  filtered = removeOutliers(filtered, radius, min_neighbors);
+  filtered = thresholdDepth (input, min_depth, max_depth);
+  filtered = downsample (filtered, leaf_size);
+  filtered = removeOutliers (filtered, radius, min_neighbors);
 
   return (filtered);
 }

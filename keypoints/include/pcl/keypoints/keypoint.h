@@ -66,12 +66,12 @@ public:
   using PointCloudInConstPtr = typename PointCloudIn::ConstPtr;
   using PointCloudOut = pcl::PointCloud<PointOutT>;
   using SearchMethod =
-      std::function<int(pcl::index_t, double, pcl::Indices&, std::vector<float>&)>;
-  using SearchMethodSurface = std::function<int(const PointCloudIn& cloud,
-                                                pcl::index_t index,
-                                                double,
-                                                pcl::Indices&,
-                                                std::vector<float>&)>;
+      std::function<int (pcl::index_t, double, pcl::Indices&, std::vector<float>&)>;
+  using SearchMethodSurface = std::function<int (const PointCloudIn& cloud,
+                                                 pcl::index_t index,
+                                                 double,
+                                                 pcl::Indices&,
+                                                 std::vector<float>&)>;
 
 public:
   /** \brief Empty constructor. */
@@ -191,8 +191,8 @@ public:
                       std::vector<float>& distances) const
   {
     if (surface_ == input_) // if the two surfaces are the same
-      return (search_method_(index, parameter, indices, distances));
-    return (search_method_surface_(*input_, index, parameter, indices, distances));
+      return (search_method_ (index, parameter, indices, distances));
+    return (search_method_surface_ (*input_, index, parameter, indices, distances));
   }
 
 protected:

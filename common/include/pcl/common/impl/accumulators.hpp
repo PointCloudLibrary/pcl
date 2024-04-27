@@ -157,19 +157,20 @@ struct AccumulatorRGBA {
   void
   add (const PointT& t)
   {
-    r += static_cast<float>(t.r);
-    g += static_cast<float>(t.g);
-    b += static_cast<float>(t.b);
-    a += static_cast<float>(t.a);
+    r += static_cast<float> (t.r);
+    g += static_cast<float> (t.g);
+    b += static_cast<float> (t.b);
+    a += static_cast<float> (t.a);
   }
 
   template <typename PointT>
   void
   get (PointT& t, std::size_t n) const
   {
-    t.rgba = static_cast<std::uint32_t>(a / n) << 24 |
-             static_cast<std::uint32_t>(r / n) << 16 |
-             static_cast<std::uint32_t>(g / n) << 8 | static_cast<std::uint32_t>(b / n);
+    t.rgba = static_cast<std::uint32_t> (a / n) << 24 |
+             static_cast<std::uint32_t> (r / n) << 16 |
+             static_cast<std::uint32_t> (g / n) << 8 |
+             static_cast<std::uint32_t> (b / n);
   }
 };
 
@@ -209,9 +210,9 @@ struct AccumulatorLabel {
   void
   add (const PointT& t)
   {
-    auto itr = labels.find(t.label);
+    auto itr = labels.find (t.label);
     if (itr == labels.end())
-      labels.insert(std::make_pair(t.label, 1));
+      labels.insert (std::make_pair (t.label, 1));
     else
       ++itr->second;
   }
@@ -262,13 +263,13 @@ struct AddPoint {
 
   const PointT& p;
 
-  AddPoint(const PointT& point) : p(point) {}
+  AddPoint (const PointT& point) : p (point) {}
 
   template <typename AccumulatorT>
   void
-  operator()(AccumulatorT& accumulator) const
+  operator() (AccumulatorT& accumulator) const
   {
-    accumulator.add(p);
+    accumulator.add (p);
   }
 };
 
@@ -280,13 +281,13 @@ struct GetPoint {
   PointT& p;
   std::size_t n;
 
-  GetPoint(PointT& point, std::size_t num) : p(point), n(num) {}
+  GetPoint (PointT& point, std::size_t num) : p (point), n (num) {}
 
   template <typename AccumulatorT>
   void
-  operator()(AccumulatorT& accumulator) const
+  operator() (AccumulatorT& accumulator) const
   {
-    accumulator.get(p, n);
+    accumulator.get (p, n);
   }
 };
 

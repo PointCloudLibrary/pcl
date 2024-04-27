@@ -47,7 +47,7 @@ struct OpenNI2DeviceInfo {
 };
 
 std::ostream&
-operator<<(std::ostream& stream, const OpenNI2DeviceInfo& device_info);
+operator<< (std::ostream& stream, const OpenNI2DeviceInfo& device_info);
 
 } // namespace openni2
 } // namespace io

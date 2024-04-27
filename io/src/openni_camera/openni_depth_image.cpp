@@ -45,20 +45,20 @@
 namespace openni_wrapper {
 
 void
-DepthImage::fillDepthImageRaw(unsigned width,
-                              unsigned height,
-                              unsigned short* depth_buffer,
-                              unsigned line_step) const
+DepthImage::fillDepthImageRaw (unsigned width,
+                               unsigned height,
+                               unsigned short* depth_buffer,
+                               unsigned line_step) const
 {
   if (width > depth_md_->XRes() || height > depth_md_->YRes())
-    THROW_OPENNI_EXCEPTION("upsampling not supported: %d x %d -> %d x %d",
-                           depth_md_->XRes(),
-                           depth_md_->YRes(),
-                           width,
-                           height);
+    THROW_OPENNI_EXCEPTION ("upsampling not supported: %d x %d -> %d x %d",
+                            depth_md_->XRes(),
+                            depth_md_->YRes(),
+                            width,
+                            height);
 
   if (depth_md_->XRes() % width != 0 || depth_md_->YRes() % height != 0)
-    THROW_OPENNI_EXCEPTION(
+    THROW_OPENNI_EXCEPTION (
         "downsampling only supported for integer scale: %d x %d -> %d x %d",
         depth_md_->XRes(),
         depth_md_->YRes(),
@@ -66,18 +66,18 @@ DepthImage::fillDepthImageRaw(unsigned width,
         height);
 
   if (line_step == 0)
-    line_step = width * static_cast<unsigned>(sizeof(unsigned short));
+    line_step = width * static_cast<unsigned> (sizeof (unsigned short));
 
   // special case no sclaing, no padding => memcopy!
   if (width == depth_md_->XRes() && height == depth_md_->YRes() &&
-      (line_step == width * sizeof(unsigned short))) {
-    memcpy(depth_buffer, depth_md_->Data(), depth_md_->DataSize());
+      (line_step == width * sizeof (unsigned short))) {
+    memcpy (depth_buffer, depth_md_->Data(), depth_md_->DataSize());
     return;
   }
 
   // padding skip for destination image
   unsigned bufferSkip =
-      line_step - width * static_cast<unsigned>(sizeof(unsigned short));
+      line_step - width * static_cast<unsigned> (sizeof (unsigned short));
 
   // step and padding skip for source image
   unsigned xStep = depth_md_->XRes() / width;
@@ -94,32 +94,32 @@ DepthImage::fillDepthImageRaw(unsigned width,
           (*depth_md_)[depthIdx] == shadow_value_)
         *depth_buffer = bad_point;
       else {
-        *depth_buffer = static_cast<unsigned short>((*depth_md_)[depthIdx]);
+        *depth_buffer = static_cast<unsigned short> ((*depth_md_)[depthIdx]);
       }
     }
     // if we have padding
     if (bufferSkip > 0) {
-      char* cBuffer = reinterpret_cast<char*>(depth_buffer);
-      depth_buffer = reinterpret_cast<unsigned short*>(cBuffer + bufferSkip);
+      char* cBuffer = reinterpret_cast<char*> (depth_buffer);
+      depth_buffer = reinterpret_cast<unsigned short*> (cBuffer + bufferSkip);
     }
   }
 }
 
 void
-DepthImage::fillDepthImage(unsigned width,
-                           unsigned height,
-                           float* depth_buffer,
-                           unsigned line_step) const
+DepthImage::fillDepthImage (unsigned width,
+                            unsigned height,
+                            float* depth_buffer,
+                            unsigned line_step) const
 {
   if (width > depth_md_->XRes() || height > depth_md_->YRes())
-    THROW_OPENNI_EXCEPTION("upsampling not supported: %d x %d -> %d x %d",
-                           depth_md_->XRes(),
-                           depth_md_->YRes(),
-                           width,
-                           height);
+    THROW_OPENNI_EXCEPTION ("upsampling not supported: %d x %d -> %d x %d",
+                            depth_md_->XRes(),
+                            depth_md_->YRes(),
+                            width,
+                            height);
 
   if (depth_md_->XRes() % width != 0 || depth_md_->YRes() % height != 0)
-    THROW_OPENNI_EXCEPTION(
+    THROW_OPENNI_EXCEPTION (
         "downsampling only supported for integer scale: %d x %d -> %d x %d",
         depth_md_->XRes(),
         depth_md_->YRes(),
@@ -127,10 +127,10 @@ DepthImage::fillDepthImage(unsigned width,
         height);
 
   if (line_step == 0)
-    line_step = width * static_cast<unsigned>(sizeof(float));
+    line_step = width * static_cast<unsigned> (sizeof (float));
 
   // padding skip for destination image
-  unsigned bufferSkip = line_step - width * static_cast<unsigned>(sizeof(float));
+  unsigned bufferSkip = line_step - width * static_cast<unsigned> (sizeof (float));
 
   // step and padding skip for source image
   unsigned xStep = depth_md_->XRes() / width;
@@ -147,32 +147,32 @@ DepthImage::fillDepthImage(unsigned width,
           (*depth_md_)[depthIdx] == shadow_value_)
         *depth_buffer = bad_point;
       else {
-        *depth_buffer = static_cast<float>((*depth_md_)[depthIdx]) * 0.001f;
+        *depth_buffer = static_cast<float> ((*depth_md_)[depthIdx]) * 0.001f;
       }
     }
     // if we have padding
     if (bufferSkip > 0) {
-      char* cBuffer = reinterpret_cast<char*>(depth_buffer);
-      depth_buffer = reinterpret_cast<float*>(cBuffer + bufferSkip);
+      char* cBuffer = reinterpret_cast<char*> (depth_buffer);
+      depth_buffer = reinterpret_cast<float*> (cBuffer + bufferSkip);
     }
   }
 }
 
 void
-DepthImage::fillDisparityImage(unsigned width,
-                               unsigned height,
-                               float* disparity_buffer,
-                               unsigned line_step) const
+DepthImage::fillDisparityImage (unsigned width,
+                                unsigned height,
+                                float* disparity_buffer,
+                                unsigned line_step) const
 {
   if (width > depth_md_->XRes() || height > depth_md_->YRes())
-    THROW_OPENNI_EXCEPTION("upsampling not supported: %d x %d -> %d x %d",
-                           depth_md_->XRes(),
-                           depth_md_->YRes(),
-                           width,
-                           height);
+    THROW_OPENNI_EXCEPTION ("upsampling not supported: %d x %d -> %d x %d",
+                            depth_md_->XRes(),
+                            depth_md_->YRes(),
+                            width,
+                            height);
 
   if (depth_md_->XRes() % width != 0 || depth_md_->YRes() % height != 0)
-    THROW_OPENNI_EXCEPTION(
+    THROW_OPENNI_EXCEPTION (
         "downsampling only supported for integer scale: %d x %d -> %d x %d",
         depth_md_->XRes(),
         depth_md_->YRes(),
@@ -180,18 +180,18 @@ DepthImage::fillDisparityImage(unsigned width,
         height);
 
   if (line_step == 0)
-    line_step = width * static_cast<unsigned>(sizeof(float));
+    line_step = width * static_cast<unsigned> (sizeof (float));
 
   unsigned xStep = depth_md_->XRes() / width;
   unsigned ySkip = (depth_md_->YRes() / height - 1) * depth_md_->XRes();
 
-  unsigned bufferSkip = line_step - width * static_cast<unsigned>(sizeof(float));
+  unsigned bufferSkip = line_step - width * static_cast<unsigned> (sizeof (float));
 
   // Fill in the depth image data
   // iterate over all elements and fill disparity matrix: disp[x,y] = f * b /
   // z_distance[x,y]; focal length is for the native image resolution -> focal_length =
   // focal_length_ / xStep;
-  float constant = focal_length_ * baseline_ * 1000.0f / static_cast<float>(xStep);
+  float constant = focal_length_ * baseline_ * 1000.0f / static_cast<float> (xStep);
 
   for (unsigned yIdx = 0, depthIdx = 0; yIdx < height; ++yIdx, depthIdx += ySkip) {
     for (unsigned xIdx = 0; xIdx < width;
@@ -200,13 +200,13 @@ DepthImage::fillDisparityImage(unsigned width,
           (*depth_md_)[depthIdx] == shadow_value_)
         *disparity_buffer = 0.0;
       else
-        *disparity_buffer = constant / static_cast<float>((*depth_md_)[depthIdx]);
+        *disparity_buffer = constant / static_cast<float> ((*depth_md_)[depthIdx]);
     }
 
     // if we have padding
     if (bufferSkip > 0) {
-      char* cBuffer = reinterpret_cast<char*>(disparity_buffer);
-      disparity_buffer = reinterpret_cast<float*>(cBuffer + bufferSkip);
+      char* cBuffer = reinterpret_cast<char*> (disparity_buffer);
+      disparity_buffer = reinterpret_cast<float*> (cBuffer + bufferSkip);
     }
   }
 }

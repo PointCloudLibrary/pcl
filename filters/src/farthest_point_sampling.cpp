@@ -14,6 +14,6 @@
 #include <pcl/impl/instantiate.hpp>
 #include <pcl/point_types.h>
 
-PCL_INSTANTIATE(FarthestPointSampling, PCL_XYZ_POINT_TYPES);
+PCL_INSTANTIATE (FarthestPointSampling, PCL_XYZ_POINT_TYPES);
 
 #endif // PCL_NO_PRECOMPILE

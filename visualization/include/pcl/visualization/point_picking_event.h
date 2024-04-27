@@ -88,20 +88,20 @@ private:
 /** /brief Class representing 3D point picking events. */
 class PCL_EXPORTS PointPickingEvent {
 public:
-  PointPickingEvent(pcl::index_t idx) : PointPickingEvent(idx, -1, -1, -1) {}
-  PointPickingEvent(
+  PointPickingEvent (pcl::index_t idx) : PointPickingEvent (idx, -1, -1, -1) {}
+  PointPickingEvent (
       pcl::index_t idx, float x, float y, float z, const std::string& name = "")
-  : idx_(idx), idx2_(-1), x_(x), y_(y), z_(z), x2_(), y2_(), z2_(), name_(name)
+  : idx_ (idx), idx2_ (-1), x_ (x), y_ (y), z_ (z), x2_(), y2_(), z2_(), name_ (name)
   {}
-  PointPickingEvent(pcl::index_t idx1,
-                    pcl::index_t idx2,
-                    float x1,
-                    float y1,
-                    float z1,
-                    float x2,
-                    float y2,
-                    float z2)
-  : idx_(idx1), idx2_(idx2), x_(x1), y_(y1), z_(z1), x2_(x2), y2_(y2), z2_(z2)
+  PointPickingEvent (pcl::index_t idx1,
+                     pcl::index_t idx2,
+                     float x1,
+                     float y1,
+                     float z1,
+                     float x2,
+                     float y2,
+                     float z2)
+  : idx_ (idx1), idx2_ (idx2), x_ (x1), y_ (y1), z_ (z1), x2_ (x2), y2_ (y2), z2_ (z2)
   {}
 
   /** \brief Obtain the ID of a point that the user just clicked on.

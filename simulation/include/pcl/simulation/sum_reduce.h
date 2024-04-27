@@ -36,7 +36,7 @@ public:
    * \param width[in] the height of the input array
    * \param levels[in] the number of levels to carry out the reduction
    */
-  SumReduce(int width, int height, int levels);
+  SumReduce (int width, int height, int levels);
 
   /** Release any allocated resources. */
   ~SumReduce();

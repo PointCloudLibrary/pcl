@@ -65,7 +65,7 @@ public:
    * frames per second. If 0, start() functions like a trigger, publishing the next PCD
    * in the list. \param[in] repeat whether to play PCD file in an endless loop or not.
    */
-  PCDGrabberBase(const std::string& pcd_file, float frames_per_second, bool repeat);
+  PCDGrabberBase (const std::string& pcd_file, float frames_per_second, bool repeat);
 
   /** \brief Constructor taking a list of paths to PCD files, that are played in the
    * order they appear in the list. \param[in] pcd_files vector of paths to PCD files.
@@ -73,9 +73,9 @@ public:
    * trigger, publishing the next PCD in the list. \param[in] repeat whether to play PCD
    * file in an endless loop or not.
    */
-  PCDGrabberBase(const std::vector<std::string>& pcd_files,
-                 float frames_per_second,
-                 bool repeat);
+  PCDGrabberBase (const std::vector<std::string>& pcd_files,
+                  float frames_per_second,
+                  bool repeat);
 
   /** \brief Virtual destructor. */
   ~PCDGrabberBase() noexcept override;
@@ -148,19 +148,19 @@ public:
   using Ptr = shared_ptr<PCDGrabber>;
   using ConstPtr = shared_ptr<const PCDGrabber>;
 
-  PCDGrabber(const std::string& pcd_path,
-             float frames_per_second = 0,
-             bool repeat = false);
-  PCDGrabber(const std::vector<std::string>& pcd_files,
-             float frames_per_second = 0,
-             bool repeat = false);
+  PCDGrabber (const std::string& pcd_path,
+              float frames_per_second = 0,
+              bool repeat = false);
+  PCDGrabber (const std::vector<std::string>& pcd_files,
+              float frames_per_second = 0,
+              bool repeat = false);
 
   /** \brief Virtual destructor. */
   ~PCDGrabber() noexcept override { stop(); }
 
   // Inherited from FileGrabber
   const typename pcl::PointCloud<PointT>::ConstPtr
-  operator[](std::size_t idx) const override;
+  operator[] (std::size_t idx) const override;
 
   // Inherited from FileGrabber
   std::size_t
@@ -173,67 +173,67 @@ protected:
            const Eigen::Quaternionf& orientation,
            const std::string& file_name) const override;
 
-  boost::signals2::signal<void(const typename pcl::PointCloud<PointT>::ConstPtr&)>*
+  boost::signals2::signal<void (const typename pcl::PointCloud<PointT>::ConstPtr&)>*
       signal_;
-  boost::signals2::signal<void(const std::string&)>* file_name_signal_;
+  boost::signals2::signal<void (const std::string&)>* file_name_signal_;
 
 #ifdef HAVE_OPENNI
-  boost::signals2::signal<void(const openni_wrapper::DepthImage::Ptr&)>*
+  boost::signals2::signal<void (const openni_wrapper::DepthImage::Ptr&)>*
       depth_image_signal_;
-  boost::signals2::signal<void(const openni_wrapper::Image::Ptr&)>* image_signal_;
-  boost::signals2::signal<void(const openni_wrapper::Image::Ptr&,
-                               const openni_wrapper::DepthImage::Ptr&,
-                               float constant)>* image_depth_image_signal_;
+  boost::signals2::signal<void (const openni_wrapper::Image::Ptr&)>* image_signal_;
+  boost::signals2::signal<void (const openni_wrapper::Image::Ptr&,
+                                const openni_wrapper::DepthImage::Ptr&,
+                                float constant)>* image_depth_image_signal_;
 #endif
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
-PCDGrabber<PointT>::PCDGrabber(const std::string& pcd_path,
-                               float frames_per_second,
-                               bool repeat)
-: PCDGrabberBase(pcd_path, frames_per_second, repeat)
+PCDGrabber<PointT>::PCDGrabber (const std::string& pcd_path,
+                                float frames_per_second,
+                                bool repeat)
+: PCDGrabberBase (pcd_path, frames_per_second, repeat)
 {
-  signal_ = createSignal<void(const typename pcl::PointCloud<PointT>::ConstPtr&)>();
-  file_name_signal_ = createSignal<void(const std::string&)>();
+  signal_ = createSignal<void (const typename pcl::PointCloud<PointT>::ConstPtr&)>();
+  file_name_signal_ = createSignal<void (const std::string&)>();
 #ifdef HAVE_OPENNI
-  depth_image_signal_ = createSignal<void(const openni_wrapper::DepthImage::Ptr&)>();
-  image_signal_ = createSignal<void(const openni_wrapper::Image::Ptr&)>();
-  image_depth_image_signal_ = createSignal<void(const openni_wrapper::Image::Ptr&,
-                                                const openni_wrapper::DepthImage::Ptr&,
-                                                float constant)>();
+  depth_image_signal_ = createSignal<void (const openni_wrapper::DepthImage::Ptr&)>();
+  image_signal_ = createSignal<void (const openni_wrapper::Image::Ptr&)>();
+  image_depth_image_signal_ = createSignal<void (const openni_wrapper::Image::Ptr&,
+                                                 const openni_wrapper::DepthImage::Ptr&,
+                                                 float constant)>();
 #endif
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
-PCDGrabber<PointT>::PCDGrabber(const std::vector<std::string>& pcd_files,
-                               float frames_per_second,
-                               bool repeat)
-: PCDGrabberBase(pcd_files, frames_per_second, repeat), signal_()
+PCDGrabber<PointT>::PCDGrabber (const std::vector<std::string>& pcd_files,
+                                float frames_per_second,
+                                bool repeat)
+: PCDGrabberBase (pcd_files, frames_per_second, repeat), signal_()
 {
-  signal_ = createSignal<void(const typename pcl::PointCloud<PointT>::ConstPtr&)>();
-  file_name_signal_ = createSignal<void(const std::string&)>();
+  signal_ = createSignal<void (const typename pcl::PointCloud<PointT>::ConstPtr&)>();
+  file_name_signal_ = createSignal<void (const std::string&)>();
 #ifdef HAVE_OPENNI
-  depth_image_signal_ = createSignal<void(const openni_wrapper::DepthImage::Ptr&)>();
-  image_signal_ = createSignal<void(const openni_wrapper::Image::Ptr&)>();
-  image_depth_image_signal_ = createSignal<void(const openni_wrapper::Image::Ptr&,
-                                                const openni_wrapper::DepthImage::Ptr&,
-                                                float constant)>();
+  depth_image_signal_ = createSignal<void (const openni_wrapper::DepthImage::Ptr&)>();
+  image_signal_ = createSignal<void (const openni_wrapper::Image::Ptr&)>();
+  image_depth_image_signal_ = createSignal<void (const openni_wrapper::Image::Ptr&,
+                                                 const openni_wrapper::DepthImage::Ptr&,
+                                                 float constant)>();
 #endif
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 const typename pcl::PointCloud<PointT>::ConstPtr
-PCDGrabber<PointT>::operator[](std::size_t idx) const
+PCDGrabber<PointT>::operator[] (std::size_t idx) const
 {
   pcl::PCLPointCloud2 blob;
   Eigen::Vector4f origin;
   Eigen::Quaternionf orientation;
-  getCloudAt(idx, blob, origin, orientation);
-  typename pcl::PointCloud<PointT>::Ptr cloud(new pcl::PointCloud<PointT>());
-  pcl::fromPCLPointCloud2(blob, *cloud);
+  getCloudAt (idx, blob, origin, orientation);
+  typename pcl::PointCloud<PointT>::Ptr cloud (new pcl::PointCloud<PointT>());
+  pcl::fromPCLPointCloud2 (blob, *cloud);
   cloud->sensor_origin_ = origin;
   cloud->sensor_orientation_ = orientation;
   return (cloud);
@@ -250,72 +250,72 @@ PCDGrabber<PointT>::size() const
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 void
-PCDGrabber<PointT>::publish(const pcl::PCLPointCloud2& blob,
-                            const Eigen::Vector4f& origin,
-                            const Eigen::Quaternionf& orientation,
-                            const std::string& file_name) const
+PCDGrabber<PointT>::publish (const pcl::PCLPointCloud2& blob,
+                             const Eigen::Vector4f& origin,
+                             const Eigen::Quaternionf& orientation,
+                             const std::string& file_name) const
 {
-  typename pcl::PointCloud<PointT>::Ptr cloud(new pcl::PointCloud<PointT>());
-  pcl::fromPCLPointCloud2(blob, *cloud);
+  typename pcl::PointCloud<PointT>::Ptr cloud (new pcl::PointCloud<PointT>());
+  pcl::fromPCLPointCloud2 (blob, *cloud);
   cloud->sensor_origin_ = origin;
   cloud->sensor_orientation_ = orientation;
 
-  signal_->operator()(cloud);
+  signal_->operator() (cloud);
   if (file_name_signal_->num_slots() > 0)
-    file_name_signal_->operator()(file_name);
+    file_name_signal_->operator() (file_name);
 
 #ifdef HAVE_OPENNI
   // If dataset is not organized, return
   if (!cloud->isOrganized())
     return;
 
-  shared_ptr<xn::DepthMetaData> depth_meta_data(new xn::DepthMetaData);
-  depth_meta_data->AllocateData(cloud->width, cloud->height);
+  shared_ptr<xn::DepthMetaData> depth_meta_data (new xn::DepthMetaData);
+  depth_meta_data->AllocateData (cloud->width, cloud->height);
   XnDepthPixel* depth_map = depth_meta_data->WritableData();
   std::uint32_t k = 0;
   for (std::uint32_t i = 0; i < cloud->height; ++i)
     for (std::uint32_t j = 0; j < cloud->width; ++j) {
-      depth_map[k] = static_cast<XnDepthPixel>((*cloud)[k].z * 1000);
+      depth_map[k] = static_cast<XnDepthPixel> ((*cloud)[k].z * 1000);
       ++k;
     }
 
-  openni_wrapper::DepthImage::Ptr depth_image(
-      new openni_wrapper::DepthImage(depth_meta_data, 0.075f, 525, 0, 0));
+  openni_wrapper::DepthImage::Ptr depth_image (
+      new openni_wrapper::DepthImage (depth_meta_data, 0.075f, 525, 0, 0));
   if (depth_image_signal_->num_slots() > 0)
-    depth_image_signal_->operator()(depth_image);
+    depth_image_signal_->operator() (depth_image);
 
   // ---[ RGB special case
   std::vector<pcl::PCLPointField> fields;
-  int rgba_index = pcl::getFieldIndex<PointT>("rgb", fields);
+  int rgba_index = pcl::getFieldIndex<PointT> ("rgb", fields);
   if (rgba_index == -1)
-    rgba_index = pcl::getFieldIndex<PointT>("rgba", fields);
+    rgba_index = pcl::getFieldIndex<PointT> ("rgba", fields);
   if (rgba_index >= 0) {
     rgba_index = fields[rgba_index].offset;
 
-    shared_ptr<xn::ImageMetaData> image_meta_data(new xn::ImageMetaData);
-    image_meta_data->AllocateData(cloud->width, cloud->height, XN_PIXEL_FORMAT_RGB24);
+    shared_ptr<xn::ImageMetaData> image_meta_data (new xn::ImageMetaData);
+    image_meta_data->AllocateData (cloud->width, cloud->height, XN_PIXEL_FORMAT_RGB24);
     XnRGB24Pixel* image_map = image_meta_data->WritableRGB24Data();
     k = 0;
     for (std::uint32_t i = 0; i < cloud->height; ++i) {
       for (std::uint32_t j = 0; j < cloud->width; ++j) {
         // Fill r/g/b data, assuming that the order is BGRA
         pcl::RGB rgb;
-        memcpy(&rgb,
-               reinterpret_cast<const char*>(&(*cloud)[k]) + rgba_index,
-               sizeof(RGB));
-        image_map[k].nRed = static_cast<XnUInt8>(rgb.r);
-        image_map[k].nGreen = static_cast<XnUInt8>(rgb.g);
-        image_map[k].nBlue = static_cast<XnUInt8>(rgb.b);
+        memcpy (&rgb,
+                reinterpret_cast<const char*> (&(*cloud)[k]) + rgba_index,
+                sizeof (RGB));
+        image_map[k].nRed = static_cast<XnUInt8> (rgb.r);
+        image_map[k].nGreen = static_cast<XnUInt8> (rgb.g);
+        image_map[k].nBlue = static_cast<XnUInt8> (rgb.b);
         ++k;
       }
     }
 
-    openni_wrapper::Image::Ptr image(new openni_wrapper::ImageRGB24(image_meta_data));
+    openni_wrapper::Image::Ptr image (new openni_wrapper::ImageRGB24 (image_meta_data));
     if (image_signal_->num_slots() > 0)
-      image_signal_->operator()(image);
+      image_signal_->operator() (image);
 
     if (image_depth_image_signal_->num_slots() > 0)
-      image_depth_image_signal_->operator()(image, depth_image, 1.0f / 525.0f);
+      image_depth_image_signal_->operator() (image, depth_image, 1.0f / 525.0f);
   }
 #endif
 }

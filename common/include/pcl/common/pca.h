@@ -84,26 +84,26 @@ public:
   /** \brief Default Constructor
    * \param basis_only flag to compute only the PCA basis
    */
-  PCA(bool basis_only = false) : Base(), basis_only_(basis_only) {}
+  PCA (bool basis_only = false) : Base(), basis_only_ (basis_only) {}
 
   /** Copy Constructor
    * \param[in] pca PCA object
    */
-  PCA(PCA const& pca)
-  : Base(pca)
-  , compute_done_(pca.compute_done_)
-  , basis_only_(pca.basis_only_)
-  , eigenvectors_(pca.eigenvectors_)
-  , coefficients_(pca.coefficients_)
-  , mean_(pca.mean_)
-  , eigenvalues_(pca.eigenvalues_)
+  PCA (PCA const& pca)
+  : Base (pca)
+  , compute_done_ (pca.compute_done_)
+  , basis_only_ (pca.basis_only_)
+  , eigenvectors_ (pca.eigenvectors_)
+  , coefficients_ (pca.coefficients_)
+  , mean_ (pca.mean_)
+  , eigenvalues_ (pca.eigenvalues_)
   {}
 
   /** Assignment operator
    * \param[in] pca PCA object
    */
   inline PCA&
-  operator=(PCA const& pca)
+  operator= (PCA const& pca)
   {
     eigenvectors_ = pca.eigenvectors_;
     coefficients_ = pca.coefficients_;
@@ -118,7 +118,7 @@ public:
   inline void
   setInputCloud (const PointCloudConstPtr& cloud) override
   {
-    Base::setInputCloud(cloud);
+    Base::setInputCloud (cloud);
     compute_done_ = false;
   }
 
@@ -128,7 +128,7 @@ public:
   void
   setIndices (const IndicesPtr& indices) override
   {
-    Base::setIndices(indices);
+    Base::setIndices (indices);
     compute_done_ = false;
   }
 
@@ -138,7 +138,7 @@ public:
   void
   setIndices (const IndicesConstPtr& indices) override
   {
-    Base::setIndices(indices);
+    Base::setIndices (indices);
     compute_done_ = false;
   }
 
@@ -148,7 +148,7 @@ public:
   void
   setIndices (const PointIndicesConstPtr& indices) override
   {
-    Base::setIndices(indices);
+    Base::setIndices (indices);
     compute_done_ = false;
   }
 
@@ -166,7 +166,7 @@ public:
               std::size_t nb_rows,
               std::size_t nb_cols) override
   {
-    Base::setIndices(row_start, col_start, nb_rows, nb_cols);
+    Base::setIndices (row_start, col_start, nb_rows, nb_cols);
     compute_done_ = false;
   }
 
@@ -179,8 +179,8 @@ public:
     if (!compute_done_)
       initCompute();
     if (!compute_done_)
-      PCL_THROW_EXCEPTION(InitFailedException,
-                          "[pcl::PCA::getMean] PCA initCompute failed");
+      PCL_THROW_EXCEPTION (InitFailedException,
+                           "[pcl::PCA::getMean] PCA initCompute failed");
     return (mean_);
   }
 
@@ -194,8 +194,8 @@ public:
     if (!compute_done_)
       initCompute();
     if (!compute_done_)
-      PCL_THROW_EXCEPTION(InitFailedException,
-                          "[pcl::PCA::getEigenVectors] PCA initCompute failed");
+      PCL_THROW_EXCEPTION (InitFailedException,
+                           "[pcl::PCA::getEigenVectors] PCA initCompute failed");
     return (eigenvectors_);
   }
 
@@ -208,8 +208,8 @@ public:
     if (!compute_done_)
       initCompute();
     if (!compute_done_)
-      PCL_THROW_EXCEPTION(InitFailedException,
-                          "[pcl::PCA::getEigenVectors] PCA getEigenValues failed");
+      PCL_THROW_EXCEPTION (InitFailedException,
+                           "[pcl::PCA::getEigenVectors] PCA getEigenValues failed");
     return (eigenvalues_);
   }
 
@@ -222,8 +222,8 @@ public:
     if (!compute_done_)
       initCompute();
     if (!compute_done_)
-      PCL_THROW_EXCEPTION(InitFailedException,
-                          "[pcl::PCA::getEigenVectors] PCA getCoefficients failed");
+      PCL_THROW_EXCEPTION (InitFailedException,
+                           "[pcl::PCA::getEigenVectors] PCA getCoefficients failed");
     return (coefficients_);
   }
 

@@ -68,16 +68,16 @@ public:
     int volume_element_size, weights_element_size;
 
     Header()
-    : resolution(0, 0, 0)
-    , volume_size(0, 0, 0)
-    , volume_element_size(sizeof(VoxelT))
-    , weights_element_size(sizeof(WeightT)){};
+    : resolution (0, 0, 0)
+    , volume_size (0, 0, 0)
+    , volume_element_size (sizeof (VoxelT))
+    , weights_element_size (sizeof (WeightT)){};
 
-    Header(const Eigen::Vector3i& res, const Eigen::Vector3f& size)
-    : resolution(res)
-    , volume_size(size)
-    , volume_element_size(sizeof(VoxelT))
-    , weights_element_size(sizeof(WeightT)){};
+    Header (const Eigen::Vector3i& res, const Eigen::Vector3f& size)
+    : resolution (res)
+    , volume_size (size)
+    , volume_element_size (sizeof (VoxelT))
+    , weights_element_size (sizeof (WeightT)){};
 
     inline std::size_t
     getVolumeSize () const
@@ -86,7 +86,7 @@ public:
     };
 
     friend inline std::ostream&
-    operator<<(std::ostream& os, const Header& h)
+    operator<< (std::ostream& os, const Header& h)
     {
       os << "(resolution = " << h.resolution.transpose()
          << ", volume size = " << h.volume_size.transpose() << ")";
@@ -104,18 +104,18 @@ public:
   struct Intr {
     float fx, fy, cx, cy;
     Intr(){};
-    Intr(float fx_, float fy_, float cx_, float cy_)
-    : fx(fx_), fy(fy_), cx(cx_), cy(cy_){};
+    Intr (float fx_, float fy_, float cx_, float cy_)
+    : fx (fx_), fy (fy_), cx (cx_), cy (cy_){};
 
     Intr
-    operator()(int level_index) const
+    operator() (int level_index) const
     {
       int div = 1 << level_index;
-      return (Intr(fx / div, fy / div, cx / div, cy / div));
+      return (Intr (fx / div, fy / div, cx / div, cy / div));
     }
 
     friend inline std::ostream&
-    operator<<(std::ostream& os, const Intr& intr)
+    operator<< (std::ostream& os, const Intr& intr)
     {
       os << "([f = " << intr.fx << ", " << intr.fy << "] [cp = " << intr.cx << ", "
          << intr.cy << "])";
@@ -127,13 +127,14 @@ public:
   // Constructors
 
   /** \brief Default constructor */
-  TSDFVolume() : volume_(new std::vector<VoxelT>), weights_(new std::vector<WeightT>){};
+  TSDFVolume()
+  : volume_ (new std::vector<VoxelT>), weights_ (new std::vector<WeightT>){};
 
   /** \brief Constructor loading data from file */
-  TSDFVolume(const std::string& filename)
-  : volume_(new std::vector<VoxelT>), weights_(new std::vector<WeightT>)
+  TSDFVolume (const std::string& filename)
+  : volume_ (new std::vector<VoxelT>), weights_ (new std::vector<WeightT>)
   {
-    if (load(filename))
+    if (load (filename))
       std::cout << "done [" << size() << "]" << std::endl;
     else
       std::cout << "error!" << std::endl;
@@ -144,25 +145,25 @@ public:
   inline void
   setHeader (const Eigen::Vector3i& resolution, const Eigen::Vector3f& volume_size)
   {
-    header_ = Header(resolution, volume_size);
+    header_ = Header (resolution, volume_size);
     if (volume_->size() != this->size())
-      pcl::console::print_warn("[TSDFVolume::setHeader] Header volume size (%d) "
-                               "doesn't fit underlying data size (%d)",
-                               volume_->size(),
-                               size());
+      pcl::console::print_warn ("[TSDFVolume::setHeader] Header volume size (%d) "
+                                "doesn't fit underlying data size (%d)",
+                                volume_->size(),
+                                size());
   };
 
   /** \brief Resizes the internal storage and updates the header accordingly */
   inline void
   resize (Eigen::Vector3i& grid_resolution,
-          const Eigen::Vector3f& volume_size = Eigen::Vector3f(DEFAULT_VOLUME_SIZE_X,
-                                                               DEFAULT_VOLUME_SIZE_Y,
-                                                               DEFAULT_VOLUME_SIZE_Z))
+          const Eigen::Vector3f& volume_size = Eigen::Vector3f (DEFAULT_VOLUME_SIZE_X,
+                                                                DEFAULT_VOLUME_SIZE_Y,
+                                                                DEFAULT_VOLUME_SIZE_Z))
   {
     int lin_size = grid_resolution[0] * grid_resolution[1] * grid_resolution[2];
-    volume_->resize(lin_size);
-    weights_->resize(lin_size);
-    setHeader(grid_resolution, volume_size);
+    volume_->resize (lin_size);
+    weights_->resize (lin_size);
+    setHeader (grid_resolution, volume_size);
   };
 
   /** \brief Resize internal storage and header to default sizes defined in
@@ -170,9 +171,10 @@ public:
   inline void
   resizeDefaultSize ()
   {
-    resize(Eigen::Vector3i(DEFAULT_GRID_RES_X, DEFAULT_GRID_RES_Y, DEFAULT_GRID_RES_Z),
-           Eigen::Vector3f(
-               DEFAULT_VOLUME_SIZE_X, DEFAULT_VOLUME_SIZE_Y, DEFAULT_VOLUME_SIZE_Z));
+    resize (
+        Eigen::Vector3i (DEFAULT_GRID_RES_X, DEFAULT_GRID_RES_Y, DEFAULT_GRID_RES_Z),
+        Eigen::Vector3f (
+            DEFAULT_VOLUME_SIZE_X, DEFAULT_VOLUME_SIZE_Y, DEFAULT_VOLUME_SIZE_Z));
   };
 
   ////////////////////////////////////////////////////////////////////////////////////////
@@ -304,8 +306,8 @@ public:
   inline int
   getLinearVoxelIndex (const Eigen::Array3i& indices) const
   {
-    return indices(0) + indices(1) * header_.resolution[0] +
-           indices(2) * header_.resolution[0] * header_.resolution[1];
+    return indices (0) + indices (1) * header_.resolution[0] +
+           indices (2) * header_.resolution[0] * header_.resolution[1];
   }
 
   /** \brief Returns a vector of linear indices for voxel coordinates given in 3xn
@@ -314,9 +316,9 @@ public:
   getLinearVoxelIndinces (
       const Eigen::Matrix<int, 3, Eigen::Dynamic>& indices_matrix) const
   {
-    return (Eigen::RowVector3i(1,
-                               header_.resolution[0],
-                               header_.resolution[0] * header_.resolution[1]) *
+    return (Eigen::RowVector3i (1,
+                                header_.resolution[0],
+                                header_.resolution[0] * header_.resolution[1]) *
             indices_matrix)
         .transpose();
   }

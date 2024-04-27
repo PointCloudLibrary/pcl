@@ -117,9 +117,9 @@ public:
       const std::multimap<std::uint32_t, std::uint32_t>& label_adjacency_arg)
   {
     // Initialization
-    prepareSegmentation(supervoxel_clusters_arg,
-                        label_adjacency_arg); // after this, sv_adjacency_list_ can be
-                                              // used to access adjacency list
+    prepareSegmentation (supervoxel_clusters_arg,
+                         label_adjacency_arg); // after this, sv_adjacency_list_ can be
+                                               // used to access adjacency list
     supervoxels_set_ = true;
   }
 
@@ -148,8 +148,8 @@ public:
       segment_supervoxel_map_arg = seg_label_to_sv_list_map_;
     }
     else {
-      PCL_WARN("[pcl::LCCPSegmentation::getSegmentMap] WARNING: Call function segment "
-               "first. Nothing has been done. \n");
+      PCL_WARN ("[pcl::LCCPSegmentation::getSegmentMap] WARNING: Call function segment "
+                "first. Nothing has been done. \n");
       segment_supervoxel_map_arg = std::map<std::uint32_t, std::set<std::uint32_t>>();
     }
   }
@@ -165,8 +165,8 @@ public:
       supervoxel_segment_map_arg = sv_label_to_seg_label_map_;
     }
     else {
-      PCL_WARN("[pcl::LCCPSegmentation::getSegmentMap] WARNING: Call function segment "
-               "first. Nothing has been done. \n");
+      PCL_WARN ("[pcl::LCCPSegmentation::getSegmentMap] WARNING: Call function segment "
+                "first. Nothing has been done. \n");
       supervoxel_segment_map_arg = std::map<std::uint32_t, std::uint32_t>();
     }
   }
@@ -184,8 +184,9 @@ public:
       segment_adjacency_map_arg = seg_label_to_neighbor_set_map_;
     }
     else {
-      PCL_WARN("[pcl::LCCPSegmentation::getSegmentAdjacencyMap] WARNING: Call function "
-               "segment first. Nothing has been done. \n");
+      PCL_WARN (
+          "[pcl::LCCPSegmentation::getSegmentAdjacencyMap] WARNING: Call function "
+          "segment first. Nothing has been done. \n");
       segment_adjacency_map_arg = std::map<std::uint32_t, std::set<std::uint32_t>>();
     }
   }
@@ -208,8 +209,8 @@ public:
       adjacency_list_arg = sv_adjacency_list_;
     }
     else {
-      PCL_WARN("[pcl::LCCPSegmentation::getSVAdjacencyList] WARNING: Call function "
-               "segment first. Nothing has been done. \n");
+      PCL_WARN ("[pcl::LCCPSegmentation::getSVAdjacencyList] WARNING: Call function "
+                "segment first. Nothing has been done. \n");
       adjacency_list_arg = pcl::LCCPSegmentation<PointT>::SupervoxelAdjacencyList();
     }
   }

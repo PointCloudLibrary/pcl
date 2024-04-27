@@ -49,7 +49,7 @@ template <class FeatureType, class NodeType>
 class PCL_EXPORTS Fern {
 public:
   /** Constructor. */
-  Fern() : num_of_decisions_(0), features_(0), thresholds_(0), nodes_(1) {}
+  Fern() : num_of_decisions_ (0), features_ (0), thresholds_ (0), nodes_ (1) {}
 
   /** Initializes the fern.
    *
@@ -59,9 +59,9 @@ public:
   initialize (const std::size_t num_of_decisions)
   {
     num_of_decisions_ = num_of_decisions;
-    features_.resize(num_of_decisions_);
-    thresholds_.resize(num_of_decisions_, std::numeric_limits<float>::quiet_NaN());
-    nodes_.resize(0x1 << num_of_decisions_);
+    features_.resize (num_of_decisions_);
+    thresholds_.resize (num_of_decisions_, std::numeric_limits<float>::quiet_NaN());
+    nodes_.resize (0x1 << num_of_decisions_);
   }
 
   /** Returns the number of nodes the Fern has. */
@@ -87,19 +87,19 @@ public:
   {
     // const int tmp_value = static_cast<int> (num_of_decisions_);
     // stream.write (reinterpret_cast<char*> (&tmp_value), sizeof (tmp_value));
-    stream.write(reinterpret_cast<const char*>(&num_of_decisions_),
-                 sizeof(num_of_decisions_));
+    stream.write (reinterpret_cast<const char*> (&num_of_decisions_),
+                  sizeof (num_of_decisions_));
 
     for (auto& feature : features_) {
-      feature.serialize(stream);
+      feature.serialize (stream);
     }
 
     for (const auto& threshold : thresholds_) {
-      stream.write(reinterpret_cast<const char*>(&threshold), sizeof(threshold));
+      stream.write (reinterpret_cast<const char*> (&threshold), sizeof (threshold));
     }
 
     for (auto& node : nodes_) {
-      node.serialize(stream);
+      node.serialize (stream);
     }
   }
 
@@ -110,22 +110,23 @@ public:
   void
   deserialize (::std::istream& stream)
   {
-    stream.read(reinterpret_cast<char*>(&num_of_decisions_), sizeof(num_of_decisions_));
+    stream.read (reinterpret_cast<char*> (&num_of_decisions_),
+                 sizeof (num_of_decisions_));
 
-    features_.resize(num_of_decisions_);
-    thresholds_.resize(num_of_decisions_);
-    nodes_.resize(0x1 << num_of_decisions_);
+    features_.resize (num_of_decisions_);
+    thresholds_.resize (num_of_decisions_);
+    nodes_.resize (0x1 << num_of_decisions_);
 
     for (auto& feature : features_) {
-      feature.deserialize(stream);
+      feature.deserialize (stream);
     }
 
     for (const auto& threshold : thresholds_) {
-      stream.read(reinterpret_cast<char*>(&(threshold)), sizeof(threshold));
+      stream.read (reinterpret_cast<char*> (&(threshold)), sizeof (threshold));
     }
 
     for (auto& node : nodes_) {
-      node.deserialize(stream);
+      node.deserialize (stream);
     }
   }
 
@@ -134,7 +135,7 @@ public:
    * \param node_index the index of the node to access
    */
   inline NodeType&
-  operator[](const std::size_t node_index)
+  operator[] (const std::size_t node_index)
   {
     return nodes_[node_index];
   }
@@ -144,7 +145,7 @@ public:
    * \param node_index the index of the node to access
    */
   inline const NodeType&
-  operator[](const std::size_t node_index) const
+  operator[] (const std::size_t node_index) const
   {
     return nodes_[node_index];
   }

@@ -55,7 +55,7 @@
   {                                                                                    \
     std::ostringstream s;                                                              \
     s << message;                                                                      \
-    throw ExceptionName(s.str(), __FILE__, BOOST_CURRENT_FUNCTION, __LINE__);          \
+    throw ExceptionName (s.str(), __FILE__, BOOST_CURRENT_FUNCTION, __LINE__);         \
   }
 // NOLINTEND(bugprone-macro-parentheses)
 
@@ -70,15 +70,15 @@ namespace poisson {
  */
 class PoissonException : public std::runtime_error {
 public:
-  PoissonException(const std::string& error_description,
-                   const char* file_name = nullptr,
-                   const char* function_name = nullptr,
-                   unsigned line_number = 0)
-  : std::runtime_error(
-        createDetailedMessage(error_description, file_name, function_name, line_number))
-  , file_name_(file_name)
-  , function_name_(function_name)
-  , line_number_(line_number)
+  PoissonException (const std::string& error_description,
+                    const char* file_name = nullptr,
+                    const char* function_name = nullptr,
+                    unsigned line_number = 0)
+  : std::runtime_error (createDetailedMessage (
+        error_description, file_name, function_name, line_number))
+  , file_name_ (file_name)
+  , function_name_ (function_name)
+  , line_number_ (line_number)
   {}
 
 protected:
@@ -113,11 +113,11 @@ protected:
  */
 class PoissonBadArgumentException : public PoissonException {
 public:
-  PoissonBadArgumentException(const std::string& error_description,
-                              const char* file_name = nullptr,
-                              const char* function_name = nullptr,
-                              unsigned line_number = 0)
-  : pcl::poisson::PoissonException(
+  PoissonBadArgumentException (const std::string& error_description,
+                               const char* file_name = nullptr,
+                               const char* function_name = nullptr,
+                               unsigned line_number = 0)
+  : pcl::poisson::PoissonException (
         error_description, file_name, function_name, line_number)
   {}
 };
@@ -128,11 +128,11 @@ public:
  */
 class PoissonOpenMPException : public PoissonException {
 public:
-  PoissonOpenMPException(const std::string& error_description,
-                         const char* file_name = nullptr,
-                         const char* function_name = nullptr,
-                         unsigned line_number = 0)
-  : pcl::poisson::PoissonException(
+  PoissonOpenMPException (const std::string& error_description,
+                          const char* file_name = nullptr,
+                          const char* function_name = nullptr,
+                          unsigned line_number = 0)
+  : pcl::poisson::PoissonException (
         error_description, file_name, function_name, line_number)
   {}
 };
@@ -142,11 +142,11 @@ public:
  */
 class PoissonBadInitException : public PoissonException {
 public:
-  PoissonBadInitException(const std::string& error_description,
-                          const char* file_name = nullptr,
-                          const char* function_name = nullptr,
-                          unsigned line_number = 0)
-  : pcl::poisson::PoissonException(
+  PoissonBadInitException (const std::string& error_description,
+                           const char* file_name = nullptr,
+                           const char* function_name = nullptr,
+                           unsigned line_number = 0)
+  : pcl::poisson::PoissonException (
         error_description, file_name, function_name, line_number)
   {}
 };

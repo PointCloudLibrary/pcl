@@ -47,13 +47,13 @@ struct PCLPointCloud2;
  * \param output the resultant filtered point cloud dataset
  */
 void
-pcl::FilterIndices<pcl::PCLPointCloud2>::filter(Indices& indices)
+pcl::FilterIndices<pcl::PCLPointCloud2>::filter (Indices& indices)
 {
   if (!initCompute())
     return;
 
   // Apply the actual filter
-  applyFilter(indices);
+  applyFilter (indices);
 
   deinitCompute();
 }
@@ -63,7 +63,7 @@ pcl::FilterIndices<pcl::PCLPointCloud2>::filter(Indices& indices)
 #include <pcl/point_types.h>
 
 // Instantiations of specific point types
-PCL_INSTANTIATE(removeNanFromPointCloud, PCL_XYZ_POINT_TYPES)
-PCL_INSTANTIATE(FilterIndices, PCL_POINT_TYPES)
+PCL_INSTANTIATE (removeNanFromPointCloud, PCL_XYZ_POINT_TYPES)
+PCL_INSTANTIATE (FilterIndices, PCL_POINT_TYPES)
 
 #endif // PCL_NO_PRECOMPILE

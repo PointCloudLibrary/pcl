@@ -124,8 +124,8 @@ public:
   };
 
   // =====CONSTRUCTOR & DESTRUCTOR=====
-  NarfKeypoint(RangeImageBorderExtractor* range_image_border_extractor = nullptr,
-               float support_size = -1.0f);
+  NarfKeypoint (RangeImageBorderExtractor* range_image_border_extractor = nullptr,
+                float support_size = -1.0f);
   ~NarfKeypoint() override;
 
   // =====PUBLIC METHODS=====
@@ -222,10 +222,10 @@ protected:
  * \ingroup keypoints
  */
 inline std::ostream&
-operator<<(std::ostream& os, const NarfKeypoint::Parameters& p)
+operator<< (std::ostream& os, const NarfKeypoint::Parameters& p)
 {
-  os << PVARC(p.support_size) << PVARC(p.min_distance_between_interest_points)
-     << PVARC(p.min_interest_value) << PVARN(p.distance_for_additional_points);
+  os << PVARC (p.support_size) << PVARC (p.min_distance_between_interest_points)
+     << PVARC (p.min_interest_value) << PVARN (p.distance_for_additional_points);
   return (os);
 }
 

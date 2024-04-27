@@ -58,20 +58,20 @@ class BruteForce : public Search<PointT> {
   using pcl::search::Search<PointT>::sorted_results_;
 
   struct Entry {
-    Entry(index_t idx, float dist) : index(idx), distance(dist) {}
+    Entry (index_t idx, float dist) : index (idx), distance (dist) {}
 
-    Entry() : index(0), distance(0) {}
+    Entry() : index (0), distance (0) {}
     index_t index;
     float distance;
 
     inline bool
-    operator<(const Entry& other) const
+    operator< (const Entry& other) const
     {
       return (distance < other.distance);
     }
 
     inline bool
-    operator>(const Entry& other) const
+    operator> (const Entry& other) const
     {
       return (distance > other.distance);
     }
@@ -82,7 +82,8 @@ class BruteForce : public Search<PointT> {
   getDistSqr (const PointT& point1, const PointT& point2) const;
 
 public:
-  BruteForce(bool sorted_results = false) : Search<PointT>("BruteForce", sorted_results)
+  BruteForce (bool sorted_results = false)
+  : Search<PointT> ("BruteForce", sorted_results)
   {}
 
   /** \brief Destructor for KdTree. */

@@ -50,7 +50,7 @@ public:
   // =====PUBLIC STRUCTS=====
   //! Parameters used in this class
   struct Parameters {
-    Parameters() { setZeroValue(1e-6); }
+    Parameters() { setZeroValue (1e-6); }
     //! Set zero_value
     void
     setZeroValue (real new_zero_value);
@@ -105,7 +105,7 @@ public:
   inline void
   setZeroValue (real new_zero_value)
   {
-    parameters_.setZeroValue(new_zero_value);
+    parameters_.setZeroValue (new_zero_value);
   }
 
 protected:
@@ -114,14 +114,14 @@ protected:
   inline bool
   isNearlyZero (real d) const
   {
-    return (std::abs(d) < parameters_.zero_value);
+    return (std::abs (d) < parameters_.zero_value);
   }
 
   //! check if sqrt(std::abs(d))<zeroValue
   inline bool
   sqrtIsNearlyZero (real d) const
   {
-    return (std::abs(d) < parameters_.sqr_zero_value);
+    return (std::abs (d) < parameters_.sqr_zero_value);
   }
 
   // =====PROTECTED MEMBERS=====

@@ -47,65 +47,65 @@
 #include <pcl/io/openni_camera/openni_image_rgb24.h>
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-openni_wrapper::DeviceONI::DeviceONI(xn::Context& context,
-                                     const std::string& file_name,
-                                     bool repeat,
-                                     bool streaming)
-: OpenNIDevice(context), streaming_(streaming)
+openni_wrapper::DeviceONI::DeviceONI (xn::Context& context,
+                                      const std::string& file_name,
+                                      bool repeat,
+                                      bool streaming)
+: OpenNIDevice (context), streaming_ (streaming)
 {
   XnStatus status;
 #if (XN_MINOR_VERSION >= 3)
-  status = context_.OpenFileRecording(file_name.c_str(), player_);
+  status = context_.OpenFileRecording (file_name.c_str(), player_);
   if (status != XN_STATUS_OK)
-    THROW_OPENNI_EXCEPTION("Could not open ONI file. Reason: %s",
-                           xnGetStatusString(status));
+    THROW_OPENNI_EXCEPTION ("Could not open ONI file. Reason: %s",
+                            xnGetStatusString (status));
 #else
-  status = context_.OpenFileRecording(file_name.c_str());
+  status = context_.OpenFileRecording (file_name.c_str());
   if (status != XN_STATUS_OK)
-    THROW_OPENNI_EXCEPTION("Could not open ONI file. Reason: %s",
-                           xnGetStatusString(status));
+    THROW_OPENNI_EXCEPTION ("Could not open ONI file. Reason: %s",
+                            xnGetStatusString (status));
 
-  status = context_.FindExistingNode(XN_NODE_TYPE_PLAYER, player_);
+  status = context_.FindExistingNode (XN_NODE_TYPE_PLAYER, player_);
   if (status != XN_STATUS_OK)
-    THROW_OPENNI_EXCEPTION("Failed to find player node: %s\n",
-                           xnGetStatusString(status));
+    THROW_OPENNI_EXCEPTION ("Failed to find player node: %s\n",
+                            xnGetStatusString (status));
 #endif
 
-  status = context_.FindExistingNode(XN_NODE_TYPE_DEPTH, depth_generator_);
+  status = context_.FindExistingNode (XN_NODE_TYPE_DEPTH, depth_generator_);
   if (status != XN_STATUS_OK)
-    THROW_OPENNI_EXCEPTION("could not find depth stream in file %s. Reason: %s",
-                           file_name.c_str(),
-                           xnGetStatusString(status));
+    THROW_OPENNI_EXCEPTION ("could not find depth stream in file %s. Reason: %s",
+                            file_name.c_str(),
+                            xnGetStatusString (status));
   else {
-    available_depth_modes_.push_back(getDepthOutputMode());
-    depth_generator_.RegisterToNewDataAvailable(
-        static_cast<xn::StateChangedHandler>(NewONIDepthDataAvailable),
+    available_depth_modes_.push_back (getDepthOutputMode());
+    depth_generator_.RegisterToNewDataAvailable (
+        static_cast<xn::StateChangedHandler> (NewONIDepthDataAvailable),
         this,
         depth_callback_handle_);
   }
 
-  status = context_.FindExistingNode(XN_NODE_TYPE_IMAGE, image_generator_);
+  status = context_.FindExistingNode (XN_NODE_TYPE_IMAGE, image_generator_);
   if (status == XN_STATUS_OK) {
-    available_image_modes_.push_back(getImageOutputMode());
-    image_generator_.RegisterToNewDataAvailable(
-        static_cast<xn::StateChangedHandler>(NewONIImageDataAvailable),
+    available_image_modes_.push_back (getImageOutputMode());
+    image_generator_.RegisterToNewDataAvailable (
+        static_cast<xn::StateChangedHandler> (NewONIImageDataAvailable),
         this,
         image_callback_handle_);
   }
 
-  status = context_.FindExistingNode(XN_NODE_TYPE_IR, ir_generator_);
+  status = context_.FindExistingNode (XN_NODE_TYPE_IR, ir_generator_);
   if (status == XN_STATUS_OK)
-    ir_generator_.RegisterToNewDataAvailable(
-        static_cast<xn::StateChangedHandler>(NewONIIRDataAvailable),
+    ir_generator_.RegisterToNewDataAvailable (
+        static_cast<xn::StateChangedHandler> (NewONIIRDataAvailable),
         this,
         ir_callback_handle_);
 
   device_node_info_ = player_.GetInfo();
   Init();
 
-  player_.SetRepeat(repeat);
+  player_.SetRepeat (repeat);
   if (streaming_)
-    player_thread_ = std::thread(&DeviceONI::PlayerThreadFunction, this);
+    player_thread_ = std::thread (&DeviceONI::PlayerThreadFunction, this);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -188,14 +188,14 @@ openni_wrapper::DeviceONI::isIRStreamRunning() const noexcept
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 bool
-openni_wrapper::DeviceONI::trigger(int relative_offset)
+openni_wrapper::DeviceONI::trigger (int relative_offset)
 {
   if (streaming_)
-    THROW_OPENNI_EXCEPTION(
+    THROW_OPENNI_EXCEPTION (
         "Virtual device is in streaming mode. Trigger not available.");
 
   if (relative_offset < 0) {
-    XnStatus res = player_.SeekToFrame(
+    XnStatus res = player_.SeekToFrame (
         depth_generator_.GetName(), relative_offset, XN_PLAYER_SEEK_CUR);
     if (res != XN_STATUS_OK)
       return (false);
@@ -226,48 +226,50 @@ openni_wrapper::DeviceONI::PlayerThreadFunction()
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void __stdcall openni_wrapper::DeviceONI::NewONIDepthDataAvailable(
+void __stdcall openni_wrapper::DeviceONI::NewONIDepthDataAvailable (
     xn::ProductionNode&, void* cookie) noexcept
 {
-  auto* device = reinterpret_cast<DeviceONI*>(cookie);
+  auto* device = reinterpret_cast<DeviceONI*> (cookie);
   if (device->depth_stream_running_)
     device->depth_condition_.notify_all();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void __stdcall openni_wrapper::DeviceONI::NewONIImageDataAvailable(
+void __stdcall openni_wrapper::DeviceONI::NewONIImageDataAvailable (
     xn::ProductionNode&, void* cookie) noexcept
 {
-  auto* device = reinterpret_cast<DeviceONI*>(cookie);
+  auto* device = reinterpret_cast<DeviceONI*> (cookie);
   if (device->image_stream_running_)
     device->image_condition_.notify_all();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void __stdcall openni_wrapper::DeviceONI::NewONIIRDataAvailable(xn::ProductionNode&,
-                                                                void* cookie) noexcept
+void __stdcall openni_wrapper::DeviceONI::NewONIIRDataAvailable (xn::ProductionNode&,
+                                                                 void* cookie) noexcept
 {
-  auto* device = reinterpret_cast<DeviceONI*>(cookie);
+  auto* device = reinterpret_cast<DeviceONI*> (cookie);
   if (device->ir_stream_running_)
     device->ir_condition_.notify_all();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 openni_wrapper::Image::Ptr
-openni_wrapper::DeviceONI::getCurrentImage(
+openni_wrapper::DeviceONI::getCurrentImage (
     pcl::shared_ptr<xn::ImageMetaData> image_meta_data) const noexcept
 {
-  return (openni_wrapper::Image::Ptr(new openni_wrapper::ImageRGB24(image_meta_data)));
+  return (
+      openni_wrapper::Image::Ptr (new openni_wrapper::ImageRGB24 (image_meta_data)));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 bool
-openni_wrapper::DeviceONI::isImageResizeSupported(unsigned input_width,
-                                                  unsigned input_height,
-                                                  unsigned output_width,
-                                                  unsigned output_height) const noexcept
+openni_wrapper::DeviceONI::isImageResizeSupported (
+    unsigned input_width,
+    unsigned input_height,
+    unsigned output_width,
+    unsigned output_height) const noexcept
 {
-  return (openni_wrapper::ImageRGB24::resizingSupported(
+  return (openni_wrapper::ImageRGB24::resizingSupported (
       input_width, input_height, output_width, output_height));
 }
 

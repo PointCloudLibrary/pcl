@@ -40,7 +40,7 @@ public:
   typename std::map<float, PointTPtrConst> voxelized_assembled_;
 
   bool
-  operator==(const Model& other) const
+  operator== (const Model& other) const
   {
     return (id_ == other.id_) && (class_ == other.class_);
   }
@@ -52,16 +52,16 @@ public:
       return assembled_;
 
     typename std::map<float, PointTPtrConst>::iterator it =
-        voxelized_assembled_.find(resolution);
+        voxelized_assembled_.find (resolution);
     if (it == voxelized_assembled_.end()) {
-      PointTPtr voxelized(new pcl::PointCloud<PointT>);
+      PointTPtr voxelized (new pcl::PointCloud<PointT>);
       pcl::VoxelGrid<PointT> grid_;
-      grid_.setInputCloud(assembled_);
-      grid_.setLeafSize(resolution, resolution, resolution);
-      grid_.setDownsampleAllData(true);
-      grid_.filter(*voxelized);
+      grid_.setInputCloud (assembled_);
+      grid_.setLeafSize (resolution, resolution, resolution);
+      grid_.setDownsampleAllData (true);
+      grid_.filter (*voxelized);
 
-      PointTPtrConst voxelized_const(new pcl::PointCloud<PointT>(*voxelized));
+      PointTPtrConst voxelized_const (new pcl::PointCloud<PointT> (*voxelized));
       voxelized_assembled_[resolution] = voxelized_const;
       return voxelized_const;
     }
@@ -100,8 +100,8 @@ protected:
   createTrainingDir (std::string& training_dir)
   {
     bf::path trained_dir = training_dir;
-    if (!bf::exists(trained_dir))
-      bf::create_directory(trained_dir);
+    if (!bf::exists (trained_dir))
+      bf::create_directory (trained_dir);
   }
 
   void
@@ -109,7 +109,7 @@ protected:
                                   std::string& class_str,
                                   std::string& id_str)
   {
-    bf::create_directories(training_dir + '/' + class_str + '/' + id_str);
+    bf::create_directories (training_dir + '/' + class_str + '/' + id_str);
   }
 
 public:
@@ -142,27 +142,27 @@ public:
                         std::vector<std::string>& relative_paths,
                         std::string& ext)
   {
-    for (const auto& dir_entry : bf::directory_iterator(dir)) {
+    for (const auto& dir_entry : bf::directory_iterator (dir)) {
       // check if its a directory, then get models in it
-      if (bf::is_directory(dir_entry)) {
+      if (bf::is_directory (dir_entry)) {
         std::string so_far =
             rel_path_so_far + (dir_entry.path().filename()).string() + '/';
 
         bf::path curr_path = dir_entry.path();
-        getModelsInDirectory(curr_path, so_far, relative_paths, ext);
+        getModelsInDirectory (curr_path, so_far, relative_paths, ext);
       }
       else {
         // check that it is a ply file and then add, otherwise ignore..
         std::vector<std::string> strs;
         std::string file = (dir_entry.path().filename()).string();
 
-        boost::split(strs, file, boost::is_any_of("."));
+        boost::split (strs, file, boost::is_any_of ("."));
         std::string extension = strs[strs.size() - 1];
 
         if (extension == ext) {
           std::string path = rel_path_so_far + (dir_entry.path().filename()).string();
 
-          relative_paths.push_back(path);
+          relative_paths.push_back (path);
         }
       }
     }
@@ -172,7 +172,7 @@ public:
   voxelizeAllModels (float resolution)
   {
     for (std::size_t i = 0; i < models_->size(); i++) {
-      models_->at(i).getAssembled(resolution);
+      models_->at (i).getAssembled (resolution);
     }
   }
 
@@ -194,10 +194,10 @@ public:
   std::shared_ptr<std::vector<ModelT>>
   getModels (std::string& model_id)
   {
-    models_->erase(std::remove_if(models_->begin(),
-                                  models_->end(),
-                                  [=] (ModelT& s) { return (s.id_ != model_id); }),
-                   models_->end());
+    models_->erase (std::remove_if (models_->begin(),
+                                    models_->end(),
+                                    [=] (ModelT& s) { return (s.id_ != model_id); }),
+                    models_->end());
 
     return models_;
   }
@@ -205,7 +205,7 @@ public:
   bool
   modelAlreadyTrained (ModelT m, std::string& base_dir, std::string& descr_name)
   {
-    return bf::exists(getModelDescriptorDir(m, base_dir, descr_name));
+    return bf::exists (getModelDescriptorDir (m, base_dir, descr_name));
   }
 
   std::string
@@ -217,11 +217,11 @@ public:
   void
   removeDescDirectory (ModelT m, std::string& base_dir, std::string& descr_name)
   {
-    std::string dir = getModelDescriptorDir(m, base_dir, descr_name);
+    std::string dir = getModelDescriptorDir (m, base_dir, descr_name);
 
     bf::path desc_dir = dir;
-    if (bf::exists(desc_dir))
-      bf::remove_all(desc_dir);
+    if (bf::exists (desc_dir))
+      bf::remove_all (desc_dir);
   }
 
   void

@@ -247,16 +247,16 @@ public:
   {
     pcl::PCLPointCloud2 blob;
     int file_version;
-    int res = read(file_name,
-                   blob,
-                   cloud.sensor_origin_,
-                   cloud.sensor_orientation_,
-                   file_version,
-                   offset);
+    int res = read (file_name,
+                    blob,
+                    cloud.sensor_origin_,
+                    cloud.sensor_orientation_,
+                    file_version,
+                    offset);
     if (res < 0)
       return (res);
 
-    pcl::fromPCLPointCloud2(blob, cloud);
+    pcl::fromPCLPointCloud2 (blob, cloud);
     return (0);
   }
 
@@ -281,7 +281,7 @@ loadOBJFile (const std::string& file_name,
 {
   pcl::OBJReader p;
   int obj_version;
-  return (p.read(file_name, cloud, origin, orientation, obj_version));
+  return (p.read (file_name, cloud, origin, orientation, obj_version));
 }
 
 /** \brief Load an OBJ file into a PCLPointCloud2 blob type.
@@ -295,7 +295,7 @@ inline int
 loadOBJFile (const std::string& file_name, pcl::PCLPointCloud2& cloud)
 {
   pcl::OBJReader p;
-  return (p.read(file_name, cloud));
+  return (p.read (file_name, cloud));
 }
 
 /** \brief Load any OBJ file into a templated PointCloud type
@@ -308,7 +308,7 @@ inline int
 loadOBJFile (const std::string& file_name, pcl::PointCloud<PointT>& cloud)
 {
   pcl::OBJReader p;
-  return (p.read(file_name, cloud));
+  return (p.read (file_name, cloud));
 }
 
 /** \brief Load any OBJ file into a PolygonMesh type.
@@ -322,7 +322,7 @@ inline int
 loadOBJFile (const std::string& file_name, pcl::PolygonMesh& mesh)
 {
   pcl::OBJReader p;
-  return (p.read(file_name, mesh));
+  return (p.read (file_name, mesh));
 }
 
 /** \brief Load any OBJ file into a TextureMesh type.
@@ -336,7 +336,7 @@ inline int
 loadOBJFile (const std::string& file_name, pcl::TextureMesh& mesh)
 {
   pcl::OBJReader p;
-  return (p.read(file_name, mesh));
+  return (p.read (file_name, mesh));
 }
 
 /** \brief Saves a TextureMesh in ascii OBJ format.

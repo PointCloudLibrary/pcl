@@ -99,12 +99,12 @@ public:
    *
    *  \param[in] path_arg Location of JSON metadata file to load from disk
    */
-  OutofcoreOctreeBaseMetadata(const boost::filesystem::path& path_arg);
+  OutofcoreOctreeBaseMetadata (const boost::filesystem::path& path_arg);
   /** \brief Default destructor*/
   ~OutofcoreOctreeBaseMetadata() override;
 
   /** \brief Copy constructor */
-  OutofcoreOctreeBaseMetadata(const OutofcoreOctreeBaseMetadata& orig);
+  OutofcoreOctreeBaseMetadata (const OutofcoreOctreeBaseMetadata& orig);
 
   /** \brief et the outofcore version read from the "version" field of the JSON object
    */
@@ -189,7 +189,7 @@ public:
 
   /** \brief Provide operator overload to stream ascii file data*/
   friend std::ostream&
-  operator<<(std::ostream& os, const OutofcoreOctreeBaseMetadata& metadata_arg);
+  operator<< (std::ostream& os, const OutofcoreOctreeBaseMetadata& metadata_arg);
 
 protected:
   /** \brief Metadata (JSON) file pathname (octree extension JSON file) */

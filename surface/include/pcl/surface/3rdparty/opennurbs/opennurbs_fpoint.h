@@ -43,20 +43,20 @@ public:
 
   // use implicit destructor, copy constructor
   ON_2fPoint(); // x,y not initialized
-  ON_2fPoint(float x, float y);
+  ON_2fPoint (float x, float y);
 
-  ON_2fPoint(const ON_3fPoint&);  // from 3f point
-  ON_2fPoint(const ON_4fPoint&);  // from 4f point
-  ON_2fPoint(const ON_2fVector&); // from 2f vector
-  ON_2fPoint(const ON_3fVector&); // from 3f vector
-  ON_2fPoint(const float*);       // from float[2] array
+  ON_2fPoint (const ON_3fPoint&);  // from 3f point
+  ON_2fPoint (const ON_4fPoint&);  // from 4f point
+  ON_2fPoint (const ON_2fVector&); // from 2f vector
+  ON_2fPoint (const ON_3fVector&); // from 3f vector
+  ON_2fPoint (const float*);       // from float[2] array
 
-  ON_2fPoint(const ON_2dPoint&);  // from 2d point
-  ON_2fPoint(const ON_3dPoint&);  // from 3d point
-  ON_2fPoint(const ON_4dPoint&);  // from 4d point
-  ON_2fPoint(const ON_2dVector&); // from 2d vector
-  ON_2fPoint(const ON_3dVector&); // from 3d vector
-  ON_2fPoint(const double*);      // from double[2] array
+  ON_2fPoint (const ON_2dPoint&);  // from 2d point
+  ON_2fPoint (const ON_3dPoint&);  // from 3d point
+  ON_2fPoint (const ON_4dPoint&);  // from 4d point
+  ON_2fPoint (const ON_2dVector&); // from 2d vector
+  ON_2fPoint (const ON_3dVector&); // from 3d vector
+  ON_2fPoint (const double*);      // from double[2] array
 
   // (float*) conversion operators
   operator float*();
@@ -64,124 +64,124 @@ public:
 
   // use implicit operator=(const ON_2fPoint&)
   ON_2fPoint&
-  operator=(const ON_3fPoint&);
+  operator= (const ON_3fPoint&);
   ON_2fPoint&
-  operator=(const ON_4fPoint&);
+  operator= (const ON_4fPoint&);
   ON_2fPoint&
-  operator=(const ON_2fVector&);
+  operator= (const ON_2fVector&);
   ON_2fPoint&
-  operator=(const ON_3fVector&);
+  operator= (const ON_3fVector&);
   ON_2fPoint&
-  operator=(const float*); // point = float[2] support
+  operator= (const float*); // point = float[2] support
 
   ON_2fPoint&
-  operator=(const ON_2dPoint&);
+  operator= (const ON_2dPoint&);
   ON_2fPoint&
-  operator=(const ON_3dPoint&);
+  operator= (const ON_3dPoint&);
   ON_2fPoint&
-  operator=(const ON_4dPoint&);
+  operator= (const ON_4dPoint&);
   ON_2fPoint&
-  operator=(const ON_2dVector&);
+  operator= (const ON_2dVector&);
   ON_2fPoint&
-  operator=(const ON_3dVector&);
+  operator= (const ON_3dVector&);
   ON_2fPoint&
-  operator=(const double*); // point = double[2] support
+  operator= (const double*); // point = double[2] support
 
   ON_2fPoint&
-  operator*=(float);
+  operator*= (float);
   ON_2fPoint&
-  operator/=(float);
+  operator/= (float);
   ON_2fPoint&
-  operator+=(const ON_2fPoint&);
+  operator+= (const ON_2fPoint&);
   ON_2fPoint&
-  operator+=(const ON_2fVector&);
+  operator+= (const ON_2fVector&);
   ON_2fPoint&
-  operator+=(const ON_3fVector&);
+  operator+= (const ON_3fVector&);
   ON_2fPoint&
-  operator-=(const ON_2fPoint&);
+  operator-= (const ON_2fPoint&);
   ON_2fPoint&
-  operator-=(const ON_2fVector&);
+  operator-= (const ON_2fVector&);
   ON_2fPoint&
-  operator-=(const ON_3fVector&);
+  operator-= (const ON_3fVector&);
 
   ON_2fPoint
-  operator*(int) const;
+  operator* (int) const;
   ON_2fPoint
-  operator/(int) const;
+  operator/ (int) const;
   ON_2fPoint
-  operator*(float) const;
+  operator* (float) const;
   ON_2fPoint
-  operator/(float) const;
+  operator/ (float) const;
   ON_2dPoint
-  operator*(double) const;
+  operator* (double) const;
   ON_2dPoint
-  operator/(double) const;
+  operator/ (double) const;
 
   ON_2fPoint
-  operator+(const ON_2fPoint&) const;
+  operator+ (const ON_2fPoint&) const;
   ON_2fPoint
-  operator+(const ON_2fVector&) const;
+  operator+ (const ON_2fVector&) const;
   ON_2fVector
-  operator-(const ON_2fPoint&) const;
+  operator- (const ON_2fPoint&) const;
   ON_2fPoint
-  operator-(const ON_2fVector&) const;
+  operator- (const ON_2fVector&) const;
   ON_3fPoint
-  operator+(const ON_3fPoint&) const;
+  operator+ (const ON_3fPoint&) const;
   ON_3fPoint
-  operator+(const ON_3fVector&) const;
+  operator+ (const ON_3fVector&) const;
   ON_3fVector
-  operator-(const ON_3fPoint&) const;
+  operator- (const ON_3fPoint&) const;
   ON_3fPoint
-  operator-(const ON_3fVector&) const;
+  operator- (const ON_3fVector&) const;
 
   ON_2dPoint
-  operator+(const ON_2dPoint&) const;
+  operator+ (const ON_2dPoint&) const;
   ON_2dPoint
-  operator+(const ON_2dVector&) const;
+  operator+ (const ON_2dVector&) const;
   ON_2dVector
-  operator-(const ON_2dPoint&) const;
+  operator- (const ON_2dPoint&) const;
   ON_2dPoint
-  operator-(const ON_2dVector&) const;
+  operator- (const ON_2dVector&) const;
   ON_3dPoint
-  operator+(const ON_3dPoint&) const;
+  operator+ (const ON_3dPoint&) const;
   ON_3dPoint
-  operator+(const ON_3dVector&) const;
+  operator+ (const ON_3dVector&) const;
   ON_3dVector
-  operator-(const ON_3dPoint&) const;
+  operator- (const ON_3dPoint&) const;
   ON_3dPoint
-  operator-(const ON_3dVector&) const;
+  operator- (const ON_3dVector&) const;
 
   float
-  operator*(const ON_2fPoint&) const; // for points acting as vectors
+  operator* (const ON_2fPoint&) const; // for points acting as vectors
   float
-  operator*(const ON_2fVector&) const; // for points acting as vectors
+  operator* (const ON_2fVector&) const; // for points acting as vectors
   float
-  operator*(const ON_4fPoint&) const;
+  operator* (const ON_4fPoint&) const;
 
   bool
-  operator==(const ON_2fPoint&) const;
+  operator== (const ON_2fPoint&) const;
   bool
-  operator!=(const ON_2fPoint&) const;
+  operator!= (const ON_2fPoint&) const;
 
   // dictionary order comparisons
   bool
-  operator<=(const ON_2fPoint&) const;
+  operator<= (const ON_2fPoint&) const;
   bool
-  operator>=(const ON_2fPoint&) const;
+  operator>= (const ON_2fPoint&) const;
   bool
-  operator<(const ON_2fPoint&) const;
+  operator< (const ON_2fPoint&) const;
   bool
-  operator>(const ON_2fPoint&) const;
+  operator> (const ON_2fPoint&) const;
 
   // index operators mimic float[2] behavior
   float&
-  operator[](int);
+  operator[] (int);
   float
-  operator[](int) const;
+  operator[] (int) const;
   float&
-  operator[](unsigned int);
+  operator[] (unsigned int);
   float
-  operator[](unsigned int) const;
+  operator[] (unsigned int) const;
 
   // set 2d point value
   void
@@ -219,15 +219,15 @@ public:
 
 ON_DECL
 ON_2fPoint
-operator*(int, const ON_2fPoint&);
+operator* (int, const ON_2fPoint&);
 
 ON_DECL
 ON_2fPoint
-operator*(float, const ON_2fPoint&);
+operator* (float, const ON_2fPoint&);
 
 ON_DECL
 ON_2dPoint
-operator*(double, const ON_2fPoint&);
+operator* (double, const ON_2fPoint&);
 
 ////////////////////////////////////////////////////////////////
 //
@@ -241,19 +241,19 @@ public:
 
   // use implicit destructor, copy constructor
   ON_3fPoint(); // x,y,z not initialized
-  ON_3fPoint(float x, float y, float z);
-  ON_3fPoint(const ON_2fPoint&);  // from 2f point
-  ON_3fPoint(const ON_4fPoint&);  // from 4f point
-  ON_3fPoint(const ON_2fVector&); // from 2f vector
-  ON_3fPoint(const ON_3fVector&); // from 3f vector
-  ON_3fPoint(const float*);       // from float[3] array
+  ON_3fPoint (float x, float y, float z);
+  ON_3fPoint (const ON_2fPoint&);  // from 2f point
+  ON_3fPoint (const ON_4fPoint&);  // from 4f point
+  ON_3fPoint (const ON_2fVector&); // from 2f vector
+  ON_3fPoint (const ON_3fVector&); // from 3f vector
+  ON_3fPoint (const float*);       // from float[3] array
 
-  ON_3fPoint(const ON_2dPoint&);  // from 2d point
-  ON_3fPoint(const ON_3dPoint&);  // from 3d point
-  ON_3fPoint(const ON_4dPoint&);  // from 4d point
-  ON_3fPoint(const ON_2dVector&); // from 2d vector
-  ON_3fPoint(const ON_3dVector&); // from 3d vector
-  ON_3fPoint(const double*);      // from double[3] array
+  ON_3fPoint (const ON_2dPoint&);  // from 2d point
+  ON_3fPoint (const ON_3dPoint&);  // from 3d point
+  ON_3fPoint (const ON_4dPoint&);  // from 4d point
+  ON_3fPoint (const ON_2dVector&); // from 2d vector
+  ON_3fPoint (const ON_3dVector&); // from 3d vector
+  ON_3fPoint (const double*);      // from double[3] array
 
   // (float*) conversion operators
   operator float*();
@@ -261,120 +261,120 @@ public:
 
   // use implicit operator=(const ON_3fPoint&)
   ON_3fPoint&
-  operator=(const ON_2fPoint&);
+  operator= (const ON_2fPoint&);
   ON_3fPoint&
-  operator=(const ON_4fPoint&);
+  operator= (const ON_4fPoint&);
   ON_3fPoint&
-  operator=(const ON_2fVector&);
+  operator= (const ON_2fVector&);
   ON_3fPoint&
-  operator=(const ON_3fVector&);
+  operator= (const ON_3fVector&);
   ON_3fPoint&
-  operator=(const float*); // point = float[3] support
+  operator= (const float*); // point = float[3] support
 
   ON_3fPoint&
-  operator=(const ON_2dPoint&);
+  operator= (const ON_2dPoint&);
   ON_3fPoint&
-  operator=(const ON_3dPoint&);
+  operator= (const ON_3dPoint&);
   ON_3fPoint&
-  operator=(const ON_4dPoint&);
+  operator= (const ON_4dPoint&);
   ON_3fPoint&
-  operator=(const ON_2dVector&);
+  operator= (const ON_2dVector&);
   ON_3fPoint&
-  operator=(const ON_3dVector&);
+  operator= (const ON_3dVector&);
   ON_3fPoint&
-  operator=(const double*); // point = double[3] support
+  operator= (const double*); // point = double[3] support
 
   ON_3fPoint&
-  operator*=(float);
+  operator*= (float);
   ON_3fPoint&
-  operator/=(float);
+  operator/= (float);
   ON_3fPoint&
-  operator+=(const ON_3fPoint&);
+  operator+= (const ON_3fPoint&);
   ON_3fPoint&
-  operator+=(const ON_3fVector&);
+  operator+= (const ON_3fVector&);
   ON_3fPoint&
-  operator-=(const ON_3fPoint&);
+  operator-= (const ON_3fPoint&);
   ON_3fPoint&
-  operator-=(const ON_3fVector&);
+  operator-= (const ON_3fVector&);
 
   ON_3fPoint
-  operator*(int) const;
+  operator* (int) const;
   ON_3fPoint
-  operator/(int) const;
+  operator/ (int) const;
   ON_3fPoint
-  operator*(float) const;
+  operator* (float) const;
   ON_3fPoint
-  operator/(float) const;
+  operator/ (float) const;
   ON_3dPoint
-  operator*(double) const;
+  operator* (double) const;
   ON_3dPoint
-  operator/(double) const;
+  operator/ (double) const;
 
   ON_3fPoint
-  operator+(const ON_3fPoint&) const;
+  operator+ (const ON_3fPoint&) const;
   ON_3fPoint
-  operator+(const ON_3fVector&) const;
+  operator+ (const ON_3fVector&) const;
   ON_3fVector
-  operator-(const ON_3fPoint&) const;
+  operator- (const ON_3fPoint&) const;
   ON_3fPoint
-  operator-(const ON_3fVector&) const;
+  operator- (const ON_3fVector&) const;
   ON_3fPoint
-  operator+(const ON_2fPoint&) const;
+  operator+ (const ON_2fPoint&) const;
   ON_3fPoint
-  operator+(const ON_2fVector&) const;
+  operator+ (const ON_2fVector&) const;
   ON_3fVector
-  operator-(const ON_2fPoint&) const;
+  operator- (const ON_2fPoint&) const;
   ON_3fPoint
-  operator-(const ON_2fVector&) const;
+  operator- (const ON_2fVector&) const;
 
   ON_3dPoint
-  operator+(const ON_3dPoint&) const;
+  operator+ (const ON_3dPoint&) const;
   ON_3dPoint
-  operator+(const ON_3dVector&) const;
+  operator+ (const ON_3dVector&) const;
   ON_3dVector
-  operator-(const ON_3dPoint&) const;
+  operator- (const ON_3dPoint&) const;
   ON_3dPoint
-  operator-(const ON_3dVector&) const;
+  operator- (const ON_3dVector&) const;
   ON_3dPoint
-  operator+(const ON_2dPoint&) const;
+  operator+ (const ON_2dPoint&) const;
   ON_3dPoint
-  operator+(const ON_2dVector&) const;
+  operator+ (const ON_2dVector&) const;
   ON_3dVector
-  operator-(const ON_2dPoint&) const;
+  operator- (const ON_2dPoint&) const;
   ON_3dPoint
-  operator-(const ON_2dVector&) const;
+  operator- (const ON_2dVector&) const;
 
   float
-  operator*(const ON_3fPoint&) const; // for points acting as vectors
+  operator* (const ON_3fPoint&) const; // for points acting as vectors
   float
-  operator*(const ON_3fVector&) const; // for points acting as vectors
+  operator* (const ON_3fVector&) const; // for points acting as vectors
   float
-  operator*(const ON_4fPoint&) const;
+  operator* (const ON_4fPoint&) const;
 
   bool
-  operator==(const ON_3fPoint&) const;
+  operator== (const ON_3fPoint&) const;
   bool
-  operator!=(const ON_3fPoint&) const;
+  operator!= (const ON_3fPoint&) const;
 
   // dictionary order comparisons
   bool
-  operator<=(const ON_3fPoint&) const;
+  operator<= (const ON_3fPoint&) const;
   bool
-  operator>=(const ON_3fPoint&) const;
+  operator>= (const ON_3fPoint&) const;
   bool
-  operator<(const ON_3fPoint&) const;
+  operator< (const ON_3fPoint&) const;
   bool
-  operator>(const ON_3fPoint&) const;
+  operator> (const ON_3fPoint&) const;
 
   // index operators mimic float[3] behavior
   float&
-  operator[](int);
+  operator[] (int);
   float
-  operator[](int) const;
+  operator[] (int) const;
   float&
-  operator[](unsigned int);
+  operator[] (unsigned int);
   float
-  operator[](unsigned int) const;
+  operator[] (unsigned int) const;
 
   // set 3d point value
   void
@@ -414,15 +414,15 @@ public:
 
 ON_DECL
 ON_3fPoint
-operator*(int, const ON_3fPoint&);
+operator* (int, const ON_3fPoint&);
 
 ON_DECL
 ON_3fPoint
-operator*(float, const ON_3fPoint&);
+operator* (float, const ON_3fPoint&);
 
 ON_DECL
 ON_3dPoint
-operator*(double, const ON_3fPoint&);
+operator* (double, const ON_3fPoint&);
 
 ////////////////////////////////////////////////////////////////
 //
@@ -434,20 +434,20 @@ public:
 
   // use implicit destructor, copy constructor
   ON_4fPoint(); // x,y,z,w not initialized
-  ON_4fPoint(float x, float y, float z, float w);
+  ON_4fPoint (float x, float y, float z, float w);
 
-  ON_4fPoint(const ON_2fPoint&);  // from 2f point
-  ON_4fPoint(const ON_3fPoint&);  // from 3f point
-  ON_4fPoint(const ON_2fVector&); // from 2f vector
-  ON_4fPoint(const ON_3fVector&); // from 3f vector
-  ON_4fPoint(const float*);       // from float[4] array
+  ON_4fPoint (const ON_2fPoint&);  // from 2f point
+  ON_4fPoint (const ON_3fPoint&);  // from 3f point
+  ON_4fPoint (const ON_2fVector&); // from 2f vector
+  ON_4fPoint (const ON_3fVector&); // from 3f vector
+  ON_4fPoint (const float*);       // from float[4] array
 
-  ON_4fPoint(const ON_2dPoint&);  // from 2d point
-  ON_4fPoint(const ON_3dPoint&);  // from 3d point
-  ON_4fPoint(const ON_4dPoint&);  // from 4d point
-  ON_4fPoint(const ON_2dVector&); // from 2d vector
-  ON_4fPoint(const ON_3dVector&); // from 3d vector
-  ON_4fPoint(const double*);      // from double[4] array
+  ON_4fPoint (const ON_2dPoint&);  // from 2d point
+  ON_4fPoint (const ON_3dPoint&);  // from 3d point
+  ON_4fPoint (const ON_4dPoint&);  // from 4d point
+  ON_4fPoint (const ON_2dVector&); // from 2d vector
+  ON_4fPoint (const ON_3dVector&); // from 3d vector
+  ON_4fPoint (const double*);      // from double[4] array
 
   // (float*) conversion operators
   operator float*();
@@ -455,65 +455,65 @@ public:
 
   // use implicit operator=(const ON_4fPoint&)
   ON_4fPoint&
-  operator=(const ON_2fPoint&);
+  operator= (const ON_2fPoint&);
   ON_4fPoint&
-  operator=(const ON_3fPoint&);
+  operator= (const ON_3fPoint&);
   ON_4fPoint&
-  operator=(const ON_2fVector&);
+  operator= (const ON_2fVector&);
   ON_4fPoint&
-  operator=(const ON_3fVector&);
+  operator= (const ON_3fVector&);
   ON_4fPoint&
-  operator=(const float*); // point = float[4] support
+  operator= (const float*); // point = float[4] support
 
   ON_4fPoint&
-  operator=(const ON_2dPoint&);
+  operator= (const ON_2dPoint&);
   ON_4fPoint&
-  operator=(const ON_3dPoint&);
+  operator= (const ON_3dPoint&);
   ON_4fPoint&
-  operator=(const ON_4dPoint&);
+  operator= (const ON_4dPoint&);
   ON_4fPoint&
-  operator=(const ON_2dVector&);
+  operator= (const ON_2dVector&);
   ON_4fPoint&
-  operator=(const ON_3dVector&);
+  operator= (const ON_3dVector&);
   ON_4fPoint&
-  operator=(const double*); // point = double[4] support
+  operator= (const double*); // point = double[4] support
 
   ON_4fPoint&
-  operator*=(float);
+  operator*= (float);
   ON_4fPoint&
-  operator/=(float);
+  operator/= (float);
   ON_4fPoint&
-  operator+=(const ON_4fPoint&);
+  operator+= (const ON_4fPoint&);
   ON_4fPoint&
-  operator-=(const ON_4fPoint&);
+  operator-= (const ON_4fPoint&);
 
   ON_4fPoint
-  operator*(float) const;
+  operator* (float) const;
   ON_4fPoint
-  operator/(float) const;
+  operator/ (float) const;
   ON_4fPoint
-  operator+(const ON_4fPoint&) const; // sum w = sqrt(w1*w2)
+  operator+ (const ON_4fPoint&) const; // sum w = sqrt(w1*w2)
   ON_4fPoint
-  operator-(const ON_4fPoint&) const; // difference w = sqrt(w1*w2)
+  operator- (const ON_4fPoint&) const; // difference w = sqrt(w1*w2)
 
   float
-  operator*(const ON_4fPoint&) const;
+  operator* (const ON_4fPoint&) const;
 
   // projective comparison
   // (i.e., [x,y,z,w] == [c*x,c*y,c*z,c*w] is true for nonzero c)
-  bool operator==(ON_4fPoint) const;
+  bool operator== (ON_4fPoint) const;
   bool
-  operator!=(const ON_4fPoint&) const;
+  operator!= (const ON_4fPoint&) const;
 
   // index operators mimic float[4] behavior
   float&
-  operator[](int);
+  operator[] (int);
   float
-  operator[](int) const;
+  operator[] (int) const;
   float&
-  operator[](unsigned int);
+  operator[] (unsigned int);
   float
-  operator[](unsigned int) const;
+  operator[] (unsigned int) const;
 
   // set 4d point value
   void
@@ -537,11 +537,11 @@ public:
 
 ON_DECL
 ON_4fPoint
-operator*(float, const ON_4fPoint&);
+operator* (float, const ON_4fPoint&);
 
 ON_DECL
 ON_4dPoint
-operator*(double, const ON_4fPoint&);
+operator* (double, const ON_4fPoint&);
 
 ////////////////////////////////////////////////////////////////
 //
@@ -567,19 +567,19 @@ public:
 
   // use implicit destructor, copy constructor
   ON_2fVector(); // x,y not initialized
-  ON_2fVector(float x, float y);
-  ON_2fVector(const ON_2fPoint&);  // from 2f point
-  ON_2fVector(const ON_3fPoint&);  // from 3f point
-  ON_2fVector(const ON_4fPoint&);  // from 4f point
-  ON_2fVector(const ON_3fVector&); // from 3f vector
-  ON_2fVector(const float*);       // from float[2] array
+  ON_2fVector (float x, float y);
+  ON_2fVector (const ON_2fPoint&);  // from 2f point
+  ON_2fVector (const ON_3fPoint&);  // from 3f point
+  ON_2fVector (const ON_4fPoint&);  // from 4f point
+  ON_2fVector (const ON_3fVector&); // from 3f vector
+  ON_2fVector (const float*);       // from float[2] array
 
-  ON_2fVector(const ON_2dPoint&);  // from 2d point
-  ON_2fVector(const ON_3dPoint&);  // from 3d point
-  ON_2fVector(const ON_4dPoint&);  // from 4d point
-  ON_2fVector(const ON_2dVector&); // from 2d vector
-  ON_2fVector(const ON_3dVector&); // from 3d vector
-  ON_2fVector(const double*);      // from double[2] array
+  ON_2fVector (const ON_2dPoint&);  // from 2d point
+  ON_2fVector (const ON_3dPoint&);  // from 3d point
+  ON_2fVector (const ON_4dPoint&);  // from 4d point
+  ON_2fVector (const ON_2dVector&); // from 2d vector
+  ON_2fVector (const ON_3dVector&); // from 3d vector
+  ON_2fVector (const double*);      // from double[2] array
 
   // (float*) conversion operators
   operator float*();
@@ -587,118 +587,118 @@ public:
 
   // use implicit operator=(const ON_2fVector&)
   ON_2fVector&
-  operator=(const ON_2fPoint&);
+  operator= (const ON_2fPoint&);
   ON_2fVector&
-  operator=(const ON_3fPoint&);
+  operator= (const ON_3fPoint&);
   ON_2fVector&
-  operator=(const ON_3fVector&);
+  operator= (const ON_3fVector&);
   ON_2fVector&
-  operator=(const float*); // point = float[2] support
+  operator= (const float*); // point = float[2] support
 
   ON_2fVector&
-  operator=(const ON_2dPoint&);
+  operator= (const ON_2dPoint&);
   ON_2fVector&
-  operator=(const ON_3dPoint&);
+  operator= (const ON_3dPoint&);
   ON_2fVector&
-  operator=(const ON_2dVector&);
+  operator= (const ON_2dVector&);
   ON_2fVector&
-  operator=(const ON_3dVector&);
+  operator= (const ON_3dVector&);
   ON_2fVector&
-  operator=(const double*); // point = double[2] support
+  operator= (const double*); // point = double[2] support
 
   ON_2fVector
   operator-() const;
 
   ON_2fVector&
-  operator*=(float);
+  operator*= (float);
   ON_2fVector&
-  operator/=(float);
+  operator/= (float);
   ON_2fVector&
-  operator+=(const ON_2fVector&);
+  operator+= (const ON_2fVector&);
   ON_2fVector&
-  operator-=(const ON_2fVector&);
+  operator-= (const ON_2fVector&);
 
   float
-  operator*(const ON_2fVector&) const; // inner (dot) product
+  operator* (const ON_2fVector&) const; // inner (dot) product
   float
-  operator*(const ON_2fPoint&) const; // inner (dot) product point acting as a vector
+  operator* (const ON_2fPoint&) const; // inner (dot) product point acting as a vector
   double
-  operator*(const ON_2dVector&) const; // inner (dot) product
+  operator* (const ON_2dVector&) const; // inner (dot) product
 
   ON_2fVector
-  operator*(int) const;
+  operator* (int) const;
   ON_2fVector
-  operator/(int) const;
+  operator/ (int) const;
   ON_2fVector
-  operator*(float) const;
+  operator* (float) const;
   ON_2fVector
-  operator/(float) const;
+  operator/ (float) const;
   ON_2dVector
-  operator*(double) const;
+  operator* (double) const;
   ON_2dVector
-  operator/(double) const;
+  operator/ (double) const;
 
   ON_2fVector
-  operator+(const ON_2fVector&) const;
+  operator+ (const ON_2fVector&) const;
   ON_2fPoint
-  operator+(const ON_2fPoint&) const;
+  operator+ (const ON_2fPoint&) const;
   ON_2fVector
-  operator-(const ON_2fVector&) const;
+  operator- (const ON_2fVector&) const;
   ON_2fPoint
-  operator-(const ON_2fPoint&) const;
+  operator- (const ON_2fPoint&) const;
   ON_3fVector
-  operator+(const ON_3fVector&) const;
+  operator+ (const ON_3fVector&) const;
   ON_3fPoint
-  operator+(const ON_3fPoint&) const;
+  operator+ (const ON_3fPoint&) const;
   ON_3fVector
-  operator-(const ON_3fVector&) const;
+  operator- (const ON_3fVector&) const;
   ON_3fPoint
-  operator-(const ON_3fPoint&) const;
+  operator- (const ON_3fPoint&) const;
 
   ON_2dVector
-  operator+(const ON_2dVector&) const;
+  operator+ (const ON_2dVector&) const;
   ON_2dPoint
-  operator+(const ON_2dPoint&) const;
+  operator+ (const ON_2dPoint&) const;
   ON_2dVector
-  operator-(const ON_2dVector&) const;
+  operator- (const ON_2dVector&) const;
   ON_2dPoint
-  operator-(const ON_2dPoint&) const;
+  operator- (const ON_2dPoint&) const;
   ON_3dVector
-  operator+(const ON_3dVector&) const;
+  operator+ (const ON_3dVector&) const;
   ON_3dPoint
-  operator+(const ON_3dPoint&) const;
+  operator+ (const ON_3dPoint&) const;
   ON_3dVector
-  operator-(const ON_3dVector&) const;
+  operator- (const ON_3dVector&) const;
   ON_3dPoint
-  operator-(const ON_3dPoint&) const;
+  operator- (const ON_3dPoint&) const;
 
   float
-  operator*(const ON_4fPoint&) const;
+  operator* (const ON_4fPoint&) const;
 
   bool
-  operator==(const ON_2fVector&) const;
+  operator== (const ON_2fVector&) const;
   bool
-  operator!=(const ON_2fVector&) const;
+  operator!= (const ON_2fVector&) const;
 
   // dictionary order comparisons
   bool
-  operator<=(const ON_2fVector&) const;
+  operator<= (const ON_2fVector&) const;
   bool
-  operator>=(const ON_2fVector&) const;
+  operator>= (const ON_2fVector&) const;
   bool
-  operator<(const ON_2fVector&) const;
+  operator< (const ON_2fVector&) const;
   bool
-  operator>(const ON_2fVector&) const;
+  operator> (const ON_2fVector&) const;
 
   // index operators mimic float[2] behavior
   float&
-  operator[](int);
+  operator[] (int);
   float
-  operator[](int) const;
+  operator[] (int) const;
   float&
-  operator[](unsigned int);
+  operator[] (unsigned int);
   float
-  operator[](unsigned int) const;
+  operator[] (unsigned int) const;
 
   // set 2d vector value
   void
@@ -715,13 +715,13 @@ public:
   Length () const;
 
   bool
-  Decompose ( // Computes a, b such that this vector = a*X + b*Y
-              // Returns false if unable to solve for a,b.  This happens
-              // when X,Y is not really a basis.
-              //
-              // If X,Y is known to be an orthonormal frame,
-              // then a = V*X, b = V*Y will compute
-              // the same result more quickly.
+  Decompose (             // Computes a, b such that this vector = a*X + b*Y
+                          // Returns false if unable to solve for a,b.  This happens
+                          // when X,Y is not really a basis.
+                          //
+                          // If X,Y is known to be an orthonormal frame,
+                          // then a = V*X, b = V*Y will compute
+                          // the same result more quickly.
       const ON_2fVector&, // X
       const ON_2fVector&, // Y
       double*,            // a
@@ -788,15 +788,15 @@ public:
 
 ON_DECL
 ON_2fVector
-operator*(int, const ON_2fVector&);
+operator* (int, const ON_2fVector&);
 
 ON_DECL
 ON_2fVector
-operator*(float, const ON_2fVector&);
+operator* (float, const ON_2fVector&);
 
 ON_DECL
 ON_2dVector
-operator*(double, const ON_2fVector&);
+operator* (double, const ON_2fVector&);
 
 ///////////////////////////////////////////////////////////////
 //
@@ -858,20 +858,20 @@ public:
 
   // use implicit destructor, copy constructor
   ON_3fVector(); // x,y,z not initialized
-  ON_3fVector(float x, float y, float z);
+  ON_3fVector (float x, float y, float z);
 
-  ON_3fVector(const ON_2fPoint&);  // from 2f point
-  ON_3fVector(const ON_3fPoint&);  // from 3f point
-  ON_3fVector(const ON_4fPoint&);  // from 4f point
-  ON_3fVector(const ON_2fVector&); // from 2f vector
-  ON_3fVector(const float*);       // from float[3] array
+  ON_3fVector (const ON_2fPoint&);  // from 2f point
+  ON_3fVector (const ON_3fPoint&);  // from 3f point
+  ON_3fVector (const ON_4fPoint&);  // from 4f point
+  ON_3fVector (const ON_2fVector&); // from 2f vector
+  ON_3fVector (const float*);       // from float[3] array
 
-  ON_3fVector(const ON_2dPoint&);  // from 2d point
-  ON_3fVector(const ON_3dPoint&);  // from 3d point
-  ON_3fVector(const ON_4dPoint&);  // from 4d point
-  ON_3fVector(const ON_2dVector&); // from 2d vector
-  ON_3fVector(const ON_3dVector&); // from 3d vector
-  ON_3fVector(const double*);      // from double[3] array
+  ON_3fVector (const ON_2dPoint&);  // from 2d point
+  ON_3fVector (const ON_3dPoint&);  // from 3d point
+  ON_3fVector (const ON_4dPoint&);  // from 4d point
+  ON_3fVector (const ON_2dVector&); // from 2d vector
+  ON_3fVector (const ON_3dVector&); // from 3d vector
+  ON_3fVector (const double*);      // from double[3] array
 
   // (float*) conversion operators
   operator float*();
@@ -879,122 +879,122 @@ public:
 
   // use implicit operator=(const ON_3fVector&)
   ON_3fVector&
-  operator=(const ON_2fPoint&);
+  operator= (const ON_2fPoint&);
   ON_3fVector&
-  operator=(const ON_3fPoint&);
+  operator= (const ON_3fPoint&);
   ON_3fVector&
-  operator=(const ON_4fPoint&);
+  operator= (const ON_4fPoint&);
   ON_3fVector&
-  operator=(const ON_2fVector&);
+  operator= (const ON_2fVector&);
   ON_3fVector&
-  operator=(const float*); // point = float[3] support
+  operator= (const float*); // point = float[3] support
 
   ON_3fVector&
-  operator=(const ON_2dPoint&);
+  operator= (const ON_2dPoint&);
   ON_3fVector&
-  operator=(const ON_3dPoint&);
+  operator= (const ON_3dPoint&);
   ON_3fVector&
-  operator=(const ON_4dPoint&);
+  operator= (const ON_4dPoint&);
   ON_3fVector&
-  operator=(const ON_2dVector&);
+  operator= (const ON_2dVector&);
   ON_3fVector&
-  operator=(const ON_3dVector&);
+  operator= (const ON_3dVector&);
   ON_3fVector&
-  operator=(const double*); // point = double[3] support
+  operator= (const double*); // point = double[3] support
 
   ON_3fVector
   operator-() const;
 
   ON_3fVector&
-  operator*=(float);
+  operator*= (float);
   ON_3fVector&
-  operator/=(float);
+  operator/= (float);
   ON_3fVector&
-  operator+=(const ON_3fVector&);
+  operator+= (const ON_3fVector&);
   ON_3fVector&
-  operator-=(const ON_3fVector&);
+  operator-= (const ON_3fVector&);
 
   float
-  operator*(const ON_3fVector&) const; // inner (dot) product
+  operator* (const ON_3fVector&) const; // inner (dot) product
   float
-  operator*(const ON_3fPoint&) const; // inner (dot) product (point acting as a vector)
+  operator* (const ON_3fPoint&) const; // inner (dot) product (point acting as a vector)
   double
-  operator*(const ON_3dVector&) const; // inner (dot) product
+  operator* (const ON_3dVector&) const; // inner (dot) product
 
   ON_3fVector
-  operator*(int) const;
+  operator* (int) const;
   ON_3fVector
-  operator/(int) const;
+  operator/ (int) const;
   ON_3fVector
-  operator*(float) const;
+  operator* (float) const;
   ON_3fVector
-  operator/(float) const;
+  operator/ (float) const;
   ON_3dVector
-  operator*(double) const;
+  operator* (double) const;
   ON_3dVector
-  operator/(double) const;
+  operator/ (double) const;
 
   ON_3fVector
-  operator+(const ON_3fVector&) const;
+  operator+ (const ON_3fVector&) const;
   ON_3fPoint
-  operator+(const ON_3fPoint&) const;
+  operator+ (const ON_3fPoint&) const;
   ON_3fVector
-  operator-(const ON_3fVector&) const;
+  operator- (const ON_3fVector&) const;
   ON_3fPoint
-  operator-(const ON_3fPoint&) const;
+  operator- (const ON_3fPoint&) const;
   ON_3fVector
-  operator+(const ON_2fVector&) const;
+  operator+ (const ON_2fVector&) const;
   ON_3fPoint
-  operator+(const ON_2fPoint&) const;
+  operator+ (const ON_2fPoint&) const;
   ON_3fVector
-  operator-(const ON_2fVector&) const;
+  operator- (const ON_2fVector&) const;
   ON_3fPoint
-  operator-(const ON_2fPoint&) const;
+  operator- (const ON_2fPoint&) const;
 
   ON_3dVector
-  operator+(const ON_3dVector&) const;
+  operator+ (const ON_3dVector&) const;
   ON_3dPoint
-  operator+(const ON_3dPoint&) const;
+  operator+ (const ON_3dPoint&) const;
   ON_3dVector
-  operator-(const ON_3dVector&) const;
+  operator- (const ON_3dVector&) const;
   ON_3dPoint
-  operator-(const ON_3dPoint&) const;
+  operator- (const ON_3dPoint&) const;
   ON_3dVector
-  operator+(const ON_2dVector&) const;
+  operator+ (const ON_2dVector&) const;
   ON_3dPoint
-  operator+(const ON_2dPoint&) const;
+  operator+ (const ON_2dPoint&) const;
   ON_3dVector
-  operator-(const ON_2dVector&) const;
+  operator- (const ON_2dVector&) const;
   ON_3dPoint
-  operator-(const ON_2dPoint&) const;
+  operator- (const ON_2dPoint&) const;
 
   float
-  operator*(const ON_4fPoint&) const;
+  operator* (const ON_4fPoint&) const;
 
   bool
-  operator==(const ON_3fVector&) const;
+  operator== (const ON_3fVector&) const;
   bool
-  operator!=(const ON_3fVector&) const;
+  operator!= (const ON_3fVector&) const;
 
   // dictionary order comparisons
   bool
-  operator<=(const ON_3fVector&) const;
+  operator<= (const ON_3fVector&) const;
   bool
-  operator>=(const ON_3fVector&) const;
+  operator>= (const ON_3fVector&) const;
   bool
-  operator<(const ON_3fVector&) const;
+  operator< (const ON_3fVector&) const;
   bool
-  operator>(const ON_3fVector&) const;
+  operator> (const ON_3fVector&) const;
 
   // index operators mimic float[3] behavior
   float&
-  operator[](int);
+  operator[] (int);
   float
-  operator[](int) const;
+  operator[] (int) const;
   float&
-  operator[](unsigned int);
+  operator[] (unsigned int);
   float
-  operator[](unsigned int) const;
+  operator[] (unsigned int) const;
 
   // set 3d vector value
   void
@@ -1076,15 +1076,15 @@ public:
 
 ON_DECL
 ON_3fVector
-operator*(int, const ON_3fVector&);
+operator* (int, const ON_3fVector&);
 
 ON_DECL
 ON_3fVector
-operator*(float, const ON_3fVector&);
+operator* (float, const ON_3fVector&);
 
 ON_DECL
 ON_3dVector
-operator*(double, const ON_3fVector&);
+operator* (double, const ON_3fVector&);
 
 ///////////////////////////////////////////////////////////////
 //

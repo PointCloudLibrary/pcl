@@ -68,9 +68,9 @@ public:
   using ConstPtr = shared_ptr<const FastBilateralFilterOMP<PointT>>;
 
   /** \brief Empty constructor. */
-  FastBilateralFilterOMP(unsigned int nr_threads = 0)
+  FastBilateralFilterOMP (unsigned int nr_threads = 0)
   {
-    setNumberOfThreads(nr_threads);
+    setNumberOfThreads (nr_threads);
   }
 
   /** \brief Initialize the scheduler and set the number of threads to use.

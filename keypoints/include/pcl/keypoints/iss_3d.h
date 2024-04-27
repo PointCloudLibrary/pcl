@@ -109,15 +109,15 @@ public:
    * \param[in] salient_radius the radius of the spherical neighborhood used to compute
    * the scatter matrix.
    */
-  ISSKeypoint3D(double salient_radius = 0.0001)
-  : salient_radius_(salient_radius)
-  , normals_(new pcl::PointCloud<NormalT>)
-  , angle_threshold_(static_cast<float>(M_PI) / 2.0f)
+  ISSKeypoint3D (double salient_radius = 0.0001)
+  : salient_radius_ (salient_radius)
+  , normals_ (new pcl::PointCloud<NormalT>)
+  , angle_threshold_ (static_cast<float> (M_PI) / 2.0f)
   {
     name_ = "ISSKeypoint3D";
     search_radius_ = salient_radius_;
-    setNumberOfThreads(threads_); // Reset number of threads with the member's
-                                  // initialization value to apply input validation.
+    setNumberOfThreads (threads_); // Reset number of threads with the member's
+                                   // initialization value to apply input validation.
   }
 
   /** \brief Destructor. */

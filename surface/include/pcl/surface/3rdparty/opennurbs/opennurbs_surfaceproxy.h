@@ -33,10 +33,10 @@ public:
 
 public:
   ON_SurfaceProxy();
-  ON_SurfaceProxy(const ON_Surface*);
-  ON_SurfaceProxy(const ON_SurfaceProxy&);
+  ON_SurfaceProxy (const ON_Surface*);
+  ON_SurfaceProxy (const ON_SurfaceProxy&);
   ON_SurfaceProxy&
-  operator=(const ON_SurfaceProxy&);
+  operator= (const ON_SurfaceProxy&);
 
   virtual ~ON_SurfaceProxy();
 
@@ -321,7 +321,7 @@ public:
   );
 
   ON_BOOL32
-  Transpose (); // transpose surface parameterization (swap "s" and "t")
+  Transpose(); // transpose surface parameterization (swap "s" and "t")
 
   // work horse evaluator
   ON_BOOL32
@@ -383,7 +383,7 @@ public:
                                             double* nurbs_t) const;
 
 private:
-  ON_OBJECT_DECLARE(ON_SurfaceProxy);
+  ON_OBJECT_DECLARE (ON_SurfaceProxy);
 };
 
 #endif

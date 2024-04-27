@@ -46,7 +46,7 @@
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT, typename NormalT, typename IntensityT>
 void
-pcl::SUSANKeypoint<PointInT, PointOutT, NormalT, IntensityT>::setNonMaxSupression(
+pcl::SUSANKeypoint<PointInT, PointOutT, NormalT, IntensityT>::setNonMaxSupression (
     bool nonmax)
 {
   nonmax_ = nonmax;
@@ -55,7 +55,7 @@ pcl::SUSANKeypoint<PointInT, PointOutT, NormalT, IntensityT>::setNonMaxSupressio
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT, typename NormalT, typename IntensityT>
 void
-pcl::SUSANKeypoint<PointInT, PointOutT, NormalT, IntensityT>::setGeometricValidation(
+pcl::SUSANKeypoint<PointInT, PointOutT, NormalT, IntensityT>::setGeometricValidation (
     bool validate)
 {
   geometric_validation_ = validate;
@@ -64,7 +64,7 @@ pcl::SUSANKeypoint<PointInT, PointOutT, NormalT, IntensityT>::setGeometricValida
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT, typename NormalT, typename IntensityT>
 void
-pcl::SUSANKeypoint<PointInT, PointOutT, NormalT, IntensityT>::setRadius(float radius)
+pcl::SUSANKeypoint<PointInT, PointOutT, NormalT, IntensityT>::setRadius (float radius)
 {
   search_radius_ = radius;
 }
@@ -72,7 +72,7 @@ pcl::SUSANKeypoint<PointInT, PointOutT, NormalT, IntensityT>::setRadius(float ra
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT, typename NormalT, typename IntensityT>
 void
-pcl::SUSANKeypoint<PointInT, PointOutT, NormalT, IntensityT>::setDistanceThreshold(
+pcl::SUSANKeypoint<PointInT, PointOutT, NormalT, IntensityT>::setDistanceThreshold (
     float distance_threshold)
 {
   distance_threshold_ = distance_threshold;
@@ -81,7 +81,7 @@ pcl::SUSANKeypoint<PointInT, PointOutT, NormalT, IntensityT>::setDistanceThresho
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT, typename NormalT, typename IntensityT>
 void
-pcl::SUSANKeypoint<PointInT, PointOutT, NormalT, IntensityT>::setAngularThreshold(
+pcl::SUSANKeypoint<PointInT, PointOutT, NormalT, IntensityT>::setAngularThreshold (
     float angular_threshold)
 {
   angular_threshold_ = angular_threshold;
@@ -90,7 +90,7 @@ pcl::SUSANKeypoint<PointInT, PointOutT, NormalT, IntensityT>::setAngularThreshol
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT, typename NormalT, typename IntensityT>
 void
-pcl::SUSANKeypoint<PointInT, PointOutT, NormalT, IntensityT>::setIntensityThreshold(
+pcl::SUSANKeypoint<PointInT, PointOutT, NormalT, IntensityT>::setIntensityThreshold (
     float intensity_threshold)
 {
   intensity_threshold_ = intensity_threshold;
@@ -99,7 +99,7 @@ pcl::SUSANKeypoint<PointInT, PointOutT, NormalT, IntensityT>::setIntensityThresh
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT, typename NormalT, typename IntensityT>
 void
-pcl::SUSANKeypoint<PointInT, PointOutT, NormalT, IntensityT>::setNormals(
+pcl::SUSANKeypoint<PointInT, PointOutT, NormalT, IntensityT>::setNormals (
     const PointCloudNConstPtr& normals)
 {
   normals_ = normals;
@@ -108,17 +108,17 @@ pcl::SUSANKeypoint<PointInT, PointOutT, NormalT, IntensityT>::setNormals(
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT, typename NormalT, typename IntensityT>
 void
-pcl::SUSANKeypoint<PointInT, PointOutT, NormalT, IntensityT>::setSearchSurface(
+pcl::SUSANKeypoint<PointInT, PointOutT, NormalT, IntensityT>::setSearchSurface (
     const PointCloudInConstPtr& cloud)
 {
   surface_ = cloud;
-  normals_.reset(new pcl::PointCloud<NormalT>);
+  normals_.reset (new pcl::PointCloud<NormalT>);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT, typename NormalT, typename IntensityT>
 void
-pcl::SUSANKeypoint<PointInT, PointOutT, NormalT, IntensityT>::setNumberOfThreads(
+pcl::SUSANKeypoint<PointInT, PointOutT, NormalT, IntensityT>::setNumberOfThreads (
     unsigned int nr_threads)
 {
   threads_ = nr_threads;
@@ -240,33 +240,33 @@ bool
 pcl::SUSANKeypoint<PointInT, PointOutT, NormalT, IntensityT>::initCompute()
 {
   if (!Keypoint<PointInT, PointOutT>::initCompute()) {
-    PCL_ERROR("[pcl::%s::initCompute] init failed!\n", name_.c_str());
+    PCL_ERROR ("[pcl::%s::initCompute] init failed!\n", name_.c_str());
     return (false);
   }
 
   if (normals_->empty()) {
-    PointCloudNPtr normals(new PointCloudN());
-    normals->reserve(normals->size());
+    PointCloudNPtr normals (new PointCloudN());
+    normals->reserve (normals->size());
     if (!surface_->isOrganized()) {
       pcl::NormalEstimation<PointInT, NormalT> normal_estimation;
-      normal_estimation.setInputCloud(surface_);
-      normal_estimation.setRadiusSearch(search_radius_);
-      normal_estimation.compute(*normals);
+      normal_estimation.setInputCloud (surface_);
+      normal_estimation.setRadiusSearch (search_radius_);
+      normal_estimation.compute (*normals);
     }
     else {
       IntegralImageNormalEstimation<PointInT, NormalT> normal_estimation;
-      normal_estimation.setNormalEstimationMethod(
+      normal_estimation.setNormalEstimationMethod (
           pcl::IntegralImageNormalEstimation<PointInT, NormalT>::SIMPLE_3D_GRADIENT);
-      normal_estimation.setInputCloud(surface_);
-      normal_estimation.setNormalSmoothingSize(5.0);
-      normal_estimation.compute(*normals);
+      normal_estimation.setInputCloud (surface_);
+      normal_estimation.setNormalSmoothingSize (5.0);
+      normal_estimation.compute (*normals);
     }
     normals_ = normals;
   }
   if (normals_->size() != surface_->size()) {
-    PCL_ERROR("[pcl::%s::initCompute] normals given, but the number of normals does "
-              "not match the number of input points!\n",
-              name_.c_str());
+    PCL_ERROR ("[pcl::%s::initCompute] normals given, but the number of normals does "
+               "not match the number of input points!\n",
+               name_.c_str());
     return (false);
   }
 
@@ -276,7 +276,7 @@ pcl::SUSANKeypoint<PointInT, PointOutT, NormalT, IntensityT>::initCompute()
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT, typename NormalT, typename IntensityT>
 bool
-pcl::SUSANKeypoint<PointInT, PointOutT, NormalT, IntensityT>::isWithinNucleusCentroid(
+pcl::SUSANKeypoint<PointInT, PointOutT, NormalT, IntensityT>::isWithinNucleusCentroid (
     const Eigen::Vector3f& nucleus,
     const Eigen::Vector3f& centroid,
     const Eigen::Vector3f& nc,
@@ -284,8 +284,9 @@ pcl::SUSANKeypoint<PointInT, PointOutT, NormalT, IntensityT>::isWithinNucleusCen
 {
   Eigen::Vector3f pc = centroid - point.getVector3fMap();
   Eigen::Vector3f pn = nucleus - point.getVector3fMap();
-  Eigen::Vector3f pc_cross_nc = pc.cross(nc);
-  return ((pc_cross_nc.norm() <= tolerance_) && (pc.dot(nc) >= 0) && (pn.dot(nc) <= 0));
+  Eigen::Vector3f pc_cross_nc = pc.cross (nc);
+  return ((pc_cross_nc.norm() <= tolerance_) && (pc.dot (nc) >= 0) &&
+          (pn.dot (nc) <= 0));
 }
 
 // template <typename PointInT, typename PointOutT, typename NormalT, typename
@@ -334,65 +335,65 @@ pcl::SUSANKeypoint<PointInT, PointOutT, NormalT, IntensityT>::isWithinNucleusCen
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT, typename NormalT, typename IntensityT>
 void
-pcl::SUSANKeypoint<PointInT, PointOutT, NormalT, IntensityT>::detectKeypoints(
+pcl::SUSANKeypoint<PointInT, PointOutT, NormalT, IntensityT>::detectKeypoints (
     PointCloudOut& output)
 {
-  typename pcl::PointCloud<PointOutT>::Ptr response(new pcl::PointCloud<PointOutT>);
-  response->reserve(surface_->size());
+  typename pcl::PointCloud<PointOutT>::Ptr response (new pcl::PointCloud<PointOutT>);
+  response->reserve (surface_->size());
 
   // Check if the output has a "label" field
-  label_idx_ = pcl::getFieldIndex<PointOutT>("label", out_fields_);
+  label_idx_ = pcl::getFieldIndex<PointOutT> ("label", out_fields_);
 
-  const auto input_size = static_cast<pcl::index_t>(input_->size());
+  const auto input_size = static_cast<pcl::index_t> (input_->size());
   for (pcl::index_t point_index = 0; point_index < input_size; ++point_index) {
     const PointInT& point_in = input_->points[point_index];
     const NormalT& normal_in = normals_->points[point_index];
-    if (!isFinite(point_in) || !isFinite(normal_in))
+    if (!isFinite (point_in) || !isFinite (normal_in))
       continue;
 
     Eigen::Vector3f nucleus = point_in.getVector3fMap();
     Eigen::Vector3f nucleus_normal =
         normals_->points[point_index].getNormalVector3fMap();
-    float nucleus_intensity = intensity_(point_in);
+    float nucleus_intensity = intensity_ (point_in);
     pcl::Indices nn_indices;
     std::vector<float> nn_dists;
-    tree_->radiusSearch(point_in, search_radius_, nn_indices, nn_dists);
+    tree_->radiusSearch (point_in, search_radius_, nn_indices, nn_dists);
     float area = 0;
     Eigen::Vector3f centroid = Eigen::Vector3f::Zero();
     // Exclude nucleus from the usan
     std::vector<int> usan;
-    usan.reserve(nn_indices.size() - 1);
+    usan.reserve (nn_indices.size() - 1);
     for (const auto& index : nn_indices) {
-      if ((index != point_index) && std::isfinite((*normals_)[index].normal_x)) {
+      if ((index != point_index) && std::isfinite ((*normals_)[index].normal_x)) {
         // if the point fulfill condition
-        if ((std::abs(nucleus_intensity - intensity_((*input_)[index])) <=
+        if ((std::abs (nucleus_intensity - intensity_ ((*input_)[index])) <=
              intensity_threshold_) ||
-            (1 - nucleus_normal.dot((*normals_)[index].getNormalVector3fMap()) <=
+            (1 - nucleus_normal.dot ((*normals_)[index].getNormalVector3fMap()) <=
              angular_threshold_)) {
           ++area;
           centroid += (*input_)[index].getVector3fMap();
-          usan.push_back(index);
+          usan.push_back (index);
         }
       }
     }
 
-    float geometric_threshold = 0.5f * (static_cast<float>(nn_indices.size() - 1));
+    float geometric_threshold = 0.5f * (static_cast<float> (nn_indices.size() - 1));
     if ((area > 0) && (area < geometric_threshold)) {
       // if no geometric validation required add the point to the response
       if (!geometric_validation_) {
         PointOutT point_out;
         point_out.getVector3fMap() = point_in.getVector3fMap();
         // point_out.intensity = geometric_threshold - area;
-        intensity_out_.set(point_out, geometric_threshold - area);
+        intensity_out_.set (point_out, geometric_threshold - area);
         // if a label field is found use it to save the index
         if (label_idx_ != -1) {
           // save the index in the cloud
-          auto label = static_cast<std::uint32_t>(point_index);
-          memcpy(reinterpret_cast<char*>(&point_out) + out_fields_[label_idx_].offset,
-                 &label,
-                 sizeof(std::uint32_t));
+          auto label = static_cast<std::uint32_t> (point_index);
+          memcpy (reinterpret_cast<char*> (&point_out) + out_fields_[label_idx_].offset,
+                  &label,
+                  sizeof (std::uint32_t));
         }
-        response->push_back(point_out);
+        response->push_back (point_out);
       }
       else {
         centroid /= area;
@@ -404,7 +405,7 @@ pcl::SUSANKeypoint<PointInT, PointOutT, NormalT, IntensityT>::detectKeypoints(
           // Check the contiguity
           auto usan_it = usan.cbegin();
           for (; usan_it != usan.cend(); ++usan_it) {
-            if (!isWithinNucleusCentroid(nucleus, centroid, nc, (*input_)[*usan_it]))
+            if (!isWithinNucleusCentroid (nucleus, centroid, nc, (*input_)[*usan_it]))
               break;
           }
           // All points within usan lies on the segment [nucleus centroid]
@@ -412,17 +413,17 @@ pcl::SUSANKeypoint<PointInT, PointOutT, NormalT, IntensityT>::detectKeypoints(
             PointOutT point_out;
             point_out.getVector3fMap() = point_in.getVector3fMap();
             // point_out.intensity = geometric_threshold - area;
-            intensity_out_.set(point_out, geometric_threshold - area);
+            intensity_out_.set (point_out, geometric_threshold - area);
             // if a label field is found use it to save the index
             if (label_idx_ != -1) {
               // save the index in the cloud
-              auto label = static_cast<std::uint32_t>(point_index);
-              memcpy(reinterpret_cast<char*>(&point_out) +
-                         out_fields_[label_idx_].offset,
-                     &label,
-                     sizeof(std::uint32_t));
+              auto label = static_cast<std::uint32_t> (point_index);
+              memcpy (reinterpret_cast<char*> (&point_out) +
+                          out_fields_[label_idx_].offset,
+                      &label,
+                      sizeof (std::uint32_t));
             }
-            response->push_back(point_out);
+            response->push_back (point_out);
           }
         }
       }
@@ -435,36 +436,36 @@ pcl::SUSANKeypoint<PointInT, PointOutT, NormalT, IntensityT>::detectKeypoints(
   if (!nonmax_) {
     output = *response;
     for (std::size_t i = 0; i < response->size(); ++i)
-      keypoints_indices_->indices.push_back(i);
+      keypoints_indices_->indices.push_back (i);
     // we don not change the denseness
     output.is_dense = input_->is_dense;
   }
   else {
     output.clear();
-    output.reserve(response->size());
+    output.reserve (response->size());
 
-    for (pcl::index_t idx = 0; idx < static_cast<pcl::index_t>(response->size());
+    for (pcl::index_t idx = 0; idx < static_cast<pcl::index_t> (response->size());
          ++idx) {
       const PointOutT& point_in = response->points[idx];
       const NormalT& normal_in = normals_->points[idx];
       // const float intensity = (*response)[idx].intensity;
-      const float intensity = intensity_out_((*response)[idx]);
-      if (!isFinite(point_in) || !isFinite(normal_in) || (intensity == 0))
+      const float intensity = intensity_out_ ((*response)[idx]);
+      if (!isFinite (point_in) || !isFinite (normal_in) || (intensity == 0))
         continue;
       pcl::Indices nn_indices;
       std::vector<float> nn_dists;
-      tree_->radiusSearch(idx, search_radius_, nn_indices, nn_dists);
+      tree_->radiusSearch (idx, search_radius_, nn_indices, nn_dists);
       bool is_minima = true;
       for (const auto& nn_index : nn_indices) {
         //        if (intensity > (*response)[nn_index].intensity)
-        if (intensity > intensity_out_((*response)[nn_index])) {
+        if (intensity > intensity_out_ ((*response)[nn_index])) {
           is_minima = false;
           break;
         }
       }
       if (is_minima) {
-        output.push_back((*response)[idx]);
-        keypoints_indices_->indices.push_back(idx);
+        output.push_back ((*response)[idx]);
+        keypoints_indices_->indices.push_back (idx);
       }
     }
 

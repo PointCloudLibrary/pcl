@@ -96,7 +96,7 @@ public:
                       const float threshold,
                       unsigned char& branch_index) const override
   {
-    pcl::utils::ignore(flag);
+    pcl::utils::ignore (flag);
     branch_index = (result > threshold) ? 1 : 0;
   }
 };

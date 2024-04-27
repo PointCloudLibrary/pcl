@@ -49,17 +49,17 @@ public:
   int
   Compare (const ON_DisplayMaterialRef& other) const;
   bool
-  operator==(const ON_DisplayMaterialRef& other) const;
+  operator== (const ON_DisplayMaterialRef& other) const;
   bool
-  operator!=(const ON_DisplayMaterialRef& other) const;
+  operator!= (const ON_DisplayMaterialRef& other) const;
   bool
-  operator<(const ON_DisplayMaterialRef& other) const;
+  operator< (const ON_DisplayMaterialRef& other) const;
   bool
-  operator<=(const ON_DisplayMaterialRef& other) const;
+  operator<= (const ON_DisplayMaterialRef& other) const;
   bool
-  operator>(const ON_DisplayMaterialRef& other) const;
+  operator> (const ON_DisplayMaterialRef& other) const;
   bool
-  operator>=(const ON_DisplayMaterialRef& other) const;
+  operator>= (const ON_DisplayMaterialRef& other) const;
 
   // C++ default destructor, copy constructor and operator=
   // work fine.
@@ -89,9 +89,9 @@ public:
   ON_LinetypeSegment();
 
   bool
-  operator==(const ON_LinetypeSegment& src) const;
+  operator== (const ON_LinetypeSegment& src) const;
   bool
-  operator!=(const ON_LinetypeSegment& src) const;
+  operator!= (const ON_LinetypeSegment& src) const;
 
   // For a curve to be drawn starting at the start point
   // and ending at the endpoint, the first segment

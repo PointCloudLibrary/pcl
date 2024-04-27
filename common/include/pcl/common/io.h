@@ -60,13 +60,13 @@ inline int
 getFieldIndex (const pcl::PCLPointCloud2& cloud, const std::string& field_name)
 {
   // Get the index we need
-  const auto result = std::find_if(
+  const auto result = std::find_if (
       cloud.fields.begin(), cloud.fields.end(), [&field_name] (const auto field) {
         return field.name == field_name;
       });
   if (result == cloud.fields.end())
     return -1;
-  return std::distance(cloud.fields.begin(), result);
+  return std::distance (cloud.fields.begin(), result);
 }
 
 /** \brief Get the index of a specified field (i.e., dimension/channel)
@@ -117,8 +117,8 @@ getFieldsList (const pcl::PCLPointCloud2& cloud)
     return "";
   }
   else {
-    return std::accumulate(
-        std::next(cloud.fields.begin()),
+    return std::accumulate (
+        std::next (cloud.fields.begin()),
         cloud.fields.end(),
         cloud.fields[0].name,
         [] (const auto& acc, const auto& field) { return acc + " " + field.name; });
@@ -134,7 +134,7 @@ getFieldSize (const int datatype)
 {
   switch (datatype) {
   case pcl::PCLPointField::BOOL:
-    return sizeof(bool);
+    return sizeof (bool);
 
   case pcl::PCLPointField::INT8:
     PCL_FALLTHROUGH
@@ -181,11 +181,11 @@ getFieldsSizes (const std::vector<pcl::PCLPointField>& fields,
 inline int
 getFieldType (const int size, char type)
 {
-  type = std::toupper(type, std::locale::classic());
+  type = std::toupper (type, std::locale::classic());
 
   // extra logic for bool because its size is undefined
   if (type == 'B') {
-    if (size == sizeof(bool)) {
+    if (size == sizeof (bool)) {
       return pcl::PCLPointField::BOOL;
     }
     else {
@@ -301,7 +301,7 @@ concatenate (const pcl::PointCloud<PointT>& cloud1,
              const pcl::PointCloud<PointT>& cloud2,
              pcl::PointCloud<PointT>& cloud_out)
 {
-  return pcl::PointCloud<PointT>::concatenate(cloud1, cloud2, cloud_out);
+  return pcl::PointCloud<PointT>::concatenate (cloud1, cloud2, cloud_out);
 }
 
 /** \brief Concatenate two pcl::PCLPointCloud2
@@ -319,7 +319,7 @@ concatenate (const pcl::PCLPointCloud2& cloud1,
              const pcl::PCLPointCloud2& cloud2,
              pcl::PCLPointCloud2& cloud_out)
 {
-  return pcl::PCLPointCloud2::concatenate(cloud1, cloud2, cloud_out);
+  return pcl::PCLPointCloud2::concatenate (cloud1, cloud2, cloud_out);
 }
 
 /** \brief Concatenate two pcl::PolygonMesh
@@ -334,7 +334,7 @@ concatenate (const pcl::PolygonMesh& mesh1,
              const pcl::PolygonMesh& mesh2,
              pcl::PolygonMesh& mesh_out)
 {
-  return pcl::PolygonMesh::concatenate(mesh1, mesh2, mesh_out);
+  return pcl::PolygonMesh::concatenate (mesh1, mesh2, mesh_out);
 }
 
 /** \brief Extract the indices of a given point cloud as a new point cloud
@@ -551,7 +551,7 @@ swapByte (char* bytes);
  */
 template <>
 inline void
-swapByte<1>(char* bytes)
+swapByte<1> (char* bytes)
 {
   bytes[0] = bytes[0];
 }
@@ -561,9 +561,9 @@ swapByte<1>(char* bytes)
  */
 template <>
 inline void
-swapByte<2>(char* bytes)
+swapByte<2> (char* bytes)
 {
-  std::swap(bytes[0], bytes[1]);
+  std::swap (bytes[0], bytes[1]);
 }
 
 /** \brief specialization of swapByte for dimension 4
@@ -571,10 +571,10 @@ swapByte<2>(char* bytes)
  */
 template <>
 inline void
-swapByte<4>(char* bytes)
+swapByte<4> (char* bytes)
 {
-  std::swap(bytes[0], bytes[3]);
-  std::swap(bytes[1], bytes[2]);
+  std::swap (bytes[0], bytes[3]);
+  std::swap (bytes[1], bytes[2]);
 }
 
 /** \brief specialization of swapByte for dimension 8
@@ -582,12 +582,12 @@ swapByte<4>(char* bytes)
  */
 template <>
 inline void
-swapByte<8>(char* bytes)
+swapByte<8> (char* bytes)
 {
-  std::swap(bytes[0], bytes[7]);
-  std::swap(bytes[1], bytes[6]);
-  std::swap(bytes[2], bytes[5]);
-  std::swap(bytes[3], bytes[4]);
+  std::swap (bytes[0], bytes[7]);
+  std::swap (bytes[1], bytes[6]);
+  std::swap (bytes[2], bytes[5]);
+  std::swap (bytes[3], bytes[4]);
 }
 
 /** \brief swaps byte of an arbitrary type T casting it to char*
@@ -597,7 +597,7 @@ template <typename T>
 void
 swapByte (T& value)
 {
-  pcl::io::swapByte<sizeof(T)>(reinterpret_cast<char*>(&value));
+  pcl::io::swapByte<sizeof (T)> (reinterpret_cast<char*> (&value));
 }
 } // namespace io
 } // namespace pcl

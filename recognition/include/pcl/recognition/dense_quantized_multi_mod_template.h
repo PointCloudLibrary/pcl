@@ -49,11 +49,11 @@ struct DenseQuantizedSingleModTemplate {
   void
   serialize (std::ostream& stream) const
   {
-    const auto num_of_features = static_cast<std::size_t>(features.size());
-    write(stream, num_of_features);
+    const auto num_of_features = static_cast<std::size_t> (features.size());
+    write (stream, num_of_features);
     for (std::size_t feature_index = 0; feature_index < num_of_features;
          ++feature_index) {
-      write(stream, features[feature_index]);
+      write (stream, features[feature_index]);
     }
   }
 
@@ -63,11 +63,11 @@ struct DenseQuantizedSingleModTemplate {
     features.clear();
 
     std::size_t num_of_features;
-    read(stream, num_of_features);
-    features.resize(num_of_features);
+    read (stream, num_of_features);
+    features.resize (num_of_features);
     for (std::size_t feature_index = 0; feature_index < num_of_features;
          ++feature_index) {
-      read(stream, features[feature_index]);
+      read (stream, features[feature_index]);
     }
   }
 };
@@ -81,14 +81,14 @@ struct DenseQuantizedMultiModTemplate {
   void
   serialize (std::ostream& stream) const
   {
-    const auto num_of_modalities = static_cast<std::size_t>(modalities.size());
-    write(stream, num_of_modalities);
+    const auto num_of_modalities = static_cast<std::size_t> (modalities.size());
+    write (stream, num_of_modalities);
     for (std::size_t modality_index = 0; modality_index < num_of_modalities;
          ++modality_index) {
-      modalities[modality_index].serialize(stream);
+      modalities[modality_index].serialize (stream);
     }
 
-    region.serialize(stream);
+    region.serialize (stream);
   }
 
   void
@@ -97,14 +97,14 @@ struct DenseQuantizedMultiModTemplate {
     modalities.clear();
 
     std::size_t num_of_modalities;
-    read(stream, num_of_modalities);
-    modalities.resize(num_of_modalities);
+    read (stream, num_of_modalities);
+    modalities.resize (num_of_modalities);
     for (std::size_t modality_index = 0; modality_index < num_of_modalities;
          ++modality_index) {
-      modalities[modality_index].deserialize(stream);
+      modalities[modality_index].deserialize (stream);
     }
 
-    region.deserialize(stream);
+    region.deserialize (stream);
   }
 };
 

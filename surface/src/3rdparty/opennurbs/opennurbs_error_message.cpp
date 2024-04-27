@@ -31,17 +31,17 @@ ON_ErrorMessage (int, // 0=warning - serious problem that code is designed to ha
 #if defined(ON_PURIFY_BUILD) && defined(ON_32BIT_POINTER)
     // 10 December 2003 Dale Lear
     //     Make ON_ERROR/ON_WARNING messages show up in Purify
-    PurifyPrintf("%s", sErrorMessage);
+    PurifyPrintf ("%s", sErrorMessage);
 #endif
 
 #if defined(ON_OS_WINDOWS)
-    ::OutputDebugStringA("\n");
-    ::OutputDebugStringA(sErrorMessage);
-    ::OutputDebugStringA("\n");
+    ::OutputDebugStringA ("\n");
+    ::OutputDebugStringA (sErrorMessage);
+    ::OutputDebugStringA ("\n");
 #else
 #if defined(ON__DEBUG)
     // not using OutputDebugStringA
-    printf("\n%s\n", sErrorMessage);
+    printf ("\n%s\n", sErrorMessage);
 #endif
 #endif
   }

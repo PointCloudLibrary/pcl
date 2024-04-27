@@ -46,7 +46,7 @@ namespace registration {
 template <typename PointSource, typename PointTarget, typename NormalT, typename Scalar>
 KFPCSInitialAlignment<PointSource, PointTarget, NormalT, Scalar>::
     KFPCSInitialAlignment()
-: indices_validation_(new pcl::Indices)
+: indices_validation_ (new pcl::Indices)
 {
   reg_name_ = "pcl::registration::KFPCSInitialAlignment";
 }
@@ -57,9 +57,9 @@ KFPCSInitialAlignment<PointSource, PointTarget, NormalT, Scalar>::initCompute()
 {
   // due to sparse keypoint cloud, do not normalize delta with estimated point density
   if (normalize_delta_) {
-    PCL_WARN("[%s::initCompute] Delta should be set according to keypoint precision! "
-             "Normalization according to point cloud density is ignored.\n",
-             reg_name_.c_str());
+    PCL_WARN ("[%s::initCompute] Delta should be set according to keypoint precision! "
+              "Normalization according to point cloud density is ignored.\n",
+              reg_name_.c_str());
     normalize_delta_ = false;
   }
 
@@ -74,10 +74,10 @@ KFPCSInitialAlignment<PointSource, PointTarget, NormalT, Scalar>::initCompute()
       delta_ *
       3.f; // diff between 2 points + some inaccuracy due to quadruple orientation
   max_mse_ =
-      powf(delta_ * 4.f, 2.f); // diff between 2 points + some registration inaccuracy
+      powf (delta_ * 4.f, 2.f); // diff between 2 points + some registration inaccuracy
   max_inlier_dist_sqr_ =
-      powf(delta_ * 8.f,
-           2.f); // set rel. high, because MSAC is used (residual based score function)
+      powf (delta_ * 8.f,
+            2.f); // set rel. high, because MSAC is used (residual based score function)
 
   // check use of translation costs and calculate upper boundary if not set by user
   if (upper_trl_boundary_ < 0)
@@ -91,18 +91,18 @@ KFPCSInitialAlignment<PointSource, PointTarget, NormalT, Scalar>::initCompute()
   // generate a subset of indices of size ransac_iterations_ on which to evaluate
   // candidates on
   std::size_t nr_indices = indices_->size();
-  if (nr_indices < static_cast<std::size_t>(ransac_iterations_))
+  if (nr_indices < static_cast<std::size_t> (ransac_iterations_))
     indices_validation_ = indices_;
   else
     for (int i = 0; i < ransac_iterations_; i++)
-      indices_validation_->push_back((*indices_)[rand() % nr_indices]);
+      indices_validation_->push_back ((*indices_)[rand() % nr_indices]);
 
   return (true);
 }
 
 template <typename PointSource, typename PointTarget, typename NormalT, typename Scalar>
 void
-KFPCSInitialAlignment<PointSource, PointTarget, NormalT, Scalar>::handleMatches(
+KFPCSInitialAlignment<PointSource, PointTarget, NormalT, Scalar>::handleMatches (
     const pcl::Indices& base_indices,
     std::vector<pcl::Indices>& matches,
     MatchingCandidates& candidates)
@@ -119,31 +119,31 @@ KFPCSInitialAlignment<PointSource, PointTarget, NormalT, Scalar>::handleMatches(
 
     // determine correspondences between base and match according to their distance to
     // centroid
-    linkMatchWithBase(base_indices, match, correspondences_temp);
+    linkMatchWithBase (base_indices, match, correspondences_temp);
 
     // check match based on residuals of the corresponding points after transformation
-    if (validateMatch(base_indices, match, correspondences_temp, transformation_temp) <
+    if (validateMatch (base_indices, match, correspondences_temp, transformation_temp) <
         0)
       continue;
 
     // check resulting transformation using a sub sample of the source point cloud
     // all candidates are stored and later sorted according to their fitness score
-    validateTransformation(transformation_temp, fitness_score);
+    validateTransformation (transformation_temp, fitness_score);
 
     // store all valid match as well as associated score and transformation
-    candidates.push_back(
-        MatchingCandidate(fitness_score, correspondences_temp, transformation_temp));
+    candidates.push_back (
+        MatchingCandidate (fitness_score, correspondences_temp, transformation_temp));
   }
 }
 
 template <typename PointSource, typename PointTarget, typename NormalT, typename Scalar>
 int
 KFPCSInitialAlignment<PointSource, PointTarget, NormalT, Scalar>::
-    validateTransformation(Eigen::Matrix4f& transformation, float& fitness_score)
+    validateTransformation (Eigen::Matrix4f& transformation, float& fitness_score)
 {
   // transform sub sampled source cloud
   PointCloudSource source_transformed;
-  pcl::transformPointCloud(
+  pcl::transformPointCloud (
       *input_, *indices_validation_, source_transformed, transformation);
 
   const std::size_t nr_points = source_transformed.size();
@@ -154,7 +154,7 @@ KFPCSInitialAlignment<PointSource, PointTarget, NormalT, Scalar>::
   std::vector<float> dists_sqr;
   for (const auto& source : source_transformed) {
     // search for nearest point using kd tree search
-    tree_->nearestKSearch(source, 1, ids, dists_sqr);
+    tree_->nearestKSearch (source, 1, ids, dists_sqr);
     score_a += (dists_sqr[0] < max_inlier_dist_sqr_ ? dists_sqr[0]
                                                     : max_inlier_dist_sqr_); // MSAC
   }
@@ -173,7 +173,7 @@ KFPCSInitialAlignment<PointSource, PointTarget, NormalT, Scalar>::
     score_b =
         (trl_ratio < 0.f ? 1.f
                          : (trl_ratio > 1.f ? 0.f
-                                            : 0.5f * sin(M_PI * trl_ratio + M_PI_2) +
+                                            : 0.5f * sin (M_PI * trl_ratio + M_PI_2) +
                                                   0.5f)); // sinusoidal costs
     scale += lambda_;
   }
@@ -189,7 +189,7 @@ KFPCSInitialAlignment<PointSource, PointTarget, NormalT, Scalar>::
 
 template <typename PointSource, typename PointTarget, typename NormalT, typename Scalar>
 void
-KFPCSInitialAlignment<PointSource, PointTarget, NormalT, Scalar>::finalCompute(
+KFPCSInitialAlignment<PointSource, PointTarget, NormalT, Scalar>::finalCompute (
     const std::vector<MatchingCandidates>& candidates)
 {
   // reorganize candidates into single vector
@@ -198,14 +198,14 @@ KFPCSInitialAlignment<PointSource, PointTarget, NormalT, Scalar>::finalCompute(
     total_size += candidate.size();
 
   candidates_.clear();
-  candidates_.reserve(total_size);
+  candidates_.reserve (total_size);
 
   for (const auto& candidate : candidates)
     for (const auto& match : candidate)
-      candidates_.push_back(match);
+      candidates_.push_back (match);
 
   // sort according to score value
-  std::sort(candidates_.begin(), candidates_.end(), by_score());
+  std::sort (candidates_.begin(), candidates_.end(), by_score());
 
   // return here if no score was valid, i.e. all scores are
   // std::numeric_limits<float>::max()
@@ -227,7 +227,7 @@ KFPCSInitialAlignment<PointSource, PointTarget, NormalT, Scalar>::finalCompute(
 
 template <typename PointSource, typename PointTarget, typename NormalT, typename Scalar>
 void
-KFPCSInitialAlignment<PointSource, PointTarget, NormalT, Scalar>::getNBestCandidates(
+KFPCSInitialAlignment<PointSource, PointTarget, NormalT, Scalar>::getNBestCandidates (
     int n, float min_angle3d, float min_translation3d, MatchingCandidates& candidates)
 {
   candidates.clear();
@@ -243,9 +243,9 @@ KFPCSInitialAlignment<PointSource, PointTarget, NormalT, Scalar>::getNBestCandid
     bool unique = true;
     for (const auto& c2 : candidates) {
       Eigen::Matrix4f diff =
-          candidate.transformation.colPivHouseholderQr().solve(c2.transformation);
-      const float angle3d = Eigen::AngleAxisf(diff.topLeftCorner<3, 3>()).angle();
-      const float translation3d = diff.block<3, 1>(0, 3).norm();
+          candidate.transformation.colPivHouseholderQr().solve (c2.transformation);
+      const float angle3d = Eigen::AngleAxisf (diff.topLeftCorner<3, 3>()).angle();
+      const float translation3d = diff.block<3, 1> (0, 3).norm();
       unique = angle3d > min_angle3d && translation3d > min_translation3d;
       if (!unique) {
         break;
@@ -254,7 +254,7 @@ KFPCSInitialAlignment<PointSource, PointTarget, NormalT, Scalar>::getNBestCandid
 
     // add candidate to best candidates
     if (unique)
-      candidates.push_back(candidate);
+      candidates.push_back (candidate);
 
     // stop if n candidates are reached
     if (candidates.size() == n)
@@ -264,7 +264,7 @@ KFPCSInitialAlignment<PointSource, PointTarget, NormalT, Scalar>::getNBestCandid
 
 template <typename PointSource, typename PointTarget, typename NormalT, typename Scalar>
 void
-KFPCSInitialAlignment<PointSource, PointTarget, NormalT, Scalar>::getTBestCandidates(
+KFPCSInitialAlignment<PointSource, PointTarget, NormalT, Scalar>::getTBestCandidates (
     float t, float min_angle3d, float min_translation3d, MatchingCandidates& candidates)
 {
   candidates.clear();
@@ -280,9 +280,9 @@ KFPCSInitialAlignment<PointSource, PointTarget, NormalT, Scalar>::getTBestCandid
     bool unique = true;
     for (const auto& c2 : candidates) {
       Eigen::Matrix4f diff =
-          candidate.transformation.colPivHouseholderQr().solve(c2.transformation);
-      const float angle3d = Eigen::AngleAxisf(diff.topLeftCorner<3, 3>()).angle();
-      const float translation3d = diff.block<3, 1>(0, 3).norm();
+          candidate.transformation.colPivHouseholderQr().solve (c2.transformation);
+      const float angle3d = Eigen::AngleAxisf (diff.topLeftCorner<3, 3>()).angle();
+      const float translation3d = diff.block<3, 1> (0, 3).norm();
       unique = angle3d > min_angle3d && translation3d > min_translation3d;
       if (!unique) {
         break;
@@ -291,7 +291,7 @@ KFPCSInitialAlignment<PointSource, PointTarget, NormalT, Scalar>::getTBestCandid
 
     // add candidate to best candidates
     if (unique)
-      candidates.push_back(candidate);
+      candidates.push_back (candidate);
   }
 }
 

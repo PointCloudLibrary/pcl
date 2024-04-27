@@ -111,38 +111,38 @@ public:
   using Cloud = pcl::PointCloud<PointType>;
   using CloudConstPtr = typename Cloud::ConstPtr;
 
-  OpenNIViewer(pcl::Grabber& grabber)
-  : grabber_(grabber), rgb_data_(nullptr), rgb_data_size_(0), counter_(0)
+  OpenNIViewer (pcl::Grabber& grabber)
+  : grabber_ (grabber), rgb_data_ (nullptr), rgb_data_size_ (0), counter_ (0)
   {}
 
   void
   detect_keypoints (const CloudConstPtr& cloud)
   {
     pcl::HarrisKeypoint2D<PointType, pcl::PointXYZI> harris;
-    harris.setInputCloud(cloud);
-    harris.setNumberOfThreads(6);
-    harris.setNonMaxSupression(true);
-    harris.setRadiusSearch(0.01);
-    harris.setMethod(pcl::HarrisKeypoint2D<PointType, pcl::PointXYZI>::TOMASI);
-    harris.setThreshold(0.05);
-    harris.setWindowWidth(5);
-    harris.setWindowHeight(5);
-    pcl::PointCloud<pcl::PointXYZI>::Ptr response(new pcl::PointCloud<pcl::PointXYZI>);
-    harris.compute(*response);
+    harris.setInputCloud (cloud);
+    harris.setNumberOfThreads (6);
+    harris.setNonMaxSupression (true);
+    harris.setRadiusSearch (0.01);
+    harris.setMethod (pcl::HarrisKeypoint2D<PointType, pcl::PointXYZI>::TOMASI);
+    harris.setThreshold (0.05);
+    harris.setWindowWidth (5);
+    harris.setWindowHeight (5);
+    pcl::PointCloud<pcl::PointXYZI>::Ptr response (new pcl::PointCloud<pcl::PointXYZI>);
+    harris.compute (*response);
     points_ = harris.getKeypointsIndices();
   }
 
   void
   cloud_callback (const CloudConstPtr& cloud)
   {
-    FPS_CALC("cloud callback");
-    std::lock_guard<std::mutex> lock(cloud_mutex_);
+    FPS_CALC ("cloud callback");
+    std::lock_guard<std::mutex> lock (cloud_mutex_);
     cloud_ = cloud;
     // Compute Tomasi keypoints
-    tracker_->setInputCloud(cloud_);
+    tracker_->setInputCloud (cloud_);
     if (!points_ || (counter_ % 10 == 0)) {
-      detect_keypoints(cloud_);
-      tracker_->setPointsToTrack(points_);
+      detect_keypoints (cloud_);
+      tracker_->setPointsToTrack (points_);
     }
     tracker_->compute();
     ++counter_;
@@ -151,8 +151,8 @@ public:
   void
   image_callback (const openni_wrapper::Image::Ptr& image)
   {
-    FPS_CALC("image callback");
-    std::lock_guard<std::mutex> lock(image_mutex_);
+    FPS_CALC ("image callback");
+    std::lock_guard<std::mutex> lock (image_mutex_);
     image_ = image;
 
     if (image->getEncoding() != openni_wrapper::Image::RGB) {
@@ -161,7 +161,7 @@ public:
         rgb_data_size_ = image->getWidth() * image->getHeight();
         rgb_data_ = new unsigned char[rgb_data_size_ * 3];
       }
-      image_->fillRGB(image_->getWidth(), image_->getHeight(), rgb_data_);
+      image_->fillRGB (image_->getWidth(), image_->getHeight(), rgb_data_);
     }
   }
 
@@ -172,11 +172,11 @@ public:
     static std::ostringstream frame;
     if (event.keyUp()) {
       if ((event.getKeyCode() == 's') || (event.getKeyCode() == 'S')) {
-        std::lock_guard<std::mutex> lock(cloud_mutex_);
-        frame.str("frame-");
+        std::lock_guard<std::mutex> lock (cloud_mutex_);
+        frame.str ("frame-");
         frame << pcl::getTimestamp() << ".pcd";
-        writer.writeBinaryCompressed(frame.str(), *cloud_);
-        PCL_INFO("Written cloud %s.\n", frame.str().c_str());
+        writer.writeBinaryCompressed (frame.str(), *cloud_);
+        PCL_INFO ("Written cloud %s.\n", frame.str().c_str());
       }
     }
   }
@@ -197,19 +197,20 @@ public:
   void
   run ()
   {
-    std::function<void(const CloudConstPtr&)> cloud_cb =
-        [this] (const CloudConstPtr& cloud) { cloud_callback(cloud); };
-    boost::signals2::connection cloud_connection = grabber_.registerCallback(cloud_cb);
+    std::function<void (const CloudConstPtr&)> cloud_cb =
+        [this] (const CloudConstPtr& cloud) { cloud_callback (cloud); };
+    boost::signals2::connection cloud_connection = grabber_.registerCallback (cloud_cb);
 
     boost::signals2::connection image_connection;
-    if (grabber_.providesCallback<void(const openni_wrapper::Image::Ptr&)>()) {
-      image_viewer_.reset(new pcl::visualization::ImageViewer("Pyramidal KLT Tracker"));
-      std::function<void(const openni_wrapper::Image::Ptr&)> image_cb =
-          [this] (const openni_wrapper::Image::Ptr& img) { image_callback(img); };
-      image_connection = grabber_.registerCallback(image_cb);
+    if (grabber_.providesCallback<void (const openni_wrapper::Image::Ptr&)>()) {
+      image_viewer_.reset (
+          new pcl::visualization::ImageViewer ("Pyramidal KLT Tracker"));
+      std::function<void (const openni_wrapper::Image::Ptr&)> image_cb =
+          [this] (const openni_wrapper::Image::Ptr& img) { image_callback (img); };
+      image_connection = grabber_.registerCallback (image_cb);
     }
 
-    tracker_.reset(new pcl::tracking::PyramidalKLTTracker<PointType>);
+    tracker_.reset (new pcl::tracking::PyramidalKLTTracker<PointType>);
 
     bool image_init = false;
 
@@ -221,28 +222,28 @@ public:
 
       // See if we can get a cloud
       if (cloud_mutex_.try_lock()) {
-        cloud_.swap(cloud);
+        cloud_.swap (cloud);
         cloud_mutex_.unlock();
       }
 
       // See if we can get an image
       if (image_mutex_.try_lock()) {
-        image_.swap(image);
+        image_.swap (image);
         image_mutex_.unlock();
       }
 
       if (image) {
         if (!image_init && cloud && cloud->width != 0) {
-          image_viewer_->setPosition(0, 0);
-          image_viewer_->setSize(cloud->width, cloud->height);
+          image_viewer_->setPosition (0, 0);
+          image_viewer_->setSize (cloud->width, cloud->height);
           image_init = true;
         }
 
         if (image->getEncoding() == openni_wrapper::Image::RGB)
-          image_viewer_->addRGBImage(
+          image_viewer_->addRGBImage (
               image->getMetaData().Data(), image->getWidth(), image->getHeight());
         else
-          image_viewer_->addRGBImage(rgb_data_, image->getWidth(), image->getHeight());
+          image_viewer_->addRGBImage (rgb_data_, image->getWidth(), image->getHeight());
         image_viewer_->spinOnce();
       }
 
@@ -254,21 +255,21 @@ public:
         }
 
         std::vector<float> markers;
-        markers.reserve(keypoints_->size() * 2);
+        markers.reserve (keypoints_->size() * 2);
         for (std::size_t i = 0; i < keypoints_->size(); ++i) {
           if ((*points_status_)[i] < 0)
             continue;
           const pcl::PointUV& uv = (*keypoints_)[i];
-          markers.push_back(uv.u);
-          markers.push_back(uv.v);
+          markers.push_back (uv.u);
+          markers.push_back (uv.v);
         }
-        image_viewer_->removeLayer("tracked");
-        image_viewer_->markPoints(markers,
-                                  pcl::visualization::blue_color,
-                                  pcl::visualization::red_color,
-                                  5,
-                                  "tracked",
-                                  1.0);
+        image_viewer_->removeLayer ("tracked");
+        image_viewer_->markPoints (markers,
+                                   pcl::visualization::blue_color,
+                                   pcl::visualization::red_color,
+                                   5,
+                                   "tracked",
+                                   1.0);
       }
     }
 
@@ -309,9 +310,9 @@ main (int argc, char** argv)
   pcl::OpenNIGrabber::Mode image_mode = pcl::OpenNIGrabber::OpenNI_Default_Mode;
   bool xyz = false;
 
-  if (pcl::console::find_argument(argc, argv, "-h") != -1 ||
-      pcl::console::find_argument(argc, argv, "--help") != -1) {
-    printHelp(argc, argv);
+  if (pcl::console::find_argument (argc, argv, "-h") != -1 ||
+      pcl::console::find_argument (argc, argv, "--help") != -1) {
+    printHelp (argc, argv);
     return 1;
   }
 
@@ -319,7 +320,7 @@ main (int argc, char** argv)
     device_id = argv[1];
     if (device_id == "-l") {
       if (argc >= 3) {
-        pcl::OpenNIGrabber grabber(argv[2]);
+        pcl::OpenNIGrabber grabber (argv[2]);
         auto device = grabber.getDevice();
         std::cout << "Supported depth modes for device: " << device->getVendorName()
                   << " , " << device->getProductName() << std::endl;
@@ -348,11 +349,11 @@ main (int argc, char** argv)
           for (unsigned deviceIdx = 0; deviceIdx < driver.getNumberDevices();
                ++deviceIdx) {
             std::cout << "Device: " << deviceIdx + 1
-                      << ", vendor: " << driver.getVendorName(deviceIdx)
-                      << ", product: " << driver.getProductName(deviceIdx)
-                      << ", connected: " << driver.getBus(deviceIdx) << " @ "
-                      << driver.getAddress(deviceIdx) << ", serial number: \'"
-                      << driver.getSerialNumber(deviceIdx) << "\'" << std::endl;
+                      << ", vendor: " << driver.getVendorName (deviceIdx)
+                      << ", product: " << driver.getProductName (deviceIdx)
+                      << ", connected: " << driver.getBus (deviceIdx) << " @ "
+                      << driver.getAddress (deviceIdx) << ", serial number: \'"
+                      << driver.getSerialNumber (deviceIdx) << "\'" << std::endl;
           }
         }
         else
@@ -370,24 +371,24 @@ main (int argc, char** argv)
   }
 
   unsigned mode;
-  if (pcl::console::parse(argc, argv, "-depthmode", mode) != -1)
-    depth_mode = pcl::OpenNIGrabber::Mode(mode);
+  if (pcl::console::parse (argc, argv, "-depthmode", mode) != -1)
+    depth_mode = pcl::OpenNIGrabber::Mode (mode);
 
-  if (pcl::console::parse(argc, argv, "-imagemode", mode) != -1)
-    image_mode = pcl::OpenNIGrabber::Mode(mode);
+  if (pcl::console::parse (argc, argv, "-imagemode", mode) != -1)
+    image_mode = pcl::OpenNIGrabber::Mode (mode);
 
-  if (pcl::console::find_argument(argc, argv, "-xyz") != -1)
+  if (pcl::console::find_argument (argc, argv, "-xyz") != -1)
     xyz = true;
 
-  pcl::OpenNIGrabber grabber(device_id, depth_mode, image_mode);
+  pcl::OpenNIGrabber grabber (device_id, depth_mode, image_mode);
 
   if (xyz ||
       !grabber.providesCallback<pcl::OpenNIGrabber::sig_cb_openni_point_cloud_rgb>()) {
-    OpenNIViewer<pcl::PointXYZ> openni_viewer(grabber);
+    OpenNIViewer<pcl::PointXYZ> openni_viewer (grabber);
     openni_viewer.run();
   }
   else {
-    OpenNIViewer<pcl::PointXYZRGBA> openni_viewer(grabber);
+    OpenNIViewer<pcl::PointXYZRGBA> openni_viewer (grabber);
     openni_viewer.run();
   }
 

@@ -44,29 +44,29 @@ namespace registration {
 
 template <typename PointT, typename Scalar>
 MetaRegistration<PointT, Scalar>::MetaRegistration()
-: abs_transform_(Matrix4::Identity())
+: abs_transform_ (Matrix4::Identity())
 {}
 
 template <typename PointT, typename Scalar>
 bool
-MetaRegistration<PointT, Scalar>::registerCloud(const PointCloudConstPtr& new_cloud,
-                                                const Matrix4& delta_estimate)
+MetaRegistration<PointT, Scalar>::registerCloud (const PointCloudConstPtr& new_cloud,
+                                                 const Matrix4& delta_estimate)
 {
-  assert(registration_);
+  assert (registration_);
 
-  PointCloudPtr new_cloud_transformed(new pcl::PointCloud<PointT>());
+  PointCloudPtr new_cloud_transformed (new pcl::PointCloud<PointT>());
 
   if (!full_cloud_) {
-    pcl::transformPointCloud(*new_cloud, *new_cloud_transformed, delta_estimate);
+    pcl::transformPointCloud (*new_cloud, *new_cloud_transformed, delta_estimate);
     full_cloud_ = new_cloud_transformed;
     abs_transform_ = delta_estimate;
     return (true);
   }
 
-  registration_->setInputSource(new_cloud);
-  registration_->setInputTarget(full_cloud_);
+  registration_->setInputSource (new_cloud);
+  registration_->setInputTarget (full_cloud_);
 
-  registration_->align(*new_cloud_transformed, abs_transform_ * delta_estimate);
+  registration_->align (*new_cloud_transformed, abs_transform_ * delta_estimate);
 
   bool converged = registration_->hasConverged();
 
@@ -95,7 +95,7 @@ MetaRegistration<PointT, Scalar>::reset()
 
 template <typename PointT, typename Scalar>
 inline void
-MetaRegistration<PointT, Scalar>::setRegistration(RegistrationPtr reg)
+MetaRegistration<PointT, Scalar>::setRegistration (RegistrationPtr reg)
 {
   registration_ = reg;
 }

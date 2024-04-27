@@ -59,12 +59,12 @@ public:
    * \param[in] order the polynomial order of the B-Spline surface.
    * \param[in] data pointer to the 2D point-cloud data to be fit.
    * \param[in] z vector defining front face of surface.        */
-  FittingSphere(int order, NurbsDataSurface* data);
+  FittingSphere (int order, NurbsDataSurface* data);
 
   /** \brief Constructor initializing with the B-Spline surface given in argument 2.
    * \param[in] data pointer to the 3D point-cloud data to be fit.
    * \param[in] ns B-Spline surface used for fitting.        */
-  FittingSphere(NurbsDataSurface* data, const ON_NurbsSurface& ns);
+  FittingSphere (NurbsDataSurface* data, const ON_NurbsSurface& ns);
 
   /** \brief Assemble the system of equations for fitting
    * - for large point-clouds this is time consuming.
@@ -93,7 +93,7 @@ public:
   setQuiet (bool val)
   {
     m_quiet = val;
-    m_solver.setQuiet(val);
+    m_solver.setQuiet (val);
   }
 
   /** \brief Initializing a cylindric B-Spline surface using
@@ -101,7 +101,7 @@ public:
   static ON_NurbsSurface
   initNurbsSphere (int order,
                    NurbsDataSurface* data,
-                   Eigen::Vector3d pole_axis = Eigen::Vector3d(0.0, 0.0, 1.0));
+                   Eigen::Vector3d pole_axis = Eigen::Vector3d (0.0, 0.0, 1.0));
 
   /** \brief Get the elements of a cylindric B-Spline surface.*/
   static std::vector<double>
@@ -182,17 +182,17 @@ private:
   int
   lrc2gl (int E, int F, int i, int j)
   {
-    return grc2gl(E + i, F + j);
+    return grc2gl (E + i, F + j);
   } // local row/col index to global lexicographic index
   int
   gl2gr (int A) const
   {
-    return (A / m_nurbs.CVCount(1));
+    return (A / m_nurbs.CVCount (1));
   } // global lexicographic in global row index
   int
   gl2gc (int A) const
   {
-    return (A % m_nurbs.CVCount(1));
+    return (A % m_nurbs.CVCount (1));
   } // global lexicographic in global col index
 };
 

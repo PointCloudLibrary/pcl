@@ -43,8 +43,8 @@ pcl::DigitalElevationMapBuilder::DigitalElevationMapBuilder() = default;
 pcl::DigitalElevationMapBuilder::~DigitalElevationMapBuilder() = default;
 
 void
-pcl::DigitalElevationMapBuilder::setResolution(std::size_t resolution_column,
-                                               std::size_t resolution_disparity)
+pcl::DigitalElevationMapBuilder::setResolution (std::size_t resolution_column,
+                                                std::size_t resolution_disparity)
 {
   resolution_column_ = resolution_column;
   resolution_disparity_ = resolution_disparity;
@@ -63,7 +63,7 @@ pcl::DigitalElevationMapBuilder::getDisparityResolution() const
 }
 
 void
-pcl::DigitalElevationMapBuilder::setMinPointsInCell(std::size_t min_points_in_cell)
+pcl::DigitalElevationMapBuilder::setMinPointsInCell (std::size_t min_points_in_cell)
 {
   min_points_in_cell_ = min_points_in_cell;
 }
@@ -76,14 +76,14 @@ pcl::DigitalElevationMapBuilder::getMinPointsInCell() const
 
 // Build DEM.
 void
-pcl::DigitalElevationMapBuilder::compute(pcl::PointCloud<PointDEM>& out_cloud)
+pcl::DigitalElevationMapBuilder::compute (pcl::PointCloud<PointDEM>& out_cloud)
 {
   // Initialize.
   // Initialize the output cloud.
   out_cloud.clear();
   out_cloud.width = resolution_column_;
   out_cloud.height = resolution_disparity_;
-  out_cloud.resize(out_cloud.width * out_cloud.height);
+  out_cloud.resize (out_cloud.width * out_cloud.height);
 
   // Initialize steps.
   const std::size_t kColumnStep = (disparity_map_width_ - 1) / resolution_column_ + 1;
@@ -97,26 +97,26 @@ pcl::DigitalElevationMapBuilder::compute(pcl::PointCloud<PointDEM>& out_cloud)
   const float kHeightMax = 1.5f;
   const float kHeightResolution = 0.01f;
   const auto kHeightBins =
-      static_cast<std::size_t>((kHeightMax - kHeightMin) / kHeightResolution);
+      static_cast<std::size_t> ((kHeightMax - kHeightMin) / kHeightResolution);
   // Histogram for initializing other height histograms.
-  FeatureHistogram height_histogram_example(kHeightBins, kHeightMin, kHeightMax);
+  FeatureHistogram height_histogram_example (kHeightBins, kHeightMin, kHeightMax);
 
   const float kIntensityMin = 0.0f;
   const float kIntensityMax = 255.0f;
   const std::size_t kIntensityBins = 256;
   // Histogram for initializing other intensity histograms.
-  FeatureHistogram intensity_histogram_example(
+  FeatureHistogram intensity_histogram_example (
       kIntensityBins, kIntensityMin, kIntensityMax);
 
-  std::vector<FeatureHistogram> height_histograms(kNumberOfHistograms,
-                                                  height_histogram_example);
-  std::vector<FeatureHistogram> intensity_histograms(kNumberOfHistograms,
-                                                     intensity_histogram_example);
+  std::vector<FeatureHistogram> height_histograms (kNumberOfHistograms,
+                                                   height_histogram_example);
+  std::vector<FeatureHistogram> intensity_histograms (kNumberOfHistograms,
+                                                      intensity_histogram_example);
 
   // Check, if an image was loaded.
   if (!image_) {
-    PCL_ERROR("[pcl::DisparityMapConverter::compute] Memory for the image was not "
-              "allocated.\n");
+    PCL_ERROR ("[pcl::DisparityMapConverter::compute] Memory for the image was not "
+               "allocated.\n");
     return;
   }
 
@@ -126,23 +126,23 @@ pcl::DigitalElevationMapBuilder::compute(pcl::PointCloud<PointDEM>& out_cloud)
       if (disparity_threshold_min_ < disparity &&
           disparity < disparity_threshold_max_) {
         // Find a height and an intensity of the point of interest.
-        PointXYZ point_3D = translateCoordinates(row, column, disparity);
+        PointXYZ point_3D = translateCoordinates (row, column, disparity);
         float height = point_3D.y;
 
         RGB point_RGB = (*image_)[column + row * disparity_map_width_];
         float intensity =
-            static_cast<float>((point_RGB.r + point_RGB.g + point_RGB.b) / 3);
+            static_cast<float> ((point_RGB.r + point_RGB.g + point_RGB.b) / 3);
 
         // Calculate index of histograms.
         std::size_t index_column = column / kColumnStep;
-        auto index_disparity = static_cast<std::size_t>(
+        auto index_disparity = static_cast<std::size_t> (
             (disparity - disparity_threshold_min_) / kDisparityStep);
 
         std::size_t index = index_column + index_disparity * resolution_column_;
 
         // Increase the histograms.
-        height_histograms[index].addValue(height);
-        intensity_histograms[index].addValue(intensity);
+        height_histograms[index].addValue (height);
+        intensity_histograms[index].addValue (intensity);
 
       } // if
     }   // row
@@ -157,9 +157,9 @@ pcl::DigitalElevationMapBuilder::compute(pcl::PointCloud<PointDEM>& out_cloud)
       // Compute the corresponding DEM cell.
       std::size_t column = index_column * kColumnStep;
       float disparity = disparity_threshold_min_ +
-                        static_cast<float>(index_disparity) * kDisparityStep;
+                        static_cast<float> (index_disparity) * kDisparityStep;
 
-      PointXYZ point_3D = translateCoordinates(0, column, disparity);
+      PointXYZ point_3D = translateCoordinates (0, column, disparity);
       PointDEM point_DEM;
       point_DEM.x = point_3D.x;
       point_DEM.z = point_3D.z;
@@ -170,7 +170,7 @@ pcl::DigitalElevationMapBuilder::compute(pcl::PointCloud<PointDEM>& out_cloud)
 
         point_DEM.intensity = intensity_histograms[index].getMeanValue();
         point_DEM.intensity_variance =
-            intensity_histograms[index].getVariance(point_DEM.intensity);
+            intensity_histograms[index].getVariance (point_DEM.intensity);
       }
       else // height_histograms[index].getNumberOfElements () < min_points_in_cell_
       {
@@ -180,7 +180,7 @@ pcl::DigitalElevationMapBuilder::compute(pcl::PointCloud<PointDEM>& out_cloud)
         point_DEM.intensity_variance = std::numeric_limits<float>::quiet_NaN();
       }
 
-      out_cloud.at(index_column, index_disparity) = point_DEM;
+      out_cloud.at (index_column, index_disparity) = point_DEM;
 
     } // index_disparity
   }   // index_column

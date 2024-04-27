@@ -84,8 +84,8 @@ public:
    * \param[in] random if true set the random seed to the current time, else set to
    * 12345 (default: false)
    */
-  SampleConsensusModelCircle2D(const PointCloudConstPtr& cloud, bool random = false)
-  : SampleConsensusModel<PointT>(cloud, random)
+  SampleConsensusModelCircle2D (const PointCloudConstPtr& cloud, bool random = false)
+  : SampleConsensusModel<PointT> (cloud, random)
   {
     model_name_ = "SampleConsensusModelCircle2D";
     sample_size_ = 3;
@@ -98,10 +98,10 @@ public:
    * \param[in] random if true set the random seed to the current time, else set to
    * 12345 (default: false)
    */
-  SampleConsensusModelCircle2D(const PointCloudConstPtr& cloud,
-                               const Indices& indices,
-                               bool random = false)
-  : SampleConsensusModel<PointT>(cloud, indices, random)
+  SampleConsensusModelCircle2D (const PointCloudConstPtr& cloud,
+                                const Indices& indices,
+                                bool random = false)
+  : SampleConsensusModel<PointT> (cloud, indices, random)
   {
     model_name_ = "SampleConsensusModelCircle2D";
     sample_size_ = 3;
@@ -111,7 +111,7 @@ public:
   /** \brief Copy constructor.
    * \param[in] source the model to copy into this
    */
-  SampleConsensusModelCircle2D(const SampleConsensusModelCircle2D& source)
+  SampleConsensusModelCircle2D (const SampleConsensusModelCircle2D& source)
   : SampleConsensusModel<PointT>()
   {
     *this = source;
@@ -125,9 +125,9 @@ public:
    * \param[in] source the model to copy into this
    */
   inline SampleConsensusModelCircle2D&
-  operator=(const SampleConsensusModelCircle2D& source)
+  operator= (const SampleConsensusModelCircle2D& source)
   {
-    SampleConsensusModel<PointT>::operator=(source);
+    SampleConsensusModel<PointT>::operator= (source);
     return (*this);
   }
 
@@ -265,9 +265,9 @@ private:
      * \param[in] indices the indices of data points to evaluate
      * \param[in] estimator pointer to the estimator object
      */
-    OptimizationFunctor(const pcl::SampleConsensusModelCircle2D<PointT>* model,
-                        const Indices& indices)
-    : pcl::Functor<float>(indices.size()), model_(model), indices_(indices)
+    OptimizationFunctor (const pcl::SampleConsensusModelCircle2D<PointT>* model,
+                         const Indices& indices)
+    : pcl::Functor<float> (indices.size()), model_ (model), indices_ (indices)
     {}
 
     /** Cost function to be minimized
@@ -276,7 +276,7 @@ private:
      * \return 0
      */
     int
-    operator()(const Eigen::VectorXf& x, Eigen::VectorXf& fvec) const
+    operator() (const Eigen::VectorXf& x, Eigen::VectorXf& fvec) const
     {
       for (int i = 0; i < values(); ++i) {
         // Compute the difference between the center of the circle and the datapoint X_i
@@ -284,7 +284,7 @@ private:
         float yt = (*model_->input_)[indices_[i]].y - x[1];
 
         // g = sqrt ((x-a)^2 + (y-b)^2) - R
-        fvec[i] = std::sqrt(xt * xt + yt * yt) - x[2];
+        fvec[i] = std::sqrt (xt * xt + yt * yt) - x[2];
       }
       return (0);
     }

@@ -73,13 +73,13 @@ lineToLineSegment (const Eigen::VectorXf& line_a,
  * line_pt[3] = 0 as there are no internal checks!) \param line_dir the line direction
  * \ingroup common
  */
-double inline sqrPointToLineDistance(const Eigen::Vector4f& pt,
-                                     const Eigen::Vector4f& line_pt,
-                                     const Eigen::Vector4f& line_dir)
+double inline sqrPointToLineDistance (const Eigen::Vector4f& pt,
+                                      const Eigen::Vector4f& line_pt,
+                                      const Eigen::Vector4f& line_dir)
 {
   // Calculate the distance from the point to the line
   // D = ||(P2-P1) x (P1-P0)|| / ||P2-P1|| = norm (cross (p2-p1, p1-p0)) / norm(p2-p1)
-  return (line_dir.cross3(line_pt - pt)).squaredNorm() / line_dir.squaredNorm();
+  return (line_dir.cross3 (line_pt - pt)).squaredNorm() / line_dir.squaredNorm();
 }
 
 /** \brief Get the square distance from a point to a line (represented by a point and a
@@ -90,14 +90,14 @@ double inline sqrPointToLineDistance(const Eigen::Vector4f& pt,
  * \param sqr_length the squared norm of the line direction
  * \ingroup common
  */
-double inline sqrPointToLineDistance(const Eigen::Vector4f& pt,
-                                     const Eigen::Vector4f& line_pt,
-                                     const Eigen::Vector4f& line_dir,
-                                     const double sqr_length)
+double inline sqrPointToLineDistance (const Eigen::Vector4f& pt,
+                                      const Eigen::Vector4f& line_pt,
+                                      const Eigen::Vector4f& line_dir,
+                                      const double sqr_length)
 {
   // Calculate the distance from the point to the line
   // D = ||(P2-P1) x (P1-P0)|| / ||P2-P1|| = norm (cross (p2-p1, p1-p0)) / norm(p2-p1)
-  return (line_dir.cross3(line_pt - pt)).squaredNorm() / sqr_length;
+  return (line_dir.cross3 (line_pt - pt)).squaredNorm() / sqr_length;
 }
 
 /** \brief Obtain the maximum segment in a given set of points, and return the minimum
@@ -107,9 +107,9 @@ double inline sqrPointToLineDistance(const Eigen::Vector4f& pt,
  * segment) \return the length of segment length \ingroup common
  */
 template <typename PointT>
-double inline getMaxSegment(const pcl::PointCloud<PointT>& cloud,
-                            PointT& pmin,
-                            PointT& pmax)
+double inline getMaxSegment (const pcl::PointCloud<PointT>& cloud,
+                             PointT& pmin,
+                             PointT& pmax)
 {
   double max_dist = std::numeric_limits<double>::min();
   const auto token = std::numeric_limits<std::size_t>::max();
@@ -134,7 +134,7 @@ double inline getMaxSegment(const pcl::PointCloud<PointT>& cloud,
 
   pmin = cloud[i_min];
   pmax = cloud[i_max];
-  return (std::sqrt(max_dist));
+  return (std::sqrt (max_dist));
 }
 
 /** \brief Obtain the maximum segment in a given set of points, and return the minimum
@@ -145,10 +145,10 @@ double inline getMaxSegment(const pcl::PointCloud<PointT>& cloud,
  * of segment length \ingroup common
  */
 template <typename PointT>
-double inline getMaxSegment(const pcl::PointCloud<PointT>& cloud,
-                            const Indices& indices,
-                            PointT& pmin,
-                            PointT& pmax)
+double inline getMaxSegment (const pcl::PointCloud<PointT>& cloud,
+                             const Indices& indices,
+                             PointT& pmin,
+                             PointT& pmax)
 {
   double max_dist = std::numeric_limits<double>::min();
   const auto token = std::numeric_limits<std::size_t>::max();
@@ -174,7 +174,7 @@ double inline getMaxSegment(const pcl::PointCloud<PointT>& cloud,
 
   pmin = cloud[indices[i_min]];
   pmax = cloud[indices[i_max]];
-  return (std::sqrt(max_dist));
+  return (std::sqrt (max_dist));
 }
 
 /** \brief Calculate the squared euclidean distance between the two given points.
@@ -209,6 +209,6 @@ template <typename PointType1, typename PointType2>
 inline float
 euclideanDistance (const PointType1& p1, const PointType2& p2)
 {
-  return (std::sqrt(squaredEuclideanDistance(p1, p2)));
+  return (std::sqrt (squaredEuclideanDistance (p1, p2)));
 }
 } // namespace pcl

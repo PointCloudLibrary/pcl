@@ -52,7 +52,7 @@ namespace cuda {
 class ScopeTimeGPU {
 public:
   /** \brief Constructor. */
-  inline ScopeTimeGPU(const char* title) : title_(title) { start(); }
+  inline ScopeTimeGPU (const char* title) : title_ (title) { start(); }
 
   /** \brief Destructor. */
   inline ~ScopeTimeGPU()
@@ -65,26 +65,26 @@ public:
   inline void
   start ()
   {
-    CUT_CHECK_ERROR("dude");
-    cutilSafeCall(cudaEventCreate(&start_));
-    cutilSafeCall(cudaEventCreate(&end_));
+    CUT_CHECK_ERROR ("dude");
+    cutilSafeCall (cudaEventCreate (&start_));
+    cutilSafeCall (cudaEventCreate (&end_));
 
-    cutilSafeCall(cudaEventRecord(start_, 0));
+    cutilSafeCall (cudaEventRecord (start_, 0));
   }
 
   /** \brief Stop the timer. */
   inline void
   stop ()
   {
-    CUT_CHECK_ERROR("dude");
+    CUT_CHECK_ERROR ("dude");
     // Measure time needed to copy data
-    cutilSafeCall(cudaDeviceSynchronize());
-    cutilSafeCall(cudaEventRecord(end_, 0));
-    cutilSafeCall(cudaEventSynchronize(end_));
-    cutilSafeCall(cudaEventElapsedTime(&elapsed_time_, start_, end_));
+    cutilSafeCall (cudaDeviceSynchronize());
+    cutilSafeCall (cudaEventRecord (end_, 0));
+    cutilSafeCall (cudaEventSynchronize (end_));
+    cutilSafeCall (cudaEventElapsedTime (&elapsed_time_, start_, end_));
 
-    cutilSafeCall(cudaEventDestroy(end_));
-    cutilSafeCall(cudaEventDestroy(start_));
+    cutilSafeCall (cudaEventDestroy (end_));
+    cutilSafeCall (cudaEventDestroy (start_));
   }
 
   /** \brief Stop and print the timer. */

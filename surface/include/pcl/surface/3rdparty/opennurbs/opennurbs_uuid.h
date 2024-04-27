@@ -36,9 +36,9 @@ public:
   unsigned char Data4[8];
 
   bool
-  operator==(const ON_UUID& other) const;
+  operator== (const ON_UUID& other) const;
   bool
-  operator!=(const ON_UUID& other) const;
+  operator!= (const ON_UUID& other) const;
 };
 
 #endif

@@ -43,61 +43,62 @@
 
 template <typename VoxelT, typename WeightT>
 bool
-pcl::TSDFVolume<VoxelT, WeightT>::load(const std::string& filename, bool binary)
+pcl::TSDFVolume<VoxelT, WeightT>::load (const std::string& filename, bool binary)
 {
-  pcl::console::print_info("Loading TSDF volume from ");
-  pcl::console::print_value("%s ... ", filename.c_str());
+  pcl::console::print_info ("Loading TSDF volume from ");
+  pcl::console::print_value ("%s ... ", filename.c_str());
   std::cout << std::flush;
 
-  std::ifstream file(filename.c_str());
+  std::ifstream file (filename.c_str());
 
   if (file.is_open()) {
     if (binary) {
       // read HEADER
-      file.read((char*)&header_, sizeof(Header));
+      file.read ((char*)&header_, sizeof (Header));
       /* file.read (&header_.resolution, sizeof(Eigen::Array3i));
       file.read (&header_.volume_size, sizeof(Eigen::Vector3f));
       file.read (&header_.volume_element_size, sizeof(int));
       file.read (&header_.weights_element_size, sizeof(int)); */
 
       // check if element size fits to data
-      if (header_.volume_element_size != sizeof(VoxelT)) {
-        pcl::console::print_error("[TSDFVolume::load] Error: Given volume element size "
-                                  "(%d) doesn't fit data (%d)",
-                                  sizeof(VoxelT),
-                                  header_.volume_element_size);
+      if (header_.volume_element_size != sizeof (VoxelT)) {
+        pcl::console::print_error (
+            "[TSDFVolume::load] Error: Given volume element size "
+            "(%d) doesn't fit data (%d)",
+            sizeof (VoxelT),
+            header_.volume_element_size);
         return false;
       }
-      if (header_.weights_element_size != sizeof(WeightT)) {
-        pcl::console::print_error("[TSDFVolume::load] Error: Given weights element "
-                                  "size (%d) doesn't fit data (%d)",
-                                  sizeof(WeightT),
-                                  header_.weights_element_size);
+      if (header_.weights_element_size != sizeof (WeightT)) {
+        pcl::console::print_error ("[TSDFVolume::load] Error: Given weights element "
+                                   "size (%d) doesn't fit data (%d)",
+                                   sizeof (WeightT),
+                                   header_.weights_element_size);
         return false;
       }
 
       // read DATA
       int num_elements = header_.getVolumeSize();
-      volume_->resize(num_elements);
-      weights_->resize(num_elements);
-      file.read((char*)&(*volume_)[0], num_elements * sizeof(VoxelT));
-      file.read((char*)&(*weights_)[0], num_elements * sizeof(WeightT));
+      volume_->resize (num_elements);
+      weights_->resize (num_elements);
+      file.read ((char*)&(*volume_)[0], num_elements * sizeof (VoxelT));
+      file.read ((char*)&(*weights_)[0], num_elements * sizeof (WeightT));
     }
     else {
-      pcl::console::print_error(
+      pcl::console::print_error (
           "[TSDFVolume::load] Error: ASCII loading not implemented.\n");
     }
 
     file.close();
   }
   else {
-    pcl::console::print_error("[TSDFVolume::load] Error: Cloudn't read file %s.\n",
-                              filename.c_str());
+    pcl::console::print_error ("[TSDFVolume::load] Error: Cloudn't read file %s.\n",
+                               filename.c_str());
     return false;
   }
 
   const Eigen::Vector3i& res = this->gridResolution();
-  pcl::console::print_info(
+  pcl::console::print_info (
       "done [%d voxels, res %dx%dx%d]\n", this->size(), res[0], res[1], res[2]);
 
   return true;
@@ -105,20 +106,20 @@ pcl::TSDFVolume<VoxelT, WeightT>::load(const std::string& filename, bool binary)
 
 template <typename VoxelT, typename WeightT>
 bool
-pcl::TSDFVolume<VoxelT, WeightT>::save(const std::string& filename, bool binary) const
+pcl::TSDFVolume<VoxelT, WeightT>::save (const std::string& filename, bool binary) const
 {
-  pcl::console::print_info("Saving TSDF volume to ");
-  pcl::console::print_value("%s ... ", filename.c_str());
+  pcl::console::print_info ("Saving TSDF volume to ");
+  pcl::console::print_value ("%s ... ", filename.c_str());
   std::cout << std::flush;
 
-  std::ofstream file(filename.c_str(),
-                     binary ? std::ios_base::binary : std::ios_base::out);
+  std::ofstream file (filename.c_str(),
+                      binary ? std::ios_base::binary : std::ios_base::out);
 
   if (file.is_open()) {
     if (binary) {
       // HEADER
       // write resolution and size of volume
-      file.write((char*)&header_, sizeof(Header));
+      file.write ((char*)&header_, sizeof (Header));
       /* file.write ((char*) &header_.resolution, sizeof(Eigen::Vector3i));
       file.write ((char*) &header_.volume_size, sizeof(Eigen::Vector3f));
       // write  element size
@@ -129,16 +130,16 @@ pcl::TSDFVolume<VoxelT, WeightT>::save(const std::string& filename, bool binary)
 
       // DATA
       // write data
-      file.write((char*)&(volume_->at(0)), volume_->size() * sizeof(VoxelT));
-      file.write((char*)&(weights_->at(0)), weights_->size() * sizeof(WeightT));
+      file.write ((char*)&(volume_->at (0)), volume_->size() * sizeof (VoxelT));
+      file.write ((char*)&(weights_->at (0)), weights_->size() * sizeof (WeightT));
     }
     else {
       // write resolution and size of volume and element size
-      file << header_.resolution(0) << " " << header_.resolution(1) << " "
-           << header_.resolution(2) << std::endl;
-      file << header_.volume_size(0) << " " << header_.volume_size(1) << " "
-           << header_.volume_size(2) << std::endl;
-      file << sizeof(VoxelT) << " " << sizeof(WeightT) << std::endl;
+      file << header_.resolution (0) << " " << header_.resolution (1) << " "
+           << header_.resolution (2) << std::endl;
+      file << header_.volume_size (0) << " " << header_.volume_size (1) << " "
+           << header_.volume_size (2) << std::endl;
+      file << sizeof (VoxelT) << " " << sizeof (WeightT) << std::endl;
 
       // write data
       for (typename std::vector<VoxelT>::const_iterator iter = volume_->begin();
@@ -150,29 +151,29 @@ pcl::TSDFVolume<VoxelT, WeightT>::save(const std::string& filename, bool binary)
     file.close();
   }
   else {
-    pcl::console::print_error("[saveTsdfVolume] Error: Couldn't open file %s.\n",
-                              filename.c_str());
+    pcl::console::print_error ("[saveTsdfVolume] Error: Couldn't open file %s.\n",
+                               filename.c_str());
     return false;
   }
 
-  pcl::console::print_info("done [%d voxels]\n", this->size());
+  pcl::console::print_info ("done [%d voxels]\n", this->size());
 
   return true;
 }
 
 template <typename VoxelT, typename WeightT>
 void
-pcl::TSDFVolume<VoxelT, WeightT>::convertToTsdfCloud(
+pcl::TSDFVolume<VoxelT, WeightT>::convertToTsdfCloud (
     pcl::PointCloud<pcl::PointXYZI>::Ptr& cloud, const unsigned step) const
 {
-  int sx = header_.resolution(0);
-  int sy = header_.resolution(1);
-  int sz = header_.resolution(2);
+  int sx = header_.resolution (0);
+  int sy = header_.resolution (1);
+  int sz = header_.resolution (2);
 
   const int cloud_size = header_.getVolumeSize() / (step * step * step);
 
   cloud->clear();
-  cloud->reserve(std::min(cloud_size / 10, 500000));
+  cloud->reserve (std::min (cloud_size / 10, 500000));
 
   int volume_idx = 0, cloud_idx = 0;
   for (int z = 0; z < sz; z += step)
@@ -181,15 +182,15 @@ pcl::TSDFVolume<VoxelT, WeightT>::convertToTsdfCloud(
         volume_idx = sx * sy * z + sx * y + x;
         // pcl::PointXYZI &point = (*cloud)[cloud_idx];
 
-        if (weights_->at(volume_idx) == 0 || volume_->at(volume_idx) > 0.98)
+        if (weights_->at (volume_idx) == 0 || volume_->at (volume_idx) > 0.98)
           continue;
 
         pcl::PointXYZI point;
         point.x = x;
         point.y = y;
         point.z = z; //*64;
-        point.intensity = volume_->at(volume_idx);
-        cloud->push_back(point);
+        point.intensity = volume_->at (volume_idx);
+        cloud->push_back (point);
       }
 
   // cloud->width = cloud_size;
@@ -199,18 +200,18 @@ pcl::TSDFVolume<VoxelT, WeightT>::convertToTsdfCloud(
 template <typename VoxelT, typename WeightT>
 template <typename PointT>
 void
-pcl::TSDFVolume<VoxelT, WeightT>::getVoxelCoord(const PointT& point,
-                                                Eigen::Vector3i& coord) const
+pcl::TSDFVolume<VoxelT, WeightT>::getVoxelCoord (const PointT& point,
+                                                 Eigen::Vector3i& coord) const
 {
   static Eigen::Array3f voxel_size = voxelSize().array();
 
   // point coordinates in world coordinate frame and voxel coordinates
-  Eigen::Array3f point_coord(point.x, point.y, point.z);
+  Eigen::Array3f point_coord (point.x, point.y, point.z);
   Eigen::Array3f voxel_coord =
       (point_coord / voxel_size) - 0.5f; // 0.5f offset due to voxel center vs grid
-  coord(0) = round(voxel_coord(0));
-  coord(1) = round(voxel_coord(1));
-  coord(2) = round(voxel_coord(2));
+  coord (0) = round (voxel_coord (0));
+  coord (1) = round (voxel_coord (1));
+  coord (2) = round (voxel_coord (2));
 }
 
 /** \brief Returns the 3D voxel coordinate and point offset wrt. to the voxel center (in
@@ -218,19 +219,19 @@ pcl::TSDFVolume<VoxelT, WeightT>::getVoxelCoord(const PointT& point,
 template <typename VoxelT, typename WeightT>
 template <typename PointT>
 void
-pcl::TSDFVolume<VoxelT, WeightT>::getVoxelCoordAndOffset(const PointT& point,
-                                                         Eigen::Vector3i& coord,
-                                                         Eigen::Vector3f& offset) const
+pcl::TSDFVolume<VoxelT, WeightT>::getVoxelCoordAndOffset (const PointT& point,
+                                                          Eigen::Vector3i& coord,
+                                                          Eigen::Vector3f& offset) const
 {
   static Eigen::Array3f voxel_size = voxelSize().array();
 
   // point coordinates in world coordinate frame and voxel coordinates
-  Eigen::Array3f point_coord(point.x, point.y, point.z);
+  Eigen::Array3f point_coord (point.x, point.y, point.z);
   Eigen::Array3f voxel_coord =
       (point_coord / voxel_size) - 0.5f; // 0.5f offset due to voxel center vs grid
-  coord(0) = round(voxel_coord(0));
-  coord(1) = round(voxel_coord(1));
-  coord(2) = round(voxel_coord(2));
+  coord (0) = round (voxel_coord (0));
+  coord (1) = round (voxel_coord (1));
+  coord (2) = round (voxel_coord (2));
 
   // offset of point wrt. to voxel center
   offset = (voxel_coord - coord.cast<float>().array() * voxel_size).matrix();
@@ -238,7 +239,7 @@ pcl::TSDFVolume<VoxelT, WeightT>::getVoxelCoordAndOffset(const PointT& point,
 
 template <typename VoxelT, typename WeightT>
 bool
-pcl::TSDFVolume<VoxelT, WeightT>::extractNeighborhood(
+pcl::TSDFVolume<VoxelT, WeightT>::extractNeighborhood (
     const Eigen::Vector3i& voxel_coord,
     int neighborhood_size,
     VoxelTVec& neighborhood) const
@@ -249,31 +250,31 @@ pcl::TSDFVolume<VoxelT, WeightT>::extractNeighborhood(
   Eigen::Vector3i max_index = voxel_coord.array() + shift;
 
   // check that index is within range
-  if (getLinearVoxelIndex(min_index) < 0 ||
-      getLinearVoxelIndex(max_index) >= (int)size()) {
-    pcl::console::print_info(
+  if (getLinearVoxelIndex (min_index) < 0 ||
+      getLinearVoxelIndex (max_index) >= (int)size()) {
+    pcl::console::print_info (
         "[extractNeighborhood] Skipping voxel with coord (%d, %d, %d).\n",
-        voxel_coord(0),
-        voxel_coord(1),
-        voxel_coord(2));
+        voxel_coord (0),
+        voxel_coord (1),
+        voxel_coord (2));
     return false;
   }
 
   static const int descriptor_size =
       neighborhood_size * neighborhood_size * neighborhood_size;
-  neighborhood.resize(descriptor_size);
+  neighborhood.resize (descriptor_size);
 
-  const Eigen::RowVector3i offset_vector(
+  const Eigen::RowVector3i offset_vector (
       1, neighborhood_size, neighborhood_size * neighborhood_size);
 
 // loop over all voxels in 3D neighborhood
 #pragma omp parallel for default(none)
-  for (int z = min_index(2); z <= max_index(2); ++z) {
-    for (int y = min_index(1); y <= max_index(1); ++y) {
-      for (int x = min_index(0); x <= max_index(0); ++x) {
+  for (int z = min_index (2); z <= max_index (2); ++z) {
+    for (int y = min_index (1); y <= max_index (1); ++y) {
+      for (int x = min_index (0); x <= max_index (0); ++x) {
         // linear voxel index in volume and index in descriptor vector
-        Eigen::Vector3i point(x, y, z);
-        int volume_idx = getLinearVoxelIndex(point);
+        Eigen::Vector3i point (x, y, z);
+        int volume_idx = getLinearVoxelIndex (point);
         int descr_idx = offset_vector * (point - min_index);
 
         /*        std::cout << "linear index " << volume_idx << std::endl;
@@ -284,10 +285,10 @@ pcl::TSDFVolume<VoxelT, WeightT>::extractNeighborhood(
            "descr index = " << descr_idx << std::endl;
         */
         // get the TSDF value and store as descriptor entry
-        if (weights_->at(volume_idx) != 0)
-          neighborhood(descr_idx) = volume_->at(volume_idx);
+        if (weights_->at (volume_idx) != 0)
+          neighborhood (descr_idx) = volume_->at (volume_idx);
         else
-          neighborhood(descr_idx) =
+          neighborhood (descr_idx) =
               -1.0; // if never visited we assume inside of object (outside captured and
                     // thus filled with positive values)
       }
@@ -299,10 +300,10 @@ pcl::TSDFVolume<VoxelT, WeightT>::extractNeighborhood(
 
 template <typename VoxelT, typename WeightT>
 bool
-pcl::TSDFVolume<VoxelT, WeightT>::addNeighborhood(const Eigen::Vector3i& voxel_coord,
-                                                  int neighborhood_size,
-                                                  const VoxelTVec& neighborhood,
-                                                  WeightT voxel_weight)
+pcl::TSDFVolume<VoxelT, WeightT>::addNeighborhood (const Eigen::Vector3i& voxel_coord,
+                                                   int neighborhood_size,
+                                                   const VoxelTVec& neighborhood,
+                                                   WeightT voxel_weight)
 {
   // point_index is at the center of a cube of scale_ x scale_ x scale_ voxels
   int shift = (neighborhood_size - 1) / 2;
@@ -310,39 +311,39 @@ pcl::TSDFVolume<VoxelT, WeightT>::addNeighborhood(const Eigen::Vector3i& voxel_c
   Eigen::Vector3i max_index = voxel_coord.array() + shift;
 
   // check that index is within range
-  if (getLinearVoxelIndex(min_index) < 0 ||
-      getLinearVoxelIndex(max_index) >= (int)size()) {
-    pcl::console::print_info(
+  if (getLinearVoxelIndex (min_index) < 0 ||
+      getLinearVoxelIndex (max_index) >= (int)size()) {
+    pcl::console::print_info (
         "[addNeighborhood] Skipping voxel with coord (%d, %d, %d).\n",
-        voxel_coord(0),
-        voxel_coord(1),
-        voxel_coord(2));
+        voxel_coord (0),
+        voxel_coord (1),
+        voxel_coord (2));
     return false;
   }
 
   // static const int descriptor_size =
   // neighborhood_size*neighborhood_size*neighborhood_size;
-  const Eigen::RowVector3i offset_vector(
+  const Eigen::RowVector3i offset_vector (
       1, neighborhood_size, neighborhood_size * neighborhood_size);
 
   Eigen::Vector3i index = min_index;
 // loop over all voxels in 3D neighborhood
 #pragma omp parallel for default(none)
-  for (int z = min_index(2); z <= max_index(2); ++z) {
-    for (int y = min_index(1); y <= max_index(1); ++y) {
-      for (int x = min_index(0); x <= max_index(0); ++x) {
+  for (int z = min_index (2); z <= max_index (2); ++z) {
+    for (int y = min_index (1); y <= max_index (1); ++y) {
+      for (int x = min_index (0); x <= max_index (0); ++x) {
         // linear voxel index in volume and index in descriptor vector
-        Eigen::Vector3i point(x, y, z);
-        int volume_idx = getLinearVoxelIndex(point);
+        Eigen::Vector3i point (x, y, z);
+        int volume_idx = getLinearVoxelIndex (point);
         int descr_idx = offset_vector * (point - min_index);
 
         // add the descriptor entry to the volume
-        VoxelT& voxel = volume_->at(volume_idx);
-        WeightT& weight = weights_->at(volume_idx);
+        VoxelT& voxel = volume_->at (volume_idx);
+        WeightT& weight = weights_->at (volume_idx);
 
 // TODO check that this simple lock works correctly!!
 #pragma omp atomic
-        voxel += neighborhood(descr_idx);
+        voxel += neighborhood (descr_idx);
 
 #pragma omp atomic
         weight += voxel_weight;
@@ -359,9 +360,9 @@ pcl::TSDFVolume<VoxelT, WeightT>::averageValues()
 {
 #pragma omp parallel for default(none)
   for (std::size_t i = 0; i < volume_->size(); ++i) {
-    WeightT& w = weights_->at(i);
+    WeightT& w = weights_->at (i);
     if (w > 0.0) {
-      volume_->at(i) /= w;
+      volume_->at (i) /= w;
       w = 1.0;
     }
   }

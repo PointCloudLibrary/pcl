@@ -63,11 +63,11 @@ public:
   void
   serialize (::std::ostream& stream) const
   {
-    const int num_of_trees = static_cast<int>(this->size());
-    stream.write(reinterpret_cast<const char*>(&num_of_trees), sizeof(num_of_trees));
+    const int num_of_trees = static_cast<int> (this->size());
+    stream.write (reinterpret_cast<const char*> (&num_of_trees), sizeof (num_of_trees));
 
     for (std::size_t tree_index = 0; tree_index < this->size(); ++tree_index) {
-      (*this)[tree_index].serialize(stream);
+      (*this)[tree_index].serialize (stream);
     }
 
     // const int num_of_trees = static_cast<int> (trees_.size ());
@@ -88,11 +88,11 @@ public:
   deserialize (::std::istream& stream)
   {
     int num_of_trees;
-    stream.read(reinterpret_cast<char*>(&num_of_trees), sizeof(num_of_trees));
-    this->resize(num_of_trees);
+    stream.read (reinterpret_cast<char*> (&num_of_trees), sizeof (num_of_trees));
+    this->resize (num_of_trees);
 
     for (std::size_t tree_index = 0; tree_index < this->size(); ++tree_index) {
-      (*this)[tree_index].deserialize(stream);
+      (*this)[tree_index].deserialize (stream);
     }
 
     // int num_of_trees;

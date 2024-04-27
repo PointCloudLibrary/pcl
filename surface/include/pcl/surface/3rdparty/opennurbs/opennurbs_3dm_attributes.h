@@ -38,7 +38,7 @@ Remarks:
 */
 
 class ON_CLASS ON_3dmObjectAttributes : public ON_Object {
-  ON_OBJECT_DECLARE(ON_3dmObjectAttributes);
+  ON_OBJECT_DECLARE (ON_3dmObjectAttributes);
 
 public:
   // ON_Object virtual interface.  See ON_Object
@@ -79,9 +79,9 @@ public:
   // NO // ON_3dmObjectAttributes& operator=(const ON_3dmObjectAttributes&);
 
   bool
-  operator==(const ON_3dmObjectAttributes&) const;
+  operator== (const ON_3dmObjectAttributes&) const;
   bool
-  operator!=(const ON_3dmObjectAttributes&) const;
+  operator!= (const ON_3dmObjectAttributes&) const;
 
   // Initializes all attributes to the default values.
   void
@@ -96,7 +96,7 @@ public:
   // If the object is hidden, it is not visible and it cannot be selected.
   ON::object_mode
   Mode () const;
-  void SetMode(ON::object_mode); // See Mode().
+  void SetMode (ON::object_mode); // See Mode().
 
   /*
   Description:
@@ -135,7 +135,7 @@ public:
   // If LinetypeSource() is ON::linetype_from_object, then value of m_linetype is used.
   ON::object_linetype_source
   LinetypeSource () const;
-  void SetLinetypeSource(ON::object_linetype_source); // See LinetypeSource().
+  void SetLinetypeSource (ON::object_linetype_source); // See LinetypeSource().
 
   // The color used to display an OpenNURBS object is specified in one of three ways.
   // If ColorSource() is ON::color_from_layer, then the object's layer
@@ -146,7 +146,7 @@ public:
   // determine where to get the definition of the object's render material.
   ON::object_color_source
   ColorSource () const;
-  void SetColorSource(ON::object_color_source); // See ColorSource().
+  void SetColorSource (ON::object_color_source); // See ColorSource().
 
   // The color used to plot an OpenNURBS object on paper is specified
   // in one of three ways.
@@ -156,11 +156,11 @@ public:
   // used.
   ON::plot_color_source
   PlotColorSource () const;
-  void SetPlotColorSource(ON::plot_color_source); // See PlotColorSource().
+  void SetPlotColorSource (ON::plot_color_source); // See PlotColorSource().
 
   ON::plot_weight_source
   PlotWeightSource () const;
-  void SetPlotWeightSource(ON::plot_weight_source);
+  void SetPlotWeightSource (ON::plot_weight_source);
 
   // OpenNURBS objects can be displayed in one of three ways: wireframe,
   // shaded, or render preview.  If the display mode is ON::default_display,
@@ -170,7 +170,7 @@ public:
   // forced to display in that mode.
   ON::display_mode
   DisplayMode () const;
-  void SetDisplayMode(ON::display_mode); // See DisplayMode().
+  void SetDisplayMode (ON::display_mode); // See DisplayMode().
 
   /*
   Description:

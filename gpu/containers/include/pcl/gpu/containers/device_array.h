@@ -57,7 +57,7 @@ public:
   using type = T;
 
   /** \brief Element size. */
-  enum { elem_size = sizeof(T) };
+  enum { elem_size = sizeof (T) };
 
   /** \brief Empty constructor. */
   DeviceArray();
@@ -65,21 +65,21 @@ public:
   /** \brief Allocates internal buffer in GPU memory
    * \param size number of elements to allocate
    * */
-  DeviceArray(std::size_t size);
+  DeviceArray (std::size_t size);
 
   /** \brief Initializes with user allocated buffer. Reference counting is disabled in
    * this case.
    * \param ptr pointer to buffer
    * \param size elements number
    * */
-  DeviceArray(T* ptr, std::size_t size);
+  DeviceArray (T* ptr, std::size_t size);
 
   /** \brief Copy constructor. Just increments reference counter. */
-  DeviceArray(const DeviceArray& other);
+  DeviceArray (const DeviceArray& other);
 
   /** \brief Assignment operator. Just increments reference counter. */
   DeviceArray&
-  operator=(const DeviceArray& other);
+  operator= (const DeviceArray& other);
 
   /** \brief Allocates internal buffer in GPU memory. If internal buffer was created
    * before the function recreates it with new size. If new and old sizes are equal it
@@ -191,7 +191,7 @@ public:
   using type = T;
 
   /** \brief Element size. */
-  enum { elem_size = sizeof(T) };
+  enum { elem_size = sizeof (T) };
 
   /** \brief Empty constructor. */
   DeviceArray2D();
@@ -200,7 +200,7 @@ public:
    * \param rows number of rows to allocate
    * \param cols number of elements in each row
    * */
-  DeviceArray2D(int rows, int cols);
+  DeviceArray2D (int rows, int cols);
 
   /** \brief Initializes with user allocated buffer. Reference counting is disabled in
    * this case.
@@ -209,14 +209,14 @@ public:
    * \param data pointer to buffer
    * \param stepBytes stride between two consecutive rows in bytes
    * */
-  DeviceArray2D(int rows, int cols, void* data, std::size_t stepBytes);
+  DeviceArray2D (int rows, int cols, void* data, std::size_t stepBytes);
 
   /** \brief Copy constructor. Just increments reference counter. */
-  DeviceArray2D(const DeviceArray2D& other);
+  DeviceArray2D (const DeviceArray2D& other);
 
   /** \brief Assignment operator. Just increments reference counter. */
   DeviceArray2D&
-  operator=(const DeviceArray2D& other);
+  operator= (const DeviceArray2D& other);
 
   /** \brief Allocates internal buffer in GPU memory. If internal buffer was created
    * before the function recreates it with new size. If new and old sizes are equal it

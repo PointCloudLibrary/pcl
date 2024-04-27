@@ -49,12 +49,12 @@
 
 namespace pcl {
 template <typename PointT>
-Kmeans<PointT>::Kmeans() : cluster_field_name_("")
+Kmeans<PointT>::Kmeans() : cluster_field_name_ ("")
 {}
 
 template <typename PointT>
 void
-Kmeans<PointT>::cluster(std::vector<PointIndices>& clusters)
+Kmeans<PointT>::cluster (std::vector<PointIndices>& clusters)
 {
   if (!initCompute() || (input_ != 0 && input_->points.empty()) ||
       (indices_ != 0 && indices_->empty())) {
@@ -66,22 +66,22 @@ Kmeans<PointT>::cluster(std::vector<PointIndices>& clusters)
   std::vector<pcl::PCLPointField> fields;
 
   // if no cluster field name is set, check for X Y Z
-  if (strcmp(cluster_field_name_.c_str(), "") == 0) {
+  if (strcmp (cluster_field_name_.c_str(), "") == 0) {
     int x_index = -1;
     int y_index = -1;
     int z_index = -1;
-    x_index = pcl::getFieldIndex<PointT>("x", fields);
+    x_index = pcl::getFieldIndex<PointT> ("x", fields);
     if (y_index != -1)
-      y_index = pcl::getFieldIndex<PointT>("y", fields);
+      y_index = pcl::getFieldIndex<PointT> ("y", fields);
     if (z_index != -1)
-      z_index = pcl::getFieldIndex<PointT>("z", fields);
+      z_index = pcl::getFieldIndex<PointT> ("z", fields);
 
     if (x_index == -1 && y_index == -1 && z_index == -1) {
-      PCL_ERROR("Failed to find match for field 'x y z'\n");
+      PCL_ERROR ("Failed to find match for field 'x y z'\n");
       return;
     }
 
-    PCL_INFO("Use X Y Z as input data\n");
+    PCL_INFO ("Use X Y Z as input data\n");
     // create input data
     /*
         for (std::size_t i = 0; i < input_->size (); i++)
@@ -97,7 +97,7 @@ Kmeans<PointT>::cluster(std::vector<PointIndices>& clusters)
     std::cout << "x index: " << x_index << std::endl;
 
     float x = 0.0;
-    memcpy(&x, &(*input_)[0] + fields[x_index].offset, sizeof(float));
+    memcpy (&x, &(*input_)[0] + fields[x_index].offset, sizeof (float));
 
     std::cout << "xxx: " << x << std::endl;
 
@@ -112,10 +112,10 @@ Kmeans<PointT>::cluster(std::vector<PointIndices>& clusters)
   }
   // if cluster field name is set, check if field name is valid
   else {
-    int user_index = pcl::getFieldIndex<PointT>(cluster_field_name_.c_str(), fields);
+    int user_index = pcl::getFieldIndex<PointT> (cluster_field_name_.c_str(), fields);
 
     if (user_index == -1) {
-      PCL_ERROR("Failed to find match for field '%s'\n", cluster_field_name_.c_str());
+      PCL_ERROR ("Failed to find match for field '%s'\n", cluster_field_name_.c_str());
       return;
     }
   }

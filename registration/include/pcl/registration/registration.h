@@ -100,22 +100,22 @@ public:
    * cloud we want to register against \param[in] indices_tgt - a selector of points in
    * cloud_tgt
    */
-  using UpdateVisualizerCallbackSignature = void(const pcl::PointCloud<PointSource>&,
-                                                 const pcl::Indices&,
-                                                 const pcl::PointCloud<PointTarget>&,
-                                                 const pcl::Indices&);
+  using UpdateVisualizerCallbackSignature = void (const pcl::PointCloud<PointSource>&,
+                                                  const pcl::Indices&,
+                                                  const pcl::PointCloud<PointTarget>&,
+                                                  const pcl::Indices&);
 
   /** \brief Empty constructor. */
   Registration()
-  : tree_(new KdTree)
-  , tree_reciprocal_(new KdTreeReciprocal)
+  : tree_ (new KdTree)
+  , tree_reciprocal_ (new KdTreeReciprocal)
   , target_()
-  , final_transformation_(Matrix4::Identity())
-  , transformation_(Matrix4::Identity())
-  , previous_transformation_(Matrix4::Identity())
-  , euclidean_fitness_epsilon_(-std::numeric_limits<double>::max())
-  , corr_dist_threshold_(std::sqrt(std::numeric_limits<double>::max()))
-  , correspondences_(new Correspondences)
+  , final_transformation_ (Matrix4::Identity())
+  , transformation_ (Matrix4::Identity())
+  , previous_transformation_ (Matrix4::Identity())
+  , euclidean_fitness_epsilon_ (-std::numeric_limits<double>::max())
+  , corr_dist_threshold_ (std::sqrt (std::numeric_limits<double>::max()))
+  , correspondences_ (new Correspondences)
   , transformation_estimation_()
   , correspondence_estimation_()
   , point_representation_()
@@ -435,7 +435,7 @@ public:
     if (visualizerCallback) {
       update_visualizer_ = visualizerCallback;
       pcl::Indices indices;
-      update_visualizer_(*input_, indices, *target_, indices);
+      update_visualizer_ (*input_, indices, *target_, indices);
       return (true);
     }
     return (false);
@@ -514,7 +514,7 @@ public:
   inline void
   addCorrespondenceRejector (const CorrespondenceRejectorPtr& rejector)
   {
-    correspondence_rejectors_.push_back(rejector);
+    correspondence_rejectors_.push_back (rejector);
   }
 
   /** \brief Get the list of correspondence rejectors. */
@@ -532,7 +532,7 @@ public:
   {
     if (i >= correspondence_rejectors_.size())
       return (false);
-    correspondence_rejectors_.erase(correspondence_rejectors_.begin() + i);
+    correspondence_rejectors_.erase (correspondence_rejectors_.begin() + i);
     return (true);
   }
 
@@ -665,7 +665,7 @@ protected:
                       pcl::Indices& indices,
                       std::vector<float>& distances)
   {
-    int k = tree_->nearestKSearch(cloud, index, 1, indices, distances);
+    int k = tree_->nearestKSearch (cloud, index, 1, indices, distances);
     if (k == 0)
       return (false);
     return (true);
@@ -687,9 +687,9 @@ private:
   void
   setInputCloud (const PointCloudSourceConstPtr& cloud) override
   {
-    PCL_WARN("[pcl::registration::Registration] setInputCloud is deprecated."
-             "Please use setInputSource instead.\n");
-    setInputSource(cloud);
+    PCL_WARN ("[pcl::registration::Registration] setInputCloud is deprecated."
+              "Please use setInputSource instead.\n");
+    setInputSource (cloud);
   }
 
 public:

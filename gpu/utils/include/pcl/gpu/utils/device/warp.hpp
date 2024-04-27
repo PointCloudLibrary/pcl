@@ -47,7 +47,7 @@ struct Warp {
   laneId ()
   {
     unsigned int ret;
-    asm("mov.u32 %0, %laneid;" : "=r"(ret));
+    asm ("mov.u32 %0, %laneid;" : "=r"(ret));
     return ret;
   }
 
@@ -55,7 +55,7 @@ struct Warp {
   laneMaskLe ()
   {
     unsigned int ret;
-    asm("mov.u32 %0, %lanemask_le;" : "=r"(ret));
+    asm ("mov.u32 %0, %lanemask_le;" : "=r"(ret));
     return ret;
   }
 
@@ -63,7 +63,7 @@ struct Warp {
   laneMaskLt ()
   {
     unsigned int ret;
-    asm("mov.u32 %0, %lanemask_lt;" : "=r"(ret));
+    asm ("mov.u32 %0, %lanemask_lt;" : "=r"(ret));
     return ret;
   }
   static __device__ __forceinline__ unsigned int
@@ -77,13 +77,13 @@ struct Warp {
   static __device__ __forceinline__ int
   binaryInclScan (int ballot_mask)
   {
-    return __popc(Warp::laneMaskLe() & ballot_mask);
+    return __popc (Warp::laneMaskLe() & ballot_mask);
   }
 
   static __device__ __forceinline__ int
   binaryExclScan (int ballot_mask)
   {
-    return __popc(Warp::laneMaskLt() & ballot_mask);
+    return __popc (Warp::laneMaskLt() & ballot_mask);
   }
 
   template <typename It, typename T>
@@ -116,7 +116,7 @@ struct Warp {
     OutIt o = out + lane;
 
     for (InIt t = beg + laneId(); t < end; t += STRIDE, o += STRIDE)
-      *o = op(*t);
+      *o = op (*t);
     return o;
   }
 
@@ -130,7 +130,7 @@ struct Warp {
     OutIt o = out + lane;
 
     for (; t1 < end1; t1 += STRIDE, t2 += STRIDE, o += STRIDE)
-      *o = op(*t1, *t2);
+      *o = op (*t1, *t2);
     return o;
   }
 
@@ -153,11 +153,11 @@ struct Warp {
     T val = buffer[lane];
 
     if (lane < 16) {
-      buffer[lane] = val = op(val, buffer[lane + 16]);
-      buffer[lane] = val = op(val, buffer[lane + 8]);
-      buffer[lane] = val = op(val, buffer[lane + 4]);
-      buffer[lane] = val = op(val, buffer[lane + 2]);
-      buffer[lane] = val = op(val, buffer[lane + 1]);
+      buffer[lane] = val = op (val, buffer[lane + 16]);
+      buffer[lane] = val = op (val, buffer[lane + 8]);
+      buffer[lane] = val = op (val, buffer[lane + 4]);
+      buffer[lane] = val = op (val, buffer[lane + 2]);
+      buffer[lane] = val = op (val, buffer[lane + 1]);
     }
   }
 
@@ -169,11 +169,11 @@ struct Warp {
     T val = buffer[lane] = init;
 
     if (lane < 16) {
-      buffer[lane] = val = op(val, buffer[lane + 16]);
-      buffer[lane] = val = op(val, buffer[lane + 8]);
-      buffer[lane] = val = op(val, buffer[lane + 4]);
-      buffer[lane] = val = op(val, buffer[lane + 2]);
-      buffer[lane] = val = op(val, buffer[lane + 1]);
+      buffer[lane] = val = op (val, buffer[lane + 16]);
+      buffer[lane] = val = op (val, buffer[lane + 8]);
+      buffer[lane] = val = op (val, buffer[lane + 4]);
+      buffer[lane] = val = op (val, buffer[lane + 2]);
+      buffer[lane] = val = op (val, buffer[lane + 1]);
     }
     return buffer[0];
   }

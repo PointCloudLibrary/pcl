@@ -82,10 +82,10 @@ public:
   CVFHEstimation()
   :
 
-      cluster_tolerance_(leaf_size_ * 3)
+      cluster_tolerance_ (leaf_size_ * 3)
   ,
 
-  radius_normals_(leaf_size_ * 3)
+  radius_normals_ (leaf_size_ * 3)
   {
     search_radius_ = 0;
     k_ = 1;
@@ -149,9 +149,9 @@ public:
       std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f>>&
           centroids)
   {
-    centroids.insert(centroids.cend(),
-                     centroids_dominant_orientations_.cbegin(),
-                     centroids_dominant_orientations_.cend());
+    centroids.insert (centroids.cend(),
+                      centroids_dominant_orientations_.cbegin(),
+                      centroids_dominant_orientations_.cend());
   }
 
   /** \brief Get the normal centroids used to compute different CVFH descriptors
@@ -163,7 +163,7 @@ public:
           centroids)
   {
     for (const auto& normal : dominant_normals_)
-      centroids.push_back(normal);
+      centroids.push_back (normal);
   }
 
   /** \brief Sets max. Euclidean distance between points to be added to the cluster

@@ -46,7 +46,7 @@
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename GradientT, typename PointOutT>
 void
-pcl::RIFTEstimation<PointInT, GradientT, PointOutT>::computeRIFT(
+pcl::RIFTEstimation<PointInT, GradientT, PointOutT>::computeRIFT (
     const PointCloudIn& cloud,
     const PointCloudGradient& gradient,
     int p_idx,
@@ -56,13 +56,13 @@ pcl::RIFTEstimation<PointInT, GradientT, PointOutT>::computeRIFT(
     Eigen::MatrixXf& rift_descriptor)
 {
   if (indices.empty()) {
-    PCL_ERROR("[pcl::RIFTEstimation] Null indices points passed!\n");
+    PCL_ERROR ("[pcl::RIFTEstimation] Null indices points passed!\n");
     return;
   }
 
   // Determine the number of bins to use based on the size of rift_descriptor
-  int nr_distance_bins = static_cast<int>(rift_descriptor.rows());
-  int nr_gradient_bins = static_cast<int>(rift_descriptor.cols());
+  int nr_distance_bins = static_cast<int> (rift_descriptor.rows());
+  int nr_gradient_bins = static_cast<int> (rift_descriptor.cols());
 
   // Get the center point
   pcl::Vector3fMapConst p0 = cloud[p_idx].getVector3fMap();
@@ -72,29 +72,29 @@ pcl::RIFTEstimation<PointInT, GradientT, PointOutT>::computeRIFT(
   for (std::size_t idx = 0; idx < indices.size(); ++idx) {
     // Compute the gradient magnitude and orientation (relative to the center point)
     pcl::Vector3fMapConst point = cloud[indices[idx]].getVector3fMap();
-    Eigen::Map<const Eigen::Vector3f> gradient_vector(
+    Eigen::Map<const Eigen::Vector3f> gradient_vector (
         &(gradient[indices[idx]].gradient[0]));
 
     float gradient_magnitude = gradient_vector.norm();
-    float gradient_angle_from_center =
-        std::acos(gradient_vector.dot((point - p0).normalized()) / gradient_magnitude);
-    if (!std::isfinite(gradient_angle_from_center))
+    float gradient_angle_from_center = std::acos (
+        gradient_vector.dot ((point - p0).normalized()) / gradient_magnitude);
+    if (!std::isfinite (gradient_angle_from_center))
       gradient_angle_from_center = 0.0;
 
     // Normalize distance and angle values to: 0.0 <= d,g <
     // nr_distances_bins,nr_gradient_bins
     const float eps = std::numeric_limits<float>::epsilon();
-    float d = static_cast<float>(nr_distance_bins) * std::sqrt(sqr_distances[idx]) /
+    float d = static_cast<float> (nr_distance_bins) * std::sqrt (sqr_distances[idx]) /
               (radius + eps);
-    float g = static_cast<float>(nr_gradient_bins) * gradient_angle_from_center /
-              (static_cast<float>(M_PI) + eps);
+    float g = static_cast<float> (nr_gradient_bins) * gradient_angle_from_center /
+              (static_cast<float> (M_PI) + eps);
 
     // Compute the bin indices that need to be updated
-    int d_idx_min = (std::max)(static_cast<int>(std::ceil(d - 1)), 0);
+    int d_idx_min = (std::max) (static_cast<int> (std::ceil (d - 1)), 0);
     int d_idx_max =
-        (std::min)(static_cast<int>(std::floor(d + 1)), nr_distance_bins - 1);
-    int g_idx_min = static_cast<int>(std::ceil(g - 1));
-    int g_idx_max = static_cast<int>(std::floor(g + 1));
+        (std::min) (static_cast<int> (std::floor (d + 1)), nr_distance_bins - 1);
+    int g_idx_min = static_cast<int> (std::ceil (g - 1));
+    int g_idx_max = static_cast<int> (std::floor (g + 1));
 
     // Update the appropriate bins of the histogram
     for (int g_idx = g_idx_min; g_idx <= g_idx_max; ++g_idx) {
@@ -103,10 +103,10 @@ pcl::RIFTEstimation<PointInT, GradientT, PointOutT>::computeRIFT(
 
       for (int d_idx = d_idx_min; d_idx <= d_idx_max; ++d_idx) {
         // To avoid boundary effects, use linear interpolation when updating each bin
-        float w = (1.0f - std::abs(d - static_cast<float>(d_idx))) *
-                  (1.0f - std::abs(g - static_cast<float>(g_idx)));
+        float w = (1.0f - std::abs (d - static_cast<float> (d_idx))) *
+                  (1.0f - std::abs (g - static_cast<float> (g_idx)));
 
-        rift_descriptor(d_idx, g_idx_wrapped) += w * gradient_magnitude;
+        rift_descriptor (d_idx, g_idx_wrapped) += w * gradient_magnitude;
       }
     }
   }
@@ -118,14 +118,14 @@ pcl::RIFTEstimation<PointInT, GradientT, PointOutT>::computeRIFT(
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename GradientT, typename PointOutT>
 void
-pcl::RIFTEstimation<PointInT, GradientT, PointOutT>::computeFeature(
+pcl::RIFTEstimation<PointInT, GradientT, PointOutT>::computeFeature (
     PointCloudOut& output)
 {
   // Make sure a search radius is set
   if (search_radius_ == 0.0) {
-    PCL_ERROR("[pcl::%s::computeFeature] The search radius must be set before "
-              "computing the feature!\n",
-              getClassName().c_str());
+    PCL_ERROR ("[pcl::%s::computeFeature] The search radius must be set before "
+               "computing the feature!\n",
+               getClassName().c_str());
     output.width = output.height = 0;
     output.clear();
     return;
@@ -133,17 +133,17 @@ pcl::RIFTEstimation<PointInT, GradientT, PointOutT>::computeFeature(
 
   // Make sure the RIFT descriptor has valid dimensions
   if (nr_gradient_bins_ <= 0) {
-    PCL_ERROR("[pcl::%s::computeFeature] The number of gradient bins must be greater "
-              "than zero!\n",
-              getClassName().c_str());
+    PCL_ERROR ("[pcl::%s::computeFeature] The number of gradient bins must be greater "
+               "than zero!\n",
+               getClassName().c_str());
     output.width = output.height = 0;
     output.clear();
     return;
   }
   if (nr_distance_bins_ <= 0) {
-    PCL_ERROR("[pcl::%s::computeFeature] The number of distance bins must be greater "
-              "than zero!\n",
-              getClassName().c_str());
+    PCL_ERROR ("[pcl::%s::computeFeature] The number of distance bins must be greater "
+               "than zero!\n",
+               getClassName().c_str());
     output.width = output.height = 0;
     output.clear();
     return;
@@ -151,43 +151,43 @@ pcl::RIFTEstimation<PointInT, GradientT, PointOutT>::computeFeature(
 
   // Check for valid input gradient
   if (!gradient_) {
-    PCL_ERROR("[pcl::%s::computeFeature] No input gradient was given!\n",
-              getClassName().c_str());
+    PCL_ERROR ("[pcl::%s::computeFeature] No input gradient was given!\n",
+               getClassName().c_str());
     output.width = output.height = 0;
     output.clear();
     return;
   }
   if (gradient_->size() != surface_->size()) {
-    PCL_ERROR("[pcl::%s::computeFeature] ", getClassName().c_str());
-    PCL_ERROR("The number of points in the input dataset differs from the number of "
-              "points in the gradient!\n");
+    PCL_ERROR ("[pcl::%s::computeFeature] ", getClassName().c_str());
+    PCL_ERROR ("The number of points in the input dataset differs from the number of "
+               "points in the gradient!\n");
     output.width = output.height = 0;
     output.clear();
     return;
   }
 
-  Eigen::MatrixXf rift_descriptor(nr_distance_bins_, nr_gradient_bins_);
+  Eigen::MatrixXf rift_descriptor (nr_distance_bins_, nr_gradient_bins_);
   pcl::Indices nn_indices;
   std::vector<float> nn_dist_sqr;
 
   // Iterating over the entire index vector
   for (std::size_t idx = 0; idx < indices_->size(); ++idx) {
     // Find neighbors within the search radius
-    tree_->radiusSearch((*indices_)[idx], search_radius_, nn_indices, nn_dist_sqr);
+    tree_->radiusSearch ((*indices_)[idx], search_radius_, nn_indices, nn_dist_sqr);
 
     // Compute the RIFT descriptor
-    computeRIFT(*surface_,
-                *gradient_,
-                (*indices_)[idx],
-                static_cast<float>(search_radius_),
-                nn_indices,
-                nn_dist_sqr,
-                rift_descriptor);
+    computeRIFT (*surface_,
+                 *gradient_,
+                 (*indices_)[idx],
+                 static_cast<float> (search_radius_),
+                 nn_indices,
+                 nn_dist_sqr,
+                 rift_descriptor);
 
     // Default layout is column major, copy elementwise
-    std::copy(rift_descriptor.data(),
-              rift_descriptor.data() + rift_descriptor.size(),
-              output[idx].histogram);
+    std::copy (rift_descriptor.data(),
+               rift_descriptor.data() + rift_descriptor.size(),
+               output[idx].histogram);
   }
 }
 

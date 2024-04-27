@@ -24,26 +24,26 @@
 
 #if defined(__FUNCTION__)
 // __FUNCTION__ macro exists
-#define ON_ERROR(msg) ON_ErrorEx(__FILE__, __LINE__, __FUNCTION__, msg)
-#define ON_WARNING(msg) ON_WarningEx(__FILE__, __LINE__, __FUNCTION__, msg)
+#define ON_ERROR(msg) ON_ErrorEx (__FILE__, __LINE__, __FUNCTION__, msg)
+#define ON_WARNING(msg) ON_WarningEx (__FILE__, __LINE__, __FUNCTION__, msg)
 #define ON_ASSERT(cond)                                                                \
-  ON_AssertEx(cond, __FILE__, __LINE__, __FUNCTION__, #cond " is false")
+  ON_AssertEx (cond, __FILE__, __LINE__, __FUNCTION__, #cond " is false")
 #define ON_ASSERT_OR_RETURN(cond, returncode)                                          \
   do {                                                                                 \
     if (!(cond)) {                                                                     \
-      ON_AssertEx(false, __FILE__, __LINE__, __FUNCTION__, #cond " is false");         \
+      ON_AssertEx (false, __FILE__, __LINE__, __FUNCTION__, #cond " is false");        \
       return (returncode);                                                             \
     }                                                                                  \
   } while (0)
 #else
 // __FUNCTION__ macro does not exist
-#define ON_ERROR(msg) ON_Error(__FILE__, __LINE__, msg)
-#define ON_WARNING(msg) ON_Warning(__FILE__, __LINE__, msg)
-#define ON_ASSERT(cond) ON_Assert(cond, __FILE__, __LINE__, #cond " is false")
+#define ON_ERROR(msg) ON_Error (__FILE__, __LINE__, msg)
+#define ON_WARNING(msg) ON_Warning (__FILE__, __LINE__, msg)
+#define ON_ASSERT(cond) ON_Assert (cond, __FILE__, __LINE__, #cond " is false")
 #define ON_ASSERT_OR_RETURN(cond, returncode)                                          \
   do {                                                                                 \
     if (!(cond)) {                                                                     \
-      ON_Assert(false, __FILE__, __LINE__, #cond " is false");                         \
+      ON_Assert (false, __FILE__, __LINE__, #cond " is false");                        \
       return (returncode);                                                             \
     }                                                                                  \
   } while (0)

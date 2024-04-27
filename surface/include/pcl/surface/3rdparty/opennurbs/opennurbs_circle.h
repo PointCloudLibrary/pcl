@@ -38,26 +38,26 @@ public:
 
   // Creates a circle in the plane with center at
   // plane.origin.
-  ON_Circle(const ON_Plane& plane, double radius);
+  ON_Circle (const ON_Plane& plane, double radius);
 
   // Creates a circle parallel to the world XY plane
   // with given center and radius
-  ON_Circle(const ON_3dPoint& center, double radius);
+  ON_Circle (const ON_3dPoint& center, double radius);
 
   // Creates a circle parallel to the plane
   // with given center and radius.
-  ON_Circle(const ON_Plane& plane, const ON_3dPoint& center, double radius);
+  ON_Circle (const ON_Plane& plane, const ON_3dPoint& center, double radius);
 
   // Create a circle through three 2d points.
   // The start/end of the circle is at point P.
-  ON_Circle( // circle through 3 2d points
+  ON_Circle ( // circle through 3 2d points
       const ON_2dPoint& P,
       const ON_2dPoint& Q,
       const ON_2dPoint& R);
 
   // Create a circle through three 3d points.
   // The start/end of the circle is at point P.
-  ON_Circle(const ON_3dPoint& P, const ON_3dPoint& Q, const ON_3dPoint& R);
+  ON_Circle (const ON_3dPoint& P, const ON_3dPoint& Q, const ON_3dPoint& R);
 
   ~ON_Circle();
 

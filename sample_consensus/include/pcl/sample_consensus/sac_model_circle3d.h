@@ -76,8 +76,8 @@ public:
    * \param[in] random if true set the random seed to the current time, else set to
    * 12345 (default: false)
    */
-  SampleConsensusModelCircle3D(const PointCloudConstPtr& cloud, bool random = false)
-  : SampleConsensusModel<PointT>(cloud, random)
+  SampleConsensusModelCircle3D (const PointCloudConstPtr& cloud, bool random = false)
+  : SampleConsensusModel<PointT> (cloud, random)
   {
     model_name_ = "SampleConsensusModelCircle3D";
     sample_size_ = 3;
@@ -90,10 +90,10 @@ public:
    * \param[in] random if true set the random seed to the current time, else set to
    * 12345 (default: false)
    */
-  SampleConsensusModelCircle3D(const PointCloudConstPtr& cloud,
-                               const Indices& indices,
-                               bool random = false)
-  : SampleConsensusModel<PointT>(cloud, indices, random)
+  SampleConsensusModelCircle3D (const PointCloudConstPtr& cloud,
+                                const Indices& indices,
+                                bool random = false)
+  : SampleConsensusModel<PointT> (cloud, indices, random)
   {
     model_name_ = "SampleConsensusModelCircle3D";
     sample_size_ = 3;
@@ -106,7 +106,7 @@ public:
   /** \brief Copy constructor.
    * \param[in] source the model to copy into this
    */
-  SampleConsensusModelCircle3D(const SampleConsensusModelCircle3D& source)
+  SampleConsensusModelCircle3D (const SampleConsensusModelCircle3D& source)
   : SampleConsensusModel<PointT>()
   {
     *this = source;
@@ -117,9 +117,9 @@ public:
    * \param[in] source the model to copy into this
    */
   inline SampleConsensusModelCircle3D&
-  operator=(const SampleConsensusModelCircle3D& source)
+  operator= (const SampleConsensusModelCircle3D& source)
   {
-    SampleConsensusModel<PointT>::operator=(source);
+    SampleConsensusModel<PointT>::operator= (source);
     return (*this);
   }
 
@@ -228,9 +228,9 @@ private:
      * \param[in] indices the indices of data points to evaluate
      * \param[in] estimator pointer to the estimator object
      */
-    OptimizationFunctor(const pcl::SampleConsensusModelCircle3D<PointT>* model,
-                        const Indices& indices)
-    : pcl::Functor<double>(indices.size()), model_(model), indices_(indices)
+    OptimizationFunctor (const pcl::SampleConsensusModelCircle3D<PointT>* model,
+                         const Indices& indices)
+    : pcl::Functor<double> (indices.size()), model_ (model), indices_ (indices)
     {}
 
     /** Cost function to be minimized
@@ -239,7 +239,7 @@ private:
      * \return 0
      */
     int
-    operator()(const Eigen::VectorXd& x, Eigen::VectorXd& fvec) const
+    operator() (const Eigen::VectorXd& x, Eigen::VectorXd& fvec) const
     {
       for (int i = 0; i < values(); ++i) {
         // what i have:
@@ -247,16 +247,16 @@ private:
         Eigen::Vector3d P =
             (*model_->input_)[indices_[i]].getVector3fMap().template cast<double>();
         // C : Circle Center
-        Eigen::Vector3d C(x[0], x[1], x[2]);
+        Eigen::Vector3d C (x[0], x[1], x[2]);
         // N : Circle (Plane) Normal
-        Eigen::Vector3d N(x[4], x[5], x[6]);
+        Eigen::Vector3d N (x[4], x[5], x[6]);
         // r : Radius
         double r = x[3];
 
         Eigen::Vector3d helperVectorPC = P - C;
         // 1.1. get line parameter
         // float lambda = (helperVectorPC.dot(N)) / N.squaredNorm() ;
-        double lambda = (-(helperVectorPC.dot(N))) / N.dot(N);
+        double lambda = (-(helperVectorPC.dot (N))) / N.dot (N);
         // Projected Point on plane
         Eigen::Vector3d P_proj = P + lambda * N;
         Eigen::Vector3d helperVectorP_projC = P_proj - C;

@@ -50,39 +50,39 @@ RangeImagePlanar::~RangeImagePlanar() = default;
 
 /////////////////////////////////////////////////////////////////////////
 void
-RangeImagePlanar::setDisparityImage(const float* disparity_image,
-                                    int di_width,
-                                    int di_height,
-                                    float focal_length,
-                                    float base_line,
-                                    float desired_angular_resolution)
+RangeImagePlanar::setDisparityImage (const float* disparity_image,
+                                     int di_width,
+                                     int di_height,
+                                     float focal_length,
+                                     float base_line,
+                                     float desired_angular_resolution)
 {
   // MEASURE_FUNCTION_TIME;
   reset();
 
-  float original_angular_resolution = std::atan(0.5f * static_cast<float>(di_width) /
-                                                static_cast<float>(focal_length)) /
-                                      (0.5f * static_cast<float>(di_width));
+  float original_angular_resolution = std::atan (0.5f * static_cast<float> (di_width) /
+                                                 static_cast<float> (focal_length)) /
+                                      (0.5f * static_cast<float> (di_width));
   int skip = 1;
   if (desired_angular_resolution >= 2.0f * original_angular_resolution)
-    skip = static_cast<int>(pcl_lrint(
-        std::floor(desired_angular_resolution / original_angular_resolution)));
+    skip = static_cast<int> (pcl_lrint (
+        std::floor (desired_angular_resolution / original_angular_resolution)));
 
-  setAngularResolution(original_angular_resolution * static_cast<float>(skip));
+  setAngularResolution (original_angular_resolution * static_cast<float> (skip));
   width = di_width / skip;
   height = di_height / skip;
-  focal_length_x_ = focal_length_y_ = focal_length / static_cast<float>(skip);
+  focal_length_x_ = focal_length_y_ = focal_length / static_cast<float> (skip);
   focal_length_x_reciprocal_ = focal_length_y_reciprocal_ = 1.0f / focal_length_x_;
-  center_x_ = static_cast<float>(di_width) / static_cast<float>(2 * skip);
-  center_y_ = static_cast<float>(di_height) / static_cast<float>(2 * skip);
-  points.resize(width * height);
+  center_x_ = static_cast<float> (di_width) / static_cast<float> (2 * skip);
+  center_y_ = static_cast<float> (di_height) / static_cast<float> (2 * skip);
+  points.resize (width * height);
 
   // std::cout << PVARN (*this);
 
-  float normalization_factor = static_cast<float>(skip) * focal_length_x_ * base_line;
-  for (int y = 0; y < static_cast<int>(height); ++y) {
-    for (int x = 0; x < static_cast<int>(width); ++x) {
-      PointWithRange& point = getPointNoCheck(x, y);
+  float normalization_factor = static_cast<float> (skip) * focal_length_x_ * base_line;
+  for (int y = 0; y < static_cast<int> (height); ++y) {
+    for (int x = 0; x < static_cast<int> (width); ++x) {
+      PointWithRange& point = getPointNoCheck (x, y);
       float disparity = disparity_image[(y * skip) * di_width + x * skip];
       if (disparity <= 0.0f) {
         // std::cout << disparity << ", "<<std::flush;
@@ -91,9 +91,9 @@ RangeImagePlanar::setDisparityImage(const float* disparity_image,
       }
       point.z = normalization_factor / disparity;
       point.x =
-          (static_cast<float>(x) - center_x_) * point.z * focal_length_x_reciprocal_;
+          (static_cast<float> (x) - center_x_) * point.z * focal_length_x_reciprocal_;
       point.y =
-          (static_cast<float>(y) - center_y_) * point.z * focal_length_y_reciprocal_;
+          (static_cast<float> (y) - center_y_) * point.z * focal_length_y_reciprocal_;
       point.range = point.getVector3fMap().norm();
       // std::cout << point<<std::flush;
 
@@ -113,50 +113,50 @@ RangeImagePlanar::setDisparityImage(const float* disparity_image,
 
 /////////////////////////////////////////////////////////////////////////
 void
-RangeImagePlanar::setDepthImage(const float* depth_image,
-                                int di_width,
-                                int di_height,
-                                float di_center_x,
-                                float di_center_y,
-                                float di_focal_length_x,
-                                float di_focal_length_y,
-                                float desired_angular_resolution)
+RangeImagePlanar::setDepthImage (const float* depth_image,
+                                 int di_width,
+                                 int di_height,
+                                 float di_center_x,
+                                 float di_center_y,
+                                 float di_focal_length_x,
+                                 float di_focal_length_y,
+                                 float desired_angular_resolution)
 {
   // MEASURE_FUNCTION_TIME;
   reset();
 
-  float original_angular_resolution = asinf(0.5f * static_cast<float>(di_width) /
-                                            static_cast<float>(di_focal_length_x)) /
-                                      (0.5f * static_cast<float>(di_width));
+  float original_angular_resolution = asinf (0.5f * static_cast<float> (di_width) /
+                                             static_cast<float> (di_focal_length_x)) /
+                                      (0.5f * static_cast<float> (di_width));
   int skip = 1;
   if (desired_angular_resolution >= 2.0f * original_angular_resolution)
-    skip = static_cast<int>(pcl_lrint(
-        std::floor(desired_angular_resolution / original_angular_resolution)));
+    skip = static_cast<int> (pcl_lrint (
+        std::floor (desired_angular_resolution / original_angular_resolution)));
 
-  setAngularResolution(original_angular_resolution * static_cast<float>(skip));
+  setAngularResolution (original_angular_resolution * static_cast<float> (skip));
   width = di_width / skip;
   height = di_height / skip;
-  focal_length_x_ = di_focal_length_x / static_cast<float>(skip);
+  focal_length_x_ = di_focal_length_x / static_cast<float> (skip);
   focal_length_x_reciprocal_ = 1.0f / focal_length_x_;
-  focal_length_y_ = di_focal_length_y / static_cast<float>(skip);
+  focal_length_y_ = di_focal_length_y / static_cast<float> (skip);
   focal_length_y_reciprocal_ = 1.0f / focal_length_y_;
-  center_x_ = static_cast<float>(di_center_x) / static_cast<float>(skip);
-  center_y_ = static_cast<float>(di_center_y) / static_cast<float>(skip);
-  points.resize(width * height);
+  center_x_ = static_cast<float> (di_center_x) / static_cast<float> (skip);
+  center_y_ = static_cast<float> (di_center_y) / static_cast<float> (skip);
+  points.resize (width * height);
 
-  for (int y = 0; y < static_cast<int>(height); ++y) {
-    for (int x = 0; x < static_cast<int>(width); ++x) {
-      PointWithRange& point = getPointNoCheck(x, y);
+  for (int y = 0; y < static_cast<int> (height); ++y) {
+    for (int x = 0; x < static_cast<int> (width); ++x) {
+      PointWithRange& point = getPointNoCheck (x, y);
       float depth = depth_image[(y * skip) * di_width + x * skip];
-      if (depth <= 0.0f || !std::isfinite(depth)) {
+      if (depth <= 0.0f || !std::isfinite (depth)) {
         point = unobserved_point;
         continue;
       }
       point.z = depth;
       point.x =
-          (static_cast<float>(x) - center_x_) * point.z * focal_length_x_reciprocal_;
+          (static_cast<float> (x) - center_x_) * point.z * focal_length_x_reciprocal_;
       point.y =
-          (static_cast<float>(y) - center_y_) * point.z * focal_length_y_reciprocal_;
+          (static_cast<float> (y) - center_y_) * point.z * focal_length_y_reciprocal_;
       point.range = point.getVector3fMap().norm();
     }
   }
@@ -164,50 +164,50 @@ RangeImagePlanar::setDepthImage(const float* depth_image,
 
 /////////////////////////////////////////////////////////////////////////
 void
-RangeImagePlanar::setDepthImage(const unsigned short* depth_image,
-                                int di_width,
-                                int di_height,
-                                float di_center_x,
-                                float di_center_y,
-                                float di_focal_length_x,
-                                float di_focal_length_y,
-                                float desired_angular_resolution)
+RangeImagePlanar::setDepthImage (const unsigned short* depth_image,
+                                 int di_width,
+                                 int di_height,
+                                 float di_center_x,
+                                 float di_center_y,
+                                 float di_focal_length_x,
+                                 float di_focal_length_y,
+                                 float desired_angular_resolution)
 {
   // MEASURE_FUNCTION_TIME;
   reset();
 
-  float original_angular_resolution = asinf(0.5f * static_cast<float>(di_width) /
-                                            static_cast<float>(di_focal_length_x)) /
-                                      (0.5f * static_cast<float>(di_width));
+  float original_angular_resolution = asinf (0.5f * static_cast<float> (di_width) /
+                                             static_cast<float> (di_focal_length_x)) /
+                                      (0.5f * static_cast<float> (di_width));
   int skip = 1;
   if (desired_angular_resolution >= 2.0f * original_angular_resolution)
-    skip = static_cast<int>(pcl_lrint(
-        std::floor(desired_angular_resolution / original_angular_resolution)));
+    skip = static_cast<int> (pcl_lrint (
+        std::floor (desired_angular_resolution / original_angular_resolution)));
 
-  setAngularResolution(original_angular_resolution * static_cast<float>(skip));
+  setAngularResolution (original_angular_resolution * static_cast<float> (skip));
   width = di_width / skip;
   height = di_height / skip;
-  focal_length_x_ = di_focal_length_x / static_cast<float>(skip);
+  focal_length_x_ = di_focal_length_x / static_cast<float> (skip);
   focal_length_x_reciprocal_ = 1.0f / focal_length_x_;
-  focal_length_y_ = di_focal_length_y / static_cast<float>(skip);
+  focal_length_y_ = di_focal_length_y / static_cast<float> (skip);
   focal_length_y_reciprocal_ = 1.0f / focal_length_y_;
-  center_x_ = static_cast<float>(di_center_x) / static_cast<float>(skip);
-  center_y_ = static_cast<float>(di_center_y) / static_cast<float>(skip);
-  points.resize(width * height);
+  center_x_ = static_cast<float> (di_center_x) / static_cast<float> (skip);
+  center_y_ = static_cast<float> (di_center_y) / static_cast<float> (skip);
+  points.resize (width * height);
 
-  for (int y = 0; y < static_cast<int>(height); ++y) {
-    for (int x = 0; x < static_cast<int>(width); ++x) {
-      PointWithRange& point = getPointNoCheck(x, y);
+  for (int y = 0; y < static_cast<int> (height); ++y) {
+    for (int x = 0; x < static_cast<int> (width); ++x) {
+      PointWithRange& point = getPointNoCheck (x, y);
       float depth = depth_image[(y * skip) * di_width + x * skip] * 0.001f;
-      if (depth <= 0.0f || !std::isfinite(depth)) {
+      if (depth <= 0.0f || !std::isfinite (depth)) {
         point = unobserved_point;
         continue;
       }
       point.z = depth;
       point.x =
-          (static_cast<float>(x) - center_x_) * point.z * focal_length_x_reciprocal_;
+          (static_cast<float> (x) - center_x_) * point.z * focal_length_x_reciprocal_;
       point.y =
-          (static_cast<float>(y) - center_y_) * point.z * focal_length_y_reciprocal_;
+          (static_cast<float> (y) - center_y_) * point.z * focal_length_y_reciprocal_;
       point.range = point.getVector3fMap().norm();
     }
   }
@@ -215,15 +215,15 @@ RangeImagePlanar::setDepthImage(const unsigned short* depth_image,
 
 /////////////////////////////////////////////////////////////////////////
 void
-RangeImagePlanar::getHalfImage(RangeImage& half_image) const
+RangeImagePlanar::getHalfImage (RangeImage& half_image) const
 {
   // std::cout << __PRETTY_FUNCTION__ << " called.\n";
-  if (typeid(*this) != typeid(half_image)) {
+  if (typeid (*this) != typeid (half_image)) {
     std::cerr << __PRETTY_FUNCTION__
               << ": Given range image is not a RangeImagePlanar!\n";
     return;
   }
-  RangeImagePlanar& ret = *(dynamic_cast<RangeImagePlanar*>(&half_image));
+  RangeImagePlanar& ret = *(dynamic_cast<RangeImagePlanar*> (&half_image));
 
   ret.focal_length_x_ = focal_length_x_ / 2;
   ret.focal_length_x_reciprocal_ = 1.0f / ret.focal_length_x_;
@@ -231,53 +231,53 @@ RangeImagePlanar::getHalfImage(RangeImage& half_image) const
   ret.focal_length_y_reciprocal_ = 1.0f / ret.focal_length_y_;
   ret.center_x_ = center_x_ / 2;
   ret.center_y_ = center_y_ / 2;
-  BaseClass::getHalfImage(ret);
+  BaseClass::getHalfImage (ret);
 }
 
 /////////////////////////////////////////////////////////////////////////
 void
-RangeImagePlanar::getSubImage(int sub_image_image_offset_x,
-                              int sub_image_image_offset_y,
-                              int sub_image_width,
-                              int sub_image_height,
-                              int combine_pixels,
-                              RangeImage& sub_image) const
+RangeImagePlanar::getSubImage (int sub_image_image_offset_x,
+                               int sub_image_image_offset_y,
+                               int sub_image_width,
+                               int sub_image_height,
+                               int combine_pixels,
+                               RangeImage& sub_image) const
 {
   std::cerr << __PRETTY_FUNCTION__ << ": Warning, not tested properly!\n";
 
-  if (typeid(*this) != typeid(sub_image)) {
+  if (typeid (*this) != typeid (sub_image)) {
     std::cerr << __PRETTY_FUNCTION__
               << ": Given range image is not a RangeImagePlanar!\n";
     return;
   }
-  RangeImagePlanar& ret = *(dynamic_cast<RangeImagePlanar*>(&sub_image));
+  RangeImagePlanar& ret = *(dynamic_cast<RangeImagePlanar*> (&sub_image));
 
-  ret.focal_length_x_ = focal_length_x_ / static_cast<float>(combine_pixels);
+  ret.focal_length_x_ = focal_length_x_ / static_cast<float> (combine_pixels);
   ret.focal_length_x_reciprocal_ = 1.0f / ret.focal_length_x_;
-  ret.focal_length_y_ = focal_length_x_ / static_cast<float>(combine_pixels);
+  ret.focal_length_y_ = focal_length_x_ / static_cast<float> (combine_pixels);
   ret.focal_length_y_reciprocal_ = 1.0f / ret.focal_length_y_;
-  ret.center_x_ = center_x_ / 2 - static_cast<float>(sub_image_image_offset_x);
-  ret.center_y_ = center_y_ / 2 - static_cast<float>(sub_image_image_offset_y);
-  BaseClass::getSubImage(sub_image_image_offset_x,
-                         sub_image_image_offset_y,
-                         sub_image_width,
-                         sub_image_height,
-                         combine_pixels,
-                         ret);
+  ret.center_x_ = center_x_ / 2 - static_cast<float> (sub_image_image_offset_x);
+  ret.center_y_ = center_y_ / 2 - static_cast<float> (sub_image_image_offset_y);
+  BaseClass::getSubImage (sub_image_image_offset_x,
+                          sub_image_image_offset_y,
+                          sub_image_width,
+                          sub_image_height,
+                          combine_pixels,
+                          ret);
   ret.image_offset_x_ = ret.image_offset_y_ = 0;
 }
 
 /////////////////////////////////////////////////////////////////////////
 void
-RangeImagePlanar::copyTo(RangeImage& other) const
+RangeImagePlanar::copyTo (RangeImage& other) const
 {
   bool ERROR_GIVEN_RANGE_IMAGE_IS_NOT_A_RangeImagePlanar =
-      typeid(*this) == typeid(other);
+      typeid (*this) == typeid (other);
   if (!ERROR_GIVEN_RANGE_IMAGE_IS_NOT_A_RangeImagePlanar) {
-    std::cerr << PVARC(typeid(*this).name()) << PVARN(typeid(other).name());
+    std::cerr << PVARC (typeid (*this).name()) << PVARN (typeid (other).name());
   }
-  assert(ERROR_GIVEN_RANGE_IMAGE_IS_NOT_A_RangeImagePlanar);
-  *dynamic_cast<RangeImagePlanar*>(&other) = *this;
+  assert (ERROR_GIVEN_RANGE_IMAGE_IS_NOT_A_RangeImagePlanar);
+  *dynamic_cast<RangeImagePlanar*> (&other) = *this;
 }
 
 } // namespace pcl

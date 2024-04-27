@@ -65,7 +65,7 @@ public:
   simplify (const pcl::PolygonMesh& input, pcl::PolygonMesh& output)
   {
     pcl::Indices indices;
-    simplify(input, output, indices);
+    simplify (input, output, indices);
   }
 
   /** \brief Perform simplification (remove unused vertices).

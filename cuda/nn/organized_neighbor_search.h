@@ -61,7 +61,8 @@ class OrganizedNeighborSearch
 public:
   /** \brief OrganizedNeighborSearch constructor.
    * */
-  OrganizedNeighborSearch() : radiusLookupTableWidth_(-1), radiusLookupTableHeight_(-1)
+  OrganizedNeighborSearch()
+  : radiusLookupTableWidth_ (-1), radiusLookupTableHeight_ (-1)
   {
     max_distance_ = std::numeric_limits<double>::max();
 
@@ -87,7 +88,7 @@ public:
       input_ = cloud_arg;
 
       estimateFocalLengthFromInputCloud();
-      generateRadiusLookupTable(input_->width, input_->height);
+      generateRadiusLookupTable (input_->width, input_->height);
     }
   }
 
@@ -233,7 +234,7 @@ protected:
     /** \brief Operator< for comparing radiusSearchLoopkupEntry instances with each
      * other.  */
     bool
-    operator<(const radiusSearchLoopkupEntry& rhs_arg) const
+    operator< (const radiusSearchLoopkupEntry& rhs_arg) const
     {
       return (this->squared_distance_ < rhs_arg.squared_distance_);
     }
@@ -259,7 +260,7 @@ protected:
     /** \brief Operator< for comparing nearestNeighborCandidate instances with each
      * other.  */
     bool
-    operator<(const nearestNeighborCandidate& rhs_arg) const
+    operator< (const nearestNeighborCandidate& rhs_arg) const
     {
       return (this->squared_distance_ < rhs_arg.squared_distance_);
     }
@@ -286,8 +287,8 @@ protected:
   inline void
   pointPlaneProjection (const PointT& point, int& xpos, int& ypos) const
   {
-    xpos = (int)pcl_round(point.x / (point.z * focalLength_));
-    ypos = (int)pcl_round(point.y / (point.z * focalLength_));
+    xpos = (int)pcl_round (point.x / (point.z * focalLength_));
+    ypos = (int)pcl_round (point.y / (point.z * focalLength_));
   }
 
   void

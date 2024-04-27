@@ -27,7 +27,7 @@
 
 class ON_NurbsCurve;
 class PCL_EXPORTS ON_CLASS ON_NurbsCurve : public ON_Curve {
-  ON_OBJECT_DECLARE(ON_NurbsCurve);
+  ON_OBJECT_DECLARE (ON_NurbsCurve);
 
 public:
   /*
@@ -48,13 +48,13 @@ public:
   New (int dimension, ON_BOOL32 bIsRational, int order, int cv_count);
 
   ON_NurbsCurve();
-  ON_NurbsCurve(const ON_NurbsCurve&);
+  ON_NurbsCurve (const ON_NurbsCurve&);
 
   // Description:
   //   Create a NURBS curve equal to bezier with domain [0,1].
   // Parameters:
   //   bezier_curve - [in]
-  ON_NurbsCurve(const ON_BezierCurve& bezier_curve);
+  ON_NurbsCurve (const ON_BezierCurve& bezier_curve);
 
   // Description:
   //   Create a NURBS curve with knot a cv memory allocated.
@@ -63,7 +63,7 @@ public:
   //   bIsRational - [in] true to make a rational NURBS
   //   order - [in] (>= 2) The order=degree+1
   //   cv_count - [in] (>= order) number of control vertices
-  ON_NurbsCurve(int dimension, ON_BOOL32 bIsRational, int order, int cv_count);
+  ON_NurbsCurve (int dimension, ON_BOOL32 bIsRational, int order, int cv_count);
 
   // virtual ON_Object::SizeOf override
   unsigned int
@@ -154,14 +154,14 @@ public:
   EmergencyDestroy ();
 
   ON_NurbsCurve&
-  operator=(const ON_NurbsCurve& src);
+  operator= (const ON_NurbsCurve& src);
 
   // Description:
   //   Set NURBS curve equal to bezier with domain [0,1].
   // Parameters:
   //   bezier_curve - [in]
   ON_NurbsCurve&
-  operator=(const ON_BezierCurve& bezier_curve);
+  operator= (const ON_BezierCurve& bezier_curve);
 
   /////////////////////////////////////////////////////////////////
   // ON_Object overrides
@@ -387,7 +387,7 @@ public:
   //   CV = euclidean location of end CV, or curve is
   //   periodic.)
   ON_BOOL32
-  IsClosed () const;
+  IsClosed() const;
 
   // Description:
   //   virtual ON_Curve::IsPeriodic override.
@@ -396,7 +396,7 @@ public:
   //   periodic knot vector, last degree many CVs
   //   are duplicates of first degree many CVs).
   ON_BOOL32
-  IsPeriodic () const;
+  IsPeriodic() const;
 
   /*
   Description:
@@ -532,7 +532,7 @@ public:
   // Remarks:
   //   Domain changes from [a,b] to [-b,-a]
   ON_BOOL32
-  Reverse ();
+  Reverse();
 
   // Description:
   //   virtual ON_Curve::Evaluate override.

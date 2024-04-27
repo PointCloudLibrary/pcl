@@ -53,17 +53,17 @@ public:
   /// @param copy_buffer_ptr a shared pointer pointing to the copy buffer.
   /// @param selection_ptr a shared pointer pointing to the selection object.
   /// @param cloud_ptr a shared pointer pointing to the cloud object.
-  PasteCommand(ConstCopyBufferPtr copy_buffer_ptr,
-               SelectionPtr selection_ptr,
-               CloudPtr cloud_ptr);
+  PasteCommand (ConstCopyBufferPtr copy_buffer_ptr,
+                SelectionPtr selection_ptr,
+                CloudPtr cloud_ptr);
   // comment that the selection is updated (also resets the matrix in cloud)
 
   /// @brief Copy constructor - commands are non-copyable
-  PasteCommand(const PasteCommand&) = delete;
+  PasteCommand (const PasteCommand&) = delete;
 
   /// @brief Equal operator - commands are non-copyable
   PasteCommand&
-  operator=(const PasteCommand&) = delete;
+  operator= (const PasteCommand&) = delete;
 
 protected:
   /// @brief Appends the points in the copy buffer into the cloud.

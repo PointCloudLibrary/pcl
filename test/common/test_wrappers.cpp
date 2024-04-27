@@ -48,80 +48,80 @@ using namespace pcl::test;
 PointCloud<PointXYZ> cloud;
 constexpr std::size_t size = 10 * 480;
 
-TEST(PointCloud, size) { EXPECT_EQ(cloud.size(), cloud.size()); }
+TEST (PointCloud, size) { EXPECT_EQ (cloud.size(), cloud.size()); }
 
-TEST(PointCloud, sq_brackets_wrapper)
+TEST (PointCloud, sq_brackets_wrapper)
 {
   for (std::uint32_t i = 0; i < size; ++i)
-    EXPECT_EQ_VECTORS(cloud[i].getVector3fMap(), cloud[i].getVector3fMap());
+    EXPECT_EQ_VECTORS (cloud[i].getVector3fMap(), cloud[i].getVector3fMap());
 }
 
-TEST(PointCloud, at)
+TEST (PointCloud, at)
 {
   for (std::uint32_t i = 0; i < size; ++i)
-    EXPECT_EQ_VECTORS(cloud.at(i).getVector3fMap(), cloud.at(i).getVector3fMap());
+    EXPECT_EQ_VECTORS (cloud.at (i).getVector3fMap(), cloud.at (i).getVector3fMap());
 }
 
-TEST(PointCloud, front)
+TEST (PointCloud, front)
 {
-  EXPECT_EQ_VECTORS(cloud.front().getVector3fMap(), cloud.front().getVector3fMap());
+  EXPECT_EQ_VECTORS (cloud.front().getVector3fMap(), cloud.front().getVector3fMap());
 }
 
-TEST(PointCloud, back)
+TEST (PointCloud, back)
 {
-  EXPECT_EQ_VECTORS(cloud.back().getVector3fMap(), cloud.back().getVector3fMap());
+  EXPECT_EQ_VECTORS (cloud.back().getVector3fMap(), cloud.back().getVector3fMap());
 }
 
-TEST(PointCloud, constructor_with_allocation)
+TEST (PointCloud, constructor_with_allocation)
 {
-  PointCloud<PointXYZ> cloud2(5, 80);
-  EXPECT_EQ(cloud2.width, 5);
-  EXPECT_EQ(cloud2.height, 80);
-  EXPECT_EQ(cloud2.size(), 5 * 80);
+  PointCloud<PointXYZ> cloud2 (5, 80);
+  EXPECT_EQ (cloud2.width, 5);
+  EXPECT_EQ (cloud2.height, 80);
+  EXPECT_EQ (cloud2.size(), 5 * 80);
 }
 
-TEST(PointCloud, constructor_with_allocation_valued)
+TEST (PointCloud, constructor_with_allocation_valued)
 {
-  PointXYZ nan_point(0.1f, 0.2f, 0.3f);
-  PointCloud<PointXYZ> cloud2(5, 80, nan_point);
-  EXPECT_EQ(cloud2.width, 5);
-  EXPECT_EQ(cloud2.height, 80);
-  EXPECT_EQ(cloud2.size(), 5 * 80);
+  PointXYZ nan_point (0.1f, 0.2f, 0.3f);
+  PointCloud<PointXYZ> cloud2 (5, 80, nan_point);
+  EXPECT_EQ (cloud2.width, 5);
+  EXPECT_EQ (cloud2.height, 80);
+  EXPECT_EQ (cloud2.size(), 5 * 80);
   for (const auto& point : cloud2) {
-    EXPECT_NEAR(point.x, 0.1, 1e-3);
-    EXPECT_NEAR(point.y, 0.2, 1e-3);
-    EXPECT_NEAR(point.z, 0.3, 1e-3);
+    EXPECT_NEAR (point.x, 0.1, 1e-3);
+    EXPECT_NEAR (point.y, 0.2, 1e-3);
+    EXPECT_NEAR (point.z, 0.3, 1e-3);
   }
 }
 
-TEST(PointCloud, iterators)
+TEST (PointCloud, iterators)
 {
-  EXPECT_EQ_VECTORS(cloud.begin()->getVector3fMap(), cloud.begin()->getVector3fMap());
-  EXPECT_EQ_VECTORS((--cloud.end())->getVector3fMap(),
-                    (--cloud.end())->getVector3fMap());
+  EXPECT_EQ_VECTORS (cloud.begin()->getVector3fMap(), cloud.begin()->getVector3fMap());
+  EXPECT_EQ_VECTORS ((--cloud.end())->getVector3fMap(),
+                     (--cloud.end())->getVector3fMap());
   PointCloud<PointXYZ>::const_iterator pit = cloud.begin();
   PointCloud<PointXYZ>::VectorType::const_iterator pit2 = cloud.begin();
   for (; pit < cloud.end(); ++pit2, ++pit)
-    EXPECT_EQ_VECTORS(pit->getVector3fMap(), pit2->getVector3fMap());
+    EXPECT_EQ_VECTORS (pit->getVector3fMap(), pit2->getVector3fMap());
 }
 
-TEST(PointCloud, insert_range)
+TEST (PointCloud, insert_range)
 {
-  PointCloud<PointXYZ> cloud2(10, 1);
+  PointCloud<PointXYZ> cloud2 (10, 1);
   for (std::uint32_t i = 0; i < 10; ++i)
-    cloud2[i] = PointXYZ(5.0f * static_cast<float>(i) + 0,
-                         5.0f * static_cast<float>(i) + 1,
-                         5.0f * static_cast<float>(i) + 2);
+    cloud2[i] = PointXYZ (5.0f * static_cast<float> (i) + 0,
+                          5.0f * static_cast<float> (i) + 1,
+                          5.0f * static_cast<float> (i) + 2);
 
-  auto old_size = static_cast<std::uint32_t>(cloud.size());
-  cloud.insert(cloud.begin(), cloud2.begin(), cloud2.end());
-  EXPECT_EQ(cloud.width, cloud.size());
-  EXPECT_EQ(cloud.height, 1);
-  EXPECT_EQ(cloud.width, old_size + cloud2.size());
+  auto old_size = static_cast<std::uint32_t> (cloud.size());
+  cloud.insert (cloud.begin(), cloud2.begin(), cloud2.end());
+  EXPECT_EQ (cloud.width, cloud.size());
+  EXPECT_EQ (cloud.height, 1);
+  EXPECT_EQ (cloud.width, old_size + cloud2.size());
   PointCloud<PointXYZ>::const_iterator pit = cloud.begin();
   PointCloud<PointXYZ>::const_iterator pit2 = cloud2.begin();
   for (; pit2 < cloud2.end(); ++pit2, ++pit)
-    EXPECT_EQ_VECTORS(pit->getVector3fMap(), pit2->getVector3fMap());
+    EXPECT_EQ_VECTORS (pit->getVector3fMap(), pit2->getVector3fMap());
 }
 
 int
@@ -130,10 +130,10 @@ main (int argc, char** argv)
   cloud.width = 10;
   cloud.height = 480;
   for (std::uint32_t i = 0; i < size; ++i)
-    cloud.emplace_back(3.0f * static_cast<float>(i) + 0,
-                       3.0f * static_cast<float>(i) + 1,
-                       3.0f * static_cast<float>(i) + 2);
+    cloud.emplace_back (3.0f * static_cast<float> (i) + 0,
+                        3.0f * static_cast<float> (i) + 1,
+                        3.0f * static_cast<float> (i) + 2);
 
-  testing::InitGoogleTest(&argc, argv);
+  testing::InitGoogleTest (&argc, argv);
   return (RUN_ALL_TESTS());
 }

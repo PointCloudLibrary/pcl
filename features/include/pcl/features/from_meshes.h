@@ -22,7 +22,7 @@ computeApproximateNormals (const pcl::PointCloud<PointT>& cloud,
   normals.header = cloud.header;
   normals.width = cloud.width;
   normals.height = cloud.height;
-  normals.resize(nr_points);
+  normals.resize (nr_points);
 
   for (auto& point : normals.points)
     point.getNormalVector3fMap() = Eigen::Vector3f::Zero();
@@ -39,9 +39,14 @@ computeApproximateNormals (const pcl::PointCloud<PointT>& cloud,
                               cloud[polygon.vertices[1]].getVector3fMap();
     Eigen::Vector3f vec_a_c = cloud[polygon.vertices[0]].getVector3fMap() -
                               cloud[polygon.vertices[2]].getVector3fMap();
-    Eigen::Vector3f normal = vec_a_b.cross(vec_a_c);
-    pcl::flipNormalTowardsViewpoint(
-        cloud[polygon.vertices[0]], 0.0f, 0.0f, 0.0f, normal(0), normal(1), normal(2));
+    Eigen::Vector3f normal = vec_a_b.cross (vec_a_c);
+    pcl::flipNormalTowardsViewpoint (cloud[polygon.vertices[0]],
+                                     0.0f,
+                                     0.0f,
+                                     0.0f,
+                                     normal (0),
+                                     normal (1),
+                                     normal (2));
 
     // add normal to all points in polygon
     for (const auto& vertex : polygon.vertices)
@@ -50,13 +55,13 @@ computeApproximateNormals (const pcl::PointCloud<PointT>& cloud,
 
   for (std::size_t i = 0; i < nr_points; ++i) {
     normals[i].getNormalVector3fMap().normalize();
-    pcl::flipNormalTowardsViewpoint(cloud[i],
-                                    0.0f,
-                                    0.0f,
-                                    0.0f,
-                                    normals[i].normal_x,
-                                    normals[i].normal_y,
-                                    normals[i].normal_z);
+    pcl::flipNormalTowardsViewpoint (cloud[i],
+                                     0.0f,
+                                     0.0f,
+                                     0.0f,
+                                     normals[i].normal_x,
+                                     normals[i].normal_y,
+                                     normals[i].normal_z);
   }
 }
 
@@ -77,28 +82,28 @@ computeApproximateCovariances (
         covariances,
     double epsilon = 0.001)
 {
-  assert(cloud.size() == normals.size());
+  assert (cloud.size() == normals.size());
 
   const auto nr_points = cloud.size();
   covariances.clear();
-  covariances.reserve(nr_points);
+  covariances.reserve (nr_points);
   for (const auto& point : normals.points) {
-    Eigen::Vector3d normal(point.normal_x, point.normal_y, point.normal_z);
+    Eigen::Vector3d normal (point.normal_x, point.normal_y, point.normal_z);
 
     // compute rotation matrix
     Eigen::Matrix3d rot;
     Eigen::Vector3d y;
     y << 0, 1, 0;
-    rot.row(2) = normal;
-    y -= normal(1) * normal;
+    rot.row (2) = normal;
+    y -= normal (1) * normal;
     y.normalize();
-    rot.row(1) = y;
-    rot.row(0) = normal.cross(rot.row(1));
+    rot.row (1) = y;
+    rot.row (0) = normal.cross (rot.row (1));
 
     // comnpute approximate covariance
     Eigen::Matrix3d cov;
     cov << 1, 0, 0, 0, 1, 0, 0, 0, epsilon;
-    covariances.emplace_back(rot.transpose() * cov * rot);
+    covariances.emplace_back (rot.transpose() * cov * rot);
   }
 }
 
@@ -106,7 +111,7 @@ computeApproximateCovariances (
 } // namespace pcl
 
 #define PCL_INSTANTIATE_computeApproximateCovariances(T, NT)                           \
-  template PCL_EXPORTS void pcl::features::computeApproximateCovariances<T, NT>(       \
+  template PCL_EXPORTS void pcl::features::computeApproximateCovariances<T, NT> (      \
       const pcl::PointCloud<T>&,                                                       \
       const pcl::PointCloud<NT>&,                                                      \
       std::vector<Eigen::Matrix3d, Eigen::aligned_allocator<Eigen::Matrix3d>>&,        \

@@ -48,7 +48,7 @@ class SceneTree : public QTreeWidget {
   Q_OBJECT
 
 public:
-  SceneTree(QWidget* parent = nullptr);
+  SceneTree (QWidget* parent = nullptr);
 
   QSize
   sizeHint () const override;

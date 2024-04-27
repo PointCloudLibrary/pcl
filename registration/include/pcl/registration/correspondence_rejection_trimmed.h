@@ -81,7 +81,7 @@ public:
   virtual inline void
   setOverlapRatio (float ratio)
   {
-    overlap_ratio_ = std::min(1.0f, std::max(0.0f, ratio));
+    overlap_ratio_ = std::min (1.0f, std::max (0.0f, ratio));
   };
 
   /** \brief Get the maximum distance used for thresholding in correspondence rejection.
@@ -129,7 +129,7 @@ protected:
   inline void
   applyRejection (pcl::Correspondences& correspondences) override
   {
-    getRemainingCorrespondences(*input_correspondences_, correspondences);
+    getRemainingCorrespondences (*input_correspondences_, correspondences);
   }
 
   /** Overlap Ratio in [0..1] */

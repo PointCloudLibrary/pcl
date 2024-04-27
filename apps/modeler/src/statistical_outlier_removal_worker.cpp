@@ -42,11 +42,11 @@
 #include <pcl/filters/statistical_outlier_removal.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-pcl::modeler::StatisticalOutlierRemovalWorker::StatisticalOutlierRemovalWorker(
+pcl::modeler::StatisticalOutlierRemovalWorker::StatisticalOutlierRemovalWorker (
     const QList<CloudMeshItem*>& cloud_mesh_items, QWidget* parent)
-: AbstractWorker(cloud_mesh_items, parent)
-, mean_k_(nullptr)
-, stddev_mul_thresh_(nullptr)
+: AbstractWorker (cloud_mesh_items, parent)
+, mean_k_ (nullptr)
+, stddev_mul_thresh_ (nullptr)
 {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -58,7 +58,7 @@ pcl::modeler::StatisticalOutlierRemovalWorker::~StatisticalOutlierRemovalWorker(
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::modeler::StatisticalOutlierRemovalWorker::initParameters(CloudMeshItem*)
+pcl::modeler::StatisticalOutlierRemovalWorker::initParameters (CloudMeshItem*)
 {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -79,24 +79,24 @@ pcl::modeler::StatisticalOutlierRemovalWorker::setupParameters()
       1.0, 0.1, 10, 0.1);
   // clang-format on
 
-  parameter_dialog_->addParameter(mean_k_);
-  parameter_dialog_->addParameter(stddev_mul_thresh_);
+  parameter_dialog_->addParameter (mean_k_);
+  parameter_dialog_->addParameter (stddev_mul_thresh_);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::modeler::StatisticalOutlierRemovalWorker::processImpl(
+pcl::modeler::StatisticalOutlierRemovalWorker::processImpl (
     CloudMeshItem* cloud_mesh_item)
 {
   pcl::StatisticalOutlierRemoval<pcl::PointSurfel> sor;
-  sor.setInputCloud(cloud_mesh_item->getCloudMesh()->getCloud());
-  sor.setMeanK(*mean_k_);
-  sor.setStddevMulThresh(*stddev_mul_thresh_);
+  sor.setInputCloud (cloud_mesh_item->getCloudMesh()->getCloud());
+  sor.setMeanK (*mean_k_);
+  sor.setStddevMulThresh (*stddev_mul_thresh_);
 
-  CloudMesh::PointCloudPtr cloud(new CloudMesh::PointCloud());
-  sor.filter(*cloud);
+  CloudMesh::PointCloudPtr cloud (new CloudMesh::PointCloud());
+  sor.filter (*cloud);
 
   cloud_mesh_item->getCloudMesh()->getCloud() = cloud;
 
-  emitDataUpdated(cloud_mesh_item);
+  emitDataUpdated (cloud_mesh_item);
 }

@@ -78,15 +78,15 @@ public:
   using TrackerBase::tracker_name_;
 
   /** Constructor */
-  PyramidalKLTTracker(int nb_levels = 5,
-                      int tracking_window_width = 7,
-                      int tracking_window_height = 7)
+  PyramidalKLTTracker (int nb_levels = 5,
+                       int tracking_window_width = 7,
+                       int tracking_window_height = 7)
   : ref_()
-  , nb_levels_(nb_levels)
-  , track_width_(tracking_window_width)
-  , track_height_(tracking_window_height)
-  , threads_(0)
-  , initialized_(false)
+  , nb_levels_ (nb_levels)
+  , track_width_ (tracking_window_width)
+  , track_height_ (tracking_window_height)
+  , threads_ (0)
+  , initialized_ (false)
   {
     tracker_name_ = "PyramidalKLTTracker";
     accuracy_ = 0.1;
@@ -260,12 +260,12 @@ public:
    * Status == -1 --> point is out of bond;
    * Status == -2 --> optical flow can not be computed for this point.
    */
-  PCL_DEPRECATED(1, 15, "use getStatusOfPointsToTrack instead")
+  PCL_DEPRECATED (1, 15, "use getStatusOfPointsToTrack instead")
   inline pcl::PointIndicesConstPtr
   getPointsToTrackStatus () const
   {
-    pcl::PointIndicesPtr res(new pcl::PointIndices);
-    res->indices.insert(
+    pcl::PointIndicesPtr res (new pcl::PointIndices);
+    res->indices.insert (
         res->indices.end(), keypoints_status_->begin(), keypoints_status_->end());
     return (res);
   }

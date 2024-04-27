@@ -105,7 +105,7 @@ computeRoots2 (const float& b, const float& c, float3& roots)
   if (d < 0.f) // no real roots!!!! THIS SHOULD NOT HAPPEN!
     d = 0.f;
 
-  float sd = sqrtf(d);
+  float sd = sqrtf (d);
 
   roots.z = 0.5f * (b + sd);
   roots.y = 0.5f * (b - sd);
@@ -114,14 +114,14 @@ computeRoots2 (const float& b, const float& c, float3& roots)
 __device__ __forceinline__ void
 computeRoots3 (float c0, float c1, float c2, float3& roots)
 {
-  if (std::abs(c0) <
+  if (std::abs (c0) <
       std::numeric_limits<float>::epsilon()) // one root is 0 -> quadratic equation
   {
-    computeRoots2(c2, c1, roots);
+    computeRoots2 (c2, c1, roots);
   }
   else {
     const float s_inv3 = 1.f / 3.f;
-    const float s_sqrt3 = sqrtf(3.f);
+    const float s_sqrt3 = sqrtf (3.f);
     // Construct the parameters used in classifying the roots of the equation
     // and in solving the equation for the roots in closed form.
     float c2_over_3 = c2 * s_inv3;
@@ -136,27 +136,27 @@ computeRoots3 (float c0, float c1, float c2, float3& roots)
       q = 0.f;
 
     // Compute the eigenvalues by solving for the roots of the polynomial.
-    float rho = sqrtf(-a_over_3);
-    float theta = std::atan2(sqrtf(-q), half_b) * s_inv3;
-    float cos_theta = __cosf(theta);
-    float sin_theta = __sinf(theta);
+    float rho = sqrtf (-a_over_3);
+    float theta = std::atan2 (sqrtf (-q), half_b) * s_inv3;
+    float cos_theta = __cosf (theta);
+    float sin_theta = __sinf (theta);
     roots.x = c2_over_3 + 2.f * rho * cos_theta;
     roots.y = c2_over_3 - rho * (cos_theta + s_sqrt3 * sin_theta);
     roots.z = c2_over_3 - rho * (cos_theta - s_sqrt3 * sin_theta);
 
     // Sort in increasing order.
     if (roots.x >= roots.y)
-      swap(roots.x, roots.y);
+      swap (roots.x, roots.y);
 
     if (roots.y >= roots.z) {
-      swap(roots.y, roots.z);
+      swap (roots.y, roots.z);
 
       if (roots.x >= roots.y)
-        swap(roots.x, roots.y);
+        swap (roots.x, roots.y);
     }
     if (roots.x <= 0) // eigenval for symmetric positive semi-definite matrix can not be
                       // negative! Set it to 0
-      computeRoots2(c2, c1, roots);
+      computeRoots2 (c2, c1, roots);
   }
 }
 
@@ -166,12 +166,12 @@ public:
   struct MiniMat {
     float3 data[Rows];
     __device__ __host__ __forceinline__ float3&
-    operator[](int i)
+    operator[] (int i)
     {
       return data[i];
     }
     __device__ __host__ __forceinline__ const float3&
-    operator[](int i) const
+    operator[] (int i) const
     {
       return data[i];
     }
@@ -190,8 +190,8 @@ public:
     /* unless the x and y coords are both close to zero, we can
      * simply take ( -y, x, 0 ) and normalize it.
      */
-    if (!isMuchSmallerThan(src.x, src.z) || !isMuchSmallerThan(src.y, src.z)) {
-      float invnm = rsqrtf(src.x * src.x + src.y * src.y);
+    if (!isMuchSmallerThan (src.x, src.z) || !isMuchSmallerThan (src.y, src.z)) {
+      float invnm = rsqrtf (src.x * src.x + src.y * src.y);
       perp.x = -src.y * invnm;
       perp.y = src.x * invnm;
       perp.z = 0.0f;
@@ -201,7 +201,7 @@ public:
      * So we take the crossed product with (1,0,0) and normalize it.
      */
     else {
-      float invnm = rsqrtf(src.z * src.z + src.y * src.y);
+      float invnm = rsqrtf (src.z * src.z + src.y * src.y);
       perp.x = 0.0f;
       perp.y = -src.z * invnm;
       perp.z = src.y * invnm;
@@ -212,7 +212,7 @@ public:
 
   __device__ __forceinline__
   Eigen33 (volatile float* mat_pkg_arg)
-  : mat_pkg(mat_pkg_arg)
+  : mat_pkg (mat_pkg_arg)
   {}
   __device__ __forceinline__ void
   compute (Mat33& tmp, Mat33& vec_tmp, Mat33& evecs, float3& evals)
@@ -220,11 +220,11 @@ public:
     // Scale the matrix so its entries are in [-1,1].  The scaling is applied
     // only when at least one matrix entry has magnitude larger than 1.
 
-    float max01 = fmaxf(std::abs(mat_pkg[0]), std::abs(mat_pkg[1]));
-    float max23 = fmaxf(std::abs(mat_pkg[2]), std::abs(mat_pkg[3]));
-    float max45 = fmaxf(std::abs(mat_pkg[4]), std::abs(mat_pkg[5]));
-    float m0123 = fmaxf(max01, max23);
-    float scale = fmaxf(max45, m0123);
+    float max01 = fmaxf (std::abs (mat_pkg[0]), std::abs (mat_pkg[1]));
+    float max23 = fmaxf (std::abs (mat_pkg[2]), std::abs (mat_pkg[3]));
+    float max45 = fmaxf (std::abs (mat_pkg[4]), std::abs (mat_pkg[5]));
+    float m0123 = fmaxf (max01, max23);
+    float scale = fmaxf (max45, m0123);
 
     if (scale <= std::numeric_limits<float>::min())
       scale = 1.f;
@@ -245,12 +245,12 @@ public:
                m11() * m22() - m12() * m12();
     float c2 = m00() + m11() + m22();
 
-    computeRoots3(c0, c1, c2, evals);
+    computeRoots3 (c0, c1, c2, evals);
 
     if (evals.z - evals.x <= std::numeric_limits<float>::epsilon()) {
-      evecs[0] = make_float3(1.f, 0.f, 0.f);
-      evecs[1] = make_float3(0.f, 1.f, 0.f);
-      evecs[2] = make_float3(0.f, 0.f, 1.f);
+      evecs[0] = make_float3 (1.f, 0.f, 0.f);
+      evecs[1] = make_float3 (0.f, 1.f, 0.f);
+      evecs[2] = make_float3 (0.f, 0.f, 1.f);
     }
     else if (evals.y - evals.x <= std::numeric_limits<float>::epsilon()) {
       // first and second equal
@@ -261,26 +261,26 @@ public:
       tmp[1].y -= evals.z;
       tmp[2].z -= evals.z;
 
-      vec_tmp[0] = cross(tmp[0], tmp[1]);
-      vec_tmp[1] = cross(tmp[0], tmp[2]);
-      vec_tmp[2] = cross(tmp[1], tmp[2]);
+      vec_tmp[0] = cross (tmp[0], tmp[1]);
+      vec_tmp[1] = cross (tmp[0], tmp[2]);
+      vec_tmp[2] = cross (tmp[1], tmp[2]);
 
-      float len1 = dot(vec_tmp[0], vec_tmp[0]);
-      float len2 = dot(vec_tmp[1], vec_tmp[1]);
-      float len3 = dot(vec_tmp[2], vec_tmp[2]);
+      float len1 = dot (vec_tmp[0], vec_tmp[0]);
+      float len2 = dot (vec_tmp[1], vec_tmp[1]);
+      float len3 = dot (vec_tmp[2], vec_tmp[2]);
 
       if (len1 >= len2 && len1 >= len3) {
-        evecs[2] = vec_tmp[0] * rsqrtf(len1);
+        evecs[2] = vec_tmp[0] * rsqrtf (len1);
       }
       else if (len2 >= len1 && len2 >= len3) {
-        evecs[2] = vec_tmp[1] * rsqrtf(len2);
+        evecs[2] = vec_tmp[1] * rsqrtf (len2);
       }
       else {
-        evecs[2] = vec_tmp[2] * rsqrtf(len3);
+        evecs[2] = vec_tmp[2] * rsqrtf (len3);
       }
 
-      evecs[1] = unitOrthogonal(evecs[2]);
-      evecs[0] = cross(evecs[1], evecs[2]);
+      evecs[1] = unitOrthogonal (evecs[2]);
+      evecs[0] = cross (evecs[1], evecs[2]);
     }
     else if (evals.z - evals.y <= std::numeric_limits<float>::epsilon()) {
       // second and third equal
@@ -291,26 +291,26 @@ public:
       tmp[1].y -= evals.x;
       tmp[2].z -= evals.x;
 
-      vec_tmp[0] = cross(tmp[0], tmp[1]);
-      vec_tmp[1] = cross(tmp[0], tmp[2]);
-      vec_tmp[2] = cross(tmp[1], tmp[2]);
+      vec_tmp[0] = cross (tmp[0], tmp[1]);
+      vec_tmp[1] = cross (tmp[0], tmp[2]);
+      vec_tmp[2] = cross (tmp[1], tmp[2]);
 
-      float len1 = dot(vec_tmp[0], vec_tmp[0]);
-      float len2 = dot(vec_tmp[1], vec_tmp[1]);
-      float len3 = dot(vec_tmp[2], vec_tmp[2]);
+      float len1 = dot (vec_tmp[0], vec_tmp[0]);
+      float len2 = dot (vec_tmp[1], vec_tmp[1]);
+      float len3 = dot (vec_tmp[2], vec_tmp[2]);
 
       if (len1 >= len2 && len1 >= len3) {
-        evecs[0] = vec_tmp[0] * rsqrtf(len1);
+        evecs[0] = vec_tmp[0] * rsqrtf (len1);
       }
       else if (len2 >= len1 && len2 >= len3) {
-        evecs[0] = vec_tmp[1] * rsqrtf(len2);
+        evecs[0] = vec_tmp[1] * rsqrtf (len2);
       }
       else {
-        evecs[0] = vec_tmp[2] * rsqrtf(len3);
+        evecs[0] = vec_tmp[2] * rsqrtf (len3);
       }
 
-      evecs[1] = unitOrthogonal(evecs[0]);
-      evecs[2] = cross(evecs[0], evecs[1]);
+      evecs[1] = unitOrthogonal (evecs[0]);
+      evecs[2] = cross (evecs[0], evecs[1]);
     }
     else {
 
@@ -321,13 +321,13 @@ public:
       tmp[1].y -= evals.z;
       tmp[2].z -= evals.z;
 
-      vec_tmp[0] = cross(tmp[0], tmp[1]);
-      vec_tmp[1] = cross(tmp[0], tmp[2]);
-      vec_tmp[2] = cross(tmp[1], tmp[2]);
+      vec_tmp[0] = cross (tmp[0], tmp[1]);
+      vec_tmp[1] = cross (tmp[0], tmp[2]);
+      vec_tmp[2] = cross (tmp[1], tmp[2]);
 
-      float len1 = dot(vec_tmp[0], vec_tmp[0]);
-      float len2 = dot(vec_tmp[1], vec_tmp[1]);
-      float len3 = dot(vec_tmp[2], vec_tmp[2]);
+      float len1 = dot (vec_tmp[0], vec_tmp[0]);
+      float len2 = dot (vec_tmp[1], vec_tmp[1]);
+      float len3 = dot (vec_tmp[2], vec_tmp[2]);
 
       float mmax[3];
 
@@ -335,15 +335,15 @@ public:
       unsigned int max_el = 2;
       if (len1 >= len2 && len1 >= len3) {
         mmax[2] = len1;
-        evecs[2] = vec_tmp[0] * rsqrtf(len1);
+        evecs[2] = vec_tmp[0] * rsqrtf (len1);
       }
       else if (len2 >= len1 && len2 >= len3) {
         mmax[2] = len2;
-        evecs[2] = vec_tmp[1] * rsqrtf(len2);
+        evecs[2] = vec_tmp[1] * rsqrtf (len2);
       }
       else {
         mmax[2] = len3;
-        evecs[2] = vec_tmp[2] * rsqrtf(len3);
+        evecs[2] = vec_tmp[2] * rsqrtf (len3);
       }
 
       tmp[0] = row0();
@@ -353,29 +353,29 @@ public:
       tmp[1].y -= evals.y;
       tmp[2].z -= evals.y;
 
-      vec_tmp[0] = cross(tmp[0], tmp[1]);
-      vec_tmp[1] = cross(tmp[0], tmp[2]);
-      vec_tmp[2] = cross(tmp[1], tmp[2]);
+      vec_tmp[0] = cross (tmp[0], tmp[1]);
+      vec_tmp[1] = cross (tmp[0], tmp[2]);
+      vec_tmp[2] = cross (tmp[1], tmp[2]);
 
-      len1 = dot(vec_tmp[0], vec_tmp[0]);
-      len2 = dot(vec_tmp[1], vec_tmp[1]);
-      len3 = dot(vec_tmp[2], vec_tmp[2]);
+      len1 = dot (vec_tmp[0], vec_tmp[0]);
+      len2 = dot (vec_tmp[1], vec_tmp[1]);
+      len3 = dot (vec_tmp[2], vec_tmp[2]);
 
       if (len1 >= len2 && len1 >= len3) {
         mmax[1] = len1;
-        evecs[1] = vec_tmp[0] * rsqrtf(len1);
+        evecs[1] = vec_tmp[0] * rsqrtf (len1);
         min_el = len1 <= mmax[min_el] ? 1 : min_el;
         max_el = len1 > mmax[max_el] ? 1 : max_el;
       }
       else if (len2 >= len1 && len2 >= len3) {
         mmax[1] = len2;
-        evecs[1] = vec_tmp[1] * rsqrtf(len2);
+        evecs[1] = vec_tmp[1] * rsqrtf (len2);
         min_el = len2 <= mmax[min_el] ? 1 : min_el;
         max_el = len2 > mmax[max_el] ? 1 : max_el;
       }
       else {
         mmax[1] = len3;
-        evecs[1] = vec_tmp[2] * rsqrtf(len3);
+        evecs[1] = vec_tmp[2] * rsqrtf (len3);
         min_el = len3 <= mmax[min_el] ? 1 : min_el;
         max_el = len3 > mmax[max_el] ? 1 : max_el;
       }
@@ -387,38 +387,38 @@ public:
       tmp[1].y -= evals.x;
       tmp[2].z -= evals.x;
 
-      vec_tmp[0] = cross(tmp[0], tmp[1]);
-      vec_tmp[1] = cross(tmp[0], tmp[2]);
-      vec_tmp[2] = cross(tmp[1], tmp[2]);
+      vec_tmp[0] = cross (tmp[0], tmp[1]);
+      vec_tmp[1] = cross (tmp[0], tmp[2]);
+      vec_tmp[2] = cross (tmp[1], tmp[2]);
 
-      len1 = dot(vec_tmp[0], vec_tmp[0]);
-      len2 = dot(vec_tmp[1], vec_tmp[1]);
-      len3 = dot(vec_tmp[2], vec_tmp[2]);
+      len1 = dot (vec_tmp[0], vec_tmp[0]);
+      len2 = dot (vec_tmp[1], vec_tmp[1]);
+      len3 = dot (vec_tmp[2], vec_tmp[2]);
 
       if (len1 >= len2 && len1 >= len3) {
         mmax[0] = len1;
-        evecs[0] = vec_tmp[0] * rsqrtf(len1);
+        evecs[0] = vec_tmp[0] * rsqrtf (len1);
         min_el = len3 <= mmax[min_el] ? 0 : min_el;
         max_el = len3 > mmax[max_el] ? 0 : max_el;
       }
       else if (len2 >= len1 && len2 >= len3) {
         mmax[0] = len2;
-        evecs[0] = vec_tmp[1] * rsqrtf(len2);
+        evecs[0] = vec_tmp[1] * rsqrtf (len2);
         min_el = len3 <= mmax[min_el] ? 0 : min_el;
         max_el = len3 > mmax[max_el] ? 0 : max_el;
       }
       else {
         mmax[0] = len3;
-        evecs[0] = vec_tmp[2] * rsqrtf(len3);
+        evecs[0] = vec_tmp[2] * rsqrtf (len3);
         min_el = len3 <= mmax[min_el] ? 0 : min_el;
         max_el = len3 > mmax[max_el] ? 0 : max_el;
       }
 
       unsigned mid_el = 3 - min_el - max_el;
       evecs[min_el] =
-          normalized(cross(evecs[(min_el + 1) % 3], evecs[(min_el + 2) % 3]));
+          normalized (cross (evecs[(min_el + 1) % 3], evecs[(min_el + 2) % 3]));
       evecs[mid_el] =
-          normalized(cross(evecs[(mid_el + 1) % 3], evecs[(mid_el + 2) % 3]));
+          normalized (cross (evecs[(mid_el + 1) % 3], evecs[(mid_el + 2) % 3]));
     }
     // Rescale back to the original size.
     evals *= scale;
@@ -476,17 +476,17 @@ private:
   __device__ __forceinline__ float3
   row0 () const
   {
-    return make_float3(m00(), m01(), m02());
+    return make_float3 (m00(), m01(), m02());
   }
   __device__ __forceinline__ float3
   row1 () const
   {
-    return make_float3(m10(), m11(), m12());
+    return make_float3 (m10(), m11(), m12());
   }
   __device__ __forceinline__ float3
   row2 () const
   {
-    return make_float3(m20(), m21(), m22());
+    return make_float3 (m20(), m21(), m22());
   }
 
   __device__ __forceinline__ static bool

@@ -39,38 +39,38 @@
 #include <pcl/apps/modeler/render_window.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-pcl::modeler::DockWidget::DockWidget(const QString& title,
-                                     QWidget* parent,
-                                     Qt::WindowFlags flags)
-: QDockWidget(title, parent, flags)
+pcl::modeler::DockWidget::DockWidget (const QString& title,
+                                      QWidget* parent,
+                                      Qt::WindowFlags flags)
+: QDockWidget (title, parent, flags)
 {
-  setStyleSheet("QDockWidget::title {text-align: center;}");
-  setFocusPolicy(Qt::StrongFocus);
+  setStyleSheet ("QDockWidget::title {text-align: center;}");
+  setFocusPolicy (Qt::StrongFocus);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-pcl::modeler::DockWidget::DockWidget(QWidget* parent, Qt::WindowFlags flags)
-: QDockWidget(parent, flags)
+pcl::modeler::DockWidget::DockWidget (QWidget* parent, Qt::WindowFlags flags)
+: QDockWidget (parent, flags)
 {
-  setStyleSheet("QDockWidget::title {text-align: center;}");
-  setFocusPolicy(Qt::StrongFocus);
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-void
-pcl::modeler::DockWidget::focusInEvent(QFocusEvent* event)
-{
-  QDockWidget::focusInEvent(event);
+  setStyleSheet ("QDockWidget::title {text-align: center;}");
+  setFocusPolicy (Qt::StrongFocus);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::modeler::DockWidget::setFocusBasedStyle(bool focused)
+pcl::modeler::DockWidget::focusInEvent (QFocusEvent* event)
+{
+  QDockWidget::focusInEvent (event);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::modeler::DockWidget::setFocusBasedStyle (bool focused)
 {
   if (focused) {
-    setStyleSheet("QDockWidget::title {text-align: center; background: #87CEFA;}");
+    setStyleSheet ("QDockWidget::title {text-align: center; background: #87CEFA;}");
   }
   else {
-    setStyleSheet("QDockWidget::title {text-align: center;}");
+    setStyleSheet ("QDockWidget::title {text-align: center;}");
   }
 }

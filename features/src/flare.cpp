@@ -41,13 +41,13 @@
 #include <pcl/point_types.h>
 // Instantiations of specific point types
 #ifdef PCL_ONLY_CORE_POINT_TYPES
-PCL_INSTANTIATE_PRODUCT(
+PCL_INSTANTIATE_PRODUCT (
     FLARELocalReferenceFrameEstimation,
-    ((pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGB)(pcl::PointXYZRGBA))(
-        (pcl::Normal))((pcl::ReferenceFrame))((float)))
+    ((pcl::PointXYZ) (pcl::PointXYZI) (pcl::PointXYZRGB) (pcl::PointXYZRGBA)) (
+        (pcl::Normal)) ((pcl::ReferenceFrame)) ((float)))
 #else
-PCL_INSTANTIATE_PRODUCT(
+PCL_INSTANTIATE_PRODUCT (
     FLARELocalReferenceFrameEstimation,
-    (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES)((pcl::ReferenceFrame))((float)))
+    (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES)((pcl::ReferenceFrame)) ((float)))
 #endif
 #endif // PCL_NO_PRECOMPILE

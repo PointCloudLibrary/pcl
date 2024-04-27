@@ -79,8 +79,8 @@ public:
    * \param[in] extract_removed_indices Set to true if you want to be able to extract
    * the indices of points being removed (default = false).
    */
-  ExtractIndices(bool extract_removed_indices = false)
-  : FilterIndices<PointT>::FilterIndices(extract_removed_indices)
+  ExtractIndices (bool extract_removed_indices = false)
+  : FilterIndices<PointT>::FilterIndices (extract_removed_indices)
   {
     use_indices_ = true;
     filter_name_ = "ExtractIndices";
@@ -123,7 +123,7 @@ protected:
   void
   applyFilter (Indices& indices) override
   {
-    applyFilterIndices(indices);
+    applyFilterIndices (indices);
   }
 
   /** \brief Filtered results are indexed by an indices array.

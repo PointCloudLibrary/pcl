@@ -45,11 +45,11 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 void
-pcl::PassThrough<PointT>::applyFilterIndices(Indices& indices)
+pcl::PassThrough<PointT>::applyFilterIndices (Indices& indices)
 {
   // The arrays to be used
-  indices.resize(indices_->size());
-  removed_indices_->resize(indices_->size());
+  indices.resize (indices_->size());
+  removed_indices_->resize (indices_->size());
   int oii = 0, rii = 0; // oii = output indices iterator, rii = removed indices iterator
 
   // Has a field name been specified?
@@ -58,8 +58,8 @@ pcl::PassThrough<PointT>::applyFilterIndices(Indices& indices)
     for (const auto ii : *indices_) // ii = input index
     {
       // Non-finite entries are always passed to removed indices
-      if (!std::isfinite((*input_)[ii].x) || !std::isfinite((*input_)[ii].y) ||
-          !std::isfinite((*input_)[ii].z)) {
+      if (!std::isfinite ((*input_)[ii].x) || !std::isfinite ((*input_)[ii].y) ||
+          !std::isfinite ((*input_)[ii].z)) {
         if (extract_removed_indices_)
           (*removed_indices_)[rii++] = ii;
         continue;
@@ -70,48 +70,48 @@ pcl::PassThrough<PointT>::applyFilterIndices(Indices& indices)
   else {
     // Attempt to get the field name's index
     std::vector<pcl::PCLPointField> fields;
-    int distance_idx = pcl::getFieldIndex<PointT>(filter_field_name_, fields);
+    int distance_idx = pcl::getFieldIndex<PointT> (filter_field_name_, fields);
     if (distance_idx == -1) {
-      PCL_WARN("[pcl::%s::applyFilter] Unable to find field name in point type.\n",
-               getClassName().c_str());
-      indices.clear();
-      removed_indices_->clear();
-      return;
-    }
-    if (fields[distance_idx].datatype != pcl::PCLPointField::PointFieldTypes::FLOAT32) {
-      PCL_ERROR("[pcl::%s::applyFilter] PassThrough currently only works with float32 "
-                "fields. To filter fields of other types see ConditionalRemoval or "
-                "FunctorFilter/FunctionFilter.\n",
+      PCL_WARN ("[pcl::%s::applyFilter] Unable to find field name in point type.\n",
                 getClassName().c_str());
       indices.clear();
       removed_indices_->clear();
       return;
     }
+    if (fields[distance_idx].datatype != pcl::PCLPointField::PointFieldTypes::FLOAT32) {
+      PCL_ERROR ("[pcl::%s::applyFilter] PassThrough currently only works with float32 "
+                 "fields. To filter fields of other types see ConditionalRemoval or "
+                 "FunctorFilter/FunctionFilter.\n",
+                 getClassName().c_str());
+      indices.clear();
+      removed_indices_->clear();
+      return;
+    }
     if (filter_field_name_ == "rgb")
-      PCL_WARN("[pcl::%s::applyFilter] You told PassThrough to operate on the 'rgb' "
-               "field. This will likely not do what you expect. Consider using "
-               "ConditionalRemoval or FunctorFilter/FunctionFilter.\n",
-               getClassName().c_str());
+      PCL_WARN ("[pcl::%s::applyFilter] You told PassThrough to operate on the 'rgb' "
+                "field. This will likely not do what you expect. Consider using "
+                "ConditionalRemoval or FunctorFilter/FunctionFilter.\n",
+                getClassName().c_str());
     const auto field_offset = fields[distance_idx].offset;
 
     // Filter for non-finite entries and the specified field limits
     for (const auto ii : *indices_) // ii = input index
     {
       // Non-finite entries are always passed to removed indices
-      if (!std::isfinite((*input_)[ii].x) || !std::isfinite((*input_)[ii].y) ||
-          !std::isfinite((*input_)[ii].z)) {
+      if (!std::isfinite ((*input_)[ii].x) || !std::isfinite ((*input_)[ii].y) ||
+          !std::isfinite ((*input_)[ii].z)) {
         if (extract_removed_indices_)
           (*removed_indices_)[rii++] = ii;
         continue;
       }
 
       // Get the field's value
-      const auto* pt_data = reinterpret_cast<const std::uint8_t*>(&(*input_)[ii]);
+      const auto* pt_data = reinterpret_cast<const std::uint8_t*> (&(*input_)[ii]);
       float field_value = 0;
-      memcpy(&field_value, pt_data + field_offset, sizeof(float));
+      memcpy (&field_value, pt_data + field_offset, sizeof (float));
 
       // Remove NAN/INF/-INF values. We expect passthrough to output clean valid data.
-      if (!std::isfinite(field_value)) {
+      if (!std::isfinite (field_value)) {
         if (extract_removed_indices_)
           (*removed_indices_)[rii++] = ii;
         continue;
@@ -139,8 +139,8 @@ pcl::PassThrough<PointT>::applyFilterIndices(Indices& indices)
   }
 
   // Resize the output arrays
-  indices.resize(oii);
-  removed_indices_->resize(rii);
+  indices.resize (oii);
+  removed_indices_->resize (rii);
 }
 
 #define PCL_INSTANTIATE_PassThrough(T) template class PCL_EXPORTS pcl::PassThrough<T>;

@@ -98,9 +98,9 @@ public:
    * and initializes the internal search \a tree to a FLANN kd-tree.
    */
   TransformationValidationEuclidean()
-  : max_range_(std::numeric_limits<double>::max())
-  , threshold_(std::numeric_limits<double>::quiet_NaN())
-  , tree_(new pcl::search::KdTree<PointTarget>)
+  : max_range_ (std::numeric_limits<double>::max())
+  , threshold_ (std::numeric_limits<double>::quiet_NaN())
+  , tree_ (new pcl::search::KdTree<PointTarget>)
   {}
 
   virtual ~TransformationValidationEuclidean() = default;
@@ -183,7 +183,7 @@ public:
    * \return true if score1 is better than score2
    */
   virtual bool
-  operator()(const double& score1, const double& score2) const
+  operator() (const double& score1, const double& score2) const
   {
     return (score1 < score2);
   }
@@ -201,13 +201,13 @@ public:
            const PointCloudTargetConstPtr& cloud_tgt,
            const Matrix4& transformation_matrix) const
   {
-    if (std::isnan(threshold_)) {
-      PCL_ERROR("[pcl::TransformationValidationEuclidean::isValid] Threshold not set! "
-                "Please use setThreshold () before continuing.\n");
+    if (std::isnan (threshold_)) {
+      PCL_ERROR ("[pcl::TransformationValidationEuclidean::isValid] Threshold not set! "
+                 "Please use setThreshold () before continuing.\n");
       return (false);
     }
 
-    return (validateTransformation(cloud_src, cloud_tgt, transformation_matrix) <
+    return (validateTransformation (cloud_src, cloud_tgt, transformation_matrix) <
             threshold_);
   }
 

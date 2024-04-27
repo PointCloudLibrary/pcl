@@ -47,37 +47,37 @@
 using namespace pcl;
 using namespace pcl::io;
 
-PointCloud<PointXYZ>::Ptr cloud(new PointCloud<PointXYZ>);
-PointCloud<PointNormal>::Ptr cloud_with_normals(new PointCloud<PointNormal>);
+PointCloud<PointXYZ>::Ptr cloud (new PointCloud<PointXYZ>);
+PointCloud<PointNormal>::Ptr cloud_with_normals (new PointCloud<PointNormal>);
 search::KdTree<PointXYZ>::Ptr tree;
 search::KdTree<PointNormal>::Ptr tree2;
 
 // add by ktran to test update functions
-PointCloud<PointXYZ>::Ptr cloud1(new PointCloud<PointXYZ>);
-PointCloud<PointNormal>::Ptr cloud_with_normals1(new PointCloud<PointNormal>);
+PointCloud<PointXYZ>::Ptr cloud1 (new PointCloud<PointXYZ>);
+PointCloud<PointNormal>::Ptr cloud_with_normals1 (new PointCloud<PointNormal>);
 search::KdTree<PointXYZ>::Ptr tree3;
 search::KdTree<PointNormal>::Ptr tree4;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TEST(PCL, GridProjection)
+TEST (PCL, GridProjection)
 {
   // Init objects
   PolygonMesh grid;
   GridProjection<PointNormal> gp;
 
   // Set parameters
-  gp.setInputCloud(cloud_with_normals);
-  gp.setSearchMethod(tree2);
-  gp.setResolution(0.005);
-  gp.setPaddingSize(3);
+  gp.setInputCloud (cloud_with_normals);
+  gp.setSearchMethod (tree2);
+  gp.setResolution (0.005);
+  gp.setPaddingSize (3);
 
   // Reconstruct
-  gp.reconstruct(grid);
+  gp.reconstruct (grid);
   // saveVTKFile ("./test/bun0-grid.vtk", grid);
-  EXPECT_GE(grid.cloud.width, 5180);
-  EXPECT_GE(int(grid.polygons.size()), 1295);
-  EXPECT_EQ(int(grid.polygons.at(0).vertices.size()), 4);
-  EXPECT_EQ(int(grid.polygons.at(0).vertices.at(0)), 0);
+  EXPECT_GE (grid.cloud.width, 5180);
+  EXPECT_GE (int (grid.polygons.size()), 1295);
+  EXPECT_EQ (int (grid.polygons.at (0).vertices.size()), 4);
+  EXPECT_EQ (int (grid.polygons.at (0).vertices.at (0)), 0);
 }
 
 /* ---[ */
@@ -93,56 +93,56 @@ main (int argc, char** argv)
 
   // Load file
   pcl::PCLPointCloud2 cloud_blob;
-  loadPCDFile(argv[1], cloud_blob);
-  fromPCLPointCloud2(cloud_blob, *cloud);
+  loadPCDFile (argv[1], cloud_blob);
+  fromPCLPointCloud2 (cloud_blob, *cloud);
 
   // Create search tree
-  tree.reset(new search::KdTree<PointXYZ>(false));
-  tree->setInputCloud(cloud);
+  tree.reset (new search::KdTree<PointXYZ> (false));
+  tree->setInputCloud (cloud);
 
   // Normal estimation
   NormalEstimation<PointXYZ, Normal> n;
-  PointCloud<Normal>::Ptr normals(new PointCloud<Normal>());
-  n.setInputCloud(cloud);
+  PointCloud<Normal>::Ptr normals (new PointCloud<Normal>());
+  n.setInputCloud (cloud);
   // n.setIndices (indices[B);
-  n.setSearchMethod(tree);
-  n.setKSearch(20);
-  n.compute(*normals);
+  n.setSearchMethod (tree);
+  n.setKSearch (20);
+  n.compute (*normals);
 
   // Concatenate XYZ and normal information
-  pcl::concatenateFields(*cloud, *normals, *cloud_with_normals);
+  pcl::concatenateFields (*cloud, *normals, *cloud_with_normals);
 
   // Create search tree
-  tree2.reset(new search::KdTree<PointNormal>);
-  tree2->setInputCloud(cloud_with_normals);
+  tree2.reset (new search::KdTree<PointNormal>);
+  tree2->setInputCloud (cloud_with_normals);
 
   // Process for update cloud
   if (argc == 3) {
     pcl::PCLPointCloud2 cloud_blob1;
-    loadPCDFile(argv[2], cloud_blob1);
-    fromPCLPointCloud2(cloud_blob1, *cloud1);
+    loadPCDFile (argv[2], cloud_blob1);
+    fromPCLPointCloud2 (cloud_blob1, *cloud1);
     // Create search tree
-    tree3.reset(new search::KdTree<PointXYZ>(false));
-    tree3->setInputCloud(cloud1);
+    tree3.reset (new search::KdTree<PointXYZ> (false));
+    tree3->setInputCloud (cloud1);
 
     // Normal estimation
     NormalEstimation<PointXYZ, Normal> n1;
-    PointCloud<Normal>::Ptr normals1(new PointCloud<Normal>());
-    n1.setInputCloud(cloud1);
+    PointCloud<Normal>::Ptr normals1 (new PointCloud<Normal>());
+    n1.setInputCloud (cloud1);
 
-    n1.setSearchMethod(tree3);
-    n1.setKSearch(20);
-    n1.compute(*normals1);
+    n1.setSearchMethod (tree3);
+    n1.setKSearch (20);
+    n1.compute (*normals1);
 
     // Concatenate XYZ and normal information
-    pcl::concatenateFields(*cloud1, *normals1, *cloud_with_normals1);
+    pcl::concatenateFields (*cloud1, *normals1, *cloud_with_normals1);
     // Create search tree
-    tree4.reset(new search::KdTree<PointNormal>);
-    tree4->setInputCloud(cloud_with_normals1);
+    tree4.reset (new search::KdTree<PointNormal>);
+    tree4->setInputCloud (cloud_with_normals1);
   }
 
   // Testing
-  testing::InitGoogleTest(&argc, argv);
+  testing::InitGoogleTest (&argc, argv);
   return (RUN_ALL_TESTS());
 }
 /* ]--- */

@@ -96,7 +96,7 @@ public:
   FPFHEstimation()
   :
 
-      d_pi_(1.0f / (2.0f * static_cast<float>(M_PI)))
+      d_pi_ (1.0f / (2.0f * static_cast<float> (M_PI)))
   {
     feature_name_ = "FPFHEstimation";
   };

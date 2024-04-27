@@ -50,7 +50,7 @@ namespace on_nurbs {
 class NurbsSolve {
 public:
   /** \brief Empty constructor */
-  NurbsSolve() : m_quiet(true) {}
+  NurbsSolve() : m_quiet (true) {}
 
   /** \brief Assign size and dimension (2D, 3D) of system of equations. */
   void
@@ -110,9 +110,9 @@ public:
   inline void
   getSize (unsigned& rows, unsigned& cols, unsigned& dims)
   {
-    rows = static_cast<unsigned>(m_feig.rows());
-    cols = static_cast<unsigned>(m_xeig.rows());
-    dims = static_cast<unsigned>(m_feig.cols());
+    rows = static_cast<unsigned> (m_feig.rows());
+    cols = static_cast<unsigned> (m_xeig.rows());
+    dims = static_cast<unsigned> (m_feig.cols());
   }
 
 private:

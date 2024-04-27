@@ -32,9 +32,9 @@ on_stricmp (const char* s1, const char* s2)
 {
 #if defined(ON_OS_WINDOWS)
   // return stricmp(s1,s2);
-  return _stricmp(s1, s2);
+  return _stricmp (s1, s2);
 #else
-  return strcasecmp(s1, s2);
+  return strcasecmp (s1, s2);
 #endif
 }
 
@@ -43,11 +43,11 @@ char*
 on_strupr (char* s)
 {
 #if defined(ON_OS_WINDOWS)
-  return _strupr(s); // ANSI name
+  return _strupr (s); // ANSI name
 #else
   if (s) {
     while (*s) {
-      *s = toupper(*s);
+      *s = toupper (*s);
       s++;
     }
   }
@@ -60,11 +60,11 @@ char*
 on_strlwr (char* s)
 {
 #if defined(ON_OS_WINDOWS)
-  return _strlwr(s); // ANSI name
+  return _strlwr (s); // ANSI name
 #else
   if (s) {
     while (*s) {
-      *s = tolower(*s);
+      *s = tolower (*s);
       s++;
     }
   }
@@ -77,11 +77,11 @@ char*
 on_strrev (char* s)
 {
 #if defined(ON_OS_WINDOWS)
-  return _strrev(s); // ANSI name
+  return _strrev (s); // ANSI name
 #else
   int i, j;
   char c;
-  for (i = 0, j = ((int)strlen(s)) - 1; i < j; i++, j--) {
+  for (i = 0, j = ((int)strlen (s)) - 1; i < j; i++, j--) {
     c = s[i];
     s[i] = s[j];
     s[j] = c;
@@ -147,7 +147,7 @@ on__hack__tolower (int c)
   }
   else if (c <= 127) {
     // ASCII character
-    i = tolower(c);
+    i = tolower (c);
   }
   else if (c <= 255) {
     // "extended" ASCII character
@@ -353,8 +353,8 @@ on__hack__wcsicmp (const wchar_t* s1, const wchar_t* s2)
   int rc, c1, c2;
 
   do {
-    c1 = on__hack__tolower(*s1++);
-    c2 = on__hack__tolower(*s2++);
+    c1 = on__hack__tolower (*s1++);
+    c2 = on__hack__tolower (*s2++);
     rc = c1 - c2;
   } while (0 == rc && c1 && c2);
 
@@ -382,7 +382,7 @@ on_wcsicmp (const wchar_t* s1, const wchar_t* s2)
 
 #if defined(ON_COMPILER_BORLAND)
   // Borland's compiler / C library
-  return wcscmpi(s1, s2);
+  return wcscmpi (s1, s2);
 #else
   // Microsoft compiler
 
@@ -401,24 +401,24 @@ on_wcsicmp (const wchar_t* s1, const wchar_t* s2)
         }
         if (0 == *c1 || 0 == *c2) {
 #if defined(ON_COMPILER_MSC1400)
-          return _wcsicmp(s1, s2);
+          return _wcsicmp (s1, s2);
 #else
-          return wcsicmp(s1, s2);
+          return wcsicmp (s1, s2);
 #endif
         }
       }
 
       // These convert UNICODE to wide character strings
-      ON_String a(s1);
-      ON_String b(s2);
+      ON_String a (s1);
+      ON_String b (s2);
 
       // Wide char conversion
-      int rc = ::CompareStringA(g_s__windows_locale_id,
-                                NORM_IGNORECASE | NORM_IGNOREWIDTH,
-                                a.Array(),
-                                -1,
-                                b.Array(),
-                                -1);
+      int rc = ::CompareStringA (g_s__windows_locale_id,
+                                 NORM_IGNORECASE | NORM_IGNOREWIDTH,
+                                 a.Array(),
+                                 -1,
+                                 b.Array(),
+                                 -1);
       if (rc == CSTR_LESS_THAN)
         return -1;
       if (rc == CSTR_EQUAL)
@@ -428,7 +428,7 @@ on_wcsicmp (const wchar_t* s1, const wchar_t* s2)
     }
     else {
       // a version of Windows with working UNICODE support
-      int rc = ::CompareStringW(
+      int rc = ::CompareStringW (
           g_s__windows_locale_id, NORM_IGNORECASE | NORM_IGNOREWIDTH, s1, -1, s2, -1);
 
       if (rc == CSTR_LESS_THAN)
@@ -450,9 +450,9 @@ on_wcsicmp (const wchar_t* s1, const wchar_t* s2)
   // Microsoft's wcsicmp() blows it.
   //
 #if defined(ON_COMPILER_MSC1400)
-  return _wcsicmp(s1, s2); // Microsoft's compiler / C library
+  return _wcsicmp (s1, s2); // Microsoft's compiler / C library
 #else
-  return wcsicmp(s1, s2); // Microsoft's compiler / C library
+  return wcsicmp (s1, s2); // Microsoft's compiler / C library
 #endif
 
 #endif
@@ -462,7 +462,7 @@ on_wcsicmp (const wchar_t* s1, const wchar_t* s2)
   // If your compiler does not have a way to perform
   // a case insensitive compare of UNICODE strings,
   // then use the "hack" version below.
-  return on__hack__wcsicmp(s1, s2);
+  return on__hack__wcsicmp (s1, s2);
 }
 
 #if defined(ON_COMPILER_MSC)
@@ -475,16 +475,16 @@ on_wcsupr (wchar_t* s)
 #if defined(ON_OS_WINDOWS)
 #if defined(ON_COMPILER_BORLAND)
   // Borland's compiler / C library
-  return _wcsupr(s);
+  return _wcsupr (s);
 #else
   // Microsoft compiler
-  return _wcsupr(s);
+  return _wcsupr (s);
 #endif
 #else
   if (s) {
     wchar_t c;
     while (*s) {
-      if (0 != (c = toupper(*s)))
+      if (0 != (c = toupper (*s)))
         *s = c;
       s++;
     }
@@ -500,16 +500,16 @@ on_wcslwr (wchar_t* s)
 #if defined(ON_OS_WINDOWS)
 #if defined(ON_COMPILER_BORLAND)
   // Borland's compiler / C library
-  return _wcslwr(s);
+  return _wcslwr (s);
 #else
   // Microsoft compiler
-  return _wcslwr(s);
+  return _wcslwr (s);
 #endif
 #else
   if (s) {
     wchar_t c;
     while (*s) {
-      if (0 != (c = tolower(*s)))
+      if (0 != (c = tolower (*s)))
         *s = c;
       s++;
     }
@@ -529,23 +529,23 @@ ON_wString::MakeUpper()
         // (I hope you don't need the right answer in a hurry on Win9X.)
 
         // These convert UNICODE to wide character strings
-        ON_String in(*this);
+        ON_String in (*this);
         int len_in = in.Length();
         int max_len_out = 2 * len_in + 16; // if 2x for wide char expansion
         ON_String out;
-        out.ReserveArray(max_len_out + 1);
-        out.SetLength(max_len_out + 1);
+        out.ReserveArray (max_len_out + 1);
+        out.SetLength (max_len_out + 1);
 
         // Wide char conversion
-        int rc = ::LCMapStringA(g_s__windows_locale_id,
-                                LCMAP_UPPERCASE,
-                                in.Array(),
-                                len_in,
-                                out.Array(),
-                                max_len_out);
+        int rc = ::LCMapStringA (g_s__windows_locale_id,
+                                 LCMAP_UPPERCASE,
+                                 in.Array(),
+                                 len_in,
+                                 out.Array(),
+                                 max_len_out);
         if (rc > 0 && rc <= max_len_out) {
-          out.SetLength(rc);
-          operator=(out); // multi-byte to wchar conversion
+          out.SetLength (rc);
+          operator= (out); // multi-byte to wchar conversion
           return;
         }
       }
@@ -554,19 +554,19 @@ ON_wString::MakeUpper()
         int len_in = Length();
         int max_len_out = len_in + 16;
         ON_wString out;
-        out.ReserveArray(max_len_out + 1);
-        out.SetLength(max_len_out + 1);
+        out.ReserveArray (max_len_out + 1);
+        out.SetLength (max_len_out + 1);
 
         // Wide char conversion
-        int rc = ::LCMapStringW(g_s__windows_locale_id,
-                                LCMAP_UPPERCASE,
-                                Array(),
-                                len_in,
-                                out.Array(),
-                                max_len_out);
+        int rc = ::LCMapStringW (g_s__windows_locale_id,
+                                 LCMAP_UPPERCASE,
+                                 Array(),
+                                 len_in,
+                                 out.Array(),
+                                 max_len_out);
         if (rc > 0 && rc <= max_len_out) {
-          out.SetLength(rc);
-          operator=(out); // very fast - simply changes reference count
+          out.SetLength (rc);
+          operator= (out); // very fast - simply changes reference count
           return;
         }
       }
@@ -579,7 +579,7 @@ ON_wString::MakeUpper()
     // in most Western European languages but is not adequate for
     // commercial quality software.
     CopyArray();
-    on_wcsupr(m_s);
+    on_wcsupr (m_s);
   }
 }
 
@@ -594,23 +594,23 @@ ON_wString::MakeLower()
         // (I hope you don't need the right answer in a hurry on Win9X.)
 
         // These convert UNICODE to wide character strings
-        ON_String in(*this);
+        ON_String in (*this);
         int len_in = in.Length();
         int max_len_out = 2 * len_in + 16; // if 2x for wide char expansion
         ON_String out;
-        out.ReserveArray(max_len_out + 1);
-        out.SetLength(max_len_out + 1);
+        out.ReserveArray (max_len_out + 1);
+        out.SetLength (max_len_out + 1);
 
         // Wide char conversion to multi-byte lower case string
-        int rc = ::LCMapStringA(g_s__windows_locale_id,
-                                LCMAP_LOWERCASE,
-                                in.Array(),
-                                len_in,
-                                out.Array(),
-                                max_len_out);
+        int rc = ::LCMapStringA (g_s__windows_locale_id,
+                                 LCMAP_LOWERCASE,
+                                 in.Array(),
+                                 len_in,
+                                 out.Array(),
+                                 max_len_out);
         if (rc > 0 && rc <= max_len_out) {
-          out.SetLength(rc);
-          operator=(out); // multi-byte to wchar conversion
+          out.SetLength (rc);
+          operator= (out); // multi-byte to wchar conversion
           return;
         }
       }
@@ -628,21 +628,21 @@ ON_wString::MakeLower()
         // difficult to diagnose crashes if MS releases a buggy
         // version of LCMapStringW().
         ON_wString out;
-        out.ReserveArray(max_len_out + 1);
-        out.SetLength(max_len_out + 1);
+        out.ReserveArray (max_len_out + 1);
+        out.SetLength (max_len_out + 1);
 
         // Wide char conversion to lower case.
         // Note that changing to lower case in some languages
         // can change the string length.
-        int rc = ::LCMapStringW(g_s__windows_locale_id,
-                                LCMAP_LOWERCASE,
-                                Array(),
-                                len_in,
-                                out.Array(),
-                                max_len_out);
+        int rc = ::LCMapStringW (g_s__windows_locale_id,
+                                 LCMAP_LOWERCASE,
+                                 Array(),
+                                 len_in,
+                                 out.Array(),
+                                 max_len_out);
         if (rc > 0 && rc <= max_len_out) {
-          out.SetLength(rc);
-          operator=(out); // very fast - simply changes reference count
+          out.SetLength (rc);
+          operator= (out); // very fast - simply changes reference count
           return;
         }
       }
@@ -655,7 +655,7 @@ ON_wString::MakeLower()
     // in most Western European languages but is not adequate for
     // commercial quality software.
     CopyArray();
-    on_wcslwr(m_s);
+    on_wcslwr (m_s);
   }
 }
 
@@ -709,17 +709,17 @@ on_WideCharToMultiByte (const wchar_t* lpWideCharStr,
   unsigned int error_mask = 0xFFFFFFFF;
   ON__UINT32 error_code_point = 0xFFFD;
   const wchar_t* p1 = 0;
-  int count = ON_ConvertWideCharToUTF8(false,
-                                       lpWideCharStr,
-                                       cchWideChar,
-                                       lpMultiByteStr,
-                                       cchMultiByte,
-                                       &error_status,
-                                       error_mask,
-                                       error_code_point,
-                                       &p1);
+  int count = ON_ConvertWideCharToUTF8 (false,
+                                        lpWideCharStr,
+                                        cchWideChar,
+                                        lpMultiByteStr,
+                                        cchMultiByte,
+                                        &error_status,
+                                        error_mask,
+                                        error_code_point,
+                                        &p1);
   if (0 != error_status) {
-    ON_ERROR(
+    ON_ERROR (
         "Error converting UTF-16 encoded wchar_t string to UTF-8 encoded char string.");
   }
   return count;
@@ -742,16 +742,16 @@ on_MultiByteToWideChar (const char* lpMultiByteStr,
   unsigned int error_mask = 0xFFFFFFFF;
   ON__UINT32 error_code_point = 0xFFFD;
   const char* p1 = 0;
-  int count = ON_ConvertUTF8ToWideChar(lpMultiByteStr,
-                                       cchMultiByte,
-                                       lpWideCharStr,
-                                       cchWideChar,
-                                       &error_status,
-                                       error_mask,
-                                       error_code_point,
-                                       &p1);
+  int count = ON_ConvertUTF8ToWideChar (lpMultiByteStr,
+                                        cchMultiByte,
+                                        lpWideCharStr,
+                                        cchWideChar,
+                                        &error_status,
+                                        error_mask,
+                                        error_code_point,
+                                        &p1);
   if (0 != error_status) {
-    ON_ERROR(
+    ON_ERROR (
         "Error converting UTF-8 encoded char string to UTF-16 encoded wchar_t string.");
   }
   return count;
@@ -763,13 +763,13 @@ on_vsnprintf (char* buffer, std::size_t count, const char* format, va_list argpt
 #if defined(ON_OS_WINDOWS)
 
 #if defined(ON_COMPILER_BORLAND)
-  return vsprintf(buffer, format, argptr);
+  return vsprintf (buffer, format, argptr);
 #else
-  return _vsnprintf(buffer, count, format, argptr);
+  return _vsnprintf (buffer, count, format, argptr);
 #endif
 
 #else
-  return vsnprintf(buffer, count, format, argptr);
+  return vsnprintf (buffer, count, format, argptr);
 #endif
 }
 
@@ -782,9 +782,9 @@ on_vsnwprintf (wchar_t* buffer,
 #if defined(ON_OS_WINDOWS)
 
 #if defined(ON_COMPILER_BORLAND)
-  return vswprintf(buffer, format, argptr);
+  return vswprintf (buffer, format, argptr);
 #else
-  return _vsnwprintf(buffer, count, format, argptr);
+  return _vsnwprintf (buffer, count, format, argptr);
 #endif
 
 #else
@@ -793,12 +793,12 @@ on_vsnwprintf (wchar_t* buffer,
   ON_String aformat = format; // convert format from UNICODE to ASCII
 
   // format an ASCII buffer
-  char* abuffer = (char*)onmalloc(4 * count * sizeof(*abuffer));
-  int rc = on_vsnprintf(abuffer, 4 * count, aformat.Array(), argptr);
+  char* abuffer = (char*)onmalloc (4 * count * sizeof (*abuffer));
+  int rc = on_vsnprintf (abuffer, 4 * count, aformat.Array(), argptr);
 
   // convert formatted ASCII buffer to UNICODE
-  on_MultiByteToWideChar(abuffer, (int)strlen(abuffer), buffer, (int)count);
-  onfree(abuffer);
+  on_MultiByteToWideChar (abuffer, (int)strlen (abuffer), buffer, (int)count);
+  onfree (abuffer);
   return rc;
 #endif
 }
@@ -1027,29 +1027,29 @@ ON::DocumentationBranch()
 }
 
 FILE*
-ON::OpenFile(             // like fopen() - needed when OpenNURBS is used as a DLL
+ON::OpenFile (            // like fopen() - needed when OpenNURBS is used as a DLL
     const char* filename, // file name
     const char* filemode  // file mode
 )
 {
-  return ON_FileStream::Open(filename, filemode);
+  return ON_FileStream::Open (filename, filemode);
 }
 
 FILE*
-ON::OpenFile(                // like fopen() - needed when OpenNURBS is used as a DLL
+ON::OpenFile (               // like fopen() - needed when OpenNURBS is used as a DLL
     const wchar_t* filename, // file name
     const wchar_t* filemode  // file mode
 )
 {
-  return ON_FileStream::Open(filename, filemode);
+  return ON_FileStream::Open (filename, filemode);
 }
 
 int
-ON::CloseFile( // like fclose() - needed when OpenNURBS is used as a DLL
-    FILE* fp   // pointer returned by OpenFile()
+ON::CloseFile ( // like fclose() - needed when OpenNURBS is used as a DLL
+    FILE* fp    // pointer returned by OpenFile()
 )
 {
-  return ON_FileStream::Close(fp);
+  return ON_FileStream::Close (fp);
 }
 
 int
@@ -1066,7 +1066,7 @@ ON::CloseAllFiles()
 }
 
 ON::active_space
-ON::ActiveSpace(int i)
+ON::ActiveSpace (int i)
 {
   ON::active_space as;
 
@@ -1089,7 +1089,7 @@ ON::ActiveSpace(int i)
 }
 
 ON::unit_system
-ON::UnitSystem(int i)
+ON::UnitSystem (int i)
 {
   unit_system us = no_unit_system;
   switch (i) {
@@ -1181,43 +1181,43 @@ ON::UnitSystem(int i)
 }
 
 double
-ON::UnitScale(const class ON_3dmUnitsAndTolerances& u_and_t_from,
-              const class ON_3dmUnitsAndTolerances& u_and_t_to)
+ON::UnitScale (const class ON_3dmUnitsAndTolerances& u_and_t_from,
+               const class ON_3dmUnitsAndTolerances& u_and_t_to)
 {
-  return ON::UnitScale(u_and_t_from.m_unit_system, u_and_t_to.m_unit_system);
+  return ON::UnitScale (u_and_t_from.m_unit_system, u_and_t_to.m_unit_system);
 }
 
 double
-ON::UnitScale(ON::unit_system us_from, const class ON_UnitSystem& us_to)
+ON::UnitScale (ON::unit_system us_from, const class ON_UnitSystem& us_to)
 {
   double scale = 1.0;
   ON::unit_system us1 = us_to.m_unit_system;
   if (ON::custom_unit_system == us1) {
-    if (us_to.m_custom_unit_scale > 0.0 && ON_IsValid(us_to.m_custom_unit_scale)) {
+    if (us_to.m_custom_unit_scale > 0.0 && ON_IsValid (us_to.m_custom_unit_scale)) {
       scale *= us_to.m_custom_unit_scale;
       us1 = ON::meters;
     }
   }
-  return scale * ON::UnitScale(us_from, us1);
+  return scale * ON::UnitScale (us_from, us1);
 }
 
 double
-ON::UnitScale(const class ON_UnitSystem& us_from, ON::unit_system us_to)
+ON::UnitScale (const class ON_UnitSystem& us_from, ON::unit_system us_to)
 {
   double scale = 1.0;
   ON::unit_system us0 = us_from.m_unit_system;
   if (ON::custom_unit_system == us0) {
-    if (us_from.m_custom_unit_scale > 0.0 && ON_IsValid(us_from.m_custom_unit_scale)) {
+    if (us_from.m_custom_unit_scale > 0.0 && ON_IsValid (us_from.m_custom_unit_scale)) {
       scale /= us_from.m_custom_unit_scale;
       us0 = ON::meters;
     }
   }
-  return scale * ON::UnitScale(us0, us_to);
+  return scale * ON::UnitScale (us0, us_to);
 }
 
 double
-ON::UnitScale(const class ON_UnitSystem& u_and_t_from,
-              const class ON_UnitSystem& u_and_t_to)
+ON::UnitScale (const class ON_UnitSystem& u_and_t_from,
+               const class ON_UnitSystem& u_and_t_to)
 {
   double scale = 1.0;
   ON::unit_system us_from = u_and_t_from.m_unit_system;
@@ -1225,19 +1225,20 @@ ON::UnitScale(const class ON_UnitSystem& u_and_t_from,
 
   if (ON::no_unit_system != us_from && ON::no_unit_system != us_to) {
     if (ON::custom_unit_system == us_from &&
-        ON_IsValid(u_and_t_from.m_custom_unit_scale) &&
+        ON_IsValid (u_and_t_from.m_custom_unit_scale) &&
         u_and_t_from.m_custom_unit_scale > 0.0) {
       scale /= u_and_t_from.m_custom_unit_scale;
       us_from = ON::meters;
     }
 
-    if (ON::custom_unit_system == us_to && ON_IsValid(u_and_t_to.m_custom_unit_scale) &&
+    if (ON::custom_unit_system == us_to &&
+        ON_IsValid (u_and_t_to.m_custom_unit_scale) &&
         u_and_t_to.m_custom_unit_scale > 0.0) {
       scale *= u_and_t_to.m_custom_unit_scale;
       us_to = ON::meters;
     }
 
-    scale *= ON::UnitScale(us_from, us_to);
+    scale *= ON::UnitScale (us_from, us_to);
   }
 
   return scale;
@@ -1252,8 +1253,8 @@ IsEnglishUnit (ON::unit_system us)
 }
 
 double
-ON::UnitScale(ON::unit_system u0, // from
-              ON::unit_system u1  // to
+ON::UnitScale (ON::unit_system u0, // from
+               ON::unit_system u1  // to
 )
 {
   // Scale factor for changing unit systems
@@ -1270,15 +1271,15 @@ ON::UnitScale(ON::unit_system u0, // from
   )
     switch (u0) {
     case ON::angstroms:
-      scale = UnitScale(meters, u1) * 1.0e-10;
+      scale = UnitScale (meters, u1) * 1.0e-10;
       break;
 
     case ON::nanometers:
-      scale = UnitScale(meters, u1) * 1.0e-9;
+      scale = UnitScale (meters, u1) * 1.0e-9;
       break;
 
     case ON::microns:
-      scale = UnitScale(meters, u1) * 1.0e-6;
+      scale = UnitScale (meters, u1) * 1.0e-6;
       break;
 
     case ON::millimeters:
@@ -1294,8 +1295,8 @@ ON::UnitScale(ON::unit_system u0, // from
         break;
 
       default:
-        scale = IsEnglishUnit(u1) ? UnitScale(inches, u1) / 25.4
-                                  : UnitScale(meters, u1) * 1.0e-3;
+        scale = IsEnglishUnit (u1) ? UnitScale (inches, u1) / 25.4
+                                   : UnitScale (meters, u1) * 1.0e-3;
         break;
       }
       break;
@@ -1310,15 +1311,15 @@ ON::UnitScale(ON::unit_system u0, // from
         break;
 
       default:
-        scale = IsEnglishUnit(u1) ? UnitScale(inches, u1) / 2.54
-                                  : UnitScale(meters, u1) * 1.0e-2;
+        scale = IsEnglishUnit (u1) ? UnitScale (inches, u1) / 2.54
+                                   : UnitScale (meters, u1) * 1.0e-2;
         break;
       }
       break;
 
     case ON::decimeters:
-      scale = IsEnglishUnit(u1) ? UnitScale(inches, u1) / 0.254
-                                : UnitScale(meters, u1) * 1.0e-1;
+      scale = IsEnglishUnit (u1) ? UnitScale (inches, u1) / 0.254
+                                 : UnitScale (meters, u1) * 1.0e-1;
       break;
 
     case ON::meters:
@@ -1374,39 +1375,39 @@ ON::UnitScale(ON::unit_system u0, // from
         break;
 
       default:
-        if (IsEnglishUnit(u1))
-          scale = UnitScale(inches, u1) / 0.0254;
+        if (IsEnglishUnit (u1))
+          scale = UnitScale (inches, u1) / 0.0254;
         break;
       }
       break;
 
     case ON::dekameters:
-      scale = UnitScale(meters, u1) * 10.0;
+      scale = UnitScale (meters, u1) * 10.0;
       break;
 
     case ON::hectometers:
-      scale = UnitScale(meters, u1) * 100.0;
+      scale = UnitScale (meters, u1) * 100.0;
       break;
 
     case ON::kilometers:
-      scale = IsEnglishUnit(u1) ? UnitScale(inches, u1) / 0.0000254
-                                : UnitScale(meters, u1) * 1000.0;
+      scale = IsEnglishUnit (u1) ? UnitScale (inches, u1) / 0.0000254
+                                 : UnitScale (meters, u1) * 1000.0;
       break;
 
     case ON::megameters:
-      scale = UnitScale(meters, u1) * 1.0e6;
+      scale = UnitScale (meters, u1) * 1.0e6;
       break;
 
     case ON::gigameters:
-      scale = UnitScale(meters, u1) * 1.0e9;
+      scale = UnitScale (meters, u1) * 1.0e9;
       break;
 
     case ON::microinches:
-      scale = UnitScale(inches, u1) * 1.0e-6;
+      scale = UnitScale (inches, u1) * 1.0e-6;
       break;
 
     case ON::mils:
-      scale = UnitScale(inches, u1) * 1.0e-3;
+      scale = UnitScale (inches, u1) * 1.0e-3;
       break;
 
     case ON::inches:
@@ -1474,7 +1475,7 @@ ON::UnitScale(ON::unit_system u0, // from
         break;
 
       default:
-        scale = UnitScale(meters, u1) * 2.54e-2;
+        scale = UnitScale (meters, u1) * 2.54e-2;
         break;
       }
       break;
@@ -1488,7 +1489,7 @@ ON::UnitScale(ON::unit_system u0, // from
         scale = 1.0 / 5280.0;
         break;
       default:
-        scale = UnitScale(inches, u1) * 12.0;
+        scale = UnitScale (inches, u1) * 12.0;
         break;
       }
       break;
@@ -1502,7 +1503,7 @@ ON::UnitScale(ON::unit_system u0, // from
         scale = 1.0 / 1760.0;
         break;
       default:
-        scale = UnitScale(inches, u1) * 36.0;
+        scale = UnitScale (inches, u1) * 36.0;
         break;
       }
       break;
@@ -1512,21 +1513,21 @@ ON::UnitScale(ON::unit_system u0, // from
         scale = 5280.0;
       }
       else {
-        scale = IsEnglishUnit(u1) ? UnitScale(inches, u1) * 12.0 * 5280.0
-                                  : UnitScale(meters, u1) * 1609.344;
+        scale = IsEnglishUnit (u1) ? UnitScale (inches, u1) * 12.0 * 5280.0
+                                   : UnitScale (meters, u1) * 1609.344;
       }
       break;
 
     case ON::printer_point:
-      scale = UnitScale(inches, u1) / 72.0;
+      scale = UnitScale (inches, u1) / 72.0;
       break;
 
     case ON::printer_pica:
-      scale = UnitScale(inches, u1) / 6.0;
+      scale = UnitScale (inches, u1) / 6.0;
       break;
 
     case ON::nautical_mile:
-      scale = UnitScale(meters, u1) * 1852.0;
+      scale = UnitScale (meters, u1) * 1852.0;
       break;
 
     case ON::astronomical:
@@ -1534,7 +1535,7 @@ ON::UnitScale(ON::unit_system u0, // from
       // 1.495979e+11   http://units.nist.gov/Pubs/SP811/appenB9.htm
       //    An astronomical unit (au) is the mean distance from the
       //    center of the earth to the center of the sun.
-      scale = UnitScale(meters, u1) * 1.4959787e+11;
+      scale = UnitScale (meters, u1) * 1.4959787e+11;
       break;
 
     case ON::lightyears:
@@ -1544,13 +1545,13 @@ ON::UnitScale(ON::unit_system u0, // from
       //    The speed of light is exactly 299792458 meters/second.
       //    A Julian year is exactly 365.25 * 86400 seconds and is
       //    approximately the time it takes for one earth orbit.
-      scale = UnitScale(meters, u1) * 9.4607304725808e+15;
+      scale = UnitScale (meters, u1) * 9.4607304725808e+15;
       break;
 
     case ON::parsecs:
       // 3.08567758e+16  // http://en.wikipedia.org/wiki/Parsec
       // 3.085678e+16    // http://units.nist.gov/Pubs/SP811/appenB9.htm
-      scale = UnitScale(meters, u1) * 3.08567758e+16;
+      scale = UnitScale (meters, u1) * 3.08567758e+16;
       break;
 
     case ON::custom_unit_system:
@@ -1566,7 +1567,7 @@ ON::UnitScale(ON::unit_system u0, // from
 enum distance_display_mode { decimal = 0, fractional = 1, feet_inches = 2 };
 
 ON::distance_display_mode
-ON::DistanceDisplayMode(int i)
+ON::DistanceDisplayMode (int i)
 {
   distance_display_mode dm = decimal;
   switch (i) {
@@ -1584,7 +1585,7 @@ ON::DistanceDisplayMode(int i)
 }
 
 ON::point_style
-ON::PointStyle(int i)
+ON::PointStyle (int i)
 {
   // convertintegertopoint_styleenum
   point_style ps = unknown_point_style;
@@ -1606,7 +1607,7 @@ ON::PointStyle(int i)
 }
 
 ON::knot_style
-ON::KnotStyle(int i)
+ON::KnotStyle (int i)
 {
   // convertintegertoknot_styleenum
   knot_style ks = unknown_knot_style;
@@ -1634,7 +1635,7 @@ ON::KnotStyle(int i)
 }
 
 ON::continuity
-ON::Continuity(int i)
+ON::Continuity (int i)
 {
   continuity c = unknown_continuity;
 
@@ -1688,7 +1689,7 @@ ON::Continuity(int i)
 }
 
 ON::continuity
-ON::ParametricContinuity(int i)
+ON::ParametricContinuity (int i)
 {
   // "erase" the locus setting.
   continuity c = unknown_continuity;
@@ -1739,7 +1740,7 @@ ON::ParametricContinuity(int i)
 }
 
 ON::continuity
-ON::PolylineContinuity(int i)
+ON::PolylineContinuity (int i)
 {
   continuity c = unknown_continuity;
 
@@ -1789,7 +1790,7 @@ ON::PolylineContinuity(int i)
 }
 
 ON::curve_style
-ON::CurveStyle(int i)
+ON::CurveStyle (int i)
 {
   // convertintegertocurve_styleenum
   curve_style cs = unknown_curve_style;
@@ -1829,7 +1830,7 @@ ON::CurveStyle(int i)
 }
 
 ON::surface_style
-ON::SurfaceStyle(int i)
+ON::SurfaceStyle (int i)
 {
   // convertintegertosurface_styleenum
   surface_style ss = unknown_surface_style;
@@ -1873,7 +1874,7 @@ ON::SurfaceStyle(int i)
 }
 
 ON::sort_algorithm
-ON::SortAlgorithm(int i)
+ON::SortAlgorithm (int i)
 {
   sort_algorithm sa = ON::quick_sort;
 
@@ -1892,7 +1893,7 @@ ON::SortAlgorithm(int i)
 }
 
 ON::endian
-ON::Endian(int i)
+ON::Endian (int i)
 { // convert integer to endian enum
   endian e = (i <= 0) ? little_endian : big_endian;
   return e;
@@ -1904,14 +1905,14 @@ ON::Endian()
   // returns endian-ness of cpu.
   union {
     int i;
-    unsigned char b[sizeof(int)];
+    unsigned char b[sizeof (int)];
   } u;
   u.i = 1;
   return (u.b[0] == 1) ? little_endian : big_endian;
 }
 
 ON::archive_mode
-ON::ArchiveMode(int i)
+ON::ArchiveMode (int i)
 {
   // convert integer to endian enum
   archive_mode a = read;
@@ -1936,7 +1937,7 @@ ON::ArchiveMode(int i)
 }
 
 ON::view_projection
-ON::ViewProjection(int i)
+ON::ViewProjection (int i)
 {
   // convert integer to view_projection enum
   view_projection v = ON::unknown_view;
@@ -1952,19 +1953,19 @@ ON::ViewProjection(int i)
 }
 
 bool
-ON::IsParallelProjection(ON::view_projection proj)
+ON::IsParallelProjection (ON::view_projection proj)
 {
   return ON::parallel_view == proj;
 }
 
 bool
-ON::IsPerspectiveProjection(ON::view_projection proj)
+ON::IsPerspectiveProjection (ON::view_projection proj)
 {
   return (ON::perspective_view == proj);
 }
 
 ON::coordinate_system
-ON::CoordinateSystem(int i)
+ON::CoordinateSystem (int i)
 {
   // convert integer to coordinate_system enum
   coordinate_system cs = world_cs;
@@ -1986,7 +1987,7 @@ ON::CoordinateSystem(int i)
 }
 
 ON::exception_type
-ON::ExceptionType(int i)
+ON::ExceptionType (int i)
 {
   // convert integer to exception_type enum
   ON::exception_type e = unknown_exception;
@@ -2014,7 +2015,7 @@ ON::ExceptionType(int i)
 }
 
 ON::layer_mode
-ON::LayerMode(int i)
+ON::LayerMode (int i)
 {
   ON::layer_mode m = normal_layer;
   switch (i) {
@@ -2032,7 +2033,7 @@ ON::LayerMode(int i)
 }
 
 ON::object_mode
-ON::ObjectMode(int i)
+ON::ObjectMode (int i)
 {
   ON::object_mode m = normal_object;
   switch (i) {
@@ -2053,7 +2054,7 @@ ON::ObjectMode(int i)
 }
 
 ON::object_color_source
-ON::ObjectColorSource(int i)
+ON::ObjectColorSource (int i)
 {
   // convert integer to object_mode enum
   ON::object_color_source cs = color_from_layer;
@@ -2075,7 +2076,7 @@ ON::ObjectColorSource(int i)
 }
 
 ON::plot_color_source
-ON::PlotColorSource(int i)
+ON::PlotColorSource (int i)
 {
   // convert integer to object_mode enum
   ON::plot_color_source cs = plot_color_from_layer;
@@ -2097,7 +2098,7 @@ ON::PlotColorSource(int i)
 }
 
 ON::plot_weight_source
-ON::PlotWeightSource(int pw)
+ON::PlotWeightSource (int pw)
 {
   switch (pw) {
   case plot_weight_from_layer:
@@ -2114,7 +2115,7 @@ ON::PlotWeightSource(int pw)
 }
 
 ON::object_linetype_source
-ON::ObjectLinetypeSource(int i)
+ON::ObjectLinetypeSource (int i)
 {
   // convert integer to object_mode enum
   ON::object_linetype_source ls = linetype_from_layer;
@@ -2133,7 +2134,7 @@ ON::ObjectLinetypeSource(int i)
 }
 
 ON::object_material_source
-ON::ObjectMaterialSource(int i)
+ON::ObjectMaterialSource (int i)
 {
   ON::object_material_source ms = material_from_layer;
   switch (i) {
@@ -2151,7 +2152,7 @@ ON::ObjectMaterialSource(int i)
 }
 
 ON::light_style
-ON::LightStyle(int i)
+ON::LightStyle (int i)
 {
   // convert integer to light_style enum
   light_style ls = unknown_light_style;
@@ -2194,7 +2195,7 @@ ON::LightStyle(int i)
 }
 
 ON::curvature_style
-ON::CurvatureStyle(int i)
+ON::CurvatureStyle (int i)
 {
   // convert integer to light_style enum
   ON::curvature_style cs = unknown_curvature_style;
@@ -2238,7 +2239,7 @@ compile and it does. John Croudy.
 };*/
 
 ON::view_type
-ON::ViewType(int vt)
+ON::ViewType (int vt)
 {
   switch (vt) {
   case model_view_type:
@@ -2256,7 +2257,7 @@ ON::ViewType(int vt)
 }
 
 ON::display_mode
-ON::DisplayMode(int i)
+ON::DisplayMode (int i)
 {
   // convert integer to light_style enum
   ON::display_mode dm = default_display;
@@ -2278,7 +2279,7 @@ ON::DisplayMode(int i)
 }
 
 ON::texture_mode
-ON::TextureMode(int i)
+ON::TextureMode (int i)
 {
   // convert integer to texture_mode enum
   ON::texture_mode tm;
@@ -2300,7 +2301,7 @@ ON::TextureMode(int i)
 }
 
 ON::object_type
-ON::ObjectType(int i)
+ON::ObjectType (int i)
 {
   // convert integer to object_type enum
   object_type ot = unknown_object_type;
@@ -2403,7 +2404,7 @@ ON::ObjectType(int i)
 }
 
 ON::bitmap_type
-ON::BitmapType(int i)
+ON::BitmapType (int i)
 {
   // convert integer to object_type enum
   bitmap_type bt = unknown_bitmap_type;
@@ -2428,7 +2429,7 @@ ON::BitmapType(int i)
 }
 
 ON::object_decoration
-ON::ObjectDecoration(int i)
+ON::ObjectDecoration (int i)
 {
   ON::object_decoration d;
   switch (i) {
@@ -2452,7 +2453,7 @@ ON::ObjectDecoration(int i)
 }
 
 ON::osnap_mode
-ON::OSnapMode(int i)
+ON::OSnapMode (int i)
 {
   ON::osnap_mode osm;
   switch ((unsigned int)i) {
@@ -2506,7 +2507,7 @@ ON::OSnapMode(int i)
 }
 
 ON::cubic_loft_end_condition
-ON::CubicLoftEndCondition(int i)
+ON::CubicLoftEndCondition (int i)
 {
   ON::cubic_loft_end_condition e;
   switch (i) {
@@ -2535,7 +2536,7 @@ ON::CubicLoftEndCondition(int i)
     e = ON::cubic_loft_ec_free_cv;
     break;
   default:
-    ON_ERROR("ON::CubicLoftEndCondition(i) value of i is not valid.");
+    ON_ERROR ("ON::CubicLoftEndCondition(i) value of i is not valid.");
     e = ON::cubic_loft_ec_quadratic;
     break;
   }
@@ -2543,7 +2544,7 @@ ON::CubicLoftEndCondition(int i)
 }
 
 ON::mesh_type
-ON::MeshType(int i)
+ON::MeshType (int i)
 {
   mesh_type mt = default_mesh;
   switch (i) {
@@ -2570,7 +2571,7 @@ ON::MeshType(int i)
 }
 
 ON::eAnnotationType
-ON::AnnotationType(int i)
+ON::AnnotationType (int i)
 {
   // convert integer to eAnnotationType enum
   eAnnotationType at = dtNothing;
@@ -2607,7 +2608,7 @@ ON::AnnotationType(int i)
 }
 
 ON::eTextDisplayMode
-ON::TextDisplayMode(int i)
+ON::TextDisplayMode (int i)
 {
   eTextDisplayMode m = dtAboveLine;
   switch (i) {

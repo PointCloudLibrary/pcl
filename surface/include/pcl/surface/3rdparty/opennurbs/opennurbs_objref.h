@@ -171,9 +171,9 @@ ON_DLL_TEMPLATE template class ON_CLASS ON_SimpleArray<ON_ObjRef_IRefID>;
 class ON_CLASS ON_ObjRef {
 public:
   ON_ObjRef();
-  ON_ObjRef(const ON_ObjRef& src);
+  ON_ObjRef (const ON_ObjRef& src);
   ON_ObjRef&
-  operator=(const ON_ObjRef& src);
+  operator= (const ON_ObjRef& src);
   ~ON_ObjRef();
 
   void

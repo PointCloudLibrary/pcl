@@ -46,39 +46,39 @@
 #include <pcl/segmentation/plane_coefficient_comparator.h>
 #include <pcl/segmentation/rgb_plane_coefficient_comparator.h>
 
-pcl::gpu::people::OrganizedPlaneDetector::OrganizedPlaneDetector(int rows, int cols)
+pcl::gpu::people::OrganizedPlaneDetector::OrganizedPlaneDetector (int rows, int cols)
 {
-  PCL_DEBUG("[pcl::gpu::people::OrganizedPlaneDetector::OrganizedPlaneDetector] : (D) "
-            ": Constructor called\n");
+  PCL_DEBUG ("[pcl::gpu::people::OrganizedPlaneDetector::OrganizedPlaneDetector] : (D) "
+             ": Constructor called\n");
 
   // Set NE defaults
-  ne_.setNormalEstimationMethod(ne_.COVARIANCE_MATRIX);
-  ne_.setMaxDepthChangeFactor(0.02f);
-  ne_.setNormalSmoothingSize(20.0f);
+  ne_.setNormalEstimationMethod (ne_.COVARIANCE_MATRIX);
+  ne_.setMaxDepthChangeFactor (0.02f);
+  ne_.setNormalSmoothingSize (20.0f);
 
   // Set MPS defaults
   mps_MinInliers_ = 10000;
-  mps_AngularThreshold_ = pcl::deg2rad(3.0); // 3 degrees
-  mps_DistanceThreshold_ = 0.02;             // 2cm
+  mps_AngularThreshold_ = pcl::deg2rad (3.0); // 3 degrees
+  mps_DistanceThreshold_ = 0.02;              // 2cm
   mps_use_planar_refinement_ = true;
 
-  mps_.setMinInliers(mps_MinInliers_);
-  mps_.setAngularThreshold(mps_AngularThreshold_);
-  mps_.setDistanceThreshold(mps_DistanceThreshold_);
+  mps_.setMinInliers (mps_MinInliers_);
+  mps_.setAngularThreshold (mps_AngularThreshold_);
+  mps_.setDistanceThreshold (mps_DistanceThreshold_);
 
-  allocate_buffers(rows, cols);
+  allocate_buffers (rows, cols);
 }
 
 void
-pcl::gpu::people::OrganizedPlaneDetector::process(
+pcl::gpu::people::OrganizedPlaneDetector::process (
     const PointCloud<PointTC>::ConstPtr& cloud)
 {
-  PCL_DEBUG("[pcl::gpu::people::OrganizedPlaneDetector::process] : (D) : Called\n");
+  PCL_DEBUG ("[pcl::gpu::people::OrganizedPlaneDetector::process] : (D) : Called\n");
 
   // Estimate Normals
-  pcl::PointCloud<pcl::Normal>::Ptr normal_cloud(new pcl::PointCloud<pcl::Normal>);
-  ne_.setInputCloud(cloud);
-  ne_.compute(*normal_cloud);
+  pcl::PointCloud<pcl::Normal>::Ptr normal_cloud (new pcl::PointCloud<pcl::Normal>);
+  ne_.setInputCloud (cloud);
+  ne_.compute (*normal_cloud);
 
   // Segment Planes
   std::vector<pcl::PlanarRegion<PointTC>,
@@ -86,24 +86,24 @@ pcl::gpu::people::OrganizedPlaneDetector::process(
       regions;
   std::vector<pcl::ModelCoefficients> model_coefficients;
   std::vector<pcl::PointIndices> inlier_indices;
-  pcl::PointCloud<pcl::Label>::Ptr labels(new pcl::PointCloud<pcl::Label>);
+  pcl::PointCloud<pcl::Label>::Ptr labels (new pcl::PointCloud<pcl::Label>);
 
   std::vector<pcl::PointIndices> label_indices;
   std::vector<pcl::PointIndices> boundary_indices;
 
-  mps_.setInputNormals(normal_cloud);
-  mps_.setInputCloud(cloud);
+  mps_.setInputNormals (normal_cloud);
+  mps_.setInputCloud (cloud);
   if (mps_use_planar_refinement_) {
-    mps_.segmentAndRefine(regions,
-                          model_coefficients,
-                          inlier_indices,
-                          labels,
-                          label_indices,
-                          boundary_indices);
+    mps_.segmentAndRefine (regions,
+                           model_coefficients,
+                           inlier_indices,
+                           labels,
+                           label_indices,
+                           boundary_indices);
   }
   else {
     // mps_.segment (regions);
-    mps_.segment(model_coefficients, inlier_indices);
+    mps_.segment (model_coefficients, inlier_indices);
   }
 
   // Fill in the probabilities
@@ -119,27 +119,27 @@ pcl::gpu::people::OrganizedPlaneDetector::process(
 }
 
 void
-pcl::gpu::people::OrganizedPlaneDetector::allocate_buffers(int rows, int cols)
+pcl::gpu::people::OrganizedPlaneDetector::allocate_buffers (int rows, int cols)
 {
-  PCL_DEBUG(
+  PCL_DEBUG (
       "[pcl::gpu::people::OrganizedPlaneDetector::allocate_buffers] : (D) : Called\n");
 
   // Create histogram on host
-  P_l_host_.resize(rows * cols);
+  P_l_host_.resize (rows * cols);
   P_l_host_.width = cols;
   P_l_host_.height = rows;
 
-  P_l_host_prev_.resize(rows * cols);
+  P_l_host_prev_.resize (rows * cols);
   P_l_host_prev_.width = cols;
   P_l_host_prev_.height = rows;
 
   // Create all the label probabilities on device
-  P_l_dev_.create(rows, cols);
-  P_l_dev_prev_.create(rows, cols);
+  P_l_dev_.create (rows, cols);
+  P_l_dev_prev_.create (rows, cols);
 }
 
 void
-pcl::gpu::people::OrganizedPlaneDetector::emptyHostLabelProbability(
+pcl::gpu::people::OrganizedPlaneDetector::emptyHostLabelProbability (
     HostLabelProbability& histogram)
 {
   for (auto& point : histogram.points) {
@@ -150,12 +150,12 @@ pcl::gpu::people::OrganizedPlaneDetector::emptyHostLabelProbability(
 }
 
 int
-pcl::gpu::people::OrganizedPlaneDetector::copyHostLabelProbability(
+pcl::gpu::people::OrganizedPlaneDetector::copyHostLabelProbability (
     HostLabelProbability& src, HostLabelProbability& dst)
 {
   if (src.size() != dst.size()) {
-    PCL_ERROR("[pcl::gpu::people::OrganizedPlaneDetector::copyHostLabelProbability] : "
-              "(E) : Sizes don't match\n");
+    PCL_ERROR ("[pcl::gpu::people::OrganizedPlaneDetector::copyHostLabelProbability] : "
+               "(E) : Sizes don't match\n");
     return -1;
   }
   for (std::size_t hist = 0; hist < src.size(); hist++) {
@@ -167,12 +167,12 @@ pcl::gpu::people::OrganizedPlaneDetector::copyHostLabelProbability(
 }
 
 int
-pcl::gpu::people::OrganizedPlaneDetector::copyAndClearHostLabelProbability(
+pcl::gpu::people::OrganizedPlaneDetector::copyAndClearHostLabelProbability (
     HostLabelProbability& src, HostLabelProbability& dst)
 {
   if (src.size() != dst.size()) {
-    PCL_ERROR("[pcl::gpu::people::OrganizedPlaneDetector::copyHostLabelProbability] : "
-              "(E) : Sizes don't match\n");
+    PCL_ERROR ("[pcl::gpu::people::OrganizedPlaneDetector::copyHostLabelProbability] : "
+               "(E) : Sizes don't match\n");
     return -1;
   }
   for (std::size_t hist = 0; hist < src.size(); hist++) {

@@ -50,7 +50,8 @@ ON_Sort (ON::sort_algorithm method,
          const void* base,
          std::size_t count,
          std::size_t sizeof_element,
-         int (*compare)(const void*, const void*) // int compar(const void*,const void*)
+         int (*compare) (const void*,
+                         const void*) // int compar(const void*,const void*)
 );
 
 /*
@@ -89,9 +90,9 @@ ON_Sort (ON::sort_algorithm method,
          const void* base,
          std::size_t count,
          std::size_t sizeof_element,
-         int (*compare)(const void*,
-                        const void*,
-                        void*), // int compar(const void* a,const void* b, void* ptr)
+         int (*compare) (const void*,
+                         const void*,
+                         void*), // int compar(const void* a,const void* b, void* ptr)
          void* context);
 
 /*
@@ -130,21 +131,21 @@ void
 ON_hsort (void* base,
           std::size_t count,
           std::size_t sizeof_element,
-          int (*compare)(const void*, const void*));
+          int (*compare) (const void*, const void*));
 
 ON_DECL
 void
 ON_qsort (void* base,
           std::size_t count,
           std::size_t sizeof_element,
-          int (*compare)(const void*, const void*));
+          int (*compare) (const void*, const void*));
 
 ON_DECL
 void
 ON_hsort (void* base,
           std::size_t count,
           std::size_t sizeof_element,
-          int (*compare)(void*, const void*, const void*),
+          int (*compare) (void*, const void*, const void*),
           void* context);
 
 ON_DECL
@@ -152,7 +153,7 @@ void
 ON_qsort (void* base,
           std::size_t count,
           std::size_t sizeof_element,
-          int (*compare)(void*, const void*, const void*),
+          int (*compare) (void*, const void*, const void*),
           void* context);
 
 /*
@@ -377,25 +378,25 @@ class ON_CLASS ON_String {
 public:
   // Constructors
   ON_String();
-  ON_String(const ON_String&);
+  ON_String (const ON_String&);
 
-  ON_String(const char*);
-  ON_String(const char*, int /*length*/); // from substring
-  ON_String(char, int = 1 /* repeat count */);
+  ON_String (const char*);
+  ON_String (const char*, int /*length*/); // from substring
+  ON_String (char, int = 1 /* repeat count */);
 
-  ON_String(const unsigned char*);
-  ON_String(const unsigned char*, int /*length*/); // from substring
-  ON_String(unsigned char, int = 1 /* repeat count */);
+  ON_String (const unsigned char*);
+  ON_String (const unsigned char*, int /*length*/); // from substring
+  ON_String (unsigned char, int = 1 /* repeat count */);
 
   // construct a UTF-8 string string from a UTF-16 string.
-  ON_String(const wchar_t* src);             // src = UTF-16 string
-  ON_String(const wchar_t* src, int length); // from a UTF-16 substring
-  ON_String(const ON_wString& src);          // src = UTF-16 string
+  ON_String (const wchar_t* src);             // src = UTF-16 string
+  ON_String (const wchar_t* src, int length); // from a UTF-16 substring
+  ON_String (const ON_wString& src);          // src = UTF-16 string
 
 #if defined(ON_OS_WINDOWS)
   // Windows support
-  bool LoadResourceString(HINSTANCE, UINT); // load from Windows string resource
-                                            // 2047 chars max
+  bool LoadResourceString (HINSTANCE, UINT); // load from Windows string resource
+                                             // 2047 chars max
 #endif
 
   void
@@ -436,9 +437,9 @@ public:
   Empty (); // sets length to zero - if possible, memory is retained
 
   char&
-  operator[](int);
+  operator[] (int);
   char
-  operator[](int) const;
+  operator[] (int) const;
   char
   GetAt (int) const;
   void
@@ -449,57 +450,57 @@ public:
 
   // overloaded assignment
   ON_String&
-  operator=(const ON_String&);
+  operator= (const ON_String&);
   ON_String&
-  operator=(char);
+  operator= (char);
   ON_String&
-  operator=(const char*);
+  operator= (const char*);
   ON_String&
-  operator=(unsigned char);
+  operator= (unsigned char);
   ON_String&
-  operator=(const unsigned char*);
+  operator= (const unsigned char*);
   ON_String&
-  operator=(const wchar_t* src); // src = UTF-16 string, result is a UTF-8 string
+  operator= (const wchar_t* src); // src = UTF-16 string, result is a UTF-8 string
   ON_String&
-  operator=(const ON_wString& src); // src = UTF-16 string, result is a UTF-8 string
+  operator= (const ON_wString& src); // src = UTF-16 string, result is a UTF-8 string
 
   // operator+()
   ON_String
-  operator+(const ON_String&) const;
+  operator+ (const ON_String&) const;
   ON_String
-  operator+(char) const;
+  operator+ (char) const;
   ON_String
-  operator+(unsigned char) const;
+  operator+ (unsigned char) const;
   ON_String
-  operator+(const char*) const;
+  operator+ (const char*) const;
   ON_String
-  operator+(const unsigned char*) const;
+  operator+ (const unsigned char*) const;
 
   // string comparison
   bool
-  operator==(const ON_String&) const;
+  operator== (const ON_String&) const;
   bool
-  operator==(const char*) const;
+  operator== (const char*) const;
   bool
-  operator!=(const ON_String&) const;
+  operator!= (const ON_String&) const;
   bool
-  operator!=(const char*) const;
+  operator!= (const char*) const;
   bool
-  operator<(const ON_String&) const;
+  operator< (const ON_String&) const;
   bool
-  operator<(const char*) const;
+  operator< (const char*) const;
   bool
-  operator>(const ON_String&) const;
+  operator> (const ON_String&) const;
   bool
-  operator>(const char*) const;
+  operator> (const char*) const;
   bool
-  operator<=(const ON_String&) const;
+  operator<= (const ON_String&) const;
   bool
-  operator<=(const char*) const;
+  operator<= (const char*) const;
   bool
-  operator>=(const ON_String&) const;
+  operator>= (const ON_String&) const;
   bool
-  operator>=(const char*) const;
+  operator>= (const char*) const;
 
   // string concatenation
   void
@@ -507,15 +508,15 @@ public:
   void
   Append (const unsigned char*, int); // append specified number of characters
   const ON_String&
-  operator+=(const ON_String&);
+  operator+= (const ON_String&);
   const ON_String&
-  operator+=(char);
+  operator+= (char);
   const ON_String&
-  operator+=(unsigned char);
+  operator+= (unsigned char);
   const ON_String&
-  operator+=(const char*);
+  operator+= (const char*);
   const ON_String&
-  operator+=(const unsigned char*);
+  operator+= (const unsigned char*);
 
   // string comparison
   // If this < string, returns < 0.
@@ -636,11 +637,11 @@ public:
   Format (const unsigned char*, ...);
 
   // Low level access to string contents as character array
-  void ReserveArray(std::size_t); // make sure internal array has at least
-                                  // the requested capacity.
+  void ReserveArray (std::size_t); // make sure internal array has at least
+                                   // the requested capacity.
   void
-  ShrinkArray ();              // shrink internal storage to minimum size
-  void SetLength(std::size_t); // set length (<=capacity)
+  ShrinkArray ();               // shrink internal storage to minimum size
+  void SetLength (std::size_t); // set length (<=capacity)
   char*
   Array ();
   const char*
@@ -754,26 +755,26 @@ class PCL_EXPORTS ON_CLASS ON_wString {
 public:
   // Constructors
   ON_wString();
-  ON_wString(const ON_wString&);
+  ON_wString (const ON_wString&);
 
-  ON_wString(const ON_String& src); // src = UTF-8 string
+  ON_wString (const ON_String& src); // src = UTF-8 string
 
-  ON_wString(const char* src);                 // src = nul; terminated UTF-8 string
-  ON_wString(const char* src, int /*length*/); // from UTF-8 substring
-  ON_wString(char, int = 1 /* repeat count */);
+  ON_wString (const char* src);                 // src = nul; terminated UTF-8 string
+  ON_wString (const char* src, int /*length*/); // from UTF-8 substring
+  ON_wString (char, int = 1 /* repeat count */);
 
-  ON_wString(const unsigned char* src); // src = nul; terminated UTF-8 string
-  ON_wString(const unsigned char* src, int /*length*/); // from UTF-8 substring
-  ON_wString(unsigned char, int = 1 /* repeat count */);
+  ON_wString (const unsigned char* src); // src = nul; terminated UTF-8 string
+  ON_wString (const unsigned char* src, int /*length*/); // from UTF-8 substring
+  ON_wString (unsigned char, int = 1 /* repeat count */);
 
-  ON_wString(const wchar_t*);
-  ON_wString(const wchar_t*, int /*length*/); // from substring
-  ON_wString(wchar_t, int = 1 /* repeat count */);
+  ON_wString (const wchar_t*);
+  ON_wString (const wchar_t*, int /*length*/); // from substring
+  ON_wString (wchar_t, int = 1 /* repeat count */);
 
 #if defined(ON_OS_WINDOWS)
   // Windows support
-  bool LoadResourceString(HINSTANCE, UINT); // load from string resource
-                                            // 2047 characters max
+  bool LoadResourceString (HINSTANCE, UINT); // load from string resource
+                                             // 2047 characters max
 #endif
 
   void
@@ -814,9 +815,9 @@ public:
   Empty (); // sets length to zero - if possible, memory is retained
 
   wchar_t&
-  operator[](int);
+  operator[] (int);
   wchar_t
-  operator[](int) const;
+  operator[] (int) const;
   wchar_t
   GetAt (int) const;
   void
@@ -829,20 +830,20 @@ public:
 
   // overloaded assignment
   const ON_wString&
-  operator=(const ON_wString&);
+  operator= (const ON_wString&);
   const ON_wString&
-  operator=(const ON_String& src); // src = UTF-8 string
+  operator= (const ON_String& src); // src = UTF-8 string
   const ON_wString&
-  operator=(char);
+  operator= (char);
   const ON_wString&
-  operator=(const char* src); // src = UTF-8 string
+  operator= (const char* src); // src = UTF-8 string
   const ON_wString&
-  operator=(unsigned char);
+  operator= (unsigned char);
   const ON_wString&
-  operator=(const unsigned char* src); // src = UTF-8 string
-  const ON_wString& operator=(wchar_t);
+  operator= (const unsigned char* src); // src = UTF-8 string
+  const ON_wString& operator= (wchar_t);
   const ON_wString&
-  operator=(const wchar_t*);
+  operator= (const wchar_t*);
 
   // string concatenation
   void
@@ -854,63 +855,63 @@ public:
   void
   Append (const wchar_t*, int); // append specified number of elements
   const ON_wString&
-  operator+=(const ON_wString&);
+  operator+= (const ON_wString&);
   const ON_wString&
-  operator+=(const ON_String& sUTF8); // append UTF-8 string
+  operator+= (const ON_String& sUTF8); // append UTF-8 string
   const ON_wString&
-  operator+=(char);
+  operator+= (char);
   const ON_wString&
-  operator+=(unsigned char);
-  const ON_wString& operator+=(wchar_t);
+  operator+= (unsigned char);
+  const ON_wString& operator+= (wchar_t);
   const ON_wString&
-  operator+=(const char* sUTF8); // append UTF-8 string
+  operator+= (const char* sUTF8); // append UTF-8 string
   const ON_wString&
-  operator+=(const unsigned char* sUTF8); // append UTF-8 string
+  operator+= (const unsigned char* sUTF8); // append UTF-8 string
   const ON_wString&
-  operator+=(const wchar_t*);
+  operator+= (const wchar_t*);
 
   // operator+()
   ON_wString
-  operator+(const ON_wString&) const;
+  operator+ (const ON_wString&) const;
   ON_wString
-  operator+(const ON_String& sUTF8) const; // concatinate with a UTF-8 string
+  operator+ (const ON_String& sUTF8) const; // concatinate with a UTF-8 string
   ON_wString
-  operator+(char) const;
+  operator+ (char) const;
   ON_wString
-  operator+(unsigned char) const;
-  ON_wString operator+(wchar_t) const;
+  operator+ (unsigned char) const;
+  ON_wString operator+ (wchar_t) const;
   ON_wString
-  operator+(const char* sUTF8) const; // concatinate with a UTF-8 string
+  operator+ (const char* sUTF8) const; // concatinate with a UTF-8 string
   ON_wString
-  operator+(const unsigned char* sUTF8) const; // concatinate with a UTF-8 string
+  operator+ (const unsigned char* sUTF8) const; // concatinate with a UTF-8 string
   ON_wString
-  operator+(const wchar_t*) const;
+  operator+ (const wchar_t*) const;
 
   // string comparison
   bool
-  operator==(const ON_wString&) const;
+  operator== (const ON_wString&) const;
   bool
-  operator==(const wchar_t*) const;
+  operator== (const wchar_t*) const;
   bool
-  operator!=(const ON_wString&) const;
+  operator!= (const ON_wString&) const;
   bool
-  operator!=(const wchar_t*) const;
+  operator!= (const wchar_t*) const;
   bool
-  operator<(const ON_wString&) const;
+  operator< (const ON_wString&) const;
   bool
-  operator<(const wchar_t*) const;
+  operator< (const wchar_t*) const;
   bool
-  operator>(const ON_wString&) const;
+  operator> (const ON_wString&) const;
   bool
-  operator>(const wchar_t*) const;
+  operator> (const wchar_t*) const;
   bool
-  operator<=(const ON_wString&) const;
+  operator<= (const ON_wString&) const;
   bool
-  operator<=(const wchar_t*) const;
+  operator<= (const wchar_t*) const;
   bool
-  operator>=(const ON_wString&) const;
+  operator>= (const ON_wString&) const;
   bool
-  operator>=(const wchar_t*) const;
+  operator>= (const wchar_t*) const;
 
   // string comparison
   // If this < string, returns < 0.
@@ -1063,12 +1064,12 @@ public:
   Find (char) const;
   int
   Find (unsigned char) const;
-  int Find(wchar_t) const;
+  int Find (wchar_t) const;
   int
   ReverseFind (char) const;
   int
   ReverseFind (unsigned char) const;
-  int ReverseFind(wchar_t) const;
+  int ReverseFind (wchar_t) const;
 
   // look for a specific sub-string
   int
@@ -1087,11 +1088,11 @@ public:
   Format (const wchar_t*, ...);
 
   // Low level access to string contents as character array
-  void ReserveArray(std::size_t); // make sure internal array has at least
-                                  // the requested capacity.
+  void ReserveArray (std::size_t); // make sure internal array has at least
+                                   // the requested capacity.
   void
-  ShrinkArray ();              // shrink internal storage to minimum size
-  void SetLength(std::size_t); // set length (<=capacity)
+  ShrinkArray ();               // shrink internal storage to minimum size
+  void SetLength (std::size_t); // set length (<=capacity)
   wchar_t*
   Array ();
   const wchar_t*
@@ -1221,13 +1222,13 @@ public:
   ON_UnitSystem(); // default constructor units are millimeters.
   ~ON_UnitSystem();
 
-  ON_UnitSystem(ON::unit_system);
-  ON_UnitSystem& operator=(ON::unit_system);
+  ON_UnitSystem (ON::unit_system);
+  ON_UnitSystem& operator= (ON::unit_system);
 
   bool
-  operator==(const ON_UnitSystem&);
+  operator== (const ON_UnitSystem&);
   bool
-  operator!=(const ON_UnitSystem&);
+  operator!= (const ON_UnitSystem&);
 
   bool
   IsValid () const;

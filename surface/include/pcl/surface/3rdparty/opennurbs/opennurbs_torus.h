@@ -37,8 +37,8 @@ public:
 
 public:
   ON_Torus();
-  ON_Torus(const ON_Plane& major__plane, double major__radius, double minor__radius);
-  ON_Torus(const ON_Circle& major__circle, double minor__radius);
+  ON_Torus (const ON_Plane& major__plane, double major__radius, double minor__radius);
+  ON_Torus (const ON_Circle& major__circle, double minor__radius);
   ~ON_Torus();
 
   ON_BOOL32

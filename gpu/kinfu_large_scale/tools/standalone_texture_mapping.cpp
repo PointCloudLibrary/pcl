@@ -57,20 +57,21 @@ saveOBJFile (const std::string& file_name,
              unsigned precision)
 {
   if (tex_mesh.cloud.data.empty()) {
-    PCL_ERROR("[pcl::io::saveOBJFile] Input point cloud has no data!\n");
+    PCL_ERROR ("[pcl::io::saveOBJFile] Input point cloud has no data!\n");
     return (-1);
   }
 
   // Open file
   std::ofstream fs;
-  fs.precision(precision);
-  fs.open(file_name.c_str());
+  fs.precision (precision);
+  fs.open (file_name.c_str());
 
   // Define material file
-  std::string mtl_file_name = file_name.substr(0, file_name.find_last_of('.')) + ".mtl";
+  std::string mtl_file_name =
+      file_name.substr (0, file_name.find_last_of ('.')) + ".mtl";
   // Strip path for "mtllib" command
   std::string mtl_file_name_nopath = mtl_file_name;
-  mtl_file_name_nopath.erase(0, mtl_file_name.find_last_of('/') + 1);
+  mtl_file_name_nopath.erase (0, mtl_file_name.find_last_of ('/') + 1);
 
   /* Write 3D information */
   // number of points
@@ -111,9 +112,9 @@ saveOBJFile (const std::string& file_name,
           v_written = true;
         }
         float value;
-        memcpy(&value,
-               &tex_mesh.cloud.data[i * point_size + tex_mesh.cloud.fields[d].offset],
-               sizeof(float));
+        memcpy (&value,
+                &tex_mesh.cloud.data[i * point_size + tex_mesh.cloud.fields[d].offset],
+                sizeof (float));
         fs << value;
         if (++xyz == 3)
           break;
@@ -121,7 +122,7 @@ saveOBJFile (const std::string& file_name,
       }
     }
     if (xyz != 3) {
-      PCL_ERROR("[pcl::io::saveOBJFile] Input point cloud has no XYZ data!\n");
+      PCL_ERROR ("[pcl::io::saveOBJFile] Input point cloud has no XYZ data!\n");
       return (-2);
     }
     fs << std::endl;
@@ -145,9 +146,9 @@ saveOBJFile (const std::string& file_name,
           v_written = true;
         }
         float value;
-        memcpy(&value,
-               &tex_mesh.cloud.data[i * point_size + tex_mesh.cloud.fields[d].offset],
-               sizeof(float));
+        memcpy (&value,
+                &tex_mesh.cloud.data[i * point_size + tex_mesh.cloud.fields[d].offset],
+                sizeof (float));
         fs << value;
         if (++xyz == 3)
           break;
@@ -155,7 +156,7 @@ saveOBJFile (const std::string& file_name,
       }
     }
     if (xyz != 3) {
-      PCL_ERROR("[pcl::io::saveOBJFile] Input point cloud has no normals!\n");
+      PCL_ERROR ("[pcl::io::saveOBJFile] Input point cloud has no normals!\n");
       return (-2);
     }
     fs << std::endl;
@@ -166,7 +167,7 @@ saveOBJFile (const std::string& file_name,
     if (tex_mesh.tex_coordinates.empty())
       continue;
 
-    PCL_INFO(
+    PCL_INFO (
         "%d vertex textures in submesh %d\n", tex_mesh.tex_coordinates[m].size(), m);
     fs << "# " << tex_mesh.tex_coordinates[m].size() << " vertex textures in submesh "
        << m << std::endl;
@@ -179,7 +180,7 @@ saveOBJFile (const std::string& file_name,
   int f_idx = 0;
 
   // int idx_vt =0;
-  PCL_INFO("Writing faces...\n");
+  PCL_INFO ("Writing faces...\n");
   for (int m = 0; m < nr_meshes; ++m) {
     if (m > 0)
       f_idx += tex_mesh.tex_polygons[m - 1].size();
@@ -202,26 +203,26 @@ saveOBJFile (const std::string& file_name,
       }
       fs << std::endl;
     }
-    PCL_INFO("%d faces in mesh %d \n", tex_mesh.tex_polygons[m].size(), m);
+    PCL_INFO ("%d faces in mesh %d \n", tex_mesh.tex_polygons[m].size(), m);
     fs << "# " << tex_mesh.tex_polygons[m].size() << " faces in mesh " << m
        << std::endl;
   }
   fs << "# End of File";
 
   // Close obj file
-  PCL_INFO("Closing obj file\n");
+  PCL_INFO ("Closing obj file\n");
   fs.close();
 
   /* Write material definition for OBJ file*/
   // Open file
-  PCL_INFO("Writing material files\n");
+  PCL_INFO ("Writing material files\n");
   // don't do it if no material to write
   if (tex_mesh.tex_materials.empty())
     return (0);
 
   std::ofstream m_fs;
-  m_fs.precision(precision);
-  m_fs.open(mtl_file_name.c_str());
+  m_fs.precision (precision);
+  m_fs.open (mtl_file_name.c_str());
 
   // default
   m_fs << "#" << std::endl;
@@ -266,7 +267,7 @@ showCameras (pcl::texture_mapping::CameraVector cams,
 {
 
   // visualization object
-  pcl::visualization::PCLVisualizer visu("cameras");
+  pcl::visualization::PCLVisualizer visu ("cameras");
 
   // add a visual for each camera at the correct pose
   for (std::size_t i = 0; i < cams.size(); ++i) {
@@ -283,9 +284,9 @@ showCameras (pcl::texture_mapping::CameraVector cams,
     p1.z = 0;
     double dist = 0.75;
     double minX, minY, maxX, maxY;
-    maxX = dist * tan(std::atan(width / (2.0 * focal)));
+    maxX = dist * tan (std::atan (width / (2.0 * focal)));
     minX = -maxX;
-    maxY = dist * tan(std::atan(height / (2.0 * focal)));
+    maxY = dist * tan (std::atan (height / (2.0 * focal)));
     minY = -maxY;
     p2.x = minX;
     p2.y = minY;
@@ -299,48 +300,48 @@ showCameras (pcl::texture_mapping::CameraVector cams,
     p5.x = minX;
     p5.y = maxY;
     p5.z = dist;
-    p1 = pcl::transformPoint(p1, cam.pose);
-    p2 = pcl::transformPoint(p2, cam.pose);
-    p3 = pcl::transformPoint(p3, cam.pose);
-    p4 = pcl::transformPoint(p4, cam.pose);
-    p5 = pcl::transformPoint(p5, cam.pose);
+    p1 = pcl::transformPoint (p1, cam.pose);
+    p2 = pcl::transformPoint (p2, cam.pose);
+    p3 = pcl::transformPoint (p3, cam.pose);
+    p4 = pcl::transformPoint (p4, cam.pose);
+    p5 = pcl::transformPoint (p5, cam.pose);
     std::stringstream ss;
     ss << "Cam #" << i + 1;
-    visu.addText3D(ss.str(), p1, 0.1, 1.0, 1.0, 1.0, ss.str());
+    visu.addText3D (ss.str(), p1, 0.1, 1.0, 1.0, 1.0, ss.str());
 
-    ss.str("");
+    ss.str ("");
     ss << "camera_" << i << "line1";
-    visu.addLine(p1, p2, ss.str());
-    ss.str("");
+    visu.addLine (p1, p2, ss.str());
+    ss.str ("");
     ss << "camera_" << i << "line2";
-    visu.addLine(p1, p3, ss.str());
-    ss.str("");
+    visu.addLine (p1, p3, ss.str());
+    ss.str ("");
     ss << "camera_" << i << "line3";
-    visu.addLine(p1, p4, ss.str());
-    ss.str("");
+    visu.addLine (p1, p4, ss.str());
+    ss.str ("");
     ss << "camera_" << i << "line4";
-    visu.addLine(p1, p5, ss.str());
-    ss.str("");
+    visu.addLine (p1, p5, ss.str());
+    ss.str ("");
     ss << "camera_" << i << "line5";
-    visu.addLine(p2, p5, ss.str());
-    ss.str("");
+    visu.addLine (p2, p5, ss.str());
+    ss.str ("");
     ss << "camera_" << i << "line6";
-    visu.addLine(p5, p4, ss.str());
-    ss.str("");
+    visu.addLine (p5, p4, ss.str());
+    ss.str ("");
     ss << "camera_" << i << "line7";
-    visu.addLine(p4, p3, ss.str());
-    ss.str("");
+    visu.addLine (p4, p3, ss.str());
+    ss.str ("");
     ss << "camera_" << i << "line8";
-    visu.addLine(p3, p2, ss.str());
+    visu.addLine (p3, p2, ss.str());
   }
 
   // add a coordinate system
-  visu.addCoordinateSystem(1.0, "global");
+  visu.addCoordinateSystem (1.0, "global");
 
   // add the mesh's cloud (colored on Z axis)
-  pcl::visualization::PointCloudColorHandlerGenericField<pcl::PointXYZ> color_handler(
+  pcl::visualization::PointCloudColorHandlerGenericField<pcl::PointXYZ> color_handler (
       cloud, "z");
-  visu.addPointCloud(cloud, color_handler, "cloud");
+  visu.addPointCloud (cloud, color_handler, "cloud");
 
   // reset camera
   visu.resetCamera();
@@ -353,9 +354,9 @@ showCameras (pcl::texture_mapping::CameraVector cams,
 std::ifstream&
 GotoLine (std::ifstream& file, unsigned int num)
 {
-  file.seekg(std::ios::beg);
+  file.seekg (std::ios::beg);
   for (unsigned int i = 0; i < num - 1; ++i) {
-    file.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    file.ignore (std::numeric_limits<std::streamsize>::max(), '\n');
   }
   return (file);
 }
@@ -365,55 +366,55 @@ bool
 readCamPoseFile (std::string filename, pcl::TextureMapping<pcl::PointXYZ>::Camera& cam)
 {
   std::ifstream myReadFile;
-  myReadFile.open(filename.c_str(), std::ios::in);
+  myReadFile.open (filename.c_str(), std::ios::in);
   if (!myReadFile.is_open()) {
-    PCL_ERROR("Error opening file %d\n", filename.c_str());
+    PCL_ERROR ("Error opening file %d\n", filename.c_str());
     return false;
   }
-  myReadFile.seekg(ios::beg);
+  myReadFile.seekg (ios::beg);
 
   double val;
 
   // go to line 2 to read translations
-  GotoLine(myReadFile, 2);
+  GotoLine (myReadFile, 2);
   myReadFile >> val;
-  cam.pose(0, 3) = val; // TX
+  cam.pose (0, 3) = val; // TX
   myReadFile >> val;
-  cam.pose(1, 3) = val; // TY
+  cam.pose (1, 3) = val; // TY
   myReadFile >> val;
-  cam.pose(2, 3) = val; // TZ
+  cam.pose (2, 3) = val; // TZ
 
   // go to line 7 to read rotations
-  GotoLine(myReadFile, 7);
+  GotoLine (myReadFile, 7);
 
   myReadFile >> val;
-  cam.pose(0, 0) = val;
+  cam.pose (0, 0) = val;
   myReadFile >> val;
-  cam.pose(0, 1) = val;
+  cam.pose (0, 1) = val;
   myReadFile >> val;
-  cam.pose(0, 2) = val;
+  cam.pose (0, 2) = val;
 
   myReadFile >> val;
-  cam.pose(1, 0) = val;
+  cam.pose (1, 0) = val;
   myReadFile >> val;
-  cam.pose(1, 1) = val;
+  cam.pose (1, 1) = val;
   myReadFile >> val;
-  cam.pose(1, 2) = val;
+  cam.pose (1, 2) = val;
 
   myReadFile >> val;
-  cam.pose(2, 0) = val;
+  cam.pose (2, 0) = val;
   myReadFile >> val;
-  cam.pose(2, 1) = val;
+  cam.pose (2, 1) = val;
   myReadFile >> val;
-  cam.pose(2, 2) = val;
+  cam.pose (2, 2) = val;
 
-  cam.pose(3, 0) = 0.0;
-  cam.pose(3, 1) = 0.0;
-  cam.pose(3, 2) = 0.0;
-  cam.pose(3, 3) = 1.0; // Scale
+  cam.pose (3, 0) = 0.0;
+  cam.pose (3, 1) = 0.0;
+  cam.pose (3, 2) = 0.0;
+  cam.pose (3, 3) = 1.0; // Scale
 
   // go to line 12 to read camera focal length and size
-  GotoLine(myReadFile, 12);
+  GotoLine (myReadFile, 12);
   myReadFile >> val;
   cam.focal_length = val;
   myReadFile >> val;
@@ -432,12 +433,12 @@ main (int argc, char** argv)
 {
 
   // read mesh from plyfile
-  PCL_INFO("\nLoading mesh from file %s...\n", argv[1]);
+  PCL_INFO ("\nLoading mesh from file %s...\n", argv[1]);
   pcl::PolygonMesh triangles;
-  pcl::io::loadPLYFile(argv[1], triangles);
+  pcl::io::loadPLYFile (argv[1], triangles);
 
-  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
-  pcl::fromPCLPointCloud2(triangles.cloud, *cloud);
+  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
+  pcl::fromPCLPointCloud2 (triangles.cloud, *cloud);
 
   // Create the texturemesh object that will contain our UV-mapped mesh
   TextureMesh mesh;
@@ -445,41 +446,41 @@ main (int argc, char** argv)
   std::vector<pcl::Vertices> polygon_1;
 
   // push faces into the texturemesh object
-  polygon_1.resize(triangles.polygons.size());
+  polygon_1.resize (triangles.polygons.size());
   for (std::size_t i = 0; i < triangles.polygons.size(); ++i) {
     polygon_1[i] = triangles.polygons[i];
   }
-  mesh.tex_polygons.push_back(polygon_1);
-  PCL_INFO("\tInput mesh contains %zu faces and %zu vertices\n",
-           mesh.tex_polygons[0].size(),
-           static_cast<std::size_t>(cloud->size()));
-  PCL_INFO("...Done.\n");
+  mesh.tex_polygons.push_back (polygon_1);
+  PCL_INFO ("\tInput mesh contains %zu faces and %zu vertices\n",
+            mesh.tex_polygons[0].size(),
+            static_cast<std::size_t> (cloud->size()));
+  PCL_INFO ("...Done.\n");
 
   // Load textures and cameras poses and intrinsics
-  PCL_INFO("\nLoading textures and camera poses...\n");
+  PCL_INFO ("\nLoading textures and camera poses...\n");
   pcl::texture_mapping::CameraVector my_cams;
 
-  const pcl_fs::path base_dir(".");
-  std::string extension(".txt");
-  for (pcl_fs::directory_iterator it(base_dir); it != pcl_fs::directory_iterator();
+  const pcl_fs::path base_dir (".");
+  std::string extension (".txt");
+  for (pcl_fs::directory_iterator it (base_dir); it != pcl_fs::directory_iterator();
        ++it) {
-    if (pcl_fs::is_regular_file(it->status()) &&
+    if (pcl_fs::is_regular_file (it->status()) &&
         it->path().extension().string() == extension) {
       pcl::TextureMapping<pcl::PointXYZ>::Camera cam;
-      readCamPoseFile(it->path().string(), cam);
+      readCamPoseFile (it->path().string(), cam);
       cam.texture_file = it->path().stem().string() + ".png";
-      my_cams.push_back(cam);
+      my_cams.push_back (cam);
     }
   }
-  PCL_INFO("\tLoaded %zu textures.\n", my_cams.size());
-  PCL_INFO("...Done.\n");
+  PCL_INFO ("\tLoaded %zu textures.\n", my_cams.size());
+  PCL_INFO ("...Done.\n");
 
   // Display cameras to user
-  PCL_INFO("\nDisplaying cameras. Press \'q\' to continue texture mapping\n");
-  showCameras(my_cams, cloud);
+  PCL_INFO ("\nDisplaying cameras. Press \'q\' to continue texture mapping\n");
+  showCameras (my_cams, cloud);
 
   // Create materials for each texture (and one extra for occluded faces)
-  mesh.tex_materials.resize(my_cams.size() + 1);
+  mesh.tex_materials.resize (my_cams.size() + 1);
   for (std::size_t i = 0; i <= my_cams.size(); ++i) {
     pcl::TexMaterial mesh_material;
     mesh_material.tex_Ka.r = 0.2f;
@@ -511,41 +512,41 @@ main (int argc, char** argv)
   }
 
   // Sort faces
-  PCL_INFO("\nSorting faces by cameras...\n");
+  PCL_INFO ("\nSorting faces by cameras...\n");
   pcl::TextureMapping<pcl::PointXYZ>
       tm; // TextureMapping object that will perform the sort
-  tm.textureMeshwithMultipleCameras(mesh, my_cams);
+  tm.textureMeshwithMultipleCameras (mesh, my_cams);
 
-  PCL_INFO("Sorting faces by cameras done.\n");
+  PCL_INFO ("Sorting faces by cameras done.\n");
   for (std::size_t i = 0; i <= my_cams.size(); ++i) {
-    PCL_INFO("\tSub mesh %zu contains %zu faces and %zu UV coordinates.\n",
-             i,
-             mesh.tex_polygons[i].size(),
-             mesh.tex_coordinates[i].size());
+    PCL_INFO ("\tSub mesh %zu contains %zu faces and %zu UV coordinates.\n",
+              i,
+              mesh.tex_polygons[i].size(),
+              mesh.tex_coordinates[i].size());
   }
 
   // compute normals for the mesh
-  PCL_INFO("\nEstimating normals...\n");
+  PCL_INFO ("\nEstimating normals...\n");
   pcl::NormalEstimation<pcl::PointXYZ, pcl::Normal> n;
-  pcl::PointCloud<pcl::Normal>::Ptr normals(new pcl::PointCloud<pcl::Normal>);
-  pcl::search::KdTree<pcl::PointXYZ>::Ptr tree(new pcl::search::KdTree<pcl::PointXYZ>);
-  tree->setInputCloud(cloud);
-  n.setInputCloud(cloud);
-  n.setSearchMethod(tree);
-  n.setKSearch(20);
-  n.compute(*normals);
+  pcl::PointCloud<pcl::Normal>::Ptr normals (new pcl::PointCloud<pcl::Normal>);
+  pcl::search::KdTree<pcl::PointXYZ>::Ptr tree (new pcl::search::KdTree<pcl::PointXYZ>);
+  tree->setInputCloud (cloud);
+  n.setInputCloud (cloud);
+  n.setSearchMethod (tree);
+  n.setKSearch (20);
+  n.compute (*normals);
 
   // Concatenate XYZ and normal fields
-  pcl::PointCloud<pcl::PointNormal>::Ptr cloud_with_normals(
+  pcl::PointCloud<pcl::PointNormal>::Ptr cloud_with_normals (
       new pcl::PointCloud<pcl::PointNormal>);
-  pcl::concatenateFields(*cloud, *normals, *cloud_with_normals);
-  PCL_INFO("...Done.\n");
+  pcl::concatenateFields (*cloud, *normals, *cloud_with_normals);
+  PCL_INFO ("...Done.\n");
 
-  pcl::toPCLPointCloud2(*cloud_with_normals, mesh.cloud);
+  pcl::toPCLPointCloud2 (*cloud_with_normals, mesh.cloud);
 
-  PCL_INFO("\nSaving mesh to textured_mesh.obj\n");
+  PCL_INFO ("\nSaving mesh to textured_mesh.obj\n");
 
-  saveOBJFile("textured_mesh.obj", mesh, 5);
+  saveOBJFile ("textured_mesh.obj", mesh, 5);
 
   return (0);
 }

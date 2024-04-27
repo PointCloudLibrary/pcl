@@ -43,13 +43,13 @@
 #include <pcl/point_types.h>
 // Instantiations of specific point types
 #ifdef PCL_ONLY_CORE_POINT_TYPES
-PCL_INSTANTIATE_PRODUCT(
+PCL_INSTANTIATE_PRODUCT (
     BoundaryEstimation,
-    ((pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA)(pcl::PointXYZRGBNormal)(
-        pcl::PointNormal))((pcl::PointXYZRGBNormal)(pcl::Normal)(pcl::PointNormal))(
+    ((pcl::PointXYZ) (pcl::PointXYZI) (pcl::PointXYZRGBA) (pcl::PointXYZRGBNormal) (
+        pcl::PointNormal)) ((pcl::PointXYZRGBNormal) (pcl::Normal) (pcl::PointNormal)) (
         (pcl::Boundary)))
 #else
-PCL_INSTANTIATE_PRODUCT(BoundaryEstimation,
-                        (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES)((pcl::Boundary)))
+PCL_INSTANTIATE_PRODUCT (BoundaryEstimation,
+                         (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES)((pcl::Boundary)))
 #endif
 #endif // PCL_NO_PRECOMPILE

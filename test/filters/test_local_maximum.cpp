@@ -46,14 +46,14 @@
 using namespace pcl;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TEST(Filters, LocalMaximum)
+TEST (Filters, LocalMaximum)
 {
   PointCloud<PointXYZ> cloud_in, cloud_out;
 
   cloud_in.height = 1;
   cloud_in.width = 4;
   cloud_in.is_dense = true;
-  cloud_in.resize(4);
+  cloud_in.resize (4);
 
   cloud_in[0].x = 0;
   cloud_in[0].y = 0;
@@ -69,25 +69,25 @@ TEST(Filters, LocalMaximum)
   cloud_in[3].z = 2;
 
   LocalMaximum<PointXYZ> lm;
-  lm.setInputCloud(cloud_in.makeShared());
-  lm.setRadius(1.0f);
-  lm.filter(cloud_out);
+  lm.setInputCloud (cloud_in.makeShared());
+  lm.setRadius (1.0f);
+  lm.filter (cloud_out);
 
-  EXPECT_EQ(0.25f, cloud_out[0].z);
-  EXPECT_EQ(0.50f, cloud_out[1].z);
-  EXPECT_EQ(2.00f, cloud_out[2].z);
-  EXPECT_EQ(3, cloud_out.size());
+  EXPECT_EQ (0.25f, cloud_out[0].z);
+  EXPECT_EQ (0.50f, cloud_out[1].z);
+  EXPECT_EQ (2.00f, cloud_out[2].z);
+  EXPECT_EQ (3, cloud_out.size());
 }
 
-TEST(Filters, LocalMaximum2) // Same as the "LocalMaximum" test above, but the points
-                             // have a different order
+TEST (Filters, LocalMaximum2) // Same as the "LocalMaximum" test above, but the points
+                              // have a different order
 {
   PointCloud<PointXYZ> cloud_in, cloud_out;
 
   cloud_in.height = 1;
   cloud_in.width = 4;
   cloud_in.is_dense = true;
-  cloud_in.resize(4);
+  cloud_in.resize (4);
 
   cloud_in[0].x = 0.5;
   cloud_in[0].y = 0.5;
@@ -103,21 +103,21 @@ TEST(Filters, LocalMaximum2) // Same as the "LocalMaximum" test above, but the p
   cloud_in[3].z = 2;
 
   LocalMaximum<PointXYZ> lm;
-  lm.setInputCloud(cloud_in.makeShared());
-  lm.setRadius(1.0f);
-  lm.filter(cloud_out);
+  lm.setInputCloud (cloud_in.makeShared());
+  lm.setRadius (1.0f);
+  lm.filter (cloud_out);
 
-  EXPECT_EQ(0.25f, cloud_out[0].z);
-  EXPECT_EQ(0.50f, cloud_out[1].z);
-  EXPECT_EQ(2.00f, cloud_out[2].z);
-  EXPECT_EQ(3, cloud_out.size());
+  EXPECT_EQ (0.25f, cloud_out[0].z);
+  EXPECT_EQ (0.50f, cloud_out[1].z);
+  EXPECT_EQ (2.00f, cloud_out[2].z);
+  EXPECT_EQ (3, cloud_out.size());
 }
 
 /* ---[ */
 int
 main (int argc, char** argv)
 {
-  testing::InitGoogleTest(&argc, argv);
+  testing::InitGoogleTest (&argc, argv);
   return (RUN_ALL_TESTS());
 }
 /* ]--- */

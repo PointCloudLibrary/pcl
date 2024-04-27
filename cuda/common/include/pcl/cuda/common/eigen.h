@@ -117,8 +117,8 @@ unitOrthogonal (const float3& src)
   /* unless the x and y coords are both close to zero, we can
    * simply take ( -y, x, 0 ) and normalize it.
    */
-  if ((!isMuchSmallerThan(src.x, src.z)) || (!isMuchSmallerThan(src.y, src.z))) {
-    float invnm = 1.0f / sqrtf(src.x * src.x + src.y * src.y);
+  if ((!isMuchSmallerThan (src.x, src.z)) || (!isMuchSmallerThan (src.y, src.z))) {
+    float invnm = 1.0f / sqrtf (src.x * src.x + src.y * src.y);
     perp.x = -src.y * invnm;
     perp.y = src.x * invnm;
     perp.z = 0.0f;
@@ -128,7 +128,7 @@ unitOrthogonal (const float3& src)
    * So we take the crossed product with (1,0,0) and normalize it.
    */
   else {
-    float invnm = 1.0f / sqrtf(src.z * src.z + src.y * src.y);
+    float invnm = 1.0f / sqrtf (src.z * src.z + src.y * src.y);
     perp.x = 0.0f;
     perp.y = -src.z * invnm;
     perp.z = src.y * invnm;
@@ -145,7 +145,7 @@ computeRoots2 (const float& b, const float& c, float3& roots)
   if (d < 0.0f) // no real roots!!!! THIS SHOULD NOT HAPPEN!
     d = 0.0f;
 
-  float sd = sqrt(d);
+  float sd = sqrt (d);
 
   roots.z = 0.5f * (b + sd);
   roots.y = 0.5f * (b - sd);
@@ -154,7 +154,7 @@ computeRoots2 (const float& b, const float& c, float3& roots)
 inline __host__ __device__ void
 swap (float& a, float& b)
 {
-  float c(a);
+  float c (a);
   a = b;
   b = c;
 }
@@ -176,12 +176,12 @@ computeRoots (const CovarianceMatrix& m, float3& roots)
              m.data[1].y * m.data[2].z - m.data[1].z * m.data[1].z;
   float c2 = m.data[0].x + m.data[1].y + m.data[2].z;
 
-  if (std::abs(c0) <
+  if (std::abs (c0) <
       std::numeric_limits<float>::epsilon()) // one root is 0 -> quadratic equation
-    computeRoots2(c2, c1, roots);
+    computeRoots2 (c2, c1, roots);
   else {
     const float s_inv3 = 1.0f / 3.0f;
-    const float s_sqrt3 = sqrtf(3.0f);
+    const float s_sqrt3 = sqrtf (3.0f);
     // Construct the parameters used in classifying the roots of the equation
     // and in solving the equation for the roots in closed form.
     float c2_over_3 = c2 * s_inv3;
@@ -196,41 +196,42 @@ computeRoots (const CovarianceMatrix& m, float3& roots)
       q = 0.0f;
 
     // Compute the eigenvalues by solving for the roots of the polynomial.
-    float rho = sqrtf(-a_over_3);
-    float theta = std::atan2(sqrtf(-q), half_b) * s_inv3;
-    float cos_theta = std::cos(theta);
-    float sin_theta = sin(theta);
+    float rho = sqrtf (-a_over_3);
+    float theta = std::atan2 (sqrtf (-q), half_b) * s_inv3;
+    float cos_theta = std::cos (theta);
+    float sin_theta = sin (theta);
     roots.x = c2_over_3 + 2.f * rho * cos_theta;
     roots.y = c2_over_3 - rho * (cos_theta + s_sqrt3 * sin_theta);
     roots.z = c2_over_3 - rho * (cos_theta - s_sqrt3 * sin_theta);
 
     // Sort in increasing order.
     if (roots.x >= roots.y)
-      swap(roots.x, roots.y);
+      swap (roots.x, roots.y);
     if (roots.y >= roots.z) {
-      swap(roots.y, roots.z);
+      swap (roots.y, roots.z);
       if (roots.x >= roots.y)
-        swap(roots.x, roots.y);
+        swap (roots.x, roots.y);
     }
 
     if (roots.x <= 0.0f) // eigenval for symmetric positive semi-definite matrix can not
                          // be negative! Set it to 0
-      computeRoots2(c2, c1, roots);
+      computeRoots2 (c2, c1, roots);
   }
 }
 
 inline __host__ __device__ void
 eigen33 (const CovarianceMatrix& mat, CovarianceMatrix& evecs, float3& evals)
 {
-  evals = evecs.data[0] = evecs.data[1] = evecs.data[2] = make_float3(0.0f, 0.0f, 0.0f);
+  evals = evecs.data[0] = evecs.data[1] = evecs.data[2] =
+      make_float3 (0.0f, 0.0f, 0.0f);
 
   // Scale the matrix so its entries are in [-1,1].  The scaling is applied
   // only when at least one matrix entry has magnitude larger than 1.
 
   // Scalar scale = mat.cwiseAbs ().maxCoeff ();
   float3 scale_tmp =
-      fmaxf(fmaxf(fabs(mat.data[0]), fabs(mat.data[1])), fabs(mat.data[2]));
-  float scale = fmaxf(fmaxf(scale_tmp.x, scale_tmp.y), scale_tmp.z);
+      fmaxf (fmaxf (fabs (mat.data[0]), fabs (mat.data[1])), fabs (mat.data[2]));
+  float scale = fmaxf (fmaxf (scale_tmp.x, scale_tmp.y), scale_tmp.z);
   if (scale <= std::numeric_limits<float>::min())
     scale = 1.0f;
 
@@ -240,13 +241,13 @@ eigen33 (const CovarianceMatrix& mat, CovarianceMatrix& evecs, float3& evals)
   scaledMat.data[2] = mat.data[2] / scale;
 
   // Compute the eigenvalues
-  computeRoots(scaledMat, evals);
+  computeRoots (scaledMat, evals);
 
   if ((evals.z - evals.x) <= std::numeric_limits<float>::epsilon()) {
     // all three equal
-    evecs.data[0] = make_float3(1.0f, 0.0f, 0.0f);
-    evecs.data[1] = make_float3(0.0f, 1.0f, 0.0f);
-    evecs.data[2] = make_float3(0.0f, 0.0f, 1.0f);
+    evecs.data[0] = make_float3 (1.0f, 0.0f, 0.0f);
+    evecs.data[1] = make_float3 (0.0f, 1.0f, 0.0f);
+    evecs.data[2] = make_float3 (0.0f, 0.0f, 1.0f);
   }
   else if ((evals.y - evals.x) <= std::numeric_limits<float>::epsilon()) {
     // first and second equal
@@ -259,23 +260,23 @@ eigen33 (const CovarianceMatrix& mat, CovarianceMatrix& evecs, float3& evals)
     tmp.data[1].y -= evals.z;
     tmp.data[2].z -= evals.z;
 
-    float3 vec1 = cross(tmp.data[0], tmp.data[1]);
-    float3 vec2 = cross(tmp.data[0], tmp.data[2]);
-    float3 vec3 = cross(tmp.data[1], tmp.data[2]);
+    float3 vec1 = cross (tmp.data[0], tmp.data[1]);
+    float3 vec2 = cross (tmp.data[0], tmp.data[2]);
+    float3 vec3 = cross (tmp.data[1], tmp.data[2]);
 
-    float len1 = dot(vec1, vec1);
-    float len2 = dot(vec2, vec2);
-    float len3 = dot(vec3, vec3);
+    float len1 = dot (vec1, vec1);
+    float len2 = dot (vec2, vec2);
+    float len3 = dot (vec3, vec3);
 
     if (len1 >= len2 && len1 >= len3)
-      evecs.data[2] = vec1 / sqrtf(len1);
+      evecs.data[2] = vec1 / sqrtf (len1);
     else if (len2 >= len1 && len2 >= len3)
-      evecs.data[2] = vec2 / sqrtf(len2);
+      evecs.data[2] = vec2 / sqrtf (len2);
     else
-      evecs.data[2] = vec3 / sqrtf(len3);
+      evecs.data[2] = vec3 / sqrtf (len3);
 
-    evecs.data[1] = unitOrthogonal(evecs.data[2]);
-    evecs.data[0] = cross(evecs.data[1], evecs.data[2]);
+    evecs.data[1] = unitOrthogonal (evecs.data[2]);
+    evecs.data[0] = cross (evecs.data[1], evecs.data[2]);
   }
   else if ((evals.z - evals.y) <= std::numeric_limits<float>::epsilon()) {
     // second and third equal
@@ -287,23 +288,23 @@ eigen33 (const CovarianceMatrix& mat, CovarianceMatrix& evecs, float3& evals)
     tmp.data[1].y -= evals.x;
     tmp.data[2].z -= evals.x;
 
-    float3 vec1 = cross(tmp.data[0], tmp.data[1]);
-    float3 vec2 = cross(tmp.data[0], tmp.data[2]);
-    float3 vec3 = cross(tmp.data[1], tmp.data[2]);
+    float3 vec1 = cross (tmp.data[0], tmp.data[1]);
+    float3 vec2 = cross (tmp.data[0], tmp.data[2]);
+    float3 vec3 = cross (tmp.data[1], tmp.data[2]);
 
-    float len1 = dot(vec1, vec1);
-    float len2 = dot(vec2, vec2);
-    float len3 = dot(vec3, vec3);
+    float len1 = dot (vec1, vec1);
+    float len2 = dot (vec2, vec2);
+    float len3 = dot (vec3, vec3);
 
     if (len1 >= len2 && len1 >= len3)
-      evecs.data[0] = vec1 / sqrtf(len1);
+      evecs.data[0] = vec1 / sqrtf (len1);
     else if (len2 >= len1 && len2 >= len3)
-      evecs.data[0] = vec2 / sqrtf(len2);
+      evecs.data[0] = vec2 / sqrtf (len2);
     else
-      evecs.data[0] = vec3 / sqrtf(len3);
+      evecs.data[0] = vec3 / sqrtf (len3);
 
-    evecs.data[1] = unitOrthogonal(evecs.data[0]);
-    evecs.data[2] = cross(evecs.data[0], evecs.data[1]);
+    evecs.data[1] = unitOrthogonal (evecs.data[0]);
+    evecs.data[2] = cross (evecs.data[0], evecs.data[1]);
   }
   else {
     CovarianceMatrix tmp;
@@ -314,28 +315,28 @@ eigen33 (const CovarianceMatrix& mat, CovarianceMatrix& evecs, float3& evals)
     tmp.data[1].y -= evals.z;
     tmp.data[2].z -= evals.z;
 
-    float3 vec1 = cross(tmp.data[0], tmp.data[1]);
-    float3 vec2 = cross(tmp.data[0], tmp.data[2]);
-    float3 vec3 = cross(tmp.data[1], tmp.data[2]);
+    float3 vec1 = cross (tmp.data[0], tmp.data[1]);
+    float3 vec2 = cross (tmp.data[0], tmp.data[2]);
+    float3 vec3 = cross (tmp.data[1], tmp.data[2]);
 
-    float len1 = dot(vec1, vec1);
-    float len2 = dot(vec2, vec2);
-    float len3 = dot(vec3, vec3);
+    float len1 = dot (vec1, vec1);
+    float len2 = dot (vec2, vec2);
+    float len3 = dot (vec3, vec3);
 
     float mmax[3];
     unsigned int min_el = 2;
     unsigned int max_el = 2;
     if (len1 >= len2 && len1 >= len3) {
       mmax[2] = len1;
-      evecs.data[2] = vec1 / sqrtf(len1);
+      evecs.data[2] = vec1 / sqrtf (len1);
     }
     else if (len2 >= len1 && len2 >= len3) {
       mmax[2] = len2;
-      evecs.data[2] = vec2 / sqrtf(len2);
+      evecs.data[2] = vec2 / sqrtf (len2);
     }
     else {
       mmax[2] = len3;
-      evecs.data[2] = vec3 / sqrtf(len3);
+      evecs.data[2] = vec3 / sqrtf (len3);
     }
 
     tmp.data[0] = scaledMat.data[0];
@@ -345,28 +346,28 @@ eigen33 (const CovarianceMatrix& mat, CovarianceMatrix& evecs, float3& evals)
     tmp.data[1].y -= evals.y;
     tmp.data[2].z -= evals.y;
 
-    vec1 = cross(tmp.data[0], tmp.data[1]);
-    vec2 = cross(tmp.data[0], tmp.data[2]);
-    vec3 = cross(tmp.data[1], tmp.data[2]);
+    vec1 = cross (tmp.data[0], tmp.data[1]);
+    vec2 = cross (tmp.data[0], tmp.data[2]);
+    vec3 = cross (tmp.data[1], tmp.data[2]);
 
-    len1 = dot(vec1, vec1);
-    len2 = dot(vec2, vec2);
-    len3 = dot(vec3, vec3);
+    len1 = dot (vec1, vec1);
+    len2 = dot (vec2, vec2);
+    len3 = dot (vec3, vec3);
     if (len1 >= len2 && len1 >= len3) {
       mmax[1] = len1;
-      evecs.data[1] = vec1 / sqrtf(len1);
+      evecs.data[1] = vec1 / sqrtf (len1);
       min_el = len1 <= mmax[min_el] ? 1 : min_el;
       max_el = len1 > mmax[max_el] ? 1 : max_el;
     }
     else if (len2 >= len1 && len2 >= len3) {
       mmax[1] = len2;
-      evecs.data[1] = vec2 / sqrtf(len2);
+      evecs.data[1] = vec2 / sqrtf (len2);
       min_el = len2 <= mmax[min_el] ? 1 : min_el;
       max_el = len2 > mmax[max_el] ? 1 : max_el;
     }
     else {
       mmax[1] = len3;
-      evecs.data[1] = vec3 / sqrtf(len3);
+      evecs.data[1] = vec3 / sqrtf (len3);
       min_el = len3 <= mmax[min_el] ? 1 : min_el;
       max_el = len3 > mmax[max_el] ? 1 : max_el;
     }
@@ -378,37 +379,37 @@ eigen33 (const CovarianceMatrix& mat, CovarianceMatrix& evecs, float3& evals)
     tmp.data[1].y -= evals.x;
     tmp.data[2].z -= evals.x;
 
-    vec1 = cross(tmp.data[0], tmp.data[1]);
-    vec2 = cross(tmp.data[0], tmp.data[2]);
-    vec3 = cross(tmp.data[1], tmp.data[2]);
+    vec1 = cross (tmp.data[0], tmp.data[1]);
+    vec2 = cross (tmp.data[0], tmp.data[2]);
+    vec3 = cross (tmp.data[1], tmp.data[2]);
 
-    len1 = dot(vec1, vec1);
-    len2 = dot(vec2, vec2);
-    len3 = dot(vec3, vec3);
+    len1 = dot (vec1, vec1);
+    len2 = dot (vec2, vec2);
+    len3 = dot (vec3, vec3);
     if (len1 >= len2 && len1 >= len3) {
       mmax[0] = len1;
-      evecs.data[0] = vec1 / sqrtf(len1);
+      evecs.data[0] = vec1 / sqrtf (len1);
       min_el = len3 <= mmax[min_el] ? 0 : min_el;
       max_el = len3 > mmax[max_el] ? 0 : max_el;
     }
     else if (len2 >= len1 && len2 >= len3) {
       mmax[0] = len2;
-      evecs.data[0] = vec2 / sqrtf(len2);
+      evecs.data[0] = vec2 / sqrtf (len2);
       min_el = len3 <= mmax[min_el] ? 0 : min_el;
       max_el = len3 > mmax[max_el] ? 0 : max_el;
     }
     else {
       mmax[0] = len3;
-      evecs.data[0] = vec3 / sqrtf(len3);
+      evecs.data[0] = vec3 / sqrtf (len3);
       min_el = len3 <= mmax[min_el] ? 0 : min_el;
       max_el = len3 > mmax[max_el] ? 0 : max_el;
     }
 
     unsigned mid_el = 3 - min_el - max_el;
     evecs.data[min_el] =
-        normalize(cross(evecs.data[(min_el + 1) % 3], evecs.data[(min_el + 2) % 3]));
+        normalize (cross (evecs.data[(min_el + 1) % 3], evecs.data[(min_el + 2) % 3]));
     evecs.data[mid_el] =
-        normalize(cross(evecs.data[(mid_el + 1) % 3], evecs.data[(mid_el + 2) % 3]));
+        normalize (cross (evecs.data[(mid_el + 1) % 3], evecs.data[(mid_el + 2) % 3]));
   }
   // Rescale back to the original size.
   evals *= scale;
@@ -417,7 +418,7 @@ eigen33 (const CovarianceMatrix& mat, CovarianceMatrix& evecs, float3& evals)
 /** \brief Simple kernel to add two points. */
 struct AddPoints {
   __inline__ __host__ __device__ float3
-  operator()(float3 lhs, float3 rhs)
+  operator() (float3 lhs, float3 rhs)
   {
     return lhs + rhs;
   }
@@ -426,7 +427,7 @@ struct AddPoints {
 /** \brief Adds two matrices element-wise. */
 struct AddCovariances {
   __inline__ __host__ __device__ CovarianceMatrix
-  operator()(CovarianceMatrix lhs, CovarianceMatrix rhs)
+  operator() (CovarianceMatrix lhs, CovarianceMatrix rhs)
   {
     CovarianceMatrix ret;
     ret.data[0] = lhs.data[0] + rhs.data[0];
@@ -440,7 +441,7 @@ struct AddCovariances {
  * PointXYZRGB. */
 struct convert_point_to_float3 {
   __inline__ __host__ __device__ float3
-  operator()(const PointXYZRGB& pt)
+  operator() (const PointXYZRGB& pt)
   {
     return pt;
   }
@@ -451,11 +452,11 @@ struct ComputeCovarianceForPoint {
   float3 centroid_;
   __inline__ __host__ __device__
   ComputeCovarianceForPoint (const float3& centroid)
-  : centroid_(centroid)
+  : centroid_ (centroid)
   {}
 
   __inline__ __host__ __device__ CovarianceMatrix
-  operator()(const PointXYZRGB& point)
+  operator() (const PointXYZRGB& point)
   {
     CovarianceMatrix cov;
     float3 pt = point - centroid_;
@@ -481,7 +482,7 @@ compute3DCentroid (IteratorT begin, IteratorT end, float3& centroid)
   // we need a way to iterate over the inliers in the point cloud.. permutation_iterator
   // to the rescue
   centroid =
-      transform_reduce(begin, end, convert_point_to_float3(), centroid, AddPoints());
+      transform_reduce (begin, end, convert_point_to_float3(), centroid, AddPoints());
   centroid /= (float)(end - begin);
 }
 
@@ -493,12 +494,12 @@ computeCovariance (IteratorT begin,
                    CovarianceMatrix& cov,
                    float3 centroid)
 {
-  cov.data[0] = make_float3(0.0f, 0.0f, 0.0f);
-  cov.data[1] = make_float3(0.0f, 0.0f, 0.0f);
-  cov.data[2] = make_float3(0.0f, 0.0f, 0.0f);
+  cov.data[0] = make_float3 (0.0f, 0.0f, 0.0f);
+  cov.data[1] = make_float3 (0.0f, 0.0f, 0.0f);
+  cov.data[2] = make_float3 (0.0f, 0.0f, 0.0f);
 
-  cov = transform_reduce(
-      begin, end, ComputeCovarianceForPoint(centroid), cov, AddCovariances());
+  cov = transform_reduce (
+      begin, end, ComputeCovarianceForPoint (centroid), cov, AddCovariances());
 
   // fill in the lower triangle (symmetry)
   cov.data[1].x = cov.data[0].y;
@@ -516,12 +517,12 @@ computeCovariance (IteratorT begin,
 template <typename CloudPtr>
 class OrganizedRadiusSearch {
 public:
-  OrganizedRadiusSearch(const CloudPtr& input, float focalLength, float sqr_radius)
-  : points_(thrust::raw_pointer_cast(&input->points[0]))
-  , focalLength_(focalLength)
-  , width_(input->width)
-  , height_(input->height)
-  , sqr_radius_(sqr_radius)
+  OrganizedRadiusSearch (const CloudPtr& input, float focalLength, float sqr_radius)
+  : points_ (thrust::raw_pointer_cast (&input->points[0]))
+  , focalLength_ (focalLength)
+  , width_ (input->width)
+  , height_ (input->height)
+  , sqr_radius_ (sqr_radius)
   {}
 
   //////////////////////////////////////////////////////////////////////////////////////////////
@@ -544,9 +545,9 @@ public:
     z_sqr = point_arg.z * point_arg.z;
 
     sqrt_term_y =
-        sqrt(point_arg.y * point_arg.y * sqr_radius_ + z_sqr * sqr_radius_ - r_quadr);
+        sqrt (point_arg.y * point_arg.y * sqr_radius_ + z_sqr * sqr_radius_ - r_quadr);
     sqrt_term_x =
-        sqrt(point_arg.x * point_arg.x * sqr_radius_ + z_sqr * sqr_radius_ - r_quadr);
+        sqrt (point_arg.x * point_arg.x * sqr_radius_ + z_sqr * sqr_radius_ - r_quadr);
     // sqrt_term_y = sqrt (point_arg.y * point_arg.y * sqr_radius_ + z_sqr * sqr_radius_
     // - r_quadr); sqrt_term_x = sqrt (point_arg.x * point_arg.x * sqr_radius_ + z_sqr *
     // sqr_radius_ - r_quadr);
@@ -568,16 +569,16 @@ public:
     bounds.z += height_ / 2.0f;
     bounds.w += height_ / 2.0f;
 
-    res.x = (int)std::floor(bounds.x);
-    res.y = (int)std::ceil(bounds.y);
-    res.z = (int)std::floor(bounds.z);
-    res.w = (int)std::ceil(bounds.w);
+    res.x = (int)std::floor (bounds.x);
+    res.y = (int)std::ceil (bounds.y);
+    res.z = (int)std::floor (bounds.z);
+    res.w = (int)std::ceil (bounds.w);
 
     // clamp the coordinates to fit to depth image size
-    res.x = clamp(res.x, 0, width_ - 1);
-    res.y = clamp(res.y, 0, width_ - 1);
-    res.z = clamp(res.z, 0, height_ - 1);
-    res.w = clamp(res.w, 0, height_ - 1);
+    res.x = clamp (res.x, 0, width_ - 1);
+    res.y = clamp (res.y, 0, width_ - 1);
+    res.z = clamp (res.z, 0, height_ - 1);
+    res.w = clamp (res.w, 0, height_ - 1);
     return res;
   }
 
@@ -586,7 +587,7 @@ public:
   radiusSearch (const float3& query_pt, int k_indices[], int max_nnn)
   {
     // bounds.x = min_x, .y = max_x, .z = min_y, .w = max_y
-    int4 bounds = getProjectedRadiusSearchBox(query_pt);
+    int4 bounds = getProjectedRadiusSearchBox (query_pt);
 
     int nnn = 0;
     // iterate over all pixels in the rectangular region
@@ -594,13 +595,13 @@ public:
       for (int y = bounds.z; (y <= bounds.w) & (nnn < max_nnn); ++y) {
         int idx = y * width_ + x;
 
-        if (isnan(points_[idx].x))
+        if (isnan (points_[idx].x))
           continue;
 
         float3 point_dif = points_[idx] - query_pt;
 
         // check distance and add to results
-        if (dot(point_dif, point_dif) <= sqr_radius_) {
+        if (dot (point_dif, point_dif) <= sqr_radius_) {
           k_indices[nnn] = idx;
           ++nnn;
         }
@@ -620,7 +621,7 @@ public:
     //
     // sqr_radius_ = query_pt.z * (0.2f / 4.0f);
     // sqr_radius_ *= sqr_radius_;
-    int4 bounds = getProjectedRadiusSearchBox(query_pt);
+    int4 bounds = getProjectedRadiusSearchBox (query_pt);
 
     // This implements a fixed window size in image coordinates (pixels)
     // int2 proj_point = make_int2 ( query_pt.x/(query_pt.z/focalLength_)+width_/2.0f,
@@ -633,26 +634,26 @@ public:
     //    );
 
     // clamp the coordinates to fit to depth image size
-    bounds.x = clamp(bounds.x, 0, width_ - 1);
-    bounds.y = clamp(bounds.y, 0, width_ - 1);
-    bounds.z = clamp(bounds.z, 0, height_ - 1);
-    bounds.w = clamp(bounds.w, 0, height_ - 1);
+    bounds.x = clamp (bounds.x, 0, width_ - 1);
+    bounds.y = clamp (bounds.y, 0, width_ - 1);
+    bounds.z = clamp (bounds.z, 0, height_ - 1);
+    bounds.w = clamp (bounds.w, 0, height_ - 1);
     // int4 bounds = getProjectedRadiusSearchBox(query_pt);
 
     // number of points in rectangular area
     // int boundsarea = (bounds.y-bounds.x) * (bounds.w-bounds.z);
     // float skip = max (sqrtf ((float)boundsarea) / sqrt_desired_nr_neighbors, 1.0);
     float skipX =
-        max(sqrtf((float)bounds.y - bounds.x) / sqrt_desired_nr_neighbors, 1.0f);
+        max (sqrtf ((float)bounds.y - bounds.x) / sqrt_desired_nr_neighbors, 1.0f);
     float skipY =
-        max(sqrtf((float)bounds.w - bounds.z) / sqrt_desired_nr_neighbors, 1.0f);
+        max (sqrtf ((float)bounds.w - bounds.z) / sqrt_desired_nr_neighbors, 1.0f);
     skipX = 1;
     skipY = 1;
 
-    cov.data[0] = make_float3(0, 0, 0);
-    cov.data[1] = make_float3(0, 0, 0);
-    cov.data[2] = make_float3(0, 0, 0);
-    float3 centroid = make_float3(0, 0, 0);
+    cov.data[0] = make_float3 (0, 0, 0);
+    cov.data[1] = make_float3 (0, 0, 0);
+    cov.data[2] = make_float3 (0, 0, 0);
+    float3 centroid = make_float3 (0, 0, 0);
     int nnn = 0;
     // iterate over all pixels in the rectangular region
     for (float y = (float)bounds.z; y <= bounds.w; y += skipY) {
@@ -661,13 +662,13 @@ public:
         int idx = ((int)y) * width_ + ((int)x);
 
         // ignore invalid points
-        if (isnan(points_[idx].x) | isnan(points_[idx].y) | isnan(points_[idx].z))
+        if (isnan (points_[idx].x) | isnan (points_[idx].y) | isnan (points_[idx].z))
           continue;
 
         float3 point_dif = points_[idx] - query_pt;
 
         // check distance and update covariance matrix
-        if (dot(point_dif, point_dif) <= sqr_radius_) {
+        if (dot (point_dif, point_dif) <= sqr_radius_) {
           ++nnn;
           float3 demean_old = points_[idx] - centroid;
           centroid += demean_old / (float)nnn;
@@ -704,7 +705,7 @@ public:
     //
     // sqr_radius_ = query_pt.z * (0.2f / 4.0f);
     // sqr_radius_ *= sqr_radius_;
-    int4 bounds = getProjectedRadiusSearchBox(query_pt);
+    int4 bounds = getProjectedRadiusSearchBox (query_pt);
 
     // This implements a fixed window size in image coordinates (pixels)
     // int2 proj_point = make_int2 ( query_pt.x/(query_pt.z/focalLength_)+width_/2.0f,
@@ -717,22 +718,22 @@ public:
     //    );
 
     // clamp the coordinates to fit to depth image size
-    bounds.x = clamp(bounds.x, 0, width_ - 1);
-    bounds.y = clamp(bounds.y, 0, width_ - 1);
-    bounds.z = clamp(bounds.z, 0, height_ - 1);
-    bounds.w = clamp(bounds.w, 0, height_ - 1);
+    bounds.x = clamp (bounds.x, 0, width_ - 1);
+    bounds.y = clamp (bounds.y, 0, width_ - 1);
+    bounds.z = clamp (bounds.z, 0, height_ - 1);
+    bounds.w = clamp (bounds.w, 0, height_ - 1);
 
     // number of points in rectangular area
     // int boundsarea = (bounds.y-bounds.x) * (bounds.w-bounds.z);
     // float skip = max (sqrtf ((float)boundsarea) / sqrt_desired_nr_neighbors, 1.0);
     float skipX =
-        max(sqrtf((float)bounds.y - bounds.x) / sqrt_desired_nr_neighbors, 1.0f);
+        max (sqrtf ((float)bounds.y - bounds.x) / sqrt_desired_nr_neighbors, 1.0f);
     float skipY =
-        max(sqrtf((float)bounds.w - bounds.z) / sqrt_desired_nr_neighbors, 1.0f);
+        max (sqrtf ((float)bounds.w - bounds.z) / sqrt_desired_nr_neighbors, 1.0f);
 
     skipX = 1;
     skipY = 1;
-    float3 centroid = make_float3(0, 0, 0);
+    float3 centroid = make_float3 (0, 0, 0);
     int nnn = 0;
     // iterate over all pixels in the rectangular region
     for (float y = (float)bounds.z; y <= bounds.w; y += skipY) {
@@ -741,13 +742,13 @@ public:
         int idx = ((int)y) * width_ + ((int)x);
 
         // ignore invalid points
-        if (isnan(points_[idx].x) | isnan(points_[idx].y) | isnan(points_[idx].z))
+        if (isnan (points_[idx].x) | isnan (points_[idx].y) | isnan (points_[idx].z))
           continue;
 
         float3 point_dif = points_[idx] - query_pt;
 
         // check distance and update covariance matrix
-        if (dot(point_dif, point_dif) <= sqr_radius_) {
+        if (dot (point_dif, point_dif) <= sqr_radius_) {
           centroid += points_[idx];
           ++nnn;
         }

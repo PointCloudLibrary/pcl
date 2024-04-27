@@ -69,14 +69,15 @@ public:
   using Ptr = shared_ptr<OpenNI2Device>;
   using ConstPtr = shared_ptr<const OpenNI2Device>;
 
-  using ImageCallbackFunction = std::function<void(Image::Ptr, void* cookie)>;
-  using DepthImageCallbackFunction = std::function<void(DepthImage::Ptr, void* cookie)>;
-  using IRImageCallbackFunction = std::function<void(IRImage::Ptr, void* cookie)>;
+  using ImageCallbackFunction = std::function<void (Image::Ptr, void* cookie)>;
+  using DepthImageCallbackFunction =
+      std::function<void (DepthImage::Ptr, void* cookie)>;
+  using IRImageCallbackFunction = std::function<void (IRImage::Ptr, void* cookie)>;
   using CallbackHandle = unsigned;
 
-  using StreamCallbackFunction = std::function<void(openni::VideoStream& stream)>;
+  using StreamCallbackFunction = std::function<void (openni::VideoStream& stream)>;
 
-  OpenNI2Device(const std::string& device_URI);
+  OpenNI2Device (const std::string& device_URI);
   virtual ~OpenNI2Device();
 
   const std::string
@@ -327,7 +328,7 @@ protected:
 };
 
 PCL_EXPORTS std::ostream&
-operator<<(std::ostream& stream, const OpenNI2Device& device);
+operator<< (std::ostream& stream, const OpenNI2Device& device);
 
 } // namespace openni2
 } // namespace io

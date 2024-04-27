@@ -118,7 +118,7 @@ public:
   };
 
   /** \brief Constructor. */
-  explicit InHandScanner(Base* parent = nullptr);
+  explicit InHandScanner (Base* parent = nullptr);
 
   /** \brief Destructor. */
   ~InHandScanner() override;
@@ -314,4 +314,4 @@ public:
 } // End namespace pcl
 
 // http://doc.qt.digia.com/qt/qmetatype.html#Q_DECLARE_METATYPE
-Q_DECLARE_METATYPE(pcl::ihs::InHandScanner::RunningMode)
+Q_DECLARE_METATYPE (pcl::ihs::InHandScanner::RunningMode)

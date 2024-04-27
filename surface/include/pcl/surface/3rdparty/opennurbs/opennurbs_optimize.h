@@ -21,11 +21,11 @@
 ON_BOOL32
 ON_FindLocalMinimum ( // returns 0 - failed to converge, 1 - success, 2 - failed to
                       // converge to requested tolerances
-    int (*)(void*,
-            double,
-            double*,
-            double*), // f(void*, double t, double* value, double* derivative );
-    void*,            // passed as the void* argument to the above function
+    int (*) (void*,
+             double,
+             double*,
+             double*), // f(void*, double t, double* value, double* derivative );
+    void*,             // passed as the void* argument to the above function
     double,
     double,
     double, // ax,bx,cx, 3 abcissa  ax<bx<cx or ax>bx>cx, and

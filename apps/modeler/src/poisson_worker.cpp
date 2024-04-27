@@ -43,15 +43,15 @@
 #include <pcl/surface/poisson.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-pcl::modeler::PoissonReconstructionWorker::PoissonReconstructionWorker(
+pcl::modeler::PoissonReconstructionWorker::PoissonReconstructionWorker (
     const QList<CloudMeshItem*>& cloud_mesh_items, QWidget* parent)
-: AbstractWorker(cloud_mesh_items, parent)
-, depth_(nullptr)
-, solver_divide_(nullptr)
-, iso_divide_(nullptr)
-, degree_(nullptr)
-, scale_(nullptr)
-, samples_per_node_(nullptr)
+: AbstractWorker (cloud_mesh_items, parent)
+, depth_ (nullptr)
+, solver_divide_ (nullptr)
+, iso_divide_ (nullptr)
+, degree_ (nullptr)
+, scale_ (nullptr)
+, samples_per_node_ (nullptr)
 {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -117,32 +117,32 @@ pcl::modeler::PoissonReconstructionWorker::setupParameters()
       poisson.getScale(), 0.1, 10.0, 0.01);
   // clang-format on
 
-  parameter_dialog_->addParameter(depth_);
-  parameter_dialog_->addParameter(solver_divide_);
-  parameter_dialog_->addParameter(iso_divide_);
-  parameter_dialog_->addParameter(degree_);
-  parameter_dialog_->addParameter(scale_);
-  parameter_dialog_->addParameter(samples_per_node_);
+  parameter_dialog_->addParameter (depth_);
+  parameter_dialog_->addParameter (solver_divide_);
+  parameter_dialog_->addParameter (iso_divide_);
+  parameter_dialog_->addParameter (degree_);
+  parameter_dialog_->addParameter (scale_);
+  parameter_dialog_->addParameter (samples_per_node_);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::modeler::PoissonReconstructionWorker::processImpl(CloudMeshItem* cloud_mesh_item)
+pcl::modeler::PoissonReconstructionWorker::processImpl (CloudMeshItem* cloud_mesh_item)
 {
   pcl::Poisson<pcl::PointSurfel> poisson;
-  poisson.setDegree(*depth_);
-  poisson.setSolverDivide(*solver_divide_);
-  poisson.setIsoDivide(*iso_divide_);
-  poisson.setDegree(*degree_);
-  poisson.setScale(float(*scale_));
-  poisson.setScale(float(*samples_per_node_));
+  poisson.setDegree (*depth_);
+  poisson.setSolverDivide (*solver_divide_);
+  poisson.setIsoDivide (*iso_divide_);
+  poisson.setDegree (*degree_);
+  poisson.setScale (float (*scale_));
+  poisson.setScale (float (*samples_per_node_));
 
-  poisson.setConfidence(true);
-  poisson.setManifold(true);
+  poisson.setConfidence (true);
+  poisson.setManifold (true);
 
-  poisson.setInputCloud(cloud_mesh_item->getCloudMesh()->getCloud());
+  poisson.setInputCloud (cloud_mesh_item->getCloudMesh()->getCloud());
 
-  CloudMesh::PointCloudPtr cloud(new CloudMesh::PointCloud());
-  poisson.reconstruct(*cloud, cloud_mesh_item->getCloudMesh()->getPolygons());
+  CloudMesh::PointCloudPtr cloud (new CloudMesh::PointCloud());
+  poisson.reconstruct (*cloud, cloud_mesh_item->getCloudMesh()->getPolygons());
   cloud_mesh_item->getCloudMesh()->getCloud() = cloud;
 }

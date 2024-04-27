@@ -501,21 +501,21 @@ mergePointNormal (const DeviceArray<float4>& cloud,
 inline bool
 valid_host (float value)
 {
-  return *reinterpret_cast<int*>(&value) != 0x7fffffff; // QNAN
+  return *reinterpret_cast<int*> (&value) != 0x7fffffff; // QNAN
 }
 
 /** \brief synchronizes CUDA execution */
 inline void
 sync ()
 {
-  cudaSafeCall(cudaDeviceSynchronize());
+  cudaSafeCall (cudaDeviceSynchronize());
 }
 
 template <class D, class Matx>
 D&
 device_cast (Matx& matx)
 {
-  return (*reinterpret_cast<D*>(matx.data()));
+  return (*reinterpret_cast<D*> (matx.data()));
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////

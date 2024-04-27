@@ -43,7 +43,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 void
-pcl::RandomSample<PointT>::applyFilter(Indices& indices)
+pcl::RandomSample<PointT>::applyFilter (Indices& indices)
 {
   std::size_t N = indices_->size();
   std::size_t sample_size = negative_ ? N - sample_ : sample_;
@@ -55,19 +55,19 @@ pcl::RandomSample<PointT>::applyFilter(Indices& indices)
   }
   else {
     // Resize output indices to sample size
-    indices.resize(sample_size);
+    indices.resize (sample_size);
     if (extract_removed_indices_)
-      removed_indices_->resize(N - sample_size);
+      removed_indices_->resize (N - sample_size);
 
     // Set random seed so derived indices are the same each time the filter runs
-    std::srand(seed_);
+    std::srand (seed_);
 
     // Algorithm S
     std::size_t i = 0;
     std::size_t index = 0;
     std::vector<bool> added;
     if (extract_removed_indices_)
-      added.resize(indices_->size(), false);
+      added.resize (indices_->size(), false);
     std::size_t n = sample_size;
     while (n > 0) {
       // Step 1: [Generate U.] Generate a random variate U that is uniformly distributed

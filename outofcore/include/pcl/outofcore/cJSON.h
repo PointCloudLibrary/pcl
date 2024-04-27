@@ -61,86 +61,86 @@ typedef struct cJSON { // NOLINT
 } cJSON;
 
 typedef struct cJSON_Hooks { // NOLINT
-  void* (*malloc_fn)(std::size_t sz);
-  void (*free_fn)(void* ptr);
+  void* (*malloc_fn) (std::size_t sz);
+  void (*free_fn) (void* ptr);
 } cJSON_Hooks;
 
 /* Supply malloc, realloc and free functions to cJSON */
-PCLAPI(void) cJSON_InitHooks(cJSON_Hooks* hooks);
+PCLAPI (void) cJSON_InitHooks (cJSON_Hooks* hooks);
 
 /* Supply a block of JSON, and this returns a cJSON object you can interrogate. Call
  * cJSON_Delete when finished. */
-PCLAPI(cJSON*) cJSON_Parse(const char* value);
+PCLAPI (cJSON*) cJSON_Parse (const char* value);
 /* Render a cJSON entity to text for transfer/storage. Free the char* when finished. */
-PCLAPI(char*) cJSON_Print(cJSON* item);
+PCLAPI (char*) cJSON_Print (cJSON* item);
 /* Render a cJSON entity to text for transfer/storage without any formatting. Free the
  * char* when finished. */
-PCLAPI(char*) cJSON_PrintUnformatted(cJSON* item);
+PCLAPI (char*) cJSON_PrintUnformatted (cJSON* item);
 /* Delete a cJSON entity and all subentities. */
-PCLAPI(void) cJSON_Delete(cJSON* c);
+PCLAPI (void) cJSON_Delete (cJSON* c);
 /* Render a cJSON entity to text for transfer/storage. */
-PCLAPI(void) cJSON_PrintStr(cJSON* item, std::string& s);
+PCLAPI (void) cJSON_PrintStr (cJSON* item, std::string& s);
 /* Render a cJSON entity to text for transfer/storage without any formatting. */
-PCLAPI(void) cJSON_PrintUnformattedStr(cJSON* item, std::string& s);
+PCLAPI (void) cJSON_PrintUnformattedStr (cJSON* item, std::string& s);
 
 /* Returns the number of items in an array (or object). */
-PCLAPI(int) cJSON_GetArraySize(cJSON* array);
+PCLAPI (int) cJSON_GetArraySize (cJSON* array);
 /* Retrieve item number "item" from array "array". Returns NULL if unsuccessful. */
-PCLAPI(cJSON*) cJSON_GetArrayItem(cJSON* array, int item);
+PCLAPI (cJSON*) cJSON_GetArrayItem (cJSON* array, int item);
 /* Get item "string" from object. Case insensitive. */
-PCLAPI(cJSON*) cJSON_GetObjectItem(cJSON* object, const char* string);
+PCLAPI (cJSON*) cJSON_GetObjectItem (cJSON* object, const char* string);
 
 /* For analysing failed parses. This returns a pointer to the parse error. You'll
  * probably need to look a few chars back to make sense of it. Defined when
  * cJSON_Parse() returns 0. 0 when cJSON_Parse() succeeds. */
-PCLAPI(const char*) cJSON_GetErrorPtr();
+PCLAPI (const char*) cJSON_GetErrorPtr();
 
 /* These calls create a cJSON item of the appropriate type. */
-PCLAPI(cJSON*) cJSON_CreateNull();
-PCLAPI(cJSON*) cJSON_CreateTrue();
-PCLAPI(cJSON*) cJSON_CreateFalse();
-PCLAPI(cJSON*) cJSON_CreateBool(int b);
-PCLAPI(cJSON*) cJSON_CreateNumber(double num);
-PCLAPI(cJSON*) cJSON_CreateString(const char* string);
-PCLAPI(cJSON*) cJSON_CreateArray();
-PCLAPI(cJSON*) cJSON_CreateObject();
+PCLAPI (cJSON*) cJSON_CreateNull();
+PCLAPI (cJSON*) cJSON_CreateTrue();
+PCLAPI (cJSON*) cJSON_CreateFalse();
+PCLAPI (cJSON*) cJSON_CreateBool (int b);
+PCLAPI (cJSON*) cJSON_CreateNumber (double num);
+PCLAPI (cJSON*) cJSON_CreateString (const char* string);
+PCLAPI (cJSON*) cJSON_CreateArray();
+PCLAPI (cJSON*) cJSON_CreateObject();
 
 /* These utilities create an Array of count items. */
-PCLAPI(cJSON*) cJSON_CreateIntArray(int* numbers, int count);
-PCLAPI(cJSON*) cJSON_CreateFloatArray(float* numbers, int count);
-PCLAPI(cJSON*) cJSON_CreateDoubleArray(double* numbers, int count);
-PCLAPI(cJSON*) cJSON_CreateStringArray(const char** strings, int count);
+PCLAPI (cJSON*) cJSON_CreateIntArray (int* numbers, int count);
+PCLAPI (cJSON*) cJSON_CreateFloatArray (float* numbers, int count);
+PCLAPI (cJSON*) cJSON_CreateDoubleArray (double* numbers, int count);
+PCLAPI (cJSON*) cJSON_CreateStringArray (const char** strings, int count);
 
 /* Append item to the specified array/object. */
-PCLAPI(void) cJSON_AddItemToArray(cJSON* array, cJSON* item);
-PCLAPI(void) cJSON_AddItemToObject(cJSON* object, const char* string, cJSON* item);
+PCLAPI (void) cJSON_AddItemToArray (cJSON* array, cJSON* item);
+PCLAPI (void) cJSON_AddItemToObject (cJSON* object, const char* string, cJSON* item);
 /* Append reference to item to the specified array/object. Use this when you want to add
  * an existing cJSON to a new cJSON, but don't want to corrupt your existing cJSON. */
-PCLAPI(void) cJSON_AddItemReferenceToArray(cJSON* array, cJSON* item);
-PCLAPI(void)
-cJSON_AddItemReferenceToObject(cJSON* object, const char* string, cJSON* item);
+PCLAPI (void) cJSON_AddItemReferenceToArray (cJSON* array, cJSON* item);
+PCLAPI (void)
+cJSON_AddItemReferenceToObject (cJSON* object, const char* string, cJSON* item);
 
 /* Remove/Detach items from Arrays/Objects. */
-PCLAPI(cJSON*) cJSON_DetachItemFromArray(cJSON* array, int which);
-PCLAPI(void) cJSON_DeleteItemFromArray(cJSON* array, int which);
-PCLAPI(cJSON*) cJSON_DetachItemFromObject(cJSON* object, const char* string);
-PCLAPI(void) cJSON_DeleteItemFromObject(cJSON* object, const char* string);
+PCLAPI (cJSON*) cJSON_DetachItemFromArray (cJSON* array, int which);
+PCLAPI (void) cJSON_DeleteItemFromArray (cJSON* array, int which);
+PCLAPI (cJSON*) cJSON_DetachItemFromObject (cJSON* object, const char* string);
+PCLAPI (void) cJSON_DeleteItemFromObject (cJSON* object, const char* string);
 
 /* Update array items. */
-PCLAPI(void) cJSON_ReplaceItemInArray(cJSON* array, int which, cJSON* newitem);
-PCLAPI(void)
-cJSON_ReplaceItemInObject(cJSON* object, const char* string, cJSON* newitem);
+PCLAPI (void) cJSON_ReplaceItemInArray (cJSON* array, int which, cJSON* newitem);
+PCLAPI (void)
+cJSON_ReplaceItemInObject (cJSON* object, const char* string, cJSON* newitem);
 
 #define cJSON_AddNullToObject(object, name)                                            \
-  cJSON_AddItemToObject(object, name, cJSON_CreateNull())
+  cJSON_AddItemToObject (object, name, cJSON_CreateNull())
 #define cJSON_AddTrueToObject(object, name)                                            \
-  cJSON_AddItemToObject(object, name, cJSON_CreateTrue())
+  cJSON_AddItemToObject (object, name, cJSON_CreateTrue())
 #define cJSON_AddFalseToObject(object, name)                                           \
-  cJSON_AddItemToObject(object, name, cJSON_CreateFalse())
+  cJSON_AddItemToObject (object, name, cJSON_CreateFalse())
 #define cJSON_AddNumberToObject(object, name, n)                                       \
-  cJSON_AddItemToObject(object, name, cJSON_CreateNumber(n))
+  cJSON_AddItemToObject (object, name, cJSON_CreateNumber (n))
 #define cJSON_AddStringToObject(object, name, s)                                       \
-  cJSON_AddItemToObject(object, name, cJSON_CreateString(s))
+  cJSON_AddItemToObject (object, name, cJSON_CreateString (s))
 
 #ifdef __cplusplus
 }

@@ -73,11 +73,11 @@ public:
   using KdTreePtr = typename KdTree::Ptr;
 
   /** \brief Constructor. */
-  MarchingCubesRBF(const float off_surface_epsilon = 0.1f,
-                   const float percentage_extend_grid = 0.0f,
-                   const float iso_level = 0.0f)
-  : MarchingCubes<PointNT>(percentage_extend_grid, iso_level)
-  , off_surface_epsilon_(off_surface_epsilon)
+  MarchingCubesRBF (const float off_surface_epsilon = 0.1f,
+                    const float percentage_extend_grid = 0.0f,
+                    const float iso_level = 0.0f)
+  : MarchingCubes<PointNT> (percentage_extend_grid, iso_level)
+  , off_surface_epsilon_ (off_surface_epsilon)
   {}
 
   /** \brief Destructor. */

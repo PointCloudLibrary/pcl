@@ -45,7 +45,7 @@ namespace registration {
 
 template <typename SourceT, typename TargetT>
 void
-CorrespondenceRejectorPoly<SourceT, TargetT>::getRemainingCorrespondences(
+CorrespondenceRejectorPoly<SourceT, TargetT>::getRemainingCorrespondences (
     const pcl::Correspondences& original_correspondences,
     pcl::Correspondences& remaining_correspondences)
 {
@@ -54,42 +54,42 @@ CorrespondenceRejectorPoly<SourceT, TargetT>::getRemainingCorrespondences(
 
   // Check source/target
   if (!input_) {
-    PCL_ERROR("[pcl::registration::%s::getRemainingCorrespondences] No source was "
-              "input! Returning all input correspondences.\n",
-              getClassName().c_str());
+    PCL_ERROR ("[pcl::registration::%s::getRemainingCorrespondences] No source was "
+               "input! Returning all input correspondences.\n",
+               getClassName().c_str());
     return;
   }
 
   if (!target_) {
-    PCL_ERROR("[pcl::registration::%s::getRemainingCorrespondences] No target was "
-              "input! Returning all input correspondences.\n",
-              getClassName().c_str());
+    PCL_ERROR ("[pcl::registration::%s::getRemainingCorrespondences] No target was "
+               "input! Returning all input correspondences.\n",
+               getClassName().c_str());
     return;
   }
 
   // Check cardinality
   if (cardinality_ < 2) {
-    PCL_ERROR("[pcl::registration::%s::getRemainingCorrespondences] Polygon "
-              "cardinality too low!. Returning all input correspondences.\n",
-              getClassName().c_str());
+    PCL_ERROR ("[pcl::registration::%s::getRemainingCorrespondences] Polygon "
+               "cardinality too low!. Returning all input correspondences.\n",
+               getClassName().c_str());
     return;
   }
 
   // Number of input correspondences
-  const int nr_correspondences = static_cast<int>(original_correspondences.size());
+  const int nr_correspondences = static_cast<int> (original_correspondences.size());
 
   // Not enough correspondences for polygonal rejections
   if (cardinality_ >= nr_correspondences) {
-    PCL_ERROR("[pcl::registration::%s::getRemainingCorrespondences] Number of "
-              "correspondences smaller than polygon cardinality! Returning all input "
-              "correspondences.\n",
-              getClassName().c_str());
+    PCL_ERROR ("[pcl::registration::%s::getRemainingCorrespondences] Number of "
+               "correspondences smaller than polygon cardinality! Returning all input "
+               "correspondences.\n",
+               getClassName().c_str());
     return;
   }
 
   // Check similarity
   if (similarity_threshold_ < 0.0f || similarity_threshold_ > 1.0f) {
-    PCL_ERROR(
+    PCL_ERROR (
         "[pcl::registration::%s::getRemainingCorrespondences] Invalid edge length "
         "similarity - must be in [0,1]!. Returning all input correspondences.\n",
         getClassName().c_str());
@@ -101,20 +101,20 @@ CorrespondenceRejectorPoly<SourceT, TargetT>::getRemainingCorrespondences(
 
   // Initialization of result
   remaining_correspondences.clear();
-  remaining_correspondences.reserve(nr_correspondences);
+  remaining_correspondences.reserve (nr_correspondences);
 
   // Number of times a correspondence is sampled and number of times it was accepted
-  std::vector<int> num_samples(nr_correspondences, 0);
-  std::vector<int> num_accepted(nr_correspondences, 0);
+  std::vector<int> num_samples (nr_correspondences, 0);
+  std::vector<int> num_accepted (nr_correspondences, 0);
 
   // Main loop
   for (int i = 0; i < iterations_; ++i) {
     // Sample cardinality_ correspondences without replacement
     const std::vector<int> idx =
-        getUniqueRandomIndices(nr_correspondences, cardinality_);
+        getUniqueRandomIndices (nr_correspondences, cardinality_);
 
     // Verify the polygon similarity
-    if (thresholdPolygon(original_correspondences, idx)) {
+    if (thresholdPolygon (original_correspondences, idx)) {
       // Increment sample counter and accept counter
       for (int j = 0; j < cardinality_; ++j) {
         ++num_samples[idx[j]];
@@ -129,66 +129,67 @@ CorrespondenceRejectorPoly<SourceT, TargetT>::getRemainingCorrespondences(
   }
 
   // Now calculate the acceptance rate of each correspondence
-  std::vector<float> accept_rate(nr_correspondences, 0.0f);
+  std::vector<float> accept_rate (nr_correspondences, 0.0f);
   for (int i = 0; i < nr_correspondences; ++i) {
     const int numsi = num_samples[i];
     if (numsi == 0)
       accept_rate[i] = 0.0f;
     else
-      accept_rate[i] = static_cast<float>(num_accepted[i]) / static_cast<float>(numsi);
+      accept_rate[i] =
+          static_cast<float> (num_accepted[i]) / static_cast<float> (numsi);
   }
 
   // Compute a histogram in range [0,1] for acceptance rates
   const int hist_size = nr_correspondences / 2; // TODO: Optimize this
   const std::vector<int> histogram =
-      computeHistogram(accept_rate, 0.0f, 1.0f, hist_size);
+      computeHistogram (accept_rate, 0.0f, 1.0f, hist_size);
 
   // Find the cut point between outliers and inliers using Otsu's thresholding method
-  const int cut_idx = findThresholdOtsu(histogram);
-  const float cut = static_cast<float>(cut_idx) / static_cast<float>(hist_size);
+  const int cut_idx = findThresholdOtsu (histogram);
+  const float cut = static_cast<float> (cut_idx) / static_cast<float> (hist_size);
 
   // Threshold
   for (int i = 0; i < nr_correspondences; ++i)
     if (accept_rate[i] > cut)
-      remaining_correspondences.push_back(original_correspondences[i]);
+      remaining_correspondences.push_back (original_correspondences[i]);
 }
 
 template <typename SourceT, typename TargetT>
 std::vector<int>
-CorrespondenceRejectorPoly<SourceT, TargetT>::computeHistogram(
+CorrespondenceRejectorPoly<SourceT, TargetT>::computeHistogram (
     const std::vector<float>& data, float lower, float upper, int bins)
 {
   // Result
-  std::vector<int> result(bins, 0);
+  std::vector<int> result (bins, 0);
 
   // Last index into result and increment factor from data value --> index
   const int last_idx = bins - 1;
-  const float idx_per_val = static_cast<float>(bins) / (upper - lower);
+  const float idx_per_val = static_cast<float> (bins) / (upper - lower);
 
   // Accumulate
   for (const float& value : data)
-    ++result[std::min(last_idx, static_cast<int>(value * idx_per_val))];
+    ++result[std::min (last_idx, static_cast<int> (value * idx_per_val))];
 
   return (result);
 }
 
 template <typename SourceT, typename TargetT>
 int
-CorrespondenceRejectorPoly<SourceT, TargetT>::findThresholdOtsu(
+CorrespondenceRejectorPoly<SourceT, TargetT>::findThresholdOtsu (
     const std::vector<int>& histogram)
 {
   // Precision
   constexpr double eps = std::numeric_limits<double>::epsilon();
 
   // Histogram dimension
-  const int nbins = static_cast<int>(histogram.size());
+  const int nbins = static_cast<int> (histogram.size());
 
   // Mean and inverse of the number of data points
   double mean = 0.0;
   double sum_inv = 0.0;
   for (int i = 0; i < nbins; ++i) {
-    mean += static_cast<double>(i * histogram[i]);
-    sum_inv += static_cast<double>(histogram[i]);
+    mean += static_cast<double> (i * histogram[i]);
+    sum_inv += static_cast<double> (histogram[i]);
   }
   sum_inv = 1.0 / sum_inv;
   mean *= sum_inv;
@@ -207,7 +208,7 @@ CorrespondenceRejectorPoly<SourceT, TargetT>::findThresholdOtsu(
     class_mean1 *= class_prob1;
 
     // Probability of bin i
-    const double prob_i = static_cast<double>(histogram[i]) * sum_inv;
+    const double prob_i = static_cast<double> (histogram[i]) * sum_inv;
 
     // Class probability 1: sum of probabilities from 0 to i
     class_prob1 += prob_i;
@@ -216,12 +217,12 @@ CorrespondenceRejectorPoly<SourceT, TargetT>::findThresholdOtsu(
     class_prob2 -= prob_i;
 
     // Avoid division by zero below
-    if (std::min(class_prob1, class_prob2) < eps ||
-        std::max(class_prob1, class_prob2) > 1.0 - eps)
+    if (std::min (class_prob1, class_prob2) < eps ||
+        std::max (class_prob1, class_prob2) > 1.0 - eps)
       continue;
 
     // Class mean 1: sum of probabilities from 0 to i, weighted by bin value
-    class_mean1 = (class_mean1 + static_cast<double>(i) * prob_i) / class_prob1;
+    class_mean1 = (class_mean1 + static_cast<double> (i) * prob_i) / class_prob1;
 
     // Class mean 2: sum of probabilities from i+1 to nbins-1, weighted by bin value
     const double class_mean2 = (mean - class_prob1 * class_mean1) / class_prob2;

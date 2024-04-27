@@ -86,7 +86,7 @@ public:
   using PointCloudInPtr = typename Feature<PointInT, PointOutT>::PointCloudInPtr;
 
   /** \brief Constructor. */
-  GRSDEstimation() : relative_coordinates_all_(getAllNeighborCellIndices())
+  GRSDEstimation() : relative_coordinates_all_ (getAllNeighborCellIndices())
   {
     feature_name_ = "GRSDEstimation";
   };

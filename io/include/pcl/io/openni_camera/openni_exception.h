@@ -52,7 +52,7 @@
 #endif
 
 #define THROW_OPENNI_EXCEPTION(format, ...)                                            \
-  throwOpenNIException(__PRETTY_FUNCTION__, __FILE__, __LINE__, format, ##__VA_ARGS__)
+  throwOpenNIException (__PRETTY_FUNCTION__, __FILE__, __LINE__, format, ##__VA_ARGS__)
 
 namespace openni_wrapper {
 
@@ -73,10 +73,10 @@ public:
    * @param[in] line_number the line number where this exception was created.
    * @param[in] message the message of the exception
    */
-  OpenNIException(const std::string& function_name,
-                  const std::string& file_name,
-                  unsigned line_number,
-                  const std::string& message) noexcept;
+  OpenNIException (const std::string& function_name,
+                   const std::string& file_name,
+                   unsigned line_number,
+                   const std::string& message) noexcept;
 
   /**
    * @brief virtual Destructor that never throws an exception
@@ -90,7 +90,7 @@ public:
    * @return
    */
   OpenNIException&
-  operator=(const OpenNIException& exception) noexcept;
+  operator= (const OpenNIException& exception) noexcept;
 
   /**
    * @brief virtual method, derived from std::exception
@@ -146,10 +146,10 @@ throwOpenNIException (const char* function_name,
 {
   static char msg[1024];
   va_list args;
-  va_start(args, format);
-  vsprintf(msg, format, args);
-  va_end(args);
-  throw OpenNIException(function_name, file_name, line_number, msg);
+  va_start (args, format);
+  vsprintf (msg, format, args);
+  va_end (args);
+  throw OpenNIException (function_name, file_name, line_number, msg);
 }
 } // namespace openni_wrapper
 #endif

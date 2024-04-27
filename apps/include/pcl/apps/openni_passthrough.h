@@ -74,7 +74,7 @@ public:
   using CloudPtr = Cloud::Ptr;
   using CloudConstPtr = Cloud::ConstPtr;
 
-  OpenNIPassthrough(pcl::OpenNIGrabber& grabber);
+  OpenNIPassthrough (pcl::OpenNIGrabber& grabber);
 
   ~OpenNIPassthrough() override
   {
@@ -104,8 +104,8 @@ public Q_SLOTS:
   void
   adjustPassThroughValues (int new_value)
   {
-    pass_.setFilterLimits(0.0f, float(new_value) / 10.0f);
-    PCL_INFO("Changed passthrough maximum value to: %f\n", float(new_value) / 10.0f);
+    pass_.setFilterLimits (0.0f, float (new_value) / 10.0f);
+    PCL_INFO ("Changed passthrough maximum value to: %f\n", float (new_value) / 10.0f);
   }
 
 private Q_SLOTS:

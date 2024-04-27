@@ -72,7 +72,7 @@ struct ImageType<Device> {
   static void
   createContinuous (int h, int w, int typ, type& mat)
   {
-    cv::gpu::createContinuous(h, w, typ, mat);
+    cv::gpu::createContinuous (h, w, typ, mat);
   }
 };
 
@@ -82,36 +82,37 @@ struct ImageType<Host> {
   static void
   createContinuous (int h, int w, int typ, type& mat)
   {
-    mat = cv::Mat(h, w, typ); // assume no padding at the end of line
+    mat = cv::Mat (h, w, typ); // assume no padding at the end of line
   }
 };
 
 class Segmentation {
 public:
-  Segmentation() : viewer("PCL CUDA - Segmentation"), new_cloud(false), go_on(true) {}
+  Segmentation() : viewer ("PCL CUDA - Segmentation"), new_cloud (false), go_on (true)
+  {}
 
   void
   viz_cb (pcl::visualization::PCLVisualizer& viz)
   {
-    std::lock_guard<std::mutex> l(m_mutex);
+    std::lock_guard<std::mutex> l (m_mutex);
     if (new_cloud) {
       // using ColorHandler =
       // pcl::visualization::PointCloudColorHandlerRGBField<pcl::PointXYZRGBNormal>;
       using ColorHandler = pcl::visualization::PointCloudColorHandlerGenericField<
           pcl::PointXYZRGBNormal>;
-      ColorHandler Color_handler(normal_cloud, "curvature");
+      ColorHandler Color_handler (normal_cloud, "curvature");
       static bool first_time = true;
       if (!first_time) {
-        viz.removePointCloud("normalcloud");
-        viz.removePointCloud("cloud");
+        viz.removePointCloud ("normalcloud");
+        viz.removePointCloud ("cloud");
       }
       else
         first_time = false;
 
-      viz.addPointCloudNormals<pcl::PointXYZRGBNormal>(
+      viz.addPointCloudNormals<pcl::PointXYZRGBNormal> (
           normal_cloud, 200, 0.1, "normalcloud");
-      viz.addPointCloud<pcl::PointXYZRGBNormal>(
-          normal_cloud, Color_handler, std::string("cloud"), 0);
+      viz.addPointCloud<pcl::PointXYZRGBNormal> (
+          normal_cloud, Color_handler, std::string ("cloud"), 0);
       new_cloud = false;
     }
   }
@@ -120,10 +121,10 @@ public:
   void
   file_cloud_cb (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr& cloud)
   {
-    pcl::PointCloud<pcl::PointXYZRGB>::Ptr output(
+    pcl::PointCloud<pcl::PointXYZRGB>::Ptr output (
         new pcl::PointCloud<pcl::PointXYZRGB>);
     PointCloudAOS<Host> data_host;
-    data_host.resize(cloud->points.size());
+    data_host.resize (cloud->points.size());
     for (std::size_t i = 0; i < cloud->points.size(); ++i) {
       PointXYZRGB pt;
       pt.x = (*cloud)[i].x;
@@ -136,23 +137,24 @@ public:
     data_host.width = cloud->width;
     data_host.height = cloud->height;
     data_host.is_dense = cloud->is_dense;
-    typename PointCloudAOS<Storage>::Ptr data = toStorage<Host, Storage>(data_host);
+    typename PointCloudAOS<Storage>::Ptr data = toStorage<Host, Storage> (data_host);
 
     // we got a cloud in device..
 
     shared_ptr<typename Storage<float4>::type> normals;
     {
-      ScopeTimeCPU time("TIMING: Normal Estimation");
+      ScopeTimeCPU time ("TIMING: Normal Estimation");
       constexpr float focallength = 580 / 2.0;
-      normals = computePointNormals<Storage,
-                                    typename PointIterator<Storage, PointXYZRGB>::type>(
-          data->points.begin(), data->points.end(), focallength, data, 0.05, 30);
+      normals =
+          computePointNormals<Storage,
+                              typename PointIterator<Storage, PointXYZRGB>::type> (
+              data->points.begin(), data->points.end(), focallength, data, 0.05, 30);
     }
     go_on = false;
 
-    std::lock_guard<std::mutex> l(m_mutex);
-    normal_cloud.reset(new pcl::PointCloud<pcl::PointXYZRGBNormal>);
-    toPCL(*data, *normals, *normal_cloud);
+    std::lock_guard<std::mutex> l (m_mutex);
+    normal_cloud.reset (new pcl::PointCloud<pcl::PointXYZRGBNormal>);
+    toPCL (*data, *normals, *normal_cloud);
     new_cloud = true;
   }
 
@@ -166,25 +168,25 @@ public:
     static double last = getTime();
     double now = getTime();
     if (++count == 30 || (now - last) > 5) {
-      std::cout << "Average framerate: " << double(count) / double(now - last)
+      std::cout << "Average framerate: " << double (count) / double (now - last)
                 << " Hz..........................................." << std::endl;
       count = 0;
       last = now;
     }
 
-    pcl::PointCloud<pcl::PointXYZRGB>::Ptr output(
+    pcl::PointCloud<pcl::PointXYZRGB>::Ptr output (
         new pcl::PointCloud<pcl::PointXYZRGB>);
     typename PointCloudAOS<Storage>::Ptr data;
 
     // ScopeTimeCPU timer ("All: ");
-    ScopeTimeCPU time("TIMING: everything");
+    ScopeTimeCPU time ("TIMING: everything");
     // Compute the PointCloud on the device
-    d2c.compute<Storage>(depth_image, image, constant, data, true, 2);
+    d2c.compute<Storage> (depth_image, image, constant, data, true, 2);
 
     shared_ptr<typename Storage<float4>::type> normals;
     {
-      ScopeTimeCPU time("TIMING: Normal Estimation");
-      normals = computeFastPointNormals<Storage>(data);
+      ScopeTimeCPU time ("TIMING: Normal Estimation");
+      normals = computeFastPointNormals<Storage> (data);
     }
 
     // retrieve normals as an image..
@@ -196,19 +198,19 @@ public:
     typename ImageType<Storage>::type normal_image;
     typename StoragePointer<Storage, char4>::type ptr;
     {
-      ScopeTimeCPU time("TIMING: Matrix Creation");
-      ImageType<Storage>::createContinuous(
+      ScopeTimeCPU time ("TIMING: Matrix Creation");
+      ImageType<Storage>::createContinuous (
           (int)data->height, (int)data->width, CV_8UC4, normal_image);
-      ptr = typename StoragePointer<Storage, char4>::type((char4*)normal_image.data);
-      createNormalsImage<Storage>(ptr, *normals);
+      ptr = typename StoragePointer<Storage, char4>::type ((char4*)normal_image.data);
+      createNormalsImage<Storage> (ptr, *normals);
     }
 
     // TODO: this breaks for pcl::cuda::Host
-    pcl::cuda::detail::DjSets comps(0);
+    pcl::cuda::detail::DjSets comps (0);
     cv::Mat seg;
     {
-      ScopeTimeCPU time("TIMING: Mean Shift");
-      pcl::cuda::meanShiftSegmentation(normal_image, seg, 8, 20, 100, comps);
+      ScopeTimeCPU time ("TIMING: Mean Shift");
+      pcl::cuda::meanShiftSegmentation (normal_image, seg, 8, 20, 100, comps);
     }
     std::cerr << "time since callback: " << getTime() - now << std::endl;
     //      std::cout << "comps " << comps.parent.size () << " " << comps.rank.size ()
@@ -221,15 +223,15 @@ public:
     //      std::ostream_iterator<int>(std::cout, " "));
 
     {
-      ScopeTimeCPU time("TIMING: Vis");
-      cv::namedWindow("NormalImage", CV_WINDOW_NORMAL);
+      ScopeTimeCPU time ("TIMING: Vis");
+      cv::namedWindow ("NormalImage", CV_WINDOW_NORMAL);
       // cv::imshow ("NormalImage", cv::Mat(normal_image));
-      cv::imshow("NormalImage", seg);
-      cv::waitKey(2);
+      cv::imshow ("NormalImage", seg);
+      cv::waitKey (2);
 
-      std::lock_guard<std::mutex> l(m_mutex);
-      normal_cloud.reset(new pcl::PointCloud<pcl::PointXYZRGBNormal>);
-      toPCL(*data, *normals, *normal_cloud);
+      std::lock_guard<std::mutex> l (m_mutex);
+      normal_cloud.reset (new pcl::PointCloud<pcl::PointXYZRGBNormal>);
+      toPCL (*data, *normals, *normal_cloud);
       new_cloud = true;
     }
   }
@@ -246,9 +248,9 @@ public:
 
       if (use_device) {
         std::cerr << "[Segmentation] Using GPU..." << std::endl;
-        std::function<void(const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr&)> f =
-            std::bind(&Segmentation::file_cloud_cb<Device>, this, _1);
-        filegrabber.registerCallback(f);
+        std::function<void (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr&)> f =
+            std::bind (&Segmentation::file_cloud_cb<Device>, this, _1);
+        filegrabber.registerCallback (f);
       }
       else {
         //          std::cerr << "[Segmentation] Using CPU..." << std::endl;
@@ -261,7 +263,7 @@ public:
       filegrabber.start();
       while (go_on) //! viewer.wasStopped () && go_on)
       {
-        pcl_sleep(1);
+        pcl_sleep (1);
       }
       filegrabber.stop();
     }
@@ -270,11 +272,11 @@ public:
 
       if (use_device) {
         std::cerr << "[Segmentation] Using GPU..." << std::endl;
-        std::function<void(const openni_wrapper::Image::Ptr& image,
-                           const openni_wrapper::DepthImage::Ptr& depth_image,
-                           float)>
-            f = std::bind(&Segmentation::cloud_cb<Device>, this, _1, _2, _3);
-        grabber.registerCallback(f);
+        std::function<void (const openni_wrapper::Image::Ptr& image,
+                            const openni_wrapper::DepthImage::Ptr& depth_image,
+                            float)>
+            f = std::bind (&Segmentation::cloud_cb<Device>, this, _1, _2, _3);
+        grabber.registerCallback (f);
       }
       else {
         //          std::cerr << "[Segmentation] Using CPU..." << std::endl;
@@ -284,13 +286,13 @@ public:
         //          grabber.registerCallback (f);
       }
 
-      viewer.runOnVisualizationThread(std::bind(&Segmentation::viz_cb, this, _1),
-                                      "viz_cb");
+      viewer.runOnVisualizationThread (std::bind (&Segmentation::viz_cb, this, _1),
+                                       "viz_cb");
 
       grabber.start();
 
       while (!viewer.wasStopped()) {
-        pcl_sleep(1);
+        pcl_sleep (1);
       }
 
       grabber.stop();
@@ -314,6 +316,6 @@ main (int argc, char** argv)
   if (argc >= 3)
     use_file = true;
   Segmentation s;
-  s.run(use_device, use_file);
+  s.run (use_device, use_file);
   return 0;
 }

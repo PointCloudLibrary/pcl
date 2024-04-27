@@ -44,8 +44,8 @@ namespace cloud_composer {
 class TransformClouds : public ModifyItemTool {
   Q_OBJECT
 public:
-  TransformClouds(QMap<QString, vtkSmartPointer<vtkMatrix4x4>> transform_map,
-                  QObject* parent = nullptr);
+  TransformClouds (QMap<QString, vtkSmartPointer<vtkMatrix4x4>> transform_map,
+                   QObject* parent = nullptr);
 
   QList<CloudComposerItem*>
   performAction (QList<const CloudComposerItem*> input_data,

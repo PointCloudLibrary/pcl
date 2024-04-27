@@ -3,11 +3,11 @@
 
 pcl::cloud_composer::SelectionEvent::~SelectionEvent()
 {
-  renderer_->RemoveActor(selected_actor_);
+  renderer_->RemoveActor (selected_actor_);
 }
 
 void
-pcl::cloud_composer::SelectionEvent::findIndicesInItem(
+pcl::cloud_composer::SelectionEvent::findIndicesInItem (
     CloudItem* cloud_item, const pcl::PointIndices::Ptr& indices)
 {
   // WE DON'T NEED TO DO THIS SEARCH BECAUSE WE HAVE A 1-1 CORRESPONDENCE VTK TO PCL
@@ -47,15 +47,15 @@ pcl::cloud_composer::SelectionEvent::findIndicesInItem(
     }
 
   }*/
-  if (id_selected_data_map_.contains(cloud_item->getId())) {
-    vtkPolyData* points_in_item = id_selected_data_map_.value(cloud_item->getId());
-    vtkIdTypeArray* point_ids = vtkIdTypeArray::SafeDownCast(
-        points_in_item->GetPointData()->GetArray("vtkIdFilter_Ids"));
+  if (id_selected_data_map_.contains (cloud_item->getId())) {
+    vtkPolyData* points_in_item = id_selected_data_map_.value (cloud_item->getId());
+    vtkIdTypeArray* point_ids = vtkIdTypeArray::SafeDownCast (
+        points_in_item->GetPointData()->GetArray ("vtkIdFilter_Ids"));
 
-    indices->indices.resize(point_ids->GetNumberOfTuples());
+    indices->indices.resize (point_ids->GetNumberOfTuples());
     for (vtkIdType i = 0; i < point_ids->GetNumberOfTuples(); ++i) {
       // qDebug () << "id="<<point_ids->GetValue (i);
-      indices->indices[i] = point_ids->GetValue(i);
+      indices->indices[i] = point_ids->GetValue (i);
     }
     // qDebug () << points_in_item->GetNumberOfPoints () << " selected points in
     // "<<cloud_item->getId ();

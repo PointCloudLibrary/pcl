@@ -90,23 +90,23 @@ public:
   };
 
   // define callback signature typedefs
-  using sig_cb_openni_image = void(const openni_wrapper::Image::Ptr&);
-  using sig_cb_openni_depth_image = void(const openni_wrapper::DepthImage::Ptr&);
-  using sig_cb_openni_ir_image = void(const openni_wrapper::IRImage::Ptr&);
-  using sig_cb_openni_image_depth_image = void(const openni_wrapper::Image::Ptr&,
-                                               const openni_wrapper::DepthImage::Ptr&,
-                                               float);
-  using sig_cb_openni_ir_depth_image = void(const openni_wrapper::IRImage::Ptr&,
-                                            const openni_wrapper::DepthImage::Ptr&,
-                                            float);
+  using sig_cb_openni_image = void (const openni_wrapper::Image::Ptr&);
+  using sig_cb_openni_depth_image = void (const openni_wrapper::DepthImage::Ptr&);
+  using sig_cb_openni_ir_image = void (const openni_wrapper::IRImage::Ptr&);
+  using sig_cb_openni_image_depth_image = void (const openni_wrapper::Image::Ptr&,
+                                                const openni_wrapper::DepthImage::Ptr&,
+                                                float);
+  using sig_cb_openni_ir_depth_image = void (const openni_wrapper::IRImage::Ptr&,
+                                             const openni_wrapper::DepthImage::Ptr&,
+                                             float);
   using sig_cb_openni_point_cloud =
-      void(const pcl::PointCloud<pcl::PointXYZ>::ConstPtr&);
+      void (const pcl::PointCloud<pcl::PointXYZ>::ConstPtr&);
   using sig_cb_openni_point_cloud_rgb =
-      void(const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr&);
+      void (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr&);
   using sig_cb_openni_point_cloud_rgba =
-      void(const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&);
+      void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&);
   using sig_cb_openni_point_cloud_i =
-      void(const pcl::PointCloud<pcl::PointXYZI>::ConstPtr&);
+      void (const pcl::PointCloud<pcl::PointXYZI>::ConstPtr&);
 
 public:
   /** \brief Constructor
@@ -114,9 +114,9 @@ public:
    * or the index of the device. \param[in] depth_mode the mode of the depth stream
    * \param[in] image_mode the mode of the image stream
    */
-  OpenNIGrabber(const std::string& device_id = "",
-                const Mode& depth_mode = OpenNI_Default_Mode,
-                const Mode& image_mode = OpenNI_Default_Mode);
+  OpenNIGrabber (const std::string& device_id = "",
+                 const Mode& depth_mode = OpenNI_Default_Mode,
+                 const Mode& image_mode = OpenNI_Default_Mode);
 
   /** \brief virtual Destructor inherited from the Grabber interface. It never throws.
    */
@@ -320,7 +320,7 @@ public:
 
     // shift-to-depth lookup
     for (std::size_t i = 0; i < size; ++i) {
-      *depth_data_it = openni_device->shiftToDepth(*shift_data_it);
+      *depth_data_it = openni_device->shiftToDepth (*shift_data_it);
 
       shift_data_it++;
       depth_data_it++;
@@ -454,7 +454,7 @@ protected:
   struct modeComp {
 
     bool
-    operator()(const XnMapOutputMode& mode1, const XnMapOutputMode& mode2) const
+    operator() (const XnMapOutputMode& mode1, const XnMapOutputMode& mode2) const
     {
       if (mode1.nXRes < mode2.nXRes)
         return true;

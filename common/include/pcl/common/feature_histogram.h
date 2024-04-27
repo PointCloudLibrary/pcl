@@ -53,7 +53,7 @@ public:
    * \param[in] min lower threshold.
    * \param[in] max upper threshold.
    */
-  FeatureHistogram(const std::size_t number_of_bins, const float min, const float max);
+  FeatureHistogram (const std::size_t number_of_bins, const float min, const float max);
 
   /** \brief Public destructor. */
   virtual ~FeatureHistogram();

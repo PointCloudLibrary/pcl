@@ -57,7 +57,7 @@ can have their own copy of a dimension style to override some settings
 // Presumably, this will be moved into ON_DimStyle when the SDK is changed again
 // Don't put this extension class in a header file or export it.
 class ON_DimStyleExtra : public ON_UserData {
-  ON_OBJECT_DECLARE(ON_DimStyleExtra);
+  ON_OBJECT_DECLARE (ON_DimStyleExtra);
 
 public:
   //////// 26 Oct 2010 - Changed to always create ON_DimStyleExtra
@@ -114,7 +114,7 @@ public:
 
   // override virtual ON_UserData::Archive function
   ON_BOOL32
-  Archive () const;
+  Archive() const;
 
   void
   SetFieldOverride (int field_id, bool bOverride);
@@ -195,7 +195,7 @@ public:
   void
   SetSourceDimstyle (ON_UUID source_uuid);
   ON_UUID
-  SourceDimstyle () const;
+  SourceDimstyle() const;
 
   bool
   CompareFields (const ON_DimStyleExtra* pOther) const;
@@ -228,18 +228,18 @@ public:
 };
 
 // Added for v5 - 5/01/07 LW
-ON_OBJECT_IMPLEMENT(ON_DimStyleExtra,
-                    ON_UserData,
-                    "513FDE53-7284-4065-8601-06CEA8B28D6F");
+ON_OBJECT_IMPLEMENT (ON_DimStyleExtra,
+                     ON_UserData,
+                     "513FDE53-7284-4065-8601-06CEA8B28D6F");
 
 ////// 26 Oct 2010 - Lowell - Changed to always create ON_DimStyleExtra if there's not
-///one /ON_DimStyleExtra* ON_DimStyleExtra::DimStyleExtension( ON_DimStyle* pDimStyle)
+/// one /ON_DimStyleExtra* ON_DimStyleExtra::DimStyleExtension( ON_DimStyle* pDimStyle)
 ////{
 ////  ON_DimStyleExtra* pExtra = 0;
 ////  if( pDimStyle)
 ////  {
 ////    pExtra = ON_DimStyleExtra::Cast( pDimStyle->GetUserData(
-///ON_DimStyleExtra::m_ON_DimStyleExtra_class_id.Uuid())); /    if( pExtra == 0) /    {
+/// ON_DimStyleExtra::m_ON_DimStyleExtra_class_id.Uuid())); /    if( pExtra == 0) /    {
 ////      pExtra = new ON_DimStyleExtra;
 ////      if( pExtra)
 ////      {
@@ -256,12 +256,13 @@ ON_OBJECT_IMPLEMENT(ON_DimStyleExtra,
 
 // 26 Oct 2010 - Lowell - Changed to always create ON_DimStyleExtra if there's not one
 ON_DimStyleExtra*
-ON_DimStyleExtra::DimStyleExtensionGet(ON_DimStyle* pDimStyle, bool bCreateIfNoneExists)
+ON_DimStyleExtra::DimStyleExtensionGet (ON_DimStyle* pDimStyle,
+                                        bool bCreateIfNoneExists)
 {
   ON_DimStyleExtra* pExtra = 0;
   if (pDimStyle) {
-    pExtra = ON_DimStyleExtra::Cast(
-        pDimStyle->GetUserData(ON_DimStyleExtra::m_ON_DimStyleExtra_class_id.Uuid()));
+    pExtra = ON_DimStyleExtra::Cast (
+        pDimStyle->GetUserData (ON_DimStyleExtra::m_ON_DimStyleExtra_class_id.Uuid()));
     // 2 November 2011 Dale Lear
     //   I added the bCreateIfNoneExists parameter and I'm using
     //   is sparingly.  It is critical that we do not add
@@ -277,7 +278,7 @@ ON_DimStyleExtra::DimStyleExtensionGet(ON_DimStyle* pDimStyle, bool bCreateIfNon
     if (pExtra == 0 && bCreateIfNoneExists) {
       pExtra = new ON_DimStyleExtra;
       if (pExtra) {
-        if (!pDimStyle->AttachUserData(pExtra)) {
+        if (!pDimStyle->AttachUserData (pExtra)) {
           delete pExtra;
           pExtra = 0;
         }
@@ -288,10 +289,10 @@ ON_DimStyleExtra::DimStyleExtensionGet(ON_DimStyle* pDimStyle, bool bCreateIfNon
 }
 
 const ON_DimStyleExtra*
-ON_DimStyleExtra::DimStyleExtensionGet(const ON_DimStyle* pDimStyle)
+ON_DimStyleExtra::DimStyleExtensionGet (const ON_DimStyle* pDimStyle)
 {
   // Please do not changes the "false" to a "true" in the second argument.
-  return ON_DimStyleExtra::DimStyleExtensionGet((ON_DimStyle*)pDimStyle, false);
+  return ON_DimStyleExtra::DimStyleExtensionGet ((ON_DimStyle*)pDimStyle, false);
 }
 
 ON_DimStyleExtra::ON_DimStyleExtra()
@@ -302,8 +303,8 @@ ON_DimStyleExtra::ON_DimStyleExtra()
                                          // V6 SaveAs V5 needs to work, but SaveAs
                                          // V4 should not write this userdata.
   m_userdata_copycount = 1;
-  m_valid_fields.Reserve(ON_DimStyleExtra::eFieldCount);
-  m_valid_fields.SetCount(ON_DimStyleExtra::eFieldCount);
+  m_valid_fields.Reserve (ON_DimStyleExtra::eFieldCount);
+  m_valid_fields.SetCount (ON_DimStyleExtra::eFieldCount);
   m_parent_dimstyle = ON_nil_uuid;
   m_source_dimstyle = ON_nil_uuid;
   SetDefaults();
@@ -370,7 +371,7 @@ ON_DimStyleExtra::IsDefault() const
 }
 
 void
-ON_DimStyleExtra::Dump(ON_TextLog&) const
+ON_DimStyleExtra::Dump (ON_TextLog&) const
 {
   // do nothing
 }
@@ -379,68 +380,68 @@ unsigned int
 ON_DimStyleExtra::SizeOf() const
 {
   unsigned int sz = ON_UserData::SizeOf();
-  sz += sizeof(*this) - sizeof(ON_UserData);
+  sz += sizeof (*this) - sizeof (ON_UserData);
   return sz;
 }
 
 ON_BOOL32
-ON_DimStyleExtra::Write(ON_BinaryArchive& archive) const
+ON_DimStyleExtra::Write (ON_BinaryArchive& archive) const
 {
   //  bool rc = archive.BeginWrite3dmChunk(TCODE_ANONYMOUS_CHUNK,1,0); Changed to 1,1
   //  for mask settings 12/12/09 bool rc =
   //  archive.BeginWrite3dmChunk(TCODE_ANONYMOUS_CHUNK,1,1); Changed to 1,2 for dimscale
   //  12/17/09 bool rc = archive.BeginWrite3dmChunk(TCODE_ANONYMOUS_CHUNK,1,2); Changed
   //  to 1,3 for source_dimstyle 10/19/10
-  bool rc = archive.BeginWrite3dmChunk(TCODE_ANONYMOUS_CHUNK, 1, 3);
+  bool rc = archive.BeginWrite3dmChunk (TCODE_ANONYMOUS_CHUNK, 1, 3);
 
   if (rc)
-    rc = archive.WriteUuid(m_parent_dimstyle);
+    rc = archive.WriteUuid (m_parent_dimstyle);
   if (rc)
-    rc = archive.WriteArray(m_valid_fields);
+    rc = archive.WriteArray (m_valid_fields);
 
   if (rc)
-    rc = archive.WriteInt(m_tolerance_style);
+    rc = archive.WriteInt (m_tolerance_style);
   if (rc)
-    rc = archive.WriteInt(m_tolerance_resolution);
+    rc = archive.WriteInt (m_tolerance_resolution);
 
   if (rc)
-    rc = archive.WriteDouble(m_tolerance_upper_value);
+    rc = archive.WriteDouble (m_tolerance_upper_value);
   if (rc)
-    rc = archive.WriteDouble(m_tolerance_lower_value);
+    rc = archive.WriteDouble (m_tolerance_lower_value);
   if (rc)
-    rc = archive.WriteDouble(m_tolerance_height_scale);
+    rc = archive.WriteDouble (m_tolerance_height_scale);
 
   // March 22, 2010 - Global DimStyle was obsoleted and moved into DimStyles
   // So now for writing older version files, its multiplied into all distance values
   if (archive.Archive3dmVersion() < 5) {
     if (rc)
-      rc = archive.WriteDouble(m_baseline_spacing * m_dimscale);
+      rc = archive.WriteDouble (m_baseline_spacing * m_dimscale);
   }
   else {
     if (rc)
-      rc = archive.WriteDouble(m_baseline_spacing);
+      rc = archive.WriteDouble (m_baseline_spacing);
   }
 
   if (rc)
-    rc = archive.WriteBool(m_bDrawMask);
+    rc = archive.WriteBool (m_bDrawMask);
   if (rc)
-    rc = archive.WriteInt(m_mask_color_source);
+    rc = archive.WriteInt (m_mask_color_source);
   if (rc)
-    rc = archive.WriteColor(m_mask_color);
+    rc = archive.WriteColor (m_mask_color);
 
   if (archive.Archive3dmVersion() < 5) {
     if (rc)
-      rc = archive.WriteDouble(1.0);
+      rc = archive.WriteDouble (1.0);
   }
   else {
     if (rc)
-      rc = archive.WriteDouble(m_dimscale);
+      rc = archive.WriteDouble (m_dimscale);
   }
   if (rc)
-    rc = archive.WriteInt(m_dimscale_source); // Obsolete field
+    rc = archive.WriteInt (m_dimscale_source); // Obsolete field
 
   if (rc)
-    rc = archive.WriteUuid(m_source_dimstyle); // Added 19 Oct 2010
+    rc = archive.WriteUuid (m_source_dimstyle); // Added 19 Oct 2010
 
   if (!archive.EndWrite3dmChunk())
     rc = false;
@@ -449,55 +450,55 @@ ON_DimStyleExtra::Write(ON_BinaryArchive& archive) const
 }
 
 ON_BOOL32
-ON_DimStyleExtra::Read(ON_BinaryArchive& archive)
+ON_DimStyleExtra::Read (ON_BinaryArchive& archive)
 {
   // Changed to 1,0 for mask settings 12/12/09
   int major_version = 0;
   int minor_version = 0;
   bool rc =
-      archive.BeginRead3dmChunk(TCODE_ANONYMOUS_CHUNK, &major_version, &minor_version);
+      archive.BeginRead3dmChunk (TCODE_ANONYMOUS_CHUNK, &major_version, &minor_version);
   if (major_version != 1)
     rc = false;
 
   if (rc)
-    rc = archive.ReadUuid(m_parent_dimstyle);
+    rc = archive.ReadUuid (m_parent_dimstyle);
   if (rc)
-    rc = archive.ReadArray(m_valid_fields);
+    rc = archive.ReadArray (m_valid_fields);
 
   if (rc)
-    rc = archive.ReadInt(&m_tolerance_style);
+    rc = archive.ReadInt (&m_tolerance_style);
   if (rc)
-    rc = archive.ReadInt(&m_tolerance_resolution);
+    rc = archive.ReadInt (&m_tolerance_resolution);
 
   if (rc)
-    rc = archive.ReadDouble(&m_tolerance_upper_value);
+    rc = archive.ReadDouble (&m_tolerance_upper_value);
   if (rc)
-    rc = archive.ReadDouble(&m_tolerance_lower_value);
+    rc = archive.ReadDouble (&m_tolerance_lower_value);
   if (rc)
-    rc = archive.ReadDouble(&m_tolerance_height_scale);
+    rc = archive.ReadDouble (&m_tolerance_height_scale);
 
   if (rc)
-    rc = archive.ReadDouble(&m_baseline_spacing);
+    rc = archive.ReadDouble (&m_baseline_spacing);
 
   if (minor_version >= 1) {
     if (rc)
-      rc = archive.ReadBool(&m_bDrawMask);
+      rc = archive.ReadBool (&m_bDrawMask);
     if (rc)
-      rc = archive.ReadInt(&m_mask_color_source);
+      rc = archive.ReadInt (&m_mask_color_source);
     if (rc)
-      rc = archive.ReadColor(m_mask_color);
+      rc = archive.ReadColor (m_mask_color);
   }
 
   if (minor_version >= 2) {
     if (rc)
-      rc = archive.ReadDouble(&m_dimscale);
+      rc = archive.ReadDouble (&m_dimscale);
     if (rc)
-      rc = archive.ReadInt(&m_dimscale_source);
+      rc = archive.ReadInt (&m_dimscale_source);
   }
 
   if (minor_version >= 3) {
     if (rc)
-      rc = archive.ReadUuid(m_source_dimstyle);
+      rc = archive.ReadUuid (m_source_dimstyle);
   }
 
   if (!archive.EndRead3dmChunk())
@@ -507,9 +508,9 @@ ON_DimStyleExtra::Read(ON_BinaryArchive& archive)
 }
 
 ON_BOOL32
-ON_DimStyleExtra::GetDescription(ON_wString& description)
+ON_DimStyleExtra::GetDescription (ON_wString& description)
 {
-  description.Format("Userdata extension of ON_DimStyle");
+  description.Format ("Userdata extension of ON_DimStyle");
   return true;
 }
 
@@ -521,15 +522,15 @@ ON_DimStyleExtra::Archive() const
 }
 
 void
-ON_DimStyleExtra::Scale(double scale)
+ON_DimStyleExtra::Scale (double scale)
 {
-  if (ON_IsValid(scale) && scale > ON_SQRT_EPSILON)
+  if (ON_IsValid (scale) && scale > ON_SQRT_EPSILON)
     m_baseline_spacing *= scale;
 }
 
 // Tolerance style
 void
-ON_DimStyleExtra::SetToleranceStyle(int style)
+ON_DimStyleExtra::SetToleranceStyle (int style)
 {
   if (style >= 0 && style <= 4)
     m_tolerance_style = style;
@@ -542,7 +543,7 @@ ON_DimStyleExtra::ToleranceStyle() const
 }
 
 void
-ON_DimStyleExtra::SetToleranceResolution(int resolution)
+ON_DimStyleExtra::SetToleranceResolution (int resolution)
 {
   if (resolution >= 0 && resolution < 16)
     m_tolerance_resolution = resolution;
@@ -555,9 +556,9 @@ ON_DimStyleExtra::ToleranceResolution() const
 }
 
 void
-ON_DimStyleExtra::SetToleranceUpperValue(double upper_value)
+ON_DimStyleExtra::SetToleranceUpperValue (double upper_value)
 {
-  if (ON_IsValid(upper_value))
+  if (ON_IsValid (upper_value))
     m_tolerance_upper_value = upper_value;
 }
 
@@ -568,9 +569,9 @@ ON_DimStyleExtra::ToleranceUpperValue() const
 }
 
 void
-ON_DimStyleExtra::SetToleranceLowerValue(double lower_value)
+ON_DimStyleExtra::SetToleranceLowerValue (double lower_value)
 {
-  if (ON_IsValid(lower_value))
+  if (ON_IsValid (lower_value))
     m_tolerance_lower_value = lower_value;
 }
 
@@ -581,9 +582,9 @@ ON_DimStyleExtra::ToleranceLowerValue() const
 }
 
 void
-ON_DimStyleExtra::SetToleranceHeightScale(double scale)
+ON_DimStyleExtra::SetToleranceHeightScale (double scale)
 {
-  if (ON_IsValid(scale) && scale > ON_SQRT_EPSILON)
+  if (ON_IsValid (scale) && scale > ON_SQRT_EPSILON)
     m_tolerance_height_scale = scale;
 }
 
@@ -594,9 +595,9 @@ ON_DimStyleExtra::ToleranceHeightScale() const
 }
 
 void
-ON_DimStyleExtra::SetBaselineSpacing(double spacing)
+ON_DimStyleExtra::SetBaselineSpacing (double spacing)
 {
-  if (ON_IsValid(spacing) && spacing > ON_SQRT_EPSILON)
+  if (ON_IsValid (spacing) && spacing > ON_SQRT_EPSILON)
     m_baseline_spacing = spacing;
 }
 
@@ -613,7 +614,7 @@ ON_DimStyleExtra::DrawTextMask() const
 }
 
 void
-ON_DimStyleExtra::SetDrawTextMask(bool bDraw)
+ON_DimStyleExtra::SetDrawTextMask (bool bDraw)
 {
   m_bDrawMask = bDraw ? true : false;
 }
@@ -625,7 +626,7 @@ ON_DimStyleExtra::MaskColorSource() const
 }
 
 void
-ON_DimStyleExtra::SetMaskColorSource(int source)
+ON_DimStyleExtra::SetMaskColorSource (int source)
 {
   if (source == 1)
     m_mask_color_source = 1;
@@ -640,13 +641,13 @@ ON_DimStyleExtra::MaskColor() const
 }
 
 void
-ON_DimStyleExtra::SetMaskColor(ON_Color color)
+ON_DimStyleExtra::SetMaskColor (ON_Color color)
 {
   m_mask_color = color;
 }
 
 void
-ON_DimStyleExtra::SetDimScale(double scale)
+ON_DimStyleExtra::SetDimScale (double scale)
 {
   m_dimscale = scale;
 }
@@ -658,7 +659,7 @@ ON_DimStyleExtra::DimScale() const
 }
 
 void
-ON_DimStyleExtra::SetDimScaleSource(int source)
+ON_DimStyleExtra::SetDimScaleSource (int source)
 {
   m_dimscale_source = source;
 }
@@ -670,20 +671,17 @@ ON_DimStyleExtra::DimScaleSource() const
 }
 
 void
-ON_DimStyleExtra::SetSourceDimstyle(ON_UUID source_uuid)
+ON_DimStyleExtra::SetSourceDimstyle (ON_UUID source_uuid)
 {
   m_source_dimstyle = source_uuid;
 }
 
 ON_UUID
-ON_DimStyleExtra::SourceDimstyle() const
-{
-  return m_source_dimstyle;
-}
+ON_DimStyleExtra::SourceDimstyle() const { return m_source_dimstyle; }
 
 // returns true if they are the same
 bool
-ON_DimStyleExtra::CompareFields(const ON_DimStyleExtra* pOther) const
+ON_DimStyleExtra::CompareFields (const ON_DimStyleExtra* pOther) const
 {
   if (pOther == 0)
     return false;
@@ -708,7 +706,7 @@ ON_DimStyleExtra::CompareFields(const ON_DimStyleExtra* pOther) const
   return true;
 }
 
-ON_OBJECT_IMPLEMENT(ON_DimStyle, ON_Object, "81BD83D5-7120-41c4-9A57-C449336FF12C");
+ON_OBJECT_IMPLEMENT (ON_DimStyle, ON_Object, "81BD83D5-7120-41c4-9A57-C449336FF12C");
 
 ON_DimStyle::ON_DimStyle()
 {
@@ -726,7 +724,7 @@ ON_DimStyle::SetDefaults()
 {
   // If there is already a userdata extension, reset it to the defaults,
   // but don't make one if its not there already
-  ON_DimStyleExtra* pDE = ON_DimStyleExtra::DimStyleExtensionGet(this, false);
+  ON_DimStyleExtra* pDE = ON_DimStyleExtra::DimStyleExtensionGet (this, false);
   if (pDE) {
     // 2 November 2011 Dale Lear
     //    The "default" settings are easily handled
@@ -750,7 +748,7 @@ void
 ON_DimStyle::SetDefaultsNoExtension()
 {
   m_dimstyle_index = -1;
-  memset(&m_dimstyle_id, 0, sizeof(m_dimstyle_id));
+  memset (&m_dimstyle_id, 0, sizeof (m_dimstyle_id));
   m_dimstyle_name = L"Default";
 
   m_extextension = 0.5;
@@ -793,7 +791,7 @@ ON_DimStyle::SetDefaultsNoExtension()
 
 // copy from ON_3dmAnnotationSettings and add a couple of fields
 ON_DimStyle&
-ON_DimStyle::operator=(const ON_3dmAnnotationSettings& src)
+ON_DimStyle::operator= (const ON_3dmAnnotationSettings& src)
 {
   SetDefaults();
 
@@ -819,23 +817,23 @@ ON_DimStyle::operator=(const ON_3dmAnnotationSettings& src)
 // ON_Object overrides
 
 ON_BOOL32
-ON_DimStyle::IsValid(ON_TextLog*) const
+ON_DimStyle::IsValid (ON_TextLog*) const
 {
   return (m_dimstyle_name.Length() > 0 && m_dimstyle_index >= 0);
 }
 
 void
-ON_DimStyle::Dump(ON_TextLog& dump) const
+ON_DimStyle::Dump (ON_TextLog& dump) const
 {
   const wchar_t* wsName = m_dimstyle_name;
   if (!wsName)
     wsName = L"";
-  dump.Print("dimstyle index = %d\n", m_dimstyle_index);
-  dump.Print("dimstyle name = \"%ls\"\n", wsName);
+  dump.Print ("dimstyle index = %d\n", m_dimstyle_index);
+  dump.Print ("dimstyle name = \"%ls\"\n", wsName);
 }
 
 ON_BOOL32
-ON_DimStyle::Write(ON_BinaryArchive& file // serialize definition to binary archive
+ON_DimStyle::Write (ON_BinaryArchive& file // serialize definition to binary archive
 ) const
 {
   // March 22, 2010 - Global DimStyle was obsoleted and moved into DimStyles
@@ -846,188 +844,188 @@ ON_DimStyle::Write(ON_BinaryArchive& file // serialize definition to binary arch
 
   // changed to version 1.4 Dec 28, 05
   // changed to version 1.5 Mar 23, 06
-  ON_BOOL32 rc = file.Write3dmChunkVersion(1, 5);
+  ON_BOOL32 rc = file.Write3dmChunkVersion (1, 5);
 
   if (rc)
-    rc = file.WriteInt(m_dimstyle_index);
+    rc = file.WriteInt (m_dimstyle_index);
   if (rc)
-    rc = file.WriteString(m_dimstyle_name);
+    rc = file.WriteString (m_dimstyle_name);
 
   if (rc)
-    rc = file.WriteDouble(m_extextension * ds);
+    rc = file.WriteDouble (m_extextension * ds);
   if (rc)
-    rc = file.WriteDouble(m_extoffset * ds);
+    rc = file.WriteDouble (m_extoffset * ds);
   if (rc)
-    rc = file.WriteDouble(m_arrowsize * ds);
+    rc = file.WriteDouble (m_arrowsize * ds);
   if (rc)
-    rc = file.WriteDouble(m_centermark * ds);
+    rc = file.WriteDouble (m_centermark * ds);
   if (rc)
-    rc = file.WriteDouble(m_textgap * ds);
+    rc = file.WriteDouble (m_textgap * ds);
 
   if (rc)
-    rc = file.WriteInt(m_textalign);
+    rc = file.WriteInt (m_textalign);
   if (rc)
-    rc = file.WriteInt(m_arrowtype);
+    rc = file.WriteInt (m_arrowtype);
   if (rc)
-    rc = file.WriteInt(m_angularunits);
+    rc = file.WriteInt (m_angularunits);
   if (rc)
-    rc = file.WriteInt(m_lengthformat);
+    rc = file.WriteInt (m_lengthformat);
   if (rc)
-    rc = file.WriteInt(m_angleformat);
+    rc = file.WriteInt (m_angleformat);
   if (rc)
-    rc = file.WriteInt(m_lengthresolution);
+    rc = file.WriteInt (m_lengthresolution);
   if (rc)
-    rc = file.WriteInt(m_angleresolution);
+    rc = file.WriteInt (m_angleresolution);
   if (rc)
-    rc = file.WriteInt(m_fontindex);
+    rc = file.WriteInt (m_fontindex);
 
   if (rc)
-    rc = file.WriteDouble(m_textheight * ds);
+    rc = file.WriteDouble (m_textheight * ds);
 
   // added 1/13/05 ver 1.2
   if (rc)
-    rc = file.WriteDouble(m_lengthfactor);
+    rc = file.WriteDouble (m_lengthfactor);
   if (rc)
-    rc = file.WriteString(m_prefix);
+    rc = file.WriteString (m_prefix);
   if (rc)
-    rc = file.WriteString(m_suffix);
+    rc = file.WriteString (m_suffix);
 
   if (rc)
-    rc = file.WriteBool(m_bAlternate);
+    rc = file.WriteBool (m_bAlternate);
   if (rc)
-    rc = file.WriteDouble(m_alternate_lengthfactor);
+    rc = file.WriteDouble (m_alternate_lengthfactor);
   if (rc)
-    rc = file.WriteInt(m_alternate_lengthformat);
+    rc = file.WriteInt (m_alternate_lengthformat);
   if (rc)
-    rc = file.WriteInt(m_alternate_lengthresolution);
+    rc = file.WriteInt (m_alternate_lengthresolution);
   if (rc)
-    rc = file.WriteInt(m_alternate_angleformat);
+    rc = file.WriteInt (m_alternate_angleformat);
   if (rc)
-    rc = file.WriteInt(m_alternate_angleresolution);
+    rc = file.WriteInt (m_alternate_angleresolution);
   if (rc)
-    rc = file.WriteString(m_alternate_prefix);
+    rc = file.WriteString (m_alternate_prefix);
   if (rc)
-    rc = file.WriteString(m_alternate_suffix);
+    rc = file.WriteString (m_alternate_suffix);
   if (rc)
-    rc = file.WriteInt(m_valid);
+    rc = file.WriteInt (m_valid);
 
   // Added 24 October 2005 ver 1.3
   if (rc)
-    rc = file.WriteUuid(m_dimstyle_id);
+    rc = file.WriteUuid (m_dimstyle_id);
 
   // Added Dec 28, 05 ver 1.4
   if (rc)
-    rc = file.WriteDouble(m_dimextension * ds);
+    rc = file.WriteDouble (m_dimextension * ds);
 
   // Added Mar 23 06 ver 1.5
   if (rc)
-    rc = file.WriteDouble(m_leaderarrowsize * ds);
+    rc = file.WriteDouble (m_leaderarrowsize * ds);
   if (rc)
-    rc = file.WriteInt(m_leaderarrowtype);
+    rc = file.WriteInt (m_leaderarrowtype);
   if (rc)
-    rc = file.WriteBool(m_bSuppressExtension1);
+    rc = file.WriteBool (m_bSuppressExtension1);
   if (rc)
-    rc = file.WriteBool(m_bSuppressExtension2);
+    rc = file.WriteBool (m_bSuppressExtension2);
 
   return rc;
 }
 
 ON_BOOL32
-ON_DimStyle::Read(ON_BinaryArchive& file // restore definition from binary archive
+ON_DimStyle::Read (ON_BinaryArchive& file // restore definition from binary archive
 )
 {
   SetDefaultsNoExtension();
 
   int major_version = 0;
   int minor_version = 0;
-  ON_BOOL32 rc = file.Read3dmChunkVersion(&major_version, &minor_version);
+  ON_BOOL32 rc = file.Read3dmChunkVersion (&major_version, &minor_version);
 
   if (major_version >= 1) {
     if (rc)
-      rc = file.ReadInt(&m_dimstyle_index);
+      rc = file.ReadInt (&m_dimstyle_index);
     if (rc)
-      rc = file.ReadString(m_dimstyle_name);
+      rc = file.ReadString (m_dimstyle_name);
 
     if (rc)
-      rc = file.ReadDouble(&m_extextension);
+      rc = file.ReadDouble (&m_extextension);
     if (rc)
-      rc = file.ReadDouble(&m_extoffset);
+      rc = file.ReadDouble (&m_extoffset);
     if (rc)
-      rc = file.ReadDouble(&m_arrowsize);
+      rc = file.ReadDouble (&m_arrowsize);
     if (rc)
-      rc = file.ReadDouble(&m_centermark);
+      rc = file.ReadDouble (&m_centermark);
     if (rc)
-      rc = file.ReadDouble(&m_textgap);
+      rc = file.ReadDouble (&m_textgap);
 
     if (rc)
-      rc = file.ReadInt(&m_textalign);
+      rc = file.ReadInt (&m_textalign);
     if (rc)
-      rc = file.ReadInt(&m_arrowtype);
+      rc = file.ReadInt (&m_arrowtype);
     if (rc)
-      rc = file.ReadInt(&m_angularunits);
+      rc = file.ReadInt (&m_angularunits);
     if (rc)
-      rc = file.ReadInt(&m_lengthformat);
+      rc = file.ReadInt (&m_lengthformat);
     if (rc)
-      rc = file.ReadInt(&m_angleformat);
+      rc = file.ReadInt (&m_angleformat);
     if (rc)
-      rc = file.ReadInt(&m_lengthresolution);
+      rc = file.ReadInt (&m_lengthresolution);
     if (rc)
-      rc = file.ReadInt(&m_angleresolution);
+      rc = file.ReadInt (&m_angleresolution);
     if (rc)
-      rc = file.ReadInt(&m_fontindex);
+      rc = file.ReadInt (&m_fontindex);
 
     if (minor_version >= 1)
       if (rc)
-        rc = file.ReadDouble(&m_textheight);
+        rc = file.ReadDouble (&m_textheight);
 
     // added 1/13/05
     if (minor_version >= 2) {
       if (rc)
-        rc = file.ReadDouble(&m_lengthfactor);
+        rc = file.ReadDouble (&m_lengthfactor);
       if (rc)
-        rc = file.ReadString(m_prefix);
+        rc = file.ReadString (m_prefix);
       if (rc)
-        rc = file.ReadString(m_suffix);
+        rc = file.ReadString (m_suffix);
 
       if (rc)
-        rc = file.ReadBool(&m_bAlternate);
+        rc = file.ReadBool (&m_bAlternate);
       if (rc)
-        rc = file.ReadDouble(&m_alternate_lengthfactor);
+        rc = file.ReadDouble (&m_alternate_lengthfactor);
       if (rc)
-        rc = file.ReadInt(&m_alternate_lengthformat);
+        rc = file.ReadInt (&m_alternate_lengthformat);
       if (rc)
-        rc = file.ReadInt(&m_alternate_lengthresolution);
+        rc = file.ReadInt (&m_alternate_lengthresolution);
       if (rc)
-        rc = file.ReadInt(&m_alternate_angleformat);
+        rc = file.ReadInt (&m_alternate_angleformat);
       if (rc)
-        rc = file.ReadInt(&m_alternate_angleresolution);
+        rc = file.ReadInt (&m_alternate_angleresolution);
       if (rc)
-        rc = file.ReadString(m_alternate_prefix);
+        rc = file.ReadString (m_alternate_prefix);
       if (rc)
-        rc = file.ReadString(m_alternate_suffix);
+        rc = file.ReadString (m_alternate_suffix);
       if (rc)
-        rc = file.ReadInt(&m_valid);
+        rc = file.ReadInt (&m_valid);
 
       if (minor_version >= 3) {
         if (rc)
-          rc = file.ReadUuid(m_dimstyle_id);
+          rc = file.ReadUuid (m_dimstyle_id);
       }
     }
     // Added Dec 28, 05 ver 1.4
     if (minor_version >= 4)
       if (rc)
-        rc = file.ReadDouble(&m_dimextension);
+        rc = file.ReadDouble (&m_dimextension);
 
     // Added Mar 23 06 ver 1.5
     if (minor_version >= 5) {
       if (rc)
-        rc = file.ReadDouble(&m_leaderarrowsize);
+        rc = file.ReadDouble (&m_leaderarrowsize);
       if (rc)
-        rc = file.ReadInt(&m_leaderarrowtype);
+        rc = file.ReadInt (&m_leaderarrowtype);
       if (rc)
-        rc = file.ReadBool(&m_bSuppressExtension1);
+        rc = file.ReadBool (&m_bSuppressExtension1);
       if (rc)
-        rc = file.ReadBool(&m_bSuppressExtension2);
+        rc = file.ReadBool (&m_bSuppressExtension2);
     }
   }
   else
@@ -1049,21 +1047,21 @@ ON_DimStyle::EmergencyDestroy()
 //
 // Interface
 void
-ON_DimStyle::SetName(const wchar_t* s)
+ON_DimStyle::SetName (const wchar_t* s)
 {
   m_dimstyle_name = s;
   m_dimstyle_name.TrimLeftAndRight();
 }
 
 void
-ON_DimStyle::SetName(const char* s)
+ON_DimStyle::SetName (const char* s)
 {
   m_dimstyle_name = s;
   m_dimstyle_name.TrimLeftAndRight();
 }
 
 void
-ON_DimStyle::GetName(ON_wString& s) const
+ON_DimStyle::GetName (ON_wString& s) const
 {
   s = m_dimstyle_name;
 }
@@ -1076,7 +1074,7 @@ ON_DimStyle::Name() const
 }
 
 void
-ON_DimStyle::SetIndex(int i)
+ON_DimStyle::SetIndex (int i)
 {
   m_dimstyle_index = i;
 }
@@ -1094,7 +1092,7 @@ ON_DimStyle::ExtExtension() const
 }
 
 void
-ON_DimStyle::SetExtExtension(const double e)
+ON_DimStyle::SetExtExtension (const double e)
 {
   // Allow negative?
   m_extextension = e;
@@ -1107,7 +1105,7 @@ ON_DimStyle::ExtOffset() const
 }
 
 void
-ON_DimStyle::SetExtOffset(const double e)
+ON_DimStyle::SetExtOffset (const double e)
 {
   m_extoffset = e;
 }
@@ -1119,7 +1117,7 @@ ON_DimStyle::ArrowSize() const
 }
 
 void
-ON_DimStyle::SetArrowSize(const double e)
+ON_DimStyle::SetArrowSize (const double e)
 {
   m_arrowsize = e;
 }
@@ -1131,7 +1129,7 @@ ON_DimStyle::LeaderArrowSize() const
 }
 
 void
-ON_DimStyle::SetLeaderArrowSize(const double e)
+ON_DimStyle::SetLeaderArrowSize (const double e)
 {
   m_leaderarrowsize = e;
 }
@@ -1143,7 +1141,7 @@ ON_DimStyle::CenterMark() const
 }
 
 void
-ON_DimStyle::SetCenterMark(const double e)
+ON_DimStyle::SetCenterMark (const double e)
 {
   m_centermark = e;
 }
@@ -1155,7 +1153,7 @@ ON_DimStyle::TextAlignment() const
 }
 
 void
-ON_DimStyle::SetTextAlignment(ON::eTextDisplayMode a)
+ON_DimStyle::SetTextAlignment (ON::eTextDisplayMode a)
 {
   m_textalign = a;
 }
@@ -1167,7 +1165,7 @@ ON_DimStyle::ArrowType() const
 }
 
 void
-ON_DimStyle::SetArrowType(eArrowType a)
+ON_DimStyle::SetArrowType (eArrowType a)
 {
   m_arrowtype = a;
 }
@@ -1179,7 +1177,7 @@ ON_DimStyle::LeaderArrowType() const
 }
 
 void
-ON_DimStyle::SetLeaderArrowType(eArrowType a)
+ON_DimStyle::SetLeaderArrowType (eArrowType a)
 {
   m_leaderarrowtype = a;
 }
@@ -1191,7 +1189,7 @@ ON_DimStyle::AngularUnits() const
 }
 
 void
-ON_DimStyle::SetAngularUnits(int u)
+ON_DimStyle::SetAngularUnits (int u)
 {
   m_angularunits = u;
 }
@@ -1203,7 +1201,7 @@ ON_DimStyle::LengthFormat() const
 }
 
 void
-ON_DimStyle::SetLengthFormat(int f)
+ON_DimStyle::SetLengthFormat (int f)
 {
   m_lengthformat = f;
 }
@@ -1215,7 +1213,7 @@ ON_DimStyle::AngleFormat() const
 }
 
 void
-ON_DimStyle::SetAngleFormat(int f)
+ON_DimStyle::SetAngleFormat (int f)
 {
   m_angleformat = f;
 }
@@ -1227,7 +1225,7 @@ ON_DimStyle::LengthResolution() const
 }
 
 void
-ON_DimStyle::SetLengthResolution(int r)
+ON_DimStyle::SetLengthResolution (int r)
 {
   if (r >= 0 && r < 16) {
     m_lengthresolution = r;
@@ -1241,7 +1239,7 @@ ON_DimStyle::AngleResolution() const
 }
 
 void
-ON_DimStyle::SetAngleResolution(int r)
+ON_DimStyle::SetAngleResolution (int r)
 {
   if (r >= 0 && r < 16) {
     m_angleresolution = r;
@@ -1255,7 +1253,7 @@ ON_DimStyle::FontIndex() const
 }
 
 void
-ON_DimStyle::SetFontIndex(int index)
+ON_DimStyle::SetFontIndex (int index)
 {
   m_fontindex = index;
 }
@@ -1267,7 +1265,7 @@ ON_DimStyle::TextGap() const
 }
 
 void
-ON_DimStyle::SetTextGap(double gap)
+ON_DimStyle::SetTextGap (double gap)
 {
   if (gap >= 0.0) {
     m_textgap = gap;
@@ -1281,9 +1279,9 @@ ON_DimStyle::TextHeight() const
 }
 
 void
-ON_DimStyle::SetTextHeight(double height)
+ON_DimStyle::SetTextHeight (double height)
 {
-  if (ON_IsValid(height) && height > ON_SQRT_EPSILON) {
+  if (ON_IsValid (height) && height > ON_SQRT_EPSILON) {
     m_textheight = height;
   }
 }
@@ -1294,12 +1292,12 @@ ON_DimStyle::LengthFactor() const
   return m_lengthfactor;
 }
 void
-ON_DimStyle::SetLengthactor(double factor)
+ON_DimStyle::SetLengthactor (double factor)
 {
-  SetLengthFactor(factor);
+  SetLengthFactor (factor);
 }
 void
-ON_DimStyle::SetLengthFactor(double factor)
+ON_DimStyle::SetLengthFactor (double factor)
 {
   m_lengthfactor = factor;
   // ValidateField( fn_lengthfactor);
@@ -1312,7 +1310,7 @@ ON_DimStyle::Alternate() const
   return m_bAlternate;
 }
 void
-ON_DimStyle::SetAlternate(bool bAlternate)
+ON_DimStyle::SetAlternate (bool bAlternate)
 {
   m_bAlternate = bAlternate;
 }
@@ -1323,12 +1321,12 @@ ON_DimStyle::AlternateLengthFactor() const
   return m_alternate_lengthfactor;
 }
 void
-ON_DimStyle::SetAlternateLengthactor(double factor)
+ON_DimStyle::SetAlternateLengthactor (double factor)
 {
-  SetAlternateLengthFactor(factor);
+  SetAlternateLengthFactor (factor);
 }
 void
-ON_DimStyle::SetAlternateLengthFactor(double factor)
+ON_DimStyle::SetAlternateLengthFactor (double factor)
 {
   m_alternate_lengthfactor = factor;
   // ValidateField( fn_alternate_lengthfactor);
@@ -1341,7 +1339,7 @@ ON_DimStyle::AlternateLengthFormat() const
   return m_alternate_lengthformat;
 }
 void
-ON_DimStyle::SetAlternateLengthFormat(int format)
+ON_DimStyle::SetAlternateLengthFormat (int format)
 {
   m_alternate_lengthformat = format;
 }
@@ -1352,7 +1350,7 @@ ON_DimStyle::AlternateLengthResolution() const
   return m_alternate_lengthresolution;
 }
 void
-ON_DimStyle::SetAlternateLengthResolution(int resolution)
+ON_DimStyle::SetAlternateLengthResolution (int resolution)
 {
   m_alternate_lengthresolution = resolution;
 }
@@ -1363,7 +1361,7 @@ ON_DimStyle::AlternateAngleFormat() const
   return m_alternate_angleformat;
 }
 void
-ON_DimStyle::SetAlternateAngleFormat(int format)
+ON_DimStyle::SetAlternateAngleFormat (int format)
 {
   m_alternate_angleformat = format;
 }
@@ -1374,13 +1372,13 @@ ON_DimStyle::AlternateAngleResolution() const
   return m_alternate_angleresolution;
 }
 void
-ON_DimStyle::SetAlternateAngleResolution(int resolution)
+ON_DimStyle::SetAlternateAngleResolution (int resolution)
 {
   m_alternate_angleresolution = resolution;
 }
 
 void
-ON_DimStyle::GetPrefix(ON_wString& prefix) const
+ON_DimStyle::GetPrefix (ON_wString& prefix) const
 {
   prefix = m_prefix;
 }
@@ -1390,18 +1388,18 @@ ON_DimStyle::Prefix() const
   return m_prefix;
 }
 void
-ON_DimStyle::SetPrefix(wchar_t* prefix)
+ON_DimStyle::SetPrefix (wchar_t* prefix)
 {
   m_prefix = prefix;
 }
 void
-ON_DimStyle::SetPrefix(const wchar_t* prefix)
+ON_DimStyle::SetPrefix (const wchar_t* prefix)
 {
   m_prefix = prefix;
 }
 
 void
-ON_DimStyle::GetSuffix(ON_wString& suffix) const
+ON_DimStyle::GetSuffix (ON_wString& suffix) const
 {
   suffix = m_suffix;
 }
@@ -1411,18 +1409,18 @@ ON_DimStyle::Suffix() const
   return m_suffix;
 }
 void
-ON_DimStyle::SetSuffix(wchar_t* suffix)
+ON_DimStyle::SetSuffix (wchar_t* suffix)
 {
   m_suffix = suffix;
 }
 void
-ON_DimStyle::SetSuffix(const wchar_t* suffix)
+ON_DimStyle::SetSuffix (const wchar_t* suffix)
 {
   m_suffix = suffix;
 }
 
 void
-ON_DimStyle::GetAlternatePrefix(ON_wString& prefix) const
+ON_DimStyle::GetAlternatePrefix (ON_wString& prefix) const
 {
   prefix = m_alternate_prefix;
 }
@@ -1432,18 +1430,18 @@ ON_DimStyle::AlternatePrefix() const
   return m_alternate_prefix;
 }
 void
-ON_DimStyle::SetAlternatePrefix(wchar_t* prefix)
+ON_DimStyle::SetAlternatePrefix (wchar_t* prefix)
 {
   m_alternate_prefix = prefix;
 }
 void
-ON_DimStyle::SetAlternatePrefix(const wchar_t* prefix)
+ON_DimStyle::SetAlternatePrefix (const wchar_t* prefix)
 {
   m_alternate_prefix = prefix;
 }
 
 void
-ON_DimStyle::GetAlternateSuffix(ON_wString& suffix) const
+ON_DimStyle::GetAlternateSuffix (ON_wString& suffix) const
 {
   suffix = m_alternate_suffix;
 }
@@ -1453,12 +1451,12 @@ ON_DimStyle::AlternateSuffix() const
   return m_alternate_suffix;
 }
 void
-ON_DimStyle::SetAlternateSuffix(wchar_t* suffix)
+ON_DimStyle::SetAlternateSuffix (wchar_t* suffix)
 {
   m_alternate_suffix = suffix;
 }
 void
-ON_DimStyle::SetAlternateSuffix(const wchar_t* suffix)
+ON_DimStyle::SetAlternateSuffix (const wchar_t* suffix)
 {
   m_alternate_suffix = suffix;
 }
@@ -1469,7 +1467,7 @@ ON_DimStyle::SuppressExtension1() const
   return m_bSuppressExtension1;
 }
 void
-ON_DimStyle::SetSuppressExtension1(bool suppress)
+ON_DimStyle::SetSuppressExtension1 (bool suppress)
 {
   m_bSuppressExtension1 = suppress;
 }
@@ -1479,14 +1477,14 @@ ON_DimStyle::SuppressExtension2() const
   return m_bSuppressExtension2;
 }
 void
-ON_DimStyle::SetSuppressExtension2(bool suppress)
+ON_DimStyle::SetSuppressExtension2 (bool suppress)
 {
   m_bSuppressExtension2 = suppress;
 }
 
 // This function deprecated 5/01/07 LW
 void
-ON_DimStyle::Composite(const ON_DimStyle& /*OverRide*/)
+ON_DimStyle::Composite (const ON_DimStyle& /*OverRide*/)
 {
   /*
     InvalidateAllFields();
@@ -1551,7 +1549,7 @@ ON_DimStyle::Composite(const ON_DimStyle& /*OverRide*/)
 
 // This function deprecated 5/01/07 LW
 void
-ON_DimStyle::InvalidateField(eField field)
+ON_DimStyle::InvalidateField (eField field)
 {
   m_valid &= ~(1 << field);
 }
@@ -1563,13 +1561,13 @@ ON_DimStyle::InvalidateAllFields()
 }
 // This function deprecated 5/01/07 LW
 void
-ON_DimStyle::ValidateField(eField field)
+ON_DimStyle::ValidateField (eField field)
 {
   m_valid |= (1 << field);
 }
 // This function deprecated 5/01/07 LW
 bool
-ON_DimStyle::IsFieldValid(eField field) const
+ON_DimStyle::IsFieldValid (eField field) const
 {
   return (m_valid & (1 << field)) ? true : false;
 }
@@ -1582,7 +1580,7 @@ ON_DimStyle::DimExtension() const
 }
 
 void
-ON_DimStyle::SetDimExtension(const double e)
+ON_DimStyle::SetDimExtension (const double e)
 {
   // Allow negative?
   m_dimextension = e;
@@ -1593,31 +1591,31 @@ ON_DimStyle::SetDimExtension(const double e)
 // Added for v5 5/01/07 LW
 
 bool
-ON_DimStyle::IsFieldOverride(ON_DimStyle::eField field_id) const
+ON_DimStyle::IsFieldOverride (ON_DimStyle::eField field_id) const
 {
-  const ON_DimStyleExtra* pDE = ON_DimStyleExtra::DimStyleExtensionGet(this);
+  const ON_DimStyleExtra* pDE = ON_DimStyleExtra::DimStyleExtensionGet (this);
   if (pDE)
-    return pDE->IsFieldOverride(field_id);
+    return pDE->IsFieldOverride (field_id);
 
   return false;
 }
 
 void
-ON_DimStyle::SetFieldOverride(ON_DimStyle::eField field_id, bool bOverride)
+ON_DimStyle::SetFieldOverride (ON_DimStyle::eField field_id, bool bOverride)
 {
   // 2 November 2011 Dale Lear
   //   If bOverride is true, then create the userdata, otherwise get it
   //   only if it exists.
-  ON_DimStyleExtra* pDE = ON_DimStyleExtra::DimStyleExtensionGet(this, bOverride);
+  ON_DimStyleExtra* pDE = ON_DimStyleExtra::DimStyleExtensionGet (this, bOverride);
   if (pDE) {
-    pDE->SetFieldOverride(field_id, bOverride);
+    pDE->SetFieldOverride (field_id, bOverride);
   }
 }
 
 bool
 ON_DimStyle::HasOverrides() const
 {
-  const ON_DimStyleExtra* pDE = ON_DimStyleExtra::DimStyleExtensionGet(this);
+  const ON_DimStyleExtra* pDE = ON_DimStyleExtra::DimStyleExtensionGet (this);
   if (pDE) {
     for (int i = 0; i < pDE->m_valid_fields.Count(); i++) {
       if (pDE->m_valid_fields[i])
@@ -1628,18 +1626,18 @@ ON_DimStyle::HasOverrides() const
 }
 
 bool
-ON_DimStyle::OverrideFields(const ON_DimStyle& src, const ON_DimStyle& parent)
+ON_DimStyle::OverrideFields (const ON_DimStyle& src, const ON_DimStyle& parent)
 {
   // 2 November 2011 Dale Lear
   //   I made lots of changes to this function to make sure "i" was a valid
   //   array index before it was passed to operator[].
-  const ON_DimStyleExtra* pDEsrc = ON_DimStyleExtra::DimStyleExtensionGet(&src);
+  const ON_DimStyleExtra* pDEsrc = ON_DimStyleExtra::DimStyleExtensionGet (&src);
 
   // Please do not change the 2nd parameter from "false" to a "true" in the
   // call to DimStyleExtensionGet().  If "this" does not have ON_DimStyleExtra
   // user data at this point, it will be created if it is actually needed.
   // If you have questions, please ask Dale Lear.
-  ON_DimStyleExtra* pDE = ON_DimStyleExtra::DimStyleExtensionGet(this, false);
+  ON_DimStyleExtra* pDE = ON_DimStyleExtra::DimStyleExtensionGet (this, false);
 
   const int src_valid_fields_count = pDEsrc ? pDEsrc->m_valid_fields.Count() : 0;
   int this_valid_fields_count = pDE ? pDE->m_valid_fields.Count() : 0;
@@ -1650,7 +1648,7 @@ ON_DimStyle::OverrideFields(const ON_DimStyle& src, const ON_DimStyle& parent)
 
     if (bValidSrcField && 0 == pDE) {
       // Actually need to create ON_DimStyleExtra user data on "this".
-      pDE = ON_DimStyleExtra::DimStyleExtensionGet(this, true);
+      pDE = ON_DimStyleExtra::DimStyleExtensionGet (this, true);
       if (pDE)
         this_valid_fields_count = pDE->m_valid_fields.Count();
     }
@@ -1663,127 +1661,127 @@ ON_DimStyle::OverrideFields(const ON_DimStyle& src, const ON_DimStyle& parent)
 
     switch (i) {
     case fn_extextension:
-      SetExtExtension(copyfrom->ExtExtension());
+      SetExtExtension (copyfrom->ExtExtension());
       break;
     case fn_extoffset:
-      SetExtOffset(copyfrom->ExtOffset());
+      SetExtOffset (copyfrom->ExtOffset());
       break;
     case fn_arrowsize:
-      SetArrowSize(copyfrom->ArrowSize());
+      SetArrowSize (copyfrom->ArrowSize());
       break;
     case fn_centermark:
-      SetCenterMark(copyfrom->CenterMark());
+      SetCenterMark (copyfrom->CenterMark());
       break;
     case fn_textgap:
-      SetTextGap(copyfrom->TextGap());
+      SetTextGap (copyfrom->TextGap());
       break;
     case fn_textheight:
-      SetTextHeight(copyfrom->TextHeight());
+      SetTextHeight (copyfrom->TextHeight());
       break;
     case fn_textalign:
-      SetTextAlignment((ON::eTextDisplayMode)copyfrom->TextAlignment());
+      SetTextAlignment ((ON::eTextDisplayMode)copyfrom->TextAlignment());
       break;
     case fn_arrowtype:
-      SetArrowType((eArrowType)copyfrom->ArrowType());
+      SetArrowType ((eArrowType)copyfrom->ArrowType());
       break;
     case fn_angularunits:
-      SetAngularUnits((eArrowType)copyfrom->AngularUnits());
+      SetAngularUnits ((eArrowType)copyfrom->AngularUnits());
       break;
     case fn_lengthformat:
-      SetLengthFormat(copyfrom->LengthFormat());
+      SetLengthFormat (copyfrom->LengthFormat());
       break;
     case fn_angleformat:
-      SetAngleFormat(copyfrom->AngleFormat());
+      SetAngleFormat (copyfrom->AngleFormat());
       break;
     case fn_angleresolution:
-      SetAngleResolution(copyfrom->AngleResolution());
+      SetAngleResolution (copyfrom->AngleResolution());
       break;
     case fn_lengthresolution:
-      SetLengthResolution(copyfrom->LengthResolution());
+      SetLengthResolution (copyfrom->LengthResolution());
       break;
     case fn_fontindex:
-      SetFontIndex(copyfrom->FontIndex());
+      SetFontIndex (copyfrom->FontIndex());
       break;
     case fn_lengthfactor:
-      SetLengthFactor(copyfrom->LengthFactor());
+      SetLengthFactor (copyfrom->LengthFactor());
       break;
     case fn_bAlternate:
-      SetAlternate(copyfrom->Alternate());
+      SetAlternate (copyfrom->Alternate());
       break;
     case fn_alternate_lengthfactor:
-      SetAlternateLengthFactor(copyfrom->AlternateLengthFactor());
+      SetAlternateLengthFactor (copyfrom->AlternateLengthFactor());
       break;
     case fn_alternate_lengthformat:
-      SetAlternateLengthFormat(copyfrom->AlternateLengthFormat());
+      SetAlternateLengthFormat (copyfrom->AlternateLengthFormat());
       break;
     case fn_alternate_lengthresolution:
-      SetAlternateLengthResolution(copyfrom->AlternateLengthResolution());
+      SetAlternateLengthResolution (copyfrom->AlternateLengthResolution());
       break;
     case fn_alternate_angleformat:
-      SetAlternateLengthResolution(copyfrom->AlternateLengthResolution());
+      SetAlternateLengthResolution (copyfrom->AlternateLengthResolution());
       break;
     case fn_alternate_angleresolution:
-      SetAlternateAngleResolution(copyfrom->AlternateAngleResolution());
+      SetAlternateAngleResolution (copyfrom->AlternateAngleResolution());
       break;
     case fn_prefix:
-      SetPrefix(copyfrom->Prefix());
+      SetPrefix (copyfrom->Prefix());
       break;
     case fn_suffix:
-      SetSuffix(copyfrom->Suffix());
+      SetSuffix (copyfrom->Suffix());
       break;
     case fn_alternate_prefix:
-      SetAlternatePrefix(copyfrom->AlternatePrefix());
+      SetAlternatePrefix (copyfrom->AlternatePrefix());
       break;
     case fn_alternate_suffix:
-      SetAlternateSuffix(copyfrom->AlternateSuffix());
+      SetAlternateSuffix (copyfrom->AlternateSuffix());
       break;
     case fn_dimextension:
-      SetDimExtension(copyfrom->DimExtension());
+      SetDimExtension (copyfrom->DimExtension());
       break;
     case fn_leaderarrowsize:
-      SetLeaderArrowSize(copyfrom->LeaderArrowSize());
+      SetLeaderArrowSize (copyfrom->LeaderArrowSize());
       break;
     case fn_leaderarrowtype:
-      SetLeaderArrowType((eArrowType)copyfrom->LeaderArrowType());
+      SetLeaderArrowType ((eArrowType)copyfrom->LeaderArrowType());
       break;
     case fn_suppressextension1:
-      SetSuppressExtension1(copyfrom->SuppressExtension1());
+      SetSuppressExtension1 (copyfrom->SuppressExtension1());
       break;
     case fn_suppressextension2:
-      SetSuppressExtension2(copyfrom->SuppressExtension2());
+      SetSuppressExtension2 (copyfrom->SuppressExtension2());
       break;
     case fn_tolerance_style:
-      SetToleranceStyle(copyfrom->ToleranceStyle());
+      SetToleranceStyle (copyfrom->ToleranceStyle());
       break;
     case fn_tolerance_resolution:
-      SetToleranceResolution(copyfrom->ToleranceResolution());
+      SetToleranceResolution (copyfrom->ToleranceResolution());
       break;
     case fn_tolerance_upper_value:
-      SetToleranceUpperValue(copyfrom->ToleranceUpperValue());
+      SetToleranceUpperValue (copyfrom->ToleranceUpperValue());
       break;
     case fn_tolerance_lower_value:
-      SetToleranceLowerValue(copyfrom->ToleranceLowerValue());
+      SetToleranceLowerValue (copyfrom->ToleranceLowerValue());
       break;
     case fn_tolerance_height_scale:
-      SetToleranceHeightScale(copyfrom->ToleranceHeightScale());
+      SetToleranceHeightScale (copyfrom->ToleranceHeightScale());
       break;
     case fn_baseline_spacing:
-      SetBaselineSpacing(copyfrom->BaselineSpacing());
+      SetBaselineSpacing (copyfrom->BaselineSpacing());
       break;
     case fn_draw_mask:
-      SetDrawTextMask(copyfrom->DrawTextMask());
+      SetDrawTextMask (copyfrom->DrawTextMask());
       break;
     case fn_mask_color_source:
-      SetMaskColorSource(copyfrom->MaskColorSource());
+      SetMaskColorSource (copyfrom->MaskColorSource());
       break;
     case fn_mask_color:
-      SetMaskColor(copyfrom->MaskColor());
+      SetMaskColor (copyfrom->MaskColor());
       break;
     case fn_dimscale:
-      SetDimScale(copyfrom->DimScale());
+      SetDimScale (copyfrom->DimScale());
       break;
     case fn_dimscale_source:
-      SetDimScaleSource(copyfrom->DimScaleSource());
+      SetDimScaleSource (copyfrom->DimScaleSource());
       break;
     }
   }
@@ -1791,14 +1789,14 @@ ON_DimStyle::OverrideFields(const ON_DimStyle& src, const ON_DimStyle& parent)
 }
 
 bool
-ON_DimStyle::InheritFields(const ON_DimStyle& parent)
+ON_DimStyle::InheritFields (const ON_DimStyle& parent)
 {
   bool rc = false;
 
   // 2 November 2011 Dale Lear
   //   Please do not create ON_DimStyleExtra user data if
   //   it does not exist on this.
-  const ON_DimStyleExtra* pDE = ON_DimStyleExtra::DimStyleExtensionGet(this);
+  const ON_DimStyleExtra* pDE = ON_DimStyleExtra::DimStyleExtensionGet (this);
   for (int i = 0; i < ON_DimStyleExtra::eFieldCount; i++) {
     bool bValidField =
         (0 != pDE && i < pDE->m_valid_fields.Count()) ? pDE->m_valid_fields[i] : false;
@@ -1806,247 +1804,247 @@ ON_DimStyle::InheritFields(const ON_DimStyle& parent)
     switch (i) {
     case fn_extextension:
       if (!bValidField) {
-        SetExtExtension(parent.ExtExtension());
+        SetExtExtension (parent.ExtExtension());
         rc = true;
       }
       break;
     case fn_extoffset:
       if (!bValidField) {
-        SetExtOffset(parent.ExtOffset());
+        SetExtOffset (parent.ExtOffset());
         rc = true;
       }
       break;
     case fn_arrowsize:
       if (!bValidField) {
-        SetArrowSize(parent.ArrowSize());
+        SetArrowSize (parent.ArrowSize());
         rc = true;
       }
       break;
     case fn_centermark:
       if (!bValidField) {
-        SetCenterMark(parent.CenterMark());
+        SetCenterMark (parent.CenterMark());
         rc = true;
       }
       break;
     case fn_textgap:
       if (!bValidField) {
-        SetTextGap(parent.TextGap());
+        SetTextGap (parent.TextGap());
         rc = true;
       }
       break;
     case fn_textheight:
       if (!bValidField) {
-        SetTextHeight(parent.TextHeight());
+        SetTextHeight (parent.TextHeight());
         rc = true;
       }
       break;
     case fn_textalign:
       if (!bValidField) {
-        SetTextAlignment((ON::eTextDisplayMode)parent.TextAlignment());
+        SetTextAlignment ((ON::eTextDisplayMode)parent.TextAlignment());
         rc = true;
       }
       break;
     case fn_arrowtype:
       if (!bValidField) {
-        SetArrowType((eArrowType)parent.ArrowType());
+        SetArrowType ((eArrowType)parent.ArrowType());
         rc = true;
       }
       break;
     case fn_angularunits:
       if (!bValidField) {
-        SetAngularUnits((eArrowType)parent.AngularUnits());
+        SetAngularUnits ((eArrowType)parent.AngularUnits());
         rc = true;
       }
       break;
     case fn_lengthformat:
       if (!bValidField) {
-        SetLengthFormat(parent.LengthFormat());
+        SetLengthFormat (parent.LengthFormat());
         rc = true;
       }
       break;
     case fn_angleformat:
       if (!bValidField) {
-        SetAngleFormat(parent.AngleFormat());
+        SetAngleFormat (parent.AngleFormat());
         rc = true;
       }
       break;
     case fn_angleresolution:
       if (!bValidField) {
-        SetAngleResolution(parent.AngleResolution());
+        SetAngleResolution (parent.AngleResolution());
         rc = true;
       }
       break;
     case fn_lengthresolution:
       if (!bValidField) {
-        SetLengthResolution(parent.LengthResolution());
+        SetLengthResolution (parent.LengthResolution());
         rc = true;
       }
       break;
     case fn_fontindex:
       if (!bValidField) {
-        SetFontIndex(parent.FontIndex());
+        SetFontIndex (parent.FontIndex());
         rc = true;
       }
       break;
     case fn_lengthfactor:
       if (!bValidField) {
-        SetLengthFactor(parent.LengthFactor());
+        SetLengthFactor (parent.LengthFactor());
         rc = true;
       }
       break;
     case fn_bAlternate:
       if (!bValidField) {
-        SetAlternate(parent.Alternate());
+        SetAlternate (parent.Alternate());
         rc = true;
       }
       break;
     case fn_alternate_lengthfactor:
       if (!bValidField) {
-        SetAlternateLengthFactor(parent.LengthFactor());
+        SetAlternateLengthFactor (parent.LengthFactor());
         rc = true;
       }
       break;
     case fn_alternate_lengthformat:
       if (!bValidField) {
-        SetAlternateLengthFormat(parent.AlternateLengthFormat());
+        SetAlternateLengthFormat (parent.AlternateLengthFormat());
         rc = true;
       }
       break;
     case fn_alternate_lengthresolution:
       if (!bValidField) {
-        SetAlternateLengthResolution(parent.AlternateLengthResolution());
+        SetAlternateLengthResolution (parent.AlternateLengthResolution());
         rc = true;
       }
       break;
     case fn_alternate_angleformat:
       if (!bValidField) {
-        SetAlternateLengthResolution(parent.AlternateLengthResolution());
+        SetAlternateLengthResolution (parent.AlternateLengthResolution());
         rc = true;
       }
       break;
     case fn_alternate_angleresolution:
       if (!bValidField) {
-        SetAlternateAngleResolution(parent.AlternateAngleResolution());
+        SetAlternateAngleResolution (parent.AlternateAngleResolution());
         rc = true;
       }
       break;
     case fn_prefix:
       if (!bValidField) {
-        SetPrefix(parent.Prefix());
+        SetPrefix (parent.Prefix());
         rc = true;
       }
       break;
     case fn_suffix:
       if (!bValidField) {
-        SetSuffix(parent.Suffix());
+        SetSuffix (parent.Suffix());
         rc = true;
       }
       break;
     case fn_alternate_prefix:
       if (!bValidField) {
-        SetAlternatePrefix(parent.AlternatePrefix());
+        SetAlternatePrefix (parent.AlternatePrefix());
         rc = true;
       }
       break;
     case fn_alternate_suffix:
       if (!bValidField) {
-        SetAlternateSuffix(parent.AlternateSuffix());
+        SetAlternateSuffix (parent.AlternateSuffix());
         rc = true;
       }
       break;
     case fn_dimextension:
       if (!bValidField) {
-        SetDimExtension(parent.DimExtension());
+        SetDimExtension (parent.DimExtension());
         rc = true;
       }
       break;
     case fn_leaderarrowsize:
       if (!bValidField) {
-        SetLeaderArrowSize(parent.LeaderArrowSize());
+        SetLeaderArrowSize (parent.LeaderArrowSize());
         rc = true;
       }
       break;
     case fn_leaderarrowtype:
       if (!bValidField) {
-        SetLeaderArrowType((eArrowType)parent.LeaderArrowType());
+        SetLeaderArrowType ((eArrowType)parent.LeaderArrowType());
         rc = true;
       }
       break;
     case fn_suppressextension1:
       if (!bValidField) {
-        SetSuppressExtension1(parent.SuppressExtension1());
+        SetSuppressExtension1 (parent.SuppressExtension1());
         rc = true;
       }
       break;
     case fn_suppressextension2:
       if (!bValidField) {
-        SetSuppressExtension2(parent.SuppressExtension2());
+        SetSuppressExtension2 (parent.SuppressExtension2());
         rc = true;
       }
       break;
     case fn_tolerance_style:
       if (!bValidField) {
-        SetToleranceStyle(parent.ToleranceStyle());
+        SetToleranceStyle (parent.ToleranceStyle());
         rc = true;
       }
       break;
     case fn_tolerance_resolution:
       if (!bValidField) {
-        SetToleranceResolution(parent.ToleranceResolution());
+        SetToleranceResolution (parent.ToleranceResolution());
         rc = true;
       }
       break;
     case fn_tolerance_upper_value:
       if (!bValidField) {
-        SetToleranceUpperValue(parent.ToleranceUpperValue());
+        SetToleranceUpperValue (parent.ToleranceUpperValue());
         rc = true;
       }
       break;
     case fn_tolerance_lower_value:
       if (!bValidField) {
-        SetToleranceLowerValue(parent.ToleranceLowerValue());
+        SetToleranceLowerValue (parent.ToleranceLowerValue());
         rc = true;
       }
       break;
     case fn_tolerance_height_scale:
       if (!bValidField) {
-        SetToleranceHeightScale(parent.ToleranceHeightScale());
+        SetToleranceHeightScale (parent.ToleranceHeightScale());
         rc = true;
       }
       break;
     case fn_baseline_spacing:
       if (!bValidField) {
-        SetBaselineSpacing(parent.BaselineSpacing());
+        SetBaselineSpacing (parent.BaselineSpacing());
         rc = true;
       }
       break;
     case fn_draw_mask:
       if (!bValidField) {
-        SetDrawTextMask(parent.DrawTextMask());
+        SetDrawTextMask (parent.DrawTextMask());
         rc = true;
       }
       break;
     case fn_mask_color_source:
       if (!bValidField) {
-        SetMaskColorSource(parent.MaskColorSource());
+        SetMaskColorSource (parent.MaskColorSource());
         rc = true;
       }
       break;
     case fn_mask_color:
       if (!bValidField) {
-        SetMaskColor(parent.MaskColor());
+        SetMaskColor (parent.MaskColor());
         rc = true;
       }
       break;
     case fn_dimscale:
       if (!bValidField) {
-        SetDimScale(parent.DimScale());
+        SetDimScale (parent.DimScale());
         rc = true;
       }
       break;
     case fn_dimscale_source:
       if (!bValidField) {
-        SetDimScaleSource(parent.DimScaleSource());
+        SetDimScaleSource (parent.DimScaleSource());
         rc = true;
       }
       break;
@@ -2066,7 +2064,7 @@ ON_DimStyle::IsChildDimstyle() const
 }
 
 bool
-ON_DimStyle::IsChildOf(ON_UUID& parent_uuid) const
+ON_DimStyle::IsChildOf (ON_UUID& parent_uuid) const
 {
   // delete this old function when SDK can be broken.
   // parameter needed a const
@@ -2078,7 +2076,7 @@ ON_DimStyle::IsChildOf(ON_UUID& parent_uuid) const
 }
 
 bool
-ON_DimStyle::IsChildOf(const ON_UUID& parent_uuid) const
+ON_DimStyle::IsChildOf (const ON_UUID& parent_uuid) const
 {
   const ON_DimStyleExtra* pDE = DimStyleExtension();
   if (pDE && parent_uuid != ON_nil_uuid && pDE->m_parent_dimstyle == parent_uuid)
@@ -2088,19 +2086,19 @@ ON_DimStyle::IsChildOf(const ON_UUID& parent_uuid) const
 }
 
 void
-ON_DimStyle::SetParent(ON_UUID& parent_uuid)
+ON_DimStyle::SetParent (ON_UUID& parent_uuid)
 {
   // delete this old function when SDK can be broken.
   // parameter needed a const
-  SetParentId(parent_uuid);
+  SetParentId (parent_uuid);
 }
 
 void
-ON_DimStyle::SetParentId(ON_UUID parent_id)
+ON_DimStyle::SetParentId (ON_UUID parent_id)
 {
-  bool bCreateIfNoneExists = !ON_UuidIsNil(parent_id);
+  bool bCreateIfNoneExists = !ON_UuidIsNil (parent_id);
   ON_DimStyleExtra* pDE =
-      ON_DimStyleExtra::DimStyleExtensionGet(this, bCreateIfNoneExists);
+      ON_DimStyleExtra::DimStyleExtensionGet (this, bCreateIfNoneExists);
   if (pDE)
     pDE->m_parent_dimstyle = parent_id;
 }
@@ -2113,7 +2111,7 @@ ON_DimStyle::ParentId() const
 }
 
 bool
-ON_DimStyleExtra::IsFieldOverride(int field_id) const
+ON_DimStyleExtra::IsFieldOverride (int field_id) const
 {
   if (field_id >= 0 && field_id < m_valid_fields.Count())
     return m_valid_fields[field_id];
@@ -2122,7 +2120,7 @@ ON_DimStyleExtra::IsFieldOverride(int field_id) const
 }
 
 void
-ON_DimStyleExtra::SetFieldOverride(int field_id, bool bOverride)
+ON_DimStyleExtra::SetFieldOverride (int field_id, bool bOverride)
 {
   if (field_id >= 0 && field_id < m_valid_fields.Count())
     m_valid_fields[field_id] = bOverride;
@@ -2278,7 +2276,7 @@ ON_DimStyle::DefaultMaskColor()
   //          His ON_DimStyle::MaskColor() function defaulted to black
   //          and his ON_DimStyleExtra defaulted to white.
   // return 0;
-  return ON_Color(255, 255, 255);
+  return ON_Color (255, 255, 255);
 }
 
 // static
@@ -2297,9 +2295,9 @@ ON_DimStyle::DefaultDimScaleSource()
 
 //-------------------
 void
-ON_DimStyle::Scale(double scale)
+ON_DimStyle::Scale (double scale)
 {
-  if (ON_IsValid(scale) && scale > ON_SQRT_EPSILON && 1.0 != scale) {
+  if (ON_IsValid (scale) && scale > ON_SQRT_EPSILON && 1.0 != scale) {
     m_extextension *= scale;
     m_extoffset *= scale;
     m_arrowsize *= scale;
@@ -2309,79 +2307,79 @@ ON_DimStyle::Scale(double scale)
     m_dimextension *= scale;
     m_leaderarrowsize *= scale;
 
-    ON_DimStyleExtra* pDE = ON_DimStyleExtra::DimStyleExtensionGet(this, true);
+    ON_DimStyleExtra* pDE = ON_DimStyleExtra::DimStyleExtensionGet (this, true);
     if (pDE) {
-      pDE->Scale(scale);
+      pDE->Scale (scale);
     }
   }
 }
 
 void
-ON_DimStyle::SetToleranceStyle(int style)
+ON_DimStyle::SetToleranceStyle (int style)
 {
   bool bCreateIfDoesNotExist = (ON_DimStyle::DefaultToleranceStyle() != style);
   ON_DimStyleExtra* pDE =
-      ON_DimStyleExtra::DimStyleExtensionGet(this, bCreateIfDoesNotExist);
+      ON_DimStyleExtra::DimStyleExtensionGet (this, bCreateIfDoesNotExist);
   if (pDE) {
-    pDE->SetToleranceStyle(style);
+    pDE->SetToleranceStyle (style);
   }
 }
 
 void
-ON_DimStyle::SetToleranceResolution(int resolution)
+ON_DimStyle::SetToleranceResolution (int resolution)
 {
   bool bCreateIfDoesNotExist =
       (ON_DimStyle::DefaultToleranceResolution() != resolution);
   ON_DimStyleExtra* pDE =
-      ON_DimStyleExtra::DimStyleExtensionGet(this, bCreateIfDoesNotExist);
+      ON_DimStyleExtra::DimStyleExtensionGet (this, bCreateIfDoesNotExist);
   if (pDE) {
-    pDE->SetToleranceResolution(resolution);
+    pDE->SetToleranceResolution (resolution);
   }
 }
 
 void
-ON_DimStyle::SetToleranceUpperValue(double upper_value)
+ON_DimStyle::SetToleranceUpperValue (double upper_value)
 {
   bool bCreateIfDoesNotExist =
       (ON_DimStyle::DefaultToleranceUpperValue() != upper_value);
   ON_DimStyleExtra* pDE =
-      ON_DimStyleExtra::DimStyleExtensionGet(this, bCreateIfDoesNotExist);
+      ON_DimStyleExtra::DimStyleExtensionGet (this, bCreateIfDoesNotExist);
   if (pDE) {
-    pDE->SetToleranceUpperValue(upper_value);
+    pDE->SetToleranceUpperValue (upper_value);
   }
 }
 
 void
-ON_DimStyle::SetToleranceLowerValue(double lower_value)
+ON_DimStyle::SetToleranceLowerValue (double lower_value)
 {
   bool bCreateIfDoesNotExist =
       (ON_DimStyle::DefaultToleranceLowerValue() != lower_value);
   ON_DimStyleExtra* pDE =
-      ON_DimStyleExtra::DimStyleExtensionGet(this, bCreateIfDoesNotExist);
+      ON_DimStyleExtra::DimStyleExtensionGet (this, bCreateIfDoesNotExist);
   if (pDE) {
-    pDE->SetToleranceLowerValue(lower_value);
+    pDE->SetToleranceLowerValue (lower_value);
   }
 }
 
 void
-ON_DimStyle::SetToleranceHeightScale(double scale)
+ON_DimStyle::SetToleranceHeightScale (double scale)
 {
   bool bCreateIfDoesNotExist = (ON_DimStyle::DefaultToleranceHeightScale() != scale);
   ON_DimStyleExtra* pDE =
-      ON_DimStyleExtra::DimStyleExtensionGet(this, bCreateIfDoesNotExist);
+      ON_DimStyleExtra::DimStyleExtensionGet (this, bCreateIfDoesNotExist);
   if (pDE) {
-    pDE->SetToleranceHeightScale(scale);
+    pDE->SetToleranceHeightScale (scale);
   }
 }
 
 void
-ON_DimStyle::SetBaselineSpacing(double spacing)
+ON_DimStyle::SetBaselineSpacing (double spacing)
 {
   bool bCreateIfDoesNotExist = (ON_DimStyle::DefaultBaselineSpacing() != spacing);
   ON_DimStyleExtra* pDE =
-      ON_DimStyleExtra::DimStyleExtensionGet(this, bCreateIfDoesNotExist);
+      ON_DimStyleExtra::DimStyleExtensionGet (this, bCreateIfDoesNotExist);
   if (pDE) {
-    pDE->SetBaselineSpacing(spacing);
+    pDE->SetBaselineSpacing (spacing);
   }
 }
 
@@ -2398,14 +2396,14 @@ ON_DimStyle::DrawTextMask() const
 }
 
 void
-ON_DimStyle::SetDrawTextMask(bool bDraw)
+ON_DimStyle::SetDrawTextMask (bool bDraw)
 {
   bool bCreateIfDoesNotExist =
       (ON_DimStyle::DefaultDrawTextMask() != (bDraw ? true : false));
   ON_DimStyleExtra* pDE =
-      ON_DimStyleExtra::DimStyleExtensionGet(this, bCreateIfDoesNotExist);
+      ON_DimStyleExtra::DimStyleExtensionGet (this, bCreateIfDoesNotExist);
   if (pDE)
-    pDE->SetDrawTextMask(bDraw);
+    pDE->SetDrawTextMask (bDraw);
 }
 
 int
@@ -2421,13 +2419,13 @@ ON_DimStyle::MaskColorSource() const
 }
 
 void
-ON_DimStyle::SetMaskColorSource(int source)
+ON_DimStyle::SetMaskColorSource (int source)
 {
   bool bCreateIfDoesNotExist = (ON_DimStyle::DefaultMaskColorSource() != source);
   ON_DimStyleExtra* pDE =
-      ON_DimStyleExtra::DimStyleExtensionGet(this, bCreateIfDoesNotExist);
+      ON_DimStyleExtra::DimStyleExtensionGet (this, bCreateIfDoesNotExist);
   if (pDE)
-    pDE->SetMaskColorSource(source);
+    pDE->SetMaskColorSource (source);
 }
 
 ON_Color
@@ -2443,13 +2441,13 @@ ON_DimStyle::MaskColor() const
 }
 
 void
-ON_DimStyle::SetMaskColor(ON_Color color)
+ON_DimStyle::SetMaskColor (ON_Color color)
 {
   bool bCreateIfDoesNotExist = (ON_DimStyle::DefaultMaskColor() != color);
   ON_DimStyleExtra* pDE =
-      ON_DimStyleExtra::DimStyleExtensionGet(this, bCreateIfDoesNotExist);
+      ON_DimStyleExtra::DimStyleExtensionGet (this, bCreateIfDoesNotExist);
   if (pDE)
-    pDE->SetMaskColor(color);
+    pDE->SetMaskColor (color);
 }
 
 double
@@ -2462,13 +2460,13 @@ ON_DimStyle::MaskOffsetFactor() const
 }
 
 void
-ON_DimStyle::SetDimScale(double scale)
+ON_DimStyle::SetDimScale (double scale)
 {
   bool bCreateIfDoesNotExist = (ON_DimStyle::DefaultDimScale() != scale);
   ON_DimStyleExtra* pDE =
-      ON_DimStyleExtra::DimStyleExtensionGet(this, bCreateIfDoesNotExist);
+      ON_DimStyleExtra::DimStyleExtensionGet (this, bCreateIfDoesNotExist);
   if (pDE)
-    pDE->SetDimScale(scale);
+    pDE->SetDimScale (scale);
 }
 
 double
@@ -2484,13 +2482,13 @@ ON_DimStyle::DimScale() const
 }
 
 void
-ON_DimStyle::SetDimScaleSource(int source)
+ON_DimStyle::SetDimScaleSource (int source)
 {
   bool bCreateIfDoesNotExist = (ON_DimStyle::DefaultDimScaleSource() != source);
   ON_DimStyleExtra* pDE =
-      ON_DimStyleExtra::DimStyleExtensionGet(this, bCreateIfDoesNotExist);
+      ON_DimStyleExtra::DimStyleExtensionGet (this, bCreateIfDoesNotExist);
   if (pDE)
-    pDE->SetDimScaleSource(source);
+    pDE->SetDimScaleSource (source);
 }
 
 int
@@ -2506,13 +2504,13 @@ ON_DimStyle::DimScaleSource() const
 }
 
 void
-ON_DimStyle::SetSourceDimstyle(ON_UUID source_uuid)
+ON_DimStyle::SetSourceDimstyle (ON_UUID source_uuid)
 {
   bool bCreateIfDoesNotExist = (!(ON_nil_uuid == source_uuid));
   ON_DimStyleExtra* pDE =
-      ON_DimStyleExtra::DimStyleExtensionGet(this, bCreateIfDoesNotExist);
+      ON_DimStyleExtra::DimStyleExtensionGet (this, bCreateIfDoesNotExist);
   if (pDE)
-    pDE->SetSourceDimstyle(source_uuid);
+    pDE->SetSourceDimstyle (source_uuid);
 }
 
 ON_UUID
@@ -2533,8 +2531,8 @@ ON_DimStyle::DimStyleExtension()
 {
   // This function gets an extensions class if one exists.
   // It must not create an extensions class if one does not exist.
-  ON_DimStyleExtra* pExtra = ON_DimStyleExtra::Cast(
-      GetUserData(ON_DimStyleExtra::m_ON_DimStyleExtra_class_id.Uuid()));
+  ON_DimStyleExtra* pExtra = ON_DimStyleExtra::Cast (
+      GetUserData (ON_DimStyleExtra::m_ON_DimStyleExtra_class_id.Uuid()));
   return pExtra;
 }
 
@@ -2543,14 +2541,14 @@ ON_DimStyle::DimStyleExtension() const
 {
   // This function gets an extensions class if one exists.
   // It must not create an extensions class if one does not exist.
-  ON_DimStyleExtra* pExtra = ON_DimStyleExtra::Cast(
-      GetUserData(ON_DimStyleExtra::m_ON_DimStyleExtra_class_id.Uuid()));
+  ON_DimStyleExtra* pExtra = ON_DimStyleExtra::Cast (
+      GetUserData (ON_DimStyleExtra::m_ON_DimStyleExtra_class_id.Uuid()));
   return pExtra;
 }
 
 // returns true if they are the same
 bool
-ON_DimStyle::CompareFields(const ON_DimStyle& other) const
+ON_DimStyle::CompareFields (const ON_DimStyle& other) const
 {
   if ((m_extextension != other.m_extextension) || (m_extoffset != other.m_extoffset) ||
       (m_arrowsize != other.m_arrowsize) || (m_centermark != other.m_centermark) ||
@@ -2580,10 +2578,10 @@ ON_DimStyle::CompareFields(const ON_DimStyle& other) const
 
   // 2 November 2011 Dale Lear:
   //   Do not create ON_DimStyleExtra if it does not already exist.
-  const ON_DimStyleExtra* pDEo = ON_DimStyleExtra::DimStyleExtensionGet(&other);
-  const ON_DimStyleExtra* pDE = ON_DimStyleExtra::DimStyleExtensionGet(this);
+  const ON_DimStyleExtra* pDEo = ON_DimStyleExtra::DimStyleExtensionGet (&other);
+  const ON_DimStyleExtra* pDE = ON_DimStyleExtra::DimStyleExtensionGet (this);
 
-  if (0 != pDEo && 0 != pDE && !pDE->CompareFields(pDEo))
+  if (0 != pDEo && 0 != pDE && !pDE->CompareFields (pDEo))
     return false;
 
   // 2 November 2011 Dale Lear:

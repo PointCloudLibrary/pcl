@@ -64,7 +64,7 @@ namespace cuda {
  */
 class ScopeTimeCPU {
 public:
-  inline ScopeTimeCPU(const char* title);
+  inline ScopeTimeCPU (const char* title);
   inline ~ScopeTimeCPU();
 
 private:
@@ -73,7 +73,7 @@ private:
 };
 
 #ifndef MEASURE_FUNCTION_TIME
-#define MEASURE_FUNCTION_TIME ScopeTimeCPU scopeTime(__func__)
+#define MEASURE_FUNCTION_TIME ScopeTimeCPU scopeTime (__func__)
 #endif
 
 inline double
@@ -98,7 +98,7 @@ getTime ();
 
 /// Executes code, only if secs are gone since last exec.
 #ifndef DO_EVERY
-#define DO_EVERY(secs, code) DO_EVERY_TS(secs, pcl::cuda::getTime(), code)
+#define DO_EVERY(secs, code) DO_EVERY_TS (secs, pcl::cuda::getTime(), code)
 #endif
 
 } // namespace cuda
@@ -110,17 +110,17 @@ pcl::cuda::getTime()
 #ifdef _WIN32
   LARGE_INTEGER frequency;
   LARGE_INTEGER timer_tick;
-  QueryPerformanceFrequency(&frequency);
-  QueryPerformanceCounter(&timer_tick);
+  QueryPerformanceFrequency (&frequency);
+  QueryPerformanceCounter (&timer_tick);
   return (double)(timer_tick.QuadPart) / (double)frequency.QuadPart;
 #else
   timeval current_time;
-  gettimeofday(&current_time, nullptr);
+  gettimeofday (&current_time, nullptr);
   return (current_time.tv_sec + 1e-6 * current_time.tv_usec);
 #endif
 }
 
-inline pcl::cuda::ScopeTimeCPU::ScopeTimeCPU(const char* title) : title_(title)
+inline pcl::cuda::ScopeTimeCPU::ScopeTimeCPU (const char* title) : title_ (title)
 {
   start_time_ = pcl::cuda::getTime();
 }

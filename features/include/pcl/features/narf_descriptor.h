@@ -67,8 +67,8 @@ public:
 
   // =====CONSTRUCTOR & DESTRUCTOR=====
   /** Constructor */
-  NarfDescriptor(const RangeImage* range_image = nullptr,
-                 const pcl::Indices* indices = nullptr);
+  NarfDescriptor (const RangeImage* range_image = nullptr,
+                  const pcl::Indices* indices = nullptr);
   /** Destructor */
   ~NarfDescriptor() override;
 

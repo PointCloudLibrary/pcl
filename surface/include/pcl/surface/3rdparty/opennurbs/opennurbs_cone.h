@@ -30,7 +30,7 @@ public:
   ON_Cone();
 
   // See ON_Cone::Create.
-  ON_Cone(const ON_Plane& plane, double height, double radius);
+  ON_Cone (const ON_Plane& plane, double height, double radius);
 
   ~ON_Cone();
 
@@ -47,7 +47,7 @@ public:
   // Returns true if plane is valid, height is not zero, and
   // radius is not zero.
   ON_BOOL32
-  IsValid () const;
+  IsValid() const;
 
   // Returns:
   //   Center of base circle.
@@ -118,7 +118,7 @@ public:
                   double* height_parameter) const;
 
   // returns point on cone that is closest to given point
-  ON_3dPoint ClosestPointTo(ON_3dPoint) const;
+  ON_3dPoint ClosestPointTo (ON_3dPoint) const;
 
   ON_BOOL32
   Transform (const ON_Xform&);

@@ -85,61 +85,61 @@ ON_TestMathFunction (int function_index, double x, double y)
     z = x / y;
     break;
   case 5: // absolute value
-    z = fabs(x);
+    z = fabs (x);
     break;
   case 6: // exp
-    z = exp(x);
+    z = exp (x);
     break;
   case 7: // log
-    z = log(x);
+    z = log (x);
     break;
   case 8: // log10
-    z = log10(x);
+    z = log10 (x);
     break;
   case 9: // frexp
-    z = frexp(x, &i);
+    z = frexp (x, &i);
     break;
   case 10: // pow
-    z = pow(x, y);
+    z = pow (x, y);
     break;
   case 11: // square root
-    z = sqrt(x);
+    z = sqrt (x);
     break;
   case 12: // sine
-    z = sin(x);
+    z = sin (x);
     break;
   case 13: // cosine
-    z = cos(x);
+    z = cos (x);
     break;
   case 14: // tangent
-    z = tan(x);
+    z = tan (x);
     break;
   case 15: // hyperbolic sine
-    z = sinh(x);
+    z = sinh (x);
     break;
   case 16: // hyperbolic cosine
-    z = cosh(x);
+    z = cosh (x);
     break;
   case 17: // hyperbolic tangent
-    z = tanh(x);
+    z = tanh (x);
     break;
   case 18: // arcsine
-    z = asin(x);
+    z = asin (x);
     break;
   case 19: // arccosine
-    z = acos(x);
+    z = acos (x);
     break;
   case 20: // arctangent
-    z = atan(x);
+    z = atan (x);
     break;
   case 21: // arctangent
-    z = atan2(y, x);
+    z = atan2 (y, x);
     break;
   case 22:
-    z = fmod(x, y);
+    z = fmod (x, y);
     break;
   case 23:
-    z = modf(x, &y);
+    z = modf (x, &y);
     break;
   default:
     z = 0.0;
@@ -193,26 +193,26 @@ ON_ArrayDistance (int dim, const double* A, const double* B)
   double a, b, c, len;
   switch (dim) {
   case 1:
-    len = fabs(*B - *A);
+    len = fabs (*B - *A);
     break;
   case 2:
-    a = fabs(*B++ - *A++);
-    b = fabs(*B - *A);
+    a = fabs (*B++ - *A++);
+    b = fabs (*B - *A);
     if (a > b) {
       b /= a;
-      len = a * sqrt(1.0 + b * b);
+      len = a * sqrt (1.0 + b * b);
     }
     else if (b > a) {
       a /= b;
-      len = b * sqrt(1.0 + a * a);
+      len = b * sqrt (1.0 + a * a);
     }
     else
       len = a * ON_SQRT2;
     break;
   case 3:
-    a = fabs(*B++ - *A++);
-    b = fabs(*B++ - *A++);
-    c = fabs(*B - *A);
+    a = fabs (*B++ - *A++);
+    b = fabs (*B++ - *A++);
+    c = fabs (*B - *A);
     if (a >= b) {
       if (a >= c) {
         if (a == 0.0)
@@ -222,24 +222,24 @@ ON_ArrayDistance (int dim, const double* A, const double* B)
         else {
           b /= a;
           c /= a;
-          len = a * sqrt(1.0 + (b * b + c * c));
+          len = a * sqrt (1.0 + (b * b + c * c));
         }
       }
       else {
         a /= c;
         b /= c;
-        len = c * sqrt(1.0 + (a * a + b * b));
+        len = c * sqrt (1.0 + (a * a + b * b));
       }
     }
     else if (b >= c) {
       a /= b;
       c /= b;
-      len = b * sqrt(1.0 + (a * a + c * c));
+      len = b * sqrt (1.0 + (a * a + c * c));
     }
     else {
       b /= c;
       a /= c;
-      len = c * sqrt(1.0 + (a * a + b * b));
+      len = c * sqrt (1.0 + (a * a + b * b));
     }
     break;
   default:
@@ -248,7 +248,7 @@ ON_ArrayDistance (int dim, const double* A, const double* B)
       a = *B++ - *A++;
       len += a * a;
     }
-    len = sqrt(len);
+    len = sqrt (len);
     break;
   }
   return len;
@@ -272,26 +272,26 @@ ON_ArrayMagnitude (int dim, const double* A)
   double a, b, c, len;
   switch (dim) {
   case 1:
-    len = fabs(*A);
+    len = fabs (*A);
     break;
   case 2:
-    a = fabs(*A++);
-    b = fabs(*A);
+    a = fabs (*A++);
+    b = fabs (*A);
     if (a > b) {
       b /= a;
-      len = a * sqrt(1.0 + b * b);
+      len = a * sqrt (1.0 + b * b);
     }
     else if (b > a) {
       a /= b;
-      len = b * sqrt(1.0 + a * a);
+      len = b * sqrt (1.0 + a * a);
     }
     else
       len = a * ON_SQRT2;
     break;
   case 3:
-    a = fabs(*A++);
-    b = fabs(*A++);
-    c = fabs(*A);
+    a = fabs (*A++);
+    b = fabs (*A++);
+    c = fabs (*A);
     if (a >= b) {
       if (a >= c) {
         if (a == b && a == c)
@@ -299,24 +299,24 @@ ON_ArrayMagnitude (int dim, const double* A)
         else {
           b /= a;
           c /= a;
-          len = a * sqrt(1.0 + (b * b + c * c));
+          len = a * sqrt (1.0 + (b * b + c * c));
         }
       }
       else {
         a /= c;
         b /= c;
-        len = c * sqrt(1.0 + (a * a + b * b));
+        len = c * sqrt (1.0 + (a * a + b * b));
       }
     }
     else if (b >= c) {
       a /= b;
       c /= b;
-      len = b * sqrt(1.0 + (a * a + c * c));
+      len = b * sqrt (1.0 + (a * a + c * c));
     }
     else {
       b /= c;
       a /= c;
-      len = c * sqrt(1.0 + (a * a + b * b));
+      len = c * sqrt (1.0 + (a * a + b * b));
     }
     break;
   default:
@@ -325,7 +325,7 @@ ON_ArrayMagnitude (int dim, const double* A)
       a = *A++;
       len += a * a;
     }
-    len = sqrt(len);
+    len = sqrt (len);
     break;
   }
   return len;
@@ -404,12 +404,12 @@ ON_DecomposeVector (const ON_3dVector& V,
   const double AoA = A * A;
   const double AoB = A * B;
   const double BoB = B * B;
-  rank = ON_Solve2x2(AoA, AoB, AoB, BoB, AoV, BoV, x, y, &pr);
+  rank = ON_Solve2x2 (AoA, AoB, AoB, BoB, AoV, BoV, x, y, &pr);
   return (rank == 2) ? true : false;
 }
 
 ON_BOOL32
-ON_EvJacobian(double ds_o_ds, double ds_o_dt, double dt_o_dt, double* det_addr)
+ON_EvJacobian (double ds_o_ds, double ds_o_dt, double dt_o_dt, double* det_addr)
 /* Carefully compute the Jacobian determinant
  *
  * INPUT:
@@ -448,7 +448,7 @@ ON_EvJacobian(double ds_o_ds, double ds_o_dt, double dt_o_dt, double* det_addr)
      */
     rc = false;
   }
-  else if (fabs(det) <= ((a > b) ? a : b) * ON_SQRT_EPSILON) {
+  else if (fabs (det) <= ((a > b) ? a : b) * ON_SQRT_EPSILON) {
     /* Du and Dv are (numerically) (anti) parallel -
      * value of det is unreliable.
      */
@@ -463,20 +463,20 @@ ON_EvJacobian(double ds_o_ds, double ds_o_dt, double dt_o_dt, double* det_addr)
 }
 
 ON_BOOL32
-ON_EvNormalPartials(const ON_3dVector& ds,
-                    const ON_3dVector& dt,
-                    const ON_3dVector& dss,
-                    const ON_3dVector& dst,
-                    const ON_3dVector& dtt,
-                    ON_3dVector& ns,
-                    ON_3dVector& nt)
+ON_EvNormalPartials (const ON_3dVector& ds,
+                     const ON_3dVector& dt,
+                     const ON_3dVector& dss,
+                     const ON_3dVector& dst,
+                     const ON_3dVector& dtt,
+                     ON_3dVector& ns,
+                     ON_3dVector& nt)
 {
   ON_BOOL32 rc = false;
   const double ds_o_ds = ds * ds;
   const double ds_o_dt = ds * dt;
   const double dt_o_dt = dt * dt;
 
-  rc = ON_EvJacobian(ds_o_ds, ds_o_dt, dt_o_dt, NULL);
+  rc = ON_EvJacobian (ds_o_ds, ds_o_dt, dt_o_dt, NULL);
   if (!rc) {
     // degenerate Jacobian and unit surface normal is not well defined
     ns.Zero();
@@ -492,7 +492,7 @@ ON_EvNormalPartials(const ON_3dVector& ds,
     // When a surface has a non-degenerate Jacobian, V = ds X dt
     // and the derivatives of N may be computed from the first
     // and second partials.
-    ON_3dVector V = ON_CrossProduct(ds, dt);
+    ON_3dVector V = ON_CrossProduct (ds, dt);
     double len = V.Length();
     double len3 = len * len * len;
     if (len < ON_EPSILON) {
@@ -517,7 +517,7 @@ ON_EvNormalPartials(const ON_3dVector& ds,
 }
 
 ON_BOOL32
-ON_Pullback3dVector(           // use to pull 3d vector back to surface parameter space
+ON_Pullback3dVector (          // use to pull 3d vector back to surface parameter space
     const ON_3dVector& vector, // 3d vector
     double distance, // signed distance from vector location to closet point on surface
                      // < 0 if point is below with respect to Du x Dv
@@ -533,21 +533,21 @@ ON_Pullback3dVector(           // use to pull 3d vector back to surface paramete
   // int bIsDegenerate = false;
   if (distance != 0.0) {
     ON_3dVector ns, nt;
-    rc = ON_EvNormalPartials(ds, dt, dss, dst, dtt, ns, nt);
+    rc = ON_EvNormalPartials (ds, dt, dss, dst, dtt, ns, nt);
     if (rc) {
       // adjust ds and dt to take account of offset distance
-      rc = ON_DecomposeVector(
+      rc = ON_DecomposeVector (
           vector, ds + distance * ns, dt + distance * nt, &pullback.x, &pullback.y);
     }
   }
   else {
-    rc = ON_DecomposeVector(vector, ds, dt, &pullback.x, &pullback.y);
+    rc = ON_DecomposeVector (vector, ds, dt, &pullback.x, &pullback.y);
   }
   return rc;
 }
 
 ON_BOOL32
-ON_GetParameterTolerance(
+ON_GetParameterTolerance (
     double t0,
     double t1, // domain
     double t,  // parameter in domain
@@ -561,7 +561,8 @@ ON_GetParameterTolerance(
       t = t0;
     else if (t > t1)
       t = t1;
-    double dt = (t1 - t0) * 8.0 * ON_SQRT_EPSILON + (fabs(t0) + fabs(t1)) * ON_EPSILON;
+    double dt =
+        (t1 - t0) * 8.0 * ON_SQRT_EPSILON + (fabs (t0) + fabs (t1)) * ON_EPSILON;
     if (dt >= t1 - t0)
       dt = 0.5 * (t1 - t0);
     const double tmin = t - dt;
@@ -576,19 +577,19 @@ ON_GetParameterTolerance(
 }
 
 ON_BOOL32
-ON_EvNormal(int limit_dir,
-            const ON_3dVector& Du,
-            const ON_3dVector& Dv,
-            const ON_3dVector& Duu,
-            const ON_3dVector& Duv,
-            const ON_3dVector& Dvv,
-            ON_3dVector& N)
+ON_EvNormal (int limit_dir,
+             const ON_3dVector& Du,
+             const ON_3dVector& Dv,
+             const ON_3dVector& Duu,
+             const ON_3dVector& Duv,
+             const ON_3dVector& Dvv,
+             ON_3dVector& N)
 {
   const double DuoDu = Du.LengthSquared();
   const double DuoDv = Du * Dv;
   const double DvoDv = Dv.LengthSquared();
-  if (ON_EvJacobian(DuoDu, DuoDv, DvoDv, NULL)) {
-    N = ON_CrossProduct(Du, Dv);
+  if (ON_EvJacobian (DuoDu, DuoDv, DvoDv, NULL)) {
+    N = ON_CrossProduct (Du, Dv);
   }
   else {
     /* degenerate jacobian - try to compute normal using limit
@@ -727,10 +728,10 @@ ON_EvTangent (const ON_3dVector& D1, // first derivative
 }
 
 ON_BOOL32
-ON_EvCurvature(const ON_3dVector& D1, // first derivative
-               const ON_3dVector& D2, // second derivative
-               ON_3dVector& T,        // Unit tangent returned here
-               ON_3dVector& K         // Curvature returned here
+ON_EvCurvature (const ON_3dVector& D1, // first derivative
+                const ON_3dVector& D2, // second derivative
+                ON_3dVector& T,        // Unit tangent returned here
+                ON_3dVector& K         // Curvature returned here
 )
 {
   // Evaluate unit tangent and curvature from first and second derivatives
@@ -819,7 +820,7 @@ ON_EvSectionalCurvature (const ON_3dVector& S10,
   D1.z = M.x * planeNormal.y - planeNormal.x * M.y;
 
   // D1 is tangent to the surface.  Find a, b so that D1 = a*Su + b*Sv.
-  rank = ON_Solve3x2(&S10.x, &S01.x, D1.x, D1.y, D1.z, &a, &b, &e, &pr);
+  rank = ON_Solve3x2 (&S10.x, &S01.x, D1.x, D1.y, D1.z, &a, &b, &e, &pr);
   if (rank < 2) {
     K.x = 0.0;
     K.y = 0.0;
@@ -884,19 +885,19 @@ ON_IsContinuous (ON::continuity desired_continuity,
 {
   ON_3dVector Ta, Tb, Ka, Kb;
 
-  switch (ON::ParametricContinuity(desired_continuity)) {
+  switch (ON::ParametricContinuity (desired_continuity)) {
   case ON::unknown_continuity:
     break;
 
   case ON::C0_continuous:
   case ON::C0_locus_continuous:
-    if (!(Pa - Pb).IsTiny(point_tolerance))
+    if (!(Pa - Pb).IsTiny (point_tolerance))
       return false;
     break;
 
   case ON::C1_continuous:
   case ON::C1_locus_continuous:
-    if (!(Pa - Pb).IsTiny(point_tolerance) || !(D1a - D1b).IsTiny(d1_tolerance))
+    if (!(Pa - Pb).IsTiny (point_tolerance) || !(D1a - D1b).IsTiny (d1_tolerance))
       return false;
     break;
 
@@ -904,36 +905,37 @@ ON_IsContinuous (ON::continuity desired_continuity,
   case ON::G1_locus_continuous:
     Ta = D1a;
     if (!Ta.Unitize())
-      ON_EvCurvature(D1a, D2a, Ta, Ka);
+      ON_EvCurvature (D1a, D2a, Ta, Ka);
     Tb = D1b;
     if (!Tb.Unitize())
-      ON_EvCurvature(D1b, D2b, Tb, Kb);
-    if (!(Pa - Pb).IsTiny(point_tolerance) || Ta * Tb < cos_angle_tolerance)
+      ON_EvCurvature (D1b, D2b, Tb, Kb);
+    if (!(Pa - Pb).IsTiny (point_tolerance) || Ta * Tb < cos_angle_tolerance)
       return false;
     break;
 
   case ON::C2_continuous:
   case ON::C2_locus_continuous:
   case ON::Cinfinity_continuous:
-    if (!(Pa - Pb).IsTiny(point_tolerance) || !(D1a - D1b).IsTiny(d1_tolerance) ||
-        !(D2a - D2b).IsTiny(d2_tolerance))
+    if (!(Pa - Pb).IsTiny (point_tolerance) || !(D1a - D1b).IsTiny (d1_tolerance) ||
+        !(D2a - D2b).IsTiny (d2_tolerance))
       return false;
     break;
 
   case ON::G2_continuous:
   case ON::G2_locus_continuous:
   case ON::Gsmooth_continuous:
-    ON_EvCurvature(D1a, D2a, Ta, Ka);
-    ON_EvCurvature(D1b, D2b, Tb, Kb);
-    if (!(Pa - Pb).IsTiny(point_tolerance) || Ta * Tb < cos_angle_tolerance)
+    ON_EvCurvature (D1a, D2a, Ta, Ka);
+    ON_EvCurvature (D1b, D2b, Tb, Kb);
+    if (!(Pa - Pb).IsTiny (point_tolerance) || Ta * Tb < cos_angle_tolerance)
       return false;
     if (ON::Gsmooth_continuous == desired_continuity) {
-      if (!ON_IsGsmoothCurvatureContinuous(
+      if (!ON_IsGsmoothCurvatureContinuous (
               Ka, Kb, cos_angle_tolerance, curvature_tolerance))
         return false;
     }
     else {
-      if (!ON_IsG2CurvatureContinuous(Ka, Kb, cos_angle_tolerance, curvature_tolerance))
+      if (!ON_IsG2CurvatureContinuous (
+              Ka, Kb, cos_angle_tolerance, curvature_tolerance))
         return false;
     }
     break;
@@ -1366,11 +1368,11 @@ ON_BinomialCoefficient (int i, int j)
     return 10.0;
 
   if (n % 2)
-    return ON_BinomialCoefficient(i - 1, j) + ON_BinomialCoefficient(i, j - 1);
+    return ON_BinomialCoefficient (i - 1, j) + ON_BinomialCoefficient (i, j - 1);
 
   half_n = n >> 1;
   if (half_n > MAX_HALF_N)
-    return ON_BinomialCoefficient(i - 1, j) + ON_BinomialCoefficient(i, j - 1);
+    return ON_BinomialCoefficient (i - 1, j) + ON_BinomialCoefficient (i, j - 1);
   if (i > half_n)
     i = n - i;
   /* at this point we have n even,
@@ -1388,11 +1390,11 @@ ON_DECL
 double
 ON_TrinomialCoefficient (int i, int j, int k)
 {
-  return (ON_BinomialCoefficient(i, j + k) * ON_BinomialCoefficient(j, k));
+  return (ON_BinomialCoefficient (i, j + k) * ON_BinomialCoefficient (j, k));
 }
 
 ON_BOOL32
-ON_IsValidPointList(int dim, int is_rat, int count, int stride, const float* p)
+ON_IsValidPointList (int dim, int is_rat, int count, int stride, const float* p)
 {
   return (dim > 0 && stride >= (is_rat ? (dim + 1) : dim) && count >= 0 && p != NULL)
              ? true
@@ -1400,7 +1402,7 @@ ON_IsValidPointList(int dim, int is_rat, int count, int stride, const float* p)
 }
 
 ON_BOOL32
-ON_IsValidPointList(int dim, int is_rat, int count, int stride, const double* p)
+ON_IsValidPointList (int dim, int is_rat, int count, int stride, const double* p)
 {
   return (dim > 0 && stride >= (is_rat ? (dim + 1) : dim) && count >= 0 && p != NULL)
              ? true
@@ -1408,13 +1410,13 @@ ON_IsValidPointList(int dim, int is_rat, int count, int stride, const double* p)
 }
 
 ON_BOOL32
-ON_IsValidPointGrid(int dim,
-                    ON_BOOL32 is_rat,
-                    int point_count0,
-                    int point_count1,
-                    int point_stride0,
-                    int point_stride1,
-                    const double* p)
+ON_IsValidPointGrid (int dim,
+                     ON_BOOL32 is_rat,
+                     int point_count0,
+                     int point_count1,
+                     int point_stride0,
+                     int point_stride1,
+                     const double* p)
 {
   if (dim < 1 || point_count0 < 1 || point_count1 < 1 || p == NULL)
     return false;
@@ -1436,43 +1438,43 @@ ON_IsValidPointGrid(int dim,
 bool
 ON_ReversePointList (int dim, int is_rat, int count, int stride, double* p)
 {
-  if (!ON_IsValidPointList(dim, is_rat, count, stride, p))
+  if (!ON_IsValidPointList (dim, is_rat, count, stride, p))
     return false;
   if (is_rat)
     dim++;
   if (count <= 1)
     return true;
-  const std::size_t ele_size = dim * sizeof(*p);
-  void* t = onmalloc(ele_size);
+  const std::size_t ele_size = dim * sizeof (*p);
+  void* t = onmalloc (ele_size);
   int i, j;
   for (i = 0, j = (count - 1) * stride; i < j; i += stride, j -= stride) {
-    memcpy(t, p + i, ele_size);
-    memcpy(p + i, p + j, ele_size);
-    memcpy(p + j, t, ele_size);
+    memcpy (t, p + i, ele_size);
+    memcpy (p + i, p + j, ele_size);
+    memcpy (p + j, t, ele_size);
   }
-  onfree(t);
+  onfree (t);
   return true;
 }
 
 ON_BOOL32
-ON_ReversePointGrid(int dim,
-                    ON_BOOL32 is_rat,
-                    int point_count0,
-                    int point_count1,
-                    int point_stride0,
-                    int point_stride1,
-                    double* p,
-                    int dir)
+ON_ReversePointGrid (int dim,
+                     ON_BOOL32 is_rat,
+                     int point_count0,
+                     int point_count1,
+                     int point_stride0,
+                     int point_stride1,
+                     double* p,
+                     int dir)
 {
   ON_BOOL32 rc = false;
   if (!dir) {
-    rc = ON_ReversePointGrid(
+    rc = ON_ReversePointGrid (
         dim, is_rat, point_count1, point_count0, point_stride1, point_stride0, p, 1);
   }
   else {
     int i;
     for (i = 0; i < point_count0; i++) {
-      if (!ON_ReversePointList(
+      if (!ON_ReversePointList (
               dim, is_rat, point_count1, point_stride1, p + i * point_stride0)) {
         rc = false;
         break;
@@ -1490,7 +1492,7 @@ ON_SwapPointListCoordinates (int count, int stride, float* p, int i, int j)
 {
   float t;
   int k;
-  if (!ON_IsValidPointList(stride, 0, count, stride, p))
+  if (!ON_IsValidPointList (stride, 0, count, stride, p))
     return false;
   if (i < 0 || j < 0 || i >= stride || j >= stride)
     return false;
@@ -1509,7 +1511,7 @@ ON_SwapPointListCoordinates (int count, int stride, double* p, int i, int j)
 {
   double t;
   int k;
-  if (!ON_IsValidPointList(stride, 0, count, stride, p))
+  if (!ON_IsValidPointList (stride, 0, count, stride, p))
     return false;
   if (i < 0 || j < 0 || i >= stride || j >= stride)
     return false;
@@ -1524,13 +1526,13 @@ ON_SwapPointListCoordinates (int count, int stride, double* p, int i, int j)
 }
 
 ON_BOOL32
-ON_SwapPointGridCoordinates(int point_count0,
-                            int point_count1,
-                            int point_stride0,
-                            int point_stride1,
-                            double* p,
-                            int i,
-                            int j // coordinates to swap
+ON_SwapPointGridCoordinates (int point_count0,
+                             int point_count1,
+                             int point_stride0,
+                             int point_stride1,
+                             double* p,
+                             int i,
+                             int j // coordinates to swap
 )
 {
   ON_BOOL32 rc = false;
@@ -1559,7 +1561,7 @@ ON_TransformPointList (
   bool rc = true;
   double x, y, z, w;
 
-  if (!ON_IsValidPointList(dim, is_rat, count, stride, point))
+  if (!ON_IsValidPointList (dim, is_rat, count, stride, point))
     return false;
   if (xform.m_xform == NULL)
     return false;
@@ -1679,7 +1681,7 @@ ON_TransformPointList (
   bool rc = true;
   double x, y, z, w;
 
-  if (!ON_IsValidPointList(dim, is_rat, count, stride, point))
+  if (!ON_IsValidPointList (dim, is_rat, count, stride, point))
     return false;
   if (xform.m_xform == NULL)
     return false;
@@ -1793,20 +1795,20 @@ ON_TransformPointList (
 }
 
 ON_BOOL32
-ON_TransformPointGrid(int dim,
-                      int is_rat,
-                      int point_count0,
-                      int point_count1,
-                      int point_stride0,
-                      int point_stride1,
-                      double* point,
-                      const ON_Xform& xform)
+ON_TransformPointGrid (int dim,
+                       int is_rat,
+                       int point_count0,
+                       int point_count1,
+                       int point_stride0,
+                       int point_stride1,
+                       double* point,
+                       const ON_Xform& xform)
 {
   ON_BOOL32 rc = false;
   int i;
   double* pt = point;
   for (i = 0; i < point_count0; i++) {
-    if (!ON_TransformPointList(dim, is_rat, point_count1, point_stride1, pt, xform)) {
+    if (!ON_TransformPointList (dim, is_rat, point_count1, point_stride1, pt, xform)) {
       rc = false;
     }
     else if (!i) {
@@ -1818,13 +1820,13 @@ ON_TransformPointGrid(int dim,
 }
 
 ON_BOOL32
-ON_TransformVectorList(
+ON_TransformVectorList (
     int dim, int count, int stride, float* vector, const ON_Xform& xform)
 {
   ON_BOOL32 rc = true;
   double x, y, z;
 
-  if (!ON_IsValidPointList(dim, 0, count, stride, vector))
+  if (!ON_IsValidPointList (dim, 0, count, stride, vector))
     return false;
   if (xform.m_xform == NULL)
     return false;
@@ -1868,13 +1870,13 @@ ON_TransformVectorList(
 }
 
 ON_BOOL32
-ON_TransformVectorList(
+ON_TransformVectorList (
     int dim, int count, int stride, double* vector, const ON_Xform& xform)
 {
   ON_BOOL32 rc = true;
   double x, y, z;
 
-  if (!ON_IsValidPointList(dim, 0, count, stride, vector))
+  if (!ON_IsValidPointList (dim, 0, count, stride, vector))
     return false;
   if (xform.m_xform == NULL)
     return false;
@@ -1930,16 +1932,16 @@ ON_PointsAreCoincident (int dim, int is_rat, const double* pointA, const double*
     wb = pointB[dim];
     if (0.0 == wa || 0.0 == wb) {
       if (0.0 == wa && 0.0 == wb)
-        return ON_PointsAreCoincident(dim, 0, pointA, pointB);
+        return ON_PointsAreCoincident (dim, 0, pointA, pointB);
       return false;
     }
     while (dim--) {
       a = *pointA++ / wa;
       b = *pointB++ / wb;
-      d = fabs(a - b);
+      d = fabs (a - b);
       if (d <= ON_ZERO_TOLERANCE)
         continue;
-      if (d <= (fabs(a) + fabs(b)) * ON_RELATIVE_TOLERANCE)
+      if (d <= (fabs (a) + fabs (b)) * ON_RELATIVE_TOLERANCE)
         continue;
       return false;
     }
@@ -1948,10 +1950,10 @@ ON_PointsAreCoincident (int dim, int is_rat, const double* pointA, const double*
     while (dim--) {
       a = *pointA++;
       b = *pointB++;
-      d = fabs(a - b);
+      d = fabs (a - b);
       if (d <= ON_ZERO_TOLERANCE)
         continue;
-      if (d <= (fabs(a) + fabs(b)) * ON_RELATIVE_TOLERANCE)
+      if (d <= (fabs (a) + fabs (b)) * ON_RELATIVE_TOLERANCE)
         continue;
       return false;
     }
@@ -1968,13 +1970,13 @@ ON_PointsAreCoincident (
     return false;
   if (point_stride < (is_rat ? (dim + 1) : dim))
     return false;
-  if (false == ON_PointsAreCoincident(
+  if (false == ON_PointsAreCoincident (
                    dim, is_rat, points, points + ((point_count - 1) * point_stride)))
     return false;
   if (point_count > 2) {
     point_count--;
     while (point_count--) {
-      if (false == ON_PointsAreCoincident(dim, is_rat, points, points + point_stride))
+      if (false == ON_PointsAreCoincident (dim, is_rat, points, points + point_stride))
         return false;
       points += point_stride;
     }
@@ -1999,7 +2001,7 @@ ON_ComparePoint ( // returns
   for (i = 0; i < dim; i++) {
     a = wA * *pointA++;
     b = wB * *pointB++;
-    tol = (fabs(a) + fabs(b)) * ON_RELATIVE_TOLERANCE;
+    tol = (fabs (a) + fabs (b)) * ON_RELATIVE_TOLERANCE;
     if (tol < ON_ZERO_TOLERANCE)
       tol = ON_ZERO_TOLERANCE;
     if (a < b - tol)
@@ -2029,31 +2031,31 @@ ON_ComparePointList ( // returns
 {
   int i, rc = 0, rc1 = 0;
   bool bDoSecondCheck =
-      (1 == is_rat && dim <= 3 && point_count > 0 && ON_IsValid(pointA[dim]) &&
-       0.0 != pointA[dim] && ON_IsValid(pointB[dim]) && 0.0 != pointB[dim]);
+      (1 == is_rat && dim <= 3 && point_count > 0 && ON_IsValid (pointA[dim]) &&
+       0.0 != pointA[dim] && ON_IsValid (pointB[dim]) && 0.0 != pointB[dim]);
   const double wA = bDoSecondCheck ? pointA[dim] : 1.0;
   const double wB = bDoSecondCheck ? pointB[dim] : 1.0;
   const double wAtol = wA * ON_ZERO_TOLERANCE;
   const double wBtol = wB * ON_ZERO_TOLERANCE;
   double A[3] = {0.0, 0.0, 0.0};
   double B[3] = {0.0, 0.0, 0.0};
-  const std::size_t AB_size = dim * sizeof(A[0]);
+  const std::size_t AB_size = dim * sizeof (A[0]);
 
   for (i = 0; i < point_count && !rc; i++) {
-    rc = ON_ComparePoint(dim, is_rat, pointA, pointB);
-    if (rc && bDoSecondCheck && fabs(wA - pointA[dim]) <= wAtol &&
-        fabs(wB - pointB[dim]) <= wBtol) {
+    rc = ON_ComparePoint (dim, is_rat, pointA, pointB);
+    if (rc && bDoSecondCheck && fabs (wA - pointA[dim]) <= wAtol &&
+        fabs (wB - pointB[dim]) <= wBtol) {
       if (!rc1)
         rc1 = rc;
-      memcpy(A, pointA, AB_size);
+      memcpy (A, pointA, AB_size);
       A[0] /= pointA[dim];
       A[1] /= pointA[dim];
       A[2] /= pointA[dim];
-      memcpy(B, pointB, AB_size);
+      memcpy (B, pointB, AB_size);
       B[0] /= pointB[dim];
       B[1] /= pointB[dim];
       B[2] /= pointB[dim];
-      rc = (0 == ON_ComparePoint(dim, 0, A, B)) ? 0 : rc1;
+      rc = (0 == ON_ComparePoint (dim, 0, A, B)) ? 0 : rc1;
     }
     pointA += point_strideA;
     pointB += point_strideB;
@@ -2063,13 +2065,13 @@ ON_ComparePointList ( // returns
 }
 
 ON_BOOL32
-ON_IsPointListClosed(int dim, int is_rat, int count, int stride, const double* p)
+ON_IsPointListClosed (int dim, int is_rat, int count, int stride, const double* p)
 {
   ON_BOOL32 rc = false;
-  if (count >= 4 && 0 == ON_ComparePoint(dim, is_rat, p, p + stride * (count - 1))) {
+  if (count >= 4 && 0 == ON_ComparePoint (dim, is_rat, p, p + stride * (count - 1))) {
     // a bunch of points piled on top of each other is not considered to be closed.
     for (int i = 1; i < count - 1; i++) {
-      if (ON_ComparePoint(dim, is_rat, p, p + stride * i)) {
+      if (ON_ComparePoint (dim, is_rat, p, p + stride * i)) {
         rc = true;
         break;
       }
@@ -2079,14 +2081,14 @@ ON_IsPointListClosed(int dim, int is_rat, int count, int stride, const double* p
 }
 
 ON_BOOL32
-ON_IsPointGridClosed(int dim,
-                     ON_BOOL32 is_rat,
-                     int point_count0,
-                     int point_count1,
-                     int point_stride0,
-                     int point_stride1,
-                     const double* p,
-                     int dir)
+ON_IsPointGridClosed (int dim,
+                      ON_BOOL32 is_rat,
+                      int point_count0,
+                      int point_count1,
+                      int point_stride0,
+                      int point_stride1,
+                      const double* p,
+                      int dir)
 {
   ON_BOOL32 rc = false;
   if (point_count0 > 0 && point_count1 > 0 && p != NULL) {
@@ -2105,8 +2107,9 @@ ON_IsPointGridClosed(int dim,
       count = point_count1;
       stride = point_stride1;
     }
-    rc = (0 == ON_ComparePointList(dim, is_rat, count, stride, p0, stride, p1)) ? true
-                                                                                : false;
+    rc = (0 == ON_ComparePointList (dim, is_rat, count, stride, p0, stride, p1))
+             ? true
+             : false;
   }
   return rc;
 }
@@ -2176,7 +2179,7 @@ ON_SolveQuadraticEquation (double a, double b, double c, double* r0, double* r1)
 
   if (b == 0.0) {
     c /= -a;
-    *r1 = sqrt(fabs(c));
+    *r1 = sqrt (fabs (c));
     if (c < 0.0) {
       *r0 = 0.0;
       return 2;
@@ -2185,7 +2188,7 @@ ON_SolveQuadraticEquation (double a, double b, double c, double* r0, double* r1)
     return 0;
   }
   q = b * b - 4.0 * a * c;
-  if (fabs(q) <= b * b * ON_EPSILON)
+  if (fabs (q) <= b * b * ON_EPSILON)
     q = 0.0; /* q is noise - set it to zero */
   if (q <= 0.0) {
     /* multiple real root or complex conjugate roots */
@@ -2196,7 +2199,7 @@ ON_SolveQuadraticEquation (double a, double b, double c, double* r0, double* r1)
     }
 
     /* complex conjugate roots (probably) */
-    *r1 = fabs(0.5 * sqrt(fabs(q)) / a);
+    *r1 = fabs (0.5 * sqrt (fabs (q)) / a);
     x0 = *r0;
     x1 = *r1;
     y = (a * x0 + b) * x0 + c; /* y = quadratic evaluated at -b/2a */
@@ -2206,7 +2209,7 @@ ON_SolveQuadraticEquation (double a, double b, double c, double* r0, double* r1)
     }
     y0 = y - a * x1 * x1;         /* y0 = real part of "zero" */
     y1 = (2.0 * a * x0 + b) * x1; /* y1 = imaginary part of "zero" */
-    if (fabs(y) <= fabs(y0) || fabs(y) <= fabs(y1)) {
+    if (fabs (y) <= fabs (y0) || fabs (y) <= fabs (y1)) {
       *r1 = *r0;
       return 1;
     }
@@ -2214,7 +2217,7 @@ ON_SolveQuadraticEquation (double a, double b, double c, double* r0, double* r1)
   }
 
   /* distinct roots (probably) */
-  q = 0.5 * (fabs(b) + sqrt(q));
+  q = 0.5 * (fabs (b) + sqrt (q));
   if (b > 0.0)
     q = -q;
   x0 = q / a;
@@ -2236,7 +2239,7 @@ ON_SolveQuadraticEquation (double a, double b, double c, double* r0, double* r1)
     y = (a * y + b) * y + c; /* y = quadratic evaluated at -b/2a */
     y0 = (a * x0 + b) * x0 + c;
     y1 = (a * x1 + b) * x1 + c;
-    if (fabs(y) <= fabs(y0) || fabs(y) <= fabs(y1) || (a > 0.0 && y > 0.0) ||
+    if (fabs (y) <= fabs (y0) || fabs (y) <= fabs (y1) || (a > 0.0 && y > 0.0) ||
         (a < 0.0 && y < 0.0)) {
       *r0 = *r1 = -0.5 * b / a;
       return 1;
@@ -2250,7 +2253,7 @@ ON_SolveQuadraticEquation (double a, double b, double c, double* r0, double* r1)
 }
 
 ON_BOOL32
-ON_SolveTriDiagonal(
+ON_SolveTriDiagonal (
     int dim, int n, double* a, const double* b, double* c, const double* d, double* X)
 /*****************************************************************************
 Solve a tridiagonal linear system of equations using backsubstution
@@ -2430,18 +2433,18 @@ ON_Solve2x2 (double m00,
 {
   int i = 0;
   double maxpiv, minpiv;
-  double x = fabs(m00);
-  double y = fabs(m01);
+  double x = fabs (m00);
+  double y = fabs (m01);
   if (y > x) {
     x = y;
     i = 1;
   }
-  y = fabs(m10);
+  y = fabs (m10);
   if (y > x) {
     x = y;
     i = 2;
   }
-  y = fabs(m11);
+  y = fabs (m11);
   if (y > x) {
     x = y;
     i = 3;
@@ -2486,7 +2489,7 @@ ON_Solve2x2 (double m00,
   if (m11 == 0.0)
     return 1; // rank = 1
 
-  y = fabs(m11);
+  y = fabs (m11);
   if (y > maxpiv)
     maxpiv = y;
   else if (y < minpiv)
@@ -2571,35 +2574,35 @@ ON_Solve3x2 (const double col0[3],
   *x_addr = *y_addr = *pivot_ratio = 0.0;
   *err_addr = ON_DBL_MAX;
   i = 0;
-  x = fabs(col0[0]);
-  y = fabs(col0[1]);
+  x = fabs (col0[0]);
+  y = fabs (col0[1]);
   if (y > x) {
     x = y;
     i = 1;
   }
-  y = fabs(col0[2]);
+  y = fabs (col0[2]);
   if (y > x) {
     x = y;
     i = 2;
   }
-  y = fabs(col1[0]);
+  y = fabs (col1[0]);
   if (y > x) {
     x = y;
     i = 3;
   }
-  y = fabs(col1[1]);
+  y = fabs (col1[1]);
   if (y > x) {
     x = y;
     i = 4;
   }
-  y = fabs(col1[2]);
+  y = fabs (col1[2]);
   if (y > x) {
     x = y;
     i = 5;
   }
   if (x == 0.0)
     return 0;
-  *pivot_ratio = fabs(x);
+  *pivot_ratio = fabs (x);
   if (i >= 3) {
     /* swap columns */
     double* ptr = x_addr;
@@ -2651,11 +2654,11 @@ ON_Solve3x2 (const double col0[3],
     d2 += x * d0;
   }
 
-  if (fabs(c1.y) > fabs(c1.z)) {
-    if (fabs(c1.y) > *pivot_ratio)
-      *pivot_ratio /= fabs(c1.y);
+  if (fabs (c1.y) > fabs (c1.z)) {
+    if (fabs (c1.y) > *pivot_ratio)
+      *pivot_ratio /= fabs (c1.y);
     else
-      *pivot_ratio = fabs(c1.y) / *pivot_ratio;
+      *pivot_ratio = fabs (c1.y) / *pivot_ratio;
     d1 /= c1.y;
     x = -c1.x;
     if (x != 0.0)
@@ -2670,10 +2673,10 @@ ON_Solve3x2 (const double col0[3],
   else if (c1.z == 0.0)
     return 1; /* 3x2 matrix has rank = 1 */
   else {
-    if (fabs(c1.z) > *pivot_ratio)
-      *pivot_ratio /= fabs(c1.z);
+    if (fabs (c1.z) > *pivot_ratio)
+      *pivot_ratio /= fabs (c1.z);
     else
-      *pivot_ratio = fabs(c1.z) / *pivot_ratio;
+      *pivot_ratio = fabs (c1.z) / *pivot_ratio;
     d2 /= c1.z;
     x = -c1.x;
     if (x != 0.0)
@@ -2707,7 +2710,7 @@ ON_SolveNxN (
         x += M[i][j] * M[i][j];
       }
       if (x > 0.0) {
-        x = 1.0 / sqrt(x);
+        x = 1.0 / sqrt (x);
         B[i] *= x;
         for (j = 0; j < n; j++)
           M[i][j] *= x;
@@ -2724,9 +2727,9 @@ ON_SolveNxN (
     // unless you have a special case matrix, in which case this
     // function will be much slower than one that is designed to
     // takes advantage of the special case.
-    Xdex = (n <= (int)((sizeof(Xdex_buffer) / sizeof(Xdex_buffer[0]))))
+    Xdex = (n <= (int)((sizeof (Xdex_buffer) / sizeof (Xdex_buffer[0]))))
                ? &Xdex_buffer[0]
-               : (int*)onmalloc(n * sizeof(Xdex[0]));
+               : (int*)onmalloc (n * sizeof (Xdex[0]));
     for (i = 0; i < n; i++)
       Xdex[i] = i;
   }
@@ -2739,8 +2742,8 @@ ON_SolveNxN (
     x = 0.0;
     for (j = n0; j < n; j++) {
       for (i = n0; i < n; i++) {
-        if (fabs(M[i][j]) > x) {
-          x = fabs(M[i][j]);
+        if (fabs (M[i][j]) > x) {
+          x = fabs (M[i][j]);
           maxi = i;
           maxj = j;
         }
@@ -2752,7 +2755,7 @@ ON_SolveNxN (
       // system of equations is degenerate
       // Return -(rank of M) (M has rank n0)
       if (0 != Xdex && Xdex != &Xdex_buffer[0])
-        onfree(Xdex);
+        onfree (Xdex);
       return -n0;
     }
     else if (0 == n0) {
@@ -2825,10 +2828,10 @@ ON_SolveNxN (
       X[Xdex[i]] = B[i];
 
     if (0 != Xdex && Xdex != &Xdex_buffer[0])
-      onfree(Xdex);
+      onfree (Xdex);
   }
   else {
-    memcpy(&X[0], &B[0], n * sizeof(X[0]));
+    memcpy (&X[0], &B[0], n * sizeof (X[0]));
   }
 
   return minpivot / maxpivot;
@@ -2856,96 +2859,96 @@ ON_Solve4x4 (const double row0[4],
   double *p0, *p1, *p2, *p3, *p;
   double x, y, workarray[20], maxpiv, minpiv;
 
-  const int sizeof_row = 4 * sizeof(row0[4]);
+  const int sizeof_row = 4 * sizeof (row0[4]);
 
   *pivot_ratio = *x_addr = *y_addr = *z_addr = *w_addr = 0.0;
-  x = fabs(row0[0]);
+  x = fabs (row0[0]);
   i = j = 0;
-  y = fabs(row0[1]);
+  y = fabs (row0[1]);
   if (y > x) {
     x = y;
     j = 1;
   }
-  y = fabs(row0[2]);
+  y = fabs (row0[2]);
   if (y > x) {
     x = y;
     j = 2;
   }
-  y = fabs(row0[3]);
+  y = fabs (row0[3]);
   if (y > x) {
     x = y;
     j = 3;
   }
 
-  y = fabs(row1[0]);
+  y = fabs (row1[0]);
   if (y > x) {
     x = y;
     i = 1;
     j = 0;
   }
-  y = fabs(row1[1]);
+  y = fabs (row1[1]);
   if (y > x) {
     x = y;
     i = 1;
     j = 1;
   }
-  y = fabs(row1[2]);
+  y = fabs (row1[2]);
   if (y > x) {
     x = y;
     i = 1;
     j = 2;
   }
-  y = fabs(row1[3]);
+  y = fabs (row1[3]);
   if (y > x) {
     x = y;
     i = 1;
     j = 3;
   }
 
-  y = fabs(row2[0]);
+  y = fabs (row2[0]);
   if (y > x) {
     x = y;
     i = 2;
     j = 0;
   }
-  y = fabs(row2[1]);
+  y = fabs (row2[1]);
   if (y > x) {
     x = y;
     i = 2;
     j = 1;
   }
-  y = fabs(row2[2]);
+  y = fabs (row2[2]);
   if (y > x) {
     x = y;
     i = 2;
     j = 2;
   }
-  y = fabs(row2[3]);
+  y = fabs (row2[3]);
   if (y > x) {
     x = y;
     i = 2;
     j = 3;
   }
 
-  y = fabs(row3[0]);
+  y = fabs (row3[0]);
   if (y > x) {
     x = y;
     i = 3;
     j = 0;
   }
-  y = fabs(row3[1]);
+  y = fabs (row3[1]);
   if (y > x) {
     x = y;
     i = 3;
     j = 1;
   }
-  y = fabs(row3[2]);
+  y = fabs (row3[2]);
   if (y > x) {
     x = y;
     i = 3;
     j = 2;
   }
-  y = fabs(row3[3]);
+  y = fabs (row3[3]);
   if (y > x) {
     x = y;
     i = 3;
@@ -2962,43 +2965,43 @@ ON_Solve4x4 (const double row0[4],
   p3 = p2 + 5;
   switch (i) {
   case 1: /* swap rows 0 and 1 */
-    memcpy(p0, row1, sizeof_row);
+    memcpy (p0, row1, sizeof_row);
     p0[4] = d1;
-    memcpy(p1, row0, sizeof_row);
+    memcpy (p1, row0, sizeof_row);
     p1[4] = d0;
-    memcpy(p2, row2, sizeof_row);
+    memcpy (p2, row2, sizeof_row);
     p2[4] = d2;
-    memcpy(p3, row3, sizeof_row);
+    memcpy (p3, row3, sizeof_row);
     p3[4] = d3;
     break;
   case 2: /* swap rows 0 and 2 */
-    memcpy(p0, row2, sizeof_row);
+    memcpy (p0, row2, sizeof_row);
     p0[4] = d2;
-    memcpy(p1, row1, sizeof_row);
+    memcpy (p1, row1, sizeof_row);
     p1[4] = d1;
-    memcpy(p2, row0, sizeof_row);
+    memcpy (p2, row0, sizeof_row);
     p2[4] = d0;
-    memcpy(p3, row3, sizeof_row);
+    memcpy (p3, row3, sizeof_row);
     p3[4] = d3;
     break;
   case 3: /* swap rows 0 and 3 */
-    memcpy(p0, row3, sizeof_row);
+    memcpy (p0, row3, sizeof_row);
     p0[4] = d3;
-    memcpy(p1, row1, sizeof_row);
+    memcpy (p1, row1, sizeof_row);
     p1[4] = d1;
-    memcpy(p2, row2, sizeof_row);
+    memcpy (p2, row2, sizeof_row);
     p2[4] = d2;
-    memcpy(p3, row0, sizeof_row);
+    memcpy (p3, row0, sizeof_row);
     p3[4] = d0;
     break;
   default:
-    memcpy(p0, row0, sizeof_row);
+    memcpy (p0, row0, sizeof_row);
     p0[4] = d0;
-    memcpy(p1, row1, sizeof_row);
+    memcpy (p1, row1, sizeof_row);
     p1[4] = d1;
-    memcpy(p2, row2, sizeof_row);
+    memcpy (p2, row2, sizeof_row);
     p2[4] = d2;
-    memcpy(p3, row3, sizeof_row);
+    memcpy (p3, row3, sizeof_row);
     p3[4] = d3;
     break;
   }
@@ -3105,51 +3108,51 @@ ON_Solve4x4 (const double row0[4],
   //  p2 = 0 * * *   *
   //  p3 = 0 * * *   *
   //
-  x = fabs(p1[1]);
+  x = fabs (p1[1]);
   i = j = 0;
-  y = fabs(p1[2]);
+  y = fabs (p1[2]);
   if (y > x) {
     x = y;
     j = 1;
   }
-  y = fabs(p1[3]);
+  y = fabs (p1[3]);
   if (y > x) {
     x = y;
     j = 2;
   }
 
-  y = fabs(p2[1]);
+  y = fabs (p2[1]);
   if (y > x) {
     x = y;
     i = 1;
     j = 0;
   }
-  y = fabs(p2[2]);
+  y = fabs (p2[2]);
   if (y > x) {
     x = y;
     i = 1;
     j = 1;
   }
-  y = fabs(p2[3]);
+  y = fabs (p2[3]);
   if (y > x) {
     x = y;
     i = 1;
     j = 2;
   }
 
-  y = fabs(p3[1]);
+  y = fabs (p3[1]);
   if (y > x) {
     x = y;
     i = 2;
     j = 0;
   }
-  y = fabs(p3[2]);
+  y = fabs (p3[2]);
   if (y > x) {
     x = y;
     i = 2;
     j = 1;
   }
-  y = fabs(p3[3]);
+  y = fabs (p3[3]);
   if (y > x) {
     x = y;
     i = 2;
@@ -3250,20 +3253,20 @@ ON_Solve4x4 (const double row0[4],
   //  p2 = 0 0 * *   *
   //  p3 = 0 0 * *   *
   //
-  x = fabs(p2[2]);
+  x = fabs (p2[2]);
   i = j = 0;
-  y = fabs(p2[3]);
+  y = fabs (p2[3]);
   if (y > x) {
     x = y;
     j = 1;
   }
-  y = fabs(p3[2]);
+  y = fabs (p3[2]);
   if (y > x) {
     x = y;
     i = 1;
     j = 0;
   }
-  y = fabs(p3[3]);
+  y = fabs (p3[3]);
   if (y > x) {
     x = y;
     i = j = 1;
@@ -3329,7 +3332,7 @@ ON_Solve4x4 (const double row0[4],
   //  p3 = 0 0 0 *   *
   //
 
-  x = fabs(p3[3]);
+  x = fabs (p3[3]);
   if (x == 0.0) {
     *z_addr = p2[4];
     *y_addr = p1[4] - p1[2] * (*z_addr);
@@ -3378,52 +3381,52 @@ ON_Solve3x3 (const double row0[3],
   double* p2;
   double x, y, workarray[12], maxpiv, minpiv;
 
-  const int sizeof_row = 3 * sizeof(row0[0]);
+  const int sizeof_row = 3 * sizeof (row0[0]);
 
   *pivot_ratio = *x_addr = *y_addr = *z_addr = 0.0;
-  x = fabs(row0[0]);
+  x = fabs (row0[0]);
   i = j = 0;
-  y = fabs(row0[1]);
+  y = fabs (row0[1]);
   if (y > x) {
     x = y;
     j = 1;
   }
-  y = fabs(row0[2]);
+  y = fabs (row0[2]);
   if (y > x) {
     x = y;
     j = 2;
   }
-  y = fabs(row1[0]);
+  y = fabs (row1[0]);
   if (y > x) {
     x = y;
     i = 1;
     j = 0;
   }
-  y = fabs(row1[1]);
+  y = fabs (row1[1]);
   if (y > x) {
     x = y;
     i = 1;
     j = 1;
   }
-  y = fabs(row1[2]);
+  y = fabs (row1[2]);
   if (y > x) {
     x = y;
     i = 1;
     j = 2;
   }
-  y = fabs(row2[0]);
+  y = fabs (row2[0]);
   if (y > x) {
     x = y;
     i = 2;
     j = 0;
   }
-  y = fabs(row2[1]);
+  y = fabs (row2[1]);
   if (y > x) {
     x = y;
     i = 2;
     j = 1;
   }
-  y = fabs(row2[2]);
+  y = fabs (row2[2]);
   if (y > x) {
     x = y;
     i = 2;
@@ -3431,37 +3434,37 @@ ON_Solve3x3 (const double row0[3],
   }
   if (x == 0.0)
     return 0;
-  maxpiv = minpiv = fabs(x);
+  maxpiv = minpiv = fabs (x);
   p0 = workarray;
   switch (i) {
   case 1: /* swap rows 0 and 1 */
-    memcpy(p0, row1, sizeof_row);
+    memcpy (p0, row1, sizeof_row);
     p0[3] = d1;
     p0 += 4;
-    memcpy(p0, row0, sizeof_row);
+    memcpy (p0, row0, sizeof_row);
     p0[3] = d0;
     p0 += 4;
-    memcpy(p0, row2, sizeof_row);
+    memcpy (p0, row2, sizeof_row);
     p0[3] = d2;
     break;
   case 2: /* swap rows 0 and 2 */
-    memcpy(p0, row2, sizeof_row);
+    memcpy (p0, row2, sizeof_row);
     p0[3] = d2;
     p0 += 4;
-    memcpy(p0, row1, sizeof_row);
+    memcpy (p0, row1, sizeof_row);
     p0[3] = d1;
     p0 += 4;
-    memcpy(p0, row0, sizeof_row);
+    memcpy (p0, row0, sizeof_row);
     p0[3] = d0;
     break;
   default:
-    memcpy(p0, row0, sizeof_row);
+    memcpy (p0, row0, sizeof_row);
     p0[3] = d0;
     p0 += 4;
-    memcpy(p0, row1, sizeof_row);
+    memcpy (p0, row1, sizeof_row);
     p0[3] = d1;
     p0 += 4;
-    memcpy(p0, row2, sizeof_row);
+    memcpy (p0, row2, sizeof_row);
     p0[3] = d2;
     break;
   }
@@ -3527,27 +3530,27 @@ ON_Solve3x3 (const double row0[3],
     p0 -= 2;
   }
 
-  x = fabs(workarray[5]);
+  x = fabs (workarray[5]);
   i = j = 0;
-  y = fabs(workarray[6]);
+  y = fabs (workarray[6]);
   if (y > x) {
     x = y;
     j = 1;
   }
-  y = fabs(workarray[9]);
+  y = fabs (workarray[9]);
   if (y > x) {
     x = y;
     i = 1;
     j = 0;
   }
-  y = fabs(workarray[10]);
+  y = fabs (workarray[10]);
   if (y > x) {
     x = y;
     i = j = 1;
   }
   if (x == 0.0)
     return 1; // rank = 1;
-  y = fabs(x);
+  y = fabs (x);
   if (y > maxpiv)
     maxpiv = y;
   else if (y < minpiv)
@@ -3613,7 +3616,7 @@ ON_Solve3x3 (const double row0[3],
   x = *p2++;
   if (x == 0.0)
     return 2; // rank = 2;
-  y = fabs(x);
+  y = fabs (x);
   if (y > maxpiv)
     maxpiv = y;
   else if (y < minpiv)
@@ -3644,25 +3647,25 @@ ON_Solve3x3 (const double row0[3],
 struct tagON_SORT_CONTEXT {
   void* users_context;
   const unsigned char* qdata;
-  int (*compar2)(const void*, const void*);
-  int (*compar3)(const void*, const void*, void*);
+  int (*compar2) (const void*, const void*);
+  int (*compar3) (const void*, const void*, void*);
 };
 
 static int
 qicompar2 (void* p, const void* a, const void* b)
 {
   return ((struct tagON_SORT_CONTEXT*)p)
-      ->compar2(((struct tagON_SORT_CONTEXT*)p)->qdata + *((unsigned int*)a),
-                ((struct tagON_SORT_CONTEXT*)p)->qdata + *((unsigned int*)b));
+      ->compar2 (((struct tagON_SORT_CONTEXT*)p)->qdata + *((unsigned int*)a),
+                 ((struct tagON_SORT_CONTEXT*)p)->qdata + *((unsigned int*)b));
 }
 
 static int
 qicompar3 (void* p, const void* a, const void* b)
 {
   return ((struct tagON_SORT_CONTEXT*)p)
-      ->compar3(((struct tagON_SORT_CONTEXT*)p)->qdata + *((unsigned int*)a),
-                ((struct tagON_SORT_CONTEXT*)p)->qdata + *((unsigned int*)b),
-                ((struct tagON_SORT_CONTEXT*)p)->users_context);
+      ->compar3 (((struct tagON_SORT_CONTEXT*)p)->qdata + *((unsigned int*)a),
+                 ((struct tagON_SORT_CONTEXT*)p)->qdata + *((unsigned int*)b),
+                 ((struct tagON_SORT_CONTEXT*)p)->users_context);
 }
 
 void
@@ -3671,7 +3674,7 @@ ON_Sort (ON::sort_algorithm method,
          const void* data,
          std::size_t count,
          std::size_t sizeof_element,
-         int (*compar)(const void*, const void*))
+         int (*compar) (const void*, const void*))
 /*****************************************************************************
 Sort an index
 
@@ -3720,12 +3723,12 @@ REFERENCE:
     *idx++ = i;
   }
 
-  memset(&context, 0, sizeof(context));
+  memset (&context, 0, sizeof (context));
   context.qdata = (const unsigned char*)data;
   context.compar2 = compar;
   idx = (unsigned int*)index; // convert to unsigned int
   if (ON::quick_sort == method) {
-    ON_qsort(idx, count, sizeof(idx[0]), qicompar2, &context);
+    ON_qsort (idx, count, sizeof (idx[0]), qicompar2, &context);
   }
   else {
     // heap sort
@@ -3751,10 +3754,10 @@ REFERENCE:
       j = (k << 1) + 1;
       while (j <= icount) {
         if (j < icount &&
-            context.compar2(context.qdata + idx[j], context.qdata + idx[j + 1]) < 0) {
+            context.compar2 (context.qdata + idx[j], context.qdata + idx[j + 1]) < 0) {
           j++;
         }
-        if (context.compar2(tmp, context.qdata + idx[j]) < 0) {
+        if (context.compar2 (tmp, context.qdata + idx[j]) < 0) {
           idx[i] = idx[j];
           i = j;
           j = (j << 1) + 1;
@@ -3778,7 +3781,7 @@ ON_Sort (ON::sort_algorithm method,
          const void* data,
          std::size_t count,
          std::size_t sizeof_element,
-         int (*compar)(const void*, const void*, void*),
+         int (*compar) (const void*, const void*, void*),
          void* p)
 {
   tagON_SORT_CONTEXT context;
@@ -3802,13 +3805,13 @@ ON_Sort (ON::sort_algorithm method,
     *idx++ = i;
   }
 
-  memset(&context, 0, sizeof(context));
+  memset (&context, 0, sizeof (context));
   context.users_context = p;
   context.qdata = (const unsigned char*)data;
   context.compar3 = compar;
   idx = (unsigned int*)index; // convert to unsigned int
   if (ON::quick_sort == method) {
-    ON_qsort(idx, count, sizeof(idx[0]), qicompar3, &context);
+    ON_qsort (idx, count, sizeof (idx[0]), qicompar3, &context);
   }
   else {
     // heap sort
@@ -3833,12 +3836,12 @@ ON_Sort (ON::sort_algorithm method,
       i = k;
       j = (k << 1) + 1;
       while (j <= icount) {
-        if (j < icount && context.compar3(context.qdata + idx[j],
-                                          context.qdata + idx[j + 1],
-                                          context.users_context) < 0) {
+        if (j < icount && context.compar3 (context.qdata + idx[j],
+                                           context.qdata + idx[j + 1],
+                                           context.users_context) < 0) {
           j++;
         }
-        if (context.compar3(tmp, context.qdata + idx[j], context.users_context) < 0) {
+        if (context.compar3 (tmp, context.qdata + idx[j], context.users_context) < 0) {
           idx[i] = idx[j];
           i = j;
           j = (j << 1) + 1;
@@ -3884,9 +3887,9 @@ ON_hsort_str (char** e, std::size_t nel)
       i = k;
       j = (k << 1) + 1;
       while (j <= i_end) {
-        if (j < i_end && strcmp(e[j], e[j + 1]) < 0)
+        if (j < i_end && strcmp (e[j], e[j + 1]) < 0)
           j++;
-        if (strcmp(e_tmp, e[j]) < 0) {
+        if (strcmp (e_tmp, e[j]) < 0) {
           e[i] = e[j];
           i = j;
           j = (j << 1) + 1;
@@ -4072,7 +4075,7 @@ compar_string (const void* pa, const void* pb)
   else if (!sb) {
     return 1;
   }
-  return strcmp(sa, sb);
+  return strcmp (sa, sb);
 }
 
 void
@@ -4084,11 +4087,11 @@ ON_SortStringArray (ON::sort_algorithm method,
   if (nel > 1) {
     switch (method) {
     case ON::heap_sort:
-      ON_hsort_str(e, nel);
+      ON_hsort_str (e, nel);
       break;
     case ON::quick_sort:
     default:
-      ON_qsort(e, nel, sizeof(*e), compar_string);
+      ON_qsort (e, nel, sizeof (*e), compar_string);
       break;
     }
   }
@@ -4179,7 +4182,7 @@ ON_EvaluateQuotientRule (int dim, int der_count, int v_stride, double* v)
           for (i = 0; i < n; i++) {
             // f = value of i-th derivative
             // w = ((n-i)-th derivative of denominator)/weight
-            wt = -ON_BinomialCoefficient(n - i, i) * *w;
+            wt = -ON_BinomialCoefficient (n - i, i) * *w;
             w -= v_stride;
             j = dim;
             while (j--)
@@ -4302,12 +4305,12 @@ ON_EvaluateQuotientRule2 (int dim, int der_count, int v_stride, double* v)
             // 13 Jan 2005 Dale Lear bug fix - added missing a binomial coefficients.
             i = n - j;
             for (ii = 0; ii <= i; ii++) {
-              ws = ON_BinomialCoefficient(ii, i - ii);
+              ws = ON_BinomialCoefficient (ii, i - ii);
               for (jj = ii ? 0 : 1; jj <= j; jj++) {
                 q = ii + jj;
                 Fn = ((q * (q + 1)) / 2 + jj) * v_stride + dim;
                 // wt = -(i choose ii)*(j choose jj)*W(ii,jj)
-                wt = -ws * ON_BinomialCoefficient(jj, j - jj) * v[Fn];
+                wt = -ws * ON_BinomialCoefficient (jj, j - jj) * v[Fn];
                 q = n - q;
                 Fn = ((q * (q + 1)) / 2 + j - jj) * v_stride; // X(i-ii,j-jj) = v[Fn]
                 for (q = 0; q < dim; q++)
@@ -4431,9 +4434,9 @@ ON_EvaluateQuotientRule3 (int dim, int der_count, int v_stride, double* v)
               k = n - i - j;
               // f = Dr^i Ds^j Dt^k
               for (ii = 0; ii <= i; ii++) {
-                wr = ON_BinomialCoefficient(ii, i - ii);
+                wr = ON_BinomialCoefficient (ii, i - ii);
                 for (jj = 0; jj <= j; jj++) {
-                  ws = wr * ON_BinomialCoefficient(jj, j - jj);
+                  ws = wr * ON_BinomialCoefficient (jj, j - jj);
                   for (kk = (ii || jj) ? 0 : 1; kk <= k; kk++) {
                     q = ii + jj + kk;
                     Fn = q - ii;
@@ -4441,7 +4444,7 @@ ON_EvaluateQuotientRule3 (int dim, int der_count, int v_stride, double* v)
                              (q * (q + 1) * (q + 2) / 6 + Fn * (Fn + 1) / 2 + kk) +
                          dim;
                     // wt = -(i choose ii)*(j choose jj)*(k choose kk)*W(ii,jj,kk)
-                    wt = -ws * ON_BinomialCoefficient(kk, k - kk) * v[Fn];
+                    wt = -ws * ON_BinomialCoefficient (kk, k - kk) * v[Fn];
                     q = n - q;
                     Fn = q - i + ii;
                     // F(i-ii,j-jj,k-kk) = v[Fn]
@@ -4470,7 +4473,7 @@ ON_EvaluateQuotientRule3 (int dim, int der_count, int v_stride, double* v)
 void
 ON_EPC_WARNING (const char* msg)
 {
-  ON_Warning(__FILE__, __LINE__, msg);
+  ON_Warning (__FILE__, __LINE__, msg);
 }
 
 #else
@@ -4500,7 +4503,7 @@ ON_EvPrincipalCurvatures (
   const double m = N.x * Dst.x + N.y * Dst.y + N.z * Dst.z;
   const double n = N.x * Dtt.x + N.y * Dtt.y + N.z * Dtt.z;
 
-  return ON_EvPrincipalCurvatures(
+  return ON_EvPrincipalCurvatures (
       Ds, Dt, l, m, n, N, gauss, mean, kappa1, kappa2, K1, K2);
 }
 
@@ -4559,7 +4562,7 @@ ON_EvPrincipalCurvatures (
     //    k = 0.5*(trace +/-sqrt(trace*trace - 4.0*det)
     x = trace * trace;
     double tol =
-        fabs(det) * 1.0e-12; // 31 March 2008 Dale Lear - added tol to fix 32091
+        fabs (det) * 1.0e-12; // 31 March 2008 Dale Lear - added tol to fix 32091
     if (x < 4.0 * det - tol) {
       if (det <= ON_EPSILON) {
         k1 = k2 = 0.0;
@@ -4575,7 +4578,7 @@ ON_EvPrincipalCurvatures (
     else if (0.0 == x) {
       if (det > 0.0)
         return false;
-      k1 = sqrt(-det);
+      k1 = sqrt (-det);
       k2 = -k1;
     }
     else {
@@ -4583,14 +4586,14 @@ ON_EvPrincipalCurvatures (
       if (x > 1.0)
         x = 1.0;
       // k1 = root with largest absolute value
-      k1 = 0.5 * fabs(trace) * (1.0 + sqrt(1.0 - x));
+      k1 = 0.5 * fabs (trace) * (1.0 + sqrt (1.0 - x));
       if (trace < 0.0)
         k1 = -k1;
       // Calculate k2 this way instead of using
       // the numerically sloppy difference in the
       // standard quadratic formula.
       k2 = det / k1;
-      if (fabs(k2) > fabs(k1)) {
+      if (fabs (k2) > fabs (k1)) {
         // numerical nonsense
         k2 = (det < 0.0) ? -k1 : k1;
       }
@@ -4604,26 +4607,26 @@ ON_EvPrincipalCurvatures (
 #if defined(ON_TEST_EV_KAPPAS)
     double gggg = k1 * k2;
     double tttt = k1 + k2;
-    if (fabs(gggg - det) > 1.0e-4 * fabs(det)) {
-      ON_EPC_WARNING("ON_EvPrincipalCurvatures() Det(shape op) != gaussian");
+    if (fabs (gggg - det) > 1.0e-4 * fabs (det)) {
+      ON_EPC_WARNING ("ON_EvPrincipalCurvatures() Det(shape op) != gaussian");
     }
-    if (fabs(tttt - trace) > 1.0e-4 * fabs(trace)) {
-      ON_EPC_WARNING("ON_EvPrincipalCurvatures() Trace(shape op) != trace");
+    if (fabs (tttt - trace) > 1.0e-4 * fabs (trace)) {
+      ON_EPC_WARNING ("ON_EvPrincipalCurvatures() Trace(shape op) != trace");
     }
 
     double zzz1 = k1 * k1 - trace * k1 + det;
     double zzz2 = k2 * k2 - trace * k2 + det;
-    if (fabs(zzz1) > (fabs(trace) + fabs(det)) * 1e-10) {
-      ON_EPC_WARNING("ON_EvPrincipalCurvatures() k1 is bogus");
+    if (fabs (zzz1) > (fabs (trace) + fabs (det)) * 1e-10) {
+      ON_EPC_WARNING ("ON_EvPrincipalCurvatures() k1 is bogus");
     }
-    if (fabs(zzz2) > (fabs(trace) + fabs(det)) * 1e-10) {
-      ON_EPC_WARNING("ON_EvPrincipalCurvatures() k2 is bogus");
+    if (fabs (zzz2) > (fabs (trace) + fabs (det)) * 1e-10) {
+      ON_EPC_WARNING ("ON_EvPrincipalCurvatures() k2 is bogus");
     }
 #endif
 
     {
       int bUmbilic = true;
-      if (fabs(k1 - k2) > 1.0e-6 * (fabs(k1) + fabs(k2))) {
+      if (fabs (k1 - k2) > 1.0e-6 * (fabs (k1) + fabs (k2))) {
         // different principle curvatures - see if we can get an answer
         int ki, bFixK1, bFixK2;
         double a, b, c, d, kk, x, y, len1, len2, E[2];
@@ -4650,11 +4653,11 @@ ON_EvPrincipalCurvatures (
         // trace = (g*l - 2.0*f*m + e*n)*x; // = 2*(mean curvature)
         double ggg = a * d - b * c;
         double ttt = a + d;
-        if (fabs(ggg - det) > 1.0e-4 * fabs(det)) {
-          ON_EPC_WARNING("ON_EvPrincipalCurvatures() Det(shape op) != gaussian");
+        if (fabs (ggg - det) > 1.0e-4 * fabs (det)) {
+          ON_EPC_WARNING ("ON_EvPrincipalCurvatures() Det(shape op) != gaussian");
         }
-        if (fabs(ttt - trace) > 1.0e-4 * fabs(trace)) {
-          ON_EPC_WARNING("ON_EvPrincipalCurvatures() Trace(shape op) != trace");
+        if (fabs (ttt - trace) > 1.0e-4 * fabs (trace)) {
+          ON_EPC_WARNING ("ON_EvPrincipalCurvatures() Trace(shape op) != trace");
         }
 #endif
 
@@ -4682,13 +4685,13 @@ ON_EvPrincipalCurvatures (
 #if defined(ON_TEST_EV_KAPPAS)
           x = (a - kk) * (d - kk) - b * c; // kk = eigen value of ShapeOp means
                                            // x should be zero
-          if (fabs(x) > 1.0e-8) {
+          if (fabs (x) > 1.0e-8) {
             if (0 == ki) {
-              ON_EPC_WARNING(
+              ON_EPC_WARNING (
                   "ON_EvPrincipalCurvatures() |det(shape op - [k1,k1])| > 1.0e-8");
             }
             else {
-              ON_EPC_WARNING(
+              ON_EPC_WARNING (
                   "ON_EvPrincipalCurvatures() |det(shape op - [k2,k2])| > 1.0e-8");
             }
           }
@@ -4715,13 +4718,13 @@ ON_EvPrincipalCurvatures (
           x = shapeE[0] - kk * E[0];
           y = shapeE[1] - kk * E[1];
 
-          if (fabs(x) > 1.0e-8 || fabs(y) > 1.0e-8) {
+          if (fabs (x) > 1.0e-8 || fabs (y) > 1.0e-8) {
             if (0 == ki) {
-              ON_EPC_WARNING(
+              ON_EPC_WARNING (
                   "ON_EvPrincipalCurvatures() (shape op k1 eigenvector is noisy).");
             }
             else {
-              ON_EPC_WARNING(
+              ON_EPC_WARNING (
                   "ON_EvPrincipalCurvatures() (shape op k2 eigenvector is noisy).");
             }
           }
@@ -4745,14 +4748,14 @@ ON_EvPrincipalCurvatures (
         {
           // make sure K1 and K2 are perp to N.
           x = K1 * N;
-          if (fabs(x) >= 1.0e-4) {
-            ON_EPC_WARNING("ON_EvPrincipalCurvatures() K1*N > 1.0e-4.");
+          if (fabs (x) >= 1.0e-4) {
+            ON_EPC_WARNING ("ON_EvPrincipalCurvatures() K1*N > 1.0e-4.");
             bFixK1 = true;
           }
 
           x = K2 * N;
-          if (fabs(x) >= 1.0e-4) {
-            ON_EPC_WARNING("ON_EvPrincipalCurvatures() K2*N > 1.0e-4.");
+          if (fabs (x) >= 1.0e-4) {
+            ON_EPC_WARNING ("ON_EvPrincipalCurvatures() K2*N > 1.0e-4.");
             bFixK2 = true;
           }
         }
@@ -4760,12 +4763,12 @@ ON_EvPrincipalCurvatures (
         if (!bFixK1 && !bFixK2) {
           // make sure K1 and K2 are perp.
           x = K1 * K2;
-          if (fabs(x) >= 1.0e-4) {
+          if (fabs (x) >= 1.0e-4) {
 #if defined(ON_TEST_EV_KAPPAS)
             {
               static bool bSecondTry = false;
               if (!bSecondTry) {
-                ON_EPC_WARNING("ON_EvPrincipalCurvatures() K1*K2 > 0.1.");
+                ON_EPC_WARNING ("ON_EvPrincipalCurvatures() K1*K2 > 0.1.");
 
                 // 15 July 2005 - Dale Lear
                 //        There is a bug in converting the 2d eigenvectors
@@ -4773,7 +4776,7 @@ ON_EvPrincipalCurvatures (
                 bSecondTry = true;
                 double ggg, mmm, kkk1, kkk2;
                 ON_3dVector KKK1, KKK2;
-                ON_EvPrincipalCurvatures(
+                ON_EvPrincipalCurvatures (
                     Ds, Dt, Dss, Dst, Dtt, N, &ggg, &mmm, &kkk1, &kkk2, KKK1, KKK2);
                 bSecondTry = false;
               }
@@ -4791,11 +4794,11 @@ ON_EvPrincipalCurvatures (
             bUmbilic = true;
           }
           else if (bFixK1) {
-            K1 = ON_CrossProduct(K2, N);
+            K1 = ON_CrossProduct (K2, N);
             K1.Unitize();
           }
           else if (bFixK2) {
-            K2 = ON_CrossProduct(N, K1);
+            K2 = ON_CrossProduct (N, K1);
             K2.Unitize();
           }
         }
@@ -4813,7 +4816,7 @@ ON_EvPrincipalCurvatures (
           K1 = Dt;
           K1.Unitize();
         }
-        K2 = ON_CrossProduct(N, K1);
+        K2 = ON_CrossProduct (N, K1);
         K2.Unitize();
       }
     }
@@ -4853,7 +4856,7 @@ curvature is equal to NormalCurvature o UnitNormal.
 
   a = b = 0.0;
   // solve T = a*S10 + b*S01
-  rc = ON_Solve3x2(
+  rc = ON_Solve3x2 (
       S10, S01, UnitTangent.x, UnitTangent.y, UnitTangent.z, &a, &b, &e, &pr);
   if (rc < 2) {
     NormalCurvature.Zero();
@@ -4863,7 +4866,7 @@ curvature is equal to NormalCurvature o UnitNormal.
     D2 = a * a * S20 + 2.0 * a * b * S11 + b * b * S02;
 
     // compute curvature of 3d curve(t) = srf( u0 + a*t, v0 + b*t ) at t=0
-    ON_EvCurvature(UnitTangent, D2, T, K);
+    ON_EvCurvature (UnitTangent, D2, T, K);
 
     // get component of K parallel to N
     d = K * UnitNormal;
@@ -4899,13 +4902,13 @@ ON_GetPolylineLength (
 
   sumi = count / SUM_SIZE;
   sumi++;
-  sum = (double*)alloca(sumi * sizeof(*sum));
+  sum = (double*)alloca (sumi * sizeof (*sum));
   sumi = 0;
 
   if (is_rat) {
     w1 = p1[dim];
     if (w1 == 0.0) {
-      ON_ERROR("ON_GetPolylineLength: Zero weight");
+      ON_ERROR ("ON_GetPolylineLength: Zero weight");
       return false;
     }
     w1 = 1.0 / w1;
@@ -4915,7 +4918,7 @@ ON_GetPolylineLength (
       p1 = p1 + stride;
       w1 = p1[dim];
       if (w1 == 0.0) {
-        ON_ERROR("ON_GetPolylineLength: Zero weight");
+        ON_ERROR ("ON_GetPolylineLength: Zero weight");
         return false;
       }
       w1 = 1.0 / w1;
@@ -4924,7 +4927,7 @@ ON_GetPolylineLength (
         d = w0 * p0[j] - w1 * p1[j];
         dd += d * d;
       }
-      L += sqrt(dd);
+      L += sqrt (dd);
       if (!(i % SUM_SIZE)) {
         sum[sumi++] = L;
         L = 0.0;
@@ -4940,7 +4943,7 @@ ON_GetPolylineLength (
         d = p1[j] - p0[j];
         dd += d * d;
       }
-      L += sqrt(dd);
+      L += sqrt (dd);
       if (!(i % SUM_SIZE)) {
         sum[sumi++] = L;
         L = 0.0;
@@ -4958,26 +4961,26 @@ ON_GetPolylineLength (
 #undef SUM_SIZE
 }
 
-ON_Evaluator::ON_Evaluator(int parameter_count,
-                           int value_count,
-                           const ON_Interval* domain,
-                           const bool* periodic)
-: m_parameter_count(parameter_count)
-, m_value_count(value_count > 0 ? value_count : parameter_count)
+ON_Evaluator::ON_Evaluator (int parameter_count,
+                            int value_count,
+                            const ON_Interval* domain,
+                            const bool* periodic)
+: m_parameter_count (parameter_count)
+, m_value_count (value_count > 0 ? value_count : parameter_count)
 {
   int i;
 
   if (domain) {
-    m_domain.Reserve(m_parameter_count);
+    m_domain.Reserve (m_parameter_count);
     for (i = 0; i < parameter_count; i++)
-      m_domain.Append(domain[i]);
+      m_domain.Append (domain[i]);
 
     if (periodic) {
       for (i = 0; i < parameter_count; i++) {
         if (periodic[i]) {
-          m_bPeriodicParameter.Reserve(m_parameter_count);
+          m_bPeriodicParameter.Reserve (m_parameter_count);
           for (i = 0; i < m_parameter_count; i++) {
-            m_bPeriodicParameter.Append(periodic[i] ? true : false);
+            m_bPeriodicParameter.Append (periodic[i] ? true : false);
           }
           break;
         }
@@ -4989,23 +4992,23 @@ ON_Evaluator::ON_Evaluator(int parameter_count,
 ON_Evaluator::~ON_Evaluator() {}
 
 int
-ON_Evaluator::EvaluateHessian(const double* parameters,
-                              double* value,
-                              double* gradient,
-                              double** hessian)
+ON_Evaluator::EvaluateHessian (const double* parameters,
+                               double* value,
+                               double* gradient,
+                               double** hessian)
 {
   if (m_parameter_count == 1) {
     if (0 != gradient) {
       // we have enough information to get the
       // value and the gradient
-      Evaluate(parameters, value, &gradient);
+      Evaluate (parameters, value, &gradient);
     }
 
     if (0 != hessian) {
       // zero out the hessian matrix
       int i;
       for (i = 0; i < m_parameter_count; i++) {
-        memset(hessian[0], 0, m_parameter_count * sizeof(hessian[i][0]));
+        memset (hessian[0], 0, m_parameter_count * sizeof (hessian[i][0]));
       }
     }
   }
@@ -5022,7 +5025,7 @@ ON_Evaluator::FiniteDomain() const
 }
 
 bool
-ON_Evaluator::Periodic(int parameter_index) const
+ON_Evaluator::Periodic (int parameter_index) const
 {
   return ((m_parameter_count == m_bPeriodicParameter.Count() && m_parameter_count > 0)
               ? m_bPeriodicParameter[parameter_index]
@@ -5030,11 +5033,11 @@ ON_Evaluator::Periodic(int parameter_index) const
 }
 
 ON_Interval
-ON_Evaluator::Domain(int parameter_index) const
+ON_Evaluator::Domain (int parameter_index) const
 {
   return ((m_parameter_count == m_domain.Count() && m_parameter_count > 0)
               ? m_domain[parameter_index]
-              : ON_Interval(-1.0e300, 1.0e300));
+              : ON_Interval (-1.0e300, 1.0e300));
 }
 
 double
@@ -5081,16 +5084,16 @@ ON_Round (double x)
   //   Do not call this function in any opennurbs code, tl code
   //   or any other code that does critical calculations.
 
-  if (!ON_IsValid(x)) {
-    ON_ERROR("ON_Round - invalid input");
+  if (!ON_IsValid (x)) {
+    ON_ERROR ("ON_Round - invalid input");
     return 0;
   }
 
   // Do not use "INT_MAX" - the define is not portable
   // and this code needs to compile and execute the same
   // way on all OSs.
-  if (fabs(x) >= 2147483647.0) {
-    ON_ERROR("ON_Round - integer overflow");
+  if (fabs (x) >= 2147483647.0) {
+    ON_ERROR ("ON_Round - integer overflow");
     return (x > 0.0) ? 2147483647 : -2147483647;
   }
 

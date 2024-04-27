@@ -50,66 +50,66 @@
 using namespace pcl;
 using namespace pcl::io;
 
-PointCloud<PointXYZ>::Ptr cloud(new PointCloud<PointXYZ>);
-PointCloud<PointNormal>::Ptr cloud_with_normals(new PointCloud<PointNormal>);
+PointCloud<PointXYZ>::Ptr cloud (new PointCloud<PointXYZ>);
+PointCloud<PointNormal>::Ptr cloud_with_normals (new PointCloud<PointNormal>);
 search::KdTree<PointXYZ>::Ptr tree;
 search::KdTree<PointNormal>::Ptr tree2;
 
 // add by ktran to test update functions
-PointCloud<PointXYZ>::Ptr cloud1(new PointCloud<PointXYZ>);
-PointCloud<PointNormal>::Ptr cloud_with_normals1(new PointCloud<PointNormal>);
+PointCloud<PointXYZ>::Ptr cloud1 (new PointCloud<PointXYZ>);
+PointCloud<PointNormal>::Ptr cloud_with_normals1 (new PointCloud<PointNormal>);
 search::KdTree<PointXYZ>::Ptr tree3;
 search::KdTree<PointNormal>::Ptr tree4;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TEST(PCL, GreedyProjectionTriangulation)
+TEST (PCL, GreedyProjectionTriangulation)
 {
   // Init objects
   PolygonMesh triangles;
   GreedyProjectionTriangulation<PointNormal> gp3;
 
   // Set parameters
-  gp3.setInputCloud(cloud_with_normals);
-  gp3.setSearchMethod(tree2);
-  gp3.setSearchRadius(0.025);
-  gp3.setMu(2.5);
-  gp3.setMaximumNearestNeighbors(100);
-  gp3.setMaximumSurfaceAngle(M_PI / 4); // 45 degrees
-  gp3.setMinimumAngle(M_PI / 18);       // 10 degrees
-  gp3.setMaximumAngle(2 * M_PI / 3);    // 120 degrees
-  gp3.setNormalConsistency(false);
+  gp3.setInputCloud (cloud_with_normals);
+  gp3.setSearchMethod (tree2);
+  gp3.setSearchRadius (0.025);
+  gp3.setMu (2.5);
+  gp3.setMaximumNearestNeighbors (100);
+  gp3.setMaximumSurfaceAngle (M_PI / 4); // 45 degrees
+  gp3.setMinimumAngle (M_PI / 18);       // 10 degrees
+  gp3.setMaximumAngle (2 * M_PI / 3);    // 120 degrees
+  gp3.setNormalConsistency (false);
 
   // Reconstruct
-  gp3.reconstruct(triangles);
+  gp3.reconstruct (triangles);
   // saveVTKFile ("./test/bun0-gp3.vtk", triangles);
-  EXPECT_EQ(triangles.cloud.width, cloud_with_normals->width);
-  EXPECT_EQ(triangles.cloud.height, cloud_with_normals->height);
-  EXPECT_NEAR(int(triangles.polygons.size()), 685, 5);
+  EXPECT_EQ (triangles.cloud.width, cloud_with_normals->width);
+  EXPECT_EQ (triangles.cloud.height, cloud_with_normals->height);
+  EXPECT_NEAR (int (triangles.polygons.size()), 685, 5);
 
   // Check triangles
-  EXPECT_EQ(int(triangles.polygons.at(0).vertices.size()), 3);
-  EXPECT_EQ(int(triangles.polygons.at(0).vertices.at(0)), 0);
-  EXPECT_EQ(int(triangles.polygons.at(0).vertices.at(1)), 12);
-  EXPECT_EQ(int(triangles.polygons.at(0).vertices.at(2)), 198);
-  EXPECT_EQ(int(triangles.polygons.at(684).vertices.size()), 3);
-  EXPECT_EQ(int(triangles.polygons.at(684).vertices.at(0)), 393);
-  EXPECT_EQ(int(triangles.polygons.at(684).vertices.at(1)), 394);
-  EXPECT_EQ(int(triangles.polygons.at(684).vertices.at(2)), 395);
+  EXPECT_EQ (int (triangles.polygons.at (0).vertices.size()), 3);
+  EXPECT_EQ (int (triangles.polygons.at (0).vertices.at (0)), 0);
+  EXPECT_EQ (int (triangles.polygons.at (0).vertices.at (1)), 12);
+  EXPECT_EQ (int (triangles.polygons.at (0).vertices.at (2)), 198);
+  EXPECT_EQ (int (triangles.polygons.at (684).vertices.size()), 3);
+  EXPECT_EQ (int (triangles.polygons.at (684).vertices.at (0)), 393);
+  EXPECT_EQ (int (triangles.polygons.at (684).vertices.at (1)), 394);
+  EXPECT_EQ (int (triangles.polygons.at (684).vertices.at (2)), 395);
 
   // Additional vertex information
   std::vector<int> parts = gp3.getPartIDs();
   std::vector<int> states = gp3.getPointStates();
   int nr_points = cloud_with_normals->width * cloud_with_normals->height;
-  EXPECT_EQ(int(parts.size()), nr_points);
-  EXPECT_EQ(int(states.size()), nr_points);
-  EXPECT_EQ(parts[0], 0);
-  EXPECT_EQ(states[0], gp3.COMPLETED);
-  EXPECT_EQ(parts[393], 5);
-  EXPECT_EQ(states[393], gp3.BOUNDARY);
+  EXPECT_EQ (int (parts.size()), nr_points);
+  EXPECT_EQ (int (states.size()), nr_points);
+  EXPECT_EQ (parts[0], 0);
+  EXPECT_EQ (states[0], gp3.COMPLETED);
+  EXPECT_EQ (parts[393], 5);
+  EXPECT_EQ (states[393], gp3.BOUNDARY);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TEST(PCL, GreedyProjectionTriangulation_Merge2Meshes)
+TEST (PCL, GreedyProjectionTriangulation_Merge2Meshes)
 {
   // check if exist update cloud
   if (cloud_with_normals1->width * cloud_with_normals1->height > 0) {
@@ -120,27 +120,27 @@ TEST(PCL, GreedyProjectionTriangulation_Merge2Meshes)
     GreedyProjectionTriangulation<PointNormal> gp31;
 
     // Set parameters
-    gp3.setInputCloud(cloud_with_normals);
-    gp3.setSearchMethod(tree2);
-    gp3.setSearchRadius(0.025);
-    gp3.setMu(2.5);
-    gp3.setMaximumNearestNeighbors(100);
-    gp3.setMaximumSurfaceAngle(M_PI / 4); // 45 degrees
-    gp3.setMinimumAngle(M_PI / 18);       // 10 degrees
-    gp3.setMaximumAngle(2 * M_PI / 3);    // 120 degrees
-    gp3.setNormalConsistency(false);
+    gp3.setInputCloud (cloud_with_normals);
+    gp3.setSearchMethod (tree2);
+    gp3.setSearchRadius (0.025);
+    gp3.setMu (2.5);
+    gp3.setMaximumNearestNeighbors (100);
+    gp3.setMaximumSurfaceAngle (M_PI / 4); // 45 degrees
+    gp3.setMinimumAngle (M_PI / 18);       // 10 degrees
+    gp3.setMaximumAngle (2 * M_PI / 3);    // 120 degrees
+    gp3.setNormalConsistency (false);
 
     // for mesh 2
     // Set parameters
-    gp31.setInputCloud(cloud_with_normals1);
-    gp31.setSearchMethod(tree4);
-    gp31.setSearchRadius(0.025);
-    gp31.setMu(2.5);
-    gp31.setMaximumNearestNeighbors(100);
-    gp31.setMaximumSurfaceAngle(M_PI / 4); // 45 degrees
-    gp31.setMinimumAngle(M_PI / 18);       // 10 degrees
-    gp31.setMaximumAngle(2 * M_PI / 3);    // 120 degrees
-    gp31.setNormalConsistency(false);
+    gp31.setInputCloud (cloud_with_normals1);
+    gp31.setSearchMethod (tree4);
+    gp31.setSearchRadius (0.025);
+    gp31.setMu (2.5);
+    gp31.setMaximumNearestNeighbors (100);
+    gp31.setMaximumSurfaceAngle (M_PI / 4); // 45 degrees
+    gp31.setMinimumAngle (M_PI / 18);       // 10 degrees
+    gp31.setMaximumAngle (2 * M_PI / 3);    // 120 degrees
+    gp31.setNormalConsistency (false);
 
     // Reconstruct
     // gp3.reconstruct (triangles);
@@ -151,7 +151,7 @@ TEST(PCL, GreedyProjectionTriangulation_Merge2Meshes)
   }
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TEST(PCL, UpdateMesh_With_TextureMapping)
+TEST (PCL, UpdateMesh_With_TextureMapping)
 {
   if (cloud_with_normals1->width * cloud_with_normals1->height > 0) {
     // Init objects
@@ -161,33 +161,33 @@ TEST(PCL, UpdateMesh_With_TextureMapping)
     GreedyProjectionTriangulation<PointNormal> gp31;
 
     // Set parameters
-    gp3.setInputCloud(cloud_with_normals);
-    gp3.setSearchMethod(tree2);
-    gp3.setSearchRadius(0.025);
-    gp3.setMu(2.5);
-    gp3.setMaximumNearestNeighbors(100);
-    gp3.setMaximumSurfaceAngle(M_PI / 4); // 45 degrees
-    gp3.setMinimumAngle(M_PI / 18);       // 10 degrees
-    gp3.setMaximumAngle(2 * M_PI / 3);    // 120 degrees
-    gp3.setNormalConsistency(false);
+    gp3.setInputCloud (cloud_with_normals);
+    gp3.setSearchMethod (tree2);
+    gp3.setSearchRadius (0.025);
+    gp3.setMu (2.5);
+    gp3.setMaximumNearestNeighbors (100);
+    gp3.setMaximumSurfaceAngle (M_PI / 4); // 45 degrees
+    gp3.setMinimumAngle (M_PI / 18);       // 10 degrees
+    gp3.setMaximumAngle (2 * M_PI / 3);    // 120 degrees
+    gp3.setNormalConsistency (false);
 
-    gp3.reconstruct(triangles);
+    gp3.reconstruct (triangles);
 
-    EXPECT_EQ(triangles.cloud.width, cloud_with_normals->width);
-    EXPECT_EQ(triangles.cloud.height, cloud_with_normals->height);
-    EXPECT_EQ(int(triangles.polygons.size()), 685);
+    EXPECT_EQ (triangles.cloud.width, cloud_with_normals->width);
+    EXPECT_EQ (triangles.cloud.height, cloud_with_normals->height);
+    EXPECT_EQ (int (triangles.polygons.size()), 685);
 
     // update with texture mapping
     // set 2 texture for 2 mesh
     std::vector<std::string> tex_files;
-    tex_files.emplace_back("tex4.jpg");
+    tex_files.emplace_back ("tex4.jpg");
 
     // initialize texture mesh
     TextureMesh tex_mesh;
     tex_mesh.cloud = triangles.cloud;
 
     // add the 1st mesh
-    tex_mesh.tex_polygons.push_back(triangles.polygons);
+    tex_mesh.tex_polygons.push_back (triangles.polygons);
 
     // update mesh and texture mesh
     // gp3.updateMesh(cloud_with_normals1, triangles, tex_mesh);
@@ -248,56 +248,56 @@ main (int argc, char** argv)
 
   // Load file
   pcl::PCLPointCloud2 cloud_blob;
-  loadPCDFile(argv[1], cloud_blob);
-  fromPCLPointCloud2(cloud_blob, *cloud);
+  loadPCDFile (argv[1], cloud_blob);
+  fromPCLPointCloud2 (cloud_blob, *cloud);
 
   // Create search tree
-  tree.reset(new search::KdTree<PointXYZ>(false));
-  tree->setInputCloud(cloud);
+  tree.reset (new search::KdTree<PointXYZ> (false));
+  tree->setInputCloud (cloud);
 
   // Normal estimation
   NormalEstimation<PointXYZ, Normal> n;
-  PointCloud<Normal>::Ptr normals(new PointCloud<Normal>());
-  n.setInputCloud(cloud);
+  PointCloud<Normal>::Ptr normals (new PointCloud<Normal>());
+  n.setInputCloud (cloud);
   // n.setIndices (indices[B);
-  n.setSearchMethod(tree);
-  n.setKSearch(20);
-  n.compute(*normals);
+  n.setSearchMethod (tree);
+  n.setKSearch (20);
+  n.compute (*normals);
 
   // Concatenate XYZ and normal information
-  pcl::concatenateFields(*cloud, *normals, *cloud_with_normals);
+  pcl::concatenateFields (*cloud, *normals, *cloud_with_normals);
 
   // Create search tree
-  tree2.reset(new search::KdTree<PointNormal>);
-  tree2->setInputCloud(cloud_with_normals);
+  tree2.reset (new search::KdTree<PointNormal>);
+  tree2->setInputCloud (cloud_with_normals);
 
   // Process for update cloud
   if (argc == 3) {
     pcl::PCLPointCloud2 cloud_blob1;
-    loadPCDFile(argv[2], cloud_blob1);
-    fromPCLPointCloud2(cloud_blob1, *cloud1);
+    loadPCDFile (argv[2], cloud_blob1);
+    fromPCLPointCloud2 (cloud_blob1, *cloud1);
     // Create search tree
-    tree3.reset(new search::KdTree<PointXYZ>(false));
-    tree3->setInputCloud(cloud1);
+    tree3.reset (new search::KdTree<PointXYZ> (false));
+    tree3->setInputCloud (cloud1);
 
     // Normal estimation
     NormalEstimation<PointXYZ, Normal> n1;
-    PointCloud<Normal>::Ptr normals1(new PointCloud<Normal>());
-    n1.setInputCloud(cloud1);
+    PointCloud<Normal>::Ptr normals1 (new PointCloud<Normal>());
+    n1.setInputCloud (cloud1);
 
-    n1.setSearchMethod(tree3);
-    n1.setKSearch(20);
-    n1.compute(*normals1);
+    n1.setSearchMethod (tree3);
+    n1.setKSearch (20);
+    n1.compute (*normals1);
 
     // Concatenate XYZ and normal information
-    pcl::concatenateFields(*cloud1, *normals1, *cloud_with_normals1);
+    pcl::concatenateFields (*cloud1, *normals1, *cloud_with_normals1);
     // Create search tree
-    tree4.reset(new search::KdTree<PointNormal>);
-    tree4->setInputCloud(cloud_with_normals1);
+    tree4.reset (new search::KdTree<PointNormal>);
+    tree4->setInputCloud (cloud_with_normals1);
   }
 
   // Testing
-  testing::InitGoogleTest(&argc, argv);
+  testing::InitGoogleTest (&argc, argv);
   return (RUN_ALL_TESTS());
 }
 /* ]--- */

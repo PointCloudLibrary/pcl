@@ -66,11 +66,11 @@ protected:
   using Mesh = MeshT;
 };
 
-TYPED_TEST_SUITE(TestGetBoundary, MeshTypes);
+TYPED_TEST_SUITE (TestGetBoundary, MeshTypes);
 
 ////////////////////////////////////////////////////////////////////////////////
 
-TYPED_TEST(TestGetBoundary, GetBoundaryHalfEdges)
+TYPED_TEST (TestGetBoundary, GetBoundaryHalfEdges)
 {
   using Mesh = typename TestFixture::Mesh;
 
@@ -91,53 +91,53 @@ TYPED_TEST(TestGetBoundary, GetBoundaryHalfEdges)
   VertexIndices vi;
 
   for (int i = 0; i < 23; ++i)
-    vi.push_back(mesh.addVertex());
+    vi.push_back (mesh.addVertex());
 
-  ASSERT_TRUE(mesh.addFace(vi[0], vi[4], vi[5], vi[1]).isValid());
-  ASSERT_TRUE(mesh.addFace(vi[1], vi[5], vi[6], vi[2]).isValid());
-  ASSERT_TRUE(mesh.addFace(vi[2], vi[6], vi[7], vi[3]).isValid());
-  ASSERT_TRUE(mesh.addFace(vi[4], vi[8], vi[9], vi[5]).isValid());
-  ASSERT_TRUE(mesh.addFace(vi[6], vi[10], vi[11], vi[7]).isValid());
-  ASSERT_TRUE(mesh.addFace(vi[8], vi[12], vi[13], vi[9]).isValid());
-  ASSERT_TRUE(mesh.addFace(vi[10], vi[14], vi[15], vi[11]).isValid());
-  ASSERT_TRUE(mesh.addFace(vi[12], vi[16], vi[17], vi[13]).isValid());
-  ASSERT_TRUE(mesh.addFace(vi[14], vi[18], vi[19], vi[15]).isValid());
-  ASSERT_TRUE(mesh.addFace(vi[13], vi[17], vi[18], vi[14]).isValid());
+  ASSERT_TRUE (mesh.addFace (vi[0], vi[4], vi[5], vi[1]).isValid());
+  ASSERT_TRUE (mesh.addFace (vi[1], vi[5], vi[6], vi[2]).isValid());
+  ASSERT_TRUE (mesh.addFace (vi[2], vi[6], vi[7], vi[3]).isValid());
+  ASSERT_TRUE (mesh.addFace (vi[4], vi[8], vi[9], vi[5]).isValid());
+  ASSERT_TRUE (mesh.addFace (vi[6], vi[10], vi[11], vi[7]).isValid());
+  ASSERT_TRUE (mesh.addFace (vi[8], vi[12], vi[13], vi[9]).isValid());
+  ASSERT_TRUE (mesh.addFace (vi[10], vi[14], vi[15], vi[11]).isValid());
+  ASSERT_TRUE (mesh.addFace (vi[12], vi[16], vi[17], vi[13]).isValid());
+  ASSERT_TRUE (mesh.addFace (vi[14], vi[18], vi[19], vi[15]).isValid());
+  ASSERT_TRUE (mesh.addFace (vi[13], vi[17], vi[18], vi[14]).isValid());
 
   std::vector<HalfEdgeIndices> expected_boundary_collection;
   HalfEdgeIndices boundary;
 
-  boundary.push_back(findHalfEdge(mesh, vi[0], vi[1]));
-  boundary.push_back(findHalfEdge(mesh, vi[1], vi[2]));
-  boundary.push_back(findHalfEdge(mesh, vi[2], vi[3]));
-  boundary.push_back(findHalfEdge(mesh, vi[3], vi[7]));
-  boundary.push_back(findHalfEdge(mesh, vi[7], vi[11]));
-  boundary.push_back(findHalfEdge(mesh, vi[11], vi[15]));
-  boundary.push_back(findHalfEdge(mesh, vi[15], vi[19]));
-  boundary.push_back(findHalfEdge(mesh, vi[19], vi[18]));
-  boundary.push_back(findHalfEdge(mesh, vi[18], vi[17]));
-  boundary.push_back(findHalfEdge(mesh, vi[17], vi[16]));
-  boundary.push_back(findHalfEdge(mesh, vi[16], vi[12]));
-  boundary.push_back(findHalfEdge(mesh, vi[12], vi[8]));
-  boundary.push_back(findHalfEdge(mesh, vi[8], vi[4]));
-  boundary.push_back(findHalfEdge(mesh, vi[4], vi[0]));
-  expected_boundary_collection.push_back(boundary);
+  boundary.push_back (findHalfEdge (mesh, vi[0], vi[1]));
+  boundary.push_back (findHalfEdge (mesh, vi[1], vi[2]));
+  boundary.push_back (findHalfEdge (mesh, vi[2], vi[3]));
+  boundary.push_back (findHalfEdge (mesh, vi[3], vi[7]));
+  boundary.push_back (findHalfEdge (mesh, vi[7], vi[11]));
+  boundary.push_back (findHalfEdge (mesh, vi[11], vi[15]));
+  boundary.push_back (findHalfEdge (mesh, vi[15], vi[19]));
+  boundary.push_back (findHalfEdge (mesh, vi[19], vi[18]));
+  boundary.push_back (findHalfEdge (mesh, vi[18], vi[17]));
+  boundary.push_back (findHalfEdge (mesh, vi[17], vi[16]));
+  boundary.push_back (findHalfEdge (mesh, vi[16], vi[12]));
+  boundary.push_back (findHalfEdge (mesh, vi[12], vi[8]));
+  boundary.push_back (findHalfEdge (mesh, vi[8], vi[4]));
+  boundary.push_back (findHalfEdge (mesh, vi[4], vi[0]));
+  expected_boundary_collection.push_back (boundary);
   boundary.clear();
 
-  boundary.push_back(findHalfEdge(mesh, vi[5], vi[9]));
-  boundary.push_back(findHalfEdge(mesh, vi[9], vi[13]));
-  boundary.push_back(findHalfEdge(mesh, vi[13], vi[14]));
-  boundary.push_back(findHalfEdge(mesh, vi[14], vi[10]));
-  boundary.push_back(findHalfEdge(mesh, vi[10], vi[6]));
-  boundary.push_back(findHalfEdge(mesh, vi[6], vi[5]));
-  expected_boundary_collection.push_back(boundary);
+  boundary.push_back (findHalfEdge (mesh, vi[5], vi[9]));
+  boundary.push_back (findHalfEdge (mesh, vi[9], vi[13]));
+  boundary.push_back (findHalfEdge (mesh, vi[13], vi[14]));
+  boundary.push_back (findHalfEdge (mesh, vi[14], vi[10]));
+  boundary.push_back (findHalfEdge (mesh, vi[10], vi[6]));
+  boundary.push_back (findHalfEdge (mesh, vi[6], vi[5]));
+  expected_boundary_collection.push_back (boundary);
   boundary.clear();
 
   std::vector<HalfEdgeIndices> actual_boundary_collection;
 
-  pcl::geometry::getBoundBoundaryHalfEdges(mesh, actual_boundary_collection);
-  ASSERT_TRUE(isCircularPermutationVec(expected_boundary_collection,
-                                       actual_boundary_collection));
+  pcl::geometry::getBoundBoundaryHalfEdges (mesh, actual_boundary_collection);
+  ASSERT_TRUE (isCircularPermutationVec (expected_boundary_collection,
+                                         actual_boundary_collection));
 
   if (Mesh::IsManifold::value)
     return;
@@ -153,42 +153,42 @@ TYPED_TEST(TestGetBoundary, GetBoundaryHalfEdges)
   // 16 - 17 - 18 - 19 - 20
   //                 |    |
   //                21 - 22
-  ASSERT_TRUE(mesh.addFace(vi[5], vi[9], vi[10], vi[6]).isValid());
-  ASSERT_TRUE(mesh.addFace(vi[19], vi[21], vi[22], vi[20]).isValid());
+  ASSERT_TRUE (mesh.addFace (vi[5], vi[9], vi[10], vi[6]).isValid());
+  ASSERT_TRUE (mesh.addFace (vi[19], vi[21], vi[22], vi[20]).isValid());
 
   expected_boundary_collection.clear();
 
-  boundary.push_back(findHalfEdge(mesh, vi[0], vi[1]));
-  boundary.push_back(findHalfEdge(mesh, vi[1], vi[2]));
-  boundary.push_back(findHalfEdge(mesh, vi[2], vi[3]));
-  boundary.push_back(findHalfEdge(mesh, vi[3], vi[7]));
-  boundary.push_back(findHalfEdge(mesh, vi[7], vi[11]));
-  boundary.push_back(findHalfEdge(mesh, vi[11], vi[15]));
-  boundary.push_back(findHalfEdge(mesh, vi[15], vi[19]));
-  boundary.push_back(findHalfEdge(mesh, vi[19], vi[20]));
-  boundary.push_back(findHalfEdge(mesh, vi[20], vi[22]));
-  boundary.push_back(findHalfEdge(mesh, vi[22], vi[21]));
-  boundary.push_back(findHalfEdge(mesh, vi[21], vi[19]));
-  boundary.push_back(findHalfEdge(mesh, vi[19], vi[18]));
-  boundary.push_back(findHalfEdge(mesh, vi[18], vi[17]));
-  boundary.push_back(findHalfEdge(mesh, vi[17], vi[16]));
-  boundary.push_back(findHalfEdge(mesh, vi[16], vi[12]));
-  boundary.push_back(findHalfEdge(mesh, vi[12], vi[8]));
-  boundary.push_back(findHalfEdge(mesh, vi[8], vi[4]));
-  boundary.push_back(findHalfEdge(mesh, vi[4], vi[0]));
-  expected_boundary_collection.push_back(boundary);
+  boundary.push_back (findHalfEdge (mesh, vi[0], vi[1]));
+  boundary.push_back (findHalfEdge (mesh, vi[1], vi[2]));
+  boundary.push_back (findHalfEdge (mesh, vi[2], vi[3]));
+  boundary.push_back (findHalfEdge (mesh, vi[3], vi[7]));
+  boundary.push_back (findHalfEdge (mesh, vi[7], vi[11]));
+  boundary.push_back (findHalfEdge (mesh, vi[11], vi[15]));
+  boundary.push_back (findHalfEdge (mesh, vi[15], vi[19]));
+  boundary.push_back (findHalfEdge (mesh, vi[19], vi[20]));
+  boundary.push_back (findHalfEdge (mesh, vi[20], vi[22]));
+  boundary.push_back (findHalfEdge (mesh, vi[22], vi[21]));
+  boundary.push_back (findHalfEdge (mesh, vi[21], vi[19]));
+  boundary.push_back (findHalfEdge (mesh, vi[19], vi[18]));
+  boundary.push_back (findHalfEdge (mesh, vi[18], vi[17]));
+  boundary.push_back (findHalfEdge (mesh, vi[17], vi[16]));
+  boundary.push_back (findHalfEdge (mesh, vi[16], vi[12]));
+  boundary.push_back (findHalfEdge (mesh, vi[12], vi[8]));
+  boundary.push_back (findHalfEdge (mesh, vi[8], vi[4]));
+  boundary.push_back (findHalfEdge (mesh, vi[4], vi[0]));
+  expected_boundary_collection.push_back (boundary);
   boundary.clear();
 
-  boundary.push_back(findHalfEdge(mesh, vi[9], vi[13]));
-  boundary.push_back(findHalfEdge(mesh, vi[13], vi[14]));
-  boundary.push_back(findHalfEdge(mesh, vi[14], vi[10]));
-  boundary.push_back(findHalfEdge(mesh, vi[10], vi[9]));
-  expected_boundary_collection.push_back(boundary);
+  boundary.push_back (findHalfEdge (mesh, vi[9], vi[13]));
+  boundary.push_back (findHalfEdge (mesh, vi[13], vi[14]));
+  boundary.push_back (findHalfEdge (mesh, vi[14], vi[10]));
+  boundary.push_back (findHalfEdge (mesh, vi[10], vi[9]));
+  expected_boundary_collection.push_back (boundary);
   boundary.clear();
 
-  pcl::geometry::getBoundBoundaryHalfEdges(mesh, actual_boundary_collection);
-  ASSERT_TRUE(isCircularPermutationVec(expected_boundary_collection,
-                                       actual_boundary_collection));
+  pcl::geometry::getBoundBoundaryHalfEdges (mesh, actual_boundary_collection);
+  ASSERT_TRUE (isCircularPermutationVec (expected_boundary_collection,
+                                         actual_boundary_collection));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -196,6 +196,6 @@ TYPED_TEST(TestGetBoundary, GetBoundaryHalfEdges)
 int
 main (int argc, char** argv)
 {
-  testing::InitGoogleTest(&argc, argv);
+  testing::InitGoogleTest (&argc, argv);
   return (RUN_ALL_TESTS());
 }

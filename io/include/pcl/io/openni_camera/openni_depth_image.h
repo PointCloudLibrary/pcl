@@ -71,11 +71,11 @@ public:
    * change, depending whether the depth stream is registered/mapped to the RGB stream
    * or not.
    */
-  inline DepthImage(pcl::shared_ptr<xn::DepthMetaData> depth_meta_data,
-                    float baseline,
-                    float focal_length,
-                    XnUInt64 shadow_value,
-                    XnUInt64 no_sample_value) noexcept;
+  inline DepthImage (pcl::shared_ptr<xn::DepthMetaData> depth_meta_data,
+                     float baseline,
+                     float focal_length,
+                     XnUInt64 shadow_value,
+                     XnUInt64 no_sample_value) noexcept;
 
   /** \brief Destructor. Never throws an exception. */
   inline virtual ~DepthImage() noexcept;
@@ -182,16 +182,16 @@ protected:
   XnUInt64 no_sample_value_;
 };
 
-DepthImage::DepthImage(pcl::shared_ptr<xn::DepthMetaData> depth_meta_data,
-                       float baseline,
-                       float focal_length,
-                       XnUInt64 shadow_value,
-                       XnUInt64 no_sample_value) noexcept
-: depth_md_(std::move(depth_meta_data))
-, baseline_(baseline)
-, focal_length_(focal_length)
-, shadow_value_(shadow_value)
-, no_sample_value_(no_sample_value)
+DepthImage::DepthImage (pcl::shared_ptr<xn::DepthMetaData> depth_meta_data,
+                        float baseline,
+                        float focal_length,
+                        XnUInt64 shadow_value,
+                        XnUInt64 no_sample_value) noexcept
+: depth_md_ (std::move (depth_meta_data))
+, baseline_ (baseline)
+, focal_length_ (focal_length)
+, shadow_value_ (shadow_value)
+, no_sample_value_ (no_sample_value)
 {}
 
 DepthImage::~DepthImage() noexcept = default;
@@ -247,7 +247,7 @@ DepthImage::getFrameID() const noexcept
 unsigned long
 DepthImage::getTimeStamp() const noexcept
 {
-  return static_cast<unsigned long>(depth_md_->Timestamp());
+  return static_cast<unsigned long> (depth_md_->Timestamp());
 }
 } // namespace openni_wrapper
 #endif

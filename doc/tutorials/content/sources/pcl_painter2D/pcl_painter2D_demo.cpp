@@ -13,7 +13,7 @@ main ()
   pcl::visualization::PCLPainter2D* painter = new pcl::visualization::PCLPainter2D();
 
   int winw = 800, winh = 600;
-  painter->setWindowSize(winw, winh);
+  painter->setWindowSize (winw, winh);
   int xpos = 0;
   int r = winw;
   int R = 50;
@@ -24,24 +24,24 @@ main ()
     // draw noc no of circles
     for (int i = 0; i < noc; i++) {
       if (i % 2)
-        painter->setBrushColor(0, 0, 0, 200);
+        painter->setBrushColor (0, 0, 0, 200);
       else
-        painter->setBrushColor(255, 255, 255, 200);
+        painter->setBrushColor (255, 255, 255, 200);
 
       int rad = r - i * R;
       if (rad < 0) {
         rad = winw + rad;
       }
 
-      painter->addCircle(winw / 2, winh / 2, rad);
+      painter->addCircle (winw / 2, winh / 2, rad);
     }
 
     r -= inc;
     if (r < winw - R)
       r = winw + R;
 
-    painter->setBrushColor(255, 0, 0, 100);
-    painter->addRect((xpos += inc) % winw, 100, 100, 100);
+    painter->setBrushColor (255, 0, 0, 100);
+    painter->addRect ((xpos += inc) % winw, 100, 100, 100);
 
     // display
     painter->spinOnce();

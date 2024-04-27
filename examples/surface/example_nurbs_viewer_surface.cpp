@@ -9,13 +9,13 @@ main (int argc, char* argv[])
   std::string file_3dm;
 
   if (argc < 2) {
-    printf("\nUsage: pcl_example_nurbs_viewer_surface 3dm-out-file\n\n");
-    exit(0);
+    printf ("\nUsage: pcl_example_nurbs_viewer_surface 3dm-out-file\n\n");
+    exit (0);
   }
   file_3dm = argv[1];
 
-  pcl::visualization::PCLVisualizer viewer("B-spline surface viewer");
-  viewer.setSize(800, 600);
+  pcl::visualization::PCLVisualizer viewer ("B-spline surface viewer");
+  viewer.setSize (800, 600);
 
   int mesh_resolution = 128;
 
@@ -23,7 +23,7 @@ main (int argc, char* argv[])
 
   // load surface
   ONX_Model on_model;
-  bool rc = on_model.Read(file_3dm.c_str());
+  bool rc = on_model.Read (file_3dm.c_str());
 
   // print diagnostic
   if (rc)
@@ -53,7 +53,7 @@ main (int argc, char* argv[])
     std::cout << "3dm file does not contain a trimming curve: " << file_3dm
               << std::endl;
 
-    pcl::on_nurbs::Triangulation::convertSurface2PolygonMesh(
+    pcl::on_nurbs::Triangulation::convertSurface2PolygonMesh (
         on_surf, mesh, mesh_resolution);
   }
   else {
@@ -65,11 +65,11 @@ main (int argc, char* argv[])
 
     const ON_NurbsCurve& on_curv = *(ON_NurbsCurve*)on_object;
 
-    pcl::on_nurbs::Triangulation::convertTrimmedSurface2PolygonMesh(
+    pcl::on_nurbs::Triangulation::convertTrimmedSurface2PolygonMesh (
         on_surf, on_curv, mesh, mesh_resolution);
   }
 
-  viewer.addPolygonMesh(mesh, mesh_id);
+  viewer.addPolygonMesh (mesh, mesh_id);
 
   viewer.spin();
   return 0;

@@ -43,7 +43,8 @@ namespace pcl {
 
 template <typename PointInT, typename PointOutT>
 void
-CloudSurfaceProcessing<PointInT, PointOutT>::process(pcl::PointCloud<PointOutT>& output)
+CloudSurfaceProcessing<PointInT, PointOutT>::process (
+    pcl::PointCloud<PointOutT>& output)
 {
   // Copy the header
   output.header = input_->header;
@@ -55,7 +56,7 @@ CloudSurfaceProcessing<PointInT, PointOutT>::process(pcl::PointCloud<PointOutT>&
   }
 
   // Perform the actual surface reconstruction
-  performProcessing(output);
+  performProcessing (output);
 
   deinitCompute();
 }

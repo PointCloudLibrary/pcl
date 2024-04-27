@@ -48,7 +48,7 @@ class PiecewiseLinearFunction {
 public:
   // =====CONSTRUCTOR & DESTRUCTOR=====
   //! Constructor
-  PiecewiseLinearFunction(float factor, float offset);
+  PiecewiseLinearFunction (float factor, float offset);
 
   // =====PUBLIC METHODS=====
   //! Get the list of known data points

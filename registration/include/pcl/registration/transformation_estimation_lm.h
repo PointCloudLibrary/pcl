@@ -83,18 +83,18 @@ public:
   /** \brief Copy constructor.
    * \param[in] src the TransformationEstimationLM object to copy into this
    */
-  TransformationEstimationLM(const TransformationEstimationLM& src)
-  : tmp_src_(src.tmp_src_)
-  , tmp_tgt_(src.tmp_tgt_)
-  , tmp_idx_src_(src.tmp_idx_src_)
-  , tmp_idx_tgt_(src.tmp_idx_tgt_)
-  , warp_point_(src.warp_point_){};
+  TransformationEstimationLM (const TransformationEstimationLM& src)
+  : tmp_src_ (src.tmp_src_)
+  , tmp_tgt_ (src.tmp_tgt_)
+  , tmp_idx_src_ (src.tmp_idx_src_)
+  , tmp_idx_tgt_ (src.tmp_idx_tgt_)
+  , warp_point_ (src.warp_point_){};
 
   /** \brief Copy operator.
    * \param[in] src the TransformationEstimationLM object to copy into this
    */
   TransformationEstimationLM&
-  operator=(const TransformationEstimationLM& src)
+  operator= (const TransformationEstimationLM& src)
   {
     tmp_src_ = src.tmp_src_;
     tmp_tgt_ = src.tmp_tgt_;
@@ -181,8 +181,8 @@ protected:
   virtual MatScalar
   computeDistance (const PointSource& p_src, const PointTarget& p_tgt) const
   {
-    Vector4 s(p_src.x, p_src.y, p_src.z, 0);
-    Vector4 t(p_tgt.x, p_tgt.y, p_tgt.z, 0);
+    Vector4 s (p_src.x, p_src.y, p_src.z, 0);
+    Vector4 t (p_tgt.x, p_tgt.y, p_tgt.z, 0);
     return ((s - t).norm());
   }
 
@@ -197,7 +197,7 @@ protected:
   virtual MatScalar
   computeDistance (const Vector4& p_src, const PointTarget& p_tgt) const
   {
-    Vector4 t(p_tgt.x, p_tgt.y, p_tgt.z, 0);
+    Vector4 t (p_tgt.x, p_tgt.y, p_tgt.z, 0);
     return ((p_src - t).norm());
   }
 
@@ -232,12 +232,12 @@ protected:
         Eigen::Matrix<_Scalar, ValuesAtCompileTime, InputsAtCompileTime>;
 
     /** \brief Empty Constructor. */
-    Functor() : m_data_points_(ValuesAtCompileTime) {}
+    Functor() : m_data_points_ (ValuesAtCompileTime) {}
 
     /** \brief Constructor
      * \param[in] m_data_points number of data points to evaluate.
      */
-    Functor(int m_data_points) : m_data_points_(m_data_points) {}
+    Functor (int m_data_points) : m_data_points_ (m_data_points) {}
 
     /** \brief Destructor. */
     virtual ~Functor() = default;
@@ -260,15 +260,15 @@ protected:
      * \param[in] m_data_points the number of data points to evaluate
      * \param[in,out] estimator pointer to the estimator object
      */
-    OptimizationFunctor(int m_data_points, const TransformationEstimationLM* estimator)
-    : Functor<MatScalar>(m_data_points), estimator_(estimator)
+    OptimizationFunctor (int m_data_points, const TransformationEstimationLM* estimator)
+    : Functor<MatScalar> (m_data_points), estimator_ (estimator)
     {}
 
     /** Copy constructor
      * \param[in] src the optimization functor to copy into this
      */
-    inline OptimizationFunctor(const OptimizationFunctor& src)
-    : Functor<MatScalar>(src.m_data_points_), estimator_()
+    inline OptimizationFunctor (const OptimizationFunctor& src)
+    : Functor<MatScalar> (src.m_data_points_), estimator_()
     {
       *this = src;
     }
@@ -277,9 +277,9 @@ protected:
      * \param[in] src the optimization functor to copy into this
      */
     inline OptimizationFunctor&
-    operator=(const OptimizationFunctor& src)
+    operator= (const OptimizationFunctor& src)
     {
-      Functor<MatScalar>::operator=(src);
+      Functor<MatScalar>::operator= (src);
       estimator_ = src.estimator_;
       return (*this);
     }
@@ -292,7 +292,7 @@ protected:
      * \param[out] fvec f values vector
      */
     int
-    operator()(const VectorX& x, VectorX& fvec) const;
+    operator() (const VectorX& x, VectorX& fvec) const;
 
     const TransformationEstimationLM<PointSource, PointTarget, MatScalar>* estimator_;
   };
@@ -304,16 +304,16 @@ protected:
      * \param[in] m_data_points the number of data points to evaluate
      * \param[in,out] estimator pointer to the estimator object
      */
-    OptimizationFunctorWithIndices(int m_data_points,
-                                   const TransformationEstimationLM* estimator)
-    : Functor<MatScalar>(m_data_points), estimator_(estimator)
+    OptimizationFunctorWithIndices (int m_data_points,
+                                    const TransformationEstimationLM* estimator)
+    : Functor<MatScalar> (m_data_points), estimator_ (estimator)
     {}
 
     /** Copy constructor
      * \param[in] src the optimization functor to copy into this
      */
-    inline OptimizationFunctorWithIndices(const OptimizationFunctorWithIndices& src)
-    : Functor<MatScalar>(src.m_data_points_), estimator_()
+    inline OptimizationFunctorWithIndices (const OptimizationFunctorWithIndices& src)
+    : Functor<MatScalar> (src.m_data_points_), estimator_()
     {
       *this = src;
     }
@@ -322,9 +322,9 @@ protected:
      * \param[in] src the optimization functor to copy into this
      */
     inline OptimizationFunctorWithIndices&
-    operator=(const OptimizationFunctorWithIndices& src)
+    operator= (const OptimizationFunctorWithIndices& src)
     {
-      Functor<MatScalar>::operator=(src);
+      Functor<MatScalar>::operator= (src);
       estimator_ = src.estimator_;
       return (*this);
     }
@@ -337,7 +337,7 @@ protected:
      * \param[out] fvec f values vector
      */
     int
-    operator()(const VectorX& x, VectorX& fvec) const;
+    operator() (const VectorX& x, VectorX& fvec) const;
 
     const TransformationEstimationLM<PointSource, PointTarget, MatScalar>* estimator_;
   };

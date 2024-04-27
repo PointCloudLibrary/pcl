@@ -20,11 +20,11 @@ class Viewport {
 public:
   // Operators
   // -----------------------------------------------------------------------------
-  Viewport(vtkSmartPointer<vtkRenderWindow> window,
-           double xmin = 0.0,
-           double ymin = 0.0,
-           double xmax = 1.0,
-           double ymax = 1.0);
+  Viewport (vtkSmartPointer<vtkRenderWindow> window,
+            double xmin = 0.0,
+            double ymin = 0.0,
+            double xmax = 1.0,
+            double ymax = 1.0);
 
   // Accessors
   // -----------------------------------------------------------------------------
@@ -37,8 +37,8 @@ public:
   void
   setCamera (Camera* camera)
   {
-    renderer_->SetActiveCamera(vtkCamera::SafeDownCast(camera->getCamera()));
-    camera_hud_actor_->SetInput(camera->getName().c_str());
+    renderer_->SetActiveCamera (vtkCamera::SafeDownCast (camera->getCamera()));
+    camera_hud_actor_->SetInput (camera->getName().c_str());
     renderer_->ResetCamera();
   }
 
@@ -47,27 +47,27 @@ private:
   // -----------------------------------------------------------------------------
   static void
   viewportModifiedCallback (vtkObject* caller,
-                            unsigned long int vtkNotUsed(eventId),
-                            void* vtkNotUsed(clientData),
-                            void* vtkNotUsed(callData));
+                            unsigned long int vtkNotUsed (eventId),
+                            void* vtkNotUsed (clientData),
+                            void* vtkNotUsed (callData));
 
   void
   viewportModified ();
 
   static void
   viewportActorUpdateCallback (vtkObject* caller,
-                               unsigned long int vtkNotUsed(eventId),
-                               void* vtkNotUsed(clientData),
-                               void* vtkNotUsed(callData));
+                               unsigned long int vtkNotUsed (eventId),
+                               void* vtkNotUsed (clientData),
+                               void* vtkNotUsed (callData));
 
   void
   viewportActorUpdate ();
 
   static void
   viewportHudUpdateCallback (vtkObject* caller,
-                             unsigned long int vtkNotUsed(eventId),
-                             void* vtkNotUsed(clientData),
-                             void* vtkNotUsed(callData));
+                             unsigned long int vtkNotUsed (eventId),
+                             void* vtkNotUsed (clientData),
+                             void* vtkNotUsed (callData));
 
   void
   viewportHudUpdate ();

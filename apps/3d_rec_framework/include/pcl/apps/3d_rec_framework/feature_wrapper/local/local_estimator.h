@@ -21,7 +21,7 @@ namespace pcl {
 template <>
 struct SIFTKeypointFieldSelector<PointXYZ> {
   inline float
-  operator()(const PointXYZ& p) const
+  operator() (const PointXYZ& p) const
   {
     return p.z;
   }
@@ -87,25 +87,25 @@ private:
     // create a search object
     typename pcl::search::Search<PointInT>::Ptr tree;
     if (input->isOrganized())
-      tree.reset(new pcl::search::OrganizedNeighbor<PointInT>());
+      tree.reset (new pcl::search::OrganizedNeighbor<PointInT>());
     else
-      tree.reset(new pcl::search::KdTree<PointInT>(false));
-    tree->setInputCloud(input);
+      tree.reset (new pcl::search::KdTree<PointInT> (false));
+    tree->setInputCloud (input);
 
-    neighborhood_indices_.reset(new std::vector<pcl::Indices>);
-    neighborhood_indices_->resize(keypoints_cloud->size());
-    neighborhood_dist_.reset(new std::vector<std::vector<float>>);
-    neighborhood_dist_->resize(keypoints_cloud->size());
+    neighborhood_indices_.reset (new std::vector<pcl::Indices>);
+    neighborhood_indices_->resize (keypoints_cloud->size());
+    neighborhood_dist_.reset (new std::vector<std::vector<float>>);
+    neighborhood_dist_->resize (keypoints_cloud->size());
 
-    filtered_keypoints.resize(keypoints_cloud->size());
+    filtered_keypoints.resize (keypoints_cloud->size());
     int good = 0;
 
     for (std::size_t i = 0; i < keypoints_cloud->size(); i++) {
 
-      if (tree->radiusSearch((*keypoints_cloud)[i],
-                             radius_,
-                             (*neighborhood_indices_)[good],
-                             (*neighborhood_dist_)[good])) {
+      if (tree->radiusSearch ((*keypoints_cloud)[i],
+                              radius_,
+                              (*neighborhood_indices_)[good],
+                              (*neighborhood_dist_)[good])) {
 
         EIGEN_ALIGN16 Eigen::Matrix3f covariance_matrix;
         Eigen::Vector4f xyz_centroid;
@@ -113,17 +113,17 @@ private:
         EIGEN_ALIGN16 Eigen::Matrix3f eigenVectors;
 
         // compute planarity of the region
-        computeMeanAndCovarianceMatrix(
+        computeMeanAndCovarianceMatrix (
             *input, (*neighborhood_indices_)[good], covariance_matrix, xyz_centroid);
-        pcl::eigen33(covariance_matrix, eigenVectors, eigenValues);
+        pcl::eigen33 (covariance_matrix, eigenVectors, eigenValues);
 
         float eigsum = eigenValues.sum();
-        if (!std::isfinite(eigsum)) {
-          PCL_ERROR("Eigen sum is not finite\n");
+        if (!std::isfinite (eigsum)) {
+          PCL_ERROR ("Eigen sum is not finite\n");
         }
 
-        if ((std::abs(eigenValues[0] - eigenValues[1]) < 1.5e-4) ||
-            (eigsum != 0 && std::abs(eigenValues[0] / eigsum) > 1.e-2)) {
+        if ((std::abs (eigenValues[0] - eigenValues[1]) < 1.5e-4) ||
+            (eigsum != 0 && std::abs (eigenValues[0] / eigsum) > 1.e-2)) {
           // region is not planar, add to filtered keypoint
           (*keypoints_cloud)[good] = (*keypoints_cloud)[i];
           good++;
@@ -131,9 +131,9 @@ private:
       }
     }
 
-    neighborhood_indices_->resize(good);
-    neighborhood_dist_->resize(good);
-    keypoints_cloud->points.resize(good);
+    neighborhood_indices_->resize (good);
+    neighborhood_dist_->resize (good);
+    keypoints_cloud->points.resize (good);
 
     neighborhood_indices_->clear();
     neighborhood_dist_->clear();
@@ -155,16 +155,16 @@ public:
   void
   compute (PointInTPtr& keypoints) override
   {
-    keypoints.reset(new pcl::PointCloud<PointInT>);
+    keypoints.reset (new pcl::PointCloud<PointInT>);
 
     pcl::UniformSampling<PointInT> keypoint_extractor;
-    keypoint_extractor.setRadiusSearch(sampling_density_);
-    keypoint_extractor.setInputCloud(input_);
+    keypoint_extractor.setRadiusSearch (sampling_density_);
+    keypoint_extractor.setInputCloud (input_);
 
-    keypoint_extractor.filter(*keypoints);
+    keypoint_extractor.filter (*keypoints);
 
     if (filter_planar_)
-      filterPlanar(input_, keypoints);
+      filterPlanar (input_, keypoints);
   }
 };
 
@@ -178,17 +178,17 @@ public:
   void
   compute (PointInTPtr& keypoints)
   {
-    keypoints.reset(new pcl::PointCloud<PointInT>);
+    keypoints.reset (new pcl::PointCloud<PointInT>);
 
-    typename pcl::PointCloud<pcl::PointXYZI>::Ptr intensity_keypoints(
+    typename pcl::PointCloud<pcl::PointXYZI>::Ptr intensity_keypoints (
         new pcl::PointCloud<pcl::PointXYZI>);
     pcl::SIFTKeypoint<PointInT, pcl::PointXYZI> sift3D;
-    sift3D.setScales(0.003f, 3, 2);
-    sift3D.setMinimumContrast(0.1f);
-    sift3D.setInputCloud(input_);
-    sift3D.setSearchSurface(input_);
-    sift3D.compute(*intensity_keypoints);
-    pcl::copyPointCloud(*intensity_keypoints, *keypoints);
+    sift3D.setScales (0.003f, 3, 2);
+    sift3D.setMinimumContrast (0.1f);
+    sift3D.setInputCloud (input_);
+    sift3D.setSearchSurface (input_);
+    sift3D.compute (*intensity_keypoints);
+    pcl::copyPointCloud (*intensity_keypoints, *keypoints);
   }
 };
 
@@ -216,29 +216,29 @@ public:
   compute (PointInTPtr& keypoints)
   {
     if (normals_ == nullptr || (normals_->size() != input_->size()))
-      PCL_WARN("SIFTSurfaceKeypointExtractor -- Normals are not valid\n");
+      PCL_WARN ("SIFTSurfaceKeypointExtractor -- Normals are not valid\n");
 
-    keypoints.reset(new pcl::PointCloud<PointInT>);
+    keypoints.reset (new pcl::PointCloud<PointInT>);
 
-    typename pcl::PointCloud<pcl::PointNormal>::Ptr input_cloud(
+    typename pcl::PointCloud<pcl::PointNormal>::Ptr input_cloud (
         new pcl::PointCloud<pcl::PointNormal>);
     input_cloud->width = input_->width;
     input_cloud->height = input_->height;
-    input_cloud->points.resize(input_->width * input_->height);
+    input_cloud->points.resize (input_->width * input_->height);
     for (std::size_t i = 0; i < input_->points.size(); i++) {
       (*input_cloud)[i].getVector3fMap() = (*input_)[i].getVector3fMap();
       (*input_cloud)[i].getNormalVector3fMap() = (*normals_)[i].getNormalVector3fMap();
     }
 
-    typename pcl::PointCloud<pcl::PointXYZI>::Ptr intensity_keypoints(
+    typename pcl::PointCloud<pcl::PointXYZI>::Ptr intensity_keypoints (
         new pcl::PointCloud<pcl::PointXYZI>);
     pcl::SIFTKeypoint<pcl::PointNormal, pcl::PointXYZI> sift3D;
-    sift3D.setScales(0.003f, 3, 2);
-    sift3D.setMinimumContrast(0.0);
-    sift3D.setInputCloud(input_cloud);
-    sift3D.setSearchSurface(input_cloud);
-    sift3D.compute(*intensity_keypoints);
-    pcl::copyPointCloud(*intensity_keypoints, *keypoints);
+    sift3D.setScales (0.003f, 3, 2);
+    sift3D.setMinimumContrast (0.0);
+    sift3D.setInputCloud (input_cloud);
+    sift3D.setSearchSurface (input_cloud);
+    sift3D.compute (*intensity_keypoints);
+    pcl::copyPointCloud (*intensity_keypoints, *keypoints);
   }
 };
 
@@ -295,26 +295,26 @@ public:
   void
   compute (PointInTPtr& keypoints)
   {
-    keypoints.reset(new pcl::PointCloud<PointInT>);
+    keypoints.reset (new pcl::PointCloud<PointInT>);
 
     if (normals_ == nullptr || (normals_->size() != input_->size()))
-      PCL_WARN("HarrisKeypointExtractor -- Normals are not valid\n");
+      PCL_WARN ("HarrisKeypointExtractor -- Normals are not valid\n");
 
-    typename pcl::PointCloud<pcl::PointXYZI>::Ptr intensity_keypoints(
+    typename pcl::PointCloud<pcl::PointXYZI>::Ptr intensity_keypoints (
         new pcl::PointCloud<pcl::PointXYZI>);
 
     pcl::HarrisKeypoint3D<PointInT, pcl::PointXYZI> harris;
-    harris.setNonMaxSupression(true);
-    harris.setRefine(false);
-    harris.setThreshold(threshold_);
-    harris.setInputCloud(input_);
-    harris.setNormals(normals_);
-    harris.setRadius(non_max_radius_);
-    harris.setRadiusSearch(non_max_radius_);
-    harris.setMethod(m_);
-    harris.compute(*intensity_keypoints);
+    harris.setNonMaxSupression (true);
+    harris.setRefine (false);
+    harris.setThreshold (threshold_);
+    harris.setInputCloud (input_);
+    harris.setNormals (normals_);
+    harris.setRadius (non_max_radius_);
+    harris.setRadiusSearch (non_max_radius_);
+    harris.setMethod (m_);
+    harris.compute (*intensity_keypoints);
 
-    pcl::copyPointCloud(*intensity_keypoints, *keypoints);
+    pcl::copyPointCloud (*intensity_keypoints, *keypoints);
   }
 };
 
@@ -344,23 +344,23 @@ public:
   void
   compute (PointInTPtr& keypoints)
   {
-    keypoints.reset(new pcl::PointCloud<PointInT>);
+    keypoints.reset (new pcl::PointCloud<PointInT>);
 
     if (normals_ == nullptr || (normals_->size() != input_->size()))
-      PCL_WARN("SUSANKeypointExtractor -- Normals are not valid\n");
+      PCL_WARN ("SUSANKeypointExtractor -- Normals are not valid\n");
 
-    typename pcl::PointCloud<pcl::PointXYZI>::Ptr intensity_keypoints(
+    typename pcl::PointCloud<pcl::PointXYZI>::Ptr intensity_keypoints (
         new pcl::PointCloud<pcl::PointXYZI>);
 
     pcl::SUSANKeypoint<PointInT, pcl::PointXYZI> susan;
-    susan.setNonMaxSupression(true);
-    susan.setInputCloud(input_);
-    susan.setNormals(normals_);
-    susan.setRadius(0.01f);
-    susan.setRadiusSearch(0.01f);
-    susan.compute(*intensity_keypoints);
+    susan.setNonMaxSupression (true);
+    susan.setInputCloud (input_);
+    susan.setNormals (normals_);
+    susan.setRadius (0.01f);
+    susan.setRadiusSearch (0.01f);
+    susan.compute (*intensity_keypoints);
 
-    pcl::copyPointCloud(*intensity_keypoints, *keypoints);
+    pcl::copyPointCloud (*intensity_keypoints, *keypoints);
   }
 };
 
@@ -385,16 +385,16 @@ protected:
                     PointInTPtr& keypoints,
                     pcl::PointCloud<pcl::Normal>::Ptr& normals)
   {
-    keypoints.reset(new pcl::PointCloud<PointInT>);
+    keypoints.reset (new pcl::PointCloud<PointInT>);
     for (std::size_t i = 0; i < keypoint_extractor_.size(); i++) {
-      keypoint_extractor_[i]->setInputCloud(cloud);
+      keypoint_extractor_[i]->setInputCloud (cloud);
       if (keypoint_extractor_[i]->needNormals())
-        keypoint_extractor_[i]->setNormals(normals);
+        keypoint_extractor_[i]->setNormals (normals);
 
-      keypoint_extractor_[i]->setSupportRadius(support_radius_);
+      keypoint_extractor_[i]->setSupportRadius (support_radius_);
 
       PointInTPtr detected_keypoints;
-      keypoint_extractor_[i]->compute(detected_keypoints);
+      keypoint_extractor_[i]->compute (detected_keypoints);
       *keypoints += *detected_keypoints;
     }
   }
@@ -433,7 +433,7 @@ public:
   void
   addKeypointExtractor (std::shared_ptr<KeypointExtractor<PointInT>>& ke)
   {
-    keypoint_extractor_.push_back(ke);
+    keypoint_extractor_.push_back (ke);
   }
 
   void

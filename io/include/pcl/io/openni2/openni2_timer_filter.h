@@ -41,7 +41,7 @@ namespace openni2 {
 
 class OpenNI2TimerFilter {
 public:
-  OpenNI2TimerFilter(std::size_t filter_len);
+  OpenNI2TimerFilter (std::size_t filter_len);
   virtual ~OpenNI2TimerFilter();
 
   void

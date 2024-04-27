@@ -16,28 +16,28 @@
 
 #include "pcl/surface/3rdparty/opennurbs/opennurbs.h"
 
-ON_VIRTUAL_OBJECT_IMPLEMENT(ON_UserData,
-                            ON_Object,
-                            "850324A7-050E-11d4-BFFA-0010830122F0");
+ON_VIRTUAL_OBJECT_IMPLEMENT (ON_UserData,
+                             ON_Object,
+                             "850324A7-050E-11d4-BFFA-0010830122F0");
 
 ON_UserData::ON_UserData()
-: m_userdata_uuid(ON_nil_uuid)
-, m_application_uuid(ON_nil_uuid)
-, m_userdata_copycount(0)
-, m_userdata_xform(1)
-, m_userdata_owner(0)
-, m_userdata_next(0)
+: m_userdata_uuid (ON_nil_uuid)
+, m_application_uuid (ON_nil_uuid)
+, m_userdata_copycount (0)
+, m_userdata_xform (1)
+, m_userdata_owner (0)
+, m_userdata_next (0)
 {}
 
-ON_UserData::ON_UserData(const ON_UserData& src)
-: ON_Object(src)
-, m_userdata_uuid(src.m_userdata_uuid)
-, m_application_uuid(src.m_application_uuid)
-, m_userdata_copycount(src.m_userdata_copycount)
-, m_userdata_xform(src.m_userdata_xform)
-, m_userdata_owner(0)
-,                  // do not copy owner
-m_userdata_next(0) // do not copy next
+ON_UserData::ON_UserData (const ON_UserData& src)
+: ON_Object (src)
+, m_userdata_uuid (src.m_userdata_uuid)
+, m_application_uuid (src.m_application_uuid)
+, m_userdata_copycount (src.m_userdata_copycount)
+, m_userdata_xform (src.m_userdata_xform)
+, m_userdata_owner (0)
+,                   // do not copy owner
+m_userdata_next (0) // do not copy next
 {
   if (m_userdata_copycount) {
     m_userdata_copycount++;
@@ -57,14 +57,14 @@ ON_UserData::Archive() const
 
 // virtual
 ON_BOOL32
-ON_UserData::Transform(const ON_Xform& x)
+ON_UserData::Transform (const ON_Xform& x)
 {
   m_userdata_xform = x * m_userdata_xform;
   return true;
 }
 
 ON_UserData&
-ON_UserData::operator=(const ON_UserData& src)
+ON_UserData::operator= (const ON_UserData& src)
 {
   // 16 January 2004 Dale Lear
   //    Do not copy the m_userdata_uuid, m_application_uuid,
@@ -75,7 +75,7 @@ ON_UserData::operator=(const ON_UserData& src)
   //    values are set when the user data is attached
   //    to a parent object.
   if (this != &src) {
-    ON_Object::operator=(src);
+    ON_Object::operator= (src);
     m_userdata_copycount = src.m_userdata_copycount;
     m_userdata_xform = src.m_userdata_xform;
     if (0 != m_userdata_copycount) {
@@ -112,28 +112,28 @@ ON_UserData::~ON_UserData()
 }
 
 void
-ON_UserData::Dump(ON_TextLog& text_log) const
+ON_UserData::Dump (ON_TextLog& text_log) const
 {
-  text_log.Print("User Data:\n");
+  text_log.Print ("User Data:\n");
   text_log.PushIndent();
 
   // print class name and class uuid
-  ON_Object::Dump(text_log);
+  ON_Object::Dump (text_log);
 
   // developer's user data description
   ON_wString description;
-  const_cast<ON_UserData*>(this)->GetDescription(description);
+  const_cast<ON_UserData*> (this)->GetDescription (description);
   if (description.IsEmpty())
     description = L"none";
   const wchar_t* ws = description;
-  text_log.Print("user data description: %ls\n", ws);
-  text_log.Print("user data uuid: ");
-  text_log.Print(m_userdata_uuid);
-  text_log.Print("\n");
-  text_log.Print("user data copy count: %d\n", this->m_userdata_copycount);
+  text_log.Print ("user data description: %ls\n", ws);
+  text_log.Print ("user data uuid: ");
+  text_log.Print (m_userdata_uuid);
+  text_log.Print ("\n");
+  text_log.Print ("user data copy count: %d\n", this->m_userdata_copycount);
 
   // archive setting
-  text_log.Print("user data saved in 3dm archive: %s\n", Archive() ? "yes" : "no");
+  text_log.Print ("user data saved in 3dm archive: %s\n", Archive() ? "yes" : "no");
 
   text_log.PopIndent();
 }
@@ -142,38 +142,39 @@ unsigned int
 ON_UserData::SizeOf() const
 {
   unsigned int sz = ON_Object::SizeOf();
-  sz += (sizeof(*this) - sizeof(ON_Object));
+  sz += (sizeof (*this) - sizeof (ON_Object));
   return sz;
 }
 
 ON_BOOL32
-ON_UserData::IsValid(ON_TextLog* text_log) const
+ON_UserData::IsValid (ON_TextLog* text_log) const
 {
-  if (0 == ON_UuidCompare(&m_userdata_uuid, &ON_nil_uuid)) {
+  if (0 == ON_UuidCompare (&m_userdata_uuid, &ON_nil_uuid)) {
     if (0 != text_log) {
-      text_log->Print("invalid userdata - m_userdata_uuid = nil\n");
+      text_log->Print ("invalid userdata - m_userdata_uuid = nil\n");
     }
     return false;
   }
 
-  if (0 == ON_UuidCompare(m_userdata_uuid, ON_UserData::ClassId()->Uuid())) {
+  if (0 == ON_UuidCompare (m_userdata_uuid, ON_UserData::ClassId()->Uuid())) {
     if (0 != text_log) {
-      text_log->Print("invalid userdata - m_userdata_uuid in use. Use guidgen to get a "
-                      "unique id.\n");
+      text_log->Print (
+          "invalid userdata - m_userdata_uuid in use. Use guidgen to get a "
+          "unique id.\n");
     }
     return false;
   }
 
   if (Archive() &&
-      0 == ON_UuidCompare(ClassId()->Uuid(), ON_UserData::ClassId()->Uuid())) {
+      0 == ON_UuidCompare (ClassId()->Uuid(), ON_UserData::ClassId()->Uuid())) {
     // 8 January 2004 Dale Lear:
     //  I added this test to help developers remember to use
     //  the ON_DECLARE_OBJECT/ON_IMPLEMENT_OBJECT macros when
     //  they create user data that gets archived.
     if (0 != text_log) {
-      text_log->Print("invalid userdata - classes derived from ON_UserData that get "
-                      "saved in 3dm archives must have a class id and name defined by "
-                      "ON_OBJECT_DECLARE/ON_OBJECT_IMPLEMENT.\n");
+      text_log->Print ("invalid userdata - classes derived from ON_UserData that get "
+                       "saved in 3dm archives must have a class id and name defined by "
+                       "ON_OBJECT_DECLARE/ON_OBJECT_IMPLEMENT.\n");
     }
     return false;
   }
@@ -210,30 +211,27 @@ ON_UserData::IsUnknownUserData() const
 }
 
 ON_BOOL32
-ON_UserData::GetDescription(ON_wString&)
-{
-  return true;
-}
+ON_UserData::GetDescription (ON_wString&) { return true; }
 
-ON_OBJECT_IMPLEMENT(ON_UnknownUserData,
-                    ON_UserData,
-                    "850324A8-050E-11d4-BFFA-0010830122F0");
+ON_OBJECT_IMPLEMENT (ON_UnknownUserData,
+                     ON_UserData,
+                     "850324A8-050E-11d4-BFFA-0010830122F0");
 
 ON_UnknownUserData::ON_UnknownUserData()
-: m_unknownclass_uuid(ON_nil_uuid)
-, m_sizeof_buffer(0)
-, m_buffer(0)
-, m_3dm_version(0)
-, m_3dm_opennurbs_version(0)
+: m_unknownclass_uuid (ON_nil_uuid)
+, m_sizeof_buffer (0)
+, m_buffer (0)
+, m_3dm_version (0)
+, m_3dm_opennurbs_version (0)
 {}
 
-ON_UnknownUserData::ON_UnknownUserData(const ON_UnknownUserData& src)
-: ON_UserData(src)
-, m_unknownclass_uuid(ON_nil_uuid)
-, m_sizeof_buffer(0)
-, m_buffer(0)
-, m_3dm_version(0)
-, m_3dm_opennurbs_version(0)
+ON_UnknownUserData::ON_UnknownUserData (const ON_UnknownUserData& src)
+: ON_UserData (src)
+, m_unknownclass_uuid (ON_nil_uuid)
+, m_sizeof_buffer (0)
+, m_buffer (0)
+, m_3dm_version (0)
+, m_3dm_opennurbs_version (0)
 {
   if (m_userdata_copycount > 0 && src.m_sizeof_buffer > 0 && src.m_buffer) {
     // For most kinds of user data except ON_UnknownUserData,
@@ -246,25 +244,25 @@ ON_UnknownUserData::ON_UnknownUserData(const ON_UnknownUserData& src)
 
     m_unknownclass_uuid = src.m_unknownclass_uuid;
     m_sizeof_buffer = src.m_sizeof_buffer;
-    m_buffer = onmemdup(src.m_buffer, src.m_sizeof_buffer);
+    m_buffer = onmemdup (src.m_buffer, src.m_sizeof_buffer);
     m_3dm_version = src.m_3dm_version;
     m_3dm_opennurbs_version = src.m_3dm_opennurbs_version;
   }
 }
 
 ON_UnknownUserData&
-ON_UnknownUserData::operator=(const ON_UnknownUserData& src)
+ON_UnknownUserData::operator= (const ON_UnknownUserData& src)
 {
   if (this != &src) {
     m_sizeof_buffer = 0;
     if (0 != m_buffer) {
-      onfree(m_buffer);
+      onfree (m_buffer);
       m_buffer = 0;
     }
 
     // ON_UserData::operator= handles setting m_userdata_copycount and
     // m_userdata_xform.
-    ON_UserData::operator=(src);
+    ON_UserData::operator= (src);
 
     // For most kinds of user data except ON_UnknownUserData,
     // m_userdata_uuid and m_application_uuid are set by the
@@ -278,7 +276,7 @@ ON_UnknownUserData::operator=(const ON_UnknownUserData& src)
     if (m_userdata_copycount > 0 && src.m_sizeof_buffer > 0 && src.m_buffer) {
       m_unknownclass_uuid = src.m_unknownclass_uuid;
       m_sizeof_buffer = src.m_sizeof_buffer;
-      m_buffer = onmemdup(src.m_buffer, src.m_sizeof_buffer);
+      m_buffer = onmemdup (src.m_buffer, src.m_sizeof_buffer);
       m_3dm_version = src.m_3dm_version;
       m_3dm_opennurbs_version = src.m_3dm_opennurbs_version;
     }
@@ -298,18 +296,18 @@ ON_UnknownUserData::operator=(const ON_UnknownUserData& src)
 ON_UnknownUserData::~ON_UnknownUserData()
 {
   if (m_buffer)
-    onfree(m_buffer);
+    onfree (m_buffer);
 }
 
 unsigned int
 ON_UnknownUserData::SizeOf() const
 {
-  return ON_UserData::SizeOf() + (sizeof(ON_UnknownUserData) - sizeof(ON_UserData)) +
+  return ON_UserData::SizeOf() + (sizeof (ON_UnknownUserData) - sizeof (ON_UserData)) +
          m_sizeof_buffer;
 }
 
 ON_BOOL32
-ON_UnknownUserData::GetDescription(ON_wString& s)
+ON_UnknownUserData::GetDescription (ON_wString& s)
 {
   s = "Unknown user data. (Definition of class was not available when object was "
       "read.)";
@@ -317,9 +315,9 @@ ON_UnknownUserData::GetDescription(ON_wString& s)
 }
 
 ON_BOOL32
-ON_UnknownUserData::IsValid(ON_TextLog* text_log) const
+ON_UnknownUserData::IsValid (ON_TextLog* text_log) const
 {
-  ON_BOOL32 rc = ON_UserData::IsValid(text_log);
+  ON_BOOL32 rc = ON_UserData::IsValid (text_log);
 
   // valid unknown user data must have something in it
   if (rc)
@@ -329,26 +327,26 @@ ON_UnknownUserData::IsValid(ON_TextLog* text_log) const
 
   // the unknown class uuid cannot be nil
   if (rc)
-    rc = ON_UuidCompare(&m_unknownclass_uuid, &ON_nil_uuid);
+    rc = ON_UuidCompare (&m_unknownclass_uuid, &ON_nil_uuid);
 
   // the unknown class uuid cannot be the ON_UnknownUserData class uuid
   if (rc) {
     ON_UUID ON_UnknownUserData_classuuid =
         ON_UnknownUserData::m_ON_UnknownUserData_class_id.Uuid();
-    rc = ON_UuidCompare(&m_unknownclass_uuid, &ON_UnknownUserData_classuuid);
+    rc = ON_UuidCompare (&m_unknownclass_uuid, &ON_UnknownUserData_classuuid);
   }
   return rc ? true : false;
 }
 
 void
-ON_UnknownUserData::Dump(ON_TextLog& dump) const
+ON_UnknownUserData::Dump (ON_TextLog& dump) const
 {
-  ON_UserData::Dump(dump);
+  ON_UserData::Dump (dump);
   dump.PushIndent();
-  dump.Print("unknown class uuid: ");
-  dump.Print(m_unknownclass_uuid);
-  dump.Print("\n");
-  dump.Print("Data size in 3dm archive: %d bytes\n", m_sizeof_buffer);
+  dump.Print ("unknown class uuid: ");
+  dump.Print (m_unknownclass_uuid);
+  dump.Print ("\n");
+  dump.Print ("Data size in 3dm archive: %d bytes\n", m_sizeof_buffer);
   dump.PopIndent();
 }
 
@@ -362,17 +360,17 @@ ON_UnknownUserData::Archive() const
 }
 
 ON_BOOL32
-ON_UnknownUserData::Write(ON_BinaryArchive& file) const
+ON_UnknownUserData::Write (ON_BinaryArchive& file) const
 {
-  return file.WriteByte(m_sizeof_buffer, m_buffer);
+  return file.WriteByte (m_sizeof_buffer, m_buffer);
 }
 
 ON_BOOL32
-ON_UnknownUserData::Read(ON_BinaryArchive& file)
+ON_UnknownUserData::Read (ON_BinaryArchive& file)
 {
-  m_buffer = onrealloc(m_buffer, m_sizeof_buffer);
+  m_buffer = onrealloc (m_buffer, m_sizeof_buffer);
   m_3dm_version = file.Archive3dmVersion();
-  return file.ReadByte(m_sizeof_buffer, m_buffer);
+  return file.ReadByte (m_sizeof_buffer, m_buffer);
 }
 
 class ON_UnknownUserDataArchive : public ON_BinaryArchive {
@@ -380,7 +378,7 @@ class ON_UnknownUserDataArchive : public ON_BinaryArchive {
   // in ON_UnknownUserData::Convert() to initialize a ON_UserData class
   // from a memory buffer.
 public:
-  ON_UnknownUserDataArchive(const ON_UnknownUserData&);
+  ON_UnknownUserDataArchive (const ON_UnknownUserData&);
   ~ON_UnknownUserDataArchive();
 
   // ON_BinaryArchive overrides
@@ -391,8 +389,8 @@ public:
   SeekFromCurrentPosition ( // seek from current position ( like fseek( ,SEEK_CUR) )
       int                   // byte offset ( >= -CurrentPostion() )
   );
-  bool SeekFromStart( // seek from current position ( like fseek( ,SEEK_SET) )
-      std::size_t     // byte offset ( >= 0 )
+  bool SeekFromStart ( // seek from current position ( like fseek( ,SEEK_SET) )
+      std::size_t      // byte offset ( >= 0 )
   );
   bool
   AtEnd () const; // true if at end of file
@@ -413,10 +411,10 @@ private:
   std::size_t m_buffer_position;
 };
 
-ON_UnknownUserDataArchive::ON_UnknownUserDataArchive(const ON_UnknownUserData& ud)
-: ON_BinaryArchive(ON::read3dm)
+ON_UnknownUserDataArchive::ON_UnknownUserDataArchive (const ON_UnknownUserData& ud)
+: ON_BinaryArchive (ON::read3dm)
 {
-  SetArchive3dmVersion(ud.m_3dm_version);
+  SetArchive3dmVersion (ud.m_3dm_version);
   m_sizeof_buffer = ud.m_sizeof_buffer;
   m_buffer = (const unsigned char*)ud.m_buffer;
   m_buffer_position = 0;
@@ -431,10 +429,10 @@ ON_UnknownUserDataArchive::CurrentPosition() const
 }
 
 bool
-ON_UnknownUserDataArchive::SeekFromCurrentPosition(int offset)
+ON_UnknownUserDataArchive::SeekFromCurrentPosition (int offset)
 {
   bool rc = false;
-  if (offset >= 0 || m_buffer_position >= ((std::size_t)(-offset))) {
+  if (offset >= 0 || m_buffer_position >= ((std::size_t) (-offset))) {
     std::size_t newpos = m_buffer_position + offset;
     if (newpos < m_sizeof_buffer) {
       m_buffer_position = newpos;
@@ -445,7 +443,7 @@ ON_UnknownUserDataArchive::SeekFromCurrentPosition(int offset)
 }
 
 bool
-ON_UnknownUserDataArchive::SeekFromStart(std::size_t offset)
+ON_UnknownUserDataArchive::SeekFromStart (std::size_t offset)
 {
   bool rc = false;
   if (offset < m_sizeof_buffer) {
@@ -465,7 +463,7 @@ ON_UnknownUserDataArchive::AtEnd() const
 }
 
 std::size_t
-ON_UnknownUserDataArchive::Read(std::size_t count, void* buffer)
+ON_UnknownUserDataArchive::Read (std::size_t count, void* buffer)
 {
   std::size_t maxcount = 0;
 
@@ -478,7 +476,7 @@ ON_UnknownUserDataArchive::Read(std::size_t count, void* buffer)
   }
 
   if (count > 0) {
-    memcpy(buffer, m_buffer + m_buffer_position, count);
+    memcpy (buffer, m_buffer + m_buffer_position, count);
     m_buffer_position += count;
   }
 
@@ -486,7 +484,7 @@ ON_UnknownUserDataArchive::Read(std::size_t count, void* buffer)
 }
 
 std::size_t
-ON_UnknownUserDataArchive::Write(std::size_t, const void*)
+ON_UnknownUserDataArchive::Write (std::size_t, const void*)
 {
   // ON_UnknownUserDataArchive does not support Write() and Flush()
   return 0;
@@ -504,7 +502,7 @@ ON_UnknownUserData::Convert() const
 {
   ON_UserData* ud = NULL;
   if (IsValid()) {
-    const ON_ClassId* pID = ON_ClassId::ClassId(m_unknownclass_uuid);
+    const ON_ClassId* pID = ON_ClassId::ClassId (m_unknownclass_uuid);
     // if pID is NULL, it means the definiton of the unknown user data
     // is still not available
     if (pID) {
@@ -513,16 +511,16 @@ ON_UnknownUserData::Convert() const
       // to convert the buffer into a valid class
       ON_Object* pObject = pID->Create();
       if (pObject) {
-        ud = ON_UserData::Cast(pObject);
+        ud = ON_UserData::Cast (pObject);
         if (!ud)
           delete pObject;
         else {
           // use class's Read() function to initialize class members from buffer
-          ON_UnknownUserDataArchive file(*this);
+          ON_UnknownUserDataArchive file (*this);
           // copy values that would be set by reading the base class
           ud->m_userdata_copycount = m_userdata_copycount;
           ud->m_userdata_xform = m_userdata_xform;
-          ud->Read(file);
+          ud->Read (file);
         }
       }
     }
@@ -531,29 +529,26 @@ ON_UnknownUserData::Convert() const
 }
 
 bool
-ON_UserDataHolder::MoveUserDataFrom(const ON_Object& source_object)
+ON_UserDataHolder::MoveUserDataFrom (const ON_Object& source_object)
 {
   PurgeUserData();
-  MoveUserData(*const_cast<ON_Object*>(&source_object));
+  MoveUserData (*const_cast<ON_Object*> (&source_object));
   return (0 != FirstUserData());
 }
 
 bool
-ON_UserDataHolder::MoveUserDataTo(const ON_Object& source_object, bool bAppend)
+ON_UserDataHolder::MoveUserDataTo (const ON_Object& source_object, bool bAppend)
 {
   if (!bAppend) {
-    const_cast<ON_Object*>(&source_object)->PurgeUserData();
+    const_cast<ON_Object*> (&source_object)->PurgeUserData();
   }
-  const_cast<ON_Object*>(&source_object)->MoveUserData(*this);
+  const_cast<ON_Object*> (&source_object)->MoveUserData (*this);
   PurgeUserData();
   return (0 != source_object.FirstUserData());
 }
 
 ON_BOOL32
-ON_UserDataHolder::IsValid(ON_TextLog*) const
-{
-  return true;
-}
+ON_UserDataHolder::IsValid (ON_TextLog*) const { return true; }
 
 /////////////////////////////////////////////////////////////////
 //
@@ -566,17 +561,17 @@ ON_UserString::ON_UserString() {}
 ON_UserString::~ON_UserString() {}
 
 bool
-ON_UserString::Write(ON_BinaryArchive& archive) const
+ON_UserString::Write (ON_BinaryArchive& archive) const
 {
-  bool rc = archive.BeginWrite3dmChunk(TCODE_ANONYMOUS_CHUNK, 1, 0);
+  bool rc = archive.BeginWrite3dmChunk (TCODE_ANONYMOUS_CHUNK, 1, 0);
   if (!rc)
     return false;
 
   for (;;) {
-    rc = archive.WriteString(m_key);
+    rc = archive.WriteString (m_key);
     if (!rc)
       break;
-    rc = archive.WriteString(m_string_value);
+    rc = archive.WriteString (m_string_value);
     if (!rc)
       break;
 
@@ -590,7 +585,7 @@ ON_UserString::Write(ON_BinaryArchive& archive) const
 }
 
 bool
-ON_UserString::Read(ON_BinaryArchive& archive)
+ON_UserString::Read (ON_BinaryArchive& archive)
 {
   m_key.Empty();
   m_string_value.Empty();
@@ -598,7 +593,7 @@ ON_UserString::Read(ON_BinaryArchive& archive)
   int major_version = 0;
   int minor_version = 0;
   bool rc =
-      archive.BeginRead3dmChunk(TCODE_ANONYMOUS_CHUNK, &major_version, &minor_version);
+      archive.BeginRead3dmChunk (TCODE_ANONYMOUS_CHUNK, &major_version, &minor_version);
   if (!rc)
     return false;
 
@@ -606,10 +601,10 @@ ON_UserString::Read(ON_BinaryArchive& archive)
     rc = (1 == major_version);
     if (!rc)
       break;
-    rc = archive.ReadString(m_key);
+    rc = archive.ReadString (m_key);
     if (!rc)
       break;
-    rc = archive.ReadString(m_string_value);
+    rc = archive.ReadString (m_string_value);
     if (!rc)
       break;
 
@@ -623,22 +618,22 @@ ON_UserString::Read(ON_BinaryArchive& archive)
 }
 
 void
-ON_UserString::Dump(ON_TextLog& text_log) const
+ON_UserString::Dump (ON_TextLog& text_log) const
 {
   const wchar_t* ws = m_key;
   if (!ws)
     ws = L"";
-  text_log.Print("Key: %ls\n", ws);
+  text_log.Print ("Key: %ls\n", ws);
 
   ws = m_string_value;
   if (!ws)
     ws = L"";
-  text_log.Print("Value: %ls\n", ws);
+  text_log.Print ("Value: %ls\n", ws);
 }
 
-ON_OBJECT_IMPLEMENT(ON_UserStringList,
-                    ON_UserData,
-                    "CE28DE29-F4C5-4faa-A50A-C3A6849B6329");
+ON_OBJECT_IMPLEMENT (ON_UserStringList,
+                     ON_UserData,
+                     "CE28DE29-F4C5-4faa-A50A-C3A6849B6329");
 
 ON_UserStringList::ON_UserStringList()
 {
@@ -652,68 +647,65 @@ ON_UserStringList::ON_UserStringList()
 ON_UserStringList::~ON_UserStringList() {}
 
 ON_BOOL32
-ON_UserStringList::GetDescription(ON_wString& description)
+ON_UserStringList::GetDescription (ON_wString& description)
 {
-  description.Format("User text (%d entries)", m_e.Count());
+  description.Format ("User text (%d entries)", m_e.Count());
   return true;
 }
 
 ON_BOOL32
-ON_UserStringList::Archive() const
-{
-  return true;
-}
+ON_UserStringList::Archive() const { return true; }
 
 unsigned int
 ON_UserStringList::SizeOf() const
 {
   unsigned int sz = ON_UserData::SizeOf();
-  sz += sizeof(*this) - sizeof(ON_UserData);
+  sz += sizeof (*this) - sizeof (ON_UserData);
   sz += m_e.SizeOfArray();
   int i = m_e.Count();
   while (i--)
-    sz += m_e[i].m_string_value.Length() * sizeof(wchar_t);
+    sz += m_e[i].m_string_value.Length() * sizeof (wchar_t);
   return sz;
 }
 
 ON__UINT32
-ON_UserStringList::DataCRC(ON__UINT32 current_remainder) const
+ON_UserStringList::DataCRC (ON__UINT32 current_remainder) const
 {
   int count = m_e.Count();
   for (int i = 0; i < count; i++) {
-    current_remainder = m_e[i].m_key.DataCRC(current_remainder);
-    current_remainder = m_e[i].m_string_value.DataCRC(current_remainder);
+    current_remainder = m_e[i].m_key.DataCRC (current_remainder);
+    current_remainder = m_e[i].m_string_value.DataCRC (current_remainder);
   }
   return current_remainder;
 }
 
 void
-ON_UserStringList::Dump(ON_TextLog& text_log) const
+ON_UserStringList::Dump (ON_TextLog& text_log) const
 {
   int i, count = m_e.Count();
-  text_log.Print("%d entries\n", count);
+  text_log.Print ("%d entries\n", count);
   text_log.PushIndent();
   for (i = 0; i < count; i++) {
-    m_e[i].Dump(text_log);
+    m_e[i].Dump (text_log);
   }
   text_log.PopIndent();
 }
 
 ON_BOOL32
-ON_UserStringList::Write(ON_BinaryArchive& archive) const
+ON_UserStringList::Write (ON_BinaryArchive& archive) const
 {
-  bool rc = archive.BeginWrite3dmChunk(TCODE_ANONYMOUS_CHUNK, 1, 0);
+  bool rc = archive.BeginWrite3dmChunk (TCODE_ANONYMOUS_CHUNK, 1, 0);
   if (!rc)
     return false;
 
   for (;;) {
     int count = m_e.Count();
-    rc = archive.WriteInt(count);
+    rc = archive.WriteInt (count);
     if (!rc)
       break;
 
     for (int i = 0; i < count && rc; i++) {
-      rc = m_e[i].Write(archive);
+      rc = m_e[i].Write (archive);
     }
     if (!rc)
       break;
@@ -728,12 +720,12 @@ ON_UserStringList::Write(ON_BinaryArchive& archive) const
 }
 
 ON_BOOL32
-ON_UserStringList::Read(ON_BinaryArchive& archive)
+ON_UserStringList::Read (ON_BinaryArchive& archive)
 {
   int major_version = 0;
   int minor_version = 0;
   bool rc =
-      archive.BeginRead3dmChunk(TCODE_ANONYMOUS_CHUNK, &major_version, &minor_version);
+      archive.BeginRead3dmChunk (TCODE_ANONYMOUS_CHUNK, &major_version, &minor_version);
   if (!rc)
     return false;
 
@@ -743,12 +735,12 @@ ON_UserStringList::Read(ON_BinaryArchive& archive)
       break;
 
     int count = 0;
-    rc = archive.ReadInt(&count);
+    rc = archive.ReadInt (&count);
     if (!rc)
       break;
 
     for (int i = 0; i < count; i++) {
-      rc = m_e.AppendNew().Read(archive);
+      rc = m_e.AppendNew().Read (archive);
       if (!rc) {
         m_e.Remove();
         break;
@@ -767,19 +759,19 @@ ON_UserStringList::Read(ON_BinaryArchive& archive)
 }
 
 bool
-ON_UserStringList::SetUserString(const wchar_t* key, const wchar_t* string_value)
+ON_UserStringList::SetUserString (const wchar_t* key, const wchar_t* string_value)
 {
   if (!key || !key[0])
     return false;
 
   int i, count = m_e.Count();
   for (i = 0; i < count; i++) {
-    if (!m_e[i].m_key.CompareNoCase(key)) {
+    if (!m_e[i].m_key.CompareNoCase (key)) {
       if (string_value && string_value[0]) {
         m_e[i].m_string_value = string_value;
       }
       else {
-        m_e.Remove(i);
+        m_e.Remove (i);
       }
       m_userdata_copycount++;
       return true;
@@ -798,12 +790,12 @@ ON_UserStringList::SetUserString(const wchar_t* key, const wchar_t* string_value
 }
 
 bool
-ON_UserStringList::GetUserString(const wchar_t* key, ON_wString& string_value) const
+ON_UserStringList::GetUserString (const wchar_t* key, ON_wString& string_value) const
 {
   if (key && key[0]) {
     int i, count = m_e.Count();
     for (i = 0; i < count; i++) {
-      if (!m_e[i].m_key.CompareNoCase(key)) {
+      if (!m_e[i].m_key.CompareNoCase (key)) {
         string_value = m_e[i].m_string_value;
         return true;
       }
@@ -844,7 +836,7 @@ cmp_hash_2dex_ij (const void* a, const void* b)
 }
 
 int
-ON_UserStringList::SetUserStrings(int count, const ON_UserString* us, bool bReplace)
+ON_UserStringList::SetUserStrings (int count, const ON_UserString* us, bool bReplace)
 {
   int added_count = 0;
   int i;
@@ -857,11 +849,11 @@ ON_UserStringList::SetUserStrings(int count, const ON_UserString* us, bool bRepl
     if (us[0].m_key.IsEmpty())
       return 0;
     for (i = 0; i < m_e.Count(); i++) {
-      if (m_e[i].m_key.CompareNoCase(us[0].m_key))
+      if (m_e[i].m_key.CompareNoCase (us[0].m_key))
         continue;
       if (bReplace) {
         if (us[0].m_string_value.IsEmpty())
-          m_e.Remove(i);
+          m_e.Remove (i);
         else
           m_e[i] = us[0];
         added_count++;
@@ -873,26 +865,26 @@ ON_UserStringList::SetUserStrings(int count, const ON_UserString* us, bool bRepl
 
   std::size_t k0, k1;
   int count0 = m_e.Count();
-  std::size_t count0_plus_count = (std::size_t)(count0 + count);
-  ON_2dex* hash = (ON_2dex*)onmalloc((count0_plus_count + count) * sizeof(hash[0]));
+  std::size_t count0_plus_count = (std::size_t) (count0 + count);
+  ON_2dex* hash = (ON_2dex*)onmalloc ((count0_plus_count + count) * sizeof (hash[0]));
   ON_2dex* hash1 = hash + (count0_plus_count);
   const ON_2dex* h;
   int deleted_count = 0;
 
   for (i = 0; i < count0; i++) {
-    hash[i].i = (int)m_e[i].m_key.DataCRCLower(0);
+    hash[i].i = (int)m_e[i].m_key.DataCRCLower (0);
     hash[i].j = i;
   }
 
   for (i = 0; i < count; i++) {
-    hash1[i].i = (int)us[i].m_key.DataCRCLower(0);
+    hash1[i].i = (int)us[i].m_key.DataCRCLower (0);
     hash1[i].j = i;
     hash[i + count0].i = hash1[i].i;
     hash[i + count0].j = hash1[i].j + count0;
   }
-  ON_qsort(hash, count0_plus_count, sizeof(hash[0]), cmp_hash_2dex_ij);
+  ON_qsort (hash, count0_plus_count, sizeof (hash[0]), cmp_hash_2dex_ij);
 
-  m_e.Reserve(count0 + count);
+  m_e.Reserve (count0 + count);
   for (i = 0; i < count; i++) {
     if (us[i].m_key.IsEmpty())
       continue;
@@ -900,9 +892,9 @@ ON_UserStringList::SetUserStrings(int count, const ON_UserString* us, bool bRepl
     // Set k0, k1 so that hash[k0]....,hash[k1-1] are
     // the hash[] entries keys with the same hash code
     // as us[i].m_key.
-    h = ON_BinarySearch2dexArray(hash1[i].i, hash, count0_plus_count);
+    h = ON_BinarySearch2dexArray (hash1[i].i, hash, count0_plus_count);
     if (0 == h) {
-      ON_ERROR("There is a bug in this function.");
+      ON_ERROR ("There is a bug in this function.");
       continue;
     }
     k0 = h - hash;
@@ -923,7 +915,7 @@ ON_UserStringList::SetUserStrings(int count, const ON_UserString* us, bool bRepl
       // so us[i].m_key is not present in m_e.
       if (!us[i].m_string_value.IsEmpty()) {
         hash[k0].j = count0++;
-        m_e.Append(us[i]);
+        m_e.Append (us[i]);
         added_count++;
       }
       continue;
@@ -931,7 +923,7 @@ ON_UserStringList::SetUserStrings(int count, const ON_UserString* us, bool bRepl
 
     for (/* empty init*/; k0 < k1; k0++) {
       if (hash[k0].j < count0) {
-        if (m_e[hash[k0].j].m_key.CompareNoCase(us[i].m_key))
+        if (m_e[hash[k0].j].m_key.CompareNoCase (us[i].m_key))
           continue; // different keys with same hash
         if (bReplace) {
           m_e[hash[k0].j] = us[i];
@@ -948,19 +940,19 @@ ON_UserStringList::SetUserStrings(int count, const ON_UserString* us, bool bRepl
       // so we add it if it is valid.
       if (!us[i].m_string_value.IsEmpty()) {
         hash[k0].j = count0++;
-        m_e.Append(us[i]);
+        m_e.Append (us[i]);
         added_count++;
       }
     }
   }
 
-  onfree(hash);
+  onfree (hash);
 
   // remove deleted items.
   i = m_e.Count();
   while (i-- > 0 && deleted_count > 0) {
     if (m_e[i].m_string_value.IsEmpty()) {
-      m_e.Remove(i);
+      m_e.Remove (i);
       deleted_count--;
     }
   }
@@ -969,14 +961,14 @@ ON_UserStringList::SetUserStrings(int count, const ON_UserString* us, bool bRepl
 }
 
 bool
-ON_Object::SetUserString(const wchar_t* key, const wchar_t* string_value)
+ON_Object::SetUserString (const wchar_t* key, const wchar_t* string_value)
 {
-  ON_UserStringList* us = ON_UserStringList::Cast(
-      GetUserData(ON_UserStringList::m_ON_UserStringList_class_id.Uuid()));
+  ON_UserStringList* us = ON_UserStringList::Cast (
+      GetUserData (ON_UserStringList::m_ON_UserStringList_class_id.Uuid()));
   bool b = false;
   if (!us) {
     us = new ON_UserStringList();
-    if (!AttachUserData(us)) {
+    if (!AttachUserData (us)) {
       delete us;
       us = 0;
     }
@@ -986,7 +978,7 @@ ON_Object::SetUserString(const wchar_t* key, const wchar_t* string_value)
   }
 
   if (us) {
-    if (us->SetUserString(key, string_value)) {
+    if (us->SetUserString (key, string_value)) {
       if (b && 2 == us->m_userdata_copycount) {
         // user data is brand new - roll back the
         // m_userdata_copycount++ that happens in
@@ -1007,7 +999,7 @@ ON_Object::SetUserString(const wchar_t* key, const wchar_t* string_value)
 }
 
 int
-ON_Object::SetUserStrings(int count, const ON_UserString* user_strings, bool bReplace)
+ON_Object::SetUserStrings (int count, const ON_UserString* user_strings, bool bReplace)
 {
   if (0 == count || 0 == user_strings)
     return 0;
@@ -1025,94 +1017,91 @@ ON_Object::SetUserStrings(int count, const ON_UserString* user_strings, bool bRe
   if (0 == add_count && 0 == del_count)
     return 0;
 
-  ON_UserStringList* us = ON_UserStringList::Cast(
-      GetUserData(ON_UserStringList::m_ON_UserStringList_class_id.Uuid()));
+  ON_UserStringList* us = ON_UserStringList::Cast (
+      GetUserData (ON_UserStringList::m_ON_UserStringList_class_id.Uuid()));
   if (!us && add_count > 0) {
     us = new ON_UserStringList();
-    if (!AttachUserData(us)) {
+    if (!AttachUserData (us)) {
       delete us;
       us = 0;
     }
   }
 
-  return us ? us->SetUserStrings(count, user_strings, bReplace) : 0;
+  return us ? us->SetUserStrings (count, user_strings, bReplace) : 0;
 }
 
 bool
-ON_Object::GetUserString(const wchar_t* key, ON_wString& string_value) const
+ON_Object::GetUserString (const wchar_t* key, ON_wString& string_value) const
 {
   string_value.Empty();
-  const ON_UserStringList* us = ON_UserStringList::Cast(
-      GetUserData(ON_UserStringList::m_ON_UserStringList_class_id.Uuid()));
-  return us ? us->GetUserString(key, string_value) : false;
+  const ON_UserStringList* us = ON_UserStringList::Cast (
+      GetUserData (ON_UserStringList::m_ON_UserStringList_class_id.Uuid()));
+  return us ? us->GetUserString (key, string_value) : false;
 }
 
 int
 ON_Object::UserStringCount() const
 {
-  const ON_UserStringList* us = ON_UserStringList::Cast(
-      GetUserData(ON_UserStringList::m_ON_UserStringList_class_id.Uuid()));
+  const ON_UserStringList* us = ON_UserStringList::Cast (
+      GetUserData (ON_UserStringList::m_ON_UserStringList_class_id.Uuid()));
   return (0 != us) ? us->m_e.Count() : 0;
 }
 
 int
-ON_Object::GetUserStrings(ON_ClassArray<ON_UserString>& user_strings) const
+ON_Object::GetUserStrings (ON_ClassArray<ON_UserString>& user_strings) const
 {
   const int count0 = user_strings.Count();
-  const ON_UserStringList* us = ON_UserStringList::Cast(
-      GetUserData(ON_UserStringList::m_ON_UserStringList_class_id.Uuid()));
+  const ON_UserStringList* us = ON_UserStringList::Cast (
+      GetUserData (ON_UserStringList::m_ON_UserStringList_class_id.Uuid()));
   if (us)
-    user_strings.Append(us->m_e.Count(), us->m_e.Array());
+    user_strings.Append (us->m_e.Count(), us->m_e.Array());
 
   return user_strings.Count() - count0;
 }
 
 int
-ON_Object::GetUserStringKeys(ON_ClassArray<ON_wString>& user_string_keys) const
+ON_Object::GetUserStringKeys (ON_ClassArray<ON_wString>& user_string_keys) const
 {
   const int count0 = user_string_keys.Count();
-  const ON_UserStringList* us = ON_UserStringList::Cast(
-      GetUserData(ON_UserStringList::m_ON_UserStringList_class_id.Uuid()));
+  const ON_UserStringList* us = ON_UserStringList::Cast (
+      GetUserData (ON_UserStringList::m_ON_UserStringList_class_id.Uuid()));
   if (us) {
-    user_string_keys.Reserve(count0 + us->m_e.Count());
+    user_string_keys.Reserve (count0 + us->m_e.Count());
     for (int i = 0; i < us->m_e.Count(); i++) {
-      user_string_keys.Append(us->m_e[i].m_key);
+      user_string_keys.Append (us->m_e[i].m_key);
     }
   }
 
   return user_string_keys.Count() - count0;
 }
 
-ON_OBJECT_IMPLEMENT(ON_DocumentUserStringList,
-                    ON_Object,
-                    "06F3218E-F5EC-4f6c-B74C-14583F0ED7BC");
+ON_OBJECT_IMPLEMENT (ON_DocumentUserStringList,
+                     ON_Object,
+                     "06F3218E-F5EC-4f6c-B74C-14583F0ED7BC");
 
 ON_DocumentUserStringList::ON_DocumentUserStringList() {}
 
 ON_DocumentUserStringList::~ON_DocumentUserStringList() {}
 
 ON_BOOL32
-ON_DocumentUserStringList::IsValid(ON_TextLog*) const
-{
-  return true;
-}
+ON_DocumentUserStringList::IsValid (ON_TextLog*) const { return true; }
 
 void
-ON_DocumentUserStringList::Dump(ON_TextLog&) const
+ON_DocumentUserStringList::Dump (ON_TextLog&) const
 {}
 
 ON__UINT32
-ON_DocumentUserStringList::DataCRC(ON__UINT32 current_remainder) const
+ON_DocumentUserStringList::DataCRC (ON__UINT32 current_remainder) const
 {
-  const ON_UserStringList* us = ON_UserStringList::Cast(
-      GetUserData(ON_UserStringList::m_ON_UserStringList_class_id.Uuid()));
+  const ON_UserStringList* us = ON_UserStringList::Cast (
+      GetUserData (ON_UserStringList::m_ON_UserStringList_class_id.Uuid()));
   if (us)
-    current_remainder = us->DataCRC(current_remainder);
+    current_remainder = us->DataCRC (current_remainder);
   return current_remainder;
 }
 
 ON_BOOL32
-ON_DocumentUserStringList::Write(ON_BinaryArchive& binary_archive) const
+ON_DocumentUserStringList::Write (ON_BinaryArchive& binary_archive) const
 {
   //  The key/value pairs are saved as ON_UserStringList user data.
 
@@ -1121,7 +1110,7 @@ ON_DocumentUserStringList::Write(ON_BinaryArchive& binary_archive) const
   // begin block code, and the IO will still work.
   //
   unsigned char c = 1;
-  bool rc = binary_archive.WriteChar(c);
+  bool rc = binary_archive.WriteChar (c);
 
   ////rc = binary_archive.BeginWrite3dmChunk(TCODE_ANONYMOUS_CHUNK,1,0);
   ////if (!rc)
@@ -1140,12 +1129,12 @@ ON_DocumentUserStringList::Write(ON_BinaryArchive& binary_archive) const
 }
 
 ON_BOOL32
-ON_DocumentUserStringList::Read(ON_BinaryArchive& binary_archive)
+ON_DocumentUserStringList::Read (ON_BinaryArchive& binary_archive)
 {
   //  The key/value pairs are saved as ON_UserStringList user data.
 
   unsigned char c = 0;
-  bool rc = binary_archive.ReadChar(&c);
+  bool rc = binary_archive.ReadChar (&c);
   if (!rc || c < 1 || c > 2)
     return false;
 
@@ -1156,7 +1145,7 @@ ON_DocumentUserStringList::Read(ON_BinaryArchive& binary_archive)
     // any new information that is added at a later date.
     int major_version = 0;
     int minor_version = 0;
-    rc = binary_archive.BeginRead3dmChunk(
+    rc = binary_archive.BeginRead3dmChunk (
         TCODE_ANONYMOUS_CHUNK, &major_version, &minor_version);
     if (!rc)
       return false;

@@ -18,21 +18,21 @@
 
 ON_Ellipse::ON_Ellipse() { radius[0] = radius[1] = 0.0; }
 
-ON_Ellipse::ON_Ellipse(const ON_Plane& p, double rx, double ry) { Create(p, rx, ry); }
+ON_Ellipse::ON_Ellipse (const ON_Plane& p, double rx, double ry) { Create (p, rx, ry); }
 
-ON_Ellipse::ON_Ellipse(const ON_Circle& c) { Create(c); }
+ON_Ellipse::ON_Ellipse (const ON_Circle& c) { Create (c); }
 
 ON_Ellipse::~ON_Ellipse() {}
 
 ON_Ellipse&
-ON_Ellipse::operator=(const ON_Circle& c)
+ON_Ellipse::operator= (const ON_Circle& c)
 {
-  Create(c);
+  Create (c);
   return *this;
 }
 
 ON_BOOL32
-ON_Ellipse::Create(const ON_Plane& p, double rx, double ry)
+ON_Ellipse::Create (const ON_Plane& p, double rx, double ry)
 {
   plane = p;
   radius[0] = rx;
@@ -41,9 +41,9 @@ ON_Ellipse::Create(const ON_Plane& p, double rx, double ry)
 }
 
 ON_BOOL32
-ON_Ellipse::Create(const ON_Circle& c)
+ON_Ellipse::Create (const ON_Circle& c)
 {
-  return Create(c.Plane(), c.Radius(), c.Radius());
+  return Create (c.Plane(), c.Radius(), c.Radius());
 }
 
 ON_BOOL32
@@ -59,14 +59,14 @@ ON_BOOL32
 ON_Ellipse::IsCircle() const
 {
   double r0 = radius[0];
-  return (ON_IsValid(r0) && fabs(r0 - radius[1]) <= fabs(r0) * ON_ZERO_TOLERANCE &&
+  return (ON_IsValid (r0) && fabs (r0 - radius[1]) <= fabs (r0) * ON_ZERO_TOLERANCE &&
           IsValid())
              ? true
              : false;
 }
 
 double
-ON_Ellipse::Radius(int i) const
+ON_Ellipse::Radius (int i) const
 {
   return radius[(i) ? 1 : 0];
 }
@@ -80,14 +80,14 @@ ON_Ellipse::Center() const
 double
 ON_Ellipse::FocalDistance() const
 {
-  int i = (fabs(radius[0]) >= fabs(radius[1])) ? 0 : 1;
-  const double a = fabs(radius[i]);
-  const double b = a > 0.0 ? fabs(radius[1 - i]) / a : 0.0;
-  return a * sqrt(1.0 - b * b);
+  int i = (fabs (radius[0]) >= fabs (radius[1])) ? 0 : 1;
+  const double a = fabs (radius[i]);
+  const double b = a > 0.0 ? fabs (radius[1 - i]) / a : 0.0;
+  return a * sqrt (1.0 - b * b);
 }
 
 bool
-ON_Ellipse::GetFoci(ON_3dPoint& F1, ON_3dPoint& F2) const
+ON_Ellipse::GetFoci (ON_3dPoint& F1, ON_3dPoint& F2) const
 {
   const double f = FocalDistance();
   const ON_3dVector& majorAxis = (radius[0] >= radius[1]) ? plane.xaxis : plane.yaxis;
@@ -109,54 +109,54 @@ ON_Ellipse::Plane() const
 }
 
 ON_3dPoint
-ON_Ellipse::PointAt(double t) const
+ON_Ellipse::PointAt (double t) const
 {
-  return plane.PointAt(cos(t) * radius[0], sin(t) * radius[1]);
+  return plane.PointAt (cos (t) * radius[0], sin (t) * radius[1]);
 }
 
 ON_3dVector
-ON_Ellipse::DerivativeAt(int d,   // desired derivative ( >= 0 )
-                         double t // parameter
+ON_Ellipse::DerivativeAt (int d,   // desired derivative ( >= 0 )
+                          double t // parameter
 ) const
 {
   double r0 = radius[0];
   double r1 = radius[1];
-  switch (abs(d) % 4) {
+  switch (abs (d) % 4) {
   case 0:
-    r0 *= cos(t);
-    r1 *= sin(t);
+    r0 *= cos (t);
+    r1 *= sin (t);
     break;
   case 1:
-    r0 *= -sin(t);
-    r1 *= cos(t);
+    r0 *= -sin (t);
+    r1 *= cos (t);
     break;
   case 2:
-    r0 *= -cos(t);
-    r1 *= -sin(t);
+    r0 *= -cos (t);
+    r1 *= -sin (t);
     break;
   case 3:
-    r0 *= sin(t);
-    r1 *= -cos(t);
+    r0 *= sin (t);
+    r1 *= -cos (t);
     break;
   }
   return (r0 * plane.xaxis + r1 * plane.yaxis);
 }
 
 ON_3dVector
-ON_Ellipse::TangentAt(double t // parameter
+ON_Ellipse::TangentAt (double t // parameter
 ) const
 {
-  ON_3dVector T = DerivativeAt(1, t);
+  ON_3dVector T = DerivativeAt (1, t);
   T.Unitize();
   return T;
 }
 
 ON_3dVector
-ON_Ellipse::CurvatureAt(double t // parameter
+ON_Ellipse::CurvatureAt (double t // parameter
 ) const
 {
   ON_3dVector T, K;
-  ON_EvCurvature(DerivativeAt(1, t), DerivativeAt(2, t), T, K);
+  ON_EvCurvature (DerivativeAt (1, t), DerivativeAt (2, t), T, K);
   return K;
 }
 
@@ -169,8 +169,8 @@ distSqToEllipse (void* p, double t, double* f, double* df)
   // a[0], a[1] = x/y radii of 2d ellipse
   // (a[2],a[3]) = 2d point
   // f(t) = distance squared from ellipse(t) to 2d point
-  ct = cos(t);
-  st = sin(t);
+  ct = cos (t);
+  st = sin (t);
   dx = ct * a[0] - a[2];
   dy = st * a[1] - a[3];
   if (f) {
@@ -196,12 +196,12 @@ distSqToEllipse (void* p, double t, double* f, double* df)
 #endif
 
 ON_BOOL32
-ON_Ellipse::ClosestPointTo(const ON_3dPoint& point, double* t) const
+ON_Ellipse::ClosestPointTo (const ON_3dPoint& point, double* t) const
 {
   ON_BOOL32 rc = true;
   if (t) {
     ON_2dPoint uv;
-    rc = plane.ClosestPointTo(point, &uv.x, &uv.y);
+    rc = plane.ClosestPointTo (point, &uv.x, &uv.y);
     if (uv.x == 0.0) {
       if (uv.y == 0.0) {
         *t = (radius[0] <= radius[1]) ? 0.0 : 0.5 * ON_PI;
@@ -229,7 +229,7 @@ ON_Ellipse::ClosestPointTo(const ON_3dPoint& point, double* t) const
     {
       // use circluar approximation to get a seed value
       double t0, t1;
-      *t = atan2(uv.y, uv.x);
+      *t = atan2 (uv.y, uv.x);
       if (*t < 0.0) {
         *t += 2.0 * ON_PI;
         if (2.0 * ON_PI <= *t) {
@@ -280,8 +280,8 @@ ON_Ellipse::ClosestPointTo(const ON_3dPoint& point, double* t) const
             et = 0.9 * t0 + 0.1 * t1;
           else if (et >= t1)
             et = 0.9 * t1 + 0.1 * t0;
-          distSqToEllipse(p, t0, &d0, NULL);
-          distSqToEllipse(p, t1, &d1, NULL);
+          distSqToEllipse (p, t0, &d0, NULL);
+          distSqToEllipse (p, t1, &d1, NULL);
           if (d0 == 0.0) {
             *t = (t0 == 2.0 * ON_PI) ? 0.0 : t0;
             return true;
@@ -300,26 +300,26 @@ ON_Ellipse::ClosestPointTo(const ON_3dPoint& point, double* t) const
           }
           *t = (t0 == 2.0 * ON_PI) ? 0.0 : t0;
           for (i = 0; true; i++) {
-            distSqToEllipse(p, et, &dt, NULL);
+            distSqToEllipse (p, et, &dt, NULL);
             if (dt < d0) {
               *t = (et >= 2.0 * ON_PI) ? 0.0 : et;
               break;
             }
             if (i >= 100) {
-              ON_3dPoint E0 = PointAt(t0);
-              if (sqrt(d0) <= ON_ZERO_TOLERANCE ||
-                  sqrt(d0) <= ON_SQRT_EPSILON * E0.DistanceTo(Center())) {
+              ON_3dPoint E0 = PointAt (t0);
+              if (sqrt (d0) <= ON_ZERO_TOLERANCE ||
+                  sqrt (d0) <= ON_SQRT_EPSILON * E0.DistanceTo (Center())) {
                 // Could not find a seed value for dbrent,
                 // but t0 is pretty close.
                 return true;
               }
-              ON_3dVector T = TangentAt(t0);
+              ON_3dVector T = TangentAt (t0);
               ON_3dVector V = E0 - point;
               if (V.Unitize()) {
                 // Could not find a seed value for dbrent,
                 // but V and T are orthoganal, so t0 is
                 // pretty close.
-                if (fabs(V * T) <= 0.087155742747658173558064270837474)
+                if (fabs (V * T) <= 0.087155742747658173558064270837474)
                   return true;
               }
               return false; // can't get valid seed - bail out
@@ -330,7 +330,7 @@ ON_Ellipse::ClosestPointTo(const ON_3dPoint& point, double* t) const
             }
           }
 
-          rc = ON_FindLocalMinimum(
+          rc = ON_FindLocalMinimum (
               distSqToEllipse, p, t0, et, t1, ON_EPSILON, ON_SQRT_EPSILON, 100, &et);
           rc = (rc > 0) ? true : false;
           if (rc)
@@ -347,15 +347,15 @@ ON_Ellipse::ClosestPointTo(const ON_3dPoint& point, double* t) const
 #endif
 
 ON_3dPoint
-ON_Ellipse::ClosestPointTo(const ON_3dPoint& point) const
+ON_Ellipse::ClosestPointTo (const ON_3dPoint& point) const
 {
   double t;
-  ClosestPointTo(point, &t);
-  return PointAt(t);
+  ClosestPointTo (point, &t);
+  return PointAt (t);
 }
 
 double
-ON_Ellipse::EquationAt(const ON_2dPoint& p // coordinates in plane
+ON_Ellipse::EquationAt (const ON_2dPoint& p // coordinates in plane
 ) const
 {
   double e, x, y;
@@ -371,7 +371,7 @@ ON_Ellipse::EquationAt(const ON_2dPoint& p // coordinates in plane
 }
 
 ON_2dVector
-ON_Ellipse::GradientAt(const ON_2dPoint& p // coordinates in plane
+ON_Ellipse::GradientAt (const ON_2dPoint& p // coordinates in plane
 ) const
 {
   ON_2dVector g;
@@ -386,44 +386,41 @@ ON_Ellipse::GradientAt(const ON_2dPoint& p // coordinates in plane
 }
 
 ON_BOOL32
-ON_Ellipse::Rotate(double sin_angle, double cos_angle, const ON_3dVector& axis)
+ON_Ellipse::Rotate (double sin_angle, double cos_angle, const ON_3dVector& axis)
 {
-  return plane.Rotate(sin_angle, cos_angle, axis);
+  return plane.Rotate (sin_angle, cos_angle, axis);
 }
 
 ON_BOOL32
-ON_Ellipse::Rotate(double angle, const ON_3dVector& axis)
+ON_Ellipse::Rotate (double angle, const ON_3dVector& axis)
 {
-  return plane.Rotate(angle, axis);
+  return plane.Rotate (angle, axis);
 }
 
 ON_BOOL32
-ON_Ellipse::Rotate(double sin_angle,
-                   double cos_angle,
-                   const ON_3dVector& axis,
-                   const ON_3dPoint& point)
+ON_Ellipse::Rotate (double sin_angle,
+                    double cos_angle,
+                    const ON_3dVector& axis,
+                    const ON_3dPoint& point)
 {
-  return plane.Rotate(sin_angle, cos_angle, axis, point);
+  return plane.Rotate (sin_angle, cos_angle, axis, point);
 }
 
 ON_BOOL32
-ON_Ellipse::Rotate(double angle, const ON_3dVector& axis, const ON_3dPoint& point)
+ON_Ellipse::Rotate (double angle, const ON_3dVector& axis, const ON_3dPoint& point)
 {
-  return plane.Rotate(angle, axis, point);
+  return plane.Rotate (angle, axis, point);
 }
 
 ON_BOOL32
-ON_Ellipse::Translate(const ON_3dVector& delta)
-{
-  return plane.Translate(delta);
-}
+ON_Ellipse::Translate (const ON_3dVector& delta) { return plane.Translate (delta); }
 
 ON_BOOL32
-ON_Ellipse::GetNurbForm(ON_NurbsCurve& nurbscurve) const
+ON_Ellipse::GetNurbForm (ON_NurbsCurve& nurbscurve) const
 {
   int rc = 0;
   if (IsValid()) {
-    nurbscurve.Create(3, true, 3, 9);
+    nurbscurve.Create (3, true, 3, 9);
     nurbscurve.m_knot[0] = nurbscurve.m_knot[1] = 0.0;
     nurbscurve.m_knot[2] = nurbscurve.m_knot[3] = 0.5 * ON_PI;
     nurbscurve.m_knot[4] = nurbscurve.m_knot[5] = ON_PI;
@@ -431,17 +428,17 @@ ON_Ellipse::GetNurbForm(ON_NurbsCurve& nurbscurve) const
     nurbscurve.m_knot[8] = nurbscurve.m_knot[9] = 2.0 * ON_PI;
     ON_4dPoint* CV = (ON_4dPoint*)nurbscurve.m_cv;
 
-    CV[0] = plane.PointAt(radius[0], 0.0);
-    CV[1] = plane.PointAt(radius[0], radius[1]);
-    CV[2] = plane.PointAt(0.0, radius[1]);
-    CV[3] = plane.PointAt(-radius[0], radius[1]);
-    CV[4] = plane.PointAt(-radius[0], 0.0);
-    CV[5] = plane.PointAt(-radius[0], -radius[1]);
-    CV[6] = plane.PointAt(0.0, -radius[1]);
-    CV[7] = plane.PointAt(radius[0], -radius[1]);
+    CV[0] = plane.PointAt (radius[0], 0.0);
+    CV[1] = plane.PointAt (radius[0], radius[1]);
+    CV[2] = plane.PointAt (0.0, radius[1]);
+    CV[3] = plane.PointAt (-radius[0], radius[1]);
+    CV[4] = plane.PointAt (-radius[0], 0.0);
+    CV[5] = plane.PointAt (-radius[0], -radius[1]);
+    CV[6] = plane.PointAt (0.0, -radius[1]);
+    CV[7] = plane.PointAt (radius[0], -radius[1]);
     CV[8] = CV[0];
 
-    const double w = 1.0 / sqrt(2.0);
+    const double w = 1.0 / sqrt (2.0);
     int i;
     for (i = 1; i < 8; i += 2) {
       CV[i].x *= w;

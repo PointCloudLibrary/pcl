@@ -113,12 +113,12 @@ printDeviceList ()
 {
   std::vector<DepthSenseGrabber::Ptr> grabbers;
   std::cout << "Connected devices: ";
-  boost::format fmt("\n  #%i  %s");
+  boost::format fmt ("\n  #%i  %s");
   while (true) {
     try {
-      grabbers.push_back(DepthSenseGrabber::Ptr(new pcl::DepthSenseGrabber));
-      std::cout << boost::str(fmt % grabbers.size() %
-                              grabbers.back()->getDeviceSerialNumber());
+      grabbers.push_back (DepthSenseGrabber::Ptr (new pcl::DepthSenseGrabber));
+      std::cout << boost::str (fmt % grabbers.size() %
+                               grabbers.back()->getDeviceSerialNumber());
     } catch (pcl::io::IOException& e) {
       break;
     }
@@ -135,14 +135,14 @@ class DepthSenseViewer {
 public:
   using PointCloudT = pcl::PointCloud<PointT>;
 
-  DepthSenseViewer(pcl::DepthSenseGrabber& grabber)
-  : grabber_(grabber)
-  , viewer_("DepthSense Viewer")
-  , threshold_(50)
-  , window_(5)
-  , temporal_filtering_(pcl::DepthSenseGrabber::DepthSense_None)
+  DepthSenseViewer (pcl::DepthSenseGrabber& grabber)
+  : grabber_ (grabber)
+  , viewer_ ("DepthSense Viewer")
+  , threshold_ (50)
+  , window_ (5)
+  , temporal_filtering_ (pcl::DepthSenseGrabber::DepthSense_None)
   {
-    viewer_.registerKeyboardCallback(&DepthSenseViewer::keyboardCallback, *this);
+    viewer_.registerKeyboardCallback (&DepthSenseViewer::keyboardCallback, *this);
   }
 
   ~DepthSenseViewer() { connection_.disconnect(); }
@@ -150,22 +150,22 @@ public:
   void
   run ()
   {
-    std::function<void(const typename PointCloudT::ConstPtr&)> f =
-        [this] (const typename PointCloudT::ConstPtr& cloud) { cloudCallback(cloud); };
-    connection_ = grabber_.registerCallback(f);
+    std::function<void (const typename PointCloudT::ConstPtr&)> f =
+        [this] (const typename PointCloudT::ConstPtr& cloud) { cloudCallback (cloud); };
+    connection_ = grabber_.registerCallback (f);
     grabber_.start();
     while (!viewer_.wasStopped()) {
       if (new_cloud_) {
-        std::lock_guard<std::mutex> lock(new_cloud_mutex_);
-        if (!viewer_.updatePointCloud(new_cloud_, "cloud")) {
-          viewer_.addPointCloud(new_cloud_, "cloud");
+        std::lock_guard<std::mutex> lock (new_cloud_mutex_);
+        if (!viewer_.updatePointCloud (new_cloud_, "cloud")) {
+          viewer_.addPointCloud (new_cloud_, "cloud");
           viewer_.resetCamera();
         }
         displaySettings();
         last_cloud_ = new_cloud_;
         new_cloud_.reset();
       }
-      viewer_.spinOnce(1, true);
+      viewer_.spinOnce (1, true);
     }
     grabber_.stop();
   }
@@ -175,7 +175,7 @@ private:
   cloudCallback (typename PointCloudT::ConstPtr cloud)
   {
     if (!viewer_.wasStopped()) {
-      std::lock_guard<std::mutex> lock(new_cloud_mutex_);
+      std::lock_guard<std::mutex> lock (new_cloud_mutex_);
       new_cloud_ = cloud;
     }
   }
@@ -188,47 +188,47 @@ private:
         window_ += event.getKeyCode() == 'w' ? 1 : -1;
         if (window_ < 1)
           window_ = 1;
-        pcl::console::print_info("Temporal filtering window size: ");
-        pcl::console::print_value("%i\n", window_);
-        grabber_.enableTemporalFiltering(temporal_filtering_, window_);
+        pcl::console::print_info ("Temporal filtering window size: ");
+        pcl::console::print_value ("%i\n", window_);
+        grabber_.enableTemporalFiltering (temporal_filtering_, window_);
       }
       if (event.getKeyCode() == 't' || event.getKeyCode() == 'T') {
         threshold_ += event.getKeyCode() == 't' ? 10 : -10;
         if (threshold_ < 0)
           threshold_ = 0;
-        pcl::console::print_info("Confidence threshold: ");
-        pcl::console::print_value("%i\n", threshold_);
-        grabber_.setConfidenceThreshold(threshold_);
+        pcl::console::print_info ("Confidence threshold: ");
+        pcl::console::print_value ("%i\n", threshold_);
+        grabber_.setConfidenceThreshold (threshold_);
       }
       if (event.getKeyCode() == 'k') {
-        pcl::console::print_info("Temporal filtering: ");
+        pcl::console::print_info ("Temporal filtering: ");
         switch (temporal_filtering_) {
         case pcl::DepthSenseGrabber::DepthSense_None: {
           temporal_filtering_ = pcl::DepthSenseGrabber::DepthSense_Median;
-          pcl::console::print_value("median\n");
+          pcl::console::print_value ("median\n");
           break;
         }
         case pcl::DepthSenseGrabber::DepthSense_Median: {
           temporal_filtering_ = pcl::DepthSenseGrabber::DepthSense_Average;
-          pcl::console::print_value("average\n");
+          pcl::console::print_value ("average\n");
           break;
         }
         case pcl::DepthSenseGrabber::DepthSense_Average: {
           temporal_filtering_ = pcl::DepthSenseGrabber::DepthSense_None;
-          pcl::console::print_value("none\n");
+          pcl::console::print_value ("none\n");
           break;
         }
         }
-        grabber_.enableTemporalFiltering(temporal_filtering_, window_);
+        grabber_.enableTemporalFiltering (temporal_filtering_, window_);
       }
       if (event.getKeyCode() == 's') {
-        boost::format fmt("DS_%s_%u.pcd");
-        std::string fn = boost::str(fmt % grabber_.getDeviceSerialNumber().c_str() %
-                                    last_cloud_->header.stamp);
-        pcl::io::savePCDFileBinaryCompressed(fn, *last_cloud_);
-        pcl::console::print_info("Saved point cloud: ");
-        pcl::console::print_value(fn.c_str());
-        pcl::console::print_info("\n");
+        boost::format fmt ("DS_%s_%u.pcd");
+        std::string fn = boost::str (fmt % grabber_.getDeviceSerialNumber().c_str() %
+                                     last_cloud_->header.stamp);
+        pcl::io::savePCDFileBinaryCompressed (fn, *last_cloud_);
+        pcl::console::print_info ("Saved point cloud: ");
+        pcl::console::print_value (fn.c_str());
+        pcl::console::print_info ("\n");
       }
       displaySettings();
     }
@@ -240,23 +240,24 @@ private:
     const int dx = 5;
     const int dy = 14;
     const int fs = 10;
-    boost::format name_fmt("text%i");
+    boost::format name_fmt ("text%i");
     const char* TF[] = {"off", "median", "average"};
     std::vector<boost::format> entries;
     // Framerate
-    entries.push_back(boost::format("framerate: %.1f") % grabber_.getFramesPerSecond());
+    entries.push_back (boost::format ("framerate: %.1f") %
+                       grabber_.getFramesPerSecond());
     // Confidence threshold
-    entries.push_back(boost::format("confidence threshold: %i") % threshold_);
+    entries.push_back (boost::format ("confidence threshold: %i") % threshold_);
     // Temporal filter settings
-    std::string tfs = boost::str(boost::format(", window size %i") % window_);
-    entries.push_back(
-        boost::format("temporal filtering: %s%s") % TF[temporal_filtering_] %
+    std::string tfs = boost::str (boost::format (", window size %i") % window_);
+    entries.push_back (
+        boost::format ("temporal filtering: %s%s") % TF[temporal_filtering_] %
         (temporal_filtering_ == pcl::DepthSenseGrabber::DepthSense_None ? "" : tfs));
     for (std::size_t i = 0; i < entries.size(); ++i) {
-      std::string name = boost::str(name_fmt % i);
-      std::string entry = boost::str(entries[i]);
-      if (!viewer_.updateText(entry, dx, dy + i * (fs + 2), fs, 1.0, 1.0, 1.0, name))
-        viewer_.addText(entry, dx, dy + i * (fs + 2), fs, 1.0, 1.0, 1.0, name);
+      std::string name = boost::str (name_fmt % i);
+      std::string entry = boost::str (entries[i]);
+      if (!viewer_.updateText (entry, dx, dy + i * (fs + 2), fs, 1.0, 1.0, 1.0, name))
+        viewer_.addText (entry, dx, dy + i * (fs + 2), fs, 1.0, 1.0, 1.0, name);
     }
   }
 
@@ -276,20 +277,20 @@ private:
 int
 main (int argc, char** argv)
 {
-  print_info("Viewer for DepthSense devices (run with --help for more information)\n",
-             argv[0]);
+  print_info ("Viewer for DepthSense devices (run with --help for more information)\n",
+              argv[0]);
 
-  if (find_switch(argc, argv, "--help") || find_switch(argc, argv, "-h")) {
-    printHelp(argc, argv);
+  if (find_switch (argc, argv, "--help") || find_switch (argc, argv, "-h")) {
+    printHelp (argc, argv);
     return (0);
   }
 
-  if (find_switch(argc, argv, "--list") || find_switch(argc, argv, "-l")) {
+  if (find_switch (argc, argv, "--list") || find_switch (argc, argv, "-l")) {
     printDeviceList();
     return (0);
   }
 
-  bool xyz_only = find_switch(argc, argv, "--xyz");
+  bool xyz_only = find_switch (argc, argv, "--xyz");
 
   std::string device_id;
 
@@ -297,25 +298,25 @@ main (int argc, char** argv)
       (argc == 2 && xyz_only)) // single argument, and it is --xyz
   {
     device_id = "";
-    print_info("Creating a grabber for the first available device\n");
+    print_info ("Creating a grabber for the first available device\n");
   }
   else {
     device_id = argv[argc - 1];
-    print_info("Creating a grabber for device \"%s\"\n", device_id.c_str());
+    print_info ("Creating a grabber for device \"%s\"\n", device_id.c_str());
   }
 
   try {
-    pcl::DepthSenseGrabber grabber(device_id);
+    pcl::DepthSenseGrabber grabber (device_id);
     if (xyz_only) {
-      DepthSenseViewer<pcl::PointXYZ> viewer(grabber);
+      DepthSenseViewer<pcl::PointXYZ> viewer (grabber);
       viewer.run();
     }
     else {
-      DepthSenseViewer<pcl::PointXYZRGBA> viewer(grabber);
+      DepthSenseViewer<pcl::PointXYZRGBA> viewer (grabber);
       viewer.run();
     }
   } catch (pcl::io::IOException& e) {
-    print_error("Failed to create a grabber: %s\n", e.what());
+    print_error ("Failed to create a grabber: %s\n", e.what());
     return (1);
   }
 

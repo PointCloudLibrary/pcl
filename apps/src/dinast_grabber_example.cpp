@@ -50,8 +50,8 @@ public:
   using Cloud = pcl::PointCloud<PointType>;
   using CloudConstPtr = typename Cloud::ConstPtr;
 
-  DinastProcessor(pcl::Grabber& grabber)
-  : interface(grabber), viewer("Dinast Cloud Viewer")
+  DinastProcessor (pcl::Grabber& grabber)
+  : interface (grabber), viewer ("Dinast Cloud Viewer")
   {}
 
   void
@@ -61,29 +61,29 @@ public:
     static double last = pcl::getTime();
     if (++count == 30) {
       double now = pcl::getTime();
-      std::cout << "Average framerate: " << double(count) / double(now - last) << " Hz"
-                << std::endl;
+      std::cout << "Average framerate: " << double (count) / double (now - last)
+                << " Hz" << std::endl;
       count = 0;
       last = now;
     }
     if (!viewer.wasStopped())
-      viewer.showCloud(cloud_cb);
+      viewer.showCloud (cloud_cb);
   }
 
   int
   run ()
   {
 
-    std::function<void(const CloudConstPtr&)> f = [this] (const CloudConstPtr& cloud) {
-      cloud_cb_(cloud);
+    std::function<void (const CloudConstPtr&)> f = [this] (const CloudConstPtr& cloud) {
+      cloud_cb_ (cloud);
     };
 
-    boost::signals2::connection c = interface.registerCallback(f);
+    boost::signals2::connection c = interface.registerCallback (f);
 
     interface.start();
 
     while (!viewer.wasStopped()) {
-      std::this_thread::sleep_for(1s);
+      std::this_thread::sleep_for (1s);
     }
 
     interface.stop();
@@ -99,7 +99,7 @@ int
 main ()
 {
   pcl::DinastGrabber grabber;
-  DinastProcessor<pcl::PointXYZI> v(grabber);
+  DinastProcessor<pcl::PointXYZI> v (grabber);
   v.run();
   return 0;
 }

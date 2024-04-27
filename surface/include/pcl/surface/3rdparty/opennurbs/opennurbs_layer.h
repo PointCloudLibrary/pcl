@@ -18,7 +18,7 @@
 #define OPENNURBS_LAYER_INC_
 
 class ON_CLASS ON_Layer : public ON_Object {
-  ON_OBJECT_DECLARE(ON_Layer);
+  ON_OBJECT_DECLARE (ON_Layer);
 
 public:
   ON_Layer();
@@ -67,7 +67,7 @@ public:
   ObjectType () const;
 
   ON_UUID
-  ModelObjectId () const;
+  ModelObjectId() const;
 
   //////////////////////////////////////////////////////////////////////
   //
@@ -288,7 +288,7 @@ public:
     when layers have different per viewport settings.
   */
   ON__UINT32
-  PerViewportSettingsCRC () const;
+  PerViewportSettingsCRC() const;
 
   /*
   Description:

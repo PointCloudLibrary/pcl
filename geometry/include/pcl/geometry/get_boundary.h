@@ -70,22 +70,22 @@ getBoundBoundaryHalfEdges (
   boundary_he_collection.clear();
 
   HalfEdgeIndices boundary_he;
-  boundary_he.reserve(expected_size);
-  std::vector<bool> visited(mesh.sizeEdges(), false);
+  boundary_he.reserve (expected_size);
+  std::vector<bool> visited (mesh.sizeEdges(), false);
   IHEAFC circ, circ_end;
 
-  for (HalfEdgeIndex i(0); i < HalfEdgeIndex(mesh.sizeHalfEdges()); ++i) {
-    if (mesh.isBoundary(i) && !visited[pcl::geometry::toEdgeIndex(i).get()]) {
+  for (HalfEdgeIndex i (0); i < HalfEdgeIndex (mesh.sizeHalfEdges()); ++i) {
+    if (mesh.isBoundary (i) && !visited[pcl::geometry::toEdgeIndex (i).get()]) {
       boundary_he.clear();
 
-      circ = mesh.getInnerHalfEdgeAroundFaceCirculator(i);
+      circ = mesh.getInnerHalfEdgeAroundFaceCirculator (i);
       circ_end = circ;
       do {
-        visited[pcl::geometry::toEdgeIndex(circ.getTargetIndex()).get()] = true;
-        boundary_he.push_back(circ.getTargetIndex());
+        visited[pcl::geometry::toEdgeIndex (circ.getTargetIndex()).get()] = true;
+        boundary_he.push_back (circ.getTargetIndex());
       } while (++circ != circ_end);
 
-      boundary_he_collection.push_back(boundary_he);
+      boundary_he_collection.push_back (boundary_he);
     }
   }
 }

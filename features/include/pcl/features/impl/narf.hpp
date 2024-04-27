@@ -44,29 +44,29 @@
 namespace pcl {
 
 inline float
-Narf::getDescriptorDistance(const Narf& other) const
+Narf::getDescriptorDistance (const Narf& other) const
 {
-  float ret = L1_Norm(descriptor_, other.descriptor_, descriptor_size_);
+  float ret = L1_Norm (descriptor_, other.descriptor_, descriptor_size_);
   // float ret = Sublinear_Norm(descriptor_, other.descriptor_, descriptor_size_);
-  ret /= static_cast<float>(descriptor_size_);
+  ret /= static_cast<float> (descriptor_size_);
   return (ret);
 }
 
 inline void
-Narf::copyToNarf36(Narf36& narf36) const
+Narf::copyToNarf36 (Narf36& narf36) const
 {
   if (descriptor_size_ != 36) {
     std::cerr << __PRETTY_FUNCTION__ << ": descriptor size is not 36!\n";
     return;
   }
-  getTranslationAndEulerAngles(transformation_.inverse(),
-                               narf36.x,
-                               narf36.y,
-                               narf36.z,
-                               narf36.roll,
-                               narf36.pitch,
-                               narf36.yaw);
-  std::copy(descriptor_, descriptor_ + 36, narf36.descriptor);
+  getTranslationAndEulerAngles (transformation_.inverse(),
+                                narf36.x,
+                                narf36.y,
+                                narf36.z,
+                                narf36.roll,
+                                narf36.pitch,
+                                narf36.yaw);
+  std::copy (descriptor_, descriptor_ + 36, narf36.descriptor);
 }
 
 // inline float Narf::getDescriptorDistance(const Narf& other) const

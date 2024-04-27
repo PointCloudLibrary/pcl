@@ -40,6 +40,6 @@
 #include <pcl/point_types.h>
 
 // Instantiations of specific point types
-PCL_INSTANTIATE_PRODUCT(PapazovHV, ((pcl::PointXYZ))((pcl::PointXYZ)))
-PCL_INSTANTIATE_PRODUCT(PapazovHV, ((pcl::PointXYZRGB))((pcl::PointXYZRGB)))
-PCL_INSTANTIATE_PRODUCT(PapazovHV, ((pcl::PointXYZRGBA))((pcl::PointXYZRGBA)))
+PCL_INSTANTIATE_PRODUCT (PapazovHV, ((pcl::PointXYZ)) ((pcl::PointXYZ)))
+PCL_INSTANTIATE_PRODUCT (PapazovHV, ((pcl::PointXYZRGB)) ((pcl::PointXYZRGB)))
+PCL_INSTANTIATE_PRODUCT (PapazovHV, ((pcl::PointXYZRGBA)) ((pcl::PointXYZRGBA)))

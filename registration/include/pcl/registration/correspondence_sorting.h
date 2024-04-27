@@ -56,7 +56,7 @@ struct sortCorrespondencesByQueryIndex {
   using second_argument_type = pcl::Correspondence;
   using result_type = bool;
   bool
-  operator()(pcl::Correspondence a, pcl::Correspondence b)
+  operator() (pcl::Correspondence a, pcl::Correspondence b)
   {
     return (a.index_query < b.index_query);
   }
@@ -70,7 +70,7 @@ struct sortCorrespondencesByMatchIndex {
   using second_argument_type = pcl::Correspondence;
   using result_type = bool;
   bool
-  operator()(pcl::Correspondence a, pcl::Correspondence b)
+  operator() (pcl::Correspondence a, pcl::Correspondence b)
   {
     return (a.index_match < b.index_match);
   }
@@ -85,7 +85,7 @@ struct sortCorrespondencesByDistance {
   using second_argument_type = pcl::Correspondence;
   using result_type = bool;
   bool
-  operator()(pcl::Correspondence a, pcl::Correspondence b)
+  operator() (pcl::Correspondence a, pcl::Correspondence b)
   {
     return (a.distance < b.distance);
   }
@@ -99,7 +99,7 @@ struct sortCorrespondencesByQueryIndexAndDistance {
   using second_argument_type = pcl::Correspondence;
   using result_type = bool;
   inline bool
-  operator()(pcl::Correspondence a, pcl::Correspondence b)
+  operator() (pcl::Correspondence a, pcl::Correspondence b)
   {
     if (a.index_query < b.index_query)
       return (true);
@@ -117,7 +117,7 @@ struct sortCorrespondencesByMatchIndexAndDistance {
   using second_argument_type = pcl::Correspondence;
   using result_type = bool;
   inline bool
-  operator()(pcl::Correspondence a, pcl::Correspondence b)
+  operator() (pcl::Correspondence a, pcl::Correspondence b)
   {
     if (a.index_match < b.index_match)
       return (true);

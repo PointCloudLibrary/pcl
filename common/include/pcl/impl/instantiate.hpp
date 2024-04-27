@@ -68,10 +68,10 @@
 #include <boost/preprocessor/seq/to_tuple.hpp>
 
 #define PCL_INSTANTIATE_IMPL(r, TEMPLATE, POINT_TYPE)                                  \
-  BOOST_PP_CAT(PCL_INSTANTIATE_, TEMPLATE)(POINT_TYPE)
+  BOOST_PP_CAT (PCL_INSTANTIATE_, TEMPLATE) (POINT_TYPE)
 
 #define PCL_INSTANTIATE(TEMPLATE, POINT_TYPES)                                         \
-  BOOST_PP_SEQ_FOR_EACH(PCL_INSTANTIATE_IMPL, TEMPLATE, POINT_TYPES)
+  BOOST_PP_SEQ_FOR_EACH (PCL_INSTANTIATE_IMPL, TEMPLATE, POINT_TYPES)
 
 //
 // PCL_INSTANTIATE_PRODUCT(templatename, (seq1)(seq2)...(seqN))
@@ -97,16 +97,16 @@
 //
 #ifdef _MSC_VER
 #define PCL_INSTANTIATE_PRODUCT_IMPL(r, product)                                       \
-  BOOST_PP_CAT(PCL_INSTANTIATE_, BOOST_PP_SEQ_HEAD(product))                           \
-  BOOST_PP_EXPAND(BOOST_PP_SEQ_TO_TUPLE(BOOST_PP_SEQ_TAIL(product)))
+  BOOST_PP_CAT (PCL_INSTANTIATE_, BOOST_PP_SEQ_HEAD (product))                         \
+  BOOST_PP_EXPAND (BOOST_PP_SEQ_TO_TUPLE (BOOST_PP_SEQ_TAIL (product)))
 #else
 #define PCL_INSTANTIATE_PRODUCT_IMPL(r, product)                                       \
-  BOOST_PP_EXPAND(BOOST_PP_CAT(PCL_INSTANTIATE_, BOOST_PP_SEQ_HEAD(product))           \
-                      BOOST_PP_SEQ_TO_TUPLE(BOOST_PP_SEQ_TAIL(product)))
+  BOOST_PP_EXPAND (BOOST_PP_CAT (PCL_INSTANTIATE_, BOOST_PP_SEQ_HEAD (product))        \
+                       BOOST_PP_SEQ_TO_TUPLE (BOOST_PP_SEQ_TAIL (product)))
 #endif
 
 #define PCL_INSTANTIATE_PRODUCT(TEMPLATE, PRODUCT)                                     \
-  BOOST_PP_SEQ_FOR_EACH_PRODUCT(PCL_INSTANTIATE_PRODUCT_IMPL, ((TEMPLATE))PRODUCT)
+  BOOST_PP_SEQ_FOR_EACH_PRODUCT (PCL_INSTANTIATE_PRODUCT_IMPL, ((TEMPLATE))PRODUCT)
 
 #endif
 

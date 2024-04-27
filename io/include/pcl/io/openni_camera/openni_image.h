@@ -67,7 +67,7 @@ public:
    * @brief Constructor
    * @param[in] image_meta_data the actual image data from the OpenNI driver
    */
-  inline Image(pcl::shared_ptr<xn::ImageMetaData> image_meta_data) noexcept;
+  inline Image (pcl::shared_ptr<xn::ImageMetaData> image_meta_data) noexcept;
 
   /**
    * @author Suat Gedikli
@@ -121,7 +121,7 @@ public:
   inline void
   fillRaw (unsigned char* rgb_buffer) const noexcept
   {
-    memcpy(rgb_buffer, image_md_->Data(), image_md_->DataSize());
+    memcpy (rgb_buffer, image_md_->Data(), image_md_->DataSize());
   }
 
   /**
@@ -181,8 +181,8 @@ protected:
   pcl::shared_ptr<xn::ImageMetaData> image_md_;
 };
 
-Image::Image(pcl::shared_ptr<xn::ImageMetaData> image_meta_data) noexcept
-: image_md_(std::move(image_meta_data))
+Image::Image (pcl::shared_ptr<xn::ImageMetaData> image_meta_data) noexcept
+: image_md_ (std::move (image_meta_data))
 {}
 
 Image::~Image() noexcept = default;
@@ -208,7 +208,7 @@ Image::getFrameID() const noexcept
 unsigned long
 Image::getTimeStamp() const noexcept
 {
-  return static_cast<unsigned long>(image_md_->Timestamp());
+  return static_cast<unsigned long> (image_md_->Timestamp());
 }
 
 const xn::ImageMetaData&

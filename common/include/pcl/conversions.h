@@ -60,7 +60,7 @@ namespace detail {
 // For converting template point cloud to message.
 template <typename PointT>
 struct FieldAdder {
-  FieldAdder(std::vector<pcl::PCLPointField>& fields) : fields_(fields){};
+  FieldAdder (std::vector<pcl::PCLPointField>& fields) : fields_ (fields){};
 
   template <typename U>
   void
@@ -71,7 +71,7 @@ struct FieldAdder {
     f.offset = pcl::traits::offset<PointT, U>::value;
     f.datatype = pcl::traits::datatype<PointT, U>::value;
     f.count = pcl::traits::datatype<PointT, U>::size;
-    fields_.push_back(f);
+    fields_.push_back (f);
   }
 
   std::vector<pcl::PCLPointField>& fields_;
@@ -80,9 +80,9 @@ struct FieldAdder {
 // For converting message to template point cloud.
 template <typename PointT>
 struct FieldMapper {
-  FieldMapper(const std::vector<pcl::PCLPointField>& fields,
-              std::vector<FieldMapping>& map)
-  : fields_(fields), map_(map)
+  FieldMapper (const std::vector<pcl::PCLPointField>& fields,
+               std::vector<FieldMapping>& map)
+  : fields_ (fields), map_ (map)
   {}
 
   template <typename Tag>
@@ -90,18 +90,18 @@ struct FieldMapper {
   operator()()
   {
     for (const auto& field : fields_) {
-      if (FieldMatches<PointT, Tag>()(field)) {
+      if (FieldMatches<PointT, Tag>() (field)) {
         FieldMapping mapping;
         mapping.serialized_offset = field.offset;
         mapping.struct_offset = pcl::traits::offset<PointT, Tag>::value;
-        mapping.size = sizeof(typename pcl::traits::datatype<PointT, Tag>::type);
-        map_.push_back(mapping);
+        mapping.size = sizeof (typename pcl::traits::datatype<PointT, Tag>::type);
+        map_.push_back (mapping);
         return;
       }
     }
     // Disable thrown exception per #595: http://dev.pointclouds.org/issues/595
-    PCL_WARN("Failed to find match for field '%s'.\n",
-             pcl::traits::name<PointT, Tag>::value);
+    PCL_WARN ("Failed to find match for field '%s'.\n",
+              pcl::traits::name<PointT, Tag>::value);
     // throw pcl::InvalidConversionException (ss.str ());
   }
 
@@ -123,12 +123,12 @@ createMapping (const std::vector<pcl::PCLPointField>& msg_fields,
                MsgFieldMap& field_map)
 {
   // Create initial 1-1 mapping between serialized data segments and struct fields
-  detail::FieldMapper<PointT> mapper(msg_fields, field_map);
-  for_each_type<typename traits::fieldList<PointT>::type>(mapper);
+  detail::FieldMapper<PointT> mapper (msg_fields, field_map);
+  for_each_type<typename traits::fieldList<PointT>::type> (mapper);
 
   // Coalesce adjacent fields into single memcpy's where possible
   if (field_map.size() > 1) {
-    std::sort(field_map.begin(), field_map.end(), detail::fieldOrdering);
+    std::sort (field_map.begin(), field_map.end(), detail::fieldOrdering);
     MsgFieldMap::iterator i = field_map.begin(), j = i + 1;
     while (j != field_map.end()) {
       // This check is designed to permit padding between adjacent fields.
@@ -137,7 +137,7 @@ createMapping (const std::vector<pcl::PCLPointField>& msg_fields,
       if (j->serialized_offset - i->serialized_offset ==
           j->struct_offset - i->struct_offset) {
         i->size += (j->struct_offset + j->size) - (i->struct_offset + i->size);
-        j = field_map.erase(j);
+        j = field_map.erase (j);
       }
       else {
         ++i;
@@ -171,32 +171,32 @@ fromPCLPointCloud2 (const pcl::PCLPointCloud2& msg,
   cloud.is_dense = msg.is_dense == 1;
 
   // Resize cloud
-  cloud.resize(msg.width * msg.height);
+  cloud.resize (msg.width * msg.height);
 
   // check if there is data to copy
   if (msg.width * msg.height == 0) {
-    PCL_WARN("[pcl::fromPCLPointCloud2] No data to copy.\n");
+    PCL_WARN ("[pcl::fromPCLPointCloud2] No data to copy.\n");
     return;
   }
 
   // Copy point data
-  std::uint8_t* cloud_data = reinterpret_cast<std::uint8_t*>(cloud.data());
+  std::uint8_t* cloud_data = reinterpret_cast<std::uint8_t*> (cloud.data());
 
   // Check if we can copy adjacent points in a single memcpy.  We can do so if there
   // is exactly one field to copy and it is the same size as the source and destination
   // point types.
   if (field_map.size() == 1 && field_map[0].serialized_offset == 0 &&
       field_map[0].struct_offset == 0 && field_map[0].size == msg.point_step &&
-      field_map[0].size == sizeof(PointT)) {
-    const auto cloud_row_step = (sizeof(PointT) * cloud.width);
+      field_map[0].size == sizeof (PointT)) {
+    const auto cloud_row_step = (sizeof (PointT) * cloud.width);
     // Should usually be able to copy all rows at once
     if (msg.row_step == cloud_row_step) {
-      memcpy(cloud_data, msg_data, msg.width * msg.height * sizeof(PointT));
+      memcpy (cloud_data, msg_data, msg.width * msg.height * sizeof (PointT));
     }
     else {
       for (uindex_t i = 0; i < msg.height;
            ++i, cloud_data += cloud_row_step, msg_data += msg.row_step)
-        memcpy(cloud_data, msg_data, cloud_row_step);
+        memcpy (cloud_data, msg_data, cloud_row_step);
     }
   }
   else {
@@ -206,11 +206,11 @@ fromPCLPointCloud2 (const pcl::PCLPointCloud2& msg,
       for (std::size_t col = 0; col < msg.width; ++col) {
         const std::uint8_t* msg_data = row_data + col * msg.point_step;
         for (const detail::FieldMapping& mapping : field_map) {
-          std::copy(msg_data + mapping.serialized_offset,
-                    msg_data + mapping.serialized_offset + mapping.size,
-                    cloud_data + mapping.struct_offset);
+          std::copy (msg_data + mapping.serialized_offset,
+                     msg_data + mapping.serialized_offset + mapping.size,
+                     cloud_data + mapping.struct_offset);
         }
-        cloud_data += sizeof(PointT);
+        cloud_data += sizeof (PointT);
       }
     }
   }
@@ -234,7 +234,7 @@ fromPCLPointCloud2 (const pcl::PCLPointCloud2& msg,
                     pcl::PointCloud<PointT>& cloud,
                     const MsgFieldMap& field_map)
 {
-  fromPCLPointCloud2(msg, cloud, field_map, msg.data.data());
+  fromPCLPointCloud2 (msg, cloud, field_map, msg.data.data());
 }
 
 /** \brief Convert a PCLPointCloud2 binary data blob into a pcl::PointCloud<T> object.
@@ -246,8 +246,8 @@ void
 fromPCLPointCloud2 (const pcl::PCLPointCloud2& msg, pcl::PointCloud<PointT>& cloud)
 {
   MsgFieldMap field_map;
-  createMapping<PointT>(msg.fields, field_map);
-  fromPCLPointCloud2(msg, cloud, field_map);
+  createMapping<PointT> (msg.fields, field_map);
+  fromPCLPointCloud2 (msg, cloud, field_map);
 }
 
 namespace detail {
@@ -256,17 +256,17 @@ namespace detail {
  */
 template <typename PointT>
 struct FieldCopier {
-  FieldCopier(std::uint8_t*& msg_data, const std::uint8_t*& cloud_data)
-  : msg_data_(msg_data), cloud_data_(cloud_data){};
+  FieldCopier (std::uint8_t*& msg_data, const std::uint8_t*& cloud_data)
+  : msg_data_ (msg_data), cloud_data_ (cloud_data){};
 
   template <typename U>
   void
   operator()()
   {
-    memcpy(msg_data_,
-           cloud_data_ + pcl::traits::offset<PointT, U>::value,
-           sizeof(typename pcl::traits::datatype<PointT, U>::type));
-    msg_data_ += sizeof(typename pcl::traits::datatype<PointT, U>::type);
+    memcpy (msg_data_,
+            cloud_data_ + pcl::traits::offset<PointT, U>::value,
+            sizeof (typename pcl::traits::datatype<PointT, U>::type));
+    msg_data_ += sizeof (typename pcl::traits::datatype<PointT, U>::type);
   }
 
   std::uint8_t*& msg_data_;
@@ -278,9 +278,9 @@ struct FieldCopier {
  */
 template <typename PointT>
 struct FieldAdderAdvanced {
-  FieldAdderAdvanced(std::vector<pcl::PCLPointField>& fields,
-                     std::vector<std::size_t>& field_sizes)
-  : fields_(fields), field_sizes_(field_sizes){};
+  FieldAdderAdvanced (std::vector<pcl::PCLPointField>& fields,
+                      std::vector<std::size_t>& field_sizes)
+  : fields_ (fields), field_sizes_ (field_sizes){};
 
   template <typename U>
   void
@@ -291,8 +291,8 @@ struct FieldAdderAdvanced {
     f.offset = pcl::traits::offset<PointT, U>::value;
     f.datatype = pcl::traits::datatype<PointT, U>::value;
     f.count = pcl::traits::datatype<PointT, U>::size;
-    fields_.push_back(f);
-    field_sizes_.push_back(sizeof(
+    fields_.push_back (f);
+    field_sizes_.push_back (sizeof (
         typename pcl::traits::datatype<PointT, U>::
             type)); // If field is an array, then this is the size of all array elements
   }
@@ -324,29 +324,29 @@ toPCLPointCloud2 (const pcl::PointCloud<PointT>& cloud,
     msg.height = 1;
   }
   else {
-    assert(cloud.size() == cloud.width * cloud.height);
+    assert (cloud.size() == cloud.width * cloud.height);
     msg.height = cloud.height;
     msg.width = cloud.width;
   }
   // Fill fields metadata
   msg.fields.clear();
   std::vector<std::size_t> field_sizes;
-  for_each_type<typename pcl::traits::fieldList<PointT>::type>(
-      pcl::detail::FieldAdderAdvanced<PointT>(msg.fields, field_sizes));
+  for_each_type<typename pcl::traits::fieldList<PointT>::type> (
+      pcl::detail::FieldAdderAdvanced<PointT> (msg.fields, field_sizes));
   // Check if padding should be kept, or if the point type does not contain padding
   // (then the single memcpy is faster)
-  if (padding || std::accumulate(field_sizes.begin(),
-                                 field_sizes.end(),
-                                 static_cast<std::size_t>(0)) == sizeof(PointT)) {
+  if (padding || std::accumulate (field_sizes.begin(),
+                                  field_sizes.end(),
+                                  static_cast<std::size_t> (0)) == sizeof (PointT)) {
     // Fill point cloud binary data (padding and all)
-    std::size_t data_size = sizeof(PointT) * cloud.size();
-    msg.data.resize(data_size);
+    std::size_t data_size = sizeof (PointT) * cloud.size();
+    msg.data.resize (data_size);
     if (data_size) {
-      memcpy(msg.data.data(), cloud.data(), data_size);
+      memcpy (msg.data.data(), cloud.data(), data_size);
     }
 
-    msg.point_step = sizeof(PointT);
-    msg.row_step = (sizeof(PointT) * msg.width);
+    msg.point_step = sizeof (PointT);
+    msg.row_step = (sizeof (PointT) * msg.width);
   }
   else {
     std::size_t point_size = 0;
@@ -354,15 +354,15 @@ toPCLPointCloud2 (const pcl::PointCloud<PointT>& cloud,
       msg.fields[i].offset = point_size; // Adjust offset when padding is removed
       point_size += field_sizes[i];
     }
-    msg.data.resize(point_size * cloud.size());
+    msg.data.resize (point_size * cloud.size());
     std::uint8_t* msg_data = &msg.data[0];
-    const std::uint8_t* cloud_data = reinterpret_cast<const std::uint8_t*>(&cloud[0]);
-    const std::uint8_t* end = cloud_data + sizeof(PointT) * cloud.size();
-    pcl::detail::FieldCopier<PointT> copier(
+    const std::uint8_t* cloud_data = reinterpret_cast<const std::uint8_t*> (&cloud[0]);
+    const std::uint8_t* end = cloud_data + sizeof (PointT) * cloud.size();
+    pcl::detail::FieldCopier<PointT> copier (
         msg_data, cloud_data); // copier takes msg_data and cloud_data as references, so
                                // the two are shared
-    for (; cloud_data < end; cloud_data += sizeof(PointT)) {
-      for_each_type<typename traits::fieldList<PointT>::type>(copier);
+    for (; cloud_data < end; cloud_data += sizeof (PointT)) {
+      for_each_type<typename traits::fieldList<PointT>::type> (copier);
     }
 
     msg.point_step = point_size;
@@ -381,7 +381,7 @@ template <typename PointT>
 void
 toPCLPointCloud2 (const pcl::PointCloud<PointT>& cloud, pcl::PCLPointCloud2& msg)
 {
-  toPCLPointCloud2(cloud, msg, true); // true is the default in older PCL version
+  toPCLPointCloud2 (cloud, msg, true); // true is the default in older PCL version
 }
 
 /** \brief Copy the RGB fields of a PointCloud into pcl::PCLImage format
@@ -396,10 +396,10 @@ toPCLPointCloud2 (const CloudT& cloud, pcl::PCLImage& msg)
 {
   // Ease the user's burden on specifying width/height for unorganized datasets
   if (cloud.width == 0 && cloud.height == 0)
-    throw std::runtime_error("Needs to be a dense like cloud!!");
+    throw std::runtime_error ("Needs to be a dense like cloud!!");
   else {
     if (cloud.size() != cloud.width * cloud.height)
-      throw std::runtime_error("The width and height do not match the cloud size!");
+      throw std::runtime_error ("The width and height do not match the cloud size!");
     msg.height = cloud.height;
     msg.width = cloud.width;
   }
@@ -407,12 +407,12 @@ toPCLPointCloud2 (const CloudT& cloud, pcl::PCLImage& msg)
   // ensor_msgs::image_encodings::BGR8;
   msg.header = cloud.header;
   msg.encoding = "bgr8";
-  msg.step = msg.width * sizeof(std::uint8_t) * 3;
-  msg.data.resize(msg.step * msg.height);
+  msg.step = msg.width * sizeof (std::uint8_t) * 3;
+  msg.data.resize (msg.step * msg.height);
   for (std::size_t y = 0; y < cloud.height; y++) {
     for (std::size_t x = 0; x < cloud.width; x++) {
       std::uint8_t* pixel = &(msg.data[y * msg.step + x * 3]);
-      memcpy(pixel, &cloud(x, y).rgb, 3 * sizeof(std::uint8_t));
+      memcpy (pixel, &cloud (x, y).rgb, 3 * sizeof (std::uint8_t));
     }
   }
 }
@@ -427,13 +427,13 @@ toPCLPointCloud2 (const pcl::PCLPointCloud2& cloud, pcl::PCLImage& msg)
 {
   const auto predicate = [] (const auto& field) { return field.name == "rgb"; };
   const auto result =
-      std::find_if(cloud.fields.cbegin(), cloud.fields.cend(), predicate);
+      std::find_if (cloud.fields.cbegin(), cloud.fields.cend(), predicate);
   if (result == cloud.fields.end())
-    throw std::runtime_error("No rgb field!!");
+    throw std::runtime_error ("No rgb field!!");
 
-  const auto rgb_index = std::distance(cloud.fields.begin(), result);
+  const auto rgb_index = std::distance (cloud.fields.begin(), result);
   if (cloud.width == 0 && cloud.height == 0)
-    throw std::runtime_error("Needs to be a dense like cloud!!");
+    throw std::runtime_error ("Needs to be a dense like cloud!!");
   else {
     msg.height = cloud.height;
     msg.width = cloud.width;
@@ -444,13 +444,13 @@ toPCLPointCloud2 (const pcl::PCLPointCloud2& cloud, pcl::PCLImage& msg)
   // pcl::image_encodings::BGR8;
   msg.header = cloud.header;
   msg.encoding = "bgr8";
-  msg.step = (msg.width * sizeof(std::uint8_t) * 3);
-  msg.data.resize(msg.step * msg.height);
+  msg.step = (msg.width * sizeof (std::uint8_t) * 3);
+  msg.data.resize (msg.step * msg.height);
 
   for (std::size_t y = 0; y < cloud.height; y++) {
     for (std::size_t x = 0; x < cloud.width; x++, rgb_offset += point_step) {
       std::uint8_t* pixel = &(msg.data[y * msg.step + x * 3]);
-      std::copy(&cloud.data[rgb_offset], &cloud.data[rgb_offset] + 3, pixel);
+      std::copy (&cloud.data[rgb_offset], &cloud.data[rgb_offset] + 3, pixel);
     }
   }
 }

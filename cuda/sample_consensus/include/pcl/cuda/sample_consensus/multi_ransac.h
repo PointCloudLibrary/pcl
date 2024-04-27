@@ -73,11 +73,11 @@ public:
   /** \brief RANSAC (RAndom SAmple Consensus) main constructor
    * \param model a Sample Consensus model
    */
-  MultiRandomSampleConsensus(const SampleConsensusModelPtr& model)
-  : SampleConsensus<Storage>(model)
-  , min_coverage_percent_(0.9)
-  , max_batches_(5)
-  , iterations_per_batch_(1000)
+  MultiRandomSampleConsensus (const SampleConsensusModelPtr& model)
+  : SampleConsensus<Storage> (model)
+  , min_coverage_percent_ (0.9)
+  , max_batches_ (5)
+  , iterations_per_batch_ (1000)
   {
     // Maximum number of trials before we give up.
     max_iterations_ = 10000;
@@ -87,8 +87,8 @@ public:
    * \param model a Sample Consensus model
    * \param threshold distance to model threshold
    */
-  MultiRandomSampleConsensus(const SampleConsensusModelPtr& model, double threshold)
-  : SampleConsensus<Storage>(model, threshold)
+  MultiRandomSampleConsensus (const SampleConsensusModelPtr& model, double threshold)
+  : SampleConsensus<Storage> (model, threshold)
   {
     // Maximum number of trials before we give up.
     max_iterations_ = 10000;

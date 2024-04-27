@@ -11,15 +11,15 @@ LLVMFuzzerTestOneInput (const uint8_t* data, size_t size)
   pcl::PCLPointCloud2 cloud_blob;
   pcl::PLYReader reader;
   char filename[256];
-  sprintf(filename, "/tmp/libfuzzer.%d", getpid());
+  sprintf (filename, "/tmp/libfuzzer.%d", getpid());
 
-  FILE* fp = fopen(filename, "wb");
+  FILE* fp = fopen (filename, "wb");
   if (!fp)
     return 0;
-  fwrite(data, size, 1, fp);
-  fclose(fp);
+  fwrite (data, size, 1, fp);
+  fclose (fp);
 
-  reader.read(filename, cloud_blob);
-  unlink(filename);
+  reader.read (filename, cloud_blob);
+  unlink (filename);
   return 0;
 }

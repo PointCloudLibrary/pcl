@@ -79,10 +79,11 @@ public:
    * \param[in] random if true set the random seed to the current time, else set to
    * 12345 (default: false)
    */
-  SampleConsensusModelParallelLine(const PointCloudConstPtr& cloud, bool random = false)
-  : SampleConsensusModelLine<PointT>(cloud, random)
-  , axis_(Eigen::Vector3f::Zero())
-  , eps_angle_(0.0)
+  SampleConsensusModelParallelLine (const PointCloudConstPtr& cloud,
+                                    bool random = false)
+  : SampleConsensusModelLine<PointT> (cloud, random)
+  , axis_ (Eigen::Vector3f::Zero())
+  , eps_angle_ (0.0)
   {
     model_name_ = "SampleConsensusModelParallelLine";
     sample_size_ = 2;
@@ -95,12 +96,12 @@ public:
    * \param[in] random if true set the random seed to the current time, else set to
    * 12345 (default: false)
    */
-  SampleConsensusModelParallelLine(const PointCloudConstPtr& cloud,
-                                   const Indices& indices,
-                                   bool random = false)
-  : SampleConsensusModelLine<PointT>(cloud, indices, random)
-  , axis_(Eigen::Vector3f::Zero())
-  , eps_angle_(0.0)
+  SampleConsensusModelParallelLine (const PointCloudConstPtr& cloud,
+                                    const Indices& indices,
+                                    bool random = false)
+  : SampleConsensusModelLine<PointT> (cloud, indices, random)
+  , axis_ (Eigen::Vector3f::Zero())
+  , eps_angle_ (0.0)
   {
     model_name_ = "SampleConsensusModelParallelLine";
     sample_size_ = 2;

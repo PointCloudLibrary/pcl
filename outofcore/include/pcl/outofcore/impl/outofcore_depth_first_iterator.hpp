@@ -43,11 +43,11 @@ namespace pcl {
 namespace outofcore {
 
 template <typename PointT, typename ContainerT>
-OutofcoreDepthFirstIterator<PointT, ContainerT>::OutofcoreDepthFirstIterator(
+OutofcoreDepthFirstIterator<PointT, ContainerT>::OutofcoreDepthFirstIterator (
     OutofcoreOctreeBase<ContainerT, PointT>& octree_arg)
-: OutofcoreIteratorBase<PointT, ContainerT>(octree_arg), stack_(0)
+: OutofcoreIteratorBase<PointT, ContainerT> (octree_arg), stack_ (0)
 {
-  stack_.reserve(this->octree_.getTreeDepth());
+  stack_.reserve (this->octree_.getTreeDepth());
   OutofcoreIteratorBase<PointT, ContainerT>::reset();
 }
 
@@ -69,17 +69,17 @@ OutofcoreDepthFirstIterator<PointT, ContainerT>::operator++()
     OutofcoreOctreeBaseNode<ContainerT, PointT>* itNode = nullptr;
 
     if (this->currentNode_->getNodeType() == pcl::octree::BRANCH_NODE) {
-      auto* currentBranch = static_cast<BranchNode*>(this->currentNode_);
+      auto* currentBranch = static_cast<BranchNode*> (this->currentNode_);
 
       if (currentChildIdx_ < 8) {
-        itNode = this->octree_.getBranchChildPtr(*currentBranch, currentChildIdx_);
+        itNode = this->octree_.getBranchChildPtr (*currentBranch, currentChildIdx_);
 
         // keep looking for a valid child until we've run out of children or a valid one
         // is found
         while ((currentChildIdx_ < 7) && !(itNode)) {
           // find next existing child node
           currentChildIdx_++;
-          itNode = this->octree_.getBranchChildPtr(*currentBranch, currentChildIdx_);
+          itNode = this->octree_.getBranchChildPtr (*currentBranch, currentChildIdx_);
         }
         // if no valid one was found, set flag to move back up the tree to the parent
         // node
@@ -115,9 +115,9 @@ OutofcoreDepthFirstIterator<PointT, ContainerT>::operator++()
       std::pair<OutofcoreOctreeBaseNode<ContainerT, PointT>*, unsigned char>
           newStackEntry;
       newStackEntry.first = this->currentNode_;
-      newStackEntry.second = static_cast<unsigned char>(currentChildIdx_ + 1);
+      newStackEntry.second = static_cast<unsigned char> (currentChildIdx_ + 1);
 
-      stack_.push_back(newStackEntry);
+      stack_.push_back (newStackEntry);
 
       // don't do anything with the keys here...
 

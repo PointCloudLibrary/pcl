@@ -47,19 +47,19 @@ printFuncAttrib (Func& func)
 {
 
   cudaFuncAttributes attrs;
-  cudaFuncGetAttributes(&attrs, func);
+  cudaFuncGetAttributes (&attrs, func);
 
-  printf("=== Function stats ===\n");
-  printf("Name: \n");
-  printf("sharedSizeBytes    = %d\n", (int)attrs.sharedSizeBytes);
-  printf("constSizeBytes     = %d\n", (int)attrs.constSizeBytes);
-  printf("localSizeBytes     = %d\n", (int)attrs.localSizeBytes);
-  printf("maxThreadsPerBlock = %d\n", attrs.maxThreadsPerBlock);
-  printf("numRegs            = %d\n", attrs.numRegs);
-  printf("ptxVersion         = %d\n", attrs.ptxVersion);
-  printf("binaryVersion      = %d\n", attrs.binaryVersion);
-  printf("\n");
-  fflush(stdout);
+  printf ("=== Function stats ===\n");
+  printf ("Name: \n");
+  printf ("sharedSizeBytes    = %d\n", (int)attrs.sharedSizeBytes);
+  printf ("constSizeBytes     = %d\n", (int)attrs.constSizeBytes);
+  printf ("localSizeBytes     = %d\n", (int)attrs.localSizeBytes);
+  printf ("maxThreadsPerBlock = %d\n", attrs.maxThreadsPerBlock);
+  printf ("numRegs            = %d\n", attrs.numRegs);
+  printf ("ptxVersion         = %d\n", attrs.ptxVersion);
+  printf ("binaryVersion      = %d\n", attrs.binaryVersion);
+  printf ("\n");
+  fflush (stdout);
 }
 } // namespace device
 

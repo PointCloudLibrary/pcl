@@ -49,7 +49,7 @@ namespace cloud_composer {
 class AbstractTool : public QObject {
   Q_OBJECT
 public:
-  AbstractTool(PropertiesModel* parameter_model, QObject* parent);
+  AbstractTool (PropertiesModel* parameter_model, QObject* parent);
 
   ~AbstractTool() { qDebug() << "Tool Destructed"; }
 
@@ -90,8 +90,8 @@ private:
 class ModifyItemTool : public AbstractTool {
   Q_OBJECT
 public:
-  ModifyItemTool(PropertiesModel* parameter_model, QObject* parent)
-  : AbstractTool(parameter_model, parent)
+  ModifyItemTool (PropertiesModel* parameter_model, QObject* parent)
+  : AbstractTool (parameter_model, parent)
   {}
 
   QList<CloudComposerItem*>
@@ -101,7 +101,7 @@ public:
   inline CloudCommand*
   createCommand (QList<const CloudComposerItem*> input_data) override
   {
-    return new ModifyItemCommand(input_data);
+    return new ModifyItemCommand (input_data);
   }
 
   inline QString
@@ -114,8 +114,8 @@ public:
 class NewItemTool : public AbstractTool {
   Q_OBJECT
 public:
-  NewItemTool(PropertiesModel* parameter_model, QObject* parent)
-  : AbstractTool(parameter_model, parent)
+  NewItemTool (PropertiesModel* parameter_model, QObject* parent)
+  : AbstractTool (parameter_model, parent)
   {}
 
   QList<CloudComposerItem*>
@@ -125,7 +125,7 @@ public:
   inline CloudCommand*
   createCommand (QList<const CloudComposerItem*> input_data) override
   {
-    return new NewItemCloudCommand(input_data);
+    return new NewItemCloudCommand (input_data);
   }
 
   inline QString
@@ -138,8 +138,8 @@ public:
 class SplitItemTool : public AbstractTool {
   Q_OBJECT
 public:
-  SplitItemTool(PropertiesModel* parameter_model, QObject* parent)
-  : AbstractTool(parameter_model, parent)
+  SplitItemTool (PropertiesModel* parameter_model, QObject* parent)
+  : AbstractTool (parameter_model, parent)
   {}
 
   QList<CloudComposerItem*>
@@ -149,7 +149,7 @@ public:
   inline CloudCommand*
   createCommand (QList<const CloudComposerItem*> input_data) override
   {
-    return new SplitCloudCommand(input_data);
+    return new SplitCloudCommand (input_data);
   }
 
   inline QString
@@ -162,8 +162,8 @@ public:
 class MergeCloudTool : public AbstractTool {
   Q_OBJECT
 public:
-  MergeCloudTool(PropertiesModel* parameter_model, QObject* parent)
-  : AbstractTool(parameter_model, parent)
+  MergeCloudTool (PropertiesModel* parameter_model, QObject* parent)
+  : AbstractTool (parameter_model, parent)
   {}
 
   QList<CloudComposerItem*>
@@ -173,7 +173,7 @@ public:
   inline CloudCommand*
   createCommand (QList<const CloudComposerItem*> input_data) override
   {
-    return new MergeCloudCommand(input_data);
+    return new MergeCloudCommand (input_data);
   }
 
   inline QString

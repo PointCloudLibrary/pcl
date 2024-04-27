@@ -152,9 +152,9 @@ public:
   void
   setSourceNormals (pcl::PCLPointCloud2::ConstPtr cloud2)
   {
-    NormalsPtr cloud(new PointCloudNormals);
-    fromPCLPointCloud2(*cloud2, *cloud);
-    setSourceNormals(cloud);
+    NormalsPtr cloud (new PointCloudNormals);
+    fromPCLPointCloud2 (*cloud2, *cloud);
+    setSourceNormals (cloud);
   }
 
   /** \brief See if this rejector requires target normals*/
@@ -168,9 +168,9 @@ public:
   void
   setTargetNormals (pcl::PCLPointCloud2::ConstPtr cloud2)
   {
-    NormalsPtr cloud(new PointCloudNormals);
-    fromPCLPointCloud2(*cloud2, *cloud);
-    setTargetNormals(cloud);
+    NormalsPtr cloud (new PointCloudNormals);
+    fromPCLPointCloud2 (*cloud2, *cloud);
+    setTargetNormals (cloud);
   }
 
   /** \brief Determine the correspondences between input and target cloud.
@@ -221,10 +221,10 @@ public:
   virtual typename CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::Ptr
   clone () const
   {
-    Ptr copy(new CorrespondenceEstimationBackProjection<PointSource,
-                                                        PointTarget,
-                                                        NormalT,
-                                                        Scalar>(*this));
+    Ptr copy (new CorrespondenceEstimationBackProjection<PointSource,
+                                                         PointTarget,
+                                                         NormalT,
+                                                         Scalar> (*this));
     return (copy);
   }
 

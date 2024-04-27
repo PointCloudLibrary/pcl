@@ -27,7 +27,7 @@ class PCLViewer : public QMainWindow {
 
 public:
   /** @brief Constructor */
-  explicit PCLViewer(QWidget* parent = 0);
+  explicit PCLViewer (QWidget* parent = 0);
 
   /** @brief Destructor */
   ~PCLViewer();

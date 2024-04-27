@@ -52,10 +52,13 @@ namespace modeler {
 
 class Parameter {
 public:
-  Parameter(const std::string& name,
-            const std::string& description,
-            const boost::any& value)
-  : name_(name), description_(description), default_value_(value), current_value_(value)
+  Parameter (const std::string& name,
+             const std::string& description,
+             const boost::any& value)
+  : name_ (name)
+  , description_ (description)
+  , default_value_ (value)
+  , current_value_ (value)
   {}
   virtual ~Parameter() = default;
 
@@ -110,11 +113,11 @@ protected:
 
 class BoolParameter : public Parameter {
 public:
-  BoolParameter(const std::string& name, const std::string& description, bool value)
-  : Parameter(name, description, value)
+  BoolParameter (const std::string& name, const std::string& description, bool value)
+  : Parameter (name, description, value)
   {}
 
-  operator bool() const { return boost::any_cast<bool>(current_value_); }
+  operator bool() const { return boost::any_cast<bool> (current_value_); }
 
   std::string
   valueTip () override;
@@ -135,16 +138,16 @@ protected:
 
 class IntParameter : public Parameter {
 public:
-  IntParameter(const std::string& name,
-               const std::string& description,
-               int value,
-               int low,
-               int high,
-               int step = 1)
-  : Parameter(name, description, value), low_(low), high_(high), step_(step)
+  IntParameter (const std::string& name,
+                const std::string& description,
+                int value,
+                int low,
+                int high,
+                int step = 1)
+  : Parameter (name, description, value), low_ (low), high_ (high), step_ (step)
   {}
 
-  operator int() const { return boost::any_cast<int>(current_value_); }
+  operator int() const { return boost::any_cast<int> (current_value_); }
 
   std::string
   valueTip () override;
@@ -188,14 +191,14 @@ protected:
 template <class T>
 class EnumParameter : public Parameter {
 public:
-  EnumParameter(const std::string& name,
-                const std::string& description,
-                T value,
-                const std::map<T, std::string>& candidates)
-  : Parameter(name, description, value), candidates_(candidates)
+  EnumParameter (const std::string& name,
+                 const std::string& description,
+                 T value,
+                 const std::map<T, std::string>& candidates)
+  : Parameter (name, description, value), candidates_ (candidates)
   {}
 
-  operator T() const { return boost::any_cast<T>(current_value_); }
+  operator T() const { return boost::any_cast<T> (current_value_); }
 
   std::string
   valueTip () override;
@@ -218,16 +221,16 @@ protected:
 
 class DoubleParameter : public Parameter {
 public:
-  DoubleParameter(const std::string& name,
-                  const std::string& description,
-                  double value,
-                  double low,
-                  double high,
-                  double step = 0.01)
-  : Parameter(name, description, value), low_(low), high_(high), step_(step)
+  DoubleParameter (const std::string& name,
+                   const std::string& description,
+                   double value,
+                   double low,
+                   double high,
+                   double step = 0.01)
+  : Parameter (name, description, value), low_ (low), high_ (high), step_ (step)
   {}
 
-  operator double() const { return boost::any_cast<double>(current_value_); }
+  operator double() const { return boost::any_cast<double> (current_value_); }
 
   std::string
   valueTip () override;
@@ -270,13 +273,13 @@ protected:
 
 class ColorParameter : public Parameter {
 public:
-  ColorParameter(const std::string& name,
-                 const std::string& description,
-                 const QColor& value)
-  : Parameter(name, description, value)
+  ColorParameter (const std::string& name,
+                  const std::string& description,
+                  const QColor& value)
+  : Parameter (name, description, value)
   {}
 
-  operator QColor() const { return boost::any_cast<QColor>(current_value_); }
+  operator QColor() const { return boost::any_cast<QColor> (current_value_); }
 
   std::string
   valueTip () override;

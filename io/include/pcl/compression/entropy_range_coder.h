@@ -108,7 +108,7 @@ private:
 class StaticRangeCoder {
 public:
   /** \brief Constructor. */
-  StaticRangeCoder() : cFreqTable_(65537) {}
+  StaticRangeCoder() : cFreqTable_ (65537) {}
 
   /** \brief Empty deconstructor. */
   virtual ~StaticRangeCoder() = default;

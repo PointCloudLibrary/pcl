@@ -77,9 +77,10 @@ public:
   using Ptr = pcl::shared_ptr<OpenNIDevice>;
   using ConstPtr = pcl::shared_ptr<const OpenNIDevice>;
 
-  using ImageCallbackFunction = std::function<void(Image::Ptr, void* cookie)>;
-  using DepthImageCallbackFunction = std::function<void(DepthImage::Ptr, void* cookie)>;
-  using IRImageCallbackFunction = std::function<void(IRImage::Ptr, void* cookie)>;
+  using ImageCallbackFunction = std::function<void (Image::Ptr, void* cookie)>;
+  using DepthImageCallbackFunction =
+      std::function<void (DepthImage::Ptr, void* cookie)>;
+  using IRImageCallbackFunction = std::function<void (IRImage::Ptr, void* cookie)>;
   using CallbackHandle = unsigned;
 
 public:
@@ -304,7 +305,7 @@ public:
    */
   template <typename T>
   CallbackHandle
-  registerImageCallback (void (T::*callback)(Image::Ptr, void* cookie),
+  registerImageCallback (void (T::*callback) (Image::Ptr, void* cookie),
                          T& instance,
                          void* cookie = nullptr) noexcept;
 
@@ -338,7 +339,7 @@ public:
    */
   template <typename T>
   CallbackHandle
-  registerDepthCallback (void (T::*callback)(DepthImage::Ptr, void* cookie),
+  registerDepthCallback (void (T::*callback) (DepthImage::Ptr, void* cookie),
                          T& instance,
                          void* cookie = nullptr) noexcept;
 
@@ -371,7 +372,7 @@ public:
    */
   template <typename T>
   CallbackHandle
-  registerIRCallback (void (T::*callback)(IRImage::Ptr, void* cookie),
+  registerIRCallback (void (T::*callback) (IRImage::Ptr, void* cookie),
                       T& instance,
                       void* cookie = nullptr) noexcept;
 
@@ -450,7 +451,7 @@ public:
   std::uint16_t
   shiftToDepth (std::uint16_t shift_value) const
   {
-    assert(shift_conversion_parameters_.init_);
+    assert (shift_conversion_parameters_.init_);
 
     std::uint16_t ret = 0;
 
@@ -463,31 +464,31 @@ public:
 
 private:
   // make OpenNIDevice non copyable
-  OpenNIDevice(OpenNIDevice const&);
+  OpenNIDevice (OpenNIDevice const&);
   OpenNIDevice&
-  operator=(OpenNIDevice const&);
+  operator= (OpenNIDevice const&);
 
 protected:
-  using ActualImageCallbackFunction = std::function<void(Image::Ptr)>;
-  using ActualDepthImageCallbackFunction = std::function<void(DepthImage::Ptr)>;
-  using ActualIRImageCallbackFunction = std::function<void(IRImage::Ptr)>;
+  using ActualImageCallbackFunction = std::function<void (Image::Ptr)>;
+  using ActualDepthImageCallbackFunction = std::function<void (DepthImage::Ptr)>;
+  using ActualIRImageCallbackFunction = std::function<void (IRImage::Ptr)>;
 
-  OpenNIDevice(xn::Context& context,
-               const xn::NodeInfo& device_node,
-               const xn::NodeInfo& image_node,
-               const xn::NodeInfo& depth_node,
-               const xn::NodeInfo& ir_node);
-  OpenNIDevice(xn::Context& context,
-               const xn::NodeInfo& device_node,
-               const xn::NodeInfo& depth_node,
-               const xn::NodeInfo& ir_node);
-  OpenNIDevice(xn::Context& context);
-  static void __stdcall NewDepthDataAvailable(xn::ProductionNode& node,
-                                              void* cookie) noexcept;
-  static void __stdcall NewImageDataAvailable(xn::ProductionNode& node,
-                                              void* cookie) noexcept;
-  static void __stdcall NewIRDataAvailable(xn::ProductionNode& node,
-                                           void* cookie) noexcept;
+  OpenNIDevice (xn::Context& context,
+                const xn::NodeInfo& device_node,
+                const xn::NodeInfo& image_node,
+                const xn::NodeInfo& depth_node,
+                const xn::NodeInfo& ir_node);
+  OpenNIDevice (xn::Context& context,
+                const xn::NodeInfo& device_node,
+                const xn::NodeInfo& depth_node,
+                const xn::NodeInfo& ir_node);
+  OpenNIDevice (xn::Context& context);
+  static void __stdcall NewDepthDataAvailable (xn::ProductionNode& node,
+                                               void* cookie) noexcept;
+  static void __stdcall NewImageDataAvailable (xn::ProductionNode& node,
+                                               void* cookie) noexcept;
+  static void __stdcall NewIRDataAvailable (xn::ProductionNode& node,
+                                            void* cookie) noexcept;
 
   // This is a workaround, since in the NewDepthDataAvailable function WaitAndUpdateData
   // leads to a dead-lock behaviour and retrieving image data without WaitAndUpdateData
@@ -599,25 +600,25 @@ protected:
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 float
-OpenNIDevice::getImageFocalLength(int output_x_resolution) const noexcept
+OpenNIDevice::getImageFocalLength (int output_x_resolution) const noexcept
 {
   if (output_x_resolution == 0)
     output_x_resolution = getImageOutputMode().nXRes;
 
   float scale =
-      static_cast<float>(output_x_resolution) / static_cast<float>(XN_SXGA_X_RES);
+      static_cast<float> (output_x_resolution) / static_cast<float> (XN_SXGA_X_RES);
   return (rgb_focal_length_SXGA_ * scale);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 float
-OpenNIDevice::getDepthFocalLength(int output_x_resolution) const noexcept
+OpenNIDevice::getDepthFocalLength (int output_x_resolution) const noexcept
 {
   if (output_x_resolution == 0)
     output_x_resolution = getDepthOutputMode().nXRes;
 
   float scale =
-      static_cast<float>(output_x_resolution) / static_cast<float>(XN_SXGA_X_RES);
+      static_cast<float> (output_x_resolution) / static_cast<float> (XN_SXGA_X_RES);
   if (isDepthRegistered())
     return (rgb_focal_length_SXGA_ * scale);
   return (depth_focal_length_SXGA_ * scale);
@@ -633,12 +634,12 @@ OpenNIDevice::getBaseline() const noexcept
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename T>
 OpenNIDevice::CallbackHandle
-OpenNIDevice::registerImageCallback(void (T::*callback)(Image::Ptr, void* cookie),
-                                    T& instance,
-                                    void* custom_data) noexcept
+OpenNIDevice::registerImageCallback (void (T::*callback) (Image::Ptr, void* cookie),
+                                     T& instance,
+                                     void* custom_data) noexcept
 {
   image_callback_[image_callback_handle_counter_] = [=, &instance] (Image::Ptr img) {
-    (instance.*callback)(img, custom_data);
+    (instance.*callback) (img, custom_data);
   };
   return (image_callback_handle_counter_++);
 }
@@ -646,24 +647,25 @@ OpenNIDevice::registerImageCallback(void (T::*callback)(Image::Ptr, void* cookie
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename T>
 OpenNIDevice::CallbackHandle
-OpenNIDevice::registerDepthCallback(void (T::*callback)(DepthImage::Ptr, void* cookie),
-                                    T& instance,
-                                    void* custom_data) noexcept
+OpenNIDevice::registerDepthCallback (void (T::*callback) (DepthImage::Ptr,
+                                                          void* cookie),
+                                     T& instance,
+                                     void* custom_data) noexcept
 {
   depth_callback_[depth_callback_handle_counter_] =
-      [=, &instance] (DepthImage::Ptr img) { (instance.*callback)(img, custom_data); };
+      [=, &instance] (DepthImage::Ptr img) { (instance.*callback) (img, custom_data); };
   return (depth_callback_handle_counter_++);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename T>
 OpenNIDevice::CallbackHandle
-OpenNIDevice::registerIRCallback(void (T::*callback)(IRImage::Ptr, void* cookie),
-                                 T& instance,
-                                 void* custom_data) noexcept
+OpenNIDevice::registerIRCallback (void (T::*callback) (IRImage::Ptr, void* cookie),
+                                  T& instance,
+                                  void* custom_data) noexcept
 {
   ir_callback_[ir_callback_handle_counter_] = [=, &instance] (IRImage::Ptr img) {
-    (instance.*callback)(img, custom_data);
+    (instance.*callback) (img, custom_data);
   };
   return (ir_callback_handle_counter_++);
 }

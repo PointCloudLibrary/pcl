@@ -38,13 +38,13 @@
 #include <pcl/filters/plane_clipper3D.h>
 
 template <typename PointT>
-pcl::PlaneClipper3D<PointT>::PlaneClipper3D(const Eigen::Vector4f& plane_params)
-: plane_params_(plane_params)
+pcl::PlaneClipper3D<PointT>::PlaneClipper3D (const Eigen::Vector4f& plane_params)
+: plane_params_ (plane_params)
 {}
 
 template <typename PointT>
 void
-pcl::PlaneClipper3D<PointT>::setPlaneParameters(const Eigen::Vector4f& plane_params)
+pcl::PlaneClipper3D<PointT>::setPlaneParameters (const Eigen::Vector4f& plane_params)
 {
   plane_params_ = plane_params;
 }
@@ -60,12 +60,12 @@ template <typename PointT>
 pcl::Clipper3D<PointT>*
 pcl::PlaneClipper3D<PointT>::clone() const
 {
-  return new PlaneClipper3D<PointT>(plane_params_);
+  return new PlaneClipper3D<PointT> (plane_params_);
 }
 
 template <typename PointT>
 float
-pcl::PlaneClipper3D<PointT>::getDistance(const PointT& point) const
+pcl::PlaneClipper3D<PointT>::getDistance (const PointT& point) const
 {
   return (plane_params_[0] * point.x + plane_params_[1] * point.y +
           plane_params_[2] * point.z + plane_params_[3]);
@@ -73,7 +73,7 @@ pcl::PlaneClipper3D<PointT>::getDistance(const PointT& point) const
 
 template <typename PointT>
 bool
-pcl::PlaneClipper3D<PointT>::clipPoint3D(const PointT& point) const
+pcl::PlaneClipper3D<PointT>::clipPoint3D (const PointT& point) const
 {
   return ((plane_params_[0] * point.x + plane_params_[1] * point.y +
            plane_params_[2] * point.z) >= -plane_params_[3]);
@@ -84,10 +84,10 @@ pcl::PlaneClipper3D<PointT>::clipPoint3D(const PointT& point) const
  */
 template <typename PointT>
 bool
-pcl::PlaneClipper3D<PointT>::clipLineSegment3D(PointT& point1, PointT& point2) const
+pcl::PlaneClipper3D<PointT>::clipLineSegment3D (PointT& point1, PointT& point2) const
 {
-  float dist1 = getDistance(point1);
-  float dist2 = getDistance(point2);
+  float dist1 = getDistance (point1);
+  float dist2 = getDistance (point2);
 
   if (dist1 * dist2 > 0) // both on same side of the plane -> nothing to clip
     return (dist1 > 0);  // true if both are on positive side, thus visible
@@ -114,33 +114,33 @@ pcl::PlaneClipper3D<PointT>::clipLineSegment3D(PointT& point1, PointT& point2) c
  */
 template <typename PointT>
 void
-pcl::PlaneClipper3D<PointT>::clipPlanarPolygon3D(
+pcl::PlaneClipper3D<PointT>::clipPlanarPolygon3D (
     const std::vector<PointT, Eigen::aligned_allocator<PointT>>& polygon,
     std::vector<PointT, Eigen::aligned_allocator<PointT>>& clipped_polygon) const
 {
   clipped_polygon.clear();
-  clipped_polygon.reserve(polygon.size());
+  clipped_polygon.reserve (polygon.size());
 
   // test for degenerated polygons
   if (polygon.size() < 3) {
     if (polygon.size() == 1) {
       // point outside clipping area ?
-      if (clipPoint3D(polygon[0]))
-        clipped_polygon.push_back(polygon[0]);
+      if (clipPoint3D (polygon[0]))
+        clipped_polygon.push_back (polygon[0]);
     }
     else if (polygon.size() == 2) {
-      clipped_polygon.push_back(polygon[0]);
-      clipped_polygon.push_back(polygon[1]);
-      if (!clipLineSegment3D(clipped_polygon[0], clipped_polygon[1]))
+      clipped_polygon.push_back (polygon[0]);
+      clipped_polygon.push_back (polygon[1]);
+      if (!clipLineSegment3D (clipped_polygon[0], clipped_polygon[1]))
         clipped_polygon.clear();
     }
     return;
   }
 
-  float previous_distance = getDistance(polygon[0]);
+  float previous_distance = getDistance (polygon[0]);
 
   if (previous_distance > 0)
-    clipped_polygon.push_back(polygon[0]);
+    clipped_polygon.push_back (polygon[0]);
 
   typename std::vector<PointT, Eigen::aligned_allocator<PointT>>::const_iterator
       prev_it = polygon.begin();
@@ -150,7 +150,7 @@ pcl::PlaneClipper3D<PointT>::clipPlanarPolygon3D(
        pIt != polygon.end();
        prev_it = pIt++) {
     // if we intersect plane
-    float distance = getDistance(*pIt);
+    float distance = getDistance (*pIt);
     if (distance * previous_distance < 0) {
       float lambda = distance / (distance - previous_distance);
 
@@ -159,10 +159,10 @@ pcl::PlaneClipper3D<PointT>::clipPlanarPolygon3D(
       intersection.y = (prev_it->y - pIt->y) * lambda + pIt->y;
       intersection.z = (prev_it->z - pIt->z) * lambda + pIt->z;
 
-      clipped_polygon.push_back(intersection);
+      clipped_polygon.push_back (intersection);
     }
     if (distance > 0)
-      clipped_polygon.push_back(*pIt);
+      clipped_polygon.push_back (*pIt);
 
     previous_distance = distance;
   }
@@ -173,11 +173,11 @@ pcl::PlaneClipper3D<PointT>::clipPlanarPolygon3D(
  */
 template <typename PointT>
 void
-pcl::PlaneClipper3D<PointT>::clipPlanarPolygon3D(
+pcl::PlaneClipper3D<PointT>::clipPlanarPolygon3D (
     std::vector<PointT, Eigen::aligned_allocator<PointT>>& polygon) const
 {
   std::vector<PointT, Eigen::aligned_allocator<PointT>> clipped;
-  clipPlanarPolygon3D(polygon, clipped);
+  clipPlanarPolygon3D (polygon, clipped);
   polygon = clipped;
 }
 
@@ -185,12 +185,12 @@ pcl::PlaneClipper3D<PointT>::clipPlanarPolygon3D(
 // that uses advantages of eigens SSE operations.
 template <typename PointT>
 void
-pcl::PlaneClipper3D<PointT>::clipPointCloud3D(const pcl::PointCloud<PointT>& cloud_in,
-                                              Indices& clipped,
-                                              const Indices& indices) const
+pcl::PlaneClipper3D<PointT>::clipPointCloud3D (const pcl::PointCloud<PointT>& cloud_in,
+                                               Indices& clipped,
+                                               const Indices& indices) const
 {
   if (indices.empty()) {
-    clipped.reserve(cloud_in.size());
+    clipped.reserve (cloud_in.size());
 
     // #if 0
     //     Eigen::MatrixXf points = cloud_in.getMatrixXfMap (4, sizeof (PointT) / sizeof
@@ -227,13 +227,13 @@ pcl::PlaneClipper3D<PointT>::clipPointCloud3D(const pcl::PointCloud<PointT>& clo
     //     () << std::endl;
 
     for (unsigned pIdx = 0; pIdx < cloud_in.size(); ++pIdx)
-      if (clipPoint3D(cloud_in[pIdx]))
-        clipped.push_back(pIdx);
+      if (clipPoint3D (cloud_in[pIdx]))
+        clipped.push_back (pIdx);
   }
   else {
     for (const auto& index : indices)
-      if (clipPoint3D(cloud_in[index]))
-        clipped.push_back(index);
+      if (clipPoint3D (cloud_in[index]))
+        clipped.push_back (index);
   }
 }
 #endif // PCL_FILTERS_IMPL_PLANE_CLIPPER3D_HPP

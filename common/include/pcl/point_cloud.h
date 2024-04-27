@@ -80,8 +80,8 @@ struct NdCopyEigenPointFunctor {
    * \param[in] p1 the input Eigen type
    * \param[out] p2 the output Point type
    */
-  NdCopyEigenPointFunctor(const Eigen::VectorXf& p1, PointOutT& p2)
-  : p1_(p1), p2_(reinterpret_cast<Pod&>(p2)), f_idx_(0)
+  NdCopyEigenPointFunctor (const Eigen::VectorXf& p1, PointOutT& p2)
+  : p1_ (p1), p2_ (reinterpret_cast<Pod&> (p2)), f_idx_ (0)
   {}
 
   /** \brief Operator. Data copy happens here. */
@@ -91,9 +91,9 @@ struct NdCopyEigenPointFunctor {
   {
     // boost::fusion::at_key<Key> (p2_) = p1_[f_idx_++];
     using T = typename pcl::traits::datatype<PointOutT, Key>::type;
-    std::uint8_t* data_ptr = reinterpret_cast<std::uint8_t*>(&p2_) +
+    std::uint8_t* data_ptr = reinterpret_cast<std::uint8_t*> (&p2_) +
                              pcl::traits::offset<PointOutT, Key>::value;
-    *reinterpret_cast<T*>(data_ptr) = static_cast<T>(p1_[f_idx_++]);
+    *reinterpret_cast<T*> (data_ptr) = static_cast<T> (p1_[f_idx_++]);
   }
 
 private:
@@ -115,8 +115,8 @@ struct NdCopyPointEigenFunctor {
    * \param[in] p1 the input Point type
    * \param[out] p2 the output Eigen type
    */
-  NdCopyPointEigenFunctor(const PointInT& p1, Eigen::VectorXf& p2)
-  : p1_(reinterpret_cast<const Pod&>(p1)), p2_(p2), f_idx_(0)
+  NdCopyPointEigenFunctor (const PointInT& p1, Eigen::VectorXf& p2)
+  : p1_ (reinterpret_cast<const Pod&> (p1)), p2_ (p2), f_idx_ (0)
   {}
 
   /** \brief Operator. Data copy happens here. */
@@ -126,9 +126,9 @@ struct NdCopyPointEigenFunctor {
   {
     // p2_[f_idx_++] = boost::fusion::at_key<Key> (p1_);
     using T = typename pcl::traits::datatype<PointInT, Key>::type;
-    const std::uint8_t* data_ptr = reinterpret_cast<const std::uint8_t*>(&p1_) +
+    const std::uint8_t* data_ptr = reinterpret_cast<const std::uint8_t*> (&p1_) +
                                    pcl::traits::offset<PointInT, Key>::value;
-    p2_[f_idx_++] = static_cast<float>(*reinterpret_cast<const T*>(data_ptr));
+    p2_[f_idx_++] = static_cast<float> (*reinterpret_cast<const T*> (data_ptr));
   }
 
 private:
@@ -194,17 +194,17 @@ public:
    * \param[in] pc the cloud to copy into this
    * \param[in] indices the subset to copy
    */
-  PointCloud(const PointCloud<PointT>& pc, const Indices& indices)
-  : header(pc.header)
-  , points(indices.size())
-  , width(indices.size())
-  , height(1)
-  , is_dense(pc.is_dense)
-  , sensor_origin_(pc.sensor_origin_)
-  , sensor_orientation_(pc.sensor_orientation_)
+  PointCloud (const PointCloud<PointT>& pc, const Indices& indices)
+  : header (pc.header)
+  , points (indices.size())
+  , width (indices.size())
+  , height (1)
+  , is_dense (pc.is_dense)
+  , sensor_origin_ (pc.sensor_origin_)
+  , sensor_orientation_ (pc.sensor_orientation_)
   {
     // Copy the obvious
-    assert(indices.size() <= pc.size());
+    assert (indices.size() <= pc.size());
     for (std::size_t i = 0; i < indices.size(); i++)
       points[i] = pc[indices[i]];
   }
@@ -214,10 +214,10 @@ public:
    * \param[in] height_ the cloud height
    * \param[in] value_ default value
    */
-  PointCloud(std::uint32_t width_,
-             std::uint32_t height_,
-             const PointT& value_ = PointT())
-  : points(width_ * height_, value_), width(width_), height(height_)
+  PointCloud (std::uint32_t width_,
+              std::uint32_t height_,
+              const PointT& value_ = PointT())
+  : points (width_ * height_, value_), width (width_), height (height_)
   {}
 
   // TODO: check if copy/move constructors/assignment operators are needed
@@ -228,9 +228,9 @@ public:
    * cloud
    */
   inline PointCloud&
-  operator+=(const PointCloud& rhs)
+  operator+= (const PointCloud& rhs)
   {
-    concatenate((*this), rhs);
+    concatenate ((*this), rhs);
     return (*this);
   }
 
@@ -240,21 +240,21 @@ public:
    * cloud
    */
   inline PointCloud
-  operator+(const PointCloud& rhs)
+  operator+ (const PointCloud& rhs)
   {
-    return (PointCloud(*this) += rhs);
+    return (PointCloud (*this) += rhs);
   }
 
   inline static bool
   concatenate (pcl::PointCloud<PointT>& cloud1, const pcl::PointCloud<PointT>& cloud2)
   {
     // Make the resultant point cloud take the newest stamp
-    cloud1.header.stamp = std::max(cloud1.header.stamp, cloud2.header.stamp);
+    cloud1.header.stamp = std::max (cloud1.header.stamp, cloud2.header.stamp);
 
     // libstdc++ (GCC) on calling reserve allocates new memory, copies and deallocates
     // old vector This causes a drastic performance hit. Prefer not to use reserve with
     // libstdc++ (default on clang)
-    cloud1.insert(cloud1.end(), cloud2.begin(), cloud2.end());
+    cloud1.insert (cloud1.end(), cloud2.begin(), cloud2.end());
 
     cloud1.width = cloud1.size();
     cloud1.height = 1;
@@ -268,7 +268,7 @@ public:
                pcl::PointCloud<PointT>& cloud_out)
   {
     cloud_out = cloud1;
-    return concatenate(cloud_out, cloud2);
+    return concatenate (cloud_out, cloud2);
   }
 
   /** \brief Obtain the point given by the (column, row) coordinates. Only works on
@@ -279,9 +279,9 @@ public:
   at (int column, int row) const
   {
     if (this->height > 1)
-      return (points.at(row * this->width + column));
+      return (points.at (row * this->width + column));
     else
-      throw UnorganizedPointCloudException(
+      throw UnorganizedPointCloudException (
           "Can't use 2D indexing with an unorganized point cloud");
   }
 
@@ -293,9 +293,9 @@ public:
   at (int column, int row)
   {
     if (this->height > 1)
-      return (points.at(row * this->width + column));
+      return (points.at (row * this->width + column));
     else
-      throw UnorganizedPointCloudException(
+      throw UnorganizedPointCloudException (
           "Can't use 2D indexing with an unorganized point cloud");
   }
 
@@ -304,7 +304,7 @@ public:
    * coordinate \param[in] row the row coordinate
    */
   inline const PointT&
-  operator()(std::size_t column, std::size_t row) const
+  operator() (std::size_t column, std::size_t row) const
   {
     return (points[row * this->width + column]);
   }
@@ -314,7 +314,7 @@ public:
    * coordinate \param[in] row the row coordinate
    */
   inline PointT&
-  operator()(std::size_t column, std::size_t row)
+  operator() (std::size_t column, std::size_t row)
   {
     return (points[row * this->width + column]);
   }
@@ -354,17 +354,17 @@ public:
   getMatrixXfMap (int dim, int stride, int offset)
   {
     if (Eigen::MatrixXf::Flags & Eigen::RowMajorBit)
-      return (Eigen::Map<Eigen::MatrixXf, Eigen::Aligned, Eigen::OuterStride<>>(
-          reinterpret_cast<float*>(&points[0]) + offset,
+      return (Eigen::Map<Eigen::MatrixXf, Eigen::Aligned, Eigen::OuterStride<>> (
+          reinterpret_cast<float*> (&points[0]) + offset,
           size(),
           dim,
-          Eigen::OuterStride<>(stride)));
+          Eigen::OuterStride<> (stride)));
     else
-      return (Eigen::Map<Eigen::MatrixXf, Eigen::Aligned, Eigen::OuterStride<>>(
-          reinterpret_cast<float*>(&points[0]) + offset,
+      return (Eigen::Map<Eigen::MatrixXf, Eigen::Aligned, Eigen::OuterStride<>> (
+          reinterpret_cast<float*> (&points[0]) + offset,
           dim,
           size(),
-          Eigen::OuterStride<>(stride)));
+          Eigen::OuterStride<> (stride)));
   }
 
   /** \brief Return an Eigen MatrixXf (assumes float values) mapped to the specified
@@ -392,17 +392,17 @@ public:
   getMatrixXfMap (int dim, int stride, int offset) const
   {
     if (Eigen::MatrixXf::Flags & Eigen::RowMajorBit)
-      return (Eigen::Map<const Eigen::MatrixXf, Eigen::Aligned, Eigen::OuterStride<>>(
-          reinterpret_cast<float*>(const_cast<PointT*>(&points[0])) + offset,
+      return (Eigen::Map<const Eigen::MatrixXf, Eigen::Aligned, Eigen::OuterStride<>> (
+          reinterpret_cast<float*> (const_cast<PointT*> (&points[0])) + offset,
           size(),
           dim,
-          Eigen::OuterStride<>(stride)));
+          Eigen::OuterStride<> (stride)));
     else
-      return (Eigen::Map<const Eigen::MatrixXf, Eigen::Aligned, Eigen::OuterStride<>>(
-          reinterpret_cast<float*>(const_cast<PointT*>(&points[0])) + offset,
+      return (Eigen::Map<const Eigen::MatrixXf, Eigen::Aligned, Eigen::OuterStride<>> (
+          reinterpret_cast<float*> (const_cast<PointT*> (&points[0])) + offset,
           dim,
           size(),
-          Eigen::OuterStride<>(stride)));
+          Eigen::OuterStride<> (stride)));
   }
 
   /**
@@ -415,8 +415,8 @@ public:
   inline Eigen::Map<Eigen::MatrixXf, Eigen::Aligned, Eigen::OuterStride<>>
   getMatrixXfMap ()
   {
-    return (getMatrixXfMap(
-        sizeof(PointT) / sizeof(float), sizeof(PointT) / sizeof(float), 0));
+    return (getMatrixXfMap (
+        sizeof (PointT) / sizeof (float), sizeof (PointT) / sizeof (float), 0));
   }
 
   /**
@@ -429,8 +429,8 @@ public:
   inline const Eigen::Map<const Eigen::MatrixXf, Eigen::Aligned, Eigen::OuterStride<>>
   getMatrixXfMap () const
   {
-    return (getMatrixXfMap(
-        sizeof(PointT) / sizeof(float), sizeof(PointT) / sizeof(float), 0));
+    return (getMatrixXfMap (
+        sizeof (PointT) / sizeof (float), sizeof (PointT) / sizeof (float), 0));
   }
 
   /** \brief The point cloud header. It contains information about the acquisition time.
@@ -544,12 +544,12 @@ public:
   inline index_t
   max_size () const noexcept
   {
-    return static_cast<index_t>(points.max_size());
+    return static_cast<index_t> (points.max_size());
   }
   inline void
   reserve (std::size_t n)
   {
-    points.reserve(n);
+    points.reserve (n);
   }
   inline bool
   empty () const
@@ -581,9 +581,9 @@ public:
   inline void
   resize (std::size_t count)
   {
-    points.resize(count);
+    points.resize (count);
     if (width * height != count) {
-      width = static_cast<std::uint32_t>(count);
+      width = static_cast<std::uint32_t> (count);
       height = 1;
     }
   }
@@ -601,7 +601,7 @@ public:
   inline void
   resize (uindex_t new_width, uindex_t new_height)
   {
-    points.resize(new_width * new_height);
+    points.resize (new_width * new_height);
     width = new_width;
     height = new_height;
   }
@@ -621,7 +621,7 @@ public:
   inline void
   resize (index_t count, const PointT& value)
   {
-    points.resize(count, value);
+    points.resize (count, value);
     if (width * height != count) {
       width = count;
       height = 1;
@@ -642,31 +642,31 @@ public:
   inline void
   resize (index_t new_width, index_t new_height, const PointT& value)
   {
-    points.resize(new_width * new_height, value);
+    points.resize (new_width * new_height, value);
     width = new_width;
     height = new_height;
   }
 
   // element access
   inline const PointT&
-  operator[](std::size_t n) const
+  operator[] (std::size_t n) const
   {
     return (points[n]);
   }
   inline PointT&
-  operator[](std::size_t n)
+  operator[] (std::size_t n)
   {
     return (points[n]);
   }
   inline const PointT&
   at (std::size_t n) const
   {
-    return (points.at(n));
+    return (points.at (n));
   }
   inline PointT&
   at (std::size_t n)
   {
-    return (points.at(n));
+    return (points.at (n));
   }
   inline const PointT&
   front () const
@@ -699,8 +699,8 @@ public:
   inline void
   assign (index_t count, const PointT& value)
   {
-    points.assign(count, value);
-    width = static_cast<std::uint32_t>(size());
+    points.assign (count, value);
+    width = static_cast<std::uint32_t> (size());
     height = 1;
   }
 
@@ -713,7 +713,7 @@ public:
   inline void
   assign (index_t new_width, index_t new_height, const PointT& value)
   {
-    points.assign(new_width * new_height, value);
+    points.assign (new_width * new_height, value);
     width = new_width;
     height = new_height;
   }
@@ -729,8 +729,8 @@ public:
   inline void
   assign (InputIterator first, InputIterator last)
   {
-    points.assign(std::move(first), std::move(last));
-    width = static_cast<std::uint32_t>(size());
+    points.assign (std::move (first), std::move (last));
+    width = static_cast<std::uint32_t> (size());
     height = 1;
   }
 
@@ -748,19 +748,19 @@ public:
   assign (InputIterator first, InputIterator last, index_t new_width)
   {
     if (new_width == 0) {
-      PCL_WARN("Assignment with new_width equal to 0,"
-               "setting width to size of the cloud and height to 1\n");
-      return assign(std::move(first), std::move(last));
+      PCL_WARN ("Assignment with new_width equal to 0,"
+                "setting width to size of the cloud and height to 1\n");
+      return assign (std::move (first), std::move (last));
     }
 
-    points.assign(std::move(first), std::move(last));
+    points.assign (std::move (first), std::move (last));
     width = new_width;
     height = size() / width;
     if (width * height != size()) {
-      PCL_WARN("Mismatch in assignment. Requested width (%zu) doesn't divide "
-               "provided size (%zu) cleanly. Setting height to 1\n",
-               static_cast<std::size_t>(width),
-               static_cast<std::size_t>(size()));
+      PCL_WARN ("Mismatch in assignment. Requested width (%zu) doesn't divide "
+                "provided size (%zu) cleanly. Setting height to 1\n",
+                static_cast<std::size_t> (width),
+                static_cast<std::size_t> (size()));
       width = size();
       height = 1;
     }
@@ -771,10 +771,10 @@ public:
    * \note This breaks the organized structure of the cloud by setting the height to
    * 1!
    */
-  void inline assign(std::initializer_list<PointT> ilist)
+  void inline assign (std::initializer_list<PointT> ilist)
   {
-    points.assign(std::move(ilist));
-    width = static_cast<std::uint32_t>(size());
+    points.assign (std::move (ilist));
+    width = static_cast<std::uint32_t> (size());
     height = 1;
   }
 
@@ -785,21 +785,21 @@ public:
    * \param[in] ilist initializer list from which the points are copied
    * \param[in] new_width new width of the point cloud
    */
-  void inline assign(std::initializer_list<PointT> ilist, index_t new_width)
+  void inline assign (std::initializer_list<PointT> ilist, index_t new_width)
   {
     if (new_width == 0) {
-      PCL_WARN("Assignment with new_width equal to 0,"
-               "setting width to size of the cloud and height to 1\n");
-      return assign(std::move(ilist));
+      PCL_WARN ("Assignment with new_width equal to 0,"
+                "setting width to size of the cloud and height to 1\n");
+      return assign (std::move (ilist));
     }
-    points.assign(std::move(ilist));
+    points.assign (std::move (ilist));
     width = new_width;
     height = size() / width;
     if (width * height != size()) {
-      PCL_WARN("Mismatch in assignment. Requested width (%zu) doesn't divide "
-               "provided size (%zu) cleanly. Setting height to 1\n",
-               static_cast<std::size_t>(width),
-               static_cast<std::size_t>(size()));
+      PCL_WARN ("Mismatch in assignment. Requested width (%zu) doesn't divide "
+                "provided size (%zu) cleanly. Setting height to 1\n",
+                static_cast<std::size_t> (width),
+                static_cast<std::size_t> (size()));
       width = size();
       height = 1;
     }
@@ -812,7 +812,7 @@ public:
   inline void
   push_back (const PointT& pt)
   {
-    points.push_back(pt);
+    points.push_back (pt);
     width = size();
     height = 1;
   }
@@ -824,7 +824,7 @@ public:
   inline void
   transient_push_back (const PointT& pt)
   {
-    points.push_back(pt);
+    points.push_back (pt);
   }
 
   /** \brief Emplace a new point in the cloud, at the end of the container.
@@ -836,7 +836,7 @@ public:
   inline reference
   emplace_back (Args&&... args)
   {
-    points.emplace_back(std::forward<Args>(args)...);
+    points.emplace_back (std::forward<Args> (args)...);
     width = size();
     height = 1;
     return points.back();
@@ -851,7 +851,7 @@ public:
   inline reference
   transient_emplace_back (Args&&... args)
   {
-    points.emplace_back(std::forward<Args>(args)...);
+    points.emplace_back (std::forward<Args> (args)...);
     return points.back();
   }
 
@@ -864,7 +864,7 @@ public:
   inline iterator
   insert (iterator position, const PointT& pt)
   {
-    iterator it = points.insert(std::move(position), pt);
+    iterator it = points.insert (std::move (position), pt);
     width = size();
     height = 1;
     return (it);
@@ -879,7 +879,7 @@ public:
   inline iterator
   transient_insert (iterator position, const PointT& pt)
   {
-    iterator it = points.insert(std::move(position), pt);
+    iterator it = points.insert (std::move (position), pt);
     return (it);
   }
 
@@ -892,7 +892,7 @@ public:
   inline void
   insert (iterator position, std::size_t n, const PointT& pt)
   {
-    points.insert(std::move(position), n, pt);
+    points.insert (std::move (position), n, pt);
     width = size();
     height = 1;
   }
@@ -906,7 +906,7 @@ public:
   inline void
   transient_insert (iterator position, std::size_t n, const PointT& pt)
   {
-    points.insert(std::move(position), n, pt);
+    points.insert (std::move (position), n, pt);
   }
 
   /** \brief Insert a new range of points in the cloud, at a certain position.
@@ -919,7 +919,7 @@ public:
   inline void
   insert (iterator position, InputIterator first, InputIterator last)
   {
-    points.insert(std::move(position), std::move(first), std::move(last));
+    points.insert (std::move (position), std::move (first), std::move (last));
     width = size();
     height = 1;
   }
@@ -934,7 +934,7 @@ public:
   inline void
   transient_insert (iterator position, InputIterator first, InputIterator last)
   {
-    points.insert(std::move(position), std::move(first), std::move(last));
+    points.insert (std::move (position), std::move (first), std::move (last));
   }
 
   /** \brief Emplace a new point in the cloud, given an iterator.
@@ -947,7 +947,7 @@ public:
   inline iterator
   emplace (iterator position, Args&&... args)
   {
-    iterator it = points.emplace(std::move(position), std::forward<Args>(args)...);
+    iterator it = points.emplace (std::move (position), std::forward<Args> (args)...);
     width = size();
     height = 1;
     return (it);
@@ -963,7 +963,7 @@ public:
   inline iterator
   transient_emplace (iterator position, Args&&... args)
   {
-    iterator it = points.emplace(std::move(position), std::forward<Args>(args)...);
+    iterator it = points.emplace (std::move (position), std::forward<Args> (args)...);
     return (it);
   }
 
@@ -975,7 +975,7 @@ public:
   inline iterator
   erase (iterator position)
   {
-    iterator it = points.erase(std::move(position));
+    iterator it = points.erase (std::move (position));
     width = size();
     height = 1;
     return (it);
@@ -989,7 +989,7 @@ public:
   inline iterator
   transient_erase (iterator position)
   {
-    iterator it = points.erase(std::move(position));
+    iterator it = points.erase (std::move (position));
     return (it);
   }
 
@@ -1002,7 +1002,7 @@ public:
   inline iterator
   erase (iterator first, iterator last)
   {
-    iterator it = points.erase(std::move(first), std::move(last));
+    iterator it = points.erase (std::move (first), std::move (last));
     width = size();
     height = 1;
     return (it);
@@ -1017,7 +1017,7 @@ public:
   inline iterator
   transient_erase (iterator first, iterator last)
   {
-    iterator it = points.erase(std::move(first), std::move(last));
+    iterator it = points.erase (std::move (first), std::move (last));
     return (it);
   }
 
@@ -1027,13 +1027,13 @@ public:
   inline void
   swap (PointCloud<PointT>& rhs)
   {
-    std::swap(header, rhs.header);
-    this->points.swap(rhs.points);
-    std::swap(width, rhs.width);
-    std::swap(height, rhs.height);
-    std::swap(is_dense, rhs.is_dense);
-    std::swap(sensor_origin_, rhs.sensor_origin_);
-    std::swap(sensor_orientation_, rhs.sensor_orientation_);
+    std::swap (header, rhs.header);
+    this->points.swap (rhs.points);
+    std::swap (width, rhs.width);
+    std::swap (height, rhs.height);
+    std::swap (is_dense, rhs.is_dense);
+    std::swap (sensor_origin_, rhs.sensor_origin_);
+    std::swap (sensor_orientation_, rhs.sensor_orientation_);
   }
 
   /** \brief Removes all points in a cloud and sets the width and height to 0. */
@@ -1053,7 +1053,7 @@ public:
   inline Ptr
   makeShared () const
   {
-    return Ptr(new PointCloud<PointT>(*this));
+    return Ptr (new PointCloud<PointT> (*this));
   }
 
   PCL_MAKE_ALIGNED_OPERATOR_NEW
@@ -1061,7 +1061,7 @@ public:
 
 template <typename PointT>
 std::ostream&
-operator<<(std::ostream& s, const pcl::PointCloud<PointT>& p)
+operator<< (std::ostream& s, const pcl::PointCloud<PointT>& p)
 {
   s << "header: " << p.header << std::endl;
   s << "points[]: " << p.size() << std::endl;

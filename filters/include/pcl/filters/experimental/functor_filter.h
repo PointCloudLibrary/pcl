@@ -39,9 +39,9 @@ class FunctorFilter : public FilterIndices<PointT> {
 public:
   using FunctionObjectT = FunctionObject;
   // using in type would complicate signature
-  static_assert(is_function_object_for_filter_v<PointT, FunctionObjectT>,
-                "Function object signature must be similar to `bool(const "
-                "PointCloud<PointT>&, index_t)`");
+  static_assert (is_function_object_for_filter_v<PointT, FunctionObjectT>,
+                 "Function object signature must be similar to `bool(const "
+                 "PointCloud<PointT>&, index_t)`");
 
 protected:
   using Base::extract_removed_indices_;
@@ -62,8 +62,8 @@ public:
    * \param[in] extract_removed_indices Set to true if you want to be able to
    * extract the indices of points being removed (default = false).
    */
-  FunctorFilter(FunctionObjectT function_object, bool extract_removed_indices = false)
-  : Base(extract_removed_indices), functionObject_(std::move(function_object))
+  FunctorFilter (FunctionObjectT function_object, bool extract_removed_indices = false)
+  : Base (extract_removed_indices), functionObject_ (std::move (function_object))
   {
     filter_name_ = "functor_filter";
   }
@@ -88,19 +88,19 @@ public:
   applyFilter (Indices& indices) override
   {
     indices.clear();
-    indices.reserve(indices_->size());
+    indices.reserve (indices_->size());
     if (extract_removed_indices_) {
       removed_indices_->clear();
-      removed_indices_->reserve(indices_->size());
+      removed_indices_->reserve (indices_->size());
     }
 
     for (const auto index : *indices_) {
       // function object returns true for points that should be selected
-      if (negative_ != functionObject_(*input_, index)) {
-        indices.push_back(index);
+      if (negative_ != functionObject_ (*input_, index)) {
+        indices.push_back (index);
       }
       else if (extract_removed_indices_) {
-        removed_indices_->push_back(index);
+        removed_indices_->push_back (index);
       }
     }
   }
@@ -113,7 +113,7 @@ protected:
    * \note The class would be ill-defined until `setFunctionObject` has been called
    * Do not call any filter routine until then
    */
-  FunctorFilter(bool extract_removed_indices = false) : Base(extract_removed_indices)
+  FunctorFilter (bool extract_removed_indices = false) : Base (extract_removed_indices)
   {
     filter_name_ = "functor_filter";
   }
@@ -126,13 +126,13 @@ protected:
   void
   setFunctionObject (FunctionObjectT function_object) const noexcept
   {
-    functionObject_ = std::move(function_object);
+    functionObject_ = std::move (function_object);
   }
 };
 } // namespace advanced
 
 template <class PointT>
-using FilterFunction = std::function<bool(const PointCloud<PointT>&, index_t)>;
+using FilterFunction = std::function<bool (const PointCloud<PointT>&, index_t)>;
 
 template <class PointT>
 using FunctionFilter = advanced::FunctorFilter<PointT, FilterFunction<PointT>>;

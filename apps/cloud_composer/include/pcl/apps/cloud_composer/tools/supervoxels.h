@@ -45,7 +45,7 @@ namespace cloud_composer {
 class SupervoxelsTool : public SplitItemTool {
   Q_OBJECT
 public:
-  SupervoxelsTool(PropertiesModel* parameter_model, QObject* parent);
+  SupervoxelsTool (PropertiesModel* parameter_model, QObject* parent);
 
   QList<CloudComposerItem*>
   performAction (QList<const CloudComposerItem*> input_data,
@@ -64,13 +64,13 @@ public:
 
 class SupervoxelsToolFactory : public QObject, public ToolFactory {
   Q_OBJECT
-  Q_INTERFACES(pcl::cloud_composer::ToolFactory)
-  Q_PLUGIN_METADATA(IID "cloud_composer.ToolFactory/1.0")
+  Q_INTERFACES (pcl::cloud_composer::ToolFactory)
+  Q_PLUGIN_METADATA (IID "cloud_composer.ToolFactory/1.0")
 public:
   SplitItemTool*
   createTool (PropertiesModel* parameter_model, QObject* parent = nullptr) override
   {
-    return new SupervoxelsTool(parameter_model, parent);
+    return new SupervoxelsTool (parameter_model, parent);
   }
 
   PropertiesModel*

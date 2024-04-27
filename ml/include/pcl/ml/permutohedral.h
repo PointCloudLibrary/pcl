@@ -67,7 +67,7 @@ class Permutohedral {
 protected:
   struct Neighbors {
     int n1, n2;
-    Neighbors(int n1 = 0, int n2 = 0) : n1(n1), n2(n2) {}
+    Neighbors (int n1 = 0, int n2 = 0) : n1 (n1), n2 (n2) {}
   };
 
 public:
@@ -142,12 +142,12 @@ public:
 
 class HashTableOLD {
   // Don't copy!
-  HashTableOLD(const HashTableOLD& o)
-  : key_size_(o.key_size_), filled_(0), capacity_(o.capacity_)
+  HashTableOLD (const HashTableOLD& o)
+  : key_size_ (o.key_size_), filled_ (0), capacity_ (o.capacity_)
   {
     table_ = new int[capacity_]{};
     keys_ = new short[(capacity_ / 2 + 10) * key_size_]{};
-    std::fill(table_, table_ + capacity_, -1);
+    std::fill (table_, table_ + capacity_, -1);
   }
 
 protected:
@@ -163,19 +163,19 @@ protected:
     // Swap out the old memory
     short* old_keys = keys_;
     int* old_table = table_;
-    int old_capacity = static_cast<int>(capacity_);
+    int old_capacity = static_cast<int> (capacity_);
     capacity_ *= 2;
     // Allocate the new memory
     keys_ = new short[(old_capacity + 10) * key_size_]{};
     table_ = new int[capacity_]{};
-    std::fill(table_, table_ + capacity_, -1);
-    std::copy(old_keys, old_keys + filled_ * key_size_, keys_);
+    std::fill (table_, table_ + capacity_, -1);
+    std::copy (old_keys, old_keys + filled_ * key_size_, keys_);
 
     // Reinsert each element
     for (int i = 0; i < old_capacity; i++)
       if (old_table[i] >= 0) {
         int e = old_table[i];
-        std::size_t h = hash(old_keys + (getKey(e) - keys_)) % capacity_;
+        std::size_t h = hash (old_keys + (getKey (e) - keys_)) % capacity_;
         for (; table_[h] >= 0; h = h < capacity_ - 1 ? h + 1 : 0) {
         };
         table_[h] = e;
@@ -197,12 +197,12 @@ protected:
   }
 
 public:
-  explicit HashTableOLD(int key_size, int n_elements)
-  : key_size_(key_size), filled_(0), capacity_(2 * n_elements)
+  explicit HashTableOLD (int key_size, int n_elements)
+  : key_size_ (key_size), filled_ (0), capacity_ (2 * n_elements)
   {
     table_ = new int[capacity_]{};
     keys_ = new short[(capacity_ / 2 + 10) * key_size_]{};
-    std::fill(table_, table_ + capacity_, -1);
+    std::fill (table_, table_ + capacity_, -1);
   }
 
   ~HashTableOLD()
@@ -214,14 +214,14 @@ public:
   int
   size () const
   {
-    return static_cast<int>(filled_);
+    return static_cast<int> (filled_);
   }
 
   void
   reset ()
   {
     filled_ = 0;
-    std::fill(table_, table_ + capacity_, -1);
+    std::fill (table_, table_ + capacity_, -1);
   }
 
   int
@@ -230,7 +230,7 @@ public:
     if (2 * filled_ >= capacity_)
       grow();
     // Get the hash value
-    std::size_t h = hash(k) % capacity_;
+    std::size_t h = hash (k) % capacity_;
     // Find the element with he right key, using linear probing
     while (1) {
       int e = table_[h];
@@ -239,7 +239,7 @@ public:
           // Insert a new key and return the new id
           for (std::size_t i = 0; i < key_size_; i++)
             keys_[filled_ * key_size_ + i] = k[i];
-          return table_[h] = static_cast<int>(filled_++);
+          return table_[h] = static_cast<int> (filled_++);
         }
         else
           return -1;

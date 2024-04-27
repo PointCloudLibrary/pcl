@@ -51,46 +51,46 @@ namespace pcl {
 
 template <typename ImageType>
 void
-Keypoint<ImageType>::harrisCorner(ImageType& output,
-                                  ImageType& input,
-                                  const float sigma_d,
-                                  const float sigma_i,
-                                  const float alpha,
-                                  const float thresh)
+Keypoint<ImageType>::harrisCorner (ImageType& output,
+                                   ImageType& input,
+                                   const float sigma_d,
+                                   const float sigma_i,
+                                   const float alpha,
+                                   const float thresh)
 {
   /*creating the gaussian kernels*/
   ImageType kernel_d;
   ImageType kernel_i;
-  conv_2d.gaussianKernel(5, sigma_d, kernel_d);
-  conv_2d.gaussianKernel(5, sigma_i, kernel_i);
+  conv_2d.gaussianKernel (5, sigma_d, kernel_d);
+  conv_2d.gaussianKernel (5, sigma_i, kernel_i);
 
   /*scaling the image with differentiation scale*/
   ImageType smoothed_image;
-  conv_2d.convolve(smoothed_image, kernel_d, input);
+  conv_2d.convolve (smoothed_image, kernel_d, input);
 
   /*image derivatives*/
   ImageType I_x, I_y;
-  edge_detection.ComputeDerivativeXCentral(I_x, smoothed_image);
-  edge_detection.ComputeDerivativeYCentral(I_y, smoothed_image);
+  edge_detection.ComputeDerivativeXCentral (I_x, smoothed_image);
+  edge_detection.ComputeDerivativeYCentral (I_y, smoothed_image);
 
   /*second moment matrix*/
   ImageType I_x2, I_y2, I_xI_y;
-  imageElementMultiply(I_x2, I_x, I_x);
-  imageElementMultiply(I_y2, I_y, I_y);
-  imageElementMultiply(I_xI_y, I_x, I_y);
+  imageElementMultiply (I_x2, I_x, I_x);
+  imageElementMultiply (I_y2, I_y, I_y);
+  imageElementMultiply (I_xI_y, I_x, I_y);
 
   /*scaling second moment matrix with integration scale*/
   ImageType M00, M10, M11;
-  conv_2d.convolve(M00, kernel_i, I_x2);
-  conv_2d.convolve(M10, kernel_i, I_xI_y);
-  conv_2d.convolve(M11, kernel_i, I_y2);
+  conv_2d.convolve (M00, kernel_i, I_x2);
+  conv_2d.convolve (M10, kernel_i, I_xI_y);
+  conv_2d.convolve (M11, kernel_i, I_y2);
 
   /*harris function*/
   const std::size_t height = input.size();
   const std::size_t width = input[0].size();
-  output.resize(height);
+  output.resize (height);
   for (std::size_t i = 0; i < height; i++) {
-    output[i].resize(width);
+    output[i].resize (width);
     for (std::size_t j = 0; j < width; j++) {
       output[i][j] = M00[i][j] * M11[i][j] - (M10[i][j] * M10[i][j]) -
                      alpha * ((M00[i][j] + M11[i][j]) * (M00[i][j] + M11[i][j]));
@@ -119,37 +119,37 @@ Keypoint<ImageType>::harrisCorner(ImageType& output,
 
 template <typename ImageType>
 void
-Keypoint<ImageType>::hessianBlob(ImageType& output,
-                                 ImageType& input,
-                                 const float sigma,
-                                 bool SCALED)
+Keypoint<ImageType>::hessianBlob (ImageType& output,
+                                  ImageType& input,
+                                  const float sigma,
+                                  bool SCALED)
 {
   /*creating the gaussian kernels*/
   ImageType kernel, cornerness;
-  conv_2d.gaussianKernel(5, sigma, kernel);
+  conv_2d.gaussianKernel (5, sigma, kernel);
 
   /*scaling the image with differentiation scale*/
   ImageType smoothed_image;
-  conv_2d.convolve(smoothed_image, kernel, input);
+  conv_2d.convolve (smoothed_image, kernel, input);
 
   /*image derivatives*/
   ImageType I_x, I_y;
-  edge_detection.ComputeDerivativeXCentral(I_x, smoothed_image);
-  edge_detection.ComputeDerivativeYCentral(I_y, smoothed_image);
+  edge_detection.ComputeDerivativeXCentral (I_x, smoothed_image);
+  edge_detection.ComputeDerivativeYCentral (I_y, smoothed_image);
 
   /*second moment matrix*/
   ImageType I_xx, I_yy, I_xy;
-  edge_detection.ComputeDerivativeXCentral(I_xx, I_x);
-  edge_detection.ComputeDerivativeYCentral(I_xy, I_x);
-  edge_detection.ComputeDerivativeYCentral(I_yy, I_y);
+  edge_detection.ComputeDerivativeXCentral (I_xx, I_x);
+  edge_detection.ComputeDerivativeYCentral (I_xy, I_x);
+  edge_detection.ComputeDerivativeYCentral (I_yy, I_y);
   /*Determinant of Hessian*/
   const std::size_t height = input.size();
   const std::size_t width = input[0].size();
   float min = std::numeric_limits<float>::max();
   float max = std::numeric_limits<float>::min();
-  cornerness.resize(height);
+  cornerness.resize (height);
   for (std::size_t i = 0; i < height; i++) {
-    cornerness[i].resize(width);
+    cornerness[i].resize (width);
     for (std::size_t j = 0; j < width; j++) {
       cornerness[i][j] =
           sigma * sigma * (I_xx[i][j] + I_yy[i][j] - I_xy[i][j] * I_xy[i][j]);
@@ -162,11 +162,11 @@ Keypoint<ImageType>::hessianBlob(ImageType& output,
     }
 
     /*local maxima*/
-    output.resize(height);
-    output[0].resize(width);
-    output[height - 1].resize(width);
+    output.resize (height);
+    output[0].resize (width);
+    output[height - 1].resize (width);
     for (std::size_t i = 1; i < height - 1; i++) {
-      output[i].resize(width);
+      output[i].resize (width);
       for (std::size_t j = 1; j < width - 1; j++) {
         if (SCALED)
           output[i][j] = ((cornerness[i][j] - min) / (max - min));
@@ -179,20 +179,20 @@ Keypoint<ImageType>::hessianBlob(ImageType& output,
 
 template <typename ImageType>
 void
-Keypoint<ImageType>::hessianBlob(ImageType& output,
-                                 ImageType& input,
-                                 const float start_scale,
-                                 const float scaling_factor,
-                                 const int num_scales)
+Keypoint<ImageType>::hessianBlob (ImageType& output,
+                                  ImageType& input,
+                                  const float start_scale,
+                                  const float scaling_factor,
+                                  const int num_scales)
 {
   const std::size_t height = input.size();
   const std::size_t width = input[0].size();
   const int local_search_radius = 1;
   float scale = start_scale;
   std::vector<ImageType> cornerness;
-  cornerness.resize(num_scales);
+  cornerness.resize (num_scales);
   for (int i = 0; i < num_scales; i++) {
-    hessianBlob(cornerness[i], input, scale, false);
+    hessianBlob (cornerness[i], input, scale, false);
     scale *= scaling_factor;
   }
   for (std::size_t i = 0; i < height; i++) {
@@ -231,7 +231,7 @@ Keypoint<ImageType>::hessianBlob(ImageType& output,
             scale_max = cornerness[k][i][j];
             /*output indicates the scale at which the blob is found at the current
              * location in the image*/
-            output[i][j] = start_scale * pow(scaling_factor, k);
+            output[i][j] = start_scale * pow (scaling_factor, k);
           }
         }
       }
@@ -241,15 +241,15 @@ Keypoint<ImageType>::hessianBlob(ImageType& output,
 
 template <typename ImageType>
 void
-Keypoint<ImageType>::imageElementMultiply(ImageType& output,
-                                          ImageType& input1,
-                                          ImageType& input2)
+Keypoint<ImageType>::imageElementMultiply (ImageType& output,
+                                           ImageType& input1,
+                                           ImageType& input2)
 {
   const std::size_t height = input1.size();
   const std::size_t width = input1[0].size();
-  output.resize(height);
+  output.resize (height);
   for (std::size_t i = 0; i < height; i++) {
-    output[i].resize(width);
+    output[i].resize (width);
     for (std::size_t j = 0; j < width; j++) {
       output[i][j] = input1[i][j] * input2[i][j];
     }

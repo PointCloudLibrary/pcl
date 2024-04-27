@@ -48,14 +48,14 @@ using namespace pcl;
 PointCloud<PointXYZ> cloud;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TEST(Grid, Minimum)
+TEST (Grid, Minimum)
 {
   PointCloud<PointXYZ> cloud_in, cloud_out;
 
   cloud_in.height = 1;
   cloud_in.width = 3;
   cloud_in.is_dense = true;
-  cloud_in.resize(3);
+  cloud_in.resize (3);
 
   cloud_in[0].x = 0;
   cloud_in[0].y = 0;
@@ -67,28 +67,28 @@ TEST(Grid, Minimum)
   cloud_in[2].y = 1.5;
   cloud_in[2].z = 0.0;
 
-  GridMinimum<PointXYZ> gm(1.0f);
-  gm.setInputCloud(cloud_in.makeShared());
-  gm.filter(cloud_out);
+  GridMinimum<PointXYZ> gm (1.0f);
+  gm.setInputCloud (cloud_in.makeShared());
+  gm.filter (cloud_out);
 
-  EXPECT_EQ(cloud_out[0].z, 0.25f);
-  EXPECT_EQ(cloud_out[1].z, 0.0f);
-  EXPECT_EQ(cloud_out.size(), 2);
-  EXPECT_EQ(gm.getResolution(), 1.0f);
+  EXPECT_EQ (cloud_out[0].z, 0.25f);
+  EXPECT_EQ (cloud_out[1].z, 0.0f);
+  EXPECT_EQ (cloud_out.size(), 2);
+  EXPECT_EQ (gm.getResolution(), 1.0f);
 
-  gm.setResolution(2.0f);
-  gm.filter(cloud_out);
+  gm.setResolution (2.0f);
+  gm.filter (cloud_out);
 
-  EXPECT_EQ(cloud_out[0].z, 0.0f);
-  EXPECT_EQ(cloud_out.size(), 1);
-  EXPECT_EQ(gm.getResolution(), 2.0f);
+  EXPECT_EQ (cloud_out[0].z, 0.0f);
+  EXPECT_EQ (cloud_out.size(), 1);
+  EXPECT_EQ (gm.getResolution(), 2.0f);
 }
 
 /* ---[ */
 int
 main (int argc, char** argv)
 {
-  testing::InitGoogleTest(&argc, argv);
+  testing::InitGoogleTest (&argc, argv);
   return (RUN_ALL_TESTS());
 }
 /* ]--- */

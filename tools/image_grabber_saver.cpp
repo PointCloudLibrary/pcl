@@ -54,16 +54,17 @@ int counter;
 void
 printHelp (int, char** argv)
 {
-  print_error("Syntax is: %s <options>\n", argv[0]);
-  print_info(" where options are:\n");
-  print_info("\t-rgb_dir   \t<directory_path>    \t= directory path to RGB images to "
-             "be read from\n");
-  print_info("\t-depth_dir \t<directory_path>    \t= directory path to Depth images to "
-             "be read from\n");
-  print_info(
+  print_error ("Syntax is: %s <options>\n", argv[0]);
+  print_info (" where options are:\n");
+  print_info ("\t-rgb_dir   \t<directory_path>    \t= directory path to RGB images to "
+              "be read from\n");
+  print_info (
+      "\t-depth_dir \t<directory_path>    \t= directory path to Depth images to "
+      "be read from\n");
+  print_info (
       "\t-out_dir   \t<directory_path>    \t= directory path to put the pcd files\n");
   // print_info ("\t-fps frequency           = frames per second\n");
-  print_info("\n");
+  print_info ("\n");
 }
 
 struct EventHelper {
@@ -72,7 +73,7 @@ struct EventHelper {
   {
     const std::string filepath =
         out_folder + '/' + grabber->getPrevDepthFileName() + ".pcd";
-    pcl::io::savePCDFileASCII(filepath, *cloud);
+    pcl::io::savePCDFileASCII (filepath, *cloud);
   }
 };
 
@@ -85,56 +86,56 @@ main (int argc, char** argv)
 
   if (argc > 1) {
     for (int i = 1; i < argc; i++) {
-      if (std::string(argv[i]) == "-h") {
-        printHelp(argc, argv);
+      if (std::string (argv[i]) == "-h") {
+        printHelp (argc, argv);
         return (-1);
       }
     }
   }
 
   float frames_per_second = 0; // 0 means only if triggered!
-  pcl::console::parse(argc, argv, "-fps", frames_per_second);
+  pcl::console::parse (argc, argv, "-fps", frames_per_second);
   if (frames_per_second < 0)
     frames_per_second = 0.0;
 
   float focal_length = 525.0;
-  pcl::console::parse(argc, argv, "-focal", focal_length);
+  pcl::console::parse (argc, argv, "-focal", focal_length);
 
   std::string depth_path;
-  pcl::console::parse_argument(argc, argv, "-depth_dir", depth_path);
+  pcl::console::parse_argument (argc, argv, "-depth_dir", depth_path);
 
   std::string rgb_path;
-  pcl::console::parse_argument(argc, argv, "-rgb_dir", rgb_path);
+  pcl::console::parse_argument (argc, argv, "-rgb_dir", rgb_path);
 
-  pcl::console::parse_argument(argc, argv, "-out_dir", out_folder);
+  pcl::console::parse_argument (argc, argv, "-out_dir", out_folder);
 
-  if (out_folder.empty() || !pcl_fs::exists(out_folder)) {
-    PCL_INFO("No correct directory was given with the -out_dir flag. Setting to "
-             "current dir\n");
+  if (out_folder.empty() || !pcl_fs::exists (out_folder)) {
+    PCL_INFO ("No correct directory was given with the -out_dir flag. Setting to "
+              "current dir\n");
     out_folder = "./";
   }
   else
-    PCL_INFO("Using %s as output dir", out_folder.c_str());
+    PCL_INFO ("Using %s as output dir", out_folder.c_str());
 
-  if (!rgb_path.empty() && !depth_path.empty() && pcl_fs::exists(rgb_path) &&
-      pcl_fs::exists(depth_path)) {
-    grabber.reset(new pcl::ImageGrabber<pcl::PointXYZRGBA>(
+  if (!rgb_path.empty() && !depth_path.empty() && pcl_fs::exists (rgb_path) &&
+      pcl_fs::exists (depth_path)) {
+    grabber.reset (new pcl::ImageGrabber<pcl::PointXYZRGBA> (
         depth_path, rgb_path, frames_per_second, false));
   }
   else {
-    PCL_INFO("No directory was given with the -<rgb/depth>_dir flag.");
-    printHelp(argc, argv);
+    PCL_INFO ("No directory was given with the -<rgb/depth>_dir flag.");
+    printHelp (argc, argv);
     return (-1);
   }
-  grabber->setDepthImageUnits(static_cast<float>(1E-3));
+  grabber->setDepthImageUnits (static_cast<float> (1E-3));
   // grabber->setFocalLength(focal_length); // FIXME
 
   EventHelper h;
-  std::function<void(const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)> f =
+  std::function<void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)> f =
       [&] (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr& cloud) {
-        h.cloud_cb(cloud);
+        h.cloud_cb (cloud);
       };
-  boost::signals2::connection c1 = grabber->registerCallback(f);
+  boost::signals2::connection c1 = grabber->registerCallback (f);
 
   do {
     grabber->trigger();

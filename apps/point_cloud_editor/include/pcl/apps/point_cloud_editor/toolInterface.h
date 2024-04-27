@@ -100,13 +100,13 @@ protected:
 
 private:
   /// @brief Copy constructor - tools are non-copyable
-  ToolInterface(const ToolInterface&) { assert(false); }
+  ToolInterface (const ToolInterface&) { assert (false); }
 
   /// @brief Equal operator - tools are non-copyable
   ToolInterface&
-  operator=(const ToolInterface&)
+  operator= (const ToolInterface&)
   {
-    assert(false);
+    assert (false);
     return (*this);
   }
 };

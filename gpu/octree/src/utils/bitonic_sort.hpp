@@ -63,8 +63,8 @@ bitonicSortWarp (volatile K* keys, volatile V* vals, unsigned int dir = 1)
       unsigned int pos = 2 * lane - (lane & (stride - 1));
 
       if ((keys[pos] > keys[pos + stride]) == ddd) {
-        swap(keys[pos], keys[pos + stride]);
-        swap(vals[pos], vals[pos + stride]);
+        swap (keys[pos], keys[pos + stride]);
+        swap (vals[pos], vals[pos + stride]);
       }
     }
   }
@@ -74,8 +74,8 @@ bitonicSortWarp (volatile K* keys, volatile V* vals, unsigned int dir = 1)
     unsigned int pos = 2 * lane - (lane & (stride - 1));
 
     if ((keys[pos] > keys[pos + stride]) == dir) {
-      swap(keys[pos], keys[pos + stride]);
-      swap(vals[pos], vals[pos + stride]);
+      swap (keys[pos], keys[pos + stride]);
+      swap (vals[pos], vals[pos + stride]);
     }
   }
 }

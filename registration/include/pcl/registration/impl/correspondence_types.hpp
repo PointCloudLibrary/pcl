@@ -61,16 +61,17 @@ getCorDistMeanStd (const pcl::Correspondences& correspondences,
     sum += correspondence.distance;
     sq_sum += correspondence.distance * correspondence.distance;
   }
-  mean = sum / static_cast<double>(correspondences.size());
-  double variance = (sq_sum - sum * sum / static_cast<double>(correspondences.size())) /
-                    static_cast<double>(correspondences.size() - 1);
-  stddev = sqrt(variance);
+  mean = sum / static_cast<double> (correspondences.size());
+  double variance =
+      (sq_sum - sum * sum / static_cast<double> (correspondences.size())) /
+      static_cast<double> (correspondences.size() - 1);
+  stddev = sqrt (variance);
 }
 
 inline void
 getQueryIndices (const pcl::Correspondences& correspondences, pcl::Indices& indices)
 {
-  indices.resize(correspondences.size());
+  indices.resize (correspondences.size());
   for (std::size_t i = 0; i < correspondences.size(); ++i)
     indices[i] = correspondences[i].index_query;
 }
@@ -78,7 +79,7 @@ getQueryIndices (const pcl::Correspondences& correspondences, pcl::Indices& indi
 inline void
 getMatchIndices (const pcl::Correspondences& correspondences, pcl::Indices& indices)
 {
-  indices.resize(correspondences.size());
+  indices.resize (correspondences.size());
   for (std::size_t i = 0; i < correspondences.size(); ++i)
     indices[i] = correspondences[i].index_match;
 }

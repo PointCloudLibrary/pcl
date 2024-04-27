@@ -63,7 +63,7 @@ using namespace pcl;
 using namespace pcl::gpu;
 
 // TEST(PCL_OctreeGPU, DISABLED_hostRadiusSearch)
-TEST(PCL_OctreeGPU, hostRadiusSearch)
+TEST (PCL_OctreeGPU, hostRadiusSearch)
 {
   DataGenerator data;
   data.data_size = 871000;
@@ -78,73 +78,74 @@ TEST(PCL_OctreeGPU, hostRadiusSearch)
 
   // prepare device cloud
   pcl::gpu::Octree::PointCloud cloud_device;
-  cloud_device.upload(data.points);
+  cloud_device.upload (data.points);
 
   // prepare host cloud
-  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_host(new pcl::PointCloud<pcl::PointXYZ>);
+  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_host (new pcl::PointCloud<pcl::PointXYZ>);
   cloud_host->width = data.points.size();
   cloud_host->height = 1;
-  cloud_host->points.resize(cloud_host->width * cloud_host->height);
-  std::transform(data.points.cbegin(),
-                 data.points.cend(),
-                 cloud_host->begin(),
-                 DataGenerator::ConvPoint<pcl::PointXYZ>());
+  cloud_host->points.resize (cloud_host->width * cloud_host->height);
+  std::transform (data.points.cbegin(),
+                  data.points.cend(),
+                  cloud_host->begin(),
+                  DataGenerator::ConvPoint<pcl::PointXYZ>());
 
   // build device octree
   pcl::gpu::Octree octree_device;
-  octree_device.setCloud(cloud_device);
+  octree_device.setCloud (cloud_device);
   octree_device.build();
 
   // build host octree
   float resolution = 25.f;
   std::cout << "[!]Octree resolution: " << resolution << std::endl;
-  pcl::octree::OctreePointCloudSearch<pcl::PointXYZ> octree_host(resolution);
-  octree_host.setInputCloud(cloud_host);
+  pcl::octree::OctreePointCloudSearch<pcl::PointXYZ> octree_host (resolution);
+  octree_host.setInputCloud (cloud_host);
   octree_host.addPointsFromInputCloud();
 
   // perform bruteForceSearch
-  data.bruteForceSearch(true);
+  data.bruteForceSearch (true);
 
   std::vector<int> sizes;
-  sizes.reserve(data.tests_num);
+  sizes.reserve (data.tests_num);
   octree_device.internalDownload();
 
   for (std::size_t i = 0; i < data.tests_num; ++i) {
     // search host on octree that was built on device
     std::vector<int> results_host_gpu; // host search
-    octree_device.radiusSearchHost(data.queries[i], data.radiuses[i], results_host_gpu);
+    octree_device.radiusSearchHost (
+        data.queries[i], data.radiuses[i], results_host_gpu);
 
     // search host
     std::vector<float> dists;
     pcl::Indices results_host;
-    octree_host.radiusSearch(
-        pcl::PointXYZ(data.queries[i].x, data.queries[i].y, data.queries[i].z),
+    octree_host.radiusSearch (
+        pcl::PointXYZ (data.queries[i].x, data.queries[i].y, data.queries[i].z),
         data.radiuses[i],
         results_host,
         dists);
 
-    std::sort(results_host_gpu.begin(), results_host_gpu.end());
-    std::sort(results_host.begin(), results_host.end());
+    std::sort (results_host_gpu.begin(), results_host_gpu.end());
+    std::sort (results_host.begin(), results_host.end());
 
-    pcl::test::EXPECT_EQ_VECTORS(results_host_gpu, results_host);
-    pcl::test::EXPECT_EQ_VECTORS(results_host_gpu, data.bfresutls[i]);
-    sizes.push_back(results_host.size());
+    pcl::test::EXPECT_EQ_VECTORS (results_host_gpu, results_host);
+    pcl::test::EXPECT_EQ_VECTORS (results_host_gpu, data.bfresutls[i]);
+    sizes.push_back (results_host.size());
   }
 
   float avg_size =
-      std::accumulate(sizes.begin(), sizes.end(), 0) * (1.f / sizes.size());
+      std::accumulate (sizes.begin(), sizes.end(), 0) * (1.f / sizes.size());
   ;
 
   std::cout << "avg_result_size = " << avg_size << std::endl;
-  ASSERT_GT(avg_size, 5);
+  ASSERT_GT (avg_size, 5);
 }
 
 int
 main (int argc, char** argv)
 {
   constexpr int device = 0;
-  pcl::gpu::setDevice(device);
-  pcl::gpu::printShortCudaDeviceInfo(device);
-  testing::InitGoogleTest(&argc, argv);
+  pcl::gpu::setDevice (device);
+  pcl::gpu::printShortCudaDeviceInfo (device);
+  testing::InitGoogleTest (&argc, argv);
   return (RUN_ALL_TESTS());
 }

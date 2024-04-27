@@ -63,14 +63,14 @@
 
 // Must be used in global namespace with name fully qualified
 #define POINT_CLOUD_REGISTER_POINT_STRUCT(name, fseq)                                  \
-  POINT_CLOUD_REGISTER_POINT_STRUCT_I(                                                 \
-      name, BOOST_PP_CAT(POINT_CLOUD_REGISTER_POINT_STRUCT_X fseq, 0))
+  POINT_CLOUD_REGISTER_POINT_STRUCT_I (                                                \
+      name, BOOST_PP_CAT (POINT_CLOUD_REGISTER_POINT_STRUCT_X fseq, 0))
 /***/
 
 #define POINT_CLOUD_REGISTER_POINT_WRAPPER(wrapper, pod)                               \
-  BOOST_MPL_ASSERT_MSG(sizeof(wrapper) == sizeof(pod),                                 \
-                       POINT_WRAPPER_AND_POD_TYPES_HAVE_DIFFERENT_SIZES,               \
-                       (wrapper&, pod&));                                              \
+  BOOST_MPL_ASSERT_MSG (sizeof (wrapper) == sizeof (pod),                              \
+                        POINT_WRAPPER_AND_POD_TYPES_HAVE_DIFFERENT_SIZES,              \
+                        (wrapper&, pod&));                                             \
   namespace pcl {                                                                      \
   namespace traits {                                                                   \
   template <>                                                                          \
@@ -105,7 +105,7 @@ inline std::enable_if_t<std::is_array<T>::value>
 plus (std::remove_const_t<T>& l, const T& r)
 {
   using type = std::remove_all_extents_t<T>;
-  constexpr std::uint32_t count = sizeof(T) / sizeof(type);
+  constexpr std::uint32_t count = sizeof (T) / sizeof (type);
   for (std::uint32_t i = 0; i < count; ++i)
     l[i] += r[i];
 }
@@ -122,7 +122,7 @@ inline std::enable_if_t<std::is_array<T1>::value>
 plusscalar (T1& p, const T2& scalar)
 {
   using type = std::remove_all_extents_t<T1>;
-  constexpr std::uint32_t count = sizeof(T1) / sizeof(type);
+  constexpr std::uint32_t count = sizeof (T1) / sizeof (type);
   for (std::uint32_t i = 0; i < count; ++i)
     p[i] += scalar;
 }
@@ -139,7 +139,7 @@ inline std::enable_if_t<std::is_array<T>::value>
 minus (std::remove_const_t<T>& l, const T& r)
 {
   using type = std::remove_all_extents_t<T>;
-  constexpr std::uint32_t count = sizeof(T) / sizeof(type);
+  constexpr std::uint32_t count = sizeof (T) / sizeof (type);
   for (std::uint32_t i = 0; i < count; ++i)
     l[i] -= r[i];
 }
@@ -156,7 +156,7 @@ inline std::enable_if_t<std::is_array<T1>::value>
 minusscalar (T1& p, const T2& scalar)
 {
   using type = std::remove_all_extents_t<T1>;
-  constexpr std::uint32_t count = sizeof(T1) / sizeof(type);
+  constexpr std::uint32_t count = sizeof (T1) / sizeof (type);
   for (std::uint32_t i = 0; i < count; ++i)
     p[i] -= scalar;
 }
@@ -173,7 +173,7 @@ inline std::enable_if_t<std::is_array<T1>::value>
 mulscalar (T1& p, const T2& scalar)
 {
   using type = std::remove_all_extents_t<T1>;
-  constexpr std::uint32_t count = sizeof(T1) / sizeof(type);
+  constexpr std::uint32_t count = sizeof (T1) / sizeof (type);
   for (std::uint32_t i = 0; i < count; ++i)
     p[i] *= scalar;
 }
@@ -190,7 +190,7 @@ inline std::enable_if_t<std::is_array<T1>::value>
 divscalar (T1& p, const T2& scalar)
 {
   using type = std::remove_all_extents_t<T1>;
-  constexpr std::uint32_t count = sizeof(T1) / sizeof(type);
+  constexpr std::uint32_t count = sizeof (T1) / sizeof (type);
   for (std::uint32_t i = 0; i < count; ++i)
     p[i] /= scalar;
 }
@@ -207,7 +207,7 @@ inline std::enable_if_t<std::is_array<ArrayT>::value>
 divscalar2 (ArrayT& p, const ScalarT& scalar)
 {
   using type = std::remove_all_extents_t<ArrayT>;
-  constexpr std::uint32_t count = sizeof(ArrayT) / sizeof(type);
+  constexpr std::uint32_t count = sizeof (ArrayT) / sizeof (type);
   for (std::uint32_t i = 0; i < count; ++i)
     p[i] = scalar / p[i];
 }
@@ -216,35 +216,35 @@ divscalar2 (ArrayT& p, const ScalarT& scalar)
 
 // Point operators
 #define PCL_PLUSEQ_POINT_TAG(r, data, elem)                                            \
-  pcl::traits::plus(lhs.BOOST_PP_TUPLE_ELEM(3, 1, elem),                               \
-                    rhs.BOOST_PP_TUPLE_ELEM(3, 1, elem));
+  pcl::traits::plus (lhs.BOOST_PP_TUPLE_ELEM (3, 1, elem),                             \
+                     rhs.BOOST_PP_TUPLE_ELEM (3, 1, elem));
 /***/
 
 #define PCL_PLUSEQSC_POINT_TAG(r, data, elem)                                          \
-  pcl::traits::plusscalar(p.BOOST_PP_TUPLE_ELEM(3, 1, elem), scalar);
+  pcl::traits::plusscalar (p.BOOST_PP_TUPLE_ELEM (3, 1, elem), scalar);
 /***/
 // p.BOOST_PP_TUPLE_ELEM(3, 1, elem) += scalar;
 
 #define PCL_MINUSEQ_POINT_TAG(r, data, elem)                                           \
-  pcl::traits::minus(lhs.BOOST_PP_TUPLE_ELEM(3, 1, elem),                              \
-                     rhs.BOOST_PP_TUPLE_ELEM(3, 1, elem));
+  pcl::traits::minus (lhs.BOOST_PP_TUPLE_ELEM (3, 1, elem),                            \
+                      rhs.BOOST_PP_TUPLE_ELEM (3, 1, elem));
 /***/
 
 #define PCL_MINUSEQSC_POINT_TAG(r, data, elem)                                         \
-  pcl::traits::minusscalar(p.BOOST_PP_TUPLE_ELEM(3, 1, elem), scalar);
+  pcl::traits::minusscalar (p.BOOST_PP_TUPLE_ELEM (3, 1, elem), scalar);
 /***/
 // p.BOOST_PP_TUPLE_ELEM(3, 1, elem) -= scalar;
 
 #define PCL_MULEQSC_POINT_TAG(r, data, elem)                                           \
-  pcl::traits::mulscalar(p.BOOST_PP_TUPLE_ELEM(3, 1, elem), scalar);
+  pcl::traits::mulscalar (p.BOOST_PP_TUPLE_ELEM (3, 1, elem), scalar);
 /***/
 
 #define PCL_DIVEQSC_POINT_TAG(r, data, elem)                                           \
-  pcl::traits::divscalar(p.BOOST_PP_TUPLE_ELEM(3, 1, elem), scalar);
+  pcl::traits::divscalar (p.BOOST_PP_TUPLE_ELEM (3, 1, elem), scalar);
 /***/
 
 #define PCL_DIVEQSC2_POINT_TAG(r, data, elem)                                          \
-  pcl::traits::divscalar2(p.BOOST_PP_TUPLE_ELEM(3, 1, elem), scalar);
+  pcl::traits::divscalar2 (p.BOOST_PP_TUPLE_ELEM (3, 1, elem), scalar);
 /***/
 
 // Construct type traits given full sequence of (type, name, tag) triples
@@ -253,89 +253,89 @@ divscalar2 (ArrayT& p, const ScalarT& scalar)
 #define POINT_CLOUD_REGISTER_POINT_STRUCT_I(name, seq)                                 \
   namespace pcl {                                                                      \
   namespace fields {                                                                   \
-  BOOST_PP_SEQ_FOR_EACH(POINT_CLOUD_REGISTER_FIELD_TAG, name, seq)                     \
+  BOOST_PP_SEQ_FOR_EACH (POINT_CLOUD_REGISTER_FIELD_TAG, name, seq)                    \
   }                                                                                    \
   namespace traits {                                                                   \
-  BOOST_PP_SEQ_FOR_EACH(POINT_CLOUD_REGISTER_FIELD_NAME, name, seq)                    \
-  BOOST_PP_SEQ_FOR_EACH(POINT_CLOUD_REGISTER_FIELD_OFFSET, name, seq)                  \
-  BOOST_PP_SEQ_FOR_EACH(POINT_CLOUD_REGISTER_FIELD_DATATYPE, name, seq)                \
-  POINT_CLOUD_REGISTER_POINT_FIELD_LIST(name, POINT_CLOUD_EXTRACT_TAGS(seq))           \
+  BOOST_PP_SEQ_FOR_EACH (POINT_CLOUD_REGISTER_FIELD_NAME, name, seq)                   \
+  BOOST_PP_SEQ_FOR_EACH (POINT_CLOUD_REGISTER_FIELD_OFFSET, name, seq)                 \
+  BOOST_PP_SEQ_FOR_EACH (POINT_CLOUD_REGISTER_FIELD_DATATYPE, name, seq)               \
+  POINT_CLOUD_REGISTER_POINT_FIELD_LIST (name, POINT_CLOUD_EXTRACT_TAGS (seq))         \
   }                                                                                    \
   namespace common {                                                                   \
   inline const name&                                                                   \
-  operator+=(name& lhs, const name& rhs)                                               \
+  operator+= (name& lhs, const name& rhs)                                              \
   {                                                                                    \
-    BOOST_PP_SEQ_FOR_EACH(PCL_PLUSEQ_POINT_TAG, _, seq)                                \
+    BOOST_PP_SEQ_FOR_EACH (PCL_PLUSEQ_POINT_TAG, _, seq)                               \
     return (lhs);                                                                      \
   }                                                                                    \
   inline const name&                                                                   \
-  operator+=(name& p, const float& scalar)                                             \
+  operator+= (name& p, const float& scalar)                                            \
   {                                                                                    \
-    BOOST_PP_SEQ_FOR_EACH(PCL_PLUSEQSC_POINT_TAG, _, seq)                              \
+    BOOST_PP_SEQ_FOR_EACH (PCL_PLUSEQSC_POINT_TAG, _, seq)                             \
     return (p);                                                                        \
   }                                                                                    \
   inline const name                                                                    \
-  operator+(const name& lhs, const name& rhs)                                          \
+  operator+ (const name& lhs, const name& rhs)                                         \
   {                                                                                    \
     name result = lhs;                                                                 \
     result += rhs;                                                                     \
     return (result);                                                                   \
   }                                                                                    \
   inline const name                                                                    \
-  operator+(const float& scalar, const name& p)                                        \
+  operator+ (const float& scalar, const name& p)                                       \
   {                                                                                    \
     name result = p;                                                                   \
     result += scalar;                                                                  \
     return (result);                                                                   \
   }                                                                                    \
   inline const name                                                                    \
-  operator+(const name& p, const float& scalar)                                        \
+  operator+ (const name& p, const float& scalar)                                       \
   {                                                                                    \
     name result = p;                                                                   \
     result += scalar;                                                                  \
     return (result);                                                                   \
   }                                                                                    \
   inline const name&                                                                   \
-  operator*=(name& p, const float& scalar)                                             \
+  operator*= (name& p, const float& scalar)                                            \
   {                                                                                    \
-    BOOST_PP_SEQ_FOR_EACH(PCL_MULEQSC_POINT_TAG, _, seq)                               \
+    BOOST_PP_SEQ_FOR_EACH (PCL_MULEQSC_POINT_TAG, _, seq)                              \
     return (p);                                                                        \
   }                                                                                    \
   inline const name                                                                    \
-  operator*(const float& scalar, const name& p)                                        \
+  operator* (const float& scalar, const name& p)                                       \
   {                                                                                    \
     name result = p;                                                                   \
     result *= scalar;                                                                  \
     return (result);                                                                   \
   }                                                                                    \
   inline const name                                                                    \
-  operator*(const name& p, const float& scalar)                                        \
+  operator* (const name& p, const float& scalar)                                       \
   {                                                                                    \
     name result = p;                                                                   \
     result *= scalar;                                                                  \
     return (result);                                                                   \
   }                                                                                    \
   inline const name&                                                                   \
-  operator-=(name& lhs, const name& rhs)                                               \
+  operator-= (name& lhs, const name& rhs)                                              \
   {                                                                                    \
-    BOOST_PP_SEQ_FOR_EACH(PCL_MINUSEQ_POINT_TAG, _, seq)                               \
+    BOOST_PP_SEQ_FOR_EACH (PCL_MINUSEQ_POINT_TAG, _, seq)                              \
     return (lhs);                                                                      \
   }                                                                                    \
   inline const name&                                                                   \
-  operator-=(name& p, const float& scalar)                                             \
+  operator-= (name& p, const float& scalar)                                            \
   {                                                                                    \
-    BOOST_PP_SEQ_FOR_EACH(PCL_MINUSEQSC_POINT_TAG, _, seq)                             \
+    BOOST_PP_SEQ_FOR_EACH (PCL_MINUSEQSC_POINT_TAG, _, seq)                            \
     return (p);                                                                        \
   }                                                                                    \
   inline const name                                                                    \
-  operator-(const name& lhs, const name& rhs)                                          \
+  operator- (const name& lhs, const name& rhs)                                         \
   {                                                                                    \
     name result = lhs;                                                                 \
     result -= rhs;                                                                     \
     return (result);                                                                   \
   }                                                                                    \
   inline const name                                                                    \
-  operator-(const float& scalar, const name& p)                                        \
+  operator- (const float& scalar, const name& p)                                       \
   {                                                                                    \
     name result = p;                                                                   \
     result *= -1.0f;                                                                   \
@@ -343,27 +343,27 @@ divscalar2 (ArrayT& p, const ScalarT& scalar)
     return (result);                                                                   \
   }                                                                                    \
   inline const name                                                                    \
-  operator-(const name& p, const float& scalar)                                        \
+  operator- (const name& p, const float& scalar)                                       \
   {                                                                                    \
     name result = p;                                                                   \
     result -= scalar;                                                                  \
     return (result);                                                                   \
   }                                                                                    \
   inline const name&                                                                   \
-  operator/=(name& p, const float& scalar)                                             \
+  operator/= (name& p, const float& scalar)                                            \
   {                                                                                    \
-    BOOST_PP_SEQ_FOR_EACH(PCL_DIVEQSC_POINT_TAG, _, seq)                               \
+    BOOST_PP_SEQ_FOR_EACH (PCL_DIVEQSC_POINT_TAG, _, seq)                              \
     return (p);                                                                        \
   }                                                                                    \
   inline const name                                                                    \
-  operator/(const float& scalar, const name& p_in)                                     \
+  operator/ (const float& scalar, const name& p_in)                                    \
   {                                                                                    \
     name p = p_in;                                                                     \
-    BOOST_PP_SEQ_FOR_EACH(PCL_DIVEQSC2_POINT_TAG, _, seq)                              \
+    BOOST_PP_SEQ_FOR_EACH (PCL_DIVEQSC2_POINT_TAG, _, seq)                             \
     return (p);                                                                        \
   }                                                                                    \
   inline const name                                                                    \
-  operator/(const name& p, const float& scalar)                                        \
+  operator/ (const name& p, const float& scalar)                                       \
   {                                                                                    \
     name result = p;                                                                   \
     result /= scalar;                                                                  \
@@ -374,12 +374,13 @@ divscalar2 (ArrayT& p, const ScalarT& scalar)
 /***/
 
 #define POINT_CLOUD_REGISTER_FIELD_TAG(r, name, elem)                                  \
-  struct BOOST_PP_TUPLE_ELEM(3, 2, elem);                                              \
+  struct BOOST_PP_TUPLE_ELEM (3, 2, elem);                                             \
   /***/
 
-#define POINT_CLOUD_TAG_OP(s, data, elem) pcl::fields::BOOST_PP_TUPLE_ELEM(3, 2, elem)
+#define POINT_CLOUD_TAG_OP(s, data, elem) pcl::fields::BOOST_PP_TUPLE_ELEM (3, 2, elem)
 
-#define POINT_CLOUD_EXTRACT_TAGS(seq) BOOST_PP_SEQ_TRANSFORM(POINT_CLOUD_TAG_OP, _, seq)
+#define POINT_CLOUD_EXTRACT_TAGS(seq)                                                  \
+  BOOST_PP_SEQ_TRANSFORM (POINT_CLOUD_TAG_OP, _, seq)
 
 #if defined _MSC_VER
 #pragma warning(pop)

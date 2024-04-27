@@ -44,7 +44,7 @@
 #include <pcl/impl/instantiate.hpp>
 #include <pcl/point_types.h>
 
-PCL_INSTANTIATE(FastBilateralFilterOMP,
-                (pcl::PointXYZ)(pcl::PointXYZRGB)(pcl::PointXYZRGBA))
+PCL_INSTANTIATE (FastBilateralFilterOMP,
+                 (pcl::PointXYZ) (pcl::PointXYZRGB) (pcl::PointXYZRGBA))
 
 #endif // PCL_NO_PRECOMPILE

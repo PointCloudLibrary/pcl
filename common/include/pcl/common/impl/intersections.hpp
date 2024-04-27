@@ -50,7 +50,7 @@ lineWithLineIntersection (const Eigen::VectorXf& line_a,
                           double sqr_eps)
 {
   Eigen::Vector4f p1, p2;
-  lineToLineSegment(line_a, line_b, p1, p2);
+  lineToLineSegment (line_a, line_b, p1, p2);
 
   // If the segment size is smaller than a pre-given epsilon...
   double sqr_dist = (p1 - p2).squaredNorm();
@@ -69,10 +69,10 @@ lineWithLineIntersection (const pcl::ModelCoefficients& line_a,
                           double sqr_eps)
 {
   Eigen::VectorXf coeff1 =
-      Eigen::VectorXf::Map(line_a.values.data(), line_a.values.size());
+      Eigen::VectorXf::Map (line_a.values.data(), line_a.values.size());
   Eigen::VectorXf coeff2 =
-      Eigen::VectorXf::Map(line_b.values.data(), line_b.values.size());
-  return (lineWithLineIntersection(coeff1, coeff2, point, sqr_eps));
+      Eigen::VectorXf::Map (line_b.values.data(), line_b.values.size());
+  return (lineWithLineIntersection (coeff1, coeff2, point, sqr_eps));
 }
 
 template <typename Scalar>
@@ -88,21 +88,21 @@ planeWithPlaneIntersection (const Eigen::Matrix<Scalar, 4, 1>& plane_a,
   using Matrix5 = Eigen::Matrix<Scalar, 5, 5>;
 
   // Normalize plane normals
-  Vector3 plane_a_norm(plane_a.template head<3>());
-  Vector3 plane_b_norm(plane_b.template head<3>());
+  Vector3 plane_a_norm (plane_a.template head<3>());
+  Vector3 plane_b_norm (plane_b.template head<3>());
   plane_a_norm.normalize();
   plane_b_norm.normalize();
 
   // Test if planes are parallel
-  double test_cos = plane_a_norm.dot(plane_b_norm);
-  double tolerance_cos = 1 - sin(std::abs(angular_tolerance));
+  double test_cos = plane_a_norm.dot (plane_b_norm);
+  double tolerance_cos = 1 - sin (std::abs (angular_tolerance));
 
-  if (std::abs(test_cos) > tolerance_cos) {
-    PCL_DEBUG("Plane A and Plane B are parallel.\n");
+  if (std::abs (test_cos) > tolerance_cos) {
+    PCL_DEBUG ("Plane A and Plane B are parallel.\n");
     return (false);
   }
 
-  Vector4 line_direction = plane_a.cross3(plane_b);
+  Vector4 line_direction = plane_a.cross3 (plane_b);
   line_direction.normalized();
 
   // Construct system of equations using lagrange multipliers with one objective
@@ -115,10 +115,10 @@ planeWithPlaneIntersection (const Eigen::Matrix<Scalar, 4, 1>& plane_a,
   Vector5 b;
   b << 0, 0, 0, -plane_a[3], -plane_b[3];
 
-  line.resize(6);
+  line.resize (6);
   // Solve for the lagrange multipliers
   line.template head<3>() =
-      langrange_coefs.colPivHouseholderQr().solve(b).template head<3>();
+      langrange_coefs.colPivHouseholderQr().solve (b).template head<3>();
   line.template tail<3>() = line_direction.template head<3>();
   return (true);
 }
@@ -139,15 +139,15 @@ threePlanesIntersection (const Eigen::Matrix<Scalar, 4, 1>& plane_a,
   Matrix3 normals_in_lines;
 
   for (int i = 0; i < 3; i++) {
-    normals_in_lines(i, 0) = plane_a[i];
-    normals_in_lines(i, 1) = plane_b[i];
-    normals_in_lines(i, 2) = plane_c[i];
+    normals_in_lines (i, 0) = plane_a[i];
+    normals_in_lines (i, 1) = plane_b[i];
+    normals_in_lines (i, 2) = plane_c[i];
   }
 
   Scalar determinant = normals_in_lines.determinant();
-  if (std::abs(determinant) < determinant_tolerance) {
+  if (std::abs (determinant) < determinant_tolerance) {
     // det ~= 0
-    PCL_DEBUG("At least two planes are parallel.\n");
+    PCL_DEBUG ("At least two planes are parallel.\n");
     return (false);
   }
 
@@ -155,9 +155,9 @@ threePlanesIntersection (const Eigen::Matrix<Scalar, 4, 1>& plane_a,
   Matrix3 left_member;
 
   for (int i = 0; i < 3; i++) {
-    left_member(0, i) = plane_a[i];
-    left_member(1, i) = plane_b[i];
-    left_member(2, i) = plane_c[i];
+    left_member (0, i) = plane_a[i];
+    left_member (1, i) = plane_b[i];
+    left_member (2, i) = plane_c[i];
   }
 
   // Right side of the 3 equations
@@ -165,7 +165,7 @@ threePlanesIntersection (const Eigen::Matrix<Scalar, 4, 1>& plane_a,
   right_member << -plane_a[3], -plane_b[3], -plane_c[3];
 
   // Solve the system
-  intersection_point = left_member.fullPivLu().solve(right_member);
+  intersection_point = left_member.fullPivLu().solve (right_member);
   return (true);
 }
 

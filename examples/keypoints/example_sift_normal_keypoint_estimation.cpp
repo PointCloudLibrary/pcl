@@ -54,10 +54,10 @@ main (int, char** argv)
 {
   std::string filename = argv[1];
   std::cout << "Reading " << filename << std::endl;
-  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_xyz(new pcl::PointCloud<pcl::PointXYZ>);
-  if (pcl::io::loadPCDFile<pcl::PointXYZ>(filename, *cloud_xyz) == -1) // load the file
+  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_xyz (new pcl::PointCloud<pcl::PointXYZ>);
+  if (pcl::io::loadPCDFile<pcl::PointXYZ> (filename, *cloud_xyz) == -1) // load the file
   {
-    PCL_ERROR("Couldn't read file\n");
+    PCL_ERROR ("Couldn't read file\n");
     return -1;
   }
   std::cout << "points: " << cloud_xyz->size() << std::endl;
@@ -70,15 +70,15 @@ main (int, char** argv)
 
   // Estimate the normals of the cloud_xyz
   pcl::NormalEstimation<pcl::PointXYZ, pcl::PointNormal> ne;
-  pcl::PointCloud<pcl::PointNormal>::Ptr cloud_normals(
+  pcl::PointCloud<pcl::PointNormal>::Ptr cloud_normals (
       new pcl::PointCloud<pcl::PointNormal>);
-  pcl::search::KdTree<pcl::PointXYZ>::Ptr tree_n(
+  pcl::search::KdTree<pcl::PointXYZ>::Ptr tree_n (
       new pcl::search::KdTree<pcl::PointXYZ>());
 
-  ne.setInputCloud(cloud_xyz);
-  ne.setSearchMethod(tree_n);
-  ne.setRadiusSearch(0.2);
-  ne.compute(*cloud_normals);
+  ne.setInputCloud (cloud_xyz);
+  ne.setSearchMethod (tree_n);
+  ne.setRadiusSearch (0.2);
+  ne.compute (*cloud_normals);
 
   // Copy the xyz info from cloud_xyz and add it to cloud_normals as the xyz field in
   // PointNormals estimation is zero
@@ -92,13 +92,13 @@ main (int, char** argv)
   // variants
   pcl::SIFTKeypoint<pcl::PointNormal, pcl::PointWithScale> sift;
   pcl::PointCloud<pcl::PointWithScale> result;
-  pcl::search::KdTree<pcl::PointNormal>::Ptr tree(
+  pcl::search::KdTree<pcl::PointNormal>::Ptr tree (
       new pcl::search::KdTree<pcl::PointNormal>());
-  sift.setSearchMethod(tree);
-  sift.setScales(min_scale, n_octaves, n_scales_per_octave);
-  sift.setMinimumContrast(min_contrast);
-  sift.setInputCloud(cloud_normals);
-  sift.compute(result);
+  sift.setSearchMethod (tree);
+  sift.setScales (min_scale, n_octaves, n_scales_per_octave);
+  sift.setMinimumContrast (min_contrast);
+  sift.setInputCloud (cloud_normals);
+  sift.compute (result);
 
   std::cout << "No of SIFT points in the result are " << result.size() << std::endl;
 

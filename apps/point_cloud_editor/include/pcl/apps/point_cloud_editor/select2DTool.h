@@ -58,9 +58,9 @@ public:
   /// @param cloud_ptr a shared pointer pointing to the cloud object.
   /// @param get_viewport_and_projection_mat a function that can be used to get the
   /// viewport and the projection matrix
-  Select2DTool(SelectionPtr selection_ptr,
-               CloudPtr cloud_ptr,
-               std::function<void(GLint*, GLfloat*)> get_viewport_and_projection_mat);
+  Select2DTool (SelectionPtr selection_ptr,
+                CloudPtr cloud_ptr,
+                std::function<void (GLint*, GLfloat*)> get_viewport_and_projection_mat);
 
   /// @brief Destructor
   ~Select2DTool() override;
@@ -125,7 +125,7 @@ public:
 
 private:
   /// @brief Default constructor - object is not default constructable
-  Select2DTool() { assert(false); }
+  Select2DTool() { assert (false); }
 
   /// @brief draw the 2D selection rubber band.
   /// @param viewport the viewport obtained from GL
@@ -155,5 +155,5 @@ private:
   bool display_box_;
 
   /// function to get the viewport and the projection matrix (initialized by ctor)
-  std::function<void(GLint*, GLfloat*)> get_viewport_and_projection_mat_;
+  std::function<void (GLint*, GLfloat*)> get_viewport_and_projection_mat_;
 };

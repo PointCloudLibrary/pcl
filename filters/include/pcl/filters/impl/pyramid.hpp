@@ -52,14 +52,14 @@ bool
 Pyramid<PointT>::initCompute()
 {
   if (!input_->isOrganized()) {
-    PCL_ERROR(
+    PCL_ERROR (
         "[pcl::filters::%s::initCompute] Number of levels should be at least 2!\n",
         getClassName().c_str());
     return (false);
   }
 
   if (levels_ < 2) {
-    PCL_ERROR(
+    PCL_ERROR (
         "[pcl::filters::%s::initCompute] Number of levels should be at least 2!\n",
         getClassName().c_str());
     return (false);
@@ -70,20 +70,21 @@ Pyramid<PointT>::initCompute()
   // std::size_t last_height = input_->height / ratio;
 
   if (levels_ > 4) {
-    PCL_ERROR("[pcl::filters::%s::initCompute] Number of levels should not exceed 4!\n",
-              getClassName().c_str());
+    PCL_ERROR (
+        "[pcl::filters::%s::initCompute] Number of levels should not exceed 4!\n",
+        getClassName().c_str());
     return (false);
   }
 
   if (large_) {
-    Eigen::VectorXf k(5);
+    Eigen::VectorXf k (5);
     k << 1.f / 16.f, 1.f / 4.f, 3.f / 8.f, 1.f / 4.f, 1.f / 16.f;
     kernel_ = k * k.transpose();
     if (threshold_ != std::numeric_limits<float>::infinity())
       threshold_ *= 2 * threshold_;
   }
   else {
-    Eigen::VectorXf k(3);
+    Eigen::VectorXf k (3);
     k << 1.f / 4.f, 1.f / 2.f, 1.f / 4.f;
     kernel_ = k * k.transpose();
     if (threshold_ != std::numeric_limits<float>::infinity())
@@ -95,27 +96,27 @@ Pyramid<PointT>::initCompute()
 
 template <typename PointT>
 void
-Pyramid<PointT>::compute(std::vector<PointCloudPtr>& output)
+Pyramid<PointT>::compute (std::vector<PointCloudPtr>& output)
 {
   std::cout << "compute" << std::endl;
   if (!initCompute()) {
-    PCL_ERROR("[pcl::%s::compute] initCompute failed!\n", getClassName().c_str());
+    PCL_ERROR ("[pcl::%s::compute] initCompute failed!\n", getClassName().c_str());
     return;
   }
 
-  int kernel_rows = static_cast<int>(kernel_.rows());
-  int kernel_cols = static_cast<int>(kernel_.cols());
+  int kernel_rows = static_cast<int> (kernel_.rows());
+  int kernel_cols = static_cast<int> (kernel_.cols());
   int kernel_center_x = kernel_cols / 2;
   int kernel_center_y = kernel_rows / 2;
 
-  output.resize(levels_ + 1);
-  output[0].reset(new pcl::PointCloud<PointT>);
+  output.resize (levels_ + 1);
+  output[0].reset (new pcl::PointCloud<PointT>);
   *(output[0]) = *input_;
 
   if (input_->is_dense) {
     for (int l = 1; l <= levels_; ++l) {
-      output[l].reset(new pcl::PointCloud<PointT>(output[l - 1]->width / 2,
-                                                  output[l - 1]->height / 2));
+      output[l].reset (new pcl::PointCloud<PointT> (output[l - 1]->width / 2,
+                                                    output[l - 1]->height / 2));
       const PointCloud<PointT>& previous = *output[l - 1];
       PointCloud<PointT>& next = *output[l];
 #pragma omp parallel for default(none) shared(next) num_threads(threads_)
@@ -137,7 +138,7 @@ Pyramid<PointT>::compute(std::vector<PointCloudPtr>& output)
                 jj = 0;
               if (jj >= previous.width)
                 jj = previous.width - 1;
-              next.at(j, i) += previous.at(jj, ii) * kernel_(mm, nn);
+              next.at (j, i) += previous.at (jj, ii) * kernel_ (mm, nn);
             }
           }
         }
@@ -146,8 +147,8 @@ Pyramid<PointT>::compute(std::vector<PointCloudPtr>& output)
   }
   else {
     for (int l = 1; l <= levels_; ++l) {
-      output[l].reset(new pcl::PointCloud<PointT>(output[l - 1]->width / 2,
-                                                  output[l - 1]->height / 2));
+      output[l].reset (new pcl::PointCloud<PointT> (output[l - 1]->width / 2,
+                                                    output[l - 1]->height / 2));
       const PointCloud<PointT>& previous = *output[l - 1];
       PointCloud<PointT>& next = *output[l];
 #pragma omp parallel for default(none) shared(next) num_threads(threads_)
@@ -168,20 +169,20 @@ Pyramid<PointT>::compute(std::vector<PointCloudPtr>& output)
                 jj = 0;
               if (jj >= previous.width)
                 jj = previous.width - 1;
-              if (!isFinite(previous.at(jj, ii)))
+              if (!isFinite (previous.at (jj, ii)))
                 continue;
-              if (pcl::squaredEuclideanDistance(previous.at(2 * j, 2 * i),
-                                                previous.at(jj, ii)) < threshold_) {
-                next.at(j, i) += previous.at(jj, ii).x * kernel_(mm, nn);
-                weight += kernel_(mm, nn);
+              if (pcl::squaredEuclideanDistance (previous.at (2 * j, 2 * i),
+                                                 previous.at (jj, ii)) < threshold_) {
+                next.at (j, i) += previous.at (jj, ii).x * kernel_ (mm, nn);
+                weight += kernel_ (mm, nn);
               }
             }
           }
           if (weight == 0)
-            nullify(next.at(j, i));
+            nullify (next.at (j, i));
           else {
             weight = 1.f / weight;
-            next.at(j, i) *= weight;
+            next.at (j, i) *= weight;
           }
         }
       }
@@ -191,17 +192,17 @@ Pyramid<PointT>::compute(std::vector<PointCloudPtr>& output)
 
 template <>
 void
-Pyramid<pcl::PointXYZRGB>::compute(
+Pyramid<pcl::PointXYZRGB>::compute (
     std::vector<Pyramid<pcl::PointXYZRGB>::PointCloudPtr>& output);
 
 template <>
 void
-Pyramid<pcl::PointXYZRGBA>::compute(
+Pyramid<pcl::PointXYZRGBA>::compute (
     std::vector<Pyramid<pcl::PointXYZRGBA>::PointCloudPtr>& output);
 
 template <>
 void
-Pyramid<pcl::RGB>::nullify(pcl::RGB& p)
+Pyramid<pcl::RGB>::nullify (pcl::RGB& p)
 {
   p.r = 0;
   p.g = 0;
@@ -210,7 +211,7 @@ Pyramid<pcl::RGB>::nullify(pcl::RGB& p)
 
 template <>
 void
-Pyramid<pcl::RGB>::compute(std::vector<Pyramid<pcl::RGB>::PointCloudPtr>& output);
+Pyramid<pcl::RGB>::compute (std::vector<Pyramid<pcl::RGB>::PointCloudPtr>& output);
 
 } // namespace filters
 } // namespace pcl

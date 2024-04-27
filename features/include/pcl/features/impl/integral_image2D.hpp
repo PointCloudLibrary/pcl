@@ -44,7 +44,7 @@ namespace pcl {
 
 template <typename DataType, unsigned Dimension>
 void
-IntegralImage2D<DataType, Dimension>::setSecondOrderComputation(
+IntegralImage2D<DataType, Dimension>::setSecondOrderComputation (
     bool compute_second_order_integral_images)
 {
   compute_second_order_integral_images_ = compute_second_order_integral_images;
@@ -52,44 +52,26 @@ IntegralImage2D<DataType, Dimension>::setSecondOrderComputation(
 
 template <typename DataType, unsigned Dimension>
 void
-IntegralImage2D<DataType, Dimension>::setInput(const DataType* data,
-                                               unsigned width,
-                                               unsigned height,
-                                               unsigned element_stride,
-                                               unsigned row_stride)
+IntegralImage2D<DataType, Dimension>::setInput (const DataType* data,
+                                                unsigned width,
+                                                unsigned height,
+                                                unsigned element_stride,
+                                                unsigned row_stride)
 {
   if ((width + 1) * (height + 1) > first_order_integral_image_.size()) {
     width_ = width;
     height_ = height;
-    first_order_integral_image_.resize((width_ + 1) * (height_ + 1));
-    finite_values_integral_image_.resize((width_ + 1) * (height_ + 1));
+    first_order_integral_image_.resize ((width_ + 1) * (height_ + 1));
+    finite_values_integral_image_.resize ((width_ + 1) * (height_ + 1));
     if (compute_second_order_integral_images_)
-      second_order_integral_image_.resize((width_ + 1) * (height_ + 1));
+      second_order_integral_image_.resize ((width_ + 1) * (height_ + 1));
   }
-  computeIntegralImages(data, row_stride, element_stride);
+  computeIntegralImages (data, row_stride, element_stride);
 }
 
 template <typename DataType, unsigned Dimension>
 typename pcl::IntegralImage2D<DataType, Dimension>::ElementType
-IntegralImage2D<DataType, Dimension>::getFirstOrderSum(unsigned start_x,
-                                                       unsigned start_y,
-                                                       unsigned width,
-                                                       unsigned height) const
-{
-  const unsigned upper_left_idx = start_y * (width_ + 1) + start_x;
-  const unsigned upper_right_idx = upper_left_idx + width;
-  const unsigned lower_left_idx = (start_y + height) * (width_ + 1) + start_x;
-  const unsigned lower_right_idx = lower_left_idx + width;
-
-  return (first_order_integral_image_[lower_right_idx] +
-          first_order_integral_image_[upper_left_idx] -
-          first_order_integral_image_[upper_right_idx] -
-          first_order_integral_image_[lower_left_idx]);
-}
-
-template <typename DataType, unsigned Dimension>
-typename pcl::IntegralImage2D<DataType, Dimension>::SecondOrderType
-IntegralImage2D<DataType, Dimension>::getSecondOrderSum(unsigned start_x,
+IntegralImage2D<DataType, Dimension>::getFirstOrderSum (unsigned start_x,
                                                         unsigned start_y,
                                                         unsigned width,
                                                         unsigned height) const
@@ -99,6 +81,24 @@ IntegralImage2D<DataType, Dimension>::getSecondOrderSum(unsigned start_x,
   const unsigned lower_left_idx = (start_y + height) * (width_ + 1) + start_x;
   const unsigned lower_right_idx = lower_left_idx + width;
 
+  return (first_order_integral_image_[lower_right_idx] +
+          first_order_integral_image_[upper_left_idx] -
+          first_order_integral_image_[upper_right_idx] -
+          first_order_integral_image_[lower_left_idx]);
+}
+
+template <typename DataType, unsigned Dimension>
+typename pcl::IntegralImage2D<DataType, Dimension>::SecondOrderType
+IntegralImage2D<DataType, Dimension>::getSecondOrderSum (unsigned start_x,
+                                                         unsigned start_y,
+                                                         unsigned width,
+                                                         unsigned height) const
+{
+  const unsigned upper_left_idx = start_y * (width_ + 1) + start_x;
+  const unsigned upper_right_idx = upper_left_idx + width;
+  const unsigned lower_left_idx = (start_y + height) * (width_ + 1) + start_x;
+  const unsigned lower_right_idx = lower_left_idx + width;
+
   return (second_order_integral_image_[lower_right_idx] +
           second_order_integral_image_[upper_left_idx] -
           second_order_integral_image_[upper_right_idx] -
@@ -107,10 +107,10 @@ IntegralImage2D<DataType, Dimension>::getSecondOrderSum(unsigned start_x,
 
 template <typename DataType, unsigned Dimension>
 unsigned
-IntegralImage2D<DataType, Dimension>::getFiniteElementsCount(unsigned start_x,
-                                                             unsigned start_y,
-                                                             unsigned width,
-                                                             unsigned height) const
+IntegralImage2D<DataType, Dimension>::getFiniteElementsCount (unsigned start_x,
+                                                              unsigned start_y,
+                                                              unsigned width,
+                                                              unsigned height) const
 {
   const unsigned upper_left_idx = start_y * (width_ + 1) + start_x;
   const unsigned upper_right_idx = upper_left_idx + width;
@@ -125,10 +125,10 @@ IntegralImage2D<DataType, Dimension>::getFiniteElementsCount(unsigned start_x,
 
 template <typename DataType, unsigned Dimension>
 typename pcl::IntegralImage2D<DataType, Dimension>::ElementType
-IntegralImage2D<DataType, Dimension>::getFirstOrderSumSE(unsigned start_x,
-                                                         unsigned start_y,
-                                                         unsigned end_x,
-                                                         unsigned end_y) const
+IntegralImage2D<DataType, Dimension>::getFirstOrderSumSE (unsigned start_x,
+                                                          unsigned start_y,
+                                                          unsigned end_x,
+                                                          unsigned end_y) const
 {
   const unsigned upper_left_idx = start_y * (width_ + 1) + start_x;
   const unsigned upper_right_idx = start_y * (width_ + 1) + end_x;
@@ -143,10 +143,10 @@ IntegralImage2D<DataType, Dimension>::getFirstOrderSumSE(unsigned start_x,
 
 template <typename DataType, unsigned Dimension>
 typename pcl::IntegralImage2D<DataType, Dimension>::SecondOrderType
-IntegralImage2D<DataType, Dimension>::getSecondOrderSumSE(unsigned start_x,
-                                                          unsigned start_y,
-                                                          unsigned end_x,
-                                                          unsigned end_y) const
+IntegralImage2D<DataType, Dimension>::getSecondOrderSumSE (unsigned start_x,
+                                                           unsigned start_y,
+                                                           unsigned end_x,
+                                                           unsigned end_y) const
 {
   const unsigned upper_left_idx = start_y * (width_ + 1) + start_x;
   const unsigned upper_right_idx = start_y * (width_ + 1) + end_x;
@@ -161,10 +161,10 @@ IntegralImage2D<DataType, Dimension>::getSecondOrderSumSE(unsigned start_x,
 
 template <typename DataType, unsigned Dimension>
 unsigned
-IntegralImage2D<DataType, Dimension>::getFiniteElementsCountSE(unsigned start_x,
-                                                               unsigned start_y,
-                                                               unsigned end_x,
-                                                               unsigned end_y) const
+IntegralImage2D<DataType, Dimension>::getFiniteElementsCountSE (unsigned start_x,
+                                                                unsigned start_y,
+                                                                unsigned end_x,
+                                                                unsigned end_y) const
 {
   const unsigned upper_left_idx = start_y * (width_ + 1) + start_x;
   const unsigned upper_right_idx = start_y * (width_ + 1) + end_x;
@@ -179,9 +179,9 @@ IntegralImage2D<DataType, Dimension>::getFiniteElementsCountSE(unsigned start_x,
 
 template <typename DataType, unsigned Dimension>
 void
-IntegralImage2D<DataType, Dimension>::computeIntegralImages(const DataType* data,
-                                                            unsigned row_stride,
-                                                            unsigned element_stride)
+IntegralImage2D<DataType, Dimension>::computeIntegralImages (const DataType* data,
+                                                             unsigned row_stride,
+                                                             unsigned element_stride)
 {
   ElementType* previous_row = first_order_integral_image_.data();
   ElementType* current_row = previous_row + (width_ + 1);
@@ -190,7 +190,7 @@ IntegralImage2D<DataType, Dimension>::computeIntegralImages(const DataType* data
 
   unsigned* count_previous_row = finite_values_integral_image_.data();
   unsigned* count_current_row = count_previous_row + (width_ + 1);
-  std::fill_n(count_previous_row, width_ + 1, 0);
+  std::fill_n (count_previous_row, width_ + 1, 0);
 
   if (!compute_second_order_integral_images_) {
     for (unsigned rowIdx = 0; rowIdx < height_; ++rowIdx,
@@ -208,8 +208,8 @@ IntegralImage2D<DataType, Dimension>::computeIntegralImages(const DataType* data
         count_current_row[colIdx + 1] = count_previous_row[colIdx + 1] +
                                         count_current_row[colIdx] -
                                         count_previous_row[colIdx];
-        const auto* element = reinterpret_cast<const InputType*>(&data[valIdx]);
-        if (std::isfinite(element->sum())) {
+        const auto* element = reinterpret_cast<const InputType*> (&data[valIdx]);
+        if (std::isfinite (element->sum())) {
           current_row[colIdx + 1] += element->template cast<
               typename IntegralImageTypeTraits<DataType>::IntegralType>();
           ++(count_current_row[colIdx + 1]);
@@ -245,8 +245,8 @@ IntegralImage2D<DataType, Dimension>::computeIntegralImages(const DataType* data
                                         count_current_row[colIdx] -
                                         count_previous_row[colIdx];
 
-        const auto* element = reinterpret_cast<const InputType*>(&data[valIdx]);
-        if (std::isfinite(element->sum())) {
+        const auto* element = reinterpret_cast<const InputType*> (&data[valIdx]);
+        if (std::isfinite (element->sum())) {
           current_row[colIdx + 1] += element->template cast<
               typename IntegralImageTypeTraits<DataType>::IntegralType>();
           ++(count_current_row[colIdx + 1]);
@@ -262,29 +262,29 @@ IntegralImage2D<DataType, Dimension>::computeIntegralImages(const DataType* data
 
 template <typename DataType>
 void
-IntegralImage2D<DataType, 1>::setInput(const DataType* data,
-                                       unsigned width,
-                                       unsigned height,
-                                       unsigned element_stride,
-                                       unsigned row_stride)
+IntegralImage2D<DataType, 1>::setInput (const DataType* data,
+                                        unsigned width,
+                                        unsigned height,
+                                        unsigned element_stride,
+                                        unsigned row_stride)
 {
   if ((width + 1) * (height + 1) > first_order_integral_image_.size()) {
     width_ = width;
     height_ = height;
-    first_order_integral_image_.resize((width_ + 1) * (height_ + 1));
-    finite_values_integral_image_.resize((width_ + 1) * (height_ + 1));
+    first_order_integral_image_.resize ((width_ + 1) * (height_ + 1));
+    finite_values_integral_image_.resize ((width_ + 1) * (height_ + 1));
     if (compute_second_order_integral_images_)
-      second_order_integral_image_.resize((width_ + 1) * (height_ + 1));
+      second_order_integral_image_.resize ((width_ + 1) * (height_ + 1));
   }
-  computeIntegralImages(data, row_stride, element_stride);
+  computeIntegralImages (data, row_stride, element_stride);
 }
 
 template <typename DataType>
 typename pcl::IntegralImage2D<DataType, 1>::ElementType
-IntegralImage2D<DataType, 1>::getFirstOrderSum(unsigned start_x,
-                                               unsigned start_y,
-                                               unsigned width,
-                                               unsigned height) const
+IntegralImage2D<DataType, 1>::getFirstOrderSum (unsigned start_x,
+                                                unsigned start_y,
+                                                unsigned width,
+                                                unsigned height) const
 {
   const unsigned upper_left_idx = start_y * (width_ + 1) + start_x;
   const unsigned upper_right_idx = upper_left_idx + width;
@@ -299,10 +299,10 @@ IntegralImage2D<DataType, 1>::getFirstOrderSum(unsigned start_x,
 
 template <typename DataType>
 typename pcl::IntegralImage2D<DataType, 1>::SecondOrderType
-IntegralImage2D<DataType, 1>::getSecondOrderSum(unsigned start_x,
-                                                unsigned start_y,
-                                                unsigned width,
-                                                unsigned height) const
+IntegralImage2D<DataType, 1>::getSecondOrderSum (unsigned start_x,
+                                                 unsigned start_y,
+                                                 unsigned width,
+                                                 unsigned height) const
 {
   const unsigned upper_left_idx = start_y * (width_ + 1) + start_x;
   const unsigned upper_right_idx = upper_left_idx + width;
@@ -317,10 +317,10 @@ IntegralImage2D<DataType, 1>::getSecondOrderSum(unsigned start_x,
 
 template <typename DataType>
 unsigned
-IntegralImage2D<DataType, 1>::getFiniteElementsCount(unsigned start_x,
-                                                     unsigned start_y,
-                                                     unsigned width,
-                                                     unsigned height) const
+IntegralImage2D<DataType, 1>::getFiniteElementsCount (unsigned start_x,
+                                                      unsigned start_y,
+                                                      unsigned width,
+                                                      unsigned height) const
 {
   const unsigned upper_left_idx = start_y * (width_ + 1) + start_x;
   const unsigned upper_right_idx = upper_left_idx + width;
@@ -335,10 +335,10 @@ IntegralImage2D<DataType, 1>::getFiniteElementsCount(unsigned start_x,
 
 template <typename DataType>
 typename pcl::IntegralImage2D<DataType, 1>::ElementType
-IntegralImage2D<DataType, 1>::getFirstOrderSumSE(unsigned start_x,
-                                                 unsigned start_y,
-                                                 unsigned end_x,
-                                                 unsigned end_y) const
+IntegralImage2D<DataType, 1>::getFirstOrderSumSE (unsigned start_x,
+                                                  unsigned start_y,
+                                                  unsigned end_x,
+                                                  unsigned end_y) const
 {
   const unsigned upper_left_idx = start_y * (width_ + 1) + start_x;
   const unsigned upper_right_idx = start_y * (width_ + 1) + end_x;
@@ -353,10 +353,10 @@ IntegralImage2D<DataType, 1>::getFirstOrderSumSE(unsigned start_x,
 
 template <typename DataType>
 typename pcl::IntegralImage2D<DataType, 1>::SecondOrderType
-IntegralImage2D<DataType, 1>::getSecondOrderSumSE(unsigned start_x,
-                                                  unsigned start_y,
-                                                  unsigned end_x,
-                                                  unsigned end_y) const
+IntegralImage2D<DataType, 1>::getSecondOrderSumSE (unsigned start_x,
+                                                   unsigned start_y,
+                                                   unsigned end_x,
+                                                   unsigned end_y) const
 {
   const unsigned upper_left_idx = start_y * (width_ + 1) + start_x;
   const unsigned upper_right_idx = start_y * (width_ + 1) + end_x;
@@ -371,10 +371,10 @@ IntegralImage2D<DataType, 1>::getSecondOrderSumSE(unsigned start_x,
 
 template <typename DataType>
 unsigned
-IntegralImage2D<DataType, 1>::getFiniteElementsCountSE(unsigned start_x,
-                                                       unsigned start_y,
-                                                       unsigned end_x,
-                                                       unsigned end_y) const
+IntegralImage2D<DataType, 1>::getFiniteElementsCountSE (unsigned start_x,
+                                                        unsigned start_y,
+                                                        unsigned end_x,
+                                                        unsigned end_y) const
 {
   const unsigned upper_left_idx = start_y * (width_ + 1) + start_x;
   const unsigned upper_right_idx = start_y * (width_ + 1) + end_x;
@@ -389,17 +389,17 @@ IntegralImage2D<DataType, 1>::getFiniteElementsCountSE(unsigned start_x,
 
 template <typename DataType>
 void
-IntegralImage2D<DataType, 1>::computeIntegralImages(const DataType* data,
-                                                    unsigned row_stride,
-                                                    unsigned element_stride)
+IntegralImage2D<DataType, 1>::computeIntegralImages (const DataType* data,
+                                                     unsigned row_stride,
+                                                     unsigned element_stride)
 {
   ElementType* previous_row = first_order_integral_image_.data();
   ElementType* current_row = previous_row + (width_ + 1);
-  std::fill_n(previous_row, width_ + 1, 0);
+  std::fill_n (previous_row, width_ + 1, 0);
 
   unsigned* count_previous_row = finite_values_integral_image_.data();
   unsigned* count_current_row = count_previous_row + (width_ + 1);
-  std::fill_n(count_previous_row, width_ + 1, 0);
+  std::fill_n (count_previous_row, width_ + 1, 0);
 
   if (!compute_second_order_integral_images_) {
     for (unsigned rowIdx = 0; rowIdx < height_; ++rowIdx,
@@ -417,7 +417,7 @@ IntegralImage2D<DataType, 1>::computeIntegralImages(const DataType* data,
         count_current_row[colIdx + 1] = count_previous_row[colIdx + 1] +
                                         count_current_row[colIdx] -
                                         count_previous_row[colIdx];
-        if (std::isfinite(data[valIdx])) {
+        if (std::isfinite (data[valIdx])) {
           current_row[colIdx + 1] += data[valIdx];
           ++(count_current_row[colIdx + 1]);
         }
@@ -427,7 +427,7 @@ IntegralImage2D<DataType, 1>::computeIntegralImages(const DataType* data,
   else {
     SecondOrderType* so_previous_row = second_order_integral_image_.data();
     SecondOrderType* so_current_row = so_previous_row + (width_ + 1);
-    std::fill_n(so_previous_row, width_ + 1, 0);
+    std::fill_n (so_previous_row, width_ + 1, 0);
 
     for (unsigned rowIdx = 0; rowIdx < height_; ++rowIdx,
                   data += row_stride,
@@ -449,7 +449,7 @@ IntegralImage2D<DataType, 1>::computeIntegralImages(const DataType* data,
         count_current_row[colIdx + 1] = count_previous_row[colIdx + 1] +
                                         count_current_row[colIdx] -
                                         count_previous_row[colIdx];
-        if (std::isfinite(data[valIdx])) {
+        if (std::isfinite (data[valIdx])) {
           current_row[colIdx + 1] += data[valIdx];
           so_current_row[colIdx + 1] += data[valIdx] * data[valIdx];
           ++(count_current_row[colIdx + 1]);

@@ -48,7 +48,7 @@
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT, typename NormalT>
 void
-pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::setSalientRadius(
+pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::setSalientRadius (
     double salient_radius)
 {
   salient_radius_ = salient_radius;
@@ -57,7 +57,8 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::setSalientRadius(
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT, typename NormalT>
 void
-pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::setNonMaxRadius(double non_max_radius)
+pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::setNonMaxRadius (
+    double non_max_radius)
 {
   non_max_radius_ = non_max_radius;
 }
@@ -65,7 +66,7 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::setNonMaxRadius(double non_max
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT, typename NormalT>
 void
-pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::setNormalRadius(double normal_radius)
+pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::setNormalRadius (double normal_radius)
 {
   normal_radius_ = normal_radius;
 }
@@ -73,7 +74,7 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::setNormalRadius(double normal_
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT, typename NormalT>
 void
-pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::setBorderRadius(double border_radius)
+pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::setBorderRadius (double border_radius)
 {
   border_radius_ = border_radius;
 }
@@ -81,7 +82,7 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::setBorderRadius(double border_
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT, typename NormalT>
 void
-pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::setThreshold21(double gamma_21)
+pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::setThreshold21 (double gamma_21)
 {
   gamma_21_ = gamma_21;
 }
@@ -89,7 +90,7 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::setThreshold21(double gamma_21
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT, typename NormalT>
 void
-pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::setThreshold32(double gamma_32)
+pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::setThreshold32 (double gamma_32)
 {
   gamma_32_ = gamma_32;
 }
@@ -97,7 +98,7 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::setThreshold32(double gamma_32
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT, typename NormalT>
 void
-pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::setMinNeighbors(int min_neighbors)
+pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::setMinNeighbors (int min_neighbors)
 {
   min_neighbors_ = min_neighbors;
 }
@@ -105,7 +106,7 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::setMinNeighbors(int min_neighb
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT, typename NormalT>
 void
-pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::setNormals(
+pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::setNormals (
     const PointCloudNConstPtr& normals)
 {
   normals_ = normals;
@@ -114,7 +115,7 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::setNormals(
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT, typename NormalT>
 void
-pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::setNumberOfThreads(
+pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::setNumberOfThreads (
     unsigned int nr_threads)
 {
   if (nr_threads == 0)
@@ -130,7 +131,7 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::setNumberOfThreads(
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT, typename NormalT>
 bool*
-pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::getBoundaryPoints(
+pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::getBoundaryPoints (
     PointCloudIn& input, double border_radius, float angle_threshold)
 {
   bool* edge_points = new bool[input.size()];
@@ -139,29 +140,29 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::getBoundaryPoints(
   Eigen::Vector4f v = Eigen::Vector4f::Zero();
 
   pcl::BoundaryEstimation<PointInT, NormalT, pcl::Boundary> boundary_estimator;
-  boundary_estimator.setInputCloud(input_);
+  boundary_estimator.setInputCloud (input_);
 
 #pragma omp parallel for default(none)                                                 \
     shared(angle_threshold, boundary_estimator, border_radius, edge_points, input)     \
     firstprivate(u, v) num_threads(threads_)
-  for (int index = 0; index < static_cast<int>(input.size()); index++) {
+  for (int index = 0; index < static_cast<int> (input.size()); index++) {
     edge_points[index] = false;
     PointInT current_point = input[index];
 
-    if (pcl::isFinite(current_point)) {
+    if (pcl::isFinite (current_point)) {
       pcl::Indices nn_indices;
       std::vector<float> nn_distances;
       int n_neighbors;
 
-      this->searchForNeighbors(index, border_radius, nn_indices, nn_distances);
+      this->searchForNeighbors (index, border_radius, nn_indices, nn_distances);
 
-      n_neighbors = static_cast<int>(nn_indices.size());
+      n_neighbors = static_cast<int> (nn_indices.size());
 
       if (n_neighbors >= min_neighbors_) {
-        boundary_estimator.getCoordinateSystemOnPlane((*normals_)[index], u, v);
+        boundary_estimator.getCoordinateSystemOnPlane ((*normals_)[index], u, v);
 
-        if (boundary_estimator.isBoundaryPoint(
-                input, static_cast<int>(index), nn_indices, u, v, angle_threshold))
+        if (boundary_estimator.isBoundaryPoint (
+                input, static_cast<int> (index), nn_indices, u, v, angle_threshold))
           edge_points[index] = true;
       }
     }
@@ -173,7 +174,7 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::getBoundaryPoints(
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT, typename NormalT>
 void
-pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::getScatterMatrix(
+pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::getScatterMatrix (
     const int& current_index, Eigen::Matrix3d& cov_m)
 {
   const PointInT& current_point = (*input_)[current_index];
@@ -190,9 +191,9 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::getScatterMatrix(
   std::vector<float> nn_distances;
   int n_neighbors;
 
-  this->searchForNeighbors(current_index, salient_radius_, nn_indices, nn_distances);
+  this->searchForNeighbors (current_index, salient_radius_, nn_indices, nn_distances);
 
-  n_neighbors = static_cast<int>(nn_indices.size());
+  n_neighbors = static_cast<int> (nn_indices.size());
 
   if (n_neighbors < min_neighbors_)
     return;
@@ -223,42 +224,44 @@ bool
 pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::initCompute()
 {
   if (!Keypoint<PointInT, PointOutT>::initCompute()) {
-    PCL_ERROR("[pcl::%s::initCompute] init failed!\n", name_.c_str());
+    PCL_ERROR ("[pcl::%s::initCompute] init failed!\n", name_.c_str());
     return (false);
   }
   if (salient_radius_ <= 0) {
-    PCL_ERROR(
+    PCL_ERROR (
         "[pcl::%s::initCompute] : the salient radius (%f) must be strict positive!\n",
         name_.c_str(),
         salient_radius_);
     return (false);
   }
   if (non_max_radius_ <= 0) {
-    PCL_ERROR("[pcl::%s::initCompute] : the non maxima radius (%f) must be strict "
-              "positive!\n",
-              name_.c_str(),
-              non_max_radius_);
+    PCL_ERROR ("[pcl::%s::initCompute] : the non maxima radius (%f) must be strict "
+               "positive!\n",
+               name_.c_str(),
+               non_max_radius_);
     return (false);
   }
   if (gamma_21_ <= 0) {
-    PCL_ERROR("[pcl::%s::initCompute] : the threshold on the ratio between the 2nd and "
-              "the 1rst eigenvalue (%f) must be strict positive!\n",
-              name_.c_str(),
-              gamma_21_);
+    PCL_ERROR (
+        "[pcl::%s::initCompute] : the threshold on the ratio between the 2nd and "
+        "the 1rst eigenvalue (%f) must be strict positive!\n",
+        name_.c_str(),
+        gamma_21_);
     return (false);
   }
   if (gamma_32_ <= 0) {
-    PCL_ERROR("[pcl::%s::initCompute] : the threshold on the ratio between the 3rd and "
-              "the 2nd eigenvalue (%f) must be strict positive!\n",
-              name_.c_str(),
-              gamma_32_);
+    PCL_ERROR (
+        "[pcl::%s::initCompute] : the threshold on the ratio between the 3rd and "
+        "the 2nd eigenvalue (%f) must be strict positive!\n",
+        name_.c_str(),
+        gamma_32_);
     return (false);
   }
   if (min_neighbors_ <= 0) {
-    PCL_ERROR("[pcl::%s::initCompute] : the minimum number of neighbors (%f) must be "
-              "strict positive!\n",
-              name_.c_str(),
-              min_neighbors_);
+    PCL_ERROR ("[pcl::%s::initCompute] : the minimum number of neighbors (%f) must be "
+               "strict positive!\n",
+               name_.c_str(),
+               min_neighbors_);
     return (false);
   }
 
@@ -271,42 +274,42 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::initCompute()
   if (border_radius_ > 0.0) {
     if (normals_->empty()) {
       if (normal_radius_ <= 0.) {
-        PCL_ERROR("[pcl::%s::initCompute] : the radius used to estimate surface "
-                  "normals (%f) must be positive!\n",
-                  name_.c_str(),
-                  normal_radius_);
+        PCL_ERROR ("[pcl::%s::initCompute] : the radius used to estimate surface "
+                   "normals (%f) must be positive!\n",
+                   name_.c_str(),
+                   normal_radius_);
         return (false);
       }
 
-      PointCloudNPtr normal_ptr(new PointCloudN());
+      PointCloudNPtr normal_ptr (new PointCloudN());
       if (input_->height == 1) {
         pcl::NormalEstimation<PointInT, NormalT> normal_estimation;
-        normal_estimation.setInputCloud(surface_);
-        normal_estimation.setRadiusSearch(normal_radius_);
-        normal_estimation.compute(*normal_ptr);
+        normal_estimation.setInputCloud (surface_);
+        normal_estimation.setRadiusSearch (normal_radius_);
+        normal_estimation.compute (*normal_ptr);
       }
       else {
         pcl::IntegralImageNormalEstimation<PointInT, NormalT> normal_estimation;
-        normal_estimation.setNormalEstimationMethod(
+        normal_estimation.setNormalEstimationMethod (
             pcl::IntegralImageNormalEstimation<PointInT, NormalT>::SIMPLE_3D_GRADIENT);
-        normal_estimation.setInputCloud(surface_);
-        normal_estimation.setNormalSmoothingSize(5.0);
-        normal_estimation.compute(*normal_ptr);
+        normal_estimation.setInputCloud (surface_);
+        normal_estimation.setNormalSmoothingSize (5.0);
+        normal_estimation.compute (*normal_ptr);
       }
       normals_ = normal_ptr;
     }
     if (normals_->size() != surface_->size()) {
-      PCL_ERROR("[pcl::%s::initCompute] normals given, but the number of normals does "
-                "not match the number of input points!\n",
-                name_.c_str());
+      PCL_ERROR ("[pcl::%s::initCompute] normals given, but the number of normals does "
+                 "not match the number of input points!\n",
+                 name_.c_str());
       return (false);
     }
   }
   else if (border_radius_ < 0.0) {
-    PCL_ERROR("[pcl::%s::initCompute] : the border radius used to estimate boundary "
-              "points (%f) must be positive!\n",
-              name_.c_str(),
-              border_radius_);
+    PCL_ERROR ("[pcl::%s::initCompute] : the border radius used to estimate boundary "
+               "points (%f) must be positive!\n",
+               name_.c_str(),
+               border_radius_);
     return (false);
   }
 
@@ -316,27 +319,28 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::initCompute()
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT, typename NormalT>
 void
-pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints(PointCloudOut& output)
+pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (
+    PointCloudOut& output)
 {
   // Make sure the output cloud is empty
   output.clear();
 
   if (border_radius_ > 0.0)
     edge_points_ =
-        getBoundaryPoints(*(input_->makeShared()), border_radius_, angle_threshold_);
+        getBoundaryPoints (*(input_->makeShared()), border_radius_, angle_threshold_);
 
   bool* borders = new bool[input_->size()];
 
 #pragma omp parallel for default(none) shared(borders) num_threads(threads_)
-  for (int index = 0; index < static_cast<int>(input_->size()); index++) {
+  for (int index = 0; index < static_cast<int> (input_->size()); index++) {
     borders[index] = false;
     PointInT current_point = (*input_)[index];
 
-    if ((border_radius_ > 0.0) && (pcl::isFinite(current_point))) {
+    if ((border_radius_ > 0.0) && (pcl::isFinite (current_point))) {
       pcl::Indices nn_indices;
       std::vector<float> nn_distances;
 
-      this->searchForNeighbors(index, border_radius_, nn_indices, nn_distances);
+      this->searchForNeighbors (index, border_radius_, nn_indices, nn_distances);
 
       for (const auto& nn_index : nn_indices) {
         if (edge_points_[nn_index]) {
@@ -351,11 +355,11 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints(PointCloudOut&
   auto* omp_mem = new Eigen::Vector3d[threads_];
 
   for (std::size_t i = 0; i < threads_; i++)
-    omp_mem[i].setZero(3);
+    omp_mem[i].setZero (3);
 #else
   auto* omp_mem = new Eigen::Vector3d[1];
 
-  omp_mem[0].setZero(3);
+  omp_mem[0].setZero (3);
 #endif
 
   double* prg_local_mem = new double[input_->size() * 3];
@@ -366,7 +370,7 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints(PointCloudOut&
 
 #pragma omp parallel for default(none) shared(borders, omp_mem, prg_mem)               \
     num_threads(threads_)
-  for (int index = 0; index < static_cast<int>(input_->size()); index++) {
+  for (int index = 0; index < static_cast<int> (input_->size()); index++) {
 #ifdef _OPENMP
     int tid = omp_get_thread_num();
 #else
@@ -374,26 +378,26 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints(PointCloudOut&
 #endif
     PointInT current_point = (*input_)[index];
 
-    if ((!borders[index]) && pcl::isFinite(current_point)) {
+    if ((!borders[index]) && pcl::isFinite (current_point)) {
       // if the considered point is not a border point and the point is "finite", then
       // compute the scatter matrix
       Eigen::Matrix3d cov_m = Eigen::Matrix3d::Zero();
-      getScatterMatrix(static_cast<int>(index), cov_m);
+      getScatterMatrix (static_cast<int> (index), cov_m);
 
-      Eigen::SelfAdjointEigenSolver<Eigen::Matrix3d> solver(cov_m);
+      Eigen::SelfAdjointEigenSolver<Eigen::Matrix3d> solver (cov_m);
 
       const double& e1c = solver.eigenvalues()[2];
       const double& e2c = solver.eigenvalues()[1];
       const double& e3c = solver.eigenvalues()[0];
 
-      if (!std::isfinite(e1c) || !std::isfinite(e2c) || !std::isfinite(e3c))
+      if (!std::isfinite (e1c) || !std::isfinite (e2c) || !std::isfinite (e3c))
         continue;
 
       if (e3c < 0) {
-        PCL_WARN("[pcl::%s::detectKeypoints] : The third eigenvalue is negative! "
-                 "Skipping the point with index %i.\n",
-                 name_.c_str(),
-                 index);
+        PCL_WARN ("[pcl::%s::detectKeypoints] : The third eigenvalue is negative! "
+                  "Skipping the point with index %i.\n",
+                  name_.c_str(),
+                  index);
         continue;
       }
 
@@ -406,7 +410,7 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints(PointCloudOut&
       prg_mem[index][d] = omp_mem[tid][d];
   }
 
-  for (int index = 0; index < static_cast<int>(input_->size()); index++) {
+  for (int index = 0; index < static_cast<int> (input_->size()); index++) {
     if (!borders[index]) {
       if ((prg_mem[index][0] < gamma_21_) && (prg_mem[index][1] < gamma_32_))
         third_eigen_value_[index] = prg_mem[index][2];
@@ -416,18 +420,18 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints(PointCloudOut&
   bool* feat_max = new bool[input_->size()];
 
 #pragma omp parallel for default(none) shared(feat_max) num_threads(threads_)
-  for (int index = 0; index < static_cast<int>(input_->size()); index++) {
+  for (int index = 0; index < static_cast<int> (input_->size()); index++) {
     feat_max[index] = false;
     PointInT current_point = (*input_)[index];
 
-    if ((third_eigen_value_[index] > 0.0) && (pcl::isFinite(current_point))) {
+    if ((third_eigen_value_[index] > 0.0) && (pcl::isFinite (current_point))) {
       pcl::Indices nn_indices;
       std::vector<float> nn_distances;
       int n_neighbors;
 
-      this->searchForNeighbors(index, non_max_radius_, nn_indices, nn_distances);
+      this->searchForNeighbors (index, non_max_radius_, nn_indices, nn_distances);
 
-      n_neighbors = static_cast<int>(nn_indices.size());
+      n_neighbors = static_cast<int> (nn_indices.size());
 
       if (n_neighbors >= min_neighbors_) {
         bool is_max = true;
@@ -442,14 +446,14 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints(PointCloudOut&
   }
 
 #pragma omp parallel for default(none) shared(feat_max, output) num_threads(threads_)
-  for (int index = 0; index < static_cast<int>(input_->size()); index++) {
+  for (int index = 0; index < static_cast<int> (input_->size()); index++) {
     if (feat_max[index])
 #pragma omp critical
     {
       PointOutT p;
       p.getVector3fMap() = (*input_)[index].getVector3fMap();
-      output.push_back(p);
-      keypoints_indices_->indices.push_back(index);
+      output.push_back (p);
+      keypoints_indices_->indices.push_back (index);
     }
   }
 
@@ -460,7 +464,7 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints(PointCloudOut&
   // Clear the contents of variables and arrays before the beginning of the next
   // computation.
   if (border_radius_ > 0.0)
-    normals_.reset(new pcl::PointCloud<NormalT>);
+    normals_.reset (new pcl::PointCloud<NormalT>);
 
   delete[] borders;
   delete[] prg_mem;

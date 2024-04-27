@@ -63,27 +63,27 @@ public:
   using CloudPtr = Cloud::Ptr;
   using CloudConstPtr = Cloud::ConstPtr;
 
-  TrajkovicDemo(Grabber& grabber, bool enable_3d)
-  : cloud_viewer_("TRAJKOVIC 3D Keypoints -- PointCloud")
-  , grabber_(grabber)
-  , image_viewer_("TRAJKOVIC 3D Keypoints -- Image")
-  , enable_3d_(enable_3d)
+  TrajkovicDemo (Grabber& grabber, bool enable_3d)
+  : cloud_viewer_ ("TRAJKOVIC 3D Keypoints -- PointCloud")
+  , grabber_ (grabber)
+  , image_viewer_ ("TRAJKOVIC 3D Keypoints -- Image")
+  , enable_3d_ (enable_3d)
   {}
 
   /////////////////////////////////////////////////////////////////////////
   void
   cloud_callback_3d (const CloudConstPtr& cloud)
   {
-    FPS_CALC("cloud callback");
-    std::lock_guard<std::mutex> lock(cloud_mutex_);
+    FPS_CALC ("cloud callback");
+    std::lock_guard<std::mutex> lock (cloud_mutex_);
     cloud_ = cloud;
 
     // Compute TRAJKOVIC keypoints 3D
     TrajkovicKeypoint3D<PointT, KeyPointT> trajkovic;
-    trajkovic.setInputCloud(cloud);
-    trajkovic.setNumberOfThreads(6);
-    keypoints_.reset(new PointCloud<KeyPointT>);
-    trajkovic.compute(*keypoints_);
+    trajkovic.setInputCloud (cloud);
+    trajkovic.setNumberOfThreads (6);
+    keypoints_.reset (new PointCloud<KeyPointT>);
+    trajkovic.compute (*keypoints_);
     keypoints_indices_ = trajkovic.getKeypointsIndices();
   }
 
@@ -91,16 +91,16 @@ public:
   void
   cloud_callback_2d (const CloudConstPtr& cloud)
   {
-    FPS_CALC("cloud callback");
-    std::lock_guard<std::mutex> lock(cloud_mutex_);
+    FPS_CALC ("cloud callback");
+    std::lock_guard<std::mutex> lock (cloud_mutex_);
     cloud_ = cloud;
 
     // Compute TRAJKOVIC keypoints 2D
     TrajkovicKeypoint2D<PointT, KeyPointT> trajkovic;
-    trajkovic.setInputCloud(cloud);
-    trajkovic.setNumberOfThreads(6);
-    keypoints_.reset(new PointCloud<KeyPointT>);
-    trajkovic.compute(*keypoints_);
+    trajkovic.setInputCloud (cloud);
+    trajkovic.setNumberOfThreads (6);
+    keypoints_.reset (new PointCloud<KeyPointT>);
+    trajkovic.compute (*keypoints_);
     keypoints_indices_ = trajkovic.getKeypointsIndices();
   }
 
@@ -108,13 +108,13 @@ public:
   void
   init ()
   {
-    std::function<void(const CloudConstPtr&)> cloud_cb;
+    std::function<void (const CloudConstPtr&)> cloud_cb;
     if (enable_3d_)
-      cloud_cb = [this] (const CloudConstPtr& cloud) { cloud_callback_3d(cloud); };
+      cloud_cb = [this] (const CloudConstPtr& cloud) { cloud_callback_3d (cloud); };
     else
-      cloud_cb = [this] (const CloudConstPtr& cloud) { cloud_callback_2d(cloud); };
+      cloud_cb = [this] (const CloudConstPtr& cloud) { cloud_callback_2d (cloud); };
 
-    cloud_connection = grabber_.registerCallback(cloud_cb);
+    cloud_connection = grabber_.registerCallback (cloud_cb);
   }
 
   /////////////////////////////////////////////////////////////////////////
@@ -139,63 +139,63 @@ public:
       PointCloud<KeyPointT>::Ptr keypoints;
       CloudConstPtr cloud;
       if (cloud_mutex_.try_lock()) {
-        cloud_.swap(cloud);
-        keypoints_.swap(keypoints);
+        cloud_.swap (cloud);
+        keypoints_.swap (keypoints);
 
         cloud_mutex_.unlock();
       }
 
       if (cloud) {
         if (!cloud_init) {
-          cloud_viewer_.setPosition(0, 0);
-          cloud_viewer_.setSize(cloud->width, cloud->height);
+          cloud_viewer_.setPosition (0, 0);
+          cloud_viewer_.setSize (cloud->width, cloud->height);
           cloud_init = true;
         }
 
-        if (!cloud_viewer_.updatePointCloud(cloud, "OpenNICloud")) {
-          cloud_viewer_.addPointCloud(cloud, "OpenNICloud");
-          cloud_viewer_.resetCameraViewpoint("OpenNICloud");
+        if (!cloud_viewer_.updatePointCloud (cloud, "OpenNICloud")) {
+          cloud_viewer_.addPointCloud (cloud, "OpenNICloud");
+          cloud_viewer_.resetCameraViewpoint ("OpenNICloud");
         }
 
         if (!image_init) {
-          image_viewer_.setPosition(cloud->width, 0);
-          image_viewer_.setSize(cloud->width, cloud->height);
+          image_viewer_.setPosition (cloud->width, 0);
+          image_viewer_.setSize (cloud->width, cloud->height);
           image_init = true;
         }
 
-        image_viewer_.addRGBImage<PointT>(cloud);
+        image_viewer_.addRGBImage<PointT> (cloud);
 
         if (keypoints && !keypoints->empty()) {
-          image_viewer_.removeLayer(getStrBool(keypts));
+          image_viewer_.removeLayer (getStrBool (keypts));
           std::vector<int> uv;
-          uv.reserve(keypoints_indices_->indices.size() * 2);
+          uv.reserve (keypoints_indices_->indices.size() * 2);
           for (const auto& index : keypoints_indices_->indices) {
-            int u(index % cloud->width);
-            int v(index / cloud->width);
-            image_viewer_.markPoint(u,
-                                    v,
-                                    visualization::red_color,
-                                    visualization::blue_color,
-                                    5,
-                                    getStrBool(!keypts),
-                                    0.5);
+            int u (index % cloud->width);
+            int v (index / cloud->width);
+            image_viewer_.markPoint (u,
+                                     v,
+                                     visualization::red_color,
+                                     visualization::blue_color,
+                                     5,
+                                     getStrBool (!keypts),
+                                     0.5);
           }
           keypts = !keypts;
 
-          visualization::PointCloudColorHandlerCustom<KeyPointT> blue(
+          visualization::PointCloudColorHandlerCustom<KeyPointT> blue (
               keypoints, 0, 0, 255);
-          if (!cloud_viewer_.updatePointCloud(keypoints, blue, "keypoints"))
-            cloud_viewer_.addPointCloud(keypoints, blue, "keypoints");
-          cloud_viewer_.setPointCloudRenderingProperties(
+          if (!cloud_viewer_.updatePointCloud (keypoints, blue, "keypoints"))
+            cloud_viewer_.addPointCloud (keypoints, blue, "keypoints");
+          cloud_viewer_.setPointCloudRenderingProperties (
               visualization::PCL_VISUALIZER_POINT_SIZE, 10, "keypoints");
-          cloud_viewer_.setPointCloudRenderingProperties(
+          cloud_viewer_.setPointCloudRenderingProperties (
               visualization::PCL_VISUALIZER_OPACITY, 0.5, "keypoints");
         }
       }
 
       cloud_viewer_.spinOnce();
       image_viewer_.spinOnce();
-      std::this_thread::sleep_for(100us);
+      std::this_thread::sleep_for (100us);
     }
 
     grabber_.stop();
@@ -221,27 +221,27 @@ private:
 int
 main (int argc, char** argv)
 {
-  if (pcl::console::find_switch(argc, argv, "-h")) {
-    pcl::console::print_info("Syntax is: %s [-device device_id_string] [-2d]\n",
-                             argv[0]);
+  if (pcl::console::find_switch (argc, argv, "-h")) {
+    pcl::console::print_info ("Syntax is: %s [-device device_id_string] [-2d]\n",
+                              argv[0]);
     return 0;
   }
 
-  std::string device_id("#1");
+  std::string device_id ("#1");
   bool enable_3d = true;
-  if (pcl::console::find_switch(argc, argv, "-2d"))
+  if (pcl::console::find_switch (argc, argv, "-2d"))
     enable_3d = false;
 
-  if (pcl::console::find_argument(argc, argv, "-device"))
-    pcl::console::parse<std::string>(argc, argv, "-device", device_id);
+  if (pcl::console::find_argument (argc, argv, "-device"))
+    pcl::console::parse<std::string> (argc, argv, "-device", device_id);
 
-  pcl::console::print_info("Extracting Trajkovic %s keypoints from device %s.\n",
-                           enable_3d ? "3D" : "2D",
-                           device_id.c_str());
+  pcl::console::print_info ("Extracting Trajkovic %s keypoints from device %s.\n",
+                            enable_3d ? "3D" : "2D",
+                            device_id.c_str());
 
-  OpenNIGrabber grabber(device_id);
+  OpenNIGrabber grabber (device_id);
 
-  TrajkovicDemo openni_viewer(grabber, enable_3d);
+  TrajkovicDemo openni_viewer (grabber, enable_3d);
 
   openni_viewer.init();
   openni_viewer.run();

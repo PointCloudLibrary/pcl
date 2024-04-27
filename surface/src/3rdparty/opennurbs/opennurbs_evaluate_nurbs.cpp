@@ -141,12 +141,12 @@ RELATED FUNCTIONS:
      * tested on a SUN Sparc (SUNOS 4.3, gcc -O)
      */
     if (degree < 9)
-      return (t * ON_EvaluateBernsteinBasis(degree - 1, i - 1, t) +
-              (1 - t) * ON_EvaluateBernsteinBasis(degree - 1, i, t));
+      return (t * ON_EvaluateBernsteinBasis (degree - 1, i - 1, t) +
+              (1 - t) * ON_EvaluateBernsteinBasis (degree - 1, i, t));
     else
-      return ON_BinomialCoefficient(degree - i, i) *
-             ((degree == i) ? 1.0 : pow(1.0 - t, (double)(degree - i))) *
-             ((i) ? pow(t, (double)i) : 1.0);
+      return ON_BinomialCoefficient (degree - i, i) *
+             ((degree == i) ? 1.0 : pow (1.0 - t, (double)(degree - i))) *
+             ((i) ? pow (t, (double)i) : 1.0);
   }
 }
 
@@ -374,7 +374,7 @@ RELATED FUNCTIONS:
 
   j = cv_stride * order;
   newcv += j;
-  memcpy(newcv, newcv - cv_stride, cvdim * sizeof(*newcv));
+  memcpy (newcv, newcv - cv_stride, cvdim * sizeof (*newcv));
   newcv -= (dcv + 1);
   cv = newcv - cv_stride;
   a0 = order;
@@ -418,7 +418,7 @@ ON_RemoveBezierSingAt0 (int dim, int order, int cv_stride, double* cv)
     }
   }
   while (order < ord0)
-    ON_IncreaseBezierDegree(dim, true, order++, cv_stride, cv);
+    ON_IncreaseBezierDegree (dim, true, order++, cv_stride, cv);
   return true;
 }
 
@@ -445,7 +445,7 @@ ON_RemoveBezierSingAt1 (int dim, int order, int cv_stride, double* cv)
     CVlen -= cvdim;
   }
   while (order < ord0)
-    ON_IncreaseBezierDegree(dim, true, order++, cv_stride, cv);
+    ON_IncreaseBezierDegree (dim, true, order++, cv_stride, cv);
   return false;
 }
 
@@ -515,7 +515,7 @@ RELATED FUNCTIONS:
   ON_onvertNurbToBezier
 *****************************************************************************/
 {
-  unsigned char stack_buffer[4 * 64 * sizeof(double)];
+  unsigned char stack_buffer[4 * 64 * sizeof (double)];
   double delta_t;
   double alpha0;
   double alpha1;
@@ -529,7 +529,7 @@ RELATED FUNCTIONS:
   if (cv_stride < cvdim)
     cv_stride = cvdim;
 
-  memset(v, 0, v_stride * (der_count + 1) * sizeof(*v));
+  memset (v, 0, v_stride * (der_count + 1) * sizeof (*v));
 
 #if defined(ON_DEBUG)
   if (t0 == t1) {
@@ -547,18 +547,18 @@ RELATED FUNCTIONS:
     }
   }
 
-  std::size_t sizeofCV = (i + j) * sizeof(*CV);
+  std::size_t sizeofCV = (i + j) * sizeof (*CV);
 
   // 21 November 2007 Dale Lear RR 29005 - remove call to alloca()
-  CV = (double*)((sizeofCV <= sizeof(stack_buffer)) ? stack_buffer
-                                                    : (free_me = onmalloc(sizeofCV)));
+  CV = (double*)((sizeofCV <= sizeof (stack_buffer)) ? stack_buffer
+                                                     : (free_me = onmalloc (sizeofCV)));
   if (j) {
-    memset(CV + i, 0, j * sizeof(*CV));
+    memset (CV + i, 0, j * sizeof (*CV));
   }
   cv0 = CV;
   if (t0 == t || (t <= 0.5 * (t0 + t1) && t != t1)) {
     for (i = 0; i < order; i++) {
-      memcpy(cv0, cv, cvdim * sizeof(*cv0));
+      memcpy (cv0, cv, cvdim * sizeof (*cv0));
       cv0 += cvdim;
       cv += cv_stride;
     }
@@ -573,7 +573,7 @@ RELATED FUNCTIONS:
     k = order;
     while (k--) {
       cv -= cv_stride;
-      memcpy(cv0, cv, cvdim * sizeof(*cv0));
+      memcpy (cv0, cv, cvdim * sizeof (*cv0));
       cv0 += cvdim;
     }
     delta_t = 1.0 / (t0 - t);
@@ -602,9 +602,9 @@ RELATED FUNCTIONS:
 
   /* check for removable singularity */
   if (is_rat && CV[dim] == 0.0) {
-    if (!ON_RemoveBezierSingAt0(dim, order, cvdim, CV)) {
+    if (!ON_RemoveBezierSingAt0 (dim, order, cvdim, CV)) {
       if (free_me)
-        onfree(free_me);
+        onfree (free_me);
       return false;
     }
   }
@@ -646,17 +646,17 @@ RELATED FUNCTIONS:
   }
 
   if (is_rat) {
-    ON_EvaluateQuotientRule(dim, der_count, cvdim, CV);
+    ON_EvaluateQuotientRule (dim, der_count, cvdim, CV);
   }
 
   for (i = 0; i <= der_count; i++) {
-    memcpy(v, CV, dim * sizeof(*v));
+    memcpy (v, CV, dim * sizeof (*v));
     v += v_stride;
     CV += cvdim;
   }
 
   if (free_me)
-    onfree(free_me);
+    onfree (free_me);
 
   return true;
 }
@@ -742,12 +742,12 @@ ON_EvaluateNurbsBasis (int order, const double* knot, double t, double* N)
   const int d = order - 1;
   int j, r;
 
-  t_k = (double*)alloca(d << 4);
+  t_k = (double*)alloca (d << 4);
   k_t = t_k + d;
 
   if (knot[d - 1] == knot[d]) {
     /* value is defined to be zero on empty spans */
-    memset(N, 0, order * order * sizeof(*N));
+    memset (N, 0, order * order * sizeof (*N));
     return true;
   }
 
@@ -857,9 +857,9 @@ ON_EvaluateNurbsBasisDerivatives (int order,
    * dk[der_count-1] = 1.0/(knot[d] - knot[d-1])
    * dk[der_count] = dummy pointer to make loop efficient
    */
-  dk = (double**)alloca((der_count + 1)
-                        << 3); /* << 3 in case pointers are 8 bytes long */
-  a0 = (double*)alloca(
+  dk = (double**)alloca ((der_count + 1)
+                         << 3); /* << 3 in case pointers are 8 bytes long */
+  a0 = (double*)alloca (
       (order * (2 + ((d + 1) >> 1)))
       << 3); /* d for a0, d for a1, d*order/2 for dk[]'s and slop to avoid /2 */
   a1 = a0 + order;
@@ -961,27 +961,27 @@ ON_EvaluateNurbsNonRationalSpan (
   double* N;
   double a;
 
-  N = (double*)alloca((order * order) << 3);
+  N = (double*)alloca ((order * order) << 3);
 
   if (stride_minus_dim > 0) {
     i = (der_count + 1);
     while (i--) {
-      memset(v, 0, dim * sizeof(v[0]));
+      memset (v, 0, dim * sizeof (v[0]));
       v += v_stride;
     }
     v -= ((der_count + 1) * v_stride);
   }
   else {
-    memset(v, 0, (der_count + 1) * v_stride * sizeof(*v));
+    memset (v, 0, (der_count + 1) * v_stride * sizeof (*v));
   }
 
   if (der_count >= order)
     der_count = order - 1;
 
   // evaluate basis functions
-  ON_EvaluateNurbsBasis(order, knot, t, N);
+  ON_EvaluateNurbsBasis (order, knot, t, N);
   if (der_count)
-    ON_EvaluateNurbsBasisDerivatives(order, knot, der_count, N);
+    ON_EvaluateNurbsBasisDerivatives (order, knot, der_count, N);
 
   // convert cv's into answers
   for (i = 0; i <= der_count; i++, v += v_stride, N += order) {
@@ -1028,17 +1028,17 @@ ON_EvaluateNurbsRationalSpan (int dim,            // dimension
   int i;
   bool rc;
 
-  hv = (double*)alloca((der_count + 1) * hv_stride * sizeof(*hv));
+  hv = (double*)alloca ((der_count + 1) * hv_stride * sizeof (*hv));
 
-  rc = ON_EvaluateNurbsNonRationalSpan(
+  rc = ON_EvaluateNurbsNonRationalSpan (
       dim + 1, order, knot, cv_stride, cv, der_count, t, hv_stride, hv);
   if (rc) {
-    rc = ON_EvaluateQuotientRule(dim, der_count, hv_stride, hv);
+    rc = ON_EvaluateQuotientRule (dim, der_count, hv_stride, hv);
   }
   if (rc) {
     // copy answer to v[]
     for (i = 0; i <= der_count; i++) {
-      memcpy(v, hv, dim * sizeof(*v));
+      memcpy (v, hv, dim * sizeof (*v));
       v += v_stride;
       hv += hv_stride;
     }
@@ -1062,23 +1062,23 @@ ON_EvaluateNurbsSpan (int dim,            // dimension
   bool rc = false;
   if (knot[0] == knot[order - 2] && knot[order - 1] == knot[2 * order - 3]) {
     // Bezier span - use faster Bezier evaluator
-    rc = ON_EvaluateBezier(dim,
-                           is_rat,
-                           order,
-                           cv_stride,
-                           cv,
-                           knot[order - 2],
-                           knot[order - 1],
-                           der_count,
-                           t,
-                           v_stride,
-                           v);
+    rc = ON_EvaluateBezier (dim,
+                            is_rat,
+                            order,
+                            cv_stride,
+                            cv,
+                            knot[order - 2],
+                            knot[order - 1],
+                            der_count,
+                            t,
+                            v_stride,
+                            v);
   }
   else {
     // generic NURBS span evaluation
-    rc = (is_rat) ? ON_EvaluateNurbsRationalSpan(
+    rc = (is_rat) ? ON_EvaluateNurbsRationalSpan (
                         dim, order, knot, cv_stride, cv, der_count, t, v_stride, v)
-                  : ON_EvaluateNurbsNonRationalSpan(
+                  : ON_EvaluateNurbsNonRationalSpan (
                         dim, order, knot, cv_stride, cv, der_count, t, v_stride, v);
   }
   return rc;
@@ -1117,18 +1117,18 @@ ON_EvaluateNurbsSurfaceSpan (int dim,
   j = order1 * order1;
   Pcount = ((der_count + 1) * (der_count + 2)) >> 1;
   Psize = cvdim << 3;
-  N_0 = (double*)alloca(((i + j) << 3) + Pcount * Psize);
+  N_0 = (double*)alloca (((i + j) << 3) + Pcount * Psize);
   N_1 = N_0 + i;
   P0 = N_1 + j;
-  memset(P0, 0, Pcount * Psize);
+  memset (P0, 0, Pcount * Psize);
 
   /* evaluate basis functions */
-  ON_EvaluateNurbsBasis(order0, knot0, t0, N_0);
-  ON_EvaluateNurbsBasis(order1, knot1, t1, N_1);
+  ON_EvaluateNurbsBasis (order0, knot0, t0, N_0);
+  ON_EvaluateNurbsBasis (order1, knot1, t1, N_1);
   if (der_count0) {
     // der_count0 > 0 iff der_count1 > 0
-    ON_EvaluateNurbsBasisDerivatives(order0, knot0, der_count0, N_0);
-    ON_EvaluateNurbsBasisDerivatives(order1, knot1, der_count1, N_1);
+    ON_EvaluateNurbsBasisDerivatives (order0, knot0, der_count0, N_0);
+    ON_EvaluateNurbsBasisDerivatives (order1, knot1, der_count1, N_1);
   }
 
   // compute point
@@ -1249,11 +1249,11 @@ ON_EvaluateNurbsSurfaceSpan (int dim,
   }
 
   if (is_rat) {
-    ON_EvaluateQuotientRule2(dim, der_count, cvdim, P0);
+    ON_EvaluateQuotientRule2 (dim, der_count, cvdim, P0);
     Psize -= 8;
   }
   for (i = 0; i < Pcount; i++) {
-    memcpy(v, P0, Psize);
+    memcpy (v, P0, Psize);
     v += v_stride;
     P0 += cvdim;
   }
@@ -1402,7 +1402,7 @@ ON_EvaluateNurbsDeBoor (int cv_dim,
   t0 = knots[degree - 1];
   t1 = knots[degree];
   if (t0 == t1) {
-    ON_ERROR("ON_EvaluateNurbsDeBoor(): knots[degree-1] == knots[degree]");
+    ON_ERROR ("ON_EvaluateNurbsDeBoor(): knots[degree-1] == knots[degree]");
     return false;
   }
 
@@ -1420,7 +1420,7 @@ ON_EvaluateNurbsDeBoor (int cv_dim,
     else {
       side = -1;
       if (degree > 21)
-        delta_t = free_delta_t = (double*)onmalloc(degree * sizeof(*delta_t));
+        delta_t = free_delta_t = (double*)onmalloc (degree * sizeof (*delta_t));
     }
     /* delta_t = {t - knot[order-2], t - knot[order-1], ... , t - knot[0]} */
     knots += degree - 1;
@@ -1492,7 +1492,7 @@ ON_EvaluateNurbsDeBoor (int cv_dim,
     else {
       side = 1;
       if (degree > 21)
-        delta_t = free_delta_t = (double*)onmalloc(degree * sizeof(*delta_t));
+        delta_t = free_delta_t = (double*)onmalloc (degree * sizeof (*delta_t));
     }
     knots += degree;
     if (side == 1) {
@@ -1552,7 +1552,7 @@ ON_EvaluateNurbsDeBoor (int cv_dim,
   }
 
   if (free_delta_t)
-    onfree(free_delta_t);
+    onfree (free_delta_t);
 
   return true;
 }
@@ -1579,7 +1579,7 @@ ON_EvaluateNurbsBlossom (int cvdim,
   double* space = workspace;
   double* free_space = NULL;
   if (order > 32) {
-    free_space = (double*)onmalloc(order * sizeof(double));
+    free_space = (double*)onmalloc (order * sizeof (double));
     space = free_space;
   }
 
@@ -1615,7 +1615,7 @@ ON_EvaluateNurbsBlossom (int cvdim,
   }
 
   if (free_space)
-    onfree((void*)free_space);
+    onfree ((void*)free_space);
   return true;
 }
 
@@ -1675,6 +1675,6 @@ ON_ConvertNurbSpanToBezier (int cvdim,
  *   TL_EvdeBoor(), TL_ConvertBezierToPolynomial
  */
 {
-  ON_EvaluateNurbsDeBoor(cvdim, order, cvstride, cv, knot, 1, 0.0, t0);
-  ON_EvaluateNurbsDeBoor(cvdim, order, cvstride, cv, knot, -2, t0, t1);
+  ON_EvaluateNurbsDeBoor (cvdim, order, cvstride, cv, knot, 1, 0.0, t0);
+  ON_EvaluateNurbsDeBoor (cvdim, order, cvstride, cv, knot, -2, t0, t1);
 }

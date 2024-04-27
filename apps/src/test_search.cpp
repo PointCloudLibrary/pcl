@@ -11,24 +11,24 @@ int
 main (int argc, char** argv)
 {
   if (argc < 2) {
-    pcl::console::print_info(
+    pcl::console::print_info (
         "Syntax is: %s [-pcd <pcd-file>] (-radius <radius> [-knn <k>] | -knn <k> )\n",
         argv[0]);
     return 1;
   }
 
   std::string pcd_path;
-  bool use_pcd_file = pcl::console::find_switch(argc, argv, "-pcd");
+  bool use_pcd_file = pcl::console::find_switch (argc, argv, "-pcd");
   if (use_pcd_file)
-    pcl::console::parse(argc, argv, "-pcd", pcd_path);
+    pcl::console::parse (argc, argv, "-pcd", pcd_path);
 
   float radius = -1;
-  if (pcl::console::find_switch(argc, argv, "-radius"))
-    pcl::console::parse(argc, argv, "-radius", radius);
+  if (pcl::console::find_switch (argc, argv, "-radius"))
+    pcl::console::parse (argc, argv, "-radius", radius);
 
   int k = -1;
-  if (pcl::console::find_switch(argc, argv, "-knn"))
-    pcl::console::parse(argc, argv, "-knn", k);
+  if (pcl::console::find_switch (argc, argv, "-knn"))
+    pcl::console::parse (argc, argv, "-knn", k);
 
   if (radius < 0 && k < 0) {
     std::cout << "please specify at least one of the options -radius and -knn"
@@ -36,16 +36,16 @@ main (int argc, char** argv)
     return 1;
   }
 
-  pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZRGB>);
+  pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZRGB>);
 
   if (use_pcd_file)
-    pcl::io::loadPCDFile(pcd_path, *cloud);
+    pcl::io::loadPCDFile (pcd_path, *cloud);
   else {
-    cloud->resize(1000000);
+    cloud->resize (1000000);
     for (std::size_t idx = 0; idx < cloud->size(); ++idx) {
-      (*cloud)[idx].x = static_cast<float>(rand() / RAND_MAX);
-      (*cloud)[idx].y = static_cast<float>(rand() / RAND_MAX);
-      (*cloud)[idx].z = static_cast<float>(rand() / RAND_MAX);
+      (*cloud)[idx].x = static_cast<float> (rand() / RAND_MAX);
+      (*cloud)[idx].y = static_cast<float> (rand() / RAND_MAX);
+      (*cloud)[idx].z = static_cast<float> (rand() / RAND_MAX);
     }
   }
 
@@ -68,25 +68,25 @@ main (int argc, char** argv)
 
   if (k > 0) {
     start = pcl::getTime();
-    tree.setInputCloud(cloud);
+    tree.setInputCloud (cloud);
     stop = pcl::getTime();
     std::cout << "setting up kd tree: " << (kd_setup = stop - start) << std::endl;
 
     start = pcl::getTime();
-    tree.nearestKSearchT(query, k, kd_indices, kd_distances);
+    tree.nearestKSearchT (query, k, kd_indices, kd_distances);
     stop = pcl::getTime();
     std::cout << "single search with kd tree; " << (kd_search = stop - start)
               << " :: " << kd_indices[0] << " , " << kd_distances[0] << std::endl;
 
     pcl::search::BruteForce<pcl::PointXYZRGB> brute_force;
     start = pcl::getTime();
-    brute_force.setInputCloud(cloud);
+    brute_force.setInputCloud (cloud);
     stop = pcl::getTime();
     std::cout << "setting up brute force search: " << (bf_setup = stop - start)
               << std::endl;
 
     start = pcl::getTime();
-    brute_force.nearestKSearchT(query, k, bf_indices, bf_distances);
+    brute_force.nearestKSearchT (query, k, bf_indices, bf_distances);
     stop = pcl::getTime();
     std::cout << "single search with brute force; " << (bf_search = stop - start)
               << " :: " << bf_indices[0] << " , " << bf_distances[0] << std::endl;
@@ -95,25 +95,25 @@ main (int argc, char** argv)
   }
   else {
     start = pcl::getTime();
-    tree.setInputCloud(cloud);
+    tree.setInputCloud (cloud);
     stop = pcl::getTime();
     std::cout << "setting up kd tree: " << (kd_setup = stop - start) << std::endl;
 
     start = pcl::getTime();
-    tree.radiusSearch(query, radius, kd_indices, kd_distances, k);
+    tree.radiusSearch (query, radius, kd_indices, kd_distances, k);
     stop = pcl::getTime();
     std::cout << "single search with kd tree; " << (kd_search = stop - start)
               << " :: " << kd_indices[0] << " , " << kd_distances[0] << std::endl;
 
     pcl::search::BruteForce<pcl::PointXYZRGB> brute_force;
     start = pcl::getTime();
-    brute_force.setInputCloud(cloud);
+    brute_force.setInputCloud (cloud);
     stop = pcl::getTime();
     std::cout << "setting up brute force search: " << (bf_setup = stop - start)
               << std::endl;
 
     start = pcl::getTime();
-    brute_force.radiusSearch(query, radius, bf_indices, bf_distances, k);
+    brute_force.radiusSearch (query, radius, bf_indices, bf_distances, k);
     stop = pcl::getTime();
     std::cout << "single search with brute force; " << (bf_search = stop - start)
               << " :: " << bf_indices[0] << " , " << bf_distances[0] << std::endl;

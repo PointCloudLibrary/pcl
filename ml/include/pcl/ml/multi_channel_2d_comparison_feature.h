@@ -49,7 +49,7 @@ template <class PointT>
 class PCL_EXPORTS MultiChannel2DComparisonFeature {
 public:
   /** Constructor. */
-  MultiChannel2DComparisonFeature() : p1(), p2(), channel(0) {}
+  MultiChannel2DComparisonFeature() : p1(), p2(), channel (0) {}
 
   /** Destructor. */
   virtual ~MultiChannel2DComparisonFeature() = default;
@@ -61,9 +61,9 @@ public:
   inline void
   serialize (std::ostream& stream) const
   {
-    p1.serialize(stream);
-    p2.serialize(stream);
-    stream.write(reinterpret_cast<const char*>(&channel), sizeof(channel));
+    p1.serialize (stream);
+    p2.serialize (stream);
+    stream.write (reinterpret_cast<const char*> (&channel), sizeof (channel));
   }
 
   /** Deserializes the feature from a stream.
@@ -73,9 +73,9 @@ public:
   inline void
   deserialize (std::istream& stream)
   {
-    p1.deserialize(stream);
-    p2.deserialize(stream);
-    stream.read(reinterpret_cast<char*>(&channel), sizeof(channel));
+    p1.deserialize (stream);
+    p2.deserialize (stream);
+    stream.read (reinterpret_cast<char*> (&channel), sizeof (channel));
   }
 
 public:

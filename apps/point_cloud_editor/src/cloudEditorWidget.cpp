@@ -72,19 +72,19 @@
 #include <pcl/apps/point_cloud_editor/mainWindow.h>
 #include <pcl/apps/point_cloud_editor/pasteCommand.h>
 
-CloudEditorWidget::CloudEditorWidget(QWidget* parent)
-: QOpenGLWidget(parent)
-, point_size_(2.0f)
-, selected_point_size_(4.0f)
-, cam_fov_(60.0)
-, cam_aspect_(1.0)
-, cam_near_(0.0001)
-, cam_far_(100.0)
-, color_scheme_(COLOR_BY_PURE)
-, is_colored_(false)
+CloudEditorWidget::CloudEditorWidget (QWidget* parent)
+: QOpenGLWidget (parent)
+, point_size_ (2.0f)
+, selected_point_size_ (4.0f)
+, cam_fov_ (60.0)
+, cam_aspect_ (1.0)
+, cam_near_ (0.0001)
+, cam_far_ (100.0)
+, color_scheme_ (COLOR_BY_PURE)
+, is_colored_ (false)
 {
-  setFocusPolicy(Qt::StrongFocus);
-  command_queue_ptr_ = CommandQueuePtr(new CommandQueue());
+  setFocusPolicy (Qt::StrongFocus);
+  command_queue_ptr_ = CommandQueuePtr (new CommandQueue());
   initFileLoadMap();
   initKeyMap();
 }
@@ -92,29 +92,29 @@ CloudEditorWidget::CloudEditorWidget(QWidget* parent)
 CloudEditorWidget::~CloudEditorWidget() = default;
 
 void
-CloudEditorWidget::loadFile(const std::string& filename)
+CloudEditorWidget::loadFile (const std::string& filename)
 {
-  std::string ext = filename.substr(filename.find_last_of('.') + 1);
-  FileLoadMap::iterator it = cloud_load_func_map_.find(ext);
+  std::string ext = filename.substr (filename.find_last_of ('.') + 1);
+  FileLoadMap::iterator it = cloud_load_func_map_.find (ext);
   if (it != cloud_load_func_map_.end())
-    (it->second)(this, filename);
+    (it->second) (this, filename);
   else
-    loadFilePCD(filename);
+    loadFilePCD (filename);
 }
 
 void
 CloudEditorWidget::load()
 {
-  QString file_path = QFileDialog::getOpenFileName(this, tr("Open File"));
+  QString file_path = QFileDialog::getOpenFileName (this, tr ("Open File"));
 
   if (file_path.isEmpty())
     return;
 
   try {
-    loadFile(file_path.toStdString());
+    loadFile (file_path.toStdString());
   } catch (...) {
-    QMessageBox::information(
-        this, tr("Point Cloud Editor"), tr("Can not load %1.").arg(file_path));
+    QMessageBox::information (
+        this, tr ("Point Cloud Editor"), tr ("Can not load %1.").arg (file_path));
   }
   update();
 }
@@ -123,11 +123,12 @@ void
 CloudEditorWidget::save()
 {
   if (!cloud_ptr_) {
-    QMessageBox::information(this, tr("Point Cloud Editor"), tr("No cloud is loaded."));
+    QMessageBox::information (
+        this, tr ("Point Cloud Editor"), tr ("No cloud is loaded."));
     return;
   }
 
-  QString file_path = QFileDialog::getSaveFileName(this, tr("Save point cloud"));
+  QString file_path = QFileDialog::getSaveFileName (this, tr ("Save point cloud"));
 
   std::string file_path_std = file_path.toStdString();
   if ((file_path_std.empty()) || (!cloud_ptr_))
@@ -137,21 +138,21 @@ CloudEditorWidget::save()
     // the swapping is due to the strange alignment of r,g,b values used by PCL..
     swapRBValues();
     try {
-      pcl::io::savePCDFile(file_path_std, cloud_ptr_->getInternalCloud());
+      pcl::io::savePCDFile (file_path_std, cloud_ptr_->getInternalCloud());
     } catch (...) {
-      QMessageBox::information(
-          this, tr("Point Cloud Editor"), tr("Can not save %1.").arg(file_path));
+      QMessageBox::information (
+          this, tr ("Point Cloud Editor"), tr ("Can not save %1.").arg (file_path));
     }
     swapRBValues();
   }
   else {
     pcl::PointCloud<pcl::PointXYZ> uncolored_cloud;
-    pcl::copyPointCloud(cloud_ptr_->getInternalCloud(), uncolored_cloud);
+    pcl::copyPointCloud (cloud_ptr_->getInternalCloud(), uncolored_cloud);
     try {
-      pcl::io::savePCDFile(file_path_std, uncolored_cloud);
+      pcl::io::savePCDFile (file_path_std, uncolored_cloud);
     } catch (...) {
-      QMessageBox::information(
-          this, tr("Point Cloud Editor"), tr("Can not save %1.").arg(file_path));
+      QMessageBox::information (
+          this, tr ("Point Cloud Editor"), tr ("Can not save %1.").arg (file_path));
     }
   }
 }
@@ -162,11 +163,11 @@ CloudEditorWidget::toggleBlendMode()
   if (!cloud_ptr_)
     return;
   GLint blend_src = 0;
-  glGetIntegerv(GL_BLEND_SRC, &blend_src);
+  glGetIntegerv (GL_BLEND_SRC, &blend_src);
   if (blend_src == GL_SRC_ALPHA)
-    glBlendFunc(GL_ONE, GL_ZERO);
+    glBlendFunc (GL_ONE, GL_ZERO);
   else
-    glBlendFunc(GL_SRC_ALPHA, GL_ZERO);
+    glBlendFunc (GL_SRC_ALPHA, GL_ZERO);
   update();
 }
 
@@ -175,7 +176,7 @@ CloudEditorWidget::view()
 {
   if (!cloud_ptr_)
     return;
-  tool_ptr_ = std::shared_ptr<CloudTransformTool>(new CloudTransformTool(cloud_ptr_));
+  tool_ptr_ = std::shared_ptr<CloudTransformTool> (new CloudTransformTool (cloud_ptr_));
 }
 
 void
@@ -184,7 +185,7 @@ CloudEditorWidget::select1D()
   if (!cloud_ptr_)
     return;
   tool_ptr_ =
-      std::shared_ptr<Select1DTool>(new Select1DTool(selection_ptr_, cloud_ptr_));
+      std::shared_ptr<Select1DTool> (new Select1DTool (selection_ptr_, cloud_ptr_));
   update();
 }
 
@@ -193,10 +194,10 @@ CloudEditorWidget::select2D()
 {
   if (!cloud_ptr_)
     return;
-  tool_ptr_ = std::shared_ptr<Select2DTool>(new Select2DTool(
+  tool_ptr_ = std::shared_ptr<Select2DTool> (new Select2DTool (
       selection_ptr_, cloud_ptr_, [this] (GLint* viewport, GLfloat* projection_matrix) {
-        std::copy_n(this->viewport_.begin(), 4, viewport);
-        std::copy_n(this->projection_matrix_.begin(), 16, projection_matrix);
+        std::copy_n (this->viewport_.begin(), 4, viewport);
+        std::copy_n (this->projection_matrix_.begin(), 16, projection_matrix);
       }));
   update();
 }
@@ -217,7 +218,7 @@ CloudEditorWidget::invertSelect()
   if (!selection_ptr_)
     return;
   selection_ptr_->invertSelect();
-  cloud_ptr_->setSelection(selection_ptr_);
+  cloud_ptr_->setSelection (selection_ptr_);
   update();
 }
 
@@ -237,9 +238,9 @@ CloudEditorWidget::copy()
     return;
   if (!selection_ptr_ || selection_ptr_->empty())
     return;
-  std::shared_ptr<CopyCommand> c(
-      new CopyCommand(copy_buffer_ptr_, selection_ptr_, cloud_ptr_));
-  command_queue_ptr_->execute(c);
+  std::shared_ptr<CopyCommand> c (
+      new CopyCommand (copy_buffer_ptr_, selection_ptr_, cloud_ptr_));
+  command_queue_ptr_->execute (c);
 }
 
 void
@@ -249,9 +250,9 @@ CloudEditorWidget::paste()
     return;
   if (!copy_buffer_ptr_ || copy_buffer_ptr_->empty())
     return;
-  std::shared_ptr<PasteCommand> c(
-      new PasteCommand(copy_buffer_ptr_, selection_ptr_, cloud_ptr_));
-  command_queue_ptr_->execute(c);
+  std::shared_ptr<PasteCommand> c (
+      new PasteCommand (copy_buffer_ptr_, selection_ptr_, cloud_ptr_));
+  command_queue_ptr_->execute (c);
   update();
 }
 
@@ -262,8 +263,8 @@ CloudEditorWidget::remove()
     return;
   if (!selection_ptr_ || selection_ptr_->empty())
     return;
-  std::shared_ptr<DeleteCommand> c(new DeleteCommand(selection_ptr_, cloud_ptr_));
-  command_queue_ptr_->execute(c);
+  std::shared_ptr<DeleteCommand> c (new DeleteCommand (selection_ptr_, cloud_ptr_));
+  command_queue_ptr_->execute (c);
   update();
 }
 
@@ -274,9 +275,9 @@ CloudEditorWidget::cut()
     return;
   if (!selection_ptr_ || selection_ptr_->empty())
     return;
-  std::shared_ptr<CutCommand> c(
-      new CutCommand(copy_buffer_ptr_, selection_ptr_, cloud_ptr_));
-  command_queue_ptr_->execute(c);
+  std::shared_ptr<CutCommand> c (
+      new CutCommand (copy_buffer_ptr_, selection_ptr_, cloud_ptr_));
+  command_queue_ptr_->execute (c);
   update();
 }
 
@@ -285,8 +286,8 @@ CloudEditorWidget::transform()
 {
   if (!cloud_ptr_ || !selection_ptr_ || selection_ptr_->empty())
     return;
-  tool_ptr_ = std::shared_ptr<SelectionTransformTool>(
-      new SelectionTransformTool(selection_ptr_, cloud_ptr_, command_queue_ptr_));
+  tool_ptr_ = std::shared_ptr<SelectionTransformTool> (
+      new SelectionTransformTool (selection_ptr_, cloud_ptr_, command_queue_ptr_));
   update();
 }
 
@@ -301,9 +302,9 @@ CloudEditorWidget::denoise()
   if (!form.ok()) {
     return;
   }
-  std::shared_ptr<DenoiseCommand> c(new DenoiseCommand(
+  std::shared_ptr<DenoiseCommand> c (new DenoiseCommand (
       selection_ptr_, cloud_ptr_, form.getMeanK(), form.getStdDevThresh()));
-  command_queue_ptr_->execute(c);
+  command_queue_ptr_->execute (c);
   update();
 }
 
@@ -323,7 +324,7 @@ CloudEditorWidget::increasePointSize()
   point_size_ = ((MainWindow*)parentWidget())->getSpinBoxValue();
   if (!cloud_ptr_)
     return;
-  cloud_ptr_->setPointSize(point_size_);
+  cloud_ptr_->setPointSize (point_size_);
   update();
 }
 
@@ -334,7 +335,7 @@ CloudEditorWidget::decreasePointSize()
   point_size_ = ((MainWindow*)parentWidget())->getSpinBoxValue();
   if (!cloud_ptr_)
     return;
-  cloud_ptr_->setPointSize(point_size_);
+  cloud_ptr_->setPointSize (point_size_);
   update();
 }
 
@@ -345,7 +346,7 @@ CloudEditorWidget::increaseSelectedPointSize()
   selected_point_size_ = ((MainWindow*)parentWidget())->getSelectedSpinBoxValue();
   if (!cloud_ptr_)
     return;
-  cloud_ptr_->setHighlightPointSize(selected_point_size_);
+  cloud_ptr_->setHighlightPointSize (selected_point_size_);
   update();
 }
 
@@ -356,27 +357,27 @@ CloudEditorWidget::decreaseSelectedPointSize()
   selected_point_size_ = ((MainWindow*)parentWidget())->getSelectedSpinBoxValue();
   if (!cloud_ptr_)
     return;
-  cloud_ptr_->setHighlightPointSize(selected_point_size_);
+  cloud_ptr_->setHighlightPointSize (selected_point_size_);
   update();
 }
 
 void
-CloudEditorWidget::setPointSize(int size)
+CloudEditorWidget::setPointSize (int size)
 {
   point_size_ = size;
   if (!cloud_ptr_)
     return;
-  cloud_ptr_->setPointSize(size);
+  cloud_ptr_->setPointSize (size);
   update();
 }
 
 void
-CloudEditorWidget::setSelectedPointSize(int size)
+CloudEditorWidget::setSelectedPointSize (int size)
 {
   selected_point_size_ = size;
   if (!cloud_ptr_)
     return;
-  cloud_ptr_->setHighlightPointSize(size);
+  cloud_ptr_->setHighlightPointSize (size);
   update();
 }
 
@@ -422,24 +423,24 @@ CloudEditorWidget::showStat()
 void
 CloudEditorWidget::initializeGL()
 {
-  glClearColor(0.0, 0.0, 0.0, 0.0);
-  glShadeModel(GL_FLAT);
-  glEnable(GL_DEPTH_TEST);
-  glDisable(GL_LIGHTING);
-  glDisable(GL_FOG);
-  glEnable(GL_POINT_SMOOTH);
-  glEnable(GL_LINE_SMOOTH);
-  glEnable(GL_BLEND);
-  glBlendFunc(GL_ONE, GL_ZERO);
-  glHint(GL_POINT_SMOOTH_HINT & GL_LINE_SMOOTH_HINT, GL_NICEST);
+  glClearColor (0.0, 0.0, 0.0, 0.0);
+  glShadeModel (GL_FLAT);
+  glEnable (GL_DEPTH_TEST);
+  glDisable (GL_LIGHTING);
+  glDisable (GL_FOG);
+  glEnable (GL_POINT_SMOOTH);
+  glEnable (GL_LINE_SMOOTH);
+  glEnable (GL_BLEND);
+  glBlendFunc (GL_ONE, GL_ZERO);
+  glHint (GL_POINT_SMOOTH_HINT & GL_LINE_SMOOTH_HINT, GL_NICEST);
   initTexture();
 }
 
 void
 CloudEditorWidget::paintGL()
 {
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-  glMatrixMode(GL_MODELVIEW);
+  glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+  glMatrixMode (GL_MODELVIEW);
   glLoadIdentity();
   if (!cloud_ptr_)
     return;
@@ -452,91 +453,91 @@ CloudEditorWidget::paintGL()
   else {
     // Assumes that color_scheme_ contains COLOR_BY_[X,Y,Z] and the values
     // match Axis::[X,Y,Z]
-    cloud_ptr_->setColorRampAxis(Axis(color_scheme_));
+    cloud_ptr_->setColorRampAxis (Axis (color_scheme_));
     cloud_ptr_->drawWithTexture();
   }
 }
 
 void
-CloudEditorWidget::resizeGL(int width, int height)
+CloudEditorWidget::resizeGL (int width, int height)
 {
   const auto ratio = this->devicePixelRatio();
-  width = static_cast<int>(width * ratio);
-  height = static_cast<int>(height * ratio);
-  glViewport(0, 0, width, height);
+  width = static_cast<int> (width * ratio);
+  height = static_cast<int> (height * ratio);
+  glViewport (0, 0, width, height);
   viewport_ = {0, 0, width, height};
-  cam_aspect_ = double(width) / double(height);
-  glMatrixMode(GL_PROJECTION);
+  cam_aspect_ = double (width) / double (height);
+  glMatrixMode (GL_PROJECTION);
   glLoadIdentity();
-  gluPerspective(cam_fov_, cam_aspect_, cam_near_, cam_far_);
-  glGetFloatv(GL_PROJECTION_MATRIX, projection_matrix_.data());
-  glMatrixMode(GL_MODELVIEW);
+  gluPerspective (cam_fov_, cam_aspect_, cam_near_, cam_far_);
+  glGetFloatv (GL_PROJECTION_MATRIX, projection_matrix_.data());
+  glMatrixMode (GL_MODELVIEW);
   glLoadIdentity();
 }
 
 void
-CloudEditorWidget::mousePressEvent(QMouseEvent* event)
+CloudEditorWidget::mousePressEvent (QMouseEvent* event)
 {
   auto ratio = this->devicePixelRatio();
   if (!tool_ptr_)
     return;
-  tool_ptr_->start(
+  tool_ptr_->start (
       event->x() * ratio, event->y() * ratio, event->modifiers(), event->buttons());
   update();
 }
 
 void
-CloudEditorWidget::mouseMoveEvent(QMouseEvent* event)
+CloudEditorWidget::mouseMoveEvent (QMouseEvent* event)
 {
   auto ratio = this->devicePixelRatio();
   if (!tool_ptr_)
     return;
-  tool_ptr_->update(
+  tool_ptr_->update (
       event->x() * ratio, event->y() * ratio, event->modifiers(), event->buttons());
   update();
 }
 
 void
-CloudEditorWidget::mouseReleaseEvent(QMouseEvent* event)
+CloudEditorWidget::mouseReleaseEvent (QMouseEvent* event)
 {
   auto ratio = this->devicePixelRatio();
   if (!tool_ptr_)
     return;
-  tool_ptr_->end(
+  tool_ptr_->end (
       event->x() * ratio, event->y() * ratio, event->modifiers(), event->button());
   update();
 }
 
 void
-CloudEditorWidget::keyPressEvent(QKeyEvent* event)
+CloudEditorWidget::keyPressEvent (QKeyEvent* event)
 {
-  int key = event->key() + static_cast<int>(event->modifiers());
-  std::map<int, KeyMapFunc>::iterator it = key_map_.find(key);
+  int key = event->key() + static_cast<int> (event->modifiers());
+  std::map<int, KeyMapFunc>::iterator it = key_map_.find (key);
   if (it != key_map_.end()) {
-    (it->second)(this);
+    (it->second) (this);
     update();
   }
 }
 
 void
-CloudEditorWidget::loadFilePCD(const std::string& filename)
+CloudEditorWidget::loadFilePCD (const std::string& filename)
 {
   PclCloudPtr pcl_cloud_ptr;
   Cloud3D tmp;
-  if (pcl::io::loadPCDFile<Point3D>(filename, tmp) == -1)
+  if (pcl::io::loadPCDFile<Point3D> (filename, tmp) == -1)
     throw;
-  pcl_cloud_ptr = PclCloudPtr(new Cloud3D(tmp));
+  pcl_cloud_ptr = PclCloudPtr (new Cloud3D (tmp));
   pcl::Indices index;
-  pcl::removeNaNFromPointCloud(*pcl_cloud_ptr, *pcl_cloud_ptr, index);
+  pcl::removeNaNFromPointCloud (*pcl_cloud_ptr, *pcl_cloud_ptr, index);
   Statistics::clear();
-  cloud_ptr_ = CloudPtr(new Cloud(*pcl_cloud_ptr, true));
-  selection_ptr_ = SelectionPtr(new Selection(cloud_ptr_, true));
-  copy_buffer_ptr_ = CopyBufferPtr(new CopyBuffer(true));
-  cloud_ptr_->setPointSize(point_size_);
-  cloud_ptr_->setHighlightPointSize(selected_point_size_);
-  tool_ptr_ = std::shared_ptr<CloudTransformTool>(new CloudTransformTool(cloud_ptr_));
+  cloud_ptr_ = CloudPtr (new Cloud (*pcl_cloud_ptr, true));
+  selection_ptr_ = SelectionPtr (new Selection (cloud_ptr_, true));
+  copy_buffer_ptr_ = CopyBufferPtr (new CopyBuffer (true));
+  cloud_ptr_->setPointSize (point_size_);
+  cloud_ptr_->setHighlightPointSize (selected_point_size_);
+  tool_ptr_ = std::shared_ptr<CloudTransformTool> (new CloudTransformTool (cloud_ptr_));
 
-  if (isColored(filename)) {
+  if (isColored (filename)) {
     swapRBValues();
     color_scheme_ = COLOR_BY_RGB;
     is_colored_ = true;
@@ -555,15 +556,15 @@ CloudEditorWidget::initFileLoadMap()
 }
 
 bool
-CloudEditorWidget::isColored(const std::string& fileName) const
+CloudEditorWidget::isColored (const std::string& fileName) const
 {
   pcl::PCLPointCloud2 cloud2;
   pcl::PCDReader reader;
-  reader.readHeader(fileName, cloud2);
+  reader.readHeader (fileName, cloud2);
   std::vector<pcl::PCLPointField> cloud_fields = cloud2.fields;
   for (const auto& field : cloud_fields) {
-    std::string name(field.name);
-    stringToLower(name);
+    std::string name (field.name);
+    stringToLower (name);
     if ((name == "rgb") || (name == "rgba"))
       return true;
   }
@@ -631,11 +632,11 @@ CloudEditorWidget::initTexture()
       {1.0000f, 0.0f, 0.0f},
   };
   GLuint textures;
-  glGenTextures(1, &textures);
-  glBindTexture(GL_TEXTURE_1D, textures);
-  glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-  glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-  glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  glTexImage1D(GL_TEXTURE_1D, 0, GL_RGB, 14, 0, GL_RGB, GL_FLOAT, colorWheel);
+  glGenTextures (1, &textures);
+  glBindTexture (GL_TEXTURE_1D, textures);
+  glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+  glTexParameteri (GL_TEXTURE_1D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+  glTexParameteri (GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glTexParameteri (GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexImage1D (GL_TEXTURE_1D, 0, GL_RGB, 14, 0, GL_RGB, GL_FLOAT, colorWheel);
 }

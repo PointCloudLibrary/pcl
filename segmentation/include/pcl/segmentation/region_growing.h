@@ -305,7 +305,7 @@ protected:
   bool residual_flag_{false};
 
   /** \brief Threshold used for testing the smoothness between points. */
-  float theta_threshold_{30.0f / 180.0f * static_cast<float>(M_PI)};
+  float theta_threshold_{30.0f / 180.0f * static_cast<float> (M_PI)};
 
   /** \brief Threshold used in residual test. */
   float residual_threshold_{0.05f};

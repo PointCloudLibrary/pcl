@@ -159,7 +159,7 @@ struct PCL_EXPORTS ISMModel {
   ISMModel();
 
   /** \brief Copy constructor for deep copy. */
-  ISMModel(ISMModel const& copy);
+  ISMModel (ISMModel const& copy);
 
   /** Destructor that frees memory. */
   virtual ~ISMModel();
@@ -182,7 +182,7 @@ struct PCL_EXPORTS ISMModel {
 
   /** Operator overloading for deep copy. */
   ISMModel&
-  operator=(const ISMModel& other);
+  operator= (const ISMModel& other);
 
   /** \brief Stores statistical weights. */
   std::vector<std::vector<float>> statistical_weights_{};
@@ -254,14 +254,14 @@ protected:
      * \param[in] origin initial point
      * \param[in] normal normal of the initial point
      */
-    LocationInfo(unsigned int model_num,
-                 const PointT& dir_to_center,
-                 const PointT& origin,
-                 const NormalT& normal)
-    : model_num_(model_num)
-    , dir_to_center_(dir_to_center)
-    , point_(origin)
-    , normal_(normal){};
+    LocationInfo (unsigned int model_num,
+                  const PointT& dir_to_center,
+                  const PointT& origin,
+                  const NormalT& normal)
+    : model_num_ (model_num)
+    , dir_to_center_ (dir_to_center)
+    , point_ (origin)
+    , normal_ (normal){};
 
     /** \brief Tells from which training model this keypoint was extracted. */
     unsigned int model_num_;
@@ -286,8 +286,8 @@ protected:
      * \param[in] max_count defines the max number of iterations
      * \param[in] epsilon defines the desired accuracy
      */
-    TermCriteria(int type, int max_count, float epsilon)
-    : type_(type), max_count_(max_count), epsilon_(epsilon){};
+    TermCriteria (int type, int max_count, float epsilon)
+    : type_ (type), max_count_ (max_count), epsilon_ (epsilon){};
 
     /** \brief Flag that determines when the k-means clustering must be stopped.
      * If type_ equals COUNT then it must be stopped when the max number of iterations
@@ -310,7 +310,7 @@ protected:
     VisualWordStat()
     :
 
-        dir_to_center_(0.0f, 0.0f, 0.0f){};
+        dir_to_center_ (0.0f, 0.0f, 0.0f){};
 
     /** \brief Which class this vote belongs. */
     int class_{-1};
@@ -587,7 +587,7 @@ protected:
 
   /** \brief Forbids the assignment operator. */
   ImplicitShapeModelEstimation&
-  operator=(const ImplicitShapeModelEstimation&);
+  operator= (const ImplicitShapeModelEstimation&);
 
 protected:
   /** \brief Stores the clouds used for training. */
@@ -630,8 +630,8 @@ protected:
 } // namespace ism
 } // namespace pcl
 
-POINT_CLOUD_REGISTER_POINT_STRUCT(
-    pcl::ISMPeak,
-    (float, x, x)(float, y, y)(float, z, z)(float, density, ism_density)(float,
-                                                                         class_id,
-                                                                         ism_class_id))
+POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::ISMPeak,
+                                   (float, x, x) (float, y, y) (float, z, z) (
+                                       float, density, ism_density) (float,
+                                                                     class_id,
+                                                                     ism_class_id))

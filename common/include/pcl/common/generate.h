@@ -64,16 +64,16 @@ public:
    * range \param params parameters for X, Y and Z values generation. Uniqueness is
    * ensured through seed incrementation
    */
-  CloudGenerator(const GeneratorParameters& params);
+  CloudGenerator (const GeneratorParameters& params);
 
   /** Constructor with independent generators per axis
    * \param x_params parameters for x values generation
    * \param y_params parameters for y values generation
    * \param z_params parameters for z values generation
    */
-  CloudGenerator(const GeneratorParameters& x_params,
-                 const GeneratorParameters& y_params,
-                 const GeneratorParameters& z_params);
+  CloudGenerator (const GeneratorParameters& x_params,
+                  const GeneratorParameters& y_params,
+                  const GeneratorParameters& z_params);
 
   /** Set parameters for x, y and z values. Uniqueness is ensured through seed
    * incrementation. \param params parameters for X, Y and Z values generation.
@@ -142,10 +142,10 @@ public:
 
   CloudGenerator();
 
-  CloudGenerator(const GeneratorParameters& params);
+  CloudGenerator (const GeneratorParameters& params);
 
-  CloudGenerator(const GeneratorParameters& x_params,
-                 const GeneratorParameters& y_params);
+  CloudGenerator (const GeneratorParameters& x_params,
+                  const GeneratorParameters& y_params);
 
   void
   setParameters (const GeneratorParameters& params);

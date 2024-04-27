@@ -52,7 +52,7 @@ struct OutputPair {
 
 class CloudCommand : public QUndoCommand {
 public:
-  CloudCommand(ConstItemList input_data, QUndoCommand* parent = nullptr);
+  CloudCommand (ConstItemList input_data, QUndoCommand* parent = nullptr);
 
   ~CloudCommand();
 
@@ -74,7 +74,7 @@ public:
   inline void
   setInputData (ConstItemList input_data)
   {
-    original_data_ = std::move(input_data);
+    original_data_ = std::move (input_data);
   }
 
 protected:
@@ -118,7 +118,7 @@ protected:
 
 class ModifyItemCommand : public CloudCommand {
 public:
-  ModifyItemCommand(ConstItemList input_data, QUndoCommand* parent = nullptr);
+  ModifyItemCommand (ConstItemList input_data, QUndoCommand* parent = nullptr);
 
   bool
   runCommand (AbstractTool* tool) override;
@@ -134,7 +134,7 @@ private:
 
 class NewItemCloudCommand : public CloudCommand {
 public:
-  NewItemCloudCommand(ConstItemList input_data, QUndoCommand* parent = nullptr);
+  NewItemCloudCommand (ConstItemList input_data, QUndoCommand* parent = nullptr);
 
   bool
   runCommand (AbstractTool* tool) override;
@@ -148,7 +148,7 @@ public:
 
 class SplitCloudCommand : public CloudCommand {
 public:
-  SplitCloudCommand(ConstItemList input_data, QUndoCommand* parent = nullptr);
+  SplitCloudCommand (ConstItemList input_data, QUndoCommand* parent = nullptr);
 
   bool
   runCommand (AbstractTool* tool) override;
@@ -164,7 +164,7 @@ private:
 
 class DeleteItemCommand : public CloudCommand {
 public:
-  DeleteItemCommand(ConstItemList input_data, QUndoCommand* parent = nullptr);
+  DeleteItemCommand (ConstItemList input_data, QUndoCommand* parent = nullptr);
 
   bool
   runCommand (AbstractTool* tool) override;
@@ -184,7 +184,7 @@ public:
    *  \param[in] input_data Input list of CloudItem s from the project model which will
    * be merged \param[in] temporary_clouds Input list of CloudItems which
    */
-  MergeCloudCommand(ConstItemList input_data, QUndoCommand* parent = nullptr);
+  MergeCloudCommand (ConstItemList input_data, QUndoCommand* parent = nullptr);
 
   bool
   runCommand (AbstractTool* tool) override;
@@ -208,4 +208,4 @@ private:
 } // namespace cloud_composer
 } // namespace pcl
 
-Q_DECLARE_METATYPE(ConstItemList);
+Q_DECLARE_METATYPE (ConstItemList);

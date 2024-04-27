@@ -50,15 +50,15 @@
 namespace pcl {
 
 template <typename real>
-BivariatePolynomialT<real>::BivariatePolynomialT(int new_degree)
+BivariatePolynomialT<real>::BivariatePolynomialT (int new_degree)
 {
-  setDegree(new_degree);
+  setDegree (new_degree);
 }
 
 template <typename real>
-BivariatePolynomialT<real>::BivariatePolynomialT(const BivariatePolynomialT& other)
+BivariatePolynomialT<real>::BivariatePolynomialT (const BivariatePolynomialT& other)
 {
-  deepCopy(other);
+  deepCopy (other);
 }
 
 template <typename real>
@@ -69,7 +69,7 @@ BivariatePolynomialT<real>::~BivariatePolynomialT()
 
 template <typename real>
 void
-BivariatePolynomialT<real>::setDegree(int newDegree)
+BivariatePolynomialT<real>::setDegree (int newDegree)
 {
   if (newDegree <= 0) {
     degree = -1;
@@ -102,7 +102,7 @@ BivariatePolynomialT<real>::memoryCleanUp()
 
 template <typename real>
 void
-BivariatePolynomialT<real>::deepCopy(const pcl::BivariatePolynomialT<real>& other)
+BivariatePolynomialT<real>::deepCopy (const pcl::BivariatePolynomialT<real>& other)
 {
   if (this == &other)
     return;
@@ -122,25 +122,25 @@ BivariatePolynomialT<real>::deepCopy(const pcl::BivariatePolynomialT<real>& othe
     gradient_y = new pcl::BivariatePolynomialT<real>();
   }
 
-  std::copy_n(other.parameters, getNoOfParameters(), parameters);
+  std::copy_n (other.parameters, getNoOfParameters(), parameters);
 
   if (other.gradient_x != nullptr) {
-    gradient_x->deepCopy(*other.gradient_x);
-    gradient_y->deepCopy(*other.gradient_y);
+    gradient_x->deepCopy (*other.gradient_x);
+    gradient_y->deepCopy (*other.gradient_y);
   }
 }
 
 template <typename real>
 void
-BivariatePolynomialT<real>::calculateGradient(bool forceRecalc)
+BivariatePolynomialT<real>::calculateGradient (bool forceRecalc)
 {
   if (gradient_x != nullptr && !forceRecalc)
     return;
 
   if (gradient_x == nullptr)
-    gradient_x = new pcl::BivariatePolynomialT<real>(degree - 1);
+    gradient_x = new pcl::BivariatePolynomialT<real> (degree - 1);
   if (gradient_y == nullptr)
-    gradient_y = new pcl::BivariatePolynomialT<real>(degree - 1);
+    gradient_y = new pcl::BivariatePolynomialT<real> (degree - 1);
 
   unsigned int parameterPosDx = 0, parameterPosDy = 0;
   for (int xDegree = degree; xDegree >= 0; xDegree--) {
@@ -161,7 +161,7 @@ BivariatePolynomialT<real>::calculateGradient(bool forceRecalc)
 
 template <typename real>
 real
-BivariatePolynomialT<real>::getValue(real x, real y) const
+BivariatePolynomialT<real>::getValue (real x, real y) const
 {
   unsigned int parametersSize = getNoOfParameters();
   real* tmpParameter = &parameters[parametersSize - 1];
@@ -180,48 +180,51 @@ BivariatePolynomialT<real>::getValue(real x, real y) const
 
 template <typename real>
 void
-BivariatePolynomialT<real>::getValueOfGradient(real x, real y, real& gradX, real& gradY)
+BivariatePolynomialT<real>::getValueOfGradient (real x,
+                                                real y,
+                                                real& gradX,
+                                                real& gradY)
 {
   calculateGradient();
-  gradX = gradient_x->getValue(x, y);
-  gradY = gradient_y->getValue(x, y);
+  gradX = gradient_x->getValue (x, y);
+  gradY = gradient_y->getValue (x, y);
 }
 
 template <typename real>
 void
-BivariatePolynomialT<real>::findCriticalPoints(std::vector<real>& x_values,
-                                               std::vector<real>& y_values,
-                                               std::vector<int>& types) const
+BivariatePolynomialT<real>::findCriticalPoints (std::vector<real>& x_values,
+                                                std::vector<real>& y_values,
+                                                std::vector<int>& types) const
 {
   x_values.clear();
   y_values.clear();
   types.clear();
 
   if (degree == 2) {
-    real x = (static_cast<real>(2) * parameters[2] * parameters[3] -
+    real x = (static_cast<real> (2) * parameters[2] * parameters[3] -
               parameters[1] * parameters[4]) /
              (parameters[1] * parameters[1] -
-              static_cast<real>(4) * parameters[0] * parameters[3]),
-         y = (static_cast<real>(-2) * parameters[0] * x - parameters[2]) /
+              static_cast<real> (4) * parameters[0] * parameters[3]),
+         y = (static_cast<real> (-2) * parameters[0] * x - parameters[2]) /
              parameters[1];
 
-    if (!std::isfinite(x) || !std::isfinite(y))
+    if (!std::isfinite (x) || !std::isfinite (y))
       return;
 
     int type = 2;
-    real det_H = static_cast<real>(4) * parameters[0] * parameters[3] -
+    real det_H = static_cast<real> (4) * parameters[0] * parameters[3] -
                  parameters[1] * parameters[1];
     // std::cout << "det(H) = "<<det_H<<"\n";
-    if (det_H > static_cast<real>(0)) // Check Hessian determinant
+    if (det_H > static_cast<real> (0)) // Check Hessian determinant
     {
-      if (parameters[0] + parameters[3] < static_cast<real>(0)) // Check Hessian trace
+      if (parameters[0] + parameters[3] < static_cast<real> (0)) // Check Hessian trace
         type = 0;
       else
         type = 1;
     }
-    x_values.push_back(x);
-    y_values.push_back(y);
-    types.push_back(type);
+    x_values.push_back (x);
+    y_values.push_back (y);
+    types.push_back (type);
   }
   else {
     std::cerr << __PRETTY_FUNCTION__ << " is not implemented for polynomials of degree "
@@ -231,7 +234,7 @@ BivariatePolynomialT<real>::findCriticalPoints(std::vector<real>& x_values,
 
 template <typename real>
 std::ostream&
-operator<<(std::ostream& os, const pcl::BivariatePolynomialT<real>& p)
+operator<< (std::ostream& os, const pcl::BivariatePolynomialT<real>& p)
 {
   real* tmpParameter = p.parameters;
   bool first = true;
@@ -241,7 +244,7 @@ operator<<(std::ostream& os, const pcl::BivariatePolynomialT<real>& p)
       currentParameter = *tmpParameter;
       if (!first) {
         os << (currentParameter < 0.0 ? " - " : " + ");
-        currentParameter = std::abs(currentParameter);
+        currentParameter = std::abs (currentParameter);
       }
       os << currentParameter;
       if (xDegree > 0) {
@@ -264,38 +267,38 @@ operator<<(std::ostream& os, const pcl::BivariatePolynomialT<real>& p)
 
 template <typename real>
 void
-BivariatePolynomialT<real>::writeBinary(std::ostream& os) const
+BivariatePolynomialT<real>::writeBinary (std::ostream& os) const
 {
-  os.write(reinterpret_cast<const char*>(&degree), sizeof(int));
-  unsigned int paramCnt = getNoOfParametersFromDegree(this->degree);
-  os.write(reinterpret_cast<const char*>(this->parameters), paramCnt * sizeof(real));
+  os.write (reinterpret_cast<const char*> (&degree), sizeof (int));
+  unsigned int paramCnt = getNoOfParametersFromDegree (this->degree);
+  os.write (reinterpret_cast<const char*> (this->parameters), paramCnt * sizeof (real));
 }
 
 template <typename real>
 void
-BivariatePolynomialT<real>::writeBinary(const char* filename) const
+BivariatePolynomialT<real>::writeBinary (const char* filename) const
 {
-  std::ofstream fout(filename);
-  writeBinary(fout);
+  std::ofstream fout (filename);
+  writeBinary (fout);
 }
 
 template <typename real>
 void
-BivariatePolynomialT<real>::readBinary(std::istream& os)
+BivariatePolynomialT<real>::readBinary (std::istream& os)
 {
   memoryCleanUp();
-  os.read(reinterpret_cast<char*>(&this->degree), sizeof(int));
-  unsigned int paramCnt = getNoOfParametersFromDegree(this->degree);
+  os.read (reinterpret_cast<char*> (&this->degree), sizeof (int));
+  unsigned int paramCnt = getNoOfParametersFromDegree (this->degree);
   parameters = new real[paramCnt];
-  os.read(reinterpret_cast<char*>(&(*this->parameters)), paramCnt * sizeof(real));
+  os.read (reinterpret_cast<char*> (&(*this->parameters)), paramCnt * sizeof (real));
 }
 
 template <typename real>
 void
-BivariatePolynomialT<real>::readBinary(const char* filename)
+BivariatePolynomialT<real>::readBinary (const char* filename)
 {
-  std::ifstream fin(filename);
-  readBinary(fin);
+  std::ifstream fin (filename);
+  readBinary (fin);
 }
 
 } // namespace pcl

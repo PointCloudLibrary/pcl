@@ -49,8 +49,8 @@ namespace io {
  */
 class PCL_EXPORTS ImageRGB24 : public pcl::io::Image {
 public:
-  ImageRGB24(FrameWrapper::Ptr image_metadata);
-  ImageRGB24(FrameWrapper::Ptr image_metadata, Timestamp timestamp);
+  ImageRGB24 (FrameWrapper::Ptr image_metadata);
+  ImageRGB24 (FrameWrapper::Ptr image_metadata, Timestamp timestamp);
   ~ImageRGB24() noexcept override;
 
   inline Encoding

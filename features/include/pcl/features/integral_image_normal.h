@@ -98,13 +98,13 @@ public:
 
   /** \brief Constructor */
   IntegralImageNormalEstimation()
-  : normal_estimation_method_(AVERAGE_3D_GRADIENT)
-  , border_policy_(BORDER_POLICY_IGNORE)
-  , integral_image_DX_(false)
-  , integral_image_DY_(false)
-  , integral_image_depth_(false)
-  , integral_image_XYZ_(true)
-  , max_depth_change_factor_(20.0f * 0.001f)
+  : normal_estimation_method_ (AVERAGE_3D_GRADIENT)
+  , border_policy_ (BORDER_POLICY_IGNORE)
+  , integral_image_DX_ (false)
+  , integral_image_DY_ (false)
+  , integral_image_depth_ (false)
+  , integral_image_XYZ_ (true)
+  , max_depth_change_factor_ (20.0f * 0.001f)
   {
     feature_name_ = "IntegralImagesNormalEstimation";
     tree_.reset();
@@ -171,11 +171,11 @@ public:
   setNormalSmoothingSize (float normal_smoothing_size)
   {
     if (normal_smoothing_size < 2.0f) {
-      PCL_ERROR("[pcl::%s::setNormalSmoothingSize] Invalid normal smoothing size "
-                "given! (%g). Must be at least 2. Defaulting to %g.\n",
-                feature_name_.c_str(),
-                normal_smoothing_size,
-                normal_smoothing_size_);
+      PCL_ERROR ("[pcl::%s::setNormalSmoothingSize] Invalid normal smoothing size "
+                 "given! (%g). Must be at least 2. Defaulting to %g.\n",
+                 feature_name_.c_str(),
+                 normal_smoothing_size,
+                 normal_smoothing_size_);
       return;
     }
     normal_smoothing_size_ = normal_smoothing_size;
@@ -218,17 +218,17 @@ public:
   {
     input_ = cloud;
     if (!cloud->isOrganized()) {
-      PCL_ERROR("[pcl::IntegralImageNormalEstimation::setInputCloud] Input dataset is "
-                "not organized (height = 1).\n");
+      PCL_ERROR ("[pcl::IntegralImageNormalEstimation::setInputCloud] Input dataset is "
+                 "not organized (height = 1).\n");
       return;
     }
 
     init_covariance_matrix_ = init_average_3d_gradient_ = init_depth_change_ = false;
 
     if (use_sensor_origin_) {
-      vpx_ = input_->sensor_origin_.coeff(0);
-      vpy_ = input_->sensor_origin_.coeff(1);
-      vpz_ = input_->sensor_origin_.coeff(2);
+      vpx_ = input_->sensor_origin_.coeff (0);
+      vpy_ = input_->sensor_origin_.coeff (1);
+      vpz_ = input_->sensor_origin_.coeff (2);
     }
 
     // Initialize the correct data structure based on the normal estimation method
@@ -284,9 +284,9 @@ public:
   {
     use_sensor_origin_ = true;
     if (input_) {
-      vpx_ = input_->sensor_origin_.coeff(0);
-      vpy_ = input_->sensor_origin_.coeff(1);
-      vpz_ = input_->sensor_origin_.coeff(2);
+      vpx_ = input_->sensor_origin_.coeff (0);
+      vpy_ = input_->sensor_origin_.coeff (1);
+      vpz_ = input_->sensor_origin_.coeff (2);
     }
     else {
       vpx_ = 0;

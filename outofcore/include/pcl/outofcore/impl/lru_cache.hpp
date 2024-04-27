@@ -14,7 +14,7 @@ public:
   virtual std::size_t
   sizeOf () const
   {
-    return sizeof(item);
+    return sizeof (item);
   }
 
   virtual ~LRUCacheItem() = default;
@@ -32,23 +32,23 @@ public:
   using Cache = std::map<KeyT, std::pair<CacheItemT, typename KeyIndex::iterator>>;
   using CacheIterator = typename Cache::iterator;
 
-  LRUCache(std::size_t c) : capacity_(c) { assert(capacity_ != 0); }
+  LRUCache (std::size_t c) : capacity_ (c) { assert (capacity_ != 0); }
 
   bool
   hasKey (const KeyT& k)
   {
-    return (cache_.find(k) != cache_.end());
+    return (cache_.find (k) != cache_.end());
   }
 
   CacheItemT&
   get (const KeyT& k)
   {
     // Get existing key
-    const CacheIterator it = cache_.find(k);
-    assert(it != cache_.end());
+    const CacheIterator it = cache_.find (k);
+    assert (it != cache_.end());
 
     // Move key to MRU key index
-    key_index_.splice(key_index_.end(), key_index_, (*it).second.second);
+    key_index_.splice (key_index_.end(), key_index_, (*it).second.second);
 
     // Return the retrieved item
     return it->second.first;
@@ -58,19 +58,19 @@ public:
   touch (const KeyT& key)
   {
     // Get existing key
-    const CacheIterator it = cache_.find(key);
-    assert(it != cache_.end());
+    const CacheIterator it = cache_.find (key);
+    assert (it != cache_.end());
 
     // Move key to MRU key index
-    key_index_.splice(key_index_.end(), key_index_, it->second.second);
+    key_index_.splice (key_index_.end(), key_index_, it->second.second);
   }
 
   // Record a fresh key-value pair in the cache
   bool
   insert (const KeyT& key, const CacheItemT& value)
   {
-    if (cache_.find(key) != cache_.end()) {
-      touch(key);
+    if (cache_.find (key) != cache_.end()) {
+      touch (key);
       return true;
     }
 
@@ -82,7 +82,7 @@ public:
     auto key_it = key_index_.begin();
 
     while (size + item_size >= capacity_) {
-      const CacheIterator cache_it = cache_.find(*key_it);
+      const CacheIterator cache_it = cache_.find (*key_it);
 
       // Get tail item (Least Recently Used)
       std::size_t tail_timestamp = cache_it->second.first.timestamp;
@@ -99,15 +99,15 @@ public:
     }
 
     // Evict enough items to make room for the new item
-    evict(evict_count);
+    evict (evict_count);
 
     size_ += item_size;
 
     // Insert most-recently-used key at the end of our key index
-    auto it = key_index_.insert(key_index_.end(), key);
+    auto it = key_index_.insert (key_index_.end(), key);
 
     // Add to cache
-    cache_.insert(std::make_pair(key, std::make_pair(value, it)));
+    cache_.insert (std::make_pair (key, std::make_pair (value, it)));
 
     return true;
   }
@@ -121,7 +121,7 @@ public:
   CacheItemT&
   tailItem ()
   {
-    const CacheIterator it = cache_.find(key_index_.front());
+    const CacheIterator it = cache_.find (key_index_.front());
     return it->second.first;
   }
 
@@ -140,12 +140,12 @@ public:
         return false;
 
       // Get LRU item
-      const CacheIterator it = cache_.find(key_index_.front());
-      assert(it != cache_.end());
+      const CacheIterator it = cache_.find (key_index_.front());
+      assert (it != cache_.end());
 
       // Remove LRU item from cache and key index
       size_ -= it->second.first.sizeOf();
-      cache_.erase(it);
+      cache_.erase (it);
       key_index_.pop_front();
     }
 

@@ -10,7 +10,7 @@ struct NonCachedLoad {
   Invoke (const T* ptr)
   {
     // asm code insertion
-    asm(...);
+    asm (...);
   }
 };
 

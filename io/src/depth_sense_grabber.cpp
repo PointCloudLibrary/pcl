@@ -38,8 +38,8 @@
 #include <pcl/io/depth_sense/depth_sense_grabber_impl.h>
 #include <pcl/io/depth_sense_grabber.h>
 
-pcl::DepthSenseGrabber::DepthSenseGrabber(const std::string& device_id)
-: Grabber(), p_(new pcl::io::depth_sense::DepthSenseGrabberImpl(this, device_id))
+pcl::DepthSenseGrabber::DepthSenseGrabber (const std::string& device_id)
+: Grabber(), p_ (new pcl::io::depth_sense::DepthSenseGrabberImpl (this, device_id))
 {}
 
 pcl::DepthSenseGrabber::~DepthSenseGrabber() noexcept { delete p_; }
@@ -69,22 +69,22 @@ pcl::DepthSenseGrabber::getFramesPerSecond() const
 }
 
 void
-pcl::DepthSenseGrabber::setConfidenceThreshold(int threshold)
+pcl::DepthSenseGrabber::setConfidenceThreshold (int threshold)
 {
-  p_->setConfidenceThreshold(threshold);
+  p_->setConfidenceThreshold (threshold);
 }
 
 void
-pcl::DepthSenseGrabber::enableTemporalFiltering(TemporalFilteringType type,
-                                                std::size_t window_size)
+pcl::DepthSenseGrabber::enableTemporalFiltering (TemporalFilteringType type,
+                                                 std::size_t window_size)
 {
-  p_->enableTemporalFiltering(type, window_size);
+  p_->enableTemporalFiltering (type, window_size);
 }
 
 void
 pcl::DepthSenseGrabber::disableTemporalFiltering()
 {
-  p_->enableTemporalFiltering(DepthSense_None, 1);
+  p_->enableTemporalFiltering (DepthSense_None, 1);
 }
 
 std::string

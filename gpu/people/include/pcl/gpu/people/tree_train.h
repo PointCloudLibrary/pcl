@@ -20,7 +20,7 @@ namespace trees {
 // histogram stuff
 class Histogram : public boost::array<std::uint32_t, NUMLABELS> {
 public:
-  inline Histogram() { std::fill(begin(), end(), 0); }
+  inline Histogram() { std::fill (begin(), end(), 0); }
 };
 
 struct HistogramPair {
@@ -68,7 +68,7 @@ protected:
 // ###############################################
 // SplitPoint
 struct SplitPoint {
-  inline SplitPoint(int ai, Attrib t) : attribId(ai), threshold(t) {}
+  inline SplitPoint (int ai, Attrib t) : attribId (ai), threshold (t) {}
   int attribId;
   Attrib threshold;
 };
@@ -78,7 +78,8 @@ struct SplitPoint {
 // Data Structures as stored in binary files
 struct LabeledAttrib {
   inline LabeledAttrib() {}
-  inline LabeledAttrib(const Label& label, const Attrib& attrib) : l(label), a(attrib)
+  inline LabeledAttrib (const Label& label, const Attrib& attrib)
+  : l (label), a (attrib)
   {}
   Label l;
   Attrib a;
@@ -87,11 +88,11 @@ struct LabeledAttrib {
 // this is only going to be a helper structure
 struct LabeledFeature { // : boost::noncopyable {
   // constructors
-  inline LabeledFeature() : l(NOLABEL) {}
-  inline LabeledFeature(const LabeledFeature& B)
+  inline LabeledFeature() : l (NOLABEL) {}
+  inline LabeledFeature (const LabeledFeature& B)
   {
     l = B.l;
-    std::copy(B.attribs, B.attribs + NUMATTRIBS, attribs);
+    std::copy (B.attribs, B.attribs + NUMATTRIBS, attribs);
   }
   Label l; // WARNING the compiler will pad here
   Attrib attribs[NUMATTRIBS];
@@ -103,7 +104,7 @@ numElements (const Histogram& h)
 {
   std::uint64_t Ntotal = 0;
   for (int li = 0; li < NUMLABELS; ++li)
-    Ntotal += std::uint64_t(h[li]);
+    Ntotal += std::uint64_t (h[li]);
   return Ntotal;
 }
 
@@ -113,12 +114,12 @@ numElements (const Histogram& h)
 static inline double
 entropy (const Histogram& h)
 {
-  double Ntotal = numElements(h);
+  double Ntotal = numElements (h);
   double entropy = 0.;
   for (int li = 0; li < NUMLABELS; ++li) {
     if (h[li] != 0) {
-      double p = double(h[li]) / Ntotal;
-      entropy -= p * std::log(p);
+      double p = double (h[li]) / Ntotal;
+      entropy -= p * std::log (p);
     }
   }
   return entropy;
@@ -133,13 +134,13 @@ entropy_merged (const HistogramPair& hp)
   const Histogram& htrue = hp.h_true();
   const Histogram& hfalse = hp.h_false();
 
-  double Ntotal = numElements(htrue) + numElements(hfalse);
+  double Ntotal = numElements (htrue) + numElements (hfalse);
   double entropy = 0.;
   for (int li = 0; li < NUMLABELS; ++li) {
-    std::uint64_t Ni = std::uint64_t(htrue[li]) + std::uint64_t(hfalse[li]);
+    std::uint64_t Ni = std::uint64_t (htrue[li]) + std::uint64_t (hfalse[li]);
     if (Ni != 0) {
-      double p = double(Ni) / Ntotal;
-      entropy -= p * std::log(p);
+      double p = double (Ni) / Ntotal;
+      entropy -= p * std::log (p);
     }
   }
   return entropy;
@@ -151,12 +152,12 @@ entropy_merged (const HistogramPair& hp)
 static inline double
 informationGain (const HistogramPair& hp)
 {
-  double e0 = entropy_merged(hp);
-  double etrue = entropy(hp.h_true());
-  double efalse = entropy(hp.h_false());
+  double e0 = entropy_merged (hp);
+  double etrue = entropy (hp.h_true());
+  double efalse = entropy (hp.h_false());
 
-  double Ntrue = numElements(hp.h_true());
-  double Nfalse = numElements(hp.h_false());
+  double Ntrue = numElements (hp.h_true());
+  double Nfalse = numElements (hp.h_false());
   double Ntotal = Ntrue + Nfalse;
 
   // lets avoid division by 0
@@ -169,7 +170,7 @@ informationGain (const HistogramPair& hp)
 // #########################################
 // Reading and writing histograms
 static inline std::ostream&
-operator<<(std::ostream& os, const Histogram& h)
+operator<< (std::ostream& os, const Histogram& h)
 {
   for (int li = 0; li < NUMLABELS; ++li)
     os << h[li] << " ";
@@ -178,7 +179,7 @@ operator<<(std::ostream& os, const Histogram& h)
 }
 
 static inline std::istream&
-operator>>(std::istream& is, Histogram& h)
+operator>> (std::istream& is, Histogram& h)
 {
   for (int li = 0; li < NUMLABELS; ++li)
     is >> h[li];
@@ -189,7 +190,7 @@ operator>>(std::istream& is, Histogram& h)
 // #######################################
 // reading and writing histogram Pairs
 static inline std::ostream&
-operator<<(std::ostream& os, const HistogramPair& hp)
+operator<< (std::ostream& os, const HistogramPair& hp)
 {
   os << hp.h_false();
   os << hp.h_true();
@@ -197,7 +198,7 @@ operator<<(std::ostream& os, const HistogramPair& hp)
 }
 
 static inline std::istream&
-operator>>(std::istream& is, HistogramPair& hp)
+operator>> (std::istream& is, HistogramPair& hp)
 {
   is >> hp.h_false();
   is >> hp.h_true();
@@ -210,7 +211,7 @@ operator>>(std::istream& is, HistogramPair& hp)
 static void
 writeLabeledFeatureVec (std::ostream& os, const std::vector<LabeledFeature>& lfs)
 {
-  os.write((const char*)&lfs[0], sizeof(LabeledFeature) * lfs.size());
+  os.write ((const char*)&lfs[0], sizeof (LabeledFeature) * lfs.size());
 }
 
 //	static void readLabeledFeature( std::istream& is, LabeledFeature& lf)
@@ -223,14 +224,14 @@ writeLabeledFeatureVec (std::ostream& os, const std::vector<LabeledFeature>& lfs
 // #######################################
 // reading and writing split points
 inline std::ostream&
-operator<<(std::ostream& os, const SplitPoint& sp)
+operator<< (std::ostream& os, const SplitPoint& sp)
 {
   os << sp.attribId << " " << sp.threshold << "\n";
   return os;
 }
 
 inline std::istream&
-operator>>(std::istream& is, SplitPoint& sp)
+operator>> (std::istream& is, SplitPoint& sp)
 {
   is >> sp.attribId >> sp.threshold;
   return is;
@@ -246,11 +247,11 @@ writeInfoFile (const std::string& filename,
                double gain,
                const HistogramPair& HP)
 {
-  std::ofstream fout(filename.c_str());
+  std::ofstream fout (filename.c_str());
   if (!fout.is_open())
-    throw std::runtime_error(std::string("(E) could not open ") + filename);
+    throw std::runtime_error (std::string ("(E) could not open ") + filename);
 
-  fout << int(attribId) << " " << int(threshold) << "\n";
+  fout << int (attribId) << " " << int (threshold) << "\n";
   fout << gain << "\n";
   fout << HP;
 }
@@ -262,13 +263,13 @@ readInfoFile (const std::string& filename,
               double& gain,
               HistogramPair& HP)
 {
-  std::ifstream fin(filename.c_str());
+  std::ifstream fin (filename.c_str());
   if (!fin.is_open())
-    throw std::runtime_error(std::string("(E) could not open") + filename);
+    throw std::runtime_error (std::string ("(E) could not open") + filename);
 
   fin >> attribId >> threshold >> gain >> HP;
   if (fin.fail())
-    throw std::runtime_error(std::string("(E) malformed splitInfo file ") + filename);
+    throw std::runtime_error (std::string ("(E) malformed splitInfo file ") + filename);
 }
 
 } // end namespace trees

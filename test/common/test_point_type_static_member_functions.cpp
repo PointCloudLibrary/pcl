@@ -19,19 +19,19 @@ using namespace pcl::test;
 template <typename T>
 class PointTypeStaticMemberFunctionsTest : public testing::Test {};
 using FeaturePointTypes =
-    ::testing::Types<BOOST_PP_SEQ_ENUM(PCL_DESCRIPTOR_FEATURE_POINT_TYPES),
+    ::testing::Types<BOOST_PP_SEQ_ENUM (PCL_DESCRIPTOR_FEATURE_POINT_TYPES),
                      Histogram<1>>;
-TYPED_TEST_SUITE(PointTypeStaticMemberFunctionsTest, FeaturePointTypes);
-TYPED_TEST(PointTypeStaticMemberFunctionsTest, DescriptorSizeTests)
+TYPED_TEST_SUITE (PointTypeStaticMemberFunctionsTest, FeaturePointTypes);
+TYPED_TEST (PointTypeStaticMemberFunctionsTest, DescriptorSizeTests)
 {
-  static_assert(TypeParam::descriptorSize() ==
-                    pcl::detail::traits::descriptorSize_v<TypeParam>,
-                "incorrect descriptorSize");
+  static_assert (TypeParam::descriptorSize() ==
+                     pcl::detail::traits::descriptorSize_v<TypeParam>,
+                 "incorrect descriptorSize");
 }
 
 int
 main (int argc, char** argv)
 {
-  testing::InitGoogleTest(&argc, argv);
+  testing::InitGoogleTest (&argc, argv);
   return (RUN_ALL_TESTS());
 }

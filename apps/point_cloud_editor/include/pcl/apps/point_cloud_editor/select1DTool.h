@@ -55,7 +55,7 @@ public:
   /// @brief Constructor
   /// @param selection_ptr a shared pointer pointing to the selection object.
   /// @param cloud_ptr a shared pointer pointing to the cloud object.
-  Select1DTool(SelectionPtr selection_ptr, CloudPtr cloud_ptr);
+  Select1DTool (SelectionPtr selection_ptr, CloudPtr cloud_ptr);
 
   /// @brief Destructor
   ~Select1DTool() override = default;
@@ -97,7 +97,7 @@ public:
 
 private:
   /// @brief Default constructor - object is not default constructable
-  Select1DTool() { assert(false); }
+  Select1DTool() { assert (false); }
 
   /// a shared pointer pointing to the selection object
   SelectionPtr selection_ptr_;

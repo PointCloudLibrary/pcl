@@ -92,13 +92,13 @@ public:
    * \param[in] random if true set the random seed to the current time, else set to
    * 12345 (default: false)
    */
-  SampleConsensusModelCone(const PointCloudConstPtr& cloud, bool random = false)
-  : SampleConsensusModel<PointT>(cloud, random)
+  SampleConsensusModelCone (const PointCloudConstPtr& cloud, bool random = false)
+  : SampleConsensusModel<PointT> (cloud, random)
   , SampleConsensusModelFromNormals<PointT, PointNT>()
-  , axis_(Eigen::Vector3f::Zero())
-  , eps_angle_(0)
-  , min_angle_(-std::numeric_limits<double>::max())
-  , max_angle_(std::numeric_limits<double>::max())
+  , axis_ (Eigen::Vector3f::Zero())
+  , eps_angle_ (0)
+  , min_angle_ (-std::numeric_limits<double>::max())
+  , max_angle_ (std::numeric_limits<double>::max())
   {
     model_name_ = "SampleConsensusModelCone";
     sample_size_ = 3;
@@ -111,15 +111,15 @@ public:
    * \param[in] random if true set the random seed to the current time, else set to
    * 12345 (default: false)
    */
-  SampleConsensusModelCone(const PointCloudConstPtr& cloud,
-                           const Indices& indices,
-                           bool random = false)
-  : SampleConsensusModel<PointT>(cloud, indices, random)
+  SampleConsensusModelCone (const PointCloudConstPtr& cloud,
+                            const Indices& indices,
+                            bool random = false)
+  : SampleConsensusModel<PointT> (cloud, indices, random)
   , SampleConsensusModelFromNormals<PointT, PointNT>()
-  , axis_(Eigen::Vector3f::Zero())
-  , eps_angle_(0)
-  , min_angle_(-std::numeric_limits<double>::max())
-  , max_angle_(std::numeric_limits<double>::max())
+  , axis_ (Eigen::Vector3f::Zero())
+  , eps_angle_ (0)
+  , min_angle_ (-std::numeric_limits<double>::max())
+  , max_angle_ (std::numeric_limits<double>::max())
   {
     model_name_ = "SampleConsensusModelCone";
     sample_size_ = 3;
@@ -129,7 +129,7 @@ public:
   /** \brief Copy constructor.
    * \param[in] source the model to copy into this
    */
-  SampleConsensusModelCone(const SampleConsensusModelCone& source)
+  SampleConsensusModelCone (const SampleConsensusModelCone& source)
   : SampleConsensusModel<PointT>()
   , SampleConsensusModelFromNormals<PointT, PointNT>()
   , eps_angle_()
@@ -147,10 +147,10 @@ public:
    * \param[in] source the model to copy into this
    */
   inline SampleConsensusModelCone&
-  operator=(const SampleConsensusModelCone& source)
+  operator= (const SampleConsensusModelCone& source)
   {
-    SampleConsensusModel<PointT>::operator=(source);
-    SampleConsensusModelFromNormals<PointT, PointNT>::operator=(source);
+    SampleConsensusModel<PointT>::operator= (source);
+    SampleConsensusModelFromNormals<PointT, PointNT>::operator= (source);
     axis_ = source.axis_;
     eps_angle_ = source.eps_angle_;
     min_angle_ = source.min_angle_;

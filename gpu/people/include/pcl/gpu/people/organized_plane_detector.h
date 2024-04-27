@@ -85,7 +85,7 @@ protected:
 
 public:
   /** \brief This is the constructor **/
-  OrganizedPlaneDetector(int rows = 480, int cols = 640);
+  OrganizedPlaneDetector (int rows = 480, int cols = 640);
 
   /** \brief Process step, this wraps Organized Plane Segmentation code **/
   void
@@ -101,7 +101,7 @@ public:
   setMpsAngularThreshold (double mpsAngularThreshold)
   {
     mps_AngularThreshold_ = mpsAngularThreshold;
-    mps_.setAngularThreshold(mps_AngularThreshold_);
+    mps_.setAngularThreshold (mps_AngularThreshold_);
   }
 
   double
@@ -114,7 +114,7 @@ public:
   setMpsDistanceThreshold (double mpsDistanceThreshold)
   {
     mps_DistanceThreshold_ = mpsDistanceThreshold;
-    mps_.setDistanceThreshold(mps_DistanceThreshold_);
+    mps_.setDistanceThreshold (mps_DistanceThreshold_);
   }
 
   int
@@ -127,7 +127,7 @@ public:
   setMpsMinInliers (int mpsMinInliers)
   {
     mps_MinInliers_ = mpsMinInliers;
-    mps_.setMinInliers(mps_MinInliers_);
+    mps_.setMinInliers (mps_MinInliers_);
   }
 
   float
@@ -140,7 +140,7 @@ public:
   setNeMaxDepthChangeFactor (float neMaxDepthChangeFactor)
   {
     ne_MaxDepthChangeFactor_ = neMaxDepthChangeFactor;
-    ne_.setMaxDepthChangeFactor(ne_MaxDepthChangeFactor_);
+    ne_.setMaxDepthChangeFactor (ne_MaxDepthChangeFactor_);
   }
 
   float
@@ -153,7 +153,7 @@ public:
   setNeNormalSmoothingSize (float neNormalSmoothingSize)
   {
     ne_NormalSmoothingSize_ = neNormalSmoothingSize;
-    ne_.setNormalSmoothingSize(ne_NormalSmoothingSize_);
+    ne_.setNormalSmoothingSize (ne_NormalSmoothingSize_);
   }
 
   void

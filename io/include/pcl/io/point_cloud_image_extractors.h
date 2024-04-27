@@ -139,17 +139,17 @@ public:
   enum ScalingMethod { SCALING_NO, SCALING_FULL_RANGE, SCALING_FIXED_FACTOR };
 
   /** \brief Constructor. */
-  PointCloudImageExtractorWithScaling(const std::string& field_name,
-                                      const ScalingMethod scaling_method)
-  : field_name_(field_name), scaling_method_(scaling_method), scaling_factor_(1.0f)
+  PointCloudImageExtractorWithScaling (const std::string& field_name,
+                                       const ScalingMethod scaling_method)
+  : field_name_ (field_name), scaling_method_ (scaling_method), scaling_factor_ (1.0f)
   {}
 
   /** \brief Constructor. */
-  PointCloudImageExtractorWithScaling(const std::string& field_name,
-                                      const float scaling_factor)
-  : field_name_(field_name)
-  , scaling_method_(SCALING_FIXED_FACTOR)
-  , scaling_factor_(scaling_factor)
+  PointCloudImageExtractorWithScaling (const std::string& field_name,
+                                       const float scaling_factor)
+  : field_name_ (field_name)
+  , scaling_method_ (SCALING_FIXED_FACTOR)
+  , scaling_factor_ (scaling_factor)
   {}
 
   /** \brief Destructor. */
@@ -258,8 +258,8 @@ public:
   };
 
   /** \brief Constructor. */
-  PointCloudImageExtractorFromLabelField(const ColorMode color_mode = COLORS_MONO)
-  : color_mode_(color_mode)
+  PointCloudImageExtractorFromLabelField (const ColorMode color_mode = COLORS_MONO)
+  : color_mode_ (color_mode)
   {}
 
   /** \brief Destructor. */
@@ -304,15 +304,15 @@ public:
    * \param[in] scaling_factor a scaling factor to apply to each depth value (default
    * 10000)
    */
-  PointCloudImageExtractorFromZField(const float scaling_factor = 10000)
-  : PointCloudImageExtractorWithScaling<PointT>("z", scaling_factor)
+  PointCloudImageExtractorFromZField (const float scaling_factor = 10000)
+  : PointCloudImageExtractorWithScaling<PointT> ("z", scaling_factor)
   {}
 
   /** \brief Constructor.
    * \param[in] scaling_method a scaling method to use
    */
-  PointCloudImageExtractorFromZField(const ScalingMethod scaling_method)
-  : PointCloudImageExtractorWithScaling<PointT>("z", scaling_method)
+  PointCloudImageExtractorFromZField (const ScalingMethod scaling_method)
+  : PointCloudImageExtractorWithScaling<PointT> ("z", scaling_method)
   {}
 
   /** \brief Destructor. */
@@ -345,17 +345,17 @@ public:
   /** \brief Constructor.
    * \param[in] scaling_method a scaling method to use (default SCALING_FULL_RANGE)
    */
-  PointCloudImageExtractorFromCurvatureField(
+  PointCloudImageExtractorFromCurvatureField (
       const ScalingMethod scaling_method =
           PointCloudImageExtractorWithScaling<PointT>::SCALING_FULL_RANGE)
-  : PointCloudImageExtractorWithScaling<PointT>("curvature", scaling_method)
+  : PointCloudImageExtractorWithScaling<PointT> ("curvature", scaling_method)
   {}
 
   /** \brief Constructor.
    * \param[in] scaling_factor a scaling factor to apply to each curvature value
    */
-  PointCloudImageExtractorFromCurvatureField(const float scaling_factor)
-  : PointCloudImageExtractorWithScaling<PointT>("curvature", scaling_factor)
+  PointCloudImageExtractorFromCurvatureField (const float scaling_factor)
+  : PointCloudImageExtractorWithScaling<PointT> ("curvature", scaling_factor)
   {}
 
   /** \brief Destructor. */
@@ -387,17 +387,17 @@ public:
   /** \brief Constructor.
    * \param[in] scaling_method a scaling method to use (default SCALING_NO)
    */
-  PointCloudImageExtractorFromIntensityField(
+  PointCloudImageExtractorFromIntensityField (
       const ScalingMethod scaling_method =
           PointCloudImageExtractorWithScaling<PointT>::SCALING_NO)
-  : PointCloudImageExtractorWithScaling<PointT>("intensity", scaling_method)
+  : PointCloudImageExtractorWithScaling<PointT> ("intensity", scaling_method)
   {}
 
   /** \brief Constructor.
    * \param[in] scaling_factor a scaling factor to apply to each intensity value
    */
-  PointCloudImageExtractorFromIntensityField(const float scaling_factor)
-  : PointCloudImageExtractorWithScaling<PointT>("intensity", scaling_factor)
+  PointCloudImageExtractorFromIntensityField (const float scaling_factor)
+  : PointCloudImageExtractorWithScaling<PointT> ("intensity", scaling_factor)
   {}
 
   /** \brief Destructor. */

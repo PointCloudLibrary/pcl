@@ -47,7 +47,7 @@ int min_nr_in_shape = 5000;
 //////////////////////////////////////////////////////////////////////////
 template <template <typename> class Storage>
 bool
-pcl_cuda::MultiRandomSampleConsensus<Storage>::computeModel(int debug_verbosity_level)
+pcl_cuda::MultiRandomSampleConsensus<Storage>::computeModel (int debug_verbosity_level)
 {
   // Warn and exit if no threshold was set
   if (threshold_ == std::numeric_limits<double>::max()) {
@@ -66,15 +66,15 @@ pcl_cuda::MultiRandomSampleConsensus<Storage>::computeModel(int debug_verbosity_
   // number of valid iterations
   int valid_iterations = 0;
   // each batch has a vector of plane coefficients (float4)
-  std::vector<Hypotheses> h(max_batches_);
-  std::vector<typename Storage<int>::type> h_samples(max_batches_);
-  std::vector<float3> centroids(max_batches_ * iterations_per_batch_);
+  std::vector<Hypotheses> h (max_batches_);
+  std::vector<typename Storage<int>::type> h_samples (max_batches_);
+  std::vector<float3> centroids (max_batches_ * iterations_per_batch_);
   // current batch number
   int cur_batch = 0;
   //// stencil vector that holds the current inliers
-  std::vector<IndicesPtr> hypotheses_inliers_stencils(max_batches_ *
-                                                      iterations_per_batch_);
-  std::vector<int> hypotheses_inlier_count(max_batches_ * iterations_per_batch_);
+  std::vector<IndicesPtr> hypotheses_inliers_stencils (max_batches_ *
+                                                       iterations_per_batch_);
+  std::vector<int> hypotheses_inlier_count (max_batches_ * iterations_per_batch_);
   // initialize some things
   all_inliers_.clear();
   all_model_coefficients_.clear();
@@ -94,7 +94,7 @@ pcl_cuda::MultiRandomSampleConsensus<Storage>::computeModel(int debug_verbosity_
   //     << host_points[print_iter].z << " ]" << std::endl;
   // }
 
-  ScopeTime t("ALLLLLLLLLLL");
+  ScopeTime t ("ALLLLLLLLLLL");
   do // multiple models ..
   {
     thrust::host_vector<int> host_samples;
@@ -104,8 +104,8 @@ pcl_cuda::MultiRandomSampleConsensus<Storage>::computeModel(int debug_verbosity_
 
     // generate a new batch of hypotheses
     {
-      ScopeTime t("generateModelHypotheses");
-      sac_model_->generateModelHypotheses(
+      ScopeTime t ("generateModelHypotheses");
+      sac_model_->generateModelHypotheses (
           h[cur_batch], h_samples[cur_batch], iterations_per_batch_);
     }
     host_samples = h_samples[cur_batch];
@@ -122,11 +122,11 @@ pcl_cuda::MultiRandomSampleConsensus<Storage>::computeModel(int debug_verbosity_
       }
     }
 
-    std::vector<bool> hypothesis_valid(max_batches_ * iterations_per_batch_, true);
+    std::vector<bool> hypothesis_valid (max_batches_ * iterations_per_batch_, true);
 
     // evaluate each hypothesis in this batch
     {
-      ScopeTime t("evaluate");
+      ScopeTime t ("evaluate");
       for (unsigned int i = 0; i < iterations_per_batch_;
            i++, cur_iteration++, valid_iterations++) {
         // hypothesis could be invalid because it's initial sample point was inlier
@@ -140,14 +140,14 @@ pcl_cuda::MultiRandomSampleConsensus<Storage>::computeModel(int debug_verbosity_
         // compute inliers for each model
         IndicesPtr inl_stencil;
         {
-          ScopeTime t("selectWithinDistance");
+          ScopeTime t ("selectWithinDistance");
           int d_cur_penalty = 0;
-          n_inliers_count = sac_model_->selectWithinDistance(h[cur_batch],
-                                                             i,
-                                                             threshold_,
-                                                             inl_stencil,
-                                                             centroids[cur_iteration],
-                                                             d_cur_penalty);
+          n_inliers_count = sac_model_->selectWithinDistance (h[cur_batch],
+                                                              i,
+                                                              threshold_,
+                                                              inl_stencil,
+                                                              centroids[cur_iteration],
+                                                              d_cur_penalty);
         }
         // store inliers and inlier count
         if (n_inliers_count < min_nr_in_shape) {
@@ -167,14 +167,14 @@ pcl_cuda::MultiRandomSampleConsensus<Storage>::computeModel(int debug_verbosity_
           // Compute the k parameter (k=std::log(z)/std::log(1-w^n))
           float w = (float)((float)n_best_inliers_count / (float)nr_remaining_points);
           float p_no_outliers = 1.0f - w;
-          p_no_outliers = (std::max)(std::numeric_limits<float>::epsilon(),
-                                     p_no_outliers); // Avoid division by -Inf
-          p_no_outliers = (std::min)(1.0f - std::numeric_limits<float>::epsilon(),
-                                     p_no_outliers); // Avoid division by 0.
+          p_no_outliers = (std::max) (std::numeric_limits<float>::epsilon(),
+                                      p_no_outliers); // Avoid division by -Inf
+          p_no_outliers = (std::min) (1.0f - std::numeric_limits<float>::epsilon(),
+                                      p_no_outliers); // Avoid division by 0.
           if (p_no_outliers == 1.0f)
             k++;
           else
-            k = std::log(1.0f - probability_) / std::log(p_no_outliers);
+            k = std::log (1.0f - probability_) / std::log (p_no_outliers);
         }
 
         // fprintf (stderr, "[pcl_cuda::MultiRandomSampleConsensus::computeModel] Trial
@@ -183,32 +183,32 @@ pcl_cuda::MultiRandomSampleConsensus<Storage>::computeModel(int debug_verbosity_
         // check if we found a valid model
 
         {
-          ScopeTime t("extracmodel");
+          ScopeTime t ("extracmodel");
 
           if (valid_iterations >= k) {
             unsigned int extracted_model = good_coeff;
             // int nr_remaining_points_before_delete = nr_remaining_points;
             bool find_no_better = false;
-            nr_remaining_points =
-                sac_model_->deleteIndices(hypotheses_inliers_stencils[extracted_model]);
+            nr_remaining_points = sac_model_->deleteIndices (
+                hypotheses_inliers_stencils[extracted_model]);
             // if (nr_remaining_points != nr_remaining_points_before_delete)
             {
 
               // Compute the k parameter (k=std::log(z)/std::log(1-w^n))
               float w = (float)((float)min_nr_in_shape / (float)nr_remaining_points);
               float p_no_outliers = 1.0f - w;
-              p_no_outliers = (std::max)(std::numeric_limits<float>::epsilon(),
-                                         p_no_outliers); // Avoid division by -Inf
-              p_no_outliers = (std::min)(1.0f - std::numeric_limits<float>::epsilon(),
-                                         p_no_outliers); // Avoid division by 0.
+              p_no_outliers = (std::max) (std::numeric_limits<float>::epsilon(),
+                                          p_no_outliers); // Avoid division by -Inf
+              p_no_outliers = (std::min) (1.0f - std::numeric_limits<float>::epsilon(),
+                                          p_no_outliers); // Avoid division by 0.
               if (p_no_outliers != 1.0f) {
-                if (std::log(1.0f - probability_) / std::log(p_no_outliers) <
+                if (std::log (1.0f - probability_) / std::log (p_no_outliers) <
                     valid_iterations) // we won't find a model with min_nr_in_shape
                                       // points anymore...
                   find_no_better = true;
                 else if (debug_verbosity_level > 1)
                   std::cerr << "------->"
-                            << std::log(1.0f - probability_) / std::log(p_no_outliers)
+                            << std::log (1.0f - probability_) / std::log (p_no_outliers)
                             << "  -vs-  " << valid_iterations << std::endl;
               }
             }
@@ -218,12 +218,12 @@ pcl_cuda::MultiRandomSampleConsensus<Storage>::computeModel(int debug_verbosity_
                       << valid_iterations << " / " << cur_iteration << " iterations"
                       << std::endl;
 
-            all_inliers_.push_back(hypotheses_inliers_stencils[extracted_model]);
-            all_inlier_counts_.push_back(n_best_inliers_count);
-            all_model_centroids_.push_back(centroids[extracted_model]);
+            all_inliers_.push_back (hypotheses_inliers_stencils[extracted_model]);
+            all_inlier_counts_.push_back (n_best_inliers_count);
+            all_model_centroids_.push_back (centroids[extracted_model]);
             thrust::host_vector<float4> host_coeffs_extracted_model =
                 h[extracted_model / iterations_per_batch_];
-            all_model_coefficients_.push_back(
+            all_model_coefficients_.push_back (
                 host_coeffs_extracted_model[extracted_model % iterations_per_batch_]);
 
             // float4 model_coeff =
@@ -270,7 +270,7 @@ pcl_cuda::MultiRandomSampleConsensus<Storage>::computeModel(int debug_verbosity_
                             << " is being extracted..." << std::endl;
                 continue;
               }
-              if (sac_model_->isSampleInlier(
+              if (sac_model_->isSampleInlier (
                       hypotheses_inliers_stencils[extracted_model], h_samples[b], j)) {
                 // std::cerr << "sample point for model " << j << " in batch " << b <<"
                 // is inlier to best model " << extracted_model << std::endl;
@@ -288,7 +288,7 @@ pcl_cuda::MultiRandomSampleConsensus<Storage>::computeModel(int debug_verbosity_
                 if (old_score != 0) {
                   // std::cerr << "inliers for model " << b*iterations_per_batch_ + j <<
                   // " : " << old_score;
-                  n_inliers_count = sac_model_->deleteIndices(
+                  n_inliers_count = sac_model_->deleteIndices (
                       h[b],
                       j,
                       hypotheses_inliers_stencils[b * iterations_per_batch_ + j],
@@ -308,15 +308,15 @@ pcl_cuda::MultiRandomSampleConsensus<Storage>::computeModel(int debug_verbosity_
                   float w =
                       (float)((float)n_best_inliers_count / (float)nr_remaining_points);
                   float p_no_outliers = 1.0f - w;
-                  p_no_outliers = (std::max)(std::numeric_limits<float>::epsilon(),
-                                             p_no_outliers); // Avoid division by -Inf
+                  p_no_outliers = (std::max) (std::numeric_limits<float>::epsilon(),
+                                              p_no_outliers); // Avoid division by -Inf
                   p_no_outliers =
-                      (std::min)(1.0f - std::numeric_limits<float>::epsilon(),
-                                 p_no_outliers); // Avoid division by 0.
+                      (std::min) (1.0f - std::numeric_limits<float>::epsilon(),
+                                  p_no_outliers); // Avoid division by 0.
                   if (p_no_outliers == 1.0f)
                     k++;
                   else
-                    k = std::log(1.0f - probability_) / std::log(p_no_outliers);
+                    k = std::log (1.0f - probability_) / std::log (p_no_outliers);
                 }
               }
             }

@@ -20,8 +20,8 @@ struct PCL_EXPORTS PCLPointCloud2 {
 
   std::vector<::pcl::PCLPointField> fields;
 
-  static_assert(BOOST_ENDIAN_BIG_BYTE || BOOST_ENDIAN_LITTLE_BYTE,
-                "unable to determine system endianness");
+  static_assert (BOOST_ENDIAN_BIG_BYTE || BOOST_ENDIAN_LITTLE_BYTE,
+                 "unable to determine system endianness");
   std::uint8_t is_bigendian = BOOST_ENDIAN_BIG_BYTE;
   uindex_t point_step = 0;
   uindex_t row_step = 0;
@@ -66,7 +66,7 @@ public:
                PCLPointCloud2& cloud_out)
   {
     cloud_out = cloud1;
-    return concatenate(cloud_out, cloud2);
+    return concatenate (cloud_out, cloud2);
   }
 
   /** \brief Add a point cloud to the current cloud.
@@ -75,7 +75,7 @@ public:
    * cloud
    */
   PCLPointCloud2&
-  operator+=(const PCLPointCloud2& rhs);
+  operator+= (const PCLPointCloud2& rhs);
 
   /** \brief Add a point cloud to another cloud.
    * \param[in] rhs the cloud to add to the current cloud
@@ -83,9 +83,9 @@ public:
    * cloud
    */
   inline PCLPointCloud2
-  operator+(const PCLPointCloud2& rhs)
+  operator+ (const PCLPointCloud2& rhs)
   {
-    return (PCLPointCloud2(*this) += rhs);
+    return (PCLPointCloud2 (*this) += rhs);
   }
 
   /** \brief Get value at specified offset.
@@ -98,10 +98,10 @@ public:
   at (const pcl::uindex_t& point_index, const pcl::uindex_t& field_offset) const
   {
     const auto position = point_index * point_step + field_offset;
-    if (data.size() >= (position + sizeof(T)))
-      return reinterpret_cast<const T&>(data[position]);
+    if (data.size() >= (position + sizeof (T)))
+      return reinterpret_cast<const T&> (data[position]);
     else
-      throw std::out_of_range("PCLPointCloud2::at");
+      throw std::out_of_range ("PCLPointCloud2::at");
   }
 
   /** \brief Get value at specified offset.
@@ -114,10 +114,10 @@ public:
   at (const pcl::uindex_t& point_index, const pcl::uindex_t& field_offset)
   {
     const auto position = point_index * point_step + field_offset;
-    if (data.size() >= (position + sizeof(T)))
-      return reinterpret_cast<T&>(data[position]);
+    if (data.size() >= (position + sizeof (T)))
+      return reinterpret_cast<T&> (data[position]);
     else
-      throw std::out_of_range("PCLPointCloud2::at");
+      throw std::out_of_range ("PCLPointCloud2::at");
   }
 }; // struct PCLPointCloud2
 
@@ -125,7 +125,7 @@ using PCLPointCloud2Ptr = PCLPointCloud2::Ptr;
 using PCLPointCloud2ConstPtr = PCLPointCloud2::ConstPtr;
 
 inline std::ostream&
-operator<<(std::ostream& s, const ::pcl::PCLPointCloud2& v)
+operator<< (std::ostream& s, const ::pcl::PCLPointCloud2& v)
 {
   s << "header: " << std::endl;
   s << v.header;
@@ -148,7 +148,7 @@ operator<<(std::ostream& s, const ::pcl::PCLPointCloud2& v)
   s << "data[]" << std::endl;
   for (std::size_t i = 0; i < v.data.size(); ++i) {
     s << "  data[" << i << "]: ";
-    s << "  " << static_cast<int>(v.data[i]) << std::endl;
+    s << "  " << static_cast<int> (v.data[i]) << std::endl;
   }
   s << "is_dense: ";
   s << "  " << v.is_dense << std::endl;

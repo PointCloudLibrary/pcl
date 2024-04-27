@@ -82,11 +82,11 @@ public:
    * \param[in] extract_removed_indices Set to true if you want to be able to extract
    * the indices of points being removed (default = false).
    */
-  FilterIndices(bool extract_removed_indices = false)
-  : Filter<PointT>(extract_removed_indices)
+  FilterIndices (bool extract_removed_indices = false)
+  : Filter<PointT> (extract_removed_indices)
   ,
 
-  user_filter_value_(std::numeric_limits<float>::quiet_NaN())
+  user_filter_value_ (std::numeric_limits<float>::quiet_NaN())
   {}
 
   using Filter<PointT>::filter;
@@ -101,7 +101,7 @@ public:
       return;
 
     // Apply the actual filter
-    applyFilter(indices);
+    applyFilter (indices);
 
     deinitCompute();
   }
@@ -204,11 +204,11 @@ public:
    * \param[in] extract_removed_indices Set to true if you want to extract the indices
    * of points being removed (default = false).
    */
-  FilterIndices(bool extract_removed_indices = false)
-  : Filter<PCLPointCloud2>(extract_removed_indices)
+  FilterIndices (bool extract_removed_indices = false)
+  : Filter<PCLPointCloud2> (extract_removed_indices)
   ,
 
-  user_filter_value_(std::numeric_limits<float>::quiet_NaN())
+  user_filter_value_ (std::numeric_limits<float>::quiet_NaN())
   {}
 
   using Filter<PCLPointCloud2>::filter;

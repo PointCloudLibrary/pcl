@@ -63,13 +63,13 @@ protected:
   Statistics() = default;
 
   /// @brief Copy Constructor
-  Statistics(const Statistics&) { assert(false); }
+  Statistics (const Statistics&) { assert (false); }
 
   /// @brief Equal Operator
   virtual Statistics&
-  operator=(const Statistics&)
+  operator= (const Statistics&)
   {
-    assert(false);
+    assert (false);
     return (*this);
   }
 

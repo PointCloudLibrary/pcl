@@ -455,9 +455,9 @@ private:
   // There is no implementation of the following to prevent use.
   // ON_Workspaces should never be copied, or you will get
   // multiple attempts to free the same pointer.
-  ON_Workspace(const ON_Workspace&);
+  ON_Workspace (const ON_Workspace&);
   ON_Workspace&
-  operator=(const ON_Workspace&);
+  operator= (const ON_Workspace&);
 };
 
 #endif

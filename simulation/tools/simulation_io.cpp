@@ -2,39 +2,39 @@
 
 #include <pcl/io/png_io.h>
 
-pcl::simulation::SimExample::SimExample(int argc, char** argv, int height, int width)
-: height_(height), width_(width)
+pcl::simulation::SimExample::SimExample (int argc, char** argv, int height, int width)
+: height_ (height), width_ (width)
 {
 
-  initializeGL(argc, argv);
+  initializeGL (argc, argv);
 
   // 1. construct member elements:
-  camera_ = Camera::Ptr(new Camera());
-  scene_ = Scene::Ptr(new Scene());
+  camera_ = Camera::Ptr (new Camera());
+  scene_ = Scene::Ptr (new Scene());
 
   // rl_ = RangeLikelihoodGLSL::Ptr(new RangeLikelihoodGLSL(1, 1, height, width, scene_,
   // 0));
-  rl_ = RangeLikelihood::Ptr(new RangeLikelihood(1, 1, height, width, scene_));
+  rl_ = RangeLikelihood::Ptr (new RangeLikelihood (1, 1, height, width, scene_));
   // rl_ = RangeLikelihood::Ptr(new RangeLikelihood(10, 10, 96, 96, scene_));
   // rl_ = RangeLikelihood::Ptr(new RangeLikelihood(1, 1, height_, width_, scene_));
 
   // Actually corresponds to default parameters:
-  rl_->setCameraIntrinsicsParameters(
+  rl_->setCameraIntrinsicsParameters (
       width_, height_, 576.09757860, 576.09757860, 321.06398107, 242.97676897);
-  rl_->setComputeOnCPU(false);
-  rl_->setSumOnCPU(true);
-  rl_->setUseColor(true);
+  rl_->setComputeOnCPU (false);
+  rl_->setSumOnCPU (true);
+  rl_->setUseColor (true);
 
   // 2. read mesh and setup model:
   std::cout << "About to read: " << argv[2] << std::endl;
   pcl::PolygonMesh mesh; // (new pcl::PolygonMesh);
-  pcl::io::loadPolygonFile(argv[2], mesh);
-  pcl::PolygonMesh::Ptr cloud(new pcl::PolygonMesh(mesh));
+  pcl::io::loadPolygonFile (argv[2], mesh);
+  pcl::PolygonMesh::Ptr cloud (new pcl::PolygonMesh (mesh));
 
   // Not sure if PolygonMesh assumes triangles if to, TODO: Ask a developer
   PolygonMeshModel::Ptr model =
-      PolygonMeshModel::Ptr(new PolygonMeshModel(GL_POLYGON, cloud));
-  scene_->add(model);
+      PolygonMeshModel::Ptr (new PolygonMeshModel (GL_POLYGON, cloud));
+  scene_->add (model);
 
   std::cout << "Just read " << argv[2] << std::endl;
   std::cout << mesh.polygons.size() << " polygons and " << mesh.cloud.data.size()
@@ -48,47 +48,47 @@ pcl::simulation::SimExample::SimExample(int argc, char** argv, int height, int w
 
   // works for small files:
   // camera_->set(-5.0, 0.0, 1.0, 0.0, 0.0, 0.0);
-  camera_->set(0.471703, 1.59862, 3.10937, 0, 0.418879, -12.2129);
-  camera_->setPitch(0.418879); // not sure why this is here:
+  camera_->set (0.471703, 1.59862, 3.10937, 0, 0.418879, -12.2129);
+  camera_->setPitch (0.418879); // not sure why this is here:
 
   for (int i = 0; i < 2048; i++) {
     float v = i / 2048.0;
-    v = powf(v, 3) * 6;
+    v = powf (v, 3) * 6;
     t_gamma[i] = v * 6 * 256;
   }
 }
 
 void
-pcl::simulation::SimExample::initializeGL(int argc, char** argv)
+pcl::simulation::SimExample::initializeGL (int argc, char** argv)
 {
-  glutInit(&argc, argv);
-  glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGB); // was GLUT_RGBA
-  glutInitWindowPosition(10, 10);
-  glutInitWindowSize(10, 10);
+  glutInit (&argc, argv);
+  glutInitDisplayMode (GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGB); // was GLUT_RGBA
+  glutInitWindowPosition (10, 10);
+  glutInitWindowSize (10, 10);
   // glutInitWindowSize (window_width_, window_height_);
-  glutCreateWindow("OpenGL range likelihood");
+  glutCreateWindow ("OpenGL range likelihood");
 
   GLenum err = glewInit();
   if (GLEW_OK != err) {
-    std::cerr << "Error: " << glewGetErrorString(err) << std::endl;
-    exit(-1);
+    std::cerr << "Error: " << glewGetErrorString (err) << std::endl;
+    exit (-1);
   }
 
-  std::cout << "Status: Using GLEW " << glewGetString(GLEW_VERSION) << std::endl;
-  if (glewIsSupported("GL_VERSION_2_0"))
+  std::cout << "Status: Using GLEW " << glewGetString (GLEW_VERSION) << std::endl;
+  if (glewIsSupported ("GL_VERSION_2_0"))
     std::cout << "OpenGL 2.0 supported" << std::endl;
   else {
     std::cerr << "Error: OpenGL 2.0 not supported" << std::endl;
-    exit(1);
+    exit (1);
   }
 
   std::cout << "GL_MAX_VIEWPORTS: " << GL_MAX_VIEWPORTS << std::endl;
-  const GLubyte* version = glGetString(GL_VERSION);
+  const GLubyte* version = glGetString (GL_VERSION);
   std::cout << "OpenGL Version: " << version << std::endl;
 }
 
 void
-pcl::simulation::SimExample::doSim(Eigen::Isometry3d pose_in)
+pcl::simulation::SimExample::doSim (Eigen::Isometry3d pose_in)
 {
   // No reference image - but this is kept for compatibility with range_test_v2:
   float* reference = new float[rl_->getRowHeight() * rl_->getColWidth()];
@@ -102,8 +102,8 @@ pcl::simulation::SimExample::doSim(Eigen::Isometry3d pose_in)
 
   std::vector<Eigen::Isometry3d, Eigen::aligned_allocator<Eigen::Isometry3d>> poses;
   std::vector<float> scores;
-  poses.push_back(pose_in);
-  rl_->computeLikelihoods(reference, poses, scores);
+  poses.push_back (pose_in);
+  rl_->computeLikelihoods (reference, poses, scores);
   std::cout << "camera: " << camera_->getX() << " " << camera_->getY() << " "
             << camera_->getZ() << " " << camera_->getRoll() << " "
             << camera_->getPitch() << " " << camera_->getYaw() << std::endl;
@@ -112,8 +112,8 @@ pcl::simulation::SimExample::doSim(Eigen::Isometry3d pose_in)
 }
 
 void
-pcl::simulation::SimExample::write_score_image(const float* score_buffer,
-                                               std::string fname)
+pcl::simulation::SimExample::write_score_image (const float* score_buffer,
+                                                std::string fname)
 {
   int npixels = rl_->getWidth() * rl_->getHeight();
   auto* score_img = new std::uint8_t[npixels * 3];
@@ -140,14 +140,14 @@ pcl::simulation::SimExample::write_score_image(const float* score_buffer,
   }
 
   // Write to file:
-  pcl::io::saveRgbPNGFile(fname, score_img, width_, height_);
+  pcl::io::saveRgbPNGFile (fname, score_img, width_, height_);
 
   delete[] score_img;
 }
 
 void
-pcl::simulation::SimExample::write_depth_image(const float* depth_buffer,
-                                               std::string fname)
+pcl::simulation::SimExample::write_depth_image (const float* depth_buffer,
+                                                std::string fname)
 {
   int npixels = rl_->getWidth() * rl_->getHeight();
   auto* depth_img = new std::uint8_t[npixels * 3];
@@ -172,7 +172,7 @@ pcl::simulation::SimExample::write_depth_image(const float* depth_buffer,
       float z = -zf * zn / ((zf - zn) * (d - zf / (zf - zn)));
       float b = 0.075;
       float f = 580.0;
-      auto kd = static_cast<std::uint16_t>(1090 - b * f / z * 8);
+      auto kd = static_cast<std::uint16_t> (1090 - b * f / z * 8);
       if (kd > 2047)
         kd = 2047;
 
@@ -219,14 +219,14 @@ pcl::simulation::SimExample::write_depth_image(const float* depth_buffer,
   }
 
   // Write to file:
-  pcl::io::saveRgbPNGFile(fname, depth_img, width_, height_);
+  pcl::io::saveRgbPNGFile (fname, depth_img, width_, height_);
 
   delete[] depth_img;
 }
 
 void
-pcl::simulation::SimExample::write_depth_image_uint(const float* depth_buffer,
-                                                    std::string fname)
+pcl::simulation::SimExample::write_depth_image_uint (const float* depth_buffer,
+                                                     std::string fname)
 {
   int npixels = rl_->getWidth() * rl_->getHeight();
   auto* depth_img = new unsigned short[npixels];
@@ -249,8 +249,9 @@ pcl::simulation::SimExample::write_depth_image_uint(const float* depth_buffer,
       float zf = 20.0;
       float d = depth_buffer[i_in];
 
-      unsigned short z_new = static_cast<unsigned short>(std::min(
-          std::floor(1000 * (-zf * zn / ((zf - zn) * (d - zf / (zf - zn))))), 65535.f));
+      unsigned short z_new = static_cast<unsigned short> (
+          std::min (std::floor (1000 * (-zf * zn / ((zf - zn) * (d - zf / (zf - zn))))),
+                    65535.f));
 
       if (z_new < 18000) {
         std::cout << z_new << " " << d << " " << x << "\n";
@@ -261,14 +262,14 @@ pcl::simulation::SimExample::write_depth_image_uint(const float* depth_buffer,
   }
 
   // Write to file:
-  pcl::io::saveShortPNGFile(fname, depth_img, width_, height_, 1);
+  pcl::io::saveShortPNGFile (fname, depth_img, width_, height_, 1);
 
   delete[] depth_img;
 }
 
 void
-pcl::simulation::SimExample::write_rgb_image(const std::uint8_t* rgb_buffer,
-                                             std::string fname)
+pcl::simulation::SimExample::write_rgb_image (const std::uint8_t* rgb_buffer,
+                                              std::string fname)
 {
   int npixels = rl_->getWidth() * rl_->getHeight();
   auto* rgb_img = new std::uint8_t[npixels * 3];
@@ -284,7 +285,7 @@ pcl::simulation::SimExample::write_rgb_image(const std::uint8_t* rgb_buffer,
   }
 
   // Write to file:
-  pcl::io::saveRgbPNGFile(fname, rgb_img, width_, height_);
+  pcl::io::saveRgbPNGFile (fname, rgb_img, width_, height_);
 
   delete[] rgb_img;
 }

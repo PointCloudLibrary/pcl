@@ -45,8 +45,8 @@ class DoubleParameter;
 
 class VoxelGridDownampleWorker : public AbstractWorker {
 public:
-  VoxelGridDownampleWorker(const QList<CloudMeshItem*>& cloud_mesh_items,
-                           QWidget* parent = nullptr);
+  VoxelGridDownampleWorker (const QList<CloudMeshItem*>& cloud_mesh_items,
+                            QWidget* parent = nullptr);
   ~VoxelGridDownampleWorker();
 
 protected:

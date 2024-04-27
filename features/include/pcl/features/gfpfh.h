@@ -82,7 +82,7 @@ public:
   GFPFHEstimation()
   :
 
-      descriptor_size_(PointOutT::descriptorSize())
+      descriptor_size_ (PointOutT::descriptorSize())
   {
     feature_name_ = "GFPFHEstimation";
   }

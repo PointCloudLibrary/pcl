@@ -82,7 +82,7 @@ public:
   using CloudPtr = Cloud::Ptr;
   using CloudConstPtr = Cloud::ConstPtr;
 
-  OrganizedSegmentationDemo(pcl::Grabber& grabber);
+  OrganizedSegmentationDemo (pcl::Grabber& grabber);
 
   ~OrganizedSegmentationDemo() override
   {

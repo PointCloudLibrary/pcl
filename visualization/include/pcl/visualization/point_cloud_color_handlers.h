@@ -70,11 +70,11 @@ public:
   using ConstPtr = shared_ptr<const PointCloudColorHandler<PointT>>;
 
   /** \brief Constructor. */
-  PointCloudColorHandler() : cloud_(), capable_(false), field_idx_(-1), fields_() {}
+  PointCloudColorHandler() : cloud_(), capable_ (false), field_idx_ (-1), fields_() {}
 
   /** \brief Constructor. */
-  PointCloudColorHandler(const PointCloudConstPtr& cloud)
-  : cloud_(cloud), capable_(false), field_idx_(-1), fields_()
+  PointCloudColorHandler (const PointCloudConstPtr& cloud)
+  : cloud_ (cloud), capable_ (false), field_idx_ (-1), fields_()
   {}
 
   /** \brief Destructor. */
@@ -146,8 +146,8 @@ public:
   PointCloudColorHandlerRandom() : PointCloudColorHandler<PointT>() { capable_ = true; }
 
   /** \brief Constructor. */
-  PointCloudColorHandlerRandom(const PointCloudConstPtr& cloud)
-  : PointCloudColorHandler<PointT>(cloud)
+  PointCloudColorHandlerRandom (const PointCloudConstPtr& cloud)
+  : PointCloudColorHandler<PointT> (cloud)
   {
     capable_ = true;
   }
@@ -192,18 +192,18 @@ public:
   using ConstPtr = shared_ptr<const PointCloudColorHandlerCustom<PointT>>;
 
   /** \brief Constructor. */
-  PointCloudColorHandlerCustom(double r, double g, double b)
-  : PointCloudColorHandler<PointT>(), r_(r), g_(g), b_(b)
+  PointCloudColorHandlerCustom (double r, double g, double b)
+  : PointCloudColorHandler<PointT>(), r_ (r), g_ (g), b_ (b)
   {
     capable_ = true;
   }
 
   /** \brief Constructor. */
-  PointCloudColorHandlerCustom(const PointCloudConstPtr& cloud,
-                               double r,
-                               double g,
-                               double b)
-  : PointCloudColorHandler<PointT>(cloud), r_(r), g_(g), b_(b)
+  PointCloudColorHandlerCustom (const PointCloudConstPtr& cloud,
+                                double r,
+                                double g,
+                                double b)
+  : PointCloudColorHandler<PointT> (cloud), r_ (r), g_ (g), b_ (b)
   {
     capable_ = true;
   }
@@ -254,10 +254,10 @@ public:
   PointCloudColorHandlerRGBField() { capable_ = false; }
 
   /** \brief Constructor. */
-  PointCloudColorHandlerRGBField(const PointCloudConstPtr& cloud)
-  : PointCloudColorHandler<PointT>(cloud)
+  PointCloudColorHandlerRGBField (const PointCloudConstPtr& cloud)
+  : PointCloudColorHandler<PointT> (cloud)
   {
-    setInputCloud(cloud);
+    setInputCloud (cloud);
   }
 
   /** \brief Get the name of the field used. */
@@ -308,7 +308,7 @@ public:
   using ConstPtr = shared_ptr<const PointCloudColorHandlerHSVField<PointT>>;
 
   /** \brief Constructor. */
-  PointCloudColorHandlerHSVField(const PointCloudConstPtr& cloud);
+  PointCloudColorHandlerHSVField (const PointCloudConstPtr& cloud);
 
   /** \brief Get the name of the field used. */
   virtual std::string
@@ -359,18 +359,18 @@ public:
   using ConstPtr = shared_ptr<const PointCloudColorHandlerGenericField<PointT>>;
 
   /** \brief Constructor. */
-  PointCloudColorHandlerGenericField(const std::string& field_name)
-  : field_name_(field_name)
+  PointCloudColorHandlerGenericField (const std::string& field_name)
+  : field_name_ (field_name)
   {
     capable_ = false;
   }
 
   /** \brief Constructor. */
-  PointCloudColorHandlerGenericField(const PointCloudConstPtr& cloud,
-                                     const std::string& field_name)
-  : PointCloudColorHandler<PointT>(cloud), field_name_(field_name)
+  PointCloudColorHandlerGenericField (const PointCloudConstPtr& cloud,
+                                      const std::string& field_name)
+  : PointCloudColorHandler<PointT> (cloud), field_name_ (field_name)
   {
-    setInputCloud(cloud);
+    setInputCloud (cloud);
   }
 
   /** \brief Get the name of the field used. */
@@ -427,10 +427,10 @@ public:
   PointCloudColorHandlerRGBAField() { capable_ = false; }
 
   /** \brief Constructor. */
-  PointCloudColorHandlerRGBAField(const PointCloudConstPtr& cloud)
-  : PointCloudColorHandler<PointT>(cloud)
+  PointCloudColorHandlerRGBAField (const PointCloudConstPtr& cloud)
+  : PointCloudColorHandler<PointT> (cloud)
   {
-    setInputCloud(cloud);
+    setInputCloud (cloud);
   }
 
   /** \brief Get the name of the field used. */
@@ -484,7 +484,7 @@ public:
   /** \brief Constructor.
    * \param[in] static_mapping Use a static colormapping from label_id to color (default
    * true) */
-  PointCloudColorHandlerLabelField(const bool static_mapping = true)
+  PointCloudColorHandlerLabelField (const bool static_mapping = true)
   : PointCloudColorHandler<PointT>()
   {
     capable_ = false;
@@ -494,11 +494,11 @@ public:
   /** \brief Constructor.
    * \param[in] static_mapping Use a static colormapping from label_id to color (default
    * true) */
-  PointCloudColorHandlerLabelField(const PointCloudConstPtr& cloud,
-                                   const bool static_mapping = true)
-  : PointCloudColorHandler<PointT>(cloud)
+  PointCloudColorHandlerLabelField (const PointCloudConstPtr& cloud,
+                                    const bool static_mapping = true)
+  : PointCloudColorHandler<PointT> (cloud)
   {
-    setInputCloud(cloud);
+    setInputCloud (cloud);
     static_mapping_ = static_mapping;
   }
 
@@ -553,8 +553,8 @@ public:
   using ConstPtr = shared_ptr<const PointCloudColorHandler<PointCloud>>;
 
   /** \brief Constructor. */
-  PointCloudColorHandler(const PointCloudConstPtr& cloud)
-  : cloud_(cloud), capable_(false), field_idx_()
+  PointCloudColorHandler (const PointCloudConstPtr& cloud)
+  : cloud_ (cloud), capable_ (false), field_idx_()
   {}
 
   /** \brief Destructor. */
@@ -624,8 +624,8 @@ public:
   using ConstPtr = shared_ptr<const PointCloudColorHandlerRandom<PointCloud>>;
 
   /** \brief Constructor. */
-  PointCloudColorHandlerRandom(const PointCloudConstPtr& cloud)
-  : PointCloudColorHandler<pcl::PCLPointCloud2>(cloud)
+  PointCloudColorHandlerRandom (const PointCloudConstPtr& cloud)
+  : PointCloudColorHandler<pcl::PCLPointCloud2> (cloud)
   {
     capable_ = true;
   }
@@ -663,11 +663,11 @@ class PCL_EXPORTS PointCloudColorHandlerCustom<pcl::PCLPointCloud2>
 
 public:
   /** \brief Constructor. */
-  PointCloudColorHandlerCustom(const PointCloudConstPtr& cloud,
-                               double r,
-                               double g,
-                               double b)
-  : PointCloudColorHandler<pcl::PCLPointCloud2>(cloud), r_(r), g_(g), b_(b)
+  PointCloudColorHandlerCustom (const PointCloudConstPtr& cloud,
+                                double r,
+                                double g,
+                                double b)
+  : PointCloudColorHandler<pcl::PCLPointCloud2> (cloud), r_ (r), g_ (g), b_ (b)
   {
     capable_ = true;
   }
@@ -712,7 +712,7 @@ public:
   using ConstPtr = shared_ptr<const PointCloudColorHandlerRGBField<PointCloud>>;
 
   /** \brief Constructor. */
-  PointCloudColorHandlerRGBField(const PointCloudConstPtr& cloud);
+  PointCloudColorHandlerRGBField (const PointCloudConstPtr& cloud);
 
   vtkSmartPointer<vtkDataArray>
   getColor () const override;
@@ -750,7 +750,7 @@ public:
   using ConstPtr = shared_ptr<const PointCloudColorHandlerHSVField<PointCloud>>;
 
   /** \brief Constructor. */
-  PointCloudColorHandlerHSVField(const PointCloudConstPtr& cloud);
+  PointCloudColorHandlerHSVField (const PointCloudConstPtr& cloud);
 
   vtkSmartPointer<vtkDataArray>
   getColor () const override;
@@ -795,8 +795,8 @@ public:
   using ConstPtr = shared_ptr<const PointCloudColorHandlerGenericField<PointCloud>>;
 
   /** \brief Constructor. */
-  PointCloudColorHandlerGenericField(const PointCloudConstPtr& cloud,
-                                     const std::string& field_name);
+  PointCloudColorHandlerGenericField (const PointCloudConstPtr& cloud,
+                                      const std::string& field_name);
 
   vtkSmartPointer<vtkDataArray>
   getColor () const override;
@@ -839,7 +839,7 @@ public:
   using ConstPtr = shared_ptr<const PointCloudColorHandlerRGBAField<PointCloud>>;
 
   /** \brief Constructor. */
-  PointCloudColorHandlerRGBAField(const PointCloudConstPtr& cloud);
+  PointCloudColorHandlerRGBAField (const PointCloudConstPtr& cloud);
 
   vtkSmartPointer<vtkDataArray>
   getColor () const override;
@@ -880,8 +880,8 @@ public:
   /** \brief Constructor.
    * \param[in] static_mapping Use a static colormapping from label_id to color (default
    * true) */
-  PointCloudColorHandlerLabelField(const PointCloudConstPtr& cloud,
-                                   const bool static_mapping = true);
+  PointCloudColorHandlerLabelField (const PointCloudConstPtr& cloud,
+                                    const bool static_mapping = true);
 
   vtkSmartPointer<vtkDataArray>
   getColor () const override;

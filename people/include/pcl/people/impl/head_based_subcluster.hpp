@@ -61,23 +61,23 @@ pcl::people::HeadBasedSubclustering<PointT>::HeadBasedSubclustering()
 
 template <typename PointT>
 void
-pcl::people::HeadBasedSubclustering<PointT>::setInputCloud(PointCloudPtr& cloud)
+pcl::people::HeadBasedSubclustering<PointT>::setInputCloud (PointCloudPtr& cloud)
 {
   cloud_ = cloud;
 }
 
 template <typename PointT>
 void
-pcl::people::HeadBasedSubclustering<PointT>::setGround(Eigen::VectorXf& ground_coeffs)
+pcl::people::HeadBasedSubclustering<PointT>::setGround (Eigen::VectorXf& ground_coeffs)
 {
   ground_coeffs_ = ground_coeffs;
   sqrt_ground_coeffs_ =
-      (ground_coeffs - Eigen::Vector4f(0.0f, 0.0f, 0.0f, ground_coeffs(3))).norm();
+      (ground_coeffs - Eigen::Vector4f (0.0f, 0.0f, 0.0f, ground_coeffs (3))).norm();
 }
 
 template <typename PointT>
 void
-pcl::people::HeadBasedSubclustering<PointT>::setInitialClusters(
+pcl::people::HeadBasedSubclustering<PointT>::setInitialClusters (
     std::vector<pcl::PointIndices>& cluster_indices)
 {
   cluster_indices_ = cluster_indices;
@@ -85,15 +85,16 @@ pcl::people::HeadBasedSubclustering<PointT>::setInitialClusters(
 
 template <typename PointT>
 void
-pcl::people::HeadBasedSubclustering<PointT>::setSensorPortraitOrientation(bool vertical)
+pcl::people::HeadBasedSubclustering<PointT>::setSensorPortraitOrientation (
+    bool vertical)
 {
   vertical_ = vertical;
 }
 
 template <typename PointT>
 void
-pcl::people::HeadBasedSubclustering<PointT>::setHeightLimits(float min_height,
-                                                             float max_height)
+pcl::people::HeadBasedSubclustering<PointT>::setHeightLimits (float min_height,
+                                                              float max_height)
 {
   min_height_ = min_height;
   max_height_ = max_height;
@@ -101,8 +102,8 @@ pcl::people::HeadBasedSubclustering<PointT>::setHeightLimits(float min_height,
 
 template <typename PointT>
 void
-pcl::people::HeadBasedSubclustering<PointT>::setDimensionLimits(int min_points,
-                                                                int max_points)
+pcl::people::HeadBasedSubclustering<PointT>::setDimensionLimits (int min_points,
+                                                                 int max_points)
 {
   min_points_ = min_points;
   max_points_ = max_points;
@@ -110,7 +111,7 @@ pcl::people::HeadBasedSubclustering<PointT>::setDimensionLimits(int min_points,
 
 template <typename PointT>
 void
-pcl::people::HeadBasedSubclustering<PointT>::setMinimumDistanceBetweenHeads(
+pcl::people::HeadBasedSubclustering<PointT>::setMinimumDistanceBetweenHeads (
     float heads_minimum_distance)
 {
   heads_minimum_distance_ = heads_minimum_distance;
@@ -118,15 +119,15 @@ pcl::people::HeadBasedSubclustering<PointT>::setMinimumDistanceBetweenHeads(
 
 template <typename PointT>
 void
-pcl::people::HeadBasedSubclustering<PointT>::setHeadCentroid(bool head_centroid)
+pcl::people::HeadBasedSubclustering<PointT>::setHeadCentroid (bool head_centroid)
 {
   head_centroid_ = head_centroid;
 }
 
 template <typename PointT>
 void
-pcl::people::HeadBasedSubclustering<PointT>::getHeightLimits(float& min_height,
-                                                             float& max_height)
+pcl::people::HeadBasedSubclustering<PointT>::getHeightLimits (float& min_height,
+                                                              float& max_height)
 {
   min_height = min_height_;
   max_height = max_height_;
@@ -134,8 +135,8 @@ pcl::people::HeadBasedSubclustering<PointT>::getHeightLimits(float& min_height,
 
 template <typename PointT>
 void
-pcl::people::HeadBasedSubclustering<PointT>::getDimensionLimits(int& min_points,
-                                                                int& max_points)
+pcl::people::HeadBasedSubclustering<PointT>::getDimensionLimits (int& min_points,
+                                                                 int& max_points)
 {
   min_points = min_points_;
   max_points = max_points_;
@@ -150,24 +151,24 @@ pcl::people::HeadBasedSubclustering<PointT>::getMinimumDistanceBetweenHeads()
 
 template <typename PointT>
 void
-pcl::people::HeadBasedSubclustering<PointT>::mergeClustersCloseInFloorCoordinates(
+pcl::people::HeadBasedSubclustering<PointT>::mergeClustersCloseInFloorCoordinates (
     std::vector<pcl::people::PersonCluster<PointT>>& input_clusters,
     std::vector<pcl::people::PersonCluster<PointT>>& output_clusters)
 {
   float min_distance_between_cluster_centers = 0.4; // meters
-  float normalize_factor = std::pow(
+  float normalize_factor = std::pow (
       sqrt_ground_coeffs_, 2); // sqrt_ground_coeffs ^ 2 (precomputed for speed)
   Eigen::Vector3f head_ground_coeffs =
       ground_coeffs_.head<3>(); // ground plane normal (precomputed for speed)
   std::vector<std::vector<int>> connected_clusters;
-  connected_clusters.resize(input_clusters.size());
+  connected_clusters.resize (input_clusters.size());
   std::vector<bool> used_clusters; // 0 in correspondence of clusters remained to
                                    // process, 1 for already used clusters
-  used_clusters.resize(input_clusters.size());
+  used_clusters.resize (input_clusters.size());
   for (std::size_t i = 0; i < input_clusters.size(); i++) // for every cluster
   {
     Eigen::Vector3f theoretical_center = input_clusters[i].getTCenter();
-    float t = theoretical_center.dot(head_ground_coeffs) /
+    float t = theoretical_center.dot (head_ground_coeffs) /
               normalize_factor; // height from the ground
     Eigen::Vector3f current_cluster_center_projection =
         theoretical_center -
@@ -176,14 +177,14 @@ pcl::people::HeadBasedSubclustering<PointT>::mergeClustersCloseInFloorCoordinate
          j++) // for every remaining cluster
     {
       theoretical_center = input_clusters[j].getTCenter();
-      float t = theoretical_center.dot(head_ground_coeffs) /
+      float t = theoretical_center.dot (head_ground_coeffs) /
                 normalize_factor; // height from the ground
       Eigen::Vector3f new_cluster_center_projection =
           theoretical_center -
           head_ground_coeffs * t; // projection of the point on the groundplane
       if (((new_cluster_center_projection - current_cluster_center_projection).norm()) <
           min_distance_between_cluster_centers) {
-        connected_clusters[i].push_back(j);
+        connected_clusters[i].push_back (j);
       }
     }
   }
@@ -195,7 +196,7 @@ pcl::people::HeadBasedSubclustering<PointT>::mergeClustersCloseInFloorCoordinate
       used_clusters[i] = true;
       if (connected_clusters[i].empty()) // no other clusters to merge
       {
-        output_clusters.push_back(input_clusters[i]);
+        output_clusters.push_back (input_clusters[i]);
       }
       else {
         // Copy cluster points into new cluster:
@@ -207,17 +208,17 @@ pcl::people::HeadBasedSubclustering<PointT>::mergeClustersCloseInFloorCoordinate
             used_clusters[cluster] = true;
             for (const auto& cluster_idx :
                  input_clusters[cluster].getIndices().indices) {
-              point_indices.indices.push_back(cluster_idx);
+              point_indices.indices.push_back (cluster_idx);
             }
           }
         }
-        pcl::people::PersonCluster<PointT> cluster(cloud_,
-                                                   point_indices,
-                                                   ground_coeffs_,
-                                                   sqrt_ground_coeffs_,
-                                                   head_centroid_,
-                                                   vertical_);
-        output_clusters.push_back(cluster);
+        pcl::people::PersonCluster<PointT> cluster (cloud_,
+                                                    point_indices,
+                                                    ground_coeffs_,
+                                                    sqrt_ground_coeffs_,
+                                                    head_centroid_,
+                                                    vertical_);
+        output_clusters.push_back (cluster);
       }
     }
   }
@@ -225,7 +226,7 @@ pcl::people::HeadBasedSubclustering<PointT>::mergeClustersCloseInFloorCoordinate
 
 template <typename PointT>
 void
-pcl::people::HeadBasedSubclustering<PointT>::createSubClusters(
+pcl::people::HeadBasedSubclustering<PointT>::createSubClusters (
     pcl::people::PersonCluster<PointT>& cluster,
     int maxima_number,
     std::vector<int>& maxima_cloud_indices,
@@ -233,40 +234,40 @@ pcl::people::HeadBasedSubclustering<PointT>::createSubClusters(
 {
   // create new clusters from the current cluster and put corresponding indices into
   // sub_clusters_indices:
-  float normalize_factor = std::pow(
+  float normalize_factor = std::pow (
       sqrt_ground_coeffs_, 2); // sqrt_ground_coeffs ^ 2 (precomputed for speed)
   Eigen::Vector3f head_ground_coeffs =
       ground_coeffs_.head<3>(); // ground plane normal (precomputed for speed)
-  Eigen::Matrix3Xf maxima_projected(3,
-                                    maxima_number); // matrix containing the projection
-                                                    // of maxima onto the ground plane
-  Eigen::VectorXi subclusters_number_of_points(
+  Eigen::Matrix3Xf maxima_projected (3,
+                                     maxima_number); // matrix containing the projection
+                                                     // of maxima onto the ground plane
+  Eigen::VectorXi subclusters_number_of_points (
       maxima_number);                             // subclusters number of points
   std::vector<pcl::Indices> sub_clusters_indices; // vector of vectors with the cluster
                                                   // indices for every maximum
-  sub_clusters_indices.resize(maxima_number);     // resize to number of maxima
+  sub_clusters_indices.resize (maxima_number);    // resize to number of maxima
 
   // Project maxima on the ground plane:
   for (int i = 0; i < maxima_number; i++) // for every maximum
   {
     PointT* current_point =
         &(*cloud_)[maxima_cloud_indices[i]]; // current maximum point cloud point
-    Eigen::Vector3f p_current_eigen(
+    Eigen::Vector3f p_current_eigen (
         current_point->x, current_point->y, current_point->z); // conversion to eigen
-    float t = p_current_eigen.dot(head_ground_coeffs) /
+    float t = p_current_eigen.dot (head_ground_coeffs) /
               normalize_factor; // height from the ground
-    maxima_projected.col(i).matrix() =
+    maxima_projected.col (i).matrix() =
         p_current_eigen -
-        head_ground_coeffs * t;          // projection of the point on the groundplane
-    subclusters_number_of_points(i) = 0; // initialize number of points
+        head_ground_coeffs * t;           // projection of the point on the groundplane
+    subclusters_number_of_points (i) = 0; // initialize number of points
   }
 
   // Associate cluster points to one of the maximum:
   for (const auto& cluster_idx : cluster.getIndices().indices) {
-    Eigen::Vector3f p_current_eigen((*cloud_)[cluster_idx].x,
-                                    (*cloud_)[cluster_idx].y,
-                                    (*cloud_)[cluster_idx].z); // conversion to eigen
-    float t = p_current_eigen.dot(head_ground_coeffs) /
+    Eigen::Vector3f p_current_eigen ((*cloud_)[cluster_idx].x,
+                                     (*cloud_)[cluster_idx].y,
+                                     (*cloud_)[cluster_idx].z); // conversion to eigen
+    float t = p_current_eigen.dot (head_ground_coeffs) /
               normalize_factor; // height from the ground
     p_current_eigen -=
         head_ground_coeffs * t; // projection of the point on the groundplane
@@ -274,11 +275,11 @@ pcl::people::HeadBasedSubclustering<PointT>::createSubClusters(
     int i = 0;
     bool correspondence_detected = false;
     while ((!correspondence_detected) && (i < maxima_number)) {
-      if (((p_current_eigen - maxima_projected.col(i)).norm()) <
+      if (((p_current_eigen - maxima_projected.col (i)).norm()) <
           heads_minimum_distance_) {
         correspondence_detected = true;
-        sub_clusters_indices[i].push_back(cluster_idx);
-        subclusters_number_of_points(i)++;
+        sub_clusters_indices[i].push_back (cluster_idx);
+        subclusters_number_of_points (i)++;
       }
       else
         i++;
@@ -289,18 +290,18 @@ pcl::people::HeadBasedSubclustering<PointT>::createSubClusters(
   // threshold:
   for (int i = 0; i < maxima_number; i++) // for every maximum
   {
-    if (subclusters_number_of_points(i) > min_points_) {
+    if (subclusters_number_of_points (i) > min_points_) {
       pcl::PointIndices point_indices;
       point_indices.indices =
           sub_clusters_indices[i]; // indices associated to the i-th maximum
 
-      pcl::people::PersonCluster<PointT> cluster(cloud_,
-                                                 point_indices,
-                                                 ground_coeffs_,
-                                                 sqrt_ground_coeffs_,
-                                                 head_centroid_,
-                                                 vertical_);
-      subclusters.push_back(cluster);
+      pcl::people::PersonCluster<PointT> cluster (cloud_,
+                                                  point_indices,
+                                                  ground_coeffs_,
+                                                  sqrt_ground_coeffs_,
+                                                  head_centroid_,
+                                                  vertical_);
+      subclusters.push_back (cluster);
       // std::cout << "Cluster number of points: " << subclusters_number_of_points(i) <<
       // std::endl;
     }
@@ -309,35 +310,35 @@ pcl::people::HeadBasedSubclustering<PointT>::createSubClusters(
 
 template <typename PointT>
 void
-pcl::people::HeadBasedSubclustering<PointT>::subcluster(
+pcl::people::HeadBasedSubclustering<PointT>::subcluster (
     std::vector<pcl::people::PersonCluster<PointT>>& clusters)
 {
   // Check if all mandatory variables have been set:
-  if (std::isnan(sqrt_ground_coeffs_)) {
-    PCL_ERROR("[pcl::people::pcl::people::HeadBasedSubclustering::subcluster] Floor "
-              "parameters have not been set or they are not valid!\n");
+  if (std::isnan (sqrt_ground_coeffs_)) {
+    PCL_ERROR ("[pcl::people::pcl::people::HeadBasedSubclustering::subcluster] Floor "
+               "parameters have not been set or they are not valid!\n");
     return;
   }
   if (cluster_indices_.empty()) {
-    PCL_ERROR("[pcl::people::pcl::people::HeadBasedSubclustering::subcluster] Cluster "
-              "indices have not been set!\n");
+    PCL_ERROR ("[pcl::people::pcl::people::HeadBasedSubclustering::subcluster] Cluster "
+               "indices have not been set!\n");
     return;
   }
   if (cloud_ == nullptr) {
-    PCL_ERROR("[pcl::people::pcl::people::HeadBasedSubclustering::subcluster] Input "
-              "cloud has not been set!\n");
+    PCL_ERROR ("[pcl::people::pcl::people::HeadBasedSubclustering::subcluster] Input "
+               "cloud has not been set!\n");
     return;
   }
 
   // Person clusters creation from clusters indices:
   for (const auto& cluster_index : cluster_indices_) {
-    pcl::people::PersonCluster<PointT> cluster(cloud_,
-                                               cluster_index,
-                                               ground_coeffs_,
-                                               sqrt_ground_coeffs_,
-                                               head_centroid_,
-                                               vertical_); // PersonCluster creation
-    clusters.push_back(cluster);
+    pcl::people::PersonCluster<PointT> cluster (cloud_,
+                                                cluster_index,
+                                                ground_coeffs_,
+                                                sqrt_ground_coeffs_,
+                                                head_centroid_,
+                                                vertical_); // PersonCluster creation
+    clusters.push_back (cluster);
   }
 
   // Remove clusters with too high height from the ground plane:
@@ -345,25 +346,26 @@ pcl::people::HeadBasedSubclustering<PointT>::subcluster(
   for (std::size_t i = 0; i < clusters.size(); i++) // for every cluster
   {
     if (clusters[i].getHeight() <= max_height_)
-      new_clusters.push_back(clusters[i]);
+      new_clusters.push_back (clusters[i]);
   }
   clusters = new_clusters;
   new_clusters.clear();
 
   // Merge clusters close in floor coordinates:
-  mergeClustersCloseInFloorCoordinates(clusters, new_clusters);
+  mergeClustersCloseInFloorCoordinates (clusters, new_clusters);
   clusters = new_clusters;
 
   std::vector<pcl::people::PersonCluster<PointT>> subclusters;
-  int cluster_min_points_sub = static_cast<int>(static_cast<float>(min_points_) * 1.5);
+  int cluster_min_points_sub =
+      static_cast<int> (static_cast<float> (min_points_) * 1.5);
   //  int cluster_max_points_sub = max_points_;
 
   // create HeightMap2D object:
   pcl::people::HeightMap2D<PointT> height_map_obj;
-  height_map_obj.setGround(ground_coeffs_);
-  height_map_obj.setInputCloud(cloud_);
-  height_map_obj.setSensorPortraitOrientation(vertical_);
-  height_map_obj.setMinimumDistanceBetweenMaxima(heads_minimum_distance_);
+  height_map_obj.setGround (ground_coeffs_);
+  height_map_obj.setInputCloud (cloud_);
+  height_map_obj.setSensorPortraitOrientation (vertical_);
+  height_map_obj.setMinimumDistanceBetweenMaxima (heads_minimum_distance_);
   for (auto it = clusters.begin(); it != clusters.end(); ++it) // for every cluster
   {
     float height = it->getHeight();
@@ -374,24 +376,24 @@ pcl::people::HeadBasedSubclustering<PointT>::subcluster(
       {
         // Compute height map associated to the current cluster and its local maxima
         // (heads):
-        height_map_obj.compute(*it);
+        height_map_obj.compute (*it);
         if (height_map_obj.getMaximaNumberAfterFiltering() >
             1) // if more than one maximum
         {
           // create new clusters from the current cluster and put corresponding indices
           // into sub_clusters_indices:
-          createSubClusters(*it,
-                            height_map_obj.getMaximaNumberAfterFiltering(),
-                            height_map_obj.getMaximaCloudIndicesFiltered(),
-                            subclusters);
+          createSubClusters (*it,
+                             height_map_obj.getMaximaNumberAfterFiltering(),
+                             height_map_obj.getMaximaCloudIndicesFiltered(),
+                             subclusters);
         }
         else { // Only one maximum --> copy original cluster:
-          subclusters.push_back(*it);
+          subclusters.push_back (*it);
         }
       }
       else {
         // Cluster properties not good for sub-clustering --> copy original cluster:
-        subclusters.push_back(*it);
+        subclusters.push_back (*it);
       }
     }
   }

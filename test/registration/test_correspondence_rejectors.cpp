@@ -50,35 +50,35 @@
 pcl::PointCloud<pcl::PointXYZ>::Ptr cloud;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TEST(CorrespondenceRejectors, CorrespondenceRejectionMedianDistance)
+TEST (CorrespondenceRejectors, CorrespondenceRejectionMedianDistance)
 {
-  pcl::CorrespondencesPtr corresps(new pcl::Correspondences());
+  pcl::CorrespondencesPtr corresps (new pcl::Correspondences());
   for (int i = 0; i <= 10; ++i) {
     pcl::Correspondence c;
-    c.distance = static_cast<float>(i * i);
-    corresps->push_back(c);
+    c.distance = static_cast<float> (i * i);
+    corresps->push_back (c);
   }
 
   pcl::registration::CorrespondenceRejectorMedianDistance rejector;
-  rejector.setInputCorrespondences(corresps);
-  rejector.setMedianFactor(2.0);
+  rejector.setInputCorrespondences (corresps);
+  rejector.setMedianFactor (2.0);
 
   pcl::Correspondences corresps_filtered;
-  rejector.getCorrespondences(corresps_filtered);
+  rejector.getCorrespondences (corresps_filtered);
 
-  EXPECT_EQ(corresps_filtered.size(), 8);
+  EXPECT_EQ (corresps_filtered.size(), 8);
   for (int i = 0; i < 8; ++i)
-    EXPECT_NEAR(corresps_filtered[i].distance, static_cast<float>(i * i), 1e-5);
+    EXPECT_NEAR (corresps_filtered[i].distance, static_cast<float> (i * i), 1e-5);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TEST(CorrespondenceRejectors, CorrespondenceRejectionPoly)
+TEST (CorrespondenceRejectors, CorrespondenceRejectionPoly)
 {
   // Size of point cloud
-  const int size = static_cast<int>(cloud->size());
+  const int size = static_cast<int> (cloud->size());
 
   // Ground truth correspondences
-  pcl::Correspondences corr(size);
+  pcl::Correspondences corr (size);
   for (int i = 0; i < size; ++i)
     corr[i].index_query = corr[i].index_match = i;
 
@@ -90,16 +90,16 @@ TEST(CorrespondenceRejectors, CorrespondenceRejectionPoly)
     corr[i].index_match += inc;
 
   // Transform the target
-  pcl::PointCloud<pcl::PointXYZ>::Ptr target(new pcl::PointCloud<pcl::PointXYZ>);
-  Eigen::Vector3f t(0.1f, 0.2f, 0.3f);
-  Eigen::Quaternionf q(static_cast<float>(std::cos(0.5 * M_PI_4)),
-                       0.0f,
-                       0.0f,
-                       static_cast<float>(std::sin(0.5 * M_PI_4)));
-  pcl::transformPointCloud(*cloud, *target, t, q);
+  pcl::PointCloud<pcl::PointXYZ>::Ptr target (new pcl::PointCloud<pcl::PointXYZ>);
+  Eigen::Vector3f t (0.1f, 0.2f, 0.3f);
+  Eigen::Quaternionf q (static_cast<float> (std::cos (0.5 * M_PI_4)),
+                        0.0f,
+                        0.0f,
+                        static_cast<float> (std::sin (0.5 * M_PI_4)));
+  pcl::transformPointCloud (*cloud, *target, t, q);
 
   // Noisify the target with a known seed and N(0, 0.005) using deterministic sampling
-  pcl::common::NormalGenerator<float> nd(0, 0.005, 1e6);
+  pcl::common::NormalGenerator<float> nd (0, 0.005, 1e6);
   for (auto& point : *target) {
     point.x += nd.run();
     point.y += nd.run();
@@ -107,35 +107,35 @@ TEST(CorrespondenceRejectors, CorrespondenceRejectionPoly)
   }
 
   // Test rejector with varying seeds
-  const unsigned int seed = std::time(nullptr);
-  std::srand(seed);
+  const unsigned int seed = std::time (nullptr);
+  std::srand (seed);
 
   // Create a rejection object
   pcl::registration::CorrespondenceRejectorPoly<pcl::PointXYZ, pcl::PointXYZ> reject;
-  reject.setIterations(20000);
-  reject.setCardinality(3);
-  reject.setSimilarityThreshold(0.8f);
-  reject.setInputSource(cloud);
-  reject.setInputTarget(target);
+  reject.setIterations (20000);
+  reject.setCardinality (3);
+  reject.setSimilarityThreshold (0.8f);
+  reject.setInputSource (cloud);
+  reject.setInputTarget (target);
 
   // Run rejection
   pcl::Correspondences result;
-  reject.getRemainingCorrespondences(corr, result);
+  reject.getRemainingCorrespondences (corr, result);
 
   // Ground truth fraction of inliers and estimated fraction of inliers
   const float ground_truth_frac =
-      static_cast<float>(size - last) / static_cast<float>(size);
+      static_cast<float> (size - last) / static_cast<float> (size);
   const float accepted_frac =
-      static_cast<float>(result.size()) / static_cast<float>(size);
+      static_cast<float> (result.size()) / static_cast<float> (size);
 
   /*
    * Test criterion 1: verify that the method accepts at least 25 % of the input
    * correspondences, but not too many
    */
-  EXPECT_GE(accepted_frac, ground_truth_frac);
+  EXPECT_GE (accepted_frac, ground_truth_frac);
   // Factor 1.5 raised to 1.6 as there is a variance in the noise added from the various
   // standard implementations See #2995 for details
-  EXPECT_LE(accepted_frac, 1.6f * ground_truth_frac);
+  EXPECT_LE (accepted_frac, 1.6f * ground_truth_frac);
 
   /*
    * Test criterion 2: expect high precision/recall. The true positives are the
@@ -147,12 +147,12 @@ TEST(CorrespondenceRejectors, CorrespondenceRejectionPoly)
       ++true_positives;
   const std::size_t false_positives = result.size() - true_positives;
 
-  const double precision = static_cast<double>(true_positives) /
-                           static_cast<double>(true_positives + false_positives);
+  const double precision = static_cast<double> (true_positives) /
+                           static_cast<double> (true_positives + false_positives);
   const double recall =
-      static_cast<double>(true_positives) / static_cast<double>(size - last);
-  EXPECT_NEAR(precision, 1.0, 0.4);
-  EXPECT_NEAR(recall, 1.0, 0.2);
+      static_cast<double> (true_positives) / static_cast<double> (size - last);
+  EXPECT_NEAR (precision, 1.0, 0.4);
+  EXPECT_NEAR (recall, 1.0, 0.2);
 }
 
 /* ---[ */
@@ -167,15 +167,15 @@ main (int argc, char** argv)
   }
 
   // Input
-  cloud.reset(new pcl::PointCloud<pcl::PointXYZ>);
-  if (pcl::io::loadPCDFile(argv[1], *cloud) < 0) {
+  cloud.reset (new pcl::PointCloud<pcl::PointXYZ>);
+  if (pcl::io::loadPCDFile (argv[1], *cloud) < 0) {
     std::cerr << "Failed to read test file. Please download `bunny.pcd` and pass its "
                  "path to the test."
               << std::endl;
     return (-1);
   }
 
-  testing::InitGoogleTest(&argc, argv);
+  testing::InitGoogleTest (&argc, argv);
   return (RUN_ALL_TESTS());
 }
 /* ]--- */

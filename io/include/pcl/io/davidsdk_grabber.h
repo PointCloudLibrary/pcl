@@ -69,17 +69,17 @@ public:
   using ConstPtr = shared_ptr<const DavidSDKGrabber>;
 
   // Define callback signature typedefs
-  using sig_cb_davidsdk_point_cloud = void(const pcl::PointCloud<pcl::PointXYZ>::Ptr&);
+  using sig_cb_davidsdk_point_cloud = void (const pcl::PointCloud<pcl::PointXYZ>::Ptr&);
 
-  using sig_cb_davidsdk_mesh = void(const pcl::PolygonMesh::Ptr&);
+  using sig_cb_davidsdk_mesh = void (const pcl::PolygonMesh::Ptr&);
 
-  using sig_cb_davidsdk_image = void(const pcl::PCLImage::Ptr&);
+  using sig_cb_davidsdk_image = void (const pcl::PCLImage::Ptr&);
 
   using sig_cb_davidsdk_point_cloud_image =
-      void(const pcl::PointCloud<pcl::PointXYZ>::Ptr&, const pcl::PCLImage::Ptr&);
+      void (const pcl::PointCloud<pcl::PointXYZ>::Ptr&, const pcl::PCLImage::Ptr&);
 
-  using sig_cb_davidsdk_mesh_image = void(const pcl::PolygonMesh::Ptr&,
-                                          const pcl::PCLImage::Ptr&);
+  using sig_cb_davidsdk_mesh_image = void (const pcl::PolygonMesh::Ptr&,
+                                           const pcl::PCLImage::Ptr&);
 
   /** @endcond */
 

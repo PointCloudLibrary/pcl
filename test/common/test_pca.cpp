@@ -46,41 +46,41 @@ using namespace pcl::test;
 pcl::PointCloud<pcl::PointXYZ> cloud;
 pcl::PCA<pcl::PointXYZ> pca;
 
-TEST(PCA, projection)
+TEST (PCA, projection)
 {
   pcl::PointXYZ projected, reconstructed;
   for (const auto& point : cloud) {
-    pca.project(point, projected);
-    pca.reconstruct(projected, reconstructed);
-    EXPECT_NEAR_VECTORS(reconstructed.getVector3fMap(), point.getVector3fMap(), 5e-4);
+    pca.project (point, projected);
+    pca.reconstruct (projected, reconstructed);
+    EXPECT_NEAR_VECTORS (reconstructed.getVector3fMap(), point.getVector3fMap(), 5e-4);
   }
 }
 
-TEST(PCA, copy_constructor)
+TEST (PCA, copy_constructor)
 {
   // Test copy constructor
-  pcl::PCA<pcl::PointXYZ> pca_copy(pca);
+  pcl::PCA<pcl::PointXYZ> pca_copy (pca);
   try {
     Eigen::Matrix3f eigen_vectors_copy = pca_copy.getEigenVectors();
     Eigen::Matrix3f eigen_vectors = pca.getEigenVectors();
     for (std::size_t i = 0; i < 3; ++i)
       for (std::size_t j = 0; j < 3; ++j)
-        EXPECT_EQ(eigen_vectors(i, j), eigen_vectors_copy(i, j));
+        EXPECT_EQ (eigen_vectors (i, j), eigen_vectors_copy (i, j));
   } catch (pcl::InitFailedException& /*e*/) {
     std::cerr << "something wrong" << std::endl;
   }
 }
 
-TEST(PCA, cloud_projection)
+TEST (PCA, cloud_projection)
 {
   pcl::PointCloud<pcl::PointXYZ> cloud_projected, cloud_reconstructed;
   try {
-    pca.project(cloud, cloud_projected);
-    EXPECT_EQ(cloud.size(), cloud_projected.size());
-    pca.reconstruct(cloud_projected, cloud_reconstructed);
-    EXPECT_EQ(cloud_reconstructed.size(), cloud_projected.size());
+    pca.project (cloud, cloud_projected);
+    EXPECT_EQ (cloud.size(), cloud_projected.size());
+    pca.reconstruct (cloud_projected, cloud_reconstructed);
+    EXPECT_EQ (cloud_reconstructed.size(), cloud_projected.size());
     for (std::size_t i = 0; i < cloud.size(); i++)
-      EXPECT_NEAR_VECTORS(
+      EXPECT_NEAR_VECTORS (
           cloud[i].getVector3fMap(), cloud_reconstructed[i].getVector3fMap(), 5e-4);
   } catch (pcl::InitFailedException& /*e*/) {
     std::cerr << "something wrong" << std::endl;
@@ -93,7 +93,7 @@ main (int argc, char** argv)
   cloud.width = 5;
   cloud.height = 4;
   cloud.is_dense = true;
-  cloud.resize(20);
+  cloud.resize (20);
   cloud[0].x = 100;
   cloud[0].y = 8;
   cloud[0].z = 5;
@@ -155,8 +155,8 @@ main (int argc, char** argv)
   cloud[19].y = 202;
   cloud[19].z = 29;
 
-  pca.setInputCloud(cloud.makeShared());
+  pca.setInputCloud (cloud.makeShared());
 
-  testing::InitGoogleTest(&argc, argv);
+  testing::InitGoogleTest (&argc, argv);
   return (RUN_ALL_TESTS());
 }

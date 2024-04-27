@@ -20,17 +20,17 @@
 class ON_PlaneSurface;
 
 class ON_CLASS ON_PlaneSurface : public ON_Surface {
-  ON_OBJECT_DECLARE(ON_PlaneSurface);
+  ON_OBJECT_DECLARE (ON_PlaneSurface);
 
 public:
   ON_PlaneSurface();
-  ON_PlaneSurface(const ON_PlaneSurface&);
+  ON_PlaneSurface (const ON_PlaneSurface&);
   ON_PlaneSurface&
-  operator=(const ON_PlaneSurface&);
+  operator= (const ON_PlaneSurface&);
 
-  ON_PlaneSurface(const ON_Plane&);
+  ON_PlaneSurface (const ON_Plane&);
   ON_PlaneSurface&
-  operator=(const ON_Plane&);
+  operator= (const ON_Plane&);
 
   virtual ~ON_PlaneSurface();
 
@@ -306,7 +306,7 @@ public:
   );
 
   ON_BOOL32
-  Transpose (); // transpose surface parameterization (swap "s" and "t")
+  Transpose(); // transpose surface parameterization (swap "s" and "t")
 
   ON_BOOL32
   Evaluate ( // returns false if unable to evaluate
@@ -604,18 +604,18 @@ protected:
 };
 
 class ON_CLASS ON_ClippingPlaneSurface : public ON_PlaneSurface {
-  ON_OBJECT_DECLARE(ON_ClippingPlaneSurface);
+  ON_OBJECT_DECLARE (ON_ClippingPlaneSurface);
 
 public:
   ON_ClippingPlaneSurface();
-  ON_ClippingPlaneSurface(const ON_Plane& src);
-  ON_ClippingPlaneSurface(const ON_PlaneSurface& src);
+  ON_ClippingPlaneSurface (const ON_Plane& src);
+  ON_ClippingPlaneSurface (const ON_PlaneSurface& src);
   ~ON_ClippingPlaneSurface();
 
   ON_ClippingPlaneSurface&
-  operator=(const ON_Plane& src);
+  operator= (const ON_Plane& src);
   ON_ClippingPlaneSurface&
-  operator=(const ON_PlaneSurface& src);
+  operator= (const ON_PlaneSurface& src);
 
   void
   Default ();

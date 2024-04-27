@@ -39,7 +39,7 @@ public:
   See Also:
     ON_Plane::CreateFromNormal
   */
-  ON_Plane(const ON_3dPoint& origin, const ON_3dVector& normal);
+  ON_Plane (const ON_3dPoint& origin, const ON_3dVector& normal);
 
   /*
   Description:
@@ -53,9 +53,9 @@ public:
         that is used to determine the yaxis direction.
         y_dir does not have to be perpendicular to x_dir.
   */
-  ON_Plane(const ON_3dPoint& origin,
-           const ON_3dVector& x_dir,
-           const ON_3dVector& y_dir);
+  ON_Plane (const ON_3dPoint& origin,
+            const ON_3dVector& x_dir,
+            const ON_3dVector& y_dir);
 
   /*
   Description:
@@ -68,9 +68,9 @@ public:
         not colinear with the first two points.
         yaxis*(y_point-origin) will be > 0.
   */
-  ON_Plane(const ON_3dPoint& origin,
-           const ON_3dPoint& x_point,
-           const ON_3dPoint& y_point);
+  ON_Plane (const ON_3dPoint& origin,
+            const ON_3dPoint& x_point,
+            const ON_3dPoint& y_point);
 
   /*
   Description:
@@ -80,14 +80,14 @@ public:
        one of equation[0], equation[1], or equation[2]
        being non-zero.
   */
-  ON_Plane(const double equation[4]);
+  ON_Plane (const double equation[4]);
 
   ~ON_Plane();
 
   bool
-  operator==(const ON_Plane&) const;
+  operator== (const ON_Plane&) const;
   bool
-  operator!=(const ON_Plane&) const;
+  operator!= (const ON_Plane&) const;
 
   /*
   Description:

@@ -48,7 +48,7 @@ namespace pcl {
 class PCL_EXPORTS DenseCrf {
 public:
   /** Constructor for DenseCrf class. */
-  DenseCrf(int N, int m);
+  DenseCrf (int N, int m);
 
   /** Deconstructor for DenseCrf class. */
   ~DenseCrf();

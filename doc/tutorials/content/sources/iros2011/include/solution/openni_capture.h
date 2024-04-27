@@ -8,7 +8,7 @@
 /* A simple class for capturing data from an OpenNI camera */
 class OpenNICapture {
 public:
-  OpenNICapture(const std::string& device_id = "");
+  OpenNICapture (const std::string& device_id = "");
   ~OpenNICapture();
 
   void

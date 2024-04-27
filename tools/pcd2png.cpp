@@ -141,19 +141,19 @@ bool
 loadCloud (const std::string& filename, pcl::PCLPointCloud2& cloud)
 {
   TicToc tt;
-  print_highlight("Loading ");
-  print_value("%s ", filename.c_str());
+  print_highlight ("Loading ");
+  print_value ("%s ", filename.c_str());
 
   tt.tic();
-  if (loadPCDFile(filename, cloud) < 0)
+  if (loadPCDFile (filename, cloud) < 0)
     return (false);
-  print_info("[done, ");
-  print_value("%g", tt.toc());
-  print_info(" ms : ");
-  print_value("%d", cloud.width * cloud.height);
-  print_info(" points]\n");
-  print_info("Available dimensions: ");
-  print_value("%s\n", pcl::getFieldsList(cloud).c_str());
+  print_info ("[done, ");
+  print_value ("%g", tt.toc());
+  print_info (" ms : ");
+  print_value ("%d", cloud.width * cloud.height);
+  print_info (" points]\n");
+  print_info ("Available dimensions: ");
+  print_value ("%s\n", pcl::getFieldsList (cloud).c_str());
 
   return (true);
 }
@@ -163,14 +163,14 @@ saveImage (const std::string& filename, const pcl::PCLImage& image)
 {
   TicToc tt;
   tt.tic();
-  print_highlight("Saving ");
-  print_value("%s ", filename.c_str());
-  savePNGFile(filename, image);
-  print_info("[done, ");
-  print_value("%g", tt.toc());
-  print_info(" ms : ");
-  print_value("%d", image.width * image.height);
-  print_info(" points]\n");
+  print_highlight ("Saving ");
+  print_value ("%s ", filename.c_str());
+  savePNGFile (filename, image);
+  print_info ("[done, ");
+  print_value ("%g", tt.toc());
+  print_info (" ms : ");
+  print_value ("%d", image.width * image.height);
+  print_info (" points]\n");
 }
 
 template <typename T>
@@ -178,26 +178,26 @@ bool
 parseScaleOption (int argc, char** argv, T& pcie)
 {
   std::string scaling = "default";
-  pcl::console::parse_argument(argc, argv, "--scale", scaling);
-  print_info("Scaling: ");
-  print_value("%s\n", scaling.c_str());
+  pcl::console::parse_argument (argc, argv, "--scale", scaling);
+  print_info ("Scaling: ");
+  print_value ("%s\n", scaling.c_str());
   if (scaling == "default") {
     // scaling option omitted, use whatever defaults image extractor has
   }
   else if (scaling == "no") {
-    pcie.setScalingMethod(pcie.SCALING_NO);
+    pcie.setScalingMethod (pcie.SCALING_NO);
   }
   else if (scaling == "auto") {
-    pcie.setScalingMethod(pcie.SCALING_FULL_RANGE);
+    pcie.setScalingMethod (pcie.SCALING_FULL_RANGE);
   }
   else {
     try {
-      float factor = boost::lexical_cast<float>(scaling);
-      pcie.setScalingMethod(pcie.SCALING_FIXED_FACTOR);
-      pcie.setScalingFactor(factor);
+      float factor = boost::lexical_cast<float> (scaling);
+      pcie.setScalingMethod (pcie.SCALING_FIXED_FACTOR);
+      pcie.setScalingFactor (factor);
     } catch (const boost::bad_lexical_cast&) {
-      print_error("The value of --scale option should be \"no\", \"auto\", or a "
-                  "floating point number.\n");
+      print_error ("The value of --scale option should be \"no\", \"auto\", or a "
+                   "floating point number.\n");
       return false;
     }
   }
@@ -209,17 +209,17 @@ bool
 parseColorsOption (int argc, char** argv, T& pcie)
 {
   std::string colors = "glasbey";
-  pcl::console::parse_argument(argc, argv, "--colors", colors);
-  print_info("Colors: ");
-  print_value("%s\n", colors.c_str());
+  pcl::console::parse_argument (argc, argv, "--colors", colors);
+  print_info ("Colors: ");
+  print_value ("%s\n", colors.c_str());
   if (colors == "mono") {
-    pcie.setColorMode(pcie.COLORS_MONO);
+    pcie.setColorMode (pcie.COLORS_MONO);
   }
   else if (colors == "rgb") {
-    pcie.setColorMode(pcie.COLORS_RGB_RANDOM);
+    pcie.setColorMode (pcie.COLORS_RGB_RANDOM);
   }
   else if (colors == "glasbey") {
-    pcie.setColorMode(pcie.COLORS_RGB_GLASBEY);
+    pcie.setColorMode (pcie.COLORS_RGB_GLASBEY);
   }
   else {
     return false;
@@ -231,21 +231,21 @@ parseColorsOption (int argc, char** argv, T& pcie)
 int
 main (int argc, char** argv)
 {
-  print_info(
+  print_info (
       "Convert a PCD file to PNG format.\nFor more information, use: %s --help\n",
       argv[0]);
 
-  if (argc < 3 || pcl::console::find_switch(argc, argv, "--help")) {
-    printHelp(argc, argv);
+  if (argc < 3 || pcl::console::find_switch (argc, argv, "--help")) {
+    printHelp (argc, argv);
     return (-1);
   }
 
   // Parse the command line arguments for .pcd and .png files
-  std::vector<int> pcd_file_index = parse_file_extension_argument(argc, argv, ".pcd");
-  std::vector<int> png_file_index = parse_file_extension_argument(argc, argv, ".png");
+  std::vector<int> pcd_file_index = parse_file_extension_argument (argc, argv, ".pcd");
+  std::vector<int> png_file_index = parse_file_extension_argument (argc, argv, ".png");
 
   if (pcd_file_index.size() != 1 || png_file_index.size() != 1) {
-    print_error("Need one input PCD file and one output PNG file.\n");
+    print_error ("Need one input PCD file and one output PNG file.\n");
     return (-1);
   }
 
@@ -253,89 +253,89 @@ main (int argc, char** argv)
   std::string png_filename = argv[png_file_index[0]];
 
   // Load the input file
-  pcl::PCLPointCloud2::Ptr blob(new pcl::PCLPointCloud2);
-  if (!loadCloud(pcd_filename, *blob)) {
-    print_error("Unable to load PCD file.\n");
+  pcl::PCLPointCloud2::Ptr blob (new pcl::PCLPointCloud2);
+  if (!loadCloud (pcd_filename, *blob)) {
+    print_error ("Unable to load PCD file.\n");
     return (-1);
   }
 
   // Check if the cloud is organized
   if (blob->height == 1) {
-    print_error("Input cloud is not organized.\n");
+    print_error ("Input cloud is not organized.\n");
     return (-1);
   }
 
-  bool paint_nans_with_black = pcl::console::find_switch(argc, argv, "--no-nan");
-  print_info("Paint infinite points with black: ");
-  print_value("%s\n", paint_nans_with_black ? "YES" : "NO");
+  bool paint_nans_with_black = pcl::console::find_switch (argc, argv, "--no-nan");
+  print_info ("Paint infinite points with black: ");
+  print_value ("%s\n", paint_nans_with_black ? "YES" : "NO");
 
   std::string field_name = "rgb";
-  parse_argument(argc, argv, "--field", field_name);
-  print_info("Field name: ");
-  print_value("%s\n", field_name.c_str());
+  parse_argument (argc, argv, "--field", field_name);
+  print_info ("Field name: ");
+  print_value ("%s\n", field_name.c_str());
 
   pcl::PCLImage image;
   bool extracted;
   if (field_name == "normal") {
     PointCloud<PointNormal> cloud;
-    fromPCLPointCloud2(*blob, cloud);
+    fromPCLPointCloud2 (*blob, cloud);
     PointCloudImageExtractorFromNormalField<PointNormal> pcie;
-    pcie.setPaintNaNsWithBlack(paint_nans_with_black);
-    extracted = pcie.extract(cloud, image);
+    pcie.setPaintNaNsWithBlack (paint_nans_with_black);
+    extracted = pcie.extract (cloud, image);
   }
   else if (field_name == "rgb") {
     PointCloud<PointXYZRGB> cloud;
-    fromPCLPointCloud2(*blob, cloud);
+    fromPCLPointCloud2 (*blob, cloud);
     PointCloudImageExtractorFromRGBField<PointXYZRGB> pcie;
-    pcie.setPaintNaNsWithBlack(paint_nans_with_black);
-    extracted = pcie.extract(cloud, image);
+    pcie.setPaintNaNsWithBlack (paint_nans_with_black);
+    extracted = pcie.extract (cloud, image);
   }
   else if (field_name == "label") {
     PointCloud<PointXYZL> cloud;
-    fromPCLPointCloud2(*blob, cloud);
+    fromPCLPointCloud2 (*blob, cloud);
     PointCloudImageExtractorFromLabelField<PointXYZL> pcie;
-    pcie.setPaintNaNsWithBlack(paint_nans_with_black);
-    if (!parseColorsOption(argc, argv, pcie))
+    pcie.setPaintNaNsWithBlack (paint_nans_with_black);
+    if (!parseColorsOption (argc, argv, pcie))
       return (-1);
-    extracted = pcie.extract(cloud, image);
+    extracted = pcie.extract (cloud, image);
   }
   else if (field_name == "z") {
     PointCloud<PointXYZ> cloud;
-    fromPCLPointCloud2(*blob, cloud);
+    fromPCLPointCloud2 (*blob, cloud);
     PointCloudImageExtractorFromZField<PointXYZ> pcie;
-    pcie.setPaintNaNsWithBlack(paint_nans_with_black);
-    if (!parseScaleOption(argc, argv, pcie))
+    pcie.setPaintNaNsWithBlack (paint_nans_with_black);
+    if (!parseScaleOption (argc, argv, pcie))
       return (-1);
-    extracted = pcie.extract(cloud, image);
+    extracted = pcie.extract (cloud, image);
   }
   else if (field_name == "curvature") {
     PointCloud<PointNormal> cloud;
-    fromPCLPointCloud2(*blob, cloud);
+    fromPCLPointCloud2 (*blob, cloud);
     PointCloudImageExtractorFromCurvatureField<PointNormal> pcie;
-    pcie.setPaintNaNsWithBlack(paint_nans_with_black);
-    if (!parseScaleOption(argc, argv, pcie))
+    pcie.setPaintNaNsWithBlack (paint_nans_with_black);
+    if (!parseScaleOption (argc, argv, pcie))
       return (-1);
-    extracted = pcie.extract(cloud, image);
+    extracted = pcie.extract (cloud, image);
   }
   else if (field_name == "intensity") {
     PointCloud<PointXYZI> cloud;
-    fromPCLPointCloud2(*blob, cloud);
+    fromPCLPointCloud2 (*blob, cloud);
     PointCloudImageExtractorFromIntensityField<PointXYZI> pcie;
-    pcie.setPaintNaNsWithBlack(paint_nans_with_black);
-    if (!parseScaleOption(argc, argv, pcie))
+    pcie.setPaintNaNsWithBlack (paint_nans_with_black);
+    if (!parseScaleOption (argc, argv, pcie))
       return (-1);
-    extracted = pcie.extract(cloud, image);
+    extracted = pcie.extract (cloud, image);
   }
   else {
-    print_error("Unsupported field \"%s\".\n", field_name.c_str());
+    print_error ("Unsupported field \"%s\".\n", field_name.c_str());
     return (-1);
   }
 
   if (!extracted) {
-    print_error("Failed to extract an image from field \"%s\".\n", field_name.c_str());
+    print_error ("Failed to extract an image from field \"%s\".\n", field_name.c_str());
     return (-1);
   }
-  saveImage(png_filename, image);
+  saveImage (png_filename, image);
 
   return (0);
 }

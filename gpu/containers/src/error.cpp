@@ -40,12 +40,12 @@
 #include <iostream>
 
 void
-pcl::gpu::error(const char* error_string,
-                const char* file,
-                const int line,
-                const char* func)
+pcl::gpu::error (const char* error_string,
+                 const char* file,
+                 const int line,
+                 const char* func)
 {
   std::cout << "Error: " << error_string << "\t" << file << ":" << line << ":" << func
             << std::endl;
-  exit(EXIT_FAILURE);
+  exit (EXIT_FAILURE);
 }

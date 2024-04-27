@@ -30,7 +30,7 @@ ON_DecodeBase64::Begin()
 {
   m_decode_count = 0;
   m_output_count = 0;
-  memset(m_output, 0, 512);
+  memset (m_output, 0, 512);
   m_status = 0;
   m_cache_count = 0;
   m_cache[0] = 0;
@@ -60,7 +60,7 @@ ON_DecodeBase64::End()
     m_status = 5; // finished
   }
   m_output_count = 0;
-  memset(m_output, 0, 512);
+  memset (m_output, 0, 512);
   return (1 != m_status);
 }
 
@@ -68,7 +68,7 @@ void
 ON_DecodeBase64::SetError()
 {
   // unrecoverable error
-  ON_ERROR("ON_DecodeBase64::Decode - error");
+  ON_ERROR ("ON_DecodeBase64::Decode - error");
   m_status = 1;
 }
 
@@ -129,7 +129,7 @@ ON_DecodeBase64::DecodeHelper2()
 }
 
 const char*
-ON_DecodeBase64::Decode(const char* base64str)
+ON_DecodeBase64::Decode (const char* base64str)
 {
   union {
     ON__INT32 i;
@@ -295,7 +295,7 @@ ON_DecodeBase64::Decode(const char* base64str)
 }
 
 const char*
-ON_DecodeBase64::Decode(const char* base64str, std::size_t base64str_count)
+ON_DecodeBase64::Decode (const char* base64str, std::size_t base64str_count)
 {
   char* sEnd;
   const char* p;
@@ -305,8 +305,8 @@ ON_DecodeBase64::Decode(const char* base64str, std::size_t base64str_count)
   sEnd = s + 1024;
   *sEnd = 0;
   while (base64str_count >= 1024) {
-    memcpy(s, base64str, 1024);
-    p = Decode(s);
+    memcpy (s, base64str, 1024);
+    p = Decode (s);
     if (0 == p)
       return 0;
     if (p != sEnd) {
@@ -316,9 +316,9 @@ ON_DecodeBase64::Decode(const char* base64str, std::size_t base64str_count)
     base64str_count -= 1024;
   }
   if (base64str_count > 0) {
-    memcpy(s, base64str, base64str_count);
+    memcpy (s, base64str, base64str_count);
     s[base64str_count] = 0;
-    p = Decode(s);
+    p = Decode (s);
     if (0 == p)
       return 0;
     base64str += (p - s);
@@ -327,7 +327,7 @@ ON_DecodeBase64::Decode(const char* base64str, std::size_t base64str_count)
 }
 
 const wchar_t*
-ON_DecodeBase64::Decode(const wchar_t* base64str)
+ON_DecodeBase64::Decode (const wchar_t* base64str)
 {
   const wchar_t* p;
   wchar_t w;
@@ -339,11 +339,11 @@ ON_DecodeBase64::Decode(const wchar_t* base64str)
     if (w < 32 || w > 122)
       break;
   }
-  return Decode(base64str, p - base64str);
+  return Decode (base64str, p - base64str);
 }
 
 const wchar_t*
-ON_DecodeBase64::Decode(const wchar_t* base64str, std::size_t base64str_count)
+ON_DecodeBase64::Decode (const wchar_t* base64str, std::size_t base64str_count)
 {
   char* sEnd;
   const char* p;
@@ -363,7 +363,7 @@ ON_DecodeBase64::Decode(const wchar_t* base64str, std::size_t base64str_count)
       }
       s[i] = (char)w;
     }
-    p = Decode(s);
+    p = Decode (s);
     if (0 == p)
       return 0;
     if (p != sEnd) {
@@ -382,7 +382,7 @@ ON_DecodeBase64::Decode(const wchar_t* base64str, std::size_t base64str_count)
       s[i] = (char)w;
     }
     s[i] = 0;
-    p = Decode(s);
+    p = Decode (s);
     if (0 == p)
       return 0;
     base64str += (p - s);
@@ -674,21 +674,21 @@ void ON_EncodeBase64::End()
 /////////////////////////////////////////////////////////////////////
 
 ON_Base64EncodeStream::ON_Base64EncodeStream()
-: m_out_callback_function(0)
-, m_out_callback_context(0)
-, m_in_size(0)
-, m_out_size(0)
-, m_in_crc(0)
-, m_out_crc(0)
-, m_implementation(0)
-, m_reserved(0)
+: m_out_callback_function (0)
+, m_out_callback_context (0)
+, m_in_size (0)
+, m_out_size (0)
+, m_in_crc (0)
+, m_out_crc (0)
+, m_implementation (0)
+, m_reserved (0)
 {}
 
 ON_Base64EncodeStream::~ON_Base64EncodeStream()
 {
 
   if (0 != m_implementation) {
-    onfree(m_implementation);
+    onfree (m_implementation);
     m_implementation = 0;
   }
 }
@@ -697,7 +697,7 @@ void
 ON_Base64EncodeStream::ErrorHandler()
 {
   // place holder for error handing
-  ON_ERROR("ON_UncompressStream error");
+  ON_ERROR ("ON_UncompressStream error");
 }
 
 class ON_Base64EncodeImplementation {
@@ -718,7 +718,7 @@ bool
 ON_Base64EncodeStream::Begin()
 {
   if (0 != m_implementation) {
-    onfree(m_implementation);
+    onfree (m_implementation);
     m_implementation = 0;
   }
 
@@ -730,8 +730,8 @@ ON_Base64EncodeStream::Begin()
   m_out_crc = 0;
 
   ON_Base64EncodeImplementation* imp =
-      (ON_Base64EncodeImplementation*)onmalloc(sizeof(*imp));
-  memset(imp, 0, sizeof(*imp));
+      (ON_Base64EncodeImplementation*)onmalloc (sizeof (*imp));
+  memset (imp, 0, sizeof (*imp));
   m_implementation = imp;
 
   return true;
@@ -885,66 +885,66 @@ EncodeBase64Helper57 (const unsigned char* inbuf, char* outbuf)
   //
   // Encoding 57 input bytes creates 76 output bytes and 76
   // is the maximum line length for base64 encoding.
-  EncodeBase64Helper3(inbuf, outbuf);
+  EncodeBase64Helper3 (inbuf, outbuf);
   inbuf += 3;
   outbuf += 4;
-  EncodeBase64Helper3(inbuf, outbuf);
+  EncodeBase64Helper3 (inbuf, outbuf);
   inbuf += 3;
   outbuf += 4;
-  EncodeBase64Helper3(inbuf, outbuf);
+  EncodeBase64Helper3 (inbuf, outbuf);
   inbuf += 3;
   outbuf += 4;
-  EncodeBase64Helper3(inbuf, outbuf);
+  EncodeBase64Helper3 (inbuf, outbuf);
   inbuf += 3;
   outbuf += 4;
-  EncodeBase64Helper3(inbuf, outbuf);
+  EncodeBase64Helper3 (inbuf, outbuf);
   inbuf += 3;
   outbuf += 4;
-  EncodeBase64Helper3(inbuf, outbuf);
+  EncodeBase64Helper3 (inbuf, outbuf);
   inbuf += 3;
   outbuf += 4;
-  EncodeBase64Helper3(inbuf, outbuf);
+  EncodeBase64Helper3 (inbuf, outbuf);
   inbuf += 3;
   outbuf += 4;
-  EncodeBase64Helper3(inbuf, outbuf);
+  EncodeBase64Helper3 (inbuf, outbuf);
   inbuf += 3;
   outbuf += 4;
-  EncodeBase64Helper3(inbuf, outbuf);
+  EncodeBase64Helper3 (inbuf, outbuf);
   inbuf += 3;
   outbuf += 4;
-  EncodeBase64Helper3(inbuf, outbuf);
+  EncodeBase64Helper3 (inbuf, outbuf);
   inbuf += 3;
   outbuf += 4;
-  EncodeBase64Helper3(inbuf, outbuf);
+  EncodeBase64Helper3 (inbuf, outbuf);
   inbuf += 3;
   outbuf += 4;
-  EncodeBase64Helper3(inbuf, outbuf);
+  EncodeBase64Helper3 (inbuf, outbuf);
   inbuf += 3;
   outbuf += 4;
-  EncodeBase64Helper3(inbuf, outbuf);
+  EncodeBase64Helper3 (inbuf, outbuf);
   inbuf += 3;
   outbuf += 4;
-  EncodeBase64Helper3(inbuf, outbuf);
+  EncodeBase64Helper3 (inbuf, outbuf);
   inbuf += 3;
   outbuf += 4;
-  EncodeBase64Helper3(inbuf, outbuf);
+  EncodeBase64Helper3 (inbuf, outbuf);
   inbuf += 3;
   outbuf += 4;
-  EncodeBase64Helper3(inbuf, outbuf);
+  EncodeBase64Helper3 (inbuf, outbuf);
   inbuf += 3;
   outbuf += 4;
-  EncodeBase64Helper3(inbuf, outbuf);
+  EncodeBase64Helper3 (inbuf, outbuf);
   inbuf += 3;
   outbuf += 4;
-  EncodeBase64Helper3(inbuf, outbuf);
+  EncodeBase64Helper3 (inbuf, outbuf);
   inbuf += 3;
   outbuf += 4;
-  EncodeBase64Helper3(inbuf, outbuf);
+  EncodeBase64Helper3 (inbuf, outbuf);
   outbuf[4] = 0;
 }
 
 bool
-ON_Base64EncodeStream::In(ON__UINT64 in_buffer_size, const void* in_buffer)
+ON_Base64EncodeStream::In (ON__UINT64 in_buffer_size, const void* in_buffer)
 {
   if (in_buffer_size <= 0)
     return true;
@@ -971,28 +971,28 @@ ON_Base64EncodeStream::In(ON__UINT64 in_buffer_size, const void* in_buffer)
       // still don't have sizeof(imp->m_in_buffer_size) bytes of input
       sz = (ON__UINT32)in_buffer_size; // cast is safe because in_buffer_size <
                                        // sizeof(imp->m_in_buffer_size) <= 8192
-      memcpy(imp->m_in_buffer + imp->m_in_buffer_size, in_buffer, sz);
+      memcpy (imp->m_in_buffer + imp->m_in_buffer_size, in_buffer, sz);
       imp->m_in_buffer_size += sz;
       return true;
     }
 
-    memcpy(imp->m_in_buffer + imp->m_in_buffer_size, in_buffer, sz);
+    memcpy (imp->m_in_buffer + imp->m_in_buffer_size, in_buffer, sz);
     in_buffer = ((const unsigned char*)in_buffer) + sz;
     in_buffer_size -= sz;
 
-    EncodeBase64Helper57(imp->m_in_buffer, imp->m_out_buffer);
+    EncodeBase64Helper57 (imp->m_in_buffer, imp->m_out_buffer);
     imp->m_in_buffer_size = 0;
 
-    crc1 = ON_CRC32(m_out_crc, 76, imp->m_out_buffer);
+    crc1 = ON_CRC32 (m_out_crc, 76, imp->m_out_buffer);
     rc = (0 != m_out_callback_function)
-             ? m_out_callback_function(m_out_callback_context, 76, imp->m_out_buffer)
-             : Out(m_out_callback_context, 76, imp->m_out_buffer);
+             ? m_out_callback_function (m_out_callback_context, 76, imp->m_out_buffer)
+             : Out (m_out_callback_context, 76, imp->m_out_buffer);
     if (!rc) {
-      onfree(m_implementation);
+      onfree (m_implementation);
       m_implementation = 0;
       return false;
     }
-    m_in_crc = ON_CRC32(m_in_crc, 57, imp->m_in_buffer);
+    m_in_crc = ON_CRC32 (m_in_crc, 57, imp->m_in_buffer);
     m_in_size += 57;
     m_out_crc = crc1;
     m_out_size += 76;
@@ -1000,17 +1000,17 @@ ON_Base64EncodeStream::In(ON__UINT64 in_buffer_size, const void* in_buffer)
 
   while (in_buffer_size >= 57) {
     // base 64 encode 57 input bytes to create 76 output bytes
-    EncodeBase64Helper57((const unsigned char*)in_buffer, imp->m_out_buffer);
-    crc1 = ON_CRC32(m_out_crc, 76, imp->m_out_buffer);
+    EncodeBase64Helper57 ((const unsigned char*)in_buffer, imp->m_out_buffer);
+    crc1 = ON_CRC32 (m_out_crc, 76, imp->m_out_buffer);
     rc = (0 != m_out_callback_function)
-             ? m_out_callback_function(m_out_callback_context, 76, imp->m_out_buffer)
-             : Out(m_out_callback_context, 76, imp->m_out_buffer);
+             ? m_out_callback_function (m_out_callback_context, 76, imp->m_out_buffer)
+             : Out (m_out_callback_context, 76, imp->m_out_buffer);
     if (!rc) {
-      onfree(m_implementation);
+      onfree (m_implementation);
       m_implementation = 0;
       return false;
     }
-    m_in_crc = ON_CRC32(m_in_crc, 57, in_buffer);
+    m_in_crc = ON_CRC32 (m_in_crc, 57, in_buffer);
     m_in_size += 57;
     m_out_crc = crc1;
     m_out_size += 76;
@@ -1020,7 +1020,7 @@ ON_Base64EncodeStream::In(ON__UINT64 in_buffer_size, const void* in_buffer)
 
   if (in_buffer_size > 0) {
     // store what's left of the input in imp->m_in_buffer[]
-    memcpy(imp->m_in_buffer, in_buffer, (std::size_t)in_buffer_size);
+    memcpy (imp->m_in_buffer, in_buffer, (std::size_t)in_buffer_size);
   }
   imp->m_in_buffer_size = (ON__UINT32)in_buffer_size; // safe cast - sizeof_buffer < 57
 
@@ -1043,52 +1043,52 @@ ON_Base64EncodeStream::End()
     ON__UINT32 in_buffer_size = imp->m_in_buffer_size;
     ON__UINT32 out_buffer_size = 0;
     while (in_buffer_size >= 3) {
-      EncodeBase64Helper3(in_buffer, &imp->m_out_buffer[out_buffer_size]);
+      EncodeBase64Helper3 (in_buffer, &imp->m_out_buffer[out_buffer_size]);
       in_buffer += 3;
       out_buffer_size += 4;
       in_buffer_size -= 3;
     }
     if (1 == in_buffer_size) {
       // 1 byte of input left
-      EncodeBase64Helper1(in_buffer, &imp->m_out_buffer[out_buffer_size]);
+      EncodeBase64Helper1 (in_buffer, &imp->m_out_buffer[out_buffer_size]);
       out_buffer_size += 4;
     }
     else if (2 == in_buffer_size) {
       // 2 bytes of input left
-      EncodeBase64Helper2(in_buffer, &imp->m_out_buffer[out_buffer_size]);
+      EncodeBase64Helper2 (in_buffer, &imp->m_out_buffer[out_buffer_size]);
       out_buffer_size += 4;
     }
     imp->m_out_buffer[out_buffer_size] = 0;
 
-    ON__UINT32 crc1 = ON_CRC32(m_out_crc, out_buffer_size, imp->m_out_buffer);
+    ON__UINT32 crc1 = ON_CRC32 (m_out_crc, out_buffer_size, imp->m_out_buffer);
     rc = (0 != m_out_callback_function)
-             ? m_out_callback_function(
+             ? m_out_callback_function (
                    m_out_callback_context, out_buffer_size, imp->m_out_buffer)
-             : Out(m_out_callback_context, out_buffer_size, imp->m_out_buffer);
+             : Out (m_out_callback_context, out_buffer_size, imp->m_out_buffer);
     if (rc) {
-      m_in_crc = ON_CRC32(m_in_crc, imp->m_in_buffer_size, imp->m_in_buffer);
+      m_in_crc = ON_CRC32 (m_in_crc, imp->m_in_buffer_size, imp->m_in_buffer);
       m_in_size += imp->m_in_buffer_size;
       m_out_crc = crc1;
       m_out_size += out_buffer_size;
     }
   }
 
-  onfree(m_implementation);
+  onfree (m_implementation);
   m_implementation = 0;
 
   return rc;
 }
 
 bool
-ON_Base64EncodeStream::Out(void*, ON__UINT32, const char*)
+ON_Base64EncodeStream::Out (void*, ON__UINT32, const char*)
 {
   // default base 64 encoded stream handler does nothing.
   return true;
 }
 
 bool
-ON_Base64EncodeStream::SetCallback(ON_StreamCallbackFunction out_callback_function,
-                                   void* out_callback_context)
+ON_Base64EncodeStream::SetCallback (ON_StreamCallbackFunction out_callback_function,
+                                    void* out_callback_context)
 {
   m_out_callback_function = out_callback_function;
   m_out_callback_context = out_callback_context;
@@ -1108,25 +1108,13 @@ ON_Base64EncodeStream::CallbackContext() const
 }
 
 ON__UINT64
-ON_Base64EncodeStream::InSize() const
-{
-  return m_in_size;
-}
+ON_Base64EncodeStream::InSize() const { return m_in_size; }
 
 ON__UINT64
-ON_Base64EncodeStream::OutSize() const
-{
-  return m_out_size;
-}
+ON_Base64EncodeStream::OutSize() const { return m_out_size; }
 
 ON__UINT32
-ON_Base64EncodeStream::InCRC() const
-{
-  return m_in_crc;
-}
+ON_Base64EncodeStream::InCRC() const { return m_in_crc; }
 
 ON__UINT32
-ON_Base64EncodeStream::OutCRC() const
-{
-  return m_out_crc;
-}
+ON_Base64EncodeStream::OutCRC() const { return m_out_crc; }

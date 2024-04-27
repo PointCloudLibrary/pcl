@@ -128,31 +128,31 @@ Inv (const double* src, double dst[4][4], double* determinant, double* pivot)
   *pivot = 0.0;
   *determinant = 0.0;
 
-  memset(I, 0, sizeof(I));
+  memset (I, 0, sizeof (I));
   I[0][0] = I[1][1] = I[2][2] = I[3][3] = 1.0;
 
-  memcpy(M, src, sizeof(M));
+  memcpy (M, src, sizeof (M));
 
   // some loops unrolled for speed
 
   ix = jx = 0;
-  x = fabs(M[0][0]);
+  x = fabs (M[0][0]);
   for (i = 0; i < 4; i++)
     for (j = 0; j < 4; j++) {
-      if (fabs(M[i][j]) > x) {
+      if (fabs (M[i][j]) > x) {
         ix = i;
         jx = j;
-        x = fabs(M[i][j]);
+        x = fabs (M[i][j]);
       }
     }
   *pivot = x;
   if (ix != 0) {
-    SwapRow(M, 0, ix);
-    SwapRow(I, 0, ix);
+    SwapRow (M, 0, ix);
+    SwapRow (I, 0, ix);
     swapcount++;
   }
   if (jx != 0) {
-    SwapCol(M, 0, jx);
+    SwapCol (M, 0, jx);
     col[0] = jx;
     swapcount++;
   }
@@ -180,47 +180,47 @@ Inv (const double* src, double dst[4][4], double* determinant, double* pivot)
 
     x *= ON_EPSILON;
 
-    if (fabs(M[1][0]) > x) {
+    if (fabs (M[1][0]) > x) {
       c = -M[1][0];
       M[1][1] += c * M[0][1];
       M[1][2] += c * M[0][2];
       M[1][3] += c * M[0][3];
-      AddCxRow(I, c, 0, 1);
+      AddCxRow (I, c, 0, 1);
     }
-    if (fabs(M[2][0]) > x) {
+    if (fabs (M[2][0]) > x) {
       c = -M[2][0];
       M[2][1] += c * M[0][1];
       M[2][2] += c * M[0][2];
       M[2][3] += c * M[0][3];
-      AddCxRow(I, c, 0, 2);
+      AddCxRow (I, c, 0, 2);
     }
-    if (fabs(M[3][0]) > x) {
+    if (fabs (M[3][0]) > x) {
       c = -M[3][0];
       M[3][1] += c * M[0][1];
       M[3][2] += c * M[0][2];
       M[3][3] += c * M[0][3];
-      AddCxRow(I, c, 0, 3);
+      AddCxRow (I, c, 0, 3);
     }
 
     ix = jx = 1;
-    x = fabs(M[1][1]);
+    x = fabs (M[1][1]);
     for (i = 1; i < 4; i++)
       for (j = 1; j < 4; j++) {
-        if (fabs(M[i][j]) > x) {
+        if (fabs (M[i][j]) > x) {
           ix = i;
           jx = j;
-          x = fabs(M[i][j]);
+          x = fabs (M[i][j]);
         }
       }
     if (x < *pivot)
       *pivot = x;
     if (ix != 1) {
-      SwapRow(M, 1, ix);
-      SwapRow(I, 1, ix);
+      SwapRow (M, 1, ix);
+      SwapRow (I, 1, ix);
       swapcount++;
     }
     if (jx != 1) {
-      SwapCol(M, 1, jx);
+      SwapCol (M, 1, jx);
       col[1] = jx;
       swapcount++;
     }
@@ -246,44 +246,44 @@ Inv (const double* src, double dst[4][4], double* determinant, double* pivot)
       d /= c;
 
       x *= ON_EPSILON;
-      if (fabs(M[0][1]) > x) {
+      if (fabs (M[0][1]) > x) {
         c = -M[0][1];
         M[0][2] += c * M[1][2];
         M[0][3] += c * M[1][3];
-        AddCxRow(I, c, 1, 0);
+        AddCxRow (I, c, 1, 0);
       }
-      if (fabs(M[2][1]) > x) {
+      if (fabs (M[2][1]) > x) {
         c = -M[2][1];
         M[2][2] += c * M[1][2];
         M[2][3] += c * M[1][3];
-        AddCxRow(I, c, 1, 2);
+        AddCxRow (I, c, 1, 2);
       }
-      if (fabs(M[3][1]) > x) {
+      if (fabs (M[3][1]) > x) {
         c = -M[3][1];
         M[3][2] += c * M[1][2];
         M[3][3] += c * M[1][3];
-        AddCxRow(I, c, 1, 3);
+        AddCxRow (I, c, 1, 3);
       }
 
       ix = jx = 2;
-      x = fabs(M[2][2]);
+      x = fabs (M[2][2]);
       for (i = 2; i < 4; i++)
         for (j = 2; j < 4; j++) {
-          if (fabs(M[i][j]) > x) {
+          if (fabs (M[i][j]) > x) {
             ix = i;
             jx = j;
-            x = fabs(M[i][j]);
+            x = fabs (M[i][j]);
           }
         }
       if (x < *pivot)
         *pivot = x;
       if (ix != 2) {
-        SwapRow(M, 2, ix);
-        SwapRow(I, 2, ix);
+        SwapRow (M, 2, ix);
+        SwapRow (I, 2, ix);
         swapcount++;
       }
       if (jx != 2) {
-        SwapCol(M, 2, jx);
+        SwapCol (M, 2, jx);
         col[2] = jx;
         swapcount++;
       }
@@ -308,23 +308,23 @@ Inv (const double* src, double dst[4][4], double* determinant, double* pivot)
         d /= c;
 
         x *= ON_EPSILON;
-        if (fabs(M[0][2]) > x) {
+        if (fabs (M[0][2]) > x) {
           c = -M[0][2];
           M[0][3] += c * M[2][3];
-          AddCxRow(I, c, 2, 0);
+          AddCxRow (I, c, 2, 0);
         }
-        if (fabs(M[1][2]) > x) {
+        if (fabs (M[1][2]) > x) {
           c = -M[1][2];
           M[1][3] += c * M[2][3];
-          AddCxRow(I, c, 2, 1);
+          AddCxRow (I, c, 2, 1);
         }
-        if (fabs(M[3][2]) > x) {
+        if (fabs (M[3][2]) > x) {
           c = -M[3][2];
           M[3][3] += c * M[2][3];
-          AddCxRow(I, c, 2, 3);
+          AddCxRow (I, c, 2, 3);
         }
 
-        x = fabs(M[3][3]);
+        x = fabs (M[3][3]);
         if (x < *pivot)
           *pivot = x;
 
@@ -347,14 +347,14 @@ Inv (const double* src, double dst[4][4], double* determinant, double* pivot)
           d /= c;
 
           x *= ON_EPSILON;
-          if (fabs(M[0][3]) > x) {
-            AddCxRow(I, -M[0][3], 3, 0);
+          if (fabs (M[0][3]) > x) {
+            AddCxRow (I, -M[0][3], 3, 0);
           }
-          if (fabs(M[1][3]) > x) {
-            AddCxRow(I, -M[1][3], 3, 1);
+          if (fabs (M[1][3]) > x) {
+            AddCxRow (I, -M[1][3], 3, 1);
           }
-          if (fabs(M[2][3]) > x) {
-            AddCxRow(I, -M[2][3], 3, 2);
+          if (fabs (M[2][3]) > x) {
+            AddCxRow (I, -M[2][3], 3, 2);
           }
 
           *determinant = (swapcount % 2) ? -d : d;
@@ -364,15 +364,15 @@ Inv (const double* src, double dst[4][4], double* determinant, double* pivot)
   }
 
   if (col[3] != 3)
-    SwapRow(I, 3, col[3]);
+    SwapRow (I, 3, col[3]);
   if (col[2] != 2)
-    SwapRow(I, 2, col[2]);
+    SwapRow (I, 2, col[2]);
   if (col[1] != 1)
-    SwapRow(I, 1, col[1]);
+    SwapRow (I, 1, col[1]);
   if (col[0] != 0)
-    SwapRow(I, 0, col[0]);
+    SwapRow (I, 0, col[0]);
 
-  memcpy(dst, I, sizeof(I));
+  memcpy (dst, I, sizeof (I));
   return rank;
 }
 
@@ -383,38 +383,38 @@ Inv (const double* src, double dst[4][4], double* determinant, double* pivot)
 
 ON_Xform::ON_Xform()
 {
-  memset(m_xform, 0, sizeof(m_xform));
+  memset (m_xform, 0, sizeof (m_xform));
   m_xform[3][3] = 1.0;
 }
 
-ON_Xform::ON_Xform(int d)
+ON_Xform::ON_Xform (int d)
 {
-  memset(m_xform, 0, sizeof(m_xform));
+  memset (m_xform, 0, sizeof (m_xform));
   m_xform[0][0] = m_xform[1][1] = m_xform[2][2] = (double)d;
   m_xform[3][3] = 1.0;
 }
 
-ON_Xform::ON_Xform(double d)
+ON_Xform::ON_Xform (double d)
 {
-  memset(m_xform, 0, sizeof(m_xform));
+  memset (m_xform, 0, sizeof (m_xform));
   m_xform[0][0] = m_xform[1][1] = m_xform[2][2] = d;
   m_xform[3][3] = 1.0;
 }
 
 #if defined(ON_COMPILER_MSC)
-ON_Xform::ON_Xform(double m[4][4])
+ON_Xform::ON_Xform (double m[4][4])
 {
-  memcpy(&m_xform[0][0], &m[0][0], sizeof(m_xform));
+  memcpy (&m_xform[0][0], &m[0][0], sizeof (m_xform));
 }
 #endif
 
-ON_Xform::ON_Xform(const double m[4][4])
+ON_Xform::ON_Xform (const double m[4][4])
 {
-  memcpy(&m_xform[0][0], &m[0][0], sizeof(m_xform));
+  memcpy (&m_xform[0][0], &m[0][0], sizeof (m_xform));
 }
 
 #if defined(ON_COMPILER_MSC)
-ON_Xform::ON_Xform(float m[4][4])
+ON_Xform::ON_Xform (float m[4][4])
 {
   m_xform[0][0] = (double)m[0][0];
   m_xform[0][1] = (double)m[0][1];
@@ -438,7 +438,7 @@ ON_Xform::ON_Xform(float m[4][4])
 }
 #endif
 
-ON_Xform::ON_Xform(const float m[4][4])
+ON_Xform::ON_Xform (const float m[4][4])
 {
   m_xform[0][0] = (double)m[0][0];
   m_xform[0][1] = (double)m[0][1];
@@ -461,9 +461,9 @@ ON_Xform::ON_Xform(const float m[4][4])
   m_xform[3][3] = (double)m[3][3];
 }
 
-ON_Xform::ON_Xform(const double* m) { memcpy(&m_xform[0][0], m, sizeof(m_xform)); }
+ON_Xform::ON_Xform (const double* m) { memcpy (&m_xform[0][0], m, sizeof (m_xform)); }
 
-ON_Xform::ON_Xform(const float* m)
+ON_Xform::ON_Xform (const float* m)
 {
   m_xform[0][0] = (double)m[0];
   m_xform[0][1] = (double)m[1];
@@ -486,10 +486,10 @@ ON_Xform::ON_Xform(const float* m)
   m_xform[3][3] = (double)m[15];
 }
 
-ON_Xform::ON_Xform(const ON_3dPoint& P,
-                   const ON_3dVector& X,
-                   const ON_3dVector& Y,
-                   const ON_3dVector& Z)
+ON_Xform::ON_Xform (const ON_3dPoint& P,
+                    const ON_3dVector& X,
+                    const ON_3dVector& Y,
+                    const ON_3dVector& Z)
 {
   m_xform[0][0] = X[0];
   m_xform[1][0] = X[1];
@@ -512,7 +512,7 @@ ON_Xform::ON_Xform(const ON_3dPoint& P,
   m_xform[3][3] = 1;
 }
 
-ON_Xform::ON_Xform(const ON_Matrix& m) { *this = m; }
+ON_Xform::ON_Xform (const ON_Matrix& m) { *this = m; }
 
 ///////////////////////////////////////////////////////////////
 //
@@ -520,13 +520,13 @@ ON_Xform::ON_Xform(const ON_Matrix& m) { *this = m; }
 //
 
 double*
-ON_Xform::operator[](int i)
+ON_Xform::operator[] (int i)
 {
   return (i >= 0 && i < 4) ? &m_xform[i][0] : NULL;
 }
 
 const double*
-ON_Xform::operator[](int i) const
+ON_Xform::operator[] (int i) const
 {
   return (i >= 0 && i < 4) ? &m_xform[i][0] : NULL;
 }
@@ -537,27 +537,27 @@ ON_Xform::operator[](int i) const
 //
 
 ON_Xform&
-ON_Xform::operator=(int d)
+ON_Xform::operator= (int d)
 {
-  memset(m_xform, 0, sizeof(m_xform));
+  memset (m_xform, 0, sizeof (m_xform));
   m_xform[0][0] = m_xform[1][1] = m_xform[2][2] = (double)d;
   m_xform[3][3] = 1.0;
   return *this;
 }
 
 ON_Xform&
-ON_Xform::operator=(float d)
+ON_Xform::operator= (float d)
 {
-  memset(m_xform, 0, sizeof(m_xform));
+  memset (m_xform, 0, sizeof (m_xform));
   m_xform[0][0] = m_xform[1][1] = m_xform[2][2] = (double)d;
   m_xform[3][3] = 1.0;
   return *this;
 }
 
 ON_Xform&
-ON_Xform::operator=(double d)
+ON_Xform::operator= (double d)
 {
-  memset(m_xform, 0, sizeof(m_xform));
+  memset (m_xform, 0, sizeof (m_xform));
   m_xform[0][0] = m_xform[1][1] = m_xform[2][2] = d;
   m_xform[3][3] = 1.0;
   return *this;
@@ -570,7 +570,7 @@ ON_Xform::operator=(double d)
 // All non-commutative operations have "this" as left hand side and
 // argument as right hand side.
 ON_Xform
-ON_Xform::operator*(const ON_Xform& rhs) const
+ON_Xform::operator* (const ON_Xform& rhs) const
 {
   double m[4][4];
   const double* p = &rhs.m_xform[0][0];
@@ -611,11 +611,11 @@ ON_Xform::operator*(const ON_Xform& rhs) const
   m[3][3] = m_xform[3][0] * p[3] + m_xform[3][1] * p[7] + m_xform[3][2] * p[11] +
             m_xform[3][3] * p[15];
 
-  return ON_Xform(m);
+  return ON_Xform (m);
 }
 
 ON_Xform
-ON_Xform::operator+(const ON_Xform& rhs) const
+ON_Xform::operator+ (const ON_Xform& rhs) const
 {
   double m[4][4];
   const double* p = &rhs.m_xform[0][0];
@@ -640,11 +640,11 @@ ON_Xform::operator+(const ON_Xform& rhs) const
   m[3][2] = m_xform[3][2] + p[14];
   m[3][3] = m_xform[3][3] + p[15];
 
-  return ON_Xform(m);
+  return ON_Xform (m);
 }
 
 ON_Xform
-ON_Xform::operator-(const ON_Xform& rhs) const
+ON_Xform::operator- (const ON_Xform& rhs) const
 {
   double m[4][4];
   const double* p = &rhs.m_xform[0][0];
@@ -669,7 +669,7 @@ ON_Xform::operator-(const ON_Xform& rhs) const
   m[3][2] = m_xform[3][2] - p[14];
   m[3][3] = m_xform[3][3] - p[15];
 
-  return ON_Xform(m);
+  return ON_Xform (m);
 }
 
 ///////////////////////////////////////////////////////////////
@@ -680,28 +680,28 @@ ON_Xform::operator-(const ON_Xform& rhs) const
 void
 ON_Xform::Zero()
 {
-  memset(m_xform, 0, sizeof(m_xform));
+  memset (m_xform, 0, sizeof (m_xform));
 }
 
 void
 ON_Xform::Identity()
 {
-  memset(m_xform, 0, sizeof(m_xform));
+  memset (m_xform, 0, sizeof (m_xform));
   m_xform[0][0] = m_xform[1][1] = m_xform[2][2] = m_xform[3][3] = 1.0;
 }
 
 void
-ON_Xform::Diagonal(double d)
+ON_Xform::Diagonal (double d)
 {
-  memset(m_xform, 0, sizeof(m_xform));
+  memset (m_xform, 0, sizeof (m_xform));
   m_xform[0][0] = m_xform[1][1] = m_xform[2][2] = d;
   m_xform[3][3] = 1.0;
 }
 
 void
-ON_Xform::Scale(double x, double y, double z)
+ON_Xform::Scale (double x, double y, double z)
 {
-  memset(m_xform, 0, sizeof(m_xform));
+  memset (m_xform, 0, sizeof (m_xform));
   m_xform[0][0] = x;
   m_xform[1][1] = y;
   m_xform[2][2] = z;
@@ -709,9 +709,9 @@ ON_Xform::Scale(double x, double y, double z)
 }
 
 void
-ON_Xform::Scale(const ON_3dVector& v)
+ON_Xform::Scale (const ON_3dVector& v)
 {
-  memset(m_xform, 0, sizeof(m_xform));
+  memset (m_xform, 0, sizeof (m_xform));
   m_xform[0][0] = v.x;
   m_xform[1][1] = v.y;
   m_xform[2][2] = v.z;
@@ -719,40 +719,40 @@ ON_Xform::Scale(const ON_3dVector& v)
 }
 
 void
-ON_Xform::Scale(ON_3dPoint fixed_point, double scale_factor)
+ON_Xform::Scale (ON_3dPoint fixed_point, double scale_factor)
 {
   if (fixed_point.x == 0.0 && fixed_point.y == 0.0 && fixed_point.z == 0.0) {
-    Scale(scale_factor, scale_factor, scale_factor);
+    Scale (scale_factor, scale_factor, scale_factor);
   }
   else {
     ON_Xform t0, t1, s;
-    t0.Translation(ON_origin - fixed_point);
-    s.Scale(scale_factor, scale_factor, scale_factor);
-    t1.Translation(fixed_point - ON_origin);
-    operator=(t1* s* t0);
+    t0.Translation (ON_origin - fixed_point);
+    s.Scale (scale_factor, scale_factor, scale_factor);
+    t1.Translation (fixed_point - ON_origin);
+    operator= (t1* s* t0);
   }
 }
 
 void
-ON_Xform::Scale(const ON_Plane& plane,
-                double x_scale_factor,
-                double y_scale_factor,
-                double z_scale_factor)
+ON_Xform::Scale (const ON_Plane& plane,
+                 double x_scale_factor,
+                 double y_scale_factor,
+                 double z_scale_factor)
 {
-  Shear(plane,
-        x_scale_factor * plane.xaxis,
-        y_scale_factor * plane.yaxis,
-        z_scale_factor * plane.zaxis);
+  Shear (plane,
+         x_scale_factor * plane.xaxis,
+         y_scale_factor * plane.yaxis,
+         z_scale_factor * plane.zaxis);
 }
 
 void
-ON_Xform::Shear(const ON_Plane& plane,
-                const ON_3dVector& x1,
-                const ON_3dVector& y1,
-                const ON_3dVector& z1)
+ON_Xform::Shear (const ON_Plane& plane,
+                 const ON_3dVector& x1,
+                 const ON_3dVector& y1,
+                 const ON_3dVector& z1)
 {
-  ON_Xform t0, t1, s0(1), s1(1);
-  t0.Translation(ON_origin - plane.origin);
+  ON_Xform t0, t1, s0 (1), s1 (1);
+  t0.Translation (ON_origin - plane.origin);
   s0.m_xform[0][0] = plane.xaxis.x;
   s0.m_xform[0][1] = plane.xaxis.y;
   s0.m_xform[0][2] = plane.xaxis.z;
@@ -771,12 +771,12 @@ ON_Xform::Shear(const ON_Plane& plane,
   s1.m_xform[0][2] = z1.x;
   s1.m_xform[1][2] = z1.y;
   s1.m_xform[2][2] = z1.z;
-  t1.Translation(plane.origin - ON_origin);
-  operator=(t1* s1* s0* t0);
+  t1.Translation (plane.origin - ON_origin);
+  operator= (t1* s1* s0* t0);
 }
 
 void
-ON_Xform::Translation(double x, double y, double z)
+ON_Xform::Translation (double x, double y, double z)
 {
   Identity();
   m_xform[0][3] = x;
@@ -786,7 +786,7 @@ ON_Xform::Translation(double x, double y, double z)
 }
 
 void
-ON_Xform::Translation(const ON_3dVector& v)
+ON_Xform::Translation (const ON_3dVector& v)
 {
   Identity();
   m_xform[0][3] = v.x;
@@ -796,7 +796,7 @@ ON_Xform::Translation(const ON_3dVector& v)
 }
 
 void
-ON_Xform::PlanarProjection(const ON_Plane& plane)
+ON_Xform::PlanarProjection (const ON_Plane& plane)
 {
   int i, j;
   double x[3] = {plane.xaxis.x, plane.xaxis.y, plane.xaxis.z};
@@ -822,7 +822,7 @@ ON_Xform::PlanarProjection(const ON_Plane& plane)
 //
 
 void
-ON_Xform::ActOnLeft(double x, double y, double z, double w, double v[4]) const
+ON_Xform::ActOnLeft (double x, double y, double z, double w, double v[4]) const
 {
   if (v) {
     v[0] =
@@ -837,7 +837,7 @@ ON_Xform::ActOnLeft(double x, double y, double z, double w, double v[4]) const
 }
 
 void
-ON_Xform::ActOnRight(double x, double y, double z, double w, double v[4]) const
+ON_Xform::ActOnRight (double x, double y, double z, double w, double v[4]) const
 {
   if (v) {
     v[0] =
@@ -852,7 +852,7 @@ ON_Xform::ActOnRight(double x, double y, double z, double w, double v[4]) const
 }
 
 ON_2dPoint
-ON_Xform::operator*(const ON_2dPoint& p) const
+ON_Xform::operator* (const ON_2dPoint& p) const
 {
   const double x = p.x; // optimizer should put x,y in registers
   const double y = p.y;
@@ -862,11 +862,11 @@ ON_Xform::operator*(const ON_2dPoint& p) const
   xh[1] = m[4] * x + m[5] * y + m[7];
   w = m[12] * x + m[13] * y + m[15];
   w = (w != 0.0) ? 1.0 / w : 1.0;
-  return ON_2dPoint(w * xh[0], w * xh[1]);
+  return ON_2dPoint (w * xh[0], w * xh[1]);
 }
 
 ON_3dPoint
-ON_Xform::operator*(const ON_3dPoint& p) const
+ON_Xform::operator* (const ON_3dPoint& p) const
 {
   const double x = p.x; // optimizer should put x,y,z in registers
   const double y = p.y;
@@ -878,11 +878,11 @@ ON_Xform::operator*(const ON_3dPoint& p) const
   xh[2] = m[8] * x + m[9] * y + m[10] * z + m[11];
   w = m[12] * x + m[13] * y + m[14] * z + m[15];
   w = (w != 0.0) ? 1.0 / w : 1.0;
-  return ON_3dPoint(w * xh[0], w * xh[1], w * xh[2]);
+  return ON_3dPoint (w * xh[0], w * xh[1], w * xh[2]);
 }
 
 ON_4dPoint
-ON_Xform::operator*(const ON_4dPoint& h) const
+ON_Xform::operator* (const ON_4dPoint& h) const
 {
   const double x = h.x; // optimizer should put x,y,z,w in registers
   const double y = h.y;
@@ -894,11 +894,11 @@ ON_Xform::operator*(const ON_4dPoint& h) const
   xh[1] = m[4] * x + m[5] * y + m[6] * z + m[7] * w;
   xh[2] = m[8] * x + m[9] * y + m[10] * z + m[11] * w;
   xh[3] = m[12] * x + m[13] * y + m[14] * z + m[15] * w;
-  return ON_4dPoint(xh[0], xh[1], xh[2], xh[3]);
+  return ON_4dPoint (xh[0], xh[1], xh[2], xh[3]);
 }
 
 ON_2dVector
-ON_Xform::operator*(const ON_2dVector& v) const
+ON_Xform::operator* (const ON_2dVector& v) const
 {
   const double x = v.x; // optimizer should put x,y in registers
   const double y = v.y;
@@ -906,11 +906,11 @@ ON_Xform::operator*(const ON_2dVector& v) const
   const double* m = &m_xform[0][0];
   xh[0] = m[0] * x + m[1] * y;
   xh[1] = m[4] * x + m[5] * y;
-  return ON_2dVector(xh[0], xh[1]);
+  return ON_2dVector (xh[0], xh[1]);
 }
 
 ON_3dVector
-ON_Xform::operator*(const ON_3dVector& v) const
+ON_Xform::operator* (const ON_3dVector& v) const
 {
   const double x = v.x; // optimizer should put x,y,z in registers
   const double y = v.y;
@@ -920,7 +920,7 @@ ON_Xform::operator*(const ON_3dVector& v) const
   xh[0] = m[0] * x + m[1] * y + m[2] * z;
   xh[1] = m[4] * x + m[5] * y + m[6] * z;
   xh[2] = m[8] * x + m[9] * y + m[10] * z;
-  return ON_3dVector(xh[0], xh[1], xh[2]);
+  return ON_3dVector (xh[0], xh[1], xh[2]);
 }
 
 bool
@@ -930,96 +930,96 @@ ON_Xform::IsValid() const
   const double* x = &m_xform[0][0];
   bool rc = true;
   for (i = 0; i < 16 && rc; i++) {
-    rc = ON_IsValid(*x++);
+    rc = ON_IsValid (*x++);
   }
   return rc;
 }
 
 bool
-ON_Xform::IsIdentity(double zero_tolerance) const
+ON_Xform::IsIdentity (double zero_tolerance) const
 {
   // The code below will return false if m_xform[][] contains
   // a nan value.
   const double* v = &m_xform[0][0];
   for (int i = 0; i < 3; i++) {
-    if (!(fabs(1.0 - *v++) <= zero_tolerance))
+    if (!(fabs (1.0 - *v++) <= zero_tolerance))
       return false;
-    if (!(fabs(*v++) <= zero_tolerance))
+    if (!(fabs (*v++) <= zero_tolerance))
       return false;
-    if (!(fabs(*v++) <= zero_tolerance))
+    if (!(fabs (*v++) <= zero_tolerance))
       return false;
-    if (!(fabs(*v++) <= zero_tolerance))
+    if (!(fabs (*v++) <= zero_tolerance))
       return false;
-    if (!(fabs(*v++) <= zero_tolerance))
+    if (!(fabs (*v++) <= zero_tolerance))
       return false;
   }
-  if (!(fabs(1.0 - *v) <= zero_tolerance))
+  if (!(fabs (1.0 - *v) <= zero_tolerance))
     return false;
   return true;
 }
 
 bool
-ON_Xform::IsNotIdentity(double zero_tolerance) const
+ON_Xform::IsNotIdentity (double zero_tolerance) const
 {
   // The code below will return false if m_xform[][] contains
   // a nan value.
   const double* v = &m_xform[0][0];
   for (int i = 0; i < 3; i++) {
-    if (fabs(1.0 - *v++) > zero_tolerance)
+    if (fabs (1.0 - *v++) > zero_tolerance)
       return true;
-    if (fabs(*v++) > zero_tolerance)
+    if (fabs (*v++) > zero_tolerance)
       return true;
-    if (fabs(*v++) > zero_tolerance)
+    if (fabs (*v++) > zero_tolerance)
       return true;
-    if (fabs(*v++) > zero_tolerance)
+    if (fabs (*v++) > zero_tolerance)
       return true;
-    if (fabs(*v++) > zero_tolerance)
+    if (fabs (*v++) > zero_tolerance)
       return true;
   }
-  if (fabs(1.0 - *v) > zero_tolerance)
+  if (fabs (1.0 - *v) > zero_tolerance)
     return true;
 
   return false;
 }
 
 bool
-ON_Xform::IsTranslation(double zero_tolerance) const
+ON_Xform::IsTranslation (double zero_tolerance) const
 {
   const double* v = &m_xform[0][0];
-  if (fabs(1.0 - *v++) > zero_tolerance)
+  if (fabs (1.0 - *v++) > zero_tolerance)
     return false;
-  if (fabs(*v++) > zero_tolerance)
+  if (fabs (*v++) > zero_tolerance)
     return false;
-  if (fabs(*v++) > zero_tolerance)
-    return false;
-  v++;
-  if (fabs(*v++) > zero_tolerance)
-    return false;
-  if (fabs(1.0 - *v++) > zero_tolerance)
-    return false;
-  if (fabs(*v++) > zero_tolerance)
+  if (fabs (*v++) > zero_tolerance)
     return false;
   v++;
-  if (fabs(*v++) > zero_tolerance)
+  if (fabs (*v++) > zero_tolerance)
     return false;
-  if (fabs(*v++) > zero_tolerance)
+  if (fabs (1.0 - *v++) > zero_tolerance)
     return false;
-  if (fabs(1.0 - *v++) > zero_tolerance)
+  if (fabs (*v++) > zero_tolerance)
     return false;
   v++;
-  if (fabs(*v++) > zero_tolerance)
+  if (fabs (*v++) > zero_tolerance)
     return false;
-  if (fabs(*v++) > zero_tolerance)
+  if (fabs (*v++) > zero_tolerance)
     return false;
-  if (fabs(*v++) > zero_tolerance)
+  if (fabs (1.0 - *v++) > zero_tolerance)
     return false;
-  if (fabs(1.0 - *v) > zero_tolerance)
+  v++;
+  if (fabs (*v++) > zero_tolerance)
+    return false;
+  if (fabs (*v++) > zero_tolerance)
+    return false;
+  if (fabs (*v++) > zero_tolerance)
+    return false;
+  if (fabs (1.0 - *v) > zero_tolerance)
     return false;
   return true;
 }
 
 int
-ON_Xform::Compare(const ON_Xform& other) const
+ON_Xform::Compare (const ON_Xform& other) const
 {
   const double* a = &m_xform[0][0];
   const double* b = &other.m_xform[0][0];
@@ -1047,19 +1047,19 @@ ON_Xform::IsSimilarity() const
     double tol = 1.0e-4;
     double dottol = 1.0e-3;
     double det = Determinant();
-    if (fabs(det) <= ON_SQRT_EPSILON) {
+    if (fabs (det) <= ON_SQRT_EPSILON) {
       // projection or worse
       rc = 0;
     }
     else {
-      ON_3dVector X(m_xform[0][0], m_xform[1][0], m_xform[2][0]);
-      ON_3dVector Y(m_xform[0][1], m_xform[1][1], m_xform[2][1]);
-      ON_3dVector Z(m_xform[0][2], m_xform[1][2], m_xform[2][2]);
+      ON_3dVector X (m_xform[0][0], m_xform[1][0], m_xform[2][0]);
+      ON_3dVector Y (m_xform[0][1], m_xform[1][1], m_xform[2][1]);
+      ON_3dVector Z (m_xform[0][2], m_xform[1][2], m_xform[2][2]);
       double sx = X.Length();
       double sy = Y.Length();
       double sz = Z.Length();
-      if (sx == 0.0 || sy == 0.0 || sz == 0.0 || fabs(sx - sy) > tol ||
-          fabs(sy - sz) > tol || fabs(sz - sx) > tol) {
+      if (sx == 0.0 || sy == 0.0 || sz == 0.0 || fabs (sx - sy) > tol ||
+          fabs (sy - sz) > tol || fabs (sz - sx) > tol) {
         // non-uniform scale or worse
         rc = 0;
       }
@@ -1067,7 +1067,7 @@ ON_Xform::IsSimilarity() const
         double xy = (X * Y) / (sx * sy);
         double yz = (Y * Z) / (sy * sz);
         double zx = (Z * X) / (sz * sx);
-        if (fabs(xy) > dottol || fabs(yz) > dottol || fabs(zx) > dottol) {
+        if (fabs (xy) > dottol || fabs (yz) > dottol || fabs (zx) > dottol) {
           // shear or worse
           rc = 0;
         }
@@ -1116,21 +1116,21 @@ ON_Xform::Transpose()
 }
 
 int
-ON_Xform::Rank(double* pivot) const
+ON_Xform::Rank (double* pivot) const
 {
   double I[4][4], d = 0.0, p = 0.0;
-  int r = Inv(&m_xform[0][0], I, &d, &p);
+  int r = Inv (&m_xform[0][0], I, &d, &p);
   if (pivot)
     *pivot = p;
   return r;
 }
 
 double
-ON_Xform::Determinant(double* pivot) const
+ON_Xform::Determinant (double* pivot) const
 {
   double I[4][4], d = 0.0, p = 0.0;
   // int rank =
-  Inv(&m_xform[0][0], I, &d, &p);
+  Inv (&m_xform[0][0], I, &d, &p);
   if (pivot)
     *pivot = p;
   if (d != 0.0)
@@ -1139,38 +1139,38 @@ ON_Xform::Determinant(double* pivot) const
 }
 
 bool
-ON_Xform::Invert(double* pivot)
+ON_Xform::Invert (double* pivot)
 {
   double mrofx[4][4], d = 0.0, p = 0.0;
-  int rank = Inv(&m_xform[0][0], mrofx, &d, &p);
-  memcpy(m_xform, mrofx, sizeof(m_xform));
+  int rank = Inv (&m_xform[0][0], mrofx, &d, &p);
+  memcpy (m_xform, mrofx, sizeof (m_xform));
   if (pivot)
     *pivot = p;
   return (rank == 4) ? true : false;
 }
 
 ON_Xform
-ON_Xform::Inverse(double* pivot) const
+ON_Xform::Inverse (double* pivot) const
 {
   ON_Xform inv;
   double d = 0.0, p = 0.0;
   // int rank =
-  Inv(&m_xform[0][0], inv.m_xform, &d, &p);
+  Inv (&m_xform[0][0], inv.m_xform, &d, &p);
   if (pivot)
     *pivot = p;
   return inv;
 }
 
 double
-ON_Xform::GetSurfaceNormalXform(ON_Xform& N_xform) const
+ON_Xform::GetSurfaceNormalXform (ON_Xform& N_xform) const
 {
   // since were are transforming vectors, we don't need
   // the translation column or bottom row.
-  memcpy(&N_xform.m_xform[0][0], &m_xform[0][0], 3 * sizeof(N_xform.m_xform[0][0]));
+  memcpy (&N_xform.m_xform[0][0], &m_xform[0][0], 3 * sizeof (N_xform.m_xform[0][0]));
   N_xform.m_xform[0][3] = 0.0;
-  memcpy(&N_xform.m_xform[1][0], &m_xform[1][0], 3 * sizeof(N_xform.m_xform[0][0]));
+  memcpy (&N_xform.m_xform[1][0], &m_xform[1][0], 3 * sizeof (N_xform.m_xform[0][0]));
   N_xform.m_xform[1][3] = 0.0;
-  memcpy(&N_xform.m_xform[2][0], &m_xform[2][0], 3 * sizeof(N_xform.m_xform[0][0]));
+  memcpy (&N_xform.m_xform[2][0], &m_xform[2][0], 3 * sizeof (N_xform.m_xform[0][0]));
   N_xform.m_xform[2][3] = 0.0;
   N_xform.m_xform[3][0] = 0.0;
   N_xform.m_xform[3][1] = 0.0;
@@ -1179,8 +1179,8 @@ ON_Xform::GetSurfaceNormalXform(ON_Xform& N_xform) const
 
   double mrofx[4][4], d = 0.0, p = 0.0;
   double dtol = ON_SQRT_EPSILON * ON_SQRT_EPSILON * ON_SQRT_EPSILON;
-  if (4 == Inv(&N_xform.m_xform[0][0], mrofx, &d, &p) && fabs(d) > dtol &&
-      fabs(d) * dtol < 1.0 && fabs(p) > ON_EPSILON * fabs(d)) {
+  if (4 == Inv (&N_xform.m_xform[0][0], mrofx, &d, &p) && fabs (d) > dtol &&
+      fabs (d) * dtol < 1.0 && fabs (p) > ON_EPSILON * fabs (d)) {
     // Set N_xform = transpose of mrofx (only upper 3x3 matters)
     N_xform.m_xform[0][0] = mrofx[0][0];
     N_xform.m_xform[0][1] = mrofx[1][0];
@@ -1201,12 +1201,12 @@ ON_Xform::GetSurfaceNormalXform(ON_Xform& N_xform) const
 }
 
 double
-ON_Xform::GetMappingXforms(ON_Xform& P_xform, ON_Xform& N_xform) const
+ON_Xform::GetMappingXforms (ON_Xform& P_xform, ON_Xform& N_xform) const
 {
   double d = 0.0, p = 0.0;
   double dtol = ON_SQRT_EPSILON * ON_SQRT_EPSILON * ON_SQRT_EPSILON;
-  if (4 == Inv(&m_xform[0][0], P_xform.m_xform, &d, &p) && fabs(d) > dtol &&
-      fabs(d) * dtol < 1.0 && fabs(p) > ON_EPSILON * fabs(d)) {
+  if (4 == Inv (&m_xform[0][0], P_xform.m_xform, &d, &p) && fabs (d) > dtol &&
+      fabs (d) * dtol < 1.0 && fabs (p) > ON_EPSILON * fabs (d)) {
     // Set N_xform = transpose of this (only upper 3x3 matters)
     N_xform.m_xform[0][0] = m_xform[0][0];
     N_xform.m_xform[0][1] = m_xform[1][0];
@@ -1237,82 +1237,82 @@ ON_Xform::GetMappingXforms(ON_Xform& P_xform, ON_Xform& N_xform) const
 }
 
 void
-ON_Xform::Rotation(double angle,
-                   ON_3dVector axis, // 3d nonzero axis of rotation
-                   ON_3dPoint center // 3d center of rotation
+ON_Xform::Rotation (double angle,
+                    ON_3dVector axis, // 3d nonzero axis of rotation
+                    ON_3dPoint center // 3d center of rotation
 )
 {
-  Rotation(sin(angle), cos(angle), axis, center);
+  Rotation (sin (angle), cos (angle), axis, center);
 }
 
 void
-ON_Xform::Rotation(ON_3dVector start_dir,
-                   ON_3dVector end_dir,
-                   ON_3dPoint rotation_center)
+ON_Xform::Rotation (ON_3dVector start_dir,
+                    ON_3dVector end_dir,
+                    ON_3dPoint rotation_center)
 {
-  if (fabs(start_dir.Length() - 1.0) > ON_SQRT_EPSILON)
+  if (fabs (start_dir.Length() - 1.0) > ON_SQRT_EPSILON)
     start_dir.Unitize();
-  if (fabs(end_dir.Length() - 1.0) > ON_SQRT_EPSILON)
+  if (fabs (end_dir.Length() - 1.0) > ON_SQRT_EPSILON)
     end_dir.Unitize();
   double cos_angle = start_dir * end_dir;
-  ON_3dVector axis = ON_CrossProduct(start_dir, end_dir);
+  ON_3dVector axis = ON_CrossProduct (start_dir, end_dir);
   double sin_angle = axis.Length();
   if (0.0 == sin_angle || !axis.Unitize()) {
-    axis.PerpendicularTo(start_dir);
+    axis.PerpendicularTo (start_dir);
     axis.Unitize();
     sin_angle = 0.0;
     cos_angle = (cos_angle < 0.0) ? -1.0 : 1.0;
   }
-  Rotation(sin_angle, cos_angle, axis, rotation_center);
+  Rotation (sin_angle, cos_angle, axis, rotation_center);
 }
 
 void
-ON_Xform::Rotation(double sin_angle,
-                   double cos_angle,
-                   ON_3dVector axis,
-                   ON_3dPoint center)
+ON_Xform::Rotation (double sin_angle,
+                    double cos_angle,
+                    ON_3dVector axis,
+                    ON_3dPoint center)
 {
   Identity();
 
   for (;;) {
     // 29 June 2005 Dale Lear
     //     Kill noise in input
-    if (fabs(sin_angle) >= 1.0 - ON_SQRT_EPSILON &&
-        fabs(cos_angle) <= ON_SQRT_EPSILON) {
+    if (fabs (sin_angle) >= 1.0 - ON_SQRT_EPSILON &&
+        fabs (cos_angle) <= ON_SQRT_EPSILON) {
       cos_angle = 0.0;
       sin_angle = (sin_angle < 0.0) ? -1.0 : 1.0;
       break;
     }
 
-    if (fabs(cos_angle) >= 1.0 - ON_SQRT_EPSILON &&
-        fabs(sin_angle) <= ON_SQRT_EPSILON) {
+    if (fabs (cos_angle) >= 1.0 - ON_SQRT_EPSILON &&
+        fabs (sin_angle) <= ON_SQRT_EPSILON) {
       cos_angle = (cos_angle < 0.0) ? -1.0 : 1.0;
       sin_angle = 0.0;
       break;
     }
 
-    if (fabs(cos_angle * cos_angle + sin_angle * sin_angle - 1.0) > ON_SQRT_EPSILON) {
-      ON_2dVector cs(cos_angle, sin_angle);
+    if (fabs (cos_angle * cos_angle + sin_angle * sin_angle - 1.0) > ON_SQRT_EPSILON) {
+      ON_2dVector cs (cos_angle, sin_angle);
       if (cs.Unitize()) {
         cos_angle = cs.x;
         sin_angle = cs.y;
         // no break here
       }
       else {
-        ON_ERROR("sin_angle and cos_angle are both zero.");
+        ON_ERROR ("sin_angle and cos_angle are both zero.");
         cos_angle = 1.0;
         sin_angle = 0.0;
         break;
       }
     }
 
-    if (fabs(cos_angle) > 1.0 - ON_EPSILON || fabs(sin_angle) < ON_EPSILON) {
+    if (fabs (cos_angle) > 1.0 - ON_EPSILON || fabs (sin_angle) < ON_EPSILON) {
       cos_angle = (cos_angle < 0.0) ? -1.0 : 1.0;
       sin_angle = 0.0;
       break;
     }
 
-    if (fabs(sin_angle) > 1.0 - ON_EPSILON || fabs(cos_angle) < ON_EPSILON) {
+    if (fabs (sin_angle) > 1.0 - ON_EPSILON || fabs (cos_angle) < ON_EPSILON) {
       cos_angle = 0.0;
       sin_angle = (sin_angle < 0.0) ? -1.0 : 1.0;
       break;
@@ -1324,7 +1324,7 @@ ON_Xform::Rotation(double sin_angle,
   if (sin_angle != 0.0 || cos_angle != 1.0) {
     const double one_minus_cos_angle = 1.0 - cos_angle;
     ON_3dVector a = axis;
-    if (fabs(a.LengthSquared() - 1.0) > ON_EPSILON)
+    if (fabs (a.LengthSquared() - 1.0) > ON_EPSILON)
       a.Unitize();
 
     m_xform[0][0] = a.x * a.x * one_minus_cos_angle + cos_angle;
@@ -1354,7 +1354,7 @@ ON_Xform::Rotation(double sin_angle,
 }
 
 void
-ON_Xform::Rotation(
+ON_Xform::Rotation (
     const ON_3dVector& X0, // initial frame X (X,Y,Z = right handed orthonormal frame)
     const ON_3dVector& Y0, // initial frame Y
     const ON_3dVector& Z0, // initial frame Z
@@ -1396,20 +1396,20 @@ ON_Xform::Rotation(
 }
 
 void
-ON_Xform::Rotation(const ON_Plane& plane0, const ON_Plane& plane1)
+ON_Xform::Rotation (const ON_Plane& plane0, const ON_Plane& plane1)
 {
-  Rotation(plane0.origin,
-           plane0.xaxis,
-           plane0.yaxis,
-           plane0.zaxis,
-           plane1.origin,
-           plane1.xaxis,
-           plane1.yaxis,
-           plane1.zaxis);
+  Rotation (plane0.origin,
+            plane0.xaxis,
+            plane0.yaxis,
+            plane0.zaxis,
+            plane1.origin,
+            plane1.xaxis,
+            plane1.yaxis,
+            plane1.zaxis);
 }
 
 void
-ON_Xform::Rotation(        // (not strictly a rotation)
+ON_Xform::Rotation (       // (not strictly a rotation)
                            // transformation maps P0 to P1, P0+X0 to P1+X1, ...
     const ON_3dPoint& P0,  // initial frame center
     const ON_3dVector& X0, // initial frame X
@@ -1425,20 +1425,20 @@ ON_Xform::Rotation(        // (not strictly a rotation)
 
   // T0 translates point P0 to (0,0,0)
   ON_Xform T0;
-  T0.Translation(-P0.x, -P0.y, -P0.z);
+  T0.Translation (-P0.x, -P0.y, -P0.z);
 
   ON_Xform R;
-  R.Rotation(X0, Y0, Z0, X1, Y1, Z1);
+  R.Rotation (X0, Y0, Z0, X1, Y1, Z1);
 
   // T1 translates (0,0,0) to point o1
   ON_Xform T1;
-  T1.Translation(P1);
+  T1.Translation (P1);
 
   *this = T1 * R * T0;
 }
 
 void
-ON_Xform::Mirror(ON_3dPoint point_on_mirror_plane, ON_3dVector normal_to_mirror_plane)
+ON_Xform::Mirror (ON_3dPoint point_on_mirror_plane, ON_3dVector normal_to_mirror_plane)
 {
   ON_3dPoint P = point_on_mirror_plane;
   ON_3dVector N = normal_to_mirror_plane;
@@ -1466,7 +1466,7 @@ ON_Xform::Mirror(ON_3dPoint point_on_mirror_plane, ON_3dVector normal_to_mirror_
 }
 
 bool
-ON_Xform::ChangeBasis(
+ON_Xform::ChangeBasis (
     // General: If you have points defined with respect to planes, this
     //          computes the transformation to change coordinates from
     //          one plane to another.  The predefined world plane
@@ -1479,18 +1479,18 @@ ON_Xform::ChangeBasis(
     const ON_Plane& plane1  // final plane
 )
 {
-  return ChangeBasis(plane0.origin,
-                     plane0.xaxis,
-                     plane0.yaxis,
-                     plane0.zaxis,
-                     plane1.origin,
-                     plane1.xaxis,
-                     plane1.yaxis,
-                     plane1.zaxis);
+  return ChangeBasis (plane0.origin,
+                      plane0.xaxis,
+                      plane0.yaxis,
+                      plane0.zaxis,
+                      plane1.origin,
+                      plane1.xaxis,
+                      plane1.yaxis,
+                      plane1.zaxis);
 }
 
 bool
-ON_Xform::ChangeBasis(
+ON_Xform::ChangeBasis (
     const ON_3dVector& X0, // initial frame X (X,Y,Z = arbitrary basis)
     const ON_3dVector& Y0, // initial frame Y
     const ON_3dVector& Z0, // initial frame Z
@@ -1552,7 +1552,7 @@ ON_Xform::ChangeBasis(
     R[i2][i0] = 0.0;
   }
 
-  if (fabs(R[i1][i1]) < fabs(R[i2][i2])) {
+  if (fabs (R[i1][i1]) < fabs (R[i2][i2])) {
     int i = i1;
     i1 = i2;
     i2 = i;
@@ -1635,7 +1635,7 @@ ON_Xform::ChangeBasis(
 }
 
 bool
-ON_Xform::ChangeBasis(
+ON_Xform::ChangeBasis (
     const ON_3dPoint& P0,  // initial frame center
     const ON_3dVector& X0, // initial frame X (X,Y,Z = arbitrary basis)
     const ON_3dVector& Y0, // initial frame Y
@@ -1650,24 +1650,24 @@ ON_Xform::ChangeBasis(
   // Q = P0 + a0*X0 + b0*Y0 + c0*Z0 = P1 + a1*X1 + b1*Y1 + c1*Z1
   // then this transform will map the point (a0,b0,c0) to (a1,b1,c1)
 
-  ON_Xform F0(P0, X0, Y0, Z0); // Frame 0
+  ON_Xform F0 (P0, X0, Y0, Z0); // Frame 0
 
   // T1 translates by -P1
   ON_Xform T1;
-  T1.Translation(-P1.x, -P1.y, -P1.z);
+  T1.Translation (-P1.x, -P1.y, -P1.z);
 
   ON_Xform CB;
-  rc = CB.ChangeBasis(ON_xaxis, ON_yaxis, ON_zaxis, X1, Y1, Z1);
+  rc = CB.ChangeBasis (ON_xaxis, ON_yaxis, ON_zaxis, X1, Y1, Z1);
 
   *this = CB * T1 * F0;
   return rc;
 }
 
 void
-ON_Xform::WorldToCamera(const ON_3dPoint& cameraLocation,
-                        const ON_3dVector& cameraX,
-                        const ON_3dVector& cameraY,
-                        const ON_3dVector& cameraZ)
+ON_Xform::WorldToCamera (const ON_3dPoint& cameraLocation,
+                         const ON_3dVector& cameraX,
+                         const ON_3dVector& cameraY,
+                         const ON_3dVector& cameraZ)
 {
   // see comments in tl2_xform.h for details.
   /* compute world to camera coordinate xform */
@@ -1691,10 +1691,10 @@ ON_Xform::WorldToCamera(const ON_3dPoint& cameraLocation,
 }
 
 void
-ON_Xform::CameraToWorld(const ON_3dPoint& cameraLocation,
-                        const ON_3dVector& cameraX,
-                        const ON_3dVector& cameraY,
-                        const ON_3dVector& cameraZ)
+ON_Xform::CameraToWorld (const ON_3dPoint& cameraLocation,
+                         const ON_3dVector& cameraX,
+                         const ON_3dVector& cameraY,
+                         const ON_3dVector& cameraZ)
 {
   // see comments in tl2_xform.h for details.
   /* compute camera to world coordinate m_xform */
@@ -1715,13 +1715,13 @@ ON_Xform::CameraToWorld(const ON_3dPoint& cameraLocation,
 }
 
 bool
-ON_Xform::CameraToClip(ON_BOOL32 bPerspective,
-                       double left,
-                       double right,
-                       double bottom,
-                       double top,
-                       double near_dist,
-                       double far_dist)
+ON_Xform::CameraToClip (ON_BOOL32 bPerspective,
+                        double left,
+                        double right,
+                        double bottom,
+                        double top,
+                        double near_dist,
+                        double far_dist)
 {
   double dd;
 
@@ -1810,13 +1810,13 @@ ON_Xform::CameraToClip(ON_BOOL32 bPerspective,
 }
 
 bool
-ON_Xform::ClipToCamera(ON_BOOL32 bPerspective,
-                       double left,
-                       double right,
-                       double bottom,
-                       double top,
-                       double near_dist,
-                       double far_dist)
+ON_Xform::ClipToCamera (ON_BOOL32 bPerspective,
+                        double left,
+                        double right,
+                        double bottom,
+                        double top,
+                        double near_dist,
+                        double far_dist)
 {
   // see comments in tl2_xform.h for details.
   double dd;
@@ -1881,7 +1881,7 @@ ON_Xform::ClipToCamera(ON_BOOL32 bPerspective,
 }
 
 bool
-ON_Xform::ClipToScreen(
+ON_Xform::ClipToScreen (
     double left, double right, double bottom, double top, double near_z, double far_z)
 {
   // see comments in tl2_xform.h for details.
@@ -1913,12 +1913,12 @@ ON_Xform::ClipToScreen(
 }
 
 bool
-ON_Xform::ScreenToClip(
+ON_Xform::ScreenToClip (
     double left, double right, double bottom, double top, double near_z, double far_z)
 {
   // see comments in tl2_xform.h for details.
   ON_Xform c2s;
-  bool rc = c2s.ClipToScreen(left, right, bottom, top, near_z, far_z);
+  bool rc = c2s.ClipToScreen (left, right, bottom, top, near_z, far_z);
   if (rc) {
     m_xform[0][0] = 1.0 / c2s[0][0];
     m_xform[0][3] = -c2s[0][3] / c2s[0][0];
@@ -1939,7 +1939,7 @@ ON_Xform::ScreenToClip(
 }
 
 int
-ON_Xform::ClipFlag4d(const double* point) const
+ON_Xform::ClipFlag4d (const double* point) const
 {
   if (!point)
     return 1 | 2 | 4 | 8 | 16 | 32;
@@ -1974,7 +1974,7 @@ ON_Xform::ClipFlag4d(const double* point) const
 }
 
 int
-ON_Xform::ClipFlag3d(const double* point) const
+ON_Xform::ClipFlag3d (const double* point) const
 {
   if (!point)
     return 1 | 2 | 4 | 8 | 16 | 32;
@@ -2003,35 +2003,41 @@ ON_Xform::ClipFlag3d(const double* point) const
 }
 
 int
-ON_Xform::ClipFlag4d(int count, int stride, const double* point, ON_BOOL32 bTestZ) const
+ON_Xform::ClipFlag4d (int count,
+                      int stride,
+                      const double* point,
+                      ON_BOOL32 bTestZ) const
 {
   int clip = 1 | 2 | 4 | 8;
   if (bTestZ)
     clip |= (16 | 32);
   if (point && ((count > 0 && stride >= 4) || count == 1)) {
     for (/*empty*/; clip && count--; point += stride) {
-      clip &= ClipFlag4d(point);
+      clip &= ClipFlag4d (point);
     }
   }
   return clip;
 }
 
 int
-ON_Xform::ClipFlag3d(int count, int stride, const double* point, ON_BOOL32 bTestZ) const
+ON_Xform::ClipFlag3d (int count,
+                      int stride,
+                      const double* point,
+                      ON_BOOL32 bTestZ) const
 {
   int clip = 1 | 2 | 4 | 8;
   if (bTestZ)
     clip |= (16 | 32);
   if (point && ((count > 0 && stride >= 3) || count == 1)) {
     for (/*empty*/; clip && count--; point += stride) {
-      clip &= ClipFlag3d(point);
+      clip &= ClipFlag3d (point);
     }
   }
   return clip;
 }
 
 int
-ON_Xform::ClipFlag3dBox(const double* boxmin, const double* boxmax) const
+ON_Xform::ClipFlag3dBox (const double* boxmin, const double* boxmax) const
 {
   int clip = 1 | 2 | 4 | 8 | 16 | 32;
   double point[3];
@@ -2043,7 +2049,7 @@ ON_Xform::ClipFlag3dBox(const double* boxmin, const double* boxmax) const
         point[1] = (j) ? boxmax[1] : boxmin[1];
         for (k = 0; k < 2; k++) {
           point[2] = (k) ? boxmax[2] : boxmin[2];
-          clip &= ClipFlag3d(point);
+          clip &= ClipFlag3d (point);
           if (!clip)
             return 0;
         }
@@ -2054,7 +2060,7 @@ ON_Xform::ClipFlag3dBox(const double* boxmin, const double* boxmax) const
 }
 
 ON_Xform&
-ON_Xform::operator=(const ON_Matrix& src)
+ON_Xform::operator= (const ON_Matrix& src)
 {
   int i, j;
   i = src.RowCount();
@@ -2070,7 +2076,7 @@ ON_Xform::operator=(const ON_Matrix& src)
 }
 
 bool
-ON_Xform::IntervalChange(int dir, ON_Interval old_interval, ON_Interval new_interval)
+ON_Xform::IntervalChange (int dir, ON_Interval old_interval, ON_Interval new_interval)
 {
   bool rc = false;
   Identity();

@@ -50,10 +50,10 @@ PCL_INSTANTIATE(Kmeans, PCL_POINT_TYPES);
 #include <pcl/ml/kmeans.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-pcl::Kmeans::Kmeans(unsigned int num_points, unsigned int num_dimensions)
-: num_points_(num_points)
-, num_dimensions_(num_dimensions)
-, points_to_clusters_(num_points_, 0)
+pcl::Kmeans::Kmeans (unsigned int num_points, unsigned int num_dimensions)
+: num_points_ (num_points)
+, num_dimensions_ (num_dimensions)
+, points_to_clusters_ (num_points_, 0)
 // data_ (num_points_, Point (num_dimensions_))
 {}
 
@@ -64,14 +64,14 @@ pcl::Kmeans::initialClusterPoints()
   for (ClusterId i = 0; i < num_clusters_; i++) {
     Point point; // each centroid is a point
     for (unsigned int dim = 0; dim < num_dimensions_; dim++)
-      point.push_back(0.0);
+      point.push_back (0.0);
     SetPoints set_of_points;
 
     // init centroids
-    centroids_.push_back(point);
+    centroids_.push_back (point);
 
     // init clusterId -> set of points
-    clusters_to_points_.push_back(set_of_points);
+    clusters_to_points_.push_back (set_of_points);
   }
 
   ClusterId cid;
@@ -81,7 +81,7 @@ pcl::Kmeans::initialClusterPoints()
     cid = pid % num_clusters_;
 
     points_to_clusters_[pid] = cid;
-    clusters_to_points_[cid].insert(pid);
+    clusters_to_points_[cid].insert (pid);
   }
 }
 
@@ -108,7 +108,7 @@ pcl::Kmeans::computeCentroids()
     }
     // if no point in the clusters, this goes to inf (correct!)
     for (unsigned int i = 0; i < num_dimensions_; i++) {
-      centroid[i] /= static_cast<float>(num_points_in_cluster);
+      centroid[i] /= static_cast<float> (num_points_in_cluster);
       // std::cout << centroid[i] << " ";
     }
     // std::cout << std::endl;
@@ -138,20 +138,20 @@ pcl::Kmeans::kMeans()
     // for each point
     for (PointId pid = 0; pid < num_points_; pid++) {
       // distance from current cluster
-      min = distance(centroids_[points_to_clusters_[pid]], data_[pid]);
+      min = distance (centroids_[points_to_clusters_[pid]], data_[pid]);
 
       // foreach centroid
       cid = 0;
       bool move = false;
       for (const auto& c : centroids_) {
-        d = distance(c, data_[pid]);
+        d = distance (c, data_[pid]);
         if (d < min) {
           min = d;
           move = true;
           to_cluster = cid;
 
           // remove from current cluster
-          clusters_to_points_[points_to_clusters_[pid]].erase(pid);
+          clusters_to_points_[points_to_clusters_[pid]].erase (pid);
 
           not_converged = true;
         }
@@ -162,7 +162,7 @@ pcl::Kmeans::kMeans()
       if (move) {
         // insert
         points_to_clusters_[pid] = to_cluster;
-        clusters_to_points_[to_cluster].insert(pid);
+        clusters_to_points_[to_cluster].insert (pid);
       }
     }
   } // end while

@@ -46,7 +46,7 @@ class ON_BrepFace;
 //   Use ON_Brep::NewPointOnFace() to create vertices that are
 //   points on faces.
 class ON_CLASS ON_BrepVertex : public ON_Point {
-  ON_OBJECT_DECLARE(ON_BrepVertex);
+  ON_OBJECT_DECLARE (ON_BrepVertex);
 
 public:
   // Union available for application use.
@@ -64,10 +64,10 @@ public:
   // In general, you should not directly create ON_BrepVertex classes.
   // Use ON_Brep::NewVertex instead.
   ON_BrepVertex();
-  ON_BrepVertex(int // vertex index
+  ON_BrepVertex (int // vertex index
   );
   ON_BrepVertex&
-  operator=(const ON_BrepVertex&);
+  operator= (const ON_BrepVertex&);
 
   // virtual ON_Object::SizeOf override
   unsigned int
@@ -113,7 +113,7 @@ public:
 
   // virtual ON_Geometry::ComponentIndex() override
   ON_COMPONENT_INDEX
-  ComponentIndex () const;
+  ComponentIndex() const;
 
   /////////////////////////////////////////////////////////////////
   // Interface
@@ -180,7 +180,7 @@ public:
   double m_tolerance;
 
 private:
-  ON_BrepVertex(const ON_BrepVertex&); // no implementation
+  ON_BrepVertex (const ON_BrepVertex&); // no implementation
 };
 
 /*
@@ -197,7 +197,7 @@ Description:
   agree.
 */
 class ON_CLASS ON_BrepEdge : public ON_CurveProxy {
-  ON_OBJECT_DECLARE(ON_BrepEdge);
+  ON_OBJECT_DECLARE (ON_BrepEdge);
 
 public:
   // Union available for application use.
@@ -211,7 +211,7 @@ public:
 
   // virtual ON_Curve::IsClosed override
   ON_BOOL32
-  IsClosed () const;
+  IsClosed() const;
 
   /////////////////////////////////////////////////////////////////
   // Construction
@@ -219,9 +219,9 @@ public:
   // In general, you should not directly create ON_BrepEdge classes.
   // Use ON_Brep::NewVertex instead.
   ON_BrepEdge();
-  ON_BrepEdge(int); // edge index
+  ON_BrepEdge (int); // edge index
   ON_BrepEdge&
-  operator=(const ON_BrepEdge&);
+  operator= (const ON_BrepEdge&);
 
   // virtual ON_Object function
   // The ON_BrepEdge override returns ON::curve_object.
@@ -304,11 +304,11 @@ public:
 
   // virtual ON_Geometry::ComponentIndex() override
   ON_COMPONENT_INDEX
-  ComponentIndex () const;
+  ComponentIndex() const;
 
   // virtual ON_Curve::Reverse override
   ON_BOOL32
-  Reverse ();
+  Reverse();
 
   // virtual ON_Curve::SetStartPoint override
   ON_BOOL32
@@ -396,7 +396,7 @@ public:
 private:
   friend class ON_Brep;
   ON_Brep* m_brep; // so isolated edge class edge can get at it's 3d curve
-  ON_BrepEdge(const ON_BrepEdge&); // no implementation
+  ON_BrepEdge (const ON_BrepEdge&); // no implementation
 };
 
 struct ON_BrepTrimPoint {
@@ -429,7 +429,7 @@ Description:
   agree.
 */
 class ON_CLASS ON_BrepTrim : public ON_CurveProxy {
-  ON_OBJECT_DECLARE(ON_BrepTrim);
+  ON_OBJECT_DECLARE (ON_BrepTrim);
 
 public:
   void
@@ -488,9 +488,9 @@ public:
   // In general, you should not directly create ON_BrepTrim classes.
   // Use ON_Brep::NewTrim instead.
   ON_BrepTrim();
-  ON_BrepTrim(int); // trim index
+  ON_BrepTrim (int); // trim index
   ON_BrepTrim&
-  operator=(const ON_BrepTrim&);
+  operator= (const ON_BrepTrim&);
 
   /*
   Returns:
@@ -569,7 +569,7 @@ public:
 
   // virtual ON_Geometry::ComponentIndex() override
   ON_COMPONENT_INDEX
-  ComponentIndex () const;
+  ComponentIndex() const;
 
   // virtual ON_Curve::Reverse override
   // Reverses curve - caller must make sure trim's m_bRev3d
@@ -577,7 +577,7 @@ public:
   // ON_Brep::FlipTrim to reverse and trim and update all
   // m_bRev3d informtion.
   ON_BOOL32
-  Reverse ();
+  Reverse();
 
   // virtual ON_Curve::SetStartPoint override
   ON_BOOL32
@@ -852,11 +852,11 @@ public:
 private:
   friend class ON_Brep;
   ON_Brep* m_brep; // so isolated edge class edge can get at it's 3d curve
-  ON_BrepTrim(const ON_BrepTrim&); // no implementation
+  ON_BrepTrim (const ON_BrepTrim&); // no implementation
 };
 
 class ON_CLASS ON_BrepLoop : public ON_Geometry {
-  ON_OBJECT_DECLARE(ON_BrepLoop);
+  ON_OBJECT_DECLARE (ON_BrepLoop);
 
 public:
   void
@@ -937,9 +937,9 @@ public:
   };
 
   ON_BrepLoop();
-  ON_BrepLoop(int); // loop index
+  ON_BrepLoop (int); // loop index
   ON_BrepLoop&
-  operator=(const ON_BrepLoop&);
+  operator= (const ON_BrepLoop&);
 
   /////////////////////////////////////////////////////////////////
   // ON_Object overrides
@@ -984,7 +984,7 @@ public:
 
   // virtual ON_Geometry::ComponentIndex() override
   ON_COMPONENT_INDEX
-  ComponentIndex () const;
+  ComponentIndex() const;
 
   /////////////////////////////////////////////////////////////////
   // Interface
@@ -1037,11 +1037,11 @@ public:
 private:
   friend class ON_Brep;
   ON_Brep* m_brep;
-  ON_BrepLoop(const ON_BrepLoop&); // no implementation
+  ON_BrepLoop (const ON_BrepLoop&); // no implementation
 };
 
 class ON_CLASS ON_BrepFace : public ON_SurfaceProxy {
-  ON_OBJECT_DECLARE(ON_BrepFace);
+  ON_OBJECT_DECLARE (ON_BrepFace);
 
 public:
   void
@@ -1057,9 +1057,9 @@ public:
 
   ON_BrepFace();
   ~ON_BrepFace();
-  ON_BrepFace(int);
+  ON_BrepFace (int);
   ON_BrepFace&
-  operator=(const ON_BrepFace&);
+  operator= (const ON_BrepFace&);
 
   /*
   Returns:
@@ -1153,7 +1153,7 @@ public:
 
   // virtual ON_Geometry::ComponentIndex() override
   ON_COMPONENT_INDEX
-  ComponentIndex () const;
+  ComponentIndex() const;
 
   // virtual ON_Geometry::ClearBoundingBox() override
   void
@@ -1196,7 +1196,7 @@ public:
     of then loops are changed so that the resulting face is still valid.
   */
   ON_BOOL32
-  Transpose ();
+  Transpose();
 
   /*
   Description:
@@ -1352,11 +1352,11 @@ private:
 private:
   friend class ON_Brep;
   ON_Brep* m_brep;
-  ON_BrepFace(const ON_BrepFace&);
+  ON_BrepFace (const ON_BrepFace&);
 };
 
 class ON_CLASS ON_BrepFaceSide : public ON_Object {
-  ON_OBJECT_DECLARE(ON_BrepFaceSide);
+  ON_OBJECT_DECLARE (ON_BrepFaceSide);
 
 public:
   ON_BOOL32
@@ -1374,7 +1374,7 @@ public:
   ON_BrepFaceSide();
   ~ON_BrepFaceSide();
   ON_BrepFaceSide&
-  operator=(const ON_BrepFaceSide&);
+  operator= (const ON_BrepFaceSide&);
 
   ON_BOOL32
   Write (ON_BinaryArchive& binary_archive) const;
@@ -1432,11 +1432,11 @@ private:
   friend class ON_Brep;
   friend class ON_BrepRegionTopology;
   ON_BrepRegionTopology* m_rtop;
-  ON_BrepFaceSide(const ON_BrepFaceSide&);
+  ON_BrepFaceSide (const ON_BrepFaceSide&);
 };
 
 class ON_CLASS ON_BrepRegion : public ON_Object {
-  ON_OBJECT_DECLARE(ON_BrepRegion);
+  ON_OBJECT_DECLARE (ON_BrepRegion);
 
 public:
   ON_BOOL32
@@ -1454,7 +1454,7 @@ public:
   ON_BrepRegion();
   ~ON_BrepRegion();
   ON_BrepRegion&
-  operator=(const ON_BrepRegion&);
+  operator= (const ON_BrepRegion&);
 
   ON_BOOL32
   Write (ON_BinaryArchive& binary_archive) const;
@@ -1523,7 +1523,7 @@ private:
   friend class ON_Brep;
   friend class ON_BrepRegionTopology;
   ON_BrepRegionTopology* m_rtop;
-  ON_BrepRegion(const ON_BrepRegion&);
+  ON_BrepRegion (const ON_BrepRegion&);
 };
 
 #if defined(ON_DLL_TEMPLATE)
@@ -1644,10 +1644,10 @@ public:
 class ON_CLASS ON_BrepRegionTopology {
 public:
   ON_BrepRegionTopology();
-  ON_BrepRegionTopology(const ON_BrepRegionTopology& src);
+  ON_BrepRegionTopology (const ON_BrepRegionTopology& src);
   ~ON_BrepRegionTopology();
   ON_BrepRegionTopology&
-  operator=(const ON_BrepRegionTopology&);
+  operator= (const ON_BrepRegionTopology&);
 
   ON_BrepFaceSideArray m_FS;
   ON_BrepRegionArray m_R;
@@ -1671,7 +1671,7 @@ private:
 };
 
 class ON_CLASS ON_Brep : public ON_Geometry {
-  ON_OBJECT_DECLARE(ON_Brep);
+  ON_OBJECT_DECLARE (ON_Brep);
 
 public:
   // virtual ON_Object::DestroyRuntimeCache override
@@ -1736,9 +1736,9 @@ public:
   // Construction
   ON_Brep();
   ~ON_Brep();
-  ON_Brep(const ON_Brep&);
+  ON_Brep (const ON_Brep&);
   ON_Brep&
-  operator=(const ON_Brep&);
+  operator= (const ON_Brep&);
 
   // Override of virtual ON_Object::MemoryRelocate
   void
@@ -2022,7 +2022,7 @@ public:
 
   // virtual ON_Geometry::HasBrepForm() override
   ON_BOOL32
-  HasBrepForm () const; // returns true
+  HasBrepForm() const; // returns true
 
   /*
   Description:
@@ -2231,7 +2231,7 @@ public:
   Returns:
     New outer boundary loop.
   */
-  ON_BrepLoop& NewLoop(ON_BrepLoop::TYPE);
+  ON_BrepLoop& NewLoop (ON_BrepLoop::TYPE);
 
   /*
   Description:
@@ -3870,9 +3870,9 @@ protected:
   // can be used to set brep edge and trimming tolerances with a call
   // to ON_Brep::SetTolsFromLegacyValues().
   friend bool
-  ON_BinaryArchive::ReadV1_TCODE_LEGACY_FAC(ON_Object**, ON_3dmObjectAttributes*);
+  ON_BinaryArchive::ReadV1_TCODE_LEGACY_FAC (ON_Object**, ON_3dmObjectAttributes*);
   friend bool
-  ON_BinaryArchive::ReadV1_TCODE_LEGACY_SHL(ON_Object**, ON_3dmObjectAttributes*);
+  ON_BinaryArchive::ReadV1_TCODE_LEGACY_SHL (ON_Object**, ON_3dmObjectAttributes*);
   void
   Initialize ();
 

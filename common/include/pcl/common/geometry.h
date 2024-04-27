@@ -87,7 +87,7 @@ project (const PointT& point,
 {
   Eigen::Vector3f po = point - plane_origin;
   const Eigen::Vector3f normal = plane_normal.getVector3fMapConst();
-  float lambda = normal.dot(po);
+  float lambda = normal.dot (po);
   projected.getVector3fMap() = point.getVector3fMapConst() - (lambda * normal);
 }
 
@@ -104,7 +104,7 @@ project (const Eigen::Vector3f& point,
          Eigen::Vector3f& projected)
 {
   Eigen::Vector3f po = point - plane_origin;
-  float lambda = plane_normal.dot(po);
+  float lambda = plane_normal.dot (po);
   projected = point - (lambda * plane_normal);
 }
 
@@ -123,7 +123,7 @@ projectedAsUnitVector (Eigen::Vector3f const& point,
                        Eigen::Vector3f const& plane_normal)
 {
   Eigen::Vector3f projection;
-  project(point, plane_origin, plane_normal, projection);
+  project (point, plane_origin, plane_normal, projection);
   Eigen::Vector3f projected_as_unit_vector = projection - plane_origin;
   projected_as_unit_vector.normalize();
   return projected_as_unit_vector;
@@ -140,20 +140,20 @@ randomOrthogonalAxis (Eigen::Vector3f const& axis)
 {
   Eigen::Vector3f rand_ortho_axis;
   rand_ortho_axis.setRandom();
-  if (std::abs(axis.z()) > 1E-8f) {
+  if (std::abs (axis.z()) > 1E-8f) {
     rand_ortho_axis.z() =
         -(axis.x() * rand_ortho_axis.x() + axis.y() * rand_ortho_axis.y()) / axis.z();
   }
-  else if (std::abs(axis.y()) > 1E-8f) {
+  else if (std::abs (axis.y()) > 1E-8f) {
     rand_ortho_axis.y() =
         -(axis.x() * rand_ortho_axis.x() + axis.z() * rand_ortho_axis.z()) / axis.y();
   }
-  else if (std::abs(axis.x()) > 1E-8f) {
+  else if (std::abs (axis.x()) > 1E-8f) {
     rand_ortho_axis.x() =
         -(axis.y() * rand_ortho_axis.y() + axis.z() * rand_ortho_axis.z()) / axis.x();
   }
   else {
-    PCL_WARN("[pcl::randomOrthogonalAxis] provided axis has norm < 1E-8f\n");
+    PCL_WARN ("[pcl::randomOrthogonalAxis] provided axis has norm < 1E-8f\n");
   }
 
   rand_ortho_axis.normalize();

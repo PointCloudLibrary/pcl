@@ -61,7 +61,7 @@ BearingAngleImage::reset()
 
 /////////////////////////////////////////////////////////
 double
-BearingAngleImage::getAngle(const PointXYZ& point1, const PointXYZ& point2)
+BearingAngleImage::getAngle (const PointXYZ& point1, const PointXYZ& point2)
 {
   double a, b, c;
   double theta;
@@ -72,7 +72,7 @@ BearingAngleImage::getAngle(const PointXYZ& point1, const PointXYZ& point2)
   c = p2.squaredNorm();
 
   if (a != 0 && b != 0) {
-    theta = std::acos((a + b - c) / (2 * sqrt(a) * sqrt(b))) * 180 / M_PI;
+    theta = std::acos ((a + b - c) / (2 * sqrt (a) * sqrt (b))) * 180 / M_PI;
   }
   else {
     theta = 0.0;
@@ -83,21 +83,21 @@ BearingAngleImage::getAngle(const PointXYZ& point1, const PointXYZ& point2)
 
 /////////////////////////////////////////////////////////
 void
-BearingAngleImage::generateBAImage(PointCloud<PointXYZ>& point_cloud)
+BearingAngleImage::generateBAImage (PointCloud<PointXYZ>& point_cloud)
 {
   width = point_cloud.width;
   height = point_cloud.height;
   unsigned int size = width * height;
   points.clear();
-  points.resize(size, unobserved_point_);
+  points.resize (size, unobserved_point_);
 
   double theta;
   std::uint8_t r, g, b, gray;
 
   // primary transformation process
-  for (decltype(height) i = 0; i < height - 1; ++i) {
-    for (decltype(width) j = 0; j < width - 1; ++j) {
-      theta = getAngle(point_cloud.at(j, i + 1), point_cloud.at(j + 1, i));
+  for (decltype (height) i = 0; i < height - 1; ++i) {
+    for (decltype (width) j = 0; j < width - 1; ++j) {
+      theta = getAngle (point_cloud.at (j, i + 1), point_cloud.at (j + 1, i));
 
       // based on the theta, calculate the gray value of every pixel point
       gray = theta * 255 / 180;
@@ -105,13 +105,13 @@ BearingAngleImage::generateBAImage(PointCloud<PointXYZ>& point_cloud)
       g = gray;
       b = gray;
 
-      points[(i + 1) * width + j].x = point_cloud.at(j, i + 1).x;
-      points[(i + 1) * width + j].y = point_cloud.at(j, i + 1).y;
-      points[(i + 1) * width + j].z = point_cloud.at(j, i + 1).z;
+      points[(i + 1) * width + j].x = point_cloud.at (j, i + 1).x;
+      points[(i + 1) * width + j].y = point_cloud.at (j, i + 1).y;
+      points[(i + 1) * width + j].z = point_cloud.at (j, i + 1).z;
       // set the gray value for every pixel point
-      points[(i + 1) * width + j].rgba = (static_cast<int>(r)) << 24 |
-                                         (static_cast<int>(g)) << 16 |
-                                         (static_cast<int>(b)) << 8 | 0xff;
+      points[(i + 1) * width + j].rgba = (static_cast<int> (r)) << 24 |
+                                         (static_cast<int> (g)) << 16 |
+                                         (static_cast<int> (b)) << 8 | 0xff;
     }
   }
 }

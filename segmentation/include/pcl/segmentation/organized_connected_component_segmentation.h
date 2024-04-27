@@ -78,8 +78,8 @@ public:
    * \param[in] compare A pointer to the comparator to be used for segmentation.  Must
    * be an instance of pcl::Comparator.
    */
-  OrganizedConnectedComponentSegmentation(const ComparatorConstPtr& compare)
-  : compare_(compare)
+  OrganizedConnectedComponentSegmentation (const ComparatorConstPtr& compare)
+  : compare_ (compare)
   {}
 
   /** \brief Destructor for OrganizedConnectedComponentSegmentation. */
@@ -137,7 +137,7 @@ protected:
 
 private:
   struct Neighbor {
-    Neighbor(int dx, int dy, int didx) : d_x(dx), d_y(dy), d_index(didx) {}
+    Neighbor (int dx, int dy, int didx) : d_x (dx), d_y (dy), d_index (didx) {}
 
     int d_x;
     int d_y;

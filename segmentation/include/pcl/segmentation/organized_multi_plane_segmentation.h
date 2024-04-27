@@ -294,7 +294,7 @@ protected:
 
   /** \brief The tolerance in radians for difference in normal direction between
    * neighboring points, to be considered part of the same plane. */
-  double angular_threshold_{pcl::deg2rad(3.0)};
+  double angular_threshold_{pcl::deg2rad (3.0)};
 
   /** \brief The tolerance in meters for difference in perpendicular distance (d
    * component of plane equation) to the plane between neighboring points, to be

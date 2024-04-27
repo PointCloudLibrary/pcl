@@ -47,28 +47,28 @@ TrajkovicKeypoint2D<PointInT, PointOutT, IntensityT>::initCompute()
   if (!PCLBase<PointInT>::initCompute())
     return (false);
 
-  keypoints_indices_.reset(new pcl::PointIndices);
-  keypoints_indices_->indices.reserve(input_->size());
+  keypoints_indices_.reset (new pcl::PointIndices);
+  keypoints_indices_->indices.reserve (input_->size());
 
   if (!input_->isOrganized()) {
-    PCL_ERROR("[pcl::%s::initCompute] %s doesn't support non organized clouds!\n",
-              name_.c_str());
+    PCL_ERROR ("[pcl::%s::initCompute] %s doesn't support non organized clouds!\n",
+               name_.c_str());
     return (false);
   }
 
   if (indices_->size() != input_->size()) {
-    PCL_ERROR("[pcl::%s::initCompute] %s doesn't support setting indices!\n",
-              name_.c_str());
+    PCL_ERROR ("[pcl::%s::initCompute] %s doesn't support setting indices!\n",
+               name_.c_str());
     return (false);
   }
 
   if ((window_size_ % 2) == 0) {
-    PCL_ERROR("[pcl::%s::initCompute] Window size must be odd!\n", name_.c_str());
+    PCL_ERROR ("[pcl::%s::initCompute] Window size must be odd!\n", name_.c_str());
     return (false);
   }
 
   if (window_size_ < 3) {
-    PCL_ERROR("[pcl::%s::initCompute] Window size must be >= 3x3!\n", name_.c_str());
+    PCL_ERROR ("[pcl::%s::initCompute] Window size must be >= 3x3!\n", name_.c_str());
     return (false);
   }
 
@@ -79,12 +79,12 @@ TrajkovicKeypoint2D<PointInT, PointOutT, IntensityT>::initCompute()
 
 template <typename PointInT, typename PointOutT, typename IntensityT>
 void
-TrajkovicKeypoint2D<PointInT, PointOutT, IntensityT>::detectKeypoints(
+TrajkovicKeypoint2D<PointInT, PointOutT, IntensityT>::detectKeypoints (
     PointCloudOut& output)
 {
-  response_.reset(new pcl::PointCloud<float>(input_->width, input_->height));
-  const int w = static_cast<int>(input_->width) - half_window_size_;
-  const int h = static_cast<int>(input_->height) - half_window_size_;
+  response_.reset (new pcl::PointCloud<float> (input_->width, input_->height));
+  const int w = static_cast<int> (input_->width) - half_window_size_;
+  const int h = static_cast<int> (input_->height) - half_window_size_;
 
   if (method_ ==
       pcl::TrajkovicKeypoint2D<PointInT, PointOutT, IntensityT>::FOUR_CORNERS) {
@@ -95,11 +95,11 @@ TrajkovicKeypoint2D<PointInT, PointOutT, IntensityT>::detectKeypoints(
 #endif
     for (int j = half_window_size_; j < h; ++j) {
       for (int i = half_window_size_; i < w; ++i) {
-        float center = intensity_((*input_)(i, j));
-        float up = intensity_((*input_)(i, j - half_window_size_));
-        float down = intensity_((*input_)(i, j + half_window_size_));
-        float left = intensity_((*input_)(i - half_window_size_, j));
-        float right = intensity_((*input_)(i + half_window_size_, j));
+        float center = intensity_ ((*input_) (i, j));
+        float up = intensity_ ((*input_) (i, j - half_window_size_));
+        float down = intensity_ ((*input_) (i, j + half_window_size_));
+        float left = intensity_ ((*input_) (i - half_window_size_, j));
+        float right = intensity_ ((*input_) (i + half_window_size_, j));
 
         float up_center = up - center;
         float r1 = up_center * up_center;
@@ -111,7 +111,7 @@ TrajkovicKeypoint2D<PointInT, PointOutT, IntensityT>::detectKeypoints(
         float left_center = left - center;
         r2 += left_center * left_center;
 
-        float d = std::min(r1, r2);
+        float d = std::min (r1, r2);
 
         if (d < first_threshold_)
           continue;
@@ -120,10 +120,10 @@ TrajkovicKeypoint2D<PointInT, PointOutT, IntensityT>::detectKeypoints(
         b1 += (left - down) * down_center;
         float b2 = (right - down) * down_center;
         b2 += (left - up) * up_center;
-        float B = std::min(b1, b2);
+        float B = std::min (b1, b2);
         float A = r2 - r1 - 2 * B;
 
-        (*response_)(i, j) = ((B < 0) && ((B + A) > 0)) ? r1 - ((B * B) / A) : d;
+        (*response_) (i, j) = ((B < 0) && ((B + A) > 0)) ? r1 - ((B * B) / A) : d;
       }
     }
   }
@@ -135,20 +135,20 @@ TrajkovicKeypoint2D<PointInT, PointOutT, IntensityT>::detectKeypoints(
 #endif
     for (int j = half_window_size_; j < h; ++j) {
       for (int i = half_window_size_; i < w; ++i) {
-        float center = intensity_((*input_)(i, j));
-        float up = intensity_((*input_)(i, j - half_window_size_));
-        float down = intensity_((*input_)(i, j + half_window_size_));
-        float left = intensity_((*input_)(i - half_window_size_, j));
-        float right = intensity_((*input_)(i + half_window_size_, j));
+        float center = intensity_ ((*input_) (i, j));
+        float up = intensity_ ((*input_) (i, j - half_window_size_));
+        float down = intensity_ ((*input_) (i, j + half_window_size_));
+        float left = intensity_ ((*input_) (i - half_window_size_, j));
+        float right = intensity_ ((*input_) (i + half_window_size_, j));
         float upleft =
-            intensity_((*input_)(i - half_window_size_, j - half_window_size_));
+            intensity_ ((*input_) (i - half_window_size_, j - half_window_size_));
         float upright =
-            intensity_((*input_)(i + half_window_size_, j - half_window_size_));
+            intensity_ ((*input_) (i + half_window_size_, j - half_window_size_));
         float downleft =
-            intensity_((*input_)(i - half_window_size_, j + half_window_size_));
+            intensity_ ((*input_) (i - half_window_size_, j + half_window_size_));
         float downright =
-            intensity_((*input_)(i + half_window_size_, j + half_window_size_));
-        std::vector<float> r(4, 0);
+            intensity_ ((*input_) (i + half_window_size_, j + half_window_size_));
+        std::vector<float> r (4, 0);
 
         float up_center = up - center;
         r[0] = up_center * up_center;
@@ -170,14 +170,14 @@ TrajkovicKeypoint2D<PointInT, PointOutT, IntensityT>::detectKeypoints(
         float upleft_center = upleft - center;
         r[3] += upleft_center * upleft_center;
 
-        float d = *(std::min_element(r.begin(), r.end()));
+        float d = *(std::min_element (r.begin(), r.end()));
 
         if (d < first_threshold_)
           continue;
 
-        std::vector<float> B(4, 0);
-        std::vector<float> A(4, 0);
-        std::vector<float> sumAB(4, 0);
+        std::vector<float> B (4, 0);
+        std::vector<float> A (4, 0);
+        std::vector<float> sumAB (4, 0);
         B[0] = (upright - up) * up_center;
         B[0] += (downleft - down) * down_center;
         B[1] = (right - upright) * upright_center;
@@ -194,33 +194,33 @@ TrajkovicKeypoint2D<PointInT, PointOutT, IntensityT>::detectKeypoints(
         sumAB[1] = A[1] + B[1];
         sumAB[2] = A[2] + B[2];
         sumAB[3] = A[3] + B[3];
-        if ((*std::max_element(B.begin(), B.end()) < 0) &&
-            (*std::min_element(sumAB.begin(), sumAB.end()) > 0)) {
-          std::vector<float> D(4, 0);
+        if ((*std::max_element (B.begin(), B.end()) < 0) &&
+            (*std::min_element (sumAB.begin(), sumAB.end()) > 0)) {
+          std::vector<float> D (4, 0);
           D[0] = B[0] * B[0] / A[0];
           D[1] = B[1] * B[1] / A[1];
           D[2] = B[2] * B[2] / A[2];
           D[3] = B[3] * B[3] / A[3];
-          (*response_)(i, j) = *(std::min(D.begin(), D.end()));
+          (*response_) (i, j) = *(std::min (D.begin(), D.end()));
         }
         else
-          (*response_)(i, j) = d;
+          (*response_) (i, j) = d;
       }
     }
   }
 
   // Non maximas suppression
   pcl::Indices indices = *indices_;
-  std::sort(indices.begin(), indices.end(), [this] (int p1, int p2) {
-    return greaterCornernessAtIndices(p1, p2);
+  std::sort (indices.begin(), indices.end(), [this] (int p1, int p2) {
+    return greaterCornernessAtIndices (p1, p2);
   });
 
   output.clear();
-  output.reserve(input_->size());
+  output.reserve (input_->size());
 
-  std::vector<bool> occupency_map(indices.size(), false);
-  const int width(input_->width);
-  const int height(input_->height);
+  std::vector<bool> occupency_map (indices.size(), false);
+  const int width (input_->width);
+  const int height (input_->height);
 
 #if OPENMP_LEGACY_CONST_DATA_SHARING_RULE
 #pragma omp parallel for default(none) shared(indices, occupency_map, output)          \
@@ -231,7 +231,7 @@ TrajkovicKeypoint2D<PointInT, PointOutT, IntensityT>::detectKeypoints(
 #endif
   // Disable lint since this 'for' is part of the pragma
   // NOLINTNEXTLINE(modernize-loop-convert)
-  for (std::ptrdiff_t i = 0; i < static_cast<std::ptrdiff_t>(indices.size()); ++i) {
+  for (std::ptrdiff_t i = 0; i < static_cast<std::ptrdiff_t> (indices.size()); ++i) {
     int idx = indices[i];
     if (((*response_)[idx] < second_threshold_) || occupency_map[idx])
       continue;
@@ -242,16 +242,16 @@ TrajkovicKeypoint2D<PointInT, PointOutT, IntensityT>::detectKeypoints(
 
 #pragma omp critical
     {
-      output.push_back(p);
-      keypoints_indices_->indices.push_back(idx);
+      output.push_back (p);
+      keypoints_indices_->indices.push_back (idx);
     }
 
     const int x = idx % width;
     const int y = idx / width;
-    const int u_end = std::min(width, x + half_window_size_);
-    const int v_end = std::min(height, y + half_window_size_);
-    for (int v = std::max(0, y - half_window_size_); v < v_end; ++v)
-      for (int u = std::max(0, x - half_window_size_); u < u_end; ++u)
+    const int u_end = std::min (width, x + half_window_size_);
+    const int v_end = std::min (height, y + half_window_size_);
+    for (int v = std::max (0, y - half_window_size_); v < v_end; ++v)
+      for (int u = std::max (0, x - half_window_size_); u < u_end; ++u)
         occupency_map[v * width + u] = true;
   }
 

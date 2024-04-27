@@ -63,13 +63,14 @@ public:
    * the limit specified by setSignalPointCloudSize().
    */
   using sig_cb_robot_eye_point_cloud_xyzi =
-      void(const pcl::PointCloud<pcl::PointXYZI>::ConstPtr&);
+      void (const pcl::PointCloud<pcl::PointXYZI>::ConstPtr&);
 
   /** \brief RobotEyeGrabber default constructor. */
   RobotEyeGrabber();
 
   /** \brief RobotEyeGrabber constructor taking a specified IP address and data port. */
-  RobotEyeGrabber(const boost::asio::ip::address& ipAddress, unsigned short port = 443);
+  RobotEyeGrabber (const boost::asio::ip::address& ipAddress,
+                   unsigned short port = 443);
 
   /** \brief virtual Destructor inherited from the Grabber interface. It never throws.
    */

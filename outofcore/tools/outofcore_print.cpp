@@ -87,7 +87,7 @@ void
 printDepth (std::size_t depth)
 {
   for (std::size_t i = 0; i < depth; i++)
-    PCL_INFO("  ");
+    PCL_INFO ("  ");
 }
 
 void
@@ -104,42 +104,42 @@ outofcorePrint (boost::filesystem::path tree_root,
                 bool point_count = false,
                 bool breadth_first = false)
 {
-  std::cout << boost::filesystem::absolute(tree_root) << std::endl;
+  std::cout << boost::filesystem::absolute (tree_root) << std::endl;
 
   OctreeDisk* octree;
-  octree = new OctreeDisk(tree_root, true);
+  octree = new OctreeDisk (tree_root, true);
 
   Eigen::Vector3d min, max;
-  octree->getBoundingBox(min, max);
+  octree->getBoundingBox (min, max);
 
   // Cloud bounding box
-  PCL_INFO(" Bounding Box: <%lf, %lf, %lf> - <%lf, %lf, %lf>\n",
-           min[0],
-           min[1],
-           min[2],
-           max[0],
-           max[1],
-           max[2]);
+  PCL_INFO (" Bounding Box: <%lf, %lf, %lf> - <%lf, %lf, %lf>\n",
+            min[0],
+            min[1],
+            min[2],
+            max[0],
+            max[1],
+            max[2]);
 
   // Cloud depth
   std::uint64_t depth = octree->getTreeDepth();
-  PCL_INFO(" Depth: %ld\n", depth);
+  PCL_INFO (" Depth: %ld\n", depth);
   if (print_depth > depth)
     print_depth = depth;
 
   // Cloud point counts at each level
   std::vector<std::uint64_t> lodPoints = octree->getNumPointsVector();
-  PCL_INFO(" Points:\n");
+  PCL_INFO (" Points:\n");
   for (std::uint64_t i = 0; i < lodPoints.size(); i++)
-    PCL_INFO("   %d: %d\n", i, lodPoints[i]);
+    PCL_INFO ("   %d: %d\n", i, lodPoints[i]);
 
   // Cloud voxel side length
-  PCL_INFO(" Voxel Side Length: %d\n", octree->getVoxelSideLength());
+  PCL_INFO (" Voxel Side Length: %d\n", octree->getVoxelSideLength());
 
   // Cloud voxel count
   std::vector<PointT, AlignedPointT> voxel_centers;
-  octree->getOccupiedVoxelCenters(voxel_centers);
-  PCL_INFO(" Voxel Count: %d\n", voxel_centers.size());
+  octree->getOccupiedVoxelCenters (voxel_centers);
+  PCL_INFO (" Voxel Count: %d\n", voxel_centers.size());
 
   // Point data for statistics
   std::vector<std::uint64_t> pointsPerVoxel;
@@ -149,90 +149,90 @@ outofcorePrint (boost::filesystem::path tree_root,
       acc;
 
   if (!breadth_first) {
-    OctreeDisk::DepthFirstIterator depth_first_it(*octree);
+    OctreeDisk::DepthFirstIterator depth_first_it (*octree);
 
     while (*depth_first_it != nullptr) {
       OctreeDiskNode* node = *depth_first_it;
       std::size_t node_depth = node->getDepth();
 
-      printDepth(node_depth);
+      printDepth (node_depth);
       std::string metadata_relative_file = node->getMetadataFilename().string();
-      boost::replace_first(
+      boost::replace_first (
           metadata_relative_file, tree_root.parent_path().string(), "");
-      PCL_INFO("..%s\n", metadata_relative_file.c_str());
+      PCL_INFO ("..%s\n", metadata_relative_file.c_str());
 
-      printDepth(node_depth);
+      printDepth (node_depth);
 
       if (pcd) {
         std::string pcd_relative_file = node->getPCDFilename().string();
-        boost::replace_first(pcd_relative_file, tree_root.parent_path().string(), "");
-        PCL_INFO("  PCD: ..%s\n", pcd_relative_file.c_str());
+        boost::replace_first (pcd_relative_file, tree_root.parent_path().string(), "");
+        PCL_INFO ("  PCD: ..%s\n", pcd_relative_file.c_str());
       }
 
       if (bounding_box) {
         Eigen::Vector3d min, max;
-        node->getBoundingBox(min, max);
+        node->getBoundingBox (min, max);
 
-        printDepth(node_depth);
-        PCL_INFO("  Bounding Box: <%lf, %lf, %lf> - <%lf, %lf, %lf>\n",
-                 min[0],
-                 min[1],
-                 min[2],
-                 max[0],
-                 max[1],
-                 max[2]);
+        printDepth (node_depth);
+        PCL_INFO ("  Bounding Box: <%lf, %lf, %lf> - <%lf, %lf, %lf>\n",
+                  min[0],
+                  min[1],
+                  min[2],
+                  max[0],
+                  max[1],
+                  max[2]);
       }
 
       if (point_count) {
-        printDepth(node_depth);
-        PCL_INFO("  Points: %lu\n", node->getDataSize());
-        pointsPerVoxel.push_back(node->getDataSize());
-        acc(node->getDataSize());
+        printDepth (node_depth);
+        PCL_INFO ("  Points: %lu\n", node->getDataSize());
+        pointsPerVoxel.push_back (node->getDataSize());
+        acc (node->getDataSize());
       }
 
       depth_first_it++;
     }
   }
   else {
-    OctreeDisk::BreadthFirstIterator breadth_first_it(*octree);
-    breadth_first_it.setMaxDepth(static_cast<unsigned int>(print_depth));
+    OctreeDisk::BreadthFirstIterator breadth_first_it (*octree);
+    breadth_first_it.setMaxDepth (static_cast<unsigned int> (print_depth));
     while (*breadth_first_it != nullptr) {
       OctreeDiskNode* node = *breadth_first_it;
       std::size_t node_depth = node->getDepth();
 
-      printDepth(node_depth);
+      printDepth (node_depth);
       std::string metadata_relative_file = node->getMetadataFilename().string();
-      boost::replace_first(
+      boost::replace_first (
           metadata_relative_file, tree_root.parent_path().string(), "");
-      PCL_INFO("..%s\n", metadata_relative_file.c_str());
+      PCL_INFO ("..%s\n", metadata_relative_file.c_str());
 
-      printDepth(node_depth);
+      printDepth (node_depth);
 
       if (pcd) {
         std::string pcd_relative_file = node->getPCDFilename().string();
-        boost::replace_first(pcd_relative_file, tree_root.parent_path().string(), "");
-        PCL_INFO("  PCD: ..%s\n", pcd_relative_file.c_str());
+        boost::replace_first (pcd_relative_file, tree_root.parent_path().string(), "");
+        PCL_INFO ("  PCD: ..%s\n", pcd_relative_file.c_str());
       }
 
       if (bounding_box) {
         Eigen::Vector3d min, max;
-        node->getBoundingBox(min, max);
+        node->getBoundingBox (min, max);
 
-        printDepth(node_depth);
-        PCL_INFO("  Bounding Box: <%lf, %lf, %lf> - <%lf, %lf, %lf>\n",
-                 min[0],
-                 min[1],
-                 min[2],
-                 max[0],
-                 max[1],
-                 max[2]);
+        printDepth (node_depth);
+        PCL_INFO ("  Bounding Box: <%lf, %lf, %lf> - <%lf, %lf, %lf>\n",
+                  min[0],
+                  min[1],
+                  min[2],
+                  max[0],
+                  max[1],
+                  max[2]);
       }
 
       if (point_count) {
-        printDepth(node_depth);
-        PCL_INFO("  Points: %lu\n", node->getDataSize());
-        pointsPerVoxel.push_back(node->getDataSize());
-        acc(node->getDataSize());
+        printDepth (node_depth);
+        PCL_INFO ("  Points: %lu\n", node->getDataSize());
+        pointsPerVoxel.push_back (node->getDataSize());
+        acc (node->getDataSize());
       }
 
       breadth_first_it++;
@@ -240,12 +240,12 @@ outofcorePrint (boost::filesystem::path tree_root,
   }
 
   if (point_count) {
-    PCL_INFO("Points per Voxel:\n");
-    PCL_INFO("Min: %u, Max: %u, Mean: %f, StdDev %f\n",
-             ba::min(acc),
-             ba::max(acc),
-             ba::mean(acc),
-             sqrt(ba::variance(acc)));
+    PCL_INFO ("Points per Voxel:\n");
+    PCL_INFO ("Min: %u, Max: %u, Mean: %f, StdDev %f\n",
+              ba::min (acc),
+              ba::max (acc),
+              ba::mean (acc),
+              sqrt (ba::variance (acc)));
   }
 
   return 0;
@@ -254,20 +254,20 @@ outofcorePrint (boost::filesystem::path tree_root,
 void
 printHelp (int, char** argv)
 {
-  print_info("This program is used to process pcd files into an outofcore data "
-             "structure viewable by the");
-  print_info("pcl_outofcore_viewer\n\n");
-  print_info("%s <options> <input_tree_dir> \n", argv[0]);
-  print_info("\n");
-  print_info("Options:\n");
-  print_info("\t -depth <depth>                \t Octree depth\n");
-  print_info("\t -bounding_box                 \t Print bounding box info\n");
-  print_info("\t -point_count                  \t Print point count info\n");
-  print_info("\t -pcd                          \t Print pcd file info\n");
-  print_info("\t -breadth                      \t Print nodes in breadth-first "
-             "(Default depth-first)\n");
-  print_info("\t -h                            \t Display help\n");
-  print_info("\n");
+  print_info ("This program is used to process pcd files into an outofcore data "
+              "structure viewable by the");
+  print_info ("pcl_outofcore_viewer\n\n");
+  print_info ("%s <options> <input_tree_dir> \n", argv[0]);
+  print_info ("\n");
+  print_info ("Options:\n");
+  print_info ("\t -depth <depth>                \t Octree depth\n");
+  print_info ("\t -bounding_box                 \t Print bounding box info\n");
+  print_info ("\t -point_count                  \t Print point count info\n");
+  print_info ("\t -pcd                          \t Print pcd file info\n");
+  print_info ("\t -breadth                      \t Print nodes in breadth-first "
+              "(Default depth-first)\n");
+  print_info ("\t -h                            \t Display help\n");
+  print_info ("\n");
 }
 
 int
@@ -276,41 +276,41 @@ main (int argc, char* argv[])
 
   // Check for help (-h) flag
   if (argc > 1) {
-    if (find_switch(argc, argv, "-h")) {
-      printHelp(argc, argv);
+    if (find_switch (argc, argv, "-h")) {
+      printHelp (argc, argv);
       return (-1);
     }
   }
 
   // If no arguments specified
   if (argc - 1 < 1) {
-    printHelp(argc, argv);
+    printHelp (argc, argv);
     return (-1);
   }
 
-  if (find_switch(argc, argv, "-v"))
-    console::setVerbosityLevel(console::L_DEBUG);
+  if (find_switch (argc, argv, "-v"))
+    console::setVerbosityLevel (console::L_DEBUG);
 
   // Defaults
   int depth = std::numeric_limits<int>::max();
-  bool breadth_first = find_switch(argc, argv, "-breadth");
-  bool bounding_box = find_switch(argc, argv, "-bounding_box");
-  bool pcd = find_switch(argc, argv, "-pcd");
-  bool point_count = find_switch(argc, argv, "-point_count");
+  bool breadth_first = find_switch (argc, argv, "-breadth");
+  bool bounding_box = find_switch (argc, argv, "-bounding_box");
+  bool pcd = find_switch (argc, argv, "-pcd");
+  bool point_count = find_switch (argc, argv, "-point_count");
 
   // Parse options
-  parse_argument(argc, argv, "-depth", depth);
+  parse_argument (argc, argv, "-depth", depth);
 
   // Parse non-option arguments
-  boost::filesystem::path tree_root(argv[argc - 1]);
+  boost::filesystem::path tree_root (argv[argc - 1]);
 
   // Check if a root directory was specified, use directory of pcd file
-  if (boost::filesystem::is_directory(tree_root)) {
+  if (boost::filesystem::is_directory (tree_root)) {
     boost::filesystem::directory_iterator diterend;
-    for (boost::filesystem::directory_iterator diter(tree_root); diter != diterend;
+    for (boost::filesystem::directory_iterator diter (tree_root); diter != diterend;
          ++diter) {
       const boost::filesystem::path& file = *diter;
-      if (!boost::filesystem::is_directory(file)) {
+      if (!boost::filesystem::is_directory (file)) {
         if (file.extension().string() == OctreeDiskNode::node_index_extension) {
           tree_root = file;
         }
@@ -318,6 +318,6 @@ main (int argc, char* argv[])
     }
   }
 
-  return outofcorePrint(
+  return outofcorePrint (
       tree_root, depth, bounding_box, pcd, point_count, breadth_first);
 }

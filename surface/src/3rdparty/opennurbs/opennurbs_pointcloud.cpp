@@ -16,22 +16,24 @@
 
 #include "pcl/surface/3rdparty/opennurbs/opennurbs.h"
 
-ON_OBJECT_IMPLEMENT(ON_PointCloud, ON_Geometry, "2488F347-F8FA-11d3-BFEC-0010830122F0");
+ON_OBJECT_IMPLEMENT (ON_PointCloud,
+                     ON_Geometry,
+                     "2488F347-F8FA-11d3-BFEC-0010830122F0");
 
 ON_3dPoint&
-ON_PointCloud::operator[](int i)
+ON_PointCloud::operator[] (int i)
 {
   return m_P[i];
 }
 
 const ON_3dPoint&
-ON_PointCloud::operator[](int i) const
+ON_PointCloud::operator[] (int i) const
 {
   return m_P[i];
 }
 
 ON_3dPoint
-ON_PointCloud::Point(ON_COMPONENT_INDEX ci) const
+ON_PointCloud::Point (ON_COMPONENT_INDEX ci) const
 {
   return (ON_COMPONENT_INDEX::pointcloud_point == ci.m_type && ci.m_index >= 0 &&
           ci.m_index < m_P.Count())
@@ -39,24 +41,24 @@ ON_PointCloud::Point(ON_COMPONENT_INDEX ci) const
              : ON_UNSET_POINT;
 }
 
-ON_PointCloud::ON_PointCloud() : m_flags(0) { m_hidden_count = 0; }
+ON_PointCloud::ON_PointCloud() : m_flags (0) { m_hidden_count = 0; }
 
-ON_PointCloud::ON_PointCloud(int capacity) : m_P(capacity), m_flags(0)
+ON_PointCloud::ON_PointCloud (int capacity) : m_P (capacity), m_flags (0)
 {
   m_hidden_count = 0;
 }
 
-ON_PointCloud::ON_PointCloud(const ON_PointCloud& src) : ON_Geometry(src)
+ON_PointCloud::ON_PointCloud (const ON_PointCloud& src) : ON_Geometry (src)
 {
   *this = src;
 }
 
 ON_PointCloud&
-ON_PointCloud::operator=(const ON_PointCloud& src)
+ON_PointCloud::operator= (const ON_PointCloud& src)
 {
   if (this != &src) {
     Destroy();
-    ON_Geometry::operator=(src);
+    ON_Geometry::operator= (src);
     m_P = src.m_P;
     m_H = src.m_H;
     m_C = src.m_C;
@@ -97,79 +99,76 @@ ON_PointCloud::EmergencyDestroy()
 }
 
 ON_BOOL32
-ON_PointCloud::IsValid(ON_TextLog*) const
-{
-  return (m_P.Count() > 0) ? true : false;
-}
+ON_PointCloud::IsValid (ON_TextLog*) const { return (m_P.Count() > 0) ? true : false; }
 
 void
-ON_PointCloud::Dump(ON_TextLog& dump) const
+ON_PointCloud::Dump (ON_TextLog& dump) const
 {
   int i;
   const bool bHasNormals = HasPointNormals();
   const bool bHasHiddenPoints = (HiddenPointCount() > 0);
   const int point_count = m_P.Count();
-  dump.Print("ON_PointCloud: %d points\n", point_count);
+  dump.Print ("ON_PointCloud: %d points\n", point_count);
   dump.PushIndent();
   for (i = 0; i < point_count; i++) {
-    dump.Print("point[%2d]: ", i);
-    dump.Print(m_P[i]);
+    dump.Print ("point[%2d]: ", i);
+    dump.Print (m_P[i]);
     if (bHasNormals) {
-      dump.Print(", normal = ");
-      dump.Print(m_N[i]);
+      dump.Print (", normal = ");
+      dump.Print (m_N[i]);
     }
     if (bHasHiddenPoints && m_H[i]) {
-      dump.Print(" (hidden)");
+      dump.Print (" (hidden)");
     }
-    dump.Print("\n");
+    dump.Print ("\n");
   }
   dump.PopIndent();
 }
 
 ON_BOOL32
-ON_PointCloud::Write(ON_BinaryArchive& file) const
+ON_PointCloud::Write (ON_BinaryArchive& file) const
 {
-  bool rc = file.Write3dmChunkVersion(1, 1);
+  bool rc = file.Write3dmChunkVersion (1, 1);
 
   if (rc)
-    rc = file.WriteArray(m_P);
+    rc = file.WriteArray (m_P);
   if (rc)
-    rc = file.WritePlane(m_plane);
+    rc = file.WritePlane (m_plane);
   if (rc)
-    rc = file.WriteBoundingBox(m_bbox);
+    rc = file.WriteBoundingBox (m_bbox);
   if (rc)
-    rc = file.WriteInt(m_flags);
+    rc = file.WriteInt (m_flags);
 
   // added for 1.1  (7 December 2005)
   if (rc)
-    rc = file.WriteArray(m_N);
+    rc = file.WriteArray (m_N);
   if (rc)
-    rc = file.WriteArray(m_C);
+    rc = file.WriteArray (m_C);
 
   return rc;
 }
 
 ON_BOOL32
-ON_PointCloud::Read(ON_BinaryArchive& file)
+ON_PointCloud::Read (ON_BinaryArchive& file)
 {
   int major_version = 0;
   int minor_version = 0;
-  bool rc = file.Read3dmChunkVersion(&major_version, &minor_version);
+  bool rc = file.Read3dmChunkVersion (&major_version, &minor_version);
   if (rc && major_version == 1) {
     if (rc)
-      rc = file.ReadArray(m_P);
+      rc = file.ReadArray (m_P);
     if (rc)
-      rc = file.ReadPlane(m_plane);
+      rc = file.ReadPlane (m_plane);
     if (rc)
-      rc = file.ReadBoundingBox(m_bbox);
+      rc = file.ReadBoundingBox (m_bbox);
     if (rc)
-      rc = file.ReadInt(&m_flags);
+      rc = file.ReadInt (&m_flags);
 
     if (rc && minor_version >= 1) {
       if (rc)
-        rc = file.ReadArray(m_N);
+        rc = file.ReadArray (m_N);
       if (rc)
-        rc = file.ReadArray(m_C);
+        rc = file.ReadArray (m_C);
     }
   }
   return rc;
@@ -188,14 +187,14 @@ ON_PointCloud::Dimension() const
 }
 
 ON_BOOL32
-ON_PointCloud::GetBBox( // returns true if successful
-    double* boxmin,     // minimum
-    double* boxmax,     // maximum
-    ON_BOOL32 bGrowBox  // true means grow box
+ON_PointCloud::GetBBox ( // returns true if successful
+    double* boxmin,      // minimum
+    double* boxmax,      // maximum
+    ON_BOOL32 bGrowBox   // true means grow box
 ) const
 {
   if (!m_bbox.IsValid()) {
-    m_P.GetBBox((double*)&m_bbox.m_min.x, (double*)&m_bbox.m_max.x, false);
+    m_P.GetBBox ((double*)&m_bbox.m_min.x, (double*)&m_bbox.m_max.x, false);
   }
   ON_BOOL32 rc = m_bbox.IsValid();
   if (rc) {
@@ -234,12 +233,12 @@ ON_PointCloud::GetBBox( // returns true if successful
 }
 
 ON_BOOL32
-ON_PointCloud::Transform(const ON_Xform& xform)
+ON_PointCloud::Transform (const ON_Xform& xform)
 {
-  TransformUserData(xform);
-  ON_BOOL32 rc = m_P.Transform(xform);
+  TransformUserData (xform);
+  ON_BOOL32 rc = m_P.Transform (xform);
   if (rc && HasPlane())
-    rc = m_plane.Transform(xform);
+    rc = m_plane.Transform (xform);
   m_bbox.Destroy();
   return rc;
 }
@@ -257,15 +256,15 @@ ON_PointCloud::MakeDeformable()
 }
 
 ON_BOOL32
-ON_PointCloud::SwapCoordinates(int i, int j // indices of coords to swap
+ON_PointCloud::SwapCoordinates (int i, int j // indices of coords to swap
 )
 {
-  ON_BOOL32 rc = m_P.SwapCoordinates(i, j);
+  ON_BOOL32 rc = m_P.SwapCoordinates (i, j);
   if (rc && HasPlane()) {
-    rc = m_plane.SwapCoordinates(i, j);
+    rc = m_plane.SwapCoordinates (i, j);
   }
   if (rc && m_bbox.IsValid()) {
-    rc = m_bbox.SwapCoordinates(i, j);
+    rc = m_bbox.SwapCoordinates (i, j);
   }
   return rc;
 }
@@ -277,9 +276,9 @@ ON_PointCloud::PointCount() const
 }
 
 void
-ON_PointCloud::AppendPoint(const ON_3dPoint& pt)
+ON_PointCloud::AppendPoint (const ON_3dPoint& pt)
 {
-  m_P.Append(pt);
+  m_P.Append (pt);
 }
 
 void
@@ -289,7 +288,7 @@ ON_PointCloud::InvalidateBoundingBox()
 }
 
 void
-ON_PointCloud::SetOrdered(bool b)
+ON_PointCloud::SetOrdered (bool b)
 {
   if (b) {
     m_flags |= 1;
@@ -312,7 +311,7 @@ ON_PointCloud::HasPlane() const
 }
 
 void
-ON_PointCloud::SetPlane(const ON_Plane& plane)
+ON_PointCloud::SetPlane (const ON_Plane& plane)
 {
   m_plane = plane;
   if (m_plane.IsValid()) {
@@ -330,7 +329,7 @@ ON_PointCloud::Plane()
 }
 
 double
-ON_PointCloud::Height(int i)
+ON_PointCloud::Height (int i)
 {
   return (m_P[i] - m_plane.origin) * m_plane.zaxis;
 }
@@ -364,7 +363,7 @@ ON_GetClosestPointInPointList (int point_count,
       if (e >= d2)
         continue;
       d2 = (1.0 + ON_SQRT_EPSILON) * e;
-      e = P.DistanceTo(*point_list);
+      e = P.DistanceTo (*point_list);
       if (e < d) {
         d = e;
         best_i = point_count - i - 1;
@@ -380,16 +379,16 @@ ON_GetClosestPointInPointList (int point_count,
 }
 
 bool
-ON_3dPointArray::GetClosestPoint(ON_3dPoint P,
-                                 int* closest_point_index,
-                                 double maximum_distance) const
+ON_3dPointArray::GetClosestPoint (ON_3dPoint P,
+                                  int* closest_point_index,
+                                  double maximum_distance) const
 {
   int i;
 
-  bool rc = ON_GetClosestPointInPointList(m_count, m_a, P, &i);
+  bool rc = ON_GetClosestPointInPointList (m_count, m_a, P, &i);
 
   if (rc) {
-    if (maximum_distance > 0.0 && P.DistanceTo(m_a[i]) > maximum_distance) {
+    if (maximum_distance > 0.0 && P.DistanceTo (m_a[i]) > maximum_distance) {
       rc = false;
     }
     else if (closest_point_index) {
@@ -415,16 +414,16 @@ ON_PointCloud::HasPointNormals() const
 }
 
 bool
-ON_PointCloud::GetClosestPoint(ON_3dPoint P,
-                               int* closest_point_index,
-                               double maximum_distance) const
+ON_PointCloud::GetClosestPoint (ON_3dPoint P,
+                                int* closest_point_index,
+                                double maximum_distance) const
 {
   if (maximum_distance > 0.0 && m_bbox.IsValid()) {
     // check bounding box
-    if (m_bbox.MinimumDistanceTo(P) > maximum_distance)
+    if (m_bbox.MinimumDistanceTo (P) > maximum_distance)
       return false;
   }
-  return m_P.GetClosestPoint(P, closest_point_index, maximum_distance);
+  return m_P.GetClosestPoint (P, closest_point_index, maximum_distance);
 }
 
 int
@@ -451,14 +450,14 @@ ON_PointCloud::HiddenPointArray() const
 }
 
 void
-ON_PointCloud::SetHiddenPointFlag(int point_index, bool bHidden)
+ON_PointCloud::SetHiddenPointFlag (int point_index, bool bHidden)
 {
   const int point_count = m_P.Count();
   if (point_index >= 0 && point_index < point_count) {
     if (bHidden) {
       if (point_count != m_H.Count()) {
-        m_H.SetCapacity(point_count);
-        m_H.SetCount(point_count);
+        m_H.SetCapacity (point_count);
+        m_H.SetCount (point_count);
         m_H.Zero();
         m_H[point_index] = true;
         m_hidden_count = 1;
@@ -488,7 +487,7 @@ ON_PointCloud::SetHiddenPointFlag(int point_index, bool bHidden)
 }
 
 bool
-ON_PointCloud::PointIsHidden(int point_index) const
+ON_PointCloud::PointIsHidden (int point_index) const
 {
   int point_count;
   return (point_index >= 0 && point_index < (point_count = m_P.Count()) &&

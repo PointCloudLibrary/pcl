@@ -46,7 +46,7 @@
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT>
 void
-pcl::SHOTLocalReferenceFrameEstimationOMP<PointInT, PointOutT>::setNumberOfThreads(
+pcl::SHOTLocalReferenceFrameEstimationOMP<PointInT, PointOutT>::setNumberOfThreads (
     unsigned int nr_threads)
 {
   if (nr_threads == 0)
@@ -62,20 +62,20 @@ pcl::SHOTLocalReferenceFrameEstimationOMP<PointInT, PointOutT>::setNumberOfThrea
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT>
 void
-pcl::SHOTLocalReferenceFrameEstimationOMP<PointInT, PointOutT>::computeFeature(
+pcl::SHOTLocalReferenceFrameEstimationOMP<PointInT, PointOutT>::computeFeature (
     PointCloudOut& output)
 {
   // check whether used with search radius or search k-neighbors
   if (this->getKSearch() != 0) {
-    PCL_ERROR("[pcl::%s::computeFeature] Error! Search method set to k-neighborhood. "
-              "Call setKSearch(0) and setRadiusSearch( radius ) to use this class.\n",
-              getClassName().c_str());
+    PCL_ERROR ("[pcl::%s::computeFeature] Error! Search method set to k-neighborhood. "
+               "Call setKSearch(0) and setRadiusSearch( radius ) to use this class.\n",
+               getClassName().c_str());
     return;
   }
-  tree_->setSortedResults(true);
+  tree_->setSortedResults (true);
 
 #pragma omp parallel for default(none) shared(output) num_threads(threads_)
-  for (std::ptrdiff_t i = 0; i < static_cast<std::ptrdiff_t>(indices_->size()); ++i) {
+  for (std::ptrdiff_t i = 0; i < static_cast<std::ptrdiff_t> (indices_->size()); ++i) {
     // point result
     Eigen::Matrix3f rf;
     PointOutT& output_rf = output[i];
@@ -85,16 +85,16 @@ pcl::SHOTLocalReferenceFrameEstimationOMP<PointInT, PointOutT>::computeFeature(
 
     pcl::Indices n_indices;
     std::vector<float> n_sqr_distances;
-    this->searchForNeighbors(
+    this->searchForNeighbors (
         (*indices_)[i], search_parameter_, n_indices, n_sqr_distances);
-    if (getLocalRF((*indices_)[i], rf) == std::numeric_limits<float>::max()) {
+    if (getLocalRF ((*indices_)[i], rf) == std::numeric_limits<float>::max()) {
       output.is_dense = false;
     }
 
     for (int d = 0; d < 3; ++d) {
-      output_rf.x_axis[d] = rf.row(0)[d];
-      output_rf.y_axis[d] = rf.row(1)[d];
-      output_rf.z_axis[d] = rf.row(2)[d];
+      output_rf.x_axis[d] = rf.row (0)[d];
+      output_rf.y_axis[d] = rf.row (1)[d];
+      output_rf.z_axis[d] = rf.row (2)[d];
     }
   }
 }

@@ -40,5 +40,5 @@
 #ifndef PCL_NO_PRECOMPILE
 #include <pcl/impl/instantiate.hpp>
 #include <pcl/point_types.h>
-PCL_INSTANTIATE(Search, PCL_POINT_TYPES)
+PCL_INSTANTIATE (Search, PCL_POINT_TYPES)
 #endif // PCL_NO_PRECOMPILE

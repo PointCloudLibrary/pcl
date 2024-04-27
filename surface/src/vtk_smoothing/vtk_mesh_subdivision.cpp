@@ -48,10 +48,10 @@ pcl::MeshSubdivisionVTK::MeshSubdivisionVTK() = default;
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::MeshSubdivisionVTK::performProcessing(pcl::PolygonMesh& output)
+pcl::MeshSubdivisionVTK::performProcessing (pcl::PolygonMesh& output)
 {
   // Convert from PCL mesh representation to the VTK representation
-  VTKUtils::convertToVTK(*input_mesh_, vtk_polygons_);
+  VTKUtils::convertToVTK (*input_mesh_, vtk_polygons_);
 
   // Apply the VTK algorithm
   vtkSmartPointer<vtkPolyDataAlgorithm> vtk_subdivision_filter;
@@ -66,16 +66,17 @@ pcl::MeshSubdivisionVTK::performProcessing(pcl::PolygonMesh& output)
     vtk_subdivision_filter = vtkButterflySubdivisionFilter::New();
     break;
   default:
-    PCL_ERROR("[pcl::surface::VTKSmoother::subdivideMesh] Invalid filter selection!\n");
+    PCL_ERROR (
+        "[pcl::surface::VTKSmoother::subdivideMesh] Invalid filter selection!\n");
     return;
     break;
   }
 
-  vtk_subdivision_filter->SetInputData(vtk_polygons_);
+  vtk_subdivision_filter->SetInputData (vtk_polygons_);
   vtk_subdivision_filter->Update();
 
   vtk_polygons_ = vtk_subdivision_filter->GetOutput();
 
   // Convert the result back to the PCL representation
-  VTKUtils::convertToPCL(vtk_polygons_, output);
+  VTKUtils::convertToPCL (vtk_polygons_, output);
 }

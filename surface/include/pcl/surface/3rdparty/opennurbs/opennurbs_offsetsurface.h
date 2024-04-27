@@ -26,11 +26,11 @@ public:
   ON_BumpFunction();
 
   bool
-  operator==(const ON_BumpFunction& other) const;
+  operator== (const ON_BumpFunction& other) const;
   bool
-  operator<(const ON_BumpFunction& other) const;
+  operator< (const ON_BumpFunction& other) const;
   bool
-  operator>(const ON_BumpFunction& other) const;
+  operator> (const ON_BumpFunction& other) const;
 
   double
   ValueAt (double s, double t) const;
@@ -266,14 +266,14 @@ class ON_CLASS ON_OffsetSurface : public ON_SurfaceProxy {
   // offset meshes and any other fitting and approximation
   // tools that requires a surface evaluator but do not need
   // NURBS forms, isocurves, and so on.
-  ON_OBJECT_DECLARE(ON_OffsetSurface);
+  ON_OBJECT_DECLARE (ON_OffsetSurface);
 
 public:
   ON_OffsetSurface();
   ~ON_OffsetSurface();
-  ON_OffsetSurface(const ON_OffsetSurface& src);
+  ON_OffsetSurface (const ON_OffsetSurface& src);
   ON_OffsetSurface&
-  operator=(const ON_OffsetSurface& src);
+  operator= (const ON_OffsetSurface& src);
 
   ON_BOOL32
   GetBBox (double* bbox_min, double* bbox_max, int bGrowBox = false) const;

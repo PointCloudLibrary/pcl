@@ -39,10 +39,10 @@
 #include <pcl/apps/modeler/parameter_dialog.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-pcl::modeler::AbstractWorker::AbstractWorker(
+pcl::modeler::AbstractWorker::AbstractWorker (
     const QList<CloudMeshItem*>& cloud_mesh_items, QWidget* parent)
-: cloud_mesh_items_(cloud_mesh_items)
-, parameter_dialog_(new ParameterDialog(getName(), parent))
+: cloud_mesh_items_ (cloud_mesh_items)
+, parameter_dialog_ (new ParameterDialog (getName(), parent))
 {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -53,7 +53,7 @@ int
 pcl::modeler::AbstractWorker::exec()
 {
   for (auto& cloud_mesh_item : cloud_mesh_items_)
-    initParameters(cloud_mesh_item);
+    initParameters (cloud_mesh_item);
 
   setupParameters();
 
@@ -65,7 +65,7 @@ void
 pcl::modeler::AbstractWorker::process()
 {
   for (auto& cloud_mesh_item : cloud_mesh_items_) {
-    processImpl(cloud_mesh_item);
+    processImpl (cloud_mesh_item);
   }
 
   emit finished();
@@ -73,7 +73,7 @@ pcl::modeler::AbstractWorker::process()
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::modeler::AbstractWorker::emitDataUpdated(CloudMeshItem* cloud_mesh_item)
+pcl::modeler::AbstractWorker::emitDataUpdated (CloudMeshItem* cloud_mesh_item)
 {
-  emit dataUpdated(cloud_mesh_item);
+  emit dataUpdated (cloud_mesh_item);
 }

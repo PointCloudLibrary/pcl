@@ -46,23 +46,23 @@
 #include <vtkRenderWindow.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-pcl::modeler::ChannelActorItem::ChannelActorItem(
+pcl::modeler::ChannelActorItem::ChannelActorItem (
     QTreeWidgetItem* parent,
     const CloudMesh::Ptr& cloud_mesh,
     const vtkSmartPointer<vtkRenderWindow>& render_window,
     const vtkSmartPointer<vtkActor>& actor,
     const std::string& channel_name)
-: QTreeWidgetItem(parent)
-, cloud_mesh_(cloud_mesh)
-, poly_data_(vtkSmartPointer<vtkPolyData>::New())
-, render_window_(render_window)
-, color_scheme_("rgb")
-, actor_(actor)
+: QTreeWidgetItem (parent)
+, cloud_mesh_ (cloud_mesh)
+, poly_data_ (vtkSmartPointer<vtkPolyData>::New())
+, render_window_ (render_window)
+, color_scheme_ ("rgb")
+, actor_ (actor)
 {
-  setFlags(flags() & (~Qt::ItemIsDragEnabled));
-  setFlags(flags() & (~Qt::ItemIsDropEnabled));
+  setFlags (flags() & (~Qt::ItemIsDragEnabled));
+  setFlags (flags() & (~Qt::ItemIsDropEnabled));
 
-  setText(0, QString(channel_name.c_str()));
+  setText (0, QString (channel_name.c_str()));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -91,26 +91,26 @@ pcl::modeler::ChannelActorItem::update()
 void
 pcl::modeler::ChannelActorItem::attachActor()
 {
-  render_window_->GetRenderers()->GetFirstRenderer()->AddActor(actor_);
+  render_window_->GetRenderers()->GetFirstRenderer()->AddActor (actor_);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::modeler::ChannelActorItem::detachActor()
 {
-  render_window_->GetRenderers()->GetFirstRenderer()->RemoveActor(actor_);
+  render_window_->GetRenderers()->GetFirstRenderer()->RemoveActor (actor_);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::modeler::ChannelActorItem::prepareContextMenu(QMenu*) const
+pcl::modeler::ChannelActorItem::prepareContextMenu (QMenu*) const
 {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::modeler::ChannelActorItem::switchRenderWindow(vtkRenderWindow* render_window)
+pcl::modeler::ChannelActorItem::switchRenderWindow (vtkRenderWindow* render_window)
 {
   detachActor();
-  render_window_ = vtkSmartPointer<vtkRenderWindow>(render_window);
+  render_window_ = vtkSmartPointer<vtkRenderWindow> (render_window);
   attachActor();
 }

@@ -61,9 +61,9 @@ public:
    * \param[in] contour a vector of points bounding the polygon
    * \param[in] coefficients a vector of the plane's coefficients (a,b,c,d)
    */
-  PlanarPolygon(typename pcl::PointCloud<PointT>::VectorType& contour,
-                Eigen::Vector4f& coefficients)
-  : contour_(contour), coefficients_(coefficients)
+  PlanarPolygon (typename pcl::PointCloud<PointT>::VectorType& contour,
+                 Eigen::Vector4f& coefficients)
+  : contour_ (contour), coefficients_ (coefficients)
   {}
 
   /** \brief Destructor. */
@@ -108,7 +108,7 @@ public:
   setCoefficients (const pcl::ModelCoefficients& coefficients)
   {
     for (int i = 0; i < 4; i++)
-      coefficients_[i] = coefficients.values.at(i);
+      coefficients_[i] = coefficients.values.at (i);
   }
 
   /** \brief Getter for the coefficients */

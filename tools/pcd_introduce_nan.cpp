@@ -49,20 +49,20 @@ int
 main (int argc, char** argv)
 {
   if (argc != 3 && argc != 4) {
-    PCL_ERROR("Usage: %s cloud_in.pcd cloud_out_ascii.pcd percentage_of_NaN \n",
-              argv[0]);
+    PCL_ERROR ("Usage: %s cloud_in.pcd cloud_out_ascii.pcd percentage_of_NaN \n",
+               argv[0]);
     return (-1);
   }
 
   int percentage_of_NaN = 20;
   if (argc == 4)
-    percentage_of_NaN = boost::lexical_cast<int>(argv[3]);
+    percentage_of_NaN = boost::lexical_cast<int> (argv[3]);
 
-  PCL_INFO("Replacing approximately %d%% of the cloud with NaN values (already "
-           "existing NaN values are conserved)\n",
-           percentage_of_NaN);
-  PointCloudT::Ptr cloud(new PointCloudT);
-  if (pcl::io::loadPCDFile(argv[1], *cloud) != 0)
+  PCL_INFO ("Replacing approximately %d%% of the cloud with NaN values (already "
+            "existing NaN values are conserved)\n",
+            percentage_of_NaN);
+  PointCloudT::Ptr cloud (new PointCloudT);
+  if (pcl::io::loadPCDFile (argv[1], *cloud) != 0)
     return (-1);
 
   for (auto& point : *cloud) {
@@ -79,6 +79,6 @@ main (int argc, char** argv)
     }
   }
 
-  pcl::io::savePCDFile(argv[2], *cloud);
+  pcl::io::savePCDFile (argv[2], *cloud);
   return (0);
 }

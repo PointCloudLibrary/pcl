@@ -61,7 +61,7 @@ class Synchronizer {
   std::deque<T1Stamped> queueT1;
   std::deque<T2Stamped> queueT2;
 
-  using CallbackFunction = std::function<void(T1, T2, unsigned long, unsigned long)>;
+  using CallbackFunction = std::function<void (T1, T2, unsigned long, unsigned long)>;
 
   std::map<int, CallbackFunction> cb_;
   int callback_counter = 0;
@@ -70,7 +70,7 @@ public:
   int
   addCallback (const CallbackFunction& callback)
   {
-    std::unique_lock<std::mutex> publish_lock(publish_mutex_);
+    std::unique_lock<std::mutex> publish_lock (publish_mutex_);
     cb_[callback_counter] = callback;
     return callback_counter++;
   }
@@ -78,15 +78,15 @@ public:
   void
   removeCallback (int i)
   {
-    std::unique_lock<std::mutex> publish_lock(publish_mutex_);
-    cb_.erase(i);
+    std::unique_lock<std::mutex> publish_lock (publish_mutex_);
+    cb_.erase (i);
   }
 
   void
   add0 (const T1& t, unsigned long time)
   {
     mutex1_.lock();
-    queueT1.push_back(T1Stamped(time, t));
+    queueT1.push_back (T1Stamped (time, t));
     mutex1_.unlock();
     publish();
   }
@@ -95,7 +95,7 @@ public:
   add1 (const T2& t, unsigned long time)
   {
     mutex2_.lock();
-    queueT2.push_back(T2Stamped(time, t));
+    queueT2.push_back (T2Stamped (time, t));
     mutex2_.unlock();
     publish();
   }
@@ -104,15 +104,15 @@ private:
   void
   publishData ()
   {
-    std::unique_lock<std::mutex> lock1(mutex1_);
-    std::unique_lock<std::mutex> lock2(mutex2_);
+    std::unique_lock<std::mutex> lock1 (mutex1_);
+    std::unique_lock<std::mutex> lock2 (mutex2_);
 
     for (const auto& cb : cb_) {
       if (cb.second) {
-        cb.second.operator()(queueT1.front().second,
-                             queueT2.front().second,
-                             queueT1.front().first,
-                             queueT2.front().first);
+        cb.second.operator() (queueT1.front().second,
+                              queueT2.front().second,
+                              queueT1.front().first,
+                              queueT2.front().first);
       }
     }
 
@@ -124,15 +124,15 @@ private:
   publish ()
   {
     // only one publish call at once allowed
-    std::unique_lock<std::mutex> publish_lock(publish_mutex_);
+    std::unique_lock<std::mutex> publish_lock (publish_mutex_);
 
-    std::unique_lock<std::mutex> lock1(mutex1_);
+    std::unique_lock<std::mutex> lock1 (mutex1_);
     if (queueT1.empty())
       return;
     T1Stamped t1 = queueT1.front();
     lock1.unlock();
 
-    std::unique_lock<std::mutex> lock2(mutex2_);
+    std::unique_lock<std::mutex> lock2 (mutex2_);
     if (queueT2.empty())
       return;
     T2Stamped t2 = queueT2.front();

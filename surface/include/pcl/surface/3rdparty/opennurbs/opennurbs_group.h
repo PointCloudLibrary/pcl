@@ -18,7 +18,7 @@
 #define OPENNURBS_GROUP_INC_
 
 class ON_CLASS ON_Group : public ON_Object {
-  ON_OBJECT_DECLARE(ON_Group);
+  ON_OBJECT_DECLARE (ON_Group);
 
 public:
   ON_Group();

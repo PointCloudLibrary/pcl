@@ -64,7 +64,7 @@ pcl::recognition::ORROctree::clear()
 //================================================================================================================================================================
 
 void
-pcl::recognition::ORROctree::build(const float* bounds, float voxel_size)
+pcl::recognition::ORROctree::build (const float* bounds, float voxel_size)
 {
   if (voxel_size <= 0.0f)
     return;
@@ -73,8 +73,8 @@ pcl::recognition::ORROctree::build(const float* bounds, float voxel_size)
 
   voxel_size_ = voxel_size;
 
-  float extent = std::max(std::max(bounds[1] - bounds[0], bounds[3] - bounds[2]),
-                          bounds[5] - bounds[4]);
+  float extent = std::max (std::max (bounds[1] - bounds[0], bounds[3] - bounds[2]),
+                           bounds[5] - bounds[4]);
   float center[3] = {0.5f * (bounds[0] + bounds[1]),
                      0.5f * (bounds[2] + bounds[3]),
                      0.5f * (bounds[4] + bounds[5])};
@@ -82,12 +82,13 @@ pcl::recognition::ORROctree::build(const float* bounds, float voxel_size)
 
   // Compute the number of tree levels
   if (arg > 1.0f)
-    tree_levels_ = static_cast<int>(std::ceil(std::log(arg) / std::log(2.0)) + 0.5);
+    tree_levels_ = static_cast<int> (std::ceil (std::log (arg) / std::log (2.0)) + 0.5);
   else
     tree_levels_ = 0;
 
   // Compute the number of octree levels and the bounds of the root
-  float half_root_side = static_cast<float>(0.5f * pow(2.0, tree_levels_) * voxel_size);
+  float half_root_side =
+      static_cast<float> (0.5f * pow (2.0, tree_levels_) * voxel_size);
 
   // Determine the bounding box of the octree
   bounds_[0] = center[0] - half_root_side;
@@ -99,48 +100,48 @@ pcl::recognition::ORROctree::build(const float* bounds, float voxel_size)
 
   // Create and initialize the root
   root_ = new ORROctree::Node();
-  root_->setCenter(center);
-  root_->setBounds(bounds_);
-  root_->setParent(nullptr);
+  root_->setCenter (center);
+  root_->setBounds (bounds_);
+  root_->setParent (nullptr);
   root_->computeRadius();
 }
 
 //================================================================================================================================================================
 
 void
-pcl::recognition::ORROctree::build(const PointCloudIn& points,
-                                   float voxel_size,
-                                   const PointCloudN* normals,
-                                   float enlarge_bounds)
+pcl::recognition::ORROctree::build (const PointCloudIn& points,
+                                    float voxel_size,
+                                    const PointCloudN* normals,
+                                    float enlarge_bounds)
 {
   if (voxel_size <= 0.0f)
     return;
 
   // Get the bounds of the input point set
   PointXYZ min, max;
-  getMinMax3D(points, min, max);
+  getMinMax3D (points, min, max);
 
   // Enlarge the bounds a bit to avoid points lying exact on the octree boundaries
-  float eps =
-      enlarge_bounds * std::max(std::max(max.x - min.x, max.y - min.y), max.z - min.z);
+  float eps = enlarge_bounds *
+              std::max (std::max (max.x - min.x, max.y - min.y), max.z - min.z);
   float b[6] = {
       min.x - eps, max.x + eps, min.y - eps, max.y + eps, min.z - eps, max.z + eps};
 
   // Build an empty octree with the right boundaries and the right number of levels
-  this->build(b, voxel_size);
+  this->build (b, voxel_size);
 
 #ifdef PCL_REC_ORR_OCTREE_VERBOSE
-  printf("ORROctree::%s(): start\n", __func__);
-  printf("point set bounds =\n"
-         "[%f, %f]\n"
-         "[%f, %f]\n"
-         "[%f, %f]\n",
-         min.x,
-         max.x,
-         min.y,
-         max.y,
-         min.z,
-         max.z);
+  printf ("ORROctree::%s(): start\n", __func__);
+  printf ("point set bounds =\n"
+          "[%f, %f]\n"
+          "[%f, %f]\n"
+          "[%f, %f]\n",
+          min.x,
+          max.x,
+          min.y,
+          max.y,
+          min.z,
+          max.z);
 #endif
 
   std::size_t num_points = points.size();
@@ -148,25 +149,25 @@ pcl::recognition::ORROctree::build(const PointCloudIn& points,
   // Fill the leaves with the points
   for (std::size_t i = 0; i < num_points; ++i) {
     // Create a leaf which contains the i-th point.
-    ORROctree::Node* node = this->createLeaf(points[i].x, points[i].y, points[i].z);
+    ORROctree::Node* node = this->createLeaf (points[i].x, points[i].y, points[i].z);
 
     // Make sure that the point is within some leaf
     if (!node) {
-      fprintf(stderr,
-              "WARNING in 'ORROctree::%s()': the point (%f, %f, %f) should be within "
-              "the octree bounds!\n",
-              __func__,
-              points[i].x,
-              points[i].y,
-              points[i].z);
+      fprintf (stderr,
+               "WARNING in 'ORROctree::%s()': the point (%f, %f, %f) should be within "
+               "the octree bounds!\n",
+               __func__,
+               points[i].x,
+               points[i].y,
+               points[i].z);
       continue;
     }
 
     // Now, that we have the right leaf -> fill it
-    node->getData()->addToPoint(points[i].x, points[i].y, points[i].z);
+    node->getData()->addToPoint (points[i].x, points[i].y, points[i].z);
     if (normals)
-      node->getData()->addToNormal(
-          normals->at(i).normal_x, normals->at(i).normal_y, normals->at(i).normal_z);
+      node->getData()->addToNormal (
+          normals->at (i).normal_x, normals->at (i).normal_y, normals->at (i).normal_z);
   }
 
   // Compute the normals and average points for each full octree node
@@ -176,17 +177,17 @@ pcl::recognition::ORROctree::build(const PointCloudIn& points,
       (*it)->getData()->computeAveragePoint();
 
       // Compute the length of the average normal
-      float normal_length = aux::length3((*it)->getData()->getNormal());
+      float normal_length = aux::length3 ((*it)->getData()->getNormal());
 
       // We are suppose to use normals. However, it could be that all normals in this
       // leaf are "illegal", because, e.g., they were not available in the data set. In
       // this case, remove the leaf from the octree.
       if (normal_length <= std::numeric_limits<float>::epsilon()) {
-        this->deleteBranch(*it);
-        it = full_leaves_.erase(it);
+        this->deleteBranch (*it);
+        it = full_leaves_.erase (it);
       }
       else {
-        aux::mult3((*it)->getData()->getNormal(), 1.0f / normal_length);
+        aux::mult3 ((*it)->getData()->getNormal(), 1.0f / normal_length);
         ++it;
       }
     }
@@ -198,7 +199,7 @@ pcl::recognition::ORROctree::build(const PointCloudIn& points,
   }
 
 #ifdef PCL_REC_ORR_OCTREE_VERBOSE
-  printf("ORROctree::%s(): end\n", __func__);
+  printf ("ORROctree::%s(): end\n", __func__);
 #endif
 }
 
@@ -225,8 +226,8 @@ pcl::recognition::ORROctree::Node::createChildren()
   center[1] = 0.5f * (bounds[2] + bounds[3]);
   center[2] = 0.5f * (bounds[4] + bounds[5]);
   // Save the results
-  children_[0].setBounds(bounds);
-  children_[0].setCenter(center);
+  children_[0].setBounds (bounds);
+  children_[0].setCenter (center);
 
   // Compute bounds and center for child 1, i.e., for (0,0,1)
   bounds[4] = center_[2];
@@ -234,8 +235,8 @@ pcl::recognition::ORROctree::Node::createChildren()
   // Update the center
   center[2] += childside;
   // Save the results
-  children_[1].setBounds(bounds);
-  children_[1].setCenter(center);
+  children_[1].setBounds (bounds);
+  children_[1].setCenter (center);
 
   // Compute bounds and center for child 3, i.e., for (0,1,1)
   bounds[2] = center_[1];
@@ -243,8 +244,8 @@ pcl::recognition::ORROctree::Node::createChildren()
   // Update the center
   center[1] += childside;
   // Save the results
-  children_[3].setBounds(bounds);
-  children_[3].setCenter(center);
+  children_[3].setBounds (bounds);
+  children_[3].setCenter (center);
 
   // Compute bounds and center for child 2, i.e., for (0,1,0)
   bounds[4] = bounds_[4];
@@ -252,8 +253,8 @@ pcl::recognition::ORROctree::Node::createChildren()
   // Update the center
   center[2] -= childside;
   // Save the results
-  children_[2].setBounds(bounds);
-  children_[2].setCenter(center);
+  children_[2].setBounds (bounds);
+  children_[2].setCenter (center);
 
   // Compute bounds and center for child 6, i.e., for (1,1,0)
   bounds[0] = center_[0];
@@ -261,8 +262,8 @@ pcl::recognition::ORROctree::Node::createChildren()
   // Update the center
   center[0] += childside;
   // Save the results
-  children_[6].setBounds(bounds);
-  children_[6].setCenter(center);
+  children_[6].setBounds (bounds);
+  children_[6].setCenter (center);
 
   // Compute bounds and center for child 7, i.e., for (1,1,1)
   bounds[4] = center_[2];
@@ -270,8 +271,8 @@ pcl::recognition::ORROctree::Node::createChildren()
   // Update the center
   center[2] += childside;
   // Save the results
-  children_[7].setBounds(bounds);
-  children_[7].setCenter(center);
+  children_[7].setBounds (bounds);
+  children_[7].setCenter (center);
 
   // Compute bounds and center for child 5, i.e., for (1,0,1)
   bounds[2] = bounds_[2];
@@ -279,8 +280,8 @@ pcl::recognition::ORROctree::Node::createChildren()
   // Update the center
   center[1] -= childside;
   // Save the results
-  children_[5].setBounds(bounds);
-  children_[5].setCenter(center);
+  children_[5].setBounds (bounds);
+  children_[5].setCenter (center);
 
   // Compute bounds and center for child 4, i.e., for (1,0,0)
   bounds[4] = bounds_[4];
@@ -288,12 +289,12 @@ pcl::recognition::ORROctree::Node::createChildren()
   // Update the center
   center[2] -= childside;
   // Save the results
-  children_[4].setBounds(bounds);
-  children_[4].setCenter(center);
+  children_[4].setBounds (bounds);
+  children_[4].setCenter (center);
 
   for (int i = 0; i < 8; ++i) {
     children_[i].computeRadius();
-    children_[i].setParent(this);
+    children_[i].setParent (this);
   }
 
   return (true);
@@ -302,11 +303,11 @@ pcl::recognition::ORROctree::Node::createChildren()
 //====================================================================================================
 
 void
-pcl::recognition::ORROctree::getFullLeavesIntersectedBySphere(
+pcl::recognition::ORROctree::getFullLeavesIntersectedBySphere (
     const float* p, float radius, std::list<ORROctree::Node*>& out) const
 {
   std::list<ORROctree::Node*> nodes;
-  nodes.push_back(root_);
+  nodes.push_back (root_);
 
   ORROctree::Node *node, *child;
 
@@ -317,24 +318,24 @@ pcl::recognition::ORROctree::getFullLeavesIntersectedBySphere(
     nodes.pop_back();
 
     // Check if the sphere intersects the current node
-    if (std::abs(radius - aux::distance3<float>(p, node->getCenter())) <=
+    if (std::abs (radius - aux::distance3<float> (p, node->getCenter())) <=
         node->getRadius()) {
       // We have an intersection -> push back the children of the current node
       if (node->hasChildren()) {
         for (int i = 0; i < 8; ++i) {
-          child = node->getChild(i);
+          child = node->getChild (i);
           // We do not want to push all children -> only children with children or
           // leaves
           if (child->hasChildren())
-            nodes.push_back(child);
+            nodes.push_back (child);
           // only push back the child if it is not the leaf of p
-          else if (child->hasData() && !aux::equal3(p, child->getData()->getPoint()))
-            nodes.push_back(child);
+          else if (child->hasData() && !aux::equal3 (p, child->getData()->getPoint()))
+            nodes.push_back (child);
         }
       }
       // only push back the node if it is not the leaf of p
-      else if (node->hasData() && !aux::equal3<float>(p, node->getData()->getPoint()))
-        out.push_back(node); // We got a full leaf
+      else if (node->hasData() && !aux::equal3<float> (p, node->getData()->getPoint()))
+        out.push_back (node); // We got a full leaf
     }
   }
 }
@@ -342,17 +343,17 @@ pcl::recognition::ORROctree::getFullLeavesIntersectedBySphere(
 //================================================================================================================================================================
 
 ORROctree::Node*
-pcl::recognition::ORROctree::getRandomFullLeafOnSphere(const float* p,
-                                                       float radius) const
+pcl::recognition::ORROctree::getRandomFullLeafOnSphere (const float* p,
+                                                        float radius) const
 {
   std::vector<int> tmp_ids;
-  tmp_ids.reserve(8);
+  tmp_ids.reserve (8);
 
-  pcl::common::UniformGenerator<int> randgen(
-      0, 1, static_cast<std::uint32_t>(time(nullptr)));
+  pcl::common::UniformGenerator<int> randgen (
+      0, 1, static_cast<std::uint32_t> (time (nullptr)));
 
   std::list<ORROctree::Node*> nodes;
-  nodes.push_back(root_);
+  nodes.push_back (root_);
 
   while (!nodes.empty()) {
     // Get the last element in the list
@@ -361,21 +362,21 @@ pcl::recognition::ORROctree::getRandomFullLeafOnSphere(const float* p,
     nodes.pop_back();
 
     // Check if the sphere intersects the current node
-    if (std::abs(radius - aux::distance3<float>(p, node->getCenter())) <=
+    if (std::abs (radius - aux::distance3<float> (p, node->getCenter())) <=
         node->getRadius()) {
       // We have an intersection -> push back the children of the current node
       if (node->hasChildren()) {
         // Prepare the tmp id vector
         for (int i = 0; i < 8; ++i)
-          tmp_ids.push_back(i);
+          tmp_ids.push_back (i);
 
         // Push back the children in random order
         for (int i = 0; i < 8; ++i) {
-          randgen.setParameters(0, static_cast<int>(tmp_ids.size()) - 1);
+          randgen.setParameters (0, static_cast<int> (tmp_ids.size()) - 1);
           int rand_pos = randgen.run();
-          nodes.push_back(node->getChild(tmp_ids[rand_pos]));
+          nodes.push_back (node->getChild (tmp_ids[rand_pos]));
           // Remove the randomly selected id
-          tmp_ids.erase(tmp_ids.begin() + rand_pos);
+          tmp_ids.erase (tmp_ids.begin() + rand_pos);
         }
       }
       else if (node->hasData())
@@ -389,7 +390,7 @@ pcl::recognition::ORROctree::getRandomFullLeafOnSphere(const float* p,
 //================================================================================================================================================================
 
 void
-pcl::recognition::ORROctree::deleteBranch(Node* node)
+pcl::recognition::ORROctree::deleteBranch (Node* node)
 {
   node->deleteChildren();
   node->deleteData();
@@ -423,9 +424,9 @@ pcl::recognition::ORROctree::deleteBranch(Node* node)
 //================================================================================================================================================================
 
 void
-pcl::recognition::ORROctree::getFullLeavesPoints(PointCloudOut& out) const
+pcl::recognition::ORROctree::getFullLeavesPoints (PointCloudOut& out) const
 {
-  out.resize(full_leaves_.size());
+  out.resize (full_leaves_.size());
   std::size_t i = 0;
 
   // Now iterate over all full leaves and compute the normals and average points
@@ -439,9 +440,9 @@ pcl::recognition::ORROctree::getFullLeavesPoints(PointCloudOut& out) const
 //================================================================================================================================================================
 
 void
-pcl::recognition::ORROctree::getNormalsOfFullLeaves(PointCloudN& out) const
+pcl::recognition::ORROctree::getNormalsOfFullLeaves (PointCloudN& out) const
 {
-  out.resize(full_leaves_.size());
+  out.resize (full_leaves_.size());
   std::size_t i = 0;
 
   // Now iterate over all full leaves and compute the normals and average points

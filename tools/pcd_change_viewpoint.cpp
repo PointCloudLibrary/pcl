@@ -50,9 +50,9 @@ using namespace pcl::console;
 void
 printHelp (int, char** argv)
 {
-  print_error("Syntax is: %s input.pcd output.pcd <options>\n", argv[0]);
-  print_info("  where options are:\n");
-  print_info("                     -viewpoint Tx,Ty,Tz,Qw,Qx,Qy,Qz\n");
+  print_error ("Syntax is: %s input.pcd output.pcd <options>\n", argv[0]);
+  print_info ("  where options are:\n");
+  print_info ("                     -viewpoint Tx,Ty,Tz,Qw,Qx,Qy,Qz\n");
 }
 
 bool
@@ -62,26 +62,26 @@ loadCloud (const std::string& filename, pcl::PCLPointCloud2& cloud)
   Eigen::Quaternionf orientation;
 
   TicToc tt;
-  print_highlight("Loading ");
-  print_value("%s ", filename.c_str());
+  print_highlight ("Loading ");
+  print_value ("%s ", filename.c_str());
 
   tt.tic();
-  if (loadPCDFile(filename, cloud, translation, orientation) < 0)
+  if (loadPCDFile (filename, cloud, translation, orientation) < 0)
     return (false);
-  print_info("[done, ");
-  print_value("%g", tt.toc());
-  print_info(" ms : ");
-  print_value("%d", cloud.width * cloud.height);
-  print_info(" points]\n");
-  print_info("VIEWPOINT information is: ");
-  print_value("%.2f %.2f %.2f / %.2f %.2f %.2f %.2f\n",
-              translation.x(),
-              translation.y(),
-              translation.z(),
-              orientation.w(),
-              orientation.x(),
-              orientation.y(),
-              orientation.z());
+  print_info ("[done, ");
+  print_value ("%g", tt.toc());
+  print_info (" ms : ");
+  print_value ("%d", cloud.width * cloud.height);
+  print_info (" points]\n");
+  print_info ("VIEWPOINT information is: ");
+  print_value ("%.2f %.2f %.2f / %.2f %.2f %.2f %.2f\n",
+               translation.x(),
+               translation.y(),
+               translation.z(),
+               orientation.w(),
+               orientation.x(),
+               orientation.y(),
+               orientation.z());
 
   return (true);
 }
@@ -95,29 +95,29 @@ saveCloud (const std::string& filename,
   TicToc tt;
   tt.tic();
 
-  print_highlight("Saving ");
-  print_value("%s ", filename.c_str());
+  print_highlight ("Saving ");
+  print_value ("%s ", filename.c_str());
 
   PCDWriter w;
-  w.writeBinaryCompressed(filename, output, translation, orientation);
+  w.writeBinaryCompressed (filename, output, translation, orientation);
 
-  print_info("[done, ");
-  print_value("%g", tt.toc());
-  print_info(" ms : ");
-  print_value("%d", output.width * output.height);
-  print_info(" points]\n");
+  print_info ("[done, ");
+  print_value ("%g", tt.toc());
+  print_info (" ms : ");
+  print_value ("%d", output.width * output.height);
+  print_info (" points]\n");
 }
 
 /* ---[ */
 int
 main (int argc, char** argv)
 {
-  print_info(
+  print_info (
       "Change viewpoint information in a PCD file. For more information, use: %s -h\n",
       argv[0]);
 
   if (argc < 4) {
-    printHelp(argc, argv);
+    printHelp (argc, argv);
     return (-1);
   }
 
@@ -125,42 +125,42 @@ main (int argc, char** argv)
   Eigen::Quaternionf orientation = Eigen::Quaternionf::Identity();
 
   std::vector<float> values;
-  if (parse_x_arguments(argc, argv, "-viewpoint", values) > -1) {
+  if (parse_x_arguments (argc, argv, "-viewpoint", values) > -1) {
     if (values.size() == 7) {
-      translation = Eigen::Vector4f(values[0], values[1], values[2], 0.0f);
-      orientation = Eigen::Quaternionf(values[3], values[4], values[5], values[6]);
+      translation = Eigen::Vector4f (values[0], values[1], values[2], 0.0f);
+      orientation = Eigen::Quaternionf (values[3], values[4], values[5], values[6]);
     }
     else {
-      print_error("Wrong number of values given (%lu): ", values.size());
-      print_error("The VIEWPOINT specified with -viewpoint must contain 7 elements "
-                  "(tx, ty, tz, qw, qx, qy, qz).\n");
+      print_error ("Wrong number of values given (%lu): ", values.size());
+      print_error ("The VIEWPOINT specified with -viewpoint must contain 7 elements "
+                   "(tx, ty, tz, qw, qx, qy, qz).\n");
       return (-1);
     }
   }
 
   // Parse the command line arguments for .pcd files
   std::vector<int> p_file_indices;
-  p_file_indices = parse_file_extension_argument(argc, argv, ".pcd");
+  p_file_indices = parse_file_extension_argument (argc, argv, ".pcd");
   if (p_file_indices.size() != 2) {
-    print_error("Need one input PCD file and one output PCD file to continue.\n");
+    print_error ("Need one input PCD file and one output PCD file to continue.\n");
     return (-1);
   }
 
   // Load the first file
   pcl::PCLPointCloud2 cloud;
-  if (!loadCloud(argv[p_file_indices[0]], cloud))
+  if (!loadCloud (argv[p_file_indices[0]], cloud))
     return (-1);
 
-  print_info("Saving output PCD file with the following VIEWPOINT information: ");
-  print_value("%.2f %.2f %.2f / %.2f %.2f %.2f %.2f\n",
-              translation.x(),
-              translation.y(),
-              translation.z(),
-              orientation.w(),
-              orientation.x(),
-              orientation.y(),
-              orientation.z());
+  print_info ("Saving output PCD file with the following VIEWPOINT information: ");
+  print_value ("%.2f %.2f %.2f / %.2f %.2f %.2f %.2f\n",
+               translation.x(),
+               translation.y(),
+               translation.z(),
+               orientation.w(),
+               orientation.x(),
+               orientation.y(),
+               orientation.z());
 
   // Save into the second file
-  saveCloud(argv[p_file_indices[1]], translation, orientation, cloud);
+  saveCloud (argv[p_file_indices[1]], translation, orientation, cloud);
 }

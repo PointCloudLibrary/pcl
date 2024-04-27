@@ -44,10 +44,10 @@
 
 ////////////////////////////////////////////////////////////////////////////////
 
-pcl::ihs::HelpWindow::HelpWindow(QWidget* parent)
-: QDialog(parent), ui(new Ui::HelpWindow)
+pcl::ihs::HelpWindow::HelpWindow (QWidget* parent)
+: QDialog (parent), ui (new Ui::HelpWindow)
 {
-  ui->setupUi(this);
+  ui->setupUi (this);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

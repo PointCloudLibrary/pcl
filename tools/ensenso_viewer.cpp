@@ -63,7 +63,7 @@ void
 grabberCallback (const PointCloudXYZ::Ptr& cloud)
 {
   if (!viewer_ptr->wasStopped())
-    viewer_ptr->showCloud(cloud);
+    viewer_ptr->showCloud (cloud);
 }
 
 /** @brief Main function
@@ -71,18 +71,18 @@ grabberCallback (const PointCloudXYZ::Ptr& cloud)
 int
 main ()
 {
-  viewer_ptr.reset(new CloudViewer("Ensenso 3D cloud viewer"));
-  ensenso_ptr.reset(new pcl::EnsensoGrabber);
+  viewer_ptr.reset (new CloudViewer ("Ensenso 3D cloud viewer"));
+  ensenso_ptr.reset (new pcl::EnsensoGrabber);
   ensenso_ptr->openTcpPort();
   ensenso_ptr->openDevice();
 
-  std::function<void(const PointCloudXYZ::Ptr&)> f =
-      [] (const PointCloudXYZ::Ptr& cloud) { grabberCallback(cloud); };
-  ensenso_ptr->registerCallback(f);
+  std::function<void (const PointCloudXYZ::Ptr&)> f =
+      [] (const PointCloudXYZ::Ptr& cloud) { grabberCallback (cloud); };
+  ensenso_ptr->registerCallback (f);
   ensenso_ptr->start();
 
   while (!viewer_ptr->wasStopped()) {
-    std::this_thread::sleep_for(1s);
+    std::this_thread::sleep_for (1s);
     std::cout << "FPS: " << ensenso_ptr->getFramesPerSecond() << std::endl;
   }
 

@@ -85,10 +85,10 @@ public:
     float dx = (*input_)[idx1].x - (*input_)[idx2].x;
     float dy = (*input_)[idx1].y - (*input_)[idx2].y;
     float dz = (*input_)[idx1].z - (*input_)[idx2].z;
-    float dist = std::sqrt(dx * dx + dy * dy + dz * dz);
+    float dist = std::sqrt (dx * dx + dy * dy + dz * dz);
 
     return ((dist < distance_threshold_) &&
-            ((*normals_)[idx1].getNormalVector3fMap().dot(
+            ((*normals_)[idx1].getNormalVector3fMap().dot (
                  (*normals_)[idx2].getNormalVector3fMap()) > angular_threshold_));
   }
 };

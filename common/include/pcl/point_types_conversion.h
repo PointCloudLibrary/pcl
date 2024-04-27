@@ -60,8 +60,9 @@ PointXYZRGBtoXYZI (const PointXYZRGB& in, PointXYZI& out)
   out.x = in.x;
   out.y = in.y;
   out.z = in.z;
-  out.intensity = 0.299f * static_cast<float>(in.r) +
-                  0.587f * static_cast<float>(in.g) + 0.114f * static_cast<float>(in.b);
+  out.intensity = 0.299f * static_cast<float> (in.r) +
+                  0.587f * static_cast<float> (in.g) +
+                  0.114f * static_cast<float> (in.b);
 }
 
 /** \brief Convert a RGB point type to a I
@@ -71,8 +72,9 @@ PointXYZRGBtoXYZI (const PointXYZRGB& in, PointXYZI& out)
 inline void
 PointRGBtoI (const RGB& in, Intensity& out)
 {
-  out.intensity = 0.299f * static_cast<float>(in.r) +
-                  0.587f * static_cast<float>(in.g) + 0.114f * static_cast<float>(in.b);
+  out.intensity = 0.299f * static_cast<float> (in.r) +
+                  0.587f * static_cast<float> (in.g) +
+                  0.114f * static_cast<float> (in.b);
 }
 
 /** \brief Convert a RGB point type to a I
@@ -82,9 +84,9 @@ PointRGBtoI (const RGB& in, Intensity& out)
 inline void
 PointRGBtoI (const RGB& in, Intensity8u& out)
 {
-  out.intensity = static_cast<std::uint8_t>(0.299f * static_cast<float>(in.r) +
-                                            0.587f * static_cast<float>(in.g) +
-                                            0.114f * static_cast<float>(in.b));
+  out.intensity = static_cast<std::uint8_t> (0.299f * static_cast<float> (in.r) +
+                                             0.587f * static_cast<float> (in.g) +
+                                             0.114f * static_cast<float> (in.b));
 }
 
 /** \brief Convert a RGB point type to a I
@@ -94,9 +96,9 @@ PointRGBtoI (const RGB& in, Intensity8u& out)
 inline void
 PointRGBtoI (const RGB& in, Intensity32u& out)
 {
-  out.intensity = static_cast<std::uint32_t>(0.299f * static_cast<float>(in.r) +
-                                             0.587f * static_cast<float>(in.g) +
-                                             0.114f * static_cast<float>(in.b));
+  out.intensity = static_cast<std::uint32_t> (0.299f * static_cast<float> (in.r) +
+                                              0.587f * static_cast<float> (in.g) +
+                                              0.114f * static_cast<float> (in.b));
 }
 
 /** \brief Convert a XYZRGB point type to a XYZHSV
@@ -106,13 +108,13 @@ PointRGBtoI (const RGB& in, Intensity32u& out)
 inline void
 PointXYZRGBtoXYZHSV (const PointXYZRGB& in, PointXYZHSV& out)
 {
-  const unsigned char max = std::max(in.r, std::max(in.g, in.b));
-  const unsigned char min = std::min(in.r, std::min(in.g, in.b));
+  const unsigned char max = std::max (in.r, std::max (in.g, in.b));
+  const unsigned char min = std::min (in.r, std::min (in.g, in.b));
 
   out.x = in.x;
   out.y = in.y;
   out.z = in.z;
-  out.v = static_cast<float>(max) / 255.f;
+  out.v = static_cast<float> (max) / 255.f;
 
   if (max == 0) // division by zero
   {
@@ -121,8 +123,8 @@ PointXYZRGBtoXYZHSV (const PointXYZRGB& in, PointXYZHSV& out)
     return;
   }
 
-  const float diff = static_cast<float>(max - min);
-  out.s = diff / static_cast<float>(max);
+  const float diff = static_cast<float> (max - min);
+  out.s = diff / static_cast<float> (max);
 
   if (min == max) // diff == 0 -> division by zero
   {
@@ -131,11 +133,11 @@ PointXYZRGBtoXYZHSV (const PointXYZRGB& in, PointXYZHSV& out)
   }
 
   if (max == in.r)
-    out.h = 60.f * (static_cast<float>(in.g - in.b) / diff);
+    out.h = 60.f * (static_cast<float> (in.g - in.b) / diff);
   else if (max == in.g)
-    out.h = 60.f * (2.f + static_cast<float>(in.b - in.r) / diff);
+    out.h = 60.f * (2.f + static_cast<float> (in.b - in.r) / diff);
   else
-    out.h = 60.f * (4.f + static_cast<float>(in.r - in.g) / diff); // max == b
+    out.h = 60.f * (4.f + static_cast<float> (in.r - in.g) / diff); // max == b
 
   if (out.h < 0.f)
     out.h += 360.f;
@@ -171,7 +173,7 @@ PointXYZRGBtoXYZLAB (const PointT& in, PointXYZLAB& out)
   const double Z = R * 0.0193 + G * 0.1192 + B * 0.9505;
 
   // normalize X, Y, Z with tristimulus values for Xn, Yn, Zn
-  float f[3] = {static_cast<float>(X), static_cast<float>(Y), static_cast<float>(Z)};
+  float f[3] = {static_cast<float> (X), static_cast<float> (Y), static_cast<float> (Z)};
   f[0] /= 0.95047;
   f[1] /= 1;
   f[2] /= 1.08883;
@@ -179,7 +181,7 @@ PointXYZRGBtoXYZLAB (const PointT& in, PointXYZLAB& out)
   // CIEXYZ -> CIELAB
   for (float& xyz : f) {
     if (xyz > 0.008856) {
-      xyz = std::pow(xyz, 1.0 / 3.0);
+      xyz = std::pow (xyz, 1.0 / 3.0);
     }
     else {
       xyz = 7.787 * xyz + 16.0 / 116.0;
@@ -199,13 +201,13 @@ PointXYZRGBtoXYZLAB (const PointT& in, PointXYZLAB& out)
 inline void
 PointXYZRGBAtoXYZHSV (const PointXYZRGBA& in, PointXYZHSV& out)
 {
-  const unsigned char max = std::max(in.r, std::max(in.g, in.b));
-  const unsigned char min = std::min(in.r, std::min(in.g, in.b));
+  const unsigned char max = std::max (in.r, std::max (in.g, in.b));
+  const unsigned char min = std::min (in.r, std::min (in.g, in.b));
 
   out.x = in.x;
   out.y = in.y;
   out.z = in.z;
-  out.v = static_cast<float>(max) / 255.f;
+  out.v = static_cast<float> (max) / 255.f;
 
   if (max == 0) // division by zero
   {
@@ -214,8 +216,8 @@ PointXYZRGBAtoXYZHSV (const PointXYZRGBA& in, PointXYZHSV& out)
     return;
   }
 
-  const float diff = static_cast<float>(max - min);
-  out.s = diff / static_cast<float>(max);
+  const float diff = static_cast<float> (max - min);
+  out.s = diff / static_cast<float> (max);
 
   if (min == max) // diff == 0 -> division by zero
   {
@@ -224,11 +226,11 @@ PointXYZRGBAtoXYZHSV (const PointXYZRGBA& in, PointXYZHSV& out)
   }
 
   if (max == in.r)
-    out.h = 60.f * (static_cast<float>(in.g - in.b) / diff);
+    out.h = 60.f * (static_cast<float> (in.g - in.b) / diff);
   else if (max == in.g)
-    out.h = 60.f * (2.f + static_cast<float>(in.b - in.r) / diff);
+    out.h = 60.f * (2.f + static_cast<float> (in.b - in.r) / diff);
   else
-    out.h = 60.f * (4.f + static_cast<float>(in.r - in.g) / diff); // max == b
+    out.h = 60.f * (4.f + static_cast<float> (in.r - in.g) / diff); // max == b
 
   if (out.h < 0.f)
     out.h += 360.f;
@@ -245,51 +247,51 @@ PointXYZHSVtoXYZRGB (const PointXYZHSV& in, PointXYZRGB& out)
   out.y = in.y;
   out.z = in.z;
   if (in.s == 0) {
-    out.r = out.g = out.b = static_cast<std::uint8_t>(255 * in.v);
+    out.r = out.g = out.b = static_cast<std::uint8_t> (255 * in.v);
     return;
   }
   float a = in.h / 60;
-  int i = static_cast<int>(std::floor(a));
-  float f = a - static_cast<float>(i);
+  int i = static_cast<int> (std::floor (a));
+  float f = a - static_cast<float> (i);
   float p = in.v * (1 - in.s);
   float q = in.v * (1 - in.s * f);
   float t = in.v * (1 - in.s * (1 - f));
 
   switch (i) {
   case 0: {
-    out.r = static_cast<std::uint8_t>(255 * in.v);
-    out.g = static_cast<std::uint8_t>(255 * t);
-    out.b = static_cast<std::uint8_t>(255 * p);
+    out.r = static_cast<std::uint8_t> (255 * in.v);
+    out.g = static_cast<std::uint8_t> (255 * t);
+    out.b = static_cast<std::uint8_t> (255 * p);
     break;
   }
   case 1: {
-    out.r = static_cast<std::uint8_t>(255 * q);
-    out.g = static_cast<std::uint8_t>(255 * in.v);
-    out.b = static_cast<std::uint8_t>(255 * p);
+    out.r = static_cast<std::uint8_t> (255 * q);
+    out.g = static_cast<std::uint8_t> (255 * in.v);
+    out.b = static_cast<std::uint8_t> (255 * p);
     break;
   }
   case 2: {
-    out.r = static_cast<std::uint8_t>(255 * p);
-    out.g = static_cast<std::uint8_t>(255 * in.v);
-    out.b = static_cast<std::uint8_t>(255 * t);
+    out.r = static_cast<std::uint8_t> (255 * p);
+    out.g = static_cast<std::uint8_t> (255 * in.v);
+    out.b = static_cast<std::uint8_t> (255 * t);
     break;
   }
   case 3: {
-    out.r = static_cast<std::uint8_t>(255 * p);
-    out.g = static_cast<std::uint8_t>(255 * q);
-    out.b = static_cast<std::uint8_t>(255 * in.v);
+    out.r = static_cast<std::uint8_t> (255 * p);
+    out.g = static_cast<std::uint8_t> (255 * q);
+    out.b = static_cast<std::uint8_t> (255 * in.v);
     break;
   }
   case 4: {
-    out.r = static_cast<std::uint8_t>(255 * t);
-    out.g = static_cast<std::uint8_t>(255 * p);
-    out.b = static_cast<std::uint8_t>(255 * in.v);
+    out.r = static_cast<std::uint8_t> (255 * t);
+    out.g = static_cast<std::uint8_t> (255 * p);
+    out.b = static_cast<std::uint8_t> (255 * in.v);
     break;
   }
   default: {
-    out.r = static_cast<std::uint8_t>(255 * in.v);
-    out.g = static_cast<std::uint8_t>(255 * p);
-    out.b = static_cast<std::uint8_t>(255 * q);
+    out.r = static_cast<std::uint8_t> (255 * in.v);
+    out.g = static_cast<std::uint8_t> (255 * p);
+    out.b = static_cast<std::uint8_t> (255 * q);
     break;
   }
   }
@@ -306,8 +308,8 @@ PointCloudRGBtoI (const PointCloud<RGB>& in, PointCloud<Intensity>& out)
   out.height = in.height;
   for (const auto& point : in) {
     Intensity p;
-    PointRGBtoI(point, p);
-    out.push_back(p);
+    PointRGBtoI (point, p);
+    out.push_back (p);
   }
 }
 
@@ -322,8 +324,8 @@ PointCloudRGBtoI (const PointCloud<RGB>& in, PointCloud<Intensity8u>& out)
   out.height = in.height;
   for (const auto& point : in) {
     Intensity8u p;
-    PointRGBtoI(point, p);
-    out.push_back(p);
+    PointRGBtoI (point, p);
+    out.push_back (p);
   }
 }
 
@@ -338,8 +340,8 @@ PointCloudRGBtoI (const PointCloud<RGB>& in, PointCloud<Intensity32u>& out)
   out.height = in.height;
   for (const auto& point : in) {
     Intensity32u p;
-    PointRGBtoI(point, p);
-    out.push_back(p);
+    PointRGBtoI (point, p);
+    out.push_back (p);
   }
 }
 
@@ -355,8 +357,8 @@ PointCloudXYZRGBtoXYZHSV (const PointCloud<PointXYZRGB>& in,
   out.height = in.height;
   for (const auto& point : in) {
     PointXYZHSV p;
-    PointXYZRGBtoXYZHSV(point, p);
-    out.push_back(p);
+    PointXYZRGBtoXYZHSV (point, p);
+    out.push_back (p);
   }
 }
 
@@ -372,8 +374,8 @@ PointCloudXYZHSVtoXYZRGB (const PointCloud<PointXYZHSV>& in,
   out.height = in.height;
   for (const auto& point : in) {
     PointXYZRGB p;
-    PointXYZHSVtoXYZRGB(point, p);
-    out.push_back(p);
+    PointXYZHSVtoXYZRGB (point, p);
+    out.push_back (p);
   }
 }
 
@@ -389,8 +391,8 @@ PointCloudXYZRGBAtoXYZHSV (const PointCloud<PointXYZRGBA>& in,
   out.height = in.height;
   for (const auto& point : in) {
     PointXYZHSV p;
-    PointXYZRGBAtoXYZHSV(point, p);
-    out.push_back(p);
+    PointXYZRGBAtoXYZHSV (point, p);
+    out.push_back (p);
   }
 }
 
@@ -405,8 +407,8 @@ PointCloudXYZRGBtoXYZI (const PointCloud<PointXYZRGB>& in, PointCloud<PointXYZI>
   out.height = in.height;
   for (const auto& point : in) {
     PointXYZI p;
-    PointXYZRGBtoXYZI(point, p);
-    out.push_back(p);
+    PointXYZRGBtoXYZI (point, p);
+    out.push_back (p);
   }
 }
 
@@ -430,21 +432,21 @@ PointCloudDepthAndRGBtoXYZRGBA (const PointCloud<Intensity>& depth,
   for (std::size_t v = 0; v < height_; v++) {
     for (std::size_t u = 0; u < width_; u++) {
       PointXYZRGBA pt;
-      float depth_ = depth.at(u, v).intensity;
+      float depth_ = depth.at (u, v).intensity;
 
       if (depth_ == 0) {
         pt.x = pt.y = pt.z = bad_point;
       }
       else {
         pt.z = depth_ * 0.001f;
-        pt.x = static_cast<float>(u) * pt.z * constant_;
-        pt.y = static_cast<float>(v) * pt.z * constant_;
+        pt.x = static_cast<float> (u) * pt.z * constant_;
+        pt.y = static_cast<float> (v) * pt.z * constant_;
       }
-      pt.r = image.at(u, v).r;
-      pt.g = image.at(u, v).g;
-      pt.b = image.at(u, v).b;
+      pt.r = image.at (u, v).r;
+      pt.g = image.at (u, v).g;
+      pt.b = image.at (u, v).b;
 
-      out.push_back(pt);
+      out.push_back (pt);
     }
   }
   out.width = width_;

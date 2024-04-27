@@ -187,9 +187,9 @@ private:
      * constructor \param[in] model a Sample Consensus model \param[in] random if true
      * set the random seed to the current time, else set to 12345 (default: false)
      */
-    WeightedRandomSampleConsensus(const SampleConsensusModelPtr& model,
-                                  bool random = false)
-    : SampleConsensus<WeightSACPointType>(model, random)
+    WeightedRandomSampleConsensus (const SampleConsensusModelPtr& model,
+                                   bool random = false)
+    : SampleConsensus<WeightSACPointType> (model, random)
     {
       initialize();
     }
@@ -199,10 +199,10 @@ private:
      * distance to model threshold \param[in] random if true set the random seed to the
      * current time, else set to 12345 (default: false)
      */
-    WeightedRandomSampleConsensus(const SampleConsensusModelPtr& model,
-                                  double threshold,
-                                  bool random = false)
-    : SampleConsensus<WeightSACPointType>(model, threshold, random)
+    WeightedRandomSampleConsensus (const SampleConsensusModelPtr& model,
+                                   double threshold,
+                                   bool random = false)
+    : SampleConsensus<WeightSACPointType> (model, threshold, random)
     {
       initialize();
     }
@@ -222,7 +222,7 @@ private:
     setWeights (const std::vector<double>& weights, const bool directed_weights = false)
     {
       if (weights.size() != full_cloud_pt_indices_->size()) {
-        PCL_ERROR(
+        PCL_ERROR (
             "[pcl::WeightedRandomSampleConsensus::setWeights] Cannot assign weights. "
             "Weight vector needs to have the same length as the input pointcloud\n");
         return;
@@ -231,7 +231,7 @@ private:
       model_pt_indices_->clear();
       for (std::size_t i = 0; i < weights.size(); ++i) {
         if (weights[i] > std::numeric_limits<double>::epsilon())
-          model_pt_indices_->push_back(i);
+          model_pt_indices_->push_back (i);
       }
       use_directed_weights_ = directed_weights;
     }
@@ -253,8 +253,8 @@ private:
       // Maximum number of trials before we give up.
       max_iterations_ = 10000;
       use_directed_weights_ = false;
-      model_pt_indices_.reset(new Indices);
-      full_cloud_pt_indices_.reset(new Indices(*(sac_model_->getIndices())));
+      model_pt_indices_.reset (new Indices);
+      full_cloud_pt_indices_.reset (new Indices (*(sac_model_->getIndices())));
       point_cloud_ptr_ = sac_model_->getInputCloud();
     }
 

@@ -66,5 +66,5 @@ Statistics::clear()
 void
 Statistics::registerStats()
 {
-  stat_vec_.push_back(this);
+  stat_vec_.push_back (this);
 }

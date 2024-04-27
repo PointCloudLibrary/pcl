@@ -51,7 +51,7 @@ class CloudTransformTool : public ToolInterface {
 public:
   /// @brief Constructor
   /// @param cloud_ptr a shared pointer pointing to the cloud object.
-  CloudTransformTool(CloudPtr cloud_ptr);
+  CloudTransformTool (CloudPtr cloud_ptr);
 
   /// @brief Destructor
   ~CloudTransformTool() override;

@@ -110,7 +110,7 @@ public:
    * \return true if score1 is better than score2
    */
   virtual bool
-  operator()(const double& score1, const double& score2) const = 0;
+  operator() (const double& score1, const double& score2) const = 0;
 
   /** \brief Check if the score is valid for a specific transformation. Pure virtual.
    *

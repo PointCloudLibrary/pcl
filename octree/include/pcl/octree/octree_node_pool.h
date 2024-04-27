@@ -65,7 +65,7 @@ public:
   inline void
   pushNode (NodeT* node_arg)
   {
-    nodePool_.push_back(node_arg);
+    nodePool_.push_back (node_arg);
   }
 
   /** \brief Pop node from pool - Allocates new nodes if pool is empty

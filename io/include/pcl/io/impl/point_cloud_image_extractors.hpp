@@ -49,19 +49,19 @@
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 bool
-pcl::io::PointCloudImageExtractor<PointT>::extract(const PointCloud& cloud,
-                                                   pcl::PCLImage& img) const
+pcl::io::PointCloudImageExtractor<PointT>::extract (const PointCloud& cloud,
+                                                    pcl::PCLImage& img) const
 {
   if (!cloud.isOrganized() || cloud.size() != cloud.width * cloud.height)
     return (false);
 
-  bool result = this->extractImpl(cloud, img);
+  bool result = this->extractImpl (cloud, img);
 
   if (paint_nans_with_black_ && result) {
     std::size_t size = img.encoding == "mono16" ? 2 : 3;
     for (std::size_t i = 0; i < cloud.size(); ++i)
-      if (!pcl::isFinite(cloud[i])) {
-        std::fill_n(&img.data[i * size], size, 0);
+      if (!pcl::isFinite (cloud[i])) {
+        std::fill_n (&img.data[i * size], size, 0);
       }
   }
 
@@ -71,13 +71,13 @@ pcl::io::PointCloudImageExtractor<PointT>::extract(const PointCloud& cloud,
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 bool
-pcl::io::PointCloudImageExtractorFromNormalField<PointT>::extractImpl(
+pcl::io::PointCloudImageExtractorFromNormalField<PointT>::extractImpl (
     const PointCloud& cloud, pcl::PCLImage& img) const
 {
   std::vector<pcl::PCLPointField> fields;
-  int field_x_idx = pcl::getFieldIndex<PointT>("normal_x", fields);
-  int field_y_idx = pcl::getFieldIndex<PointT>("normal_y", fields);
-  int field_z_idx = pcl::getFieldIndex<PointT>("normal_z", fields);
+  int field_x_idx = pcl::getFieldIndex<PointT> ("normal_x", fields);
+  int field_y_idx = pcl::getFieldIndex<PointT> ("normal_y", fields);
+  int field_z_idx = pcl::getFieldIndex<PointT> ("normal_z", fields);
   if (field_x_idx == -1 || field_y_idx == -1 || field_z_idx == -1)
     return (false);
   const std::size_t offset_x = fields[field_x_idx].offset;
@@ -87,19 +87,19 @@ pcl::io::PointCloudImageExtractorFromNormalField<PointT>::extractImpl(
   img.encoding = "rgb8";
   img.width = cloud.width;
   img.height = cloud.height;
-  img.step = img.width * sizeof(unsigned char) * 3;
-  img.data.resize(img.step * img.height);
+  img.step = img.width * sizeof (unsigned char) * 3;
+  img.data.resize (img.step * img.height);
 
   for (std::size_t i = 0; i < cloud.size(); ++i) {
     float x;
     float y;
     float z;
-    pcl::getFieldValue<PointT, float>(cloud[i], offset_x, x);
-    pcl::getFieldValue<PointT, float>(cloud[i], offset_y, y);
-    pcl::getFieldValue<PointT, float>(cloud[i], offset_z, z);
-    img.data[i * 3 + 0] = static_cast<unsigned char>((x + 1.0) * 127);
-    img.data[i * 3 + 1] = static_cast<unsigned char>((y + 1.0) * 127);
-    img.data[i * 3 + 2] = static_cast<unsigned char>((z + 1.0) * 127);
+    pcl::getFieldValue<PointT, float> (cloud[i], offset_x, x);
+    pcl::getFieldValue<PointT, float> (cloud[i], offset_y, y);
+    pcl::getFieldValue<PointT, float> (cloud[i], offset_z, z);
+    img.data[i * 3 + 0] = static_cast<unsigned char> ((x + 1.0) * 127);
+    img.data[i * 3 + 1] = static_cast<unsigned char> ((y + 1.0) * 127);
+    img.data[i * 3 + 2] = static_cast<unsigned char> ((z + 1.0) * 127);
   }
 
   return (true);
@@ -108,13 +108,13 @@ pcl::io::PointCloudImageExtractorFromNormalField<PointT>::extractImpl(
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 bool
-pcl::io::PointCloudImageExtractorFromRGBField<PointT>::extractImpl(
+pcl::io::PointCloudImageExtractorFromRGBField<PointT>::extractImpl (
     const PointCloud& cloud, pcl::PCLImage& img) const
 {
   std::vector<pcl::PCLPointField> fields;
-  int field_idx = pcl::getFieldIndex<PointT>("rgb", fields);
+  int field_idx = pcl::getFieldIndex<PointT> ("rgb", fields);
   if (field_idx == -1) {
-    field_idx = pcl::getFieldIndex<PointT>("rgba", fields);
+    field_idx = pcl::getFieldIndex<PointT> ("rgba", fields);
     if (field_idx == -1)
       return (false);
   }
@@ -123,12 +123,12 @@ pcl::io::PointCloudImageExtractorFromRGBField<PointT>::extractImpl(
   img.encoding = "rgb8";
   img.width = cloud.width;
   img.height = cloud.height;
-  img.step = img.width * sizeof(unsigned char) * 3;
-  img.data.resize(img.step * img.height);
+  img.step = img.width * sizeof (unsigned char) * 3;
+  img.data.resize (img.step * img.height);
 
   for (std::size_t i = 0; i < cloud.size(); ++i) {
     std::uint32_t val;
-    pcl::getFieldValue<PointT, std::uint32_t>(cloud[i], offset, val);
+    pcl::getFieldValue<PointT, std::uint32_t> (cloud[i], offset, val);
     img.data[i * 3 + 0] = (val >> 16) & 0x0000ff;
     img.data[i * 3 + 1] = (val >> 8) & 0x0000ff;
     img.data[i * 3 + 2] = (val)&0x0000ff;
@@ -140,11 +140,11 @@ pcl::io::PointCloudImageExtractorFromRGBField<PointT>::extractImpl(
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 bool
-pcl::io::PointCloudImageExtractorFromLabelField<PointT>::extractImpl(
+pcl::io::PointCloudImageExtractorFromLabelField<PointT>::extractImpl (
     const PointCloud& cloud, pcl::PCLImage& img) const
 {
   std::vector<pcl::PCLPointField> fields;
-  int field_idx = pcl::getFieldIndex<PointT>("label", fields);
+  int field_idx = pcl::getFieldIndex<PointT> ("label", fields);
   if (field_idx == -1)
     return (false);
   const std::size_t offset = fields[field_idx].offset;
@@ -154,13 +154,13 @@ pcl::io::PointCloudImageExtractorFromLabelField<PointT>::extractImpl(
     img.encoding = "mono16";
     img.width = cloud.width;
     img.height = cloud.height;
-    img.step = img.width * sizeof(unsigned short);
-    img.data.resize(img.step * img.height);
-    auto* data = reinterpret_cast<unsigned short*>(img.data.data());
+    img.step = img.width * sizeof (unsigned short);
+    img.data.resize (img.step * img.height);
+    auto* data = reinterpret_cast<unsigned short*> (img.data.data());
     for (std::size_t i = 0; i < cloud.size(); ++i) {
       std::uint32_t val;
-      pcl::getFieldValue<PointT, std::uint32_t>(cloud[i], offset, val);
-      data[i] = static_cast<unsigned short>(val);
+      pcl::getFieldValue<PointT, std::uint32_t> (cloud[i], offset, val);
+      data[i] = static_cast<unsigned short> (val);
     }
     break;
   }
@@ -168,23 +168,23 @@ pcl::io::PointCloudImageExtractorFromLabelField<PointT>::extractImpl(
     img.encoding = "rgb8";
     img.width = cloud.width;
     img.height = cloud.height;
-    img.step = img.width * sizeof(unsigned char) * 3;
-    img.data.resize(img.step * img.height);
+    img.step = img.width * sizeof (unsigned char) * 3;
+    img.data.resize (img.step * img.height);
 
-    std::srand(std::time(nullptr));
+    std::srand (std::time (nullptr));
     std::map<std::uint32_t, std::size_t> colormap;
 
     for (std::size_t i = 0; i < cloud.size(); ++i) {
       std::uint32_t val;
-      pcl::getFieldValue<PointT, std::uint32_t>(cloud[i], offset, val);
-      if (colormap.count(val) == 0) {
+      pcl::getFieldValue<PointT, std::uint32_t> (cloud[i], offset, val);
+      if (colormap.count (val) == 0) {
         colormap[val] = i * 3;
-        img.data[i * 3 + 0] = static_cast<std::uint8_t>((std::rand() % 256));
-        img.data[i * 3 + 1] = static_cast<std::uint8_t>((std::rand() % 256));
-        img.data[i * 3 + 2] = static_cast<std::uint8_t>((std::rand() % 256));
+        img.data[i * 3 + 0] = static_cast<std::uint8_t> ((std::rand() % 256));
+        img.data[i * 3 + 1] = static_cast<std::uint8_t> ((std::rand() % 256));
+        img.data[i * 3 + 2] = static_cast<std::uint8_t> ((std::rand() % 256));
       }
       else {
-        memcpy(&img.data[i * 3], &img.data[colormap[val]], 3);
+        memcpy (&img.data[i * 3], &img.data[colormap[val]], 3);
       }
     }
     break;
@@ -193,21 +193,21 @@ pcl::io::PointCloudImageExtractorFromLabelField<PointT>::extractImpl(
     img.encoding = "rgb8";
     img.width = cloud.width;
     img.height = cloud.height;
-    img.step = img.width * sizeof(unsigned char) * 3;
-    img.data.resize(img.step * img.height);
+    img.step = img.width * sizeof (unsigned char) * 3;
+    img.data.resize (img.step * img.height);
 
-    std::srand(std::time(nullptr));
+    std::srand (std::time (nullptr));
     std::set<std::uint32_t> labels;
     std::map<std::uint32_t, std::size_t> colormap;
 
     // First pass: find unique labels
     for (const auto& point : cloud) {
       // If we need to paint NaN points with black do not waste colors on them
-      if (paint_nans_with_black_ && !pcl::isFinite(point))
+      if (paint_nans_with_black_ && !pcl::isFinite (point))
         continue;
       std::uint32_t val;
-      pcl::getFieldValue<PointT, std::uint32_t>(point, offset, val);
-      labels.insert(val);
+      pcl::getFieldValue<PointT, std::uint32_t> (point, offset, val);
+      labels.insert (val);
     }
 
     // Assign Glasbey colors in ascending order of labels
@@ -222,8 +222,8 @@ pcl::io::PointCloudImageExtractorFromLabelField<PointT>::extractImpl(
     // Second pass: copy colors from the LUT
     for (std::size_t i = 0; i < cloud.size(); ++i) {
       std::uint32_t val;
-      pcl::getFieldValue<PointT, std::uint32_t>(cloud[i], offset, val);
-      memcpy(&img.data[i * 3], GlasbeyLUT::data() + colormap[val] * 3, 3);
+      pcl::getFieldValue<PointT, std::uint32_t> (cloud[i], offset, val);
+      memcpy (&img.data[i * 3], GlasbeyLUT::data() + colormap[val] * 3, 3);
     }
 
     break;
@@ -236,11 +236,11 @@ pcl::io::PointCloudImageExtractorFromLabelField<PointT>::extractImpl(
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 bool
-pcl::io::PointCloudImageExtractorWithScaling<PointT>::extractImpl(
+pcl::io::PointCloudImageExtractorWithScaling<PointT>::extractImpl (
     const PointCloud& cloud, pcl::PCLImage& img) const
 {
   std::vector<pcl::PCLPointField> fields;
-  int field_idx = pcl::getFieldIndex<PointT>(field_name_, fields);
+  int field_idx = pcl::getFieldIndex<PointT> (field_name_, fields);
   if (field_idx == -1)
     return (false);
   const std::size_t offset = fields[field_idx].offset;
@@ -248,9 +248,9 @@ pcl::io::PointCloudImageExtractorWithScaling<PointT>::extractImpl(
   img.encoding = "mono16";
   img.width = cloud.width;
   img.height = cloud.height;
-  img.step = img.width * sizeof(unsigned short);
-  img.data.resize(img.step * img.height);
-  auto* data = reinterpret_cast<unsigned short*>(img.data.data());
+  img.step = img.width * sizeof (unsigned short);
+  img.data.resize (img.step * img.height);
+  auto* data = reinterpret_cast<unsigned short*> (img.data.data());
 
   float scaling_factor = scaling_factor_;
   float data_min = 0.0f;
@@ -259,7 +259,7 @@ pcl::io::PointCloudImageExtractorWithScaling<PointT>::extractImpl(
     float max = -std::numeric_limits<float>::infinity();
     for (const auto& point : cloud) {
       float val;
-      pcl::getFieldValue<PointT, float>(point, offset, val);
+      pcl::getFieldValue<PointT, float> (point, offset, val);
       if (val < min)
         min = val;
       if (val > max)
@@ -272,7 +272,7 @@ pcl::io::PointCloudImageExtractorWithScaling<PointT>::extractImpl(
 
   for (std::size_t i = 0; i < cloud.size(); ++i) {
     float val;
-    pcl::getFieldValue<PointT, float>(cloud[i], offset, val);
+    pcl::getFieldValue<PointT, float> (cloud[i], offset, val);
     if (scaling_method_ == SCALING_NO) {
       data[i] = val;
     }

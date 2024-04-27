@@ -27,7 +27,7 @@ extern "C" {
 #ifdef USE_SIMD
 #include <xmmintrin.h>
 #define kiss_fft_scalar __m128
-#define KISS_FFT_MALLOC(nbytes) _mm_malloc(nbytes, 16)
+#define KISS_FFT_MALLOC(nbytes) _mm_malloc (nbytes, 16)
 #define KISS_FFT_FREE _mm_free
 #else
 #define KISS_FFT_MALLOC malloc
@@ -121,7 +121,7 @@ int PCL_EXPORTS
 kiss_fft_next_fast_size (int n);
 
 /* for real ffts, we need an even size */
-#define kiss_fftr_next_fast_size_real(n) (kiss_fft_next_fast_size(((n) + 1) >> 1) << 1)
+#define kiss_fftr_next_fast_size_real(n) (kiss_fft_next_fast_size (((n) + 1) >> 1) << 1)
 
 #ifdef __cplusplus
 }

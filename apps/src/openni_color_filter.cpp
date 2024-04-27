@@ -68,20 +68,20 @@ public:
   using CloudPtr = typename Cloud::Ptr;
   using CloudConstPtr = typename Cloud::ConstPtr;
 
-  OpenNIPassthrough(pcl::OpenNIGrabber& grabber,
-                    unsigned char red,
-                    unsigned char green,
-                    unsigned char blue,
-                    unsigned char radius)
-  : viewer("PCL OpenNI ColorFilter Viewer"), grabber_(grabber)
+  OpenNIPassthrough (pcl::OpenNIGrabber& grabber,
+                     unsigned char red,
+                     unsigned char green,
+                     unsigned char blue,
+                     unsigned char radius)
+  : viewer ("PCL OpenNI ColorFilter Viewer"), grabber_ (grabber)
   {
-    std::function<void(const CloudConstPtr&)> f = [this] (const CloudConstPtr& cloud) {
-      cloud_cb_(cloud);
+    std::function<void (const CloudConstPtr&)> f = [this] (const CloudConstPtr& cloud) {
+      cloud_cb_ (cloud);
     };
-    boost::signals2::connection c = grabber_.registerCallback(f);
+    boost::signals2::connection c = grabber_.registerCallback (f);
 
-    std::vector<bool> lookup(1 << 24, false);
-    fillLookup(lookup, red, green, blue, radius);
+    std::vector<bool> lookup (1 << 24, false);
+    fillLookup (lookup, red, green, blue, radius);
     unsigned set = 0;
     for (unsigned i = 0; i < (1 << 24); ++i)
       if (lookup[i])
@@ -89,7 +89,7 @@ public:
 
     std::cout << "used colors: " << set << std::endl;
 
-    color_filter_.setLookUpTable(lookup);
+    color_filter_.setLookUpTable (lookup);
   }
 
   void
@@ -102,11 +102,12 @@ public:
     unsigned radius_sqr = radius * radius;
     pcl::RGB color;
     for (color.rgba = 0; color.rgba < (1 << 24); ++color.rgba) {
-      unsigned dist =
-          (unsigned(color.r) - unsigned(red)) * (unsigned(color.r) - unsigned(red)) +
-          (unsigned(color.g) - unsigned(green)) *
-              (unsigned(color.g) - unsigned(green)) +
-          (unsigned(color.b) - unsigned(blue)) * (unsigned(color.b) - unsigned(blue));
+      unsigned dist = (unsigned (color.r) - unsigned (red)) *
+                          (unsigned (color.r) - unsigned (red)) +
+                      (unsigned (color.g) - unsigned (green)) *
+                          (unsigned (color.g) - unsigned (green)) +
+                      (unsigned (color.b) - unsigned (blue)) *
+                          (unsigned (color.b) - unsigned (blue));
       if (dist < radius_sqr)
         lookup[color.rgba] = true;
       else
@@ -117,13 +118,13 @@ public:
   void
   cloud_cb_ (const CloudConstPtr& cloud)
   {
-    std::lock_guard<std::mutex> lock(mtx_);
-    FPS_CALC("computation");
+    std::lock_guard<std::mutex> lock (mtx_);
+    FPS_CALC ("computation");
 
-    cloud_color_.reset(new Cloud);
+    cloud_color_.reset (new Cloud);
     // Computation goes here
-    color_filter_.setInputCloud(cloud);
-    color_filter_.filter(*cloud_color_);
+    color_filter_.setInputCloud (cloud);
+    color_filter_.filter (*cloud_color_);
     cloud_ = cloud;
   }
 
@@ -135,12 +136,12 @@ public:
 
     while (!viewer.wasStopped()) {
       if (cloud_color_) {
-        std::lock_guard<std::mutex> lock(mtx_);
+        std::lock_guard<std::mutex> lock (mtx_);
 
-        FPS_CALC("visualization");
+        FPS_CALC ("visualization");
         CloudPtr temp_cloud;
-        temp_cloud.swap(cloud_color_); // here we set cloud_ to null, so that
-        viewer.showCloud(temp_cloud);
+        temp_cloud.swap (cloud_color_); // here we set cloud_ to null, so that
+        viewer.showCloud (temp_cloud);
       }
     }
 
@@ -195,9 +196,9 @@ int
 main (int argc, char** argv)
 {
   /////////////////////////////////////////////////////////////////////
-  if (pcl::console::find_argument(argc, argv, "-h") != -1 ||
-      pcl::console::find_argument(argc, argv, "--help") != -1) {
-    usage(argv);
+  if (pcl::console::find_argument (argc, argv, "-h") != -1 ||
+      pcl::console::find_argument (argc, argv, "--help") != -1) {
+    usage (argv);
     return 1;
   }
 
@@ -206,13 +207,13 @@ main (int argc, char** argv)
   int rr, gg, bb;
   unsigned char radius = 442; // all colors!
 
-  if (pcl::console::parse_argument(argc, argv, "-device_id", device_id) == -1 &&
+  if (pcl::console::parse_argument (argc, argv, "-device_id", device_id) == -1 &&
       argc > 1 && argv[1][0] != '-')
     device_id = argv[1];
-  if (pcl::console::parse_3x_arguments(argc, argv, "-rgb", rr, gg, bb, true) != -1) {
+  if (pcl::console::parse_3x_arguments (argc, argv, "-rgb", rr, gg, bb, true) != -1) {
     std::cout << "-rgb present" << std::endl;
     int rad;
-    int idx = pcl::console::parse_argument(argc, argv, "-radius", rad);
+    int idx = pcl::console::parse_argument (argc, argv, "-radius", rad);
     if (idx != -1) {
       if (rad > 0)
         radius = rad;
@@ -226,10 +227,10 @@ main (int argc, char** argv)
   }
   /////////////////////////////////////////////////////////////////////
 
-  pcl::OpenNIGrabber grabber(device_id);
+  pcl::OpenNIGrabber grabber (device_id);
 
   if (grabber.providesCallback<pcl::OpenNIGrabber::sig_cb_openni_point_cloud_rgba>()) {
-    OpenNIPassthrough<pcl::PointXYZRGBA> v(grabber, red, green, blue, radius);
+    OpenNIPassthrough<pcl::PointXYZRGBA> v (grabber, red, green, blue, radius);
     v.run();
   }
   else {

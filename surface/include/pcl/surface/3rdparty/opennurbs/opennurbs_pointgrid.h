@@ -20,9 +20,9 @@
 class ON_CLASS ON_PointGrid : public ON_Geometry {
 public:
   ON_PointGrid();
-  ON_PointGrid(const ON_PointGrid&);
-  ON_PointGrid(int, // point count0 (>=1)
-               int  // point count1 (>=1)
+  ON_PointGrid (const ON_PointGrid&);
+  ON_PointGrid (int, // point count0 (>=1)
+                int  // point count1 (>=1)
   );
 
   void
@@ -41,13 +41,13 @@ public:
   EmergencyDestroy (); // call if memory used by point grid becomes invalid
 
   ON_PointGrid&
-  operator=(const ON_PointGrid&);
+  operator= (const ON_PointGrid&);
 
   // point_grid[i][j] returns GetPoint(i,j)
   ON_3dPoint*
-  operator[](int); // 0 <= index < PointCount(0)
+  operator[] (int); // 0 <= index < PointCount(0)
   const ON_3dPoint*
-  operator[](int) const; // 0 <= index < PointCount(0)
+  operator[] (int) const; // 0 <= index < PointCount(0)
 
   /////////////////////////////////////////////////////////////////
   // ON_Object overrides
@@ -192,7 +192,7 @@ public:
   );
 
   ON_BOOL32
-  Transpose (); // transpose grid points
+  Transpose(); // transpose grid points
 
   /////////////////////////////////////////////////////////////////
   // Implementation
@@ -205,7 +205,7 @@ protected:
 private:
   static ON_3dPoint m_no_point; // prevent crashes when sizes are 0
 
-  ON_OBJECT_DECLARE(ON_PointGrid);
+  ON_OBJECT_DECLARE (ON_PointGrid);
 };
 
 #endif

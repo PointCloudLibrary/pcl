@@ -52,7 +52,7 @@ public:
   using ConstPtr = pcl::shared_ptr<const Evaluation>;
   using RGB = pcl::gpu::kinfuLS::PixelRGB;
 
-  Evaluation(const std::string& folder);
+  Evaluation (const std::string& folder);
 
   /** \brief Sets file with matches between depth and rgb */
   void

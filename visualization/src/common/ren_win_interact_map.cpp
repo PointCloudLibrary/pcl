@@ -45,7 +45,7 @@
 
 //////////////////////////////////////////////////////////////////////////////
 pcl::visualization::RenWinInteract::RenWinInteract()
-: xy_plot_(vtkSmartPointer<vtkXYPlotActor>::New())
-, ren_(vtkSmartPointer<vtkRenderer>::New())
-, win_(vtkSmartPointer<vtkRenderWindow>::New())
+: xy_plot_ (vtkSmartPointer<vtkXYPlotActor>::New())
+, ren_ (vtkSmartPointer<vtkRenderer>::New())
+, win_ (vtkSmartPointer<vtkRenderWindow>::New())
 {}

@@ -87,7 +87,7 @@ public:
     min_number_correspondences_ = 4;
     reg_name_ = "IterativeClosestPointNonLinear";
 
-    transformation_estimation_.reset(
+    transformation_estimation_.reset (
         new pcl::registration::
             TransformationEstimationLM<PointSource, PointTarget, Scalar>);
   }

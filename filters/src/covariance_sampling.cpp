@@ -44,9 +44,9 @@
 #include <pcl/impl/instantiate.hpp>
 #include <pcl/point_types.h>
 
-PCL_INSTANTIATE_PRODUCT(CovarianceSampling,
-                        ((pcl::PointXYZ)(pcl::PointNormal)(pcl::PointXYZRGB)(
-                            pcl::PointXYZRGBA)(pcl::PointXYZRGBNormal))(
-                            (pcl::Normal)(pcl::PointNormal)(pcl::PointXYZRGBNormal)))
+PCL_INSTANTIATE_PRODUCT (CovarianceSampling,
+                         ((pcl::PointXYZ) (pcl::PointNormal) (pcl::PointXYZRGB) (
+                             pcl::PointXYZRGBA) (pcl::PointXYZRGBNormal)) (
+                             (pcl::Normal) (pcl::PointNormal) (pcl::PointXYZRGBNormal)))
 
 #endif // PCL_NO_PRECOMPILE

@@ -62,9 +62,9 @@ inline void
 projectPoint (const Point& p, const Eigen::Vector4f& model_coefficients, Point& q)
 {
   // Calculate the distance from the point to the plane
-  Eigen::Vector4f pp(p.x, p.y, p.z, 1);
+  Eigen::Vector4f pp (p.x, p.y, p.z, 1);
   // use normalized coefficients to calculate the scalar projection
-  float distance_to_plane = pp.dot(model_coefficients);
+  float distance_to_plane = pp.dot (model_coefficients);
 
   // TODO: Why doesn't getVector4Map work here?
   // Eigen::Vector4f q_e = q.getVector4fMap ();
@@ -116,7 +116,7 @@ template <typename Point>
 inline double
 pointToPlaneDistance (const Point& p, double a, double b, double c, double d)
 {
-  return (std::abs(pointToPlaneDistanceSigned(p, a, b, c, d)));
+  return (std::abs (pointToPlaneDistanceSigned (p, a, b, c, d)));
 }
 
 /** \brief Get the distance from a point to a plane (unsigned) defined by ax+by+cz+d=0
@@ -128,7 +128,7 @@ template <typename Point>
 inline double
 pointToPlaneDistance (const Point& p, const Eigen::Vector4f& plane_coefficients)
 {
-  return (std::abs(pointToPlaneDistanceSigned(p, plane_coefficients)));
+  return (std::abs (pointToPlaneDistanceSigned (p, plane_coefficients)));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -165,8 +165,8 @@ public:
    * \param[in] random if true set the random seed to the current time, else set to
    * 12345 (default: false)
    */
-  SampleConsensusModelPlane(const PointCloudConstPtr& cloud, bool random = false)
-  : SampleConsensusModel<PointT>(cloud, random)
+  SampleConsensusModelPlane (const PointCloudConstPtr& cloud, bool random = false)
+  : SampleConsensusModel<PointT> (cloud, random)
   {
     model_name_ = "SampleConsensusModelPlane";
     sample_size_ = 3;
@@ -179,10 +179,10 @@ public:
    * \param[in] random if true set the random seed to the current time, else set to
    * 12345 (default: false)
    */
-  SampleConsensusModelPlane(const PointCloudConstPtr& cloud,
-                            const Indices& indices,
-                            bool random = false)
-  : SampleConsensusModel<PointT>(cloud, indices, random)
+  SampleConsensusModelPlane (const PointCloudConstPtr& cloud,
+                             const Indices& indices,
+                             bool random = false)
+  : SampleConsensusModel<PointT> (cloud, indices, random)
   {
     model_name_ = "SampleConsensusModelPlane";
     sample_size_ = 3;

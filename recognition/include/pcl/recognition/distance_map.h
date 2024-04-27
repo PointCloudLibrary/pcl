@@ -45,7 +45,7 @@ namespace pcl {
 class DistanceMap {
 public:
   /** \brief Constructor. */
-  DistanceMap() : data_(0) {}
+  DistanceMap() : data_ (0) {}
   /** \brief Destructor. */
   virtual ~DistanceMap() = default;
 
@@ -77,7 +77,7 @@ public:
   void
   resize (const std::size_t width, const std::size_t height)
   {
-    data_.resize(width * height);
+    data_.resize (width * height);
     width_ = width;
     height_ = height;
   }
@@ -87,7 +87,7 @@ public:
    * \param[in] row_index the row index of the element to access.
    */
   inline float&
-  operator()(const std::size_t col_index, const std::size_t row_index)
+  operator() (const std::size_t col_index, const std::size_t row_index)
   {
     return (data_[row_index * width_ + col_index]);
   }
@@ -97,7 +97,7 @@ public:
    * \param[in] row_index the row index of the element to access.
    */
   inline const float&
-  operator()(const std::size_t col_index, const std::size_t row_index) const
+  operator() (const std::size_t col_index, const std::size_t row_index) const
   {
     return (data_[row_index * width_ + col_index]);
   }

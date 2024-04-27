@@ -55,8 +55,8 @@ public:
   using Mesh = pcl::ihs::Mesh;
   using HalfEdgeIndices = Mesh::HalfEdgeIndices;
 
-  static_assert(Mesh::IsManifold::value,
-                "MeshProcessing currently works only on the manifold mesh.");
+  static_assert (Mesh::IsManifold::value,
+                 "MeshProcessing currently works only on the manifold mesh.");
 
   /** \brief Constructor. */
   MeshProcessing();

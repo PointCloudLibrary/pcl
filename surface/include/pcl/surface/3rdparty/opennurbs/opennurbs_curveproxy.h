@@ -36,7 +36,7 @@ Details:
 */
 class ON_CurveProxy;
 class ON_CLASS ON_CurveProxy : public ON_Curve {
-  ON_OBJECT_DECLARE(ON_CurveProxy);
+  ON_OBJECT_DECLARE (ON_CurveProxy);
 
 public:
   // virtual ON_Object::DestroyRuntimeCache override
@@ -45,12 +45,12 @@ public:
 
 public:
   ON_CurveProxy();
-  ON_CurveProxy(const ON_CurveProxy&);
-  ON_CurveProxy(const ON_Curve*);
-  ON_CurveProxy(const ON_Curve*, ON_Interval);
+  ON_CurveProxy (const ON_CurveProxy&);
+  ON_CurveProxy (const ON_Curve*);
+  ON_CurveProxy (const ON_Curve*, ON_Interval);
 
   ON_CurveProxy&
-  operator=(const ON_CurveProxy&);
+  operator= (const ON_CurveProxy&);
 
   virtual ~ON_CurveProxy();
 
@@ -416,8 +416,8 @@ public:
                 double curvature_tolerance = ON_SQRT_EPSILON) const;
 
   ON_BOOL32
-  Reverse (); // reverse parameterizatrion
-              // Domain changes from [a,b] to [-b,-a]
+  Reverse(); // reverse parameterizatrion
+             // Domain changes from [a,b] to [-b,-a]
 
   ON_BOOL32
   Evaluate (   // returns false if unable to evaluate

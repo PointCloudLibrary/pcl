@@ -38,7 +38,7 @@ namespace io {
 namespace openni2 {
 
 std::ostream&
-operator<<(std::ostream& stream, const OpenNI2DeviceInfo& device_info)
+operator<< (std::ostream& stream, const OpenNI2DeviceInfo& device_info)
 {
   stream << "Uri: " << device_info.uri_ << " (Vendor: " << device_info.vendor_
          << ", Name: " << device_info.name_ << ", Vendor ID: " << device_info.vendor_id_

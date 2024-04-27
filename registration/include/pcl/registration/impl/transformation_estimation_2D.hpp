@@ -45,94 +45,94 @@ namespace registration {
 template <typename PointSource, typename PointTarget, typename Scalar>
 inline void
 TransformationEstimation2D<PointSource, PointTarget, Scalar>::
-    estimateRigidTransformation(const pcl::PointCloud<PointSource>& cloud_src,
-                                const pcl::PointCloud<PointTarget>& cloud_tgt,
-                                Matrix4& transformation_matrix) const
+    estimateRigidTransformation (const pcl::PointCloud<PointSource>& cloud_src,
+                                 const pcl::PointCloud<PointTarget>& cloud_tgt,
+                                 Matrix4& transformation_matrix) const
 {
   const auto nr_points = cloud_src.size();
   if (cloud_tgt.size() != nr_points) {
-    PCL_ERROR("[pcl::TransformationEstimation2D::estimateRigidTransformation] Number "
-              "or points in source (%zu) differs than target (%zu)!\n",
-              static_cast<std::size_t>(nr_points),
-              static_cast<std::size_t>(cloud_tgt.size()));
+    PCL_ERROR ("[pcl::TransformationEstimation2D::estimateRigidTransformation] Number "
+               "or points in source (%zu) differs than target (%zu)!\n",
+               static_cast<std::size_t> (nr_points),
+               static_cast<std::size_t> (cloud_tgt.size()));
     return;
   }
 
-  ConstCloudIterator<PointSource> source_it(cloud_src);
-  ConstCloudIterator<PointTarget> target_it(cloud_tgt);
-  estimateRigidTransformation(source_it, target_it, transformation_matrix);
+  ConstCloudIterator<PointSource> source_it (cloud_src);
+  ConstCloudIterator<PointTarget> target_it (cloud_tgt);
+  estimateRigidTransformation (source_it, target_it, transformation_matrix);
 }
 
 template <typename PointSource, typename PointTarget, typename Scalar>
 void
 TransformationEstimation2D<PointSource, PointTarget, Scalar>::
-    estimateRigidTransformation(const pcl::PointCloud<PointSource>& cloud_src,
-                                const pcl::Indices& indices_src,
-                                const pcl::PointCloud<PointTarget>& cloud_tgt,
-                                Matrix4& transformation_matrix) const
+    estimateRigidTransformation (const pcl::PointCloud<PointSource>& cloud_src,
+                                 const pcl::Indices& indices_src,
+                                 const pcl::PointCloud<PointTarget>& cloud_tgt,
+                                 Matrix4& transformation_matrix) const
 {
   if (indices_src.size() != cloud_tgt.size()) {
-    PCL_ERROR("[pcl::Transformation2D::estimateRigidTransformation] Number or points "
-              "in source (%zu) differs than target (%zu)!\n",
-              indices_src.size(),
-              static_cast<std::size_t>(cloud_tgt.size()));
+    PCL_ERROR ("[pcl::Transformation2D::estimateRigidTransformation] Number or points "
+               "in source (%zu) differs than target (%zu)!\n",
+               indices_src.size(),
+               static_cast<std::size_t> (cloud_tgt.size()));
     return;
   }
 
-  ConstCloudIterator<PointSource> source_it(cloud_src, indices_src);
-  ConstCloudIterator<PointTarget> target_it(cloud_tgt);
-  estimateRigidTransformation(source_it, target_it, transformation_matrix);
+  ConstCloudIterator<PointSource> source_it (cloud_src, indices_src);
+  ConstCloudIterator<PointTarget> target_it (cloud_tgt);
+  estimateRigidTransformation (source_it, target_it, transformation_matrix);
 }
 
 template <typename PointSource, typename PointTarget, typename Scalar>
 inline void
 TransformationEstimation2D<PointSource, PointTarget, Scalar>::
-    estimateRigidTransformation(const pcl::PointCloud<PointSource>& cloud_src,
-                                const pcl::Indices& indices_src,
-                                const pcl::PointCloud<PointTarget>& cloud_tgt,
-                                const pcl::Indices& indices_tgt,
-                                Matrix4& transformation_matrix) const
+    estimateRigidTransformation (const pcl::PointCloud<PointSource>& cloud_src,
+                                 const pcl::Indices& indices_src,
+                                 const pcl::PointCloud<PointTarget>& cloud_tgt,
+                                 const pcl::Indices& indices_tgt,
+                                 Matrix4& transformation_matrix) const
 {
   if (indices_src.size() != indices_tgt.size()) {
-    PCL_ERROR("[pcl::TransformationEstimation2D::estimateRigidTransformation] Number "
-              "or points in source (%lu) differs than target (%lu)!\n",
-              indices_src.size(),
-              indices_tgt.size());
+    PCL_ERROR ("[pcl::TransformationEstimation2D::estimateRigidTransformation] Number "
+               "or points in source (%lu) differs than target (%lu)!\n",
+               indices_src.size(),
+               indices_tgt.size());
     return;
   }
 
-  ConstCloudIterator<PointSource> source_it(cloud_src, indices_src);
-  ConstCloudIterator<PointTarget> target_it(cloud_tgt, indices_tgt);
-  estimateRigidTransformation(source_it, target_it, transformation_matrix);
+  ConstCloudIterator<PointSource> source_it (cloud_src, indices_src);
+  ConstCloudIterator<PointTarget> target_it (cloud_tgt, indices_tgt);
+  estimateRigidTransformation (source_it, target_it, transformation_matrix);
 }
 
 template <typename PointSource, typename PointTarget, typename Scalar>
 void
 TransformationEstimation2D<PointSource, PointTarget, Scalar>::
-    estimateRigidTransformation(const pcl::PointCloud<PointSource>& cloud_src,
-                                const pcl::PointCloud<PointTarget>& cloud_tgt,
-                                const pcl::Correspondences& correspondences,
-                                Matrix4& transformation_matrix) const
+    estimateRigidTransformation (const pcl::PointCloud<PointSource>& cloud_src,
+                                 const pcl::PointCloud<PointTarget>& cloud_tgt,
+                                 const pcl::Correspondences& correspondences,
+                                 Matrix4& transformation_matrix) const
 {
-  ConstCloudIterator<PointSource> source_it(cloud_src, correspondences, true);
-  ConstCloudIterator<PointTarget> target_it(cloud_tgt, correspondences, false);
-  estimateRigidTransformation(source_it, target_it, transformation_matrix);
+  ConstCloudIterator<PointSource> source_it (cloud_src, correspondences, true);
+  ConstCloudIterator<PointTarget> target_it (cloud_tgt, correspondences, false);
+  estimateRigidTransformation (source_it, target_it, transformation_matrix);
 }
 
 template <typename PointSource, typename PointTarget, typename Scalar>
 inline void
 TransformationEstimation2D<PointSource, PointTarget, Scalar>::
-    estimateRigidTransformation(ConstCloudIterator<PointSource>& source_it,
-                                ConstCloudIterator<PointTarget>& target_it,
-                                Matrix4& transformation_matrix) const
+    estimateRigidTransformation (ConstCloudIterator<PointSource>& source_it,
+                                 ConstCloudIterator<PointTarget>& target_it,
+                                 Matrix4& transformation_matrix) const
 {
   source_it.reset();
   target_it.reset();
 
   Eigen::Matrix<Scalar, 4, 1> centroid_src, centroid_tgt;
   // Estimate the centroids of source, target
-  compute3DCentroid(source_it, centroid_src);
-  compute3DCentroid(target_it, centroid_tgt);
+  compute3DCentroid (source_it, centroid_src);
+  compute3DCentroid (target_it, centroid_tgt);
   source_it.reset();
   target_it.reset();
 
@@ -142,20 +142,20 @@ TransformationEstimation2D<PointSource, PointTarget, Scalar>::
   // Subtract the centroids from source, target
   Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic> cloud_src_demean,
       cloud_tgt_demean;
-  demeanPointCloud(source_it, centroid_src, cloud_src_demean);
-  demeanPointCloud(target_it, centroid_tgt, cloud_tgt_demean);
+  demeanPointCloud (source_it, centroid_src, cloud_src_demean);
+  demeanPointCloud (target_it, centroid_tgt, cloud_tgt_demean);
 
-  getTransformationFromCorrelation(cloud_src_demean,
-                                   centroid_src,
-                                   cloud_tgt_demean,
-                                   centroid_tgt,
-                                   transformation_matrix);
+  getTransformationFromCorrelation (cloud_src_demean,
+                                    centroid_src,
+                                    cloud_tgt_demean,
+                                    centroid_tgt,
+                                    transformation_matrix);
 }
 
 template <typename PointSource, typename PointTarget, typename Scalar>
 void
 TransformationEstimation2D<PointSource, PointTarget, Scalar>::
-    getTransformationFromCorrelation(
+    getTransformationFromCorrelation (
         const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic>& cloud_src_demean,
         const Eigen::Matrix<Scalar, 4, 1>& centroid_src,
         const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic>& cloud_tgt_demean,
@@ -168,17 +168,17 @@ TransformationEstimation2D<PointSource, PointTarget, Scalar>::
   Eigen::Matrix<Scalar, 3, 3> H =
       (cloud_src_demean * cloud_tgt_demean.transpose()).template topLeftCorner<3, 3>();
 
-  float angle = std::atan2((H(0, 1) - H(1, 0)), (H(0, 0) + H(1, 1)));
+  float angle = std::atan2 ((H (0, 1) - H (1, 0)), (H (0, 0) + H (1, 1)));
 
-  Eigen::Matrix<Scalar, 3, 3> R(Eigen::Matrix<Scalar, 3, 3>::Identity());
-  R(0, 0) = R(1, 1) = std::cos(angle);
-  R(0, 1) = -std::sin(angle);
-  R(1, 0) = std::sin(angle);
+  Eigen::Matrix<Scalar, 3, 3> R (Eigen::Matrix<Scalar, 3, 3>::Identity());
+  R (0, 0) = R (1, 1) = std::cos (angle);
+  R (0, 1) = -std::sin (angle);
+  R (1, 0) = std::sin (angle);
 
   // Return the correct transformation
   transformation_matrix.template topLeftCorner<3, 3>().matrix() = R;
-  const Eigen::Matrix<Scalar, 3, 1> Rc(R * centroid_src.template head<3>().matrix());
-  transformation_matrix.template block<3, 1>(0, 3).matrix() =
+  const Eigen::Matrix<Scalar, 3, 1> Rc (R * centroid_src.template head<3>().matrix());
+  transformation_matrix.template block<3, 1> (0, 3).matrix() =
       centroid_tgt.template head<3>() - Rc;
 }
 

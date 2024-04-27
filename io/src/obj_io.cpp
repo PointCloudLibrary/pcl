@@ -53,7 +53,7 @@ pcl::MTLReader::MTLReader()
 }
 
 inline void
-pcl::MTLReader::cie2rgb(const Eigen::Vector3f& xyz, pcl::TexMaterial::RGB& rgb) const
+pcl::MTLReader::cie2rgb (const Eigen::Vector3f& xyz, pcl::TexMaterial::RGB& rgb) const
 {
   Eigen::Vector3f rgb_vec = xyz_to_rgb_matrix_ * xyz;
   rgb.r = rgb_vec[0];
@@ -62,22 +62,22 @@ pcl::MTLReader::cie2rgb(const Eigen::Vector3f& xyz, pcl::TexMaterial::RGB& rgb) 
 }
 
 int
-pcl::MTLReader::fillRGBfromXYZ(const std::vector<std::string>& split_line,
-                               pcl::TexMaterial::RGB& rgb)
+pcl::MTLReader::fillRGBfromXYZ (const std::vector<std::string>& split_line,
+                                pcl::TexMaterial::RGB& rgb)
 {
   Eigen::Vector3f xyz;
   if (split_line.size() == 5) {
     try {
-      xyz[0] = boost::lexical_cast<float>(split_line[2]);
-      xyz[1] = boost::lexical_cast<float>(split_line[3]);
-      xyz[2] = boost::lexical_cast<float>(split_line[4]);
+      xyz[0] = boost::lexical_cast<float> (split_line[2]);
+      xyz[1] = boost::lexical_cast<float> (split_line[3]);
+      xyz[2] = boost::lexical_cast<float> (split_line[4]);
     } catch (boost::bad_lexical_cast&) {
       return (-1);
     }
   }
   else if (split_line.size() == 3) {
     try {
-      xyz[0] = xyz[1] = xyz[2] = boost::lexical_cast<float>(split_line[2]);
+      xyz[0] = xyz[1] = xyz[2] = boost::lexical_cast<float> (split_line[2]);
     } catch (boost::bad_lexical_cast&) {
       return (-1);
     }
@@ -85,19 +85,19 @@ pcl::MTLReader::fillRGBfromXYZ(const std::vector<std::string>& split_line,
   else
     return (-1);
 
-  cie2rgb(xyz, rgb);
+  cie2rgb (xyz, rgb);
   return (0);
 }
 
 int
-pcl::MTLReader::fillRGBfromRGB(const std::vector<std::string>& split_line,
-                               pcl::TexMaterial::RGB& rgb)
+pcl::MTLReader::fillRGBfromRGB (const std::vector<std::string>& split_line,
+                                pcl::TexMaterial::RGB& rgb)
 {
   if (split_line.size() == 4) {
     try {
-      rgb.r = boost::lexical_cast<float>(split_line[1]);
-      rgb.g = boost::lexical_cast<float>(split_line[2]);
-      rgb.b = boost::lexical_cast<float>(split_line[3]);
+      rgb.r = boost::lexical_cast<float> (split_line[1]);
+      rgb.g = boost::lexical_cast<float> (split_line[2]);
+      rgb.b = boost::lexical_cast<float> (split_line[3]);
     } catch (boost::bad_lexical_cast&) {
       rgb.r = rgb.g = rgb.b = 0;
       return (-1);
@@ -105,7 +105,7 @@ pcl::MTLReader::fillRGBfromRGB(const std::vector<std::string>& split_line,
   }
   else if (split_line.size() == 2) {
     try {
-      rgb.r = rgb.g = rgb.b = boost::lexical_cast<float>(split_line[1]);
+      rgb.r = rgb.g = rgb.b = boost::lexical_cast<float> (split_line[1]);
     } catch (boost::bad_lexical_cast&) {
       return (-1);
     }
@@ -117,7 +117,7 @@ pcl::MTLReader::fillRGBfromRGB(const std::vector<std::string>& split_line,
 }
 
 std::vector<pcl::TexMaterial>::const_iterator
-pcl::MTLReader::getMaterial(const std::string& material_name) const
+pcl::MTLReader::getMaterial (const std::string& material_name) const
 {
   auto mat_it = materials_.begin();
   for (; mat_it != materials_.end(); ++mat_it)
@@ -127,53 +127,54 @@ pcl::MTLReader::getMaterial(const std::string& material_name) const
 }
 
 int
-pcl::MTLReader::read(const std::string& obj_file_name, const std::string& mtl_file_name)
+pcl::MTLReader::read (const std::string& obj_file_name,
+                      const std::string& mtl_file_name)
 {
   if (obj_file_name.empty()) {
-    PCL_ERROR("[pcl::MTLReader::read] No OBJ file name given!\n");
+    PCL_ERROR ("[pcl::MTLReader::read] No OBJ file name given!\n");
     return (-1);
   }
 
-  if (!pcl_fs::exists(obj_file_name)) {
-    PCL_ERROR("[pcl::MTLReader::read] Could not find file '%s'!\n",
-              obj_file_name.c_str());
+  if (!pcl_fs::exists (obj_file_name)) {
+    PCL_ERROR ("[pcl::MTLReader::read] Could not find file '%s'!\n",
+               obj_file_name.c_str());
     return (-1);
   }
 
   if (mtl_file_name.empty()) {
-    PCL_ERROR("[pcl::MTLReader::read] MTL file name is empty!\n");
+    PCL_ERROR ("[pcl::MTLReader::read] MTL file name is empty!\n");
     return (-1);
   }
 
-  pcl_fs::path obj_file_path(obj_file_name.c_str());
+  pcl_fs::path obj_file_path (obj_file_name.c_str());
   pcl_fs::path mtl_file_path = obj_file_path.parent_path();
   mtl_file_path /= mtl_file_name;
-  return (read(mtl_file_path.string()));
+  return (read (mtl_file_path.string()));
 }
 
 int
-pcl::MTLReader::read(const std::string& mtl_file_path)
+pcl::MTLReader::read (const std::string& mtl_file_path)
 {
   if (mtl_file_path.empty()) {
-    PCL_ERROR("[pcl::MTLReader::read] No file name given!\n");
+    PCL_ERROR ("[pcl::MTLReader::read] No file name given!\n");
     return (-1);
   }
 
   // Open file in binary mode to avoid problem of
   // std::getline() corrupting the result of ifstream::tellg()
   std::ifstream mtl_file;
-  mtl_file.open(mtl_file_path.c_str(), std::ios::binary);
+  mtl_file.open (mtl_file_path.c_str(), std::ios::binary);
 
   if (!mtl_file.good()) {
-    PCL_ERROR("[pcl::MTLReader::read] Could not find file '%s'.\n",
-              mtl_file_path.c_str());
+    PCL_ERROR ("[pcl::MTLReader::read] Could not find file '%s'.\n",
+               mtl_file_path.c_str());
     return (-1);
   }
 
   if (!mtl_file.is_open() || mtl_file.fail()) {
-    PCL_ERROR("[pcl::MTLReader::read] Could not open file '%s'! Error : %s\n",
-              mtl_file_path.c_str(),
-              strerror(errno));
+    PCL_ERROR ("[pcl::MTLReader::read] Could not open file '%s'! Error : %s\n",
+               mtl_file_path.c_str(),
+               strerror (errno));
     mtl_file.close();
     return (-1);
   }
@@ -185,13 +186,13 @@ pcl::MTLReader::read(const std::string& mtl_file_path)
 
   try {
     while (!mtl_file.eof()) {
-      getline(mtl_file, line);
+      getline (mtl_file, line);
       // Ignore empty lines
       if (line.empty())
         continue;
 
       // Tokenize the line
-      pcl::split(st, line, "\t\r ");
+      pcl::split (st, line, "\t\r ");
       // Ignore comments and lines with only whitespace
       if (st.empty() || st[0] == "#")
         continue;
@@ -204,7 +205,7 @@ pcl::MTLReader::read(const std::string& mtl_file_path)
 
       if (st[0] == "Ka" || st[0] == "Kd" || st[0] == "Ks") {
         if (st[1] == "spectral") {
-          PCL_ERROR("[pcl::MTLReader::read] Can't handle spectral files!\n");
+          PCL_ERROR ("[pcl::MTLReader::read] Can't handle spectral files!\n");
           mtl_file.close();
           materials_.clear();
           return (-1);
@@ -216,18 +217,18 @@ pcl::MTLReader::read(const std::string& mtl_file_path)
           rgb = &materials_.back().tex_Ks;
 
         if (st[1] == "xyz") {
-          if (fillRGBfromXYZ(st, *rgb)) {
-            PCL_ERROR("[pcl::MTLReader::read] Could not convert %s to RGB values\n",
-                      line.c_str());
+          if (fillRGBfromXYZ (st, *rgb)) {
+            PCL_ERROR ("[pcl::MTLReader::read] Could not convert %s to RGB values\n",
+                       line.c_str());
             mtl_file.close();
             materials_.clear();
             return (-1);
           }
         }
         else {
-          if (fillRGBfromRGB(st, *rgb)) {
-            PCL_ERROR("[pcl::MTLReader::read] Could not convert %s to RGB values\n",
-                      line.c_str());
+          if (fillRGBfromRGB (st, *rgb)) {
+            PCL_ERROR ("[pcl::MTLReader::read] Could not convert %s to RGB values\n",
+                       line.c_str());
             mtl_file.close();
             materials_.clear();
             return (-1);
@@ -238,9 +239,9 @@ pcl::MTLReader::read(const std::string& mtl_file_path)
 
       if (st[0] == "illum") {
         try {
-          materials_.back().tex_illum = boost::lexical_cast<int>(st[1]);
+          materials_.back().tex_illum = boost::lexical_cast<int> (st[1]);
         } catch (boost::bad_lexical_cast&) {
-          PCL_ERROR(
+          PCL_ERROR (
               "[pcl::MTLReader::read] Could not convert %s to illumination model\n",
               line.c_str());
           mtl_file.close();
@@ -254,11 +255,11 @@ pcl::MTLReader::read(const std::string& mtl_file_path)
         bool reverse = (st[0] == "Tr");
         try {
           materials_.back().tex_d =
-              boost::lexical_cast<float>(st[st.size() > 2 ? 2 : 1]);
+              boost::lexical_cast<float> (st[st.size() > 2 ? 2 : 1]);
           if (reverse)
             materials_.back().tex_d = 1.f - materials_.back().tex_d;
         } catch (boost::bad_lexical_cast&) {
-          PCL_ERROR(
+          PCL_ERROR (
               "[pcl::MTLReader::read] Could not convert %s to transparency value\n",
               line.c_str());
           mtl_file.close();
@@ -270,10 +271,10 @@ pcl::MTLReader::read(const std::string& mtl_file_path)
 
       if (st[0] == "Ns") {
         try {
-          materials_.back().tex_Ns = boost::lexical_cast<float>(st[1]);
+          materials_.back().tex_Ns = boost::lexical_cast<float> (st[1]);
         } catch (boost::bad_lexical_cast&) {
-          PCL_ERROR("[pcl::MTLReader::read] Could not convert %s to shininess value\n",
-                    line.c_str());
+          PCL_ERROR ("[pcl::MTLReader::read] Could not convert %s to shininess value\n",
+                     line.c_str());
           mtl_file.close();
           materials_.clear();
           return (-1);
@@ -290,7 +291,7 @@ pcl::MTLReader::read(const std::string& mtl_file_path)
       // other elements? we don't care for now
     }
   } catch (const char* exception) {
-    PCL_ERROR("[pcl::MTLReader::read] %s\n", exception);
+    PCL_ERROR ("[pcl::MTLReader::read] %s\n", exception);
     mtl_file.close();
     materials_.clear();
     return (-1);
@@ -300,14 +301,14 @@ pcl::MTLReader::read(const std::string& mtl_file_path)
 }
 
 int
-pcl::OBJReader::readHeader(const std::string& file_name,
-                           pcl::PCLPointCloud2& cloud,
-                           Eigen::Vector4f& origin,
-                           Eigen::Quaternionf& orientation,
-                           int& file_version,
-                           int& data_type,
-                           unsigned int& data_idx,
-                           const int offset)
+pcl::OBJReader::readHeader (const std::string& file_name,
+                            pcl::PCLPointCloud2& cloud,
+                            Eigen::Vector4f& origin,
+                            Eigen::Quaternionf& orientation,
+                            int& file_version,
+                            int& data_type,
+                            unsigned int& data_idx,
+                            const int offset)
 {
   origin = Eigen::Vector4f::Zero();
   orientation = Eigen::Quaternionf::Identity();
@@ -320,31 +321,31 @@ pcl::OBJReader::readHeader(const std::string& file_name,
   std::string line;
 
   if (file_name.empty()) {
-    PCL_ERROR("[pcl::OBJReader::readHeader] No file name given!\n");
+    PCL_ERROR ("[pcl::OBJReader::readHeader] No file name given!\n");
     return (-1);
   }
 
   // Open file in binary mode to avoid problem of
   // std::getline() corrupting the result of ifstream::tellg()
   std::ifstream fs;
-  fs.open(file_name.c_str(), std::ios::binary);
+  fs.open (file_name.c_str(), std::ios::binary);
 
   if (!fs.good()) {
-    PCL_ERROR("[pcl::OBJReader::readHeader] Could not find file '%s'.\n",
-              file_name.c_str());
+    PCL_ERROR ("[pcl::OBJReader::readHeader] Could not find file '%s'.\n",
+               file_name.c_str());
     return (-1);
   }
 
   if (!fs.is_open() || fs.fail()) {
-    PCL_ERROR("[pcl::OBJReader::readHeader] Could not open file '%s'! Error : %s\n",
-              file_name.c_str(),
-              strerror(errno));
+    PCL_ERROR ("[pcl::OBJReader::readHeader] Could not open file '%s'! Error : %s\n",
+               file_name.c_str(),
+               strerror (errno));
     fs.close();
     return (-1);
   }
 
   // Seek at the given offset
-  fs.seekg(offset, std::ios::beg);
+  fs.seekg (offset, std::ios::beg);
 
   // Read the header and fill it in with wonderful values
   bool vertex_normal_found = false;
@@ -356,14 +357,14 @@ pcl::OBJReader::readHeader(const std::string& file_name,
 
   try {
     while (!fs.eof()) {
-      getline(fs, line);
+      getline (fs, line);
       // Ignore empty lines
       if (line.empty())
         continue;
 
       // Trim the line
       // TODO: we can easily do this without boost
-      boost::trim(line);
+      boost::trim (line);
 
       // Ignore comments
       if (line[0] == '#')
@@ -391,21 +392,21 @@ pcl::OBJReader::readHeader(const std::string& file_name,
       }
 
       // Material library, skip for now!
-      if (line.substr(0, 6) == "mtllib") {
+      if (line.substr (0, 6) == "mtllib") {
         std::vector<std::string> st;
-        pcl::split(st, line, "\t\r ");
-        material_files.push_back(st.at(1));
+        pcl::split (st, line, "\t\r ");
+        material_files.push_back (st.at (1));
         continue;
       }
     }
   } catch (const char* exception) {
-    PCL_ERROR("[pcl::OBJReader::readHeader] %s\n", exception);
+    PCL_ERROR ("[pcl::OBJReader::readHeader] %s\n", exception);
     fs.close();
     return (-1);
   }
 
   if (!nr_point) {
-    PCL_ERROR("[pcl::OBJReader::readHeader] No vertices found!\n");
+    PCL_ERROR ("[pcl::OBJReader::readHeader] No vertices found!\n");
     fs.close();
     return (-1);
   }
@@ -437,10 +438,10 @@ pcl::OBJReader::readHeader(const std::string& file_name,
   if (!material_files.empty()) {
     for (const auto& material_file : material_files) {
       MTLReader companion;
-      if (companion.read(file_name, material_file))
-        PCL_WARN("[pcl::OBJReader::readHeader] Problem reading material file %s\n",
-                 material_file.c_str());
-      companions_.push_back(companion);
+      if (companion.read (file_name, material_file))
+        PCL_WARN ("[pcl::OBJReader::readHeader] Problem reading material file %s\n",
+                  material_file.c_str());
+      companions_.push_back (companion);
     }
   }
 
@@ -449,59 +450,59 @@ pcl::OBJReader::readHeader(const std::string& file_name,
   cloud.height = 1;
   cloud.row_step = cloud.point_step * cloud.width;
   cloud.is_dense = true;
-  cloud.data.resize(cloud.point_step * nr_point);
+  cloud.data.resize (cloud.point_step * nr_point);
   fs.close();
   return (0);
 }
 
 int
-pcl::OBJReader::read(const std::string& file_name,
-                     pcl::PCLPointCloud2& cloud,
-                     const int offset)
+pcl::OBJReader::read (const std::string& file_name,
+                      pcl::PCLPointCloud2& cloud,
+                      const int offset)
 {
   int file_version;
   Eigen::Vector4f origin;
   Eigen::Quaternionf orientation;
-  return (read(file_name, cloud, origin, orientation, file_version, offset));
+  return (read (file_name, cloud, origin, orientation, file_version, offset));
 }
 
 int
-pcl::OBJReader::read(const std::string& file_name,
-                     pcl::PCLPointCloud2& cloud,
-                     Eigen::Vector4f& origin,
-                     Eigen::Quaternionf& orientation,
-                     int& file_version,
-                     const int offset)
+pcl::OBJReader::read (const std::string& file_name,
+                      pcl::PCLPointCloud2& cloud,
+                      Eigen::Vector4f& origin,
+                      Eigen::Quaternionf& orientation,
+                      int& file_version,
+                      const int offset)
 {
   pcl::console::TicToc tt;
   tt.tic();
 
   int data_type;
   unsigned int data_idx;
-  if (readHeader(file_name,
-                 cloud,
-                 origin,
-                 orientation,
-                 file_version,
-                 data_type,
-                 data_idx,
-                 offset)) {
-    PCL_ERROR("[pcl::OBJReader::read] Problem reading header!\n");
+  if (readHeader (file_name,
+                  cloud,
+                  origin,
+                  orientation,
+                  file_version,
+                  data_type,
+                  data_idx,
+                  offset)) {
+    PCL_ERROR ("[pcl::OBJReader::read] Problem reading header!\n");
     return (-1);
   }
 
   std::ifstream fs;
-  fs.open(file_name.c_str(), std::ios::binary);
+  fs.open (file_name.c_str(), std::ios::binary);
   if (!fs.is_open() || fs.fail()) {
-    PCL_ERROR("[pcl::OBJReader::readHeader] Could not open file '%s'! Error : %s\n",
-              file_name.c_str(),
-              strerror(errno));
+    PCL_ERROR ("[pcl::OBJReader::readHeader] Could not open file '%s'! Error : %s\n",
+               file_name.c_str(),
+               strerror (errno));
     fs.close();
     return (-1);
   }
 
   // Seek at the given offset
-  fs.seekg(data_idx, std::ios::beg);
+  fs.seekg (data_idx, std::ios::beg);
 
   // Get normal_x and rgba fields indices
   int normal_x_field = -1;
@@ -521,13 +522,13 @@ pcl::OBJReader::read(const std::string& file_name,
     uindex_t normal_idx = 0;
 
     while (!fs.eof()) {
-      getline(fs, line);
+      getline (fs, line);
       // Ignore empty lines
       if (line.empty())
         continue;
 
       // Tokenize the line
-      pcl::split(st, line, "\t\r ");
+      pcl::split (st, line, "\t\r ");
 
       // Ignore comments and lines with only whitespace
       if (st.empty() || st[0] == "#")
@@ -537,14 +538,14 @@ pcl::OBJReader::read(const std::string& file_name,
       if (st[0] == "v") {
         try {
           for (int i = 1, f = 0; i < 4; ++i, ++f) {
-            float value = boost::lexical_cast<float>(st[i]);
-            memcpy(&cloud.data[point_idx * cloud.point_step + cloud.fields[f].offset],
-                   &value,
-                   sizeof(float));
+            float value = boost::lexical_cast<float> (st[i]);
+            memcpy (&cloud.data[point_idx * cloud.point_step + cloud.fields[f].offset],
+                    &value,
+                    sizeof (float));
           }
           ++point_idx;
         } catch (const boost::bad_lexical_cast&) {
-          PCL_ERROR("Unable to convert %s to vertex coordinates!\n", line.c_str());
+          PCL_ERROR ("Unable to convert %s to vertex coordinates!\n", line.c_str());
           return (-1);
         }
         continue;
@@ -554,93 +555,93 @@ pcl::OBJReader::read(const std::string& file_name,
       if (st[0] == "vn") {
         if (normal_idx >= cloud.width) {
           if (normal_idx == cloud.width)
-            PCL_WARN("[pcl:OBJReader] Too many vertex normals (expected %d), skipping "
-                     "remaining normals.\n",
-                     cloud.width,
-                     normal_idx + 1);
+            PCL_WARN ("[pcl:OBJReader] Too many vertex normals (expected %d), skipping "
+                      "remaining normals.\n",
+                      cloud.width,
+                      normal_idx + 1);
           ++normal_idx;
           continue;
         }
         try {
           for (int i = 1, f = normal_x_field; i < 4; ++i, ++f) {
-            float value = boost::lexical_cast<float>(st[i]);
-            memcpy(&cloud.data[normal_idx * cloud.point_step + cloud.fields[f].offset],
-                   &value,
-                   sizeof(float));
+            float value = boost::lexical_cast<float> (st[i]);
+            memcpy (&cloud.data[normal_idx * cloud.point_step + cloud.fields[f].offset],
+                    &value,
+                    sizeof (float));
           }
           ++normal_idx;
         } catch (const boost::bad_lexical_cast&) {
-          PCL_ERROR("Unable to convert line %s to vertex normal!\n", line.c_str());
+          PCL_ERROR ("Unable to convert line %s to vertex normal!\n", line.c_str());
           return (-1);
         }
         continue;
       }
     }
   } catch (const char* exception) {
-    PCL_ERROR("[pcl::OBJReader::read] %s\n", exception);
+    PCL_ERROR ("[pcl::OBJReader::read] %s\n", exception);
     fs.close();
     return (-1);
   }
 
   double total_time = tt.toc();
-  PCL_DEBUG("[pcl::OBJReader::read] Loaded %s as a dense cloud in %g ms with %d "
-            "points. Available dimensions: %s.\n",
-            file_name.c_str(),
-            total_time,
-            cloud.width * cloud.height,
-            pcl::getFieldsList(cloud).c_str());
+  PCL_DEBUG ("[pcl::OBJReader::read] Loaded %s as a dense cloud in %g ms with %d "
+             "points. Available dimensions: %s.\n",
+             file_name.c_str(),
+             total_time,
+             cloud.width * cloud.height,
+             pcl::getFieldsList (cloud).c_str());
   fs.close();
   return (0);
 }
 
 int
-pcl::OBJReader::read(const std::string& file_name,
-                     pcl::TextureMesh& mesh,
-                     const int offset)
+pcl::OBJReader::read (const std::string& file_name,
+                      pcl::TextureMesh& mesh,
+                      const int offset)
 {
   int file_version;
   Eigen::Vector4f origin;
   Eigen::Quaternionf orientation;
-  return (read(file_name, mesh, origin, orientation, file_version, offset));
+  return (read (file_name, mesh, origin, orientation, file_version, offset));
 }
 
 int
-pcl::OBJReader::read(const std::string& file_name,
-                     pcl::TextureMesh& mesh,
-                     Eigen::Vector4f& origin,
-                     Eigen::Quaternionf& orientation,
-                     int& file_version,
-                     const int offset)
+pcl::OBJReader::read (const std::string& file_name,
+                      pcl::TextureMesh& mesh,
+                      Eigen::Vector4f& origin,
+                      Eigen::Quaternionf& orientation,
+                      int& file_version,
+                      const int offset)
 {
   pcl::console::TicToc tt;
   tt.tic();
 
   int data_type;
   unsigned int data_idx;
-  if (readHeader(file_name,
-                 mesh.cloud,
-                 origin,
-                 orientation,
-                 file_version,
-                 data_type,
-                 data_idx,
-                 offset)) {
-    PCL_ERROR("[pcl::OBJReader::read] Problem reading header!\n");
+  if (readHeader (file_name,
+                  mesh.cloud,
+                  origin,
+                  orientation,
+                  file_version,
+                  data_type,
+                  data_idx,
+                  offset)) {
+    PCL_ERROR ("[pcl::OBJReader::read] Problem reading header!\n");
     return (-1);
   }
 
   std::ifstream fs;
-  fs.open(file_name.c_str(), std::ios::binary);
+  fs.open (file_name.c_str(), std::ios::binary);
   if (!fs.is_open() || fs.fail()) {
-    PCL_ERROR("[pcl::OBJReader::readHeader] Could not open file '%s'! Error : %s\n",
-              file_name.c_str(),
-              strerror(errno));
+    PCL_ERROR ("[pcl::OBJReader::readHeader] Could not open file '%s'! Error : %s\n",
+               file_name.c_str(),
+               strerror (errno));
     fs.close();
     return (-1);
   }
 
   // Seek at the given offset
-  fs.seekg(data_idx, std::ios::beg);
+  fs.seekg (data_idx, std::ios::beg);
 
   // Get normal_x and rgba fields indices
   int normal_x_field = -1;
@@ -660,13 +661,13 @@ pcl::OBJReader::read(const std::string& file_name,
     std::size_t vn_idx = 0;
 
     while (!fs.eof()) {
-      getline(fs, line);
+      getline (fs, line);
       // Ignore empty lines
       if (line.empty())
         continue;
 
       // Tokenize the line
-      pcl::split(st, line, "\t\r ");
+      pcl::split (st, line, "\t\r ");
 
       // Ignore comments
       if (st[0] == "#")
@@ -675,15 +676,15 @@ pcl::OBJReader::read(const std::string& file_name,
       if (st[0] == "v") {
         try {
           for (int i = 1, f = 0; i < 4; ++i, ++f) {
-            float value = boost::lexical_cast<float>(st[i]);
-            memcpy(&mesh.cloud.data[v_idx * mesh.cloud.point_step +
-                                    mesh.cloud.fields[f].offset],
-                   &value,
-                   sizeof(float));
+            float value = boost::lexical_cast<float> (st[i]);
+            memcpy (&mesh.cloud.data[v_idx * mesh.cloud.point_step +
+                                     mesh.cloud.fields[f].offset],
+                    &value,
+                    sizeof (float));
           }
           ++v_idx;
         } catch (const boost::bad_lexical_cast&) {
-          PCL_ERROR("Unable to convert %s to vertex coordinates!\n", line.c_str());
+          PCL_ERROR ("Unable to convert %s to vertex coordinates!\n", line.c_str());
           return (-1);
         }
         continue;
@@ -692,15 +693,15 @@ pcl::OBJReader::read(const std::string& file_name,
       if (st[0] == "vn") {
         try {
           for (int i = 1, f = normal_x_field; i < 4; ++i, ++f) {
-            float value = boost::lexical_cast<float>(st[i]);
-            memcpy(&mesh.cloud.data[vn_idx * mesh.cloud.point_step +
-                                    mesh.cloud.fields[f].offset],
-                   &value,
-                   sizeof(float));
+            float value = boost::lexical_cast<float> (st[i]);
+            memcpy (&mesh.cloud.data[vn_idx * mesh.cloud.point_step +
+                                     mesh.cloud.fields[f].offset],
+                    &value,
+                    sizeof (float));
           }
           ++vn_idx;
         } catch (const boost::bad_lexical_cast&) {
-          PCL_ERROR("Unable to convert line %s to vertex normal!\n", line.c_str());
+          PCL_ERROR ("Unable to convert line %s to vertex normal!\n", line.c_str());
           return (-1);
         }
         continue;
@@ -708,16 +709,16 @@ pcl::OBJReader::read(const std::string& file_name,
       // Texture coordinates
       if (st[0] == "vt") {
         try {
-          Eigen::Vector3f c(0, 0, 0);
+          Eigen::Vector3f c (0, 0, 0);
           for (std::size_t i = 1; i < st.size(); ++i)
-            c[i - 1] = boost::lexical_cast<float>(st[i]);
+            c[i - 1] = boost::lexical_cast<float> (st[i]);
           if (c[2] == 0)
-            coordinates.emplace_back(c[0], c[1]);
+            coordinates.emplace_back (c[0], c[1]);
           else
-            coordinates.emplace_back(c[0] / c[2], c[1] / c[2]);
+            coordinates.emplace_back (c[0] / c[2], c[1] / c[2]);
         } catch (const boost::bad_lexical_cast&) {
-          PCL_ERROR("Unable to convert line %s to texture coordinates!\n",
-                    line.c_str());
+          PCL_ERROR ("Unable to convert line %s to texture coordinates!\n",
+                     line.c_str());
           return (-1);
         }
         continue;
@@ -728,7 +729,7 @@ pcl::OBJReader::read(const std::string& file_name,
         mesh.tex_coord_indices.emplace_back();
         mesh.tex_materials.emplace_back();
         for (const auto& companion : companions_) {
-          auto mat_it = companion.getMaterial(st[1]);
+          auto mat_it = companion.getMaterial (st[1]);
           if (mat_it != companion.materials_.end()) {
             mesh.tex_materials.back() = *mat_it;
             break;
@@ -737,7 +738,7 @@ pcl::OBJReader::read(const std::string& file_name,
         // We didn't find the appropriate material so we create it here with name only.
         if (mesh.tex_materials.back().tex_name.empty())
           mesh.tex_materials.back().tex_name = st[1];
-        mesh.tex_coordinates.push_back(coordinates);
+        mesh.tex_coordinates.push_back (coordinates);
         coordinates.clear();
         continue;
       }
@@ -745,92 +746,92 @@ pcl::OBJReader::read(const std::string& file_name,
       if (st[0] == "f") {
         // TODO read in normal indices properly
         pcl::Vertices face_v;
-        face_v.vertices.resize(st.size() - 1);
+        face_v.vertices.resize (st.size() - 1);
         pcl::Vertices tex_indices;
-        tex_indices.vertices.reserve(st.size() - 1);
+        tex_indices.vertices.reserve (st.size() - 1);
         for (std::size_t i = 1; i < st.size(); ++i) {
           char* str_end;
-          int v = std::strtol(st[i].c_str(), &str_end, 10);
+          int v = std::strtol (st[i].c_str(), &str_end, 10);
           v = (v < 0) ? v_idx + v : v - 1;
           face_v.vertices[i - 1] = v;
           if (str_end[0] == '/' && str_end[1] != '/' && str_end[1] != '\0') {
             // texture coordinate indices are optional
-            int tex_index = std::strtol(str_end + 1, &str_end, 10);
-            tex_indices.vertices.push_back(tex_index - 1);
+            int tex_index = std::strtol (str_end + 1, &str_end, 10);
+            tex_indices.vertices.push_back (tex_index - 1);
           }
         }
-        mesh.tex_polygons.back().push_back(face_v);
-        mesh.tex_coord_indices.back().push_back(tex_indices);
+        mesh.tex_polygons.back().push_back (face_v);
+        mesh.tex_coord_indices.back().push_back (tex_indices);
         ++f_idx;
         continue;
       }
     }
   } catch (const char* exception) {
-    PCL_ERROR("[pcl::OBJReader::read] %s\n", exception);
+    PCL_ERROR ("[pcl::OBJReader::read] %s\n", exception);
     fs.close();
     return (-1);
   }
 
   double total_time = tt.toc();
-  PCL_DEBUG("[pcl::OBJReader::read] Loaded %s as a TextureMesh in %g ms with %zu "
-            "points, %zu texture materials, %zu polygons.\n",
-            file_name.c_str(),
-            total_time,
-            v_idx,
-            mesh.tex_materials.size(),
-            f_idx);
+  PCL_DEBUG ("[pcl::OBJReader::read] Loaded %s as a TextureMesh in %g ms with %zu "
+             "points, %zu texture materials, %zu polygons.\n",
+             file_name.c_str(),
+             total_time,
+             v_idx,
+             mesh.tex_materials.size(),
+             f_idx);
   fs.close();
   return (0);
 }
 
 int
-pcl::OBJReader::read(const std::string& file_name,
-                     pcl::PolygonMesh& mesh,
-                     const int offset)
+pcl::OBJReader::read (const std::string& file_name,
+                      pcl::PolygonMesh& mesh,
+                      const int offset)
 {
   int file_version;
   Eigen::Vector4f origin;
   Eigen::Quaternionf orientation;
-  return (read(file_name, mesh, origin, orientation, file_version, offset));
+  return (read (file_name, mesh, origin, orientation, file_version, offset));
 }
 
 int
-pcl::OBJReader::read(const std::string& file_name,
-                     pcl::PolygonMesh& mesh,
-                     Eigen::Vector4f& origin,
-                     Eigen::Quaternionf& orientation,
-                     int& file_version,
-                     const int offset)
+pcl::OBJReader::read (const std::string& file_name,
+                      pcl::PolygonMesh& mesh,
+                      Eigen::Vector4f& origin,
+                      Eigen::Quaternionf& orientation,
+                      int& file_version,
+                      const int offset)
 {
   pcl::console::TicToc tt;
   tt.tic();
 
   int data_type;
   unsigned int data_idx;
-  if (readHeader(file_name,
-                 mesh.cloud,
-                 origin,
-                 orientation,
-                 file_version,
-                 data_type,
-                 data_idx,
-                 offset)) {
-    PCL_ERROR("[pcl::OBJReader::read] Problem reading header!\n");
+  if (readHeader (file_name,
+                  mesh.cloud,
+                  origin,
+                  orientation,
+                  file_version,
+                  data_type,
+                  data_idx,
+                  offset)) {
+    PCL_ERROR ("[pcl::OBJReader::read] Problem reading header!\n");
     return (-1);
   }
 
   std::ifstream fs;
-  fs.open(file_name.c_str(), std::ios::binary);
+  fs.open (file_name.c_str(), std::ios::binary);
   if (!fs.is_open() || fs.fail()) {
-    PCL_ERROR("[pcl::OBJReader::readHeader] Could not open file '%s'! Error : %s\n",
-              file_name.c_str(),
-              strerror(errno));
+    PCL_ERROR ("[pcl::OBJReader::readHeader] Could not open file '%s'! Error : %s\n",
+               file_name.c_str(),
+               strerror (errno));
     fs.close();
     return (-1);
   }
 
   // Seek at the given offset
-  fs.seekg(data_idx, std::ios::beg);
+  fs.seekg (data_idx, std::ios::beg);
 
   // Get normal_x and rgba fields indices
   int normal_x_field = -1;
@@ -848,13 +849,13 @@ pcl::OBJReader::read(const std::string& file_name,
 
     while (!fs.eof()) {
       std::string line;
-      getline(fs, line);
+      getline (fs, line);
       // Ignore empty lines
       if (line.empty())
         continue;
 
       // Tokenize the line
-      pcl::split(st, line, "\t\r ");
+      pcl::split (st, line, "\t\r ");
 
       // Ignore comments and lines with only whitespace
       if (st.empty() || st[0] == "#")
@@ -864,15 +865,15 @@ pcl::OBJReader::read(const std::string& file_name,
       if (st[0] == "v") {
         try {
           for (int i = 1, f = 0; i < 4; ++i, ++f) {
-            float value = boost::lexical_cast<float>(st[i]);
-            memcpy(&mesh.cloud.data[v_idx * mesh.cloud.point_step +
-                                    mesh.cloud.fields[f].offset],
-                   &value,
-                   sizeof(float));
+            float value = boost::lexical_cast<float> (st[i]);
+            memcpy (&mesh.cloud.data[v_idx * mesh.cloud.point_step +
+                                     mesh.cloud.fields[f].offset],
+                    &value,
+                    sizeof (float));
           }
           ++v_idx;
         } catch (const boost::bad_lexical_cast&) {
-          PCL_ERROR("Unable to convert %s to vertex coordinates!\n", line.c_str());
+          PCL_ERROR ("Unable to convert %s to vertex coordinates!\n", line.c_str());
           return (-1);
         }
         continue;
@@ -882,15 +883,15 @@ pcl::OBJReader::read(const std::string& file_name,
       if (st[0] == "vn") {
         try {
           for (int i = 1, f = normal_x_field; i < 4; ++i, ++f) {
-            float value = boost::lexical_cast<float>(st[i]);
-            memcpy(&mesh.cloud.data[vn_idx * mesh.cloud.point_step +
-                                    mesh.cloud.fields[f].offset],
-                   &value,
-                   sizeof(float));
+            float value = boost::lexical_cast<float> (st[i]);
+            memcpy (&mesh.cloud.data[vn_idx * mesh.cloud.point_step +
+                                     mesh.cloud.fields[f].offset],
+                    &value,
+                    sizeof (float));
           }
           ++vn_idx;
         } catch (const boost::bad_lexical_cast&) {
-          PCL_ERROR("Unable to convert line %s to vertex normal!\n", line.c_str());
+          PCL_ERROR ("Unable to convert line %s to vertex normal!\n", line.c_str());
           return (-1);
         }
         continue;
@@ -899,65 +900,66 @@ pcl::OBJReader::read(const std::string& file_name,
       // Face
       if (st[0] == "f") {
         pcl::Vertices face_vertices;
-        face_vertices.vertices.resize(st.size() - 1);
+        face_vertices.vertices.resize (st.size() - 1);
         for (std::size_t i = 1; i < st.size(); ++i) {
           int v;
-          sscanf(st[i].c_str(), "%d", &v);
+          sscanf (st[i].c_str(), "%d", &v);
           v = (v < 0) ? v_idx + v : v - 1;
           face_vertices.vertices[i - 1] = v;
         }
-        mesh.polygons.push_back(face_vertices);
+        mesh.polygons.push_back (face_vertices);
         continue;
       }
     }
   } catch (const char* exception) {
-    PCL_ERROR("[pcl::OBJReader::read] %s\n", exception);
+    PCL_ERROR ("[pcl::OBJReader::read] %s\n", exception);
     fs.close();
     return (-1);
   }
 
   double total_time = tt.toc();
-  PCL_DEBUG("[pcl::OBJReader::read] Loaded %s as a PolygonMesh in %g ms with %zu "
-            "points and %zu polygons.\n",
-            file_name.c_str(),
-            total_time,
-            static_cast<std::size_t>(mesh.cloud.width * mesh.cloud.height),
-            mesh.polygons.size());
+  PCL_DEBUG ("[pcl::OBJReader::read] Loaded %s as a PolygonMesh in %g ms with %zu "
+             "points and %zu polygons.\n",
+             file_name.c_str(),
+             total_time,
+             static_cast<std::size_t> (mesh.cloud.width * mesh.cloud.height),
+             mesh.polygons.size());
   fs.close();
   return (0);
 }
 
 int
-pcl::io::saveOBJFile(const std::string& file_name,
-                     const pcl::TextureMesh& tex_mesh,
-                     unsigned precision)
+pcl::io::saveOBJFile (const std::string& file_name,
+                      const pcl::TextureMesh& tex_mesh,
+                      unsigned precision)
 {
   if (tex_mesh.cloud.data.empty()) {
-    PCL_ERROR("[pcl::io::saveOBJFile] Input point cloud has no data!\n");
+    PCL_ERROR ("[pcl::io::saveOBJFile] Input point cloud has no data!\n");
     return (-1);
   }
   // Open file
   std::ofstream fs;
-  fs.precision(precision);
-  fs.open(file_name.c_str());
+  fs.precision (precision);
+  fs.open (file_name.c_str());
 
   // Define material file
-  std::string mtl_file_name = file_name.substr(0, file_name.find_last_of('.')) + ".mtl";
+  std::string mtl_file_name =
+      file_name.substr (0, file_name.find_last_of ('.')) + ".mtl";
   // Strip path for "mtllib" command
   std::string mtl_file_name_nopath = mtl_file_name;
-  mtl_file_name_nopath.erase(0, mtl_file_name.find_last_of('/') + 1);
+  mtl_file_name_nopath.erase (0, mtl_file_name.find_last_of ('/') + 1);
 
   /* Write 3D information */
   // number of points
   unsigned nr_points = tex_mesh.cloud.width * tex_mesh.cloud.height;
-  auto point_size = static_cast<unsigned>(tex_mesh.cloud.data.size() / nr_points);
+  auto point_size = static_cast<unsigned> (tex_mesh.cloud.data.size() / nr_points);
 
   // mesh size
-  auto nr_meshes = static_cast<unsigned>(tex_mesh.tex_polygons.size());
+  auto nr_meshes = static_cast<unsigned> (tex_mesh.tex_polygons.size());
   // number of faces for header
   unsigned nr_faces = 0;
   for (unsigned m = 0; m < nr_meshes; ++m)
-    nr_faces += static_cast<unsigned>(tex_mesh.tex_polygons[m].size());
+    nr_faces += static_cast<unsigned> (tex_mesh.tex_polygons[m].size());
 
   // Write the header information
   fs << "####" << '\n';
@@ -986,9 +988,9 @@ pcl::io::saveOBJFile(const std::string& file_name,
           v_written = true;
         }
         float value;
-        memcpy(&value,
-               &tex_mesh.cloud.data[i * point_size + tex_mesh.cloud.fields[d].offset],
-               sizeof(float));
+        memcpy (&value,
+                &tex_mesh.cloud.data[i * point_size + tex_mesh.cloud.fields[d].offset],
+                sizeof (float));
         fs << value;
         if (++xyz == 3)
           break;
@@ -996,7 +998,7 @@ pcl::io::saveOBJFile(const std::string& file_name,
       }
     }
     if (xyz != 3) {
-      PCL_ERROR("[pcl::io::saveOBJFile] Input point cloud has no XYZ data!\n");
+      PCL_ERROR ("[pcl::io::saveOBJFile] Input point cloud has no XYZ data!\n");
       return (-2);
     }
     fs << '\n';
@@ -1020,9 +1022,9 @@ pcl::io::saveOBJFile(const std::string& file_name,
           v_written = true;
         }
         float value;
-        memcpy(&value,
-               &tex_mesh.cloud.data[i * point_size + tex_mesh.cloud.fields[d].offset],
-               sizeof(float));
+        memcpy (&value,
+                &tex_mesh.cloud.data[i * point_size + tex_mesh.cloud.fields[d].offset],
+                sizeof (float));
         fs << value;
         if (++xyz == 3)
           break;
@@ -1030,7 +1032,7 @@ pcl::io::saveOBJFile(const std::string& file_name,
       }
     }
     if (xyz != 3) {
-      PCL_ERROR("[pcl::io::saveOBJFile] Input point cloud has no normals!\n");
+      PCL_ERROR ("[pcl::io::saveOBJFile] Input point cloud has no normals!\n");
       return (-2);
     }
     fs << '\n';
@@ -1076,8 +1078,8 @@ pcl::io::saveOBJFile(const std::string& file_name,
   // Open file
 
   std::ofstream m_fs;
-  m_fs.precision(precision);
-  m_fs.open(mtl_file_name.c_str());
+  m_fs.precision (precision);
+  m_fs.open (mtl_file_name.c_str());
 
   // default
   m_fs << "#" << '\n';
@@ -1115,28 +1117,28 @@ pcl::io::saveOBJFile(const std::string& file_name,
 }
 
 int
-pcl::io::saveOBJFile(const std::string& file_name,
-                     const pcl::PolygonMesh& mesh,
-                     unsigned precision)
+pcl::io::saveOBJFile (const std::string& file_name,
+                      const pcl::PolygonMesh& mesh,
+                      unsigned precision)
 {
   if (mesh.cloud.data.empty()) {
-    PCL_ERROR("[pcl::io::saveOBJFile] Input point cloud has no data!\n");
+    PCL_ERROR ("[pcl::io::saveOBJFile] Input point cloud has no data!\n");
     return (-1);
   }
   // Open file
   std::ofstream fs;
-  fs.precision(precision);
-  fs.open(file_name.c_str());
+  fs.precision (precision);
+  fs.open (file_name.c_str());
 
   /* Write 3D information */
   // number of points
   int nr_points = mesh.cloud.width * mesh.cloud.height;
   // point size
-  auto point_size = static_cast<unsigned>(mesh.cloud.data.size() / nr_points);
+  auto point_size = static_cast<unsigned> (mesh.cloud.data.size() / nr_points);
   // number of faces for header
-  auto nr_faces = static_cast<unsigned>(mesh.polygons.size());
+  auto nr_faces = static_cast<unsigned> (mesh.polygons.size());
   // Do we have vertices normals?
-  int normal_index = getFieldIndex(mesh.cloud, "normal_x");
+  int normal_index = getFieldIndex (mesh.cloud, "normal_x");
 
   // Write the header information
   fs << "####" << '\n';
@@ -1161,9 +1163,9 @@ pcl::io::saveOBJFile(const std::string& file_name,
           fs << "v ";
 
         float value;
-        memcpy(&value,
-               &mesh.cloud.data[i * point_size + mesh.cloud.fields[d].offset],
-               sizeof(float));
+        memcpy (&value,
+                &mesh.cloud.data[i * point_size + mesh.cloud.fields[d].offset],
+                sizeof (float));
         fs << value;
         if (++xyz == 3)
           break;
@@ -1171,7 +1173,7 @@ pcl::io::saveOBJFile(const std::string& file_name,
       }
     }
     if (xyz != 3) {
-      PCL_ERROR("[pcl::io::saveOBJFile] Input point cloud has no XYZ data!\n");
+      PCL_ERROR ("[pcl::io::saveOBJFile] Input point cloud has no XYZ data!\n");
       return (-2);
     }
     fs << '\n';
@@ -1195,9 +1197,9 @@ pcl::io::saveOBJFile(const std::string& file_name,
             fs << "vn ";
 
           float value;
-          memcpy(&value,
-                 &mesh.cloud.data[i * point_size + mesh.cloud.fields[d].offset],
-                 sizeof(float));
+          memcpy (&value,
+                  &mesh.cloud.data[i * point_size + mesh.cloud.fields[d].offset],
+                  sizeof (float));
           fs << value;
           if (++nxyz == 3)
             break;
@@ -1205,7 +1207,7 @@ pcl::io::saveOBJFile(const std::string& file_name,
         }
       }
       if (nxyz != 3) {
-        PCL_ERROR("[pcl::io::saveOBJFile] Input point cloud has no normals!\n");
+        PCL_ERROR ("[pcl::io::saveOBJFile] Input point cloud has no normals!\n");
         return (-2);
       }
       fs << '\n';

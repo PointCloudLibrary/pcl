@@ -67,12 +67,12 @@ public:
   using ConstPtr = shared_ptr<const PointCloudGeometryHandler<PointT>>;
 
   /** \brief Constructor. */
-  PointCloudGeometryHandler(const PointCloudConstPtr& cloud)
-  : cloud_(cloud)
-  , capable_(false)
-  , field_x_idx_(UNAVAILABLE)
-  , field_y_idx_(UNAVAILABLE)
-  , field_z_idx_(UNAVAILABLE)
+  PointCloudGeometryHandler (const PointCloudConstPtr& cloud)
+  : cloud_ (cloud)
+  , capable_ (false)
+  , field_x_idx_ (UNAVAILABLE)
+  , field_y_idx_ (UNAVAILABLE)
+  , field_z_idx_ (UNAVAILABLE)
   , fields_()
   {}
 
@@ -150,7 +150,7 @@ public:
   using ConstPtr = shared_ptr<const PointCloudGeometryHandlerXYZ<PointT>>;
 
   /** \brief Constructor. */
-  PointCloudGeometryHandlerXYZ(const PointCloudConstPtr& cloud);
+  PointCloudGeometryHandlerXYZ (const PointCloudConstPtr& cloud);
 
   /** \brief Class getName method. */
   virtual std::string
@@ -201,7 +201,7 @@ public:
   using ConstPtr = shared_ptr<const PointCloudGeometryHandlerSurfaceNormal<PointT>>;
 
   /** \brief Constructor. */
-  PointCloudGeometryHandlerSurfaceNormal(const PointCloudConstPtr& cloud);
+  PointCloudGeometryHandlerSurfaceNormal (const PointCloudConstPtr& cloud);
 
   /** \brief Class getName method. */
   virtual std::string
@@ -251,20 +251,20 @@ public:
   using ConstPtr = shared_ptr<const PointCloudGeometryHandlerCustom<PointT>>;
 
   /** \brief Constructor. */
-  PointCloudGeometryHandlerCustom(const PointCloudConstPtr& cloud,
-                                  const std::string& x_field_name,
-                                  const std::string& y_field_name,
-                                  const std::string& z_field_name)
-  : pcl::visualization::PointCloudGeometryHandler<PointT>::PointCloudGeometryHandler(
+  PointCloudGeometryHandlerCustom (const PointCloudConstPtr& cloud,
+                                   const std::string& x_field_name,
+                                   const std::string& y_field_name,
+                                   const std::string& z_field_name)
+  : pcl::visualization::PointCloudGeometryHandler<PointT>::PointCloudGeometryHandler (
         cloud)
   {
-    field_x_idx_ = pcl::getFieldIndex<PointT>(x_field_name, fields_);
+    field_x_idx_ = pcl::getFieldIndex<PointT> (x_field_name, fields_);
     if (field_x_idx_ == UNAVAILABLE)
       return;
-    field_y_idx_ = pcl::getFieldIndex<PointT>(y_field_name, fields_);
+    field_y_idx_ = pcl::getFieldIndex<PointT> (y_field_name, fields_);
     if (field_y_idx_ == UNAVAILABLE)
       return;
-    field_z_idx_ = pcl::getFieldIndex<PointT>(z_field_name, fields_);
+    field_z_idx_ = pcl::getFieldIndex<PointT> (z_field_name, fields_);
     if (field_z_idx_ == UNAVAILABLE)
       return;
     field_name_ = x_field_name + y_field_name + z_field_name;
@@ -297,25 +297,25 @@ public:
     if (!points)
       points = vtkSmartPointer<vtkPoints>::New();
     points->SetDataTypeToFloat();
-    points->SetNumberOfPoints(cloud_->size());
+    points->SetNumberOfPoints (cloud_->size());
 
     float data;
     // Add all points
     double p[3];
-    for (vtkIdType i = 0; i < static_cast<vtkIdType>(cloud_->size()); ++i) {
+    for (vtkIdType i = 0; i < static_cast<vtkIdType> (cloud_->size()); ++i) {
       // Copy the value at the specified field
       const std::uint8_t* pt_data =
-          reinterpret_cast<const std::uint8_t*>(&(*cloud_)[i]);
-      memcpy(&data, pt_data + fields_[field_x_idx_].offset, sizeof(float));
+          reinterpret_cast<const std::uint8_t*> (&(*cloud_)[i]);
+      memcpy (&data, pt_data + fields_[field_x_idx_].offset, sizeof (float));
       p[0] = data;
 
-      memcpy(&data, pt_data + fields_[field_y_idx_].offset, sizeof(float));
+      memcpy (&data, pt_data + fields_[field_y_idx_].offset, sizeof (float));
       p[1] = data;
 
-      memcpy(&data, pt_data + fields_[field_z_idx_].offset, sizeof(float));
+      memcpy (&data, pt_data + fields_[field_z_idx_].offset, sizeof (float));
       p[2] = data;
 
-      points->SetPoint(i, p);
+      points->SetPoint (i, p);
     }
   }
 
@@ -348,14 +348,14 @@ public:
   using ConstPtr = shared_ptr<const PointCloudGeometryHandler<PointCloud>>;
 
   /** \brief Constructor. */
-  PointCloudGeometryHandler(const PointCloudConstPtr& cloud,
-                            const Eigen::Vector4f& = Eigen::Vector4f::Zero())
-  : cloud_(cloud)
-  , capable_(false)
-  , field_x_idx_(UNAVAILABLE)
-  , field_y_idx_(UNAVAILABLE)
-  , field_z_idx_(UNAVAILABLE)
-  , fields_(cloud_->fields)
+  PointCloudGeometryHandler (const PointCloudConstPtr& cloud,
+                             const Eigen::Vector4f& = Eigen::Vector4f::Zero())
+  : cloud_ (cloud)
+  , capable_ (false)
+  , field_x_idx_ (UNAVAILABLE)
+  , field_y_idx_ (UNAVAILABLE)
+  , field_z_idx_ (UNAVAILABLE)
+  , fields_ (cloud_->fields)
   {}
 
   /** \brief Destructor. */
@@ -431,7 +431,7 @@ public:
   using ConstPtr = shared_ptr<const PointCloudGeometryHandlerXYZ<PointCloud>>;
 
   /** \brief Constructor. */
-  PointCloudGeometryHandlerXYZ(const PointCloudConstPtr& cloud);
+  PointCloudGeometryHandlerXYZ (const PointCloudConstPtr& cloud);
 
   /** \brief Class getName method. */
   virtual std::string
@@ -467,7 +467,7 @@ public:
   using ConstPtr = shared_ptr<const PointCloudGeometryHandlerSurfaceNormal<PointCloud>>;
 
   /** \brief Constructor. */
-  PointCloudGeometryHandlerSurfaceNormal(const PointCloudConstPtr& cloud);
+  PointCloudGeometryHandlerSurfaceNormal (const PointCloudConstPtr& cloud);
 
   /** \brief Class getName method. */
   virtual std::string
@@ -500,10 +500,10 @@ public:
   using PointCloudConstPtr = PointCloud::ConstPtr;
 
   /** \brief Constructor. */
-  PointCloudGeometryHandlerCustom(const PointCloudConstPtr& cloud,
-                                  const std::string& x_field_name,
-                                  const std::string& y_field_name,
-                                  const std::string& z_field_name);
+  PointCloudGeometryHandlerCustom (const PointCloudConstPtr& cloud,
+                                   const std::string& x_field_name,
+                                   const std::string& y_field_name,
+                                   const std::string& z_field_name);
 
   /** \brief Class getName method. */
   virtual std::string

@@ -13,21 +13,21 @@ public:
   void
   push (const DataT& newData)
   {
-    std::lock_guard<std::mutex> lock(monitor_mutex_);
-    queue_.push(newData);
+    std::lock_guard<std::mutex> lock (monitor_mutex_);
+    queue_.push (newData);
     item_available_.notify_one();
   }
 
   DataT
   pop ()
   {
-    std::unique_lock<std::mutex> lock(monitor_mutex_);
+    std::unique_lock<std::mutex> lock (monitor_mutex_);
 
     if (queue_.empty()) {
-      item_available_.wait(lock);
+      item_available_.wait (lock);
     }
 
-    DataT temp(queue_.front());
+    DataT temp (queue_.front());
     queue_.pop();
 
     return temp;

@@ -41,12 +41,12 @@ namespace poisson {
 
 template <class T>
 struct MatrixEntry {
-  MatrixEntry(void)
+  MatrixEntry (void)
   {
     N = -1;
     Value = 0;
   }
-  MatrixEntry(int i)
+  MatrixEntry (int i)
   {
     N = i;
     Value = 0;
@@ -73,19 +73,19 @@ public:
   int* rowSizes;
   MatrixEntry<T>** m_ppElements;
   MatrixEntry<T>*
-  operator[](int idx)
+  operator[] (int idx)
   {
     return m_ppElements[idx];
   }
   const MatrixEntry<T>*
-  operator[](int idx) const
+  operator[] (int idx) const
   {
     return m_ppElements[idx];
   }
 
-  SparseMatrix(void);
-  SparseMatrix(int rows);
-  SparseMatrix(int rows, int maxEntriesPerRow);
+  SparseMatrix (void);
+  SparseMatrix (int rows);
+  SparseMatrix (int rows, int maxEntriesPerRow);
   void
   Resize (int rows);
   void
@@ -95,7 +95,7 @@ public:
   int
   Entries (void) const;
 
-  SparseMatrix(const SparseMatrix& M);
+  SparseMatrix (const SparseMatrix& M);
   ~SparseMatrix();
 
   void
@@ -104,15 +104,15 @@ public:
   SetIdentity ();
 
   SparseMatrix<T>&
-  operator=(const SparseMatrix<T>& M);
+  operator= (const SparseMatrix<T>& M);
 
   SparseMatrix<T>
-  operator*(const T& V) const;
+  operator* (const T& V) const;
   SparseMatrix<T>&
-  operator*=(const T& V);
+  operator*= (const T& V);
 
   SparseMatrix<T>
-  operator*(const SparseMatrix<T>& M) const;
+  operator* (const SparseMatrix<T>& M) const;
   SparseMatrix<T>
   Multiply (const SparseMatrix<T>& M) const;
   SparseMatrix<T>
@@ -120,7 +120,7 @@ public:
 
   template <class T2>
   Vector<T2>
-  operator*(const Vector<T2>& V) const;
+  operator* (const Vector<T2>& V) const;
   template <class T2>
   Vector<T2>
   Multiply (const Vector<T2>& V) const;
@@ -165,37 +165,37 @@ private:
 
 public:
   std::vector<T2*> out;
-  MapReduceVector(void) { _dim = 0; }
-  ~MapReduceVector(void)
+  MapReduceVector (void) { _dim = 0; }
+  ~MapReduceVector (void)
   {
     if (_dim)
-      for (int t = 0; t < int(out.size()); t++)
+      for (int t = 0; t < int (out.size()); t++)
         delete[] out[t];
-    out.resize(0);
+    out.resize (0);
   }
   T2*
-  operator[](int t)
+  operator[] (int t)
   {
     return out[t];
   }
   const T2*
-  operator[](int t) const
+  operator[] (int t) const
   {
     return out[t];
   }
   int
   threads (void) const
   {
-    return int(out.size());
+    return int (out.size());
   }
   void
   resize (int threads, int dim)
   {
     if (threads != out.size() || _dim < dim) {
-      for (int t = 0; t < int(out.size()); t++)
+      for (int t = 0; t < int (out.size()); t++)
         delete[] out[t];
-      out.resize(threads);
-      for (int t = 0; t < int(out.size()); t++)
+      out.resize (threads);
+      for (int t = 0; t < int (out.size()); t++)
         out[t] = new T2[dim];
       _dim = dim;
     }
@@ -207,7 +207,7 @@ class SparseSymmetricMatrix : public SparseMatrix<T> {
 public:
   template <class T2>
   Vector<T2>
-  operator*(const Vector<T2>& V) const;
+  operator* (const Vector<T2>& V) const;
 
   template <class T2>
   Vector<T2>

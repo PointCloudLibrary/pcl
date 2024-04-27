@@ -22,7 +22,7 @@
 // Class ON_Material
 //
 class ON_CLASS ON_Material : public ON_Object {
-  ON_OBJECT_DECLARE(ON_Material);
+  ON_OBJECT_DECLARE (ON_Material);
 
 public:
   static double
@@ -33,9 +33,9 @@ public:
   // C++ default copy construction and operator= work fine.
 
   bool
-  operator==(const ON_Material&) const; // ignores m_material_index
+  operator== (const ON_Material&) const; // ignores m_material_index
   bool
-  operator!=(const ON_Material&) const; // ignores m_material_index
+  operator!= (const ON_Material&) const; // ignores m_material_index
 
   void
   Default ();
@@ -81,7 +81,7 @@ public:
 
   // virtual
   ON_UUID
-  ModelObjectId () const;
+  ModelObjectId() const;
 
   /////////////////////////////////////////////////////////////////
   // Interface
@@ -104,13 +104,13 @@ public:
   Specular () const;
 
   // OBSOLETE - use m_ambient
-  void SetAmbient(ON_Color);
+  void SetAmbient (ON_Color);
   // OBSOLETE - use m_diffuse
-  void SetDiffuse(ON_Color);
+  void SetDiffuse (ON_Color);
   // OBSOLETE - use m_emission
-  void SetEmission(ON_Color);
+  void SetEmission (ON_Color);
   // OBSOLETE - use m_specular
-  void SetSpecular(ON_Color);
+  void SetSpecular (ON_Color);
 
   // Shine values are in range 0.0 to ON_Material::MaxShine()
   double
@@ -133,10 +133,10 @@ public:
 
   // OBSOLETE - just use m_plugin_id
   ON_UUID
-  MaterialPlugInUuid () const;
+  MaterialPlugInUuid() const;
 
   // OBSOLETE - just use m_plugin_id
-  void SetMaterialPlugInUuid(ON_UUID);
+  void SetMaterialPlugInUuid (ON_UUID);
 
   // OBSOLETE - just use m_material_name
   const wchar_t*

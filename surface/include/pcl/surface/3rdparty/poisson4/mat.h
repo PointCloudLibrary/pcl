@@ -47,8 +47,8 @@ class MinimalAreaTriangulation {
                     std::vector<TriangleIndex>& triangles);
 
 public:
-  MinimalAreaTriangulation(void);
-  ~MinimalAreaTriangulation(void);
+  MinimalAreaTriangulation (void);
+  ~MinimalAreaTriangulation (void);
   Real
   GetArea (const std::vector<Point3D<Real>>& vertices);
   void

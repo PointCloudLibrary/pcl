@@ -49,9 +49,9 @@ class DoubleParameter;
 
 class CloudMeshItem : public QTreeWidgetItem, public AbstractItem {
 public:
-  CloudMeshItem(QTreeWidgetItem* parent, const std::string& filename);
-  CloudMeshItem(QTreeWidgetItem* parent, CloudMesh::PointCloudPtr cloud);
-  CloudMeshItem(QTreeWidgetItem* parent, const CloudMeshItem& cloud_mesh_item);
+  CloudMeshItem (QTreeWidgetItem* parent, const std::string& filename);
+  CloudMeshItem (QTreeWidgetItem* parent, CloudMesh::PointCloudPtr cloud);
+  CloudMeshItem (QTreeWidgetItem* parent, const CloudMeshItem& cloud_mesh_item);
 
   inline CloudMesh::Ptr&
   getCloudMesh ()

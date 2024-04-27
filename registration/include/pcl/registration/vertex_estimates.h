@@ -59,10 +59,10 @@ struct PoseEstimate {
   Eigen::Matrix4f pose;
   typename pcl::PointCloud<PointT>::ConstPtr cloud;
 
-  PoseEstimate(const Eigen::Matrix4f& p = Eigen::Matrix4f::Identity(),
-               const typename pcl::PointCloud<PointT>::ConstPtr& c =
-                   typename pcl::PointCloud<PointT>::ConstPtr())
-  : pose(p), cloud(c)
+  PoseEstimate (const Eigen::Matrix4f& p = Eigen::Matrix4f::Identity(),
+                const typename pcl::PointCloud<PointT>::ConstPtr& c =
+                    typename pcl::PointCloud<PointT>::ConstPtr())
+  : pose (p), cloud (c)
   {}
 
   PCL_MAKE_ALIGNED_OPERATOR_NEW

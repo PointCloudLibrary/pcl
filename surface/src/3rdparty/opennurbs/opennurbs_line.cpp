@@ -22,26 +22,26 @@ ON_Line::ON_Line()
   to.Zero();
 }
 
-ON_Line::ON_Line(const ON_3dPoint& from_pt, const ON_3dPoint& to_pt)
-: from(from_pt), to(to_pt)
+ON_Line::ON_Line (const ON_3dPoint& from_pt, const ON_3dPoint& to_pt)
+: from (from_pt), to (to_pt)
 {}
 
 ON_Line::~ON_Line() {}
 
 ON_3dPoint&
-ON_Line::operator[](int i)
+ON_Line::operator[] (int i)
 {
   return (i <= 0) ? from : to;
 }
 
 const ON_3dPoint&
-ON_Line::operator[](int i) const
+ON_Line::operator[] (int i) const
 {
   return (i <= 0) ? from : to;
 }
 
 bool
-ON_Line::Create(const ON_3dPoint& from_pt, const ON_3dPoint& to_pt)
+ON_Line::Create (const ON_3dPoint& from_pt, const ON_3dPoint& to_pt)
 {
   from = from_pt;
   to = to_pt;
@@ -57,7 +57,7 @@ ON_Line::IsValid() const
 double
 ON_Line::Length() const
 {
-  return from.DistanceTo(to);
+  return from.DistanceTo (to);
 }
 
 ON_3dVector
@@ -75,7 +75,7 @@ ON_Line::Tangent() const
 }
 
 ON_3dPoint
-ON_Line::PointAt(double t) const
+ON_Line::PointAt (double t) const
 {
   // 26 Feb 2003 Dale Lear
   //     Changed
@@ -84,9 +84,9 @@ ON_Line::PointAt(double t) const
   //     return exact answers for large values of t.
   //     See RR 9683.
   const double s = 1.0 - t;
-  return ON_3dPoint((from.x == to.x) ? from.x : s * from.x + t * to.x,
-                    (from.y == to.y) ? from.y : s * from.y + t * to.y,
-                    (from.z == to.z) ? from.z : s * from.z + t * to.z);
+  return ON_3dPoint ((from.x == to.x) ? from.x : s * from.x + t * to.x,
+                     (from.y == to.y) ? from.y : s * from.y + t * to.y,
+                     (from.z == to.z) ? from.z : s * from.z + t * to.z);
 }
 
 void
@@ -98,14 +98,14 @@ ON_Line::Reverse()
 }
 
 bool
-ON_Line::ClosestPointTo(const ON_3dPoint& point, double* t) const
+ON_Line::ClosestPointTo (const ON_3dPoint& point, double* t) const
 {
   bool rc = false;
   if (t) {
     const ON_3dVector D = Direction();
     const double DoD = D.LengthSquared();
     if (DoD > 0.0) {
-      if (point.DistanceTo(from) <= point.DistanceTo(to)) {
+      if (point.DistanceTo (from) <= point.DistanceTo (to)) {
         *t = ((point - from) * D) / DoD;
       }
       else {
@@ -121,21 +121,21 @@ ON_Line::ClosestPointTo(const ON_3dPoint& point, double* t) const
 }
 
 ON_3dPoint
-ON_Line::ClosestPointTo(const ON_3dPoint& point) const
+ON_Line::ClosestPointTo (const ON_3dPoint& point) const
 {
   double t;
-  ClosestPointTo(point, &t);
-  return PointAt(t);
+  ClosestPointTo (point, &t);
+  return PointAt (t);
 }
 
 double
-ON_Line::DistanceTo(ON_3dPoint test_point) const
+ON_Line::DistanceTo (ON_3dPoint test_point) const
 {
-  return test_point.DistanceTo(ClosestPointTo(test_point));
+  return test_point.DistanceTo (ClosestPointTo (test_point));
 }
 
 bool
-ON_Line::Transform(const ON_Xform& tr)
+ON_Line::Transform (const ON_Xform& tr)
 {
   from = tr * from;
   to = tr * to;
@@ -147,17 +147,17 @@ ON_Line::Transform(const ON_Xform& tr)
 
 // rotate line about a point and axis
 bool
-ON_Line::Rotate(double sin_angle,        // sin(angle)
-                double cos_angle,        // cos(angle)
-                const ON_3dVector& axis, // axis of rotation
-                const ON_3dPoint& center // center of rotation
+ON_Line::Rotate (double sin_angle,        // sin(angle)
+                 double cos_angle,        // cos(angle)
+                 const ON_3dVector& axis, // axis of rotation
+                 const ON_3dPoint& center // center of rotation
 )
 {
   ON_Xform rot;
-  rot.Rotation(sin_angle, cos_angle, axis, center);
+  rot.Rotation (sin_angle, cos_angle, axis, center);
   const bool bFixP0 = (from == center);
   const bool bFixP1 = (to == center);
-  const bool rc = Transform(rot);
+  const bool rc = Transform (rot);
   if (bFixP0)
     from = center;
   if (bFixP1)
@@ -166,20 +166,20 @@ ON_Line::Rotate(double sin_angle,        // sin(angle)
 }
 
 bool
-ON_Line::Rotate(double a,                // angle in radians
-                const ON_3dVector& axis, // axis of rotation
-                const ON_3dPoint& center // center of rotation
+ON_Line::Rotate (double a,                // angle in radians
+                 const ON_3dVector& axis, // axis of rotation
+                 const ON_3dPoint& center // center of rotation
 )
 {
-  return Rotate(sin(a), cos(a), axis, center);
+  return Rotate (sin (a), cos (a), axis, center);
 }
 
 bool
-ON_Line::Translate(const ON_3dVector& delta)
+ON_Line::Translate (const ON_3dVector& delta)
 {
   ON_Xform tr;
-  tr.Translation(delta);
-  return Transform(tr);
+  tr.Translation (delta);
+  return Transform (tr);
 }
 
 int
@@ -202,27 +202,27 @@ ON_ArePointsOnLine ( // returns 0=no, 1 = yes, 2 = pointset is (to tolerance) a 
     return 0;
 
   if (!line.IsValid()) {
-    ON_ERROR("line parameter not valid");
+    ON_ERROR ("line parameter not valid");
     return 0;
   }
   if (!bbox.IsValid()) {
-    ON_ERROR("bbox parameter not valid");
+    ON_ERROR ("bbox parameter not valid");
     return 0;
   }
-  if (!ON_IsValid(tolerance) || tolerance < 0.0) {
-    ON_ERROR("tolerance parameter not valid");
+  if (!ON_IsValid (tolerance) || tolerance < 0.0) {
+    ON_ERROR ("tolerance parameter not valid");
     return 0;
   }
   if (dim < 2 || dim > 3) {
-    ON_ERROR("dim parameter not valid");
+    ON_ERROR ("dim parameter not valid");
     return 0;
   }
   if (0 == point) {
-    ON_ERROR("point parameter not valid");
+    ON_ERROR ("point parameter not valid");
     return 0;
   }
   if (stride < (is_rat ? (dim + 1) : dim)) {
-    ON_ERROR("stride parameter not valid");
+    ON_ERROR ("stride parameter not valid");
     return 0;
   }
 
@@ -242,7 +242,7 @@ ON_ArePointsOnLine ( // returns 0=no, 1 = yes, 2 = pointset is (to tolerance) a 
       Q.y = bbox[j].y;
       for (k = 0; rc && k < 2; k++) {
         Q.z = bbox[k].z;
-        if (Q.DistanceTo(line.ClosestPointTo(Q)) > tolerance)
+        if (Q.DistanceTo (line.ClosestPointTo (Q)) > tolerance)
           rc = 0;
       }
     }
@@ -256,11 +256,11 @@ ON_ArePointsOnLine ( // returns 0=no, 1 = yes, 2 = pointset is (to tolerance) a 
       for (i = 0; i < count; i++) {
         w = point[dim];
         if (w == 0.0) {
-          ON_ERROR("rational point has zero weight");
+          ON_ERROR ("rational point has zero weight");
           return 0;
         }
-        ON_ArrayScale(dim, 1.0 / w, point, &Q.x);
-        if (Q.DistanceTo(line.ClosestPointTo(Q)) > tolerance) {
+        ON_ArrayScale (dim, 1.0 / w, point, &Q.x);
+        if (Q.DistanceTo (line.ClosestPointTo (Q)) > tolerance) {
           rc = 0;
           break;
         }
@@ -269,8 +269,8 @@ ON_ArePointsOnLine ( // returns 0=no, 1 = yes, 2 = pointset is (to tolerance) a 
     }
     else {
       for (i = 0; i < count; i++) {
-        memcpy(&Q.x, point, dim * sizeof(Q.x));
-        if (Q.DistanceTo(line.ClosestPointTo(Q)) > tolerance) {
+        memcpy (&Q.x, point, dim * sizeof (Q.x));
+        if (Q.DistanceTo (line.ClosestPointTo (Q)) > tolerance) {
           rc = 0;
           break;
         }
@@ -286,24 +286,24 @@ ON_BoundingBox
 ON_Line::BoundingBox() const
 {
   ON_BoundingBox bbox;
-  bbox.Set(3, false, 2, 3, &from.x, false);
+  bbox.Set (3, false, 2, 3, &from.x, false);
   return bbox;
 }
 
 bool
-ON_Line::GetBoundingBox(ON_BoundingBox& bbox, int bGrowBox) const
+ON_Line::GetBoundingBox (ON_BoundingBox& bbox, int bGrowBox) const
 {
-  bbox.Set(3, false, 2, 3, &from.x, bGrowBox);
+  bbox.Set (3, false, 2, 3, &from.x, bGrowBox);
   return true;
 }
 
 bool
-ON_Line::InPlane(ON_Plane& plane, double tolerance) const
+ON_Line::InPlane (ON_Plane& plane, double tolerance) const
 {
   const ON_3dVector v = to - from;
-  const bool bTinyX = fabs(v.x) <= tolerance;
-  const bool bTinyY = fabs(v.y) <= tolerance;
-  const bool bTinyZ = fabs(v.z) <= tolerance;
+  const bool bTinyX = fabs (v.x) <= tolerance;
+  const bool bTinyY = fabs (v.y) <= tolerance;
+  const bool bTinyZ = fabs (v.z) <= tolerance;
   bool rc = true;
   ON_3dVector X;
   ON_3dVector Y;
@@ -322,7 +322,7 @@ ON_Line::InPlane(ON_Plane& plane, double tolerance) const
   else {
     X = v;
     X.Unitize();
-    Y.PerpendicularTo(X);
+    Y.PerpendicularTo (X);
     if (bTinyX && bTinyY && bTinyZ) {
       rc = false;
       if (X.IsZero()) {
@@ -331,25 +331,25 @@ ON_Line::InPlane(ON_Plane& plane, double tolerance) const
       }
     }
   }
-  plane.CreateFromFrame(from, X, Y);
+  plane.CreateFromFrame (from, X, Y);
   return rc;
 }
 
 double
-ON_Line::MinimumDistanceTo(const ON_3dPoint& P) const
+ON_Line::MinimumDistanceTo (const ON_3dPoint& P) const
 {
   double d, t;
-  if (ClosestPointTo(P, &t)) {
+  if (ClosestPointTo (P, &t)) {
     if (t < 0.0)
       t = 0.0;
     else if (t > 1.0)
       t = 1.0;
-    d = PointAt(t).DistanceTo(P);
+    d = PointAt (t).DistanceTo (P);
   }
   else {
     // degenerate line
-    d = from.DistanceTo(P);
-    t = to.DistanceTo(P);
+    d = from.DistanceTo (P);
+    t = to.DistanceTo (P);
     if (t < d)
       d = t;
   }
@@ -357,13 +357,13 @@ ON_Line::MinimumDistanceTo(const ON_3dPoint& P) const
 }
 
 double
-ON_Line::MinimumDistanceTo(const ON_Line& L) const
+ON_Line::MinimumDistanceTo (const ON_Line& L) const
 {
   ON_3dPoint A, B;
   double a, b, t, x, d;
   bool bCheckA, bCheckB;
 
-  bool bGoodX = ON_Intersect(*this, L, &a, &b);
+  bool bGoodX = ON_Intersect (*this, L, &a, &b);
 
   bCheckA = true;
   if (a < 0.0)
@@ -380,28 +380,28 @@ ON_Line::MinimumDistanceTo(const ON_Line& L) const
   else
     bCheckB = !bGoodX;
 
-  A = PointAt(a);
-  B = L.PointAt(b);
-  d = A.DistanceTo(B);
+  A = PointAt (a);
+  B = L.PointAt (b);
+  d = A.DistanceTo (B);
 
   if (bCheckA) {
-    L.ClosestPointTo(A, &t);
+    L.ClosestPointTo (A, &t);
     if (t < 0.0)
       t = 0.0;
     else if (t > 1.0)
       t = 1.0;
-    x = L.PointAt(t).DistanceTo(A);
+    x = L.PointAt (t).DistanceTo (A);
     if (x < d)
       d = x;
   }
 
   if (bCheckB) {
-    ClosestPointTo(B, &t);
+    ClosestPointTo (B, &t);
     if (t < 0.0)
       t = 0.0;
     else if (t > 1.0)
       t = 1.0;
-    x = PointAt(t).DistanceTo(B);
+    x = PointAt (t).DistanceTo (B);
     if (x < d)
       d = x;
   }
@@ -410,25 +410,25 @@ ON_Line::MinimumDistanceTo(const ON_Line& L) const
 }
 
 double
-ON_Line::MaximumDistanceTo(const ON_3dPoint& P) const
+ON_Line::MaximumDistanceTo (const ON_3dPoint& P) const
 {
   double a, b;
-  a = from.DistanceTo(P);
-  b = to.DistanceTo(P);
+  a = from.DistanceTo (P);
+  b = to.DistanceTo (P);
   return ((a < b) ? b : a);
 }
 
 double
-ON_Line::MaximumDistanceTo(const ON_Line& L) const
+ON_Line::MaximumDistanceTo (const ON_Line& L) const
 {
   double a, b;
-  a = MaximumDistanceTo(L.from);
-  b = MaximumDistanceTo(L.to);
+  a = MaximumDistanceTo (L.from);
+  b = MaximumDistanceTo (L.to);
   return ((a < b) ? b : a);
 }
 
 bool
-ON_Line::IsFartherThan(double d, const ON_3dPoint& P) const
+ON_Line::IsFartherThan (double d, const ON_3dPoint& P) const
 {
   if (P.x > to.x + d && P.x > from.x + d) {
     return true;
@@ -448,11 +448,11 @@ ON_Line::IsFartherThan(double d, const ON_3dPoint& P) const
   if (P.z < to.z - d && P.z < from.z - d) {
     return true;
   }
-  return (MinimumDistanceTo(P) > d);
+  return (MinimumDistanceTo (P) > d);
 }
 
 bool
-ON_Line::IsFartherThan(double d, const ON_Line& L) const
+ON_Line::IsFartherThan (double d, const ON_Line& L) const
 {
   ON_3dPoint A, B;
   double a, b, t, x;
@@ -494,35 +494,35 @@ ON_Line::IsFartherThan(double d, const ON_Line& L) const
   if (a - d > L.from.z && a - d > L.to.z)
     return true;
 
-  if (!ON_Intersect(*this, L, &a, &b)) {
+  if (!ON_Intersect (*this, L, &a, &b)) {
     // lines are parallel or anti parallel
     if (Direction() * L.Direction() >= 0.0) {
       // lines are parallel
       a = 0.0;
-      L.ClosestPointTo(from, &b);
+      L.ClosestPointTo (from, &b);
       // If ( b >= 0.0), then this->from and L(b) are a pair of closest points.
       if (b < 0.0) {
         // Othersise L.from and this(a) are a pair of closest points.
         b = 0.0;
-        ClosestPointTo(L.from, &a);
+        ClosestPointTo (L.from, &a);
       }
     }
     else {
       // lines are anti parallel
       a = 1.0;
-      L.ClosestPointTo(to, &b);
+      L.ClosestPointTo (to, &b);
       // If ( b >= 0.0), then this->to and L(b) are a pair of closest points.
       if (b < 0.0) {
         // Othersise L.to and this(a) are a pair of closest points.
         b = 0.0;
-        ClosestPointTo(L.from, &a);
+        ClosestPointTo (L.from, &a);
       }
     }
   }
 
-  A = PointAt(a);
-  B = L.PointAt(b);
-  x = A.DistanceTo(B);
+  A = PointAt (a);
+  B = L.PointAt (b);
+  x = A.DistanceTo (B);
   if (x > d)
     return true;
 
@@ -534,13 +534,13 @@ ON_Line::IsFartherThan(double d, const ON_Line& L) const
   else
     bCheckA = false;
   if (bCheckA) {
-    A = PointAt(a);
-    L.ClosestPointTo(A, &t);
+    A = PointAt (a);
+    L.ClosestPointTo (A, &t);
     if (t < 0.0)
       t = 0.0;
     else if (t > 1.0)
       t = 1.0;
-    x = L.PointAt(t).DistanceTo(A);
+    x = L.PointAt (t).DistanceTo (A);
   }
 
   bCheckB = true;
@@ -551,13 +551,13 @@ ON_Line::IsFartherThan(double d, const ON_Line& L) const
   else
     bCheckB = false;
   if (bCheckB) {
-    B = L.PointAt(b);
-    ClosestPointTo(B, &t);
+    B = L.PointAt (b);
+    ClosestPointTo (B, &t);
     if (t < 0.0)
       t = 0.0;
     else if (t > 1.0)
       t = 1.0;
-    t = PointAt(t).DistanceTo(B);
+    t = PointAt (t).DistanceTo (B);
     if (bCheckA) {
       if (t < x)
         x = t;

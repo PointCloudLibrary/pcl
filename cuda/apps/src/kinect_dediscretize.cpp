@@ -52,7 +52,7 @@
 
 class SimpleKinectTool {
 public:
-  SimpleKinectTool() : viewer("KinectGrabber"), init_(false) {}
+  SimpleKinectTool() : viewer ("KinectGrabber"), init_ (false) {}
 
   void
   cloud_cb_ (const openni_wrapper::Image::Ptr& image,
@@ -61,35 +61,35 @@ public:
   {
     pcl_cuda::PointCloudAOS<pcl_cuda::Device>::Ptr data;
     {
-      pcl::ScopeTime t("time:");
-      d2c.compute<pcl_cuda::Device>(depth_image, image, constant, data);
+      pcl::ScopeTime t ("time:");
+      d2c.compute<pcl_cuda::Device> (depth_image, image, constant, data);
     }
     // d2c.callback (depth_image, constant, *data);
 
-    pcl::PointCloud<pcl::PointXYZRGB>::Ptr output(
+    pcl::PointCloud<pcl::PointXYZRGB>::Ptr output (
         new pcl::PointCloud<pcl::PointXYZRGB>);
-    pcl_cuda::toPCL(*data, *output);
+    pcl_cuda::toPCL (*data, *output);
 
-    viewer.showCloud(output);
+    viewer.showCloud (output);
   }
 
   void
   run (const std::string& device_id)
   {
-    pcl::Grabber* interface = new pcl::OpenNIGrabber(device_id);
+    pcl::Grabber* interface = new pcl::OpenNIGrabber (device_id);
 
-    std::function<void(const openni_wrapper::Image::Ptr& image,
-                       const openni_wrapper::DepthImage::Ptr& depth_image,
-                       float)>
-        f = std::bind(&SimpleKinectTool::cloud_cb_, this, _1, _2, _3);
+    std::function<void (const openni_wrapper::Image::Ptr& image,
+                        const openni_wrapper::DepthImage::Ptr& depth_image,
+                        float)>
+        f = std::bind (&SimpleKinectTool::cloud_cb_, this, _1, _2, _3);
 
-    interface->registerCallback(f);
+    interface->registerCallback (f);
 
     // viewer.runOnVisualizationThread (fn, "viz_cb");
     interface->start();
 
     while (true) {
-      sleep(1);
+      sleep (1);
     }
 
     interface->stop();
@@ -109,6 +109,6 @@ main (int argc, char** argv)
     device_id = argv[1];
   }
   SimpleKinectTool v;
-  v.run(device_id);
+  v.run (device_id);
   return 0;
 }

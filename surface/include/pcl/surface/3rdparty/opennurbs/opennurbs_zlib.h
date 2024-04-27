@@ -62,16 +62,16 @@
 ON_BEGIN_EXTERNC
 voidpf
 zcalloc (voidpf, unsigned, unsigned);
-void zcfree(voidpf, voidpf);
+void zcfree (voidpf, voidpf);
 ON_END_EXTERNC
 
 class ON_CLASS ON_CompressedBuffer {
 public:
   ON_CompressedBuffer();
   ~ON_CompressedBuffer();
-  ON_CompressedBuffer(const ON_CompressedBuffer& src);
+  ON_CompressedBuffer (const ON_CompressedBuffer& src);
   ON_CompressedBuffer&
-  operator=(const ON_CompressedBuffer& src);
+  operator= (const ON_CompressedBuffer& src);
 
   /*
   Description:

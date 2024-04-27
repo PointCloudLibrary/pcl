@@ -80,7 +80,7 @@ pcl::StereoMatching::~StereoMatching()
 
 //////////////////////////////////////////////////////////////////////////////
 void
-pcl::StereoMatching::medianFilter(int radius)
+pcl::StereoMatching::medianFilter (int radius)
 {
 
   // TODO: do median filter
@@ -107,7 +107,7 @@ pcl::StereoMatching::medianFilter(int radius)
           }
         }
 
-        std::sort(v, v + n);
+        std::sort (v, v + n);
         out[y * width_ + x] = v[n / 2];
       }
     }
@@ -123,11 +123,11 @@ pcl::StereoMatching::medianFilter(int radius)
 
 //////////////////////////////////////////////////////////////////////////////
 void
-pcl::StereoMatching::getVisualMap(pcl::PointCloud<pcl::RGB>::Ptr vMap)
+pcl::StereoMatching::getVisualMap (pcl::PointCloud<pcl::RGB>::Ptr vMap)
 {
-  if (static_cast<int>(vMap->width) != width_ ||
-      static_cast<int>(vMap->height) != height_) {
-    vMap->resize(width_ * height_);
+  if (static_cast<int> (vMap->width) != width_ ||
+      static_cast<int> (vMap->height) != height_) {
+    vMap->resize (width_ * height_);
     vMap->width = width_;
     vMap->height = height_;
   }
@@ -140,19 +140,19 @@ pcl::StereoMatching::getVisualMap(pcl::PointCloud<pcl::RGB>::Ptr vMap)
   invalid_val.g = 255;
   invalid_val.b = 0;
 
-  float scale = 255.0f / (16.0f * static_cast<float>(max_disp_));
+  float scale = 255.0f / (16.0f * static_cast<float> (max_disp_));
 
   for (int y = 0; y < height_; y++) {
     for (int x = 0; x < width_; x++) {
       if (disp_map_[y * width_ + x] <= 0) {
-        vMap->at(x, y) = invalid_val;
+        vMap->at (x, y) = invalid_val;
       }
       else {
         auto val =
-            static_cast<unsigned char>(std::floor(scale * disp_map_[y * width_ + x]));
-        vMap->at(x, y).r = val;
-        vMap->at(x, y).g = val;
-        vMap->at(x, y).b = val;
+            static_cast<unsigned char> (std::floor (scale * disp_map_[y * width_ + x]));
+        vMap->at (x, y).r = val;
+        vMap->at (x, y).g = val;
+        vMap->at (x, y).b = val;
       }
     }
   }
@@ -169,12 +169,12 @@ pcl::StereoMatching::leftRightCheck()
       if (disp_map_[y * width_ + x] > 0) {
         p1 = disp_map_[y * width_ + x] / 16;
 
-        p2i = static_cast<short int>(x - p1 - x_off_);
+        p2i = static_cast<short int> (x - p1 - x_off_);
 
         if (p2i >= 0) {
           p2 = disp_map_trg_[y * width_ + p2i] / 16;
 
-          if (std::abs(p1 - p2) > lr_check_th_)
+          if (std::abs (p1 - p2) > lr_check_th_)
             disp_map_[y * width_ + x] = -8;
         }
       }
@@ -184,34 +184,34 @@ pcl::StereoMatching::leftRightCheck()
 
 //////////////////////////////////////////////////////////////////////////////
 bool
-pcl::StereoMatching::getPointCloud(float u_c,
-                                   float v_c,
-                                   float focal,
-                                   float baseline,
-                                   pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud,
-                                   pcl::PointCloud<pcl::RGB>::Ptr texture)
+pcl::StereoMatching::getPointCloud (float u_c,
+                                    float v_c,
+                                    float focal,
+                                    float baseline,
+                                    pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud,
+                                    pcl::PointCloud<pcl::RGB>::Ptr texture)
 {
   // disp map has not been computed yet..
   if (disp_map_ == nullptr) {
-    PCL_ERROR("[pcl::StereoMatching::getPointCloud] Error: a disparity map has not "
-              "been computed yet. The resulting cloud can not be computed..\n");
+    PCL_ERROR ("[pcl::StereoMatching::getPointCloud] Error: a disparity map has not "
+               "been computed yet. The resulting cloud can not be computed..\n");
 
     return (false);
   }
 
-  if (static_cast<int>(texture->width) != width_ ||
-      static_cast<int>(texture->height) != height_) {
-    PCL_ERROR("[pcl::StereoMatching::getPointCloud] Error: the size of the texture "
-              "cloud does not match that of the computed range map. The resulting "
-              "cloud can not be computed..\n");
+  if (static_cast<int> (texture->width) != width_ ||
+      static_cast<int> (texture->height) != height_) {
+    PCL_ERROR ("[pcl::StereoMatching::getPointCloud] Error: the size of the texture "
+               "cloud does not match that of the computed range map. The resulting "
+               "cloud can not be computed..\n");
     return (false);
   }
 
   // cloud needs to be re-allocated
-  if (static_cast<int>(cloud->width) != width_ ||
-      static_cast<int>(cloud->height) != height_) {
+  if (static_cast<int> (cloud->width) != width_ ||
+      static_cast<int> (cloud->height) != height_) {
     // cloud.reset(new pcl::PointCloud<pcl::PointXYZRGBA>(width_, height_) );
-    cloud->resize(width_ * height_);
+    cloud->resize (width_ * height_);
     cloud->width = width_;
     cloud->height = height_;
     cloud->is_dense = false;
@@ -235,14 +235,14 @@ pcl::StereoMatching::getPointCloud(float u_c,
     for (int i = 0; i < width_; i++) {
       if (disp_map_[j * width_ + i] > 0) {
         temp_point.z = (depth_scale) / (disp_map_[j * width_ + i]);
-        temp_point.x = ((static_cast<float>(i) - u_c) * temp_point.z) / focal;
-        temp_point.y = ((static_cast<float>(j) - v_c) * temp_point.z) / focal;
+        temp_point.x = ((static_cast<float> (i) - u_c) * temp_point.z) / focal;
+        temp_point.y = ((static_cast<float> (j) - v_c) * temp_point.z) / focal;
 
         // temp_point.intensity = ( texture->at(j*width_+i).r +texture->at(j*width_+i).g
         // + texture->at(j*width_+i).b) / 3.0f;
-        temp_point.r = texture->at(j * width_ + i).r;
-        temp_point.g = texture->at(j * width_ + i).g;
-        temp_point.b = texture->at(j * width_ + i).b;
+        temp_point.r = texture->at (j * width_ + i).r;
+        temp_point.g = texture->at (j * width_ + i).g;
+        temp_point.b = texture->at (j * width_ + i).b;
 
         (*cloud)[j * width_ + i] = temp_point;
       }
@@ -251,9 +251,9 @@ pcl::StereoMatching::getPointCloud(float u_c,
         temp_point.x = std::numeric_limits<float>::quiet_NaN();
         temp_point.y = std::numeric_limits<float>::quiet_NaN();
         temp_point.z = std::numeric_limits<float>::quiet_NaN();
-        temp_point.r = texture->at(j * width_ + i).r;
-        temp_point.g = texture->at(j * width_ + i).g;
-        temp_point.b = texture->at(j * width_ + i).b;
+        temp_point.r = texture->at (j * width_ + i).r;
+        temp_point.g = texture->at (j * width_ + i).g;
+        temp_point.b = texture->at (j * width_ + i).b;
         (*cloud)[j * width_ + i] = temp_point;
       }
     }
@@ -266,26 +266,26 @@ pcl::StereoMatching::getPointCloud(float u_c,
 // const pcl::PointCloud<pcl::PointXYZRGBA>::Ptr
 // pcl::StereoMatching::getPointCloud(float uC, float vC, float focal, float baseline)
 bool
-pcl::StereoMatching::getPointCloud(float u_c,
-                                   float v_c,
-                                   float focal,
-                                   float baseline,
-                                   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud)
+pcl::StereoMatching::getPointCloud (float u_c,
+                                    float v_c,
+                                    float focal,
+                                    float baseline,
+                                    pcl::PointCloud<pcl::PointXYZ>::Ptr cloud)
 {
 
   // disp map has not been computed yet..
   if (disp_map_ == nullptr) {
 
-    PCL_ERROR("[pcl::StereoMatching::getPointCloud] Error: a disparity map has not "
-              "been computed yet. The resulting cloud can not be computed..\n");
+    PCL_ERROR ("[pcl::StereoMatching::getPointCloud] Error: a disparity map has not "
+               "been computed yet. The resulting cloud can not be computed..\n");
 
     return false;
   }
 
   // cloud needs to be re-allocated
-  if (static_cast<int>(cloud->width) != width_ ||
-      static_cast<int>(cloud->height) != height_) {
-    cloud->resize(width_ * height_);
+  if (static_cast<int> (cloud->width) != width_ ||
+      static_cast<int> (cloud->height) != height_) {
+    cloud->resize (width_ * height_);
     cloud->width = width_;
     cloud->height = height_;
     cloud->is_dense = false;
@@ -311,8 +311,8 @@ pcl::StereoMatching::getPointCloud(float u_c,
       if (disp_map_[j * width_ + i] > 0) {
 
         temp_point.z = depth_scale / disp_map_[j * width_ + i];
-        temp_point.x = ((static_cast<float>(i) - u_c) * temp_point.z) / focal;
-        temp_point.y = ((static_cast<float>(j) - v_c) * temp_point.z) / focal;
+        temp_point.x = ((static_cast<float> (i) - u_c) * temp_point.z) / focal;
+        temp_point.y = ((static_cast<float> (j) - v_c) * temp_point.z) / focal;
         // temp_point.intensity = 255;
 
         (*cloud)[j * width_ + i] = temp_point;
@@ -335,7 +335,7 @@ pcl::GrayStereoMatching::~GrayStereoMatching() = default;
 
 //////////////////////////////////////////////////////////////////////////////
 void
-pcl::GrayStereoMatching::preProcessing(unsigned char* img, unsigned char* pp_img)
+pcl::GrayStereoMatching::preProcessing (unsigned char* img, unsigned char* pp_img)
 {
   int radius = 4; // default value, could be exported
   int n = 2 * radius + 1;
@@ -371,14 +371,14 @@ pcl::GrayStereoMatching::preProcessing(unsigned char* img, unsigned char* pp_img
                        img[(y - radius - 1) * width_ + x + radius];
       sum += v[x + radius] - v[x - radius - 1];
 
-      auto temp = static_cast<short int>(img[y * width_ + x] - (sum / area));
+      auto temp = static_cast<short int> (img[y * width_ + x] - (sum / area));
 
       if (temp < -threshold)
         pp_img[y * width_ + x] = 0;
       else if (temp > threshold)
-        pp_img[y * width_ + x] = static_cast<unsigned char>(threshold + threshold);
+        pp_img[y * width_ + x] = static_cast<unsigned char> (threshold + threshold);
       else
-        pp_img[y * width_ + x] = static_cast<unsigned char>(temp + threshold);
+        pp_img[y * width_ + x] = static_cast<unsigned char> (temp + threshold);
     }
 
     for (int x = width_ - radius; x < width_; x++) {
@@ -397,12 +397,12 @@ pcl::GrayStereoMatching::preProcessing(unsigned char* img, unsigned char* pp_img
 
 //////////////////////////////////////////////////////////////////////////////
 void
-pcl::GrayStereoMatching::imgFlip(unsigned char*& img)
+pcl::GrayStereoMatching::imgFlip (unsigned char*& img)
 {
   auto* temp_row = new unsigned char[width_];
 
   for (int j = 0; j < height_; j++) {
-    std::copy(img + j * width_, img + j * width_ + width_, temp_row);
+    std::copy (img + j * width_, img + j * width_ + width_, temp_row);
     for (int i = 0; i < width_; i++) {
       img[j * width_ + i] = temp_row[width_ - 1 - i];
     }
@@ -413,19 +413,19 @@ pcl::GrayStereoMatching::imgFlip(unsigned char*& img)
 
 //////////////////////////////////////////////////////////////////////////////
 void
-pcl::GrayStereoMatching::compute(pcl::PointCloud<pcl::RGB>& ref,
-                                 pcl::PointCloud<pcl::RGB>& trg)
+pcl::GrayStereoMatching::compute (pcl::PointCloud<pcl::RGB>& ref,
+                                  pcl::PointCloud<pcl::RGB>& trg)
 {
 
   if (ref.width != trg.width || ref.height != trg.height) {
 
-    PCL_ERROR("[pcl::GrayStereoMatching::compute] Error. The two input clouds have "
-              "different sizes. Aborting..\n");
+    PCL_ERROR ("[pcl::GrayStereoMatching::compute] Error. The two input clouds have "
+               "different sizes. Aborting..\n");
     return;
   }
 
-  if ((ref_img_ != nullptr) && (width_ != static_cast<int>(ref.width) ||
-                                height_ != static_cast<int>(ref.height))) {
+  if ((ref_img_ != nullptr) && (width_ != static_cast<int> (ref.width) ||
+                                height_ != static_cast<int> (ref.height))) {
     delete[] ref_img_;
     delete[] trg_img_;
 
@@ -441,34 +441,34 @@ pcl::GrayStereoMatching::compute(pcl::PointCloud<pcl::RGB>& ref,
   float divider = 1.0f / 3.0f;
   for (unsigned int j = 0; j < ref.height; j++) {
     for (unsigned int i = 0; i < ref.width; i++) {
-      ref_img_[j * ref.width + i] = static_cast<unsigned char>(
-          static_cast<float>(ref[j * ref.width + i].r + ref[j * ref.width + i].g +
-                             ref[j * ref.width + i].b) *
+      ref_img_[j * ref.width + i] = static_cast<unsigned char> (
+          static_cast<float> (ref[j * ref.width + i].r + ref[j * ref.width + i].g +
+                              ref[j * ref.width + i].b) *
           divider);
-      trg_img_[j * ref.width + i] = static_cast<unsigned char>(
-          static_cast<float>(trg[j * ref.width + i].r + trg[j * ref.width + i].g +
-                             trg[j * ref.width + i].b) *
+      trg_img_[j * ref.width + i] = static_cast<unsigned char> (
+          static_cast<float> (trg[j * ref.width + i].r + trg[j * ref.width + i].g +
+                              trg[j * ref.width + i].b) *
           divider);
       // ref_img_[ j*ref.width + i] = ( ref(j,i).r + ref(j,i).g + ref(j,i).b) / 3;
       // trg_img_[ j*ref.width + i] = ( trg(j,i).r + trg(j,i).g + trg(j,i).b) / 3;
     }
   }
 
-  compute(ref_img_, trg_img_, ref.width, ref.height);
+  compute (ref_img_, trg_img_, ref.width, ref.height);
 }
 
 //////////////////////////////////////////////////////////////////////////////
 void
-pcl::GrayStereoMatching::compute(unsigned char* ref_img,
-                                 unsigned char* trg_img,
-                                 int width,
-                                 int height)
+pcl::GrayStereoMatching::compute (unsigned char* ref_img,
+                                  unsigned char* trg_img,
+                                  int width,
+                                  int height)
 {
 
   // Check that a suitable value of max_disp has been selected
   if (max_disp_ <= 0) {
-    PCL_ERROR("[pcl::StereoMatching::compute] Error. A positive max_disparity value "
-              "has not be correctly inserted. Aborting..\n");
+    PCL_ERROR ("[pcl::StereoMatching::compute] Error. A positive max_disparity value "
+               "has not be correctly inserted. Aborting..\n");
     return;
   }
 
@@ -513,32 +513,32 @@ pcl::GrayStereoMatching::compute(unsigned char* ref_img,
     pp_trg_img_ = nullptr;
   }
 
-  std::fill_n(disp_map_, height_ * width_, 0);
+  std::fill_n (disp_map_, height_ * width_, 0);
 
   if (is_pre_proc_) {
-    preProcessing(ref_img, pp_ref_img_);
-    preProcessing(trg_img, pp_trg_img_);
+    preProcessing (ref_img, pp_ref_img_);
+    preProcessing (trg_img, pp_trg_img_);
   }
 
   if (is_lr_check_) {
 
     if (is_pre_proc_) {
-      imgFlip(pp_ref_img_);
-      imgFlip(pp_trg_img_);
+      imgFlip (pp_ref_img_);
+      imgFlip (pp_trg_img_);
 
-      compute_impl(pp_trg_img_, pp_ref_img_);
+      compute_impl (pp_trg_img_, pp_ref_img_);
 
-      imgFlip(pp_ref_img_);
-      imgFlip(pp_trg_img_);
+      imgFlip (pp_ref_img_);
+      imgFlip (pp_trg_img_);
     }
     else {
-      imgFlip(ref_img);
-      imgFlip(trg_img);
+      imgFlip (ref_img);
+      imgFlip (trg_img);
 
-      compute_impl(trg_img, ref_img);
+      compute_impl (trg_img, ref_img);
 
-      imgFlip(ref_img);
-      imgFlip(trg_img);
+      imgFlip (ref_img);
+      imgFlip (trg_img);
     }
 
     for (int j = 0; j < height_; j++)
@@ -547,9 +547,9 @@ pcl::GrayStereoMatching::compute(unsigned char* ref_img,
   }
 
   if (is_pre_proc_)
-    compute_impl(pp_ref_img_, pp_trg_img_);
+    compute_impl (pp_ref_img_, pp_trg_img_);
   else
-    compute_impl(ref_img, trg_img);
+    compute_impl (ref_img, trg_img);
 
   if (is_lr_check_) {
     leftRightCheck();
@@ -561,5 +561,5 @@ pcl::GrayStereoMatching::compute(unsigned char* ref_img,
   for (int j = 0; j < height_; j++)
     for (int i = 0; i < width_; i++)
       if (disp_map_[j * width_ + i] > 0)
-        disp_map_[j * width_ + i] += static_cast<short int>(x_off_ * 16);
+        disp_map_[j * width_ + i] += static_cast<short int> (x_off_ * 16);
 }

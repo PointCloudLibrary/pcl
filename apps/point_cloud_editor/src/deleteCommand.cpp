@@ -42,10 +42,10 @@
 #include <pcl/apps/point_cloud_editor/deleteCommand.h>
 #include <pcl/apps/point_cloud_editor/selection.h>
 
-DeleteCommand::DeleteCommand(SelectionPtr selection_ptr, const CloudPtr& cloud_ptr)
-: cloud_ptr_(cloud_ptr)
-, selection_ptr_(std::move(selection_ptr))
-, deleted_selection_(cloud_ptr)
+DeleteCommand::DeleteCommand (SelectionPtr selection_ptr, const CloudPtr& cloud_ptr)
+: cloud_ptr_ (cloud_ptr)
+, selection_ptr_ (std::move (selection_ptr))
+, deleted_selection_ (cloud_ptr)
 {}
 
 void
@@ -58,17 +58,17 @@ DeleteCommand::execute()
 
   // back up the points to be deleted
   deleted_selection_ = *selection_ptr_;
-  deleted_cloud_buffer_.set(cloud_ptr_, deleted_selection_);
+  deleted_cloud_buffer_.set (cloud_ptr_, deleted_selection_);
 
   // delete the points
-  cloud_ptr_->remove(deleted_selection_);
+  cloud_ptr_->remove (deleted_selection_);
 
   // The selection points to the incorrect points or may have indices out of
   // bounds, so we must clear it.
   selection_ptr_->clear();
 
   // notify the cloud that the selection has changed
-  cloud_ptr_->setSelection(selection_ptr_);
+  cloud_ptr_->setSelection (selection_ptr_);
 }
 
 void
@@ -76,5 +76,5 @@ DeleteCommand::undo()
 {
   if (!cloud_ptr_)
     return;
-  cloud_ptr_->restore(deleted_cloud_buffer_, deleted_selection_);
+  cloud_ptr_->restore (deleted_cloud_buffer_, deleted_selection_);
 }

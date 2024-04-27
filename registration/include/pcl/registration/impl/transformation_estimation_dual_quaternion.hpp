@@ -51,57 +51,57 @@ namespace registration {
 template <typename PointSource, typename PointTarget, typename Scalar>
 inline void
 TransformationEstimationDualQuaternion<PointSource, PointTarget, Scalar>::
-    estimateRigidTransformation(const pcl::PointCloud<PointSource>& cloud_src,
-                                const pcl::PointCloud<PointTarget>& cloud_tgt,
-                                Matrix4& transformation_matrix) const
+    estimateRigidTransformation (const pcl::PointCloud<PointSource>& cloud_src,
+                                 const pcl::PointCloud<PointTarget>& cloud_tgt,
+                                 Matrix4& transformation_matrix) const
 {
   const auto nr_points = cloud_src.size();
   if (cloud_tgt.size() != nr_points) {
-    PCL_ERROR(
+    PCL_ERROR (
         "[pcl::TransformationEstimationDualQuaternion::estimateRigidTransformation] "
         "Number or points in source (%zu) differs than target (%zu)!\n",
-        static_cast<std::size_t>(nr_points),
-        static_cast<std::size_t>(cloud_tgt.size()));
+        static_cast<std::size_t> (nr_points),
+        static_cast<std::size_t> (cloud_tgt.size()));
     return;
   }
 
-  ConstCloudIterator<PointSource> source_it(cloud_src);
-  ConstCloudIterator<PointTarget> target_it(cloud_tgt);
-  estimateRigidTransformation(source_it, target_it, transformation_matrix);
+  ConstCloudIterator<PointSource> source_it (cloud_src);
+  ConstCloudIterator<PointTarget> target_it (cloud_tgt);
+  estimateRigidTransformation (source_it, target_it, transformation_matrix);
 }
 
 template <typename PointSource, typename PointTarget, typename Scalar>
 void
 TransformationEstimationDualQuaternion<PointSource, PointTarget, Scalar>::
-    estimateRigidTransformation(const pcl::PointCloud<PointSource>& cloud_src,
-                                const pcl::Indices& indices_src,
-                                const pcl::PointCloud<PointTarget>& cloud_tgt,
-                                Matrix4& transformation_matrix) const
+    estimateRigidTransformation (const pcl::PointCloud<PointSource>& cloud_src,
+                                 const pcl::Indices& indices_src,
+                                 const pcl::PointCloud<PointTarget>& cloud_tgt,
+                                 Matrix4& transformation_matrix) const
 {
   if (indices_src.size() != cloud_tgt.size()) {
-    PCL_ERROR("[pcl::TransformationDQ::estimateRigidTransformation] Number or points "
-              "in source (%zu) differs than target (%zu)!\n",
-              indices_src.size(),
-              static_cast<std::size_t>(cloud_tgt.size()));
+    PCL_ERROR ("[pcl::TransformationDQ::estimateRigidTransformation] Number or points "
+               "in source (%zu) differs than target (%zu)!\n",
+               indices_src.size(),
+               static_cast<std::size_t> (cloud_tgt.size()));
     return;
   }
 
-  ConstCloudIterator<PointSource> source_it(cloud_src, indices_src);
-  ConstCloudIterator<PointTarget> target_it(cloud_tgt);
-  estimateRigidTransformation(source_it, target_it, transformation_matrix);
+  ConstCloudIterator<PointSource> source_it (cloud_src, indices_src);
+  ConstCloudIterator<PointTarget> target_it (cloud_tgt);
+  estimateRigidTransformation (source_it, target_it, transformation_matrix);
 }
 
 template <typename PointSource, typename PointTarget, typename Scalar>
 inline void
 TransformationEstimationDualQuaternion<PointSource, PointTarget, Scalar>::
-    estimateRigidTransformation(const pcl::PointCloud<PointSource>& cloud_src,
-                                const pcl::Indices& indices_src,
-                                const pcl::PointCloud<PointTarget>& cloud_tgt,
-                                const pcl::Indices& indices_tgt,
-                                Matrix4& transformation_matrix) const
+    estimateRigidTransformation (const pcl::PointCloud<PointSource>& cloud_src,
+                                 const pcl::Indices& indices_src,
+                                 const pcl::PointCloud<PointTarget>& cloud_tgt,
+                                 const pcl::Indices& indices_tgt,
+                                 Matrix4& transformation_matrix) const
 {
   if (indices_src.size() != indices_tgt.size()) {
-    PCL_ERROR(
+    PCL_ERROR (
         "[pcl::TransformationEstimationDualQuaternion::estimateRigidTransformation] "
         "Number or points in source (%lu) differs than target (%lu)!\n",
         indices_src.size(),
@@ -109,32 +109,32 @@ TransformationEstimationDualQuaternion<PointSource, PointTarget, Scalar>::
     return;
   }
 
-  ConstCloudIterator<PointSource> source_it(cloud_src, indices_src);
-  ConstCloudIterator<PointTarget> target_it(cloud_tgt, indices_tgt);
-  estimateRigidTransformation(source_it, target_it, transformation_matrix);
+  ConstCloudIterator<PointSource> source_it (cloud_src, indices_src);
+  ConstCloudIterator<PointTarget> target_it (cloud_tgt, indices_tgt);
+  estimateRigidTransformation (source_it, target_it, transformation_matrix);
 }
 
 template <typename PointSource, typename PointTarget, typename Scalar>
 void
 TransformationEstimationDualQuaternion<PointSource, PointTarget, Scalar>::
-    estimateRigidTransformation(const pcl::PointCloud<PointSource>& cloud_src,
-                                const pcl::PointCloud<PointTarget>& cloud_tgt,
-                                const pcl::Correspondences& correspondences,
-                                Matrix4& transformation_matrix) const
+    estimateRigidTransformation (const pcl::PointCloud<PointSource>& cloud_src,
+                                 const pcl::PointCloud<PointTarget>& cloud_tgt,
+                                 const pcl::Correspondences& correspondences,
+                                 Matrix4& transformation_matrix) const
 {
-  ConstCloudIterator<PointSource> source_it(cloud_src, correspondences, true);
-  ConstCloudIterator<PointTarget> target_it(cloud_tgt, correspondences, false);
-  estimateRigidTransformation(source_it, target_it, transformation_matrix);
+  ConstCloudIterator<PointSource> source_it (cloud_src, correspondences, true);
+  ConstCloudIterator<PointTarget> target_it (cloud_tgt, correspondences, false);
+  estimateRigidTransformation (source_it, target_it, transformation_matrix);
 }
 
 template <typename PointSource, typename PointTarget, typename Scalar>
 inline void
 TransformationEstimationDualQuaternion<PointSource, PointTarget, Scalar>::
-    estimateRigidTransformation(ConstCloudIterator<PointSource>& source_it,
-                                ConstCloudIterator<PointTarget>& target_it,
-                                Matrix4& transformation_matrix) const
+    estimateRigidTransformation (ConstCloudIterator<PointSource>& source_it,
+                                 ConstCloudIterator<PointTarget>& target_it,
+                                 Matrix4& transformation_matrix) const
 {
-  const int npts = static_cast<int>(source_it.size());
+  const int npts = static_cast<int> (source_it.size());
 
   transformation_matrix.setIdentity();
 
@@ -194,30 +194,30 @@ TransformationEstimationDualQuaternion<PointSource, PointTarget, Scalar>::
   C2 *= 2.0;
 
   const Eigen::Matrix<double, 4, 4> A =
-      (0.25 / static_cast<double>(npts)) * C2.transpose() * C2 - C1;
+      (0.25 / static_cast<double> (npts)) * C2.transpose() * C2 - C1;
 
-  const Eigen::EigenSolver<Eigen::Matrix<double, 4, 4>> es(A);
+  const Eigen::EigenSolver<Eigen::Matrix<double, 4, 4>> es (A);
 
   ptrdiff_t i;
-  es.eigenvalues().real().maxCoeff(&i);
-  const Eigen::Matrix<double, 4, 1> qmat = es.eigenvectors().col(i).real();
+  es.eigenvalues().real().maxCoeff (&i);
+  const Eigen::Matrix<double, 4, 1> qmat = es.eigenvectors().col (i).real();
   const Eigen::Matrix<double, 4, 1> smat =
-      -(0.5 / static_cast<double>(npts)) * C2 * qmat;
+      -(0.5 / static_cast<double> (npts)) * C2 * qmat;
 
-  const Eigen::Quaternion<double> q(qmat(3), qmat(0), qmat(1), qmat(2));
-  const Eigen::Quaternion<double> s(smat(3), smat(0), smat(1), smat(2));
+  const Eigen::Quaternion<double> q (qmat (3), qmat (0), qmat (1), qmat (2));
+  const Eigen::Quaternion<double> s (smat (3), smat (0), smat (1), smat (2));
 
   const Eigen::Quaternion<double> t = s * q.conjugate();
 
-  const Eigen::Matrix<double, 3, 3> R(q.toRotationMatrix());
+  const Eigen::Matrix<double, 3, 3> R (q.toRotationMatrix());
 
   for (int i = 0; i < 3; ++i)
     for (int j = 0; j < 3; ++j)
-      transformation_matrix(i, j) = R(i, j);
+      transformation_matrix (i, j) = R (i, j);
 
-  transformation_matrix(0, 3) = -t.x();
-  transformation_matrix(1, 3) = -t.y();
-  transformation_matrix(2, 3) = -t.z();
+  transformation_matrix (0, 3) = -t.x();
+  transformation_matrix (1, 3) = -t.y();
+  transformation_matrix (2, 3) = -t.z();
 }
 
 } // namespace registration

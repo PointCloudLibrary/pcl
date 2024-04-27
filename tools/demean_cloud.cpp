@@ -48,26 +48,26 @@ using namespace pcl::console;
 void
 printHelp (int, char** argv)
 {
-  print_error("Syntax is: %s input.pcd output.pcd\n", argv[0]);
+  print_error ("Syntax is: %s input.pcd output.pcd\n", argv[0]);
 }
 
 bool
 loadCloud (const std::string& filename, pcl::PCLPointCloud2& cloud)
 {
   TicToc tt;
-  print_highlight("Loading ");
-  print_value("%s ", filename.c_str());
+  print_highlight ("Loading ");
+  print_value ("%s ", filename.c_str());
 
   tt.tic();
-  if (loadPCDFile(filename, cloud) < 0)
+  if (loadPCDFile (filename, cloud) < 0)
     return (false);
-  print_info("[done, ");
-  print_value("%g", tt.toc());
-  print_info(" ms : ");
-  print_value("%d", cloud.width * cloud.height);
-  print_info(" points]\n");
-  print_info("Available dimensions: ");
-  print_value("%s\n", pcl::getFieldsList(cloud).c_str());
+  print_info ("[done, ");
+  print_value ("%g", tt.toc());
+  print_info (" ms : ");
+  print_value ("%d", cloud.width * cloud.height);
+  print_info (" points]\n");
+  print_info ("Available dimensions: ");
+  print_value ("%s\n", pcl::getFieldsList (cloud).c_str());
 
   return (true);
 }
@@ -78,56 +78,57 @@ saveCloud (const std::string& filename, const pcl::PCLPointCloud2& cloud)
   TicToc tt;
   tt.tic();
 
-  print_highlight("Saving ");
-  print_value("%s ", filename.c_str());
+  print_highlight ("Saving ");
+  print_value ("%s ", filename.c_str());
 
   pcl::PCDWriter writer;
-  writer.writeBinaryCompressed(filename, cloud);
-  print_info("[done, ");
-  print_value("%g", tt.toc());
-  print_info(" ms : ");
-  print_value("%d", cloud.width * cloud.height);
-  print_info(" points]\n");
+  writer.writeBinaryCompressed (filename, cloud);
+  print_info ("[done, ");
+  print_value ("%g", tt.toc());
+  print_info (" ms : ");
+  print_value ("%d", cloud.width * cloud.height);
+  print_info (" points]\n");
 }
 
 /* ---[ */
 int
 main (int argc, char** argv)
 {
-  print_info(
+  print_info (
       "Convert a PCD file to a de-meaned PCD file. For more information, use: %s -h\n",
       argv[0]);
 
   if (argc < 3) {
-    printHelp(argc, argv);
+    printHelp (argc, argv);
     return (-1);
   }
 
   // Parse the command line arguments for .pcd files
-  std::vector<int> pcd_file_indices = parse_file_extension_argument(argc, argv, ".pcd");
+  std::vector<int> pcd_file_indices =
+      parse_file_extension_argument (argc, argv, ".pcd");
   if (pcd_file_indices.size() != 2) {
-    print_error("Need one input and one output PCD file.\n");
+    print_error ("Need one input and one output PCD file.\n");
     return (-1);
   }
 
   // Load the first file
   pcl::PCLPointCloud2 cloud;
-  if (!loadCloud(argv[pcd_file_indices[0]], cloud))
+  if (!loadCloud (argv[pcd_file_indices[0]], cloud))
     return (-1);
 
   PointCloud<PointXYZ> cloud_xyz, cloud_xyz_demeaned;
-  fromPCLPointCloud2(cloud, cloud_xyz);
+  fromPCLPointCloud2 (cloud, cloud_xyz);
   Eigen::Vector4f centroid;
-  compute3DCentroid(cloud_xyz, centroid);
-  demeanPointCloud(cloud_xyz, centroid, cloud_xyz_demeaned);
+  compute3DCentroid (cloud_xyz, centroid);
+  demeanPointCloud (cloud_xyz, centroid, cloud_xyz_demeaned);
 
   pcl::PCLPointCloud2 cloud2_xyz_demeaned;
-  toPCLPointCloud2(cloud_xyz_demeaned, cloud2_xyz_demeaned);
+  toPCLPointCloud2 (cloud_xyz_demeaned, cloud2_xyz_demeaned);
   pcl::PCLPointCloud2 cloud_out;
-  concatenateFields(cloud, cloud2_xyz_demeaned, cloud_out);
+  concatenateFields (cloud, cloud2_xyz_demeaned, cloud_out);
 
   // Save cloud
-  saveCloud(argv[pcd_file_indices[1]], cloud_out);
+  saveCloud (argv[pcd_file_indices[1]], cloud_out);
 
   return (0);
 }

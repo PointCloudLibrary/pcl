@@ -45,7 +45,7 @@ namespace recognition {
 template <class T, typename REAL = float>
 class VoxelStructure {
 public:
-  inline VoxelStructure() : voxels_(nullptr) {}
+  inline VoxelStructure() : voxels_ (nullptr) {}
   inline virtual ~VoxelStructure() { this->clear(); }
 
   /** \brief Call this method before using an instance of this class. Parameter meaning
@@ -117,9 +117,9 @@ public:
   inline void
   computeVoxelCenter (const int id3[3], REAL center[3]) const
   {
-    center[0] = min_center_[0] + static_cast<float>(id3[0]) * spacing_[0];
-    center[1] = min_center_[1] + static_cast<float>(id3[1]) * spacing_[1];
-    center[2] = min_center_[2] + static_cast<float>(id3[2]) * spacing_[2];
+    center[0] = min_center_[0] + static_cast<float> (id3[0]) * spacing_[0];
+    center[1] = min_center_[1] + static_cast<float> (id3[1]) * spacing_[1];
+    center[2] = min_center_[2] + static_cast<float> (id3[2]) * spacing_[2];
   }
 
   /** \brief Returns the total number of voxels. */

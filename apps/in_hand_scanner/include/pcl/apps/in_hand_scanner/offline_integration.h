@@ -81,7 +81,7 @@ public:
   using Self = pcl::ihs::OfflineIntegration;
 
   /** \brief Constructor. */
-  explicit OfflineIntegration(Base* parent = nullptr);
+  explicit OfflineIntegration (Base* parent = nullptr);
 
   /** \brief Destructor. */
   ~OfflineIntegration() override;

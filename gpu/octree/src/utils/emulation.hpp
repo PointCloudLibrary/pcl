@@ -47,8 +47,8 @@ struct Emulation {
   static __forceinline__ __device__ int
   Ballot (int predicate, volatile int* cta_buffer)
   {
-    pcl::utils::ignore(cta_buffer);
-    return __ballot(predicate);
+    pcl::utils::ignore (cta_buffer);
+    return __ballot (predicate);
   }
 };
 } // namespace device

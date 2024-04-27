@@ -82,7 +82,7 @@ public:
                                  const pcl::Indices& indices_src,
                                  const pcl::PointCloud<PointTarget>& cloud_tgt,
                                  const pcl::Indices& indices_tgt) {
-      updateIntermediateCloud(cloud_src, indices_src, cloud_tgt, indices_tgt);
+      updateIntermediateCloud (cloud_src, indices_src, cloud_tgt, indices_tgt);
     };
 
     // Flag that no visualizer update was done. It indicates to visualizer update
@@ -96,7 +96,7 @@ public:
 
     // Register the local callback function to the registration algorithm callback
     // function
-    registration.registerVisualizationCallback(this->update_visualizer_);
+    registration.registerVisualizationCallback (this->update_visualizer_);
 
     return true;
   }
@@ -159,7 +159,7 @@ private:
   inline std::string
   getIndexedName (std::string& root_name, std::size_t& id)
   {
-    return root_name + std::to_string(id);
+    return root_name + std::to_string (id);
   }
 
   /** \brief The registration viewer. */
@@ -173,10 +173,10 @@ private:
   std::string registration_method_name_;
 
   /** \brief Callback function linked to pcl::Registration::update_visualizer_ */
-  std::function<void(const pcl::PointCloud<PointSource>& cloud_src,
-                     const pcl::Indices& indices_src,
-                     const pcl::PointCloud<PointTarget>& cloud_tgt,
-                     const pcl::Indices& indices_tgt)>
+  std::function<void (const pcl::PointCloud<PointSource>& cloud_src,
+                      const pcl::Indices& indices_src,
+                      const pcl::PointCloud<PointTarget>& cloud_tgt,
+                      const pcl::Indices& indices_tgt)>
       update_visualizer_;
 
   /** \brief Updates source and target point clouds only for the first update call. */

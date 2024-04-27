@@ -85,20 +85,20 @@ struct ScanParameters {
 vtkPolyData*
 loadDataSet (const char* file_name)
 {
-  std::string extension = pcl_fs::path(file_name).extension().string();
+  std::string extension = pcl_fs::path (file_name).extension().string();
   if (extension == ".ply") {
     vtkPLYReader* reader = vtkPLYReader::New();
-    reader->SetFileName(file_name);
+    reader->SetFileName (file_name);
     reader->Update();
     return (reader->GetOutput());
   }
   if (extension == ".vtk") {
     vtkPolyDataReader* reader = vtkPolyDataReader::New();
-    reader->SetFileName(file_name);
+    reader->SetFileName (file_name);
     reader->Update();
     return (reader->GetOutput());
   }
-  PCL_ERROR("Needs a VTK/PLY file to continue.\n");
+  PCL_ERROR ("Needs a VTK/PLY file to continue.\n");
   return (nullptr);
 }
 
@@ -106,8 +106,8 @@ int
 main (int argc, char** argv)
 {
   if (argc < 2) {
-    PCL_INFO("Usage %s [options] <model.ply | model.vtk>\n", argv[0]);
-    PCL_INFO(
+    PCL_INFO ("Usage %s [options] <model.ply | model.vtk>\n", argv[0]);
+    PCL_INFO (
         " * where options are:\n"
         "         -object_coordinates <0|1> : save the dataset in object coordinates "
         "(1) or camera coordinates (0)\n"
@@ -130,65 +130,65 @@ main (int argc, char** argv)
 
   // Parse the command line arguments for .vtk or .ply files
   std::vector<int> p_file_indices_vtk =
-      console::parse_file_extension_argument(argc, argv, ".vtk");
+      console::parse_file_extension_argument (argc, argv, ".vtk");
   std::vector<int> p_file_indices_ply =
-      console::parse_file_extension_argument(argc, argv, ".ply");
+      console::parse_file_extension_argument (argc, argv, ".ply");
   bool object_coordinates = true;
-  console::parse_argument(argc, argv, "-object_coordinates", object_coordinates);
+  console::parse_argument (argc, argv, "-object_coordinates", object_coordinates);
   bool single_view = false;
-  console::parse_argument(argc, argv, "-single_view", single_view);
+  console::parse_argument (argc, argv, "-single_view", single_view);
   double vx = 0, vy = 0, vz = 0;
-  console::parse_3x_arguments(argc, argv, "-view_point", vx, vy, vz);
+  console::parse_3x_arguments (argc, argv, "-view_point", vx, vy, vz);
   double tx = 0, ty = 0, tz = 0;
-  console::parse_3x_arguments(argc, argv, "-target_point", tx, ty, tz);
+  console::parse_3x_arguments (argc, argv, "-target_point", tx, ty, tz);
   int organized = 0;
-  console::parse_argument(argc, argv, "-organized", organized);
+  console::parse_argument (argc, argv, "-organized", organized);
   double scale = 1;
-  console::parse_argument(argc, argv, "-scale", scale);
+  console::parse_argument (argc, argv, "-scale", scale);
 
   if (organized)
-    PCL_INFO("Saving an organized dataset.\n");
+    PCL_INFO ("Saving an organized dataset.\n");
   else
-    PCL_INFO("Saving an unorganized dataset.\n");
+    PCL_INFO ("Saving an unorganized dataset.\n");
 
   vtkSmartPointer<vtkPolyData> data;
   // Loading PLY/VTK file
   if (p_file_indices_ply.empty() && p_file_indices_vtk.empty()) {
-    PCL_ERROR("Error: no .PLY or .VTK files given!\n");
+    PCL_ERROR ("Error: no .PLY or .VTK files given!\n");
     return (-1);
   }
 
   std::string filename;
   if (!p_file_indices_ply.empty())
-    filename = argv[p_file_indices_ply.at(0)];
+    filename = argv[p_file_indices_ply.at (0)];
   else
-    filename = argv[p_file_indices_vtk.at(0)];
+    filename = argv[p_file_indices_vtk.at (0)];
 
-  data = loadDataSet(filename.c_str());
+  data = loadDataSet (filename.c_str());
 
-  PCL_INFO("Loaded model with %d vertices/points.\n", data->GetNumberOfPoints());
+  PCL_INFO ("Loaded model with %d vertices/points.\n", data->GetNumberOfPoints());
 
   // Default scan parameters
   ScanParameters sp;
   sp.nr_scans = 900;
-  console::parse_argument(argc, argv, "-nr_scans", sp.nr_scans);
+  console::parse_argument (argc, argv, "-nr_scans", sp.nr_scans);
   sp.nr_points_in_scans = 900;
-  console::parse_argument(argc, argv, "-pts_in_scan", sp.nr_points_in_scans);
+  console::parse_argument (argc, argv, "-pts_in_scan", sp.nr_points_in_scans);
   sp.max_dist = 30000; // maximum distance (in mm)
   sp.vert_res = 0.25;
-  console::parse_argument(argc, argv, "-vert_res", sp.vert_res);
+  console::parse_argument (argc, argv, "-vert_res", sp.vert_res);
   sp.hor_res = 0.25;
-  console::parse_argument(argc, argv, "-hor_res", sp.hor_res);
+  console::parse_argument (argc, argv, "-hor_res", sp.hor_res);
 
   int noise_model = 0; // set the default noise level to none
-  console::parse_argument(argc, argv, "-noise", noise_model);
+  console::parse_argument (argc, argv, "-noise", noise_model);
   float noise_std = 0.05f; // 0.5 standard deviations by default
-  console::parse_argument(argc, argv, "-noise_std", noise_std);
+  console::parse_argument (argc, argv, "-noise_std", noise_std);
   if (noise_model)
-    PCL_INFO("Adding Gaussian noise to the final model with %f x std_dev.\n",
-             noise_std);
+    PCL_INFO ("Adding Gaussian noise to the final model with %f x std_dev.\n",
+              noise_std);
   else
-    PCL_INFO("Not adding any noise to the final model.\n");
+    PCL_INFO ("Not adding any noise to the final model.\n");
 
   int subdiv_level = 1;
   double scan_dist = 3;
@@ -196,10 +196,10 @@ main (int argc, char** argv)
   char seq[256];
 
   // Compute start/stop for vertical and horizontal
-  double vert_start = -(static_cast<double>(sp.nr_scans - 1) / 2.0) * sp.vert_res;
+  double vert_start = -(static_cast<double> (sp.nr_scans - 1) / 2.0) * sp.vert_res;
   double vert_end = +((sp.nr_scans - 1) * sp.vert_res) + vert_start;
   double hor_start =
-      -(static_cast<double>(sp.nr_points_in_scans - 1) / 2.0) * sp.hor_res;
+      -(static_cast<double> (sp.nr_points_in_scans - 1) / 2.0) * sp.hor_res;
   double hor_end = +((sp.nr_points_in_scans - 1) * sp.hor_res) + hor_start;
 
   // Prepare the point cloud data
@@ -207,12 +207,12 @@ main (int argc, char** argv)
 
   // Prepare the leaves for downsampling
   pcl::VoxelGrid<pcl::PointWithViewpoint> grid;
-  grid.setLeafSize(2.5, 2.5, 2.5); // @note: this value should be given in mm!
+  grid.setLeafSize (2.5, 2.5, 2.5); // @note: this value should be given in mm!
 
   // Reset and set a random seed for the Global Random Number Generator
   std::random_device rd;
-  std::mt19937 rng(rd());
-  std::normal_distribution<float> nd(0.0f, noise_std * noise_std);
+  std::mt19937 rng (rd());
+  std::normal_distribution<float> nd (0.0f, noise_std * noise_std);
 
   std::vector<std::string> st;
   // Virtual camera parameters
@@ -236,30 +236,30 @@ main (int argc, char** argv)
   // of the icosahedron into smaller triangles)
   vtkSmartPointer<vtkLoopSubdivisionFilter> subdivide =
       vtkSmartPointer<vtkLoopSubdivisionFilter>::New();
-  subdivide->SetNumberOfSubdivisions(subdiv_level);
-  subdivide->SetInputConnection(icosa->GetOutputPort());
+  subdivide->SetNumberOfSubdivisions (subdiv_level);
+  subdivide->SetInputConnection (icosa->GetOutputPort());
   subdivide->Update();
 
   // Get camera positions
   vtkPolyData* sphere = subdivide->GetOutput();
   if (!single_view)
-    PCL_INFO("Created %ld camera position points.\n", sphere->GetNumberOfPoints());
+    PCL_INFO ("Created %ld camera position points.\n", sphere->GetNumberOfPoints());
 
   // Build a spatial locator for our dataset
   vtkSmartPointer<vtkCellLocator> tree = vtkSmartPointer<vtkCellLocator>::New();
-  tree->SetDataSet(data);
+  tree->SetDataSet (data);
   tree->CacheCellBoundsOn();
-  tree->SetTolerance(0.0);
-  tree->SetNumberOfCellsPerBucket(1);
+  tree->SetTolerance (0.0);
+  tree->SetNumberOfCellsPerBucket (1);
   tree->AutomaticOn();
   tree->BuildLocator();
   tree->Update();
 
   // Get the min-max bounds of data
-  data->GetBounds(bounds);
+  data->GetBounds (bounds);
 
   // if single view is required iterate over loop only once
-  int number_of_points = static_cast<int>(sphere->GetNumberOfPoints());
+  int number_of_points = static_cast<int> (sphere->GetNumberOfPoints());
   if (single_view)
     number_of_points = 1;
 
@@ -267,12 +267,12 @@ main (int argc, char** argv)
     // Clear cloud for next view scan
     cloud.clear();
 
-    sphere->GetPoint(i, eye);
-    if (std::abs(eye[0]) < EPS)
+    sphere->GetPoint (i, eye);
+    if (std::abs (eye[0]) < EPS)
       eye[0] = 0;
-    if (std::abs(eye[1]) < EPS)
+    if (std::abs (eye[1]) < EPS)
       eye[1] = 0;
-    if (std::abs(eye[2]) < EPS)
+    if (std::abs (eye[2]) < EPS)
       eye[2] = 0;
 
     viewray[0] = -eye[0];
@@ -289,11 +289,11 @@ main (int argc, char** argv)
       viewray[0] = tx - vx;
       viewray[1] = ty - vy;
       viewray[2] = tz - vz;
-      double len = sqrt(viewray[0] * viewray[0] + viewray[1] * viewray[1] +
-                        viewray[2] * viewray[2]);
+      double len = sqrt (viewray[0] * viewray[0] + viewray[1] * viewray[1] +
+                         viewray[2] * viewray[2]);
       if (len == 0) {
-        PCL_ERROR("The single_view option is enabled but the view_point and the "
-                  "target_point are the same!\n");
+        PCL_ERROR ("The single_view option is enabled but the view_point and the "
+                   "target_point are the same!\n");
         break;
       }
       viewray[0] /= len;
@@ -302,32 +302,32 @@ main (int argc, char** argv)
     }
 
     if ((viewray[0] == 0) && (viewray[1] == 0))
-      vtkMath::Cross(viewray, x_axis, right);
+      vtkMath::Cross (viewray, x_axis, right);
     else
-      vtkMath::Cross(viewray, z_axis, right);
-    if (std::abs(right[0]) < EPS)
+      vtkMath::Cross (viewray, z_axis, right);
+    if (std::abs (right[0]) < EPS)
       right[0] = 0;
-    if (std::abs(right[1]) < EPS)
+    if (std::abs (right[1]) < EPS)
       right[1] = 0;
-    if (std::abs(right[2]) < EPS)
+    if (std::abs (right[2]) < EPS)
       right[2] = 0;
 
-    vtkMath::Cross(viewray, right, up);
-    if (std::abs(up[0]) < EPS)
+    vtkMath::Cross (viewray, right, up);
+    if (std::abs (up[0]) < EPS)
       up[0] = 0;
-    if (std::abs(up[1]) < EPS)
+    if (std::abs (up[1]) < EPS)
       up[1] = 0;
-    if (std::abs(up[2]) < EPS)
+    if (std::abs (up[2]) < EPS)
       up[2] = 0;
 
     if (!object_coordinates) {
       // Normalization
       double right_len =
-          sqrt(right[0] * right[0] + right[1] * right[1] + right[2] * right[2]);
+          sqrt (right[0] * right[0] + right[1] * right[1] + right[2] * right[2]);
       right[0] /= right_len;
       right[1] /= right_len;
       right[2] /= right_len;
-      double up_len = sqrt(up[0] * up[0] + up[1] * up[1] + up[2] * up[2]);
+      double up_len = sqrt (up[0] * up[0] + up[1] * up[1] + up[2] * up[2]);
       up[0] /= up_len;
       up[1] /= up_len;
       up[2] /= up_len;
@@ -345,21 +345,21 @@ main (int argc, char** argv)
     vtkGeneralTransform* tr2 = vtkGeneralTransform::New();
 
     // right = viewray x up
-    vtkMath::Cross(viewray, up, right);
+    vtkMath::Cross (viewray, up, right);
 
     // Sweep vertically
     for (double vert = vert_start; vert <= vert_end; vert += sp.vert_res) {
       tr1->Identity();
-      tr1->RotateWXYZ(vert, right);
-      tr1->InternalTransformPoint(viewray, temp_beam);
+      tr1->RotateWXYZ (vert, right);
+      tr1->InternalTransformPoint (viewray, temp_beam);
 
       // Sweep horizontally
       for (double hor = hor_start; hor <= hor_end; hor += sp.hor_res) {
         // Create a beam vector with (lat,long) angles (vert, hor) with the viewray
         tr2->Identity();
-        tr2->RotateWXYZ(hor, up);
-        tr2->InternalTransformPoint(temp_beam, beam);
-        vtkMath::Normalize(beam);
+        tr2->RotateWXYZ (hor, up);
+        tr2->InternalTransformPoint (temp_beam, beam);
+        vtkMath::Normalize (beam);
 
         // Find point at max range: p = eye + beam * max_dist
         for (int d = 0; d < 3; d++)
@@ -367,37 +367,37 @@ main (int argc, char** argv)
 
         // Put p_coords into laser scan at packetid = vert, scan id = hor
         vtkIdType cellId;
-        if (tree->IntersectWithLine(eye, p, 0, t, x, p_coords, subId, cellId)) {
+        if (tree->IntersectWithLine (eye, p, 0, t, x, p_coords, subId, cellId)) {
           pcl::PointWithViewpoint pt;
           if (object_coordinates) {
-            pt.x = static_cast<float>(x[0] * scale);
-            pt.y = static_cast<float>(x[1] * scale);
-            pt.z = static_cast<float>(x[2] * scale);
-            pt.vp_x = static_cast<float>(eye[0]);
-            pt.vp_y = static_cast<float>(eye[1]);
-            pt.vp_z = static_cast<float>(eye[2]);
+            pt.x = static_cast<float> (x[0] * scale);
+            pt.y = static_cast<float> (x[1] * scale);
+            pt.z = static_cast<float> (x[2] * scale);
+            pt.vp_x = static_cast<float> (eye[0]);
+            pt.vp_y = static_cast<float> (eye[1]);
+            pt.vp_z = static_cast<float> (eye[2]);
           }
           else {
             // z axis is the viewray
             // y axis is up
             // x axis is -right (negative because z*y=-x but viewray*up=right)
-            pt.x = static_cast<float>(
+            pt.x = static_cast<float> (
                 (-right[0] * x[1] + up[0] * x[2] + viewray[0] * x[0] + eye[0]) * scale);
-            pt.y = static_cast<float>(
+            pt.y = static_cast<float> (
                 (-right[1] * x[1] + up[1] * x[2] + viewray[1] * x[0] + eye[1]) * scale);
-            pt.z = static_cast<float>(
+            pt.z = static_cast<float> (
                 (-right[2] * x[1] + up[2] * x[2] + viewray[2] * x[0] + eye[2]) * scale);
             pt.vp_x = pt.vp_y = pt.vp_z = 0.0f;
           }
-          cloud.push_back(pt);
+          cloud.push_back (pt);
         }
         else if (organized) {
           pcl::PointWithViewpoint pt;
           pt.x = pt.y = pt.z = std::numeric_limits<float>::quiet_NaN();
-          pt.vp_x = static_cast<float>(eye[0]);
-          pt.vp_y = static_cast<float>(eye[1]);
-          pt.vp_z = static_cast<float>(eye[2]);
-          cloud.push_back(pt);
+          pt.vp_x = static_cast<float> (eye[0]);
+          pt.vp_y = static_cast<float> (eye[1]);
+          pt.vp_z = static_cast<float> (eye[2]);
+          cloud.push_back (pt);
         }
       } // Horizontal
     }   // Vertical
@@ -409,9 +409,9 @@ main (int argc, char** argv)
       switch (noise_model) {
       // Gaussian
       case 1: {
-        point.x += nd(rng);
-        point.y += nd(rng);
-        point.z += nd(rng);
+        point.x += nd (rng);
+        point.y += nd (rng);
+        point.z += nd (rng);
         break;
       }
       }
@@ -419,32 +419,32 @@ main (int argc, char** argv)
 
     // Downsample and remove silly point duplicates
     pcl::PointCloud<pcl::PointWithViewpoint> cloud_downsampled;
-    grid.setInputCloud(
-        pcl::make_shared<pcl::PointCloud<pcl::PointWithViewpoint>>(cloud));
+    grid.setInputCloud (
+        pcl::make_shared<pcl::PointCloud<pcl::PointWithViewpoint>> (cloud));
     // grid.filter (cloud_downsampled);
 
     // Saves the point cloud data to disk
-    sprintf(seq, "%d", i);
-    boost::trim(filename);
-    boost::split(st, filename, boost::is_any_of("/\\"), boost::token_compress_on);
+    sprintf (seq, "%d", i);
+    boost::trim (filename);
+    boost::split (st, filename, boost::is_any_of ("/\\"), boost::token_compress_on);
 
-    const std::string output_dir = st.at(st.size() - 1) + "_output";
+    const std::string output_dir = st.at (st.size() - 1) + "_output";
 
-    pcl_fs::path outpath(output_dir);
-    if (!pcl_fs::exists(outpath)) {
-      if (!pcl_fs::create_directories(outpath)) {
-        PCL_ERROR("Error creating directory %s.\n", output_dir.c_str());
+    pcl_fs::path outpath (output_dir);
+    if (!pcl_fs::exists (outpath)) {
+      if (!pcl_fs::create_directories (outpath)) {
+        PCL_ERROR ("Error creating directory %s.\n", output_dir.c_str());
         return (-1);
       }
-      PCL_INFO("Creating directory %s\n", output_dir.c_str());
+      PCL_INFO ("Creating directory %s\n", output_dir.c_str());
     }
 
     fname = output_dir + '/' + seq + ".pcd";
 
     if (organized) {
       cloud.height =
-          1 + static_cast<std::uint32_t>((vert_end - vert_start) / sp.vert_res);
-      cloud.width = 1 + static_cast<std::uint32_t>((hor_end - hor_start) / sp.hor_res);
+          1 + static_cast<std::uint32_t> ((vert_end - vert_start) / sp.vert_res);
+      cloud.width = 1 + static_cast<std::uint32_t> ((hor_end - hor_start) / sp.hor_res);
     }
     else {
       cloud.width = cloud.size();
@@ -452,12 +452,12 @@ main (int argc, char** argv)
     }
 
     pcl::PCDWriter writer;
-    PCL_INFO("Wrote %zu points (%d x %d) to %s\n",
-             static_cast<std::size_t>(cloud.size()),
-             cloud.width,
-             cloud.height,
-             fname.c_str());
-    writer.writeBinaryCompressed(fname, cloud);
+    PCL_INFO ("Wrote %zu points (%d x %d) to %s\n",
+              static_cast<std::size_t> (cloud.size()),
+              cloud.width,
+              cloud.height,
+              fname.c_str());
+    writer.writeBinaryCompressed (fname, cloud);
   } // sphere
   return (0);
 }

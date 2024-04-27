@@ -45,7 +45,7 @@
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointNT, typename PointOutT>
 bool
-pcl::PFHRGBEstimation<PointInT, PointNT, PointOutT>::computeRGBPairFeatures(
+pcl::PFHRGBEstimation<PointInT, PointNT, PointOutT>::computeRGBPairFeatures (
     const pcl::PointCloud<PointInT>& cloud,
     const pcl::PointCloud<PointNT>& normals,
     int p_idx,
@@ -58,28 +58,28 @@ pcl::PFHRGBEstimation<PointInT, PointNT, PointOutT>::computeRGBPairFeatures(
     float& f6,
     float& f7)
 {
-  Eigen::Vector4i colors1(cloud[p_idx].r, cloud[p_idx].g, cloud[p_idx].b, 0),
-      colors2(cloud[q_idx].r, cloud[q_idx].g, cloud[q_idx].b, 0);
-  pcl::computeRGBPairFeatures(cloud[p_idx].getVector4fMap(),
-                              normals[p_idx].getNormalVector4fMap(),
-                              colors1,
-                              cloud[q_idx].getVector4fMap(),
-                              normals[q_idx].getNormalVector4fMap(),
-                              colors2,
-                              f1,
-                              f2,
-                              f3,
-                              f4,
-                              f5,
-                              f6,
-                              f7);
+  Eigen::Vector4i colors1 (cloud[p_idx].r, cloud[p_idx].g, cloud[p_idx].b, 0),
+      colors2 (cloud[q_idx].r, cloud[q_idx].g, cloud[q_idx].b, 0);
+  pcl::computeRGBPairFeatures (cloud[p_idx].getVector4fMap(),
+                               normals[p_idx].getNormalVector4fMap(),
+                               colors1,
+                               cloud[q_idx].getVector4fMap(),
+                               normals[q_idx].getNormalVector4fMap(),
+                               colors2,
+                               f1,
+                               f2,
+                               f3,
+                               f4,
+                               f5,
+                               f6,
+                               f7);
   return (true);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointNT, typename PointOutT>
 void
-pcl::PFHRGBEstimation<PointInT, PointNT, PointOutT>::computePointPFHRGBSignature(
+pcl::PFHRGBEstimation<PointInT, PointNT, PointOutT>::computePointPFHRGBSignature (
     const pcl::PointCloud<PointInT>& cloud,
     const pcl::PointCloud<PointNT>& normals,
     const pcl::Indices& indices,
@@ -93,7 +93,7 @@ pcl::PFHRGBEstimation<PointInT, PointNT, PointOutT>::computePointPFHRGBSignature
 
   // Factorization constant
   float hist_incr =
-      100.0f / static_cast<float>(indices.size() * (indices.size() - 1) / 2);
+      100.0f / static_cast<float> (indices.size() * (indices.size() - 1) / 2);
 
   // Iterate over all the points in the neighborhood
   for (const auto& index_i : indices) {
@@ -103,34 +103,34 @@ pcl::PFHRGBEstimation<PointInT, PointNT, PointOutT>::computePointPFHRGBSignature
         continue;
 
       // Compute the pair NNi to NNj
-      if (!computeRGBPairFeatures(cloud,
-                                  normals,
-                                  index_i,
-                                  index_j,
-                                  pfhrgb_tuple_[0],
-                                  pfhrgb_tuple_[1],
-                                  pfhrgb_tuple_[2],
-                                  pfhrgb_tuple_[3],
-                                  pfhrgb_tuple_[4],
-                                  pfhrgb_tuple_[5],
-                                  pfhrgb_tuple_[6]))
+      if (!computeRGBPairFeatures (cloud,
+                                   normals,
+                                   index_i,
+                                   index_j,
+                                   pfhrgb_tuple_[0],
+                                   pfhrgb_tuple_[1],
+                                   pfhrgb_tuple_[2],
+                                   pfhrgb_tuple_[3],
+                                   pfhrgb_tuple_[4],
+                                   pfhrgb_tuple_[5],
+                                   pfhrgb_tuple_[6]))
         continue;
 
       // Normalize the f1, f2, f3, f5, f6, f7 features and push them in the histogram
-      f_index_[0] =
-          static_cast<int>(std::floor(nr_split * ((pfhrgb_tuple_[0] + M_PI) * d_pi_)));
+      f_index_[0] = static_cast<int> (
+          std::floor (nr_split * ((pfhrgb_tuple_[0] + M_PI) * d_pi_)));
       // @TODO: confirm "not to do for i == 3"
       for (int i = 1; i < 3; ++i) {
         const float feature_value = nr_split * ((pfhrgb_tuple_[i] + 1.0) * 0.5);
-        f_index_[i] = static_cast<int>(std::floor(feature_value));
+        f_index_[i] = static_cast<int> (std::floor (feature_value));
       }
       // color ratios are in [-1, 1]
       for (int i = 4; i < 7; ++i) {
         const float feature_value = nr_split * ((pfhrgb_tuple_[i] + 1.0) * 0.5);
-        f_index_[i] = static_cast<int>(std::floor(feature_value));
+        f_index_[i] = static_cast<int> (std::floor (feature_value));
       }
       for (auto& feature : f_index_) {
-        feature = std::min(nr_split - 1, std::max(0, feature));
+        feature = std::min (nr_split - 1, std::max (0, feature));
       }
 
       // Copy into the histogram
@@ -157,29 +157,30 @@ pcl::PFHRGBEstimation<PointInT, PointNT, PointOutT>::computePointPFHRGBSignature
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointNT, typename PointOutT>
 void
-pcl::PFHRGBEstimation<PointInT, PointNT, PointOutT>::computeFeature(
+pcl::PFHRGBEstimation<PointInT, PointNT, PointOutT>::computeFeature (
     PointCloudOut& output)
 {
   /// nr_subdiv^3 for RGB and nr_subdiv^3 for the angular features
-  pfhrgb_histogram_.setZero(2 * nr_subdiv_ * nr_subdiv_ * nr_subdiv_);
-  pfhrgb_tuple_.setZero(7);
+  pfhrgb_histogram_.setZero (2 * nr_subdiv_ * nr_subdiv_ * nr_subdiv_);
+  pfhrgb_tuple_.setZero (7);
 
   // Allocate enough space to hold the results
   // \note This resize is irrelevant for a radiusSearch ().
-  pcl::Indices nn_indices(k_);
-  std::vector<float> nn_dists(k_);
+  pcl::Indices nn_indices (k_);
+  std::vector<float> nn_dists (k_);
 
   // Iterating over the entire index vector
   for (std::size_t idx = 0; idx < indices_->size(); ++idx) {
-    this->searchForNeighbors((*indices_)[idx], search_parameter_, nn_indices, nn_dists);
+    this->searchForNeighbors (
+        (*indices_)[idx], search_parameter_, nn_indices, nn_dists);
 
     // Estimate the PFH signature at each patch
-    computePointPFHRGBSignature(
+    computePointPFHRGBSignature (
         *surface_, *normals_, nn_indices, nr_subdiv_, pfhrgb_histogram_);
 
-    std::copy(pfhrgb_histogram_.data(),
-              pfhrgb_histogram_.data() + pfhrgb_histogram_.size(),
-              output[idx].histogram);
+    std::copy (pfhrgb_histogram_.data(),
+               pfhrgb_histogram_.data() + pfhrgb_histogram_.size(),
+               output[idx].histogram);
   }
 }
 

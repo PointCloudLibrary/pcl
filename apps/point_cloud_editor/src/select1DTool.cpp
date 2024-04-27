@@ -44,12 +44,12 @@
 
 #include <algorithm>
 
-Select1DTool::Select1DTool(SelectionPtr selection_ptr, CloudPtr cloud_ptr)
-: selection_ptr_(std::move(selection_ptr)), cloud_ptr_(std::move(cloud_ptr))
+Select1DTool::Select1DTool (SelectionPtr selection_ptr, CloudPtr cloud_ptr)
+: selection_ptr_ (std::move (selection_ptr)), cloud_ptr_ (std::move (cloud_ptr))
 {}
 
 void
-Select1DTool::end(int x, int y, BitMask modifiers, BitMask buttons)
+Select1DTool::end (int x, int y, BitMask modifiers, BitMask buttons)
 {
   if (!cloud_ptr_)
     return;
@@ -62,26 +62,26 @@ Select1DTool::end(int x, int y, BitMask modifiers, BitMask buttons)
     unsigned int id;
   } u;
   // XXX - The following assumes sizeof(unsigned int) == 4 bytes
-  glPushAttrib(GL_COLOR_BUFFER_BIT | GL_PIXEL_MODE_BIT | GL_HINT_BIT | GL_LINE_BIT |
-               GL_POINT_BIT);
+  glPushAttrib (GL_COLOR_BUFFER_BIT | GL_PIXEL_MODE_BIT | GL_HINT_BIT | GL_LINE_BIT |
+                GL_POINT_BIT);
   {
-    glDisable(GL_POINT_SMOOTH);
-    glDisable(GL_LINE_SMOOTH);
-    glDisable(GL_BLEND);
-    glClearColor(0, 0, 0, 0);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glDisable (GL_POINT_SMOOTH);
+    glDisable (GL_LINE_SMOOTH);
+    glDisable (GL_BLEND);
+    glClearColor (0, 0, 0, 0);
+    glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     GLint viewport[4];
-    glGetIntegerv(GL_VIEWPORT, viewport);
-    IncIndex inc(1); // start the indexing from 1, since the clear color is 0
+    glGetIntegerv (GL_VIEWPORT, viewport);
+    IncIndex inc (1); // start the indexing from 1, since the clear color is 0
     unsigned int* index_arr = new unsigned int[cloud_ptr_->size()];
-    std::generate_n(index_arr, cloud_ptr_->size(), inc);
+    std::generate_n (index_arr, cloud_ptr_->size(), inc);
 
-    glPushClientAttrib(GL_CLIENT_VERTEX_ARRAY_BIT);
+    glPushClientAttrib (GL_CLIENT_VERTEX_ARRAY_BIT);
     {
-      glEnableClientState(GL_COLOR_ARRAY);
-      glColorPointer(4, GL_UNSIGNED_BYTE, 0, index_arr);
-      cloud_ptr_->draw(true);
-      glReadPixels(x, viewport[3] - y, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, u.pixel);
+      glEnableClientState (GL_COLOR_ARRAY);
+      glColorPointer (4, GL_UNSIGNED_BYTE, 0, index_arr);
+      cloud_ptr_->draw (true);
+      glReadPixels (x, viewport[3] - y, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, u.pixel);
     }
     glPopClientAttrib();
     delete[] index_arr;
@@ -95,14 +95,14 @@ Select1DTool::end(int x, int y, BitMask modifiers, BitMask buttons)
   index = u.id - 1;
 
   if (modifiers & SHFT) {
-    selection_ptr_->addIndex(index);
+    selection_ptr_->addIndex (index);
   }
   else if (modifiers & CTRL) {
-    selection_ptr_->removeIndex(index);
+    selection_ptr_->removeIndex (index);
   }
   else {
     selection_ptr_->clear();
-    selection_ptr_->addIndex(index);
+    selection_ptr_->addIndex (index);
   }
-  cloud_ptr_->setSelection(selection_ptr_);
+  cloud_ptr_->setSelection (selection_ptr_);
 }

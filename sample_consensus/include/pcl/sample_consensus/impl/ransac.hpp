@@ -55,11 +55,11 @@
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 bool
-pcl::RandomSampleConsensus<PointT>::computeModel(int)
+pcl::RandomSampleConsensus<PointT>::computeModel (int)
 {
   // Warn and exit if no threshold was set
   if (threshold_ == std::numeric_limits<double>::max()) {
-    PCL_ERROR("[pcl::RandomSampleConsensus::computeModel] No threshold set!\n");
+    PCL_ERROR ("[pcl::RandomSampleConsensus::computeModel] No threshold set!\n");
     return (false);
   }
 
@@ -68,11 +68,11 @@ pcl::RandomSampleConsensus<PointT>::computeModel(int)
   double k = std::numeric_limits<double>::max();
 
   Indices selection;
-  Eigen::VectorXf model_coefficients(sac_model_->getModelSize());
+  Eigen::VectorXf model_coefficients (sac_model_->getModelSize());
 
-  const double log_probability = std::log(1.0 - probability_);
+  const double log_probability = std::log (1.0 - probability_);
   const double one_over_indices =
-      1.0 / static_cast<double>(sac_model_->getIndices()->size());
+      1.0 / static_cast<double> (sac_model_->getIndices()->size());
 
   unsigned skipped_count = 0;
 
@@ -85,14 +85,15 @@ pcl::RandomSampleConsensus<PointT>::computeModel(int)
 #if OPENMP_AVAILABLE_RANSAC
     if (threads == 0) {
       threads = omp_get_num_procs();
-      PCL_DEBUG("[pcl::RandomSampleConsensus::computeModel] Automatic number of "
-                "threads requested, choosing %i threads.\n",
-                threads);
+      PCL_DEBUG ("[pcl::RandomSampleConsensus::computeModel] Automatic number of "
+                 "threads requested, choosing %i threads.\n",
+                 threads);
     }
 #else
     // Parallelization desired, but not available
-    PCL_WARN("[pcl::RandomSampleConsensus::computeModel] Parallelization is requested, "
-             "but OpenMP 3.1 is not available! Continuing without parallelization.\n");
+    PCL_WARN (
+        "[pcl::RandomSampleConsensus::computeModel] Parallelization is requested, "
+        "but OpenMP 3.1 is not available! Continuing without parallelization.\n");
     threads = -1;
 #endif
   }
@@ -109,12 +110,14 @@ pcl::RandomSampleConsensus<PointT>::computeModel(int)
 #if OPENMP_AVAILABLE_RANSAC
     if (omp_in_parallel())
 #pragma omp master
-      PCL_DEBUG("[pcl::RandomSampleConsensus::computeModel] Computing in parallel with "
-                "up to %i threads.\n",
-                omp_get_num_threads());
+      PCL_DEBUG (
+          "[pcl::RandomSampleConsensus::computeModel] Computing in parallel with "
+          "up to %i threads.\n",
+          omp_get_num_threads());
     else
 #endif
-      PCL_DEBUG("[pcl::RandomSampleConsensus::computeModel] Computing not parallel.\n");
+      PCL_DEBUG (
+          "[pcl::RandomSampleConsensus::computeModel] Computing not parallel.\n");
 
     // Iterate
     while (true) // infinite loop with four possible breaks
@@ -124,19 +127,19 @@ pcl::RandomSampleConsensus<PointT>::computeModel(int)
 #pragma omp critical(samples)
 #endif
       {
-        sac_model_->getSamples(
+        sac_model_->getSamples (
             iterations_, selection); // The random number generator used when choosing
                                      // the samples should not be called in parallel
       }
 
       if (selection.empty()) {
-        PCL_ERROR("[pcl::RandomSampleConsensus::computeModel] No samples could be "
-                  "selected!\n");
+        PCL_ERROR ("[pcl::RandomSampleConsensus::computeModel] No samples could be "
+                   "selected!\n");
         break;
       }
 
       // Search for inliers in the point cloud for the current plane model M
-      if (!sac_model_->computeModelCoefficients(
+      if (!sac_model_->computeModelCoefficients (
               selection, model_coefficients)) // This function has to be thread-safe
       {
         //++iterations_;
@@ -156,7 +159,7 @@ pcl::RandomSampleConsensus<PointT>::computeModel(int)
       // if (inliers.empty () && k > 1.0)
       //  continue;
 
-      std::size_t n_inliers_count = sac_model_->countWithinDistance(
+      std::size_t n_inliers_count = sac_model_->countWithinDistance (
           model_coefficients,
           threshold_); // This functions has to be thread-safe. Most work is done here
 
@@ -191,18 +194,19 @@ pcl::RandomSampleConsensus<PointT>::computeModel(int)
 
             // Compute the k parameter (k=std::log(z)/std::log(1-w^n))
             const double w =
-                static_cast<double>(n_best_inliers_count) * one_over_indices;
+                static_cast<double> (n_best_inliers_count) * one_over_indices;
             double p_outliers =
                 1.0 -
-                std::pow(w,
-                         static_cast<double>(
-                             selection.size())); // Probability that selection is
-                                                 // contaminated by at least one outlier
-            p_outliers = (std::max)(std::numeric_limits<double>::epsilon(),
-                                    p_outliers); // Avoid division by -Inf
-            p_outliers = (std::min)(1.0 - std::numeric_limits<double>::epsilon(),
-                                    p_outliers); // Avoid division by 0.
-            k = log_probability / std::log(p_outliers);
+                std::pow (
+                    w,
+                    static_cast<double> (
+                        selection.size())); // Probability that selection is
+                                            // contaminated by at least one outlier
+            p_outliers = (std::max) (std::numeric_limits<double>::epsilon(),
+                                     p_outliers); // Avoid division by -Inf
+            p_outliers = (std::min) (1.0 - std::numeric_limits<double>::epsilon(),
+                                     p_outliers); // Avoid division by 0.
+            k = log_probability / std::log (p_outliers);
           }
         } // omp critical
       }
@@ -218,43 +222,44 @@ pcl::RandomSampleConsensus<PointT>::computeModel(int)
 #endif
       k_tmp = k;
 #if OPENMP_AVAILABLE_RANSAC
-      PCL_DEBUG("[pcl::RandomSampleConsensus::computeModel] Trial %d out of %f: %u "
-                "inliers (best is: %u so far) (thread %d).\n",
-                iterations_tmp,
-                k_tmp,
-                n_inliers_count,
-                n_best_inliers_count_tmp,
-                omp_get_thread_num());
+      PCL_DEBUG ("[pcl::RandomSampleConsensus::computeModel] Trial %d out of %f: %u "
+                 "inliers (best is: %u so far) (thread %d).\n",
+                 iterations_tmp,
+                 k_tmp,
+                 n_inliers_count,
+                 n_best_inliers_count_tmp,
+                 omp_get_thread_num());
 #else
-      PCL_DEBUG("[pcl::RandomSampleConsensus::computeModel] Trial %d out of %f: %u "
-                "inliers (best is: %u so far).\n",
-                iterations_tmp,
-                k_tmp,
-                n_inliers_count,
-                n_best_inliers_count_tmp);
+      PCL_DEBUG ("[pcl::RandomSampleConsensus::computeModel] Trial %d out of %f: %u "
+                 "inliers (best is: %u so far).\n",
+                 iterations_tmp,
+                 k_tmp,
+                 n_inliers_count,
+                 n_best_inliers_count_tmp);
 #endif
       if (iterations_tmp > k_tmp)
         break;
       if (iterations_tmp > max_iterations_) {
-        PCL_DEBUG("[pcl::RandomSampleConsensus::computeModel] RANSAC reached the "
-                  "maximum number of trials.\n");
+        PCL_DEBUG ("[pcl::RandomSampleConsensus::computeModel] RANSAC reached the "
+                   "maximum number of trials.\n");
         break;
       }
     } // while
   }   // omp parallel
 
-  PCL_DEBUG("[pcl::RandomSampleConsensus::computeModel] Model: %lu size, %u inliers.\n",
-            model_.size(),
-            n_best_inliers_count);
+  PCL_DEBUG (
+      "[pcl::RandomSampleConsensus::computeModel] Model: %lu size, %u inliers.\n",
+      model_.size(),
+      n_best_inliers_count);
 
   if (model_.empty()) {
-    PCL_ERROR("[pcl::RandomSampleConsensus::computeModel] RANSAC found no model.\n");
+    PCL_ERROR ("[pcl::RandomSampleConsensus::computeModel] RANSAC found no model.\n");
     inliers_.clear();
     return (false);
   }
 
   // Get the set of inliers that correspond to the best model found so far
-  sac_model_->selectWithinDistance(model_coefficients_, threshold_, inliers_);
+  sac_model_->selectWithinDistance (model_coefficients_, threshold_, inliers_);
   return (true);
 }
 

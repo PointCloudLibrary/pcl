@@ -49,46 +49,46 @@ using namespace pcl::io;
 PointCloud<PointXYZ> cloud_source, cloud_target;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TEST(PCL, NormalDistributionsTransform)
+TEST (PCL, NormalDistributionsTransform)
 {
   using PointT = PointNormal;
-  PointCloud<PointT>::Ptr src(new PointCloud<PointT>);
-  copyPointCloud(cloud_source, *src);
-  PointCloud<PointT>::Ptr tgt(new PointCloud<PointT>);
-  copyPointCloud(cloud_target, *tgt);
+  PointCloud<PointT>::Ptr src (new PointCloud<PointT>);
+  copyPointCloud (cloud_source, *src);
+  PointCloud<PointT>::Ptr tgt (new PointCloud<PointT>);
+  copyPointCloud (cloud_target, *tgt);
   PointCloud<PointT> output;
 
   NormalDistributionsTransform<PointT, PointT> reg;
-  reg.setStepSize(0.05);
-  reg.setResolution(0.025f);
-  reg.setInputSource(src);
-  reg.setInputTarget(tgt);
-  reg.setMaximumIterations(50);
-  reg.setTransformationEpsilon(1e-8);
+  reg.setStepSize (0.05);
+  reg.setResolution (0.025f);
+  reg.setInputSource (src);
+  reg.setInputTarget (tgt);
+  reg.setMaximumIterations (50);
+  reg.setTransformationEpsilon (1e-8);
   // Register
-  reg.align(output);
-  EXPECT_EQ(output.size(), cloud_source.size());
-  EXPECT_LT(reg.getFitnessScore(), 0.001);
+  reg.align (output);
+  EXPECT_EQ (output.size(), cloud_source.size());
+  EXPECT_LT (reg.getFitnessScore(), 0.001);
 
   // Check again, for all possible caching schemes
   for (int iter = 0; iter < 4; iter++) {
-    bool force_cache = static_cast<bool>(iter / 2);
-    bool force_cache_reciprocal = static_cast<bool>(iter % 2);
-    pcl::search::KdTree<PointT>::Ptr tree(new pcl::search::KdTree<PointT>);
+    bool force_cache = static_cast<bool> (iter / 2);
+    bool force_cache_reciprocal = static_cast<bool> (iter % 2);
+    pcl::search::KdTree<PointT>::Ptr tree (new pcl::search::KdTree<PointT>);
     // Ensure that, when force_cache is not set, we are robust to the wrong input
     if (force_cache)
-      tree->setInputCloud(tgt);
-    reg.setSearchMethodTarget(tree, force_cache);
+      tree->setInputCloud (tgt);
+    reg.setSearchMethodTarget (tree, force_cache);
 
-    pcl::search::KdTree<PointT>::Ptr tree_recip(new pcl::search::KdTree<PointT>);
+    pcl::search::KdTree<PointT>::Ptr tree_recip (new pcl::search::KdTree<PointT>);
     if (force_cache_reciprocal)
-      tree_recip->setInputCloud(src);
-    reg.setSearchMethodSource(tree_recip, force_cache_reciprocal);
+      tree_recip->setInputCloud (src);
+    reg.setSearchMethodSource (tree_recip, force_cache_reciprocal);
 
     // Register
-    reg.align(output);
-    EXPECT_EQ(output.size(), cloud_source.size());
-    EXPECT_LT(reg.getFitnessScore(), 0.001);
+    reg.align (output);
+    EXPECT_EQ (output.size(), cloud_source.size());
+    EXPECT_LT (reg.getFitnessScore(), 0.001);
   }
 }
 
@@ -102,19 +102,19 @@ main (int argc, char** argv)
     return (-1);
   }
 
-  if (loadPCDFile(argv[1], cloud_source) < 0) {
+  if (loadPCDFile (argv[1], cloud_source) < 0) {
     std::cerr << "Failed to read test file. Please download `bun0.pcd` and pass its "
                  "path to the test."
               << std::endl;
     return (-1);
   }
-  if (loadPCDFile(argv[2], cloud_target) < 0) {
+  if (loadPCDFile (argv[2], cloud_target) < 0) {
     std::cerr << "Failed to read test file. Please download `bun4.pcd` and pass its "
                  "path to the test."
               << std::endl;
     return (-1);
   }
 
-  testing::InitGoogleTest(&argc, argv);
+  testing::InitGoogleTest (&argc, argv);
   return (RUN_ALL_TESTS());
 }

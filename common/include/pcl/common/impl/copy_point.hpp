@@ -79,9 +79,9 @@ struct CopyPointHelper<PointInT,
                        PointOutT,
                        std::enable_if_t<std::is_same<PointInT, PointOutT>::value>> {
   void
-  operator()(const PointInT& point_in, PointOutT& point_out) const
+  operator() (const PointInT& point_in, PointOutT& point_out) const
   {
-    memcpy(&point_out, &point_in, sizeof(PointInT));
+    memcpy (&point_out, &point_in, sizeof (PointInT));
   }
 };
 
@@ -100,13 +100,13 @@ struct CopyPointHelper<
                              pcl::traits::has_field<PointOutT, pcl::fields::rgba>>>>::
                          value>> {
   void
-  operator()(const PointInT& point_in, PointOutT& point_out) const
+  operator() (const PointInT& point_in, PointOutT& point_out) const
   {
     using FieldListInT = typename pcl::traits::fieldList<PointInT>::type;
     using FieldListOutT = typename pcl::traits::fieldList<PointOutT>::type;
     using FieldList = typename pcl::intersect<FieldListInT, FieldListOutT>::type;
-    pcl::for_each_type<FieldList>(
-        pcl::NdConcatenateFunctor<PointInT, PointOutT>(point_in, point_out));
+    pcl::for_each_type<FieldList> (
+        pcl::NdConcatenateFunctor<PointInT, PointOutT> (point_in, point_out));
   }
 };
 
@@ -123,7 +123,7 @@ struct CopyPointHelper<
                              pcl::traits::has_field<PointOutT, pcl::fields::rgb>>>>::
                          value>> {
   void
-  operator()(const PointInT& point_in, PointOutT& point_out) const
+  operator() (const PointInT& point_in, PointOutT& point_out) const
   {
     using FieldListInT = typename pcl::traits::fieldList<PointInT>::type;
     using FieldListOutT = typename pcl::traits::fieldList<PointOutT>::type;
@@ -136,11 +136,11 @@ struct CopyPointHelper<
         boost::mpl::if_<pcl::traits::has_field<PointOutT, pcl::fields::rgb>,
                         pcl::traits::offset<PointOutT, pcl::fields::rgb>,
                         pcl::traits::offset<PointOutT, pcl::fields::rgba>>::type::value;
-    pcl::for_each_type<FieldList>(
-        pcl::NdConcatenateFunctor<PointInT, PointOutT>(point_in, point_out));
-    memcpy(reinterpret_cast<char*>(&point_out) + offset_out,
-           reinterpret_cast<const char*>(&point_in) + offset_in,
-           4);
+    pcl::for_each_type<FieldList> (
+        pcl::NdConcatenateFunctor<PointInT, PointOutT> (point_in, point_out));
+    memcpy (reinterpret_cast<char*> (&point_out) + offset_out,
+            reinterpret_cast<const char*> (&point_in) + offset_in,
+            4);
   }
 };
 
@@ -151,7 +151,7 @@ void
 copyPoint (const PointInT& point_in, PointOutT& point_out)
 {
   detail::CopyPointHelper<PointInT, PointOutT> copy;
-  copy(point_in, point_out);
+  copy (point_in, point_out);
 }
 
 } // namespace pcl

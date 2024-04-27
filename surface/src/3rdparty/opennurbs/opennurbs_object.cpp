@@ -163,7 +163,7 @@ ON__dblinithelper (int i)
   else {
     // this sitation is not handled by this algorithm
     // and that is a bug in the algorithm.
-    ON_ERROR("CPU has unexpected bit pattern in double 2.0.");
+    ON_ERROR ("CPU has unexpected bit pattern in double 2.0.");
     i7 = 0;
     i6 = 0;
     i = 99;
@@ -235,7 +235,7 @@ ON__fltinithelper (int i)
   else {
     // this sitation is not handled by this algorithm
     // and that is a bug in the algorithm.
-    ON_ERROR("CPU has unexpected bit pattern in float 2.0f.");
+    ON_ERROR ("CPU has unexpected bit pattern in float 2.0f.");
     i3 = 0;
     i2 = 0;
     i = 99;
@@ -270,13 +270,13 @@ ON__fltinithelper (int i)
   return u.x;
 }
 
-const double ON_DBL_QNAN = ON__dblinithelper(1);
-const double ON_DBL_PINF = ON__dblinithelper(2);
-const double ON_DBL_NINF = -ON__dblinithelper(2);
+const double ON_DBL_QNAN = ON__dblinithelper (1);
+const double ON_DBL_PINF = ON__dblinithelper (2);
+const double ON_DBL_NINF = -ON__dblinithelper (2);
 
-const float ON_FLT_QNAN = ON__fltinithelper(1);
-const float ON_FLT_PINF = ON__fltinithelper(2);
-const float ON_FLT_NINF = -ON__fltinithelper(2);
+const float ON_FLT_QNAN = ON__fltinithelper (1);
+const float ON_FLT_PINF = ON__fltinithelper (2);
+const float ON_FLT_NINF = -ON__fltinithelper (2);
 
 void
 ON_DBL_SNAN (double* x)
@@ -312,10 +312,10 @@ ON_DBL_SNAN (double* x)
   else {
     // this sitation is not handled by this algorithm
     // and that is a bug in the algorithm.
-    ON_ERROR("CPU has unexpected bit pattern in double 2.0.");
+    ON_ERROR ("CPU has unexpected bit pattern in double 2.0.");
     i7 = 0;
     i6 = 0;
-    memset(&x, 0xFF, sizeof(*x));
+    memset (&x, 0xFF, sizeof (*x));
     return;
   }
 #endif
@@ -338,7 +338,7 @@ ON_DBL_SNAN (double* x)
 
   // must use memcpy().  On Intel FPU, assignment using x = u.x
   // will set x to qnan and invalid op exception occures.
-  memcpy(x, &u.x, sizeof(*x));
+  memcpy (x, &u.x, sizeof (*x));
 }
 
 void
@@ -373,8 +373,8 @@ ON_FLT_SNAN (float* x)
   else {
     // this sitation is not handled by this algorithm
     // and that is a bug in the algorithm.
-    ON_ERROR("CPU has unexpected bit pattern in float 2.0f.");
-    memset(&x, 0xFF, sizeof(*x));
+    ON_ERROR ("CPU has unexpected bit pattern in float 2.0f.");
+    memset (&x, 0xFF, sizeof (*x));
     return;
   }
 #endif
@@ -393,7 +393,7 @@ ON_FLT_SNAN (float* x)
 
   // must use memcpy().  On Intel FPU, assignment using x = u.x
   // will set x to qnan and invalid op exception occures.
-  memcpy(x, &u.x, sizeof(*x));
+  memcpy (x, &u.x, sizeof (*x));
 }
 
 void
@@ -443,32 +443,32 @@ ValidateSizesHelper ()
 #pragma warning(disable : 4127)
 #endif
 
-    if (ON_SIZEOF_POINTER != sizeof(void*)) {
-      ON_ERROR("ON_SIZEOF_POINTER is not correctly defined.");
+    if (ON_SIZEOF_POINTER != sizeof (void*)) {
+      ON_ERROR ("ON_SIZEOF_POINTER is not correctly defined.");
     }
-    if (ON_SIZEOF_POINTER != sizeof(ON__INT_PTR)) {
-      ON_ERROR("ON_INT_PTR is not correctly defined.");
+    if (ON_SIZEOF_POINTER != sizeof (ON__INT_PTR)) {
+      ON_ERROR ("ON_INT_PTR is not correctly defined.");
     }
-    if (1 != sizeof(char)) {
-      ON_ERROR("OpenNURBS assumes sizeof(char) = 1.");
+    if (1 != sizeof (char)) {
+      ON_ERROR ("OpenNURBS assumes sizeof(char) = 1.");
     }
-    if (2 != sizeof(ON__INT16)) {
-      ON_ERROR("ON__INT16 is not correctly defined.");
+    if (2 != sizeof (ON__INT16)) {
+      ON_ERROR ("ON__INT16 is not correctly defined.");
     }
-    if (4 != sizeof(ON__INT32)) {
-      ON_ERROR("ON__INT32 is not correctly defined.");
+    if (4 != sizeof (ON__INT32)) {
+      ON_ERROR ("ON__INT32 is not correctly defined.");
     }
-    if (8 != sizeof(ON__INT64)) {
-      ON_ERROR("ON__INT32 is not correctly defined.");
+    if (8 != sizeof (ON__INT64)) {
+      ON_ERROR ("ON__INT32 is not correctly defined.");
     }
-    if (sizeof(int) > sizeof(void*)) {
-      ON_ERROR("OpenNURBS assumes sizeof(int) <= sizeof(void*).");
+    if (sizeof (int) > sizeof (void*)) {
+      ON_ERROR ("OpenNURBS assumes sizeof(int) <= sizeof(void*).");
     }
-    if (4 != sizeof(float)) {
-      ON_ERROR("OpenNURBS assumes sizeof(float) = 4.");
+    if (4 != sizeof (float)) {
+      ON_ERROR ("OpenNURBS assumes sizeof(float) = 4.");
     }
-    if (8 != sizeof(double)) {
-      ON_ERROR("OpenNURBS assumes sizeof(double) = 8.");
+    if (8 != sizeof (double)) {
+      ON_ERROR ("OpenNURBS assumes sizeof(double) = 8.");
     }
 
 #if defined(ON_COMPILER_MSC)
@@ -494,82 +494,82 @@ ON::Begin()
     bRunning = true;
     const ON_Object* p = 0;
 
-    ON_Object::Cast(p);
-    ON_3dmObjectAttributes::Cast(p);
-    ON_Bitmap::Cast(p);
-    ON_EmbeddedBitmap::Cast(p);
-    ON_WindowsBitmap::Cast(p);
-    ON_WindowsBitmapEx::Cast(p);
-    ON_DimStyle::Cast(p);
-    ON_DocumentUserStringList::Cast(p);
-    ON_Font::Cast(p);
-    ON_Geometry::Cast(p);
-    ON_Annotation::Cast(p);
-    ON_AngularDimension::Cast(p);
-    ON_Leader::Cast(p);
-    ON_LinearDimension::Cast(p);
-    ON_RadialDimension::Cast(p);
-    ON_TextEntity::Cast(p);
-    ON_Annotation2::Cast(p);
-    ON_AngularDimension2::Cast(p);
-    ON_Leader2::Cast(p);
-    ON_LinearDimension2::Cast(p);
-    ON_OrdinateDimension2::Cast(p);
-    ON_RadialDimension2::Cast(p);
-    ON_TextEntity2::Cast(p);
-    ON_AnnotationArrow::Cast(p);
-    ON_Brep::Cast(p);
-    ON_BrepLoop::Cast(p);
-    ON_Curve::Cast(p);
-    ON_ArcCurve::Cast(p);
+    ON_Object::Cast (p);
+    ON_3dmObjectAttributes::Cast (p);
+    ON_Bitmap::Cast (p);
+    ON_EmbeddedBitmap::Cast (p);
+    ON_WindowsBitmap::Cast (p);
+    ON_WindowsBitmapEx::Cast (p);
+    ON_DimStyle::Cast (p);
+    ON_DocumentUserStringList::Cast (p);
+    ON_Font::Cast (p);
+    ON_Geometry::Cast (p);
+    ON_Annotation::Cast (p);
+    ON_AngularDimension::Cast (p);
+    ON_Leader::Cast (p);
+    ON_LinearDimension::Cast (p);
+    ON_RadialDimension::Cast (p);
+    ON_TextEntity::Cast (p);
+    ON_Annotation2::Cast (p);
+    ON_AngularDimension2::Cast (p);
+    ON_Leader2::Cast (p);
+    ON_LinearDimension2::Cast (p);
+    ON_OrdinateDimension2::Cast (p);
+    ON_RadialDimension2::Cast (p);
+    ON_TextEntity2::Cast (p);
+    ON_AnnotationArrow::Cast (p);
+    ON_Brep::Cast (p);
+    ON_BrepLoop::Cast (p);
+    ON_Curve::Cast (p);
+    ON_ArcCurve::Cast (p);
     // ON__OBSOLETE__CircleCurve::Cast(p);
-    ON_CurveOnSurface::Cast(p);
-    ON_CurveProxy::Cast(p);
-    ON_BrepEdge::Cast(p);
-    ON_BrepTrim::Cast(p);
+    ON_CurveOnSurface::Cast (p);
+    ON_CurveProxy::Cast (p);
+    ON_BrepEdge::Cast (p);
+    ON_BrepTrim::Cast (p);
     // ON_PolyEdgeSegment::Cast(p);
-    ON_LineCurve::Cast(p);
-    ON_NurbsCurve::Cast(p);
-    ON_PolyCurve::Cast(p);
+    ON_LineCurve::Cast (p);
+    ON_NurbsCurve::Cast (p);
+    ON_PolyCurve::Cast (p);
     // ON_PolyEdgeCurve::Cast(p);
-    ON_PolylineCurve::Cast(p);
-    ON_DetailView::Cast(p);
-    ON_Hatch::Cast(p);
-    ON_InstanceDefinition::Cast(p);
-    ON_InstanceRef::Cast(p);
-    ON_Light::Cast(p);
-    ON_Mesh::Cast(p);
-    ON_MeshEdgeRef::Cast(p);
-    ON_MeshFaceRef::Cast(p);
-    ON_MeshVertexRef::Cast(p);
-    ON_MorphControl::Cast(p);
-    ON_NurbsCage::Cast(p);
-    ON_Point::Cast(p);
-    ON_AnnotationTextDot::Cast(p);
-    ON_BrepVertex::Cast(p);
-    ON_PointCloud::Cast(p);
-    ON_PointGrid::Cast(p);
-    ON_Surface::Cast(p);
-    ON_Extrusion::Cast(p);
-    ON_NurbsSurface::Cast(p);
-    ON_PlaneSurface::Cast(p);
-    ON_ClippingPlaneSurface::Cast(p);
-    ON_RevSurface::Cast(p);
-    ON_SumSurface::Cast(p);
-    ON_SurfaceProxy::Cast(p);
-    ON_BrepFace::Cast(p);
-    ON_OffsetSurface::Cast(p);
-    ON_TextDot::Cast(p);
-    ON_Viewport::Cast(p);
-    ON_Group::Cast(p);
-    ON_HatchPattern::Cast(p);
-    ON_HistoryRecord::Cast(p);
-    ON_Layer::Cast(p);
-    ON_Linetype::Cast(p);
-    ON_Material::Cast(p);
-    ON_Texture::Cast(p);
-    ON_TextureMapping::Cast(p);
-    ON_UserData::Cast(p);
+    ON_PolylineCurve::Cast (p);
+    ON_DetailView::Cast (p);
+    ON_Hatch::Cast (p);
+    ON_InstanceDefinition::Cast (p);
+    ON_InstanceRef::Cast (p);
+    ON_Light::Cast (p);
+    ON_Mesh::Cast (p);
+    ON_MeshEdgeRef::Cast (p);
+    ON_MeshFaceRef::Cast (p);
+    ON_MeshVertexRef::Cast (p);
+    ON_MorphControl::Cast (p);
+    ON_NurbsCage::Cast (p);
+    ON_Point::Cast (p);
+    ON_AnnotationTextDot::Cast (p);
+    ON_BrepVertex::Cast (p);
+    ON_PointCloud::Cast (p);
+    ON_PointGrid::Cast (p);
+    ON_Surface::Cast (p);
+    ON_Extrusion::Cast (p);
+    ON_NurbsSurface::Cast (p);
+    ON_PlaneSurface::Cast (p);
+    ON_ClippingPlaneSurface::Cast (p);
+    ON_RevSurface::Cast (p);
+    ON_SumSurface::Cast (p);
+    ON_SurfaceProxy::Cast (p);
+    ON_BrepFace::Cast (p);
+    ON_OffsetSurface::Cast (p);
+    ON_TextDot::Cast (p);
+    ON_Viewport::Cast (p);
+    ON_Group::Cast (p);
+    ON_HatchPattern::Cast (p);
+    ON_HistoryRecord::Cast (p);
+    ON_Layer::Cast (p);
+    ON_Linetype::Cast (p);
+    ON_Material::Cast (p);
+    ON_Texture::Cast (p);
+    ON_TextureMapping::Cast (p);
+    ON_UserData::Cast (p);
     // ON__LayerExtensions::Cast(p);
     // ON_AngularDimension2Extra::Cast(p);
     // ON_AnnotationTextFormula::Cast(p);
@@ -578,9 +578,9 @@ ON::Begin()
     // ON_HatchExtra::Cast(p);
     // ON_MeshDoubleVertices::Cast(p);
     // ON_MeshNgonUserData::Cast(p);
-    ON_TextExtra::Cast(p);
-    ON_UnknownUserData::Cast(p);
-    ON_UserStringList::Cast(p);
+    ON_TextExtra::Cast (p);
+    ON_UnknownUserData::Cast (p);
+    ON_UserStringList::Cast (p);
   }
 #endif
 }
@@ -603,7 +603,7 @@ ON_ClassId::IncrementMark()
 }
 
 int
-ON_ClassId::Purge(int mark_value)
+ON_ClassId::Purge (int mark_value)
 {
   // Fundamental openNURBS class ids have a mark value of 0 and cannot be purged.
   int purge_count = 0;
@@ -635,7 +635,7 @@ ON_ClassId::LastClassId()
 }
 
 bool
-ON_ClassId::PurgeAfter(const ON_ClassId* pClassId)
+ON_ClassId::PurgeAfter (const ON_ClassId* pClassId)
 {
   // If you crash in on the p=p->m_pNext iterator in
   // the for() loop, it is because somebody incorrectly
@@ -651,7 +651,7 @@ ON_ClassId::PurgeAfter(const ON_ClassId* pClassId)
     }
   }
 
-  ON_ERROR("ON_ClassId::PurgeAfter pClassId is not active");
+  ON_ERROR ("ON_ClassId::PurgeAfter pClassId is not active");
   return false;
 }
 
@@ -690,92 +690,92 @@ IntToString (int i, char s[7])
   s[6] = 0;
 }
 
-ON_ClassId::ON_ClassId(const char* sClassName,
-                       const char* sBaseClassName,
-                       ON_Object* (*create)(),
-                       bool (*copy)(const ON_Object*, ON_Object*),
-                       const char* sUUID // UUID in registry format from guidgen
-                       )
-: m_pNext(0)
-, m_pBaseClassId(0)
-, m_create(create)
-, m_mark(m_mark0)
-, m_class_id_version(1)
-, m_copy(copy)
-, m_f2(0)
-, m_f3(0)
-, m_f4(0)
-, m_f5(0)
-, m_f6(0)
-, m_f7(0)
-, m_f8(0)
+ON_ClassId::ON_ClassId (const char* sClassName,
+                        const char* sBaseClassName,
+                        ON_Object* (*create)(),
+                        bool (*copy) (const ON_Object*, ON_Object*),
+                        const char* sUUID // UUID in registry format from guidgen
+                        )
+: m_pNext (0)
+, m_pBaseClassId (0)
+, m_create (create)
+, m_mark (m_mark0)
+, m_class_id_version (1)
+, m_copy (copy)
+, m_f2 (0)
+, m_f3 (0)
+, m_f4 (0)
+, m_f5 (0)
+, m_f6 (0)
+, m_f7 (0)
+, m_f8 (0)
 {
   // code compiled on or after opennurbs 200703060 calls this constructor
-  ConstructorHelper(sClassName, sBaseClassName, sUUID);
+  ConstructorHelper (sClassName, sBaseClassName, sUUID);
   m_mark |= 0x80000000; // This bit of m_mark is a flag that indicates
                         // the new constructor was called.
 }
 
-ON_ClassId::ON_ClassId(const char* sClassName,
-                       const char* sBaseClassName,
-                       ON_Object* (*create)(),
-                       const char* sUUID // UUID in registry format from guidgen
-                       )
-: m_pNext(0), m_pBaseClassId(0), m_create(create), m_mark(m_mark0)
+ON_ClassId::ON_ClassId (const char* sClassName,
+                        const char* sBaseClassName,
+                        ON_Object* (*create)(),
+                        const char* sUUID // UUID in registry format from guidgen
+                        )
+: m_pNext (0), m_pBaseClassId (0), m_create (create), m_mark (m_mark0)
 {
   // Code COMPILED before opennurbs 200703060 calls this constructor.
   // DO NOT INITIALIZE m_class_id_version or any ON_ClassId fields
   // after m_class_id_version because the executable calling this
   // constructor did not allocate room for this these members.
-  ConstructorHelper(sClassName, sBaseClassName, sUUID);
+  ConstructorHelper (sClassName, sBaseClassName, sUUID);
 }
 
 void
-ON_ClassId::ConstructorHelper(const char* sClassName,
-                              const char* sBaseClassName,
-                              const char* sUUID // UUID in registry format from guidgen
+ON_ClassId::ConstructorHelper (const char* sClassName,
+                               const char* sBaseClassName,
+                               const char* sUUID // UUID in registry format from guidgen
 )
 {
   // Do not initialize "m_class_id_version" or any fields
   // after it in this helper.  See comments in the constructors
   // for more information.
-  memset(m_sClassName, 0, sizeof(m_sClassName));
-  memset(m_sBaseClassName, 0, sizeof(m_sBaseClassName));
-  m_uuid = ON_UuidFromString(sUUID);
+  memset (m_sClassName, 0, sizeof (m_sClassName));
+  memset (m_sBaseClassName, 0, sizeof (m_sBaseClassName));
+  m_uuid = ON_UuidFromString (sUUID);
   if (sClassName) {
-    strncpy(m_sClassName, sClassName, sizeof(m_sClassName) - 1);
+    strncpy (m_sClassName, sClassName, sizeof (m_sClassName) - 1);
   }
   if (sBaseClassName) {
-    strncpy(m_sBaseClassName, sBaseClassName, sizeof(m_sBaseClassName) - 1);
+    strncpy (m_sBaseClassName, sBaseClassName, sizeof (m_sBaseClassName) - 1);
   }
-  m_pBaseClassId = ClassId(m_sBaseClassName);
+  m_pBaseClassId = ClassId (m_sBaseClassName);
 
   if (!m_sClassName[0]) {
-    ON_ERROR("ON_ClassId::ON_ClassId() - missing class name");
+    ON_ERROR ("ON_ClassId::ON_ClassId() - missing class name");
     return;
   }
 
-  const ON_ClassId* duplicate_class = ClassId(m_sClassName);
+  const ON_ClassId* duplicate_class = ClassId (m_sClassName);
   // The m_mark0 > 2 test prevents opennurbs and Rhino from
   // having two ON_Object derived classes that have the same
   // name.  Plug-ins are free to use any name.
   if (0 != duplicate_class && m_mark0 > 2) {
     char s[7];
     int ver;
-    ON_WARNING("ON_ClassId::ON_ClassId() - class name already in use.  Will append "
-               "number to make it unique.");
+    ON_WARNING ("ON_ClassId::ON_ClassId() - class name already in use.  Will append "
+                "number to make it unique.");
     for (ver = 1; ver < 10000 && 0 != duplicate_class; ver++) {
-      IntToString(ver, s);
+      IntToString (ver, s);
       s[6] = 0;
-      strncpy(m_sClassName, sClassName, sizeof(m_sClassName) - 1);
-      strncat(m_sClassName, s, sizeof(m_sClassName) - 1);
-      duplicate_class = ClassId(m_sClassName);
+      strncpy (m_sClassName, sClassName, sizeof (m_sClassName) - 1);
+      strncat (m_sClassName, s, sizeof (m_sClassName) - 1);
+      duplicate_class = ClassId (m_sClassName);
     }
   }
 
   if (0 != duplicate_class) {
     // Do NOT permit core classes to have duplicate names.
-    ON_ERROR("ON_ClassId::ON_ClassId() - class name already in use.");
+    ON_ERROR ("ON_ClassId::ON_ClassId() - class name already in use.");
     return;
   }
 
@@ -784,21 +784,21 @@ ON_ClassId::ConstructorHelper(const char* sClassName,
       m_sClassName[6] != 'e' || m_sClassName[7] != 'c' || m_sClassName[8] != 't' ||
       m_sClassName[9] != 0) {
     if (!m_sBaseClassName[0]) {
-      ON_ERROR("ON_ClassId::ON_ClassId() - missing baseclass name.");
+      ON_ERROR ("ON_ClassId::ON_ClassId() - missing baseclass name.");
       return;
     }
   }
 
   g_bDisableDemotion = true;
-  if (ClassId(m_uuid)) {
+  if (ClassId (m_uuid)) {
     g_bDisableDemotion = false;
-    ON_ERROR("ON_ClassId::ON_ClassId() - class uuid already in use.");
+    ON_ERROR ("ON_ClassId::ON_ClassId() - class uuid already in use.");
     return;
   }
   g_bDisableDemotion = false;
 
-  if (ON_UuidIsNil(m_uuid)) {
-    ON_ERROR("ON_ClassId::ON_ClassId() - class uuid is nill.");
+  if (ON_UuidIsNil (m_uuid)) {
+    ON_ERROR ("ON_ClassId::ON_ClassId() - class uuid is nill.");
     return;
   }
 
@@ -807,7 +807,7 @@ ON_ClassId::ConstructorHelper(const char* sClassName,
   if (m_sClassName[0]) {
     for (ON_ClassId* p = m_p0; p; p = p->m_pNext) {
       if (!p->m_pBaseClassId && p->m_sBaseClassName) {
-        if (!strcmp(m_sClassName, p->m_sBaseClassName))
+        if (!strcmp (m_sClassName, p->m_sBaseClassName))
           p->m_pBaseClassId = this;
       }
     }
@@ -831,10 +831,7 @@ ON_ClassId::~ON_ClassId() {}
 static ON_UUID s_most_recent_class_id_create_uuid;
 
 ON_UUID
-ON_GetMostRecentClassIdCreateUuid ()
-{
-  return s_most_recent_class_id_create_uuid;
-}
+ON_GetMostRecentClassIdCreateUuid() { return s_most_recent_class_id_create_uuid; }
 
 ON_Object*
 ON_ClassId::Create() const
@@ -847,7 +844,7 @@ ON_ClassId::Create() const
 }
 
 const ON_ClassId*
-ON_ClassId::ClassId(const char* sClassName)
+ON_ClassId::ClassId (const char* sClassName)
 {
   // static member function
   // search list of class ids for one with a matching class name
@@ -876,13 +873,13 @@ ON_ClassId::ClassId(const char* sClassName)
 }
 
 const ON_ClassId*
-ON_ClassId::ClassId(ON_UUID uuid)
+ON_ClassId::ClassId (ON_UUID uuid)
 {
   // static member function
   // search list of class ids for one with a matching typecode
   const ON_ClassId* p;
   for (p = m_p0; p; p = p->m_pNext) {
-    if (!ON_UuidCompare(&p->m_uuid, &uuid))
+    if (!ON_UuidCompare (&p->m_uuid, &uuid))
       break;
   }
 
@@ -930,18 +927,18 @@ ON_ClassId::ClassId(ON_UUID uuid)
     ON_UUID sumsrf = {
         0x665f6331, 0x2a66, 0x4cce, {0x81, 0xd0, 0xb5, 0xee, 0xbd, 0x9b, 0x54, 0x17}};
 
-    if (!ON_UuidCompare(&uuid, &nc0) || !ON_UuidCompare(&uuid, &nc1))
+    if (!ON_UuidCompare (&uuid, &nc0) || !ON_UuidCompare (&uuid, &nc1))
       p = &ON_NurbsCurve::m_ON_NurbsCurve_class_id;
-    else if (!ON_UuidCompare(&uuid, &ns0) || !ON_UuidCompare(&uuid, &ns1))
+    else if (!ON_UuidCompare (&uuid, &ns0) || !ON_UuidCompare (&uuid, &ns1))
       p = &ON_NurbsSurface::m_ON_NurbsSurface_class_id;
-    else if (!ON_UuidCompare(&uuid, &pc0))
+    else if (!ON_UuidCompare (&uuid, &pc0))
       p = &ON_PolyCurve::m_ON_PolyCurve_class_id;
-    else if (!ON_UuidCompare(&uuid, &br0) || !ON_UuidCompare(&uuid, &br1) ||
-             !ON_UuidCompare(&uuid, &br2))
+    else if (!ON_UuidCompare (&uuid, &br0) || !ON_UuidCompare (&uuid, &br1) ||
+             !ON_UuidCompare (&uuid, &br2))
       p = &ON_Brep::m_ON_Brep_class_id;
-    else if (!ON_UuidCompare(&uuid, &revsrf))
+    else if (!ON_UuidCompare (&uuid, &revsrf))
       p = &ON_RevSurface::m_ON_RevSurface_class_id;
-    else if (!ON_UuidCompare(&uuid, &sumsrf))
+    else if (!ON_UuidCompare (&uuid, &sumsrf))
       p = &ON_SumSurface::m_ON_SumSurface_class_id;
     else
       p = 0; // <- does nothing but it's a good place for debugger breakpoint
@@ -975,7 +972,7 @@ ON__ClassIdDumpNode::ON__ClassIdDumpNode()
 ON__ClassIdDumpNode::~ON__ClassIdDumpNode() {}
 
 int
-ON__ClassIdDumpNode::CompareClassUuid(const class ON__ClassIdDumpNode& other) const
+ON__ClassIdDumpNode::CompareClassUuid (const class ON__ClassIdDumpNode& other) const
 {
   int rc = 0;
   const ON_ClassId* a = m_class_id;
@@ -987,9 +984,9 @@ ON__ClassIdDumpNode::CompareClassUuid(const class ON__ClassIdDumpNode& other) co
     else if (0 == b)
       rc = 1;
     else {
-      rc = ON_UuidCompare(a->Uuid(), b->Uuid());
+      rc = ON_UuidCompare (a->Uuid(), b->Uuid());
       if (0 == rc) {
-        rc = CompareClassName(other);
+        rc = CompareClassName (other);
       }
     }
   }
@@ -997,7 +994,7 @@ ON__ClassIdDumpNode::CompareClassUuid(const class ON__ClassIdDumpNode& other) co
 }
 
 int
-ON__ClassIdDumpNode::CompareClassName(const class ON__ClassIdDumpNode& other) const
+ON__ClassIdDumpNode::CompareClassName (const class ON__ClassIdDumpNode& other) const
 {
   int rc = 0;
   const ON_ClassId* a = m_class_id;
@@ -1015,7 +1012,7 @@ ON__ClassIdDumpNode::CompareClassName(const class ON__ClassIdDumpNode& other) co
         if (0 == b_name) {
           rc = b->Mark() - a->Mark();
           if (0 == rc)
-            rc = ON_UuidCompare(a->Uuid(), b->Uuid());
+            rc = ON_UuidCompare (a->Uuid(), b->Uuid());
         }
         else
           rc = -1;
@@ -1024,13 +1021,13 @@ ON__ClassIdDumpNode::CompareClassName(const class ON__ClassIdDumpNode& other) co
         rc = 1;
       }
       else {
-        rc = on_stricmp(a_name, b_name);
+        rc = on_stricmp (a_name, b_name);
         if (0 == rc) {
-          rc = strcmp(a_name, b_name);
+          rc = strcmp (a_name, b_name);
           if (0 == rc) {
             rc = b->Mark() - a->Mark();
             if (0 == rc)
-              rc = ON_UuidCompare(a->Uuid(), b->Uuid());
+              rc = ON_UuidCompare (a->Uuid(), b->Uuid());
           }
         }
       }
@@ -1051,7 +1048,7 @@ ON__ClassIdDumpNode_CompareUuid (const ON__ClassIdDumpNode* a,
     rc = 1;
   }
   else {
-    rc = a->CompareClassUuid(*b);
+    rc = a->CompareClassUuid (*b);
   }
   return rc;
 }
@@ -1068,13 +1065,13 @@ ON__ClassIdDumpNode_CompareName (ON__ClassIdDumpNode* const* a,
     rc = 1;
   }
   else {
-    rc = (*a)->CompareClassName(*(*b));
+    rc = (*a)->CompareClassName (*(*b));
   }
   return rc;
 }
 
 bool
-ON__ClassIdDumpNode::Dump(int depth, ON_TextLog& text_log)
+ON__ClassIdDumpNode::Dump (int depth, ON_TextLog& text_log)
 {
   bool rc = true;
   if (0 == m_class_id || m_depth != 0 || depth < 1)
@@ -1086,14 +1083,14 @@ ON__ClassIdDumpNode::Dump(int depth, ON_TextLog& text_log)
       class_name = "!!ERROR!!";
       rc = false;
     }
-    text_log.Print("%s::ClassId: ", m_class_id->ClassName());
-    text_log.Print("mark=%d ", m_class_id->Mark());
-    text_log.Print(m_class_id->Uuid());
-    text_log.Print("  (%08x)\n", m_class_id);
+    text_log.Print ("%s::ClassId: ", m_class_id->ClassName());
+    text_log.Print ("mark=%d ", m_class_id->Mark());
+    text_log.Print (m_class_id->Uuid());
+    text_log.Print ("  (%08x)\n", m_class_id);
     int i, count = m_child_nodes.Count();
     if (count > 0) {
       // dump children names alphabetically
-      m_child_nodes.QuickSort(ON__ClassIdDumpNode_CompareName);
+      m_child_nodes.QuickSort (ON__ClassIdDumpNode_CompareName);
 
       text_log.PushIndent();
       for (i = 0; i < count; i++) {
@@ -1101,7 +1098,7 @@ ON__ClassIdDumpNode::Dump(int depth, ON_TextLog& text_log)
         if (0 == child_node)
           rc = false;
         else {
-          if (!child_node->Dump(depth + 1, text_log))
+          if (!child_node->Dump (depth + 1, text_log))
             rc = false;
         }
       }
@@ -1112,7 +1109,7 @@ ON__ClassIdDumpNode::Dump(int depth, ON_TextLog& text_log)
 }
 
 void
-ON_ClassId::Dump(ON_TextLog& dump)
+ON_ClassId::Dump (ON_TextLog& dump)
 {
   int i, j, count = 0;
   const ON_ClassId* p;
@@ -1120,18 +1117,18 @@ ON_ClassId::Dump(ON_TextLog& dump)
     count++;
   }
   if (0 != p) {
-    dump.Print("ON_ClassId::m_p0 list is damaged.\n");
+    dump.Print ("ON_ClassId::m_p0 list is damaged.\n");
   }
   else {
     ON__ClassIdDumpNode tmp_node;
-    ON_ClassArray<ON__ClassIdDumpNode> nodes(count);
+    ON_ClassArray<ON__ClassIdDumpNode> nodes (count);
     for (p = m_p0; p; p = p->m_pNext) {
       ON__ClassIdDumpNode& node = nodes.AppendNew();
       node.m_class_id = p;
     }
 
     // sort nodes by class id's uuid
-    nodes.QuickSort(ON__ClassIdDumpNode_CompareUuid);
+    nodes.QuickSort (ON__ClassIdDumpNode_CompareUuid);
 
     // fill in m_parent_node and m_child_nodes[]
     for (i = 0; i < count; i++) {
@@ -1139,22 +1136,22 @@ ON_ClassId::Dump(ON_TextLog& dump)
       p = node.m_class_id;
       if (0 != p) {
         tmp_node.m_class_id = p->BaseClass();
-        j = nodes.BinarySearch(&tmp_node, ON__ClassIdDumpNode_CompareUuid);
+        j = nodes.BinarySearch (&tmp_node, ON__ClassIdDumpNode_CompareUuid);
         if (j >= 0 && i != j) {
           ON__ClassIdDumpNode& base_node = nodes[j];
           node.m_parent_node = &base_node;
-          base_node.m_child_nodes.Append(&node);
+          base_node.m_child_nodes.Append (&node);
         }
       }
     }
 
     // print class tree
     tmp_node.m_class_id = &ON_Object::m_ON_Object_class_id;
-    i = nodes.BinarySearch(&tmp_node, ON__ClassIdDumpNode_CompareUuid);
+    i = nodes.BinarySearch (&tmp_node, ON__ClassIdDumpNode_CompareUuid);
     bool rc = false;
     if (i >= 0) {
       // recursively dump class tree
-      rc = nodes[i].Dump(1, dump);
+      rc = nodes[i].Dump (1, dump);
       for (i = 0; i < count && rc; i++) {
         if (nodes[i].m_depth <= 0)
           rc = false;
@@ -1164,10 +1161,10 @@ ON_ClassId::Dump(ON_TextLog& dump)
     if (!rc) {
       // should never happen
       for (p = m_p0; p; p = p->m_pNext) {
-        dump.Print("%s::ClassId: ", p->m_sClassName);
-        dump.Print("mark=%d ", p->m_mark);
-        dump.Print(p->m_uuid);
-        dump.Print("  (%08x)\n", p);
+        dump.Print ("%s::ClassId: ", p->m_sClassName);
+        dump.Print ("mark=%d ", p->m_mark);
+        dump.Print (p->m_uuid);
+        dump.Print ("  (%08x)\n", p);
       }
     }
   }
@@ -1186,10 +1183,7 @@ ON_ClassId::BaseClassName() const
 }
 
 ON_UUID
-ON_ClassId::Uuid() const
-{
-  return m_uuid;
-}
+ON_ClassId::Uuid() const { return m_uuid; }
 
 int
 ON_ClassId::Mark() const
@@ -1210,7 +1204,7 @@ ON_ClassId::BaseClass() const
 }
 
 ON_BOOL32
-ON_ClassId::IsDerivedFrom(const ON_ClassId* pBaseClassId) const
+ON_ClassId::IsDerivedFrom (const ON_ClassId* pBaseClassId) const
 {
   // determine if this is derived from pBaseClassId
   ON_BOOL32 b = false;
@@ -1229,10 +1223,10 @@ ON_ClassId::IsDerivedFrom(const ON_ClassId* pBaseClassId) const
 
 //////////////////////////////////////////////////////////////////////////////
 
-ON_VIRTUAL_OBJECT_IMPLEMENT(ON_Object, 0, "60B5DBBD-E660-11d3-BFE4-0010830122F0");
+ON_VIRTUAL_OBJECT_IMPLEMENT (ON_Object, 0, "60B5DBBD-E660-11d3-BFE4-0010830122F0");
 
 bool
-ON_Object::CopyFrom(const ON_Object* src)
+ON_Object::CopyFrom (const ON_Object* src)
 {
   // In V6 this will be a virtual function that will be
   // declared in the ON_OBJECT_DECLARE macro and defined
@@ -1242,21 +1236,24 @@ ON_Object::CopyFrom(const ON_Object* src)
   // See the comments in the ON_ClassId constructors for
   // details.
   const ON_ClassId* cid = ClassId();
-  return (cid && cid->ClassIdVersion() >= 1 && cid->m_copy) ? cid->m_copy(src, this)
+  return (cid && cid->ClassIdVersion() >= 1 && cid->m_copy) ? cid->m_copy (src, this)
                                                             : false;
 }
 
-ON_Object::ON_Object() : m_userdata_list(0) {}
+ON_Object::ON_Object() : m_userdata_list (0) {}
 
-ON_Object::ON_Object(const ON_Object& src) : m_userdata_list(0) { CopyUserData(src); }
+ON_Object::ON_Object (const ON_Object& src) : m_userdata_list (0)
+{
+  CopyUserData (src);
+}
 
 ON_Object&
-ON_Object::operator=(const ON_Object& src)
+ON_Object::operator= (const ON_Object& src)
 {
   // DO NOT MODIFY this->m_mempool here
   if (this != &src) {
     PurgeUserData();
-    CopyUserData(src);
+    CopyUserData (src);
   }
   return *this;
 }
@@ -1304,20 +1301,20 @@ ON_Object::PurgeUserData()
 }
 
 ON_BOOL32
-ON_Object::AttachUserData(ON_UserData* p)
+ON_Object::AttachUserData (ON_UserData* p)
 {
   ON_BOOL32 rc = false;
   if (p && NULL == p->m_userdata_owner &&
-      ON_UuidCompare(&ON_nil_uuid, &p->m_userdata_uuid) &&
-      NULL == GetUserData(p->m_userdata_uuid)) {
+      ON_UuidCompare (&ON_nil_uuid, &p->m_userdata_uuid) &&
+      NULL == GetUserData (p->m_userdata_uuid)) {
     if (p->IsUnknownUserData()) {
       // make sure we have valid user data - the first beta release of Rhino 2.0
       // created empty user data.
-      ON_UnknownUserData* uud = ON_UnknownUserData::Cast(p);
+      ON_UnknownUserData* uud = ON_UnknownUserData::Cast (p);
       if (uud)
         rc = uud->IsValid();
       if (!rc) {
-        ON_ERROR(
+        ON_ERROR (
             "ON_Object::AttachUserData() - attempt to attach invalid UnknownUserData.");
       }
     }
@@ -1333,7 +1330,7 @@ ON_Object::AttachUserData(ON_UserData* p)
 }
 
 ON_BOOL32
-ON_Object::DetachUserData(ON_UserData* p)
+ON_Object::DetachUserData (ON_UserData* p)
 {
   ON_BOOL32 rc = false;
   if (p && p->m_userdata_owner == this) {
@@ -1358,12 +1355,12 @@ ON_Object::DetachUserData(ON_UserData* p)
 }
 
 ON_UserData*
-ON_Object::GetUserData(const ON_UUID& userdata_uuid) const
+ON_Object::GetUserData (const ON_UUID& userdata_uuid) const
 {
   ON_UserData* prev = NULL;
   ON_UserData* p;
   for (p = m_userdata_list; p; prev = p, p = p->m_userdata_next) {
-    if (!ON_UuidCompare(&p->m_userdata_uuid, &userdata_uuid)) {
+    if (!ON_UuidCompare (&p->m_userdata_uuid, &userdata_uuid)) {
       if (p->IsUnknownUserData()) {
         // See if we can convert this unknown user data into something useful.
         // Unknown user data is created when a 3dm archive is read and
@@ -1371,7 +1368,7 @@ ON_Object::GetUserData(const ON_UUID& userdata_uuid) const
         // If something is getting around to asking for a specific kind
         // of user data, the class definition has probably be dynamically
         // loaded.
-        ON_UnknownUserData* uud = ON_UnknownUserData::Cast(p);
+        ON_UnknownUserData* uud = ON_UnknownUserData::Cast (p);
         if (uud) {
           ON_UserData* realp = uud->Convert();
           if (realp) {
@@ -1382,7 +1379,7 @@ ON_Object::GetUserData(const ON_UUID& userdata_uuid) const
               // little white lie to attach the "real" user
               // data to the object in place of the unknown
               // user data.
-              ON_Object* pNotConst = const_cast<ON_Object*>(this);
+              ON_Object* pNotConst = const_cast<ON_Object*> (this);
               pNotConst->m_userdata_list = realp;
               realp->m_userdata_owner =
                   pNotConst; // Dale Lear added 22 Jan 2004 to fix I/O bug
@@ -1408,25 +1405,25 @@ ON_Object::FirstUserData() const
 }
 
 void
-ON_Object::TransformUserData(const ON_Xform& x)
+ON_Object::TransformUserData (const ON_Xform& x)
 {
   ON_UserData *p, *next;
   for (p = m_userdata_list; p; p = next) {
     next = p->m_userdata_next;
-    if (!p->Transform(x))
+    if (!p->Transform (x))
       delete p;
   }
 }
 
 void
-ON_Object::CopyUserData(const ON_Object& src)
+ON_Object::CopyUserData (const ON_Object& src)
 {
   const ON_UserData* p;
   for (p = src.m_userdata_list; p; p = p->m_userdata_next) {
     if (p->m_userdata_copycount) {
       ON_Object* o = p->Duplicate();
       if (o) {
-        if (!AttachUserData(ON_UserData::Cast(o)))
+        if (!AttachUserData (ON_UserData::Cast (o)))
           delete o;
       }
     }
@@ -1434,7 +1431,7 @@ ON_Object::CopyUserData(const ON_Object& src)
 }
 
 void
-ON_Object::MoveUserData(ON_Object& src)
+ON_Object::MoveUserData (ON_Object& src)
 {
   ON_UserData *p, *next;
 
@@ -1456,7 +1453,7 @@ ON_Object::MoveUserData(ON_Object& src)
     // delete source user data that already exists on this
     for (p = src.m_userdata_list; p; p = next) {
       next = p->m_userdata_next;
-      if (GetUserData(p->m_userdata_uuid))
+      if (GetUserData (p->m_userdata_uuid))
         delete p;
     }
 
@@ -1490,12 +1487,12 @@ ON_Object::MemoryRelocate()
 }
 
 ON_BOOL32
-ON_Object::IsKindOf(const ON_ClassId* pBaseClassId) const
+ON_Object::IsKindOf (const ON_ClassId* pBaseClassId) const
 {
   ON_BOOL32 b = false;
   const ON_ClassId* p = ClassId();
   if (p)
-    b = p->IsDerivedFrom(pBaseClassId);
+    b = p->IsDerivedFrom (pBaseClassId);
   return b;
 }
 
@@ -1507,75 +1504,42 @@ ON_Object::ObjectType() const
 }
 
 ON_UUID
-ON_Object::ModelObjectId() const
-{
-  return ON_nil_uuid;
-}
+ON_Object::ModelObjectId() const { return ON_nil_uuid; }
 
 ON_UUID
-ON_Material::ModelObjectId() const
-{
-  return m_material_id;
-}
+ON_Material::ModelObjectId() const { return m_material_id; }
 
 ON_UUID
-ON_Layer::ModelObjectId() const
-{
-  return m_layer_id;
-}
+ON_Layer::ModelObjectId() const { return m_layer_id; }
 
 ON_UUID
-ON_Font::ModelObjectId() const
-{
-  return m_font_id;
-}
+ON_Font::ModelObjectId() const { return m_font_id; }
 
 ON_UUID
-ON_DimStyle::ModelObjectId() const
-{
-  return m_dimstyle_id;
-}
+ON_DimStyle::ModelObjectId() const { return m_dimstyle_id; }
 
 ON_UUID
-ON_HatchPattern::ModelObjectId() const
-{
-  return m_hatchpattern_id;
-}
+ON_HatchPattern::ModelObjectId() const { return m_hatchpattern_id; }
 
 ON_UUID
-ON_Linetype::ModelObjectId() const
-{
-  return m_linetype_id;
-}
+ON_Linetype::ModelObjectId() const { return m_linetype_id; }
 
 ON_UUID
-ON_Bitmap::ModelObjectId() const
-{
-  return m_bitmap_id;
-}
+ON_Bitmap::ModelObjectId() const { return m_bitmap_id; }
 
 ON_UUID
-ON_Light::ModelObjectId() const
-{
-  return m_light_id;
-}
+ON_Light::ModelObjectId() const { return m_light_id; }
 
 ON_UUID
-ON_TextureMapping::ModelObjectId() const
-{
-  return m_mapping_id;
-}
+ON_TextureMapping::ModelObjectId() const { return m_mapping_id; }
 
 ON_UUID
-ON_InstanceDefinition::ModelObjectId() const
-{
-  return m_uuid;
-}
+ON_InstanceDefinition::ModelObjectId() const { return m_uuid; }
 
 unsigned int
 ON_Object::SizeOf() const
 {
-  unsigned int sz = sizeof(*this);
+  unsigned int sz = sizeof (*this);
   const ON_UserData* ud = m_userdata_list;
   while (ud) {
     sz += ud->SizeOf();
@@ -1585,32 +1549,32 @@ ON_Object::SizeOf() const
 }
 
 ON__UINT32
-ON_Object::DataCRC(ON__UINT32 current_remainder) const
+ON_Object::DataCRC (ON__UINT32 current_remainder) const
 {
   // do not include user data.
   return current_remainder;
 }
 
 void
-ON_Object::Dump(ON_TextLog& dump) const
+ON_Object::Dump (ON_TextLog& dump) const
 {
   const ON_ClassId* p = ClassId();
   if (p) {
     const char* class_name = p->ClassName();
     if (0 == class_name)
       class_name = "unknown";
-    dump.Print("class name: %s\n", class_name);
-    dump.Print("class uuid: ");
-    dump.Print(p->Uuid());
-    dump.Print("\n");
+    dump.Print ("class name: %s\n", class_name);
+    dump.Print ("class uuid: ");
+    dump.Print (p->Uuid());
+    dump.Print ("\n");
   }
   else {
-    dump.Print("ON_Object::ClassId() FAILED\n");
+    dump.Print ("ON_Object::ClassId() FAILED\n");
   }
 }
 
 ON_BOOL32
-ON_Object::Write(ON_BinaryArchive&) const
+ON_Object::Write (ON_BinaryArchive&) const
 {
   // default Write() does nothing.
   return false;
@@ -1628,7 +1592,7 @@ ON_Object::Write(ON_BinaryArchive&) const
 }
 
 ON_BOOL32
-ON_Object::Read(ON_BinaryArchive&)
+ON_Object::Read (ON_BinaryArchive&)
 {
   // default Read() does nothing.
   return false;
@@ -1649,75 +1613,75 @@ ON_Object::Read(ON_BinaryArchive&)
 }
 
 void
-ON_Object::DestroyRuntimeCache(bool)
+ON_Object::DestroyRuntimeCache (bool)
 {}
 
 void
-ON_Curve::DestroyRuntimeCache(bool)
+ON_Curve::DestroyRuntimeCache (bool)
 {}
 
 void
-ON_CurveProxy::DestroyRuntimeCache(bool bDelete)
+ON_CurveProxy::DestroyRuntimeCache (bool bDelete)
 {
-  ON_Curve::DestroyRuntimeCache(bDelete);
+  ON_Curve::DestroyRuntimeCache (bDelete);
   if (0 != m_real_curve && m_real_curve != this) {
-    ON_Curve* curve = const_cast<ON_Curve*>(m_real_curve);
+    ON_Curve* curve = const_cast<ON_Curve*> (m_real_curve);
     if (0 != curve)
-      curve->DestroyRuntimeCache(bDelete);
+      curve->DestroyRuntimeCache (bDelete);
   }
 }
 
 void
-ON_Surface::DestroyRuntimeCache(bool)
+ON_Surface::DestroyRuntimeCache (bool)
 {}
 
 void
-ON_SurfaceProxy::DestroyRuntimeCache(bool bDelete)
+ON_SurfaceProxy::DestroyRuntimeCache (bool bDelete)
 {
-  ON_Surface::DestroyRuntimeCache(bDelete);
+  ON_Surface::DestroyRuntimeCache (bDelete);
   if (0 != m_surface && m_surface != this) {
-    ON_Surface* surface = const_cast<ON_Surface*>(m_surface);
+    ON_Surface* surface = const_cast<ON_Surface*> (m_surface);
     if (0 != surface)
-      surface->DestroyRuntimeCache(bDelete);
+      surface->DestroyRuntimeCache (bDelete);
   }
 }
 
 void
-ON_Brep::DestroyRuntimeCache(bool bDelete)
+ON_Brep::DestroyRuntimeCache (bool bDelete)
 {
   int i, count;
 
   count = m_C2.Count();
   for (i = 0; i < count; i++) {
     if (m_C2[i])
-      m_C2[i]->DestroyRuntimeCache(bDelete);
+      m_C2[i]->DestroyRuntimeCache (bDelete);
   }
 
   count = m_C3.Count();
   for (i = 0; i < count; i++) {
     if (m_C3[i])
-      m_C3[i]->DestroyRuntimeCache(bDelete);
+      m_C3[i]->DestroyRuntimeCache (bDelete);
   }
 
   count = m_S.Count();
   for (i = 0; i < count; i++) {
     if (m_S[i])
-      m_S[i]->DestroyRuntimeCache(bDelete);
+      m_S[i]->DestroyRuntimeCache (bDelete);
   }
 
   count = m_T.Count();
   for (i = 0; i < count; i++) {
-    m_T[i].DestroyRuntimeCache(bDelete);
+    m_T[i].DestroyRuntimeCache (bDelete);
   }
 
   count = m_E.Count();
   for (i = 0; i < count; i++) {
-    m_E[i].DestroyRuntimeCache(bDelete);
+    m_E[i].DestroyRuntimeCache (bDelete);
   }
 
   count = m_F.Count();
   for (i = 0; i < count; i++) {
-    m_F[i].DestroyRuntimeCache(bDelete);
+    m_F[i].DestroyRuntimeCache (bDelete);
   }
 
   // 15 August 2003 Dale Lear:

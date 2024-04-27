@@ -57,7 +57,8 @@
     if (pcl::getTime() - last >= 1.0) {                                                \
       double now = pcl::getTime();                                                     \
       std::cout << "Average framerate(" << (_WHAT_)                                    \
-                << "): " << double(count) / double(now - last) << " Hz" << std::endl;  \
+                << "): " << double (count) / double (now - last) << " Hz"              \
+                << std::endl;                                                          \
       count = 0;                                                                       \
       last = now;                                                                      \
     }                                                                                  \
@@ -74,8 +75,8 @@ public:
   using Cloud = pcl::PointCloud<PointType>;
   using CloudConstPtr = typename Cloud::ConstPtr;
 
-  SimpleONIViewer(pcl::ONIGrabber& grabber)
-  : viewer("PCL OpenNI Viewer"), grabber_(grabber), cloud_()
+  SimpleONIViewer (pcl::ONIGrabber& grabber)
+  : viewer ("PCL OpenNI Viewer"), grabber_ (grabber), cloud_()
   {}
 
   /**
@@ -85,8 +86,8 @@ public:
   void
   cloud_cb_ (const CloudConstPtr& cloud)
   {
-    FPS_CALC("callback");
-    std::lock_guard<std::mutex> lock(mtx_);
+    FPS_CALC ("callback");
+    std::lock_guard<std::mutex> lock (mtx_);
     cloud_ = cloud;
   }
 
@@ -99,9 +100,9 @@ public:
   getLatestCloud ()
   {
     // lock while we swap our cloud and reset it.
-    std::lock_guard<std::mutex> lock(mtx_);
+    std::lock_guard<std::mutex> lock (mtx_);
     CloudConstPtr temp_cloud;
-    temp_cloud.swap(cloud_); // here we set cloud_ to null, so that
+    temp_cloud.swap (cloud_); // here we set cloud_ to null, so that
     // it is safe to set it again from our
     // callback
     return (temp_cloud);
@@ -116,19 +117,19 @@ public:
     // pcl::Grabber* interface = new pcl::OpenNIGrabber(device_id_,
     // pcl::OpenNIGrabber::OpenNI_QQVGA_30Hz, pcl::OpenNIGrabber::OpenNI_VGA_30Hz);
 
-    std::function<void(const CloudConstPtr&)> f = [this] (const CloudConstPtr& cloud) {
-      cloud_cb_(cloud);
+    std::function<void (const CloudConstPtr&)> f = [this] (const CloudConstPtr& cloud) {
+      cloud_cb_ (cloud);
     };
 
-    boost::signals2::connection c = grabber_.registerCallback(f);
+    boost::signals2::connection c = grabber_.registerCallback (f);
 
     grabber_.start();
 
     while (!viewer.wasStopped()) {
       if (cloud_) {
-        FPS_CALC("drawing");
+        FPS_CALC ("drawing");
         // the call to get() sets the cloud_ to null;
-        viewer.showCloud(getLatestCloud(), "cloud");
+        viewer.showCloud (getLatestCloud(), "cloud");
       }
     }
 
@@ -160,34 +161,34 @@ main (int argc, char** argv)
     arg = argv[1];
 
     if (arg == "--help" || arg == "-h") {
-      usage(argv);
+      usage (argv);
       return 1;
     }
 
     if (argc >= 3) {
-      frame_rate = atoi(argv[2]);
+      frame_rate = atoi (argv[2]);
     }
   }
   else {
-    usage(argv);
+    usage (argv);
     return 1;
   }
 
   pcl::TimeTrigger trigger;
 
-  pcl::ONIGrabber grabber(arg, true, frame_rate == 0);
+  pcl::ONIGrabber grabber (arg, true, frame_rate == 0);
   if (frame_rate != 0) {
-    trigger.setInterval(1.0 / static_cast<double>(frame_rate));
-    trigger.registerCallback([&] { grabber.start(); });
+    trigger.setInterval (1.0 / static_cast<double> (frame_rate));
+    trigger.registerCallback ([&] { grabber.start(); });
     trigger.start();
   }
   if (grabber.providesCallback<pcl::ONIGrabber::sig_cb_openni_point_cloud_rgb>() &&
-      !pcl::console::find_switch(argc, argv, "-xyz")) {
-    SimpleONIViewer<pcl::PointXYZRGBA> v(grabber);
+      !pcl::console::find_switch (argc, argv, "-xyz")) {
+    SimpleONIViewer<pcl::PointXYZRGBA> v (grabber);
     v.run();
   }
   else {
-    SimpleONIViewer<pcl::PointXYZ> v(grabber);
+    SimpleONIViewer<pcl::PointXYZ> v (grabber);
     v.run();
   }
 

@@ -19,14 +19,14 @@
 
 class ON_CLASS ON_AnnotationTextDot : public ON_Point {
   // 3d annotation dot with text
-  ON_OBJECT_DECLARE(ON_AnnotationTextDot);
+  ON_OBJECT_DECLARE (ON_AnnotationTextDot);
 
 public:
   ON_AnnotationTextDot();
   ~ON_AnnotationTextDot();
-  ON_AnnotationTextDot(const ON_AnnotationTextDot&);
+  ON_AnnotationTextDot (const ON_AnnotationTextDot&);
   ON_AnnotationTextDot&
-  operator=(const ON_AnnotationTextDot&);
+  operator= (const ON_AnnotationTextDot&);
 
   /////////////////////////////////////////////////////////////////
   //
@@ -71,14 +71,14 @@ public:
 
 class ON_CLASS ON_AnnotationArrow : public ON_Geometry {
   // 3d annotation arrow
-  ON_OBJECT_DECLARE(ON_AnnotationArrow);
+  ON_OBJECT_DECLARE (ON_AnnotationArrow);
 
 public:
   ON_AnnotationArrow();
   ~ON_AnnotationArrow();
-  ON_AnnotationArrow(const ON_AnnotationArrow&);
+  ON_AnnotationArrow (const ON_AnnotationArrow&);
   ON_AnnotationArrow&
-  operator=(const ON_AnnotationArrow&);
+  operator= (const ON_AnnotationArrow&);
 
   /////////////////////////////////////////////////////////////////
   //
@@ -162,7 +162,7 @@ public:
 //
 
 class ON_CLASS ON_Annotation : public ON_Geometry {
-  ON_OBJECT_DECLARE(ON_Annotation);
+  ON_OBJECT_DECLARE (ON_Annotation);
 
   enum SYMBOLS {
     degreesym = 176,
@@ -176,10 +176,10 @@ public:
   IsRealObject () const = 0;
 
   ON_Annotation();
-  ON_Annotation(const ON_Annotation&);
+  ON_Annotation (const ON_Annotation&);
   ~ON_Annotation();
   ON_Annotation&
-  operator=(const ON_Annotation&);
+  operator= (const ON_Annotation&);
 
   void
   Create (); // initialize class's fields assuming
@@ -330,16 +330,16 @@ public:
 };
 
 class ON_CLASS ON_LinearDimension : public ON_Annotation {
-  ON_OBJECT_DECLARE(ON_LinearDimension);
+  ON_OBJECT_DECLARE (ON_LinearDimension);
 
 public:
   ON_BOOL32
-  IsRealObject () const;
+  IsRealObject() const;
   ON_LinearDimension();
-  ON_LinearDimension(const ON_LinearDimension&);
+  ON_LinearDimension (const ON_LinearDimension&);
   ~ON_LinearDimension();
   ON_LinearDimension&
-  operator=(const ON_LinearDimension&);
+  operator= (const ON_LinearDimension&);
 
   double
   NumericValue ();
@@ -350,16 +350,16 @@ public:
 };
 
 class ON_CLASS ON_RadialDimension : public ON_Annotation {
-  ON_OBJECT_DECLARE(ON_RadialDimension);
+  ON_OBJECT_DECLARE (ON_RadialDimension);
 
 public:
   ON_BOOL32
-  IsRealObject () const;
+  IsRealObject() const;
   ON_RadialDimension();
-  ON_RadialDimension(const ON_RadialDimension&);
+  ON_RadialDimension (const ON_RadialDimension&);
   ~ON_RadialDimension();
   ON_RadialDimension&
-  operator=(const ON_RadialDimension&);
+  operator= (const ON_RadialDimension&);
 
   double
   NumericValue ();
@@ -371,17 +371,17 @@ public:
 };
 
 class ON_CLASS ON_AngularDimension : public ON_Annotation {
-  ON_OBJECT_DECLARE(ON_AngularDimension);
+  ON_OBJECT_DECLARE (ON_AngularDimension);
 
 public:
   ON_BOOL32
-  IsRealObject () const;
+  IsRealObject() const;
 
   ON_AngularDimension();
-  ON_AngularDimension(const ON_AngularDimension&);
+  ON_AngularDimension (const ON_AngularDimension&);
   ~ON_AngularDimension();
   ON_AngularDimension&
-  operator=(const ON_AngularDimension&);
+  operator= (const ON_AngularDimension&);
 
   void
   EmergencyDestroy ();
@@ -423,16 +423,16 @@ private:
 };
 
 class ON_CLASS ON_TextEntity : public ON_Annotation {
-  ON_OBJECT_DECLARE(ON_TextEntity);
+  ON_OBJECT_DECLARE (ON_TextEntity);
 
 public:
   ON_BOOL32
-  IsRealObject () const;
+  IsRealObject() const;
   ON_TextEntity();
-  ON_TextEntity(const ON_TextEntity&);
+  ON_TextEntity (const ON_TextEntity&);
   ~ON_TextEntity();
   ON_TextEntity&
-  operator=(const ON_TextEntity&);
+  operator= (const ON_TextEntity&);
 
   void
   EmergencyDestroy ();
@@ -480,16 +480,16 @@ private:
 };
 
 class ON_CLASS ON_Leader : public ON_Annotation {
-  ON_OBJECT_DECLARE(ON_Leader);
+  ON_OBJECT_DECLARE (ON_Leader);
 
 public:
   ON_BOOL32
-  IsRealObject () const;
+  IsRealObject() const;
   ON_Leader();
-  ON_Leader(const ON_Leader&);
+  ON_Leader (const ON_Leader&);
   ~ON_Leader();
   ON_Leader&
-  operator=(const ON_Leader&);
+  operator= (const ON_Leader&);
 
   void
   EmergencyDestroy ();

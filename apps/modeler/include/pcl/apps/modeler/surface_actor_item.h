@@ -55,9 +55,9 @@ public:
   using ColorHandlerPtr = ColorHandler::Ptr;
   using ColorHandlerConstPtr = ColorHandler::ConstPtr;
 
-  SurfaceActorItem(QTreeWidgetItem* parent,
-                   const CloudMesh::Ptr& cloud_mesh,
-                   const vtkSmartPointer<vtkRenderWindow>& render_window);
+  SurfaceActorItem (QTreeWidgetItem* parent,
+                    const CloudMesh::Ptr& cloud_mesh,
+                    const vtkSmartPointer<vtkRenderWindow>& render_window);
 
   std::string
   getItemName () const override

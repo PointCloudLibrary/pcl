@@ -109,35 +109,35 @@ print_usage (const std::string& msg)
 
 class SimpleOpenNIViewer {
 public:
-  SimpleOpenNIViewer(ostream& outputFile_arg,
-                     OrganizedPointCloudCompression<PointXYZRGBA>* octreeEncoder_arg,
-                     bool doColorEncoding_arg,
-                     bool bShowStatistics_arg,
-                     bool bRawImageEncoding_arg,
-                     bool bGrayScaleConversion_arg,
-                     int pngLevel_arg = -1)
-  : viewer("Input Point Cloud - PCL Compression Viewer")
-  , outputFile_(outputFile_arg)
-  , organizedEncoder_(octreeEncoder_arg)
-  , doColorEncoding_(doColorEncoding_arg)
-  , bShowStatistics_(bShowStatistics_arg)
-  , bRawImageEncoding_(bRawImageEncoding_arg)
-  , bGrayScaleConversion_(bGrayScaleConversion_arg)
-  , pngLevel_(pngLevel_arg)
+  SimpleOpenNIViewer (ostream& outputFile_arg,
+                      OrganizedPointCloudCompression<PointXYZRGBA>* octreeEncoder_arg,
+                      bool doColorEncoding_arg,
+                      bool bShowStatistics_arg,
+                      bool bRawImageEncoding_arg,
+                      bool bGrayScaleConversion_arg,
+                      int pngLevel_arg = -1)
+  : viewer ("Input Point Cloud - PCL Compression Viewer")
+  , outputFile_ (outputFile_arg)
+  , organizedEncoder_ (octreeEncoder_arg)
+  , doColorEncoding_ (doColorEncoding_arg)
+  , bShowStatistics_ (bShowStatistics_arg)
+  , bRawImageEncoding_ (bRawImageEncoding_arg)
+  , bGrayScaleConversion_ (bGrayScaleConversion_arg)
+  , pngLevel_ (pngLevel_arg)
   {}
 
   void
   cloud_cb_ (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr& cloud)
   {
     if (!viewer.wasStopped()) {
-      organizedEncoder_->encodePointCloud(cloud,
-                                          outputFile_,
-                                          doColorEncoding_,
-                                          bGrayScaleConversion_,
-                                          bShowStatistics_,
-                                          pngLevel_);
+      organizedEncoder_->encodePointCloud (cloud,
+                                           outputFile_,
+                                           doColorEncoding_,
+                                           bGrayScaleConversion_,
+                                           bShowStatistics_,
+                                           pngLevel_);
 
-      viewer.showCloud(cloud);
+      viewer.showCloud (cloud);
     }
   }
 
@@ -150,20 +150,20 @@ public:
       pcl::OpenNIGrabber interface;
 
       // make callback function from member function
-      std::function<void(const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)> f =
+      std::function<void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)> f =
           [this] (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr& cloud) {
-            cloud_cb_(cloud);
+            cloud_cb_ (cloud);
           };
 
       // connect callback function for desired signal. In this case its a point cloud
       // with color values
-      boost::signals2::connection c = interface.registerCallback(f);
+      boost::signals2::connection c = interface.registerCallback (f);
 
       // start receiving point clouds
       interface.start();
 
       while (!outputFile_.fail()) {
-        std::this_thread::sleep_for(1s);
+        std::this_thread::sleep_for (1s);
       }
 
       interface.stop();
@@ -181,32 +181,32 @@ public:
 };
 
 struct EventHelper {
-  EventHelper(ostream& outputFile_arg,
-              OrganizedPointCloudCompression<PointXYZRGBA>* octreeEncoder_arg,
-              bool doColorEncoding_arg,
-              bool bShowStatistics_arg,
-              bool bRawImageEncoding_arg,
-              bool bGrayScaleConversion_arg,
-              int pngLevel_arg = -1)
-  : outputFile_(outputFile_arg)
-  , organizedEncoder_(octreeEncoder_arg)
-  , doColorEncoding_(doColorEncoding_arg)
-  , bShowStatistics_(bShowStatistics_arg)
-  , bRawImageEncoding_(bRawImageEncoding_arg)
-  , bGrayScaleConversion_(bGrayScaleConversion_arg)
-  , pngLevel_(pngLevel_arg)
+  EventHelper (ostream& outputFile_arg,
+               OrganizedPointCloudCompression<PointXYZRGBA>* octreeEncoder_arg,
+               bool doColorEncoding_arg,
+               bool bShowStatistics_arg,
+               bool bRawImageEncoding_arg,
+               bool bGrayScaleConversion_arg,
+               int pngLevel_arg = -1)
+  : outputFile_ (outputFile_arg)
+  , organizedEncoder_ (octreeEncoder_arg)
+  , doColorEncoding_ (doColorEncoding_arg)
+  , bShowStatistics_ (bShowStatistics_arg)
+  , bRawImageEncoding_ (bRawImageEncoding_arg)
+  , bGrayScaleConversion_ (bGrayScaleConversion_arg)
+  , pngLevel_ (pngLevel_arg)
   {}
 
   void
   cloud_cb_ (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr& cloud)
   {
     if (!outputFile_.fail()) {
-      organizedEncoder_->encodePointCloud(cloud,
-                                          outputFile_,
-                                          doColorEncoding_,
-                                          bGrayScaleConversion_,
-                                          bShowStatistics_,
-                                          pngLevel_);
+      organizedEncoder_->encodePointCloud (cloud,
+                                           outputFile_,
+                                           doColorEncoding_,
+                                           bGrayScaleConversion_,
+                                           bShowStatistics_,
+                                           pngLevel_);
     }
   }
 
@@ -222,30 +222,30 @@ struct EventHelper {
     std::uint32_t width = depth_image->getWidth();
     std::uint32_t height = depth_image->getHeight();
 
-    disparity_data.resize(width * height);
-    depth_image->fillDepthImageRaw(
+    disparity_data.resize (width * height);
+    depth_image->fillDepthImageRaw (
         width,
         height,
         &disparity_data[0],
-        static_cast<unsigned int>(width * sizeof(std::uint16_t)));
+        static_cast<unsigned int> (width * sizeof (std::uint16_t)));
 
     if (image->getEncoding() != openni_wrapper::Image::RGB) {
-      rgb_data.resize(width * height * 3);
-      image->fillRGB(width,
-                     height,
-                     &rgb_data[0],
-                     static_cast<unsigned int>(width * sizeof(std::uint8_t) * 3));
+      rgb_data.resize (width * height * 3);
+      image->fillRGB (width,
+                      height,
+                      &rgb_data[0],
+                      static_cast<unsigned int> (width * sizeof (std::uint8_t) * 3));
     }
 
-    organizedEncoder_->encodeRawDisparityMapWithColorImage(disparity_data,
-                                                           rgb_data,
-                                                           width,
-                                                           height,
-                                                           outputFile_,
-                                                           doColorEncoding_,
-                                                           bGrayScaleConversion_,
-                                                           bShowStatistics_,
-                                                           pngLevel_);
+    organizedEncoder_->encodeRawDisparityMapWithColorImage (disparity_data,
+                                                            rgb_data,
+                                                            width,
+                                                            height,
+                                                            outputFile_,
+                                                            doColorEncoding_,
+                                                            bGrayScaleConversion_,
+                                                            bShowStatistics_,
+                                                            pngLevel_);
   }
 
   void
@@ -256,20 +256,20 @@ struct EventHelper {
       pcl::OpenNIGrabber interface;
 
       // make callback function from member function
-      std::function<void(const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)> f =
+      std::function<void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)> f =
           [this] (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr& cloud) {
-            cloud_cb_(cloud);
+            cloud_cb_ (cloud);
           };
 
       // connect callback function for desired signal. In this case its a point cloud
       // with color values
-      boost::signals2::connection c = interface.registerCallback(f);
+      boost::signals2::connection c = interface.registerCallback (f);
 
       // start receiving point clouds
       interface.start();
 
       while (!outputFile_.fail()) {
-        std::this_thread::sleep_for(1s);
+        std::this_thread::sleep_for (1s);
       }
 
       interface.stop();
@@ -278,24 +278,25 @@ struct EventHelper {
       pcl::OpenNIGrabber::Mode image_mode = pcl::OpenNIGrabber::OpenNI_Default_Mode;
       int depthformat = openni_wrapper::OpenNIDevice::OpenNI_shift_values;
 
-      pcl::OpenNIGrabber grabber(
+      pcl::OpenNIGrabber grabber (
           "", pcl::OpenNIGrabber::OpenNI_Default_Mode, image_mode);
 
       // Set the depth output format
-      grabber.getDevice()->setDepthOutputFormat(
-          static_cast<openni_wrapper::OpenNIDevice::DepthMode>(depthformat));
+      grabber.getDevice()->setDepthOutputFormat (
+          static_cast<openni_wrapper::OpenNIDevice::DepthMode> (depthformat));
 
-      std::function<void(const openni_wrapper::Image::Ptr&,
-                         const openni_wrapper::DepthImage::Ptr&,
-                         float)>
+      std::function<void (const openni_wrapper::Image::Ptr&,
+                          const openni_wrapper::DepthImage::Ptr&,
+                          float)>
           image_cb = [this] (const openni_wrapper::Image::Ptr& img,
                              const openni_wrapper::DepthImage::Ptr& depth,
-                             float f) { image_callback(img, depth, f); };
-      boost::signals2::connection image_connection = grabber.registerCallback(image_cb);
+                             float f) { image_callback (img, depth, f); };
+      boost::signals2::connection image_connection =
+          grabber.registerCallback (image_cb);
 
       grabber.start();
       while (!outputFile_.fail()) {
-        std::this_thread::sleep_for(1s);
+        std::this_thread::sleep_for (1s);
       }
       grabber.stop();
     }
@@ -338,55 +339,55 @@ main (int argc, char** argv)
   bRawImageEncoding = false;
   bGrayScaleConversion = false;
 
-  if (pcl::console::find_argument(argc, argv, "-e") > 0)
+  if (pcl::console::find_argument (argc, argv, "-e") > 0)
     bShowInputCloud = true;
 
-  if (pcl::console::find_argument(argc, argv, "-r") > 0)
+  if (pcl::console::find_argument (argc, argv, "-r") > 0)
     bRawImageEncoding = true;
 
-  if (pcl::console::find_argument(argc, argv, "-g") > 0)
+  if (pcl::console::find_argument (argc, argv, "-g") > 0)
     bGrayScaleConversion = true;
 
-  if (pcl::console::find_argument(argc, argv, "-s") > 0) {
+  if (pcl::console::find_argument (argc, argv, "-s") > 0) {
     bEnDecode = true;
     bServerFileMode = true;
     validArguments = true;
   }
 
-  if (pcl::console::parse_argument(argc, argv, "-c", hostName) > 0) {
+  if (pcl::console::parse_argument (argc, argv, "-c", hostName) > 0) {
     bEnDecode = false;
     bServerFileMode = true;
     validArguments = true;
   }
 
-  if (pcl::console::find_argument(argc, argv, "-a") > 0) {
+  if (pcl::console::find_argument (argc, argv, "-a") > 0) {
     doColorEncoding = true;
   }
 
-  if (pcl::console::find_argument(argc, argv, "-x") > 0) {
+  if (pcl::console::find_argument (argc, argv, "-x") > 0) {
     bEnDecode = true;
     bServerFileMode = false;
     validArguments = true;
   }
 
-  if (pcl::console::find_argument(argc, argv, "-d") > 0) {
+  if (pcl::console::find_argument (argc, argv, "-d") > 0) {
     bEnDecode = false;
     bServerFileMode = false;
     validArguments = true;
   }
 
-  if (pcl::console::find_argument(argc, argv, "-t") > 0)
+  if (pcl::console::find_argument (argc, argv, "-t") > 0)
     showStatistics = true;
 
-  pcl::console::parse_argument(argc, argv, "-f", fileName);
+  pcl::console::parse_argument (argc, argv, "-f", fileName);
 
-  if (pcl::console::find_argument(argc, argv, "-?") > 0) {
-    print_usage("");
+  if (pcl::console::find_argument (argc, argv, "-?") > 0) {
+    print_usage ("");
     return 1;
   }
 
   if (!validArguments) {
-    print_usage("Please specify compression mode..\n");
+    print_usage ("Please specify compression mode..\n");
     return -1;
   }
 
@@ -396,41 +397,41 @@ main (int argc, char** argv)
     if (bEnDecode) {
       // ENCODING
       std::ofstream compressedPCFile;
-      compressedPCFile.open(fileName.c_str(),
-                            std::ios::out | std::ios::trunc | std::ios::binary);
+      compressedPCFile.open (fileName.c_str(),
+                             std::ios::out | std::ios::trunc | std::ios::binary);
 
       if (!bShowInputCloud) {
-        EventHelper v(compressedPCFile,
-                      organizedCoder,
-                      doColorEncoding,
-                      showStatistics,
-                      bRawImageEncoding,
-                      bGrayScaleConversion);
+        EventHelper v (compressedPCFile,
+                       organizedCoder,
+                       doColorEncoding,
+                       showStatistics,
+                       bRawImageEncoding,
+                       bGrayScaleConversion);
         v.run();
       }
       else {
-        SimpleOpenNIViewer v(compressedPCFile,
-                             organizedCoder,
-                             doColorEncoding,
-                             showStatistics,
-                             bRawImageEncoding,
-                             bGrayScaleConversion);
+        SimpleOpenNIViewer v (compressedPCFile,
+                              organizedCoder,
+                              doColorEncoding,
+                              showStatistics,
+                              bRawImageEncoding,
+                              bGrayScaleConversion);
         v.run();
       }
     }
     else {
       // DECODING
       std::ifstream compressedPCFile;
-      compressedPCFile.open(fileName.c_str(), std::ios::in | std::ios::binary);
-      compressedPCFile.seekg(0);
-      compressedPCFile.unsetf(std::ios_base::skipws);
+      compressedPCFile.open (fileName.c_str(), std::ios::in | std::ios::binary);
+      compressedPCFile.seekg (0);
+      compressedPCFile.unsetf (std::ios_base::skipws);
 
-      pcl::visualization::CloudViewer viewer("PCL Compression Viewer");
+      pcl::visualization::CloudViewer viewer ("PCL Compression Viewer");
 
       while (!compressedPCFile.eof()) {
-        PointCloud<PointXYZRGBA>::Ptr cloudOut(new PointCloud<PointXYZRGBA>());
-        organizedCoder->decodePointCloud(compressedPCFile, cloudOut);
-        viewer.showCloud(cloudOut);
+        PointCloud<PointXYZRGBA>::Ptr cloudOut (new PointCloud<PointXYZRGBA>());
+        organizedCoder->decodePointCloud (compressedPCFile, cloudOut);
+        viewer.showCloud (cloudOut);
       }
     }
   }
@@ -439,39 +440,39 @@ main (int argc, char** argv)
       // ENCODING
       try {
         boost::asio::io_service io_service;
-        tcp::endpoint endpoint(tcp::v4(), 6666);
-        tcp::acceptor acceptor(io_service, endpoint);
+        tcp::endpoint endpoint (tcp::v4(), 6666);
+        tcp::acceptor acceptor (io_service, endpoint);
 
         tcp::iostream socketStream;
 
         std::cout << "Waiting for connection.." << std::endl;
 
-        acceptor.accept(*socketStream.rdbuf());
+        acceptor.accept (*socketStream.rdbuf());
 
         std::cout << "Connected!" << std::endl;
 
         if (!bShowInputCloud) {
-          EventHelper v(socketStream,
-                        organizedCoder,
-                        doColorEncoding,
-                        showStatistics,
-                        bRawImageEncoding,
-                        bGrayScaleConversion);
+          EventHelper v (socketStream,
+                         organizedCoder,
+                         doColorEncoding,
+                         showStatistics,
+                         bRawImageEncoding,
+                         bGrayScaleConversion);
           v.run();
         }
         else {
-          SimpleOpenNIViewer v(socketStream,
-                               organizedCoder,
-                               doColorEncoding,
-                               showStatistics,
-                               bRawImageEncoding,
-                               bGrayScaleConversion);
+          SimpleOpenNIViewer v (socketStream,
+                                organizedCoder,
+                                doColorEncoding,
+                                showStatistics,
+                                bRawImageEncoding,
+                                bGrayScaleConversion);
           v.run();
         }
 
         std::cout << "Disconnected!" << std::endl;
 
-        std::this_thread::sleep_for(3s);
+        std::this_thread::sleep_for (3s);
 
       } catch (std::exception& e) {
         std::cerr << e.what() << std::endl;
@@ -482,18 +483,18 @@ main (int argc, char** argv)
       std::cout << "Connecting to: " << hostName << ".." << std::endl;
 
       try {
-        tcp::iostream socketStream(hostName.c_str(), "6666");
+        tcp::iostream socketStream (hostName.c_str(), "6666");
 
         std::cout << "Connected!" << std::endl;
 
-        pcl::visualization::CloudViewer viewer(
+        pcl::visualization::CloudViewer viewer (
             "Decoded Point Cloud - PCL Compression Viewer");
 
         while (!socketStream.fail()) {
-          FPS_CALC("drawing");
-          PointCloud<PointXYZRGBA>::Ptr cloudOut(new PointCloud<PointXYZRGBA>());
-          organizedCoder->decodePointCloud(socketStream, cloudOut);
-          viewer.showCloud(cloudOut);
+          FPS_CALC ("drawing");
+          PointCloud<PointXYZRGBA>::Ptr cloudOut (new PointCloud<PointXYZRGBA>());
+          organizedCoder->decodePointCloud (socketStream, cloudOut);
+          viewer.showCloud (cloudOut);
         }
 
       } catch (std::exception& e) {

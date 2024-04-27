@@ -55,7 +55,7 @@ public:
   struct Parameter {
     double smoothness;
     double rScale;
-    Parameter() : smoothness(0.1), rScale(1.0) {}
+    Parameter() : smoothness (0.1), rScale (1.0) {}
   };
 
   struct FitParameter {
@@ -76,13 +76,13 @@ public:
    * \param[in] order the polynomial order of the B-Spline curve.
    * \param[in] data pointer to the 2D point-cloud data to be fit.
    */
-  FittingCurve2dPDM(int order, NurbsDataCurve2d* data);
+  FittingCurve2dPDM (int order, NurbsDataCurve2d* data);
 
   /** \brief Constructor initializing with the B-Spline curve given in argument 2.
    * \param[in] data pointer to the 2D point-cloud data to be fit.
    * \param[in] nc B-Spline curve used for fitting.
    */
-  FittingCurve2dPDM(NurbsDataCurve2d* data, const ON_NurbsCurve& nc);
+  FittingCurve2dPDM (NurbsDataCurve2d* data, const ON_NurbsCurve& nc);
 
   /** \brief Default virtual destructor. */
   virtual ~FittingCurve2dPDM() = default;
@@ -218,7 +218,7 @@ public:
   setQuiet (bool val)
   {
     m_quiet = val;
-    m_solver.setQuiet(val);
+    m_solver.setQuiet (val);
   }
 
   /** \brief Set parameters for inverse mapping. */

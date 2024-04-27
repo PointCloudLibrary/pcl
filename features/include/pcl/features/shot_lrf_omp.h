@@ -73,7 +73,7 @@ public:
   {
     feature_name_ = "SHOTLocalReferenceFrameEstimationOMP";
 
-    setNumberOfThreads(0);
+    setNumberOfThreads (0);
   }
 
   /** \brief Empty destructor */

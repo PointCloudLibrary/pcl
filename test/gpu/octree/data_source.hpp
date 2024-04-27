@@ -45,7 +45,7 @@
 #include <vector>
 
 #if defined(_WIN32) || defined(_WIN64)
-EIGEN_DEFINE_STL_VECTOR_SPECIALIZATION(pcl::PointXYZ)
+EIGEN_DEFINE_STL_VECTOR_SPECIALIZATION (pcl::PointXYZ)
 #endif
 
 namespace pcl {
@@ -70,7 +70,7 @@ struct DataGenerator {
 
   std::vector<int> indices;
 
-  DataGenerator() : data_size(871000), tests_num(10000), cube_size(1024.f)
+  DataGenerator() : data_size (871000), tests_num (10000), cube_size (1024.f)
   {
     max_radius = cube_size / 15.f;
     shared_radius = cube_size / 20.f;
@@ -79,17 +79,17 @@ struct DataGenerator {
   void
   operator()()
   {
-    srand(0);
+    srand (0);
 
-    points.resize(data_size);
+    points.resize (data_size);
     for (std::size_t i = 0; i < data_size; ++i) {
       points[i].x = ((float)rand()) / RAND_MAX * cube_size;
       points[i].y = ((float)rand()) / RAND_MAX * cube_size;
       points[i].z = ((float)rand()) / RAND_MAX * cube_size;
     }
 
-    queries.resize(tests_num);
-    radiuses.resize(tests_num);
+    queries.resize (tests_num);
+    radiuses.resize (tests_num);
     for (std::size_t i = 0; i < tests_num; ++i) {
       queries[i].x = ((float)rand()) / RAND_MAX * cube_size;
       queries[i].y = ((float)rand()) / RAND_MAX * cube_size;
@@ -98,7 +98,7 @@ struct DataGenerator {
     };
 
     for (std::size_t i = 0; i < tests_num / 2; ++i)
-      indices.push_back(i * 2);
+      indices.push_back (i * 2);
   }
 
   void
@@ -107,10 +107,10 @@ struct DataGenerator {
     if (log)
       std::cout << "BruteForceSearch";
 
-    int value100 = std::min<int>(tests_num, 50);
+    int value100 = std::min<int> (tests_num, 50);
     int step = tests_num / value100;
 
-    bfresutls.resize(tests_num);
+    bfresutls.resize (tests_num);
     for (std::size_t i = 0; i < tests_num; ++i) {
       if (log && i % step == 0) {
         std::cout << ".";
@@ -131,10 +131,10 @@ struct DataGenerator {
         float dz = query.z - point.z;
 
         if (dx * dx + dy * dy + dz * dz < query_radius * query_radius)
-          curr_res.push_back(ind);
+          curr_res.push_back (ind);
       }
 
-      std::sort(curr_res.begin(), curr_res.end());
+      std::sort (curr_res.begin(), curr_res.end());
     }
     if (log)
       std::cout << "Done" << std::endl;
@@ -153,7 +153,7 @@ struct DataGenerator {
   template <typename Dst>
   struct ConvPoint {
     Dst
-    operator()(const PointType& src) const
+    operator() (const PointType& src) const
     {
       Dst dst;
       dst.x = src.x;

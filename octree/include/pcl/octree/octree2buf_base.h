@@ -58,14 +58,14 @@ public:
   BufferedBranchNode() : OctreeNode() { reset(); }
 
   /** \brief Copy constructor. */
-  BufferedBranchNode(const BufferedBranchNode& source) : OctreeNode()
+  BufferedBranchNode (const BufferedBranchNode& source) : OctreeNode()
   {
     *this = source;
   }
 
   /** \brief Copy operator. */
   inline BufferedBranchNode&
-  operator=(const BufferedBranchNode& source_arg)
+  operator= (const BufferedBranchNode& source_arg)
   {
     child_node_array_ = {};
     for (unsigned char b = 0; b < 2; ++b) {
@@ -85,7 +85,7 @@ public:
   BufferedBranchNode*
   deepCopy () const override
   {
-    return new BufferedBranchNode(*this);
+    return new BufferedBranchNode (*this);
   }
 
   /** \brief Get child pointer in current branch node
@@ -96,7 +96,7 @@ public:
   inline OctreeNode*
   getChildPtr (unsigned char buffer_arg, unsigned char index_arg) const
   {
-    assert((buffer_arg < 2) && (index_arg < 8));
+    assert ((buffer_arg < 2) && (index_arg < 8));
     return child_node_array_[buffer_arg][index_arg];
   }
 
@@ -110,7 +110,7 @@ public:
                unsigned char index_arg,
                OctreeNode* newNode_arg)
   {
-    assert((buffer_arg < 2) && (index_arg < 8));
+    assert ((buffer_arg < 2) && (index_arg < 8));
     child_node_array_[buffer_arg][index_arg] = newNode_arg;
   }
 
@@ -122,7 +122,7 @@ public:
   inline bool
   hasChild (unsigned char buffer_arg, unsigned char index_arg) const
   {
-    assert((buffer_arg < 2) && (index_arg < 8));
+    assert ((buffer_arg < 2) && (index_arg < 8));
     return (child_node_array_[buffer_arg][index_arg] != nullptr);
   }
 
@@ -243,7 +243,7 @@ public:
   Iterator
   begin (uindex_t max_depth_arg = 0)
   {
-    return Iterator(this, max_depth_arg);
+    return Iterator (this, max_depth_arg);
   };
   const Iterator
   end ()
@@ -265,7 +265,7 @@ public:
   LeafNodeDepthFirstIterator
   leaf_depth_begin (uindex_t max_depth_arg = 0)
   {
-    return LeafNodeDepthFirstIterator(this, max_depth_arg);
+    return LeafNodeDepthFirstIterator (this, max_depth_arg);
   };
 
   const LeafNodeDepthFirstIterator
@@ -280,7 +280,7 @@ public:
   DepthFirstIterator
   depth_begin (uindex_t maxDepth_arg = 0)
   {
-    return DepthFirstIterator(this, maxDepth_arg);
+    return DepthFirstIterator (this, maxDepth_arg);
   };
   const DepthFirstIterator
   depth_end ()
@@ -294,7 +294,7 @@ public:
   BreadthFirstIterator
   breadth_begin (uindex_t max_depth_arg = 0)
   {
-    return BreadthFirstIterator(this, max_depth_arg);
+    return BreadthFirstIterator (this, max_depth_arg);
   };
   const BreadthFirstIterator
   breadth_end ()
@@ -310,14 +310,14 @@ public:
   LeafNodeBreadthIterator
   leaf_breadth_begin (uindex_t max_depth_arg = 0u)
   {
-    return LeafNodeBreadthIterator(this,
-                                   max_depth_arg ? max_depth_arg : this->octree_depth_);
+    return LeafNodeBreadthIterator (
+        this, max_depth_arg ? max_depth_arg : this->octree_depth_);
   };
 
   const LeafNodeBreadthIterator
   leaf_breadth_end ()
   {
-    return LeafNodeBreadthIterator(this, 0, nullptr);
+    return LeafNodeBreadthIterator (this, 0, nullptr);
   };
 
   /** \brief Empty constructor. */
@@ -327,25 +327,25 @@ public:
   virtual ~Octree2BufBase();
 
   /** \brief Copy constructor. */
-  Octree2BufBase(const Octree2BufBase& source)
-  : leaf_count_(source.leaf_count_)
-  , branch_count_(source.branch_count_)
-  , root_node_(new(BranchNode)(*(source.root_node_)))
-  , depth_mask_(source.depth_mask_)
-  , max_key_(source.max_key_)
-  , buffer_selector_(source.buffer_selector_)
-  , tree_dirty_flag_(source.tree_dirty_flag_)
-  , octree_depth_(source.octree_depth_)
-  , dynamic_depth_enabled_(source.dynamic_depth_enabled_)
+  Octree2BufBase (const Octree2BufBase& source)
+  : leaf_count_ (source.leaf_count_)
+  , branch_count_ (source.branch_count_)
+  , root_node_ (new (BranchNode) (*(source.root_node_)))
+  , depth_mask_ (source.depth_mask_)
+  , max_key_ (source.max_key_)
+  , buffer_selector_ (source.buffer_selector_)
+  , tree_dirty_flag_ (source.tree_dirty_flag_)
+  , octree_depth_ (source.octree_depth_)
+  , dynamic_depth_enabled_ (source.dynamic_depth_enabled_)
   {}
 
   /** \brief Copy constructor. */
   inline Octree2BufBase&
-  operator=(const Octree2BufBase& source)
+  operator= (const Octree2BufBase& source)
   {
     leaf_count_ = source.leaf_count_;
     branch_count_ = source.branch_count_;
-    root_node_ = new (BranchNode)(*(source.root_node_));
+    root_node_ = new (BranchNode) (*(source.root_node_));
     depth_mask_ = source.depth_mask_;
     max_key_ = source.max_key_;
     buffer_selector_ = source.buffer_selector_;
@@ -440,7 +440,7 @@ public:
   inline void
   deletePreviousBuffer ()
   {
-    treeCleanUpRecursive(root_node_);
+    treeCleanUpRecursive (root_node_);
   }
 
   /** \brief Delete the octree structure in the current buffer. */
@@ -448,7 +448,7 @@ public:
   deleteCurrentBuffer ()
   {
     buffer_selector_ = !buffer_selector_;
-    treeCleanUpRecursive(root_node_);
+    treeCleanUpRecursive (root_node_);
     leaf_count_ = 0;
   }
 
@@ -545,7 +545,7 @@ protected:
   findLeaf (const OctreeKey& key_arg) const
   {
     LeafContainerT* result = nullptr;
-    findLeafRecursive(key_arg, depth_mask_, root_node_, result);
+    findLeafRecursive (key_arg, depth_mask_, root_node_, result);
     return result;
   }
 
@@ -561,7 +561,7 @@ protected:
     LeafNode* leaf_node;
     BranchNode* leaf_node_parent;
 
-    createLeafRecursive(
+    createLeafRecursive (
         key_arg, depth_mask_, root_node_, leaf_node, leaf_node_parent, false);
 
     LeafContainerT* ret = leaf_node->getContainerPtr();
@@ -576,7 +576,7 @@ protected:
   inline bool
   existLeaf (const OctreeKey& key_arg) const
   {
-    return (findLeaf(key_arg) != nullptr);
+    return (findLeaf (key_arg) != nullptr);
   }
 
   /** \brief Remove leaf node from octree
@@ -586,7 +586,7 @@ protected:
   removeLeaf (const OctreeKey& key_arg)
   {
     if (key_arg <= max_key_) {
-      deleteLeafRecursive(key_arg, depth_mask_, root_node_);
+      deleteLeafRecursive (key_arg, depth_mask_, root_node_);
 
       // we changed the octree structure -> dirty
       tree_dirty_flag_ = true;
@@ -606,7 +606,7 @@ protected:
   branchHasChild (const BranchNode& branch_arg, unsigned char child_idx_arg) const
   {
     // test occupancyByte for child existence
-    return (branch_arg.getChildPtr(buffer_selector_, child_idx_arg) != nullptr);
+    return (branch_arg.getChildPtr (buffer_selector_, child_idx_arg) != nullptr);
   }
 
   /** \brief Retrieve a child node pointer for child node at child_idx.
@@ -617,7 +617,7 @@ protected:
   inline OctreeNode*
   getBranchChildPtr (const BranchNode& branch_arg, unsigned char child_idx_arg) const
   {
-    return branch_arg.getChildPtr(buffer_selector_, child_idx_arg);
+    return branch_arg.getChildPtr (buffer_selector_, child_idx_arg);
   }
 
   /** \brief Assign new child node to branch
@@ -630,7 +630,7 @@ protected:
                      unsigned char child_idx_arg,
                      OctreeNode* new_child_arg)
   {
-    branch_arg.setChildPtr(buffer_selector_, child_idx_arg, new_child_arg);
+    branch_arg.setChildPtr (buffer_selector_, child_idx_arg, new_child_arg);
   }
 
   /** \brief Generate bit pattern reflecting the existence of child node pointers for
@@ -646,8 +646,8 @@ protected:
     // create bit pattern
     node_bits = 0;
     for (unsigned char i = 0; i < 8; i++) {
-      const OctreeNode* child = branch_arg.getChildPtr(buffer_selector_, i);
-      node_bits |= static_cast<char>((!!child) << i);
+      const OctreeNode* child = branch_arg.getChildPtr (buffer_selector_, i);
+      node_bits |= static_cast<char> ((!!child) << i);
     }
 
     return (node_bits);
@@ -668,8 +668,8 @@ protected:
     // create bit pattern
     node_bits = 0;
     for (unsigned char i = 0; i < 8; i++) {
-      const OctreeNode* child = branch_arg.getChildPtr(bufferSelector_arg, i);
-      node_bits |= static_cast<char>((!!child) << i);
+      const OctreeNode* child = branch_arg.getChildPtr (bufferSelector_arg, i);
+      node_bits |= static_cast<char> ((!!child) << i);
     }
 
     return (node_bits);
@@ -689,11 +689,11 @@ protected:
     node_bits[0] = node_bits[1] = 0;
 
     for (unsigned char i = 0; i < 8; i++) {
-      const OctreeNode* childA = branch_arg.getChildPtr(0, i);
-      const OctreeNode* childB = branch_arg.getChildPtr(1, i);
+      const OctreeNode* childA = branch_arg.getChildPtr (0, i);
+      const OctreeNode* childB = branch_arg.getChildPtr (1, i);
 
-      node_bits[0] |= static_cast<char>((!!childA) << i);
-      node_bits[1] |= static_cast<char>((!!childB) << i);
+      node_bits[0] |= static_cast<char> ((!!childA) << i);
+      node_bits[1] |= static_cast<char> ((!!childB) << i);
     }
 
     return node_bits[0] ^ node_bits[1];
@@ -707,7 +707,7 @@ protected:
   inline bool
   hasBranchChanges (const BranchNode& branch_arg) const
   {
-    return (getBranchXORBitPattern(branch_arg) > 0);
+    return (getBranchXORBitPattern (branch_arg) > 0);
   }
 
   /** \brief Delete child node and all its subchilds from octree in specific buffer
@@ -720,14 +720,14 @@ protected:
                      unsigned char buffer_selector_arg,
                      unsigned char child_idx_arg)
   {
-    if (branch_arg.hasChild(buffer_selector_arg, child_idx_arg)) {
+    if (branch_arg.hasChild (buffer_selector_arg, child_idx_arg)) {
       OctreeNode* branchChild =
-          branch_arg.getChildPtr(buffer_selector_arg, child_idx_arg);
+          branch_arg.getChildPtr (buffer_selector_arg, child_idx_arg);
 
       switch (branchChild->getNodeType()) {
       case BRANCH_NODE: {
         // free child branch recursively
-        deleteBranch(*static_cast<BranchNode*>(branchChild));
+        deleteBranch (*static_cast<BranchNode*> (branchChild));
 
         // delete unused branch
         delete (branchChild);
@@ -744,7 +744,7 @@ protected:
       }
 
       // set branch child pointer to 0
-      branch_arg.setChildPtr(buffer_selector_arg, child_idx_arg, nullptr);
+      branch_arg.setChildPtr (buffer_selector_arg, child_idx_arg, nullptr);
     }
   }
 
@@ -755,7 +755,7 @@ protected:
   inline void
   deleteBranchChild (BranchNode& branch_arg, unsigned char child_idx_arg)
   {
-    deleteBranchChild(branch_arg, buffer_selector_, child_idx_arg);
+    deleteBranchChild (branch_arg, buffer_selector_, child_idx_arg);
   }
 
   /** \brief Delete branch and all its subchilds from octree (both buffers)
@@ -767,17 +767,17 @@ protected:
     // delete all branch node children
     for (char i = 0; i < 8; i++) {
 
-      if (branch_arg.getChildPtr(0, i) == branch_arg.getChildPtr(1, i)) {
+      if (branch_arg.getChildPtr (0, i) == branch_arg.getChildPtr (1, i)) {
         // reference was copied - there is only one child instance to be deleted
-        deleteBranchChild(branch_arg, 0, i);
+        deleteBranchChild (branch_arg, 0, i);
 
         // remove pointers from both buffers
-        branch_arg.setChildPtr(0, i, nullptr);
-        branch_arg.setChildPtr(1, i, nullptr);
+        branch_arg.setChildPtr (0, i, nullptr);
+        branch_arg.setChildPtr (1, i, nullptr);
       }
       else {
-        deleteBranchChild(branch_arg, 0, i);
-        deleteBranchChild(branch_arg, 1, i);
+        deleteBranchChild (branch_arg, 0, i);
+        deleteBranchChild (branch_arg, 1, i);
       }
     }
   }
@@ -792,8 +792,8 @@ protected:
   {
     auto* new_branch_child = new BranchNode();
 
-    branch_arg.setChildPtr(
-        buffer_selector_, child_idx_arg, static_cast<OctreeNode*>(new_branch_child));
+    branch_arg.setChildPtr (
+        buffer_selector_, child_idx_arg, static_cast<OctreeNode*> (new_branch_child));
 
     return new_branch_child;
   }
@@ -808,7 +808,7 @@ protected:
   {
     auto* new_leaf_child = new LeafNode();
 
-    branch_arg.setChildPtr(buffer_selector_, child_idx_arg, new_leaf_child);
+    branch_arg.setChildPtr (buffer_selector_, child_idx_arg, new_leaf_child);
 
     return new_leaf_child;
   }

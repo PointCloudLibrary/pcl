@@ -64,7 +64,7 @@ namespace visualization {
  * \ingroup visualization
  */
 template <typename PointT>
-vtkSmartPointer<vtkDataSet> inline createPolygon(
+vtkSmartPointer<vtkDataSet> inline createPolygon (
     const typename pcl::PointCloud<PointT>::ConstPtr& cloud);
 
 /** \brief Create a 3d poly line from a set of points on the boundary of a planar
@@ -72,7 +72,7 @@ vtkSmartPointer<vtkDataSet> inline createPolygon(
  * \ingroup visualization
  */
 template <typename PointT>
-vtkSmartPointer<vtkDataSet> inline createPolygon(
+vtkSmartPointer<vtkDataSet> inline createPolygon (
     const pcl::PlanarPolygon<PointT>& planar_polygon);
 
 /** \brief Create a line shape from two points

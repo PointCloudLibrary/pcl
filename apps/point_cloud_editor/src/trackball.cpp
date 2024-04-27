@@ -43,29 +43,29 @@
 
 #include <limits>
 
-TrackBall::TrackBall() : quat_(1.0f), origin_x_(0), origin_y_(0), origin_z_(0)
+TrackBall::TrackBall() : quat_ (1.0f), origin_x_ (0), origin_y_ (0), origin_z_ (0)
 {
-  radius_sqr_ = (TRACKBALL_RADIUS_SCALE * static_cast<float>(WINDOW_WIDTH)) *
-                (TRACKBALL_RADIUS_SCALE * static_cast<float>(WINDOW_WIDTH));
+  radius_sqr_ = (TRACKBALL_RADIUS_SCALE * static_cast<float> (WINDOW_WIDTH)) *
+                (TRACKBALL_RADIUS_SCALE * static_cast<float> (WINDOW_WIDTH));
 }
 
-TrackBall::TrackBall(const TrackBall& copy) = default;
+TrackBall::TrackBall (const TrackBall& copy) = default;
 
 TrackBall::~TrackBall() = default;
 
 TrackBall&
-TrackBall::operator=(const TrackBall& rhs) = default;
+TrackBall::operator= (const TrackBall& rhs) = default;
 
 void
-TrackBall::start(int s_x, int s_y)
+TrackBall::start (int s_x, int s_y)
 {
-  getPointFromScreenPoint(s_x, s_y, origin_x_, origin_y_, origin_z_);
+  getPointFromScreenPoint (s_x, s_y, origin_x_, origin_y_, origin_z_);
 }
 
 void
 normalize (float x, float y, float z, float& nx, float& ny, float& nz)
 {
-  float inv_len = 1.0f / std::sqrt(x * x + y * y + z * z);
+  float inv_len = 1.0f / std::sqrt (x * x + y * y + z * z);
   nx = x * inv_len;
   ny = y * inv_len;
   nz = z * inv_len;
@@ -78,20 +78,20 @@ normalizeQuaternion (const boost::math::quaternion<float>& q)
   float x = q.R_component_2();
   float y = q.R_component_3();
   float z = q.R_component_4();
-  float inv_len = 1.0f / std::sqrt(w * w + x * x + y * y + z * z);
-  return boost::math::quaternion<float>(
+  float inv_len = 1.0f / std::sqrt (w * w + x * x + y * y + z * z);
+  return boost::math::quaternion<float> (
       w * inv_len, x * inv_len, y * inv_len, z * inv_len);
 }
 
 boost::math::quaternion<float>
 quaternionFromAngleAxis (float angle, float x, float y, float z)
 {
-  float s = std::sin(0.5f * angle);
-  float qw = std::cos(0.5f * angle);
+  float s = std::sin (0.5f * angle);
+  float qw = std::cos (0.5f * angle);
   float qx = x * s;
   float qy = y * s;
   float qz = z * s;
-  return normalizeQuaternion(boost::math::quaternion<float>(qw, qx, qy, qz));
+  return normalizeQuaternion (boost::math::quaternion<float> (qw, qx, qy, qz));
 }
 
 boost::math::quaternion<float>
@@ -113,14 +113,14 @@ multiplyQuaternion (const boost::math::quaternion<float>& lhs,
   float ty = lw * ry + lx * rz + ly * rw - lz * rx;
   float tz = lw * rz - lx * ry + ly * rx + lz * rw;
 
-  return boost::math::quaternion<float>(tw, tx, ty, tz);
+  return boost::math::quaternion<float> (tw, tx, ty, tz);
 }
 
 void
-TrackBall::update(int s_x, int s_y)
+TrackBall::update (int s_x, int s_y)
 {
   float cur_x, cur_y, cur_z;
-  getPointFromScreenPoint(s_x, s_y, cur_x, cur_y, cur_z);
+  getPointFromScreenPoint (s_x, s_y, cur_x, cur_y, cur_z);
 
   float d_x = cur_x - origin_x_;
   float d_y = cur_y - origin_y_;
@@ -128,16 +128,16 @@ TrackBall::update(int s_x, int s_y)
 
   float dot = d_x * d_x + d_y * d_y + d_z * d_z;
   if (dot < std::numeric_limits<float>::epsilon()) {
-    quat_ = boost::math::quaternion<float>(1.0f);
+    quat_ = boost::math::quaternion<float> (1.0f);
     return;
   }
   float nc_x, nc_y, nc_z;
   float no_x, no_y, no_z;
-  normalize(cur_x, cur_y, cur_z, nc_x, nc_y, nc_z);
-  normalize(origin_x_, origin_y_, origin_z_, no_x, no_y, no_z);
+  normalize (cur_x, cur_y, cur_z, nc_x, nc_y, nc_z);
+  normalize (origin_x_, origin_y_, origin_z_, no_x, no_y, no_z);
 
   // compute the angle of rotation
-  float angle = std::acos(nc_x * no_x + nc_y * no_y + nc_z * no_z);
+  float angle = std::acos (nc_x * no_x + nc_y * no_y + nc_z * no_z);
 
   // compute the axis of rotation
   float cross_x = nc_y * no_z - nc_z * no_y;
@@ -145,11 +145,11 @@ TrackBall::update(int s_x, int s_y)
   float cross_z = nc_x * no_y - nc_y * no_x;
 
   // reuse of nc_*
-  normalize(cross_x, cross_y, cross_z, nc_x, nc_y, nc_z);
+  normalize (cross_x, cross_y, cross_z, nc_x, nc_y, nc_z);
 
-  quat_ = quaternionFromAngleAxis(angle, nc_x, nc_y, nc_z);
-  if (std::isnan(quat_.R_component_1()))
-    quat_ = boost::math::quaternion<float>(1.0f);
+  quat_ = quaternionFromAngleAxis (angle, nc_x, nc_y, nc_z);
+  if (std::isnan (quat_.R_component_1()))
+    quat_ = boost::math::quaternion<float> (1.0f);
 
   origin_x_ = cur_x;
   origin_y_ = cur_y;
@@ -157,7 +157,7 @@ TrackBall::update(int s_x, int s_y)
 }
 
 void
-TrackBall::getRotationMatrix(float (&rot)[MATRIX_SIZE])
+TrackBall::getRotationMatrix (float (&rot)[MATRIX_SIZE])
 {
   // This function is based on quaternion_to_R3_rotation from
   // http://www.boost.org/doc/libs/1_41_0/libs/math/quaternion/HSO3.hpp
@@ -178,7 +178,7 @@ TrackBall::getRotationMatrix(float (&rot)[MATRIX_SIZE])
   float cd = c * d;
   float dd = d * d;
 
-  setIdentity(rot);
+  setIdentity (rot);
   float n = aa + bb + cc + dd;
 
   if (n <= std::numeric_limits<float>::epsilon())
@@ -199,22 +199,23 @@ TrackBall::getRotationMatrix(float (&rot)[MATRIX_SIZE])
 void
 TrackBall::reset()
 {
-  quat_ = boost::math::quaternion<float>(1.0f);
+  quat_ = boost::math::quaternion<float> (1.0f);
 }
 
 void
-TrackBall::getPointFromScreenPoint(int s_x, int s_y, float& x, float& y, float& z) const
+TrackBall::getPointFromScreenPoint (
+    int s_x, int s_y, float& x, float& y, float& z) const
 {
   // See http://www.opengl.org/wiki/Trackball for more info
 
-  x = static_cast<float>(s_x) - (static_cast<float>(WINDOW_WIDTH) * 0.5f);
-  y = (static_cast<float>(WINDOW_HEIGHT) * 0.5f) - static_cast<float>(s_y);
+  x = static_cast<float> (s_x) - (static_cast<float> (WINDOW_WIDTH) * 0.5f);
+  y = (static_cast<float> (WINDOW_HEIGHT) * 0.5f) - static_cast<float> (s_y);
   float d = x * x + y * y;
   if (d > 0.5f * radius_sqr_) {
     // use hyperbolic sheet
-    z = (0.5f * radius_sqr_) / std::sqrt(d);
+    z = (0.5f * radius_sqr_) / std::sqrt (d);
     return;
   }
   // use sphere
-  z = std::sqrt(radius_sqr_ - d);
+  z = std::sqrt (radius_sqr_ - d);
 }

@@ -62,16 +62,16 @@
 #define VTK_CREATE(type, name) vtkSmartPointer<type> name = vtkSmartPointer<type>::New()
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-pcl::visualization::PCLPlotter::PCLPlotter(char const* name)
-: view_(vtkSmartPointer<vtkContextView>::New())
-, chart_(vtkSmartPointer<vtkChartXY>::New())
-, color_series_(vtkSmartPointer<vtkColorSeries>::New())
-, exit_loop_timer_(vtkSmartPointer<ExitMainLoopTimerCallback>::New())
-, exit_callback_(vtkSmartPointer<ExitCallback>::New())
+pcl::visualization::PCLPlotter::PCLPlotter (char const* name)
+: view_ (vtkSmartPointer<vtkContextView>::New())
+, chart_ (vtkSmartPointer<vtkChartXY>::New())
+, color_series_ (vtkSmartPointer<vtkColorSeries>::New())
+, exit_loop_timer_ (vtkSmartPointer<ExitMainLoopTimerCallback>::New())
+, exit_callback_ (vtkSmartPointer<ExitCallback>::New())
 {
   // connecting and mandatory bookkeeping
-  view_->GetScene()->AddItem(chart_);
-  view_->GetRenderWindow()->SetWindowName(name);
+  view_->GetScene()->AddItem (chart_);
+  view_->GetRenderWindow()->SetWindowName (name);
 
   // ###WARNING: hardcoding logic ;) :-/.. please see plot() and spin*() functions for
   // the logic
@@ -87,7 +87,7 @@ pcl::visualization::PCLPlotter::PCLPlotter(char const* name)
   bkg_color_[1] = 1;
   bkg_color_[2] = 1;
   current_plot_ = -1;
-  color_series_->SetColorScheme(vtkColorSeries::SPECTRUM);
+  color_series_->SetColorScheme (vtkColorSeries::SPECTRUM);
   win_name_ = "PCL Plotter";
 }
 
@@ -96,12 +96,12 @@ pcl::visualization::PCLPlotter::~PCLPlotter() = default;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::visualization::PCLPlotter::addPlotData(double const* array_X,
-                                            double const* array_Y,
-                                            unsigned long size,
-                                            char const* name /* = "Y Axis" */,
-                                            int type,
-                                            char const* color)
+pcl::visualization::PCLPlotter::addPlotData (double const* array_X,
+                                             double const* array_Y,
+                                             unsigned long size,
+                                             char const* name /* = "Y Axis" */,
+                                             int type,
+                                             char const* color)
 {
   // updating the current plot ID
   current_plot_++;
@@ -109,56 +109,56 @@ pcl::visualization::PCLPlotter::addPlotData(double const* array_X,
   // creating a permanent copy of the arrays
   double* permanent_X = new double[size];
   double* permanent_Y = new double[size];
-  std::copy(array_X, array_X + size, permanent_X);
-  std::copy(array_Y, array_Y + size, permanent_Y);
+  std::copy (array_X, array_X + size, permanent_X);
+  std::copy (array_Y, array_Y + size, permanent_Y);
 
   // transforming data to be fed to the vtkChartXY
-  VTK_CREATE(vtkTable, table);
+  VTK_CREATE (vtkTable, table);
 
-  VTK_CREATE(vtkDoubleArray, varray_X);
-  varray_X->SetName("X Axis");
-  varray_X->SetArray(permanent_X, size, 1, vtkDoubleArray::VTK_DATA_ARRAY_DELETE);
-  table->AddColumn(varray_X);
+  VTK_CREATE (vtkDoubleArray, varray_X);
+  varray_X->SetName ("X Axis");
+  varray_X->SetArray (permanent_X, size, 1, vtkDoubleArray::VTK_DATA_ARRAY_DELETE);
+  table->AddColumn (varray_X);
 
-  VTK_CREATE(vtkDoubleArray, varray_Y);
-  varray_Y->SetName(name);
-  varray_Y->SetArray(permanent_Y, size, 1, vtkDoubleArray::VTK_DATA_ARRAY_DELETE);
-  table->AddColumn(varray_Y);
+  VTK_CREATE (vtkDoubleArray, varray_Y);
+  varray_Y->SetName (name);
+  varray_Y->SetArray (permanent_Y, size, 1, vtkDoubleArray::VTK_DATA_ARRAY_DELETE);
+  table->AddColumn (varray_Y);
 
   // adding to chart
   // vtkPlot *line = chart_->AddPlot(vtkChart::LINE);
-  vtkPlot* line = chart_->AddPlot(type);
-  line->SetInputData(table, 0, 1);
-  line->SetWidth(1);
+  vtkPlot* line = chart_->AddPlot (type);
+  line->SetInputData (table, 0, 1);
+  line->SetWidth (1);
 
   if (!color) // color automatically based on the ColorScheme
   {
-    vtkColor3ub vcolor = color_series_->GetColorRepeating(current_plot_);
-    line->SetColor(vcolor[0], vcolor[1], vcolor[2], 255);
+    vtkColor3ub vcolor = color_series_->GetColorRepeating (current_plot_);
+    line->SetColor (vcolor[0], vcolor[1], vcolor[2], 255);
   }
   else // add the specific color
-    line->SetColor(color[0], color[1], color[2], color[3]);
+    line->SetColor (color[0], color[1], color[2], color[3]);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::visualization::PCLPlotter::addPlotData(std::vector<double> const& array_X,
-                                            std::vector<double> const& array_Y,
-                                            char const* name /* = "Y Axis" */,
-                                            int type /* = vtkChart::LINE */,
-                                            std::vector<char> const& color)
+pcl::visualization::PCLPlotter::addPlotData (std::vector<double> const& array_X,
+                                             std::vector<double> const& array_Y,
+                                             char const* name /* = "Y Axis" */,
+                                             int type /* = vtkChart::LINE */,
+                                             std::vector<char> const& color)
 {
-  this->addPlotData(array_X.data(),
-                    array_Y.data(),
-                    static_cast<unsigned long>(array_X.size()),
-                    name,
-                    type,
-                    (color.empty()) ? nullptr : color.data());
+  this->addPlotData (array_X.data(),
+                     array_Y.data(),
+                     static_cast<unsigned long> (array_X.size()),
+                     name,
+                     type,
+                     (color.empty()) ? nullptr : color.data());
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::visualization::PCLPlotter::addPlotData(
+pcl::visualization::PCLPlotter::addPlotData (
     std::vector<std::pair<double, double>> const& plot_data,
     char const* name /* = "Y Axis" */,
     int type,
@@ -171,54 +171,54 @@ pcl::visualization::PCLPlotter::addPlotData(
     array_x[i] = plot_data[i].first;
     array_y[i] = plot_data[i].second;
   }
-  this->addPlotData(array_x,
-                    array_y,
-                    static_cast<unsigned long>(plot_data.size()),
-                    name,
-                    type,
-                    (color.empty()) ? nullptr : color.data());
+  this->addPlotData (array_x,
+                     array_y,
+                     static_cast<unsigned long> (plot_data.size()),
+                     name,
+                     type,
+                     (color.empty()) ? nullptr : color.data());
   delete[] array_x;
   delete[] array_y;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::visualization::PCLPlotter::addPlotData(PolynomialFunction const& p_function,
-                                            double x_min,
-                                            double x_max,
-                                            char const* name,
-                                            int num_points,
-                                            int type,
-                                            std::vector<char> const& color)
+pcl::visualization::PCLPlotter::addPlotData (PolynomialFunction const& p_function,
+                                             double x_min,
+                                             double x_max,
+                                             char const* name,
+                                             int num_points,
+                                             int type,
+                                             std::vector<char> const& color)
 {
-  std::vector<double> array_x(num_points), array_y(num_points);
+  std::vector<double> array_x (num_points), array_y (num_points);
   double incr = (x_max - x_min) / num_points;
 
   for (int i = 0; i < num_points; i++) {
     double xval = i * incr + x_min;
     array_x[i] = xval;
-    array_y[i] = compute(p_function, xval);
+    array_y[i] = compute (p_function, xval);
   }
 
-  this->addPlotData(array_x, array_y, name, type, color);
+  this->addPlotData (array_x, array_y, name, type, color);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::visualization::PCLPlotter::addPlotData(RationalFunction const& r_function,
-                                            double x_min,
-                                            double x_max,
-                                            char const* name,
-                                            int num_points,
-                                            int type,
-                                            std::vector<char> const& color)
+pcl::visualization::PCLPlotter::addPlotData (RationalFunction const& r_function,
+                                             double x_min,
+                                             double x_max,
+                                             char const* name,
+                                             int num_points,
+                                             int type,
+                                             std::vector<char> const& color)
 {
-  std::vector<double> array_x(num_points), array_y(num_points);
+  std::vector<double> array_x (num_points), array_y (num_points);
   double incr = (x_max - x_min) / num_points;
 
   for (int i = 0; i < num_points; i++) {
     double xval = i * incr + x_min;
-    double yval = compute(r_function, xval);
+    double yval = compute (r_function, xval);
     // if (yval == std::numeric_limits<double>::max()) continue; //handling dived by
     // zero
 
@@ -226,40 +226,40 @@ pcl::visualization::PCLPlotter::addPlotData(RationalFunction const& r_function,
     array_y[i] = yval;
   }
 
-  this->addPlotData(array_x, array_y, name, type, color);
+  this->addPlotData (array_x, array_y, name, type, color);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::visualization::PCLPlotter::addPlotData(double (*function)(double),
-                                            double x_min,
-                                            double x_max,
-                                            char const* name,
-                                            int num_points,
-                                            int type,
-                                            std::vector<char> const& color)
+pcl::visualization::PCLPlotter::addPlotData (double (*function) (double),
+                                             double x_min,
+                                             double x_max,
+                                             char const* name,
+                                             int num_points,
+                                             int type,
+                                             std::vector<char> const& color)
 {
-  std::vector<double> array_x(num_points), array_y(num_points);
+  std::vector<double> array_x (num_points), array_y (num_points);
   double incr = (x_max - x_min) / num_points;
 
   for (int i = 0; i < num_points; i++) {
     double xval = i * incr + x_min;
     array_x[i] = xval;
-    array_y[i] = function(xval);
+    array_y[i] = function (xval);
   }
 
-  this->addPlotData(array_x, array_y, name, type, color);
+  this->addPlotData (array_x, array_y, name, type, color);
 }
 
 void
-pcl::visualization::PCLPlotter::addPlotData(char const* filename, int type)
+pcl::visualization::PCLPlotter::addPlotData (char const* filename, int type)
 {
-  std::ifstream fin(filename);
+  std::ifstream fin (filename);
 
   // getting the no of column
   std::string line;
-  getline(fin, line);
-  std::stringstream ss(line);
+  getline (fin, line);
+  std::stringstream ss (line);
 
   std::vector<std::string> pnames; // plot names
   std::string xname, temp;         // plot name of X axis
@@ -268,119 +268,119 @@ pcl::visualization::PCLPlotter::addPlotData(char const* filename, int type)
   ss >> xname;
   // getting Y axis names
   while (ss >> temp)
-    pnames.push_back(temp);
+    pnames.push_back (temp);
 
-  int nop = static_cast<int>(pnames.size()); // number of plots (y coordinate vectors)
+  int nop = static_cast<int> (pnames.size()); // number of plots (y coordinate vectors)
 
-  std::vector<double> xarray;                    // array of X coordinates
-  std::vector<std::vector<double>> yarrays(nop); // a set of array of Y coordinates
+  std::vector<double> xarray;                     // array of X coordinates
+  std::vector<std::vector<double>> yarrays (nop); // a set of array of Y coordinates
 
   // reading the entire table
   double x, y;
   while (fin >> x) {
-    xarray.push_back(x);
+    xarray.push_back (x);
 
     for (int i = 0; i < nop; i++) {
       fin >> y;
-      yarrays[i].push_back(y);
+      yarrays[i].push_back (y);
     }
   }
 
   // adding nop plot data
   for (int i = 0; i < nop; i++)
-    this->addPlotData(xarray, yarrays[i], pnames[i].c_str(), type);
+    this->addPlotData (xarray, yarrays[i], pnames[i].c_str(), type);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::visualization::PCLPlotter::addHistogramData(std::vector<double> const& data,
-                                                 int const nbins,
-                                                 char const* name,
-                                                 std::vector<char> const& color)
+pcl::visualization::PCLPlotter::addHistogramData (std::vector<double> const& data,
+                                                  int const nbins,
+                                                  char const* name,
+                                                  std::vector<char> const& color)
 {
   std::vector<std::pair<double, double>> histogram;
-  computeHistogram(data, nbins, histogram);
-  this->addPlotData(histogram, name, vtkChart::BAR, color);
+  computeHistogram (data, nbins, histogram);
+  this->addPlotData (histogram, name, vtkChart::BAR, color);
 }
 
 ////////////////////////////////HistVizualizer
-///Functions//////////////////////////////////////
+/// Functions//////////////////////////////////////
 bool
-pcl::visualization::PCLPlotter::addFeatureHistogram(const pcl::PCLPointCloud2& cloud,
-                                                    const std::string& field_name,
-                                                    const std::string& id,
-                                                    int win_width,
-                                                    int win_height)
+pcl::visualization::PCLPlotter::addFeatureHistogram (const pcl::PCLPointCloud2& cloud,
+                                                     const std::string& field_name,
+                                                     const std::string& id,
+                                                     int win_width,
+                                                     int win_height)
 {
   // Get the field
-  int field_idx = pcl::getFieldIndex(cloud, field_name);
+  int field_idx = pcl::getFieldIndex (cloud, field_name);
   if (field_idx == -1) {
-    PCL_ERROR("[addFeatureHistogram] Invalid field (%s) given!\n", field_name.c_str());
+    PCL_ERROR ("[addFeatureHistogram] Invalid field (%s) given!\n", field_name.c_str());
     return (false);
   }
 
   int hsize = cloud.fields[field_idx].count;
-  std::vector<double> array_x(hsize), array_y(hsize);
+  std::vector<double> array_x (hsize), array_y (hsize);
 
   // Parse the cloud data and store it in the array
   for (int i = 0; i < hsize; ++i) {
     array_x[i] = i;
     float data;
     // TODO: replace float with the real data type
-    memcpy(&data,
-           &cloud.data[cloud.fields[field_idx].offset + i * sizeof(float)],
-           sizeof(float));
+    memcpy (&data,
+            &cloud.data[cloud.fields[field_idx].offset + i * sizeof (float)],
+            sizeof (float));
     array_y[i] = data;
   }
 
-  this->addPlotData(array_x, array_y, id.c_str(), vtkChart::LINE);
-  setWindowSize(win_width, win_height);
+  this->addPlotData (array_x, array_y, id.c_str(), vtkChart::LINE);
+  setWindowSize (win_width, win_height);
   return (true);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 bool
-pcl::visualization::PCLPlotter::addFeatureHistogram(const pcl::PCLPointCloud2& cloud,
-                                                    const std::string& field_name,
-                                                    const pcl::index_t index,
-                                                    const std::string& id,
-                                                    int win_width,
-                                                    int win_height)
+pcl::visualization::PCLPlotter::addFeatureHistogram (const pcl::PCLPointCloud2& cloud,
+                                                     const std::string& field_name,
+                                                     const pcl::index_t index,
+                                                     const std::string& id,
+                                                     int win_width,
+                                                     int win_height)
 {
-  if (index < 0 || index >= static_cast<pcl::index_t>(cloud.width * cloud.height)) {
-    PCL_ERROR("[addFeatureHistogram] Invalid point index (%d) given!\n", index);
+  if (index < 0 || index >= static_cast<pcl::index_t> (cloud.width * cloud.height)) {
+    PCL_ERROR ("[addFeatureHistogram] Invalid point index (%d) given!\n", index);
     return (false);
   }
 
   // Get the field
-  int field_idx = pcl::getFieldIndex(cloud, field_name);
+  int field_idx = pcl::getFieldIndex (cloud, field_name);
   if (field_idx == -1) {
-    PCL_ERROR("[addFeatureHistogram] Invalid field (%s) given!\n", field_name.c_str());
+    PCL_ERROR ("[addFeatureHistogram] Invalid field (%s) given!\n", field_name.c_str());
     return (false);
   }
 
   // Compute the total size of the fields
   unsigned int fsize = 0;
   for (const auto& field : cloud.fields)
-    fsize += field.count * pcl::getFieldSize(field.datatype);
+    fsize += field.count * pcl::getFieldSize (field.datatype);
 
   int hsize = cloud.fields[field_idx].count;
-  std::vector<double> array_x(hsize), array_y(hsize);
+  std::vector<double> array_x (hsize), array_y (hsize);
 
   // Parse the cloud data and store it in the array
   for (int i = 0; i < hsize; ++i) {
     array_x[i] = i;
     float data;
     // TODO: replace float with the real data type
-    memcpy(
-        &data,
-        &cloud.data[index * fsize + cloud.fields[field_idx].offset + i * sizeof(float)],
-        sizeof(float));
+    memcpy (&data,
+            &cloud.data[index * fsize + cloud.fields[field_idx].offset +
+                        i * sizeof (float)],
+            sizeof (float));
     array_y[i] = data;
   }
 
-  this->addPlotData(array_x, array_y, id.c_str(), vtkChart::LINE);
-  setWindowSize(win_width, win_height);
+  this->addPlotData (array_x, array_y, id.c_str(), vtkChart::LINE);
+  setWindowSize (win_width, win_height);
   return (true);
 }
 
@@ -388,9 +388,9 @@ pcl::visualization::PCLPlotter::addFeatureHistogram(const pcl::PCLPointCloud2& c
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::visualization::PCLPlotter::setColorScheme(int scheme)
+pcl::visualization::PCLPlotter::setColorScheme (int scheme)
 {
-  color_series_->SetColorScheme(scheme);
+  color_series_->SetColorScheme (scheme);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -405,34 +405,34 @@ void
 pcl::visualization::PCLPlotter::plot()
 {
   // apply current states
-  view_->GetRenderer()->SetBackground(bkg_color_[0], bkg_color_[1], bkg_color_[2]);
-  view_->GetRenderWindow()->SetSize(win_width_, win_height_);
-  view_->GetRenderWindow()->SetPosition(win_x_, win_y_);
+  view_->GetRenderer()->SetBackground (bkg_color_[0], bkg_color_[1], bkg_color_[2]);
+  view_->GetRenderWindow()->SetSize (win_width_, win_height_);
+  view_->GetRenderWindow()->SetPosition (win_x_, win_y_);
   view_->GetInteractor()->Initialize();
 
   // according to vtk bug 976, SetWindowName must be called after RenderWindow
   // Initialize();
-  view_->GetRenderWindow()->SetWindowName(win_name_.c_str());
+  view_->GetRenderWindow()->SetWindowName (win_name_.c_str());
   view_->GetRenderWindow()->Render();
   view_->GetInteractor()->Start();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::visualization::PCLPlotter::spinOnce(const int spin_time)
+pcl::visualization::PCLPlotter::spinOnce (const int spin_time)
 {
   // apply current states
-  view_->GetRenderer()->SetBackground(bkg_color_[0], bkg_color_[1], bkg_color_[2]);
-  view_->GetRenderWindow()->SetSize(win_width_, win_height_);
+  view_->GetRenderer()->SetBackground (bkg_color_[0], bkg_color_[1], bkg_color_[2]);
+  view_->GetRenderWindow()->SetSize (win_width_, win_height_);
 
   // start timer to spin
   if (!view_->GetInteractor()->GetEnabled()) {
     view_->GetInteractor()->Initialize();
-    view_->GetInteractor()->AddObserver(vtkCommand::TimerEvent, exit_loop_timer_);
-    view_->GetInteractor()->AddObserver(vtkCommand::ExitEvent, exit_callback_);
+    view_->GetInteractor()->AddObserver (vtkCommand::TimerEvent, exit_loop_timer_);
+    view_->GetInteractor()->AddObserver (vtkCommand::ExitEvent, exit_callback_);
   }
   exit_loop_timer_->right_timer_id =
-      view_->GetInteractor()->CreateOneShotTimer(spin_time);
+      view_->GetInteractor()->CreateOneShotTimer (spin_time);
 
   // Start spinning
   view_->GetRenderWindow()->Render();
@@ -444,8 +444,8 @@ void
 pcl::visualization::PCLPlotter::renderOnce()
 {
   // apply current states
-  view_->GetRenderer()->SetBackground(bkg_color_[0], bkg_color_[1], bkg_color_[2]);
-  view_->GetRenderWindow()->SetSize(win_width_, win_height_);
+  view_->GetRenderer()->SetBackground (bkg_color_[0], bkg_color_[1], bkg_color_[2]);
+  view_->GetRenderWindow()->SetSize (win_width_, win_height_);
 
   // render
   view_->GetInteractor()->Initialize();
@@ -469,9 +469,9 @@ pcl::visualization::PCLPlotter::clearPlots()
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::visualization::PCLPlotter::setBackgroundColor(const double r,
-                                                   const double g,
-                                                   const double b)
+pcl::visualization::PCLPlotter::setBackgroundColor (const double r,
+                                                    const double g,
+                                                    const double b)
 {
   bkg_color_[0] = r;
   bkg_color_[1] = g;
@@ -480,7 +480,7 @@ pcl::visualization::PCLPlotter::setBackgroundColor(const double r,
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::visualization::PCLPlotter::setBackgroundColor(const double color[3])
+pcl::visualization::PCLPlotter::setBackgroundColor (const double color[3])
 {
   bkg_color_[0] = color[0];
   bkg_color_[1] = color[1];
@@ -500,54 +500,54 @@ pcl::visualization::PCLPlotter::getBackgroundColor()
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::visualization::PCLPlotter::setYRange(double min, double max)
+pcl::visualization::PCLPlotter::setYRange (double min, double max)
 {
-  chart_->GetAxis(vtkAxis::LEFT)->SetRange(min, max);
-  chart_->GetAxis(vtkAxis::LEFT)->SetBehavior(vtkAxis::FIXED);
+  chart_->GetAxis (vtkAxis::LEFT)->SetRange (min, max);
+  chart_->GetAxis (vtkAxis::LEFT)->SetBehavior (vtkAxis::FIXED);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::visualization::PCLPlotter::setXRange(double min, double max)
+pcl::visualization::PCLPlotter::setXRange (double min, double max)
 {
-  chart_->GetAxis(vtkAxis::BOTTOM)->SetRange(min, max);
-  chart_->GetAxis(vtkAxis::BOTTOM)->SetBehavior(vtkAxis::FIXED);
+  chart_->GetAxis (vtkAxis::BOTTOM)->SetRange (min, max);
+  chart_->GetAxis (vtkAxis::BOTTOM)->SetBehavior (vtkAxis::FIXED);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::visualization::PCLPlotter::setTitle(const char* title)
+pcl::visualization::PCLPlotter::setTitle (const char* title)
 {
-  chart_->SetTitle(title);
-  chart_->SetShowLegend(true);
+  chart_->SetTitle (title);
+  chart_->SetShowLegend (true);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::visualization::PCLPlotter::setXTitle(const char* title)
+pcl::visualization::PCLPlotter::setXTitle (const char* title)
 {
-  chart_->GetAxis(vtkAxis::BOTTOM)->SetTitle(title);
-  chart_->SetShowLegend(true);
+  chart_->GetAxis (vtkAxis::BOTTOM)->SetTitle (title);
+  chart_->SetShowLegend (true);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::visualization::PCLPlotter::setYTitle(const char* title)
+pcl::visualization::PCLPlotter::setYTitle (const char* title)
 {
-  chart_->GetAxis(vtkAxis::LEFT)->SetTitle(title);
-  chart_->SetShowLegend(true);
+  chart_->GetAxis (vtkAxis::LEFT)->SetTitle (title);
+  chart_->SetShowLegend (true);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::visualization::PCLPlotter::setShowLegend(bool flag)
+pcl::visualization::PCLPlotter::setShowLegend (bool flag)
 {
-  chart_->SetShowLegend(flag);
+  chart_->SetShowLegend (flag);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::visualization::PCLPlotter::setWindowSize(int w, int h)
+pcl::visualization::PCLPlotter::setWindowSize (int w, int h)
 {
   win_width_ = w;
   win_height_ = h;
@@ -565,7 +565,7 @@ pcl::visualization::PCLPlotter::getWindowSize() const
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::visualization::PCLPlotter::setWindowPosition(int x, int y)
+pcl::visualization::PCLPlotter::setWindowPosition (int x, int y)
 {
   win_x_ = x;
   win_y_ = y;
@@ -573,7 +573,7 @@ pcl::visualization::PCLPlotter::setWindowPosition(int x, int y)
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::visualization::PCLPlotter::setWindowName(const std::string& name)
+pcl::visualization::PCLPlotter::setWindowName (const std::string& name)
 {
   win_name_ = name;
 }
@@ -588,18 +588,18 @@ pcl::visualization::PCLPlotter::startInteractor()
 
 ///////////////////////IMPORTANT PRIVATE FUNCTIONS///////////////////////////////
 void
-pcl::visualization::PCLPlotter::computeHistogram(
+pcl::visualization::PCLPlotter::computeHistogram (
     std::vector<double> const& data,
     int const nbins,
     std::vector<std::pair<double, double>>& histogram)
 {
   // resizing the vector to nbins to store histogram;
-  histogram.resize(nbins);
+  histogram.resize (nbins);
 
   // find min and max in the data
   double min = data[0], max = data[0];
   for (std::size_t i = 1; i < data.size(); i++) {
-    if (std::isfinite(data[i])) {
+    if (std::isfinite (data[i])) {
       if (data[i] < min)
         min = data[i];
       if (data[i] > max)
@@ -621,9 +621,9 @@ pcl::visualization::PCLPlotter::computeHistogram(
 
   // fill the freq for each data
   for (const double& value : data) {
-    if (std::isfinite(value)) {
-      auto index = static_cast<unsigned int>(std::floor((value - min) / size));
-      if (index == static_cast<unsigned int>(nbins))
+    if (std::isfinite (value)) {
+      auto index = static_cast<unsigned int> (std::floor ((value - min) / size));
+      if (index == static_cast<unsigned int> (nbins))
         index = nbins - 1; // including right boundary
       histogram[index].second++;
     }
@@ -632,34 +632,34 @@ pcl::visualization::PCLPlotter::computeHistogram(
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 double
-pcl::visualization::PCLPlotter::compute(
+pcl::visualization::PCLPlotter::compute (
     pcl::visualization::PCLPlotter::PolynomialFunction const& p_function, double val)
 {
   double res = 0;
   for (std::size_t i = 0; i < p_function.size(); i++)
-    res += (p_function[i] * pow(val, static_cast<double>(i)));
+    res += (p_function[i] * pow (val, static_cast<double> (i)));
   return (res);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 double
-pcl::visualization::PCLPlotter::compute(RationalFunction const& r_function, double val)
+pcl::visualization::PCLPlotter::compute (RationalFunction const& r_function, double val)
 {
   PolynomialFunction numerator = r_function.first, denominator = r_function.second;
 
-  double dres = this->compute(denominator, val);
+  double dres = this->compute (denominator, val);
   // if (dres == 0) return std::numeric_limits<double>::max();  //return the max
   // possible double value to represent infinity
-  double nres = this->compute(numerator, val);
+  double nres = this->compute (numerator, val);
   return (nres / dres);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::visualization::PCLPlotter::setViewInteractor(
+pcl::visualization::PCLPlotter::setViewInteractor (
     vtkSmartPointer<vtkRenderWindowInteractor> interactor)
 {
-  view_->SetInteractor(interactor);
+  view_->SetInteractor (interactor);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -689,12 +689,12 @@ pcl::visualization::PCLPlotter::getRenderWindow()
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::visualization::PCLPlotter::ExitMainLoopTimerCallback::Execute(
+pcl::visualization::PCLPlotter::ExitMainLoopTimerCallback::Execute (
     vtkObject*, unsigned long event_id, void* call_data)
 {
   if (event_id != vtkCommand::TimerEvent)
     return;
-  int timer_id = *(reinterpret_cast<int*>(call_data));
+  int timer_id = *(reinterpret_cast<int*> (call_data));
 
   if (timer_id != right_timer_id)
     return;
@@ -705,9 +705,9 @@ pcl::visualization::PCLPlotter::ExitMainLoopTimerCallback::Execute(
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::visualization::PCLPlotter::ExitCallback::Execute(vtkObject*,
-                                                      unsigned long event_id,
-                                                      void*)
+pcl::visualization::PCLPlotter::ExitCallback::Execute (vtkObject*,
+                                                       unsigned long event_id,
+                                                       void*)
 {
   if (event_id != vtkCommand::ExitEvent)
     return;

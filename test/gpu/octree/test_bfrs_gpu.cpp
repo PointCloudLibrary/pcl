@@ -57,7 +57,7 @@
 using namespace pcl::gpu;
 
 // TEST (PCL_GPU, DISABLED_bruteForceRadiusSeachGPU)
-TEST(PCL_GPU, bruteForceRadiusSeachGPU)
+TEST (PCL_GPU, bruteForceRadiusSeachGPU)
 {
   DataGenerator data;
   data.data_size = 871000;
@@ -75,36 +75,36 @@ TEST(PCL_GPU, bruteForceRadiusSeachGPU)
 
   // prepare gpu cloud
   pcl::gpu::Octree::PointCloud cloud_device;
-  cloud_device.upload(data.points);
+  cloud_device.upload (data.points);
 
-  pcl::gpu::DeviceArray<int> results_device, buffer(cloud_device.size());
+  pcl::gpu::DeviceArray<int> results_device, buffer (cloud_device.size());
 
   std::vector<int> results_host;
   std::vector<std::size_t> sizes;
   for (std::size_t i = 0; i < data.tests_num; ++i) {
-    pcl::gpu::bruteForceRadiusSearchGPU(
+    pcl::gpu::bruteForceRadiusSearchGPU (
         cloud_device, data.queries[i], data.radiuses[i], results_device, buffer);
 
-    results_device.download(results_host);
-    std::sort(results_host.begin(), results_host.end());
+    results_device.download (results_host);
+    std::sort (results_host.begin(), results_host.end());
 
-    ASSERT_EQ((results_host == data.bfresutls[i]), true);
-    sizes.push_back(results_device.size());
+    ASSERT_EQ ((results_host == data.bfresutls[i]), true);
+    sizes.push_back (results_device.size());
   }
 
-  float avg_size = std::accumulate(sizes.begin(), sizes.end(), (std::size_t)0) *
+  float avg_size = std::accumulate (sizes.begin(), sizes.end(), (std::size_t)0) *
                    (1.f / sizes.size());
   ;
 
   std::cout << "avg_result_size = " << avg_size << std::endl;
-  ASSERT_GT(avg_size, 5);
+  ASSERT_GT (avg_size, 5);
 }
 
 /* ---[ */
 int
 main (int argc, char** argv)
 {
-  testing::InitGoogleTest(&argc, argv);
+  testing::InitGoogleTest (&argc, argv);
   return (RUN_ALL_TESTS());
 }
 /* ]--- */

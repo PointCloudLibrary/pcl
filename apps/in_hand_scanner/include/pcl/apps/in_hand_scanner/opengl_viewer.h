@@ -65,11 +65,11 @@ class FaceVertexMesh {
 public:
   class Triangle {
   public:
-    Triangle() : first(0), second(0), third(0) {}
-    Triangle(const unsigned int first,
-             const unsigned int second,
-             const unsigned int third)
-    : first(first), second(second), third(third)
+    Triangle() : first (0), second (0), third (0) {}
+    Triangle (const unsigned int first,
+              const unsigned int second,
+              const unsigned int third)
+    : first (first), second (second), third (third)
     {}
 
     unsigned int first;
@@ -81,7 +81,7 @@ public:
   FaceVertexMesh();
 
   /** \brief Constructor. Converts the input mesh into a face vertex mesh. */
-  FaceVertexMesh(const Mesh& mesh, const Eigen::Isometry3d& T);
+  FaceVertexMesh (const Mesh& mesh, const Eigen::Isometry3d& T);
 
   using PointIHS = pcl::ihs::PointIHS;
   using CloudIHS = pcl::ihs::CloudIHS;
@@ -133,29 +133,29 @@ public:
   class BoxCoefficients {
   public:
     BoxCoefficients()
-    : x_min(0)
-    , x_max(0)
-    , y_min(0)
-    , y_max(0)
-    , z_min(0)
-    , z_max(0)
-    , transformation(Eigen::Isometry3d::Identity())
+    : x_min (0)
+    , x_max (0)
+    , y_min (0)
+    , y_max (0)
+    , z_min (0)
+    , z_max (0)
+    , transformation (Eigen::Isometry3d::Identity())
     {}
 
-    BoxCoefficients(const float x_min,
-                    const float x_max,
-                    const float y_min,
-                    const float y_max,
-                    const float z_min,
-                    const float z_max,
-                    const Eigen::Isometry3d& T)
-    : x_min(x_min)
-    , x_max(x_max)
-    , y_min(y_min)
-    , y_max(y_max)
-    , z_min(z_min)
-    , z_max(z_max)
-    , transformation(T)
+    BoxCoefficients (const float x_min,
+                     const float x_max,
+                     const float y_min,
+                     const float y_max,
+                     const float z_min,
+                     const float z_max,
+                     const Eigen::Isometry3d& T)
+    : x_min (x_min)
+    , x_max (x_max)
+    , y_min (y_min)
+    , y_max (y_max)
+    , z_min (z_min)
+    , z_max (z_max)
+    , transformation (T)
     {}
 
     float x_min;
@@ -171,7 +171,7 @@ public:
   };
 
   /** \brief Constructor. */
-  explicit OpenGLViewer(QWidget* parent = nullptr);
+  explicit OpenGLViewer (QWidget* parent = nullptr);
 
   /** \brief Destructor. */
   ~OpenGLViewer() override;
@@ -302,7 +302,7 @@ protected:
   /** \brief Please have a look at the documentation of calcFPS. */
   class FPS {
   public:
-    FPS() : fps_(0.) {}
+    FPS() : fps_ (0.) {}
 
     inline double&
     value ()
@@ -319,7 +319,7 @@ protected:
     str () const
     {
       std::stringstream ss;
-      ss << std::setprecision(1) << std::fixed << fps_;
+      ss << std::setprecision (1) << std::fixed << fps_;
       return (ss.str());
     }
 
@@ -342,7 +342,7 @@ protected:
 
     ++count;
     if (sw.getTimeSeconds() >= .2) {
-      fps.value() = static_cast<double>(count) / sw.getTimeSeconds();
+      fps.value() = static_cast<double> (count) / sw.getTimeSeconds();
       count = 0;
       sw.reset();
     }
@@ -480,5 +480,5 @@ public:
 } // End namespace pcl
 
 // http://doc.qt.digia.com/qt/qmetatype.html#Q_DECLARE_METATYPE
-Q_DECLARE_METATYPE(pcl::ihs::OpenGLViewer::MeshRepresentation)
-Q_DECLARE_METATYPE(pcl::ihs::OpenGLViewer::Coloring)
+Q_DECLARE_METATYPE (pcl::ihs::OpenGLViewer::MeshRepresentation)
+Q_DECLARE_METATYPE (pcl::ihs::OpenGLViewer::Coloring)

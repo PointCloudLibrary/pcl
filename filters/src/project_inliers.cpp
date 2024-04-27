@@ -42,11 +42,11 @@
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::ProjectInliers<pcl::PCLPointCloud2>::applyFilter(PCLPointCloud2& output)
+pcl::ProjectInliers<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2& output)
 {
   if (indices_->empty()) {
-    PCL_WARN("[pcl::%s::applyFilter] No indices given or empty indices!\n",
-             getClassName().c_str());
+    PCL_WARN ("[pcl::%s::applyFilter] No indices given or empty indices!\n",
+              getClassName().c_str());
     output.width = output.height = 0;
     output.data.clear();
     return;
@@ -55,14 +55,14 @@ pcl::ProjectInliers<pcl::PCLPointCloud2>::applyFilter(PCLPointCloud2& output)
   // Eigen::Map<Eigen::VectorXf, Eigen::Aligned> model_coefficients (&model_->values[0],
   // model_->values.size ());
   //  More expensive than a map but safer (32bit architectures seem to complain)
-  Eigen::VectorXf model_coefficients(model_->values.size());
+  Eigen::VectorXf model_coefficients (model_->values.size());
   for (std::size_t i = 0; i < model_->values.size(); ++i)
     model_coefficients[i] = model_->values[i];
 
   // Construct the model and project
-  if (!initSACModel(model_type_)) {
-    PCL_ERROR("[pcl::%s::segment] Error initializing the SAC model!\n",
-              getClassName().c_str());
+  if (!initSACModel (model_type_)) {
+    PCL_ERROR ("[pcl::%s::segment] Error initializing the SAC model!\n",
+               getClassName().c_str());
     output.width = output.height = 0;
     output.data.clear();
     return;
@@ -70,9 +70,9 @@ pcl::ProjectInliers<pcl::PCLPointCloud2>::applyFilter(PCLPointCloud2& output)
   pcl::PointCloud<pcl::PointXYZ> cloud_out;
 
   if (!copy_all_fields_)
-    sacmodel_->projectPoints(*indices_, model_coefficients, cloud_out, false);
+    sacmodel_->projectPoints (*indices_, model_coefficients, cloud_out, false);
   else
-    sacmodel_->projectPoints(*indices_, model_coefficients, cloud_out, true);
+    sacmodel_->projectPoints (*indices_, model_coefficients, cloud_out, true);
 
   if (copy_all_data_) {
     output.height = input_->height;
@@ -85,7 +85,7 @@ pcl::ProjectInliers<pcl::PCLPointCloud2>::applyFilter(PCLPointCloud2& output)
 
     // Get the distance field index
     int x_idx = -1, y_idx = -1, z_idx = -1;
-    for (int d = 0; d < static_cast<int>(output.fields.size()); ++d) {
+    for (int d = 0; d < static_cast<int> (output.fields.size()); ++d) {
       if (output.fields[d].name == "x")
         x_idx = d;
       if (output.fields[d].name == "y")
@@ -94,11 +94,12 @@ pcl::ProjectInliers<pcl::PCLPointCloud2>::applyFilter(PCLPointCloud2& output)
         z_idx = d;
     }
     if (x_idx == -1 || y_idx == -1 || z_idx == -1) {
-      PCL_ERROR("[pcl::%s::segment] X (%d) Y (%d) Z (%d) field dimensions not found!\n",
-                getClassName().c_str(),
-                x_idx,
-                y_idx,
-                z_idx);
+      PCL_ERROR (
+          "[pcl::%s::segment] X (%d) Y (%d) Z (%d) field dimensions not found!\n",
+          getClassName().c_str(),
+          x_idx,
+          y_idx,
+          z_idx);
       output.width = output.height = 0;
       output.data.clear();
       return;
@@ -106,30 +107,30 @@ pcl::ProjectInliers<pcl::PCLPointCloud2>::applyFilter(PCLPointCloud2& output)
 
     // Copy the projected points
     for (std::size_t i = 0; i < indices_->size(); ++i) {
-      memcpy(&output.data[(*indices_)[i] * output.point_step +
-                          output.fields[x_idx].offset],
-             &cloud_out[(*indices_)[i]].x,
-             sizeof(float));
-      memcpy(&output.data[(*indices_)[i] * output.point_step +
-                          output.fields[y_idx].offset],
-             &cloud_out[(*indices_)[i]].y,
-             sizeof(float));
-      memcpy(&output.data[(*indices_)[i] * output.point_step +
-                          output.fields[z_idx].offset],
-             &cloud_out[(*indices_)[i]].z,
-             sizeof(float));
+      memcpy (&output.data[(*indices_)[i] * output.point_step +
+                           output.fields[x_idx].offset],
+              &cloud_out[(*indices_)[i]].x,
+              sizeof (float));
+      memcpy (&output.data[(*indices_)[i] * output.point_step +
+                           output.fields[y_idx].offset],
+              &cloud_out[(*indices_)[i]].y,
+              sizeof (float));
+      memcpy (&output.data[(*indices_)[i] * output.point_step +
+                           output.fields[z_idx].offset],
+              &cloud_out[(*indices_)[i]].z,
+              sizeof (float));
     }
   }
   else {
     if (!copy_all_fields_) {
-      pcl::toPCLPointCloud2<pcl::PointXYZ>(cloud_out, output);
+      pcl::toPCLPointCloud2<pcl::PointXYZ> (cloud_out, output);
     }
     else {
       // Copy everything
       output.height = 1;
       output.width = indices_->size();
       output.point_step = input_->point_step;
-      output.data.resize(output.width * output.point_step);
+      output.data.resize (output.width * output.point_step);
       output.is_bigendian = input_->is_bigendian;
       output.row_step = output.point_step * output.width;
       // All projections should return valid data, so is_dense = true
@@ -137,7 +138,7 @@ pcl::ProjectInliers<pcl::PCLPointCloud2>::applyFilter(PCLPointCloud2& output)
 
       // Get the distance field index
       int x_idx = -1, y_idx = -1, z_idx = -1;
-      for (int d = 0; d < static_cast<int>(output.fields.size()); ++d) {
+      for (int d = 0; d < static_cast<int> (output.fields.size()); ++d) {
         if (output.fields[d].name == "x")
           x_idx = d;
         if (output.fields[d].name == "y")
@@ -147,7 +148,7 @@ pcl::ProjectInliers<pcl::PCLPointCloud2>::applyFilter(PCLPointCloud2& output)
       }
 
       if (x_idx == -1 || y_idx == -1 || z_idx == -1) {
-        PCL_ERROR(
+        PCL_ERROR (
             "[pcl::%s::segment] X (%d) Y (%d) Z (%d) field dimensions not found!\n",
             getClassName().c_str(),
             x_idx,
@@ -160,18 +161,18 @@ pcl::ProjectInliers<pcl::PCLPointCloud2>::applyFilter(PCLPointCloud2& output)
 
       // Copy the projected points
       for (std::size_t i = 0; i < indices_->size(); ++i) {
-        memcpy(&output.data[i * output.point_step],
-               &input_->data[(*indices_)[i] * input_->point_step],
-               output.point_step);
-        memcpy(&output.data[i * output.point_step + output.fields[x_idx].offset],
-               &cloud_out[(*indices_)[i]].x,
-               sizeof(float));
-        memcpy(&output.data[i * output.point_step + output.fields[y_idx].offset],
-               &cloud_out[(*indices_)[i]].y,
-               sizeof(float));
-        memcpy(&output.data[i * output.point_step + output.fields[z_idx].offset],
-               &cloud_out[(*indices_)[i]].z,
-               sizeof(float));
+        memcpy (&output.data[i * output.point_step],
+                &input_->data[(*indices_)[i] * input_->point_step],
+                output.point_step);
+        memcpy (&output.data[i * output.point_step + output.fields[x_idx].offset],
+                &cloud_out[(*indices_)[i]].x,
+                sizeof (float));
+        memcpy (&output.data[i * output.point_step + output.fields[y_idx].offset],
+                &cloud_out[(*indices_)[i]].y,
+                sizeof (float));
+        memcpy (&output.data[i * output.point_step + output.fields[z_idx].offset],
+                &cloud_out[(*indices_)[i]].z,
+                sizeof (float));
       }
     }
   }
@@ -179,93 +180,94 @@ pcl::ProjectInliers<pcl::PCLPointCloud2>::applyFilter(PCLPointCloud2& output)
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 bool
-pcl::ProjectInliers<pcl::PCLPointCloud2>::initSACModel(int model_type)
+pcl::ProjectInliers<pcl::PCLPointCloud2>::initSACModel (int model_type)
 {
   // Convert the input data
-  PointCloud<PointXYZ>::Ptr cloud_ptr(new PointCloud<PointXYZ>);
-  fromPCLPointCloud2(*input_, *cloud_ptr);
+  PointCloud<PointXYZ>::Ptr cloud_ptr (new PointCloud<PointXYZ>);
+  fromPCLPointCloud2 (*input_, *cloud_ptr);
 
   // Build the model
   switch (model_type) {
   case SACMODEL_PLANE: {
     // PCL_DEBUG ("[pcl::%s::initSACModel] Using a model of type: SACMODEL_PLANE\n",
     // getClassName ().c_str ());
-    sacmodel_.reset(new SampleConsensusModelPlane<pcl::PointXYZ>(cloud_ptr));
+    sacmodel_.reset (new SampleConsensusModelPlane<pcl::PointXYZ> (cloud_ptr));
     break;
   }
   case SACMODEL_LINE: {
     // PCL_DEBUG ("[pcl::%s::initSACModel] Using a model of type: SACMODEL_LINE\n",
     // getClassName ().c_str ());
-    sacmodel_.reset(new SampleConsensusModelLine<pcl::PointXYZ>(cloud_ptr));
+    sacmodel_.reset (new SampleConsensusModelLine<pcl::PointXYZ> (cloud_ptr));
     break;
   }
   case SACMODEL_CIRCLE2D: {
     // PCL_DEBUG ("[pcl::%s::initSACModel] Using a model of type: SACMODEL_CIRCLE2D\n",
     // getClassName ().c_str ());
-    sacmodel_.reset(new SampleConsensusModelCircle2D<pcl::PointXYZ>(cloud_ptr));
+    sacmodel_.reset (new SampleConsensusModelCircle2D<pcl::PointXYZ> (cloud_ptr));
     break;
   }
   case SACMODEL_SPHERE: {
     // PCL_DEBUG ("[pcl::%s::initSACModel] Using a model of type: SACMODEL_SPHERE\n",
     // getClassName ().c_str ());
-    sacmodel_.reset(new SampleConsensusModelSphere<pcl::PointXYZ>(cloud_ptr));
+    sacmodel_.reset (new SampleConsensusModelSphere<pcl::PointXYZ> (cloud_ptr));
     break;
   }
   case SACMODEL_PARALLEL_LINE: {
     // PCL_DEBUG ("[pcl::%s::initSACModel] Using a model of type:
     // SACMODEL_PARALLEL_LINE\n", getClassName ().c_str ());
-    sacmodel_.reset(new SampleConsensusModelParallelLine<pcl::PointXYZ>(cloud_ptr));
+    sacmodel_.reset (new SampleConsensusModelParallelLine<pcl::PointXYZ> (cloud_ptr));
     break;
   }
   case SACMODEL_PERPENDICULAR_PLANE: {
     // PCL_DEBUG ("[pcl::%s::initSACModel] Using a model of type:
     // SACMODEL_PERPENDICULAR_PLANE\n", getClassName ().c_str ());
-    sacmodel_.reset(
-        new SampleConsensusModelPerpendicularPlane<pcl::PointXYZ>(cloud_ptr));
+    sacmodel_.reset (
+        new SampleConsensusModelPerpendicularPlane<pcl::PointXYZ> (cloud_ptr));
     break;
   }
   case SACMODEL_CYLINDER: {
     // PCL_DEBUG ("[pcl::%s::segment] Using a model of type: SACMODEL_CYLINDER\n",
     // getClassName ().c_str ());
-    sacmodel_.reset(new SampleConsensusModelCylinder<pcl::PointXYZ, Normal>(cloud_ptr));
+    sacmodel_.reset (
+        new SampleConsensusModelCylinder<pcl::PointXYZ, Normal> (cloud_ptr));
     break;
   }
   case SACMODEL_NORMAL_PLANE: {
     // PCL_DEBUG ("[pcl::%s::segment] Using a model of type: SACMODEL_NORMAL_PLANE\n",
     // getClassName ().c_str ());
-    sacmodel_.reset(
-        new SampleConsensusModelNormalPlane<pcl::PointXYZ, Normal>(cloud_ptr));
+    sacmodel_.reset (
+        new SampleConsensusModelNormalPlane<pcl::PointXYZ, Normal> (cloud_ptr));
     break;
   }
   case SACMODEL_CONE: {
     // PCL_DEBUG ("[pcl::%s::segment] Using a model of type: SACMODEL_CONE\n",
     // getClassName ().c_str ());
-    sacmodel_.reset(new SampleConsensusModelCone<pcl::PointXYZ, Normal>(cloud_ptr));
+    sacmodel_.reset (new SampleConsensusModelCone<pcl::PointXYZ, Normal> (cloud_ptr));
     break;
   }
   case SACMODEL_NORMAL_SPHERE: {
     // PCL_DEBUG ("[pcl::%s::segment] Using a model of type: SACMODEL_NORMAL_SPHERE\n",
     // getClassName ().c_str ());
-    sacmodel_.reset(
-        new SampleConsensusModelNormalSphere<pcl::PointXYZ, Normal>(cloud_ptr));
+    sacmodel_.reset (
+        new SampleConsensusModelNormalSphere<pcl::PointXYZ, Normal> (cloud_ptr));
     break;
   }
   case SACMODEL_NORMAL_PARALLEL_PLANE: {
     // PCL_DEBUG ("[pcl::%s::segment] Using a model of type:
     // SACMODEL_NORMAL_PARALLEL_PLANE\n", getClassName ().c_str ());
-    sacmodel_.reset(
-        new SampleConsensusModelNormalParallelPlane<pcl::PointXYZ, Normal>(cloud_ptr));
+    sacmodel_.reset (
+        new SampleConsensusModelNormalParallelPlane<pcl::PointXYZ, Normal> (cloud_ptr));
     break;
   }
   case SACMODEL_PARALLEL_PLANE: {
     // PCL_DEBUG ("[pcl::%s::segment] Using a model of type: SACMODEL_PARALLEL_PLANE\n",
     // getClassName ().c_str ());
-    sacmodel_.reset(new SampleConsensusModelParallelPlane<pcl::PointXYZ>(cloud_ptr));
+    sacmodel_.reset (new SampleConsensusModelParallelPlane<pcl::PointXYZ> (cloud_ptr));
     break;
   }
   default: {
-    PCL_ERROR("[pcl::%s::initSACModel] No valid model given!\n",
-              getClassName().c_str());
+    PCL_ERROR ("[pcl::%s::initSACModel] No valid model given!\n",
+               getClassName().c_str());
     return (false);
   }
   }
@@ -278,10 +280,11 @@ pcl::ProjectInliers<pcl::PCLPointCloud2>::initSACModel(int model_type)
 
 // Instantiations of specific point types
 #ifdef PCL_ONLY_CORE_POINT_TYPES
-PCL_INSTANTIATE(ProjectInliers,
-                (pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGB)(pcl::PointXYZRGBA))
+PCL_INSTANTIATE (
+    ProjectInliers,
+    (pcl::PointXYZ) (pcl::PointXYZI) (pcl::PointXYZRGB) (pcl::PointXYZRGBA))
 #else
-PCL_INSTANTIATE(ProjectInliers, PCL_XYZ_POINT_TYPES)
+PCL_INSTANTIATE (ProjectInliers, PCL_XYZ_POINT_TYPES)
 #endif
 
 #endif // PCL_NO_PRECOMPILE

@@ -373,14 +373,14 @@ private:
 
 private:
   // prohibit copy construction and operator=.
-  ON_FixedSizePool(const ON_FixedSizePool&);
+  ON_FixedSizePool (const ON_FixedSizePool&);
   ON_FixedSizePool&
-  operator=(const ON_FixedSizePool&);
+  operator= (const ON_FixedSizePool&);
 };
 
 class ON_CLASS ON_FixedSizePoolIterator {
 public:
-  ON_FixedSizePoolIterator(const class ON_FixedSizePool& fsp);
+  ON_FixedSizePoolIterator (const class ON_FixedSizePool& fsp);
 
   const class ON_FixedSizePool& m_fsp;
 
@@ -514,7 +514,7 @@ private:
 
   // no implementation (you can use a copy construtor)
   ON_FixedSizePoolIterator&
-  operator=(const ON_FixedSizePoolIterator&);
+  operator= (const ON_FixedSizePoolIterator&);
 };
 
 template <class T>
@@ -775,9 +775,9 @@ public:
 
 private:
   // prohibit copy construction and operator=.
-  ON_SimpleFixedSizePool(const ON_SimpleFixedSizePool<T>&);
+  ON_SimpleFixedSizePool (const ON_SimpleFixedSizePool<T>&);
   ON_SimpleFixedSizePool<T>&
-  operator=(const ON_SimpleFixedSizePool<T>&);
+  operator= (const ON_SimpleFixedSizePool<T>&);
 };
 
 // definitions of the template functions are in a different file

@@ -74,7 +74,7 @@ struct ValueAndDerivatives {
   }
 
   ValueAndDerivatives<N, T>&
-  operator+=(ValueAndDerivatives<N, T> const& r)
+  operator+= (ValueAndDerivatives<N, T> const& r)
   {
     hessian += r.hessian;
     grad += r.grad;
@@ -107,7 +107,7 @@ public:
   void
   addIdx (std::size_t i)
   {
-    pt_indices_.push_back(i);
+    pt_indices_.push_back (i);
   }
 
   /** \brief Estimate the normal distribution parameters given the point indices
@@ -122,7 +122,7 @@ public:
     Eigen::Matrix2d sxx = Eigen::Matrix2d::Zero();
 
     for (const auto& pt_index : pt_indices_) {
-      Eigen::Vector2d p(cloud[pt_index].x, cloud[pt_index].y);
+      Eigen::Vector2d p (cloud[pt_index].x, cloud[pt_index].y);
       sx += p;
       sxx += p * p.transpose();
     }
@@ -130,21 +130,21 @@ public:
     n_ = pt_indices_.size();
 
     if (n_ >= min_n_) {
-      mean_ = sx / static_cast<double>(n_);
+      mean_ = sx / static_cast<double> (n_);
       // Using maximum likelihood estimation as in the original paper
       Eigen::Matrix2d covar =
-          (sxx - 2 * (sx * mean_.transpose())) / static_cast<double>(n_) +
+          (sxx - 2 * (sx * mean_.transpose())) / static_cast<double> (n_) +
           mean_ * mean_.transpose();
 
-      Eigen::SelfAdjointEigenSolver<Eigen::Matrix2d> solver(covar);
+      Eigen::SelfAdjointEigenSolver<Eigen::Matrix2d> solver (covar);
       if (solver.eigenvalues()[0] < min_covar_eigvalue_mult * solver.eigenvalues()[1]) {
-        PCL_DEBUG("[pcl::NormalDist::estimateParams] NDT normal fit: adjusting "
-                  "eigenvalue %f\n",
-                  solver.eigenvalues()[0]);
+        PCL_DEBUG ("[pcl::NormalDist::estimateParams] NDT normal fit: adjusting "
+                   "eigenvalue %f\n",
+                   solver.eigenvalues()[0]);
         Eigen::Matrix2d l = solver.eigenvalues().asDiagonal();
         Eigen::Matrix2d q = solver.eigenvectors();
         // set minimum smallest eigenvalue:
-        l(0, 0) = l(1, 1) * min_covar_eigvalue_mult;
+        l (0, 0) = l (1, 1) * min_covar_eigvalue_mult;
         covar = q * l * q.transpose();
       }
       covar_inv_ = covar.inverse();
@@ -173,10 +173,10 @@ public:
     ValueAndDerivatives<3, double> r;
     const double x = transformed_pt.x;
     const double y = transformed_pt.y;
-    const Eigen::Vector2d p_xy(transformed_pt.x, transformed_pt.y);
+    const Eigen::Vector2d p_xy (transformed_pt.x, transformed_pt.y);
     const Eigen::Vector2d q = p_xy - mean_;
-    const Eigen::RowVector2d qt_cvi(q.transpose() * covar_inv_);
-    const double exp_qt_cvi_q = std::exp(-0.5 * static_cast<double>(qt_cvi * q));
+    const Eigen::RowVector2d qt_cvi (q.transpose() * covar_inv_);
+    const double exp_qt_cvi_q = std::exp (-0.5 * static_cast<double> (qt_cvi * q));
     r.value = -exp_qt_cvi_q;
 
     Eigen::Matrix<double, 2, 3> jacobian;
@@ -184,20 +184,20 @@ public:
         x * cos_theta - y * sin_theta;
 
     for (std::size_t i = 0; i < 3; i++)
-      r.grad[i] = static_cast<double>(qt_cvi * jacobian.col(i)) * exp_qt_cvi_q;
+      r.grad[i] = static_cast<double> (qt_cvi * jacobian.col (i)) * exp_qt_cvi_q;
 
     // second derivative only for i == j == 2:
-    const Eigen::Vector2d d2q_didj(y * sin_theta - x * cos_theta,
-                                   -(x * sin_theta + y * cos_theta));
+    const Eigen::Vector2d d2q_didj (y * sin_theta - x * cos_theta,
+                                    -(x * sin_theta + y * cos_theta));
 
     for (std::size_t i = 0; i < 3; i++)
       for (std::size_t j = 0; j < 3; j++)
-        r.hessian(i, j) =
+        r.hessian (i, j) =
             -exp_qt_cvi_q *
-            (static_cast<double>(-qt_cvi * jacobian.col(i)) *
-                 static_cast<double>(-qt_cvi * jacobian.col(j)) +
+            (static_cast<double> (-qt_cvi * jacobian.col (i)) *
+                 static_cast<double> (-qt_cvi * jacobian.col (j)) +
              (-qt_cvi * ((i == 2 && j == 2) ? d2q_didj : Eigen::Vector2d::Zero())) +
-             (-jacobian.col(j).transpose() * covar_inv_ * jacobian.col(i)));
+             (-jacobian.col (j).transpose() * covar_inv_ * jacobian.col (i)));
 
     return r;
   }
@@ -222,35 +222,35 @@ class NDTSingleGrid : public boost::noncopyable {
   using NormalDist = pcl::ndt2d::NormalDist<PointT>;
 
 public:
-  NDTSingleGrid(PointCloudConstPtr cloud,
-                const Eigen::Vector2f& about,
-                const Eigen::Vector2f& extent,
-                const Eigen::Vector2f& step)
-  : min_(about - extent)
-  , max_(min_ + 2 * extent)
-  , step_(step)
-  , cells_((max_[0] - min_[0]) / step_[0], (max_[1] - min_[1]) / step_[1])
-  , normal_distributions_(cells_[0], cells_[1])
+  NDTSingleGrid (PointCloudConstPtr cloud,
+                 const Eigen::Vector2f& about,
+                 const Eigen::Vector2f& extent,
+                 const Eigen::Vector2f& step)
+  : min_ (about - extent)
+  , max_ (min_ + 2 * extent)
+  , step_ (step)
+  , cells_ ((max_[0] - min_[0]) / step_[0], (max_[1] - min_[1]) / step_[1])
+  , normal_distributions_ (cells_[0], cells_[1])
   {
     // sort through all points, assigning them to distributions:
     std::size_t used_points = 0;
     for (std::size_t i = 0; i < cloud->size(); i++)
-      if (NormalDist* n = normalDistForPoint(cloud->at(i))) {
-        n->addIdx(i);
+      if (NormalDist* n = normalDistForPoint (cloud->at (i))) {
+        n->addIdx (i);
         used_points++;
       }
 
-    PCL_DEBUG("[pcl::NDTSingleGrid] NDT single grid %dx%d using %d/%d points\n",
-              cells_[0],
-              cells_[1],
-              used_points,
-              cloud->size());
+    PCL_DEBUG ("[pcl::NDTSingleGrid] NDT single grid %dx%d using %d/%d points\n",
+               cells_[0],
+               cells_[1],
+               used_points,
+               cloud->size());
 
     // then bake the distributions such that they approximate the
     // points (and throw away memory of the points)
     for (int x = 0; x < cells_[0]; x++)
       for (int y = 0; y < cells_[1]; y++)
-        normal_distributions_.coeffRef(x, y).estimateParams(*cloud);
+        normal_distributions_.coeffRef (x, y).estimateParams (*cloud);
   }
 
   /** \brief Return the 'score' (denormalised likelihood) and derivatives of score of
@@ -265,11 +265,11 @@ public:
         const double& cos_theta,
         const double& sin_theta) const
   {
-    const NormalDist* n = normalDistForPoint(transformed_pt);
+    const NormalDist* n = normalDistForPoint (transformed_pt);
     // index is in grid, return score from the normal distribution from
     // the correct part of the grid:
     if (n)
-      return n->test(transformed_pt, cos_theta, sin_theta);
+      return n->test (transformed_pt, cos_theta, sin_theta);
     return ValueAndDerivatives<3, double>::Zero();
   }
 
@@ -290,7 +290,7 @@ protected:
         return nullptr;
     // const cast to avoid duplicating this function in const and
     // non-const variants...
-    return const_cast<NormalDist*>(&normal_distributions_.coeffRef(idxi[0], idxi[1]));
+    return const_cast<NormalDist*> (&normal_distributions_.coeffRef (idxi[0], idxi[1]));
   }
 
   Eigen::Vector2f min_;
@@ -320,17 +320,17 @@ public:
    * \param[in] extent Extent of grid for normal distributions model
    * \param[in] step Size of region that each normal distribution will model
    */
-  NDT2D(PointCloudConstPtr cloud,
-        const Eigen::Vector2f& about,
-        const Eigen::Vector2f& extent,
-        const Eigen::Vector2f& step)
+  NDT2D (PointCloudConstPtr cloud,
+         const Eigen::Vector2f& about,
+         const Eigen::Vector2f& extent,
+         const Eigen::Vector2f& step)
   {
-    Eigen::Vector2f dx(step[0] / 2, 0);
-    Eigen::Vector2f dy(0, step[1] / 2);
-    single_grids_[0].reset(new SingleGrid(cloud, about, extent, step));
-    single_grids_[1].reset(new SingleGrid(cloud, about + dx, extent, step));
-    single_grids_[2].reset(new SingleGrid(cloud, about + dy, extent, step));
-    single_grids_[3].reset(new SingleGrid(cloud, about + dx + dy, extent, step));
+    Eigen::Vector2f dx (step[0] / 2, 0);
+    Eigen::Vector2f dy (0, step[1] / 2);
+    single_grids_[0].reset (new SingleGrid (cloud, about, extent, step));
+    single_grids_[1].reset (new SingleGrid (cloud, about + dx, extent, step));
+    single_grids_[2].reset (new SingleGrid (cloud, about + dy, extent, step));
+    single_grids_[3].reset (new SingleGrid (cloud, about + dx + dy, extent, step));
   }
 
   /** \brief Return the 'score' (denormalised likelihood) and derivatives of score of
@@ -347,7 +347,7 @@ public:
   {
     ValueAndDerivatives<3, double> r = ValueAndDerivatives<3, double>::Zero();
     for (const auto& single_grid : single_grids_)
-      r += single_grid->test(transformed_pt, cos_theta, sin_theta);
+      r += single_grid->test (transformed_pt, cos_theta, sin_theta);
     return r;
   }
 
@@ -389,7 +389,7 @@ namespace pcl {
 
 template <typename PointSource, typename PointTarget>
 void
-NormalDistributionsTransform2D<PointSource, PointTarget>::computeTransformation(
+NormalDistributionsTransform2D<PointSource, PointTarget>::computeTransformation (
     PointCloudSource& output, const Eigen::Matrix4f& guess)
 {
   PointCloudSource intm_cloud = output;
@@ -399,11 +399,12 @@ NormalDistributionsTransform2D<PointSource, PointTarget>::computeTransformation(
 
   if (guess != Eigen::Matrix4f::Identity()) {
     transformation_ = guess;
-    transformPointCloud(output, intm_cloud, transformation_);
+    transformPointCloud (output, intm_cloud, transformation_);
   }
 
   // build Normal Distribution Transform of target cloud:
-  ndt2d::NDT2D<PointTarget> target_ndt(target_, grid_centre_, grid_extent_, grid_step_);
+  ndt2d::NDT2D<PointTarget> target_ndt (
+      target_, grid_centre_, grid_extent_, grid_step_);
 
   // can't seem to use .block<> () member function on transformation_
   // directly... gcc bug?
@@ -411,34 +412,34 @@ NormalDistributionsTransform2D<PointSource, PointTarget>::computeTransformation(
 
   // work with x translation, y translation and z rotation: extending to 3D
   // would be some tricky maths, but not impossible.
-  const Eigen::Matrix3f initial_rot(transformation.block<3, 3>(0, 0));
-  const Eigen::Vector3f rot_x(initial_rot * Eigen::Vector3f::UnitX());
-  const double z_rotation = std::atan2(rot_x[1], rot_x[0]);
+  const Eigen::Matrix3f initial_rot (transformation.block<3, 3> (0, 0));
+  const Eigen::Vector3f rot_x (initial_rot * Eigen::Vector3f::UnitX());
+  const double z_rotation = std::atan2 (rot_x[1], rot_x[0]);
 
-  Eigen::Vector3d xytheta_transformation(
-      transformation(0, 3), transformation(1, 3), z_rotation);
+  Eigen::Vector3d xytheta_transformation (
+      transformation (0, 3), transformation (1, 3), z_rotation);
 
   while (!converged_) {
-    const double cos_theta = std::cos(xytheta_transformation[2]);
-    const double sin_theta = std::sin(xytheta_transformation[2]);
+    const double cos_theta = std::cos (xytheta_transformation[2]);
+    const double sin_theta = std::sin (xytheta_transformation[2]);
     previous_transformation_ = transformation;
 
     ndt2d::ValueAndDerivatives<3, double> score =
         ndt2d::ValueAndDerivatives<3, double>::Zero();
     for (std::size_t i = 0; i < intm_cloud.size(); i++)
-      score += target_ndt.test(intm_cloud[i], cos_theta, sin_theta);
+      score += target_ndt.test (intm_cloud[i], cos_theta, sin_theta);
 
-    PCL_DEBUG("[pcl::NormalDistributionsTransform2D::computeTransformation] NDT score "
-              "%f (x=%f,y=%f,r=%f)\n",
-              float(score.value),
-              xytheta_transformation[0],
-              xytheta_transformation[1],
-              xytheta_transformation[2]);
+    PCL_DEBUG ("[pcl::NormalDistributionsTransform2D::computeTransformation] NDT score "
+               "%f (x=%f,y=%f,r=%f)\n",
+               float (score.value),
+               xytheta_transformation[0],
+               xytheta_transformation[1],
+               xytheta_transformation[2]);
 
     if (score.value != 0) {
       // test for positive definiteness, and adjust to ensure it if necessary:
       Eigen::EigenSolver<Eigen::Matrix3d> solver;
-      solver.compute(score.hessian, false);
+      solver.compute (score.hessian, false);
       double min_eigenvalue = 0;
       for (int i = 0; i < 3; i++)
         if (solver.eigenvalues()[i].real() < min_eigenvalue)
@@ -448,47 +449,48 @@ NormalDistributionsTransform2D<PointSource, PointTarget>::computeTransformation(
       // from the original paper
       if (min_eigenvalue < 0) {
         double lambda = 1.1 * min_eigenvalue - 1;
-        score.hessian += Eigen::Vector3d(-lambda, -lambda, -lambda).asDiagonal();
-        solver.compute(score.hessian, false);
-        PCL_DEBUG("[pcl::NormalDistributionsTransform2D::computeTransformation] adjust "
-                  "hessian: %f: new eigenvalues:%f %f %f\n",
-                  float(lambda),
-                  solver.eigenvalues()[0].real(),
-                  solver.eigenvalues()[1].real(),
-                  solver.eigenvalues()[2].real());
+        score.hessian += Eigen::Vector3d (-lambda, -lambda, -lambda).asDiagonal();
+        solver.compute (score.hessian, false);
+        PCL_DEBUG (
+            "[pcl::NormalDistributionsTransform2D::computeTransformation] adjust "
+            "hessian: %f: new eigenvalues:%f %f %f\n",
+            float (lambda),
+            solver.eigenvalues()[0].real(),
+            solver.eigenvalues()[1].real(),
+            solver.eigenvalues()[2].real());
       }
-      assert(solver.eigenvalues()[0].real() >= 0 &&
-             solver.eigenvalues()[1].real() >= 0 &&
-             solver.eigenvalues()[2].real() >= 0);
+      assert (solver.eigenvalues()[0].real() >= 0 &&
+              solver.eigenvalues()[1].real() >= 0 &&
+              solver.eigenvalues()[2].real() >= 0);
 
-      Eigen::Vector3d delta_transformation(-score.hessian.inverse() * score.grad);
+      Eigen::Vector3d delta_transformation (-score.hessian.inverse() * score.grad);
       Eigen::Vector3d new_transformation =
-          xytheta_transformation + newton_lambda_.cwiseProduct(delta_transformation);
+          xytheta_transformation + newton_lambda_.cwiseProduct (delta_transformation);
 
       xytheta_transformation = new_transformation;
 
       // update transformation matrix from x, y, theta:
-      transformation.block<3, 3>(0, 0).matrix() = Eigen::Matrix3f(Eigen::AngleAxisf(
-          static_cast<float>(xytheta_transformation[2]), Eigen::Vector3f::UnitZ()));
-      transformation.block<3, 1>(0, 3).matrix() =
-          Eigen::Vector3f(static_cast<float>(xytheta_transformation[0]),
-                          static_cast<float>(xytheta_transformation[1]),
-                          0.0f);
+      transformation.block<3, 3> (0, 0).matrix() = Eigen::Matrix3f (Eigen::AngleAxisf (
+          static_cast<float> (xytheta_transformation[2]), Eigen::Vector3f::UnitZ()));
+      transformation.block<3, 1> (0, 3).matrix() =
+          Eigen::Vector3f (static_cast<float> (xytheta_transformation[0]),
+                           static_cast<float> (xytheta_transformation[1]),
+                           0.0f);
 
       // std::cout << "new transformation:\n" << transformation << std::endl;
     }
     else {
-      PCL_ERROR("[pcl::NormalDistributionsTransform2D::computeTransformation] no "
-                "overlap: try increasing the size or reducing the step of the grid\n");
+      PCL_ERROR ("[pcl::NormalDistributionsTransform2D::computeTransformation] no "
+                 "overlap: try increasing the size or reducing the step of the grid\n");
       break;
     }
 
-    transformPointCloud(output, intm_cloud, transformation);
+    transformPointCloud (output, intm_cloud, transformation);
 
     nr_iterations_++;
 
     if (update_visualizer_)
-      update_visualizer_(output, *indices_, *target_, *indices_);
+      update_visualizer_ (output, *indices_, *target_, *indices_);
 
     // std::cout << "eps=" << std::abs ((transformation - previous_transformation_).sum
     // ()) << std::endl;
@@ -496,12 +498,12 @@ NormalDistributionsTransform2D<PointSource, PointTarget>::computeTransformation(
     Eigen::Matrix4f transformation_delta =
         transformation.inverse() * previous_transformation_;
     double cos_angle =
-        0.5 * (transformation_delta.coeff(0, 0) + transformation_delta.coeff(1, 1) +
-               transformation_delta.coeff(2, 2) - 1);
+        0.5 * (transformation_delta.coeff (0, 0) + transformation_delta.coeff (1, 1) +
+               transformation_delta.coeff (2, 2) - 1);
     double translation_sqr =
-        transformation_delta.coeff(0, 3) * transformation_delta.coeff(0, 3) +
-        transformation_delta.coeff(1, 3) * transformation_delta.coeff(1, 3) +
-        transformation_delta.coeff(2, 3) * transformation_delta.coeff(2, 3);
+        transformation_delta.coeff (0, 3) * transformation_delta.coeff (0, 3) +
+        transformation_delta.coeff (1, 3) * transformation_delta.coeff (1, 3) +
+        transformation_delta.coeff (2, 3) * transformation_delta.coeff (2, 3);
 
     if (nr_iterations_ >= max_iterations_ ||
         ((transformation_epsilon_ > 0 && translation_sqr <= transformation_epsilon_) &&

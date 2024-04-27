@@ -58,7 +58,7 @@ using IndicesPtr = shared_ptr<Indices>;
 using IndicesConstPtr = shared_ptr<const Indices>;
 
 // Used to denote that a value has not been set for an index_t variable
-static constexpr index_t UNAVAILABLE = static_cast<index_t>(-1);
+static constexpr index_t UNAVAILABLE = static_cast<index_t> (-1);
 
 /////////////////////////////////////////////////////////////////////////////////////////
 /** \brief PCL base class. Implements methods that are used by most PCL algorithms.
@@ -78,7 +78,7 @@ public:
   PCLBase();
 
   /** \brief Copy constructor. */
-  PCLBase(const PCLBase& base);
+  PCLBase (const PCLBase& base);
 
   /** \brief Destructor. */
   virtual ~PCLBase() = default;
@@ -148,7 +148,7 @@ public:
    * \param[in] pos position in indices_ vector
    */
   inline const PointT&
-  operator[](std::size_t pos) const
+  operator[] (std::size_t pos) const
   {
     return ((*input_)[(*indices_)[pos]]);
   }

@@ -52,7 +52,7 @@ class HelpWindow : public QDialog {
   Q_OBJECT
 
 public:
-  explicit HelpWindow(QWidget* parent = nullptr);
+  explicit HelpWindow (QWidget* parent = nullptr);
   ~HelpWindow() override;
 
 private:

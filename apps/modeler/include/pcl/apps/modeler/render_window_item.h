@@ -51,7 +51,7 @@ class BoolParameter;
 
 class RenderWindowItem : public QTreeWidgetItem, public AbstractItem {
 public:
-  RenderWindowItem(QTreeWidget* parent);
+  RenderWindowItem (QTreeWidget* parent);
   ~RenderWindowItem();
 
   inline RenderWindow*

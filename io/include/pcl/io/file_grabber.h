@@ -58,7 +58,7 @@ public:
    *  \param[in] idx The frame to load
    */
   virtual const typename pcl::PointCloud<PointT>::ConstPtr
-  operator[](std::size_t idx) const = 0;
+  operator[] (std::size_t idx) const = 0;
 
   /** \brief size Returns the number of clouds currently loaded by the grabber */
   virtual std::size_t
@@ -72,10 +72,10 @@ public:
   {
     if (idx >= size()) {
       // Throw error
-      throw pcl::IOException(
+      throw pcl::IOException (
           "[pcl::FileGrabber] Attempted to access element which is out of bounds!");
     }
-    return (operator[](idx));
+    return (operator[] (idx));
   }
 };
 } // namespace pcl

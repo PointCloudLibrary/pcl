@@ -8,7 +8,7 @@ namespace tracking {
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename StateT>
 void
-ParticleFilterOMPTracker<PointInT, StateT>::setNumberOfThreads(unsigned int nr_threads)
+ParticleFilterOMPTracker<PointInT, StateT>::setNumberOfThreads (unsigned int nr_threads)
 {
   if (nr_threads == 0)
 #ifdef _OPENMP
@@ -32,17 +32,17 @@ ParticleFilterOMPTracker<PointInT, StateT>::weight()
   num_threads(threads_)
     // clang-format on
     for (int i = 0; i < particle_num_; i++)
-      this->computeTransformedPointCloudWithoutNormal((*particles_)[i],
-                                                      *transed_reference_vector_[i]);
+      this->computeTransformedPointCloudWithoutNormal ((*particles_)[i],
+                                                       *transed_reference_vector_[i]);
 
-    PointCloudInPtr coherence_input(new PointCloudIn);
-    this->cropInputPointCloud(input_, *coherence_input);
+    PointCloudInPtr coherence_input (new PointCloudIn);
+    this->cropInputPointCloud (input_, *coherence_input);
     if (change_counter_ == 0) {
       // test change detector
-      if (!use_change_detector_ || this->testChangeDetection(coherence_input)) {
+      if (!use_change_detector_ || this->testChangeDetection (coherence_input)) {
         changed_ = true;
         change_counter_ = change_detector_interval_;
-        coherence_->setTargetCloud(coherence_input);
+        coherence_->setTargetCloud (coherence_input);
         coherence_->initCompute();
         // clang-format off
 #pragma omp parallel for \
@@ -51,7 +51,7 @@ ParticleFilterOMPTracker<PointInT, StateT>::weight()
         // clang-format on
         for (int i = 0; i < particle_num_; i++) {
           IndicesPtr indices; // dummy
-          coherence_->compute(
+          coherence_->compute (
               transed_reference_vector_[i], indices, (*particles_)[i].weight);
         }
       }
@@ -60,7 +60,7 @@ ParticleFilterOMPTracker<PointInT, StateT>::weight()
     }
     else {
       --change_counter_;
-      coherence_->setTargetCloud(coherence_input);
+      coherence_->setTargetCloud (coherence_input);
       coherence_->initCompute();
       // clang-format off
 #pragma omp parallel for \
@@ -69,15 +69,15 @@ ParticleFilterOMPTracker<PointInT, StateT>::weight()
       // clang-format on
       for (int i = 0; i < particle_num_; i++) {
         IndicesPtr indices; // dummy
-        coherence_->compute(
+        coherence_->compute (
             transed_reference_vector_[i], indices, (*particles_)[i].weight);
       }
     }
   }
   else {
-    std::vector<IndicesPtr> indices_list(particle_num_);
+    std::vector<IndicesPtr> indices_list (particle_num_);
     for (int i = 0; i < particle_num_; i++) {
-      indices_list[i] = IndicesPtr(new pcl::Indices);
+      indices_list[i] = IndicesPtr (new pcl::Indices);
     }
     // clang-format off
 #pragma omp parallel for \

@@ -47,10 +47,10 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 void
-pcl::RadiusOutlierRemoval<PointT>::applyFilterIndices(Indices& indices)
+pcl::RadiusOutlierRemoval<PointT>::applyFilterIndices (Indices& indices)
 {
   if (search_radius_ == 0.0) {
-    PCL_ERROR("[pcl::%s::applyFilter] No radius defined!\n", getClassName().c_str());
+    PCL_ERROR ("[pcl::%s::applyFilter] No radius defined!\n", getClassName().c_str());
     indices.clear();
     removed_indices_->clear();
     return;
@@ -59,23 +59,23 @@ pcl::RadiusOutlierRemoval<PointT>::applyFilterIndices(Indices& indices)
   // Initialize the search class
   if (!searcher_) {
     if (input_->isOrganized())
-      searcher_.reset(new pcl::search::OrganizedNeighbor<PointT>());
+      searcher_.reset (new pcl::search::OrganizedNeighbor<PointT>());
     else
-      searcher_.reset(new pcl::search::KdTree<PointT>(false));
+      searcher_.reset (new pcl::search::KdTree<PointT> (false));
   }
-  if (!searcher_->setInputCloud(input_)) {
-    PCL_ERROR("[pcl::%s::applyFilter] Error when initializing search method!\n",
-              getClassName().c_str());
+  if (!searcher_->setInputCloud (input_)) {
+    PCL_ERROR ("[pcl::%s::applyFilter] Error when initializing search method!\n",
+               getClassName().c_str());
     indices.clear();
     removed_indices_->clear();
     return;
   }
 
   // The arrays to be used
-  Indices nn_indices(indices_->size());
-  std::vector<float> nn_dists(indices_->size());
-  indices.resize(indices_->size());
-  removed_indices_->resize(indices_->size());
+  Indices nn_indices (indices_->size());
+  std::vector<float> nn_dists (indices_->size());
+  indices.resize (indices_->size());
+  removed_indices_->resize (indices_->size());
   int oii = 0, rii = 0; // oii = output indices iterator, rii = removed indices iterator
 
   // If the data is dense => use nearest-k search
@@ -86,7 +86,7 @@ pcl::RadiusOutlierRemoval<PointT>::applyFilterIndices(Indices& indices)
 
     for (const auto& index : (*indices_)) {
       // Perform the nearest-k search
-      int k = searcher_->nearestKSearch(index, mean_k, nn_indices, nn_dists);
+      int k = searcher_->nearestKSearch (index, mean_k, nn_indices, nn_dists);
 
       // Check the number of neighbors
       // Note: nn_dists is sorted, so check the last item
@@ -126,7 +126,7 @@ pcl::RadiusOutlierRemoval<PointT>::applyFilterIndices(Indices& indices)
     for (const auto& index : (*indices_)) {
       // Perform the radius search
       // Note: k includes the query point, so is always at least 1
-      int k = searcher_->radiusSearch(index, search_radius_, nn_indices, nn_dists);
+      int k = searcher_->radiusSearch (index, search_radius_, nn_indices, nn_dists);
 
       // Points having too few neighbors are outliers and are passed to removed indices
       // Unless negative was set, then it's the opposite condition
@@ -142,8 +142,8 @@ pcl::RadiusOutlierRemoval<PointT>::applyFilterIndices(Indices& indices)
   }
 
   // Resize the output arrays
-  indices.resize(oii);
-  removed_indices_->resize(rii);
+  indices.resize (oii);
+  removed_indices_->resize (rii);
 }
 
 #define PCL_INSTANTIATE_RadiusOutlierRemoval(T)                                        \

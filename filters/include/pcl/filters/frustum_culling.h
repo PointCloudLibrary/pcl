@@ -83,9 +83,9 @@ public:
 
   using Filter<PointT>::getClassName;
 
-  FrustumCulling(bool extract_removed_indices = false)
-  : FilterIndices<PointT>(extract_removed_indices)
-  , camera_pose_(Eigen::Matrix4f::Identity())
+  FrustumCulling (bool extract_removed_indices = false)
+  : FilterIndices<PointT> (extract_removed_indices)
+  , camera_pose_ (Eigen::Matrix4f::Identity())
   {
     filter_name_ = "FrustumCulling";
   }
@@ -129,7 +129,7 @@ public:
   setHorizontalFOV (float hfov)
   {
     if (hfov <= 0 || hfov >= 180) {
-      throw PCLException(
+      throw PCLException (
           "Horizontal field of view should be between 0 and 180(excluded).",
           "frustum_culling.h",
           "setHorizontalFOV");
@@ -154,7 +154,7 @@ public:
   {
     if (fov_left_bound <= -90 || fov_right_bound >= 90 ||
         fov_left_bound >= fov_right_bound) {
-      throw PCLException(
+      throw PCLException (
           "Horizontal field of view bounds should be between -90 and 90(excluded). "
           "And left bound should be smaller than right bound.",
           "frustum_culling.h",
@@ -168,13 +168,13 @@ public:
   float
   getHorizontalFOV () const
   {
-    if (std::fabs(fov_right_bound_) != std::fabs(fov_left_bound_)) {
-      PCL_WARN("Your horizontal field of view is asymmetrical: "
-               "left bound's absolute value(%f) != right bound's absolute value(%f)! "
-               "Please use getHorizontalFOV (float& fov_left_bound, float& "
-               "fov_right_bound) instead.\n",
-               std::fabs(fov_left_bound_),
-               std::fabs(fov_right_bound_));
+    if (std::fabs (fov_right_bound_) != std::fabs (fov_left_bound_)) {
+      PCL_WARN ("Your horizontal field of view is asymmetrical: "
+                "left bound's absolute value(%f) != right bound's absolute value(%f)! "
+                "Please use getHorizontalFOV (float& fov_left_bound, float& "
+                "fov_right_bound) instead.\n",
+                std::fabs (fov_left_bound_),
+                std::fabs (fov_right_bound_));
     }
     return (fov_right_bound_ - fov_left_bound_);
   }
@@ -195,7 +195,7 @@ public:
   setVerticalFOV (float vfov)
   {
     if (vfov <= 0 || vfov >= 180) {
-      throw PCLException(
+      throw PCLException (
           "Vertical field of view should be between 0 and 180(excluded).",
           "frustum_culling.h",
           "setVerticalFOV");
@@ -219,7 +219,7 @@ public:
   {
     if (fov_lower_bound <= -90 || fov_upper_bound >= 90 ||
         fov_lower_bound >= fov_upper_bound) {
-      throw PCLException(
+      throw PCLException (
           "Vertical field of view bounds should be between -90 and 90(excluded). "
           "And lower bound should be smaller than upper bound.",
           "frustum_culling.h",
@@ -233,13 +233,13 @@ public:
   float
   getVerticalFOV () const
   {
-    if (std::fabs(fov_upper_bound_) != std::fabs(fov_lower_bound_)) {
-      PCL_WARN("Your vertical field of view is asymmetrical: "
-               "lower bound's absolute value(%f) != upper bound's absolute value(%f)! "
-               "Please use getVerticalFOV (float& fov_lower_bound, float& "
-               "fov_upper_bound) instead.\n",
-               std::fabs(fov_lower_bound_),
-               std::fabs(fov_upper_bound_));
+    if (std::fabs (fov_upper_bound_) != std::fabs (fov_lower_bound_)) {
+      PCL_WARN ("Your vertical field of view is asymmetrical: "
+                "lower bound's absolute value(%f) != upper bound's absolute value(%f)! "
+                "Please use getVerticalFOV (float& fov_lower_bound, float& "
+                "fov_upper_bound) instead.\n",
+                std::fabs (fov_lower_bound_),
+                std::fabs (fov_upper_bound_));
     }
     return (fov_upper_bound_ - fov_lower_bound_);
   }
@@ -260,9 +260,9 @@ public:
   setNearPlaneDistance (float np_dist)
   {
     if (np_dist < 0.0f) {
-      throw PCLException("Near plane distance should be greater than or equal to 0.",
-                         "frustum_culling.h",
-                         "setNearPlaneDistance");
+      throw PCLException ("Near plane distance should be greater than or equal to 0.",
+                          "frustum_culling.h",
+                          "setNearPlaneDistance");
     }
     np_dist_ = np_dist;
   }
@@ -283,9 +283,9 @@ public:
   setFarPlaneDistance (float fp_dist)
   {
     if (fp_dist <= 0.0f) {
-      throw PCLException("Far plane distance should be greater than 0.",
-                         "frustum_culling.h",
-                         "setFarPlaneDistance");
+      throw PCLException ("Far plane distance should be greater than 0.",
+                          "frustum_culling.h",
+                          "setFarPlaneDistance");
     }
     fp_dist_ = fp_dist;
   }
@@ -313,10 +313,10 @@ public:
   {
     if ((roi_x > 1.0f) || (roi_x < 0.0f) || (roi_y > 1.0f) || (roi_y < 0.0f) ||
         (roi_w <= 0.0f) || (roi_w > 1.0f) || (roi_h <= 0.0f) || (roi_h > 1.0f)) {
-      throw PCLException("ROI X-Y values should be between 0 and 1. "
-                         "Width and height must not be zero.",
-                         "frustum_culling.h",
-                         "setRegionOfInterest");
+      throw PCLException ("ROI X-Y values should be between 0 and 1. "
+                          "Width and height must not be zero.",
+                          "frustum_culling.h",
+                          "setRegionOfInterest");
     }
     roi_x_ = roi_x;
     roi_y_ = roi_y;

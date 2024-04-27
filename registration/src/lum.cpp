@@ -43,4 +43,4 @@
 #include <pcl/registration/impl/lum.hpp>
 #include <pcl/point_types.h>
 
-PCL_INSTANTIATE(LUM, PCL_XYZ_POINT_TYPES);
+PCL_INSTANTIATE (LUM, PCL_XYZ_POINT_TYPES);

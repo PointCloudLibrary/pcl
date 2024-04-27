@@ -84,7 +84,7 @@ public:
    * query point
    *
    */
-  KdTree(bool sorted = true);
+  KdTree (bool sorted = true);
 
   /** \brief Destructor for KdTree. */
 

@@ -47,7 +47,7 @@
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT>
 void
-pcl::MomentInvariantsEstimation<PointInT, PointOutT>::computePointMomentInvariants(
+pcl::MomentInvariantsEstimation<PointInT, PointOutT>::computePointMomentInvariants (
     const pcl::PointCloud<PointInT>& cloud,
     const pcl::Indices& indices,
     float& j1,
@@ -55,7 +55,7 @@ pcl::MomentInvariantsEstimation<PointInT, PointOutT>::computePointMomentInvarian
     float& j3)
 {
   // Estimate the XYZ centroid
-  compute3DCentroid(cloud, indices, xyz_centroid_);
+  compute3DCentroid (cloud, indices, xyz_centroid_);
 
   // Initialize the centralized moments
   float mu200 = 0, mu020 = 0, mu002 = 0, mu110 = 0, mu101 = 0, mu011 = 0;
@@ -86,11 +86,11 @@ pcl::MomentInvariantsEstimation<PointInT, PointOutT>::computePointMomentInvarian
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT>
 void
-pcl::MomentInvariantsEstimation<PointInT, PointOutT>::computePointMomentInvariants(
+pcl::MomentInvariantsEstimation<PointInT, PointOutT>::computePointMomentInvariants (
     const pcl::PointCloud<PointInT>& cloud, float& j1, float& j2, float& j3)
 {
   // Estimate the XYZ centroid
-  compute3DCentroid(cloud, xyz_centroid_);
+  compute3DCentroid (cloud, xyz_centroid_);
 
   // Initialize the centralized moments
   float mu200 = 0, mu020 = 0, mu002 = 0, mu110 = 0, mu101 = 0, mu011 = 0;
@@ -121,13 +121,13 @@ pcl::MomentInvariantsEstimation<PointInT, PointOutT>::computePointMomentInvarian
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT>
 void
-pcl::MomentInvariantsEstimation<PointInT, PointOutT>::computeFeature(
+pcl::MomentInvariantsEstimation<PointInT, PointOutT>::computeFeature (
     PointCloudOut& output)
 {
   // Allocate enough space to hold the results
   // \note This resize is irrelevant for a radiusSearch ().
-  pcl::Indices nn_indices(k_);
-  std::vector<float> nn_dists(k_);
+  pcl::Indices nn_indices (k_);
+  std::vector<float> nn_dists (k_);
 
   output.is_dense = true;
   // Save a few cycles by not checking every point for NaN/Inf values if the cloud is
@@ -135,7 +135,7 @@ pcl::MomentInvariantsEstimation<PointInT, PointOutT>::computeFeature(
   if (input_->is_dense) {
     // Iterating over the entire index vector
     for (std::size_t idx = 0; idx < indices_->size(); ++idx) {
-      if (this->searchForNeighbors(
+      if (this->searchForNeighbors (
               (*indices_)[idx], search_parameter_, nn_indices, nn_dists) == 0) {
         output[idx].j1 = output[idx].j2 = output[idx].j3 =
             std::numeric_limits<float>::quiet_NaN();
@@ -143,15 +143,15 @@ pcl::MomentInvariantsEstimation<PointInT, PointOutT>::computeFeature(
         continue;
       }
 
-      computePointMomentInvariants(
+      computePointMomentInvariants (
           *surface_, nn_indices, output[idx].j1, output[idx].j2, output[idx].j3);
     }
   }
   else {
     // Iterating over the entire index vector
     for (std::size_t idx = 0; idx < indices_->size(); ++idx) {
-      if (!isFinite((*input_)[(*indices_)[idx]]) ||
-          this->searchForNeighbors(
+      if (!isFinite ((*input_)[(*indices_)[idx]]) ||
+          this->searchForNeighbors (
               (*indices_)[idx], search_parameter_, nn_indices, nn_dists) == 0) {
         output[idx].j1 = output[idx].j2 = output[idx].j3 =
             std::numeric_limits<float>::quiet_NaN();
@@ -159,7 +159,7 @@ pcl::MomentInvariantsEstimation<PointInT, PointOutT>::computeFeature(
         continue;
       }
 
-      computePointMomentInvariants(
+      computePointMomentInvariants (
           *surface_, nn_indices, output[idx].j1, output[idx].j2, output[idx].j3);
     }
   }

@@ -72,12 +72,12 @@ public:
   using ConstPtr = shared_ptr<const EnsensoGrabber>;
 
   // Define callback signature typedefs
-  using sig_cb_ensenso_point_cloud = void(const pcl::PointCloud<pcl::PointXYZ>::Ptr&);
+  using sig_cb_ensenso_point_cloud = void (const pcl::PointCloud<pcl::PointXYZ>::Ptr&);
 
-  using sig_cb_ensenso_images = void(const shared_ptr<PairOfImages>&);
+  using sig_cb_ensenso_images = void (const shared_ptr<PairOfImages>&);
 
-  using sig_cb_ensenso_point_cloud_images =
-      void(const pcl::PointCloud<pcl::PointXYZ>::Ptr&, const shared_ptr<PairOfImages>&);
+  using sig_cb_ensenso_point_cloud_images = void (
+      const pcl::PointCloud<pcl::PointXYZ>::Ptr&, const shared_ptr<PairOfImages>&);
 
   /** @endcond */
 
@@ -498,14 +498,16 @@ protected:
    * the reference time is January 1st, 1970 (UTC). See [time-stamp
    * page](http://www.ensenso.de/manual/index.html?json_types.htm) for more info about
    * the time stamp conversion. */
-  std::uint64_t static getPCLStamp(const double ensenso_stamp);
+  std::uint64_t static getPCLStamp (const double ensenso_stamp);
 
   /** @brief Get OpenCV image type corresponding to the parameters given
    * @param channels number of channels in the image
    * @param bpe bytes per element
    * @param isFlt is float
    * @return the OpenCV type as a string */
-  std::string static getOpenCVType(const int channels, const int bpe, const bool isFlt);
+  std::string static getOpenCVType (const int channels,
+                                    const int bpe,
+                                    const bool isFlt);
 
   /** @brief Continuously asks for images and or point clouds data from the device and
    * publishes them if available. PCL time stamps are filled for both the images and

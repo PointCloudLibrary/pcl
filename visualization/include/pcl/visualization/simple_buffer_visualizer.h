@@ -27,20 +27,20 @@ public:
   /** \brief PCL simple buffer visualizer visualizer constructor.
    * \param[in] nb_values the number of values stored in the buffer [2 - 308]
    */
-  PCLSimpleBufferVisualizer(const int nb_values)
+  PCLSimpleBufferVisualizer (const int nb_values)
   {
     histo_ = new PCLHistogramVisualizer();
     nb_values_ = nb_values;
 
     if (nb_values_ > 308) {
-      PCL_WARN("Maximum number of values can only be 308 (%d given). Setting back to "
-               "308. \n");
+      PCL_WARN ("Maximum number of values can only be 308 (%d given). Setting back to "
+                "308. \n");
       nb_values_ = 308;
     }
 
     if (nb_values_ <= 1) {
-      PCL_WARN("Number of values must be at least 2 (%d given). Setting it to default "
-               "(308). \n");
+      PCL_WARN ("Number of values must be at least 2 (%d given). Setting it to default "
+                "(308). \n");
       nb_values_ = 308;
     }
 
@@ -60,23 +60,23 @@ public:
     // check if we need to automatically handle the background color
     if (control_background_color_) {
       if (values_.back() < lowest_threshold_) {
-        histo_->setBackgroundColor(255.0, 140.0, 0.0);
+        histo_->setBackgroundColor (255.0, 140.0, 0.0);
       }
       else {
-        histo_->setBackgroundColor(255.0, 255.0, 255.0);
+        histo_->setBackgroundColor (255.0, 255.0, 255.0);
       }
     }
 
     // add cloud to the visualizer
-    histo_->updateFeatureHistogram(cloud_, nb_values_);
+    histo_->updateFeatureHistogram (cloud_, nb_values_);
 
     // check if we need to handle the Y scale ourselves
     if (handle_y_scale_) {
-      histo_->setGlobalYRange(min_, max_);
+      histo_->setGlobalYRange (min_, max_);
     }
 
     // spin once
-    spinOnce(time);
+    spinOnce (time);
   }
 
   /** \brief add a new value at the end of the buffer.
@@ -89,7 +89,7 @@ public:
     values_.pop_front();
 
     // push new value in the back
-    values_.push_back(val);
+    values_.push_back (val);
 
     // udapte min_ and max_ values
     if (val > max_)
@@ -105,7 +105,7 @@ public:
   void
   spinOnce (const int time = 1)
   {
-    histo_->spinOnce(time);
+    histo_->spinOnce (time);
   }
 
   /** \brief spin method. */
@@ -131,7 +131,7 @@ public:
     // if the user sets it back to false, we make sure to reset the bckgrd color to
     // white
     if (value == false)
-      histo_->setBackgroundColor(255.0, 255.0, 255.0);
+      histo_->setBackgroundColor (255.0, 255.0, 255.0);
 
     lowest_threshold_ = threshold;
   }
@@ -154,13 +154,13 @@ private:
   void
   initValuesAndVisualization ()
   {
-    cloud_.resize(1);
+    cloud_.resize (1);
 
-    PCL_WARN("Setting buffer size to %d entries.\n", nb_values_);
-    values_.resize(nb_values_);
+    PCL_WARN ("Setting buffer size to %d entries.\n", nb_values_);
+    values_.resize (nb_values_);
 
     // add the cloud to the histogram viewer
-    histo_->addFeatureHistogram(cloud_, nb_values_);
+    histo_->addFeatureHistogram (cloud_, nb_values_);
 
     // init GUI-related variables
     initGUIValues();

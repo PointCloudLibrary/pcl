@@ -198,11 +198,14 @@ struct CopyIfFieldExists {
    * \param[out] exists set to true if the field exists, false otherwise
    * \param[out] value the copied field value
    */
-  CopyIfFieldExists(const PointInT& pt,
-                    const std::string& field,
-                    bool& exists,
-                    OutT& value)
-  : pt_(reinterpret_cast<const Pod&>(pt)), name_(field), exists_(exists), value_(value)
+  CopyIfFieldExists (const PointInT& pt,
+                     const std::string& field,
+                     bool& exists,
+                     OutT& value)
+  : pt_ (reinterpret_cast<const Pod&> (pt))
+  , name_ (field)
+  , exists_ (exists)
+  , value_ (value)
   {
     exists_ = false;
   }
@@ -212,11 +215,11 @@ struct CopyIfFieldExists {
    * \param[in] field the name of the field
    * \param[out] value the copied field value
    */
-  CopyIfFieldExists(const PointInT& pt, const std::string& field, OutT& value)
-  : pt_(reinterpret_cast<const Pod&>(pt))
-  , name_(field)
-  , exists_(exists_tmp_)
-  , value_(value)
+  CopyIfFieldExists (const PointInT& pt, const std::string& field, OutT& value)
+  : pt_ (reinterpret_cast<const Pod&> (pt))
+  , name_ (field)
+  , exists_ (exists_tmp_)
+  , value_ (value)
   {}
 
   /** \brief Operator. Data copy happens here. */
@@ -227,9 +230,9 @@ struct CopyIfFieldExists {
     if (name_ == pcl::traits::name<PointInT, Key>::value) {
       exists_ = true;
       using T = typename pcl::traits::datatype<PointInT, Key>::type;
-      const std::uint8_t* data_ptr = reinterpret_cast<const std::uint8_t*>(&pt_) +
+      const std::uint8_t* data_ptr = reinterpret_cast<const std::uint8_t*> (&pt_) +
                                      pcl::traits::offset<PointInT, Key>::value;
-      value_ = static_cast<OutT>(*reinterpret_cast<const T*>(data_ptr));
+      value_ = static_cast<OutT> (*reinterpret_cast<const T*> (data_ptr));
     }
   }
 
@@ -263,8 +266,8 @@ struct SetIfFieldExists {
    * \param[in] field the name of the field
    * \param[out] value the value to set
    */
-  SetIfFieldExists(PointOutT& pt, const std::string& field, const InT& value)
-  : pt_(reinterpret_cast<Pod&>(pt)), name_(field), value_(value)
+  SetIfFieldExists (PointOutT& pt, const std::string& field, const InT& value)
+  : pt_ (reinterpret_cast<Pod&> (pt)), name_ (field), value_ (value)
   {}
 
   /** \brief Operator. Data copy happens here. */
@@ -274,9 +277,9 @@ struct SetIfFieldExists {
   {
     if (name_ == pcl::traits::name<PointOutT, Key>::value) {
       using T = typename pcl::traits::datatype<PointOutT, Key>::type;
-      std::uint8_t* data_ptr = reinterpret_cast<std::uint8_t*>(&pt_) +
+      std::uint8_t* data_ptr = reinterpret_cast<std::uint8_t*> (&pt_) +
                                pcl::traits::offset<PointOutT, Key>::value;
-      *reinterpret_cast<T*>(data_ptr) = static_cast<T>(value_);
+      *reinterpret_cast<T*> (data_ptr) = static_cast<T> (value_);
     }
   }
 
@@ -295,8 +298,8 @@ template <typename PointT, typename ValT>
 inline void
 setFieldValue (PointT& pt, std::size_t field_offset, const ValT& value)
 {
-  std::uint8_t* data_ptr = reinterpret_cast<std::uint8_t*>(&pt) + field_offset;
-  *reinterpret_cast<ValT*>(data_ptr) = value;
+  std::uint8_t* data_ptr = reinterpret_cast<std::uint8_t*> (&pt) + field_offset;
+  *reinterpret_cast<ValT*> (data_ptr) = value;
 }
 
 /** \brief Get the value at a specified field in a point
@@ -309,8 +312,8 @@ inline void
 getFieldValue (const PointT& pt, std::size_t field_offset, ValT& value)
 {
   const std::uint8_t* data_ptr =
-      reinterpret_cast<const std::uint8_t*>(&pt) + field_offset;
-  value = *reinterpret_cast<const ValT*>(data_ptr);
+      reinterpret_cast<const std::uint8_t*> (&pt) + field_offset;
+  value = *reinterpret_cast<const ValT*> (data_ptr);
 }
 
 template <typename...>
@@ -344,12 +347,12 @@ struct has_custom_allocator<T, void_t<typename T::_custom_allocator_type_trait>>
 // Implementation taken from: https://stackoverflow.com/a/51188325
 template <typename F, typename... Args>
 constexpr bool is_invocable_v =
-    std::is_constructible<std::function<void(Args...)>,
+    std::is_constructible<std::function<void (Args...)>,
                           std::reference_wrapper<std::remove_reference_t<F>>>::value;
 
 template <typename R, typename F, typename... Args>
 constexpr bool is_invocable_r_v =
-    std::is_constructible<std::function<R(Args...)>,
+    std::is_constructible<std::function<R (Args...)>,
                           std::reference_wrapper<std::remove_reference_t<F>>>::value;
 #else
 using std::is_invocable_r_v;

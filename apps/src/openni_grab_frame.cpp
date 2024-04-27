@@ -81,17 +81,17 @@ class OpenNIGrabFrame {
   using CloudConstPtr = typename Cloud::ConstPtr;
 
 public:
-  OpenNIGrabFrame(pcl::OpenNIGrabber& grabber)
-  : visualizer_(new pcl::visualization::PCLVisualizer("OpenNI Viewer"))
+  OpenNIGrabFrame (pcl::OpenNIGrabber& grabber)
+  : visualizer_ (new pcl::visualization::PCLVisualizer ("OpenNI Viewer"))
   , writer_()
-  , quit_(false)
-  , continuous_(false)
-  , trigger_(false)
-  , file_name_("")
-  , dir_name_("")
-  , format_(4)
-  , grabber_(grabber)
-  , visualizer_enable_(true)
+  , quit_ (false)
+  , continuous_ (false)
+  , trigger_ (false)
+  , file_name_ ("")
+  , dir_name_ ("")
+  , format_ (4)
+  , grabber_ (grabber)
+  , visualizer_enable_ (true)
   {}
 
   void
@@ -100,7 +100,7 @@ public:
     if (quit_)
       return;
 
-    std::lock_guard<std::mutex> lock(cloud_mutex_);
+    std::lock_guard<std::mutex> lock (cloud_mutex_);
     cloud_ = cloud;
 
     if (continuous_ || trigger_)
@@ -144,9 +144,9 @@ public:
   getLatestCloud ()
   {
     // lock while we swap our cloud and reset it.
-    std::lock_guard<std::mutex> lock(cloud_mutex_);
+    std::lock_guard<std::mutex> lock (cloud_mutex_);
     CloudConstPtr temp_cloud;
-    temp_cloud.swap(cloud_); // here we set cloud_ to null, so that
+    temp_cloud.swap (cloud_); // here we set cloud_ to null, so that
     // it is safe to set it again from our
     // callback
     return temp_cloud;
@@ -155,21 +155,21 @@ public:
   void
   saveCloud ()
   {
-    FPS_CALC("I/O");
+    FPS_CALC ("I/O");
     const std::string time = pcl::getTimestamp();
     const std::string filepath = dir_name_ + '/' + file_name_ + '_' + time + ".pcd";
 
     if (format_ & 1) {
-      writer_.writeBinary<PointType>(filepath, *cloud_);
+      writer_.writeBinary<PointType> (filepath, *cloud_);
       // std::cerr << "Data saved in BINARY format to " << ss.str () << std::endl;
     }
 
     if (format_ & 2) {
-      writer_.writeBinaryCompressed<PointType>(filepath, *cloud_);
+      writer_.writeBinaryCompressed<PointType> (filepath, *cloud_);
     }
 
     if (format_ & 4) {
-      writer_.writeBinaryCompressed<PointType>(filepath, *cloud_);
+      writer_.writeBinaryCompressed<PointType> (filepath, *cloud_);
     }
   }
 
@@ -177,24 +177,24 @@ public:
   run ()
   {
     // register the keyboard and mouse callback for the visualizer
-    visualizer_->registerMouseCallback(&OpenNIGrabFrame::mouse_callback, *this);
-    visualizer_->registerKeyboardCallback(&OpenNIGrabFrame::keyboard_callback, *this);
+    visualizer_->registerMouseCallback (&OpenNIGrabFrame::mouse_callback, *this);
+    visualizer_->registerKeyboardCallback (&OpenNIGrabFrame::keyboard_callback, *this);
 
     // make callback function from member function
-    std::function<void(const CloudConstPtr&)> f = [this] (const CloudConstPtr& cloud) {
-      cloud_cb_(cloud);
+    std::function<void (const CloudConstPtr&)> f = [this] (const CloudConstPtr& cloud) {
+      cloud_cb_ (cloud);
     };
 
     // connect callback function for desired signal. In this case its a point cloud with
     // color values
-    boost::signals2::connection c = grabber_.registerCallback(f);
+    boost::signals2::connection c = grabber_.registerCallback (f);
 
     // start receiving point clouds
     grabber_.start();
 
     // wait until user quits program with Ctrl-C, but no busy-waiting -> sleep (1);
     while (!visualizer_->wasStopped()) {
-      std::this_thread::sleep_for(100us);
+      std::this_thread::sleep_for (100us);
 
       visualizer_->spinOnce();
 
@@ -203,9 +203,9 @@ public:
 
       if (cloud_) {
         CloudConstPtr cloud = getLatestCloud();
-        if (!visualizer_->updatePointCloud(cloud, "OpenNICloud")) {
-          visualizer_->addPointCloud(cloud, "OpenNICloud");
-          visualizer_->resetCameraViewpoint("OpenNICloud");
+        if (!visualizer_->updatePointCloud (cloud, "OpenNICloud")) {
+          visualizer_->addPointCloud (cloud, "OpenNICloud");
+          visualizer_->resetCameraViewpoint ("OpenNICloud");
         }
       }
     }
@@ -220,7 +220,7 @@ public:
               bool paused,
               bool visualizer)
   {
-    pcl_fs::path path(filename);
+    pcl_fs::path path (filename);
 
     if (filename.empty()) {
       dir_name_ = ".";
@@ -229,9 +229,9 @@ public:
     else {
       dir_name_ = path.parent_path().string();
 
-      if (!dir_name_.empty() && !pcl_fs::exists(path.parent_path())) {
+      if (!dir_name_.empty() && !pcl_fs::exists (path.parent_path())) {
         std::cerr << "directory \"" << path.parent_path() << "\" does not exist!\n";
-        exit(1);
+        exit (1);
       }
       file_name_ = path.stem().string();
     }
@@ -287,10 +287,10 @@ main (int argc, char** argv)
 {
   std::string arg;
   if (argc > 1)
-    arg = std::string(argv[1]);
+    arg = std::string (argv[1]);
 
   if (arg == "--help" || arg == "-h") {
-    usage(argv);
+    usage (argv);
     return 1;
   }
 
@@ -305,35 +305,35 @@ main (int argc, char** argv)
   if (argc > 1) {
     // Parse the command line arguments for .pcd file
     std::vector<int> p_file_indices;
-    p_file_indices = parse_file_extension_argument(argc, argv, ".pcd");
+    p_file_indices = parse_file_extension_argument (argc, argv, ".pcd");
     if (p_file_indices.size() > 0)
       filename = argv[p_file_indices[0]];
 
     std::cout << "fname: " << filename << std::endl;
     // Command line parsing
-    parse_argument(argc, argv, "-format", format);
-    xyz = find_switch(argc, argv, "-XYZ");
-    paused = find_switch(argc, argv, "-paused");
-    visualizer = find_switch(argc, argv, "-visualizer");
+    parse_argument (argc, argv, "-format", format);
+    xyz = find_switch (argc, argv, "-XYZ");
+    paused = find_switch (argc, argv, "-paused");
+    visualizer = find_switch (argc, argv, "-visualizer");
 
     unsigned mode;
-    if (pcl::console::parse(argc, argv, "-depthmode", mode) != -1)
-      depth_mode = pcl::OpenNIGrabber::Mode(mode);
+    if (pcl::console::parse (argc, argv, "-depthmode", mode) != -1)
+      depth_mode = pcl::OpenNIGrabber::Mode (mode);
 
-    if (pcl::console::parse(argc, argv, "-imagemode", mode) != -1)
-      image_mode = pcl::OpenNIGrabber::Mode(mode);
+    if (pcl::console::parse (argc, argv, "-imagemode", mode) != -1)
+      image_mode = pcl::OpenNIGrabber::Mode (mode);
   }
 
-  pcl::OpenNIGrabber grabber("#1", depth_mode, image_mode);
+  pcl::OpenNIGrabber grabber ("#1", depth_mode, image_mode);
 
   if (xyz) {
-    OpenNIGrabFrame<pcl::PointXYZ> grab_frame(grabber);
-    grab_frame.setOptions(filename, format, paused, visualizer);
+    OpenNIGrabFrame<pcl::PointXYZ> grab_frame (grabber);
+    grab_frame.setOptions (filename, format, paused, visualizer);
     grab_frame.run();
   }
   else {
-    OpenNIGrabFrame<pcl::PointXYZRGBA> grab_frame(grabber);
-    grab_frame.setOptions(filename, format, paused, visualizer);
+    OpenNIGrabFrame<pcl::PointXYZRGBA> grab_frame (grabber);
+    grab_frame.setOptions (filename, format, paused, visualizer);
     grab_frame.run();
   }
   return 0;

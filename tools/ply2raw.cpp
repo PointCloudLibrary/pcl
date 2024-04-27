@@ -62,10 +62,10 @@ class ply_to_raw_converter {
 public:
   ply_to_raw_converter() = default;
 
-  ply_to_raw_converter(const ply_to_raw_converter& f) { *this = f; }
+  ply_to_raw_converter (const ply_to_raw_converter& f) { *this = f; }
 
   ply_to_raw_converter&
-  operator=(const ply_to_raw_converter& f)
+  operator= (const ply_to_raw_converter& f)
   {
     ostream_ = f.ostream_;
     vertex_x_ = f.vertex_x_;
@@ -103,13 +103,13 @@ private:
   element_definition_callback (const std::string& element_name, std::size_t count);
 
   template <typename ScalarType>
-  std::function<void(ScalarType)>
+  std::function<void (ScalarType)>
   scalar_property_definition_callback (const std::string& element_name,
                                        const std::string& property_name);
 
   template <typename SizeType, typename ScalarType>
-  std::tuple<std::function<void(SizeType)>,
-             std::function<void(ScalarType)>,
+  std::tuple<std::function<void (SizeType)>,
+             std::function<void (ScalarType)>,
              std::function<void()>>
   list_property_definition_callback (const std::string& element_name,
                                      const std::string& property_name);
@@ -154,35 +154,35 @@ private:
 };
 
 void
-ply_to_raw_converter::info_callback(const std::string& filename,
-                                    std::size_t line_number,
-                                    const std::string& message)
+ply_to_raw_converter::info_callback (const std::string& filename,
+                                     std::size_t line_number,
+                                     const std::string& message)
 {
   std::cerr << filename << ":" << line_number << ": "
             << "info: " << message << std::endl;
 }
 
 void
-ply_to_raw_converter::warning_callback(const std::string& filename,
-                                       std::size_t line_number,
-                                       const std::string& message)
+ply_to_raw_converter::warning_callback (const std::string& filename,
+                                        std::size_t line_number,
+                                        const std::string& message)
 {
   std::cerr << filename << ":" << line_number << ": "
             << "warning: " << message << std::endl;
 }
 
 void
-ply_to_raw_converter::error_callback(const std::string& filename,
-                                     std::size_t line_number,
-                                     const std::string& message)
+ply_to_raw_converter::error_callback (const std::string& filename,
+                                      std::size_t line_number,
+                                      const std::string& message)
 {
   std::cerr << filename << ":" << line_number << ": "
             << "error: " << message << std::endl;
 }
 
 std::tuple<std::function<void()>, std::function<void()>>
-ply_to_raw_converter::element_definition_callback(const std::string& element_name,
-                                                  std::size_t)
+ply_to_raw_converter::element_definition_callback (const std::string& element_name,
+                                                   std::size_t)
 {
   if (element_name == "vertex") {
     return {[this] { vertex_begin(); }, [this] { vertex_end(); }};
@@ -194,35 +194,35 @@ ply_to_raw_converter::element_definition_callback(const std::string& element_nam
 }
 
 template <>
-std::function<void(pcl::io::ply::float32)>
-ply_to_raw_converter::scalar_property_definition_callback(
+std::function<void (pcl::io::ply::float32)>
+ply_to_raw_converter::scalar_property_definition_callback (
     const std::string& element_name, const std::string& property_name)
 {
   if (element_name == "vertex") {
     if (property_name == "x") {
-      return [this] (pcl::io::ply::float32 x) { vertex_x(x); };
+      return [this] (pcl::io::ply::float32 x) { vertex_x (x); };
     }
     if (property_name == "y") {
-      return [this] (pcl::io::ply::float32 y) { vertex_y(y); };
+      return [this] (pcl::io::ply::float32 y) { vertex_y (y); };
     }
     if (property_name == "z") {
-      return [this] (pcl::io::ply::float32 z) { vertex_z(z); };
+      return [this] (pcl::io::ply::float32 z) { vertex_z (z); };
     }
   }
   return {};
 }
 
 template <>
-std::tuple<std::function<void(pcl::io::ply::uint8)>,
-           std::function<void(pcl::io::ply::int32)>,
+std::tuple<std::function<void (pcl::io::ply::uint8)>,
+           std::function<void (pcl::io::ply::int32)>,
            std::function<void()>>
-ply_to_raw_converter::list_property_definition_callback(
+ply_to_raw_converter::list_property_definition_callback (
     const std::string& element_name, const std::string& property_name)
 {
   if ((element_name == "face") && (property_name == "vertex_indices")) {
-    return {[this] (pcl::io::ply::uint8 p) { face_vertex_indices_begin(p); },
+    return {[this] (pcl::io::ply::uint8 p) { face_vertex_indices_begin (p); },
             [this] (pcl::io::ply::int32 vertex_index) {
-              face_vertex_indices_element(vertex_index);
+              face_vertex_indices_element (vertex_index);
             },
             [this] { face_vertex_indices_end(); }};
   }
@@ -234,19 +234,19 @@ ply_to_raw_converter::vertex_begin()
 {}
 
 void
-ply_to_raw_converter::vertex_x(pcl::io::ply::float32 x)
+ply_to_raw_converter::vertex_x (pcl::io::ply::float32 x)
 {
   vertex_x_ = x;
 }
 
 void
-ply_to_raw_converter::vertex_y(pcl::io::ply::float32 y)
+ply_to_raw_converter::vertex_y (pcl::io::ply::float32 y)
 {
   vertex_y_ = y;
 }
 
 void
-ply_to_raw_converter::vertex_z(pcl::io::ply::float32 z)
+ply_to_raw_converter::vertex_z (pcl::io::ply::float32 z)
 {
   vertex_z_ = z;
 }
@@ -254,7 +254,7 @@ ply_to_raw_converter::vertex_z(pcl::io::ply::float32 z)
 void
 ply_to_raw_converter::vertex_end()
 {
-  vertices_.emplace_back(vertex_x_, vertex_y_, vertex_z_);
+  vertices_.emplace_back (vertex_x_, vertex_y_, vertex_z_);
 }
 
 void
@@ -262,13 +262,13 @@ ply_to_raw_converter::face_begin()
 {}
 
 void
-ply_to_raw_converter::face_vertex_indices_begin(pcl::io::ply::uint8)
+ply_to_raw_converter::face_vertex_indices_begin (pcl::io::ply::uint8)
 {
   face_vertex_indices_element_index_ = 0;
 }
 
 void
-ply_to_raw_converter::face_vertex_indices_element(pcl::io::ply::int32 vertex_index)
+ply_to_raw_converter::face_vertex_indices_element (pcl::io::ply::int32 vertex_index)
 {
   if (face_vertex_indices_element_index_ == 0) {
     face_vertex_indices_first_element_ = vertex_index;
@@ -277,15 +277,15 @@ ply_to_raw_converter::face_vertex_indices_element(pcl::io::ply::int32 vertex_ind
     face_vertex_indices_previous_element_ = vertex_index;
   }
   else {
-    (*ostream_) << std::get<0>(vertices_[face_vertex_indices_first_element_]) << " "
-                << std::get<1>(vertices_[face_vertex_indices_first_element_]) << " "
-                << std::get<2>(vertices_[face_vertex_indices_first_element_]) << " "
-                << std::get<0>(vertices_[face_vertex_indices_previous_element_]) << " "
-                << std::get<1>(vertices_[face_vertex_indices_previous_element_]) << " "
-                << std::get<2>(vertices_[face_vertex_indices_previous_element_]) << " "
-                << std::get<0>(vertices_[vertex_index]) << " "
-                << std::get<1>(vertices_[vertex_index]) << " "
-                << std::get<2>(vertices_[vertex_index]) << "\n";
+    (*ostream_) << std::get<0> (vertices_[face_vertex_indices_first_element_]) << " "
+                << std::get<1> (vertices_[face_vertex_indices_first_element_]) << " "
+                << std::get<2> (vertices_[face_vertex_indices_first_element_]) << " "
+                << std::get<0> (vertices_[face_vertex_indices_previous_element_]) << " "
+                << std::get<1> (vertices_[face_vertex_indices_previous_element_]) << " "
+                << std::get<2> (vertices_[face_vertex_indices_previous_element_]) << " "
+                << std::get<0> (vertices_[vertex_index]) << " "
+                << std::get<1> (vertices_[vertex_index]) << " "
+                << std::get<2> (vertices_[vertex_index]) << "\n";
     face_vertex_indices_previous_element_ = vertex_index;
   }
   ++face_vertex_indices_element_index_;
@@ -300,54 +300,55 @@ ply_to_raw_converter::face_end()
 {}
 
 bool
-ply_to_raw_converter::convert(std::istream&,
-                              const std::string& istream_filename,
-                              std::ostream& ostream,
-                              const std::string&)
+ply_to_raw_converter::convert (std::istream&,
+                               const std::string& istream_filename,
+                               std::ostream& ostream,
+                               const std::string&)
 {
   pcl::io::ply::ply_parser ply_parser;
 
-  ply_parser.info_callback(
+  ply_parser.info_callback (
       [&, this] (std::size_t line_number, const std::string& message) {
-        info_callback(istream_filename, line_number, message);
+        info_callback (istream_filename, line_number, message);
       });
-  ply_parser.warning_callback(
+  ply_parser.warning_callback (
       [&, this] (std::size_t line_number, const std::string& message) {
-        warning_callback(istream_filename, line_number, message);
+        warning_callback (istream_filename, line_number, message);
       });
-  ply_parser.error_callback(
+  ply_parser.error_callback (
       [&, this] (std::size_t line_number, const std::string& message) {
-        error_callback(istream_filename, line_number, message);
+        error_callback (istream_filename, line_number, message);
       });
 
-  ply_parser.element_definition_callback(
+  ply_parser.element_definition_callback (
       [this] (const std::string& element_name, std::size_t count) {
-        return element_definition_callback(element_name, count);
+        return element_definition_callback (element_name, count);
       });
 
   pcl::io::ply::ply_parser::scalar_property_definition_callbacks_type
       scalar_property_definition_callbacks;
-  pcl::io::ply::ply_parser::at<pcl::io::ply::float32>(
+  pcl::io::ply::ply_parser::at<pcl::io::ply::float32> (
       scalar_property_definition_callbacks) =
       [this] (const std::string& element_name, const std::string& property_name) {
-        return scalar_property_definition_callback<pcl::io::ply::float32>(
+        return scalar_property_definition_callback<pcl::io::ply::float32> (
             element_name, property_name);
       };
-  ply_parser.scalar_property_definition_callbacks(scalar_property_definition_callbacks);
+  ply_parser.scalar_property_definition_callbacks (
+      scalar_property_definition_callbacks);
 
   pcl::io::ply::ply_parser::list_property_definition_callbacks_type
       list_property_definition_callbacks;
-  pcl::io::ply::ply_parser::at<pcl::io::ply::uint8, pcl::io::ply::int32>(
+  pcl::io::ply::ply_parser::at<pcl::io::ply::uint8, pcl::io::ply::int32> (
       list_property_definition_callbacks) = [this] (const std::string& element_name,
                                                     const std::string& property_name) {
-    return list_property_definition_callback<pcl::io::ply::uint8, pcl::io::ply::int32>(
+    return list_property_definition_callback<pcl::io::ply::uint8, pcl::io::ply::int32> (
         element_name, property_name);
   };
-  ply_parser.list_property_definition_callbacks(list_property_definition_callbacks);
+  ply_parser.list_property_definition_callbacks (list_property_definition_callbacks);
 
   ostream_ = &ostream;
 
-  return ply_parser.parse(istream_filename);
+  return ply_parser.parse (istream_filename);
 }
 
 int
@@ -383,7 +384,7 @@ main (int argc, char* argv[])
       }
     }
 
-    if ((short_opt == 'h') || (std::strcmp(long_opt, "help") == 0)) {
+    if ((short_opt == 'h') || (std::strcmp (long_opt, "help") == 0)) {
       std::cout << "Usage: ply2raw [OPTION] [[INFILE] OUTFILE]\n";
       std::cout << "Convert from PLY to POV-Ray RAW triangle format.\n";
       std::cout << "\n";
@@ -405,7 +406,7 @@ main (int argc, char* argv[])
       return EXIT_SUCCESS;
     }
 
-    if ((short_opt == 'v') || (std::strcmp(long_opt, "version") == 0)) {
+    if ((short_opt == 'v') || (std::strcmp (long_opt, "version") == 0)) {
       std::cout << "ply2raw \n";
       std::cout << " Point Cloud Library (PCL) - www.pointclouds.org\n";
       std::cout << " Copyright (c) 2007-2012, Ares Lagae\n";
@@ -475,8 +476,8 @@ main (int argc, char* argv[])
   const char* istream_filename = "";
   if (parc > 0) {
     istream_filename = parv[0];
-    if (std::strcmp(istream_filename, "-") != 0) {
-      ifstream.open(istream_filename);
+    if (std::strcmp (istream_filename, "-") != 0) {
+      ifstream.open (istream_filename);
       if (!ifstream.is_open()) {
         std::cerr << "ply2raw: " << istream_filename << ": "
                   << "no such file or directory"
@@ -490,8 +491,8 @@ main (int argc, char* argv[])
   const char* ostream_filename = "";
   if (parc > 1) {
     ostream_filename = parv[1];
-    if (std::strcmp(ostream_filename, "-") != 0) {
-      ofstream.open(ostream_filename);
+    if (std::strcmp (ostream_filename, "-") != 0) {
+      ofstream.open (ostream_filename);
       if (!ofstream.is_open()) {
         std::cerr << "ply2raw: " << ostream_filename << ": "
                   << "could not open file"
@@ -505,6 +506,6 @@ main (int argc, char* argv[])
   std::ostream& ostream = ofstream.is_open() ? ofstream : std::cout;
 
   class ply_to_raw_converter ply_to_raw_converter;
-  return ply_to_raw_converter.convert(
+  return ply_to_raw_converter.convert (
       istream, istream_filename, ostream, ostream_filename);
 }

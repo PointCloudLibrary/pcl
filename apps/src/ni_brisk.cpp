@@ -63,37 +63,37 @@ public:
   using CloudPtr = Cloud::Ptr;
   using CloudConstPtr = Cloud::ConstPtr;
 
-  BRISKDemo(Grabber& grabber)
-  : cloud_viewer_("BRISK 2D Keypoints -- PointCloud")
-  , grabber_(grabber)
-  , image_viewer_("BRISK 2D Keypoints -- Image")
+  BRISKDemo (Grabber& grabber)
+  : cloud_viewer_ ("BRISK 2D Keypoints -- PointCloud")
+  , grabber_ (grabber)
+  , image_viewer_ ("BRISK 2D Keypoints -- Image")
   {}
 
   /////////////////////////////////////////////////////////////////////////
   void
   cloud_callback (const CloudConstPtr& cloud)
   {
-    FPS_CALC("cloud callback");
-    std::lock_guard<std::mutex> lock(cloud_mutex_);
+    FPS_CALC ("cloud callback");
+    std::lock_guard<std::mutex> lock (cloud_mutex_);
     cloud_ = cloud;
 
     // Compute BRISK keypoints
     BriskKeypoint2D<PointT> brisk;
-    brisk.setThreshold(60);
-    brisk.setOctaves(4);
-    brisk.setInputCloud(cloud);
+    brisk.setThreshold (60);
+    brisk.setOctaves (4);
+    brisk.setInputCloud (cloud);
 
-    keypoints_.reset(new PointCloud<KeyPointT>);
-    brisk.compute(*keypoints_);
+    keypoints_.reset (new PointCloud<KeyPointT>);
+    brisk.compute (*keypoints_);
   }
 
   /////////////////////////////////////////////////////////////////////////
   void
   init ()
   {
-    std::function<void(const CloudConstPtr&)> cloud_cb =
-        [this] (const CloudConstPtr& cloud) { cloud_callback(cloud); };
-    cloud_connection = grabber_.registerCallback(cloud_cb);
+    std::function<void (const CloudConstPtr&)> cloud_cb =
+        [this] (const CloudConstPtr& cloud) { cloud_callback (cloud); };
+    cloud_connection = grabber_.registerCallback (cloud_cb);
   }
 
   /////////////////////////////////////////////////////////////////////////
@@ -107,42 +107,42 @@ public:
   inline PointT
   bilinearInterpolation (const CloudConstPtr& cloud, float x, float y)
   {
-    int u = int(x);
-    int v = int(y);
+    int u = int (x);
+    int v = int (y);
 
     PointT pt;
     pt.x = pt.y = pt.z = 0;
 
-    const PointT& p1 = (*cloud)(u, v);
-    const PointT& p2 = (*cloud)(u + 1, v);
-    const PointT& p3 = (*cloud)(u, v + 1);
-    const PointT& p4 = (*cloud)(u + 1, v + 1);
+    const PointT& p1 = (*cloud) (u, v);
+    const PointT& p2 = (*cloud) (u + 1, v);
+    const PointT& p3 = (*cloud) (u, v + 1);
+    const PointT& p4 = (*cloud) (u + 1, v + 1);
 
-    float fx = x - float(u), fy = y - float(v);
+    float fx = x - float (u), fy = y - float (v);
     float fx1 = 1.0f - fx, fy1 = 1.0f - fy;
 
     float w1 = fx1 * fy1, w2 = fx * fy1, w3 = fx1 * fy, w4 = fx * fy;
     float weight = 0;
 
-    if (isFinite(p1)) {
+    if (isFinite (p1)) {
       pt.x += p1.x * w1;
       pt.y += p1.y * w1;
       pt.z += p1.z * w1;
       weight += w1;
     }
-    if (isFinite(p2)) {
+    if (isFinite (p2)) {
       pt.x += p2.x * w2;
       pt.y += p2.y * w2;
       pt.z += p2.z * w2;
       weight += w2;
     }
-    if (isFinite(p3)) {
+    if (isFinite (p3)) {
       pt.x += p3.x * w3;
       pt.y += p3.y * w3;
       pt.z += p3.z * w3;
       weight += w3;
     }
-    if (isFinite(p4)) {
+    if (isFinite (p4)) {
       pt.x += p4.x * w4;
       pt.y += p4.y * w4;
       pt.z += p4.z * w4;
@@ -167,14 +167,14 @@ public:
                   const PointCloud<KeyPointT>::Ptr& keypoints,
                   PointCloud<PointT>& keypoints3d)
   {
-    keypoints3d.resize(keypoints->size());
+    keypoints3d.resize (keypoints->size());
     keypoints3d.width = keypoints->width;
     keypoints3d.height = keypoints->height;
     keypoints3d.is_dense = true;
 
     std::size_t j = 0;
     for (std::size_t i = 0; i < keypoints->size(); ++i) {
-      PointT pt = bilinearInterpolation(cloud, (*keypoints)[i].x, (*keypoints)[i].y);
+      PointT pt = bilinearInterpolation (cloud, (*keypoints)[i].x, (*keypoints)[i].y);
 
       keypoints3d[j].x = pt.x;
       keypoints3d[j].y = pt.y;
@@ -183,7 +183,7 @@ public:
     }
 
     if (j != keypoints->size()) {
-      keypoints3d.resize(j);
+      keypoints3d.resize (j);
       keypoints3d.width = j;
       keypoints3d.height = 1;
     }
@@ -200,15 +200,15 @@ public:
 
     PointCloud<KeyPointT>::Ptr keypoints;
     CloudConstPtr cloud;
-    CloudPtr keypoints3d(new Cloud);
+    CloudPtr keypoints3d (new Cloud);
 
     while (!cloud_viewer_.wasStopped() && !image_viewer_.wasStopped()) {
       if (cloud_mutex_.try_lock()) {
         if (cloud_)
-          cloud_.swap(cloud);
+          cloud_.swap (cloud);
 
         if (keypoints_)
-          keypoints_.swap(keypoints);
+          keypoints_.swap (keypoints);
 
         cloud_mutex_.unlock();
 
@@ -216,51 +216,51 @@ public:
           continue;
 
         if (!cloud_init) {
-          cloud_viewer_.setPosition(0, 0);
-          cloud_viewer_.setSize(cloud->width, cloud->height);
+          cloud_viewer_.setPosition (0, 0);
+          cloud_viewer_.setSize (cloud->width, cloud->height);
           cloud_init = true;
         }
 
-        if (!cloud_viewer_.updatePointCloud(cloud, "OpenNICloud")) {
-          cloud_viewer_.addPointCloud(cloud, "OpenNICloud");
-          cloud_viewer_.resetCameraViewpoint("OpenNICloud");
+        if (!cloud_viewer_.updatePointCloud (cloud, "OpenNICloud")) {
+          cloud_viewer_.addPointCloud (cloud, "OpenNICloud");
+          cloud_viewer_.resetCameraViewpoint ("OpenNICloud");
         }
 
         if (!image_init) {
-          image_viewer_.setPosition(cloud->width, 0);
-          image_viewer_.setSize(cloud->width, cloud->height);
+          image_viewer_.setPosition (cloud->width, 0);
+          image_viewer_.setSize (cloud->width, cloud->height);
           image_init = true;
         }
 
-        image_viewer_.showRGBImage<PointT>(cloud);
+        image_viewer_.showRGBImage<PointT> (cloud);
 
-        image_viewer_.removeLayer(getStrBool(keypts));
+        image_viewer_.removeLayer (getStrBool (keypts));
         for (std::size_t i = 0; i < keypoints->size(); ++i) {
-          int u = int((*keypoints)[i].x);
-          int v = int((*keypoints)[i].y);
-          image_viewer_.markPoint(u,
-                                  v,
-                                  visualization::red_color,
-                                  visualization::blue_color,
-                                  10,
-                                  getStrBool(!keypts));
+          int u = int ((*keypoints)[i].x);
+          int v = int ((*keypoints)[i].y);
+          image_viewer_.markPoint (u,
+                                   v,
+                                   visualization::red_color,
+                                   visualization::blue_color,
+                                   10,
+                                   getStrBool (!keypts));
         }
         keypts = !keypts;
 
-        get3DKeypoints(cloud, keypoints, *keypoints3d);
-        visualization::PointCloudColorHandlerCustom<PointT> blue(
+        get3DKeypoints (cloud, keypoints, *keypoints3d);
+        visualization::PointCloudColorHandlerCustom<PointT> blue (
             keypoints3d, 0, 0, 255);
-        if (!cloud_viewer_.updatePointCloud(keypoints3d, blue, "keypoints"))
-          cloud_viewer_.addPointCloud(keypoints3d, blue, "keypoints");
-        cloud_viewer_.setPointCloudRenderingProperties(
+        if (!cloud_viewer_.updatePointCloud (keypoints3d, blue, "keypoints"))
+          cloud_viewer_.addPointCloud (keypoints3d, blue, "keypoints");
+        cloud_viewer_.setPointCloudRenderingProperties (
             visualization::PCL_VISUALIZER_POINT_SIZE, 10, "keypoints");
-        cloud_viewer_.setPointCloudRenderingProperties(
+        cloud_viewer_.setPointCloudRenderingProperties (
             visualization::PCL_VISUALIZER_OPACITY, 0.5, "keypoints");
       }
 
       cloud_viewer_.spinOnce();
       image_viewer_.spinOnce();
-      std::this_thread::sleep_for(100us);
+      std::this_thread::sleep_for (100us);
     }
 
     grabber_.stop();
@@ -285,9 +285,9 @@ private:
 int
 main (int, char**)
 {
-  std::string device_id("#1");
-  OpenNIGrabber grabber(device_id);
-  BRISKDemo openni_viewer(grabber);
+  std::string device_id ("#1");
+  OpenNIGrabber grabber (device_id);
+  BRISKDemo openni_viewer (grabber);
 
   openni_viewer.init();
   openni_viewer.run();

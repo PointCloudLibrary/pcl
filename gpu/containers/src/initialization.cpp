@@ -60,25 +60,25 @@ pcl::gpu::getCudaEnabledDeviceCount()
 }
 
 void
-pcl::gpu::setDevice(int /*device*/)
+pcl::gpu::setDevice (int /*device*/)
 {
   throw_nogpu();
 }
 
 std::string
-pcl::gpu::getDeviceName(int /*device*/)
+pcl::gpu::getDeviceName (int /*device*/)
 {
   throw_nogpu();
 }
 
 void
-pcl::gpu::printCudaDeviceInfo(int /*device*/)
+pcl::gpu::printCudaDeviceInfo (int /*device*/)
 {
   throw_nogpu();
 }
 
 void
-pcl::gpu::printShortCudaDeviceInfo(int /*device*/)
+pcl::gpu::printShortCudaDeviceInfo (int /*device*/)
 {
   throw_nogpu();
 }
@@ -89,7 +89,7 @@ int
 pcl::gpu::getCudaEnabledDeviceCount()
 {
   int count;
-  cudaError_t error = cudaGetDeviceCount(&count);
+  cudaError_t error = cudaGetDeviceCount (&count);
 
   if (error == cudaErrorInsufficientDriver)
     return -1;
@@ -97,33 +97,33 @@ pcl::gpu::getCudaEnabledDeviceCount()
   if (error == cudaErrorNoDevice)
     return 0;
 
-  cudaSafeCall(error);
+  cudaSafeCall (error);
   return count;
 }
 
 void
-pcl::gpu::setDevice(int device)
+pcl::gpu::setDevice (int device)
 {
-  cudaSafeCall(cudaSetDevice(device));
+  cudaSafeCall (cudaSetDevice (device));
 }
 
 std::string
-pcl::gpu::getDeviceName(int device)
+pcl::gpu::getDeviceName (int device)
 {
   cudaDeviceProp prop;
-  cudaSafeCall(cudaGetDeviceProperties(&prop, device));
+  cudaSafeCall (cudaGetDeviceProperties (&prop, device));
 
   return prop.name;
 }
 
 bool
-pcl::gpu::checkIfPreFermiGPU(int device)
+pcl::gpu::checkIfPreFermiGPU (int device)
 {
   if (device < 0)
-    cudaSafeCall(cudaGetDevice(&device));
+    cudaSafeCall (cudaGetDevice (&device));
 
   cudaDeviceProp prop;
-  cudaSafeCall(cudaGetDeviceProperties(&prop, device));
+  cudaSafeCall (cudaGetDeviceProperties (&prop, device));
   return prop.major < 2; // CC == 1.x
 }
 
@@ -139,8 +139,8 @@ getCudaAttribute (T* attribute, CUdevice_attribute /*device_attribute*/, int /*d
   if (CUDA_SUCCESS == error)
     return;
 
-  printf("Driver API error = %04d\n", error);
-  pcl::gpu::error("driver API error", __FILE__, __LINE__);
+  printf ("Driver API error = %04d\n", error);
+  pcl::gpu::error ("driver API error", __FILE__, __LINE__);
 }
 
 inline int
@@ -173,14 +173,14 @@ convertSMVer2Cores (int major, int minor)
     if (sm2cores.SM == ((major << 4) + minor))
       return sm2cores.Cores;
   }
-  printf(
+  printf (
       "\nCan't determine number of cores. Unknown SM version %d.%d!\n", major, minor);
   return 0;
 }
 } // namespace
 
 void
-pcl::gpu::printCudaDeviceInfo(int device)
+pcl::gpu::printCudaDeviceInfo (int device)
 {
   int count = getCudaEnabledDeviceCount();
   bool valid = (device >= 0) && (device < count);
@@ -188,13 +188,13 @@ pcl::gpu::printCudaDeviceInfo(int device)
   int beg = valid ? device : 0;
   int end = valid ? device + 1 : count;
 
-  printf(
+  printf (
       "*** CUDA Device Query (Runtime API) version (CUDART static linking) *** \n\n");
-  printf("Device count: %d\n", count);
+  printf ("Device count: %d\n", count);
 
   int driverVersion = 0, runtimeVersion = 0;
-  cudaSafeCall(cudaDriverGetVersion(&driverVersion));
-  cudaSafeCall(cudaRuntimeGetVersion(&runtimeVersion));
+  cudaSafeCall (cudaDriverGetVersion (&driverVersion));
+  cudaSafeCall (cudaRuntimeGetVersion (&runtimeVersion));
 
   const char* computeMode[] = {
       "Default (multiple host threads can use ::cudaSetDevice() simultaneously)",
@@ -206,119 +206,120 @@ pcl::gpu::printCudaDeviceInfo(int device)
 
   for (int dev = beg; dev < end; ++dev) {
     cudaDeviceProp prop;
-    cudaSafeCall(cudaGetDeviceProperties(&prop, dev));
+    cudaSafeCall (cudaGetDeviceProperties (&prop, dev));
 
-    int sm_cores = convertSMVer2Cores(prop.major, prop.minor);
+    int sm_cores = convertSMVer2Cores (prop.major, prop.minor);
 
-    printf("\nDevice %d: \"%s\"\n", dev, prop.name);
-    printf("  CUDA Driver Version / Runtime Version          %d.%d / %d.%d\n",
-           driverVersion / 1000,
-           driverVersion % 100,
-           runtimeVersion / 1000,
-           runtimeVersion % 100);
-    printf("  CUDA Capability Major/Minor version number:    %d.%d\n",
-           prop.major,
-           prop.minor);
-    printf(
+    printf ("\nDevice %d: \"%s\"\n", dev, prop.name);
+    printf ("  CUDA Driver Version / Runtime Version          %d.%d / %d.%d\n",
+            driverVersion / 1000,
+            driverVersion % 100,
+            runtimeVersion / 1000,
+            runtimeVersion % 100);
+    printf ("  CUDA Capability Major/Minor version number:    %d.%d\n",
+            prop.major,
+            prop.minor);
+    printf (
         "  Total amount of global memory:                 %.0f MBytes (%llu bytes)\n",
         (float)prop.totalGlobalMem / 1048576.0f,
         (unsigned long long)prop.totalGlobalMem);
-    printf("  (%2d) Multiprocessors x (%2d) CUDA Cores/MP:     %d CUDA Cores\n",
-           prop.multiProcessorCount,
-           sm_cores,
-           sm_cores * prop.multiProcessorCount);
-    printf("  GPU Clock Speed:                               %.2f GHz\n",
-           prop.clockRate * 1e-6f);
+    printf ("  (%2d) Multiprocessors x (%2d) CUDA Cores/MP:     %d CUDA Cores\n",
+            prop.multiProcessorCount,
+            sm_cores,
+            sm_cores * prop.multiProcessorCount);
+    printf ("  GPU Clock Speed:                               %.2f GHz\n",
+            prop.clockRate * 1e-6f);
 
     // This is not available in the CUDA Runtime API, so we make the necessary calls the
     // driver API to support this for output
     int memoryClock, memBusWidth, L2CacheSize;
-    getCudaAttribute<int>(&memoryClock, CU_DEVICE_ATTRIBUTE_MEMORY_CLOCK_RATE, dev);
-    getCudaAttribute<int>(
+    getCudaAttribute<int> (&memoryClock, CU_DEVICE_ATTRIBUTE_MEMORY_CLOCK_RATE, dev);
+    getCudaAttribute<int> (
         &memBusWidth, CU_DEVICE_ATTRIBUTE_GLOBAL_MEMORY_BUS_WIDTH, dev);
-    getCudaAttribute<int>(&L2CacheSize, CU_DEVICE_ATTRIBUTE_L2_CACHE_SIZE, dev);
+    getCudaAttribute<int> (&L2CacheSize, CU_DEVICE_ATTRIBUTE_L2_CACHE_SIZE, dev);
 
-    printf("  Memory Clock rate:                             %.2f Mhz\n",
-           memoryClock * 1e-3f);
-    printf("  Memory Bus Width:                              %d-bit\n", memBusWidth);
+    printf ("  Memory Clock rate:                             %.2f Mhz\n",
+            memoryClock * 1e-3f);
+    printf ("  Memory Bus Width:                              %d-bit\n", memBusWidth);
     if (L2CacheSize)
-      printf("  L2 Cache Size:                                 %d bytes\n",
-             L2CacheSize);
+      printf ("  L2 Cache Size:                                 %d bytes\n",
+              L2CacheSize);
 
-    printf("  Max Texture Dimension Size (x,y,z)             1D=(%d), 2D=(%d,%d), "
-           "3D=(%d,%d,%d)\n",
-           prop.maxTexture1D,
-           prop.maxTexture2D[0],
-           prop.maxTexture2D[1],
-           prop.maxTexture3D[0],
-           prop.maxTexture3D[1],
-           prop.maxTexture3D[2]);
-    printf("  Max Layered Texture Size (dim) x layers        1D=(%d) x %d, 2D=(%d,%d) "
-           "x %d\n",
-           prop.maxTexture1DLayered[0],
-           prop.maxTexture1DLayered[1],
-           prop.maxTexture2DLayered[0],
-           prop.maxTexture2DLayered[1],
-           prop.maxTexture2DLayered[2]);
-    printf("  Total amount of constant memory:               %u bytes\n",
-           (int)prop.totalConstMem);
-    printf("  Total amount of shared memory per block:       %u bytes\n",
-           (int)prop.sharedMemPerBlock);
-    printf("  Total number of registers available per block: %d\n", prop.regsPerBlock);
-    printf("  Warp size:                                     %d\n", prop.warpSize);
-    printf("  Maximum number of threads per block:           %d\n",
-           prop.maxThreadsPerBlock);
-    printf("  Maximum sizes of each dimension of a block:    %d x %d x %d\n",
-           prop.maxThreadsDim[0],
-           prop.maxThreadsDim[1],
-           prop.maxThreadsDim[2]);
-    printf("  Maximum sizes of each dimension of a grid:     %d x %d x %d\n",
-           prop.maxGridSize[0],
-           prop.maxGridSize[1],
-           prop.maxGridSize[2]);
-    printf("  Maximum memory pitch:                          %u bytes\n",
-           (int)prop.memPitch);
-    printf("  Texture alignment:                             %u bytes\n",
-           (int)prop.textureAlignment);
+    printf ("  Max Texture Dimension Size (x,y,z)             1D=(%d), 2D=(%d,%d), "
+            "3D=(%d,%d,%d)\n",
+            prop.maxTexture1D,
+            prop.maxTexture2D[0],
+            prop.maxTexture2D[1],
+            prop.maxTexture3D[0],
+            prop.maxTexture3D[1],
+            prop.maxTexture3D[2]);
+    printf ("  Max Layered Texture Size (dim) x layers        1D=(%d) x %d, 2D=(%d,%d) "
+            "x %d\n",
+            prop.maxTexture1DLayered[0],
+            prop.maxTexture1DLayered[1],
+            prop.maxTexture2DLayered[0],
+            prop.maxTexture2DLayered[1],
+            prop.maxTexture2DLayered[2]);
+    printf ("  Total amount of constant memory:               %u bytes\n",
+            (int)prop.totalConstMem);
+    printf ("  Total amount of shared memory per block:       %u bytes\n",
+            (int)prop.sharedMemPerBlock);
+    printf ("  Total number of registers available per block: %d\n", prop.regsPerBlock);
+    printf ("  Warp size:                                     %d\n", prop.warpSize);
+    printf ("  Maximum number of threads per block:           %d\n",
+            prop.maxThreadsPerBlock);
+    printf ("  Maximum sizes of each dimension of a block:    %d x %d x %d\n",
+            prop.maxThreadsDim[0],
+            prop.maxThreadsDim[1],
+            prop.maxThreadsDim[2]);
+    printf ("  Maximum sizes of each dimension of a grid:     %d x %d x %d\n",
+            prop.maxGridSize[0],
+            prop.maxGridSize[1],
+            prop.maxGridSize[2]);
+    printf ("  Maximum memory pitch:                          %u bytes\n",
+            (int)prop.memPitch);
+    printf ("  Texture alignment:                             %u bytes\n",
+            (int)prop.textureAlignment);
 
-    printf(
+    printf (
         "  Concurrent copy and execution:                 %s with %d copy engine(s)\n",
         (prop.deviceOverlap ? "Yes" : "No"),
         prop.asyncEngineCount);
-    printf("  Run time limit on kernels:                     %s\n",
-           prop.kernelExecTimeoutEnabled ? "Yes" : "No");
-    printf("  Integrated GPU sharing Host Memory:            %s\n",
-           prop.integrated ? "Yes" : "No");
-    printf("  Support host page-locked memory mapping:       %s\n",
-           prop.canMapHostMemory ? "Yes" : "No");
+    printf ("  Run time limit on kernels:                     %s\n",
+            prop.kernelExecTimeoutEnabled ? "Yes" : "No");
+    printf ("  Integrated GPU sharing Host Memory:            %s\n",
+            prop.integrated ? "Yes" : "No");
+    printf ("  Support host page-locked memory mapping:       %s\n",
+            prop.canMapHostMemory ? "Yes" : "No");
 
-    printf("  Concurrent kernel execution:                   %s\n",
-           prop.concurrentKernels ? "Yes" : "No");
-    printf("  Alignment requirement for Surfaces:            %s\n",
-           prop.surfaceAlignment ? "Yes" : "No");
-    printf("  Device has ECC support enabled:                %s\n",
-           prop.ECCEnabled ? "Yes" : "No");
-    printf("  Device is using TCC driver mode:               %s\n",
-           prop.tccDriver ? "Yes" : "No");
-    printf("  Device supports Unified Addressing (UVA):      %s\n",
-           prop.unifiedAddressing ? "Yes" : "No");
-    printf("  Device PCI Bus ID / PCI location ID:           %d / %d\n",
-           prop.pciBusID,
-           prop.pciDeviceID);
-    printf("  Compute Mode:\n");
-    printf("      %s \n", computeMode[prop.computeMode]);
+    printf ("  Concurrent kernel execution:                   %s\n",
+            prop.concurrentKernels ? "Yes" : "No");
+    printf ("  Alignment requirement for Surfaces:            %s\n",
+            prop.surfaceAlignment ? "Yes" : "No");
+    printf ("  Device has ECC support enabled:                %s\n",
+            prop.ECCEnabled ? "Yes" : "No");
+    printf ("  Device is using TCC driver mode:               %s\n",
+            prop.tccDriver ? "Yes" : "No");
+    printf ("  Device supports Unified Addressing (UVA):      %s\n",
+            prop.unifiedAddressing ? "Yes" : "No");
+    printf ("  Device PCI Bus ID / PCI location ID:           %d / %d\n",
+            prop.pciBusID,
+            prop.pciDeviceID);
+    printf ("  Compute Mode:\n");
+    printf ("      %s \n", computeMode[prop.computeMode]);
   }
 
-  printf("\n");
-  printf("deviceQuery, CUDA Driver = CUDART");
-  printf(", CUDA Driver Version  = %d.%d", driverVersion / 1000, driverVersion % 100);
-  printf(", CUDA Runtime Version = %d.%d", runtimeVersion / 1000, runtimeVersion % 100);
-  printf(", NumDevs = %d\n\n", count);
-  fflush(stdout);
+  printf ("\n");
+  printf ("deviceQuery, CUDA Driver = CUDART");
+  printf (", CUDA Driver Version  = %d.%d", driverVersion / 1000, driverVersion % 100);
+  printf (
+      ", CUDA Runtime Version = %d.%d", runtimeVersion / 1000, runtimeVersion % 100);
+  printf (", NumDevs = %d\n\n", count);
+  fflush (stdout);
 }
 
 void
-pcl::gpu::printShortCudaDeviceInfo(int device)
+pcl::gpu::printShortCudaDeviceInfo (int device)
 {
   int count = getCudaEnabledDeviceCount();
   bool valid = (device >= 0) && (device < count);
@@ -327,30 +328,30 @@ pcl::gpu::printShortCudaDeviceInfo(int device)
   int end = valid ? device + 1 : count;
 
   int driverVersion = 0, runtimeVersion = 0;
-  cudaSafeCall(cudaDriverGetVersion(&driverVersion));
-  cudaSafeCall(cudaRuntimeGetVersion(&runtimeVersion));
+  cudaSafeCall (cudaDriverGetVersion (&driverVersion));
+  cudaSafeCall (cudaRuntimeGetVersion (&runtimeVersion));
 
   for (int dev = beg; dev < end; ++dev) {
     cudaDeviceProp prop;
-    cudaSafeCall(cudaGetDeviceProperties(&prop, dev));
+    cudaSafeCall (cudaGetDeviceProperties (&prop, dev));
 
     const char* arch_str = prop.major < 2 ? " (pre-Fermi)" : "";
-    printf("[pcl::gpu::printShortCudaDeviceInfo] : Device %d:  \"%s\"  %.0fMb",
-           dev,
-           prop.name,
-           (float)prop.totalGlobalMem / 1048576.0f);
-    printf(", sm_%d%d%s, %d cores",
-           prop.major,
-           prop.minor,
-           arch_str,
-           convertSMVer2Cores(prop.major, prop.minor) * prop.multiProcessorCount);
-    printf(", Driver/Runtime ver.%d.%d/%d.%d\n",
-           driverVersion / 1000,
-           driverVersion % 100,
-           runtimeVersion / 1000,
-           runtimeVersion % 100);
+    printf ("[pcl::gpu::printShortCudaDeviceInfo] : Device %d:  \"%s\"  %.0fMb",
+            dev,
+            prop.name,
+            (float)prop.totalGlobalMem / 1048576.0f);
+    printf (", sm_%d%d%s, %d cores",
+            prop.major,
+            prop.minor,
+            arch_str,
+            convertSMVer2Cores (prop.major, prop.minor) * prop.multiProcessorCount);
+    printf (", Driver/Runtime ver.%d.%d/%d.%d\n",
+            driverVersion / 1000,
+            driverVersion % 100,
+            runtimeVersion / 1000,
+            runtimeVersion % 100);
   }
-  fflush(stdout);
+  fflush (stdout);
 }
 
 #endif

@@ -27,7 +27,7 @@
 
 class ON_CLASS ON_Bitmap : public ON_Object {
   // virtual base class for bitmap objects
-  ON_OBJECT_DECLARE(ON_Bitmap);
+  ON_OBJECT_DECLARE (ON_Bitmap);
 
 public:
   ON_Bitmap();
@@ -39,7 +39,7 @@ public:
 
   // virtual
   ON_UUID
-  ModelObjectId () const;
+  ModelObjectId() const;
 
   void
   Dump (ON_TextLog&) const; // for debugging
@@ -84,13 +84,13 @@ public:
   in a Rhino document.
 */
 class ON_CLASS ON_EmbeddedFile : public ON_Object {
-  ON_OBJECT_DECLARE(ON_EmbeddedFile);
+  ON_OBJECT_DECLARE (ON_EmbeddedFile);
 
 public:
   ON_EmbeddedFile();
-  ON_EmbeddedFile(const ON_EmbeddedFile& src);
+  ON_EmbeddedFile (const ON_EmbeddedFile& src);
   ON_EmbeddedFile&
-  operator=(const ON_EmbeddedFile& src);
+  operator= (const ON_EmbeddedFile& src);
 
   virtual ~ON_EmbeddedFile();
   void
@@ -183,7 +183,7 @@ public:
   RelativeFileName () const;
 
   ON_UUID
-  Id () const;
+  Id() const;
 
   void
   SetId (ON_UUID id);
@@ -195,11 +195,11 @@ public:
   SetRelativeFileName (const wchar_t* relative_file_name);
 
   ON__UINT64
-  FileSize () const;
+  FileSize() const;
   ON__UINT64
-  FileLastModifiedTime () const;
+  FileLastModifiedTime() const;
   ON__UINT32
-  FileCRC () const;
+  FileCRC() const;
 
   ON_BOOL32
   IsValid (ON_TextLog* text_log = NULL) const;
@@ -227,7 +227,7 @@ public:
 
 public:
   ON__UINT32
-      m_buffer_crc; // will be different from m_file_crc if the buffer is compressed.
+  m_buffer_crc; // will be different from m_file_crc if the buffer is compressed.
   ON_Buffer m_buffer;
   unsigned char m_bCompressedBuffer; // true if m_buffer is compressed.
 
@@ -302,12 +302,12 @@ struct ON_WindowsBITMAPINFOHEADER {
                               //             32-bit-per-pixel bitmaps.
                               //         =4  BI_JPEG (not supported in Win 95/NT4)
                               //
-  unsigned int biSizeImage;    // DWORD = bytes in image
-  int biXPelsPerMeter;         // LONG
-  int biYPelsPerMeter;         // LONG
-  unsigned int biClrUsed;      // DWORD = 0 or true length of bmiColors[] array.  If 0,
-                               //           then the value of biBitCount determines the
-                               //           length of the bmiColors[] array.
+  unsigned int biSizeImage;   // DWORD = bytes in image
+  int biXPelsPerMeter;        // LONG
+  int biYPelsPerMeter;        // LONG
+  unsigned int biClrUsed;     // DWORD = 0 or true length of bmiColors[] array.  If 0,
+                              //           then the value of biBitCount determines the
+                              //           length of the bmiColors[] array.
   unsigned int biClrImportant; // DWORD
 };
 
@@ -344,16 +344,16 @@ struct ON_WindowsBITMAPINFO {
 // OBSOLETE // class ON_OpenGLBitmap;
 
 class ON_CLASS ON_WindowsBitmap : public ON_Bitmap {
-  ON_OBJECT_DECLARE(ON_WindowsBitmap);
+  ON_OBJECT_DECLARE (ON_WindowsBitmap);
   // Uncompressed 8 bpp, 24 bpp, or 32 bpp Windows device
   // independent bitmaps (DIB)
 public:
   ON_WindowsBitmap();
-  ON_WindowsBitmap(const ON_WindowsBitmap&);
+  ON_WindowsBitmap (const ON_WindowsBitmap&);
   ~ON_WindowsBitmap();
 
   ON_WindowsBitmap&
-  operator=(const ON_WindowsBitmap&);
+  operator= (const ON_WindowsBitmap&);
 
   void
   EmergencyDestroy ();
@@ -459,7 +459,7 @@ public:
   See Also:
     ON_WindowsBitmap::Create
   */
-  ON_WindowsBitmap(const BITMAPINFO& src);
+  ON_WindowsBitmap (const BITMAPINFO& src);
 
   /*
   Description:
@@ -472,7 +472,7 @@ public:
   Remarks:
     ~ON_WindowsBitmap will not delete src.
   */
-  ON_WindowsBitmap(const BITMAPINFO* src);
+  ON_WindowsBitmap (const BITMAPINFO* src);
 
   /*
   Description:
@@ -484,7 +484,7 @@ public:
     ON_WindowsBitmap::Create
   */
   ON_WindowsBitmap&
-  operator=(const BITMAPINFO& src);
+  operator= (const BITMAPINFO& src);
 
   /*
   Description:
@@ -578,7 +578,7 @@ Description:
   it's Read/Write functions save bitmap names.
 */
 class ON_CLASS ON_WindowsBitmapEx : public ON_WindowsBitmap {
-  ON_OBJECT_DECLARE(ON_WindowsBitmapEx);
+  ON_OBJECT_DECLARE (ON_WindowsBitmapEx);
 
 public:
   ON_WindowsBitmapEx();
@@ -590,7 +590,7 @@ public:
 };
 
 class ON_CLASS ON_EmbeddedBitmap : public ON_Bitmap {
-  ON_OBJECT_DECLARE(ON_EmbeddedBitmap);
+  ON_OBJECT_DECLARE (ON_EmbeddedBitmap);
 
 public:
   ON_EmbeddedBitmap();

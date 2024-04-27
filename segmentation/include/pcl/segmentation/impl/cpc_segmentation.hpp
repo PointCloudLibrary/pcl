@@ -54,52 +54,52 @@ pcl::CPCSegmentation<PointT>::segment()
   if (supervoxels_set_) {
     // Calculate for every Edge if the connection is convex or invalid
     // This effectively performs the segmentation.
-    calculateConvexConnections(sv_adjacency_list_);
+    calculateConvexConnections (sv_adjacency_list_);
 
     // Correct edge relations using extended convexity definition if k>0
-    applyKconvexity(k_factor_);
+    applyKconvexity (k_factor_);
 
     // Determine whether to use cutting planes
     doGrouping();
 
     grouping_data_valid_ = true;
 
-    applyCuttingPlane(max_cuts_);
+    applyCuttingPlane (max_cuts_);
 
     // merge small segments
     mergeSmallSegments();
   }
   else
-    PCL_WARN("[pcl::CPCSegmentation::segment] WARNING: Call function "
-             "setInputSupervoxels first. Nothing has been done. \n");
+    PCL_WARN ("[pcl::CPCSegmentation::segment] WARNING: Call function "
+              "setInputSupervoxels first. Nothing has been done. \n");
 }
 
 template <typename PointT>
 void
-pcl::CPCSegmentation<PointT>::applyCuttingPlane(std::uint32_t depth_levels_left)
+pcl::CPCSegmentation<PointT>::applyCuttingPlane (std::uint32_t depth_levels_left)
 {
   using SegLabel2ClusterMap =
       std::map<std::uint32_t, pcl::PointCloud<WeightSACPointType>::Ptr>;
 
-  pcl::console::print_info("Cutting at level %d (maximum %d)\n",
-                           max_cuts_ - depth_levels_left + 1,
-                           max_cuts_);
+  pcl::console::print_info ("Cutting at level %d (maximum %d)\n",
+                            max_cuts_ - depth_levels_left + 1,
+                            max_cuts_);
   // stop if we reached the 0 level
   if (depth_levels_left <= 0)
     return;
 
-  pcl::IndicesPtr support_indices(new pcl::Indices);
+  pcl::IndicesPtr support_indices (new pcl::Indices);
   SegLabel2ClusterMap seg_to_edge_points_map;
   std::map<std::uint32_t, std::vector<EdgeID>> seg_to_edgeIDs_map;
   EdgeIterator edge_itr, edge_itr_end, next_edge;
-  boost::tie(edge_itr, edge_itr_end) = boost::edges(sv_adjacency_list_);
+  boost::tie (edge_itr, edge_itr_end) = boost::edges (sv_adjacency_list_);
   for (next_edge = edge_itr; edge_itr != edge_itr_end; edge_itr = next_edge) {
     next_edge++; // next_edge iterator is necessary, because removing an edge
                  // invalidates the iterator to the current edge
     std::uint32_t source_sv_label =
-        sv_adjacency_list_[boost::source(*edge_itr, sv_adjacency_list_)];
+        sv_adjacency_list_[boost::source (*edge_itr, sv_adjacency_list_)];
     std::uint32_t target_sv_label =
-        sv_adjacency_list_[boost::target(*edge_itr, sv_adjacency_list_)];
+        sv_adjacency_list_[boost::target (*edge_itr, sv_adjacency_list_)];
 
     std::uint32_t source_segment_label = sv_label_to_seg_label_map_[source_sv_label];
     std::uint32_t target_segment_label = sv_label_to_seg_label_map_[target_sv_label];
@@ -135,14 +135,14 @@ pcl::CPCSegmentation<PointT>::applyCuttingPlane(std::uint32_t depth_levels_left)
     edge_centroid.intensity = sv_adjacency_list_[*edge_itr].is_convex
                                   ? -sv_adjacency_list_[*edge_itr].normal_difference
                                   : sv_adjacency_list_[*edge_itr].normal_difference;
-    if (seg_to_edge_points_map.find(source_segment_label) ==
+    if (seg_to_edge_points_map.find (source_segment_label) ==
         seg_to_edge_points_map.end()) {
       seg_to_edge_points_map[source_segment_label] =
-          pcl::PointCloud<WeightSACPointType>::Ptr(
+          pcl::PointCloud<WeightSACPointType>::Ptr (
               new pcl::PointCloud<WeightSACPointType>());
     }
-    seg_to_edge_points_map[source_segment_label]->push_back(edge_centroid);
-    seg_to_edgeIDs_map[source_segment_label].push_back(*edge_itr);
+    seg_to_edge_points_map[source_segment_label]->push_back (edge_centroid);
+    seg_to_edgeIDs_map[source_segment_label].push_back (*edge_itr);
   }
   bool cut_found = false;
   // do the following processing for each segment separately
@@ -153,7 +153,7 @@ pcl::CPCSegmentation<PointT>::applyCuttingPlane(std::uint32_t depth_levels_left)
     }
 
     std::vector<double> weights;
-    weights.resize(seg_to_edge_points.second->size());
+    weights.resize (seg_to_edge_points.second->size());
     for (std::size_t cp = 0; cp < seg_to_edge_points.second->size(); ++cp) {
       float& cur_weight = (*seg_to_edge_points.second)[cp].intensity;
       cur_weight = cur_weight < concavity_tolerance_threshold_ ? 0 : 1;
@@ -162,13 +162,13 @@ pcl::CPCSegmentation<PointT>::applyCuttingPlane(std::uint32_t depth_levels_left)
 
     pcl::PointCloud<WeightSACPointType>::Ptr edge_cloud_cluster =
         seg_to_edge_points.second;
-    pcl::SampleConsensusModelPlane<WeightSACPointType>::Ptr model_p(
-        new pcl::SampleConsensusModelPlane<WeightSACPointType>(edge_cloud_cluster));
+    pcl::SampleConsensusModelPlane<WeightSACPointType>::Ptr model_p (
+        new pcl::SampleConsensusModelPlane<WeightSACPointType> (edge_cloud_cluster));
 
-    WeightedRandomSampleConsensus weight_sac(model_p, seed_resolution_, true);
+    WeightedRandomSampleConsensus weight_sac (model_p, seed_resolution_, true);
 
-    weight_sac.setWeights(weights, use_directed_weights_);
-    weight_sac.setMaxIterations(ransac_itrs_);
+    weight_sac.setWeights (weights, use_directed_weights_);
+    weight_sac.setMaxIterations (ransac_itrs_);
 
     // if not enough inliers are found
     if (!weight_sac.computeModel()) {
@@ -176,18 +176,18 @@ pcl::CPCSegmentation<PointT>::applyCuttingPlane(std::uint32_t depth_levels_left)
     }
 
     Eigen::VectorXf model_coefficients;
-    weight_sac.getModelCoefficients(model_coefficients);
+    weight_sac.getModelCoefficients (model_coefficients);
 
     model_coefficients[3] += std::numeric_limits<float>::epsilon();
 
-    weight_sac.getInliers(*support_indices);
+    weight_sac.getInliers (*support_indices);
 
     // the support_indices which are actually cut (if not locally constrain:
     // cut_support_indices = support_indices
     pcl::Indices cut_support_indices;
 
     if (use_local_constrains_) {
-      Eigen::Vector3f plane_normal(
+      Eigen::Vector3f plane_normal (
           model_coefficients[0], model_coefficients[1], model_coefficients[2]);
       // Cut the connections.
       // We only iterate through the points which are within the support (when we are
@@ -195,16 +195,16 @@ pcl::CPCSegmentation<PointT>::applyCuttingPlane(std::uint32_t depth_levels_left)
       // edge goes through the plane. This is why we check the planedistance
       std::vector<pcl::PointIndices> cluster_indices;
       pcl::EuclideanClusterExtraction<WeightSACPointType> euclidean_clusterer;
-      pcl::search::KdTree<WeightSACPointType>::Ptr tree(
+      pcl::search::KdTree<WeightSACPointType>::Ptr tree (
           new pcl::search::KdTree<WeightSACPointType>);
-      tree->setInputCloud(edge_cloud_cluster);
-      euclidean_clusterer.setClusterTolerance(seed_resolution_);
-      euclidean_clusterer.setMinClusterSize(1);
-      euclidean_clusterer.setMaxClusterSize(25000);
-      euclidean_clusterer.setSearchMethod(tree);
-      euclidean_clusterer.setInputCloud(edge_cloud_cluster);
-      euclidean_clusterer.setIndices(support_indices);
-      euclidean_clusterer.extract(cluster_indices);
+      tree->setInputCloud (edge_cloud_cluster);
+      euclidean_clusterer.setClusterTolerance (seed_resolution_);
+      euclidean_clusterer.setMinClusterSize (1);
+      euclidean_clusterer.setMaxClusterSize (25000);
+      euclidean_clusterer.setSearchMethod (tree);
+      euclidean_clusterer.setInputCloud (edge_cloud_cluster);
+      euclidean_clusterer.setIndices (support_indices);
+      euclidean_clusterer.extract (cluster_indices);
       //       sv_adjacency_list_[seg_to_edgeID_map[seg_to_edge_points.first][point_index]].used_for_cutting
       //       = true;
 
@@ -218,8 +218,8 @@ pcl::CPCSegmentation<PointT>::applyCuttingPlane(std::uint32_t depth_levels_left)
           if (use_directed_weights_)
             index_score *=
                 1.414 *
-                (std::abs(plane_normal.dot(
-                    edge_cloud_cluster->at(current_index).getNormalVector3fMap())));
+                (std::abs (plane_normal.dot (
+                    edge_cloud_cluster->at (current_index).getNormalVector3fMap())));
           cluster_score += index_score;
         }
         // check if the score is below the threshold. If that is the case this segment
@@ -227,9 +227,9 @@ pcl::CPCSegmentation<PointT>::applyCuttingPlane(std::uint32_t depth_levels_left)
         cluster_score /= cluster_index.indices.size();
         //         std::cout << "Cluster score: " << cluster_score << std::endl;
         if (cluster_score >= min_cut_score_) {
-          cut_support_indices.insert(cut_support_indices.end(),
-                                     cluster_index.indices.begin(),
-                                     cluster_index.indices.end());
+          cut_support_indices.insert (cut_support_indices.end(),
+                                      cluster_index.indices.begin(),
+                                      cluster_index.indices.end());
         }
       }
       if (cut_support_indices.empty()) {
@@ -254,10 +254,10 @@ pcl::CPCSegmentation<PointT>::applyCuttingPlane(std::uint32_t depth_levels_left)
     for (const auto& point_index : cut_support_indices) {
       if (use_clean_cutting_) {
         // skip edges where both centroids are on one side of the cutting plane
-        std::uint32_t source_sv_label = sv_adjacency_list_[boost::source(
+        std::uint32_t source_sv_label = sv_adjacency_list_[boost::source (
             seg_to_edgeIDs_map[seg_to_edge_points.first][point_index],
             sv_adjacency_list_)];
-        std::uint32_t target_sv_label = sv_adjacency_list_[boost::target(
+        std::uint32_t target_sv_label = sv_adjacency_list_[boost::target (
             seg_to_edgeIDs_map[seg_to_edge_points.first][point_index],
             sv_adjacency_list_)];
         // get centroids of vertices
@@ -266,8 +266,8 @@ pcl::CPCSegmentation<PointT>::applyCuttingPlane(std::uint32_t depth_levels_left)
         const pcl::PointXYZRGBA target_centroid =
             sv_label_to_supervoxel_map_[target_sv_label]->centroid_;
         // this makes a clean cut
-        if (pcl::pointToPlaneDistanceSigned(source_centroid, model_coefficients) *
-                pcl::pointToPlaneDistanceSigned(target_centroid, model_coefficients) >
+        if (pcl::pointToPlaneDistanceSigned (source_centroid, model_coefficients) *
+                pcl::pointToPlaneDistanceSigned (target_centroid, model_coefficients) >
             0) {
           continue;
         }
@@ -291,10 +291,10 @@ pcl::CPCSegmentation<PointT>::applyCuttingPlane(std::uint32_t depth_levels_left)
   if (cut_found) {
     doGrouping();
     --depth_levels_left;
-    applyCuttingPlane(depth_levels_left);
+    applyCuttingPlane (depth_levels_left);
   }
   else
-    pcl::console::print_info("Could not find any more cuts, stopping recursion\n");
+    pcl::console::print_info ("Could not find any more cuts, stopping recursion\n");
 }
 
 /******************************************* Directional weighted RANSAC definitions
@@ -302,12 +302,12 @@ pcl::CPCSegmentation<PointT>::applyCuttingPlane(std::uint32_t depth_levels_left)
 
 template <typename PointT>
 bool
-pcl::CPCSegmentation<PointT>::WeightedRandomSampleConsensus::computeModel(int)
+pcl::CPCSegmentation<PointT>::WeightedRandomSampleConsensus::computeModel (int)
 {
   // Warn and exit if no threshold was set
   if (threshold_ == std::numeric_limits<double>::max()) {
-    PCL_ERROR("[pcl::CPCSegmentation<PointT>::WeightedRandomSampleConsensus::"
-              "computeModel] No threshold set!\n");
+    PCL_ERROR ("[pcl::CPCSegmentation<PointT>::WeightedRandomSampleConsensus::"
+               "computeModel] No threshold set!\n");
     return (false);
   }
 
@@ -325,28 +325,28 @@ pcl::CPCSegmentation<PointT>::WeightedRandomSampleConsensus::computeModel(int)
   // Iterate
   while (iterations_ < max_iterations_ && skipped_count < max_skip) {
     // Get X samples which satisfy the model criteria and which have a weight > 0
-    sac_model_->setIndices(model_pt_indices_);
-    sac_model_->getSamples(iterations_, selection);
+    sac_model_->setIndices (model_pt_indices_);
+    sac_model_->getSamples (iterations_, selection);
 
     if (selection.empty()) {
-      PCL_ERROR("[pcl::CPCSegmentation<PointT>::WeightedRandomSampleConsensus::"
-                "computeModel] No samples could be selected!\n");
+      PCL_ERROR ("[pcl::CPCSegmentation<PointT>::WeightedRandomSampleConsensus::"
+                 "computeModel] No samples could be selected!\n");
       break;
     }
 
     // Search for inliers in the point cloud for the current plane model M
-    if (!sac_model_->computeModelCoefficients(selection, model_coefficients)) {
+    if (!sac_model_->computeModelCoefficients (selection, model_coefficients)) {
       //++iterations_;
       ++skipped_count;
       continue;
     }
     // weight distances to get the score (only using connected inliers)
-    sac_model_->setIndices(full_cloud_pt_indices_);
+    sac_model_->setIndices (full_cloud_pt_indices_);
 
-    pcl::IndicesPtr current_inliers(new pcl::Indices);
-    sac_model_->selectWithinDistance(model_coefficients, threshold_, *current_inliers);
+    pcl::IndicesPtr current_inliers (new pcl::Indices);
+    sac_model_->selectWithinDistance (model_coefficients, threshold_, *current_inliers);
     double current_score = 0;
-    Eigen::Vector3f plane_normal(
+    Eigen::Vector3f plane_normal (
         model_coefficients[0], model_coefficients[1], model_coefficients[2]);
     for (const auto& current_index : *current_inliers) {
       double index_score = weights_[current_index];
@@ -354,8 +354,8 @@ pcl::CPCSegmentation<PointT>::WeightedRandomSampleConsensus::computeModel(int)
         // the sqrt(2) factor was used in the paper and was meant for making the scores
         // better comparable between directed and undirected weights
         index_score *=
-            1.414 * (std::abs(plane_normal.dot(
-                        point_cloud_ptr_->at(current_index).getNormalVector3fMap())));
+            1.414 * (std::abs (plane_normal.dot (
+                        point_cloud_ptr_->at (current_index).getNormalVector3fMap())));
 
       current_score += index_score;
     }
@@ -371,23 +371,23 @@ pcl::CPCSegmentation<PointT>::WeightedRandomSampleConsensus::computeModel(int)
     }
 
     ++iterations_;
-    PCL_DEBUG("[pcl::CPCSegmentation<PointT>::WeightedRandomSampleConsensus::"
-              "computeModel] Trial %d (max %d): score is %f (best is: %f so far).\n",
-              iterations_,
-              max_iterations_,
-              current_score,
-              best_score_);
+    PCL_DEBUG ("[pcl::CPCSegmentation<PointT>::WeightedRandomSampleConsensus::"
+               "computeModel] Trial %d (max %d): score is %f (best is: %f so far).\n",
+               iterations_,
+               max_iterations_,
+               current_score,
+               best_score_);
     if (iterations_ > max_iterations_) {
-      PCL_DEBUG("[pcl::CPCSegmentation<PointT>::WeightedRandomSampleConsensus::"
-                "computeModel] RANSAC reached the maximum number of trials.\n");
+      PCL_DEBUG ("[pcl::CPCSegmentation<PointT>::WeightedRandomSampleConsensus::"
+                 "computeModel] RANSAC reached the maximum number of trials.\n");
       break;
     }
   }
   //   std::cout << "Took us " << iterations_ - 1 << " iterations" << std::endl;
-  PCL_DEBUG("[pcl::CPCSegmentation<PointT>::WeightedRandomSampleConsensus::"
-            "computeModel] Model: %lu size, %f score.\n",
-            model_.size(),
-            best_score_);
+  PCL_DEBUG ("[pcl::CPCSegmentation<PointT>::WeightedRandomSampleConsensus::"
+             "computeModel] Model: %lu size, %f score.\n",
+             model_.size(),
+             best_score_);
 
   if (model_.empty()) {
     inliers_.clear();
@@ -395,7 +395,7 @@ pcl::CPCSegmentation<PointT>::WeightedRandomSampleConsensus::computeModel(int)
   }
 
   // Get the set of inliers that correspond to the best model found so far
-  sac_model_->selectWithinDistance(model_coefficients_, threshold_, inliers_);
+  sac_model_->selectWithinDistance (model_coefficients_, threshold_, inliers_);
   return (true);
 }
 

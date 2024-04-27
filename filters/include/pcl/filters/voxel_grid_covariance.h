@@ -90,11 +90,11 @@ public:
      * \ref evecs_ to the identity matrix
      */
     Leaf()
-    : mean_(Eigen::Vector3d::Zero())
-    , cov_(Eigen::Matrix3d::Zero())
-    , icov_(Eigen::Matrix3d::Zero())
-    , evecs_(Eigen::Matrix3d::Identity())
-    , evals_(Eigen::Vector3d::Zero())
+    : mean_ (Eigen::Vector3d::Zero())
+    , cov_ (Eigen::Matrix3d::Zero())
+    , icov_ (Eigen::Matrix3d::Zero())
+    , evecs_ (Eigen::Matrix3d::Identity())
+    , evals_ (Eigen::Vector3d::Zero())
     {}
 
     /** \brief Get the voxel covariance.
@@ -208,9 +208,9 @@ public:
       min_points_per_voxel_ = min_points_per_voxel;
     }
     else {
-      PCL_WARN("[%s::setMinPointPerVoxel] Covariance calculation requires at least 3 "
-               "points, setting Min Point per Voxel to 3\n",
-               this->getClassName().c_str());
+      PCL_WARN ("[%s::setMinPointPerVoxel] Covariance calculation requires at least 3 "
+                "points, setting Min Point per Voxel to 3\n",
+                this->getClassName().c_str());
       min_points_per_voxel_ = 3;
     }
   }
@@ -252,22 +252,23 @@ public:
   filter (PointCloud& output, bool searchable = false)
   {
     searchable_ = searchable;
-    applyFilter(output);
+    applyFilter (output);
 
-    voxel_centroids_ = PointCloudPtr(new PointCloud(output));
+    voxel_centroids_ = PointCloudPtr (new PointCloud (output));
 
     if (searchable_) {
       if (voxel_centroids_->empty()) {
-        PCL_WARN("[%s::filter] No voxels with a sufficient number of points. Grid will "
-                 "not be searchable. You can try reducing the min number of points "
-                 "required per voxel or increasing the voxel/leaf size.\n",
-                 this->getClassName().c_str());
+        PCL_WARN (
+            "[%s::filter] No voxels with a sufficient number of points. Grid will "
+            "not be searchable. You can try reducing the min number of points "
+            "required per voxel or increasing the voxel/leaf size.\n",
+            this->getClassName().c_str());
         searchable_ = false;
       }
       else {
         // Initiates kdtree of the centroids of voxels containing a sufficient number of
         // points
-        kdtree_.setInputCloud(voxel_centroids_);
+        kdtree_.setInputCloud (voxel_centroids_);
       }
     }
   }
@@ -280,21 +281,22 @@ public:
   filter (bool searchable = false)
   {
     searchable_ = searchable;
-    voxel_centroids_ = PointCloudPtr(new PointCloud);
-    applyFilter(*voxel_centroids_);
+    voxel_centroids_ = PointCloudPtr (new PointCloud);
+    applyFilter (*voxel_centroids_);
 
     if (searchable_) {
       if (voxel_centroids_->empty()) {
-        PCL_WARN("[%s::filter] No voxels with a sufficient number of points. Grid will "
-                 "not be searchable. You can try reducing the min number of points "
-                 "required per voxel or increasing the voxel/leaf size\n",
-                 this->getClassName().c_str());
+        PCL_WARN (
+            "[%s::filter] No voxels with a sufficient number of points. Grid will "
+            "not be searchable. You can try reducing the min number of points "
+            "required per voxel or increasing the voxel/leaf size\n",
+            this->getClassName().c_str());
         searchable_ = false;
       }
       else {
         // Initiates kdtree of the centroids of voxels containing a sufficient number of
         // points
-        kdtree_.setInputCloud(voxel_centroids_);
+        kdtree_.setInputCloud (voxel_centroids_);
       }
     }
   }
@@ -306,9 +308,9 @@ public:
   inline LeafConstPtr
   getLeaf (int index)
   {
-    auto leaf_iter = leaves_.find(index);
+    auto leaf_iter = leaves_.find (index);
     if (leaf_iter != leaves_.end()) {
-      LeafConstPtr ret(&(leaf_iter->second));
+      LeafConstPtr ret (&(leaf_iter->second));
       return ret;
     }
     return nullptr;
@@ -322,18 +324,18 @@ public:
   getLeaf (PointT& p)
   {
     // Generate index associated with p
-    int ijk0 = static_cast<int>(std::floor(p.x * inverse_leaf_size_[0]) - min_b_[0]);
-    int ijk1 = static_cast<int>(std::floor(p.y * inverse_leaf_size_[1]) - min_b_[1]);
-    int ijk2 = static_cast<int>(std::floor(p.z * inverse_leaf_size_[2]) - min_b_[2]);
+    int ijk0 = static_cast<int> (std::floor (p.x * inverse_leaf_size_[0]) - min_b_[0]);
+    int ijk1 = static_cast<int> (std::floor (p.y * inverse_leaf_size_[1]) - min_b_[1]);
+    int ijk2 = static_cast<int> (std::floor (p.z * inverse_leaf_size_[2]) - min_b_[2]);
 
     // Compute the centroid leaf index
     int idx = ijk0 * divb_mul_[0] + ijk1 * divb_mul_[1] + ijk2 * divb_mul_[2];
 
     // Find leaf associated with index
-    auto leaf_iter = leaves_.find(idx);
+    auto leaf_iter = leaves_.find (idx);
     if (leaf_iter != leaves_.end()) {
       // If such a leaf exists return the pointer to the leaf structure
-      LeafConstPtr ret(&(leaf_iter->second));
+      LeafConstPtr ret (&(leaf_iter->second));
       return ret;
     }
     return nullptr;
@@ -347,18 +349,18 @@ public:
   getLeaf (Eigen::Vector3f& p)
   {
     // Generate index associated with p
-    int ijk0 = static_cast<int>(std::floor(p[0] * inverse_leaf_size_[0]) - min_b_[0]);
-    int ijk1 = static_cast<int>(std::floor(p[1] * inverse_leaf_size_[1]) - min_b_[1]);
-    int ijk2 = static_cast<int>(std::floor(p[2] * inverse_leaf_size_[2]) - min_b_[2]);
+    int ijk0 = static_cast<int> (std::floor (p[0] * inverse_leaf_size_[0]) - min_b_[0]);
+    int ijk1 = static_cast<int> (std::floor (p[1] * inverse_leaf_size_[1]) - min_b_[1]);
+    int ijk2 = static_cast<int> (std::floor (p[2] * inverse_leaf_size_[2]) - min_b_[2]);
 
     // Compute the centroid leaf index
     int idx = ijk0 * divb_mul_[0] + ijk1 * divb_mul_[1] + ijk2 * divb_mul_[2];
 
     // Find leaf associated with index
-    auto leaf_iter = leaves_.find(idx);
+    auto leaf_iter = leaves_.find (idx);
     if (leaf_iter != leaves_.end()) {
       // If such a leaf exists return the pointer to the leaf structure
-      LeafConstPtr ret(&(leaf_iter->second));
+      LeafConstPtr ret (&(leaf_iter->second));
       return ret;
     }
     return nullptr;
@@ -461,23 +463,23 @@ public:
 
     // Check if kdtree has been built
     if (!searchable_) {
-      PCL_WARN("[%s::nearestKSearch] Not Searchable\n", this->getClassName().c_str());
+      PCL_WARN ("[%s::nearestKSearch] Not Searchable\n", this->getClassName().c_str());
       return 0;
     }
 
     // Find k-nearest neighbors in the occupied voxel centroid cloud
-    Indices k_indices(k);
-    k = kdtree_.nearestKSearch(point, k, k_indices, k_sqr_distances);
+    Indices k_indices (k);
+    k = kdtree_.nearestKSearch (point, k, k_indices, k_sqr_distances);
 
     // Find leaves corresponding to neighbors
-    k_leaves.reserve(k);
+    k_leaves.reserve (k);
     for (const auto& k_index : k_indices) {
-      auto voxel = leaves_.find(voxel_centroids_leaf_indices_[k_index]);
+      auto voxel = leaves_.find (voxel_centroids_leaf_indices_[k_index]);
       if (voxel == leaves_.end()) {
         continue;
       }
 
-      k_leaves.push_back(&voxel->second);
+      k_leaves.push_back (&voxel->second);
     }
     return k_leaves.size();
   }
@@ -498,9 +500,9 @@ public:
                   std::vector<LeafConstPtr>& k_leaves,
                   std::vector<float>& k_sqr_distances) const
   {
-    if (index >= static_cast<int>(cloud.size()) || index < 0)
+    if (index >= static_cast<int> (cloud.size()) || index < 0)
       return (0);
-    return (nearestKSearch(cloud[index], k, k_leaves, k_sqr_distances));
+    return (nearestKSearch (cloud[index], k, k_leaves, k_sqr_distances));
   }
 
   /** \brief Search for all the nearest occupied voxels of the query point in a given
@@ -522,24 +524,24 @@ public:
 
     // Check if kdtree has been built
     if (!searchable_) {
-      PCL_WARN("[%s::radiusSearch] Not Searchable\n", this->getClassName().c_str());
+      PCL_WARN ("[%s::radiusSearch] Not Searchable\n", this->getClassName().c_str());
       return 0;
     }
 
     // Find neighbors within radius in the occupied voxel centroid cloud
     Indices k_indices;
     const int k =
-        kdtree_.radiusSearch(point, radius, k_indices, k_sqr_distances, max_nn);
+        kdtree_.radiusSearch (point, radius, k_indices, k_sqr_distances, max_nn);
 
     // Find leaves corresponding to neighbors
-    k_leaves.reserve(k);
+    k_leaves.reserve (k);
     for (const auto& k_index : k_indices) {
-      const auto voxel = leaves_.find(voxel_centroids_leaf_indices_[k_index]);
+      const auto voxel = leaves_.find (voxel_centroids_leaf_indices_[k_index]);
       if (voxel == leaves_.end()) {
         continue;
       }
 
-      k_leaves.push_back(&voxel->second);
+      k_leaves.push_back (&voxel->second);
     }
     return k_leaves.size();
   }
@@ -561,9 +563,9 @@ public:
                 std::vector<float>& k_sqr_distances,
                 unsigned int max_nn = 0) const
   {
-    if (index >= static_cast<int>(cloud.size()) || index < 0)
+    if (index >= static_cast<int> (cloud.size()) || index < 0)
       return (0);
-    return (radiusSearch(cloud[index], radius, k_leaves, k_sqr_distances, max_nn));
+    return (radiusSearch (cloud[index], radius, k_leaves, k_sqr_distances, max_nn));
   }
 
 protected:

@@ -69,68 +69,68 @@ public:
   using CloudPtr = Cloud::Ptr;
   using CloudConstPtr = Cloud::ConstPtr;
 
-  OpenNIUniformSampling(const std::string& device_id = "", float leaf_size = 0.05)
-  : viewer("PCL OpenNI PassThrough Viewer"), device_id_(device_id)
+  OpenNIUniformSampling (const std::string& device_id = "", float leaf_size = 0.05)
+  : viewer ("PCL OpenNI PassThrough Viewer"), device_id_ (device_id)
   {
-    pass_.setRadiusSearch(leaf_size);
+    pass_.setRadiusSearch (leaf_size);
   }
 
   void
   cloud_cb_ (const CloudConstPtr& cloud)
   {
-    std::lock_guard<std::mutex> lock(mtx_);
-    FPS_CALC("computation");
+    std::lock_guard<std::mutex> lock (mtx_);
+    FPS_CALC ("computation");
 
-    cloud_.reset(new Cloud);
-    keypoints_.reset(new pcl::PointCloud<pcl::PointXYZ>);
+    cloud_.reset (new Cloud);
+    keypoints_.reset (new pcl::PointCloud<pcl::PointXYZ>);
     // Computation goes here
-    pass_.setInputCloud(cloud);
+    pass_.setInputCloud (cloud);
     pcl::PointCloud<pcl::PointXYZRGBA> sampled;
-    pass_.filter(sampled);
+    pass_.filter (sampled);
     *cloud_ = *cloud;
 
-    pcl::copyPointCloud(sampled, *keypoints_);
+    pcl::copyPointCloud (sampled, *keypoints_);
   }
 
   void
   viz_cb (pcl::visualization::PCLVisualizer& viz)
   {
-    std::lock_guard<std::mutex> lock(mtx_);
+    std::lock_guard<std::mutex> lock (mtx_);
     if (!keypoints_ && !cloud_) {
-      std::this_thread::sleep_for(1s);
+      std::this_thread::sleep_for (1s);
       return;
     }
 
-    FPS_CALC("visualization");
-    viz.removePointCloud("raw");
-    pcl::visualization::PointCloudColorHandlerRGBField<pcl::PointXYZRGBA> color_handler(
-        cloud_);
-    viz.addPointCloud<pcl::PointXYZRGBA>(cloud_, color_handler, "raw");
+    FPS_CALC ("visualization");
+    viz.removePointCloud ("raw");
+    pcl::visualization::PointCloudColorHandlerRGBField<pcl::PointXYZRGBA>
+        color_handler (cloud_);
+    viz.addPointCloud<pcl::PointXYZRGBA> (cloud_, color_handler, "raw");
 
-    if (!viz.updatePointCloud<pcl::PointXYZ>(keypoints_, "keypoints")) {
-      viz.addPointCloud<pcl::PointXYZ>(keypoints_, "keypoints");
-      viz.setPointCloudRenderingProperties(
+    if (!viz.updatePointCloud<pcl::PointXYZ> (keypoints_, "keypoints")) {
+      viz.addPointCloud<pcl::PointXYZ> (keypoints_, "keypoints");
+      viz.setPointCloudRenderingProperties (
           pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 5.0, "keypoints");
-      viz.resetCameraViewpoint("keypoints");
+      viz.resetCameraViewpoint ("keypoints");
     }
   }
 
   void
   run ()
   {
-    pcl::OpenNIGrabber interface(device_id_);
+    pcl::OpenNIGrabber interface (device_id_);
 
-    std::function<void(const CloudConstPtr&)> f = [this] (const CloudConstPtr& cloud) {
-      cloud_cb_(cloud);
+    std::function<void (const CloudConstPtr&)> f = [this] (const CloudConstPtr& cloud) {
+      cloud_cb_ (cloud);
     };
-    boost::signals2::connection c = interface.registerCallback(f);
-    viewer.runOnVisualizationThread(
-        [this] (pcl::visualization::PCLVisualizer& viz) { viz_cb(viz); }, "viz_cb");
+    boost::signals2::connection c = interface.registerCallback (f);
+    viewer.runOnVisualizationThread (
+        [this] (pcl::visualization::PCLVisualizer& viz) { viz_cb (viz); }, "viz_cb");
 
     interface.start();
 
     while (!viewer.wasStopped()) {
-      std::this_thread::sleep_for(1s);
+      std::this_thread::sleep_for (1s);
     }
 
     interface.stop();
@@ -182,23 +182,23 @@ int
 main (int argc, char** argv)
 {
   /////////////////////////////////////////////////////////////////////
-  if (pcl::console::find_argument(argc, argv, "-h") != -1 ||
-      pcl::console::find_argument(argc, argv, "--help") != -1) {
-    usage(argv);
+  if (pcl::console::find_argument (argc, argv, "-h") != -1 ||
+      pcl::console::find_argument (argc, argv, "--help") != -1) {
+    usage (argv);
     return 1;
   }
 
   std::string device_id = "";
   float leaf_res = 0.05f;
 
-  if (pcl::console::parse_argument(argc, argv, "-device_id", device_id) == -1 &&
+  if (pcl::console::parse_argument (argc, argv, "-device_id", device_id) == -1 &&
       argc > 1 && argv[1][0] != '-')
     device_id = argv[1];
-  pcl::console::parse_argument(argc, argv, "-leaf", leaf_res);
-  PCL_INFO("Using %f as a leaf size for UniformSampling.\n", leaf_res);
+  pcl::console::parse_argument (argc, argv, "-leaf", leaf_res);
+  PCL_INFO ("Using %f as a leaf size for UniformSampling.\n", leaf_res);
   /////////////////////////////////////////////////////////////////////
 
-  OpenNIUniformSampling v(device_id, leaf_res);
+  OpenNIUniformSampling v (device_id, leaf_res);
   v.run();
 
   return 0;

@@ -14,7 +14,7 @@ class Geometry : public Object {
 protected:
   // Operators
   // -----------------------------------------------------------------------------
-  Geometry(std::string name) : Object(name) {}
+  Geometry (std::string name) : Object (name) {}
 
 public:
   ~Geometry() override = default;

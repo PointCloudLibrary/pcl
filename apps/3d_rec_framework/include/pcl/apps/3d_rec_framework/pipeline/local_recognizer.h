@@ -117,9 +117,9 @@ class PCL_EXPORTS LocalRecognitionPipeline {
     data.rows = models.size();
     data.cols = models[0].descr.size(); // number of histogram bins
 
-    flann::Matrix<float> flann_data(new float[models.size() * models[0].descr.size()],
-                                    models.size(),
-                                    models[0].descr.size());
+    flann::Matrix<float> flann_data (new float[models.size() * models[0].descr.size()],
+                                     models.size(),
+                                     models[0].descr.size());
 
     for (std::size_t i = 0; i < data.rows; ++i)
       for (std::size_t j = 0; j < data.cols; ++j) {
@@ -162,17 +162,17 @@ class PCL_EXPORTS LocalRecognitionPipeline {
                        pcl::Correspondences& correspondences)
   {
     pcl::visualization::PCLVisualizer vis_corresp_;
-    vis_corresp_.setWindowName("correspondences...");
-    pcl::visualization::PointCloudColorHandlerCustom<PointInT> random_handler(
+    vis_corresp_.setWindowName ("correspondences...");
+    pcl::visualization::PointCloudColorHandlerCustom<PointInT> random_handler (
         cloud, 255, 0, 0);
-    vis_corresp_.addPointCloud<PointInT>(cloud, random_handler, "points");
+    vis_corresp_.addPointCloud<PointInT> (cloud, random_handler, "points");
 
     typename pcl::PointCloud<PointInT>::ConstPtr cloud_sampled;
-    cloud_sampled = oh.model_.getAssembled(0.0025f);
+    cloud_sampled = oh.model_.getAssembled (0.0025f);
 
-    pcl::visualization::PointCloudColorHandlerCustom<PointInT> random_handler_sampled(
+    pcl::visualization::PointCloudColorHandlerCustom<PointInT> random_handler_sampled (
         cloud_sampled, 0, 0, 255);
-    vis_corresp_.addPointCloud<PointInT>(
+    vis_corresp_.addPointCloud<PointInT> (
         cloud_sampled, random_handler_sampled, "sampled");
 
     for (std::size_t kk = 0; kk < correspondences.size(); kk++) {
@@ -184,8 +184,8 @@ class PCL_EXPORTS LocalRecognitionPipeline {
       p_scene.getVector4fMap() =
           (*keypoints_pointcloud)[correspondences[kk].index_match].getVector4fMap();
 
-      const std::string line_name = "line_" + std::to_string(kk);
-      vis_corresp_.addLine<pcl::PointXYZ, pcl::PointXYZ>(p_scene, p, line_name);
+      const std::string line_name = "line_" + std::to_string (kk);
+      vis_corresp_.addLine<pcl::PointXYZ, pcl::PointXYZ> (p_scene, p, line_name);
     }
 
     vis_corresp_.spin();
@@ -195,7 +195,7 @@ class PCL_EXPORTS LocalRecognitionPipeline {
   }
 
 public:
-  LocalRecognitionPipeline() : search_model_("")
+  LocalRecognitionPipeline() : search_model_ ("")
   {
     use_cache_ = false;
     threshold_accept_model_hypothesis_ = 0.2f;

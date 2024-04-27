@@ -56,8 +56,8 @@ public:
   using Clock = std::chrono::high_resolution_clock;
   using Timestamp = std::chrono::high_resolution_clock::time_point;
 
-  IRImage(FrameWrapper::Ptr ir_metadata);
-  IRImage(FrameWrapper::Ptr ir_metadata, Timestamp time);
+  IRImage (FrameWrapper::Ptr ir_metadata);
+  IRImage (FrameWrapper::Ptr ir_metadata, Timestamp time);
 
   ~IRImage() noexcept = default;
 

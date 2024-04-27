@@ -48,9 +48,9 @@ public:
   bool save;
   openni_wrapper::OpenNIDevice::DepthMode mode;
 
-  SimpleOpenNIProcessor(openni_wrapper::OpenNIDevice::DepthMode depth_mode =
-                            openni_wrapper::OpenNIDevice::OpenNI_12_bit_depth)
-  : mode(depth_mode)
+  SimpleOpenNIProcessor (openni_wrapper::OpenNIDevice::DepthMode depth_mode =
+                             openni_wrapper::OpenNIDevice::OpenNI_12_bit_depth)
+  : mode (depth_mode)
   {}
 
   void
@@ -63,16 +63,16 @@ public:
       std::cout << "distance of center pixel :"
                 << cloud->points[(cloud->width >> 1) * (cloud->height + 1)].z
                 << " mm. Average framerate: "
-                << static_cast<double>(count) / (now - last) << " Hz" << std::endl;
+                << static_cast<double> (count) / (now - last) << " Hz" << std::endl;
       count = 0;
       last = now;
     }
 
     if (save) {
       std::stringstream ss;
-      ss << std::setprecision(12) << pcl::getTime() * 100 << ".pcd";
+      ss << std::setprecision (12) << pcl::getTime() * 100 << ".pcd";
       pcl::PCDWriter w;
-      w.writeBinaryCompressed(ss.str(), *cloud);
+      w.writeBinaryCompressed (ss.str(), *cloud);
       std::cout << "wrote point clouds to file " << ss.str() << std::endl;
     }
   }
@@ -88,7 +88,7 @@ public:
       double now = pcl::getTime();
       std::cout << "got synchronized image x depth-image with constant factor: "
                 << constant
-                << ". Average framerate: " << static_cast<double>(count) / (now - last)
+                << ". Average framerate: " << static_cast<double> (count) / (now - last)
                 << " Hz" << std::endl;
       std::cout << "Depth baseline: " << d_img->getBaseline()
                 << " and focal length: " << d_img->getFocalLength() << std::endl;
@@ -106,29 +106,30 @@ public:
     pcl::OpenNIGrabber interface;
 
     // Set the depth output format
-    interface.getDevice()->setDepthOutputFormat(mode);
+    interface.getDevice()->setDepthOutputFormat (mode);
 
     // make callback function from member function
-    std::function<void(const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)> f =
+    std::function<void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)> f =
         [this] (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr& cloud) {
-          cloud_cb_(cloud);
+          cloud_cb_ (cloud);
         };
 
     // connect callback function for desired signal. In this case its a point cloud with
     // color values
-    boost::signals2::connection c = interface.registerCallback(f);
+    boost::signals2::connection c = interface.registerCallback (f);
 
     // make callback function from member function
-    std::function<void(const openni_wrapper::Image::Ptr&,
-                       const openni_wrapper::DepthImage::Ptr&,
-                       float constant)>
-        f2 = [this] (const openni_wrapper::Image::Ptr& img,
-                     const openni_wrapper::DepthImage::Ptr& depth,
-                     float constant) { imageDepthImageCallback(img, depth, constant); };
+    std::function<void (const openni_wrapper::Image::Ptr&,
+                        const openni_wrapper::DepthImage::Ptr&,
+                        float constant)>
+        f2 =
+            [this] (const openni_wrapper::Image::Ptr& img,
+                    const openni_wrapper::DepthImage::Ptr& depth,
+                    float constant) { imageDepthImageCallback (img, depth, constant); };
 
     // connect callback function for desired signal. In this case its a point cloud with
     // color values
-    boost::signals2::connection c2 = interface.registerCallback(f2);
+    boost::signals2::connection c2 = interface.registerCallback (f2);
 
     // start receiving point clouds
     interface.start();
@@ -138,7 +139,7 @@ public:
     std::cout << "\'s\': save" << std::endl;
     char key;
     do {
-      key = static_cast<char>(getchar());
+      key = static_cast<char> (getchar());
       switch (key) {
       case ' ':
         if (interface.isRunning())
@@ -160,9 +161,9 @@ int
 main (int argc, char** argv)
 {
   int mode = openni_wrapper::OpenNIDevice::OpenNI_12_bit_depth;
-  pcl::console::parse_argument(argc, argv, "-mode", mode);
+  pcl::console::parse_argument (argc, argv, "-mode", mode);
 
-  SimpleOpenNIProcessor v(static_cast<openni_wrapper::OpenNIDevice::DepthMode>(mode));
+  SimpleOpenNIProcessor v (static_cast<openni_wrapper::OpenNIDevice::DepthMode> (mode));
   v.run();
   return (0);
 }

@@ -60,7 +60,7 @@ protected:
   /// @brief The default constructor.
   /// @details Derived commands are assumed to have undo by default.  Each
   /// is free to override this.
-  Command() : has_undo_(true) {}
+  Command() : has_undo_ (true) {}
 
   /// @brief Returns true if the command has an undo function.
   inline bool
@@ -82,13 +82,13 @@ protected:
 
 private:
   /// @brief Copy Constructor - object is non-copyable
-  Command(const Command&) { assert(false); }
+  Command (const Command&) { assert (false); }
 
   /// @brief Equal Operator - object is non-copyable
   Command&
-  operator=(const Command&)
+  operator= (const Command&)
   {
-    assert(false);
+    assert (false);
     return (*this);
   }
 };

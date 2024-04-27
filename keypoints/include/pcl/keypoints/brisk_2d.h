@@ -86,8 +86,8 @@ public:
   using Keypoint<PointInT, PointOutT>::k_;
 
   /** \brief Constructor */
-  BriskKeypoint2D(int octaves = 4, int threshold = 60)
-  : threshold_(threshold), octaves_(octaves)
+  BriskKeypoint2D (int octaves = 4, int threshold = 60)
+  : threshold_ (threshold), octaves_ (octaves)
   {
     k_ = 1;
     name_ = "BriskKeypoint2D";
@@ -155,41 +155,41 @@ public:
                          float y,
                          PointOutT& pt)
   {
-    int u = static_cast<int>(x);
-    int v = static_cast<int>(y);
+    int u = static_cast<int> (x);
+    int v = static_cast<int> (y);
 
     pt.x = pt.y = pt.z = 0;
 
-    const PointInT& p1 = (*cloud)(u, v);
-    const PointInT& p2 = (*cloud)(u + 1, v);
-    const PointInT& p3 = (*cloud)(u, v + 1);
-    const PointInT& p4 = (*cloud)(u + 1, v + 1);
+    const PointInT& p1 = (*cloud) (u, v);
+    const PointInT& p2 = (*cloud) (u + 1, v);
+    const PointInT& p3 = (*cloud) (u, v + 1);
+    const PointInT& p4 = (*cloud) (u + 1, v + 1);
 
-    float fx = x - static_cast<float>(u), fy = y - static_cast<float>(v);
+    float fx = x - static_cast<float> (u), fy = y - static_cast<float> (v);
     float fx1 = 1.0f - fx, fy1 = 1.0f - fy;
 
     float w1 = fx1 * fy1, w2 = fx * fy1, w3 = fx1 * fy, w4 = fx * fy;
     float weight = 0;
 
-    if (pcl::isFinite(p1)) {
+    if (pcl::isFinite (p1)) {
       pt.x += p1.x * w1;
       pt.y += p1.y * w1;
       pt.z += p1.z * w1;
       weight += w1;
     }
-    if (pcl::isFinite(p2)) {
+    if (pcl::isFinite (p2)) {
       pt.x += p2.x * w2;
       pt.y += p2.y * w2;
       pt.z += p2.z * w2;
       weight += w2;
     }
-    if (pcl::isFinite(p3)) {
+    if (pcl::isFinite (p3)) {
       pt.x += p3.x * w3;
       pt.y += p3.y * w3;
       pt.z += p3.z * w3;
       weight += w3;
     }
-    if (pcl::isFinite(p4)) {
+    if (pcl::isFinite (p4)) {
       pt.x += p4.x * w4;
       pt.y += p4.y * w4;
       pt.z += p4.z * w4;
@@ -251,17 +251,17 @@ public:
    * \param[in] scale scale
    * \param[in] offset offset
    */
-  Layer(const std::vector<unsigned char>& img,
-        int width,
-        int height,
-        float scale = 1.0f,
-        float offset = 0.0f);
+  Layer (const std::vector<unsigned char>& img,
+         int width,
+         int height,
+         float scale = 1.0f,
+         float offset = 0.0f);
 
   /** \brief Copy constructor for deriving a layer.
    * \param[in] layer layer to derive from
    * \param[in] mode deriving mode
    */
-  Layer(const Layer& layer, int mode);
+  Layer (const Layer& layer, int mode);
 
   /** \brief AGAST keypoints without non-max suppression.
    * \param[in] threshold the keypoints threshold
@@ -396,7 +396,7 @@ public:
   /** \brief Constructor. Specify the number of octaves.
    * \param[in] octaves the number of octaves (default: 3)
    */
-  ScaleSpace(int octaves = 3);
+  ScaleSpace (int octaves = 3);
   ~ScaleSpace();
 
   /** \brief Construct the image pyramids.

@@ -54,21 +54,23 @@ template <typename PointT>
 struct CompressionPointTraits {
   static const bool hasColor = false;
   static const unsigned int channels = 1;
-  static const std::size_t bytesPerPoint = 3 * sizeof(float);
+  static const std::size_t bytesPerPoint = 3 * sizeof (float);
 };
 
 template <>
 struct CompressionPointTraits<PointXYZRGB> {
   static const bool hasColor = true;
   static const unsigned int channels = 4;
-  static const std::size_t bytesPerPoint = 3 * sizeof(float) + 3 * sizeof(std::uint8_t);
+  static const std::size_t bytesPerPoint =
+      3 * sizeof (float) + 3 * sizeof (std::uint8_t);
 };
 
 template <>
 struct CompressionPointTraits<PointXYZRGBA> {
   static const bool hasColor = true;
   static const unsigned int channels = 4;
-  static const std::size_t bytesPerPoint = 3 * sizeof(float) + 3 * sizeof(std::uint8_t);
+  static const std::size_t bytesPerPoint =
+      3 * sizeof (float) + 3 * sizeof (std::uint8_t);
 };
 
 template <typename PointT, bool enableColor = CompressionPointTraits<PointT>::hasColor>
@@ -99,22 +101,22 @@ struct OrganizedConversion<PointT, false> {
     // Clear image data
     disparityData_arg.clear();
 
-    disparityData_arg.reserve(cloud_size);
+    disparityData_arg.reserve (cloud_size);
 
     for (std::size_t i = 0; i < cloud_size; ++i) {
       // Get point from cloud
       const PointT& point = cloud_arg[i];
 
-      if (pcl::isFinite(point)) {
+      if (pcl::isFinite (point)) {
         // Inverse depth quantization
-        auto disparity = static_cast<std::uint16_t>(
+        auto disparity = static_cast<std::uint16_t> (
             focalLength_arg / (disparityScale_arg * point.z) +
             disparityShift_arg / disparityScale_arg);
-        disparityData_arg.push_back(disparity);
+        disparityData_arg.push_back (disparity);
       }
       else {
         // Non-valid points are encoded with zeros
-        disparityData_arg.push_back(0);
+        disparityData_arg.push_back (0);
       }
     }
   }
@@ -142,20 +144,20 @@ struct OrganizedConversion<PointT, false> {
   {
     std::size_t cloud_size = width_arg * height_arg;
 
-    assert(disparityData_arg.size() == cloud_size);
+    assert (disparityData_arg.size() == cloud_size);
 
     // Reset point cloud
     cloud_arg.clear();
-    cloud_arg.reserve(cloud_size);
+    cloud_arg.reserve (cloud_size);
 
     // Define point cloud parameters
-    cloud_arg.width = static_cast<std::uint32_t>(width_arg);
-    cloud_arg.height = static_cast<std::uint32_t>(height_arg);
+    cloud_arg.width = static_cast<std::uint32_t> (width_arg);
+    cloud_arg.height = static_cast<std::uint32_t> (height_arg);
     cloud_arg.is_dense = false;
 
     // Calculate center of disparity image
-    int centerX = static_cast<int>(width_arg / 2);
-    int centerY = static_cast<int>(height_arg / 2);
+    int centerX = static_cast<int> (width_arg / 2);
+    int centerY = static_cast<int> (height_arg / 2);
 
     const float fl_const = 1.0f / focalLength_arg;
     static const float bad_point = std::numeric_limits<float>::quiet_NaN();
@@ -170,12 +172,12 @@ struct OrganizedConversion<PointT, false> {
         if (pixel_disparity) {
           // Inverse depth decoding
           float depth = focalLength_arg /
-                        (static_cast<float>(pixel_disparity) * disparityScale_arg +
+                        (static_cast<float> (pixel_disparity) * disparityScale_arg +
                          disparityShift_arg);
 
           // Generate new points
-          newPoint.x = static_cast<float>(x) * depth * fl_const;
-          newPoint.y = static_cast<float>(y) * depth * fl_const;
+          newPoint.x = static_cast<float> (x) * depth * fl_const;
+          newPoint.y = static_cast<float> (y) * depth * fl_const;
           newPoint.z = depth;
         }
         else {
@@ -183,7 +185,7 @@ struct OrganizedConversion<PointT, false> {
           newPoint.x = newPoint.y = newPoint.z = bad_point;
         }
 
-        cloud_arg.push_back(newPoint);
+        cloud_arg.push_back (newPoint);
       }
   }
 
@@ -206,20 +208,20 @@ struct OrganizedConversion<PointT, false> {
   {
     std::size_t cloud_size = width_arg * height_arg;
 
-    assert(depthData_arg.size() == cloud_size);
+    assert (depthData_arg.size() == cloud_size);
 
     // Reset point cloud
     cloud_arg.clear();
-    cloud_arg.reserve(cloud_size);
+    cloud_arg.reserve (cloud_size);
 
     // Define point cloud parameters
-    cloud_arg.width = static_cast<std::uint32_t>(width_arg);
-    cloud_arg.height = static_cast<std::uint32_t>(height_arg);
+    cloud_arg.width = static_cast<std::uint32_t> (width_arg);
+    cloud_arg.height = static_cast<std::uint32_t> (height_arg);
     cloud_arg.is_dense = false;
 
     // Calculate center of disparity image
-    int centerX = static_cast<int>(width_arg / 2);
-    int centerY = static_cast<int>(height_arg / 2);
+    int centerX = static_cast<int> (width_arg / 2);
+    int centerY = static_cast<int> (height_arg / 2);
 
     const float fl_const = 1.0f / focalLength_arg;
     static const float bad_point = std::numeric_limits<float>::quiet_NaN();
@@ -233,8 +235,8 @@ struct OrganizedConversion<PointT, false> {
 
         if (pixel_depth) {
           // Generate new points
-          newPoint.x = static_cast<float>(x) * pixel_depth * fl_const;
-          newPoint.y = static_cast<float>(y) * pixel_depth * fl_const;
+          newPoint.x = static_cast<float> (x) * pixel_depth * fl_const;
+          newPoint.y = static_cast<float> (y) * pixel_depth * fl_const;
           newPoint.z = pixel_depth;
         }
         else {
@@ -242,7 +244,7 @@ struct OrganizedConversion<PointT, false> {
           newPoint.x = newPoint.y = newPoint.z = bad_point;
         }
 
-        cloud_arg.push_back(newPoint);
+        cloud_arg.push_back (newPoint);
       }
   }
 };
@@ -276,53 +278,53 @@ struct OrganizedConversion<PointT, true> {
     rgbData_arg.clear();
 
     // Allocate memory
-    disparityData_arg.reserve(cloud_size);
+    disparityData_arg.reserve (cloud_size);
     if (convertToMono) {
-      rgbData_arg.reserve(cloud_size);
+      rgbData_arg.reserve (cloud_size);
     }
     else {
-      rgbData_arg.reserve(cloud_size * 3);
+      rgbData_arg.reserve (cloud_size * 3);
     }
 
     for (std::size_t i = 0; i < cloud_size; ++i) {
       const PointT& point = cloud_arg[i];
 
-      if (pcl::isFinite(point)) {
+      if (pcl::isFinite (point)) {
         if (convertToMono) {
           // Encode point color
-          auto grayvalue = static_cast<std::uint8_t>(
+          auto grayvalue = static_cast<std::uint8_t> (
               0.2989 * point.r + 0.5870 * point.g + 0.1140 * point.b);
 
-          rgbData_arg.push_back(grayvalue);
+          rgbData_arg.push_back (grayvalue);
         }
         else {
           // Encode point color
-          rgbData_arg.push_back(point.r);
-          rgbData_arg.push_back(point.g);
-          rgbData_arg.push_back(point.b);
+          rgbData_arg.push_back (point.r);
+          rgbData_arg.push_back (point.g);
+          rgbData_arg.push_back (point.b);
         }
 
         // Inverse depth quantization
-        auto disparity = static_cast<std::uint16_t>(
+        auto disparity = static_cast<std::uint16_t> (
             focalLength_arg / (disparityScale_arg * point.z) +
             disparityShift_arg / disparityScale_arg);
 
         // Encode disparity
-        disparityData_arg.push_back(disparity);
+        disparityData_arg.push_back (disparity);
       }
       else {
         // Encode black point
         if (convertToMono) {
-          rgbData_arg.push_back(0);
+          rgbData_arg.push_back (0);
         }
         else {
-          rgbData_arg.push_back(0);
-          rgbData_arg.push_back(0);
-          rgbData_arg.push_back(0);
+          rgbData_arg.push_back (0);
+          rgbData_arg.push_back (0);
+          rgbData_arg.push_back (0);
         }
 
         // Encode bad point
-        disparityData_arg.push_back(0);
+        disparityData_arg.push_back (0);
       }
     }
   }
@@ -354,28 +356,28 @@ struct OrganizedConversion<PointT, true> {
     bool hasColor = (!rgbData_arg.empty());
 
     // Check size of input data
-    assert(disparityData_arg.size() == cloud_size);
+    assert (disparityData_arg.size() == cloud_size);
     if (hasColor) {
       if (monoImage_arg) {
-        assert(rgbData_arg.size() == cloud_size);
+        assert (rgbData_arg.size() == cloud_size);
       }
       else {
-        assert(rgbData_arg.size() == cloud_size * 3);
+        assert (rgbData_arg.size() == cloud_size * 3);
       }
     }
 
     // Reset point cloud
     cloud_arg.clear();
-    cloud_arg.reserve(cloud_size);
+    cloud_arg.reserve (cloud_size);
 
     // Define point cloud parameters
-    cloud_arg.width = static_cast<std::uint32_t>(width_arg);
-    cloud_arg.height = static_cast<std::uint32_t>(height_arg);
+    cloud_arg.width = static_cast<std::uint32_t> (width_arg);
+    cloud_arg.height = static_cast<std::uint32_t> (height_arg);
     cloud_arg.is_dense = false;
 
     // Calculate center of disparity image
-    int centerX = static_cast<int>(width_arg / 2);
-    int centerY = static_cast<int>(height_arg / 2);
+    int centerX = static_cast<int> (width_arg / 2);
+    int centerY = static_cast<int> (height_arg / 2);
 
     const float fl_const = 1.0f / focalLength_arg;
     static const float bad_point = std::numeric_limits<float>::quiet_NaN();
@@ -389,13 +391,13 @@ struct OrganizedConversion<PointT, true> {
 
         if (pixel_disparity && (pixel_disparity != 0x7FF)) {
           float depth = focalLength_arg /
-                        (static_cast<float>(pixel_disparity) * disparityScale_arg +
+                        (static_cast<float> (pixel_disparity) * disparityScale_arg +
                          disparityShift_arg);
 
           // Define point location
           newPoint.z = depth;
-          newPoint.x = static_cast<float>(x) * depth * fl_const;
-          newPoint.y = static_cast<float>(y) * depth * fl_const;
+          newPoint.x = static_cast<float> (x) * depth * fl_const;
+          newPoint.y = static_cast<float> (y) * depth * fl_const;
 
           if (hasColor) {
             if (monoImage_arg) {
@@ -423,7 +425,7 @@ struct OrganizedConversion<PointT, true> {
         }
 
         // Add point to cloud
-        cloud_arg.push_back(newPoint);
+        cloud_arg.push_back (newPoint);
         // Increment point iterator
         ++i;
       }
@@ -452,28 +454,28 @@ struct OrganizedConversion<PointT, true> {
     bool hasColor = (!rgbData_arg.empty());
 
     // Check size of input data
-    assert(depthData_arg.size() == cloud_size);
+    assert (depthData_arg.size() == cloud_size);
     if (hasColor) {
       if (monoImage_arg) {
-        assert(rgbData_arg.size() == cloud_size);
+        assert (rgbData_arg.size() == cloud_size);
       }
       else {
-        assert(rgbData_arg.size() == cloud_size * 3);
+        assert (rgbData_arg.size() == cloud_size * 3);
       }
     }
 
     // Reset point cloud
     cloud_arg.clear();
-    cloud_arg.reserve(cloud_size);
+    cloud_arg.reserve (cloud_size);
 
     // Define point cloud parameters
-    cloud_arg.width = static_cast<std::uint32_t>(width_arg);
-    cloud_arg.height = static_cast<std::uint32_t>(height_arg);
+    cloud_arg.width = static_cast<std::uint32_t> (width_arg);
+    cloud_arg.height = static_cast<std::uint32_t> (height_arg);
     cloud_arg.is_dense = false;
 
     // Calculate center of disparity image
-    int centerX = static_cast<int>(width_arg / 2);
-    int centerY = static_cast<int>(height_arg / 2);
+    int centerX = static_cast<int> (width_arg / 2);
+    int centerY = static_cast<int> (height_arg / 2);
 
     const float fl_const = 1.0f / focalLength_arg;
     static const float bad_point = std::numeric_limits<float>::quiet_NaN();
@@ -488,8 +490,8 @@ struct OrganizedConversion<PointT, true> {
         if (pixel_depth) {
           // Define point location
           newPoint.z = pixel_depth;
-          newPoint.x = static_cast<float>(x) * pixel_depth * fl_const;
-          newPoint.y = static_cast<float>(y) * pixel_depth * fl_const;
+          newPoint.x = static_cast<float> (x) * pixel_depth * fl_const;
+          newPoint.y = static_cast<float> (y) * pixel_depth * fl_const;
 
           if (hasColor) {
             if (monoImage_arg) {
@@ -517,7 +519,7 @@ struct OrganizedConversion<PointT, true> {
         }
 
         // Add point to cloud
-        cloud_arg.push_back(newPoint);
+        cloud_arg.push_back (newPoint);
         // Increment point iterator
         ++i;
       }

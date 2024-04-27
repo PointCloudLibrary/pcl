@@ -81,8 +81,8 @@ public:
   /** \brief Constructor.
    * \param[in] resolution octree resolution at lowest octree level
    */
-  OctreePointCloudSearch(const double resolution)
-  : OctreePointCloud<PointT, LeafContainerT, BranchContainerT>(resolution)
+  OctreePointCloudSearch (const double resolution)
+  : OctreePointCloud<PointT, LeafContainerT, BranchContainerT> (resolution)
   {}
 
   /** \brief Search for neighbors within a voxel at given point
@@ -119,7 +119,7 @@ public:
                   Indices& k_indices,
                   std::vector<float>& k_sqr_distances)
   {
-    return (nearestKSearch(cloud[index], k, k_indices, k_sqr_distances));
+    return (nearestKSearch (cloud[index], k, k_indices, k_sqr_distances));
   }
 
   /** \brief Search for k-nearest neighbors at given query point.
@@ -167,7 +167,7 @@ public:
                        index_t& result_index,
                        float& sqr_distance)
   {
-    return (approxNearestSearch(cloud[query_index], result_index, sqr_distance));
+    return (approxNearestSearch (cloud[query_index], result_index, sqr_distance));
   }
 
   /** \brief Search for approx. nearest neighbor at the query point.
@@ -209,7 +209,7 @@ public:
                 std::vector<float>& k_sqr_distances,
                 index_t max_nn = 0)
   {
-    return (radiusSearch(cloud[index], radius, k_indices, k_sqr_distances, max_nn));
+    return (radiusSearch (cloud[index], radius, k_indices, k_sqr_distances, max_nn));
   }
 
   /** \brief Search for all neighbors of query point that are within a given radius.
@@ -299,22 +299,22 @@ protected:
   class prioBranchQueueEntry {
   public:
     /** \brief Empty constructor  */
-    prioBranchQueueEntry() : node(), point_distance(0) {}
+    prioBranchQueueEntry() : node(), point_distance (0) {}
 
     /** \brief Constructor for initializing priority queue entry.
      * \param _node pointer to octree node
      * \param _key octree key addressing voxel in octree structure
      * \param[in] _point_distance distance of query point to voxel center
      */
-    prioBranchQueueEntry(OctreeNode* _node, OctreeKey& _key, float _point_distance)
-    : node(_node), point_distance(_point_distance), key(_key)
+    prioBranchQueueEntry (OctreeNode* _node, OctreeKey& _key, float _point_distance)
+    : node (_node), point_distance (_point_distance), key (_key)
     {}
 
     /** \brief Operator< for comparing priority queue entries with each other.
      * \param[in] rhs the priority queue to compare this against
      */
     bool
-    operator<(const prioBranchQueueEntry rhs) const
+    operator< (const prioBranchQueueEntry rhs) const
     {
       return (this->point_distance > rhs.point_distance);
     }
@@ -338,21 +338,21 @@ protected:
   class prioPointQueueEntry {
   public:
     /** \brief Empty constructor  */
-    prioPointQueueEntry() : point_idx_(0), point_distance_(0) {}
+    prioPointQueueEntry() : point_idx_ (0), point_distance_ (0) {}
 
     /** \brief Constructor for initializing priority queue entry.
      * \param[in] point_idx index for a dataset point given by \a setInputCloud
      * \param[in] point_distance distance of query point to voxel center
      */
-    prioPointQueueEntry(uindex_t point_idx, float point_distance)
-    : point_idx_(point_idx), point_distance_(point_distance)
+    prioPointQueueEntry (uindex_t point_idx, float point_distance)
+    : point_idx_ (point_idx), point_distance_ (point_distance)
     {}
 
     /** \brief Operator< for comparing priority queue entries with each other.
      * \param[in] rhs priority queue to compare this against
      */
     bool
-    operator<(const prioPointQueueEntry& rhs) const
+    operator< (const prioPointQueueEntry& rhs) const
     {
       return (this->point_distance_ < rhs.point_distance_);
     }
@@ -549,20 +549,20 @@ protected:
 
     // Handle negative axis direction vector
     if (direction.x() < 0.0) {
-      origin.x() = static_cast<float>(this->min_x_) + static_cast<float>(this->max_x_) -
-                   origin.x();
+      origin.x() = static_cast<float> (this->min_x_) +
+                   static_cast<float> (this->max_x_) - origin.x();
       direction.x() = -direction.x();
       a |= 4;
     }
     if (direction.y() < 0.0) {
-      origin.y() = static_cast<float>(this->min_y_) + static_cast<float>(this->max_y_) -
-                   origin.y();
+      origin.y() = static_cast<float> (this->min_y_) +
+                   static_cast<float> (this->max_y_) - origin.y();
       direction.y() = -direction.y();
       a |= 2;
     }
     if (direction.z() < 0.0) {
-      origin.z() = static_cast<float>(this->min_z_) + static_cast<float>(this->max_z_) -
-                   origin.z();
+      origin.z() = static_cast<float> (this->min_z_) +
+                   static_cast<float> (this->max_z_) - origin.z();
       direction.z() = -direction.z();
       a |= 1;
     }

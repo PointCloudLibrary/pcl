@@ -50,7 +50,7 @@ namespace io {
 namespace openni2 {
 class Openni2FrameWrapper : public pcl::io::FrameWrapper {
 public:
-  Openni2FrameWrapper(const openni::VideoFrameRef& metadata) : metadata_(metadata) {}
+  Openni2FrameWrapper (const openni::VideoFrameRef& metadata) : metadata_ (metadata) {}
 
   inline const void*
   getData () const override

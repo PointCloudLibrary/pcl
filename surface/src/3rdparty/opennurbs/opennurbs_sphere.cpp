@@ -16,20 +16,20 @@
 
 #include "pcl/surface/3rdparty/opennurbs/opennurbs.h"
 
-ON_Sphere::ON_Sphere() : radius(0.0) {}
+ON_Sphere::ON_Sphere() : radius (0.0) {}
 
-ON_Sphere::ON_Sphere(const ON_3dPoint& center, double r) { Create(center, r); }
+ON_Sphere::ON_Sphere (const ON_3dPoint& center, double r) { Create (center, r); }
 
 ON_Sphere::~ON_Sphere() {}
 
 bool
 ON_Sphere::IsValid() const
 {
-  return (ON_IsValid(radius) && radius > 0.0 && plane.IsValid()) ? true : false;
+  return (ON_IsValid (radius) && radius > 0.0 && plane.IsValid()) ? true : false;
 }
 
 bool
-ON_Sphere::Create(const ON_3dPoint& center, double r)
+ON_Sphere::Create (const ON_3dPoint& center, double r)
 {
   plane = ON_xy_plane;
   plane.origin = center;
@@ -39,40 +39,41 @@ ON_Sphere::Create(const ON_3dPoint& center, double r)
 }
 
 ON_3dPoint
-ON_Sphere::PointAt(double longitude, double latitude) const
+ON_Sphere::PointAt (double longitude, double latitude) const
 {
-  return radius * NormalAt(longitude, latitude) + plane.origin;
+  return radius * NormalAt (longitude, latitude) + plane.origin;
 }
 
 ON_3dVector
-ON_Sphere::NormalAt(double longitude, double latitude) const
+ON_Sphere::NormalAt (double longitude, double latitude) const
 {
-  return cos(latitude) * (cos(longitude) * plane.xaxis + sin(longitude) * plane.yaxis) +
-         sin(latitude) * plane.zaxis;
+  return cos (latitude) *
+             (cos (longitude) * plane.xaxis + sin (longitude) * plane.yaxis) +
+         sin (latitude) * plane.zaxis;
 }
 
 ON_Circle
-ON_Sphere::LatitudeRadians(double a) const
+ON_Sphere::LatitudeRadians (double a) const
 {
-  return ON_Circle(PointAt(0.0, a), PointAt(0.5 * ON_PI, a), PointAt(ON_PI, a));
+  return ON_Circle (PointAt (0.0, a), PointAt (0.5 * ON_PI, a), PointAt (ON_PI, a));
 }
 
 ON_Circle
-ON_Sphere::LatitudeDegrees(double a) const
+ON_Sphere::LatitudeDegrees (double a) const
 {
-  return LatitudeRadians(a * ON_PI / 180.0);
+  return LatitudeRadians (a * ON_PI / 180.0);
 }
 
 ON_Circle
-ON_Sphere::LongitudeRadians(double a) const
+ON_Sphere::LongitudeRadians (double a) const
 {
-  return ON_Circle(PointAt(a, 0.0), NorthPole(), PointAt(a + ON_PI, 0.0));
+  return ON_Circle (PointAt (a, 0.0), NorthPole(), PointAt (a + ON_PI, 0.0));
 }
 
 ON_Circle
-ON_Sphere::LongitudeDegrees(double a) const
+ON_Sphere::LongitudeDegrees (double a) const
 {
-  return LongitudeRadians(a * ON_PI / 180.0);
+  return LongitudeRadians (a * ON_PI / 180.0);
 }
 
 ON_3dPoint
@@ -84,13 +85,13 @@ ON_Sphere::Center() const
 ON_3dPoint
 ON_Sphere::NorthPole() const
 {
-  return PointAt(0.0, 0.5 * ON_PI);
+  return PointAt (0.0, 0.5 * ON_PI);
 }
 
 ON_3dPoint
 ON_Sphere::SouthPole() const
 {
-  return PointAt(0.0, -0.5 * ON_PI);
+  return PointAt (0.0, -0.5 * ON_PI);
 }
 
 double
@@ -106,7 +107,7 @@ ON_Sphere::Diameter() const
 }
 
 bool
-ON_Sphere::ClosestPointTo(ON_3dPoint point, double* longitude, double* latitude) const
+ON_Sphere::ClosestPointTo (ON_3dPoint point, double* longitude, double* latitude) const
 {
   bool rc = true;
   ON_3dVector v = point - plane.origin;
@@ -123,23 +124,23 @@ ON_Sphere::ClosestPointTo(ON_3dPoint point, double* longitude, double* latitude)
       rc = false;
   }
   else {
-    if (fabs(x) >= fabs(y)) {
+    if (fabs (x) >= fabs (y)) {
       r = y / x;
-      r = fabs(x) * sqrt(1.0 + r * r);
+      r = fabs (x) * sqrt (1.0 + r * r);
     }
     else {
       r = x / y;
-      r = fabs(y) * sqrt(1.0 + r * r);
+      r = fabs (y) * sqrt (1.0 + r * r);
     }
     if (longitude) {
-      *longitude = atan2(y, x);
+      *longitude = atan2 (y, x);
       if (*longitude < 0.0)
         *longitude += 2.0 * ON_PI;
       if (*longitude < 0.0 || *longitude >= 2.0 * ON_PI)
         *longitude = 0.0;
     }
     if (latitude)
-      *latitude = atan(h / r);
+      *latitude = atan (h / r);
   }
   return rc;
 }
@@ -162,7 +163,7 @@ ON_Sphere::BoundingBox() const
 
 // returns point on cylinder that is closest to given point
 ON_3dPoint
-ON_Sphere::ClosestPointTo(ON_3dPoint point) const
+ON_Sphere::ClosestPointTo (ON_3dPoint point) const
 {
   ON_3dVector v = point - plane.origin;
   v.Unitize();
@@ -171,53 +172,53 @@ ON_Sphere::ClosestPointTo(ON_3dPoint point) const
 
 // rotate cylinder about its origin
 bool
-ON_Sphere::Rotate(double sin_angle,
-                  double cos_angle,
-                  const ON_3dVector& axis // axis of rotation
+ON_Sphere::Rotate (double sin_angle,
+                   double cos_angle,
+                   const ON_3dVector& axis // axis of rotation
 )
 {
-  return Rotate(sin_angle, cos_angle, axis, plane.origin);
+  return Rotate (sin_angle, cos_angle, axis, plane.origin);
 }
 
 bool
-ON_Sphere::Rotate(double angle,           // angle in radians
-                  const ON_3dVector& axis // axis of rotation
+ON_Sphere::Rotate (double angle,           // angle in radians
+                   const ON_3dVector& axis // axis of rotation
 )
 {
-  return Rotate(sin(angle), cos(angle), axis, plane.origin);
+  return Rotate (sin (angle), cos (angle), axis, plane.origin);
 }
 
 // rotate cylinder about a point and axis
 bool
-ON_Sphere::Rotate(double sin_angle,
-                  double cos_angle,
-                  const ON_3dVector& axis, // axis of rotation
-                  const ON_3dPoint& point  // center of rotation
+ON_Sphere::Rotate (double sin_angle,
+                   double cos_angle,
+                   const ON_3dVector& axis, // axis of rotation
+                   const ON_3dPoint& point  // center of rotation
 )
 {
-  return plane.Rotate(sin_angle, cos_angle, axis, point);
+  return plane.Rotate (sin_angle, cos_angle, axis, point);
 }
 
 bool
-ON_Sphere::Rotate(double angle,            // angle in radians
-                  const ON_3dVector& axis, // axis of rotation
-                  const ON_3dPoint& point  // center of rotation
+ON_Sphere::Rotate (double angle,            // angle in radians
+                   const ON_3dVector& axis, // axis of rotation
+                   const ON_3dPoint& point  // center of rotation
 )
 {
-  return Rotate(sin(angle), cos(angle), axis, point);
+  return Rotate (sin (angle), cos (angle), axis, point);
 }
 
 bool
-ON_Sphere::Translate(const ON_3dVector& delta)
+ON_Sphere::Translate (const ON_3dVector& delta)
 {
-  return plane.Translate(delta);
+  return plane.Translate (delta);
 }
 
 bool
-ON_Sphere::Transform(const ON_Xform& xform)
+ON_Sphere::Transform (const ON_Xform& xform)
 {
-  ON_Circle xc(plane, radius);
-  bool rc = xc.Transform(xform);
+  ON_Circle xc (plane, radius);
+  bool rc = xc.Transform (xform);
   if (rc) {
     plane = xc.plane;
     radius = xc.radius;
@@ -226,11 +227,11 @@ ON_Sphere::Transform(const ON_Xform& xform)
 }
 
 int
-ON_Sphere::GetNurbForm(ON_NurbsSurface& s) const
+ON_Sphere::GetNurbForm (ON_NurbsSurface& s) const
 {
   int rc = 0;
   if (IsValid()) {
-    s.Create(3, true, 3, 3, 9, 5);
+    s.Create (3, true, 3, 3, 9, 5);
     s.m_knot[0][0] = s.m_knot[0][1] = 0.0;
     s.m_knot[0][2] = s.m_knot[0][3] = 0.5 * ON_PI;
     s.m_knot[0][4] = s.m_knot[0][5] = ON_PI;
@@ -256,7 +257,7 @@ ON_Sphere::GetNurbForm(ON_NurbsSurface& s) const
                        plane.origin + x - y,
                        plane.origin + x};
 
-    const double w = 1.0 / sqrt(2.0);
+    const double w = 1.0 / sqrt (2.0);
     double w13;
     int i;
     ON_4dPoint southpole = plane.origin - z;
@@ -307,13 +308,13 @@ ON_Sphere::GetNurbForm(ON_NurbsSurface& s) const
 }
 
 ON_RevSurface*
-ON_Sphere::RevSurfaceForm(ON_RevSurface* srf) const
+ON_Sphere::RevSurfaceForm (ON_RevSurface* srf) const
 {
-  return RevSurfaceForm(false, srf);
+  return RevSurfaceForm (false, srf);
 }
 
 ON_RevSurface*
-ON_Sphere::RevSurfaceForm(bool bArcLengthParameterization, ON_RevSurface* srf) const
+ON_Sphere::RevSurfaceForm (bool bArcLengthParameterization, ON_RevSurface* srf) const
 {
   if (srf)
     srf->Destroy();
@@ -326,13 +327,13 @@ ON_Sphere::RevSurfaceForm(bool bArcLengthParameterization, ON_RevSurface* srf) c
     arc.plane.zaxis = -plane.yaxis;
     arc.plane.UpdateEquation();
     arc.radius = radius;
-    arc.SetAngleRadians(ON_PI);
-    ON_ArcCurve* arc_curve = new ON_ArcCurve(arc, -0.5 * ON_PI, 0.5 * ON_PI);
+    arc.SetAngleRadians (ON_PI);
+    ON_ArcCurve* arc_curve = new ON_ArcCurve (arc, -0.5 * ON_PI, 0.5 * ON_PI);
     if (srf)
       pRevSurface = srf;
     else
       pRevSurface = new ON_RevSurface();
-    pRevSurface->m_angle.Set(0.0, 2.0 * ON_PI);
+    pRevSurface->m_angle.Set (0.0, 2.0 * ON_PI);
     pRevSurface->m_t = pRevSurface->m_angle;
     pRevSurface->m_curve = arc_curve;
     pRevSurface->m_axis.from = plane.origin;
@@ -347,12 +348,12 @@ ON_Sphere::RevSurfaceForm(bool bArcLengthParameterization, ON_RevSurface* srf) c
     pRevSurface->m_bbox.m_max.y += radius;
     pRevSurface->m_bbox.m_max.z += radius;
     if (bArcLengthParameterization) {
-      double r = fabs(radius);
+      double r = fabs (radius);
       if (!(r > ON_SQRT_EPSILON))
         r = 1.0;
       r *= ON_PI;
-      pRevSurface->SetDomain(0, 0.0, 2.0 * r);
-      pRevSurface->SetDomain(1, -0.5 * r, 0.5 * r);
+      pRevSurface->SetDomain (0, 0.0, 2.0 * r);
+      pRevSurface->SetDomain (1, -0.5 * r, 0.5 * r);
     }
   }
   return pRevSurface;

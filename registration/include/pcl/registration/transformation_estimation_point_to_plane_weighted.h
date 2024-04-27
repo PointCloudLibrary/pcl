@@ -88,22 +88,22 @@ public:
    * \param[in] src the TransformationEstimationPointToPlaneWeighted object to copy into
    * this
    */
-  TransformationEstimationPointToPlaneWeighted(
+  TransformationEstimationPointToPlaneWeighted (
       const TransformationEstimationPointToPlaneWeighted& src)
-  : tmp_src_(src.tmp_src_)
-  , tmp_tgt_(src.tmp_tgt_)
-  , tmp_idx_src_(src.tmp_idx_src_)
-  , tmp_idx_tgt_(src.tmp_idx_tgt_)
-  , warp_point_(src.warp_point_)
-  , correspondence_weights_(src.correspondence_weights_)
-  , use_correspondence_weights_(src.use_correspondence_weights_){};
+  : tmp_src_ (src.tmp_src_)
+  , tmp_tgt_ (src.tmp_tgt_)
+  , tmp_idx_src_ (src.tmp_idx_src_)
+  , tmp_idx_tgt_ (src.tmp_idx_tgt_)
+  , warp_point_ (src.warp_point_)
+  , correspondence_weights_ (src.correspondence_weights_)
+  , use_correspondence_weights_ (src.use_correspondence_weights_){};
 
   /** \brief Copy operator.
    * \param[in] src the TransformationEstimationPointToPlaneWeighted object to copy into
    * this
    */
   TransformationEstimationPointToPlaneWeighted&
-  operator=(const TransformationEstimationPointToPlaneWeighted& src)
+  operator= (const TransformationEstimationPointToPlaneWeighted& src)
   {
     tmp_src_ = src.tmp_src_;
     tmp_tgt_ = src.tmp_tgt_;
@@ -232,12 +232,12 @@ protected:
         Eigen::Matrix<_Scalar, ValuesAtCompileTime, InputsAtCompileTime>;
 
     /** \brief Empty Constructor. */
-    Functor() : m_data_points_(ValuesAtCompileTime) {}
+    Functor() : m_data_points_ (ValuesAtCompileTime) {}
 
     /** \brief Constructor
      * \param[in] m_data_points number of data points to evaluate.
      */
-    Functor(int m_data_points) : m_data_points_(m_data_points) {}
+    Functor (int m_data_points) : m_data_points_ (m_data_points) {}
 
     /** \brief Destructor. */
     virtual ~Functor() = default;
@@ -260,16 +260,16 @@ protected:
      * \param[in] m_data_points the number of data points to evaluate
      * \param[in,out] estimator pointer to the estimator object
      */
-    OptimizationFunctor(int m_data_points,
-                        const TransformationEstimationPointToPlaneWeighted* estimator)
-    : Functor<MatScalar>(m_data_points), estimator_(estimator)
+    OptimizationFunctor (int m_data_points,
+                         const TransformationEstimationPointToPlaneWeighted* estimator)
+    : Functor<MatScalar> (m_data_points), estimator_ (estimator)
     {}
 
     /** Copy constructor
      * \param[in] src the optimization functor to copy into this
      */
-    inline OptimizationFunctor(const OptimizationFunctor& src)
-    : Functor<MatScalar>(src.m_data_points_), estimator_()
+    inline OptimizationFunctor (const OptimizationFunctor& src)
+    : Functor<MatScalar> (src.m_data_points_), estimator_()
     {
       *this = src;
     }
@@ -278,9 +278,9 @@ protected:
      * \param[in] src the optimization functor to copy into this
      */
     inline OptimizationFunctor&
-    operator=(const OptimizationFunctor& src)
+    operator= (const OptimizationFunctor& src)
     {
-      Functor<MatScalar>::operator=(src);
+      Functor<MatScalar>::operator= (src);
       estimator_ = src.estimator_;
       return (*this);
     }
@@ -293,7 +293,7 @@ protected:
      * \param[out] fvec f values vector
      */
     int
-    operator()(const VectorX& x, VectorX& fvec) const;
+    operator() (const VectorX& x, VectorX& fvec) const;
 
     const TransformationEstimationPointToPlaneWeighted<PointSource,
                                                        PointTarget,
@@ -307,17 +307,17 @@ protected:
      * \param[in] m_data_points the number of data points to evaluate
      * \param[in,out] estimator pointer to the estimator object
      */
-    OptimizationFunctorWithIndices(
+    OptimizationFunctorWithIndices (
         int m_data_points,
         const TransformationEstimationPointToPlaneWeighted* estimator)
-    : Functor<MatScalar>(m_data_points), estimator_(estimator)
+    : Functor<MatScalar> (m_data_points), estimator_ (estimator)
     {}
 
     /** Copy constructor
      * \param[in] src the optimization functor to copy into this
      */
-    inline OptimizationFunctorWithIndices(const OptimizationFunctorWithIndices& src)
-    : Functor<MatScalar>(src.m_data_points_), estimator_()
+    inline OptimizationFunctorWithIndices (const OptimizationFunctorWithIndices& src)
+    : Functor<MatScalar> (src.m_data_points_), estimator_()
     {
       *this = src;
     }
@@ -326,9 +326,9 @@ protected:
      * \param[in] src the optimization functor to copy into this
      */
     inline OptimizationFunctorWithIndices&
-    operator=(const OptimizationFunctorWithIndices& src)
+    operator= (const OptimizationFunctorWithIndices& src)
     {
-      Functor<MatScalar>::operator=(src);
+      Functor<MatScalar>::operator= (src);
       estimator_ = src.estimator_;
       return (*this);
     }
@@ -341,7 +341,7 @@ protected:
      * \param[out] fvec f values vector
      */
     int
-    operator()(const VectorX& x, VectorX& fvec) const;
+    operator() (const VectorX& x, VectorX& fvec) const;
 
     const TransformationEstimationPointToPlaneWeighted<PointSource,
                                                        PointTarget,

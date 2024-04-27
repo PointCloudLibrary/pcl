@@ -33,18 +33,18 @@ computeInitialAlignment (const PointCloudPtr& source_points,
                          int nr_iterations)
 {
   pcl::SampleConsensusInitialAlignment<PointT, PointT, LocalDescriptorT> sac_ia;
-  sac_ia.setMinSampleDistance(min_sample_distance);
-  sac_ia.setMaxCorrespondenceDistance(max_correspondence_distance);
-  sac_ia.setMaximumIterations(nr_iterations);
+  sac_ia.setMinSampleDistance (min_sample_distance);
+  sac_ia.setMaxCorrespondenceDistance (max_correspondence_distance);
+  sac_ia.setMaximumIterations (nr_iterations);
 
-  sac_ia.setInputSource(source_points);
-  sac_ia.setSourceFeatures(source_descriptors);
+  sac_ia.setInputSource (source_points);
+  sac_ia.setSourceFeatures (source_descriptors);
 
-  sac_ia.setInputTarget(target_points);
-  sac_ia.setTargetFeatures(target_descriptors);
+  sac_ia.setInputTarget (target_points);
+  sac_ia.setTargetFeatures (target_descriptors);
 
   PointCloud registration_output;
-  sac_ia.align(registration_output);
+  sac_ia.align (registration_output);
 
   return (sac_ia.getFinalTransformation());
 }
@@ -75,20 +75,20 @@ refineAlignment (const PointCloudPtr& source_points,
 {
 
   pcl::IterativeClosestPoint<PointT, PointT> icp;
-  icp.setMaxCorrespondenceDistance(max_correspondence_distance);
-  icp.setRANSACOutlierRejectionThreshold(outlier_rejection_threshold);
-  icp.setTransformationEpsilon(transformation_epsilon);
-  icp.setMaximumIterations(max_iterations);
+  icp.setMaxCorrespondenceDistance (max_correspondence_distance);
+  icp.setRANSACOutlierRejectionThreshold (outlier_rejection_threshold);
+  icp.setTransformationEpsilon (transformation_epsilon);
+  icp.setMaximumIterations (max_iterations);
 
-  PointCloudPtr source_points_transformed(new PointCloud);
-  pcl::transformPointCloud(
+  PointCloudPtr source_points_transformed (new PointCloud);
+  pcl::transformPointCloud (
       *source_points, *source_points_transformed, initial_alignment);
 
-  icp.setInputSource(source_points_transformed);
-  icp.setInputTarget(target_points);
+  icp.setInputSource (source_points_transformed);
+  icp.setInputTarget (target_points);
 
   PointCloud registration_output;
-  icp.align(registration_output);
+  icp.align (registration_output);
 
   return (icp.getFinalTransformation() * initial_alignment);
 }

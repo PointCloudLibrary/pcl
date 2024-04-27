@@ -72,16 +72,16 @@ public:
     int volume_element_size, weights_element_size;
 
     Header()
-    : resolution(0, 0, 0)
-    , volume_size(0, 0, 0)
-    , volume_element_size(sizeof(float))
-    , weights_element_size(sizeof(short)){};
+    : resolution (0, 0, 0)
+    , volume_size (0, 0, 0)
+    , volume_element_size (sizeof (float))
+    , weights_element_size (sizeof (short)){};
 
-    Header(const Eigen::Vector3i& res, const Eigen::Vector3f& size)
-    : resolution(res)
-    , volume_size(size)
-    , volume_element_size(sizeof(float))
-    , weights_element_size(sizeof(short)){};
+    Header (const Eigen::Vector3i& res, const Eigen::Vector3f& size)
+    : resolution (res)
+    , volume_size (size)
+    , volume_element_size (sizeof (float))
+    , weights_element_size (sizeof (short)){};
 
     /** \brief Get the size of data stored on host*/
     inline std::size_t
@@ -91,7 +91,7 @@ public:
     };
 
     friend inline std::ostream&
-    operator<<(std::ostream& os, const Header& h)
+    operator<< (std::ostream& os, const Header& h)
     {
       os << "(resolution = " << h.resolution.transpose()
          << ", volume size = " << h.volume_size.transpose() << ")";
@@ -109,7 +109,7 @@ public:
   /** \brief Constructor
    * \param[in] resolution volume resolution
    */
-  TsdfVolume(const Eigen::Vector3i& resolution);
+  TsdfVolume (const Eigen::Vector3i& resolution);
 
   /** \brief Sets Tsdf volume size for each dimension
    * \param[in] size size of tsdf volume in meters
@@ -254,12 +254,12 @@ public:
   inline void
   setHeader (const Eigen::Vector3i& resolution, const Eigen::Vector3f& volume_size)
   {
-    header_ = Header(resolution, volume_size);
+    header_ = Header (resolution, volume_size);
     if (volume_host_->size() != this->size())
-      pcl::console::print_warn("[TSDFVolume::setHeader] Header volume size (%d) "
-                               "doesn't fit underlying data size (%d)",
-                               volume_host_->size(),
-                               size());
+      pcl::console::print_warn ("[TSDFVolume::setHeader] Header volume size (%d) "
+                                "doesn't fit underlying data size (%d)",
+                                volume_host_->size(),
+                                size());
   }
 
   /** \brief Returns overall number of voxels in grid stored on host */

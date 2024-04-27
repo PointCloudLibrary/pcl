@@ -86,10 +86,10 @@ public:
 
   /** \brief Empty constructor. */
   ELCH()
-  : loop_graph_(new LoopGraph)
-  , loop_start_(0)
-  , loop_end_(0)
-  , reg_(new pcl::IterativeClosestPoint<PointT, PointT>)
+  : loop_graph_ (new LoopGraph)
+  , loop_start_ (0)
+  , loop_end_ (0)
+  , reg_ (new pcl::IterativeClosestPoint<PointT, PointT>)
   , vd_(){};
 
   /** \brief Empty destructor */
@@ -102,10 +102,10 @@ public:
   addPointCloud (PointCloudPtr cloud)
   {
     typename boost::graph_traits<LoopGraph>::vertex_descriptor vd =
-        add_vertex(*loop_graph_);
+        add_vertex (*loop_graph_);
     (*loop_graph_)[vd].cloud = cloud;
-    if (num_vertices(*loop_graph_) > 1)
-      add_edge(vd_, vd, *loop_graph_);
+    if (num_vertices (*loop_graph_) > 1)
+      add_edge (vd_, vd, *loop_graph_);
     vd_ = vd;
   }
 

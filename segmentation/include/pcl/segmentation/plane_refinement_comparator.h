@@ -74,15 +74,18 @@ public:
   using pcl::PlaneCoefficientComparator<PointT, PointNT>::plane_coeff_d_;
 
   /** \brief Empty constructor for PlaneCoefficientComparator. */
-  PlaneRefinementComparator() : labels_(), depth_dependent_(false) {}
+  PlaneRefinementComparator() : labels_(), depth_dependent_ (false) {}
 
   /** \brief Empty constructor for PlaneCoefficientComparator.
    * \param[in] models
    * \param[in] refine_labels
    */
-  PlaneRefinementComparator(shared_ptr<std::vector<pcl::ModelCoefficients>>& models,
-                            shared_ptr<std::vector<bool>>& refine_labels)
-  : models_(models), labels_(), refine_labels_(refine_labels), depth_dependent_(false)
+  PlaneRefinementComparator (shared_ptr<std::vector<pcl::ModelCoefficients>>& models,
+                             shared_ptr<std::vector<bool>>& refine_labels)
+  : models_ (models)
+  , labels_()
+  , refine_labels_ (refine_labels)
+  , depth_dependent_ (false)
   {}
 
   /** \brief Destructor for PlaneCoefficientComparator. */
@@ -105,7 +108,7 @@ public:
   void
   setModelCoefficients (std::vector<pcl::ModelCoefficients>& models)
   {
-    models_ = pcl::make_shared<std::vector<pcl::ModelCoefficients>>(models);
+    models_ = pcl::make_shared<std::vector<pcl::ModelCoefficients>> (models);
   }
 
   /** \brief Set which labels should be refined.  This is a vector of bools 0-max_label,
@@ -125,7 +128,7 @@ public:
   void
   setRefineLabels (std::vector<bool>& refine_labels)
   {
-    refine_labels_ = pcl::make_shared<std::vector<bool>>(refine_labels);
+    refine_labels_ = pcl::make_shared<std::vector<bool>> (refine_labels);
   }
 
   /** \brief A mapping from label to index in the vector of models, allowing the model
@@ -145,7 +148,7 @@ public:
   inline void
   setLabelToModel (std::vector<int>& label_to_model)
   {
-    label_to_model_ = pcl::make_shared<std::vector<int>>(label_to_model);
+    label_to_model_ = pcl::make_shared<std::vector<int>> (label_to_model);
   }
 
   /** \brief Get the vector of model coefficients to which we will compare. */
@@ -182,8 +185,8 @@ public:
 
     PointT pt = (*input_)[idx2];
     double ptp_dist =
-        std::fabs(model_coeff.values[0] * pt.x + model_coeff.values[1] * pt.y +
-                  model_coeff.values[2] * pt.z + model_coeff.values[3]);
+        std::fabs (model_coeff.values[0] * pt.x + model_coeff.values[1] * pt.y +
+                   model_coeff.values[2] * pt.z + model_coeff.values[3]);
 
     // depth dependent
     float threshold = distance_threshold_;
@@ -191,7 +194,7 @@ public:
       // Eigen::Vector4f origin = input_->sensor_origin_;
       Eigen::Vector3f vec = (*input_)[idx1].getVector3fMap(); // - origin.head<3> ();
 
-      float z = vec.dot(z_axis_);
+      float z = vec.dot (z_axis_);
       threshold *= z * z;
     }
 

@@ -128,9 +128,9 @@ private:
   friend class AbstractItem;
 
   MainWindow();
-  MainWindow(const MainWindow&) = delete;
+  MainWindow (const MainWindow&) = delete;
   MainWindow&
-  operator=(const MainWindow&) = delete;
+  operator= (const MainWindow&) = delete;
   ~MainWindow();
 
   Ui::MainWindow* ui_; // Designer form

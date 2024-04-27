@@ -48,7 +48,7 @@
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT>
 void
-pcl::BilateralUpsampling<PointInT, PointOutT>::process(
+pcl::BilateralUpsampling<PointInT, PointOutT>::process (
     pcl::PointCloud<PointOutT>& output)
 {
   // Copy the header
@@ -61,7 +61,7 @@ pcl::BilateralUpsampling<PointInT, PointOutT>::process(
   }
 
   if (input_->isOrganized() == false) {
-    PCL_ERROR("Input cloud is not organized.\n");
+    PCL_ERROR ("Input cloud is not organized.\n");
     return;
   }
 
@@ -70,13 +70,13 @@ pcl::BilateralUpsampling<PointInT, PointOutT>::process(
 
   for (int i = 0; i < 3; ++i) {
     for (int j = 0; j < 3; ++j)
-      printf("%f ", unprojection_matrix_(i, j));
+      printf ("%f ", unprojection_matrix_ (i, j));
 
-    printf("\n");
+    printf ("\n");
   }
 
   // Perform the actual surface reconstruction
-  performProcessing(output);
+  performProcessing (output);
 
   deinitCompute();
 }
@@ -84,41 +84,41 @@ pcl::BilateralUpsampling<PointInT, PointOutT>::process(
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT>
 void
-pcl::BilateralUpsampling<PointInT, PointOutT>::performProcessing(PointCloudOut& output)
+pcl::BilateralUpsampling<PointInT, PointOutT>::performProcessing (PointCloudOut& output)
 {
-  output.resize(input_->size());
+  output.resize (input_->size());
   float nan = std::numeric_limits<float>::quiet_NaN();
 
   Eigen::MatrixXf val_exp_depth_matrix;
   Eigen::VectorXf val_exp_rgb_vector;
-  computeDistances(val_exp_depth_matrix, val_exp_rgb_vector);
+  computeDistances (val_exp_depth_matrix, val_exp_rgb_vector);
 
-  for (int x = 0; x < static_cast<int>(input_->width); ++x)
-    for (int y = 0; y < static_cast<int>(input_->height); ++y) {
-      int start_window_x = std::max(x - window_size_, 0),
-          start_window_y = std::max(y - window_size_, 0),
-          end_window_x = std::min(x + window_size_, static_cast<int>(input_->width)),
-          end_window_y = std::min(y + window_size_, static_cast<int>(input_->height));
+  for (int x = 0; x < static_cast<int> (input_->width); ++x)
+    for (int y = 0; y < static_cast<int> (input_->height); ++y) {
+      int start_window_x = std::max (x - window_size_, 0),
+          start_window_y = std::max (y - window_size_, 0),
+          end_window_x = std::min (x + window_size_, static_cast<int> (input_->width)),
+          end_window_y = std::min (y + window_size_, static_cast<int> (input_->height));
 
       float sum = 0.0f, norm_sum = 0.0f;
 
       for (int x_w = start_window_x; x_w < end_window_x; ++x_w)
         for (int y_w = start_window_y; y_w < end_window_y; ++y_w) {
-          float val_exp_depth = val_exp_depth_matrix(
-              static_cast<Eigen::MatrixXf::Index>(x - x_w + window_size_),
-              static_cast<Eigen::MatrixXf::Index>(y - y_w + window_size_));
+          float val_exp_depth = val_exp_depth_matrix (
+              static_cast<Eigen::MatrixXf::Index> (x - x_w + window_size_),
+              static_cast<Eigen::MatrixXf::Index> (y - y_w + window_size_));
 
-          auto d_color = static_cast<Eigen::VectorXf::Index>(
-              std::abs((*input_)[y_w * input_->width + x_w].r -
-                       (*input_)[y * input_->width + x].r) +
-              std::abs((*input_)[y_w * input_->width + x_w].g -
-                       (*input_)[y * input_->width + x].g) +
-              std::abs((*input_)[y_w * input_->width + x_w].b -
-                       (*input_)[y * input_->width + x].b));
+          auto d_color = static_cast<Eigen::VectorXf::Index> (
+              std::abs ((*input_)[y_w * input_->width + x_w].r -
+                        (*input_)[y * input_->width + x].r) +
+              std::abs ((*input_)[y_w * input_->width + x_w].g -
+                        (*input_)[y * input_->width + x].g) +
+              std::abs ((*input_)[y_w * input_->width + x_w].b -
+                        (*input_)[y * input_->width + x].b));
 
-          float val_exp_rgb = val_exp_rgb_vector(d_color);
+          float val_exp_rgb = val_exp_rgb_vector (d_color);
 
-          if (std::isfinite((*input_)[y_w * input_->width + x_w].z)) {
+          if (std::isfinite ((*input_)[y_w * input_->width + x_w].z)) {
             sum += val_exp_depth * val_exp_rgb * (*input_)[y_w * input_->width + x_w].z;
             norm_sum += val_exp_depth * val_exp_rgb;
           }
@@ -130,9 +130,9 @@ pcl::BilateralUpsampling<PointInT, PointOutT>::performProcessing(PointCloudOut& 
 
       if (norm_sum != 0.0f) {
         float depth = sum / norm_sum;
-        Eigen::Vector3f pc(
-            static_cast<float>(x) * depth, static_cast<float>(y) * depth, depth);
-        Eigen::Vector3f pw(unprojection_matrix_ * pc);
+        Eigen::Vector3f pc (
+            static_cast<float> (x) * depth, static_cast<float> (y) * depth, depth);
+        Eigen::Vector3f pw (unprojection_matrix_ * pc);
         output[y * input_->width + x].x = pw[0];
         output[y * input_->width + x].y = pw[1];
         output[y * input_->width + x].z = pw[2];
@@ -151,28 +151,29 @@ pcl::BilateralUpsampling<PointInT, PointOutT>::performProcessing(PointCloudOut& 
 
 template <typename PointInT, typename PointOutT>
 void
-pcl::BilateralUpsampling<PointInT, PointOutT>::computeDistances(
+pcl::BilateralUpsampling<PointInT, PointOutT>::computeDistances (
     Eigen::MatrixXf& val_exp_depth, Eigen::VectorXf& val_exp_rgb)
 {
-  val_exp_depth.resize(2 * window_size_ + 1, 2 * window_size_ + 1);
-  val_exp_rgb.resize(3 * 255 + 1);
+  val_exp_depth.resize (2 * window_size_ + 1, 2 * window_size_ + 1);
+  val_exp_rgb.resize (3 * 255 + 1);
 
   int j = 0;
   for (int dx = -window_size_; dx < window_size_ + 1; ++dx) {
     int i = 0;
     for (int dy = -window_size_; dy < window_size_ + 1; ++dy) {
       float val_exp =
-          std::exp(-(dx * dx + dy * dy) /
-                   (2.0f * static_cast<float>(sigma_depth_ * sigma_depth_)));
-      val_exp_depth(i, j) = val_exp;
+          std::exp (-(dx * dx + dy * dy) /
+                    (2.0f * static_cast<float> (sigma_depth_ * sigma_depth_)));
+      val_exp_depth (i, j) = val_exp;
       i++;
     }
     j++;
   }
 
   for (int d_color = 0; d_color < 3 * 255 + 1; d_color++) {
-    float val_exp = std::exp(-d_color * d_color / (2.0f * sigma_color_ * sigma_color_));
-    val_exp_rgb(d_color) = val_exp;
+    float val_exp =
+        std::exp (-d_color * d_color / (2.0f * sigma_color_ * sigma_color_));
+    val_exp_rgb (d_color) = val_exp;
   }
 }
 

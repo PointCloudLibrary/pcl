@@ -147,7 +147,7 @@ struct ON_RTreeSearchResult {
 
 class ON_CLASS ON_RTreeMemPool {
 public:
-  ON_RTreeMemPool(ON_MEMORY_POOL* heap, std::size_t leaf_count);
+  ON_RTreeMemPool (ON_MEMORY_POOL* heap, std::size_t leaf_count);
   ~ON_RTreeMemPool();
 
   ON_RTreeNode*
@@ -224,7 +224,7 @@ public:
     iterator.
   */
   ON_RTreeIterator();
-  ON_RTreeIterator(const class ON_RTree& a_rtree);
+  ON_RTreeIterator (const class ON_RTree& a_rtree);
 
   ~ON_RTreeIterator();
 
@@ -388,7 +388,7 @@ private:
 
 class ON_CLASS ON_RTree {
 public:
-  ON_RTree(ON_MEMORY_POOL* heap = 0, std::size_t leaf_count = 0);
+  ON_RTree (ON_MEMORY_POOL* heap = 0, std::size_t leaf_count = 0);
   ~ON_RTree();
 
   /*
@@ -512,17 +512,17 @@ public:
   */
   bool
   Search (ON_RTreeSphere* a_sphere,
-          bool ON_MSC_CDECL resultCallback(void* a_context, ON__INT_PTR a_id),
+          bool ON_MSC_CDECL resultCallback (void* a_context, ON__INT_PTR a_id),
           void* a_context) const;
 
   bool
   Search (ON_RTreeCapsule* a_capsule,
-          bool ON_MSC_CDECL resultCallback(void* a_context, ON__INT_PTR a_id),
+          bool ON_MSC_CDECL resultCallback (void* a_context, ON__INT_PTR a_id),
           void* a_context) const;
 
   bool
   Search (ON_RTreeBBox* a_rect,
-          bool ON_MSC_CDECL resultCallback(void* a_context, ON__INT_PTR a_id),
+          bool ON_MSC_CDECL resultCallback (void* a_context, ON__INT_PTR a_id),
           void* a_context) const;
 
   /*
@@ -550,13 +550,13 @@ public:
   Search (const double a_plane_eqn[4],
           double a_min,
           double a_max,
-          bool ON_MSC_CDECL resultCallback(void* a_context, ON__INT_PTR a_id),
+          bool ON_MSC_CDECL resultCallback (void* a_context, ON__INT_PTR a_id),
           void* a_context) const;
 
   bool
   Search (const double a_min[3],
           const double a_max[3],
-          bool ON_MSC_CDECL resultCallback(void* a_context, ON__INT_PTR a_id),
+          bool ON_MSC_CDECL resultCallback (void* a_context, ON__INT_PTR a_id),
           void* a_context) const;
 
   bool
@@ -582,7 +582,7 @@ public:
   bool
   Search2d (const double a_min[2],
             const double a_max[2],
-            bool ON_MSC_CDECL resultCallback(void* a_context, ON__INT_PTR a_id),
+            bool ON_MSC_CDECL resultCallback (void* a_context, ON__INT_PTR a_id),
             void* a_context) const;
 
   bool
@@ -644,9 +644,9 @@ public:
   Search (const ON_RTree& a_rtreeA,
           const ON_RTree& a_rtreeB,
           double tolerance,
-          void ON_MSC_CDECL resultCallback(void* a_context,
-                                           ON__INT_PTR a_idA,
-                                           ON__INT_PTR a_idB),
+          void ON_MSC_CDECL resultCallback (void* a_context,
+                                            ON__INT_PTR a_idA,
+                                            ON__INT_PTR a_idB),
           void* a_context);
 
   /*
@@ -669,9 +669,9 @@ public:
   Search (const ON_RTree& a_rtreeA,
           const ON_RTree& a_rtreeB,
           double tolerance,
-          bool ON_MSC_CDECL resultCallback(void* a_context,
-                                           ON__INT_PTR a_idA,
-                                           ON__INT_PTR a_idB),
+          bool ON_MSC_CDECL resultCallback (void* a_context,
+                                            ON__INT_PTR a_idA,
+                                            ON__INT_PTR a_idB),
           void* a_context);
   /*
   Returns:

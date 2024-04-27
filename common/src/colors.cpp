@@ -152,9 +152,9 @@ static constexpr std::array<std::size_t, 2> LUT_SIZES = {GLASBEY_LUT_SIZE,
 
 template <typename pcl::ColorLUTName T>
 pcl::RGB
-pcl::ColorLUT<T>::at(std::size_t color_id)
+pcl::ColorLUT<T>::at (std::size_t color_id)
 {
-  assert(color_id < LUT_SIZES[T]);
+  assert (color_id < LUT_SIZES[T]);
   pcl::RGB color;
   color.r = (*LUTS[T])[color_id * 3 + 0];
   color.g = (*LUTS[T])[color_id * 3 + 1];
@@ -177,24 +177,24 @@ pcl::ColorLUT<T>::data()
 }
 
 pcl::RGB
-pcl::getRandomColor(double min, double max)
+pcl::getRandomColor (double min, double max)
 {
   double sum;
   static unsigned stepRGBA = 100;
   double r, g, b;
   do {
-    r = (rand() % stepRGBA) / static_cast<double>(stepRGBA);
-    while ((g = (rand() % stepRGBA) / static_cast<double>(stepRGBA)) == r) {
+    r = (rand() % stepRGBA) / static_cast<double> (stepRGBA);
+    while ((g = (rand() % stepRGBA) / static_cast<double> (stepRGBA)) == r) {
     }
-    while (((b = (rand() % stepRGBA) / static_cast<double>(stepRGBA)) == r) &&
+    while (((b = (rand() % stepRGBA) / static_cast<double> (stepRGBA)) == r) &&
            (b == g)) {
     }
     sum = r + g + b;
   } while (sum <= min || sum >= max);
   pcl::RGB color;
-  color.r = static_cast<std::uint8_t>(r * 255.0);
-  color.g = static_cast<std::uint8_t>(g * 255.0);
-  color.b = static_cast<std::uint8_t>(b * 255.0);
+  color.r = static_cast<std::uint8_t> (r * 255.0);
+  color.g = static_cast<std::uint8_t> (g * 255.0);
+  color.b = static_cast<std::uint8_t> (b * 255.0);
   return (color);
 }
 

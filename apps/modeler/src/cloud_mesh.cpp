@@ -47,18 +47,18 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 pcl::modeler::CloudMesh::CloudMesh()
-: vtk_points_(vtkSmartPointer<vtkPoints>::New())
-, vtk_polygons_(vtkSmartPointer<vtkCellArray>::New())
+: vtk_points_ (vtkSmartPointer<vtkPoints>::New())
+, vtk_polygons_ (vtkSmartPointer<vtkCellArray>::New())
 {
-  cloud_.reset(new pcl::PointCloud<pcl::PointSurfel>());
+  cloud_.reset (new pcl::PointCloud<pcl::PointSurfel>());
   vtk_points_->SetDataTypeToFloat();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-pcl::modeler::CloudMesh::CloudMesh(PointCloudPtr cloud)
-: cloud_(std::move(cloud))
-, vtk_points_(vtkSmartPointer<vtkPoints>::New())
-, vtk_polygons_(vtkSmartPointer<vtkCellArray>::New())
+pcl::modeler::CloudMesh::CloudMesh (PointCloudPtr cloud)
+: cloud_ (std::move (cloud))
+, vtk_points_ (vtkSmartPointer<vtkPoints>::New())
+, vtk_polygons_ (vtkSmartPointer<vtkCellArray>::New())
 {
   vtk_points_->SetDataTypeToFloat();
   updateVtkPoints();
@@ -74,9 +74,9 @@ pcl::modeler::CloudMesh::getAvaiableFieldNames() const
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 bool
-pcl::modeler::CloudMesh::open(const std::string& filename)
+pcl::modeler::CloudMesh::open (const std::string& filename)
 {
-  if (pcl::io::loadPCDFile(filename, *cloud_) != 0)
+  if (pcl::io::loadPCDFile (filename, *cloud_) != 0)
     return false;
 
   updateVtkPoints();
@@ -86,65 +86,65 @@ pcl::modeler::CloudMesh::open(const std::string& filename)
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 bool
-pcl::modeler::CloudMesh::save(const std::string& filename) const
+pcl::modeler::CloudMesh::save (const std::string& filename) const
 {
-  if (filename.rfind(".obj") == (filename.length() - 4)) {
+  if (filename.rfind (".obj") == (filename.length() - 4)) {
     pcl::PolygonMesh polygon_mesh;
-    pcl::toPCLPointCloud2(*cloud_, polygon_mesh.cloud);
+    pcl::toPCLPointCloud2 (*cloud_, polygon_mesh.cloud);
     polygon_mesh.polygons = polygons_;
-    return pcl::io::saveOBJFile(filename, polygon_mesh, true) == 0;
+    return pcl::io::saveOBJFile (filename, polygon_mesh, true) == 0;
   }
 
-  return pcl::io::savePCDFile(filename, *cloud_, true) == 0;
+  return pcl::io::savePCDFile (filename, *cloud_, true) == 0;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 bool
-pcl::modeler::CloudMesh::save(const std::vector<const CloudMesh*>& cloud_meshes,
-                              const std::string& filename)
+pcl::modeler::CloudMesh::save (const std::vector<const CloudMesh*>& cloud_meshes,
+                               const std::string& filename)
 {
   if (cloud_meshes.empty())
     return false;
 
   if (cloud_meshes.size() == 1)
-    return cloud_meshes[0]->save(filename);
+    return cloud_meshes[0]->save (filename);
 
   CloudMesh cloud_mesh;
   for (const auto& mesh : cloud_meshes) {
-    if (filename.rfind(".obj") == (filename.length() - 4)) {
+    if (filename.rfind (".obj") == (filename.length() - 4)) {
       index_t delta = cloud_mesh.cloud_->size();
       for (auto polygon : mesh->polygons_) {
         for (index_t& vertice : polygon.vertices)
           vertice += delta;
-        cloud_mesh.polygons_.push_back(polygon);
+        cloud_mesh.polygons_.push_back (polygon);
       }
     }
 
     *cloud_mesh.cloud_ += *(mesh->cloud_);
   }
 
-  return cloud_mesh.save(filename);
+  return cloud_mesh.save (filename);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::modeler::CloudMesh::getColorScalarsFromField(
+pcl::modeler::CloudMesh::getColorScalarsFromField (
     vtkSmartPointer<vtkDataArray>& scalars, const std::string& field) const
 {
   if (field == "rgb" || field == "rgba") {
-    pcl::visualization::PointCloudColorHandlerRGBField<PointT> color_handler(cloud_);
+    pcl::visualization::PointCloudColorHandlerRGBField<PointT> color_handler (cloud_);
     scalars = color_handler.getColor();
     return;
   }
 
   if (field == "random") {
-    pcl::visualization::PointCloudColorHandlerRandom<PointT> color_handler(cloud_);
+    pcl::visualization::PointCloudColorHandlerRandom<PointT> color_handler (cloud_);
     scalars = color_handler.getColor();
     return;
   }
 
-  pcl::visualization::PointCloudColorHandlerGenericField<PointT> color_handler(cloud_,
-                                                                               field);
+  pcl::visualization::PointCloudColorHandlerGenericField<PointT> color_handler (cloud_,
+                                                                                field);
   scalars = color_handler.getColor();
 }
 
@@ -153,34 +153,34 @@ void
 pcl::modeler::CloudMesh::updateVtkPoints()
 {
   if (vtk_points_->GetData() == nullptr)
-    vtk_points_->SetData(vtkSmartPointer<vtkFloatArray>::New());
+    vtk_points_->SetData (vtkSmartPointer<vtkFloatArray>::New());
 
-  vtkFloatArray* data = dynamic_cast<vtkFloatArray*>(vtk_points_->GetData());
-  data->SetNumberOfComponents(3);
+  vtkFloatArray* data = dynamic_cast<vtkFloatArray*> (vtk_points_->GetData());
+  data->SetNumberOfComponents (3);
 
   // If the dataset has no invalid values, just copy all of them
   if (cloud_->is_dense) {
     vtkIdType nr_points = cloud_->size();
-    data->SetNumberOfValues(3 * nr_points);
+    data->SetNumberOfValues (3 * nr_points);
 
     for (vtkIdType i = 0; i < nr_points; ++i) {
-      data->SetValue(i * 3 + 0, (*cloud_)[i].x);
-      data->SetValue(i * 3 + 1, (*cloud_)[i].y);
-      data->SetValue(i * 3 + 2, (*cloud_)[i].z);
+      data->SetValue (i * 3 + 0, (*cloud_)[i].x);
+      data->SetValue (i * 3 + 1, (*cloud_)[i].y);
+      data->SetValue (i * 3 + 2, (*cloud_)[i].z);
     }
   }
   // Need to check for NaNs, Infs, ec
   else {
-    pcl::IndicesPtr indices(new pcl::Indices());
-    pcl::removeNaNFromPointCloud(*cloud_, *indices);
+    pcl::IndicesPtr indices (new pcl::Indices());
+    pcl::removeNaNFromPointCloud (*cloud_, *indices);
 
-    data->SetNumberOfValues(3 * indices->size());
+    data->SetNumberOfValues (3 * indices->size());
 
     for (vtkIdType i = 0, i_end = indices->size(); i < i_end; ++i) {
       vtkIdType idx = (*indices)[i];
-      data->SetValue(i * 3 + 0, (*cloud_)[idx].x);
-      data->SetValue(i * 3 + 1, (*cloud_)[idx].y);
-      data->SetValue(i * 3 + 2, (*cloud_)[idx].z);
+      data->SetValue (i * 3 + 0, (*cloud_)[idx].x);
+      data->SetValue (i * 3 + 1, (*cloud_)[idx].y);
+      data->SetValue (i * 3 + 2, (*cloud_)[idx].z);
     }
   }
   data->Squeeze();
@@ -194,43 +194,43 @@ pcl::modeler::CloudMesh::updateVtkPolygons()
 
   if (cloud_->is_dense) {
     for (const auto& polygon : polygons_) {
-      vtk_polygons_->InsertNextCell(polygon.vertices.size());
+      vtk_polygons_->InsertNextCell (polygon.vertices.size());
       for (const auto& vertex : polygon.vertices)
-        vtk_polygons_->InsertCellPoint(vertex);
+        vtk_polygons_->InsertCellPoint (vertex);
     }
   }
   else {
-    pcl::IndicesPtr indices(new pcl::Indices());
-    pcl::removeNaNFromPointCloud(*cloud_, *indices);
+    pcl::IndicesPtr indices (new pcl::Indices());
+    pcl::removeNaNFromPointCloud (*cloud_, *indices);
 
     for (const auto& polygon : polygons_) {
-      vtk_polygons_->InsertNextCell(polygon.vertices.size());
+      vtk_polygons_->InsertNextCell (polygon.vertices.size());
       for (const auto& vertex : polygon.vertices)
-        vtk_polygons_->InsertCellPoint((*indices)[vertex]);
+        vtk_polygons_->InsertCellPoint ((*indices)[vertex]);
     }
   }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::modeler::CloudMesh::transform(
+pcl::modeler::CloudMesh::transform (
     double tx, double ty, double tz, double rx, double ry, double rz)
 {
   Eigen::Vector4f centroid;
-  pcl::compute3DCentroid(*cloud_, centroid);
+  pcl::compute3DCentroid (*cloud_, centroid);
 
   CloudMesh::PointCloud mean_cloud = *cloud_;
-  pcl::demeanPointCloud(*cloud_, centroid, mean_cloud);
+  pcl::demeanPointCloud (*cloud_, centroid, mean_cloud);
 
   rx *= M_PI / 180;
   ry *= M_PI / 180;
   rz *= M_PI / 180;
-  Eigen::Affine3f affine_transform = pcl::getTransformation(
-      float(tx), float(ty), float(tz), float(rx), float(ry), float(rz));
+  Eigen::Affine3f affine_transform = pcl::getTransformation (
+      float (tx), float (ty), float (tz), float (rx), float (ry), float (rz));
   CloudMesh::PointCloud transform_cloud = mean_cloud;
-  pcl::transformPointCloudWithNormals(
+  pcl::transformPointCloudWithNormals (
       mean_cloud, transform_cloud, affine_transform.matrix());
 
   centroid = -centroid;
-  pcl::demeanPointCloud(transform_cloud, centroid, *cloud_);
+  pcl::demeanPointCloud (transform_cloud, centroid, *cloud_);
 }

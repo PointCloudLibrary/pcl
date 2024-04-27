@@ -32,7 +32,7 @@ Description:
 */
 class ON_CLASS ON_SerialNumberMap {
 public:
-  ON_SerialNumberMap(ON_MEMORY_POOL* pool = 0);
+  ON_SerialNumberMap (ON_MEMORY_POOL* pool = 0);
   ~ON_SerialNumberMap();
 
   struct MAP_VALUE {
@@ -177,7 +177,7 @@ public:
     fields or you will break searching and possibly cause
     crashes.
   */
-  struct SN_ELEMENT* FindId(ON_UUID) const;
+  struct SN_ELEMENT* FindId (ON_UUID) const;
 
   /*
   Description:
@@ -347,9 +347,9 @@ public:
 private:
   // prohibit copy construction and operator=
   // no implementation
-  ON_SerialNumberMap(const ON_SerialNumberMap&);
+  ON_SerialNumberMap (const ON_SerialNumberMap&);
   ON_SerialNumberMap&
-  operator=(const ON_SerialNumberMap&);
+  operator= (const ON_SerialNumberMap&);
 
   enum {
     // These numbers are chosen so the ON_SerialNumberMap

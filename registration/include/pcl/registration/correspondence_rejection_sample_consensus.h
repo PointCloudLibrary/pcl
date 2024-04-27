@@ -128,9 +128,9 @@ public:
   void
   setSourcePoints (pcl::PCLPointCloud2::ConstPtr cloud2) override
   {
-    PointCloudPtr cloud(new PointCloud);
-    fromPCLPointCloud2(*cloud2, *cloud);
-    setInputSource(cloud);
+    PointCloudPtr cloud (new PointCloud);
+    fromPCLPointCloud2 (*cloud2, *cloud);
+    setInputSource (cloud);
   }
 
   /** \brief See if this rejector requires a target cloud */
@@ -144,9 +144,9 @@ public:
   void
   setTargetPoints (pcl::PCLPointCloud2::ConstPtr cloud2) override
   {
-    PointCloudPtr cloud(new PointCloud);
-    fromPCLPointCloud2(*cloud2, *cloud);
-    setInputTarget(cloud);
+    PointCloudPtr cloud (new PointCloud);
+    fromPCLPointCloud2 (*cloud2, *cloud);
+    setInputTarget (cloud);
   }
 
   /** \brief Set the maximum distance between corresponding points.
@@ -175,7 +175,7 @@ public:
   inline void
   setMaximumIterations (int max_iterations)
   {
-    max_iterations_ = std::max(max_iterations, 0);
+    max_iterations_ = std::max (max_iterations, 0);
   }
 
   /** \brief Get the maximum number of iterations.
@@ -247,7 +247,7 @@ protected:
   inline void
   applyRejection (pcl::Correspondences& correspondences) override
   {
-    getRemainingCorrespondences(*input_correspondences_, correspondences);
+    getRemainingCorrespondences (*input_correspondences_, correspondences);
   }
 
   double inlier_threshold_{0.05};

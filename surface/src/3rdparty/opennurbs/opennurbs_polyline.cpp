@@ -18,19 +18,19 @@
 
 ON_Polyline::ON_Polyline() {}
 
-ON_Polyline::ON_Polyline(const ON_3dPointArray& src) : ON_3dPointArray(src) {}
+ON_Polyline::ON_Polyline (const ON_3dPointArray& src) : ON_3dPointArray (src) {}
 
 bool
-ON_Polyline::IsValid(double tolerance) const
+ON_Polyline::IsValid (double tolerance) const
 {
   bool rc = (m_count >= 2) ? true : false;
   int i;
   if (tolerance > 0.0) {
     for (i = 1; rc && i < m_count; i++) {
-      if (m_a[i].DistanceTo(m_a[i - 1]) <= tolerance)
+      if (m_a[i].DistanceTo (m_a[i - 1]) <= tolerance)
         rc = false;
     }
-    if (rc && m_count < 4 && m_a[0].DistanceTo(m_a[m_count - 1]) <= tolerance)
+    if (rc && m_count < 4 && m_a[0].DistanceTo (m_a[m_count - 1]) <= tolerance)
       rc = false;
   }
   else {
@@ -45,7 +45,7 @@ ON_Polyline::IsValid(double tolerance) const
 }
 
 int
-ON_Polyline::Clean(double tolerance)
+ON_Polyline::Clean (double tolerance)
 {
   // 14 January 2005 Dale Lear
   //     Fixed this cleaner so that it did not modify
@@ -56,7 +56,7 @@ ON_Polyline::Clean(double tolerance)
     int i, j;
     j = 0;
     for (i = 1; i < m_count - 1; i++) {
-      if (m_a[j].DistanceTo(m_a[i]) <= tolerance)
+      if (m_a[j].DistanceTo (m_a[i]) <= tolerance)
         continue;
       j++;
       if (i > j)
@@ -68,7 +68,7 @@ ON_Polyline::Clean(double tolerance)
       m_count = j + 2;
     }
 
-    while (m_count > 2 && m_a[m_count - 2].DistanceTo(m_a[m_count - 1]) <= tolerance) {
+    while (m_count > 2 && m_a[m_count - 2].DistanceTo (m_a[m_count - 1]) <= tolerance) {
       m_a[m_count - 2] = m_a[m_count - 1];
       m_count--;
     }
@@ -78,9 +78,9 @@ ON_Polyline::Clean(double tolerance)
 }
 
 ON_Polyline&
-ON_Polyline::operator=(const ON_3dPointArray& src)
+ON_Polyline::operator= (const ON_3dPointArray& src)
 {
-  ON_3dPointArray::operator=(src);
+  ON_3dPointArray::operator= (src);
   return *this;
 }
 
@@ -102,17 +102,17 @@ ON_Polyline::SegmentCount() const
 }
 
 bool
-ON_Polyline::IsClosed(double tolerance) const
+ON_Polyline::IsClosed (double tolerance) const
 {
   bool rc = false;
   const int count = m_count - 1;
   int i;
   if (count >= 3) {
     if (tolerance > 0.0) {
-      if (m_a[0].DistanceTo(m_a[count]) <= tolerance) {
+      if (m_a[0].DistanceTo (m_a[count]) <= tolerance) {
         for (i = 1; i < count; i++) {
-          if (m_a[i].DistanceTo(m_a[0]) > tolerance &&
-              m_a[i].DistanceTo(m_a[count]) > tolerance) {
+          if (m_a[i].DistanceTo (m_a[0]) > tolerance &&
+              m_a[i].DistanceTo (m_a[count]) > tolerance) {
             rc = true;
             break;
           }
@@ -120,10 +120,10 @@ ON_Polyline::IsClosed(double tolerance) const
       }
     }
     else {
-      if (ON_PointsAreCoincident(3, false, &m_a[0].x, &m_a[count].x)) {
+      if (ON_PointsAreCoincident (3, false, &m_a[0].x, &m_a[count].x)) {
         for (i = 1; i < count; i++) {
-          if (!ON_PointsAreCoincident(3, false, &m_a[i].x, &m_a[0].x) &&
-              !ON_PointsAreCoincident(3, false, &m_a[i].x, &m_a[count].x)) {
+          if (!ON_PointsAreCoincident (3, false, &m_a[i].x, &m_a[0].x) &&
+              !ON_PointsAreCoincident (3, false, &m_a[i].x, &m_a[count].x)) {
             rc = true;
             break;
           }
@@ -141,13 +141,13 @@ ON_Polyline::Length() const
   double d = 0;
   int i;
   for (i = 1; i < count; i++) {
-    d += m_a[i].DistanceTo(m_a[i - 1]);
+    d += m_a[i].DistanceTo (m_a[i - 1]);
   }
   return d;
 }
 
 ON_3dVector
-ON_Polyline::SegmentDirection(int segment_index) const
+ON_Polyline::SegmentDirection (int segment_index) const
 {
   ON_3dVector v;
   if (segment_index >= 0 && segment_index < m_count - 1) {
@@ -160,15 +160,15 @@ ON_Polyline::SegmentDirection(int segment_index) const
 }
 
 ON_3dVector
-ON_Polyline::SegmentTangent(int segment_index) const
+ON_Polyline::SegmentTangent (int segment_index) const
 {
-  ON_3dVector v = SegmentDirection(segment_index);
+  ON_3dVector v = SegmentDirection (segment_index);
   v.Unitize();
   return v;
 }
 
 ON_3dPoint
-ON_Polyline::PointAt(double t) const
+ON_Polyline::PointAt (double t) const
 {
   const int count = m_count;
   int segment_index = 0;
@@ -179,7 +179,7 @@ ON_Polyline::PointAt(double t) const
     return m_a[0];
   }
   else {
-    segment_index = (int)floor(t);
+    segment_index = (int)floor (t);
     if (segment_index < 0) {
       segment_index = 0;
       t = 0.0;
@@ -197,14 +197,14 @@ ON_Polyline::PointAt(double t) const
 }
 
 ON_3dVector
-ON_Polyline::DerivativeAt(double t) const
+ON_Polyline::DerivativeAt (double t) const
 {
   const int count = m_count;
   int segment_index = 0;
   if (count < 2)
     return ON_origin;
   else {
-    segment_index = (int)floor(t);
+    segment_index = (int)floor (t);
     if (segment_index < 0)
       segment_index = 0;
     else if (segment_index >= count - 1)
@@ -214,18 +214,18 @@ ON_Polyline::DerivativeAt(double t) const
 }
 
 ON_3dVector
-ON_Polyline::TangentAt(double t) const
+ON_Polyline::TangentAt (double t) const
 {
-  ON_3dVector v = DerivativeAt(t);
+  ON_3dVector v = DerivativeAt (t);
   v.Unitize();
   return v;
 }
 
 bool
-ON_Polyline::ClosestPointTo(const ON_3dPoint& point,
-                            double* t,
-                            int segment_index0,
-                            int segment_index1) const
+ON_Polyline::ClosestPointTo (const ON_3dPoint& point,
+                             double* t,
+                             int segment_index0,
+                             int segment_index1) const
 {
   bool rc = false;
   int segment_index;
@@ -239,13 +239,13 @@ ON_Polyline::ClosestPointTo(const ON_3dPoint& point,
       segment_index1 = SegmentCount();
     for (segment_index = segment_index0; segment_index < segment_index1;
          segment_index++) {
-      double seg_length = m_a[segment_index].DistanceTo(m_a[segment_index + 1]);
+      double seg_length = m_a[segment_index].DistanceTo (m_a[segment_index + 1]);
       if (seg_length < ON_EPSILON)
         segment_t = 0.0;
       else {
-        const ON_3dVector D = SegmentTangent(segment_index);
-        const int i = (point.DistanceTo(m_a[segment_index]) <=
-                       point.DistanceTo(m_a[segment_index + 1]))
+        const ON_3dVector D = SegmentTangent (segment_index);
+        const int i = (point.DistanceTo (m_a[segment_index]) <=
+                       point.DistanceTo (m_a[segment_index + 1]))
                           ? 0
                           : 1;
         segment_t = (point - m_a[segment_index + i]) * D / seg_length;
@@ -257,8 +257,8 @@ ON_Polyline::ClosestPointTo(const ON_3dPoint& point,
         else if (segment_t > 1.0)
           segment_t = 1.0;
       }
-      segment_d = point.DistanceTo((1 - segment_t) * m_a[segment_index] +
-                                   segment_t * m_a[segment_index + 1]);
+      segment_d = point.DistanceTo ((1 - segment_t) * m_a[segment_index] +
+                                    segment_t * m_a[segment_index + 1]);
       if (!rc || segment_d < best_d) {
         best_t = segment_t + ((double)segment_index);
         best_d = segment_d;
@@ -272,32 +272,32 @@ ON_Polyline::ClosestPointTo(const ON_3dPoint& point,
 }
 
 bool
-ON_Polyline::ClosestPointTo(const ON_3dPoint& point, double* t) const
+ON_Polyline::ClosestPointTo (const ON_3dPoint& point, double* t) const
 {
-  return ClosestPointTo(point, t, 0, SegmentCount());
+  return ClosestPointTo (point, t, 0, SegmentCount());
 }
 
 ON_3dPoint
-ON_Polyline::ClosestPointTo(const ON_3dPoint& point) const
+ON_Polyline::ClosestPointTo (const ON_3dPoint& point) const
 {
   double t;
-  ON_BOOL32 rc = ClosestPointTo(point, &t);
+  ON_BOOL32 rc = ClosestPointTo (point, &t);
   if (!rc)
     t = 0.0;
-  return PointAt(t);
+  return PointAt (t);
 }
 
 bool
-ON_Polyline::CreateInscribedPolygon(const ON_Circle& circle, int side_count)
+ON_Polyline::CreateInscribedPolygon (const ON_Circle& circle, int side_count)
 {
   bool rc = (circle.IsValid() && side_count >= 3) ? true : false;
   if (rc) {
-    SetCapacity(side_count + 1);
-    SetCount(side_count + 1);
+    SetCapacity (side_count + 1);
+    SetCount (side_count + 1);
     double a = 2.0 * ON_PI / side_count;
     int i;
     for (i = 0; i < side_count; i++) {
-      m_a[i] = circle.PointAt(a * i);
+      m_a[i] = circle.PointAt (a * i);
     }
     m_a[side_count] = m_a[0];
   }
@@ -307,18 +307,18 @@ ON_Polyline::CreateInscribedPolygon(const ON_Circle& circle, int side_count)
 }
 
 bool
-ON_Polyline::CreateCircumscribedPolygon(const ON_Circle& circle, int side_count)
+ON_Polyline::CreateCircumscribedPolygon (const ON_Circle& circle, int side_count)
 {
   bool rc = (circle.IsValid() && side_count >= 3) ? true : false;
   if (rc) {
-    SetCapacity(side_count + 1);
-    SetCount(side_count + 1);
+    SetCapacity (side_count + 1);
+    SetCount (side_count + 1);
     double half_a = ON_PI / side_count;
     int i;
     ON_Circle c = circle;
-    c.radius = circle.radius / cos(half_a);
+    c.radius = circle.radius / cos (half_a);
     for (i = 0; i < side_count; i++) {
-      m_a[i] = c.PointAt(half_a * (1 + 2 * i));
+      m_a[i] = c.PointAt (half_a * (1 + 2 * i));
     }
     m_a[side_count] = m_a[0];
   }
@@ -328,21 +328,21 @@ ON_Polyline::CreateCircumscribedPolygon(const ON_Circle& circle, int side_count)
 }
 
 bool
-ON_Polyline::CreateStarPolygon(const ON_Circle& circle,
-                               double other_radius,
-                               int side_count)
+ON_Polyline::CreateStarPolygon (const ON_Circle& circle,
+                                double other_radius,
+                                int side_count)
 {
   bool rc = (circle.IsValid() && side_count >= 3 && other_radius >= 0.0) ? true : false;
   if (rc) {
-    SetCapacity(2 * side_count + 1);
-    SetCount(2 * side_count + 1);
+    SetCapacity (2 * side_count + 1);
+    SetCount (2 * side_count + 1);
     double half_a = ON_PI / side_count;
     int i;
     ON_Circle other_circle = circle;
     other_circle.radius = other_radius;
     for (i = 0; i < side_count; i++) {
-      m_a[i * 2] = circle.PointAt(half_a * 2 * i);
-      m_a[i * 2 + 1] = other_circle.PointAt(half_a * (1 + 2 * i));
+      m_a[i * 2] = circle.PointAt (half_a * 2 * i);
+      m_a[i * 2 + 1] = other_circle.PointAt (half_a * (1 + 2 * i));
     }
     m_a[side_count * 2] = m_a[0];
   }

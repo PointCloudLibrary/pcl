@@ -66,13 +66,13 @@ public:
    * \param[in] extract_removed_indices Set to true if you want to be able to extract
    * the indices of points being removed (default = false).
    */
-  CropBox(bool extract_removed_indices = false)
-  : FilterIndices<PointT>(extract_removed_indices)
-  , min_pt_(Eigen::Vector4f(-1, -1, -1, 1))
-  , max_pt_(Eigen::Vector4f(1, 1, 1, 1))
-  , rotation_(Eigen::Vector3f::Zero())
-  , translation_(Eigen::Vector3f::Zero())
-  , transform_(Eigen::Affine3f::Identity())
+  CropBox (bool extract_removed_indices = false)
+  : FilterIndices<PointT> (extract_removed_indices)
+  , min_pt_ (Eigen::Vector4f (-1, -1, -1, 1))
+  , max_pt_ (Eigen::Vector4f (1, 1, 1, 1))
+  , rotation_ (Eigen::Vector3f::Zero())
+  , translation_ (Eigen::Vector3f::Zero())
+  , transform_ (Eigen::Affine3f::Identity())
   {
     filter_name_ = "CropBox";
   }
@@ -215,13 +215,13 @@ public:
    * \param[in] extract_removed_indices Set to true if you want to be able to extract
    * the indices of points being removed (default = false).
    */
-  CropBox(bool extract_removed_indices = false)
-  : FilterIndices<pcl::PCLPointCloud2>::FilterIndices(extract_removed_indices)
-  , min_pt_(Eigen::Vector4f(-1, -1, -1, 1))
-  , max_pt_(Eigen::Vector4f(1, 1, 1, 1))
-  , translation_(Eigen::Vector3f::Zero())
-  , rotation_(Eigen::Vector3f::Zero())
-  , transform_(Eigen::Affine3f::Identity())
+  CropBox (bool extract_removed_indices = false)
+  : FilterIndices<pcl::PCLPointCloud2>::FilterIndices (extract_removed_indices)
+  , min_pt_ (Eigen::Vector4f (-1, -1, -1, 1))
+  , max_pt_ (Eigen::Vector4f (1, 1, 1, 1))
+  , translation_ (Eigen::Vector3f::Zero())
+  , rotation_ (Eigen::Vector3f::Zero())
+  , transform_ (Eigen::Affine3f::Identity())
   {
     filter_name_ = "CropBox";
   }

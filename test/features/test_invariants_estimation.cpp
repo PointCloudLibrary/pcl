@@ -52,42 +52,42 @@ pcl::Indices indices;
 KdTreePtr tree;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TEST(PCL, MomentInvariantsEstimation)
+TEST (PCL, MomentInvariantsEstimation)
 {
   float j1, j2, j3;
 
   MomentInvariantsEstimation<PointXYZ, MomentInvariants> mi;
 
   // computePointMomentInvariants (indices))
-  mi.computePointMomentInvariants(cloud, indices, j1, j2, j3);
-  EXPECT_NEAR(j1, 1.59244, 1e-4);
-  EXPECT_NEAR(j2, 0.652063, 1e-4);
-  EXPECT_NEAR(j3, 0.053917, 1e-4);
+  mi.computePointMomentInvariants (cloud, indices, j1, j2, j3);
+  EXPECT_NEAR (j1, 1.59244, 1e-4);
+  EXPECT_NEAR (j2, 0.652063, 1e-4);
+  EXPECT_NEAR (j3, 0.053917, 1e-4);
 
   // computePointMomentInvariants
-  mi.computePointMomentInvariants(cloud, indices, j1, j2, j3);
-  EXPECT_NEAR(j1, 1.59244, 1e-4);
-  EXPECT_NEAR(j2, 0.652063, 1e-4);
-  EXPECT_NEAR(j3, 0.053917, 1e-4);
+  mi.computePointMomentInvariants (cloud, indices, j1, j2, j3);
+  EXPECT_NEAR (j1, 1.59244, 1e-4);
+  EXPECT_NEAR (j2, 0.652063, 1e-4);
+  EXPECT_NEAR (j3, 0.053917, 1e-4);
 
   // Object
-  PointCloud<MomentInvariants>::Ptr moments(new PointCloud<MomentInvariants>());
+  PointCloud<MomentInvariants>::Ptr moments (new PointCloud<MomentInvariants>());
 
   // set parameters
-  mi.setInputCloud(cloud.makeShared());
-  pcl::IndicesPtr indicesptr(new pcl::Indices(indices));
-  mi.setIndices(indicesptr);
-  mi.setSearchMethod(tree);
-  mi.setKSearch(static_cast<int>(indices.size()));
+  mi.setInputCloud (cloud.makeShared());
+  pcl::IndicesPtr indicesptr (new pcl::Indices (indices));
+  mi.setIndices (indicesptr);
+  mi.setSearchMethod (tree);
+  mi.setKSearch (static_cast<int> (indices.size()));
 
   // estimate
-  mi.compute(*moments);
-  EXPECT_EQ(moments->size(), indices.size());
+  mi.compute (*moments);
+  EXPECT_EQ (moments->size(), indices.size());
 
   for (const auto& point : moments->points) {
-    EXPECT_NEAR(point.j1, 1.59244, 1e-4);
-    EXPECT_NEAR(point.j2, 0.652063, 1e-4);
-    EXPECT_NEAR(point.j3, 0.053917, 1e-4);
+    EXPECT_NEAR (point.j1, 1.59244, 1e-4);
+    EXPECT_NEAR (point.j2, 0.652063, 1e-4);
+    EXPECT_NEAR (point.j3, 0.053917, 1e-4);
   }
 }
 
@@ -102,21 +102,21 @@ main (int argc, char** argv)
     return (-1);
   }
 
-  if (loadPCDFile<PointXYZ>(argv[1], cloud) < 0) {
+  if (loadPCDFile<PointXYZ> (argv[1], cloud) < 0) {
     std::cerr << "Failed to read test file. Please download `bun0.pcd` and pass its "
                  "path to the test."
               << std::endl;
     return (-1);
   }
 
-  indices.resize(cloud.size());
-  for (int i = 0; i < static_cast<int>(indices.size()); ++i)
+  indices.resize (cloud.size());
+  for (int i = 0; i < static_cast<int> (indices.size()); ++i)
     indices[i] = i;
 
-  tree.reset(new search::KdTree<PointXYZ>(false));
-  tree->setInputCloud(cloud.makeShared());
+  tree.reset (new search::KdTree<PointXYZ> (false));
+  tree->setInputCloud (cloud.makeShared());
 
-  testing::InitGoogleTest(&argc, argv);
+  testing::InitGoogleTest (&argc, argv);
   return (RUN_ALL_TESTS());
 }
 /* ]--- */

@@ -86,9 +86,9 @@ pcl::recognition::ORROctreeZProjection::clear()
 //=========================================================================================================================================
 
 void
-pcl::recognition::ORROctreeZProjection::build(const ORROctree& input,
-                                              float eps_front,
-                                              float eps_back)
+pcl::recognition::ORROctreeZProjection::build (const ORROctree& input,
+                                               float eps_front,
+                                               float eps_back)
 {
   this->clear();
 
@@ -129,10 +129,10 @@ pcl::recognition::ORROctreeZProjection::build(const ORROctree& input,
   extent_x_ = full_leaves_bounds[1] - full_leaves_bounds[0];
   extent_y_ = full_leaves_bounds[3] - full_leaves_bounds[2];
 
-  num_pixels_x_ = static_cast<int>(
+  num_pixels_x_ = static_cast<int> (
       extent_x_ / pixel_size_ +
       0.5f); // we do not need to round, but it's safer due to numerical errors
-  num_pixels_y_ = static_cast<int>(extent_y_ / pixel_size_ + 0.5f);
+  num_pixels_y_ = static_cast<int> (extent_y_ / pixel_size_ + 0.5f);
   num_pixels_ = num_pixels_x_ * num_pixels_y_;
 
   // Allocate and initialize memory for the pixels and the sets
@@ -153,17 +153,17 @@ pcl::recognition::ORROctreeZProjection::build(const ORROctree& input,
 
   // Project the octree full leaves onto the xy-plane
   for (const auto& full_leaf : full_leaves) {
-    this->getPixelCoordinates(full_leaf->getCenter(), num_pixels_x_, num_pixels_y_);
+    this->getPixelCoordinates (full_leaf->getCenter(), num_pixels_x_, num_pixels_y_);
     // If there is no set/pixel and at this position -> create one
     if (sets_[num_pixels_x_][num_pixels_y_] == nullptr) {
-      pixels_[num_pixels_x_][num_pixels_y_] = new Pixel(pixel_id++);
-      sets_[num_pixels_x_][num_pixels_y_] = new Set(num_pixels_x_, num_pixels_y_);
-      full_pixels_.push_back(pixels_[num_pixels_x_][num_pixels_y_]);
-      full_sets_.push_back(sets_[num_pixels_x_][num_pixels_y_]);
+      pixels_[num_pixels_x_][num_pixels_y_] = new Pixel (pixel_id++);
+      sets_[num_pixels_x_][num_pixels_y_] = new Set (num_pixels_x_, num_pixels_y_);
+      full_pixels_.push_back (pixels_[num_pixels_x_][num_pixels_y_]);
+      full_sets_.push_back (sets_[num_pixels_x_][num_pixels_y_]);
     }
 
     // Insert the full octree leaf at the right position in the set
-    sets_[num_pixels_x_][num_pixels_y_]->insert(full_leaf);
+    sets_[num_pixels_x_][num_pixels_y_]->insert (full_leaf);
   }
 
   // Now, at each occupied (i, j) position, get the longest connected component
@@ -206,7 +206,7 @@ pcl::recognition::ORROctreeZProjection::build(const ORROctree& input,
     int i = full_set->get_x();
     int j = full_set->get_y();
 
-    pixels_[i][j]->set_z1(best_min - eps_front);
-    pixels_[i][j]->set_z2(best_max + eps_back);
+    pixels_[i][j]->set_z1 (best_min - eps_front);
+    pixels_[i][j]->set_z2 (best_max + eps_back);
   }
 }
