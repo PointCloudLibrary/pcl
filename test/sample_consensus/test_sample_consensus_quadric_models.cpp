@@ -59,6 +59,7 @@ using SampleConsensusModelCylinderPtr =
 using SampleConsensusModelNormalSpherePtr =
     SampleConsensusModelNormalSphere<PointXYZ, Normal>::Ptr;
 using SampleConsensusModelEllipse3DPtr = SampleConsensusModelEllipse3D<PointXYZ>::Ptr;
+using SampleConsensusModelTorusPtr = SampleConsensusModelTorus<PointXYZ,Normal>::Ptr;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST(SampleConsensusModelSphere, RANSAC)
@@ -1502,7 +1503,6 @@ TEST(SampleConsensusModelTorus, RANSAC)
   EXPECT_NEAR(coeff[6], -0.5, 1e-2);
   EXPECT_NEAR(coeff[7], 0.5, 1e-2);
 }
-
 int
 main(int argc, char** argv)
 {
