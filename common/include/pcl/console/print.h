@@ -80,14 +80,16 @@
       PCL_ERROR (msg);                                                                 \
       PCL_ERROR ("In File %s, in line %d\n" __FILE__, __LINE__);                       \
     }                                                                                  \
-  } while (0)
+  }                                                                                    \
+  while (0)
 
 #define PCL_ASSERT_ERROR_PRINT_RETURN(pred, msg, err)                                  \
   do {                                                                                 \
     PCL_ASSERT_ERROR_PRINT_CHECK (pred, msg);                                          \
     if (!(pred))                                                                       \
       return err;                                                                      \
-  } while (0)
+  }                                                                                    \
+  while (0)
 
 namespace pcl {
 namespace console {

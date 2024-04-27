@@ -312,7 +312,8 @@ pcl::RobotEyeGrabber::start()
 
   try {
     socket_.reset (new boost::asio::ip::udp::socket (io_service_, destinationEndpoint));
-  } catch (std::exception& e) {
+  }
+  catch (std::exception& e) {
     PCL_ERROR ("[pcl::RobotEyeGrabber::start] Unable to bind to socket! %s\n",
                e.what());
     return;

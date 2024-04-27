@@ -71,14 +71,16 @@ pcl::MTLReader::fillRGBfromXYZ (const std::vector<std::string>& split_line,
       xyz[0] = boost::lexical_cast<float> (split_line[2]);
       xyz[1] = boost::lexical_cast<float> (split_line[3]);
       xyz[2] = boost::lexical_cast<float> (split_line[4]);
-    } catch (boost::bad_lexical_cast&) {
+    }
+    catch (boost::bad_lexical_cast&) {
       return (-1);
     }
   }
   else if (split_line.size() == 3) {
     try {
       xyz[0] = xyz[1] = xyz[2] = boost::lexical_cast<float> (split_line[2]);
-    } catch (boost::bad_lexical_cast&) {
+    }
+    catch (boost::bad_lexical_cast&) {
       return (-1);
     }
   }
@@ -98,7 +100,8 @@ pcl::MTLReader::fillRGBfromRGB (const std::vector<std::string>& split_line,
       rgb.r = boost::lexical_cast<float> (split_line[1]);
       rgb.g = boost::lexical_cast<float> (split_line[2]);
       rgb.b = boost::lexical_cast<float> (split_line[3]);
-    } catch (boost::bad_lexical_cast&) {
+    }
+    catch (boost::bad_lexical_cast&) {
       rgb.r = rgb.g = rgb.b = 0;
       return (-1);
     }
@@ -106,7 +109,8 @@ pcl::MTLReader::fillRGBfromRGB (const std::vector<std::string>& split_line,
   else if (split_line.size() == 2) {
     try {
       rgb.r = rgb.g = rgb.b = boost::lexical_cast<float> (split_line[1]);
-    } catch (boost::bad_lexical_cast&) {
+    }
+    catch (boost::bad_lexical_cast&) {
       return (-1);
     }
   }
@@ -240,7 +244,8 @@ pcl::MTLReader::read (const std::string& mtl_file_path)
       if (st[0] == "illum") {
         try {
           materials_.back().tex_illum = boost::lexical_cast<int> (st[1]);
-        } catch (boost::bad_lexical_cast&) {
+        }
+        catch (boost::bad_lexical_cast&) {
           PCL_ERROR (
               "[pcl::MTLReader::read] Could not convert %s to illumination model\n",
               line.c_str());
@@ -258,7 +263,8 @@ pcl::MTLReader::read (const std::string& mtl_file_path)
               boost::lexical_cast<float> (st[st.size() > 2 ? 2 : 1]);
           if (reverse)
             materials_.back().tex_d = 1.f - materials_.back().tex_d;
-        } catch (boost::bad_lexical_cast&) {
+        }
+        catch (boost::bad_lexical_cast&) {
           PCL_ERROR (
               "[pcl::MTLReader::read] Could not convert %s to transparency value\n",
               line.c_str());
@@ -272,7 +278,8 @@ pcl::MTLReader::read (const std::string& mtl_file_path)
       if (st[0] == "Ns") {
         try {
           materials_.back().tex_Ns = boost::lexical_cast<float> (st[1]);
-        } catch (boost::bad_lexical_cast&) {
+        }
+        catch (boost::bad_lexical_cast&) {
           PCL_ERROR ("[pcl::MTLReader::read] Could not convert %s to shininess value\n",
                      line.c_str());
           mtl_file.close();
@@ -290,7 +297,8 @@ pcl::MTLReader::read (const std::string& mtl_file_path)
       }
       // other elements? we don't care for now
     }
-  } catch (const char* exception) {
+  }
+  catch (const char* exception) {
     PCL_ERROR ("[pcl::MTLReader::read] %s\n", exception);
     mtl_file.close();
     materials_.clear();
@@ -399,7 +407,8 @@ pcl::OBJReader::readHeader (const std::string& file_name,
         continue;
       }
     }
-  } catch (const char* exception) {
+  }
+  catch (const char* exception) {
     PCL_ERROR ("[pcl::OBJReader::readHeader] %s\n", exception);
     fs.close();
     return (-1);
@@ -544,7 +553,8 @@ pcl::OBJReader::read (const std::string& file_name,
                     sizeof (float));
           }
           ++point_idx;
-        } catch (const boost::bad_lexical_cast&) {
+        }
+        catch (const boost::bad_lexical_cast&) {
           PCL_ERROR ("Unable to convert %s to vertex coordinates!\n", line.c_str());
           return (-1);
         }
@@ -570,14 +580,16 @@ pcl::OBJReader::read (const std::string& file_name,
                     sizeof (float));
           }
           ++normal_idx;
-        } catch (const boost::bad_lexical_cast&) {
+        }
+        catch (const boost::bad_lexical_cast&) {
           PCL_ERROR ("Unable to convert line %s to vertex normal!\n", line.c_str());
           return (-1);
         }
         continue;
       }
     }
-  } catch (const char* exception) {
+  }
+  catch (const char* exception) {
     PCL_ERROR ("[pcl::OBJReader::read] %s\n", exception);
     fs.close();
     return (-1);
@@ -683,7 +695,8 @@ pcl::OBJReader::read (const std::string& file_name,
                     sizeof (float));
           }
           ++v_idx;
-        } catch (const boost::bad_lexical_cast&) {
+        }
+        catch (const boost::bad_lexical_cast&) {
           PCL_ERROR ("Unable to convert %s to vertex coordinates!\n", line.c_str());
           return (-1);
         }
@@ -700,7 +713,8 @@ pcl::OBJReader::read (const std::string& file_name,
                     sizeof (float));
           }
           ++vn_idx;
-        } catch (const boost::bad_lexical_cast&) {
+        }
+        catch (const boost::bad_lexical_cast&) {
           PCL_ERROR ("Unable to convert line %s to vertex normal!\n", line.c_str());
           return (-1);
         }
@@ -716,7 +730,8 @@ pcl::OBJReader::read (const std::string& file_name,
             coordinates.emplace_back (c[0], c[1]);
           else
             coordinates.emplace_back (c[0] / c[2], c[1] / c[2]);
-        } catch (const boost::bad_lexical_cast&) {
+        }
+        catch (const boost::bad_lexical_cast&) {
           PCL_ERROR ("Unable to convert line %s to texture coordinates!\n",
                      line.c_str());
           return (-1);
@@ -766,7 +781,8 @@ pcl::OBJReader::read (const std::string& file_name,
         continue;
       }
     }
-  } catch (const char* exception) {
+  }
+  catch (const char* exception) {
     PCL_ERROR ("[pcl::OBJReader::read] %s\n", exception);
     fs.close();
     return (-1);
@@ -872,7 +888,8 @@ pcl::OBJReader::read (const std::string& file_name,
                     sizeof (float));
           }
           ++v_idx;
-        } catch (const boost::bad_lexical_cast&) {
+        }
+        catch (const boost::bad_lexical_cast&) {
           PCL_ERROR ("Unable to convert %s to vertex coordinates!\n", line.c_str());
           return (-1);
         }
@@ -890,7 +907,8 @@ pcl::OBJReader::read (const std::string& file_name,
                     sizeof (float));
           }
           ++vn_idx;
-        } catch (const boost::bad_lexical_cast&) {
+        }
+        catch (const boost::bad_lexical_cast&) {
           PCL_ERROR ("Unable to convert line %s to vertex normal!\n", line.c_str());
           return (-1);
         }
@@ -911,7 +929,8 @@ pcl::OBJReader::read (const std::string& file_name,
         continue;
       }
     }
-  } catch (const char* exception) {
+  }
+  catch (const char* exception) {
     PCL_ERROR ("[pcl::OBJReader::read] %s\n", exception);
     fs.close();
     return (-1);

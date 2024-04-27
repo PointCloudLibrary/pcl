@@ -1564,9 +1564,11 @@ main (int argc, char* argv[])
   // executing
   try {
     app.execute (argc, argv, plyfile);
-  } catch (const std::bad_alloc& /*e*/) {
+  }
+  catch (const std::bad_alloc& /*e*/) {
     std::cout << "Bad alloc" << std::endl;
-  } catch (const std::exception& /*e*/) {
+  }
+  catch (const std::exception& /*e*/) {
     std::cout << "Exception" << std::endl;
   }
 

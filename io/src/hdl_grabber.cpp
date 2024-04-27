@@ -198,7 +198,8 @@ pcl::HDLGrabber::loadCorrectionsFile (const std::string& correctionsFile)
   boost::property_tree::ptree pt;
   try {
     read_xml (correctionsFile, pt, boost::property_tree::xml_parser::trim_whitespace);
-  } catch (boost::exception const&) {
+  }
+  catch (boost::exception const&) {
     PCL_ERROR (
         "[pcl::HDLGrabber::loadCorrectionsFile] Error reading calibration file %s!\n",
         correctionsFile.c_str());
@@ -498,7 +499,8 @@ pcl::HDLGrabber::start()
         }
         hdl_read_socket_ =
             new udp::socket (hdl_read_socket_service_, udp_listener_endpoint_);
-      } catch (const std::exception&) {
+      }
+      catch (const std::exception&) {
         delete hdl_read_socket_;
         hdl_read_socket_ =
             new udp::socket (hdl_read_socket_service_,
@@ -506,7 +508,8 @@ pcl::HDLGrabber::start()
                                             udp_listener_endpoint_.port()));
       }
       hdl_read_socket_service_.run();
-    } catch (std::exception& e) {
+    }
+    catch (std::exception& e) {
       PCL_ERROR ("[pcl::HDLGrabber::start] Unable to bind to socket! %s\n", e.what());
       return;
     }
@@ -531,7 +534,8 @@ pcl::HDLGrabber::stop()
   if (hdl_read_socket_ != nullptr) {
     try {
       hdl_read_socket_->shutdown (boost::asio::ip::tcp::socket::shutdown_both);
-    } catch (const boost::system::system_error& e) {
+    }
+    catch (const boost::system::system_error& e) {
       PCL_ERROR ("[pcl::HDLGrabber::stop] Failed to shutdown the socket. %s\n",
                  e.what());
     }
@@ -654,7 +658,8 @@ pcl::HDLGrabber::readPacketsFromSocket()
            source_port_filter_ == sender_endpoint.port())) {
         enqueueHDLPacket (data, length);
       }
-    } catch (const boost::system::system_error& e) {
+    }
+    catch (const boost::system::system_error& e) {
       // We must ignore those errors triggered on socket close/shutdown request.
       if (!(e.code() == boost::asio::error::interrupted ||
             e.code() == boost::asio::error::operation_aborted))

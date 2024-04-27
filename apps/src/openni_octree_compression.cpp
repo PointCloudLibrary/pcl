@@ -439,8 +439,8 @@ main (int argc, char** argv)
         std::cout << "Disconnected!" << std::endl;
 
         std::this_thread::sleep_for (3s);
-
-      } catch (std::exception& e) {
+      }
+      catch (std::exception& e) {
         std::cerr << e.what() << std::endl;
       }
     }
@@ -462,8 +462,8 @@ main (int argc, char** argv)
           octreeCoder->decodePointCloud (socketStream, cloudOut);
           viewer.showCloud (cloudOut);
         }
-
-      } catch (std::exception& e) {
+      }
+      catch (std::exception& e) {
         std::cout << "Exception: " << e.what() << std::endl;
       }
     }

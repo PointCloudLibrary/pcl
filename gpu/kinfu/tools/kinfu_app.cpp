@@ -1110,10 +1110,12 @@ struct KinFuApp {
 
         try {
           this->execute (depth_, rgb24_, has_data);
-        } catch (const std::bad_alloc& /*e*/) {
+        }
+        catch (const std::bad_alloc& /*e*/) {
           std::cout << "Bad alloc" << std::endl;
           break;
-        } catch (const std::exception& /*e*/) {
+        }
+        catch (const std::exception& /*e*/) {
           std::cout << "Exception" << std::endl;
           break;
         }
@@ -1461,7 +1463,8 @@ main (int argc, char* argv[])
       // triggered_capture = true; capture.reset( new
       // pcl::ONIGrabber("d:/onis/20111013-224719.oni", true, ! triggered_capture) );
     }
-  } catch (const pcl::PCLException& /*e*/) {
+  }
+  catch (const pcl::PCLException& /*e*/) {
     return std::cout << "Can't open depth source" << std::endl, -1;
   }
 
@@ -1524,11 +1527,14 @@ main (int argc, char* argv[])
   // executing
   try {
     app.startMainLoop (triggered_capture);
-  } catch (const pcl::PCLException& /*e*/) {
+  }
+  catch (const pcl::PCLException& /*e*/) {
     std::cout << "PCLException" << std::endl;
-  } catch (const std::bad_alloc& /*e*/) {
+  }
+  catch (const std::bad_alloc& /*e*/) {
     std::cout << "Bad alloc" << std::endl;
-  } catch (const std::exception& /*e*/) {
+  }
+  catch (const std::exception& /*e*/) {
     std::cout << "Exception" << std::endl;
   }
 

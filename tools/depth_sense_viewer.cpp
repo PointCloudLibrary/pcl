@@ -119,7 +119,8 @@ printDeviceList ()
       grabbers.push_back (DepthSenseGrabber::Ptr (new pcl::DepthSenseGrabber));
       std::cout << boost::str (fmt % grabbers.size() %
                                grabbers.back()->getDeviceSerialNumber());
-    } catch (pcl::io::IOException& e) {
+    }
+    catch (pcl::io::IOException& e) {
       break;
     }
   }
@@ -315,7 +316,8 @@ main (int argc, char** argv)
       DepthSenseViewer<pcl::PointXYZRGBA> viewer (grabber);
       viewer.run();
     }
-  } catch (pcl::io::IOException& e) {
+  }
+  catch (pcl::io::IOException& e) {
     print_error ("Failed to create a grabber: %s\n", e.what());
     return (1);
   }

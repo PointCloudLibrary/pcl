@@ -158,7 +158,8 @@ printDeviceList ()
         }
       else
         std::cout << " none";
-    } catch (pcl::io::IOException& e) {
+    }
+    catch (pcl::io::IOException& e) {
       break;
     }
   }
@@ -410,7 +411,8 @@ main (int argc, char** argv)
           mode_id);
       return (1);
     }
-  } catch (pcl::io::IOException& e) {
+  }
+  catch (pcl::io::IOException& e) {
     print_error ("Failed to create a grabber: %s\n", e.what());
     return (1);
   }

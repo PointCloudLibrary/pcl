@@ -252,7 +252,8 @@ JointIterativeClosestPoint<PointSource, PointTarget, Scalar>::computeTransformat
     //  update_visualizer_(output, source_indices_good, *target_, target_indices_good );
 
     converged_ = static_cast<bool> ((*convergence_criteria_));
-  } while (!converged_);
+  }
+  while (!converged_);
 
   PCL_DEBUG (
       "Transformation "

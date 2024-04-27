@@ -207,7 +207,8 @@ PCDBuffer<PointT>::getFront()
       count = 0;                                                                       \
       last = now;                                                                      \
     }                                                                                  \
-  } while (false)
+  }                                                                                    \
+  while (false)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Producer thread class

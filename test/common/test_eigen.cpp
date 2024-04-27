@@ -426,7 +426,8 @@ generateSymPosMatrix2x2 (Matrix& matrix)
       eigenvectors.col (0)[0] = static_cast<Scalar> (rand_double (rng));
       eigenvectors.col (0)[1] = static_cast<Scalar> (rand_double (rng));
       sqrNorm = eigenvectors.col (0).squaredNorm();
-    } while (sqrNorm == 0);
+    }
+    while (sqrNorm == 0);
     eigenvectors.col (0) /= sqrt (sqrNorm);
 
     eigenvectors.col (1)[0] = -eigenvectors.col (1)[1];
@@ -614,7 +615,8 @@ generateSymPosMatrix3x3 (Matrix& matrix)
     eigenvectors.col (2) = eigenvectors.col (0).cross (eigenvectors.col (1));
 
     sqrNorm = eigenvectors.col (2).squaredNorm();
-  } while (sqrNorm == 0);
+  }
+  while (sqrNorm == 0);
 
   eigenvectors.col (0).normalize();
   eigenvectors.col (2).normalize();

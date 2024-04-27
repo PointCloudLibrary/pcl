@@ -46,7 +46,8 @@ pcl::io::depth_sense::DepthSenseDeviceManager::DepthSenseDeviceManager()
   try {
     context_ = DepthSense::Context::create ("localhost");
     depth_sense_thread_ = std::thread (&DepthSense::Context::run, &context_);
-  } catch (...) {
+  }
+  catch (...) {
     THROW_IO_EXCEPTION ("failed to initialize DepthSense context");
   }
 }
@@ -56,7 +57,8 @@ pcl::io::depth_sense::DepthSenseDeviceManager::~DepthSenseDeviceManager()
   try {
     context_.quit();
     depth_sense_thread_.join();
-  } catch (DepthSense::InvalidOperationException& e) {
+  }
+  catch (DepthSense::InvalidOperationException& e) {
     // do nothing
   }
 }
@@ -127,7 +129,8 @@ pcl::io::depth_sense::DepthSenseDeviceManager::startDevice (const std::string& s
     context_.registerNode (dev.depth_node);
     context_.registerNode (dev.color_node);
     context_.startNodes();
-  } catch (DepthSense::ArgumentException& e) {
+  }
+  catch (DepthSense::ArgumentException& e) {
     THROW_IO_EXCEPTION ("unable to start device %s, possibly disconnected", sn.c_str());
   }
 }
@@ -141,7 +144,8 @@ pcl::io::depth_sense::DepthSenseDeviceManager::stopDevice (const std::string& sn
     context_.unregisterNode (dev.color_node);
     if (context_.getRegisteredNodes().size() == 0)
       context_.stopNodes();
-  } catch (DepthSense::ArgumentException& e) {
+  }
+  catch (DepthSense::ArgumentException& e) {
     THROW_IO_EXCEPTION ("unable to stop device %s, possibly disconnected", sn.c_str());
   }
 }

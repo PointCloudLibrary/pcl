@@ -652,8 +652,8 @@ pcl::MLSResult::projectPointOrthogonalToPolynomialSurface (const double u,
           std::sqrt ((gu - u) * (gu - u) + (gv - v) * (gv - v) + (gw - w) * (gw - w));
 
       err_total = std::sqrt (e1 * e1 + e2 * e2);
-
-    } while (err_total > 1e-8 && dist2 < dist1);
+    }
+    while (err_total > 1e-8 && dist2 < dist1);
 
     if (dist2 > dist1) // the optimization was diverging reset the coordinates for
                        // simple projection

@@ -66,7 +66,8 @@ RealSense2Grabber::~RealSense2Grabber()
     disconnect_all_slots<signal_librealsense_PointXYZI>();
     disconnect_all_slots<signal_librealsense_PointXYZRGB>();
     disconnect_all_slots<signal_librealsense_PointXYZRGBA>();
-  } catch (...) {
+  }
+  catch (...) {
   }
 }
 

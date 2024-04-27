@@ -687,7 +687,8 @@ AtomicIncrement (volatile double* ptr, double addend)
     _oldValue = _newValue;
     newValue += addend;
     _newValue = InterlockedCompareExchange64 ((LONGLONG*)ptr, _newValue, _oldValue);
-  } while (_newValue != _oldValue);
+  }
+  while (_newValue != _oldValue);
 }
 #endif // _AtomicIncrement_
 template <class T>

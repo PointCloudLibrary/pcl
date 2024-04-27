@@ -402,7 +402,7 @@ ON_ArcCurve::IsContinuous (ON::continuity c,
                            double, // cos_angle_tolerance - formal parameter
                                    // intentionally ignored in this virtual function
                            double  // curvature_tolerance - formal parameter
-                                  // intentionally ignored in this virtual function
+                                   // intentionally ignored in this virtual function
 ) const
 {
   // 20 March 2003 Dale Lear

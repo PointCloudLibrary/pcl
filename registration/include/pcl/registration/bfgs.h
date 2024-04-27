@@ -352,7 +352,8 @@ BFGS<FunctorType>::minimize (FVectorType& x)
   do {
     status = minimizeOneStep (x);
     ++iter;
-  } while (status == BFGSSpace::Success && iter < parameters.max_iters);
+  }
+  while (status == BFGSSpace::Success && iter < parameters.max_iters);
   return status;
 }
 

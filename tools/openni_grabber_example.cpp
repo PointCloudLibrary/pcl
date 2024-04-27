@@ -150,7 +150,8 @@ public:
       case 's':
         save = !save;
       }
-    } while (key != 27 && key != 'q' && key != 'Q');
+    }
+    while (key != 27 && key != 'q' && key != 'Q');
 
     // stop the grabber
     interface.stop();

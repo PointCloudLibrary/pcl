@@ -70,7 +70,8 @@ toFaceVertexMesh (const HalfEdgeMeshT& half_edge_mesh,
     polygon.vertices.clear();
     do {
       polygon.vertices.push_back (circ.getTargetIndex().get());
-    } while (++circ != circ_end);
+    }
+    while (++circ != circ_end);
     face_vertex_mesh.polygons.push_back (polygon);
   }
 }

@@ -53,7 +53,8 @@ EnumParameter<T>::valueTip()
     ++it;
     if (it != candidates_.end())
       tip += ", ";
-  } while (it != candidates_.end());
+  }
+  while (it != candidates_.end());
   tip += "}";
 
   return tip;

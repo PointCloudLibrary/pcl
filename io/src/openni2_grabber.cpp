@@ -136,7 +136,8 @@ pcl::io::OpenNI2Grabber::~OpenNI2Grabber() noexcept
     disconnect_all_slots<sig_cb_openni_point_cloud_rgb>();
     disconnect_all_slots<sig_cb_openni_point_cloud_rgba>();
     disconnect_all_slots<sig_cb_openni_point_cloud_i>();
-  } catch (...) {
+  }
+  catch (...) {
     // destructor never throws
   }
 }
@@ -212,7 +213,8 @@ pcl::io::OpenNI2Grabber::start()
       device_->startIRStream();
     }
     running_ = true;
-  } catch (IOException& ex) {
+  }
+  catch (IOException& ex) {
     PCL_THROW_EXCEPTION (pcl::IOException,
                          "Could not start streams. Reason: " << ex.what());
   }
@@ -235,7 +237,8 @@ pcl::io::OpenNI2Grabber::stop()
       device_->stopIRStream();
 
     running_ = false;
-  } catch (IOException& ex) {
+  }
+  catch (IOException& ex) {
     PCL_THROW_EXCEPTION (pcl::IOException,
                          "Could not stop streams. Reason: " << ex.what());
   }
@@ -295,16 +298,19 @@ pcl::io::OpenNI2Grabber::setupDevice (const std::string& device_id,
     else {
       device_ = deviceManager->getDevice (device_id);
     }
-  } catch (const IOException& exception) {
+  }
+  catch (const IOException& exception) {
     if (!device_)
       PCL_THROW_EXCEPTION (pcl::IOException,
                            "No matching device found. " << exception.what())
     else
       PCL_THROW_EXCEPTION (pcl::IOException,
                            "could not retrieve device. Reason " << exception.what())
-  } catch (const pcl::IOException&) {
+  }
+  catch (const pcl::IOException&) {
     throw;
-  } catch (...) {
+  }
+  catch (...) {
     PCL_THROW_EXCEPTION (pcl::IOException, "unknown error occurred");
   }
 
@@ -367,7 +373,8 @@ pcl::io::OpenNI2Grabber::startSynchronization()
          device_->getColorVideoMode().frame_rate_ ==
              device_->getDepthVideoMode().frame_rate_))
       device_->setSynchronization (true);
-  } catch (const IOException& exception) {
+  }
+  catch (const IOException& exception) {
     std::cerr << exception.what() << std::endl;
   }
 }
@@ -379,7 +386,8 @@ pcl::io::OpenNI2Grabber::stopSynchronization()
   try {
     if (device_->isSynchronizationSupported() && device_->isSynchronized())
       device_->setSynchronization (false);
-  } catch (const IOException& exception) {
+  }
+  catch (const IOException& exception) {
     PCL_THROW_EXCEPTION (pcl::IOException,
                          "Could not start synchronization " << exception.what());
   }

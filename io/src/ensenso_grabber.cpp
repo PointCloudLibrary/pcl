@@ -75,7 +75,8 @@ pcl::EnsensoGrabber::EnsensoGrabber()
   try {
     nxLibInitialize();
     root_.reset (new NxLibItem);
-  } catch (NxLibException& ex) {
+  }
+  catch (NxLibException& ex) {
     ensensoExceptionHandling (ex, "EnsensoGrabber");
     PCL_THROW_EXCEPTION (
         pcl::IOException,
@@ -97,7 +98,8 @@ pcl::EnsensoGrabber::~EnsensoGrabber() noexcept
     if (tcp_open_)
       closeTcpPort();
     nxLibFinalize();
-  } catch (...) {
+  }
+  catch (...) {
     // destructor never throws
   }
 }
@@ -133,7 +135,8 @@ pcl::EnsensoGrabber::enumDevices() const
 #endif
     }
     PCL_INFO ("\n");
-  } catch (NxLibException& ex) {
+  }
+  catch (NxLibException& ex) {
     ensensoExceptionHandling (ex, "enumDevices");
   }
 
@@ -161,7 +164,8 @@ pcl::EnsensoGrabber::openDevice (const int device)
     NxLibCommand open (cmdOpen);
     open.parameters()[itmCameras] = camera_[itmSerialNumber].asString();
     open.execute();
-  } catch (NxLibException& ex) {
+  }
+  catch (NxLibException& ex) {
     ensensoExceptionHandling (ex, "openDevice");
     return (false);
   }
@@ -183,7 +187,8 @@ pcl::EnsensoGrabber::closeDevice()
   try {
     NxLibCommand (cmdClose).execute();
     device_open_ = false;
-  } catch (NxLibException& ex) {
+  }
+  catch (NxLibException& ex) {
     ensensoExceptionHandling (ex, "closeDevice");
     return (false);
   }
@@ -278,7 +283,8 @@ pcl::EnsensoGrabber::configureCapture (
     captureParams[itmTriggerMode].set (trigger_mode);
     captureParams[itmUseDisparityMapAreaOfInterest].set (
         use_disparity_map_area_of_interest);
-  } catch (NxLibException& ex) {
+  }
+  catch (NxLibException& ex) {
     ensensoExceptionHandling (ex, "configureCapture");
     return (false);
   }
@@ -334,7 +340,8 @@ pcl::EnsensoGrabber::grabSingleCloud (pcl::PointCloud<pcl::PointXYZ>& cloud) con
     }
 
     return (true);
-  } catch (NxLibException& ex) {
+  }
+  catch (NxLibException& ex) {
     ensensoExceptionHandling (ex, "grabSingleCloud");
     return (false);
   }
@@ -373,7 +380,8 @@ pcl::EnsensoGrabber::initExtrinsicCalibration (const int grid_spacing) const
                       80,
                       "Software",
                       false);
-  } catch (NxLibException& ex) {
+  }
+  catch (NxLibException& ex) {
     ensensoExceptionHandling (ex, "initExtrinsicCalibration");
     return (false);
   }
@@ -392,7 +400,8 @@ pcl::EnsensoGrabber::clearCalibrationPatternBuffer() const
 
   try {
     NxLibCommand (cmdDiscardPatterns).execute();
-  } catch (NxLibException& ex) {
+  }
+  catch (NxLibException& ex) {
     ensensoExceptionHandling (ex, "clearCalibrationPatternBuffer");
     return (false);
   }
@@ -412,7 +421,8 @@ pcl::EnsensoGrabber::captureCalibrationPattern() const
   try {
     NxLibCommand (cmdCapture).execute();
     NxLibCommand (cmdCollectPattern).execute();
-  } catch (NxLibException& ex) {
+  }
+  catch (NxLibException& ex) {
     ensensoExceptionHandling (ex, "captureCalibrationPattern");
     return (-1);
   }
@@ -441,7 +451,8 @@ pcl::EnsensoGrabber::estimateCalibrationPatternPose (
     pattern_pose.translation() /=
         1000.0; // Convert translation in meters (Ensenso API returns millimeters)
     return (true);
-  } catch (NxLibException& ex) {
+  }
+  catch (NxLibException& ex) {
     ensensoExceptionHandling (ex, "estimateCalibrationPatternPoses");
     return (false);
   }
@@ -534,7 +545,8 @@ pcl::EnsensoGrabber::computeCalibrationMatrix (
       json.clear();
       return (false);
     }
-  } catch (NxLibException& ex) {
+  }
+  catch (NxLibException& ex) {
     ensensoExceptionHandling (ex, "computeCalibrationMatrix");
     return (false);
   }
@@ -548,7 +560,8 @@ pcl::EnsensoGrabber::storeEEPROMExtrinsicCalibration() const
     NxLibCommand store (cmdStoreCalibration);
     store.execute();
     return (true);
-  } catch (NxLibException& ex) {
+  }
+  catch (NxLibException& ex) {
     ensensoExceptionHandling (ex, "storeEEPROMExtrinsicCalibration");
     return (false);
   }
@@ -563,7 +576,8 @@ pcl::EnsensoGrabber::clearEEPROMExtrinsicCalibration()
     NxLibCommand store (cmdStoreCalibration);
     store.execute();
     return (true);
-  } catch (NxLibException& ex) {
+  }
+  catch (NxLibException& ex) {
     ensensoExceptionHandling (ex, "clearEEPROMExtrinsicCalibration");
     return (false);
   }
@@ -595,7 +609,8 @@ pcl::EnsensoGrabber::setExtrinsicCalibration (const double euler_angle,
                                         1000.0); // Convert in millimeters
     calibParams[itmTranslation][1].set (translation[1] * 1000.0);
     calibParams[itmTranslation][2].set (translation[2] * 1000.0);
-  } catch (NxLibException& ex) {
+  }
+  catch (NxLibException& ex) {
     ensensoExceptionHandling (ex, "setExtrinsicCalibration");
     return (false);
   }
@@ -646,7 +661,8 @@ pcl::EnsensoGrabber::openTcpPort (const int port)
   try {
     nxLibOpenTcpPort (port);
     tcp_open_ = true;
-  } catch (NxLibException& ex) {
+  }
+  catch (NxLibException& ex) {
     ensensoExceptionHandling (ex, "openTcpPort");
     return (false);
   }
@@ -660,7 +676,8 @@ pcl::EnsensoGrabber::closeTcpPort()
   try {
     nxLibCloseTcpPort();
     tcp_open_ = false;
-  } catch (NxLibException& ex) {
+  }
+  catch (NxLibException& ex) {
     ensensoExceptionHandling (ex, "closeTcpPort");
     return (false);
   }
@@ -673,7 +690,8 @@ pcl::EnsensoGrabber::getTreeAsJson (const bool pretty_format) const
 {
   try {
     return (root_->asJson (pretty_format));
-  } catch (NxLibException& ex) {
+  }
+  catch (NxLibException& ex) {
     ensensoExceptionHandling (ex, "getTreeAsJson");
     return ("");
   }
@@ -747,7 +765,8 @@ pcl::EnsensoGrabber::jsonTransformationToAngleAxis (const std::string json,
     axis[2] = tf[itmRotation][itmAxis][2].asDouble(); // Z component of Euler vector
     tf.erase();                                       // Delete tmpTF node
     return (true);
-  } catch (NxLibException& ex) {
+  }
+  catch (NxLibException& ex) {
     ensensoExceptionHandling (ex, "jsonTransformationToAngleAxis");
     return (false);
   }
@@ -787,7 +806,8 @@ pcl::EnsensoGrabber::jsonTransformationToMatrix (const std::string transformatio
         convert_transformation.result()[itmTransformation][3][2].asDouble());
     matrix = tmp;
     return (true);
-  } catch (NxLibException& ex) {
+  }
+  catch (NxLibException& ex) {
     ensensoExceptionHandling (ex, "jsonTransformationToMatrix");
     return (false);
   }
@@ -823,7 +843,8 @@ pcl::EnsensoGrabber::eulerAnglesTransformationToJson (const double x,
     chain.execute();
     json = chain.result()[itmTransformation].asJson (pretty_format);
     return (true);
-  } catch (NxLibException& ex) {
+  }
+  catch (NxLibException& ex) {
     ensensoExceptionHandling (ex, "eulerAnglesTransformationToJson");
     return (false);
   }
@@ -908,7 +929,8 @@ pcl::EnsensoGrabber::matrixTransformationToJson (const Eigen::Affine3d& matrix,
     convert_transformation.execute();
     json = convert_transformation.result()[itmTransformation].asJson (pretty_format);
     return (true);
-  } catch (NxLibException& ex) {
+  }
+  catch (NxLibException& ex) {
     ensensoExceptionHandling (ex, "matrixTransformationToJson");
     return (false);
   }
@@ -973,7 +995,8 @@ pcl::EnsensoGrabber::processGrabbing()
                 false); // Do NOT store the pattern into the buffer!
             collect_pattern.execute();
             collected_pattern = true;
-          } catch (const NxLibException& ex) {
+          }
+          catch (const NxLibException& ex) {
             // We failed to collect the pattern but the RAW images are available!
           }
 
@@ -1059,7 +1082,8 @@ pcl::EnsensoGrabber::processGrabbing()
           images_signal_->operator() (images);
       }
       continue_grabbing = running_;
-    } catch (NxLibException& ex) {
+    }
+    catch (NxLibException& ex) {
       ensensoExceptionHandling (ex, "processGrabbing");
     }
   }

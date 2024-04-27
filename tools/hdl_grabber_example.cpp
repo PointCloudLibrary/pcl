@@ -90,7 +90,8 @@ public:
     char key;
     do {
       key = static_cast<char> (getchar());
-    } while (key != 27 && key != 'q' && key != 'Q');
+    }
+    while (key != 27 && key != 'q' && key != 'Q');
 
     // stop the grabber
     interface.stop();

@@ -269,14 +269,16 @@ ncvSetDebugOutputHandler (NCVDebugOutputHandler* func);
           << ", line=" << __LINE__ << std::endl;                                       \
       ncvDebugOutput (oss.str());                                                      \
     }                                                                                  \
-  } while (0)
+  }                                                                                    \
+  while (0)
 
 #define ncvAssertPrintReturn(pred, msg, err)                                           \
   do {                                                                                 \
     ncvAssertPrintCheck (pred, msg);                                                   \
     if (!(pred))                                                                       \
       return err;                                                                      \
-  } while (0)
+  }                                                                                    \
+  while (0)
 
 #define ncvAssertReturn(pred, err)                                                     \
   ncvAssertPrintReturn (pred, "retcode=" << (int)err, err)
@@ -286,19 +288,22 @@ ncvSetDebugOutputHandler (NCVDebugOutputHandler* func);
     NCVStatus _ncvStat = ncvOp;                                                        \
     ncvAssertPrintReturn (                                                             \
         NCV_SUCCESS == _ncvStat, "NcvStat=" << (int)_ncvStat, _ncvStat);               \
-  } while (0)
+  }                                                                                    \
+  while (0)
 
 #define ncvAssertCUDAReturn(cudacall, errCode)                                         \
   do {                                                                                 \
     cudaError_t res = cudacall;                                                        \
     ncvAssertPrintReturn (cudaSuccess == res, "cudaError_t=" << res, errCode);         \
-  } while (0)
+  }                                                                                    \
+  while (0)
 
 #define ncvAssertCUDALastErrorReturn(errCode)                                          \
   do {                                                                                 \
     cudaError_t res = cudaGetLastError();                                              \
     ncvAssertPrintReturn (cudaSuccess == res, "cudaError_t=" << res, errCode);         \
-  } while (0)
+  }                                                                                    \
+  while (0)
 
 /**
  * \brief Return-codes for status notification, errors and warnings

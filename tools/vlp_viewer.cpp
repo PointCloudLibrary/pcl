@@ -71,11 +71,13 @@ using namespace pcl::visualization;
       count = 0;                                                                       \
       last = now;                                                                      \
     }                                                                                  \
-  } while (false)
+  }                                                                                    \
+  while (false)
 #else
 #define FPS_CALC(_WHAT_)                                                               \
   do {                                                                                 \
-  } while (false)
+  }                                                                                    \
+  while (false)
 #endif
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

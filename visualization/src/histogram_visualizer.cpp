@@ -88,7 +88,8 @@ pcl::visualization::PCLHistogramVisualizer::spin()
     if (stopped_)
       break;
     std::this_thread::sleep_for (1s);
-  } while (true);
+  }
+  while (true);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////

@@ -103,7 +103,8 @@ Convolution<PointIn, PointOut>::convolveRows (PointCloudOut& output)
     case BORDERS_POLICY_IGNORE:
       convolve_rows (output);
     }
-  } catch (InitFailedException& e) {
+  }
+  catch (InitFailedException& e) {
     PCL_THROW_EXCEPTION (InitFailedException,
                          "[pcl::filters::Convolution::convolveRows] init failed "
                              << e.what());
@@ -126,7 +127,8 @@ Convolution<PointIn, PointOut>::convolveCols (PointCloudOut& output)
     case BORDERS_POLICY_IGNORE:
       convolve_cols (output);
     }
-  } catch (InitFailedException& e) {
+  }
+  catch (InitFailedException& e) {
     PCL_THROW_EXCEPTION (InitFailedException,
                          "[pcl::filters::Convolution::convolveCols] init failed "
                              << e.what());
@@ -146,7 +148,8 @@ Convolution<PointIn, PointOut>::convolve (const Eigen::ArrayXf& h_kernel,
     setInputCloud (tmp);
     setKernel (v_kernel);
     convolveCols (output);
-  } catch (InitFailedException& e) {
+  }
+  catch (InitFailedException& e) {
     PCL_THROW_EXCEPTION (InitFailedException,
                          "[pcl::filters::Convolution::convolve] init failed "
                              << e.what());
@@ -162,7 +165,8 @@ Convolution<PointIn, PointOut>::convolve (PointCloud<PointOut>& output)
     convolveRows (*tmp);
     setInputCloud (tmp);
     convolveCols (output);
-  } catch (InitFailedException& e) {
+  }
+  catch (InitFailedException& e) {
     PCL_THROW_EXCEPTION (InitFailedException,
                          "[pcl::filters::Convolution::convolve] init failed "
                              << e.what());

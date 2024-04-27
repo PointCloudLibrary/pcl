@@ -156,7 +156,8 @@ pcl::IFSReader::readHeader (const std::string& file_name,
         break;
       }
     }
-  } catch (const char* exception) {
+  }
+  catch (const char* exception) {
     PCL_ERROR ("[pcl::IFSReader::readHeader] %s\n", exception);
     fs.close();
     return (-1);
@@ -198,7 +199,8 @@ pcl::IFSReader::read (const std::string& file_name,
 
   try {
     mapped_file.open (file_name, data_size, 0);
-  } catch (const char* exception) {
+  }
+  catch (const char* exception) {
     PCL_ERROR ("[pcl::IFSReader::read] Error : %s!\n", file_name.c_str(), exception);
     mapped_file.close();
     return (-1);
@@ -251,7 +253,8 @@ pcl::IFSReader::read (const std::string& file_name,
 
   try {
     mapped_file.open (file_name, data_size, 0);
-  } catch (const char* exception) {
+  }
+  catch (const char* exception) {
     PCL_ERROR ("[pcl::IFSReader::read] Error : %s!\n", file_name.c_str(), exception);
     mapped_file.close();
     return (-1);
@@ -385,7 +388,8 @@ pcl::IFSWriter::write (const std::string& file_name,
 
   try {
     sink.open (params);
-  } catch (const char* exception) {
+  }
+  catch (const char* exception) {
     PCL_ERROR ("[pcl::IFSWriter::write] Error : %s!\n", file_name.c_str(), exception);
     sink.close();
     return (-1);

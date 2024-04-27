@@ -120,12 +120,14 @@ main (int argc, char** argv)
 
     PCL_INFO ("Done!\n");
     return (0);
-
-  } catch (const pcl::PCLException& /*e*/) {
+  }
+  catch (const pcl::PCLException& /*e*/) {
     PCL_ERROR ("PCLException... Exiting...\n");
-  } catch (const std::bad_alloc& /*e*/) {
+  }
+  catch (const std::bad_alloc& /*e*/) {
     PCL_ERROR ("Bad alloc... Exiting...\n");
-  } catch (const std::exception& /*e*/) {
+  }
+  catch (const std::exception& /*e*/) {
     PCL_ERROR ("Exception... Exiting...\n");
   }
   return (-1);

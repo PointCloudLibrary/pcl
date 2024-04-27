@@ -216,7 +216,8 @@ main (int argc, char** argv)
     ::testing::InitGoogleTest (&argc, argv);
     ::testing::FLAGS_gtest_death_test_style = "threadsafe";
     return RUN_ALL_TESTS();
-  } catch (std::exception& e) {
+  }
+  catch (std::exception& e) {
     std::cerr << "Unhandled exception: " << e.what() << "\n";
   }
   return 1;

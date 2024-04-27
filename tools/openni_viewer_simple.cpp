@@ -70,11 +70,13 @@
       count = 0;                                                                       \
       last = now;                                                                      \
     }                                                                                  \
-  } while (false)
+  }                                                                                    \
+  while (false)
 #else
 #define FPS_CALC(_WHAT_)                                                               \
   do {                                                                                 \
-  } while (false)
+  }                                                                                    \
+  while (false)
 #endif
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -376,7 +378,8 @@ main (int argc, char** argv)
       SimpleOpenNIViewer<pcl::PointXYZI> v (grabber);
       v.run();
     }
-  } catch (pcl::IOException& e) {
+  }
+  catch (pcl::IOException& e) {
     pcl::console::print_error ("Failed to create a grabber: %s\n", e.what());
     return (1);
   }

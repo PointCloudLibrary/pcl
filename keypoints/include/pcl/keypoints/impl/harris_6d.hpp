@@ -410,8 +410,8 @@ pcl::HarrisKeypoint6D<PointInT, PointOutT, NormalT>::refineCorners (
       diff = (cornerIt->x - corner.x) * (cornerIt->x - corner.x) +
              (cornerIt->y - corner.y) * (cornerIt->y - corner.y) +
              (cornerIt->z - corner.z) * (cornerIt->z - corner.z);
-
-    } while (diff > 1e-6 && ++iterations < max_iterations);
+    }
+    while (diff > 1e-6 && ++iterations < max_iterations);
   }
 }
 

@@ -53,13 +53,15 @@
     PCL_ASSERT_ERROR_PRINT_RETURN (NCV_SUCCESS == _ncv_return_status,                  \
                                    "ncv_return_status!=NCV_SUCCESS",                   \
                                    _ncv_return_status);                                \
-  } while (0)
+  }                                                                                    \
+  while (0)
 
 #define PCL_ASSERT_CUDA_RETURN(cudacall, errCode)                                      \
   do {                                                                                 \
     cudaError_t res = cudacall;                                                        \
     ncvAssertPrintReturn (cudaSuccess == res, "cudaError_t!=cudaSuccess", errCode);    \
-  } while (0)
+  }                                                                                    \
+  while (0)
 
 using boost::property_tree::ptree;
 
@@ -108,16 +110,19 @@ pcl::gpu::people::FaceDetector::loadFromXML2 (
   try // Fetch error loading the file
   {
     read_xml (filename, pt);
-  } catch (boost::exception const&) {
+  }
+  catch (boost::exception const&) {
     PCL_DEBUG ("[pcl::gpu::people::FaceDetector::loadFromXML2] : (D) : Unable to read "
                "filename with boost exception\n");
     return NCV_HAAR_XML_LOADING_EXCEPTION;
-  } catch (std::exception const& ex) {
+  }
+  catch (std::exception const& ex) {
     PCL_DEBUG ("[pcl::gpu::people::FaceDetector::loadFromXML2] : (D) : Unable to read "
                "filename with exception %s\n",
                ex.what());
     return NCV_HAAR_XML_LOADING_EXCEPTION;
-  } catch (...) {
+  }
+  catch (...) {
     PCL_DEBUG ("[pcl::gpu::people::FaceDetector::loadFromXML2] : (D) : Unable to read "
                "filename\n");
     return NCV_HAAR_XML_LOADING_EXCEPTION;
@@ -375,16 +380,19 @@ pcl::gpu::people::FaceDetector::loadFromXML2 (
       }
       level1++;
     }
-  } catch (boost::exception const&) {
+  }
+  catch (boost::exception const&) {
     PCL_DEBUG ("[pcl::gpu::people::FaceDetector::loadFromXML2] : (D) : Unable to "
                "process content with boost exception\n");
     return (NCV_HAAR_XML_LOADING_EXCEPTION);
-  } catch (std::exception const& ex) {
+  }
+  catch (std::exception const& ex) {
     PCL_DEBUG ("[pcl::gpu::people::FaceDetector::loadFromXML2] : (D) : Unable to "
                "process content with std exception %s\n",
                ex.what());
     return (NCV_HAAR_XML_LOADING_EXCEPTION);
-  } catch (...) {
+  }
+  catch (...) {
     PCL_DEBUG ("[pcl::gpu::people::FaceDetector::loadFromXML2] : (D) : Unable to "
                "process content\n");
     return (NCV_HAAR_XML_LOADING_EXCEPTION);

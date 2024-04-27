@@ -170,7 +170,8 @@ pcl::gpu::extractEuclideanClusters (
       PCL_DEBUG (" new points: %i, next queries size: %i\n",
                  found_points - previous_found_points,
                  queries_host.size());
-    } while (previous_found_points < found_points);
+    }
+    while (previous_found_points < found_points);
     // If this queue is satisfactory, add to the clusters
     if (found_points >= min_pts_per_cluster && found_points <= max_pts_per_cluster) {
       std::sort (r.indices.begin(), r.indices.end());

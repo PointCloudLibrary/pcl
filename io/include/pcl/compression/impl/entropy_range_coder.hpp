@@ -242,7 +242,8 @@ pcl::StaticRangeCoder::encodeIntVectorToStream (
       do {
         // increase frequency table size by factor 2
         frequencyTableSize <<= 1;
-      } while (inputSymbol + 1 > frequencyTableSize);
+      }
+      while (inputSymbol + 1 > frequencyTableSize);
 
       if (cFreqTable_.size() < frequencyTableSize + 1) {
         // resize frequency vector

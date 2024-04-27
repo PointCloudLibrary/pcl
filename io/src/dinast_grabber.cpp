@@ -63,7 +63,8 @@ pcl::DinastGrabber::~DinastGrabber() noexcept
     libusb_close (device_handle_);
     delete[] raw_buffer_;
     delete[] image_;
-  } catch (...) {
+  }
+  catch (...) {
     // Destructor never throws
   }
 }

@@ -282,9 +282,11 @@ pcl::GreedyProjectionTriangulation<PointInT>::reconstructPolygons (
             not_found = false;
             break;
           }
-        } while (true);
+        }
+        while (true);
         left++;
-      } while (not_found);
+      }
+      while (not_found);
     }
 
     is_free = NONE;

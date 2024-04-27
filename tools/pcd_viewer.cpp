@@ -937,7 +937,8 @@ main (int argc, char** argv)
         p->spinOnce();
       }
       std::this_thread::sleep_for (100us);
-    } while (!stopped);
+    }
+    while (!stopped);
   }
   else {
     // If no images, continue

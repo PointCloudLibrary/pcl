@@ -382,7 +382,8 @@ pcl::lzfDecompress (const void* const in_data,
         for (unsigned len_c = len + 2 /* case 0 iterates twice */; len_c; --len_c)
           *op++ = *ref++;
     }
-  } while (ip < in_end);
+  }
+  while (ip < in_end);
 
   return (static_cast<unsigned int> (op - static_cast<unsigned char*> (out_data)));
 }

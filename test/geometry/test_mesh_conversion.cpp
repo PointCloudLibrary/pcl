@@ -274,7 +274,8 @@ TYPED_TEST (TestMeshConversion, FaceVertexMeshToHalfEdgeMesh)
     converted_face.clear();
     do {
       converted_face.push_back (static_cast<index_t> (circ.getTargetIndex().get()));
-    } while (++circ != circ_end);
+    }
+    while (++circ != circ_end);
 
     EXPECT_TRUE (isCircularPermutation (expected_faces[i], converted_face))
         << "Face number " << i;

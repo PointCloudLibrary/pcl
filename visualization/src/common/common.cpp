@@ -62,7 +62,8 @@ pcl::visualization::getRandomColors (
            (b == g)) {
     }
     sum = r + g + b;
-  } while (sum <= min || sum >= max);
+  }
+  while (sum <= min || sum >= max);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -80,7 +81,8 @@ pcl::visualization::getRandomColors (pcl::RGB& rgb, double min, double max)
            (b == g)) {
     }
     sum = r + g + b;
-  } while (sum <= min || sum >= max);
+  }
+  while (sum <= min || sum >= max);
   rgb.r = static_cast<std::uint8_t> (r * 255.0);
   rgb.g = static_cast<std::uint8_t> (g * 255.0);
   rgb.b = static_cast<std::uint8_t> (b * 255.0);

@@ -241,8 +241,8 @@ pcl::search::OrganizedNeighbor<PointT>::nearestKSearch (
             static_cast<int> (right) >= xBegin && static_cast<int> (right) < xEnd &&
             static_cast<int> (top) >= yBegin && static_cast<int> (top) < yEnd &&
             static_cast<int> (bottom) >= yBegin && static_cast<int> (bottom) < yEnd);
-
-  } while (!stop);
+  }
+  while (!stop);
 
   const auto results_size = results.size();
   k_indices.resize (results_size);

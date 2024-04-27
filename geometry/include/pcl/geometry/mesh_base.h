@@ -230,7 +230,8 @@ public:
       {
         delete_faces_vertex_.push_back (circ.getTargetIndex());
       }
-    } while (++circ != circ_end);
+    }
+    while (++circ != circ_end);
 
     for (const auto& delete_me : delete_faces_vertex_) {
       this->deleteFace (delete_me);
@@ -1320,7 +1321,8 @@ protected:
         is_new_ab = false;
         return (true);
       }
-    } while (++circ != circ_end);
+    }
+    while (++circ != circ_end);
 
     return (true);
   }
@@ -1610,7 +1612,8 @@ protected:
       inner_he_.push_back (circ.getTargetIndex());
       is_boundary_.push_back (
           this->isBoundary (this->getOppositeHalfEdgeIndex (circ.getTargetIndex())));
-    } while (++circ != circ_end);
+    }
+    while (++circ != circ_end);
     assert (inner_he_.size() >= 3); // Minimum should be a triangle.
 
     const int n = static_cast<int> (inner_he_.size());
@@ -1950,7 +1953,8 @@ protected:
       if (this->isBoundary (circ.getTargetIndex())) {
         return (true);
       }
-    } while (++circ != circ_end);
+    }
+    while (++circ != circ_end);
 
     return (false);
   }
@@ -1967,7 +1971,8 @@ protected:
       if (this->isBoundary (circ.getTargetIndex())) {
         return (true);
       }
-    } while (++circ != circ_end);
+    }
+    while (++circ != circ_end);
 
     return (false);
   }
@@ -1992,7 +1997,8 @@ protected:
     do {
       if (this->isBoundary (circ.getTargetIndex()))
         return (false);
-    } while (++circ != circ_end);
+    }
+    while (++circ != circ_end);
 
     return (true);
   }

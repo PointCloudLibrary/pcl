@@ -734,7 +734,8 @@ TEST (TestDelete, VertexAndEdge)
       idx_he_06 = circ.getCurrentHalfEdgeIndex();
       break;
     }
-  } while (++circ != circ_end);
+  }
+  while (++circ != circ_end);
 
   // Delete
   Mesh mesh_deleted_vertex = mesh;

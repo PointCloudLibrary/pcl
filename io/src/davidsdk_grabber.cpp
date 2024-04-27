@@ -81,7 +81,8 @@ pcl::DavidSDKGrabber::~DavidSDKGrabber() noexcept
     disconnect_all_slots<sig_cb_davidsdk_image>();
     disconnect_all_slots<sig_cb_davidsdk_point_cloud_image>();
     disconnect_all_slots<sig_cb_davidsdk_mesh_image>();
-  } catch (...) {
+  }
+  catch (...) {
     // destructor never throws
   }
 }
@@ -98,7 +99,8 @@ pcl::DavidSDKGrabber::connect (const std::string& address, std::uint16_t port)
   try {
     david_.Connect (address, port);
     client_connected_ = true;
-  } catch (david::Exception& e) {
+  }
+  catch (david::Exception& e) {
     e.PrintError();
   }
 
@@ -114,7 +116,8 @@ pcl::DavidSDKGrabber::disconnect (const bool stop_server)
 
   try {
     david_.Disconnect (stop_server);
-  } catch (david::Exception& e) {
+  }
+  catch (david::Exception& e) {
     e.PrintError();
   }
 
@@ -248,7 +251,8 @@ pcl::DavidSDKGrabber::calibrate (double grid_size)
 
   try {
     david_.sls().Calibrate (grid_size);
-  } catch (david::Exception& e) {
+  }
+  catch (david::Exception& e) {
     e.PrintError();
     return (false);
   }
@@ -285,7 +289,8 @@ pcl::DavidSDKGrabber::grabSingleCloud (pcl::PointCloud<pcl::PointXYZ>& cloud)
       return (false);
 
     pcl::fromPCLPointCloud2 (mesh.cloud, cloud);
-  } catch (david::Exception& e) {
+  }
+  catch (david::Exception& e) {
     e.PrintError();
     return (false);
   }
@@ -319,8 +324,8 @@ pcl::DavidSDKGrabber::grabSingleMesh (pcl::PolygonMesh& mesh)
     }
     else
       return (false);
-
-  } catch (david::Exception& e) {
+  }
+  catch (david::Exception& e) {
     e.PrintError();
     return (false);
   }
@@ -415,7 +420,8 @@ pcl::DavidSDKGrabber::processGrabbing()
           image_signal_->operator() (image);
       }
       continue_grabbing = running_;
-    } catch (david::Exception& e) {
+    }
+    catch (david::Exception& e) {
       e.PrintError();
     }
   }

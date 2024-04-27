@@ -356,7 +356,8 @@ on__hack__wcsicmp (const wchar_t* s1, const wchar_t* s2)
     c1 = on__hack__tolower (*s1++);
     c2 = on__hack__tolower (*s2++);
     rc = c1 - c2;
-  } while (0 == rc && c1 && c2);
+  }
+  while (0 == rc && c1 && c2);
 
   return rc;
 }

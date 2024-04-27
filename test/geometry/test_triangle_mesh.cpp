@@ -597,13 +597,15 @@ TEST (TestManifoldTriangleMesh, addTrianglePair)
     ManifoldTriangleMesh::VertexAroundFaceCirculator circ_end = circ;
     do {
       actual_1.push_back (circ.getTargetIndex());
-    } while (++circ != circ_end);
+    }
+    while (++circ != circ_end);
 
     circ = mesh.getVertexAroundFaceCirculator (FaceIndex (2 * i + 1));
     circ_end = circ;
     do {
       actual_2.push_back (circ.getTargetIndex());
-    } while (++circ != circ_end);
+    }
+    while (++circ != circ_end);
 
     VertexIndices expected_1, expected_2, expected_3, expected_4;
     tmp = faces[i];

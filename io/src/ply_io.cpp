@@ -275,7 +275,8 @@ PLYReader::vertexScalarPropertyCallback (Scalar value)
     unsetDenseFlagIfNotFinite (value, cloud_);
     cloud_->at<Scalar> (vertex_count_, vertex_offset_before_) = value;
     vertex_offset_before_ += static_cast<int> (sizeof (Scalar));
-  } catch (const std::out_of_range&) {
+  }
+  catch (const std::out_of_range&) {
     PCL_WARN ("[pcl::PLYReader::vertexScalarPropertyCallback] Incorrect data index "
               "specified (%lu)!\n",
               vertex_count_ * cloud_->point_step + vertex_offset_before_);
@@ -306,7 +307,8 @@ PLYReader::vertexListPropertyContentCallback (ContentType value)
     unsetDenseFlagIfNotFinite (value, cloud_);
     cloud_->at<ContentType> (vertex_count_, vertex_offset_before_) = value;
     vertex_offset_before_ += static_cast<int> (sizeof (ContentType));
-  } catch (const std::out_of_range&) {
+  }
+  catch (const std::out_of_range&) {
     PCL_WARN (
         "[pcl::PLYReader::vertexListPropertyContentCallback] Incorrect data index "
         "specified (%lu)!\n",
@@ -393,7 +395,8 @@ pcl::PLYReader::vertexColorCallback (const std::string& color_name,
     try {
       cloud_->at<std::int32_t> (vertex_count_, rgb_offset_before_) = rgb;
       vertex_offset_before_ += static_cast<int> (sizeof (pcl::io::ply::float32));
-    } catch (const std::out_of_range&) {
+    }
+    catch (const std::out_of_range&) {
       PCL_WARN ("[pcl::PLYReader::vertexColorCallback] Incorrect data index specified "
                 "(%lu)!\n",
                 vertex_count_ * cloud_->point_step + rgb_offset_before_);

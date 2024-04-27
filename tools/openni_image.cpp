@@ -103,7 +103,8 @@ int buff_size = BUFFER_SIZE;
       count = 0;                                                                       \
       last = now;                                                                      \
     }                                                                                  \
-  } while (false)
+  }                                                                                    \
+  while (false)
 
 #define FPS_CALC_VIEWER(_WHAT_, buff)                                                  \
   do {                                                                                 \
@@ -118,7 +119,8 @@ int buff_size = BUFFER_SIZE;
       count = 0;                                                                       \
       last = now;                                                                      \
     }                                                                                  \
-  } while (false)
+  }                                                                                    \
+  while (false)
 
 #define FPS_CALC_DRIVER(_WHAT_, buff1, buff2)                                          \
   do {                                                                                 \
@@ -139,7 +141,8 @@ int buff_size = BUFFER_SIZE;
       count = 0;                                                                       \
       last = now;                                                                      \
     }                                                                                  \
-  } while (false)
+  }                                                                                    \
+  while (false)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 struct Frame {

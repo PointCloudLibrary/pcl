@@ -66,7 +66,8 @@ using namespace std::chrono_literals;
       count = 0;                                                                       \
       last = now;                                                                      \
     }                                                                                  \
-  } while (false)
+  }                                                                                    \
+  while (false)
 
 bool is_done = false;
 std::mutex io_mutex;

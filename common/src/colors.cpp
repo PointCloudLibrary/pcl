@@ -190,7 +190,8 @@ pcl::getRandomColor (double min, double max)
            (b == g)) {
     }
     sum = r + g + b;
-  } while (sum <= min || sum >= max);
+  }
+  while (sum <= min || sum >= max);
   pcl::RGB color;
   color.r = static_cast<std::uint8_t> (r * 255.0);
   color.g = static_cast<std::uint8_t> (g * 255.0);

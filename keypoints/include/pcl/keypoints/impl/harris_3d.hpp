@@ -522,7 +522,8 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::refineCorners (
       if (diff <= 1e-6) {
         break;
       }
-    } while (++iterations < max_iterations);
+    }
+    while (++iterations < max_iterations);
   }
 }
 

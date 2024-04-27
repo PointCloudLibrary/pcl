@@ -162,8 +162,9 @@ public:
 
       //            printf ("energy = %f, energy diff. = %f, ratio = %f\n", energy,
       //            old_energy - energy, energy/old_energy);
-    } while (energy / old_energy <
-             new_to_old_energy_ratio_); // iterate if enough progress
+    }
+    while (energy / old_energy <
+           new_to_old_energy_ratio_); // iterate if enough progress
 
     //          printf ("\n");
   }

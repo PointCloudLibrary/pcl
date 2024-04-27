@@ -145,7 +145,8 @@ ONIGrabber::~ONIGrabber() noexcept
     disconnect_all_slots<sig_cb_openni_point_cloud_rgb>();
     disconnect_all_slots<sig_cb_openni_point_cloud_rgba>();
     disconnect_all_slots<sig_cb_openni_point_cloud_i>();
-  } catch (...) {
+  }
+  catch (...) {
     // destructor never throws
   }
 }
@@ -167,7 +168,8 @@ ONIGrabber::start()
         device_->startIRStream();
 
       running_ = true;
-    } catch (openni_wrapper::OpenNIException& ex) {
+    }
+    catch (openni_wrapper::OpenNIException& ex) {
       PCL_THROW_EXCEPTION (pcl::IOException,
                            "Could not start streams. Reason: " << ex.what());
     }
@@ -200,7 +202,8 @@ ONIGrabber::stop()
         device_->stopIRStream();
 
       running_ = false;
-    } catch (openni_wrapper::OpenNIException& ex) {
+    }
+    catch (openni_wrapper::OpenNIException& ex) {
       PCL_THROW_EXCEPTION (pcl::IOException,
                            "Could not stop streams. Reason: " << ex.what());
     }

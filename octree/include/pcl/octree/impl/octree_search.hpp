@@ -856,7 +856,8 @@ OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::
       curr_node = 8;
       break;
     }
-  } while ((curr_node < 8) && (max_voxel_count <= 0 || voxel_count < max_voxel_count));
+  }
+  while ((curr_node < 8) && (max_voxel_count <= 0 || voxel_count < max_voxel_count));
   return (voxel_count);
 }
 
@@ -1048,7 +1049,8 @@ OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::
       curr_node = 8;
       break;
     }
-  } while ((curr_node < 8) && (max_voxel_count <= 0 || voxel_count < max_voxel_count));
+  }
+  while ((curr_node < 8) && (max_voxel_count <= 0 || voxel_count < max_voxel_count));
 
   return (voxel_count);
 }

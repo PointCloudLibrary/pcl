@@ -70,7 +70,8 @@ using namespace std::chrono_literals;
 #else
 #define FPS_CALC(_WHAT_)                                                               \
   do {                                                                                 \
-  } while (false)
+  }                                                                                    \
+  while (false)
 #endif
 
 using namespace pcl::console;

@@ -66,7 +66,8 @@
 #else
 #define FPS_CALC(_WHAT_)                                                               \
   do {                                                                                 \
-  } while (false)
+  }                                                                                    \
+  while (false)
 #endif
 
 void

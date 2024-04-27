@@ -97,7 +97,8 @@ public:
       if (key == ' ') {
         interface.toggle();
       }
-    } while ((key != 27) && (key != 'q') && (key != 'Q'));
+    }
+    while ((key != 27) && (key != 'q') && (key != 'Q'));
 
     // stop the grabber
     interface.stop();

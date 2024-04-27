@@ -240,7 +240,8 @@ openni_wrapper::OpenNIDriver::~OpenNIDriver() noexcept
   // no exception during destructor
   try {
     stopAll();
-  } catch (...) {
+  }
+  catch (...) {
   }
 
 #if (XN_MINOR_VERSION >= 3)

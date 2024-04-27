@@ -236,9 +236,10 @@ IterativeClosestPoint<PointSource, PointTarget, Scalar>::computeTransformation (
     }
 
     converged_ = static_cast<bool> ((*convergence_criteria_));
-  } while (convergence_criteria_->getConvergenceState() ==
-           pcl::registration::DefaultConvergenceCriteria<
-               Scalar>::CONVERGENCE_CRITERIA_NOT_CONVERGED);
+  }
+  while (convergence_criteria_->getConvergenceState() ==
+         pcl::registration::DefaultConvergenceCriteria<
+             Scalar>::CONVERGENCE_CRITERIA_NOT_CONVERGED);
 
   // Transform the input cloud using the final transformation
   PCL_DEBUG (

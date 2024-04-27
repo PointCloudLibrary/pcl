@@ -112,7 +112,8 @@ CloudEditorWidget::load()
 
   try {
     loadFile (file_path.toStdString());
-  } catch (...) {
+  }
+  catch (...) {
     QMessageBox::information (
         this, tr ("Point Cloud Editor"), tr ("Can not load %1.").arg (file_path));
   }
@@ -139,7 +140,8 @@ CloudEditorWidget::save()
     swapRBValues();
     try {
       pcl::io::savePCDFile (file_path_std, cloud_ptr_->getInternalCloud());
-    } catch (...) {
+    }
+    catch (...) {
       QMessageBox::information (
           this, tr ("Point Cloud Editor"), tr ("Can not save %1.").arg (file_path));
     }
@@ -150,7 +152,8 @@ CloudEditorWidget::save()
     pcl::copyPointCloud (cloud_ptr_->getInternalCloud(), uncolored_cloud);
     try {
       pcl::io::savePCDFile (file_path_std, uncolored_cloud);
-    } catch (...) {
+    }
+    catch (...) {
       QMessageBox::information (
           this, tr ("Point Cloud Editor"), tr ("Can not save %1.").arg (file_path));
     }

@@ -91,7 +91,8 @@ hasFaces (const MeshT& mesh,
         return false;
       }
       vi.push_back (circ.getTargetIndex());
-    } while (++circ != circ_end);
+    }
+    while (++circ != circ_end);
 
     if (vi.size() != faces[i].size()) {
       std::cerr << "Wrong size!\n";
@@ -156,7 +157,8 @@ hasFaces (const MeshT& mesh,
         return false;
       }
       vv.push_back (vdc[circ.getTargetIndex().get()]);
-    } while (++circ != circ_end);
+    }
+    while (++circ != circ_end);
 
     if (vv.size() != faces[i].size()) {
       std::cerr << "Wrong size!\n";
@@ -218,7 +220,8 @@ getBoundaryVertices (const MeshT& mesh,
       return {};
     }
     boundary_vertices.push_back (circ.getTargetIndex());
-  } while (++circ != circ_end);
+  }
+  while (++circ != circ_end);
   if (verbose)
     std::cerr << "\n";
   return boundary_vertices;
@@ -263,7 +266,8 @@ getBoundaryVertices (const MeshT& mesh, const int first, const bool verbose = fa
     }
     boundary_vertices.push_back (
         mesh.getVertexDataCloud()[circ.getTargetIndex().get()]);
-  } while (++circ != circ_end);
+  }
+  while (++circ != circ_end);
   if (verbose)
     std::cerr << "\n";
   return boundary_vertices;
@@ -371,7 +375,8 @@ findHalfEdge (const MeshT& mesh,
     if (circ.getTargetIndex() == idx_v_1) {
       return (circ.getCurrentHalfEdgeIndex());
     }
-  } while (++circ != circ_end);
+  }
+  while (++circ != circ_end);
 
   return {};
 }

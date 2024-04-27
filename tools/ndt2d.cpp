@@ -114,7 +114,8 @@ main (int argc, char** argv)
   try {
     pcl::io::savePCDFile (result_filename, *model);
     std::cout << "saving first model to " << result_filename << std::endl;
-  } catch (pcl::IOException& e) {
+  }
+  catch (pcl::IOException& e) {
     std::cerr << e.what() << std::endl;
   }
 
@@ -159,7 +160,8 @@ main (int argc, char** argv)
       result_filename = result_filename.substr (result_filename.rfind ('/') + 1);
       pcl::io::savePCDFileBinary (result_filename, *tmp);
       std::cout << "saving result to " << result_filename << std::endl;
-    } catch (pcl::IOException& e) {
+    }
+    catch (pcl::IOException& e) {
       std::cerr << e.what() << std::endl;
     }
   }

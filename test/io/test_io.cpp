@@ -599,7 +599,8 @@ TEST (PCL, IO)
   // Save as binary
   try {
     w.write<PointXYZI> ("test_pcl_io_binary.pcd", cloud, true);
-  } catch (pcl::IOException& e) {
+  }
+  catch (pcl::IOException& e) {
     std::cerr << e.detailedMessage() << std::endl;
   }
   res = loadPCDFile ("test_pcl_io_binary.pcd", cloud_blob);
@@ -635,7 +636,8 @@ TEST (PCL, IO)
   // Save as ASCII
   try {
     w.write<PointXYZI> ("test_pcl_io_ascii.pcd", cloud, false);
-  } catch (pcl::IOException& e) {
+  }
+  catch (pcl::IOException& e) {
     std::cerr << e.detailedMessage() << std::endl;
   }
   res = loadPCDFile ("test_pcl_io_ascii.pcd", cloud_blob);
@@ -674,7 +676,8 @@ TEST (PCL, IO)
   // Save as binary
   try {
     w.write<PointXYZI> ("test_pcl_io_binary.pcd", cloud, indices, true);
-  } catch (pcl::IOException& e) {
+  }
+  catch (pcl::IOException& e) {
     std::cerr << e.detailedMessage() << std::endl;
   }
   res = loadPCDFile ("test_pcl_io_binary.pcd", cloud_blob);
@@ -709,7 +712,8 @@ TEST (PCL, IO)
   // Save as ASCII
   try {
     w.write<PointXYZI> ("test_pcl_io_ascii.pcd", cloud, indices, false);
-  } catch (pcl::IOException& e) {
+  }
+  catch (pcl::IOException& e) {
     std::cerr << e.detailedMessage() << std::endl;
   }
   res = loadPCDFile ("test_pcl_io_ascii.pcd", cloud_blob);
@@ -1615,7 +1619,8 @@ TEST (PCL, Locale)
 #else
       std::locale::global (std::locale ("de_DE.UTF-8"));
 #endif
-    } catch (const std::runtime_error&) {
+    }
+    catch (const std::runtime_error&) {
       PCL_WARN ("Failed to set locale, skipping test.\n");
     }
     int res = writer.writeASCII<PointXYZ> ("test_pcl_io_ascii_locale.pcd", cloud);
@@ -1628,7 +1633,8 @@ TEST (PCL, Locale)
 #else
       std::locale::global (std::locale ("en_US.UTF-8"));
 #endif
-    } catch (const std::runtime_error&) {
+    }
+    catch (const std::runtime_error&) {
       PCL_WARN ("Failed to set locale, skipping test.\n");
     }
     reader.read<PointXYZ> ("test_pcl_io_ascii_locale.pcd", cloud2);
@@ -1647,7 +1653,8 @@ TEST (PCL, Locale)
       ASSERT_FLOAT_EQ (cloud2[i].y, cloud[i].y);
       ASSERT_FLOAT_EQ (cloud2[i].z, cloud[i].z);
     }
-  } catch (const std::exception&) {
+  }
+  catch (const std::exception&) {
   }
 
   remove ("test_pcl_io_ascii_locale.pcd");
@@ -1659,7 +1666,8 @@ TEST (PCL, Locale)
 #else
     std::locale::global (std::locale ("en_US.UTF-8"));
 #endif
-  } catch (const std::runtime_error&) {
+  }
+  catch (const std::runtime_error&) {
     PCL_WARN ("Failed to set locale, skipping test.\n");
   }
   PCDWriter writer;
@@ -1673,7 +1681,8 @@ TEST (PCL, Locale)
 #else
     std::locale::global (std::locale ("de_DE.UTF-8"));
 #endif
-  } catch (const std::runtime_error&) {
+  }
+  catch (const std::runtime_error&) {
     PCL_WARN ("Failed to set locale, skipping test.\n");
   }
   reader.read<PointXYZ> ("test_pcl_io_ascii_locale.pcd", cloud3);

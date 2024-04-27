@@ -177,12 +177,14 @@ recurse:
       if (mid > loguy) {
         do {
           loguy++;
-        } while (loguy < mid && ON_QSORT_LE (loguy, mid));
+        }
+        while (loguy < mid && ON_QSORT_LE (loguy, mid));
       }
       if (mid <= loguy) {
         do {
           loguy++;
-        } while (loguy <= hi && ON_QSORT_LE (loguy, mid));
+        }
+        while (loguy <= hi && ON_QSORT_LE (loguy, mid));
       }
 
       /* lo < loguy <= hi+1, A[i] <= A[mid] for lo <= i < loguy,
@@ -190,7 +192,8 @@ recurse:
 
       do {
         higuy--;
-      } while (higuy > mid && ON_QSORT_GT (higuy, mid));
+      }
+      while (higuy > mid && ON_QSORT_GT (higuy, mid));
 
       /* lo <= higuy < hi, A[i] > A[mid] for higuy < i < hi,
           either higuy == lo or A[higuy] <= A[mid] */
@@ -232,12 +235,14 @@ recurse:
     if (mid < higuy) {
       do {
         higuy--;
-      } while (higuy > mid && ON_QSORT_EQ (higuy, mid));
+      }
+      while (higuy > mid && ON_QSORT_EQ (higuy, mid));
     }
     if (mid >= higuy) {
       do {
         higuy--;
-      } while (higuy > lo && ON_QSORT_EQ (higuy, mid));
+      }
+      while (higuy > lo && ON_QSORT_EQ (higuy, mid));
     }
 
     /* OK, now we have the following:

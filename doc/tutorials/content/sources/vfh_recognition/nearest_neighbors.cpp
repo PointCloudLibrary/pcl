@@ -41,7 +41,8 @@ loadHist (const pcl_fs::path& path, vfh_model& vfh)
       return (false);
     if ((int)cloud.width * cloud.height != 1)
       return (false);
-  } catch (const pcl::InvalidConversionException&) {
+  }
+  catch (const pcl::InvalidConversionException&) {
     return (false);
   }
 

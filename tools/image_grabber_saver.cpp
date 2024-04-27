@@ -139,7 +139,8 @@ main (int argc, char** argv)
 
   do {
     grabber->trigger();
-  } while (!grabber->atLastFrame());
+  }
+  while (!grabber->atLastFrame());
   grabber->trigger(); // Attempt to process the last frame
   grabber->stop();
 }

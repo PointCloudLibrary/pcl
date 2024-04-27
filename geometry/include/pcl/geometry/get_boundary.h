@@ -83,7 +83,8 @@ getBoundBoundaryHalfEdges (
       do {
         visited[pcl::geometry::toEdgeIndex (circ.getTargetIndex()).get()] = true;
         boundary_he.push_back (circ.getTargetIndex());
-      } while (++circ != circ_end);
+      }
+      while (++circ != circ_end);
 
       boundary_he_collection.push_back (boundary_he);
     }

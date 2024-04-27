@@ -280,8 +280,9 @@ EXAMPLE:
   if (span_index < cv_count - order) {
     do {
       span_index++;
-    } while (span_index < cv_count - order &&
-             knot[span_index + order - 2] == knot[span_index + order - 1]);
+    }
+    while (span_index < cv_count - order &&
+           knot[span_index + order - 2] == knot[span_index + order - 1]);
   }
   return span_index;
 }

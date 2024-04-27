@@ -601,7 +601,8 @@ pcl::io::ply::ply_parser::parse_scalar_property (
       value = static_cast<scalar_type> (
           boost::lexical_cast<
               typename pcl::io::ply::type_traits<scalar_type>::parse_type> (value_s));
-    } catch (boost::bad_lexical_cast&) {
+    }
+    catch (boost::bad_lexical_cast&) {
       value = std::numeric_limits<scalar_type>::quiet_NaN();
     }
 
@@ -675,7 +676,8 @@ pcl::io::ply::ply_parser::parse_list_property (
         value = static_cast<scalar_type> (
             boost::lexical_cast<
                 typename pcl::io::ply::type_traits<scalar_type>::parse_type> (value_s));
-      } catch (boost::bad_lexical_cast&) {
+      }
+      catch (boost::bad_lexical_cast&) {
         value = std::numeric_limits<scalar_type>::quiet_NaN();
       }
 

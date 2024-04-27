@@ -174,7 +174,8 @@ pcl::NormalSpaceSampling<PointT, NormalT>::applyFilter (Indices& indices)
       do {
         random_index = rng_uniform_distribution (rng_);
         pos = start_index[j] + random_index;
-      } while (is_sampled_flag.test (pos));
+      }
+      while (is_sampled_flag.test (pos));
 
       is_sampled_flag.flip (start_index[j] + random_index);
 

@@ -327,8 +327,8 @@ pcl_cuda::MultiRandomSampleConsensus<Storage>::computeModel (int debug_verbosity
 
     // one batch done, go to next
     cur_batch++;
-
-  } while (cur_iteration < max_batches_ * iterations_per_batch_);
+  }
+  while (cur_iteration < max_batches_ * iterations_per_batch_);
 
   return (false);
 }

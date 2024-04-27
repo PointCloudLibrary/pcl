@@ -327,7 +327,8 @@ GeneralizedIterativeClosestPoint<PointSource, PointTarget, Scalar>::
       break;
     }
     result = bfgs.testGradient();
-  } while (result == BFGSSpace::Running && inner_iterations_ < max_inner_iterations_);
+  }
+  while (result == BFGSSpace::Running && inner_iterations_ < max_inner_iterations_);
   if (result == BFGSSpace::NoProgress || result == BFGSSpace::Success ||
       inner_iterations_ == max_inner_iterations_) {
     PCL_DEBUG ("[pcl::registration::TransformationEstimationBFGS::"
@@ -445,7 +446,8 @@ GeneralizedIterativeClosestPoint<PointSource, PointTarget, Scalar>::
                  rotation_gradient_tolerance_);
       break;
     }
-  } while (inner_iterations_ < max_inner_iterations_);
+  }
+  while (inner_iterations_ < max_inner_iterations_);
   PCL_DEBUG ("[estimateRigidTransformationNewton] solver finished after %i iterations "
              "(of max %i)\n",
              inner_iterations_,
@@ -843,7 +845,8 @@ GeneralizedIterativeClosestPoint<PointSource, PointTarget, Scalar>::
             delta = c_delta;
         }
       }
-    } catch (PCLException& e) {
+    }
+    catch (PCLException& e) {
       PCL_DEBUG ("[pcl::%s::computeTransformation] Optimization issue %s\n",
                  getClassName().c_str(),
                  e.what());

@@ -34,7 +34,8 @@
       ON_AssertEx (false, __FILE__, __LINE__, __FUNCTION__, #cond " is false");        \
       return (returncode);                                                             \
     }                                                                                  \
-  } while (0)
+  }                                                                                    \
+  while (0)
 #else
 // __FUNCTION__ macro does not exist
 #define ON_ERROR(msg) ON_Error (__FILE__, __LINE__, msg)
@@ -46,7 +47,8 @@
       ON_Assert (false, __FILE__, __LINE__, #cond " is false");                        \
       return (returncode);                                                             \
     }                                                                                  \
-  } while (0)
+  }                                                                                    \
+  while (0)
 #endif
 
 ON_BEGIN_EXTERNC

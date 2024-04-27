@@ -376,7 +376,8 @@ pcl::interpolatePointIndex (int p, int len, InterpolationType type)
           p = -p - 1 + delta;
         else
           p = len - 1 - (p - len) - delta;
-      } while (static_cast<unsigned> (p) >= static_cast<unsigned> (len));
+      }
+      while (static_cast<unsigned> (p) >= static_cast<unsigned> (len));
     }
     else if (type == BORDER_WRAP) {
       if (p < 0)

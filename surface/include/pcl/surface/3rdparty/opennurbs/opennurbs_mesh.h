@@ -1426,8 +1426,9 @@ public:
   /////////
   // Description:
   //		Reverse one coordinate direction of the texture coordinates, within texture
-  // domain m_tex_domain 	Parameters: 		dir  -[in]	-   dir=0  first texture coordinate
-  // is reversed 									  dir=1 second texture coordinate is reversed
+  // domain m_tex_domain 	Parameters: 		dir  -[in]	-   dir=0  first texture
+  // coordinate is reversed 									  dir=1 second texture coordinate is
+  // reversed
   //  Returns
   //			true  -  success
   bool

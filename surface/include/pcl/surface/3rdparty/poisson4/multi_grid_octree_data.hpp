@@ -220,7 +220,8 @@ SortedTreeNodes::setCornerTable (CornerTableData& cData,
                 break;
               n = n->parent;
               d--;
-            } while (1);
+            }
+            while (1);
             count[t]++;
           }
         }

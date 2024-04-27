@@ -508,7 +508,8 @@ pcl::ihs::InHandScanner::startGrabberImpl()
 
   try {
     grabber_ = GrabberPtr (new Grabber());
-  } catch (const pcl::PCLException& e) {
+  }
+  catch (const pcl::PCLException& e) {
     std::cerr << "ERROR in in_hand_scanner.cpp: " << e.what() << std::endl;
     exit (EXIT_FAILURE);
   }

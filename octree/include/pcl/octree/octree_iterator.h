@@ -732,8 +732,9 @@ public:
   {
     do {
       OctreeDepthFirstIterator<OctreeT>::operator++();
-    } while ((this->current_state_) &&
-             (this->current_state_->node_->getNodeType() != LEAF_NODE));
+    }
+    while ((this->current_state_) &&
+           (this->current_state_->node_->getNodeType() != LEAF_NODE));
 
     return (*this);
   }

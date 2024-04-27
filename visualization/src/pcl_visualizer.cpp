@@ -4661,7 +4661,8 @@ pcl::visualization::PCLVisualizer::textureFromTexMaterial (
             tex_mat.tex_file.c_str());
         return (-1);
       }
-    } catch (const pcl_fs::filesystem_error& ex) {
+    }
+    catch (const pcl_fs::filesystem_error& ex) {
 
       PCL_WARN (
           "[PCLVisualizer::textureFromTexMaterial] Error %s when looking for file "

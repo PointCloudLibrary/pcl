@@ -203,7 +203,8 @@ pcl::ROPSEstimation<PointInT, PointOutT>::computeFeature (PointCloudOut& output)
         }
 
         theta += step_;
-      } while (theta < 90.0f);
+      }
+      while (theta < 90.0f);
     }
 
     const float norm = std::accumulate (

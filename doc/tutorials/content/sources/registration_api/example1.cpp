@@ -175,7 +175,8 @@ icp (const PointCloud<PointT>::Ptr& src,
 
     // Visualize the results
     view (output, tgt, good_correspondences);
-  } while (!converged);
+  }
+  while (!converged);
   transform = final_transform;
 }
 

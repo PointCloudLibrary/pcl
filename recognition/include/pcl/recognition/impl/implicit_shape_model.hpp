@@ -152,7 +152,8 @@ pcl::features::ISMVoteList<PointT>::findStrongestPeaks (
     do {
       old_center = curr_center;
       curr_center = shiftMean (old_center, SIGMA_DIST);
-    } while ((old_center - curr_center).norm() > FINAL_EPS);
+    }
+    while ((old_center - curr_center).norm() > FINAL_EPS);
 
     pcl::PointXYZ point;
     point.x = curr_center (0);

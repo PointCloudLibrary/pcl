@@ -185,7 +185,8 @@ pcl::TimGrabber::start()
     boost::asio::ip::tcp::resolver resolver (tim_io_service_);
     tcp_endpoint_ = *resolver.resolve (tcp_endpoint_);
     tim_socket_.connect (tcp_endpoint_);
-  } catch (std::exception& e) {
+  }
+  catch (std::exception& e) {
     PCL_ERROR ("[pcl::TimGrabber::start] Unable to bind to socket! %s\n", e.what());
     return;
   }

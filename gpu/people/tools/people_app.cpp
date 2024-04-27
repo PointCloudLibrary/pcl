@@ -315,9 +315,11 @@ public:
             visualizeAndWrite();
         }
         final_view_.spinOnce (3);
-      } catch (const std::bad_alloc& /*e*/) {
+      }
+      catch (const std::bad_alloc& /*e*/) {
         std::cout << "Bad alloc" << std::endl;
-      } catch (const std::exception& /*e*/) {
+      }
+      catch (const std::exception& /*e*/) {
         std::cout << "Exception" << std::endl;
       }
 
@@ -413,7 +415,8 @@ main (int argc, char** argv)
     else {
       capture.reset (new pcl::OpenNIGrabber());
     }
-  } catch (const pcl::PCLException& /*e*/) {
+  }
+  catch (const pcl::PCLException& /*e*/) {
     return std::cout << "Can't open depth source" << std::endl, -1;
   }
 
@@ -451,16 +454,20 @@ main (int argc, char** argv)
 
     // executing
     app.startMainLoop();
-  } catch (const pcl::PCLException& e) {
+  }
+  catch (const pcl::PCLException& e) {
     std::cout << "PCLException: " << e.detailedMessage() << std::endl;
     print_help();
-  } catch (const std::runtime_error& e) {
+  }
+  catch (const std::runtime_error& e) {
     std::cout << e.what() << std::endl;
     print_help();
-  } catch (const std::bad_alloc& /*e*/) {
+  }
+  catch (const std::bad_alloc& /*e*/) {
     std::cout << "Bad alloc" << std::endl;
     print_help();
-  } catch (const std::exception& /*e*/) {
+  }
+  catch (const std::exception& /*e*/) {
     std::cout << "Exception" << std::endl;
     print_help();
   }

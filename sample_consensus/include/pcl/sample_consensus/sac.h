@@ -287,7 +287,8 @@ public:
           break;
         }
       }
-    } while (inlier_changed && ++refine_iterations < max_iterations);
+    }
+    while (inlier_changed && ++refine_iterations < max_iterations);
 
     // If the new set of inliers is empty, we didn't do a good job refining
     if (new_inliers.empty()) {

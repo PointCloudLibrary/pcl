@@ -82,7 +82,8 @@ KLDAdaptiveParticleFilterTracker<PointInT, StateT>::resample()
     if (insertIntoBins (std::move (new_bin), bins))
       ++k;
     ++n;
-  } while (n < maximum_particle_number_ && (k < 2 || n < calcKLBound (k)));
+  }
+  while (n < maximum_particle_number_ && (k < 2 || n < calcKLBound (k)));
 
   particles_ = S; // swap
   particle_num_ = static_cast<int> (particles_->size());

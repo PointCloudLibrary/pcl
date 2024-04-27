@@ -81,7 +81,8 @@ pcl::PCDWriter::setLockingPermissions (const std::string& file_name,
     pcl_fs::permissions (pcl_fs::path (file_name),
                          pcl_fs::add_perms | pcl_fs::set_gid_on_exe);
 #endif
-  } catch (const std::exception& e) {
+  }
+  catch (const std::exception& e) {
     PCL_DEBUG (
         "[pcl::PCDWriter::setLockingPermissions] Permissions on %s could not be set!\n",
         file_name.c_str());
@@ -106,7 +107,8 @@ pcl::PCDWriter::resetLockingPermissions (const std::string& file_name,
     pcl_fs::permissions (pcl_fs::path (file_name),
                          pcl_fs::remove_perms | pcl_fs::set_gid_on_exe);
 #endif
-  } catch (const std::exception& e) {
+  }
+  catch (const std::exception& e) {
     PCL_DEBUG ("[pcl::PCDWriter::resetLockingPermissions] Permissions on %s could not "
                "be reset!\n",
                file_name.c_str());
@@ -341,7 +343,8 @@ pcl::PCDReader::readHeader (std::istream& fs,
       }
       break;
     }
-  } catch (const char* exception) {
+  }
+  catch (const char* exception) {
     PCL_ERROR ("[pcl::PCDReader::readHeader] %s\n", exception);
     return (-1);
   }
@@ -566,7 +569,8 @@ pcl::PCDReader::readBodyASCII (std::istream& fs,
       }
       idx++;
     }
-  } catch (const char* exception) {
+  }
+  catch (const char* exception) {
     PCL_ERROR ("[pcl::PCDReader::read] %s\n", exception);
     return (-1);
   }

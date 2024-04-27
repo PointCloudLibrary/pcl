@@ -203,7 +203,8 @@ GeneralizedIterativeClosestPoint6D::computeTransformation (PointCloudSource& out
             delta = c_delta;
         }
       }
-    } catch (PCLException& e) {
+    }
+    catch (PCLException& e) {
       PCL_DEBUG ("[pcl::%s::computeTransformation] Optimization issue %s\n",
                  getClassName().c_str(),
                  e.what());

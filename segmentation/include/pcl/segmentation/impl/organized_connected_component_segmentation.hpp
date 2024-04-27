@@ -114,7 +114,8 @@ pcl::OrganizedConnectedComponentSegmentation<PointT, PointLT>::
     curr_x += directions[nIdx].d_x;
     curr_y += directions[nIdx].d_y;
     boundary_indices.indices.push_back (curr_idx);
-  } while (curr_idx != start_idx);
+  }
+  while (curr_idx != start_idx);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

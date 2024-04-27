@@ -175,7 +175,8 @@ pcl::ASCIIReader::read (const std::string& file_name,
     try {
       for (std::size_t i = 0; i < fields_.size(); i++)
         offset += parse (tokens[i], fields_[i], data + offset);
-    } catch (std::exception& /*e*/) {
+    }
+    catch (std::exception& /*e*/) {
       continue;
     }
     data += offset;

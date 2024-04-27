@@ -290,7 +290,8 @@ protected:
         // Store
         result.push_back (idx);
       }
-    } while (samples < k);
+    }
+    while (samples < k);
 
     return (result);
   }

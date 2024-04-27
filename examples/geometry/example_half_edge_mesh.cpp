@@ -128,7 +128,8 @@ printFace (const Mesh& mesh, const FaceIndex& idx_face)
   std::cout << "  ";
   do {
     std::cout << mesh.getVertexDataCloud()[circ.getTargetIndex().get()] << " ";
-  } while (++circ != circ_end);
+  }
+  while (++circ != circ_end);
   std::cout << std::endl;
 }
 
@@ -185,7 +186,8 @@ main ()
   const OHEAVC circ_oheav_end = circ_oheav;
   do {
     printEdge (mesh, circ_oheav.getTargetIndex());
-  } while (++circ_oheav != circ_oheav_end);
+  }
+  while (++circ_oheav != circ_oheav_end);
 
   //////////////////////////////////////////////////////////////////////////////
 
@@ -195,7 +197,8 @@ main ()
   const IHEAFC circ_iheaf_end = circ_iheaf;
   do {
     printEdge (mesh, circ_iheaf.getTargetIndex());
-  } while (++circ_iheaf != circ_iheaf_end);
+  }
+  while (++circ_iheaf != circ_iheaf_end);
 
   //////////////////////////////////////////////////////////////////////////////
 
@@ -226,7 +229,8 @@ main ()
     else {
       std::cout << "  invalid face -> boundary half-edge\n";
     }
-  } while (++circ_fav != circ_fav_end);
+  }
+  while (++circ_fav != circ_fav_end);
 
   return (0);
 }

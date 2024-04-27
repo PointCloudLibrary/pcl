@@ -173,7 +173,8 @@ TEST_F (TestMeshCirculators, VertexAroundVertexIncrement)
   do {
     ASSERT_LE (++counter, 6); // Avoid infinite loop if connectivity is wrong
     actual.push_back (circ.getTargetIndex());
-  } while (++circ != circ_end);
+  }
+  while (++circ != circ_end);
   EXPECT_TRUE (isCircularPermutation (expected_654321_, actual));
 }
 
@@ -190,7 +191,8 @@ TEST_F (TestMeshCirculators, VertexAroundVertexDecrement)
   do {
     ASSERT_LE (++counter, 6); // Avoid infinite loop if connectivity is wrong
     actual.push_back (circ.getTargetIndex());
-  } while (--circ != circ_end);
+  }
+  while (--circ != circ_end);
   EXPECT_TRUE (isCircularPermutation (expected_123456_, actual));
 }
 
@@ -209,7 +211,8 @@ TEST_F (TestMeshCirculators, OutgoingHalfEdgeAroundVertexIncrement)
     const HalfEdgeIndex he = circ.getTargetIndex();
     EXPECT_EQ (VertexIndex (0), mesh_.getOriginatingVertexIndex (he));
     actual.push_back (mesh_.getTerminatingVertexIndex (he));
-  } while (++circ != circ_end);
+  }
+  while (++circ != circ_end);
   EXPECT_TRUE (isCircularPermutation (expected_654321_, actual));
 }
 
@@ -228,7 +231,8 @@ TEST_F (TestMeshCirculators, OutgoingHalfEdgeAroundVertexDecrement)
     const HalfEdgeIndex he = circ.getTargetIndex();
     EXPECT_EQ (VertexIndex (0), mesh_.getOriginatingVertexIndex (he));
     actual.push_back (mesh_.getTerminatingVertexIndex (he));
-  } while (--circ != circ_end);
+  }
+  while (--circ != circ_end);
   EXPECT_TRUE (isCircularPermutation (expected_123456_, actual));
 }
 
@@ -247,7 +251,8 @@ TEST_F (TestMeshCirculators, IncomingHalfEdgeAroundVertexIncrement)
     const HalfEdgeIndex he = circ.getTargetIndex();
     EXPECT_EQ (VertexIndex (0), mesh_.getTerminatingVertexIndex (he));
     actual.push_back (mesh_.getOriginatingVertexIndex (he));
-  } while (++circ != circ_end);
+  }
+  while (++circ != circ_end);
   EXPECT_TRUE (isCircularPermutation (expected_654321_, actual));
 }
 
@@ -266,7 +271,8 @@ TEST_F (TestMeshCirculators, IncomingHalfEdgeAroundVertexDecrement)
     const HalfEdgeIndex he = circ.getTargetIndex();
     EXPECT_EQ (VertexIndex (0), mesh_.getTerminatingVertexIndex (he));
     actual.push_back (mesh_.getOriginatingVertexIndex (he));
-  } while (--circ != circ_end);
+  }
+  while (--circ != circ_end);
   EXPECT_TRUE (isCircularPermutation (expected_123456_, actual));
 }
 
@@ -291,9 +297,11 @@ TEST_F (TestMeshCirculators, FaceAroundVertexIncrement)
     do {
       ASSERT_LE (++counter_f, 3); // Avoid infinite loop if connectivity is wrong
       vi.push_back (circ_vaf.getTargetIndex());
-    } while (++circ_vaf != circ_vaf_end);
+    }
+    while (++circ_vaf != circ_vaf_end);
     actual.push_back (vi);
-  } while (++circ_fav != circ_fav_end);
+  }
+  while (++circ_fav != circ_fav_end);
   EXPECT_TRUE (isCircularPermutationVec (
       std::vector<VertexIndices> (faces_.rbegin(), faces_.rend()), actual));
 }
@@ -319,9 +327,11 @@ TEST_F (TestMeshCirculators, FaceAroundVertexDecrement)
     do {
       ASSERT_LE (++counter_f, 3); // Avoid infinite loop if connectivity is wrong
       vi.push_back (circ_vaf.getTargetIndex());
-    } while (++circ_vaf != circ_vaf_end);
+    }
+    while (++circ_vaf != circ_vaf_end);
     actual.push_back (vi);
-  } while (--circ_fav != circ_fav_end);
+  }
+  while (--circ_fav != circ_fav_end);
   EXPECT_TRUE (isCircularPermutationVec (faces_, actual));
 }
 
@@ -340,7 +350,8 @@ TEST_F (TestMeshCirculators, VertexAroundFaceIncrement)
     do {
       ASSERT_LE (++counter, 3); // Avoid infinite loop if connectivity is wrong
       actual.push_back (circ.getTargetIndex());
-    } while (++circ != circ_end);
+    }
+    while (++circ != circ_end);
     EXPECT_TRUE (isCircularPermutation (faces_[i], actual)) << "Face number " << i;
   }
 }
@@ -360,7 +371,8 @@ TEST_F (TestMeshCirculators, VertexAroundFaceDecrement)
     do {
       ASSERT_LE (++counter, 3); // Avoid infinite loop if connectivity is wrong
       actual.push_back (circ.getTargetIndex());
-    } while (--circ != circ_end);
+    }
+    while (--circ != circ_end);
     EXPECT_TRUE (isCircularPermutation (
         VertexIndices (faces_[i].rbegin(), faces_[i].rend()), actual))
         << "Face number " << i;
@@ -383,7 +395,8 @@ TEST_F (TestMeshCirculators, InnerHalfEdgeAroundFaceForAllFacesIncrement)
       ASSERT_LE (++counter, 3); // Avoid infinite loop if connectivity is wrong
       EXPECT_FALSE (mesh_.isBoundary (circ.getTargetIndex()));
       actual.push_back (mesh_.getTerminatingVertexIndex (circ.getTargetIndex()));
-    } while (++circ != circ_end);
+    }
+    while (++circ != circ_end);
     EXPECT_TRUE (isCircularPermutation (faces_[i], actual)) << "Face number " << i;
   }
 }
@@ -404,7 +417,8 @@ TEST_F (TestMeshCirculators, InnerHalfEdgeAroundFaceForAllFacesDecrement)
       ASSERT_LE (++counter, 3); // Avoid infinite loop if connectivity is wrong
       EXPECT_FALSE (mesh_.isBoundary (circ.getTargetIndex()));
       actual.push_back (mesh_.getTerminatingVertexIndex (circ.getTargetIndex()));
-    } while (--circ != circ_end);
+    }
+    while (--circ != circ_end);
     EXPECT_TRUE (isCircularPermutation (
         VertexIndices (faces_[i].rbegin(), faces_[i].rend()), actual))
         << "Face number " << i;
@@ -426,7 +440,8 @@ TEST_F (TestMeshCirculators, InnerHalfEdgeAroundFaceForBoundaryIncrement)
     ASSERT_LE (++counter, 6); // Avoid infinite loop if connectivity is wrong
     EXPECT_TRUE (mesh_.isBoundary (circ.getTargetIndex()));
     actual.push_back (mesh_.getTerminatingVertexIndex (circ.getTargetIndex()));
-  } while (++circ != circ_end);
+  }
+  while (++circ != circ_end);
   EXPECT_TRUE (isCircularPermutation (expected_654321_, actual));
 }
 
@@ -445,7 +460,8 @@ TEST_F (TestMeshCirculators, InnerHalfEdgeAroundFaceForBoundaryDecrement)
     ASSERT_LE (++counter, 6); // Avoid infinite loop if connectivity is wrong
     EXPECT_TRUE (mesh_.isBoundary (circ.getTargetIndex()));
     actual.push_back (mesh_.getTerminatingVertexIndex (circ.getTargetIndex()));
-  } while (--circ != circ_end);
+  }
+  while (--circ != circ_end);
   EXPECT_TRUE (isCircularPermutation (expected_123456_, actual));
 }
 
@@ -469,7 +485,8 @@ TEST_F (TestMeshCirculators, OuterHalfEdgeAroundFaceIncrement)
       else
         num_not_boundary += 1;
       actual.push_back (mesh_.getTerminatingVertexIndex (circ.getTargetIndex()));
-    } while (++circ != circ_end);
+    }
+    while (++circ != circ_end);
     EXPECT_EQ (1, num_boundary) << "Face number " << i;
     EXPECT_EQ (2, num_not_boundary) << "Face number " << i;
     EXPECT_TRUE (isCircularPermutation (faces_[i], actual)) << "Face number " << i;
@@ -496,7 +513,8 @@ TEST_F (TestMeshCirculators, OuterHalfEdgeAroundFaceDecrement)
       else
         num_not_boundary += 1;
       actual.push_back (mesh_.getTerminatingVertexIndex (circ.getTargetIndex()));
-    } while (--circ != circ_end);
+    }
+    while (--circ != circ_end);
     EXPECT_EQ (1, num_boundary) << "Face number " << i;
     EXPECT_EQ (2, num_not_boundary) << "Face number " << i;
     EXPECT_TRUE (isCircularPermutation (
@@ -526,7 +544,8 @@ TEST_F (TestMeshCirculators, FaceAroundFaceIncrement)
     do {
       ASSERT_LE (++counter, 3); // Avoid infinite loop if connectivity is wrong
       actual.push_back (circ.getTargetIndex());
-    } while (++circ != circ_end);
+    }
+    while (++circ != circ_end);
     EXPECT_TRUE (isCircularPermutation (expected, actual)) << "Face number " << i;
   }
 }
@@ -552,7 +571,8 @@ TEST_F (TestMeshCirculators, FaceAroundFaceDecrement)
     do {
       ASSERT_LE (++counter, 3); // Avoid infinite loop if connectivity is wrong
       actual.push_back (circ.getTargetIndex());
-    } while (--circ != circ_end);
+    }
+    while (--circ != circ_end);
     EXPECT_TRUE (isCircularPermutation (expected, actual)) << "Face number " << i;
   }
 }
