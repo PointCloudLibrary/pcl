@@ -73,3 +73,4 @@ SpaceBeforeParens: Custom
 SpaceBeforeParensOptions:
   AfterFunctionDeclarationName: true
   AfterFunctionDefinitionName: true
+  BeforeNonEmptyParentheses: true
