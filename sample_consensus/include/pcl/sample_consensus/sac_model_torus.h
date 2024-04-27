@@ -70,7 +70,9 @@ optimizeModelCoefficientsTorus(Eigen::VectorXf& coeff,
  * \ingroup sample_consensus
  */
 template <typename PointT, typename PointNT>
-class SampleConsensusModelTorus :  public SampleConsensusModel<PointT>, public SampleConsensusModelFromNormals<PointT, PointNT> {
+class SampleConsensusModelTorus
+: public SampleConsensusModel<PointT>,
+  public SampleConsensusModelFromNormals<PointT, PointNT> {
   using SampleConsensusModel<PointT>::model_name_;
   using SampleConsensusModel<PointT>::input_;
   using SampleConsensusModel<PointT>::indices_;
@@ -84,7 +86,7 @@ class SampleConsensusModelTorus :  public SampleConsensusModel<PointT>, public S
   using PointCloudPtr = typename SampleConsensusModel<PointT>::PointCloudPtr;
   using PointCloudConstPtr = typename SampleConsensusModel<PointT>::PointCloudConstPtr;
 
-  public:
+public:
   using Ptr = shared_ptr<SampleConsensusModelTorus<PointT, PointNT>>;
   using ConstPtr = shared_ptr<const SampleConsensusModelTorus<PointT, PointNT>>;
 
@@ -94,25 +96,25 @@ class SampleConsensusModelTorus :  public SampleConsensusModel<PointT>, public S
    * 12345 (default: false)
    */
   SampleConsensusModelTorus(const PointCloudConstPtr& cloud, bool random = false)
-    : SampleConsensusModel<PointT> (cloud, random)
-    , SampleConsensusModelFromNormals<PointT, PointNT> ()
-{
-  model_name_ = "SampleConsensusModelTorus";
-  sample_size_ = 4;
-  model_size_ = 8;
-}
+  : SampleConsensusModel<PointT>(cloud, random)
+  , SampleConsensusModelFromNormals<PointT, PointNT>()
+  {
+    model_name_ = "SampleConsensusModelTorus";
+    sample_size_ = 4;
+    model_size_ = 8;
+  }
 
-/** \brief Constructor for base SampleConsensusModelTorus.
- * \param[in] cloud the input point cloud dataset
- * \param[in] indices a vector of point indices to be used from \a cloud
- * \param[in] random if true set the random seed to the current time, else set to
- * 12345 (default: false)
- */
+  /** \brief Constructor for base SampleConsensusModelTorus.
+   * \param[in] cloud the input point cloud dataset
+   * \param[in] indices a vector of point indices to be used from \a cloud
+   * \param[in] random if true set the random seed to the current time, else set to
+   * 12345 (default: false)
+   */
   SampleConsensusModelTorus(const PointCloudConstPtr& cloud,
                             const Indices& indices,
                             bool random = false)
-    : SampleConsensusModel<PointT> (cloud, indices, random)
-    , SampleConsensusModelFromNormals<PointT, PointNT> ()
+  : SampleConsensusModel<PointT>(cloud, indices, random)
+  , SampleConsensusModelFromNormals<PointT, PointNT>()
   {
     model_name_ = "SampleConsensusModelTorus";
     sample_size_ = 4;
@@ -123,8 +125,7 @@ class SampleConsensusModelTorus :  public SampleConsensusModel<PointT>, public S
    * \param[in] source the model to copy into this
    */
   SampleConsensusModelTorus(const SampleConsensusModelTorus& source)
-    : SampleConsensusModel<PointT> ()
-    , SampleConsensusModelFromNormals<PointT, PointNT> ()
+  : SampleConsensusModel<PointT>(), SampleConsensusModelFromNormals<PointT, PointNT>()
   {
     *this = source;
     model_name_ = "SampleConsensusModelTorus";
@@ -139,7 +140,7 @@ class SampleConsensusModelTorus :  public SampleConsensusModel<PointT>, public S
   inline SampleConsensusModelTorus&
   operator=(const SampleConsensusModelTorus& source)
   {
-    SampleConsensusModelFromNormals<PointT,PointNT>::operator=(source);
+    SampleConsensusModelFromNormals<PointT, PointNT>::operator=(source);
     return (*this);
   }
   /** \brief Check whether the given index samples can form a valid torus model, compute
@@ -273,8 +274,8 @@ private:
     int
     operator()(const Eigen::VectorXd& xs, Eigen::VectorXd& fvec) const
     {
-      size_t j = 0;
-      for (const auto& i : indices_) {
+      for (size_t j = 0; j < indices_.size(); j++) {
+        size_t i = indices_[j];
 
         // Getting constants from state vector
         const double& R = xs[0];
@@ -284,15 +285,23 @@ private:
         const double& y0 = xs[3];
         const double& z0 = xs[4];
 
+        Eigen::Vector3d centroid{x0, y0, z0};
+
         const double& nx = xs[5];
         const double& ny = xs[6];
         const double& nz = xs[7];
 
-        const PointT& pt = (*model_->input_)[i];
-
-        Eigen::Vector3d pte{pt.x - x0, pt.y - y0, pt.z - z0};
-        Eigen::Vector3d n1{0, 0, 1};
         Eigen::Vector3d n2{nx, ny, nz};
+
+        const Eigen::Vector3d pt =
+            (*model_->input_)[i].getVector3fMap().template cast<double>();
+
+        Eigen::Vector3d pt_n =
+            Eigen::Vector3f((*model_->normals_)[i].getNormalVector3fMap())
+                .template cast<double>();
+
+        Eigen::Vector3d pte{pt - centroid};
+        Eigen::Vector3d n1{0.0, 0.0, 1.0};
         n2.normalize();
 
         // Transposition is inversion
@@ -307,8 +316,17 @@ private:
         const double& y = pte[1];
         const double& z = pte[2];
 
-        fvec[j] = std::pow(sqrt(x * x + y * y) - R, 2) + z * z - r * r;
-        j++; // TODO, maybe not range-for here
+        double w1 = 1.0;
+        double w2 = 1.0;
+
+        fvec[j] =
+            // Torus equation residual
+            w1 * (std::pow(sqrt(x * x + y * y) - R, 2) + z * z - r * r) +
+
+            // Distance from normal line to direction line residual
+            w2 * (n1.cross(pt_n).dot(pte) / n1.cross(pt_n).norm())
+
+            ;
       }
       return 0;
     }
