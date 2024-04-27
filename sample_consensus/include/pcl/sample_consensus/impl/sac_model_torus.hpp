@@ -393,7 +393,7 @@ void
 pcl::SampleConsensusModelTorus<PointT, PointNT>::projectPointToTorus(
     const Eigen::Vector3f& p_in,
     const Eigen::VectorXf& model_coefficients,
-    Eigen::Vector3f& q) const
+    Eigen::Vector3f& pt_out) const
 {
 
   // Fetch optimization parameters
@@ -434,7 +434,7 @@ pcl::SampleConsensusModelTorus<PointT, PointNT>::projectPointToTorus(
   Eigen::Vector3f torus_closest =
       (p - circle_closest).normalized() * r + circle_closest;
 
-  q = torus_closest;
+  pt_out = torus_closest;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -475,11 +475,17 @@ pcl::SampleConsensusModelTorus<PointT, PointNT>::doSamplesVerifyModel(
     const Eigen::VectorXf& model_coefficients,
     const double threshold) const
 {
+
+  for (const auto &index : indices)
+  {
+    Eigen::Vector3f pt = (*input_)[index].getVector3fMap ();
+    Eigen::Vector3f torus_closest;
+    projectPointToTorus(pt, model_coefficients, torus_closest);
+
+    if ((pt - torus_closest).squaredNorm() > threshold)
+      return (false);
+  }
   return true;
-  // TODO implement
-  (void)indices;
-  (void)model_coefficients;
-  (void)threshold;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////

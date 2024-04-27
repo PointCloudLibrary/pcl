@@ -123,6 +123,8 @@ class SampleConsensusModelTorus :  public SampleConsensusModel<PointT>, public S
    * \param[in] source the model to copy into this
    */
   SampleConsensusModelTorus(const SampleConsensusModelTorus& source)
+    : SampleConsensusModel<PointT> ()
+    , SampleConsensusModelFromNormals<PointT, PointNT> ()
   {
     *this = source;
     model_name_ = "SampleConsensusModelTorus";
