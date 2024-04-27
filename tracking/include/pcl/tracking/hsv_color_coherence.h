@@ -32,14 +32,14 @@ public:
    * \param[in] weight the weight of coherence.
    */
   inline void
-  setWeight(double weight)
+  setWeight (double weight)
   {
     weight_ = weight;
   }
 
   /** \brief get the weight (w) of coherence */
   inline double
-  getWeight()
+  getWeight ()
   {
     return weight_;
   }
@@ -48,14 +48,14 @@ public:
    * \param[in] weight the hue weight (w_h) of coherence.
    */
   inline void
-  setHWeight(double weight)
+  setHWeight (double weight)
   {
     h_weight_ = weight;
   }
 
   /** \brief get the hue weight (w_h) of coherence */
   inline double
-  getHWeight()
+  getHWeight ()
   {
     return h_weight_;
   }
@@ -64,14 +64,14 @@ public:
    * \param[in] weight the saturation weight (w_s) of coherence.
    */
   inline void
-  setSWeight(double weight)
+  setSWeight (double weight)
   {
     s_weight_ = weight;
   }
 
   /** \brief get the saturation weight (w_s) of coherence */
   inline double
-  getSWeight()
+  getSWeight ()
   {
     return s_weight_;
   }
@@ -80,14 +80,14 @@ public:
    * \param[in] weight the value weight (w_v) of coherence.
    */
   inline void
-  setVWeight(double weight)
+  setVWeight (double weight)
   {
     v_weight_ = weight;
   }
 
   /** \brief get the value weight (w_v) of coherence */
   inline double
-  getVWeight()
+  getVWeight ()
   {
     return v_weight_;
   }
@@ -98,7 +98,7 @@ protected:
    * \param[in] target instance of target point.
    */
   double
-  computeCoherence(PointInT& source, PointInT& target) override;
+  computeCoherence (PointInT& source, PointInT& target) override;
 
   /** \brief the weight of coherence (w) */
   double weight_;

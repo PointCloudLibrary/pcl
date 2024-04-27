@@ -83,11 +83,11 @@ public:
   }
 
   void
-  cloud_cb(const CloudConstPtr& cloud);
+  cloud_cb (const CloudConstPtr& cloud);
 
 protected:
   void
-  refreshView();
+  refreshView ();
 
   pcl::visualization::PCLVisualizer::Ptr vis_;
   pcl::OpenNIGrabber& grabber_;
@@ -102,7 +102,7 @@ private:
 
 public Q_SLOTS:
   void
-  adjustPassThroughValues(int new_value)
+  adjustPassThroughValues (int new_value)
   {
     pass_.setFilterLimits(0.0f, float(new_value) / 10.0f);
     PCL_INFO("Changed passthrough maximum value to: %f\n", float(new_value) / 10.0f);
@@ -110,9 +110,9 @@ public Q_SLOTS:
 
 private Q_SLOTS:
   void
-  timeoutSlot();
+  timeoutSlot ();
 
 Q_SIGNALS:
   void
-  valueChanged(int new_value);
+  valueChanged (int new_value);
 };

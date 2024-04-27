@@ -44,49 +44,54 @@
 #include <pcl/features/normal_3d_omp.h>
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointInT, typename PointOutT> void
-pcl::NormalEstimationOMP<PointInT, PointOutT>::setNumberOfThreads (unsigned int nr_threads)
+template <typename PointInT, typename PointOutT>
+void
+pcl::NormalEstimationOMP<PointInT, PointOutT>::setNumberOfThreads(
+    unsigned int nr_threads)
 {
 #ifdef _OPENMP
   if (nr_threads == 0)
     threads_ = omp_get_num_procs();
   else
     threads_ = nr_threads;
-  PCL_DEBUG ("[pcl::NormalEstimationOMP::setNumberOfThreads] Setting number of threads to %u.\n", threads_);
+  PCL_DEBUG("[pcl::NormalEstimationOMP::setNumberOfThreads] Setting number of threads "
+            "to %u.\n",
+            threads_);
 #else
   threads_ = 1;
   if (nr_threads != 1)
-    PCL_WARN ("[pcl::NormalEstimationOMP::setNumberOfThreads] Parallelization is requested, but OpenMP is not available! Continuing without parallelization.\n");
+    PCL_WARN(
+        "[pcl::NormalEstimationOMP::setNumberOfThreads] Parallelization is requested, "
+        "but OpenMP is not available! Continuing without parallelization.\n");
 #endif // _OPENMP
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointInT, typename PointOutT> void
-pcl::NormalEstimationOMP<PointInT, PointOutT>::computeFeature (PointCloudOut &output)
+template <typename PointInT, typename PointOutT>
+void
+pcl::NormalEstimationOMP<PointInT, PointOutT>::computeFeature(PointCloudOut& output)
 {
   // Allocate enough space to hold the results
   // \note This resize is irrelevant for a radiusSearch ().
-  pcl::Indices nn_indices (k_);
-  std::vector<float> nn_dists (k_);
+  pcl::Indices nn_indices(k_);
+  std::vector<float> nn_dists(k_);
 
   output.is_dense = true;
-  // Save a few cycles by not checking every point for NaN/Inf values if the cloud is set to dense
-  if (input_->is_dense)
-  {
-#pragma omp parallel for \
-  default(none) \
-  shared(output) \
-  firstprivate(nn_indices, nn_dists) \
-  num_threads(threads_) \
-  schedule(dynamic, chunk_size_)
+  // Save a few cycles by not checking every point for NaN/Inf values if the cloud is
+  // set to dense
+  if (input_->is_dense) {
+#pragma omp parallel for default(none) shared(output)                                  \
+    firstprivate(nn_indices, nn_dists) num_threads(threads_)                           \
+    schedule(dynamic, chunk_size_)
     // Iterating over the entire index vector
-    for (std::ptrdiff_t idx = 0; idx < static_cast<std::ptrdiff_t> (indices_->size ()); ++idx)
-    {
+    for (std::ptrdiff_t idx = 0; idx < static_cast<std::ptrdiff_t>(indices_->size());
+         ++idx) {
       Eigen::Vector4f n;
-      if (this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists) == 0 ||
-          !pcl::computePointNormal (*surface_, nn_indices, n, output[idx].curvature))
-      {
-        output[idx].normal[0] = output[idx].normal[1] = output[idx].normal[2] = output[idx].curvature = std::numeric_limits<float>::quiet_NaN ();
+      if (this->searchForNeighbors(
+              (*indices_)[idx], search_parameter_, nn_indices, nn_dists) == 0 ||
+          !pcl::computePointNormal(*surface_, nn_indices, n, output[idx].curvature)) {
+        output[idx].normal[0] = output[idx].normal[1] = output[idx].normal[2] =
+            output[idx].curvature = std::numeric_limits<float>::quiet_NaN();
 
         output.is_dense = false;
         continue;
@@ -96,28 +101,29 @@ pcl::NormalEstimationOMP<PointInT, PointOutT>::computeFeature (PointCloudOut &ou
       output[idx].normal_y = n[1];
       output[idx].normal_z = n[2];
 
-      flipNormalTowardsViewpoint ((*input_)[(*indices_)[idx]], vpx_, vpy_, vpz_,
-                                  output[idx].normal[0], output[idx].normal[1], output[idx].normal[2]);
-
+      flipNormalTowardsViewpoint((*input_)[(*indices_)[idx]],
+                                 vpx_,
+                                 vpy_,
+                                 vpz_,
+                                 output[idx].normal[0],
+                                 output[idx].normal[1],
+                                 output[idx].normal[2]);
     }
   }
-  else
-  {
-#pragma omp parallel for \
-  default(none) \
-  shared(output) \
-  firstprivate(nn_indices, nn_dists) \
-  num_threads(threads_) \
-  schedule(dynamic, chunk_size_)
+  else {
+#pragma omp parallel for default(none) shared(output)                                  \
+    firstprivate(nn_indices, nn_dists) num_threads(threads_)                           \
+    schedule(dynamic, chunk_size_)
     // Iterating over the entire index vector
-    for (std::ptrdiff_t idx = 0; idx < static_cast<std::ptrdiff_t> (indices_->size ()); ++idx)
-    {
+    for (std::ptrdiff_t idx = 0; idx < static_cast<std::ptrdiff_t>(indices_->size());
+         ++idx) {
       Eigen::Vector4f n;
-      if (!isFinite ((*input_)[(*indices_)[idx]]) ||
-          this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists) == 0 ||
-          !pcl::computePointNormal (*surface_, nn_indices, n, output[idx].curvature))
-      {
-        output[idx].normal[0] = output[idx].normal[1] = output[idx].normal[2] = output[idx].curvature = std::numeric_limits<float>::quiet_NaN ();
+      if (!isFinite((*input_)[(*indices_)[idx]]) ||
+          this->searchForNeighbors(
+              (*indices_)[idx], search_parameter_, nn_indices, nn_dists) == 0 ||
+          !pcl::computePointNormal(*surface_, nn_indices, n, output[idx].curvature)) {
+        output[idx].normal[0] = output[idx].normal[1] = output[idx].normal[2] =
+            output[idx].curvature = std::numeric_limits<float>::quiet_NaN();
 
         output.is_dense = false;
         continue;
@@ -127,14 +133,18 @@ pcl::NormalEstimationOMP<PointInT, PointOutT>::computeFeature (PointCloudOut &ou
       output[idx].normal_y = n[1];
       output[idx].normal_z = n[2];
 
-      flipNormalTowardsViewpoint ((*input_)[(*indices_)[idx]], vpx_, vpy_, vpz_,
-                                  output[idx].normal[0], output[idx].normal[1], output[idx].normal[2]);
-
+      flipNormalTowardsViewpoint((*input_)[(*indices_)[idx]],
+                                 vpx_,
+                                 vpy_,
+                                 vpz_,
+                                 output[idx].normal[0],
+                                 output[idx].normal[1],
+                                 output[idx].normal[2]);
     }
   }
 }
 
-#define PCL_INSTANTIATE_NormalEstimationOMP(T,NT) template class PCL_EXPORTS pcl::NormalEstimationOMP<T,NT>;
+#define PCL_INSTANTIATE_NormalEstimationOMP(T, NT)                                     \
+  template class PCL_EXPORTS pcl::NormalEstimationOMP<T, NT>;
 
-#endif    // PCL_FEATURES_IMPL_NORMAL_3D_OMP_H_
-
+#endif // PCL_FEATURES_IMPL_NORMAL_3D_OMP_H_

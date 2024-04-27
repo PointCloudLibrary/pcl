@@ -37,10 +37,10 @@
  *
  */
 
-#include <pcl/point_types.h>
 #include <pcl/impl/instantiate.hpp>
-#include <pcl/segmentation/region_growing_rgb.h>
 #include <pcl/segmentation/impl/region_growing_rgb.hpp>
+#include <pcl/segmentation/region_growing_rgb.h>
+#include <pcl/point_types.h>
 
 // Instantiations of specific point types
 template class PCL_EXPORTS pcl::RegionGrowingRGB<pcl::PointXYZRGBA>;

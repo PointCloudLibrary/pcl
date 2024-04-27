@@ -37,18 +37,20 @@
 
 /** \brief PCD 2 PNG converter
  *
- * This converter takes three inputs: names of the input PCD and output PNG files, and the name of the field.
+ * This converter takes three inputs: names of the input PCD and output PNG files, and
+ * the name of the field.
  *
  * \author Sergey Alexandrov
  *
  */
 
-#include <pcl/console/time.h>
-#include <pcl/console/print.h>
 #include <pcl/console/parse.h>
+#include <pcl/console/print.h>
+#include <pcl/console/time.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/io/png_io.h>
 #include <pcl/conversions.h>
+
 #include <boost/lexical_cast.hpp> // for lexical_cast
 
 using namespace pcl;
@@ -56,133 +58,170 @@ using namespace pcl::io;
 using namespace pcl::console;
 
 void
-printHelp (int, char **argv)
+printHelp (int, char** argv)
 {
   std::cout << std::endl;
-  std::cout << "****************************************************************************" << std::endl;
-  std::cout << "*                                                                          *" << std::endl;
-  std::cout << "*                       PCD 2 PNG CONVERTER - Usage Guide                  *" << std::endl;
-  std::cout << "*                                                                          *" << std::endl;
-  std::cout << "****************************************************************************" << std::endl;
+  std::cout
+      << "****************************************************************************"
+      << std::endl;
+  std::cout
+      << "*                                                                          *"
+      << std::endl;
+  std::cout
+      << "*                       PCD 2 PNG CONVERTER - Usage Guide                  *"
+      << std::endl;
+  std::cout
+      << "*                                                                          *"
+      << std::endl;
+  std::cout
+      << "****************************************************************************"
+      << std::endl;
   std::cout << std::endl;
   std::cout << "Usage: " << argv[0] << " [Options] input.pcd output.png" << std::endl;
   std::cout << std::endl;
   std::cout << "Options:" << std::endl;
   std::cout << std::endl;
-  std::cout << "     --help   : Show this help"                                               << std::endl;
-  std::cout << "     --no-nan : Paint NaN (infinite) points with black color regardless of"   << std::endl;
-  std::cout << "                field contents"                                               << std::endl;
-  std::cout << "     --field  : Set the field to extract data from. Supported fields:"        << std::endl;
-  std::cout << "                - normal"                                                     << std::endl;
-  std::cout << "                * rgb (default)"                                              << std::endl;
-  std::cout << "                - label"                                                      << std::endl;
-  std::cout << "                - z"                                                          << std::endl;
-  std::cout << "                - curvature"                                                  << std::endl;
-  std::cout << "                - intensity"                                                  << std::endl;
-  std::cout << "     --scale  : Apply scaling to extracted data (only for z, curvature, and"  << std::endl;
-  std::cout << "                intensity fields). Supported options:"                        << std::endl;
-  std::cout << "                - <float> : Scale by a fixed number"                          << std::endl;
-  std::cout << "                - auto    : Auto-scale to the full range"                     << std::endl;
-  std::cout << "                - no      : No scaling"                                       << std::endl;
-  std::cout << "                If the option is omitted then default scaling (depends on"    << std::endl;
-  std::cout << "                the field type) will be used."                                << std::endl;
-  std::cout << "     --colors : Choose color mapping mode for labels (only for label field)." << std::endl;
-  std::cout << "                Supported options:"                                           << std::endl;
-  std::cout << "                - mono    : Shades of gray"                                   << std::endl;
-  std::cout << "                - rgb     : Randomly generated RGB colors"                    << std::endl;
-  std::cout << "                * glasbey : Fixed colors from the Glasbey table¹ (default)"   << std::endl;
+  std::cout << "     --help   : Show this help" << std::endl;
+  std::cout
+      << "     --no-nan : Paint NaN (infinite) points with black color regardless of"
+      << std::endl;
+  std::cout << "                field contents" << std::endl;
+  std::cout << "     --field  : Set the field to extract data from. Supported fields:"
+            << std::endl;
+  std::cout << "                - normal" << std::endl;
+  std::cout << "                * rgb (default)" << std::endl;
+  std::cout << "                - label" << std::endl;
+  std::cout << "                - z" << std::endl;
+  std::cout << "                - curvature" << std::endl;
+  std::cout << "                - intensity" << std::endl;
+  std::cout
+      << "     --scale  : Apply scaling to extracted data (only for z, curvature, and"
+      << std::endl;
+  std::cout << "                intensity fields). Supported options:" << std::endl;
+  std::cout << "                - <float> : Scale by a fixed number" << std::endl;
+  std::cout << "                - auto    : Auto-scale to the full range" << std::endl;
+  std::cout << "                - no      : No scaling" << std::endl;
+  std::cout
+      << "                If the option is omitted then default scaling (depends on"
+      << std::endl;
+  std::cout << "                the field type) will be used." << std::endl;
+  std::cout
+      << "     --colors : Choose color mapping mode for labels (only for label field)."
+      << std::endl;
+  std::cout << "                Supported options:" << std::endl;
+  std::cout << "                - mono    : Shades of gray" << std::endl;
+  std::cout << "                - rgb     : Randomly generated RGB colors" << std::endl;
+  std::cout
+      << "                * glasbey : Fixed colors from the Glasbey table¹ (default)"
+      << std::endl;
   std::cout << std::endl;
-  std::cout << "Notes:"                                                                       << std::endl;
+  std::cout << "Notes:" << std::endl;
   std::cout << std::endl;
-  std::cout << "¹) The Glasbey lookup table is a color table structured in a maximally"       << std::endl;
-  std::cout << "   discontinuous manner. Adjacent color bins are chosen to be as distinct"    << std::endl;
-  std::cout << "   from one another as possible (see https://github.com/taketwo/glasbey)."    << std::endl;
-  std::cout << "   The label with the smallest id will be assigned the first color from the"  << std::endl;
-  std::cout << "   table, the second smallest will have the second color, and so on. Thus,"   << std::endl;
-  std::cout << "   if you have several clouds with the same labels, you will get repetitive"  << std::endl;
-  std::cout << "   consistently colored PNG images."                                          << std::endl;
+  std::cout << "¹) The Glasbey lookup table is a color table structured in a maximally"
+            << std::endl;
+  std::cout
+      << "   discontinuous manner. Adjacent color bins are chosen to be as distinct"
+      << std::endl;
+  std::cout
+      << "   from one another as possible (see https://github.com/taketwo/glasbey)."
+      << std::endl;
+  std::cout
+      << "   The label with the smallest id will be assigned the first color from the"
+      << std::endl;
+  std::cout
+      << "   table, the second smallest will have the second color, and so on. Thus,"
+      << std::endl;
+  std::cout
+      << "   if you have several clouds with the same labels, you will get repetitive"
+      << std::endl;
+  std::cout << "   consistently colored PNG images." << std::endl;
 }
 
 bool
-loadCloud (const std::string &filename, pcl::PCLPointCloud2 &cloud)
+loadCloud (const std::string& filename, pcl::PCLPointCloud2& cloud)
 {
   TicToc tt;
-  print_highlight ("Loading "); print_value ("%s ", filename.c_str ());
+  print_highlight("Loading ");
+  print_value("%s ", filename.c_str());
 
-  tt.tic ();
-  if (loadPCDFile (filename, cloud) < 0)
+  tt.tic();
+  if (loadPCDFile(filename, cloud) < 0)
     return (false);
-  print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%d", cloud.width * cloud.height); print_info (" points]\n");
-  print_info ("Available dimensions: "); print_value ("%s\n", pcl::getFieldsList (cloud).c_str ());
+  print_info("[done, ");
+  print_value("%g", tt.toc());
+  print_info(" ms : ");
+  print_value("%d", cloud.width * cloud.height);
+  print_info(" points]\n");
+  print_info("Available dimensions: ");
+  print_value("%s\n", pcl::getFieldsList(cloud).c_str());
 
   return (true);
 }
 
 void
-saveImage (const std::string &filename, const pcl::PCLImage& image)
+saveImage (const std::string& filename, const pcl::PCLImage& image)
 {
   TicToc tt;
-  tt.tic ();
-  print_highlight ("Saving "); print_value ("%s ", filename.c_str ());
-  savePNGFile (filename, image);
-  print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%d", image.width * image.height); print_info (" points]\n");
+  tt.tic();
+  print_highlight("Saving ");
+  print_value("%s ", filename.c_str());
+  savePNGFile(filename, image);
+  print_info("[done, ");
+  print_value("%g", tt.toc());
+  print_info(" ms : ");
+  print_value("%d", image.width * image.height);
+  print_info(" points]\n");
 }
 
-template<typename T> bool
+template <typename T>
+bool
 parseScaleOption (int argc, char** argv, T& pcie)
 {
   std::string scaling = "default";
-  pcl::console::parse_argument (argc, argv, "--scale", scaling);
-  print_info ("Scaling: "); print_value ("%s\n", scaling.c_str());
-  if (scaling == "default")
-  {
+  pcl::console::parse_argument(argc, argv, "--scale", scaling);
+  print_info("Scaling: ");
+  print_value("%s\n", scaling.c_str());
+  if (scaling == "default") {
     // scaling option omitted, use whatever defaults image extractor has
   }
-  else if (scaling == "no")
-  {
+  else if (scaling == "no") {
     pcie.setScalingMethod(pcie.SCALING_NO);
   }
-  else if (scaling == "auto")
-  {
+  else if (scaling == "auto") {
     pcie.setScalingMethod(pcie.SCALING_FULL_RANGE);
   }
-  else
-  {
-    try
-    {
-      float factor = boost::lexical_cast<float> (scaling);
+  else {
+    try {
+      float factor = boost::lexical_cast<float>(scaling);
       pcie.setScalingMethod(pcie.SCALING_FIXED_FACTOR);
       pcie.setScalingFactor(factor);
-    }
-    catch (const boost::bad_lexical_cast&)
-    {
-      print_error ("The value of --scale option should be \"no\", \"auto\", or a floating point number.\n");
+    } catch (const boost::bad_lexical_cast&) {
+      print_error("The value of --scale option should be \"no\", \"auto\", or a "
+                  "floating point number.\n");
       return false;
     }
   }
   return true;
 }
 
-template<typename T> bool
+template <typename T>
+bool
 parseColorsOption (int argc, char** argv, T& pcie)
 {
   std::string colors = "glasbey";
-  pcl::console::parse_argument (argc, argv, "--colors", colors);
-  print_info ("Colors: "); print_value ("%s\n", colors.c_str());
-  if (colors == "mono")
-  {
+  pcl::console::parse_argument(argc, argv, "--colors", colors);
+  print_info("Colors: ");
+  print_value("%s\n", colors.c_str());
+  if (colors == "mono") {
     pcie.setColorMode(pcie.COLORS_MONO);
   }
-  else if (colors == "rgb")
-  {
+  else if (colors == "rgb") {
     pcie.setColorMode(pcie.COLORS_RGB_RANDOM);
   }
-  else if (colors == "glasbey")
-  {
+  else if (colors == "glasbey") {
     pcie.setColorMode(pcie.COLORS_RGB_GLASBEY);
   }
-  else
-  {
+  else {
     return false;
   }
   return true;
@@ -192,21 +231,21 @@ parseColorsOption (int argc, char** argv, T& pcie)
 int
 main (int argc, char** argv)
 {
-  print_info ("Convert a PCD file to PNG format.\nFor more information, use: %s --help\n", argv[0]);
+  print_info(
+      "Convert a PCD file to PNG format.\nFor more information, use: %s --help\n",
+      argv[0]);
 
-  if (argc < 3 || pcl::console::find_switch (argc, argv, "--help"))
-  {
-    printHelp (argc, argv);
+  if (argc < 3 || pcl::console::find_switch(argc, argv, "--help")) {
+    printHelp(argc, argv);
     return (-1);
   }
 
   // Parse the command line arguments for .pcd and .png files
-  std::vector<int> pcd_file_index = parse_file_extension_argument (argc, argv, ".pcd");
-  std::vector<int> png_file_index = parse_file_extension_argument (argc, argv, ".png");
+  std::vector<int> pcd_file_index = parse_file_extension_argument(argc, argv, ".pcd");
+  std::vector<int> png_file_index = parse_file_extension_argument(argc, argv, ".png");
 
-  if (pcd_file_index.size () != 1 || png_file_index.size () != 1)
-  {
-    print_error ("Need one input PCD file and one output PNG file.\n");
+  if (pcd_file_index.size() != 1 || png_file_index.size() != 1) {
+    print_error("Need one input PCD file and one output PNG file.\n");
     return (-1);
   }
 
@@ -214,98 +253,89 @@ main (int argc, char** argv)
   std::string png_filename = argv[png_file_index[0]];
 
   // Load the input file
-  pcl::PCLPointCloud2::Ptr blob (new pcl::PCLPointCloud2);
-  if (!loadCloud (pcd_filename, *blob))
-  {
-    print_error ("Unable to load PCD file.\n");
+  pcl::PCLPointCloud2::Ptr blob(new pcl::PCLPointCloud2);
+  if (!loadCloud(pcd_filename, *blob)) {
+    print_error("Unable to load PCD file.\n");
     return (-1);
   }
 
   // Check if the cloud is organized
-  if (blob->height == 1)
-  {
-    print_error ("Input cloud is not organized.\n");
+  if (blob->height == 1) {
+    print_error("Input cloud is not organized.\n");
     return (-1);
   }
 
-  bool paint_nans_with_black = pcl::console::find_switch (argc, argv, "--no-nan");
-  print_info ("Paint infinite points with black: "); print_value ("%s\n", paint_nans_with_black ? "YES" : "NO");
+  bool paint_nans_with_black = pcl::console::find_switch(argc, argv, "--no-nan");
+  print_info("Paint infinite points with black: ");
+  print_value("%s\n", paint_nans_with_black ? "YES" : "NO");
 
   std::string field_name = "rgb";
-  parse_argument (argc, argv, "--field", field_name);
-  print_info ("Field name: "); print_value ("%s\n", field_name.c_str());
-
+  parse_argument(argc, argv, "--field", field_name);
+  print_info("Field name: ");
+  print_value("%s\n", field_name.c_str());
 
   pcl::PCLImage image;
   bool extracted;
-  if (field_name == "normal")
-  {
+  if (field_name == "normal") {
     PointCloud<PointNormal> cloud;
-    fromPCLPointCloud2 (*blob, cloud);
+    fromPCLPointCloud2(*blob, cloud);
     PointCloudImageExtractorFromNormalField<PointNormal> pcie;
-    pcie.setPaintNaNsWithBlack (paint_nans_with_black);
+    pcie.setPaintNaNsWithBlack(paint_nans_with_black);
     extracted = pcie.extract(cloud, image);
   }
-  else if (field_name == "rgb")
-  {
+  else if (field_name == "rgb") {
     PointCloud<PointXYZRGB> cloud;
-    fromPCLPointCloud2 (*blob, cloud);
+    fromPCLPointCloud2(*blob, cloud);
     PointCloudImageExtractorFromRGBField<PointXYZRGB> pcie;
-    pcie.setPaintNaNsWithBlack (paint_nans_with_black);
+    pcie.setPaintNaNsWithBlack(paint_nans_with_black);
     extracted = pcie.extract(cloud, image);
   }
-  else if (field_name == "label")
-  {
+  else if (field_name == "label") {
     PointCloud<PointXYZL> cloud;
-    fromPCLPointCloud2 (*blob, cloud);
+    fromPCLPointCloud2(*blob, cloud);
     PointCloudImageExtractorFromLabelField<PointXYZL> pcie;
-    pcie.setPaintNaNsWithBlack (paint_nans_with_black);
+    pcie.setPaintNaNsWithBlack(paint_nans_with_black);
     if (!parseColorsOption(argc, argv, pcie))
       return (-1);
     extracted = pcie.extract(cloud, image);
   }
-  else if (field_name == "z")
-  {
+  else if (field_name == "z") {
     PointCloud<PointXYZ> cloud;
-    fromPCLPointCloud2 (*blob, cloud);
+    fromPCLPointCloud2(*blob, cloud);
     PointCloudImageExtractorFromZField<PointXYZ> pcie;
-    pcie.setPaintNaNsWithBlack (paint_nans_with_black);
+    pcie.setPaintNaNsWithBlack(paint_nans_with_black);
     if (!parseScaleOption(argc, argv, pcie))
       return (-1);
     extracted = pcie.extract(cloud, image);
   }
-  else if (field_name == "curvature")
-  {
+  else if (field_name == "curvature") {
     PointCloud<PointNormal> cloud;
-    fromPCLPointCloud2 (*blob, cloud);
+    fromPCLPointCloud2(*blob, cloud);
     PointCloudImageExtractorFromCurvatureField<PointNormal> pcie;
-    pcie.setPaintNaNsWithBlack (paint_nans_with_black);
+    pcie.setPaintNaNsWithBlack(paint_nans_with_black);
     if (!parseScaleOption(argc, argv, pcie))
       return (-1);
     extracted = pcie.extract(cloud, image);
   }
-  else if (field_name == "intensity")
-  {
+  else if (field_name == "intensity") {
     PointCloud<PointXYZI> cloud;
-    fromPCLPointCloud2 (*blob, cloud);
+    fromPCLPointCloud2(*blob, cloud);
     PointCloudImageExtractorFromIntensityField<PointXYZI> pcie;
-    pcie.setPaintNaNsWithBlack (paint_nans_with_black);
+    pcie.setPaintNaNsWithBlack(paint_nans_with_black);
     if (!parseScaleOption(argc, argv, pcie))
       return (-1);
     extracted = pcie.extract(cloud, image);
   }
-  else
-  {
-    print_error ("Unsupported field \"%s\".\n", field_name.c_str());
+  else {
+    print_error("Unsupported field \"%s\".\n", field_name.c_str());
     return (-1);
   }
 
-  if (!extracted)
-  {
-    print_error ("Failed to extract an image from field \"%s\".\n", field_name.c_str());
+  if (!extracted) {
+    print_error("Failed to extract an image from field \"%s\".\n", field_name.c_str());
     return (-1);
   }
-  saveImage (png_filename, image);
+  saveImage(png_filename, image);
 
   return (0);
 }

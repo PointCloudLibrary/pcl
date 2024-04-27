@@ -99,7 +99,7 @@ public:
    * \param[in] cloud the new point cloud
    */
   inline void
-  addPointCloud(PointCloudPtr cloud)
+  addPointCloud (PointCloudPtr cloud)
   {
     typename boost::graph_traits<LoopGraph>::vertex_descriptor vd =
         add_vertex(*loop_graph_);
@@ -111,7 +111,7 @@ public:
 
   /** \brief Getter for the internal graph. */
   inline LoopGraphPtr
-  getLoopGraph()
+  getLoopGraph ()
   {
     return (loop_graph_);
   }
@@ -120,14 +120,14 @@ public:
    * \param[in] loop_graph the new graph
    */
   inline void
-  setLoopGraph(LoopGraphPtr loop_graph)
+  setLoopGraph (LoopGraphPtr loop_graph)
   {
     loop_graph_ = loop_graph;
   }
 
   /** \brief Getter for the first scan of a loop. */
   inline typename boost::graph_traits<LoopGraph>::vertex_descriptor
-  getLoopStart()
+  getLoopStart ()
   {
     return (loop_start_);
   }
@@ -136,7 +136,7 @@ public:
    * \param[in] loop_start the scan that starts the loop
    */
   inline void
-  setLoopStart(
+  setLoopStart (
       const typename boost::graph_traits<LoopGraph>::vertex_descriptor& loop_start)
   {
     loop_start_ = loop_start;
@@ -144,7 +144,7 @@ public:
 
   /** \brief Getter for the last scan of a loop. */
   inline typename boost::graph_traits<LoopGraph>::vertex_descriptor
-  getLoopEnd()
+  getLoopEnd ()
   {
     return (loop_end_);
   }
@@ -153,14 +153,15 @@ public:
    * \param[in] loop_end the scan that ends the loop
    */
   inline void
-  setLoopEnd(const typename boost::graph_traits<LoopGraph>::vertex_descriptor& loop_end)
+  setLoopEnd (
+      const typename boost::graph_traits<LoopGraph>::vertex_descriptor& loop_end)
   {
     loop_end_ = loop_end;
   }
 
   /** \brief Getter for the registration algorithm. */
   inline RegistrationPtr
-  getReg()
+  getReg ()
   {
     return (reg_);
   }
@@ -170,14 +171,14 @@ public:
    * between the start and the end of the loop
    */
   inline void
-  setReg(RegistrationPtr reg)
+  setReg (RegistrationPtr reg)
   {
     reg_ = reg;
   }
 
   /** \brief Getter for the transformation between the first and the last scan. */
   inline Eigen::Matrix4f
-  getLoopTransform()
+  getLoopTransform ()
   {
     return (loop_transform_);
   }
@@ -186,7 +187,7 @@ public:
    * \param[in] loop_transform the transformation between the first and the last scan
    */
   inline void
-  setLoopTransform(const Eigen::Matrix4f& loop_transform)
+  setLoopTransform (const Eigen::Matrix4f& loop_transform)
   {
     loop_transform_ = loop_transform;
     compute_loop_ = false;
@@ -197,14 +198,14 @@ public:
    * clouds for now!
    */
   void
-  compute();
+  compute ();
 
 protected:
   using PCLBase<PointT>::deinitCompute;
 
   /** \brief This method should get called before starting the actual computation. */
   virtual bool
-  initCompute();
+  initCompute ();
 
 private:
   /** \brief graph structure for the internal optimization graph */
@@ -222,7 +223,7 @@ private:
    * @param[out] weights array for the weights
    */
   void
-  loopOptimizerAlgorithm(LOAGraph& g, double* weights);
+  loopOptimizerAlgorithm (LOAGraph& g, double* weights);
 
   /** \brief The internal loop graph. */
   LoopGraphPtr loop_graph_;

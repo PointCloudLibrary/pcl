@@ -38,181 +38,217 @@
 
 #include <pcl/visualization/pcl_visualizer.h> //pcl vis
 
-#include <string>
 #include <memory>
+#include <string>
 
-namespace pcl
-{
-  namespace visualization
+namespace pcl {
+namespace visualization {
+/** \brief Simple point cloud visualization class
+ * \author Ethan Rublee
+ * \ingroup visualization
+ */
+class PCL_EXPORTS CloudViewer : boost::noncopyable {
+public:
+  using Ptr = shared_ptr<CloudViewer>;
+  using ConstPtr = shared_ptr<const CloudViewer>;
+
+  using ColorACloud = pcl::PointCloud<pcl::PointXYZRGBA>;
+  using ColorCloud = pcl::PointCloud<pcl::PointXYZRGB>;
+  using GrayCloud = pcl::PointCloud<pcl::PointXYZI>;
+  using MonochromeCloud = pcl::PointCloud<pcl::PointXYZ>;
+
+  /** \brief Construct a cloud viewer, with a window name.
+   * \param window_name This is displayed at the top of the window
+   */
+  CloudViewer(const std::string& window_name);
+
+  /** \brief Will quit the window,
+   * and release all resources held by the viewer.
+   * @return
+   */
+  ~CloudViewer();
+
+  /** \brief Show a cloud, with an optional key for multiple clouds.
+   * \param[in] cloud RGB point cloud
+   * \param[in] cloudname a key for the point cloud, use the same name if you would like
+   * to overwrite the existing cloud.
+   */
+  void
+  showCloud (const ColorCloud::ConstPtr& cloud, const std::string& cloudname = "cloud");
+
+  /** \brief Show a cloud, with an optional key for multiple clouds.
+   * \param[in] cloud RGB point cloud
+   * \param[in] cloudname a key for the point cloud, use the same name if you would like
+   * to overwrite the existing cloud.
+   */
+  void
+  showCloud (const ColorACloud::ConstPtr& cloud,
+             const std::string& cloudname = "cloud");
+
+  /** \brief Show a cloud, with an optional key for multiple clouds.
+   * \param[in] cloud XYZI point cloud
+   * \param[in] cloudname a key for the point cloud, use the same name if you would like
+   * to overwrite the existing cloud.
+   */
+  void
+  showCloud (const GrayCloud::ConstPtr& cloud, const std::string& cloudname = "cloud");
+
+  /** \brief Show a cloud, with an optional key for multiple clouds.
+   * \param[in] cloud XYZ point cloud
+   * \param[in] cloudname a key for the point cloud, use the same name if you would like
+   * to overwrite the existing cloud.
+   */
+  void
+  showCloud (const MonochromeCloud::ConstPtr& cloud,
+             const std::string& cloudname = "cloud");
+
+  /** \brief Check if the gui was quit, you should quit also
+   * \param millis_to_wait This will request to "spin" for the number of milliseconds,
+   * before exiting. \return true if the user signaled the gui to stop
+   */
+  bool
+  wasStopped (int millis_to_wait = 1);
+
+  /** Visualization callable function, may be used for running things on the UI thread.
+   */
+  using VizCallable = std::function<void(pcl::visualization::PCLVisualizer&)>;
+
+  /** \brief Run a callbable object on the UI thread. Will persist until removed
+   * @param x Use boost::ref(x) for a function object that you would like to not copy
+   * \param key The key for the callable -- use the same key to overwrite.
+   */
+  void
+  runOnVisualizationThread (VizCallable x, const std::string& key = "callable");
+
+  /** \brief Run a callbable object on the UI thread. This will run once and be removed
+   * @param x Use boost::ref(x) for a function object that you would like to not copy
+   */
+  void
+  runOnVisualizationThreadOnce (VizCallable x);
+
+  /** \brief Remove a previously added callable object, NOP if it doesn't exist.
+   * @param key the key that was registered with the callable object.
+   */
+  void
+  removeVisualizationCallable (const std::string& key = "callable");
+
+  /** \brief Register a callback function for keyboard events
+   * \param[in] callback  the function that will be registered as a callback for a
+   * keyboard event \param[in] cookie    user data that is passed to the callback
+   * \return              connection object that allows to disconnect the callback
+   * function.
+   */
+  inline boost::signals2::connection
+  registerKeyboardCallback (void (*callback)(const pcl::visualization::KeyboardEvent&,
+                                             void*),
+                            void* cookie = nullptr)
   {
-    /** \brief Simple point cloud visualization class
-      * \author Ethan Rublee
-      * \ingroup visualization
-      */
-    class PCL_EXPORTS CloudViewer : boost::noncopyable
-    {
-      public:
-        using Ptr = shared_ptr<CloudViewer>;
-        using ConstPtr = shared_ptr<const CloudViewer>;
-
-        using ColorACloud = pcl::PointCloud<pcl::PointXYZRGBA>;
-        using ColorCloud = pcl::PointCloud<pcl::PointXYZRGB>;
-        using GrayCloud = pcl::PointCloud<pcl::PointXYZI>;
-        using MonochromeCloud = pcl::PointCloud<pcl::PointXYZ>;
-
-        /** \brief Construct a cloud viewer, with a window name.
-         * \param window_name This is displayed at the top of the window
-         */
-        CloudViewer (const std::string& window_name);
-
-        /** \brief Will quit the window,
-         * and release all resources held by the viewer.
-         * @return
-         */
-        ~CloudViewer ();
-
-        /** \brief Show a cloud, with an optional key for multiple clouds.
-          * \param[in] cloud RGB point cloud
-          * \param[in] cloudname a key for the point cloud, use the same name if you would like to overwrite the existing cloud.
-          */
-        void
-        showCloud (const ColorCloud::ConstPtr &cloud, const std::string& cloudname = "cloud");
-
-        /** \brief Show a cloud, with an optional key for multiple clouds.
-          * \param[in] cloud RGB point cloud
-          * \param[in] cloudname a key for the point cloud, use the same name if you would like to overwrite the existing cloud.
-          */
-        void
-        showCloud (const ColorACloud::ConstPtr &cloud, const std::string& cloudname = "cloud");
-
-        /** \brief Show a cloud, with an optional key for multiple clouds.
-          * \param[in] cloud XYZI point cloud
-          * \param[in] cloudname a key for the point cloud, use the same name if you would like to overwrite the existing cloud.
-          */
-        void
-        showCloud (const GrayCloud::ConstPtr &cloud, const std::string& cloudname = "cloud");
-
-
-        /** \brief Show a cloud, with an optional key for multiple clouds.
-          * \param[in] cloud XYZ point cloud
-          * \param[in] cloudname a key for the point cloud, use the same name if you would like to overwrite the existing cloud.
-          */
-        void
-        showCloud (const MonochromeCloud::ConstPtr &cloud, const std::string& cloudname = "cloud");
-        
-        /** \brief Check if the gui was quit, you should quit also
-         * \param millis_to_wait This will request to "spin" for the number of milliseconds, before exiting.
-         * \return true if the user signaled the gui to stop
-         */
-        bool
-        wasStopped (int millis_to_wait = 1);
-
-        /** Visualization callable function, may be used for running things on the UI thread.
-         */
-        using VizCallable = std::function<void (pcl::visualization::PCLVisualizer&)>;
-
-        /** \brief Run a callbable object on the UI thread. Will persist until removed
-         * @param x Use boost::ref(x) for a function object that you would like to not copy
-         * \param key The key for the callable -- use the same key to overwrite.
-         */
-        void
-        runOnVisualizationThread (VizCallable x, const std::string& key = "callable");
-
-        /** \brief Run a callbable object on the UI thread. This will run once and be removed
-         * @param x Use boost::ref(x) for a function object that you would like to not copy
-         */
-        void
-        runOnVisualizationThreadOnce (VizCallable x);
-
-        /** \brief Remove a previously added callable object, NOP if it doesn't exist.
-         * @param key the key that was registered with the callable object.
-         */
-        void
-        removeVisualizationCallable (const std::string& key = "callable");
-        
-        /** \brief Register a callback function for keyboard events
-          * \param[in] callback  the function that will be registered as a callback for a keyboard event
-          * \param[in] cookie    user data that is passed to the callback
-          * \return              connection object that allows to disconnect the callback function.
-          */
-        inline boost::signals2::connection 
-        registerKeyboardCallback (void (*callback) (const pcl::visualization::KeyboardEvent&, void*), void* cookie = nullptr)
-        {
-          return (registerKeyboardCallback ([=] (const pcl::visualization::KeyboardEvent& e) { (*callback) (e, cookie); }));
-        }
-        
-        /** \brief Register a callback function for keyboard events
-          * \param[in] callback  the member function that will be registered as a callback for a keyboard event
-          * \param[in] instance  instance to the class that implements the callback function
-          * \param[in] cookie    user data that is passed to the callback
-          * \return              connection object that allows to disconnect the callback function.
-          */
-        template<typename T> inline boost::signals2::connection 
-        registerKeyboardCallback (void (T::*callback) (const pcl::visualization::KeyboardEvent&, void*), T& instance, void* cookie = nullptr)
-        {
-          return (registerKeyboardCallback ([=, &instance] (const pcl::visualization::KeyboardEvent& e) { (instance.*callback) (e, cookie); }));
-        }
-        
-        /** \brief Register a callback function for mouse events
-          * \param[in] callback  the function that will be registered as a callback for a mouse event
-          * \param[in] cookie    user data that is passed to the callback
-          * \return              connection object that allows to disconnect the callback function.
-          */
-        inline boost::signals2::connection 
-        registerMouseCallback (void (*callback) (const pcl::visualization::MouseEvent&, void*), void* cookie = nullptr)
-        {
-          return (registerMouseCallback ([=] (const pcl::visualization::MouseEvent& e) { (*callback) (e, cookie); }));
-        }
-        
-        /** \brief Register a callback function for mouse events
-          * \param[in] callback  the member function that will be registered as a callback for a mouse event
-          * \param[in] instance  instance to the class that implements the callback function
-          * \param[in] cookie    user data that is passed to the callback
-          * \return              connection object that allows to disconnect the callback function.
-          */
-        template<typename T> inline boost::signals2::connection 
-        registerMouseCallback (void (T::*callback) (const pcl::visualization::MouseEvent&, void*), T& instance, void* cookie = nullptr)
-        {
-          return (registerMouseCallback ([=, &instance] (const pcl::visualization::MouseEvent& e) { (instance.*callback) (e, cookie); }));
-        }
-
-        
-        /** \brief Register a callback function for point picking events
-          * \param[in] callback  the function that will be registered as a callback for a point picking event
-          * \param[in] cookie    user data that is passed to the callback
-          * \return              connection object that allows to disconnect the callback function.
-          */
-        inline boost::signals2::connection 
-        registerPointPickingCallback (void (*callback) (const pcl::visualization::PointPickingEvent&, void*), void* cookie = nullptr)
-        {
-          return (registerPointPickingCallback ([=] (const pcl::visualization::PointPickingEvent& e) { (*callback) (e, cookie); }));
-        }
-        
-        /** \brief Register a callback function for point picking events
-          * \param[in] callback  the member function that will be registered as a callback for a point picking event
-          * \param[in] instance  instance to the class that implements the callback function
-          * \param[in] cookie    user data that is passed to the callback
-          * \return              connection object that allows to disconnect the callback function.
-          */
-        template<typename T> inline boost::signals2::connection 
-        registerPointPickingCallback (void (T::*callback) (const pcl::visualization::PointPickingEvent&, void*), T& instance, void* cookie = nullptr)
-        {
-          return (registerPointPickingCallback ([=, &instance] (const pcl::visualization::PointPickingEvent& e) { (instance.*callback) (e, cookie); }));
-        }
-        
-      private:
-        /** \brief Private implementation. */
-        struct CloudViewer_impl;
-        std::unique_ptr<CloudViewer_impl> impl_;
-        
-        boost::signals2::connection 
-        registerMouseCallback (std::function<void (const pcl::visualization::MouseEvent&)>);
-
-        boost::signals2::connection 
-        registerKeyboardCallback (std::function<void (const pcl::visualization::KeyboardEvent&)>);
-
-        boost::signals2::connection 
-        registerPointPickingCallback (std::function<void (const pcl::visualization::PointPickingEvent&)>);
-    };
+    return (registerKeyboardCallback(
+        [=] (const pcl::visualization::KeyboardEvent& e) { (*callback)(e, cookie); }));
   }
-}
+
+  /** \brief Register a callback function for keyboard events
+   * \param[in] callback  the member function that will be registered as a callback for
+   * a keyboard event \param[in] instance  instance to the class that implements the
+   * callback function \param[in] cookie    user data that is passed to the callback
+   * \return              connection object that allows to disconnect the callback
+   * function.
+   */
+  template <typename T>
+  inline boost::signals2::connection
+  registerKeyboardCallback (
+      void (T::*callback)(const pcl::visualization::KeyboardEvent&, void*),
+      T& instance,
+      void* cookie = nullptr)
+  {
+    return (registerKeyboardCallback(
+        [=, &instance] (const pcl::visualization::KeyboardEvent& e) {
+          (instance.*callback)(e, cookie);
+        }));
+  }
+
+  /** \brief Register a callback function for mouse events
+   * \param[in] callback  the function that will be registered as a callback for a mouse
+   * event \param[in] cookie    user data that is passed to the callback \return
+   * connection object that allows to disconnect the callback function.
+   */
+  inline boost::signals2::connection
+  registerMouseCallback (void (*callback)(const pcl::visualization::MouseEvent&, void*),
+                         void* cookie = nullptr)
+  {
+    return (registerMouseCallback(
+        [=] (const pcl::visualization::MouseEvent& e) { (*callback)(e, cookie); }));
+  }
+
+  /** \brief Register a callback function for mouse events
+   * \param[in] callback  the member function that will be registered as a callback for
+   * a mouse event \param[in] instance  instance to the class that implements the
+   * callback function \param[in] cookie    user data that is passed to the callback
+   * \return              connection object that allows to disconnect the callback
+   * function.
+   */
+  template <typename T>
+  inline boost::signals2::connection
+  registerMouseCallback (void (T::*callback)(const pcl::visualization::MouseEvent&,
+                                             void*),
+                         T& instance,
+                         void* cookie = nullptr)
+  {
+    return (
+        registerMouseCallback([=, &instance] (const pcl::visualization::MouseEvent& e) {
+          (instance.*callback)(e, cookie);
+        }));
+  }
+
+  /** \brief Register a callback function for point picking events
+   * \param[in] callback  the function that will be registered as a callback for a point
+   * picking event \param[in] cookie    user data that is passed to the callback \return
+   * connection object that allows to disconnect the callback function.
+   */
+  inline boost::signals2::connection
+  registerPointPickingCallback (
+      void (*callback)(const pcl::visualization::PointPickingEvent&, void*),
+      void* cookie = nullptr)
+  {
+    return (registerPointPickingCallback(
+        [=] (const pcl::visualization::PointPickingEvent& e) {
+          (*callback)(e, cookie);
+        }));
+  }
+
+  /** \brief Register a callback function for point picking events
+   * \param[in] callback  the member function that will be registered as a callback for
+   * a point picking event \param[in] instance  instance to the class that implements
+   * the callback function \param[in] cookie    user data that is passed to the callback
+   * \return              connection object that allows to disconnect the callback
+   * function.
+   */
+  template <typename T>
+  inline boost::signals2::connection
+  registerPointPickingCallback (
+      void (T::*callback)(const pcl::visualization::PointPickingEvent&, void*),
+      T& instance,
+      void* cookie = nullptr)
+  {
+    return (registerPointPickingCallback(
+        [=, &instance] (const pcl::visualization::PointPickingEvent& e) {
+          (instance.*callback)(e, cookie);
+        }));
+  }
+
+private:
+  /** \brief Private implementation. */
+  struct CloudViewer_impl;
+  std::unique_ptr<CloudViewer_impl> impl_;
+
+  boost::signals2::connection
+      registerMouseCallback(std::function<void(const pcl::visualization::MouseEvent&)>);
+
+  boost::signals2::connection registerKeyboardCallback(
+      std::function<void(const pcl::visualization::KeyboardEvent&)>);
+
+  boost::signals2::connection registerPointPickingCallback(
+      std::function<void(const pcl::visualization::PointPickingEvent&)>);
+};
+} // namespace visualization
+} // namespace pcl

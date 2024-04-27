@@ -47,19 +47,20 @@ public:
   }
 
   void
-  setPrefix(std::string& pre)
+  setPrefix (std::string& pre)
   {
     view_prefix_ = pre;
   }
 
   void
-  setPoseRowOrder(int o)
+  setPoseRowOrder (int o)
   {
     pose_files_order_ = o;
   }
 
   void
-  getViewsFilenames(bf::path& path_with_views, std::vector<std::string>& view_filenames)
+  getViewsFilenames (bf::path& path_with_views,
+                     std::vector<std::string>& view_filenames)
   {
     int number_of_views = 0;
     for (const auto& dir_entry : bf::directory_iterator(path_with_views)) {
@@ -84,7 +85,7 @@ public:
   }
 
   void
-  assembleModelFromViewsAndPoses(
+  assembleModelFromViewsAndPoses (
       ModelT& model,
       std::vector<Eigen::Matrix4f, Eigen::aligned_allocator<Eigen::Matrix4f>>& poses)
   {
@@ -98,7 +99,7 @@ public:
   }
 
   void
-  loadOrGenerate(std::string& dir, std::string& model_path, ModelT& model)
+  loadOrGenerate (std::string& dir, std::string& model_path, ModelT& model)
   {
     const std::string pathmodel = dir + '/' + model.class_ + '/' + model.id_;
     const bf::path trained_dir = pathmodel;
@@ -213,7 +214,7 @@ public:
   }
 
   bool
-  isleafDirectory(bf::path& path)
+  isleafDirectory (bf::path& path)
   {
     bool no_dirs_inside = true;
     for (const auto& dir_entry : bf::directory_iterator(path)) {
@@ -226,9 +227,9 @@ public:
   }
 
   void
-  getModelsInDirectory(bf::path& dir,
-                       std::string& rel_path_so_far,
-                       std::vector<std::string>& relative_paths)
+  getModelsInDirectory (bf::path& dir,
+                        std::string& rel_path_so_far,
+                        std::vector<std::string>& relative_paths)
   {
     for (const auto& dir_entry : bf::directory_iterator(dir)) {
       // check if its a directory, then get models in it
@@ -253,7 +254,7 @@ public:
    * needed
    */
   void
-  generate(std::string& training_dir)
+  generate (std::string& training_dir)
   {
 
     // create training dir fs if not existent

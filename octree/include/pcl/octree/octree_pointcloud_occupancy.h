@@ -100,7 +100,7 @@ public:
    *  \param point_arg:  input point
    * */
   void
-  setOccupiedVoxelAtPoint(const PointT& point_arg)
+  setOccupiedVoxelAtPoint (const PointT& point_arg)
   {
     OctreeKey key;
 
@@ -118,7 +118,7 @@ public:
    *  \param cloud_arg:  input point cloud
    * */
   void
-  setOccupiedVoxelsAtPointsFromCloud(PointCloudPtr cloud_arg)
+  setOccupiedVoxelsAtPointsFromCloud (PointCloudPtr cloud_arg)
   {
     for (const auto& point : *cloud_arg) {
       // check for NaNs

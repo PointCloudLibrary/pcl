@@ -38,274 +38,302 @@
 
 #pragma once
 
-#include <pcl/sample_consensus/sac_model.h>
-#include <pcl/sample_consensus/model_types.h>
 #include <pcl/common/distances.h>
+#include <pcl/sample_consensus/model_types.h>
+#include <pcl/sample_consensus/sac_model.h>
 #include <pcl/pcl_exports.h>
 
-namespace pcl
-{
-  namespace internal {
-    PCL_EXPORTS int optimizeModelCoefficientsCone (Eigen::VectorXf& coeff, const Eigen::ArrayXf& pts_x, const Eigen::ArrayXf& pts_y, const Eigen::ArrayXf& pts_z);
-  } // namespace internal
+namespace pcl {
+namespace internal {
+PCL_EXPORTS int
+optimizeModelCoefficientsCone (Eigen::VectorXf& coeff,
+                               const Eigen::ArrayXf& pts_x,
+                               const Eigen::ArrayXf& pts_y,
+                               const Eigen::ArrayXf& pts_z);
+} // namespace internal
 
-  /** \brief @b SampleConsensusModelCone defines a model for 3D cone segmentation.
-    * The model coefficients are defined as:
-    * <ul>
-    * <li><b>apex.x</b>  : the X coordinate of cone's apex
-    * <li><b>apex.y</b>  : the Y coordinate of cone's apex
-    * <li><b>apex.z</b>  : the Z coordinate of cone's apex
-    * <li><b>axis_direction.x</b> : the X coordinate of the cone's axis direction
-    * <li><b>axis_direction.y</b> : the Y coordinate of the cone's axis direction
-    * <li><b>axis_direction.z</b> : the Z coordinate of the cone's axis direction
-    * <li><b>opening_angle</b>    : the cone's opening angle
-    * </ul>
-    * \author Stefan Schrandt
-    * \ingroup sample_consensus
-    */
-  template <typename PointT, typename PointNT>
-  class SampleConsensusModelCone : public SampleConsensusModel<PointT>, public SampleConsensusModelFromNormals<PointT, PointNT>
+/** \brief @b SampleConsensusModelCone defines a model for 3D cone segmentation.
+ * The model coefficients are defined as:
+ * <ul>
+ * <li><b>apex.x</b>  : the X coordinate of cone's apex
+ * <li><b>apex.y</b>  : the Y coordinate of cone's apex
+ * <li><b>apex.z</b>  : the Z coordinate of cone's apex
+ * <li><b>axis_direction.x</b> : the X coordinate of the cone's axis direction
+ * <li><b>axis_direction.y</b> : the Y coordinate of the cone's axis direction
+ * <li><b>axis_direction.z</b> : the Z coordinate of the cone's axis direction
+ * <li><b>opening_angle</b>    : the cone's opening angle
+ * </ul>
+ * \author Stefan Schrandt
+ * \ingroup sample_consensus
+ */
+template <typename PointT, typename PointNT>
+class SampleConsensusModelCone
+: public SampleConsensusModel<PointT>,
+  public SampleConsensusModelFromNormals<PointT, PointNT> {
+public:
+  using SampleConsensusModel<PointT>::model_name_;
+  using SampleConsensusModel<PointT>::input_;
+  using SampleConsensusModel<PointT>::indices_;
+  using SampleConsensusModel<PointT>::radius_min_;
+  using SampleConsensusModel<PointT>::radius_max_;
+  using SampleConsensusModelFromNormals<PointT, PointNT>::normals_;
+  using SampleConsensusModelFromNormals<PointT, PointNT>::normal_distance_weight_;
+  using SampleConsensusModel<PointT>::error_sqr_dists_;
+
+  using PointCloud = typename SampleConsensusModel<PointT>::PointCloud;
+  using PointCloudPtr = typename SampleConsensusModel<PointT>::PointCloudPtr;
+  using PointCloudConstPtr = typename SampleConsensusModel<PointT>::PointCloudConstPtr;
+
+  using Ptr = shared_ptr<SampleConsensusModelCone<PointT, PointNT>>;
+  using ConstPtr = shared_ptr<const SampleConsensusModelCone<PointT, PointNT>>;
+
+  /** \brief Constructor for base SampleConsensusModelCone.
+   * \param[in] cloud the input point cloud dataset
+   * \param[in] random if true set the random seed to the current time, else set to
+   * 12345 (default: false)
+   */
+  SampleConsensusModelCone(const PointCloudConstPtr& cloud, bool random = false)
+  : SampleConsensusModel<PointT>(cloud, random)
+  , SampleConsensusModelFromNormals<PointT, PointNT>()
+  , axis_(Eigen::Vector3f::Zero())
+  , eps_angle_(0)
+  , min_angle_(-std::numeric_limits<double>::max())
+  , max_angle_(std::numeric_limits<double>::max())
   {
-    public:
-      using SampleConsensusModel<PointT>::model_name_;
-      using SampleConsensusModel<PointT>::input_;
-      using SampleConsensusModel<PointT>::indices_;
-      using SampleConsensusModel<PointT>::radius_min_;
-      using SampleConsensusModel<PointT>::radius_max_;
-      using SampleConsensusModelFromNormals<PointT, PointNT>::normals_;
-      using SampleConsensusModelFromNormals<PointT, PointNT>::normal_distance_weight_;
-      using SampleConsensusModel<PointT>::error_sqr_dists_;
+    model_name_ = "SampleConsensusModelCone";
+    sample_size_ = 3;
+    model_size_ = 7;
+  }
 
-      using PointCloud = typename SampleConsensusModel<PointT>::PointCloud;
-      using PointCloudPtr = typename SampleConsensusModel<PointT>::PointCloudPtr;
-      using PointCloudConstPtr = typename SampleConsensusModel<PointT>::PointCloudConstPtr;
+  /** \brief Constructor for base SampleConsensusModelCone.
+   * \param[in] cloud the input point cloud dataset
+   * \param[in] indices a vector of point indices to be used from \a cloud
+   * \param[in] random if true set the random seed to the current time, else set to
+   * 12345 (default: false)
+   */
+  SampleConsensusModelCone(const PointCloudConstPtr& cloud,
+                           const Indices& indices,
+                           bool random = false)
+  : SampleConsensusModel<PointT>(cloud, indices, random)
+  , SampleConsensusModelFromNormals<PointT, PointNT>()
+  , axis_(Eigen::Vector3f::Zero())
+  , eps_angle_(0)
+  , min_angle_(-std::numeric_limits<double>::max())
+  , max_angle_(std::numeric_limits<double>::max())
+  {
+    model_name_ = "SampleConsensusModelCone";
+    sample_size_ = 3;
+    model_size_ = 7;
+  }
 
-      using Ptr = shared_ptr<SampleConsensusModelCone<PointT, PointNT> >;
-      using ConstPtr = shared_ptr<const SampleConsensusModelCone<PointT, PointNT>>;
+  /** \brief Copy constructor.
+   * \param[in] source the model to copy into this
+   */
+  SampleConsensusModelCone(const SampleConsensusModelCone& source)
+  : SampleConsensusModel<PointT>()
+  , SampleConsensusModelFromNormals<PointT, PointNT>()
+  , eps_angle_()
+  , min_angle_()
+  , max_angle_()
+  {
+    *this = source;
+    model_name_ = "SampleConsensusModelCone";
+  }
 
-      /** \brief Constructor for base SampleConsensusModelCone.
-        * \param[in] cloud the input point cloud dataset
-        * \param[in] random if true set the random seed to the current time, else set to 12345 (default: false)
-        */
-      SampleConsensusModelCone (const PointCloudConstPtr &cloud, bool random = false) 
-        : SampleConsensusModel<PointT> (cloud, random)
-        , SampleConsensusModelFromNormals<PointT, PointNT> ()
-        , axis_ (Eigen::Vector3f::Zero ())
-        , eps_angle_ (0)
-        , min_angle_ (-std::numeric_limits<double>::max ())
-        , max_angle_ (std::numeric_limits<double>::max ())
-      {
-        model_name_ = "SampleConsensusModelCone";
-        sample_size_ = 3;
-        model_size_ = 7;
-      }
+  /** \brief Empty destructor */
+  ~SampleConsensusModelCone() override = default;
 
-      /** \brief Constructor for base SampleConsensusModelCone.
-        * \param[in] cloud the input point cloud dataset
-        * \param[in] indices a vector of point indices to be used from \a cloud
-        * \param[in] random if true set the random seed to the current time, else set to 12345 (default: false)
-        */
-      SampleConsensusModelCone (const PointCloudConstPtr &cloud, 
-                                const Indices &indices,
-                                bool random = false) 
-        : SampleConsensusModel<PointT> (cloud, indices, random)
-        , SampleConsensusModelFromNormals<PointT, PointNT> ()
-        , axis_ (Eigen::Vector3f::Zero ())
-        , eps_angle_ (0)
-        , min_angle_ (-std::numeric_limits<double>::max ())
-        , max_angle_ (std::numeric_limits<double>::max ())
-      {
-        model_name_ = "SampleConsensusModelCone";
-        sample_size_ = 3;
-        model_size_ = 7;
-      }
+  /** \brief Copy constructor.
+   * \param[in] source the model to copy into this
+   */
+  inline SampleConsensusModelCone&
+  operator=(const SampleConsensusModelCone& source)
+  {
+    SampleConsensusModel<PointT>::operator=(source);
+    SampleConsensusModelFromNormals<PointT, PointNT>::operator=(source);
+    axis_ = source.axis_;
+    eps_angle_ = source.eps_angle_;
+    min_angle_ = source.min_angle_;
+    max_angle_ = source.max_angle_;
+    return (*this);
+  }
 
-      /** \brief Copy constructor.
-        * \param[in] source the model to copy into this
-        */
-      SampleConsensusModelCone (const SampleConsensusModelCone &source) :
-        SampleConsensusModel<PointT> (), 
-        SampleConsensusModelFromNormals<PointT, PointNT> (),
-        eps_angle_ (), min_angle_ (), max_angle_ ()
-      {
-        *this = source;
-        model_name_ = "SampleConsensusModelCone";
-      }
-      
-      /** \brief Empty destructor */
-      ~SampleConsensusModelCone () override = default;
+  /** \brief Set the angle epsilon (delta) threshold.
+   * \param[in] ea the maximum allowed difference between the cone's axis and the given
+   * axis.
+   */
+  inline void
+  setEpsAngle (double ea)
+  {
+    eps_angle_ = ea;
+  }
 
-      /** \brief Copy constructor.
-        * \param[in] source the model to copy into this
-        */
-      inline SampleConsensusModelCone&
-      operator = (const SampleConsensusModelCone &source)
-      {
-        SampleConsensusModel<PointT>::operator=(source);
-        SampleConsensusModelFromNormals<PointT, PointNT>::operator=(source);
-        axis_ = source.axis_;
-        eps_angle_ = source.eps_angle_;
-        min_angle_ = source.min_angle_;
-        max_angle_ = source.max_angle_;
-        return (*this);
-      }
+  /** \brief Get the angle epsilon (delta) threshold. */
+  inline double
+  getEpsAngle () const
+  {
+    return (eps_angle_);
+  }
 
-      /** \brief Set the angle epsilon (delta) threshold.
-        * \param[in] ea the maximum allowed difference between the cone's axis and the given axis.
-        */
-      inline void 
-      setEpsAngle (double ea) { eps_angle_ = ea; }
+  /** \brief Set the axis along which we need to search for a cone direction.
+   * \param[in] ax the axis along which we need to search for a cone direction
+   */
+  inline void
+  setAxis (const Eigen::Vector3f& ax)
+  {
+    axis_ = ax;
+  }
 
-      /** \brief Get the angle epsilon (delta) threshold. */
-      inline double 
-      getEpsAngle () const { return (eps_angle_); }
+  /** \brief Get the axis along which we need to search for a cone direction. */
+  inline Eigen::Vector3f
+  getAxis () const
+  {
+    return (axis_);
+  }
 
-      /** \brief Set the axis along which we need to search for a cone direction.
-        * \param[in] ax the axis along which we need to search for a cone direction
-        */
-      inline void 
-      setAxis (const Eigen::Vector3f &ax) { axis_ = ax; }
+  /** \brief Set the minimum and maximum allowable opening angle for a cone model
+   * given from a user.
+   * \param[in] min_angle the minimum allowable opening angle of a cone model
+   * \param[in] max_angle the maximum allowable opening angle of a cone model
+   */
+  inline void
+  setMinMaxOpeningAngle (const double& min_angle, const double& max_angle)
+  {
+    min_angle_ = min_angle;
+    max_angle_ = max_angle;
+  }
 
-      /** \brief Get the axis along which we need to search for a cone direction. */
-      inline Eigen::Vector3f 
-      getAxis () const { return (axis_); }
+  /** \brief Get the opening angle which we need minimum to validate a cone model.
+   * \param[out] min_angle the minimum allowable opening angle of a cone model
+   * \param[out] max_angle the maximum allowable opening angle of a cone model
+   */
+  inline void
+  getMinMaxOpeningAngle (double& min_angle, double& max_angle) const
+  {
+    min_angle = min_angle_;
+    max_angle = max_angle_;
+  }
 
-      /** \brief Set the minimum and maximum allowable opening angle for a cone model
-        * given from a user.
-        * \param[in] min_angle the minimum allowable opening angle of a cone model
-        * \param[in] max_angle the maximum allowable opening angle of a cone model
-        */
-      inline void
-      setMinMaxOpeningAngle (const double &min_angle, const double &max_angle)
-      {
-        min_angle_ = min_angle;
-        max_angle_ = max_angle;
-      }
+  /** \brief Check whether the given index samples can form a valid cone model, compute
+   * the model coefficients from these samples and store them in model_coefficients. The
+   * cone coefficients are: apex, axis_direction, opening_angle. \param[in] samples the
+   * point indices found as possible good candidates for creating a valid model
+   * \param[out] model_coefficients the resultant model coefficients
+   */
+  bool
+  computeModelCoefficients (const Indices& samples,
+                            Eigen::VectorXf& model_coefficients) const override;
 
-      /** \brief Get the opening angle which we need minimum to validate a cone model.
-        * \param[out] min_angle the minimum allowable opening angle of a cone model
-        * \param[out] max_angle the maximum allowable opening angle of a cone model
-        */
-      inline void
-      getMinMaxOpeningAngle (double &min_angle, double &max_angle) const
-      {
-        min_angle = min_angle_;
-        max_angle = max_angle_;
-      }
+  /** \brief Compute all distances from the cloud data to a given cone model.
+   * \param[in] model_coefficients the coefficients of a cone model that we need to
+   * compute distances to \param[out] distances the resultant estimated distances
+   */
+  void
+  getDistancesToModel (const Eigen::VectorXf& model_coefficients,
+                       std::vector<double>& distances) const override;
 
-      /** \brief Check whether the given index samples can form a valid cone model, compute the model coefficients
-        * from these samples and store them in model_coefficients. The cone coefficients are: apex,
-        * axis_direction, opening_angle.
-        * \param[in] samples the point indices found as possible good candidates for creating a valid model
-        * \param[out] model_coefficients the resultant model coefficients
-        */
-      bool
-      computeModelCoefficients (const Indices &samples,
-                                Eigen::VectorXf &model_coefficients) const override;
+  /** \brief Select all the points which respect the given model coefficients as
+   * inliers. \param[in] model_coefficients the coefficients of a cone model that we
+   * need to compute distances to \param[in] threshold a maximum admissible distance
+   * threshold for determining the inliers from the outliers \param[out] inliers the
+   * resultant model inliers
+   */
+  void
+  selectWithinDistance (const Eigen::VectorXf& model_coefficients,
+                        const double threshold,
+                        Indices& inliers) override;
 
-      /** \brief Compute all distances from the cloud data to a given cone model.
-        * \param[in] model_coefficients the coefficients of a cone model that we need to compute distances to
-        * \param[out] distances the resultant estimated distances
-        */
-      void
-      getDistancesToModel (const Eigen::VectorXf &model_coefficients,
-                           std::vector<double> &distances) const override;
+  /** \brief Count all the points which respect the given model coefficients as inliers.
+   *
+   * \param[in] model_coefficients the coefficients of a model that we need to compute
+   * distances to \param[in] threshold maximum admissible distance threshold for
+   * determining the inliers from the outliers \return the resultant number of inliers
+   */
+  std::size_t
+  countWithinDistance (const Eigen::VectorXf& model_coefficients,
+                       const double threshold) const override;
 
-      /** \brief Select all the points which respect the given model coefficients as inliers.
-        * \param[in] model_coefficients the coefficients of a cone model that we need to compute distances to
-        * \param[in] threshold a maximum admissible distance threshold for determining the inliers from the outliers
-        * \param[out] inliers the resultant model inliers
-        */
-      void 
-      selectWithinDistance (const Eigen::VectorXf &model_coefficients, 
-                            const double threshold, 
-                            Indices &inliers) override;
+  /** \brief Recompute the cone coefficients using the given inlier set and return them
+   * to the user.
+   * @note: these are the coefficients of the cone model after refinement (e.g. after
+   * SVD) \param[in] inliers the data inliers found as supporting the model \param[in]
+   * model_coefficients the initial guess for the optimization \param[out]
+   * optimized_coefficients the resultant recomputed coefficients after non-linear
+   * optimization
+   */
+  void
+  optimizeModelCoefficients (const Indices& inliers,
+                             const Eigen::VectorXf& model_coefficients,
+                             Eigen::VectorXf& optimized_coefficients) const override;
 
-      /** \brief Count all the points which respect the given model coefficients as inliers. 
-        * 
-        * \param[in] model_coefficients the coefficients of a model that we need to compute distances to
-        * \param[in] threshold maximum admissible distance threshold for determining the inliers from the outliers
-        * \return the resultant number of inliers
-        */
-      std::size_t
-      countWithinDistance (const Eigen::VectorXf &model_coefficients,
-                           const double threshold) const override;
+  /** \brief Create a new point cloud with inliers projected onto the cone model.
+   * \param[in] inliers the data inliers that we want to project on the cone model
+   * \param[in] model_coefficients the coefficients of a cone model
+   * \param[out] projected_points the resultant projected points
+   * \param[in] copy_data_fields set to true if we need to copy the other data fields
+   */
+  void
+  projectPoints (const Indices& inliers,
+                 const Eigen::VectorXf& model_coefficients,
+                 PointCloud& projected_points,
+                 bool copy_data_fields = true) const override;
 
+  /** \brief Verify whether a subset of indices verifies the given cone model
+   * coefficients. \param[in] indices the data indices that need to be tested against
+   * the cone model \param[in] model_coefficients the cone model coefficients \param[in]
+   * threshold a maximum admissible distance threshold for determining the inliers from
+   * the outliers
+   */
+  bool
+  doSamplesVerifyModel (const std::set<index_t>& indices,
+                        const Eigen::VectorXf& model_coefficients,
+                        const double threshold) const override;
 
-      /** \brief Recompute the cone coefficients using the given inlier set and return them to the user.
-        * @note: these are the coefficients of the cone model after refinement (e.g. after SVD)
-        * \param[in] inliers the data inliers found as supporting the model
-        * \param[in] model_coefficients the initial guess for the optimization
-        * \param[out] optimized_coefficients the resultant recomputed coefficients after non-linear optimization
-        */
-      void
-      optimizeModelCoefficients (const Indices &inliers,
-                                 const Eigen::VectorXf &model_coefficients,
-                                 Eigen::VectorXf &optimized_coefficients) const override;
+  /** \brief Return a unique id for this model (SACMODEL_CONE). */
+  inline pcl::SacModel
+  getModelType () const override
+  {
+    return (SACMODEL_CONE);
+  }
 
+protected:
+  using SampleConsensusModel<PointT>::sample_size_;
+  using SampleConsensusModel<PointT>::model_size_;
 
-      /** \brief Create a new point cloud with inliers projected onto the cone model.
-        * \param[in] inliers the data inliers that we want to project on the cone model
-        * \param[in] model_coefficients the coefficients of a cone model
-        * \param[out] projected_points the resultant projected points
-        * \param[in] copy_data_fields set to true if we need to copy the other data fields
-        */
-      void
-      projectPoints (const Indices &inliers,
-                     const Eigen::VectorXf &model_coefficients,
-                     PointCloud &projected_points,
-                     bool copy_data_fields = true) const override;
+  /** \brief Get the distance from a point to a line (represented by a point and a
+   * direction) \param[in] pt a point \param[in] model_coefficients the line
+   * coefficients (a point on the line, line direction)
+   */
+  double
+  pointToAxisDistance (const Eigen::Vector4f& pt,
+                       const Eigen::VectorXf& model_coefficients) const;
 
-      /** \brief Verify whether a subset of indices verifies the given cone model coefficients.
-        * \param[in] indices the data indices that need to be tested against the cone model
-        * \param[in] model_coefficients the cone model coefficients
-        * \param[in] threshold a maximum admissible distance threshold for determining the inliers from the outliers
-        */
-      bool
-      doSamplesVerifyModel (const std::set<index_t> &indices,
-                            const Eigen::VectorXf &model_coefficients,
-                            const double threshold) const override;
+  /** \brief Check whether a model is valid given the user constraints.
+   * \param[in] model_coefficients the set of model coefficients
+   */
+  bool
+  isModelValid (const Eigen::VectorXf& model_coefficients) const override;
 
-      /** \brief Return a unique id for this model (SACMODEL_CONE). */
-      inline pcl::SacModel 
-      getModelType () const override { return (SACMODEL_CONE); }
+  /** \brief Check if a sample of indices results in a good sample of points
+   * indices. Pure virtual.
+   * \param[in] samples the resultant index samples
+   */
+  bool
+  isSampleGood (const Indices& samples) const override;
 
-    protected:
-      using SampleConsensusModel<PointT>::sample_size_;
-      using SampleConsensusModel<PointT>::model_size_;
+private:
+  /** \brief The axis along which we need to search for a cone direction. */
+  Eigen::Vector3f axis_;
 
-      /** \brief Get the distance from a point to a line (represented by a point and a direction)
-        * \param[in] pt a point
-        * \param[in] model_coefficients the line coefficients (a point on the line, line direction)
-        */
-      double
-      pointToAxisDistance (const Eigen::Vector4f &pt, const Eigen::VectorXf &model_coefficients) const;
+  /** \brief The maximum allowed difference between the cone direction and the given
+   * axis. */
+  double eps_angle_;
 
-      /** \brief Check whether a model is valid given the user constraints.
-        * \param[in] model_coefficients the set of model coefficients
-        */
-      bool
-      isModelValid (const Eigen::VectorXf &model_coefficients) const override;
-
-      /** \brief Check if a sample of indices results in a good sample of points
-        * indices. Pure virtual.
-        * \param[in] samples the resultant index samples
-        */
-      bool
-      isSampleGood (const Indices &samples) const override;
-
-    private:
-      /** \brief The axis along which we need to search for a cone direction. */
-      Eigen::Vector3f axis_;
-    
-      /** \brief The maximum allowed difference between the cone direction and the given axis. */
-      double eps_angle_;
-
-      /** \brief The minimum and maximum allowed opening angles of valid cone model. */
-      double min_angle_;
-      double max_angle_;
-  };
-}
+  /** \brief The minimum and maximum allowed opening angles of valid cone model. */
+  double min_angle_;
+  double max_angle_;
+};
+} // namespace pcl
 
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/sample_consensus/impl/sac_model_cone.hpp>

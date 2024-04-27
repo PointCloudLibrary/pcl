@@ -41,58 +41,57 @@
 #define PCL_IO_AUTO_IO_IMPL_H_
 
 #include <pcl/common/pcl_filesystem.h>
-
+#include <pcl/io/ifs_io.h>
 #include <pcl/io/obj_io.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/io/ply_io.h>
-#include <pcl/io/ifs_io.h>
 
-namespace pcl
+namespace pcl {
+namespace io {
+template <typename PointT>
+int
+load (const std::string& file_name, pcl::PointCloud<PointT>& cloud)
 {
-  namespace io
-  {
-    template<typename PointT> int
-    load (const std::string& file_name, pcl::PointCloud<PointT>& cloud)
-    {
-      pcl_fs::path p (file_name.c_str ());
-      std::string extension = p.extension ().string ();
-      int result = -1;
-      if (extension == ".pcd")
-        result = pcl::io::loadPCDFile (file_name, cloud);
-      else if (extension == ".ply")
-        result = pcl::io::loadPLYFile (file_name, cloud);
-      else if (extension == ".ifs")
-        result = pcl::io::loadIFSFile (file_name, cloud);
-      else if (extension == ".obj")
-        result = pcl::io::loadOBJFile (file_name, cloud);
-      else
-      {
-        PCL_ERROR ("[pcl::io::load] Don't know how to handle file with extension %s\n", extension.c_str ());
-        result = -1;
-      }
-      return (result);
-    }
-
-    template<typename PointT> int
-    save (const std::string& file_name, const pcl::PointCloud<PointT>& cloud)
-    {
-      pcl_fs::path p (file_name.c_str ());
-      std::string extension = p.extension ().string ();
-      int result = -1;
-      if (extension == ".pcd")
-        result = pcl::io::savePCDFile (file_name, cloud, true);
-      else if (extension == ".ply")
-        result = pcl::io::savePLYFile (file_name, cloud, true);
-      else if (extension == ".ifs")
-        result = pcl::io::saveIFSFile (file_name, cloud);
-      else
-      {
-        PCL_ERROR ("[pcl::io::save] Don't know how to handle file with extension %s\n", extension.c_str ());
-        result = -1;
-      }
-      return (result);
-    }
+  pcl_fs::path p(file_name.c_str());
+  std::string extension = p.extension().string();
+  int result = -1;
+  if (extension == ".pcd")
+    result = pcl::io::loadPCDFile(file_name, cloud);
+  else if (extension == ".ply")
+    result = pcl::io::loadPLYFile(file_name, cloud);
+  else if (extension == ".ifs")
+    result = pcl::io::loadIFSFile(file_name, cloud);
+  else if (extension == ".obj")
+    result = pcl::io::loadOBJFile(file_name, cloud);
+  else {
+    PCL_ERROR("[pcl::io::load] Don't know how to handle file with extension %s\n",
+              extension.c_str());
+    result = -1;
   }
+  return (result);
 }
 
-#endif //PCL_IO_AUTO_IO_IMPL_H_
+template <typename PointT>
+int
+save (const std::string& file_name, const pcl::PointCloud<PointT>& cloud)
+{
+  pcl_fs::path p(file_name.c_str());
+  std::string extension = p.extension().string();
+  int result = -1;
+  if (extension == ".pcd")
+    result = pcl::io::savePCDFile(file_name, cloud, true);
+  else if (extension == ".ply")
+    result = pcl::io::savePLYFile(file_name, cloud, true);
+  else if (extension == ".ifs")
+    result = pcl::io::saveIFSFile(file_name, cloud);
+  else {
+    PCL_ERROR("[pcl::io::save] Don't know how to handle file with extension %s\n",
+              extension.c_str());
+    result = -1;
+  }
+  return (result);
+}
+} // namespace io
+} // namespace pcl
+
+#endif // PCL_IO_AUTO_IO_IMPL_H_

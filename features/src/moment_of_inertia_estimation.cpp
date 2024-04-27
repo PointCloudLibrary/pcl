@@ -37,16 +37,17 @@
  *
  */
 
-#include <pcl/features/moment_of_inertia_estimation.h>
 #include <pcl/features/impl/moment_of_inertia_estimation.hpp>
+#include <pcl/features/moment_of_inertia_estimation.h>
 
 #ifndef PCL_NO_PRECOMPILE
-#include <pcl/point_types.h>
 #include <pcl/impl/instantiate.hpp>
+#include <pcl/point_types.h>
 // Instantiations of specific point types
 #ifdef PCL_ONLY_CORE_POINT_TYPES
-  PCL_INSTANTIATE(MomentOfInertiaEstimation, (pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA)(pcl::PointNormal))
+PCL_INSTANTIATE(MomentOfInertiaEstimation,
+                (pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA)(pcl::PointNormal))
 #else
-  PCL_INSTANTIATE(MomentOfInertiaEstimation, PCL_XYZ_POINT_TYPES)
+PCL_INSTANTIATE(MomentOfInertiaEstimation, PCL_XYZ_POINT_TYPES)
 #endif
-#endif    // PCL_NO_PRECOMPILE
+#endif // PCL_NO_PRECOMPILE

@@ -16,7 +16,7 @@
 #include <flann/util/matrix.h>
 
 inline bool
-correspSorter(const pcl::Correspondence& i, const pcl::Correspondence& j)
+correspSorter (const pcl::Correspondence& i, const pcl::Correspondence& j)
 {
   return (i.distance < j.distance);
 }
@@ -109,10 +109,10 @@ class PCL_EXPORTS LocalRecognitionPipeline {
 
   // load features from disk and create flann structure
   void
-  loadFeaturesAndCreateFLANN();
+  loadFeaturesAndCreateFLANN ();
 
   inline void
-  convertToFLANN(const std::vector<flann_model>& models, flann::Matrix<float>& data)
+  convertToFLANN (const std::vector<flann_model>& models, flann::Matrix<float>& data)
   {
     data.rows = models.size();
     data.cols = models[0].descr.size(); // number of histogram bins
@@ -130,11 +130,11 @@ class PCL_EXPORTS LocalRecognitionPipeline {
   }
 
   void
-  nearestKSearch(flann::Index<DistT>* index,
-                 const flann_model& model,
-                 int k,
-                 flann::Matrix<int>& indices,
-                 flann::Matrix<float>& distances);
+  nearestKSearch (flann::Index<DistT>* index,
+                  const flann_model& model,
+                  int k,
+                  flann::Matrix<int>& indices,
+                  flann::Matrix<float>& distances);
 
   class ObjectHypothesis {
   public:
@@ -148,18 +148,18 @@ class PCL_EXPORTS LocalRecognitionPipeline {
   };
 
   void
-  getPose(ModelT& model, int view_id, Eigen::Matrix4f& pose_matrix);
+  getPose (ModelT& model, int view_id, Eigen::Matrix4f& pose_matrix);
 
   void
-  getKeypoints(ModelT& model,
-               int view_id,
-               typename pcl::PointCloud<PointInT>::Ptr& keypoints_cloud);
+  getKeypoints (ModelT& model,
+                int view_id,
+                typename pcl::PointCloud<PointInT>::Ptr& keypoints_cloud);
 
   void
-  drawCorrespondences(PointInTPtr& cloud,
-                      ObjectHypothesis& oh,
-                      PointInTPtr& keypoints_pointcloud,
-                      pcl::Correspondences& correspondences)
+  drawCorrespondences (PointInTPtr& cloud,
+                       ObjectHypothesis& oh,
+                       PointInTPtr& keypoints_pointcloud,
+                       pcl::Correspondences& correspondences)
   {
     pcl::visualization::PCLVisualizer vis_corresp_;
     vis_corresp_.setWindowName("correspondences...");
@@ -206,9 +206,9 @@ public:
   }
 
   void
-  setISPK(typename pcl::PointCloud<FeatureT>::Ptr& signatures,
-          PointInTPtr& p,
-          PointInTPtr& keypoints)
+  setISPK (typename pcl::PointCloud<FeatureT>::Ptr& signatures,
+           PointInTPtr& p,
+           PointInTPtr& keypoints)
   {
     keypoints_input_ = keypoints;
     signatures_ = signatures;
@@ -216,18 +216,18 @@ public:
   }
 
   void
-  setVoxelSizeICP(float s)
+  setVoxelSizeICP (float s)
   {
     VOXEL_SIZE_ICP_ = s;
   }
   void
-  setSearchModel(std::string& id)
+  setSearchModel (std::string& id)
   {
     search_model_ = id;
   }
 
   void
-  setThresholdAcceptHyp(float t)
+  setThresholdAcceptHyp (float t)
   {
     threshold_accept_model_hypothesis_ = t;
   }
@@ -235,38 +235,38 @@ public:
   ~LocalRecognitionPipeline() = default;
 
   void
-  setKdtreeSplits(int n)
+  setKdtreeSplits (int n)
   {
     kdtree_splits_ = n;
   }
 
   void
-  setIndices(pcl::Indices& indices)
+  setIndices (pcl::Indices& indices)
   {
     indices_ = indices;
   }
 
   void
-  setICPIterations(int it)
+  setICPIterations (int it)
   {
     ICP_iterations_ = it;
   }
 
   void
-  setUseCache(bool u)
+  setUseCache (bool u)
   {
     use_cache_ = u;
   }
 
   std::shared_ptr<std::vector<ModelT>>
-  getModels()
+  getModels ()
   {
     return models_;
   }
 
   std::shared_ptr<
       std::vector<Eigen::Matrix4f, Eigen::aligned_allocator<Eigen::Matrix4f>>>
-  getTransforms()
+  getTransforms ()
   {
     return transforms_;
   }
@@ -275,13 +275,13 @@ public:
    * \brief Sets the model data source_
    */
   void
-  setDataSource(std::shared_ptr<Source<PointInT>>& source)
+  setDataSource (std::shared_ptr<Source<PointInT>>& source)
   {
     source_ = source;
   }
 
   std::shared_ptr<Source<PointInT>>
-  getDataSource()
+  getDataSource ()
   {
     return source_;
   }
@@ -290,7 +290,7 @@ public:
    * \brief Sets the local feature estimator
    */
   void
-  setFeatureEstimator(std::shared_ptr<LocalEstimator<PointInT, FeatureT>>& feat)
+  setFeatureEstimator (std::shared_ptr<LocalEstimator<PointInT, FeatureT>>& feat)
   {
     estimator_ = feat;
   }
@@ -299,7 +299,7 @@ public:
    * \brief Sets the CG algorithm
    */
   void
-  setCGAlgorithm(std::shared_ptr<CorrespondenceGrouping<PointInT, PointInT>>& alg)
+  setCGAlgorithm (std::shared_ptr<CorrespondenceGrouping<PointInT, PointInT>>& alg)
   {
     cg_algorithm_ = alg;
   }
@@ -308,7 +308,7 @@ public:
    * \brief Sets the HV algorithm
    */
   void
-  setHVAlgorithm(std::shared_ptr<HypothesisVerification<PointInT, PointInT>>& alg)
+  setHVAlgorithm (std::shared_ptr<HypothesisVerification<PointInT, PointInT>>& alg)
   {
     hv_algorithm_ = alg;
   }
@@ -317,7 +317,7 @@ public:
    * \brief Sets the input cloud to be classified
    */
   void
-  setInputCloud(const PointInTPtr& cloud)
+  setInputCloud (const PointInTPtr& cloud)
   {
     input_ = cloud;
   }
@@ -326,7 +326,7 @@ public:
    * \brief Sets the descriptor name
    */
   void
-  setDescriptorName(std::string& name)
+  setDescriptorName (std::string& name)
   {
     descr_name_ = name;
   }
@@ -335,19 +335,19 @@ public:
    * \brief Filesystem dir where to keep the generated training data
    */
   void
-  setTrainingDir(std::string& dir)
+  setTrainingDir (std::string& dir)
   {
     training_dir_ = dir;
   }
 
   void
-  setComputeTablePlane(bool b)
+  setComputeTablePlane (bool b)
   {
     compute_table_plane_ = b;
   }
 
   void
-  getProcessed(PointInTPtr& cloud)
+  getProcessed (PointInTPtr& cloud)
   {
     cloud = processed_;
   }
@@ -358,14 +358,14 @@ public:
    */
 
   void
-  initialize(bool force_retrain = false);
+  initialize (bool force_retrain = false);
 
   /**
    * \brief Performs recognition and pose estimation on the input cloud
    */
 
   void
-  recognize();
+  recognize ();
 };
 
 } // namespace rec_3d_framework

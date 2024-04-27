@@ -38,762 +38,779 @@
 
 #pragma once
 
-#include <array>
-
-#include <pcl/point_cloud.h>
-#include <pcl/point_types.h>
-#include <pcl/keypoints/keypoint.h>
 #include <pcl/common/intensity.h>
 #include <pcl/common/io.h> // for copyPointCloud
+#include <pcl/keypoints/keypoint.h>
+#include <pcl/point_cloud.h>
+#include <pcl/point_types.h>
 
-namespace pcl
-{
-  namespace keypoints
+#include <array>
+
+namespace pcl {
+namespace keypoints {
+namespace agast {
+
+/** \brief Abstract detector class for AGAST corner point detectors.
+ *
+ * Adapted from the C++ implementation of Elmar Mair
+ * (http://www6.in.tum.de/Main/ResearchAgast).
+ *
+ * \author Stefan Holzer
+ * \ingroup keypoints
+ */
+class PCL_EXPORTS AbstractAgastDetector {
+public:
+  using Ptr = shared_ptr<AbstractAgastDetector>;
+  using ConstPtr = shared_ptr<const AbstractAgastDetector>;
+
+  /** \brief Constructor.
+   * \param[in] width the width of the image to process
+   * \param[in] height the height of the image to process
+   * \param[in] threshold the corner detection threshold
+   * \param[in] bmax the max image value (default: 255)
+   */
+  AbstractAgastDetector(const std::size_t width,
+                        const std::size_t height,
+                        const double threshold,
+                        const double bmax)
+  : width_(width)
+  , height_(height)
+  , threshold_(threshold)
+  , nr_max_keypoints_(std::numeric_limits<unsigned int>::max())
+  , bmax_(bmax)
+  {}
+
+  /** \brief Destructor. */
+  virtual ~AbstractAgastDetector() = default;
+
+  /** \brief Detects corner points.
+   * \param intensity_data
+   * \param output
+   */
+  void
+  detectKeypoints (const std::vector<unsigned char>& intensity_data,
+                   pcl::PointCloud<pcl::PointUV>& output) const;
+
+  /** \brief Detects corner points.
+   * \param intensity_data
+   * \param output
+   */
+  void
+  detectKeypoints (const std::vector<float>& intensity_data,
+                   pcl::PointCloud<pcl::PointUV>& output) const;
+
+  /** \brief Applies non-max-suppression.
+   * \param[in] intensity_data the image data
+   * \param[in] input the keypoint positions
+   * \param[out] output the resultant keypoints after non-max-suppression
+   */
+  void
+  applyNonMaxSuppression (const std::vector<unsigned char>& intensity_data,
+                          const pcl::PointCloud<pcl::PointUV>& input,
+                          pcl::PointCloud<pcl::PointUV>& output);
+
+  /** \brief Applies non-max-suppression.
+   * \param[in] intensity_data the image data
+   * \param[in] input the keypoint positions
+   * \param[out] output the resultant keypoints after non-max-suppression
+   */
+  void
+  applyNonMaxSuppression (const std::vector<float>& intensity_data,
+                          const pcl::PointCloud<pcl::PointUV>& input,
+                          pcl::PointCloud<pcl::PointUV>& output);
+
+  /** \brief Computes corner score.
+   * \param[in] im the pixels to compute the score at
+   */
+  virtual int
+  computeCornerScore (const unsigned char* im) const = 0;
+
+  /** \brief Computes corner score.
+   * \param[in] im the pixels to compute the score at
+   */
+  virtual int
+  computeCornerScore (const float* im) const = 0;
+
+  /** \brief Sets the threshold for corner detection.
+   * \param[in] threshold the threshold used for corner detection.
+   */
+  inline void
+  setThreshold (const double threshold)
   {
-    namespace agast
+    threshold_ = threshold;
+  }
+
+  /** \brief Get the threshold for corner detection, as set by the user. */
+  inline double
+  getThreshold ()
+  {
+    return (threshold_);
+  }
+
+  /** \brief Sets the maximum number of keypoints to return. The
+   * estimated keypoints are sorted by their internal score.
+   * \param[in] nr_max_keypoints set the maximum number of keypoints to return
+   */
+  inline void
+  setMaxKeypoints (const unsigned int nr_max_keypoints)
+  {
+    nr_max_keypoints_ = nr_max_keypoints;
+  }
+
+  /** \brief Get the maximum number of keypoints to return, as set by the user. */
+  inline unsigned int
+  getMaxKeypoints ()
+  {
+    return (nr_max_keypoints_);
+  }
+
+  /** \brief Detects points of interest (i.e., keypoints) in the given image
+   * \param[in] im the image to detect keypoints in
+   * \param[out] corners_all the resultant set of keypoints detected
+   */
+  virtual void
+  detect (const unsigned char* im,
+          std::vector<pcl::PointUV, Eigen::aligned_allocator<pcl::PointUV>>&
+              corners_all) const = 0;
+
+  /** \brief Detects points of interest (i.e., keypoints) in the given image
+   * \param[in] im the image to detect keypoints in
+   */
+  virtual void
+  detect (const float* im,
+          std::vector<pcl::PointUV, Eigen::aligned_allocator<pcl::PointUV>>&) const = 0;
+
+protected:
+  /** \brief Structure holding an index and the associated keypoint score. */
+  struct ScoreIndex {
+    int idx;
+    int score;
+  };
+
+  /** \brief Score index comparator. */
+  struct CompareScoreIndex {
+    /** \brief Comparator
+     * \param[in] i1 the first score index
+     * \param[in] i2 the second score index
+     */
+    inline bool
+    operator()(const ScoreIndex& i1, const ScoreIndex& i2)
     {
-
-      /** \brief Abstract detector class for AGAST corner point detectors.
-        *        
-        * Adapted from the C++ implementation of Elmar Mair 
-        * (http://www6.in.tum.de/Main/ResearchAgast).
-        *
-        * \author Stefan Holzer
-        * \ingroup keypoints
-        */
-      class PCL_EXPORTS AbstractAgastDetector
-      {
-        public:
-          using Ptr = shared_ptr<AbstractAgastDetector>;
-          using ConstPtr = shared_ptr<const AbstractAgastDetector>;
-
-          /** \brief Constructor. 
-            * \param[in] width the width of the image to process
-            * \param[in] height the height of the image to process
-            * \param[in] threshold the corner detection threshold
-            * \param[in] bmax the max image value (default: 255)
-            */
-          AbstractAgastDetector (const std::size_t width, 
-                                 const std::size_t height, 
-                                 const double threshold,
-                                 const double bmax) 
-            : width_ (width)
-            , height_ (height)
-            , threshold_ (threshold)
-            , nr_max_keypoints_ (std::numeric_limits<unsigned int>::max ())
-            , bmax_ (bmax)
-          {}
-
-          /** \brief Destructor. */
-          virtual ~AbstractAgastDetector () = default;
-
-          /** \brief Detects corner points. 
-            * \param intensity_data
-            * \param output
-            */
-          void 
-          detectKeypoints (const std::vector<unsigned char> &intensity_data, 
-                           pcl::PointCloud<pcl::PointUV> &output) const;
-
-          /** \brief Detects corner points. 
-            * \param intensity_data
-            * \param output
-            */
-          void 
-          detectKeypoints (const std::vector<float> &intensity_data, 
-                           pcl::PointCloud<pcl::PointUV> &output) const;
-
-          /** \brief Applies non-max-suppression. 
-            * \param[in] intensity_data the image data
-            * \param[in] input the keypoint positions
-            * \param[out] output the resultant keypoints after non-max-suppression
-            */
-          void
-          applyNonMaxSuppression (const std::vector<unsigned char>& intensity_data, 
-                                  const pcl::PointCloud<pcl::PointUV> &input, 
-                                  pcl::PointCloud<pcl::PointUV> &output);
-
-          /** \brief Applies non-max-suppression. 
-            * \param[in] intensity_data the image data
-            * \param[in] input the keypoint positions
-            * \param[out] output the resultant keypoints after non-max-suppression
-            */
-          void
-          applyNonMaxSuppression (const std::vector<float>& intensity_data, 
-                                  const pcl::PointCloud<pcl::PointUV> &input, 
-                                  pcl::PointCloud<pcl::PointUV> &output);
-
-          /** \brief Computes corner score. 
-            * \param[in] im the pixels to compute the score at
-            */
-          virtual int 
-          computeCornerScore (const unsigned char* im) const = 0;
-
-          /** \brief Computes corner score. 
-            * \param[in] im the pixels to compute the score at
-            */
-          virtual int 
-          computeCornerScore (const float* im) const = 0;
-
-          /** \brief Sets the threshold for corner detection.
-            * \param[in] threshold the threshold used for corner detection.
-            */
-          inline void
-          setThreshold (const double threshold)
-          {
-            threshold_ = threshold;
-          }
-
-          /** \brief Get the threshold for corner detection, as set by the user. */
-          inline double
-          getThreshold ()
-          {
-            return (threshold_);
-          }
-
-          /** \brief Sets the maximum number of keypoints to return. The
-            * estimated keypoints are sorted by their internal score.
-            * \param[in] nr_max_keypoints set the maximum number of keypoints to return
-            */
-          inline void
-          setMaxKeypoints (const unsigned int nr_max_keypoints)
-          {
-            nr_max_keypoints_ = nr_max_keypoints;
-          }
-
-          /** \brief Get the maximum number of keypoints to return, as set by the user. */
-          inline unsigned int 
-          getMaxKeypoints ()
-          {
-            return (nr_max_keypoints_);
-          }
-
-          /** \brief Detects points of interest (i.e., keypoints) in the given image
-            * \param[in] im the image to detect keypoints in 
-            * \param[out] corners_all the resultant set of keypoints detected
-            */
-          virtual void 
-          detect (const unsigned char* im, 
-                  std::vector<pcl::PointUV, Eigen::aligned_allocator<pcl::PointUV> > &corners_all) const = 0;
-
-          /** \brief Detects points of interest (i.e., keypoints) in the given image
-            * \param[in] im the image to detect keypoints in 
-            */
-          virtual void 
-          detect (const float* im, 
-                  std::vector<pcl::PointUV, Eigen::aligned_allocator<pcl::PointUV> > &) const = 0;
-
-        protected:
-
-          /** \brief Structure holding an index and the associated keypoint score. */
-          struct ScoreIndex
-          {
-            int idx;
-            int score;
-          };
-
-          /** \brief Score index comparator. */
-          struct CompareScoreIndex
-          {
-            /** \brief Comparator
-              * \param[in] i1 the first score index
-              * \param[in] i2 the second score index
-              */
-            inline bool
-            operator() (const ScoreIndex &i1, const ScoreIndex &i2)
-            {
-              return (i1.score > i2.score);
-            }
-          };
-
-          /** \brief Initializes the sample pattern. */
-          virtual void
-          initPattern () = 0;
-
-          /** \brief Non-max-suppression helper method.
-            * \param[in] input the keypoint positions
-            * \param[in] scores the keypoint scores computed on the image data
-            * \param[out] output the resultant keypoints after non-max-suppression
-            */
-          void
-          applyNonMaxSuppression (const pcl::PointCloud<pcl::PointUV> &input, 
-                                  const std::vector<ScoreIndex>& scores, 
-                                  pcl::PointCloud<pcl::PointUV> &output);
-
-          /** \brief Computes corner scores for the specified points. 
-            * \param im
-            * \param corners_all
-            * \param scores
-            */
-          void 
-          computeCornerScores (const unsigned char* im, 
-                               const std::vector<pcl::PointUV, Eigen::aligned_allocator<pcl::PointUV> > & corners_all, 
-                               std::vector<ScoreIndex> & scores) const;
-
-          /** \brief Computes corner scores for the specified points. 
-            * \param im
-            * \param corners_all
-            * \param scores
-            */
-          void 
-          computeCornerScores (const float* im, 
-                               const std::vector<pcl::PointUV, Eigen::aligned_allocator<pcl::PointUV> > & corners_all, 
-                               std::vector<ScoreIndex> & scores) const;
-
-          /** \brief Width of the image to process. */
-          std::size_t width_;
-          /** \brief Height of the image to process. */
-          std::size_t height_;
-
-          /** \brief Threshold for corner detection. */
-          double threshold_;
-
-          /** \brief The maximum number of keypoints to return. */
-          unsigned int nr_max_keypoints_;
-
-          /** \brief Max image value. */
-          double bmax_;
-      };
-
-      /** \brief Detector class for AGAST corner point detector (7_12s). 
-        *        
-        * Adapted from the C++ implementation of Elmar Mair 
-        * (http://www6.in.tum.de/Main/ResearchAgast).
-        *
-        * \author Stefan Holzer
-        * \ingroup keypoints
-        */
-      class PCL_EXPORTS AgastDetector7_12s : public AbstractAgastDetector
-      {
-        public:
-          using Ptr = shared_ptr<AgastDetector7_12s>;
-          using ConstPtr = shared_ptr<const AgastDetector7_12s>;
-
-          /** \brief Constructor. 
-            * \param[in] width the width of the image to process
-            * \param[in] height the height of the image to process
-            * \param[in] threshold the corner detection threshold
-            * \param[in] bmax the max image value (default: 255)
-            */
-          AgastDetector7_12s (const std::size_t width, 
-                              const std::size_t height, 
-                              const double threshold,
-                              const double bmax = 255) 
-            : AbstractAgastDetector (width, height, threshold, bmax)
-          {
-            initPattern ();
-          }
-
-          /** \brief Destructor. */
-          ~AgastDetector7_12s () override = default;
-
-          /** \brief Computes corner score. 
-            * \param im 
-            */
-          int 
-          computeCornerScore (const unsigned char* im) const override;
-
-          /** \brief Computes corner score. 
-            * \param im 
-            */
-          int 
-          computeCornerScore (const float* im) const override;
-
-          /** \brief Detects points of interest (i.e., keypoints) in the given image
-            * \param[in] im the image to detect keypoints in 
-            * \param[out] corners_all the resultant set of keypoints detected
-            */
-          void 
-          detect (const unsigned char* im, std::vector<pcl::PointUV, Eigen::aligned_allocator<pcl::PointUV> > &corners_all) const override;
-
-          /** \brief Detects points of interest (i.e., keypoints) in the given image
-            * \param[in] im the image to detect keypoints in 
-            * \param[out] corners_all the resultant set of keypoints detected
-            */
-          void 
-          detect (const float* im, std::vector<pcl::PointUV, Eigen::aligned_allocator<pcl::PointUV> > &corners_all) const override;
-
-        protected:
-          /** \brief Initializes the sample pattern. */
-          void 
-          initPattern () override;
-
-        private:
-          /** \brief Border width. */
-          static const int border_width_ = 2;
-
-          // offsets defining the sample pattern
-          std::array<std::int_fast16_t, 12> offset_;
-      };
-
-      /** \brief Detector class for AGAST corner point detector (5_8). 
-        *        
-        * Adapted from the C++ implementation of Elmar Mair 
-        * (http://www6.in.tum.de/Main/ResearchAgast).
-        *
-        * \author Stefan Holzer
-        * \ingroup keypoints
-        */
-      class PCL_EXPORTS AgastDetector5_8 : public AbstractAgastDetector
-      {
-        public:
-          using Ptr = shared_ptr<AgastDetector5_8>;
-          using ConstPtr = shared_ptr<const AgastDetector5_8>;
-
-          /** \brief Constructor. 
-            * \param[in] width the width of the image to process
-            * \param[in] height the height of the image to process
-            * \param[in] threshold the corner detection threshold
-            * \param[in] bmax the max image value (default: 255)
-            */
-          AgastDetector5_8 (const std::size_t width, 
-                            const std::size_t height, 
-                            const double threshold,
-                            const double bmax = 255) 
-            : AbstractAgastDetector (width, height, threshold, bmax)
-          {
-            initPattern ();
-          }
-
-          /** \brief Destructor. */
-          ~AgastDetector5_8 () override = default;
-
-          /** \brief Computes corner score. 
-            * \param im 
-            */
-          int 
-          computeCornerScore (const unsigned char* im) const override;
-
-          /** \brief Computes corner score. 
-            * \param im 
-            */
-          int 
-          computeCornerScore (const float* im) const override;
-
-          /** \brief Detects points of interest (i.e., keypoints) in the given image
-            * \param[in] im the image to detect keypoints in 
-            * \param[out] corners_all the resultant set of keypoints detected
-            */
-          void 
-          detect (const unsigned char* im, std::vector<pcl::PointUV, Eigen::aligned_allocator<pcl::PointUV> > &corners_all) const override;
-
-          /** \brief Detects points of interest (i.e., keypoints) in the given image
-            * \param[in] im the image to detect keypoints in 
-            * \param[out] corners_all the resultant set of keypoints detected
-            */
-          void 
-          detect (const float* im, std::vector<pcl::PointUV, Eigen::aligned_allocator<pcl::PointUV> > &corners_all) const override;
-
-        protected:
-          /** \brief Initializes the sample pattern. */
-          void 
-          initPattern () override;
-
-        private:
-          /** \brief Border width. */
-          static const int border_width_ = 1;
-
-          // offsets defining the sample pattern
-          std::array<std::int_fast16_t, 8> offset_;
-      };
-
-      /** \brief Detector class for AGAST corner point detector (OAST 9_16). 
-        *        
-        * Adapted from the C++ implementation of Elmar Mair 
-        * (http://www6.in.tum.de/Main/ResearchAgast).
-        *
-        * \author Stefan Holzer
-        * \ingroup keypoints
-        */
-      class PCL_EXPORTS OastDetector9_16 : public AbstractAgastDetector
-      {
-        public:
-          using Ptr = shared_ptr<OastDetector9_16>;
-          using ConstPtr = shared_ptr<const OastDetector9_16>;
-
-          /** \brief Constructor. 
-            * \param[in] width the width of the image to process
-            * \param[in] height the height of the image to process
-            * \param[in] threshold the corner detection threshold
-            * \param[in] bmax the max image value (default: 255)
-            */
-          OastDetector9_16 (const std::size_t width, 
-                            const std::size_t height, 
-                            const double threshold,
-                            const double bmax = 255) 
-            : AbstractAgastDetector (width, height, threshold, bmax)
-          {
-            initPattern ();
-          }
-
-          /** \brief Destructor. */
-          ~OastDetector9_16 () override = default;
-
-          /** \brief Computes corner score. 
-            * \param im 
-            */
-          int 
-          computeCornerScore (const unsigned char* im) const override;
-
-          /** \brief Computes corner score. 
-            * \param im 
-            */
-          int 
-          computeCornerScore (const float* im) const override;
-
-          /** \brief Detects points of interest (i.e., keypoints) in the given image
-            * \param[in] im the image to detect keypoints in 
-            * \param[out] corners_all the resultant set of keypoints detected
-            */
-          void 
-          detect (const unsigned char* im, std::vector<pcl::PointUV, Eigen::aligned_allocator<pcl::PointUV> > &corners_all) const override;
-
-          /** \brief Detects points of interest (i.e., keypoints) in the given image
-            * \param[in] im the image to detect keypoints in 
-            * \param[out] corners_all the resultant set of keypoints detected
-            */
-          void 
-          detect (const float* im, std::vector<pcl::PointUV, Eigen::aligned_allocator<pcl::PointUV> > &corners_all) const override;
-
-        protected:
-          /** \brief Initializes the sample pattern. */
-          void 
-          initPattern () override;
-
-        private:
-          /** \brief Border width. */
-          static const int border_width_ = 3;
-
-          // offsets defining the sample pattern
-          std::array<std::int_fast16_t, 16> offset_;
-      };
-    } // namespace agast
-  } // namespace keypoints
-
-  /////////////////////////////////////////////////////////////////////////////////////////
-  /////////////////////////////////////////////////////////////////////////////////////////
-  /////////////////////////////////////////////////////////////////////////////////////////
-  namespace keypoints
-  {
-    namespace internal
-    {
-      /////////////////////////////////////////////////////////////////////////////////////
-      template <typename Out> 
-      struct AgastApplyNonMaxSuppresion
-      {
-        AgastApplyNonMaxSuppresion (
-            const std::vector<unsigned char> &image_data, 
-            const pcl::PointCloud<pcl::PointUV> &tmp_cloud,
-            const pcl::keypoints::agast::AbstractAgastDetector::Ptr &detector,
-            pcl::PointCloud<Out> &output)
-        {
-          pcl::PointCloud<pcl::PointUV> output_temp;
-          detector->applyNonMaxSuppression (image_data, tmp_cloud, output_temp);
-          pcl::copyPointCloud (output_temp, output);
-        }
-      };
-
-      /////////////////////////////////////////////////////////////////////////////////////
-      template <>
-      struct AgastApplyNonMaxSuppresion<pcl::PointUV>
-      {
-        AgastApplyNonMaxSuppresion (
-            const std::vector<unsigned char> &image_data, 
-            const pcl::PointCloud<pcl::PointUV> &tmp_cloud,
-            const pcl::keypoints::agast::AbstractAgastDetector::Ptr &detector,
-            pcl::PointCloud<pcl::PointUV> &output)
-        {
-          detector->applyNonMaxSuppression (image_data, tmp_cloud, output);
-        }
-      };
-      /////////////////////////////////////////////////////////////////////////////////////
-      template <typename Out> 
-      struct AgastDetector
-      {
-        AgastDetector (
-            const std::vector<unsigned char> &image_data, 
-            const pcl::keypoints::agast::AbstractAgastDetector::Ptr &detector,
-            pcl::PointCloud<Out> &output)
-        {
-          pcl::PointCloud<pcl::PointUV> output_temp;
-          detector->detectKeypoints (image_data, output_temp);
-          pcl::copyPointCloud (output_temp, output);
-        }
-      };
-
-      /////////////////////////////////////////////////////////////////////////////////////
-      template <>
-      struct AgastDetector<pcl::PointUV>
-      {
-        AgastDetector (
-            const std::vector<unsigned char> &image_data, 
-            const pcl::keypoints::agast::AbstractAgastDetector::Ptr &detector,
-            pcl::PointCloud<pcl::PointUV> &output)
-        {
-          detector->detectKeypoints (image_data, output);
-        }
-      };
-    } // namespace agast
-  } // namespace keypoints
-
-  /////////////////////////////////////////////////////////////////////////////////////////
-  /////////////////////////////////////////////////////////////////////////////////////////
-  /////////////////////////////////////////////////////////////////////////////////////////
-  /** \brief Detects 2D AGAST corner points. Based on the original work and
-    * paper reference by
-    *
-    * \par
-    * Elmar Mair, Gregory D. Hager, Darius Burschka, Michael Suppa, and Gerhard Hirzinger. 
-    * Adaptive and generic corner detection based on the accelerated segment test. 
-    * In Proceedings of the European Conference on Computer Vision (ECCV'10), September 2010.
-    *
-    * \note This is an abstract base class. All children must implement a detectKeypoints method, based on the type of AGAST keypoint to be used.
-    *
-    * \author Stefan Holzer, Radu B. Rusu
-    * \ingroup keypoints
-    */
-  template <typename PointInT, typename PointOutT, typename IntensityT = pcl::common::IntensityFieldAccessor<PointInT> >
-  class AgastKeypoint2DBase : public Keypoint<PointInT, PointOutT>
-  {
-    public:
-      using PointCloudIn = typename Keypoint<PointInT, PointOutT>::PointCloudIn;
-      using PointCloudOut = typename Keypoint<PointInT, PointOutT>::PointCloudOut;
-      using KdTree = typename Keypoint<PointInT, PointOutT>::KdTree;
-      using PointCloudInConstPtr = typename PointCloudIn::ConstPtr;
-
-      using AgastDetectorPtr = pcl::keypoints::agast::AbstractAgastDetector::Ptr;
-     
-      using Keypoint<PointInT, PointOutT>::name_;
-      using Keypoint<PointInT, PointOutT>::input_;
-      using Keypoint<PointInT, PointOutT>::indices_;
-      using Keypoint<PointInT, PointOutT>::k_;
-
-      /** \brief Constructor */
-      AgastKeypoint2DBase ()
-        : 
-         nr_max_keypoints_ (std::numeric_limits<unsigned int>::max ())
-      {
-        k_ = 1;
-      }
-
-      /** \brief Destructor. */
-      ~AgastKeypoint2DBase () override = default;
-
-      /** \brief Sets the threshold for corner detection.
-        * \param[in] threshold the threshold used for corner detection.
-        */
-      inline void
-      setThreshold (const double threshold)
-      {
-        threshold_ = threshold;
-      }
-
-      /** \brief Get the threshold for corner detection, as set by the user. */
-      inline double
-      getThreshold ()
-      {
-        return (threshold_);
-      }
-
-      /** \brief Sets the maximum number of keypoints to return. The
-        * estimated keypoints are sorted by their internal score.
-        * \param[in] nr_max_keypoints set the maximum number of keypoints to return
-        */
-      inline void
-      setMaxKeypoints (const unsigned int nr_max_keypoints)
-      {
-        nr_max_keypoints_ = nr_max_keypoints;
-      }
-
-      /** \brief Get the maximum number of keypoints to return, as set by the user. */
-      inline unsigned int 
-      getMaxKeypoints ()
-      {
-        return (nr_max_keypoints_);
-      }
-
-      /** \brief Sets the max image data value (affects how many iterations AGAST does)
-        * \param[in] bmax the max image data value
-        */
-      inline void
-      setMaxDataValue (const double bmax)
-      {
-        bmax_ = bmax;
-      }
-
-      /** \brief Get the bmax image value, as set by the user. */
-      inline double
-      getMaxDataValue ()
-      {
-        return (bmax_);
-      }
-
-      /** \brief Sets whether non-max-suppression is applied or not.
-        * \param[in] enabled determines whether non-max-suppression is enabled.
-        */
-      inline void
-      setNonMaxSuppression (const bool enabled)
-      {
-        apply_non_max_suppression_ = enabled;
-      }
-
-      /** \brief Returns whether non-max-suppression is applied or not. */
-      inline bool
-      getNonMaxSuppression ()
-      {
-        return (apply_non_max_suppression_);
-      }
-
-      inline void
-      setAgastDetector (const AgastDetectorPtr &detector)
-      {
-        detector_ = detector;
-      }
-
-      inline AgastDetectorPtr
-      getAgastDetector ()
-      {
-        return (detector_);
-      }
-    protected:
-
-      /** \brief Initializes everything and checks whether input data is fine. */
-      bool 
-      initCompute () override;
-      
-      /** \brief Detects the keypoints.
-        * \param[out] output the resultant keypoints
-        */
-      void 
-      detectKeypoints (PointCloudOut &output) override = 0;
-
-      /** \brief Intensity field accessor. */
-      IntensityT intensity_;
-      
-      /** \brief Threshold for corner detection. */
-      double threshold_{10};
-
-      /** \brief Determines whether non-max-suppression is activated. */
-      bool apply_non_max_suppression_{true};
-
-      /** \brief Max image value. */
-      double bmax_{255};
-
-      /** \brief The Agast detector to use. */
-      AgastDetectorPtr detector_;
-
-      /** \brief The maximum number of keypoints to return. */
-      unsigned int nr_max_keypoints_;
+      return (i1.score > i2.score);
+    }
   };
 
-  /** \brief Detects 2D AGAST corner points. Based on the original work and
-    * paper reference by
-    *
-    * \par
-    * Elmar Mair, Gregory D. Hager, Darius Burschka, Michael Suppa, and Gerhard Hirzinger. 
-    * Adaptive and generic corner detection based on the accelerated segment test. 
-    * In Proceedings of the European Conference on Computer Vision (ECCV'10), September 2010.
-    *
-    * Code example:
-    *
-    * \code
-    * pcl::PointCloud<pcl::PointXYZRGBA> cloud;
-    * pcl::AgastKeypoint2D<pcl::PointXYZRGBA> agast;
-    * agast.setThreshold (30);
-    * agast.setInputCloud (cloud);
-    *
-    * PointCloud<pcl::PointUV> keypoints;
-    * agast.compute (keypoints);
-    * \endcode
-    *
-    * \note The AGAST keypoint type used is 7_12s.
-    *
-    * \author Stefan Holzer, Radu B. Rusu
-    * \ingroup keypoints
-    */
-  template <typename PointInT, typename PointOutT = pcl::PointUV>
-  class AgastKeypoint2D : public AgastKeypoint2DBase<PointInT, PointOutT, pcl::common::IntensityFieldAccessor<PointInT> >
+  /** \brief Initializes the sample pattern. */
+  virtual void
+  initPattern () = 0;
+
+  /** \brief Non-max-suppression helper method.
+   * \param[in] input the keypoint positions
+   * \param[in] scores the keypoint scores computed on the image data
+   * \param[out] output the resultant keypoints after non-max-suppression
+   */
+  void
+  applyNonMaxSuppression (const pcl::PointCloud<pcl::PointUV>& input,
+                          const std::vector<ScoreIndex>& scores,
+                          pcl::PointCloud<pcl::PointUV>& output);
+
+  /** \brief Computes corner scores for the specified points.
+   * \param im
+   * \param corners_all
+   * \param scores
+   */
+  void
+  computeCornerScores (
+      const unsigned char* im,
+      const std::vector<pcl::PointUV, Eigen::aligned_allocator<pcl::PointUV>>&
+          corners_all,
+      std::vector<ScoreIndex>& scores) const;
+
+  /** \brief Computes corner scores for the specified points.
+   * \param im
+   * \param corners_all
+   * \param scores
+   */
+  void
+  computeCornerScores (
+      const float* im,
+      const std::vector<pcl::PointUV, Eigen::aligned_allocator<pcl::PointUV>>&
+          corners_all,
+      std::vector<ScoreIndex>& scores) const;
+
+  /** \brief Width of the image to process. */
+  std::size_t width_;
+  /** \brief Height of the image to process. */
+  std::size_t height_;
+
+  /** \brief Threshold for corner detection. */
+  double threshold_;
+
+  /** \brief The maximum number of keypoints to return. */
+  unsigned int nr_max_keypoints_;
+
+  /** \brief Max image value. */
+  double bmax_;
+};
+
+/** \brief Detector class for AGAST corner point detector (7_12s).
+ *
+ * Adapted from the C++ implementation of Elmar Mair
+ * (http://www6.in.tum.de/Main/ResearchAgast).
+ *
+ * \author Stefan Holzer
+ * \ingroup keypoints
+ */
+class PCL_EXPORTS AgastDetector7_12s : public AbstractAgastDetector {
+public:
+  using Ptr = shared_ptr<AgastDetector7_12s>;
+  using ConstPtr = shared_ptr<const AgastDetector7_12s>;
+
+  /** \brief Constructor.
+   * \param[in] width the width of the image to process
+   * \param[in] height the height of the image to process
+   * \param[in] threshold the corner detection threshold
+   * \param[in] bmax the max image value (default: 255)
+   */
+  AgastDetector7_12s(const std::size_t width,
+                     const std::size_t height,
+                     const double threshold,
+                     const double bmax = 255)
+  : AbstractAgastDetector(width, height, threshold, bmax)
   {
-    public:
-      using PointCloudOut = typename Keypoint<PointInT, PointOutT>::PointCloudOut;
+    initPattern();
+  }
 
-      using Keypoint<PointInT, PointOutT>::name_;
-      using Keypoint<PointInT, PointOutT>::input_;
-      using Keypoint<PointInT, PointOutT>::indices_;
-      using Keypoint<PointInT, PointOutT>::k_;
-      using AgastKeypoint2DBase<PointInT, PointOutT, pcl::common::IntensityFieldAccessor<PointInT> >::intensity_;
-      using AgastKeypoint2DBase<PointInT, PointOutT, pcl::common::IntensityFieldAccessor<PointInT> >::threshold_;
-      using AgastKeypoint2DBase<PointInT, PointOutT, pcl::common::IntensityFieldAccessor<PointInT> >::bmax_;
-      using AgastKeypoint2DBase<PointInT, PointOutT, pcl::common::IntensityFieldAccessor<PointInT> >::apply_non_max_suppression_;
-      using AgastKeypoint2DBase<PointInT, PointOutT, pcl::common::IntensityFieldAccessor<PointInT> >::detector_;
-      using AgastKeypoint2DBase<PointInT, PointOutT, pcl::common::IntensityFieldAccessor<PointInT> >::nr_max_keypoints_;
+  /** \brief Destructor. */
+  ~AgastDetector7_12s() override = default;
 
-      /** \brief Constructor */
-      AgastKeypoint2D ()
-      {
-        name_ = "AgastKeypoint2D";
-      }
+  /** \brief Computes corner score.
+   * \param im
+   */
+  int
+  computeCornerScore (const unsigned char* im) const override;
 
-      /** \brief Destructor. */
-      ~AgastKeypoint2D () override = default;
+  /** \brief Computes corner score.
+   * \param im
+   */
+  int
+  computeCornerScore (const float* im) const override;
 
-    protected:
-      /** \brief Detects the keypoints.
-        * \param[out] output the resultant keypoints
-        */
-      void 
-      detectKeypoints (PointCloudOut &output) override;
-  };
+  /** \brief Detects points of interest (i.e., keypoints) in the given image
+   * \param[in] im the image to detect keypoints in
+   * \param[out] corners_all the resultant set of keypoints detected
+   */
+  void
+  detect (const unsigned char* im,
+          std::vector<pcl::PointUV, Eigen::aligned_allocator<pcl::PointUV>>&
+              corners_all) const override;
 
-  /** \brief Detects 2D AGAST corner points. Based on the original work and
-    * paper reference by
-    *
-    * \par
-    * Elmar Mair, Gregory D. Hager, Darius Burschka, Michael Suppa, and Gerhard Hirzinger. 
-    * Adaptive and generic corner detection based on the accelerated segment test. 
-    * In Proceedings of the European Conference on Computer Vision (ECCV'10), September 2010.
-    *
-    * Code example:
-    *
-    * \code
-    * pcl::PointCloud<pcl::PointXYZRGBA> cloud;
-    * pcl::AgastKeypoint2D<pcl::PointXYZRGBA> agast;
-    * agast.setThreshold (30);
-    * agast.setInputCloud (cloud);
-    *
-    * PointCloud<pcl::PointUV> keypoints;
-    * agast.compute (keypoints);
-    * \endcode
-    *
-    * \note This is a specialized version for PointXYZ clouds, and operates on depth (z) as float. The output keypoints are of the PointXY type.
-    * \note The AGAST keypoint type used is 7_12s.
-    *
-    * \author Stefan Holzer, Radu B. Rusu
-    * \ingroup keypoints
-    */
-  template <>
-  class AgastKeypoint2D<pcl::PointXYZ, pcl::PointUV>
-    : public AgastKeypoint2DBase<pcl::PointXYZ, pcl::PointUV, pcl::common::IntensityFieldAccessor<pcl::PointXYZ> > 
+  /** \brief Detects points of interest (i.e., keypoints) in the given image
+   * \param[in] im the image to detect keypoints in
+   * \param[out] corners_all the resultant set of keypoints detected
+   */
+  void
+  detect (const float* im,
+          std::vector<pcl::PointUV, Eigen::aligned_allocator<pcl::PointUV>>&
+              corners_all) const override;
+
+protected:
+  /** \brief Initializes the sample pattern. */
+  void
+  initPattern () override;
+
+private:
+  /** \brief Border width. */
+  static const int border_width_ = 2;
+
+  // offsets defining the sample pattern
+  std::array<std::int_fast16_t, 12> offset_;
+};
+
+/** \brief Detector class for AGAST corner point detector (5_8).
+ *
+ * Adapted from the C++ implementation of Elmar Mair
+ * (http://www6.in.tum.de/Main/ResearchAgast).
+ *
+ * \author Stefan Holzer
+ * \ingroup keypoints
+ */
+class PCL_EXPORTS AgastDetector5_8 : public AbstractAgastDetector {
+public:
+  using Ptr = shared_ptr<AgastDetector5_8>;
+  using ConstPtr = shared_ptr<const AgastDetector5_8>;
+
+  /** \brief Constructor.
+   * \param[in] width the width of the image to process
+   * \param[in] height the height of the image to process
+   * \param[in] threshold the corner detection threshold
+   * \param[in] bmax the max image value (default: 255)
+   */
+  AgastDetector5_8(const std::size_t width,
+                   const std::size_t height,
+                   const double threshold,
+                   const double bmax = 255)
+  : AbstractAgastDetector(width, height, threshold, bmax)
   {
-    public:
-      /** \brief Constructor */
-      AgastKeypoint2D ()
-      {
-        name_ = "AgastKeypoint2D";
-        bmax_ = 4;    // max data value for an OpenNI camera
-      }
+    initPattern();
+  }
 
-      /** \brief Destructor. */
-      ~AgastKeypoint2D () override = default;
+  /** \brief Destructor. */
+  ~AgastDetector5_8() override = default;
 
-    protected:
-      /** \brief Detects the keypoints.
-        * \param[out] output the resultant keypoints
-        */
-      void 
-      detectKeypoints (pcl::PointCloud<pcl::PointUV> &output) override;
-  };
+  /** \brief Computes corner score.
+   * \param im
+   */
+  int
+  computeCornerScore (const unsigned char* im) const override;
 
-}
+  /** \brief Computes corner score.
+   * \param im
+   */
+  int
+  computeCornerScore (const float* im) const override;
+
+  /** \brief Detects points of interest (i.e., keypoints) in the given image
+   * \param[in] im the image to detect keypoints in
+   * \param[out] corners_all the resultant set of keypoints detected
+   */
+  void
+  detect (const unsigned char* im,
+          std::vector<pcl::PointUV, Eigen::aligned_allocator<pcl::PointUV>>&
+              corners_all) const override;
+
+  /** \brief Detects points of interest (i.e., keypoints) in the given image
+   * \param[in] im the image to detect keypoints in
+   * \param[out] corners_all the resultant set of keypoints detected
+   */
+  void
+  detect (const float* im,
+          std::vector<pcl::PointUV, Eigen::aligned_allocator<pcl::PointUV>>&
+              corners_all) const override;
+
+protected:
+  /** \brief Initializes the sample pattern. */
+  void
+  initPattern () override;
+
+private:
+  /** \brief Border width. */
+  static const int border_width_ = 1;
+
+  // offsets defining the sample pattern
+  std::array<std::int_fast16_t, 8> offset_;
+};
+
+/** \brief Detector class for AGAST corner point detector (OAST 9_16).
+ *
+ * Adapted from the C++ implementation of Elmar Mair
+ * (http://www6.in.tum.de/Main/ResearchAgast).
+ *
+ * \author Stefan Holzer
+ * \ingroup keypoints
+ */
+class PCL_EXPORTS OastDetector9_16 : public AbstractAgastDetector {
+public:
+  using Ptr = shared_ptr<OastDetector9_16>;
+  using ConstPtr = shared_ptr<const OastDetector9_16>;
+
+  /** \brief Constructor.
+   * \param[in] width the width of the image to process
+   * \param[in] height the height of the image to process
+   * \param[in] threshold the corner detection threshold
+   * \param[in] bmax the max image value (default: 255)
+   */
+  OastDetector9_16(const std::size_t width,
+                   const std::size_t height,
+                   const double threshold,
+                   const double bmax = 255)
+  : AbstractAgastDetector(width, height, threshold, bmax)
+  {
+    initPattern();
+  }
+
+  /** \brief Destructor. */
+  ~OastDetector9_16() override = default;
+
+  /** \brief Computes corner score.
+   * \param im
+   */
+  int
+  computeCornerScore (const unsigned char* im) const override;
+
+  /** \brief Computes corner score.
+   * \param im
+   */
+  int
+  computeCornerScore (const float* im) const override;
+
+  /** \brief Detects points of interest (i.e., keypoints) in the given image
+   * \param[in] im the image to detect keypoints in
+   * \param[out] corners_all the resultant set of keypoints detected
+   */
+  void
+  detect (const unsigned char* im,
+          std::vector<pcl::PointUV, Eigen::aligned_allocator<pcl::PointUV>>&
+              corners_all) const override;
+
+  /** \brief Detects points of interest (i.e., keypoints) in the given image
+   * \param[in] im the image to detect keypoints in
+   * \param[out] corners_all the resultant set of keypoints detected
+   */
+  void
+  detect (const float* im,
+          std::vector<pcl::PointUV, Eigen::aligned_allocator<pcl::PointUV>>&
+              corners_all) const override;
+
+protected:
+  /** \brief Initializes the sample pattern. */
+  void
+  initPattern () override;
+
+private:
+  /** \brief Border width. */
+  static const int border_width_ = 3;
+
+  // offsets defining the sample pattern
+  std::array<std::int_fast16_t, 16> offset_;
+};
+} // namespace agast
+} // namespace keypoints
+
+/////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////
+namespace keypoints {
+namespace internal {
+/////////////////////////////////////////////////////////////////////////////////////
+template <typename Out>
+struct AgastApplyNonMaxSuppresion {
+  AgastApplyNonMaxSuppresion(
+      const std::vector<unsigned char>& image_data,
+      const pcl::PointCloud<pcl::PointUV>& tmp_cloud,
+      const pcl::keypoints::agast::AbstractAgastDetector::Ptr& detector,
+      pcl::PointCloud<Out>& output)
+  {
+    pcl::PointCloud<pcl::PointUV> output_temp;
+    detector->applyNonMaxSuppression(image_data, tmp_cloud, output_temp);
+    pcl::copyPointCloud(output_temp, output);
+  }
+};
+
+/////////////////////////////////////////////////////////////////////////////////////
+template <>
+struct AgastApplyNonMaxSuppresion<pcl::PointUV> {
+  AgastApplyNonMaxSuppresion(
+      const std::vector<unsigned char>& image_data,
+      const pcl::PointCloud<pcl::PointUV>& tmp_cloud,
+      const pcl::keypoints::agast::AbstractAgastDetector::Ptr& detector,
+      pcl::PointCloud<pcl::PointUV>& output)
+  {
+    detector->applyNonMaxSuppression(image_data, tmp_cloud, output);
+  }
+};
+/////////////////////////////////////////////////////////////////////////////////////
+template <typename Out>
+struct AgastDetector {
+  AgastDetector(const std::vector<unsigned char>& image_data,
+                const pcl::keypoints::agast::AbstractAgastDetector::Ptr& detector,
+                pcl::PointCloud<Out>& output)
+  {
+    pcl::PointCloud<pcl::PointUV> output_temp;
+    detector->detectKeypoints(image_data, output_temp);
+    pcl::copyPointCloud(output_temp, output);
+  }
+};
+
+/////////////////////////////////////////////////////////////////////////////////////
+template <>
+struct AgastDetector<pcl::PointUV> {
+  AgastDetector(const std::vector<unsigned char>& image_data,
+                const pcl::keypoints::agast::AbstractAgastDetector::Ptr& detector,
+                pcl::PointCloud<pcl::PointUV>& output)
+  {
+    detector->detectKeypoints(image_data, output);
+  }
+};
+} // namespace internal
+} // namespace keypoints
+
+/////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////
+/** \brief Detects 2D AGAST corner points. Based on the original work and
+ * paper reference by
+ *
+ * \par
+ * Elmar Mair, Gregory D. Hager, Darius Burschka, Michael Suppa, and Gerhard Hirzinger.
+ * Adaptive and generic corner detection based on the accelerated segment test.
+ * In Proceedings of the European Conference on Computer Vision (ECCV'10), September
+ * 2010.
+ *
+ * \note This is an abstract base class. All children must implement a detectKeypoints
+ * method, based on the type of AGAST keypoint to be used.
+ *
+ * \author Stefan Holzer, Radu B. Rusu
+ * \ingroup keypoints
+ */
+template <typename PointInT,
+          typename PointOutT,
+          typename IntensityT = pcl::common::IntensityFieldAccessor<PointInT>>
+class AgastKeypoint2DBase : public Keypoint<PointInT, PointOutT> {
+public:
+  using PointCloudIn = typename Keypoint<PointInT, PointOutT>::PointCloudIn;
+  using PointCloudOut = typename Keypoint<PointInT, PointOutT>::PointCloudOut;
+  using KdTree = typename Keypoint<PointInT, PointOutT>::KdTree;
+  using PointCloudInConstPtr = typename PointCloudIn::ConstPtr;
+
+  using AgastDetectorPtr = pcl::keypoints::agast::AbstractAgastDetector::Ptr;
+
+  using Keypoint<PointInT, PointOutT>::name_;
+  using Keypoint<PointInT, PointOutT>::input_;
+  using Keypoint<PointInT, PointOutT>::indices_;
+  using Keypoint<PointInT, PointOutT>::k_;
+
+  /** \brief Constructor */
+  AgastKeypoint2DBase() : nr_max_keypoints_(std::numeric_limits<unsigned int>::max())
+  {
+    k_ = 1;
+  }
+
+  /** \brief Destructor. */
+  ~AgastKeypoint2DBase() override = default;
+
+  /** \brief Sets the threshold for corner detection.
+   * \param[in] threshold the threshold used for corner detection.
+   */
+  inline void
+  setThreshold (const double threshold)
+  {
+    threshold_ = threshold;
+  }
+
+  /** \brief Get the threshold for corner detection, as set by the user. */
+  inline double
+  getThreshold ()
+  {
+    return (threshold_);
+  }
+
+  /** \brief Sets the maximum number of keypoints to return. The
+   * estimated keypoints are sorted by their internal score.
+   * \param[in] nr_max_keypoints set the maximum number of keypoints to return
+   */
+  inline void
+  setMaxKeypoints (const unsigned int nr_max_keypoints)
+  {
+    nr_max_keypoints_ = nr_max_keypoints;
+  }
+
+  /** \brief Get the maximum number of keypoints to return, as set by the user. */
+  inline unsigned int
+  getMaxKeypoints ()
+  {
+    return (nr_max_keypoints_);
+  }
+
+  /** \brief Sets the max image data value (affects how many iterations AGAST does)
+   * \param[in] bmax the max image data value
+   */
+  inline void
+  setMaxDataValue (const double bmax)
+  {
+    bmax_ = bmax;
+  }
+
+  /** \brief Get the bmax image value, as set by the user. */
+  inline double
+  getMaxDataValue ()
+  {
+    return (bmax_);
+  }
+
+  /** \brief Sets whether non-max-suppression is applied or not.
+   * \param[in] enabled determines whether non-max-suppression is enabled.
+   */
+  inline void
+  setNonMaxSuppression (const bool enabled)
+  {
+    apply_non_max_suppression_ = enabled;
+  }
+
+  /** \brief Returns whether non-max-suppression is applied or not. */
+  inline bool
+  getNonMaxSuppression ()
+  {
+    return (apply_non_max_suppression_);
+  }
+
+  inline void
+  setAgastDetector (const AgastDetectorPtr& detector)
+  {
+    detector_ = detector;
+  }
+
+  inline AgastDetectorPtr
+  getAgastDetector ()
+  {
+    return (detector_);
+  }
+
+protected:
+  /** \brief Initializes everything and checks whether input data is fine. */
+  bool
+  initCompute () override;
+
+  /** \brief Detects the keypoints.
+   * \param[out] output the resultant keypoints
+   */
+  void
+  detectKeypoints (PointCloudOut& output) override = 0;
+
+  /** \brief Intensity field accessor. */
+  IntensityT intensity_;
+
+  /** \brief Threshold for corner detection. */
+  double threshold_{10};
+
+  /** \brief Determines whether non-max-suppression is activated. */
+  bool apply_non_max_suppression_{true};
+
+  /** \brief Max image value. */
+  double bmax_{255};
+
+  /** \brief The Agast detector to use. */
+  AgastDetectorPtr detector_;
+
+  /** \brief The maximum number of keypoints to return. */
+  unsigned int nr_max_keypoints_;
+};
+
+/** \brief Detects 2D AGAST corner points. Based on the original work and
+ * paper reference by
+ *
+ * \par
+ * Elmar Mair, Gregory D. Hager, Darius Burschka, Michael Suppa, and Gerhard Hirzinger.
+ * Adaptive and generic corner detection based on the accelerated segment test.
+ * In Proceedings of the European Conference on Computer Vision (ECCV'10), September
+ * 2010.
+ *
+ * Code example:
+ *
+ * \code
+ * pcl::PointCloud<pcl::PointXYZRGBA> cloud;
+ * pcl::AgastKeypoint2D<pcl::PointXYZRGBA> agast;
+ * agast.setThreshold (30);
+ * agast.setInputCloud (cloud);
+ *
+ * PointCloud<pcl::PointUV> keypoints;
+ * agast.compute (keypoints);
+ * \endcode
+ *
+ * \note The AGAST keypoint type used is 7_12s.
+ *
+ * \author Stefan Holzer, Radu B. Rusu
+ * \ingroup keypoints
+ */
+template <typename PointInT, typename PointOutT = pcl::PointUV>
+class AgastKeypoint2D
+: public AgastKeypoint2DBase<PointInT,
+                             PointOutT,
+                             pcl::common::IntensityFieldAccessor<PointInT>> {
+public:
+  using PointCloudOut = typename Keypoint<PointInT, PointOutT>::PointCloudOut;
+
+  using Keypoint<PointInT, PointOutT>::name_;
+  using Keypoint<PointInT, PointOutT>::input_;
+  using Keypoint<PointInT, PointOutT>::indices_;
+  using Keypoint<PointInT, PointOutT>::k_;
+  using AgastKeypoint2DBase<PointInT,
+                            PointOutT,
+                            pcl::common::IntensityFieldAccessor<PointInT>>::intensity_;
+  using AgastKeypoint2DBase<PointInT,
+                            PointOutT,
+                            pcl::common::IntensityFieldAccessor<PointInT>>::threshold_;
+  using AgastKeypoint2DBase<PointInT,
+                            PointOutT,
+                            pcl::common::IntensityFieldAccessor<PointInT>>::bmax_;
+  using AgastKeypoint2DBase<
+      PointInT,
+      PointOutT,
+      pcl::common::IntensityFieldAccessor<PointInT>>::apply_non_max_suppression_;
+  using AgastKeypoint2DBase<PointInT,
+                            PointOutT,
+                            pcl::common::IntensityFieldAccessor<PointInT>>::detector_;
+  using AgastKeypoint2DBase<
+      PointInT,
+      PointOutT,
+      pcl::common::IntensityFieldAccessor<PointInT>>::nr_max_keypoints_;
+
+  /** \brief Constructor */
+  AgastKeypoint2D() { name_ = "AgastKeypoint2D"; }
+
+  /** \brief Destructor. */
+  ~AgastKeypoint2D() override = default;
+
+protected:
+  /** \brief Detects the keypoints.
+   * \param[out] output the resultant keypoints
+   */
+  void
+  detectKeypoints (PointCloudOut& output) override;
+};
+
+/** \brief Detects 2D AGAST corner points. Based on the original work and
+ * paper reference by
+ *
+ * \par
+ * Elmar Mair, Gregory D. Hager, Darius Burschka, Michael Suppa, and Gerhard Hirzinger.
+ * Adaptive and generic corner detection based on the accelerated segment test.
+ * In Proceedings of the European Conference on Computer Vision (ECCV'10), September
+ * 2010.
+ *
+ * Code example:
+ *
+ * \code
+ * pcl::PointCloud<pcl::PointXYZRGBA> cloud;
+ * pcl::AgastKeypoint2D<pcl::PointXYZRGBA> agast;
+ * agast.setThreshold (30);
+ * agast.setInputCloud (cloud);
+ *
+ * PointCloud<pcl::PointUV> keypoints;
+ * agast.compute (keypoints);
+ * \endcode
+ *
+ * \note This is a specialized version for PointXYZ clouds, and operates on depth (z) as
+ * float. The output keypoints are of the PointXY type. \note The AGAST keypoint type
+ * used is 7_12s.
+ *
+ * \author Stefan Holzer, Radu B. Rusu
+ * \ingroup keypoints
+ */
+template <>
+class AgastKeypoint2D<pcl::PointXYZ, pcl::PointUV>
+: public AgastKeypoint2DBase<pcl::PointXYZ,
+                             pcl::PointUV,
+                             pcl::common::IntensityFieldAccessor<pcl::PointXYZ>> {
+public:
+  /** \brief Constructor */
+  AgastKeypoint2D()
+  {
+    name_ = "AgastKeypoint2D";
+    bmax_ = 4; // max data value for an OpenNI camera
+  }
+
+  /** \brief Destructor. */
+  ~AgastKeypoint2D() override = default;
+
+protected:
+  /** \brief Detects the keypoints.
+   * \param[out] output the resultant keypoints
+   */
+  void
+  detectKeypoints (pcl::PointCloud<pcl::PointUV>& output) override;
+};
+
+} // namespace pcl
 
 #include <pcl/keypoints/impl/agast_2d.hpp>

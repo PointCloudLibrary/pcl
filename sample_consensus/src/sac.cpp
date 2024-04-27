@@ -35,34 +35,47 @@
  *
  */
 
-#include <pcl/sample_consensus/impl/ransac.hpp>
-#include <pcl/sample_consensus/impl/rransac.hpp>
-#include <pcl/sample_consensus/impl/msac.hpp>
-#include <pcl/sample_consensus/impl/rmsac.hpp>
-#include <pcl/sample_consensus/impl/prosac.hpp>
-#include <pcl/sample_consensus/impl/mlesac.hpp>
 #include <pcl/sample_consensus/impl/lmeds.hpp>
+#include <pcl/sample_consensus/impl/mlesac.hpp>
+#include <pcl/sample_consensus/impl/msac.hpp>
+#include <pcl/sample_consensus/impl/prosac.hpp>
+#include <pcl/sample_consensus/impl/ransac.hpp>
+#include <pcl/sample_consensus/impl/rmsac.hpp>
+#include <pcl/sample_consensus/impl/rransac.hpp>
 
 #ifndef PCL_NO_PRECOMPILE
 #include <pcl/impl/instantiate.hpp>
 #include <pcl/point_types.h>
 // Instantiations of specific point types
 #ifdef PCL_ONLY_CORE_POINT_TYPES
-  PCL_INSTANTIATE(RandomSampleConsensus, (pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA)(pcl::PointXYZRGB)(pcl::PointNormal)(pcl::PointXYZRGBNormal))
-  PCL_INSTANTIATE(MEstimatorSampleConsensus, (pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA)(pcl::PointXYZRGB)(pcl::PointXYZRGBNormal))
-  PCL_INSTANTIATE(RandomizedMEstimatorSampleConsensus, (pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA)(pcl::PointXYZRGB)(pcl::PointXYZRGBNormal))
-  PCL_INSTANTIATE(RandomizedRandomSampleConsensus, (pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA)(pcl::PointXYZRGB)(pcl::PointXYZRGBNormal))
-  PCL_INSTANTIATE(ProgressiveSampleConsensus, (pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA)(pcl::PointXYZRGB)(pcl::PointXYZRGBNormal))
-  PCL_INSTANTIATE(MaximumLikelihoodSampleConsensus, (pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA)(pcl::PointXYZRGB)(pcl::PointXYZRGBNormal))
-  PCL_INSTANTIATE(LeastMedianSquares, (pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA)(pcl::PointXYZRGB)(pcl::PointXYZRGBNormal))
+PCL_INSTANTIATE(RandomSampleConsensus,
+                (pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA)(pcl::PointXYZRGB)(
+                    pcl::PointNormal)(pcl::PointXYZRGBNormal))
+PCL_INSTANTIATE(MEstimatorSampleConsensus,
+                (pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA)(pcl::PointXYZRGB)(
+                    pcl::PointXYZRGBNormal))
+PCL_INSTANTIATE(RandomizedMEstimatorSampleConsensus,
+                (pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA)(pcl::PointXYZRGB)(
+                    pcl::PointXYZRGBNormal))
+PCL_INSTANTIATE(RandomizedRandomSampleConsensus,
+                (pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA)(pcl::PointXYZRGB)(
+                    pcl::PointXYZRGBNormal))
+PCL_INSTANTIATE(ProgressiveSampleConsensus,
+                (pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA)(pcl::PointXYZRGB)(
+                    pcl::PointXYZRGBNormal))
+PCL_INSTANTIATE(MaximumLikelihoodSampleConsensus,
+                (pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA)(pcl::PointXYZRGB)(
+                    pcl::PointXYZRGBNormal))
+PCL_INSTANTIATE(LeastMedianSquares,
+                (pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA)(pcl::PointXYZRGB)(
+                    pcl::PointXYZRGBNormal))
 #else
-  PCL_INSTANTIATE(RandomSampleConsensus, PCL_XYZ_POINT_TYPES)
-  PCL_INSTANTIATE(MEstimatorSampleConsensus, PCL_XYZ_POINT_TYPES)
-  PCL_INSTANTIATE(RandomizedMEstimatorSampleConsensus, PCL_XYZ_POINT_TYPES)
-  PCL_INSTANTIATE(RandomizedRandomSampleConsensus, PCL_XYZ_POINT_TYPES)
-  PCL_INSTANTIATE(ProgressiveSampleConsensus, PCL_XYZ_POINT_TYPES)
-  PCL_INSTANTIATE(MaximumLikelihoodSampleConsensus, PCL_XYZ_POINT_TYPES)
-  PCL_INSTANTIATE(LeastMedianSquares, PCL_XYZ_POINT_TYPES)
+PCL_INSTANTIATE(RandomSampleConsensus, PCL_XYZ_POINT_TYPES)
+PCL_INSTANTIATE(MEstimatorSampleConsensus, PCL_XYZ_POINT_TYPES)
+PCL_INSTANTIATE(RandomizedMEstimatorSampleConsensus, PCL_XYZ_POINT_TYPES)
+PCL_INSTANTIATE(RandomizedRandomSampleConsensus, PCL_XYZ_POINT_TYPES)
+PCL_INSTANTIATE(ProgressiveSampleConsensus, PCL_XYZ_POINT_TYPES)
+PCL_INSTANTIATE(MaximumLikelihoodSampleConsensus, PCL_XYZ_POINT_TYPES)
+PCL_INSTANTIATE(LeastMedianSquares, PCL_XYZ_POINT_TYPES)
 #endif
-#endif    // PCL_NO_PRECOMPILE
-
+#endif // PCL_NO_PRECOMPILE

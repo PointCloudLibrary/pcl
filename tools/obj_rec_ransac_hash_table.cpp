@@ -39,20 +39,23 @@
  *  Created on: Jun 20, 2012
  *      Author: papazov
  *
- *  Visualizes the hash table cell entries belonging to a model. Since the hash table is a 3D cube structure, each cell
- *  is a cube in 3D. It is visualized by a cube which is scaled according to the number of entries in the cell -> the more
- *  entries the bigger the cube.
+ *  Visualizes the hash table cell entries belonging to a model. Since the hash table is
+ * a 3D cube structure, each cell is a cube in 3D. It is visualized by a cube which is
+ * scaled according to the number of entries in the cell -> the more entries the bigger
+ * the cube.
  */
 
+#include <pcl/console/print.h>
 #include <pcl/recognition/ransac_based/obj_rec_ransac.h>
 #include <pcl/visualization/pcl_visualizer.h>
-#include <pcl/console/print.h>
 #include <pcl/point_cloud.h>
-#include <vtkPolyDataReader.h>
-#include <vtkDoubleArray.h>
+
 #include <vtkDataArray.h>
-#include <vtkPointData.h>
+#include <vtkDoubleArray.h>
 #include <vtkGlyph3D.h>
+#include <vtkPointData.h>
+#include <vtkPolyDataReader.h>
+
 #include <cstdio>
 #include <thread>
 
@@ -64,10 +67,18 @@ using namespace recognition;
 using namespace visualization;
 
 inline double
-my_sqr (double a){ return a*a;}
+my_sqr (double a)
+{
+  return a * a;
+}
 
-bool vtk_to_pointcloud (const char* file_name, PointCloud<PointXYZ>& points_in, PointCloud<Normal>& normals_in, double bounds[6]);
-void visualize (const ModelLibrary::HashTable& hash_table);
+bool
+vtk_to_pointcloud (const char* file_name,
+                   PointCloud<PointXYZ>& points_in,
+                   PointCloud<Normal>& normals_in,
+                   double bounds[6]);
+void
+visualize (const ModelLibrary::HashTable& hash_table);
 
 //===========================================================================================================================================
 
@@ -75,11 +86,10 @@ int
 main (int argc, char** argv)
 {
   // Make sure that we have the right number of arguments
-  if (argc != 2)
-  {
-    print_info ("\nVisualizes the hash table after adding the provided mesh to it.\n"
-        "usage:\n"
-        "./obj_rec_ransac_hash_table <mesh.vtk>\n");
+  if (argc != 2) {
+    print_info("\nVisualizes the hash table after adding the provided mesh to it.\n"
+               "usage:\n"
+               "./obj_rec_ransac_hash_table <mesh.vtk>\n");
     return (-1);
   }
 
@@ -87,69 +97,71 @@ main (int argc, char** argv)
   ObjRecRANSAC::PointCloudN normals_in;
   double b[6];
 
-  if ( !vtk_to_pointcloud (argv[1], points_in, normals_in, b) )
+  if (!vtk_to_pointcloud(argv[1], points_in, normals_in, b))
     return (-1);
 
   // Compute the bounding box diagonal
-  float diag = static_cast<float> (sqrt (my_sqr (b[1]-b[0]) + my_sqr (b[3]-b[2]) + my_sqr (b[5]-b[4])));
+  float diag = static_cast<float>(
+      sqrt(my_sqr(b[1] - b[0]) + my_sqr(b[3] - b[2]) + my_sqr(b[5] - b[4])));
 
   // Create the recognition object (we need it only for its hash table)
-  ObjRecRANSAC objrec (diag/8.0f, diag/60.0f);
-  objrec.addModel (points_in, normals_in, "test_model");
+  ObjRecRANSAC objrec(diag / 8.0f, diag / 60.0f);
+  objrec.addModel(points_in, normals_in, "test_model");
 
   // Start visualization (and the main VTK loop)
-  visualize (objrec.getHashTable ());
+  visualize(objrec.getHashTable());
 
   return (0);
 }
 
 //===========================================================================================================================================
 
-bool vtk_to_pointcloud (const char* file_name, PointCloud<PointXYZ>& points_in, PointCloud<Normal>& normals_in, double b[6])
+bool
+vtk_to_pointcloud (const char* file_name,
+                   PointCloud<PointXYZ>& points_in,
+                   PointCloud<Normal>& normals_in,
+                   double b[6])
 {
-  std::size_t len = strlen (file_name);
-  if ( file_name[len-3] != 'v' || file_name[len-2] != 't' || file_name[len-1] != 'k' )
-  {
-    fprintf (stderr, "ERROR: we need a .vtk object!\n");
+  std::size_t len = strlen(file_name);
+  if (file_name[len - 3] != 'v' || file_name[len - 2] != 't' ||
+      file_name[len - 1] != 'k') {
+    fprintf(stderr, "ERROR: we need a .vtk object!\n");
     return false;
   }
 
   // Load the model
-  vtkSmartPointer<vtkPolyDataReader> reader = vtkSmartPointer<vtkPolyDataReader>::New ();
-  reader->SetFileName (file_name);
-  reader->Update ();
+  vtkSmartPointer<vtkPolyDataReader> reader = vtkSmartPointer<vtkPolyDataReader>::New();
+  reader->SetFileName(file_name);
+  reader->Update();
 
   // Get the points
-  vtkPolyData *vtk_poly = reader->GetOutput ();
-  vtkPoints *vtk_points = vtk_poly->GetPoints ();
-  vtkIdType num_points = vtk_points->GetNumberOfPoints ();
+  vtkPolyData* vtk_poly = reader->GetOutput();
+  vtkPoints* vtk_points = vtk_poly->GetPoints();
+  vtkIdType num_points = vtk_points->GetNumberOfPoints();
   double p[3];
 
-  vtk_poly->ComputeBounds ();
-  vtk_poly->GetBounds (b);
-  points_in.resize (num_points);
+  vtk_poly->ComputeBounds();
+  vtk_poly->GetBounds(b);
+  points_in.resize(num_points);
 
   // Copy the points
-  for ( vtkIdType i = 0 ; i < num_points ; ++i )
-  {
-    vtk_points->GetPoint (i, p);
-    points_in[i].x = static_cast<float> (p[0]);
-    points_in[i].y = static_cast<float> (p[1]);
-    points_in[i].z = static_cast<float> (p[2]);
+  for (vtkIdType i = 0; i < num_points; ++i) {
+    vtk_points->GetPoint(i, p);
+    points_in[i].x = static_cast<float>(p[0]);
+    points_in[i].y = static_cast<float>(p[1]);
+    points_in[i].z = static_cast<float>(p[2]);
   }
 
   // Check if we have normals
-  vtkDataArray *vtk_normals = vtk_poly->GetPointData ()->GetNormals ();
-  if ( vtk_normals )
-  {
-    normals_in.resize (num_points);
+  vtkDataArray* vtk_normals = vtk_poly->GetPointData()->GetNormals();
+  if (vtk_normals) {
+    normals_in.resize(num_points);
     // Copy the normals
-    for ( vtkIdType i = 0 ; i < num_points ; ++i )
-    {
-      vtk_normals->GetTuple (i, p);
-      normals_in[i].normal_x = static_cast<float> (p[0]);
-      normals_in[i].normal_y = static_cast<float> (p[1]);
-      normals_in[i].normal_z = static_cast<float> (p[2]);
+    for (vtkIdType i = 0; i < num_points; ++i) {
+      vtk_normals->GetTuple(i, p);
+      normals_in[i].normal_x = static_cast<float>(p[0]);
+      normals_in[i].normal_y = static_cast<float>(p[1]);
+      normals_in[i].normal_z = static_cast<float>(p[2]);
     }
   }
 
@@ -162,66 +174,67 @@ void
 visualize (const ModelLibrary::HashTable& hash_table)
 {
   PCLVisualizer vis;
-  vis.setBackgroundColor (0.1, 0.1, 0.1);
+  vis.setBackgroundColor(0.1, 0.1, 0.1);
 
-  const ModelLibrary::HashTableCell* cells = hash_table.getVoxels ();
+  const ModelLibrary::HashTableCell* cells = hash_table.getVoxels();
   std::size_t max_num_entries = 0;
-  int id3[3], num_cells = hash_table.getNumberOfVoxels ();
-  float half_side, b[6], cell_center[3], spacing = hash_table.getVoxelSpacing ()[0];
+  int id3[3], num_cells = hash_table.getNumberOfVoxels();
+  float half_side, b[6], cell_center[3], spacing = hash_table.getVoxelSpacing()[0];
   char cube_id[128];
 
   // Just get the maximal number of entries in the cells
-  for ( int i = 0 ; i < num_cells ; ++i, ++cells )
-  {
-    if (!cells->empty ()) // That's the number of models in the cell (it's maximum one, since we loaded only one model)
+  for (int i = 0; i < num_cells; ++i, ++cells) {
+    if (!cells->empty()) // That's the number of models in the cell (it's maximum one,
+                         // since we loaded only one model)
     {
-      std::size_t num_entries = (*cells->begin ()).second.size(); // That's the number of entries in the current cell for the model we loaded
+      std::size_t num_entries =
+          (*cells->begin()).second.size(); // That's the number of entries in the
+                                           // current cell for the model we loaded
       // Get the max number of entries
-      if ( num_entries > max_num_entries )
+      if (num_entries > max_num_entries)
         max_num_entries = num_entries;
     }
   }
 
   // Now, that we have the max. number of entries, we can compute the
   // right scale factor for the spheres
-  float s = (0.5f*spacing)/static_cast<float> (max_num_entries);
+  float s = (0.5f * spacing) / static_cast<float>(max_num_entries);
 
   std::cout << "s = " << s << ", max_num_entries = " << max_num_entries << std::endl;
 
   // Now, render a sphere with the right radius at the right place
-  cells = hash_table.getVoxels ();
-  for ( int i = 0; i < num_cells ; ++i, ++cells )
-  {
+  cells = hash_table.getVoxels();
+  for (int i = 0; i < num_cells; ++i, ++cells) {
     // Does the cell have any entries?
-    if (!cells->empty ())
-    {
-      hash_table.compute3dId (i, id3);
-      hash_table.computeVoxelCenter (id3, cell_center);
+    if (!cells->empty()) {
+      hash_table.compute3dId(i, id3);
+      hash_table.computeVoxelCenter(id3, cell_center);
 
       // That's half of the cube's side length
-      half_side = s*static_cast<float> ((*cells->begin ()).second.size ());
+      half_side = s * static_cast<float>((*cells->begin()).second.size());
 
       // Adjust the bounds of the cube
-      b[0] = cell_center[0] - half_side; b[1] = cell_center[0] + half_side;
-      b[2] = cell_center[1] - half_side; b[3] = cell_center[1] + half_side;
-      b[4] = cell_center[2] - half_side; b[5] = cell_center[2] + half_side;
+      b[0] = cell_center[0] - half_side;
+      b[1] = cell_center[0] + half_side;
+      b[2] = cell_center[1] - half_side;
+      b[3] = cell_center[1] + half_side;
+      b[4] = cell_center[2] - half_side;
+      b[5] = cell_center[2] + half_side;
 
       // Set the id
-      sprintf (cube_id, "cube %i", i);
+      sprintf(cube_id, "cube %i", i);
 
       // Add to the visualizer
-      vis.addCube (b[0], b[1], b[2], b[3], b[4], b[5], 1.0, 1.0, 0.0, cube_id);
+      vis.addCube(b[0], b[1], b[2], b[3], b[4], b[5], 1.0, 1.0, 0.0, cube_id);
     }
   }
 
   vis.addCoordinateSystem(1.5, "global");
-  vis.resetCamera ();
+  vis.resetCamera();
 
   // Enter the main loop
-  while (!vis.wasStopped ())
-  {
-    vis.spinOnce (100);
+  while (!vis.wasStopped()) {
+    vis.spinOnce(100);
     std::this_thread::sleep_for(100ms);
   }
 }
-

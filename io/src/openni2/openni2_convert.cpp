@@ -29,79 +29,74 @@
  *      Author: Julius Kammerl (jkammerl@willowgarage.com)
  */
 
-#include <pcl/memory.h>
 #include <pcl/io/io_exception.h>
 #include <pcl/io/openni2/openni2_convert.h>
+#include <pcl/memory.h>
 
 #include <string>
 
+namespace pcl {
+namespace io {
+namespace openni2 {
 
-namespace pcl
+const OpenNI2DeviceInfo
+openni2_convert (const openni::DeviceInfo* pInfo)
 {
-  namespace io
-  {
-    namespace openni2
-    {
+  if (!pInfo)
+    THROW_IO_EXCEPTION("openni2_convert called with zero pointer\n");
 
-      const OpenNI2DeviceInfo
-      openni2_convert (const openni::DeviceInfo* pInfo)
-      {
-        if (!pInfo)
-          THROW_IO_EXCEPTION ("openni2_convert called with zero pointer\n");
+  OpenNI2DeviceInfo output;
 
-        OpenNI2DeviceInfo output;
+  output.name_ = pInfo->getName();
+  output.uri_ = pInfo->getUri();
+  output.vendor_ = pInfo->getVendor();
+  output.product_id_ = pInfo->getUsbProductId();
+  output.vendor_id_ = pInfo->getUsbVendorId();
 
-        output.name_       = pInfo->getName ();
-        output.uri_        = pInfo->getUri ();
-        output.vendor_     = pInfo->getVendor ();
-        output.product_id_ = pInfo->getUsbProductId ();
-        output.vendor_id_  = pInfo->getUsbVendorId ();
+  return (output);
+}
 
-        return (output);
-      }
+const openni::VideoMode
+grabberModeToOpenniMode (const OpenNI2VideoMode& input)
+{
 
-      const openni::VideoMode
-      grabberModeToOpenniMode (const OpenNI2VideoMode& input)
-      {
+  openni::VideoMode output;
 
-        openni::VideoMode output;
+  output.setResolution(input.x_resolution_, input.y_resolution_);
+  output.setFps(input.frame_rate_);
+  output.setPixelFormat(static_cast<openni::PixelFormat>(input.pixel_format_));
 
-        output.setResolution (input.x_resolution_, input.y_resolution_);
-        output.setFps (input.frame_rate_);
-        output.setPixelFormat (static_cast<openni::PixelFormat>(input.pixel_format_));
+  return (output);
+}
 
-        return (output);
-      }
+const OpenNI2VideoMode
+openniModeToGrabberMode (const openni::VideoMode& input)
+{
+  OpenNI2VideoMode output;
 
+  output.x_resolution_ = input.getResolutionX();
+  output.y_resolution_ = input.getResolutionY();
+  output.frame_rate_ = input.getFps();
+  output.pixel_format_ = static_cast<PixelFormat>(input.getPixelFormat());
 
-      const OpenNI2VideoMode
-      openniModeToGrabberMode (const openni::VideoMode& input)
-      {
-        OpenNI2VideoMode output;
+  return (output);
+}
 
-        output.x_resolution_ = input.getResolutionX ();
-        output.y_resolution_ = input.getResolutionY ();
-        output.frame_rate_ = input.getFps ();
-        output.pixel_format_ = static_cast<PixelFormat>(input.getPixelFormat ());
+const std::vector<OpenNI2VideoMode>
+openniModeToGrabberMode (const openni::Array<openni::VideoMode>& input)
+{
+  std::vector<OpenNI2VideoMode> output;
 
-        return (output);
-      }
+  int size = input.getSize();
 
-      const std::vector<OpenNI2VideoMode>
-      openniModeToGrabberMode (const openni::Array<openni::VideoMode>& input)
-      {
-        std::vector<OpenNI2VideoMode> output;
+  output.reserve(size);
 
-        int size = input.getSize ();
+  for (int i = 0; i < size; ++i)
+    output.push_back(openniModeToGrabberMode(input[i]));
 
-        output.reserve (size);
+  return (output);
+}
 
-        for (int i=0; i<size; ++i)
-          output.push_back (openniModeToGrabberMode (input[i]));
-
-        return (output);
-      }
-
-    } // namespace
-  }
- } 
+} // namespace openni2
+} // namespace io
+} // namespace pcl

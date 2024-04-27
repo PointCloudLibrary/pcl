@@ -61,7 +61,7 @@ public:
    * \param[out] stream The destination for the serialization
    */
   void
-  serialize(::std::ostream& stream) const
+  serialize (::std::ostream& stream) const
   {
     const int num_of_trees = static_cast<int>(this->size());
     stream.write(reinterpret_cast<const char*>(&num_of_trees), sizeof(num_of_trees));
@@ -85,7 +85,7 @@ public:
    * \param[in] stream The source for the deserialization
    */
   void
-  deserialize(::std::istream& stream)
+  deserialize (::std::istream& stream)
   {
     int num_of_trees;
     stream.read(reinterpret_cast<char*>(&num_of_trees), sizeof(num_of_trees));

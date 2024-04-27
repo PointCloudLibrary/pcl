@@ -38,16 +38,18 @@
 /// @details implementation of the class DeleteCommand
 /// @author  Yue Li and Matthew Hielsberg
 
-#include <pcl/apps/point_cloud_editor/deleteCommand.h>
 #include <pcl/apps/point_cloud_editor/copyBuffer.h>
+#include <pcl/apps/point_cloud_editor/deleteCommand.h>
 #include <pcl/apps/point_cloud_editor/selection.h>
 
-DeleteCommand::DeleteCommand (SelectionPtr selection_ptr,
-                              const CloudPtr& cloud_ptr)
-  : cloud_ptr_(cloud_ptr), selection_ptr_(std::move(selection_ptr)), deleted_selection_(cloud_ptr) {}
+DeleteCommand::DeleteCommand(SelectionPtr selection_ptr, const CloudPtr& cloud_ptr)
+: cloud_ptr_(cloud_ptr)
+, selection_ptr_(std::move(selection_ptr))
+, deleted_selection_(cloud_ptr)
+{}
 
 void
-DeleteCommand::execute ()
+DeleteCommand::execute()
 {
   if (!cloud_ptr_)
     return;
@@ -66,26 +68,13 @@ DeleteCommand::execute ()
   selection_ptr_->clear();
 
   // notify the cloud that the selection has changed
-  cloud_ptr_ -> setSelection(selection_ptr_);
+  cloud_ptr_->setSelection(selection_ptr_);
 }
 
 void
-DeleteCommand::undo ()
+DeleteCommand::undo()
 {
   if (!cloud_ptr_)
     return;
   cloud_ptr_->restore(deleted_cloud_buffer_, deleted_selection_);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-

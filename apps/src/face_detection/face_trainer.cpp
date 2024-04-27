@@ -9,7 +9,7 @@
 #include <pcl/recognition/face_detection/rf_face_detector_trainer.h>
 
 int
-main(int argc, char** argv)
+main (int argc, char** argv)
 {
   int ntrees = 10;
   std::string forest_fn = "forest.txt";

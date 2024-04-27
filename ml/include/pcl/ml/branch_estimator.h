@@ -51,7 +51,7 @@ public:
 
   /** Returns the number of branches the corresponding tree has. */
   virtual std::size_t
-  getNumOfBranches() const = 0;
+  getNumOfBranches () const = 0;
 
   /** Computes the branch index for the specified result.
    *
@@ -61,10 +61,10 @@ public:
    * \param[out] branch_index the destination for the computed branch index
    */
   virtual void
-  computeBranchIndex(const float result,
-                     const unsigned char flag,
-                     const float threshold,
-                     unsigned char& branch_index) const = 0;
+  computeBranchIndex (const float result,
+                      const unsigned char flag,
+                      const float threshold,
+                      unsigned char& branch_index) const = 0;
 };
 
 /** Branch estimator for binary trees where the branch is computed only from the
@@ -78,7 +78,7 @@ public:
 
   /** Returns the number of branches the corresponding tree has. */
   inline std::size_t
-  getNumOfBranches() const override
+  getNumOfBranches () const override
   {
     return 2;
   }
@@ -91,10 +91,10 @@ public:
    * \param[out] branch_index the destination for the computed branch index
    */
   inline void
-  computeBranchIndex(const float result,
-                     const unsigned char flag,
-                     const float threshold,
-                     unsigned char& branch_index) const override
+  computeBranchIndex (const float result,
+                      const unsigned char flag,
+                      const float threshold,
+                      unsigned char& branch_index) const override
   {
     pcl::utils::ignore(flag);
     branch_index = (result > threshold) ? 1 : 0;
@@ -112,7 +112,7 @@ public:
 
   /** \brief Returns the number of branches the corresponding tree has. */
   inline std::size_t
-  getNumOfBranches() const override
+  getNumOfBranches () const override
   {
     return 3;
   }
@@ -125,10 +125,10 @@ public:
    * \param[out] branch_index the destination for the computed branch index
    */
   inline void
-  computeBranchIndex(const float result,
-                     const unsigned char flag,
-                     const float threshold,
-                     unsigned char& branch_index) const override
+  computeBranchIndex (const float result,
+                      const unsigned char flag,
+                      const float threshold,
+                      unsigned char& branch_index) const override
   {
     if (flag == 0)
       branch_index = (result > threshold) ? 1 : 0;

@@ -39,61 +39,59 @@
 
 #include <pcl/point_cloud.h>
 
-namespace pcl
-{
-  namespace io
+namespace pcl {
+namespace io {
+/** \brief A TAR file's header, as described on
+ * https://en.wikipedia.org/wiki/Tar_%28file_format%29.
+ */
+struct TARHeader {
+  char file_name[100];
+  char file_mode[8];
+  char uid[8];
+  char gid[8];
+  char file_size[12];
+  char mtime[12];
+  char chksum[8];
+  char file_type[1];
+  char link_file_name[100];
+  char ustar[6];
+  char ustar_version[2];
+  char uname[32];
+  char gname[32];
+  char dev_major[8];
+  char dev_minor[8];
+  char file_name_prefix[155];
+  char _padding[12];
+
+  /** \brief get file size */
+  unsigned int
+  getFileSize ()
   {
-    /** \brief A TAR file's header, as described on 
-      * https://en.wikipedia.org/wiki/Tar_%28file_format%29.
-      */
-    struct TARHeader
-    {
-      char file_name[100];
-      char file_mode[8];
-      char uid[8];
-      char gid[8];
-      char file_size[12];
-      char mtime[12];
-      char chksum[8];
-      char file_type[1];
-      char link_file_name[100];
-      char ustar[6];
-      char ustar_version[2];
-      char uname[32];
-      char gname[32];
-      char dev_major[8];
-      char dev_minor[8];
-      char file_name_prefix[155];
-      char _padding[12];
-
-      /** \brief get file size */
-      unsigned int 
-      getFileSize ()
-      {
-        unsigned int output = 0;
-        char *str = file_size;
-        for (int i = 0; i < 11; i++)
-        {
-          output = output * 8 + *str - '0';
-          str++;
-        }
-        return (output);
-      }
-    };
-
-    /** \brief Save a PointCloud dataset into a TAR file. 
-      * Append if the file exists, or create a new one if not.
-      * \remark till implemented will return FALSE
-      */
-      // param[in] tar_filename the name of the TAR file to save the cloud to
-      // param[in] cloud the point cloud dataset to save
-      // param[in] pcd_filename the internal name of the PCD file that should be stored in the TAR header
-    template <typename PointT> bool
-    saveTARPointCloud (const std::string& /*tar_filename*/,
-                       const PointCloud<PointT>& /*cloud*/,
-                       const std::string& /*pcd_filename*/)
-    {
-      return (false);
+    unsigned int output = 0;
+    char* str = file_size;
+    for (int i = 0; i < 11; i++) {
+      output = output * 8 + *str - '0';
+      str++;
     }
+    return (output);
   }
+};
+
+/** \brief Save a PointCloud dataset into a TAR file.
+ * Append if the file exists, or create a new one if not.
+ * \remark till implemented will return FALSE
+ */
+// param[in] tar_filename the name of the TAR file to save the cloud to
+// param[in] cloud the point cloud dataset to save
+// param[in] pcd_filename the internal name of the PCD file that should be stored in the
+// TAR header
+template <typename PointT>
+bool
+saveTARPointCloud (const std::string& /*tar_filename*/,
+                   const PointCloud<PointT>& /*cloud*/,
+                   const std::string& /*pcd_filename*/)
+{
+  return (false);
 }
+} // namespace io
+} // namespace pcl

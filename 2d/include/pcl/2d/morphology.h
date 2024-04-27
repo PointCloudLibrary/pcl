@@ -59,7 +59,7 @@ public:
    * \param[out] output Output point cloud passed by reference
    */
   void
-  openingBinary(pcl::PointCloud<PointT>& output);
+  openingBinary (pcl::PointCloud<PointT>& output);
 
   /** \brief This function performs dilation followed by erosion.
    * It is useful for filling up (holes/cracks/small discontinuities) in a binary
@@ -67,7 +67,7 @@ public:
    * \param[out] output Output point cloud passed by reference
    */
   void
-  closingBinary(pcl::PointCloud<PointT>& output);
+  closingBinary (pcl::PointCloud<PointT>& output);
 
   /** \brief Binary dilation is similar to a logical disjunction of sets.
    * At each pixel having value 1, if for all pixels in the structuring element  having
@@ -77,7 +77,7 @@ public:
    * \param[out] output Output point cloud passed by reference
    */
   void
-  erosionBinary(pcl::PointCloud<PointT>& output);
+  erosionBinary (pcl::PointCloud<PointT>& output);
 
   /** \brief Binary erosion is similar to a logical addition of sets.
    * At each pixel having value 1, if at least one pixel in the structuring  element is
@@ -87,7 +87,7 @@ public:
    * \param[out] output Output point cloud passed by reference
    */
   void
-  dilationBinary(pcl::PointCloud<PointT>& output);
+  dilationBinary (pcl::PointCloud<PointT>& output);
 
   /** \brief Grayscale erosion followed by dilation.
    * This is used to remove small bright artifacts from the image. Large bright objects
@@ -96,7 +96,7 @@ public:
    * \param[out] output Output point cloud passed by reference
    */
   void
-  openingGray(pcl::PointCloud<PointT>& output);
+  openingGray (pcl::PointCloud<PointT>& output);
 
   /** \brief Grayscale dilation followed by erosion.
    * This is used to remove small dark artifacts from the image. Bright features or
@@ -105,19 +105,19 @@ public:
    * \param[out] output Output point cloud passed by reference
    */
   void
-  closingGray(pcl::PointCloud<PointT>& output);
+  closingGray (pcl::PointCloud<PointT>& output);
 
   /** \brief Takes the min of the pixels where kernel is 1
    * \param[out] output Output point cloud passed by reference
    */
   void
-  erosionGray(pcl::PointCloud<PointT>& output);
+  erosionGray (pcl::PointCloud<PointT>& output);
 
   /** \brief Takes the max of the pixels where kernel is 1
    * \param[out] output Output point cloud passed by reference
    */
   void
-  dilationGray(pcl::PointCloud<PointT>& output);
+  dilationGray (pcl::PointCloud<PointT>& output);
 
   /** \brief Set operation
    * output = input1 - input2
@@ -126,9 +126,9 @@ public:
    * \param[in] input2
    */
   void
-  subtractionBinary(pcl::PointCloud<PointT>& output,
-                    const pcl::PointCloud<PointT>& input1,
-                    const pcl::PointCloud<PointT>& input2);
+  subtractionBinary (pcl::PointCloud<PointT>& output,
+                     const pcl::PointCloud<PointT>& input1,
+                     const pcl::PointCloud<PointT>& input2);
 
   /** \brief Set operation
    * \f$output = input1 \cup input2\f$
@@ -137,9 +137,9 @@ public:
    * \param[in] input2
    */
   void
-  unionBinary(pcl::PointCloud<PointT>& output,
-              const pcl::PointCloud<PointT>& input1,
-              const pcl::PointCloud<PointT>& input2);
+  unionBinary (pcl::PointCloud<PointT>& output,
+               const pcl::PointCloud<PointT>& input1,
+               const pcl::PointCloud<PointT>& input2);
 
   /** \brief Set operation \f$ output = input1 \cap input2 \f$
    * \param[out] output Output point cloud passed by reference
@@ -147,9 +147,9 @@ public:
    * \param[in] input2
    */
   void
-  intersectionBinary(pcl::PointCloud<PointT>& output,
-                     const pcl::PointCloud<PointT>& input1,
-                     const pcl::PointCloud<PointT>& input2);
+  intersectionBinary (pcl::PointCloud<PointT>& output,
+                      const pcl::PointCloud<PointT>& input1,
+                      const pcl::PointCloud<PointT>& input2);
 
   /** \brief Creates a circular structing element. The size of the kernel created is
    * 2*radius x 2*radius. Center of the structuring element is the center of the circle.
@@ -159,7 +159,7 @@ public:
    * \param[in] radius Radius of the circular structuring element.
    */
   void
-  structuringElementCircular(pcl::PointCloud<PointT>& kernel, const int radius);
+  structuringElementCircular (pcl::PointCloud<PointT>& kernel, const int radius);
 
   /** \brief Creates a rectangular structing element of size height x width.         *
    * All values are 1.
@@ -170,9 +170,9 @@ public:
    *
    */
   void
-  structuringElementRectangle(pcl::PointCloud<PointT>& kernel,
-                              const int height,
-                              const int width);
+  structuringElementRectangle (pcl::PointCloud<PointT>& kernel,
+                               const int height,
+                               const int width);
 
   enum MORPHOLOGICAL_OPERATOR_TYPE {
     EROSION_GRAY,
@@ -191,14 +191,14 @@ public:
    * \param[out] output Output point cloud passed by reference
    */
   void
-  applyMorphologicalOperation(pcl::PointCloud<PointT>& output);
+  applyMorphologicalOperation (pcl::PointCloud<PointT>& output);
 
   /**
    * \param[in] structuring_element The structuring element to be used for the
    *                                 morphological operation
    */
   void
-  setStructuringElement(const PointCloudInPtr& structuring_element);
+  setStructuringElement (const PointCloudInPtr& structuring_element);
 };
 
 } // namespace pcl

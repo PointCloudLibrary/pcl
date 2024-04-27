@@ -38,20 +38,19 @@
  * $Id$
  */
 
-#include <pcl/point_types.h>
-#include <pcl/io/pcd_io.h>
 #include <pcl/common/pcl_filesystem.h>
-#include <pcl/console/print.h>
 #include <pcl/console/parse.h>
+#include <pcl/console/print.h>
 #include <pcl/console/time.h>
 #include <pcl/filters/morphological_filter.h>
+#include <pcl/io/pcd_io.h>
+#include <pcl/point_types.h>
 
 #include <boost/algorithm/string/case_conv.hpp> // for to_upper_copy
 
 using namespace pcl;
 using namespace pcl::io;
 using namespace pcl::console;
-
 
 using PointType = PointXYZ;
 using Cloud = PointCloud<PointXYZ>;
@@ -61,116 +60,135 @@ std::string default_method = "open";
 float default_resolution = 1.0f;
 
 void
-printHelp (int, char **argv)
+printHelp (int, char** argv)
 {
-  print_error ("Syntax is: %s input.pcd output.pcd <options>\n", argv[0]);
-  print_info ("  where options are:\n");
-  print_info ("                     -resolution X = cell size (default: ");
-  print_value ("%f", default_resolution); print_info (")\n");
-  print_info ("                     -method X = the morphological operator to be used (options: dilate / erode / open / close) (default: ");
-  print_value ("%s", default_method.c_str ()); print_info (")\n");
-  print_info ("                     -input_dir X  = batch process all PCD files found in input_dir\n");
-  print_info ("                     -output_dir X = save the processed files from input_dir in this directory\n");
+  print_error("Syntax is: %s input.pcd output.pcd <options>\n", argv[0]);
+  print_info("  where options are:\n");
+  print_info("                     -resolution X = cell size (default: ");
+  print_value("%f", default_resolution);
+  print_info(")\n");
+  print_info("                     -method X = the morphological operator to be used "
+             "(options: dilate / erode / open / close) (default: ");
+  print_value("%s", default_method.c_str());
+  print_info(")\n");
+  print_info("                     -input_dir X  = batch process all PCD files found "
+             "in input_dir\n");
+  print_info("                     -output_dir X = save the processed files from "
+             "input_dir in this directory\n");
 }
 
 bool
-loadCloud (const std::string &filename, Cloud &cloud)
+loadCloud (const std::string& filename, Cloud& cloud)
 {
   TicToc tt;
-  print_highlight ("Loading "); print_value ("%s ", filename.c_str ());
+  print_highlight("Loading ");
+  print_value("%s ", filename.c_str());
 
-  tt.tic ();
-  if (loadPCDFile (filename, cloud) < 0)
+  tt.tic();
+  if (loadPCDFile(filename, cloud) < 0)
     return (false);
-  print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%d", cloud.width * cloud.height); print_info (" points]\n");
-  print_info ("Available dimensions: "); print_value ("%s\n", pcl::getFieldsList (cloud).c_str ());
+  print_info("[done, ");
+  print_value("%g", tt.toc());
+  print_info(" ms : ");
+  print_value("%d", cloud.width * cloud.height);
+  print_info(" points]\n");
+  print_info("Available dimensions: ");
+  print_value("%s\n", pcl::getFieldsList(cloud).c_str());
 
   return (true);
 }
 
 void
-compute (ConstCloudPtr &input, Cloud &output, float resolution, const std::string& method)
+compute (ConstCloudPtr& input,
+         Cloud& output,
+         float resolution,
+         const std::string& method)
 {
   // Estimate
   TicToc tt;
-  tt.tic ();
+  tt.tic();
 
-  print_highlight (stderr, "Computing ");
+  print_highlight(stderr, "Computing ");
 
-  if (method == "dilate")
-  {
-    applyMorphologicalOperator<PointType> (input, resolution, MORPH_DILATE, output);
+  if (method == "dilate") {
+    applyMorphologicalOperator<PointType>(input, resolution, MORPH_DILATE, output);
   }
-  else if (method == "erode")
-  {
-    applyMorphologicalOperator<PointType> (input, resolution, MORPH_ERODE, output);
+  else if (method == "erode") {
+    applyMorphologicalOperator<PointType>(input, resolution, MORPH_ERODE, output);
   }
-  else if (method == "open")
-  {
-    applyMorphologicalOperator<PointType> (input, resolution, MORPH_OPEN, output);
+  else if (method == "open") {
+    applyMorphologicalOperator<PointType>(input, resolution, MORPH_OPEN, output);
   }
-  else if (method == "close")
-  {
-    applyMorphologicalOperator<PointType> (input, resolution, MORPH_CLOSE, output);
+  else if (method == "close") {
+    applyMorphologicalOperator<PointType>(input, resolution, MORPH_CLOSE, output);
   }
-  else
-  {
-    PCL_ERROR ("%s is not a valid morphological operator! Quitting!\n", method.c_str ());
+  else {
+    PCL_ERROR("%s is not a valid morphological operator! Quitting!\n", method.c_str());
     return;
   }
 
-  print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%d", output.width * output.height); print_info (" points]\n");
+  print_info("[done, ");
+  print_value("%g", tt.toc());
+  print_info(" ms : ");
+  print_value("%d", output.width * output.height);
+  print_info(" points]\n");
 }
 
 void
-saveCloud (const std::string &filename, const Cloud &output)
+saveCloud (const std::string& filename, const Cloud& output)
 {
   TicToc tt;
-  tt.tic ();
+  tt.tic();
 
-  print_highlight ("Saving "); print_value ("%s ", filename.c_str ());
+  print_highlight("Saving ");
+  print_value("%s ", filename.c_str());
 
   PCDWriter w;
-  w.writeBinaryCompressed (filename, output);
+  w.writeBinaryCompressed(filename, output);
 
-  print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%d", output.width * output.height); print_info (" points]\n");
+  print_info("[done, ");
+  print_value("%g", tt.toc());
+  print_info(" ms : ");
+  print_value("%d", output.width * output.height);
+  print_info(" points]\n");
 }
 
 int
-batchProcess (const std::vector<std::string> &pcd_files, std::string &output_dir,
-              float resolution, const std::string &method)
+batchProcess (const std::vector<std::string>& pcd_files,
+              std::string& output_dir,
+              float resolution,
+              const std::string& method)
 {
-  for (const auto &pcd_file : pcd_files)
-  {
+  for (const auto& pcd_file : pcd_files) {
     // Load the first file
-    Cloud::Ptr cloud (new Cloud);
-    if (!loadCloud (pcd_file, *cloud))
+    Cloud::Ptr cloud(new Cloud);
+    if (!loadCloud(pcd_file, *cloud))
       return (-1);
 
     // Perform the feature estimation
     Cloud output;
-    compute (cloud, output, resolution, method);
+    compute(cloud, output, resolution, method);
 
     // Prepare output file name
     std::string filename = pcl_fs::path(pcd_file).filename().string();
-    
+
     // Save into the second file
     const std::string filepath = output_dir + '/' + filename;
-    saveCloud (filepath, output);
+    saveCloud(filepath, output);
   }
   return (0);
 }
-
 
 /* ---[ */
 int
 main (int argc, char** argv)
 {
-  print_info ("Filter a point cloud using the pcl::morphologicalOpen. For more information, use: %s -h\n", argv[0]);
+  print_info("Filter a point cloud using the pcl::morphologicalOpen. For more "
+             "information, use: %s -h\n",
+             argv[0]);
 
-  if (argc < 3)
-  {
-    printHelp (argc, argv);
+  if (argc < 3) {
+    printHelp(argc, argv);
     return (-1);
   }
 
@@ -179,15 +197,14 @@ main (int argc, char** argv)
   // Command line parsing
   std::string method = default_method;
   float resolution = default_resolution;
-  parse_argument (argc, argv, "-method", method);
-  parse_argument (argc, argv, "-resolution", resolution);
+  parse_argument(argc, argv, "-method", method);
+  parse_argument(argc, argv, "-resolution", resolution);
   std::string input_dir, output_dir;
-  if (parse_argument (argc, argv, "-input_dir", input_dir) != -1)
-  {
-    PCL_INFO ("Input directory given as %s. Batch process mode on.\n", input_dir.c_str ());
-    if (parse_argument (argc, argv, "-output_dir", output_dir) == -1)
-    {
-      PCL_ERROR ("Need an output directory! Please use -output_dir to continue.\n");
+  if (parse_argument(argc, argv, "-input_dir", input_dir) != -1) {
+    PCL_INFO("Input directory given as %s. Batch process mode on.\n",
+             input_dir.c_str());
+    if (parse_argument(argc, argv, "-output_dir", output_dir) == -1) {
+      PCL_ERROR("Need an output directory! Please use -output_dir to continue.\n");
       return (-1);
     }
 
@@ -195,51 +212,48 @@ main (int argc, char** argv)
     batch_mode = true;
   }
 
-  if (!batch_mode)
-  {
+  if (!batch_mode) {
     // Parse the command line arguments for .pcd files
     std::vector<int> p_file_indices;
-    p_file_indices = parse_file_extension_argument (argc, argv, ".pcd");
-    if (p_file_indices.size () != 2)
-    {
-      print_error ("Need one input PCD file and one output PCD file to continue.\n");
+    p_file_indices = parse_file_extension_argument(argc, argv, ".pcd");
+    if (p_file_indices.size() != 2) {
+      print_error("Need one input PCD file and one output PCD file to continue.\n");
       return (-1);
     }
 
     // Load the first file
-    Cloud::Ptr cloud (new Cloud);
-    if (!loadCloud (argv[p_file_indices[0]], *cloud))
+    Cloud::Ptr cloud(new Cloud);
+    if (!loadCloud(argv[p_file_indices[0]], *cloud))
       return (-1);
 
     // Perform the feature estimation
     Cloud output;
-    compute (cloud, output, resolution, method);
+    compute(cloud, output, resolution, method);
 
     // Save into the second file
-    saveCloud (argv[p_file_indices[1]], output);
+    saveCloud(argv[p_file_indices[1]], output);
   }
-  else
-  {
-    if (!input_dir.empty() && pcl_fs::exists (input_dir))
-    {
+  else {
+    if (!input_dir.empty() && pcl_fs::exists(input_dir)) {
       std::vector<std::string> pcd_files;
       pcl_fs::directory_iterator end_itr;
-      for (pcl_fs::directory_iterator itr (input_dir); itr != end_itr; ++itr)
-      {
+      for (pcl_fs::directory_iterator itr(input_dir); itr != end_itr; ++itr) {
         // Only add PCD files
-        if (!is_directory (itr->status ()) && boost::algorithm::to_upper_copy (itr->path ().extension ().string ()) == ".PCD" )
-        {
-          pcd_files.push_back (itr->path ().string ());
-          PCL_INFO ("[Batch processing mode] Added %s for processing.\n", itr->path ().string ().c_str ());
+        if (!is_directory(itr->status()) &&
+            boost::algorithm::to_upper_copy(itr->path().extension().string()) ==
+                ".PCD") {
+          pcd_files.push_back(itr->path().string());
+          PCL_INFO("[Batch processing mode] Added %s for processing.\n",
+                   itr->path().string().c_str());
         }
       }
-      batchProcess (pcd_files, output_dir, resolution, method);
+      batchProcess(pcd_files, output_dir, resolution, method);
     }
-    else
-    {
-      PCL_ERROR ("Batch processing mode enabled, but invalid input directory (%s) given!\n", input_dir.c_str ());
+    else {
+      PCL_ERROR(
+          "Batch processing mode enabled, but invalid input directory (%s) given!\n",
+          input_dir.c_str());
       return (-1);
     }
   }
 }
-

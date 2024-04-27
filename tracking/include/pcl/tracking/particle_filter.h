@@ -65,14 +65,14 @@ public:
    * \param[in] iteration_num the number of iteration.
    */
   inline void
-  setIterationNum(const int iteration_num)
+  setIterationNum (const int iteration_num)
   {
     iteration_num_ = iteration_num;
   }
 
   /** \brief Get the number of iteration. */
   inline int
-  getIterationNum() const
+  getIterationNum () const
   {
     return iteration_num_;
   }
@@ -81,14 +81,14 @@ public:
    * \param[in] particle_num the number of the particles.
    */
   inline void
-  setParticleNum(const int particle_num)
+  setParticleNum (const int particle_num)
   {
     particle_num_ = particle_num;
   }
 
   /** \brief Get the number of the particles. */
   inline int
-  getParticleNum() const
+  getParticleNum () const
   {
     return particle_num_;
   }
@@ -97,14 +97,14 @@ public:
    * \param[in] ref a pointer to a PointCloud message
    */
   inline void
-  setReferenceCloud(const PointCloudInConstPtr& ref)
+  setReferenceCloud (const PointCloudInConstPtr& ref)
   {
     ref_ = ref;
   }
 
   /** \brief Get a pointer to a reference dataset to be tracked. */
   inline PointCloudInConstPtr const
-  getReferenceCloud()
+  getReferenceCloud ()
   {
     return ref_;
   }
@@ -113,14 +113,14 @@ public:
    * \param[in] coherence a pointer to PointCloudCoherence.
    */
   inline void
-  setCloudCoherence(const CloudCoherencePtr& coherence)
+  setCloudCoherence (const CloudCoherencePtr& coherence)
   {
     coherence_ = coherence;
   }
 
   /** \brief Get the PointCloudCoherence to compute likelihood. */
   inline CloudCoherencePtr
-  getCloudCoherence() const
+  getCloudCoherence () const
   {
     return coherence_;
   }
@@ -130,7 +130,7 @@ public:
    * of step noise.
    */
   inline void
-  setStepNoiseCovariance(const std::vector<double>& step_noise_covariance)
+  setStepNoiseCovariance (const std::vector<double>& step_noise_covariance)
   {
     step_noise_covariance_ = step_noise_covariance;
   }
@@ -141,7 +141,7 @@ public:
    * initial noise.
    */
   inline void
-  setInitialNoiseCovariance(const std::vector<double>& initial_noise_covariance)
+  setInitialNoiseCovariance (const std::vector<double>& initial_noise_covariance)
   {
     initial_noise_covariance_ = initial_noise_covariance;
   }
@@ -151,7 +151,7 @@ public:
    * \param[in] initial_noise_mean the mean values of initial noise.
    */
   inline void
-  setInitialNoiseMean(const std::vector<double>& initial_noise_mean)
+  setInitialNoiseMean (const std::vector<double>& initial_noise_mean)
   {
     initial_noise_mean_ = initial_noise_mean;
   }
@@ -160,7 +160,7 @@ public:
    * \param[in] resample_likelihood_thr threshold to re-initialize.
    */
   inline void
-  setResampleLikelihoodThr(const double resample_likelihood_thr)
+  setResampleLikelihoodThr (const double resample_likelihood_thr)
   {
     resample_likelihood_thr_ = resample_likelihood_thr;
   }
@@ -171,7 +171,7 @@ public:
    * \param[in] occlusion_angle_thr threshold of angle to be considered occlusion.
    */
   inline void
-  setOcclusionAngleThe(const double occlusion_angle_thr)
+  setOcclusionAngleThe (const double occlusion_angle_thr)
   {
     occlusion_angle_thr_ = occlusion_angle_thr;
   }
@@ -182,7 +182,7 @@ public:
    * \param[in] min_indices the minimum number of indices.
    */
   inline void
-  setMinIndices(const int min_indices)
+  setMinIndices (const int min_indices)
   {
     min_indices_ = min_indices;
   }
@@ -193,7 +193,7 @@ public:
    * the particles.
    */
   inline void
-  setTrans(const Eigen::Affine3f& trans)
+  setTrans (const Eigen::Affine3f& trans)
   {
     trans_ = trans;
   }
@@ -201,7 +201,7 @@ public:
   /** \brief Get the transformation from the world coordinates to the frame of
    * the particles. */
   inline Eigen::Affine3f
-  getTrans() const
+  getTrans () const
   {
     return trans_;
   }
@@ -212,7 +212,7 @@ public:
    * location in the most recent frame.
    */
   inline StateT
-  getResult() const override
+  getResult () const override
   {
     return representative_state_;
   }
@@ -222,14 +222,14 @@ public:
    * \param[in] particle an instance of StateT.
    */
   Eigen::Affine3f
-  toEigenMatrix(const StateT& particle)
+  toEigenMatrix (const StateT& particle)
   {
     return particle.toEigenMatrix();
   }
 
   /** \brief Get a pointer to a pointcloud of the particles. */
   inline PointCloudStatePtr
-  getParticles() const
+  getParticles () const
   {
     return particles_;
   }
@@ -243,7 +243,7 @@ public:
    * \param[in] w_max the maximum weight of the particles
    */
   inline double
-  normalizeParticleWeight(double w, double w_min, double w_max)
+  normalizeParticleWeight (double w, double w_min, double w_max)
   {
     return std::exp(1.0 - alpha_ * (w - w_min) / (w_max - w_min));
   }
@@ -252,14 +252,14 @@ public:
    *  \param[in] alpha the value of alpha
    */
   inline void
-  setAlpha(double alpha)
+  setAlpha (double alpha)
   {
     alpha_ = alpha;
   }
 
   /** \brief Get the value of alpha. */
   inline double
-  getAlpha()
+  getAlpha ()
   {
     return alpha_;
   }
@@ -268,7 +268,7 @@ public:
    * \param[in] use_normal the value of use_normal_.
    */
   inline void
-  setUseNormal(bool use_normal)
+  setUseNormal (bool use_normal)
   {
     if (traits::has_normal_v<PointInT> || !use_normal) {
       use_normal_ = use_normal;
@@ -282,7 +282,7 @@ public:
 
   /** \brief Get the value of use_normal_. */
   inline bool
-  getUseNormal()
+  getUseNormal ()
   {
     return use_normal_;
   }
@@ -291,14 +291,14 @@ public:
    * \param[in] use_change_detector the value of use_change_detector_.
    */
   inline void
-  setUseChangeDetector(bool use_change_detector)
+  setUseChangeDetector (bool use_change_detector)
   {
     use_change_detector_ = use_change_detector;
   }
 
   /** \brief Get the value of use_change_detector_. */
   inline bool
-  getUseChangeDetector()
+  getUseChangeDetector ()
   {
     return use_change_detector_;
   }
@@ -307,14 +307,14 @@ public:
    * \param[in] motion_ratio the ratio of hypothesis to use motion model.
    */
   inline void
-  setMotionRatio(double motion_ratio)
+  setMotionRatio (double motion_ratio)
   {
     motion_ratio_ = motion_ratio;
   }
 
   /** \brief Get the motion ratio. */
   inline double
-  getMotionRatio()
+  getMotionRatio ()
   {
     return motion_ratio_;
   }
@@ -323,14 +323,14 @@ public:
    * \param[in] change_detector_interval the number of interval frames.
    */
   inline void
-  setIntervalOfChangeDetection(unsigned int change_detector_interval)
+  setIntervalOfChangeDetection (unsigned int change_detector_interval)
   {
     change_detector_interval_ = change_detector_interval;
   }
 
   /** \brief Get the number of interval frames to run change detection. */
   inline unsigned int
-  getIntervalOfChangeDetection()
+  getIntervalOfChangeDetection ()
   {
     return change_detector_interval_;
   }
@@ -341,7 +341,7 @@ public:
    * node
    */
   inline void
-  setMinPointsOfChangeDetection(unsigned int change_detector_filter)
+  setMinPointsOfChangeDetection (unsigned int change_detector_filter)
   {
     change_detector_filter_ = change_detector_filter;
   }
@@ -350,14 +350,14 @@ public:
    * \param[in] resolution resolution of change detection octree
    */
   inline void
-  setResolutionOfChangeDetection(double resolution)
+  setResolutionOfChangeDetection (double resolution)
   {
     change_detector_resolution_ = resolution;
   }
 
   /** \brief Get the resolution of change detection. */
   inline double
-  getResolutionOfChangeDetection()
+  getResolutionOfChangeDetection ()
   {
     return change_detector_resolution_;
   }
@@ -365,21 +365,21 @@ public:
   /** \brief Get the minimum amount of points required within leaf node to
    * become serialized in change detection. */
   inline unsigned int
-  getMinPointsOfChangeDetection()
+  getMinPointsOfChangeDetection ()
   {
     return change_detector_filter_;
   }
 
   /** \brief Get the adjustment ratio. */
   inline double
-  getFitRatio() const
+  getFitRatio () const
   {
     return fit_ratio_;
   }
 
   /** \brief Reset the particles to restart tracking*/
   virtual inline void
-  resetTracking()
+  resetTracking ()
   {
     if (particles_)
       particles_->points.clear();
@@ -396,12 +396,12 @@ protected:
    * \param[out] z_max the maximum value of z axis.
    */
   void
-  calcBoundingBox(double& x_min,
-                  double& x_max,
-                  double& y_min,
-                  double& y_max,
-                  double& z_min,
-                  double& z_max);
+  calcBoundingBox (double& x_min,
+                   double& x_max,
+                   double& y_min,
+                   double& y_max,
+                   double& z_min,
+                   double& z_max);
 
   /** \brief Crop the pointcloud by the bounding box calculated from hypothesis
    * and the reference pointcloud.
@@ -409,7 +409,7 @@ protected:
    * \param[out] output a pointer to be assigned the cropped pointcloud.
    */
   void
-  cropInputPointCloud(const PointCloudInConstPtr& cloud, PointCloudIn& output);
+  cropInputPointCloud (const PointCloudInConstPtr& cloud, PointCloudIn& output);
 
   /** \brief Compute a reference pointcloud transformed to the pose that hypothesis
    represents.
@@ -419,9 +419,9 @@ protected:
    hypothesis.
    **/
   void
-  computeTransformedPointCloud(const StateT& hypothesis,
-                               pcl::Indices& indices,
-                               PointCloudIn& cloud);
+  computeTransformedPointCloud (const StateT& hypothesis,
+                                pcl::Indices& indices,
+                                PointCloudIn& cloud);
 
 #ifdef DOXYGEN_ONLY
   /** \brief Compute a reference pointcloud transformed to the pose that hypothesis
@@ -432,18 +432,18 @@ protected:
    hypothesis.
    **/
   void
-  computeTransformedPointCloudWithNormal(const StateT& hypothesis,
-                                         pcl::Indices& indices,
-                                         PointCloudIn& cloud);
+  computeTransformedPointCloudWithNormal (const StateT& hypothesis,
+                                          pcl::Indices& indices,
+                                          PointCloudIn& cloud);
 #else
   template <typename PointT = PointInT, traits::HasNormal<PointT> = true>
   void
-  computeTransformedPointCloudWithNormal(const StateT& hypothesis,
-                                         pcl::Indices& indices,
-                                         PointCloudIn& cloud);
+  computeTransformedPointCloudWithNormal (const StateT& hypothesis,
+                                          pcl::Indices& indices,
+                                          PointCloudIn& cloud);
   template <typename PointT = PointInT, traits::HasNoNormal<PointT> = true>
   void
-  computeTransformedPointCloudWithNormal(const StateT&, pcl::Indices&, PointCloudIn&)
+  computeTransformedPointCloudWithNormal (const StateT&, pcl::Indices&, PointCloudIn&)
   {
     PCL_WARN("[pcl::%s::computeTransformedPointCloudWithNormal] "
              "use_normal_ == true is not supported in this Point Type.\n",
@@ -458,41 +458,41 @@ protected:
    *hypothesis.
    **/
   void
-  computeTransformedPointCloudWithoutNormal(const StateT& hypothesis,
-                                            PointCloudIn& cloud);
+  computeTransformedPointCloudWithoutNormal (const StateT& hypothesis,
+                                             PointCloudIn& cloud);
 
   /** \brief This method should get called before starting the actual computation. */
   bool
-  initCompute() override;
+  initCompute () override;
 
   /** \brief Weighting phase of particle filter method. Calculate the likelihood
    * of all of the particles and set the weights. */
   virtual void
-  weight();
+  weight ();
 
   /** \brief Resampling phase of particle filter method. Sampling the particles
    * according to the weights calculated in weight method. In particular,
    * "sample with replacement" is achieved by walker's alias method.
    */
   virtual void
-  resample();
+  resample ();
 
   /** \brief Calculate the weighted mean of the particles and set it as the result. */
   virtual void
-  update();
+  update ();
 
   /** \brief Normalize the weights of all the particels. */
   virtual void
-  normalizeWeight();
+  normalizeWeight ();
 
   /** \brief Initialize the particles. initial_noise_covariance_ and
    * initial_noise_mean_ are used for Gaussian sampling. */
   void
-  initParticles(bool reset);
+  initParticles (bool reset);
 
   /** \brief Track the pointcloud using particle filter method. */
   void
-  computeTracking() override;
+  computeTracking () override;
 
   /** \brief Implementation of "sample with replacement" using Walker's alias method.
    * about Walker's alias method, you can check the paper below: article{355749}, author
@@ -512,27 +512,27 @@ protected:
    * \param q a table of weight, which generated by genAliasTable.
    */
   int
-  sampleWithReplacement(const std::vector<int>& a, const std::vector<double>& q);
+  sampleWithReplacement (const std::vector<int>& a, const std::vector<double>& q);
 
   /** \brief Generate the tables for walker's alias method. */
   void
-  genAliasTable(std::vector<int>& a,
-                std::vector<double>& q,
-                const PointCloudStateConstPtr& particles);
+  genAliasTable (std::vector<int>& a,
+                 std::vector<double>& q,
+                 const PointCloudStateConstPtr& particles);
 
   /** \brief Resampling the particle with replacement. */
   void
-  resampleWithReplacement();
+  resampleWithReplacement ();
 
   /** \brief Resampling the particle in deterministic way. */
   void
-  resampleDeterministic();
+  resampleDeterministic ();
 
   /** \brief Run change detection and return true if there is a change.
    * \param[in] input a pointer to the input pointcloud.
    */
   bool
-  testChangeDetection(const PointCloudInConstPtr& input);
+  testChangeDetection (const PointCloudInConstPtr& input);
 
   /** \brief The number of iteration of particlefilter. */
   int iteration_num_{1};

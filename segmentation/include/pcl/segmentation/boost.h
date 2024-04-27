@@ -46,10 +46,9 @@ PCL_DEPRECATED_HEADER(1, 15, "Please include the needed boost headers directly."
 
 #ifndef Q_MOC_RUN
 // Marking all Boost headers as system headers to remove warnings
-#include <boost/version.hpp>
 #include <boost/graph/adjacency_list.hpp>
+#include <boost/graph/boykov_kolmogorov_max_flow.hpp>
 #include <boost/multi_array.hpp>
 #include <boost/ptr_container/ptr_list.hpp>
-
-#include <boost/graph/boykov_kolmogorov_max_flow.hpp>
+#include <boost/version.hpp>
 #endif

@@ -101,7 +101,7 @@ char usage[] = "\n"
 // clang-format on
 
 void
-print_usage(const std::string& msg)
+print_usage (const std::string& msg)
 {
   std::cerr << msg << std::endl;
   std::cout << usage << std::endl;
@@ -127,7 +127,7 @@ public:
   {}
 
   void
-  cloud_cb_(const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr& cloud)
+  cloud_cb_ (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr& cloud)
   {
     if (!viewer.wasStopped()) {
       organizedEncoder_->encodePointCloud(cloud,
@@ -142,7 +142,7 @@ public:
   }
 
   void
-  run()
+  run ()
   {
 
     if (!bRawImageEncoding_) {
@@ -151,7 +151,7 @@ public:
 
       // make callback function from member function
       std::function<void(const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)> f =
-          [this](const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr& cloud) {
+          [this] (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr& cloud) {
             cloud_cb_(cloud);
           };
 
@@ -198,7 +198,7 @@ struct EventHelper {
   {}
 
   void
-  cloud_cb_(const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr& cloud)
+  cloud_cb_ (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr& cloud)
   {
     if (!outputFile_.fail()) {
       organizedEncoder_->encodePointCloud(cloud,
@@ -211,9 +211,9 @@ struct EventHelper {
   }
 
   void
-  image_callback(const openni_wrapper::Image::Ptr& image,
-                 const openni_wrapper::DepthImage::Ptr& depth_image,
-                 float)
+  image_callback (const openni_wrapper::Image::Ptr& image,
+                  const openni_wrapper::DepthImage::Ptr& depth_image,
+                  float)
   {
 
     std::vector<std::uint16_t> disparity_data;
@@ -249,7 +249,7 @@ struct EventHelper {
   }
 
   void
-  run()
+  run ()
   {
     if (!bRawImageEncoding_) {
       // create a new grabber for OpenNI devices
@@ -257,7 +257,7 @@ struct EventHelper {
 
       // make callback function from member function
       std::function<void(const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)> f =
-          [this](const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr& cloud) {
+          [this] (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr& cloud) {
             cloud_cb_(cloud);
           };
 
@@ -288,9 +288,9 @@ struct EventHelper {
       std::function<void(const openni_wrapper::Image::Ptr&,
                          const openni_wrapper::DepthImage::Ptr&,
                          float)>
-          image_cb = [this](const openni_wrapper::Image::Ptr& img,
-                            const openni_wrapper::DepthImage::Ptr& depth,
-                            float f) { image_callback(img, depth, f); };
+          image_cb = [this] (const openni_wrapper::Image::Ptr& img,
+                             const openni_wrapper::DepthImage::Ptr& depth,
+                             float f) { image_callback(img, depth, f); };
       boost::signals2::connection image_connection = grabber.registerCallback(image_cb);
 
       grabber.start();
@@ -311,7 +311,7 @@ struct EventHelper {
 };
 
 int
-main(int argc, char** argv)
+main (int argc, char** argv)
 {
   OrganizedPointCloudCompression<PointXYZRGBA>* organizedCoder;
 

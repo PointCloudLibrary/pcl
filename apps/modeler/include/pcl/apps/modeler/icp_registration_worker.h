@@ -53,19 +53,19 @@ public:
 
 protected:
   std::string
-  getName() const override
+  getName () const override
   {
     return "Normal Estimation";
   }
 
   void
-  initParameters(CloudMeshItem* cloud_mesh_item) override;
+  initParameters (CloudMeshItem* cloud_mesh_item) override;
 
   void
-  setupParameters() override;
+  setupParameters () override;
 
   void
-  processImpl(CloudMeshItem* cloud_mesh_item) override;
+  processImpl (CloudMeshItem* cloud_mesh_item) override;
 
 private:
   CloudMesh::PointCloudPtr cloud_;

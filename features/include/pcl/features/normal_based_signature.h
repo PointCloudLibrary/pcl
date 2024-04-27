@@ -41,116 +41,151 @@
 
 #include <pcl/features/feature.h>
 
-namespace pcl
-{
-  /** \brief Normal-based feature signature estimation class. Obtains the feature vector by applying Discrete Cosine and
-    * Fourier Transforms on an NxM array of real numbers representing the projection distances of the points in the input
-    * cloud to a disc around the point of interest.
-    * Please consult the following publication for more details:
-    *    Xinju Li and Igor Guskov
-    *    Multi-scale features for approximate alignment of point-based surfaces
-    *    Proceedings of the third Eurographics symposium on Geometry processing
-    *    July 2005, Vienna, Austria
-    *
-    * \note These features were meant to be used at keypoints detected by a detector using different smoothing radii
-    * (e.g., SmoothedSurfacesKeypoint)
-    * \author Alexandru-Eugen Ichim
-    */
-  template <typename PointT, typename PointNT, typename PointFeature>
-  class NormalBasedSignatureEstimation : public FeatureFromNormals<PointT, PointNT, PointFeature>
+namespace pcl {
+/** \brief Normal-based feature signature estimation class. Obtains the feature vector
+ * by applying Discrete Cosine and Fourier Transforms on an NxM array of real numbers
+ * representing the projection distances of the points in the input cloud to a disc
+ * around the point of interest. Please consult the following publication for more
+ * details: Xinju Li and Igor Guskov Multi-scale features for approximate alignment of
+ * point-based surfaces Proceedings of the third Eurographics symposium on Geometry
+ * processing July 2005, Vienna, Austria
+ *
+ * \note These features were meant to be used at keypoints detected by a detector using
+ * different smoothing radii (e.g., SmoothedSurfacesKeypoint) \author Alexandru-Eugen
+ * Ichim
+ */
+template <typename PointT, typename PointNT, typename PointFeature>
+class NormalBasedSignatureEstimation
+: public FeatureFromNormals<PointT, PointNT, PointFeature> {
+public:
+  using Feature<PointT, PointFeature>::input_;
+  using Feature<PointT, PointFeature>::tree_;
+  using Feature<PointT, PointFeature>::search_radius_;
+  using PCLBase<PointT>::indices_;
+  using FeatureFromNormals<PointT, PointNT, PointFeature>::normals_;
+
+  using FeatureCloud = pcl::PointCloud<PointFeature>;
+  using Ptr = shared_ptr<NormalBasedSignatureEstimation<PointT, PointNT, PointFeature>>;
+  using ConstPtr =
+      shared_ptr<const NormalBasedSignatureEstimation<PointT, PointNT, PointFeature>>;
+
+  /** \brief Empty constructor, initializes the internal parameters to the default
+   * values
+   */
+  NormalBasedSignatureEstimation() : FeatureFromNormals<PointT, PointNT, PointFeature>()
+  {}
+
+  /** \brief Setter method for the N parameter - the length of the columns used for the
+   * Discrete Fourier Transform. \param[in] n the length of the columns used for the
+   * Discrete Fourier Transform.
+   */
+  inline void
+  setN (std::size_t n)
   {
-    public:
-      using Feature<PointT, PointFeature>::input_;
-      using Feature<PointT, PointFeature>::tree_;
-      using Feature<PointT, PointFeature>::search_radius_;
-      using PCLBase<PointT>::indices_;
-      using FeatureFromNormals<PointT, PointNT, PointFeature>::normals_;
+    N_ = n;
+  }
 
-      using FeatureCloud = pcl::PointCloud<PointFeature>;
-      using Ptr = shared_ptr<NormalBasedSignatureEstimation<PointT, PointNT, PointFeature> >;
-      using ConstPtr = shared_ptr<const NormalBasedSignatureEstimation<PointT, PointNT, PointFeature> >;
+  /** \brief Returns the N parameter - the length of the columns used for the Discrete
+   * Fourier Transform. */
+  inline std::size_t
+  getN ()
+  {
+    return N_;
+  }
 
+  /** \brief Setter method for the M parameter - the length of the rows used for the
+   * Discrete Cosine Transform. \param[in] m the length of the rows used for the
+   * Discrete Cosine Transform.
+   */
+  inline void
+  setM (std::size_t m)
+  {
+    M_ = m;
+  }
 
+  /** \brief Returns the M parameter - the length of the rows used for the Discrete
+   * Cosine Transform */
+  inline std::size_t
+  getM ()
+  {
+    return M_;
+  }
 
-      /** \brief Empty constructor, initializes the internal parameters to the default values
-        */
-      NormalBasedSignatureEstimation ()
-        : FeatureFromNormals<PointT, PointNT, PointFeature> ()
-      {
-      }
+  /** \brief Setter method for the N' parameter - the number of columns to be taken from
+   * the matrix of DFT and DCT values that will be contained in the output feature
+   * vector \note This value directly influences the dimensions of the type of output
+   * points (PointFeature) \param[in] n_prime the number of columns from the matrix of
+   * DFT and DCT that will be contained in the output
+   */
+  inline void
+  setNPrime (std::size_t n_prime)
+  {
+    N_prime_ = n_prime;
+  }
 
-      /** \brief Setter method for the N parameter - the length of the columns used for the Discrete Fourier Transform. 
-        * \param[in] n the length of the columns used for the Discrete Fourier Transform. 
-        */
-      inline void
-      setN (std::size_t n) { N_ = n; }
+  /** \brief Returns the N' parameter - the number of rows to be taken from the matrix
+   * of DFT and DCT values that will be contained in the output feature vector \note
+   * This value directly influences the dimensions of the type of output points
+   * (PointFeature)
+   */
+  inline std::size_t
+  getNPrime ()
+  {
+    return N_prime_;
+  }
 
-      /** \brief Returns the N parameter - the length of the columns used for the Discrete Fourier Transform. */
-      inline std::size_t
-      getN () { return N_; }
+  /** \brief Setter method for the M' parameter - the number of rows to be taken from
+   * the matrix of DFT and DCT values that will be contained in the output feature
+   * vector \note This value directly influences the dimensions of the type of output
+   * points (PointFeature) \param[in] m_prime the number of rows from the matrix of DFT
+   * and DCT that will be contained in the output
+   */
+  inline void
+  setMPrime (std::size_t m_prime)
+  {
+    M_prime_ = m_prime;
+  }
 
-      /** \brief Setter method for the M parameter - the length of the rows used for the Discrete Cosine Transform.
-        * \param[in] m the length of the rows used for the Discrete Cosine Transform.
-        */
-      inline void
-      setM (std::size_t m) { M_ = m; }
+  /** \brief Returns the M' parameter - the number of rows to be taken from the matrix
+   * of DFT and DCT values that will be contained in the output feature vector \note
+   * This value directly influences the dimensions of the type of output points
+   * (PointFeature)
+   */
+  inline std::size_t
+  getMPrime ()
+  {
+    return M_prime_;
+  }
 
-      /** \brief Returns the M parameter - the length of the rows used for the Discrete Cosine Transform */
-      inline std::size_t
-      getM () { return M_; }
+  /** \brief Setter method for the scale parameter - used to determine the radius of the
+   * sampling disc around the point of interest - linked to the smoothing scale of the
+   * input cloud
+   */
+  inline void
+  setScale (float scale)
+  {
+    scale_h_ = scale;
+  }
 
-      /** \brief Setter method for the N' parameter - the number of columns to be taken from the matrix of DFT and DCT
-        * values that will be contained in the output feature vector
-        * \note This value directly influences the dimensions of the type of output points (PointFeature)
-        * \param[in] n_prime the number of columns from the matrix of DFT and DCT that will be contained in the output
-        */
-      inline void
-      setNPrime (std::size_t n_prime) { N_prime_ = n_prime; }
+  /** \brief Returns the scale parameter - used to determine the radius of the sampling
+   * disc around the point of interest - linked to the smoothing scale of the input
+   * cloud
+   */
+  inline float
+  getScale ()
+  {
+    return scale_h_;
+  }
 
-      /** \brief Returns the N' parameter - the number of rows to be taken from the matrix of DFT and DCT
-        * values that will be contained in the output feature vector
-        * \note This value directly influences the dimensions of the type of output points (PointFeature)
-        */
-      inline std::size_t
-      getNPrime () { return N_prime_; }
+protected:
+  void
+  computeFeature (FeatureCloud& output) override;
 
-      /** \brief Setter method for the M' parameter - the number of rows to be taken from the matrix of DFT and DCT
-        * values that will be contained in the output feature vector
-        * \note This value directly influences the dimensions of the type of output points (PointFeature)
-        * \param[in] m_prime the number of rows from the matrix of DFT and DCT that will be contained in the output
-        */
-      inline void
-      setMPrime (std::size_t m_prime) { M_prime_ = m_prime; }
-
-      /** \brief Returns the M' parameter - the number of rows to be taken from the matrix of DFT and DCT
-        * values that will be contained in the output feature vector
-        * \note This value directly influences the dimensions of the type of output points (PointFeature)
-        */
-      inline std::size_t
-      getMPrime () { return M_prime_; }
-
-      /** \brief Setter method for the scale parameter - used to determine the radius of the sampling disc around the
-        * point of interest - linked to the smoothing scale of the input cloud
-        */
-      inline void
-      setScale (float scale) { scale_h_ = scale; }
-
-      /** \brief Returns the scale parameter - used to determine the radius of the sampling disc around the
-        * point of interest - linked to the smoothing scale of the input cloud
-        */
-      inline float
-      getScale () { return scale_h_; }
-
-
-    protected:
-      void
-      computeFeature (FeatureCloud &output) override;
-
-    private:
-      float scale_h_{};
-      std::size_t N_{36}, M_{8}, N_prime_{4}, M_prime_{3};
-  };
-}
+private:
+  float scale_h_{};
+  std::size_t N_{36}, M_{8}, N_prime_{4}, M_prime_{3};
+};
+} // namespace pcl
 
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/features/impl/normal_based_signature.hpp>

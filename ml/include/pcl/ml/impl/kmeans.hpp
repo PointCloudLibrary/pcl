@@ -41,11 +41,11 @@
 
 #include <pcl/ml/kmeans.h>
 
-//#include <pcl/common/io.h>
+// #include <pcl/common/io.h>
 
-//#include <stdio.h>
-//#include <stdlib.h>
-//#include <time.h>
+// #include <stdio.h>
+// #include <stdlib.h>
+// #include <time.h>
 
 namespace pcl {
 template <typename PointT>

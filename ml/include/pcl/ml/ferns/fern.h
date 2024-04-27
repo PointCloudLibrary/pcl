@@ -56,7 +56,7 @@ public:
    * \param num_of_decisions the number of decisions taken to access the nodes
    */
   void
-  initialize(const std::size_t num_of_decisions)
+  initialize (const std::size_t num_of_decisions)
   {
     num_of_decisions_ = num_of_decisions;
     features_.resize(num_of_decisions_);
@@ -66,14 +66,14 @@ public:
 
   /** Returns the number of nodes the Fern has. */
   inline std::size_t
-  getNumOfNodes()
+  getNumOfNodes ()
   {
     return 0x1U << num_of_decisions_;
   }
 
   /** Returns the number of features the Fern has. */
   inline std::size_t
-  getNumOfFeatures()
+  getNumOfFeatures ()
   {
     return num_of_decisions_;
   }
@@ -83,7 +83,7 @@ public:
    * \param[out] stream the destination for the serialization
    */
   void
-  serialize(::std::ostream& stream) const
+  serialize (::std::ostream& stream) const
   {
     // const int tmp_value = static_cast<int> (num_of_decisions_);
     // stream.write (reinterpret_cast<char*> (&tmp_value), sizeof (tmp_value));
@@ -108,7 +108,7 @@ public:
    * \param[in] stream the source for the deserialization
    */
   void
-  deserialize(::std::istream& stream)
+  deserialize (::std::istream& stream)
   {
     stream.read(reinterpret_cast<char*>(&num_of_decisions_), sizeof(num_of_decisions_));
 
@@ -154,7 +154,7 @@ public:
    * \param feature_index the index of the feature to access
    */
   inline FeatureType&
-  accessFeature(const std::size_t feature_index)
+  accessFeature (const std::size_t feature_index)
   {
     return features_[feature_index];
   }
@@ -164,7 +164,7 @@ public:
    * \param feature_index the index of the feature to access
    */
   inline const FeatureType&
-  accessFeature(const std::size_t feature_index) const
+  accessFeature (const std::size_t feature_index) const
   {
     return features_[feature_index];
   }
@@ -174,7 +174,7 @@ public:
    * \param threshold_index the index of the threshold to access
    */
   inline float&
-  accessThreshold(const std::size_t threshold_index)
+  accessThreshold (const std::size_t threshold_index)
   {
     return thresholds_[threshold_index];
   }
@@ -184,7 +184,7 @@ public:
    * \param threshold_index the index of the threshold to access
    */
   inline const float&
-  accessThreshold(const std::size_t threshold_index) const
+  accessThreshold (const std::size_t threshold_index) const
   {
     return thresholds_[threshold_index];
   }

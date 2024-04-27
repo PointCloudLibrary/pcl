@@ -39,208 +39,218 @@
 
 #include <pcl/filters/filter.h>
 
-namespace pcl
-{
-  /** \brief Helper functor structure for copying data between an Eigen::VectorXf and a PointT. */
-  template <typename PointT>
-  struct xNdCopyEigenPointFunctor
+namespace pcl {
+/** \brief Helper functor structure for copying data between an Eigen::VectorXf and a
+ * PointT. */
+template <typename PointT>
+struct xNdCopyEigenPointFunctor {
+  using Pod = typename traits::POD<PointT>::type;
+
+  xNdCopyEigenPointFunctor(const Eigen::VectorXf& p1, PointT& p2)
+  : p1_(p1), p2_(reinterpret_cast<Pod&>(p2))
+  {}
+
+  template <typename Key>
+  inline void
+  operator()()
   {
-    using Pod = typename traits::POD<PointT>::type;
-    
-    xNdCopyEigenPointFunctor (const Eigen::VectorXf &p1, PointT &p2)
-      : p1_ (p1),
-        p2_ (reinterpret_cast<Pod&>(p2))
-        { }
+    // boost::fusion::at_key<Key> (p2_) = p1_[f_idx_++];
+    using T = typename pcl::traits::datatype<PointT, Key>::type;
+    std::uint8_t* data_ptr =
+        reinterpret_cast<std::uint8_t*>(&p2_) + pcl::traits::offset<PointT, Key>::value;
+    *reinterpret_cast<T*>(data_ptr) = static_cast<T>(p1_[f_idx_++]);
+  }
 
-    template<typename Key> inline void operator() ()
-    {
-      //boost::fusion::at_key<Key> (p2_) = p1_[f_idx_++];
-      using T = typename pcl::traits::datatype<PointT, Key>::type;
-      std::uint8_t* data_ptr = reinterpret_cast<std::uint8_t*>(&p2_) + pcl::traits::offset<PointT, Key>::value;
-      *reinterpret_cast<T*>(data_ptr) = static_cast<T> (p1_[f_idx_++]);
-    }
+private:
+  const Eigen::VectorXf& p1_;
+  Pod& p2_;
+  int f_idx_{0};
+};
 
-    private:
-      const Eigen::VectorXf &p1_;
-      Pod &p2_;
-      int f_idx_{0};
+/** \brief Helper functor structure for copying data between an Eigen::VectorXf and a
+ * PointT. */
+template <typename PointT>
+struct xNdCopyPointEigenFunctor {
+  using Pod = typename traits::POD<PointT>::type;
+
+  xNdCopyPointEigenFunctor(const PointT& p1, Eigen::VectorXf& p2)
+  : p1_(reinterpret_cast<const Pod&>(p1)), p2_(p2)
+  {}
+
+  template <typename Key>
+  inline void
+  operator()()
+  {
+    // p2_[f_idx_++] = boost::fusion::at_key<Key> (p1_);
+    using T = typename pcl::traits::datatype<PointT, Key>::type;
+    const std::uint8_t* data_ptr = reinterpret_cast<const std::uint8_t*>(&p1_) +
+                                   pcl::traits::offset<PointT, Key>::value;
+    p2_[f_idx_++] = static_cast<float>(*reinterpret_cast<const T*>(data_ptr));
+  }
+
+private:
+  const Pod& p1_;
+  Eigen::VectorXf& p2_;
+  int f_idx_{0};
+};
+
+/** \brief ApproximateVoxelGrid assembles a local 3D grid over a given PointCloud, and
+ * downsamples + filters the data. Thus, this is similar to the \ref VoxelGrid filter.
+ * This class works best if points that are stored in memory next to each other (in the
+ * input point cloud), are also somewhat close in 3D euclidean space (this is for
+ * example usually the case for organized point clouds). If the points have no storage
+ * order (e.g. in synthetic, randomly generated point clouds), this class will give very
+ * poor results, and \ref VoxelGrid should be used instead. \author James Bowman, Radu
+ * B. Rusu \ingroup filters
+ */
+template <typename PointT>
+class ApproximateVoxelGrid : public Filter<PointT> {
+  using Filter<PointT>::filter_name_;
+  using Filter<PointT>::getClassName;
+  using Filter<PointT>::input_;
+  using Filter<PointT>::indices_;
+
+  using PointCloud = typename Filter<PointT>::PointCloud;
+  using PointCloudPtr = typename PointCloud::Ptr;
+  using PointCloudConstPtr = typename PointCloud::ConstPtr;
+
+private:
+  struct he {
+    he() = default;
+    int ix{0}, iy{0}, iz{0};
+    int count{0};
+    Eigen::VectorXf centroid;
   };
 
-  /** \brief Helper functor structure for copying data between an Eigen::VectorXf and a PointT. */
-  template <typename PointT>
-  struct xNdCopyPointEigenFunctor
+public:
+  using Ptr = shared_ptr<ApproximateVoxelGrid<PointT>>;
+  using ConstPtr = shared_ptr<const ApproximateVoxelGrid<PointT>>;
+
+  /** \brief Empty constructor. */
+  ApproximateVoxelGrid()
+  : pcl::Filter<PointT>()
+  , leaf_size_(Eigen::Vector3f::Ones())
+  , inverse_leaf_size_(Eigen::Array3f::Ones())
+  ,
+
+  history_(new he[histsize_])
   {
-    using Pod = typename traits::POD<PointT>::type;
-    
-    xNdCopyPointEigenFunctor (const PointT &p1, Eigen::VectorXf &p2)
-      : p1_ (reinterpret_cast<const Pod&>(p1)), p2_ (p2) { }
+    filter_name_ = "ApproximateVoxelGrid";
+  }
 
-    template<typename Key> inline void operator() ()
-    {
-      //p2_[f_idx_++] = boost::fusion::at_key<Key> (p1_);
-      using T = typename pcl::traits::datatype<PointT, Key>::type;
-      const std::uint8_t* data_ptr = reinterpret_cast<const std::uint8_t*>(&p1_) + pcl::traits::offset<PointT, Key>::value;
-      p2_[f_idx_++] = static_cast<float> (*reinterpret_cast<const T*>(data_ptr));
-    }
-
-    private:
-      const Pod &p1_;
-      Eigen::VectorXf &p2_;
-      int f_idx_{0};
-  };
-
-  /** \brief ApproximateVoxelGrid assembles a local 3D grid over a given PointCloud, and downsamples + filters the data.
-    * Thus, this is similar to the \ref VoxelGrid filter.
-    * This class works best if points that are stored in memory next to each other (in the input point cloud), are also somewhat close in 3D euclidean space (this is for example usually the case for organized point clouds). If the points have no storage order (e.g. in synthetic, randomly generated point clouds), this class will give very poor results, and \ref VoxelGrid should be used instead.
-    * \author James Bowman, Radu B. Rusu
-    * \ingroup filters
-    */
-  template <typename PointT>
-  class ApproximateVoxelGrid: public Filter<PointT>
+  /** \brief Copy constructor.
+   * \param[in] src the approximate voxel grid to copy into this.
+   */
+  ApproximateVoxelGrid(const ApproximateVoxelGrid& src)
+  : pcl::Filter<PointT>()
+  , leaf_size_(src.leaf_size_)
+  , inverse_leaf_size_(src.inverse_leaf_size_)
+  , downsample_all_data_(src.downsample_all_data_)
+  , histsize_(src.histsize_)
+  , history_()
   {
-    using Filter<PointT>::filter_name_;
-    using Filter<PointT>::getClassName;
-    using Filter<PointT>::input_;
-    using Filter<PointT>::indices_;
+    history_ = new he[histsize_];
+    for (std::size_t i = 0; i < histsize_; i++)
+      history_[i] = src.history_[i];
+  }
 
-    using PointCloud = typename Filter<PointT>::PointCloud;
-    using PointCloudPtr = typename PointCloud::Ptr;
-    using PointCloudConstPtr = typename PointCloud::ConstPtr;
+  /** \brief Destructor.
+   */
+  ~ApproximateVoxelGrid() override { delete[] history_; }
 
-    private:
-      struct he
-      {
-        he () = default;
-        int ix{0}, iy{0}, iz{0};
-        int count{0};
-        Eigen::VectorXf centroid;
-      };
+  /** \brief Copy operator.
+   * \param[in] src the approximate voxel grid to copy into this.
+   */
+  inline ApproximateVoxelGrid&
+  operator=(const ApproximateVoxelGrid& src)
+  {
+    leaf_size_ = src.leaf_size_;
+    inverse_leaf_size_ = src.inverse_leaf_size_;
+    downsample_all_data_ = src.downsample_all_data_;
+    histsize_ = src.histsize_;
+    history_ = new he[histsize_];
+    for (std::size_t i = 0; i < histsize_; i++)
+      history_[i] = src.history_[i];
+    return (*this);
+  }
 
-    public:
+  /** \brief Set the voxel grid leaf size.
+   * \param[in] leaf_size the voxel grid leaf size
+   */
+  inline void
+  setLeafSize (const Eigen::Vector3f& leaf_size)
+  {
+    leaf_size_ = leaf_size;
+    inverse_leaf_size_ = Eigen::Array3f::Ones() / leaf_size_.array();
+  }
 
-      using Ptr = shared_ptr<ApproximateVoxelGrid<PointT> >;
-      using ConstPtr = shared_ptr<const ApproximateVoxelGrid<PointT> >;
+  /** \brief Set the voxel grid leaf size.
+   * \param[in] lx the leaf size for X
+   * \param[in] ly the leaf size for Y
+   * \param[in] lz the leaf size for Z
+   */
+  inline void
+  setLeafSize (float lx, float ly, float lz)
+  {
+    setLeafSize(Eigen::Vector3f(lx, ly, lz));
+  }
 
+  /** \brief Get the voxel grid leaf size. */
+  inline Eigen::Vector3f
+  getLeafSize () const
+  {
+    return (leaf_size_);
+  }
 
-      /** \brief Empty constructor. */
-      ApproximateVoxelGrid () : 
-        pcl::Filter<PointT> (),
-        leaf_size_ (Eigen::Vector3f::Ones ()),
-        inverse_leaf_size_ (Eigen::Array3f::Ones ()),
-        
-        history_ (new he[histsize_])
-      {
-        filter_name_ = "ApproximateVoxelGrid";
-      }
+  /** \brief Set to true if all fields need to be downsampled, or false if just XYZ.
+   * \param downsample the new value (true/false)
+   */
+  inline void
+  setDownsampleAllData (bool downsample)
+  {
+    downsample_all_data_ = downsample;
+  }
 
-      /** \brief Copy constructor. 
-        * \param[in] src the approximate voxel grid to copy into this. 
-        */
-      ApproximateVoxelGrid (const ApproximateVoxelGrid &src) : 
-        pcl::Filter<PointT> (),
-        leaf_size_ (src.leaf_size_),
-        inverse_leaf_size_ (src.inverse_leaf_size_),
-        downsample_all_data_ (src.downsample_all_data_), 
-        histsize_ (src.histsize_),
-        history_ ()
-      {
-        history_ = new he[histsize_];
-        for (std::size_t i = 0; i < histsize_; i++)
-          history_[i] = src.history_[i];
-      }
+  /** \brief Get the state of the internal downsampling parameter (true if
+   * all fields need to be downsampled, false if just XYZ).
+   */
+  inline bool
+  getDownsampleAllData () const
+  {
+    return (downsample_all_data_);
+  }
 
+protected:
+  /** \brief The size of a leaf. */
+  Eigen::Vector3f leaf_size_;
 
-      /** \brief Destructor.
-        */
-      ~ApproximateVoxelGrid () override
-      {
-        delete [] history_;
-      }
+  /** \brief Compute 1/leaf_size_ to avoid division later */
+  Eigen::Array3f inverse_leaf_size_;
 
+  /** \brief Set to true if all fields need to be downsampled, or false if just XYZ. */
+  bool downsample_all_data_{true};
 
-      /** \brief Copy operator. 
-        * \param[in] src the approximate voxel grid to copy into this. 
-        */
-      inline ApproximateVoxelGrid& 
-      operator = (const ApproximateVoxelGrid &src)
-      {
-        leaf_size_ = src.leaf_size_;
-        inverse_leaf_size_ = src.inverse_leaf_size_;
-        downsample_all_data_ = src.downsample_all_data_;
-        histsize_ = src.histsize_;
-        history_ = new he[histsize_];
-        for (std::size_t i = 0; i < histsize_; i++)
-          history_[i] = src.history_[i];
-        return (*this);
-      }
+  /** \brief history buffer size, power of 2 */
+  std::size_t histsize_{512};
 
-      /** \brief Set the voxel grid leaf size.
-        * \param[in] leaf_size the voxel grid leaf size
-        */
-      inline void 
-      setLeafSize (const Eigen::Vector3f &leaf_size) 
-      { 
-        leaf_size_ = leaf_size; 
-        inverse_leaf_size_ = Eigen::Array3f::Ones () / leaf_size_.array ();
-      }
+  /** \brief history buffer */
+  struct he* history_;
 
-      /** \brief Set the voxel grid leaf size.
-        * \param[in] lx the leaf size for X
-        * \param[in] ly the leaf size for Y
-        * \param[in] lz the leaf size for Z
-        */
-      inline void
-      setLeafSize (float lx, float ly, float lz)
-      {
-        setLeafSize (Eigen::Vector3f (lx, ly, lz));
-      }
+  using FieldList = typename pcl::traits::fieldList<PointT>::type;
 
-      /** \brief Get the voxel grid leaf size. */
-      inline Eigen::Vector3f 
-      getLeafSize () const { return (leaf_size_); }
+  /** \brief Downsample a Point Cloud using a voxelized grid approach
+   * \param output the resultant point cloud message
+   */
+  void
+  applyFilter (PointCloud& output) override;
 
-      /** \brief Set to true if all fields need to be downsampled, or false if just XYZ.
-        * \param downsample the new value (true/false)
-        */
-      inline void 
-      setDownsampleAllData (bool downsample) { downsample_all_data_ = downsample; }
-
-      /** \brief Get the state of the internal downsampling parameter (true if
-        * all fields need to be downsampled, false if just XYZ). 
-        */
-      inline bool 
-      getDownsampleAllData () const { return (downsample_all_data_); }
-
-    protected:
-      /** \brief The size of a leaf. */
-      Eigen::Vector3f leaf_size_;
-
-      /** \brief Compute 1/leaf_size_ to avoid division later */ 
-      Eigen::Array3f inverse_leaf_size_;
-
-      /** \brief Set to true if all fields need to be downsampled, or false if just XYZ. */
-      bool downsample_all_data_{true};
-
-      /** \brief history buffer size, power of 2 */
-      std::size_t histsize_{512};
-
-      /** \brief history buffer */
-      struct he* history_;
-
-      using FieldList = typename pcl::traits::fieldList<PointT>::type;
-
-      /** \brief Downsample a Point Cloud using a voxelized grid approach
-        * \param output the resultant point cloud message
-        */
-      void 
-      applyFilter (PointCloud &output) override;
-
-      /** \brief Write a single point from the hash to the output cloud
-        */
-      void 
-      flush (PointCloud &output, std::size_t op, he *hhe, int rgba_index, int centroid_size);
-  };
-}
+  /** \brief Write a single point from the hash to the output cloud
+   */
+  void
+  flush (
+      PointCloud& output, std::size_t op, he* hhe, int rgba_index, int centroid_size);
+};
+} // namespace pcl
 
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/filters/impl/approximate_voxel_grid.hpp>

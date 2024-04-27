@@ -90,15 +90,15 @@ public:
    * set of remaining correspondences
    */
   inline void
-  getRemainingCorrespondences(const pcl::Correspondences& original_correspondences,
-                              pcl::Correspondences& remaining_correspondences);
+  getRemainingCorrespondences (const pcl::Correspondences& original_correspondences,
+                               pcl::Correspondences& remaining_correspondences);
 
   /** \brief Sets the focal length parameters of the target camera.
    * \param[in] fx the focal length in pixels along the x-axis of the image
    * \param[in] fy the focal length in pixels along the y-axis of the image
    */
   inline void
-  setFocalLengths(const float fx, const float fy)
+  setFocalLengths (const float fx, const float fy)
   {
     projection_matrix_(0, 0) = fx;
     projection_matrix_(1, 1) = fy;
@@ -109,7 +109,7 @@ public:
    * \param[out] fy the focal length in pixels along the y-axis of the image
    */
   inline void
-  getFocalLengths(float& fx, float& fy) const
+  getFocalLengths (float& fx, float& fy) const
   {
     fx = projection_matrix_(0, 0);
     fy = projection_matrix_(1, 1);
@@ -120,7 +120,7 @@ public:
    * \param[in] cy the y-coordinate of the camera center
    */
   inline void
-  setCameraCenters(const float cx, const float cy)
+  setCameraCenters (const float cx, const float cy)
   {
     projection_matrix_(0, 2) = cx;
     projection_matrix_(1, 2) = cy;
@@ -131,7 +131,7 @@ public:
    * \param[out] cy the y-coordinate of the camera center
    */
   inline void
-  getCameraCenters(float& cx, float& cy) const
+  getCameraCenters (float& cx, float& cy) const
   {
     cx = projection_matrix_(0, 2);
     cy = projection_matrix_(1, 2);
@@ -142,7 +142,7 @@ protected:
    * \param[out] correspondences the set of resultant correspondences.
    */
   inline void
-  applyRejection(pcl::Correspondences& correspondences)
+  applyRejection (pcl::Correspondences& correspondences)
   {
     getRemainingCorrespondences(*input_correspondences_, correspondences);
   }

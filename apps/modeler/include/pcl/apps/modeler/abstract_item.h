@@ -55,26 +55,26 @@ public:
   AbstractItem();
 
   void
-  showContextMenu(const QPoint* position);
+  showContextMenu (const QPoint* position);
 
   virtual std::string
-  getItemName() const = 0;
+  getItemName () const = 0;
 
   void
-  showPropertyEditor();
+  showPropertyEditor ();
 
 protected:
   Ui::MainWindow*
-  ui() const;
+  ui () const;
 
   virtual void
-  prepareContextMenu(QMenu* menu) const = 0;
+  prepareContextMenu (QMenu* menu) const = 0;
 
   virtual void
-  prepareProperties(ParameterDialog* parameter_dialog) = 0;
+  prepareProperties (ParameterDialog* parameter_dialog) = 0;
 
   virtual void
-  setProperties() = 0;
+  setProperties () = 0;
 };
 
 } // namespace modeler

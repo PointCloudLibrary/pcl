@@ -43,12 +43,12 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-seededHueSegmentation(const pcl::PointCloud<pcl::PointXYZRGB>::Ptr& host_cloud_,
-                      const pcl::gpu::Octree::Ptr& tree,
-                      float tolerance,
-                      PointIndices& indices_in,
-                      PointIndices& indices_out,
-                      float delta_hue)
+seededHueSegmentation (const pcl::PointCloud<pcl::PointXYZRGB>::Ptr& host_cloud_,
+                       const pcl::gpu::Octree::Ptr& tree,
+                       float tolerance,
+                       PointIndices& indices_in,
+                       PointIndices& indices_out,
+                       float delta_hue)
 {
 
   // Create a bool vector of processed point indices, and initialize it to false

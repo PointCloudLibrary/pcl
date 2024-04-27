@@ -33,139 +33,134 @@
  *
  */
 
+#include <pcl/common/io.h>
 #include <pcl/test/gtest.h>
 #include <pcl/pcl_config.h>
 #include <pcl/pcl_tests.h>
 #include <pcl/point_cloud.h>
-#include <pcl/common/io.h>
 
 using namespace pcl;
 using namespace pcl::test;
 
-pcl::PointCloud<pcl::PointXYZ> cloud (64,48);
+pcl::PointCloud<pcl::PointXYZ> cloud(64, 48);
 int top = 2, bottom = 2, left = 2, right = 2;
-const pcl::PointXYZ constant (0, 0, 0);
+const pcl::PointXYZ constant(0, 0, 0);
 
-TEST (CopyPointCloud, constant)
+TEST(CopyPointCloud, constant)
 {
-  pcl::PointCloud<pcl::PointXYZ> dst (cloud.width + left + right, cloud.height + top + bottom);
-  pcl::copyPointCloud (cloud, dst, top, bottom, left, right, pcl::BORDER_CONSTANT, constant);
+  pcl::PointCloud<pcl::PointXYZ> dst(cloud.width + left + right,
+                                     cloud.height + top + bottom);
+  pcl::copyPointCloud(
+      cloud, dst, top, bottom, left, right, pcl::BORDER_CONSTANT, constant);
 
   for (int j = 0; j < top; ++j)
     for (std::uint32_t i = 0; i < dst.width; ++i)
-      EXPECT_XYZ_EQ (dst (i,j), constant);
+      EXPECT_XYZ_EQ(dst(i, j), constant);
 
-  for (unsigned int j = top; j < cloud.height+top; ++j)
-  {
-    for (std::uint32_t i = 0; i < dst.width; ++i)
-    {
-      if (static_cast<int> (i) < left)
-        EXPECT_XYZ_EQ (dst (i,j), constant);
-      else
-      {
+  for (unsigned int j = top; j < cloud.height + top; ++j) {
+    for (std::uint32_t i = 0; i < dst.width; ++i) {
+      if (static_cast<int>(i) < left)
+        EXPECT_XYZ_EQ(dst(i, j), constant);
+      else {
         if (i >= (cloud.width + left))
-          EXPECT_XYZ_EQ (dst (i,j), constant);
+          EXPECT_XYZ_EQ(dst(i, j), constant);
         else
-          EXPECT_XYZ_EQ (dst (i,j), cloud (i - left, j -top));
+          EXPECT_XYZ_EQ(dst(i, j), cloud(i - left, j - top));
       }
     }
   }
 
-  for (std::uint32_t j = cloud.height+top; j < dst.height; ++j)
+  for (std::uint32_t j = cloud.height + top; j < dst.height; ++j)
     for (std::uint32_t i = 0; i < dst.width; ++i)
-      EXPECT_XYZ_EQ (dst (i,j), constant);
+      EXPECT_XYZ_EQ(dst(i, j), constant);
 }
 
-TEST (CopyPointCloud, replicate)
+TEST(CopyPointCloud, replicate)
 {
-  pcl::PointCloud<pcl::PointXYZ> dst (cloud.width + left + right, cloud.height + top + bottom);
-  pcl::copyPointCloud (cloud, dst, top, bottom, left, right, pcl::BORDER_REPLICATE, constant);
+  pcl::PointCloud<pcl::PointXYZ> dst(cloud.width + left + right,
+                                     cloud.height + top + bottom);
+  pcl::copyPointCloud(
+      cloud, dst, top, bottom, left, right, pcl::BORDER_REPLICATE, constant);
 
-  for (int j = 0; j < top; ++j)
-  {
+  for (int j = 0; j < top; ++j) {
     for (int i = 0; i < left; ++i)
-      EXPECT_XYZ_EQ (dst (i,j), cloud (0,0));
-    for (unsigned int i = left; i < cloud.width+left; ++i)
-      EXPECT_XYZ_EQ (dst (i,j), cloud (i-left,0));
-    for (std::uint32_t i = cloud.width+left; i < dst.width; ++i)
-      EXPECT_XYZ_EQ (dst (i,j), cloud (cloud.width-1,0));
+      EXPECT_XYZ_EQ(dst(i, j), cloud(0, 0));
+    for (unsigned int i = left; i < cloud.width + left; ++i)
+      EXPECT_XYZ_EQ(dst(i, j), cloud(i - left, 0));
+    for (std::uint32_t i = cloud.width + left; i < dst.width; ++i)
+      EXPECT_XYZ_EQ(dst(i, j), cloud(cloud.width - 1, 0));
   }
 
-  for (unsigned int j = top; j < cloud.height+top; ++j)
-  {
-    for (std::uint32_t i = 0; i < dst.width; ++i)
-    {
-      if (static_cast<int> (i) < left)
-        EXPECT_XYZ_EQ (dst (i,j), cloud (0,j-top));
-      else
-      {
+  for (unsigned int j = top; j < cloud.height + top; ++j) {
+    for (std::uint32_t i = 0; i < dst.width; ++i) {
+      if (static_cast<int>(i) < left)
+        EXPECT_XYZ_EQ(dst(i, j), cloud(0, j - top));
+      else {
         if (i >= (cloud.width + left))
-          EXPECT_XYZ_EQ (dst (i,j), cloud (cloud.width-1,j-top));
+          EXPECT_XYZ_EQ(dst(i, j), cloud(cloud.width - 1, j - top));
         else
-          EXPECT_XYZ_EQ (dst (i,j), cloud (i - left, j -top));
+          EXPECT_XYZ_EQ(dst(i, j), cloud(i - left, j - top));
       }
     }
   }
 
-  for (std::uint32_t j = cloud.height+top; j < dst.height; ++j)
-  {
+  for (std::uint32_t j = cloud.height + top; j < dst.height; ++j) {
     for (int i = 0; i < left; ++i)
-      EXPECT_XYZ_EQ (dst (i,j), cloud (0,cloud.height-1));
-    for (unsigned int i = left; i < cloud.width+left; ++i)
-      EXPECT_XYZ_EQ (dst (i,j), cloud (i-left,cloud.height-1));
-    for (std::uint32_t i = cloud.width+left; i < dst.width; ++i)
-      EXPECT_XYZ_EQ (dst (i,j), cloud (cloud.width-1,cloud.height-1));
+      EXPECT_XYZ_EQ(dst(i, j), cloud(0, cloud.height - 1));
+    for (unsigned int i = left; i < cloud.width + left; ++i)
+      EXPECT_XYZ_EQ(dst(i, j), cloud(i - left, cloud.height - 1));
+    for (std::uint32_t i = cloud.width + left; i < dst.width; ++i)
+      EXPECT_XYZ_EQ(dst(i, j), cloud(cloud.width - 1, cloud.height - 1));
   }
 }
 
-TEST (CopyPointCloud, reflect)
+TEST(CopyPointCloud, reflect)
 {
-  pcl::PointCloud<pcl::PointXYZ> dst (cloud.width + left + right, cloud.height + top + bottom);
-  pcl::copyPointCloud (cloud, dst, top, bottom, left, right, pcl::BORDER_REFLECT, constant);
+  pcl::PointCloud<pcl::PointXYZ> dst(cloud.width + left + right,
+                                     cloud.height + top + bottom);
+  pcl::copyPointCloud(
+      cloud, dst, top, bottom, left, right, pcl::BORDER_REFLECT, constant);
 
-  for (int j = 0, k = top-1; j < top; ++j,--k)
-  {
-    for (int i = 0, l = left-1; i < left; ++i, --l)
-      EXPECT_XYZ_EQ (dst (i,j), cloud (l, k));
-
-    for (unsigned int i = left; i < cloud.width+left; ++i)
-      EXPECT_XYZ_EQ (dst (i,j), cloud (i-left,k));
-
-    for (int i = cloud.width+left, l = cloud.width-left; i < left; ++i, --l)
-      EXPECT_XYZ_EQ (dst (i,j), cloud (l, k));
-  }
-
-  for (unsigned int j = top; j < cloud.height+top; ++j)
-  {
-    for (int i = 0, l = left-1; i < left; ++i, --l)
-      EXPECT_XYZ_EQ (dst (i,j), cloud (l, j-top));
+  for (int j = 0, k = top - 1; j < top; ++j, --k) {
+    for (int i = 0, l = left - 1; i < left; ++i, --l)
+      EXPECT_XYZ_EQ(dst(i, j), cloud(l, k));
 
     for (unsigned int i = left; i < cloud.width + left; ++i)
-      EXPECT_XYZ_EQ (dst (i,j), cloud (i-left,j-top));
+      EXPECT_XYZ_EQ(dst(i, j), cloud(i - left, k));
 
-    for (int i = cloud.width+left, l = cloud.width-left; i < left; ++i, --l)
-      EXPECT_XYZ_EQ (dst (i,j), cloud (l, j-top));
+    for (int i = cloud.width + left, l = cloud.width - left; i < left; ++i, --l)
+      EXPECT_XYZ_EQ(dst(i, j), cloud(l, k));
   }
 
-  for (int j = cloud.height+top, k = cloud.height-1; j < top; ++j,--k)
-  {
-    for (int i = 0, l = left-1; i < left; ++i, --l)
-      EXPECT_XYZ_EQ (dst (i,j), cloud (l, k));
+  for (unsigned int j = top; j < cloud.height + top; ++j) {
+    for (int i = 0, l = left - 1; i < left; ++i, --l)
+      EXPECT_XYZ_EQ(dst(i, j), cloud(l, j - top));
 
-    for (unsigned int i = left; i < cloud.width+left; ++i)
-      EXPECT_XYZ_EQ (dst (i,j), cloud (i-left,k));
+    for (unsigned int i = left; i < cloud.width + left; ++i)
+      EXPECT_XYZ_EQ(dst(i, j), cloud(i - left, j - top));
 
-    for (int i = cloud.width+left, l = cloud.width-left; i < left; ++i, --l)
-      EXPECT_XYZ_EQ (dst (i,j), cloud (l, k));
+    for (int i = cloud.width + left, l = cloud.width - left; i < left; ++i, --l)
+      EXPECT_XYZ_EQ(dst(i, j), cloud(l, j - top));
+  }
+
+  for (int j = cloud.height + top, k = cloud.height - 1; j < top; ++j, --k) {
+    for (int i = 0, l = left - 1; i < left; ++i, --l)
+      EXPECT_XYZ_EQ(dst(i, j), cloud(l, k));
+
+    for (unsigned int i = left; i < cloud.width + left; ++i)
+      EXPECT_XYZ_EQ(dst(i, j), cloud(i - left, k));
+
+    for (int i = cloud.width + left, l = cloud.width - left; i < left; ++i, --l)
+      EXPECT_XYZ_EQ(dst(i, j), cloud(l, k));
   }
 }
 
 int
 main (int argc, char** argv)
 {
-  for (std::size_t i = 0, j = 10; i < cloud.size (); ++j, ++i)
-    cloud[i] = pcl::PointXYZ (j, j*10, j*100);
+  for (std::size_t i = 0, j = 10; i < cloud.size(); ++j, ++i)
+    cloud[i] = pcl::PointXYZ(j, j * 10, j * 100);
 
-  testing::InitGoogleTest (&argc, argv);
-  return (RUN_ALL_TESTS ());
+  testing::InitGoogleTest(&argc, argv);
+  return (RUN_ALL_TESTS());
 }

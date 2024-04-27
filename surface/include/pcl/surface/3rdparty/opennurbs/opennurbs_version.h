@@ -8,17 +8,15 @@
 // THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT EXPRESS OR IMPLIED WARRANTY.
 // ALL IMPLIED WARRANTIES OF FITNESS FOR ANY PARTICULAR PURPOSE AND OF
 // MERCHANTABILITY ARE HEREBY DISCLAIMED.
-//				
+//
 // For complete openNURBS copyright information see <http://www.opennurbs.org>.
 //
 ////////////////////////////////////////////////////////////////
 */
 
-
 #if !defined(OPENNURBS_VERSION_DEFINITION)
 #error Do NOT include opennurbs_version.h in your code.  Use ON::Version() instead.
 #endif
-
 
 // OpenNURBS users:
 //   Do not change OPENNURBS_VERSION or the OpenNURBS code

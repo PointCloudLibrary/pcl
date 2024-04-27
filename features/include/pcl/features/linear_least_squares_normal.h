@@ -40,103 +40,103 @@
 
 #include <pcl/features/feature.h>
 
-namespace pcl
-{
-  /** \brief Surface normal estimation on dense data using a least-squares estimation based on a first-order Taylor approximation.
-    * \author Stefan Holzer, Cedric Cagniart
-    */
-  template <typename PointInT, typename PointOutT>
-  class LinearLeastSquaresNormalEstimation : public Feature<PointInT, PointOutT>
+namespace pcl {
+/** \brief Surface normal estimation on dense data using a least-squares estimation
+ * based on a first-order Taylor approximation. \author Stefan Holzer, Cedric Cagniart
+ */
+template <typename PointInT, typename PointOutT>
+class LinearLeastSquaresNormalEstimation : public Feature<PointInT, PointOutT> {
+public:
+  using Ptr = shared_ptr<LinearLeastSquaresNormalEstimation<PointInT, PointOutT>>;
+  using ConstPtr =
+      shared_ptr<const LinearLeastSquaresNormalEstimation<PointInT, PointOutT>>;
+  using PointCloudIn = typename Feature<PointInT, PointOutT>::PointCloudIn;
+  using PointCloudOut = typename Feature<PointInT, PointOutT>::PointCloudOut;
+  using Feature<PointInT, PointOutT>::input_;
+  using Feature<PointInT, PointOutT>::feature_name_;
+  using Feature<PointInT, PointOutT>::tree_;
+  using Feature<PointInT, PointOutT>::k_;
+
+  /** \brief Constructor */
+  LinearLeastSquaresNormalEstimation()
   {
-    public:
-      using Ptr = shared_ptr<LinearLeastSquaresNormalEstimation<PointInT, PointOutT> >;
-      using ConstPtr = shared_ptr<const LinearLeastSquaresNormalEstimation<PointInT, PointOutT> >;
-      using PointCloudIn = typename Feature<PointInT, PointOutT>::PointCloudIn;
-      using PointCloudOut = typename Feature<PointInT, PointOutT>::PointCloudOut;
-      using Feature<PointInT, PointOutT>::input_;
-      using Feature<PointInT, PointOutT>::feature_name_;
-      using Feature<PointInT, PointOutT>::tree_;
-      using Feature<PointInT, PointOutT>::k_;
+    feature_name_ = "LinearLeastSquaresNormalEstimation";
+    tree_.reset();
+    k_ = 1;
+  }
 
-      /** \brief Constructor */
-      LinearLeastSquaresNormalEstimation ()
-      {
-          feature_name_ = "LinearLeastSquaresNormalEstimation";
-          tree_.reset ();
-          k_ = 1;
-      }
+  /** \brief Destructor */
+  ~LinearLeastSquaresNormalEstimation() override;
 
-      /** \brief Destructor */
-      ~LinearLeastSquaresNormalEstimation () override;
+  /** \brief Computes the normal at the specified position.
+   * \param[in] pos_x x position (pixel)
+   * \param[in] pos_y y position (pixel)
+   * \param[out] normal the output estimated normal
+   */
+  void
+  computePointNormal (const int pos_x, const int pos_y, PointOutT& normal);
 
-      /** \brief Computes the normal at the specified position. 
-        * \param[in] pos_x x position (pixel)
-        * \param[in] pos_y y position (pixel)
-        * \param[out] normal the output estimated normal 
-        */
-      void
-      computePointNormal (const int pos_x, const int pos_y, PointOutT &normal);
+  /** \brief Set the normal smoothing size
+   * \param[in] normal_smoothing_size factor which influences the size of the area used
+   * to smooth normals (depth dependent if useDepthDependentSmoothing is true)
+   */
+  void
+  setNormalSmoothingSize (float normal_smoothing_size)
+  {
+    normal_smoothing_size_ = normal_smoothing_size;
+  }
 
-      /** \brief Set the normal smoothing size
-        * \param[in] normal_smoothing_size factor which influences the size of the area used to smooth normals 
-        * (depth dependent if useDepthDependentSmoothing is true)
-        */
-      void
-      setNormalSmoothingSize (float normal_smoothing_size)
-      {
-        normal_smoothing_size_ = normal_smoothing_size;
-      }
+  /** \brief Set whether to use depth depending smoothing or not
+   * \param[in] use_depth_dependent_smoothing decides whether the smoothing is depth
+   * dependent
+   */
+  void
+  setDepthDependentSmoothing (bool use_depth_dependent_smoothing)
+  {
+    use_depth_dependent_smoothing_ = use_depth_dependent_smoothing;
+  }
 
-      /** \brief Set whether to use depth depending smoothing or not
-        * \param[in] use_depth_dependent_smoothing decides whether the smoothing is depth dependent
-        */
-      void
-      setDepthDependentSmoothing (bool use_depth_dependent_smoothing)
-      {
-        use_depth_dependent_smoothing_ = use_depth_dependent_smoothing;
-      }
+  /** \brief The depth change threshold for computing object borders
+   * \param[in] max_depth_change_factor the depth change threshold for computing object
+   * borders based on depth changes
+   */
+  void
+  setMaxDepthChangeFactor (float max_depth_change_factor)
+  {
+    max_depth_change_factor_ = max_depth_change_factor;
+  }
 
-      /** \brief The depth change threshold for computing object borders
-        * \param[in] max_depth_change_factor the depth change threshold for computing object borders based on 
-        * depth changes
-        */
-      void 
-      setMaxDepthChangeFactor (float max_depth_change_factor)
-      {
-        max_depth_change_factor_ = max_depth_change_factor;
-      }
+  /** \brief Provide a pointer to the input dataset (overwrites the
+   * PCLBase::setInputCloud method) \param[in] cloud the const boost shared pointer to a
+   * PointCloud message
+   */
+  inline void
+  setInputCloud (const typename PointCloudIn::ConstPtr& cloud) override
+  {
+    input_ = cloud;
+  }
 
-      /** \brief Provide a pointer to the input dataset (overwrites the PCLBase::setInputCloud method)
-        * \param[in] cloud the const boost shared pointer to a PointCloud message
-        */
-      inline void 
-      setInputCloud (const typename PointCloudIn::ConstPtr &cloud) override 
-      { 
-        input_ = cloud; 
-      }
+protected:
+  /** \brief Computes the normal for the complete cloud.
+   * \param[out] output the resultant normals
+   */
+  void
+  computeFeature (PointCloudOut& output) override;
 
-    protected:
-      /** \brief Computes the normal for the complete cloud. 
-        * \param[out] output the resultant normals
-        */
-      void 
-      computeFeature (PointCloudOut &output) override;
+private:
+  /** the threshold used to detect depth discontinuities */
+  // float distance_threshold_;
 
-    private:
+  /** \brief Smooth data based on depth (true/false). */
+  bool use_depth_dependent_smoothing_{false};
 
-      /** the threshold used to detect depth discontinuities */
-      //float distance_threshold_;
+  /** \brief Threshold for detecting depth discontinuities */
+  float max_depth_change_factor_{1.0f};
 
-      /** \brief Smooth data based on depth (true/false). */
-      bool use_depth_dependent_smoothing_{false};
-
-      /** \brief Threshold for detecting depth discontinuities */
-      float max_depth_change_factor_{1.0f};
-
-      /** \brief */
-      float normal_smoothing_size_{9.0f};
-  };
-}
+  /** \brief */
+  float normal_smoothing_size_{9.0f};
+};
+} // namespace pcl
 
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/features/impl/linear_least_squares_normal.hpp>

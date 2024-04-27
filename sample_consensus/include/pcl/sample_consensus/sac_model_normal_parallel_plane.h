@@ -40,183 +40,229 @@
 
 #pragma once
 
-#include <pcl/sample_consensus/sac_model_normal_plane.h>
 #include <pcl/sample_consensus/model_types.h>
+#include <pcl/sample_consensus/sac_model_normal_plane.h>
 #include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 
-namespace pcl
-{
-  /** \brief SampleConsensusModelNormalParallelPlane defines a model for 3D
-    * plane segmentation using additional surface normal constraints. Basically
-    * this means that checking for inliers will not only involve a "distance to
-    * model" criterion, but also an additional "maximum angular deviation"
-    * between the plane's normal and the inlier points normals. In addition,
-    * the plane <b>normal</b> must lie parallel to a user-specified axis.
-    * This means that the plane itself will lie perpendicular to that axis, similar to \link pcl::SampleConsensusModelPerpendicularPlane SACMODEL_PERPENDICULAR_PLANE \endlink.
-    *
-    * The model coefficients are defined as:
-    *   - \b a : the X coordinate of the plane's normal (normalized)
-    *   - \b b : the Y coordinate of the plane's normal (normalized)
-    *   - \b c : the Z coordinate of the plane's normal (normalized)
-    *   - \b d : the fourth <a href="http://mathworld.wolfram.com/HessianNormalForm.html">Hessian component</a> of the plane's equation
-    *
-    * To set the influence of the surface normals in the inlier estimation
-    * process, set the normal weight (0.0-1.0), e.g.:
-    * \code
-    * SampleConsensusModelNormalPlane<pcl::PointXYZ, pcl::Normal> sac_model;
-    * ...
-    * sac_model.setNormalDistanceWeight (0.1);
-    * ...
-    * \endcode
-    *
-    * In addition, the user can specify more constraints, such as:
-    * 
-    *   - an axis along which we need to search for a plane perpendicular to (\ref setAxis);
-    *   - an angle \a tolerance threshold between the plane's normal and the above given axis (\ref setEpsAngle);
-    *   - a distance we expect the plane to be from the origin (\ref setDistanceFromOrigin);
-    *   - a distance \a tolerance as the maximum allowed deviation from the above given distance from the origin (\ref setEpsDist).
-    *
-    * \note Please remember that you need to specify an angle > 0 in order to activate the axis-angle constraint!
-    *
-    * \author Radu B. Rusu and Jared Glover and Nico Blodow
-    * \ingroup sample_consensus
-    */
-  template <typename PointT, typename PointNT>
-  class SampleConsensusModelNormalParallelPlane : public SampleConsensusModelNormalPlane<PointT, PointNT>
+namespace pcl {
+/** \brief SampleConsensusModelNormalParallelPlane defines a model for 3D
+ * plane segmentation using additional surface normal constraints. Basically
+ * this means that checking for inliers will not only involve a "distance to
+ * model" criterion, but also an additional "maximum angular deviation"
+ * between the plane's normal and the inlier points normals. In addition,
+ * the plane <b>normal</b> must lie parallel to a user-specified axis.
+ * This means that the plane itself will lie perpendicular to that axis, similar to
+ * \link pcl::SampleConsensusModelPerpendicularPlane SACMODEL_PERPENDICULAR_PLANE
+ * \endlink.
+ *
+ * The model coefficients are defined as:
+ *   - \b a : the X coordinate of the plane's normal (normalized)
+ *   - \b b : the Y coordinate of the plane's normal (normalized)
+ *   - \b c : the Z coordinate of the plane's normal (normalized)
+ *   - \b d : the fourth <a
+ * href="http://mathworld.wolfram.com/HessianNormalForm.html">Hessian component</a> of
+ * the plane's equation
+ *
+ * To set the influence of the surface normals in the inlier estimation
+ * process, set the normal weight (0.0-1.0), e.g.:
+ * \code
+ * SampleConsensusModelNormalPlane<pcl::PointXYZ, pcl::Normal> sac_model;
+ * ...
+ * sac_model.setNormalDistanceWeight (0.1);
+ * ...
+ * \endcode
+ *
+ * In addition, the user can specify more constraints, such as:
+ *
+ *   - an axis along which we need to search for a plane perpendicular to (\ref
+ * setAxis);
+ *   - an angle \a tolerance threshold between the plane's normal and the above given
+ * axis (\ref setEpsAngle);
+ *   - a distance we expect the plane to be from the origin (\ref
+ * setDistanceFromOrigin);
+ *   - a distance \a tolerance as the maximum allowed deviation from the above given
+ * distance from the origin (\ref setEpsDist).
+ *
+ * \note Please remember that you need to specify an angle > 0 in order to activate the
+ * axis-angle constraint!
+ *
+ * \author Radu B. Rusu and Jared Glover and Nico Blodow
+ * \ingroup sample_consensus
+ */
+template <typename PointT, typename PointNT>
+class SampleConsensusModelNormalParallelPlane
+: public SampleConsensusModelNormalPlane<PointT, PointNT> {
+public:
+  using SampleConsensusModel<PointT>::model_name_;
+  using SampleConsensusModel<PointT>::input_;
+  using SampleConsensusModel<PointT>::indices_;
+  using SampleConsensusModelFromNormals<PointT, PointNT>::normals_;
+  using SampleConsensusModelFromNormals<PointT, PointNT>::normal_distance_weight_;
+  using SampleConsensusModel<PointT>::error_sqr_dists_;
+
+  using PointCloud = typename SampleConsensusModel<PointT>::PointCloud;
+  using PointCloudPtr = typename SampleConsensusModel<PointT>::PointCloudPtr;
+  using PointCloudConstPtr = typename SampleConsensusModel<PointT>::PointCloudConstPtr;
+
+  using PointCloudNPtr =
+      typename SampleConsensusModelFromNormals<PointT, PointNT>::PointCloudNPtr;
+  using PointCloudNConstPtr =
+      typename SampleConsensusModelFromNormals<PointT, PointNT>::PointCloudNConstPtr;
+
+  using Ptr = shared_ptr<SampleConsensusModelNormalParallelPlane<PointT, PointNT>>;
+  using ConstPtr =
+      shared_ptr<const SampleConsensusModelNormalParallelPlane<PointT, PointNT>>;
+
+  /** \brief Constructor for base SampleConsensusModelNormalParallelPlane.
+   * \param[in] cloud the input point cloud dataset
+   * \param[in] random if true set the random seed to the current time, else set to
+   * 12345 (default: false)
+   */
+  SampleConsensusModelNormalParallelPlane(const PointCloudConstPtr& cloud,
+                                          bool random = false)
+  : SampleConsensusModelNormalPlane<PointT, PointNT>(cloud, random)
+  , axis_(Eigen::Vector4f::Zero())
+  , distance_from_origin_(0)
+  , eps_angle_(-1.0)
+  , cos_angle_(-1.0)
+  , eps_dist_(0.0)
   {
-    public:
-      using SampleConsensusModel<PointT>::model_name_;
-      using SampleConsensusModel<PointT>::input_;
-      using SampleConsensusModel<PointT>::indices_;
-      using SampleConsensusModelFromNormals<PointT, PointNT>::normals_;
-      using SampleConsensusModelFromNormals<PointT, PointNT>::normal_distance_weight_;
-      using SampleConsensusModel<PointT>::error_sqr_dists_;
+    model_name_ = "SampleConsensusModelNormalParallelPlane";
+    sample_size_ = 3;
+    model_size_ = 4;
+  }
 
-      using PointCloud = typename SampleConsensusModel<PointT>::PointCloud;
-      using PointCloudPtr = typename SampleConsensusModel<PointT>::PointCloudPtr;
-      using PointCloudConstPtr = typename SampleConsensusModel<PointT>::PointCloudConstPtr;
+  /** \brief Constructor for base SampleConsensusModelNormalParallelPlane.
+   * \param[in] cloud the input point cloud dataset
+   * \param[in] indices a vector of point indices to be used from \a cloud
+   * \param[in] random if true set the random seed to the current time, else set to
+   * 12345 (default: false)
+   */
+  SampleConsensusModelNormalParallelPlane(const PointCloudConstPtr& cloud,
+                                          const Indices& indices,
+                                          bool random = false)
+  : SampleConsensusModelNormalPlane<PointT, PointNT>(cloud, indices, random)
+  , axis_(Eigen::Vector4f::Zero())
+  , distance_from_origin_(0)
+  , eps_angle_(-1.0)
+  , cos_angle_(-1.0)
+  , eps_dist_(0.0)
+  {
+    model_name_ = "SampleConsensusModelNormalParallelPlane";
+    sample_size_ = 3;
+    model_size_ = 4;
+  }
 
-      using PointCloudNPtr = typename SampleConsensusModelFromNormals<PointT, PointNT>::PointCloudNPtr;
-      using PointCloudNConstPtr = typename SampleConsensusModelFromNormals<PointT, PointNT>::PointCloudNConstPtr;
+  /** \brief Empty destructor */
+  ~SampleConsensusModelNormalParallelPlane() override = default;
 
-      using Ptr = shared_ptr<SampleConsensusModelNormalParallelPlane<PointT, PointNT> >;
-      using ConstPtr = shared_ptr<const SampleConsensusModelNormalParallelPlane<PointT, PointNT>>;
+  /** \brief Set the axis along which we need to search for a plane perpendicular to.
+   * \param[in] ax the axis along which we need to search for a plane perpendicular to
+   */
+  inline void
+  setAxis (const Eigen::Vector3f& ax)
+  {
+    axis_.head<3>() = ax;
+    axis_.normalize();
+  }
 
-      /** \brief Constructor for base SampleConsensusModelNormalParallelPlane.
-        * \param[in] cloud the input point cloud dataset
-        * \param[in] random if true set the random seed to the current time, else set to 12345 (default: false)
-        */
-      SampleConsensusModelNormalParallelPlane (const PointCloudConstPtr &cloud,
-                                               bool random = false) 
-        : SampleConsensusModelNormalPlane<PointT, PointNT> (cloud, random)
-        , axis_ (Eigen::Vector4f::Zero ())
-        , distance_from_origin_ (0)
-        , eps_angle_ (-1.0)
-        , cos_angle_ (-1.0)
-        , eps_dist_ (0.0)
-      {
-        model_name_ = "SampleConsensusModelNormalParallelPlane";
-        sample_size_ = 3;
-        model_size_ = 4;
-      }
+  /** \brief Get the axis along which we need to search for a plane perpendicular to. */
+  inline Eigen::Vector3f
+  getAxis () const
+  {
+    return (axis_.head<3>());
+  }
 
-      /** \brief Constructor for base SampleConsensusModelNormalParallelPlane.
-        * \param[in] cloud the input point cloud dataset
-        * \param[in] indices a vector of point indices to be used from \a cloud
-        * \param[in] random if true set the random seed to the current time, else set to 12345 (default: false)
-        */
-      SampleConsensusModelNormalParallelPlane (const PointCloudConstPtr &cloud, 
-                                               const Indices &indices,
-                                               bool random = false) 
-        : SampleConsensusModelNormalPlane<PointT, PointNT> (cloud, indices, random)
-        , axis_ (Eigen::Vector4f::Zero ())
-        , distance_from_origin_ (0)
-        , eps_angle_ (-1.0)
-        , cos_angle_ (-1.0)
-        , eps_dist_ (0.0)
-      {
-        model_name_ = "SampleConsensusModelNormalParallelPlane";
-        sample_size_ = 3;
-        model_size_ = 4;
-      }
-      
-      /** \brief Empty destructor */
-      ~SampleConsensusModelNormalParallelPlane () override = default;
+  /** \brief Set the angle epsilon (delta) threshold.
+   * \param[in] ea the maximum allowed deviation from 90 degrees between the plane
+   * normal and the given axis. \note You need to specify an angle > 0 in order to
+   * activate the axis-angle constraint!
+   */
+  inline void
+  setEpsAngle (const double ea)
+  {
+    eps_angle_ = ea;
+    cos_angle_ = std::abs(std::cos(ea));
+  }
 
-      /** \brief Set the axis along which we need to search for a plane perpendicular to.
-        * \param[in] ax the axis along which we need to search for a plane perpendicular to
-        */
-      inline void
-      setAxis (const Eigen::Vector3f &ax) { axis_.head<3> () = ax; axis_.normalize ();}
+  /** \brief Get the angle epsilon (delta) threshold. */
+  inline double
+  getEpsAngle () const
+  {
+    return (eps_angle_);
+  }
 
-      /** \brief Get the axis along which we need to search for a plane perpendicular to. */
-      inline Eigen::Vector3f
-      getAxis () const { return (axis_.head<3> ()); }
+  /** \brief Set the distance we expect the plane to be from the origin
+   * \param[in] d distance from the template plane to the origin
+   */
+  inline void
+  setDistanceFromOrigin (const double d)
+  {
+    distance_from_origin_ = d;
+  }
 
-      /** \brief Set the angle epsilon (delta) threshold.
-        * \param[in] ea the maximum allowed deviation from 90 degrees between the plane normal and the given axis.
-        * \note You need to specify an angle > 0 in order to activate the axis-angle constraint!
-        */
-      inline void
-      setEpsAngle (const double ea) { eps_angle_ = ea; cos_angle_ = std::abs (std::cos (ea));}
+  /** \brief Get the distance of the plane from the origin. */
+  inline double
+  getDistanceFromOrigin () const
+  {
+    return (distance_from_origin_);
+  }
 
-      /** \brief Get the angle epsilon (delta) threshold. */
-      inline double
-      getEpsAngle () const { return (eps_angle_); }
+  /** \brief Set the distance epsilon (delta) threshold.
+   * \param[in] delta the maximum allowed deviation from the template distance from the
+   * origin
+   */
+  inline void
+  setEpsDist (const double delta)
+  {
+    eps_dist_ = delta;
+  }
 
-      /** \brief Set the distance we expect the plane to be from the origin
-        * \param[in] d distance from the template plane to the origin
-        */
-      inline void
-      setDistanceFromOrigin (const double d) { distance_from_origin_ = d; }
+  /** \brief Get the distance epsilon (delta) threshold. */
+  inline double
+  getEpsDist () const
+  {
+    return (eps_dist_);
+  }
 
-      /** \brief Get the distance of the plane from the origin. */
-      inline double
-      getDistanceFromOrigin () const { return (distance_from_origin_); }
+  /** \brief Return a unique id for this model (SACMODEL_NORMAL_PARALLEL_PLANE). */
+  inline pcl::SacModel
+  getModelType () const override
+  {
+    return (SACMODEL_NORMAL_PARALLEL_PLANE);
+  }
 
-      /** \brief Set the distance epsilon (delta) threshold.
-        * \param[in] delta the maximum allowed deviation from the template distance from the origin
-        */
-      inline void
-      setEpsDist (const double delta) { eps_dist_ = delta; }
+  PCL_MAKE_ALIGNED_OPERATOR_NEW
 
-      /** \brief Get the distance epsilon (delta) threshold. */
-      inline double
-      getEpsDist () const { return (eps_dist_); }
+protected:
+  using SampleConsensusModel<PointT>::sample_size_;
+  using SampleConsensusModel<PointT>::model_size_;
 
-      /** \brief Return a unique id for this model (SACMODEL_NORMAL_PARALLEL_PLANE). */
-      inline pcl::SacModel
-      getModelType () const override { return (SACMODEL_NORMAL_PARALLEL_PLANE); }
+  /** \brief Check whether a model is valid given the user constraints.
+   * \param[in] model_coefficients the set of model coefficients
+   */
+  bool
+  isModelValid (const Eigen::VectorXf& model_coefficients) const override;
 
-    	PCL_MAKE_ALIGNED_OPERATOR_NEW
+private:
+  /** \brief The axis along which we need to search for a plane perpendicular to. */
+  Eigen::Vector4f axis_;
 
-    protected:
-      using SampleConsensusModel<PointT>::sample_size_;
-      using SampleConsensusModel<PointT>::model_size_;
+  /** \brief The distance from the template plane to the origin. */
+  double distance_from_origin_;
 
-      /** \brief Check whether a model is valid given the user constraints.
-        * \param[in] model_coefficients the set of model coefficients
-        */
-      bool
-      isModelValid (const Eigen::VectorXf &model_coefficients) const override;
+  /** \brief The maximum allowed difference between the plane normal and the given axis.
+   */
+  double eps_angle_;
 
-   private:
-      /** \brief The axis along which we need to search for a plane perpendicular to. */
-      Eigen::Vector4f axis_;
-
-      /** \brief The distance from the template plane to the origin. */
-      double distance_from_origin_;
-
-      /** \brief The maximum allowed difference between the plane normal and the given axis.  */
-      double eps_angle_;
-
-      /** \brief The cosine of the angle*/
-      double cos_angle_;
-      /** \brief The maximum allowed deviation from the template distance from the origin. */
-      double eps_dist_;
-  };
-}
+  /** \brief The cosine of the angle*/
+  double cos_angle_;
+  /** \brief The maximum allowed deviation from the template distance from the origin.
+   */
+  double eps_dist_;
+};
+} // namespace pcl
 
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/sample_consensus/impl/sac_model_normal_parallel_plane.hpp>

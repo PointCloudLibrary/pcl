@@ -5,19 +5,19 @@
  * @date November 2014
  */
 
+#include <pcl/common/common.h>
+#include <pcl/console/print.h>
+#include <pcl/io/ensenso_grabber.h>
+#include <pcl/visualization/cloud_viewer.h>
+#include <pcl/memory.h>
+
+#include <opencv2/core/core.hpp>
+#include <opencv2/highgui/highgui.hpp>
+
 #include <algorithm>
 #include <iostream>
 #include <thread>
 #include <vector>
-
-#include <pcl/common/common.h>
-#include <pcl/memory.h>
-#include <pcl/console/print.h>
-#include <pcl/io/ensenso_grabber.h>
-#include <pcl/visualization/cloud_viewer.h>
-
-#include <opencv2/core/core.hpp>
-#include <opencv2/highgui/highgui.hpp>
 
 using namespace std::chrono_literals;
 
@@ -44,7 +44,7 @@ pcl::EnsensoGrabber::Ptr ensenso_ptr;
  * @returns the OpenCV type
  */
 int
-getOpenCVType (const std::string &type)
+getOpenCVType (const std::string& type)
 {
   if (type == "CV_32FC1")
     return CV_32FC1;
@@ -96,26 +96,27 @@ getOpenCVType (const std::string &type)
  * @warning Image type changes if a calibration pattern is discovered/lost;
  * check @c images->first.encoding */
 void
-grabberCallback (const PointCloudT::Ptr& cloud,
-                 const PairOfImagesPtr& images)
+grabberCallback (const PointCloudT::Ptr& cloud, const PairOfImagesPtr& images)
 {
-  viewer_ptr->showCloud (cloud);
-  unsigned char *l_image_array = reinterpret_cast<unsigned char *> (&images->first.data[0]);
-  unsigned char *r_image_array = reinterpret_cast<unsigned char *> (&images->second.data[0]);
+  viewer_ptr->showCloud(cloud);
+  unsigned char* l_image_array =
+      reinterpret_cast<unsigned char*>(&images->first.data[0]);
+  unsigned char* r_image_array =
+      reinterpret_cast<unsigned char*>(&images->second.data[0]);
 
   std::cout << "Encoding: " << images->first.encoding << std::endl;
-  int type = getOpenCVType (images->first.encoding);
-  cv::Mat l_image (images->first.height, images->first.width, type, l_image_array);
-  cv::Mat r_image (images->first.height, images->first.width, type, r_image_array);
-  cv::Mat im (images->first.height, images->first.width * 2, type);
+  int type = getOpenCVType(images->first.encoding);
+  cv::Mat l_image(images->first.height, images->first.width, type, l_image_array);
+  cv::Mat r_image(images->first.height, images->first.width, type, r_image_array);
+  cv::Mat im(images->first.height, images->first.width * 2, type);
 
-  im.adjustROI (0, 0, 0, -images->first.width);
-  l_image.copyTo (im);
-  im.adjustROI (0, 0, -images->first.width, images->first.width);
-  r_image.copyTo (im);
-  im.adjustROI (0, 0, images->first.width, 0);
-  cv::imshow ("Ensenso images", im);
-  cv::waitKey (10);
+  im.adjustROI(0, 0, 0, -images->first.width);
+  l_image.copyTo(im);
+  im.adjustROI(0, 0, -images->first.width, images->first.width);
+  r_image.copyTo(im);
+  im.adjustROI(0, 0, images->first.width, 0);
+  cv::imshow("Ensenso images", im);
+  cv::waitKey(10);
 }
 
 /** @brief Main function
@@ -123,29 +124,30 @@ grabberCallback (const PointCloudT::Ptr& cloud,
 int
 main (void)
 {
-  viewer_ptr.reset (new pcl::visualization::CloudViewer ("3D Viewer"));
-  ensenso_ptr.reset (new pcl::EnsensoGrabber);
-  ensenso_ptr->openDevice (0);
-  ensenso_ptr->openTcpPort ();
-  //ensenso_ptr->initExtrinsicCalibration (5); // Disable projector if you want good looking images.
-  // You won't be able to detect a calibration pattern with the projector enabled!
+  viewer_ptr.reset(new pcl::visualization::CloudViewer("3D Viewer"));
+  ensenso_ptr.reset(new pcl::EnsensoGrabber);
+  ensenso_ptr->openDevice(0);
+  ensenso_ptr->openTcpPort();
+  // ensenso_ptr->initExtrinsicCalibration (5); // Disable projector if you want good
+  // looking images.
+  //  You won't be able to detect a calibration pattern with the projector enabled!
 
-  std::function<void (const PointCloudT::Ptr&, const PairOfImagesPtr&)> f = grabberCallback;
-  ensenso_ptr->registerCallback (f);
+  std::function<void(const PointCloudT::Ptr&, const PairOfImagesPtr&)> f =
+      grabberCallback;
+  ensenso_ptr->registerCallback(f);
 
-  cv::namedWindow ("Ensenso images", cv::WINDOW_AUTOSIZE);
-  ensenso_ptr->start ();
+  cv::namedWindow("Ensenso images", cv::WINDOW_AUTOSIZE);
+  ensenso_ptr->start();
 
-  while (!viewer_ptr->wasStopped ())
-  {
-    PCL_INFO("FPS: %f\n", ensenso_ptr->getFramesPerSecond ());
+  while (!viewer_ptr->wasStopped()) {
+    PCL_INFO("FPS: %f\n", ensenso_ptr->getFramesPerSecond());
     std::this_thread::sleep_for(500ms);
   }
 
-  ensenso_ptr->stop ();
-  //cv::destroyAllWindows (); // Doesn't work
+  ensenso_ptr->stop();
+  // cv::destroyAllWindows (); // Doesn't work
 
-  ensenso_ptr->closeDevice ();
-  ensenso_ptr->closeTcpPort ();
+  ensenso_ptr->closeDevice();
+  ensenso_ptr->closeTcpPort();
   return 0;
 }

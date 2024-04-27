@@ -76,7 +76,7 @@ public:
 
 protected:
   Scalar
-  computeDistance(const PointSource& p_src, const PointTarget& p_tgt) const override
+  computeDistance (const PointSource& p_src, const PointTarget& p_tgt) const override
   {
     // Compute the point-to-plane distance
     Vector4 s(p_src.x, p_src.y, p_src.z, 0);
@@ -86,7 +86,7 @@ protected:
   }
 
   Scalar
-  computeDistance(const Vector4& p_src, const PointTarget& p_tgt) const override
+  computeDistance (const Vector4& p_src, const PointTarget& p_tgt) const override
   {
     // Compute the point-to-plane distance
     Vector4 t(p_tgt.x, p_tgt.y, p_tgt.z, 0);

@@ -102,7 +102,7 @@ public:
 
   /////////////////////////////////////////////////////////////////////////
   void
-  cloud_callback(const CloudConstPtr& cloud)
+  cloud_callback (const CloudConstPtr& cloud)
   {
     FPS_CALC("cloud callback");
     std::lock_guard<std::mutex> lock(cloud_mutex_);
@@ -158,7 +158,7 @@ public:
 
   /////////////////////////////////////////////////////////////////////////
   CloudConstPtr
-  getLatestCloud()
+  getLatestCloud ()
   {
     // Lock while we swap our cloud and reset it.
     std::lock_guard<std::mutex> lock(cloud_mutex_);
@@ -169,7 +169,7 @@ public:
 
   /////////////////////////////////////////////////////////////////////////
   void
-  keyboard_callback(const visualization::KeyboardEvent&, void*)
+  keyboard_callback (const visualization::KeyboardEvent&, void*)
   {
     // if (event.getKeyCode())
     //  std::cout << "the key \'" << event.getKeyCode() << "\' (" << event.getKeyCode()
@@ -184,7 +184,7 @@ public:
 
   /////////////////////////////////////////////////////////////////////////
   void
-  mouse_callback(const visualization::MouseEvent&, void*)
+  mouse_callback (const visualization::MouseEvent&, void*)
   {
     // if (mouse_event.getType() == visualization::MouseEvent::MouseButtonPress &&
     // mouse_event.getButton() == visualization::MouseEvent::LeftButton)
@@ -208,11 +208,11 @@ public:
    * \param[out] object the segmented resultant object
    */
   void
-  segmentObject(pcl::index_t picked_idx,
-                const CloudConstPtr& cloud,
-                const PointIndices::Ptr& plane_indices,
-                const PointIndices::Ptr& plane_boundary_indices,
-                Cloud& object)
+  segmentObject (pcl::index_t picked_idx,
+                 const CloudConstPtr& cloud,
+                 const PointIndices::Ptr& plane_indices,
+                 const PointIndices::Ptr& plane_boundary_indices,
+                 Cloud& object)
   {
     CloudPtr plane_hull(new Cloud);
 
@@ -292,11 +292,11 @@ public:
 
   /////////////////////////////////////////////////////////////////////////
   void
-  segment(const PointT& picked_point,
-          pcl::index_t picked_idx,
-          PlanarRegion<PointT>& region,
-          PointIndices&,
-          CloudPtr& object)
+  segment (const PointT& picked_point,
+           pcl::index_t picked_idx,
+           PlanarRegion<PointT>& region,
+           PointIndices&,
+           CloudPtr& object)
   {
     // First frame is segmented using an organized multi plane segmentation approach
     // from points and their normals
@@ -378,7 +378,7 @@ public:
    * \param[in] event the event that triggered the call
    */
   void
-  pp_callback(const visualization::PointPickingEvent& event, void*)
+  pp_callback (const visualization::PointPickingEvent& event, void*)
   {
     // Check to see if we got a valid point. Early exit.
     int idx = event.getPointIndex();
@@ -493,13 +493,13 @@ public:
 
   /////////////////////////////////////////////////////////////////////////
   void
-  init()
+  init ()
   {
     cloud_viewer_.registerMouseCallback(&NILinemod::mouse_callback, *this);
     cloud_viewer_.registerKeyboardCallback(&NILinemod::keyboard_callback, *this);
     cloud_viewer_.registerPointPickingCallback(&NILinemod::pp_callback, *this);
     std::function<void(const CloudConstPtr&)> cloud_cb =
-        [this](const CloudConstPtr& cloud) { cloud_callback(cloud); };
+        [this] (const CloudConstPtr& cloud) { cloud_callback(cloud); };
     cloud_connection = grabber_.registerCallback(cloud_cb);
 
     image_viewer_.registerMouseCallback(&NILinemod::mouse_callback, *this);
@@ -508,7 +508,7 @@ public:
 
   /////////////////////////////////////////////////////////////////////////
   void
-  run()
+  run ()
   {
     grabber_.start();
 
@@ -579,7 +579,7 @@ private:
 
 /* ---[ */
 int
-main(int, char**)
+main (int, char**)
 {
   std::string device_id("#1");
   OpenNIGrabber grabber(device_id);

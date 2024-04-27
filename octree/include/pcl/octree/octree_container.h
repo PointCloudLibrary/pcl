@@ -78,34 +78,34 @@ public:
    * \return number of points/indices stored in leaf node container.
    */
   virtual uindex_t
-  getSize() const
+  getSize () const
   {
     return 0u;
   }
 
   /** \brief Pure abstract reset leaf node implementation. */
   virtual void
-  reset() = 0;
+  reset () = 0;
 
   /** \brief Empty addPointIndex implementation. This leaf node does not store any point
    * indices.
    */
   virtual void
-  addPointIndex(index_t)
+  addPointIndex (index_t)
   {}
 
   /** \brief Empty getPointIndex implementation as this leaf node does not store any
    * point indices.
    */
   void
-  getPointIndex(index_t&) const
+  getPointIndex (index_t&) const
   {}
 
   /** \brief Empty getPointIndex implementation as this leaf node does not store any
    * point indices.
    */
   virtual index_t
-  getPointIndex() const
+  getPointIndex () const
   {
     assert("getPointIndex: undefined point index");
     return -1;
@@ -115,7 +115,7 @@ public:
    * data. \
    */
   virtual void
-  getPointIndices(Indices&) const
+  getPointIndices (Indices&) const
   {}
 };
 
@@ -130,7 +130,7 @@ class OctreeContainerEmpty : public OctreeContainerBase {
 public:
   /** \brief Octree deep copy method */
   virtual OctreeContainerEmpty*
-  deepCopy() const
+  deepCopy () const
   {
     return (new OctreeContainerEmpty(*this));
   }
@@ -139,28 +139,28 @@ public:
    * \return number of DataT elements in leaf node container.
    */
   uindex_t
-  getSize() const override
+  getSize () const override
   {
     return 0;
   }
 
   /** \brief Abstract reset leaf node implementation. */
   void
-  reset() override
+  reset () override
   {}
 
   /** \brief Empty addPointIndex implementation. This leaf node does not store any point
    * indices.
    */
   void
-  addPointIndex(index_t) override
+  addPointIndex (index_t) override
   {}
 
   /** \brief Empty getPointIndex implementation as this leaf node does not store any
    * point indices.
    */
   index_t
-  getPointIndex() const override
+  getPointIndex () const override
   {
     PCL_ERROR(
         "[pcl::octree::OctreeContainerBase::getPointIndex] Undefined point index!\n");
@@ -171,7 +171,7 @@ public:
    * data.
    */
   void
-  getPointIndices(Indices&) const override
+  getPointIndices (Indices&) const override
   {}
 };
 
@@ -187,7 +187,7 @@ public:
 
   /** \brief Octree deep copy method */
   virtual OctreeContainerPointIndex*
-  deepCopy() const
+  deepCopy () const
   {
     return (new OctreeContainerPointIndex(*this));
   }
@@ -208,7 +208,7 @@ public:
    * \param[in] data_arg index to be stored within leaf node.
    */
   void
-  addPointIndex(index_t data_arg) override
+  addPointIndex (index_t data_arg) override
   {
     data_ = data_arg;
   }
@@ -218,7 +218,7 @@ public:
    * \return index stored within container.
    */
   index_t
-  getPointIndex() const override
+  getPointIndex () const override
   {
     return data_;
   }
@@ -229,7 +229,7 @@ public:
    * data vector
    */
   void
-  getPointIndices(Indices& data_vector_arg) const override
+  getPointIndices (Indices& data_vector_arg) const override
   {
     if (data_ != static_cast<index_t>(-1))
       data_vector_arg.push_back(data_);
@@ -239,14 +239,14 @@ public:
    * \return number of DataT elements in leaf node container.
    */
   uindex_t
-  getSize() const override
+  getSize () const override
   {
     return data_ == static_cast<index_t>(-1) ? 0 : 1;
   }
 
   /** \brief Reset leaf node memory to zero. */
   void
-  reset() override
+  reset () override
   {
     data_ = static_cast<index_t>(-1);
   }
@@ -265,7 +265,7 @@ class OctreeContainerPointIndices : public OctreeContainerBase {
 public:
   /** \brief Octree deep copy method */
   virtual OctreeContainerPointIndices*
-  deepCopy() const
+  deepCopy () const
   {
     return (new OctreeContainerPointIndices(*this));
   }
@@ -287,7 +287,7 @@ public:
    * \param[in] data_arg index to be stored within leaf node.
    */
   void
-  addPointIndex(index_t data_arg) override
+  addPointIndex (index_t data_arg) override
   {
     leafDataTVector_.push_back(data_arg);
   }
@@ -297,7 +297,7 @@ public:
    * \return index stored within container.
    */
   index_t
-  getPointIndex() const override
+  getPointIndex () const override
   {
     return leafDataTVector_.back();
   }
@@ -308,7 +308,7 @@ public:
    * within data vector
    */
   void
-  getPointIndices(Indices& data_vector_arg) const override
+  getPointIndices (Indices& data_vector_arg) const override
   {
     data_vector_arg.insert(
         data_vector_arg.end(), leafDataTVector_.begin(), leafDataTVector_.end());
@@ -319,7 +319,7 @@ public:
    * \return reference to vector of point indices to be stored within data vector
    */
   Indices&
-  getPointIndicesVector()
+  getPointIndicesVector ()
   {
     return leafDataTVector_;
   }
@@ -328,14 +328,14 @@ public:
    * \return number of point indices in container.
    */
   uindex_t
-  getSize() const override
+  getSize () const override
   {
     return static_cast<uindex_t>(leafDataTVector_.size());
   }
 
   /** \brief Reset leaf node. Clear DataT vector.*/
   void
-  reset() override
+  reset () override
   {
     leafDataTVector_.clear();
   }

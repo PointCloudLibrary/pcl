@@ -125,11 +125,11 @@ public:
     max_iterations_ = 200;
     transformation_epsilon_ = 5e-4;
     corr_dist_threshold_ = 5.;
-    rigid_transformation_estimation_ = [this](const PointCloudSource& cloud_src,
-                                              const pcl::Indices& indices_src,
-                                              const PointCloudTarget& cloud_tgt,
-                                              const pcl::Indices& indices_tgt,
-                                              Matrix4& transformation_matrix) {
+    rigid_transformation_estimation_ = [this] (const PointCloudSource& cloud_src,
+                                               const pcl::Indices& indices_src,
+                                               const PointCloudTarget& cloud_tgt,
+                                               const pcl::Indices& indices_tgt,
+                                               Matrix4& transformation_matrix) {
       estimateRigidTransformationNewton(
           cloud_src, indices_src, cloud_tgt, indices_tgt, transformation_matrix);
     };
@@ -139,7 +139,7 @@ public:
    * \param cloud the const boost shared pointer to a PointCloud message
    */
   inline void
-  setInputSource(const PointCloudSourceConstPtr& cloud) override
+  setInputSource (const PointCloudSourceConstPtr& cloud) override
   {
 
     if (cloud->points.empty()) {
@@ -164,7 +164,7 @@ public:
    * \param[in] covariances the input source covariances
    */
   inline void
-  setSourceCovariances(const MatricesVectorPtr& covariances)
+  setSourceCovariances (const MatricesVectorPtr& covariances)
   {
     input_covariances_ = covariances;
   }
@@ -173,7 +173,7 @@ public:
    * to align the input source to) \param[in] target the input point cloud target
    */
   inline void
-  setInputTarget(const PointCloudTargetConstPtr& target) override
+  setInputTarget (const PointCloudTargetConstPtr& target) override
   {
     pcl::IterativeClosestPoint<PointSource, PointTarget, Scalar>::setInputTarget(
         target);
@@ -187,7 +187,7 @@ public:
    * \param[in] covariances the input target covariances
    */
   inline void
-  setTargetCovariances(const MatricesVectorPtr& covariances)
+  setTargetCovariances (const MatricesVectorPtr& covariances)
   {
     target_covariances_ = covariances;
   }
@@ -203,11 +203,11 @@ public:
    * \param[in,out] transformation_matrix the resultant transformation matrix
    */
   void
-  estimateRigidTransformationBFGS(const PointCloudSource& cloud_src,
-                                  const pcl::Indices& indices_src,
-                                  const PointCloudTarget& cloud_tgt,
-                                  const pcl::Indices& indices_tgt,
-                                  Matrix4& transformation_matrix);
+  estimateRigidTransformationBFGS (const PointCloudSource& cloud_src,
+                                   const pcl::Indices& indices_src,
+                                   const PointCloudTarget& cloud_tgt,
+                                   const pcl::Indices& indices_tgt,
+                                   Matrix4& transformation_matrix);
 
   /** \brief Estimate a rigid rotation transformation between a source and a target
    * point cloud using an iterative non-linear Newton approach.
@@ -220,15 +220,15 @@ public:
    * \param[in,out] transformation_matrix the resultant transformation matrix
    */
   void
-  estimateRigidTransformationNewton(const PointCloudSource& cloud_src,
-                                    const pcl::Indices& indices_src,
-                                    const PointCloudTarget& cloud_tgt,
-                                    const pcl::Indices& indices_tgt,
-                                    Matrix4& transformation_matrix);
+  estimateRigidTransformationNewton (const PointCloudSource& cloud_src,
+                                     const pcl::Indices& indices_src,
+                                     const PointCloudTarget& cloud_tgt,
+                                     const pcl::Indices& indices_tgt,
+                                     Matrix4& transformation_matrix);
 
   /** \brief \return Mahalanobis distance matrix for the given point index */
   inline const Eigen::Matrix3d&
-  mahalanobis(std::size_t index) const
+  mahalanobis (std::size_t index) const
   {
     assert(index < mahalanobis_.size());
     return mahalanobis_[index];
@@ -243,9 +243,9 @@ public:
    * \param[out] g gradient vector
    */
   void
-  computeRDerivative(const Vector6d& x,
-                     const Eigen::Matrix3d& dCost_dR_T,
-                     Vector6d& g) const;
+  computeRDerivative (const Vector6d& x,
+                      const Eigen::Matrix3d& dCost_dR_T,
+                      Vector6d& g) const;
 
   /** \brief Set the rotation epsilon (maximum allowable difference between two
    * consecutive rotations) in order for an optimization to be considered as having
@@ -253,7 +253,7 @@ public:
    * \param epsilon the rotation epsilon
    */
   inline void
-  setRotationEpsilon(double epsilon)
+  setRotationEpsilon (double epsilon)
   {
     rotation_epsilon_ = epsilon;
   }
@@ -262,7 +262,7 @@ public:
    * consecutive rotations) as set by the user.
    */
   inline double
-  getRotationEpsilon() const
+  getRotationEpsilon () const
   {
     return rotation_epsilon_;
   }
@@ -274,7 +274,7 @@ public:
    * \param k the number of neighbors to use when computing covariances
    */
   void
-  setCorrespondenceRandomness(int k)
+  setCorrespondenceRandomness (int k)
   {
     k_correspondences_ = k;
   }
@@ -283,7 +283,7 @@ public:
    * the user
    */
   int
-  getCorrespondenceRandomness() const
+  getCorrespondenceRandomness () const
   {
     return k_correspondences_;
   }
@@ -291,13 +291,13 @@ public:
   /** \brief Use BFGS optimizer instead of default Newton optimizer
    */
   void
-  useBFGS()
+  useBFGS ()
   {
-    rigid_transformation_estimation_ = [this](const PointCloudSource& cloud_src,
-                                              const pcl::Indices& indices_src,
-                                              const PointCloudTarget& cloud_tgt,
-                                              const pcl::Indices& indices_tgt,
-                                              Matrix4& transformation_matrix) {
+    rigid_transformation_estimation_ = [this] (const PointCloudSource& cloud_src,
+                                               const pcl::Indices& indices_src,
+                                               const PointCloudTarget& cloud_tgt,
+                                               const pcl::Indices& indices_tgt,
+                                               Matrix4& transformation_matrix) {
       estimateRigidTransformationBFGS(
           cloud_src, indices_src, cloud_tgt, indices_tgt, transformation_matrix);
     };
@@ -307,7 +307,7 @@ public:
    * \param[in] max maximum number of iterations for the optimizer
    */
   void
-  setMaximumOptimizerIterations(int max)
+  setMaximumOptimizerIterations (int max)
   {
     max_inner_iterations_ = max;
   }
@@ -315,7 +315,7 @@ public:
   /** \brief Return maximum number of iterations at the optimization step
    */
   int
-  getMaximumOptimizerIterations() const
+  getMaximumOptimizerIterations () const
   {
     return max_inner_iterations_;
   }
@@ -324,7 +324,7 @@ public:
    * \param[in] tolerance translation gradient threshold in meters
    */
   void
-  setTranslationGradientTolerance(double tolerance)
+  setTranslationGradientTolerance (double tolerance)
   {
     translation_gradient_tolerance_ = tolerance;
   }
@@ -333,7 +333,7 @@ public:
    * stop
    */
   double
-  getTranslationGradientTolerance() const
+  getTranslationGradientTolerance () const
   {
     return translation_gradient_tolerance_;
   }
@@ -342,7 +342,7 @@ public:
    * \param[in] tolerance rotation gradient threshold in radians
    */
   void
-  setRotationGradientTolerance(double tolerance)
+  setRotationGradientTolerance (double tolerance)
   {
     rotation_gradient_tolerance_ = tolerance;
   }
@@ -350,7 +350,7 @@ public:
   /** \brief Return the minimal rotation gradient threshold for early optimization stop
    */
   double
-  getRotationGradientTolerance() const
+  getRotationGradientTolerance () const
   {
     return rotation_gradient_tolerance_;
   }
@@ -414,16 +414,16 @@ protected:
    */
   template <typename PointT>
   void
-  computeCovariances(typename pcl::PointCloud<PointT>::ConstPtr cloud,
-                     const typename pcl::search::KdTree<PointT>::Ptr tree,
-                     MatricesVector& cloud_covariances);
+  computeCovariances (typename pcl::PointCloud<PointT>::ConstPtr cloud,
+                      const typename pcl::search::KdTree<PointT>::Ptr tree,
+                      MatricesVector& cloud_covariances);
 
   /** \return trace of mat1 . mat2
    * \param mat1 matrix of dimension nxm
    * \param mat2 matrix of dimension mxp
    */
   inline double
-  matricesInnerProd(const Eigen::MatrixXd& mat1, const Eigen::MatrixXd& mat2) const
+  matricesInnerProd (const Eigen::MatrixXd& mat1, const Eigen::MatrixXd& mat2) const
   {
     if (mat1.cols() != mat2.rows()) {
       PCL_THROW_EXCEPTION(PCLException,
@@ -441,7 +441,7 @@ protected:
    * compute
    */
   void
-  computeTransformation(PointCloudSource& output, const Matrix4& guess) override;
+  computeTransformation (PointCloudSource& output, const Matrix4& guess) override;
 
   /** \brief Search for the closest nearest neighbor of a given point.
    * \param query the point to search a nearest neighbour for
@@ -449,9 +449,9 @@ protected:
    * \param distance vector of size 1 to store the distance to nearest neighbour found
    */
   inline bool
-  searchForNeighbors(const PointSource& query,
-                     pcl::Indices& index,
-                     std::vector<float>& distance)
+  searchForNeighbors (const PointSource& query,
+                      pcl::Indices& index,
+                      std::vector<float>& distance)
   {
     int k = tree_->nearestKSearch(query, 1, index, distance);
     if (k == 0)
@@ -461,7 +461,7 @@ protected:
 
   /// \brief compute transformation matrix from transformation matrix
   void
-  applyState(Matrix4& t, const Vector6d& x) const;
+  applyState (Matrix4& t, const Vector6d& x) const;
 
   /// \brief optimization functor structure
   struct OptimizationFunctorWithIndices : public BFGSDummyFunctor<double, 6> {
@@ -471,13 +471,13 @@ protected:
     double
     operator()(const Vector6d& x) override;
     void
-    df(const Vector6d& x, Vector6d& df) override;
+    df (const Vector6d& x, Vector6d& df) override;
     void
-    fdf(const Vector6d& x, double& f, Vector6d& df) override;
+    fdf (const Vector6d& x, double& f, Vector6d& df) override;
     void
-    dfddf(const Vector6d& x, Vector6d& df, Matrix6d& ddf);
+    dfddf (const Vector6d& x, Vector6d& df, Matrix6d& ddf);
     BFGSSpace::Status
-    checkGradient(const Vector6d& g) override;
+    checkGradient (const Vector6d& g) override;
 
     const GeneralizedIterativeClosestPoint* gicp_;
   };
@@ -491,23 +491,23 @@ protected:
 
 private:
   void
-  getRDerivatives(double phi,
-                  double theta,
-                  double psi,
-                  Eigen::Matrix3d& dR_dPhi,
-                  Eigen::Matrix3d& dR_dTheta,
-                  Eigen::Matrix3d& dR_dPsi) const;
+  getRDerivatives (double phi,
+                   double theta,
+                   double psi,
+                   Eigen::Matrix3d& dR_dPhi,
+                   Eigen::Matrix3d& dR_dTheta,
+                   Eigen::Matrix3d& dR_dPsi) const;
 
   void
-  getR2ndDerivatives(double phi,
-                     double theta,
-                     double psi,
-                     Eigen::Matrix3d& ddR_dPhi_dPhi,
-                     Eigen::Matrix3d& ddR_dPhi_dTheta,
-                     Eigen::Matrix3d& ddR_dPhi_dPsi,
-                     Eigen::Matrix3d& ddR_dTheta_dTheta,
-                     Eigen::Matrix3d& ddR_dTheta_dPsi,
-                     Eigen::Matrix3d& ddR_dPsi_dPsi) const;
+  getR2ndDerivatives (double phi,
+                      double theta,
+                      double psi,
+                      Eigen::Matrix3d& ddR_dPhi_dPhi,
+                      Eigen::Matrix3d& ddR_dPhi_dTheta,
+                      Eigen::Matrix3d& ddR_dPhi_dPsi,
+                      Eigen::Matrix3d& ddR_dTheta_dTheta,
+                      Eigen::Matrix3d& ddR_dTheta_dPsi,
+                      Eigen::Matrix3d& ddR_dPsi_dPsi) const;
 };
 } // namespace pcl
 

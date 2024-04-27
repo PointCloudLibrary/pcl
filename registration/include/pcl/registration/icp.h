@@ -185,7 +185,7 @@ public:
    * DefaultConvergenceCriteria.
    */
   inline typename pcl::registration::DefaultConvergenceCriteria<Scalar>::Ptr
-  getConvergeCriteria()
+  getConvergeCriteria ()
   {
     return convergence_criteria_;
   }
@@ -196,7 +196,7 @@ public:
    * \param[in] cloud the input point cloud source
    */
   void
-  setInputSource(const PointCloudSourceConstPtr& cloud) override
+  setInputSource (const PointCloudSourceConstPtr& cloud) override
   {
     Registration<PointSource, PointTarget, Scalar>::setInputSource(cloud);
     const auto fields = pcl::getFields<PointSource>();
@@ -229,7 +229,7 @@ public:
    * \param[in] cloud the input point cloud target
    */
   void
-  setInputTarget(const PointCloudTargetConstPtr& cloud) override
+  setInputTarget (const PointCloudTargetConstPtr& cloud) override
   {
     Registration<PointSource, PointTarget, Scalar>::setInputTarget(cloud);
     const auto fields = pcl::getFields<PointSource>();
@@ -249,14 +249,14 @@ public:
    * or not
    */
   inline void
-  setUseReciprocalCorrespondences(bool use_reciprocal_correspondence)
+  setUseReciprocalCorrespondences (bool use_reciprocal_correspondence)
   {
     use_reciprocal_correspondence_ = use_reciprocal_correspondence;
   }
 
   /** \brief Obtain whether reciprocal correspondence are used or not */
   inline bool
-  getUseReciprocalCorrespondences() const
+  getUseReciprocalCorrespondences () const
   {
     return (use_reciprocal_correspondence_);
   }
@@ -270,9 +270,9 @@ protected:
    * \note Can be used with cloud_in equal to cloud_out
    */
   virtual void
-  transformCloud(const PointCloudSource& input,
-                 PointCloudSource& output,
-                 const Matrix4& transform);
+  transformCloud (const PointCloudSource& input,
+                  PointCloudSource& output,
+                  const Matrix4& transform);
 
   /** \brief Rigid transformation computation method  with initial guess.
    * \param output the transformed input point cloud dataset using the rigid
@@ -280,12 +280,12 @@ protected:
    * compute
    */
   void
-  computeTransformation(PointCloudSource& output, const Matrix4& guess) override;
+  computeTransformation (PointCloudSource& output, const Matrix4& guess) override;
 
   /** \brief Looks at the Estimators and Rejectors and determines whether their
    * blob-setter methods need to be called */
   virtual void
-  determineRequiredBlobData();
+  determineRequiredBlobData ();
 
   /** \brief XYZ fields offset. */
   std::size_t x_idx_offset_{0}, y_idx_offset_{0}, z_idx_offset_{0};
@@ -368,7 +368,7 @@ public:
    * not
    */
   inline void
-  setUseSymmetricObjective(bool use_symmetric_objective)
+  setUseSymmetricObjective (bool use_symmetric_objective)
   {
     use_symmetric_objective_ = use_symmetric_objective;
     if (use_symmetric_objective_) {
@@ -391,7 +391,7 @@ public:
 
   /** \brief Obtain whether a symmetric objective is used or not */
   inline bool
-  getUseSymmetricObjective() const
+  getUseSymmetricObjective () const
   {
     return use_symmetric_objective_;
   }
@@ -404,7 +404,7 @@ public:
    * normals on a per-point basis such that they point in the same direction.
    */
   inline void
-  setEnforceSameDirectionNormals(bool enforce_same_direction_normals)
+  setEnforceSameDirectionNormals (bool enforce_same_direction_normals)
   {
     enforce_same_direction_normals_ = enforce_same_direction_normals;
     auto symmetric_transformation_estimation = dynamic_pointer_cast<
@@ -420,7 +420,7 @@ public:
   /** \brief Obtain whether source or target normals are negated on a per-point basis
    * such that they point in the same direction or not */
   inline bool
-  getEnforceSameDirectionNormals() const
+  getEnforceSameDirectionNormals () const
   {
     return enforce_same_direction_normals_;
   }
@@ -433,9 +433,9 @@ protected:
    * \note Can be used with cloud_in equal to cloud_out
    */
   void
-  transformCloud(const PointCloudSource& input,
-                 PointCloudSource& output,
-                 const Matrix4& transform) override;
+  transformCloud (const PointCloudSource& input,
+                  PointCloudSource& output,
+                  const Matrix4& transform) override;
 
   /** \brief Type of objective function (asymmetric vs. symmetric) used for transform
    * estimation */

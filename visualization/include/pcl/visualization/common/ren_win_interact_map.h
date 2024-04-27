@@ -38,43 +38,40 @@
 
 #pragma once
 
+#include <vtkXYPlotActor.h>
+
 #include <map>
 #include <string>
 
-#include <vtkXYPlotActor.h>
-
-template <typename T> class vtkSmartPointer;
+template <typename T>
+class vtkSmartPointer;
 class vtkRenderer;
 class vtkRenderWindow;
 class vtkRenderWindowInteractor;
 class vtkInteractorStyleTrackballCamera;
 
-namespace pcl
-{
-  namespace visualization
-  {
-    class RenWinInteract
-    {
-      public:
+namespace pcl {
+namespace visualization {
+class RenWinInteract {
+public:
+  RenWinInteract();
 
-        RenWinInteract ();
+  /** \brief The XY plot actor holding the actual data. */
+  vtkSmartPointer<vtkXYPlotActor> xy_plot_;
 
-        /** \brief The XY plot actor holding the actual data. */
-        vtkSmartPointer<vtkXYPlotActor> xy_plot_;
+  /** \brief The renderer used. */
+  vtkSmartPointer<vtkRenderer> ren_;
 
-        /** \brief The renderer used. */
-        vtkSmartPointer<vtkRenderer> ren_;
+  /** \brief The render window. */
+  vtkSmartPointer<vtkRenderWindow> win_;
 
-        /** \brief The render window. */
-        vtkSmartPointer<vtkRenderWindow> win_;
+  /** \brief The render window interactor. */
 
-        /** \brief The render window interactor. */
+  vtkSmartPointer<vtkRenderWindowInteractor> interactor_;
 
-        vtkSmartPointer<vtkRenderWindowInteractor> interactor_;
-
-        /** \brief The render window interactor style. */
-        vtkSmartPointer<vtkInteractorStyleTrackballCamera> style_;
-    };
-    using RenWinInteractMap = std::map<std::string, RenWinInteract>;
-  }
-}
+  /** \brief The render window interactor style. */
+  vtkSmartPointer<vtkInteractorStyleTrackballCamera> style_;
+};
+using RenWinInteractMap = std::map<std::string, RenWinInteract>;
+} // namespace visualization
+} // namespace pcl

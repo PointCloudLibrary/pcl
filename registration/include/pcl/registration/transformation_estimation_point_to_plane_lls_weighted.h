@@ -83,9 +83,9 @@ public:
    * \param[out] transformation_matrix the resultant transformation matrix
    */
   inline void
-  estimateRigidTransformation(const pcl::PointCloud<PointSource>& cloud_src,
-                              const pcl::PointCloud<PointTarget>& cloud_tgt,
-                              Matrix4& transformation_matrix) const;
+  estimateRigidTransformation (const pcl::PointCloud<PointSource>& cloud_src,
+                               const pcl::PointCloud<PointTarget>& cloud_tgt,
+                               Matrix4& transformation_matrix) const;
 
   /** \brief Estimate a rigid rotation transformation between a source and a target
    * point cloud using SVD. \param[in] cloud_src the source point cloud dataset
@@ -95,10 +95,10 @@ public:
    * \param[out] transformation_matrix the resultant transformation matrix
    */
   inline void
-  estimateRigidTransformation(const pcl::PointCloud<PointSource>& cloud_src,
-                              const pcl::Indices& indices_src,
-                              const pcl::PointCloud<PointTarget>& cloud_tgt,
-                              Matrix4& transformation_matrix) const;
+  estimateRigidTransformation (const pcl::PointCloud<PointSource>& cloud_src,
+                               const pcl::Indices& indices_src,
+                               const pcl::PointCloud<PointTarget>& cloud_tgt,
+                               Matrix4& transformation_matrix) const;
 
   /** \brief Estimate a rigid rotation transformation between a source and a target
    * point cloud using SVD. \param[in] cloud_src the source point cloud dataset
@@ -110,11 +110,11 @@ public:
    * \param[out] transformation_matrix the resultant transformation matrix
    */
   inline void
-  estimateRigidTransformation(const pcl::PointCloud<PointSource>& cloud_src,
-                              const pcl::Indices& indices_src,
-                              const pcl::PointCloud<PointTarget>& cloud_tgt,
-                              const pcl::Indices& indices_tgt,
-                              Matrix4& transformation_matrix) const;
+  estimateRigidTransformation (const pcl::PointCloud<PointSource>& cloud_src,
+                               const pcl::Indices& indices_src,
+                               const pcl::PointCloud<PointTarget>& cloud_tgt,
+                               const pcl::Indices& indices_tgt,
+                               Matrix4& transformation_matrix) const;
 
   /** \brief Estimate a rigid rotation transformation between a source and a target
    * point cloud using SVD. \param[in] cloud_src the source point cloud dataset
@@ -123,16 +123,16 @@ public:
    * point cloud \param[out] transformation_matrix the resultant transformation matrix
    */
   inline void
-  estimateRigidTransformation(const pcl::PointCloud<PointSource>& cloud_src,
-                              const pcl::PointCloud<PointTarget>& cloud_tgt,
-                              const pcl::Correspondences& correspondences,
-                              Matrix4& transformation_matrix) const;
+  estimateRigidTransformation (const pcl::PointCloud<PointSource>& cloud_src,
+                               const pcl::PointCloud<PointTarget>& cloud_tgt,
+                               const pcl::Correspondences& correspondences,
+                               Matrix4& transformation_matrix) const;
 
   /** \brief Set the weights for the correspondences.
    * \param[in] weights the weights for each correspondence
    */
   inline void
-  setCorrespondenceWeights(const std::vector<Scalar>& weights)
+  setCorrespondenceWeights (const std::vector<Scalar>& weights)
   {
     weights_ = weights;
   }
@@ -145,10 +145,10 @@ protected:
    * \param[out] transformation_matrix the resultant transformation matrix
    */
   void
-  estimateRigidTransformation(ConstCloudIterator<PointSource>& source_it,
-                              ConstCloudIterator<PointTarget>& target_it,
-                              typename std::vector<Scalar>::const_iterator& weights_it,
-                              Matrix4& transformation_matrix) const;
+  estimateRigidTransformation (ConstCloudIterator<PointSource>& source_it,
+                               ConstCloudIterator<PointTarget>& target_it,
+                               typename std::vector<Scalar>::const_iterator& weights_it,
+                               Matrix4& transformation_matrix) const;
 
   /** \brief Construct a 4 by 4 transformation matrix from the provided rotation and
    * translation. \param[in] alpha the rotation about the x-axis \param[in] beta the
@@ -157,13 +157,13 @@ protected:
    * translation \param[out] transformation_matrix the resultant transformation matrix
    */
   inline void
-  constructTransformationMatrix(const double& alpha,
-                                const double& beta,
-                                const double& gamma,
-                                const double& tx,
-                                const double& ty,
-                                const double& tz,
-                                Matrix4& transformation_matrix) const;
+  constructTransformationMatrix (const double& alpha,
+                                 const double& beta,
+                                 const double& gamma,
+                                 const double& tx,
+                                 const double& ty,
+                                 const double& tz,
+                                 Matrix4& transformation_matrix) const;
 
   std::vector<Scalar> weights_;
 };

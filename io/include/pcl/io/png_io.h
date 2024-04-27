@@ -33,129 +33,139 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id$ 
+ * $Id$
  * Authors: Anatoly Baksheev
  */
 
 #pragma once
 
+#include <pcl/console/print.h>
+#include <pcl/io/point_cloud_image_extractors.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/point_cloud.h>
-#include <pcl/console/print.h>
+
 #include <string>
-#include <pcl/io/point_cloud_image_extractors.h>
 
-namespace pcl
+namespace pcl {
+namespace io {
+/** \brief Saves 8-bit encoded image to PNG file.
+ * \param[in] file_name the name of the file to write to disk
+ * \param[in] mono_image image grayscale data
+ * \param[in] width image width
+ * \param[in] height image height
+ * \param[in] channels number of channels
+ * \ingroup io
+ */
+PCL_EXPORTS void
+saveCharPNGFile (const std::string& file_name,
+                 const unsigned char* mono_image,
+                 int width,
+                 int height,
+                 int channels);
+
+/** \brief Saves 16-bit encoded image to PNG file.
+ * \param[in] file_name the name of the file to write to disk
+ * \param[in] short_image image short data
+ * \param[in] width image width
+ * \param[in] height image height
+ * \param[in] channels number of channels
+ * \ingroup io
+ */
+PCL_EXPORTS void
+saveShortPNGFile (const std::string& file_name,
+                  const unsigned short* short_image,
+                  int width,
+                  int height,
+                  int channels);
+
+/** \brief Saves 8-bit encoded RGB image to PNG file.
+ * \param[in] file_name the name of the file to write to disk
+ * \param[in] rgb_image image rgb data
+ * \param[in] width image width
+ * \param[in] height image height
+ * \ingroup io
+ */
+PCL_EXPORTS void
+saveRgbPNGFile (const std::string& file_name,
+                const unsigned char* rgb_image,
+                int width,
+                int height);
+
+/** \brief Saves 8-bit grayscale cloud as image to PNG file.
+ * \param[in] file_name the name of the file to write to disk
+ * \param[in] cloud point cloud to save
+ * \ingroup io
+ */
+PCL_EXPORTS void
+savePNGFile (const std::string& file_name, const pcl::PointCloud<unsigned char>& cloud);
+
+/** \brief Saves 16-bit grayscale cloud as image to PNG file.
+ * \param[in] file_name the name of the file to write to disk
+ * \param[in] cloud point cloud to save
+ * \ingroup io
+ */
+PCL_EXPORTS void
+savePNGFile (const std::string& file_name,
+             const pcl::PointCloud<unsigned short>& cloud);
+
+/** \brief Saves a PCLImage (formerly ROS sensor_msgs::Image) to PNG file.
+ * \param[in] file_name the name of the file to write to disk
+ * \param[in] image image to save
+ * \ingroup io
+ * \note Currently only "rgb8", "mono8", and "mono16" image encodings are supported.
+ */
+PCL_EXPORTS void
+savePNGFile (const std::string& file_name, const pcl::PCLImage& image);
+
+/** \brief Saves the data from the specified field of the point cloud as image to PNG
+ * file. \param[in] file_name the name of the file to write to disk \param[in] cloud
+ * point cloud to save \param[in] field_name the name of the field to extract data from
+ * \ingroup io
+ */
+template <typename PointT>
+void
+savePNGFile (const std::string& file_name,
+             const pcl::PointCloud<PointT>& cloud,
+             const std::string& field_name)
 {
-  namespace io
-  {
-    /** \brief Saves 8-bit encoded image to PNG file.
-      * \param[in] file_name the name of the file to write to disk
-      * \param[in] mono_image image grayscale data
-      * \param[in] width image width
-      * \param[in] height image height
-      * \param[in] channels number of channels
-      * \ingroup io
-      */
-    PCL_EXPORTS void
-    saveCharPNGFile (const std::string& file_name, const unsigned char *mono_image, int width, int height, int channels);
-
-    /** \brief Saves 16-bit encoded image to PNG file.
-      * \param[in] file_name the name of the file to write to disk
-      * \param[in] short_image image short data
-      * \param[in] width image width
-      * \param[in] height image height
-      * \param[in] channels number of channels
-      * \ingroup io
-      */
-    PCL_EXPORTS void
-    saveShortPNGFile (const std::string& file_name, const unsigned short *short_image, int width, int height, int channels);
-
-    /** \brief Saves 8-bit encoded RGB image to PNG file.
-      * \param[in] file_name the name of the file to write to disk
-      * \param[in] rgb_image image rgb data
-      * \param[in] width image width
-      * \param[in] height image height
-      * \ingroup io
-      */
-    PCL_EXPORTS void 
-    saveRgbPNGFile (const std::string& file_name, const unsigned char *rgb_image, int width, int height);
-
-    /** \brief Saves 8-bit grayscale cloud as image to PNG file.
-      * \param[in] file_name the name of the file to write to disk
-      * \param[in] cloud point cloud to save
-      * \ingroup io
-      */
-    PCL_EXPORTS void
-    savePNGFile (const std::string& file_name, const pcl::PointCloud<unsigned char>& cloud);
-
-    /** \brief Saves 16-bit grayscale cloud as image to PNG file.
-      * \param[in] file_name the name of the file to write to disk
-      * \param[in] cloud point cloud to save
-      * \ingroup io
-      */
-    PCL_EXPORTS void
-    savePNGFile (const std::string& file_name, const pcl::PointCloud<unsigned short>& cloud);
-
-    /** \brief Saves a PCLImage (formerly ROS sensor_msgs::Image) to PNG file.
-      * \param[in] file_name the name of the file to write to disk
-      * \param[in] image image to save
-      * \ingroup io
-      * \note Currently only "rgb8", "mono8", and "mono16" image encodings are supported.
-      */
-    PCL_EXPORTS void
-    savePNGFile (const std::string& file_name, const pcl::PCLImage& image);
-
-    /** \brief Saves the data from the specified field of the point cloud as image to PNG file.
-     * \param[in] file_name the name of the file to write to disk
-     * \param[in] cloud point cloud to save
-     * \param[in] field_name the name of the field to extract data from
-     * \ingroup io
-     */
-    template <typename PointT> void
-    savePNGFile (const std::string& file_name, const pcl::PointCloud<PointT>& cloud, const std::string& field_name)
-    {
-      using PointCloudImageExtractorPtr = typename PointCloudImageExtractor<PointT>::Ptr;
-      PointCloudImageExtractorPtr pcie;
-      if (field_name == "normal")
-      {
-        pcie = PointCloudImageExtractorPtr (new PointCloudImageExtractorFromNormalField<PointT>);
-      }
-      else if (field_name == "rgb")
-      {
-        pcie = PointCloudImageExtractorPtr (new PointCloudImageExtractorFromRGBField<PointT>);
-      }
-      else if (field_name == "label")
-      {
-        pcie = PointCloudImageExtractorPtr (new PointCloudImageExtractorFromLabelField<PointT>);
-      }
-      else if (field_name == "z")
-      {
-        pcie = PointCloudImageExtractorPtr (new PointCloudImageExtractorFromZField<PointT>);
-      }
-      else if (field_name == "curvature")
-      {
-        pcie = PointCloudImageExtractorPtr (new PointCloudImageExtractorFromCurvatureField<PointT>);
-      }
-      else if (field_name == "intensity")
-      {
-        pcie = PointCloudImageExtractorPtr (new PointCloudImageExtractorFromIntensityField<PointT>);
-      }
-      else
-      {
-        PCL_ERROR ("[pcl::io::savePNGFile] Unsupported field \"%s\".\n", field_name.c_str ());
-        return;
-      }
-      pcl::PCLImage image;
-      if (pcie->extract (cloud, image))
-      {
-        savePNGFile(file_name, image);
-      }
-      else
-      {
-        PCL_ERROR ("[pcl::io::savePNGFile] Failed to extract an image from \"%s\" field.\n", field_name.c_str());
-      }
-    }
-
+  using PointCloudImageExtractorPtr = typename PointCloudImageExtractor<PointT>::Ptr;
+  PointCloudImageExtractorPtr pcie;
+  if (field_name == "normal") {
+    pcie = PointCloudImageExtractorPtr(
+        new PointCloudImageExtractorFromNormalField<PointT>);
+  }
+  else if (field_name == "rgb") {
+    pcie =
+        PointCloudImageExtractorPtr(new PointCloudImageExtractorFromRGBField<PointT>);
+  }
+  else if (field_name == "label") {
+    pcie =
+        PointCloudImageExtractorPtr(new PointCloudImageExtractorFromLabelField<PointT>);
+  }
+  else if (field_name == "z") {
+    pcie = PointCloudImageExtractorPtr(new PointCloudImageExtractorFromZField<PointT>);
+  }
+  else if (field_name == "curvature") {
+    pcie = PointCloudImageExtractorPtr(
+        new PointCloudImageExtractorFromCurvatureField<PointT>);
+  }
+  else if (field_name == "intensity") {
+    pcie = PointCloudImageExtractorPtr(
+        new PointCloudImageExtractorFromIntensityField<PointT>);
+  }
+  else {
+    PCL_ERROR("[pcl::io::savePNGFile] Unsupported field \"%s\".\n", field_name.c_str());
+    return;
+  }
+  pcl::PCLImage image;
+  if (pcie->extract(cloud, image)) {
+    savePNGFile(file_name, image);
+  }
+  else {
+    PCL_ERROR("[pcl::io::savePNGFile] Failed to extract an image from \"%s\" field.\n",
+              field_name.c_str());
   }
 }
+
+} // namespace io
+} // namespace pcl

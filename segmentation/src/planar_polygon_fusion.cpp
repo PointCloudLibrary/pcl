@@ -38,14 +38,14 @@
  */
 
 #include <pcl/impl/instantiate.hpp>
-#include <pcl/point_types.h>
-#include <pcl/segmentation/planar_polygon_fusion.h>
 #include <pcl/segmentation/impl/planar_polygon_fusion.hpp>
+#include <pcl/segmentation/planar_polygon_fusion.h>
+#include <pcl/point_types.h>
 
 // Instantiations of specific point types
 #ifdef PCL_ONLY_CORE_POINT_TYPES
-  PCL_INSTANTIATE(PlanarPolygonFusion, (pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA)(pcl::PointXYZRGB))
+PCL_INSTANTIATE(PlanarPolygonFusion,
+                (pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA)(pcl::PointXYZRGB))
 #else
-  PCL_INSTANTIATE(PlanarPolygonFusion, PCL_XYZ_POINT_TYPES)
+PCL_INSTANTIATE(PlanarPolygonFusion, PCL_XYZ_POINT_TYPES)
 #endif
-

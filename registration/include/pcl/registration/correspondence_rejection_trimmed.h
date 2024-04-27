@@ -79,7 +79,7 @@ public:
    * correspondences) and 1 (full overlap, all correspondences)
    */
   virtual inline void
-  setOverlapRatio(float ratio)
+  setOverlapRatio (float ratio)
   {
     overlap_ratio_ = std::min(1.0f, std::max(0.0f, ratio));
   };
@@ -87,7 +87,7 @@ public:
   /** \brief Get the maximum distance used for thresholding in correspondence rejection.
    */
   inline float
-  getOverlapRatio() const
+  getOverlapRatio () const
   {
     return overlap_ratio_;
   };
@@ -100,14 +100,14 @@ public:
    * correspondences
    */
   inline void
-  setMinCorrespondences(unsigned int min_correspondences)
+  setMinCorrespondences (unsigned int min_correspondences)
   {
     nr_min_correspondences_ = min_correspondences;
   };
 
   /** \brief Get the minimum number of correspondences. */
   inline unsigned int
-  getMinCorrespondences() const
+  getMinCorrespondences () const
   {
     return nr_min_correspondences_;
   };
@@ -118,15 +118,16 @@ public:
    * set of remaining correspondences
    */
   void
-  getRemainingCorrespondences(const pcl::Correspondences& original_correspondences,
-                              pcl::Correspondences& remaining_correspondences) override;
+  getRemainingCorrespondences (
+      const pcl::Correspondences& original_correspondences,
+      pcl::Correspondences& remaining_correspondences) override;
 
 protected:
   /** \brief Apply the rejection algorithm.
    * \param[out] correspondences the set of resultant correspondences.
    */
   inline void
-  applyRejection(pcl::Correspondences& correspondences) override
+  applyRejection (pcl::Correspondences& correspondences) override
   {
     getRemainingCorrespondences(*input_correspondences_, correspondences);
   }

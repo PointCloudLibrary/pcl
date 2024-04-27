@@ -190,9 +190,9 @@ public:
    * visualization. Therefore this method takes some time.
    */
   bool
-  addMesh(const MeshConstPtr& mesh,
-          const std::string& id,
-          const Eigen::Isometry3d& T = Eigen::Isometry3d::Identity());
+  addMesh (const MeshConstPtr& mesh,
+           const std::string& id,
+           const Eigen::Isometry3d& T = Eigen::Isometry3d::Identity());
 
   /** \brief Convert an organized cloud to a mesh and draw it.
    *
@@ -207,9 +207,9 @@ public:
    * \note This method takes some time for the conversion).
    */
   bool
-  addMesh(const CloudXYZRGBNormalConstPtr& cloud,
-          const std::string& id,
-          const Eigen::Isometry3d& T = Eigen::Isometry3d::Identity());
+  addMesh (const CloudXYZRGBNormalConstPtr& cloud,
+           const std::string& id,
+           const Eigen::Isometry3d& T = Eigen::Isometry3d::Identity());
 
   /** \brief Remove the mesh with the given id.
    *
@@ -219,27 +219,27 @@ public:
    * \return true if success.
    */
   bool
-  removeMesh(const std::string& id);
+  removeMesh (const std::string& id);
 
   /** \brief Remove all meshes that are currently drawn. */
   void
-  removeAllMeshes();
+  removeAllMeshes ();
 
   /** \brief Set the coefficients for the box. */
   void
-  setBoxCoefficients(const BoxCoefficients& coeffs);
+  setBoxCoefficients (const BoxCoefficients& coeffs);
 
   /** \brief Enable / disable drawing the box. */
   void
-  setDrawBox(const bool enabled);
+  setDrawBox (const bool enabled);
 
   /** \brief Check if the box is drawn. */
   bool
-  getDrawBox() const;
+  getDrawBox () const;
 
   /** \brief Set the point around which the camera rotates during mouse navigation. */
   void
-  setPivot(const Eigen::Vector3d& pivot);
+  setPivot (const Eigen::Vector3d& pivot);
 
   /** \brief Searches the given id in the drawn meshes and calculates the pivot as the
    * centroid of the found geometry.
@@ -248,55 +248,55 @@ public:
    * another thread.
    */
   void
-  setPivot(const std::string& id);
+  setPivot (const std::string& id);
 
   /** \brief Stop the visualization timer. */
   void
-  stopTimer();
+  stopTimer ();
 
   /** \brief The visibility confidence is normalized with this value (must be greater
    * than 1). */
   void
-  setVisibilityConfidenceNormalization(const float vis_conf_norm);
+  setVisibilityConfidenceNormalization (const float vis_conf_norm);
 
   /** \see http://doc.qt.digia.com/qt/qwidget.html#minimumSizeHint-prop */
   QSize
-  minimumSizeHint() const override;
+  minimumSizeHint () const override;
 
   /** \see http://doc.qt.digia.com/qt/qwidget.html#sizeHint-prop */
   QSize
-  sizeHint() const override;
+  sizeHint () const override;
 
   /** \brief Set the scaling factor to convert from meters to the unit of the drawn
    * files. */
   void
-  setScalingFactor(const double scale);
+  setScalingFactor (const double scale);
 
 public Q_SLOTS:
 
   /** \brief Requests the scene to be re-drawn (called periodically from a timer). */
   void
-  timerCallback();
+  timerCallback ();
 
   /** \brief Reset the virtual camera position and orientation. */
   void
-  resetCamera();
+  resetCamera ();
 
   /** \brief Toggle the mesh representation. */
   void
-  toggleMeshRepresentation();
+  toggleMeshRepresentation ();
 
   /** \brief Set the mesh representation. */
   void
-  setMeshRepresentation(const MeshRepresentation& representation);
+  setMeshRepresentation (const MeshRepresentation& representation);
 
   /** \brief Toggle the coloring mode. */
   void
-  toggleColoring();
+  toggleColoring ();
 
   /** \brief Set the coloring mode. */
   void
-  setColoring(const Coloring& coloring);
+  setColoring (const Coloring& coloring);
 
 protected:
   /** \brief Please have a look at the documentation of calcFPS. */
@@ -305,18 +305,18 @@ protected:
     FPS() : fps_(0.) {}
 
     inline double&
-    value()
+    value ()
     {
       return (fps_);
     }
     inline double
-    value() const
+    value () const
     {
       return (fps_);
     }
 
     inline std::string
-    str() const
+    str () const
     {
       std::stringstream ss;
       ss << std::setprecision(1) << std::fixed << fps_;
@@ -335,7 +335,7 @@ protected:
    * object. */
   template <class FPS>
   void
-  calcFPS(FPS& fps) const
+  calcFPS (FPS& fps) const
   {
     static pcl::StopWatch sw;
     static unsigned int count = 0;
@@ -352,7 +352,7 @@ protected:
    * \see http://doc.qt.digia.com/qt/opengl-overpainting.html
    */
   void
-  paintEvent(QPaintEvent* event) override;
+  paintEvent (QPaintEvent* event) override;
 
 private:
   using Color = Eigen::Matrix<unsigned char, 3, 1>;
@@ -376,46 +376,46 @@ private:
    * \note Must lock the mutex before calling this method.
    */
   bool
-  getMeshIsAdded(const std::string& id);
+  getMeshIsAdded (const std::string& id);
 
   /** \brief Calculate the pivot for the stored id. */
   void
-  calcPivot();
+  calcPivot ();
 
   /** \brief Draw all meshes.
    *
    * \note Only triangle meshes are currently supported.
    */
   void
-  drawMeshes();
+  drawMeshes ();
 
   /** \brief Draw a wireframe box. */
   void
-  drawBox();
+  drawBox ();
 
   /** \see http://doc.qt.digia.com/qt/qglwidget.html#initializeGL */
   void
-  initializeGL() override;
+  initializeGL () override;
 
   /** \see http://www.opengl.org/sdk/docs/man/xhtml/glViewport.xml */
   void
-  setupViewport(const int w, const int h);
+  setupViewport (const int w, const int h);
 
   /** \see http://doc.qt.digia.com/qt/qglwidget.html#resizeGL */
   void
-  resizeGL(int w, int h) override;
+  resizeGL (int w, int h) override;
 
   /** \see http://doc.qt.digia.com/qt/qwidget.html#mousePressEvent */
   void
-  mousePressEvent(QMouseEvent* event) override;
+  mousePressEvent (QMouseEvent* event) override;
 
   /** \see http://doc.qt.digia.com/qt/qwidget.html#mouseMoveEvent */
   void
-  mouseMoveEvent(QMouseEvent* event) override;
+  mouseMoveEvent (QMouseEvent* event) override;
 
   /** \see http://doc.qt.digia.com/qt/qwidget.html#wheelEvent */
   void
-  wheelEvent(QWheelEvent* event) override;
+  wheelEvent (QWheelEvent* event) override;
 
   ////////////////////////////////////////////////////////////////////////
   // Members

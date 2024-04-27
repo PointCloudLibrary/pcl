@@ -73,21 +73,21 @@ public:
    * \param[in] contour the new planar polygonal contour
    */
   void
-  setContour(const pcl::PointCloud<PointT>& contour)
+  setContour (const pcl::PointCloud<PointT>& contour)
   {
     contour_ = contour.points;
   }
 
   /** \brief Getter for the contour / boundary */
   typename pcl::PointCloud<PointT>::VectorType&
-  getContour()
+  getContour ()
   {
     return (contour_);
   }
 
   /** \brief Getter for the contour / boundary */
   const typename pcl::PointCloud<PointT>::VectorType&
-  getContour() const
+  getContour () const
   {
     return (contour_);
   }
@@ -96,7 +96,7 @@ public:
    * \param[in] coefficients the new coefficients to be set
    */
   void
-  setCoefficients(const Eigen::Vector4f& coefficients)
+  setCoefficients (const Eigen::Vector4f& coefficients)
   {
     coefficients_ = coefficients;
   }
@@ -105,7 +105,7 @@ public:
    * \param[in] coefficients the new coefficients to be set
    */
   void
-  setCoefficients(const pcl::ModelCoefficients& coefficients)
+  setCoefficients (const pcl::ModelCoefficients& coefficients)
   {
     for (int i = 0; i < 4; i++)
       coefficients_[i] = coefficients.values.at(i);
@@ -113,14 +113,14 @@ public:
 
   /** \brief Getter for the coefficients */
   Eigen::Vector4f&
-  getCoefficients()
+  getCoefficients ()
   {
     return (coefficients_);
   }
 
   /** \brief Getter for the coefficients */
   const Eigen::Vector4f&
-  getCoefficients() const
+  getCoefficients () const
   {
     return (coefficients_);
   }

@@ -39,80 +39,79 @@
 
 #include <fstream>
 
-namespace pcl
+namespace pcl {
+/** \brief Function for reading data from a stream. */
+template <class Type>
+void
+read (std::istream& stream, Type& value)
 {
-  /** \brief Function for reading data from a stream. */
-  template <class Type>
-  void read (std::istream & stream, Type & value)
-  {
-    stream.read (reinterpret_cast<char*> (&value), sizeof(value));
-  }
-
-  /** \brief Function for reading data arrays from a stream. */
-  template <class Type>
-  void read (std::istream & stream, Type * value, int nr_values)
-  {
-    for (int value_index = 0; value_index < nr_values; ++value_index)
-    {
-      read (stream, value[value_index]);
-    }
-  }
-
-  /** \brief Function for writing data to a stream. */
-  template <class Type>
-  void write (std::ostream & stream, Type value)
-  {
-    stream.write (reinterpret_cast<char*> (&value), sizeof (value));
-  }
-
-  /** \brief Function for writing data arrays to a stream. */
-  template <class Type>
-  void write (std::ostream & stream, Type * value, int nr_values)
-  {
-    for (int value_index = 0; value_index < nr_values; ++value_index)
-    {
-      write (stream, value[value_index]);
-    }
-  }
-
-  /** \brief Defines a region in XY-space.
-    * \author Stefan Holzer
-    */
-  struct PCL_EXPORTS RegionXY
-  {
-    /** \brief Constructor. */
-    RegionXY () = default;
-
-    /** \brief x-position of the region. */
-    int x{0};
-    /** \brief y-position of the region. */
-    int y{0};
-    /** \brief width of the region. */
-    int width{0};
-    /** \brief height of the region. */
-    int height{0};
-
-    /** \brief Serializes the object to the specified stream.
-      * \param[out] stream the stream the object will be serialized to. */
-    void
-    serialize (std::ostream & stream) const
-    {
-      write (stream, x);
-      write (stream, y);
-      write (stream, width);
-      write (stream, height);
-    }
-
-    /** \brief Deserializes the object from the specified stream.
-      * \param[in] stream the stream the object will be deserialized from. */
-    void
-    deserialize (::std::istream & stream)
-    {
-      read (stream, x);
-      read (stream, y);
-      read (stream, width);
-      read (stream, height);
-    }
-
-  };
+  stream.read(reinterpret_cast<char*>(&value), sizeof(value));
 }
+
+/** \brief Function for reading data arrays from a stream. */
+template <class Type>
+void
+read (std::istream& stream, Type* value, int nr_values)
+{
+  for (int value_index = 0; value_index < nr_values; ++value_index) {
+    read(stream, value[value_index]);
+  }
+}
+
+/** \brief Function for writing data to a stream. */
+template <class Type>
+void
+write (std::ostream& stream, Type value)
+{
+  stream.write(reinterpret_cast<char*>(&value), sizeof(value));
+}
+
+/** \brief Function for writing data arrays to a stream. */
+template <class Type>
+void
+write (std::ostream& stream, Type* value, int nr_values)
+{
+  for (int value_index = 0; value_index < nr_values; ++value_index) {
+    write(stream, value[value_index]);
+  }
+}
+
+/** \brief Defines a region in XY-space.
+ * \author Stefan Holzer
+ */
+struct PCL_EXPORTS RegionXY {
+  /** \brief Constructor. */
+  RegionXY() = default;
+
+  /** \brief x-position of the region. */
+  int x{0};
+  /** \brief y-position of the region. */
+  int y{0};
+  /** \brief width of the region. */
+  int width{0};
+  /** \brief height of the region. */
+  int height{0};
+
+  /** \brief Serializes the object to the specified stream.
+   * \param[out] stream the stream the object will be serialized to. */
+  void
+  serialize (std::ostream& stream) const
+  {
+    write(stream, x);
+    write(stream, y);
+    write(stream, width);
+    write(stream, height);
+  }
+
+  /** \brief Deserializes the object from the specified stream.
+   * \param[in] stream the stream the object will be deserialized from. */
+  void
+  deserialize (::std::istream& stream)
+  {
+    read(stream, x);
+    read(stream, y);
+    read(stream, width);
+    read(stream, height);
+  }
+};
+} // namespace pcl

@@ -35,42 +35,47 @@
 
 /// @file trackball.h
 /// @details Generic object for generating rotations given mouse input.  This
-/// class has been based on 
+/// class has been based on
 /// @author Matthew Hielsberg
 
 #pragma once
 
-#include <boost/math/quaternion.hpp>
 #include <pcl/apps/point_cloud_editor/localTypes.h>
 
-class TrackBall
-{
-  public:
-    TrackBall();
-    TrackBall(const TrackBall &copy);
-    ~TrackBall();
-    
-    TrackBall& operator=(const TrackBall &rhs);
-    
-    void start(int s_x, int s_y);
-    
-    void update(int s_x, int s_y);
-    
-    void getRotationMatrix(float (&rot)[MATRIX_SIZE]);
-    
-    void reset();
-    
-  private:
-    
-    void getPointFromScreenPoint(int s_x, int s_y, float &x, float &y, float &z) const;
+#include <boost/math/quaternion.hpp>
 
-    /// the quaternion representing the current orientation of the trackball
-    boost::math::quaternion<float> quat_;
-    
-    /// the original mouse screen coordinates converted to a 3d point
-    float origin_x_, origin_y_, origin_z_;
-    
-    /// the radius of the trackball squared
-    float radius_sqr_;
-        
+class TrackBall {
+public:
+  TrackBall();
+  TrackBall(const TrackBall& copy);
+  ~TrackBall();
+
+  TrackBall&
+  operator=(const TrackBall& rhs);
+
+  void
+  start (int s_x, int s_y);
+
+  void
+  update (int s_x, int s_y);
+
+  void
+  getRotationMatrix (float (&rot)[MATRIX_SIZE]);
+
+  void
+  reset ();
+
+private:
+  void
+  getPointFromScreenPoint (int s_x, int s_y, float& x, float& y, float& z) const;
+
+  /// the quaternion representing the current orientation of the trackball
+  boost::math::quaternion<float> quat_;
+
+  /// the original mouse screen coordinates converted to a 3d point
+  float origin_x_, origin_y_, origin_z_;
+
+  /// the radius of the trackball squared
+  float radius_sqr_;
+
 }; // class TrackBall

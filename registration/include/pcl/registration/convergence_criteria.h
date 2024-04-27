@@ -74,7 +74,7 @@ public:
 
   /** \brief Check if convergence has been reached. Pure virtual. */
   virtual bool
-  hasConverged() = 0;
+  hasConverged () = 0;
 
   /** \brief Bool operator. */
   operator bool() { return (hasConverged()); }

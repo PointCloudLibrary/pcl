@@ -36,53 +36,69 @@
 
 #pragma once
 
-#include <pcl/pcl_config.h>
 #include <pcl/memory.h>
+#include <pcl/pcl_config.h>
 #ifdef HAVE_OPENNI
 
 #include "openni_device.h"
 #include "openni_driver.h"
 #include "openni_image_bayer_grbg.h"
 
-namespace openni_wrapper
-{
+namespace openni_wrapper {
 
-  /**
-   * @brief Concrete implementation of the interface OpenNIDevice for a MS Kinect device.
-   * @author Suat Gedikli
-   * @date 02.january 2011
-   * @ingroup io
-   */
-  class DeviceKinect : public OpenNIDevice
-  {
-    friend class OpenNIDriver;
-  public:
-    DeviceKinect (xn::Context& context, const xn::NodeInfo& device_node, const xn::NodeInfo& image_node, const xn::NodeInfo& depth_node, const xn::NodeInfo& ir_node);
-    ~DeviceKinect () noexcept override;
+/**
+ * @brief Concrete implementation of the interface OpenNIDevice for a MS Kinect device.
+ * @author Suat Gedikli
+ * @date 02.january 2011
+ * @ingroup io
+ */
+class DeviceKinect : public OpenNIDevice {
+  friend class OpenNIDriver;
 
-    inline void setDebayeringMethod (const ImageBayerGRBG::DebayeringMethod& debayering_method) noexcept;
-    inline const ImageBayerGRBG::DebayeringMethod& getDebayeringMethod () const noexcept;
+public:
+  DeviceKinect(xn::Context& context,
+               const xn::NodeInfo& device_node,
+               const xn::NodeInfo& image_node,
+               const xn::NodeInfo& depth_node,
+               const xn::NodeInfo& ir_node);
+  ~DeviceKinect() noexcept override;
 
-    bool isSynchronizationSupported () const noexcept override;
+  inline void
+  setDebayeringMethod (
+      const ImageBayerGRBG::DebayeringMethod& debayering_method) noexcept;
+  inline const ImageBayerGRBG::DebayeringMethod&
+  getDebayeringMethod () const noexcept;
 
-  protected:
-    Image::Ptr getCurrentImage (pcl::shared_ptr<xn::ImageMetaData> image_meta_data) const noexcept override;
-    void enumAvailableModes () noexcept;
-    bool isImageResizeSupported (unsigned input_width, unsigned input_height, unsigned output_width, unsigned output_height) const noexcept override;
-    ImageBayerGRBG::DebayeringMethod debayering_method_{ImageBayerGRBG::EdgeAwareWeighted};
-  } ;
+  bool
+  isSynchronizationSupported () const noexcept override;
 
+protected:
+  Image::Ptr
+  getCurrentImage (
+      pcl::shared_ptr<xn::ImageMetaData> image_meta_data) const noexcept override;
   void
-  DeviceKinect::setDebayeringMethod (const ImageBayerGRBG::DebayeringMethod& debayering_method) noexcept
-  {
-    debayering_method_ = debayering_method;
-  }
+  enumAvailableModes () noexcept;
+  bool
+  isImageResizeSupported (unsigned input_width,
+                          unsigned input_height,
+                          unsigned output_width,
+                          unsigned output_height) const noexcept override;
+  ImageBayerGRBG::DebayeringMethod debayering_method_{
+      ImageBayerGRBG::EdgeAwareWeighted};
+};
 
-  const ImageBayerGRBG::DebayeringMethod&
-  DeviceKinect::getDebayeringMethod () const noexcept
-  {
-    return debayering_method_;
-  }
-} // namespace
+void
+DeviceKinect::setDebayeringMethod(
+    const ImageBayerGRBG::DebayeringMethod& debayering_method) noexcept
+{
+  debayering_method_ = debayering_method;
+}
+
+const ImageBayerGRBG::DebayeringMethod&
+DeviceKinect::getDebayeringMethod() const noexcept
+{
+  return debayering_method_;
+}
+} // namespace openni_wrapper
 
 #endif

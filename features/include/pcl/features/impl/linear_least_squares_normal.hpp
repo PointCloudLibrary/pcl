@@ -44,14 +44,16 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT>
-pcl::LinearLeastSquaresNormalEstimation<PointInT, PointOutT>::~LinearLeastSquaresNormalEstimation () = default;
+pcl::LinearLeastSquaresNormalEstimation<PointInT, PointOutT>::
+    ~LinearLeastSquaresNormalEstimation() = default;
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointInT, typename PointOutT> void
-pcl::LinearLeastSquaresNormalEstimation<PointInT, PointOutT>::computePointNormal (
-    const int pos_x, const int pos_y, PointOutT &normal)
+template <typename PointInT, typename PointOutT>
+void
+pcl::LinearLeastSquaresNormalEstimation<PointInT, PointOutT>::computePointNormal(
+    const int pos_x, const int pos_y, PointOutT& normal)
 {
-  const float bad_point = std::numeric_limits<float>::quiet_NaN ();
+  const float bad_point = std::numeric_limits<float>::quiet_NaN();
 
   const int width = input_->width;
   const int height = input_->height;
@@ -65,8 +67,7 @@ pcl::LinearLeastSquaresNormalEstimation<PointInT, PointOutT>::computePointNormal
   const float py = (*input_)[index].y;
   const float pz = (*input_)[index].z;
 
-  if (std::isnan (px)) 
-  {
+  if (std::isnan(px)) {
     normal.normal_x = bad_point;
     normal.normal_y = bad_point;
     normal.normal_z = bad_point;
@@ -76,9 +77,10 @@ pcl::LinearLeastSquaresNormalEstimation<PointInT, PointOutT>::computePointNormal
   }
 
   float smoothingSize = normal_smoothing_size_;
-  if (use_depth_dependent_smoothing_) smoothingSize = smoothingSize*(pz+0.5f);
+  if (use_depth_dependent_smoothing_)
+    smoothingSize = smoothingSize * (pz + 0.5f);
 
-  const int smoothingSizeInt = static_cast<int> (smoothingSize);
+  const int smoothingSizeInt = static_cast<int>(smoothingSize);
 
   float matA0 = 0.0f;
   float matA1 = 0.0f;
@@ -87,11 +89,11 @@ pcl::LinearLeastSquaresNormalEstimation<PointInT, PointOutT>::computePointNormal
   float vecb0 = 0.0f;
   float vecb1 = 0.0f;
 
-  for (int v = y - smoothingSizeInt; v <= y + smoothingSizeInt; v += smoothingSizeInt)
-  {
-    for (int u = x - smoothingSizeInt; u <= x + smoothingSizeInt; u += smoothingSizeInt)
-    {
-      if (u < 0 || u >= width || v < 0 || v >= height) continue;
+  for (int v = y - smoothingSizeInt; v <= y + smoothingSizeInt; v += smoothingSizeInt) {
+    for (int u = x - smoothingSizeInt; u <= x + smoothingSizeInt;
+         u += smoothingSizeInt) {
+      if (u < 0 || u >= width || v < 0 || v >= height)
+        continue;
 
       const int index2 = v * width + u;
 
@@ -99,16 +101,18 @@ pcl::LinearLeastSquaresNormalEstimation<PointInT, PointOutT>::computePointNormal
       const float qy = (*input_)[index2].y;
       const float qz = (*input_)[index2].z;
 
-      if (std::isnan (qx)) continue;
+      if (std::isnan(qx))
+        continue;
 
       const float delta = qz - pz;
       const float i = qx - px;
       const float j = qy - py;
 
-      float depthChangeThreshold = pz*pz * 0.05f * max_depth_change_factor_;
-      if (use_depth_dependent_smoothing_) depthChangeThreshold *= pz;
+      float depthChangeThreshold = pz * pz * 0.05f * max_depth_change_factor_;
+      if (use_depth_dependent_smoothing_)
+        depthChangeThreshold *= pz;
 
-      const float f = std::fabs (delta) > depthChangeThreshold ? 0 : 1;
+      const float f = std::fabs(delta) > depthChangeThreshold ? 0 : 1;
 
       matA0 += f * i * i;
       matA1 += f * i * j;
@@ -128,16 +132,14 @@ pcl::LinearLeastSquaresNormalEstimation<PointInT, PointOutT>::computePointNormal
 
   const float length = nx * nx + ny * ny + nz * nz;
 
-  if (length <= 0.01f)
-  {
+  if (length <= 0.01f) {
     normal.normal_x = bad_point;
     normal.normal_y = bad_point;
     normal.normal_z = bad_point;
     normal.curvature = bad_point;
   }
-  else
-  {
-    const float normInv = 1.0f / std::sqrt (length);
+  else {
+    const float normInv = 1.0f / std::sqrt(length);
 
     normal.normal_x = -nx * normInv;
     normal.normal_y = -ny * normInv;
@@ -149,45 +151,46 @@ pcl::LinearLeastSquaresNormalEstimation<PointInT, PointOutT>::computePointNormal
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointInT, typename PointOutT> void
-pcl::LinearLeastSquaresNormalEstimation<PointInT, PointOutT>::computeFeature (PointCloudOut &output)
+template <typename PointInT, typename PointOutT>
+void
+pcl::LinearLeastSquaresNormalEstimation<PointInT, PointOutT>::computeFeature(
+    PointCloudOut& output)
 {
-  const float bad_point = std::numeric_limits<float>::quiet_NaN ();
+  const float bad_point = std::numeric_limits<float>::quiet_NaN();
 
   const int width = input_->width;
   const int height = input_->height;
 
   // we compute the normals as follows:
   // ----------------------------------
-  // 
+  //
   // for the depth-gradient you can make the following first-order Taylor approximation:
   //   D(x + dx) - D(x) = dx^T \Delta D + h.o.t.
-  //     
+  //
   // build linear system by stacking up equation for 8 neighbor points:
   //   Y = X \Delta D
-  // 
+  //
   // => \Delta D = (X^T X)^{-1} X^T Y
   // => \Delta D = (A)^{-1} b
 
-  //const float smoothingSize = 30.0f;
-  for (int y = 0; y < height; ++y)
-  {
-    for (int x = 0; x < width; ++x)
-    {
+  // const float smoothingSize = 30.0f;
+  for (int y = 0; y < height; ++y) {
+    for (int x = 0; x < width; ++x) {
       const int index = y * width + x;
 
       const float px = (*input_)[index].x;
       const float py = (*input_)[index].y;
       const float pz = (*input_)[index].z;
 
-      if (std::isnan(px)) continue;
+      if (std::isnan(px))
+        continue;
 
-      //float depthDependentSmoothingSize = smoothingSize + pz / 10.0f;
+      // float depthDependentSmoothingSize = smoothingSize + pz / 10.0f;
 
       float smoothingSize = normal_smoothing_size_;
-      //if (use_depth_dependent_smoothing_) smoothingSize *= pz;
-      //if (use_depth_dependent_smoothing_) smoothingSize += pz*5;
-      //if (smoothingSize < 1.0f) smoothingSize += 1.0f;
+      // if (use_depth_dependent_smoothing_) smoothingSize *= pz;
+      // if (use_depth_dependent_smoothing_) smoothingSize += pz*5;
+      // if (smoothingSize < 1.0f) smoothingSize += 1.0f;
 
       const int smoothingSizeInt = static_cast<int>(smoothingSize);
 
@@ -198,11 +201,12 @@ pcl::LinearLeastSquaresNormalEstimation<PointInT, PointOutT>::computeFeature (Po
       float vecb0 = 0.0f;
       float vecb1 = 0.0f;
 
-      for (int v = y - smoothingSizeInt; v <= y + smoothingSizeInt; v += smoothingSizeInt)
-      {
-        for (int u = x - smoothingSizeInt; u <= x + smoothingSizeInt; u += smoothingSizeInt)
-        {
-          if (u < 0 || u >= width || v < 0 || v >= height) continue;
+      for (int v = y - smoothingSizeInt; v <= y + smoothingSizeInt;
+           v += smoothingSizeInt) {
+        for (int u = x - smoothingSizeInt; u <= x + smoothingSizeInt;
+             u += smoothingSizeInt) {
+          if (u < 0 || u >= width || v < 0 || v >= height)
+            continue;
 
           const int index2 = v * width + u;
 
@@ -210,18 +214,21 @@ pcl::LinearLeastSquaresNormalEstimation<PointInT, PointOutT>::computeFeature (Po
           const float qy = (*input_)[index2].y;
           const float qz = (*input_)[index2].z;
 
-          if (std::isnan(qx)) continue;
+          if (std::isnan(qx))
+            continue;
 
           const float delta = qz - pz;
           const float i = qx - px;
           const float j = qy - py;
 
-          const float depthDependendDepthChange = (max_depth_change_factor_ * (std::abs (pz) + 1.0f) * 2.0f);
+          const float depthDependendDepthChange =
+              (max_depth_change_factor_ * (std::abs(pz) + 1.0f) * 2.0f);
           const float f = std::fabs(delta) > depthDependendDepthChange ? 0 : 1;
 
-          //float f = std::abs(delta) > (pz * 0.05f - 0.3f) ? 0 : 1;
-          //const float f = std::abs(delta) > (pz*pz * 0.05f * max_depth_change_factor_) ? 0 : 1;
-          //float f = Math.Abs(delta) > (depth * Math.Log(depth + 1.0) * 0.02f - 0.2f) ? 0 : 1;
+          // float f = std::abs(delta) > (pz * 0.05f - 0.3f) ? 0 : 1;
+          // const float f = std::abs(delta) > (pz*pz * 0.05f *
+          // max_depth_change_factor_) ? 0 : 1; float f = Math.Abs(delta) > (depth *
+          // Math.Log(depth + 1.0) * 0.02f - 0.2f) ? 0 : 1;
 
           matA0 += f * i * i;
           matA1 += f * i * j;
@@ -241,16 +248,14 @@ pcl::LinearLeastSquaresNormalEstimation<PointInT, PointOutT>::computeFeature (Po
 
       const float length = nx * nx + ny * ny + nz * nz;
 
-      if (length <= 0.0f)
-      {
+      if (length <= 0.0f) {
         output[index].normal_x = bad_point;
         output[index].normal_y = bad_point;
         output[index].normal_z = bad_point;
         output[index].curvature = bad_point;
       }
-      else
-      {
-        const float normInv = 1.0f / std::sqrt (length);
+      else {
+        const float normInv = 1.0f / std::sqrt(length);
 
         output[index].normal_x = nx * normInv;
         output[index].normal_y = ny * normInv;
@@ -261,8 +266,9 @@ pcl::LinearLeastSquaresNormalEstimation<PointInT, PointOutT>::computeFeature (Po
   }
 }
 
-#define PCL_INSTANTIATE_LinearLeastSquaresNormalEstimation(T,NT) template class PCL_EXPORTS pcl::LinearLeastSquaresNormalEstimation<T,NT>;
-//#define LinearLeastSquaresNormalEstimation(T,NT) template class PCL_EXPORTS pcl::LinearLeastSquaresNormalEstimation<T,NT>;
+#define PCL_INSTANTIATE_LinearLeastSquaresNormalEstimation(T, NT)                      \
+  template class PCL_EXPORTS pcl::LinearLeastSquaresNormalEstimation<T, NT>;
+// #define LinearLeastSquaresNormalEstimation(T,NT) template class PCL_EXPORTS
+// pcl::LinearLeastSquaresNormalEstimation<T,NT>;
 
 #endif
-

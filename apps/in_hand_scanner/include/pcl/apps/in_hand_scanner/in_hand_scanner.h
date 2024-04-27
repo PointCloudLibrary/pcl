@@ -125,21 +125,21 @@ public:
 
   /** \brief Get the input data processing. */
   inline InputDataProcessing&
-  getInputDataProcessing()
+  getInputDataProcessing ()
   {
     return (*input_data_processing_);
   }
 
   /** \brief Get the registration. */
   inline ICP&
-  getICP()
+  getICP ()
   {
     return (*icp_);
   }
 
   /** \brief Get the integration. */
   inline Integration&
-  getIntegration()
+  getIntegration ()
   {
     return (*integration_);
   }
@@ -148,53 +148,53 @@ Q_SIGNALS:
 
   /** \brief Emitted when the running mode changes. */
   void
-  runningModeChanged(RunningMode new_running_mode) const;
+  runningModeChanged (RunningMode new_running_mode) const;
 
 public Q_SLOTS:
 
   /** \brief Start the grabber (enables the scanning pipeline). */
   void
-  startGrabber();
+  startGrabber ();
 
   /** \brief Shows the unprocessed input data. */
   void
-  showUnprocessedData();
+  showUnprocessedData ();
 
   /** \brief Shows the processed input data. */
   void
-  showProcessedData();
+  showProcessedData ();
 
   /** \brief Registers new data to the first acquired data continuously. */
   void
-  registerContinuously();
+  registerContinuously ();
 
   /** \brief Registers new data once and returns to showing the processed data. */
   void
-  registerOnce();
+  registerOnce ();
 
   /** \brief Show the model shape (if one is available). */
   void
-  showModel();
+  showModel ();
 
   /** \brief Removes unfit vertices regardless of their age. Unfit vertices are those
    * that have not been observed from enough directions. */
   void
-  removeUnfitVertices();
+  removeUnfitVertices ();
 
   /** \brief Reset the scanning pipeline. */
   void
-  reset();
+  reset ();
 
   /** \brief Saves the model mesh in a file with the given filename and filetype.
    *
    * \note The extension of the filename is ignored!
    */
   void
-  saveAs(const std::string& filename, const FileType& filetype);
+  saveAs (const std::string& filename, const FileType& filetype);
 
   /** \see http://doc.qt.digia.com/qt/qwidget.html#keyPressEvent */
   void
-  keyPressEvent(QKeyEvent* event) override;
+  keyPressEvent (QKeyEvent* event) override;
 
 private:
   using PointXYZRGBA = pcl::PointXYZRGBA;
@@ -239,24 +239,24 @@ private:
   /** \brief Called when new data arries from the grabber. The grabbing - registration -
    * integration pipeline is implemented here. */
   void
-  newDataCallback(const CloudXYZRGBAConstPtr& cloud_in);
+  newDataCallback (const CloudXYZRGBAConstPtr& cloud_in);
 
   /** \see http://doc.qt.digia.com/qt/qwidget.html#paintEvent
    * \see http://doc.qt.digia.com/qt/opengl-overpainting.html
    */
   void
-  paintEvent(QPaintEvent* event) override;
+  paintEvent (QPaintEvent* event) override;
 
   /** \brief Draw text over the opengl scene.
    * \see http://doc.qt.digia.com/qt/opengl-overpainting.html
    */
   void
-  drawText();
+  drawText ();
 
   /** \brief Actual implementation of startGrabber (needed so it can be run in a
    * different thread and doesn't block the application when starting up). */
   void
-  startGrabberImpl();
+  startGrabberImpl ();
 
   ////////////////////////////////////////////////////////////////////////
   // Members

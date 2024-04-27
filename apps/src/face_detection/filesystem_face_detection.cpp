@@ -19,12 +19,12 @@ bool VIDEO = false;
 
 template <class PointInT>
 void
-run(pcl::RFFaceDetectorTrainer& fdrf,
-    typename pcl::PointCloud<PointInT>::Ptr& scene_vis,
-    pcl::visualization::PCLVisualizer& vis,
-    bool heat_map,
-    bool show_votes,
-    const std::string& filename)
+run (pcl::RFFaceDetectorTrainer& fdrf,
+     typename pcl::PointCloud<PointInT>::Ptr& scene_vis,
+     pcl::visualization::PCLVisualizer& vis,
+     bool heat_map,
+     bool show_votes,
+     const std::string& filename)
 {
   pcl::PointCloud<pcl::PointXYZ>::Ptr scene(new pcl::PointCloud<pcl::PointXYZ>);
   pcl::copyPointCloud(*scene_vis, *scene);
@@ -153,7 +153,7 @@ run(pcl::RFFaceDetectorTrainer& fdrf,
 }
 
 int
-main(int argc, char** argv)
+main (int argc, char** argv)
 {
   int STRIDE_SW = 5;
   std::string forest_fn = "forest.txt";

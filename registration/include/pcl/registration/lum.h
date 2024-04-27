@@ -148,7 +148,7 @@ public:
    * instance of LUM. \param[in] slam_graph The new SLAM graph.
    */
   inline void
-  setLoopGraph(const SLAMGraphPtr& slam_graph);
+  setLoopGraph (const SLAMGraphPtr& slam_graph);
 
   /** \brief Get the internal SLAM graph structure.
    * \details All data used and produced by LUM is stored in this boost::adjacency_list.
@@ -157,13 +157,13 @@ public:
    * instance of LUM. \return The current SLAM graph.
    */
   inline SLAMGraphPtr
-  getLoopGraph() const;
+  getLoopGraph () const;
 
   /** \brief Get the number of vertices in the SLAM graph.
    * \return The current number of vertices in the SLAM graph.
    */
   typename SLAMGraph::vertices_size_type
-  getNumVertices() const;
+  getNumVertices () const;
 
   /** \brief Set the maximum number of iterations for the compute() method.
    * \details The compute() method finishes when max_iterations are met or when the
@@ -171,7 +171,7 @@ public:
    * iterations (default = 5).
    */
   void
-  setMaxIterations(int max_iterations);
+  setMaxIterations (int max_iterations);
 
   /** \brief Get the maximum number of iterations for the compute() method.
    * \details The compute() method finishes when max_iterations are met or when the
@@ -179,7 +179,7 @@ public:
    * (default = 5).
    */
   inline int
-  getMaxIterations() const;
+  getMaxIterations () const;
 
   /** \brief Set the convergence threshold for the compute() method.
    * \details When the compute() method computes the new poses relative to the old
@@ -189,7 +189,7 @@ public:
    * convergence threshold (default = 0.0).
    */
   void
-  setConvergenceThreshold(float convergence_threshold);
+  setConvergenceThreshold (float convergence_threshold);
 
   /** \brief Get the convergence threshold for the compute() method.
    * \details When the compute() method computes the new poses relative to the old
@@ -199,7 +199,7 @@ public:
    * (default = 0.0).
    */
   inline float
-  getConvergenceThreshold() const;
+  getConvergenceThreshold () const;
 
   /** \brief Add a new point cloud to the SLAM graph.
    * \details This method will add a new vertex to the SLAM graph and attach a point
@@ -214,8 +214,8 @@ public:
    * created vertex.
    */
   Vertex
-  addPointCloud(const PointCloudPtr& cloud,
-                const Eigen::Vector6f& pose = Eigen::Vector6f::Zero());
+  addPointCloud (const PointCloudPtr& cloud,
+                 const Eigen::Vector6f& pose = Eigen::Vector6f::Zero());
 
   /** \brief Change a point cloud on one of the SLAM graph's vertices.
    * \details This method will change the point cloud attached to an existing vertex and
@@ -226,7 +226,7 @@ public:
    * vertex.
    */
   inline void
-  setPointCloud(const Vertex& vertex, const PointCloudPtr& cloud);
+  setPointCloud (const Vertex& vertex, const PointCloudPtr& cloud);
 
   /** \brief Return a point cloud from one of the SLAM graph's vertices.
    * \note Vertex descriptors are typecastable to int.
@@ -234,7 +234,7 @@ public:
    * \return The current point cloud for that vertex.
    */
   inline PointCloudPtr
-  getPointCloud(const Vertex& vertex) const;
+  getPointCloud (const Vertex& vertex) const;
 
   /** \brief Change a pose estimate on one of the SLAM graph's vertices.
    * \details A vertex' pose is always relative to the first vertex in the SLAM graph,
@@ -246,7 +246,7 @@ public:
    * for that vertex.
    */
   inline void
-  setPose(const Vertex& vertex, const Eigen::Vector6f& pose);
+  setPose (const Vertex& vertex, const Eigen::Vector6f& pose);
 
   /** \brief Return a pose estimate from one of the SLAM graph's vertices.
    * \note Vertex descriptors are typecastable to int.
@@ -254,7 +254,7 @@ public:
    * \return The current pose estimate of that vertex.
    */
   inline Eigen::Vector6f
-  getPose(const Vertex& vertex) const;
+  getPose (const Vertex& vertex) const;
 
   /** \brief Return a pose estimate from one of the SLAM graph's vertices as an affine
    * transformation matrix. \note Vertex descriptors are typecastable to int. \param[in]
@@ -262,7 +262,7 @@ public:
    * The current transformation matrix of that vertex.
    */
   inline Eigen::Affine3f
-  getTransformation(const Vertex& vertex) const;
+  getTransformation (const Vertex& vertex) const;
 
   /** \brief Add/change a set of correspondences for one of the SLAM graph's edges.
    * \details The edges in the SLAM graph are directional and point from source vertex
@@ -278,9 +278,9 @@ public:
    * cloud. \param[in] corrs The new set of correspondences for that edge.
    */
   void
-  setCorrespondences(const Vertex& source_vertex,
-                     const Vertex& target_vertex,
-                     const pcl::CorrespondencesPtr& corrs);
+  setCorrespondences (const Vertex& source_vertex,
+                      const Vertex& target_vertex,
+                      const pcl::CorrespondencesPtr& corrs);
 
   /** \brief Return a set of correspondences from one of the SLAM graph's edges.
    * \note Vertex descriptors are typecastable to int.
@@ -289,7 +289,7 @@ public:
    * target point cloud. \return The current set of correspondences of that edge.
    */
   inline pcl::CorrespondencesPtr
-  getCorrespondences(const Vertex& source_vertex, const Vertex& target_vertex) const;
+  getCorrespondences (const Vertex& source_vertex, const Vertex& target_vertex) const;
 
   /** \brief Perform LUM's globally consistent scan matching.
    * \details Computation uses the first point cloud in the SLAM graph as a reference
@@ -311,7 +311,7 @@ public:
    * getTransformation(), getTransformedCloud() or getConcatenatedCloud().
    */
   void
-  compute();
+  compute ();
 
   /** \brief Return a point cloud from one of the SLAM graph's vertices compounded onto
    * its current pose estimate. \note Vertex descriptors are typecastable to int.
@@ -319,24 +319,24 @@ public:
    * cloud. \return The transformed point cloud of that vertex.
    */
   PointCloudPtr
-  getTransformedCloud(const Vertex& vertex) const;
+  getTransformedCloud (const Vertex& vertex) const;
 
   /** \brief Return a concatenated point cloud of all the SLAM graph's point clouds
    * compounded onto their current pose estimates. \return The concatenated transformed
    * point clouds of the entire SLAM graph.
    */
   PointCloudPtr
-  getConcatenatedCloud() const;
+  getConcatenatedCloud () const;
 
 protected:
   /** \brief Linearized computation of C^-1 and C^-1*D (results stored in slam_graph_).
    */
   void
-  computeEdge(const Edge& e);
+  computeEdge (const Edge& e);
 
   /** \brief Returns a pose corrected 6DoF incidence matrix. */
   inline Eigen::Matrix6f
-  incidenceCorrection(const Eigen::Vector6f& pose);
+  incidenceCorrection (const Eigen::Vector6f& pose);
 
 private:
   /** \brief The internal SLAM graph structure. */

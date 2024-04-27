@@ -69,13 +69,13 @@ public:
   }
 
   const FunctionObjectT&
-  getFunctionObject() const noexcept
+  getFunctionObject () const noexcept
   {
     return functionObject_;
   }
 
   FunctionObjectT&
-  getFunctionObject() noexcept
+  getFunctionObject () noexcept
   {
     return functionObject_;
   }
@@ -85,7 +85,7 @@ public:
    * \param[out] indices The resultant indices.
    */
   void
-  applyFilter(Indices& indices) override
+  applyFilter (Indices& indices) override
   {
     indices.clear();
     indices.reserve(indices_->size());
@@ -124,7 +124,7 @@ protected:
    * filter out the indices for which it returns false
    */
   void
-  setFunctionObject(FunctionObjectT function_object) const noexcept
+  setFunctionObject (FunctionObjectT function_object) const noexcept
   {
     functionObject_ = std::move(function_object);
   }

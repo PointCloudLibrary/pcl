@@ -62,29 +62,29 @@ public:
   ~ChannelActorItem();
 
   void
-  init();
+  init ();
 
   void
-  update();
+  update ();
 
   void
-  switchRenderWindow(vtkRenderWindow* render_window);
+  switchRenderWindow (vtkRenderWindow* render_window);
 
 protected:
   void
-  attachActor();
+  attachActor ();
 
   void
-  detachActor();
+  detachActor ();
 
   virtual void
-  initImpl() = 0;
+  initImpl () = 0;
 
   virtual void
-  updateImpl() = 0;
+  updateImpl () = 0;
 
   void
-  prepareContextMenu(QMenu* menu) const override;
+  prepareContextMenu (QMenu* menu) const override;
 
   CloudMesh::Ptr cloud_mesh_;
   vtkSmartPointer<vtkPolyData> poly_data_;

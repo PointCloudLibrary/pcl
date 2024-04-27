@@ -35,17 +35,17 @@
 
 #pragma once
 
-#include <iostream>
 #include <cmath>
+#include <iostream>
 #include <string>
 
 #ifdef _WIN32
-# define NOMINMAX
-# define WIN32_LEAN_AND_MEAN
-# include <Windows.h>
-# include <time.h>
+#define NOMINMAX
+#define WIN32_LEAN_AND_MEAN
+#include <time.h>
+#include <Windows.h>
 #else
-# include <sys/time.h>
+#include <sys/time.h>
 #endif
 
 /////////////////////////////////////////////////////////////////////
@@ -53,85 +53,81 @@
 //       things, e.g. the new pcl::ScopeTime implementation
 /////////////////////////////////////////////////////////////////////
 
-namespace pcl
-{
-  namespace cuda
-  {
-    /**
-     * \brief Class to measure the time spent in a scope
-     *
-     * To use this class, e.g. to measure the time spent in a function,
-     * just create an instance at the beginning of the function.
-     * \ingroup common
-     */
-    class ScopeTimeCPU
-    {
-      public: 
-        inline ScopeTimeCPU (const char* title);
-        inline ~ScopeTimeCPU ();
-      private:
-        std::string title_;
-        double start_time_;
-    };
+namespace pcl {
+namespace cuda {
+/**
+ * \brief Class to measure the time spent in a scope
+ *
+ * To use this class, e.g. to measure the time spent in a function,
+ * just create an instance at the beginning of the function.
+ * \ingroup common
+ */
+class ScopeTimeCPU {
+public:
+  inline ScopeTimeCPU(const char* title);
+  inline ~ScopeTimeCPU();
 
+private:
+  std::string title_;
+  double start_time_;
+};
 
 #ifndef MEASURE_FUNCTION_TIME
-#define MEASURE_FUNCTION_TIME \
-  ScopeTimeCPU scopeTime(__func__)
+#define MEASURE_FUNCTION_TIME ScopeTimeCPU scopeTime(__func__)
 #endif
 
-    inline double getTime ();
+inline double
+getTime ();
 
 /// Executes code, only if secs are gone since last exec.
 #ifndef DO_EVERY_TS
-#define DO_EVERY_TS(secs, currentTime, code) \
-if (1) {\
-  static double s_lastDone_ = 0.0; \
-  double s_now_ = (currentTime); \
-  if (s_lastDone_ > s_now_) \
-    s_lastDone_ = s_now_; \
-  if (s_now_ - s_lastDone_ > (secs)) { \
-    code; \
-    s_lastDone_ = s_now_; \
-  }\
-} else \
-  (void)0
+#define DO_EVERY_TS(secs, currentTime, code)                                           \
+  if (1) {                                                                             \
+    static double s_lastDone_ = 0.0;                                                   \
+    double s_now_ = (currentTime);                                                     \
+    if (s_lastDone_ > s_now_)                                                          \
+      s_lastDone_ = s_now_;                                                            \
+    if (s_now_ - s_lastDone_ > (secs)) {                                               \
+      code;                                                                            \
+      s_lastDone_ = s_now_;                                                            \
+    }                                                                                  \
+  }                                                                                    \
+  else                                                                                 \
+    (void)0
 #endif
 
 /// Executes code, only if secs are gone since last exec.
 #ifndef DO_EVERY
-#define DO_EVERY(secs, code) \
-  DO_EVERY_TS(secs, pcl::cuda::getTime(), code)
+#define DO_EVERY(secs, code) DO_EVERY_TS(secs, pcl::cuda::getTime(), code)
 #endif
 
-  }  // end namespace
-}  // end namespace
+} // namespace cuda
+} // namespace pcl
 
-
-inline double 
-  pcl::cuda::getTime ()
+inline double
+pcl::cuda::getTime()
 {
 #ifdef _WIN32
   LARGE_INTEGER frequency;
   LARGE_INTEGER timer_tick;
   QueryPerformanceFrequency(&frequency);
   QueryPerformanceCounter(&timer_tick);
-  return (double)(timer_tick.QuadPart)/(double)frequency.QuadPart;
+  return (double)(timer_tick.QuadPart) / (double)frequency.QuadPart;
 #else
   timeval current_time;
-  gettimeofday (&current_time, nullptr);
+  gettimeofday(&current_time, nullptr);
   return (current_time.tv_sec + 1e-6 * current_time.tv_usec);
 #endif
 }
 
-inline pcl::cuda::ScopeTimeCPU::ScopeTimeCPU (const char* title) : title_ (title)
+inline pcl::cuda::ScopeTimeCPU::ScopeTimeCPU(const char* title) : title_(title)
 {
-  start_time_ = pcl::cuda::getTime ();
+  start_time_ = pcl::cuda::getTime();
 }
 
-inline pcl::cuda::ScopeTimeCPU::~ScopeTimeCPU ()
+inline pcl::cuda::ScopeTimeCPU::~ScopeTimeCPU()
 {
-  double end_time = pcl::cuda::getTime ();
+  double end_time = pcl::cuda::getTime();
   double duration = end_time - start_time_;
   std::cerr << title_ << " took " << 1000 * duration << "ms. " << std::endl;
 }

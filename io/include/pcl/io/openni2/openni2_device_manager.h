@@ -31,67 +31,64 @@
 
 #pragma once
 
-#include <pcl/memory.h>
-#include <pcl/pcl_exports.h>
 #include <pcl/io/openni2/openni2_device.h>
 #include <pcl/io/openni2/openni2_device_info.h>
+#include <pcl/memory.h>
+#include <pcl/pcl_exports.h>
 
 #include <memory>
 #include <ostream>
 #include <string>
 #include <vector>
 
-namespace pcl
-{
-  namespace io
+namespace pcl {
+namespace io {
+namespace openni2 {
+
+class OpenNI2DeviceListener;
+
+class PCL_EXPORTS OpenNI2DeviceManager {
+public:
+  OpenNI2DeviceManager();
+  virtual ~OpenNI2DeviceManager();
+
+  // This may not actually be a singleton yet. Need to work out cross-dll incerface.
+  // Based on http://stackoverflow.com/a/13431981/1789618
+  static shared_ptr<OpenNI2DeviceManager>
+  getInstance ()
   {
-    namespace openni2
-    {
-
-      class OpenNI2DeviceListener;
-
-      class PCL_EXPORTS OpenNI2DeviceManager
-      {
-      public:
-        OpenNI2DeviceManager ();
-        virtual ~OpenNI2DeviceManager ();
-
-        // This may not actually be a singleton yet. Need to work out cross-dll incerface.
-        // Based on http://stackoverflow.com/a/13431981/1789618
-        static shared_ptr<OpenNI2DeviceManager> getInstance ()
-        {
-          static auto instance = pcl::make_shared<OpenNI2DeviceManager>();
-          return (instance);
-        }
-
-        std::shared_ptr<std::vector<OpenNI2DeviceInfo>>
-        getConnectedDeviceInfos () const;
-
-        std::shared_ptr<std::vector<std::string>>
-        getConnectedDeviceURIs () const;
-
-        std::size_t
-        getNumOfConnectedDevices () const;
-
-        OpenNI2Device::Ptr
-        getAnyDevice ();
-
-        OpenNI2Device::Ptr
-        getDevice (const std::string& device_URI);
-
-        OpenNI2Device::Ptr
-        getDeviceByIndex (int index) const;
-
-        OpenNI2Device::Ptr
-        getFileDevice (const std::string& path);
-
-      protected:
-        std::shared_ptr<OpenNI2DeviceListener> device_listener_;
-      };
-
-      std::ostream&
-      operator<< (std::ostream& stream, const OpenNI2DeviceManager& device_manager);
-
-    } // namespace
+    static auto instance = pcl::make_shared<OpenNI2DeviceManager>();
+    return (instance);
   }
-}
+
+  std::shared_ptr<std::vector<OpenNI2DeviceInfo>>
+  getConnectedDeviceInfos () const;
+
+  std::shared_ptr<std::vector<std::string>>
+  getConnectedDeviceURIs () const;
+
+  std::size_t
+  getNumOfConnectedDevices () const;
+
+  OpenNI2Device::Ptr
+  getAnyDevice ();
+
+  OpenNI2Device::Ptr
+  getDevice (const std::string& device_URI);
+
+  OpenNI2Device::Ptr
+  getDeviceByIndex (int index) const;
+
+  OpenNI2Device::Ptr
+  getFileDevice (const std::string& path);
+
+protected:
+  std::shared_ptr<OpenNI2DeviceListener> device_listener_;
+};
+
+std::ostream&
+operator<<(std::ostream& stream, const OpenNI2DeviceManager& device_manager);
+
+} // namespace openni2
+} // namespace io
+} // namespace pcl

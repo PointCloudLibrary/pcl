@@ -4,7 +4,7 @@
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010-2011, Willow Garage, Inc.
  *
- *  All rights reserved. 
+ *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -37,400 +37,394 @@
 
 #pragma once
 
+#include <pcl/filters/convolution.h>
+#include <pcl/recognition/point_types.h>
 #include <pcl/recognition/quantizable_modality.h>
-
 #include <pcl/pcl_base.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
-#include <pcl/recognition/point_types.h>
-#include <pcl/filters/convolution.h>
 
 #include <list>
 
-namespace pcl
-{
+namespace pcl {
 
-  /** \brief Modality based on max-RGB gradients.
-    * \author Stefan Holzer
-    */
-  template <typename PointInT>
-  class ColorGradientModality
-    : public QuantizableModality, public PCLBase<PointInT>
-  {
-    protected:
-      using PCLBase<PointInT>::input_;
+/** \brief Modality based on max-RGB gradients.
+ * \author Stefan Holzer
+ */
+template <typename PointInT>
+class ColorGradientModality : public QuantizableModality, public PCLBase<PointInT> {
+protected:
+  using PCLBase<PointInT>::input_;
 
-      /** \brief Candidate for a feature (used in feature extraction methods). */
-      struct Candidate
-      {
-        /** \brief The gradient. */
-        GradientXY gradient;
-    
-        /** \brief The x-position. */
-        int x;
-        /** \brief The y-position. */
-        int y;	
-    
-        /** \brief Operator for comparing to candidates (by magnitude of the gradient).
-          * \param[in] rhs the candidate to compare with.
-          */
-        bool operator< (const Candidate & rhs) const
-        {
-          return (gradient.magnitude > rhs.gradient.magnitude);
-        }
-      };
+  /** \brief Candidate for a feature (used in feature extraction methods). */
+  struct Candidate {
+    /** \brief The gradient. */
+    GradientXY gradient;
 
-    public:
-      using PointCloudIn = pcl::PointCloud<PointInT>;
+    /** \brief The x-position. */
+    int x;
+    /** \brief The y-position. */
+    int y;
 
-      /** \brief Different methods for feature selection/extraction. */
-      enum FeatureSelectionMethod
-      {
-        MASK_BORDER_HIGH_GRADIENTS,
-        MASK_BORDER_EQUALLY, // this gives templates most equally to the OpenCV implementation
-        DISTANCE_MAGNITUDE_SCORE
-      };
-
-      /** \brief Constructor. */
-      ColorGradientModality ();
-      /** \brief Destructor. */
-      ~ColorGradientModality () override;
-  
-      /** \brief Sets the threshold for the gradient magnitude which is used when quantizing the data.
-        *        Gradients with a smaller magnitude are ignored. 
-        * \param[in] threshold the new gradient magnitude threshold.
-        */
-      inline void
-      setGradientMagnitudeThreshold (const float threshold)
-      {
-        gradient_magnitude_threshold_ = threshold;
-      }
-
-      /** \brief Sets the threshold for the gradient magnitude which is used for feature extraction.
-        *        Gradients with a smaller magnitude are ignored. 
-        * \param[in] threshold the new gradient magnitude threshold.
-        */
-      inline void
-      setGradientMagnitudeThresholdForFeatureExtraction (const float threshold)
-      {
-        gradient_magnitude_threshold_feature_extraction_ = threshold;
-      }
-
-      /** \brief Sets the feature selection method.
-        * \param[in] method the feature selection method.
-        */
-      inline void
-      setFeatureSelectionMethod (const FeatureSelectionMethod method)
-      {
-        feature_selection_method_ = method;
-      }
-  
-      /** \brief Sets the spreading size for spreading the quantized data. */
-      inline void
-      setSpreadingSize (const std::size_t spreading_size)
-      {
-        spreading_size_ = spreading_size;
-      }
-
-      /** \brief Sets whether variable feature numbers for feature extraction is enabled.
-        * \param[in] enabled enables/disables variable feature numbers for feature extraction.
-        */
-      inline void
-      setVariableFeatureNr (const bool enabled)
-      {
-        variable_feature_nr_ = enabled;
-      }
-
-      /** \brief Returns a reference to the internally computed quantized map. */
-      inline QuantizedMap &
-      getQuantizedMap () override 
-      { 
-        return (filtered_quantized_color_gradients_);
-      }
-  
-      /** \brief Returns a reference to the internally computed spread quantized map. */
-      inline QuantizedMap &
-      getSpreadedQuantizedMap () override 
-      { 
-        return (spreaded_filtered_quantized_color_gradients_);
-      }
-
-      /** \brief Returns a point cloud containing the max-RGB gradients. */
-      inline pcl::PointCloud<pcl::GradientXY> &
-      getMaxColorGradients ()
-      {
-        return (color_gradients_);
-      }
-  
-      /** \brief Extracts features from this modality within the specified mask.
-        * \param[in] mask defines the areas where features are searched in. 
-        * \param[in] nr_features defines the number of features to be extracted 
-        *            (might be less if not sufficient information is present in the modality).
-        * \param[in] modalityIndex the index which is stored in the extracted features.
-        * \param[out] features the destination for the extracted features.
-        */
-      void
-      extractFeatures (const MaskMap & mask, std::size_t nr_features, std::size_t modalityIndex,
-                       std::vector<QuantizedMultiModFeature> & features) const override;
-  
-      /** \brief Extracts all possible features from the modality within the specified mask.
-        * \param[in] mask defines the areas where features are searched in. 
-        * \param[in] nr_features IGNORED (TODO: remove this parameter).
-        * \param[in] modalityIndex the index which is stored in the extracted features.
-        * \param[out] features the destination for the extracted features.
-        */
-      void
-      extractAllFeatures (const MaskMap & mask, std::size_t nr_features, std::size_t modalityIndex,
-                          std::vector<QuantizedMultiModFeature> & features) const override;
-  
-      /** \brief Provide a pointer to the input dataset (overwrites the PCLBase::setInputCloud method)
-        * \param cloud the const boost shared pointer to a PointCloud message
-        */
-      void 
-      setInputCloud (const typename PointCloudIn::ConstPtr & cloud) override 
-      { 
-        input_ = cloud;
-      }
-
-      /** \brief Processes the input data (smoothing, computing gradients, quantizing, filtering, spreading). */
-      virtual void
-      processInputData ();
-
-      /** \brief Processes the input data assuming that everything up to filtering is already done/available 
-        *        (so only spreading is performed). */
-      virtual void
-      processInputDataFromFiltered ();
-
-    protected:
-
-      /** \brief Computes the Gaussian kernel used for smoothing. 
-        * \param[in] kernel_size the size of the Gaussian kernel. 
-        * \param[in] sigma the sigma.
-        * \param[out] kernel_values the destination for the values of the kernel. */
-      void
-      computeGaussianKernel (const std::size_t kernel_size, const float sigma, std::vector <float> & kernel_values);
-
-      /** \brief Computes the max-RGB gradients for the specified cloud.
-        * \param[in] cloud the cloud for which the gradients are computed.
-        */
-      void
-      computeMaxColorGradients (const typename pcl::PointCloud<pcl::RGB>::ConstPtr & cloud);
-
-      /** \brief Computes the max-RGB gradients for the specified cloud using sobel.
-        * \param[in] cloud the cloud for which the gradients are computed.
-        */
-      void
-      computeMaxColorGradientsSobel (const typename pcl::PointCloud<pcl::RGB>::ConstPtr & cloud);
-  
-      /** \brief Quantizes the color gradients. */
-      void
-      quantizeColorGradients ();
-  
-      /** \brief Filters the quantized gradients. */
-      void
-      filterQuantizedColorGradients ();
-
-      /** \brief Erodes a mask.
-        * \param[in] mask_in the mask which will be eroded.
-        * \param[out] mask_out the destination for the eroded mask.
-        */
-      static void
-      erode (const pcl::MaskMap & mask_in, pcl::MaskMap & mask_out);
-  
-    private:
-
-      /** \brief Determines whether variable numbers of features are extracted or not. */
-      bool variable_feature_nr_{false};
-
-      /** \brief Stores a smoothed version of the input cloud. */
-	    pcl::PointCloud<pcl::RGB>::Ptr smoothed_input_;
-
-      /** \brief Defines which feature selection method is used. */
-      FeatureSelectionMethod feature_selection_method_;
-
-      /** \brief The threshold applied on the gradient magnitudes (for quantization). */
-      float gradient_magnitude_threshold_{10.0f};
-      /** \brief The threshold applied on the gradient magnitudes for feature extraction. */
-      float gradient_magnitude_threshold_feature_extraction_{55.0f};
-
-      /** \brief The point cloud which holds the max-RGB gradients. */
-      pcl::PointCloud<pcl::GradientXY> color_gradients_;
-
-      /** \brief The spreading size. */
-      std::size_t spreading_size_{8};
-  
-      /** \brief The map which holds the quantized max-RGB gradients. */
-      pcl::QuantizedMap quantized_color_gradients_;
-      /** \brief The map which holds the filtered quantized data. */
-      pcl::QuantizedMap filtered_quantized_color_gradients_;
-      /** \brief The map which holds the spread quantized data. */
-      pcl::QuantizedMap spreaded_filtered_quantized_color_gradients_;
-  
+    /** \brief Operator for comparing to candidates (by magnitude of the gradient).
+     * \param[in] rhs the candidate to compare with.
+     */
+    bool
+    operator<(const Candidate& rhs) const
+    {
+      return (gradient.magnitude > rhs.gradient.magnitude);
+    }
   };
 
-}
+public:
+  using PointCloudIn = pcl::PointCloud<PointInT>;
+
+  /** \brief Different methods for feature selection/extraction. */
+  enum FeatureSelectionMethod {
+    MASK_BORDER_HIGH_GRADIENTS,
+    MASK_BORDER_EQUALLY, // this gives templates most equally to the OpenCV
+                         // implementation
+    DISTANCE_MAGNITUDE_SCORE
+  };
+
+  /** \brief Constructor. */
+  ColorGradientModality();
+  /** \brief Destructor. */
+  ~ColorGradientModality() override;
+
+  /** \brief Sets the threshold for the gradient magnitude which is used when quantizing
+   * the data. Gradients with a smaller magnitude are ignored. \param[in] threshold the
+   * new gradient magnitude threshold.
+   */
+  inline void
+  setGradientMagnitudeThreshold (const float threshold)
+  {
+    gradient_magnitude_threshold_ = threshold;
+  }
+
+  /** \brief Sets the threshold for the gradient magnitude which is used for feature
+   * extraction. Gradients with a smaller magnitude are ignored. \param[in] threshold
+   * the new gradient magnitude threshold.
+   */
+  inline void
+  setGradientMagnitudeThresholdForFeatureExtraction (const float threshold)
+  {
+    gradient_magnitude_threshold_feature_extraction_ = threshold;
+  }
+
+  /** \brief Sets the feature selection method.
+   * \param[in] method the feature selection method.
+   */
+  inline void
+  setFeatureSelectionMethod (const FeatureSelectionMethod method)
+  {
+    feature_selection_method_ = method;
+  }
+
+  /** \brief Sets the spreading size for spreading the quantized data. */
+  inline void
+  setSpreadingSize (const std::size_t spreading_size)
+  {
+    spreading_size_ = spreading_size;
+  }
+
+  /** \brief Sets whether variable feature numbers for feature extraction is enabled.
+   * \param[in] enabled enables/disables variable feature numbers for feature
+   * extraction.
+   */
+  inline void
+  setVariableFeatureNr (const bool enabled)
+  {
+    variable_feature_nr_ = enabled;
+  }
+
+  /** \brief Returns a reference to the internally computed quantized map. */
+  inline QuantizedMap&
+  getQuantizedMap () override
+  {
+    return (filtered_quantized_color_gradients_);
+  }
+
+  /** \brief Returns a reference to the internally computed spread quantized map. */
+  inline QuantizedMap&
+  getSpreadedQuantizedMap () override
+  {
+    return (spreaded_filtered_quantized_color_gradients_);
+  }
+
+  /** \brief Returns a point cloud containing the max-RGB gradients. */
+  inline pcl::PointCloud<pcl::GradientXY>&
+  getMaxColorGradients ()
+  {
+    return (color_gradients_);
+  }
+
+  /** \brief Extracts features from this modality within the specified mask.
+   * \param[in] mask defines the areas where features are searched in.
+   * \param[in] nr_features defines the number of features to be extracted
+   *            (might be less if not sufficient information is present in the
+   * modality). \param[in] modalityIndex the index which is stored in the extracted
+   * features. \param[out] features the destination for the extracted features.
+   */
+  void
+  extractFeatures (const MaskMap& mask,
+                   std::size_t nr_features,
+                   std::size_t modalityIndex,
+                   std::vector<QuantizedMultiModFeature>& features) const override;
+
+  /** \brief Extracts all possible features from the modality within the specified mask.
+   * \param[in] mask defines the areas where features are searched in.
+   * \param[in] nr_features IGNORED (TODO: remove this parameter).
+   * \param[in] modalityIndex the index which is stored in the extracted features.
+   * \param[out] features the destination for the extracted features.
+   */
+  void
+  extractAllFeatures (const MaskMap& mask,
+                      std::size_t nr_features,
+                      std::size_t modalityIndex,
+                      std::vector<QuantizedMultiModFeature>& features) const override;
+
+  /** \brief Provide a pointer to the input dataset (overwrites the
+   * PCLBase::setInputCloud method) \param cloud the const boost shared pointer to a
+   * PointCloud message
+   */
+  void
+  setInputCloud (const typename PointCloudIn::ConstPtr& cloud) override
+  {
+    input_ = cloud;
+  }
+
+  /** \brief Processes the input data (smoothing, computing gradients, quantizing,
+   * filtering, spreading). */
+  virtual void
+  processInputData ();
+
+  /** \brief Processes the input data assuming that everything up to filtering is
+   * already done/available (so only spreading is performed). */
+  virtual void
+  processInputDataFromFiltered ();
+
+protected:
+  /** \brief Computes the Gaussian kernel used for smoothing.
+   * \param[in] kernel_size the size of the Gaussian kernel.
+   * \param[in] sigma the sigma.
+   * \param[out] kernel_values the destination for the values of the kernel. */
+  void
+  computeGaussianKernel (const std::size_t kernel_size,
+                         const float sigma,
+                         std::vector<float>& kernel_values);
+
+  /** \brief Computes the max-RGB gradients for the specified cloud.
+   * \param[in] cloud the cloud for which the gradients are computed.
+   */
+  void
+  computeMaxColorGradients (const typename pcl::PointCloud<pcl::RGB>::ConstPtr& cloud);
+
+  /** \brief Computes the max-RGB gradients for the specified cloud using sobel.
+   * \param[in] cloud the cloud for which the gradients are computed.
+   */
+  void
+  computeMaxColorGradientsSobel (
+      const typename pcl::PointCloud<pcl::RGB>::ConstPtr& cloud);
+
+  /** \brief Quantizes the color gradients. */
+  void
+  quantizeColorGradients ();
+
+  /** \brief Filters the quantized gradients. */
+  void
+  filterQuantizedColorGradients ();
+
+  /** \brief Erodes a mask.
+   * \param[in] mask_in the mask which will be eroded.
+   * \param[out] mask_out the destination for the eroded mask.
+   */
+  static void
+  erode (const pcl::MaskMap& mask_in, pcl::MaskMap& mask_out);
+
+private:
+  /** \brief Determines whether variable numbers of features are extracted or not. */
+  bool variable_feature_nr_{false};
+
+  /** \brief Stores a smoothed version of the input cloud. */
+  pcl::PointCloud<pcl::RGB>::Ptr smoothed_input_;
+
+  /** \brief Defines which feature selection method is used. */
+  FeatureSelectionMethod feature_selection_method_;
+
+  /** \brief The threshold applied on the gradient magnitudes (for quantization). */
+  float gradient_magnitude_threshold_{10.0f};
+  /** \brief The threshold applied on the gradient magnitudes for feature extraction. */
+  float gradient_magnitude_threshold_feature_extraction_{55.0f};
+
+  /** \brief The point cloud which holds the max-RGB gradients. */
+  pcl::PointCloud<pcl::GradientXY> color_gradients_;
+
+  /** \brief The spreading size. */
+  std::size_t spreading_size_{8};
+
+  /** \brief The map which holds the quantized max-RGB gradients. */
+  pcl::QuantizedMap quantized_color_gradients_;
+  /** \brief The map which holds the filtered quantized data. */
+  pcl::QuantizedMap filtered_quantized_color_gradients_;
+  /** \brief The map which holds the spread quantized data. */
+  pcl::QuantizedMap spreaded_filtered_quantized_color_gradients_;
+};
+
+} // namespace pcl
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT>
-pcl::ColorGradientModality<PointInT>::
-ColorGradientModality ()
-  : smoothed_input_ (new pcl::PointCloud<pcl::RGB> ())
-  , feature_selection_method_ (DISTANCE_MAGNITUDE_SCORE)
-{
-}
+pcl::ColorGradientModality<PointInT>::ColorGradientModality()
+: smoothed_input_(new pcl::PointCloud<pcl::RGB>())
+, feature_selection_method_(DISTANCE_MAGNITUDE_SCORE)
+{}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT>
-pcl::ColorGradientModality<PointInT>::
-~ColorGradientModality () = default;
+pcl::ColorGradientModality<PointInT>::~ColorGradientModality() = default;
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointInT> void
-pcl::ColorGradientModality<PointInT>::
-computeGaussianKernel (const std::size_t kernel_size, const float sigma, std::vector <float> & kernel_values)
+template <typename PointInT>
+void
+pcl::ColorGradientModality<PointInT>::computeGaussianKernel(
+    const std::size_t kernel_size, const float sigma, std::vector<float>& kernel_values)
 {
   // code taken from OpenCV
   const int n = static_cast<int>(kernel_size);
   constexpr int SMALL_GAUSSIAN_SIZE = 7;
-  static const float small_gaussian_tab[][SMALL_GAUSSIAN_SIZE] =
-  {
+  static const float small_gaussian_tab[][SMALL_GAUSSIAN_SIZE] = {
       {1.f},
       {0.25f, 0.5f, 0.25f},
       {0.0625f, 0.25f, 0.375f, 0.25f, 0.0625f},
-      {0.03125f, 0.109375f, 0.21875f, 0.28125f, 0.21875f, 0.109375f, 0.03125f}
-  };
+      {0.03125f, 0.109375f, 0.21875f, 0.28125f, 0.21875f, 0.109375f, 0.03125f}};
 
-  const float* fixed_kernel = n % 2 == 1 && n <= SMALL_GAUSSIAN_SIZE && sigma <= 0 ?
-      small_gaussian_tab[n>>1] : nullptr;
+  const float* fixed_kernel = n % 2 == 1 && n <= SMALL_GAUSSIAN_SIZE && sigma <= 0
+                                  ? small_gaussian_tab[n >> 1]
+                                  : nullptr;
 
-  //CV_Assert( ktype == CV_32F || ktype == CV_64F );
+  // CV_Assert( ktype == CV_32F || ktype == CV_64F );
   /*Mat kernel(n, 1, ktype);*/
-  kernel_values.resize (n);
+  kernel_values.resize(n);
   float* cf = kernel_values.data();
-  //double* cd = (double*)kernel.data;
+  // double* cd = (double*)kernel.data;
 
-  double sigmaX = sigma > 0 ? sigma : ((n-1)*0.5 - 1)*0.3 + 0.8;
-  double scale2X = -0.5/(sigmaX*sigmaX);
+  double sigmaX = sigma > 0 ? sigma : ((n - 1) * 0.5 - 1) * 0.3 + 0.8;
+  double scale2X = -0.5 / (sigmaX * sigmaX);
   double sum = 0;
 
-  for( int i = 0; i < n; i++ )
-  {
-    double x = i - (n-1)*0.5;
-    double t = fixed_kernel ? static_cast<double>(fixed_kernel[i]) : std::exp (scale2X*x*x);
+  for (int i = 0; i < n; i++) {
+    double x = i - (n - 1) * 0.5;
+    double t =
+        fixed_kernel ? static_cast<double>(fixed_kernel[i]) : std::exp(scale2X * x * x);
 
     cf[i] = static_cast<float>(t);
     sum += cf[i];
   }
 
-  sum = 1./sum;
-  for ( int i = 0; i < n; i++ )
-  {
-    cf[i] = static_cast<float>(cf[i]*sum);
+  sum = 1. / sum;
+  for (int i = 0; i < n; i++) {
+    cf[i] = static_cast<float>(cf[i] * sum);
   }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT>
 void
-pcl::ColorGradientModality<PointInT>::
-processInputData ()
+pcl::ColorGradientModality<PointInT>::processInputData()
 {
   // compute gaussian kernel values
   constexpr std::size_t kernel_size = 7;
   std::vector<float> kernel_values;
-  computeGaussianKernel (kernel_size, 0.0f, kernel_values);
+  computeGaussianKernel(kernel_size, 0.0f, kernel_values);
 
   // smooth input
-	pcl::filters::Convolution<pcl::RGB, pcl::RGB> convolution;
-	Eigen::ArrayXf gaussian_kernel(kernel_size);
-	//gaussian_kernel << 1.f/16, 1.f/8, 3.f/16, 2.f/8, 3.f/16, 1.f/8, 1.f/16;
-	//gaussian_kernel << 16.f/1600.f,  32.f/1600.f,  64.f/1600.f, 128.f/1600.f, 256.f/1600.f, 128.f/1600.f,  64.f/1600.f,  32.f/1600.f,  16.f/1600.f;
-  gaussian_kernel << kernel_values[0], kernel_values[1], kernel_values[2], kernel_values[3], kernel_values[4], kernel_values[5], kernel_values[6];
+  pcl::filters::Convolution<pcl::RGB, pcl::RGB> convolution;
+  Eigen::ArrayXf gaussian_kernel(kernel_size);
+  // gaussian_kernel << 1.f/16, 1.f/8, 3.f/16, 2.f/8, 3.f/16, 1.f/8, 1.f/16;
+  // gaussian_kernel << 16.f/1600.f,  32.f/1600.f,  64.f/1600.f, 128.f/1600.f,
+  // 256.f/1600.f, 128.f/1600.f,  64.f/1600.f,  32.f/1600.f,  16.f/1600.f;
+  gaussian_kernel << kernel_values[0], kernel_values[1], kernel_values[2],
+      kernel_values[3], kernel_values[4], kernel_values[5], kernel_values[6];
 
-  pcl::PointCloud<pcl::RGB>::Ptr rgb_input_ (new pcl::PointCloud<pcl::RGB>());
-  
+  pcl::PointCloud<pcl::RGB>::Ptr rgb_input_(new pcl::PointCloud<pcl::RGB>());
+
   const std::uint32_t width = input_->width;
   const std::uint32_t height = input_->height;
 
-  rgb_input_->resize (width*height);
+  rgb_input_->resize(width * height);
   rgb_input_->width = width;
   rgb_input_->height = height;
   rgb_input_->is_dense = input_->is_dense;
-  for (std::size_t row_index = 0; row_index < height; ++row_index)
-  {
-    for (std::size_t col_index = 0; col_index < width; ++col_index)
-    {
-      (*rgb_input_) (col_index, row_index).r = (*input_) (col_index, row_index).r;
-      (*rgb_input_) (col_index, row_index).g = (*input_) (col_index, row_index).g;
-      (*rgb_input_) (col_index, row_index).b = (*input_) (col_index, row_index).b;
+  for (std::size_t row_index = 0; row_index < height; ++row_index) {
+    for (std::size_t col_index = 0; col_index < width; ++col_index) {
+      (*rgb_input_)(col_index, row_index).r = (*input_)(col_index, row_index).r;
+      (*rgb_input_)(col_index, row_index).g = (*input_)(col_index, row_index).g;
+      (*rgb_input_)(col_index, row_index).b = (*input_)(col_index, row_index).b;
     }
   }
 
-	convolution.setInputCloud (rgb_input_);
-	convolution.setKernel (gaussian_kernel);
+  convolution.setInputCloud(rgb_input_);
+  convolution.setKernel(gaussian_kernel);
 
-  convolution.convolve (*smoothed_input_);
+  convolution.convolve(*smoothed_input_);
 
   // extract color gradients
-  computeMaxColorGradientsSobel (smoothed_input_);
+  computeMaxColorGradientsSobel(smoothed_input_);
 
   // quantize gradients
-  quantizeColorGradients ();
+  quantizeColorGradients();
 
   // filter quantized gradients to get only dominants one + thresholding
-  filterQuantizedColorGradients ();
+  filterQuantizedColorGradients();
 
   // spread filtered quantized gradients
-  //spreadFilteredQunatizedColorGradients ();
-  pcl::QuantizedMap::spreadQuantizedMap (filtered_quantized_color_gradients_,
-                                         spreaded_filtered_quantized_color_gradients_, 
-                                         spreading_size_);
+  // spreadFilteredQunatizedColorGradients ();
+  pcl::QuantizedMap::spreadQuantizedMap(filtered_quantized_color_gradients_,
+                                        spreaded_filtered_quantized_color_gradients_,
+                                        spreading_size_);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT>
 void
-pcl::ColorGradientModality<PointInT>::
-processInputDataFromFiltered ()
+pcl::ColorGradientModality<PointInT>::processInputDataFromFiltered()
 {
   // spread filtered quantized gradients
-  //spreadFilteredQunatizedColorGradients ();
-  pcl::QuantizedMap::spreadQuantizedMap (filtered_quantized_color_gradients_,
-                                         spreaded_filtered_quantized_color_gradients_, 
-                                         spreading_size_);
+  // spreadFilteredQunatizedColorGradients ();
+  pcl::QuantizedMap::spreadQuantizedMap(filtered_quantized_color_gradients_,
+                                        spreaded_filtered_quantized_color_gradients_,
+                                        spreading_size_);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT>
-void pcl::ColorGradientModality<PointInT>::
-extractFeatures (const MaskMap & mask, const std::size_t nr_features, const std::size_t modality_index,
-                 std::vector<QuantizedMultiModFeature> & features) const
+void
+pcl::ColorGradientModality<PointInT>::extractFeatures(
+    const MaskMap& mask,
+    const std::size_t nr_features,
+    const std::size_t modality_index,
+    std::vector<QuantizedMultiModFeature>& features) const
 {
-  const std::size_t width = mask.getWidth ();
-  const std::size_t height = mask.getHeight ();
-  
+  const std::size_t width = mask.getWidth();
+  const std::size_t height = mask.getHeight();
+
   std::list<Candidate> list1;
   std::list<Candidate> list2;
 
-
-  if (feature_selection_method_ == DISTANCE_MAGNITUDE_SCORE)
-  {
-    for (std::size_t row_index = 0; row_index < height; ++row_index)
-    {
-      for (std::size_t col_index = 0; col_index < width; ++col_index)
-      {
-        if (mask (col_index, row_index) != 0)
-        {
-          const GradientXY & gradient = color_gradients_ (col_index, row_index);
-          if (gradient.magnitude > gradient_magnitude_threshold_feature_extraction_
-            && filtered_quantized_color_gradients_ (col_index, row_index) != 0)
-          {
+  if (feature_selection_method_ == DISTANCE_MAGNITUDE_SCORE) {
+    for (std::size_t row_index = 0; row_index < height; ++row_index) {
+      for (std::size_t col_index = 0; col_index < width; ++col_index) {
+        if (mask(col_index, row_index) != 0) {
+          const GradientXY& gradient = color_gradients_(col_index, row_index);
+          if (gradient.magnitude > gradient_magnitude_threshold_feature_extraction_ &&
+              filtered_quantized_color_gradients_(col_index, row_index) != 0) {
             Candidate candidate;
             candidate.gradient = gradient;
-            candidate.x = static_cast<int> (col_index);
-            candidate.y = static_cast<int> (row_index);
+            candidate.x = static_cast<int>(col_index);
+            candidate.y = static_cast<int>(row_index);
 
-            list1.push_back (candidate);
+            list1.push_back(candidate);
           }
         }
       }
@@ -438,75 +432,70 @@ extractFeatures (const MaskMap & mask, const std::size_t nr_features, const std:
 
     list1.sort();
 
-    if (variable_feature_nr_)
-    {
-      list2.push_back (*(list1.begin ()));
-      //while (list2.size () != nr_features)
+    if (variable_feature_nr_) {
+      list2.push_back(*(list1.begin()));
+      // while (list2.size () != nr_features)
       bool feature_selection_finished = false;
-      while (!feature_selection_finished)
-      {
+      while (!feature_selection_finished) {
         float best_score = 0.0f;
-        auto best_iter = list1.end ();
-        for (auto iter1 = list1.begin (); iter1 != list1.end (); ++iter1)
-        {
+        auto best_iter = list1.end();
+        for (auto iter1 = list1.begin(); iter1 != list1.end(); ++iter1) {
           // find smallest distance
-          float smallest_distance = std::numeric_limits<float>::max ();
-          for (auto iter2 = list2.begin (); iter2 != list2.end (); ++iter2)
-          {
-            const float dx = static_cast<float> (iter1->x) - static_cast<float> (iter2->x);
-            const float dy = static_cast<float> (iter1->y) - static_cast<float> (iter2->y);
+          float smallest_distance = std::numeric_limits<float>::max();
+          for (auto iter2 = list2.begin(); iter2 != list2.end(); ++iter2) {
+            const float dx =
+                static_cast<float>(iter1->x) - static_cast<float>(iter2->x);
+            const float dy =
+                static_cast<float>(iter1->y) - static_cast<float>(iter2->y);
 
-            const float distance = dx*dx + dy*dy;
+            const float distance = dx * dx + dy * dy;
 
-            if (distance < smallest_distance)
-            {
+            if (distance < smallest_distance) {
               smallest_distance = distance;
             }
           }
 
           const float score = smallest_distance * iter1->gradient.magnitude;
 
-          if (score > best_score)
-          {
+          if (score > best_score) {
             best_score = score;
             best_iter = iter1;
           }
         }
 
-
-        float min_min_sqr_distance = std::numeric_limits<float>::max ();
+        float min_min_sqr_distance = std::numeric_limits<float>::max();
         float max_min_sqr_distance = 0;
-        for (auto iter2 = list2.begin (); iter2 != list2.end (); ++iter2)
-        {
-          float min_sqr_distance = std::numeric_limits<float>::max ();
-          for (auto iter3 = list2.begin (); iter3 != list2.end (); ++iter3)
-          {
+        for (auto iter2 = list2.begin(); iter2 != list2.end(); ++iter2) {
+          float min_sqr_distance = std::numeric_limits<float>::max();
+          for (auto iter3 = list2.begin(); iter3 != list2.end(); ++iter3) {
             if (iter2 == iter3)
               continue;
 
-            const float dx = static_cast<float> (iter2->x) - static_cast<float> (iter3->x);
-            const float dy = static_cast<float> (iter2->y) - static_cast<float> (iter3->y);
+            const float dx =
+                static_cast<float>(iter2->x) - static_cast<float>(iter3->x);
+            const float dy =
+                static_cast<float>(iter2->y) - static_cast<float>(iter3->y);
 
-            const float sqr_distance = dx*dx + dy*dy;
+            const float sqr_distance = dx * dx + dy * dy;
 
-            if (sqr_distance < min_sqr_distance)
-            {
+            if (sqr_distance < min_sqr_distance) {
               min_sqr_distance = sqr_distance;
             }
 
-            //std::cerr << min_sqr_distance;
+            // std::cerr << min_sqr_distance;
           }
-          //std::cerr << std::endl;
+          // std::cerr << std::endl;
 
           // check current feature
           {
-            const float dx = static_cast<float> (iter2->x) - static_cast<float> (best_iter->x);
-            const float dy = static_cast<float> (iter2->y) - static_cast<float> (best_iter->y);
+            const float dx =
+                static_cast<float>(iter2->x) - static_cast<float>(best_iter->x);
+            const float dy =
+                static_cast<float>(iter2->y) - static_cast<float>(best_iter->y);
 
-            const float sqr_distance = dx*dx + dy*dy;
+            const float sqr_distance = dx * dx + dy * dy;
 
-            if (sqr_distance < min_sqr_distance)
-            {
+            if (sqr_distance < min_sqr_distance) {
               min_sqr_distance = sqr_distance;
             }
           }
@@ -516,108 +505,97 @@ extractFeatures (const MaskMap & mask, const std::size_t nr_features, const std:
           if (min_sqr_distance > max_min_sqr_distance)
             max_min_sqr_distance = min_sqr_distance;
 
-          //std::cerr << min_sqr_distance << ", " << min_min_sqr_distance << ", " << max_min_sqr_distance << std::endl;
+          // std::cerr << min_sqr_distance << ", " << min_min_sqr_distance << ", " <<
+          // max_min_sqr_distance << std::endl;
         }
 
-        if (best_iter != list1.end ())
-        {
-          //std::cerr << "feature_index: " << list2.size () << std::endl;
-          //std::cerr << "min_min_sqr_distance: " << min_min_sqr_distance << std::endl;
-          //std::cerr << "max_min_sqr_distance: " << max_min_sqr_distance << std::endl;
+        if (best_iter != list1.end()) {
+          // std::cerr << "feature_index: " << list2.size () << std::endl;
+          // std::cerr << "min_min_sqr_distance: " << min_min_sqr_distance << std::endl;
+          // std::cerr << "max_min_sqr_distance: " << max_min_sqr_distance << std::endl;
 
-          if (min_min_sqr_distance < 50)
-          {
+          if (min_min_sqr_distance < 50) {
             feature_selection_finished = true;
             break;
           }
 
-          list2.push_back (*best_iter);
+          list2.push_back(*best_iter);
         }
-      } 
+      }
     }
-    else
-    {
-      if (list1.size () <= nr_features)
-      {
-        for (auto iter1 = list1.begin (); iter1 != list1.end (); ++iter1)
-        {
+    else {
+      if (list1.size() <= nr_features) {
+        for (auto iter1 = list1.begin(); iter1 != list1.end(); ++iter1) {
           QuantizedMultiModFeature feature;
-          
+
           feature.x = iter1->x;
           feature.y = iter1->y;
           feature.modality_index = modality_index;
-          feature.quantized_value = filtered_quantized_color_gradients_ (iter1->x, iter1->y);
+          feature.quantized_value =
+              filtered_quantized_color_gradients_(iter1->x, iter1->y);
 
-          features.push_back (feature);
+          features.push_back(feature);
         }
         return;
       }
 
-      list2.push_back (*(list1.begin ()));
-      while (list2.size () != nr_features)
-      {
+      list2.push_back(*(list1.begin()));
+      while (list2.size() != nr_features) {
         float best_score = 0.0f;
-        auto best_iter = list1.end ();
-        for (auto iter1 = list1.begin (); iter1 != list1.end (); ++iter1)
-        {
+        auto best_iter = list1.end();
+        for (auto iter1 = list1.begin(); iter1 != list1.end(); ++iter1) {
           // find smallest distance
-          float smallest_distance = std::numeric_limits<float>::max ();
-          for (auto iter2 = list2.begin (); iter2 != list2.end (); ++iter2)
-          {
-            const float dx = static_cast<float> (iter1->x) - static_cast<float> (iter2->x);
-            const float dy = static_cast<float> (iter1->y) - static_cast<float> (iter2->y);
+          float smallest_distance = std::numeric_limits<float>::max();
+          for (auto iter2 = list2.begin(); iter2 != list2.end(); ++iter2) {
+            const float dx =
+                static_cast<float>(iter1->x) - static_cast<float>(iter2->x);
+            const float dy =
+                static_cast<float>(iter1->y) - static_cast<float>(iter2->y);
 
-            const float distance = dx*dx + dy*dy;
+            const float distance = dx * dx + dy * dy;
 
-            if (distance < smallest_distance)
-            {
+            if (distance < smallest_distance) {
               smallest_distance = distance;
             }
           }
 
           const float score = smallest_distance * iter1->gradient.magnitude;
 
-          if (score > best_score)
-          {
+          if (score > best_score) {
             best_score = score;
             best_iter = iter1;
           }
         }
 
-        if (best_iter != list1.end ())
-        {
-          list2.push_back (*best_iter);
+        if (best_iter != list1.end()) {
+          list2.push_back(*best_iter);
         }
-        else
-        {
+        else {
           break;
         }
-      }  
+      }
     }
   }
-  else if (feature_selection_method_ == MASK_BORDER_HIGH_GRADIENTS || feature_selection_method_ == MASK_BORDER_EQUALLY)
-  {
+  else if (feature_selection_method_ == MASK_BORDER_HIGH_GRADIENTS ||
+           feature_selection_method_ == MASK_BORDER_EQUALLY) {
     MaskMap eroded_mask;
-    erode (mask, eroded_mask);
+    erode(mask, eroded_mask);
 
-    auto diff_mask = MaskMap::getDifferenceMask (mask, eroded_mask);
+    auto diff_mask = MaskMap::getDifferenceMask(mask, eroded_mask);
 
-    for (std::size_t row_index = 0; row_index < height; ++row_index)
-    {
-      for (std::size_t col_index = 0; col_index < width; ++col_index)
-      {
-        if (diff_mask (col_index, row_index) != 0)
-        {
-          const GradientXY & gradient = color_gradients_ (col_index, row_index);
-          if ((feature_selection_method_ == MASK_BORDER_EQUALLY || gradient.magnitude > gradient_magnitude_threshold_feature_extraction_)
-            && filtered_quantized_color_gradients_ (col_index, row_index) != 0)
-          {
+    for (std::size_t row_index = 0; row_index < height; ++row_index) {
+      for (std::size_t col_index = 0; col_index < width; ++col_index) {
+        if (diff_mask(col_index, row_index) != 0) {
+          const GradientXY& gradient = color_gradients_(col_index, row_index);
+          if ((feature_selection_method_ == MASK_BORDER_EQUALLY ||
+               gradient.magnitude > gradient_magnitude_threshold_feature_extraction_) &&
+              filtered_quantized_color_gradients_(col_index, row_index) != 0) {
             Candidate candidate;
             candidate.gradient = gradient;
-            candidate.x = static_cast<int> (col_index);
-            candidate.y = static_cast<int> (row_index);
+            candidate.x = static_cast<int>(col_index);
+            candidate.y = static_cast<int>(row_index);
 
-            list1.push_back (candidate);
+            list1.push_back(candidate);
           }
         }
       }
@@ -625,96 +603,88 @@ extractFeatures (const MaskMap & mask, const std::size_t nr_features, const std:
 
     list1.sort();
 
-    if (list1.size () <= nr_features)
-    {
-      for (auto iter1 = list1.begin (); iter1 != list1.end (); ++iter1)
-      {
+    if (list1.size() <= nr_features) {
+      for (auto iter1 = list1.begin(); iter1 != list1.end(); ++iter1) {
         QuantizedMultiModFeature feature;
-          
+
         feature.x = iter1->x;
         feature.y = iter1->y;
         feature.modality_index = modality_index;
-        feature.quantized_value = filtered_quantized_color_gradients_ (iter1->x, iter1->y);
+        feature.quantized_value =
+            filtered_quantized_color_gradients_(iter1->x, iter1->y);
 
-        features.push_back (feature);
+        features.push_back(feature);
       }
       return;
     }
 
-    std::size_t distance = list1.size () / nr_features + 1; // ??? 
-    while (list2.size () != nr_features)
-    {
-      const std::size_t sqr_distance = distance*distance;
-      for (auto iter1 = list1.begin (); iter1 != list1.end (); ++iter1)
-      {
+    std::size_t distance = list1.size() / nr_features + 1; // ???
+    while (list2.size() != nr_features) {
+      const std::size_t sqr_distance = distance * distance;
+      for (auto iter1 = list1.begin(); iter1 != list1.end(); ++iter1) {
         bool candidate_accepted = true;
 
-        for (auto iter2 = list2.begin (); iter2 != list2.end (); ++iter2)
-        {
+        for (auto iter2 = list2.begin(); iter2 != list2.end(); ++iter2) {
           const int dx = iter1->x - iter2->x;
           const int dy = iter1->y - iter2->y;
-          const unsigned int tmp_distance = dx*dx + dy*dy;
+          const unsigned int tmp_distance = dx * dx + dy * dy;
 
-          //if (tmp_distance < distance) 
-          if (tmp_distance < sqr_distance)
-          {
+          // if (tmp_distance < distance)
+          if (tmp_distance < sqr_distance) {
             candidate_accepted = false;
             break;
           }
         }
 
         if (candidate_accepted)
-          list2.push_back (*iter1);
+          list2.push_back(*iter1);
 
-        if (list2.size () == nr_features)
+        if (list2.size() == nr_features)
           break;
       }
       --distance;
     }
   }
 
-  for (auto iter2 = list2.begin (); iter2 != list2.end (); ++iter2)
-  {
+  for (auto iter2 = list2.begin(); iter2 != list2.end(); ++iter2) {
     QuantizedMultiModFeature feature;
-    
+
     feature.x = iter2->x;
     feature.y = iter2->y;
     feature.modality_index = modality_index;
-    feature.quantized_value = filtered_quantized_color_gradients_ (iter2->x, iter2->y);
+    feature.quantized_value = filtered_quantized_color_gradients_(iter2->x, iter2->y);
 
-    features.push_back (feature);
+    features.push_back(feature);
   }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointInT> void 
-pcl::ColorGradientModality<PointInT>::
-extractAllFeatures (const MaskMap & mask, const std::size_t, const std::size_t modality_index,
-                 std::vector<QuantizedMultiModFeature> & features) const
+template <typename PointInT>
+void
+pcl::ColorGradientModality<PointInT>::extractAllFeatures(
+    const MaskMap& mask,
+    const std::size_t,
+    const std::size_t modality_index,
+    std::vector<QuantizedMultiModFeature>& features) const
 {
-  const std::size_t width = mask.getWidth ();
-  const std::size_t height = mask.getHeight ();
-  
+  const std::size_t width = mask.getWidth();
+  const std::size_t height = mask.getHeight();
+
   std::list<Candidate> list1;
   std::list<Candidate> list2;
 
-
-  for (std::size_t row_index = 0; row_index < height; ++row_index)
-  {
-    for (std::size_t col_index = 0; col_index < width; ++col_index)
-    {
-      if (mask (col_index, row_index) != 0)
-      {
-        const GradientXY & gradient = color_gradients_ (col_index, row_index);
-        if (gradient.magnitude > gradient_magnitude_threshold_feature_extraction_
-          && filtered_quantized_color_gradients_ (col_index, row_index) != 0)
-        {
+  for (std::size_t row_index = 0; row_index < height; ++row_index) {
+    for (std::size_t col_index = 0; col_index < width; ++col_index) {
+      if (mask(col_index, row_index) != 0) {
+        const GradientXY& gradient = color_gradients_(col_index, row_index);
+        if (gradient.magnitude > gradient_magnitude_threshold_feature_extraction_ &&
+            filtered_quantized_color_gradients_(col_index, row_index) != 0) {
           Candidate candidate;
           candidate.gradient = gradient;
-          candidate.x = static_cast<int> (col_index);
-          candidate.y = static_cast<int> (row_index);
+          candidate.x = static_cast<int>(col_index);
+          candidate.y = static_cast<int>(row_index);
 
-          list1.push_back (candidate);
+          list1.push_back(candidate);
         }
       }
     }
@@ -722,42 +692,39 @@ extractAllFeatures (const MaskMap & mask, const std::size_t, const std::size_t m
 
   list1.sort();
 
-  for (auto iter1 = list1.begin (); iter1 != list1.end (); ++iter1)
-  {
+  for (auto iter1 = list1.begin(); iter1 != list1.end(); ++iter1) {
     QuantizedMultiModFeature feature;
-          
+
     feature.x = iter1->x;
     feature.y = iter1->y;
     feature.modality_index = modality_index;
-    feature.quantized_value = filtered_quantized_color_gradients_ (iter1->x, iter1->y);
+    feature.quantized_value = filtered_quantized_color_gradients_(iter1->x, iter1->y);
 
-    features.push_back (feature);
+    features.push_back(feature);
   }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT>
 void
-pcl::ColorGradientModality<PointInT>::
-computeMaxColorGradients (const typename pcl::PointCloud<pcl::RGB>::ConstPtr & cloud)
+pcl::ColorGradientModality<PointInT>::computeMaxColorGradients(
+    const typename pcl::PointCloud<pcl::RGB>::ConstPtr& cloud)
 {
   const int width = cloud->width;
   const int height = cloud->height;
 
-  color_gradients_.resize (width*height);
+  color_gradients_.resize(width * height);
   color_gradients_.width = width;
   color_gradients_.height = height;
 
-  const float pi = std::tan (1.0f) * 2;
-  for (int row_index = 0; row_index < height-2; ++row_index)
-  {
-    for (int col_index = 0; col_index < width-2; ++col_index)
-    {
-      const int index0 = row_index*width+col_index;
-      const int index_c = row_index*width+col_index+2;
-      const int index_r = (row_index+2)*width+col_index;
+  const float pi = std::tan(1.0f) * 2;
+  for (int row_index = 0; row_index < height - 2; ++row_index) {
+    for (int col_index = 0; col_index < width - 2; ++col_index) {
+      const int index0 = row_index * width + col_index;
+      const int index_c = row_index * width + col_index + 2;
+      const int index_r = (row_index + 2) * width + col_index;
 
-      //const int index_d = (row_index+1)*width+col_index+1;
+      // const int index_d = (row_index+1)*width+col_index+1;
 
       const unsigned char r0 = (*cloud)[index0].r;
       const unsigned char g0 = (*cloud)[index0].g;
@@ -771,51 +738,48 @@ computeMaxColorGradients (const typename pcl::PointCloud<pcl::RGB>::ConstPtr & c
       const unsigned char g_r = (*cloud)[index_r].g;
       const unsigned char b_r = (*cloud)[index_r].b;
 
-      const float r_dx = static_cast<float> (r_c) - static_cast<float> (r0);
-      const float g_dx = static_cast<float> (g_c) - static_cast<float> (g0);
-      const float b_dx = static_cast<float> (b_c) - static_cast<float> (b0);
+      const float r_dx = static_cast<float>(r_c) - static_cast<float>(r0);
+      const float g_dx = static_cast<float>(g_c) - static_cast<float>(g0);
+      const float b_dx = static_cast<float>(b_c) - static_cast<float>(b0);
 
-      const float r_dy = static_cast<float> (r_r) - static_cast<float> (r0);
-      const float g_dy = static_cast<float> (g_r) - static_cast<float> (g0);
-      const float b_dy = static_cast<float> (b_r) - static_cast<float> (b0);
+      const float r_dy = static_cast<float>(r_r) - static_cast<float>(r0);
+      const float g_dy = static_cast<float>(g_r) - static_cast<float>(g0);
+      const float b_dy = static_cast<float>(b_r) - static_cast<float>(b0);
 
-      const float sqr_mag_r = r_dx*r_dx + r_dy*r_dy;
-      const float sqr_mag_g = g_dx*g_dx + g_dy*g_dy;
-      const float sqr_mag_b = b_dx*b_dx + b_dy*b_dy;
+      const float sqr_mag_r = r_dx * r_dx + r_dy * r_dy;
+      const float sqr_mag_g = g_dx * g_dx + g_dy * g_dy;
+      const float sqr_mag_b = b_dx * b_dx + b_dy * b_dy;
 
-      if (sqr_mag_r > sqr_mag_g && sqr_mag_r > sqr_mag_b)
-      {
+      if (sqr_mag_r > sqr_mag_g && sqr_mag_r > sqr_mag_b) {
         GradientXY gradient;
-        gradient.magnitude = std::sqrt (sqr_mag_r);
-        gradient.angle = std::atan2 (r_dy, r_dx) * 180.0f / pi;
-        gradient.x = static_cast<float> (col_index);
-        gradient.y = static_cast<float> (row_index);
+        gradient.magnitude = std::sqrt(sqr_mag_r);
+        gradient.angle = std::atan2(r_dy, r_dx) * 180.0f / pi;
+        gradient.x = static_cast<float>(col_index);
+        gradient.y = static_cast<float>(row_index);
 
-        color_gradients_ (col_index+1, row_index+1) = gradient;
+        color_gradients_(col_index + 1, row_index + 1) = gradient;
       }
-      else if (sqr_mag_g > sqr_mag_b)
-      {
+      else if (sqr_mag_g > sqr_mag_b) {
         GradientXY gradient;
-        gradient.magnitude = std::sqrt (sqr_mag_g);
-        gradient.angle = std::atan2 (g_dy, g_dx) * 180.0f / pi;
-        gradient.x = static_cast<float> (col_index);
-        gradient.y = static_cast<float> (row_index);
+        gradient.magnitude = std::sqrt(sqr_mag_g);
+        gradient.angle = std::atan2(g_dy, g_dx) * 180.0f / pi;
+        gradient.x = static_cast<float>(col_index);
+        gradient.y = static_cast<float>(row_index);
 
-        color_gradients_ (col_index+1, row_index+1) = gradient;
+        color_gradients_(col_index + 1, row_index + 1) = gradient;
       }
-      else
-      {
+      else {
         GradientXY gradient;
-        gradient.magnitude = std::sqrt (sqr_mag_b);
-        gradient.angle = std::atan2 (b_dy, b_dx) * 180.0f / pi;
-        gradient.x = static_cast<float> (col_index);
-        gradient.y = static_cast<float> (row_index);
+        gradient.magnitude = std::sqrt(sqr_mag_b);
+        gradient.angle = std::atan2(b_dy, b_dx) * 180.0f / pi;
+        gradient.x = static_cast<float>(col_index);
+        gradient.y = static_cast<float>(row_index);
 
-        color_gradients_ (col_index+1, row_index+1) = gradient;
+        color_gradients_(col_index + 1, row_index + 1) = gradient;
       }
 
-      assert (color_gradients_ (col_index+1, row_index+1).angle >= -180 &&
-              color_gradients_ (col_index+1, row_index+1).angle <=  180);
+      assert(color_gradients_(col_index + 1, row_index + 1).angle >= -180 &&
+             color_gradients_(col_index + 1, row_index + 1).angle <= 180);
     }
   }
 
@@ -825,119 +789,144 @@ computeMaxColorGradients (const typename pcl::PointCloud<pcl::RGB>::ConstPtr & c
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT>
 void
-pcl::ColorGradientModality<PointInT>::
-computeMaxColorGradientsSobel (const typename pcl::PointCloud<pcl::RGB>::ConstPtr & cloud)
+pcl::ColorGradientModality<PointInT>::computeMaxColorGradientsSobel(
+    const typename pcl::PointCloud<pcl::RGB>::ConstPtr& cloud)
 {
   const int width = cloud->width;
   const int height = cloud->height;
 
-  color_gradients_.resize (width*height);
+  color_gradients_.resize(width * height);
   color_gradients_.width = width;
   color_gradients_.height = height;
 
-  const float pi = tanf (1.0f) * 2.0f;
-  for (int row_index = 1; row_index < height-1; ++row_index)
-  {
-    for (int col_index = 1; col_index < width-1; ++col_index)
-    {
-      const int r7 = static_cast<int> ((*cloud)[(row_index-1)*width + (col_index-1)].r);
-      const int g7 = static_cast<int> ((*cloud)[(row_index-1)*width + (col_index-1)].g);
-      const int b7 = static_cast<int> ((*cloud)[(row_index-1)*width + (col_index-1)].b);
-      const int r8 = static_cast<int> ((*cloud)[(row_index-1)*width + (col_index)].r);
-      const int g8 = static_cast<int> ((*cloud)[(row_index-1)*width + (col_index)].g);
-      const int b8 = static_cast<int> ((*cloud)[(row_index-1)*width + (col_index)].b);
-      const int r9 = static_cast<int> ((*cloud)[(row_index-1)*width + (col_index+1)].r);
-      const int g9 = static_cast<int> ((*cloud)[(row_index-1)*width + (col_index+1)].g);
-      const int b9 = static_cast<int> ((*cloud)[(row_index-1)*width + (col_index+1)].b);
-      const int r4 = static_cast<int> ((*cloud)[(row_index)*width + (col_index-1)].r);
-      const int g4 = static_cast<int> ((*cloud)[(row_index)*width + (col_index-1)].g);
-      const int b4 = static_cast<int> ((*cloud)[(row_index)*width + (col_index-1)].b);
-      const int r6 = static_cast<int> ((*cloud)[(row_index)*width + (col_index+1)].r);
-      const int g6 = static_cast<int> ((*cloud)[(row_index)*width + (col_index+1)].g);
-      const int b6 = static_cast<int> ((*cloud)[(row_index)*width + (col_index+1)].b);
-      const int r1 = static_cast<int> ((*cloud)[(row_index+1)*width + (col_index-1)].r);
-      const int g1 = static_cast<int> ((*cloud)[(row_index+1)*width + (col_index-1)].g);
-      const int b1 = static_cast<int> ((*cloud)[(row_index+1)*width + (col_index-1)].b);
-      const int r2 = static_cast<int> ((*cloud)[(row_index+1)*width + (col_index)].r);
-      const int g2 = static_cast<int> ((*cloud)[(row_index+1)*width + (col_index)].g);
-      const int b2 = static_cast<int> ((*cloud)[(row_index+1)*width + (col_index)].b);
-      const int r3 = static_cast<int> ((*cloud)[(row_index+1)*width + (col_index+1)].r);
-      const int g3 = static_cast<int> ((*cloud)[(row_index+1)*width + (col_index+1)].g);
-      const int b3 = static_cast<int> ((*cloud)[(row_index+1)*width + (col_index+1)].b);
+  const float pi = tanf(1.0f) * 2.0f;
+  for (int row_index = 1; row_index < height - 1; ++row_index) {
+    for (int col_index = 1; col_index < width - 1; ++col_index) {
+      const int r7 =
+          static_cast<int>((*cloud)[(row_index - 1) * width + (col_index - 1)].r);
+      const int g7 =
+          static_cast<int>((*cloud)[(row_index - 1) * width + (col_index - 1)].g);
+      const int b7 =
+          static_cast<int>((*cloud)[(row_index - 1) * width + (col_index - 1)].b);
+      const int r8 =
+          static_cast<int>((*cloud)[(row_index - 1) * width + (col_index)].r);
+      const int g8 =
+          static_cast<int>((*cloud)[(row_index - 1) * width + (col_index)].g);
+      const int b8 =
+          static_cast<int>((*cloud)[(row_index - 1) * width + (col_index)].b);
+      const int r9 =
+          static_cast<int>((*cloud)[(row_index - 1) * width + (col_index + 1)].r);
+      const int g9 =
+          static_cast<int>((*cloud)[(row_index - 1) * width + (col_index + 1)].g);
+      const int b9 =
+          static_cast<int>((*cloud)[(row_index - 1) * width + (col_index + 1)].b);
+      const int r4 = static_cast<int>((*cloud)[(row_index)*width + (col_index - 1)].r);
+      const int g4 = static_cast<int>((*cloud)[(row_index)*width + (col_index - 1)].g);
+      const int b4 = static_cast<int>((*cloud)[(row_index)*width + (col_index - 1)].b);
+      const int r6 = static_cast<int>((*cloud)[(row_index)*width + (col_index + 1)].r);
+      const int g6 = static_cast<int>((*cloud)[(row_index)*width + (col_index + 1)].g);
+      const int b6 = static_cast<int>((*cloud)[(row_index)*width + (col_index + 1)].b);
+      const int r1 =
+          static_cast<int>((*cloud)[(row_index + 1) * width + (col_index - 1)].r);
+      const int g1 =
+          static_cast<int>((*cloud)[(row_index + 1) * width + (col_index - 1)].g);
+      const int b1 =
+          static_cast<int>((*cloud)[(row_index + 1) * width + (col_index - 1)].b);
+      const int r2 =
+          static_cast<int>((*cloud)[(row_index + 1) * width + (col_index)].r);
+      const int g2 =
+          static_cast<int>((*cloud)[(row_index + 1) * width + (col_index)].g);
+      const int b2 =
+          static_cast<int>((*cloud)[(row_index + 1) * width + (col_index)].b);
+      const int r3 =
+          static_cast<int>((*cloud)[(row_index + 1) * width + (col_index + 1)].r);
+      const int g3 =
+          static_cast<int>((*cloud)[(row_index + 1) * width + (col_index + 1)].g);
+      const int b3 =
+          static_cast<int>((*cloud)[(row_index + 1) * width + (col_index + 1)].b);
 
-      //const int r_tmp1 = - r7 + r3;
-      //const int r_tmp2 = - r1 + r9;
-      //const int g_tmp1 = - g7 + g3;
-      //const int g_tmp2 = - g1 + g9;
-      //const int b_tmp1 = - b7 + b3;
-      //const int b_tmp2 = - b1 + b9;
+      // const int r_tmp1 = - r7 + r3;
+      // const int r_tmp2 = - r1 + r9;
+      // const int g_tmp1 = - g7 + g3;
+      // const int g_tmp2 = - g1 + g9;
+      // const int b_tmp1 = - b7 + b3;
+      // const int b_tmp2 = - b1 + b9;
       ////const int gx = - r7 - (r4<<2) - r1 + r3 + (r6<<2) + r9;
       ////const int gy = - r7 - (r8<<2) - r9 + r1 + (r2<<2) + r3;
-      //const int r_dx = r_tmp1 + r_tmp2 - (r4<<2) + (r6<<2);
-      //const int r_dy = r_tmp1 - r_tmp2 - (r8<<2) + (r2<<2);
-      //const int g_dx = g_tmp1 + g_tmp2 - (g4<<2) + (g6<<2);
-      //const int g_dy = g_tmp1 - g_tmp2 - (g8<<2) + (g2<<2);
-      //const int b_dx = b_tmp1 + b_tmp2 - (b4<<2) + (b6<<2);
-      //const int b_dy = b_tmp1 - b_tmp2 - (b8<<2) + (b2<<2);
+      // const int r_dx = r_tmp1 + r_tmp2 - (r4<<2) + (r6<<2);
+      // const int r_dy = r_tmp1 - r_tmp2 - (r8<<2) + (r2<<2);
+      // const int g_dx = g_tmp1 + g_tmp2 - (g4<<2) + (g6<<2);
+      // const int g_dy = g_tmp1 - g_tmp2 - (g8<<2) + (g2<<2);
+      // const int b_dx = b_tmp1 + b_tmp2 - (b4<<2) + (b6<<2);
+      // const int b_dy = b_tmp1 - b_tmp2 - (b8<<2) + (b2<<2);
 
-      //const int r_tmp1 = - r7 + r3;
-      //const int r_tmp2 = - r1 + r9;
-      //const int g_tmp1 = - g7 + g3;
-      //const int g_tmp2 = - g1 + g9;
-      //const int b_tmp1 = - b7 + b3;
-      //const int b_tmp2 = - b1 + b9;
-      //const int gx = - r7 - (r4<<2) - r1 + r3 + (r6<<2) + r9;
-      //const int gy = - r7 - (r8<<2) - r9 + r1 + (r2<<2) + r3;
-      const int r_dx = r9 + 2*r6 + r3 - (r7 + 2*r4 + r1);
-      const int r_dy = r1 + 2*r2 + r3 - (r7 + 2*r8 + r9);
-      const int g_dx = g9 + 2*g6 + g3 - (g7 + 2*g4 + g1);
-      const int g_dy = g1 + 2*g2 + g3 - (g7 + 2*g8 + g9);
-      const int b_dx = b9 + 2*b6 + b3 - (b7 + 2*b4 + b1);
-      const int b_dy = b1 + 2*b2 + b3 - (b7 + 2*b8 + b9);
+      // const int r_tmp1 = - r7 + r3;
+      // const int r_tmp2 = - r1 + r9;
+      // const int g_tmp1 = - g7 + g3;
+      // const int g_tmp2 = - g1 + g9;
+      // const int b_tmp1 = - b7 + b3;
+      // const int b_tmp2 = - b1 + b9;
+      // const int gx = - r7 - (r4<<2) - r1 + r3 + (r6<<2) + r9;
+      // const int gy = - r7 - (r8<<2) - r9 + r1 + (r2<<2) + r3;
+      const int r_dx = r9 + 2 * r6 + r3 - (r7 + 2 * r4 + r1);
+      const int r_dy = r1 + 2 * r2 + r3 - (r7 + 2 * r8 + r9);
+      const int g_dx = g9 + 2 * g6 + g3 - (g7 + 2 * g4 + g1);
+      const int g_dy = g1 + 2 * g2 + g3 - (g7 + 2 * g8 + g9);
+      const int b_dx = b9 + 2 * b6 + b3 - (b7 + 2 * b4 + b1);
+      const int b_dy = b1 + 2 * b2 + b3 - (b7 + 2 * b8 + b9);
 
-      const int sqr_mag_r = r_dx*r_dx + r_dy*r_dy;
-      const int sqr_mag_g = g_dx*g_dx + g_dy*g_dy;
-      const int sqr_mag_b = b_dx*b_dx + b_dy*b_dy;
+      const int sqr_mag_r = r_dx * r_dx + r_dy * r_dy;
+      const int sqr_mag_g = g_dx * g_dx + g_dy * g_dy;
+      const int sqr_mag_b = b_dx * b_dx + b_dy * b_dy;
 
-      if (sqr_mag_r > sqr_mag_g && sqr_mag_r > sqr_mag_b)
-      {
+      if (sqr_mag_r > sqr_mag_g && sqr_mag_r > sqr_mag_b) {
         GradientXY gradient;
-        gradient.magnitude = std::sqrt (static_cast<float> (sqr_mag_r));
-        gradient.angle = std::atan2 (static_cast<float> (r_dy), static_cast<float> (r_dx)) * 180.0f / pi;
-        if (gradient.angle < -180.0f) gradient.angle += 360.0f;
-        if (gradient.angle >= 180.0f) gradient.angle -= 360.0f;
-        gradient.x = static_cast<float> (col_index);
-        gradient.y = static_cast<float> (row_index);
+        gradient.magnitude = std::sqrt(static_cast<float>(sqr_mag_r));
+        gradient.angle =
+            std::atan2(static_cast<float>(r_dy), static_cast<float>(r_dx)) * 180.0f /
+            pi;
+        if (gradient.angle < -180.0f)
+          gradient.angle += 360.0f;
+        if (gradient.angle >= 180.0f)
+          gradient.angle -= 360.0f;
+        gradient.x = static_cast<float>(col_index);
+        gradient.y = static_cast<float>(row_index);
 
-        color_gradients_ (col_index, row_index) = gradient;
+        color_gradients_(col_index, row_index) = gradient;
       }
-      else if (sqr_mag_g > sqr_mag_b)
-      {
+      else if (sqr_mag_g > sqr_mag_b) {
         GradientXY gradient;
-        gradient.magnitude = std::sqrt (static_cast<float> (sqr_mag_g));
-        gradient.angle = std::atan2 (static_cast<float> (g_dy), static_cast<float> (g_dx)) * 180.0f / pi;
-        if (gradient.angle < -180.0f) gradient.angle += 360.0f;
-        if (gradient.angle >= 180.0f) gradient.angle -= 360.0f;
-        gradient.x = static_cast<float> (col_index);
-        gradient.y = static_cast<float> (row_index);
+        gradient.magnitude = std::sqrt(static_cast<float>(sqr_mag_g));
+        gradient.angle =
+            std::atan2(static_cast<float>(g_dy), static_cast<float>(g_dx)) * 180.0f /
+            pi;
+        if (gradient.angle < -180.0f)
+          gradient.angle += 360.0f;
+        if (gradient.angle >= 180.0f)
+          gradient.angle -= 360.0f;
+        gradient.x = static_cast<float>(col_index);
+        gradient.y = static_cast<float>(row_index);
 
-        color_gradients_ (col_index, row_index) = gradient;
+        color_gradients_(col_index, row_index) = gradient;
       }
-      else
-      {
+      else {
         GradientXY gradient;
-        gradient.magnitude = std::sqrt (static_cast<float> (sqr_mag_b));
-        gradient.angle = std::atan2 (static_cast<float> (b_dy), static_cast<float> (b_dx)) * 180.0f / pi;
-        if (gradient.angle < -180.0f) gradient.angle += 360.0f;
-        if (gradient.angle >= 180.0f) gradient.angle -= 360.0f;
-        gradient.x = static_cast<float> (col_index);
-        gradient.y = static_cast<float> (row_index);
+        gradient.magnitude = std::sqrt(static_cast<float>(sqr_mag_b));
+        gradient.angle =
+            std::atan2(static_cast<float>(b_dy), static_cast<float>(b_dx)) * 180.0f /
+            pi;
+        if (gradient.angle < -180.0f)
+          gradient.angle += 360.0f;
+        if (gradient.angle >= 180.0f)
+          gradient.angle -= 360.0f;
+        gradient.x = static_cast<float>(col_index);
+        gradient.y = static_cast<float>(row_index);
 
-        color_gradients_ (col_index, row_index) = gradient;
+        color_gradients_(col_index, row_index) = gradient;
       }
 
-      assert (color_gradients_ (col_index, row_index).angle >= -180 &&
-              color_gradients_ (col_index, row_index).angle <=  180);
+      assert(color_gradients_(col_index, row_index).angle >= -180 &&
+             color_gradients_(col_index, row_index).angle <= 180);
     }
   }
 
@@ -947,101 +936,102 @@ computeMaxColorGradientsSobel (const typename pcl::PointCloud<pcl::RGB>::ConstPt
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT>
 void
-pcl::ColorGradientModality<PointInT>::
-quantizeColorGradients ()
+pcl::ColorGradientModality<PointInT>::quantizeColorGradients()
 {
-  //std::cerr << "quantize this, bastard!!!" << std::endl;
+  // std::cerr << "quantize this, bastard!!!" << std::endl;
 
-  //unsigned char quantization_map[16] = {0,1,2,3,4,5,6,7,0,1,2,3,4,5,6,7};
-  //unsigned char quantization_map[16] = {1,2,3,4,5,6,7,8,1,2,3,4,5,6,7,8};
+  // unsigned char quantization_map[16] = {0,1,2,3,4,5,6,7,0,1,2,3,4,5,6,7};
+  // unsigned char quantization_map[16] = {1,2,3,4,5,6,7,8,1,2,3,4,5,6,7,8};
 
-  //for (float angle = 0.0f; angle < 360.0f; angle += 1.0f)
+  // for (float angle = 0.0f; angle < 360.0f; angle += 1.0f)
   //{
-  //  const int quantized_value = quantization_map[static_cast<int> (angle * angleScale)];
-  //  std::cerr << angle << ": " << quantized_value << std::endl;
-  //}
-
+  //   const int quantized_value = quantization_map[static_cast<int> (angle *
+  //   angleScale)]; std::cerr << angle << ": " << quantized_value << std::endl;
+  // }
 
   const std::size_t width = input_->width;
   const std::size_t height = input_->height;
 
-  quantized_color_gradients_.resize (width, height);
+  quantized_color_gradients_.resize(width, height);
 
   constexpr float angleScale = 16.0f / 360.0f;
 
-  //float min_angle = std::numeric_limits<float>::max ();
-  //float max_angle = -std::numeric_limits<float>::max ();
-  for (std::size_t row_index = 0; row_index < height; ++row_index)
-  {
-    for (std::size_t col_index = 0; col_index < width; ++col_index)
-    {
-      if (color_gradients_ (col_index, row_index).magnitude < gradient_magnitude_threshold_) 
-      {
-        quantized_color_gradients_ (col_index, row_index) = 0;
+  // float min_angle = std::numeric_limits<float>::max ();
+  // float max_angle = -std::numeric_limits<float>::max ();
+  for (std::size_t row_index = 0; row_index < height; ++row_index) {
+    for (std::size_t col_index = 0; col_index < width; ++col_index) {
+      if (color_gradients_(col_index, row_index).magnitude <
+          gradient_magnitude_threshold_) {
+        quantized_color_gradients_(col_index, row_index) = 0;
         continue;
       }
 
-      const float angle = 11.25f + color_gradients_ (col_index, row_index).angle + 180.0f;
-      const int quantized_value = (static_cast<int> (angle * angleScale)) & 7;
-      quantized_color_gradients_ (col_index, row_index) = static_cast<unsigned char> (quantized_value + 1); 
+      const float angle =
+          11.25f + color_gradients_(col_index, row_index).angle + 180.0f;
+      const int quantized_value = (static_cast<int>(angle * angleScale)) & 7;
+      quantized_color_gradients_(col_index, row_index) =
+          static_cast<unsigned char>(quantized_value + 1);
 
-      //const float angle = color_gradients_ (col_index, row_index).angle + 180.0f;
+      // const float angle = color_gradients_ (col_index, row_index).angle + 180.0f;
 
-      //min_angle = std::min (min_angle, angle);
-      //max_angle = std::max (max_angle, angle);
+      // min_angle = std::min (min_angle, angle);
+      // max_angle = std::max (max_angle, angle);
 
-      //if (angle < 0.0f || angle >= 360.0f)
+      // if (angle < 0.0f || angle >= 360.0f)
       //{
-      //  std::cerr << "angle shitty: " << angle << std::endl;
-      //}
+      //   std::cerr << "angle shitty: " << angle << std::endl;
+      // }
 
-      //const int quantized_value = quantization_map[static_cast<int> (angle * angleScale)];
-      //quantized_color_gradients_ (col_index, row_index) = static_cast<unsigned char> (quantized_value); 
+      // const int quantized_value = quantization_map[static_cast<int> (angle *
+      // angleScale)]; quantized_color_gradients_ (col_index, row_index) =
+      // static_cast<unsigned char> (quantized_value);
 
-      //assert (0 <= quantized_value && quantized_value < 16);
-      //quantized_color_gradients_ (col_index, row_index) = quantization_map[quantized_value];
-      //quantized_color_gradients_ (col_index, row_index) = static_cast<unsigned char> ((quantized_value & 7) + 1); // = (quantized_value % 8) + 1
+      // assert (0 <= quantized_value && quantized_value < 16);
+      // quantized_color_gradients_ (col_index, row_index) =
+      // quantization_map[quantized_value]; quantized_color_gradients_ (col_index,
+      // row_index) = static_cast<unsigned char> ((quantized_value & 7) + 1); // =
+      // (quantized_value % 8) + 1
     }
   }
 
-  //std::cerr << ">>>>> " << min_angle << ", " << max_angle << std::endl;
+  // std::cerr << ">>>>> " << min_angle << ", " << max_angle << std::endl;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT>
 void
-pcl::ColorGradientModality<PointInT>::
-filterQuantizedColorGradients ()
+pcl::ColorGradientModality<PointInT>::filterQuantizedColorGradients()
 {
   const std::size_t width = input_->width;
   const std::size_t height = input_->height;
 
-  filtered_quantized_color_gradients_.resize (width, height);
+  filtered_quantized_color_gradients_.resize(width, height);
 
   // filter data
-  for (std::size_t row_index = 1; row_index < height-1; ++row_index)
-  {
-    for (std::size_t col_index = 1; col_index < width-1; ++col_index)
-    {
-      unsigned char histogram[9] = {0,0,0,0,0,0,0,0,0};
+  for (std::size_t row_index = 1; row_index < height - 1; ++row_index) {
+    for (std::size_t col_index = 1; col_index < width - 1; ++col_index) {
+      unsigned char histogram[9] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
 
       {
-        const unsigned char * data_ptr = quantized_color_gradients_.getData () + (row_index-1)*width+col_index-1;
-        assert (data_ptr[0] < 9 && data_ptr[1] < 9 && data_ptr[2] < 9);
+        const unsigned char* data_ptr = quantized_color_gradients_.getData() +
+                                        (row_index - 1) * width + col_index - 1;
+        assert(data_ptr[0] < 9 && data_ptr[1] < 9 && data_ptr[2] < 9);
         ++histogram[data_ptr[0]];
         ++histogram[data_ptr[1]];
         ++histogram[data_ptr[2]];
       }
       {
-        const unsigned char * data_ptr = quantized_color_gradients_.getData () + row_index*width+col_index-1;
-        assert (data_ptr[0] < 9 && data_ptr[1] < 9 && data_ptr[2] < 9);
+        const unsigned char* data_ptr =
+            quantized_color_gradients_.getData() + row_index * width + col_index - 1;
+        assert(data_ptr[0] < 9 && data_ptr[1] < 9 && data_ptr[2] < 9);
         ++histogram[data_ptr[0]];
         ++histogram[data_ptr[1]];
         ++histogram[data_ptr[2]];
       }
       {
-        const unsigned char * data_ptr = quantized_color_gradients_.getData () + (row_index+1)*width+col_index-1;
-        assert (data_ptr[0] < 9 && data_ptr[1] < 9 && data_ptr[2] < 9);
+        const unsigned char* data_ptr = quantized_color_gradients_.getData() +
+                                        (row_index + 1) * width + col_index - 1;
+        assert(data_ptr[0] < 9 && data_ptr[1] < 9 && data_ptr[2] < 9);
         ++histogram[data_ptr[0]];
         ++histogram[data_ptr[1]];
         ++histogram[data_ptr[2]];
@@ -1059,20 +1049,44 @@ filterQuantizedColorGradients ()
       //   }
       // }
       // Unrolled for performance optimization:
-      if (max_hist_value < histogram[1]) {max_hist_index = 0; max_hist_value = histogram[1];}
-      if (max_hist_value < histogram[2]) {max_hist_index = 1; max_hist_value = histogram[2];}
-      if (max_hist_value < histogram[3]) {max_hist_index = 2; max_hist_value = histogram[3];}
-      if (max_hist_value < histogram[4]) {max_hist_index = 3; max_hist_value = histogram[4];}
-      if (max_hist_value < histogram[5]) {max_hist_index = 4; max_hist_value = histogram[5];}
-      if (max_hist_value < histogram[6]) {max_hist_index = 5; max_hist_value = histogram[6];}
-      if (max_hist_value < histogram[7]) {max_hist_index = 6; max_hist_value = histogram[7];}
-      if (max_hist_value < histogram[8]) {max_hist_index = 7; max_hist_value = histogram[8];}
+      if (max_hist_value < histogram[1]) {
+        max_hist_index = 0;
+        max_hist_value = histogram[1];
+      }
+      if (max_hist_value < histogram[2]) {
+        max_hist_index = 1;
+        max_hist_value = histogram[2];
+      }
+      if (max_hist_value < histogram[3]) {
+        max_hist_index = 2;
+        max_hist_value = histogram[3];
+      }
+      if (max_hist_value < histogram[4]) {
+        max_hist_index = 3;
+        max_hist_value = histogram[4];
+      }
+      if (max_hist_value < histogram[5]) {
+        max_hist_index = 4;
+        max_hist_value = histogram[5];
+      }
+      if (max_hist_value < histogram[6]) {
+        max_hist_index = 5;
+        max_hist_value = histogram[6];
+      }
+      if (max_hist_value < histogram[7]) {
+        max_hist_index = 6;
+        max_hist_value = histogram[7];
+      }
+      if (max_hist_value < histogram[8]) {
+        max_hist_index = 7;
+        max_hist_value = histogram[8];
+      }
 
       if (max_hist_index != -1 && max_hist_value >= 5)
-        filtered_quantized_color_gradients_ (col_index, row_index) = static_cast<unsigned char> (0x1 << max_hist_index);
+        filtered_quantized_color_gradients_(col_index, row_index) =
+            static_cast<unsigned char>(0x1 << max_hist_index);
       else
-        filtered_quantized_color_gradients_ (col_index, row_index) = 0;
-
+        filtered_quantized_color_gradients_(col_index, row_index) = 0;
     }
   }
 }
@@ -1080,29 +1094,24 @@ filterQuantizedColorGradients ()
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT>
 void
-pcl::ColorGradientModality<PointInT>::
-erode (const pcl::MaskMap & mask_in, 
-       pcl::MaskMap & mask_out)
+pcl::ColorGradientModality<PointInT>::erode(const pcl::MaskMap& mask_in,
+                                            pcl::MaskMap& mask_out)
 {
-  const std::size_t width = mask_in.getWidth ();
-  const std::size_t height = mask_in.getHeight ();
+  const std::size_t width = mask_in.getWidth();
+  const std::size_t height = mask_in.getHeight();
 
-  mask_out.resize (width, height);
+  mask_out.resize(width, height);
 
-  for (std::size_t row_index = 1; row_index < height-1; ++row_index)
-  {
-    for (std::size_t col_index = 1; col_index < width-1; ++col_index)
-    {
-      if (mask_in (col_index, row_index-1) == 0 ||
-          mask_in (col_index-1, row_index) == 0 ||
-          mask_in (col_index+1, row_index) == 0 ||
-          mask_in (col_index, row_index+1) == 0)
-      {
-        mask_out (col_index, row_index) = 0;
+  for (std::size_t row_index = 1; row_index < height - 1; ++row_index) {
+    for (std::size_t col_index = 1; col_index < width - 1; ++col_index) {
+      if (mask_in(col_index, row_index - 1) == 0 ||
+          mask_in(col_index - 1, row_index) == 0 ||
+          mask_in(col_index + 1, row_index) == 0 ||
+          mask_in(col_index, row_index + 1) == 0) {
+        mask_out(col_index, row_index) = 0;
       }
-      else
-      {
-        mask_out (col_index, row_index) = 255;
+      else {
+        mask_out(col_index, row_index) = 255;
       }
     }
   }

@@ -74,9 +74,9 @@ public:
    * transformation matrix
    */
   inline void
-  estimateRigidTransformation(const pcl::PointCloud<PointSource>& cloud_src,
-                              const pcl::PointCloud<PointTarget>& cloud_tgt,
-                              Matrix4& transformation_matrix) const;
+  estimateRigidTransformation (const pcl::PointCloud<PointSource>& cloud_src,
+                               const pcl::PointCloud<PointTarget>& cloud_tgt,
+                               Matrix4& transformation_matrix) const;
 
   /** \brief Estimate a rigid transformation between a source and a target point cloud
    * in 2D. \param[in] cloud_src the source point cloud dataset \param[in] indices_src
@@ -85,10 +85,10 @@ public:
    * \param[out] transformation_matrix the resultant transformation matrix
    */
   inline void
-  estimateRigidTransformation(const pcl::PointCloud<PointSource>& cloud_src,
-                              const pcl::Indices& indices_src,
-                              const pcl::PointCloud<PointTarget>& cloud_tgt,
-                              Matrix4& transformation_matrix) const;
+  estimateRigidTransformation (const pcl::PointCloud<PointSource>& cloud_src,
+                               const pcl::Indices& indices_src,
+                               const pcl::PointCloud<PointTarget>& cloud_tgt,
+                               Matrix4& transformation_matrix) const;
 
   /** \brief Estimate a rigid transformation between a source and a target point cloud
    * in 2D. \param[in] cloud_src the source point cloud dataset \param[in] indices_src
@@ -99,11 +99,11 @@ public:
    * \param[out] transformation_matrix the resultant transformation matrix
    */
   virtual void
-  estimateRigidTransformation(const pcl::PointCloud<PointSource>& cloud_src,
-                              const pcl::Indices& indices_src,
-                              const pcl::PointCloud<PointTarget>& cloud_tgt,
-                              const pcl::Indices& indices_tgt,
-                              Matrix4& transformation_matrix) const;
+  estimateRigidTransformation (const pcl::PointCloud<PointSource>& cloud_src,
+                               const pcl::Indices& indices_src,
+                               const pcl::PointCloud<PointTarget>& cloud_tgt,
+                               const pcl::Indices& indices_tgt,
+                               Matrix4& transformation_matrix) const;
 
   /** \brief Estimate a rigid transformation between a source and a target point cloud
    * in 2D. \param[in] cloud_src the source point cloud dataset \param[in] cloud_tgt the
@@ -112,10 +112,10 @@ public:
    * resultant transformation matrix
    */
   virtual void
-  estimateRigidTransformation(const pcl::PointCloud<PointSource>& cloud_src,
-                              const pcl::PointCloud<PointTarget>& cloud_tgt,
-                              const pcl::Correspondences& correspondences,
-                              Matrix4& transformation_matrix) const;
+  estimateRigidTransformation (const pcl::PointCloud<PointSource>& cloud_src,
+                               const pcl::PointCloud<PointTarget>& cloud_tgt,
+                               const pcl::Correspondences& correspondences,
+                               Matrix4& transformation_matrix) const;
 
 protected:
   /** \brief Estimate a rigid rotation transformation between a source and a target
@@ -124,9 +124,9 @@ protected:
    * \param[out] transformation_matrix the resultant transformation matrix
    */
   void
-  estimateRigidTransformation(ConstCloudIterator<PointSource>& source_it,
-                              ConstCloudIterator<PointTarget>& target_it,
-                              Matrix4& transformation_matrix) const;
+  estimateRigidTransformation (ConstCloudIterator<PointSource>& source_it,
+                               ConstCloudIterator<PointTarget>& target_it,
+                               Matrix4& transformation_matrix) const;
 
   /** \brief Obtain a 4x4 rigid transformation matrix from a correlation matrix H = src
    * * tgt' \param[in] cloud_src_demean the input source cloud, demeaned, in Eigen
@@ -136,7 +136,7 @@ protected:
    * \param[out] transformation_matrix the resultant 4x4 rigid transformation matrix
    */
   void
-  getTransformationFromCorrelation(
+  getTransformationFromCorrelation (
       const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic>& cloud_src_demean,
       const Eigen::Matrix<Scalar, 4, 1>& centroid_src,
       const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic>& cloud_tgt_demean,

@@ -39,52 +39,50 @@
 
 #include <QStandardItemModel>
 
-namespace pcl
-{
-  namespace cloud_composer
-  {
-    class CloudComposerItem;
-    class PropertiesModel : public QStandardItemModel
-    {
-      Q_OBJECT
-      public:
-        
-        /** \brief Constructor used for tool parameters */
-        PropertiesModel (QObject *parent = nullptr);
-        /** \brief Constructor used for item parameters */
-        PropertiesModel (CloudComposerItem* parent_item, QObject *parent = nullptr);
-        PropertiesModel (const PropertiesModel& to_copy);
-        
-        /** \brief Helper function for adding a new property */
-        void
-        addProperty (const QString& prop_name, const QVariant& value, const Qt::ItemFlags flags = Qt::ItemIsSelectable, const QString& category = "");
-        
-        /** \brief Helper function for adding a new property category */
-        void
-        addCategory (const QString& category_name);
-        
-        /** \brief Helper function to get a property */
-        QVariant 
-        getProperty (const QString& prop_name) const;
-        
-        void 
-        copyProperties (const PropertiesModel* to_copy);
-        
-      public Q_SLOTS:
-        void
-        propertyChanged (QStandardItem* property_item);
-      
-      Q_SIGNALS:
-        void 
-        propertyChanged (const QStandardItem* property_item, const CloudComposerItem* parent_item_);
-        
-        
-      private:
-        CloudComposerItem* parent_item_;
-        
-     };
-  }
-}
+namespace pcl {
+namespace cloud_composer {
+class CloudComposerItem;
+class PropertiesModel : public QStandardItemModel {
+  Q_OBJECT
+public:
+  /** \brief Constructor used for tool parameters */
+  PropertiesModel(QObject* parent = nullptr);
+  /** \brief Constructor used for item parameters */
+  PropertiesModel(CloudComposerItem* parent_item, QObject* parent = nullptr);
+  PropertiesModel(const PropertiesModel& to_copy);
 
-Q_DECLARE_METATYPE (pcl::cloud_composer::PropertiesModel);
-Q_DECLARE_METATYPE (pcl::cloud_composer::PropertiesModel*);
+  /** \brief Helper function for adding a new property */
+  void
+  addProperty (const QString& prop_name,
+               const QVariant& value,
+               const Qt::ItemFlags flags = Qt::ItemIsSelectable,
+               const QString& category = "");
+
+  /** \brief Helper function for adding a new property category */
+  void
+  addCategory (const QString& category_name);
+
+  /** \brief Helper function to get a property */
+  QVariant
+  getProperty (const QString& prop_name) const;
+
+  void
+  copyProperties (const PropertiesModel* to_copy);
+
+public Q_SLOTS:
+  void
+  propertyChanged (QStandardItem* property_item);
+
+Q_SIGNALS:
+  void
+  propertyChanged (const QStandardItem* property_item,
+                   const CloudComposerItem* parent_item_);
+
+private:
+  CloudComposerItem* parent_item_;
+};
+} // namespace cloud_composer
+} // namespace pcl
+
+Q_DECLARE_METATYPE(pcl::cloud_composer::PropertiesModel);
+Q_DECLARE_METATYPE(pcl::cloud_composer::PropertiesModel*);

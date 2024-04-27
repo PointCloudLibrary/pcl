@@ -38,13 +38,14 @@
 /// @details implementation of the class Selection
 /// @author  Yue Li and Matthew Hielsberg
 
-#include <algorithm>
-#include <pcl/apps/point_cloud_editor/selection.h>
 #include <pcl/apps/point_cloud_editor/cloud.h>
 #include <pcl/apps/point_cloud_editor/common.h>
+#include <pcl/apps/point_cloud_editor/selection.h>
+
+#include <algorithm>
 
 Selection&
-Selection::operator= (const Selection& selection)
+Selection::operator=(const Selection& selection)
 {
   cloud_ptr_ = selection.cloud_ptr_;
   selected_indices_ = selection.selected_indices_;
@@ -52,72 +53,74 @@ Selection::operator= (const Selection& selection)
 }
 
 void
-Selection::addIndex (unsigned int index)
+Selection::addIndex(unsigned int index)
 {
   selected_indices_.insert(index);
 }
 
 void
-Selection::removeIndex (unsigned int index)
+Selection::removeIndex(unsigned int index)
 {
   selected_indices_.erase(index);
 }
 
 void
-Selection::addIndex (const IndexVector &indices)
+Selection::addIndex(const IndexVector& indices)
 {
   selected_indices_.insert(indices.begin(), indices.end());
 }
 
 void
-Selection::removeIndex (const IndexVector &indices)
+Selection::removeIndex(const IndexVector& indices)
 {
-  for(const unsigned int &index : indices)
+  for (const unsigned int& index : indices)
     removeIndex(index);
 }
 
 void
-Selection::addIndexRange (unsigned int start, unsigned int num)
+Selection::addIndexRange(unsigned int start, unsigned int num)
 {
-  for(unsigned int i = start; i < start + num; ++i)
+  for (unsigned int i = start; i < start + num; ++i)
     addIndex(i);
 }
 
 void
-Selection::removeIndexRange (unsigned int start, unsigned int num)
+Selection::removeIndexRange(unsigned int start, unsigned int num)
 {
-  for(unsigned int i = start; i < start + num; ++i)
+  for (unsigned int i = start; i < start + num; ++i)
     removeIndex(i);
 }
 
 bool
-Selection::isSelected (unsigned int index) const
+Selection::isSelected(unsigned int index) const
 {
   if (index >= cloud_ptr_->size())
     return (false);
   iterator it = selected_indices_.find(index);
   if (it != selected_indices_.end())
-      return (true);
+    return (true);
   return (false);
 }
 
 void
-Selection::invertSelect ()
+Selection::invertSelect()
 {
   std::set<unsigned int> s, complement;
   IncIndex inc;
-  for(unsigned int i = 0; i < cloud_ptr_->size(); ++i)
+  for (unsigned int i = 0; i < cloud_ptr_->size(); ++i)
     s.insert(i);
-  std::set_difference(s.begin(), s.end(),
-                      selected_indices_.begin(), selected_indices_.end(),
+  std::set_difference(s.begin(),
+                      s.end(),
+                      selected_indices_.begin(),
+                      selected_indices_.end(),
                       std::inserter(complement, complement.end()));
   selected_indices_ = complement;
 }
 
 std::string
-Selection::getStat () const
+Selection::getStat() const
 {
-  if (selected_indices_.empty ())
+  if (selected_indices_.empty())
     return "";
   const std::string title = "Total number of selected points: ";
   const std::string num_str = std::to_string(selected_indices_.size());

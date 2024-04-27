@@ -39,24 +39,25 @@
 
 #include <pcl/cuda/point_cloud.h>
 
-namespace pcl
-{
-  template <typename T>
-  class PointCloud;
+namespace pcl {
+template <typename T>
+class PointCloud;
 
-  struct PointXYZRGB;
+struct PointXYZRGB;
 
-  namespace cuda
-  {
+namespace cuda {
 
-    template <template <typename> class Storage, template <typename> class OtherStorage>
-    typename PointCloudAOS<OtherStorage>::Ptr toStorage (const PointCloudAOS<Storage> &input);
-  
-    template <template <typename> class Storage>
-    void toHost (const PointCloudAOS<Storage> &input, PointCloudAOS<Host> &output);
-  
-    template <template <typename> class Storage>
-    void toDevice (const PointCloudAOS<Storage> &input, PointCloudAOS<Device> &output);
+template <template <typename> class Storage, template <typename> class OtherStorage>
+typename PointCloudAOS<OtherStorage>::Ptr
+toStorage (const PointCloudAOS<Storage>& input);
 
-  } // namespace
-} // namespace
+template <template <typename> class Storage>
+void
+toHost (const PointCloudAOS<Storage>& input, PointCloudAOS<Host>& output);
+
+template <template <typename> class Storage>
+void
+toDevice (const PointCloudAOS<Storage>& input, PointCloudAOS<Device>& output);
+
+} // namespace cuda
+} // namespace pcl

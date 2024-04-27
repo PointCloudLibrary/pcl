@@ -37,12 +37,13 @@
 /// @details Implementation of the class Cloud, see cloud.h for details.
 /// @author  Yue Li and Matthew Hielsberg
 
-#include <algorithm>
 #include <pcl/apps/point_cloud_editor/cloud.h>
-#include <pcl/apps/point_cloud_editor/selection.h>
-#include <pcl/apps/point_cloud_editor/localTypes.h>
 #include <pcl/apps/point_cloud_editor/common.h>
 #include <pcl/apps/point_cloud_editor/copyBuffer.h>
+#include <pcl/apps/point_cloud_editor/localTypes.h>
+#include <pcl/apps/point_cloud_editor/selection.h>
+
+#include <algorithm>
 
 const float Cloud::DEFAULT_POINT_DISPLAY_SIZE_ = 2.0f;
 const float Cloud::DEFAULT_POINT_HIGHLIGHT_SIZE_ = 4.0f;
@@ -55,13 +56,15 @@ const float Cloud::DEFAULT_POINT_HIGHLIGHT_COLOR_RED_ = 0.0f;
 const float Cloud::DEFAULT_POINT_HIGHLIGHT_COLOR_GREEN_ = 1.0f;
 const float Cloud::DEFAULT_POINT_HIGHLIGHT_COLOR_BLUE_ = 0.0f;
 
-
-Cloud::Cloud ()
-  : use_color_ramp_(true), color_ramp_axis_(Y),
-  display_scale_(1.0f),
-  point_size_(DEFAULT_POINT_DISPLAY_SIZE_),
-  selected_point_size_(DEFAULT_POINT_HIGHLIGHT_SIZE_),
-  select_translate_x_(0), select_translate_y_(0), select_translate_z_(0)
+Cloud::Cloud()
+: use_color_ramp_(true)
+, color_ramp_axis_(Y)
+, display_scale_(1.0f)
+, point_size_(DEFAULT_POINT_DISPLAY_SIZE_)
+, selected_point_size_(DEFAULT_POINT_HIGHLIGHT_SIZE_)
+, select_translate_x_(0)
+, select_translate_y_(0)
+, select_translate_z_(0)
 {
   std::fill_n(center_xyz_, XYZ_SIZE, 0.0f);
   setIdentity(cloud_matrix_);
@@ -74,13 +77,16 @@ Cloud::Cloud ()
   highlight_color_[BLUE] = DEFAULT_POINT_HIGHLIGHT_COLOR_BLUE_;
 }
 
-Cloud::Cloud (const Cloud3D &cloud, bool register_stats)
-  : cloud_(cloud),
-  use_color_ramp_(true), color_ramp_axis_(Y),
-  display_scale_(1.0f),
-  point_size_(DEFAULT_POINT_DISPLAY_SIZE_),
-  selected_point_size_(DEFAULT_POINT_HIGHLIGHT_SIZE_),
-  select_translate_x_(0), select_translate_y_(0), select_translate_z_(0)
+Cloud::Cloud(const Cloud3D& cloud, bool register_stats)
+: cloud_(cloud)
+, use_color_ramp_(true)
+, color_ramp_axis_(Y)
+, display_scale_(1.0f)
+, point_size_(DEFAULT_POINT_DISPLAY_SIZE_)
+, selected_point_size_(DEFAULT_POINT_HIGHLIGHT_SIZE_)
+, select_translate_x_(0)
+, select_translate_y_(0)
+, select_translate_z_(0)
 {
   std::fill_n(center_xyz_, XYZ_SIZE, 0.0f);
   setIdentity(cloud_matrix_);
@@ -96,28 +102,29 @@ Cloud::Cloud (const Cloud3D &cloud, bool register_stats)
     registerStats();
 }
 
-Cloud::Cloud (const Cloud &copy)
-  : Statistics (copy), cloud_(copy.cloud_), selection_wk_ptr_(copy.selection_wk_ptr_),
-  use_color_ramp_(copy.use_color_ramp_),
-  color_ramp_axis_(copy.color_ramp_axis_),
-  display_scale_(copy.display_scale_),
-  partitioned_indices_(copy.partitioned_indices_),
-  point_size_(copy.point_size_),
-  selected_point_size_(copy.selected_point_size_),
-  select_translate_x_(copy.select_translate_x_),
-  select_translate_y_(copy.select_translate_y_),
-  select_translate_z_(copy.select_translate_z_)
+Cloud::Cloud(const Cloud& copy)
+: Statistics(copy)
+, cloud_(copy.cloud_)
+, selection_wk_ptr_(copy.selection_wk_ptr_)
+, use_color_ramp_(copy.use_color_ramp_)
+, color_ramp_axis_(copy.color_ramp_axis_)
+, display_scale_(copy.display_scale_)
+, partitioned_indices_(copy.partitioned_indices_)
+, point_size_(copy.point_size_)
+, selected_point_size_(copy.selected_point_size_)
+, select_translate_x_(copy.select_translate_x_)
+, select_translate_y_(copy.select_translate_y_)
+, select_translate_z_(copy.select_translate_z_)
 {
-  std::copy(copy.center_xyz_, copy.center_xyz_+XYZ_SIZE, center_xyz_);
-  std::copy(copy.cloud_matrix_, copy.cloud_matrix_+MATRIX_SIZE, cloud_matrix_);
-  std::copy(copy.select_matrix_, copy.select_matrix_+MATRIX_SIZE,
-            select_matrix_);
-  std::copy(copy.color_, copy.color_+RGB, color_);
-  std::copy(copy.highlight_color_, copy.highlight_color_+RGB, highlight_color_);
+  std::copy(copy.center_xyz_, copy.center_xyz_ + XYZ_SIZE, center_xyz_);
+  std::copy(copy.cloud_matrix_, copy.cloud_matrix_ + MATRIX_SIZE, cloud_matrix_);
+  std::copy(copy.select_matrix_, copy.select_matrix_ + MATRIX_SIZE, select_matrix_);
+  std::copy(copy.color_, copy.color_ + RGB, color_);
+  std::copy(copy.highlight_color_, copy.highlight_color_ + RGB, highlight_color_);
 }
 
 Cloud&
-Cloud::operator= (const Cloud &cloud)
+Cloud::operator=(const Cloud& cloud)
 {
   cloud_ = cloud.cloud_;
   selection_wk_ptr_ = cloud.selection_wk_ptr_;
@@ -126,14 +133,12 @@ Cloud::operator= (const Cloud &cloud)
   display_scale_ = cloud.display_scale_;
   point_size_ = cloud.point_size_;
   selected_point_size_ = cloud.selected_point_size_;
-  std::copy(cloud.center_xyz_, cloud.center_xyz_+XYZ_SIZE, center_xyz_);
-  std::copy(cloud.cloud_matrix_, cloud.cloud_matrix_+MATRIX_SIZE,
-            cloud_matrix_);
-  std::copy(cloud.select_matrix_, cloud.select_matrix_+MATRIX_SIZE,
-            select_matrix_);
+  std::copy(cloud.center_xyz_, cloud.center_xyz_ + XYZ_SIZE, center_xyz_);
+  std::copy(cloud.cloud_matrix_, cloud.cloud_matrix_ + MATRIX_SIZE, cloud_matrix_);
+  std::copy(cloud.select_matrix_, cloud.select_matrix_ + MATRIX_SIZE, select_matrix_);
   partitioned_indices_ = cloud.partitioned_indices_;
-  std::copy(cloud.color_, cloud.color_+RGB, color_);
-  std::copy(cloud.highlight_color_,cloud.highlight_color_+RGB,highlight_color_);
+  std::copy(cloud.color_, cloud.color_ + RGB, color_);
+  std::copy(cloud.highlight_color_, cloud.highlight_color_ + RGB, highlight_color_);
   select_translate_x_ = cloud.select_translate_x_;
   select_translate_y_ = cloud.select_translate_y_;
   select_translate_z_ = cloud.select_translate_z_;
@@ -141,39 +146,39 @@ Cloud::operator= (const Cloud &cloud)
 }
 
 Point3D&
-Cloud::operator[] (unsigned int index)
+Cloud::operator[](unsigned int index)
 {
   assert(index < cloud_.size());
   return (cloud_[index]);
 }
 
 const Point3D&
-Cloud::operator[] (unsigned int index) const
+Cloud::operator[](unsigned int index) const
 {
   assert(index < cloud_.size());
   return (cloud_[index]);
 }
 
 void
-Cloud::loadMatrix (const float *matrix)
+Cloud::loadMatrix(const float* matrix)
 {
-  std::copy(matrix, matrix+MATRIX_SIZE, cloud_matrix_);
+  std::copy(matrix, matrix + MATRIX_SIZE, cloud_matrix_);
 }
 
 void
-Cloud::multMatrix (const float *matrix)
+Cloud::multMatrix(const float* matrix)
 {
   ::multMatrix(cloud_matrix_, matrix, cloud_matrix_);
 }
 
 void
-Cloud::setSelectionRotation (const float* matrix)
+Cloud::setSelectionRotation(const float* matrix)
 {
-  std::copy(matrix, matrix+MATRIX_SIZE, select_matrix_);
+  std::copy(matrix, matrix + MATRIX_SIZE, select_matrix_);
 }
 
 void
-Cloud::setSelectionTranslation (float dx, float dy, float dz)
+Cloud::setSelectionTranslation(float dx, float dy, float dz)
 {
   select_translate_x_ = dx;
   select_translate_y_ = dy;
@@ -181,7 +186,7 @@ Cloud::setSelectionTranslation (float dx, float dy, float dz)
 }
 
 void
-Cloud::setSelection (const SelectionPtr& selection_ptr)
+Cloud::setSelection(const SelectionPtr& selection_ptr)
 {
   selection_wk_ptr_ = selection_ptr;
   if (!selection_ptr || selection_ptr->empty())
@@ -191,14 +196,13 @@ Cloud::setSelection (const SelectionPtr& selection_ptr)
   std::generate(partitioned_indices_.begin(), partitioned_indices_.end(), inc);
   unsigned int pos = 0;
   // assumes selection is sorted small to large
-  for (auto it = selection_ptr->begin(); it != selection_ptr->end(); ++it, ++pos)
-  {
+  for (auto it = selection_ptr->begin(); it != selection_ptr->end(); ++it, ++pos) {
     std::swap(partitioned_indices_[pos], partitioned_indices_[*it]);
   }
 }
 
 void
-Cloud::setRGB (float r, float g, float b)
+Cloud::setRGB(float r, float g, float b)
 {
   color_[RED] = r;
   color_[GREEN] = g;
@@ -206,7 +210,7 @@ Cloud::setRGB (float r, float g, float b)
 }
 
 void
-Cloud::setHighlightColor (float r, float g, float b)
+Cloud::setHighlightColor(float r, float g, float b)
 {
   highlight_color_[RED] = r;
   highlight_color_[GREEN] = g;
@@ -214,7 +218,7 @@ Cloud::setHighlightColor (float r, float g, float b)
 }
 
 void
-Cloud::drawWithTexture () const
+Cloud::drawWithTexture() const
 {
   enableTexture();
   draw();
@@ -222,16 +226,15 @@ Cloud::drawWithTexture () const
 }
 
 void
-Cloud::drawWithRGB () const
+Cloud::drawWithRGB() const
 {
   glEnableClientState(GL_COLOR_ARRAY);
-  glColorPointer(3, GL_UNSIGNED_BYTE, sizeof(Point3D),
-                 &(cloud_[0].b));
+  glColorPointer(3, GL_UNSIGNED_BYTE, sizeof(Point3D), &(cloud_[0].b));
   draw();
 }
 
 void
-Cloud::drawWithPureColor () const
+Cloud::drawWithPureColor() const
 {
   glDisableClientState(GL_COLOR_ARRAY);
   glColor3fv(color_);
@@ -239,7 +242,7 @@ Cloud::drawWithPureColor () const
 }
 
 void
-Cloud::drawWithHighlightColor () const
+Cloud::drawWithHighlightColor() const
 {
   glDisableClientState(GL_COLOR_ARRAY);
   glDisable(GL_TEXTURE_1D);
@@ -248,7 +251,7 @@ Cloud::drawWithHighlightColor () const
 }
 
 void
-Cloud::draw (bool disable_highlight) const
+Cloud::draw(bool disable_highlight) const
 {
   SelectionPtr selection_ptr = selection_wk_ptr_.lock();
 
@@ -268,38 +271,37 @@ Cloud::draw (bool disable_highlight) const
         glEnableClientState(GL_VERTEX_ARRAY);
         glVertexPointer(3, GL_FLOAT, sizeof(Point3D), &(cloud_[0].x));
 
-        if (disable_highlight || (!selection_ptr) || selection_ptr->empty())
-        {
+        if (disable_highlight || (!selection_ptr) || selection_ptr->empty()) {
           // draw the entire cloud
           glDrawArrays(GL_POINTS, 0, cloud_.size());
         }
-        else
-        {
+        else {
           // draw the unselected points
-          glDrawElements(GL_POINTS, cloud_.size()-selection_ptr->size(),
+          glDrawElements(GL_POINTS,
+                         cloud_.size() - selection_ptr->size(),
                          GL_UNSIGNED_INT,
-                         (&(partitioned_indices_[selection_ptr->size()-1]))+1);
+                         (&(partitioned_indices_[selection_ptr->size() - 1])) + 1);
 
           // handle selection transformation
           glLoadIdentity();
           glTranslatef(0.0f, 0.0f, DISPLAY_Z_TRANSLATION);
           glScalef(display_scale_, display_scale_, display_scale_);
-          glTranslatef(select_translate_x_,
-                       select_translate_y_, select_translate_z_);
+          glTranslatef(select_translate_x_, select_translate_y_, select_translate_z_);
           glMultMatrixf(select_matrix_);
           glMultMatrixf(cloud_matrix_);
           glTranslatef(-center_xyz_[0], -center_xyz_[1], -center_xyz_[2]);
-
 
           // set up highlight display
           glDisable(GL_TEXTURE_1D);
           glDisableClientState(GL_COLOR_ARRAY);
           glColor3fv(highlight_color_);
           glPointSize(selected_point_size_);
-          glBlendFunc( GL_SRC_ALPHA, GL_ZERO );
+          glBlendFunc(GL_SRC_ALPHA, GL_ZERO);
 
           // draw the selected points
-          glDrawElements(GL_POINTS, selection_ptr->size(), GL_UNSIGNED_INT,
+          glDrawElements(GL_POINTS,
+                         selection_ptr->size(),
+                         GL_UNSIGNED_INT,
                          &(partitioned_indices_[0]));
         }
       }
@@ -311,13 +313,13 @@ Cloud::draw (bool disable_highlight) const
 }
 
 void
-Cloud::append (const Point3D &pt)
+Cloud::append(const Point3D& pt)
 {
   cloud_.push_back(pt);
 }
 
 void
-Cloud::append (const Cloud & cloud)
+Cloud::append(const Cloud& cloud)
 {
   cloud_ += cloud.cloud_;
 }
@@ -328,7 +330,7 @@ Cloud::remove(const Selection& selection)
   unsigned int pos = cloud_.size();
   for (auto rit = selection.rbegin(); rit != selection.rend(); ++rit)
     std::swap(cloud_[--pos], cloud_[*rit]);
-  resize(cloud_.size()-selection.size());
+  resize(cloud_.size() - selection.size());
 }
 
 void
@@ -340,42 +342,36 @@ Cloud::resize(unsigned int new_size)
 }
 
 void
-Cloud::clear ()
+Cloud::clear()
 {
   cloud_.clear();
 }
 
 void
-Cloud::setPointSize (int size)
+Cloud::setPointSize(int size)
 {
   point_size_ = size;
 }
 
 void
-Cloud::setHighlightPointSize (int size)
+Cloud::setHighlightPointSize(int size)
 {
   selected_point_size_ = size;
 }
 
 Point3D
-Cloud::getObjectSpacePoint (unsigned int index) const
+Cloud::getObjectSpacePoint(unsigned int index) const
 {
   Point3D pt = cloud_[index];
   float x, y, z;
   pt.x -= center_xyz_[0];
   pt.y -= center_xyz_[1];
   pt.z -= center_xyz_[2];
-  x = cloud_matrix_[0] * pt.x +
-      cloud_matrix_[4] * pt.y +
-      cloud_matrix_[8] * pt.z +
+  x = cloud_matrix_[0] * pt.x + cloud_matrix_[4] * pt.y + cloud_matrix_[8] * pt.z +
       cloud_matrix_[12];
-  y = cloud_matrix_[1] * pt.x +
-      cloud_matrix_[5] * pt.y +
-      cloud_matrix_[9] * pt.z +
+  y = cloud_matrix_[1] * pt.x + cloud_matrix_[5] * pt.y + cloud_matrix_[9] * pt.z +
       cloud_matrix_[13];
-  z = cloud_matrix_[2] * pt.x +
-      cloud_matrix_[6] * pt.y +
-      cloud_matrix_[10] * pt.z +
+  z = cloud_matrix_[2] * pt.x + cloud_matrix_[6] * pt.y + cloud_matrix_[10] * pt.z +
       cloud_matrix_[14];
   pt.x = x;
   pt.y = y;
@@ -385,24 +381,18 @@ Cloud::getObjectSpacePoint (unsigned int index) const
 }
 
 Point3D
-Cloud::getDisplaySpacePoint (unsigned int index) const
+Cloud::getDisplaySpacePoint(unsigned int index) const
 {
   Point3D pt = cloud_[index];
   float x, y, z;
   pt.x -= center_xyz_[0];
   pt.y -= center_xyz_[1];
   pt.z -= center_xyz_[2];
-  x = cloud_matrix_[0] * pt.x +
-      cloud_matrix_[4] * pt.y +
-      cloud_matrix_[8] * pt.z +
+  x = cloud_matrix_[0] * pt.x + cloud_matrix_[4] * pt.y + cloud_matrix_[8] * pt.z +
       cloud_matrix_[12];
-  y = cloud_matrix_[1] * pt.x +
-      cloud_matrix_[5] * pt.y +
-      cloud_matrix_[9] * pt.z +
+  y = cloud_matrix_[1] * pt.x + cloud_matrix_[5] * pt.y + cloud_matrix_[9] * pt.z +
       cloud_matrix_[13];
-  z = cloud_matrix_[2] * pt.x +
-      cloud_matrix_[6] * pt.y +
-      cloud_matrix_[10] * pt.z +
+  z = cloud_matrix_[2] * pt.x + cloud_matrix_[6] * pt.y + cloud_matrix_[10] * pt.z +
       cloud_matrix_[14];
   pt.x = x * display_scale_;
   pt.y = y * display_scale_;
@@ -413,20 +403,20 @@ Cloud::getDisplaySpacePoint (unsigned int index) const
 }
 
 void
-Cloud::getDisplaySpacePoints (Point3DVector& pts) const
+Cloud::getDisplaySpacePoints(Point3DVector& pts) const
 {
-  for(std::size_t i = 0; i < cloud_.size(); ++i)
+  for (std::size_t i = 0; i < cloud_.size(); ++i)
     pts.push_back(getDisplaySpacePoint(i));
 }
 
 const Cloud3D&
-Cloud::getInternalCloud () const
+Cloud::getInternalCloud() const
 {
   return (cloud_);
 }
 
 void
-Cloud::restore (const CopyBuffer& copy_buffer, const Selection& selection)
+Cloud::restore(const CopyBuffer& copy_buffer, const Selection& selection)
 {
 
   if (selection.empty())
@@ -442,7 +432,7 @@ Cloud::restore (const CopyBuffer& copy_buffer, const Selection& selection)
 }
 
 std::string
-Cloud::getStat () const
+Cloud::getStat() const
 {
   const std::string title = "Total number of points: ";
   const std::string num_str = std::to_string(cloud_.size());
@@ -450,27 +440,24 @@ Cloud::getStat () const
 }
 
 void
-Cloud::updateCloudMembers ()
+Cloud::updateCloudMembers()
 {
   if (cloud_.empty())
-      return;
+    return;
 
   std::fill_n(min_xyz_, XYZ_SIZE, 0.0f);
   std::fill_n(max_xyz_, XYZ_SIZE, 0.0f);
-  float *pt = &(cloud_[0].data[X]);
-  std::copy(pt, pt+XYZ_SIZE, max_xyz_);
-  std::copy(max_xyz_, max_xyz_+XYZ_SIZE, min_xyz_);
-  for (std::size_t i = 1; i < cloud_.size(); ++i)
-  {
-    for (unsigned int j = 0; j < XYZ_SIZE; ++j)
-    {
+  float* pt = &(cloud_[0].data[X]);
+  std::copy(pt, pt + XYZ_SIZE, max_xyz_);
+  std::copy(max_xyz_, max_xyz_ + XYZ_SIZE, min_xyz_);
+  for (std::size_t i = 1; i < cloud_.size(); ++i) {
+    for (unsigned int j = 0; j < XYZ_SIZE; ++j) {
       min_xyz_[j] = std::min(min_xyz_[j], cloud_[i].data[j]);
       max_xyz_[j] = std::max(max_xyz_[j], cloud_[i].data[j]);
     }
   }
   float range = 0.0f;
-  for (unsigned int j = 0; j < XYZ_SIZE; ++j)
-  {
+  for (unsigned int j = 0; j < XYZ_SIZE; ++j) {
     range = std::max(range, max_xyz_[j] - min_xyz_[j]);
     center_xyz_[j] = 0.5f * (max_xyz_[j] + min_xyz_[j]);
   }
@@ -478,32 +465,30 @@ Cloud::updateCloudMembers ()
 }
 
 void
-Cloud::enableTexture () const
+Cloud::enableTexture() const
 {
   if (!use_color_ramp_)
     return;
-  float ranges[3] ={max_xyz_[0] - min_xyz_[0],
-                    max_xyz_[1] - min_xyz_[1],
-                    max_xyz_[2] - min_xyz_[2]};
+  float ranges[3] = {
+      max_xyz_[0] - min_xyz_[0], max_xyz_[1] - min_xyz_[1], max_xyz_[2] - min_xyz_[2]};
   float transvals[3] = {-min_xyz_[0], -min_xyz_[1], -min_xyz_[2]};
   float range = ranges[color_ramp_axis_];
   float transval = transvals[color_ramp_axis_];
   glEnable(GL_TEXTURE_1D);
   glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-  glTexCoordPointer(1, GL_FLOAT, sizeof(Point3D),
-                    &(cloud_[0].data[color_ramp_axis_]));
+  glTexCoordPointer(1, GL_FLOAT, sizeof(Point3D), &(cloud_[0].data[color_ramp_axis_]));
   glMatrixMode(GL_TEXTURE);
   glPushMatrix();
   glLoadIdentity();
   if (range <= 0.0f)
     range = 1.0f;
-  glScalef(1.0f/range, 1.0f, 1.0f);
+  glScalef(1.0f / range, 1.0f, 1.0f);
   glTranslatef(transval, 0.0f, 0.0f);
   glMatrixMode(GL_MODELVIEW);
 }
 
 void
-Cloud::disableTexture () const
+Cloud::disableTexture() const
 {
   if (!use_color_ramp_)
     return;

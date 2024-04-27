@@ -96,7 +96,7 @@ public:
    * \warning Does NOT check if the stored mesh pointer is valid. You have to ensure
    * this yourself when constructing the circulator. */
   inline bool
-  isValid() const
+  isValid () const
   {
     return (idx_outgoing_half_edge_.isValid());
   }
@@ -130,14 +130,14 @@ public:
 
   /** \brief Get the index to the target vertex. */
   inline VertexIndex
-  getTargetIndex() const
+  getTargetIndex () const
   {
     return (mesh_->getTerminatingVertexIndex(idx_outgoing_half_edge_));
   }
 
   /** \brief Get the half-edge that is currently stored in the circulator. */
   inline HalfEdgeIndex
-  getCurrentHalfEdgeIndex() const
+  getCurrentHalfEdgeIndex () const
   {
     return (idx_outgoing_half_edge_);
   }
@@ -203,7 +203,7 @@ public:
    * \warning Does NOT check if the stored mesh pointer is valid. You have to ensure
    * this yourself when constructing the circulator. */
   inline bool
-  isValid() const
+  isValid () const
   {
     return (idx_outgoing_half_edge_.isValid());
   }
@@ -237,14 +237,14 @@ public:
 
   /** \brief Get the index to the outgoing half-edge. */
   inline HalfEdgeIndex
-  getTargetIndex() const
+  getTargetIndex () const
   {
     return (idx_outgoing_half_edge_);
   }
 
   /** \brief Get the half-edge that is currently stored in the circulator. */
   inline HalfEdgeIndex
-  getCurrentHalfEdgeIndex() const
+  getCurrentHalfEdgeIndex () const
   {
     return (idx_outgoing_half_edge_);
   }
@@ -310,7 +310,7 @@ public:
    * \warning Does NOT check if the stored mesh pointer is valid. You have to ensure
    * this yourself when constructing the circulator. */
   inline bool
-  isValid() const
+  isValid () const
   {
     return (idx_incoming_half_edge_.isValid());
   }
@@ -344,14 +344,14 @@ public:
 
   /** \brief Get the index to the incoming half-edge. */
   inline HalfEdgeIndex
-  getTargetIndex() const
+  getTargetIndex () const
   {
     return (idx_incoming_half_edge_);
   }
 
   /** \brief Get the half-edge that is currently stored in the circulator. */
   inline HalfEdgeIndex
-  getCurrentHalfEdgeIndex() const
+  getCurrentHalfEdgeIndex () const
   {
     return (idx_incoming_half_edge_);
   }
@@ -414,7 +414,7 @@ public:
    * \warning Does NOT check if the stored mesh pointer is valid. You have to ensure
    * this yourself when constructing the circulator. */
   inline bool
-  isValid() const
+  isValid () const
   {
     return (idx_outgoing_half_edge_.isValid());
   }
@@ -448,14 +448,14 @@ public:
 
   /** \brief Get the index to the target face. */
   inline FaceIndex
-  getTargetIndex() const
+  getTargetIndex () const
   {
     return (mesh_->getFaceIndex(idx_outgoing_half_edge_));
   }
 
   /** \brief Get the half-edge that is currently stored in the circulator. */
   inline HalfEdgeIndex
-  getCurrentHalfEdgeIndex() const
+  getCurrentHalfEdgeIndex () const
   {
     return (idx_outgoing_half_edge_);
   }
@@ -517,7 +517,7 @@ public:
    * \warning Does NOT check if the stored mesh pointer is valid. You have to ensure
    * this yourself when constructing the circulator. */
   inline bool
-  isValid() const
+  isValid () const
   {
     return (idx_inner_half_edge_.isValid());
   }
@@ -549,14 +549,14 @@ public:
 
   /** \brief Get the index to the target vertex. */
   inline VertexIndex
-  getTargetIndex() const
+  getTargetIndex () const
   {
     return (mesh_->getTerminatingVertexIndex(idx_inner_half_edge_));
   }
 
   /** \brief Get the half-edge that is currently stored in the circulator. */
   inline HalfEdgeIndex
-  getCurrentHalfEdgeIndex() const
+  getCurrentHalfEdgeIndex () const
   {
     return (idx_inner_half_edge_);
   }
@@ -618,7 +618,7 @@ public:
    * \warning Does NOT check if the stored mesh pointer is valid. You have to ensure
    * this yourself when constructing the circulator. */
   inline bool
-  isValid() const
+  isValid () const
   {
     return (idx_inner_half_edge_.isValid());
   }
@@ -650,14 +650,14 @@ public:
 
   /** \brief Get the index to the inner half-edge. */
   inline HalfEdgeIndex
-  getTargetIndex() const
+  getTargetIndex () const
   {
     return (idx_inner_half_edge_);
   }
 
   /** \brief Get the half-edge that is currently stored in the circulator. */
   inline HalfEdgeIndex
-  getCurrentHalfEdgeIndex() const
+  getCurrentHalfEdgeIndex () const
   {
     return (idx_inner_half_edge_);
   }
@@ -719,7 +719,7 @@ public:
    * \warning Does NOT check if the stored mesh pointer is valid. You have to ensure
    * this yourself when constructing the circulator. */
   inline bool
-  isValid() const
+  isValid () const
   {
     return (idx_inner_half_edge_.isValid());
   }
@@ -751,14 +751,14 @@ public:
 
   /** \brief Get the index to the outer half-edge. */
   inline HalfEdgeIndex
-  getTargetIndex() const
+  getTargetIndex () const
   {
     return (mesh_->getOppositeHalfEdgeIndex(idx_inner_half_edge_));
   }
 
   /** \brief Get the half-edge that is currently stored in the circulator. */
   inline HalfEdgeIndex
-  getCurrentHalfEdgeIndex() const
+  getCurrentHalfEdgeIndex () const
   {
     return (idx_inner_half_edge_);
   }
@@ -819,7 +819,7 @@ public:
    * \warning Does NOT check if the stored mesh pointer is valid. You have to ensure
    * this yourself when constructing the circulator. */
   inline bool
-  isValid() const
+  isValid () const
   {
     return (idx_inner_half_edge_.isValid());
   }
@@ -851,14 +851,14 @@ public:
 
   /** \brief Get the index to the target face. */
   inline FaceIndex
-  getTargetIndex() const
+  getTargetIndex () const
   {
     return (mesh_->getOppositeFaceIndex(idx_inner_half_edge_));
   }
 
   /** \brief Get the half-edge that is currently stored in the circulator. */
   inline HalfEdgeIndex
-  getCurrentHalfEdgeIndex() const
+  getCurrentHalfEdgeIndex () const
   {
     return (idx_inner_half_edge_);
   }

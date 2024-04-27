@@ -137,11 +137,11 @@ pcl::ihs::OpenGLViewer::OpenGLViewer(QWidget* parent)
   // colormap).
   //////////////////////////////////////////////////////////////////////////////
 
-  //#include <cstdlib>
-  //#include <iomanip>
+  // #include <cstdlib>
+  // #include <iomanip>
 
-  //#include <vtkColorTransferFunction.h>
-  //#include <vtkSmartPointer.h>
+  // #include <vtkColorTransferFunction.h>
+  // #include <vtkSmartPointer.h>
 
   // int
   // main()

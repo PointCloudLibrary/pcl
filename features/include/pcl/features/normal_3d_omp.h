@@ -42,66 +42,69 @@
 
 #include <pcl/features/normal_3d.h>
 
-namespace pcl
-{
-  /** \brief NormalEstimationOMP estimates local surface properties at each 3D point, such as surface normals and
-    * curvatures, in parallel, using the OpenMP standard.
-    * \author Radu Bogdan Rusu
-    * \ingroup features
-    */
-  template <typename PointInT, typename PointOutT>
-  class NormalEstimationOMP: public NormalEstimation<PointInT, PointOutT>
+namespace pcl {
+/** \brief NormalEstimationOMP estimates local surface properties at each 3D point, such
+ * as surface normals and curvatures, in parallel, using the OpenMP standard. \author
+ * Radu Bogdan Rusu \ingroup features
+ */
+template <typename PointInT, typename PointOutT>
+class NormalEstimationOMP : public NormalEstimation<PointInT, PointOutT> {
+public:
+  using Ptr = shared_ptr<NormalEstimationOMP<PointInT, PointOutT>>;
+  using ConstPtr = shared_ptr<const NormalEstimationOMP<PointInT, PointOutT>>;
+  using NormalEstimation<PointInT, PointOutT>::feature_name_;
+  using NormalEstimation<PointInT, PointOutT>::getClassName;
+  using NormalEstimation<PointInT, PointOutT>::indices_;
+  using NormalEstimation<PointInT, PointOutT>::input_;
+  using NormalEstimation<PointInT, PointOutT>::k_;
+  using NormalEstimation<PointInT, PointOutT>::vpx_;
+  using NormalEstimation<PointInT, PointOutT>::vpy_;
+  using NormalEstimation<PointInT, PointOutT>::vpz_;
+  using NormalEstimation<PointInT, PointOutT>::search_parameter_;
+  using NormalEstimation<PointInT, PointOutT>::surface_;
+  using NormalEstimation<PointInT, PointOutT>::getViewPoint;
+
+  using PointCloudOut = typename NormalEstimation<PointInT, PointOutT>::PointCloudOut;
+
+public:
+  /** \brief Initialize the scheduler and set the number of threads to use.
+   * \param nr_threads the number of hardware threads to use (0 sets the value back to
+   * automatic) \param chunk_size PCL will use dynamic scheduling with this chunk size.
+   * Setting it too low will lead to more parallelization overhead. Setting it too high
+   * will lead to a worse balancing between the threads.
+   */
+  NormalEstimationOMP(unsigned int nr_threads = 0, int chunk_size = 256)
+  : chunk_size_(chunk_size)
   {
-    public:
-      using Ptr = shared_ptr<NormalEstimationOMP<PointInT, PointOutT> >;
-      using ConstPtr = shared_ptr<const NormalEstimationOMP<PointInT, PointOutT> >;
-      using NormalEstimation<PointInT, PointOutT>::feature_name_;
-      using NormalEstimation<PointInT, PointOutT>::getClassName;
-      using NormalEstimation<PointInT, PointOutT>::indices_;
-      using NormalEstimation<PointInT, PointOutT>::input_;
-      using NormalEstimation<PointInT, PointOutT>::k_;
-      using NormalEstimation<PointInT, PointOutT>::vpx_;
-      using NormalEstimation<PointInT, PointOutT>::vpy_;
-      using NormalEstimation<PointInT, PointOutT>::vpz_;
-      using NormalEstimation<PointInT, PointOutT>::search_parameter_;
-      using NormalEstimation<PointInT, PointOutT>::surface_;
-      using NormalEstimation<PointInT, PointOutT>::getViewPoint;
+    feature_name_ = "NormalEstimationOMP";
 
-      using PointCloudOut = typename NormalEstimation<PointInT, PointOutT>::PointCloudOut;
+    setNumberOfThreads(nr_threads);
+  }
 
-    public:
-      /** \brief Initialize the scheduler and set the number of threads to use.
-        * \param nr_threads the number of hardware threads to use (0 sets the value back to automatic)
-        * \param chunk_size PCL will use dynamic scheduling with this chunk size. Setting it too low will lead to more parallelization overhead. Setting it too high will lead to a worse balancing between the threads.
-        */
-      NormalEstimationOMP (unsigned int nr_threads = 0, int chunk_size = 256): chunk_size_(chunk_size)
-      {
-        feature_name_ = "NormalEstimationOMP";
+  /** \brief Initialize the scheduler and set the number of threads to use.
+   * \param nr_threads the number of hardware threads to use (0 sets the value back to
+   * automatic)
+   */
+  void
+  setNumberOfThreads (unsigned int nr_threads = 0);
 
-        setNumberOfThreads(nr_threads);
-      }
+protected:
+  /** \brief The number of threads the scheduler should use. */
+  unsigned int threads_;
 
-      /** \brief Initialize the scheduler and set the number of threads to use.
-        * \param nr_threads the number of hardware threads to use (0 sets the value back to automatic)
-        */
-      void
-      setNumberOfThreads (unsigned int nr_threads = 0);
+  /** \brief Chunk size for (dynamic) scheduling. */
+  int chunk_size_;
 
-    protected:
-      /** \brief The number of threads the scheduler should use. */
-      unsigned int threads_;
-
-      /** \brief Chunk size for (dynamic) scheduling. */
-      int chunk_size_;
-    private:
-      /** \brief Estimate normals for all points given in <setInputCloud (), setIndices ()> using the surface in
-        * setSearchSurface () and the spatial locator in setSearchMethod ()
-        * \param output the resultant point cloud model dataset that contains surface normals and curvatures
-        */
-      void
-      computeFeature (PointCloudOut &output) override;
-  };
-}
+private:
+  /** \brief Estimate normals for all points given in <setInputCloud (), setIndices ()>
+   * using the surface in setSearchSurface () and the spatial locator in setSearchMethod
+   * () \param output the resultant point cloud model dataset that contains surface
+   * normals and curvatures
+   */
+  void
+  computeFeature (PointCloudOut& output) override;
+};
+} // namespace pcl
 
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/features/impl/normal_3d_omp.hpp>

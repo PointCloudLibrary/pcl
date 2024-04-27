@@ -6,29 +6,27 @@
 
 Scene* Scene::instance_ = nullptr;
 
-Scene::Scene () = default;
+Scene::Scene() = default;
 
 // Accessors - Cameras
 // -----------------------------------------------------------------------------
 void
-Scene::addCamera (Camera *camera)
+Scene::addCamera(Camera* camera)
 {
-  cameras_.push_back (camera);
+  cameras_.push_back(camera);
 }
 
 std::vector<Camera*>
-Scene::getCameras ()
+Scene::getCameras()
 {
   return cameras_;
 }
 
 Camera*
-Scene::getCamera (vtkCamera *camera)
+Scene::getCamera(vtkCamera* camera)
 {
-  for (const auto &c : cameras_)
-  {
-    if (c->getCamera ().GetPointer () == camera)
-    {
+  for (const auto& c : cameras_) {
+    if (c->getCamera().GetPointer() == camera) {
       return c;
     }
   }
@@ -37,10 +35,10 @@ Scene::getCamera (vtkCamera *camera)
 }
 
 Camera*
-Scene::getCamera (const std::string& name)
+Scene::getCamera(const std::string& name)
 {
-  for (const auto &camera : cameras_)
-    if (camera->getName () == name)
+  for (const auto& camera : cameras_)
+    if (camera->getName() == name)
       return camera;
 
   return nullptr;
@@ -49,23 +47,23 @@ Scene::getCamera (const std::string& name)
 // Accessors - Objects
 // -----------------------------------------------------------------------------
 void
-Scene::addObject (Object *object)
+Scene::addObject(Object* object)
 {
-  objects_.push_back (object);
+  objects_.push_back(object);
 }
 
 Object*
-Scene::getObjectByName (const std::string& name)
+Scene::getObjectByName(const std::string& name)
 {
-  for (const auto &object : objects_)
-    if (object->getName () == name)
+  for (const auto& object : objects_)
+    if (object->getName() == name)
       return object;
 
   return nullptr;
 }
 
 std::vector<Object*>
-Scene::getObjects ()
+Scene::getObjects()
 {
   return objects_;
 }
@@ -79,13 +77,13 @@ Scene::getObjects ()
 // -----------------------------------------------------------------------------
 
 void
-Scene::addViewport (Viewport *viewport)
+Scene::addViewport(Viewport* viewport)
 {
-  viewports_.push_back (viewport);
+  viewports_.push_back(viewport);
 }
 
 std::vector<Viewport*>
-Scene::getViewports ()
+Scene::getViewports()
 {
   return viewports_;
 }

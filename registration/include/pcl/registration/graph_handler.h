@@ -107,7 +107,7 @@ public:
 
   /** \brief Clear the graph */
   inline void
-  clear()
+  clear ()
   {
     deinit();
     graph_impl_.reset(new GraphT());
@@ -120,14 +120,14 @@ public:
 
   /** \brief Get a pointer to the BGL graph */
   inline GraphConstPtr
-  getGraph() const
+  getGraph () const
   {
     return graph_impl_;
   }
 
   /** \brief Get a pointer to the BGL graph */
   inline GraphPtr
-  getGraph()
+  getGraph ()
   {
     return graph_impl_;
   }
@@ -139,8 +139,8 @@ public:
    */
   template <class PointT>
   inline Vertex
-  addPointCloud(const typename pcl::PointCloud<PointT>::ConstPtr& cloud,
-                const Eigen::Matrix4f& pose)
+  addPointCloud (const typename pcl::PointCloud<PointT>::ConstPtr& cloud,
+                 const Eigen::Matrix4f& pose)
   {
     return add_vertex(PoseEstimate<PointT>(cloud, pose), *graph_impl_);
   }
@@ -151,7 +151,7 @@ public:
    */
   template <class EstimateT>
   inline Vertex
-  addGenericVertex(const EstimateT& estimate)
+  addGenericVertex (const EstimateT& estimate)
   {
     return add_vertex(estimate, *graph_impl_);
   }
@@ -165,10 +165,10 @@ public:
    */
   template <class InformationT>
   inline Edge
-  addPoseConstraint(const Vertex& v_start,
-                    const Vertex& v_end,
-                    const Eigen::Matrix4f& relative_transformation,
-                    const InformationT& information_matrix)
+  addPoseConstraint (const Vertex& v_start,
+                     const Vertex& v_end,
+                     const Eigen::Matrix4f& relative_transformation,
+                     const InformationT& information_matrix)
   {
     return add_edge(PoseMeasurement<Vertex, InformationT>(
                         v_start, v_end, relative_transformation, information_matrix),
@@ -181,7 +181,7 @@ public:
    */
   template <class MeasurementT>
   inline Edge
-  addGenericConstraint(const MeasurementT& measurement)
+  addGenericConstraint (const MeasurementT& measurement)
   {
     return add_edge(measurement, *graph_impl_);
   }
@@ -190,7 +190,7 @@ public:
    * \param v the vertex
    */
   inline void
-  removeVertex(const Vertex& v)
+  removeVertex (const Vertex& v)
   {
     remove_vertex(v.v_, *graph_impl_);
   }
@@ -199,7 +199,7 @@ public:
    * \param e the edge
    */
   inline void
-  removeConstraint(const Edge& e)
+  removeConstraint (const Edge& e)
   {
     remove_edge(e.e_, *graph_impl_);
   }
@@ -207,14 +207,14 @@ public:
 protected:
   /** \brief This method is called right after the creation of graph_impl_ */
   inline bool
-  init()
+  init ()
   {
     return true;
   }
 
   /** \brief This method is called when graph_impl_ is going to be destroyed */
   inline bool
-  deinit()
+  deinit ()
   {
     return true;
   }

@@ -39,13 +39,15 @@
 #include <pcl/features/impl/moment_invariants.hpp>
 
 #ifndef PCL_NO_PRECOMPILE
-#include <pcl/point_types.h>
 #include <pcl/impl/instantiate.hpp>
+#include <pcl/point_types.h>
 // Instantiations of specific point types
 #ifdef PCL_ONLY_CORE_POINT_TYPES
-  PCL_INSTANTIATE_PRODUCT(MomentInvariantsEstimation, ((pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA))((pcl::MomentInvariants)))
+PCL_INSTANTIATE_PRODUCT(
+    MomentInvariantsEstimation,
+    ((pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA))((pcl::MomentInvariants)))
 #else
-  PCL_INSTANTIATE_PRODUCT(MomentInvariantsEstimation, (PCL_XYZ_POINT_TYPES)((pcl::MomentInvariants)))
+PCL_INSTANTIATE_PRODUCT(MomentInvariantsEstimation,
+                        (PCL_XYZ_POINT_TYPES)((pcl::MomentInvariants)))
 #endif
-#endif    // PCL_NO_PRECOMPILE
-
+#endif // PCL_NO_PRECOMPILE

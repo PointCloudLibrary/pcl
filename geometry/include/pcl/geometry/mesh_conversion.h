@@ -53,8 +53,8 @@ namespace geometry {
  */
 template <class HalfEdgeMeshT>
 void
-toFaceVertexMesh(const HalfEdgeMeshT& half_edge_mesh,
-                 pcl::PolygonMesh& face_vertex_mesh)
+toFaceVertexMesh (const HalfEdgeMeshT& half_edge_mesh,
+                  pcl::PolygonMesh& face_vertex_mesh)
 {
   using HalfEdgeMesh = HalfEdgeMeshT;
   using VAFC = typename HalfEdgeMesh::VertexAroundFaceCirculator;
@@ -85,7 +85,7 @@ toFaceVertexMesh(const HalfEdgeMeshT& half_edge_mesh,
  */
 template <class HalfEdgeMeshT>
 int
-toHalfEdgeMesh(const pcl::PolygonMesh& face_vertex_mesh, HalfEdgeMeshT& half_edge_mesh)
+toHalfEdgeMesh (const pcl::PolygonMesh& face_vertex_mesh, HalfEdgeMeshT& half_edge_mesh)
 {
   using HalfEdgeMesh = HalfEdgeMeshT;
   using VertexDataCloud = typename HalfEdgeMesh::VertexDataCloud;

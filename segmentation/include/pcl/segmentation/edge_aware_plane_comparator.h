@@ -41,169 +41,168 @@
 
 #include <pcl/segmentation/plane_coefficient_comparator.h>
 
-namespace pcl
-{
-  /** \brief EdgeAwarePlaneComparator is a Comparator that operates on plane coefficients,
-    * for use in planar segmentation.
-    * In conjunction with OrganizedConnectedComponentSegmentation, this allows planes to be segmented from organized data.
-    *
-    * \author Stefan Holzer, Alex Trevor
-    */
-  template<typename PointT, typename PointNT>
-  class EdgeAwarePlaneComparator: public PlaneCoefficientComparator<PointT, PointNT>
+namespace pcl {
+/** \brief EdgeAwarePlaneComparator is a Comparator that operates on plane coefficients,
+ * for use in planar segmentation.
+ * In conjunction with OrganizedConnectedComponentSegmentation, this allows planes to be
+ * segmented from organized data.
+ *
+ * \author Stefan Holzer, Alex Trevor
+ */
+template <typename PointT, typename PointNT>
+class EdgeAwarePlaneComparator : public PlaneCoefficientComparator<PointT, PointNT> {
+public:
+  using PointCloud = typename Comparator<PointT>::PointCloud;
+  using PointCloudConstPtr = typename Comparator<PointT>::PointCloudConstPtr;
+
+  using PointCloudN = pcl::PointCloud<PointNT>;
+  using PointCloudNPtr = typename PointCloudN::Ptr;
+  using PointCloudNConstPtr = typename PointCloudN::ConstPtr;
+
+  using Ptr = shared_ptr<EdgeAwarePlaneComparator<PointT, PointNT>>;
+  using ConstPtr = shared_ptr<const EdgeAwarePlaneComparator<PointT, PointNT>>;
+
+  using pcl::PlaneCoefficientComparator<PointT, PointNT>::input_;
+  using pcl::PlaneCoefficientComparator<PointT, PointNT>::normals_;
+  using pcl::PlaneCoefficientComparator<PointT, PointNT>::plane_coeff_d_;
+  using pcl::PlaneCoefficientComparator<PointT, PointNT>::angular_threshold_;
+  using pcl::PlaneCoefficientComparator<PointT, PointNT>::distance_threshold_;
+  using pcl::PlaneCoefficientComparator<PointT, PointNT>::depth_dependent_;
+  using pcl::PlaneCoefficientComparator<PointT, PointNT>::z_axis_;
+
+  /** \brief Empty constructor for PlaneCoefficientComparator. */
+  EdgeAwarePlaneComparator()
+  : distance_map_threshold_(5)
+  , curvature_threshold_(0.04f)
+  , euclidean_distance_threshold_(0.04f)
+  {}
+
+  /** \brief Empty constructor for PlaneCoefficientComparator.
+   * \param[in] distance_map the distance map to use
+   */
+  EdgeAwarePlaneComparator(const float* distance_map)
+  : distance_map_(distance_map)
+  , distance_map_threshold_(5)
+  , curvature_threshold_(0.04f)
+  , euclidean_distance_threshold_(0.04f)
+  {}
+
+  /** \brief Destructor for PlaneCoefficientComparator. */
+
+  ~EdgeAwarePlaneComparator() override = default;
+
+  /** \brief Set a distance map to use. For an example of a valid distance map see
+   * IntegralImageNormalEstimation::getDistanceMap
+   * \param[in] distance_map the distance map to use
+   */
+  inline void
+  setDistanceMap (const float* distance_map)
   {
-    public:
-      using PointCloud = typename Comparator<PointT>::PointCloud;
-      using PointCloudConstPtr = typename Comparator<PointT>::PointCloudConstPtr;
+    distance_map_ = distance_map;
+  }
 
-      using PointCloudN = pcl::PointCloud<PointNT>;
-      using PointCloudNPtr = typename PointCloudN::Ptr;
-      using PointCloudNConstPtr = typename PointCloudN::ConstPtr;
+  /** \brief Return the distance map used. */
+  const float*
+  getDistanceMap () const
+  {
+    return (distance_map_);
+  }
 
-      using Ptr = shared_ptr<EdgeAwarePlaneComparator<PointT, PointNT> >;
-      using ConstPtr = shared_ptr<const EdgeAwarePlaneComparator<PointT, PointNT> >;
+  /** \brief Set the curvature threshold for creating a new segment
+   * \param[in] curvature_threshold a threshold for the curvature
+   */
+  void
+  setCurvatureThreshold (float curvature_threshold)
+  {
+    curvature_threshold_ = curvature_threshold;
+  }
 
-      using pcl::PlaneCoefficientComparator<PointT, PointNT>::input_;
-      using pcl::PlaneCoefficientComparator<PointT, PointNT>::normals_;
-      using pcl::PlaneCoefficientComparator<PointT, PointNT>::plane_coeff_d_;
-      using pcl::PlaneCoefficientComparator<PointT, PointNT>::angular_threshold_;
-      using pcl::PlaneCoefficientComparator<PointT, PointNT>::distance_threshold_;
-      using pcl::PlaneCoefficientComparator<PointT, PointNT>::depth_dependent_;
-      using pcl::PlaneCoefficientComparator<PointT, PointNT>::z_axis_;
+  /** \brief Get the curvature threshold. */
+  inline float
+  getCurvatureThreshold () const
+  {
+    return (curvature_threshold_);
+  }
 
-      /** \brief Empty constructor for PlaneCoefficientComparator. */
-      EdgeAwarePlaneComparator () :
-        distance_map_threshold_ (5),
-        curvature_threshold_ (0.04f),
-        euclidean_distance_threshold_ (0.04f)
-      {
-      }
+  /** \brief Set the distance map threshold -- the number of pixel away from a border /
+   * nan \param[in] distance_map_threshold the distance map threshold
+   */
+  void
+  setDistanceMapThreshold (float distance_map_threshold)
+  {
+    distance_map_threshold_ = distance_map_threshold;
+  }
 
-      /** \brief Empty constructor for PlaneCoefficientComparator.
-        * \param[in] distance_map the distance map to use
-        */
-      EdgeAwarePlaneComparator (const float *distance_map) :
-        distance_map_ (distance_map),
-        distance_map_threshold_ (5),
-        curvature_threshold_ (0.04f),
-        euclidean_distance_threshold_ (0.04f)
-      {
-      }
+  /** \brief Get the distance map threshold (in pixels). */
+  inline float
+  getDistanceMapThreshold () const
+  {
+    return (distance_map_threshold_);
+  }
 
-      /** \brief Destructor for PlaneCoefficientComparator. */
+  /** \brief Set the euclidean distance threshold.
+   * \param[in] euclidean_distance_threshold the euclidean distance threshold in meters
+   */
+  void
+  setEuclideanDistanceThreshold (float euclidean_distance_threshold)
+  {
+    euclidean_distance_threshold_ = euclidean_distance_threshold;
+  }
 
-      ~EdgeAwarePlaneComparator () override
-      = default;
+  /** \brief Get the euclidean distance threshold. */
+  inline float
+  getEuclideanDistanceThreshold () const
+  {
+    return (euclidean_distance_threshold_);
+  }
 
-      /** \brief Set a distance map to use. For an example of a valid distance map see
-        * IntegralImageNormalEstimation::getDistanceMap
-        * \param[in] distance_map the distance map to use
-        */
-      inline void
-      setDistanceMap (const float *distance_map)
-      {
-        distance_map_ = distance_map;
-      }
+protected:
+  /** \brief Compare two neighboring points, by using normal information, curvature, and
+   * euclidean distance information. \param[in] idx1 The index of the first point.
+   * \param[in] idx2 The index of the second point.
+   */
+  bool
+  compare (int idx1, int idx2) const override
+  {
+    // Note: there are two distance thresholds here that make sense to scale with depth.
+    // dist_threshold is on the perpendicular distance to the plane, as in plane
+    // comparator We additionally check euclidean distance to ensure that we don't have
+    // neighboring coplanar points that aren't close in euclidean space (think two
+    // tables separated by a meter, viewed from an angle where the surfaces are adjacent
+    // in image space).
+    float dist_threshold = distance_threshold_;
+    float euclidean_dist_threshold = euclidean_distance_threshold_;
+    if (depth_dependent_) {
+      Eigen::Vector3f vec = (*input_)[idx1].getVector3fMap();
+      float z = vec.dot(z_axis_);
+      dist_threshold *= z * z;
+      euclidean_dist_threshold *= z * z;
+    }
 
-      /** \brief Return the distance map used. */
-      const float*
-      getDistanceMap () const
-      {
-        return (distance_map_);
-      }
+    float dx = (*input_)[idx1].x - (*input_)[idx2].x;
+    float dy = (*input_)[idx1].y - (*input_)[idx2].y;
+    float dz = (*input_)[idx1].z - (*input_)[idx2].z;
+    float dist = std::sqrt(dx * dx + dy * dy + dz * dz);
 
-      /** \brief Set the curvature threshold for creating a new segment
-        * \param[in] curvature_threshold a threshold for the curvature
-        */
-      void
-      setCurvatureThreshold (float curvature_threshold)
-      {
-        curvature_threshold_ = curvature_threshold;
-      }
+    bool normal_ok =
+        ((*normals_)[idx1].getNormalVector3fMap().dot(
+             (*normals_)[idx2].getNormalVector3fMap()) > angular_threshold_);
+    bool dist_ok = (dist < euclidean_dist_threshold);
 
-      /** \brief Get the curvature threshold. */
-      inline float
-      getCurvatureThreshold () const
-      {
-        return (curvature_threshold_);
-      }
+    bool curvature_ok = (*normals_)[idx1].curvature < curvature_threshold_;
+    bool plane_d_ok =
+        std::abs((*plane_coeff_d_)[idx1] - (*plane_coeff_d_)[idx2]) < dist_threshold;
 
-      /** \brief Set the distance map threshold -- the number of pixel away from a border / nan
-        * \param[in] distance_map_threshold the distance map threshold
-        */
-      void
-      setDistanceMapThreshold (float distance_map_threshold)
-      {
-        distance_map_threshold_ = distance_map_threshold;
-      }
+    if (distance_map_[idx1] < distance_map_threshold_)
+      curvature_ok = false;
 
-      /** \brief Get the distance map threshold (in pixels). */
-      inline float
-      getDistanceMapThreshold () const
-      {
-        return (distance_map_threshold_);
-      }
+    return (dist_ok && normal_ok && curvature_ok && plane_d_ok);
+  }
 
-      /** \brief Set the euclidean distance threshold.
-        * \param[in] euclidean_distance_threshold the euclidean distance threshold in meters
-        */
-      void
-      setEuclideanDistanceThreshold (float euclidean_distance_threshold)
-      {
-        euclidean_distance_threshold_ = euclidean_distance_threshold;
-      }
-
-      /** \brief Get the euclidean distance threshold. */
-      inline float
-      getEuclideanDistanceThreshold () const
-      {
-        return (euclidean_distance_threshold_);
-      }
-
-    protected:
-      /** \brief Compare two neighboring points, by using normal information, curvature, and euclidean distance information.
-        * \param[in] idx1 The index of the first point.
-        * \param[in] idx2 The index of the second point.
-        */
-      bool
-      compare (int idx1, int idx2) const override
-      {
-        // Note: there are two distance thresholds here that make sense to scale with depth.
-        // dist_threshold is on the perpendicular distance to the plane, as in plane comparator
-        // We additionally check euclidean distance to ensure that we don't have neighboring coplanar points
-        // that aren't close in euclidean space (think two tables separated by a meter, viewed from an angle
-        // where the surfaces are adjacent in image space).
-        float dist_threshold = distance_threshold_;
-        float euclidean_dist_threshold = euclidean_distance_threshold_;
-        if (depth_dependent_)
-        {
-          Eigen::Vector3f vec = (*input_)[idx1].getVector3fMap ();
-          float z = vec.dot (z_axis_);
-          dist_threshold *= z * z;
-          euclidean_dist_threshold *= z * z;
-        }
-
-        float dx = (*input_)[idx1].x - (*input_)[idx2].x;
-        float dy = (*input_)[idx1].y - (*input_)[idx2].y;
-        float dz = (*input_)[idx1].z - (*input_)[idx2].z;
-        float dist = std::sqrt (dx*dx + dy*dy + dz*dz);
-
-        bool normal_ok = ((*normals_)[idx1].getNormalVector3fMap ().dot ((*normals_)[idx2].getNormalVector3fMap () ) > angular_threshold_ );
-        bool dist_ok = (dist < euclidean_dist_threshold);
-
-        bool curvature_ok = (*normals_)[idx1].curvature < curvature_threshold_;
-        bool plane_d_ok = std::abs ((*plane_coeff_d_)[idx1] - (*plane_coeff_d_)[idx2]) < dist_threshold;
-
-        if (distance_map_[idx1] < distance_map_threshold_)
-          curvature_ok = false;
-
-        return (dist_ok && normal_ok && curvature_ok && plane_d_ok);
-      }
-
-    protected:
-      const float* distance_map_;
-      int distance_map_threshold_;
-      float curvature_threshold_;
-      float euclidean_distance_threshold_;
-  };
-}
+protected:
+  const float* distance_map_;
+  int distance_map_threshold_;
+  float curvature_threshold_;
+  float euclidean_distance_threshold_;
+};
+} // namespace pcl

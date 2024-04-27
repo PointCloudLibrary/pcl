@@ -109,24 +109,24 @@ public:
   using const_iterator = typename LeafVectorT::const_iterator;
 
   inline iterator
-  begin()
+  begin ()
   {
     return (leaf_vector_.begin());
   }
   inline iterator
-  end()
+  end ()
   {
     return (leaf_vector_.end());
   }
   inline LeafContainerT*
-  at(std::size_t idx)
+  at (std::size_t idx)
   {
     return leaf_vector_.at(idx);
   }
 
   // Size of neighbors
   inline std::size_t
-  size() const
+  size () const
   {
     return leaf_vector_.size();
   }
@@ -140,7 +140,7 @@ public:
    *
    * \note This overrides addPointsFromInputCloud() from the OctreePointCloud class. */
   void
-  addPointsFromInputCloud();
+  addPointsFromInputCloud ();
 
   /** \brief Gets the leaf container for a given point.
    *
@@ -148,7 +148,7 @@ public:
    *
    * \returns Pointer to the leaf container - null if no leaf container found. */
   LeafContainerT*
-  getLeafContainerAtPoint(const PointT& point_arg) const;
+  getLeafContainerAtPoint (const PointT& point_arg) const;
 
   /** \brief Computes an adjacency graph of voxel relations.
    *
@@ -159,7 +159,7 @@ public:
    * touching relationships. Vertices are PointT, edges represent touching, and edge
    * lengths are the distance between the points. */
   void
-  computeVoxelAdjacencyGraph(VoxelAdjacencyList& voxel_adjacency_graph);
+  computeVoxelAdjacencyGraph (VoxelAdjacencyList& voxel_adjacency_graph);
 
   /** \brief Sets a point transform (and inverse) used to transform the space of the
    * input cloud.
@@ -170,7 +170,7 @@ public:
    * \param[in] transform_func A boost:function pointer to the transform to be used. The
    * transform must have one parameter (a point) which it modifies in place. */
   void
-  setTransformFunction(std::function<void(PointT& p)> transform_func)
+  setTransformFunction (std::function<void(PointT& p)> transform_func)
   {
     transform_func_ = transform_func;
   }
@@ -183,8 +183,8 @@ public:
    *
    * \returns True if path to camera is blocked by a voxel, false otherwise. */
   bool
-  testForOcclusion(const PointT& point_arg,
-                   const PointXYZ& camera_pos = PointXYZ(0, 0, 0));
+  testForOcclusion (const PointT& point_arg,
+                    const PointXYZ& camera_pos = PointXYZ(0, 0, 0));
 
 protected:
   /** \brief Add point at index from input pointcloud dataset to octree.
@@ -195,7 +195,7 @@ protected:
    * \note This virtual implementation allows the use of a transform function to compute
    * keys. */
   void
-  addPointIdx(uindex_t point_idx_arg) override;
+  addPointIdx (uindex_t point_idx_arg) override;
 
   /** \brief Fills in the neighbors fields for new voxels.
    *
@@ -203,14 +203,14 @@ protected:
    * \param[in] leaf_container Pointer to container of the leaf to check neighbors for
    */
   void
-  computeNeighbors(OctreeKey& key_arg, LeafContainerT* leaf_container);
+  computeNeighbors (OctreeKey& key_arg, LeafContainerT* leaf_container);
 
   /** \brief Generates octree key for specified point (uses transform if provided).
    *
    * \param[in] point_arg Point to generate key for
    * \param[out] key_arg Resulting octree key */
   void
-  genOctreeKeyforPoint(const PointT& point_arg, OctreeKey& key_arg) const;
+  genOctreeKeyforPoint (const PointT& point_arg, OctreeKey& key_arg) const;
 
 private:
   /** \brief Add point at given index from input point cloud to octree.

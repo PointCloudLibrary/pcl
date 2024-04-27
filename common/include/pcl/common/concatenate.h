@@ -40,39 +40,41 @@
 
 #include <type_traits>
 
-namespace pcl
-{
-  /** \brief Helper functor structure for concatenate. 
-    * \ingroup common
-    */
-  template<typename PointInT, typename PointOutT>
-  struct NdConcatenateFunctor
+namespace pcl {
+/** \brief Helper functor structure for concatenate.
+ * \ingroup common
+ */
+template <typename PointInT, typename PointOutT>
+struct NdConcatenateFunctor {
+  using PodIn = typename traits::POD<PointInT>::type;
+  using PodOut = typename traits::POD<PointOutT>::type;
+
+  NdConcatenateFunctor(const PointInT& p1, PointOutT& p2)
+  : p1_(reinterpret_cast<const PodIn&>(p1)), p2_(reinterpret_cast<PodOut&>(p2))
+  {}
+
+  template <typename Key>
+  inline void
+  operator()()
   {
-    using PodIn = typename traits::POD<PointInT>::type;
-    using PodOut = typename traits::POD<PointOutT>::type;
-    
-    NdConcatenateFunctor (const PointInT &p1, PointOutT &p2)
-      : p1_ (reinterpret_cast<const PodIn&> (p1))
-      , p2_ (reinterpret_cast<PodOut&> (p2)) { }
+    // This sucks without Fusion :(
+    // boost::fusion::at_key<Key> (p2_) = boost::fusion::at_key<Key> (p1_);
+    using InT = typename pcl::traits::datatype<PointInT, Key>::type;
+    using OutT = typename pcl::traits::datatype<PointOutT, Key>::type;
+    // Note: don't currently support different types for the same field (e.g. converting
+    // double to float)
+    BOOST_MPL_ASSERT_MSG((std::is_same<InT, OutT>::value),
+                         POINT_IN_AND_POINT_OUT_HAVE_DIFFERENT_TYPES_FOR_FIELD,
+                         (Key, PointInT&, InT, PointOutT&, OutT));
+    memcpy(reinterpret_cast<std::uint8_t*>(&p2_) +
+               pcl::traits::offset<PointOutT, Key>::value,
+           reinterpret_cast<const std::uint8_t*>(&p1_) +
+               pcl::traits::offset<PointInT, Key>::value,
+           sizeof(InT));
+  }
 
-    template<typename Key> inline void 
-    operator () ()
-    {
-      // This sucks without Fusion :(
-      //boost::fusion::at_key<Key> (p2_) = boost::fusion::at_key<Key> (p1_);
-      using InT = typename pcl::traits::datatype<PointInT, Key>::type;
-      using OutT = typename pcl::traits::datatype<PointOutT, Key>::type;
-      // Note: don't currently support different types for the same field (e.g. converting double to float)
-      BOOST_MPL_ASSERT_MSG ((std::is_same<InT, OutT>::value),
-                            POINT_IN_AND_POINT_OUT_HAVE_DIFFERENT_TYPES_FOR_FIELD,
-                            (Key, PointInT&, InT, PointOutT&, OutT));
-      memcpy (reinterpret_cast<std::uint8_t*>(&p2_) + pcl::traits::offset<PointOutT, Key>::value,
-              reinterpret_cast<const std::uint8_t*>(&p1_) + pcl::traits::offset<PointInT, Key>::value,
-              sizeof (InT));
-    }
-
-    private:
-      const PodIn &p1_;
-      PodOut &p2_;
-  };
-}
+private:
+  const PodIn& p1_;
+  PodOut& p2_;
+};
+} // namespace pcl

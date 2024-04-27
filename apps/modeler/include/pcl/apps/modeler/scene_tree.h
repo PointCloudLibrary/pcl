@@ -51,91 +51,91 @@ public:
   SceneTree(QWidget* parent = nullptr);
 
   QSize
-  sizeHint() const override;
+  sizeHint () const override;
 
   bool
-  openPointCloud(const QString& filename);
+  openPointCloud (const QString& filename);
 
   bool
-  savePointCloud(const QString& filename);
+  savePointCloud (const QString& filename);
 
   void
-  selectRenderWindowItem(RenderWindowItem* render_window_item);
+  selectRenderWindowItem (RenderWindowItem* render_window_item);
 
   void
-  addTopLevelItem(RenderWindowItem* render_window_item);
+  addTopLevelItem (RenderWindowItem* render_window_item);
 
 public Q_SLOTS:
   // slots for file menu
   void
-  slotOpenPointCloud();
+  slotOpenPointCloud ();
 
   void
-  slotImportPointCloud();
+  slotImportPointCloud ();
 
   void
-  slotSavePointCloud();
+  slotSavePointCloud ();
 
   void
-  slotClosePointCloud();
+  slotClosePointCloud ();
 
   // slots for edit menu
   void
-  slotICPRegistration();
+  slotICPRegistration ();
   void
-  slotVoxelGridDownsampleFilter();
+  slotVoxelGridDownsampleFilter ();
   void
-  slotStatisticalOutlierRemovalFilter();
+  slotStatisticalOutlierRemovalFilter ();
   void
-  slotEstimateNormal();
+  slotEstimateNormal ();
   void
-  slotPoissonReconstruction();
+  slotPoissonReconstruction ();
 
   // slots for view menu
   void
-  slotCloseRenderWindow();
+  slotCloseRenderWindow ();
 
 Q_SIGNALS:
   void
-  fileOpened(const QString& filename);
+  fileOpened (const QString& filename);
 
   void
-  itemInsertedOrRemoved();
+  itemInsertedOrRemoved ();
 
 protected:
   void
-  dropEvent(QDropEvent* event) override;
+  dropEvent (QDropEvent* event) override;
 
   bool
-  dropMimeData(QTreeWidgetItem* parent,
-               int index,
-               const QMimeData* data,
-               Qt::DropAction action) override;
+  dropMimeData (QTreeWidgetItem* parent,
+                int index,
+                const QMimeData* data,
+                Qt::DropAction action) override;
 
 private Q_SLOTS:
   void
-  slotUpdateOnSelectionChange(const QItemSelection& selected,
-                              const QItemSelection& deselected);
+  slotUpdateOnSelectionChange (const QItemSelection& selected,
+                               const QItemSelection& deselected);
 
   void
-  slotUpdateOnInsertOrRemove();
+  slotUpdateOnInsertOrRemove ();
 
   void
-  slotOnItemDoubleClicked(QTreeWidgetItem* item);
+  slotOnItemDoubleClicked (QTreeWidgetItem* item);
 
 private:
   template <class T>
   QList<T*>
-  selectedTypeItems() const;
+  selectedTypeItems () const;
 
   QList<RenderWindowItem*>
-  selectedRenderWindowItems() const;
+  selectedRenderWindowItems () const;
 
   static void
-  closePointCloud(const QList<CloudMeshItem*>& items);
+  closePointCloud (const QList<CloudMeshItem*>& items);
 
   void
-  contextMenuEvent(QContextMenuEvent* event) override;
+  contextMenuEvent (QContextMenuEvent* event) override;
 };
 
 } // namespace modeler

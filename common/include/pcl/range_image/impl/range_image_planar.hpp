@@ -42,20 +42,25 @@
 #include <pcl/range_image/range_image_planar.h>
 #include <pcl/pcl_macros.h>
 
-namespace pcl
-{
+namespace pcl {
 
 /////////////////////////////////////////////////////////////////////////
-template <typename PointCloudType> void
-RangeImagePlanar::createFromPointCloudWithFixedSize (const PointCloudType& point_cloud,
-                                                     int di_width, int di_height,
-                                                     float di_center_x, float di_center_y,
-                                                     float di_focal_length_x, float di_focal_length_y,
-                                                     const Eigen::Affine3f& sensor_pose,
-                                                     CoordinateFrame coordinate_frame, float noise_level,
-                                                     float min_range)
+template <typename PointCloudType>
+void
+RangeImagePlanar::createFromPointCloudWithFixedSize(const PointCloudType& point_cloud,
+                                                    int di_width,
+                                                    int di_height,
+                                                    float di_center_x,
+                                                    float di_center_y,
+                                                    float di_focal_length_x,
+                                                    float di_focal_length_y,
+                                                    const Eigen::Affine3f& sensor_pose,
+                                                    CoordinateFrame coordinate_frame,
+                                                    float noise_level,
+                                                    float min_range)
 {
-  //std::cout << "Starting to create range image from "<<point_cloud.size ()<<" points.\n";
+  // std::cout << "Starting to create range image from "<<point_cloud.size ()<<"
+  // points.\n";
 
   width = di_width;
   height = di_height;
@@ -67,54 +72,62 @@ RangeImagePlanar::createFromPointCloudWithFixedSize (const PointCloudType& point
   focal_length_y_reciprocal_ = 1 / focal_length_y_;
 
   is_dense = false;
-  
-  getCoordinateFrameTransformation (coordinate_frame, to_world_system_);
+
+  getCoordinateFrameTransformation(coordinate_frame, to_world_system_);
   to_world_system_ = sensor_pose * to_world_system_;
 
-  to_range_image_system_ = to_world_system_.inverse (Eigen::Isometry);
+  to_range_image_system_ = to_world_system_.inverse(Eigen::Isometry);
 
-  unsigned int size = width*height;
-  points.clear ();
-  points.resize (size, unobserved_point);
+  unsigned int size = width * height;
+  points.clear();
+  points.resize(size, unobserved_point);
 
-  int top=height, right=-1, bottom=-1, left=width;
-  doZBuffer (point_cloud, noise_level, min_range, top, right, bottom, left);
+  int top = height, right = -1, bottom = -1, left = width;
+  doZBuffer(point_cloud, noise_level, min_range, top, right, bottom, left);
 
   // Do not crop
-  //cropImage (border_size, top, right, bottom, left);
+  // cropImage (border_size, top, right, bottom, left);
 
-  recalculate3DPointPositions ();
+  recalculate3DPointPositions();
 }
-
 
 /////////////////////////////////////////////////////////////////////////
 void
-RangeImagePlanar::calculate3DPoint (float image_x, float image_y, float range, Eigen::Vector3f& point) const
+RangeImagePlanar::calculate3DPoint(float image_x,
+                                   float image_y,
+                                   float range,
+                                   Eigen::Vector3f& point) const
 {
-  //std::cout << __PRETTY_FUNCTION__ << " called.\n";
-  float delta_x = (image_x+static_cast<float> (image_offset_x_)-center_x_)*focal_length_x_reciprocal_,
-        delta_y = (image_y+static_cast<float> (image_offset_y_)-center_y_)*focal_length_y_reciprocal_;
-  point[2] = range / (std::sqrt (delta_x*delta_x + delta_y*delta_y + 1));
-  point[0] = delta_x*point[2];
-  point[1] = delta_y*point[2];
+  // std::cout << __PRETTY_FUNCTION__ << " called.\n";
+  float delta_x = (image_x + static_cast<float>(image_offset_x_) - center_x_) *
+                  focal_length_x_reciprocal_,
+        delta_y = (image_y + static_cast<float>(image_offset_y_) - center_y_) *
+                  focal_length_y_reciprocal_;
+  point[2] = range / (std::sqrt(delta_x * delta_x + delta_y * delta_y + 1));
+  point[0] = delta_x * point[2];
+  point[1] = delta_y * point[2];
   point = to_world_system_ * point;
 }
 
 /////////////////////////////////////////////////////////////////////////
-inline void 
-RangeImagePlanar::getImagePoint (const Eigen::Vector3f& point, float& image_x, float& image_y, float& range) const 
+inline void
+RangeImagePlanar::getImagePoint(const Eigen::Vector3f& point,
+                                float& image_x,
+                                float& image_y,
+                                float& range) const
 {
   Eigen::Vector3f transformedPoint = to_range_image_system_ * point;
-  if (transformedPoint[2]<=0)  // Behind the observer?
+  if (transformedPoint[2] <= 0) // Behind the observer?
   {
     image_x = image_y = range = -1.0f;
     return;
   }
-  range = transformedPoint.norm ();
-  
-  image_x = center_x_ + focal_length_x_*transformedPoint[0]/transformedPoint[2] - static_cast<float> (image_offset_x_);
-  image_y = center_y_ + focal_length_y_*transformedPoint[1]/transformedPoint[2] - static_cast<float> (image_offset_y_);
+  range = transformedPoint.norm();
+
+  image_x = center_x_ + focal_length_x_ * transformedPoint[0] / transformedPoint[2] -
+            static_cast<float>(image_offset_x_);
+  image_y = center_y_ + focal_length_y_ * transformedPoint[1] / transformedPoint[2] -
+            static_cast<float>(image_offset_y_);
 }
 
-}  // namespace pcl
-
+} // namespace pcl

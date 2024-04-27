@@ -72,7 +72,7 @@ public:
    * \param[out] label_data the destination for the resulting label data
    */
   void
-  evaluate(
+  evaluate (
       pcl::DecisionTree<NodeType>& tree,
       pcl::FeatureHandler<FeatureType, DataSet, ExampleIndex>& feature_handler,
       pcl::StatsEstimator<LabelType, NodeType, DataSet, ExampleIndex>& stats_estimator,
@@ -92,7 +92,7 @@ public:
    * \param[out] label_data the destination where the resulting label data is added to
    */
   void
-  evaluateAndAdd(
+  evaluateAndAdd (
       pcl::DecisionTree<NodeType>& tree,
       pcl::FeatureHandler<FeatureType, DataSet, ExampleIndex>& feature_handler,
       pcl::StatsEstimator<LabelType, NodeType, DataSet, ExampleIndex>& stats_estimator,
@@ -111,7 +111,7 @@ public:
    * \param[out] leave The leave reached by the examples.
    */
   void
-  evaluate(
+  evaluate (
       pcl::DecisionTree<NodeType>& tree,
       pcl::FeatureHandler<FeatureType, DataSet, ExampleIndex>& feature_handler,
       pcl::StatsEstimator<LabelType, NodeType, DataSet, ExampleIndex>& stats_estimator,
@@ -130,7 +130,7 @@ public:
    * \param[out] nodes the leaf-nodes reached while evaluation
    */
   void
-  getNodes(
+  getNodes (
       pcl::DecisionTree<NodeType>& tree,
       pcl::FeatureHandler<FeatureType, DataSet, ExampleIndex>& feature_handler,
       pcl::StatsEstimator<LabelType, NodeType, DataSet, ExampleIndex>& stats_estimator,

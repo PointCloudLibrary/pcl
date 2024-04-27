@@ -76,35 +76,35 @@ public:
 
   /** Initialization. */
   void
-  init(const std::vector<float>& feature, const int feature_dimension, const int N);
+  init (const std::vector<float>& feature, const int feature_dimension, const int N);
 
   void
-  compute(std::vector<float>& out,
-          const std::vector<float>& in,
-          int value_size,
-          int in_offset = 0,
-          int out_offset = 0,
-          int in_size = -1,
-          int out_size = -1) const;
+  compute (std::vector<float>& out,
+           const std::vector<float>& in,
+           int value_size,
+           int in_offset = 0,
+           int out_offset = 0,
+           int in_size = -1,
+           int out_size = -1) const;
 
   void
-  initOLD(const std::vector<float>& feature, const int feature_dimension, const int N);
+  initOLD (const std::vector<float>& feature, const int feature_dimension, const int N);
 
   void
-  computeOLD(std::vector<float>& out,
-             const std::vector<float>& in,
-             int value_size,
-             int in_offset = 0,
-             int out_offset = 0,
-             int in_size = -1,
-             int out_size = -1) const;
+  computeOLD (std::vector<float>& out,
+              const std::vector<float>& in,
+              int value_size,
+              int in_offset = 0,
+              int out_offset = 0,
+              int in_size = -1,
+              int out_size = -1) const;
 
   void
-  debug();
+  debug ();
 
   /** Pseudo random generator. */
   inline std::size_t
-  generateHashKey(const std::vector<short>& k)
+  generateHashKey (const std::vector<short>& k)
   {
     std::size_t r = 0;
     for (int i = 0; i < d_; i++) {
@@ -156,7 +156,7 @@ protected:
   int* table_;
 
   void
-  grow()
+  grow ()
   {
     std::cout << "GROW" << std::endl;
 
@@ -186,7 +186,7 @@ protected:
   }
 
   std::size_t
-  hash(const short* k)
+  hash (const short* k)
   {
     std::size_t r = 0;
     for (std::size_t i = 0; i < key_size_; i++) {
@@ -212,20 +212,20 @@ public:
   }
 
   int
-  size() const
+  size () const
   {
     return static_cast<int>(filled_);
   }
 
   void
-  reset()
+  reset ()
   {
     filled_ = 0;
     std::fill(table_, table_ + capacity_, -1);
   }
 
   int
-  find(const short* k, bool create = false)
+  find (const short* k, bool create = false)
   {
     if (2 * filled_ >= capacity_)
       grow();
@@ -259,7 +259,7 @@ public:
   }
 
   const short*
-  getKey(int i) const
+  getKey (int i) const
   {
     return keys_ + i * key_size_;
   }

@@ -42,24 +42,24 @@
 #include <vtkQuadricDecimation.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-pcl::MeshQuadricDecimationVTK::MeshQuadricDecimationVTK () = default;
-
+pcl::MeshQuadricDecimationVTK::MeshQuadricDecimationVTK() = default;
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::MeshQuadricDecimationVTK::performProcessing (pcl::PolygonMesh &output)
+pcl::MeshQuadricDecimationVTK::performProcessing(pcl::PolygonMesh& output)
 {
   // Convert from PCL mesh representation to the VTK representation
-  VTKUtils::convertToVTK (*input_mesh_, vtk_polygons_);
+  VTKUtils::convertToVTK(*input_mesh_, vtk_polygons_);
 
   // Apply the VTK algorithm
-  vtkSmartPointer<vtkQuadricDecimation> vtk_quadric_decimation_filter = vtkSmartPointer<vtkQuadricDecimation>::New();
-  vtk_quadric_decimation_filter->SetTargetReduction (target_reduction_factor_);
-  vtk_quadric_decimation_filter->SetInputData (vtk_polygons_);
-  vtk_quadric_decimation_filter->Update ();
+  vtkSmartPointer<vtkQuadricDecimation> vtk_quadric_decimation_filter =
+      vtkSmartPointer<vtkQuadricDecimation>::New();
+  vtk_quadric_decimation_filter->SetTargetReduction(target_reduction_factor_);
+  vtk_quadric_decimation_filter->SetInputData(vtk_polygons_);
+  vtk_quadric_decimation_filter->Update();
 
-  vtk_polygons_ = vtk_quadric_decimation_filter->GetOutput ();
+  vtk_polygons_ = vtk_quadric_decimation_filter->GetOutput();
 
   // Convert the result back to the PCL representation
-  VTKUtils::convertToPCL (vtk_polygons_, output);
+  VTKUtils::convertToPCL(vtk_polygons_, output);
 }

@@ -41,75 +41,83 @@
 
 #include <pcl/features/feature.h>
 
-namespace pcl
-{
-  /** \brief
-    * \param[in] p1 
-    * \param[in] n1
-    * \param[in] p2 
-    * \param[in] n2
-    * \param[in] c1
-    * \param[in] c2
-    * \param[out] f1
-    * \param[out] f2
-    * \param[out] f3
-    * \param[out] f4
-    * \param[out] f5
-    * \param[out] f6
-    * \param[out] f7
-    * \param[out] f8
-    * \param[out] f9
-    * \param[out] f10
-    */
-  PCL_EXPORTS bool
-  computeCPPFPairFeature (const Eigen::Vector4f &p1, const Eigen::Vector4f &n1, const Eigen::Vector4i &c1,
-                            const Eigen::Vector4f &p2, const Eigen::Vector4f &n2, const Eigen::Vector4i &c2,
-                            float &f1, float &f2, float &f3, float &f4, float &f5, float &f6, float &f7, float &f8, float &f9, float &f10);
+namespace pcl {
+/** \brief
+ * \param[in] p1
+ * \param[in] n1
+ * \param[in] p2
+ * \param[in] n2
+ * \param[in] c1
+ * \param[in] c2
+ * \param[out] f1
+ * \param[out] f2
+ * \param[out] f3
+ * \param[out] f4
+ * \param[out] f5
+ * \param[out] f6
+ * \param[out] f7
+ * \param[out] f8
+ * \param[out] f9
+ * \param[out] f10
+ */
+PCL_EXPORTS bool
+computeCPPFPairFeature (const Eigen::Vector4f& p1,
+                        const Eigen::Vector4f& n1,
+                        const Eigen::Vector4i& c1,
+                        const Eigen::Vector4f& p2,
+                        const Eigen::Vector4f& n2,
+                        const Eigen::Vector4i& c2,
+                        float& f1,
+                        float& f2,
+                        float& f3,
+                        float& f4,
+                        float& f5,
+                        float& f6,
+                        float& f7,
+                        float& f8,
+                        float& f9,
+                        float& f10);
 
+/** \brief Class that calculates the "surflet" features for each pair in the given
+ * pointcloud. Please refer to the following publication for more details:
+ *    C. Choi, Henrik Christensen
+ *    3D Pose Estimation of Daily Objects Using an RGB-D Camera
+ *    Proceedings of IEEE/RSJ International Conference on Intelligent Robots and Systems
+ * (IROS) 2012
+ *
+ * PointOutT is meant to be pcl::CPPFSignature - contains the 10 values of the Surflet
+ * feature and in addition, alpha_m for the respective pair - optimization proposed by
+ * the authors (see above)
+ *
+ * \author Martin Szarski, Alexandru-Eugen Ichim
+ */
 
+template <typename PointInT, typename PointNT, typename PointOutT>
+class CPPFEstimation : public FeatureFromNormals<PointInT, PointNT, PointOutT> {
+public:
+  using Ptr = shared_ptr<CPPFEstimation<PointInT, PointNT, PointOutT>>;
+  using ConstPtr = shared_ptr<const CPPFEstimation<PointInT, PointNT, PointOutT>>;
+  using PCLBase<PointInT>::indices_;
+  using Feature<PointInT, PointOutT>::input_;
+  using Feature<PointInT, PointOutT>::feature_name_;
+  using Feature<PointInT, PointOutT>::getClassName;
+  using FeatureFromNormals<PointInT, PointNT, PointOutT>::normals_;
 
-  /** \brief Class that calculates the "surflet" features for each pair in the given
-    * pointcloud. Please refer to the following publication for more details:
-    *    C. Choi, Henrik Christensen
-    *    3D Pose Estimation of Daily Objects Using an RGB-D Camera
-    *    Proceedings of IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)
-    *    2012
-    *
-    * PointOutT is meant to be pcl::CPPFSignature - contains the 10 values of the Surflet
-    * feature and in addition, alpha_m for the respective pair - optimization proposed by
-    * the authors (see above)
-    *
-    * \author Martin Szarski, Alexandru-Eugen Ichim
-    */
+  using PointCloudOut = pcl::PointCloud<PointOutT>;
 
-  template <typename PointInT, typename PointNT, typename PointOutT>
-  class CPPFEstimation : public FeatureFromNormals<PointInT, PointNT, PointOutT>
-  {
-    public:
-      using Ptr = shared_ptr<CPPFEstimation<PointInT, PointNT, PointOutT> >;
-      using ConstPtr = shared_ptr<const CPPFEstimation<PointInT, PointNT, PointOutT> >;
-      using PCLBase<PointInT>::indices_;
-      using Feature<PointInT, PointOutT>::input_;
-      using Feature<PointInT, PointOutT>::feature_name_;
-      using Feature<PointInT, PointOutT>::getClassName;
-      using FeatureFromNormals<PointInT, PointNT, PointOutT>::normals_;
+  /** \brief Empty Constructor. */
+  CPPFEstimation();
 
-      using PointCloudOut = pcl::PointCloud<PointOutT>;
-
-      /** \brief Empty Constructor. */
-      CPPFEstimation ();
-
-
-    private:
-      /** \brief The method called for actually doing the computations
-        * \param[out] output the resulting point cloud (which should be of type pcl::CPPFSignature);
-        * its size is the size of the input cloud, squared (i.e., one point for each pair in
-        * the input cloud);
-        */
-      void
-      computeFeature (PointCloudOut &output) override;
-  };
-}
+private:
+  /** \brief The method called for actually doing the computations
+   * \param[out] output the resulting point cloud (which should be of type
+   * pcl::CPPFSignature); its size is the size of the input cloud, squared (i.e., one
+   * point for each pair in the input cloud);
+   */
+  void
+  computeFeature (PointCloudOut& output) override;
+};
+} // namespace pcl
 
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/features/impl/cppf.hpp>

@@ -38,257 +38,269 @@
 #pragma once
 
 #include <pcl/io/openni_camera/openni_image.h>
-#include <thrust/tuple.h>
 #include <pcl/pcl_exports.h>
 
-namespace pcl
-{
-  namespace cuda
+#include <thrust/tuple.h>
+
+namespace pcl {
+namespace cuda {
+
+struct DisparityBoundSmoothing {
+  DisparityBoundSmoothing(int width,
+                          int height,
+                          int window_size,
+                          float focal_length,
+                          float baseline,
+                          float disparity_threshold,
+                          float* data,
+                          float* raw_data)
+  : width_(width)
+  , height_(height)
+  , window_size_(window_size)
+  , focal_length_(focal_length)
+  , baseline_(baseline)
+  , disparity_threshold_(disparity_threshold)
+  , data_(data)
+  , raw_data_(raw_data)
+  {}
+
+  int width_, height_;
+  int window_size_;
+  float focal_length_;
+  float baseline_;
+  float disparity_threshold_;
+  float* data_;
+  float* raw_data_;
+
+  // helper function
+  inline __host__ __device__ float
+  disparity2depth (float disparity)
   {
+    return baseline_ * focal_length_ / disparity;
+  }
 
-    struct DisparityBoundSmoothing
-    {
-      DisparityBoundSmoothing (int width, int height, int window_size, float focal_length, float baseline, float disparity_threshold, float *data, float *raw_data)
-        : width_ (width), height_ (height), window_size_ (window_size)
-        , focal_length_(focal_length), baseline_(baseline), disparity_threshold_(disparity_threshold)
-        , data_(data), raw_data_(raw_data)
-      {}
-  
-      int width_, height_;
-      int window_size_;
-      float focal_length_;
-      float baseline_;
-      float disparity_threshold_;
-      float *data_;
-      float *raw_data_;
+  // helper function
+  inline __host__ __device__ float
+  depth2disparity (float depth)
+  {
+    return baseline_ * focal_length_ / depth;
+  }
 
-      // helper function
-      inline __host__ __device__ 
-        float disparity2depth (float disparity)
-      {
-        return baseline_ * focal_length_ / disparity;
-      }
+  // clampToDisparityBounds
+  inline __host__ __device__ float
+  clampToDisparityBounds (float avg_depth, float depth)
+  {
+    float disparity = depth2disparity(depth);
+    float avg_disparity = depth2disparity(avg_depth);
+    float min_disparity = disparity - disparity_threshold_;
+    float max_disparity = disparity + disparity_threshold_;
 
-      // helper function
-      inline __host__ __device__
-        float depth2disparity (float depth)
-      {
-        return baseline_ * focal_length_ / depth;
-      }
+    if (avg_disparity > max_disparity)
+      return disparity2depth(max_disparity);
+    if (avg_disparity < min_disparity)
+      return disparity2depth(min_disparity);
 
-      // clampToDisparityBounds
-      inline __host__ __device__
-        float clampToDisparityBounds (float avg_depth, float depth)
-      {
-        float disparity = depth2disparity (depth);
-        float avg_disparity = depth2disparity (avg_depth);
-        float min_disparity = disparity - disparity_threshold_;
-        float max_disparity = disparity + disparity_threshold_;
+    return avg_depth;
+  }
 
-        if (avg_disparity > max_disparity)
-          return disparity2depth (max_disparity);
-        if (avg_disparity < min_disparity)
-          return disparity2depth (min_disparity);
-
-        return avg_depth;
-      }
-  
-      // actual kernel operator
-      inline __host__ __device__
-      float operator () (int idx)
-      {
-        float depth = data_ [idx];
-#ifdef __CUDACC__        
-        if (depth == 0 | isnan(depth) | isinf(depth))
-          return 0;
+  // actual kernel operator
+  inline __host__ __device__ float
+  operator()(int idx)
+  {
+    float depth = data_[idx];
+#ifdef __CUDACC__
+    if (depth == 0 | isnan(depth) | isinf(depth))
+      return 0;
 #else
-        if (depth == 0 | std::isnan(depth) | std::isinf(depth))
-          return 0;
+    if (depth == 0 | std::isnan(depth) | std::isinf(depth))
+      return 0;
 #endif
-        int xIdx = idx % width_;
-        int yIdx = idx / width_;
-        // TODO: test median
-        // This implements a fixed window size in image coordinates (pixels)
-        int4 bounds = make_int4 (
-            xIdx - window_size_,
-            xIdx + window_size_,
-            yIdx - window_size_,
-            yIdx + window_size_
-            );
-        
-        // clamp the coordinates to fit to depth image size
-        bounds.x = clamp (bounds.x, 0, width_-1);
-        bounds.y = clamp (bounds.y, 0, width_-1);
-        bounds.z = clamp (bounds.z, 0, height_-1);
-        bounds.w = clamp (bounds.w, 0, height_-1);
-    
-        float average_depth = depth;
-        int counter = 1;
-        // iterate over all pixels in the rectangular region
-        for (int y = bounds.z; y <= bounds.w; ++y)
-        {
-          for (int x = bounds.x; x <= bounds.y; ++x)
-          {
-            // find index in point cloud from x,y pixel positions
-            int otherIdx = ((int)y) * width_ + ((int)x);
-            float otherDepth = data_[otherIdx];
+    int xIdx = idx % width_;
+    int yIdx = idx / width_;
+    // TODO: test median
+    // This implements a fixed window size in image coordinates (pixels)
+    int4 bounds = make_int4(xIdx - window_size_,
+                            xIdx + window_size_,
+                            yIdx - window_size_,
+                            yIdx + window_size_);
 
-            // ignore invalid points
-            if (otherDepth == 0)
-              continue;
-            if (std::abs(otherDepth - depth) > 200)
-              continue;
+    // clamp the coordinates to fit to depth image size
+    bounds.x = clamp(bounds.x, 0, width_ - 1);
+    bounds.y = clamp(bounds.y, 0, width_ - 1);
+    bounds.z = clamp(bounds.z, 0, height_ - 1);
+    bounds.w = clamp(bounds.w, 0, height_ - 1);
 
-            ++counter;
-            average_depth += otherDepth;
-          }
-        }
+    float average_depth = depth;
+    int counter = 1;
+    // iterate over all pixels in the rectangular region
+    for (int y = bounds.z; y <= bounds.w; ++y) {
+      for (int x = bounds.x; x <= bounds.y; ++x) {
+        // find index in point cloud from x,y pixel positions
+        int otherIdx = ((int)y) * width_ + ((int)x);
+        float otherDepth = data_[otherIdx];
 
-        return clampToDisparityBounds (average_depth / counter, raw_data_[idx]);
+        // ignore invalid points
+        if (otherDepth == 0)
+          continue;
+        if (std::abs(otherDepth - depth) > 200)
+          continue;
+
+        ++counter;
+        average_depth += otherDepth;
       }
-    };
+    }
 
+    return clampToDisparityBounds(average_depth / counter, raw_data_[idx]);
+  }
+};
 
-    // This version requires a pre-computed map of float3 (nr_valid_points, min_allowable_depth, max_allowable_depth);
-    struct DisparityClampedSmoothing
-    {
-      DisparityClampedSmoothing (float* data, float3* disparity_helper_map, int width, int height, int window_size) 
-        : data_(data), disparity_helper_map_(disparity_helper_map), width_(width), height_(height), window_size_(window_size)
-      {}
+// This version requires a pre-computed map of float3 (nr_valid_points,
+// min_allowable_depth, max_allowable_depth);
+struct DisparityClampedSmoothing {
+  DisparityClampedSmoothing(
+      float* data, float3* disparity_helper_map, int width, int height, int window_size)
+  : data_(data)
+  , disparity_helper_map_(disparity_helper_map)
+  , width_(width)
+  , height_(height)
+  , window_size_(window_size)
+  {}
 
-      float* data_;
-      float3* disparity_helper_map_;
-      int width_;
-      int height_;
-      int window_size_;
+  float* data_;
+  float3* disparity_helper_map_;
+  int width_;
+  int height_;
+  int window_size_;
 
-      template <typename Tuple>
-      inline __host__ __device__
-        float operator () (Tuple t)
-      {
-        float depth = thrust::get<0> (t);
-        int idx = thrust::get<1> (t);
-        float3 dhel = disparity_helper_map_[idx];
-        int nr = (int) dhel.x;
-        float min_d = dhel.y;
-        float max_d = dhel.z;
-#ifdef __CUDACC__        
-        if (depth == 0 | isnan(depth) | isinf(depth))
-          return 0.0f;
+  template <typename Tuple>
+  inline __host__ __device__ float
+  operator()(Tuple t)
+  {
+    float depth = thrust::get<0>(t);
+    int idx = thrust::get<1>(t);
+    float3 dhel = disparity_helper_map_[idx];
+    int nr = (int)dhel.x;
+    float min_d = dhel.y;
+    float max_d = dhel.z;
+#ifdef __CUDACC__
+    if (depth == 0 | isnan(depth) | isinf(depth))
+      return 0.0f;
 #else
-        if (depth == 0 | std::isnan(depth) | std::isinf(depth))
-          return 0.0f;
+    if (depth == 0 | std::isnan(depth) | std::isinf(depth))
+      return 0.0f;
 #endif
-        int xIdx = idx % width_;
-        int yIdx = idx / width_;
+    int xIdx = idx % width_;
+    int yIdx = idx / width_;
 
-        // This implements a fixed window size in image coordinates (pixels)
-        int4 bounds = make_int4 (
-            xIdx - window_size_,
-            xIdx + window_size_,
-            yIdx - window_size_,
-            yIdx + window_size_
-            );
-        
-        // clamp the coordinates to fit to disparity image size
-        bounds.x = clamp (bounds.x, 0, width_-1);
-        bounds.y = clamp (bounds.y, 0, width_-1);
-        bounds.z = clamp (bounds.z, 0, height_-1);
-        bounds.w = clamp (bounds.w, 0, height_-1);
+    // This implements a fixed window size in image coordinates (pixels)
+    int4 bounds = make_int4(xIdx - window_size_,
+                            xIdx + window_size_,
+                            yIdx - window_size_,
+                            yIdx + window_size_);
 
-        // iterate over all pixels in the rectangular region
-        for (int y = bounds.z; y <= bounds.w; ++y)
-        {
-          for (int x = bounds.x; x <= bounds.y; ++x)
-          {
-            // find index in point cloud from x,y pixel positions
-            int otherIdx = ((int)y) * width_ + ((int)x);
-            depth += data_[otherIdx];
-          }
-        }
-      
-        return clamp (depth / nr, min_d, max_d);
+    // clamp the coordinates to fit to disparity image size
+    bounds.x = clamp(bounds.x, 0, width_ - 1);
+    bounds.y = clamp(bounds.y, 0, width_ - 1);
+    bounds.z = clamp(bounds.z, 0, height_ - 1);
+    bounds.w = clamp(bounds.w, 0, height_ - 1);
+
+    // iterate over all pixels in the rectangular region
+    for (int y = bounds.z; y <= bounds.w; ++y) {
+      for (int x = bounds.x; x <= bounds.y; ++x) {
+        // find index in point cloud from x,y pixel positions
+        int otherIdx = ((int)y) * width_ + ((int)x);
+        depth += data_[otherIdx];
       }
-    };
+    }
 
-    struct DisparityHelperMap
-    {
-      DisparityHelperMap (float* data, int width, int height, int window_size, float baseline, float focal_length, float disp_thresh) 
-        : data_(data), width_(width), height_(height), window_size_(window_size), baseline_(baseline), focal_length_(focal_length), disp_thresh_(disp_thresh)
-      {}
+    return clamp(depth / nr, min_d, max_d);
+  }
+};
 
-      float* data_;
-      int width_;
-      int height_;
-      int window_size_;
-      float baseline_;
-      float focal_length_;
-      float disp_thresh_;
+struct DisparityHelperMap {
+  DisparityHelperMap(float* data,
+                     int width,
+                     int height,
+                     int window_size,
+                     float baseline,
+                     float focal_length,
+                     float disp_thresh)
+  : data_(data)
+  , width_(width)
+  , height_(height)
+  , window_size_(window_size)
+  , baseline_(baseline)
+  , focal_length_(focal_length)
+  , disp_thresh_(disp_thresh)
+  {}
 
-      // helper function
-      inline __host__ __device__ 
-        float disparity2depth (float disparity)
-      {
-        return baseline_ * focal_length_ / disparity;
-      }
+  float* data_;
+  int width_;
+  int height_;
+  int window_size_;
+  float baseline_;
+  float focal_length_;
+  float disp_thresh_;
 
-      // helper function
-      inline __host__ __device__
-        float depth2disparity (float depth)
-      {
-        return baseline_ * focal_length_ / depth;
-      }
+  // helper function
+  inline __host__ __device__ float
+  disparity2depth (float disparity)
+  {
+    return baseline_ * focal_length_ / disparity;
+  }
 
-      inline __host__ __device__
-        float3 operator () (int idx)
-      {
-        float disparity = depth2disparity (data_ [idx]);
-#ifdef __CUDACC__         
-        if (disparity == 0 | isnan(disparity) | isinf(disparity))
-          return make_float3 (0,0,0);
+  // helper function
+  inline __host__ __device__ float
+  depth2disparity (float depth)
+  {
+    return baseline_ * focal_length_ / depth;
+  }
+
+  inline __host__ __device__ float3
+  operator()(int idx)
+  {
+    float disparity = depth2disparity(data_[idx]);
+#ifdef __CUDACC__
+    if (disparity == 0 | isnan(disparity) | isinf(disparity))
+      return make_float3(0, 0, 0);
 #else
-        if (disparity == 0 | std::isnan(disparity) | std::isinf(disparity))
-          return make_float3 (0,0,0);
+    if (disparity == 0 | std::isnan(disparity) | std::isinf(disparity))
+      return make_float3(0, 0, 0);
 #endif
-        int xIdx = idx % width_;
-        int yIdx = idx / width_;
+    int xIdx = idx % width_;
+    int yIdx = idx / width_;
 
-        // This implements a fixed window size in image coordinates (pixels)
-        int4 bounds = make_int4 (
-            xIdx - window_size_,
-            xIdx + window_size_,
-            yIdx - window_size_,
-            yIdx + window_size_
-            );
-        
-        // clamp the coordinates to fit to disparity image size
-        bounds.x = clamp (bounds.x, 0, width_-1);
-        bounds.y = clamp (bounds.y, 0, width_-1);
-        bounds.z = clamp (bounds.z, 0, height_-1);
-        bounds.w = clamp (bounds.w, 0, height_-1);
+    // This implements a fixed window size in image coordinates (pixels)
+    int4 bounds = make_int4(xIdx - window_size_,
+                            xIdx + window_size_,
+                            yIdx - window_size_,
+                            yIdx + window_size_);
 
-        int counter = 1;
-        // iterate over all pixels in the rectangular region
-        for (int y = bounds.z; y <= bounds.w; ++y)
-        {
-          for (int x = bounds.x; x <= bounds.y; ++x)
-          {
-            // find index in point cloud from x,y pixel positions
-            int otherIdx = ((int)y) * width_ + ((int)x);
-            float otherDepth = data_[otherIdx];
+    // clamp the coordinates to fit to disparity image size
+    bounds.x = clamp(bounds.x, 0, width_ - 1);
+    bounds.y = clamp(bounds.y, 0, width_ - 1);
+    bounds.z = clamp(bounds.z, 0, height_ - 1);
+    bounds.w = clamp(bounds.w, 0, height_ - 1);
 
-            // ignore invalid points
-            if (otherDepth > 0)
-              ++counter;
-          }
-        }
-        
-        return make_float3 ((float) counter, 
-                            disparity2depth (disparity + disp_thresh_),
-                            disparity2depth (disparity - disp_thresh_));
+    int counter = 1;
+    // iterate over all pixels in the rectangular region
+    for (int y = bounds.z; y <= bounds.w; ++y) {
+      for (int x = bounds.x; x <= bounds.y; ++x) {
+        // find index in point cloud from x,y pixel positions
+        int otherIdx = ((int)y) * width_ + ((int)x);
+        float otherDepth = data_[otherIdx];
+
+        // ignore invalid points
+        if (otherDepth > 0)
+          ++counter;
       }
-    };
+    }
 
+    return make_float3((float)counter,
+                       disparity2depth(disparity + disp_thresh_),
+                       disparity2depth(disparity - disp_thresh_));
+  }
+};
 
-  } // namespace
-} // namespace
+} // namespace cuda
+} // namespace pcl

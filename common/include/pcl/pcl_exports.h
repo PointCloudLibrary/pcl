@@ -39,11 +39,11 @@
 // which can't be eaten by nvcc (it's too weak)
 
 #if defined _WIN32 || defined WINCE || defined __MINGW32__
-    #ifdef PCLAPI_EXPORTS
-        #define PCL_EXPORTS __declspec(dllexport)
-    #else
-        #define PCL_EXPORTS
-    #endif
+#ifdef PCLAPI_EXPORTS
+#define PCL_EXPORTS __declspec(dllexport)
 #else
-    #define PCL_EXPORTS
+#define PCL_EXPORTS
+#endif
+#else
+#define PCL_EXPORTS
 #endif

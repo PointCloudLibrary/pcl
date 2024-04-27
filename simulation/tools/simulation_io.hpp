@@ -33,26 +33,26 @@ public:
 
   SimExample(int argc, char** argv, int height, int width);
   void
-  initializeGL(int argc, char** argv);
+  initializeGL (int argc, char** argv);
 
   Scene::Ptr scene_;
   Camera::Ptr camera_;
   RangeLikelihood::Ptr rl_;
 
   void
-  doSim(Eigen::Isometry3d pose_in);
+  doSim (Eigen::Isometry3d pose_in);
 
   void
-  write_score_image(const float* score_buffer, std::string fname);
+  write_score_image (const float* score_buffer, std::string fname);
 
   void
-  write_depth_image(const float* depth_buffer, std::string fname);
+  write_depth_image (const float* depth_buffer, std::string fname);
 
   void
-  write_depth_image_uint(const float* depth_buffer, std::string fname);
+  write_depth_image_uint (const float* depth_buffer, std::string fname);
 
   void
-  write_rgb_image(const std::uint8_t* rgb_buffer, std::string fname);
+  write_rgb_image (const std::uint8_t* rgb_buffer, std::string fname);
 
 private:
   std::uint16_t t_gamma[2048];

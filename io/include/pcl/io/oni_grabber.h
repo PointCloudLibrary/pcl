@@ -43,159 +43,168 @@
 
 #ifdef HAVE_OPENNI
 
-#include <pcl/point_cloud.h>
-#include <pcl/io/grabber.h>
-#include <pcl/io/openni_camera/openni_driver.h>
-#include <pcl/io/openni_camera/openni_device_oni.h>
-#include <pcl/io/openni_camera/openni_image.h>
-#include <pcl/io/openni_camera/openni_depth_image.h>
-#include <pcl/io/openni_camera/openni_ir_image.h>
-#include <string>
 #include <pcl/common/synchronizer.h>
+#include <pcl/io/grabber.h>
+#include <pcl/io/openni_camera/openni_depth_image.h>
+#include <pcl/io/openni_camera/openni_device_oni.h>
+#include <pcl/io/openni_camera/openni_driver.h>
+#include <pcl/io/openni_camera/openni_image.h>
+#include <pcl/io/openni_camera/openni_ir_image.h>
+#include <pcl/point_cloud.h>
 
-namespace pcl
-{
-  struct PointXYZ;
-  struct PointXYZRGB;
-  struct PointXYZRGBA;
-  struct PointXYZI;
+#include <string>
 
-  /** \brief A simple ONI grabber.
-    * \author Suat Gedikli
-    * \ingroup io
-    */
-  class PCL_EXPORTS ONIGrabber : public Grabber
+namespace pcl {
+struct PointXYZ;
+struct PointXYZRGB;
+struct PointXYZRGBA;
+struct PointXYZI;
+
+/** \brief A simple ONI grabber.
+ * \author Suat Gedikli
+ * \ingroup io
+ */
+class PCL_EXPORTS ONIGrabber : public Grabber {
+public:
+  // define callback signature typedefs
+  using sig_cb_openni_image = void(const openni_wrapper::Image::Ptr&);
+  using sig_cb_openni_depth_image = void(const openni_wrapper::DepthImage::Ptr&);
+  using sig_cb_openni_ir_image = void(const openni_wrapper::IRImage::Ptr&);
+  using sig_cb_openni_image_depth_image = void(const openni_wrapper::Image::Ptr&,
+                                               const openni_wrapper::DepthImage::Ptr&,
+                                               float);
+  using sig_cb_openni_ir_depth_image = void(const openni_wrapper::IRImage::Ptr&,
+                                            const openni_wrapper::DepthImage::Ptr&,
+                                            float);
+  using sig_cb_openni_point_cloud =
+      void(const pcl::PointCloud<pcl::PointXYZ>::ConstPtr&);
+  using sig_cb_openni_point_cloud_rgb =
+      void(const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr&);
+  using sig_cb_openni_point_cloud_rgba =
+      void(const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&);
+  using sig_cb_openni_point_cloud_i =
+      void(const pcl::PointCloud<pcl::PointXYZI>::ConstPtr&);
+
+  /** \brief constructor
+   * \param[in] file_name the path to the ONI file
+   * \param[in] repeat whether the play back should be in an infinite loop or not
+   * \param[in] stream whether the playback should be in streaming mode or in triggered
+   * mode.
+   */
+  ONIGrabber(const std::string& file_name, bool repeat, bool stream);
+
+  /** \brief destructor never throws an exception */
+  ~ONIGrabber() noexcept override;
+
+  /** \brief For devices that are streaming, the streams are started by calling this
+   * method. Trigger-based devices, just trigger the device once for each call of start.
+   */
+  void
+  start () override;
+
+  /** \brief For devices that are streaming, the streams are stopped.
+   *        This method has no effect for triggered devices.
+   */
+  void
+  stop () override;
+
+  /** \brief returns the name of the concrete subclass.
+   * \return the name of the concrete driver.
+   */
+  std::string
+  getName () const override;
+
+  /** \brief Indicates whether the grabber is streaming or not. This value is not
+   * defined for triggered devices. \return true if grabber is running / streaming.
+   * False otherwise.
+   */
+  bool
+  isRunning () const override;
+
+  /** \brief returns the frames pre second. 0 if it is trigger based. */
+  float
+  getFramesPerSecond () const override;
+
+  /** \brief Check if there is any data left in the ONI file to process. */
+  inline bool
+  hasDataLeft ()
   {
-    public:
-      //define callback signature typedefs
-      using sig_cb_openni_image = void (const openni_wrapper::Image::Ptr &);
-      using sig_cb_openni_depth_image = void (const openni_wrapper::DepthImage::Ptr &);
-      using sig_cb_openni_ir_image = void (const openni_wrapper::IRImage::Ptr &);
-      using sig_cb_openni_image_depth_image = void (const openni_wrapper::Image::Ptr &, const openni_wrapper::DepthImage::Ptr &, float) ;
-      using sig_cb_openni_ir_depth_image = void (const openni_wrapper::IRImage::Ptr &, const openni_wrapper::DepthImage::Ptr &, float) ;
-      using sig_cb_openni_point_cloud = void (const pcl::PointCloud<pcl::PointXYZ>::ConstPtr &);
-      using sig_cb_openni_point_cloud_rgb = void (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr &);
-      using sig_cb_openni_point_cloud_rgba = void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr &);
-      using sig_cb_openni_point_cloud_i = void (const pcl::PointCloud<pcl::PointXYZI>::ConstPtr &);
+    return (device_->hasDataLeft());
+  }
 
-      /** \brief constructor
-        * \param[in] file_name the path to the ONI file
-        * \param[in] repeat whether the play back should be in an infinite loop or not
-        * \param[in] stream whether the playback should be in streaming mode or in triggered mode.
-        */
-      ONIGrabber (const std::string& file_name, bool repeat, bool stream);
+protected:
+  /** \brief internal OpenNI (openni_wrapper) callback that handles image streams */
+  void
+  imageCallback (openni_wrapper::Image::Ptr image, void* cookie);
 
-      /** \brief destructor never throws an exception */
-      ~ONIGrabber () noexcept override;
+  /** \brief internal OpenNI (openni_wrapper) callback that handles depth streams */
+  void
+  depthCallback (openni_wrapper::DepthImage::Ptr depth_image, void* cookie);
 
-      /** \brief For devices that are streaming, the streams are started by calling this method.
-        *        Trigger-based devices, just trigger the device once for each call of start.
-        */
-      void
-      start () override;
+  /** \brief internal OpenNI (openni_wrapper) callback that handles IR streams */
+  void
+  irCallback (openni_wrapper::IRImage::Ptr ir_image, void* cookie);
 
-      /** \brief For devices that are streaming, the streams are stopped.
-        *        This method has no effect for triggered devices.
-        */
-      void
-      stop () override;
+  /** \brief internal callback that handles synchronized image + depth streams */
+  void
+  imageDepthImageCallback (const openni_wrapper::Image::Ptr& image,
+                           const openni_wrapper::DepthImage::Ptr& depth_image);
 
-      /** \brief returns the name of the concrete subclass.
-        * \return the name of the concrete driver.
-        */
-      std::string
-      getName () const override;
+  /** \brief internal callback that handles synchronized IR + depth streams */
+  void
+  irDepthImageCallback (const openni_wrapper::IRImage::Ptr& image,
+                        const openni_wrapper::DepthImage::Ptr& depth_image);
 
-      /** \brief Indicates whether the grabber is streaming or not. This value is not defined for triggered devices.
-        * \return true if grabber is running / streaming. False otherwise.
-        */
-      bool
-      isRunning () const override;
+  /** \brief internal method to assemble a point cloud object */
+  pcl::PointCloud<pcl::PointXYZ>::Ptr
+  convertToXYZPointCloud (const openni_wrapper::DepthImage::Ptr& depth) const;
 
-      /** \brief returns the frames pre second. 0 if it is trigger based. */
-      float
-      getFramesPerSecond () const override;
+  /** \brief internal method to assemble a point cloud object */
+  pcl::PointCloud<pcl::PointXYZRGB>::Ptr
+  convertToXYZRGBPointCloud (const openni_wrapper::Image::Ptr& image,
+                             const openni_wrapper::DepthImage::Ptr& depth_image) const;
 
-      /** \brief Check if there is any data left in the ONI file to process. */
-      inline bool
-      hasDataLeft ()
-      {
-        return (device_->hasDataLeft ());
-      }
+  /** \brief internal method to assemble a point cloud object */
+  pcl::PointCloud<pcl::PointXYZRGBA>::Ptr
+  convertToXYZRGBAPointCloud (const openni_wrapper::Image::Ptr& image,
+                              const openni_wrapper::DepthImage::Ptr& depth_image) const;
 
-     protected:
-      /** \brief internal OpenNI (openni_wrapper) callback that handles image streams */
-      void
-      imageCallback (openni_wrapper::Image::Ptr image, void* cookie);
+  /** \brief internal method to assemble a point cloud object */
+  pcl::PointCloud<pcl::PointXYZI>::Ptr
+  convertToXYZIPointCloud (const openni_wrapper::IRImage::Ptr& image,
+                           const openni_wrapper::DepthImage::Ptr& depth_image) const;
 
-      /** \brief internal OpenNI (openni_wrapper) callback that handles depth streams */
-      void
-      depthCallback (openni_wrapper::DepthImage::Ptr depth_image, void* cookie);
+  /** \brief synchronizer object to synchronize image and depth streams*/
+  Synchronizer<openni_wrapper::Image::Ptr, openni_wrapper::DepthImage::Ptr> rgb_sync_;
 
-      /** \brief internal OpenNI (openni_wrapper) callback that handles IR streams */
-      void
-      irCallback (openni_wrapper::IRImage::Ptr ir_image, void* cookie);
+  /** \brief synchronizer object to synchronize IR and depth streams*/
+  Synchronizer<openni_wrapper::IRImage::Ptr, openni_wrapper::DepthImage::Ptr> ir_sync_;
 
-      /** \brief internal callback that handles synchronized image + depth streams */
-      void
-      imageDepthImageCallback (const openni_wrapper::Image::Ptr &image,
-                               const openni_wrapper::DepthImage::Ptr &depth_image);
+  /** \brief the actual openni device*/
+  openni_wrapper::DeviceONI::Ptr device_;
+  std::string rgb_frame_id_;
+  std::string depth_frame_id_;
+  bool running_{false};
+  unsigned image_width_{0};
+  unsigned image_height_{0};
+  unsigned depth_width_{0};
+  unsigned depth_height_{0};
+  openni_wrapper::OpenNIDevice::CallbackHandle depth_callback_handle{};
+  openni_wrapper::OpenNIDevice::CallbackHandle image_callback_handle{};
+  openni_wrapper::OpenNIDevice::CallbackHandle ir_callback_handle{};
+  boost::signals2::signal<sig_cb_openni_image>* image_signal_{};
+  boost::signals2::signal<sig_cb_openni_depth_image>* depth_image_signal_{};
+  boost::signals2::signal<sig_cb_openni_ir_image>* ir_image_signal_{};
+  boost::signals2::signal<sig_cb_openni_image_depth_image>* image_depth_image_signal_{};
+  boost::signals2::signal<sig_cb_openni_ir_depth_image>* ir_depth_image_signal_{};
+  boost::signals2::signal<sig_cb_openni_point_cloud>* point_cloud_signal_{};
+  boost::signals2::signal<sig_cb_openni_point_cloud_i>* point_cloud_i_signal_{};
+  boost::signals2::signal<sig_cb_openni_point_cloud_rgb>* point_cloud_rgb_signal_{};
+  boost::signals2::signal<sig_cb_openni_point_cloud_rgba>* point_cloud_rgba_signal_{};
 
-      /** \brief internal callback that handles synchronized IR + depth streams */
-      void
-      irDepthImageCallback (const openni_wrapper::IRImage::Ptr &image,
-                            const openni_wrapper::DepthImage::Ptr &depth_image);
+public:
+  PCL_MAKE_ALIGNED_OPERATOR_NEW
+};
 
-      /** \brief internal method to assemble a point cloud object */
-      pcl::PointCloud<pcl::PointXYZ>::Ptr
-      convertToXYZPointCloud (const openni_wrapper::DepthImage::Ptr &depth) const;
-
-      /** \brief internal method to assemble a point cloud object */
-      pcl::PointCloud<pcl::PointXYZRGB>::Ptr
-      convertToXYZRGBPointCloud (const openni_wrapper::Image::Ptr &image,
-                                 const openni_wrapper::DepthImage::Ptr &depth_image) const;
-
-      /** \brief internal method to assemble a point cloud object */
-      pcl::PointCloud<pcl::PointXYZRGBA>::Ptr
-      convertToXYZRGBAPointCloud (const openni_wrapper::Image::Ptr &image,
-                                  const openni_wrapper::DepthImage::Ptr &depth_image) const;
-
-      /** \brief internal method to assemble a point cloud object */
-      pcl::PointCloud<pcl::PointXYZI>::Ptr
-      convertToXYZIPointCloud (const openni_wrapper::IRImage::Ptr &image,
-                               const openni_wrapper::DepthImage::Ptr &depth_image) const;
-
-      /** \brief synchronizer object to synchronize image and depth streams*/
-      Synchronizer<openni_wrapper::Image::Ptr, openni_wrapper::DepthImage::Ptr > rgb_sync_;
-
-      /** \brief synchronizer object to synchronize IR and depth streams*/
-      Synchronizer<openni_wrapper::IRImage::Ptr, openni_wrapper::DepthImage::Ptr > ir_sync_;
-
-      /** \brief the actual openni device*/
-      openni_wrapper::DeviceONI::Ptr device_;
-      std::string rgb_frame_id_;
-      std::string depth_frame_id_;
-      bool running_{false};
-      unsigned image_width_{0};
-      unsigned image_height_{0};
-      unsigned depth_width_{0};
-      unsigned depth_height_{0};
-      openni_wrapper::OpenNIDevice::CallbackHandle depth_callback_handle{};
-      openni_wrapper::OpenNIDevice::CallbackHandle image_callback_handle{};
-      openni_wrapper::OpenNIDevice::CallbackHandle ir_callback_handle{};
-      boost::signals2::signal<sig_cb_openni_image >*            image_signal_{};
-      boost::signals2::signal<sig_cb_openni_depth_image >*      depth_image_signal_{};
-      boost::signals2::signal<sig_cb_openni_ir_image >*         ir_image_signal_{};
-      boost::signals2::signal<sig_cb_openni_image_depth_image>* image_depth_image_signal_{};
-      boost::signals2::signal<sig_cb_openni_ir_depth_image>*    ir_depth_image_signal_{};
-      boost::signals2::signal<sig_cb_openni_point_cloud >*      point_cloud_signal_{};
-      boost::signals2::signal<sig_cb_openni_point_cloud_i >*    point_cloud_i_signal_{};
-      boost::signals2::signal<sig_cb_openni_point_cloud_rgb >*  point_cloud_rgb_signal_{};
-      boost::signals2::signal<sig_cb_openni_point_cloud_rgba >*  point_cloud_rgba_signal_{};
-
-    public:
-      PCL_MAKE_ALIGNED_OPERATOR_NEW
-  };
-
-} // namespace
+} // namespace pcl
 #endif // HAVE_OPENNI

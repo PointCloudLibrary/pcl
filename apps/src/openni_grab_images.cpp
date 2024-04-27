@@ -71,9 +71,9 @@ public:
   }
 
   void
-  image_callback(const openni_wrapper::Image::Ptr& image,
-                 const openni_wrapper::DepthImage::Ptr& depth_image,
-                 float)
+  image_callback (const openni_wrapper::Image::Ptr& image,
+                  const openni_wrapper::DepthImage::Ptr& depth_image,
+                  float)
   {
     std::lock_guard<std::mutex> lock(image_mutex_);
     image_ = image;
@@ -82,7 +82,7 @@ public:
   }
 
   void
-  keyboard_callback(const pcl::visualization::KeyboardEvent& event, void*)
+  keyboard_callback (const pcl::visualization::KeyboardEvent& event, void*)
   {
     if (event.keyUp()) {
       switch (event.getKeyCode()) {
@@ -103,7 +103,7 @@ public:
   }
 
   void
-  mouse_callback(const pcl::visualization::MouseEvent& mouse_event, void*)
+  mouse_callback (const pcl::visualization::MouseEvent& mouse_event, void*)
   {
     if (mouse_event.getType() == pcl::visualization::MouseEvent::MouseButtonPress &&
         mouse_event.getButton() == pcl::visualization::MouseEvent::LeftButton) {
@@ -112,7 +112,7 @@ public:
   }
 
   void
-  saveImages()
+  saveImages ()
   {
     const std::string time = pcl::getTimestamp();
     openni_wrapper::Image::Ptr image;
@@ -175,7 +175,7 @@ public:
   }
 
   int
-  run()
+  run ()
   {
     // register the keyboard and mouse callback for the visualizer
     image_viewer_.registerMouseCallback(&OpenNIGrabFrame::mouse_callback, *this);
@@ -187,9 +187,9 @@ public:
     std::function<void(const openni_wrapper::Image::Ptr&,
                        const openni_wrapper::DepthImage::Ptr&,
                        float)>
-        image_cb = [this](const openni_wrapper::Image::Ptr& img,
-                          const openni_wrapper::DepthImage::Ptr& depth,
-                          float f) { image_callback(img, depth, f); };
+        image_cb = [this] (const openni_wrapper::Image::Ptr& img,
+                           const openni_wrapper::DepthImage::Ptr& depth,
+                           float f) { image_callback(img, depth, f); };
     boost::signals2::connection image_connection = grabber_.registerCallback(image_cb);
 
     // start receiving point clouds
@@ -303,7 +303,7 @@ public:
 };
 
 void
-usage(char** argv)
+usage (char** argv)
 {
   std::cout << "usage: " << argv[0]
             << " [((<device_id> | <path-to-oni-file>) [-imagemode <mode>] "
@@ -350,7 +350,7 @@ usage(char** argv)
 }
 
 int
-main(int argc, char** argv)
+main (int argc, char** argv)
 {
   std::string device_id("");
   pcl::OpenNIGrabber::Mode image_mode = pcl::OpenNIGrabber::OpenNI_Default_Mode;

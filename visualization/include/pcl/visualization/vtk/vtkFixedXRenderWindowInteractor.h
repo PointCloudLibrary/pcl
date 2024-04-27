@@ -32,42 +32,48 @@
 //===========================================================
 // now we define the C++ class
 
-#include "vtkRenderWindowInteractor.h"
 #include "vtkRenderingUIModule.h" // For export macro
-#include <X11/Xlib.h>             // Needed for X types in the public interface
+#include "vtkRenderWindowInteractor.h"
+#include <X11/Xlib.h> // Needed for X types in the public interface
 
 namespace pcl {
 class vtkCallbackCommand;
 class vtkXRenderWindowInteractorInternals;
 
-class VTKRENDERINGUI_EXPORT vtkXRenderWindowInteractor : public vtkRenderWindowInteractor
-{
+class VTKRENDERINGUI_EXPORT vtkXRenderWindowInteractor
+: public vtkRenderWindowInteractor {
 public:
   vtkXRenderWindowInteractor(const vtkXRenderWindowInteractor&) = delete;
-  void operator=(const vtkXRenderWindowInteractor&) = delete;
+  void
+  operator=(const vtkXRenderWindowInteractor&) = delete;
 
-  static vtkXRenderWindowInteractor* New();
+  static vtkXRenderWindowInteractor*
+  New ();
   vtkTypeMacro(vtkXRenderWindowInteractor, vtkRenderWindowInteractor);
-  void PrintSelf(ostream& os, vtkIndent indent) override;
+  void
+  PrintSelf (ostream& os, vtkIndent indent) override;
 
   /**
    * Initializes the event handlers without an XtAppContext.  This is
    * good for when you don't have a user interface, but you still
    * want to have mouse interaction.
    */
-  void Initialize() override;
+  void
+  Initialize () override;
 
   /**
    * Break the event loop on 'q','e' keypress. Want more ???
    */
-  void TerminateApp() override;
+  void
+  TerminateApp () override;
 
   /**
    * Run the event loop and return. This is provided so that you can
    * implement your own event loop but yet use the vtk event handling as
    * well.
    */
-  void ProcessEvents() override;
+  void
+  ProcessEvents () override;
 
   ///@{
   /**
@@ -79,22 +85,27 @@ public:
    * and all other interactors associated with the widget are disabled
    * when their data is not displayed.
    */
-  void Enable() override;
-  void Disable() override;
+  void
+  Enable () override;
+  void
+  Disable () override;
   ///@}
 
   /**
    * Update the Size data member and set the associated RenderWindow's
    * size.
    */
-  void UpdateSize(int, int) override;
+  void
+  UpdateSize (int, int) override;
 
   /**
    * Re-defines virtual function to get mouse position by querying X-server.
    */
-  void GetMousePosition(int* x, int* y) override;
+  void
+  GetMousePosition (int* x, int* y) override;
 
-  void DispatchEvent(XEvent*);
+  void
+  DispatchEvent (XEvent*);
 
 protected:
   vtkXRenderWindowInteractor();
@@ -104,7 +115,8 @@ protected:
    * Update the Size data member and set the associated RenderWindow's
    * size but do not resize the XWindow.
    */
-  void UpdateSizeNoXResize(int, int);
+  void
+  UpdateSizeNoXResize (int, int);
 
   // Using static here to avoid destroying context when many apps are open:
   static int NumAppInitialized;
@@ -134,25 +146,29 @@ protected:
    * X-specific internal timer methods. See the superclass for detailed
    * documentation.
    */
-  int InternalCreateTimer(int timerId, int timerType, unsigned long duration) override;
-  int InternalDestroyTimer(int platformTimerId) override;
+  int
+  InternalCreateTimer (int timerId, int timerType, unsigned long duration) override;
+  int
+  InternalDestroyTimer (int platformTimerId) override;
   ///@}
 
-  void FireTimers();
+  void
+  FireTimers ();
 
   /**
    * This will start up the X event loop and never return. If you
    * call this method it will loop processing X events until the
    * application is exited.
    */
-  void StartEventLoop() override;
+  void
+  StartEventLoop () override;
 
   /**
    * Deallocate X resource that may have been allocated
    * Also calls finalize on the render window if available
    */
-  void Finalize();
-
+  void
+  Finalize ();
 };
 } // namespace pcl
 

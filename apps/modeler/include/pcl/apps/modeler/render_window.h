@@ -54,42 +54,42 @@ public:
   ~RenderWindow();
 
   QSize
-  sizeHint() const override
+  sizeHint () const override
   {
     return {512, 512};
   }
 
   void
-  setActive(bool flag);
+  setActive (bool flag);
 
   void
-  setTitle(const QString& title);
+  setTitle (const QString& title);
 
   void
-  render();
+  render ();
 
   void
-  resetCamera();
+  resetCamera ();
 
   void
-  updateAxes();
+  updateAxes ();
 
   void
-  getBackground(double& r, double& g, double& b);
+  getBackground (double& r, double& g, double& b);
 
   void
-  setBackground(double r, double g, double b);
+  setBackground (double r, double g, double b);
 
   void
-  setShowAxes(bool flag);
+  setShowAxes (bool flag);
 
 protected:
   void
-  focusInEvent(QFocusEvent* event) override;
+  focusInEvent (QFocusEvent* event) override;
 
 private:
   void
-  initRenderer();
+  initRenderer ();
 
   vtkSmartPointer<vtkCubeAxesActor> axes_;
   RenderWindowItem* render_window_item_;

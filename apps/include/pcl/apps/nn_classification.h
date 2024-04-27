@@ -77,7 +77,7 @@ public:
    * \param[in] features the training features
    */
   void
-  setTrainingFeatures(const typename pcl::PointCloud<PointT>::ConstPtr& features)
+  setTrainingFeatures (const typename pcl::PointCloud<PointT>::ConstPtr& features)
   {
     // Do not limit the number of dimensions used in the tree
     typename pcl::CustomPointRepresentation<PointT>::Ptr cpr(
@@ -93,8 +93,8 @@ public:
    * \param labels_idx the index in the class labels list for each training example
    */
   void
-  setTrainingLabelIndicesAndLUT(const std::vector<std::string>& classes,
-                                const std::vector<int>& labels_idx)
+  setTrainingLabelIndicesAndLUT (const std::vector<std::string>& classes,
+                                 const std::vector<int>& labels_idx)
   {
     // TODO check if min/max index is inside classes?
     classes_ = classes;
@@ -109,7 +109,7 @@ public:
    * \param labels the class label for each training example
    */
   void
-  setTrainingLabels(const std::vector<std::string>& labels)
+  setTrainingLabels (const std::vector<std::string>& labels)
   {
     // Create a list of unique labels
     classes_ = labels;
@@ -137,8 +137,8 @@ public:
    * match)
    */
   bool
-  loadTrainingFeatures(const std::string& file_name,
-                       const std::string& labels_file_name)
+  loadTrainingFeatures (const std::string& file_name,
+                        const std::string& labels_file_name)
   {
     typename pcl::PointCloud<PointT>::Ptr cloud(new pcl::PointCloud<PointT>);
     if (pcl::io::loadPCDFile(file_name, *cloud) != 0)
@@ -165,8 +165,8 @@ public:
    * don't match)
    */
   bool
-  saveTrainingFeatures(const std::string& file_name,
-                       const std::string& labels_file_name)
+  saveTrainingFeatures (const std::string& file_name,
+                        const std::string& labels_file_name)
   {
     typename pcl::PointCloud<PointT>::ConstPtr training_features =
         tree_->getInputCloud();
@@ -192,10 +192,10 @@ public:
    * \return pair of label and score for each training class from the neighborhood
    */
   ResultPtr
-  classify(const PointT& p_q,
-           double radius,
-           float gaussian_param,
-           int max_nn = std::numeric_limits<int>::max())
+  classify (const PointT& p_q,
+            double radius,
+            float gaussian_param,
+            int max_nn = std::numeric_limits<int>::max())
   {
     pcl::Indices k_indices;
     std::vector<float> k_sqr_distances;
@@ -214,10 +214,10 @@ public:
    * \return number of neighbors found
    */
   int
-  getKNearestExemplars(const PointT& p_q,
-                       int k,
-                       pcl::Indices& k_indices,
-                       std::vector<float>& k_sqr_distances)
+  getKNearestExemplars (const PointT& p_q,
+                        int k,
+                        pcl::Indices& k_indices,
+                        std::vector<float>& k_sqr_distances)
   {
     k_indices.resize(k);
     k_sqr_distances.resize(k);
@@ -234,11 +234,11 @@ public:
    * \return number of neighbors found in radius
    */
   int
-  getSimilarExemplars(const PointT& p_q,
-                      double radius,
-                      pcl::Indices& k_indices,
-                      std::vector<float>& k_sqr_distances,
-                      int max_nn = std::numeric_limits<int>::max())
+  getSimilarExemplars (const PointT& p_q,
+                       double radius,
+                       pcl::Indices& k_indices,
+                       std::vector<float>& k_sqr_distances,
+                       int max_nn = std::numeric_limits<int>::max())
   {
     return tree_->radiusSearch(p_q, radius, k_indices, k_sqr_distances, max_nn);
   }
@@ -250,8 +250,8 @@ public:
    * \return a square distance to each training class
    */
   std::shared_ptr<std::vector<float>>
-  getSmallestSquaredDistances(pcl::Indices& k_indices,
-                              std::vector<float>& k_sqr_distances)
+  getSmallestSquaredDistances (pcl::Indices& k_indices,
+                               std::vector<float>& k_sqr_distances)
   {
     // Reserve space for distances
     auto sqr_distances = std::make_shared<std::vector<float>>(
@@ -273,7 +273,7 @@ public:
    * \return pair of label and score for each training class from the neighborhood
    */
   ResultPtr
-  getLinearBestScores(pcl::Indices& k_indices, std::vector<float>& k_sqr_distances)
+  getLinearBestScores (pcl::Indices& k_indices, std::vector<float>& k_sqr_distances)
   {
     // Get smallest squared distances and transform them to a score for each class
     auto sqr_distances = getSmallestSquaredDistances(k_indices, k_sqr_distances);
@@ -310,9 +310,9 @@ public:
    * \return pair of label and score for each training class from the neighborhood
    */
   ResultPtr
-  getGaussianBestScores(float gaussian_param,
-                        pcl::Indices& k_indices,
-                        std::vector<float>& k_sqr_distances)
+  getGaussianBestScores (float gaussian_param,
+                         pcl::Indices& k_indices,
+                         std::vector<float>& k_sqr_distances)
   {
     // Get smallest squared distances and transform them to a score for each class
     auto sqr_distances = getSmallestSquaredDistances(k_indices, k_sqr_distances);

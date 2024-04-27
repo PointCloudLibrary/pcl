@@ -38,15 +38,15 @@
  * $Id$
  */
 
-#include <pcl/point_types.h>
-#include <pcl/io/pcd_io.h>
 #include <pcl/common/pcl_filesystem.h>
-#include <pcl/console/print.h>
 #include <pcl/console/parse.h>
+#include <pcl/console/print.h>
 #include <pcl/console/time.h>
 #include <pcl/filters/extract_indices.h>
+#include <pcl/io/pcd_io.h>
 #include <pcl/segmentation/approximate_progressive_morphological_filter.h>
 #include <pcl/segmentation/progressive_morphological_filter.h>
+#include <pcl/point_types.h>
 
 #include <boost/algorithm/string/case_conv.hpp> // for to_upper_copy
 
@@ -68,146 +68,202 @@ bool default_exponential = true;
 int default_verbosity_level = 3;
 
 void
-printHelp (int, char **argv)
+printHelp (int, char** argv)
 {
-  print_error ("Syntax is: %s input.pcd output.pcd <options>\n", argv[0]);
-  print_info ("  where options are:\n");
-  print_info ("                     -max_window_size X = maximum window size (default: ");
-  print_value ("%d", default_max_window_size); print_info (")\n");
-  print_info ("                     -slope X = slope value to compute threshold (default: ");
-  print_value ("%f", default_slope); print_info (")\n");
-  print_info ("                     -max_distnace X = maximum distance from parameterized ground surface to be considered ground (default: ");
-  print_value ("%f", default_max_distance); print_info (")\n");
-  print_info ("                     -initial_distance X = initial distance from parameterized ground surface to be considered ground (default: ");
-  print_value ("%f", default_initial_distance); print_info (")\n");
-  print_info ("                     -cell_size X = cell size (default: ");
-  print_value ("%f", default_cell_size); print_info (")\n");
-  print_info ("                     -base X = base to be used in computing progressive window sizes (default: ");
-  print_value ("%f", default_base); print_info (")\n");
-  print_info ("                     -exponential X = use exponential growth? (default: ");
-  print_value ("%s", default_exponential?"true":"false"); print_info (")\n");
-  print_info ("                     -approximate X = use approximate? (default: false\n");
-  print_info ("                     -input_dir X  = batch process all PCD files found in input_dir\n");
-  print_info ("                     -output_dir X = save the processed files from input_dir in this directory\n");
-  print_info ("                     -verbosity X = verbosity level (default: ");
-  print_value ("%d", default_verbosity_level); print_info (")\n");
+  print_error("Syntax is: %s input.pcd output.pcd <options>\n", argv[0]);
+  print_info("  where options are:\n");
+  print_info(
+      "                     -max_window_size X = maximum window size (default: ");
+  print_value("%d", default_max_window_size);
+  print_info(")\n");
+  print_info(
+      "                     -slope X = slope value to compute threshold (default: ");
+  print_value("%f", default_slope);
+  print_info(")\n");
+  print_info("                     -max_distnace X = maximum distance from "
+             "parameterized ground surface to be considered ground (default: ");
+  print_value("%f", default_max_distance);
+  print_info(")\n");
+  print_info("                     -initial_distance X = initial distance from "
+             "parameterized ground surface to be considered ground (default: ");
+  print_value("%f", default_initial_distance);
+  print_info(")\n");
+  print_info("                     -cell_size X = cell size (default: ");
+  print_value("%f", default_cell_size);
+  print_info(")\n");
+  print_info("                     -base X = base to be used in computing progressive "
+             "window sizes (default: ");
+  print_value("%f", default_base);
+  print_info(")\n");
+  print_info(
+      "                     -exponential X = use exponential growth? (default: ");
+  print_value("%s", default_exponential ? "true" : "false");
+  print_info(")\n");
+  print_info(
+      "                     -approximate X = use approximate? (default: false\n");
+  print_info("                     -input_dir X  = batch process all PCD files found "
+             "in input_dir\n");
+  print_info("                     -output_dir X = save the processed files from "
+             "input_dir in this directory\n");
+  print_info("                     -verbosity X = verbosity level (default: ");
+  print_value("%d", default_verbosity_level);
+  print_info(")\n");
 }
 
 bool
-loadCloud (const std::string &filename, Cloud &cloud)
+loadCloud (const std::string& filename, Cloud& cloud)
 {
   TicToc tt;
-  print_highlight ("Loading "); print_value ("%s ", filename.c_str ());
+  print_highlight("Loading ");
+  print_value("%s ", filename.c_str());
 
-  tt.tic ();
-  if (loadPCDFile (filename, cloud) < 0)
+  tt.tic();
+  if (loadPCDFile(filename, cloud) < 0)
     return (false);
-  print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%d", cloud.width * cloud.height); print_info (" points]\n");
-  print_info ("Available dimensions: "); print_value ("%s\n", pcl::getFieldsList (cloud).c_str ());
+  print_info("[done, ");
+  print_value("%g", tt.toc());
+  print_info(" ms : ");
+  print_value("%d", cloud.width * cloud.height);
+  print_info(" points]\n");
+  print_info("Available dimensions: ");
+  print_value("%s\n", pcl::getFieldsList(cloud).c_str());
 
   return (true);
 }
 
 void
-compute (ConstCloudPtr &input, Cloud &output, int max_window_size, float slope, float max_distance, float initial_distance, float cell_size, float base, bool exponential, bool approximate)
+compute (ConstCloudPtr& input,
+         Cloud& output,
+         int max_window_size,
+         float slope,
+         float max_distance,
+         float initial_distance,
+         float cell_size,
+         float base,
+         bool exponential,
+         bool approximate)
 {
   // Estimate
   TicToc tt;
-  tt.tic ();
+  tt.tic();
 
-  print_highlight (stderr, "Computing ");
+  print_highlight(stderr, "Computing ");
 
   pcl::Indices ground;
 
-  if (approximate)
-  {
+  if (approximate) {
     PCL_DEBUG("approx with %zu points\n", static_cast<std::size_t>(input->size()));
     ApproximateProgressiveMorphologicalFilter<PointType> pmf;
-    pmf.setInputCloud (input);
-    pmf.setMaxWindowSize (max_window_size);
-    pmf.setSlope (slope);
-    pmf.setMaxDistance (max_distance);
-    pmf.setInitialDistance (initial_distance);
-    pmf.setCellSize (cell_size);
-    pmf.setBase (base);
-    pmf.setExponential (exponential);
-    pmf.extract (ground);
+    pmf.setInputCloud(input);
+    pmf.setMaxWindowSize(max_window_size);
+    pmf.setSlope(slope);
+    pmf.setMaxDistance(max_distance);
+    pmf.setInitialDistance(initial_distance);
+    pmf.setCellSize(cell_size);
+    pmf.setBase(base);
+    pmf.setExponential(exponential);
+    pmf.extract(ground);
   }
-  else
-  {
-    PCL_DEBUG ("full\n");
+  else {
+    PCL_DEBUG("full\n");
     ProgressiveMorphologicalFilter<PointType> pmf;
-    pmf.setInputCloud (input);
-    pmf.setMaxWindowSize (max_window_size);
-    pmf.setSlope (slope);
-    pmf.setMaxDistance (max_distance);
-    pmf.setInitialDistance (initial_distance);
-    pmf.setCellSize (cell_size);
-    pmf.setBase (base);
-    pmf.setExponential (exponential);
-    pmf.extract (ground);
+    pmf.setInputCloud(input);
+    pmf.setMaxWindowSize(max_window_size);
+    pmf.setSlope(slope);
+    pmf.setMaxDistance(max_distance);
+    pmf.setInitialDistance(initial_distance);
+    pmf.setCellSize(cell_size);
+    pmf.setBase(base);
+    pmf.setExponential(exponential);
+    pmf.extract(ground);
   }
 
-  PointIndicesPtr idx (new PointIndices);
+  PointIndicesPtr idx(new PointIndices);
   idx->indices = ground;
 
   ExtractIndices<PointType> extract;
-  extract.setInputCloud (input);
-  extract.setIndices (idx);
-  extract.setNegative (false);
-  extract.filter (output);
+  extract.setInputCloud(input);
+  extract.setIndices(idx);
+  extract.setNegative(false);
+  extract.filter(output);
 
-  print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%d", output.width * output.height); print_info (" points]\n");
+  print_info("[done, ");
+  print_value("%g", tt.toc());
+  print_info(" ms : ");
+  print_value("%d", output.width * output.height);
+  print_info(" points]\n");
 }
 
 void
-saveCloud (const std::string &filename, const Cloud &output)
+saveCloud (const std::string& filename, const Cloud& output)
 {
   TicToc tt;
-  tt.tic ();
+  tt.tic();
 
-  print_highlight ("Saving "); print_value ("%s ", filename.c_str ());
+  print_highlight("Saving ");
+  print_value("%s ", filename.c_str());
 
   PCDWriter w;
-  w.writeBinaryCompressed (filename, output);
+  w.writeBinaryCompressed(filename, output);
 
-  print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%d", output.width * output.height); print_info (" points]\n");
+  print_info("[done, ");
+  print_value("%g", tt.toc());
+  print_info(" ms : ");
+  print_value("%d", output.width * output.height);
+  print_info(" points]\n");
 }
 
 int
-batchProcess (const std::vector<std::string> &pcd_files, std::string &output_dir, int max_window_size, float slope, float max_distance, float initial_distance, float cell_size, float base, bool exponential, bool approximate)
+batchProcess (const std::vector<std::string>& pcd_files,
+              std::string& output_dir,
+              int max_window_size,
+              float slope,
+              float max_distance,
+              float initial_distance,
+              float cell_size,
+              float base,
+              bool exponential,
+              bool approximate)
 {
-  for (const auto &pcd_file : pcd_files)
-  {
+  for (const auto& pcd_file : pcd_files) {
     // Load the first file
-    Cloud::Ptr cloud (new Cloud);
-    if (!loadCloud (pcd_file, *cloud))
+    Cloud::Ptr cloud(new Cloud);
+    if (!loadCloud(pcd_file, *cloud))
       return (-1);
 
     // Perform the feature estimation
     Cloud output;
-    compute (cloud, output, max_window_size, slope, max_distance, initial_distance, cell_size, base, exponential, approximate);
+    compute(cloud,
+            output,
+            max_window_size,
+            slope,
+            max_distance,
+            initial_distance,
+            cell_size,
+            base,
+            exponential,
+            approximate);
 
     // Prepare output file name
     std::string filename = pcl_fs::path(pcd_file).filename().string();
-    
+
     // Save into the second file
     const std::string filepath = output_dir + '/' + filename;
-    saveCloud (filepath, output);
+    saveCloud(filepath, output);
   }
   return (0);
 }
-
 
 /* ---[ */
 int
 main (int argc, char** argv)
 {
-  print_info ("Filter a point cloud using the pcl::ProgressiveMorphologicalFilter. For more information, use: %s -h\n", argv[0]);
+  print_info("Filter a point cloud using the pcl::ProgressiveMorphologicalFilter. For "
+             "more information, use: %s -h\n",
+             argv[0]);
 
-  if (argc < 3)
-  {
-    printHelp (argc, argv);
+  if (argc < 3) {
+    printHelp(argc, argv);
     return (-1);
   }
 
@@ -223,22 +279,21 @@ main (int argc, char** argv)
   bool exponential = default_exponential;
   bool approximate;
   int verbosity_level = default_verbosity_level;
-  parse_argument (argc, argv, "-max_window_size", max_window_size);
-  parse_argument (argc, argv, "-slope", slope);
-  parse_argument (argc, argv, "-max_distance", max_distance);
-  parse_argument (argc, argv, "-initial_distance", initial_distance);
-  parse_argument (argc, argv, "-cell_size", cell_size);
-  parse_argument (argc, argv, "-base", base);
-  parse_argument (argc, argv, "-exponential", exponential);
-  approximate = find_switch (argc, argv, "-approximate");
-  parse_argument (argc, argv, "-verbosity", verbosity_level);
+  parse_argument(argc, argv, "-max_window_size", max_window_size);
+  parse_argument(argc, argv, "-slope", slope);
+  parse_argument(argc, argv, "-max_distance", max_distance);
+  parse_argument(argc, argv, "-initial_distance", initial_distance);
+  parse_argument(argc, argv, "-cell_size", cell_size);
+  parse_argument(argc, argv, "-base", base);
+  parse_argument(argc, argv, "-exponential", exponential);
+  approximate = find_switch(argc, argv, "-approximate");
+  parse_argument(argc, argv, "-verbosity", verbosity_level);
   std::string input_dir, output_dir;
-  if (parse_argument (argc, argv, "-input_dir", input_dir) != -1)
-  {
-    PCL_INFO ("Input directory given as %s. Batch process mode on.\n", input_dir.c_str ());
-    if (parse_argument (argc, argv, "-output_dir", output_dir) == -1)
-    {
-      PCL_ERROR ("Need an output directory! Please use -output_dir to continue.\n");
+  if (parse_argument(argc, argv, "-input_dir", input_dir) != -1) {
+    PCL_INFO("Input directory given as %s. Batch process mode on.\n",
+             input_dir.c_str());
+    if (parse_argument(argc, argv, "-output_dir", output_dir) == -1) {
+      PCL_ERROR("Need an output directory! Please use -output_dir to continue.\n");
       return (-1);
     }
 
@@ -246,78 +301,92 @@ main (int argc, char** argv)
     batch_mode = true;
   }
 
-  switch (verbosity_level)
-  {
-    case 0:
-      pcl::console::setVerbosityLevel(pcl::console::L_ALWAYS);
-      break;
+  switch (verbosity_level) {
+  case 0:
+    pcl::console::setVerbosityLevel(pcl::console::L_ALWAYS);
+    break;
 
-    case 1:
-      pcl::console::setVerbosityLevel(pcl::console::L_ERROR);
-      break;
+  case 1:
+    pcl::console::setVerbosityLevel(pcl::console::L_ERROR);
+    break;
 
-    case 2:
-      pcl::console::setVerbosityLevel(pcl::console::L_WARN);
-      break;
+  case 2:
+    pcl::console::setVerbosityLevel(pcl::console::L_WARN);
+    break;
 
-    case 3:
-      pcl::console::setVerbosityLevel(pcl::console::L_INFO);
-      break;
+  case 3:
+    pcl::console::setVerbosityLevel(pcl::console::L_INFO);
+    break;
 
-    case 4:
-      pcl::console::setVerbosityLevel(pcl::console::L_DEBUG);
-      break;
+  case 4:
+    pcl::console::setVerbosityLevel(pcl::console::L_DEBUG);
+    break;
 
-    default:
-      pcl::console::setVerbosityLevel(pcl::console::L_VERBOSE);
-      break;
+  default:
+    pcl::console::setVerbosityLevel(pcl::console::L_VERBOSE);
+    break;
   }
 
-  if (!batch_mode)
-  {
+  if (!batch_mode) {
     // Parse the command line arguments for .pcd files
     std::vector<int> p_file_indices;
-    p_file_indices = parse_file_extension_argument (argc, argv, ".pcd");
-    if (p_file_indices.size () != 2)
-    {
-      print_error ("Need one input PCD file and one output PCD file to continue.\n");
+    p_file_indices = parse_file_extension_argument(argc, argv, ".pcd");
+    if (p_file_indices.size() != 2) {
+      print_error("Need one input PCD file and one output PCD file to continue.\n");
       return (-1);
     }
 
     // Load the first file
-    Cloud::Ptr cloud (new Cloud);
-    if (!loadCloud (argv[p_file_indices[0]], *cloud))
+    Cloud::Ptr cloud(new Cloud);
+    if (!loadCloud(argv[p_file_indices[0]], *cloud))
       return (-1);
 
     // Perform the feature estimation
     Cloud output;
-    compute (cloud, output, max_window_size, slope, max_distance, initial_distance, cell_size, base, exponential, approximate);
+    compute(cloud,
+            output,
+            max_window_size,
+            slope,
+            max_distance,
+            initial_distance,
+            cell_size,
+            base,
+            exponential,
+            approximate);
 
     // Save into the second file
-    saveCloud (argv[p_file_indices[1]], output);
+    saveCloud(argv[p_file_indices[1]], output);
   }
-  else
-  {
-    if (!input_dir.empty() && pcl_fs::exists (input_dir))
-    {
+  else {
+    if (!input_dir.empty() && pcl_fs::exists(input_dir)) {
       std::vector<std::string> pcd_files;
       pcl_fs::directory_iterator end_itr;
-      for (pcl_fs::directory_iterator itr (input_dir); itr != end_itr; ++itr)
-      {
+      for (pcl_fs::directory_iterator itr(input_dir); itr != end_itr; ++itr) {
         // Only add PCD files
-        if (!is_directory (itr->status ()) && boost::algorithm::to_upper_copy (itr->path ().extension ().string ()) == ".PCD" )
-        {
-          pcd_files.push_back (itr->path ().string ());
-          PCL_INFO ("[Batch processing mode] Added %s for processing.\n", itr->path ().string ().c_str ());
+        if (!is_directory(itr->status()) &&
+            boost::algorithm::to_upper_copy(itr->path().extension().string()) ==
+                ".PCD") {
+          pcd_files.push_back(itr->path().string());
+          PCL_INFO("[Batch processing mode] Added %s for processing.\n",
+                   itr->path().string().c_str());
         }
       }
-      batchProcess (pcd_files, output_dir, max_window_size, slope, max_distance, initial_distance, cell_size, base, exponential, approximate);
+      batchProcess(pcd_files,
+                   output_dir,
+                   max_window_size,
+                   slope,
+                   max_distance,
+                   initial_distance,
+                   cell_size,
+                   base,
+                   exponential,
+                   approximate);
     }
-    else
-    {
-      PCL_ERROR ("Batch processing mode enabled, but invalid input directory (%s) given!\n", input_dir.c_str ());
+    else {
+      PCL_ERROR(
+          "Batch processing mode enabled, but invalid input directory (%s) given!\n",
+          input_dir.c_str());
       return (-1);
     }
   }
 }
-

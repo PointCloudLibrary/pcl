@@ -53,7 +53,7 @@ public:
   {}
 
   Qt::ItemFlags
-  flags(const QModelIndex& index) const override
+  flags (const QModelIndex& index) const override
   {
     return (index.column() == 0) ? (Qt::ItemIsEnabled | Qt::ItemIsSelectable)
                                  : QStandardItemModel::flags(index);
@@ -66,10 +66,10 @@ public:
   ParameterDialog(const std::string& title, QWidget* parent = nullptr);
 
   void
-  addParameter(Parameter* parameter);
+  addParameter (Parameter* parameter);
 
   int
-  exec() override;
+  exec () override;
 
 protected:
   std::map<std::string, Parameter*> name_parameter_map_;
@@ -77,7 +77,7 @@ protected:
 
 protected Q_SLOTS:
   void
-  reset();
+  reset ();
 };
 
 class ParameterDelegate : public QStyledItemDelegate {
@@ -87,31 +87,31 @@ public:
                     QObject* parent = nullptr);
 
   QWidget*
-  createEditor(QWidget* parent,
-               const QStyleOptionViewItem& option,
-               const QModelIndex& index) const override;
+  createEditor (QWidget* parent,
+                const QStyleOptionViewItem& option,
+                const QModelIndex& index) const override;
 
   void
-  setEditorData(QWidget* editor, const QModelIndex& index) const override;
+  setEditorData (QWidget* editor, const QModelIndex& index) const override;
 
   void
-  setModelData(QWidget* editor,
-               QAbstractItemModel* model,
-               const QModelIndex& index) const override;
+  setModelData (QWidget* editor,
+                QAbstractItemModel* model,
+                const QModelIndex& index) const override;
 
   void
-  updateEditorGeometry(QWidget* editor,
-                       const QStyleOptionViewItem& option,
-                       const QModelIndex& index) const override;
+  updateEditorGeometry (QWidget* editor,
+                        const QStyleOptionViewItem& option,
+                        const QModelIndex& index) const override;
 
 protected:
   void
-  initStyleOption(QStyleOptionViewItem* option,
-                  const QModelIndex& index) const override;
+  initStyleOption (QStyleOptionViewItem* option,
+                   const QModelIndex& index) const override;
 
 private:
   Parameter*
-  getCurrentParameter(const QModelIndex& index) const;
+  getCurrentParameter (const QModelIndex& index) const;
 
   std::map<std::string, Parameter*>& parameter_map_;
 };

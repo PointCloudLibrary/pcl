@@ -40,23 +40,18 @@
 
 #include <pcl/apps/point_cloud_editor/denoiseParameterForm.h>
 
-DenoiseParameterForm::DenoiseParameterForm () : ok_(false)
+DenoiseParameterForm::DenoiseParameterForm() : ok_(false)
 {
   mean_K_line_ = new QLineEdit;
   std_dev_mul_thresh_line_ = new QLineEdit;
   button_box_ = new QDialogButtonBox;
-  button_box_->addButton(tr("Cancel"),
-                         QDialogButtonBox::RejectRole);
-  button_box_->addButton(tr("OK"),
-                         QDialogButtonBox::AcceptRole);
-  connect(button_box_, SIGNAL(accepted()),
-          this, SLOT(accept()));
-  connect(button_box_, SIGNAL(rejected()),
-          this, SLOT(reject()));
+  button_box_->addButton(tr("Cancel"), QDialogButtonBox::RejectRole);
+  button_box_->addButton(tr("OK"), QDialogButtonBox::AcceptRole);
+  connect(button_box_, SIGNAL(accepted()), this, SLOT(accept()));
+  connect(button_box_, SIGNAL(rejected()), this, SLOT(reject()));
   layout_ = new QFormLayout;
   layout_->addRow(tr("&MeanK:"), mean_K_line_);
-  layout_->addRow(tr("&Standard deviation threshold:"),
-                 std_dev_mul_thresh_line_);
+  layout_->addRow(tr("&Standard deviation threshold:"), std_dev_mul_thresh_line_);
 
   main_layout_ = new QVBoxLayout;
   main_layout_->addLayout(layout_);
@@ -65,7 +60,7 @@ DenoiseParameterForm::DenoiseParameterForm () : ok_(false)
   setWindowTitle(tr("Denoise Filter"));
 }
 
-DenoiseParameterForm::~DenoiseParameterForm ()
+DenoiseParameterForm::~DenoiseParameterForm()
 {
   delete mean_K_line_;
   delete std_dev_mul_thresh_line_;
@@ -75,21 +70,19 @@ DenoiseParameterForm::~DenoiseParameterForm ()
 }
 
 void
-DenoiseParameterForm::accept ()
+DenoiseParameterForm::accept()
 {
   QString mean_str = mean_K_line_->text();
   bool ok;
   mean_k_ = mean_str.toFloat(&ok);
   // validates the input.
-  if (!ok)
-  {
+  if (!ok) {
     ok_ = false;
     return;
   }
   QString std_dev_str = std_dev_mul_thresh_line_->text();
   std_dev_thresh_ = std_dev_str.toFloat(&ok);
-  if (!ok)
-  {
+  if (!ok) {
     ok_ = false;
     return;
   }
@@ -98,9 +91,8 @@ DenoiseParameterForm::accept ()
 }
 
 void
-DenoiseParameterForm::reject ()
+DenoiseParameterForm::reject()
 {
   ok_ = false;
   this->done(0);
 }
-

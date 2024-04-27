@@ -56,7 +56,7 @@ namespace pcl {
  */
 template <typename PointT>
 void
-extractLabeledEuclideanClusters(
+extractLabeledEuclideanClusters (
     const PointCloud<PointT>& cloud,
     const typename search::Search<PointT>::Ptr& tree,
     float tolerance,
@@ -94,14 +94,14 @@ public:
    * \param[in] tree a pointer to the spatial search object.
    */
   inline void
-  setSearchMethod(const KdTreePtr& tree)
+  setSearchMethod (const KdTreePtr& tree)
   {
     tree_ = tree;
   }
 
   /** \brief Get a pointer to the search method used. */
   inline KdTreePtr
-  getSearchMethod() const
+  getSearchMethod () const
   {
     return (tree_);
   }
@@ -111,7 +111,7 @@ public:
    * space
    */
   inline void
-  setClusterTolerance(double tolerance)
+  setClusterTolerance (double tolerance)
   {
     cluster_tolerance_ = tolerance;
   }
@@ -119,7 +119,7 @@ public:
   /** \brief Get the spatial cluster tolerance as a measure in the L2 Euclidean space.
    */
   inline double
-  getClusterTolerance() const
+  getClusterTolerance () const
   {
     return (cluster_tolerance_);
   }
@@ -128,7 +128,7 @@ public:
    * to be considered valid. \param[in] min_cluster_size the minimum cluster size
    */
   inline void
-  setMinClusterSize(int min_cluster_size)
+  setMinClusterSize (int min_cluster_size)
   {
     min_pts_per_cluster_ = min_cluster_size;
   }
@@ -136,7 +136,7 @@ public:
   /** \brief Get the minimum number of points that a cluster needs to contain in order
    * to be considered valid. */
   inline int
-  getMinClusterSize() const
+  getMinClusterSize () const
   {
     return (min_pts_per_cluster_);
   }
@@ -145,7 +145,7 @@ public:
    * to be considered valid. \param[in] max_cluster_size the maximum cluster size
    */
   inline void
-  setMaxClusterSize(int max_cluster_size)
+  setMaxClusterSize (int max_cluster_size)
   {
     max_pts_per_cluster_ = max_cluster_size;
   }
@@ -153,7 +153,7 @@ public:
   /** \brief Get the maximum number of points that a cluster needs to contain in order
    * to be considered valid. */
   inline int
-  getMaxClusterSize() const
+  getMaxClusterSize () const
   {
     return (max_pts_per_cluster_);
   }
@@ -162,7 +162,7 @@ public:
    * ()> \param[out] labeled_clusters the resultant point clusters
    */
   void
-  extract(std::vector<std::vector<PointIndices>>& labeled_clusters);
+  extract (std::vector<std::vector<PointIndices>>& labeled_clusters);
 
 protected:
   // Members derived from the base class
@@ -191,7 +191,7 @@ protected:
 
   /** \brief Class getName method. */
   virtual std::string
-  getClassName() const
+  getClassName () const
   {
     return ("LabeledEuclideanClusterExtraction");
   }
@@ -201,7 +201,7 @@ protected:
  * \ingroup segmentation
  */
 inline bool
-compareLabeledPointClusters(const pcl::PointIndices& a, const pcl::PointIndices& b)
+compareLabeledPointClusters (const pcl::PointIndices& a, const pcl::PointIndices& b)
 {
   return (a.indices.size() < b.indices.size());
 }

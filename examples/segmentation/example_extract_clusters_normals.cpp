@@ -38,71 +38,78 @@
  *
  */
 
-#include <iostream>
-
-#include <pcl/io/pcd_io.h>
 #include <pcl/features/normal_3d.h>
+#include <pcl/io/pcd_io.h>
 #include <pcl/segmentation/extract_clusters.h>
 
-int 
-main (int argc, char **argv)
+#include <iostream>
+
+int
+main (int argc, char** argv)
 {
-  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_ptr (new pcl::PointCloud<pcl::PointXYZ> ());
-  pcl::PointCloud<pcl::Normal>::Ptr cloud_normals (new pcl::PointCloud<pcl::Normal> ());
+  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_ptr(new pcl::PointCloud<pcl::PointXYZ>());
+  pcl::PointCloud<pcl::Normal>::Ptr cloud_normals(new pcl::PointCloud<pcl::Normal>());
   pcl::PCDWriter writer;
-	
-  if (argc < 2)
-  {
-    std::cout<<"No PCD file given!"<<std::endl;
+
+  if (argc < 2) {
+    std::cout << "No PCD file given!" << std::endl;
     return (-1);
   }
-  if (pcl::io::loadPCDFile<pcl::PointXYZ> (argv[1], *cloud_ptr) == -1)
-  {
-    std::cout<<"Couldn't read the file "<<argv[1]<<std::endl;
+  if (pcl::io::loadPCDFile<pcl::PointXYZ>(argv[1], *cloud_ptr) == -1) {
+    std::cout << "Couldn't read the file " << argv[1] << std::endl;
     return (-1);
   }
-  std::cout << "Loaded pcd file " << argv[1] << " with " << cloud_ptr->size () << std::endl;
+  std::cout << "Loaded pcd file " << argv[1] << " with " << cloud_ptr->size()
+            << std::endl;
 
   // Normal estimation
   pcl::NormalEstimation<pcl::PointXYZ, pcl::Normal> ne;
-  ne.setInputCloud (cloud_ptr);
+  ne.setInputCloud(cloud_ptr);
 
-  pcl::search::KdTree<pcl::PointXYZ>::Ptr tree_n (new pcl::search::KdTree<pcl::PointXYZ>());
-  ne.setSearchMethod (tree_n);
-  ne.setRadiusSearch (0.03);
-  ne.compute (*cloud_normals);
+  pcl::search::KdTree<pcl::PointXYZ>::Ptr tree_n(
+      new pcl::search::KdTree<pcl::PointXYZ>());
+  ne.setSearchMethod(tree_n);
+  ne.setRadiusSearch(0.03);
+  ne.compute(*cloud_normals);
   std::cout << "Estimated the normals" << std::endl;
 
   // Creating the kdtree object for the search method of the extraction
-  pcl::KdTree<pcl::PointXYZ>::Ptr tree_ec  (new pcl::KdTreeFLANN<pcl::PointXYZ> ());
-  tree_ec->setInputCloud (cloud_ptr);
-  
+  pcl::KdTree<pcl::PointXYZ>::Ptr tree_ec(new pcl::KdTreeFLANN<pcl::PointXYZ>());
+  tree_ec->setInputCloud(cloud_ptr);
+
   // Extracting Euclidean clusters using cloud and its normals
   std::vector<pcl::PointIndices> cluster_indices;
   constexpr float tolerance = 0.5f; // 50cm tolerance in (x, y, z) coordinate system
   constexpr double eps_angle = 5 * (M_PI / 180.0); // 5degree tolerance in normals
   constexpr unsigned int min_cluster_size = 50;
- 
-  pcl::extractEuclideanClusters (*cloud_ptr, *cloud_normals, tolerance, tree_ec, cluster_indices, eps_angle, min_cluster_size);
 
-  std::cout << "No of clusters formed are " << cluster_indices.size () << std::endl;
+  pcl::extractEuclideanClusters(*cloud_ptr,
+                                *cloud_normals,
+                                tolerance,
+                                tree_ec,
+                                cluster_indices,
+                                eps_angle,
+                                min_cluster_size);
+
+  std::cout << "No of clusters formed are " << cluster_indices.size() << std::endl;
 
   // Saving the clusters in separate pcd files
   int j = 0;
-  for (const auto& cluster : cluster_indices)
-  {
-    pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_cluster (new pcl::PointCloud<pcl::PointXYZ>);
-    for (const auto &index : cluster.indices) {
+  for (const auto& cluster : cluster_indices) {
+    pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_cluster(
+        new pcl::PointCloud<pcl::PointXYZ>);
+    for (const auto& index : cluster.indices) {
       cloud_cluster->push_back((*cloud_ptr)[index]);
     }
-    cloud_cluster->width = cloud_cluster->size ();
+    cloud_cluster->width = cloud_cluster->size();
     cloud_cluster->height = 1;
     cloud_cluster->is_dense = true;
 
-    std::cout << "PointCloud representing the Cluster using xyzn: " << cloud_cluster->size () << " data " << std::endl;
+    std::cout << "PointCloud representing the Cluster using xyzn: "
+              << cloud_cluster->size() << " data " << std::endl;
     std::stringstream ss;
     ss << "./cloud_cluster_" << j << ".pcd";
-    writer.write<pcl::PointXYZ> (ss.str (), *cloud_cluster, false); 
+    writer.write<pcl::PointXYZ>(ss.str(), *cloud_cluster, false);
     ++j;
   }
 

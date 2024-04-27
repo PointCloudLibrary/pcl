@@ -33,18 +33,15 @@
  *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *  $Id$
  */
 
 #pragma once
 
-#include <pcl/outofcore/outofcore.h>
-
 #include <pcl/outofcore/impl/monitor_queue.hpp>
-
 #include <pcl/outofcore/impl/octree_base.hpp>
 #include <pcl/outofcore/impl/octree_base_node.hpp>
-
 #include <pcl/outofcore/impl/octree_disk_container.hpp>
 #include <pcl/outofcore/impl/octree_ram_container.hpp>
+#include <pcl/outofcore/outofcore.h>

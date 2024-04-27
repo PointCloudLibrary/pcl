@@ -82,14 +82,14 @@ public:
    * \param[in] upper_trl_boundary upper translation threshold
    */
   inline void
-  setUpperTranslationThreshold(float upper_trl_boundary)
+  setUpperTranslationThreshold (float upper_trl_boundary)
   {
     upper_trl_boundary_ = upper_trl_boundary;
   };
 
   /** \return the upper translation threshold used for score evaluation. */
   inline float
-  getUpperTranslationThreshold() const
+  getUpperTranslationThreshold () const
   {
     return (upper_trl_boundary_);
   };
@@ -98,14 +98,14 @@ public:
    * \param[in] lower_trl_boundary lower translation threshold
    */
   inline void
-  setLowerTranslationThreshold(float lower_trl_boundary)
+  setLowerTranslationThreshold (float lower_trl_boundary)
   {
     lower_trl_boundary_ = lower_trl_boundary;
   };
 
   /** \return the lower translation threshold used for score evaluation. */
   inline float
-  getLowerTranslationThreshold() const
+  getLowerTranslationThreshold () const
   {
     return (lower_trl_boundary_);
   };
@@ -114,14 +114,14 @@ public:
    * \param[in] lambda the weighting factor of the translation cost term
    */
   inline void
-  setLambda(float lambda)
+  setLambda (float lambda)
   {
     lambda_ = lambda;
   };
 
   /** \return the weighting factor of the translation cost term. */
   inline float
-  getLambda() const
+  getLambda () const
   {
     return (lambda_);
   };
@@ -139,10 +139,10 @@ public:
    * \param[out] candidates vector of unique candidates
    */
   void
-  getNBestCandidates(int n,
-                     float min_angle3d,
-                     float min_translation3d,
-                     MatchingCandidates& candidates);
+  getNBestCandidates (int n,
+                      float min_angle3d,
+                      float min_translation3d,
+                      MatchingCandidates& candidates);
 
   /** \brief Get all unique candidate matches with fitness scores above a threshold t.
    * The method only returns unique transformations comparing the translation
@@ -154,10 +154,10 @@ public:
    * \param[out] candidates vector of unique candidates
    */
   void
-  getTBestCandidates(float t,
-                     float min_angle3d,
-                     float min_translation3d,
-                     MatchingCandidates& candidates);
+  getTBestCandidates (float t,
+                      float min_angle3d,
+                      float min_translation3d,
+                      MatchingCandidates& candidates);
 
 protected:
   using PCLBase<PointSource>::deinitCompute;
@@ -193,7 +193,7 @@ protected:
 
   /** \brief Internal computation initialization. */
   bool
-  initCompute() override;
+  initCompute () override;
 
   /** \brief Method to handle current candidate matches. Here we validate and evaluate
    * the matches w.r.t the base and store the sorted matches (together with score values
@@ -205,9 +205,9 @@ protected:
    * contains the candidates matches M
    */
   void
-  handleMatches(const pcl::Indices& base_indices,
-                std::vector<pcl::Indices>& matches,
-                MatchingCandidates& candidates) override;
+  handleMatches (const pcl::Indices& base_indices,
+                 std::vector<pcl::Indices>& matches,
+                 MatchingCandidates& candidates) override;
 
   /** \brief Validate the transformation by calculating the score value after
    * transforming the input source cloud. The resulting score is later used as the
@@ -221,8 +221,8 @@ protected:
    * * = 0 current result is better than the previous one (score updated)
    */
   int
-  validateTransformation(Eigen::Matrix4f& transformation,
-                         float& fitness_score) override;
+  validateTransformation (Eigen::Matrix4f& transformation,
+                          float& fitness_score) override;
 
   /** \brief Final computation of best match out of vector of matches. To avoid cross
    * thread dependencies during parallel running, a best match for each try was
@@ -230,7 +230,7 @@ protected:
    * of 'vectors of size 1'. \param[in] candidates vector of candidate matches
    */
   void
-  finalCompute(const std::vector<MatchingCandidates>& candidates) override;
+  finalCompute (const std::vector<MatchingCandidates>& candidates) override;
 
   /** \brief Lower boundary for translation costs calculation.
    * \note If not set by the user, the translation costs are not used during evaluation.

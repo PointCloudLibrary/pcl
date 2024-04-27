@@ -41,55 +41,60 @@
 #define PCL_FILTERS_IMPL_STATISTICAL_OUTLIER_REMOVAL_H_
 
 #include <pcl/filters/statistical_outlier_removal.h>
+#include <pcl/search/kdtree.h>    // for KdTree
 #include <pcl/search/organized.h> // for OrganizedNeighbor
-#include <pcl/search/kdtree.h> // for KdTree
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT> void
-pcl::StatisticalOutlierRemoval<PointT>::applyFilterIndices (Indices &indices)
+template <typename PointT>
+void
+pcl::StatisticalOutlierRemoval<PointT>::applyFilterIndices(Indices& indices)
 {
   // Initialize the search class
-  if (!searcher_)
-  {
-    if (input_->isOrganized ())
-      searcher_.reset (new pcl::search::OrganizedNeighbor<PointT> ());
+  if (!searcher_) {
+    if (input_->isOrganized())
+      searcher_.reset(new pcl::search::OrganizedNeighbor<PointT>());
     else
-      searcher_.reset (new pcl::search::KdTree<PointT> (false));
+      searcher_.reset(new pcl::search::KdTree<PointT>(false));
   }
-  if (!searcher_->setInputCloud (input_))
-  {
-    PCL_ERROR ("[pcl::%s::applyFilter] Error when initializing search method!\n", getClassName ().c_str ());
-    indices.clear ();
-    removed_indices_->clear ();
+  if (!searcher_->setInputCloud(input_)) {
+    PCL_ERROR("[pcl::%s::applyFilter] Error when initializing search method!\n",
+              getClassName().c_str());
+    indices.clear();
+    removed_indices_->clear();
     return;
   }
 
   // The arrays to be used
-  const int searcher_k = mean_k_ + 1;  // Find one more, since results include the query point.
-  Indices nn_indices (searcher_k);
-  std::vector<float> nn_dists (searcher_k);
-  std::vector<float> distances (indices_->size ());
-  indices.resize (indices_->size ());
-  removed_indices_->resize (indices_->size ());
-  int oii = 0, rii = 0;  // oii = output indices iterator, rii = removed indices iterator
+  const int searcher_k =
+      mean_k_ + 1; // Find one more, since results include the query point.
+  Indices nn_indices(searcher_k);
+  std::vector<float> nn_dists(searcher_k);
+  std::vector<float> distances(indices_->size());
+  indices.resize(indices_->size());
+  removed_indices_->resize(indices_->size());
+  int oii = 0, rii = 0; // oii = output indices iterator, rii = removed indices iterator
 
-  // First pass: Compute the mean distances for all points with respect to their k nearest neighbors
+  // First pass: Compute the mean distances for all points with respect to their k
+  // nearest neighbors
   int valid_distances = 0;
-  for (int iii = 0; iii < static_cast<int> (indices_->size ()); ++iii)  // iii = input indices iterator
+  for (int iii = 0; iii < static_cast<int>(indices_->size());
+       ++iii) // iii = input indices iterator
   {
-    if (!std::isfinite ((*input_)[(*indices_)[iii]].x) ||
-        !std::isfinite ((*input_)[(*indices_)[iii]].y) ||
-        !std::isfinite ((*input_)[(*indices_)[iii]].z))
-    {
+    if (!std::isfinite((*input_)[(*indices_)[iii]].x) ||
+        !std::isfinite((*input_)[(*indices_)[iii]].y) ||
+        !std::isfinite((*input_)[(*indices_)[iii]].z)) {
       distances[iii] = 0.0;
       continue;
     }
 
     // Perform the nearest k search
-    if (searcher_->nearestKSearch ((*indices_)[iii], searcher_k, nn_indices, nn_dists) == 0)
-    {
+    if (searcher_->nearestKSearch((*indices_)[iii], searcher_k, nn_indices, nn_dists) ==
+        0) {
       distances[iii] = 0.0;
-      PCL_WARN ("[pcl::%s::applyFilter] Searching for the closest %d neighbors failed.\n", getClassName ().c_str (), mean_k_);
+      PCL_WARN(
+          "[pcl::%s::applyFilter] Searching for the closest %d neighbors failed.\n",
+          getClassName().c_str(),
+          mean_k_);
       continue;
     }
 
@@ -103,25 +108,26 @@ pcl::StatisticalOutlierRemoval<PointT>::applyFilterIndices (Indices &indices)
 
   // Estimate the mean and the standard deviation of the distance vector
   double sum = 0, sq_sum = 0;
-  for (const float &distance : distances)
-  {
+  for (const float& distance : distances) {
     sum += distance;
     sq_sum += distance * distance;
   }
   double mean = sum / static_cast<double>(valid_distances);
-  double variance = (sq_sum - sum * sum / static_cast<double>(valid_distances)) / (static_cast<double>(valid_distances) - 1);
-  double stddev = sqrt (variance);
-  //getMeanStd (distances, mean, stddev);
+  double variance = (sq_sum - sum * sum / static_cast<double>(valid_distances)) /
+                    (static_cast<double>(valid_distances) - 1);
+  double stddev = sqrt(variance);
+  // getMeanStd (distances, mean, stddev);
 
   double distance_threshold = mean + std_mul_ * stddev;
 
   // Second pass: Classify the points on the computed distance threshold
-  for (int iii = 0; iii < static_cast<int> (indices_->size ()); ++iii)  // iii = input indices iterator
+  for (int iii = 0; iii < static_cast<int>(indices_->size());
+       ++iii) // iii = input indices iterator
   {
-    // Points having a too high average distance are outliers and are passed to removed indices
-    // Unless negative was set, then it's the opposite condition
-    if ((!negative_ && distances[iii] > distance_threshold) || (negative_ && distances[iii] <= distance_threshold))
-    {
+    // Points having a too high average distance are outliers and are passed to removed
+    // indices Unless negative was set, then it's the opposite condition
+    if ((!negative_ && distances[iii] > distance_threshold) ||
+        (negative_ && distances[iii] <= distance_threshold)) {
       if (extract_removed_indices_)
         (*removed_indices_)[rii++] = (*indices_)[iii];
       continue;
@@ -132,11 +138,11 @@ pcl::StatisticalOutlierRemoval<PointT>::applyFilterIndices (Indices &indices)
   }
 
   // Resize the output arrays
-  indices.resize (oii);
-  removed_indices_->resize (rii);
+  indices.resize(oii);
+  removed_indices_->resize(rii);
 }
 
-#define PCL_INSTANTIATE_StatisticalOutlierRemoval(T) template class PCL_EXPORTS pcl::StatisticalOutlierRemoval<T>;
+#define PCL_INSTANTIATE_StatisticalOutlierRemoval(T)                                   \
+  template class PCL_EXPORTS pcl::StatisticalOutlierRemoval<T>;
 
-#endif  // PCL_FILTERS_IMPL_STATISTICAL_OUTLIER_REMOVAL_H_
-
+#endif // PCL_FILTERS_IMPL_STATISTICAL_OUTLIER_REMOVAL_H_

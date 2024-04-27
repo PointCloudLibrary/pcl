@@ -35,7 +35,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-  
+
 #include <pcl/filters/impl/crop_hull.hpp>
 
 #ifndef PCL_NO_PRECOMPILE
@@ -44,5 +44,4 @@
 
 PCL_INSTANTIATE(CropHull, PCL_XYZ_POINT_TYPES)
 
-#endif    // PCL_NO_PRECOMPILE
-
+#endif // PCL_NO_PRECOMPILE

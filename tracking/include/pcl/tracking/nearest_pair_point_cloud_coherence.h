@@ -41,14 +41,14 @@ public:
    * \param search a pointer to a PointCloud message
    */
   inline void
-  setSearchMethod(const SearchPtr& search)
+  setSearchMethod (const SearchPtr& search)
   {
     search_ = search;
   }
 
   /** \brief Get a pointer to the point cloud dataset. */
   inline SearchPtr
-  getSearchMethod()
+  getSearchMethod ()
   {
     return (search_);
   }
@@ -57,7 +57,7 @@ public:
    * \param[in] cloud coherence a pointer to PointCoherence.
    */
   inline void
-  setTargetCloud(const PointCloudInConstPtr& cloud) override
+  setTargetCloud (const PointCloudInConstPtr& cloud) override
   {
     new_target_ = true;
     PointCloudCoherence<PointInT>::setTargetCloud(cloud);
@@ -67,7 +67,7 @@ public:
    * \param[in] val maximum distance.
    */
   inline void
-  setMaximumDistance(double val)
+  setMaximumDistance (double val)
   {
     maximum_distance_ = val;
   }
@@ -78,7 +78,7 @@ protected:
   /** \brief This method should get called before starting the actual
    * computation. */
   bool
-  initCompute() override;
+  initCompute () override;
 
   /** \brief A flag which is true if target_input_ is updated */
   bool new_target_{false};
@@ -92,9 +92,9 @@ protected:
   /** \brief compute the nearest pairs and compute coherence using
    * point_coherences_ */
   void
-  computeCoherence(const PointCloudInConstPtr& cloud,
-                   const IndicesConstPtr& indices,
-                   float& w_j) override;
+  computeCoherence (const PointCloudInConstPtr& cloud,
+                    const IndicesConstPtr& indices,
+                    float& w_j) override;
 };
 } // namespace tracking
 } // namespace pcl

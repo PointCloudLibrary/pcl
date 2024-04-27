@@ -36,15 +36,15 @@
  */
 
 /** \author Khai Tran */
+#include "pcl/surface/texture_mapping.h"
+
 #include "pcl/impl/instantiate.hpp"
 #include "pcl/point_types.h"
-#include "pcl/surface/texture_mapping.h"
 #include "pcl/surface/impl/texture_mapping.hpp"
-
 
 // Instantiations of specific point types
 #ifdef PCL_ONLY_CORE_POINT_TYPES
-  PCL_INSTANTIATE(TextureMapping, (pcl::PointXYZ))
+PCL_INSTANTIATE(TextureMapping, (pcl::PointXYZ))
 #else
-  PCL_INSTANTIATE(TextureMapping, PCL_XYZ_POINT_TYPES)
+PCL_INSTANTIATE(TextureMapping, PCL_XYZ_POINT_TYPES)
 #endif

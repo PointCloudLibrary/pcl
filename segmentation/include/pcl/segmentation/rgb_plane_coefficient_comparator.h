@@ -41,89 +41,92 @@
 
 #include <pcl/segmentation/plane_coefficient_comparator.h>
 
-namespace pcl
-{
-  /** \brief RGBPlaneCoefficientComparator is a Comparator that operates on plane coefficients, 
-    * for use in planar segmentation.  Also takes into account RGB, so we can segmented different colored co-planar regions.
-    * In conjunction with OrganizedConnectedComponentSegmentation, this allows planes to be segmented from organized data.
-    *
-    * \author Alex Trevor
-    */
-  template<typename PointT, typename PointNT>
-  class RGBPlaneCoefficientComparator: public PlaneCoefficientComparator<PointT, PointNT>
+namespace pcl {
+/** \brief RGBPlaneCoefficientComparator is a Comparator that operates on plane
+ * coefficients, for use in planar segmentation.  Also takes into account RGB, so we can
+ * segmented different colored co-planar regions. In conjunction with
+ * OrganizedConnectedComponentSegmentation, this allows planes to be segmented from
+ * organized data.
+ *
+ * \author Alex Trevor
+ */
+template <typename PointT, typename PointNT>
+class RGBPlaneCoefficientComparator
+: public PlaneCoefficientComparator<PointT, PointNT> {
+public:
+  using PointCloud = typename Comparator<PointT>::PointCloud;
+  using PointCloudConstPtr = typename Comparator<PointT>::PointCloudConstPtr;
+
+  using PointCloudN = pcl::PointCloud<PointNT>;
+  using PointCloudNPtr = typename PointCloudN::Ptr;
+  using PointCloudNConstPtr = typename PointCloudN::ConstPtr;
+
+  using Ptr = shared_ptr<RGBPlaneCoefficientComparator<PointT, PointNT>>;
+  using ConstPtr = shared_ptr<const RGBPlaneCoefficientComparator<PointT, PointNT>>;
+
+  using pcl::Comparator<PointT>::input_;
+  using pcl::PlaneCoefficientComparator<PointT, PointNT>::normals_;
+  using pcl::PlaneCoefficientComparator<PointT, PointNT>::angular_threshold_;
+  using pcl::PlaneCoefficientComparator<PointT, PointNT>::distance_threshold_;
+
+  /** \brief Empty constructor for RGBPlaneCoefficientComparator. */
+  RGBPlaneCoefficientComparator() : color_threshold_(50.0f) {}
+
+  /** \brief Constructor for RGBPlaneCoefficientComparator.
+   * \param[in] plane_coeff_d a reference to a vector of d coefficients of plane
+   * equations.  Must be the same size as the input cloud and input normals.  a, b, and
+   * c coefficients are in the input normals.
+   */
+  RGBPlaneCoefficientComparator(shared_ptr<std::vector<float>>& plane_coeff_d)
+  : PlaneCoefficientComparator<PointT, PointNT>(plane_coeff_d), color_threshold_(50.0f)
+  {}
+
+  /** \brief Destructor for RGBPlaneCoefficientComparator. */
+
+  ~RGBPlaneCoefficientComparator() = default;
+
+  /** \brief Set the tolerance in color space between neighboring points, to be
+   * considered part of the same plane. \param[in] color_threshold The distance in color
+   * space
+   */
+  inline void
+  setColorThreshold (float color_threshold)
   {
-    public:
-      using PointCloud = typename Comparator<PointT>::PointCloud;
-      using PointCloudConstPtr = typename Comparator<PointT>::PointCloudConstPtr;
-      
-      using PointCloudN = pcl::PointCloud<PointNT>;
-      using PointCloudNPtr = typename PointCloudN::Ptr;
-      using PointCloudNConstPtr = typename PointCloudN::ConstPtr;
-      
-      using Ptr = shared_ptr<RGBPlaneCoefficientComparator<PointT, PointNT> >;
-      using ConstPtr = shared_ptr<const RGBPlaneCoefficientComparator<PointT, PointNT> >;
+    color_threshold_ = color_threshold * color_threshold;
+  }
 
-      using pcl::Comparator<PointT>::input_;
-      using pcl::PlaneCoefficientComparator<PointT, PointNT>::normals_;
-      using pcl::PlaneCoefficientComparator<PointT, PointNT>::angular_threshold_;
-      using pcl::PlaneCoefficientComparator<PointT, PointNT>::distance_threshold_;
+  /** \brief Get the color threshold between neighboring points, to be considered part
+   * of the same plane. */
+  inline float
+  getColorThreshold () const
+  {
+    return (color_threshold_);
+  }
 
-      /** \brief Empty constructor for RGBPlaneCoefficientComparator. */
-      RGBPlaneCoefficientComparator ()
-        : color_threshold_ (50.0f)
-      {
-      }
+  /** \brief Compare two neighboring points, by using normal information, euclidean
+   * distance, and color information. \param[in] idx1 The index of the first point.
+   * \param[in] idx2 The index of the second point.
+   */
+  bool
+  compare (int idx1, int idx2) const override
+  {
+    float dx = (*input_)[idx1].x - (*input_)[idx2].x;
+    float dy = (*input_)[idx1].y - (*input_)[idx2].y;
+    float dz = (*input_)[idx1].z - (*input_)[idx2].z;
+    float dist = std::sqrt(dx * dx + dy * dy + dz * dz);
+    int dr = (*input_)[idx1].r - (*input_)[idx2].r;
+    int dg = (*input_)[idx1].g - (*input_)[idx2].g;
+    int db = (*input_)[idx1].b - (*input_)[idx2].b;
+    // Note: This is not the best metric for color comparisons, we should probably use
+    // HSV space.
+    float color_dist = static_cast<float>(dr * dr + dg * dg + db * db);
+    return ((dist < distance_threshold_) &&
+            ((*normals_)[idx1].getNormalVector3fMap().dot(
+                 (*normals_)[idx2].getNormalVector3fMap()) > angular_threshold_) &&
+            (color_dist < color_threshold_));
+  }
 
-      /** \brief Constructor for RGBPlaneCoefficientComparator.
-        * \param[in] plane_coeff_d a reference to a vector of d coefficients of plane equations.  Must be the same size as the input cloud and input normals.  a, b, and c coefficients are in the input normals.
-        */
-      RGBPlaneCoefficientComparator (shared_ptr<std::vector<float> >& plane_coeff_d) 
-        : PlaneCoefficientComparator<PointT, PointNT> (plane_coeff_d), color_threshold_ (50.0f)
-      {
-      }
-      
-      /** \brief Destructor for RGBPlaneCoefficientComparator. */
-      
-      ~RGBPlaneCoefficientComparator () = default;
-
-      /** \brief Set the tolerance in color space between neighboring points, to be considered part of the same plane.
-        * \param[in] color_threshold The distance in color space
-        */
-      inline void
-      setColorThreshold (float color_threshold)
-      {
-        color_threshold_ = color_threshold * color_threshold;
-      }
-
-      /** \brief Get the color threshold between neighboring points, to be considered part of the same plane. */
-      inline float
-      getColorThreshold () const
-      {
-        return (color_threshold_);
-      }
-
-      /** \brief Compare two neighboring points, by using normal information, euclidean distance, and color information.
-        * \param[in] idx1 The index of the first point.
-        * \param[in] idx2 The index of the second point.
-        */
-      bool
-      compare (int idx1, int idx2) const override
-      {
-        float dx = (*input_)[idx1].x - (*input_)[idx2].x;
-        float dy = (*input_)[idx1].y - (*input_)[idx2].y;
-        float dz = (*input_)[idx1].z - (*input_)[idx2].z;
-        float dist = std::sqrt (dx*dx + dy*dy + dz*dz);
-        int dr = (*input_)[idx1].r - (*input_)[idx2].r;
-        int dg = (*input_)[idx1].g - (*input_)[idx2].g;
-        int db = (*input_)[idx1].b - (*input_)[idx2].b;
-        //Note: This is not the best metric for color comparisons, we should probably use HSV space.
-        float color_dist = static_cast<float> (dr*dr + dg*dg + db*db);
-        return ( (dist < distance_threshold_)
-                 && ((*normals_)[idx1].getNormalVector3fMap ().dot ((*normals_)[idx2].getNormalVector3fMap () ) > angular_threshold_ )
-                 && (color_dist < color_threshold_));
-      }
-      
-    protected:
-      float color_threshold_;
-  };
-}
+protected:
+  float color_threshold_;
+};
+} // namespace pcl

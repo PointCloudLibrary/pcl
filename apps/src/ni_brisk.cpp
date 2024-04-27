@@ -71,7 +71,7 @@ public:
 
   /////////////////////////////////////////////////////////////////////////
   void
-  cloud_callback(const CloudConstPtr& cloud)
+  cloud_callback (const CloudConstPtr& cloud)
   {
     FPS_CALC("cloud callback");
     std::lock_guard<std::mutex> lock(cloud_mutex_);
@@ -89,23 +89,23 @@ public:
 
   /////////////////////////////////////////////////////////////////////////
   void
-  init()
+  init ()
   {
     std::function<void(const CloudConstPtr&)> cloud_cb =
-        [this](const CloudConstPtr& cloud) { cloud_callback(cloud); };
+        [this] (const CloudConstPtr& cloud) { cloud_callback(cloud); };
     cloud_connection = grabber_.registerCallback(cloud_cb);
   }
 
   /////////////////////////////////////////////////////////////////////////
   std::string
-  getStrBool(bool state)
+  getStrBool (bool state)
   {
     return state ? "1" : "0";
   }
 
   /////////////////////////////////////////////////////////////////////////
   inline PointT
-  bilinearInterpolation(const CloudConstPtr& cloud, float x, float y)
+  bilinearInterpolation (const CloudConstPtr& cloud, float x, float y)
   {
     int u = int(x);
     int v = int(y);
@@ -163,9 +163,9 @@ public:
 
   /////////////////////////////////////////////////////////////////////////
   void
-  get3DKeypoints(const CloudConstPtr& cloud,
-                 const PointCloud<KeyPointT>::Ptr& keypoints,
-                 PointCloud<PointT>& keypoints3d)
+  get3DKeypoints (const CloudConstPtr& cloud,
+                  const PointCloud<KeyPointT>::Ptr& keypoints,
+                  PointCloud<PointT>& keypoints3d)
   {
     keypoints3d.resize(keypoints->size());
     keypoints3d.width = keypoints->width;
@@ -191,7 +191,7 @@ public:
 
   /////////////////////////////////////////////////////////////////////////
   void
-  run()
+  run ()
   {
     grabber_.start();
 
@@ -283,7 +283,7 @@ private:
 
 /* ---[ */
 int
-main(int, char**)
+main (int, char**)
 {
   std::string device_id("#1");
   OpenNIGrabber grabber(device_id);

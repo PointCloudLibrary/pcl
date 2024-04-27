@@ -37,74 +37,71 @@
  *
  */
 
+#include <pcl/features/intensity_gradient.h>
+#include <pcl/features/normal_3d.h>
 #include <pcl/test/gtest.h>
 #include <pcl/point_cloud.h>
-#include <pcl/features/normal_3d.h>
-#include <pcl/features/intensity_gradient.h>
 
 using namespace pcl;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TEST (PCL, IntensityGradientEstimation)
+TEST(PCL, IntensityGradientEstimation)
 {
   // Create a test cloud
   PointCloud<PointXYZI> cloud_xyzi;
   cloud_xyzi.height = 1;
   cloud_xyzi.is_dense = true;
-  for (float x = -5.0f; x <= 5.0f; x += 0.1f)
-  {
-    for (float y = -5.0f; y <= 5.0f; y += 0.1f)
-    {
+  for (float x = -5.0f; x <= 5.0f; x += 0.1f) {
+    for (float y = -5.0f; y <= 5.0f; y += 0.1f) {
       PointXYZI p;
       p.x = x;
       p.y = y;
-      p.z = 0.1f * powf (x, 2.0f) + 0.5f * y + 1.0f;
-      p.intensity = 0.1f * powf (x, 3.0f) + 0.2f * powf (y, 2.0f) + 1.0f * p.z + 20000.0f;
+      p.z = 0.1f * powf(x, 2.0f) + 0.5f * y + 1.0f;
+      p.intensity = 0.1f * powf(x, 3.0f) + 0.2f * powf(y, 2.0f) + 1.0f * p.z + 20000.0f;
 
-      cloud_xyzi.push_back (p);
+      cloud_xyzi.push_back(p);
     }
   }
-  cloud_xyzi.width = cloud_xyzi.size ();
-  PointCloud<PointXYZI>::ConstPtr cloud_ptr = cloud_xyzi.makeShared ();
+  cloud_xyzi.width = cloud_xyzi.size();
+  PointCloud<PointXYZI>::ConstPtr cloud_ptr = cloud_xyzi.makeShared();
 
   // Estimate surface normals
-  PointCloud<Normal>::Ptr normals (new PointCloud<Normal> ());
+  PointCloud<Normal>::Ptr normals(new PointCloud<Normal>());
   NormalEstimation<PointXYZI, Normal> norm_est;
-  norm_est.setInputCloud (cloud_ptr);
-  search::KdTree<PointXYZI>::Ptr treept1 (new search::KdTree<PointXYZI> (false));
-  norm_est.setSearchMethod (treept1);
-  norm_est.setRadiusSearch (0.25);
-  norm_est.compute (*normals);
+  norm_est.setInputCloud(cloud_ptr);
+  search::KdTree<PointXYZI>::Ptr treept1(new search::KdTree<PointXYZI>(false));
+  norm_est.setSearchMethod(treept1);
+  norm_est.setRadiusSearch(0.25);
+  norm_est.compute(*normals);
 
   // Estimate intensity gradient
   PointCloud<IntensityGradient> gradient;
   IntensityGradientEstimation<PointXYZI, Normal, IntensityGradient> grad_est;
-  grad_est.setInputCloud (cloud_ptr);
-  grad_est.setInputNormals (normals);
-  search::KdTree<PointXYZI>::Ptr treept2 (new search::KdTree<PointXYZI> (false));
-  grad_est.setSearchMethod (treept2);
-  grad_est.setRadiusSearch (0.25);
-  grad_est.compute (gradient);
+  grad_est.setInputCloud(cloud_ptr);
+  grad_est.setInputNormals(normals);
+  search::KdTree<PointXYZI>::Ptr treept2(new search::KdTree<PointXYZI>(false));
+  grad_est.setSearchMethod(treept2);
+  grad_est.setRadiusSearch(0.25);
+  grad_est.compute(gradient);
 
   // Compare to gradient estimates to actual values
-  for (std::size_t i = 0; i < cloud_ptr->size (); ++i)
-  {
-    const PointXYZI &p = (*cloud_ptr)[i];
+  for (std::size_t i = 0; i < cloud_ptr->size(); ++i) {
+    const PointXYZI& p = (*cloud_ptr)[i];
 
     // A pointer to the estimated gradient values
-    const float * g_est = gradient[i].gradient;
+    const float* g_est = gradient[i].gradient;
 
     // Compute the surface normal analytically.
     float nx = -0.2f * p.x;
     float ny = -0.5f;
     float nz = 1.0f;
-    float magnitude = std::sqrt (nx * nx + ny * ny + nz * nz);
+    float magnitude = std::sqrt(nx * nx + ny * ny + nz * nz);
     nx /= magnitude;
     ny /= magnitude;
     nz /= magnitude;
 
     // Compute the intensity gradient analytically...
-    float tmpx = 0.3f * powf (p.x, 2.0f);
+    float tmpx = 0.3f * powf(p.x, 2.0f);
     float tmpy = 0.4f * p.y;
     float tmpz = 1.0f;
     // ...and project the 3-D gradient vector onto the surface's tangent plane.
@@ -114,9 +111,9 @@ TEST (PCL, IntensityGradientEstimation)
 
     // Compare the estimates to the derived values.
     constexpr float tolerance = 0.11f;
-    EXPECT_NEAR (g_est[0], gx, tolerance);
-    EXPECT_NEAR (g_est[1], gy, tolerance);
-    EXPECT_NEAR (g_est[2], gz, tolerance);
+    EXPECT_NEAR(g_est[0], gx, tolerance);
+    EXPECT_NEAR(g_est[1], gy, tolerance);
+    EXPECT_NEAR(g_est[2], gz, tolerance);
   }
 }
 
@@ -124,7 +121,7 @@ TEST (PCL, IntensityGradientEstimation)
 int
 main (int argc, char** argv)
 {
-  testing::InitGoogleTest (&argc, argv);
-  return (RUN_ALL_TESTS ());
+  testing::InitGoogleTest(&argc, argv);
+  return (RUN_ALL_TESTS());
 }
 /* ]--- */

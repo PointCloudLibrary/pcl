@@ -45,12 +45,12 @@
 namespace pcl {
 template <class T>
 short int
-doStereoRatioFilter(const T* const acc,
-                    short int dbest,
-                    T sad_min,
-                    int ratio_filter,
-                    int maxdisp,
-                    int precision = 100)
+doStereoRatioFilter (const T* const acc,
+                     short int dbest,
+                     T sad_min,
+                     int ratio_filter,
+                     int maxdisp,
+                     int precision = 100)
 {
   const auto sad_min_1st_part_it = std::min_element(acc, acc + dbest - 1);
   const auto sad_min_2nd_part_it = std::min_element(acc + dbest + 2, acc + maxdisp);
@@ -65,7 +65,7 @@ doStereoRatioFilter(const T* const acc,
 
 template <class T>
 inline short int
-doStereoPeakFilter(const T* const acc, short int dbest, int peak_filter, int maxdisp)
+doStereoPeakFilter (const T* const acc, short int dbest, int peak_filter, int maxdisp)
 {
   // da and db = acc[index] - acc[dbest],
   // where index = (dbest + 2) or (dbest - 2)
@@ -118,7 +118,7 @@ public:
    * \param[in] max_disp number of disparity candidates (disparity range); has to be > 0
    */
   void
-  setMaxDisparity(int max_disp)
+  setMaxDisparity (int max_disp)
   {
     max_disp_ = max_disp;
   };
@@ -129,7 +129,7 @@ public:
    * \param[in] x_off horizontal offset value; has to be >= 0
    */
   void
-  setXOffset(int x_off)
+  setXOffset (int x_off)
   {
     x_off_ = x_off;
   };
@@ -141,7 +141,7 @@ public:
    *            filtered)
    */
   void
-  setRatioFilter(int ratio_filter)
+  setRatioFilter (int ratio_filter)
   {
     ratio_filter_ = ratio_filter;
   };
@@ -152,7 +152,7 @@ public:
    *            [0, inf] (0: no filtering action)
    */
   void
-  setPeakFilter(int peak_filter)
+  setPeakFilter (int peak_filter)
   {
     peak_filter_ = peak_filter;
   };
@@ -163,7 +163,7 @@ public:
    *            step for both stereo images
    */
   void
-  setPreProcessing(bool is_pre_proc)
+  setPreProcessing (bool is_pre_proc)
   {
     is_pre_proc_ = is_pre_proc;
   };
@@ -176,7 +176,7 @@ public:
    *            consistency check
    */
   void
-  setLeftRightCheck(bool is_lr_check)
+  setLeftRightCheck (bool is_lr_check)
   {
     is_lr_check_ = is_lr_check;
   };
@@ -189,7 +189,7 @@ public:
    *            filtered) or 1 ("weak" consistency check, less points being filtered)
    */
   void
-  setLeftRightCheckThreshold(int lr_check_th)
+  setLeftRightCheckThreshold (int lr_check_th)
   {
     lr_check_th_ = lr_check_th;
   };
@@ -203,7 +203,7 @@ public:
    * \param[in] height number of elements per column for both input arrays
    */
   virtual void
-  compute(unsigned char* ref_img, unsigned char* trg_img, int width, int height) = 0;
+  compute (unsigned char* ref_img, unsigned char* trg_img, int width, int height) = 0;
 
   /** \brief stereo processing, it computes a disparity map stored internally by the
    * class
@@ -214,7 +214,7 @@ public:
    *            image (right image)
    */
   virtual void
-  compute(pcl::PointCloud<pcl::RGB>& ref, pcl::PointCloud<pcl::RGB>& trg) = 0;
+  compute (pcl::PointCloud<pcl::RGB>& ref, pcl::PointCloud<pcl::RGB>& trg) = 0;
 
   /** \brief median filter applied on the previously computed disparity map
    *
@@ -225,7 +225,7 @@ public:
    *            the window side is equal to 2*radius + 1
    */
   void
-  medianFilter(int radius);
+  medianFilter (int radius);
 
   /** \brief computation of the 3D point cloud from the previously computed disparity
    * map without color information
@@ -243,11 +243,11 @@ public:
    *             where 3D points are invalid
    */
   virtual bool
-  getPointCloud(float u_c,
-                float v_c,
-                float focal,
-                float baseline,
-                pcl::PointCloud<pcl::PointXYZ>::Ptr cloud);
+  getPointCloud (float u_c,
+                 float v_c,
+                 float focal,
+                 float baseline,
+                 pcl::PointCloud<pcl::PointXYZ>::Ptr cloud);
 
   /** \brief computation of the 3D point cloud from the previously computed disparity
    * map including color information
@@ -267,12 +267,12 @@ public:
    *            each 3D point of the output cloud a color triplet
    */
   virtual bool
-  getPointCloud(float u_c,
-                float v_c,
-                float focal,
-                float baseline,
-                pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud,
-                pcl::PointCloud<pcl::RGB>::Ptr texture);
+  getPointCloud (float u_c,
+                 float v_c,
+                 float focal,
+                 float baseline,
+                 pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud,
+                 pcl::PointCloud<pcl::RGB>::Ptr texture);
 
   /** \brief computation of a pcl::RGB cloud with scaled disparity values it can be used
    * to display a rescaled version of the disparity map by means of the pcl::ImageViewer
@@ -284,7 +284,7 @@ public:
    * \param[out] vMap output cloud
    */
   void
-  getVisualMap(pcl::PointCloud<pcl::RGB>::Ptr vMap);
+  getVisualMap (pcl::PointCloud<pcl::RGB>::Ptr vMap);
 
 protected:
   /** \brief The internal disparity map. */
@@ -329,19 +329,19 @@ protected:
   int lr_check_th_;
 
   virtual void
-  preProcessing(unsigned char* img, unsigned char* pp_img) = 0;
+  preProcessing (unsigned char* img, unsigned char* pp_img) = 0;
 
   virtual void
-  imgFlip(unsigned char*& img) = 0;
+  imgFlip (unsigned char*& img) = 0;
 
   virtual void
-  compute_impl(unsigned char* ref_img, unsigned char* trg_img) = 0;
+  compute_impl (unsigned char* ref_img, unsigned char* trg_img) = 0;
 
   void
-  leftRightCheck();
+  leftRightCheck ();
 
   inline short int
-  computeStereoSubpixel(int dbest, int s1, int s2, int s3)
+  computeStereoSubpixel (int dbest, int s1, int s2, int s3)
   {
     int den = (s1 + s3 - 2 * s2);
     if (den != 0)
@@ -350,7 +350,7 @@ protected:
   }
 
   inline short int
-  computeStereoSubpixel(int dbest, float s1, float s2, float s3)
+  computeStereoSubpixel (int dbest, float s1, float s2, float s3)
   {
     float den = (s1 + s3 - 2 * s2);
     if (den != 0)
@@ -384,10 +384,10 @@ public:
    * \param[in] height number of elements per column for both input arrays
    */
   void
-  compute(unsigned char* ref_img,
-          unsigned char* trg_img,
-          int width,
-          int height) override;
+  compute (unsigned char* ref_img,
+           unsigned char* trg_img,
+           int width,
+           int height) override;
 
   /** \brief stereo processing, it computes a disparity map stored internally by the
    * class
@@ -400,17 +400,17 @@ public:
    *            grayscale upon call of the method
    */
   void
-  compute(pcl::PointCloud<pcl::RGB>& ref, pcl::PointCloud<pcl::RGB>& trg) override;
+  compute (pcl::PointCloud<pcl::RGB>& ref, pcl::PointCloud<pcl::RGB>& trg) override;
 
 protected:
   void
-  compute_impl(unsigned char* ref_img, unsigned char* trg_img) override = 0;
+  compute_impl (unsigned char* ref_img, unsigned char* trg_img) override = 0;
 
   void
-  preProcessing(unsigned char* img, unsigned char* pp_img) override;
+  preProcessing (unsigned char* img, unsigned char* pp_img) override;
 
   void
-  imgFlip(unsigned char*& img) override;
+  imgFlip (unsigned char*& img) override;
 };
 
 /** \brief Block based (or fixed window) Stereo Matching class
@@ -435,14 +435,14 @@ public:
    *            stereo algorithm the window side is equal to 2*radius + 1
    */
   void
-  setRadius(int radius)
+  setRadius (int radius)
   {
     radius_ = radius;
   };
 
 private:
   void
-  compute_impl(unsigned char* ref_img, unsigned char* trg_img) override;
+  compute_impl (unsigned char* ref_img, unsigned char* trg_img) override;
 
   int radius_;
 };
@@ -472,7 +472,7 @@ public:
    *            total column length is equal to 2*radius + 1
    */
   void
-  setRadius(int radius)
+  setRadius (int radius)
   {
     radius_ = radius;
   };
@@ -483,7 +483,7 @@ public:
    *            weights
    */
   void
-  setGammaS(int gamma_s)
+  setGammaS (int gamma_s)
   {
     gamma_s_ = gamma_s;
   };
@@ -494,7 +494,7 @@ public:
    *            adaptive weights
    */
   void
-  setGammaC(int gamma_c)
+  setGammaC (int gamma_c)
   {
     gamma_c_ = gamma_c;
   };
@@ -503,7 +503,7 @@ public:
    * \param[in] smoothness_weak "weak" smoothness penalty cost
    */
   void
-  setSmoothWeak(int smoothness_weak)
+  setSmoothWeak (int smoothness_weak)
   {
     smoothness_weak_ = smoothness_weak;
   };
@@ -512,14 +512,14 @@ public:
    * \param[in] smoothness_strong "strong" smoothness penalty cost
    */
   void
-  setSmoothStrong(int smoothness_strong)
+  setSmoothStrong (int smoothness_strong)
   {
     smoothness_strong_ = smoothness_strong;
   };
 
 private:
   void
-  compute_impl(unsigned char* ref_img, unsigned char* trg_img) override;
+  compute_impl (unsigned char* ref_img, unsigned char* trg_img) override;
 
   int radius_;
 

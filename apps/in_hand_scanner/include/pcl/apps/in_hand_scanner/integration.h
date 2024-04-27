@@ -80,8 +80,8 @@ public:
    * \return true if success.
    */
   bool
-  reconstructMesh(const CloudXYZRGBNormalConstPtr& cloud_data,
-                  MeshPtr& mesh_model) const;
+  reconstructMesh (const CloudXYZRGBNormalConstPtr& cloud_data,
+                   MeshPtr& mesh_model) const;
 
   /** \brief Merge the organized cloud into the mesh.#
    *
@@ -92,9 +92,9 @@ public:
    * \return true if success.
    */
   bool
-  merge(const CloudXYZRGBNormalConstPtr& cloud_data,
-        MeshPtr& mesh_model,
-        const Eigen::Matrix4f& T) const;
+  merge (const CloudXYZRGBNormalConstPtr& cloud_data,
+         MeshPtr& mesh_model,
+         const Eigen::Matrix4f& T) const;
 
   /** \brief Outlier rejection. In each merge step points that have not been observed
    * again age by one iteration. Points that are observed again get an age of 0. Once a
@@ -106,7 +106,7 @@ public:
    * \param[in] cleanup Calls mesh.cleanup() if true.
    */
   void
-  age(const MeshPtr& mesh, const bool cleanup = true) const;
+  age (const MeshPtr& mesh, const bool cleanup = true) const;
 
   /** \brief Removes unfit vertices regardless of their age. Unfit vertices are those
    * that have not been observed from enough directions.
@@ -115,7 +115,7 @@ public:
    * \param[in] cleanup Calls mesh.cleanup() if true.
    */
   void
-  removeUnfitVertices(const MeshPtr& mesh, const bool cleanup = true) const;
+  removeUnfitVertices (const MeshPtr& mesh, const bool cleanup = true) const;
 
   /** @{ */
   /** \brief Corresponding points are averaged out if their distance is below a distance
@@ -124,9 +124,9 @@ public:
    * \note Must be greater than zero.
    */
   void
-  setMaxSquaredDistance(const float squared_distance);
+  setMaxSquaredDistance (const float squared_distance);
   float
-  getMaxSquaredDistance() const;
+  getMaxSquaredDistance () const;
   /** @} */
 
   /** @{ */
@@ -137,9 +137,9 @@ public:
    * nearest valid value.
    */
   void
-  setMaxAngle(const float angle);
+  setMaxAngle (const float angle);
   float
-  getMaxAngle() const;
+  getMaxAngle () const;
   /** @} */
 
   /** @{ */
@@ -149,9 +149,9 @@ public:
    * \note Must be greater than zero.
    */
   void
-  setMaxAge(const unsigned int age);
+  setMaxAge (const unsigned int age);
   unsigned int
-  getMaxAge() const;
+  getMaxAge () const;
   /** @} */
 
   /** @{ */
@@ -161,9 +161,9 @@ public:
    * \note Must be greater than zero.
    */
   void
-  setMinDirections(const unsigned int directions);
+  setMinDirections (const unsigned int directions);
   unsigned int
-  getMinDirections() const;
+  getMinDirections () const;
   /** @} */
 
 private:
@@ -182,44 +182,44 @@ private:
   using KdTreeConstPtr = KdTree::ConstPtr;
 
   std::uint8_t
-  trimRGB(const float val) const;
+  trimRGB (const float val) const;
 
   /** \brief Adds two triangles between points 0-1-3 and 1-2-3 to the mesh. */
   void
-  addToMesh(const PointIHS& pt_0,
-            const PointIHS& pt_1,
-            const PointIHS& pt_2,
-            const PointIHS& pt_3,
-            VertexIndex& vi_0,
-            VertexIndex& vi_1,
-            VertexIndex& vi_2,
-            VertexIndex& vi_3,
-            const MeshPtr& mesh) const;
+  addToMesh (const PointIHS& pt_0,
+             const PointIHS& pt_1,
+             const PointIHS& pt_2,
+             const PointIHS& pt_3,
+             VertexIndex& vi_0,
+             VertexIndex& vi_1,
+             VertexIndex& vi_2,
+             VertexIndex& vi_3,
+             const MeshPtr& mesh) const;
 
   /** \brief Adds a triangle between the points 0-1-2 to the mesh. */
   void
-  addToMesh(const PointIHS& pt_0,
-            const PointIHS& pt_1,
-            const PointIHS& pt_2,
-            VertexIndex& vi_0,
-            VertexIndex& vi_1,
-            VertexIndex& vi_2,
-            const MeshPtr& mesh) const;
+  addToMesh (const PointIHS& pt_0,
+             const PointIHS& pt_1,
+             const PointIHS& pt_2,
+             VertexIndex& vi_0,
+             VertexIndex& vi_1,
+             VertexIndex& vi_2,
+             const MeshPtr& mesh) const;
 
   /** \brief Returns true if the distance between the three points is below a threshold.
    */
   bool
-  distanceThreshold(const PointIHS& pt_0,
-                    const PointIHS& pt_1,
-                    const PointIHS& pt_2) const;
+  distanceThreshold (const PointIHS& pt_0,
+                     const PointIHS& pt_1,
+                     const PointIHS& pt_2) const;
 
   /** \brief Returns true if the distance between the four points is below a threshold.
    */
   bool
-  distanceThreshold(const PointIHS& pt_0,
-                    const PointIHS& pt_1,
-                    const PointIHS& pt_2,
-                    const PointIHS& pt_3) const;
+  distanceThreshold (const PointIHS& pt_0,
+                     const PointIHS& pt_1,
+                     const PointIHS& pt_2,
+                     const PointIHS& pt_3) const;
 
   ////////////////////////////////////////////////////////////////////////
   // Members

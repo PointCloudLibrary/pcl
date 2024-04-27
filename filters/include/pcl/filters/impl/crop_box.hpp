@@ -41,40 +41,38 @@
 #ifndef PCL_FILTERS_IMPL_CROP_BOX_H_
 #define PCL_FILTERS_IMPL_CROP_BOX_H_
 
-#include <pcl/filters/crop_box.h>
-#include <pcl/common/eigen.h> // for getTransformation
+#include <pcl/common/eigen.h>       // for getTransformation
 #include <pcl/common/point_tests.h> // for isFinite
-#include <pcl/common/transforms.h> // for transformPoint
+#include <pcl/common/transforms.h>  // for transformPoint
+#include <pcl/filters/crop_box.h>
 
 ///////////////////////////////////////////////////////////////////////////////
-template<typename PointT> void
-pcl::CropBox<PointT>::applyFilter (Indices &indices)
+template <typename PointT>
+void
+pcl::CropBox<PointT>::applyFilter(Indices& indices)
 {
-  indices.resize (input_->size ());
-  removed_indices_->resize (input_->size ());
+  indices.resize(input_->size());
+  removed_indices_->resize(input_->size());
   int indices_count = 0;
   int removed_indices_count = 0;
 
-  Eigen::Affine3f transform = Eigen::Affine3f::Identity ();
-  Eigen::Affine3f inverse_transform = Eigen::Affine3f::Identity ();
+  Eigen::Affine3f transform = Eigen::Affine3f::Identity();
+  Eigen::Affine3f inverse_transform = Eigen::Affine3f::Identity();
 
-  if (rotation_ != Eigen::Vector3f::Zero ())
-  {
-    pcl::getTransformation (0, 0, 0,
-                            rotation_ (0), rotation_ (1), rotation_ (2),
-                            transform);
-    inverse_transform = transform.inverse ();
+  if (rotation_ != Eigen::Vector3f::Zero()) {
+    pcl::getTransformation(
+        0, 0, 0, rotation_(0), rotation_(1), rotation_(2), transform);
+    inverse_transform = transform.inverse();
   }
 
-  bool transform_matrix_is_identity = transform_.matrix ().isIdentity ();
-  bool translation_is_zero = (translation_ == Eigen::Vector3f::Zero ());
-  bool inverse_transform_matrix_is_identity = inverse_transform.matrix ().isIdentity ();
+  bool transform_matrix_is_identity = transform_.matrix().isIdentity();
+  bool translation_is_zero = (translation_ == Eigen::Vector3f::Zero());
+  bool inverse_transform_matrix_is_identity = inverse_transform.matrix().isIdentity();
 
-  for (const auto index : *indices_)
-  {
+  for (const auto index : *indices_) {
     if (!input_->is_dense)
       // Check if the point is invalid
-      if (!isFinite ((*input_)[index]))
+      if (!isFinite((*input_)[index]))
         continue;
 
     // Get local point
@@ -82,41 +80,40 @@ pcl::CropBox<PointT>::applyFilter (Indices &indices)
 
     // Transform point to world space
     if (!transform_matrix_is_identity)
-      local_pt = pcl::transformPoint<PointT> (local_pt, transform_);
+      local_pt = pcl::transformPoint<PointT>(local_pt, transform_);
 
-    if (!translation_is_zero)
-    {
-      local_pt.x -= translation_ (0);
-      local_pt.y -= translation_ (1);
-      local_pt.z -= translation_ (2);
+    if (!translation_is_zero) {
+      local_pt.x -= translation_(0);
+      local_pt.y -= translation_(1);
+      local_pt.z -= translation_(2);
     }
 
     // Transform point to local space of crop box
     if (!inverse_transform_matrix_is_identity)
-      local_pt = pcl::transformPoint<PointT> (local_pt, inverse_transform);
+      local_pt = pcl::transformPoint<PointT>(local_pt, inverse_transform);
 
     // If outside the cropbox
-    if ( (local_pt.x < min_pt_[0] || local_pt.y < min_pt_[1] || local_pt.z < min_pt_[2]) ||
-         (local_pt.x > max_pt_[0] || local_pt.y > max_pt_[1] || local_pt.z > max_pt_[2]))
-    {
+    if ((local_pt.x < min_pt_[0] || local_pt.y < min_pt_[1] ||
+         local_pt.z < min_pt_[2]) ||
+        (local_pt.x > max_pt_[0] || local_pt.y > max_pt_[1] ||
+         local_pt.z > max_pt_[2])) {
       if (negative_)
         indices[indices_count++] = index;
       else if (extract_removed_indices_)
         (*removed_indices_)[removed_indices_count++] = index;
     }
     // If inside the cropbox
-    else
-    {
+    else {
       if (negative_ && extract_removed_indices_)
         (*removed_indices_)[removed_indices_count++] = index;
-      else if (!negative_) 
+      else if (!negative_)
         indices[indices_count++] = index;
     }
   }
-  indices.resize (indices_count);
-  removed_indices_->resize (removed_indices_count);
+  indices.resize(indices_count);
+  removed_indices_->resize(removed_indices_count);
 }
 
 #define PCL_INSTANTIATE_CropBox(T) template class PCL_EXPORTS pcl::CropBox<T>;
 
-#endif    // PCL_FILTERS_IMPL_CROP_BOX_H_
+#endif // PCL_FILTERS_IMPL_CROP_BOX_H_

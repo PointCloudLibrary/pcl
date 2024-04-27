@@ -57,7 +57,7 @@ public:
   ~OpenNIOrganizedMultiPlaneSegmentation() = default;
 
   pcl::visualization::PCLVisualizer::Ptr
-  cloudViewer(const pcl::PointCloud<PointT>::ConstPtr& cloud)
+  cloudViewer (const pcl::PointCloud<PointT>::ConstPtr& cloud)
   {
     pcl::visualization::PCLVisualizer::Ptr viewer(
         new pcl::visualization::PCLVisualizer("Viewer"));
@@ -75,7 +75,7 @@ public:
   }
 
   void
-  cloud_cb_(const pcl::PointCloud<PointT>::ConstPtr& cloud)
+  cloud_cb_ (const pcl::PointCloud<PointT>::ConstPtr& cloud)
   {
     if (!viewer->wasStopped()) {
       cloud_mutex.lock();
@@ -85,7 +85,7 @@ public:
   }
 
   void
-  removePreviousDataFromScreen(std::size_t prev_models_size)
+  removePreviousDataFromScreen (std::size_t prev_models_size)
   {
     char name[1024];
     for (std::size_t i = 0; i < prev_models_size; i++) {
@@ -98,12 +98,12 @@ public:
   }
 
   void
-  run()
+  run ()
   {
     pcl::OpenNIGrabber interface;
 
     std::function<void(const pcl::PointCloud<PointT>::ConstPtr&)> f =
-        [this](const pcl::PointCloud<PointT>::ConstPtr& cloud) { cloud_cb_(cloud); };
+        [this] (const pcl::PointCloud<PointT>::ConstPtr& cloud) { cloud_cb_(cloud); };
 
     // make a viewer
     pcl::PointCloud<PointT>::Ptr init_cloud_ptr(new pcl::PointCloud<PointT>);
@@ -192,7 +192,7 @@ public:
 };
 
 int
-main()
+main ()
 {
   OpenNIOrganizedMultiPlaneSegmentation multi_plane_app;
   multi_plane_app.run();

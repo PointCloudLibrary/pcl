@@ -92,7 +92,7 @@ public:
    * \param centre value to set
    */
   virtual void
-  setGridCentre(const Eigen::Vector2f& centre)
+  setGridCentre (const Eigen::Vector2f& centre)
   {
     grid_centre_ = centre;
   }
@@ -101,7 +101,7 @@ public:
    * \param[in] step value to set
    */
   virtual void
-  setGridStep(const Eigen::Vector2f& step)
+  setGridStep (const Eigen::Vector2f& step)
   {
     grid_step_ = step;
   }
@@ -110,7 +110,7 @@ public:
    * \param[in] extent value to set
    */
   virtual void
-  setGridExtent(const Eigen::Vector2f& extent)
+  setGridExtent (const Eigen::Vector2f& extent)
   {
     grid_extent_ = extent;
   }
@@ -120,7 +120,7 @@ public:
    * improve convergence
    */
   virtual void
-  setOptimizationStepSize(const double& lambda)
+  setOptimizationStepSize (const double& lambda)
   {
     newton_lambda_ = Eigen::Vector3d(lambda, lambda, lambda);
   }
@@ -136,7 +136,7 @@ public:
    * should be used.
    */
   virtual void
-  setOptimizationStepSize(const Eigen::Vector3d& lambda)
+  setOptimizationStepSize (const Eigen::Vector3d& lambda)
   {
     newton_lambda_ = lambda;
   }
@@ -148,8 +148,8 @@ protected:
    * compute
    */
   void
-  computeTransformation(PointCloudSource& output,
-                        const Eigen::Matrix4f& guess) override;
+  computeTransformation (PointCloudSource& output,
+                         const Eigen::Matrix4f& guess) override;
 
   using Registration<PointSource, PointTarget>::reg_name_;
   using Registration<PointSource, PointTarget>::target_;

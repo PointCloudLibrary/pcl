@@ -38,41 +38,47 @@
  *
  */
 
-#include <iostream>
-
 #include <pcl/geometry/polygon_mesh.h>
+
+#include <iostream>
 
 ////////////////////////////////////////////////////////////////////////////////
 
-// User data for the vertices. Here I just store an Id. In a 3D application this would be, for example
+// User data for the vertices. Here I just store an Id. In a 3D application this would
+// be, for example
 //  - x, y, z
 //  - nx, ny, nz
 //  - r, g, b
 // ...
-class MyVertexData
-{
-  public:
+class MyVertexData {
+public:
+  MyVertexData(const int id = -1) : id_(id) {}
 
-    MyVertexData (const int id = -1) : id_ (id) {}
+  int
+  id () const
+  {
+    return (id_);
+  }
+  int&
+  id ()
+  {
+    return (id_);
+  }
 
-    int  id () const {return (id_);}
-    int& id ()       {return (id_);}
-
-  private:
-
-    int id_;
+private:
+  int id_;
 };
 
 std::ostream&
-operator << (std::ostream& os, const MyVertexData& vd)
+operator<<(std::ostream& os, const MyVertexData& vd)
 {
-  return (os << vd.id ());
+  return (os << vd.id());
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
 // Declare the mesh.
-using Mesh = pcl::geometry::PolygonMesh<pcl::geometry::DefaultMeshTraits<MyVertexData> >;
+using Mesh = pcl::geometry::PolygonMesh<pcl::geometry::DefaultMeshTraits<MyVertexData>>;
 
 using VertexIndex = Mesh::VertexIndex;
 using HalfEdgeIndex = Mesh::HalfEdgeIndex;
@@ -97,9 +103,8 @@ void
 printVertices (const Mesh& mesh)
 {
   std::cout << "Vertices:\n   ";
-  for (std::size_t i=0; i<mesh.sizeVertices (); ++i)
-  {
-    std::cout << mesh.getVertexDataCloud () [i] << " ";
+  for (std::size_t i = 0; i < mesh.sizeVertices(); ++i) {
+    std::cout << mesh.getVertexDataCloud()[i] << " ";
   }
   std::cout << std::endl;
 }
@@ -108,9 +113,9 @@ void
 printEdge (const Mesh& mesh, const HalfEdgeIndex& idx_he)
 {
   std::cout << "  "
-            << mesh.getVertexDataCloud () [mesh.getOriginatingVertexIndex (idx_he).get ()]
+            << mesh.getVertexDataCloud()[mesh.getOriginatingVertexIndex(idx_he).get()]
             << " "
-            << mesh.getVertexDataCloud () [mesh.getTerminatingVertexIndex (idx_he).get ()]
+            << mesh.getVertexDataCloud()[mesh.getTerminatingVertexIndex(idx_he).get()]
             << std::endl;
 }
 
@@ -118,12 +123,11 @@ void
 printFace (const Mesh& mesh, const FaceIndex& idx_face)
 {
   // Circulate around all vertices in the face
-  VAFC       circ     = mesh.getVertexAroundFaceCirculator (idx_face);
+  VAFC circ = mesh.getVertexAroundFaceCirculator(idx_face);
   const VAFC circ_end = circ;
   std::cout << "  ";
-  do
-  {
-    std::cout << mesh.getVertexDataCloud () [circ.getTargetIndex ().get ()] << " ";
+  do {
+    std::cout << mesh.getVertexDataCloud()[circ.getTargetIndex().get()] << " ";
   } while (++circ != circ_end);
   std::cout << std::endl;
 }
@@ -132,17 +136,17 @@ void
 printFaces (const Mesh& mesh)
 {
   std::cout << "Faces:\n";
-  for (std::size_t i=0; i<mesh.sizeFaces (); ++i)
-  {
-    printFace (mesh, FaceIndex (i));
+  for (std::size_t i = 0; i < mesh.sizeFaces(); ++i) {
+    printFace(mesh, FaceIndex(i));
   }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
-int main ()
+int
+main ()
 {
-  Mesh          mesh;
+  Mesh mesh;
   VertexIndices vi;
 
   // Create a closed circle around vertex 0 //
@@ -151,83 +155,78 @@ int main ()
   // 3 - 0   6                              //
   //  \ / \ /                               //
   //   4 - 5                                //
-  for (unsigned int i=0; i<8; ++i)
-  {
-    vi.push_back (mesh.addVertex (MyVertexData (i)));
+  for (unsigned int i = 0; i < 8; ++i) {
+    vi.push_back(mesh.addVertex(MyVertexData(i)));
   }
 
   // General method to add faces.
   VertexIndices tmp;
-  tmp.push_back (vi [0]);
-  tmp.push_back (vi [1]);
-  tmp.push_back (vi [2]);
-  mesh.addFace (tmp);
-  tmp.clear ();
+  tmp.push_back(vi[0]);
+  tmp.push_back(vi[1]);
+  tmp.push_back(vi[2]);
+  mesh.addFace(tmp);
+  tmp.clear();
 
   // Convenience method: Works only for triangles
-  mesh.addFace (vi [0], vi [2], vi [3]);
-  mesh.addFace (vi [0], vi [3], vi [4]);
-  mesh.addFace (vi [0], vi [4], vi [5]);
+  mesh.addFace(vi[0], vi[2], vi[3]);
+  mesh.addFace(vi[0], vi[3], vi[4]);
+  mesh.addFace(vi[0], vi[4], vi[5]);
 
   // Convenience method: Works only for quads
-  mesh.addFace (vi [0], vi [5], vi [6], vi [1]);
+  mesh.addFace(vi[0], vi[5], vi[6], vi[1]);
 
-  printVertices (mesh);
-  printFaces (mesh);
+  printVertices(mesh);
+  printFaces(mesh);
 
   //////////////////////////////////////////////////////////////////////////////
 
   std::cout << "Outgoing half-edges of vertex 0:" << std::endl;
-  OHEAVC       circ_oheav     = mesh.getOutgoingHalfEdgeAroundVertexCirculator (vi[0]);
+  OHEAVC circ_oheav = mesh.getOutgoingHalfEdgeAroundVertexCirculator(vi[0]);
   const OHEAVC circ_oheav_end = circ_oheav;
-  do
-  {
-    printEdge (mesh,circ_oheav.getTargetIndex ());
+  do {
+    printEdge(mesh, circ_oheav.getTargetIndex());
   } while (++circ_oheav != circ_oheav_end);
 
   //////////////////////////////////////////////////////////////////////////////
 
   std::cout << "Circulate around the boundary half-edges:" << std::endl;
-  const HalfEdgeIndex& idx_he_boundary = mesh.getOutgoingHalfEdgeIndex (vi [6]);
-  IHEAFC       circ_iheaf     = mesh.getInnerHalfEdgeAroundFaceCirculator (idx_he_boundary);
+  const HalfEdgeIndex& idx_he_boundary = mesh.getOutgoingHalfEdgeIndex(vi[6]);
+  IHEAFC circ_iheaf = mesh.getInnerHalfEdgeAroundFaceCirculator(idx_he_boundary);
   const IHEAFC circ_iheaf_end = circ_iheaf;
-  do
-  {
-    printEdge (mesh, circ_iheaf.getTargetIndex ());
+  do {
+    printEdge(mesh, circ_iheaf.getTargetIndex());
   } while (++circ_iheaf != circ_iheaf_end);
 
   //////////////////////////////////////////////////////////////////////////////
 
   std::cout << std::endl << "Deleting face 1 (0 2 3) and 3 (0 4 5) ...\n";
-  std::cout << "(If the mesh is set to manifold further faces are removed automatically)\n\n";
-  mesh.deleteFace (FaceIndex (1));
-  mesh.deleteFace (FaceIndex (3));
+  std::cout
+      << "(If the mesh is set to manifold further faces are removed automatically)\n\n";
+  mesh.deleteFace(FaceIndex(1));
+  mesh.deleteFace(FaceIndex(3));
 
-  mesh.cleanUp (); // Removes the isolated vertex (7) as well!
-  vi.clear ();     // The vertex indices are no longer synchronized with the mesh!
+  mesh.cleanUp(); // Removes the isolated vertex (7) as well!
+  vi.clear();     // The vertex indices are no longer synchronized with the mesh!
 
-  printVertices (mesh);
-  printFaces    (mesh);
+  printVertices(mesh);
+  printFaces(mesh);
 
   //////////////////////////////////////////////////////////////////////////
 
   std::cout << "Circulate around all faces of vertex 0:\n";
 
-  FAVC       circ_fav     = mesh.getFaceAroundVertexCirculator (vi [0]);
+  FAVC circ_fav = mesh.getFaceAroundVertexCirculator(vi[0]);
   const FAVC circ_fav_end = circ_fav;
-  do
-  {
+  do {
     // Very important: Some half_edges are on the boundary
     //  -> have an invalid face index
-    if (!mesh.isBoundary (circ_fav.getCurrentHalfEdgeIndex ()))
-    {
-      printFace (mesh, circ_fav.getTargetIndex ());
+    if (!mesh.isBoundary(circ_fav.getCurrentHalfEdgeIndex())) {
+      printFace(mesh, circ_fav.getTargetIndex());
     }
-    else
-    {
+    else {
       std::cout << "  invalid face -> boundary half-edge\n";
     }
-  } while (++circ_fav!=circ_fav_end);
+  } while (++circ_fav != circ_fav_end);
 
   return (0);
 }

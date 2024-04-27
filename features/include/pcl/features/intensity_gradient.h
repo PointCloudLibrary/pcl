@@ -40,77 +40,86 @@
 
 #pragma once
 
-#include <pcl/features/feature.h>
 #include <pcl/common/intensity.h>
+#include <pcl/features/feature.h>
 
-namespace pcl
-{
-  /** \brief IntensityGradientEstimation estimates the intensity gradient for a point cloud that contains position
-    * and intensity values.  The intensity gradient at a given point will be a vector orthogonal to the surface
-    * normal and pointing in the direction of the greatest increase in local intensity; the vector's magnitude
-    * indicates the rate of intensity change.
-    * \author Michael Dixon
-    * \ingroup features
-    */
-  template <typename PointInT, typename PointNT, typename PointOutT, typename IntensitySelectorT = pcl::common::IntensityFieldAccessor<PointInT> >
-  class IntensityGradientEstimation : public FeatureFromNormals<PointInT, PointNT, PointOutT>
+namespace pcl {
+/** \brief IntensityGradientEstimation estimates the intensity gradient for a point
+ * cloud that contains position and intensity values.  The intensity gradient at a given
+ * point will be a vector orthogonal to the surface normal and pointing in the direction
+ * of the greatest increase in local intensity; the vector's magnitude indicates the
+ * rate of intensity change. \author Michael Dixon \ingroup features
+ */
+template <typename PointInT,
+          typename PointNT,
+          typename PointOutT,
+          typename IntensitySelectorT = pcl::common::IntensityFieldAccessor<PointInT>>
+class IntensityGradientEstimation
+: public FeatureFromNormals<PointInT, PointNT, PointOutT> {
+public:
+  using Ptr = shared_ptr<
+      IntensityGradientEstimation<PointInT, PointNT, PointOutT, IntensitySelectorT>>;
+  using ConstPtr = shared_ptr<const IntensityGradientEstimation<PointInT,
+                                                                PointNT,
+                                                                PointOutT,
+                                                                IntensitySelectorT>>;
+  using Feature<PointInT, PointOutT>::feature_name_;
+  using Feature<PointInT, PointOutT>::getClassName;
+  using Feature<PointInT, PointOutT>::indices_;
+  using Feature<PointInT, PointOutT>::surface_;
+  using Feature<PointInT, PointOutT>::k_;
+  using Feature<PointInT, PointOutT>::search_parameter_;
+  using FeatureFromNormals<PointInT, PointNT, PointOutT>::normals_;
+
+  using PointCloudOut = typename Feature<PointInT, PointOutT>::PointCloudOut;
+
+  /** \brief Empty constructor. */
+  IntensityGradientEstimation() : intensity_()
   {
-    public:
-      using Ptr = shared_ptr<IntensityGradientEstimation<PointInT, PointNT, PointOutT, IntensitySelectorT> >;
-      using ConstPtr = shared_ptr<const IntensityGradientEstimation<PointInT, PointNT, PointOutT, IntensitySelectorT> >;
-      using Feature<PointInT, PointOutT>::feature_name_;
-      using Feature<PointInT, PointOutT>::getClassName;
-      using Feature<PointInT, PointOutT>::indices_;
-      using Feature<PointInT, PointOutT>::surface_;
-      using Feature<PointInT, PointOutT>::k_;
-      using Feature<PointInT, PointOutT>::search_parameter_;
-      using FeatureFromNormals<PointInT, PointNT, PointOutT>::normals_;
+    feature_name_ = "IntensityGradientEstimation";
+  }
 
-      using PointCloudOut = typename Feature<PointInT, PointOutT>::PointCloudOut;
+  /** \brief Initialize the scheduler and set the number of threads to use.
+   * \param nr_threads the number of hardware threads to use (0 sets the value back to
+   * automatic)
+   */
+  inline void
+  setNumberOfThreads (unsigned int nr_threads = 0)
+  {
+    threads_ = nr_threads;
+  }
 
-      /** \brief Empty constructor. */
-      IntensityGradientEstimation () : intensity_ ()
-      {
-        feature_name_ = "IntensityGradientEstimation";
-      }
+protected:
+  /** \brief Estimate the intensity gradients for a set of points given in
+   * <setInputCloud (), setIndices ()> using the surface in setSearchSurface () and the
+   * spatial locator in setSearchMethod (). \param output the resultant point cloud that
+   * contains the intensity gradient vectors
+   */
+  void
+  computeFeature (PointCloudOut& output) override;
 
-      /** \brief Initialize the scheduler and set the number of threads to use.
-        * \param nr_threads the number of hardware threads to use (0 sets the value back to automatic)
-        */
-      inline void
-      setNumberOfThreads (unsigned int nr_threads = 0) { threads_ = nr_threads; }
+  /** \brief Estimate the intensity gradient around a given point based on its spatial
+   * neighborhood of points \param cloud a point cloud dataset containing XYZI
+   * coordinates (Cartesian coordinates + intensity) \param indices the indices of the
+   * neighboring points in the dataset \param point the 3D Cartesian coordinates of the
+   * point at which to estimate the gradient \param mean_intensity \param normal the 3D
+   * surface normal of the given point \param gradient the resultant 3D gradient vector
+   */
+  void
+  computePointIntensityGradient (const pcl::PointCloud<PointInT>& cloud,
+                                 const pcl::Indices& indices,
+                                 const Eigen::Vector3f& point,
+                                 float mean_intensity,
+                                 const Eigen::Vector3f& normal,
+                                 Eigen::Vector3f& gradient);
 
-    protected:
-      /** \brief Estimate the intensity gradients for a set of points given in <setInputCloud (), setIndices ()> using
-        *  the surface in setSearchSurface () and the spatial locator in setSearchMethod ().
-        *  \param output the resultant point cloud that contains the intensity gradient vectors
-        */
-      void
-      computeFeature (PointCloudOut &output) override;
-
-      /** \brief Estimate the intensity gradient around a given point based on its spatial neighborhood of points
-        * \param cloud a point cloud dataset containing XYZI coordinates (Cartesian coordinates + intensity)
-        * \param indices the indices of the neighboring points in the dataset
-        * \param point the 3D Cartesian coordinates of the point at which to estimate the gradient
-        * \param mean_intensity
-        * \param normal the 3D surface normal of the given point
-        * \param gradient the resultant 3D gradient vector
-        */
-      void
-      computePointIntensityGradient (const pcl::PointCloud<PointInT> &cloud,
-                                     const pcl::Indices &indices,
-                                     const Eigen::Vector3f &point, 
-                                     float mean_intensity, 
-                                     const Eigen::Vector3f &normal,
-                                     Eigen::Vector3f &gradient);
-
-    protected:
-      ///intensity field accessor structure
-      IntensitySelectorT intensity_;
-      ///number of threads to be used, default 0 (auto)
-      unsigned int threads_{0};
-  };
-}
+protected:
+  /// intensity field accessor structure
+  IntensitySelectorT intensity_;
+  /// number of threads to be used, default 0 (auto)
+  unsigned int threads_{0};
+};
+} // namespace pcl
 
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/features/impl/intensity_gradient.hpp>

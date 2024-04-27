@@ -120,13 +120,13 @@ struct PointIHS : public pcl::ihs::_PointIHS {
   }
 
   inline const Eigen::Vector3i
-  getRGBVector3i() const
+  getRGBVector3i () const
   {
     return (Eigen::Vector3i(r, g, b));
   }
 
   inline const Eigen::Vector4i
-  getRGBVector4i() const
+  getRGBVector4i () const
   {
     return (Eigen::Vector4i(r, g, b, a));
   }

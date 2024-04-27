@@ -40,100 +40,98 @@
 #include <pcl/cuda/point_cloud.h>
 #include <pcl/io/openni_camera/openni_image.h>
 
-namespace pcl
-{
-  namespace cuda
+namespace pcl {
+namespace cuda {
+
+struct downsampleIndices {
+  downsampleIndices(int width, int height, int stride)
+  : width(width), height(height), stride(stride)
+  {}
+
+  int width, height, stride;
+
+  __host__ __device__ bool
+  operator()(int i)
   {
+    int xIdx = i % width;
+    int yIdx = i / width;
 
-    struct downsampleIndices
-    {
-      downsampleIndices (int width, int height, int stride)
-        : width (width), height (height), stride (stride)
-      {}
-  
-      int width, height, stride;
-  
-      __host__ __device__
-      bool operator () (int i)
-      {
-        int xIdx = i % width;
-        int yIdx = i / width;
-  
-        return ((xIdx % stride == 0) & (yIdx % stride == 0));
-      }
-    };
-  
-    template <template <typename> class Storage>
-    struct DebayerBilinear
-    {
-  		unsigned width;
-  		unsigned height;
-  		//static unsigned dataSize;
-  		//static unsigned char* global_data; // has to be initialized only once!
-  		//unsigned char* data;
-  		unsigned char *data;
-  		DebayerBilinear (unsigned char *bayer_image, unsigned width, unsigned height);
-               //DebayerBilinear (const openni_wrapper::Image::Ptr& bayer_image);
-  
-      __inline__ __host__ __device__ OpenNIRGB operator () (int index) const;
-    };
-  /*
-  	struct DebayerEdgeAware
-    {
-  		unsigned width;
-  		unsigned height;
-  		static unsigned dataSize;
-  		static unsigned char* global_data; // has to be initialized only once!
-  		unsigned char* data;
-      DebayerEdgeAware (const openni_wrapper::Image::Ptr& bayer_image);
-      ~DebayerEdgeAware ();
-  
-      __inline__ __host__ __device__ OpenNIRGB operator () (int index) const;
-    };
-    */
-    template<template <typename> class Storage>
-    class DebayeringDownsampling
-    {
-      public:
-        using RGBImageType = typename Storage<OpenNIRGB>::type;
-        void
-        compute (const openni_wrapper::Image::Ptr& bayer_image, RGBImageType& rgb_image) const;
-    };
+    return ((xIdx % stride == 0) & (yIdx % stride == 0));
+  }
+};
 
-    template <template <typename> class Storage>
-    struct YUV2RGBKernel
-    {
-  		unsigned width;
-  		unsigned height;
-  		unsigned char *data;
-  		YUV2RGBKernel (unsigned char *yuv_image, unsigned width, unsigned height);
-  
-      __inline__ __host__ __device__ OpenNIRGB operator () (int index) const;
-    };
- 
-    template<template <typename> class Storage>
-    class YUV2RGB
-    {
-      public:
-        using RGBImageType = typename Storage<OpenNIRGB>::type;
-        void
-        compute (const openni_wrapper::Image::Ptr& yuv_image, RGBImageType& rgb_image) const;
-    };
+template <template <typename> class Storage>
+struct DebayerBilinear {
+  unsigned width;
+  unsigned height;
+  // static unsigned dataSize;
+  // static unsigned char* global_data; // has to be initialized only once!
+  // unsigned char* data;
+  unsigned char* data;
+  DebayerBilinear(unsigned char* bayer_image, unsigned width, unsigned height);
+  // DebayerBilinear (const openni_wrapper::Image::Ptr& bayer_image);
 
-    template<template <typename> class Storage>
-    class Debayering
-    {
-      public:
-        using RGBImageType = typename Storage<OpenNIRGB>::type;
-        void
-        computeBilinear (const openni_wrapper::Image::Ptr& bayer_image, RGBImageType& rgb_image) const;
-        
-        //void
-        //computeEdgeAware (const openni_wrapper::Image::Ptr& bayer_image, thrust::host_vector<OpenNIRGB>& rgb_image) const;
-        
-        //void
-        //computeEdgeAware (const openni_wrapper::Image::Ptr& bayer_image, thrust::device_vector<OpenNIRGB>& rgb_image) const;
-    };
+  __inline__ __host__ __device__ OpenNIRGB
+  operator()(int index) const;
+};
+/*
+  struct DebayerEdgeAware
+  {
+    unsigned width;
+    unsigned height;
+    static unsigned dataSize;
+    static unsigned char* global_data; // has to be initialized only once!
+    unsigned char* data;
+    DebayerEdgeAware (const openni_wrapper::Image::Ptr& bayer_image);
+    ~DebayerEdgeAware ();
 
-  } // namespace
-} // namespace
+    __inline__ __host__ __device__ OpenNIRGB operator () (int index) const;
+  };
+  */
+template <template <typename> class Storage>
+class DebayeringDownsampling {
+public:
+  using RGBImageType = typename Storage<OpenNIRGB>::type;
+  void
+  compute (const openni_wrapper::Image::Ptr& bayer_image,
+           RGBImageType& rgb_image) const;
+};
+
+template <template <typename> class Storage>
+struct YUV2RGBKernel {
+  unsigned width;
+  unsigned height;
+  unsigned char* data;
+  YUV2RGBKernel(unsigned char* yuv_image, unsigned width, unsigned height);
+
+  __inline__ __host__ __device__ OpenNIRGB
+  operator()(int index) const;
+};
+
+template <template <typename> class Storage>
+class YUV2RGB {
+public:
+  using RGBImageType = typename Storage<OpenNIRGB>::type;
+  void
+  compute (const openni_wrapper::Image::Ptr& yuv_image, RGBImageType& rgb_image) const;
+};
+
+template <template <typename> class Storage>
+class Debayering {
+public:
+  using RGBImageType = typename Storage<OpenNIRGB>::type;
+  void
+  computeBilinear (const openni_wrapper::Image::Ptr& bayer_image,
+                   RGBImageType& rgb_image) const;
+
+  // void
+  // computeEdgeAware (const openni_wrapper::Image::Ptr& bayer_image,
+  // thrust::host_vector<OpenNIRGB>& rgb_image) const;
+
+  // void
+  // computeEdgeAware (const openni_wrapper::Image::Ptr& bayer_image,
+  // thrust::device_vector<OpenNIRGB>& rgb_image) const;
+};
+
+} // namespace cuda
+} // namespace pcl

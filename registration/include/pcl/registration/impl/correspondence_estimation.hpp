@@ -120,7 +120,8 @@ template <
     typename Index,
     typename std::enable_if_t<isSamePointType<PointSource, PointTarget>()>* = nullptr>
 const PointSource&
-pointCopyOrRef(typename pcl::PointCloud<PointSource>::ConstPtr& input, const Index& idx)
+pointCopyOrRef (typename pcl::PointCloud<PointSource>::ConstPtr& input,
+                const Index& idx)
 {
   return (*input)[idx];
 }
@@ -131,7 +132,8 @@ template <
     typename Index,
     typename std::enable_if_t<!isSamePointType<PointSource, PointTarget>()>* = nullptr>
 PointTarget
-pointCopyOrRef(typename pcl::PointCloud<PointSource>::ConstPtr& input, const Index& idx)
+pointCopyOrRef (typename pcl::PointCloud<PointSource>::ConstPtr& input,
+                const Index& idx)
 {
   // Copy the source data to a target PointTarget format so we can search in the tree
   PointTarget pt;
@@ -233,7 +235,7 @@ CorrespondenceEstimation<PointSource, PointTarget, Scalar>::
 } // namespace registration
 } // namespace pcl
 
-//#define PCL_INSTANTIATE_CorrespondenceEstimation(T,U) template class PCL_EXPORTS
-// pcl::registration::CorrespondenceEstimation<T,U>;
+// #define PCL_INSTANTIATE_CorrespondenceEstimation(T,U) template class PCL_EXPORTS
+//  pcl::registration::CorrespondenceEstimation<T,U>;
 
 #endif /* PCL_REGISTRATION_IMPL_CORRESPONDENCE_ESTIMATION_H_ */

@@ -57,7 +57,7 @@ public:
   ~OpenNIOrganizedEdgeDetection() = default;
 
   pcl::visualization::PCLVisualizer::Ptr
-  initCloudViewer(const pcl::PointCloud<PointT>::ConstPtr& cloud)
+  initCloudViewer (const pcl::PointCloud<PointT>::ConstPtr& cloud)
   {
     viewer->setSize(640, 480);
     viewer->addPointCloud<PointT>(cloud, "cloud");
@@ -114,7 +114,7 @@ public:
   }
 
   void
-  keyboard_callback(const pcl::visualization::KeyboardEvent& event, void*)
+  keyboard_callback (const pcl::visualization::KeyboardEvent& event, void*)
   {
     if (event.keyUp()) {
       double opacity;
@@ -164,7 +164,7 @@ public:
   }
 
   void
-  cloud_cb_(const pcl::PointCloud<PointT>::ConstPtr& cloud)
+  cloud_cb_ (const pcl::PointCloud<PointT>::ConstPtr& cloud)
   {
     if (!viewer->wasStopped()) {
       cloud_mutex.lock();
@@ -174,12 +174,12 @@ public:
   }
 
   void
-  run()
+  run ()
   {
     pcl::OpenNIGrabber interface;
 
     std::function<void(const pcl::PointCloud<PointT>::ConstPtr&)> f =
-        [this](const pcl::PointCloud<PointT>::ConstPtr& cloud) { cloud_cb_(cloud); };
+        [this] (const pcl::PointCloud<PointT>::ConstPtr& cloud) { cloud_cb_(cloud); };
 
     // Make and initialize a cloud viewer
     pcl::PointCloud<PointT>::Ptr init_cloud_ptr(new pcl::PointCloud<PointT>);
@@ -285,7 +285,7 @@ public:
 };
 
 void
-usage(char** argv)
+usage (char** argv)
 {
   std::cout << "usage: " << argv[0] << " [-device_id X (default: \"#1\")]\n\n";
 
@@ -316,7 +316,7 @@ usage(char** argv)
 }
 
 int
-main(int argc, char** argv)
+main (int argc, char** argv)
 {
   /////////////////////////////////////////////////////////////////////
   if (pcl::console::find_argument(argc, argv, "-h") != -1 ||

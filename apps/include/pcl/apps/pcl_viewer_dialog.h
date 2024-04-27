@@ -23,12 +23,12 @@ public:
   PCLViewerDialog(QWidget* parent = 0);
 
   void
-  setPointClouds(CloudT::ConstPtr src_cloud,
-                 CloudT::ConstPtr tgt_cloud,
-                 const Eigen::Affine3f& t);
+  setPointClouds (CloudT::ConstPtr src_cloud,
+                  CloudT::ConstPtr tgt_cloud,
+                  const Eigen::Affine3f& t);
 
 public Q_SLOTS:
 
   void
-  refreshView();
+  refreshView ();
 };

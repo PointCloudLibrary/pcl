@@ -37,93 +37,95 @@
  *
  */
 
-#include <pcl/test/gtest.h>
-#include <pcl/point_cloud.h>
 #include <pcl/features/moment_of_inertia_estimation.h>
 #include <pcl/io/pcd_io.h>
+#include <pcl/test/gtest.h>
+#include <pcl/point_cloud.h>
 
-pcl::PointCloud <pcl::PointXYZ>::Ptr cloud;
+pcl::PointCloud<pcl::PointXYZ>::Ptr cloud;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TEST (MomentOfInertia, FeatureExtraction)
+TEST(MomentOfInertia, FeatureExtraction)
 {
-  pcl::MomentOfInertiaEstimation <pcl::PointXYZ> feature_extractor;
-  feature_extractor.setInputCloud (cloud);
-  feature_extractor.compute ();
+  pcl::MomentOfInertiaEstimation<pcl::PointXYZ> feature_extractor;
+  feature_extractor.setInputCloud(cloud);
+  feature_extractor.compute();
 
   float major, middle, minor;
-  feature_extractor.getEigenValues (major, middle, minor);
-  EXPECT_LE (minor, middle);
-  EXPECT_LE (middle, major);
+  feature_extractor.getEigenValues(major, middle, minor);
+  EXPECT_LE(minor, middle);
+  EXPECT_LE(middle, major);
 
   float dot_product = 0.0f;
   Eigen::Vector3f major_vec, middle_vec, minor_vec;
-  feature_extractor.getEigenVectors (major_vec, middle_vec, minor_vec);
-  dot_product = major_vec.dot (middle_vec);
-  EXPECT_NEAR (0.0f, dot_product, 0.00001f);
-  dot_product = major_vec.dot (minor_vec);
-  EXPECT_NEAR (0.0f, dot_product, 0.00001f);
-  dot_product = middle_vec.dot (minor_vec);
-  EXPECT_NEAR (0.0f, dot_product, 0.00001f);
+  feature_extractor.getEigenVectors(major_vec, middle_vec, minor_vec);
+  dot_product = major_vec.dot(middle_vec);
+  EXPECT_NEAR(0.0f, dot_product, 0.00001f);
+  dot_product = major_vec.dot(minor_vec);
+  EXPECT_NEAR(0.0f, dot_product, 0.00001f);
+  dot_product = middle_vec.dot(minor_vec);
+  EXPECT_NEAR(0.0f, dot_product, 0.00001f);
 
-  std::vector <float> moment_of_inertia;
-  std::vector <float> eccentricity;
-  feature_extractor.getMomentOfInertia (moment_of_inertia);
-  feature_extractor.getEccentricity (eccentricity);
-  auto m_size = static_cast <unsigned int> (moment_of_inertia.size ());
-  auto e_size = static_cast <unsigned int> (eccentricity.size ());
-  EXPECT_EQ (m_size, e_size);
-  EXPECT_NE (0, m_size);
+  std::vector<float> moment_of_inertia;
+  std::vector<float> eccentricity;
+  feature_extractor.getMomentOfInertia(moment_of_inertia);
+  feature_extractor.getEccentricity(eccentricity);
+  auto m_size = static_cast<unsigned int>(moment_of_inertia.size());
+  auto e_size = static_cast<unsigned int>(eccentricity.size());
+  EXPECT_EQ(m_size, e_size);
+  EXPECT_NE(0, m_size);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TEST (MomentOfInertia, InvalidParameters)
+TEST(MomentOfInertia, InvalidParameters)
 {
   float angle_step = 0.0f;
   float point_mass = 0.0f;
 
-  pcl::MomentOfInertiaEstimation <pcl::PointXYZ> feature_extractor;
-  feature_extractor.setInputCloud (cloud);
+  pcl::MomentOfInertiaEstimation<pcl::PointXYZ> feature_extractor;
+  feature_extractor.setInputCloud(cloud);
 
   angle_step = 0.0f;
-  feature_extractor.setAngleStep (angle_step);
-  angle_step = feature_extractor.getAngleStep ();
-  EXPECT_LT (0.0f, angle_step);
+  feature_extractor.setAngleStep(angle_step);
+  angle_step = feature_extractor.getAngleStep();
+  EXPECT_LT(0.0f, angle_step);
 
   angle_step = -1.0f;
-  feature_extractor.setAngleStep (angle_step);
-  angle_step = feature_extractor.getAngleStep ();
-  EXPECT_LT (0.0f, angle_step);
+  feature_extractor.setAngleStep(angle_step);
+  angle_step = feature_extractor.getAngleStep();
+  EXPECT_LT(0.0f, angle_step);
 
   point_mass = 0.0f;
-  feature_extractor.setPointMass (point_mass);
-  point_mass = feature_extractor.getPointMass ();
-  EXPECT_LT (0.0f, point_mass);
+  feature_extractor.setPointMass(point_mass);
+  point_mass = feature_extractor.getPointMass();
+  EXPECT_LT(0.0f, point_mass);
 
   point_mass = -1.0f;
-  feature_extractor.setPointMass (point_mass);
-  point_mass = feature_extractor.getPointMass ();
-  EXPECT_LT (0.0f, point_mass);
+  feature_extractor.setPointMass(point_mass);
+  point_mass = feature_extractor.getPointMass();
+  EXPECT_LT(0.0f, point_mass);
 }
 
 /* ---[ */
 int
 main (int argc, char** argv)
 {
-  if (argc < 2)
-  {
-    std::cerr << "No test file given. Please download `lamppost.pcd` and pass its paths to the test." << std::endl;
+  if (argc < 2) {
+    std::cerr << "No test file given. Please download `lamppost.pcd` and pass its "
+                 "paths to the test."
+              << std::endl;
     return (-1);
   }
 
-  cloud.reset (new pcl::PointCloud<pcl::PointXYZ> ());
-  if (pcl::io::loadPCDFile (argv[1], *cloud) < 0)
-  {
-    std::cerr << "Failed to read test file. Please download `lamppost.pcd` and pass its path to the test." << std::endl;
+  cloud.reset(new pcl::PointCloud<pcl::PointXYZ>());
+  if (pcl::io::loadPCDFile(argv[1], *cloud) < 0) {
+    std::cerr << "Failed to read test file. Please download `lamppost.pcd` and pass "
+                 "its path to the test."
+              << std::endl;
     return (-1);
   }
 
-  testing::InitGoogleTest (&argc, argv);
-  return (RUN_ALL_TESTS ());
+  testing::InitGoogleTest(&argc, argv);
+  return (RUN_ALL_TESTS());
 }
 /* ]--- */

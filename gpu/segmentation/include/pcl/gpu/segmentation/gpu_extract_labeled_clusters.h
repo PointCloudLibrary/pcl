@@ -49,7 +49,7 @@ namespace pcl {
 namespace gpu {
 template <typename PointT>
 void
-extractLabeledEuclideanClusters(
+extractLabeledEuclideanClusters (
     const typename pcl::PointCloud<PointT>::Ptr& host_cloud_,
     const pcl::gpu::Octree::Ptr& tree,
     float tolerance,
@@ -89,7 +89,7 @@ public:
    * \param tree a pointer to the spatial search object.
    */
   inline void
-  setSearchMethod(const GPUTreePtr& tree)
+  setSearchMethod (const GPUTreePtr& tree)
   {
     tree_ = tree;
   }
@@ -98,7 +98,7 @@ public:
    *  @todo fix this for a generic search tree
    */
   inline GPUTreePtr
-  getSearchMethod()
+  getSearchMethod ()
   {
     return (tree_);
   }
@@ -107,7 +107,7 @@ public:
    * \param tolerance the spatial cluster tolerance measured by L2 distance
    */
   inline void
-  setClusterTolerance(double tolerance)
+  setClusterTolerance (double tolerance)
   {
     cluster_tolerance_ = tolerance;
   }
@@ -115,7 +115,7 @@ public:
   /** \brief Get the spatial cluster tolerance as a measure in the L2 Euclidean space.
    */
   inline double
-  getClusterTolerance()
+  getClusterTolerance ()
   {
     return (cluster_tolerance_);
   }
@@ -125,7 +125,7 @@ public:
    * \param min_cluster_size the minimum cluster size
    */
   inline void
-  setMinClusterSize(int min_cluster_size)
+  setMinClusterSize (int min_cluster_size)
   {
     min_pts_per_cluster_ = min_cluster_size;
   }
@@ -133,7 +133,7 @@ public:
   /** \brief Get the minimum number of points that a cluster needs to contain in order
    * to be considered valid. */
   inline int
-  getMinClusterSize()
+  getMinClusterSize ()
   {
     return (min_pts_per_cluster_);
   }
@@ -143,7 +143,7 @@ public:
    * \param max_cluster_size the maximum cluster size
    */
   inline void
-  setMaxClusterSize(int max_cluster_size)
+  setMaxClusterSize (int max_cluster_size)
   {
     max_pts_per_cluster_ = max_cluster_size;
   }
@@ -151,19 +151,19 @@ public:
   /** \brief Get the maximum number of points that a cluster needs to contain in order
    * to be considered valid. */
   inline int
-  getMaxClusterSize()
+  getMaxClusterSize ()
   {
     return (max_pts_per_cluster_);
   }
 
   inline void
-  setInput(CloudDevice input)
+  setInput (CloudDevice input)
   {
     input_ = input;
   }
 
   inline void
-  setHostCloud(PointCloudHostPtr host_cloud)
+  setHostCloud (PointCloudHostPtr host_cloud)
   {
     host_cloud_ = host_cloud;
   }
@@ -172,7 +172,7 @@ public:
    * \param clusters the resultant point clusters
    */
   void
-  extract(std::vector<PointIndices>& clusters);
+  extract (std::vector<PointIndices>& clusters);
 
 protected:
   /** \brief the input cloud on the GPU */
@@ -197,7 +197,7 @@ protected:
 
   /** \brief Class getName method. */
   virtual std::string
-  getClassName() const
+  getClassName () const
   {
     return ("gpu::EuclideanLabeledClusterExtraction");
   }
@@ -206,7 +206,7 @@ protected:
  * \ingroup segmentation
  */
 inline bool
-compareLabeledPointClusters(const pcl::PointIndices& a, const pcl::PointIndices& b)
+compareLabeledPointClusters (const pcl::PointIndices& a, const pcl::PointIndices& b)
 {
   return (a.indices.size() < b.indices.size());
 }

@@ -37,65 +37,58 @@
 
 #pragma once
 
-#include <QTabWidget>
-
 #include <pcl/apps/cloud_composer/project_model.h>
 #include <pcl/apps/cloud_composer/properties_model.h>
+
+#include <QTabWidget>
 
 class QItemSelectionModel;
 class QTreeView;
 
-namespace pcl
-{
-  namespace cloud_composer
-  {
-    /** \brief View class for displaying properties of an item
-     * \author Jeremie Papon
-     * \ingroup cloud_composer
-     */
-    class ItemInspector : public QTabWidget
-    {
-      Q_OBJECT
-      public:
-        ItemInspector (QWidget* parent = nullptr);
-      
-      public Q_SLOTS:
-        void 
-        setModel (ProjectModel* new_model);
-        void 
-        selectionChanged (const QModelIndex &current, const QModelIndex &previous);
-        void 
-        itemChanged (QStandardItem* item);
-        
-        
-        
-      private:
-        void 
-        createItemWidgets ();
-        /** \brief Stores the state of the current tree view in item_treestate_map_  */
-        void 
-        storeTreeState ();
-        /** \brief Restores the state of \param model 's view from item_treestate_map_  */
-        void
-        restoreTreeState ();
-        /** \brief Removes the extra tabs the item might have */
-        void
-        removeTabs ();
-        /** \brief Refreshes the data shown in the current displayed view widget */
-        void
-        updateView ();
-        
-        //! The tree object used to display/edit parameters 
-        QTreeView* parameter_view_;
-        
-        
-        ProjectModel* current_project_model_;
-        PropertiesModel* current_item_properties_model_;
-        const QItemSelectionModel *current_selection_model_;
-        QMap <QString, QWidget*> itemtype_widget_map;
-        QMap <QStandardItemModel*, QList <QPersistentModelIndex> > item_treestate_map_;
-    };
-    
-    
-  }
-}
+namespace pcl {
+namespace cloud_composer {
+/** \brief View class for displaying properties of an item
+ * \author Jeremie Papon
+ * \ingroup cloud_composer
+ */
+class ItemInspector : public QTabWidget {
+  Q_OBJECT
+public:
+  ItemInspector(QWidget* parent = nullptr);
+
+public Q_SLOTS:
+  void
+  setModel (ProjectModel* new_model);
+  void
+  selectionChanged (const QModelIndex& current, const QModelIndex& previous);
+  void
+  itemChanged (QStandardItem* item);
+
+private:
+  void
+  createItemWidgets ();
+  /** \brief Stores the state of the current tree view in item_treestate_map_  */
+  void
+  storeTreeState ();
+  /** \brief Restores the state of \param model 's view from item_treestate_map_  */
+  void
+  restoreTreeState ();
+  /** \brief Removes the extra tabs the item might have */
+  void
+  removeTabs ();
+  /** \brief Refreshes the data shown in the current displayed view widget */
+  void
+  updateView ();
+
+  //! The tree object used to display/edit parameters
+  QTreeView* parameter_view_;
+
+  ProjectModel* current_project_model_;
+  PropertiesModel* current_item_properties_model_;
+  const QItemSelectionModel* current_selection_model_;
+  QMap<QString, QWidget*> itemtype_widget_map;
+  QMap<QStandardItemModel*, QList<QPersistentModelIndex>> item_treestate_map_;
+};
+
+} // namespace cloud_composer
+} // namespace pcl

@@ -34,16 +34,17 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <pcl/point_types.h>
 #include <pcl/impl/instantiate.hpp>
 #include <pcl/recognition/hv/occlusion_reasoning.h>
 #include <pcl/recognition/impl/hv/occlusion_reasoning.hpp>
+#include <pcl/point_types.h>
 
 // Instantiations of specific point types
-//#ifdef PCL_ONLY_CORE_POINT_TYPES
-//  PCL_INSTANTIATE_PRODUCT(CVFHEstimation, ((pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA))((pcl::Normal))((pcl::VFHSignature308)))
-//#else
-//PCL_INSTANTIATE_PRODUCT(ZBuffering, (PCL_XYZ_POINT_TYPES)(PCL_XYZ_POINT_TYPES))
+// #ifdef PCL_ONLY_CORE_POINT_TYPES
+//  PCL_INSTANTIATE_PRODUCT(CVFHEstimation,
+//  ((pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA))((pcl::Normal))((pcl::VFHSignature308)))
+// #else
+// PCL_INSTANTIATE_PRODUCT(ZBuffering, (PCL_XYZ_POINT_TYPES)(PCL_XYZ_POINT_TYPES))
 template class pcl::occlusion_reasoning::ZBuffering<pcl::PointXYZ, pcl::PointXYZ>;
 template class pcl::occlusion_reasoning::ZBuffering<pcl::PointXYZ, pcl::PointXYZRGB>;
-//#endif
+// #endif

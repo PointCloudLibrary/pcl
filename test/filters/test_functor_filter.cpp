@@ -17,19 +17,19 @@ using namespace pcl::experimental;
 
 TEST(FunctorFilterTrait, CheckCompatibility)
 {
-  const auto copy_all = [](PointCloud<PointXYZ>, index_t) { return 0; };
+  const auto copy_all = [] (PointCloud<PointXYZ>, index_t) { return 0; };
   EXPECT_TRUE((is_function_object_for_filter_v<PointXYZ, decltype(copy_all)>));
 
-  const auto ref_all = [](PointCloud<PointXYZ>&, index_t&) { return 0; };
+  const auto ref_all = [] (PointCloud<PointXYZ>&, index_t&) { return 0; };
   EXPECT_FALSE((is_function_object_for_filter_v<PointXYZ, decltype(ref_all)>));
 
-  const auto ref_cloud = [](PointCloud<PointXYZ>&, index_t) { return 0; };
+  const auto ref_cloud = [] (PointCloud<PointXYZ>&, index_t) { return 0; };
   EXPECT_FALSE((is_function_object_for_filter_v<PointXYZ, decltype(ref_cloud)>));
 
-  const auto const_ref_cloud = [](const PointCloud<PointXYZ>&, index_t) { return 0; };
+  const auto const_ref_cloud = [] (const PointCloud<PointXYZ>&, index_t) { return 0; };
   EXPECT_TRUE((is_function_object_for_filter_v<PointXYZ, decltype(const_ref_cloud)>));
 
-  const auto const_ref_all = [](const PointCloud<PointXYZ>&, const index_t&) {
+  const auto const_ref_all = [] (const PointCloud<PointXYZ>&, const index_t&) {
     return 0;
   };
   EXPECT_TRUE((is_function_object_for_filter_v<PointXYZ, decltype(const_ref_all)>));
@@ -37,7 +37,7 @@ TEST(FunctorFilterTrait, CheckCompatibility)
 
 struct FunctorFilterRandom : public testing::TestWithParam<std::uint32_t> {
   void
-  SetUp() override
+  SetUp () override
   {
     cloud = make_shared<PointCloud<PointXYZ>>();
 
@@ -58,7 +58,7 @@ struct FunctorFilterRandom : public testing::TestWithParam<std::uint32_t> {
 TEST_P(FunctorFilterRandom, functioning)
 {
 
-  const auto lambda = [](const PointCloud<PointXYZ>& cloud, index_t idx) {
+  const auto lambda = [] (const PointCloud<PointXYZ>& cloud, index_t idx) {
     const auto& pt = cloud[idx];
     return (pt.getArray3fMap() < 0).all();
   };
@@ -98,18 +98,18 @@ INSTANTIATE_TEST_SUITE_P(RandomSeed,
 
 namespace type_test {
 int
-free_func(const PointCloud<PointXYZ>&, const index_t& idx)
+free_func (const PointCloud<PointXYZ>&, const index_t& idx)
 {
   return idx % 2;
 }
 
-static const auto lambda_func = [](const PointCloud<PointXYZ>& cloud, index_t idx) {
+static const auto lambda_func = [] (const PointCloud<PointXYZ>& cloud, index_t idx) {
   return free_func(cloud, idx);
 };
 
 struct StaticFunctor {
   static int
-  functor(PointCloud<PointXYZ> cloud, index_t idx)
+  functor (PointCloud<PointXYZ> cloud, index_t idx)
   {
     return free_func(cloud, idx);
   }
@@ -168,7 +168,7 @@ using types = ::testing::Types<LambdaT,
 template <typename T>
 struct FunctorFilterFunctionObject : public ::testing::Test {
   void
-  SetUp() override
+  SetUp () override
   {
     cloud.resize(2);
   }
@@ -191,7 +191,7 @@ REGISTER_TYPED_TEST_SUITE_P(FunctorFilterFunctionObject, type_check);
 INSTANTIATE_TYPED_TEST_SUITE_P(pcl, FunctorFilterFunctionObject, type_test::types);
 
 int
-main(int argc, char** argv)
+main (int argc, char** argv)
 {
   testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();

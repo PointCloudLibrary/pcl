@@ -28,101 +28,101 @@ public:
   }
 
   void
-  setParameters(int width,
-                int height,
-                float fx,
-                float fy,
-                float cx,
-                float cy,
-                float z_near,
-                float z_far);
+  setParameters (int width,
+                 int height,
+                 float fx,
+                 float fy,
+                 float cx,
+                 float cy,
+                 float z_near,
+                 float z_far);
 
   Eigen::Matrix4f
-  getProjectionMatrix()
+  getProjectionMatrix ()
   {
     return projection_matrix_;
   }
 
   double
-  getX() const
+  getX () const
   {
     return x_;
   }
   void
-  setX(double x)
+  setX (double x)
   {
     x_ = x;
     updatePose();
   }
 
   double
-  getY() const
+  getY () const
   {
     return y_;
   }
   void
-  setY(double y)
+  setY (double y)
   {
     y_ = y;
     updatePose();
   }
 
   double
-  getZ() const
+  getZ () const
   {
     return z_;
   }
   void
-  setZ(double z)
+  setZ (double z)
   {
     z_ = z;
     updatePose();
   }
 
   double
-  getRoll() const
+  getRoll () const
   {
     return roll_;
   }
   void
-  setRoll(double roll)
+  setRoll (double roll)
   {
     roll_ = roll;
     updatePose();
   }
 
   double
-  getPitch() const
+  getPitch () const
   {
     return pitch_;
   }
   void
-  setPitch(double pitch)
+  setPitch (double pitch)
   {
     pitch_ = pitch;
     updatePose();
   }
 
   double
-  getYaw() const
+  getYaw () const
   {
     return yaw_;
   }
   void
-  setYaw(double yaw)
+  setYaw (double yaw)
   {
     yaw_ = yaw;
     updatePose();
   }
 
   Eigen::Isometry3d
-  getPose() const
+  getPose () const
   {
     return pose_;
   }
 
   void
-  set(double x, double y, double z, double roll, double pitch, double yaw)
+  set (double x, double y, double z, double roll, double pitch, double yaw)
   {
     x_ = x;
     y_ = y;
@@ -134,24 +134,24 @@ public:
   }
 
   void
-  move(double vx, double vy, double vz);
+  move (double vx, double vy, double vz);
 
   // Return the pose of the camera:
   Eigen::Vector3d
-  getYPR() const
+  getYPR () const
   {
     return {yaw_, pitch_, roll_};
   }
 
 private:
   void
-  updatePose();
+  updatePose ();
 
   void
-  initializeCameraParameters();
+  initializeCameraParameters ();
 
   void
-  updateProjectionMatrix();
+  updateProjectionMatrix ();
 
   double x_, y_, z_;
   double roll_, pitch_, yaw_;

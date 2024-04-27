@@ -51,13 +51,13 @@ struct EIGEN_ALIGN16 ParticleXYZRPY : public _ParticleXYZRPY {
   }
 
   inline static int
-  stateDimension()
+  stateDimension ()
   {
     return 6;
   }
 
   void
-  sample(const std::vector<double>& mean, const std::vector<double>& cov)
+  sample (const std::vector<double>& mean, const std::vector<double>& cov)
   {
     x += static_cast<float>(sampleNormal(mean[0], cov[0]));
     y += static_cast<float>(sampleNormal(mean[1], cov[1]));
@@ -104,7 +104,7 @@ struct EIGEN_ALIGN16 ParticleXYZRPY : public _ParticleXYZRPY {
   }
 
   void
-  zero()
+  zero ()
   {
     x = 0.0;
     y = 0.0;
@@ -115,13 +115,13 @@ struct EIGEN_ALIGN16 ParticleXYZRPY : public _ParticleXYZRPY {
   }
 
   inline Eigen::Affine3f
-  toEigenMatrix() const
+  toEigenMatrix () const
   {
     return getTransformation(x, y, z, roll, pitch, yaw);
   }
 
   static ParticleXYZRPY
-  toState(const Eigen::Affine3f& trans)
+  toState (const Eigen::Affine3f& trans)
   {
     float trans_x, trans_y, trans_z, trans_roll, trans_pitch, trans_yaw;
     getTranslationAndEulerAngles(
@@ -131,7 +131,7 @@ struct EIGEN_ALIGN16 ParticleXYZRPY : public _ParticleXYZRPY {
 
   template <class InputIterator>
   static ParticleXYZRPY
-  weightedAverage(InputIterator first, InputIterator last)
+  weightedAverage (InputIterator first, InputIterator last)
   {
     ParticleXYZRPY wa;
     float wa_roll_sin = 0.0, wa_roll_cos = 0.0, wa_pitch_sin = 0.0, wa_pitch_cos = 0.0,
@@ -231,7 +231,7 @@ operator-(const ParticleXYZRPY& a, const ParticleXYZRPY& b)
 } // namespace tracking
 } // namespace pcl
 
-//########################################################################33
+// ########################################################################33
 
 namespace pcl {
 namespace tracking {
@@ -277,13 +277,13 @@ struct EIGEN_ALIGN16 ParticleXYZR : public _ParticleXYZR {
   }
 
   inline static int
-  stateDimension()
+  stateDimension ()
   {
     return 6;
   }
 
   void
-  sample(const std::vector<double>& mean, const std::vector<double>& cov)
+  sample (const std::vector<double>& mean, const std::vector<double>& cov)
   {
     x += static_cast<float>(sampleNormal(mean[0], cov[0]));
     y += static_cast<float>(sampleNormal(mean[1], cov[1]));
@@ -294,7 +294,7 @@ struct EIGEN_ALIGN16 ParticleXYZR : public _ParticleXYZR {
   }
 
   void
-  zero()
+  zero ()
   {
     x = 0.0;
     y = 0.0;
@@ -305,13 +305,13 @@ struct EIGEN_ALIGN16 ParticleXYZR : public _ParticleXYZR {
   }
 
   inline Eigen::Affine3f
-  toEigenMatrix() const
+  toEigenMatrix () const
   {
     return getTransformation(x, y, z, roll, pitch, yaw);
   }
 
   static ParticleXYZR
-  toState(const Eigen::Affine3f& trans)
+  toState (const Eigen::Affine3f& trans)
   {
     float trans_x, trans_y, trans_z, trans_roll, trans_pitch, trans_yaw;
     getTranslationAndEulerAngles(
@@ -321,7 +321,7 @@ struct EIGEN_ALIGN16 ParticleXYZR : public _ParticleXYZR {
 
   template <class InputIterator>
   static ParticleXYZR
-  weightedAverage(InputIterator first, InputIterator last)
+  weightedAverage (InputIterator first, InputIterator last)
   {
     ParticleXYZR wa;
     float wa_pitch_sin = 0.0;
@@ -415,7 +415,7 @@ operator-(const ParticleXYZR& a, const ParticleXYZR& b)
 } // namespace tracking
 } // namespace pcl
 
-//########################################################################33
+// ########################################################################33
 
 namespace pcl {
 namespace tracking {
@@ -461,13 +461,13 @@ struct EIGEN_ALIGN16 ParticleXYRPY : public _ParticleXYRPY {
   }
 
   inline static int
-  stateDimension()
+  stateDimension ()
   {
     return 6;
   }
 
   void
-  sample(const std::vector<double>& mean, const std::vector<double>& cov)
+  sample (const std::vector<double>& mean, const std::vector<double>& cov)
   {
     x += static_cast<float>(sampleNormal(mean[0], cov[0]));
     y = 0;
@@ -478,7 +478,7 @@ struct EIGEN_ALIGN16 ParticleXYRPY : public _ParticleXYRPY {
   }
 
   void
-  zero()
+  zero ()
   {
     x = 0.0;
     y = 0.0;
@@ -489,13 +489,13 @@ struct EIGEN_ALIGN16 ParticleXYRPY : public _ParticleXYRPY {
   }
 
   inline Eigen::Affine3f
-  toEigenMatrix() const
+  toEigenMatrix () const
   {
     return getTransformation(x, y, z, roll, pitch, yaw);
   }
 
   static ParticleXYRPY
-  toState(const Eigen::Affine3f& trans)
+  toState (const Eigen::Affine3f& trans)
   {
     float trans_x, trans_y, trans_z, trans_roll, trans_pitch, trans_yaw;
     getTranslationAndEulerAngles(
@@ -505,7 +505,7 @@ struct EIGEN_ALIGN16 ParticleXYRPY : public _ParticleXYRPY {
 
   template <class InputIterator>
   static ParticleXYRPY
-  weightedAverage(InputIterator first, InputIterator last)
+  weightedAverage (InputIterator first, InputIterator last)
   {
     ParticleXYRPY wa;
     float wa_roll_sin = 0.0, wa_roll_cos = 0.0, wa_pitch_sin = 0.0, wa_pitch_cos = 0.0,
@@ -605,7 +605,7 @@ operator-(const ParticleXYRPY& a, const ParticleXYRPY& b)
 } // namespace tracking
 } // namespace pcl
 
-//########################################################################33
+// ########################################################################33
 
 namespace pcl {
 namespace tracking {
@@ -651,13 +651,13 @@ struct EIGEN_ALIGN16 ParticleXYRP : public _ParticleXYRP {
   }
 
   inline static int
-  stateDimension()
+  stateDimension ()
   {
     return 6;
   }
 
   void
-  sample(const std::vector<double>& mean, const std::vector<double>& cov)
+  sample (const std::vector<double>& mean, const std::vector<double>& cov)
   {
     x += static_cast<float>(sampleNormal(mean[0], cov[0]));
     y = 0;
@@ -668,7 +668,7 @@ struct EIGEN_ALIGN16 ParticleXYRP : public _ParticleXYRP {
   }
 
   void
-  zero()
+  zero ()
   {
     x = 0.0;
     y = 0.0;
@@ -679,13 +679,13 @@ struct EIGEN_ALIGN16 ParticleXYRP : public _ParticleXYRP {
   }
 
   inline Eigen::Affine3f
-  toEigenMatrix() const
+  toEigenMatrix () const
   {
     return getTransformation(x, y, z, roll, pitch, yaw);
   }
 
   static ParticleXYRP
-  toState(const Eigen::Affine3f& trans)
+  toState (const Eigen::Affine3f& trans)
   {
     float trans_x, trans_y, trans_z, trans_roll, trans_pitch, trans_yaw;
     getTranslationAndEulerAngles(
@@ -695,7 +695,7 @@ struct EIGEN_ALIGN16 ParticleXYRP : public _ParticleXYRP {
 
   template <class InputIterator>
   static ParticleXYRP
-  weightedAverage(InputIterator first, InputIterator last)
+  weightedAverage (InputIterator first, InputIterator last)
   {
     ParticleXYRP wa;
     float wa_yaw_sin = 0.0, wa_yaw_cos = 0.0, wa_pitch_sin = 0.0, wa_pitch_cos = 0.0;
@@ -792,7 +792,7 @@ operator-(const ParticleXYRP& a, const ParticleXYRP& b)
 } // namespace tracking
 } // namespace pcl
 
-//########################################################################33
+// ########################################################################33
 
 namespace pcl {
 namespace tracking {
@@ -838,13 +838,13 @@ struct EIGEN_ALIGN16 ParticleXYR : public _ParticleXYR {
   }
 
   inline static int
-  stateDimension()
+  stateDimension ()
   {
     return 6;
   }
 
   void
-  sample(const std::vector<double>& mean, const std::vector<double>& cov)
+  sample (const std::vector<double>& mean, const std::vector<double>& cov)
   {
     x += static_cast<float>(sampleNormal(mean[0], cov[0]));
     y = 0;
@@ -855,7 +855,7 @@ struct EIGEN_ALIGN16 ParticleXYR : public _ParticleXYR {
   }
 
   void
-  zero()
+  zero ()
   {
     x = 0.0;
     y = 0.0;
@@ -866,13 +866,13 @@ struct EIGEN_ALIGN16 ParticleXYR : public _ParticleXYR {
   }
 
   inline Eigen::Affine3f
-  toEigenMatrix() const
+  toEigenMatrix () const
   {
     return getTransformation(x, y, z, roll, pitch, yaw);
   }
 
   static ParticleXYR
-  toState(const Eigen::Affine3f& trans)
+  toState (const Eigen::Affine3f& trans)
   {
     float trans_x, trans_y, trans_z, trans_roll, trans_pitch, trans_yaw;
     getTranslationAndEulerAngles(
@@ -882,7 +882,7 @@ struct EIGEN_ALIGN16 ParticleXYR : public _ParticleXYR {
 
   template <class InputIterator>
   static ParticleXYR
-  weightedAverage(InputIterator first, InputIterator last)
+  weightedAverage (InputIterator first, InputIterator last)
   {
     ParticleXYR wa;
     float wa_pitch_sin = 0.0;

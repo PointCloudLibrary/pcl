@@ -2,7 +2,7 @@
 #include <pcl/test/gtest.h>
 
 std::string
-getTimeOffset()
+getTimeOffset ()
 {
   // local offset
   auto offset_hour = std::localtime(new time_t(0))->tm_hour;
@@ -43,20 +43,22 @@ TEST(PCL, TestTimestampGeneratorWithSmallFraction)
 
 TEST(PCL, TestParseTimestamp)
 {
-  const std::chrono::time_point<std::chrono::system_clock> timepoint(std::chrono::system_clock::now());
+  const std::chrono::time_point<std::chrono::system_clock> timepoint(
+      std::chrono::system_clock::now());
 
   const auto timestamp = pcl::getTimestamp(timepoint);
 
   const auto parsedTimepoint = pcl::parseTimestamp(timestamp);
 
-  const auto diff = std::chrono::duration<double,std::milli>(timepoint - parsedTimepoint).count();
+  const auto diff =
+      std::chrono::duration<double, std::milli>(timepoint - parsedTimepoint).count();
 
   EXPECT_LT(diff, 1e-3);
 }
 
 /* ---[ */
 int
-main(int argc, char** argv)
+main (int argc, char** argv)
 {
   testing::InitGoogleTest(&argc, argv);
   return (RUN_ALL_TESTS());

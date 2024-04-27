@@ -41,34 +41,28 @@
 
 #pragma once
 
-#include <pcl/point_cloud.h> // for PointCloud
 #include <pcl/pcl_exports.h> // for PCL_EXPORTS
+#include <pcl/point_cloud.h> // for PointCloud
 
-namespace pcl
-{
-  enum MorphologicalOperators
-  {
-    MORPH_OPEN,
-    MORPH_CLOSE,
-    MORPH_DILATE,
-    MORPH_ERODE
-  };
+namespace pcl {
+enum MorphologicalOperators { MORPH_OPEN, MORPH_CLOSE, MORPH_DILATE, MORPH_ERODE };
 }
 
-namespace pcl
-{
-  /** \brief Apply morphological operator to the z dimension of the input point cloud
-    * \param[in] cloud_in the input point cloud dataset
-    * \param[in] resolution the window size to be used for the morphological operation
-    * \param[in] morphological_operator the morphological operator to apply (open, close, dilate, erode)
-    * \param[out] cloud_out the resultant output point cloud dataset
-    * \ingroup filters
-    */
-  template <typename PointT> PCL_EXPORTS void
-  applyMorphologicalOperator (const typename pcl::PointCloud<PointT>::ConstPtr &cloud_in,
-                              float resolution, const int morphological_operator,
-                              pcl::PointCloud<PointT> &cloud_out);
-}
+namespace pcl {
+/** \brief Apply morphological operator to the z dimension of the input point cloud
+ * \param[in] cloud_in the input point cloud dataset
+ * \param[in] resolution the window size to be used for the morphological operation
+ * \param[in] morphological_operator the morphological operator to apply (open, close,
+ * dilate, erode) \param[out] cloud_out the resultant output point cloud dataset
+ * \ingroup filters
+ */
+template <typename PointT>
+PCL_EXPORTS void
+applyMorphologicalOperator (const typename pcl::PointCloud<PointT>::ConstPtr& cloud_in,
+                            float resolution,
+                            const int morphological_operator,
+                            pcl::PointCloud<PointT>& cloud_out);
+} // namespace pcl
 
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/filters/impl/morphological_filter.hpp>

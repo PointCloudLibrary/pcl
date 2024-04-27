@@ -1,16 +1,16 @@
 /*
  * Software License Agreement (BSD License)
- * 
+ *
  * Point Cloud Library (PCL) - www.pointclouds.org
  * Copyright (c) 2009-2012, Willow Garage, Inc.
  * Copyright (c) 2012-, Open Perception, Inc.
- * 
+ *
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
  * are met:
- * 
+ *
  *  * Redistributions of source code must retain the above copyright
  *    notice, this list of conditions and the following disclaimer.
  *  * Redistributions in binary form must reproduce the above
@@ -20,7 +20,7 @@
  *  * Neither the name of the copyright holder(s) nor the names of its
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
@@ -37,49 +37,43 @@
 
 #pragma once
 
-#include <functional>
-
 #include "OpenNI.h"
 
-namespace pcl
-{
-  namespace io
+#include <functional>
+
+namespace pcl {
+namespace io {
+namespace openni2 {
+
+using StreamCallbackFunction = std::function<void(openni::VideoStream& stream)>;
+
+/* Each NewFrameListener may only listen to one VideoStream at a time.
+ **/
+class OpenNI2FrameListener : public openni::VideoStream::NewFrameListener {
+public:
+  OpenNI2FrameListener() = default;
+
+  OpenNI2FrameListener(StreamCallbackFunction cb) : callback_(std::move(cb)) {}
+
+  ~OpenNI2FrameListener() override = default;
+
+  inline void
+  onNewFrame (openni::VideoStream& stream) override
   {
-    namespace openni2
-    {
-
-      using StreamCallbackFunction = std::function<void(openni::VideoStream& stream)>;
-
-      /* Each NewFrameListener may only listen to one VideoStream at a time.
-      **/
-      class OpenNI2FrameListener : public openni::VideoStream::NewFrameListener
-      {
-        public:
-
-          OpenNI2FrameListener () = default;
-
-          OpenNI2FrameListener (StreamCallbackFunction cb)
-            : callback_(std::move(cb)) {}
-
-          ~OpenNI2FrameListener () override = default;
-
-          inline void
-          onNewFrame (openni::VideoStream& stream) override
-          {
-            if (callback_)
-              callback_(stream);
-          }
-
-          void
-          setCallback (StreamCallbackFunction cb)
-          {
-            callback_ = std::move(cb);
-          }
-
-        private:
-          StreamCallbackFunction callback_;
-      };
-
-    } // namespace
+    if (callback_)
+      callback_(stream);
   }
-}
+
+  void
+  setCallback (StreamCallbackFunction cb)
+  {
+    callback_ = std::move(cb);
+  }
+
+private:
+  StreamCallbackFunction callback_;
+};
+
+} // namespace openni2
+} // namespace io
+} // namespace pcl

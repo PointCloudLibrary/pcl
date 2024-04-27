@@ -61,73 +61,73 @@ public:
   CloudMesh(PointCloudPtr cloud);
 
   PointCloudPtr&
-  getCloud()
+  getCloud ()
   {
     return cloud_;
   }
   PointCloudConstPtr
-  getCloud() const
+  getCloud () const
   {
     return cloud_;
   }
 
   std::vector<pcl::Vertices>&
-  getPolygons()
+  getPolygons ()
   {
     return polygons_;
   }
   const std::vector<pcl::Vertices>&
-  getPolygons() const
+  getPolygons () const
   {
     return polygons_;
   }
 
   vtkSmartPointer<vtkPoints>&
-  getVtkPoints()
+  getVtkPoints ()
   {
     return vtk_points_;
   }
   const vtkSmartPointer<vtkPoints>&
-  getVtkPoints() const
+  getVtkPoints () const
   {
     return vtk_points_;
   }
 
   vtkSmartPointer<vtkCellArray>&
-  getVtkPolygons()
+  getVtkPolygons ()
   {
     return vtk_polygons_;
   }
   const vtkSmartPointer<vtkCellArray>&
-  getVtkPolygons() const
+  getVtkPolygons () const
   {
     return vtk_polygons_;
   }
 
   std::vector<std::string>
-  getAvaiableFieldNames() const;
+  getAvaiableFieldNames () const;
 
   bool
-  open(const std::string& filename);
+  open (const std::string& filename);
 
   bool
-  save(const std::string& filename) const;
+  save (const std::string& filename) const;
 
   static bool
-  save(const std::vector<const CloudMesh*>& cloud_meshes, const std::string& filename);
+  save (const std::vector<const CloudMesh*>& cloud_meshes, const std::string& filename);
 
   void
-  getColorScalarsFromField(vtkSmartPointer<vtkDataArray>& scalars,
-                           const std::string& field) const;
+  getColorScalarsFromField (vtkSmartPointer<vtkDataArray>& scalars,
+                            const std::string& field) const;
 
   void
-  updateVtkPoints();
+  updateVtkPoints ();
 
   void
-  updateVtkPolygons();
+  updateVtkPolygons ();
 
   void
-  transform(double tx, double ty, double tz, double rx, double ry, double rz);
+  transform (double tx, double ty, double tz, double rx, double ry, double rz);
 
 protected:
 private:

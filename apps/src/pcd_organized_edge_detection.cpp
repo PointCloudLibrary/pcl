@@ -65,7 +65,7 @@ using CloudConstPtr = Cloud::ConstPtr;
 pcl::visualization::PCLVisualizer viewer("3D Edge Viewer");
 
 void
-printHelp(int, char** argv)
+printHelp (int, char** argv)
 {
   // clang-format off
   print_error ("Syntax is: %s input.pcd output.pcd <options>\n", argv[0]);
@@ -78,7 +78,7 @@ printHelp(int, char** argv)
 }
 
 bool
-loadCloud(const std::string& filename, pcl::PCLPointCloud2& cloud)
+loadCloud (const std::string& filename, pcl::PCLPointCloud2& cloud)
 {
   TicToc tt;
   print_highlight("Loading ");
@@ -99,7 +99,7 @@ loadCloud(const std::string& filename, pcl::PCLPointCloud2& cloud)
 }
 
 void
-saveCloud(const std::string& filename, const pcl::PCLPointCloud2& output)
+saveCloud (const std::string& filename, const pcl::PCLPointCloud2& output)
 {
   TicToc tt;
   tt.tic();
@@ -121,7 +121,7 @@ saveCloud(const std::string& filename, const pcl::PCLPointCloud2& output)
 }
 
 void
-keyboard_callback(const pcl::visualization::KeyboardEvent& event, void*)
+keyboard_callback (const pcl::visualization::KeyboardEvent& event, void*)
 {
   if (event.keyUp()) {
     double opacity;
@@ -165,10 +165,10 @@ keyboard_callback(const pcl::visualization::KeyboardEvent& event, void*)
 }
 
 void
-compute(const pcl::PCLPointCloud2::ConstPtr& input,
-        pcl::PCLPointCloud2& output,
-        float th_dd,
-        int max_search)
+compute (const pcl::PCLPointCloud2::ConstPtr& input,
+         pcl::PCLPointCloud2& output,
+         float th_dd,
+         int max_search)
 {
   CloudPtr cloud(new Cloud);
   fromPCLPointCloud2(*input, *cloud);
@@ -274,7 +274,7 @@ compute(const pcl::PCLPointCloud2::ConstPtr& input,
 }
 
 int
-main(int argc, char** argv)
+main (int argc, char** argv)
 {
   print_info("Detect 3D edges from organized point cloud data. For more information, "
              "use: %s -h\n",

@@ -12,9 +12,9 @@ const Eigen::Vector4f subsampling_leaf_size(0.02f, 0.02f, 0.02f, 0.0f);
 constexpr float normal_estimation_search_radius = 0.05f;
 
 void
-subsampleAndCalculateNormals(PointCloud<PointXYZ>::Ptr& cloud,
-                             PointCloud<PointXYZ>::Ptr& cloud_subsampled,
-                             PointCloud<Normal>::Ptr& cloud_subsampled_normals)
+subsampleAndCalculateNormals (PointCloud<PointXYZ>::Ptr& cloud,
+                              PointCloud<PointXYZ>::Ptr& cloud_subsampled,
+                              PointCloud<Normal>::Ptr& cloud_subsampled_normals)
 {
   cloud_subsampled = PointCloud<PointXYZ>::Ptr(new PointCloud<PointXYZ>());
   VoxelGrid<PointXYZ> subsampling_filter;
@@ -35,7 +35,7 @@ subsampleAndCalculateNormals(PointCloud<PointXYZ>::Ptr& cloud,
 }
 
 int
-main(int argc, char** argv)
+main (int argc, char** argv)
 {
   if (argc != 3) {
     PCL_ERROR("Syntax: ./pyramid_surface_matching model_1 model_2\n");

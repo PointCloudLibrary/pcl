@@ -35,11 +35,10 @@
  * $Id: uniform_sampling.cpp 2414 2011-09-07 07:01:06Z svn $
  */
 
-#include <pcl/keypoints/sift_keypoint.h>
-#include <pcl/keypoints/impl/sift_keypoint.hpp>
-#include <pcl/point_types.h>
 #include <pcl/impl/instantiate.hpp>
-
+#include <pcl/keypoints/impl/sift_keypoint.hpp>
+#include <pcl/keypoints/sift_keypoint.h>
+#include <pcl/point_types.h>
 
 // Instantiations of specific point types
-//PCL_INSTANTIATE_PRODUCT(SIFTKeypoint, (PCL_XYZ_POINT_TYPES)((pcl::PointWithScale)));
+// PCL_INSTANTIATE_PRODUCT(SIFTKeypoint, (PCL_XYZ_POINT_TYPES)((pcl::PointWithScale)));

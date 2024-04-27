@@ -37,119 +37,128 @@
 
 #pragma once
 
-#include <pcl/pcl_macros.h>
-#include <pcl/io/file_io.h>
-#include <pcl/PCLPointField.h>
 #include <pcl/common/io.h>
 #include <pcl/common/utils.h> // pcl::utils::ignore
+#include <pcl/io/file_io.h>
+#include <pcl/pcl_macros.h>
+#include <pcl/PCLPointField.h>
 
+namespace pcl {
+/** \brief Ascii Point Cloud Reader.
+ * Read any ASCII file by setting the separating characters and input point fields.
+ *
+ * \author Adam Stambler (adasta@gmail.com)
+ * \ingroup io
+ */
+class PCL_EXPORTS ASCIIReader : public FileReader {
+public:
+  ASCIIReader();
+  ~ASCIIReader() override;
+  using FileReader::read;
 
-namespace pcl
-{
-  /** \brief Ascii Point Cloud Reader.
-    * Read any ASCII file by setting the separating characters and input point fields.
-    *
-    * \author Adam Stambler (adasta@gmail.com)
-    * \ingroup io
-    */
-  class PCL_EXPORTS ASCIIReader : public FileReader
+  /* Load only the meta information (number of points, their types, etc),
+   * and not the points themselves, from a given FILE file. Useful for fast
+   * evaluation of the underlying data structure.
+   *
+   * Returns:
+   *  * < 0 (-1) on error
+   *  * > 0 on success
+   * \param[in] file_name the name of the file to load
+   * \param[out] cloud the resultant point cloud dataset (only the header will be
+   * filled) \param[out] origin the sensor acquisition origin (only for > FILE_V7 - null
+   * if not present) \param[out] orientation the sensor acquisition orientation (only
+   * for > FILE_V7 - identity if not present) \param[out] file_version the FILE version
+   * of the file (either FILE_V6 or FILE_V7) \param[out] data_type the type of data
+   * (binary data=1, ascii=0, etc) \param[out] data_idx the offset of cloud data within
+   * the file \param[in] offset the offset in the file where to expect the true header
+   * to begin. One usage example for setting the offset parameter is for reading data
+   * from a TAR "archive containing multiple files: TAR files always add a 512 byte
+   * header in front of the actual file, so set the offset to the next byte after the
+   * header (e.g., 513).
+   */
+  int
+  readHeader (const std::string& file_name,
+              pcl::PCLPointCloud2& cloud,
+              Eigen::Vector4f& origin,
+              Eigen::Quaternionf& orientation,
+              int& file_version,
+              int& data_type,
+              unsigned int& data_idx,
+              const int offset = 0) override;
+
+  /** \brief Read a point cloud data from a FILE file and store it into a
+   * pcl/PCLPointCloud2. \param[in] file_name the name of the file containing the actual
+   * PointCloud data \param[out] cloud the resultant PointCloud message read from disk
+   * \param[out] origin the sensor acquisition origin (only for > FILE_V7 - null if not
+   * present) \param[out] orientation the sensor acquisition orientation (only for >
+   * FILE_V7 - identity if not present) \param[out] file_version the FILE version of the
+   * file (either FILE_V6 or FILE_V7) \param[in] offset the offset in the file where to
+   * expect the true header to begin. One usage example for setting the offset parameter
+   * is for reading data from a TAR "archive containing multiple files: TAR files always
+   * add a 512 byte header in front of the actual file, so set the offset
+   * to the next byte after the header (e.g., 513).
+   */
+  int
+  read (const std::string& file_name,
+        pcl::PCLPointCloud2& cloud,
+        Eigen::Vector4f& origin,
+        Eigen::Quaternionf& orientation,
+        int& file_version,
+        const int offset = 0) override;
+
+  /** \brief Set the ascii file point fields.
+   */
+  template <typename PointT>
+  void
+  setInputFields ();
+
+  /** \brief Set the ascii file point fields using a list of fields.
+   * \param[in] fields  is a list of point fields, in order, in the input ascii file
+   */
+  void
+  setInputFields (const std::vector<pcl::PCLPointField>& fields);
+
+  /** \brief Set the Separating characters for the ascii point fields 2.
+   * \param[in] chars string of separating characters
+   *  Sets the separating characters for the point fields.  The
+   *  default separating characters are " \n\t,"
+   */
+  void
+  setSepChars (const std::string& chars);
+
+  /** \brief Set the extension of the ascii point file type.
+   * \param[in] ext   extension (example :  ".txt" or ".xyz" )
+   */
+  void
+  setExtension (const std::string& ext)
   {
-    public:
-      ASCIIReader ();
-      ~ASCIIReader () override;
-      using FileReader::read;
+    extension_ = ext;
+  }
 
-      /* Load only the meta information (number of points, their types, etc),
-        * and not the points themselves, from a given FILE file. Useful for fast
-        * evaluation of the underlying data structure.
-        *
-        * Returns:
-        *  * < 0 (-1) on error
-        *  * > 0 on success
-        * \param[in] file_name the name of the file to load
-        * \param[out] cloud the resultant point cloud dataset (only the header will be filled)
-        * \param[out] origin the sensor acquisition origin (only for > FILE_V7 - null if not present)
-        * \param[out] orientation the sensor acquisition orientation (only for > FILE_V7 - identity if not present)
-        * \param[out] file_version the FILE version of the file (either FILE_V6 or FILE_V7)
-        * \param[out] data_type the type of data (binary data=1, ascii=0, etc)
-        * \param[out] data_idx the offset of cloud data within the file
-        * \param[in] offset the offset in the file where to expect the true header to begin.
-        * One usage example for setting the offset parameter is for reading
-        * data from a TAR "archive containing multiple files: TAR files always
-        * add a 512 byte header in front of the actual file, so set the offset
-        * to the next byte after the header (e.g., 513).
-        */
-      int
-      readHeader (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
-                  Eigen::Vector4f &origin, Eigen::Quaternionf &orientation,
-                  int &file_version, int &data_type, unsigned int &data_idx, const int offset = 0) override ;
+protected:
+  std::string sep_chars_{", \n\r\t"};
+  std::string extension_{".txt"};
+  std::vector<pcl::PCLPointField> fields_;
+  std::string name_{"AsciiReader"};
 
+  /** \brief Parses token based on field type.
+   * \param[in] token   string representation of point fields
+   * \param[in] field   token point field type
+   * \param[out] data_target  address that the point field data should be assigned to
+   *  returns the size of the parsed point field in bytes
+   */
+  int
+  parse (const std::string& token,
+         const pcl::PCLPointField& field,
+         std::uint8_t* data_target);
 
-      /** \brief Read a point cloud data from a FILE file and store it into a pcl/PCLPointCloud2.
-        * \param[in] file_name the name of the file containing the actual PointCloud data
-        * \param[out] cloud the resultant PointCloud message read from disk
-        * \param[out] origin the sensor acquisition origin (only for > FILE_V7 - null if not present)
-        * \param[out] orientation the sensor acquisition orientation (only for > FILE_V7 - identity if not present)
-        * \param[out] file_version the FILE version of the file (either FILE_V6 or FILE_V7)
-        * \param[in] offset the offset in the file where to expect the true header to begin.
-        * One usage example for setting the offset parameter is for reading
-        * data from a TAR "archive containing multiple files: TAR files always
-        * add a 512 byte header in front of the actual file, so set the offset
-        * to the next byte after the header (e.g., 513).
-        */
-      int
-      read (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
-            Eigen::Vector4f &origin, Eigen::Quaternionf &orientation, int &file_version,
-            const int offset = 0) override;
-
-      /** \brief Set the ascii file point fields.
-        */
-      template<typename PointT>
-      void setInputFields ();
-
-      /** \brief Set the ascii file point fields using a list of fields.
-        * \param[in] fields  is a list of point fields, in order, in the input ascii file
-        */
-      void 
-      setInputFields (const std::vector<pcl::PCLPointField>& fields);
-
-      /** \brief Set the Separating characters for the ascii point fields 2.
-        * \param[in] chars string of separating characters
-        *  Sets the separating characters for the point fields.  The
-        *  default separating characters are " \n\t,"
-        */
-      void 
-      setSepChars (const std::string &chars);
-
-      /** \brief Set the extension of the ascii point file type.
-        * \param[in] ext   extension (example :  ".txt" or ".xyz" )
-        */
-      void 
-      setExtension (const std::string &ext) { extension_ = ext; }
-
-    protected:
-      std::string sep_chars_{", \n\r\t"};
-      std::string extension_{".txt"};
-      std::vector<pcl::PCLPointField> fields_;
-      std::string name_{"AsciiReader"};
-
-
-      /** \brief Parses token based on field type.
-        * \param[in] token   string representation of point fields
-        * \param[in] field   token point field type
-        * \param[out] data_target  address that the point field data should be assigned to
-        *  returns the size of the parsed point field in bytes
-        */
-      int 
-      parse (const std::string& token, const pcl::PCLPointField& field, std::uint8_t* data_target);
-
-      /** \brief Returns the size in bytes of a point field type.
-        * \param[in] type   point field type
-        *  returns the size of the type in bytes
-        */
-      std::uint32_t 
-      typeSize (int type);
-	};
-}
+  /** \brief Returns the size in bytes of a point field type.
+   * \param[in] type   point field type
+   *  returns the size of the type in bytes
+   */
+  std::uint32_t
+  typeSize (int type);
+};
+} // namespace pcl
 
 #include <pcl/io/impl/ascii_io.hpp>

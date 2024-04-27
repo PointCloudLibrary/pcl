@@ -36,18 +36,18 @@
  * $Id: $
  *
  */
-#include <pcl/test/gtest.h>
-#include <pcl/io/pcd_io.h>
-#include <pcl/point_cloud.h>
+#include <pcl/common/eigen.h>
 #include <pcl/common/transforms.h>
-#include <pcl/correspondence.h>
+#include <pcl/features/board.h>
 #include <pcl/features/normal_3d_omp.h>
 #include <pcl/features/shot_omp.h>
-#include <pcl/features/board.h>
 #include <pcl/filters/uniform_sampling.h>
-#include <pcl/recognition/cg/hough_3d.h>
+#include <pcl/io/pcd_io.h>
 #include <pcl/recognition/cg/geometric_consistency.h>
-#include <pcl/common/eigen.h>
+#include <pcl/recognition/cg/hough_3d.h>
+#include <pcl/test/gtest.h>
+#include <pcl/correspondence.h>
+#include <pcl/point_cloud.h>
 
 using namespace pcl;
 using namespace pcl::io;
@@ -57,182 +57,189 @@ using NormalType = Normal;
 using RFType = ReferenceFrame;
 using DescriptorType = SHOT352;
 
-PointCloud<PointType>::Ptr model_ (new PointCloud<PointType> ());
-PointCloud<PointType>::Ptr model_downsampled_ (new PointCloud<PointType> ());
-PointCloud<PointType>::Ptr scene_ (new PointCloud<PointType> ());
-PointCloud<PointType>::Ptr scene_downsampled_ (new PointCloud<PointType> ());
-PointCloud<NormalType>::Ptr model_normals_ (new PointCloud<NormalType> ());
-PointCloud<NormalType>::Ptr scene_normals_ (new PointCloud<NormalType> ());
-PointCloud<DescriptorType>::Ptr model_descriptors_ (new PointCloud<DescriptorType> ());
-PointCloud<DescriptorType>::Ptr scene_descriptors_ (new PointCloud<DescriptorType> ());
-CorrespondencesPtr model_scene_corrs_ (new Correspondences ());
+PointCloud<PointType>::Ptr model_(new PointCloud<PointType>());
+PointCloud<PointType>::Ptr model_downsampled_(new PointCloud<PointType>());
+PointCloud<PointType>::Ptr scene_(new PointCloud<PointType>());
+PointCloud<PointType>::Ptr scene_downsampled_(new PointCloud<PointType>());
+PointCloud<NormalType>::Ptr model_normals_(new PointCloud<NormalType>());
+PointCloud<NormalType>::Ptr scene_normals_(new PointCloud<NormalType>());
+PointCloud<DescriptorType>::Ptr model_descriptors_(new PointCloud<DescriptorType>());
+PointCloud<DescriptorType>::Ptr scene_descriptors_(new PointCloud<DescriptorType>());
+CorrespondencesPtr model_scene_corrs_(new Correspondences());
 
 double
-computeRmsE (const PointCloud<PointType>::ConstPtr &model, const PointCloud<PointType>::ConstPtr &scene, const Eigen::Matrix4f &rototranslation)
+computeRmsE (const PointCloud<PointType>::ConstPtr& model,
+             const PointCloud<PointType>::ConstPtr& scene,
+             const Eigen::Matrix4f& rototranslation)
 {
   PointCloud<PointType> transformed_model;
-  transformPointCloud (*model, transformed_model, rototranslation);
+  transformPointCloud(*model, transformed_model, rototranslation);
 
   KdTreeFLANN<PointType> tree;
-  tree.setInputCloud (scene);
+  tree.setInputCloud(scene);
 
   double sqr_norm_sum = 0;
   int found_points = 0;
 
-  pcl::Indices neigh_indices (1);
-  std::vector<float> neigh_sqr_dists (1);
-  for (const auto &model : transformed_model)
-  {
+  pcl::Indices neigh_indices(1);
+  std::vector<float> neigh_sqr_dists(1);
+  for (const auto& model : transformed_model) {
 
-    int found_neighs = tree.nearestKSearch (model, 1, neigh_indices, neigh_sqr_dists);
-    if(found_neighs == 1)
-    {
+    int found_neighs = tree.nearestKSearch(model, 1, neigh_indices, neigh_sqr_dists);
+    if (found_neighs == 1) {
       ++found_points;
-      sqr_norm_sum += static_cast<double> (neigh_sqr_dists[0]);
+      sqr_norm_sum += static_cast<double>(neigh_sqr_dists[0]);
     }
   }
 
   if (found_points > 0)
-    return sqrt (sqr_norm_sum / static_cast<double>(transformed_model.size ()));
+    return sqrt(sqr_norm_sum / static_cast<double>(transformed_model.size()));
 
-  return std::numeric_limits<double>::max ();
+  return std::numeric_limits<double>::max();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TEST (PCL, Hough3DGrouping)
+TEST(PCL, Hough3DGrouping)
 {
-  PointCloud<RFType>::Ptr model_rf (new PointCloud<RFType> ());
-  PointCloud<RFType>::Ptr scene_rf (new PointCloud<RFType> ());
+  PointCloud<RFType>::Ptr model_rf(new PointCloud<RFType>());
+  PointCloud<RFType>::Ptr scene_rf(new PointCloud<RFType>());
 
-  //RFs
+  // RFs
   BOARDLocalReferenceFrameEstimation<PointType, NormalType, RFType> rf_est;
-  rf_est.setRadiusSearch (0.015);
-  rf_est.setInputCloud (model_downsampled_);
-  rf_est.setInputNormals (model_normals_);
-  rf_est.setSearchSurface (model_);
-  rf_est.compute (*model_rf);
+  rf_est.setRadiusSearch(0.015);
+  rf_est.setInputCloud(model_downsampled_);
+  rf_est.setInputNormals(model_normals_);
+  rf_est.setSearchSurface(model_);
+  rf_est.compute(*model_rf);
 
-  rf_est.setInputCloud (scene_downsampled_);
-  rf_est.setInputNormals (scene_normals_);
-  rf_est.setSearchSurface (scene_);
-  rf_est.compute (*scene_rf);
+  rf_est.setInputCloud(scene_downsampled_);
+  rf_est.setInputNormals(scene_normals_);
+  rf_est.setSearchSurface(scene_);
+  rf_est.compute(*scene_rf);
 
-  std::vector<Eigen::Matrix4f, Eigen::aligned_allocator<Eigen::Matrix4f> > rototranslations;
+  std::vector<Eigen::Matrix4f, Eigen::aligned_allocator<Eigen::Matrix4f>>
+      rototranslations;
 
-  //Actual CG
+  // Actual CG
   Hough3DGrouping<PointType, PointType, RFType, RFType> clusterer;
-  clusterer.setInputCloud (model_downsampled_);
-  clusterer.setInputRf (model_rf);
-  clusterer.setSceneCloud (scene_downsampled_);
-  clusterer.setSceneRf (scene_rf);
-  clusterer.setModelSceneCorrespondences (model_scene_corrs_);
-  clusterer.setHoughBinSize (0.03);
-  clusterer.setHoughThreshold (10);
-  EXPECT_TRUE (clusterer.recognize (rototranslations));
+  clusterer.setInputCloud(model_downsampled_);
+  clusterer.setInputRf(model_rf);
+  clusterer.setSceneCloud(scene_downsampled_);
+  clusterer.setSceneRf(scene_rf);
+  clusterer.setModelSceneCorrespondences(model_scene_corrs_);
+  clusterer.setHoughBinSize(0.03);
+  clusterer.setHoughThreshold(10);
+  EXPECT_TRUE(clusterer.recognize(rototranslations));
 
-  //Assertions
-  ASSERT_GE (rototranslations.size (), 1);
+  // Assertions
+  ASSERT_GE(rototranslations.size(), 1);
 
   // Pick transformation with lowest error
-  double min_rms_e = std::numeric_limits<double>::max ();
-  for (const auto &rototranslation : rototranslations)
-    min_rms_e = std::min (min_rms_e, computeRmsE (model_, scene_, rototranslation));
-  EXPECT_LT (min_rms_e, 1E-2);
+  double min_rms_e = std::numeric_limits<double>::max();
+  for (const auto& rototranslation : rototranslations)
+    min_rms_e = std::min(min_rms_e, computeRmsE(model_, scene_, rototranslation));
+  EXPECT_LT(min_rms_e, 1E-2);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TEST (PCL, GeometricConsistencyGrouping)
+TEST(PCL, GeometricConsistencyGrouping)
 {
-  std::vector<Eigen::Matrix4f, Eigen::aligned_allocator<Eigen::Matrix4f> > rototranslations;
+  std::vector<Eigen::Matrix4f, Eigen::aligned_allocator<Eigen::Matrix4f>>
+      rototranslations;
 
   GeometricConsistencyGrouping<PointType, PointType> clusterer;
-  clusterer.setInputCloud (model_downsampled_);
-  clusterer.setSceneCloud (scene_downsampled_);
-  clusterer.setModelSceneCorrespondences (model_scene_corrs_);
-  clusterer.setGCSize (0.001);
-  clusterer.setGCThreshold (25);
-  EXPECT_TRUE (clusterer.recognize (rototranslations));
+  clusterer.setInputCloud(model_downsampled_);
+  clusterer.setSceneCloud(scene_downsampled_);
+  clusterer.setModelSceneCorrespondences(model_scene_corrs_);
+  clusterer.setGCSize(0.001);
+  clusterer.setGCThreshold(25);
+  EXPECT_TRUE(clusterer.recognize(rototranslations));
 
-  //Assertions
-  EXPECT_EQ (rototranslations.size (), 1);
-  EXPECT_LT (computeRmsE (model_, scene_, rototranslations[0]), 1E-4) << std::endl << rototranslations[0] << std::endl << model_downsampled_->size() << std::endl << scene_downsampled_->size() << std::endl << model_scene_corrs_->size() << std::endl;
+  // Assertions
+  EXPECT_EQ(rototranslations.size(), 1);
+  EXPECT_LT(computeRmsE(model_, scene_, rototranslations[0]), 1E-4)
+      << std::endl
+      << rototranslations[0] << std::endl
+      << model_downsampled_->size() << std::endl
+      << scene_downsampled_->size() << std::endl
+      << model_scene_corrs_->size() << std::endl;
 }
-
 
 /* ---[ */
 int
 main (int argc, char** argv)
 {
-  if (argc < 3)
-  {
-    std::cerr << "No test file given. Please download `milk.pcd` and `milk_cartoon_all_small_clorox.pcd` and pass their paths to the test." << std::endl;
+  if (argc < 3) {
+    std::cerr << "No test file given. Please download `milk.pcd` and "
+                 "`milk_cartoon_all_small_clorox.pcd` and pass their paths to the test."
+              << std::endl;
     return (-1);
   }
 
-  if (loadPCDFile (argv[1], *model_) < 0)
-  {
-    std::cerr << "Failed to read test file. Please download `milk.pcd` and pass its path to the test." << std::endl;
+  if (loadPCDFile(argv[1], *model_) < 0) {
+    std::cerr << "Failed to read test file. Please download `milk.pcd` and pass its "
+                 "path to the test."
+              << std::endl;
     return (-1);
   }
 
-  if (loadPCDFile (argv[2], *scene_) < 0)
-  {
-    std::cerr << "Failed to read test file. Please download `milk_cartoon_all_small_clorox.pcd` and pass its path to the test." << std::endl;
+  if (loadPCDFile(argv[2], *scene_) < 0) {
+    std::cerr << "Failed to read test file. Please download "
+                 "`milk_cartoon_all_small_clorox.pcd` and pass its path to the test."
+              << std::endl;
     return (-1);
   }
 
-  //Normals
+  // Normals
   NormalEstimationOMP<PointType, NormalType> norm_est;
-  norm_est.setKSearch (10);
-  norm_est.setInputCloud (model_);
-  norm_est.compute (*model_normals_);
+  norm_est.setKSearch(10);
+  norm_est.setInputCloud(model_);
+  norm_est.compute(*model_normals_);
 
-  norm_est.setInputCloud (scene_);
-  norm_est.compute (*scene_normals_);
+  norm_est.setInputCloud(scene_);
+  norm_est.compute(*scene_normals_);
 
-  //Downsampling
+  // Downsampling
   UniformSampling<PointType> uniform_sampling;
-  uniform_sampling.setInputCloud (model_);
-  uniform_sampling.setRadiusSearch (0.005);
-  uniform_sampling.filter (*model_downsampled_);
+  uniform_sampling.setInputCloud(model_);
+  uniform_sampling.setRadiusSearch(0.005);
+  uniform_sampling.filter(*model_downsampled_);
 
-  uniform_sampling.setInputCloud (scene_);
-  uniform_sampling.setRadiusSearch (0.02);
-  uniform_sampling.filter (*scene_downsampled_);
+  uniform_sampling.setInputCloud(scene_);
+  uniform_sampling.setRadiusSearch(0.02);
+  uniform_sampling.filter(*scene_downsampled_);
 
-  //Descriptor
+  // Descriptor
   SHOTEstimationOMP<PointType, NormalType, DescriptorType> descr_est;
-  descr_est.setRadiusSearch (0.015);
-  descr_est.setInputCloud (model_downsampled_);
-  descr_est.setInputNormals (model_normals_);
-  descr_est.setSearchSurface (model_);
-  descr_est.compute (*model_descriptors_);
+  descr_est.setRadiusSearch(0.015);
+  descr_est.setInputCloud(model_downsampled_);
+  descr_est.setInputNormals(model_normals_);
+  descr_est.setSearchSurface(model_);
+  descr_est.compute(*model_descriptors_);
 
-  descr_est.setInputCloud (scene_downsampled_);
-  descr_est.setInputNormals (scene_normals_);
-  descr_est.setSearchSurface (scene_);
-  descr_est.compute (*scene_descriptors_);
+  descr_est.setInputCloud(scene_downsampled_);
+  descr_est.setInputNormals(scene_normals_);
+  descr_est.setSearchSurface(scene_);
+  descr_est.compute(*scene_descriptors_);
 
-  //Correspondences with KdTree
+  // Correspondences with KdTree
   KdTreeFLANN<DescriptorType> match_search;
-  match_search.setInputCloud (model_descriptors_);
+  match_search.setInputCloud(model_descriptors_);
 
-  for (std::size_t i = 0; i < scene_descriptors_->size (); ++i)
-  {
-    if ( std::isfinite( scene_descriptors_->at (i).descriptor[0] ) )
-    {
-      pcl::Indices neigh_indices (1);
-      std::vector<float> neigh_sqr_dists (1);
-      int found_neighs = match_search.nearestKSearch (scene_descriptors_->at (i), 1, neigh_indices, neigh_sqr_dists);
-      if(found_neighs == 1 && neigh_sqr_dists[0] < 0.25f)
-      {
-        Correspondence corr (neigh_indices[0], static_cast<int> (i), neigh_sqr_dists[0]);
-        model_scene_corrs_->push_back (corr);
+  for (std::size_t i = 0; i < scene_descriptors_->size(); ++i) {
+    if (std::isfinite(scene_descriptors_->at(i).descriptor[0])) {
+      pcl::Indices neigh_indices(1);
+      std::vector<float> neigh_sqr_dists(1);
+      int found_neighs = match_search.nearestKSearch(
+          scene_descriptors_->at(i), 1, neigh_indices, neigh_sqr_dists);
+      if (found_neighs == 1 && neigh_sqr_dists[0] < 0.25f) {
+        Correspondence corr(neigh_indices[0], static_cast<int>(i), neigh_sqr_dists[0]);
+        model_scene_corrs_->push_back(corr);
       }
     }
   }
 
-  testing::InitGoogleTest (&argc, argv);
-  return (RUN_ALL_TESTS ());
+  testing::InitGoogleTest(&argc, argv);
+  return (RUN_ALL_TESTS());
 }
 /* ]--- */

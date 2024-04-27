@@ -27,10 +27,10 @@ class FPFHLocalEstimationOMP : public LocalEstimator<PointInT, FeatureT> {
 
 public:
   bool
-  estimate(PointInTPtr& in,
-           PointInTPtr& processed,
-           PointInTPtr& keypoints,
-           FeatureTPtr& signatures)
+  estimate (PointInTPtr& in,
+            PointInTPtr& processed,
+            PointInTPtr& keypoints,
+            FeatureTPtr& signatures)
   {
 
     if (!normal_estimator_) {

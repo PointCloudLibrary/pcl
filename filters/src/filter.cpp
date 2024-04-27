@@ -42,32 +42,31 @@
 #include <pcl/PCLPointCloud2.h>
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-/** \brief Base method for feature estimation for all points given in <setInputCloud (), setIndices ()> using
- * the surface in setSearchSurface () and the spatial locator in setSearchMethod ()
- * \param output the resultant filtered point cloud dataset
+/** \brief Base method for feature estimation for all points given in <setInputCloud (),
+ * setIndices ()> using the surface in setSearchSurface () and the spatial locator in
+ * setSearchMethod () \param output the resultant filtered point cloud dataset
  */
 void
-pcl::Filter<pcl::PCLPointCloud2>::filter (PCLPointCloud2 &output)
+pcl::Filter<pcl::PCLPointCloud2>::filter(PCLPointCloud2& output)
 {
-  if (!initCompute ())
+  if (!initCompute())
     return;
 
-  if (input_.get () == &output)  // cloud_in = cloud_out
+  if (input_.get() == &output) // cloud_in = cloud_out
   {
     pcl::PCLPointCloud2 output_temp;
-    applyFilter (output_temp);
+    applyFilter(output_temp);
     output_temp.fields = input_->fields;
     output_temp.header = input_->header;
-    pcl::copyPointCloud (output_temp, output);
+    pcl::copyPointCloud(output_temp, output);
   }
-  else
-  {
+  else {
     output.fields = input_->fields;
     output.header = input_->header;
-    applyFilter (output);
+    applyFilter(output);
   }
 
-  deinitCompute ();
+  deinitCompute();
 }
 
 #ifndef PCL_NO_PRECOMPILE
@@ -78,5 +77,4 @@ pcl::Filter<pcl::PCLPointCloud2>::filter (PCLPointCloud2 &output)
 PCL_INSTANTIATE(removeNaNFromPointCloud, PCL_XYZ_POINT_TYPES)
 PCL_INSTANTIATE(removeNaNNormalsFromPointCloud, PCL_NORMAL_POINT_TYPES)
 
-#endif    // PCL_NO_PRECOMPILE
-
+#endif // PCL_NO_PRECOMPILE

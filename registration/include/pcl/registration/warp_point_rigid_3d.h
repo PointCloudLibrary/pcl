@@ -72,7 +72,7 @@ public:
    * \param[in] p warp parameters (tx ty rz)
    */
   void
-  setParam(const VectorX& p) override
+  setParam (const VectorX& p) override
   {
     assert(p.rows() == this->getDimension());
     Matrix4& trans = this->transform_matrix_;

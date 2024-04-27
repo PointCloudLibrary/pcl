@@ -31,19 +31,20 @@ public:
   CRHEstimation() = default;
 
   void
-  setFeatureEstimator(
+  setFeatureEstimator (
       std::shared_ptr<GlobalEstimator<PointInT, FeatureT>>& feature_estimator)
   {
     feature_estimator_ = feature_estimator;
   }
 
   void
-  estimate(PointInTPtr& in,
-           PointInTPtr& processed,
-           std::vector<pcl::PointCloud<FeatureT>,
-                       Eigen::aligned_allocator<pcl::PointCloud<FeatureT>>>& signatures,
-           std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f>>&
-               centroids) override
+  estimate (
+      PointInTPtr& in,
+      PointInTPtr& processed,
+      std::vector<pcl::PointCloud<FeatureT>,
+                  Eigen::aligned_allocator<pcl::PointCloud<FeatureT>>>& signatures,
+      std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f>>&
+          centroids) override
   {
 
     if (!feature_estimator_) {
@@ -78,13 +79,13 @@ public:
   }
 
   void
-  getCRHHistograms(std::vector<CRHPointCloud::Ptr>& crh_histograms)
+  getCRHHistograms (std::vector<CRHPointCloud::Ptr>& crh_histograms)
   {
     crh_histograms = crh_histograms_;
   }
 
   bool
-  computedNormals() override
+  computedNormals () override
   {
     return true;
   }

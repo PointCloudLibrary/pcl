@@ -38,49 +38,58 @@
 #ifdef HAVE_OPENNI
 
 #include <pcl/io/openni_camera/openni_exception.h>
+
 #include <sstream>
 
-namespace openni_wrapper
-{
+namespace openni_wrapper {
 
-OpenNIException::OpenNIException (const std::string& function_name, const std::string& file_name, unsigned line_number, const std::string& message) noexcept
-: function_name_ (function_name)
-, file_name_ (file_name)
-, line_number_ (line_number)
-, message_ (message)
+OpenNIException::OpenNIException(const std::string& function_name,
+                                 const std::string& file_name,
+                                 unsigned line_number,
+                                 const std::string& message) noexcept
+: function_name_(function_name)
+, file_name_(file_name)
+, line_number_(line_number)
+, message_(message)
 {
   std::stringstream sstream;
-  sstream << function_name_ << " @ " << file_name_ << " @ " << line_number_ << " : " << message_;
+  sstream << function_name_ << " @ " << file_name_ << " @ " << line_number_ << " : "
+          << message_;
   message_long_ = sstream.str();
 }
 
-OpenNIException::~OpenNIException () noexcept = default;
+OpenNIException::~OpenNIException() noexcept = default;
 
-OpenNIException& OpenNIException::operator = (const OpenNIException& exception) noexcept
+OpenNIException&
+OpenNIException::operator=(const OpenNIException& exception) noexcept
 {
   message_ = exception.message_;
   return *this;
 }
 
-const char* OpenNIException::what () const noexcept
+const char*
+OpenNIException::what() const noexcept
 {
   return message_long_.c_str();
 }
 
-const std::string& OpenNIException::getFunctionName () const noexcept
+const std::string&
+OpenNIException::getFunctionName() const noexcept
 {
   return function_name_;
 }
 
-const std::string& OpenNIException::getFileName () const noexcept
+const std::string&
+OpenNIException::getFileName() const noexcept
 {
   return file_name_;
 }
 
-unsigned OpenNIException::getLineNumber () const noexcept
+unsigned
+OpenNIException::getLineNumber() const noexcept
 {
   return line_number_;
 }
 
-}//namespace openni_camera
+} // namespace openni_wrapper
 #endif

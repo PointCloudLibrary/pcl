@@ -8,7 +8,7 @@
 // THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT EXPRESS OR IMPLIED WARRANTY.
 // ALL IMPLIED WARRANTIES OF FITNESS FOR ANY PARTICULAR PURPOSE AND OF
 // MERCHANTABILITY ARE HEREBY DISCLAIMED.
-//				
+//
 // For complete openNURBS copyright information see <http://www.opennurbs.org>.
 //
 ////////////////////////////////////////////////////////////////
@@ -19,28 +19,30 @@
 
 /*
 The opennurbs rtree code is a modifed version of the
-free and unrestricted R-tree implementation obtianed from 
+free and unrestricted R-tree implementation obtianed from
 http://www.superliminal.com/sources/sources.htm
 
 The first lines on the website indicate the code is free and unrestricted:
 
   Free Source Code
-  Here are a few useful bits of free source code. 
+  Here are a few useful bits of free source code.
   You're completely free to use them for any purpose whatsoever.
-  All I ask is that if you find one to be particularly valuable, 
-  then consider sending feedback. Please send bugs and suggestions too. 
-  Enjoy 
+  All I ask is that if you find one to be particularly valuable,
+  then consider sending feedback. Please send bugs and suggestions too.
+  Enjoy
 
 The readme.txt file included with the R-tree source says
 
   LICENSE:
     Entirely free for all uses. Enjoy!
 
-The original authors are 
+The original authors are
 
 AUTHORS
- * 1983 Original algorithm and test code by Antonin Guttman and Michael Stonebraker, UC Berkely
- * 1994 ANCI C ported from original test code by Melinda Green - melinda@superliminal.com
+ * 1983 Original algorithm and test code by Antonin Guttman and Michael Stonebraker, UC
+Berkely
+ * 1994 ANCI C ported from original test code by Melinda Green -
+melinda@superliminal.com
  * 1995 Sphere volume fix for degeneracy problem submitted by Paul Brook
  * 2004 Templated C++ port by Greg Douglas
 
@@ -49,9 +51,7 @@ the leaf iterator.  The rest of the changes are cosmetic.
 
 */
 
-
-
-// Minimum and maximum number of elements 
+// Minimum and maximum number of elements
 // in ON_RTreeNode::m_branch[].
 // must have ON_RTree_MAX_NODE_COUNT > ON_RTree_MIN_NODE_COUNT
 #define ON_RTree_MIN_NODE_COUNT 2
@@ -59,7 +59,7 @@ the leaf iterator.  The rest of the changes are cosmetic.
 
 /*
 In a test of a sphere mesh with mesh: 8385 vertices, 8192 polygons
-and ON_RTree_MAX_NODE_COUNT = 3, 4, 5, and 6, the memory use was 
+and ON_RTree_MAX_NODE_COUNT = 3, 4, 5, and 6, the memory use was
 most efficient with ON_RTree_MAX_NODE_COUNT=6
 
 Memory Usage MAX_NODE_COUNT = 3
@@ -81,40 +81,34 @@ Memory Usage MAX_NODE_COUNT = 6
 
 // This struct is used instead of ON_BoundingBox to avoid calling
 // constructors.
-struct ON_RTreeBBox
-{
+struct ON_RTreeBBox {
   double m_min[3];
   double m_max[3];
 };
 
-struct ON_RTreeSphere
-{
+struct ON_RTreeSphere {
   double m_point[3];
   double m_radius;
 };
 
-struct ON_RTreeCapsule
-{
+struct ON_RTreeCapsule {
   double m_point[2][3];
   double m_radius;
   double m_domain[2];
 };
 
-struct ON_RTreeBranch
-{
+struct ON_RTreeBranch {
   ON_RTreeBBox m_rect;
 
   // If ON_RTreeNode.m_level > 0, then m_child points to a child node.
   // If ON_RTreeNode.m_level == 0, then m_id identifies the leaf element.
-  union
-  {
+  union {
     struct ON_RTreeNode* m_child;
     ON__INT_PTR m_id;
   };
 };
 
-struct ON_RTreeLeaf
-{
+struct ON_RTreeLeaf {
   ON_RTreeBBox m_rect;
   ON__INT_PTR m_id;
 };
@@ -122,65 +116,76 @@ struct ON_RTreeLeaf
 // The ON_RTreeNode is used at root, branch and leaf nodes.
 // When m_level > 0, the node is a branch.
 // When m_level = 0, the node is a leaf.
-struct ON_RTreeNode
-{
-  inline bool IsInternalNode() const
-    { return (m_level > 0); }  // internal nodes have m_level > 0
-  inline bool IsLeaf() const
-    { return (m_level == 0); } // branch nodes have m_level = 0
+struct ON_RTreeNode {
+  inline bool
+  IsInternalNode () const
+  {
+    return (m_level > 0);
+  } // internal nodes have m_level > 0
+  inline bool
+  IsLeaf () const
+  {
+    return (m_level == 0);
+  } // branch nodes have m_level = 0
 
   // m_level must be a signed int to insure signed compares work correctly
-  int m_level;  // =0 at leaf nodes, > 0 at branch nodes
+  int m_level; // =0 at leaf nodes, > 0 at branch nodes
 
   // The m_branch[] array contains m_count elements
   // 0 <= m_count <= ON_RTree_MAX_NODE_COUNT
   // m_count must be a signed int to insure signed compares work correctly
-  int m_count; 
+  int m_count;
   ON_RTreeBranch m_branch[ON_RTree_MAX_NODE_COUNT];
 };
 
-struct ON_RTreeSearchResult
-{
-  int m_capacity;   // m_id[] array capacity (search terminates when m_count == m_capacity)
-  int m_count;      // number of elements in m_id[]
+struct ON_RTreeSearchResult {
+  int m_capacity;    // m_id[] array capacity (search terminates when m_count ==
+                     // m_capacity)
+  int m_count;       // number of elements in m_id[]
   ON__INT_PTR* m_id; // m_id[] = array of search results.
 };
 
-class ON_CLASS ON_RTreeMemPool
-{
+class ON_CLASS ON_RTreeMemPool {
 public:
-  ON_RTreeMemPool( ON_MEMORY_POOL* heap, std::size_t leaf_count );
+  ON_RTreeMemPool(ON_MEMORY_POOL* heap, std::size_t leaf_count);
   ~ON_RTreeMemPool();
 
-  ON_RTreeNode* AllocNode();
-  void FreeNode(ON_RTreeNode* node);
+  ON_RTreeNode*
+  AllocNode ();
+  void
+  FreeNode (ON_RTreeNode* node);
 
-  struct ON_RTreeListNode* AllocListNode();
-  void FreeListNode(struct ON_RTreeListNode* list_node);
+  struct ON_RTreeListNode*
+  AllocListNode ();
+  void
+  FreeListNode (struct ON_RTreeListNode* list_node);
 
-  void DeallocateAll();
+  void
+  DeallocateAll ();
 
   /*
   Returns:
     Total number of bytes of heap memory allocated.
   */
-  std::size_t SizeOf() const;
+  std::size_t
+  SizeOf () const;
 
   /*
   Returns:
     Number of bytes of heap memory not currently in use.
   */
-  std::size_t SizeOfUnusedBuffer() const;
+  std::size_t
+  SizeOfUnusedBuffer () const;
 
 private:
-  void GrowBuffer();
+  void
+  GrowBuffer ();
 
-  struct Blk
-  {
+  struct Blk {
     struct Blk* m_next;
   };
 
-  // linked list of unused ON_RTreeNode 
+  // linked list of unused ON_RTreeNode
   struct Blk* m_nodes;
   // linked list of unused ON_RTreeListNode
   struct Blk* m_list_nodes;
@@ -190,7 +195,7 @@ private:
   std::size_t m_buffer_capacity;
 
   struct Blk* m_blk_list;   // linked list used to free all allocated memory
-  std::size_t m_sizeof_blk;      // total amount of memory in each block.
+  std::size_t m_sizeof_blk; // total amount of memory in each block.
 
   ON_MEMORY_POOL* m_heap;
   std::size_t m_sizeof_heap; // total amount of heap memory in this rtree
@@ -200,11 +205,10 @@ private:
 //
 // ON_RTreeIterator
 //
-//   The ON_RTreeIterator class can be used to iterate each leaf 
+//   The ON_RTreeIterator class can be used to iterate each leaf
 //   in an ON_RTree.
 //
-class ON_CLASS ON_RTreeIterator
-{
+class ON_CLASS ON_RTreeIterator {
 public:
   /*
   Description:
@@ -217,7 +221,7 @@ public:
 
     There is no connection between the order elements are inserted
     in an R-tree and the order the elements are iterated by an
-    iterator.    
+    iterator.
   */
   ON_RTreeIterator();
   ON_RTreeIterator(const class ON_RTree& a_rtree);
@@ -241,9 +245,10 @@ public:
 
     There is no connection between the order elements are inserted
     in an R-tree and the order the elements are iterated by an
-    iterator.    
+    iterator.
   */
-  bool Initialize(const class ON_RTree& a_rtree);
+  bool
+  Initialize (const class ON_RTree& a_rtree);
 
   /*
   Description:
@@ -262,9 +267,10 @@ public:
 
     There is no connection between the order elements are inserted
     in an R-tree and the order the elements are iterated by an
-    iterator.    
+    iterator.
   */
-  bool Initialize(const struct ON_RTreeNode* a_node);
+  bool
+  Initialize (const struct ON_RTreeNode* a_node);
 
   /*
   Description:
@@ -277,7 +283,8 @@ public:
     A pointer to the current R-tree leaf.  When there are no more leaves,
     the returned pointer is null.
   */
-  const ON_RTreeBranch* Value() const;
+  const ON_RTreeBranch*
+  Value () const;
 
   /*
   Description:
@@ -303,7 +310,8 @@ public:
   See Also:
     ON_RTreeIterator::Last();
   */
-  bool First();
+  bool
+  First ();
 
   /*
   Description:
@@ -317,8 +325,8 @@ public:
   See Also:
     ON_RTreeIterator::Prev();
   */
-  bool Next();
-
+  bool
+  Next ();
 
   /*
   Description:
@@ -342,7 +350,8 @@ public:
   See Also:
     ON_RTreeIterator::First();
   */
-  bool Last();
+  bool
+  Last ();
 
   /*
   Description:
@@ -356,29 +365,30 @@ public:
   See Also:
     ON_RTreeIterator::Next();
   */
-  bool Prev();
+  bool
+  Prev ();
 
 private:
-  enum { MAX_STACK = 32 }; //  Max stack size. Allows almost n^32 where n is number of branches in node
-  
-  struct StackElement
-  {
+  enum {
+    MAX_STACK = 32
+  }; //  Max stack size. Allows almost n^32 where n is number of branches in node
+
+  struct StackElement {
     const struct ON_RTreeNode* m_node;
     int m_branchIndex; // must be a signed int to insure signed compares work correctly
   };
 
-  bool PushChildren(struct StackElement* sp, bool bFirstChild);
+  bool
+  PushChildren (struct StackElement* sp, bool bFirstChild);
 
-  StackElement  m_stack[MAX_STACK]; // stack
-  StackElement* m_sp;               // stack pointer (null or points into m_stack[])
-  const ON_RTreeNode* m_root;       // root of tree being iterated
+  StackElement m_stack[MAX_STACK]; // stack
+  StackElement* m_sp;              // stack pointer (null or points into m_stack[])
+  const ON_RTreeNode* m_root;      // root of tree being iterated
 };
 
-
-class ON_CLASS ON_RTree
-{
+class ON_CLASS ON_RTree {
 public:
-  ON_RTree( ON_MEMORY_POOL* heap = 0, std::size_t leaf_count = 0 );
+  ON_RTree(ON_MEMORY_POOL* heap = 0, std::size_t leaf_count = 0);
   ~ON_RTree();
 
   /*
@@ -390,8 +400,9 @@ public:
   Returns:
     True if successful.
   */
-  bool CreateMeshFaceTree( const class ON_Mesh* mesh );
-  
+  bool
+  CreateMeshFaceTree (const class ON_Mesh* mesh);
+
   /*
   Description:
     Insert an element into the RTree.
@@ -400,7 +411,7 @@ public:
     a_max - [in]
       3d bounding box of the element.  The values in a_min[3] and a_max[3]
       must satisfy
-      a_min[0] <= a_max[0], 
+      a_min[0] <= a_max[0],
       a_min[1] <= a_max[1], and
       a_min[1] <= a_max[1].
     a_dataId - [in]
@@ -409,13 +420,17 @@ public:
     True if element was successfully inserted.
   Remarks:
     Calling Insert() or Remove() invalidates any ON_RTreeIterator
-    used to iterate this rtree. 
+    used to iterate this rtree.
   */
-  bool Insert(const double a_min[3], const double a_max[3], void* a_element_id);
-  bool Insert(const double a_min[3], const double a_max[3], int a_element_id);
-  bool Insert2d(const double a_min[2], const double a_max[2], void* a_element_id);
-  bool Insert2d(const double a_min[2], const double a_max[2], int a_element_id);
-  
+  bool
+  Insert (const double a_min[3], const double a_max[3], void* a_element_id);
+  bool
+  Insert (const double a_min[3], const double a_max[3], int a_element_id);
+  bool
+  Insert2d (const double a_min[2], const double a_max[2], void* a_element_id);
+  bool
+  Insert2d (const double a_min[2], const double a_max[2], int a_element_id);
+
   /*
   Description:
     Remove an element from the RTree.
@@ -424,7 +439,7 @@ public:
     a_max - [in]
       3d bounding box of the element.  The values in a_min[3] and a_max[3]
       must satisfy
-      a_min[0] <= a_max[0], 
+      a_min[0] <= a_max[0],
       a_min[1] <= a_max[1], and
       a_min[2] <= a_max[2].
     a_dataId - [in]
@@ -433,18 +448,23 @@ public:
     True if element was successfully removed.
   Remarks:
     Calling Insert() or Remove() invalidates any ON_RTreeIterator
-    used to iterate this rtree. 
+    used to iterate this rtree.
   */
-  bool Remove(const double a_min[3], const double a_max[3], void* a_elementId);
-  bool Remove(const double a_min[3], const double a_max[3], int a_elementId);
-  bool Remove2d(const double a_min[2], const double a_max[2], void* a_elementId);
-  bool Remove2d(const double a_min[2], const double a_max[2], int a_elementId);
-  
+  bool
+  Remove (const double a_min[3], const double a_max[3], void* a_elementId);
+  bool
+  Remove (const double a_min[3], const double a_max[3], int a_elementId);
+  bool
+  Remove2d (const double a_min[2], const double a_max[2], void* a_elementId);
+  bool
+  Remove2d (const double a_min[2], const double a_max[2], int a_elementId);
+
   /*
   Description:
     Remove all elements from the R-tree.
   */
-  void RemoveAll();
+  void
+  RemoveAll ();
 
   /*
   Description:
@@ -490,23 +510,20 @@ public:
     If you are using a Search() that uses a resultCallback() function,
     then return true to keep searching and false to terminate the search.
   */
-  bool Search( 
-    ON_RTreeSphere* a_sphere,
-    bool ON_MSC_CDECL resultCallback(void* a_context, ON__INT_PTR a_id), 
-    void* a_context
-    ) const;
+  bool
+  Search (ON_RTreeSphere* a_sphere,
+          bool ON_MSC_CDECL resultCallback(void* a_context, ON__INT_PTR a_id),
+          void* a_context) const;
 
-  bool Search( 
-    ON_RTreeCapsule* a_capsule,
-    bool ON_MSC_CDECL resultCallback(void* a_context, ON__INT_PTR a_id), 
-    void* a_context
-    ) const;
+  bool
+  Search (ON_RTreeCapsule* a_capsule,
+          bool ON_MSC_CDECL resultCallback(void* a_context, ON__INT_PTR a_id),
+          void* a_context) const;
 
-  bool Search( 
-    ON_RTreeBBox* a_rect,
-    bool ON_MSC_CDECL resultCallback(void* a_context, ON__INT_PTR a_id), 
-    void* a_context
-    ) const;
+  bool
+  Search (ON_RTreeBBox* a_rect,
+          bool ON_MSC_CDECL resultCallback(void* a_context, ON__INT_PTR a_id),
+          void* a_context) const;
 
   /*
   Description:
@@ -529,53 +546,64 @@ public:
     If you are using a Search() that uses a resultCallback() function,
     then return true to keep searching and false to terminate the search.
   */
-  bool Search(
-    const double a_plane_eqn[4],
-    double a_min,
-    double a_max,
-    bool ON_MSC_CDECL resultCallback(void* a_context, ON__INT_PTR a_id), 
-    void* a_context
-    ) const;
+  bool
+  Search (const double a_plane_eqn[4],
+          double a_min,
+          double a_max,
+          bool ON_MSC_CDECL resultCallback(void* a_context, ON__INT_PTR a_id),
+          void* a_context) const;
 
-  bool Search(const double a_min[3], const double a_max[3],
-    bool ON_MSC_CDECL resultCallback(void* a_context, ON__INT_PTR a_id), void* a_context 
-    ) const;
+  bool
+  Search (const double a_min[3],
+          const double a_max[3],
+          bool ON_MSC_CDECL resultCallback(void* a_context, ON__INT_PTR a_id),
+          void* a_context) const;
 
-	bool Search(const double a_min[3], const double a_max[3],
-    ON_RTreeSearchResult& a_result 
-    ) const;
+  bool
+  Search (const double a_min[3],
+          const double a_max[3],
+          ON_RTreeSearchResult& a_result) const;
 
-	bool Search(const double a_min[3], const double a_max[3],
-    ON_SimpleArray<ON_RTreeLeaf>& a_result 
-    ) const;
+  bool
+  Search (const double a_min[3],
+          const double a_max[3],
+          ON_SimpleArray<ON_RTreeLeaf>& a_result) const;
 
-  bool Search(const double a_min[3], const double a_max[3],
-    ON_SimpleArray<void*>& a_result 
-    ) const;
+  bool
+  Search (const double a_min[3],
+          const double a_max[3],
+          ON_SimpleArray<void*>& a_result) const;
 
-  bool Search(const double a_min[3], const double a_max[3],
-    ON_SimpleArray<int>& a_result 
-    ) const;
+  bool
+  Search (const double a_min[3],
+          const double a_max[3],
+          ON_SimpleArray<int>& a_result) const;
 
-  bool Search2d(const double a_min[2], const double a_max[2],
-    bool ON_MSC_CDECL resultCallback(void* a_context, ON__INT_PTR a_id), void* a_context
-    ) const;
+  bool
+  Search2d (const double a_min[2],
+            const double a_max[2],
+            bool ON_MSC_CDECL resultCallback(void* a_context, ON__INT_PTR a_id),
+            void* a_context) const;
 
-	bool Search2d(const double a_min[2], const double a_max[2],
-    ON_RTreeSearchResult& a_result
-    ) const;
+  bool
+  Search2d (const double a_min[2],
+            const double a_max[2],
+            ON_RTreeSearchResult& a_result) const;
 
-	bool Search2d(const double a_min[2], const double a_max[2],
-    ON_SimpleArray<ON_RTreeLeaf>& a_result
-    ) const;
+  bool
+  Search2d (const double a_min[2],
+            const double a_max[2],
+            ON_SimpleArray<ON_RTreeLeaf>& a_result) const;
 
-  bool Search2d(const double a_min[2], const double a_max[2],
-    ON_SimpleArray<void*>& a_result
-    ) const;
+  bool
+  Search2d (const double a_min[2],
+            const double a_max[2],
+            ON_SimpleArray<void*>& a_result) const;
 
-  bool Search2d(const double a_min[2], const double a_max[2],
-    ON_SimpleArray<int>& a_result
-    ) const;
+  bool
+  Search2d (const double a_min[2],
+            const double a_max[2],
+            ON_SimpleArray<int>& a_result) const;
 
   /*
   Description:
@@ -584,19 +612,18 @@ public:
     a_rtreeA - [in]
     a_rtreeB - [in]
     tolerance - [in]
-      If the distance between a pair of bounding boxes is <= tolerance, 
+      If the distance between a pair of bounding boxes is <= tolerance,
       then the pair is added to a_result[].
     a_result - [out]
       Pairs of ids of elements who bounding boxes overlap.
   Returns:
     True if entire tree was searched.  It is possible no results were found.
   */
-  static bool Search( 
-          const ON_RTree& a_rtreeA,
-          const ON_RTree& a_rtreeB, 
+  static bool
+  Search (const ON_RTree& a_rtreeA,
+          const ON_RTree& a_rtreeB,
           double tolerance,
-          ON_SimpleArray<ON_2dex>& a_result
-          );
+          ON_SimpleArray<ON_2dex>& a_result);
 
   /*
   Description:
@@ -605,7 +632,7 @@ public:
     a_rtreeA - [in]
     a_rtreeB - [in]
     tolerance - [in]
-      If the distance between a pair of bounding boxes is <= tolerance, 
+      If the distance between a pair of bounding boxes is <= tolerance,
       then resultCallback() is called.
     resultCallback - [out]
       callback function
@@ -613,13 +640,14 @@ public:
   Returns:
     True if entire tree was searched.  It is possible no results were found.
   */
-  static bool Search( 
-          const ON_RTree& a_rtreeA,
-          const ON_RTree& a_rtreeB, 
+  static bool
+  Search (const ON_RTree& a_rtreeA,
+          const ON_RTree& a_rtreeB,
           double tolerance,
-          void ON_MSC_CDECL resultCallback(void* a_context, ON__INT_PTR a_idA, ON__INT_PTR a_idB),
-          void* a_context
-          );
+          void ON_MSC_CDECL resultCallback(void* a_context,
+                                           ON__INT_PTR a_idA,
+                                           ON__INT_PTR a_idB),
+          void* a_context);
 
   /*
   Description:
@@ -628,7 +656,7 @@ public:
     a_rtreeA - [in]
     a_rtreeB - [in]
     tolerance - [in]
-      If the distance between a pair of bounding boxes is <= tolerance, 
+      If the distance between a pair of bounding boxes is <= tolerance,
       then resultCallback() is called.
     resultCallback - [out]
       callback function
@@ -637,51 +665,65 @@ public:
   Returns:
     True if entire tree was searched.  It is possible no results were found.
   */
-  static bool Search( 
-          const ON_RTree& a_rtreeA,
-          const ON_RTree& a_rtreeB, 
+  static bool
+  Search (const ON_RTree& a_rtreeA,
+          const ON_RTree& a_rtreeB,
           double tolerance,
-          bool ON_MSC_CDECL resultCallback(void* a_context, ON__INT_PTR a_idA, ON__INT_PTR a_idB),
-          void* a_context
-          );
+          bool ON_MSC_CDECL resultCallback(void* a_context,
+                                           ON__INT_PTR a_idA,
+                                           ON__INT_PTR a_idB),
+          void* a_context);
   /*
   Returns:
     Number of elements (leaves).
   Remark:
-    No internal count is maintained, so this function traverses the 
+    No internal count is maintained, so this function traverses the
     tree to count the leaves.  If efficiency is important, save the
     result.
   */
-  int ElementCount();
+  int
+  ElementCount ();
 
   /*
   Returns:
     Pointer to the root node.
   */
-  const ON_RTreeNode* Root() const;
-  
+  const ON_RTreeNode*
+  Root () const;
+
   /*
   Returns:
     Bounding box of the entire R-tree;
   */
-  ON_BoundingBox BoundingBox() const;
+  ON_BoundingBox
+  BoundingBox () const;
 
   /*
   Returns:
     Number of bytes of heap memory used by this R-tree.
   */
-  std::size_t SizeOf() const;
+  std::size_t
+  SizeOf () const;
 
 private:
-  void SplitNode(ON_RTreeNode*, ON_RTreeBranch*, ON_RTreeNode**);
-  bool AddBranch(ON_RTreeBranch*, ON_RTreeNode*, ON_RTreeNode**);
-  bool InsertRectRec(ON_RTreeBBox*, ON__INT_PTR, ON_RTreeNode*, ON_RTreeNode**, int);
-  bool InsertRect(ON_RTreeBBox*, ON__INT_PTR, ON_RTreeNode**, int);
-  void LoadNodes(ON_RTreeNode*, ON_RTreeNode*, struct ON_RTreePartitionVars*);
-  bool RemoveRect(ON_RTreeBBox*, ON__INT_PTR, ON_RTreeNode**);
-  bool RemoveRectRec(ON_RTreeBBox*, ON__INT_PTR, ON_RTreeNode*, struct ON_RTreeListNode**);
-  void ReInsert(ON_RTreeNode*, struct ON_RTreeListNode**);
-  void RemoveAllRec(ON_RTreeNode*);
+  void
+  SplitNode (ON_RTreeNode*, ON_RTreeBranch*, ON_RTreeNode**);
+  bool
+  AddBranch (ON_RTreeBranch*, ON_RTreeNode*, ON_RTreeNode**);
+  bool
+  InsertRectRec (ON_RTreeBBox*, ON__INT_PTR, ON_RTreeNode*, ON_RTreeNode**, int);
+  bool
+  InsertRect (ON_RTreeBBox*, ON__INT_PTR, ON_RTreeNode**, int);
+  void
+  LoadNodes (ON_RTreeNode*, ON_RTreeNode*, struct ON_RTreePartitionVars*);
+  bool
+  RemoveRect (ON_RTreeBBox*, ON__INT_PTR, ON_RTreeNode**);
+  bool
+  RemoveRectRec (ON_RTreeBBox*, ON__INT_PTR, ON_RTreeNode*, struct ON_RTreeListNode**);
+  void
+  ReInsert (ON_RTreeNode*, struct ON_RTreeListNode**);
+  void
+  RemoveAllRec (ON_RTreeNode*);
   ON_RTreeNode* m_root;
   std::size_t m_reserved;
   ON_RTreeMemPool m_mem_pool;

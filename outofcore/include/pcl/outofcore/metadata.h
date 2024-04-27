@@ -39,53 +39,49 @@
 #pragma once
 
 #include <boost/filesystem.hpp>
-#include <vector>
+
 #include <ostream>
+#include <vector>
 
-namespace pcl
-{
-  namespace outofcore
-  {
-    
-    /** \class AbstractMetadata
-     *
-     *  \brief Abstract interface for outofcore metadata file types
-     *
-     *  \ingroup outofcore
-     *  \author Stephen Fox (foxstephend@gmail.com)
-     */
+namespace pcl {
+namespace outofcore {
 
-    class PCL_EXPORTS OutofcoreAbstractMetadata
-    {
-    public:
-      
-      /** \brief Empty constructor */
-      OutofcoreAbstractMetadata () = default;
-      
-      virtual
-      ~OutofcoreAbstractMetadata () = default;
-      
-      /** \brief Write the metadata in the on-disk format, e.g. JSON. */
-      virtual void
-      serializeMetadataToDisk () = 0;
+/** \class AbstractMetadata
+ *
+ *  \brief Abstract interface for outofcore metadata file types
+ *
+ *  \ingroup outofcore
+ *  \author Stephen Fox (foxstephend@gmail.com)
+ */
 
-      /** \brief Method which should read and parse metadata and store
-       *  it in variables that have public getters and setters*/
-      virtual int
-      loadMetadataFromDisk (const boost::filesystem::path& path_to_metadata) = 0;
-      
-      /** \brief Should write the same ascii metadata that is saved on
-       *   disk, or a human readable format of the metadata in case a binary format is being used */
-      friend std::ostream& 
-      operator<<(std::ostream& os, const OutofcoreAbstractMetadata& metadata_arg);
-      
-    protected:
-      
-      /** \brief Constructs the metadata ascii which can be written to disk or piped to stdout */
-      virtual void
-      writeMetadataString (std::vector<char>& buf) =0;
-      
-    };
-    
-  }//namespace outofcore
-}//namespace pcl
+class PCL_EXPORTS OutofcoreAbstractMetadata {
+public:
+  /** \brief Empty constructor */
+  OutofcoreAbstractMetadata() = default;
+
+  virtual ~OutofcoreAbstractMetadata() = default;
+
+  /** \brief Write the metadata in the on-disk format, e.g. JSON. */
+  virtual void
+  serializeMetadataToDisk () = 0;
+
+  /** \brief Method which should read and parse metadata and store
+   *  it in variables that have public getters and setters*/
+  virtual int
+  loadMetadataFromDisk (const boost::filesystem::path& path_to_metadata) = 0;
+
+  /** \brief Should write the same ascii metadata that is saved on
+   *   disk, or a human readable format of the metadata in case a binary format is being
+   * used */
+  friend std::ostream&
+  operator<<(std::ostream& os, const OutofcoreAbstractMetadata& metadata_arg);
+
+protected:
+  /** \brief Constructs the metadata ascii which can be written to disk or piped to
+   * stdout */
+  virtual void
+  writeMetadataString (std::vector<char>& buf) = 0;
+};
+
+} // namespace outofcore
+} // namespace pcl

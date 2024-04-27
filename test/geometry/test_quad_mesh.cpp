@@ -38,13 +38,12 @@
  *
  */
 
-#include <vector>
-
+#include <pcl/geometry/quad_mesh.h>
 #include <pcl/test/gtest.h>
 
-#include <pcl/geometry/quad_mesh.h>
-
 #include "test_mesh_common_functions.h"
+
+#include <vector>
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -58,65 +57,63 @@ using HalfEdgeIndices = std::vector<HalfEdgeIndex>;
 using FaceIndices = std::vector<FaceIndex>;
 
 template <bool IsManifoldT>
-struct MeshTraits
-{
-    using VertexData = int;
-    using HalfEdgeData = pcl::geometry::NoData;
-    using EdgeData = pcl::geometry::NoData;
-    using FaceData = pcl::geometry::NoData;
-    using IsManifold = std::integral_constant <bool, IsManifoldT>;
+struct MeshTraits {
+  using VertexData = int;
+  using HalfEdgeData = pcl::geometry::NoData;
+  using EdgeData = pcl::geometry::NoData;
+  using FaceData = pcl::geometry::NoData;
+  using IsManifold = std::integral_constant<bool, IsManifoldT>;
 };
 
-using ManifoldQuadMesh = pcl::geometry::QuadMesh<MeshTraits<true> >;
-using NonManifoldQuadMesh = pcl::geometry::QuadMesh<MeshTraits<false> >;
+using ManifoldQuadMesh = pcl::geometry::QuadMesh<MeshTraits<true>>;
+using NonManifoldQuadMesh = pcl::geometry::QuadMesh<MeshTraits<false>>;
 
-using QuadMeshTypes = testing::Types <ManifoldQuadMesh, NonManifoldQuadMesh>;
+using QuadMeshTypes = testing::Types<ManifoldQuadMesh, NonManifoldQuadMesh>;
 
 template <class MeshT>
-class TestQuadMesh : public testing::Test
-{
-  protected:
-    using Mesh = MeshT;
+class TestQuadMesh : public testing::Test {
+protected:
+  using Mesh = MeshT;
 };
 
-TYPED_TEST_SUITE (TestQuadMesh, QuadMeshTypes);
+TYPED_TEST_SUITE(TestQuadMesh, QuadMeshTypes);
 
 ////////////////////////////////////////////////////////////////////////////////
 
-TYPED_TEST (TestQuadMesh, CorrectMeshTag)
+TYPED_TEST(TestQuadMesh, CorrectMeshTag)
 {
   using Mesh = typename TestFixture::Mesh;
   using MeshTag = typename Mesh::MeshTag;
 
-  ASSERT_EQ (typeid (pcl::geometry::QuadMeshTag), typeid (MeshTag));
+  ASSERT_EQ(typeid(pcl::geometry::QuadMeshTag), typeid(MeshTag));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
-TYPED_TEST (TestQuadMesh, CorrectNumberOfVertices)
+TYPED_TEST(TestQuadMesh, CorrectNumberOfVertices)
 {
   // Make sure that only quads can be added
   using Mesh = typename TestFixture::Mesh;
 
-  for (unsigned int n=1; n<=5; ++n)
-  {
+  for (unsigned int n = 1; n <= 5; ++n) {
     Mesh mesh;
     VertexIndices vi;
-    for (unsigned int i=0; i<n; ++i)
-    {
-      vi.push_back (VertexIndex (i));
-      mesh.addVertex (i);
+    for (unsigned int i = 0; i < n; ++i) {
+      vi.push_back(VertexIndex(i));
+      mesh.addVertex(i);
     }
 
-    const FaceIndex index = mesh.addFace (vi);
-    if (n==4) EXPECT_TRUE  (index.isValid ()) << "Number of vertices in the face: " << n;
-    else      EXPECT_FALSE (index.isValid ()) << "Number of vertices in the face: " << n;
+    const FaceIndex index = mesh.addFace(vi);
+    if (n == 4)
+      EXPECT_TRUE(index.isValid()) << "Number of vertices in the face: " << n;
+    else
+      EXPECT_FALSE(index.isValid()) << "Number of vertices in the face: " << n;
   }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
-TYPED_TEST (TestQuadMesh, OneQuad)
+TYPED_TEST(TestQuadMesh, OneQuad)
 {
   using Mesh = typename TestFixture::Mesh;
 
@@ -125,100 +122,101 @@ TYPED_TEST (TestQuadMesh, OneQuad)
   // 0 - 1 //
   Mesh mesh;
   VertexIndices vi;
-  for (unsigned int i=0; i<4; ++i) vi.push_back (mesh.addVertex (i));
+  for (unsigned int i = 0; i < 4; ++i)
+    vi.push_back(mesh.addVertex(i));
 
-  const FaceIndex fi = mesh.addFace (vi);
-  ASSERT_TRUE (fi.isValid ());
+  const FaceIndex fi = mesh.addFace(vi);
+  ASSERT_TRUE(fi.isValid());
 
-  const HalfEdgeIndex he_10 = mesh.getOutgoingHalfEdgeIndex (vi [1]);
-  const HalfEdgeIndex he_21 = mesh.getOutgoingHalfEdgeIndex (vi [2]);
-  const HalfEdgeIndex he_32 = mesh.getOutgoingHalfEdgeIndex (vi [3]);
-  const HalfEdgeIndex he_03 = mesh.getOutgoingHalfEdgeIndex (vi [0]);
+  const HalfEdgeIndex he_10 = mesh.getOutgoingHalfEdgeIndex(vi[1]);
+  const HalfEdgeIndex he_21 = mesh.getOutgoingHalfEdgeIndex(vi[2]);
+  const HalfEdgeIndex he_32 = mesh.getOutgoingHalfEdgeIndex(vi[3]);
+  const HalfEdgeIndex he_03 = mesh.getOutgoingHalfEdgeIndex(vi[0]);
 
-  const HalfEdgeIndex he_01 = mesh.getOppositeHalfEdgeIndex (he_10);
-  const HalfEdgeIndex he_12 = mesh.getOppositeHalfEdgeIndex (he_21);
-  const HalfEdgeIndex he_23 = mesh.getOppositeHalfEdgeIndex (he_32);
-  const HalfEdgeIndex he_30 = mesh.getOppositeHalfEdgeIndex (he_03);
+  const HalfEdgeIndex he_01 = mesh.getOppositeHalfEdgeIndex(he_10);
+  const HalfEdgeIndex he_12 = mesh.getOppositeHalfEdgeIndex(he_21);
+  const HalfEdgeIndex he_23 = mesh.getOppositeHalfEdgeIndex(he_32);
+  const HalfEdgeIndex he_30 = mesh.getOppositeHalfEdgeIndex(he_03);
 
-  EXPECT_TRUE (checkHalfEdge (mesh, he_10, vi [1], vi[0]));
-  EXPECT_TRUE (checkHalfEdge (mesh, he_21, vi [2], vi[1]));
-  EXPECT_TRUE (checkHalfEdge (mesh, he_32, vi [3], vi[2]));
-  EXPECT_TRUE (checkHalfEdge (mesh, he_03, vi [0], vi[3]));
+  EXPECT_TRUE(checkHalfEdge(mesh, he_10, vi[1], vi[0]));
+  EXPECT_TRUE(checkHalfEdge(mesh, he_21, vi[2], vi[1]));
+  EXPECT_TRUE(checkHalfEdge(mesh, he_32, vi[3], vi[2]));
+  EXPECT_TRUE(checkHalfEdge(mesh, he_03, vi[0], vi[3]));
 
-  EXPECT_TRUE (checkHalfEdge (mesh, he_01, vi [0], vi[1]));
-  EXPECT_TRUE (checkHalfEdge (mesh, he_12, vi [1], vi[2]));
-  EXPECT_TRUE (checkHalfEdge (mesh, he_23, vi [2], vi[3]));
-  EXPECT_TRUE (checkHalfEdge (mesh, he_30, vi [3], vi[0]));
+  EXPECT_TRUE(checkHalfEdge(mesh, he_01, vi[0], vi[1]));
+  EXPECT_TRUE(checkHalfEdge(mesh, he_12, vi[1], vi[2]));
+  EXPECT_TRUE(checkHalfEdge(mesh, he_23, vi[2], vi[3]));
+  EXPECT_TRUE(checkHalfEdge(mesh, he_30, vi[3], vi[0]));
 
-  EXPECT_EQ (he_01, mesh.getIncomingHalfEdgeIndex (vi [1]));
-  EXPECT_EQ (he_12, mesh.getIncomingHalfEdgeIndex (vi [2]));
-  EXPECT_EQ (he_23, mesh.getIncomingHalfEdgeIndex (vi [3]));
-  EXPECT_EQ (he_30, mesh.getIncomingHalfEdgeIndex (vi [0]));
+  EXPECT_EQ(he_01, mesh.getIncomingHalfEdgeIndex(vi[1]));
+  EXPECT_EQ(he_12, mesh.getIncomingHalfEdgeIndex(vi[2]));
+  EXPECT_EQ(he_23, mesh.getIncomingHalfEdgeIndex(vi[3]));
+  EXPECT_EQ(he_30, mesh.getIncomingHalfEdgeIndex(vi[0]));
 
-  EXPECT_EQ (he_12, mesh.getNextHalfEdgeIndex (he_01));
-  EXPECT_EQ (he_23, mesh.getNextHalfEdgeIndex (he_12));
-  EXPECT_EQ (he_30, mesh.getNextHalfEdgeIndex (he_23));
-  EXPECT_EQ (he_01, mesh.getNextHalfEdgeIndex (he_30));
+  EXPECT_EQ(he_12, mesh.getNextHalfEdgeIndex(he_01));
+  EXPECT_EQ(he_23, mesh.getNextHalfEdgeIndex(he_12));
+  EXPECT_EQ(he_30, mesh.getNextHalfEdgeIndex(he_23));
+  EXPECT_EQ(he_01, mesh.getNextHalfEdgeIndex(he_30));
 
-  EXPECT_EQ (he_30, mesh.getPrevHalfEdgeIndex (he_01));
-  EXPECT_EQ (he_01, mesh.getPrevHalfEdgeIndex (he_12));
-  EXPECT_EQ (he_12, mesh.getPrevHalfEdgeIndex (he_23));
-  EXPECT_EQ (he_23, mesh.getPrevHalfEdgeIndex (he_30));
+  EXPECT_EQ(he_30, mesh.getPrevHalfEdgeIndex(he_01));
+  EXPECT_EQ(he_01, mesh.getPrevHalfEdgeIndex(he_12));
+  EXPECT_EQ(he_12, mesh.getPrevHalfEdgeIndex(he_23));
+  EXPECT_EQ(he_23, mesh.getPrevHalfEdgeIndex(he_30));
 
-  EXPECT_EQ (he_03, mesh.getNextHalfEdgeIndex (he_10));
-  EXPECT_EQ (he_32, mesh.getNextHalfEdgeIndex (he_03));
-  EXPECT_EQ (he_21, mesh.getNextHalfEdgeIndex (he_32));
-  EXPECT_EQ (he_10, mesh.getNextHalfEdgeIndex (he_21));
+  EXPECT_EQ(he_03, mesh.getNextHalfEdgeIndex(he_10));
+  EXPECT_EQ(he_32, mesh.getNextHalfEdgeIndex(he_03));
+  EXPECT_EQ(he_21, mesh.getNextHalfEdgeIndex(he_32));
+  EXPECT_EQ(he_10, mesh.getNextHalfEdgeIndex(he_21));
 
-  EXPECT_EQ (he_21, mesh.getPrevHalfEdgeIndex (he_10));
-  EXPECT_EQ (he_10, mesh.getPrevHalfEdgeIndex (he_03));
-  EXPECT_EQ (he_03, mesh.getPrevHalfEdgeIndex (he_32));
-  EXPECT_EQ (he_32, mesh.getPrevHalfEdgeIndex (he_21));
+  EXPECT_EQ(he_21, mesh.getPrevHalfEdgeIndex(he_10));
+  EXPECT_EQ(he_10, mesh.getPrevHalfEdgeIndex(he_03));
+  EXPECT_EQ(he_03, mesh.getPrevHalfEdgeIndex(he_32));
+  EXPECT_EQ(he_32, mesh.getPrevHalfEdgeIndex(he_21));
 
-  EXPECT_EQ (fi, mesh.getFaceIndex (he_01));
-  EXPECT_EQ (fi, mesh.getFaceIndex (he_12));
-  EXPECT_EQ (fi, mesh.getFaceIndex (he_23));
-  EXPECT_EQ (fi, mesh.getFaceIndex (he_30));
+  EXPECT_EQ(fi, mesh.getFaceIndex(he_01));
+  EXPECT_EQ(fi, mesh.getFaceIndex(he_12));
+  EXPECT_EQ(fi, mesh.getFaceIndex(he_23));
+  EXPECT_EQ(fi, mesh.getFaceIndex(he_30));
 
-  EXPECT_FALSE (mesh.getOppositeFaceIndex (he_01).isValid ());
-  EXPECT_FALSE (mesh.getOppositeFaceIndex (he_12).isValid ());
-  EXPECT_FALSE (mesh.getOppositeFaceIndex (he_23).isValid ());
-  EXPECT_FALSE (mesh.getOppositeFaceIndex (he_30).isValid ());
+  EXPECT_FALSE(mesh.getOppositeFaceIndex(he_01).isValid());
+  EXPECT_FALSE(mesh.getOppositeFaceIndex(he_12).isValid());
+  EXPECT_FALSE(mesh.getOppositeFaceIndex(he_23).isValid());
+  EXPECT_FALSE(mesh.getOppositeFaceIndex(he_30).isValid());
 
-  EXPECT_FALSE (mesh.getFaceIndex (he_10).isValid ());
-  EXPECT_FALSE (mesh.getFaceIndex (he_21).isValid ());
-  EXPECT_FALSE (mesh.getFaceIndex (he_32).isValid ());
-  EXPECT_FALSE (mesh.getFaceIndex (he_03).isValid ());
+  EXPECT_FALSE(mesh.getFaceIndex(he_10).isValid());
+  EXPECT_FALSE(mesh.getFaceIndex(he_21).isValid());
+  EXPECT_FALSE(mesh.getFaceIndex(he_32).isValid());
+  EXPECT_FALSE(mesh.getFaceIndex(he_03).isValid());
 
-  EXPECT_EQ (fi, mesh.getOppositeFaceIndex (he_10));
-  EXPECT_EQ (fi, mesh.getOppositeFaceIndex (he_21));
-  EXPECT_EQ (fi, mesh.getOppositeFaceIndex (he_32));
-  EXPECT_EQ (fi, mesh.getOppositeFaceIndex (he_03));
+  EXPECT_EQ(fi, mesh.getOppositeFaceIndex(he_10));
+  EXPECT_EQ(fi, mesh.getOppositeFaceIndex(he_21));
+  EXPECT_EQ(fi, mesh.getOppositeFaceIndex(he_32));
+  EXPECT_EQ(fi, mesh.getOppositeFaceIndex(he_03));
 
-  EXPECT_EQ (he_30, mesh.getInnerHalfEdgeIndex (fi));
-  EXPECT_EQ (he_03, mesh.getOuterHalfEdgeIndex (fi));
+  EXPECT_EQ(he_30, mesh.getInnerHalfEdgeIndex(fi));
+  EXPECT_EQ(he_03, mesh.getOuterHalfEdgeIndex(fi));
 
-  EXPECT_FALSE (mesh.isBoundary (he_01));
-  EXPECT_FALSE (mesh.isBoundary (he_12));
-  EXPECT_FALSE (mesh.isBoundary (he_23));
-  EXPECT_FALSE (mesh.isBoundary (he_30));
+  EXPECT_FALSE(mesh.isBoundary(he_01));
+  EXPECT_FALSE(mesh.isBoundary(he_12));
+  EXPECT_FALSE(mesh.isBoundary(he_23));
+  EXPECT_FALSE(mesh.isBoundary(he_30));
 
-  EXPECT_TRUE (mesh.isBoundary (he_10));
-  EXPECT_TRUE (mesh.isBoundary (he_21));
-  EXPECT_TRUE (mesh.isBoundary (he_32));
-  EXPECT_TRUE (mesh.isBoundary (he_03));
+  EXPECT_TRUE(mesh.isBoundary(he_10));
+  EXPECT_TRUE(mesh.isBoundary(he_21));
+  EXPECT_TRUE(mesh.isBoundary(he_32));
+  EXPECT_TRUE(mesh.isBoundary(he_03));
 
-  EXPECT_TRUE (mesh.isBoundary (vi [0]));
-  EXPECT_TRUE (mesh.isBoundary (vi [1]));
-  EXPECT_TRUE (mesh.isBoundary (vi [2]));
-  EXPECT_TRUE (mesh.isBoundary (vi [3]));
+  EXPECT_TRUE(mesh.isBoundary(vi[0]));
+  EXPECT_TRUE(mesh.isBoundary(vi[1]));
+  EXPECT_TRUE(mesh.isBoundary(vi[2]));
+  EXPECT_TRUE(mesh.isBoundary(vi[3]));
 
-  EXPECT_TRUE (mesh.isBoundary (fi));
+  EXPECT_TRUE(mesh.isBoundary(fi));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
-TYPED_TEST (TestQuadMesh, NineQuads)
+TYPED_TEST(TestQuadMesh, NineQuads)
 {
   using Mesh = typename TestFixture::Mesh;
   constexpr int int_max = std::numeric_limits<int>::max();
@@ -233,93 +231,93 @@ TYPED_TEST (TestQuadMesh, NineQuads)
   //    -   -   -   //
 
   // Add the configuration in different orders. Some of them create non-manifold states.
-  std::vector <std::vector <int> > order_vec;
-  std::vector <int> non_manifold; // When is the first non-manifold quad added?
-  std::vector <int> order_tmp;
+  std::vector<std::vector<int>> order_vec;
+  std::vector<int> non_manifold; // When is the first non-manifold quad added?
+  std::vector<int> order_tmp;
 
   // Configuration 0
-  order_tmp.push_back (0);
-  order_tmp.push_back (1);
-  order_tmp.push_back (2);
-  order_tmp.push_back (3);
-  order_tmp.push_back (5);
-  order_tmp.push_back (4);
-  order_tmp.push_back (7);
-  order_tmp.push_back (6);
-  order_tmp.push_back (8);
-  order_vec.push_back (order_tmp);
-  non_manifold.push_back (int_max);
-  order_tmp.clear ();
+  order_tmp.push_back(0);
+  order_tmp.push_back(1);
+  order_tmp.push_back(2);
+  order_tmp.push_back(3);
+  order_tmp.push_back(5);
+  order_tmp.push_back(4);
+  order_tmp.push_back(7);
+  order_tmp.push_back(6);
+  order_tmp.push_back(8);
+  order_vec.push_back(order_tmp);
+  non_manifold.push_back(int_max);
+  order_tmp.clear();
 
   // Configuration 1
-  order_tmp.push_back (0);
-  order_tmp.push_back (1);
-  order_tmp.push_back (6);
-  order_tmp.push_back (8);
-  order_tmp.push_back (2);
-  order_tmp.push_back (3);
-  order_tmp.push_back (7);
-  order_tmp.push_back (5);
-  order_tmp.push_back (4);
-  order_vec.push_back (order_tmp);
-  non_manifold.push_back (int_max);
-  order_tmp.clear ();
+  order_tmp.push_back(0);
+  order_tmp.push_back(1);
+  order_tmp.push_back(6);
+  order_tmp.push_back(8);
+  order_tmp.push_back(2);
+  order_tmp.push_back(3);
+  order_tmp.push_back(7);
+  order_tmp.push_back(5);
+  order_tmp.push_back(4);
+  order_vec.push_back(order_tmp);
+  non_manifold.push_back(int_max);
+  order_tmp.clear();
 
   // Configuration 2
-  order_tmp.push_back (0);
-  order_tmp.push_back (1);
-  order_tmp.push_back (6);
-  order_tmp.push_back (8);
-  order_tmp.push_back (5);
-  order_tmp.push_back (2);
-  order_tmp.push_back (3);
-  order_tmp.push_back (7);
-  order_tmp.push_back (4);
-  order_vec.push_back (order_tmp);
-  non_manifold.push_back (4);
-  order_tmp.clear ();
+  order_tmp.push_back(0);
+  order_tmp.push_back(1);
+  order_tmp.push_back(6);
+  order_tmp.push_back(8);
+  order_tmp.push_back(5);
+  order_tmp.push_back(2);
+  order_tmp.push_back(3);
+  order_tmp.push_back(7);
+  order_tmp.push_back(4);
+  order_vec.push_back(order_tmp);
+  non_manifold.push_back(4);
+  order_tmp.clear();
 
   // Configuration 3
-  order_tmp.push_back (1);
-  order_tmp.push_back (3);
-  order_tmp.push_back (5);
-  order_tmp.push_back (7);
-  order_tmp.push_back (4);
-  order_tmp.push_back (0);
-  order_tmp.push_back (2);
-  order_tmp.push_back (6);
-  order_tmp.push_back (8);
-  order_vec.push_back (order_tmp);
-  non_manifold.push_back (1);
-  order_tmp.clear ();
+  order_tmp.push_back(1);
+  order_tmp.push_back(3);
+  order_tmp.push_back(5);
+  order_tmp.push_back(7);
+  order_tmp.push_back(4);
+  order_tmp.push_back(0);
+  order_tmp.push_back(2);
+  order_tmp.push_back(6);
+  order_tmp.push_back(8);
+  order_vec.push_back(order_tmp);
+  non_manifold.push_back(1);
+  order_tmp.clear();
 
   // Configuration 4
-  order_tmp.push_back (1);
-  order_tmp.push_back (3);
-  order_tmp.push_back (5);
-  order_tmp.push_back (7);
-  order_tmp.push_back (0);
-  order_tmp.push_back (2);
-  order_tmp.push_back (6);
-  order_tmp.push_back (8);
-  order_tmp.push_back (4);
-  order_vec.push_back (order_tmp);
-  non_manifold.push_back (1);
-  order_tmp.clear ();
+  order_tmp.push_back(1);
+  order_tmp.push_back(3);
+  order_tmp.push_back(5);
+  order_tmp.push_back(7);
+  order_tmp.push_back(0);
+  order_tmp.push_back(2);
+  order_tmp.push_back(6);
+  order_tmp.push_back(8);
+  order_tmp.push_back(4);
+  order_vec.push_back(order_tmp);
+  non_manifold.push_back(1);
+  order_tmp.clear();
 
   // Configuration 5
-  order_tmp.push_back (0);
-  order_tmp.push_back (4);
-  order_tmp.push_back (8);
-  order_tmp.push_back (2);
-  order_tmp.push_back (6);
-  order_tmp.push_back (1);
-  order_tmp.push_back (7);
-  order_tmp.push_back (5);
-  order_tmp.push_back (3);
-  order_vec.push_back (order_tmp);
-  non_manifold.push_back (1);
-  order_tmp.clear ();
+  order_tmp.push_back(0);
+  order_tmp.push_back(4);
+  order_tmp.push_back(8);
+  order_tmp.push_back(2);
+  order_tmp.push_back(6);
+  order_tmp.push_back(1);
+  order_tmp.push_back(7);
+  order_tmp.push_back(5);
+  order_tmp.push_back(3);
+  order_vec.push_back(order_tmp);
+  non_manifold.push_back(1);
+  order_tmp.clear();
 
   // 00 - 01 - 02 - 03 //
   //  |    |    |    | //
@@ -329,57 +327,98 @@ TYPED_TEST (TestQuadMesh, NineQuads)
   //  |    |    |    | //
   // 12 - 13 - 14 - 15 //
   using VI = VertexIndex;
-  std::vector <VertexIndices> faces;
+  std::vector<VertexIndices> faces;
   VertexIndices vi;
-  vi.push_back (VI ( 0)); vi.push_back (VI ( 4)); vi.push_back (VI ( 5)); vi.push_back (VI ( 1)); faces.push_back (vi); vi.clear ();
-  vi.push_back (VI ( 1)); vi.push_back (VI ( 5)); vi.push_back (VI ( 6)); vi.push_back (VI ( 2)); faces.push_back (vi); vi.clear ();
-  vi.push_back (VI ( 2)); vi.push_back (VI ( 6)); vi.push_back (VI ( 7)); vi.push_back (VI ( 3)); faces.push_back (vi); vi.clear ();
-  vi.push_back (VI ( 4)); vi.push_back (VI ( 8)); vi.push_back (VI ( 9)); vi.push_back (VI ( 5)); faces.push_back (vi); vi.clear ();
-  vi.push_back (VI ( 5)); vi.push_back (VI ( 9)); vi.push_back (VI (10)); vi.push_back (VI ( 6)); faces.push_back (vi); vi.clear ();
-  vi.push_back (VI ( 6)); vi.push_back (VI (10)); vi.push_back (VI (11)); vi.push_back (VI ( 7)); faces.push_back (vi); vi.clear ();
-  vi.push_back (VI ( 8)); vi.push_back (VI (12)); vi.push_back (VI (13)); vi.push_back (VI ( 9)); faces.push_back (vi); vi.clear ();
-  vi.push_back (VI ( 9)); vi.push_back (VI (13)); vi.push_back (VI (14)); vi.push_back (VI (10)); faces.push_back (vi); vi.clear ();
-  vi.push_back (VI (10)); vi.push_back (VI (14)); vi.push_back (VI (15)); vi.push_back (VI (11)); faces.push_back (vi); vi.clear ();
+  vi.push_back(VI(0));
+  vi.push_back(VI(4));
+  vi.push_back(VI(5));
+  vi.push_back(VI(1));
+  faces.push_back(vi);
+  vi.clear();
+  vi.push_back(VI(1));
+  vi.push_back(VI(5));
+  vi.push_back(VI(6));
+  vi.push_back(VI(2));
+  faces.push_back(vi);
+  vi.clear();
+  vi.push_back(VI(2));
+  vi.push_back(VI(6));
+  vi.push_back(VI(7));
+  vi.push_back(VI(3));
+  faces.push_back(vi);
+  vi.clear();
+  vi.push_back(VI(4));
+  vi.push_back(VI(8));
+  vi.push_back(VI(9));
+  vi.push_back(VI(5));
+  faces.push_back(vi);
+  vi.clear();
+  vi.push_back(VI(5));
+  vi.push_back(VI(9));
+  vi.push_back(VI(10));
+  vi.push_back(VI(6));
+  faces.push_back(vi);
+  vi.clear();
+  vi.push_back(VI(6));
+  vi.push_back(VI(10));
+  vi.push_back(VI(11));
+  vi.push_back(VI(7));
+  faces.push_back(vi);
+  vi.clear();
+  vi.push_back(VI(8));
+  vi.push_back(VI(12));
+  vi.push_back(VI(13));
+  vi.push_back(VI(9));
+  faces.push_back(vi);
+  vi.clear();
+  vi.push_back(VI(9));
+  vi.push_back(VI(13));
+  vi.push_back(VI(14));
+  vi.push_back(VI(10));
+  faces.push_back(vi);
+  vi.clear();
+  vi.push_back(VI(10));
+  vi.push_back(VI(14));
+  vi.push_back(VI(15));
+  vi.push_back(VI(11));
+  faces.push_back(vi);
+  vi.clear();
 
-  ASSERT_EQ (order_vec.size (), non_manifold.size ());
-  ASSERT_EQ (9, faces.size ());
-  for (std::size_t i=0; i<order_vec.size (); ++i)
-  {
-    SCOPED_TRACE ("Configuration " + std::to_string(i));
+  ASSERT_EQ(order_vec.size(), non_manifold.size());
+  ASSERT_EQ(9, faces.size());
+  for (std::size_t i = 0; i < order_vec.size(); ++i) {
+    SCOPED_TRACE("Configuration " + std::to_string(i));
 
-    const std::vector <int> order = order_vec [i];
+    const std::vector<int> order = order_vec[i];
 
-    EXPECT_EQ (9, order.size ()); // No assert so the other cases can run as well
-    if (9 != order.size ()) continue;
+    EXPECT_EQ(9, order.size()); // No assert so the other cases can run as well
+    if (9 != order.size())
+      continue;
 
     Mesh mesh;
-    for (std::size_t j=0; j<16; ++j) mesh.addVertex (j);
+    for (std::size_t j = 0; j < 16; ++j)
+      mesh.addVertex(j);
 
-    std::vector <VertexIndices> ordered_faces;
+    std::vector<VertexIndices> ordered_faces;
 
-    for (std::size_t j=0; j<faces.size (); ++j)
-    {
-      ordered_faces.push_back (faces [order [j]]);
+    for (std::size_t j = 0; j < faces.size(); ++j) {
+      ordered_faces.push_back(faces[order[j]]);
     }
     bool check_has_faces = true;
-    for (std::size_t j=0; j<faces.size (); ++j)
-    {
-      const FaceIndex index = mesh.addFace (ordered_faces [j]);
+    for (std::size_t j = 0; j < faces.size(); ++j) {
+      const FaceIndex index = mesh.addFace(ordered_faces[j]);
 
-      if (j < static_cast<unsigned int> (non_manifold [i]) || !Mesh::IsManifold::value)
-      {
-        EXPECT_TRUE (index.isValid ());
+      if (j < static_cast<unsigned int>(non_manifold[i]) || !Mesh::IsManifold::value) {
+        EXPECT_TRUE(index.isValid());
       }
-      else
-      {
-        EXPECT_FALSE (index.isValid ());
+      else {
+        EXPECT_FALSE(index.isValid());
         check_has_faces = false;
         break;
       }
     }
-    if (check_has_faces)
-    {
-      EXPECT_TRUE (hasFaces (mesh, ordered_faces));
+    if (check_has_faces) {
+      EXPECT_TRUE(hasFaces(mesh, ordered_faces));
     }
   }
 }
@@ -389,6 +428,6 @@ TYPED_TEST (TestQuadMesh, NineQuads)
 int
 main (int argc, char** argv)
 {
-  testing::InitGoogleTest (&argc, argv);
-  return (RUN_ALL_TESTS ());
+  testing::InitGoogleTest(&argc, argv);
+  return (RUN_ALL_TESTS());
 }

@@ -84,17 +84,17 @@ public:
    * \param sizeBytes_arg buffer size
    * */
   void
-  create(std::size_t sizeBytes_arg);
+  create (std::size_t sizeBytes_arg);
 
   /** \brief Decrements reference counter and releases internal buffer if needed. */
   void
-  release();
+  release ();
 
   /** \brief Performs data copying. If destination size differs it will be reallocated.
    * \param other destination container
    * */
   void
-  copyTo(DeviceMemory& other) const;
+  copyTo (DeviceMemory& other) const;
 
   /** \brief Uploads data to internal buffer in GPU memory. It calls create() inside to
    * ensure that internal buffer size is enough.
@@ -102,7 +102,7 @@ public:
    * \param sizeBytes_arg buffer size
    * */
   void
-  upload(const void* host_ptr_arg, std::size_t sizeBytes_arg);
+  upload (const void* host_ptr_arg, std::size_t sizeBytes_arg);
 
   /** \brief Uploads data from CPU memory to device array.
    * \note This overload never allocates memory in contrast to the
@@ -113,15 +113,15 @@ public:
    * \param num_bytes number of bytes to upload
    * */
   bool
-  upload(const void* host_ptr_arg,
-         std::size_t device_begin_byte_offset,
-         std::size_t num_bytes);
+  upload (const void* host_ptr_arg,
+          std::size_t device_begin_byte_offset,
+          std::size_t num_bytes);
 
   /** \brief Downloads data from internal buffer to CPU memory
    * \param host_ptr_arg pointer to buffer to download
    * */
   void
-  download(void* host_ptr_arg) const;
+  download (void* host_ptr_arg) const;
 
   /** \brief Downloads data from internal buffer to CPU memory.
    * \return true if download successful
@@ -130,25 +130,25 @@ public:
    * \param num_bytes number of bytes to download
    * */
   bool
-  download(void* host_ptr_arg,
-           std::size_t device_begin_byte_offset,
-           std::size_t num_bytes) const;
+  download (void* host_ptr_arg,
+            std::size_t device_begin_byte_offset,
+            std::size_t num_bytes) const;
 
   /** \brief Performs swap of data pointed with another device memory.
    * \param other_arg device memory to swap with
    * */
   void
-  swap(DeviceMemory& other_arg);
+  swap (DeviceMemory& other_arg);
 
   /** \brief Returns pointer for internal buffer in GPU memory. */
   template <class T>
   T*
-  ptr();
+  ptr ();
 
   /** \brief Returns constant pointer for internal buffer in GPU memory. */
   template <class T>
   const T*
-  ptr() const;
+  ptr () const;
 
   /** \brief Conversion to PtrSz for passing to kernel functions. */
   template <class U>
@@ -156,10 +156,10 @@ public:
 
   /** \brief Returns true if unallocated otherwise false. */
   bool
-  empty() const;
+  empty () const;
 
   std::size_t
-  sizeBytes() const;
+  sizeBytes () const;
 
 private:
   /** \brief Device pointer. */
@@ -217,17 +217,17 @@ public:
    * \param colsBytes_arg width of the buffer in bytes
    * */
   void
-  create(int rows_arg, int colsBytes_arg);
+  create (int rows_arg, int colsBytes_arg);
 
   /** \brief Decrements reference counter and releases internal buffer if needed. */
   void
-  release();
+  release ();
 
   /** \brief Performs data copying. If destination size differs it will be reallocated.
    * \param other destination container
    * */
   void
-  copyTo(DeviceMemory2D& other) const;
+  copyTo (DeviceMemory2D& other) const;
 
   /** \brief Uploads data to internal buffer in GPU memory. It calls create() inside to
    * ensure that internal buffer size is enough.
@@ -237,10 +237,10 @@ public:
    * \param colsBytes_arg width of host buffer in bytes
    * */
   void
-  upload(const void* host_ptr_arg,
-         std::size_t host_step_arg,
-         int rows_arg,
-         int colsBytes_arg);
+  upload (const void* host_ptr_arg,
+          std::size_t host_step_arg,
+          int rows_arg,
+          int colsBytes_arg);
 
   /** \brief Downloads data from internal buffer to CPU memory. User is responsible for
    * correct host buffer size.
@@ -248,27 +248,27 @@ public:
    * \param host_step_arg stride between two consecutive rows in bytes for host buffer
    * */
   void
-  download(void* host_ptr_arg, std::size_t host_step_arg) const;
+  download (void* host_ptr_arg, std::size_t host_step_arg) const;
 
   /** \brief Performs swap of data pointed with another device memory.
    * \param other_arg device memory to swap with
    * */
   void
-  swap(DeviceMemory2D& other_arg);
+  swap (DeviceMemory2D& other_arg);
 
   /** \brief Returns pointer to given row in internal buffer.
    * \param y_arg row index
    * */
   template <class T>
   T*
-  ptr(int y_arg = 0);
+  ptr (int y_arg = 0);
 
   /** \brief Returns constant pointer to given row in internal buffer.
    * \param y_arg row index
    * */
   template <class T>
   const T*
-  ptr(int y_arg = 0) const;
+  ptr (int y_arg = 0) const;
 
   /** \brief Conversion to PtrStep for passing to kernel functions. */
   template <class U>
@@ -280,20 +280,20 @@ public:
 
   /** \brief Returns true if unallocated otherwise false. */
   bool
-  empty() const;
+  empty () const;
 
   /** \brief Returns number of bytes in each row. */
   int
-  colsBytes() const;
+  colsBytes () const;
 
   /** \brief Returns number of rows. */
   int
-  rows() const;
+  rows () const;
 
   /** \brief Returns stride between two consecutive rows in bytes for internal buffer.
    * Step is stored always and everywhere in bytes!!! */
   std::size_t
-  step() const;
+  step () const;
 
 private:
   /** \brief Device pointer. */

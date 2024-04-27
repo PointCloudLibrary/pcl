@@ -57,7 +57,7 @@ public:
    * \param[in] height the height of the resized 2D data array
    */
   inline void
-  resize(std::size_t width, std::size_t height)
+  resize (std::size_t width, std::size_t height)
   {
     data_.resize(NUM_OF_CHANNELS * width * height);
     width_ = width;
@@ -66,7 +66,7 @@ public:
 
   /** Clears the internal data storage and sets width and height to 0. */
   void
-  clear()
+  clear ()
   {
     width_ = 0;
     height_ = 0;
@@ -145,7 +145,7 @@ public:
    * \param[in] height the height of the new data block
    */
   void
-  addData(const std::size_t width, const std::size_t height)
+  addData (const std::size_t width, const std::size_t height)
   {
     MultiChannel2DData<DATA_TYPE, NUM_OF_CHANNELS>* data =
         new MultiChannel2DData<DATA_TYPE, NUM_OF_CHANNELS>();
@@ -156,7 +156,7 @@ public:
 
   /** Releases the data stored in the data set. */
   void
-  releaseDataSet()
+  releaseDataSet ()
   {
     for (std::size_t data_set_index = 0; data_set_index < data_set_.size();
          ++data_set_index) {
@@ -166,7 +166,7 @@ public:
 
   /** Releases the data stored in the data set. */
   void
-  clear()
+  clear ()
   {
     releaseDataSet();
   }

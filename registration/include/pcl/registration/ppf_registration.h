@@ -100,7 +100,7 @@ public:
    * \param feature_cloud a const smart pointer to the PPFSignature feature cloud
    */
   void
-  setInputFeatureCloud(PointCloud<PPFSignature>::ConstPtr feature_cloud);
+  setInputFeatureCloud (PointCloud<PPFSignature>::ConstPtr feature_cloud);
 
   /** \brief Function for finding the nearest neighbors for the given feature inside the
    * discretized hash map \param f1 The 1st value describing the query PPFSignature
@@ -111,16 +111,16 @@ public:
    * query feature
    */
   void
-  nearestNeighborSearch(float& f1,
-                        float& f2,
-                        float& f3,
-                        float& f4,
-                        std::vector<std::pair<std::size_t, std::size_t>>& indices);
+  nearestNeighborSearch (float& f1,
+                         float& f2,
+                         float& f3,
+                         float& f4,
+                         std::vector<std::pair<std::size_t, std::size_t>>& indices);
 
   /** \brief Convenience method for returning a copy of the class instance as a
    * shared_ptr */
   Ptr
-  makeShared()
+  makeShared ()
   {
     return Ptr(new PPFHashMapSearch(*this));
   }
@@ -128,7 +128,7 @@ public:
   /** \brief Returns the angle discretization step parameter (the step value between
    * each bin of the hash map for the angular values) */
   inline float
-  getAngleDiscretizationStep() const
+  getAngleDiscretizationStep () const
   {
     return angle_discretization_step_;
   }
@@ -136,7 +136,7 @@ public:
   /** \brief Returns the distance discretization step parameter (the step value between
    * each bin of the hash map for the distance values) */
   inline float
-  getDistanceDiscretizationStep() const
+  getDistanceDiscretizationStep () const
   {
     return distance_discretization_step_;
   }
@@ -144,7 +144,7 @@ public:
   /** \brief Returns the maximum distance found between any feature pair in the given
    * input feature cloud */
   inline float
-  getModelDiameter() const
+  getModelDiameter () const
   {
     return max_dist_;
   }
@@ -219,7 +219,7 @@ public:
    * the algorithm)
    */
   inline void
-  setPositionClusteringThreshold(float clustering_position_diff_threshold)
+  setPositionClusteringThreshold (float clustering_position_diff_threshold)
   {
     clustering_position_diff_threshold_ = clustering_position_diff_threshold;
   }
@@ -229,7 +229,7 @@ public:
    * same cluster (for the clustering phase of the algorithm)
    */
   inline float
-  getPositionClusteringThreshold()
+  getPositionClusteringThreshold ()
   {
     return clustering_position_diff_threshold_;
   }
@@ -240,7 +240,7 @@ public:
    * algorithm)
    */
   inline void
-  setRotationClusteringThreshold(float clustering_rotation_diff_threshold)
+  setRotationClusteringThreshold (float clustering_rotation_diff_threshold)
   {
     clustering_rotation_diff_threshold_ = clustering_rotation_diff_threshold;
   }
@@ -248,7 +248,7 @@ public:
   /** \brief Returns the parameter defining the rotation clustering threshold
    */
   inline float
-  getRotationClusteringThreshold()
+  getRotationClusteringThreshold ()
   {
     return clustering_rotation_diff_threshold_;
   }
@@ -258,7 +258,7 @@ public:
    * point
    */
   inline void
-  setSceneReferencePointSamplingRate(unsigned int scene_reference_point_sampling_rate)
+  setSceneReferencePointSamplingRate (unsigned int scene_reference_point_sampling_rate)
   {
     scene_reference_point_sampling_rate_ = scene_reference_point_sampling_rate;
   }
@@ -266,7 +266,7 @@ public:
   /** \brief Returns the parameter for the scene reference point sampling rate of the
    * algorithm */
   inline unsigned int
-  getSceneReferencePointSamplingRate()
+  getSceneReferencePointSamplingRate ()
   {
     return scene_reference_point_sampling_rate_;
   }
@@ -277,14 +277,14 @@ public:
    * \param search_method smart pointer to the search method to be set
    */
   inline void
-  setSearchMethod(PPFHashMapSearch::Ptr search_method)
+  setSearchMethod (PPFHashMapSearch::Ptr search_method)
   {
     search_method_ = search_method;
   }
 
   /** \brief Getter function for the search method of the class */
   inline PPFHashMapSearch::Ptr
-  getSearchMethod()
+  getSearchMethod ()
   {
     return search_method_;
   }
@@ -293,7 +293,7 @@ public:
    * to align the input source to) \param cloud the input point cloud target
    */
   void
-  setInputTarget(const PointCloudTargetConstPtr& cloud) override;
+  setInputTarget (const PointCloudTargetConstPtr& cloud) override;
 
   /** \brief Returns the most promising pose candidates, after clustering. The pose with
    * the most votes is the result of the registration. It may make sense to check the
@@ -302,7 +302,7 @@ public:
    * this one.
    */
   inline PoseWithVotesList
-  getBestPoseCandidates()
+  getBestPoseCandidates ()
   {
     return best_pose_candidates;
   }
@@ -311,8 +311,8 @@ private:
   /** \brief Method that calculates the transformation between the input_ and target_
    * point clouds, based on the PPF features */
   void
-  computeTransformation(PointCloudSource& output,
-                        const Eigen::Matrix4f& guess) override;
+  computeTransformation (PointCloudSource& output,
+                         const Eigen::Matrix4f& guess) override;
 
   /** \brief the search method that is going to be used to find matching feature pairs
    */
@@ -337,27 +337,27 @@ private:
   /** \brief static method used for the std::sort function to order two PoseWithVotes
    * instances by their number of votes*/
   static bool
-  poseWithVotesCompareFunction(const PoseWithVotes& a, const PoseWithVotes& b);
+  poseWithVotesCompareFunction (const PoseWithVotes& a, const PoseWithVotes& b);
 
   /** \brief static method used for the std::sort function to order two pairs <index,
    * votes> by the number of votes (unsigned integer value) */
   static bool
-  clusterVotesCompareFunction(const std::pair<std::size_t, unsigned int>& a,
-                              const std::pair<std::size_t, unsigned int>& b);
+  clusterVotesCompareFunction (const std::pair<std::size_t, unsigned int>& a,
+                               const std::pair<std::size_t, unsigned int>& b);
 
   /** \brief Method that clusters a set of given poses by using the clustering
    * thresholds and their corresponding number of votes (see publication for more
    * details) */
   void
-  clusterPoses(PoseWithVotesList& poses, PoseWithVotesList& result);
+  clusterPoses (PoseWithVotesList& poses, PoseWithVotesList& result);
 
   /** \brief Method that checks whether two poses are close together - based on the
    * clustering threshold parameters of the class */
   bool
-  posesWithinErrorBounds(Eigen::Affine3f& pose1,
-                         Eigen::Affine3f& pose2,
-                         float& position_diff,
-                         float& rotation_diff_angle);
+  posesWithinErrorBounds (Eigen::Affine3f& pose1,
+                          Eigen::Affine3f& pose2,
+                          float& position_diff,
+                          float& rotation_diff_angle);
 };
 } // namespace pcl
 

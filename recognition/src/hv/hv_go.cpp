@@ -42,5 +42,4 @@
 PCL_INSTANTIATE_PRODUCT(GoHV, ((pcl::PointXYZ))((pcl::PointXYZ)))
 PCL_INSTANTIATE_PRODUCT(GoHV, ((pcl::PointXYZRGB))((pcl::PointXYZRGB)))
 PCL_INSTANTIATE_PRODUCT(GoHV, ((pcl::PointXYZRGBA))((pcl::PointXYZRGBA)))
-#endif    // PCL_NO_PRECOMPILE
-
+#endif // PCL_NO_PRECOMPILE

@@ -44,26 +44,26 @@ public:
   virtual ~KeypointExtractor() = default;
 
   void
-  setInputCloud(PointInTPtr& input)
+  setInputCloud (PointInTPtr& input)
   {
     input_ = input;
   }
 
   void
-  setSupportRadius(float f)
+  setSupportRadius (float f)
   {
     radius_ = f;
   }
 
   virtual void
-  compute(PointOutTPtr& keypoints) = 0;
+  compute (PointOutTPtr& keypoints) = 0;
 
   virtual void
-  setNormals(const pcl::PointCloud<pcl::Normal>::Ptr& /*normals*/)
+  setNormals (const pcl::PointCloud<pcl::Normal>::Ptr& /*normals*/)
   {}
 
   virtual bool
-  needNormals()
+  needNormals ()
   {
     return false;
   }
@@ -81,7 +81,7 @@ private:
   std::shared_ptr<std::vector<std::vector<float>>> neighborhood_dist_;
 
   void
-  filterPlanar(PointInTPtr& input, PointInTPtr& keypoints_cloud)
+  filterPlanar (PointInTPtr& input, PointInTPtr& keypoints_cloud)
   {
     pcl::PointCloud<int> filtered_keypoints;
     // create a search object
@@ -141,19 +141,19 @@ private:
 
 public:
   void
-  setFilterPlanar(bool b)
+  setFilterPlanar (bool b)
   {
     filter_planar_ = b;
   }
 
   void
-  setSamplingDensity(float f)
+  setSamplingDensity (float f)
   {
     sampling_density_ = f;
   }
 
   void
-  compute(PointInTPtr& keypoints) override
+  compute (PointInTPtr& keypoints) override
   {
     keypoints.reset(new pcl::PointCloud<PointInT>);
 
@@ -176,7 +176,7 @@ class SIFTKeypointExtractor : public KeypointExtractor<PointInT> {
 
 public:
   void
-  compute(PointInTPtr& keypoints)
+  compute (PointInTPtr& keypoints)
   {
     keypoints.reset(new pcl::PointCloud<PointInT>);
 
@@ -200,20 +200,20 @@ class SIFTSurfaceKeypointExtractor : public KeypointExtractor<PointInT> {
   using KeypointExtractor<PointInT>::radius_;
 
   bool
-  needNormals()
+  needNormals ()
   {
     return true;
   }
 
   void
-  setNormals(const pcl::PointCloud<pcl::Normal>::Ptr& normals)
+  setNormals (const pcl::PointCloud<pcl::Normal>::Ptr& normals)
   {
     normals_ = normals;
   }
 
 public:
   void
-  compute(PointInTPtr& keypoints)
+  compute (PointInTPtr& keypoints)
   {
     if (normals_ == nullptr || (normals_->size() != input_->size()))
       PCL_WARN("SIFTSurfaceKeypointExtractor -- Normals are not valid\n");
@@ -262,38 +262,38 @@ public:
   }
 
   bool
-  needNormals()
+  needNormals ()
   {
     return true;
   }
 
   void
-  setNormals(const pcl::PointCloud<pcl::Normal>::Ptr& normals)
+  setNormals (const pcl::PointCloud<pcl::Normal>::Ptr& normals)
   {
     normals_ = normals;
   }
 
   void
-  setThreshold(float t)
+  setThreshold (float t)
   {
     threshold_ = t;
   }
 
   void
-  setResponseMethod(
+  setResponseMethod (
       typename pcl::HarrisKeypoint3D<PointInT, pcl::PointXYZI>::ResponseMethod m)
   {
     m_ = m;
   }
 
   void
-  setNonMaximaRadius(float r)
+  setNonMaximaRadius (float r)
   {
     non_max_radius_ = r;
   }
 
   void
-  compute(PointInTPtr& keypoints)
+  compute (PointInTPtr& keypoints)
   {
     keypoints.reset(new pcl::PointCloud<PointInT>);
 
@@ -330,19 +330,19 @@ public:
   SUSANKeypointExtractor() = default;
 
   bool
-  needNormals()
+  needNormals ()
   {
     return true;
   }
 
   void
-  setNormals(const pcl::PointCloud<pcl::Normal>::Ptr& normals)
+  setNormals (const pcl::PointCloud<pcl::Normal>::Ptr& normals)
   {
     normals_ = normals;
   }
 
   void
-  compute(PointInTPtr& keypoints)
+  compute (PointInTPtr& keypoints)
   {
     keypoints.reset(new pcl::PointCloud<PointInT>);
 
@@ -381,9 +381,9 @@ protected:
   std::shared_ptr<std::vector<std::vector<float>>> neighborhood_dist_;
 
   void
-  computeKeypoints(PointInTPtr& cloud,
-                   PointInTPtr& keypoints,
-                   pcl::PointCloud<pcl::Normal>::Ptr& normals)
+  computeKeypoints (PointInTPtr& cloud,
+                    PointInTPtr& keypoints,
+                    pcl::PointCloud<pcl::Normal>::Ptr& normals)
   {
     keypoints.reset(new pcl::PointCloud<PointInT>);
     for (std::size_t i = 0; i < keypoint_extractor_.size(); i++) {
@@ -409,19 +409,19 @@ public:
   virtual ~LocalEstimator() = default;
 
   void
-  setAdaptativeMLS(bool b)
+  setAdaptativeMLS (bool b)
   {
     adaptative_MLS_ = b;
   }
 
   virtual bool
-  estimate(PointInTPtr& in,
-           PointInTPtr& processed,
-           PointInTPtr& keypoints,
-           FeatureTPtr& signatures) = 0;
+  estimate (PointInTPtr& in,
+            PointInTPtr& processed,
+            PointInTPtr& keypoints,
+            FeatureTPtr& signatures) = 0;
 
   void
-  setNormalEstimator(
+  setNormalEstimator (
       std::shared_ptr<PreProcessorAndNormalEstimator<PointInT, pcl::Normal>>& ne)
   {
     normal_estimator_ = ne;
@@ -431,19 +431,19 @@ public:
    * \brief Right now only uniformSampling keypoint extractor is allowed
    */
   void
-  addKeypointExtractor(std::shared_ptr<KeypointExtractor<PointInT>>& ke)
+  addKeypointExtractor (std::shared_ptr<KeypointExtractor<PointInT>>& ke)
   {
     keypoint_extractor_.push_back(ke);
   }
 
   void
-  setKeypointExtractors(std::vector<std::shared_ptr<KeypointExtractor<PointInT>>>& ke)
+  setKeypointExtractors (std::vector<std::shared_ptr<KeypointExtractor<PointInT>>>& ke)
   {
     keypoint_extractor_ = ke;
   }
 
   void
-  setSupportRadius(float r)
+  setSupportRadius (float r)
   {
     support_radius_ = r;
   }

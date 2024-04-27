@@ -37,11 +37,11 @@
  *
  */
 
-#include <pcl/test/gtest.h>
-#include <pcl/point_cloud.h>
+#include <pcl/common/centroid.h>
 #include <pcl/features/feature.h>
 #include <pcl/io/pcd_io.h>
-#include <pcl/common/centroid.h>
+#include <pcl/test/gtest.h>
+#include <pcl/point_cloud.h>
 
 using namespace pcl;
 using namespace pcl::io;
@@ -53,132 +53,135 @@ pcl::Indices indices;
 KdTreePtr tree;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TEST (PCL, BaseFeature)
+TEST(PCL, BaseFeature)
 {
   // compute3DCentroid (indices)
   Eigen::Vector4f centroid3;
-  compute3DCentroid (cloud, indices, centroid3);
-  EXPECT_NEAR (centroid3[0], -0.0290809, 1e-4);
-  EXPECT_NEAR (centroid3[1], 0.102653, 1e-4);
-  EXPECT_NEAR (centroid3[2], 0.027302, 1e-4);
-  EXPECT_NEAR (centroid3[3], 1, 1e-4);
+  compute3DCentroid(cloud, indices, centroid3);
+  EXPECT_NEAR(centroid3[0], -0.0290809, 1e-4);
+  EXPECT_NEAR(centroid3[1], 0.102653, 1e-4);
+  EXPECT_NEAR(centroid3[2], 0.027302, 1e-4);
+  EXPECT_NEAR(centroid3[3], 1, 1e-4);
 
   // compute3Dcentroid
-  compute3DCentroid (cloud, centroid3);
-  EXPECT_NEAR (centroid3[0], -0.0290809, 1e-4);
-  EXPECT_NEAR (centroid3[1], 0.102653, 1e-4);
-  EXPECT_NEAR (centroid3[2], 0.027302, 1e-4);
-  EXPECT_NEAR (centroid3[3], 1, 1e-4);
+  compute3DCentroid(cloud, centroid3);
+  EXPECT_NEAR(centroid3[0], -0.0290809, 1e-4);
+  EXPECT_NEAR(centroid3[1], 0.102653, 1e-4);
+  EXPECT_NEAR(centroid3[2], 0.027302, 1e-4);
+  EXPECT_NEAR(centroid3[3], 1, 1e-4);
 
   // computeNDCentroid (indices)
   Eigen::VectorXf centroidn;
-  computeNDCentroid (cloud, indices, centroidn);
-  EXPECT_NEAR (centroidn[0], -0.0290809, 1e-4);
-  EXPECT_NEAR (centroidn[1], 0.102653, 1e-4);
-  EXPECT_NEAR (centroidn[2], 0.027302, 1e-4);
+  computeNDCentroid(cloud, indices, centroidn);
+  EXPECT_NEAR(centroidn[0], -0.0290809, 1e-4);
+  EXPECT_NEAR(centroidn[1], 0.102653, 1e-4);
+  EXPECT_NEAR(centroidn[2], 0.027302, 1e-4);
 
   // computeNDCentroid
-  computeNDCentroid (cloud, centroidn);
-  EXPECT_NEAR (centroidn[0], -0.0290809, 1e-4);
-  EXPECT_NEAR (centroidn[1], 0.102653, 1e-4);
-  EXPECT_NEAR (centroidn[2], 0.027302, 1e-4);
+  computeNDCentroid(cloud, centroidn);
+  EXPECT_NEAR(centroidn[0], -0.0290809, 1e-4);
+  EXPECT_NEAR(centroidn[1], 0.102653, 1e-4);
+  EXPECT_NEAR(centroidn[2], 0.027302, 1e-4);
 
   // computeCovarianceMatrix (indices)
   Eigen::Matrix3f covariance_matrix;
-  auto result = computeCovarianceMatrix (cloud, indices, centroid3, covariance_matrix);
-  ASSERT_GT (result, 0);
-  EXPECT_NEAR (covariance_matrix (0, 0), 0.710046, 1e-4);
-  EXPECT_NEAR (covariance_matrix (0, 1), -0.234843, 1e-4);
-  EXPECT_NEAR (covariance_matrix (0, 2), 0.0704933, 1e-4);
-  EXPECT_NEAR (covariance_matrix (1, 0), -0.234843, 1e-4);
-  EXPECT_NEAR (covariance_matrix (1, 1), 0.68695, 1e-4);
-  EXPECT_NEAR (covariance_matrix (1, 2), -0.220504, 1e-4);
-  EXPECT_NEAR (covariance_matrix (2, 0), 0.0704933, 1e-4);
-  EXPECT_NEAR (covariance_matrix (2, 1), -0.220504, 1e-4);
-  EXPECT_NEAR (covariance_matrix (2, 2), 0.195448, 1e-4);
+  auto result = computeCovarianceMatrix(cloud, indices, centroid3, covariance_matrix);
+  ASSERT_GT(result, 0);
+  EXPECT_NEAR(covariance_matrix(0, 0), 0.710046, 1e-4);
+  EXPECT_NEAR(covariance_matrix(0, 1), -0.234843, 1e-4);
+  EXPECT_NEAR(covariance_matrix(0, 2), 0.0704933, 1e-4);
+  EXPECT_NEAR(covariance_matrix(1, 0), -0.234843, 1e-4);
+  EXPECT_NEAR(covariance_matrix(1, 1), 0.68695, 1e-4);
+  EXPECT_NEAR(covariance_matrix(1, 2), -0.220504, 1e-4);
+  EXPECT_NEAR(covariance_matrix(2, 0), 0.0704933, 1e-4);
+  EXPECT_NEAR(covariance_matrix(2, 1), -0.220504, 1e-4);
+  EXPECT_NEAR(covariance_matrix(2, 2), 0.195448, 1e-4);
 
   // computeCovarianceMatrix
-  result = computeCovarianceMatrix (cloud, centroid3, covariance_matrix);
-  ASSERT_GT (result, 0);
-  EXPECT_NEAR (covariance_matrix (0, 0), 0.710046, 1e-4);
-  EXPECT_NEAR (covariance_matrix (0, 1), -0.234843, 1e-4);
-  EXPECT_NEAR (covariance_matrix (0, 2), 0.0704933, 1e-4);
-  EXPECT_NEAR (covariance_matrix (1, 0), -0.234843, 1e-4);
-  EXPECT_NEAR (covariance_matrix (1, 1), 0.68695, 1e-4);
-  EXPECT_NEAR (covariance_matrix (1, 2), -0.220504, 1e-4);
-  EXPECT_NEAR (covariance_matrix (2, 0), 0.0704933, 1e-4);
-  EXPECT_NEAR (covariance_matrix (2, 1), -0.220504, 1e-4);
-  EXPECT_NEAR (covariance_matrix (2, 2), 0.195448, 1e-4);
+  result = computeCovarianceMatrix(cloud, centroid3, covariance_matrix);
+  ASSERT_GT(result, 0);
+  EXPECT_NEAR(covariance_matrix(0, 0), 0.710046, 1e-4);
+  EXPECT_NEAR(covariance_matrix(0, 1), -0.234843, 1e-4);
+  EXPECT_NEAR(covariance_matrix(0, 2), 0.0704933, 1e-4);
+  EXPECT_NEAR(covariance_matrix(1, 0), -0.234843, 1e-4);
+  EXPECT_NEAR(covariance_matrix(1, 1), 0.68695, 1e-4);
+  EXPECT_NEAR(covariance_matrix(1, 2), -0.220504, 1e-4);
+  EXPECT_NEAR(covariance_matrix(2, 0), 0.0704933, 1e-4);
+  EXPECT_NEAR(covariance_matrix(2, 1), -0.220504, 1e-4);
+  EXPECT_NEAR(covariance_matrix(2, 2), 0.195448, 1e-4);
 
   // computeCovarianceMatrixNormalized (indices)
-  result = computeCovarianceMatrixNormalized (cloud, indices, centroid3, covariance_matrix);
-  ASSERT_GT (result, 0);
-  EXPECT_NEAR (covariance_matrix (0, 0), 1.7930e-03, 1e-5);
-  EXPECT_NEAR (covariance_matrix (0, 1), -5.9304e-04, 1e-5);
-  EXPECT_NEAR (covariance_matrix (0, 2), 1.7801e-04, 1e-5);
-  EXPECT_NEAR (covariance_matrix (1, 0), -5.9304e-04, 1e-5);
-  EXPECT_NEAR (covariance_matrix (1, 1), 1.7347e-03, 1e-5);
-  EXPECT_NEAR (covariance_matrix (1, 2), -5.5683e-04, 1e-5);
-  EXPECT_NEAR (covariance_matrix (2, 0), 1.7801e-04, 1e-5);
-  EXPECT_NEAR (covariance_matrix (2, 1), -5.5683e-04, 1e-5);
-  EXPECT_NEAR (covariance_matrix (2, 2), 4.9356e-04, 1e-5);
+  result =
+      computeCovarianceMatrixNormalized(cloud, indices, centroid3, covariance_matrix);
+  ASSERT_GT(result, 0);
+  EXPECT_NEAR(covariance_matrix(0, 0), 1.7930e-03, 1e-5);
+  EXPECT_NEAR(covariance_matrix(0, 1), -5.9304e-04, 1e-5);
+  EXPECT_NEAR(covariance_matrix(0, 2), 1.7801e-04, 1e-5);
+  EXPECT_NEAR(covariance_matrix(1, 0), -5.9304e-04, 1e-5);
+  EXPECT_NEAR(covariance_matrix(1, 1), 1.7347e-03, 1e-5);
+  EXPECT_NEAR(covariance_matrix(1, 2), -5.5683e-04, 1e-5);
+  EXPECT_NEAR(covariance_matrix(2, 0), 1.7801e-04, 1e-5);
+  EXPECT_NEAR(covariance_matrix(2, 1), -5.5683e-04, 1e-5);
+  EXPECT_NEAR(covariance_matrix(2, 2), 4.9356e-04, 1e-5);
 
   // computeCovarianceMatrixNormalized
-  result = computeCovarianceMatrixNormalized (cloud, centroid3, covariance_matrix);
-  ASSERT_GT (result, 0);
-  EXPECT_NEAR (covariance_matrix (0, 0), 1.7930e-03, 1e-5);
-  EXPECT_NEAR (covariance_matrix (0, 1), -5.9304e-04, 1e-5);
-  EXPECT_NEAR (covariance_matrix (0, 2), 1.7801e-04, 1e-5);
-  EXPECT_NEAR (covariance_matrix (1, 0), -5.9304e-04, 1e-5);
-  EXPECT_NEAR (covariance_matrix (1, 1), 1.7347e-03, 1e-5);
-  EXPECT_NEAR (covariance_matrix (1, 2), -5.5683e-04, 1e-5);
-  EXPECT_NEAR (covariance_matrix (2, 0), 1.7801e-04, 1e-5);
-  EXPECT_NEAR (covariance_matrix (2, 1), -5.5683e-04, 1e-5);
-  EXPECT_NEAR (covariance_matrix (2, 2), 4.9356e-04, 1e-5);
+  result = computeCovarianceMatrixNormalized(cloud, centroid3, covariance_matrix);
+  ASSERT_GT(result, 0);
+  EXPECT_NEAR(covariance_matrix(0, 0), 1.7930e-03, 1e-5);
+  EXPECT_NEAR(covariance_matrix(0, 1), -5.9304e-04, 1e-5);
+  EXPECT_NEAR(covariance_matrix(0, 2), 1.7801e-04, 1e-5);
+  EXPECT_NEAR(covariance_matrix(1, 0), -5.9304e-04, 1e-5);
+  EXPECT_NEAR(covariance_matrix(1, 1), 1.7347e-03, 1e-5);
+  EXPECT_NEAR(covariance_matrix(1, 2), -5.5683e-04, 1e-5);
+  EXPECT_NEAR(covariance_matrix(2, 0), 1.7801e-04, 1e-5);
+  EXPECT_NEAR(covariance_matrix(2, 1), -5.5683e-04, 1e-5);
+  EXPECT_NEAR(covariance_matrix(2, 2), 4.9356e-04, 1e-5);
 
   // solvePlaneParameters (Vector)
   Eigen::Vector4f plane_parameters;
   float curvature;
-  solvePlaneParameters (covariance_matrix, centroid3, plane_parameters, curvature);
-  EXPECT_NEAR (std::abs (plane_parameters[0]), 0.035592, 1e-4);
-  EXPECT_NEAR (std::abs (plane_parameters[1]), 0.369596, 1e-4);
-  EXPECT_NEAR (std::abs (plane_parameters[2]), 0.928511, 1e-4);
-  EXPECT_NEAR (std::abs (plane_parameters[3]), 0.0622552, 1e-4);
-  EXPECT_NEAR (curvature, 0.0693136, 1e-4);
+  solvePlaneParameters(covariance_matrix, centroid3, plane_parameters, curvature);
+  EXPECT_NEAR(std::abs(plane_parameters[0]), 0.035592, 1e-4);
+  EXPECT_NEAR(std::abs(plane_parameters[1]), 0.369596, 1e-4);
+  EXPECT_NEAR(std::abs(plane_parameters[2]), 0.928511, 1e-4);
+  EXPECT_NEAR(std::abs(plane_parameters[3]), 0.0622552, 1e-4);
+  EXPECT_NEAR(curvature, 0.0693136, 1e-4);
 
   // solvePlaneParameters
   float nx, ny, nz;
-  solvePlaneParameters (covariance_matrix, nx, ny, nz, curvature);
-  EXPECT_NEAR (std::abs (nx), 0.035592, 1e-4);
-  EXPECT_NEAR (std::abs (ny), 0.369596, 1e-4);
-  EXPECT_NEAR (std::abs (nz), 0.928511, 1e-4);
-  EXPECT_NEAR (curvature, 0.0693136, 1e-4);
+  solvePlaneParameters(covariance_matrix, nx, ny, nz, curvature);
+  EXPECT_NEAR(std::abs(nx), 0.035592, 1e-4);
+  EXPECT_NEAR(std::abs(ny), 0.369596, 1e-4);
+  EXPECT_NEAR(std::abs(nz), 0.928511, 1e-4);
+  EXPECT_NEAR(curvature, 0.0693136, 1e-4);
 }
 
 /* ---[ */
 int
 main (int argc, char** argv)
 {
-  if (argc < 2)
-  {
-    std::cerr << "No test file given. Please download `bun0.pcd` and pass its path to the test." << std::endl;
+  if (argc < 2) {
+    std::cerr << "No test file given. Please download `bun0.pcd` and pass its path to "
+                 "the test."
+              << std::endl;
     return (-1);
   }
 
-  if (loadPCDFile<PointXYZ> (argv[1], cloud) < 0)
-  {
-    std::cerr << "Failed to read test file. Please download `bun0.pcd` and pass its path to the test." << std::endl;
+  if (loadPCDFile<PointXYZ>(argv[1], cloud) < 0) {
+    std::cerr << "Failed to read test file. Please download `bun0.pcd` and pass its "
+                 "path to the test."
+              << std::endl;
     return (-1);
   }
 
-  indices.resize (cloud.size ());
-  for (std::size_t i = 0; i < indices.size (); ++i)
-    indices[i] = static_cast<int> (i);
+  indices.resize(cloud.size());
+  for (std::size_t i = 0; i < indices.size(); ++i)
+    indices[i] = static_cast<int>(i);
 
-  tree.reset (new search::KdTree<PointXYZ> (false));
-  tree->setInputCloud (cloud.makeShared ());
+  tree.reset(new search::KdTree<PointXYZ>(false));
+  tree->setInputCloud(cloud.makeShared());
 
-  testing::InitGoogleTest (&argc, argv);
-  return (RUN_ALL_TESTS ());
+  testing::InitGoogleTest(&argc, argv);
+  return (RUN_ALL_TESTS());
 }
 /* ]--- */

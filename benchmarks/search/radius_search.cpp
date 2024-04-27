@@ -8,7 +8,7 @@
 #include <chrono>
 
 static void
-BM_OrganizedNeighborSearch(benchmark::State& state, const std::string& file)
+BM_OrganizedNeighborSearch (benchmark::State& state, const std::string& file)
 {
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloudIn(new pcl::PointCloud<pcl::PointXYZ>);
   pcl::PCDReader reader;
@@ -46,7 +46,7 @@ BM_OrganizedNeighborSearch(benchmark::State& state, const std::string& file)
 }
 
 int
-main(int argc, char** argv)
+main (int argc, char** argv)
 {
   if (argc < 2) {
     std::cerr << "No test file given. Please provide a PCD file for the benchmark."

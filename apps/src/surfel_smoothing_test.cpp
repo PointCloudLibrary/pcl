@@ -5,7 +5,7 @@
 using namespace pcl;
 
 int
-main(int argc, char** argv)
+main (int argc, char** argv)
 {
   if (argc != 5) {
     PCL_ERROR("./surfel_smoothing_test normal_search_radius surfel_scale source_cloud "

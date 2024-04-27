@@ -40,13 +40,12 @@
 
 #pragma once
 
-namespace pcl
-{
-  constexpr int SAC_RANSAC  = 0;
-  constexpr int SAC_LMEDS   = 1;
-  constexpr int SAC_MSAC    = 2;
-  constexpr int SAC_RRANSAC = 3;
-  constexpr int SAC_RMSAC   = 4;
-  constexpr int SAC_MLESAC  = 5;
-  constexpr int SAC_PROSAC  = 6;
-}
+namespace pcl {
+constexpr int SAC_RANSAC = 0;
+constexpr int SAC_LMEDS = 1;
+constexpr int SAC_MSAC = 2;
+constexpr int SAC_RRANSAC = 3;
+constexpr int SAC_RMSAC = 4;
+constexpr int SAC_MLESAC = 5;
+constexpr int SAC_PROSAC = 6;
+} // namespace pcl

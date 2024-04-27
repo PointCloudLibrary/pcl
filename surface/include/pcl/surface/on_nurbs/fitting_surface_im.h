@@ -37,138 +37,139 @@
 
 #pragma once
 
-#include <pcl/surface/on_nurbs/nurbs_tools.h>
 #include <pcl/surface/on_nurbs/nurbs_data.h>
 #include <pcl/surface/on_nurbs/nurbs_solve.h>
-
+#include <pcl/surface/on_nurbs/nurbs_tools.h>
 #include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 
-namespace pcl
-{
-  namespace on_nurbs
+namespace pcl {
+namespace on_nurbs {
+
+/** \brief      */
+class FittingSurfaceIM {
+public:
+  /** \brief Parameters for fitting */
+  struct Parameter {
+    double smoothness;
+    Parameter() : smoothness(0.1) {}
+  };
+
+protected:
+  pcl::PointCloud<pcl::PointXYZRGB>::Ptr m_cloud;
+  std::vector<int> m_indices;
+  Eigen::Matrix3d m_intrinsic;
+  Eigen::Vector4d m_bb;
+
+  ON_NurbsSurface m_nurbs;
+  pcl::on_nurbs::vector_vec2i m_cps_px; // control points in pixel space
+  NurbsSolve m_solver;
+  bool m_quiet;
+
+  pcl::PointXYZRGB
+  computeMean () const;
+
+public:
+  PCL_MAKE_ALIGNED_OPERATOR_NEW
+
+  inline ON_NurbsSurface&
+  getSurface ()
   {
-
-    /** \brief      */
-    class FittingSurfaceIM
-    {
-    public:
-
-      /** \brief Parameters for fitting */
-      struct Parameter
-      {
-        double smoothness;
-        Parameter () :
-          smoothness (0.1)
-        {
-        }
-      };
-
-    protected:
-      pcl::PointCloud<pcl::PointXYZRGB>::Ptr m_cloud;
-      std::vector<int> m_indices;
-      Eigen::Matrix3d m_intrinsic;
-      Eigen::Vector4d m_bb;
-
-      ON_NurbsSurface m_nurbs;
-      pcl::on_nurbs::vector_vec2i m_cps_px; // control points in pixel space
-      NurbsSolve m_solver;
-      bool m_quiet;
-
-      pcl::PointXYZRGB
-      computeMean () const;
-
-    public:
-      PCL_MAKE_ALIGNED_OPERATOR_NEW
-
-      inline ON_NurbsSurface&
-      getSurface ()
-      {
-        return m_nurbs;
-      }
-
-    public:
-      void
-      setInputCloud (pcl::PointCloud<pcl::PointXYZRGB>::Ptr _cloud);
-
-      void
-      setIndices (std::vector<int> &_indices);
-
-      void
-      setCamera (const Eigen::Matrix3d &i);
-
-      void
-      setCamera (const Eigen::Matrix3f &i);
-
-      static std::vector<double>
-      getElementVector (const ON_NurbsSurface &nurbs, int dim);
-
-      void
-      refine ();
-
-      /** compute bounding box of cloud in index space */
-      static Eigen::Vector4d
-      computeIndexBoundingBox (pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud, const std::vector<int> &indices);
-      //      void
-      //      compute (int nurbs_order, double damp = 1.0);
-
-    public:
-      void
-      initSurface (int order, const Eigen::Vector4d &bb);
-
-      void
-      assemble (bool inverse_mapping = false);
-
-      void
-      solve (double damp = 1.0);
-
-      void
-      updateSurf (double damp);
-
-      Eigen::Vector2d
-      findClosestElementMidPoint (const ON_NurbsSurface &nurbs, const Eigen::Vector3d &pt);
-
-      Eigen::Vector2d
-      inverseMapping (const ON_NurbsSurface &nurbs, const Eigen::Vector3d &pt, const Eigen::Vector2d &hint,
-                      double &error, Eigen::Vector3d &p, Eigen::Vector3d &tu, Eigen::Vector3d &tv, int maxSteps,
-                      double accuracy, bool quiet);
-
-      void
-      addPointConstraint (const Eigen::Vector2i &params, double z, double weight, unsigned &row);
-
-      void
-      addCageInteriorRegularisation (double weight, unsigned &row);
-
-      void
-      addCageBoundaryRegularisation (double weight, int side, unsigned &row);
-
-      void
-      addCageCornerRegularisation (double weight, unsigned &row);
-
-      // index routines
-      int
-      grc2gl (int I, int J)
-      {
-        return m_nurbs.CVCount (1) * I + J;
-      } // global row/col index to global lexicographic index
-      int
-      lrc2gl (int E, int F, int i, int j)
-      {
-        return grc2gl (E + i, F + j);
-      } // local row/col index to global lexicographic index
-      int
-      gl2gr (int A)
-      {
-        return (static_cast<int> (A / m_nurbs.CVCount (1)));
-      } // global lexicographic in global row index
-      int
-      gl2gc (int A)
-      {
-        return (static_cast<int> (A % m_nurbs.CVCount (1)));
-      } // global lexicographic in global col index
-
-    };
+    return m_nurbs;
   }
-}
+
+public:
+  void
+  setInputCloud (pcl::PointCloud<pcl::PointXYZRGB>::Ptr _cloud);
+
+  void
+  setIndices (std::vector<int>& _indices);
+
+  void
+  setCamera (const Eigen::Matrix3d& i);
+
+  void
+  setCamera (const Eigen::Matrix3f& i);
+
+  static std::vector<double>
+  getElementVector (const ON_NurbsSurface& nurbs, int dim);
+
+  void
+  refine ();
+
+  /** compute bounding box of cloud in index space */
+  static Eigen::Vector4d
+  computeIndexBoundingBox (pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud,
+                           const std::vector<int>& indices);
+  //      void
+  //      compute (int nurbs_order, double damp = 1.0);
+
+public:
+  void
+  initSurface (int order, const Eigen::Vector4d& bb);
+
+  void
+  assemble (bool inverse_mapping = false);
+
+  void
+  solve (double damp = 1.0);
+
+  void
+  updateSurf (double damp);
+
+  Eigen::Vector2d
+  findClosestElementMidPoint (const ON_NurbsSurface& nurbs, const Eigen::Vector3d& pt);
+
+  Eigen::Vector2d
+  inverseMapping (const ON_NurbsSurface& nurbs,
+                  const Eigen::Vector3d& pt,
+                  const Eigen::Vector2d& hint,
+                  double& error,
+                  Eigen::Vector3d& p,
+                  Eigen::Vector3d& tu,
+                  Eigen::Vector3d& tv,
+                  int maxSteps,
+                  double accuracy,
+                  bool quiet);
+
+  void
+  addPointConstraint (const Eigen::Vector2i& params,
+                      double z,
+                      double weight,
+                      unsigned& row);
+
+  void
+  addCageInteriorRegularisation (double weight, unsigned& row);
+
+  void
+  addCageBoundaryRegularisation (double weight, int side, unsigned& row);
+
+  void
+  addCageCornerRegularisation (double weight, unsigned& row);
+
+  // index routines
+  int
+  grc2gl (int I, int J)
+  {
+    return m_nurbs.CVCount(1) * I + J;
+  } // global row/col index to global lexicographic index
+  int
+  lrc2gl (int E, int F, int i, int j)
+  {
+    return grc2gl(E + i, F + j);
+  } // local row/col index to global lexicographic index
+  int
+  gl2gr (int A)
+  {
+    return (static_cast<int>(A / m_nurbs.CVCount(1)));
+  } // global lexicographic in global row index
+  int
+  gl2gc (int A)
+  {
+    return (static_cast<int>(A % m_nurbs.CVCount(1)));
+  } // global lexicographic in global col index
+};
+} // namespace on_nurbs
+} // namespace pcl

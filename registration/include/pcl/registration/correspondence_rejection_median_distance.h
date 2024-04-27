@@ -79,13 +79,14 @@ public:
    * set of remaining correspondences
    */
   void
-  getRemainingCorrespondences(const pcl::Correspondences& original_correspondences,
-                              pcl::Correspondences& remaining_correspondences) override;
+  getRemainingCorrespondences (
+      const pcl::Correspondences& original_correspondences,
+      pcl::Correspondences& remaining_correspondences) override;
 
   /** \brief Get the median distance used for thresholding in correspondence rejection.
    */
   inline double
-  getMedianDistance() const
+  getMedianDistance () const
   {
     return (median_distance_);
   };
@@ -96,7 +97,7 @@ public:
    */
   template <typename PointT>
   inline void
-  setInputSource(const typename pcl::PointCloud<PointT>::ConstPtr& cloud)
+  setInputSource (const typename pcl::PointCloud<PointT>::ConstPtr& cloud)
   {
     if (!data_container_)
       data_container_.reset(new DataContainer<PointT>);
@@ -109,7 +110,7 @@ public:
    */
   template <typename PointT>
   inline void
-  setInputTarget(const typename pcl::PointCloud<PointT>::ConstPtr& target)
+  setInputTarget (const typename pcl::PointCloud<PointT>::ConstPtr& target)
   {
     if (!data_container_)
       data_container_.reset(new DataContainer<PointT>);
@@ -118,14 +119,14 @@ public:
 
   /** \brief See if this rejector requires source points */
   bool
-  requiresSourcePoints() const override
+  requiresSourcePoints () const override
   {
     return (true);
   }
 
   /** \brief Blob method for setting the source cloud */
   void
-  setSourcePoints(pcl::PCLPointCloud2::ConstPtr cloud2) override
+  setSourcePoints (pcl::PCLPointCloud2::ConstPtr cloud2) override
   {
     PointCloud<PointXYZ>::Ptr cloud(new PointCloud<PointXYZ>);
     fromPCLPointCloud2(*cloud2, *cloud);
@@ -134,14 +135,14 @@ public:
 
   /** \brief See if this rejector requires a target cloud */
   bool
-  requiresTargetPoints() const override
+  requiresTargetPoints () const override
   {
     return (true);
   }
 
   /** \brief Method for setting the target cloud */
   void
-  setTargetPoints(pcl::PCLPointCloud2::ConstPtr cloud2) override
+  setTargetPoints (pcl::PCLPointCloud2::ConstPtr cloud2) override
   {
     PointCloud<PointXYZ>::Ptr cloud(new PointCloud<PointXYZ>);
     fromPCLPointCloud2(*cloud2, *cloud);
@@ -157,8 +158,8 @@ public:
    */
   template <typename PointT>
   inline void
-  setSearchMethodTarget(const typename pcl::search::KdTree<PointT>::Ptr& tree,
-                        bool force_no_recompute = false)
+  setSearchMethodTarget (const typename pcl::search::KdTree<PointT>::Ptr& tree,
+                         bool force_no_recompute = false)
   {
     static_pointer_cast<DataContainer<PointT>>(data_container_)
         ->setSearchMethodTarget(tree, force_no_recompute);
@@ -168,14 +169,14 @@ public:
    * than median times factor will be rejected \param[in] factor value
    */
   inline void
-  setMedianFactor(double factor)
+  setMedianFactor (double factor)
   {
     factor_ = factor;
   };
 
   /** \brief Get the factor used for thresholding in correspondence rejection. */
   inline double
-  getMedianFactor() const
+  getMedianFactor () const
   {
     return factor_;
   };
@@ -185,7 +186,7 @@ protected:
    * \param[out] correspondences the set of resultant correspondences.
    */
   inline void
-  applyRejection(pcl::Correspondences& correspondences) override
+  applyRejection (pcl::Correspondences& correspondences) override
   {
     getRemainingCorrespondences(*input_correspondences_, correspondences);
   }

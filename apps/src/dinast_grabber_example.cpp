@@ -55,7 +55,7 @@ public:
   {}
 
   void
-  cloud_cb_(CloudConstPtr cloud_cb)
+  cloud_cb_ (CloudConstPtr cloud_cb)
   {
     static unsigned count = 0;
     static double last = pcl::getTime();
@@ -71,10 +71,10 @@ public:
   }
 
   int
-  run()
+  run ()
   {
 
-    std::function<void(const CloudConstPtr&)> f = [this](const CloudConstPtr& cloud) {
+    std::function<void(const CloudConstPtr&)> f = [this] (const CloudConstPtr& cloud) {
       cloud_cb_(cloud);
     };
 
@@ -96,7 +96,7 @@ public:
 };
 
 int
-main()
+main ()
 {
   pcl::DinastGrabber grabber;
   DinastProcessor<pcl::PointXYZI> v(grabber);

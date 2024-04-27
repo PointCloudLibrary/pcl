@@ -38,51 +38,41 @@
 #include <pcl/features/narf.h>
 #include <pcl/features/narf_descriptor.h>
 
-#include <iostream>
-#include <fstream>
 #include <cmath>
+#include <fstream>
+#include <iostream>
 #include <map> // for std::multimap
-using std::cout;
 using std::cerr;
+using std::cout;
 using std::vector;
 
 using Eigen::Vector3f;
 
 #include <pcl/range_image/range_image.h>
 
-namespace pcl 
-{
+namespace pcl {
 int Narf::max_no_of_threads = 1;
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-Narf::Narf()
-{
-  reset();
-}
+Narf::Narf() { reset(); }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-Narf::~Narf()
-{
-  reset();
-}
+Narf::~Narf() { reset(); }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-Narf::Narf (const Narf& other)
-{
-  deepCopy (other);
-}
+Narf::Narf(const Narf& other) { deepCopy(other); }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-const Narf& 
-Narf::operator= (const Narf& other)
+const Narf&
+Narf::operator=(const Narf& other)
 {
-  deepCopy (other);
+  deepCopy(other);
   return (*this);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void 
-Narf::reset ()
+void
+Narf::reset()
 {
   delete[] descriptor_;
   descriptor_ = nullptr;
@@ -95,28 +85,29 @@ Narf::reset ()
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void 
-Narf::deepCopy (const Narf& other)
+void
+Narf::deepCopy(const Narf& other)
 {
-  //std::cout << __PRETTY_FUNCTION__<<" called.\n";
+  // std::cout << __PRETTY_FUNCTION__<<" called.\n";
   if (&other == this)
     return;
-  
+
   position_ = other.position_;
   transformation_ = other.transformation_;
-  
-  if (surface_patch_pixel_size_ != other.surface_patch_pixel_size_)
-  {
+
+  if (surface_patch_pixel_size_ != other.surface_patch_pixel_size_) {
     surface_patch_pixel_size_ = other.surface_patch_pixel_size_;
     delete[] surface_patch_;
-    surface_patch_ = new float[surface_patch_pixel_size_*surface_patch_pixel_size_];
+    surface_patch_ = new float[surface_patch_pixel_size_ * surface_patch_pixel_size_];
   }
-  std::copy(other.surface_patch_, other.surface_patch_ + surface_patch_pixel_size_*surface_patch_pixel_size_, surface_patch_);
+  std::copy(other.surface_patch_,
+            other.surface_patch_ +
+                surface_patch_pixel_size_ * surface_patch_pixel_size_,
+            surface_patch_);
   surface_patch_world_size_ = other.surface_patch_world_size_;
   surface_patch_rotation_ = other.surface_patch_rotation_;
-  
-  if (descriptor_size_ != other.descriptor_size_)
-  {
+
+  if (descriptor_size_ != other.descriptor_size_) {
     descriptor_size_ = other.descriptor_size_;
     delete[] descriptor_;
     descriptor_ = new float[descriptor_size_];
@@ -125,87 +116,96 @@ Narf::deepCopy (const Narf& other)
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-bool 
-Narf::extractDescriptor (int descriptor_size)
+bool
+Narf::extractDescriptor(int descriptor_size)
 {
   float weight_for_first_point = 2.0f; // The weight for the last point is always 1.0f
   int no_of_beam_points = getNoOfBeamPoints();
-  float weight_factor = -2.0f*(weight_for_first_point-1.0f) / ((weight_for_first_point+1.0f)*static_cast<float>(no_of_beam_points-1)),
-        weight_offset = 2.0f*weight_for_first_point / (weight_for_first_point+1.0f);
+  float weight_factor = -2.0f * (weight_for_first_point - 1.0f) /
+                        ((weight_for_first_point + 1.0f) *
+                         static_cast<float>(no_of_beam_points - 1)),
+        weight_offset = 2.0f * weight_for_first_point / (weight_for_first_point + 1.0f);
 
-  if (descriptor_size != descriptor_size_)
-  {
+  if (descriptor_size != descriptor_size_) {
     descriptor_size_ = descriptor_size;
     delete descriptor_;
     descriptor_ = new float[descriptor_size_];
   }
-  float angle_step_size = deg2rad (360.0f) / static_cast<float> (descriptor_size_);
-  //std::cout << PVARN(no_of_beam_points)<<PVARN(surface_patch_pixel_size_);
+  float angle_step_size = deg2rad(360.0f) / static_cast<float>(descriptor_size_);
+  // std::cout << PVARN(no_of_beam_points)<<PVARN(surface_patch_pixel_size_);
 
-  float cell_size = surface_patch_world_size_/static_cast<float>(surface_patch_pixel_size_),
-        cell_factor = 1.0f/cell_size,
-        cell_offset = 0.5f*(surface_patch_world_size_ - cell_size),
-        max_dist = 0.5f*surface_patch_world_size_,
-        beam_point_factor = (max_dist-0.5f*cell_size) / static_cast<float> (no_of_beam_points);
+  float cell_size =
+            surface_patch_world_size_ / static_cast<float>(surface_patch_pixel_size_),
+        cell_factor = 1.0f / cell_size,
+        cell_offset = 0.5f * (surface_patch_world_size_ - cell_size),
+        max_dist = 0.5f * surface_patch_world_size_,
+        beam_point_factor =
+            (max_dist - 0.5f * cell_size) / static_cast<float>(no_of_beam_points);
 
-  for (int descriptor_value_idx=0; descriptor_value_idx<descriptor_size_; ++descriptor_value_idx)
-  {
+  for (int descriptor_value_idx = 0; descriptor_value_idx < descriptor_size_;
+       ++descriptor_value_idx) {
     float& descriptor_value = descriptor_[descriptor_value_idx];
     descriptor_value = 0.0f;
-    float angle = static_cast<float> (descriptor_value_idx) * angle_step_size + surface_patch_rotation_,
+    float angle = static_cast<float>(descriptor_value_idx) * angle_step_size +
+                  surface_patch_rotation_,
           beam_point_factor_x = sinf(angle) * beam_point_factor,
-          beam_point_factor_y = -std::cos (angle) * beam_point_factor;
-     
-    std::vector<float> beam_values (no_of_beam_points + 1);
+          beam_point_factor_y = -std::cos(angle) * beam_point_factor;
+
+    std::vector<float> beam_values(no_of_beam_points + 1);
     float current_cell = 0.0f;
-    for (int beam_point_idx=0; beam_point_idx<=no_of_beam_points; ++beam_point_idx)
-    {
+    for (int beam_point_idx = 0; beam_point_idx <= no_of_beam_points;
+         ++beam_point_idx) {
       float& beam_value = beam_values[beam_point_idx];
 
-      float beam_point_x = beam_point_factor_x * static_cast<float> (beam_point_idx),
-            beam_point_y = beam_point_factor_y * static_cast<float> (beam_point_idx);
+      float beam_point_x = beam_point_factor_x * static_cast<float>(beam_point_idx),
+            beam_point_y = beam_point_factor_y * static_cast<float>(beam_point_idx);
       float beam_point_cell_x = cell_factor * (beam_point_x + cell_offset),
             beam_point_cell_y = cell_factor * (beam_point_y + cell_offset);
 
-      int cell_x = static_cast<int> (pcl_lrint (beam_point_cell_x)), cell_y = static_cast<int> (pcl_lrint (beam_point_cell_y));
-      beam_value = surface_patch_[cell_y*surface_patch_pixel_size_ + cell_x];
-      if (!std::isfinite(beam_value))
-      {
+      int cell_x = static_cast<int>(pcl_lrint(beam_point_cell_x)),
+          cell_y = static_cast<int>(pcl_lrint(beam_point_cell_y));
+      beam_value = surface_patch_[cell_y * surface_patch_pixel_size_ + cell_x];
+      if (!std::isfinite(beam_value)) {
         if (beam_value > 0.0f)
           beam_value = max_dist;
         else
-          beam_value = -std::numeric_limits<float>::infinity ();
+          beam_value = -std::numeric_limits<float>::infinity();
       }
     }
-    for (int beam_value_idx=0; beam_value_idx<no_of_beam_points; ++beam_value_idx)
-    {
-      float beam_value1=beam_values[beam_value_idx],
-            beam_value2=beam_values[beam_value_idx+1];
+    for (int beam_value_idx = 0; beam_value_idx < no_of_beam_points; ++beam_value_idx) {
+      float beam_value1 = beam_values[beam_value_idx],
+            beam_value2 = beam_values[beam_value_idx + 1];
 
-      float current_weight = weight_factor*static_cast<float>(beam_value_idx) + weight_offset;
-      float diff = beam_value2-beam_value1;
+      float current_weight =
+          weight_factor * static_cast<float>(beam_value_idx) + weight_offset;
+      float diff = beam_value2 - beam_value1;
       current_cell += current_weight * diff;
     }
     // Scaling for easy descriptor distances:
-    current_cell = std::atan2 (current_cell, max_dist) / deg2rad(180.0f);  // Scales the result to [-0.5, 0.5]
+    current_cell = std::atan2(current_cell, max_dist) /
+                   deg2rad(180.0f); // Scales the result to [-0.5, 0.5]
     descriptor_value = current_cell;
   }
   return true;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-bool 
-Narf::extractFromRangeImage (const RangeImage& range_image, const Eigen::Affine3f& pose, int descriptor_size,
-                             float support_size, int surface_patch_pixel_size)
+bool
+Narf::extractFromRangeImage(const RangeImage& range_image,
+                            const Eigen::Affine3f& pose,
+                            int descriptor_size,
+                            float support_size,
+                            int surface_patch_pixel_size)
 {
   reset();
   transformation_ = pose;
-  position_ = pose.inverse (Eigen::Isometry).translation ();
+  position_ = pose.inverse(Eigen::Isometry).translation();
   surface_patch_world_size_ = support_size;
   surface_patch_pixel_size_ = surface_patch_pixel_size;
   surface_patch_rotation_ = 0.0f;
-  surface_patch_ = range_image.getInterpolatedSurfaceProjection(pose, surface_patch_pixel_size_, surface_patch_world_size_);
-  int new_pixel_size = 2*surface_patch_pixel_size_;
+  surface_patch_ = range_image.getInterpolatedSurfaceProjection(
+      pose, surface_patch_pixel_size_, surface_patch_world_size_);
+  int new_pixel_size = 2 * surface_patch_pixel_size_;
   int blur_radius = 1;
   float* new_surface_patch = getBlurredSurfacePatch(new_pixel_size, blur_radius);
   delete[] surface_patch_;
@@ -216,37 +216,57 @@ Narf::extractFromRangeImage (const RangeImage& range_image, const Eigen::Affine3
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-bool 
-Narf::extractFromRangeImage (const RangeImage& range_image, float x, float y, int descriptor_size, float support_size)
+bool
+Narf::extractFromRangeImage(const RangeImage& range_image,
+                            float x,
+                            float y,
+                            int descriptor_size,
+                            float support_size)
 {
-  if (!range_image.isValid (static_cast<int> (pcl_lrint (x)), static_cast<int> (pcl_lrint (y))))
+  if (!range_image.isValid(static_cast<int>(pcl_lrint(x)),
+                           static_cast<int>(pcl_lrint(y))))
     return (false);
   Eigen::Vector3f feature_pos;
   range_image.calculate3DPoint(x, y, feature_pos);
-  
-  return (extractFromRangeImage (range_image, feature_pos, descriptor_size, support_size));
+
+  return (
+      extractFromRangeImage(range_image, feature_pos, descriptor_size, support_size));
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-bool 
-Narf::extractFromRangeImage (const RangeImage& range_image, const InterestPoint& interest_point, int descriptor_size, float support_size)
+bool
+Narf::extractFromRangeImage(const RangeImage& range_image,
+                            const InterestPoint& interest_point,
+                            int descriptor_size,
+                            float support_size)
 {
-  return extractFromRangeImage(range_image, Eigen::Vector3f(interest_point.x, interest_point.y, interest_point.z), descriptor_size, support_size);
+  return extractFromRangeImage(
+      range_image,
+      Eigen::Vector3f(interest_point.x, interest_point.y, interest_point.z),
+      descriptor_size,
+      support_size);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-bool 
-Narf::extractFromRangeImage (const RangeImage& range_image, const Eigen::Vector3f& interest_point, int descriptor_size, float support_size)
+bool
+Narf::extractFromRangeImage(const RangeImage& range_image,
+                            const Eigen::Vector3f& interest_point,
+                            int descriptor_size,
+                            float support_size)
 {
-  if (!range_image.getNormalBasedUprightTransformation(interest_point, 0.5f*support_size, transformation_))
+  if (!range_image.getNormalBasedUprightTransformation(
+          interest_point, 0.5f * support_size, transformation_))
     return false;
-  return extractFromRangeImage(range_image, transformation_, descriptor_size, support_size);
+  return extractFromRangeImage(
+      range_image, transformation_, descriptor_size, support_size);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-bool 
-Narf::extractFromRangeImageWithBestRotation (const RangeImage& range_image, const Eigen::Vector3f& interest_point,
-                                             int descriptor_size, float support_size)
+bool
+Narf::extractFromRangeImageWithBestRotation(const RangeImage& range_image,
+                                            const Eigen::Vector3f& interest_point,
+                                            int descriptor_size,
+                                            float support_size)
 {
   extractFromRangeImage(range_image, interest_point, descriptor_size, support_size);
   std::vector<float> rotations, strengths;
@@ -254,71 +274,75 @@ Narf::extractFromRangeImageWithBestRotation (const RangeImage& range_image, cons
   if (rotations.empty())
     return false;
 
-  const auto max_it = std::max_element(strengths.cbegin (), strengths.cend ());
-  const auto max_idx = std::distance(strengths.cbegin (), max_it);
+  const auto max_it = std::max_element(strengths.cbegin(), strengths.cend());
+  const auto max_idx = std::distance(strengths.cbegin(), max_it);
   const auto best_rotation = rotations[max_idx];
 
-  transformation_ = Eigen::AngleAxisf(-best_rotation, Eigen::Vector3f(0.0f, 0.0f, 1.0f))*transformation_;
+  transformation_ =
+      Eigen::AngleAxisf(-best_rotation, Eigen::Vector3f(0.0f, 0.0f, 1.0f)) *
+      transformation_;
   surface_patch_rotation_ = best_rotation;
   return extractDescriptor(descriptor_size_);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-float* 
-Narf::getBlurredSurfacePatch (int new_pixel_size, int blur_radius) const
+float*
+Narf::getBlurredSurfacePatch(int new_pixel_size, int blur_radius) const
 {
-  float new_to_old_factor = static_cast<float>(surface_patch_pixel_size_)/static_cast<float>(new_pixel_size);
-  int new_size = new_pixel_size*new_pixel_size;
-  
+  float new_to_old_factor = static_cast<float>(surface_patch_pixel_size_) /
+                            static_cast<float>(new_pixel_size);
+  int new_size = new_pixel_size * new_pixel_size;
+
   float* integral_image = new float[new_size];
   float* integral_image_ptr = integral_image;
-  for (int y=0; y<new_pixel_size; ++y)
-  {
-    for (int x=0; x<new_pixel_size; ++x)
-    {
+  for (int y = 0; y < new_pixel_size; ++y) {
+    for (int x = 0; x < new_pixel_size; ++x) {
       float& integral_pixel = *(integral_image_ptr++);
-      int old_x = static_cast<int> (pcl_lrint (std::floor (new_to_old_factor * float (x)))),
-          old_y = static_cast<int> (pcl_lrint (std::floor (new_to_old_factor * float (y))));
-      integral_pixel = surface_patch_[old_y*surface_patch_pixel_size_ + old_x];
+      int old_x = static_cast<int>(pcl_lrint(std::floor(new_to_old_factor * float(x)))),
+          old_y = static_cast<int>(pcl_lrint(std::floor(new_to_old_factor * float(y))));
+      integral_pixel = surface_patch_[old_y * surface_patch_pixel_size_ + old_x];
       if (std::isinf(integral_pixel))
-        integral_pixel = 0.5f*surface_patch_world_size_;
-      float left_value=0, top_left_value=0, top_value=0;
-      if (x>0)
-      {
-        left_value = integral_image[y*new_pixel_size+x-1];
-        if (y>0)
-          top_left_value = integral_image[(y-1)*new_pixel_size+x-1];
+        integral_pixel = 0.5f * surface_patch_world_size_;
+      float left_value = 0, top_left_value = 0, top_value = 0;
+      if (x > 0) {
+        left_value = integral_image[y * new_pixel_size + x - 1];
+        if (y > 0)
+          top_left_value = integral_image[(y - 1) * new_pixel_size + x - 1];
       }
-      if (y>0)
-        top_value = integral_image[(y-1)*new_pixel_size+x];
-      
+      if (y > 0)
+        top_value = integral_image[(y - 1) * new_pixel_size + x];
+
       integral_pixel += left_value + top_value - top_left_value;
-      //std::cout << PVARC(x)<<PVARC(y)<<PVARC(left_value)<<PVARC(top_value)<<PVARC(top_left_value)<<PVARN(integral_pixel)<<PVARN(integral_image[y*new_pixel_size+x-1]);
+      // std::cout <<
+      // PVARC(x)<<PVARC(y)<<PVARC(left_value)<<PVARC(top_value)<<PVARC(top_left_value)<<PVARN(integral_pixel)<<PVARN(integral_image[y*new_pixel_size+x-1]);
     }
   }
-  
+
   float* new_surface_patch = new float[new_size];
   float* new_surface_patch_ptr = new_surface_patch;
-  for (int y=0; y<new_pixel_size; ++y)
-  {
-    for (int x=0; x<new_pixel_size; ++x)
-    {
+  for (int y = 0; y < new_pixel_size; ++y) {
+    for (int x = 0; x < new_pixel_size; ++x) {
       float& new_value = *(new_surface_patch_ptr++);
-      
-      int top = (std::max) (-1, y-blur_radius-1), right=(std::min) (new_pixel_size-1, x+blur_radius), bottom = (std::min) (new_pixel_size-1, y+blur_radius), left=(std::max) (-1, x-blur_radius-1),
-          pixelSum = (right-left)*(bottom-top);
-      float normalizationFactor = 1.0f / static_cast<float> (pixelSum);
-      
-      float top_left_value=0, top_right_value=0, bottom_right_value=integral_image[bottom*new_pixel_size+right], bottom_left_value=0;
-      if (left>=0)
-      {
-        bottom_left_value = integral_image[bottom*new_pixel_size+left];
-        if (top>=0)
-          top_left_value = integral_image[top*new_pixel_size+left];
+
+      int top = (std::max)(-1, y - blur_radius - 1),
+          right = (std::min)(new_pixel_size - 1, x + blur_radius),
+          bottom = (std::min)(new_pixel_size - 1, y + blur_radius),
+          left = (std::max)(-1, x - blur_radius - 1),
+          pixelSum = (right - left) * (bottom - top);
+      float normalizationFactor = 1.0f / static_cast<float>(pixelSum);
+
+      float top_left_value = 0, top_right_value = 0,
+            bottom_right_value = integral_image[bottom * new_pixel_size + right],
+            bottom_left_value = 0;
+      if (left >= 0) {
+        bottom_left_value = integral_image[bottom * new_pixel_size + left];
+        if (top >= 0)
+          top_left_value = integral_image[top * new_pixel_size + left];
       }
-      if (top>=0)
-        top_right_value = integral_image[top*new_pixel_size+right];
-      new_value = normalizationFactor * (bottom_right_value + top_left_value - bottom_left_value - top_right_value);
+      if (top >= 0)
+        top_right_value = integral_image[top * new_pixel_size + right];
+      new_value = normalizationFactor * (bottom_right_value + top_left_value -
+                                         bottom_left_value - top_right_value);
     }
   }
   delete[] integral_image;
@@ -326,18 +350,21 @@ Narf::getBlurredSurfacePatch (int new_pixel_size, int blur_radius) const
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void 
-Narf::extractFromRangeImageAndAddToList (const RangeImage& range_image, const Eigen::Vector3f& interest_point, int descriptor_size,
-                                         float support_size, bool rotation_invariant, std::vector<Narf*>& feature_list)
+void
+Narf::extractFromRangeImageAndAddToList(const RangeImage& range_image,
+                                        const Eigen::Vector3f& interest_point,
+                                        int descriptor_size,
+                                        float support_size,
+                                        bool rotation_invariant,
+                                        std::vector<Narf*>& feature_list)
 {
   Narf* feature = new Narf;
-  if (!feature->extractFromRangeImage(range_image, interest_point, descriptor_size, support_size))
-  {
+  if (!feature->extractFromRangeImage(
+          range_image, interest_point, descriptor_size, support_size)) {
     delete feature;
     return;
   }
-  if (!rotation_invariant)
-  {
+  if (!rotation_invariant) {
     feature_list.push_back(feature);
     return;
   }
@@ -348,43 +375,60 @@ Narf::extractFromRangeImageAndAddToList (const RangeImage& range_image, const Ei
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void 
-Narf::extractFromRangeImageAndAddToList (const RangeImage& range_image, float image_x, float image_y, int descriptor_size,
-                                         float support_size, bool rotation_invariant, std::vector<Narf*>& feature_list)
+void
+Narf::extractFromRangeImageAndAddToList(const RangeImage& range_image,
+                                        float image_x,
+                                        float image_y,
+                                        int descriptor_size,
+                                        float support_size,
+                                        bool rotation_invariant,
+                                        std::vector<Narf*>& feature_list)
 {
-  if (!range_image.isValid (static_cast<int> (pcl_lrint (image_x)), static_cast<int> (pcl_lrint (image_y))))
+  if (!range_image.isValid(static_cast<int>(pcl_lrint(image_x)),
+                           static_cast<int>(pcl_lrint(image_y))))
     return;
   Eigen::Vector3f feature_pos;
   range_image.calculate3DPoint(image_x, image_y, feature_pos);
-  extractFromRangeImageAndAddToList(range_image, feature_pos, descriptor_size, support_size, rotation_invariant, feature_list);
+  extractFromRangeImageAndAddToList(range_image,
+                                    feature_pos,
+                                    descriptor_size,
+                                    support_size,
+                                    rotation_invariant,
+                                    feature_list);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void 
-Narf::extractForInterestPoints (const RangeImage& range_image, const PointCloud<InterestPoint>& interest_points,
-                                int descriptor_size, float support_size, bool rotation_invariant, std::vector<Narf*>& feature_list)
+void
+Narf::extractForInterestPoints(const RangeImage& range_image,
+                               const PointCloud<InterestPoint>& interest_points,
+                               int descriptor_size,
+                               float support_size,
+                               bool rotation_invariant,
+                               std::vector<Narf*>& feature_list)
 {
-#pragma omp parallel for \
-  default(none) \
-  shared(descriptor_size, feature_list, interest_points, range_image, rotation_invariant, support_size) \
-  schedule(dynamic, 10) \
-  num_threads(max_no_of_threads)
+#pragma omp parallel for default(none) shared(descriptor_size,                         \
+                                                  feature_list,                        \
+                                                  interest_points,                     \
+                                                  range_image,                         \
+                                                  rotation_invariant,                  \
+                                                  support_size) schedule(dynamic, 10)  \
+    num_threads(max_no_of_threads)
   //!!! nizar 20110408 : for OpenMP sake on MSVC this must be kept signed
   // Disable lint since this 'for' is part of the pragma
   // NOLINTNEXTLINE(modernize-loop-convert)
-  for (std::ptrdiff_t idx = 0; idx < static_cast<std::ptrdiff_t>(interest_points.size ()); ++idx)
-  {
+  for (std::ptrdiff_t idx = 0;
+       idx < static_cast<std::ptrdiff_t>(interest_points.size());
+       ++idx) {
     const auto& interest_point = interest_points[idx];
-    Vector3fMapConst point = interest_point.getVector3fMap ();
+    Vector3fMapConst point = interest_point.getVector3fMap();
 
     Narf* feature = new Narf;
-    if (!feature->extractFromRangeImage(range_image, point, descriptor_size, support_size))
-    {
+    if (!feature->extractFromRangeImage(
+            range_image, point, descriptor_size, support_size)) {
       delete feature;
     }
     else {
-      if (!rotation_invariant)
-      {
+      if (!rotation_invariant) {
 #pragma omp critical
         {
           feature_list.push_back(feature);
@@ -394,14 +438,14 @@ Narf::extractForInterestPoints (const RangeImage& range_image, const PointCloud<
         std::vector<float> rotations, strengths;
         feature->getRotations(rotations, strengths);
         {
-          //feature->getRotatedVersions(range_image, rotations, feature_list);
-          for (const float &rotation : rotations)
-          {
-            Narf* feature2 = new Narf(*feature);  // Call copy constructor
-            feature2->transformation_ = Eigen::AngleAxisf(-rotation, Eigen::Vector3f(0.0f, 0.0f, 1.0f))*feature2->transformation_;
+          // feature->getRotatedVersions(range_image, rotations, feature_list);
+          for (const float& rotation : rotations) {
+            Narf* feature2 = new Narf(*feature); // Call copy constructor
+            feature2->transformation_ =
+                Eigen::AngleAxisf(-rotation, Eigen::Vector3f(0.0f, 0.0f, 1.0f)) *
+                feature2->transformation_;
             feature2->surface_patch_rotation_ = rotation;
-            if (!feature2->extractDescriptor(feature2->descriptor_size_))
-            {
+            if (!feature2->extractDescriptor(feature2->descriptor_size_)) {
               delete feature2;
               continue;
             }
@@ -418,86 +462,97 @@ Narf::extractForInterestPoints (const RangeImage& range_image, const PointCloud<
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void 
-Narf::extractForEveryRangeImagePointAndAddToList (const RangeImage& range_image, int descriptor_size, float support_size,
-                                                  bool rotation_invariant, std::vector<Narf*>& feature_list)
+void
+Narf::extractForEveryRangeImagePointAndAddToList(const RangeImage& range_image,
+                                                 int descriptor_size,
+                                                 float support_size,
+                                                 bool rotation_invariant,
+                                                 std::vector<Narf*>& feature_list)
 {
-  for (unsigned int y=0; y<range_image.height; ++y)
-  {
-    for (unsigned int x=0; x<range_image.width; ++x)
-    {
-      extractFromRangeImageAndAddToList(range_image, static_cast<float> (x), static_cast<float> (y), descriptor_size, support_size,
-                                        rotation_invariant, feature_list);
+  for (unsigned int y = 0; y < range_image.height; ++y) {
+    for (unsigned int x = 0; x < range_image.width; ++x) {
+      extractFromRangeImageAndAddToList(range_image,
+                                        static_cast<float>(x),
+                                        static_cast<float>(y),
+                                        descriptor_size,
+                                        support_size,
+                                        rotation_invariant,
+                                        feature_list);
     }
   }
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void 
-Narf::getRotations (std::vector<float>& rotations, std::vector<float>& strengths) const
+void
+Narf::getRotations(std::vector<float>& rotations, std::vector<float>& strengths) const
 {
-  const auto angle_steps_no = std::max (descriptor_size_, 36);
+  const auto angle_steps_no = std::max(descriptor_size_, 36);
   const float min_angle_dist_between_rotations = deg2rad(70.0f);
-  const float angle_step_size1 = deg2rad (360.0f) / static_cast<float> (angle_steps_no);
-  const float angle_step_size2 = deg2rad (360.0f) / static_cast<float> (descriptor_size_);
+  const float angle_step_size1 = deg2rad(360.0f) / static_cast<float>(angle_steps_no);
+  const float angle_step_size2 = deg2rad(360.0f) / static_cast<float>(descriptor_size_);
 
-  const float score_normalization = 1.0f / static_cast<float> (descriptor_size_);
+  const float score_normalization = 1.0f / static_cast<float>(descriptor_size_);
 
   std::multimap<float, float> scored_orientations;
-  for (int step=0; step<angle_steps_no; ++step)
-  {
-    float angle = static_cast<float> (step) * angle_step_size1;
+  for (int step = 0; step < angle_steps_no; ++step) {
+    float angle = static_cast<float>(step) * angle_step_size1;
     float score = 0.0f;
-    
-    for (int descriptor_value_idx=0; descriptor_value_idx<descriptor_size_; ++descriptor_value_idx)
-    {
+
+    for (int descriptor_value_idx = 0; descriptor_value_idx < descriptor_size_;
+         ++descriptor_value_idx) {
       float value = descriptor_[descriptor_value_idx];
-      float angle2 = static_cast<float> (descriptor_value_idx) * angle_step_size2;
-      float distance_weight = powf (1.0f - std::abs (normAngle (angle - angle2)) / deg2rad (180.0f), 2.0f);
-      
+      float angle2 = static_cast<float>(descriptor_value_idx) * angle_step_size2;
+      float distance_weight =
+          powf(1.0f - std::abs(normAngle(angle - angle2)) / deg2rad(180.0f), 2.0f);
+
       score += value * distance_weight;
     }
-    score = score_normalization*score + 0.5f; // Scale value to [0,1]
+    score = score_normalization * score + 0.5f; // Scale value to [0,1]
     scored_orientations.insert(std::make_pair(score, angle));
   }
-  
-  //for (std::multimap<float, float>::const_iterator it=scored_orientations.begin(); it!=scored_orientations.end(); ++it)
-    //std::cout << "Score "<<it->first<<" for angle "<<rad2deg(it->second)<<".\n";
-  
+
+  // for (std::multimap<float, float>::const_iterator it=scored_orientations.begin();
+  // it!=scored_orientations.end(); ++it) std::cout << "Score "<<it->first<<" for angle
+  // "<<rad2deg(it->second)<<".\n";
+
   float min_score = scored_orientations.begin()->first,
         max_score = scored_orientations.rbegin()->first;
-  
-  float min_score_for_remaining_rotations = max_score - 0.2f*(max_score-min_score);
-  scored_orientations.erase(scored_orientations.begin(), scored_orientations.upper_bound(min_score_for_remaining_rotations));
-  //std::cout << "There are "<<scored_orientations.size()<<" potential orientations left after filtering out bad scores.\n";
-  
-  while (!scored_orientations.empty())
-  {
+
+  float min_score_for_remaining_rotations = max_score - 0.2f * (max_score - min_score);
+  scored_orientations.erase(
+      scored_orientations.begin(),
+      scored_orientations.upper_bound(min_score_for_remaining_rotations));
+  // std::cout << "There are "<<scored_orientations.size()<<" potential orientations
+  // left after filtering out bad scores.\n";
+
+  while (!scored_orientations.empty()) {
     auto best_remaining_orientation_it = scored_orientations.end();
     --best_remaining_orientation_it;
     rotations.push_back(best_remaining_orientation_it->second);
     strengths.push_back(best_remaining_orientation_it->first);
     scored_orientations.erase(best_remaining_orientation_it);
-    for (auto it = scored_orientations.begin(); it!=scored_orientations.end();)
-    {
+    for (auto it = scored_orientations.begin(); it != scored_orientations.end();) {
       auto current_it = it++;
-      if (normAngle(current_it->second - rotations.back()) < min_angle_dist_between_rotations)
+      if (normAngle(current_it->second - rotations.back()) <
+          min_angle_dist_between_rotations)
         scored_orientations.erase(current_it);
     }
   }
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void 
-Narf::getRotatedVersions (const RangeImage&, const std::vector<float>& rotations, std::vector<Narf*>& features) const
+void
+Narf::getRotatedVersions(const RangeImage&,
+                         const std::vector<float>& rotations,
+                         std::vector<Narf*>& features) const
 {
-  for (const float &rotation : rotations)
-  {
-    Narf* feature = new Narf(*this);  // Call copy constructor
-    feature->transformation_ = Eigen::AngleAxisf(-rotation, Eigen::Vector3f(0.0f, 0.0f, 1.0f))*feature->transformation_;
+  for (const float& rotation : rotations) {
+    Narf* feature = new Narf(*this); // Call copy constructor
+    feature->transformation_ =
+        Eigen::AngleAxisf(-rotation, Eigen::Vector3f(0.0f, 0.0f, 1.0f)) *
+        feature->transformation_;
     feature->surface_patch_rotation_ = rotation;
-    if (!feature->extractDescriptor(feature->descriptor_size_))
-    {
+    if (!feature->extractDescriptor(feature->descriptor_size_)) {
       delete feature;
       continue;
     }
@@ -506,31 +561,37 @@ Narf::getRotatedVersions (const RangeImage&, const std::vector<float>& rotations
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void 
-Narf::saveHeader (std::ostream& file) const
+void
+Narf::saveHeader(std::ostream& file) const
 {
-  file << "\n"<<getHeaderKeyword()<<" "<<Narf::VERSION<<" ";
+  file << "\n" << getHeaderKeyword() << " " << Narf::VERSION << " ";
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void 
-Narf::saveBinary (std::ostream& file) const
+void
+Narf::saveBinary(std::ostream& file) const
 {
   saveHeader(file);
   pcl::saveBinary(position_.matrix(), file);
   pcl::saveBinary(transformation_.matrix(), file);
-  file.write(reinterpret_cast<const char*>(&surface_patch_pixel_size_), sizeof(surface_patch_pixel_size_));
+  file.write(reinterpret_cast<const char*>(&surface_patch_pixel_size_),
+             sizeof(surface_patch_pixel_size_));
   file.write(reinterpret_cast<const char*>(surface_patch_),
-             surface_patch_pixel_size_*surface_patch_pixel_size_*sizeof(*surface_patch_));
-  file.write(reinterpret_cast<const char*>(&surface_patch_world_size_), sizeof(surface_patch_world_size_));
-  file.write(reinterpret_cast<const char*>(&surface_patch_rotation_), sizeof(surface_patch_rotation_));
-  file.write(reinterpret_cast<const char*>(&descriptor_size_), sizeof(descriptor_size_));
-  file.write(reinterpret_cast<const char*>(descriptor_), descriptor_size_*sizeof(*descriptor_));
+             surface_patch_pixel_size_ * surface_patch_pixel_size_ *
+                 sizeof(*surface_patch_));
+  file.write(reinterpret_cast<const char*>(&surface_patch_world_size_),
+             sizeof(surface_patch_world_size_));
+  file.write(reinterpret_cast<const char*>(&surface_patch_rotation_),
+             sizeof(surface_patch_rotation_));
+  file.write(reinterpret_cast<const char*>(&descriptor_size_),
+             sizeof(descriptor_size_));
+  file.write(reinterpret_cast<const char*>(descriptor_),
+             descriptor_size_ * sizeof(*descriptor_));
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void 
-Narf::saveBinary (const std::string& filename) const
+void
+Narf::saveBinary(const std::string& filename) const
 {
   std::ofstream file;
   file.open(filename.c_str());
@@ -539,150 +600,157 @@ Narf::saveBinary (const std::string& filename) const
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-int 
+int
 Narf::loadHeader(std::istream& file) const
 {
-  std::size_t pos_in_file = static_cast<std::size_t> (file.tellg ());
-  file.width (getHeaderKeyword ().size()+10); // limit maximum number of bytes to read
+  std::size_t pos_in_file = static_cast<std::size_t>(file.tellg());
+  file.width(getHeaderKeyword().size() + 10); // limit maximum number of bytes to read
   std::string header;
   file >> header;
   file.width(0); // remove limit
-  if (header != getHeaderKeyword())
-  {
-    file.seekg(pos_in_file);  // Go back to former pos in file
+  if (header != getHeaderKeyword()) {
+    file.seekg(pos_in_file); // Go back to former pos in file
     return -1;
   }
   int version;
   file >> version;
-  file.ignore (1);  // Skip the space after the version number
-  
+  file.ignore(1); // Skip the space after the version number
+
   return (version);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void 
-Narf::loadBinary (std::istream& file)
+void
+Narf::loadBinary(std::istream& file)
 {
   reset();
   int version = loadHeader(file);
-  if (version<0)
-  {
+  if (version < 0) {
     std::cerr << __PRETTY_FUNCTION__ << "Incorrect header!\n";
     return;
   }
   pcl::loadBinary(position_.matrix(), file);
   pcl::loadBinary(transformation_.matrix(), file);
-  file.read(reinterpret_cast<char*>(&surface_patch_pixel_size_), sizeof(surface_patch_pixel_size_));
-  surface_patch_ = new float[surface_patch_pixel_size_*surface_patch_pixel_size_];
+  file.read(reinterpret_cast<char*>(&surface_patch_pixel_size_),
+            sizeof(surface_patch_pixel_size_));
+  surface_patch_ = new float[surface_patch_pixel_size_ * surface_patch_pixel_size_];
   file.read(reinterpret_cast<char*>(surface_patch_),
-            surface_patch_pixel_size_*surface_patch_pixel_size_*sizeof(*surface_patch_));
-  file.read(reinterpret_cast<char*>(&surface_patch_world_size_), sizeof(surface_patch_world_size_));
-  file.read(reinterpret_cast<char*>(&surface_patch_rotation_), sizeof(surface_patch_rotation_));
+            surface_patch_pixel_size_ * surface_patch_pixel_size_ *
+                sizeof(*surface_patch_));
+  file.read(reinterpret_cast<char*>(&surface_patch_world_size_),
+            sizeof(surface_patch_world_size_));
+  file.read(reinterpret_cast<char*>(&surface_patch_rotation_),
+            sizeof(surface_patch_rotation_));
   file.read(reinterpret_cast<char*>(&descriptor_size_), sizeof(descriptor_size_));
   descriptor_ = new float[descriptor_size_];
   if (file.eof())
     std::cout << ":-(\n";
-  file.read (reinterpret_cast<char*>(descriptor_), descriptor_size_*sizeof(*descriptor_));
+  file.read(reinterpret_cast<char*>(descriptor_),
+            descriptor_size_ * sizeof(*descriptor_));
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void 
-Narf::loadBinary (const std::string& filename)
+void
+Narf::loadBinary(const std::string& filename)
 {
   std::ifstream file;
-  file.open (filename.c_str ());
-  loadBinary (file);
-  file.close ();
+  file.open(filename.c_str());
+  loadBinary(file);
+  file.close();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-NarfDescriptor::NarfDescriptor (const RangeImage* range_image, const pcl::Indices* indices)
+NarfDescriptor::NarfDescriptor(const RangeImage* range_image,
+                               const pcl::Indices* indices)
 {
-  setRangeImage (range_image, indices);
+  setRangeImage(range_image, indices);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-NarfDescriptor::~NarfDescriptor () = default;
+NarfDescriptor::~NarfDescriptor() = default;
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void 
-NarfDescriptor::setRangeImage (const RangeImage* range_image, const pcl::Indices* indices)
+void
+NarfDescriptor::setRangeImage(const RangeImage* range_image,
+                              const pcl::Indices* indices)
 {
   range_image_ = range_image;
-  if (indices != nullptr)
-  {
-    IndicesPtr indicesptr (new pcl::Indices (*indices));
-    setIndices (indicesptr);
+  if (indices != nullptr) {
+    IndicesPtr indicesptr(new pcl::Indices(*indices));
+    setIndices(indicesptr);
   }
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void 
+void
 NarfDescriptor::computeFeature(NarfDescriptor::PointCloudOut& output)
 {
-  //std::cout << __PRETTY_FUNCTION__ << " called.\n";
-  
+  // std::cout << __PRETTY_FUNCTION__ << " called.\n";
+
   output.clear();
-  
-  if (range_image_==nullptr)
-  {
+
+  if (range_image_ == nullptr) {
     std::cerr << __PRETTY_FUNCTION__
-              << ": RangeImage is not set. Sorry, the NARF descriptor calculation works on range images, not on normal point clouds."
+              << ": RangeImage is not set. Sorry, the NARF descriptor calculation "
+                 "works on range images, not on normal point clouds."
               << " Use setRangeImage(...).\n\n";
     output.width = output.height = 0;
-    output.clear ();
+    output.clear();
     return;
   }
-  if (parameters_.support_size <= 0.0f)
-  {
-    std::cerr << __PRETTY_FUNCTION__
-              << ": support size is not set. Use getParameters().support_size = ...\n\n";
+  if (parameters_.support_size <= 0.0f) {
+    std::cerr
+        << __PRETTY_FUNCTION__
+        << ": support size is not set. Use getParameters().support_size = ...\n\n";
     output.width = output.height = 0;
-    output.clear ();
+    output.clear();
     return;
   }
   std::vector<Narf*> feature_list;
-  if (indices_)
-  {
-    for (const auto& point_index: *indices_)
-    {
-      const float y = point_index/range_image_->width;
+  if (indices_) {
+    for (const auto& point_index : *indices_) {
+      const float y = point_index / range_image_->width;
       const float x = point_index - y * range_image_->width;
-      Narf::extractFromRangeImageAndAddToList(*range_image_, x, y, 36, parameters_.support_size,
-                                              parameters_.rotation_invariant, feature_list);
+      Narf::extractFromRangeImageAndAddToList(*range_image_,
+                                              x,
+                                              y,
+                                              36,
+                                              parameters_.support_size,
+                                              parameters_.rotation_invariant,
+                                              feature_list);
     }
   }
-  else
-  {
-    for (unsigned int y=0; y<range_image_->height; ++y)
-    {
-      for (unsigned int x=0; x<range_image_->width; ++x)
-      {
-        Narf::extractFromRangeImageAndAddToList(*range_image_, static_cast<float> (x), static_cast<float> (y), 36, parameters_.support_size,
-                                                parameters_.rotation_invariant, feature_list);
+  else {
+    for (unsigned int y = 0; y < range_image_->height; ++y) {
+      for (unsigned int x = 0; x < range_image_->width; ++x) {
+        Narf::extractFromRangeImageAndAddToList(*range_image_,
+                                                static_cast<float>(x),
+                                                static_cast<float>(y),
+                                                36,
+                                                parameters_.support_size,
+                                                parameters_.rotation_invariant,
+                                                feature_list);
       }
     }
   }
-  
+
   // Copy to NARF36 struct
   output.resize(feature_list.size());
-  for (std::size_t i = 0; i < feature_list.size(); ++i)
-  {
+  for (std::size_t i = 0; i < feature_list.size(); ++i) {
     feature_list[i]->copyToNarf36(output[i]);
   }
-  
+
   // Cleanup
-  for (auto &i : feature_list)
+  for (auto& i : feature_list)
     delete i;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void 
+void
 NarfDescriptor::compute(NarfDescriptor::PointCloudOut& output)
 {
   computeFeature(output);
 }
-}  // namespace end
-
+} // namespace pcl

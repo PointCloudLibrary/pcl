@@ -37,131 +37,129 @@
  *
  */
 
-#include <pcl/test/gtest.h>
-
-#include <pcl/point_types.h>
+#include <pcl/common/common.h>
+#include <pcl/features/normal_3d.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/io/vtk_io.h>
-#include <pcl/features/normal_3d.h>
-#include <pcl/surface/mls.h>
 #include <pcl/surface/gp3.h>
 #include <pcl/surface/marching_cubes_hoppe.h>
 #include <pcl/surface/marching_cubes_rbf.h>
-#include <pcl/common/common.h>
+#include <pcl/surface/mls.h>
+#include <pcl/test/gtest.h>
+#include <pcl/point_types.h>
 
 using namespace pcl;
 using namespace pcl::io;
 
-PointCloud<PointXYZ>::Ptr cloud (new PointCloud<PointXYZ>);
-PointCloud<PointNormal>::Ptr cloud_with_normals (new PointCloud<PointNormal>);
+PointCloud<PointXYZ>::Ptr cloud(new PointCloud<PointXYZ>);
+PointCloud<PointNormal>::Ptr cloud_with_normals(new PointCloud<PointNormal>);
 search::KdTree<PointXYZ>::Ptr tree;
 search::KdTree<PointNormal>::Ptr tree2;
 
 // add by ktran to test update functions
-PointCloud<PointXYZ>::Ptr cloud1 (new PointCloud<PointXYZ>);
-PointCloud<PointNormal>::Ptr cloud_with_normals1 (new PointCloud<PointNormal>);
+PointCloud<PointXYZ>::Ptr cloud1(new PointCloud<PointXYZ>);
+PointCloud<PointNormal>::Ptr cloud_with_normals1(new PointCloud<PointNormal>);
 search::KdTree<PointXYZ>::Ptr tree3;
 search::KdTree<PointNormal>::Ptr tree4;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TEST (PCL, MarchingCubesTest)
+TEST(PCL, MarchingCubesTest)
 {
   MarchingCubesHoppe<PointNormal> hoppe;
-  hoppe.setIsoLevel (0);
-  hoppe.setGridResolution (30, 30, 30);
-  hoppe.setPercentageExtendGrid (0.3f);
-  hoppe.setInputCloud (cloud_with_normals);
+  hoppe.setIsoLevel(0);
+  hoppe.setGridResolution(30, 30, 30);
+  hoppe.setPercentageExtendGrid(0.3f);
+  hoppe.setInputCloud(cloud_with_normals);
   PointCloud<PointNormal> points;
   std::vector<Vertices> vertices;
-  hoppe.reconstruct (points, vertices);
+  hoppe.reconstruct(points, vertices);
 
-  EXPECT_NEAR (points[points.size()/2].x, -0.037143, 1e-3);
-  EXPECT_NEAR (points[points.size()/2].y,  0.098213, 1e-3);
-  EXPECT_NEAR (points[points.size()/2].z, -0.044911, 1e-3);
-  EXPECT_EQ (vertices[vertices.size ()/2].vertices[0], 11202);
-  EXPECT_EQ (vertices[vertices.size ()/2].vertices[1], 11203);
-  EXPECT_EQ (vertices[vertices.size ()/2].vertices[2], 11204);
-
+  EXPECT_NEAR(points[points.size() / 2].x, -0.037143, 1e-3);
+  EXPECT_NEAR(points[points.size() / 2].y, 0.098213, 1e-3);
+  EXPECT_NEAR(points[points.size() / 2].z, -0.044911, 1e-3);
+  EXPECT_EQ(vertices[vertices.size() / 2].vertices[0], 11202);
+  EXPECT_EQ(vertices[vertices.size() / 2].vertices[1], 11203);
+  EXPECT_EQ(vertices[vertices.size() / 2].vertices[2], 11204);
 
   MarchingCubesRBF<PointNormal> rbf;
-  rbf.setIsoLevel (0);
-  rbf.setGridResolution (20, 20, 20);
-  rbf.setPercentageExtendGrid (0.1f);
-  rbf.setInputCloud (cloud_with_normals);
-  rbf.setOffSurfaceDisplacement (0.02f);
-  rbf.reconstruct (points, vertices);
+  rbf.setIsoLevel(0);
+  rbf.setGridResolution(20, 20, 20);
+  rbf.setPercentageExtendGrid(0.1f);
+  rbf.setInputCloud(cloud_with_normals);
+  rbf.setOffSurfaceDisplacement(0.02f);
+  rbf.reconstruct(points, vertices);
 
-  EXPECT_NEAR (points[points.size()/2].x, -0.025630, 1e-3);
-  EXPECT_NEAR (points[points.size()/2].y,  0.135228, 1e-3);
-  EXPECT_NEAR (points[points.size()/2].z,  0.035766, 1e-3);
-  EXPECT_EQ (vertices[vertices.size ()/2].vertices[0], 4275);
-  EXPECT_EQ (vertices[vertices.size ()/2].vertices[1], 4276);
-  EXPECT_EQ (vertices[vertices.size ()/2].vertices[2], 4277);
+  EXPECT_NEAR(points[points.size() / 2].x, -0.025630, 1e-3);
+  EXPECT_NEAR(points[points.size() / 2].y, 0.135228, 1e-3);
+  EXPECT_NEAR(points[points.size() / 2].z, 0.035766, 1e-3);
+  EXPECT_EQ(vertices[vertices.size() / 2].vertices[0], 4275);
+  EXPECT_EQ(vertices[vertices.size() / 2].vertices[1], 4276);
+  EXPECT_EQ(vertices[vertices.size() / 2].vertices[2], 4277);
 }
-
 
 /* ---[ */
 int
 main (int argc, char** argv)
 {
-  if (argc < 2)
-  {
-    std::cerr << "No test file given. Please download `bun0.pcd` and pass its path to the test." << std::endl;
+  if (argc < 2) {
+    std::cerr << "No test file given. Please download `bun0.pcd` and pass its path to "
+                 "the test."
+              << std::endl;
     return (-1);
   }
 
   // Load file
   pcl::PCLPointCloud2 cloud_blob;
-  loadPCDFile (argv[1], cloud_blob);
-  fromPCLPointCloud2 (cloud_blob, *cloud);
+  loadPCDFile(argv[1], cloud_blob);
+  fromPCLPointCloud2(cloud_blob, *cloud);
 
   // Create search tree
-  tree.reset (new search::KdTree<PointXYZ> (false));
-  tree->setInputCloud (cloud);
+  tree.reset(new search::KdTree<PointXYZ>(false));
+  tree->setInputCloud(cloud);
 
   // Normal estimation
   NormalEstimation<PointXYZ, Normal> n;
-  PointCloud<Normal>::Ptr normals (new PointCloud<Normal> ());
-  n.setInputCloud (cloud);
-  //n.setIndices (indices[B);
-  n.setSearchMethod (tree);
-  n.setKSearch (20);
-  n.compute (*normals);
+  PointCloud<Normal>::Ptr normals(new PointCloud<Normal>());
+  n.setInputCloud(cloud);
+  // n.setIndices (indices[B);
+  n.setSearchMethod(tree);
+  n.setKSearch(20);
+  n.compute(*normals);
 
   // Concatenate XYZ and normal information
-  pcl::concatenateFields (*cloud, *normals, *cloud_with_normals);
-      
+  pcl::concatenateFields(*cloud, *normals, *cloud_with_normals);
+
   // Create search tree
-  tree2.reset (new search::KdTree<PointNormal>);
-  tree2->setInputCloud (cloud_with_normals);
+  tree2.reset(new search::KdTree<PointNormal>);
+  tree2->setInputCloud(cloud_with_normals);
 
   // Process for update cloud
-  if(argc == 3){
+  if (argc == 3) {
     pcl::PCLPointCloud2 cloud_blob1;
-    loadPCDFile (argv[2], cloud_blob1);
-    fromPCLPointCloud2 (cloud_blob1, *cloud1);
-        // Create search tree
-    tree3.reset (new search::KdTree<PointXYZ> (false));
-    tree3->setInputCloud (cloud1);
+    loadPCDFile(argv[2], cloud_blob1);
+    fromPCLPointCloud2(cloud_blob1, *cloud1);
+    // Create search tree
+    tree3.reset(new search::KdTree<PointXYZ>(false));
+    tree3->setInputCloud(cloud1);
 
     // Normal estimation
     NormalEstimation<PointXYZ, Normal> n1;
-    PointCloud<Normal>::Ptr normals1 (new PointCloud<Normal> ());
-    n1.setInputCloud (cloud1);
+    PointCloud<Normal>::Ptr normals1(new PointCloud<Normal>());
+    n1.setInputCloud(cloud1);
 
-    n1.setSearchMethod (tree3);
-    n1.setKSearch (20);
-    n1.compute (*normals1);
+    n1.setSearchMethod(tree3);
+    n1.setKSearch(20);
+    n1.compute(*normals1);
 
     // Concatenate XYZ and normal information
-    pcl::concatenateFields (*cloud1, *normals1, *cloud_with_normals1);
+    pcl::concatenateFields(*cloud1, *normals1, *cloud_with_normals1);
     // Create search tree
-    tree4.reset (new search::KdTree<PointNormal>);
-    tree4->setInputCloud (cloud_with_normals1);
+    tree4.reset(new search::KdTree<PointNormal>);
+    tree4->setInputCloud(cloud_with_normals1);
   }
 
   // Testing
-  testing::InitGoogleTest (&argc, argv);
-  return (RUN_ALL_TESTS ());
+  testing::InitGoogleTest(&argc, argv);
+  return (RUN_ALL_TESTS());
 }
 /* ]--- */

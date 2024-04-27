@@ -35,11 +35,10 @@
  *
  */
 
-#include <pcl/keypoints/sift_keypoint.h>
-#include <pcl/keypoints/impl/harris_3d.hpp>
-#include <pcl/point_types.h>
 #include <pcl/impl/instantiate.hpp>
-
+#include <pcl/keypoints/impl/harris_3d.hpp>
+#include <pcl/keypoints/sift_keypoint.h>
+#include <pcl/point_types.h>
 
 // Instantiations of specific point types
-//PCL_INSTANTIATE_PRODUCT(HarrisKeypoint3D, (PCL_XYZ_POINT_TYPES));
+// PCL_INSTANTIATE_PRODUCT(HarrisKeypoint3D, (PCL_XYZ_POINT_TYPES));

@@ -8,7 +8,7 @@
 // THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT EXPRESS OR IMPLIED WARRANTY.
 // ALL IMPLIED WARRANTIES OF FITNESS FOR ANY PARTICULAR PURPOSE AND OF
 // MERCHANTABILITY ARE HEREBY DISCLAIMED.
-//				
+//
 // For complete openNURBS copyright information see <http://www.opennurbs.org>.
 //
 ////////////////////////////////////////////////////////////////
@@ -21,8 +21,7 @@
   /////////////////////////////////////////////////////////////////
   Represents a 3d boundary loop curve
 */
-class ON_CLASS ON_HatchLoop
-{
+class ON_CLASS ON_HatchLoop {
 public:
 #if defined(ON_DLL_EXPORTS) || defined(ON_DLL_IMPORTS)
   // When the Microsoft CRT(s) is/are used, this is the best
@@ -32,34 +31,42 @@ public:
 
   // new/delete
   void* operator new(std::size_t);
-  void  operator delete(void*);
+  void
+  operator delete(void*);
 
   // array new/delete
-  void* operator new[] (std::size_t);
-  void  operator delete[] (void*);
+  void* operator new[](std::size_t);
+  void
+  operator delete[](void*);
 
   // in place new/delete
-  void* operator new(std::size_t,void*);
-  void  operator delete(void*,void*);
+  void*
+  operator new(std::size_t, void*);
+  void
+  operator delete(void*, void*);
 #endif
 
-  enum eLoopType
-  {
+  enum eLoopType {
     ltOuter = 0,
     ltInner = 1,
   };
 
   ON_HatchLoop();
-  ON_HatchLoop( ON_Curve* pCurve2d, eLoopType type = ltOuter);
-  ON_HatchLoop( const ON_HatchLoop& src);
+  ON_HatchLoop(ON_Curve* pCurve2d, eLoopType type = ltOuter);
+  ON_HatchLoop(const ON_HatchLoop& src);
   ~ON_HatchLoop();
 
-  ON_HatchLoop& operator=( const ON_HatchLoop& src);
+  ON_HatchLoop&
+  operator=(const ON_HatchLoop& src);
 
-  ON_BOOL32 IsValid( ON_TextLog* text_log = NULL ) const;
-  void Dump( ON_TextLog& ) const; // for debugging
-  ON_BOOL32 Write( ON_BinaryArchive&) const;
-  ON_BOOL32 Read( ON_BinaryArchive&);
+  ON_BOOL32
+  IsValid (ON_TextLog* text_log = NULL) const;
+  void
+  Dump (ON_TextLog&) const; // for debugging
+  ON_BOOL32
+  Write (ON_BinaryArchive&) const;
+  ON_BOOL32
+  Read (ON_BinaryArchive&);
 
   // Interface
   /////////////////////////////////////////////////////////////////
@@ -71,8 +78,9 @@ public:
   Return:
     Pointer to loop's 2d curve
   */
-  const ON_Curve* Curve() const;
- 
+  const ON_Curve*
+  Curve () const;
+
   /*
   Description:
     Specify the 2d loop curve in the hatch's plane coordinates
@@ -83,7 +91,8 @@ public:
   Remarks:
     The curve is copied
   */
-  bool SetCurve( const ON_Curve& curve);
+  bool
+  SetCurve (const ON_Curve& curve);
 
   /*
   Description:
@@ -91,7 +100,8 @@ public:
   Returns:
     eLoopType::ltInner or eLoopType::ltOuter
   */
-  eLoopType Type() const;
+  eLoopType
+  Type () const;
 
   /*
   Description:
@@ -99,15 +109,15 @@ public:
   Parameters:
     type - [in] ltInner or ltOuter
   */
-  void SetType( eLoopType type);
+  void
+  SetType (eLoopType type);
 
 protected:
   friend class ON_Hatch;
-  eLoopType m_type;         // loop type flag - inner or outer
-  ON_Curve* m_p2dCurve;     // 2d closed curve bounding the hatch
-                            // This is really a 3d curve with z coordinates = 0
+  eLoopType m_type;     // loop type flag - inner or outer
+  ON_Curve* m_p2dCurve; // 2d closed curve bounding the hatch
+                        // This is really a 3d curve with z coordinates = 0
 };
-
 
 /*
   class ON_HatchLine
@@ -121,9 +131,9 @@ protected:
   Angle is the direction of the line CCW from the x axis
   The first line origin is at base
   Each line repetition is offset by offset from the previous line
-    offset.x is parallel to the line and 
+    offset.x is parallel to the line and
     offset.y is perpendicular to the line
-  The base and offset values are rotated by the line's angle to 
+  The base and offset values are rotated by the line's angle to
     produce a location in the hatch pattern's coordinate system
   There can be gaps and dashes specified for drawing the line
 
@@ -132,25 +142,29 @@ protected:
   Positive length dashes are drawn as line segments
 */
 
-class ON_CLASS ON_HatchLine
-{
+class ON_CLASS ON_HatchLine {
 public:
   ON_HatchLine();
   // C++ default copy construction and operator= work fine.
 
-  ON_HatchLine( 
-    double angle, 
-    const ON_2dPoint& base, 
-    const ON_2dVector& offset,
-    const ON_SimpleArray<double> dashes);
+  ON_HatchLine(double angle,
+               const ON_2dPoint& base,
+               const ON_2dVector& offset,
+               const ON_SimpleArray<double> dashes);
 
-  bool operator==( const ON_HatchLine&) const;
-  bool operator!=( const ON_HatchLine&) const;
+  bool
+  operator==(const ON_HatchLine&) const;
+  bool
+  operator!=(const ON_HatchLine&) const;
 
-  ON_BOOL32 IsValid( ON_TextLog* text_log = NULL ) const;
-  void Dump( ON_TextLog& ) const; // for debugging
-  ON_BOOL32 Write( ON_BinaryArchive&) const;  // serialize definition to binary archive
-  ON_BOOL32 Read( ON_BinaryArchive&);  // restore definition from binary archive
+  ON_BOOL32
+  IsValid (ON_TextLog* text_log = NULL) const;
+  void
+  Dump (ON_TextLog&) const; // for debugging
+  ON_BOOL32
+  Write (ON_BinaryArchive&) const; // serialize definition to binary archive
+  ON_BOOL32
+  Read (ON_BinaryArchive&); // restore definition from binary archive
 
   // Interface
   /////////////////////////////////////////////////////////////////
@@ -163,7 +177,8 @@ public:
   Return:
     The angle in radians
   */
-  double Angle() const;
+  double
+  Angle () const;
 
   /*
   Description:
@@ -173,8 +188,9 @@ public:
     angle - [in] angle in radians
   Return:
   */
-  void SetAngle( double angle);
-  
+  void
+  SetAngle (double angle);
+
   /*
   Description:
     Get this line's 2d basepoint
@@ -182,7 +198,8 @@ public:
   Return:
     the base point
   */
-  ON_2dPoint Base() const;
+  ON_2dPoint
+  Base () const;
   /*
   Description:
     Set this line's 2d basepoint
@@ -190,8 +207,9 @@ public:
     base - [in] the basepoint
   Return:
   */
-  void SetBase( const ON_2dPoint& base);
-  
+  void
+  SetBase (const ON_2dPoint& base);
+
   /*
   Description:
     Get this line's 2d offset for line repetitions
@@ -201,7 +219,8 @@ public:
   Return:
     the offset
   */
-  ON_2dVector Offset() const;
+  ON_2dVector
+  Offset () const;
 
   /*
   Description:
@@ -212,7 +231,8 @@ public:
     offset - [in] the shift,spacing for repeated lines
   Return:
   */
-  void SetOffset( const ON_2dVector& offset);
+  void
+  SetOffset (const ON_2dVector& offset);
 
   /*
   Description:
@@ -221,7 +241,8 @@ public:
   Return:
     nummber of dashes in the line
   */
-  int DashCount() const;
+  int
+  DashCount () const;
 
   /*
   Description:
@@ -231,7 +252,8 @@ public:
   Return:
     the length of the dash ( gap if negative)
   */
-  double Dash( int) const;
+  double
+  Dash (int) const;
 
   /*
   Description:
@@ -239,7 +261,8 @@ public:
   Parameters:
     dash - [in] length to append - < 0 for a gap
   */
-  void AppendDash( double dash);
+  void
+  AppendDash (double dash);
 
   /*
   Description:
@@ -247,11 +270,12 @@ public:
   Parameters:
     dashes - [in] array of dash lengths
   */
-  void SetPattern( const ON_SimpleArray<double>& dashes);
+  void
+  SetPattern (const ON_SimpleArray<double>& dashes);
 
   /*
   Description:
-    Get the line's angle, base, offset and dashes 
+    Get the line's angle, base, offset and dashes
     in one function call
   Parameters:
     angle  - [out] angle in radians CCW from x-axis
@@ -260,11 +284,11 @@ public:
     dashes - [out] the dash array for the line
   Return:
   */
-  void GetLineData(
-    double& angle, 
-    ON_2dPoint& base, 
-    ON_2dVector& offset, 
-    ON_SimpleArray<double>& dashes) const;
+  void
+  GetLineData (double& angle,
+               ON_2dPoint& base,
+               ON_2dVector& offset,
+               ON_SimpleArray<double>& dashes) const;
 
   /*
   Description:
@@ -273,69 +297,67 @@ public:
   Return:
     Pattern length
   */
-  double GetPatternLength() const;
+  double
+  GetPatternLength () const;
 
 public:
   double m_angle;
   ON_2dPoint m_base;
   ON_2dVector m_offset;
-  ON_SimpleArray< double> m_dashes;
+  ON_SimpleArray<double> m_dashes;
 };
-
-
-
 
 #if defined(ON_DLL_TEMPLATE)
 // This stuff is here because of a limitation in the way Microsoft
-// handles templates and DLLs.  See Microsoft's knowledge base 
+// handles templates and DLLs.  See Microsoft's knowledge base
 // article ID Q168958 for details.
-#pragma warning( push )
-#pragma warning( disable : 4231 )
+#pragma warning(push)
+#pragma warning(disable : 4231)
 ON_DLL_TEMPLATE template class ON_CLASS ON_SimpleArray<ON_HatchLoop*>;
 ON_DLL_TEMPLATE template class ON_CLASS ON_ClassArray<ON_HatchLine>;
-#pragma warning( pop )
+#pragma warning(pop)
 #endif
-
 
 /*
   class ON_HatchPattern
   /////////////////////////////////////////////////////////////////
   Fill definition for a hatch
 
-  The hatch  will be one of 
+  The hatch  will be one of
     ON_Hatch::ftLines     - pat file style definition
     ON_Hatch::ftGradient  - uses a color function
     ON_Hatch::ftSolid     - uses entity color
 
 */
-class ON_CLASS ON_HatchPattern : public ON_Object
-{
-  ON_OBJECT_DECLARE( ON_HatchPattern);
+class ON_CLASS ON_HatchPattern : public ON_Object {
+  ON_OBJECT_DECLARE(ON_HatchPattern);
 
 public:
-
-  enum eFillType
-  {
-    ftSolid    = 0,  // uses entity color
-    ftLines    = 1,  // pat file definition
-    ftGradient = 2,  // uses a fill color function
-    ftLast     = 3
+  enum eFillType {
+    ftSolid = 0,    // uses entity color
+    ftLines = 1,    // pat file definition
+    ftGradient = 2, // uses a fill color function
+    ftLast = 3
   };
 
   ON_HatchPattern();
   ~ON_HatchPattern();
   // C++ default copy construction and operator= work fine.
 
- // ON_Object overrides
+  // ON_Object overrides
   /////////////////////////////////////////////////////////////////
-   ON_BOOL32 IsValid( ON_TextLog* text_log = NULL ) const;
-  void Dump( ON_TextLog& ) const; // for debugging
-  ON_BOOL32 Write( ON_BinaryArchive&) const;
-  ON_BOOL32 Read( ON_BinaryArchive&);
+  ON_BOOL32
+  IsValid (ON_TextLog* text_log = NULL) const;
+  void
+  Dump (ON_TextLog&) const; // for debugging
+  ON_BOOL32
+  Write (ON_BinaryArchive&) const;
+  ON_BOOL32
+  Read (ON_BinaryArchive&);
 
   // virtual
-  ON_UUID ModelObjectId() const;
-
+  ON_UUID
+  ModelObjectId () const;
 
   //////////////////////////////////////////////////////////////////////
   // Interface
@@ -345,7 +367,8 @@ public:
     Return the pattern's fill type
   Parameters:
   */
-  eFillType FillType() const;
+  eFillType
+  FillType () const;
 
   /*
   Description:
@@ -353,7 +376,8 @@ public:
   Parameters:
     type - [in] the new filltype
   */
-  void SetFillType( eFillType type);
+  void
+  SetFillType (eFillType type);
 
   /*
   Description:
@@ -362,16 +386,19 @@ public:
     pName - [in] the new name
   Returns:
   */
-  void SetName( const wchar_t* pName);
-  void SetName( const char* pName);
-  
+  void
+  SetName (const wchar_t* pName);
+  void
+  SetName (const char* pName);
+
   /*
   Description:
     Get the name of the pattern
   Parameters:
     string - [out] The name is returned here
   */
-  void GetName( ON_wString& string) const;
+  void
+  GetName (ON_wString& string) const;
 
   /*
   Description:
@@ -379,7 +406,8 @@ public:
   Returns:
     The name string
   */
-  const wchar_t* Name() const;
+  const wchar_t*
+  Name () const;
 
   /*
   Description:
@@ -388,16 +416,19 @@ public:
     pDescription - [in] the new description
   Returns:
   */
-  void SetDescription( const wchar_t* pDescription);
-  void SetDescription( const char* pDescription);
-  
+  void
+  SetDescription (const wchar_t* pDescription);
+  void
+  SetDescription (const char* pDescription);
+
   /*
   Description:
     Get a short description of the pattern
   Parameters:
     string - [out] The string is returned here
   */
-  void GetDescription( ON_wString& string) const;
+  void
+  GetDescription (ON_wString& string) const;
 
   /*
   Description:
@@ -406,7 +437,8 @@ public:
   Returns:
     The description string
   */
-  const wchar_t* Description() const;
+  const wchar_t*
+  Description () const;
 
   /*
   Description:
@@ -415,7 +447,8 @@ public:
     index - [in] the new index
   Returns:
   */
-  void SetIndex( int index);
+  void
+  SetIndex (int index);
 
   /*
   Description:
@@ -424,7 +457,8 @@ public:
   Returns:
     The table index
   */
-  int Index() const;
+  int
+  Index () const;
 
   // Interface functions for line hatches
   /////////////////////////////////////////////////////////////////
@@ -435,7 +469,8 @@ public:
   Return:
     number of lines
   */
-  int HatchLineCount() const;
+  int
+  HatchLineCount () const;
 
   /*
   Description:
@@ -446,7 +481,8 @@ public:
     >= 0 index of the new line
     -1 on failure
   */
-  int AddHatchLine( const ON_HatchLine& line);
+  int
+  AddHatchLine (const ON_HatchLine& line);
 
   /*
   Description:
@@ -457,7 +493,8 @@ public:
     the hatch line
     NULL if index is out of range
   */
-  const ON_HatchLine* HatchLine( int index) const;
+  const ON_HatchLine*
+  HatchLine (int index) const;
 
   /*
   Description:
@@ -468,7 +505,8 @@ public:
     true - success
     false - index out of range
   */
-  bool RemoveHatchLine( int index);
+  bool
+  RemoveHatchLine (int index);
 
   /*
   Description:
@@ -479,31 +517,33 @@ public:
     true - success
     false - index out of range
   */
-  void RemoveAllHatchLines();
+  void
+  RemoveAllHatchLines ();
 
   /*
   Description:
-    Set all of the hatch lines at once. 
+    Set all of the hatch lines at once.
     Existing hatchlines are deleted.
   Parameters:
     lines - [in] Array of lines to add.  Lines are copied
   Return:
     number of lines added
   */
-  int SetHatchLines( const ON_ClassArray<ON_HatchLine> lines);
+  int
+  SetHatchLines (const ON_ClassArray<ON_HatchLine> lines);
 
 public:
-  int m_hatchpattern_index;         // Index in the hatch pattern table
-  ON_wString m_hatchpattern_name;   // String name of the pattern
+  int m_hatchpattern_index;       // Index in the hatch pattern table
+  ON_wString m_hatchpattern_name; // String name of the pattern
   ON_UUID m_hatchpattern_id;
-  
+
   eFillType m_type;
-  
-  ON_wString m_description;  // String description of the pattern
+
+  ON_wString m_description; // String description of the pattern
 
   // Represents a collection of ON_HatchLine's to make a complete pattern
   // This is the definition of a hatch pattern.
-  // Simple solid line hatches with fixed angle and spacing are also 
+  // Simple solid line hatches with fixed angle and spacing are also
   // represented with this type of hatch
   ON_ClassArray<ON_HatchLine> m_lines; // used by line hatches
 };
@@ -511,7 +551,7 @@ public:
 /*
   class ON_Hatch
   /////////////////////////////////////////////////////////////////
-  Represents a hatch in planar boundary loop or loops 
+  Represents a hatch in planar boundary loop or loops
   This is a 2d entity with a plane defining a local coordinate system
   The loops, patterns, angles, etc are all in this local coordinate system
 
@@ -520,33 +560,40 @@ public:
   ON_Hatch has an index to get the pattern definition from the pattern table
 
 */
-class ON_CLASS ON_Hatch : public ON_Geometry
-{
-  ON_OBJECT_DECLARE( ON_Hatch);
+class ON_CLASS ON_Hatch : public ON_Geometry {
+  ON_OBJECT_DECLARE(ON_Hatch);
 
 public:
   // Default constructor
   ON_Hatch();
-  ON_Hatch( const ON_Hatch&);
-  ON_Hatch& operator=(const ON_Hatch&);
+  ON_Hatch(const ON_Hatch&);
+  ON_Hatch&
+  operator=(const ON_Hatch&);
   ~ON_Hatch();
 
-  virtual ON_Hatch* DuplicateHatch() const;
+  virtual ON_Hatch*
+  DuplicateHatch () const;
 
   // ON_Object overrides
   /////////////////////////////////////////////////////////////////
-  ON_BOOL32 IsValid( ON_TextLog* text_log = NULL ) const;
-  void Dump( ON_TextLog& ) const; // for debugging
-  ON_BOOL32 Write( ON_BinaryArchive&) const;
-  ON_BOOL32 Read( ON_BinaryArchive&);
-  ON::object_type ObjectType() const;
+  ON_BOOL32
+  IsValid (ON_TextLog* text_log = NULL) const;
+  void
+  Dump (ON_TextLog&) const; // for debugging
+  ON_BOOL32
+  Write (ON_BinaryArchive&) const;
+  ON_BOOL32
+  Read (ON_BinaryArchive&);
+  ON::object_type
+  ObjectType () const;
 
   // ON_Geometry overrides
   /////////////////////////////////////////////////////////////////
   /*
     Returns the geometric dimension of the object ( usually 3)
   */
-  int Dimension() const;
+  int
+  Dimension () const;
 
   /*
     Description:
@@ -562,30 +609,29 @@ public:
       false = Failure
     Remarks:
   */
-  ON_BOOL32 GetBBox( double*, double*, ON_BOOL32 = false) const;
+  ON_BOOL32
+  GetBBox (double*, double*, ON_BOOL32 = false) const;
 
   /*
-	Description:
+  Description:
     Get tight bounding box of the hatch.
-	Parameters:
-		tight_bbox - [in/out] tight bounding box
-		bGrowBox -[in]	(default=false)			
+  Parameters:
+    tight_bbox - [in/out] tight bounding box
+    bGrowBox -[in]	(default=false)
       If true and the input tight_bbox is valid, then returned
-      tight_bbox is the union of the input tight_bbox and the 
+      tight_bbox is the union of the input tight_bbox and the
       tight bounding box of the hatch.
-		xform -[in] (default=NULL)
+    xform -[in] (default=NULL)
       If not NULL, the tight bounding box of the transformed
       hatch is calculated.  The hatch is not modified.
-	Returns:
-    True if the returned tight_bbox is set to a valid 
+  Returns:
+    True if the returned tight_bbox is set to a valid
     bounding box.
   */
-	bool GetTightBoundingBox( 
-			ON_BoundingBox& tight_bbox, 
-      int bGrowBox = false,
-			const ON_Xform* xform = 0
-      ) const;
-
+  bool
+  GetTightBoundingBox (ON_BoundingBox& tight_bbox,
+                       int bGrowBox = false,
+                       const ON_Xform* xform = 0) const;
 
   /*
     Description:
@@ -599,7 +645,8 @@ public:
     Remarks:
       The object has been transformed when the function returns.
   */
-  ON_BOOL32 Transform( const ON_Xform&);
+  ON_BOOL32
+  Transform (const ON_Xform&);
 
   // Interface
   /////////////////////////////////////////////////////////////////
@@ -616,11 +663,12 @@ public:
   Returns:
     true = success, false = failure
   */
-  bool Create( const ON_Plane& plane,
-               const ON_SimpleArray<const ON_Curve*> loops, 
-               int pattern_index, 
-               double pattern_rotation, 
-               double pattern_scale);
+  bool
+  Create (const ON_Plane& plane,
+          const ON_SimpleArray<const ON_Curve*> loops,
+          int pattern_index,
+          double pattern_rotation,
+          double pattern_scale);
 
   /*
   Description:
@@ -629,7 +677,8 @@ public:
   Returns:
     the plane
   */
-  const ON_Plane& Plane() const;
+  const ON_Plane&
+  Plane () const;
 
   /*
   Description:
@@ -638,11 +687,12 @@ public:
     plane - [in] the plane to set
   Returns:
   */
-  void SetPlane( const ON_Plane& plane);
-  
+  void
+  SetPlane (const ON_Plane& plane);
+
   /*
   Description:
-    Gets the rotation applied to the hatch pattern 
+    Gets the rotation applied to the hatch pattern
     when it is mapped to the hatch's plane
   Returns:
     The rotation in radians
@@ -650,23 +700,25 @@ public:
     The pattern is rotated counter-clockwise around
     the hatch's plane origin by this value
   */
-  double PatternRotation() const;
+  double
+  PatternRotation () const;
 
-/*
-  Description:
-    Sets the rotation applied to the hatch pattern 
-    when it is mapped to the hatch's plane
-  Parameters:
-    rotation - [in] The rotation in radians
-  Remarks:
-    The pattern is rotated counter-clockwise around
-    the hatch's plane origin by this value
-  */
-  void SetPatternRotation( double rotation);
-  
+  /*
+    Description:
+      Sets the rotation applied to the hatch pattern
+      when it is mapped to the hatch's plane
+    Parameters:
+      rotation - [in] The rotation in radians
+    Remarks:
+      The pattern is rotated counter-clockwise around
+      the hatch's plane origin by this value
+    */
+  void
+  SetPatternRotation (double rotation);
+
   /*
   Description:
-    Gets the scale applied to the hatch pattern 
+    Gets the scale applied to the hatch pattern
     when it is mapped to the hatch's plane
   Returns:
     The scale
@@ -674,20 +726,22 @@ public:
     The pattern is scaled around
     the hatch's plane origin by this value
   */
-  double PatternScale() const;
+  double
+  PatternScale () const;
 
-/*
-  Description:
-    Sets the scale applied to the hatch pattern 
-    when it is mapped to the hatch's plane
-  Parameters:
-    scale - [in] The scale
-  Remarks:
-    The pattern is scaled around
-    the hatch's plane origin by this value
-  */
-  void SetPatternScale( double scale);
-  
+  /*
+    Description:
+      Sets the scale applied to the hatch pattern
+      when it is mapped to the hatch's plane
+    Parameters:
+      scale - [in] The scale
+    Remarks:
+      The pattern is scaled around
+      the hatch's plane origin by this value
+    */
+  void
+  SetPatternScale (double scale);
+
   /*
   Description:
     Get the number of loops used by this hatch
@@ -695,7 +749,8 @@ public:
   Returns:
     the number of loops
   */
-  int LoopCount() const;
+  int
+  LoopCount () const;
 
   /*
   Description:
@@ -705,7 +760,8 @@ public:
            by this class.
   Returns:
   */
-  void AddLoop( ON_HatchLoop* loop);
+  void
+  AddLoop (ON_HatchLoop* loop);
 
   /*
   Description:
@@ -716,10 +772,10 @@ public:
                 by this class on success.
   Returns:
     true if success
-	  false if index is lower than 0 or greater than current loop count.
+    false if index is lower than 0 or greater than current loop count.
   */
-  bool InsertLoop( int index,
-                   ON_HatchLoop* loop);
+  bool
+  InsertLoop (int index, ON_HatchLoop* loop);
 
   /*
   Description:
@@ -729,7 +785,8 @@ public:
   Returns:
     true if success
   */
-  bool RemoveLoop( int index);
+  bool
+  RemoveLoop (int index);
 
   /*
   Description:
@@ -740,7 +797,8 @@ public:
     pointer to loop at index
     NULL if index is out of range
   */
-  const ON_HatchLoop* Loop( int index) const;
+  const ON_HatchLoop*
+  Loop (int index) const;
 
   /*
   Description:
@@ -752,7 +810,8 @@ public:
     NULL if index is out of range or curve can't be made
     Caller deletes the returned curve
   */
-  ON_Curve* LoopCurve3d( int index) const;
+  ON_Curve*
+  LoopCurve3d (int index) const;
 
   /*
   Description:
@@ -761,16 +820,18 @@ public:
   Returns:
     index of the pattern
   */
-  int PatternIndex() const;
+  int
+  PatternIndex () const;
 
-/*
-  Description:
-    Set the index of the hatch's pattern
-  Parameters:
-    index - [in] pattern index to set
-  Returns:
-  */
-  void SetPatternIndex( int index);
+  /*
+    Description:
+      Set the index of the hatch's pattern
+    Parameters:
+      index - [in] pattern index to set
+    Returns:
+    */
+  void
+  SetPatternIndex (int index);
 
   // Basepoint functions added March 23, 2008 -LW
   /*
@@ -779,7 +840,8 @@ public:
   Parameters:
     basepoint - 2d point in hatch's ECS
   */
-  void SetBasePoint(ON_2dPoint basepoint);
+  void
+  SetBasePoint (ON_2dPoint basepoint);
 
   /*
   Description:
@@ -789,19 +851,22 @@ public:
   Remarks:
     Projects point to hatch's plane and sets 2d point
   */
-  void SetBasePoint(ON_3dPoint point);
+  void
+  SetBasePoint (ON_3dPoint point);
 
   /*
   Description:
     Return 3d WCS point that lies on hatch's plane used for pattern origin.
   */
-  ON_3dPoint BasePoint() const;
+  ON_3dPoint
+  BasePoint () const;
 
   /*
   Description:
     Return 2d ECS point used for pattern origin.
   */
-  ON_2dPoint BasePoint2d() const;
+  ON_2dPoint
+  BasePoint2d () const;
 
   /*
   Function added June 12 2008 LW
@@ -815,7 +880,8 @@ public:
     true  - success
     false - no loops in input array or an error adding them
   */
-  bool ReplaceLoops(ON_SimpleArray<const ON_Curve*> loops);
+  bool
+  ReplaceLoops (ON_SimpleArray<const ON_Curve*> loops);
 
 protected:
   ON_Plane m_plane;
@@ -824,7 +890,7 @@ protected:
   ON_SimpleArray<ON_HatchLoop*> m_loops;
   int m_pattern_index;
 
-    // This function is temporary and will be removed next time the SDK can be modified.
-  class ON_HatchExtra* HatchExtension();
-
+  // This function is temporary and will be removed next time the SDK can be modified.
+  class ON_HatchExtra*
+  HatchExtension ();
 };

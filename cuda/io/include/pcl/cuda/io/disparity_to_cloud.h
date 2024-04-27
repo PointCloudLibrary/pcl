@@ -37,118 +37,122 @@
 
 #pragma once
 
-#include <pcl/cuda/point_cloud.h>
 #include <pcl/cuda/io/cloud_to_pcl.h>
-#include <pcl/io/openni_camera/openni_image.h>
+#include <pcl/cuda/point_cloud.h>
 #include <pcl/io/openni_camera/openni_depth_image.h>
-//#include <pcl/CameraInfo.h>
-//#include <pcl/PCLImage.h>
+#include <pcl/io/openni_camera/openni_image.h>
+// #include <pcl/CameraInfo.h>
+// #include <pcl/PCLImage.h>
 
 #include <cstdint>
 
-namespace pcl
-{
-namespace cuda
-{
-  /** \brief Compute the XYZ values for a point based on disparity information. */
-  struct ComputeXYZ
+namespace pcl {
+namespace cuda {
+/** \brief Compute the XYZ values for a point based on disparity information. */
+struct ComputeXYZ {
+  int width, height;
+  int center_x, center_y;
+  float constant;
+  float bad_point;
+
+  ComputeXYZ(int w, int h, int cx, int cy, float con)
+  : width(w), height(h), center_x(cx), center_y(cy), constant(con)
   {
-    int    width, height;
-    int    center_x, center_y;
-    float  constant;
-    float bad_point;
+    bad_point = std::numeric_limits<float>::quiet_NaN();
+  }
 
-    ComputeXYZ (int w, int h, int cx, int cy, float con) : 
-      width(w), height(h), center_x(cx), center_y(cy), constant(con)
-    {
-      bad_point = std::numeric_limits<float>::quiet_NaN ();
-    }
+  template <typename Tuple>
+  __inline__ __host__ __device__ PointXYZRGB
+  operator()(const Tuple& t);
+};
 
-    template <typename Tuple> __inline__ __host__ __device__ PointXYZRGB
-    operator () (const Tuple &t);
-  };
+/** \brief Compute the XYZ and RGB values for a point based on disparity information. */
+struct ComputeXYZRGB {
+  int width, height;
+  int center_x, center_y;
+  float constant;
+  float bad_point;
 
-  /** \brief Compute the XYZ and RGB values for a point based on disparity information. */
-  struct ComputeXYZRGB
+  ComputeXYZRGB(int w, int h, int cx, int cy, float con)
+  : width(w), height(h), center_x(cx), center_y(cy), constant(con)
   {
-    int    width, height;
-    int    center_x, center_y;
-    float  constant;
-    float bad_point;
+    bad_point = std::numeric_limits<float>::quiet_NaN();
+  }
 
-    ComputeXYZRGB (int w, int h, int cx, int cy, float con) : 
-      width(w), height(h), center_x(cx), center_y(cy), constant(con) 
-    {
-      bad_point = std::numeric_limits<float>::quiet_NaN ();
-    }
+  template <typename Tuple>
+  __inline__ __host__ __device__ PointXYZRGB
+  operator()(const Tuple& t);
+};
 
-    template <typename Tuple> __inline__ __host__ __device__ PointXYZRGB
-    operator () (const Tuple &t);
-  };
+/** \brief Disparity to PointCloudAOS generator.
+ */
+class PCL_EXPORTS DisparityToCloud {
+public:
+  //      // compute using ROS images, Device output
+  //      void
+  //      compute (const pcl::PCLImage::ConstPtr &depth_image,
+  //               const pcl::PCLImage::ConstPtr &rgb_image,
+  //               const pcl::CameraInfo::ConstPtr &info,
+  //               PointCloudAOS<Device>::Ptr &output);
+  //
+  //      // compute using ROS images, Host output
+  //      void
+  //      compute (const pcl::PCLImage::ConstPtr &depth_image,
+  //               const pcl::PCLImage::ConstPtr &rgb_image,
+  //               const pcl::CameraInfo::ConstPtr &info,
+  //               PointCloudAOS<Host>::Ptr &output);
 
-  /** \brief Disparity to PointCloudAOS generator.
-    */
-  class PCL_EXPORTS DisparityToCloud
-  {
-    public:
-//      // compute using ROS images, Device output
-//      void
-//      compute (const pcl::PCLImage::ConstPtr &depth_image,
-//               const pcl::PCLImage::ConstPtr &rgb_image,
-//               const pcl::CameraInfo::ConstPtr &info,
-//               PointCloudAOS<Device>::Ptr &output);
-//      
-//      // compute using ROS images, Host output
-//      void
-//      compute (const pcl::PCLImage::ConstPtr &depth_image,
-//               const pcl::PCLImage::ConstPtr &rgb_image,
-//               const pcl::CameraInfo::ConstPtr &info,
-//               PointCloudAOS<Host>::Ptr &output);
+  // compute using OpenNI images, Device output
+  template <template <typename> class Storage>
+  void
+  compute (const openni_wrapper::DepthImage::Ptr& depth_image,
+           const openni_wrapper::Image::Ptr& image,
+           float constant,
+           typename PointCloudAOS<Storage>::Ptr& output,
+           bool downsample = false,
+           int stride = 2,
+           int smoothing_nr_iterations = 0,
+           int smoothing_filter_size = 2);
 
-      // compute using OpenNI images, Device output
-      template <template <typename> class Storage> void
-      compute (const openni_wrapper::DepthImage::Ptr& depth_image,
-               const openni_wrapper::Image::Ptr& image,
-               float constant, 
-               typename PointCloudAOS<Storage>::Ptr &output,
-               bool downsample = false, int stride = 2, int smoothing_nr_iterations = 0, int smoothing_filter_size = 2);
+  template <template <typename> class Storage>
+  void
+  compute (const std::uint16_t* depth_image,
+           const OpenNIRGB* rgb_image,
+           int width,
+           int height,
+           float constant,
+           typename PointCloudAOS<Storage>::Ptr& output,
+           int smoothing_nr_iterations = 0,
+           int smoothing_filter_size = 2);
 
-      template <template <typename> class Storage> void
-      compute (const std::uint16_t* depth_image,
-               const OpenNIRGB* rgb_image,
-               int width, int height,
-               float constant,
-               typename PointCloudAOS<Storage>::Ptr &output,
-               int smoothing_nr_iterations = 0, int smoothing_filter_size = 2);
+  // compute using OpenNI images, Host output
+  /*      void
+        compute (const openni_wrapper::DepthImage::Ptr& depth_image,
+                 const openni_wrapper::Image::Ptr& image,
+                 float constant,
+                 PointCloudAOS<Host>::Ptr &output);*/
 
-      // compute using OpenNI images, Host output
-/*      void
-      compute (const openni_wrapper::DepthImage::Ptr& depth_image,
-               const openni_wrapper::Image::Ptr& image,
-               float constant, 
-               PointCloudAOS<Host>::Ptr &output);*/
-      
-      // ...
-//      void
-//      compute (const pcl::PCLImage::ConstPtr &depth_image,
-//               const pcl::CameraInfo::ConstPtr &info,
-//               PointCloudAOS<Device>::Ptr &output);
-//
-//      void
-//      compute (const pcl::PCLImage::ConstPtr &depth_image,
-//               const pcl::CameraInfo::ConstPtr &info,
-//               PointCloudAOS<Host>::Ptr &output);
+  // ...
+  //      void
+  //      compute (const pcl::PCLImage::ConstPtr &depth_image,
+  //               const pcl::CameraInfo::ConstPtr &info,
+  //               PointCloudAOS<Device>::Ptr &output);
+  //
+  //      void
+  //      compute (const pcl::PCLImage::ConstPtr &depth_image,
+  //               const pcl::CameraInfo::ConstPtr &info,
+  //               PointCloudAOS<Host>::Ptr &output);
 
-      void
-      compute (const openni_wrapper::DepthImage::Ptr& depth_image,
-                float constant,
-                PointCloudAOS<Device>::Ptr &output);
+  void
+  compute (const openni_wrapper::DepthImage::Ptr& depth_image,
+           float constant,
+           PointCloudAOS<Device>::Ptr& output);
 
-      void
-      compute (const openni_wrapper::DepthImage::Ptr& depth_image,
-                float constant,
-                PointCloudAOS<Host>::Ptr &output);
-  };
+  void
+  compute (const openni_wrapper::DepthImage::Ptr& depth_image,
+           float constant,
+           PointCloudAOS<Host>::Ptr& output);
+};
 
-} // namespace
-} // namespace
+} // namespace cuda
+} // namespace pcl

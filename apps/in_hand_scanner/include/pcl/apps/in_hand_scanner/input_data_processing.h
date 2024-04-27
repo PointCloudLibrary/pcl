@@ -82,9 +82,9 @@ public:
    * \note Converts from m to cm.
    */
   bool
-  segment(const CloudXYZRGBAConstPtr& cloud_in,
-          CloudXYZRGBNormalPtr& cloud_out,
-          CloudXYZRGBNormalPtr& cloud_discarded) const;
+  segment (const CloudXYZRGBAConstPtr& cloud_in,
+           CloudXYZRGBNormalPtr& cloud_out,
+           CloudXYZRGBNormalPtr& cloud_discarded) const;
 
   /** \brief Calculate the normals of the input cloud.
    *
@@ -96,76 +96,76 @@ public:
    * \note Converts from m to cm.
    */
   bool
-  calculateNormals(const CloudXYZRGBAConstPtr& cloud_in,
-                   CloudXYZRGBNormalPtr& cloud_out) const;
+  calculateNormals (const CloudXYZRGBAConstPtr& cloud_in,
+                    CloudXYZRGBNormalPtr& cloud_out) const;
 
   /** @{ */
   /** \brief Points outside of X - Y - Z - min / max are discarded. The unit is cm. The
    * min values must be smaller than the max values. */
   inline void
-  setXMin(const float x_min)
+  setXMin (const float x_min)
   {
     if (x_min < x_max_)
       x_min_ = x_min;
   }
   inline void
-  setXMax(const float x_max)
+  setXMax (const float x_max)
   {
     if (x_max > x_min_)
       x_max_ = x_max;
   }
   inline void
-  setYMin(const float y_min)
+  setYMin (const float y_min)
   {
     if (y_min < y_max_)
       y_min_ = y_min;
   }
   inline void
-  setYMax(const float y_max)
+  setYMax (const float y_max)
   {
     if (y_max > y_min_)
       y_max_ = y_max;
   }
   inline void
-  setZMin(const float z_min)
+  setZMin (const float z_min)
   {
     if (z_min < z_max_)
       z_min_ = z_min;
   }
   inline void
-  setZMax(const float z_max)
+  setZMax (const float z_max)
   {
     if (z_max > z_min_)
       z_max_ = z_max;
   }
 
   inline float
-  getXMin() const
+  getXMin () const
   {
     return (x_min_);
   }
   inline float
-  getXMax() const
+  getXMax () const
   {
     return (x_max_);
   }
   inline float
-  getYMin() const
+  getYMin () const
   {
     return (y_min_);
   }
   inline float
-  getYMax() const
+  getYMax () const
   {
     return (y_max_);
   }
   inline float
-  getZMin() const
+  getZMin () const
   {
     return (z_min_);
   }
   inline float
-  getZMax() const
+  getZMax () const
   {
     return (z_max_);
   }
@@ -180,63 +180,63 @@ public:
    * are clamped to the next best value. E.g. H is set to 0 if you pass -1.
    */
   inline void
-  setHMin(const float h_min)
+  setHMin (const float h_min)
   {
     h_min_ = pcl::ihs::clamp(h_min, 0.f, 360.f);
   }
   inline void
-  setHMax(const float h_max)
+  setHMax (const float h_max)
   {
     h_max_ = pcl::ihs::clamp(h_max, 0.f, 360.f);
   }
   inline void
-  setSMin(const float s_min)
+  setSMin (const float s_min)
   {
     s_min_ = pcl::ihs::clamp(s_min, 0.f, 1.f);
   }
   inline void
-  setSMax(const float s_max)
+  setSMax (const float s_max)
   {
     s_max_ = pcl::ihs::clamp(s_max, 0.f, 1.f);
   }
   inline void
-  setVMin(const float v_min)
+  setVMin (const float v_min)
   {
     v_min_ = pcl::ihs::clamp(v_min, 0.f, 1.f);
   }
   inline void
-  setVMax(const float v_max)
+  setVMax (const float v_max)
   {
     v_max_ = pcl::ihs::clamp(v_max, 0.f, 1.f);
   }
 
   inline float
-  getHMin() const
+  getHMin () const
   {
     return (h_min_);
   }
   inline float
-  getHMax() const
+  getHMax () const
   {
     return (h_max_);
   }
   inline float
-  getSMin() const
+  getSMin () const
   {
     return (s_min_);
   }
   inline float
-  getSMax() const
+  getSMax () const
   {
     return (s_max_);
   }
   inline float
-  getVMin() const
+  getVMin () const
   {
     return (v_min_);
   }
   inline float
-  getVMax() const
+  getVMax () const
   {
     return (v_max_);
   }
@@ -246,12 +246,12 @@ public:
   /** \brief If true the color values inside of H - S - V min / max are accepted instead
    * of discarded. */
   inline void
-  setColorSegmentationInverted(const bool hsv_inverted)
+  setColorSegmentationInverted (const bool hsv_inverted)
   {
     hsv_inverted_ = hsv_inverted;
   }
   inline bool
-  getColorSegmentationInverted() const
+  getColorSegmentationInverted () const
   {
     return (hsv_inverted_);
   }
@@ -260,12 +260,12 @@ public:
   /** @{ */
   /** \brief Enable / disable the color segmentation. */
   inline void
-  setColorSegmentationEnabled(const bool hsv_enabled)
+  setColorSegmentationEnabled (const bool hsv_enabled)
   {
     hsv_enabled_ = hsv_enabled;
   }
   inline bool
-  getColorSegmentationEnabled() const
+  getColorSegmentationEnabled () const
   {
     return (hsv_enabled_);
   }
@@ -274,12 +274,12 @@ public:
   /** @{ */
   /** \brief The XYZ mask is eroded with a kernel of this size. */
   inline void
-  setXYZErodeSize(const unsigned int size)
+  setXYZErodeSize (const unsigned int size)
   {
     size_erode_ = size;
   }
   inline unsigned int
-  getXYZErodeSize() const
+  getXYZErodeSize () const
   {
     return (size_erode_);
   }
@@ -288,12 +288,12 @@ public:
   /** @{ */
   /** \brief The HSV mask is dilated with a kernel of this size. */
   inline void
-  setHSVDilateSize(const unsigned int size)
+  setHSVDilateSize (const unsigned int size)
   {
     size_dilate_ = size;
   }
   inline unsigned int
-  getHSVDilateSize() const
+  getHSVDilateSize () const
   {
     return (size_dilate_);
   }
@@ -316,13 +316,13 @@ private:
    * \see http://ostermiller.org/dilate_and_erode.html
    */
   void
-  erode(MatrixXb& mask, const int k) const;
+  erode (MatrixXb& mask, const int k) const;
 
   /** \brief Dilates the input mask k times with a diamond shaped structuring element.
    * \see http://ostermiller.org/dilate_and_erode.html
    */
   void
-  dilate(MatrixXb& mask, const int k) const;
+  dilate (MatrixXb& mask, const int k) const;
 
   /** \brief Calculates the manhattan distance map for the input matrix.
    *
@@ -333,16 +333,16 @@ private:
    *         \see http://ostermiller.org/dilate_and_erode.html
    */
   MatrixXi
-  manhattan(const MatrixXb& mat, const bool comp) const;
+  manhattan (const MatrixXb& mat, const bool comp) const;
 
   /** \brief Conversion from the RGB to HSV color space. */
   void
-  RGBToHSV(const unsigned char r,
-           const unsigned char g,
-           const unsigned char b,
-           float& h,
-           float& s,
-           float& v) const;
+  RGBToHSV (const unsigned char r,
+            const unsigned char g,
+            const unsigned char b,
+            float& h,
+            float& s,
+            float& v) const;
 
   ////////////////////////////////////////////////////////////////////////
   // Members

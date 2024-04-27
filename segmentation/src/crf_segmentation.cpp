@@ -37,10 +37,10 @@
  *
  */
 
-#include <pcl/point_types.h>
 #include <pcl/impl/instantiate.hpp>
 #include <pcl/segmentation/crf_segmentation.h>
 #include <pcl/segmentation/impl/crf_segmentation.hpp>
+#include <pcl/point_types.h>
 
 // Instantiations of specific point types
 template class PCL_EXPORTS pcl::CrfSegmentation<pcl::PointXYZRGB>;

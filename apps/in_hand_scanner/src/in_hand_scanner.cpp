@@ -517,7 +517,7 @@ pcl::ihs::InHandScanner::startGrabberImpl()
     return;
 
   std::function<void(const CloudXYZRGBAConstPtr&)> new_data_cb =
-      [this](const CloudXYZRGBAConstPtr& cloud) { newDataCallback(cloud); };
+      [this] (const CloudXYZRGBAConstPtr& cloud) { newDataCallback(cloud); };
   new_data_connection_ = grabber_->registerCallback(new_data_cb);
   grabber_->start();
 

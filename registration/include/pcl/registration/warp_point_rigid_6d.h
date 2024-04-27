@@ -74,7 +74,7 @@ public:
    * \param[in] p warp parameters (tx ty tz qx qy qz)
    */
   void
-  setParam(const VectorX& p) override
+  setParam (const VectorX& p) override
   {
     assert(p.rows() == this->getDimension());
 

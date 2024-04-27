@@ -37,78 +37,77 @@
 
 #pragma once
 
-#include <pcl/pcl_base.h>
 #include <pcl/search/search.h> // for Search
+#include <pcl/pcl_base.h>
 
-namespace pcl
-{
-  template <typename PointT, typename PointNT>
-  class SurfelSmoothing : public PCLBase<PointT>
+namespace pcl {
+template <typename PointT, typename PointNT>
+class SurfelSmoothing : public PCLBase<PointT> {
+  using PCLBase<PointT>::input_;
+  using PCLBase<PointT>::initCompute;
+
+public:
+  using Ptr = shared_ptr<SurfelSmoothing<PointT, PointNT>>;
+  using ConstPtr = shared_ptr<const SurfelSmoothing<PointT, PointNT>>;
+
+  using PointCloudIn = pcl::PointCloud<PointT>;
+  using PointCloudInPtr = typename pcl::PointCloud<PointT>::Ptr;
+  using NormalCloud = pcl::PointCloud<PointNT>;
+  using NormalCloudPtr = typename pcl::PointCloud<PointNT>::Ptr;
+  using CloudKdTree = pcl::search::Search<PointT>;
+  using CloudKdTreePtr = typename pcl::search::Search<PointT>::Ptr;
+
+  SurfelSmoothing(float a_scale = 0.01)
+  : PCLBase<PointT>()
+  , scale_(a_scale)
+  , scale_squared_(a_scale * a_scale)
+  , normals_()
+  , interm_cloud_()
+  , interm_normals_()
+  , tree_()
+  {}
+
+  void
+  setInputNormals (NormalCloudPtr& a_normals)
   {
-    using PCLBase<PointT>::input_;
-    using PCLBase<PointT>::initCompute;
-
-    public:
-      using Ptr = shared_ptr<SurfelSmoothing<PointT, PointNT> >;
-      using ConstPtr = shared_ptr<const SurfelSmoothing<PointT, PointNT> >;
-
-      using PointCloudIn = pcl::PointCloud<PointT>;
-      using PointCloudInPtr = typename pcl::PointCloud<PointT>::Ptr;
-      using NormalCloud = pcl::PointCloud<PointNT>;
-      using NormalCloudPtr = typename pcl::PointCloud<PointNT>::Ptr;
-      using CloudKdTree = pcl::search::Search<PointT>;
-      using CloudKdTreePtr = typename pcl::search::Search<PointT>::Ptr;
-
-      SurfelSmoothing (float a_scale = 0.01)
-        : PCLBase<PointT> ()
-        , scale_ (a_scale)
-        , scale_squared_ (a_scale * a_scale)
-        , normals_ ()
-        , interm_cloud_ ()
-        , interm_normals_ ()
-        , tree_ ()
-      {
-      }
-
-      void
-      setInputNormals (NormalCloudPtr &a_normals) { normals_ = a_normals; };
-
-      void
-      setSearchMethod (const CloudKdTreePtr &a_tree) { tree_ = a_tree; };
-
-      bool
-      initCompute ();
-
-      float
-      smoothCloudIteration (PointCloudInPtr &output_positions,
-                            NormalCloudPtr &output_normals);
-
-      void
-      computeSmoothedCloud (PointCloudInPtr &output_positions,
-                            NormalCloudPtr &output_normals);
-
-
-      void
-      smoothPoint (std::size_t &point_index,
-                   PointT &output_point,
-                   PointNT &output_normal);
-
-      void
-      extractSalientFeaturesBetweenScales (PointCloudInPtr &cloud2,
-                                           NormalCloudPtr &cloud2_normals,
-                                           pcl::IndicesPtr &output_features);
-
-    private:
-      float scale_, scale_squared_;
-      NormalCloudPtr normals_;
-
-      PointCloudInPtr interm_cloud_;
-      NormalCloudPtr interm_normals_;
-
-      CloudKdTreePtr tree_;
-
+    normals_ = a_normals;
   };
-}
+
+  void
+  setSearchMethod (const CloudKdTreePtr& a_tree)
+  {
+    tree_ = a_tree;
+  };
+
+  bool
+  initCompute ();
+
+  float
+  smoothCloudIteration (PointCloudInPtr& output_positions,
+                        NormalCloudPtr& output_normals);
+
+  void
+  computeSmoothedCloud (PointCloudInPtr& output_positions,
+                        NormalCloudPtr& output_normals);
+
+  void
+  smoothPoint (std::size_t& point_index, PointT& output_point, PointNT& output_normal);
+
+  void
+  extractSalientFeaturesBetweenScales (PointCloudInPtr& cloud2,
+                                       NormalCloudPtr& cloud2_normals,
+                                       pcl::IndicesPtr& output_features);
+
+private:
+  float scale_, scale_squared_;
+  NormalCloudPtr normals_;
+
+  PointCloudInPtr interm_cloud_;
+  NormalCloudPtr interm_normals_;
+
+  CloudKdTreePtr tree_;
+};
+} // namespace pcl
 
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/surface/impl/surfel_smoothing.hpp>

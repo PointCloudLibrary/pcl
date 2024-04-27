@@ -67,7 +67,7 @@ pcl::MaskMap::getDifferenceMask(const MaskMap& mask0, const MaskMap& mask1)
                  std::cend(mask0.data_),
                  std::cbegin(mask1.data_),
                  std::begin(diff_mask.data_),
-                 [](const char& b0, const char& b1) { return b0 == b1 ? 0 : 255; });
+                 [] (const char& b0, const char& b1) { return b0 == b1 ? 0 : 255; });
 
   return diff_mask;
 }

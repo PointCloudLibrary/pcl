@@ -68,7 +68,7 @@ public:
    * \param[in] num_of_trees the number of trees
    */
   inline void
-  setNumberOfTreesToTrain(const std::size_t num_of_trees)
+  setNumberOfTreesToTrain (const std::size_t num_of_trees)
   {
     num_of_trees_to_train_ = num_of_trees;
   }
@@ -78,7 +78,7 @@ public:
    * \param[in] feature_handler the feature handler
    */
   inline void
-  setFeatureHandler(
+  setFeatureHandler (
       pcl::FeatureHandler<FeatureType, DataSet, ExampleIndex>& feature_handler)
   {
     decision_tree_trainer_.setFeatureHandler(feature_handler);
@@ -89,7 +89,7 @@ public:
    * \param[in] stats_estimator the statistics estimator
    */
   inline void
-  setStatsEstimator(
+  setStatsEstimator (
       pcl::StatsEstimator<LabelType, NodeType, DataSet, ExampleIndex>& stats_estimator)
   {
     decision_tree_trainer_.setStatsEstimator(stats_estimator);
@@ -100,7 +100,7 @@ public:
    * \param[in] max_tree_depth maximum depth of the learned tree
    */
   inline void
-  setMaxTreeDepth(const std::size_t max_tree_depth)
+  setMaxTreeDepth (const std::size_t max_tree_depth)
   {
     decision_tree_trainer_.setMaxTreeDepth(max_tree_depth);
   }
@@ -110,7 +110,7 @@ public:
    * \param[in] num_of_features the number of features
    */
   inline void
-  setNumOfFeatures(const std::size_t num_of_features)
+  setNumOfFeatures (const std::size_t num_of_features)
   {
     decision_tree_trainer_.setNumOfFeatures(num_of_features);
   }
@@ -121,7 +121,7 @@ public:
    * \param[in] num_of_threshold the number of thresholds
    */
   inline void
-  setNumOfThresholds(const std::size_t num_of_threshold)
+  setNumOfThresholds (const std::size_t num_of_threshold)
   {
     decision_tree_trainer_.setNumOfThresholds(num_of_threshold);
   }
@@ -131,7 +131,7 @@ public:
    * \param[in] data_set the data set used for training
    */
   inline void
-  setTrainingDataSet(DataSet& data_set)
+  setTrainingDataSet (DataSet& data_set)
   {
     decision_tree_trainer_.setTrainingDataSet(data_set);
   }
@@ -141,7 +141,7 @@ public:
    * \param[in] examples the examples
    */
   inline void
-  setExamples(std::vector<ExampleIndex>& examples)
+  setExamples (std::vector<ExampleIndex>& examples)
   {
     decision_tree_trainer_.setExamples(examples);
   }
@@ -151,7 +151,7 @@ public:
    * \param[in] label_data the label data
    */
   inline void
-  setLabelData(std::vector<LabelType>& label_data)
+  setLabelData (std::vector<LabelType>& label_data)
   {
     decision_tree_trainer_.setLabelData(label_data);
   }
@@ -161,7 +161,7 @@ public:
    * \param[in] n number of examples
    */
   inline void
-  setMinExamplesForSplit(std::size_t n)
+  setMinExamplesForSplit (std::size_t n)
   {
     decision_tree_trainer_.setMinExamplesForSplit(n);
   }
@@ -171,7 +171,7 @@ public:
    * \param[in] thres the threshold values
    */
   void
-  setThresholds(std::vector<float>& thres)
+  setThresholds (std::vector<float>& thres)
   {
     decision_tree_trainer_.setThresholds(thres);
   }
@@ -182,7 +182,7 @@ public:
    *            function
    */
   void
-  setDecisionTreeDataProvider(
+  setDecisionTreeDataProvider (
       typename pcl::DecisionTreeTrainerDataProvider<FeatureType,
                                                     DataSet,
                                                     LabelType,
@@ -197,7 +197,7 @@ public:
    * \param[in] b do it or not
    */
   void
-  setRandomFeaturesAtSplitNode(bool b)
+  setRandomFeaturesAtSplitNode (bool b)
   {
     decision_tree_trainer_.setRandomFeaturesAtSplitNode(b);
   }
@@ -207,7 +207,7 @@ public:
    * \param[out] forest destination for the trained forest
    */
   void
-  train(DecisionForest<NodeType>& forest);
+  train (DecisionForest<NodeType>& forest);
 
 private:
   /** The number of trees to train. */

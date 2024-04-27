@@ -38,5 +38,5 @@
 
 #pragma once
 
-#include <pcl/visualization/point_cloud_geometry_handlers.h>
 #include <pcl/visualization/point_cloud_color_handlers.h>
+#include <pcl/visualization/point_cloud_geometry_handlers.h>

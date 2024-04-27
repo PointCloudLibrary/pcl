@@ -3,8 +3,9 @@ namespace pcl_tests {
 // double precision, unlike euclideanDistance() in pcl/common/distances and distance()
 // in pcl/common/geometry which use float (single precision) and possibly vectorization
 
-template <typename PointT> inline double
-squared_point_distance(const PointT& p1, const PointT& p2)
+template <typename PointT>
+inline double
+squared_point_distance (const PointT& p1, const PointT& p2)
 {
   const double x_diff = (static_cast<double>(p1.x) - static_cast<double>(p2.x)),
                y_diff = (static_cast<double>(p1.y) - static_cast<double>(p2.y)),
@@ -12,8 +13,9 @@ squared_point_distance(const PointT& p1, const PointT& p2)
   return (x_diff * x_diff + y_diff * y_diff + z_diff * z_diff);
 }
 
-template <typename PointT> inline double
-point_distance(const PointT& p1, const PointT& p2)
+template <typename PointT>
+inline double
+point_distance (const PointT& p1, const PointT& p2)
 {
   const double x_diff = (static_cast<double>(p1.x) - static_cast<double>(p2.x)),
                y_diff = (static_cast<double>(p1.y) - static_cast<double>(p2.y)),

@@ -38,44 +38,44 @@
 
 #pragma once
 
-#include <pcl/pcl_macros.h>
 #include <pcl/surface/vtk_smoothing/vtk.h>
+#include <pcl/pcl_macros.h>
 
-namespace pcl
-{
-  struct PolygonMesh;
+namespace pcl {
+struct PolygonMesh;
 
-  class PCL_EXPORTS VTKUtils
-  {
-    public:
-      /** \brief Convert a PCL PolygonMesh to a VTK vtkPolyData.
-        * \param[in] triangles PolygonMesh to be converted to vtkPolyData, stored in the object.
-        * \param[out] triangles_out_vtk
-        */
-      static int
-      convertToVTK (const pcl::PolygonMesh &triangles, vtkSmartPointer<vtkPolyData> &triangles_out_vtk);
+class PCL_EXPORTS VTKUtils {
+public:
+  /** \brief Convert a PCL PolygonMesh to a VTK vtkPolyData.
+   * \param[in] triangles PolygonMesh to be converted to vtkPolyData, stored in the
+   * object. \param[out] triangles_out_vtk
+   */
+  static int
+  convertToVTK (const pcl::PolygonMesh& triangles,
+                vtkSmartPointer<vtkPolyData>& triangles_out_vtk);
 
-      /** \brief Convert the vtkPolyData object back to PolygonMesh.
-        * \param[in] vtk_polygons
-        * \param[out] triangles the PolygonMesh to store the vtkPolyData in.
-        */
-      static void
-      convertToPCL (vtkSmartPointer<vtkPolyData> &vtk_polygons, pcl::PolygonMesh &triangles);
+  /** \brief Convert the vtkPolyData object back to PolygonMesh.
+   * \param[in] vtk_polygons
+   * \param[out] triangles the PolygonMesh to store the vtkPolyData in.
+   */
+  static void
+  convertToPCL (vtkSmartPointer<vtkPolyData>& vtk_polygons,
+                pcl::PolygonMesh& triangles);
 
-      /** \brief Convert vtkPolyData object to a PCL PolygonMesh
-        * \param[in] poly_data Pointer (vtkSmartPointer) to a vtkPolyData object
-        * \param[out] mesh PCL Polygon Mesh to fill
-        * \return Number of points in the point cloud of mesh.
-        */
-      static int
-      vtk2mesh (const vtkSmartPointer<vtkPolyData>& poly_data, pcl::PolygonMesh& mesh);
+  /** \brief Convert vtkPolyData object to a PCL PolygonMesh
+   * \param[in] poly_data Pointer (vtkSmartPointer) to a vtkPolyData object
+   * \param[out] mesh PCL Polygon Mesh to fill
+   * \return Number of points in the point cloud of mesh.
+   */
+  static int
+  vtk2mesh (const vtkSmartPointer<vtkPolyData>& poly_data, pcl::PolygonMesh& mesh);
 
-      /** \brief Convert a PCL PolygonMesh to a vtkPolyData object
-        * \param[in] mesh Reference to PCL Polygon Mesh
-        * \param[out] poly_data Pointer (vtkSmartPointer) to a vtkPolyData object
-        * \return Number of points in the point cloud of mesh.
-        */
-      static int
-      mesh2vtk (const pcl::PolygonMesh& mesh, vtkSmartPointer<vtkPolyData> &poly_data);
-  };
-}
+  /** \brief Convert a PCL PolygonMesh to a vtkPolyData object
+   * \param[in] mesh Reference to PCL Polygon Mesh
+   * \param[out] poly_data Pointer (vtkSmartPointer) to a vtkPolyData object
+   * \return Number of points in the point cloud of mesh.
+   */
+  static int
+  mesh2vtk (const pcl::PolygonMesh& mesh, vtkSmartPointer<vtkPolyData>& poly_data);
+};
+} // namespace pcl

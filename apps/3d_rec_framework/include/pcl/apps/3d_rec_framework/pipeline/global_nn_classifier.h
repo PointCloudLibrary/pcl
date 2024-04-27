@@ -23,22 +23,22 @@ public:
   virtual ~GlobalClassifier() = default;
 
   virtual void
-  setNN(int nn) = 0;
+  setNN (int nn) = 0;
 
   virtual void
-  getCategory(std::vector<std::string>& categories) = 0;
+  getCategory (std::vector<std::string>& categories) = 0;
 
   virtual void
-  getConfidence(std::vector<float>& conf) = 0;
+  getConfidence (std::vector<float>& conf) = 0;
 
   virtual void
-  classify() = 0;
+  classify () = 0;
 
   virtual void
-  setIndices(pcl::Indices& indices) = 0;
+  setIndices (pcl::Indices& indices) = 0;
 
   virtual void
-  setInputCloud(const PointInTPtr& cloud) = 0;
+  setInputCloud (const PointInTPtr& cloud) = 0;
 };
 
 /**
@@ -97,10 +97,10 @@ protected:
 
   // load features from disk and create flann structure
   void
-  loadFeaturesAndCreateFLANN();
+  loadFeaturesAndCreateFLANN ();
 
   inline void
-  convertToFLANN(const std::vector<flann_model>& models, flann::Matrix<float>& data)
+  convertToFLANN (const std::vector<flann_model>& models, flann::Matrix<float>& data)
   {
     data.rows = models.size();
     data.cols = models[0].second.size(); // number of histogram bins
@@ -118,11 +118,11 @@ protected:
   }
 
   void
-  nearestKSearch(flann::Index<DistT>* index,
-                 const flann_model& model,
-                 int k,
-                 flann::Matrix<int>& indices,
-                 flann::Matrix<float>& distances);
+  nearestKSearch (flann::Index<DistT>* index,
+                  const flann_model& model,
+                  int k,
+                  flann::Matrix<int>& indices,
+                  flann::Matrix<float>& distances);
 
   int NN_;
   std::vector<std::string> categories_;
@@ -134,19 +134,19 @@ public:
   GlobalNNPipeline() { NN_ = 1; }
 
   void
-  setNN(int nn) override
+  setNN (int nn) override
   {
     NN_ = nn;
   }
 
   void
-  getCategory(std::vector<std::string>& categories) override
+  getCategory (std::vector<std::string>& categories) override
   {
     categories = categories_;
   }
 
   void
-  getConfidence(std::vector<float>& conf) override
+  getConfidence (std::vector<float>& conf) override
   {
     conf = confidences_;
   }
@@ -156,20 +156,20 @@ public:
    */
 
   void
-  initialize(bool force_retrain = false);
+  initialize (bool force_retrain = false);
 
   /**
    * \brief Performs classification
    */
 
   void
-  classify() override;
+  classify () override;
 
   /**
    * \brief Sets the model data source_
    */
   void
-  setDataSource(std::shared_ptr<Source<PointInT>>& source)
+  setDataSource (std::shared_ptr<Source<PointInT>>& source)
   {
     source_ = source;
   }
@@ -179,13 +179,13 @@ public:
    */
 
   void
-  setFeatureEstimator(std::shared_ptr<GlobalEstimator<PointInT, FeatureT>>& feat)
+  setFeatureEstimator (std::shared_ptr<GlobalEstimator<PointInT, FeatureT>>& feat)
   {
     estimator_ = feat;
   }
 
   void
-  setIndices(pcl::Indices& indices) override
+  setIndices (pcl::Indices& indices) override
   {
     indices_ = indices;
   }
@@ -194,19 +194,19 @@ public:
    * \brief Sets the input cloud to be classified
    */
   void
-  setInputCloud(const PointInTPtr& cloud) override
+  setInputCloud (const PointInTPtr& cloud) override
   {
     input_ = cloud;
   }
 
   void
-  setDescriptorName(std::string& name)
+  setDescriptorName (std::string& name)
   {
     descr_name_ = name;
   }
 
   void
-  setTrainingDir(std::string& dir)
+  setTrainingDir (std::string& dir)
   {
     training_dir_ = dir;
   }

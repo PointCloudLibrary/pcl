@@ -39,7 +39,7 @@ public:
    * \brief starts the event loop for the visualizer
    */
   void
-  run();
+  run ();
 
 protected:
   /**
@@ -49,8 +49,8 @@ protected:
    * largest cluster
    */
   void
-  segmentation(const typename pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr& input,
-               const typename pcl::PointCloud<pcl::PointXYZRGB>::Ptr& segmented) const;
+  segmentation (const typename pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr& input,
+                const typename pcl::PointCloud<pcl::PointXYZRGB>::Ptr& segmented) const;
 
   /**
    * \brief Detects key points in the input point cloud
@@ -59,8 +59,8 @@ protected:
    * subset of the input cloud
    */
   void
-  detectKeypoints(const typename pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr& input,
-                  const pcl::PointCloud<pcl::PointXYZI>::Ptr& keypoints) const;
+  detectKeypoints (const typename pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr& input,
+                   const pcl::PointCloud<pcl::PointXYZI>::Ptr& keypoints) const;
 
   /**
    * \brief extract descriptors for given key points
@@ -69,9 +69,9 @@ protected:
    * \param features resulting descriptors
    */
   void
-  extractDescriptors(typename pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr input,
-                     const typename pcl::PointCloud<pcl::PointXYZI>::Ptr& keypoints,
-                     typename pcl::PointCloud<FeatureType>::Ptr features);
+  extractDescriptors (typename pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr input,
+                      const typename pcl::PointCloud<pcl::PointXYZI>::Ptr& keypoints,
+                      typename pcl::PointCloud<FeatureType>::Ptr features);
 
   /**
    * \brief find corresponding features based on some metric
@@ -81,34 +81,34 @@ protected:
    * (nearest neighbor) to the source descriptors
    */
   void
-  findCorrespondences(typename pcl::PointCloud<FeatureType>::Ptr source,
-                      typename pcl::PointCloud<FeatureType>::Ptr target,
-                      std::vector<int>& correspondences) const;
+  findCorrespondences (typename pcl::PointCloud<FeatureType>::Ptr source,
+                       typename pcl::PointCloud<FeatureType>::Ptr target,
+                       std::vector<int>& correspondences) const;
 
   /**
    * \brief  remove non-consistent correspondences
    */
   void
-  filterCorrespondences();
+  filterCorrespondences ();
 
   /**
    * \brief calculate the initial rigid transformation from filtered corresponding
    * keypoints
    */
   void
-  determineInitialTransformation();
+  determineInitialTransformation ();
 
   /**
    * \brief calculate the final rigid transformation using ICP over all points
    */
   void
-  determineFinalTransformation();
+  determineFinalTransformation ();
 
   /**
    * \brief reconstructs the surface from merged point clouds
    */
   void
-  reconstructSurface();
+  reconstructSurface ();
 
   /**
    * \brief callback to handle keyboard events
@@ -117,7 +117,7 @@ protected:
    * \param cookie user defined data passed during registration of the callback
    */
   void
-  keyboard_callback(const pcl::visualization::KeyboardEvent& event, void* cookie);
+  keyboard_callback (const pcl::visualization::KeyboardEvent& event, void* cookie);
 
 private:
   pcl::visualization::PCLVisualizer visualizer_;
@@ -543,7 +543,7 @@ ICCVTutorial<FeatureType>::keyboard_callback(
 }
 
 int
-main(int argc, char** argv)
+main (int argc, char** argv)
 {
   if (argc < 6) {
     // clang-format off

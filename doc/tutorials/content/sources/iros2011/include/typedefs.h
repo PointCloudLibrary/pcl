@@ -1,7 +1,7 @@
 #pragma once
 
-#include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
+#include <pcl/point_types.h>
 
 /*  Define some custom types to make the rest of our code easier to read */
 
@@ -22,7 +22,6 @@ typedef pcl::PointNormal SurfelT;
 typedef pcl::PointCloud<SurfelT> SurfaceElements;
 typedef pcl::PointCloud<SurfelT>::Ptr SurfaceElementsPtr;
 typedef pcl::PointCloud<SurfelT>::ConstPtr SurfaceElementsConstPtr;
-
 
 // Define "LocalDescriptors" to be a pcl::PointCloud of pcl::FPFHSignature33 points
 typedef pcl::FPFHSignature33 LocalDescriptorT;

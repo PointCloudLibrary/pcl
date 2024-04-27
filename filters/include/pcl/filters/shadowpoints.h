@@ -1,15 +1,15 @@
 /*
  * Software License Agreement (BSD License)
- * 
+ *
  * Point Cloud Library (PCL) - www.pointclouds.org
  * Copyright (c) 2009-2011, Willow Garage, Inc.
- * 
+ *
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
- * are met: 
- * 
+ * are met:
+ *
  *  * Redistributions of source code must retain the above copyright
  *    notice, this list of conditions and the following disclaimer.
  *  * Redistributions in binary form must reproduce the above
@@ -19,7 +19,7 @@
  *  * Neither the name of the copyright holder(s) nor the names of its
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
@@ -39,88 +39,94 @@
 
 #include <pcl/filters/filter_indices.h>
 
-namespace pcl
-{
-  /** \brief @b ShadowPoints removes the ghost points appearing on edge discontinuties
-   *
-   *  \author Aravindhan K Krishnan. This code is ported from libpointmatcher (https://github.com/ethz-asl/libpointmatcher)
-   * \ingroup filters
-   */
-  template<typename PointT, typename NormalT>
-  class ShadowPoints : public FilterIndices<PointT>
+namespace pcl {
+/** \brief @b ShadowPoints removes the ghost points appearing on edge discontinuties
+ *
+ *  \author Aravindhan K Krishnan. This code is ported from libpointmatcher
+ * (https://github.com/ethz-asl/libpointmatcher) \ingroup filters
+ */
+template <typename PointT, typename NormalT>
+class ShadowPoints : public FilterIndices<PointT> {
+  using FilterIndices<PointT>::filter_name_;
+  using FilterIndices<PointT>::getClassName;
+  using FilterIndices<PointT>::indices_;
+  using FilterIndices<PointT>::input_;
+  using FilterIndices<PointT>::removed_indices_;
+  using FilterIndices<PointT>::extract_removed_indices_;
+  using FilterIndices<PointT>::negative_;
+  using FilterIndices<PointT>::user_filter_value_;
+  using FilterIndices<PointT>::keep_organized_;
+
+  using PointCloud = typename FilterIndices<PointT>::PointCloud;
+  using PointCloudPtr = typename PointCloud::Ptr;
+  using PointCloudConstPtr = typename PointCloud::ConstPtr;
+  using NormalsPtr = typename pcl::PointCloud<NormalT>::Ptr;
+
+public:
+  using Ptr = shared_ptr<ShadowPoints<PointT, NormalT>>;
+  using ConstPtr = shared_ptr<const ShadowPoints<PointT, NormalT>>;
+
+  /** \brief Empty constructor. */
+  ShadowPoints(bool extract_removed_indices = false)
+  : FilterIndices<PointT>(extract_removed_indices), input_normals_()
   {
-    using FilterIndices<PointT>::filter_name_;
-    using FilterIndices<PointT>::getClassName;
-    using FilterIndices<PointT>::indices_;
-    using FilterIndices<PointT>::input_;
-    using FilterIndices<PointT>::removed_indices_;
-    using FilterIndices<PointT>::extract_removed_indices_;
-    using FilterIndices<PointT>::negative_;
-    using FilterIndices<PointT>::user_filter_value_;
-    using FilterIndices<PointT>::keep_organized_;
+    filter_name_ = "ShadowPoints";
+  }
 
-    using PointCloud = typename FilterIndices<PointT>::PointCloud;
-    using PointCloudPtr = typename PointCloud::Ptr;
-    using PointCloudConstPtr = typename PointCloud::ConstPtr;
-    using NormalsPtr = typename pcl::PointCloud<NormalT>::Ptr;
+  /** \brief Set the normals computed on the input point cloud
+   * \param[in] normals the normals computed for the input cloud
+   */
+  inline void
+  setNormals (const NormalsPtr& normals)
+  {
+    input_normals_ = normals;
+  }
 
-    public:
+  /** \brief Get the normals computed on the input point cloud */
+  inline NormalsPtr
+  getNormals () const
+  {
+    return (input_normals_);
+  }
 
-      using Ptr = shared_ptr< ShadowPoints<PointT, NormalT> >;
-      using ConstPtr = shared_ptr< const ShadowPoints<PointT, NormalT> >;
+  /** \brief Set the threshold for shadow points rejection
+   * \param[in] threshold the threshold
+   */
+  inline void
+  setThreshold (float threshold)
+  {
+    threshold_ = threshold;
+  }
 
-      /** \brief Empty constructor. */
-      ShadowPoints (bool extract_removed_indices = false) : 
-        FilterIndices<PointT> (extract_removed_indices),
-        input_normals_ ()
-      {
-        filter_name_ = "ShadowPoints";
-      }
+  /** \brief Get the threshold for shadow points rejection */
+  inline float
+  getThreshold () const
+  {
+    return threshold_;
+  }
 
-      /** \brief Set the normals computed on the input point cloud
-        * \param[in] normals the normals computed for the input cloud
-        */
-      inline void 
-      setNormals (const NormalsPtr &normals) { input_normals_ = normals; }
+protected:
+  /** \brief The normals computed at each point in the input cloud */
+  NormalsPtr input_normals_;
 
-      /** \brief Get the normals computed on the input point cloud */
-      inline NormalsPtr
-      getNormals () const { return (input_normals_); }
+  /** \brief Sample of point indices into a separate PointCloud
+   * \param[out] output the resultant point cloud
+   */
+  void
+  applyFilter (PointCloud& output) override;
 
-      /** \brief Set the threshold for shadow points rejection
-        * \param[in] threshold the threshold
-        */
-      inline void
-      setThreshold (float threshold) { threshold_ = threshold; }
+  /** \brief Sample of point indices
+   * \param[out] indices the resultant point cloud indices
+   */
+  void
+  applyFilter (Indices& indices) override;
 
-      /** \brief Get the threshold for shadow points rejection */
-      inline float 
-      getThreshold () const { return threshold_; }
-
-    protected:
-     
-      /** \brief The normals computed at each point in the input cloud */
-      NormalsPtr input_normals_; 
-
-      /** \brief Sample of point indices into a separate PointCloud
-        * \param[out] output the resultant point cloud
-        */
-      void
-      applyFilter (PointCloud &output) override;
-
-      /** \brief Sample of point indices
-        * \param[out] indices the resultant point cloud indices
-        */
-      void
-      applyFilter (Indices &indices) override;
-
-    private:
-
-      /** \brief Threshold for shadow point rejection
-        */
-      float threshold_{0.1f};
-  };
-}
+private:
+  /** \brief Threshold for shadow point rejection
+   */
+  float threshold_{0.1f};
+};
+} // namespace pcl
 
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/filters/impl/shadowpoints.hpp>

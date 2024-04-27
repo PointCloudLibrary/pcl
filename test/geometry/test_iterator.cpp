@@ -33,105 +33,107 @@
  *
  */
 
-#include <pcl/test/gtest.h>
 #include <pcl/geometry/line_iterator.h>
-#include <pcl/point_types.h>
+#include <pcl/test/gtest.h>
 #include <pcl/point_cloud.h>
+#include <pcl/point_types.h>
+
 #include <cmath>
 
 using namespace pcl;
 
 template <typename PointT>
-void checkSimpleLine8 (unsigned x_start, unsigned y_start, unsigned x_end, unsigned y_end, PointCloud<PointT>& cloud)
+void
+checkSimpleLine8 (unsigned x_start,
+                  unsigned y_start,
+                  unsigned x_end,
+                  unsigned y_end,
+                  PointCloud<PointT>& cloud)
 {
   PointXYZ point;
   point.x = point.y = point.z = 0.0f;
-  for (unsigned yIdx = 0; yIdx < cloud.height; ++yIdx)
-  {
-    for (unsigned xIdx = 0; xIdx < cloud.width; ++xIdx)
-    {
-      PointT& point = cloud.points [yIdx * cloud.width + xIdx];
+  for (unsigned yIdx = 0; yIdx < cloud.height; ++yIdx) {
+    for (unsigned xIdx = 0; xIdx < cloud.width; ++xIdx) {
+      PointT& point = cloud.points[yIdx * cloud.width + xIdx];
       point.x = static_cast<float>(xIdx);
       point.y = static_cast<float>(yIdx);
       point.z = 0.0f;
     }
   }
 
-  LineIterator lineIt (x_start, y_start, x_end, y_end, cloud.width, LineIterator::Neighbor8);
+  LineIterator lineIt(
+      x_start, y_start, x_end, y_end, cloud.width, LineIterator::Neighbor8);
   // use polymorphic
   OrganizedIndexIterator& iterator = lineIt;
   unsigned idx = 0;
-  while (iterator.isValid ())
-  {
+  while (iterator.isValid()) {
     PointT& point = cloud[*iterator];
-    EXPECT_EQ (point.x, iterator.getColumnIndex ());
-    EXPECT_EQ (point.y, iterator.getRowIndex ());
+    EXPECT_EQ(point.x, iterator.getColumnIndex());
+    EXPECT_EQ(point.y, iterator.getRowIndex());
     point.z = 1.0f;
     ++iterator;
     ++idx;
   }
   int dx = x_end - x_start;
   int dy = y_end - y_start;
-  unsigned dmax = std::max (std::abs(dx), std::abs(dy));
-  
-  EXPECT_EQ (dmax, idx);
-  
+  unsigned dmax = std::max(std::abs(dx), std::abs(dy));
+
+  EXPECT_EQ(dmax, idx);
+
   int x_step = 0;
   int y_step = 0;
-  
-  EXPECT_GT (dmax, 0);
-  if (dx == 0)
-  {
+
+  EXPECT_GT(dmax, 0);
+  if (dx == 0) {
     x_step = 0;
     y_step = (dy > 0) ? 1 : -1;
   }
-  else if (dy == 0)
-  {
+  else if (dy == 0) {
     y_step = 0;
     x_step = (dx > 0) ? 1 : -1;
   }
-  else if (std::abs(dx) == std::abs(dy))
-  {
+  else if (std::abs(dx) == std::abs(dy)) {
     y_step = (dy > 0) ? 1 : -1;
     x_step = (dx > 0) ? 1 : -1;
   }
-  else
-  {
+  else {
     // only horizontal, vertical and 45deg diagonal lines handled here
-    EXPECT_TRUE (false);
+    EXPECT_TRUE(false);
   }
   unsigned xIdx = x_start;
   unsigned yIdx = y_start;
-  for (unsigned idx = 0; idx < dmax; ++idx, xIdx += x_step, yIdx += y_step)
-  {
-    PointT& point = cloud.points [yIdx * cloud.width + xIdx];
-    EXPECT_EQ (point.z, 1.0f);
+  for (unsigned idx = 0; idx < dmax; ++idx, xIdx += x_step, yIdx += y_step) {
+    PointT& point = cloud.points[yIdx * cloud.width + xIdx];
+    EXPECT_EQ(point.z, 1.0f);
     point.z = 0.0;
   }
   // now all z-values should be 0 again!
-  for (unsigned yIdx = 0; yIdx < cloud.height; ++yIdx)
-  {
-    for (unsigned xIdx = 0; xIdx < cloud.width; ++xIdx)
-    {
-      //std::cout << "testing  point: " << xIdx << " , " << yIdx << std::endl;
-      PointT& point = cloud.points [yIdx * cloud.width + xIdx];
-//      if (point.z != 0.0f)
-//        std::cout << "point.z != 0.0f at: " << xIdx << " , " << yIdx << std::endl;
-      EXPECT_EQ (point.z, 0.0f);
+  for (unsigned yIdx = 0; yIdx < cloud.height; ++yIdx) {
+    for (unsigned xIdx = 0; xIdx < cloud.width; ++xIdx) {
+      // std::cout << "testing  point: " << xIdx << " , " << yIdx << std::endl;
+      PointT& point = cloud.points[yIdx * cloud.width + xIdx];
+      //      if (point.z != 0.0f)
+      //        std::cout << "point.z != 0.0f at: " << xIdx << " , " << yIdx <<
+      //        std::endl;
+      EXPECT_EQ(point.z, 0.0f);
     }
   }
 }
 
 template <typename PointT>
-void checkGeneralLine (unsigned x_start, unsigned y_start, unsigned x_end, unsigned y_end, PointCloud<PointT>& cloud, bool neighorhood)
+void
+checkGeneralLine (unsigned x_start,
+                  unsigned y_start,
+                  unsigned x_end,
+                  unsigned y_end,
+                  PointCloud<PointT>& cloud,
+                  bool neighorhood)
 {
   PointXYZ point;
   point.x = point.y = point.z = 0.0f;
-  for (unsigned yIdx = 0; yIdx < cloud.height; ++yIdx)
-  {
-    for (unsigned xIdx = 0; xIdx < cloud.width; ++xIdx)
-    {
-      PointT& point = cloud.points [yIdx * cloud.width + xIdx];
+  for (unsigned yIdx = 0; yIdx < cloud.height; ++yIdx) {
+    for (unsigned xIdx = 0; xIdx < cloud.width; ++xIdx) {
+      PointT& point = cloud.points[yIdx * cloud.width + xIdx];
       point.x = static_cast<float>(xIdx);
       point.y = static_cast<float>(yIdx);
       point.z = 0.0f;
@@ -143,141 +145,142 @@ void checkGeneralLine (unsigned x_start, unsigned y_start, unsigned x_end, unsig
     neighbors = LineIterator::Neighbor8;
   else
     neighbors = LineIterator::Neighbor4;
-    
-  LineIterator lineIt (x_start, y_start, x_end, y_end, cloud.width, neighbors);
+
+  LineIterator lineIt(x_start, y_start, x_end, y_end, cloud.width, neighbors);
   // use polymorphic
   OrganizedIndexIterator& iterator = lineIt;
   unsigned idx = 0;
-  while (iterator.isValid ())
-  {
-    PointT& point = cloud [*iterator];
-    EXPECT_EQ (point.x, iterator.getColumnIndex ());
-    EXPECT_EQ (point.y, iterator.getRowIndex ());
-    //std::cout << idx << " :: " << iterator.getPointIndex () << " :: " << iterator.getColumnIndex () << " , " << iterator.getRowIndex () << std::endl;
+  while (iterator.isValid()) {
+    PointT& point = cloud[*iterator];
+    EXPECT_EQ(point.x, iterator.getColumnIndex());
+    EXPECT_EQ(point.y, iterator.getRowIndex());
+    // std::cout << idx << " :: " << iterator.getPointIndex () << " :: " <<
+    // iterator.getColumnIndex () << " , " << iterator.getRowIndex () << std::endl;
     point.z = 1.0f;
     ++iterator;
     ++idx;
   }
-  
+
   int dx = x_end - x_start;
   int dy = y_end - y_start;
-  unsigned dmax = std::max (std::abs(dx), std::abs(dy));
+  unsigned dmax = std::max(std::abs(dx), std::abs(dy));
 
   if (neighorhood)
-    EXPECT_EQ (dmax, idx);
+    EXPECT_EQ(dmax, idx);
   else
-    EXPECT_EQ (std::abs(dx) + std::abs(dy), idx);
-  
-  float length = std::sqrt (static_cast<float>(dx * dx + dy * dy));
+    EXPECT_EQ(std::abs(dx) + std::abs(dy), idx);
+
+  float length = std::sqrt(static_cast<float>(dx * dx + dy * dy));
   float dir_x = static_cast<float>(dx) / length;
   float dir_y = static_cast<float>(dy) / length;
-  
+
   // now all z-values should be 0 again!
-  for (int yIdx = 0; yIdx < static_cast<int>(cloud.height); ++yIdx)
-  {
-    for (int xIdx = 0; xIdx < static_cast<int>(cloud.width); ++xIdx)
-    {
-      PointT& point = cloud.points [yIdx * cloud.width + xIdx];
-      if (point.z != 0)
-      {
+  for (int yIdx = 0; yIdx < static_cast<int>(cloud.height); ++yIdx) {
+    for (int xIdx = 0; xIdx < static_cast<int>(cloud.width); ++xIdx) {
+      PointT& point = cloud.points[yIdx * cloud.width + xIdx];
+      if (point.z != 0) {
         // point need to be close to line
-        float distance = dir_x * static_cast<float>(yIdx - static_cast<int>(y_start)) - dir_y * static_cast<float>(xIdx - static_cast<int>(x_start));
-        if (neighorhood)        
-          EXPECT_LE (std::fabs(distance), 0.5f);
+        float distance = dir_x * static_cast<float>(yIdx - static_cast<int>(y_start)) -
+                         dir_y * static_cast<float>(xIdx - static_cast<int>(x_start));
+        if (neighorhood)
+          EXPECT_LE(std::fabs(distance), 0.5f);
         else
-          EXPECT_LE (std::fabs(distance), 0.70711f);
-        
+          EXPECT_LE(std::fabs(distance), 0.70711f);
+
         // and within the endpoints
-        float lambda = dir_y * static_cast<float>(yIdx - static_cast<int>(y_start)) + dir_x * static_cast<float>(xIdx - static_cast<int>(x_start));
-        EXPECT_LE (lambda, length);
-        EXPECT_GE (lambda, 0.0f);
+        float lambda = dir_y * static_cast<float>(yIdx - static_cast<int>(y_start)) +
+                       dir_x * static_cast<float>(xIdx - static_cast<int>(x_start));
+        EXPECT_LE(lambda, length);
+        EXPECT_GE(lambda, 0.0f);
       }
     }
   }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TEST (PCL, LineIterator8Neighbors)
+TEST(PCL, LineIterator8Neighbors)
 {
-  PointCloud <PointXYZ> cloud;
+  PointCloud<PointXYZ> cloud;
   cloud.width = 100;
   cloud.height = 100;
-  cloud.resize (cloud.width * cloud.height);  
-  
+  cloud.resize(cloud.width * cloud.height);
+
   unsigned center_x = 50;
   unsigned center_y = 50;
   unsigned length = 45;
-  
+
   // right
-  checkSimpleLine8 (center_x, center_y, center_x + length, center_y, cloud);
-  
+  checkSimpleLine8(center_x, center_y, center_x + length, center_y, cloud);
+
   // left
-  checkSimpleLine8 (center_x, center_y, center_x - length, center_y, cloud);
+  checkSimpleLine8(center_x, center_y, center_x - length, center_y, cloud);
 
   // down
-  checkSimpleLine8 (center_x, center_y, center_x, center_y - length, cloud);
-  
+  checkSimpleLine8(center_x, center_y, center_x, center_y - length, cloud);
+
   // up
-  checkSimpleLine8 (center_x, center_y, center_x, center_y + length, cloud);
+  checkSimpleLine8(center_x, center_y, center_x, center_y + length, cloud);
 
   // up-right
-  checkSimpleLine8 (center_x, center_y, center_x + length, center_y + length, cloud);
-  
+  checkSimpleLine8(center_x, center_y, center_x + length, center_y + length, cloud);
+
   // up-left
-  checkSimpleLine8 (center_x, center_y, center_x - length, center_y + length, cloud);
+  checkSimpleLine8(center_x, center_y, center_x - length, center_y + length, cloud);
 
   // down-right
-  checkSimpleLine8 (center_x, center_y, center_x + length, center_y - length, cloud);
+  checkSimpleLine8(center_x, center_y, center_x + length, center_y - length, cloud);
 
   // down-left
-  checkSimpleLine8 (center_x, center_y, center_x - length, center_y - length, cloud);
+  checkSimpleLine8(center_x, center_y, center_x - length, center_y - length, cloud);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TEST (PCL, LineIterator8NeighborsGeneral)
+TEST(PCL, LineIterator8NeighborsGeneral)
 {
-  PointCloud <PointXYZ> cloud;
+  PointCloud<PointXYZ> cloud;
   cloud.width = 100;
   cloud.height = 100;
-  cloud.resize (cloud.width * cloud.height);  
-  
+  cloud.resize(cloud.width * cloud.height);
+
   unsigned center_x = 50;
   unsigned center_y = 50;
   unsigned length = 45;
-  
+
   constexpr unsigned angular_resolution = 180;
   constexpr float d_alpha = static_cast<float>(M_PI / angular_resolution);
-  for (unsigned idx = 0; idx < angular_resolution; ++idx)
-  {
-    auto x_end = static_cast<unsigned>(length * std::cos (static_cast<float>(idx) * d_alpha) + center_x + 0.5);
-    auto y_end = static_cast<unsigned>(length * std::sin (static_cast<float>(idx) * d_alpha) + center_y + 0.5);
-    
+  for (unsigned idx = 0; idx < angular_resolution; ++idx) {
+    auto x_end = static_cast<unsigned>(
+        length * std::cos(static_cast<float>(idx) * d_alpha) + center_x + 0.5);
+    auto y_end = static_cast<unsigned>(
+        length * std::sin(static_cast<float>(idx) * d_alpha) + center_y + 0.5);
+
     // right
-    checkGeneralLine (center_x, center_y, x_end, y_end, cloud, true);
+    checkGeneralLine(center_x, center_y, x_end, y_end, cloud, true);
   }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TEST (PCL, LineIterator4NeighborsGeneral)
+TEST(PCL, LineIterator4NeighborsGeneral)
 {
-  PointCloud <PointXYZ> cloud;
+  PointCloud<PointXYZ> cloud;
   cloud.width = 100;
   cloud.height = 100;
-  cloud.resize (cloud.width * cloud.height);  
-  
+  cloud.resize(cloud.width * cloud.height);
+
   unsigned center_x = 50;
   unsigned center_y = 50;
   unsigned length = 45;
-  
+
   constexpr unsigned angular_resolution = 360;
   constexpr float d_alpha = static_cast<float>(2.0 * M_PI / angular_resolution);
-  for (unsigned idx = 0; idx < angular_resolution; ++idx)
-  {
-    auto x_end = static_cast<unsigned>(length * std::cos (static_cast<float>(idx) * d_alpha) + center_x + 0.5);
-    auto y_end = static_cast<unsigned>(length * std::sin (static_cast<float>(idx) * d_alpha) + center_y + 0.5);
-    
+  for (unsigned idx = 0; idx < angular_resolution; ++idx) {
+    auto x_end = static_cast<unsigned>(
+        length * std::cos(static_cast<float>(idx) * d_alpha) + center_x + 0.5);
+    auto y_end = static_cast<unsigned>(
+        length * std::sin(static_cast<float>(idx) * d_alpha) + center_y + 0.5);
+
     // right
-    checkGeneralLine (center_x, center_y, x_end, y_end, cloud, false);
+    checkGeneralLine(center_x, center_y, x_end, y_end, cloud, false);
   }
 }
 
@@ -285,7 +288,7 @@ TEST (PCL, LineIterator4NeighborsGeneral)
 int
 main (int argc, char** argv)
 {
-  testing::InitGoogleTest (&argc, argv);
-  return (RUN_ALL_TESTS ());
+  testing::InitGoogleTest(&argc, argv);
+  return (RUN_ALL_TESTS());
 }
 /* ]--- */

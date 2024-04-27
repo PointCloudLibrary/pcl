@@ -142,7 +142,7 @@ public:
    * \endcode
    */
   void
-  setTransformationEstimation(const TransformationEstimationPtr& te)
+  setTransformationEstimation (const TransformationEstimationPtr& te)
   {
     transformation_estimation_ = te;
   }
@@ -171,7 +171,7 @@ public:
    * \endcode
    */
   void
-  setCorrespondenceEstimation(const CorrespondenceEstimationPtr& ce)
+  setCorrespondenceEstimation (const CorrespondenceEstimationPtr& ce)
   {
     correspondence_estimation_ = ce;
   }
@@ -182,11 +182,11 @@ public:
    * \param[in] cloud the input point cloud source
    */
   virtual void
-  setInputSource(const PointCloudSourceConstPtr& cloud);
+  setInputSource (const PointCloudSourceConstPtr& cloud);
 
   /** \brief Get a pointer to the input point cloud dataset target. */
   inline PointCloudSourceConstPtr const
-  getInputSource()
+  getInputSource ()
   {
     return (input_);
   }
@@ -195,11 +195,11 @@ public:
    * to align the input source to) \param[in] cloud the input point cloud target
    */
   virtual inline void
-  setInputTarget(const PointCloudTargetConstPtr& cloud);
+  setInputTarget (const PointCloudTargetConstPtr& cloud);
 
   /** \brief Get a pointer to the input point cloud dataset target. */
   inline PointCloudTargetConstPtr const
-  getInputTarget()
+  getInputTarget ()
   {
     return (target_);
   }
@@ -212,7 +212,7 @@ public:
    * confident that the tree will be set correctly.
    */
   inline void
-  setSearchMethodTarget(const KdTreePtr& tree, bool force_no_recompute = false)
+  setSearchMethodTarget (const KdTreePtr& tree, bool force_no_recompute = false)
   {
     tree_ = tree;
     force_no_recompute_ = force_no_recompute;
@@ -223,7 +223,7 @@ public:
   /** \brief Get a pointer to the search method used to find correspondences in the
    * target cloud. */
   inline KdTreePtr
-  getSearchMethodTarget() const
+  getSearchMethodTarget () const
   {
     return (tree_);
   }
@@ -236,8 +236,8 @@ public:
    * extremely confident that the tree will be set correctly.
    */
   inline void
-  setSearchMethodSource(const KdTreeReciprocalPtr& tree,
-                        bool force_no_recompute = false)
+  setSearchMethodSource (const KdTreeReciprocalPtr& tree,
+                         bool force_no_recompute = false)
   {
     tree_reciprocal_ = tree;
     force_no_recompute_reciprocal_ = force_no_recompute;
@@ -248,7 +248,7 @@ public:
   /** \brief Get a pointer to the search method used to find correspondences in the
    * source cloud. */
   inline KdTreeReciprocalPtr
-  getSearchMethodSource() const
+  getSearchMethodSource () const
   {
     return (tree_reciprocal_);
   }
@@ -256,7 +256,7 @@ public:
   /** \brief Get the final transformation matrix estimated by the registration method.
    */
   inline Matrix4
-  getFinalTransformation()
+  getFinalTransformation ()
   {
     return (final_transformation_);
   }
@@ -264,7 +264,7 @@ public:
   /** \brief Get the last incremental transformation matrix estimated by the
    * registration method. */
   inline Matrix4
-  getLastIncrementalTransformation()
+  getLastIncrementalTransformation ()
   {
     return (transformation_);
   }
@@ -274,7 +274,7 @@ public:
    * optimization should run for
    */
   inline void
-  setMaximumIterations(int nr_iterations)
+  setMaximumIterations (int nr_iterations)
   {
     max_iterations_ = nr_iterations;
   }
@@ -282,7 +282,7 @@ public:
   /** \brief Get the maximum number of iterations the internal optimization should run
    * for, as set by the user. */
   inline int
-  getMaximumIterations()
+  getMaximumIterations ()
   {
     return (max_iterations_);
   }
@@ -291,14 +291,14 @@ public:
    * \param[in] ransac_iterations is the number of iterations RANSAC should run for
    */
   inline void
-  setRANSACIterations(int ransac_iterations)
+  setRANSACIterations (int ransac_iterations)
   {
     ransac_iterations_ = ransac_iterations;
   }
 
   /** \brief Get the number of iterations RANSAC should run for, as set by the user. */
   inline double
-  getRANSACIterations()
+  getRANSACIterations ()
   {
     return (ransac_iterations_);
   }
@@ -313,7 +313,7 @@ public:
    * rejection loop
    */
   inline void
-  setRANSACOutlierRejectionThreshold(double inlier_threshold)
+  setRANSACOutlierRejectionThreshold (double inlier_threshold)
   {
     inlier_threshold_ = inlier_threshold;
   }
@@ -321,7 +321,7 @@ public:
   /** \brief Get the inlier distance threshold for the internal outlier rejection loop
    * as set by the user. */
   inline double
-  getRANSACOutlierRejectionThreshold()
+  getRANSACOutlierRejectionThreshold ()
   {
     return (inlier_threshold_);
   }
@@ -333,7 +333,7 @@ public:
    * to be considered in the alignment process
    */
   inline void
-  setMaxCorrespondenceDistance(double distance_threshold)
+  setMaxCorrespondenceDistance (double distance_threshold)
   {
     corr_dist_threshold_ = distance_threshold;
   }
@@ -343,7 +343,7 @@ public:
    * be ignored in the alignment process.
    */
   inline double
-  getMaxCorrespondenceDistance()
+  getMaxCorrespondenceDistance ()
   {
     return (corr_dist_threshold_);
   }
@@ -355,7 +355,7 @@ public:
    * converged to the final solution.
    */
   inline void
-  setTransformationEpsilon(double epsilon)
+  setTransformationEpsilon (double epsilon)
   {
     transformation_epsilon_ = epsilon;
   }
@@ -364,7 +364,7 @@ public:
    * difference between two consecutive transformations) as set by the user.
    */
   inline double
-  getTransformationEpsilon()
+  getTransformationEpsilon ()
   {
     return (transformation_epsilon_);
   }
@@ -377,7 +377,7 @@ public:
    * representation).
    */
   inline void
-  setTransformationRotationEpsilon(double epsilon)
+  setTransformationRotationEpsilon (double epsilon)
   {
     transformation_rotation_epsilon_ = epsilon;
   }
@@ -387,7 +387,7 @@ public:
    * cos(angle) in a axis-angle representation).
    */
   inline double
-  getTransformationRotationEpsilon()
+  getTransformationRotationEpsilon ()
   {
     return (transformation_rotation_epsilon_);
   }
@@ -399,7 +399,7 @@ public:
    * allowed distance error before the algorithm will be considered to have converged
    */
   inline void
-  setEuclideanFitnessEpsilon(double epsilon)
+  setEuclideanFitnessEpsilon (double epsilon)
   {
     euclidean_fitness_epsilon_ = epsilon;
   }
@@ -409,7 +409,7 @@ public:
    * setEuclideanFitnessEpsilon
    */
   inline double
-  getEuclideanFitnessEpsilon()
+  getEuclideanFitnessEpsilon ()
   {
     return (euclidean_fitness_epsilon_);
   }
@@ -419,7 +419,7 @@ public:
    * by the k-D tree
    */
   inline void
-  setPointRepresentation(const PointRepresentationConstPtr& point_representation)
+  setPointRepresentation (const PointRepresentationConstPtr& point_representation)
   {
     point_representation_ = point_representation;
   }
@@ -429,7 +429,7 @@ public:
    * visualizerCallback reference of the user callback function
    */
   inline bool
-  registerVisualizationCallback(
+  registerVisualizationCallback (
       std::function<UpdateVisualizerCallbackSignature>& visualizerCallback)
   {
     if (visualizerCallback) {
@@ -446,7 +446,7 @@ public:
    * point and its correspondence in the target (default: double::max)
    */
   inline double
-  getFitnessScore(double max_range = std::numeric_limits<double>::max());
+  getFitnessScore (double max_range = std::numeric_limits<double>::max());
 
   /** \brief Obtain the Euclidean fitness score (e.g., mean of squared distances from
    * the source to the target) from two sets of correspondence distances (distances
@@ -455,12 +455,12 @@ public:
    * correspondences
    */
   inline double
-  getFitnessScore(const std::vector<float>& distances_a,
-                  const std::vector<float>& distances_b);
+  getFitnessScore (const std::vector<float>& distances_a,
+                   const std::vector<float>& distances_b);
 
   /** \brief Return the state of convergence after the last align run */
   inline bool
-  hasConverged() const
+  hasConverged () const
   {
     return (converged_);
   }
@@ -470,7 +470,7 @@ public:
    * resultant input transformed point cloud dataset
    */
   inline void
-  align(PointCloudSource& output);
+  align (PointCloudSource& output);
 
   /** \brief Call the registration algorithm which estimates the transformation and
    * returns the transformed source (input) as \a output. \param[out] output the
@@ -478,22 +478,22 @@ public:
    * estimation of the transformation
    */
   inline void
-  align(PointCloudSource& output, const Matrix4& guess);
+  align (PointCloudSource& output, const Matrix4& guess);
 
   /** \brief Abstract class get name method. */
   inline const std::string&
-  getClassName() const
+  getClassName () const
   {
     return (reg_name_);
   }
 
   /** \brief Internal computation initialization. */
   bool
-  initCompute();
+  initCompute ();
 
   /** \brief Internal computation when reciprocal lookup is needed */
   bool
-  initComputeReciprocal();
+  initComputeReciprocal ();
 
   /** \brief Add a new correspondence rejector to the list
    * \param[in] rejector the new correspondence rejector to concatenate
@@ -512,14 +512,14 @@ public:
    * \endcode
    */
   inline void
-  addCorrespondenceRejector(const CorrespondenceRejectorPtr& rejector)
+  addCorrespondenceRejector (const CorrespondenceRejectorPtr& rejector)
   {
     correspondence_rejectors_.push_back(rejector);
   }
 
   /** \brief Get the list of correspondence rejectors. */
   inline std::vector<CorrespondenceRejectorPtr>
-  getCorrespondenceRejectors()
+  getCorrespondenceRejectors ()
   {
     return (correspondence_rejectors_);
   }
@@ -528,7 +528,7 @@ public:
    * \param[in] i the position of the correspondence rejector in the list to remove
    */
   inline bool
-  removeCorrespondenceRejector(unsigned int i)
+  removeCorrespondenceRejector (unsigned int i)
   {
     if (i >= correspondence_rejectors_.size())
       return (false);
@@ -538,7 +538,7 @@ public:
 
   /** \brief Clear the list of correspondence rejectors. */
   inline void
-  clearCorrespondenceRejectors()
+  clearCorrespondenceRejectors ()
   {
     correspondence_rejectors_.clear();
   }
@@ -660,10 +660,10 @@ protected:
    * neighbors
    */
   inline bool
-  searchForNeighbors(const PointCloudSource& cloud,
-                     int index,
-                     pcl::Indices& indices,
-                     std::vector<float>& distances)
+  searchForNeighbors (const PointCloudSource& cloud,
+                      int index,
+                      pcl::Indices& indices,
+                      std::vector<float>& distances)
   {
     int k = tree_->nearestKSearch(cloud, index, 1, indices, distances);
     if (k == 0)
@@ -673,7 +673,7 @@ protected:
 
   /** \brief Abstract transformation computation method with initial guess */
   virtual void
-  computeTransformation(PointCloudSource& output, const Matrix4& guess) = 0;
+  computeTransformation (PointCloudSource& output, const Matrix4& guess) = 0;
 
 private:
   /** \brief The point representation used (internal). */
@@ -685,7 +685,7 @@ private:
    * Still gives the correct result (with a warning)
    */
   void
-  setInputCloud(const PointCloudSourceConstPtr& cloud) override
+  setInputCloud (const PointCloudSourceConstPtr& cloud) override
   {
     PCL_WARN("[pcl::registration::Registration] setInputCloud is deprecated."
              "Please use setInputSource instead.\n");

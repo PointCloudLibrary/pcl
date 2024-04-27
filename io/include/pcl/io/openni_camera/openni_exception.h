@@ -43,97 +43,113 @@
 #include <cstdio>
 #include <exception>
 #include <string>
-//#include <pcl/pcl_macros.h> <-- because current header is included in NVCC-compiled code and contains <Eigen/Core>. Consider <pcl/pcl_exports.h>
+// #include <pcl/pcl_macros.h> <-- because current header is included in NVCC-compiled
+// code and contains <Eigen/Core>. Consider <pcl/pcl_exports.h>
 
-
-//from <pcl/pcl_macros.h>
+// from <pcl/pcl_macros.h>
 #if defined _WIN32 && defined _MSC_VER && !defined __PRETTY_FUNCTION__
-  #define __PRETTY_FUNCTION__ __FUNCTION__  
+#define __PRETTY_FUNCTION__ __FUNCTION__
 #endif
 
+#define THROW_OPENNI_EXCEPTION(format, ...)                                            \
+  throwOpenNIException(__PRETTY_FUNCTION__, __FILE__, __LINE__, format, ##__VA_ARGS__)
 
-#define THROW_OPENNI_EXCEPTION(format,...) throwOpenNIException( __PRETTY_FUNCTION__, __FILE__, __LINE__, format , ##__VA_ARGS__ )
+namespace openni_wrapper {
 
+/**
+ * @brief General exception class
+ * @author Suat Gedikli
+ * @date 02.january 2011
+ * @ingroup io
+ */
+class OpenNIException : public std::exception {
+public:
+  /**
+   * @brief Constructor
+   * @note use the MACRO THROW_OPENNI_EXCEPTION, that takes care about the parameters
+   * function_name, file_name and line_number
+   * @param[in] function_name the function in which this exception was created.
+   * @param[in] file_name the file name in which this exception was created.
+   * @param[in] line_number the line number where this exception was created.
+   * @param[in] message the message of the exception
+   */
+  OpenNIException(const std::string& function_name,
+                  const std::string& file_name,
+                  unsigned line_number,
+                  const std::string& message) noexcept;
 
-namespace openni_wrapper
+  /**
+   * @brief virtual Destructor that never throws an exception
+   */
+  ~OpenNIException() noexcept override;
+
+  /**
+   * @brief Assignment operator to allow copying the message of another exception
+   * variable.
+   * @param[in] exception left hand side
+   * @return
+   */
+  OpenNIException&
+  operator=(const OpenNIException& exception) noexcept;
+
+  /**
+   * @brief virtual method, derived from std::exception
+   * @return the message of the exception.
+   */
+  const char*
+  what () const noexcept override;
+
+  /**
+   * @return the function name in which the exception was created.
+   */
+  const std::string&
+  getFunctionName () const noexcept;
+
+  /**
+   * @return the filename in which the exception was created.
+   */
+  const std::string&
+  getFileName () const noexcept;
+
+  /**
+   * @return the line number where the exception was created.
+   */
+  unsigned
+  getLineNumber () const noexcept;
+
+protected:
+  std::string function_name_;
+  std::string file_name_;
+  unsigned line_number_;
+  std::string message_;
+  std::string message_long_;
+};
+
+/**
+ * @brief inline function used by the macro THROW_OPENNI_EXCEPTION to create an instance
+ * of OpenNIException with correct values for function, file and line_number
+ * @param[in] function_name the function name. Will be filled in by the macro
+ * THROW_OPENNI_EXCEPTION
+ * @param[in] file_name the file name. Will be filled in by the macro
+ * THROW_OPENNI_EXCEPTION
+ * @param[in] line_number the line number. Will be filled in by the macro
+ * THROW_OPENNI_EXCEPTION
+ * @param[in] format the printf-style format string
+ * @param[in] ... optional arguments for the printf style format.
+ */
+inline void
+throwOpenNIException (const char* function_name,
+                      const char* file_name,
+                      unsigned line_number,
+                      const char* format,
+                      ...)
 {
-
-  /**
-   * @brief General exception class
-   * @author Suat Gedikli
-   * @date 02.january 2011
-   * @ingroup io
-   */
-  class OpenNIException : public std::exception
-  {
-  public:
-    /**
-     * @brief Constructor
-     * @note use the MACRO THROW_OPENNI_EXCEPTION, that takes care about the parameters function_name, file_name and line_number
-     * @param[in] function_name the function in which this exception was created.
-     * @param[in] file_name the file name in which this exception was created.
-     * @param[in] line_number the line number where this exception was created.
-     * @param[in] message the message of the exception
-     */
-    OpenNIException (const std::string& function_name, const std::string& file_name, unsigned line_number, const std::string& message) noexcept;
-
-    /**
-     * @brief virtual Destructor that never throws an exception
-     */
-    ~OpenNIException () noexcept override;
-
-    /**
-     * @brief Assignment operator to allow copying the message of another exception variable.
-     * @param[in] exception left hand side
-     * @return
-     */
-    OpenNIException & operator= (const OpenNIException& exception) noexcept;
-
-    /**
-     * @brief virtual method, derived from std::exception
-     * @return the message of the exception.
-     */
-    const char* what () const noexcept override;
-
-    /**
-     * @return the function name in which the exception was created.
-     */
-    const std::string& getFunctionName () const noexcept;
-
-    /**
-     * @return the filename in which the exception was created.
-     */
-    const std::string& getFileName () const noexcept;
-
-    /**
-     * @return the line number where the exception was created.
-     */
-    unsigned getLineNumber () const noexcept;
-  protected:
-    std::string function_name_;
-    std::string file_name_;
-    unsigned line_number_;
-    std::string message_;
-    std::string message_long_;
-  } ;
-
-  /**
-   * @brief inline function used by the macro THROW_OPENNI_EXCEPTION to create an instance of OpenNIException with correct values for function, file and line_number
-   * @param[in] function_name the function name. Will be filled in by the macro THROW_OPENNI_EXCEPTION
-   * @param[in] file_name the file name. Will be filled in by the macro THROW_OPENNI_EXCEPTION
-   * @param[in] line_number the line number. Will be filled in by the macro THROW_OPENNI_EXCEPTION
-   * @param[in] format the printf-style format string
-   * @param[in] ... optional arguments for the printf style format.
-   */
-  inline void
-  throwOpenNIException (const char* function_name, const char* file_name, unsigned line_number, const char* format, ...)
-  {
-    static char msg[1024];
-    va_list args;
-    va_start (args, format);
-    vsprintf (msg, format, args);
-    va_end (args);
-    throw OpenNIException (function_name, file_name, line_number, msg);
-  }
-} // namespace openni_camera
+  static char msg[1024];
+  va_list args;
+  va_start(args, format);
+  vsprintf(msg, format, args);
+  va_end(args);
+  throw OpenNIException(function_name, file_name, line_number, msg);
+}
+} // namespace openni_wrapper
 #endif

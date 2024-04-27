@@ -57,8 +57,9 @@ pcl::extractLabeledEuclideanClusters(
               cloud.size());
     return;
   }
-  // If tree gives sorted results, we can skip the first one because it is the query point itself
-  const std::size_t nn_start_idx = tree->getSortedResults () ? 1 : 0;
+  // If tree gives sorted results, we can skip the first one because it is the query
+  // point itself
+  const std::size_t nn_start_idx = tree->getSortedResults() ? 1 : 0;
   // Create a bool vector of processed point indices, and initialize it to false
   std::vector<bool> processed(cloud.size(), false);
 
@@ -90,8 +91,7 @@ pcl::extractLabeledEuclideanClusters(
         continue;
       }
 
-      for (std::size_t j = nn_start_idx; j < nn_indices.size(); ++j)
-      {
+      for (std::size_t j = nn_start_idx; j < nn_indices.size(); ++j) {
         if (processed[nn_indices[j]]) // Has this point been processed before ?
           continue;
         if (cloud[i].label == cloud[nn_indices[j]].label) {

@@ -70,7 +70,7 @@
 #endif
 
 void
-printHelp(int, char** argv)
+printHelp (int, char** argv)
 {
   using pcl::console::print_error;
   using pcl::console::print_info;
@@ -116,7 +116,7 @@ public:
   {}
 
   void
-  detect_keypoints(const CloudConstPtr& cloud)
+  detect_keypoints (const CloudConstPtr& cloud)
   {
     pcl::HarrisKeypoint2D<PointType, pcl::PointXYZI> harris;
     harris.setInputCloud(cloud);
@@ -133,7 +133,7 @@ public:
   }
 
   void
-  cloud_callback(const CloudConstPtr& cloud)
+  cloud_callback (const CloudConstPtr& cloud)
   {
     FPS_CALC("cloud callback");
     std::lock_guard<std::mutex> lock(cloud_mutex_);
@@ -149,7 +149,7 @@ public:
   }
 
   void
-  image_callback(const openni_wrapper::Image::Ptr& image)
+  image_callback (const openni_wrapper::Image::Ptr& image)
   {
     FPS_CALC("image callback");
     std::lock_guard<std::mutex> lock(image_mutex_);
@@ -166,7 +166,7 @@ public:
   }
 
   void
-  keyboard_callback(const pcl::visualization::KeyboardEvent& event, void*)
+  keyboard_callback (const pcl::visualization::KeyboardEvent& event, void*)
   {
     static pcl::PCDWriter writer;
     static std::ostringstream frame;
@@ -182,7 +182,7 @@ public:
   }
 
   void
-  mouse_callback(const pcl::visualization::MouseEvent& mouse_event, void*)
+  mouse_callback (const pcl::visualization::MouseEvent& mouse_event, void*)
   {
     if (mouse_event.getType() == pcl::visualization::MouseEvent::MouseButtonPress &&
         mouse_event.getButton() == pcl::visualization::MouseEvent::LeftButton) {
@@ -195,17 +195,17 @@ public:
    * \brief starts the main loop
    */
   void
-  run()
+  run ()
   {
     std::function<void(const CloudConstPtr&)> cloud_cb =
-        [this](const CloudConstPtr& cloud) { cloud_callback(cloud); };
+        [this] (const CloudConstPtr& cloud) { cloud_callback(cloud); };
     boost::signals2::connection cloud_connection = grabber_.registerCallback(cloud_cb);
 
     boost::signals2::connection image_connection;
     if (grabber_.providesCallback<void(const openni_wrapper::Image::Ptr&)>()) {
       image_viewer_.reset(new pcl::visualization::ImageViewer("Pyramidal KLT Tracker"));
       std::function<void(const openni_wrapper::Image::Ptr&)> image_cb =
-          [this](const openni_wrapper::Image::Ptr& img) { image_callback(img); };
+          [this] (const openni_wrapper::Image::Ptr& img) { image_callback(img); };
       image_connection = grabber_.registerCallback(image_cb);
     }
 
@@ -302,7 +302,7 @@ pcl::visualization::ImageViewer::Ptr img;
 
 /* ---[ */
 int
-main(int argc, char** argv)
+main (int argc, char** argv)
 {
   std::string device_id;
   pcl::OpenNIGrabber::Mode depth_mode = pcl::OpenNIGrabber::OpenNI_Default_Mode;

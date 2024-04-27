@@ -37,117 +37,112 @@
 
 #pragma once
 
-#include <vector>
-
 #include <pcl/recognition/region_xy.h>
 
-namespace pcl
-{
+#include <vector>
 
-  /** \brief Feature that defines a position and quantized value in a specific modality.
-    * \author Stefan Holzer
-    */
-  struct QuantizedMultiModFeature
+namespace pcl {
+
+/** \brief Feature that defines a position and quantized value in a specific modality.
+ * \author Stefan Holzer
+ */
+struct QuantizedMultiModFeature {
+  /** \brief Constructor. */
+  QuantizedMultiModFeature() = default;
+
+  /** \brief x-position. */
+  int x{0};
+  /** \brief y-position. */
+  int y{0};
+  /** \brief the index of the corresponding modality. */
+  std::size_t modality_index{0u};
+  /** \brief the quantized value attached to the feature. */
+  unsigned char quantized_value{0u};
+
+  /** \brief Compares whether two features are the same.
+   * \param[in] base the feature to compare to.
+   */
+  bool
+  compareForEquality (const QuantizedMultiModFeature& base) const
   {
-    /** \brief Constructor. */
-    QuantizedMultiModFeature () = default;
+    if (base.x != x)
+      return false;
+    if (base.y != y)
+      return false;
+    if (base.modality_index != modality_index)
+      return false;
+    if (base.quantized_value != quantized_value)
+      return false;
 
-    /** \brief x-position. */
-    int x{0};
-    /** \brief y-position. */
-    int y{0};
-    /** \brief the index of the corresponding modality. */
-    std::size_t modality_index{0u};
-    /** \brief the quantized value attached to the feature. */
-    unsigned char quantized_value{0u};
+    return true;
+  }
 
-    /** \brief Compares whether two features are the same.
-      * \param[in] base the feature to compare to.
-      */
-    bool
-    compareForEquality (const QuantizedMultiModFeature & base) const
-    {
-      if (base.x != x)
-        return false;
-      if (base.y != y)
-        return false;
-      if (base.modality_index != modality_index)
-        return false;
-      if (base.quantized_value != quantized_value)
-        return false;
-
-      return true;
-    }
-
-    /** \brief Serializes the object to the specified stream.
-      * \param[out] stream the stream the object will be serialized to. */
-    void
-    serialize (std::ostream & stream) const
-    {
-      write (stream, x);
-      write (stream, y);
-      write (stream, modality_index);
-      write (stream, quantized_value);
-    }
-
-    /** \brief Deserializes the object from the specified stream.
-      * \param[in] stream the stream the object will be deserialized from. */
-    void
-    deserialize (std::istream & stream)
-    {
-      read (stream, x);
-      read (stream, y);
-      read (stream, modality_index);
-      read (stream, quantized_value);
-    }
-  };
-
-  /** \brief A multi-modality template constructed from a set of quantized multi-modality features.
-    * \author Stefan Holzer
-    */
-  struct SparseQuantizedMultiModTemplate
+  /** \brief Serializes the object to the specified stream.
+   * \param[out] stream the stream the object will be serialized to. */
+  void
+  serialize (std::ostream& stream) const
   {
-    /** \brief Constructor. */
-    SparseQuantizedMultiModTemplate () = default;
+    write(stream, x);
+    write(stream, y);
+    write(stream, modality_index);
+    write(stream, quantized_value);
+  }
 
-    /** \brief The storage for the multi-modality features. */
-    std::vector<QuantizedMultiModFeature> features;
+  /** \brief Deserializes the object from the specified stream.
+   * \param[in] stream the stream the object will be deserialized from. */
+  void
+  deserialize (std::istream& stream)
+  {
+    read(stream, x);
+    read(stream, y);
+    read(stream, modality_index);
+    read(stream, quantized_value);
+  }
+};
 
-    /** \brief The region assigned to the template. */
-    RegionXY region;
+/** \brief A multi-modality template constructed from a set of quantized multi-modality
+ * features. \author Stefan Holzer
+ */
+struct SparseQuantizedMultiModTemplate {
+  /** \brief Constructor. */
+  SparseQuantizedMultiModTemplate() = default;
 
-    /** \brief Serializes the object to the specified stream.
-      * \param[out] stream the stream the object will be serialized to. */
-    void
-    serialize (std::ostream & stream) const
-    {
-      const int num_of_features = static_cast<int> (features.size ());
-      write (stream, num_of_features);
-      for (int feature_index = 0; feature_index < num_of_features; ++feature_index)
-      {
-        features[feature_index].serialize (stream);
-      }
+  /** \brief The storage for the multi-modality features. */
+  std::vector<QuantizedMultiModFeature> features;
 
-      region.serialize (stream);
+  /** \brief The region assigned to the template. */
+  RegionXY region;
+
+  /** \brief Serializes the object to the specified stream.
+   * \param[out] stream the stream the object will be serialized to. */
+  void
+  serialize (std::ostream& stream) const
+  {
+    const int num_of_features = static_cast<int>(features.size());
+    write(stream, num_of_features);
+    for (int feature_index = 0; feature_index < num_of_features; ++feature_index) {
+      features[feature_index].serialize(stream);
     }
 
-    /** \brief Deserializes the object from the specified stream.
-      * \param[in] stream the stream the object will be deserialized from. */
-    void
-    deserialize (std::istream & stream)
-    {
-      features.clear ();
+    region.serialize(stream);
+  }
 
-      int num_of_features;
-      read (stream, num_of_features);
-      features.resize (num_of_features);
-      for (int feature_index = 0; feature_index < num_of_features; ++feature_index)
-      {
-        features[feature_index].deserialize (stream);
-      }
+  /** \brief Deserializes the object from the specified stream.
+   * \param[in] stream the stream the object will be deserialized from. */
+  void
+  deserialize (std::istream& stream)
+  {
+    features.clear();
 
-      region.deserialize (stream);
+    int num_of_features;
+    read(stream, num_of_features);
+    features.resize(num_of_features);
+    for (int feature_index = 0; feature_index < num_of_features; ++feature_index) {
+      features[feature_index].deserialize(stream);
     }
-  };
 
-}
+    region.deserialize(stream);
+  }
+};
+
+} // namespace pcl

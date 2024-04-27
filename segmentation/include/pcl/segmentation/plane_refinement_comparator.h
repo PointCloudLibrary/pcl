@@ -39,175 +39,171 @@
 
 #pragma once
 
-#include <pcl/memory.h>  // for pcl::make_shared
 #include <pcl/segmentation/plane_coefficient_comparator.h>
+#include <pcl/memory.h> // for pcl::make_shared
 
-namespace pcl
-{
-  /** \brief PlaneRefinementComparator is a Comparator that operates on plane coefficients,
-    * for use in planar segmentation.
-    * In conjunction with OrganizedConnectedComponentSegmentation, this allows planes to be segmented from organized data.
-    *
-    * \author Alex Trevor, Suat Gedikli
-    */
-  template<typename PointT, typename PointNT, typename PointLT>
-  class PlaneRefinementComparator: public PlaneCoefficientComparator<PointT, PointNT>
+namespace pcl {
+/** \brief PlaneRefinementComparator is a Comparator that operates on plane
+ * coefficients, for use in planar segmentation. In conjunction with
+ * OrganizedConnectedComponentSegmentation, this allows planes to be segmented from
+ * organized data.
+ *
+ * \author Alex Trevor, Suat Gedikli
+ */
+template <typename PointT, typename PointNT, typename PointLT>
+class PlaneRefinementComparator : public PlaneCoefficientComparator<PointT, PointNT> {
+public:
+  using PointCloud = typename Comparator<PointT>::PointCloud;
+  using PointCloudConstPtr = typename Comparator<PointT>::PointCloudConstPtr;
+
+  using PointCloudN = pcl::PointCloud<PointNT>;
+  using PointCloudNPtr = typename PointCloudN::Ptr;
+  using PointCloudNConstPtr = typename PointCloudN::ConstPtr;
+
+  using PointCloudL = pcl::PointCloud<PointLT>;
+  using PointCloudLPtr = typename PointCloudL::Ptr;
+  using PointCloudLConstPtr = typename PointCloudL::ConstPtr;
+
+  using Ptr = shared_ptr<PlaneRefinementComparator<PointT, PointNT, PointLT>>;
+  using ConstPtr =
+      shared_ptr<const PlaneRefinementComparator<PointT, PointNT, PointLT>>;
+
+  using pcl::PlaneCoefficientComparator<PointT, PointNT>::input_;
+  using pcl::PlaneCoefficientComparator<PointT, PointNT>::normals_;
+  using pcl::PlaneCoefficientComparator<PointT, PointNT>::distance_threshold_;
+  using pcl::PlaneCoefficientComparator<PointT, PointNT>::plane_coeff_d_;
+
+  /** \brief Empty constructor for PlaneCoefficientComparator. */
+  PlaneRefinementComparator() : labels_(), depth_dependent_(false) {}
+
+  /** \brief Empty constructor for PlaneCoefficientComparator.
+   * \param[in] models
+   * \param[in] refine_labels
+   */
+  PlaneRefinementComparator(shared_ptr<std::vector<pcl::ModelCoefficients>>& models,
+                            shared_ptr<std::vector<bool>>& refine_labels)
+  : models_(models), labels_(), refine_labels_(refine_labels), depth_dependent_(false)
+  {}
+
+  /** \brief Destructor for PlaneCoefficientComparator. */
+  ~PlaneRefinementComparator() override = default;
+
+  /** \brief Set the vector of model coefficients to which we will compare.
+   * \param[in] models a vector of model coefficients produced by the initial
+   * segmentation step.
+   */
+  void
+  setModelCoefficients (shared_ptr<std::vector<pcl::ModelCoefficients>>& models)
   {
-    public:
-      using PointCloud = typename Comparator<PointT>::PointCloud;
-      using PointCloudConstPtr = typename Comparator<PointT>::PointCloudConstPtr;
+    models_ = models;
+  }
 
-      using PointCloudN = pcl::PointCloud<PointNT>;
-      using PointCloudNPtr = typename PointCloudN::Ptr;
-      using PointCloudNConstPtr = typename PointCloudN::ConstPtr;
+  /** \brief Set the vector of model coefficients to which we will compare.
+   * \param[in] models a vector of model coefficients produced by the initial
+   * segmentation step.
+   */
+  void
+  setModelCoefficients (std::vector<pcl::ModelCoefficients>& models)
+  {
+    models_ = pcl::make_shared<std::vector<pcl::ModelCoefficients>>(models);
+  }
 
-      using PointCloudL = pcl::PointCloud<PointLT>;
-      using PointCloudLPtr = typename PointCloudL::Ptr;
-      using PointCloudLConstPtr = typename PointCloudL::ConstPtr;
+  /** \brief Set which labels should be refined.  This is a vector of bools 0-max_label,
+   * true if the label should be refined. \param[in] refine_labels A vector of bools
+   * 0-max_label, true if the label should be refined.
+   */
+  void
+  setRefineLabels (shared_ptr<std::vector<bool>>& refine_labels)
+  {
+    refine_labels_ = refine_labels;
+  }
 
-      using Ptr = shared_ptr<PlaneRefinementComparator<PointT, PointNT, PointLT> >;
-      using ConstPtr = shared_ptr<const PlaneRefinementComparator<PointT, PointNT, PointLT> >;
+  /** \brief Set which labels should be refined.  This is a vector of bools 0-max_label,
+   * true if the label should be refined. \param[in] refine_labels A vector of bools
+   * 0-max_label, true if the label should be refined.
+   */
+  void
+  setRefineLabels (std::vector<bool>& refine_labels)
+  {
+    refine_labels_ = pcl::make_shared<std::vector<bool>>(refine_labels);
+  }
 
-      using pcl::PlaneCoefficientComparator<PointT, PointNT>::input_;
-      using pcl::PlaneCoefficientComparator<PointT, PointNT>::normals_;
-      using pcl::PlaneCoefficientComparator<PointT, PointNT>::distance_threshold_;
-      using pcl::PlaneCoefficientComparator<PointT, PointNT>::plane_coeff_d_;
+  /** \brief A mapping from label to index in the vector of models, allowing the model
+   * coefficients of a label to be accessed. \param[in] label_to_model A vector of size
+   * max_label, with the index of each corresponding model in models
+   */
+  inline void
+  setLabelToModel (shared_ptr<std::vector<int>>& label_to_model)
+  {
+    label_to_model_ = label_to_model;
+  }
 
+  /** \brief A mapping from label to index in the vector of models, allowing the model
+   * coefficients of a label to be accessed. \param[in] label_to_model A vector of size
+   * max_label, with the index of each corresponding model in models
+   */
+  inline void
+  setLabelToModel (std::vector<int>& label_to_model)
+  {
+    label_to_model_ = pcl::make_shared<std::vector<int>>(label_to_model);
+  }
 
-      /** \brief Empty constructor for PlaneCoefficientComparator. */
-     PlaneRefinementComparator ()
-        : labels_ ()
-        , depth_dependent_ (false)
-      {
-      }
+  /** \brief Get the vector of model coefficients to which we will compare. */
+  inline shared_ptr<std::vector<pcl::ModelCoefficients>>
+  getModelCoefficients () const
+  {
+    return (models_);
+  }
 
-      /** \brief Empty constructor for PlaneCoefficientComparator.
-        * \param[in] models
-        * \param[in] refine_labels
-        */
-      PlaneRefinementComparator (shared_ptr<std::vector<pcl::ModelCoefficients> >& models,
-                                 shared_ptr<std::vector<bool> >& refine_labels)
-        : models_ (models)
-        , labels_ ()
-        , refine_labels_ (refine_labels)
-        , depth_dependent_ (false)
-      {
-      }
+  /** \brief ...
+   * \param[in] labels
+   */
+  inline void
+  setLabels (PointCloudLPtr& labels)
+  {
+    labels_ = labels;
+  }
 
-      /** \brief Destructor for PlaneCoefficientComparator. */
-      ~PlaneRefinementComparator () override = default;
+  /** \brief Compare two neighboring points
+   * \param[in] idx1 The index of the first point.
+   * \param[in] idx2 The index of the second point.
+   */
+  bool
+  compare (int idx1, int idx2) const override
+  {
+    int current_label = (*labels_)[idx1].label;
+    int next_label = (*labels_)[idx2].label;
 
-      /** \brief Set the vector of model coefficients to which we will compare.
-        * \param[in] models a vector of model coefficients produced by the initial segmentation step.
-        */
-      void
-      setModelCoefficients (shared_ptr<std::vector<pcl::ModelCoefficients> >& models)
-      {
-        models_ = models;
-      }
+    if (!((*refine_labels_)[current_label] && !(*refine_labels_)[next_label]))
+      return (false);
 
-      /** \brief Set the vector of model coefficients to which we will compare.
-        * \param[in] models a vector of model coefficients produced by the initial segmentation step.
-        */
-      void
-      setModelCoefficients (std::vector<pcl::ModelCoefficients>& models)
-      {
-        models_ = pcl::make_shared<std::vector<pcl::ModelCoefficients> >(models);
-      }
+    const pcl::ModelCoefficients& model_coeff =
+        (*models_)[(*label_to_model_)[current_label]];
 
-      /** \brief Set which labels should be refined.  This is a vector of bools 0-max_label, true if the label should be refined.
-        * \param[in] refine_labels A vector of bools 0-max_label, true if the label should be refined.
-        */
-      void
-      setRefineLabels (shared_ptr<std::vector<bool> >& refine_labels)
-      {
-        refine_labels_ = refine_labels;
-      }
+    PointT pt = (*input_)[idx2];
+    double ptp_dist =
+        std::fabs(model_coeff.values[0] * pt.x + model_coeff.values[1] * pt.y +
+                  model_coeff.values[2] * pt.z + model_coeff.values[3]);
 
-      /** \brief Set which labels should be refined.  This is a vector of bools 0-max_label, true if the label should be refined.
-        * \param[in] refine_labels A vector of bools 0-max_label, true if the label should be refined.
-        */
-      void
-      setRefineLabels (std::vector<bool>& refine_labels)
-      {
-        refine_labels_ = pcl::make_shared<std::vector<bool> >(refine_labels);
-      }
+    // depth dependent
+    float threshold = distance_threshold_;
+    if (depth_dependent_) {
+      // Eigen::Vector4f origin = input_->sensor_origin_;
+      Eigen::Vector3f vec = (*input_)[idx1].getVector3fMap(); // - origin.head<3> ();
 
-      /** \brief A mapping from label to index in the vector of models, allowing the model coefficients of a label to be accessed.
-        * \param[in] label_to_model A vector of size max_label, with the index of each corresponding model in models
-        */
-      inline void
-      setLabelToModel (shared_ptr<std::vector<int> >& label_to_model)
-      {
-        label_to_model_ = label_to_model;
-      }
+      float z = vec.dot(z_axis_);
+      threshold *= z * z;
+    }
 
-      /** \brief A mapping from label to index in the vector of models, allowing the model coefficients of a label to be accessed.
-        * \param[in] label_to_model A vector of size max_label, with the index of each corresponding model in models
-        */
-      inline void
-      setLabelToModel (std::vector<int>& label_to_model)
-      {
-        label_to_model_ = pcl::make_shared<std::vector<int> >(label_to_model);
-      }
+    return (ptp_dist < threshold);
+  }
 
-      /** \brief Get the vector of model coefficients to which we will compare. */
-      inline shared_ptr<std::vector<pcl::ModelCoefficients> >
-      getModelCoefficients () const
-      {
-        return (models_);
-      }
-
-      /** \brief ...
-        * \param[in] labels
-        */
-      inline void
-      setLabels (PointCloudLPtr& labels)
-      {
-        labels_ = labels;
-      }
-
-      /** \brief Compare two neighboring points
-        * \param[in] idx1 The index of the first point.
-        * \param[in] idx2 The index of the second point.
-        */
-      bool
-      compare (int idx1, int idx2) const override
-      {
-        int current_label = (*labels_)[idx1].label;
-        int next_label = (*labels_)[idx2].label;
-
-        if (!((*refine_labels_)[current_label] && !(*refine_labels_)[next_label]))
-          return (false);
-
-        const pcl::ModelCoefficients& model_coeff = (*models_)[(*label_to_model_)[current_label]];
-
-        PointT pt = (*input_)[idx2];
-        double ptp_dist = std::fabs (model_coeff.values[0] * pt.x +
-                                model_coeff.values[1] * pt.y +
-                                model_coeff.values[2] * pt.z +
-                                model_coeff.values[3]);
-
-        // depth dependent
-        float threshold = distance_threshold_;
-        if (depth_dependent_)
-        {
-          //Eigen::Vector4f origin = input_->sensor_origin_;
-          Eigen::Vector3f vec = (*input_)[idx1].getVector3fMap ();// - origin.head<3> ();
-
-          float z = vec.dot (z_axis_);
-          threshold *= z * z;
-        }
-
-        return (ptp_dist < threshold);
-      }
-
-    protected:
-      shared_ptr<std::vector<pcl::ModelCoefficients> > models_;
-      PointCloudLPtr labels_;
-      shared_ptr<std::vector<bool> > refine_labels_;
-      shared_ptr<std::vector<int> > label_to_model_;
-      bool depth_dependent_;
-      using PlaneCoefficientComparator<PointT, PointNT>::z_axis_;
-  };
-}
+protected:
+  shared_ptr<std::vector<pcl::ModelCoefficients>> models_;
+  PointCloudLPtr labels_;
+  shared_ptr<std::vector<bool>> refine_labels_;
+  shared_ptr<std::vector<int>> label_to_model_;
+  bool depth_dependent_;
+  using PlaneCoefficientComparator<PointT, PointNT>::z_axis_;
+};
+} // namespace pcl

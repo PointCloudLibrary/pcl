@@ -269,4 +269,4 @@ SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT>::
 
 } // namespace pcl
 
-#endif //#ifndef IA_RANSAC_HPP_
+#endif // #ifndef IA_RANSAC_HPP_

@@ -37,29 +37,29 @@
 /// @details the implementation of class CloudTransformTool
 /// @author Yue Li and Matthew Hielsberg
 
-#include <pcl/apps/point_cloud_editor/selectionTransformTool.h>
 #include <pcl/apps/point_cloud_editor/cloud.h>
-#include <pcl/apps/point_cloud_editor/selection.h>
-#include <pcl/apps/point_cloud_editor/transformCommand.h>
 #include <pcl/apps/point_cloud_editor/commandQueue.h>
 #include <pcl/apps/point_cloud_editor/common.h>
+#include <pcl/apps/point_cloud_editor/selection.h>
+#include <pcl/apps/point_cloud_editor/selectionTransformTool.h>
+#include <pcl/apps/point_cloud_editor/transformCommand.h>
 
 const float SelectionTransformTool::DEFAULT_TRANSLATE_FACTOR_ = 0.001;
 
-SelectionTransformTool::SelectionTransformTool (ConstSelectionPtr selection_ptr,
-                                                CloudPtr cloud_ptr,
-                                                CommandQueuePtr command_queue_ptr)
-  : selection_ptr_(std::move(selection_ptr)),
-    cloud_ptr_(std::move(cloud_ptr)),
-    command_queue_ptr_(std::move(command_queue_ptr)),
-    translate_factor_(DEFAULT_TRANSLATE_FACTOR_)
+SelectionTransformTool::SelectionTransformTool(ConstSelectionPtr selection_ptr,
+                                               CloudPtr cloud_ptr,
+                                               CommandQueuePtr command_queue_ptr)
+: selection_ptr_(std::move(selection_ptr))
+, cloud_ptr_(std::move(cloud_ptr))
+, command_queue_ptr_(std::move(command_queue_ptr))
+, translate_factor_(DEFAULT_TRANSLATE_FACTOR_)
 {
   std::fill_n(center_xyz_, XYZ_SIZE, 0);
   setIdentity(transform_matrix_);
 }
 
 void
-SelectionTransformTool::start (int x, int y, BitMask modifiers, BitMask buttons)
+SelectionTransformTool::start(int x, int y, BitMask modifiers, BitMask buttons)
 {
   if ((!cloud_ptr_) || (!selection_ptr_) || selection_ptr_->empty())
     return;
@@ -74,7 +74,7 @@ SelectionTransformTool::start (int x, int y, BitMask modifiers, BitMask buttons)
 }
 
 void
-SelectionTransformTool::update (int x, int y, BitMask, BitMask buttons)
+SelectionTransformTool::update(int x, int y, BitMask, BitMask buttons)
 {
   if (!cloud_ptr_)
     return;
@@ -86,24 +86,21 @@ SelectionTransformTool::update (int x, int y, BitMask, BitMask buttons)
     return;
   trackball_.update(x, y);
 
-  if (modifiers_ & CTRL)
-  {
+  if (modifiers_ & CTRL) {
     // selection motion is not applied directly (waits for end)
     // as such we can not update x and y immediately
     float scale = 1.0f / cloud_ptr_->getScalingFactor();
-    cloud_ptr_->setSelectionTranslation ((float) dx * translate_factor_ * scale,
-                                         (float) -dy * translate_factor_ * scale,
-                                         0.0f);
+    cloud_ptr_->setSelectionTranslation((float)dx * translate_factor_ * scale,
+                                        (float)-dy * translate_factor_ * scale,
+                                        0.0f);
     return;
   }
-  if (modifiers_ & ALT)
-  {
+  if (modifiers_ & ALT) {
     // selection motion is not applied directly (waits for end)
     // as such we can not update x and y immediately
     float scale = 1.0f / cloud_ptr_->getScalingFactor();
-    cloud_ptr_->setSelectionTranslation (0.0f,
-                                         0.0f,
-                                         (float) dy * translate_factor_ * scale);
+    cloud_ptr_->setSelectionTranslation(
+        0.0f, 0.0f, (float)dy * translate_factor_ * scale);
     return;
   }
   float transform[MATRIX_SIZE];
@@ -115,14 +112,14 @@ SelectionTransformTool::update (int x, int y, BitMask, BitMask buttons)
   transform_matrix_[12] += center_xyz_[0];
   transform_matrix_[13] += center_xyz_[1];
   transform_matrix_[14] += center_xyz_[2];
-  cloud_ptr_ -> setSelectionRotation(transform_matrix_);
+  cloud_ptr_->setSelectionRotation(transform_matrix_);
 
   x_ = x;
   y_ = y;
 }
 
 void
-SelectionTransformTool::end (int x, int y, BitMask modifiers, BitMask buttons)
+SelectionTransformTool::end(int x, int y, BitMask modifiers, BitMask buttons)
 {
   if (!(buttons & LEFT))
     return;
@@ -131,24 +128,29 @@ SelectionTransformTool::end (int x, int y, BitMask modifiers, BitMask buttons)
   int dx = (x - x_);
   int dy = (y - y_);
   update(x, y, modifiers, buttons);
-  if (modifiers_ & CTRL)
-  {
-    std::shared_ptr<TransformCommand> c(new TransformCommand(selection_ptr_,
-      cloud_ptr_, transform_matrix_, (float) dx * translate_factor_ * scale,
-      (float) -dy * translate_factor_ * scale, 0.0f));
+  if (modifiers_ & CTRL) {
+    std::shared_ptr<TransformCommand> c(
+        new TransformCommand(selection_ptr_,
+                             cloud_ptr_,
+                             transform_matrix_,
+                             (float)dx * translate_factor_ * scale,
+                             (float)-dy * translate_factor_ * scale,
+                             0.0f));
     command_queue_ptr_->execute(c);
   }
-  else if (modifiers_ & ALT)
-  {
-    std::shared_ptr<TransformCommand> c(new TransformCommand(selection_ptr_,
-      cloud_ptr_, transform_matrix_, 0.0f, 0.0f,
-      (float) dy * translate_factor_ * scale));
+  else if (modifiers_ & ALT) {
+    std::shared_ptr<TransformCommand> c(
+        new TransformCommand(selection_ptr_,
+                             cloud_ptr_,
+                             transform_matrix_,
+                             0.0f,
+                             0.0f,
+                             (float)dy * translate_factor_ * scale));
     command_queue_ptr_->execute(c);
   }
-  else
-  {
-    std::shared_ptr<TransformCommand> c(new TransformCommand(selection_ptr_,
-      cloud_ptr_, transform_matrix_, 0.0f, 0.0f, 0.0f));
+  else {
+    std::shared_ptr<TransformCommand> c(new TransformCommand(
+        selection_ptr_, cloud_ptr_, transform_matrix_, 0.0f, 0.0f, 0.0f));
     command_queue_ptr_->execute(c);
   }
   setIdentity(transform_matrix_);
@@ -187,45 +189,27 @@ SelectionTransformTool::getRotateMatrix (int dx, int dy,
 }*/
 
 void
-SelectionTransformTool::findSelectionCenter ()
+SelectionTransformTool::findSelectionCenter()
 {
   if (!selection_ptr_ || selection_ptr_->empty())
     return;
   float min_xyz[XYZ_SIZE] = {0.0f};
   float max_xyz[XYZ_SIZE] = {0.0f};
   Selection::const_iterator it = selection_ptr_->begin();
-  Point3D point_3d = cloud_ptr_->getObjectSpacePoint (*it);
-  float *pt = &(point_3d.data[X]);
+  Point3D point_3d = cloud_ptr_->getObjectSpacePoint(*it);
+  float* pt = &(point_3d.data[X]);
   std::copy(pt, pt + XYZ_SIZE, max_xyz);
   std::copy(max_xyz, max_xyz + XYZ_SIZE, min_xyz);
 
-  for (++it; it != selection_ptr_->end(); ++it)
-  {
-    Point3D point_3d = cloud_ptr_->getObjectSpacePoint (*it);
+  for (++it; it != selection_ptr_->end(); ++it) {
+    Point3D point_3d = cloud_ptr_->getObjectSpacePoint(*it);
     pt = &(point_3d.data[X]);
-    for (unsigned int j = 0; j < XYZ_SIZE; ++j)
-    {
+    for (unsigned int j = 0; j < XYZ_SIZE; ++j) {
       min_xyz[j] = std::min(min_xyz[j], pt[j]);
       max_xyz[j] = std::max(max_xyz[j], pt[j]);
     }
   }
-  for (unsigned int j = 0; j < XYZ_SIZE; ++j)
-  {
+  for (unsigned int j = 0; j < XYZ_SIZE; ++j) {
     center_xyz_[j] = 0.5f * (max_xyz[j] + min_xyz[j]);
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

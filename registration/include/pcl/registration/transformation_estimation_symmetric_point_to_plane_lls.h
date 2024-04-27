@@ -80,9 +80,9 @@ public:
    * \param[out] transformation_matrix the resultant transformation matrix
    */
   inline void
-  estimateRigidTransformation(const pcl::PointCloud<PointSource>& cloud_src,
-                              const pcl::PointCloud<PointTarget>& cloud_tgt,
-                              Matrix4& transformation_matrix) const override;
+  estimateRigidTransformation (const pcl::PointCloud<PointSource>& cloud_src,
+                               const pcl::PointCloud<PointTarget>& cloud_tgt,
+                               Matrix4& transformation_matrix) const override;
 
   /** \brief Estimate a rigid rotation transformation between a source and a target
    * point cloud using SVD. \param[in] cloud_src the source point cloud dataset
@@ -92,10 +92,10 @@ public:
    * \param[out] transformation_matrix the resultant transformation matrix
    */
   inline void
-  estimateRigidTransformation(const pcl::PointCloud<PointSource>& cloud_src,
-                              const pcl::Indices& indices_src,
-                              const pcl::PointCloud<PointTarget>& cloud_tgt,
-                              Matrix4& transformation_matrix) const override;
+  estimateRigidTransformation (const pcl::PointCloud<PointSource>& cloud_src,
+                               const pcl::Indices& indices_src,
+                               const pcl::PointCloud<PointTarget>& cloud_tgt,
+                               Matrix4& transformation_matrix) const override;
 
   /** \brief Estimate a rigid rotation transformation between a source and a target
    * point cloud using SVD. \param[in] cloud_src the source point cloud dataset
@@ -107,11 +107,11 @@ public:
    * \param[out] transformation_matrix the resultant transformation matrix
    */
   inline void
-  estimateRigidTransformation(const pcl::PointCloud<PointSource>& cloud_src,
-                              const pcl::Indices& indices_src,
-                              const pcl::PointCloud<PointTarget>& cloud_tgt,
-                              const pcl::Indices& indices_tgt,
-                              Matrix4& transformation_matrix) const override;
+  estimateRigidTransformation (const pcl::PointCloud<PointSource>& cloud_src,
+                               const pcl::Indices& indices_src,
+                               const pcl::PointCloud<PointTarget>& cloud_tgt,
+                               const pcl::Indices& indices_tgt,
+                               Matrix4& transformation_matrix) const override;
 
   /** \brief Estimate a rigid rotation transformation between a source and a target
    * point cloud using SVD. \param[in] cloud_src the source point cloud dataset
@@ -120,10 +120,10 @@ public:
    * point cloud \param[out] transformation_matrix the resultant transformation matrix
    */
   inline void
-  estimateRigidTransformation(const pcl::PointCloud<PointSource>& cloud_src,
-                              const pcl::PointCloud<PointTarget>& cloud_tgt,
-                              const pcl::Correspondences& correspondences,
-                              Matrix4& transformation_matrix) const override;
+  estimateRigidTransformation (const pcl::PointCloud<PointSource>& cloud_src,
+                               const pcl::PointCloud<PointTarget>& cloud_tgt,
+                               const pcl::Correspondences& correspondences,
+                               Matrix4& transformation_matrix) const override;
 
   /** \brief Set whether or not to negate source or target normals on a per-point basis
    * such that they point in the same direction. \param[in]
@@ -131,12 +131,12 @@ public:
    * per-point basis such that they point in the same direction.
    */
   inline void
-  setEnforceSameDirectionNormals(bool enforce_same_direction_normals);
+  setEnforceSameDirectionNormals (bool enforce_same_direction_normals);
 
   /** \brief Obtain whether source or target normals are negated on a per-point basis
    * such that they point in the same direction or not */
   inline bool
-  getEnforceSameDirectionNormals();
+  getEnforceSameDirectionNormals ();
 
 protected:
   /** \brief Estimate a rigid rotation transformation between a source and a target
@@ -145,9 +145,9 @@ protected:
    * \param[out] transformation_matrix the resultant transformation matrix
    */
   void
-  estimateRigidTransformation(ConstCloudIterator<PointSource>& source_it,
-                              ConstCloudIterator<PointTarget>& target_it,
-                              Matrix4& transformation_matrix) const;
+  estimateRigidTransformation (ConstCloudIterator<PointSource>& source_it,
+                               ConstCloudIterator<PointTarget>& target_it,
+                               Matrix4& transformation_matrix) const;
 
   /** \brief Construct a 4 by 4 transformation matrix from the provided rotation and
    * translation. \param[in] parameters (alpha, beta, gamma, tx, ty, tz) specifying
@@ -155,8 +155,8 @@ protected:
    * respectively \param[out] transformation_matrix the resultant transformation matrix
    */
   inline void
-  constructTransformationMatrix(const Vector6& parameters,
-                                Matrix4& transformation_matrix) const;
+  constructTransformationMatrix (const Vector6& parameters,
+                                 Matrix4& transformation_matrix) const;
 
   /** \brief Whether or not to negate source and/or target normals such that they point
    * in the same direction */

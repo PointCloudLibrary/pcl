@@ -1,14 +1,14 @@
 #pragma once
 
+#include <pcl/common/io.h>
+#include <pcl/features/fpfh.h>
+#include <pcl/features/normal_3d.h>
+#include <pcl/features/vfh.h>
+#include <pcl/keypoints/sift_keypoint.h>
+
 #include "typedefs.h"
 
-#include <pcl/common/io.h>
-#include <pcl/features/normal_3d.h>
-#include <pcl/keypoints/sift_keypoint.h>
-#include <pcl/features/fpfh.h>
-#include <pcl/features/vfh.h>
-
-/* Use NormalEstimation to estimate a cloud's surface normals 
+/* Use NormalEstimation to estimate a cloud's surface normals
  * Inputs:
  *   input
  *     The input point cloud
@@ -17,7 +17,7 @@
  * Return: A pointer to a SurfaceNormals point cloud
  */
 SurfaceNormalsPtr
-estimateSurfaceNormals (const PointCloudPtr & input, float radius)
+estimateSurfaceNormals (const PointCloudPtr& input, float radius)
 {
   SurfaceNormalsPtr normals;
   return (normals);
@@ -40,8 +40,12 @@ estimateSurfaceNormals (const PointCloudPtr & input, float radius)
  * Return: A pointer to a point cloud of keypoints
  */
 PointCloudPtr
-detectKeypoints (const PointCloudPtr & points, const SurfaceNormalsPtr & normals,
-                 float min_scale, int nr_octaves, int nr_scales_per_octave, float min_contrast)  
+detectKeypoints (const PointCloudPtr& points,
+                 const SurfaceNormalsPtr& normals,
+                 float min_scale,
+                 int nr_octaves,
+                 int nr_scales_per_octave,
+                 float min_contrast)
 {
   PointCloudPtr keypoints;
   return (keypoints);
@@ -54,14 +58,16 @@ detectKeypoints (const PointCloudPtr & points, const SurfaceNormalsPtr & normals
  *   normals
  *     The input surface normals
  *   keypoints
- *     A cloud of keypoints specifying the positions at which the descriptors should be computed
- *   feature_radius
- *     The size of the neighborhood from which the local descriptors will be computed 
- * Return: A pointer to a LocalDescriptors (a cloud of LocalDescriptorT points)
+ *     A cloud of keypoints specifying the positions at which the descriptors should be
+ * computed feature_radius The size of the neighborhood from which the local descriptors
+ * will be computed Return: A pointer to a LocalDescriptors (a cloud of LocalDescriptorT
+ * points)
  */
 LocalDescriptorsPtr
-computeLocalDescriptors (const PointCloudPtr & points, const SurfaceNormalsPtr & normals, 
-                         const PointCloudPtr & keypoints, float feature_radius)
+computeLocalDescriptors (const PointCloudPtr& points,
+                         const SurfaceNormalsPtr& normals,
+                         const PointCloudPtr& keypoints,
+                         float feature_radius)
 {
   LocalDescriptorsPtr local_descriptors;
   return (local_descriptors);
@@ -73,18 +79,18 @@ computeLocalDescriptors (const PointCloudPtr & points, const SurfaceNormalsPtr &
  *     The input point cloud
  *   normals
  *     The input surface normals
- * Return: A pointer to a GlobalDescriptors point cloud (a cloud containing a single GlobalDescriptorT point)
+ * Return: A pointer to a GlobalDescriptors point cloud (a cloud containing a single
+ * GlobalDescriptorT point)
  */
 GlobalDescriptorsPtr
-computeGlobalDescriptor (const PointCloudPtr & points, const SurfaceNormalsPtr & normals)
+computeGlobalDescriptor (const PointCloudPtr& points, const SurfaceNormalsPtr& normals)
 {
   GlobalDescriptorsPtr global_descriptor;
   return (global_descriptor);
 }
 
 /* A simple structure for storing all of a cloud's features */
-struct ObjectFeatures
-{
+struct ObjectFeatures {
   PointCloudPtr points;
   SurfaceNormalsPtr normals;
   PointCloudPtr keypoints;
@@ -92,18 +98,19 @@ struct ObjectFeatures
   GlobalDescriptorsPtr global_descriptor;
 };
 
-/* Estimate normals, detect keypoints, and compute local and global descriptors 
+/* Estimate normals, detect keypoints, and compute local and global descriptors
  * Return: An ObjectFeatures struct containing all the features
  */
 ObjectFeatures
-computeFeatures (const PointCloudPtr & input)
+computeFeatures (const PointCloudPtr& input)
 {
   ObjectFeatures features;
   features.points = input;
-  features.normals = estimateSurfaceNormals (input, 0.05);
-  features.keypoints = detectKeypoints (input, features.normals, 0.005, 10, 8, 1.5);
-  features.local_descriptors = computeLocalDescriptors (input, features.normals, features.keypoints, 0.1);
-  features.global_descriptor = computeGlobalDescriptor (input, features.normals);
+  features.normals = estimateSurfaceNormals(input, 0.05);
+  features.keypoints = detectKeypoints(input, features.normals, 0.005, 10, 8, 1.5);
+  features.local_descriptors =
+      computeLocalDescriptors(input, features.normals, features.keypoints, 0.1);
+  features.global_descriptor = computeGlobalDescriptor(input, features.normals);
 
   return (features);
 }

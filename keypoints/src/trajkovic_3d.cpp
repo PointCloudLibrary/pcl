@@ -35,9 +35,9 @@
  *
  */
 
+#include <pcl/impl/instantiate.hpp>
 #include <pcl/keypoints/trajkovic_3d.h>
 #include <pcl/point_types.h>
-#include <pcl/impl/instantiate.hpp>
 
 // Instantiations of specific point types
-//PCL_INSTANTIATE_PRODUCT(HarrisKeypoint2D, (PCL_XYZ_POINT_TYPES));
+// PCL_INSTANTIATE_PRODUCT(HarrisKeypoint2D, (PCL_XYZ_POINT_TYPES));

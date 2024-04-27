@@ -64,11 +64,11 @@ public:
   /** \brief Pure virtual method for retrieving the type of octree node (branch or leaf)
    */
   virtual node_type_t
-  getNodeType() const = 0;
+  getNodeType () const = 0;
 
   /** \brief Pure virtual method to perform a deep copy of the octree */
   virtual OctreeNode*
-  deepCopy() const = 0;
+  deepCopy () const = 0;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -94,14 +94,14 @@ public:
 
   /** \brief Method to perform a deep copy of the octree */
   OctreeLeafNode<ContainerT>*
-  deepCopy() const override
+  deepCopy () const override
   {
     return new OctreeLeafNode<ContainerT>(*this);
   }
 
   /** \brief Get the type of octree node. Returns LEAVE_NODE type */
   node_type_t
-  getNodeType() const override
+  getNodeType () const override
   {
     return LEAF_NODE;
   }
@@ -136,28 +136,28 @@ public:
 
   /** \brief Get const reference to container */
   const ContainerT&
-  getContainer() const
+  getContainer () const
   {
     return container_;
   }
 
   /** \brief Get reference to container */
   ContainerT&
-  getContainer()
+  getContainer ()
   {
     return container_;
   }
 
   /** \brief Get const pointer to container */
   const ContainerT*
-  getContainerPtr() const
+  getContainerPtr () const
   {
     return &container_;
   }
 
   /** \brief Get pointer to container */
   ContainerT*
-  getContainerPtr()
+  getContainerPtr ()
   {
     return &container_;
   }
@@ -206,7 +206,7 @@ public:
 
   /** \brief Octree deep copy method */
   OctreeBranchNode*
-  deepCopy() const override
+  deepCopy () const override
   {
     return (new OctreeBranchNode<ContainerT>(*this));
   }
@@ -231,7 +231,7 @@ public:
    *  \return OctreeNode pointer
    * */
   inline OctreeNode*
-  getChildPtr(unsigned char child_idx_arg) const
+  getChildPtr (unsigned char child_idx_arg) const
   {
     assert(child_idx_arg < 8);
     return child_node_array_[child_idx_arg];
@@ -242,7 +242,7 @@ public:
    *  \return OctreeNode pointer
    * */
   inline void
-  setChildPtr(OctreeNode* child, unsigned char index)
+  setChildPtr (OctreeNode* child, unsigned char index)
   {
     assert(index < 8);
     child_node_array_[index] = child;
@@ -253,7 +253,7 @@ public:
    *  \return "true" if pointer to child node exists; "false" otherwise
    * */
   inline bool
-  hasChild(unsigned char child_idx_arg) const
+  hasChild (unsigned char child_idx_arg) const
   {
     return (child_node_array_[child_idx_arg] != nullptr);
   }
@@ -284,14 +284,14 @@ public:
 
   /** \brief Get the type of octree node. Returns LEAVE_NODE type */
   node_type_t
-  getNodeType() const override
+  getNodeType () const override
   {
     return BRANCH_NODE;
   }
 
   // reset node
   void
-  reset()
+  reset ()
   {
     child_node_array_ = {};
     container_.reset();
@@ -327,28 +327,28 @@ public:
 
   /** \brief Get const reference to container */
   const ContainerT&
-  getContainer() const
+  getContainer () const
   {
     return container_;
   }
 
   /** \brief Get reference to container */
   ContainerT&
-  getContainer()
+  getContainer ()
   {
     return container_;
   }
 
   /** \brief Get const pointer to container */
   const ContainerT*
-  getContainerPtr() const
+  getContainerPtr () const
   {
     return &container_;
   }
 
   /** \brief Get pointer to container */
   ContainerT*
-  getContainerPtr()
+  getContainerPtr ()
   {
     return &container_;
   }

@@ -33,55 +33,58 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
- 
+
 #pragma once
 
+#include <pcl/io/image.h>
 #include <pcl/pcl_config.h>
 #include <pcl/pcl_macros.h>
 
-#include <pcl/io/image.h>
+namespace pcl {
+namespace io {
+/**
+ * @brief This class provides methods to fill a RGB or Grayscale image buffer from
+ * underlying RGB24 image.
+ * @ingroup io
+ */
+class PCL_EXPORTS ImageRGB24 : public pcl::io::Image {
+public:
+  ImageRGB24(FrameWrapper::Ptr image_metadata);
+  ImageRGB24(FrameWrapper::Ptr image_metadata, Timestamp timestamp);
+  ~ImageRGB24() noexcept override;
 
-namespace pcl 
-{
-  namespace io
-  { 
-    /**
-      * @brief This class provides methods to fill a RGB or Grayscale image buffer from underlying RGB24 image.
-      * @ingroup io
-      */
-    class PCL_EXPORTS ImageRGB24 : public pcl::io::Image
-    {
-      public:
+  inline Encoding
+  getEncoding () const override
+  {
+    return (RGB);
+  }
 
-        ImageRGB24 (FrameWrapper::Ptr image_metadata);
-        ImageRGB24 (FrameWrapper::Ptr image_metadata, Timestamp timestamp);
-        ~ImageRGB24 () noexcept override;
+  void
+  fillRGB (unsigned width,
+           unsigned height,
+           unsigned char* rgb_buffer,
+           unsigned rgb_line_step = 0) const override;
 
-        inline Encoding
-        getEncoding () const override
-        {
-          return (RGB);
-        }
+  void
+  fillGrayscale (unsigned width,
+                 unsigned height,
+                 unsigned char* gray_buffer,
+                 unsigned gray_line_step = 0) const override;
 
-        void
-        fillRGB (unsigned width, unsigned height, unsigned char* rgb_buffer, unsigned rgb_line_step = 0) const override;
-      
-        void
-        fillGrayscale (unsigned width, unsigned height, unsigned char* gray_buffer, unsigned gray_line_step = 0) const override;
-      
-        bool
-        isResizingSupported (unsigned input_width, unsigned input_height, unsigned output_width, unsigned output_height) const override;
+  bool
+  isResizingSupported (unsigned input_width,
+                       unsigned input_height,
+                       unsigned output_width,
+                       unsigned output_height) const override;
 
-      private:
+private:
+  // Struct used for type conversion
+  struct RGB888Pixel {
+    std::uint8_t r;
+    std::uint8_t g;
+    std::uint8_t b;
+  };
+};
 
-        // Struct used for type conversion
-        struct RGB888Pixel
-        {
-          std::uint8_t r;
-          std::uint8_t g;
-          std::uint8_t b;
-        };
-    };
-
-  } // namespace
-}
+} // namespace io
+} // namespace pcl

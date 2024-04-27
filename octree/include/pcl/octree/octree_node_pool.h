@@ -63,7 +63,7 @@ public:
    *  \param node_arg: add this node to the pool
    *  */
   inline void
-  pushNode(NodeT* node_arg)
+  pushNode (NodeT* node_arg)
   {
     nodePool_.push_back(node_arg);
   }
@@ -72,7 +72,7 @@ public:
    *  \return Pointer to octree node
    *  */
   inline NodeT*
-  popNode()
+  popNode ()
   {
 
     NodeT* newLeafNode;
@@ -95,7 +95,7 @@ public:
   /** \brief Delete all nodes in pool
    *  */
   void
-  deletePool()
+  deletePool ()
   {
     // delete all branch instances from branch pool
     while (!nodePool_.empty()) {

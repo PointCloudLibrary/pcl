@@ -43,60 +43,59 @@
 #include <pcl/sample_consensus/sac.h>
 #include <pcl/sample_consensus/sac_model.h>
 
-namespace pcl
-{
-  /** \brief @b ProgressiveSampleConsensus represents an implementation of the PROSAC (PROgressive SAmple Consensus) algorithm, as
-    * described in: "Matching with PROSAC – Progressive Sample Consensus", Chum, O. and Matas, J.G., CVPR, I: 220-226
-    * 2005.
-    * \author Vincent Rabaud
-    * \ingroup sample_consensus
-    */
-  template<typename PointT>
-  class ProgressiveSampleConsensus : public SampleConsensus<PointT>
+namespace pcl {
+/** \brief @b ProgressiveSampleConsensus represents an implementation of the PROSAC
+ * (PROgressive SAmple Consensus) algorithm, as described in: "Matching with PROSAC –
+ * Progressive Sample Consensus", Chum, O. and Matas, J.G., CVPR, I: 220-226 2005.
+ * \author Vincent Rabaud
+ * \ingroup sample_consensus
+ */
+template <typename PointT>
+class ProgressiveSampleConsensus : public SampleConsensus<PointT> {
+  using SampleConsensusModelPtr = typename SampleConsensusModel<PointT>::Ptr;
+
+public:
+  using Ptr = shared_ptr<ProgressiveSampleConsensus>;
+  using ConstPtr = shared_ptr<const ProgressiveSampleConsensus>;
+
+  using SampleConsensus<PointT>::max_iterations_;
+  using SampleConsensus<PointT>::threshold_;
+  using SampleConsensus<PointT>::iterations_;
+  using SampleConsensus<PointT>::sac_model_;
+  using SampleConsensus<PointT>::model_;
+  using SampleConsensus<PointT>::model_coefficients_;
+  using SampleConsensus<PointT>::inliers_;
+  using SampleConsensus<PointT>::probability_;
+
+  /** \brief PROSAC (Progressive SAmple Consensus) main constructor
+   * \param[in] model a Sample Consensus model
+   */
+  ProgressiveSampleConsensus(const SampleConsensusModelPtr& model)
+  : SampleConsensus<PointT>(model)
   {
-    using SampleConsensusModelPtr = typename SampleConsensusModel<PointT>::Ptr;
+    // Maximum number of trials before we give up.
+    max_iterations_ = 10000;
+  }
 
-    public:
-      using Ptr = shared_ptr<ProgressiveSampleConsensus>;
-      using ConstPtr = shared_ptr<const ProgressiveSampleConsensus>;
+  /** \brief PROSAC (Progressive SAmple Consensus) main constructor
+   * \param[in] model a Sample Consensus model
+   * \param[in] threshold distance to model threshold
+   */
+  ProgressiveSampleConsensus(const SampleConsensusModelPtr& model, double threshold)
+  : SampleConsensus<PointT>(model, threshold)
+  {
+    // Maximum number of trials before we give up.
+    max_iterations_ = 10000;
+  }
 
-      using SampleConsensus<PointT>::max_iterations_;
-      using SampleConsensus<PointT>::threshold_;
-      using SampleConsensus<PointT>::iterations_;
-      using SampleConsensus<PointT>::sac_model_;
-      using SampleConsensus<PointT>::model_;
-      using SampleConsensus<PointT>::model_coefficients_;
-      using SampleConsensus<PointT>::inliers_;
-      using SampleConsensus<PointT>::probability_;
-
-      /** \brief PROSAC (Progressive SAmple Consensus) main constructor
-        * \param[in] model a Sample Consensus model
-        */
-      ProgressiveSampleConsensus (const SampleConsensusModelPtr &model) :
-        SampleConsensus<PointT> (model)
-      {
-        // Maximum number of trials before we give up.
-        max_iterations_ = 10000;
-      }
-
-      /** \brief PROSAC (Progressive SAmple Consensus) main constructor
-        * \param[in] model a Sample Consensus model
-        * \param[in] threshold distance to model threshold
-       */
-      ProgressiveSampleConsensus (const SampleConsensusModelPtr &model, double threshold) :
-        SampleConsensus<PointT> (model, threshold)
-      {
-        // Maximum number of trials before we give up.
-        max_iterations_ = 10000;
-      }
-
-      /** \brief Compute the actual model and find the inliers
-        * \param[in] debug_verbosity_level enable/disable on-screen debug information and set the verbosity level
-        */
-      bool 
-      computeModel (int debug_verbosity_level = 0) override;
-  };
-}
+  /** \brief Compute the actual model and find the inliers
+   * \param[in] debug_verbosity_level enable/disable on-screen debug information and set
+   * the verbosity level
+   */
+  bool
+  computeModel (int debug_verbosity_level = 0) override;
+};
+} // namespace pcl
 
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/sample_consensus/impl/prosac.hpp>

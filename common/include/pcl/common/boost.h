@@ -39,15 +39,15 @@
 #pragma once
 
 #ifdef __GNUC__
-#pragma GCC system_header 
+#pragma GCC system_header
 #endif
 PCL_DEPRECATED_HEADER(1, 15, "Please include the needed boost headers directly.")
 
 #ifndef Q_MOC_RUN
 // Marking all Boost headers as system headers to remove warnings
+#include <boost/algorithm/string.hpp>
 #include <boost/fusion/sequence/intrinsic/at_key.hpp>
 #include <boost/mpl/size.hpp>
 #include <boost/signals2.hpp>
 #include <boost/signals2/slot.hpp>
-#include <boost/algorithm/string.hpp>
 #endif

@@ -42,216 +42,222 @@
 
 #include <pcl/filters/voxel_grid.h>
 
-namespace pcl
-{
-  /** \brief VoxelGrid to estimate occluded space in the scene.
-    * The ray traversal algorithm is implemented by the work of 
-    * 'John Amanatides and Andrew Woo, A Fast Voxel Traversal Algorithm for Ray Tracing'
-    * Example code:
-    * \code
-    * pcl::VoxelGridOcclusionEstimation<pcl::PointXYZ> vg;
-    * vg.setInputCloud (input_cloud);
-    * vg.setLeafSize (leaf_x, leaf_y, leaf_z);
-    * vg.initializeVoxelGrid ();
-    * std::vector<Eigen::Vector3i, Eigen::aligned_allocator<Eigen::Vector3i> > occluded_voxels;
-    * vg.occlusionEstimationAll (occluded_voxels);
-    * \endcode
-    * \author Christian Potthast
-    * \ingroup filters
-    */
-  template <typename PointT>
-  class VoxelGridOcclusionEstimation: public VoxelGrid<PointT>
+namespace pcl {
+/** \brief VoxelGrid to estimate occluded space in the scene.
+ * The ray traversal algorithm is implemented by the work of
+ * 'John Amanatides and Andrew Woo, A Fast Voxel Traversal Algorithm for Ray Tracing'
+ * Example code:
+ * \code
+ * pcl::VoxelGridOcclusionEstimation<pcl::PointXYZ> vg;
+ * vg.setInputCloud (input_cloud);
+ * vg.setLeafSize (leaf_x, leaf_y, leaf_z);
+ * vg.initializeVoxelGrid ();
+ * std::vector<Eigen::Vector3i, Eigen::aligned_allocator<Eigen::Vector3i> >
+ * occluded_voxels; vg.occlusionEstimationAll (occluded_voxels); \endcode \author
+ * Christian Potthast \ingroup filters
+ */
+template <typename PointT>
+class VoxelGridOcclusionEstimation : public VoxelGrid<PointT> {
+protected:
+  using VoxelGrid<PointT>::min_b_;
+  using VoxelGrid<PointT>::max_b_;
+  using VoxelGrid<PointT>::div_b_;
+  using VoxelGrid<PointT>::leaf_size_;
+  using VoxelGrid<PointT>::inverse_leaf_size_;
+
+  using PointCloud = typename Filter<PointT>::PointCloud;
+  using PointCloudPtr = typename PointCloud::Ptr;
+  using PointCloudConstPtr = typename PointCloud::ConstPtr;
+
+public:
+  PCL_MAKE_ALIGNED_OPERATOR_NEW
+
+  /** \brief Empty constructor. */
+  VoxelGridOcclusionEstimation()
   {
-    protected:
-      using VoxelGrid<PointT>::min_b_;
-      using VoxelGrid<PointT>::max_b_;
-      using VoxelGrid<PointT>::div_b_;
-      using VoxelGrid<PointT>::leaf_size_;
-      using VoxelGrid<PointT>::inverse_leaf_size_;
+    initialized_ = false;
+    this->setSaveLeafLayout(true);
+  }
 
-      using PointCloud = typename Filter<PointT>::PointCloud;
-      using PointCloudPtr = typename PointCloud::Ptr;
-      using PointCloudConstPtr = typename PointCloud::ConstPtr;
+  /** \brief Destructor. */
+  ~VoxelGridOcclusionEstimation() override = default;
 
-    public:
+  /** \brief Initialize the voxel grid, needs to be called first
+   * Builts the voxel grid and computes additional values for
+   * the ray traversal algorithm.
+   */
+  void
+  initializeVoxelGrid ();
 
-      PCL_MAKE_ALIGNED_OPERATOR_NEW
+  /** \brief Computes the state (free = 0, occluded = 1) of the voxel
+   * after utilizing a ray traversal algorithm to a target voxel
+   * in (i, j, k) coordinates.
+   * \param[out] out_state The state of the voxel.
+   * \param[in] in_target_voxel The target voxel coordinate (i, j, k) of the voxel.
+   * \return 0 upon success and -1 if an error occurs
+   */
+  int
+  occlusionEstimation (int& out_state, const Eigen::Vector3i& in_target_voxel);
 
-      /** \brief Empty constructor. */
-      VoxelGridOcclusionEstimation ()
-      {
-        initialized_ = false;
-        this->setSaveLeafLayout (true);
-      }
+  /** \brief Computes the state (free = 0, occluded = 1) of the voxel
+   * after utilizing a ray traversal algorithm to a target voxel
+   * in (i, j, k) coordinates. Additionally, this function returns
+   * the voxels penetrated of the ray-traversal algorithm till reaching
+   * the target voxel.
+   * \param[out] out_state The state of the voxel.
+   * \param[out] out_ray The voxels penetrated of the ray-traversal algorithm.
+   * \param[in] in_target_voxel The target voxel coordinate (i, j, k) of the voxel.
+   * \return 0 upon success and -1 if an error occurs
+   */
+  int
+  occlusionEstimation (
+      int& out_state,
+      std::vector<Eigen::Vector3i, Eigen::aligned_allocator<Eigen::Vector3i>>& out_ray,
+      const Eigen::Vector3i& in_target_voxel);
 
-      /** \brief Destructor. */
-      ~VoxelGridOcclusionEstimation () override = default;
+  /** \brief Computes the voxel coordinates (i, j, k) of all occluded
+   * voxels in the voxel grid.
+   * \param[out] occluded_voxels the coordinates (i, j, k) of all occluded voxels
+   * \return 0 upon success and -1 if an error occurs
+   */
+  int
+  occlusionEstimationAll (
+      std::vector<Eigen::Vector3i, Eigen::aligned_allocator<Eigen::Vector3i>>&
+          occluded_voxels);
 
-      /** \brief Initialize the voxel grid, needs to be called first
-        * Builts the voxel grid and computes additional values for
-        * the ray traversal algorithm.
-        */
-      void
-      initializeVoxelGrid ();
+  /** \brief Returns the voxel grid filtered point cloud
+   * \return The voxel grid filtered point cloud
+   */
+  inline PointCloud
+  getFilteredPointCloud ()
+  {
+    return filtered_cloud_;
+  }
 
-      /** \brief Computes the state (free = 0, occluded = 1) of the voxel
-        * after utilizing a ray traversal algorithm to a target voxel
-        * in (i, j, k) coordinates.
-        * \param[out] out_state The state of the voxel.
-        * \param[in] in_target_voxel The target voxel coordinate (i, j, k) of the voxel.
-        * \return 0 upon success and -1 if an error occurs
-        */
-      int
-      occlusionEstimation (int& out_state,
-                           const Eigen::Vector3i& in_target_voxel);
+  /** \brief Returns the minimum bounding of coordinates of the voxel grid (x,y,z).
+   * \return the minimum coordinates (x,y,z)
+   */
+  inline Eigen::Vector3f
+  getMinBoundCoordinates ()
+  {
+    return (b_min_.head<3>());
+  }
 
-      /** \brief Computes the state (free = 0, occluded = 1) of the voxel
-        * after utilizing a ray traversal algorithm to a target voxel
-        * in (i, j, k) coordinates. Additionally, this function returns
-        * the voxels penetrated of the ray-traversal algorithm till reaching
-        * the target voxel.
-        * \param[out] out_state The state of the voxel.
-        * \param[out] out_ray The voxels penetrated of the ray-traversal algorithm.
-        * \param[in] in_target_voxel The target voxel coordinate (i, j, k) of the voxel.
-        * \return 0 upon success and -1 if an error occurs
-        */
-      int
-      occlusionEstimation (int& out_state,
-                           std::vector<Eigen::Vector3i, Eigen::aligned_allocator<Eigen::Vector3i> >& out_ray,
-                           const Eigen::Vector3i& in_target_voxel);
+  /** \brief Returns the maximum bounding of coordinates of the voxel grid (x,y,z).
+   * \return the maximum coordinates (x,y,z)
+   */
+  inline Eigen::Vector3f
+  getMaxBoundCoordinates ()
+  {
+    return (b_max_.head<3>());
+  }
 
-      /** \brief Computes the voxel coordinates (i, j, k) of all occluded
-        * voxels in the voxel grid.
-        * \param[out] occluded_voxels the coordinates (i, j, k) of all occluded voxels
-        * \return 0 upon success and -1 if an error occurs
-        */
-      int
-      occlusionEstimationAll (std::vector<Eigen::Vector3i, Eigen::aligned_allocator<Eigen::Vector3i> >& occluded_voxels);
+  /** \brief Returns the corresponding centroid (x,y,z) coordinates
+   * in the grid of voxel (i,j,k).
+   * \param[in] ijk the coordinate (i, j, k) of the voxel
+   * \return the (x,y,z) coordinate of the voxel centroid
+   */
+  inline Eigen::Vector4f
+  getCentroidCoordinate (const Eigen::Vector3i& ijk)
+  {
+    int i, j, k;
+    i = ((b_min_[0] < 0) ? (std::abs(min_b_[0]) + ijk[0]) : (ijk[0] - min_b_[0]));
+    j = ((b_min_[1] < 0) ? (std::abs(min_b_[1]) + ijk[1]) : (ijk[1] - min_b_[1]));
+    k = ((b_min_[2] < 0) ? (std::abs(min_b_[2]) + ijk[2]) : (ijk[2] - min_b_[2]));
 
-      /** \brief Returns the voxel grid filtered point cloud
-        * \return The voxel grid filtered point cloud
-        */
-      inline PointCloud
-      getFilteredPointCloud () { return filtered_cloud_; }
+    Eigen::Vector4f xyz;
+    xyz[0] =
+        b_min_[0] + (leaf_size_[0] * 0.5f) + (static_cast<float>(i) * leaf_size_[0]);
+    xyz[1] =
+        b_min_[1] + (leaf_size_[1] * 0.5f) + (static_cast<float>(j) * leaf_size_[1]);
+    xyz[2] =
+        b_min_[2] + (leaf_size_[2] * 0.5f) + (static_cast<float>(k) * leaf_size_[2]);
+    xyz[3] = 0;
+    return xyz;
+  }
 
-      
-      /** \brief Returns the minimum bounding of coordinates of the voxel grid (x,y,z).
-        * \return the minimum coordinates (x,y,z)
-        */
-      inline Eigen::Vector3f
-      getMinBoundCoordinates () { return (b_min_.head<3> ()); }
+  // inline void
+  // setSensorOrigin (const Eigen::Vector4f origin) { sensor_origin_ = origin; }
 
-      /** \brief Returns the maximum bounding of coordinates of the voxel grid (x,y,z).
-        * \return the maximum coordinates (x,y,z)
-        */
-      inline Eigen::Vector3f
-      getMaxBoundCoordinates () { return (b_max_.head<3> ()); }
+  // inline void
+  // setSensorOrientation (const Eigen::Quaternionf orientation) { sensor_orientation_ =
+  // orientation; }
 
-      /** \brief Returns the corresponding centroid (x,y,z) coordinates
-        * in the grid of voxel (i,j,k).
-        * \param[in] ijk the coordinate (i, j, k) of the voxel
-        * \return the (x,y,z) coordinate of the voxel centroid
-        */
-      inline Eigen::Vector4f
-      getCentroidCoordinate (const Eigen::Vector3i& ijk)
-      {
-        int i,j,k;
-        i = ((b_min_[0] < 0) ? (std::abs (min_b_[0]) + ijk[0]) : (ijk[0] - min_b_[0]));
-        j = ((b_min_[1] < 0) ? (std::abs (min_b_[1]) + ijk[1]) : (ijk[1] - min_b_[1]));
-        k = ((b_min_[2] < 0) ? (std::abs (min_b_[2]) + ijk[2]) : (ijk[2] - min_b_[2]));
+protected:
+  /** \brief Returns the scaling value (tmin) were the ray intersects with the
+   * voxel grid bounding box. (p_entry = origin + tmin * orientation)
+   * \param[in] origin The sensor origin
+   * \param[in] direction The sensor orientation
+   * \return the scaling value
+   */
+  float
+  rayBoxIntersection (const Eigen::Vector4f& origin, const Eigen::Vector4f& direction);
 
-        Eigen::Vector4f xyz;
-        xyz[0] = b_min_[0] + (leaf_size_[0] * 0.5f) + (static_cast<float> (i) * leaf_size_[0]);
-        xyz[1] = b_min_[1] + (leaf_size_[1] * 0.5f) + (static_cast<float> (j) * leaf_size_[1]);
-        xyz[2] = b_min_[2] + (leaf_size_[2] * 0.5f) + (static_cast<float> (k) * leaf_size_[2]);
-        xyz[3] = 0;
-        return xyz;
-      }
+  /** \brief Returns the state of the target voxel (0 = visible, 1 = occupied)
+   * using a ray traversal algorithm.
+   * \param[in] target_voxel The target voxel in the voxel grid with coordinate (i, j,
+   * k). \param[in] origin The sensor origin. \param[in] direction The sensor
+   * orientation \param[in] t_min The scaling value (tmin). \return The estimated voxel
+   * state.
+   */
+  int
+  rayTraversal (const Eigen::Vector3i& target_voxel,
+                const Eigen::Vector4f& origin,
+                const Eigen::Vector4f& direction,
+                const float t_min);
 
-      // inline void
-      // setSensorOrigin (const Eigen::Vector4f origin) { sensor_origin_ = origin; }
+  /** \brief Returns the state of the target voxel (0 = visible, 1 = occupied) and
+   * the voxels penetrated by the ray using a ray traversal algorithm.
+   * \param[out] out_ray The voxels penetrated by the ray in (i, j, k) coordinates
+   * \param[in] target_voxel The target voxel in the voxel grid with coordinate (i, j,
+   * k). \param[in] origin The sensor origin. \param[in] direction The sensor
+   * orientation \param[in] t_min The scaling value (tmin). \return The estimated voxel
+   * state.
+   */
+  int
+  rayTraversal (
+      std::vector<Eigen::Vector3i, Eigen::aligned_allocator<Eigen::Vector3i>>& out_ray,
+      const Eigen::Vector3i& target_voxel,
+      const Eigen::Vector4f& origin,
+      const Eigen::Vector4f& direction,
+      const float t_min);
 
-      // inline void
-      // setSensorOrientation (const Eigen::Quaternionf orientation) { sensor_orientation_ = orientation; }
+  /** \brief Returns a value rounded to the nearest integer
+   * \param[in] d
+   * \return rounded value
+   */
+  inline float
+  round (float d)
+  {
+    return static_cast<float>(std::floor(d + 0.5f));
+  }
 
-    protected:
+  /** \brief Returns the corresponding (i,j,k) coordinates in the grid of point (x,y,z).
+   * \param[in] x the X point coordinate to get the (i, j, k) index at
+   * \param[in] y the Y point coordinate to get the (i, j, k) index at
+   * \param[in] z the Z point coordinate to get the (i, j, k) index at
+   */
+  inline Eigen::Vector3i
+  getGridCoordinatesRound (float x, float y, float z)
+  {
+    return {static_cast<int>(round(x * inverse_leaf_size_[0])),
+            static_cast<int>(round(y * inverse_leaf_size_[1])),
+            static_cast<int>(round(z * inverse_leaf_size_[2]))};
+  }
 
-      /** \brief Returns the scaling value (tmin) were the ray intersects with the
-        * voxel grid bounding box. (p_entry = origin + tmin * orientation)
-        * \param[in] origin The sensor origin
-        * \param[in] direction The sensor orientation
-        * \return the scaling value
-        */
-      float
-      rayBoxIntersection (const Eigen::Vector4f& origin, 
-                          const Eigen::Vector4f& direction);
+  // initialization flag
+  bool initialized_;
 
-      /** \brief Returns the state of the target voxel (0 = visible, 1 = occupied)
-        * using a ray traversal algorithm.
-        * \param[in] target_voxel The target voxel in the voxel grid with coordinate (i, j, k).
-        * \param[in] origin The sensor origin.
-        * \param[in] direction The sensor orientation
-        * \param[in] t_min The scaling value (tmin).
-        * \return The estimated voxel state.
-        */
-      int
-      rayTraversal (const Eigen::Vector3i& target_voxel,
-                    const Eigen::Vector4f& origin, 
-                    const Eigen::Vector4f& direction,
-                    const float t_min);
+  Eigen::Vector4f sensor_origin_;
+  Eigen::Quaternionf sensor_orientation_;
 
-      /** \brief Returns the state of the target voxel (0 = visible, 1 = occupied) and
-        * the voxels penetrated by the ray using a ray traversal algorithm.
-        * \param[out] out_ray The voxels penetrated by the ray in (i, j, k) coordinates
-        * \param[in] target_voxel The target voxel in the voxel grid with coordinate (i, j, k).
-        * \param[in] origin The sensor origin.
-        * \param[in] direction The sensor orientation
-        * \param[in] t_min The scaling value (tmin).
-        * \return The estimated voxel state.
-        */
-      int
-      rayTraversal (std::vector<Eigen::Vector3i, Eigen::aligned_allocator<Eigen::Vector3i> >& out_ray,
-                    const Eigen::Vector3i& target_voxel,
-                    const Eigen::Vector4f& origin, 
-                    const Eigen::Vector4f& direction,
-                    const float t_min);
+  // minimum and maximum bounding box coordinates
+  Eigen::Vector4f b_min_, b_max_;
 
-      /** \brief Returns a value rounded to the nearest integer
-        * \param[in] d
-        * \return rounded value
-        */
-      inline float
-      round (float d)
-      {
-        return static_cast<float> (std::floor (d + 0.5f));
-      }
-
-      /** \brief Returns the corresponding (i,j,k) coordinates in the grid of point (x,y,z).
-        * \param[in] x the X point coordinate to get the (i, j, k) index at
-        * \param[in] y the Y point coordinate to get the (i, j, k) index at
-        * \param[in] z the Z point coordinate to get the (i, j, k) index at
-        */
-      inline Eigen::Vector3i
-      getGridCoordinatesRound (float x, float y, float z) 
-      {
-        return {static_cast<int> (round (x * inverse_leaf_size_[0])),
-                                static_cast<int> (round (y * inverse_leaf_size_[1])),
-                                static_cast<int> (round (z * inverse_leaf_size_[2]))};
-      }
-
-      // initialization flag
-      bool initialized_;
-
-      Eigen::Vector4f sensor_origin_;
-      Eigen::Quaternionf sensor_orientation_;
-
-      // minimum and maximum bounding box coordinates
-      Eigen::Vector4f b_min_, b_max_;
-
-      // voxel grid filtered cloud
-      PointCloud filtered_cloud_;
-  };
-}
+  // voxel grid filtered cloud
+  PointCloud filtered_cloud_;
+};
+} // namespace pcl
 
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/filters/impl/voxel_grid_occlusion_estimation.hpp>

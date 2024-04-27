@@ -37,68 +37,85 @@
  */
 
 #pragma once
- 
-#include <pcl/pcl_config.h>
+
 #include <pcl/memory.h>
+#include <pcl/pcl_config.h>
 #ifdef HAVE_OPENNI
 
 #include <pcl/pcl_macros.h>
+
 #include "openni_image.h"
 
-namespace openni_wrapper
-{
-  /** \brief This class provides methods to fill a RGB or Grayscale image buffer from underlying Bayer pattern image.
-    * \author Suat Gedikli <gedikli@willowgarage.com>
-    * \ingroup io
-    */
-  class PCL_EXPORTS ImageBayerGRBG : public Image
+namespace openni_wrapper {
+/** \brief This class provides methods to fill a RGB or Grayscale image buffer from
+ * underlying Bayer pattern image. \author Suat Gedikli <gedikli@willowgarage.com>
+ * \ingroup io
+ */
+class PCL_EXPORTS ImageBayerGRBG : public Image {
+public:
+  enum DebayeringMethod { Bilinear = 0, EdgeAware, EdgeAwareWeighted };
+
+  ImageBayerGRBG(pcl::shared_ptr<xn::ImageMetaData> image_meta_data,
+                 DebayeringMethod method) noexcept;
+  ~ImageBayerGRBG() noexcept override;
+
+  inline Encoding
+  getEncoding () const override
   {
-    public:
-      enum DebayeringMethod
-      {
-        Bilinear = 0,
-        EdgeAware,
-        EdgeAwareWeighted
-      };
-
-      ImageBayerGRBG (pcl::shared_ptr<xn::ImageMetaData> image_meta_data, DebayeringMethod method) noexcept;
-      ~ImageBayerGRBG () noexcept override;
-
-      inline Encoding
-      getEncoding () const override
-      {
-        return (BAYER_GRBG);
-      }
-
-      void fillRGB (unsigned width, unsigned height, unsigned char* rgb_buffer, unsigned rgb_line_step = 0) const override;
-      void fillGrayscale (unsigned width, unsigned height, unsigned char* gray_buffer, unsigned gray_line_step = 0) const override;
-      bool isResizingSupported (unsigned input_width, unsigned input_height, unsigned output_width, unsigned output_height) const override;
-      inline void setDebayeringMethod (const DebayeringMethod& method) noexcept;
-      inline DebayeringMethod getDebayeringMethod () const noexcept;
-      inline static bool resizingSupported (unsigned input_width, unsigned input_height, unsigned output_width, unsigned output_height);
-
-
-    protected:
-      DebayeringMethod debayering_method_;
-  };
+    return (BAYER_GRBG);
+  }
 
   void
-  ImageBayerGRBG::setDebayeringMethod (const ImageBayerGRBG::DebayeringMethod& method) noexcept
-  {
-    debayering_method_ = method;
-  }
-
-  ImageBayerGRBG::DebayeringMethod
-  ImageBayerGRBG::getDebayeringMethod () const noexcept
-  {
-    return debayering_method_;
-  }
-
+  fillRGB (unsigned width,
+           unsigned height,
+           unsigned char* rgb_buffer,
+           unsigned rgb_line_step = 0) const override;
+  void
+  fillGrayscale (unsigned width,
+                 unsigned height,
+                 unsigned char* gray_buffer,
+                 unsigned gray_line_step = 0) const override;
   bool
-  ImageBayerGRBG::resizingSupported (unsigned input_width, unsigned input_height, unsigned output_width, unsigned output_height)
-  {
-    return (output_width <= input_width && output_height <= input_height && input_width % output_width == 0 && input_height % output_height == 0 );
-  }
-} // namespace
+  isResizingSupported (unsigned input_width,
+                       unsigned input_height,
+                       unsigned output_width,
+                       unsigned output_height) const override;
+  inline void
+  setDebayeringMethod (const DebayeringMethod& method) noexcept;
+  inline DebayeringMethod
+  getDebayeringMethod () const noexcept;
+  inline static bool
+  resizingSupported (unsigned input_width,
+                     unsigned input_height,
+                     unsigned output_width,
+                     unsigned output_height);
+
+protected:
+  DebayeringMethod debayering_method_;
+};
+
+void
+ImageBayerGRBG::setDebayeringMethod(
+    const ImageBayerGRBG::DebayeringMethod& method) noexcept
+{
+  debayering_method_ = method;
+}
+
+ImageBayerGRBG::DebayeringMethod
+ImageBayerGRBG::getDebayeringMethod() const noexcept
+{
+  return debayering_method_;
+}
+
+bool
+ImageBayerGRBG::resizingSupported(unsigned input_width,
+                                  unsigned input_height,
+                                  unsigned output_width,
+                                  unsigned output_height)
+{
+  return (output_width <= input_width && output_height <= input_height &&
+          input_width % output_width == 0 && input_height % output_height == 0);
+}
+} // namespace openni_wrapper
 
 #endif

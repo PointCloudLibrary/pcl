@@ -78,7 +78,7 @@ public:
   }
 
   void
-  cloud_cb(const CloudConstPtr& cloud)
+  cloud_cb (const CloudConstPtr& cloud)
   {
     // Computation goes here
     FPS_CALC("computation");
@@ -99,11 +99,11 @@ public:
   }
 
   void
-  run(int argc, char** argv)
+  run (int argc, char** argv)
   {
     pcl::OpenNIGrabber interface(device_id_);
 
-    std::function<void(const CloudConstPtr&)> f = [this](const CloudConstPtr& cloud) {
+    std::function<void(const CloudConstPtr&)> f = [this] (const CloudConstPtr& cloud) {
       cloud_cb(cloud);
     };
     boost::signals2::connection c = interface.registerCallback(f);
@@ -150,7 +150,7 @@ public:
 };
 
 void
-usage(char** argv)
+usage (char** argv)
 {
   std::cout << "usage: " << argv[0] << " [-device_id X (default: \"#1\")]\n\n";
 
@@ -181,7 +181,7 @@ usage(char** argv)
 }
 
 int
-main(int argc, char** argv)
+main (int argc, char** argv)
 {
   /////////////////////////////////////////////////////////////////////
   if (pcl::console::find_argument(argc, argv, "-h") != -1 ||

@@ -32,139 +32,133 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  *
- * Range Coder based on Dmitry Subbotin's carry-less implementation (http://www.compression.ru/ds/)
- * Added optimized symbol lookup and added implementation for static range coding (uses fixed precomputed frequency table)
+ * Range Coder based on Dmitry Subbotin's carry-less implementation
+ * (http://www.compression.ru/ds/) Added optimized symbol lookup and added
+ * implementation for static range coding (uses fixed precomputed frequency table)
  *
  * Author: Julius Kammerl (julius@kammerl.de)
  */
 
 #pragma once
 
-#include <iostream>
-#include <vector>
-#include <cmath>
-#include <cstdint>
-
 #include <pcl/pcl_macros.h>
 
-namespace pcl
-{
+#include <cmath>
+#include <cstdint>
+#include <iostream>
+#include <vector>
 
-  using std::uint8_t;
-  using std::uint32_t;
-  using std::uint64_t;
+namespace pcl {
 
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  /** \brief @b AdaptiveRangeCoder compression class
-   *  \note This class provides adaptive range coding functionality.
-   *  \note Its symbol probability/frequency table is adaptively updated during encoding
-   *  \note
-   *  \author Julius Kammerl (julius@kammerl.de)
+using std::uint32_t;
+using std::uint64_t;
+using std::uint8_t;
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/** \brief @b AdaptiveRangeCoder compression class
+ *  \note This class provides adaptive range coding functionality.
+ *  \note Its symbol probability/frequency table is adaptively updated during encoding
+ *  \note
+ *  \author Julius Kammerl (julius@kammerl.de)
+ */
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+class AdaptiveRangeCoder {
+
+public:
+  /** \brief Empty constructor. */
+  AdaptiveRangeCoder() = default;
+
+  /** \brief Empty deconstructor. */
+  virtual ~AdaptiveRangeCoder() = default;
+
+  /** \brief Encode char vector to output stream
+   * \param inputByteVector_arg input vector
+   * \param outputByteStream_arg output stream containing compressed data
+   * \return amount of bytes written to output stream
    */
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  class AdaptiveRangeCoder
-  {
+  unsigned long
+  encodeCharVectorToStream (const std::vector<char>& inputByteVector_arg,
+                            std::ostream& outputByteStream_arg);
 
-  public:
-
-    /** \brief Empty constructor. */
-    AdaptiveRangeCoder () = default;
-
-    /** \brief Empty deconstructor. */
-    virtual
-    ~AdaptiveRangeCoder () = default;
-
-    /** \brief Encode char vector to output stream
-     * \param inputByteVector_arg input vector
-     * \param outputByteStream_arg output stream containing compressed data
-     * \return amount of bytes written to output stream
-     */
-    unsigned long
-    encodeCharVectorToStream (const std::vector<char>& inputByteVector_arg, std::ostream& outputByteStream_arg);
-
-    /** \brief Decode char stream to output vector
-     * \param inputByteStream_arg input stream of compressed data
-     * \param outputByteVector_arg decompressed output vector
-     * \return amount of bytes read from input stream
-     */
-    unsigned long
-    decodeStreamToCharVector (std::istream& inputByteStream_arg, std::vector<char>& outputByteVector_arg);
-
-  protected:
-    using DWord = std::uint32_t; // 4 bytes
-
-  private:
-    /** vector containing compressed data
-     */
-    std::vector<char> outputCharVector_;
-
-  };
-
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  /** \brief @b StaticRangeCoder compression class
-   *  \note This class provides static range coding functionality.
-   *  \note Its symbol probability/frequency table is precomputed and encoded to the output stream
-   *  \note
-   *  \author Julius Kammerl (julius@kammerl.de)
+  /** \brief Decode char stream to output vector
+   * \param inputByteStream_arg input stream of compressed data
+   * \param outputByteVector_arg decompressed output vector
+   * \return amount of bytes read from input stream
    */
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  class StaticRangeCoder
-  {
-    public:
-      /** \brief Constructor. */
-      StaticRangeCoder () :
-        cFreqTable_ (65537)
-      {
-      }
+  unsigned long
+  decodeStreamToCharVector (std::istream& inputByteStream_arg,
+                            std::vector<char>& outputByteVector_arg);
 
-      /** \brief Empty deconstructor. */
-      virtual
-      ~StaticRangeCoder () = default;
+protected:
+  using DWord = std::uint32_t; // 4 bytes
 
-      /** \brief Encode integer vector to output stream
-        * \param[in] inputIntVector_arg input vector
-        * \param[out] outputByterStream_arg output stream containing compressed data
-        * \return amount of bytes written to output stream
-        */
-      unsigned long
-      encodeIntVectorToStream (std::vector<unsigned int>& inputIntVector_arg, std::ostream& outputByterStream_arg);
+private:
+  /** vector containing compressed data
+   */
+  std::vector<char> outputCharVector_;
+};
 
-      /** \brief Decode stream to output integer vector
-       * \param inputByteStream_arg input stream of compressed data
-       * \param outputIntVector_arg decompressed output vector
-       * \return amount of bytes read from input stream
-       */
-      unsigned long
-      decodeStreamToIntVector (std::istream& inputByteStream_arg, std::vector<unsigned int>& outputIntVector_arg);
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/** \brief @b StaticRangeCoder compression class
+ *  \note This class provides static range coding functionality.
+ *  \note Its symbol probability/frequency table is precomputed and encoded to the
+ * output stream \note \author Julius Kammerl (julius@kammerl.de)
+ */
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+class StaticRangeCoder {
+public:
+  /** \brief Constructor. */
+  StaticRangeCoder() : cFreqTable_(65537) {}
 
-      /** \brief Encode char vector to output stream
-       * \param inputByteVector_arg input vector
-       * \param outputByteStream_arg output stream containing compressed data
-       * \return amount of bytes written to output stream
-       */
-      unsigned long
-      encodeCharVectorToStream (const std::vector<char>& inputByteVector_arg, std::ostream& outputByteStream_arg);
+  /** \brief Empty deconstructor. */
+  virtual ~StaticRangeCoder() = default;
 
-      /** \brief Decode char stream to output vector
-       * \param inputByteStream_arg input stream of compressed data
-       * \param outputByteVector_arg decompressed output vector
-       * \return amount of bytes read from input stream
-       */
-      unsigned long
-      decodeStreamToCharVector (std::istream& inputByteStream_arg, std::vector<char>& outputByteVector_arg);
+  /** \brief Encode integer vector to output stream
+   * \param[in] inputIntVector_arg input vector
+   * \param[out] outputByterStream_arg output stream containing compressed data
+   * \return amount of bytes written to output stream
+   */
+  unsigned long
+  encodeIntVectorToStream (std::vector<unsigned int>& inputIntVector_arg,
+                           std::ostream& outputByterStream_arg);
 
-    protected:
-      using DWord = std::uint32_t; // 4 bytes
+  /** \brief Decode stream to output integer vector
+   * \param inputByteStream_arg input stream of compressed data
+   * \param outputIntVector_arg decompressed output vector
+   * \return amount of bytes read from input stream
+   */
+  unsigned long
+  decodeStreamToIntVector (std::istream& inputByteStream_arg,
+                           std::vector<unsigned int>& outputIntVector_arg);
 
-    private:
-      /** \brief Vector containing cumulative symbol frequency table. */
-      std::vector<std::uint64_t> cFreqTable_;
+  /** \brief Encode char vector to output stream
+   * \param inputByteVector_arg input vector
+   * \param outputByteStream_arg output stream containing compressed data
+   * \return amount of bytes written to output stream
+   */
+  unsigned long
+  encodeCharVectorToStream (const std::vector<char>& inputByteVector_arg,
+                            std::ostream& outputByteStream_arg);
 
-      /** \brief Vector containing compressed data. */
-      std::vector<char> outputCharVector_;
+  /** \brief Decode char stream to output vector
+   * \param inputByteStream_arg input stream of compressed data
+   * \param outputByteVector_arg decompressed output vector
+   * \return amount of bytes read from input stream
+   */
+  unsigned long
+  decodeStreamToCharVector (std::istream& inputByteStream_arg,
+                            std::vector<char>& outputByteVector_arg);
 
-  };
-}
+protected:
+  using DWord = std::uint32_t; // 4 bytes
 
+private:
+  /** \brief Vector containing cumulative symbol frequency table. */
+  std::vector<std::uint64_t> cFreqTable_;
 
-//#include "impl/entropy_range_coder.hpp"
+  /** \brief Vector containing compressed data. */
+  std::vector<char> outputCharVector_;
+};
+} // namespace pcl
+
+// #include "impl/entropy_range_coder.hpp"

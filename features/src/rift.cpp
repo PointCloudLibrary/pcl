@@ -39,12 +39,15 @@
 #include <pcl/features/impl/rift.hpp>
 
 #ifndef PCL_NO_PRECOMPILE
-#include <pcl/point_types.h>
 #include <pcl/impl/instantiate.hpp>
+#include <pcl/point_types.h>
 // Instantiations of specific point types
 #ifdef PCL_ONLY_CORE_POINT_TYPES
-  PCL_INSTANTIATE_PRODUCT(RIFTEstimation, ((pcl::PointXYZI))((pcl::IntensityGradient))((pcl::Histogram<32>)))
+PCL_INSTANTIATE_PRODUCT(
+    RIFTEstimation, ((pcl::PointXYZI))((pcl::IntensityGradient))((pcl::Histogram<32>)))
 #else
-  PCL_INSTANTIATE_PRODUCT(RIFTEstimation, ((pcl::PointXYZI)(pcl::PointXYZINormal))((pcl::IntensityGradient))((pcl::Histogram<32>)))
+PCL_INSTANTIATE_PRODUCT(RIFTEstimation,
+                        ((pcl::PointXYZI)(pcl::PointXYZINormal))(
+                            (pcl::IntensityGradient))((pcl::Histogram<32>)))
 #endif
-#endif    // PCL_NO_PRECOMPILE
+#endif // PCL_NO_PRECOMPILE

@@ -5,8 +5,8 @@
 #include <string>
 
 // PCL
-#include <pcl/outofcore/visualization/object.h>
 #include <pcl/common/eigen.h>
+#include <pcl/outofcore/visualization/object.h>
 #include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 
@@ -17,20 +17,17 @@
 #include <vtkPolyData.h>
 #include <vtkSmartPointer.h>
 
-class Camera : public Object
-{
+class Camera : public Object {
 public:
-
   // Operators
   // -----------------------------------------------------------------------------
-  Camera (std::string name);
-  Camera (std::string name, vtkSmartPointer<vtkCamera> camera);
+  Camera(std::string name);
+  Camera(std::string name, vtkSmartPointer<vtkCamera> camera);
 
 private:
-//  friend std::ostream & operator<<(std::ostream &os, const Camera& camera);
+  //  friend std::ostream & operator<<(std::ostream &os, const Camera& camera);
 
 public:
-
   // Accessors
   // -----------------------------------------------------------------------------
   inline vtkSmartPointer<vtkCamera>
@@ -71,7 +68,7 @@ public:
   }
 
   void
-  setProjectionMatrix (const Eigen::Matrix4d &projection_matrix)
+  setProjectionMatrix (const Eigen::Matrix4d& projection_matrix)
   {
     projection_matrix_ = projection_matrix;
   }
@@ -83,7 +80,7 @@ public:
   }
 
   void
-  setModelViewMatrix (const Eigen::Matrix4d &model_view_matrix)
+  setModelViewMatrix (const Eigen::Matrix4d& model_view_matrix)
   {
     model_view_matrix_ = model_view_matrix;
   }
@@ -101,18 +98,17 @@ public:
     // since the compiler complains that the constructor selected
     // with {projection_matrix_ * model_view_matrix_} is explicit
     // NOLINTNEXTLINE(modernize-return-braced-init-list)
-    return Eigen::Matrix4d (projection_matrix_ * model_view_matrix_);
+    return Eigen::Matrix4d(projection_matrix_ * model_view_matrix_);
   }
 
   Eigen::Vector3d
   getPosition ()
   {
-    //Compute eye or position from model view matrix
-    Eigen::Matrix4d inverse_model_view_matrix = model_view_matrix_.inverse ();
+    // Compute eye or position from model view matrix
+    Eigen::Matrix4d inverse_model_view_matrix = model_view_matrix_.inverse();
     Eigen::Vector3d position;
-    for (int i = 0; i < 3; i++)
-    {
-      position (i) = inverse_model_view_matrix (i, 3);
+    for (int i = 0; i < 3; i++) {
+      position(i) = inverse_model_view_matrix(i, 3);
     }
 
     return position;
@@ -121,7 +117,7 @@ public:
   inline void
   setClippingRange (float near_value = 0.0001f, float far_value = 100000.f)
   {
-    camera_->SetClippingRange (near_value, far_value);
+    camera_->SetClippingRange(near_value, far_value);
   }
 
   void
@@ -129,10 +125,10 @@ public:
 
   // Methods
   // -----------------------------------------------------------------------------
-  //void computeFrustum(double aspect);
+  // void computeFrustum(double aspect);
   void
   computeFrustum ();
-  //computeFrustum(double aspect);
+  // computeFrustum(double aspect);
   void
   printFrustum ();
 
@@ -140,7 +136,6 @@ public:
   PCL_MAKE_ALIGNED_OPERATOR_NEW
 
 private:
-
   // Members
   // -----------------------------------------------------------------------------
   vtkSmartPointer<vtkCamera> camera_;

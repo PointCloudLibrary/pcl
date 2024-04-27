@@ -38,101 +38,102 @@
  *
  */
 
+#include <pcl/features/normal_3d.h>
+#include <pcl/features/rsd.h>
+#include <pcl/io/pcd_io.h>
 #include <pcl/test/gtest.h>
 #include <pcl/point_cloud.h>
-#include <pcl/features/rsd.h>
-#include <pcl/features/normal_3d.h>
-#include <pcl/io/pcd_io.h>
 
 using namespace pcl;
 using namespace pcl::io;
 
-search::KdTree<PointXYZ>::Ptr tree (new search::KdTree<PointXYZ> ());
-PointCloud<PointXYZ>::Ptr cloud (new PointCloud<PointXYZ> ());
+search::KdTree<PointXYZ>::Ptr tree(new search::KdTree<PointXYZ>());
+PointCloud<PointXYZ>::Ptr cloud(new PointCloud<PointXYZ>());
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TEST (PCL, RSDEstimation)
+TEST(PCL, RSDEstimation)
 {
   // Estimate normals first
   double rad = 0.02;
   NormalEstimation<PointXYZ, Normal> n;
-  PointCloud<Normal>::Ptr normals (new PointCloud<Normal> ());
+  PointCloud<Normal>::Ptr normals(new PointCloud<Normal>());
   // set parameters
-  n.setInputCloud (cloud);
-  n.setSearchMethod (tree);
-  n.setRadiusSearch (rad);
-  n.compute (*normals);
+  n.setInputCloud(cloud);
+  n.setSearchMethod(tree);
+  n.setRadiusSearch(rad);
+  n.compute(*normals);
 
-  EXPECT_NEAR ((*normals)[103].normal_x, 0.694, 0.1);
-  EXPECT_NEAR ((*normals)[103].normal_y, -0.562, 0.1);
-  EXPECT_NEAR ((*normals)[103].normal_z, -0.448, 0.1);
-  
+  EXPECT_NEAR((*normals)[103].normal_x, 0.694, 0.1);
+  EXPECT_NEAR((*normals)[103].normal_y, -0.562, 0.1);
+  EXPECT_NEAR((*normals)[103].normal_z, -0.448, 0.1);
+
   // RSDEstimation
   double max_plane_radius = 0.1;
   double rsd_radius = 0.03;
   RSDEstimation<PointXYZ, Normal, PrincipalRadiiRSD> rsd;
-  rsd.setInputNormals (normals);
-  PointCloud<PrincipalRadiiRSD>::Ptr rsds (new PointCloud<PrincipalRadiiRSD> ());
-  rsd.setInputCloud (cloud);
-  rsd.setPlaneRadius (max_plane_radius);
-  rsd.setSearchMethod (tree);
-  rsd.setRadiusSearch (rsd_radius);
-  rsd.setSaveHistograms (true);
-  rsd.compute (*rsds);
+  rsd.setInputNormals(normals);
+  PointCloud<PrincipalRadiiRSD>::Ptr rsds(new PointCloud<PrincipalRadiiRSD>());
+  rsd.setInputCloud(cloud);
+  rsd.setPlaneRadius(max_plane_radius);
+  rsd.setSearchMethod(tree);
+  rsd.setRadiusSearch(rsd_radius);
+  rsd.setSaveHistograms(true);
+  rsd.compute(*rsds);
 
   auto mat = rsd.getHistograms();
 
-  EXPECT_EQ (1, (*mat)[140](0, 0));
-  EXPECT_EQ (3, (*mat)[140](0, 1));
-  EXPECT_EQ (7, (*mat)[140](0, 2));
-  EXPECT_EQ (2, (*mat)[140](0, 3));
-  EXPECT_EQ (0, (*mat)[140](0, 4));
-  EXPECT_EQ (0, (*mat)[140](1, 0));
-  EXPECT_EQ (0, (*mat)[140](1, 1));
-  EXPECT_EQ (3, (*mat)[140](1, 2));
-  EXPECT_EQ (10, (*mat)[140](1, 3));
-  EXPECT_EQ (12, (*mat)[140](1, 4));
-  EXPECT_EQ (0, (*mat)[140](2, 0));
-  EXPECT_EQ (0, (*mat)[140](2, 1));
-  EXPECT_EQ (0, (*mat)[140](2, 2));
-  EXPECT_EQ (0, (*mat)[140](2, 3));
-  EXPECT_EQ (1, (*mat)[140](2, 4));
+  EXPECT_EQ(1, (*mat)[140](0, 0));
+  EXPECT_EQ(3, (*mat)[140](0, 1));
+  EXPECT_EQ(7, (*mat)[140](0, 2));
+  EXPECT_EQ(2, (*mat)[140](0, 3));
+  EXPECT_EQ(0, (*mat)[140](0, 4));
+  EXPECT_EQ(0, (*mat)[140](1, 0));
+  EXPECT_EQ(0, (*mat)[140](1, 1));
+  EXPECT_EQ(3, (*mat)[140](1, 2));
+  EXPECT_EQ(10, (*mat)[140](1, 3));
+  EXPECT_EQ(12, (*mat)[140](1, 4));
+  EXPECT_EQ(0, (*mat)[140](2, 0));
+  EXPECT_EQ(0, (*mat)[140](2, 1));
+  EXPECT_EQ(0, (*mat)[140](2, 2));
+  EXPECT_EQ(0, (*mat)[140](2, 3));
+  EXPECT_EQ(1, (*mat)[140](2, 4));
 
-  EXPECT_EQ (0, (*mat)[103](0, 0));
-  EXPECT_EQ (4, (*mat)[103](0, 1));
-  EXPECT_EQ (3, (*mat)[103](0, 2));
-  EXPECT_EQ (0, (*mat)[103](0, 3));
-  EXPECT_EQ (0, (*mat)[103](0, 4));
-  EXPECT_EQ (0, (*mat)[103](1, 0));
-  EXPECT_EQ (1, (*mat)[103](1, 1));
-  EXPECT_EQ (7, (*mat)[103](1, 2));
-  EXPECT_EQ (1, (*mat)[103](1, 3));
-  EXPECT_EQ (0, (*mat)[103](1, 4));
-  EXPECT_EQ (0, (*mat)[103](2, 0));
-  EXPECT_EQ (0, (*mat)[103](2, 1));
-  EXPECT_EQ (1, (*mat)[103](2, 2));
-  EXPECT_EQ (5, (*mat)[103](2, 3));
-  EXPECT_EQ (3, (*mat)[103](2, 4));
-  
+  EXPECT_EQ(0, (*mat)[103](0, 0));
+  EXPECT_EQ(4, (*mat)[103](0, 1));
+  EXPECT_EQ(3, (*mat)[103](0, 2));
+  EXPECT_EQ(0, (*mat)[103](0, 3));
+  EXPECT_EQ(0, (*mat)[103](0, 4));
+  EXPECT_EQ(0, (*mat)[103](1, 0));
+  EXPECT_EQ(1, (*mat)[103](1, 1));
+  EXPECT_EQ(7, (*mat)[103](1, 2));
+  EXPECT_EQ(1, (*mat)[103](1, 3));
+  EXPECT_EQ(0, (*mat)[103](1, 4));
+  EXPECT_EQ(0, (*mat)[103](2, 0));
+  EXPECT_EQ(0, (*mat)[103](2, 1));
+  EXPECT_EQ(1, (*mat)[103](2, 2));
+  EXPECT_EQ(5, (*mat)[103](2, 3));
+  EXPECT_EQ(3, (*mat)[103](2, 4));
 }
 
 /* ---[ */
 int
 main (int argc, char** argv)
 {
-  if (argc < 2)
-  {
-    std::cerr << "No test file given. Please download `bun0.pcd` and pass its path to the test." << std::endl;
+  if (argc < 2) {
+    std::cerr << "No test file given. Please download `bun0.pcd` and pass its path to "
+                 "the test."
+              << std::endl;
     return (-1);
   }
 
-  if (loadPCDFile<PointXYZ> (argv[1], *cloud) < 0)
-  {
-    std::cerr << "Failed to read test file. Please download `bun0.pcd` and pass its path to the test." << std::endl;
+  if (loadPCDFile<PointXYZ>(argv[1], *cloud) < 0) {
+    std::cerr << "Failed to read test file. Please download `bun0.pcd` and pass its "
+                 "path to the test."
+              << std::endl;
     return (-1);
   }
-  
-  testing::InitGoogleTest (&argc, argv);
-  return (RUN_ALL_TESTS ());
+
+  testing::InitGoogleTest(&argc, argv);
+  return (RUN_ALL_TESTS());
 }
 /* ]--- */

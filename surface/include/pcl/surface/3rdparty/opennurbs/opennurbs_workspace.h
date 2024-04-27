@@ -8,7 +8,7 @@
 // THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT EXPRESS OR IMPLIED WARRANTY.
 // ALL IMPLIED WARRANTIES OF FITNESS FOR ANY PARTICULAR PURPOSE AND OF
 // MERCHANTABILITY ARE HEREBY DISCLAIMED.
-//				
+//
 // For complete openNURBS copyright information see <http://www.opennurbs.org>.
 //
 ////////////////////////////////////////////////////////////////
@@ -19,19 +19,18 @@
 
 /*
 Description:
-  Use ON_Workspace classes on the stack to efficiently get 
-  and automatically clean up workspace memory and scratch 
+  Use ON_Workspace classes on the stack to efficiently get
+  and automatically clean up workspace memory and scratch
   files.
 */
-class ON_CLASS ON_Workspace
-{
+class ON_CLASS ON_Workspace {
 public:
   /*
   Description:
     ON_Workspace classes should be on the stack
     or as members on classes that are never copied.
     The destructor frees memory that was allocated by
-    ON_Workspace::GetMemory and closes files that were 
+    ON_Workspace::GetMemory and closes files that were
     opened with ON_Workspace::OpenFile.
   */
   ON_Workspace();
@@ -39,30 +38,30 @@ public:
   /*
   Description:
     The destructor frees memory that was allocated by
-    ON_Workspace::GetMemory and closes files that were 
+    ON_Workspace::GetMemory and closes files that were
     opened with ON_Workspace::OpenFile.
   */
   ~ON_Workspace();
 
-
   /*
   Description:
     The destructor frees memory that was allocated by
-    ON_Workspace::GetMemory and closes files that were 
+    ON_Workspace::GetMemory and closes files that were
     opened with ON_Workspace::OpenFile.  The workspace
     can be used again after calling destroy.
   */
-  void Destroy();
+  void
+  Destroy ();
 
   /*
   Description:
-    Gets a block of heap memory that will be freed by 
+    Gets a block of heap memory that will be freed by
     ~ON_Workspace. The intent of ON_Workspace::GetMemory
-    is to provide an easy way to get blocks of scratch 
-    memory without having to worry about cleaning up 
+    is to provide an easy way to get blocks of scratch
+    memory without having to worry about cleaning up
     before returning.
   Parameters:
-    sz - [in] (>0) size of memory block in bytes. 
+    sz - [in] (>0) size of memory block in bytes.
               If sz <= 0, then NULL is returned.
   Returns:
     A pointer to the memory block.
@@ -81,7 +80,8 @@ public:
     ON_Workspace::GetPointMemory
     ON_Workspace::GetVectorMemory
   */
-  void* GetMemory( std::size_t sz );
+  void*
+  GetMemory (std::size_t sz);
 
   /*
   Description:
@@ -104,7 +104,8 @@ public:
     ON_Workspace::KeepMemory
     ON_Workspace::GrowIntMemory
   */
-  int* GetIntMemory( std::size_t count );
+  int*
+  GetIntMemory (std::size_t count);
 
   /*
   Description:
@@ -121,7 +122,8 @@ public:
   See Also:
     ON_Workspace::KeepMemory
   */
-  int** GetIntMemory( std::size_t row_count, std::size_t col_count );
+  int**
+  GetIntMemory (std::size_t row_count, std::size_t col_count);
 
   /*
   Description:
@@ -136,7 +138,7 @@ public:
     A pointer to the array of doubles.
   Remarks.
     This is a simple helper function so you don't have to
-    mess around with (double*) casts and sizeof(double)s 
+    mess around with (double*) casts and sizeof(double)s
     in a call to GetMemory().  It is exactly like calling
     (double*)GetMemory(count*sizeof(double));
   See Also:
@@ -144,7 +146,8 @@ public:
     ON_Workspace::KeepMemory
     ON_Workspace::GrowIntMemory
   */
-  double* GetDoubleMemory( std::size_t count );
+  double*
+  GetDoubleMemory (std::size_t count);
 
   /*
   Description:
@@ -161,12 +164,13 @@ public:
   See Also:
     ON_Workspace::KeepMemory
   */
-  double** GetDoubleMemory( std::size_t row_count, std::size_t col_count );
+  double**
+  GetDoubleMemory (std::size_t row_count, std::size_t col_count);
 
   /*
   Description:
     Gets an array of ON_3dPoints that will be freed by ~ON_Workspace.
-    The intent of ON_Workspace::GetPointMemory is to 
+    The intent of ON_Workspace::GetPointMemory is to
     provide an easy way to get scratch point arrays without
     having to worry about cleaning up before returning.
   Parameters:
@@ -184,12 +188,13 @@ public:
     ON_Workspace::KeepMemory
     ON_Workspace::GrowIntMemory
   */
-  ON_3dPoint* GetPointMemory( std::size_t count );
+  ON_3dPoint*
+  GetPointMemory (std::size_t count);
 
   /*
   Description:
     Gets an array of ON_3dVectors that will be freed by ~ON_Workspace.
-    The intent of ON_Workspace::GetVectorMemory is to 
+    The intent of ON_Workspace::GetVectorMemory is to
     provide an easy way to get scratch Vector arrays without
     having to worry about cleaning up before returning.
   Parameters:
@@ -207,7 +212,8 @@ public:
     ON_Workspace::KeepMemory
     ON_Workspace::GrowIntMemory
   */
-  ON_3dVector* GetVectorMemory( std::size_t count );
+  ON_3dVector*
+  GetVectorMemory (std::size_t count);
 
   /*
   Description:
@@ -216,9 +222,9 @@ public:
   Parameters:
     ptr - [in] pointer returned by an earlier call to
                GetMemory or GrowMemory.
-    sz - [in] (>0) size of memory block in bytes. 
+    sz - [in] (>0) size of memory block in bytes.
               If sz <= 0, then NULL is returned.
-              If ptr is not NULL and was not allocated by an 
+              If ptr is not NULL and was not allocated by an
               earlier call to GetMemory or GrowMemory, then
               NULL is returned.
   Returns:
@@ -237,7 +243,8 @@ public:
     ON_Workspace::GrowPointMemory
     ON_Workspace::GrowVectorMemory
   */
-  void* GrowMemory( void* ptr, std::size_t sz );
+  void*
+  GrowMemory (void* ptr, std::size_t sz);
 
   /*
   Description:
@@ -262,7 +269,8 @@ public:
     ON_Workspace::GetIntMemory
     ON_Workspace::KeepMemory
   */
-  int* GrowIntMemory( int* ptr, std::size_t count );
+  int*
+  GrowIntMemory (int* ptr, std::size_t count);
 
   /*
   Description:
@@ -287,7 +295,8 @@ public:
     ON_Workspace::GetDoubleMemory
     ON_Workspace::KeepMemory
   */
-  double* GrowDoubleMemory( double* ptr, std::size_t count );
+  double*
+  GrowDoubleMemory (double* ptr, std::size_t count);
 
   /*
   Description:
@@ -312,7 +321,8 @@ public:
     ON_Workspace::GetPointMemory
     ON_Workspace::KeepMemory
   */
-  ON_3dPoint* GrowPointMemory( ON_3dPoint* ptr, std::size_t count );
+  ON_3dPoint*
+  GrowPointMemory (ON_3dPoint* ptr, std::size_t count);
 
   /*
   Description:
@@ -337,15 +347,16 @@ public:
     ON_Workspace::GetVectorMemory
     ON_Workspace::KeepMemory
   */
-  ON_3dVector* GrowVectorMemory( ON_3dVector* ptr, std::size_t count );
+  ON_3dVector*
+  GrowVectorMemory (ON_3dVector* ptr, std::size_t count);
 
   /*
   Description:
-    Calling the KeepMemory() function with a pointer 
-    returned from one of the Get...() or Grow...() calls 
+    Calling the KeepMemory() function with a pointer
+    returned from one of the Get...() or Grow...() calls
     keeps the workspace destructor from freeing the memory.
     After calling KeepMemory(), you can no longer use
-    Grow...() on the pointer.  The caller is responsible 
+    Grow...() on the pointer.  The caller is responsible
     for using onfree() to release the memory when it is no
     longer needed.
   Parameters:
@@ -359,14 +370,15 @@ public:
     ON_Workspace::GetMemory
     ON_Workspace::KeepAllMemory
   */
-  ON_BOOL32 KeepMemory( void* ptr );
+  ON_BOOL32
+  KeepMemory (void* ptr);
 
   /*
   Description:
     Calling KeepAllMemory() has the same effect as calling
     KeepMemory(p) for every active allocation in the workspace.
     After calling KeepAllMemory(), you can no longer use
-    Grow...() on the pointers and you are responsible 
+    Grow...() on the pointers and you are responsible
     for using onfree() to release the memory when it is no
     longer needed.
   See Also:
@@ -374,7 +386,8 @@ public:
     ON_Workspace::GetMemory
     ON_Workspace::KeepMemory
   */
-  void KeepAllMemory();
+  void
+  KeepAllMemory ();
 
   /*
   Description:
@@ -392,10 +405,8 @@ public:
     ON_Workspace::KeepFile
     ON::OpenFile
   */
-  FILE* OpenFile(
-          const char* filename, 
-          const char* filemode
-          );
+  FILE*
+  OpenFile (const char* filename, const char* filemode);
 
   /*
   Description:
@@ -413,10 +424,8 @@ public:
     ON_Workspace::KeepFile
     ON::OpenFile
   */
-  FILE* OpenFile(
-          const wchar_t* filename, 
-          const wchar_t* filemode
-          );
+  FILE*
+  OpenFile (const wchar_t* filename, const wchar_t* filemode);
 
   /*
   Description:
@@ -435,19 +444,20 @@ public:
     ON::OpenFile
     ON::CloseFile
   */
-  int KeepFile(FILE* fileptr);
+  int
+  KeepFile (FILE* fileptr);
 
 private:
-  struct ON_Workspace_FBLK * m_pFileBlk;
-  struct ON_Workspace_MBLK * m_pMemBlk;
+  struct ON_Workspace_FBLK* m_pFileBlk;
+  struct ON_Workspace_MBLK* m_pMemBlk;
 
 private:
   // There is no implementation of the following to prevent use.
   // ON_Workspaces should never be copied, or you will get
   // multiple attempts to free the same pointer.
-  ON_Workspace( const ON_Workspace& );
-  ON_Workspace& operator=( const ON_Workspace& );
+  ON_Workspace(const ON_Workspace&);
+  ON_Workspace&
+  operator=(const ON_Workspace&);
 };
-
 
 #endif

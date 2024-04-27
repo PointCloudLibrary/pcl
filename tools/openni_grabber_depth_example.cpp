@@ -35,80 +35,82 @@
  *
  */
 
-#include <pcl/io/openni_grabber.h>
 #include <pcl/common/time.h>
 #include <pcl/console/parse.h>
+#include <pcl/io/openni_grabber.h>
 
-class SimpleOpenNIProcessor
-{
-  public:
-    bool save;
-    openni_wrapper::OpenNIDevice::DepthMode mode;
+class SimpleOpenNIProcessor {
+public:
+  bool save;
+  openni_wrapper::OpenNIDevice::DepthMode mode;
 
-    SimpleOpenNIProcessor (openni_wrapper::OpenNIDevice::DepthMode depth_mode = openni_wrapper::OpenNIDevice::OpenNI_12_bit_depth) : mode (depth_mode) {}
+  SimpleOpenNIProcessor(openni_wrapper::OpenNIDevice::DepthMode depth_mode =
+                            openni_wrapper::OpenNIDevice::OpenNI_12_bit_depth)
+  : mode(depth_mode)
+  {}
 
-    void 
-    imageDepthImageCallback (const openni_wrapper::DepthImage::Ptr& d_img)
-    {
-      static unsigned count = 0;
-      static double last = pcl::getTime ();
-      if (++count == 30)
-      {
-        double now = pcl::getTime ();
-        std::cout << "got depth-image. Average framerate: " << static_cast<double>(count)/(now - last) << " Hz" <<  std::endl;
-        std::cout << "Depth baseline: " << d_img->getBaseline () << " and focal length: " << d_img->getFocalLength () << std::endl;
-        count = 0;
-        last = now;
+  void
+  imageDepthImageCallback (const openni_wrapper::DepthImage::Ptr& d_img)
+  {
+    static unsigned count = 0;
+    static double last = pcl::getTime();
+    if (++count == 30) {
+      double now = pcl::getTime();
+      std::cout << "got depth-image. Average framerate: "
+                << static_cast<double>(count) / (now - last) << " Hz" << std::endl;
+      std::cout << "Depth baseline: " << d_img->getBaseline()
+                << " and focal length: " << d_img->getFocalLength() << std::endl;
+      count = 0;
+      last = now;
+    }
+  }
+
+  void
+  run ()
+  {
+    save = false;
+
+    // create a new grabber for OpenNI devices
+    pcl::OpenNIGrabber interface;
+
+    // Set the depth output format
+    interface.getDevice()->setDepthOutputFormat(mode);
+
+    // make callback function from member function
+    std::function<void(const openni_wrapper::DepthImage::Ptr&)> f2 =
+        [this] (const openni_wrapper::DepthImage::Ptr& depth) {
+          imageDepthImageCallback(depth);
+        };
+
+    // connect callback function for desired signal. In this case its a point cloud with
+    // color values
+    boost::signals2::connection c2 = interface.registerCallback(f2);
+
+    // start receiving point clouds
+    interface.start();
+
+    std::cout << R"(<Esc>, 'q', 'Q': quit the program)" << std::endl;
+    std::cout << "\' \': pause" << std::endl;
+    char key;
+    do {
+      key = static_cast<char>(getchar());
+      if (key == ' ') {
+        interface.toggle();
       }
-    }
+    } while ((key != 27) && (key != 'q') && (key != 'Q'));
 
-    void 
-    run ()
-    {
-      save = false;
-
-      // create a new grabber for OpenNI devices
-      pcl::OpenNIGrabber interface;
-
-      // Set the depth output format
-      interface.getDevice ()->setDepthOutputFormat (mode);
-
-      // make callback function from member function
-      std::function<void (const openni_wrapper::DepthImage::Ptr&)> f2 = [this] (const openni_wrapper::DepthImage::Ptr& depth)
-      {
-        imageDepthImageCallback (depth);
-      };
-
-      // connect callback function for desired signal. In this case its a point cloud with color values
-      boost::signals2::connection c2 = interface.registerCallback (f2);
-
-      // start receiving point clouds
-      interface.start ();
-
-      std::cout << R"(<Esc>, 'q', 'Q': quit the program)" << std::endl;
-      std::cout << "\' \': pause" << std::endl;
-      char key;
-      do
-      {
-        key = static_cast<char> (getchar ());
-        if (key == ' ')
-        {
-          interface.toggle ();
-        }
-      } while ((key != 27) && (key != 'q') && (key != 'Q'));
-
-      // stop the grabber
-      interface.stop ();
-    }
+    // stop the grabber
+    interface.stop();
+  }
 };
 
 int
-main (int argc, char **argv)
+main (int argc, char** argv)
 {
   int mode = openni_wrapper::OpenNIDevice::OpenNI_12_bit_depth;
-  pcl::console::parse_argument (argc, argv, "-mode", mode);
+  pcl::console::parse_argument(argc, argv, "-mode", mode);
 
-  SimpleOpenNIProcessor v (static_cast<openni_wrapper::OpenNIDevice::DepthMode> (mode));
-  v.run ();
+  SimpleOpenNIProcessor v(static_cast<openni_wrapper::OpenNIDevice::DepthMode>(mode));
+  v.run();
   return (0);
 }

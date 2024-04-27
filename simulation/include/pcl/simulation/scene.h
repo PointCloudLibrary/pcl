@@ -9,7 +9,7 @@
 
 #include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
-//#include <pcl/win32_macros.h>
+// #include <pcl/win32_macros.h>
 #include <pcl/simulation/camera.h>
 #include <pcl/simulation/model.h>
 
@@ -22,16 +22,16 @@ public:
   using ConstPtr = shared_ptr<Scene>;
 
   void
-  draw();
+  draw ();
 
   void
-  add(Model::Ptr model);
+  add (Model::Ptr model);
 
   void
-  addCompleteModel(std::vector<Model::Ptr> model);
+  addCompleteModel (std::vector<Model::Ptr> model);
 
   void
-  clear();
+  clear ();
 
 private:
   std::vector<Model::Ptr> models_;

@@ -62,18 +62,19 @@ public:
   CorrespondenceRejectionOrganizedBoundary() = default;
 
   void
-  getRemainingCorrespondences(const pcl::Correspondences& original_correspondences,
-                              pcl::Correspondences& remaining_correspondences) override;
+  getRemainingCorrespondences (
+      const pcl::Correspondences& original_correspondences,
+      pcl::Correspondences& remaining_correspondences) override;
 
   inline void
-  setNumberOfBoundaryNaNs(int val)
+  setNumberOfBoundaryNaNs (int val)
   {
     boundary_nans_threshold_ = val;
   }
 
   template <typename PointT>
   inline void
-  setInputSource(const typename pcl::PointCloud<PointT>::ConstPtr& cloud)
+  setInputSource (const typename pcl::PointCloud<PointT>::ConstPtr& cloud)
   {
     if (!data_container_)
       data_container_.reset(new pcl::registration::DataContainer<PointT>);
@@ -83,7 +84,7 @@ public:
 
   template <typename PointT>
   inline void
-  setInputTarget(const typename pcl::PointCloud<PointT>::ConstPtr& cloud)
+  setInputTarget (const typename pcl::PointCloud<PointT>::ConstPtr& cloud)
   {
     if (!data_container_)
       data_container_.reset(new pcl::registration::DataContainer<PointT>);
@@ -93,14 +94,14 @@ public:
 
   /** \brief See if this rejector requires source points */
   bool
-  requiresSourcePoints() const override
+  requiresSourcePoints () const override
   {
     return (true);
   }
 
   /** \brief Blob method for setting the source cloud */
   void
-  setSourcePoints(pcl::PCLPointCloud2::ConstPtr cloud2) override
+  setSourcePoints (pcl::PCLPointCloud2::ConstPtr cloud2) override
   {
     PointCloud<PointXYZ>::Ptr cloud(new PointCloud<PointXYZ>);
     fromPCLPointCloud2(*cloud2, *cloud);
@@ -109,14 +110,14 @@ public:
 
   /** \brief See if this rejector requires a target cloud */
   bool
-  requiresTargetPoints() const override
+  requiresTargetPoints () const override
   {
     return (true);
   }
 
   /** \brief Method for setting the target cloud */
   void
-  setTargetPoints(pcl::PCLPointCloud2::ConstPtr cloud2) override
+  setTargetPoints (pcl::PCLPointCloud2::ConstPtr cloud2) override
   {
     PointCloud<PointXYZ>::Ptr cloud(new PointCloud<PointXYZ>);
     fromPCLPointCloud2(*cloud2, *cloud);
@@ -124,7 +125,7 @@ public:
   }
 
   virtual bool
-  updateSource(const Eigen::Matrix4d&)
+  updateSource (const Eigen::Matrix4d&)
   {
     return (true);
   }
@@ -134,7 +135,7 @@ protected:
    * \param[out] correspondences the set of resultant correspondences.
    */
   inline void
-  applyRejection(pcl::Correspondences& correspondences) override
+  applyRejection (pcl::Correspondences& correspondences) override
   {
     getRemainingCorrespondences(*input_correspondences_, correspondences);
   }

@@ -37,84 +37,82 @@
  *
  */
 
-#include <pcl/test/gtest.h>
-
-#include <pcl/point_types.h>
+#include <pcl/common/common.h>
+#include <pcl/features/normal_3d.h>
+#include <pcl/io/obj_io.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/io/vtk_io.h>
-#include <pcl/features/normal_3d.h>
 #include <pcl/surface/gp3.h>
-#include <pcl/common/common.h>
-
-#include <pcl/io/obj_io.h>
-#include <pcl/TextureMesh.h>
 #include <pcl/surface/texture_mapping.h>
+#include <pcl/test/gtest.h>
+#include <pcl/point_types.h>
+#include <pcl/TextureMesh.h>
 using namespace pcl;
 using namespace pcl::io;
 
-PointCloud<PointXYZ>::Ptr cloud (new PointCloud<PointXYZ>);
-PointCloud<PointNormal>::Ptr cloud_with_normals (new PointCloud<PointNormal>);
+PointCloud<PointXYZ>::Ptr cloud(new PointCloud<PointXYZ>);
+PointCloud<PointNormal>::Ptr cloud_with_normals(new PointCloud<PointNormal>);
 search::KdTree<PointXYZ>::Ptr tree;
 search::KdTree<PointNormal>::Ptr tree2;
 
 // add by ktran to test update functions
-PointCloud<PointXYZ>::Ptr cloud1 (new PointCloud<PointXYZ>);
-PointCloud<PointNormal>::Ptr cloud_with_normals1 (new PointCloud<PointNormal>);
+PointCloud<PointXYZ>::Ptr cloud1(new PointCloud<PointXYZ>);
+PointCloud<PointNormal>::Ptr cloud_with_normals1(new PointCloud<PointNormal>);
 search::KdTree<PointXYZ>::Ptr tree3;
 search::KdTree<PointNormal>::Ptr tree4;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TEST (PCL, GreedyProjectionTriangulation)
+TEST(PCL, GreedyProjectionTriangulation)
 {
   // Init objects
   PolygonMesh triangles;
   GreedyProjectionTriangulation<PointNormal> gp3;
 
   // Set parameters
-  gp3.setInputCloud (cloud_with_normals);
-  gp3.setSearchMethod (tree2);
-  gp3.setSearchRadius (0.025);
-  gp3.setMu (2.5);
-  gp3.setMaximumNearestNeighbors (100);
-  gp3.setMaximumSurfaceAngle(M_PI/4); // 45 degrees
-  gp3.setMinimumAngle(M_PI/18); // 10 degrees
-  gp3.setMaximumAngle(2*M_PI/3); // 120 degrees
+  gp3.setInputCloud(cloud_with_normals);
+  gp3.setSearchMethod(tree2);
+  gp3.setSearchRadius(0.025);
+  gp3.setMu(2.5);
+  gp3.setMaximumNearestNeighbors(100);
+  gp3.setMaximumSurfaceAngle(M_PI / 4); // 45 degrees
+  gp3.setMinimumAngle(M_PI / 18);       // 10 degrees
+  gp3.setMaximumAngle(2 * M_PI / 3);    // 120 degrees
   gp3.setNormalConsistency(false);
 
   // Reconstruct
-  gp3.reconstruct (triangles);
-  //saveVTKFile ("./test/bun0-gp3.vtk", triangles);
-  EXPECT_EQ (triangles.cloud.width, cloud_with_normals->width);
-  EXPECT_EQ (triangles.cloud.height, cloud_with_normals->height);
-  EXPECT_NEAR (int (triangles.polygons.size ()), 685, 5);
+  gp3.reconstruct(triangles);
+  // saveVTKFile ("./test/bun0-gp3.vtk", triangles);
+  EXPECT_EQ(triangles.cloud.width, cloud_with_normals->width);
+  EXPECT_EQ(triangles.cloud.height, cloud_with_normals->height);
+  EXPECT_NEAR(int(triangles.polygons.size()), 685, 5);
 
   // Check triangles
-  EXPECT_EQ (int (triangles.polygons.at (0).vertices.size ()), 3);
-  EXPECT_EQ (int (triangles.polygons.at (0).vertices.at (0)), 0);
-  EXPECT_EQ (int (triangles.polygons.at (0).vertices.at (1)), 12);
-  EXPECT_EQ (int (triangles.polygons.at (0).vertices.at (2)), 198);
-  EXPECT_EQ (int (triangles.polygons.at (684).vertices.size ()), 3);
-  EXPECT_EQ (int (triangles.polygons.at (684).vertices.at (0)), 393);
-  EXPECT_EQ (int (triangles.polygons.at (684).vertices.at (1)), 394);
-  EXPECT_EQ (int (triangles.polygons.at (684).vertices.at (2)), 395);
+  EXPECT_EQ(int(triangles.polygons.at(0).vertices.size()), 3);
+  EXPECT_EQ(int(triangles.polygons.at(0).vertices.at(0)), 0);
+  EXPECT_EQ(int(triangles.polygons.at(0).vertices.at(1)), 12);
+  EXPECT_EQ(int(triangles.polygons.at(0).vertices.at(2)), 198);
+  EXPECT_EQ(int(triangles.polygons.at(684).vertices.size()), 3);
+  EXPECT_EQ(int(triangles.polygons.at(684).vertices.at(0)), 393);
+  EXPECT_EQ(int(triangles.polygons.at(684).vertices.at(1)), 394);
+  EXPECT_EQ(int(triangles.polygons.at(684).vertices.at(2)), 395);
 
   // Additional vertex information
   std::vector<int> parts = gp3.getPartIDs();
   std::vector<int> states = gp3.getPointStates();
   int nr_points = cloud_with_normals->width * cloud_with_normals->height;
-  EXPECT_EQ (int (parts.size ()), nr_points);
-  EXPECT_EQ (int (states.size ()), nr_points);
-  EXPECT_EQ (parts[0], 0);
-  EXPECT_EQ (states[0], gp3.COMPLETED);
-  EXPECT_EQ (parts[393], 5);
-  EXPECT_EQ (states[393], gp3.BOUNDARY);
+  EXPECT_EQ(int(parts.size()), nr_points);
+  EXPECT_EQ(int(states.size()), nr_points);
+  EXPECT_EQ(parts[0], 0);
+  EXPECT_EQ(states[0], gp3.COMPLETED);
+  EXPECT_EQ(parts[393], 5);
+  EXPECT_EQ(states[393], gp3.BOUNDARY);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TEST (PCL, GreedyProjectionTriangulation_Merge2Meshes)
+TEST(PCL, GreedyProjectionTriangulation_Merge2Meshes)
 {
   // check if exist update cloud
-  if(cloud_with_normals1->width * cloud_with_normals1->height > 0){
+  if (cloud_with_normals1->width * cloud_with_normals1->height > 0) {
     // Init objects
     PolygonMesh triangles;
     PolygonMesh triangles1;
@@ -122,41 +120,40 @@ TEST (PCL, GreedyProjectionTriangulation_Merge2Meshes)
     GreedyProjectionTriangulation<PointNormal> gp31;
 
     // Set parameters
-    gp3.setInputCloud (cloud_with_normals);
-    gp3.setSearchMethod (tree2);
-    gp3.setSearchRadius (0.025);
-    gp3.setMu (2.5);
-    gp3.setMaximumNearestNeighbors (100);
-    gp3.setMaximumSurfaceAngle(M_PI/4); // 45 degrees
-    gp3.setMinimumAngle(M_PI/18); // 10 degrees
-    gp3.setMaximumAngle(2*M_PI/3); // 120 degrees
+    gp3.setInputCloud(cloud_with_normals);
+    gp3.setSearchMethod(tree2);
+    gp3.setSearchRadius(0.025);
+    gp3.setMu(2.5);
+    gp3.setMaximumNearestNeighbors(100);
+    gp3.setMaximumSurfaceAngle(M_PI / 4); // 45 degrees
+    gp3.setMinimumAngle(M_PI / 18);       // 10 degrees
+    gp3.setMaximumAngle(2 * M_PI / 3);    // 120 degrees
     gp3.setNormalConsistency(false);
 
     // for mesh 2
     // Set parameters
-    gp31.setInputCloud (cloud_with_normals1);
-    gp31.setSearchMethod (tree4);
-    gp31.setSearchRadius (0.025);
-    gp31.setMu (2.5);
-    gp31.setMaximumNearestNeighbors (100);
-    gp31.setMaximumSurfaceAngle(M_PI/4); // 45 degrees
-    gp31.setMinimumAngle(M_PI/18); // 10 degrees
-    gp31.setMaximumAngle(2*M_PI/3); // 120 degrees
+    gp31.setInputCloud(cloud_with_normals1);
+    gp31.setSearchMethod(tree4);
+    gp31.setSearchRadius(0.025);
+    gp31.setMu(2.5);
+    gp31.setMaximumNearestNeighbors(100);
+    gp31.setMaximumSurfaceAngle(M_PI / 4); // 45 degrees
+    gp31.setMinimumAngle(M_PI / 18);       // 10 degrees
+    gp31.setMaximumAngle(2 * M_PI / 3);    // 120 degrees
     gp31.setNormalConsistency(false);
 
-
     // Reconstruct
-    //gp3.reconstruct (triangles);
-    //saveVTKFile ("bun01.vtk", triangles);
+    // gp3.reconstruct (triangles);
+    // saveVTKFile ("bun01.vtk", triangles);
 
-    //gp31.reconstruct (triangles1);
-    //saveVTKFile ("bun02.vtk", triangles1);
+    // gp31.reconstruct (triangles1);
+    // saveVTKFile ("bun02.vtk", triangles1);
   }
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TEST (PCL, UpdateMesh_With_TextureMapping)
+TEST(PCL, UpdateMesh_With_TextureMapping)
 {
-  if(cloud_with_normals1->width * cloud_with_normals1->height > 0){
+  if (cloud_with_normals1->width * cloud_with_normals1->height > 0) {
     // Init objects
     PolygonMesh triangles;
     PolygonMesh triangles1;
@@ -164,21 +161,21 @@ TEST (PCL, UpdateMesh_With_TextureMapping)
     GreedyProjectionTriangulation<PointNormal> gp31;
 
     // Set parameters
-    gp3.setInputCloud (cloud_with_normals);
-    gp3.setSearchMethod (tree2);
-    gp3.setSearchRadius (0.025);
-    gp3.setMu (2.5);
-    gp3.setMaximumNearestNeighbors (100);
-    gp3.setMaximumSurfaceAngle(M_PI/4); // 45 degrees
-    gp3.setMinimumAngle(M_PI/18); // 10 degrees
-    gp3.setMaximumAngle(2*M_PI/3); // 120 degrees
+    gp3.setInputCloud(cloud_with_normals);
+    gp3.setSearchMethod(tree2);
+    gp3.setSearchRadius(0.025);
+    gp3.setMu(2.5);
+    gp3.setMaximumNearestNeighbors(100);
+    gp3.setMaximumSurfaceAngle(M_PI / 4); // 45 degrees
+    gp3.setMinimumAngle(M_PI / 18);       // 10 degrees
+    gp3.setMaximumAngle(2 * M_PI / 3);    // 120 degrees
     gp3.setNormalConsistency(false);
 
-    gp3.reconstruct (triangles);
+    gp3.reconstruct(triangles);
 
-    EXPECT_EQ (triangles.cloud.width, cloud_with_normals->width);
-    EXPECT_EQ (triangles.cloud.height, cloud_with_normals->height);
-    EXPECT_EQ (int (triangles.polygons.size ()), 685);
+    EXPECT_EQ(triangles.cloud.width, cloud_with_normals->width);
+    EXPECT_EQ(triangles.cloud.height, cloud_with_normals->height);
+    EXPECT_EQ(int(triangles.polygons.size()), 685);
 
     // update with texture mapping
     // set 2 texture for 2 mesh
@@ -193,48 +190,48 @@ TEST (PCL, UpdateMesh_With_TextureMapping)
     tex_mesh.tex_polygons.push_back(triangles.polygons);
 
     // update mesh and texture mesh
-    //gp3.updateMesh(cloud_with_normals1, triangles, tex_mesh);
+    // gp3.updateMesh(cloud_with_normals1, triangles, tex_mesh);
     // set texture for added cloud
-    //tex_files.push_back("tex8.jpg");
+    // tex_files.push_back("tex8.jpg");
     // save updated mesh
-    //saveVTKFile ("update_bunny.vtk", triangles);
+    // saveVTKFile ("update_bunny.vtk", triangles);
 
-    //TextureMapping<PointXYZ> tm;
+    // TextureMapping<PointXYZ> tm;
 
     //// set mesh scale control
-    //tm.setF(0.01);
+    // tm.setF(0.01);
 
     //// set vector field
-    //tm.setVectorField(1, 0, 0);
+    // tm.setVectorField(1, 0, 0);
 
-    //TexMaterial tex_material;
+    // TexMaterial tex_material;
 
     //// default texture materials parameters
-    //tex_material.tex_Ka.r = 0.2f;
-    //tex_material.tex_Ka.g = 0.2f;
-    //tex_material.tex_Ka.b = 0.2f;
+    // tex_material.tex_Ka.r = 0.2f;
+    // tex_material.tex_Ka.g = 0.2f;
+    // tex_material.tex_Ka.b = 0.2f;
 
-    //tex_material.tex_Kd.r = 0.8f;
-    //tex_material.tex_Kd.g = 0.8f;
-    //tex_material.tex_Kd.b = 0.8f;
+    // tex_material.tex_Kd.r = 0.8f;
+    // tex_material.tex_Kd.g = 0.8f;
+    // tex_material.tex_Kd.b = 0.8f;
 
-    //tex_material.tex_Ks.r = 1.0f;
-    //tex_material.tex_Ks.g = 1.0f;
-    //tex_material.tex_Ks.b = 1.0f;
-    //tex_material.tex_d = 1.0f;
-    //tex_material.tex_Ns = 0.0f;
-    //tex_material.tex_illum = 2;
+    // tex_material.tex_Ks.r = 1.0f;
+    // tex_material.tex_Ks.g = 1.0f;
+    // tex_material.tex_Ks.b = 1.0f;
+    // tex_material.tex_d = 1.0f;
+    // tex_material.tex_Ns = 0.0f;
+    // tex_material.tex_illum = 2;
 
     //// set texture material parameters
-    //tm.setTextureMaterials(tex_material);
+    // tm.setTextureMaterials(tex_material);
 
     //// set texture files
-    //tm.setTextureFiles(tex_files);
+    // tm.setTextureFiles(tex_files);
 
     //// mapping
-    //tm.mapTexture2Mesh(tex_mesh);
+    // tm.mapTexture2Mesh(tex_mesh);
 
-    //saveOBJFile ("update_bunny.obj", tex_mesh);
+    // saveOBJFile ("update_bunny.obj", tex_mesh);
   }
 }
 
@@ -242,64 +239,65 @@ TEST (PCL, UpdateMesh_With_TextureMapping)
 int
 main (int argc, char** argv)
 {
-  if (argc < 2)
-  {
-    std::cerr << "No test file given. Please download `bun0.pcd` and pass its path to the test." << std::endl;
+  if (argc < 2) {
+    std::cerr << "No test file given. Please download `bun0.pcd` and pass its path to "
+                 "the test."
+              << std::endl;
     return (-1);
   }
 
   // Load file
   pcl::PCLPointCloud2 cloud_blob;
-  loadPCDFile (argv[1], cloud_blob);
-  fromPCLPointCloud2 (cloud_blob, *cloud);
+  loadPCDFile(argv[1], cloud_blob);
+  fromPCLPointCloud2(cloud_blob, *cloud);
 
   // Create search tree
-  tree.reset (new search::KdTree<PointXYZ> (false));
-  tree->setInputCloud (cloud);
+  tree.reset(new search::KdTree<PointXYZ>(false));
+  tree->setInputCloud(cloud);
 
   // Normal estimation
   NormalEstimation<PointXYZ, Normal> n;
-  PointCloud<Normal>::Ptr normals (new PointCloud<Normal> ());
-  n.setInputCloud (cloud);
-  //n.setIndices (indices[B);
-  n.setSearchMethod (tree);
-  n.setKSearch (20);
-  n.compute (*normals);
+  PointCloud<Normal>::Ptr normals(new PointCloud<Normal>());
+  n.setInputCloud(cloud);
+  // n.setIndices (indices[B);
+  n.setSearchMethod(tree);
+  n.setKSearch(20);
+  n.compute(*normals);
 
   // Concatenate XYZ and normal information
-  pcl::concatenateFields (*cloud, *normals, *cloud_with_normals);
-      
+  pcl::concatenateFields(*cloud, *normals, *cloud_with_normals);
+
   // Create search tree
-  tree2.reset (new search::KdTree<PointNormal>);
-  tree2->setInputCloud (cloud_with_normals);
+  tree2.reset(new search::KdTree<PointNormal>);
+  tree2->setInputCloud(cloud_with_normals);
 
   // Process for update cloud
-  if(argc == 3){
+  if (argc == 3) {
     pcl::PCLPointCloud2 cloud_blob1;
-    loadPCDFile (argv[2], cloud_blob1);
-    fromPCLPointCloud2 (cloud_blob1, *cloud1);
-        // Create search tree
-    tree3.reset (new search::KdTree<PointXYZ> (false));
-    tree3->setInputCloud (cloud1);
+    loadPCDFile(argv[2], cloud_blob1);
+    fromPCLPointCloud2(cloud_blob1, *cloud1);
+    // Create search tree
+    tree3.reset(new search::KdTree<PointXYZ>(false));
+    tree3->setInputCloud(cloud1);
 
     // Normal estimation
     NormalEstimation<PointXYZ, Normal> n1;
-    PointCloud<Normal>::Ptr normals1 (new PointCloud<Normal> ());
-    n1.setInputCloud (cloud1);
+    PointCloud<Normal>::Ptr normals1(new PointCloud<Normal>());
+    n1.setInputCloud(cloud1);
 
-    n1.setSearchMethod (tree3);
-    n1.setKSearch (20);
-    n1.compute (*normals1);
+    n1.setSearchMethod(tree3);
+    n1.setKSearch(20);
+    n1.compute(*normals1);
 
     // Concatenate XYZ and normal information
-    pcl::concatenateFields (*cloud1, *normals1, *cloud_with_normals1);
+    pcl::concatenateFields(*cloud1, *normals1, *cloud_with_normals1);
     // Create search tree
-    tree4.reset (new search::KdTree<PointNormal>);
-    tree4->setInputCloud (cloud_with_normals1);
+    tree4.reset(new search::KdTree<PointNormal>);
+    tree4->setInputCloud(cloud_with_normals1);
   }
 
   // Testing
-  testing::InitGoogleTest (&argc, argv);
-  return (RUN_ALL_TESTS ());
+  testing::InitGoogleTest(&argc, argv);
+  return (RUN_ALL_TESTS());
 }
 /* ]--- */

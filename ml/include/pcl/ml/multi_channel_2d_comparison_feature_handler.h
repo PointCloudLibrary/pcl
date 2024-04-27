@@ -72,7 +72,7 @@ public:
    * \param[in] height the height of the feature window
    */
   inline void
-  setFeatureWindowSize(int width, int height)
+  setFeatureWindowSize (int width, int height)
   {
     feature_window_width_ = width;
     feature_window_height_ = height;
@@ -84,7 +84,7 @@ public:
    * \param[out] features the destination for the created random features
    */
   inline void
-  createRandomFeatures(
+  createRandomFeatures (
       const std::size_t num_of_features,
       std::vector<MultiChannel2DComparisonFeature<PointXY32i>>& features)
   {
@@ -114,11 +114,11 @@ public:
    *             results
    */
   inline void
-  evaluateFeature(const MultiChannel2DComparisonFeature<PointXY32i>& feature,
-                  MultiChannel2DDataSet<DATA_TYPE, NUM_OF_CHANNELS>& data_set,
-                  std::vector<MultipleData2DExampleIndex>& examples,
-                  std::vector<float>& results,
-                  std::vector<unsigned char>& flags) const
+  evaluateFeature (const MultiChannel2DComparisonFeature<PointXY32i>& feature,
+                   MultiChannel2DDataSet<DATA_TYPE, NUM_OF_CHANNELS>& data_set,
+                   std::vector<MultipleData2DExampleIndex>& examples,
+                   std::vector<float>& results,
+                   std::vector<unsigned char>& flags) const
   {
     results.resize(examples.size());
     flags.resize(examples.size());
@@ -140,11 +140,11 @@ public:
    *             result
    */
   inline void
-  evaluateFeature(const MultiChannel2DComparisonFeature<PointXY32i>& feature,
-                  MultiChannel2DDataSet<DATA_TYPE, NUM_OF_CHANNELS>& data_set,
-                  const MultipleData2DExampleIndex& example,
-                  float& result,
-                  unsigned char& flag) const
+  evaluateFeature (const MultiChannel2DComparisonFeature<PointXY32i>& feature,
+                   MultiChannel2DDataSet<DATA_TYPE, NUM_OF_CHANNELS>& data_set,
+                   const MultipleData2DExampleIndex& example,
+                   float& result,
+                   unsigned char& flag) const
   {
     const int center_col_index = example.x;
     const int center_row_index = example.y;
@@ -176,8 +176,8 @@ public:
    * \param[out] stream the destination for the generated code
    */
   void
-  generateCodeForEvaluation(const MultiChannel2DComparisonFeature<PointXY32i>& feature,
-                            std::ostream& stream) const
+  generateCodeForEvaluation (const MultiChannel2DComparisonFeature<PointXY32i>& feature,
+                             std::ostream& stream) const
   {
     stream << "ERROR: RegressionVarianceStatsEstimator does not implement "
               "generateCodeForBranchIndex(...)";
@@ -221,7 +221,7 @@ public:
    * \param[in] height the height of the feature window
    */
   inline void
-  setFeatureWindowSize(int width, int height)
+  setFeatureWindowSize (int width, int height)
   {
     feature_window_width_ = width;
     feature_window_height_ = height;
@@ -233,7 +233,7 @@ public:
    * \param[out] features the destination for the created random features
    */
   inline void
-  createRandomFeatures(
+  createRandomFeatures (
       const std::size_t num_of_features,
       std::vector<MultiChannel2DComparisonFeature<PointXY32f>>& features)
   {
@@ -263,11 +263,11 @@ public:
    *             results
    */
   inline void
-  evaluateFeature(const MultiChannel2DComparisonFeature<PointXY32f>& feature,
-                  MultiChannel2DDataSet<DATA_TYPE, NUM_OF_CHANNELS>& data_set,
-                  std::vector<MultipleData2DExampleIndex>& examples,
-                  std::vector<float>& results,
-                  std::vector<unsigned char>& flags) const
+  evaluateFeature (const MultiChannel2DComparisonFeature<PointXY32f>& feature,
+                   MultiChannel2DDataSet<DATA_TYPE, NUM_OF_CHANNELS>& data_set,
+                   std::vector<MultipleData2DExampleIndex>& examples,
+                   std::vector<float>& results,
+                   std::vector<unsigned char>& flags) const
   {
     results.resize(examples.size());
     flags.resize(examples.size());
@@ -289,11 +289,11 @@ public:
    *             result
    */
   inline void
-  evaluateFeature(const MultiChannel2DComparisonFeature<PointXY32f>& feature,
-                  MultiChannel2DDataSet<DATA_TYPE, NUM_OF_CHANNELS>& data_set,
-                  const MultipleData2DExampleIndex& example,
-                  float& result,
-                  unsigned char& flag) const
+  evaluateFeature (const MultiChannel2DComparisonFeature<PointXY32f>& feature,
+                   MultiChannel2DDataSet<DATA_TYPE, NUM_OF_CHANNELS>& data_set,
+                   const MultipleData2DExampleIndex& example,
+                   float& result,
+                   unsigned char& flag) const
   {
     const int center_col_index = example.x;
     const int center_row_index = example.y;
@@ -334,8 +334,8 @@ public:
    * \param[out] stream the destination for the generated code
    */
   void
-  generateCodeForEvaluation(const MultiChannel2DComparisonFeature<PointXY32f>& feature,
-                            std::ostream& stream) const
+  generateCodeForEvaluation (const MultiChannel2DComparisonFeature<PointXY32f>& feature,
+                             std::ostream& stream) const
   {
     stream << "ERROR: ScaledMultiChannel2DComparisonFeatureHandler does not implement "
               "generateCodeForBranchIndex(...)"
@@ -375,11 +375,11 @@ public:
   ScaledMultiChannel2DComparisonFeatureHandlerCCodeGenerator() {}
 
   void
-  generateEvalFunctionCode(std::ostream& stream) const;
+  generateEvalFunctionCode (std::ostream& stream) const;
 
   void
-  generateEvalCode(const MultiChannel2DComparisonFeature<PointXY32f>& feature,
-                   std::ostream& stream) const;
+  generateEvalCode (const MultiChannel2DComparisonFeature<PointXY32f>& feature,
+                    std::ostream& stream) const;
 };
 
 template <class DATA_TYPE,

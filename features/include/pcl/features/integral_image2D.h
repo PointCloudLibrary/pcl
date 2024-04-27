@@ -43,306 +43,348 @@
 
 #include <vector>
 
+namespace pcl {
+template <typename DataType>
+struct IntegralImageTypeTraits {
+  using Type = DataType;
+  using IntegralType = DataType;
+};
 
-namespace pcl
-{
-  template <typename DataType>
-  struct IntegralImageTypeTraits
-  {
-    using Type = DataType;
-    using IntegralType = DataType;
-  };
+template <>
+struct IntegralImageTypeTraits<float> {
+  using Type = float;
+  using IntegralType = double;
+};
 
-  template <>
-  struct IntegralImageTypeTraits<float>
-  {
-    using Type = float;
-    using IntegralType = double;
-  };
+template <>
+struct IntegralImageTypeTraits<char> {
+  using Type = char;
+  using IntegralType = int;
+};
 
-  template <>
-  struct IntegralImageTypeTraits<char>
-  {
-    using Type = char;
-    using IntegralType = int;
-  };
+template <>
+struct IntegralImageTypeTraits<short> {
+  using Type = short;
+  using IntegralType = long;
+};
 
-  template <>
-  struct IntegralImageTypeTraits<short>
-  {
-    using Type = short;
-    using IntegralType = long;
-  };
+template <>
+struct IntegralImageTypeTraits<unsigned short> {
+  using Type = unsigned short;
+  using IntegralType = unsigned long;
+};
 
-  template <>
-  struct IntegralImageTypeTraits<unsigned short>
-  {
-    using Type = unsigned short;
-    using IntegralType = unsigned long;
-  };
+template <>
+struct IntegralImageTypeTraits<unsigned char> {
+  using Type = unsigned char;
+  using IntegralType = unsigned int;
+};
 
-  template <>
-  struct IntegralImageTypeTraits<unsigned char>
-  {
-    using Type = unsigned char;
-    using IntegralType = unsigned int;
-  };
+template <>
+struct IntegralImageTypeTraits<int> {
+  using Type = int;
+  using IntegralType = long;
+};
 
-  template <>
-  struct IntegralImageTypeTraits<int>
-  {
-    using Type = int;
-    using IntegralType = long;
-  };
+template <>
+struct IntegralImageTypeTraits<unsigned int> {
+  using Type = unsigned int;
+  using IntegralType = unsigned long;
+};
 
-  template <>
-  struct IntegralImageTypeTraits<unsigned int>
-  {
-    using Type = unsigned int;
-    using IntegralType = unsigned long;
-  };
+/** \brief Determines an integral image representation for a given organized data array
+ * \author Suat Gedikli
+ */
+template <class DataType, unsigned Dimension>
+class IntegralImage2D {
+public:
+  using Ptr = shared_ptr<IntegralImage2D<DataType, Dimension>>;
+  using ConstPtr = shared_ptr<const IntegralImage2D<DataType, Dimension>>;
+  static const unsigned second_order_size = (Dimension * (Dimension + 1)) >> 1;
+  using ElementType = Eigen::
+      Matrix<typename IntegralImageTypeTraits<DataType>::IntegralType, Dimension, 1>;
+  using SecondOrderType =
+      Eigen::Matrix<typename IntegralImageTypeTraits<DataType>::IntegralType,
+                    second_order_size,
+                    1>;
 
-  /** \brief Determines an integral image representation for a given organized data array
-    * \author Suat Gedikli
-    */
-  template <class DataType, unsigned Dimension>
-  class IntegralImage2D
-  {
-    public:
-      using Ptr = shared_ptr<IntegralImage2D<DataType, Dimension>>;
-      using ConstPtr = shared_ptr<const IntegralImage2D<DataType, Dimension>>;
-      static const unsigned second_order_size = (Dimension * (Dimension + 1)) >> 1;
-      using ElementType = Eigen::Matrix<typename IntegralImageTypeTraits<DataType>::IntegralType, Dimension, 1>;
-      using SecondOrderType = Eigen::Matrix<typename IntegralImageTypeTraits<DataType>::IntegralType, second_order_size, 1>;
+  /** \brief Constructor for an Integral Image
+   * \param[in] compute_second_order_integral_images set to true if we want to compute a
+   * second order image
+   */
+  IntegralImage2D(bool compute_second_order_integral_images)
+  : first_order_integral_image_()
+  , second_order_integral_image_()
+  ,
 
-      /** \brief Constructor for an Integral Image
-        * \param[in] compute_second_order_integral_images set to true if we want to compute a second order image
-        */
-      IntegralImage2D (bool compute_second_order_integral_images) :
-        first_order_integral_image_ (),
-        second_order_integral_image_ (),
-         
-        compute_second_order_integral_images_ (compute_second_order_integral_images)
-      {
-      }
+  compute_second_order_integral_images_(compute_second_order_integral_images)
+  {}
 
-      /** \brief Destructor */
-      virtual
-      ~IntegralImage2D () = default;
+  /** \brief Destructor */
+  virtual ~IntegralImage2D() = default;
 
-      /** \brief sets the computation for second order integral images on or off.
-        * \param compute_second_order_integral_images
-        */
-      void 
-      setSecondOrderComputation (bool compute_second_order_integral_images);
+  /** \brief sets the computation for second order integral images on or off.
+   * \param compute_second_order_integral_images
+   */
+  void
+  setSecondOrderComputation (bool compute_second_order_integral_images);
 
-      /** \brief Set the input data to compute the integral image for
-        * \param[in] data the input data
-        * \param[in] width the width of the data
-        * \param[in] height the height of the data
-        * \param[in] element_stride the element stride of the data
-        * \param[in] row_stride the row stride of the data
-        */
-      void
-      setInput (const DataType * data,
-                unsigned width, unsigned height, unsigned element_stride, unsigned row_stride);
+  /** \brief Set the input data to compute the integral image for
+   * \param[in] data the input data
+   * \param[in] width the width of the data
+   * \param[in] height the height of the data
+   * \param[in] element_stride the element stride of the data
+   * \param[in] row_stride the row stride of the data
+   */
+  void
+  setInput (const DataType* data,
+            unsigned width,
+            unsigned height,
+            unsigned element_stride,
+            unsigned row_stride);
 
-      /** \brief Compute the first order sum within a given rectangle
-        * \param[in] start_x x position of rectangle
-        * \param[in] start_y y position of rectangle
-        * \param[in] width width of rectangle
-        * \param[in] height height of rectangle
-        */
-      inline ElementType
-      getFirstOrderSum (unsigned start_x, unsigned start_y, unsigned width, unsigned height) const;
+  /** \brief Compute the first order sum within a given rectangle
+   * \param[in] start_x x position of rectangle
+   * \param[in] start_y y position of rectangle
+   * \param[in] width width of rectangle
+   * \param[in] height height of rectangle
+   */
+  inline ElementType
+  getFirstOrderSum (unsigned start_x,
+                    unsigned start_y,
+                    unsigned width,
+                    unsigned height) const;
 
-      /** \brief Compute the first order sum within a given rectangle
-        * \param[in] start_x x position of the start of the rectangle
-        * \param[in] start_y x position of the start of the rectangle
-        * \param[in] end_x x position of the end of the rectangle
-        * \param[in] end_y x position of the end of the rectangle
-        */
-      inline ElementType
-      getFirstOrderSumSE (unsigned start_x, unsigned start_y, unsigned end_x, unsigned end_y) const;
+  /** \brief Compute the first order sum within a given rectangle
+   * \param[in] start_x x position of the start of the rectangle
+   * \param[in] start_y x position of the start of the rectangle
+   * \param[in] end_x x position of the end of the rectangle
+   * \param[in] end_y x position of the end of the rectangle
+   */
+  inline ElementType
+  getFirstOrderSumSE (unsigned start_x,
+                      unsigned start_y,
+                      unsigned end_x,
+                      unsigned end_y) const;
 
-      /** \brief Compute the second order sum within a given rectangle
-        * \param[in] start_x x position of rectangle
-        * \param[in] start_y y position of rectangle
-        * \param[in] width width of rectangle
-        * \param[in] height height of rectangle
-        */
-      inline SecondOrderType
-      getSecondOrderSum (unsigned start_x, unsigned start_y, unsigned width, unsigned height) const;
+  /** \brief Compute the second order sum within a given rectangle
+   * \param[in] start_x x position of rectangle
+   * \param[in] start_y y position of rectangle
+   * \param[in] width width of rectangle
+   * \param[in] height height of rectangle
+   */
+  inline SecondOrderType
+  getSecondOrderSum (unsigned start_x,
+                     unsigned start_y,
+                     unsigned width,
+                     unsigned height) const;
 
-      /** \brief Compute the second order sum within a given rectangle
-        * \param[in] start_x x position of the start of the rectangle
-        * \param[in] start_y x position of the start of the rectangle
-        * \param[in] end_x x position of the end of the rectangle
-        * \param[in] end_y x position of the end of the rectangle
-        */
-      inline SecondOrderType
-      getSecondOrderSumSE (unsigned start_x, unsigned start_y, unsigned end_x, unsigned end_y) const;
+  /** \brief Compute the second order sum within a given rectangle
+   * \param[in] start_x x position of the start of the rectangle
+   * \param[in] start_y x position of the start of the rectangle
+   * \param[in] end_x x position of the end of the rectangle
+   * \param[in] end_y x position of the end of the rectangle
+   */
+  inline SecondOrderType
+  getSecondOrderSumSE (unsigned start_x,
+                       unsigned start_y,
+                       unsigned end_x,
+                       unsigned end_y) const;
 
-      /** \brief Compute the number of finite elements within a given rectangle
-        * \param[in] start_x x position of rectangle
-        * \param[in] start_y y position of rectangle
-        * \param[in] width width of rectangle
-        * \param[in] height height of rectangle
-        */
-      inline unsigned
-      getFiniteElementsCount (unsigned start_x, unsigned start_y, unsigned width, unsigned height) const;
+  /** \brief Compute the number of finite elements within a given rectangle
+   * \param[in] start_x x position of rectangle
+   * \param[in] start_y y position of rectangle
+   * \param[in] width width of rectangle
+   * \param[in] height height of rectangle
+   */
+  inline unsigned
+  getFiniteElementsCount (unsigned start_x,
+                          unsigned start_y,
+                          unsigned width,
+                          unsigned height) const;
 
-      /** \brief Compute the number of finite elements within a given rectangle
-        * \param[in] start_x x position of the start of the rectangle
-        * \param[in] start_y x position of the start of the rectangle
-        * \param[in] end_x x position of the end of the rectangle
-        * \param[in] end_y x position of the end of the rectangle
-        */
-      inline unsigned
-      getFiniteElementsCountSE (unsigned start_x, unsigned start_y, unsigned end_x, unsigned end_y) const;
+  /** \brief Compute the number of finite elements within a given rectangle
+   * \param[in] start_x x position of the start of the rectangle
+   * \param[in] start_y x position of the start of the rectangle
+   * \param[in] end_x x position of the end of the rectangle
+   * \param[in] end_y x position of the end of the rectangle
+   */
+  inline unsigned
+  getFiniteElementsCountSE (unsigned start_x,
+                            unsigned start_y,
+                            unsigned end_x,
+                            unsigned end_y) const;
 
-    private:
-      using InputType = Eigen::Matrix<typename IntegralImageTypeTraits<DataType>::Type, Dimension, 1>;
+private:
+  using InputType =
+      Eigen::Matrix<typename IntegralImageTypeTraits<DataType>::Type, Dimension, 1>;
 
-      /** \brief Compute the actual integral image data
-        * \param[in] data the input data
-        * \param[in] element_stride the element stride of the data
-        * \param[in] row_stride the row stride of the data
-        */
-      void
-      computeIntegralImages (const DataType * data, unsigned row_stride, unsigned element_stride);
+  /** \brief Compute the actual integral image data
+   * \param[in] data the input data
+   * \param[in] element_stride the element stride of the data
+   * \param[in] row_stride the row stride of the data
+   */
+  void
+  computeIntegralImages (const DataType* data,
+                         unsigned row_stride,
+                         unsigned element_stride);
 
-      std::vector<ElementType, Eigen::aligned_allocator<ElementType> > first_order_integral_image_;
-      std::vector<SecondOrderType, Eigen::aligned_allocator<SecondOrderType> > second_order_integral_image_;
-      std::vector<unsigned> finite_values_integral_image_;
+  std::vector<ElementType, Eigen::aligned_allocator<ElementType>>
+      first_order_integral_image_;
+  std::vector<SecondOrderType, Eigen::aligned_allocator<SecondOrderType>>
+      second_order_integral_image_;
+  std::vector<unsigned> finite_values_integral_image_;
 
-      /** \brief The width of the 2d input data array */
-      unsigned width_{1};
-      /** \brief The height of the 2d input data array */
-      unsigned height_{1};
+  /** \brief The width of the 2d input data array */
+  unsigned width_{1};
+  /** \brief The height of the 2d input data array */
+  unsigned height_{1};
 
-      /** \brief Indicates whether second order integral images are available **/
-      bool compute_second_order_integral_images_;
-   };
+  /** \brief Indicates whether second order integral images are available **/
+  bool compute_second_order_integral_images_;
+};
 
-   /**
-     * \brief partial template specialization for integral images with just one channel.
-     */
-  template <class DataType>
-  class IntegralImage2D <DataType, 1>
-  {
-    public:
-      using Ptr = shared_ptr<IntegralImage2D<DataType, 1>>;
-      using ConstPtr = shared_ptr<const IntegralImage2D<DataType, 1>>;
+/**
+ * \brief partial template specialization for integral images with just one channel.
+ */
+template <class DataType>
+class IntegralImage2D<DataType, 1> {
+public:
+  using Ptr = shared_ptr<IntegralImage2D<DataType, 1>>;
+  using ConstPtr = shared_ptr<const IntegralImage2D<DataType, 1>>;
 
-      static const unsigned second_order_size = 1;
-      using ElementType = typename IntegralImageTypeTraits<DataType>::IntegralType;
-      using SecondOrderType = typename IntegralImageTypeTraits<DataType>::IntegralType;
+  static const unsigned second_order_size = 1;
+  using ElementType = typename IntegralImageTypeTraits<DataType>::IntegralType;
+  using SecondOrderType = typename IntegralImageTypeTraits<DataType>::IntegralType;
 
-      /** \brief Constructor for an Integral Image
-        * \param[in] compute_second_order_integral_images set to true if we want to compute a second order image
-        */
-      IntegralImage2D (bool compute_second_order_integral_images) : 
-        first_order_integral_image_ (),
-        second_order_integral_image_ (),
-        
-         
-        compute_second_order_integral_images_ (compute_second_order_integral_images)
-      {
-      }
+  /** \brief Constructor for an Integral Image
+   * \param[in] compute_second_order_integral_images set to true if we want to compute a
+   * second order image
+   */
+  IntegralImage2D(bool compute_second_order_integral_images)
+  : first_order_integral_image_()
+  , second_order_integral_image_()
+  ,
 
-      /** \brief Destructor */
-      virtual
-      ~IntegralImage2D () = default;
+  compute_second_order_integral_images_(compute_second_order_integral_images)
+  {}
 
-      /** \brief Set the input data to compute the integral image for
-        * \param[in] data the input data
-        * \param[in] width the width of the data
-        * \param[in] height the height of the data
-        * \param[in] element_stride the element stride of the data
-        * \param[in] row_stride the row stride of the data
-        */
-      void
-      setInput (const DataType * data,
-                unsigned width, unsigned height, unsigned element_stride, unsigned row_stride);
+  /** \brief Destructor */
+  virtual ~IntegralImage2D() = default;
 
-      /** \brief Compute the first order sum within a given rectangle
-        * \param[in] start_x x position of rectangle
-        * \param[in] start_y y position of rectangle
-        * \param[in] width width of rectangle
-        * \param[in] height height of rectangle
-        */
-      inline ElementType
-      getFirstOrderSum (unsigned start_x, unsigned start_y, unsigned width, unsigned height) const;
+  /** \brief Set the input data to compute the integral image for
+   * \param[in] data the input data
+   * \param[in] width the width of the data
+   * \param[in] height the height of the data
+   * \param[in] element_stride the element stride of the data
+   * \param[in] row_stride the row stride of the data
+   */
+  void
+  setInput (const DataType* data,
+            unsigned width,
+            unsigned height,
+            unsigned element_stride,
+            unsigned row_stride);
 
-      /** \brief Compute the first order sum within a given rectangle
-        * \param[in] start_x x position of the start of the rectangle
-        * \param[in] start_y x position of the start of the rectangle
-        * \param[in] end_x x position of the end of the rectangle
-        * \param[in] end_y x position of the end of the rectangle
-        */
-      inline ElementType
-      getFirstOrderSumSE (unsigned start_x, unsigned start_y, unsigned end_x, unsigned end_y) const;
+  /** \brief Compute the first order sum within a given rectangle
+   * \param[in] start_x x position of rectangle
+   * \param[in] start_y y position of rectangle
+   * \param[in] width width of rectangle
+   * \param[in] height height of rectangle
+   */
+  inline ElementType
+  getFirstOrderSum (unsigned start_x,
+                    unsigned start_y,
+                    unsigned width,
+                    unsigned height) const;
 
-      /** \brief Compute the second order sum within a given rectangle
-        * \param[in] start_x x position of rectangle
-        * \param[in] start_y y position of rectangle
-        * \param[in] width width of rectangle
-        * \param[in] height height of rectangle
-        */
-      inline SecondOrderType
-      getSecondOrderSum (unsigned start_x, unsigned start_y, unsigned width, unsigned height) const;
+  /** \brief Compute the first order sum within a given rectangle
+   * \param[in] start_x x position of the start of the rectangle
+   * \param[in] start_y x position of the start of the rectangle
+   * \param[in] end_x x position of the end of the rectangle
+   * \param[in] end_y x position of the end of the rectangle
+   */
+  inline ElementType
+  getFirstOrderSumSE (unsigned start_x,
+                      unsigned start_y,
+                      unsigned end_x,
+                      unsigned end_y) const;
 
-      /** \brief Compute the second order sum within a given rectangle
-        * \param[in] start_x x position of the start of the rectangle
-        * \param[in] start_y x position of the start of the rectangle
-        * \param[in] end_x x position of the end of the rectangle
-        * \param[in] end_y x position of the end of the rectangle
-        */
-      inline SecondOrderType
-      getSecondOrderSumSE (unsigned start_x, unsigned start_y, unsigned end_x, unsigned end_y) const;
+  /** \brief Compute the second order sum within a given rectangle
+   * \param[in] start_x x position of rectangle
+   * \param[in] start_y y position of rectangle
+   * \param[in] width width of rectangle
+   * \param[in] height height of rectangle
+   */
+  inline SecondOrderType
+  getSecondOrderSum (unsigned start_x,
+                     unsigned start_y,
+                     unsigned width,
+                     unsigned height) const;
 
-      /** \brief Compute the number of finite elements within a given rectangle
-        * \param[in] start_x x position of rectangle
-        * \param[in] start_y y position of rectangle
-        * \param[in] width width of rectangle
-        * \param[in] height height of rectangle
-        */
-      inline unsigned
-      getFiniteElementsCount (unsigned start_x, unsigned start_y, unsigned width, unsigned height) const;
+  /** \brief Compute the second order sum within a given rectangle
+   * \param[in] start_x x position of the start of the rectangle
+   * \param[in] start_y x position of the start of the rectangle
+   * \param[in] end_x x position of the end of the rectangle
+   * \param[in] end_y x position of the end of the rectangle
+   */
+  inline SecondOrderType
+  getSecondOrderSumSE (unsigned start_x,
+                       unsigned start_y,
+                       unsigned end_x,
+                       unsigned end_y) const;
 
-      /** \brief Compute the number of finite elements within a given rectangle
-        * \param[in] start_x x position of the start of the rectangle
-        * \param[in] start_y x position of the start of the rectangle
-        * \param[in] end_x x position of the end of the rectangle
-        * \param[in] end_y x position of the end of the rectangle
-        */
-      inline unsigned
-      getFiniteElementsCountSE (unsigned start_x, unsigned start_y, unsigned end_x, unsigned end_y) const;
+  /** \brief Compute the number of finite elements within a given rectangle
+   * \param[in] start_x x position of rectangle
+   * \param[in] start_y y position of rectangle
+   * \param[in] width width of rectangle
+   * \param[in] height height of rectangle
+   */
+  inline unsigned
+  getFiniteElementsCount (unsigned start_x,
+                          unsigned start_y,
+                          unsigned width,
+                          unsigned height) const;
 
-  private:
-    //  using InputType = typename IntegralImageTypeTraits<DataType>::Type;
+  /** \brief Compute the number of finite elements within a given rectangle
+   * \param[in] start_x x position of the start of the rectangle
+   * \param[in] start_y x position of the start of the rectangle
+   * \param[in] end_x x position of the end of the rectangle
+   * \param[in] end_y x position of the end of the rectangle
+   */
+  inline unsigned
+  getFiniteElementsCountSE (unsigned start_x,
+                            unsigned start_y,
+                            unsigned end_x,
+                            unsigned end_y) const;
 
-      /** \brief Compute the actual integral image data
-        * \param[in] data the input data
-        * \param[in] element_stride the element stride of the data
-        * \param[in] row_stride the row stride of the data
-        */
-      void
-      computeIntegralImages (const DataType * data, unsigned row_stride, unsigned element_stride);
+private:
+  //  using InputType = typename IntegralImageTypeTraits<DataType>::Type;
 
-      std::vector<ElementType, Eigen::aligned_allocator<ElementType> > first_order_integral_image_;
-      std::vector<SecondOrderType, Eigen::aligned_allocator<SecondOrderType> > second_order_integral_image_;
-      std::vector<unsigned> finite_values_integral_image_;
+  /** \brief Compute the actual integral image data
+   * \param[in] data the input data
+   * \param[in] element_stride the element stride of the data
+   * \param[in] row_stride the row stride of the data
+   */
+  void
+  computeIntegralImages (const DataType* data,
+                         unsigned row_stride,
+                         unsigned element_stride);
 
-      /** \brief The width of the 2d input data array */
-      unsigned width_{1};
-      /** \brief The height of the 2d input data array */
-      unsigned height_{1};
+  std::vector<ElementType, Eigen::aligned_allocator<ElementType>>
+      first_order_integral_image_;
+  std::vector<SecondOrderType, Eigen::aligned_allocator<SecondOrderType>>
+      second_order_integral_image_;
+  std::vector<unsigned> finite_values_integral_image_;
 
-      /** \brief Indicates whether second order integral images are available **/
-      bool compute_second_order_integral_images_;
-   };
- }
+  /** \brief The width of the 2d input data array */
+  unsigned width_{1};
+  /** \brief The height of the 2d input data array */
+  unsigned height_{1};
+
+  /** \brief Indicates whether second order integral images are available **/
+  bool compute_second_order_integral_images_;
+};
+} // namespace pcl
 
 #include <pcl/features/impl/integral_image2D.hpp>

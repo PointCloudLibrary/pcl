@@ -40,73 +40,74 @@
 
 #pragma once
 
+#include <pcl/apps/point_cloud_editor/cloud.h>
 #include <pcl/apps/point_cloud_editor/command.h>
 #include <pcl/apps/point_cloud_editor/localTypes.h>
-#include <pcl/apps/point_cloud_editor/cloud.h>
-
-#include <pcl/memory.h>  // for pcl::shared_ptr
+#include <pcl/memory.h> // for pcl::shared_ptr
 
 class Selection;
 
-class TransformCommand : public Command
-{
-  public:
-    /// The type for shared pointer pointing to a constant selection buffer
-    using ConstSelectionPtr = pcl::shared_ptr<const Selection>;
+class TransformCommand : public Command {
+public:
+  /// The type for shared pointer pointing to a constant selection buffer
+  using ConstSelectionPtr = pcl::shared_ptr<const Selection>;
 
-    /// @brief Constructor
-    /// @param selection_ptr a shared pointer pointing to the selection object.
-    /// @param cloud_ptr a shared pointer pointing to the cloud object.
-    /// @param matrix a (4x4) transform matrix following OpenGL's format.
-    /// @pre Assumes the selection_ptr is valid, non-NULL.
-    TransformCommand (const ConstSelectionPtr& selection_ptr, CloudPtr cloud_ptr,
-                      const float* matrix, float translate_x,
-                      float translate_y, float translate_z);
+  /// @brief Constructor
+  /// @param selection_ptr a shared pointer pointing to the selection object.
+  /// @param cloud_ptr a shared pointer pointing to the cloud object.
+  /// @param matrix a (4x4) transform matrix following OpenGL's format.
+  /// @pre Assumes the selection_ptr is valid, non-NULL.
+  TransformCommand(const ConstSelectionPtr& selection_ptr,
+                   CloudPtr cloud_ptr,
+                   const float* matrix,
+                   float translate_x,
+                   float translate_y,
+                   float translate_z);
 
-    /// @brief Copy constructor - object is not copy-constructable
-    TransformCommand (const TransformCommand&) = delete;
+  /// @brief Copy constructor - object is not copy-constructable
+  TransformCommand(const TransformCommand&) = delete;
 
-    /// @brief Equal operator - object is non-copyable
-    TransformCommand&
-    operator= (const TransformCommand&) = delete;
+  /// @brief Equal operator - object is non-copyable
+  TransformCommand&
+  operator=(const TransformCommand&) = delete;
 
-  protected:
-    // Transforms the coordinates of the selected points according to the transform
-    // matrix.
-    void
-    execute () override;
+protected:
+  // Transforms the coordinates of the selected points according to the transform
+  // matrix.
+  void
+  execute () override;
 
-    // Restore the coordinates of the transformed points.
-    void
-    undo () override;
+  // Restore the coordinates of the transformed points.
+  void
+  undo () override;
 
-  private:
-    /// @brief Applies the transformation to the point values
-    /// @param sel_ptr A pointer to the selection object whose points are to be
-    /// transformed.
-    void
-    applyTransform(const ConstSelectionPtr& sel_ptr);
+private:
+  /// @brief Applies the transformation to the point values
+  /// @param sel_ptr A pointer to the selection object whose points are to be
+  /// transformed.
+  void
+  applyTransform (const ConstSelectionPtr& sel_ptr);
 
-    /// pointers to constructor params
-    ConstSelectionPtr selection_ptr_;
+  /// pointers to constructor params
+  ConstSelectionPtr selection_ptr_;
 
-    /// a pointer pointing to the cloud
-    CloudPtr cloud_ptr_;
+  /// a pointer pointing to the cloud
+  CloudPtr cloud_ptr_;
 
-    float translate_x_, translate_y_, translate_z_;
+  float translate_x_, translate_y_, translate_z_;
 
-    /// An internal selection object used to perform undo
-    SelectionPtr internal_selection_ptr_;
+  /// An internal selection object used to perform undo
+  SelectionPtr internal_selection_ptr_;
 
-    /// the transform matrix to be used to compute the new coordinates
-    /// of the selected points
-    float transform_matrix_[MATRIX_SIZE];
+  /// the transform matrix to be used to compute the new coordinates
+  /// of the selected points
+  float transform_matrix_[MATRIX_SIZE];
 
-    /// The transform matrix of the cloud used by this command
-    float cloud_matrix_[MATRIX_SIZE];
-    /// The inverted transform matrix of the cloud used by this command
-    float cloud_matrix_inv_[MATRIX_SIZE];
+  /// The transform matrix of the cloud used by this command
+  float cloud_matrix_[MATRIX_SIZE];
+  /// The inverted transform matrix of the cloud used by this command
+  float cloud_matrix_inv_[MATRIX_SIZE];
 
-    /// The center of the cloud used by this command
-    float cloud_center_[XYZ_SIZE];
+  /// The center of the cloud used by this command
+  float cloud_center_[XYZ_SIZE];
 };

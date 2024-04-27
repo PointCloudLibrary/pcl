@@ -35,64 +35,60 @@
 
 #pragma once
 
-#include <pcl/memory.h>
 #include <pcl/cuda/point_cloud.h>
+#include <pcl/memory.h>
 
+namespace pcl {
+namespace cuda {
+///////////////////////////////////////////////////////////////////////////////////////////
+/** \brief PCL base class. Implements methods that are used by all PCL objects.
+ */
+template <typename CloudT>
+class PCLCUDABase {
+public:
+  using PointCloud = CloudT;
+  using PointCloudPtr = typename PointCloud::Ptr;
+  using PointCloudConstPtr = typename PointCloud::ConstPtr;
 
-namespace pcl
-{
-namespace cuda
-{
-  ///////////////////////////////////////////////////////////////////////////////////////////
-  /** \brief PCL base class. Implements methods that are used by all PCL objects. 
-    */
-  template <typename CloudT>
-  class PCLCUDABase
+  /** \brief Empty constructor. */
+  PCLCUDABase() : input_(){};
+
+  /** \brief Provide a pointer to the input dataset
+   * \param cloud the const boost shared pointer to a PointCloud message
+   */
+  virtual inline void
+  setInputCloud (const PointCloudConstPtr& cloud)
   {
-    public:
-      using PointCloud = CloudT;
-      using PointCloudPtr = typename PointCloud::Ptr;
-      using PointCloudConstPtr = typename PointCloud::ConstPtr;
+    input_ = cloud;
+  }
 
-      /** \brief Empty constructor. */
-      PCLCUDABase () : input_() {};
+  /** \brief Get a pointer to the input host point cloud dataset. */
+  inline PointCloudConstPtr const
+  getInputCloud ()
+  {
+    return (input_);
+  }
 
-      /** \brief Provide a pointer to the input dataset
-        * \param cloud the const boost shared pointer to a PointCloud message
-        */
-      virtual inline void 
-      setInputCloud (const PointCloudConstPtr &cloud) 
-      { 
-        input_ = cloud; 
-      }
+protected:
+  /** \brief The input point cloud dataset. */
+  PointCloudConstPtr input_;
 
-      /** \brief Get a pointer to the input host point cloud dataset. */
-      inline PointCloudConstPtr const 
-      getInputCloud () 
-      { 
-        return (input_); 
-      }
+  /** \brief This method should get called before starting the actual computation. */
+  bool
+  initCompute ()
+  {
+    // Check if input was set
+    if (!input_)
+      return (false);
+    return (true);
+  }
 
-    protected:
-      /** \brief The input point cloud dataset. */
-      PointCloudConstPtr input_;
-
-      /** \brief This method should get called before starting the actual computation. */
-      bool
-      initCompute ()
-      {
-        // Check if input was set
-        if (!input_)
-          return (false);
-        return (true);
-      }
-
-      /** \brief This method should get called after finishing the actual computation. */
-      bool
-      deinitCompute ()
-      {
-        return (true);
-      }
-  };
-} // namespace
-} // namespace
+  /** \brief This method should get called after finishing the actual computation. */
+  bool
+  deinitCompute ()
+  {
+    return (true);
+  }
+};
+} // namespace cuda
+} // namespace pcl

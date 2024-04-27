@@ -8,7 +8,7 @@
 // THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT EXPRESS OR IMPLIED WARRANTY.
 // ALL IMPLIED WARRANTIES OF FITNESS FOR ANY PARTICULAR PURPOSE AND OF
 // MERCHANTABILITY ARE HEREBY DISCLAIMED.
-//				
+//
 // For complete openNURBS copyright information see <http://www.opennurbs.org>.
 //
 ////////////////////////////////////////////////////////////////
@@ -17,26 +17,28 @@
 #if !defined(OPENNURBS_MATERIAL_INC_)
 #define OPENNURBS_MATERIAL_INC_
 
-
 ///////////////////////////////////////////////////////////////////////////////
 //
 // Class ON_Material
-// 
-class ON_CLASS ON_Material : public ON_Object
-{
+//
+class ON_CLASS ON_Material : public ON_Object {
   ON_OBJECT_DECLARE(ON_Material);
 
 public:
-  static double MaxShine();			// maximum value of shine exponent
+  static double
+  MaxShine (); // maximum value of shine exponent
 
-  ON_Material();					// Default grey color
-  ~ON_Material();					// destructor
+  ON_Material();  // Default grey color
+  ~ON_Material(); // destructor
   // C++ default copy construction and operator= work fine.
 
-  bool operator==(const ON_Material&) const; // ignores m_material_index
-  bool operator!=(const ON_Material&) const; // ignores m_material_index
+  bool
+  operator==(const ON_Material&) const; // ignores m_material_index
+  bool
+  operator!=(const ON_Material&) const; // ignores m_material_index
 
-  void Default();
+  void
+  Default ();
 
   /////////////////////////////////////////////////////////////////
   // ON_Object overrides
@@ -49,9 +51,9 @@ public:
     text_log - [in] if the object is not valid and text_log
         is not NULL, then a brief englis description of the
         reason the object is not valid is appened to the log.
-        The information appended to text_log is suitable for 
-        low-level debugging purposes by programmers and is 
-        not intended to be useful as a high level user 
+        The information appended to text_log is suitable for
+        low-level debugging purposes by programmers and is
+        not intended to be useful as a high level user
         interface tool.
   Returns:
     @untitled table
@@ -60,74 +62,91 @@ public:
   Remarks:
     Overrides virtual ON_Object::IsValid
   */
-  ON_BOOL32 IsValid( ON_TextLog* text_log = NULL ) const;
+  ON_BOOL32
+  IsValid (ON_TextLog* text_log = NULL) const;
 
-  void Dump( ON_TextLog& ) const; // for debugging
+  void
+  Dump (ON_TextLog&) const; // for debugging
 
-  ON_BOOL32 Write(
-         ON_BinaryArchive&  // open binary file
-       ) const;
+  ON_BOOL32
+  Write (ON_BinaryArchive& // open binary file
+  ) const;
 
-  ON_BOOL32 Read(
-         ON_BinaryArchive&  // open binary file
-       );
+  ON_BOOL32
+  Read (ON_BinaryArchive& // open binary file
+  );
 
-  ON::object_type ObjectType() const;
+  ON::object_type
+  ObjectType () const;
 
   // virtual
-  ON_UUID ModelObjectId() const;
-
+  ON_UUID
+  ModelObjectId () const;
 
   /////////////////////////////////////////////////////////////////
   // Interface
 
   // ignores m_material_index
-  int Compare( const ON_Material& other ) const; 
+  int
+  Compare (const ON_Material& other) const;
 
   // OBSOLETE - use m_ambient
-  ON_Color Ambient() const;
+  ON_Color
+  Ambient () const;
   // OBSOLETE - use m_diffuse
-  ON_Color Diffuse() const;
+  ON_Color
+  Diffuse () const;
   // OBSOLETE - use m_emission
-  ON_Color Emission() const;
+  ON_Color
+  Emission () const;
   // OBSOLETE - use m_specular
-  ON_Color Specular() const;
+  ON_Color
+  Specular () const;
 
   // OBSOLETE - use m_ambient
-  void SetAmbient(  ON_Color );
+  void SetAmbient(ON_Color);
   // OBSOLETE - use m_diffuse
-  void SetDiffuse(  ON_Color );
+  void SetDiffuse(ON_Color);
   // OBSOLETE - use m_emission
-  void SetEmission( ON_Color );
+  void SetEmission(ON_Color);
   // OBSOLETE - use m_specular
-  void SetSpecular( ON_Color );
+  void SetSpecular(ON_Color);
 
   // Shine values are in range 0.0 to ON_Material::MaxShine()
-  double Shine() const;
-  void SetShine( double );         // 0 to ON_Material::MaxShine()
+  double
+  Shine () const;
+  void
+  SetShine (double); // 0 to ON_Material::MaxShine()
 
   // Transparency values are in range 0.0 = opaque to 1.0 = transparent
-  double Transparency() const;
-  void SetTransparency( double );  // 0.0 = opaque, 1.0 = transparent
+  double
+  Transparency () const;
+  void
+  SetTransparency (double); // 0.0 = opaque, 1.0 = transparent
 
   // OBSOLETE - use m_material_index
-  int MaterialIndex() const;
+  int
+  MaterialIndex () const;
   // OBSOLETE - use m_material_index
-  void SetMaterialIndex( int );
+  void
+  SetMaterialIndex (int);
 
   // OBSOLETE - just use m_plugin_id
-  ON_UUID MaterialPlugInUuid() const;
+  ON_UUID
+  MaterialPlugInUuid () const;
 
   // OBSOLETE - just use m_plugin_id
-  void SetMaterialPlugInUuid( ON_UUID );
+  void SetMaterialPlugInUuid(ON_UUID);
 
   // OBSOLETE - just use m_material_name
-  const wchar_t* MaterialName() const;
+  const wchar_t*
+  MaterialName () const;
 
   // OBSOLETE - just use m_material_name
-  void SetMaterialName( const wchar_t* );
+  void
+  SetMaterialName (const wchar_t*);
 
-  // The only reliable and persistent way to reference 
+  // The only reliable and persistent way to reference
   // materials is by the material_id.
   ON_UUID m_material_id;
 
@@ -138,22 +157,23 @@ public:
   // never change in that instance of Rhino.
   int m_material_index;
 
-  // 
-  ON_wString m_material_name;  // For user comfort - duplicates permitted
-  
+  //
+  ON_wString m_material_name; // For user comfort - duplicates permitted
+
   ON_wString m_flamingo_library; // Legacy information from V3.
                                  // Will vanish in V5.
 
-  ON_Color   m_ambient;
-  ON_Color   m_diffuse;
-  ON_Color   m_emission;
-  ON_Color   m_specular;
-  ON_Color   m_reflection;
-  ON_Color   m_transparent;
-  double     m_index_of_refraction; // generally >= 1.0 (speed of light in vacum)/(speed of light in material)
-  double     m_reflectivity; // 0.0 = none, 1.0 = 100%
-  double     m_shine;        // 0.0 = none to GetMaxShine()=maximum
-  double     m_transparency; // 0.0 = opaque to 1.0 = transparent (1.0-alpha)
+  ON_Color m_ambient;
+  ON_Color m_diffuse;
+  ON_Color m_emission;
+  ON_Color m_specular;
+  ON_Color m_reflection;
+  ON_Color m_transparent;
+  double m_index_of_refraction; // generally >= 1.0 (speed of light in vacum)/(speed of
+                                // light in material)
+  double m_reflectivity;        // 0.0 = none, 1.0 = 100%
+  double m_shine;               // 0.0 = none to GetMaxShine()=maximum
+  double m_transparency;        // 0.0 = opaque to 1.0 = transparent (1.0-alpha)
 
   bool m_bShared; // default = false.
   // True means this material can be shared.  When an
@@ -179,7 +199,6 @@ private:
   unsigned char m_reserved2[4];
 #endif
 public:
-
   /*
   Description:
     Searches for a texure with matching texture_id.
@@ -191,9 +210,8 @@ public:
     >=0 m_textures[] index of matching texture
     -1 if no match is found.
   */
-  int FindTexture(
-    ON_UUID texture_id
-    ) const;
+  int
+  FindTexture (ON_UUID texture_id) const;
 
   /*
   Description:
@@ -204,12 +222,12 @@ public:
     filename - [in]  If NULL, then any filename matches.
     type - [in] If ON_Texture::no_texture_type, then
                 any texture type matches.
-    i0 - [in] If i0 is < 0, the search begins at 
+    i0 - [in] If i0 is < 0, the search begins at
               m_textures[0], if i0 >= m_textures.Count(),
               -1 is returnd, otherwise, the search begins
               at m_textures[i0+1].
   Example:
-    Iterate through all the the bitmap textures on 
+    Iterate through all the the bitmap textures on
     a material.
 
           ON_Material& mat = ...;
@@ -217,9 +235,9 @@ public:
           int bitmap_texture_count = 0;
           for(;;)
           {
-            ti = mat.FindTexture( 
-                        NULL, 
-                        ON_Texture::bitmap_texture, 
+            ti = mat.FindTexture(
+                        NULL,
+                        ON_Texture::bitmap_texture,
                         ti );
 
             if ( ti < 0 )
@@ -238,11 +256,8 @@ public:
     >=0 m_textures[] index of matching texture
     -1 if no match is found.
   */
-  int FindTexture(
-    const wchar_t* filename,
-    ON_Texture::TYPE type,
-    int i0 = -1
-    ) const;
+  int
+  FindTexture (const wchar_t* filename, ON_Texture::TYPE type, int i0 = -1) const;
 
   /*
   Description:
@@ -259,14 +274,13 @@ public:
     textures to the material.  If you need to do something
     different, then just work on the m_textures[] array.
   */
-  int AddTexture( 
-    const ON_Texture& tx
-    );
+  int
+  AddTexture (const ON_Texture& tx);
 
   /*
   Description:
     If there is a texture with a matching type, that texture's
-    filename is modified, otherwise a new texture is added.    
+    filename is modified, otherwise a new texture is added.
   Parameters:
     filename - [in] new filename
     type - [in]
@@ -277,10 +291,8 @@ public:
     textures to the material.  If you need to do something
     different, then just work on the m_textures[] array.
   */
-  int AddTexture(
-    const wchar_t* filename,
-    ON_Texture::TYPE type 
-    );
+  int
+  AddTexture (const wchar_t* filename, ON_Texture::TYPE type);
 
   /*
   Description:
@@ -292,17 +304,15 @@ public:
   Returns:
     Number of textures deleted.
   */
-  int DeleteTexture(
-    const wchar_t* filename,
-    ON_Texture::TYPE type 
-    );
+  int
+  DeleteTexture (const wchar_t* filename, ON_Texture::TYPE type);
 
   ON_ObjectArray<ON_Texture> m_textures;
 
   /*
   Description:
-    Used to provide per face material support. 
-    The parent object reference a basic material. 
+    Used to provide per face material support.
+    The parent object reference a basic material.
     When a brep face or mesh facet wants to use
     a material besides the base material, it specifies
     a channelSupports material channel.  The default
@@ -310,10 +320,10 @@ public:
     material.  A channel of n > 0 means that face
     used the material with id m_material_channel[n-1].
     If (n-1) >= m_material_channel.Count(), then the base
-    material is used.  The value of 
+    material is used.  The value of
     m_material_channel[n].m_id is persistent.  The
     value of m_material_channel[n].m_i is a runtime
-    index in the CRhinoDoc::m_material_table[].  If 
+    index in the CRhinoDoc::m_material_table[].  If
     CRhinoDoc::m_material_table[m_i].m_uuid != m_id,
     then m_id is assumed to be correct.
   */
@@ -323,20 +333,21 @@ public:
 
 private:
   static double m_max_shine;
-  bool ReadV3Helper( ON_BinaryArchive& file, int minor_version );
-  bool WriteV3Helper( ON_BinaryArchive& file ) const;
+  bool
+  ReadV3Helper (ON_BinaryArchive& file, int minor_version);
+  bool
+  WriteV3Helper (ON_BinaryArchive& file) const;
 };
 
 #if defined(ON_DLL_TEMPLATE)
 // This stuff is here because of a limitation in the way Microsoft
-// handles templates and DLLs.  See Microsoft's knowledge base 
+// handles templates and DLLs.  See Microsoft's knowledge base
 // article ID Q168958 for details.
-#pragma warning( push )
-#pragma warning( disable : 4231 )
+#pragma warning(push)
+#pragma warning(disable : 4231)
 ON_DLL_TEMPLATE template class ON_CLASS ON_ClassArray<ON_Material>;
 ON_DLL_TEMPLATE template class ON_CLASS ON_ObjectArray<ON_Material>;
-#pragma warning( pop )
+#pragma warning(pop)
 #endif
 
 #endif
-

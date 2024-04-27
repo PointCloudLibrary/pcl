@@ -34,9 +34,10 @@
  */
 
 #include <pcl/impl/instantiate.hpp>
-#include <pcl/point_types.h>
-#include <pcl/surface/marching_cubes.h>
 #include <pcl/surface/impl/marching_cubes.hpp>
+#include <pcl/surface/marching_cubes.h>
+#include <pcl/point_types.h>
 
 // Instantiations of specific point types
-PCL_INSTANTIATE(MarchingCubes, (pcl::PointNormal)(pcl::PointXYZRGBNormal)(pcl::PointXYZINormal))
+PCL_INSTANTIATE(MarchingCubes,
+                (pcl::PointNormal)(pcl::PointXYZRGBNormal)(pcl::PointXYZINormal))

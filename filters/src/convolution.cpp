@@ -194,11 +194,9 @@ Convolution<pcl::RGB, pcl::RGB>::convolveOneColDense(int i, int j)
 #include <pcl/impl/instantiate.hpp>
 #include <pcl/point_types.h>
 
-PCL_INSTANTIATE_PRODUCT(
-    Convolution, ((pcl::RGB))((pcl::RGB)))
+PCL_INSTANTIATE_PRODUCT(Convolution, ((pcl::RGB))((pcl::RGB)))
 
-PCL_INSTANTIATE_PRODUCT(
-    Convolution, ((pcl::PointXYZRGB))((pcl::PointXYZRGB)))
+PCL_INSTANTIATE_PRODUCT(Convolution, ((pcl::PointXYZRGB))((pcl::PointXYZRGB)))
 #endif // PCL_NO_PRECOMPILE
 
 } // namespace filters

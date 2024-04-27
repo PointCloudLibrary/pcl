@@ -37,400 +37,380 @@
 
 #pragma once
 
-#include <pcl/point_cloud.h>
 #include <pcl/PCLImage.h>
+#include <pcl/point_cloud.h>
 
-namespace pcl
-{
-  namespace io
+namespace pcl {
+namespace io {
+//////////////////////////////////////////////////////////////////////////////////////
+/** \brief Base Image Extractor class for organized point clouds.
+ *
+ * This is an abstract class that declares an interface for image extraction from
+ * organized point clouds. The family of its subclasses provide functionality to
+ * extract images from particular fields.
+ *
+ * The following piece of code demonstrates typical usage of a PointCloudImageExtractor
+ * subclass. Here the data are extracted from the "label" field and are saved as a
+ * PNG image file.
+ *
+ * \code
+ *   // Source point cloud (needs to be filled with data of course)
+ *   pcl::PointCloud<pcl::PointXYZLabel> cloud;
+ *   // Target image
+ *   pcl::PCLImage image;
+ *   // Create PointCloudImageExtractor subclass that can handle "label" field
+ *   pcl::io::PointCloudImageExtractorFromLabelField<pcl::XYZLabel> pcie;
+ *   // Set it up if not happy with the defaults
+ *   pcie.setColorMode(pcie.COLORS_RGB_RANDOM);
+ *   // Try to extract an image
+ *   bool success = pcie.extract(cloud, image);
+ *   // Save to file if succeeded
+ *   if (success)
+ *     pcl::io::saveImage ("filename.png", image);
+ * \endcode
+ *
+ * \author Sergey Alexandrov
+ * \ingroup io
+ */
+template <typename PointT>
+class PointCloudImageExtractor {
+public:
+  using PointCloud = pcl::PointCloud<PointT>;
+
+  using Ptr = shared_ptr<PointCloudImageExtractor<PointT>>;
+  using ConstPtr = shared_ptr<const PointCloudImageExtractor<PointT>>;
+
+  /** \brief Constructor. */
+  PointCloudImageExtractor() = default;
+
+  /** \brief Destructor. */
+  virtual ~PointCloudImageExtractor() = default;
+
+  /** \brief Obtain the image from the given cloud.
+   * \param[in] cloud organized point cloud to extract image from
+   * \param[out] image the output image
+   * \return true if the operation was successful, false otherwise
+   */
+  bool
+  extract (const PointCloud& cloud, pcl::PCLImage& image) const;
+
+  /** \brief Set a flag that controls if image pixels corresponding to
+   * NaN (infinite) points should be painted black.
+   */
+  inline void
+  setPaintNaNsWithBlack (bool flag)
   {
-    //////////////////////////////////////////////////////////////////////////////////////
-    /** \brief Base Image Extractor class for organized point clouds.
-      *
-      * This is an abstract class that declares an interface for image extraction from
-      * organized point clouds. The family of its subclasses provide functionality to
-      * extract images from particular fields.
-      *
-      * The following piece of code demonstrates typical usage of a PointCloudImageExtractor
-      * subclass. Here the data are extracted from the "label" field and are saved as a
-      * PNG image file.
-      *
-      * \code
-      *   // Source point cloud (needs to be filled with data of course)
-      *   pcl::PointCloud<pcl::PointXYZLabel> cloud;
-      *   // Target image
-      *   pcl::PCLImage image;
-      *   // Create PointCloudImageExtractor subclass that can handle "label" field
-      *   pcl::io::PointCloudImageExtractorFromLabelField<pcl::XYZLabel> pcie;
-      *   // Set it up if not happy with the defaults
-      *   pcie.setColorMode(pcie.COLORS_RGB_RANDOM);
-      *   // Try to extract an image
-      *   bool success = pcie.extract(cloud, image);
-      *   // Save to file if succeeded
-      *   if (success)
-      *     pcl::io::saveImage ("filename.png", image);
-      * \endcode
-      *
-      * \author Sergey Alexandrov
-      * \ingroup io
-      */
-    template <typename PointT>
-    class PointCloudImageExtractor
-    {
-      public:
-        using PointCloud = pcl::PointCloud<PointT>;
-
-        using Ptr = shared_ptr<PointCloudImageExtractor<PointT> >;
-        using ConstPtr = shared_ptr<const PointCloudImageExtractor<PointT> >;
-
-        /** \brief Constructor. */
-        PointCloudImageExtractor () = default;
-
-        /** \brief Destructor. */
-        virtual ~PointCloudImageExtractor () = default;
-
-        /** \brief Obtain the image from the given cloud.
-          * \param[in] cloud organized point cloud to extract image from
-          * \param[out] image the output image
-          * \return true if the operation was successful, false otherwise
-          */
-        bool
-        extract (const PointCloud& cloud, pcl::PCLImage& image) const;
-
-        /** \brief Set a flag that controls if image pixels corresponding to
-          * NaN (infinite) points should be painted black.
-          */
-        inline void
-        setPaintNaNsWithBlack (bool flag)
-        {
-          paint_nans_with_black_ = flag;
-        }
-
-      protected:
-
-        /** \brief Implementation of the extract() function, has to be
-          * implemented in deriving classes.
-          */
-        virtual bool
-        extractImpl (const PointCloud& cloud, pcl::PCLImage& image) const = 0;
-
-        /// A flag that controls if image pixels corresponding to NaN (infinite)
-        /// points should be painted black.
-        bool paint_nans_with_black_{false};
-    };
-
-    //////////////////////////////////////////////////////////////////////////////////////
-    /** \brief Image Extractor extension which provides functionality to apply scaling to
-      * the values extracted from a field.
-      * \author Sergey Alexandrov
-      * \ingroup io
-      */
-    template <typename PointT>
-    class PointCloudImageExtractorWithScaling : public PointCloudImageExtractor<PointT>
-    {
-      using PointCloud = typename PointCloudImageExtractor<PointT>::PointCloud;
-
-      public:
-        using Ptr = shared_ptr<PointCloudImageExtractorWithScaling<PointT> >;
-        using ConstPtr = shared_ptr<const PointCloudImageExtractorWithScaling<PointT> >;
-
-        /** \brief Different scaling methods.
-          * <ul>
-          *   <li><b>SCALING_NO</b> - no scaling.</li>
-          *   <li><b>SCALING_FULL_RANGE</b> - scales to full range of the output value.</li>
-          *   <li><b>SCASING_FIXED_FACTOR</b> - scales by a given fixed factor.</li>
-          * </ul>
-          */
-        enum ScalingMethod
-        {
-          SCALING_NO,
-          SCALING_FULL_RANGE,
-          SCALING_FIXED_FACTOR
-        };
-
-        /** \brief Constructor. */
-        PointCloudImageExtractorWithScaling (const std::string& field_name, const ScalingMethod scaling_method)
-          : field_name_ (field_name)
-          , scaling_method_ (scaling_method)
-          , scaling_factor_ (1.0f)
-        {
-        }
-
-        /** \brief Constructor. */
-        PointCloudImageExtractorWithScaling (const std::string& field_name, const float scaling_factor)
-          : field_name_ (field_name)
-          , scaling_method_ (SCALING_FIXED_FACTOR)
-          , scaling_factor_ (scaling_factor)
-        {
-        }
-
-        /** \brief Destructor. */
-        ~PointCloudImageExtractorWithScaling () override = default;
-
-        /** \brief Set scaling method. */
-        inline void
-        setScalingMethod (const ScalingMethod scaling_method)
-        {
-          scaling_method_ = scaling_method;
-        }
-
-        /** \brief Set fixed scaling factor. */
-        inline void
-        setScalingFactor (const float scaling_factor)
-        {
-          scaling_factor_ = scaling_factor;
-        }
-
-      protected:
-
-        bool
-        extractImpl (const PointCloud& cloud, pcl::PCLImage& image) const override;
-
-        std::string field_name_;
-        ScalingMethod scaling_method_;
-        float scaling_factor_;
-    };
-
-    //////////////////////////////////////////////////////////////////////////////////////
-    /** \brief Image Extractor which uses the data present in the "normal" field. Normal
-      * vector components (x, y, z) are mapped to color channels (r, g, b respectively).
-      * \author Sergey Alexandrov
-      * \ingroup io
-      */
-    template <typename PointT>
-    class PointCloudImageExtractorFromNormalField : public PointCloudImageExtractor<PointT>
-    {
-      using PointCloud = typename PointCloudImageExtractor<PointT>::PointCloud;
-
-      public:
-        using Ptr = shared_ptr<PointCloudImageExtractorFromNormalField<PointT> >;
-        using ConstPtr = shared_ptr<const PointCloudImageExtractorFromNormalField<PointT> >;
-
-        /** \brief Constructor. */
-        PointCloudImageExtractorFromNormalField () = default;
-
-        /** \brief Destructor. */
-        ~PointCloudImageExtractorFromNormalField () override = default;
-
-      protected:
-
-        bool
-        extractImpl (const PointCloud& cloud, pcl::PCLImage& img) const override;
-    };
-
-    //////////////////////////////////////////////////////////////////////////////////////
-    /** \brief Image Extractor which uses the data present in the "rgb" or "rgba" fields
-      * to produce a color image with rgb8 encoding.
-      * \author Sergey Alexandrov
-      * \ingroup io
-      */
-    template <typename PointT>
-    class PointCloudImageExtractorFromRGBField : public PointCloudImageExtractor<PointT>
-    {
-      using PointCloud = typename PointCloudImageExtractor<PointT>::PointCloud;
-
-      public:
-        using Ptr = shared_ptr<PointCloudImageExtractorFromRGBField<PointT> >;
-        using ConstPtr = shared_ptr<const PointCloudImageExtractorFromRGBField<PointT> >;
-
-        /** \brief Constructor. */
-        PointCloudImageExtractorFromRGBField () = default;
-
-        /** \brief Destructor. */
-        ~PointCloudImageExtractorFromRGBField () override = default;
-
-      protected:
-
-        bool
-        extractImpl (const PointCloud& cloud, pcl::PCLImage& img) const override;
-    };
-
-    //////////////////////////////////////////////////////////////////////////////////////
-    /** \brief Image Extractor which uses the data present in the "label" field to produce
-      * either monochrome or RGB image where different labels correspond to different
-      * colors.
-      * See the documentation for ColorMode to learn about available coloring options.
-      * \author Sergey Alexandrov
-      * \ingroup io
-      */
-    template <typename PointT>
-    class PointCloudImageExtractorFromLabelField : public PointCloudImageExtractor<PointT>
-    {
-      using PointCloud = typename PointCloudImageExtractor<PointT>::PointCloud;
-
-      public:
-        using Ptr = shared_ptr<PointCloudImageExtractorFromLabelField<PointT> >;
-        using ConstPtr = shared_ptr<const PointCloudImageExtractorFromLabelField<PointT> >;
-
-        /** \brief Different modes for color mapping. */
-        enum ColorMode
-        {
-          /// Shades of gray (according to label id)
-          /// \note Labels using more than 16 bits will cause problems
-          COLORS_MONO,
-          /// Randomly generated RGB colors
-          COLORS_RGB_RANDOM,
-          /// Fixed RGB colors from the [Glasbey lookup table](http://fiji.sc/Glasbey),
-          /// assigned in the ascending order of label id
-          COLORS_RGB_GLASBEY,
-        };
-
-        /** \brief Constructor. */
-        PointCloudImageExtractorFromLabelField (const ColorMode color_mode = COLORS_MONO)
-          : color_mode_ (color_mode)
-        {
-        }
-
-        /** \brief Destructor. */
-        ~PointCloudImageExtractorFromLabelField () override = default;
-
-        /** \brief Set color mapping mode. */
-        inline void
-        setColorMode (const ColorMode color_mode)
-        {
-          color_mode_ = color_mode;
-        }
-
-      protected:
-
-        bool
-        extractImpl (const PointCloud& cloud, pcl::PCLImage& img) const override;
-
-        // Members derived from the base class
-        using PointCloudImageExtractor<PointT>::paint_nans_with_black_;
-
-      private:
-
-        ColorMode color_mode_{COLORS_MONO};
-    };
-
-    //////////////////////////////////////////////////////////////////////////////////////
-    /** \brief Image Extractor which uses the data present in the "z" field to produce a
-      * depth map (as a monochrome image with mono16 encoding).
-      * \author Sergey Alexandrov
-      * \ingroup io
-      */
-    template <typename PointT>
-    class PointCloudImageExtractorFromZField : public PointCloudImageExtractorWithScaling<PointT>
-    {
-      using PointCloud = typename PointCloudImageExtractor<PointT>::PointCloud;
-      using ScalingMethod = typename PointCloudImageExtractorWithScaling<PointT>::ScalingMethod;
-
-      public:
-        using Ptr = shared_ptr<PointCloudImageExtractorFromZField<PointT> >;
-        using ConstPtr = shared_ptr<const PointCloudImageExtractorFromZField<PointT> >;
-
-        /** \brief Constructor.
-          * \param[in] scaling_factor a scaling factor to apply to each depth value (default 10000)
-          */
-        PointCloudImageExtractorFromZField (const float scaling_factor = 10000)
-          : PointCloudImageExtractorWithScaling<PointT> ("z", scaling_factor)
-        {
-        }
-
-        /** \brief Constructor.
-          * \param[in] scaling_method a scaling method to use
-          */
-        PointCloudImageExtractorFromZField (const ScalingMethod scaling_method)
-          : PointCloudImageExtractorWithScaling<PointT> ("z", scaling_method)
-        {
-        }
-
-        /** \brief Destructor. */
-        ~PointCloudImageExtractorFromZField () override = default;
-
-      protected:
-        // Members derived from the base class
-        using PointCloudImageExtractorWithScaling<PointT>::field_name_;
-        using PointCloudImageExtractorWithScaling<PointT>::scaling_method_;
-        using PointCloudImageExtractorWithScaling<PointT>::scaling_factor_;
-    };
-
-    //////////////////////////////////////////////////////////////////////////////////////
-    /** \brief Image Extractor which uses the data present in the "curvature" field to
-      * produce a curvature map (as a monochrome image with mono16 encoding).
-      * \author Sergey Alexandrov
-      * \ingroup io
-      */
-    template <typename PointT>
-    class PointCloudImageExtractorFromCurvatureField : public PointCloudImageExtractorWithScaling<PointT>
-    {
-      using PointCloud = typename PointCloudImageExtractor<PointT>::PointCloud;
-      using ScalingMethod = typename PointCloudImageExtractorWithScaling<PointT>::ScalingMethod;
-
-      public:
-        using Ptr = shared_ptr<PointCloudImageExtractorFromCurvatureField<PointT> >;
-        using ConstPtr = shared_ptr<const PointCloudImageExtractorFromCurvatureField<PointT> >;
-
-        /** \brief Constructor.
-          * \param[in] scaling_method a scaling method to use (default SCALING_FULL_RANGE)
-          */
-        PointCloudImageExtractorFromCurvatureField (const ScalingMethod scaling_method = PointCloudImageExtractorWithScaling<PointT>::SCALING_FULL_RANGE)
-          : PointCloudImageExtractorWithScaling<PointT> ("curvature", scaling_method)
-        {
-        }
-
-        /** \brief Constructor.
-          * \param[in] scaling_factor a scaling factor to apply to each curvature value
-          */
-        PointCloudImageExtractorFromCurvatureField (const float scaling_factor)
-          : PointCloudImageExtractorWithScaling<PointT> ("curvature", scaling_factor)
-        {
-        }
-
-        /** \brief Destructor. */
-        ~PointCloudImageExtractorFromCurvatureField () override = default;
-
-      protected:
-        // Members derived from the base class
-        using PointCloudImageExtractorWithScaling<PointT>::field_name_;
-        using PointCloudImageExtractorWithScaling<PointT>::scaling_method_;
-        using PointCloudImageExtractorWithScaling<PointT>::scaling_factor_;
-    };
-
-    //////////////////////////////////////////////////////////////////////////////////////
-    /** \brief Image Extractor which uses the data present in the "intensity" field to produce a
-      * monochrome intensity image (with mono16 encoding).
-      * \author Sergey Alexandrov
-      * \ingroup io
-      */
-    template <typename PointT>
-    class PointCloudImageExtractorFromIntensityField : public PointCloudImageExtractorWithScaling<PointT>
-    {
-      using PointCloud = typename PointCloudImageExtractor<PointT>::PointCloud;
-      using ScalingMethod = typename PointCloudImageExtractorWithScaling<PointT>::ScalingMethod;
-
-      public:
-        using Ptr = shared_ptr<PointCloudImageExtractorFromIntensityField<PointT> >;
-        using ConstPtr = shared_ptr<const PointCloudImageExtractorFromIntensityField<PointT> >;
-
-        /** \brief Constructor.
-          * \param[in] scaling_method a scaling method to use (default SCALING_NO)
-          */
-        PointCloudImageExtractorFromIntensityField (const ScalingMethod scaling_method = PointCloudImageExtractorWithScaling<PointT>::SCALING_NO)
-          : PointCloudImageExtractorWithScaling<PointT> ("intensity", scaling_method)
-        {
-        }
-
-        /** \brief Constructor.
-          * \param[in] scaling_factor a scaling factor to apply to each intensity value
-          */
-        PointCloudImageExtractorFromIntensityField (const float scaling_factor)
-          : PointCloudImageExtractorWithScaling<PointT> ("intensity", scaling_factor)
-        {
-        }
-
-        /** \brief Destructor. */
-        ~PointCloudImageExtractorFromIntensityField () override = default;
-
-      protected:
-        // Members derived from the base class
-        using PointCloudImageExtractorWithScaling<PointT>::field_name_;
-        using PointCloudImageExtractorWithScaling<PointT>::scaling_method_;
-        using PointCloudImageExtractorWithScaling<PointT>::scaling_factor_;
-    };
-
+    paint_nans_with_black_ = flag;
   }
-}
+
+protected:
+  /** \brief Implementation of the extract() function, has to be
+   * implemented in deriving classes.
+   */
+  virtual bool
+  extractImpl (const PointCloud& cloud, pcl::PCLImage& image) const = 0;
+
+  /// A flag that controls if image pixels corresponding to NaN (infinite)
+  /// points should be painted black.
+  bool paint_nans_with_black_{false};
+};
+
+//////////////////////////////////////////////////////////////////////////////////////
+/** \brief Image Extractor extension which provides functionality to apply scaling to
+ * the values extracted from a field.
+ * \author Sergey Alexandrov
+ * \ingroup io
+ */
+template <typename PointT>
+class PointCloudImageExtractorWithScaling : public PointCloudImageExtractor<PointT> {
+  using PointCloud = typename PointCloudImageExtractor<PointT>::PointCloud;
+
+public:
+  using Ptr = shared_ptr<PointCloudImageExtractorWithScaling<PointT>>;
+  using ConstPtr = shared_ptr<const PointCloudImageExtractorWithScaling<PointT>>;
+
+  /** \brief Different scaling methods.
+   * <ul>
+   *   <li><b>SCALING_NO</b> - no scaling.</li>
+   *   <li><b>SCALING_FULL_RANGE</b> - scales to full range of the output value.</li>
+   *   <li><b>SCASING_FIXED_FACTOR</b> - scales by a given fixed factor.</li>
+   * </ul>
+   */
+  enum ScalingMethod { SCALING_NO, SCALING_FULL_RANGE, SCALING_FIXED_FACTOR };
+
+  /** \brief Constructor. */
+  PointCloudImageExtractorWithScaling(const std::string& field_name,
+                                      const ScalingMethod scaling_method)
+  : field_name_(field_name), scaling_method_(scaling_method), scaling_factor_(1.0f)
+  {}
+
+  /** \brief Constructor. */
+  PointCloudImageExtractorWithScaling(const std::string& field_name,
+                                      const float scaling_factor)
+  : field_name_(field_name)
+  , scaling_method_(SCALING_FIXED_FACTOR)
+  , scaling_factor_(scaling_factor)
+  {}
+
+  /** \brief Destructor. */
+  ~PointCloudImageExtractorWithScaling() override = default;
+
+  /** \brief Set scaling method. */
+  inline void
+  setScalingMethod (const ScalingMethod scaling_method)
+  {
+    scaling_method_ = scaling_method;
+  }
+
+  /** \brief Set fixed scaling factor. */
+  inline void
+  setScalingFactor (const float scaling_factor)
+  {
+    scaling_factor_ = scaling_factor;
+  }
+
+protected:
+  bool
+  extractImpl (const PointCloud& cloud, pcl::PCLImage& image) const override;
+
+  std::string field_name_;
+  ScalingMethod scaling_method_;
+  float scaling_factor_;
+};
+
+//////////////////////////////////////////////////////////////////////////////////////
+/** \brief Image Extractor which uses the data present in the "normal" field. Normal
+ * vector components (x, y, z) are mapped to color channels (r, g, b respectively).
+ * \author Sergey Alexandrov
+ * \ingroup io
+ */
+template <typename PointT>
+class PointCloudImageExtractorFromNormalField
+: public PointCloudImageExtractor<PointT> {
+  using PointCloud = typename PointCloudImageExtractor<PointT>::PointCloud;
+
+public:
+  using Ptr = shared_ptr<PointCloudImageExtractorFromNormalField<PointT>>;
+  using ConstPtr = shared_ptr<const PointCloudImageExtractorFromNormalField<PointT>>;
+
+  /** \brief Constructor. */
+  PointCloudImageExtractorFromNormalField() = default;
+
+  /** \brief Destructor. */
+  ~PointCloudImageExtractorFromNormalField() override = default;
+
+protected:
+  bool
+  extractImpl (const PointCloud& cloud, pcl::PCLImage& img) const override;
+};
+
+//////////////////////////////////////////////////////////////////////////////////////
+/** \brief Image Extractor which uses the data present in the "rgb" or "rgba" fields
+ * to produce a color image with rgb8 encoding.
+ * \author Sergey Alexandrov
+ * \ingroup io
+ */
+template <typename PointT>
+class PointCloudImageExtractorFromRGBField : public PointCloudImageExtractor<PointT> {
+  using PointCloud = typename PointCloudImageExtractor<PointT>::PointCloud;
+
+public:
+  using Ptr = shared_ptr<PointCloudImageExtractorFromRGBField<PointT>>;
+  using ConstPtr = shared_ptr<const PointCloudImageExtractorFromRGBField<PointT>>;
+
+  /** \brief Constructor. */
+  PointCloudImageExtractorFromRGBField() = default;
+
+  /** \brief Destructor. */
+  ~PointCloudImageExtractorFromRGBField() override = default;
+
+protected:
+  bool
+  extractImpl (const PointCloud& cloud, pcl::PCLImage& img) const override;
+};
+
+//////////////////////////////////////////////////////////////////////////////////////
+/** \brief Image Extractor which uses the data present in the "label" field to produce
+ * either monochrome or RGB image where different labels correspond to different
+ * colors.
+ * See the documentation for ColorMode to learn about available coloring options.
+ * \author Sergey Alexandrov
+ * \ingroup io
+ */
+template <typename PointT>
+class PointCloudImageExtractorFromLabelField : public PointCloudImageExtractor<PointT> {
+  using PointCloud = typename PointCloudImageExtractor<PointT>::PointCloud;
+
+public:
+  using Ptr = shared_ptr<PointCloudImageExtractorFromLabelField<PointT>>;
+  using ConstPtr = shared_ptr<const PointCloudImageExtractorFromLabelField<PointT>>;
+
+  /** \brief Different modes for color mapping. */
+  enum ColorMode {
+    /// Shades of gray (according to label id)
+    /// \note Labels using more than 16 bits will cause problems
+    COLORS_MONO,
+    /// Randomly generated RGB colors
+    COLORS_RGB_RANDOM,
+    /// Fixed RGB colors from the [Glasbey lookup table](http://fiji.sc/Glasbey),
+    /// assigned in the ascending order of label id
+    COLORS_RGB_GLASBEY,
+  };
+
+  /** \brief Constructor. */
+  PointCloudImageExtractorFromLabelField(const ColorMode color_mode = COLORS_MONO)
+  : color_mode_(color_mode)
+  {}
+
+  /** \brief Destructor. */
+  ~PointCloudImageExtractorFromLabelField() override = default;
+
+  /** \brief Set color mapping mode. */
+  inline void
+  setColorMode (const ColorMode color_mode)
+  {
+    color_mode_ = color_mode;
+  }
+
+protected:
+  bool
+  extractImpl (const PointCloud& cloud, pcl::PCLImage& img) const override;
+
+  // Members derived from the base class
+  using PointCloudImageExtractor<PointT>::paint_nans_with_black_;
+
+private:
+  ColorMode color_mode_{COLORS_MONO};
+};
+
+//////////////////////////////////////////////////////////////////////////////////////
+/** \brief Image Extractor which uses the data present in the "z" field to produce a
+ * depth map (as a monochrome image with mono16 encoding).
+ * \author Sergey Alexandrov
+ * \ingroup io
+ */
+template <typename PointT>
+class PointCloudImageExtractorFromZField
+: public PointCloudImageExtractorWithScaling<PointT> {
+  using PointCloud = typename PointCloudImageExtractor<PointT>::PointCloud;
+  using ScalingMethod =
+      typename PointCloudImageExtractorWithScaling<PointT>::ScalingMethod;
+
+public:
+  using Ptr = shared_ptr<PointCloudImageExtractorFromZField<PointT>>;
+  using ConstPtr = shared_ptr<const PointCloudImageExtractorFromZField<PointT>>;
+
+  /** \brief Constructor.
+   * \param[in] scaling_factor a scaling factor to apply to each depth value (default
+   * 10000)
+   */
+  PointCloudImageExtractorFromZField(const float scaling_factor = 10000)
+  : PointCloudImageExtractorWithScaling<PointT>("z", scaling_factor)
+  {}
+
+  /** \brief Constructor.
+   * \param[in] scaling_method a scaling method to use
+   */
+  PointCloudImageExtractorFromZField(const ScalingMethod scaling_method)
+  : PointCloudImageExtractorWithScaling<PointT>("z", scaling_method)
+  {}
+
+  /** \brief Destructor. */
+  ~PointCloudImageExtractorFromZField() override = default;
+
+protected:
+  // Members derived from the base class
+  using PointCloudImageExtractorWithScaling<PointT>::field_name_;
+  using PointCloudImageExtractorWithScaling<PointT>::scaling_method_;
+  using PointCloudImageExtractorWithScaling<PointT>::scaling_factor_;
+};
+
+//////////////////////////////////////////////////////////////////////////////////////
+/** \brief Image Extractor which uses the data present in the "curvature" field to
+ * produce a curvature map (as a monochrome image with mono16 encoding).
+ * \author Sergey Alexandrov
+ * \ingroup io
+ */
+template <typename PointT>
+class PointCloudImageExtractorFromCurvatureField
+: public PointCloudImageExtractorWithScaling<PointT> {
+  using PointCloud = typename PointCloudImageExtractor<PointT>::PointCloud;
+  using ScalingMethod =
+      typename PointCloudImageExtractorWithScaling<PointT>::ScalingMethod;
+
+public:
+  using Ptr = shared_ptr<PointCloudImageExtractorFromCurvatureField<PointT>>;
+  using ConstPtr = shared_ptr<const PointCloudImageExtractorFromCurvatureField<PointT>>;
+
+  /** \brief Constructor.
+   * \param[in] scaling_method a scaling method to use (default SCALING_FULL_RANGE)
+   */
+  PointCloudImageExtractorFromCurvatureField(
+      const ScalingMethod scaling_method =
+          PointCloudImageExtractorWithScaling<PointT>::SCALING_FULL_RANGE)
+  : PointCloudImageExtractorWithScaling<PointT>("curvature", scaling_method)
+  {}
+
+  /** \brief Constructor.
+   * \param[in] scaling_factor a scaling factor to apply to each curvature value
+   */
+  PointCloudImageExtractorFromCurvatureField(const float scaling_factor)
+  : PointCloudImageExtractorWithScaling<PointT>("curvature", scaling_factor)
+  {}
+
+  /** \brief Destructor. */
+  ~PointCloudImageExtractorFromCurvatureField() override = default;
+
+protected:
+  // Members derived from the base class
+  using PointCloudImageExtractorWithScaling<PointT>::field_name_;
+  using PointCloudImageExtractorWithScaling<PointT>::scaling_method_;
+  using PointCloudImageExtractorWithScaling<PointT>::scaling_factor_;
+};
+
+//////////////////////////////////////////////////////////////////////////////////////
+/** \brief Image Extractor which uses the data present in the "intensity" field to
+ * produce a monochrome intensity image (with mono16 encoding). \author Sergey
+ * Alexandrov \ingroup io
+ */
+template <typename PointT>
+class PointCloudImageExtractorFromIntensityField
+: public PointCloudImageExtractorWithScaling<PointT> {
+  using PointCloud = typename PointCloudImageExtractor<PointT>::PointCloud;
+  using ScalingMethod =
+      typename PointCloudImageExtractorWithScaling<PointT>::ScalingMethod;
+
+public:
+  using Ptr = shared_ptr<PointCloudImageExtractorFromIntensityField<PointT>>;
+  using ConstPtr = shared_ptr<const PointCloudImageExtractorFromIntensityField<PointT>>;
+
+  /** \brief Constructor.
+   * \param[in] scaling_method a scaling method to use (default SCALING_NO)
+   */
+  PointCloudImageExtractorFromIntensityField(
+      const ScalingMethod scaling_method =
+          PointCloudImageExtractorWithScaling<PointT>::SCALING_NO)
+  : PointCloudImageExtractorWithScaling<PointT>("intensity", scaling_method)
+  {}
+
+  /** \brief Constructor.
+   * \param[in] scaling_factor a scaling factor to apply to each intensity value
+   */
+  PointCloudImageExtractorFromIntensityField(const float scaling_factor)
+  : PointCloudImageExtractorWithScaling<PointT>("intensity", scaling_factor)
+  {}
+
+  /** \brief Destructor. */
+  ~PointCloudImageExtractorFromIntensityField() override = default;
+
+protected:
+  // Members derived from the base class
+  using PointCloudImageExtractorWithScaling<PointT>::field_name_;
+  using PointCloudImageExtractorWithScaling<PointT>::scaling_method_;
+  using PointCloudImageExtractorWithScaling<PointT>::scaling_factor_;
+};
+
+} // namespace io
+} // namespace pcl
 
 #include <pcl/io/impl/point_cloud_image_extractors.hpp>

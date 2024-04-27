@@ -39,76 +39,76 @@
 
 #pragma once
 
-#include <pcl/point_types.h>
 #include <pcl/features/feature.h>
 #include <pcl/features/shot_lrf.h>
+#include <pcl/point_types.h>
 
-namespace pcl
-{
-  /** \brief SHOTLocalReferenceFrameEstimation estimates the Local Reference Frame used in the calculation
-    * of the (SHOT) descriptor.
-    *
-    * \note If you use this code in any academic work, please cite:
-    *
-    *   - F. Tombari, S. Salti, L. Di Stefano
-    *     Unique Signatures of Histograms for Local Surface Description.
-    *     In Proceedings of the 11th European Conference on Computer Vision (ECCV),
-    *     Heraklion, Greece, September 5-11 2010.
-    *   - F. Tombari, S. Salti, L. Di Stefano
-    *     A Combined Texture-Shape Descriptor For Enhanced 3D Feature Matching.
-    *     In Proceedings of the 18th International Conference on Image Processing (ICIP),
-    *     Brussels, Belgium, September 11-14 2011.
-    *
-    * \author Samuele Salti, Federico Tombari
-    * \ingroup features
-    */
-  template<typename PointInT, typename PointOutT = ReferenceFrame>
-  class SHOTLocalReferenceFrameEstimationOMP : public SHOTLocalReferenceFrameEstimation<PointInT, PointOutT>
+namespace pcl {
+/** \brief SHOTLocalReferenceFrameEstimation estimates the Local Reference Frame used in
+ * the calculation of the (SHOT) descriptor.
+ *
+ * \note If you use this code in any academic work, please cite:
+ *
+ *   - F. Tombari, S. Salti, L. Di Stefano
+ *     Unique Signatures of Histograms for Local Surface Description.
+ *     In Proceedings of the 11th European Conference on Computer Vision (ECCV),
+ *     Heraklion, Greece, September 5-11 2010.
+ *   - F. Tombari, S. Salti, L. Di Stefano
+ *     A Combined Texture-Shape Descriptor For Enhanced 3D Feature Matching.
+ *     In Proceedings of the 18th International Conference on Image Processing (ICIP),
+ *     Brussels, Belgium, September 11-14 2011.
+ *
+ * \author Samuele Salti, Federico Tombari
+ * \ingroup features
+ */
+template <typename PointInT, typename PointOutT = ReferenceFrame>
+class SHOTLocalReferenceFrameEstimationOMP
+: public SHOTLocalReferenceFrameEstimation<PointInT, PointOutT> {
+public:
+  using Ptr = shared_ptr<SHOTLocalReferenceFrameEstimationOMP<PointInT, PointOutT>>;
+  using ConstPtr =
+      shared_ptr<const SHOTLocalReferenceFrameEstimationOMP<PointInT, PointOutT>>;
+  /** \brief Constructor */
+  SHOTLocalReferenceFrameEstimationOMP()
   {
-    public:
-      using Ptr = shared_ptr<SHOTLocalReferenceFrameEstimationOMP<PointInT, PointOutT> >;
-      using ConstPtr = shared_ptr<const SHOTLocalReferenceFrameEstimationOMP<PointInT, PointOutT> >;
-      /** \brief Constructor */
-    SHOTLocalReferenceFrameEstimationOMP ()
-      {
-        feature_name_ = "SHOTLocalReferenceFrameEstimationOMP";
+    feature_name_ = "SHOTLocalReferenceFrameEstimationOMP";
 
-        setNumberOfThreads(0);
-      }
+    setNumberOfThreads(0);
+  }
 
-    /** \brief Empty destructor */
-    ~SHOTLocalReferenceFrameEstimationOMP () override = default;
+  /** \brief Empty destructor */
+  ~SHOTLocalReferenceFrameEstimationOMP() override = default;
 
-    /** \brief Initialize the scheduler and set the number of threads to use.
-     * \param nr_threads the number of hardware threads to use (0 sets the value back to automatic)
-     */
-    void
-    setNumberOfThreads (unsigned int nr_threads = 0);
+  /** \brief Initialize the scheduler and set the number of threads to use.
+   * \param nr_threads the number of hardware threads to use (0 sets the value back to
+   * automatic)
+   */
+  void
+  setNumberOfThreads (unsigned int nr_threads = 0);
 
-    protected:
-      using Feature<PointInT, PointOutT>::feature_name_;
-      using Feature<PointInT, PointOutT>::getClassName;
-      //using Feature<PointInT, PointOutT>::searchForNeighbors;
-      using Feature<PointInT, PointOutT>::input_;
-      using Feature<PointInT, PointOutT>::indices_;
-      using Feature<PointInT, PointOutT>::surface_;
-      using Feature<PointInT, PointOutT>::tree_;
-      using Feature<PointInT, PointOutT>::search_parameter_;
-      using SHOTLocalReferenceFrameEstimation<PointInT, PointOutT>::getLocalRF;
-      using PointCloudIn = typename Feature<PointInT, PointOutT>::PointCloudIn;
-      using PointCloudOut = typename Feature<PointInT, PointOutT>::PointCloudOut;
+protected:
+  using Feature<PointInT, PointOutT>::feature_name_;
+  using Feature<PointInT, PointOutT>::getClassName;
+  // using Feature<PointInT, PointOutT>::searchForNeighbors;
+  using Feature<PointInT, PointOutT>::input_;
+  using Feature<PointInT, PointOutT>::indices_;
+  using Feature<PointInT, PointOutT>::surface_;
+  using Feature<PointInT, PointOutT>::tree_;
+  using Feature<PointInT, PointOutT>::search_parameter_;
+  using SHOTLocalReferenceFrameEstimation<PointInT, PointOutT>::getLocalRF;
+  using PointCloudIn = typename Feature<PointInT, PointOutT>::PointCloudIn;
+  using PointCloudOut = typename Feature<PointInT, PointOutT>::PointCloudOut;
 
-      /** \brief Feature estimation method.
-        * \param[out] output the resultant features
-        */
-      void
-      computeFeature (PointCloudOut &output) override;
+  /** \brief Feature estimation method.
+   * \param[out] output the resultant features
+   */
+  void
+  computeFeature (PointCloudOut& output) override;
 
-      /** \brief The number of threads the scheduler should use. */
-      unsigned int threads_;
-
-  };
-}
+  /** \brief The number of threads the scheduler should use. */
+  unsigned int threads_;
+};
+} // namespace pcl
 
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/features/impl/shot_lrf_omp.hpp>

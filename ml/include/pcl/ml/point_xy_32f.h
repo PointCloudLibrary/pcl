@@ -56,7 +56,7 @@ public:
    * \param[out] stream the destination for the serialization
    */
   inline void
-  serialize(std::ostream& stream) const
+  serialize (std::ostream& stream) const
   {
     stream.write(reinterpret_cast<const char*>(&x), sizeof(x));
     stream.write(reinterpret_cast<const char*>(&y), sizeof(y));
@@ -67,7 +67,7 @@ public:
    * \param[in] stream the source for the deserialization
    */
   inline void
-  deserialize(std::istream& stream)
+  deserialize (std::istream& stream)
   {
     stream.read(reinterpret_cast<char*>(&x), sizeof(x));
     stream.read(reinterpret_cast<char*>(&y), sizeof(y));
@@ -81,7 +81,7 @@ public:
    * \param[in] max_y the maximum value for the y-coordinate of the point
    */
   static PointXY32f
-  randomPoint(const int min_x, const int max_x, const int min_y, const int max_y);
+  randomPoint (const int min_x, const int max_x, const int min_y, const int max_y);
 
 public:
   /** The x-coordinate of the point. */

@@ -95,7 +95,7 @@ public:
   {}
 
   void
-  cloud_cb_(const CloudConstPtr& cloud)
+  cloud_cb_ (const CloudConstPtr& cloud)
   {
     if (quit_)
       return;
@@ -110,7 +110,7 @@ public:
   }
 
   void
-  keyboard_callback(const pcl::visualization::KeyboardEvent& event, void*)
+  keyboard_callback (const pcl::visualization::KeyboardEvent& event, void*)
   {
     if (event.keyUp()) {
       switch (event.getKeyCode()) {
@@ -132,7 +132,7 @@ public:
   }
 
   void
-  mouse_callback(const pcl::visualization::MouseEvent& mouse_event, void*)
+  mouse_callback (const pcl::visualization::MouseEvent& mouse_event, void*)
   {
     if (mouse_event.getType() == pcl::visualization::MouseEvent::MouseButtonPress &&
         mouse_event.getButton() == pcl::visualization::MouseEvent::LeftButton) {
@@ -141,7 +141,7 @@ public:
   }
 
   CloudConstPtr
-  getLatestCloud()
+  getLatestCloud ()
   {
     // lock while we swap our cloud and reset it.
     std::lock_guard<std::mutex> lock(cloud_mutex_);
@@ -153,7 +153,7 @@ public:
   }
 
   void
-  saveCloud()
+  saveCloud ()
   {
     FPS_CALC("I/O");
     const std::string time = pcl::getTimestamp();
@@ -174,14 +174,14 @@ public:
   }
 
   void
-  run()
+  run ()
   {
     // register the keyboard and mouse callback for the visualizer
     visualizer_->registerMouseCallback(&OpenNIGrabFrame::mouse_callback, *this);
     visualizer_->registerKeyboardCallback(&OpenNIGrabFrame::keyboard_callback, *this);
 
     // make callback function from member function
-    std::function<void(const CloudConstPtr&)> f = [this](const CloudConstPtr& cloud) {
+    std::function<void(const CloudConstPtr&)> f = [this] (const CloudConstPtr& cloud) {
       cloud_cb_(cloud);
     };
 
@@ -215,10 +215,10 @@ public:
   }
 
   void
-  setOptions(const std::string& filename,
-             const std::string& pcd_format,
-             bool paused,
-             bool visualizer)
+  setOptions (const std::string& filename,
+              const std::string& pcd_format,
+              bool paused,
+              bool visualizer)
   {
     pcl_fs::path path(filename);
 
@@ -265,7 +265,7 @@ public:
 };
 
 void
-usage(char** argv)
+usage (char** argv)
 {
   std::cout << "usage: " << argv[0] << " <filename> <options>\n\n";
 
@@ -283,7 +283,7 @@ usage(char** argv)
 }
 
 int
-main(int argc, char** argv)
+main (int argc, char** argv)
 {
   std::string arg;
   if (argc > 1)

@@ -76,10 +76,10 @@ public:
    * \note Only accepted if it is greater than 0.
    */
   void
-  setEpsilon(const float epsilon);
+  setEpsilon (const float epsilon);
 
   float
-  getEpsilon() const;
+  getEpsilon () const;
   /** @} */
 
   /** @{ */
@@ -89,10 +89,10 @@ public:
    * \note Must be greater than 0. Smaller values are set to 1.
    */
   void
-  setMaxIterations(const unsigned int max_iter);
+  setMaxIterations (const unsigned int max_iter);
 
   unsigned int
-  getMaxIterations() const;
+  getMaxIterations () const;
   /** @} */
 
   /** @{ */
@@ -104,10 +104,10 @@ public:
    * nearest valid value.
    */
   void
-  setMinOverlap(const float overlap);
+  setMinOverlap (const float overlap);
 
   float
-  getMinOverlap() const;
+  getMinOverlap () const;
   /** @} */
 
   /** @{ */
@@ -117,10 +117,10 @@ public:
    * \note Must be greater than zero.
    */
   void
-  setMaxFitness(const float fitness);
+  setMaxFitness (const float fitness);
 
   float
-  getMaxFitness() const;
+  getMaxFitness () const;
   /** @} */
 
   /** @{ */
@@ -132,10 +132,10 @@ public:
    * \note Must be greater or equal one. Smaller values are set to one.
    */
   void
-  setCorrespondenceRejectionFactor(const float factor);
+  setCorrespondenceRejectionFactor (const float factor);
 
   float
-  getCorrespondenceRejectionFactor() const;
+  getCorrespondenceRejectionFactor () const;
   /** @} */
 
   /** @{ */
@@ -146,10 +146,10 @@ public:
    * the nearest valid value.
    */
   void
-  setMaxAngle(const float angle);
+  setMaxAngle (const float angle);
 
   float
-  getMaxAngle() const;
+  getMaxAngle () const;
   /** @} */
 
   /** \brief Find the transformation that aligns the data cloud (source) to the model
@@ -163,10 +163,10 @@ public:
    * \return true if success.
    */
   bool
-  findTransformation(const MeshConstPtr& mesh_model,
-                     const CloudXYZRGBNormalConstPtr& cloud_data,
-                     const Eigen::Matrix4f& T_init,
-                     Eigen::Matrix4f& T_final);
+  findTransformation (const MeshConstPtr& mesh_model,
+                      const CloudXYZRGBNormalConstPtr& cloud_data,
+                      const Eigen::Matrix4f& T_init,
+                      Eigen::Matrix4f& T_final);
 
 private:
   using PointNormal = pcl::PointNormal;
@@ -189,7 +189,8 @@ private:
    * information of the mesh is currently not used during the registration).
    */
   CloudNormalConstPtr
-  selectModelPoints(const MeshConstPtr& mesh_model, const Eigen::Matrix4f& T_inv) const;
+  selectModelPoints (const MeshConstPtr& mesh_model,
+                     const Eigen::Matrix4f& T_inv) const;
 
   /** \brief Selects the valid data points. The input cloud is organized -> contains
    * nans which are removed
@@ -199,7 +200,7 @@ private:
    * \return Cloud containing the selected points.
    */
   CloudNormalConstPtr
-  selectDataPoints(const CloudXYZRGBNormalConstPtr& cloud_data) const;
+  selectDataPoints (const CloudXYZRGBNormalConstPtr& cloud_data) const;
 
   /** \brief Finds the transformation that minimizes the point to plane distance from
    * the source to the target cloud. The input clouds must be arranged to have one to
@@ -213,9 +214,9 @@ private:
    * \return true if success
    */
   bool
-  minimizePointPlane(const CloudNormal& cloud_source,
-                     const CloudNormal& cloud_target,
-                     Eigen::Matrix4f& T) const;
+  minimizePointPlane (const CloudNormal& cloud_source,
+                      const CloudNormal& cloud_target,
+                      Eigen::Matrix4f& T) const;
 
   ////////////////////////////////////////////////////////////////////////
   // Members

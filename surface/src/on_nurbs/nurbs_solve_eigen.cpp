@@ -31,120 +31,113 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * 
+ *
  *
  */
 
-#include <iostream>
-#include <stdexcept>
+#include <pcl/surface/on_nurbs/nurbs_solve.h>
 
 #include <Eigen/SVD> // for jacobiSvd
 
-#include <pcl/surface/on_nurbs/nurbs_solve.h>
+#include <iostream>
+#include <stdexcept>
 
 using namespace pcl;
 using namespace on_nurbs;
 
 void
-NurbsSolve::assign (unsigned rows, unsigned cols, unsigned dims)
+NurbsSolve::assign(unsigned rows, unsigned cols, unsigned dims)
 {
-  m_Keig = Eigen::MatrixXd::Zero (rows, cols);
-  m_xeig = Eigen::MatrixXd::Zero (cols, dims);
-  m_feig = Eigen::MatrixXd::Zero (rows, dims);
+  m_Keig = Eigen::MatrixXd::Zero(rows, cols);
+  m_xeig = Eigen::MatrixXd::Zero(cols, dims);
+  m_feig = Eigen::MatrixXd::Zero(rows, dims);
 }
 
 void
-NurbsSolve::K (unsigned i, unsigned j, double v)
+NurbsSolve::K(unsigned i, unsigned j, double v)
 {
-  m_Keig (i, j) = v;
+  m_Keig(i, j) = v;
 }
 void
-NurbsSolve::x (unsigned i, unsigned j, double v)
+NurbsSolve::x(unsigned i, unsigned j, double v)
 {
-  m_xeig (i, j) = v;
+  m_xeig(i, j) = v;
 }
 void
-NurbsSolve::f (unsigned i, unsigned j, double v)
+NurbsSolve::f(unsigned i, unsigned j, double v)
 {
-  m_feig (i, j) = v;
+  m_feig(i, j) = v;
 }
 
 double
-NurbsSolve::K (unsigned i, unsigned j)
+NurbsSolve::K(unsigned i, unsigned j)
 {
-  return m_Keig (i, j);
+  return m_Keig(i, j);
 }
 double
-NurbsSolve::x (unsigned i, unsigned j)
+NurbsSolve::x(unsigned i, unsigned j)
 {
-  return m_xeig (i, j);
+  return m_xeig(i, j);
 }
 double
-NurbsSolve::f (unsigned i, unsigned j)
+NurbsSolve::f(unsigned i, unsigned j)
 {
-  return m_feig (i, j);
+  return m_feig(i, j);
 }
 
 void
-NurbsSolve::resize (unsigned rows)
+NurbsSolve::resize(unsigned rows)
 {
-  m_feig.conservativeResize (rows, m_feig.cols ());
-  m_Keig.conservativeResize (rows, m_Keig.cols ());
+  m_feig.conservativeResize(rows, m_feig.cols());
+  m_Keig.conservativeResize(rows, m_Keig.cols());
 }
 
 void
-NurbsSolve::printK ()
+NurbsSolve::printK()
 {
-  for (Eigen::Index r = 0; r < m_Keig.rows (); r++)
-  {
-    for (Eigen::Index c = 0; c < m_Keig.cols (); c++)
-    {
-      printf (" %f", m_Keig (r, c));
+  for (Eigen::Index r = 0; r < m_Keig.rows(); r++) {
+    for (Eigen::Index c = 0; c < m_Keig.cols(); c++) {
+      printf(" %f", m_Keig(r, c));
     }
-    printf ("\n");
+    printf("\n");
   }
 }
 
 void
-NurbsSolve::printX ()
+NurbsSolve::printX()
 {
-  for (Eigen::Index r = 0; r < m_xeig.rows (); r++)
-  {
-    for (Eigen::Index c = 0; c < m_xeig.cols (); c++)
-    {
-      printf (" %f", m_xeig (r, c));
+  for (Eigen::Index r = 0; r < m_xeig.rows(); r++) {
+    for (Eigen::Index c = 0; c < m_xeig.cols(); c++) {
+      printf(" %f", m_xeig(r, c));
     }
-    printf ("\n");
+    printf("\n");
   }
 }
 
 void
-NurbsSolve::printF ()
+NurbsSolve::printF()
 {
-  for (Eigen::Index r = 0; r < m_feig.rows (); r++)
-  {
-    for (Eigen::Index c = 0; c < m_feig.cols (); c++)
-    {
-      printf (" %f", m_feig (r, c));
+  for (Eigen::Index r = 0; r < m_feig.rows(); r++) {
+    for (Eigen::Index c = 0; c < m_feig.cols(); c++) {
+      printf(" %f", m_feig(r, c));
     }
-    printf ("\n");
+    printf("\n");
   }
 }
 
 bool
-NurbsSolve::solve ()
+NurbsSolve::solve()
 {
   //  m_xeig = m_Keig.colPivHouseholderQr().solve(m_feig);
   //  Eigen::MatrixXd x = A.householderQr().solve(b);
-  m_xeig = m_Keig.completeOrthogonalDecomposition().solve (m_feig);
+  m_xeig = m_Keig.completeOrthogonalDecomposition().solve(m_feig);
 
   return true;
 }
 
 Eigen::MatrixXd
-NurbsSolve::diff ()
+NurbsSolve::diff()
 {
-  Eigen::MatrixXd f (m_Keig * m_xeig);
+  Eigen::MatrixXd f(m_Keig * m_xeig);
   return (f - m_feig);
 }
-

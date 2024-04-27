@@ -347,7 +347,7 @@ ManualRegistration::refreshView()
 }
 
 void
-print_usage()
+print_usage ()
 {
   PCL_INFO("manual_registration cloud1.pcd cloud2.pcd\n");
   PCL_INFO("\t cloud1 \t source cloud\n");
@@ -356,7 +356,7 @@ print_usage()
 }
 
 int
-main(int argc, char** argv)
+main (int argc, char** argv)
 {
 #ifdef HAS_QVTKOPENGLWINDOW_H
   QSurfaceFormat::setDefaultFormat(QVTKOpenGLWindow::defaultFormat());

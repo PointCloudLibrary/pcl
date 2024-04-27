@@ -19,14 +19,14 @@ public:
    * \param weight the weight of coherence
    */
   inline void
-  setWeight(double weight)
+  setWeight (double weight)
   {
     weight_ = weight;
   }
 
   /** \brief get the weight of coherence */
   inline double
-  getWeight()
+  getWeight ()
   {
     return weight_;
   }
@@ -37,7 +37,7 @@ protected:
    * \param target instance of target point.
    */
   double
-  computeCoherence(PointInT& source, PointInT& target) override;
+  computeCoherence (PointInT& source, PointInT& target) override;
 
   /** \brief the weight of coherence */
   double weight_{1.0};

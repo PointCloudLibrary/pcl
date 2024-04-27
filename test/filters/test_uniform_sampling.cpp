@@ -34,11 +34,10 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <pcl/test/gtest.h>
-
 #include <pcl/common/generate.h>
 #include <pcl/common/random.h>
 #include <pcl/filters/uniform_sampling.h>
+#include <pcl/test/gtest.h>
 #include <pcl/point_types.h>
 
 TEST(UniformSampling, extractRemovedIndices)
@@ -75,7 +74,7 @@ TEST(UniformSampling, extractRemovedIndices)
 }
 
 int
-main(int argc, char** argv)
+main (int argc, char** argv)
 {
   testing::InitGoogleTest(&argc, argv);
   return (RUN_ALL_TESTS());

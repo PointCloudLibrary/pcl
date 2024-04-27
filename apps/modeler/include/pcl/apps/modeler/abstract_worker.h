@@ -53,37 +53,37 @@ public:
   ~AbstractWorker();
 
   int
-  exec();
+  exec ();
 
 public Q_SLOTS:
   void
-  process();
+  process ();
 
 Q_SIGNALS:
   void
-  dataUpdated(CloudMeshItem* cloud_mesh_item);
+  dataUpdated (CloudMeshItem* cloud_mesh_item);
 
   void
-  finished();
+  finished ();
 
 protected:
   void
-  emitDataUpdated(CloudMeshItem* cloud_mesh_item);
+  emitDataUpdated (CloudMeshItem* cloud_mesh_item);
 
   virtual std::string
-  getName() const
+  getName () const
   {
     return "";
   }
 
   virtual void
-  initParameters(CloudMeshItem* cloud_mesh_item) = 0;
+  initParameters (CloudMeshItem* cloud_mesh_item) = 0;
 
   virtual void
-  setupParameters() = 0;
+  setupParameters () = 0;
 
   virtual void
-  processImpl(CloudMeshItem* cloud_mesh_item) = 0;
+  processImpl (CloudMeshItem* cloud_mesh_item) = 0;
 
 protected:
   QList<CloudMeshItem*> cloud_mesh_items_;

@@ -39,40 +39,41 @@
  */
 
 #include <pcl/2d/convolution.h>
-#include <pcl/2d/kernel.h>
 #include <pcl/2d/edge.h>
+#include <pcl/2d/kernel.h>
 #include <pcl/2d/morphology.h>
-
+#include <pcl/io/pcd_io.h>
 #include <pcl/test/gtest.h>
+#include <pcl/point_types.h>
+
 #include <fstream>
 
-#include <pcl/point_types.h>
-#include <pcl/io/pcd_io.h>
-
-char *lena;
-char *gaus;
-char *erosion_ref;
-char *dilation_ref;
-char *opening_ref;
-char *closing_ref;
-char *erosion_binary_ref;
-char *dilation_binary_ref;
-char *opening_binary_ref;
-char *closing_binary_ref;
-char *canny_ref;
+char* lena;
+char* gaus;
+char* erosion_ref;
+char* dilation_ref;
+char* opening_ref;
+char* closing_ref;
+char* erosion_binary_ref;
+char* dilation_binary_ref;
+char* opening_binary_ref;
+char* closing_binary_ref;
+char* canny_ref;
 
 using namespace pcl;
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-TEST (Convolution, borderOptions)
+TEST(Convolution, borderOptions)
 {
   kernel<pcl::PointXYZI> k;
   Convolution<pcl::PointXYZI> conv;
 
   /*dummy clouds*/
-  pcl::PointCloud<pcl::PointXYZI>::Ptr input_cloud (new pcl::PointCloud<pcl::PointXYZI>);
-  pcl::PointCloud<pcl::PointXYZI>::Ptr kernel_cloud (new pcl::PointCloud<pcl::PointXYZI>);
-  pcl::PointCloud<pcl::PointXYZI>::Ptr output_cloud (new pcl::PointCloud<pcl::PointXYZI>);
+  pcl::PointCloud<pcl::PointXYZI>::Ptr input_cloud(new pcl::PointCloud<pcl::PointXYZI>);
+  pcl::PointCloud<pcl::PointXYZI>::Ptr kernel_cloud(
+      new pcl::PointCloud<pcl::PointXYZI>);
+  pcl::PointCloud<pcl::PointXYZI>::Ptr output_cloud(
+      new pcl::PointCloud<pcl::PointXYZI>);
 
   pcl::io::loadPCDFile(lena, *input_cloud);
 
@@ -80,58 +81,77 @@ TEST (Convolution, borderOptions)
   int width = input_cloud->width;
 
   k.setKernelType(kernel<pcl::PointXYZI>::DERIVATIVE_CENTRAL_X);
-  k.fetchKernel (*kernel_cloud);
+  k.fetchKernel(*kernel_cloud);
 
   conv.setKernel(*kernel_cloud);
   conv.setInputCloud(input_cloud);
 
   conv.setBoundaryOptions(Convolution<pcl::PointXYZI>::BOUNDARY_OPTION_MIRROR);
-  conv.filter (*output_cloud);
+  conv.filter(*output_cloud);
   for (int i = 1; i < height - 1; i++)
     for (int j = 1; j < width - 1; j++)
-      EXPECT_NEAR ((*output_cloud)(j,i).intensity, ((*input_cloud)(j+1,i).intensity-(*input_cloud)(j-1,i).intensity), 1);
+      EXPECT_NEAR(
+          (*output_cloud)(j, i).intensity,
+          ((*input_cloud)(j + 1, i).intensity - (*input_cloud)(j - 1, i).intensity),
+          1);
 
-  for (int i = 1; i < height - 1; i++)
-  {
-    EXPECT_NEAR ((*output_cloud)(0,i).intensity, ((*input_cloud)(1,i).intensity-(*input_cloud)(0,i).intensity), 1);
-    EXPECT_NEAR ((*output_cloud)(width-1,i).intensity, ((*input_cloud)(width-1,i).intensity-(*input_cloud)(width-2,i).intensity), 1);
+  for (int i = 1; i < height - 1; i++) {
+    EXPECT_NEAR((*output_cloud)(0, i).intensity,
+                ((*input_cloud)(1, i).intensity - (*input_cloud)(0, i).intensity),
+                1);
+    EXPECT_NEAR((*output_cloud)(width - 1, i).intensity,
+                ((*input_cloud)(width - 1, i).intensity -
+                 (*input_cloud)(width - 2, i).intensity),
+                1);
   }
 
   conv.setBoundaryOptions(Convolution<pcl::PointXYZI>::BOUNDARY_OPTION_CLAMP);
-  conv.filter (*output_cloud);
+  conv.filter(*output_cloud);
   for (int i = 1; i < height - 1; i++)
     for (int j = 1; j < width - 1; j++)
-      EXPECT_NEAR ((*output_cloud)(j,i).intensity, ((*input_cloud)(j+1,i).intensity-(*input_cloud)(j-1,i).intensity), 1);
+      EXPECT_NEAR(
+          (*output_cloud)(j, i).intensity,
+          ((*input_cloud)(j + 1, i).intensity - (*input_cloud)(j - 1, i).intensity),
+          1);
 
-  for (int i = 1; i < height - 1; i++)
-  {
-    EXPECT_NEAR ((*output_cloud)(0,i).intensity, ((*input_cloud)(1,i).intensity-(*input_cloud)(0,i).intensity), 1);
-  //  EXPECT_NEAR ((*output_cloud)(width-1,i).intensity, ((*input_cloud)(width-1,i).intensity-(*input_cloud)(width-2,i).intensity), 1);
+  for (int i = 1; i < height - 1; i++) {
+    EXPECT_NEAR((*output_cloud)(0, i).intensity,
+                ((*input_cloud)(1, i).intensity - (*input_cloud)(0, i).intensity),
+                1);
+    //  EXPECT_NEAR ((*output_cloud)(width-1,i).intensity,
+    //  ((*input_cloud)(width-1,i).intensity-(*input_cloud)(width-2,i).intensity), 1);
   }
 
   conv.setBoundaryOptions(Convolution<pcl::PointXYZI>::BOUNDARY_OPTION_ZERO_PADDING);
-  conv.filter (*output_cloud);
+  conv.filter(*output_cloud);
   for (int i = 1; i < height - 1; i++)
     for (int j = 1; j < width - 1; j++)
-      EXPECT_NEAR ((*output_cloud)(j,i).intensity, ((*input_cloud)(j+1,i).intensity-(*input_cloud)(j-1,i).intensity), 1);
+      EXPECT_NEAR(
+          (*output_cloud)(j, i).intensity,
+          ((*input_cloud)(j + 1, i).intensity - (*input_cloud)(j - 1, i).intensity),
+          1);
 
-  for (int i = 1; i < height - 1; i++)
-  {
-    EXPECT_NEAR ((*output_cloud)(0,i).intensity, ((*input_cloud)(1,i).intensity), 1);
-    EXPECT_NEAR ((*output_cloud)(width-1,i).intensity, (-(*input_cloud)(width-2,i).intensity), 1);
+  for (int i = 1; i < height - 1; i++) {
+    EXPECT_NEAR((*output_cloud)(0, i).intensity, ((*input_cloud)(1, i).intensity), 1);
+    EXPECT_NEAR((*output_cloud)(width - 1, i).intensity,
+                (-(*input_cloud)(width - 2, i).intensity),
+                1);
   }
 }
 
-TEST (Convolution, gaussianSmooth)
+TEST(Convolution, gaussianSmooth)
 {
   kernel<pcl::PointXYZI> k;
   Convolution<pcl::PointXYZI> conv;
 
   /*dummy clouds*/
-  pcl::PointCloud<pcl::PointXYZI>::Ptr input_cloud (new pcl::PointCloud<pcl::PointXYZI>);
-  pcl::PointCloud<pcl::PointXYZI>::Ptr gt_output_cloud (new pcl::PointCloud<pcl::PointXYZI>);
-  pcl::PointCloud<pcl::PointXYZI>::Ptr kernel_cloud (new pcl::PointCloud<pcl::PointXYZI>);
-  pcl::PointCloud<pcl::PointXYZI>::Ptr output_cloud (new pcl::PointCloud<pcl::PointXYZI>);
+  pcl::PointCloud<pcl::PointXYZI>::Ptr input_cloud(new pcl::PointCloud<pcl::PointXYZI>);
+  pcl::PointCloud<pcl::PointXYZI>::Ptr gt_output_cloud(
+      new pcl::PointCloud<pcl::PointXYZI>);
+  pcl::PointCloud<pcl::PointXYZI>::Ptr kernel_cloud(
+      new pcl::PointCloud<pcl::PointXYZI>);
+  pcl::PointCloud<pcl::PointXYZI>::Ptr output_cloud(
+      new pcl::PointCloud<pcl::PointXYZI>);
 
   pcl::io::loadPCDFile(lena, *input_cloud);
   pcl::io::loadPCDFile(gaus, *gt_output_cloud);
@@ -142,24 +162,26 @@ TEST (Convolution, gaussianSmooth)
   k.setKernelType(kernel<pcl::PointXYZI>::GAUSSIAN);
   k.setKernelSize(3);
   k.setKernelSigma(1.0f);
-  k.fetchKernel (*kernel_cloud);
+  k.fetchKernel(*kernel_cloud);
 
   conv.setKernel(*kernel_cloud);
   conv.setInputCloud(input_cloud);
 
   conv.setBoundaryOptions(Convolution<pcl::PointXYZI>::BOUNDARY_OPTION_MIRROR);
-  conv.filter (*output_cloud);
+  conv.filter(*output_cloud);
   for (int i = 1; i < height - 1; i++)
     for (int j = 1; j < width - 1; j++)
-      EXPECT_NEAR ((*output_cloud)(j,i).intensity, (*gt_output_cloud)(j,i).intensity, 1);
+      EXPECT_NEAR(
+          (*output_cloud)(j, i).intensity, (*gt_output_cloud)(j, i).intensity, 1);
 }
 
 TEST(Edge, sobel)
 {
-  Edge<pcl::PointXYZI, PointXYZIEdge>::Ptr edge_ (new Edge<pcl::PointXYZI, PointXYZIEdge> ());
+  Edge<pcl::PointXYZI, PointXYZIEdge>::Ptr edge_(
+      new Edge<pcl::PointXYZI, PointXYZIEdge>());
 
-  pcl::PointCloud<pcl::PointXYZI>::Ptr input_cloud (new pcl::PointCloud<pcl::PointXYZI>);
-  pcl::PointCloud<PointXYZIEdge>::Ptr output_cloud (new pcl::PointCloud<PointXYZIEdge>);
+  pcl::PointCloud<pcl::PointXYZI>::Ptr input_cloud(new pcl::PointCloud<pcl::PointXYZI>);
+  pcl::PointCloud<PointXYZIEdge>::Ptr output_cloud(new pcl::PointCloud<PointXYZIEdge>);
 
   pcl::io::loadPCDFile(lena, *input_cloud);
 
@@ -167,31 +189,38 @@ TEST(Edge, sobel)
   int width = input_cloud->width;
 
   edge_->setInputCloud(input_cloud);
-  edge_->setOutputType (Edge<pcl::PointXYZI, PointXYZIEdge>::OUTPUT_X_Y);
-  edge_->detectEdgeSobel (*output_cloud);
+  edge_->setOutputType(Edge<pcl::PointXYZI, PointXYZIEdge>::OUTPUT_X_Y);
+  edge_->detectEdgeSobel(*output_cloud);
 
   float gt_x, gt_y;
-  for (int i = 1; i < height - 1; i++){
-    for (int j = 1; j < width - 1; j++){
-      gt_x = (*input_cloud)(j+1,i-1).intensity - (*input_cloud)(j-1,i-1).intensity +
-          2*(*input_cloud)(j+1,i).intensity - 2*(*input_cloud)(j-1,i).intensity +
-          (*input_cloud)(j+1,i+1).intensity - (*input_cloud)(j-1,i+1).intensity;
-      EXPECT_NEAR ((*output_cloud)(j,i).magnitude_x, gt_x, 1);
+  for (int i = 1; i < height - 1; i++) {
+    for (int j = 1; j < width - 1; j++) {
+      gt_x = (*input_cloud)(j + 1, i - 1).intensity -
+             (*input_cloud)(j - 1, i - 1).intensity +
+             2 * (*input_cloud)(j + 1, i).intensity -
+             2 * (*input_cloud)(j - 1, i).intensity +
+             (*input_cloud)(j + 1, i + 1).intensity -
+             (*input_cloud)(j - 1, i + 1).intensity;
+      EXPECT_NEAR((*output_cloud)(j, i).magnitude_x, gt_x, 1);
 
-      gt_y = (*input_cloud)(j-1,i+1).intensity - (*input_cloud)(j-1,i-1).intensity +
-          2*(*input_cloud)(j,i+1).intensity - 2*(*input_cloud)(j,i-1).intensity +
-          (*input_cloud)(j+1,i+1).intensity - (*input_cloud)(j+1,i-1).intensity;
-      EXPECT_NEAR ((*output_cloud)(j,i).magnitude_y, gt_y, 1);
+      gt_y = (*input_cloud)(j - 1, i + 1).intensity -
+             (*input_cloud)(j - 1, i - 1).intensity +
+             2 * (*input_cloud)(j, i + 1).intensity -
+             2 * (*input_cloud)(j, i - 1).intensity +
+             (*input_cloud)(j + 1, i + 1).intensity -
+             (*input_cloud)(j + 1, i - 1).intensity;
+      EXPECT_NEAR((*output_cloud)(j, i).magnitude_y, gt_y, 1);
     }
   }
 }
 
 TEST(Edge, prewitt)
 {
-  Edge<pcl::PointXYZI, PointXYZIEdge>::Ptr edge_ (new Edge<pcl::PointXYZI, PointXYZIEdge> ());
+  Edge<pcl::PointXYZI, PointXYZIEdge>::Ptr edge_(
+      new Edge<pcl::PointXYZI, PointXYZIEdge>());
 
-  pcl::PointCloud<pcl::PointXYZI>::Ptr input_cloud (new pcl::PointCloud<pcl::PointXYZI>);
-  pcl::PointCloud<PointXYZIEdge>::Ptr output_cloud (new pcl::PointCloud<PointXYZIEdge>);
+  pcl::PointCloud<pcl::PointXYZI>::Ptr input_cloud(new pcl::PointCloud<pcl::PointXYZI>);
+  pcl::PointCloud<PointXYZIEdge>::Ptr output_cloud(new pcl::PointCloud<PointXYZIEdge>);
 
   pcl::io::loadPCDFile(lena, *input_cloud);
 
@@ -199,62 +228,69 @@ TEST(Edge, prewitt)
   int width = input_cloud->width;
 
   edge_->setInputCloud(input_cloud);
-  edge_->setOutputType (Edge<pcl::PointXYZI, PointXYZIEdge>::OUTPUT_X_Y);
-  edge_->detectEdgePrewitt (*output_cloud);
+  edge_->setOutputType(Edge<pcl::PointXYZI, PointXYZIEdge>::OUTPUT_X_Y);
+  edge_->detectEdgePrewitt(*output_cloud);
 
   float gt_x, gt_y;
-  for (int i = 1; i < height - 1; i++){
-    for (int j = 1; j < width - 1; j++){
-      gt_x = (*input_cloud)(j+1,i-1).intensity - (*input_cloud)(j-1,i-1).intensity +
-          (*input_cloud)(j+1,i).intensity - (*input_cloud)(j-1,i).intensity +
-          (*input_cloud)(j+1,i+1).intensity - (*input_cloud)(j-1,i+1).intensity;
-      EXPECT_NEAR ((*output_cloud)(j,i).magnitude_x, gt_x, 1);
+  for (int i = 1; i < height - 1; i++) {
+    for (int j = 1; j < width - 1; j++) {
+      gt_x = (*input_cloud)(j + 1, i - 1).intensity -
+             (*input_cloud)(j - 1, i - 1).intensity +
+             (*input_cloud)(j + 1, i).intensity - (*input_cloud)(j - 1, i).intensity +
+             (*input_cloud)(j + 1, i + 1).intensity -
+             (*input_cloud)(j - 1, i + 1).intensity;
+      EXPECT_NEAR((*output_cloud)(j, i).magnitude_x, gt_x, 1);
 
-      gt_y = (*input_cloud)(j-1,i-1).intensity - (*input_cloud)(j-1,i+1).intensity +
-          (*input_cloud)(j,i-1).intensity - (*input_cloud)(j,i+1).intensity +
-          (*input_cloud)(j+1,i-1).intensity - (*input_cloud)(j+1,i+1).intensity;
-      EXPECT_NEAR ((*output_cloud)(j,i).magnitude_y, gt_y, 1);
+      gt_y = (*input_cloud)(j - 1, i - 1).intensity -
+             (*input_cloud)(j - 1, i + 1).intensity +
+             (*input_cloud)(j, i - 1).intensity - (*input_cloud)(j, i + 1).intensity +
+             (*input_cloud)(j + 1, i - 1).intensity -
+             (*input_cloud)(j + 1, i + 1).intensity;
+      EXPECT_NEAR((*output_cloud)(j, i).magnitude_y, gt_y, 1);
     }
   }
 }
 
 TEST(Edge, canny)
 {
-  Edge<pcl::PointXYZI, PointXYZIEdge>::Ptr edge_ (new Edge<pcl::PointXYZI, PointXYZIEdge> ());
+  Edge<pcl::PointXYZI, PointXYZIEdge>::Ptr edge_(
+      new Edge<pcl::PointXYZI, PointXYZIEdge>());
 
-  pcl::PointCloud<pcl::PointXYZI>::Ptr input_cloud (new pcl::PointCloud<pcl::PointXYZI>);
-  pcl::PointCloud<pcl::PointXYZI>::Ptr gt_output_cloud (new pcl::PointCloud<pcl::PointXYZI>);
-  pcl::PointCloud<PointXYZIEdge>::Ptr output_cloud (new pcl::PointCloud<PointXYZIEdge>);
+  pcl::PointCloud<pcl::PointXYZI>::Ptr input_cloud(new pcl::PointCloud<pcl::PointXYZI>);
+  pcl::PointCloud<pcl::PointXYZI>::Ptr gt_output_cloud(
+      new pcl::PointCloud<pcl::PointXYZI>);
+  pcl::PointCloud<PointXYZIEdge>::Ptr output_cloud(new pcl::PointCloud<PointXYZIEdge>);
 
   pcl::io::loadPCDFile(lena, *input_cloud);
-  //pcl::io::loadPCDFile("canny.pcd", *gt_output_cloud);
+  // pcl::io::loadPCDFile("canny.pcd", *gt_output_cloud);
   pcl::io::loadPCDFile(canny_ref, *gt_output_cloud);
 
   int height = input_cloud->height;
   int width = input_cloud->width;
 
   edge_->setInputCloud(input_cloud);
-  edge_->setOutputType (Edge<pcl::PointXYZI, PointXYZIEdge>::OUTPUT_X_Y);
-  edge_->setHysteresisThresholdLow (10);
-  edge_->setHysteresisThresholdHigh (50);
-  edge_->detectEdgeCanny (*output_cloud);
+  edge_->setOutputType(Edge<pcl::PointXYZI, PointXYZIEdge>::OUTPUT_X_Y);
+  edge_->setHysteresisThresholdLow(10);
+  edge_->setHysteresisThresholdHigh(50);
+  edge_->detectEdgeCanny(*output_cloud);
 
-  for (int i = 1; i < height - 1; i++)
-  {
-    for (int j = 1; j < width - 1; j++)
-    {
-      EXPECT_NEAR ((*output_cloud)(j,i).magnitude, (*gt_output_cloud)(j,i).intensity, 255);
+  for (int i = 1; i < height - 1; i++) {
+    for (int j = 1; j < width - 1; j++) {
+      EXPECT_NEAR(
+          (*output_cloud)(j, i).magnitude, (*gt_output_cloud)(j, i).intensity, 255);
     }
   }
 }
 
-void threshold(pcl::PointCloud<pcl::PointXYZI>::Ptr &cloud, float thresh){
-  for(std::size_t i = 0;i < cloud->height;i++){
-    for(std::size_t j = 0;j < cloud->width;j++){
-      if((*cloud)(j,i).intensity > thresh)
-        (*cloud)(j,i).intensity = 1;
+void
+threshold (pcl::PointCloud<pcl::PointXYZI>::Ptr& cloud, float thresh)
+{
+  for (std::size_t i = 0; i < cloud->height; i++) {
+    for (std::size_t j = 0; j < cloud->width; j++) {
+      if ((*cloud)(j, i).intensity > thresh)
+        (*cloud)(j, i).intensity = 1;
       else
-        (*cloud)(j,i).intensity = 0;
+        (*cloud)(j, i).intensity = 0;
     }
   }
 }
@@ -262,10 +298,13 @@ void threshold(pcl::PointCloud<pcl::PointXYZI>::Ptr &cloud, float thresh){
 TEST(Morphology, erosion)
 {
   /*dummy clouds*/
-  pcl::PointCloud<pcl::PointXYZI>::Ptr input_cloud (new pcl::PointCloud<pcl::PointXYZI>);
-  pcl::PointCloud<pcl::PointXYZI>::Ptr gt_output_cloud (new pcl::PointCloud<pcl::PointXYZI>);
-  pcl::PointCloud<pcl::PointXYZI>::Ptr structuring_element_cloud (new pcl::PointCloud<pcl::PointXYZI>);
-  pcl::PointCloud<pcl::PointXYZI>::Ptr output_cloud (new pcl::PointCloud<pcl::PointXYZI>);
+  pcl::PointCloud<pcl::PointXYZI>::Ptr input_cloud(new pcl::PointCloud<pcl::PointXYZI>);
+  pcl::PointCloud<pcl::PointXYZI>::Ptr gt_output_cloud(
+      new pcl::PointCloud<pcl::PointXYZI>);
+  pcl::PointCloud<pcl::PointXYZI>::Ptr structuring_element_cloud(
+      new pcl::PointCloud<pcl::PointXYZI>);
+  pcl::PointCloud<pcl::PointXYZI>::Ptr output_cloud(
+      new pcl::PointCloud<pcl::PointXYZI>);
 
   pcl::io::loadPCDFile(lena, *input_cloud);
   pcl::io::loadPCDFile(erosion_ref, *gt_output_cloud);
@@ -281,7 +320,8 @@ TEST(Morphology, erosion)
 
   for (int i = 1; i < height - 1; i++)
     for (int j = 1; j < width - 1; j++)
-      EXPECT_NEAR ((*output_cloud)(j,i).intensity, (*gt_output_cloud)(j,i).intensity, 1);
+      EXPECT_NEAR(
+          (*output_cloud)(j, i).intensity, (*gt_output_cloud)(j, i).intensity, 1);
 
   pcl::io::loadPCDFile(erosion_binary_ref, *gt_output_cloud);
   threshold(input_cloud, 100);
@@ -289,16 +329,21 @@ TEST(Morphology, erosion)
   morph.erosionBinary(*output_cloud);
   for (int i = 1; i < height - 1; i++)
     for (int j = 1; j < width - 1; j++)
-      EXPECT_NEAR ((*output_cloud)(j,i).intensity, (*gt_output_cloud)(j,i).intensity/255.0, 1);
+      EXPECT_NEAR((*output_cloud)(j, i).intensity,
+                  (*gt_output_cloud)(j, i).intensity / 255.0,
+                  1);
 }
 
 TEST(Morphology, dilation)
 {
   /*dummy clouds*/
-  pcl::PointCloud<pcl::PointXYZI>::Ptr input_cloud (new pcl::PointCloud<pcl::PointXYZI>);
-  pcl::PointCloud<pcl::PointXYZI>::Ptr gt_output_cloud (new pcl::PointCloud<pcl::PointXYZI>);
-  pcl::PointCloud<pcl::PointXYZI>::Ptr structuring_element_cloud (new pcl::PointCloud<pcl::PointXYZI>);
-  pcl::PointCloud<pcl::PointXYZI>::Ptr output_cloud (new pcl::PointCloud<pcl::PointXYZI>);
+  pcl::PointCloud<pcl::PointXYZI>::Ptr input_cloud(new pcl::PointCloud<pcl::PointXYZI>);
+  pcl::PointCloud<pcl::PointXYZI>::Ptr gt_output_cloud(
+      new pcl::PointCloud<pcl::PointXYZI>);
+  pcl::PointCloud<pcl::PointXYZI>::Ptr structuring_element_cloud(
+      new pcl::PointCloud<pcl::PointXYZI>);
+  pcl::PointCloud<pcl::PointXYZI>::Ptr output_cloud(
+      new pcl::PointCloud<pcl::PointXYZI>);
 
   pcl::io::loadPCDFile(lena, *input_cloud);
   pcl::io::loadPCDFile(dilation_ref, *gt_output_cloud);
@@ -314,7 +359,8 @@ TEST(Morphology, dilation)
 
   for (int i = 1; i < height - 1; i++)
     for (int j = 1; j < width - 1; j++)
-      EXPECT_NEAR ((*output_cloud)(j,i).intensity, (*gt_output_cloud)(j,i).intensity, 1);
+      EXPECT_NEAR(
+          (*output_cloud)(j, i).intensity, (*gt_output_cloud)(j, i).intensity, 1);
 
   pcl::io::loadPCDFile(dilation_binary_ref, *gt_output_cloud);
   threshold(input_cloud, 100);
@@ -322,16 +368,21 @@ TEST(Morphology, dilation)
   morph.dilationBinary(*output_cloud);
   for (int i = 1; i < height - 1; i++)
     for (int j = 1; j < width - 1; j++)
-      EXPECT_NEAR ((*output_cloud)(j,i).intensity, (*gt_output_cloud)(j,i).intensity/255.0, 1);
+      EXPECT_NEAR((*output_cloud)(j, i).intensity,
+                  (*gt_output_cloud)(j, i).intensity / 255.0,
+                  1);
 }
 
 TEST(Morphology, opening)
 {
   /*dummy clouds*/
-  pcl::PointCloud<pcl::PointXYZI>::Ptr input_cloud (new pcl::PointCloud<pcl::PointXYZI>);
-  pcl::PointCloud<pcl::PointXYZI>::Ptr gt_output_cloud (new pcl::PointCloud<pcl::PointXYZI>);
-  pcl::PointCloud<pcl::PointXYZI>::Ptr structuring_element_cloud (new pcl::PointCloud<pcl::PointXYZI>);
-  pcl::PointCloud<pcl::PointXYZI>::Ptr output_cloud (new pcl::PointCloud<pcl::PointXYZI>);
+  pcl::PointCloud<pcl::PointXYZI>::Ptr input_cloud(new pcl::PointCloud<pcl::PointXYZI>);
+  pcl::PointCloud<pcl::PointXYZI>::Ptr gt_output_cloud(
+      new pcl::PointCloud<pcl::PointXYZI>);
+  pcl::PointCloud<pcl::PointXYZI>::Ptr structuring_element_cloud(
+      new pcl::PointCloud<pcl::PointXYZI>);
+  pcl::PointCloud<pcl::PointXYZI>::Ptr output_cloud(
+      new pcl::PointCloud<pcl::PointXYZI>);
 
   pcl::io::loadPCDFile(lena, *input_cloud);
   pcl::io::loadPCDFile(opening_ref, *gt_output_cloud);
@@ -347,7 +398,8 @@ TEST(Morphology, opening)
 
   for (int i = 1; i < height - 1; i++)
     for (int j = 1; j < width - 1; j++)
-      EXPECT_NEAR ((*output_cloud)(j,i).intensity, (*gt_output_cloud)(j,i).intensity, 1);
+      EXPECT_NEAR(
+          (*output_cloud)(j, i).intensity, (*gt_output_cloud)(j, i).intensity, 1);
 
   pcl::io::loadPCDFile(opening_binary_ref, *gt_output_cloud);
   threshold(input_cloud, 100);
@@ -355,16 +407,21 @@ TEST(Morphology, opening)
   morph.openingBinary(*output_cloud);
   for (int i = 1; i < height - 1; i++)
     for (int j = 1; j < width - 1; j++)
-      EXPECT_NEAR ((*output_cloud)(j,i).intensity, (*gt_output_cloud)(j,i).intensity/255.0, 1);
+      EXPECT_NEAR((*output_cloud)(j, i).intensity,
+                  (*gt_output_cloud)(j, i).intensity / 255.0,
+                  1);
 }
 
 TEST(Morphology, closing)
 {
   /*dummy clouds*/
-  pcl::PointCloud<pcl::PointXYZI>::Ptr input_cloud (new pcl::PointCloud<pcl::PointXYZI>);
-  pcl::PointCloud<pcl::PointXYZI>::Ptr gt_output_cloud (new pcl::PointCloud<pcl::PointXYZI>);
-  pcl::PointCloud<pcl::PointXYZI>::Ptr structuring_element_cloud (new pcl::PointCloud<pcl::PointXYZI>);
-  pcl::PointCloud<pcl::PointXYZI>::Ptr output_cloud (new pcl::PointCloud<pcl::PointXYZI>);
+  pcl::PointCloud<pcl::PointXYZI>::Ptr input_cloud(new pcl::PointCloud<pcl::PointXYZI>);
+  pcl::PointCloud<pcl::PointXYZI>::Ptr gt_output_cloud(
+      new pcl::PointCloud<pcl::PointXYZI>);
+  pcl::PointCloud<pcl::PointXYZI>::Ptr structuring_element_cloud(
+      new pcl::PointCloud<pcl::PointXYZI>);
+  pcl::PointCloud<pcl::PointXYZI>::Ptr output_cloud(
+      new pcl::PointCloud<pcl::PointXYZI>);
 
   pcl::io::loadPCDFile(lena, *input_cloud);
   pcl::io::loadPCDFile(closing_ref, *gt_output_cloud);
@@ -380,7 +437,8 @@ TEST(Morphology, closing)
 
   for (int i = 1; i < height - 1; i++)
     for (int j = 1; j < width - 1; j++)
-      EXPECT_NEAR ((*output_cloud)(j,i).intensity, (*gt_output_cloud)(j,i).intensity, 1);
+      EXPECT_NEAR(
+          (*output_cloud)(j, i).intensity, (*gt_output_cloud)(j, i).intensity, 1);
 
   pcl::io::loadPCDFile(closing_binary_ref, *gt_output_cloud);
   threshold(input_cloud, 100);
@@ -388,16 +446,18 @@ TEST(Morphology, closing)
   morph.closingBinary(*output_cloud);
   for (int i = 1; i < height - 1; i++)
     for (int j = 1; j < width - 1; j++)
-      EXPECT_NEAR ((*output_cloud)(j,i).intensity, (*gt_output_cloud)(j,i).intensity/255.0, 1);
+      EXPECT_NEAR((*output_cloud)(j, i).intensity,
+                  (*gt_output_cloud)(j, i).intensity / 255.0,
+                  1);
 }
 
 /** --[ */
 int
 main (int argc, char** argv)
 {
-  testing::InitGoogleTest (&argc, argv);
-  lena = argv[1]; //lena.pcd
-  gaus = argv[2]; //gauss_smooth.pcd
+  testing::InitGoogleTest(&argc, argv);
+  lena = argv[1]; // lena.pcd
+  gaus = argv[2]; // gauss_smooth.pcd
   erosion_ref = argv[3];
   dilation_ref = argv[4];
   opening_ref = argv[5];
@@ -407,7 +467,6 @@ main (int argc, char** argv)
   opening_binary_ref = argv[9];
   closing_binary_ref = argv[10];
   canny_ref = argv[11];
-  return (RUN_ALL_TESTS ());
+  return (RUN_ALL_TESTS());
 }
 /* ]-- */
-

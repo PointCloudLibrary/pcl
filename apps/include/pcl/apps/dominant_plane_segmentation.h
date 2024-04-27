@@ -84,7 +84,7 @@ public:
    * size specified by downsample_leaf_
    */
   void
-  compute(std::vector<CloudPtr>& clusters);
+  compute (std::vector<CloudPtr>& clusters);
 
   /**
    * \brief Extract the clusters.
@@ -92,7 +92,7 @@ public:
    * clusters are not downsampled.
    */
   void
-  compute_full(std::vector<CloudPtr>& clusters);
+  compute_full (std::vector<CloudPtr>& clusters);
 
   /**
    * \brief Extract clusters on a plane using connected components on an organized
@@ -102,20 +102,20 @@ public:
    * clusters are not downsampled.
    */
   void
-  compute_fast(std::vector<CloudPtr>& clusters);
+  compute_fast (std::vector<CloudPtr>& clusters);
 
   /**
    * \brief Computes the table plane.
    */
   void
-  compute_table_plane();
+  compute_table_plane ();
 
   /**
    * \brief Sets the input point cloud.
    * \param cloud_in The input point cloud.
    */
   void
-  setInputCloud(CloudPtr& cloud_in)
+  setInputCloud (CloudPtr& cloud_in)
   {
     input_ = cloud_in;
   }
@@ -125,7 +125,7 @@ public:
    * \param model represents the normal and the position of the plane (a,b,c,d)
    */
   void
-  getTableCoefficients(Eigen::Vector4f& model)
+  getTableCoefficients (Eigen::Vector4f& model)
   {
     model = table_coeffs_;
   }
@@ -135,7 +135,7 @@ public:
    * \param d distance (in meters)
    */
   void
-  setDistanceBetweenClusters(float d)
+  setDistanceBetweenClusters (float d)
   {
     object_cluster_tolerance_ = d;
   }
@@ -145,7 +145,7 @@ public:
    * \param size number of points
    */
   void
-  setMinClusterSize(int size)
+  setMinClusterSize (int size)
   {
     object_cluster_min_size_ = size;
   }
@@ -155,7 +155,7 @@ public:
    * \param h minimum height (in meters)
    */
   void
-  setObjectMinHeight(double h)
+  setObjectMinHeight (double h)
   {
     object_min_height_ = h;
   }
@@ -165,7 +165,7 @@ public:
    * \param h max height (in meters)
    */
   void
-  setObjectMaxHeight(double h)
+  setObjectMaxHeight (double h)
   {
     object_max_height_ = h;
   }
@@ -175,7 +175,7 @@ public:
    * \param z distance (in meters)
    */
   void
-  setMinZBounds(double z)
+  setMinZBounds (double z)
   {
     min_z_bounds_ = z;
   }
@@ -184,7 +184,7 @@ public:
    * \param z distance (in meters)
    */
   void
-  setMaxZBounds(double z)
+  setMaxZBounds (double z)
   {
     max_z_bounds_ = z;
   }
@@ -194,7 +194,7 @@ public:
    * \param k number of neighbors
    */
   void
-  setKNeighbors(int k)
+  setKNeighbors (int k)
   {
     k_ = k;
   }
@@ -204,7 +204,7 @@ public:
    * \param d threshold (in meters)
    */
   void
-  setSACThreshold(double d)
+  setSACThreshold (double d)
   {
     sac_distance_threshold_ = d;
   }
@@ -214,7 +214,7 @@ public:
    * \param d resolution (in meters)
    */
   void
-  setDownsamplingSize(float d)
+  setDownsamplingSize (float d)
   {
     downsample_leaf_ = d;
   }
@@ -224,7 +224,7 @@ public:
    * \param w window size (in pixels)
    */
   void
-  setWSize(int w)
+  setWSize (int w)
   {
     wsize_ = w;
   }
@@ -235,14 +235,14 @@ public:
    * \param indices indices of the clusters
    */
   void
-  getIndicesClusters(std::vector<pcl::PointIndices>& indices)
+  getIndicesClusters (std::vector<pcl::PointIndices>& indices)
   {
     indices = indices_clusters_;
   }
 
 private:
   int
-  check(pcl::PointXYZI& p1, pcl::PointXYZI& p2, float, float max_dist)
+  check (pcl::PointXYZI& p1, pcl::PointXYZI& p2, float, float max_dist)
   {
     if (p1.intensity == 0) // new label
       return 1;

@@ -39,9 +39,8 @@
 #include <pcl/filters/impl/normal_refinement.hpp>
 
 #ifndef PCL_NO_PRECOMPILE
-  #include <pcl/point_types.h>
-  #include <pcl/impl/instantiate.hpp>
-  // Instantiations of specific point types
-  PCL_INSTANTIATE(NormalRefinement, PCL_NORMAL_POINT_TYPES)
-#endif    // PCL_NO_PRECOMPILE
-
+#include <pcl/impl/instantiate.hpp>
+#include <pcl/point_types.h>
+// Instantiations of specific point types
+PCL_INSTANTIATE(NormalRefinement, PCL_NORMAL_POINT_TYPES)
+#endif // PCL_NO_PRECOMPILE

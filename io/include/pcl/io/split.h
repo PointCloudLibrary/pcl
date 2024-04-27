@@ -1,11 +1,11 @@
 /*
-* SPDX-License-Identifier: BSD-3-Clause
-*
-*  Point Cloud Library (PCL) - www.pointclouds.org
-*  Copyright (c) 2014-, Open Perception Inc.
-*
-*  All rights reserved
-*/
+ * SPDX-License-Identifier: BSD-3-Clause
+ *
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2014-, Open Perception Inc.
+ *
+ *  All rights reserved
+ */
 
 #pragma once
 #include <string>
@@ -22,7 +22,7 @@ namespace pcl {
  */
 template <typename SequenceSequenceT>
 void
-split(SequenceSequenceT& result, std::string const& in, const char* const delimiters)
+split (SequenceSequenceT& result, std::string const& in, const char* const delimiters)
 {
   using StringSizeT = std::string::size_type;
 

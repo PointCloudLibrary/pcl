@@ -237,7 +237,7 @@ NormalDistributionsTransform<PointSource, PointTarget, Scalar>::computeAngleDeri
     const Eigen::Matrix<double, 6, 1>& transform, bool compute_hessian)
 {
   // Simplified math for near 0 angles
-  const auto calculate_cos_sin = [](double angle, double& c, double& s) {
+  const auto calculate_cos_sin = [] (double angle, double& c, double& s) {
     if (std::abs(angle) < 10e-5) {
       c = 1.0;
       s = 0.0;

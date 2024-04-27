@@ -31,41 +31,37 @@
 
 #pragma once
 
-#include <deque>
-
 #include "OpenNI.h"
 
-namespace pcl
-{
-  namespace io
-  {
-    namespace openni2
-    {
+#include <deque>
 
-      class OpenNI2TimerFilter
-      {
-        public:
-          OpenNI2TimerFilter (std::size_t filter_len);
-          virtual ~OpenNI2TimerFilter ();
+namespace pcl {
+namespace io {
+namespace openni2 {
 
-          void
-          addSample (double sample);
+class OpenNI2TimerFilter {
+public:
+  OpenNI2TimerFilter(std::size_t filter_len);
+  virtual ~OpenNI2TimerFilter();
 
-          double
-          getMedian ();
+  void
+  addSample (double sample);
 
-          double
-          getMovingAvg ();
+  double
+  getMedian ();
 
-          void
-          clear ();
+  double
+  getMovingAvg ();
 
-        private:
-          std::size_t filter_len_;
+  void
+  clear ();
 
-          std::deque<double> buffer_;
-      };
+private:
+  std::size_t filter_len_;
 
-    } // namespace
-  }
-}
+  std::deque<double> buffer_;
+};
+
+} // namespace openni2
+} // namespace io
+} // namespace pcl

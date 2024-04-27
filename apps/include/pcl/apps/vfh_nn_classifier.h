@@ -56,7 +56,7 @@ namespace pcl {
  */
 template <typename PointT>
 pcl::PointCloud<pcl::VFHSignature308>::Ptr
-computeVFH(typename PointCloud<PointT>::ConstPtr cloud, double radius)
+computeVFH (typename PointCloud<PointT>::ConstPtr cloud, double radius)
 {
   using namespace pcl;
 
@@ -114,7 +114,7 @@ public:
   VFHClassifierNN() { reset(); }
 
   void
-  reset()
+  reset ()
   {
     training_features_.reset(new FeatureCloud);
     labels_.clear();
@@ -123,7 +123,7 @@ public:
 
   /** \brief Set up the classifier with the current training features and labels */
   void
-  finalizeTraining()
+  finalizeTraining ()
   {
     finalizeTree();
     finalizeLabels();
@@ -131,14 +131,14 @@ public:
 
   /** \brief Set up the classifier with the current training features */
   void
-  finalizeTree()
+  finalizeTree ()
   {
     classifier_.setTrainingFeatures(training_features_);
   }
 
   /** \brief Set up the classifier with the current training example labels */
   void
-  finalizeLabels()
+  finalizeLabels ()
   {
     classifier_.setTrainingLabels(labels_);
   }
@@ -152,8 +152,8 @@ public:
    * don't match)
    */
   bool
-  saveTrainingFeatures(const std::string& file_name,
-                       const std::string& labels_file_name)
+  saveTrainingFeatures (const std::string& file_name,
+                        const std::string& labels_file_name)
   {
     if (labels_.size() == training_features_->size()) {
       if (pcl::io::savePCDFile(file_name, *training_features_) != 0)
@@ -175,8 +175,8 @@ public:
    * \return true on success, false on failure (number of entries don't match)
    */
   bool
-  addTrainingFeatures(const FeatureCloudPtr& training_features,
-                      const std::vector<std::string>& labels)
+  addTrainingFeatures (const FeatureCloudPtr& training_features,
+                       const std::vector<std::string>& labels)
   {
     if (labels.size() == training_features->size()) {
       labels_.insert(labels_.end(), labels.begin(), labels.end());
@@ -203,8 +203,8 @@ public:
    * match)
    */
   bool
-  loadTrainingFeatures(const std::string& file_name,
-                       const std::string& labels_file_name)
+  loadTrainingFeatures (const std::string& file_name,
+                        const std::string& labels_file_name)
   {
     FeatureCloudPtr cloud(new FeatureCloud);
     if (pcl::io::loadPCDFile(file_name, *cloud) != 0)
@@ -228,7 +228,7 @@ public:
    * match)
    */
   bool
-  loadTrainingData(const std::string& file_name, std::string label)
+  loadTrainingData (const std::string& file_name, std::string label)
   {
     pcl::PCLPointCloud2 cloud_blob;
     if (pcl::io::loadPCDFile(file_name, cloud_blob) != 0)
@@ -246,7 +246,7 @@ public:
    * don't match)
    */
   bool
-  addTrainingData(const pcl::PCLPointCloud2& training_data, std::string& label)
+  addTrainingData (const pcl::PCLPointCloud2& training_data, std::string& label)
   {
     // Create label list containing the single label
     std::vector<std::string> labels;
@@ -266,9 +266,9 @@ public:
    * \return pair of label and score for each relevant training class
    */
   ResultPtr
-  classify(const pcl::PCLPointCloud2& testing_data,
-           double radius = 300,
-           double min_score = 0.002)
+  classify (const pcl::PCLPointCloud2& testing_data,
+            double radius = 300,
+            double min_score = 0.002)
   {
     // compute the VFH feature for this point cloud
     FeatureCloudPtr vfhs = computeFeature(testing_data);
@@ -286,7 +286,7 @@ public:
    * \return point cloud containing the extracted feature
    */
   FeatureCloudPtr
-  computeFeature(const pcl::PCLPointCloud2& points, double radius = 0.03)
+  computeFeature (const pcl::PCLPointCloud2& points, double radius = 0.03)
   {
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>());
     pcl::fromPCLPointCloud2(points, *cloud);

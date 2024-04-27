@@ -82,8 +82,8 @@ public:
 
   /////////////////////////////////////////////////////////////////////////
   void
-  estimateNormals(const typename PointCloud<PointT>::ConstPtr& input,
-                  PointCloud<Normal>& normals)
+  estimateNormals (const typename PointCloud<PointT>::ConstPtr& input,
+                   PointCloud<Normal>& normals)
   {
     if (input->isOrganized()) {
       IntegralImageNormalEstimation<PointT, Normal> ne;
@@ -112,7 +112,7 @@ public:
 
   /////////////////////////////////////////////////////////////////////////
   void
-  keyboard_callback(const visualization::KeyboardEvent&, void*)
+  keyboard_callback (const visualization::KeyboardEvent&, void*)
   {
     // if (event.getKeyCode())
     //  std::cout << "the key \'" << event.getKeyCode() << "\' (" << event.getKeyCode()
@@ -127,7 +127,7 @@ public:
 
   /////////////////////////////////////////////////////////////////////////
   void
-  mouse_callback(const visualization::MouseEvent& mouse_event, void*)
+  mouse_callback (const visualization::MouseEvent& mouse_event, void*)
   {
     if (mouse_event.getType() == visualization::MouseEvent::MouseButtonPress &&
         mouse_event.getButton() == visualization::MouseEvent::LeftButton) {
@@ -149,10 +149,10 @@ public:
    * \param[out] object the segmented resultant object
    */
   void
-  segmentObject(pcl::index_t picked_idx,
-                const typename PointCloud<PointT>::ConstPtr& cloud,
-                const PointIndices::Ptr& plane_indices,
-                PointCloud<PointT>& object)
+  segmentObject (pcl::index_t picked_idx,
+                 const typename PointCloud<PointT>::ConstPtr& cloud,
+                 const PointIndices::Ptr& plane_indices,
+                 PointCloud<PointT>& object)
   {
     typename PointCloud<PointT>::Ptr plane_hull(new PointCloud<PointT>);
 
@@ -256,10 +256,10 @@ public:
 
   /////////////////////////////////////////////////////////////////////////
   void
-  segment(const PointT& picked_point,
-          pcl::index_t picked_idx,
-          PlanarRegion<PointT>& region,
-          typename PointCloud<PointT>::Ptr& object)
+  segment (const PointT& picked_point,
+           pcl::index_t picked_idx,
+           PlanarRegion<PointT>& region,
+           typename PointCloud<PointT>::Ptr& object)
   {
     object.reset();
 
@@ -433,7 +433,7 @@ public:
    * \param[in] event the event that triggered the call
    */
   void
-  pp_callback(const visualization::PointPickingEvent& event, void*)
+  pp_callback (const visualization::PointPickingEvent& event, void*)
   {
     // Check to see if we got a valid point. Early exit.
     int idx = event.getPointIndex();
@@ -525,7 +525,7 @@ public:
 
   /////////////////////////////////////////////////////////////////////////
   void
-  compute()
+  compute ()
   {
     // Visualize the data
     while (!cloud_viewer_->wasStopped()) {
@@ -549,7 +549,7 @@ public:
 
   /////////////////////////////////////////////////////////////////////////
   void
-  initGUI()
+  initGUI ()
   {
     cloud_viewer_.reset(new visualization::PCLVisualizer("PointCloud"));
 
@@ -598,7 +598,7 @@ public:
 
   /////////////////////////////////////////////////////////////////////////
   bool
-  load(const std::string& file)
+  load (const std::string& file)
   {
     // Load the input file
     TicToc tt;
@@ -628,7 +628,7 @@ public:
 
   /////////////////////////////////////////////////////////////////////////
   void
-  save(const std::string& object_file, const std::string& plane_file)
+  save (const std::string& object_file, const std::string& plane_file)
   {
     PCDWriter w;
     if (object_ && !object_->empty()) {
@@ -660,7 +660,7 @@ private:
 
 /* ---[ */
 int
-main(int argc, char** argv)
+main (int argc, char** argv)
 {
   // Parse the command line arguments for .pcd files
   std::vector<int> p_file_indices;

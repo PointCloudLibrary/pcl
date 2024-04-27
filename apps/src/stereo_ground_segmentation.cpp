@@ -162,7 +162,7 @@ public:
   ~HRCSSegmentation() = default;
 
   void
-  cloud_cb_(const pcl::PointCloud<PointT>::ConstPtr& cloud)
+  cloud_cb_ (const pcl::PointCloud<PointT>::ConstPtr& cloud)
   {
     if (!viewer->wasStopped()) {
       cloud_mutex.lock();
@@ -172,7 +172,7 @@ public:
   }
 
   void
-  keyboardCallback(const pcl::visualization::KeyboardEvent& event, void*)
+  keyboardCallback (const pcl::visualization::KeyboardEvent& event, void*)
   {
     if (event.keyUp()) {
       switch (event.getKeyCode()) {
@@ -213,9 +213,9 @@ public:
   }
 
   void
-  processStereoPair(const pcl::PointCloud<pcl::RGB>::Ptr& left_image,
-                    const pcl::PointCloud<pcl::RGB>::Ptr& right_image,
-                    pcl::PointCloud<pcl::PointXYZRGB>::Ptr& out_cloud)
+  processStereoPair (const pcl::PointCloud<pcl::RGB>::Ptr& left_image,
+                     const pcl::PointCloud<pcl::RGB>::Ptr& right_image,
+                     pcl::PointCloud<pcl::PointXYZRGB>::Ptr& out_cloud)
   {
     stereo.compute(*left_image, *right_image);
     stereo.medianFilter(4);
@@ -224,7 +224,7 @@ public:
   }
 
   void
-  processCloud(const pcl::PointCloud<PointT>::ConstPtr& cloud)
+  processCloud (const pcl::PointCloud<PointT>::ConstPtr& cloud)
   {
     // Compute the normals
     pcl::PointCloud<pcl::Normal>::Ptr normal_cloud(new pcl::PointCloud<pcl::Normal>);
@@ -462,7 +462,7 @@ public:
   }
 
   void
-  run()
+  run ()
   {
     while (!viewer->wasStopped()) {
       // Process a new image
@@ -530,7 +530,7 @@ public:
 };
 
 int
-main(int argc, char** argv)
+main (int argc, char** argv)
 {
   if (argc < 3) {
     PCL_INFO("usage: pcl_stereo_ground_segmentation left_image_directory "

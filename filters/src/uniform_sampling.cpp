@@ -35,11 +35,10 @@
  * $Id$
  */
 
-#include <pcl/filters/uniform_sampling.h>
 #include <pcl/filters/impl/uniform_sampling.hpp>
-#include <pcl/point_types.h>
+#include <pcl/filters/uniform_sampling.h>
 #include <pcl/impl/instantiate.hpp>
-
+#include <pcl/point_types.h>
 
 // Instantiations of specific point types
 PCL_INSTANTIATE_PRODUCT(UniformSampling, (PCL_XYZ_POINT_TYPES))

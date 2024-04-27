@@ -41,27 +41,28 @@
 #define PCL_FILTERS_BILATERAL_IMPL_H_
 
 #include <pcl/filters/bilateral.h>
+#include <pcl/search/kdtree.h>    // for KdTree
 #include <pcl/search/organized.h> // for OrganizedNeighbor
-#include <pcl/search/kdtree.h> // for KdTree
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT> double
-pcl::BilateralFilter<PointT>::computePointWeight (const int pid, 
-                                                  const Indices &indices,
-                                                  const std::vector<float> &distances)
+template <typename PointT>
+double
+pcl::BilateralFilter<PointT>::computePointWeight(const int pid,
+                                                 const Indices& indices,
+                                                 const std::vector<float>& distances)
 {
   double BF = 0, W = 0;
 
   // For each neighbor
-  for (std::size_t n_id = 0; n_id < indices.size (); ++n_id)
-  {
+  for (std::size_t n_id = 0; n_id < indices.size(); ++n_id) {
     int id = indices[n_id];
     // Compute the difference in intensity
-    double intensity_dist = std::abs ((*input_)[pid].intensity - (*input_)[id].intensity);
+    double intensity_dist =
+        std::abs((*input_)[pid].intensity - (*input_)[id].intensity);
 
     // Compute the Gaussian intensity weights both in Euclidean and in intensity space
-    double dist = std::sqrt (distances[n_id]);
-    double weight = kernel (dist, sigma_s_) * kernel (intensity_dist, sigma_r_);
+    double dist = std::sqrt(distances[n_id]);
+    double weight = kernel(dist, sigma_s_) * kernel(intensity_dist, sigma_r_);
 
     // Calculate the bilateral filter response
     BF += weight * (*input_)[id].intensity;
@@ -71,26 +72,26 @@ pcl::BilateralFilter<PointT>::computePointWeight (const int pid,
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT> void
-pcl::BilateralFilter<PointT>::applyFilter (PointCloud &output)
+template <typename PointT>
+void
+pcl::BilateralFilter<PointT>::applyFilter(PointCloud& output)
 {
   // Check if sigma_s has been given by the user
-  if (sigma_s_ == 0)
-  {
-    PCL_ERROR ("[pcl::BilateralFilter::applyFilter] Need a sigma_s value given before continuing.\n");
+  if (sigma_s_ == 0) {
+    PCL_ERROR("[pcl::BilateralFilter::applyFilter] Need a sigma_s value given before "
+              "continuing.\n");
     return;
   }
   // In case a search method has not been given, initialize it using some defaults
-  if (!tree_)
-  {
+  if (!tree_) {
     // For organized datasets, use an OrganizedNeighbor
-    if (input_->isOrganized ())
-      tree_.reset (new pcl::search::OrganizedNeighbor<PointT> ());
+    if (input_->isOrganized())
+      tree_.reset(new pcl::search::OrganizedNeighbor<PointT>());
     // For unorganized data, use a FLANN kdtree
     else
-      tree_.reset (new pcl::search::KdTree<PointT> (false));
+      tree_.reset(new pcl::search::KdTree<PointT>(false));
   }
-  tree_->setInputCloud (input_);
+  tree_->setInputCloud(input_);
 
   Indices k_indices;
   std::vector<float> k_distances;
@@ -99,17 +100,17 @@ pcl::BilateralFilter<PointT>::applyFilter (PointCloud &output)
   output = *input_;
 
   // For all the indices given (equal to the entire cloud if none given)
-  for (const auto& idx : (*indices_))
-  {
+  for (const auto& idx : (*indices_)) {
     // Perform a radius search to find the nearest neighbors
-    tree_->radiusSearch (idx, sigma_s_ * 2, k_indices, k_distances);
+    tree_->radiusSearch(idx, sigma_s_ * 2, k_indices, k_distances);
 
     // Overwrite the intensity value with the computed average
-    output[idx].intensity = static_cast<float> (computePointWeight (idx, k_indices, k_distances));
+    output[idx].intensity =
+        static_cast<float>(computePointWeight(idx, k_indices, k_distances));
   }
 }
- 
-#define PCL_INSTANTIATE_BilateralFilter(T) template class PCL_EXPORTS pcl::BilateralFilter<T>;
+
+#define PCL_INSTANTIATE_BilateralFilter(T)                                             \
+  template class PCL_EXPORTS pcl::BilateralFilter<T>;
 
 #endif // PCL_FILTERS_BILATERAL_IMPL_H_
-

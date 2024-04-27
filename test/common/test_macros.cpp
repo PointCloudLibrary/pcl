@@ -34,10 +34,11 @@
  * $Id$
  */
 
+#include <pcl/common/eigen.h>
 #include <pcl/test/gtest.h>
 #include <pcl/pcl_config.h>
 #include <pcl/pcl_tests.h>
-#include <pcl/common/eigen.h>
+
 #include <vector>
 
 using namespace pcl::test;
@@ -47,44 +48,43 @@ Eigen::Vector3f ev1, ev2;
 
 TEST(MACROS, expect_eq_vectors_macro)
 {
-  for (std::size_t i = 0; i < 3; i++)
-  {
-    float val = static_cast<float> (i) * 1.5f;
-    v1.push_back (val);
-    v2.push_back (val);
+  for (std::size_t i = 0; i < 3; i++) {
+    float val = static_cast<float>(i) * 1.5f;
+    v1.push_back(val);
+    v2.push_back(val);
     ev1[i] = val;
     ev2[i] = val;
   }
 
-  EXPECT_EQ_VECTORS (v1, v2);
-  EXPECT_EQ_VECTORS (ev1, ev2);
-  EXPECT_EQ_VECTORS (v1, ev2);
-  EXPECT_EQ_VECTORS (ev1, v2);
-//  equal_vectors<std::vector<float>, std::vector<float> >(v1, v2);
+  EXPECT_EQ_VECTORS(v1, v2);
+  EXPECT_EQ_VECTORS(ev1, ev2);
+  EXPECT_EQ_VECTORS(v1, ev2);
+  EXPECT_EQ_VECTORS(ev1, v2);
+  //  equal_vectors<std::vector<float>, std::vector<float> >(v1, v2);
 }
 
 TEST(MACROS, expect_near_vectors_macro)
 {
-  v1.clear ();
-  v2.clear ();
+  v1.clear();
+  v2.clear();
   constexpr float epsilon = 1e-5f;
-  for (std::size_t i = 0; i < 3; i++)
-  {
-    float val = static_cast<float> (i) * 1.5f;
-    v1.push_back (val);
-    v2.push_back (val + epsilon);
+  for (std::size_t i = 0; i < 3; i++) {
+    float val = static_cast<float>(i) * 1.5f;
+    v1.push_back(val);
+    v2.push_back(val + epsilon);
     ev1[i] = val;
     ev2[i] = val + epsilon;
   }
-  EXPECT_NEAR_VECTORS (v1, v2, 2*epsilon);
-  EXPECT_NEAR_VECTORS (ev1, ev2, 2*epsilon);
-  EXPECT_NEAR_VECTORS (v1, ev2, 2*epsilon);
-  EXPECT_NEAR_VECTORS (ev1, v2, 2*epsilon);
+  EXPECT_NEAR_VECTORS(v1, v2, 2 * epsilon);
+  EXPECT_NEAR_VECTORS(ev1, ev2, 2 * epsilon);
+  EXPECT_NEAR_VECTORS(v1, ev2, 2 * epsilon);
+  EXPECT_NEAR_VECTORS(ev1, v2, 2 * epsilon);
 }
 
 TEST(MACROS, PCL_VERSION_COMPARE)
 {
-  // PCL_MAJOR_VERSION.PCL_MINOR_VERSION.PCL_REVISION_VERSION : latest released PCL version
+  // PCL_MAJOR_VERSION.PCL_MINOR_VERSION.PCL_REVISION_VERSION : latest released PCL
+  // version
 
   // Current version should be:
   //   * equal (if release version is being tested)
@@ -143,7 +143,7 @@ TEST(MACROS, PCL_VERSION_COMPARE)
   EXPECT_TRUE(PCL_VERSION_COMPARE(<, 2, 0, 0));
 }
 
-int 
+int
 main (int argc, char** argv)
 {
 #if ((PCL_MAJOR_VERSION == 1) && (PCL_MINOR_VERSION == 4))
@@ -151,6 +151,6 @@ main (int argc, char** argv)
 #elif ((PCL_MAJOR_VERSION == 1) && (PCL_MINOR_VERSION == 3))
   std::cerr << "1.3.0 detected" << std::endl;
 #endif
-  testing::InitGoogleTest (&argc, argv);
-  return (RUN_ALL_TESTS ());
+  testing::InitGoogleTest(&argc, argv);
+  return (RUN_ALL_TESTS());
 }

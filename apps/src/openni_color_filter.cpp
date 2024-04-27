@@ -75,7 +75,7 @@ public:
                     unsigned char radius)
   : viewer("PCL OpenNI ColorFilter Viewer"), grabber_(grabber)
   {
-    std::function<void(const CloudConstPtr&)> f = [this](const CloudConstPtr& cloud) {
+    std::function<void(const CloudConstPtr&)> f = [this] (const CloudConstPtr& cloud) {
       cloud_cb_(cloud);
     };
     boost::signals2::connection c = grabber_.registerCallback(f);
@@ -93,11 +93,11 @@ public:
   }
 
   void
-  fillLookup(std::vector<bool>& lookup,
-             unsigned char red,
-             unsigned char green,
-             unsigned char blue,
-             unsigned radius)
+  fillLookup (std::vector<bool>& lookup,
+              unsigned char red,
+              unsigned char green,
+              unsigned char blue,
+              unsigned radius)
   {
     unsigned radius_sqr = radius * radius;
     pcl::RGB color;
@@ -115,7 +115,7 @@ public:
   }
 
   void
-  cloud_cb_(const CloudConstPtr& cloud)
+  cloud_cb_ (const CloudConstPtr& cloud)
   {
     std::lock_guard<std::mutex> lock(mtx_);
     FPS_CALC("computation");
@@ -128,7 +128,7 @@ public:
   }
 
   void
-  run()
+  run ()
   {
 
     grabber_.start();
@@ -157,7 +157,7 @@ public:
 };
 
 void
-usage(char** argv)
+usage (char** argv)
 {
   std::cout << "usage: " << argv[0] << " [options]\n\n"
             << "where options are:\n"
@@ -192,7 +192,7 @@ usage(char** argv)
 }
 
 int
-main(int argc, char** argv)
+main (int argc, char** argv)
 {
   /////////////////////////////////////////////////////////////////////
   if (pcl::console::find_argument(argc, argv, "-h") != -1 ||

@@ -44,90 +44,82 @@
 #include <mutex>
 #include <queue>
 
-namespace pcl
-{
+namespace pcl {
 
-  template<typename T>
-  class SynchronizedQueue
+template <typename T>
+class SynchronizedQueue {
+public:
+  SynchronizedQueue() : queue_() {}
+
+  void
+  enqueue (const T& data)
   {
-    public:
+    std::unique_lock<std::mutex> lock(mutex_);
 
-      SynchronizedQueue () :
-        queue_()  { }
+    if (enqueue_data_) {
+      queue_.push(data);
+      cond_.notify_one();
+    }
+  }
 
-      void
-      enqueue (const T& data)
-      {
-        std::unique_lock<std::mutex> lock (mutex_);
+  bool
+  dequeue (T& result)
+  {
+    std::unique_lock<std::mutex> lock(mutex_);
 
-        if (enqueue_data_)
-        {
-          queue_.push (data);
-          cond_.notify_one ();
-        }
-      }
+    while (queue_.empty() && (!request_to_end_)) {
+      cond_.wait(lock);
+    }
 
-      bool
-      dequeue (T& result)
-      {
-        std::unique_lock<std::mutex> lock (mutex_);
+    if (request_to_end_) {
+      doEndActions();
+      return false;
+    }
 
-        while (queue_.empty () && (!request_to_end_))
-        {
-          cond_.wait (lock);
-        }
+    result = queue_.front();
+    queue_.pop();
 
-        if (request_to_end_)
-        {
-          doEndActions ();
-          return false;
-        }
+    return true;
+  }
 
-        result = queue_.front ();
-        queue_.pop ();
+  void
+  stopQueue ()
+  {
+    std::unique_lock<std::mutex> lock(mutex_);
+    request_to_end_ = true;
+    cond_.notify_one();
+  }
 
-        return true;
-      }
+  unsigned int
+  size ()
+  {
+    std::unique_lock<std::mutex> lock(mutex_);
+    return static_cast<unsigned int>(queue_.size());
+  }
 
-      void
-      stopQueue ()
-      {
-        std::unique_lock<std::mutex> lock (mutex_);
-        request_to_end_ = true;
-        cond_.notify_one ();
-      }
+  bool
+  isEmpty () const
+  {
+    std::unique_lock<std::mutex> lock(mutex_);
+    return (queue_.empty());
+  }
 
-      unsigned int
-      size ()
-      {
-        std::unique_lock<std::mutex> lock (mutex_);
-        return static_cast<unsigned int> (queue_.size ());
-      }
+private:
+  void
+  doEndActions ()
+  {
+    enqueue_data_ = false;
 
-      bool
-      isEmpty () const
-      {
-        std::unique_lock<std::mutex> lock (mutex_);
-        return (queue_.empty ());
-      }
+    while (!queue_.empty()) {
+      queue_.pop();
+    }
+  }
 
-    private:
-      void
-      doEndActions ()
-      {
-        enqueue_data_ = false;
+  std::queue<T> queue_;          // Use STL queue to store data
+  mutable std::mutex mutex_;     // The mutex to synchronise on
+  std::condition_variable cond_; // The condition to wait for
 
-        while (!queue_.empty ())
-        {
-          queue_.pop ();
-        }
-      }
-
-      std::queue<T> queue_;              // Use STL queue to store data
-      mutable std::mutex mutex_;       // The mutex to synchronise on
-      std::condition_variable cond_;   // The condition to wait for
-
-      bool request_to_end_{false};
-      bool enqueue_data_{true};
-  };
-}
+  bool request_to_end_{false};
+  bool enqueue_data_{true};
+};
+} // namespace pcl

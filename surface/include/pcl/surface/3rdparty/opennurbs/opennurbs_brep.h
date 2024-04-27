@@ -8,7 +8,7 @@
 // THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT EXPRESS OR IMPLIED WARRANTY.
 // ALL IMPLIED WARRANTIES OF FITNESS FOR ANY PARTICULAR PURPOSE AND OF
 // MERCHANTABILITY ARE HEREBY DISCLAIMED.
-//				
+//
 // For complete openNURBS copyright information see <http://www.opennurbs.org>.
 //
 ////////////////////////////////////////////////////////////////
@@ -28,7 +28,6 @@ class ON_BrepEdge;
 class ON_BrepLoop;
 class ON_BrepFace;
 
-
 // TEMPORARY DEFINES SO I DON'T BREAK THE BUILD
 #define m_vertex_user_i m_vertex_user.i
 #define m_trim_user_i m_trim_user.i
@@ -45,9 +44,8 @@ class ON_BrepFace;
 //   a single trim with type ON_BrepTrim::ptonsrf.  There
 //   will be a loop containing this single trim.
 //   Use ON_Brep::NewPointOnFace() to create vertices that are
-//   points on faces. 
-class ON_CLASS ON_BrepVertex : public ON_Point
-{
+//   points on faces.
+class ON_CLASS ON_BrepVertex : public ON_Point {
   ON_OBJECT_DECLARE(ON_BrepVertex);
 
 public:
@@ -55,7 +53,7 @@ public:
   // The constructor zeros m_vertex_user.
   // The value is of m_vertex_user is not saved in 3DM
   // archives and may be changed by some computations.
-  ON_U m_vertex_user; 
+  ON_U m_vertex_user;
 
   // index of the vertex in the ON_Brep.m_V[] array
   int m_vertex_index;
@@ -66,16 +64,18 @@ public:
   // In general, you should not directly create ON_BrepVertex classes.
   // Use ON_Brep::NewVertex instead.
   ON_BrepVertex();
-  ON_BrepVertex(
-    int // vertex index
-    );
-  ON_BrepVertex& operator=(const ON_BrepVertex&);
+  ON_BrepVertex(int // vertex index
+  );
+  ON_BrepVertex&
+  operator=(const ON_BrepVertex&);
 
   // virtual ON_Object::SizeOf override
-  unsigned int SizeOf() const;
+  unsigned int
+  SizeOf () const;
 
   // virtual ON_Object::DataCRC override
-  ON__UINT32 DataCRC(ON__UINT32 current_remainder) const;
+  ON__UINT32
+  DataCRC (ON__UINT32 current_remainder) const;
 
   /*
   Description:
@@ -85,9 +85,9 @@ public:
     text_log - [in] if the object is not valid and text_log
         is not NULL, then a brief englis description of the
         reason the object is not valid is appened to the log.
-        The information appended to text_log is suitable for 
-        low-level debugging purposes by programmers and is 
-        not intended to be useful as a high level user 
+        The information appended to text_log is suitable for
+        low-level debugging purposes by programmers and is
+        not intended to be useful as a high level user
         interface tool.
   Returns:
     @untitled table
@@ -96,19 +96,24 @@ public:
   Remarks:
     Overrides virtual ON_Object::IsValid
   */
-  ON_BOOL32 IsValid( ON_TextLog* text_log = NULL ) const;
+  ON_BOOL32
+  IsValid (ON_TextLog* text_log = NULL) const;
 
   // virtual ON_Object::Dump() override
-  void Dump( ON_TextLog& ) const; // for debugging
+  void
+  Dump (ON_TextLog&) const; // for debugging
 
   // virtual ON_Object::Write() override
-  ON_BOOL32 Write( ON_BinaryArchive& ) const;
+  ON_BOOL32
+  Write (ON_BinaryArchive&) const;
 
   // virtual ON_Object::Read() override
-  ON_BOOL32 Read( ON_BinaryArchive& );
+  ON_BOOL32
+  Read (ON_BinaryArchive&);
 
   // virtual ON_Geometry::ComponentIndex() override
-  ON_COMPONENT_INDEX ComponentIndex() const;
+  ON_COMPONENT_INDEX
+  ComponentIndex () const;
 
   /////////////////////////////////////////////////////////////////
   // Interface
@@ -117,30 +122,33 @@ public:
   //   Set vertex location.
   // Parameters:
   //   point - [in] 3d vertex location
-  bool SetPoint( 
-          const ON_3dPoint& // point
-          );
+  bool
+  SetPoint (const ON_3dPoint& // point
+  );
 
   // Returns:
   //   Vertex location.
-  ON_3dPoint Point() const;
+  ON_3dPoint
+  Point () const;
 
   // Returns:
   //   value of ON_BrepVertex::m_tolerance
   // Remarks:
   //   Use ON_Brep::SetVertexTolerance( ON_BrepVertex& ) to set tolerances.
-  double Tolerance() const;
+  double
+  Tolerance () const;
 
   // Returns:
   //   number of edges that begin or end at this vertex.
-  int EdgeCount() const;
+  int
+  EdgeCount () const;
 
   /////////////////////////////////////////////////////////////////
   // Implementation
 
   // indices of edges starting/ending at this vertex
   //
-  // For closed edges, edge.m_vi[0] = edge.m_vi[1] and 
+  // For closed edges, edge.m_vi[0] = edge.m_vi[1] and
   // edge.m_edge_index appears twice in the m_ei[] array.
   // The first occurance of edge.m_edge_index in m_ei[]
   // is for the closed edge starting the vertex.
@@ -159,7 +167,7 @@ public:
   // end is <=  ON_ZERO_TOLERANCE
   //
   // If an edge begins or ends at this vertex,
-  // then the distance from the vertex's 
+  // then the distance from the vertex's
   // 3d point to the appropriate end of the
   // edge's 3d curve must be <= this tolerance.
   //
@@ -172,8 +180,7 @@ public:
   double m_tolerance;
 
 private:
-  ON_BrepVertex( const ON_BrepVertex& ); // no implementation
-
+  ON_BrepVertex(const ON_BrepVertex&); // no implementation
 };
 
 /*
@@ -182,18 +189,17 @@ Description:
   ON_Brep.m_E[] is an array of all the edges in the brep.
 
   An ON_BrepEdge is derived from ON_CurveProxy so the the
-  edge can supply easy to use evaluation tools via 
+  edge can supply easy to use evaluation tools via
   the ON_Curve virtual member functions.
 
   Note well that the domains and orientations of the curve
   m_C3[edge.m_c3i] and the edge as a curve may not
   agree.
 */
-class ON_CLASS ON_BrepEdge : public  ON_CurveProxy
-{
+class ON_CLASS ON_BrepEdge : public ON_CurveProxy {
   ON_OBJECT_DECLARE(ON_BrepEdge);
-public:
 
+public:
   // Union available for application use.
   // The constructor zeros m_edge_user.
   // The value is of m_edge_user is not saved in 3DM
@@ -201,11 +207,11 @@ public:
   ON_U m_edge_user;
 
   // index of edge in ON_Brep.m_E[] array
-  int m_edge_index;    
-
+  int m_edge_index;
 
   // virtual ON_Curve::IsClosed override
-  ON_BOOL32 IsClosed() const;
+  ON_BOOL32
+  IsClosed () const;
 
   /////////////////////////////////////////////////////////////////
   // Construction
@@ -214,18 +220,20 @@ public:
   // Use ON_Brep::NewVertex instead.
   ON_BrepEdge();
   ON_BrepEdge(int); // edge index
-  ON_BrepEdge& operator=(const ON_BrepEdge&);
+  ON_BrepEdge&
+  operator=(const ON_BrepEdge&);
 
   // virtual ON_Object function
   // The ON_BrepEdge override returns ON::curve_object.
-  ON::object_type ObjectType() const;
+  ON::object_type
+  ObjectType () const;
 
   /*
   Returns:
     Brep this edge belongs to.
   */
-  ON_Brep* Brep() const;
-
+  ON_Brep*
+  Brep () const;
 
   /*
   Parameters:
@@ -233,13 +241,15 @@ public:
   Returns:
     The trim brep.m_T[edge.m_ti[eti]];
   */
-  ON_BrepTrim* Trim( int eti ) const;
+  ON_BrepTrim*
+  Trim (int eti) const;
 
   /*
   Returns:
     Number of trims attached to this edge.
   */
-  int TrimCount() const;
+  int
+  TrimCount () const;
 
   /*
   Parameters:
@@ -247,13 +257,16 @@ public:
   Returns:
     Brep vertex at specified end of the edge.
   */
-  ON_BrepVertex* Vertex(int evi) const;
+  ON_BrepVertex*
+  Vertex (int evi) const;
 
   // virtual ON_Object::SizeOf override
-  unsigned int SizeOf() const;
+  unsigned int
+  SizeOf () const;
 
   // virtual ON_Object::DataCRC override
-  ON__UINT32 DataCRC(ON__UINT32 current_remainder) const;
+  ON__UINT32
+  DataCRC (ON__UINT32 current_remainder) const;
 
   /*
   Description:
@@ -263,9 +276,9 @@ public:
     text_log - [in] if the object is not valid and text_log
         is not NULL, then a brief englis description of the
         reason the object is not valid is appened to the log.
-        The information appended to text_log is suitable for 
-        low-level debugging purposes by programmers and is 
-        not intended to be useful as a high level user 
+        The information appended to text_log is suitable for
+        low-level debugging purposes by programmers and is
+        not intended to be useful as a high level user
         interface tool.
   Returns:
     @untitled table
@@ -274,48 +287,54 @@ public:
   Remarks:
     Overrides virtual ON_Object::IsValid
   */
-  ON_BOOL32 IsValid( ON_TextLog* text_log = NULL ) const;
+  ON_BOOL32
+  IsValid (ON_TextLog* text_log = NULL) const;
 
   // virtual ON_Object::Dump() override
-  void Dump( ON_TextLog& ) const; // for debugging
+  void
+  Dump (ON_TextLog&) const; // for debugging
 
   // virtual ON_Object::Write() override
-  ON_BOOL32 Write( ON_BinaryArchive& ) const;
+  ON_BOOL32
+  Write (ON_BinaryArchive&) const;
 
   // virtual ON_Object::Read() override
-  ON_BOOL32 Read( ON_BinaryArchive& );
+  ON_BOOL32
+  Read (ON_BinaryArchive&);
 
   // virtual ON_Geometry::ComponentIndex() override
-  ON_COMPONENT_INDEX ComponentIndex() const;
+  ON_COMPONENT_INDEX
+  ComponentIndex () const;
 
   // virtual ON_Curve::Reverse override
-  ON_BOOL32 Reverse();
+  ON_BOOL32
+  Reverse ();
 
   // virtual ON_Curve::SetStartPoint override
-  ON_BOOL32 SetStartPoint(
-          ON_3dPoint start_point
-          );
+  ON_BOOL32
+  SetStartPoint (ON_3dPoint start_point);
 
   // virtual ON_Curve::SetEndPoint override
-  ON_BOOL32 SetEndPoint(
-          ON_3dPoint end_point
-          );
+  ON_BOOL32
+  SetEndPoint (ON_3dPoint end_point);
 
   /////////////////////////////////////////////////////////////////
   // Implementation
 
   /*
   Returns:
-    brep.m_C3[] index of the 3d curve geometry used by this edge 
+    brep.m_C3[] index of the 3d curve geometry used by this edge
     or -1.
   */
-  int EdgeCurveIndexOf() const;
+  int
+  EdgeCurveIndexOf () const;
 
   /*
   Returns:
     3d curve geometry used by this edge or NULL.
   */
-  const ON_Curve* EdgeCurveOf() const;
+  const ON_Curve*
+  EdgeCurveOf () const;
 
   /*
   Description:
@@ -334,16 +353,16 @@ public:
   Remarks:
     Sets m_c3i, calls SetProxyCurve, cleans runtime caches.
   */
-  bool ChangeEdgeCurve(
-    int c3i 
-    );
+  bool
+  ChangeEdgeCurve (int c3i);
 
   /*
   Description:
     When an edge is modified, the m_pline[].e values need
     to be set to ON_UNSET_VALUE by calling UnsetPlineEdgeParameters().
   */
-  void UnsetPlineEdgeParameters();
+  void
+  UnsetPlineEdgeParameters ();
 
   // index of 3d curve in m_C3[] array
   // (edge.m_curve also points to m_C3[m_c3i])
@@ -377,11 +396,10 @@ public:
 private:
   friend class ON_Brep;
   ON_Brep* m_brep; // so isolated edge class edge can get at it's 3d curve
-  ON_BrepEdge( const ON_BrepEdge& ); // no implementation
+  ON_BrepEdge(const ON_BrepEdge&); // no implementation
 };
 
-struct ON_BrepTrimPoint
-{
+struct ON_BrepTrimPoint {
   ON_2dPoint p; // 2d surface parameter space point
   double t;     // corresponding trim curve parameter
   double e;     // corresponding edge curve parameter (ON_UNSET_VALUE if unknown)
@@ -389,14 +407,13 @@ struct ON_BrepTrimPoint
 
 #if defined(ON_DLL_TEMPLATE)
 // This stuff is here because of a limitation in the way Microsoft
-// handles templates and DLLs.  See Microsoft's knowledge base 
+// handles templates and DLLs.  See Microsoft's knowledge base
 // article ID Q168958 for details.
-#pragma warning( push )
-#pragma warning( disable : 4231 )
+#pragma warning(push)
+#pragma warning(disable : 4231)
 ON_DLL_TEMPLATE template class ON_CLASS ON_SimpleArray<ON_BrepTrimPoint>;
-#pragma warning( pop )
+#pragma warning(pop)
 #endif
-
 
 /*
 Description:
@@ -404,22 +421,23 @@ Description:
   ON_Brep.m_T[] is an array of all the trim in the brep.
 
   An ON_BrepTrim is derived from ON_CurveProxy so the the
-  trim can supply easy to use evaluation tools via 
+  trim can supply easy to use evaluation tools via
   the ON_Curve virtual member functions.
 
   Note well that the domains and orientations of the curve
   m_C2[trim.m_c2i] and the trin as a curve may not
   agree.
 */
-class ON_CLASS ON_BrepTrim : public  ON_CurveProxy
-{
+class ON_CLASS ON_BrepTrim : public ON_CurveProxy {
   ON_OBJECT_DECLARE(ON_BrepTrim);
 
 public:
-  void DestroyRuntimeCache( bool bDelete = true );
+  void
+  DestroyRuntimeCache (bool bDelete = true);
 
   // virtual ON_Object::SizeOf override
-  unsigned int SizeOf() const;
+  unsigned int
+  SizeOf () const;
 
   // Union available for application use.
   // The constructor zeros m_trim_user.
@@ -427,40 +445,39 @@ public:
   // archives and may be changed by some computations.
   ON_U m_trim_user;
 
-  int m_trim_index;  // index of trim in ON_Brep.m_T[] array
+  int m_trim_index; // index of trim in ON_Brep.m_T[] array
 
   // types of trim - access through m_type member.  Also see m_iso and ON_Surface::ISO
-  enum TYPE 
-  {
-    unknown  = 0,
-    boundary = 1,       // trim is connected to an edge, is part of an outer, 
-                        // inner or slit loop, and is the only trim connected
-                        // to the edge.
-    mated    = 2,       // trim is connected to an edge, is part of an outer,
-                        // inner or slit loop, no other trim from the same 
-                        // loop is connected to the edge, and at least one 
-                        // trim from a different loop is connected to the edge.
-    seam     = 3,       // trim is connected to an edge, is part of an outer, 
-                        // inner or slit loop, and one other trim from the 
-                        // same loop is connected to the edge.
-                        // (There can be other mated trims that are also
-                        // connected to the edge.  For example, the non-mainfold
-                        // edge that results when a surface edge lies in the
-                        // middle of another surface.)  Non-mainfold "cuts"
-                        // have seam trims too.
-    singular = 4,       // trim is part of an outer loop, the trim's 2d curve
-                        // runs along the singular side of a surface, and the
-                        // trim is NOT connected to an edge. (There is no 3d
-                        // edge because the surface side is singular.)
-    crvonsrf = 5,       // trim is connected to an edge, is the only trim in
-                        // a crfonsrf loop, and is the only trim connected to
-                        // the edge.
-    ptonsrf  = 6,       // trim is a point on a surface, trim.m_pbox is records
-                        // surface parameters, and is the only trim
-                        // in a ptonsrf loop.  This trim is not connected
-                        // to an edge and has no 2d curve.
-    slit     = 7,       // 17 Nov 2006 - reserved for future use
-                        //   currently an invalid value
+  enum TYPE {
+    unknown = 0,
+    boundary = 1, // trim is connected to an edge, is part of an outer,
+                  // inner or slit loop, and is the only trim connected
+                  // to the edge.
+    mated = 2,    // trim is connected to an edge, is part of an outer,
+                  // inner or slit loop, no other trim from the same
+                  // loop is connected to the edge, and at least one
+                  // trim from a different loop is connected to the edge.
+    seam = 3,     // trim is connected to an edge, is part of an outer,
+                  // inner or slit loop, and one other trim from the
+                  // same loop is connected to the edge.
+                  // (There can be other mated trims that are also
+                  // connected to the edge.  For example, the non-mainfold
+                  // edge that results when a surface edge lies in the
+                  // middle of another surface.)  Non-mainfold "cuts"
+                  // have seam trims too.
+    singular = 4, // trim is part of an outer loop, the trim's 2d curve
+                  // runs along the singular side of a surface, and the
+                  // trim is NOT connected to an edge. (There is no 3d
+                  // edge because the surface side is singular.)
+    crvonsrf = 5, // trim is connected to an edge, is the only trim in
+                  // a crfonsrf loop, and is the only trim connected to
+                  // the edge.
+    ptonsrf = 6,  // trim is a point on a surface, trim.m_pbox is records
+                  // surface parameters, and is the only trim
+                  // in a ptonsrf loop.  This trim is not connected
+                  // to an edge and has no 2d curve.
+    slit = 7,     // 17 Nov 2006 - reserved for future use
+                  //   currently an invalid value
     trim_type_count = 8,
     force_32_bit_trim_type = 0xFFFFFFFF
   };
@@ -472,32 +489,37 @@ public:
   // Use ON_Brep::NewTrim instead.
   ON_BrepTrim();
   ON_BrepTrim(int); // trim index
-  ON_BrepTrim& operator=(const ON_BrepTrim&);
+  ON_BrepTrim&
+  operator=(const ON_BrepTrim&);
 
   /*
   Returns:
     Brep that this trim belongs to.
   */
-  ON_Brep* Brep() const;
+  ON_Brep*
+  Brep () const;
 
   /*
   Returns:
     Brep loop that this trim belongs to.
   */
-  ON_BrepLoop* Loop() const;
+  ON_BrepLoop*
+  Loop () const;
 
   /*
   Returns:
     Brep face this trim belongs to.
   */
-  ON_BrepFace* Face() const;
+  ON_BrepFace*
+  Face () const;
 
   /*
   Returns:
     Brep edge this trim uses or belongs to.  This will
     be NULL for singular trims.
   */
-  ON_BrepEdge* Edge() const;
+  ON_BrepEdge*
+  Edge () const;
 
   /*
   Parameters:
@@ -505,12 +527,13 @@ public:
   Returns:
     Brep vertex at specified end of the trim.
   */
-  ON_BrepVertex* Vertex(int tvi) const;
+  ON_BrepVertex*
+  Vertex (int tvi) const;
 
   /////////////////////////////////////////////////////////////////
   // ON_Object overrides
   //
-  // (Trims are purely topologicial - geometry queries should be 
+  // (Trims are purely topologicial - geometry queries should be
   //  directed at the trim's 2d curve or the trim's edge's 3d curve.)
 
   /*
@@ -521,9 +544,9 @@ public:
     text_log - [in] if the object is not valid and text_log
         is not NULL, then a brief englis description of the
         reason the object is not valid is appened to the log.
-        The information appended to text_log is suitable for 
-        low-level debugging purposes by programmers and is 
-        not intended to be useful as a high level user 
+        The information appended to text_log is suitable for
+        low-level debugging purposes by programmers and is
+        not intended to be useful as a high level user
         interface tool.
   Returns:
     @untitled table
@@ -532,37 +555,41 @@ public:
   Remarks:
     Overrides virtual ON_Object::IsValid
   */
-  ON_BOOL32 IsValid( ON_TextLog* text_log = NULL ) const;
+  ON_BOOL32
+  IsValid (ON_TextLog* text_log = NULL) const;
 
-  void Dump( ON_TextLog& ) const; // for debugging
+  void
+  Dump (ON_TextLog&) const; // for debugging
 
-  ON_BOOL32 Write( ON_BinaryArchive& ) const;
+  ON_BOOL32
+  Write (ON_BinaryArchive&) const;
 
-  ON_BOOL32 Read( ON_BinaryArchive& );
+  ON_BOOL32
+  Read (ON_BinaryArchive&);
 
   // virtual ON_Geometry::ComponentIndex() override
-  ON_COMPONENT_INDEX ComponentIndex() const;
+  ON_COMPONENT_INDEX
+  ComponentIndex () const;
 
   // virtual ON_Curve::Reverse override
   // Reverses curve - caller must make sure trim's m_bRev3d
   // flags are properly updated.  Use
   // ON_Brep::FlipTrim to reverse and trim and update all
   // m_bRev3d informtion.
-  ON_BOOL32 Reverse();
+  ON_BOOL32
+  Reverse ();
 
   // virtual ON_Curve::SetStartPoint override
-  ON_BOOL32 SetStartPoint(
-          ON_3dPoint start_point
-          );
+  ON_BOOL32
+  SetStartPoint (ON_3dPoint start_point);
 
   // virtual ON_Curve::SetEndPoint override
-  ON_BOOL32 SetEndPoint(
-          ON_3dPoint end_point
-          );
+  ON_BOOL32
+  SetEndPoint (ON_3dPoint end_point);
 
   /////////////////////////////////////////////////////////////////
   // Interface
-  
+
   /*
   Description:
     Expert user tool that replaces the 2d curve geometry
@@ -581,7 +608,8 @@ public:
     Sets m_c2i, calls SetProxyCurve, cleans runtime caches,
     and updates m_pbox.
   */
-  bool ChangeTrimCurve( int c2i );
+  bool
+  ChangeTrimCurve (int c2i);
 
   /*
   Description:
@@ -591,8 +619,9 @@ public:
     be destroyed when the location of a trim
     curve is changed.
   */
-  void DestroyPspaceInformation();
-  
+  void
+  DestroyPspaceInformation ();
+
   /*
   Description:
     Expert user function.
@@ -610,10 +639,8 @@ public:
     m_ti[] list.  The trim's m_bRev3d and tolerance values
     are not changed.
   */
-  bool RemoveFromEdge( 
-        bool bRemoveFromStartVertex,
-        bool bRemoveFromEndVertex
-        );
+  bool
+  RemoveFromEdge (bool bRemoveFromStartVertex, bool bRemoveFromEndVertex);
 
   /*
   Description:
@@ -628,55 +655,60 @@ public:
     m_ti[] list.  The trim's tolerance values are not
     changed.
   */
-  bool AttachToEdge(
-        int edge_index,
-        bool bRev3d
-        );
+  bool
+  AttachToEdge (int edge_index, bool bRev3d);
 
   /*
   Returns:
     2d curve geometry used by this trim or NULL
   */
-  const ON_Curve* TrimCurveOf() const;
+  const ON_Curve*
+  TrimCurveOf () const;
 
   /*
   Returns:
     3d curve geometry used by this trim or NULL.
   */
-  const ON_Curve* EdgeCurveOf() const;
+  const ON_Curve*
+  EdgeCurveOf () const;
 
   /*
   Returns:
     3d surface geometry used by this trim or NULL
   */
-  const ON_Surface* SurfaceOf() const;
+  const ON_Surface*
+  SurfaceOf () const;
 
   /*
   Returns:
-    brep.m_C2[] 2d curve index of the 2d curve geometry used by 
+    brep.m_C2[] 2d curve index of the 2d curve geometry used by
     this trim or -1.
   */
-  int TrimCurveIndexOf() const;
+  int
+  TrimCurveIndexOf () const;
 
   /*
   Returns:
-    brep.m_C3[] 3d curve index of the 3d curve geometry used by 
+    brep.m_C3[] 3d curve index of the 3d curve geometry used by
     this trim or -1.
   */
-  int EdgeCurveIndexOf() const;
+  int
+  EdgeCurveIndexOf () const;
 
   /*
   Returns:
-    brep.m_S[] surface index of the 3d surface geometry used by 
+    brep.m_S[] surface index of the 3d surface geometry used by
     this trim or -1.
   */
-  int SurfaceIndexOf() const;
+  int
+  SurfaceIndexOf () const;
 
   /*
   Returns:
     brep.m_F[] face index of the face used by this trim or -1.
   */
-  int FaceIndexOf() const;
+  int
+  FaceIndexOf () const;
 
   /*
   Returns:
@@ -691,7 +723,8 @@ public:
     fields must be set correctly.  In V4 SR1, this function will
     be removed and ON_BrepTrim::slit will be added as a type.
   */
-  bool IsSlit() const;
+  bool
+  IsSlit () const;
 
   /*
   Returns:
@@ -699,7 +732,7 @@ public:
       1) is part of a loop
       2) is connected to a 3d edge
       3) one other trim from the same loop is connected to the edge
-      4) the 2d trim curve for this trim lies along the side of 
+      4) the 2d trim curve for this trim lies along the side of
          the face's parameter space and the 2d curve for the other
          trim lies on the opposite side of the face's parameter
          space.
@@ -708,7 +741,8 @@ public:
     fields must be set correctly.  In V4 SR1, this function will
     be removed and ON_BrepTrim::slit will be added as a type.
   */
-  bool IsSeam() const;
+  bool
+  IsSeam () const;
 
   /*
   Description:
@@ -722,7 +756,8 @@ public:
     True if successful.  If false is returned, the brep
     may be invalid.
   */
-  bool TransformTrim( const ON_Xform& xform );
+  bool
+  TransformTrim (const ON_Xform& xform);
 
   // index of the 2d parameter space trimming curve
   int m_c2i;
@@ -734,18 +769,18 @@ public:
   // sides and trims that correspond to closed 3d edges
   // have m_vi[0] = m_vi[1].  Note that singular trims
   // and trims on the closed edge of a closed surface can
-  // have an open 2d trimming curve and still have 
+  // have an open 2d trimming curve and still have
   // m_vi[0] = m_vi[1].
   int m_vi[2];
-        
-  // true if the 2d trim and 3d edge have opposite orientations.
-  bool   m_bRev3d;
 
-  TYPE   m_type;
-  ON_Surface::ISO  m_iso;
+  // true if the 2d trim and 3d edge have opposite orientations.
+  bool m_bRev3d;
+
+  TYPE m_type;
+  ON_Surface::ISO m_iso;
 
   // index of loop that uses this trim
-  int    m_li;
+  int m_li;
 
   // The values in m_tolerance[] record the accuracy of
   // the parameter space trimming curves.
@@ -757,22 +792,22 @@ public:
   //   m_tolerance[1] = accuracy of parameter space curve
   //   in second ( "v" ) parameter
   //
-  //   A value of ON_UNSET_VALUE indicates that the 
-  //   tolerance should be computed. If the value >= 0.0, 
-  //   then the tolerance is set.  If the value is 
+  //   A value of ON_UNSET_VALUE indicates that the
+  //   tolerance should be computed. If the value >= 0.0,
+  //   then the tolerance is set.  If the value is
   //   ON_UNSET_VALUE, then the tolrance needs to be
   //   computed.
   //
   //   If the trim is not singular, then the trim must
   //   have an edge.  If P is a 3d point on the edge's
-  //   curve and surface(u,v) = Q is the point on the 
+  //   curve and surface(u,v) = Q is the point on the
   //   surface that is closest to P, then there must
   //   be a parameter t in the interval [m_t[0], m_t[1]]
   //   such that
   //
   //   |u - curve2d(t)[0]| <= m_tolerance[0]
   //
-  //   and 
+  //   and
   //
   //   |v - curve2d(t)[1]| <= m_tolerance[1]
   //
@@ -785,7 +820,7 @@ public:
   //      is <= brep.m_V[m_vi[k]].m_tolerance,
   //   *  |u-uk| <= m_tolerance[0].
   //   *  |v-vk| <= m_tolerance[1].
-  double m_tolerance[2]; 
+  double m_tolerance[2];
 
   // Runtime polyline approximation of trimming curve.
   // This information is not saved in 3DM archives.
@@ -796,7 +831,8 @@ public:
     When an edge is modified, the m_pline[].e values need
     to be set to ON_UNSET_VALUE by calling UnsetPlineEdgeParameters().
   */
-  void UnsetPlineEdgeParameters();
+  void
+  UnsetPlineEdgeParameters ();
 
   // Runtime parameter space trimming curve bounding box.
   // This information is not saved in 3DM archives.
@@ -805,27 +841,29 @@ public:
 public:
   // values stored in legacy file formats - ignore
 
-  void m__legacy_flags_Set(int,int);   // used internally - ignore
-  bool m__legacy_flags_Get(int*,int*) const; // used internally - ignore
-  double m__legacy_2d_tol; // used internally - ignore
-  double m__legacy_3d_tol; // used internally - ignore
-  int    m__legacy_flags;  // used internally - ignore
+  void
+  m__legacy_flags_Set (int, int); // used internally - ignore
+  bool
+  m__legacy_flags_Get (int*, int*) const; // used internally - ignore
+  double m__legacy_2d_tol;                // used internally - ignore
+  double m__legacy_3d_tol;                // used internally - ignore
+  int m__legacy_flags;                    // used internally - ignore
 
 private:
   friend class ON_Brep;
   ON_Brep* m_brep; // so isolated edge class edge can get at it's 3d curve
-  ON_BrepTrim( const ON_BrepTrim& ); // no implementation
+  ON_BrepTrim(const ON_BrepTrim&); // no implementation
 };
 
-class ON_CLASS ON_BrepLoop : public  ON_Geometry
-{
+class ON_CLASS ON_BrepLoop : public ON_Geometry {
   ON_OBJECT_DECLARE(ON_BrepLoop);
 
 public:
-  void DestroyRuntimeCache( bool bDelete = true );
+  void
+  DestroyRuntimeCache (bool bDelete = true);
 
   // virtual ON_Geometry overrides
-  // A loop is derived from ON_Geometry so that is can 
+  // A loop is derived from ON_Geometry so that is can
   // be passed around to things that expect ON_Geometry
   // pointers.  It is not a very useful stand-alone object.
 
@@ -835,31 +873,31 @@ public:
   Returns:
     2
   */
-  int Dimension() const;
+  int
+  Dimension () const;
 
   // virtual ON_Geometry::GetBBox() override.
-  ON_BOOL32 GetBBox(
-         double* boxmin,
-         double* boxmax,
-         int bGrowBox = false
-         ) const;
+  ON_BOOL32
+  GetBBox (double* boxmin, double* boxmax, int bGrowBox = false) const;
 
   // virtual ON_Geometry::Transform() override.
-  ON_BOOL32 Transform( 
-         const ON_Xform& xform
-         );
+  ON_BOOL32
+  Transform (const ON_Xform& xform);
+
 public:
   /*
   Returns:
    Brep that the loop belongs to.
   */
-  ON_Brep* Brep() const;
+  ON_Brep*
+  Brep () const;
 
   /*
   Returns:
     Brep face this loop belongs to.
   */
-  ON_BrepFace* Face() const;
+  ON_BrepFace*
+  Face () const;
 
   /*
   Parameters:
@@ -867,13 +905,15 @@ public:
   Returns:
     The trim brep.m_T[loop.m_ti[lti]];
   */
-  ON_BrepTrim* Trim( int lti ) const;
+  ON_BrepTrim*
+  Trim (int lti) const;
 
   /*
   Returns:
     Number of trims in this loop.
   */
-  int TrimCount() const;
+  int
+  TrimCount () const;
 
   // Union available for application use.
   // The constructor zeros m_loop_user.
@@ -881,32 +921,35 @@ public:
   // archives and may be changed by some computations.
   ON_U m_loop_user;
 
-  int m_loop_index;  // index of loop in ON_Brep.m_L[] array
+  int m_loop_index; // index of loop in ON_Brep.m_L[] array
 
   enum TYPE {
-    unknown  = 0,
-    outer    = 1,  // 2d loop curves form a simple closed curve with a counterclockwise orientation
-    inner    = 2,  // 2d loop curves form a simple closed curve with a clockwise orientation
-    slit     = 3,  // always closed - used internally during splitting operations
-    crvonsrf = 4,  // "loop" is a curveonsrf made from a single 
-                   // (open or closed) trim that is has type ON_BrepTrim::crvonsrf.
-    ptonsrf = 5,   // "loop" is a ptonsrf made from a single 
-                   // trim that is has type ON_BrepTrim::ptonsrf.
+    unknown = 0,
+    outer = 1, // 2d loop curves form a simple closed curve with a counterclockwise
+               // orientation
+    inner = 2, // 2d loop curves form a simple closed curve with a clockwise orientation
+    slit = 3,  // always closed - used internally during splitting operations
+    crvonsrf = 4, // "loop" is a curveonsrf made from a single
+                  // (open or closed) trim that is has type ON_BrepTrim::crvonsrf.
+    ptonsrf = 5,  // "loop" is a ptonsrf made from a single
+                  // trim that is has type ON_BrepTrim::ptonsrf.
     type_count = 6
   };
 
   ON_BrepLoop();
   ON_BrepLoop(int); // loop index
-  ON_BrepLoop& operator=(const ON_BrepLoop&);
+  ON_BrepLoop&
+  operator=(const ON_BrepLoop&);
 
   /////////////////////////////////////////////////////////////////
   // ON_Object overrides
   //
-  // (Loops and trims are purely topologicial - geometry queries should be 
+  // (Loops and trims are purely topologicial - geometry queries should be
   // directed at the trim's 2d curve or the trim's edge's 3d curve.)
 
   // virtual ON_Object::SizeOf override
-  unsigned int SizeOf() const;
+  unsigned int
+  SizeOf () const;
 
   /*
   Description:
@@ -916,9 +959,9 @@ public:
     text_log - [in] if the object is not valid and text_log
         is not NULL, then a brief englis description of the
         reason the object is not valid is appened to the log.
-        The information appended to text_log is suitable for 
-        low-level debugging purposes by programmers and is 
-        not intended to be useful as a high level user 
+        The information appended to text_log is suitable for
+        low-level debugging purposes by programmers and is
+        not intended to be useful as a high level user
         interface tool.
   Returns:
     @untitled table
@@ -927,16 +970,21 @@ public:
   Remarks:
     Overrides virtual ON_Object::IsValid
   */
-  ON_BOOL32 IsValid( ON_TextLog* text_log = NULL ) const;
+  ON_BOOL32
+  IsValid (ON_TextLog* text_log = NULL) const;
 
-  void Dump( ON_TextLog& ) const; // for debugging
+  void
+  Dump (ON_TextLog&) const; // for debugging
 
-  ON_BOOL32 Write( ON_BinaryArchive& ) const;
+  ON_BOOL32
+  Write (ON_BinaryArchive&) const;
 
-  ON_BOOL32 Read( ON_BinaryArchive& );
+  ON_BOOL32
+  Read (ON_BinaryArchive&);
 
   // virtual ON_Geometry::ComponentIndex() override
-  ON_COMPONENT_INDEX ComponentIndex() const;
+  ON_COMPONENT_INDEX
+  ComponentIndex () const;
 
   /////////////////////////////////////////////////////////////////
   // Interface
@@ -944,20 +992,23 @@ public:
   //////////
   // Returns the index i such that loop.m_ti[i] = trim.m_trim_index.
   // Returns -1 if the trim is not in this loop
-  int IndexOfTrim( const ON_BrepTrim& ) const;
+  int
+  IndexOfTrim (const ON_BrepTrim&) const;
 
   /*
   Returns:
-    brep.m_S[] surface index of the 3d surface geometry used by 
+    brep.m_S[] surface index of the 3d surface geometry used by
     this loop or -1.
   */
-  int SurfaceIndexOf() const;
+  int
+  SurfaceIndexOf () const;
 
   /*
   Returns:
-    Pointer to the surface geometry used by the loop.   
+    Pointer to the surface geometry used by the loop.
   */
-  const ON_Surface* SurfaceOf() const;
+  const ON_Surface*
+  SurfaceOf () const;
 
   /*
   Description:
@@ -971,28 +1022,30 @@ public:
     True if successful.  If false is returned, the brep
     may be invalid.
   */
-  bool TransformTrim( const ON_Xform& xform );
+  bool
+  TransformTrim (const ON_Xform& xform);
 
-  ON_SimpleArray<int> m_ti;   // trim indices
-  TYPE         m_type;
-  int          m_fi;   // index of face that uses this loop
+  ON_SimpleArray<int> m_ti; // trim indices
+  TYPE m_type;
+  int m_fi; // index of face that uses this loop
 
   //////////
   // parameter space trimming loop bounding box
   // runtime information - not saved
   ON_BoundingBox m_pbox;
+
 private:
   friend class ON_Brep;
   ON_Brep* m_brep;
   ON_BrepLoop(const ON_BrepLoop&); // no implementation
 };
 
-class ON_CLASS ON_BrepFace : public ON_SurfaceProxy
-{
+class ON_CLASS ON_BrepFace : public ON_SurfaceProxy {
   ON_OBJECT_DECLARE(ON_BrepFace);
 
 public:
-  void DestroyRuntimeCache( bool bDelete = true );
+  void
+  DestroyRuntimeCache (bool bDelete = true);
 
   // Union available for application use.
   // The constructor zeros m_face_user.
@@ -1000,18 +1053,20 @@ public:
   // archives and may be changed by some computations.
   ON_U m_face_user;
 
-  int m_face_index;  // index of face in ON_Brep.m_F[] array
+  int m_face_index; // index of face in ON_Brep.m_F[] array
 
   ON_BrepFace();
   ~ON_BrepFace();
   ON_BrepFace(int);
-  ON_BrepFace& operator=(const ON_BrepFace&);
+  ON_BrepFace&
+  operator=(const ON_BrepFace&);
 
   /*
   Returns:
    Brep that the face belongs to.
   */
-  ON_Brep* Brep() const;
+  ON_Brep*
+  Brep () const;
 
   /*
   Parameters:
@@ -1019,19 +1074,22 @@ public:
   Returns:
     The loop brep.m_L[face.m_li[fli]];
   */
-  ON_BrepLoop* Loop( int fli ) const;
+  ON_BrepLoop*
+  Loop (int fli) const;
 
   /*
   Returns:
     Number of loops in this face.
   */
-  int LoopCount() const;
+  int
+  LoopCount () const;
 
   /*
   Returns:
     Outer boundary loop for this face.
   */
-  ON_BrepLoop* OuterLoop() const;
+  ON_BrepLoop*
+  OuterLoop () const;
 
   /*
   Parameters:
@@ -1045,20 +1103,22 @@ public:
     topology has not be created by calling
     ON_Brep::RegionToplogy(), then NULL is returned.
   */
-  class ON_BrepFaceSide* FaceSide(int dir) const;
-
+  class ON_BrepFaceSide*
+  FaceSide (int dir) const;
 
   /////////////////////////////////////////////////////////////////
   // ON_Object overrides
   //
-  // (Faces are purely topologicial - geometry queries should be 
+  // (Faces are purely topologicial - geometry queries should be
   //  directed at the face's 3d surface.)
 
   // virtual ON_Object::SizeOf override
-  unsigned int SizeOf() const;
+  unsigned int
+  SizeOf () const;
 
   // virtual ON_Object::DataCRC override
-  ON__UINT32 DataCRC(ON__UINT32 current_remainder) const;
+  ON__UINT32
+  DataCRC (ON__UINT32 current_remainder) const;
 
   /*
   Description:
@@ -1068,9 +1128,9 @@ public:
     text_log - [in] if the object is not valid and text_log
         is not NULL, then a brief englis description of the
         reason the object is not valid is appened to the log.
-        The information appended to text_log is suitable for 
-        low-level debugging purposes by programmers and is 
-        not intended to be useful as a high level user 
+        The information appended to text_log is suitable for
+        low-level debugging purposes by programmers and is
+        not intended to be useful as a high level user
         interface tool.
   Returns:
     @untitled table
@@ -1079,26 +1139,33 @@ public:
   Remarks:
     Overrides virtual ON_Object::IsValid
   */
-  ON_BOOL32 IsValid( ON_TextLog* text_log = NULL ) const;
+  ON_BOOL32
+  IsValid (ON_TextLog* text_log = NULL) const;
 
-  void Dump( ON_TextLog& ) const; // for debugging
+  void
+  Dump (ON_TextLog&) const; // for debugging
 
-  ON_BOOL32 Write( ON_BinaryArchive& ) const;
+  ON_BOOL32
+  Write (ON_BinaryArchive&) const;
 
-  ON_BOOL32 Read( ON_BinaryArchive& );
+  ON_BOOL32
+  Read (ON_BinaryArchive&);
 
   // virtual ON_Geometry::ComponentIndex() override
-  ON_COMPONENT_INDEX ComponentIndex() const;
+  ON_COMPONENT_INDEX
+  ComponentIndex () const;
 
   // virtual ON_Geometry::ClearBoundingBox() override
-  void ClearBoundingBox();
+  void
+  ClearBoundingBox ();
 
   // virtual ON_Geometry::GetBBox() override
-  ON_BOOL32 GetBBox( // returns true if successful
-         double*,    // minimum
-         double*,    // maximum
-         ON_BOOL32 = false  // true means grow box
-         ) const;
+  ON_BOOL32
+  GetBBox (             // returns true if successful
+      double*,          // minimum
+      double*,          // maximum
+      ON_BOOL32 = false // true means grow box
+  ) const;
 
   /*
   Description:
@@ -1114,9 +1181,8 @@ public:
     The range of the face's trimming curves and the orientation direction
     of then loops are changed so that the resulting face is still valid.
   */
-  ON_BOOL32 Reverse(
-    int dir
-    );
+  ON_BOOL32
+  Reverse (int dir);
 
   /*
   Description:
@@ -1129,7 +1195,8 @@ public:
     The range of the face's trimming curves and the orientation direction
     of then loops are changed so that the resulting face is still valid.
   */
-  ON_BOOL32 Transpose();
+  ON_BOOL32
+  Transpose ();
 
   /*
   Description:
@@ -1142,11 +1209,8 @@ public:
   Returns:
     True if successful.
   */
-  ON_BOOL32 SetDomain(
-    int dir,
-    double t0,
-    double t1
-    );
+  ON_BOOL32
+  SetDomain (int dir, double t0, double t1);
 
   /*
   //////////
@@ -1155,20 +1219,20 @@ public:
   // the "u" and "v" coordinates of all the face's parameter space trimming
   // curves.  The locus of the face is not changed.
   */
-  bool SetDomain(
-         ON_Interval udom,
-         ON_Interval vdom
-         );
+  bool
+  SetDomain (ON_Interval udom, ON_Interval vdom);
 
   /////////////////////////////////////////////////////////////////
   // Rendering Interface
-  //int MaterialIndex() const; // if -1, use parent's material definition
-  //void SetMaterialIndex(int);
+  // int MaterialIndex() const; // if -1, use parent's material definition
+  // void SetMaterialIndex(int);
 
   // If true is returne, then ~ON_BrepFace will delete mesh.
-  bool SetMesh( ON::mesh_type, ON_Mesh* mesh );
+  bool
+  SetMesh (ON::mesh_type, ON_Mesh* mesh);
 
-  const ON_Mesh* Mesh( ON::mesh_type mesh_type ) const;
+  const ON_Mesh*
+  Mesh (ON::mesh_type mesh_type) const;
 
   /*
   Description:
@@ -1183,7 +1247,8 @@ public:
     CRhinoObject::MeshCount
     CRhinoObject::IsMeshable
   */
-  void DestroyMesh( ON::mesh_type mesh_type, bool bDeleteMesh = true );
+  void
+  DestroyMesh (ON::mesh_type mesh_type, bool bDeleteMesh = true);
 
   /////////////////////////////////////////////////////////////////
   // "Expert" Interface
@@ -1200,7 +1265,8 @@ public:
     True if successful.  If false is returned, the brep
     may be invalid.
   */
-  bool TransformTrim( const ON_Xform& xform );
+  bool
+  TransformTrim (const ON_Xform& xform);
 
   /*
   Description:
@@ -1225,43 +1291,42 @@ public:
     If the face had a surface and new surface has a different
     shape, then you probably want to call something like
     ON_Brep::RebuildEdges() to move the 3d edge curves so they
-    will lie on the new surface. This doesn't delete the old 
+    will lie on the new surface. This doesn't delete the old
     surface; call ON_Brep::CullUnusedSurfaces() or ON_Brep::Compact
     to remove unused surfaces.
   See Also:
     ON_Brep::RebuildEdges
     ON_Brep::CullUnusedSurfaces
   */
-  bool ChangeSurface(
-    int si
-    );
-  bool ChangeSurface(
-    int si,
-    bool bTransformTrimCurves
-    );
+  bool
+  ChangeSurface (int si);
+  bool
+  ChangeSurface (int si, bool bTransformTrimCurves);
 
   /*
   Returns:
-    brep.m_S[] surface index of the 3d surface geometry used by 
+    brep.m_S[] surface index of the 3d surface geometry used by
     this face or -1.
   */
-  int SurfaceIndexOf() const;
+  int
+  SurfaceIndexOf () const;
 
   /*
   Returns:
-    Pointer to the surface geometry used by the face.   
+    Pointer to the surface geometry used by the face.
   */
-  const ON_Surface* SurfaceOf() const;
+  const ON_Surface*
+  SurfaceOf () const;
 
   ON_SimpleArray<int> m_li; // loop indices (outer loop is m_li[0])
-  int m_si;            // index of surface in b-rep m_S[] array
-  bool m_bRev;         // true if face orientation is opposite
-                       //      of natural surface orientation
+  int m_si;                 // index of surface in b-rep m_S[] array
+  bool m_bRev;              // true if face orientation is opposite
+                            //      of natural surface orientation
 
   // m_face_material_channel provides a way to have individual
   // brep faces use a rendering material that is different
   // from the rendering material used by the parent brep.
-  // If m_face_material_channel is zero 
+  // If m_face_material_channel is zero
   // channel and m_face_material_channel.m_j is the back face
   // materal. The default is (0,0) which indicates the face
   // should use the parent brep's material.
@@ -1275,25 +1340,27 @@ public:
 
   // Persistent id for this face.  Default is ON_nil_uuid.
   ON_UUID m_face_uuid;
+
 private:
-  ON_BoundingBox m_bbox;      // 3d bounding box
-  ON_Interval    m_domain[2]; // rectangular bounds of 2d curves
+  ON_BoundingBox m_bbox;   // 3d bounding box
+  ON_Interval m_domain[2]; // rectangular bounds of 2d curves
   ON_Mesh* m_render_mesh;
   ON_Mesh* m_analysis_mesh;
   ON_Mesh* m_preview_mesh;
-  //int m_material_index; // if 0 (default), ON_Brep's object attributes
-  //                      // determine material.
+  // int m_material_index; // if 0 (default), ON_Brep's object attributes
+  //                       // determine material.
 private:
   friend class ON_Brep;
   ON_Brep* m_brep;
-  ON_BrepFace( const ON_BrepFace& );
+  ON_BrepFace(const ON_BrepFace&);
 };
 
-class ON_CLASS ON_BrepFaceSide : public ON_Object
-{
+class ON_CLASS ON_BrepFaceSide : public ON_Object {
   ON_OBJECT_DECLARE(ON_BrepFaceSide);
+
 public:
-  ON_BOOL32 IsValid( ON_TextLog* text_log = NULL ) const;
+  ON_BOOL32
+  IsValid (ON_TextLog* text_log = NULL) const;
 
   // Union available for application use.
   // The constructor zeros m_faceside_user.
@@ -1302,39 +1369,45 @@ public:
   ON_U m_faceside_user;
 
   // index of face side in ON_BrepRegionTopology.m_FS[] array
-  int m_faceside_index;  
+  int m_faceside_index;
 
   ON_BrepFaceSide();
   ~ON_BrepFaceSide();
-  ON_BrepFaceSide& operator=(const ON_BrepFaceSide&);
+  ON_BrepFaceSide&
+  operator=(const ON_BrepFaceSide&);
 
-  ON_BOOL32 Write(ON_BinaryArchive& binary_archive) const;
-  ON_BOOL32 Read(ON_BinaryArchive& binary_archive);
-
+  ON_BOOL32
+  Write (ON_BinaryArchive& binary_archive) const;
+  ON_BOOL32
+  Read (ON_BinaryArchive& binary_archive);
 
   /*
   Returns:
    Brep this face side belongs to.
   */
-  ON_Brep* Brep() const;
+  ON_Brep*
+  Brep () const;
 
   /*
   Returns:
     Region topology this face side belongs to.
   */
-  class ON_BrepRegionTopology* RegionTopology() const;
+  class ON_BrepRegionTopology*
+  RegionTopology () const;
 
   /*
   Returns:
    Region the face side belongs to.
   */
-  class ON_BrepRegion* Region() const;
+  class ON_BrepRegion*
+  Region () const;
 
   /*
   Returns:
    Face this side belongs to.
   */
-  class ON_BrepFace* Face() const;
+  class ON_BrepFace*
+  Face () const;
 
   /*
   Returns:
@@ -1343,14 +1416,15 @@ public:
    -1: underlying geometric surface normal points
        out of region.
   */
-  int SurfaceNormalDirection() const;
+  int
+  SurfaceNormalDirection () const;
 
 public:
-  int m_ri; // region index 
-            // m_ri = -1 indicates this faceside overlaps
-            // another faceside. Generally this is a flaw
-            // in an ON_Brep.
-  int m_fi; // face index
+  int m_ri;      // region index
+                 // m_ri = -1 indicates this faceside overlaps
+                 // another faceside. Generally this is a flaw
+                 // in an ON_Brep.
+  int m_fi;      // face index
   int m_srf_dir; //  1 ON_BrepFace's surface normal points into region
                  // -1 ON_BrepFace's surface normal points out of region
 
@@ -1358,14 +1432,15 @@ private:
   friend class ON_Brep;
   friend class ON_BrepRegionTopology;
   ON_BrepRegionTopology* m_rtop;
-  ON_BrepFaceSide( const ON_BrepFaceSide& );
+  ON_BrepFaceSide(const ON_BrepFaceSide&);
 };
 
-class ON_CLASS ON_BrepRegion : public ON_Object
-{
+class ON_CLASS ON_BrepRegion : public ON_Object {
   ON_OBJECT_DECLARE(ON_BrepRegion);
+
 public:
-  ON_BOOL32 IsValid( ON_TextLog* text_log = NULL ) const;
+  ON_BOOL32
+  IsValid (ON_TextLog* text_log = NULL) const;
 
   // Union available for application use.
   // The constructor zeros m_region_user.
@@ -1378,22 +1453,27 @@ public:
 
   ON_BrepRegion();
   ~ON_BrepRegion();
-  ON_BrepRegion& operator=(const ON_BrepRegion&);
+  ON_BrepRegion&
+  operator=(const ON_BrepRegion&);
 
-  ON_BOOL32 Write(ON_BinaryArchive& binary_archive) const;
-  ON_BOOL32 Read(ON_BinaryArchive& binary_archive);
+  ON_BOOL32
+  Write (ON_BinaryArchive& binary_archive) const;
+  ON_BOOL32
+  Read (ON_BinaryArchive& binary_archive);
 
   /*
   Returns:
    Brep this region belongs to.
   */
-  ON_Brep* Brep() const;
+  ON_Brep*
+  Brep () const;
 
   /*
   Returns:
     Region topology this region belongs to.
   */
-  class ON_BrepRegionTopology* RegionTopology() const;
+  class ON_BrepRegionTopology*
+  RegionTopology () const;
 
   /*
   Parameter:
@@ -1403,27 +1483,30 @@ public:
     rtop is the ON_BrepRegionTopology class this
     region belongs to.
   */
-  ON_BrepFaceSide* FaceSide(int rfsi) const;
+  ON_BrepFaceSide*
+  FaceSide (int rfsi) const;
 
   /*
   Returns:
     True if the region is finite.
   */
-  bool IsFinite() const;
+  bool
+  IsFinite () const;
 
   /*
   Returns:
    Region bounding box.
   */
-  const ON_BoundingBox& BoundingBox() const;
+  const ON_BoundingBox&
+  BoundingBox () const;
 
   ON_SimpleArray<int> m_fsi; // indices of face sides
-  int m_type; // 0 = infinte, 1 = bounded
+  int m_type;                // 0 = infinte, 1 = bounded
   ON_BoundingBox m_bbox;
 
   /*
   Description:
-    Get the boundary of a region as a brep object.  
+    Get the boundary of a region as a brep object.
     If the region is finite, the boundary will be a closed
     manifold brep.  The boundary may have more than one
     connected component.
@@ -1433,21 +1516,22 @@ public:
   Returns: the region boundary as a brep or NULL if the
            calculation fails.
   */
-  ON_Brep* RegionBoundaryBrep( ON_Brep* brep = NULL ) const;
+  ON_Brep*
+  RegionBoundaryBrep (ON_Brep* brep = NULL) const;
 
 private:
   friend class ON_Brep;
   friend class ON_BrepRegionTopology;
   ON_BrepRegionTopology* m_rtop;
-  ON_BrepRegion( const ON_BrepRegion& );
+  ON_BrepRegion(const ON_BrepRegion&);
 };
 
 #if defined(ON_DLL_TEMPLATE)
 // This stuff is here because of a limitation in the way Microsoft
-// handles templates and DLLs.  See Microsoft's knowledge base 
+// handles templates and DLLs.  See Microsoft's knowledge base
 // article ID Q168958 for details.
-#pragma warning( push )
-#pragma warning( disable : 4231 )
+#pragma warning(push)
+#pragma warning(disable : 4231)
 ON_DLL_TEMPLATE template class ON_CLASS ON_ClassArray<ON_BrepVertex>;
 ON_DLL_TEMPLATE template class ON_CLASS ON_ObjectArray<ON_BrepVertex>;
 ON_DLL_TEMPLATE template class ON_CLASS ON_ClassArray<ON_BrepEdge>;
@@ -1460,106 +1544,125 @@ ON_DLL_TEMPLATE template class ON_CLASS ON_ClassArray<ON_BrepFace>;
 ON_DLL_TEMPLATE template class ON_CLASS ON_ObjectArray<ON_BrepFace>;
 ON_DLL_TEMPLATE template class ON_CLASS ON_ObjectArray<ON_BrepFaceSide>;
 ON_DLL_TEMPLATE template class ON_CLASS ON_ObjectArray<ON_BrepRegion>;
-#pragma warning( pop )
+#pragma warning(pop)
 #endif
 
-class ON_CLASS ON_BrepVertexArray : public ON_ObjectArray<ON_BrepVertex>
-{
+class ON_CLASS ON_BrepVertexArray : public ON_ObjectArray<ON_BrepVertex> {
 public:
   ON_BrepVertexArray();
   ~ON_BrepVertexArray();
 
-  ON_BOOL32 Read( ON_BinaryArchive& );
-  ON_BOOL32 Write( ON_BinaryArchive& ) const;
+  ON_BOOL32
+  Read (ON_BinaryArchive&);
+  ON_BOOL32
+  Write (ON_BinaryArchive&) const;
 
-  unsigned int SizeOf() const;
+  unsigned int
+  SizeOf () const;
 };
 
-class ON_CLASS ON_BrepEdgeArray   : public  ON_ObjectArray<ON_BrepEdge>
-{
+class ON_CLASS ON_BrepEdgeArray : public ON_ObjectArray<ON_BrepEdge> {
 public:
   ON_BrepEdgeArray();
   ~ON_BrepEdgeArray();
-  ON_BOOL32 Read( ON_BinaryArchive& );
-  ON_BOOL32 Write( ON_BinaryArchive& ) const;
+  ON_BOOL32
+  Read (ON_BinaryArchive&);
+  ON_BOOL32
+  Write (ON_BinaryArchive&) const;
 
-  unsigned int SizeOf() const;
+  unsigned int
+  SizeOf () const;
 };
 
-class ON_CLASS ON_BrepTrimArray   : public  ON_ObjectArray<ON_BrepTrim>
-{
+class ON_CLASS ON_BrepTrimArray : public ON_ObjectArray<ON_BrepTrim> {
 public:
   ON_BrepTrimArray();
   ~ON_BrepTrimArray();
-  ON_BOOL32 Read( ON_BinaryArchive& );
-  ON_BOOL32 Write( ON_BinaryArchive& ) const;
+  ON_BOOL32
+  Read (ON_BinaryArchive&);
+  ON_BOOL32
+  Write (ON_BinaryArchive&) const;
 
-  unsigned int SizeOf() const;
+  unsigned int
+  SizeOf () const;
 };
 
-class ON_CLASS ON_BrepLoopArray   : public  ON_ObjectArray<ON_BrepLoop>
-{
+class ON_CLASS ON_BrepLoopArray : public ON_ObjectArray<ON_BrepLoop> {
 public:
   ON_BrepLoopArray();
   ~ON_BrepLoopArray();
-  ON_BOOL32 Read( ON_BinaryArchive& );
-  ON_BOOL32 Write( ON_BinaryArchive& ) const;
+  ON_BOOL32
+  Read (ON_BinaryArchive&);
+  ON_BOOL32
+  Write (ON_BinaryArchive&) const;
 
-  unsigned int SizeOf() const;
+  unsigned int
+  SizeOf () const;
 };
 
-class ON_CLASS ON_BrepFaceArray   : public  ON_ObjectArray<ON_BrepFace>
-{
+class ON_CLASS ON_BrepFaceArray : public ON_ObjectArray<ON_BrepFace> {
 public:
   ON_BrepFaceArray();
   ~ON_BrepFaceArray();
-  ON_BOOL32 Read( ON_BinaryArchive& );
-  ON_BOOL32 Write( ON_BinaryArchive& ) const;
+  ON_BOOL32
+  Read (ON_BinaryArchive&);
+  ON_BOOL32
+  Write (ON_BinaryArchive&) const;
 
-  unsigned int SizeOf() const;
+  unsigned int
+  SizeOf () const;
 };
 
-class ON_CLASS ON_BrepFaceSideArray : public ON_ObjectArray<ON_BrepFaceSide>
-{
+class ON_CLASS ON_BrepFaceSideArray : public ON_ObjectArray<ON_BrepFaceSide> {
 public:
   ON_BrepFaceSideArray();
   ~ON_BrepFaceSideArray();
 
-  bool Read( ON_BinaryArchive& );
-  bool Write( ON_BinaryArchive& ) const;
+  bool
+  Read (ON_BinaryArchive&);
+  bool
+  Write (ON_BinaryArchive&) const;
 
-  unsigned int SizeOf() const;
+  unsigned int
+  SizeOf () const;
 };
 
-class ON_CLASS ON_BrepRegionArray : public ON_ObjectArray<ON_BrepRegion>
-{
+class ON_CLASS ON_BrepRegionArray : public ON_ObjectArray<ON_BrepRegion> {
 public:
   ON_BrepRegionArray();
   ~ON_BrepRegionArray();
 
-  bool Read( ON_BinaryArchive& );
-  bool Write( ON_BinaryArchive& ) const;
+  bool
+  Read (ON_BinaryArchive&);
+  bool
+  Write (ON_BinaryArchive&) const;
 
-  unsigned int SizeOf() const;
+  unsigned int
+  SizeOf () const;
 };
 
-class ON_CLASS ON_BrepRegionTopology
-{
+class ON_CLASS ON_BrepRegionTopology {
 public:
   ON_BrepRegionTopology();
   ON_BrepRegionTopology(const ON_BrepRegionTopology& src);
   ~ON_BrepRegionTopology();
-  ON_BrepRegionTopology& operator=(const ON_BrepRegionTopology&);
+  ON_BrepRegionTopology&
+  operator=(const ON_BrepRegionTopology&);
 
   ON_BrepFaceSideArray m_FS;
   ON_BrepRegionArray m_R;
 
-  ON_Brep* Brep() const;
-  bool IsValid( ON_TextLog* text_log = 0 ) const;
-  bool Read( ON_BinaryArchive& );
-  bool Write( ON_BinaryArchive& ) const;
+  ON_Brep*
+  Brep () const;
+  bool
+  IsValid (ON_TextLog* text_log = 0) const;
+  bool
+  Read (ON_BinaryArchive&);
+  bool
+  Write (ON_BinaryArchive&) const;
 
-  unsigned int SizeOf() const;
+  unsigned int
+  SizeOf () const;
 
 private:
   friend class ON_BrepRegionTopologyUserData;
@@ -1567,31 +1670,32 @@ private:
   ON_Brep* m_brep;
 };
 
-class ON_CLASS ON_Brep : public ON_Geometry 
-{
+class ON_CLASS ON_Brep : public ON_Geometry {
   ON_OBJECT_DECLARE(ON_Brep);
 
 public:
   // virtual ON_Object::DestroyRuntimeCache override
-  void DestroyRuntimeCache( bool bDelete = true );
+  void
+  DestroyRuntimeCache (bool bDelete = true);
 
   // virtual ON_Object::SizeOf override
-  unsigned int SizeOf() const;
+  unsigned int
+  SizeOf () const;
 
   // virtual ON_Object::DataCRC override
-  ON__UINT32 DataCRC(ON__UINT32 current_remainder) const;
+  ON__UINT32
+  DataCRC (ON__UINT32 current_remainder) const;
 
   // virtual ON_Geometry override
-  bool EvaluatePoint( const class ON_ObjRef& objref, ON_3dPoint& P ) const;
+  bool
+  EvaluatePoint (const class ON_ObjRef& objref, ON_3dPoint& P) const;
 
 public:
-
-
   /*
   Description:
     Use ON_Brep::New() instead of new ON_Brep() when writing
-    Rhino plug-ins (or when openNURBS is used as a Microsoft 
-    DLL and you need to create a new ON_Brep in a different 
+    Rhino plug-ins (or when openNURBS is used as a Microsoft
+    DLL and you need to create a new ON_Brep in a different
     .EXE or .DLL).
   Example:
 
@@ -1614,28 +1718,31 @@ public:
     that identical classes has the same vtable and makes
     all code run identically.
   */
-  static ON_Brep* New();
+  static ON_Brep*
+  New ();
 
   /*
   Description:
-    Use ON_Brep::New(const ON_Brep& src) instead 
+    Use ON_Brep::New(const ON_Brep& src) instead
     of new ON_Brep(const ON_Brep& src).
   Returns:
     Pointer to an ON_Brep.  Destroy by calling delete.
   Remarks:
     See static ON_Brep* ON_Brep::New() for details.
   */
-  static ON_Brep* New(const ON_Brep&);
+  static ON_Brep*
+  New (const ON_Brep&);
 
-	// Construction
+  // Construction
   ON_Brep();
-	~ON_Brep();		
+  ~ON_Brep();
   ON_Brep(const ON_Brep&);
-  ON_Brep& operator=(const ON_Brep&);
+  ON_Brep&
+  operator=(const ON_Brep&);
 
   // Override of virtual ON_Object::MemoryRelocate
-  void MemoryRelocate();
-
+  void
+  MemoryRelocate ();
 
   /*
   Description:
@@ -1647,19 +1754,19 @@ public:
   Returns:
     true if breps are the same
   */
-  bool IsDuplicate( 
-          const ON_Brep& other, 
-          double tolerance = ON_ZERO_TOLERANCE 
-          ) const;
+  bool
+  IsDuplicate (const ON_Brep& other, double tolerance = ON_ZERO_TOLERANCE) const;
 
   /////////////////////////////////////////////////////////////////
   // construction/destruction helpers
 
   // returns Brep to state it has after default construction
-  void Destroy(); 
+  void
+  Destroy ();
 
   // call if memory pool used by b-rep members becomes invalid
-  void EmergencyDestroy(); 
+  void
+  EmergencyDestroy ();
 
   /*
   Description:
@@ -1672,10 +1779,8 @@ public:
   Returns:
     Number of meshes appended to mesh_list[] array.
   */
-  int CreateMesh( 
-    const ON_MeshParameters& mp,
-    ON_SimpleArray<ON_Mesh*>& mesh_list
-    ) const;
+  int
+  CreateMesh (const ON_MeshParameters& mp, ON_SimpleArray<ON_Mesh*>& mesh_list) const;
 
   /*
   Description:
@@ -1690,7 +1795,8 @@ public:
     ON_BrepFace::Mesh
     ON_BrepFace::SetMesh
   */
-  void DestroyMesh( ON::mesh_type mesh_type, bool bDeleteMesh = true );
+  void
+  DestroyMesh (ON::mesh_type mesh_type, bool bDeleteMesh = true);
 
   /*
   Description:
@@ -1707,7 +1813,8 @@ public:
     ON_BrepFace::Mesh
     ON_BrepFace::SetMesh
   */
-  int GetMesh( ON::mesh_type mesh_type, ON_SimpleArray< const ON_Mesh* >& meshes ) const;
+  int
+  GetMesh (ON::mesh_type mesh_type, ON_SimpleArray<const ON_Mesh*>& meshes) const;
 
   /*
   Description:
@@ -1728,30 +1835,25 @@ public:
       brep cannot be created from this surface.
       When false is returned, then the caller is responsible
       for deleting pSurface unless it was previously added
-      to the brep's m_S[] array.     
+      to the brep's m_S[] array.
   Remarks:
     The surface class must be created with new so that the
     delete in ~ON_Brep will not cause a crash.
   */
-  bool Create( 
-          ON_Surface*& pSurface
-          );
+  bool
+  Create (ON_Surface*& pSurface);
 
-  bool Create( 
-          ON_NurbsSurface*& pNurbsSurface
-          );
+  bool
+  Create (ON_NurbsSurface*& pNurbsSurface);
 
-  bool Create( 
-          ON_PlaneSurface*& pPlaneSurface
-          );
+  bool
+  Create (ON_PlaneSurface*& pPlaneSurface);
 
-  bool Create( 
-          ON_RevSurface*& pRevSurface
-          );
+  bool
+  Create (ON_RevSurface*& pRevSurface);
 
-  bool Create( 
-          ON_SumSurface*& pSumSurface
-          );
+  bool
+  Create (ON_SumSurface*& pSumSurface);
 
   /*
   Description:
@@ -1761,9 +1863,9 @@ public:
     text_log - [in] if the object is not valid and text_log
         is not NULL, then a brief englis description of the
         reason the object is not valid is appened to the log.
-        The information appended to text_log is suitable for 
-        low-level debugging purposes by programmers and is 
-        not intended to be useful as a high level user 
+        The information appended to text_log is suitable for
+        low-level debugging purposes by programmers and is
+        not intended to be useful as a high level user
         interface tool.
   Returns:
     @untitled table
@@ -1774,19 +1876,20 @@ public:
   See Also:
     ON_Brep::SetTolerancesAndFlags
   */
-  ON_BOOL32 IsValid( ON_TextLog* text_log = NULL ) const;
+  ON_BOOL32
+  IsValid (ON_TextLog* text_log = NULL) const;
 
   /*
   Description:
     Tests the brep to see if its topology information is
     valid.
   Parameters:
-    text_log - [in] if the brep topology is not valid and 
-        text_log is not NULL, then a brief english 
+    text_log - [in] if the brep topology is not valid and
+        text_log is not NULL, then a brief english
         description of the problem is appended to the log.
-        The information appended to text_log is suitable for 
-        low-level debugging purposes by programmers and is 
-        not intended to be useful as a high level user 
+        The information appended to text_log is suitable for
+        low-level debugging purposes by programmers and is
+        not intended to be useful as a high level user
         interface tool.
   Returns:
     @untitled table
@@ -1799,22 +1902,22 @@ public:
     ON_Brep::IsValidGeometry
     ON_Brep::IsValidTolerancesAndFlags
   */
-  bool IsValidTopology( ON_TextLog* text_log = NULL ) const;
-
+  bool
+  IsValidTopology (ON_TextLog* text_log = NULL) const;
 
   /*
   Description:
     Expert user function that tests the brep to see if its
-    geometry information is valid.  The value of 
-    brep.IsValidTopology() must be true before 
+    geometry information is valid.  The value of
+    brep.IsValidTopology() must be true before
     brep.IsValidGeometry() can be safely called.
   Parameters:
-    text_log - [in] if the brep geometry is not valid and 
-        text_log is not NULL, then a brief english 
+    text_log - [in] if the brep geometry is not valid and
+        text_log is not NULL, then a brief english
         description of the problem is appended to the log.
-        The information appended to text_log is suitable for 
-        low-level debugging purposes by programmers and is 
-        not intended to be useful as a high level user 
+        The information appended to text_log is suitable for
+        low-level debugging purposes by programmers and is
+        not intended to be useful as a high level user
         interface tool.
   Returns:
     @untitled table
@@ -1828,22 +1931,23 @@ public:
     ON_Brep::IsValidTopology
     ON_Brep::IsValidTolerancesAndFlags
   */
-  bool IsValidGeometry( ON_TextLog* text_log = NULL ) const;
+  bool
+  IsValidGeometry (ON_TextLog* text_log = NULL) const;
 
   /*
   Description:
     Expert user function that tests the brep to see if its
-    tolerances and flags are valid.  The values of 
+    tolerances and flags are valid.  The values of
     brep.IsValidTopology() and brep.IsValidGeometry() must
-    be true before brep.IsValidTolerancesAndFlags() can 
+    be true before brep.IsValidTolerancesAndFlags() can
     be safely called.
   Parameters:
     text_log - [in] if the brep tolerance or flags are not
-        valid and text_log is not NULL, then a brief english 
+        valid and text_log is not NULL, then a brief english
         description of the problem is appended to the log.
-        The information appended to text_log is suitable for 
-        low-level debugging purposes by programmers and is 
-        not intended to be useful as a high level user 
+        The information appended to text_log is suitable for
+        low-level debugging purposes by programmers and is
+        not intended to be useful as a high level user
         interface tool.
   Returns:
     @untitled table
@@ -1858,61 +1962,72 @@ public:
     ON_Brep::IsValidTopology
     ON_Brep::IsValidGeometry
   */
-  bool IsValidTolerancesAndFlags( ON_TextLog* text_log = NULL ) const;
+  bool
+  IsValidTolerancesAndFlags (ON_TextLog* text_log = NULL) const;
 
   // Description:
-  //   Tests brep to see if it is valid for 
+  //   Tests brep to see if it is valid for
   //   saving in V2 3DM archives.
   // Returns:
   //   true if brep is valid for V2 3DM archives.
   // Remarks:
   //   V2 breps could not have dangling curves.
-  bool IsValidForV2() const;
-  bool IsValidForV2( const ON_BrepTrim& ) const;
-  bool IsValidForV2( const ON_BrepEdge& ) const;
+  bool
+  IsValidForV2 () const;
+  bool
+  IsValidForV2 (const ON_BrepTrim&) const;
+  bool
+  IsValidForV2 (const ON_BrepEdge&) const;
 
   // virtual ON_Objet::Dump() override
-  void Dump( ON_TextLog& ) const; // for debugging
+  void
+  Dump (ON_TextLog&) const; // for debugging
 
   // virtual ON_Objet::Write() override
-  ON_BOOL32 Write( ON_BinaryArchive& ) const;
+  ON_BOOL32
+  Write (ON_BinaryArchive&) const;
 
   // virtual ON_Objet::Read() override
-  ON_BOOL32 Read( ON_BinaryArchive& );
+  ON_BOOL32
+  Read (ON_BinaryArchive&);
 
   // virtual ON_Objet::ObjectType() override
-  ON::object_type ObjectType() const;
+  ON::object_type
+  ObjectType () const;
 
   // virtual ON_Geometry::Dimension() override
-  int Dimension() const;
+  int
+  Dimension () const;
 
   // virtual ON_Geometry::ClearBoundingBox() override
-  void ClearBoundingBox();
+  void
+  ClearBoundingBox ();
 
   // virtual ON_Geometry::GetBBox() override
-  ON_BOOL32 GetBBox( // returns true if successful
-         double*,    // minimum
-         double*,    // maximum
-         ON_BOOL32 = false  // true means grow box
-         ) const;
+  ON_BOOL32
+  GetBBox (             // returns true if successful
+      double*,          // minimum
+      double*,          // maximum
+      ON_BOOL32 = false // true means grow box
+  ) const;
 
   // virtual ON_Geometry::Transform() override
-  ON_BOOL32 Transform( 
-         const ON_Xform&
-         );
+  ON_BOOL32
+  Transform (const ON_Xform&);
 
   // virtual ON_Geometry::SwapCoordinates() override
-  ON_BOOL32 SwapCoordinates(
-        int, int        // indices of coords to swap
-        );
+  ON_BOOL32
+  SwapCoordinates (int, int // indices of coords to swap
+  );
 
   // virtual ON_Geometry::HasBrepForm() override
-  ON_BOOL32 HasBrepForm() const; // returns true
+  ON_BOOL32
+  HasBrepForm () const; // returns true
 
   /*
   Description:
     If possible, BrepForm() creates a brep form of the
-    ON_Geometry. 
+    ON_Geometry.
   Parameters:
     brep - [in] if not NULL, brep is used to store the brep
         form of the geometry.
@@ -1922,7 +2037,8 @@ public:
   Remarks:
     Override of virtual ON_Geometry::BrepForm
   */
-  ON_Brep* BrepForm( ON_Brep* brep = NULL ) const;
+  ON_Brep*
+  BrepForm (ON_Brep* brep = NULL) const;
 
   /////////////////////////////////////////////////////////////////
   // Creation Interface
@@ -1931,9 +2047,12 @@ public:
   // index that should be used to reference the geometry.
   // -1 is returned if the input is not acceptable.
   // ~ON_Brep() will delete the geometry.
-  int AddTrimCurve( ON_Curve* ); // 2d curve used by ON_BrepTrim
-  int AddEdgeCurve( ON_Curve* ); // 3d curve used by ON_BrepEdge
-  int AddSurface( ON_Surface* ); // 3d surface used by ON_BrepFace
+  int
+  AddTrimCurve (ON_Curve*); // 2d curve used by ON_BrepTrim
+  int
+  AddEdgeCurve (ON_Curve*); // 3d curve used by ON_BrepEdge
+  int
+  AddSurface (ON_Surface*); // 3d surface used by ON_BrepFace
 
   // Description:
   //   Set 3d curve geometry used by a b-rep edge.
@@ -1944,11 +2063,8 @@ public:
   //      sub interval of m_C3[c3_index]->Domain().
   // Returns:
   //   true if successful.
-  bool SetEdgeCurve( 
-    ON_BrepEdge& edge,
-    int c3_index,
-    const ON_Interval* sub_domain = NULL
-    );
+  bool
+  SetEdgeCurve (ON_BrepEdge& edge, int c3_index, const ON_Interval* sub_domain = NULL);
 
   // Description:
   //   Set 2d curve geometry used by a b-rep trim.
@@ -1959,30 +2075,25 @@ public:
   //      sub interval of m_C2[c2_index]->Domain().
   // Returns:
   //   true if successful.
-  bool SetTrimCurve( 
-    ON_BrepTrim& trim,
-    int c2_index,
-    const ON_Interval* sub_domain = NULL
-    );
+  bool
+  SetTrimCurve (ON_BrepTrim& trim, int c2_index, const ON_Interval* sub_domain = NULL);
 
-  // These add a new topology piece to the b-rep and return a 
+  // These add a new topology piece to the b-rep and return a
   // reference that is intended to be used for initialization.
-  ON_BrepVertex& NewVertex();
-  ON_BrepVertex& NewVertex( 
-    ON_3dPoint vertex_point,
-    double vertex_tolerance = ON_UNSET_VALUE
-    );
+  ON_BrepVertex&
+  NewVertex ();
+  ON_BrepVertex&
+  NewVertex (ON_3dPoint vertex_point, double vertex_tolerance = ON_UNSET_VALUE);
 
-  ON_BrepEdge& NewEdge(
-                  int = -1              // 3d curve index
-                  );
-  ON_BrepEdge& NewEdge( 
-                  ON_BrepVertex&, // start vertex
-                  ON_BrepVertex&, // end vertex
-                  int = -1,       // 3d curve index
-                  const ON_Interval* = NULL, // sub_domain
-                  double edge_tolerance = ON_UNSET_VALUE
-                  );
+  ON_BrepEdge&
+  NewEdge (int = -1 // 3d curve index
+  );
+  ON_BrepEdge&
+  NewEdge (ON_BrepVertex&,            // start vertex
+           ON_BrepVertex&,            // end vertex
+           int = -1,                  // 3d curve index
+           const ON_Interval* = NULL, // sub_domain
+           double edge_tolerance = ON_UNSET_VALUE);
 
   /*
   Description:
@@ -2003,16 +2114,15 @@ public:
   See Also:
     ON_Brep::AddSurface
   */
-  ON_BrepFace& NewFace(
-                  int si = -1
-                  );
+  ON_BrepFace&
+  NewFace (int si = -1);
 
   /*
   Description:
     Add a new face to a brep.  This creates a complete face with
     new vertices at the surface corners, new edges along the surface
     boundary, etc.  The loop of the returned face has four trims that
-    correspond to the south, east, north, and west side of the 
+    correspond to the south, east, north, and west side of the
     surface in that order.  If you use this version of NewFace to
     add an exiting brep, then you are responsible for using a tool
     like ON_Brep::JoinEdges() to hook the new face to its
@@ -2031,9 +2141,8 @@ public:
     ON_Brep::JoinEdges
     ON_Brep::AddSurface
   */
-  ON_BrepFace* NewFace( 
-    const ON_Surface& surface 
-    );
+  ON_BrepFace*
+  NewFace (const ON_Surface& surface);
 
   /*
   Description:
@@ -2043,7 +2152,7 @@ public:
                     that goes around the edges of the surface.
     vid - [in/out] four vertex indices that specify the vertices at
                    the (sw,se,nw,ne) corners.  If the input value
-                   of a vertex index is -1, then the vertex will be 
+                   of a vertex index is -1, then the vertex will be
                    created.
     eid - [in/out] four edge indices that specify the edges for
                    the (south,east,north,west) sides.  If the input value
@@ -2066,16 +2175,12 @@ public:
     ON_Brep::AddFace( int si )
     ON_Brep::Create( ON_Surface*& )
   */
-  ON_BrepFace* NewFace(
-       ON_Surface* pSurface,
-       int vid[4],
-       int eid[4],
-       ON_BOOL32 bRev3d[4]
-       );
+  ON_BrepFace*
+  NewFace (ON_Surface* pSurface, int vid[4], int eid[4], ON_BOOL32 bRev3d[4]);
 
   /*
   Description:
-    Add a new face to the brep whose surface geometry is a 
+    Add a new face to the brep whose surface geometry is a
     ruled surface between two edges.
   Parameters:
     edgeA - [in] The south side of the face's surface will
@@ -2092,16 +2197,15 @@ public:
     A pointer to the new face or a NULL if the new face could
     not be created.
   */
-  ON_BrepFace* NewRuledFace(
-        const ON_BrepEdge& edgeA,
-        bool bRevEdgeA,
-        const ON_BrepEdge& edgeB, 
-        bool bRevEdgeB
-        );
+  ON_BrepFace*
+  NewRuledFace (const ON_BrepEdge& edgeA,
+                bool bRevEdgeA,
+                const ON_BrepEdge& edgeB,
+                bool bRevEdgeB);
 
   /*
   Description:
-    Add a new face to the brep whose surface geometry is a 
+    Add a new face to the brep whose surface geometry is a
     ruled cone with the edge as the base and the vertex as
     the apex point.
   Parameters:
@@ -2111,17 +2215,14 @@ public:
     edge - [in] The south side of the face's surface will
           run along this edge.
     bRevEdge - [in] true if the new face's outer boundary
-          orientation along the edge is opposite the 
+          orientation along the edge is opposite the
           orientation of edge.
   Returns:
     A pointer to the new face or a NULL if the new face could
     not be created.
   */
-  ON_BrepFace* NewConeFace(
-        const ON_BrepVertex& vertex,
-        const ON_BrepEdge& edge,
-        bool bRevEdge
-        );
+  ON_BrepFace*
+  NewConeFace (const ON_BrepVertex& vertex, const ON_BrepEdge& edge, bool bRevEdge);
 
   /*
   Description:
@@ -2130,17 +2231,18 @@ public:
   Returns:
     New outer boundary loop.
   */
-  ON_BrepLoop& NewLoop( ON_BrepLoop::TYPE );
+  ON_BrepLoop& NewLoop(ON_BrepLoop::TYPE);
 
   /*
   Description:
     Create a new boundary loop on a face.  After you get this
-    ON_BrepLoop, you still need to create the vertices, edges, 
+    ON_BrepLoop, you still need to create the vertices, edges,
     and trims that define the loop.
   Returns:
     New loop that needs to be filled in.
   */
-  ON_BrepLoop& NewLoop( ON_BrepLoop::TYPE loop_type, ON_BrepFace& face );
+  ON_BrepLoop&
+  NewLoop (ON_BrepLoop::TYPE loop_type, ON_BrepFace& face);
 
   /*
   Description:
@@ -2153,7 +2255,8 @@ public:
   Returns:
     New outer boundary loop that is complete.
   */
-  ON_BrepLoop* NewOuterLoop( int face_index );
+  ON_BrepLoop*
+  NewOuterLoop (int face_index);
 
   /*
   Description:
@@ -2164,7 +2267,7 @@ public:
                    underlying surface.
     vid - [in/out] four vertex indices that specify the vertices at
                    the (sw,se,nw,ne) corners.  If the input value
-                   of a vertex index is -1, then the vertex will be 
+                   of a vertex index is -1, then the vertex will be
                    created.
     eid - [in/out] four edge indices that specify the edges for
                    the (south,east,north,west) sides.  If the input value
@@ -2181,12 +2284,8 @@ public:
   See Also:
     ON_Brep::NewFace
   */
-  ON_BrepLoop* NewOuterLoop(
-         int face_index,
-         int vid[4],
-         int eid[4],
-         ON_BOOL32 bRev3d[4]
-         );
+  ON_BrepLoop*
+  NewOuterLoop (int face_index, int vid[4], int eid[4], ON_BOOL32 bRev3d[4]);
 
   /*
   Description:
@@ -2196,7 +2295,7 @@ public:
         suface must be an ON_PlaneSurface.
     loop_type - [in] type of loop to add.  If loop_type is
         ON_BrepLoop::unknown, then the loop direction is tested
-        and the the new loops type will be set to 
+        and the the new loops type will be set to
         ON_BrepLoop::outer or ON_BrepLoop::inner.  If the loop_type
         is ON_BrepLoop::outer, then the direction of the new loop
         is tested and flipped if it is clockwise. If the loop_type
@@ -2205,20 +2304,18 @@ public:
     boundary - [in] a list of 3d curves that form a simple (no self
         intersections) closed curve.  These curves define the 3d
         edge geometry and should be near the planar surface.
-    bDuplicateCurves - [in] If true, then duplicates of the curves 
+    bDuplicateCurves - [in] If true, then duplicates of the curves
         in the boundary array are added to the brep.  If false, the
         curves in the boundary array are added to the brep and will
         be deleted by ON_Brep::~ON_Brep.
     Returns:
       true if successful.  The new loop will be brep.m_L.Last().
   */
-  bool NewPlanarFaceLoop(
-        int face_index,
-        ON_BrepLoop::TYPE loop_type,
-        ON_SimpleArray<ON_Curve*>& boundary,
-        ON_BOOL32 bDuplicateCurves = true
-        );
-
+  bool
+  NewPlanarFaceLoop (int face_index,
+                     ON_BrepLoop::TYPE loop_type,
+                     ON_SimpleArray<ON_Curve*>& boundary,
+                     ON_BOOL32 bDuplicateCurves = true);
 
   /*
   Description:
@@ -2252,9 +2349,8 @@ public:
     ON_Brep::NewPointOnFace
     ON_Brep::NewCurveOnFace
   */
-  ON_BrepTrim& NewTrim(
-                  int c2i = -1
-                  );
+  ON_BrepTrim&
+  NewTrim (int c2i = -1);
 
   /*
   Description:
@@ -2290,11 +2386,8 @@ public:
     ON_Brep::NewPointOnFace
     ON_Brep::NewCurveOnFace
   */
-  ON_BrepTrim& NewTrim(
-                  ON_BOOL32 bRev3d,
-                  ON_BrepLoop& loop,
-                  int c2i = -1
-                  );
+  ON_BrepTrim&
+  NewTrim (ON_BOOL32 bRev3d, ON_BrepLoop& loop, int c2i = -1);
 
   /*
   Description:
@@ -2316,8 +2409,8 @@ public:
     trim.m_type = ...;
     trim.m_iso = ...;
   Remarks:
-    You should set the trim's ON_BrepTrim::m_tolerance, 
-    ON_BrepTrim::m_type, ON_BrepTrim::m_iso, 
+    You should set the trim's ON_BrepTrim::m_tolerance,
+    ON_BrepTrim::m_type, ON_BrepTrim::m_iso,
     and ON_BrepTrim::m_li values.
         In general, you should try to use the
     ON_BrepTrim::NewTrim( edge, bRev3d, loop, c2i ) version of NewTrim.
@@ -2331,11 +2424,8 @@ public:
     ON_Brep::NewPointOnFace
     ON_Brep::NewCurveOnFace
   */
-  ON_BrepTrim& NewTrim(
-                  ON_BrepEdge& edge,
-                  ON_BOOL32 bRev3d,
-                  int c2i = -1
-                  );
+  ON_BrepTrim&
+  NewTrim (ON_BrepEdge& edge, ON_BOOL32 bRev3d, int c2i = -1);
 
   /*
   Description:
@@ -2370,12 +2460,8 @@ public:
     ON_Brep::NewPointOnFace
     ON_Brep::NewCurveOnFace
   */
-  ON_BrepTrim& NewTrim(
-                  ON_BrepEdge& edge,
-                  ON_BOOL32 bRev3d,
-                  ON_BrepLoop& loop,
-                  int c2i = -1
-                  );
+  ON_BrepTrim&
+  NewTrim (ON_BrepEdge& edge, ON_BOOL32 bRev3d, ON_BrepLoop& loop, int c2i = -1);
 
   /*
   Description:
@@ -2383,7 +2469,7 @@ public:
   Parameters:
     vertex - [in] vertex along collapsed surface edge
     loop - [in] trim is appended to this loop
-    iso - [in] one of ON_Surface::S_iso, ON_Surface::E_iso, 
+    iso - [in] one of ON_Surface::S_iso, ON_Surface::E_iso,
                ON_Surface::N_iso, or ON_Surface::W_iso.
     c2i - [in] index of 2d trimming curve
   Returns:
@@ -2391,12 +2477,11 @@ public:
   See Also:
     ON_Brep::NewTrim
   */
-  ON_BrepTrim& NewSingularTrim(
-                  const ON_BrepVertex& vertex,
-                  ON_BrepLoop& loop,
-                  ON_Surface::ISO iso,
-                  int c2i = -1
-                  );
+  ON_BrepTrim&
+  NewSingularTrim (const ON_BrepVertex& vertex,
+                   ON_BrepLoop& loop,
+                   ON_Surface::ISO iso,
+                   int c2i = -1);
 
   /*
   Description:
@@ -2412,11 +2497,8 @@ public:
     a single trim with type ON_BrepTrim::ptonsrf.  There
     will be a loop containing this single trim.
   */
-  ON_BrepVertex& NewPointOnFace( 
-    ON_BrepFace& face,
-    double s,
-    double t
-    );
+  ON_BrepVertex&
+  NewPointOnFace (ON_BrepFace& face, double s, double t);
 
   /*
   Description:
@@ -2424,7 +2506,7 @@ public:
   Parameters:
     face - [in] face that curve lies on
     edge - [in] 3d edge associated with this curve on surface
-    bRev3d - [in] true if the 3d edge and the 2d parameter space 
+    bRev3d - [in] true if the 3d edge and the 2d parameter space
                   curve have opposite directions.
     c2i - [in] index of 2d curve in face's parameter space
   Returns:
@@ -2433,35 +2515,38 @@ public:
     You should set the trim's ON_BrepTrim::m_tolerance and
     ON_BrepTrim::m_iso values.
   */
-  ON_BrepTrim& NewCurveOnFace(
-                  ON_BrepFace& face,
+  ON_BrepTrim&
+  NewCurveOnFace (ON_BrepFace& face,
                   ON_BrepEdge& edge,
                   ON_BOOL32 bRev3d = false,
-                  int c2i = -1
-                  );
+                  int c2i = -1);
 
   // appends a copy of brep to this and updates
   // indices of appended brep parts.  Duplicates are not removed.
-  void Append( 
-    const ON_Brep& // brep
-    ); 
+  void
+  Append (const ON_Brep& // brep
+  );
 
   // This function can be used to compute vertex information for a
   // b-rep when everything but the m_V array is properly filled in.
-  // It is intended to be used when creating a ON_Brep from a 
+  // It is intended to be used when creating a ON_Brep from a
   // definition that does not include explicit vertex information.
-  void SetVertices(void);
+  void
+  SetVertices (void);
 
   // This function can be used to set the ON_BrepTrim::m_iso
   // flag. It is intended to be used when creating a ON_Brep from
   // a definition that does not include compatible parameter space
   // type information.
   // See Also: ON_BrepSetFlagsAndTolerances
-  bool SetTrimIsoFlags();    // sets all trim iso flags
-  bool SetTrimIsoFlags( ON_BrepFace& );
-  bool SetTrimIsoFlags( ON_BrepLoop& );
-  bool SetTrimIsoFlags( ON_BrepTrim& );
-
+  bool
+  SetTrimIsoFlags (); // sets all trim iso flags
+  bool
+  SetTrimIsoFlags (ON_BrepFace&);
+  bool
+  SetTrimIsoFlags (ON_BrepLoop&);
+  bool
+  SetTrimIsoFlags (ON_BrepTrim&);
 
   /*
   Description:
@@ -2480,62 +2565,62 @@ public:
   See Also:
     ON_Brep::SetTrimTypeFlags
   */
-  ON_BrepTrim::TYPE TrimType( 
-    const ON_BrepTrim& trim, 
-    ON_BOOL32 bLazy = true
-    ) const;
+  ON_BrepTrim::TYPE
+  TrimType (const ON_BrepTrim& trim, ON_BOOL32 bLazy = true) const;
 
   // This function can be used to set the ON_BrepTrim::m_type
   // flag.  If the optional bLazy argument is true, then only
   // trims with m_type = unknown are set.
   // See Also: ON_BrepSetFlagsAndTolerances
-  bool SetTrimTypeFlags( ON_BOOL32 bLazy = false );    // sets all trim iso flags
-  bool SetTrimTypeFlags( ON_BrepFace&, ON_BOOL32 bLazy = false );
-  bool SetTrimTypeFlags( ON_BrepLoop&, ON_BOOL32 bLazy = false );
-  bool SetTrimTypeFlags( ON_BrepTrim&, ON_BOOL32 bLazy = false );
+  bool
+  SetTrimTypeFlags (ON_BOOL32 bLazy = false); // sets all trim iso flags
+  bool
+  SetTrimTypeFlags (ON_BrepFace&, ON_BOOL32 bLazy = false);
+  bool
+  SetTrimTypeFlags (ON_BrepLoop&, ON_BOOL32 bLazy = false);
+  bool
+  SetTrimTypeFlags (ON_BrepTrim&, ON_BOOL32 bLazy = false);
 
   // GetTrim2dStart() evaluates the start of the
   // parameter space (2d) trim curve.
-  bool GetTrim2dStart( 
-          int trim_index,         // index of ON_BrepTrim in m_T[] array
-          ON_2dPoint& 
-          ) const;
+  bool
+  GetTrim2dStart (int trim_index, // index of ON_BrepTrim in m_T[] array
+                  ON_2dPoint&) const;
 
   // GetTrim2dEnd() evaluates end of the
   // parameter space (2d) trim curve.
-  bool GetTrim2dEnd(
-          int,         // index of ON_BrepTrim in m_T[] array
-          ON_2dPoint& 
-          ) const;
+  bool
+  GetTrim2dEnd (int, // index of ON_BrepTrim in m_T[] array
+                ON_2dPoint&) const;
 
   // GetTrim3dStart() evaluates the 3d surface at the start of the
   // parameter space (2d) trim curve.
-  bool GetTrim3dStart( 
-          int,         // index of ON_BrepTrim in m_T[] array
-          ON_3dPoint& 
-          ) const;
+  bool
+  GetTrim3dStart (int, // index of ON_BrepTrim in m_T[] array
+                  ON_3dPoint&) const;
 
   // GetTrim3dEnd() evaluates the 3d surface at the end of the
   // parameter space (2d) trim curve.
-  bool GetTrim3dEnd(
-          int,         // index of ON_BrepTrim in m_T[] array
-          ON_3dPoint& 
-          ) const;
+  bool
+  GetTrim3dEnd (int, // index of ON_BrepTrim in m_T[] array
+                ON_3dPoint&) const;
 
   // This function examines the 2d parameter space curves and returns
   // the loop's type based on their orientation.  Use this function for
   // debugging loop orientation problems.
-  ON_BrepLoop::TYPE ComputeLoopType( const ON_BrepLoop& ) const;
+  ON_BrepLoop::TYPE
+  ComputeLoopType (const ON_BrepLoop&) const;
 
   // These set the various tolerances.  The optional ON_BOOL32 argument
   // is called bLazy.  If bLazy is false, the tolerance is recomputed
   // from its definition.  If bLazy is true, the tolerance is computed
   // only if its current value is negative.
-  bool SetVertexTolerance( ON_BrepVertex& vertex, ON_BOOL32 bLazy = false ) const;
-  virtual
-  bool SetTrimTolerance( ON_BrepTrim& trim, ON_BOOL32 bLazy = false ) const;
-  virtual
-  bool SetEdgeTolerance( ON_BrepEdge& edge, ON_BOOL32 bLazy = false ) const;
+  bool
+  SetVertexTolerance (ON_BrepVertex& vertex, ON_BOOL32 bLazy = false) const;
+  virtual bool
+  SetTrimTolerance (ON_BrepTrim& trim, ON_BOOL32 bLazy = false) const;
+  virtual bool
+  SetEdgeTolerance (ON_BrepEdge& edge, ON_BOOL32 bLazy = false) const;
 
   /*
   Description:
@@ -2555,7 +2640,8 @@ public:
     ON_Brep::SetEdgeTolerances
     ON_Brep::SetTolerancesAndFlags
   */
-  bool SetVertexTolerances( ON_BOOL32 bLazy = false );
+  bool
+  SetVertexTolerances (ON_BOOL32 bLazy = false);
 
   /*
   Description:
@@ -2575,7 +2661,8 @@ public:
     ON_Brep::SetEdgeTolerances
     ON_Brep::SetTolerancesAndFlags
   */
-  bool SetTrimTolerances( ON_BOOL32 bLazy = false );
+  bool
+  SetTrimTolerances (ON_BOOL32 bLazy = false);
 
   /*
   Description:
@@ -2595,8 +2682,8 @@ public:
     ON_Brep::SetEdgeTolerances
     ON_Brep::SetTolerancesAndFlags
   */
-  bool SetEdgeTolerances( ON_BOOL32 bLazy = false );
-
+  bool
+  SetEdgeTolerances (ON_BOOL32 bLazy = false);
 
   /*
   Description:
@@ -2608,51 +2695,50 @@ public:
   Returns:
     true if trim ends up with a valid bounding box.
   */
-  virtual
-  bool SetTrimBoundingBox( ON_BrepTrim& trim, ON_BOOL32 bLazy=false );
+  virtual bool
+  SetTrimBoundingBox (ON_BrepTrim& trim, ON_BOOL32 bLazy = false);
 
   /*
   Description:
     Set the loop parameter space bounding box (loop.m_pbox).
   Parameters:
     loop - [in]
-    bLazy - [in] if true and loop trim trim.m_pbox is valid, 
+    bLazy - [in] if true and loop trim trim.m_pbox is valid,
        then that trim.m_pbox is not recalculated.
   Returns:
     true if loop ends up with a valid bounding box.
   */
-  virtual
-  bool SetTrimBoundingBoxes( ON_BrepLoop& loop, ON_BOOL32 bLazy=false );
-
+  virtual bool
+  SetTrimBoundingBoxes (ON_BrepLoop& loop, ON_BOOL32 bLazy = false);
 
   /*
   Description:
     Set the loop and trim parameter space bounding boxes
-    for every loop and trim in the face 
+    for every loop and trim in the face
   Parameters:
     face - [in]
-    bLazy - [in] if true and trim trim.m_pbox is valid, 
+    bLazy - [in] if true and trim trim.m_pbox is valid,
        then that trim.m_pbox is not recalculated.
   Returns:
-    true if all the face's loop and trim parameter space bounding 
+    true if all the face's loop and trim parameter space bounding
     boxes are valid.
   */
-  virtual
-  bool SetTrimBoundingBoxes( ON_BrepFace& face, ON_BOOL32 bLazy=false );
+  virtual bool
+  SetTrimBoundingBoxes (ON_BrepFace& face, ON_BOOL32 bLazy = false);
 
   /*
   Description:
     Set the loop and trim parameter space bounding boxes
     for every loop and trim in the brep.
   Parameters:
-    bLazy - [in] if true and trim trim.m_pbox is valid, 
+    bLazy - [in] if true and trim trim.m_pbox is valid,
        then that trim.m_pbox is not recalculated.
   Returns:
     true if all the loop and trim parameter space bounding boxes
     are valid.
   */
-  virtual
-  bool SetTrimBoundingBoxes( ON_BOOL32 bLazy=false );
+  virtual bool
+  SetTrimBoundingBoxes (ON_BOOL32 bLazy = false);
 
   /*
   Description:
@@ -2677,17 +2763,15 @@ public:
     ON_Brep::SetTrimBoundingBox
     ON_Brep::SetTrimBoundingBoxes
   */
-  void SetTolerancesBoxesAndFlags(
-       ON_BOOL32 bLazy = false,
-       ON_BOOL32 bSetVertexTolerances = true,
-       ON_BOOL32 bSetEdgeTolerances = true,
-       ON_BOOL32 bSetTrimTolerances = true,
-       ON_BOOL32 bSetTrimIsoFlags = true,
-       ON_BOOL32 bSetTrimTypeFlags = true,
-       ON_BOOL32 bSetLoopTypeFlags = true,
-       ON_BOOL32 bSetTrimBoxes = true
-       );
-
+  void
+  SetTolerancesBoxesAndFlags (ON_BOOL32 bLazy = false,
+                              ON_BOOL32 bSetVertexTolerances = true,
+                              ON_BOOL32 bSetEdgeTolerances = true,
+                              ON_BOOL32 bSetTrimTolerances = true,
+                              ON_BOOL32 bSetTrimIsoFlags = true,
+                              ON_BOOL32 bSetTrimTypeFlags = true,
+                              ON_BOOL32 bSetLoopTypeFlags = true,
+                              ON_BOOL32 bSetTrimBoxes = true);
 
   /////////////////////////////////////////////////////////////////
   // Query Interface
@@ -2702,10 +2786,8 @@ public:
   Returns:
     Number of brep faces that reference the surface.
   */
-  int SurfaceUseCount( 
-              int surface_index,
-              int max_count=0 ) 
-              const;
+  int
+  SurfaceUseCount (int surface_index, int max_count = 0) const;
   /*
   Description:
     Determine how many brep edges reference m_C3[c3_index].
@@ -2716,10 +2798,8 @@ public:
   Returns:
     Number of brep edges that reference the 3d curve.
   */
-  int EdgeCurveUseCount( 
-              int c3_index,
-              int max_count=0 ) 
-              const;
+  int
+  EdgeCurveUseCount (int c3_index, int max_count = 0) const;
 
   /*
   Description:
@@ -2731,10 +2811,8 @@ public:
   Returns:
     Number of brep trims that reference the 2d curve.
   */
-  int TrimCurveUseCount( 
-              int c2_index,
-              int max_count=0 ) 
-              const;
+  int
+  TrimCurveUseCount (int c2_index, int max_count = 0) const;
 
   /*
   Description:
@@ -2750,10 +2828,9 @@ public:
     A pointer to a 3d ON_Curve.  The caller must delete
     this curve.
   */
-  ON_Curve* Loop3dCurve( 
-    const ON_BrepLoop& loop,
-    ON_BOOL32 bRevCurveIfFaceRevIsTrue = false
-    ) const;
+  ON_Curve*
+  Loop3dCurve (const ON_BrepLoop& loop,
+               ON_BOOL32 bRevCurveIfFaceRevIsTrue = false) const;
 
   /*
   Description:
@@ -2770,12 +2847,10 @@ public:
   Returns:
     Number of curves appended to curve_list.
   */
-  int Loop3dCurve( 
-    const ON_BrepLoop& loop,
-    ON_SimpleArray<ON_Curve*>& curve_list,
-    ON_BOOL32 bRevCurveIfFaceRevIsTrue = false
-    ) const;
-
+  int
+  Loop3dCurve (const ON_BrepLoop& loop,
+               ON_SimpleArray<ON_Curve*>& curve_list,
+               ON_BOOL32 bRevCurveIfFaceRevIsTrue = false) const;
 
   /*
   Description:
@@ -2786,7 +2861,8 @@ public:
     A pointer to a 2d ON_Curve.  The caller must delete
     this curve.
   */
-  ON_Curve* Loop2dCurve( const ON_BrepLoop& loop ) const;
+  ON_Curve*
+  Loop2dCurve (const ON_BrepLoop& loop) const;
 
   /*
   Description:
@@ -2804,8 +2880,8 @@ public:
   See Also:
     ON_Brep::IsSolid
   */
-  virtual
-  int SolidOrientation() const;
+  virtual int
+  SolidOrientation () const;
 
   /*
   Description:
@@ -2819,8 +2895,9 @@ public:
     ON_Brep::SolidOrientation
     ON_Brep::IsManifold
   */
-  bool IsSolid() const;
-  
+  bool
+  IsSolid () const;
+
   /*
   Description:
     Test brep to see if it is an oriented manifold.
@@ -2837,18 +2914,18 @@ public:
   See Also:
     ON_Brep::IsSolid
   */
-  bool IsManifold( // returns true if b-rep is an oriented manifold
-    ON_BOOL32* pbIsOriented = NULL,
-    ON_BOOL32* pbHasBoundary = NULL
-    ) const;
+  bool
+  IsManifold ( // returns true if b-rep is an oriented manifold
+      ON_BOOL32* pbIsOriented = NULL,
+      ON_BOOL32* pbHasBoundary = NULL) const;
 
   /*
-  Description: 
+  Description:
     Determine if P is inside Brep.  This question only makes sense
     when the brep is a closed manifold.  This function does not
     not check for closed or manifold, so result is not valid in
     those cases.  Intersects a line through P with brep, finds
-    the intersection point Q closest to P, and looks at face 
+    the intersection point Q closest to P, and looks at face
     normal at Q.  If the point Q is on an edge or the intersection
     is not transverse at Q, then another line is used.
   Parameters:
@@ -2861,39 +2938,37 @@ public:
   Returns:
     True if P is in, false if not. See parameter bStrictlyIn.
   */
-  bool IsPointInside(
-          ON_3dPoint P, 
-          double tolerance,
-          bool bStrictlyInside
-          ) const;
+  bool
+  IsPointInside (ON_3dPoint P, double tolerance, bool bStrictlyInside) const;
 
+  bool
+  IsSurface () const; // returns true if the b-rep has a single face
+                      // and that face is geometrically the same
+                      // as the underlying surface.  I.e., the face
+                      // has trivial trimming.  In this case, the
+                      // surface is m_S[0].
+                      // The flag m_F[0].m_bRev records
+                      // the correspondence between the surface's
+                      // natural parametric orientation and the
+                      // orientation of the b-rep.
 
-  bool IsSurface() const;      // returns true if the b-rep has a single face
-                               // and that face is geometrically the same
-                               // as the underlying surface.  I.e., the face
-                               // has trivial trimming.  In this case, the
-                               // surface is m_S[0].
-                               // The flag m_F[0].m_bRev records
-                               // the correspondence between the surface's
-                               // natural parametric orientation and the
-                               // orientation of the b-rep.
+  bool
+  FaceIsSurface ( // returns true if the face has a single
+      int         // index of face  // outer boundary and that boundary runs
+  ) const;        // along the edges of the underlying surface.
+                  // In this case the geometry of the surface
+                  // is the same as the geometry of the face.
+                  // If FaceIsSurface() is true, then
+                  // m_S[m_F[face_index].m_si] is the surface.
+                  // The flag m_F[face_index].m_bRev records
+                  // the correspondence between the surface's
+                  // natural parametric orientation and the
+                  // orientation of face in the b-rep.
 
-
-  bool FaceIsSurface(          // returns true if the face has a single
-         int // index of face  // outer boundary and that boundary runs
-         ) const;              // along the edges of the underlying surface.
-                               // In this case the geometry of the surface
-                               // is the same as the geometry of the face.
-                               // If FaceIsSurface() is true, then
-                               // m_S[m_F[face_index].m_si] is the surface.
-                               // The flag m_F[face_index].m_bRev records
-                               // the correspondence between the surface's
-                               // natural parametric orientation and the
-                               // orientation of face in the b-rep.
-
-  bool LoopIsSurfaceBoundary(  // returns true if the loop's trims all run
-         int // index of loop  // along the edge's of the underlying surface's
-         ) const;              // parameter space.
+  bool
+  LoopIsSurfaceBoundary ( // returns true if the loop's trims all run
+      int  // index of loop  // along the edge's of the underlying surface's
+  ) const; // parameter space.
 
   /////////////////////////////////////////////////////////////////
   // Modification Interface
@@ -2901,41 +2976,43 @@ public:
   //////////
   // Clears all ON_BrepFace.m_bRev flags by ON_BrepFace::Transpose
   // on each face with a true m_bRev.
-  bool FlipReversedSurfaces();
+  bool
+  FlipReversedSurfaces ();
 
   //////////
   // Change the domain of a trim's 2d curve.  This changes only the
-  // parameterization of the 2d trimming curve; the locus of the 
+  // parameterization of the 2d trimming curve; the locus of the
   // 2d trimming curve is not changed.
-  bool SetTrimDomain(
-         int, // index of trim in m_T[] array
-         const ON_Interval&
-         );
+  bool
+  SetTrimDomain (int, // index of trim in m_T[] array
+                 const ON_Interval&);
 
   //////////
   // Change the domain of an edge.  This changes only the
-  // parameterization of the 3d edge curve; the locus of the 
+  // parameterization of the 3d edge curve; the locus of the
   // 3d edge curve is not changed.
-  bool SetEdgeDomain(
-         int, // index of edge in m_E[] array
-         const ON_Interval&
-         );
+  bool
+  SetEdgeDomain (int, // index of edge in m_E[] array
+                 const ON_Interval&);
 
-  // Reverses entire brep orientation of all faces by toggling 
+  // Reverses entire brep orientation of all faces by toggling
   // value of all face's ON_BrepFace::m_bRev flag.
-  void Flip();
+  void
+  Flip ();
 
   // reverses orientation of a face by toggling ON_BrepFace::m_bRev
-  void FlipFace(ON_BrepFace&);
+  void
+  FlipFace (ON_BrepFace&);
 
-  // Reverses orientation of trimming loop. 
+  // Reverses orientation of trimming loop.
   // This function is intended to be used by brep experts and does
-  // does NOT modify ON_BrepLoop::m_type.  You should make sure 
+  // does NOT modify ON_BrepLoop::m_type.  You should make sure
   // ON_BrepLoop::m_type jibes with the loop's direction.  (Outer loops
   // should be counter-clockwise and inner loops should be clockwise.)
   // You can use ON_Brep::LoopDirection() to determine the direction of
   // a loop.
-  void FlipLoop(ON_BrepLoop&); // reverses orientation of trimming loop
+  void
+  FlipLoop (ON_BrepLoop&); // reverses orientation of trimming loop
 
   // LoopDirection() examines the 2d trimming curve geometry that defines
   // the loop and returns
@@ -2948,12 +3025,12 @@ public:
   // Since LoopDirection() calculates its result based on the 2d trimming
   // curve geometry, it can be use to set ON_BrepLoop::m_type to outer/inner
   // when translating from data definition where this distinction is murky.
-  int LoopDirection( const ON_BrepLoop& ) const;
-
+  int
+  LoopDirection (const ON_BrepLoop&) const;
 
   /*
   Description:
-    Sort the face.m_li[] array by loop type 
+    Sort the face.m_li[] array by loop type
     (outer, inner, slit, crvonsrf, ptonsrf)
   Parameters:
     face - [in/out] face whose m_li[] array should be sorted.
@@ -2965,7 +3042,8 @@ public:
     ON_Brep::ComputeLoopType
     ON_Brep::LoopDirection
   */
-  bool SortFaceLoops( ON_BrepFace& face ) const;
+  bool
+  SortFaceLoops (ON_BrepFace& face) const;
 
   /*
   Description:
@@ -2973,7 +3051,10 @@ public:
   See Also:
     ON_Brep::JoinEdges
   */
-  bool CombineCoincidentVertices(ON_BrepVertex&, ON_BrepVertex&); // moves information to first vertex and deletes second
+  bool
+  CombineCoincidentVertices (
+      ON_BrepVertex&,
+      ON_BrepVertex&); // moves information to first vertex and deletes second
 
   /*
   Description:
@@ -2981,7 +3062,9 @@ public:
   See Also:
     ON_Brep::JoinEdges
   */
-  bool CombineCoincidentEdges(ON_BrepEdge&, ON_BrepEdge&); // moves information to first edge and deletes second
+  bool
+  CombineCoincidentEdges (
+      ON_BrepEdge&, ON_BrepEdge&); // moves information to first edge and deletes second
 
   /*
   Description:
@@ -3000,32 +3083,47 @@ public:
     be combined into a single edge.
   Remarks:
     The input edges are deleted but are still in the
-    brep's m_E[] arrays.  Use ON_Brep::Compact to remove 
+    brep's m_E[] arrays.  Use ON_Brep::Compact to remove
     the unused edges.
   */
-  ON_BrepEdge* CombineContiguousEdges( 
-    int edge_index0, 
-    int edge_iindex1, 
-    double angle_tolerance_radians = ON_PI/180.0
-    );
+  ON_BrepEdge*
+  CombineContiguousEdges (int edge_index0,
+                          int edge_iindex1,
+                          double angle_tolerance_radians = ON_PI / 180.0);
 
   // These remove a topology piece from a b-rep but do not
   // rearrange the arrays that hold the brep objects.  The
   // deleted objects have their indices set to -1.  Deleting
-  // an object that is connected to other objects will 
+  // an object that is connected to other objects will
   // modify thos objects.
-  void DeleteVertex(ON_BrepVertex& vertex);
-  void DeleteEdge(ON_BrepEdge& edge, ON_BOOL32 bDeleteEdgeVertices); // pass true to delete vertices used only by edge
-  void DeleteTrim(ON_BrepTrim& trim, ON_BOOL32 bDeleteTrimEdges); // pass true to delete edges and vertices used only by trim
-  void DeleteLoop(ON_BrepLoop& loop, ON_BOOL32 bDeleteLoopEdges); // pass true to delete edges and vertices used only by trim
-  void DeleteFace(ON_BrepFace& face, ON_BOOL32 bDeleteFaceEdges); // pass true to delete edges and vertices used only by face
-  void DeleteSurface(int s_index);
-  void Delete2dCurve(int c2_index);
-  void Delete3dCurve(int c3_index);
+  void
+  DeleteVertex (ON_BrepVertex& vertex);
+  void
+  DeleteEdge (
+      ON_BrepEdge& edge,
+      ON_BOOL32 bDeleteEdgeVertices); // pass true to delete vertices used only by edge
+  void
+  DeleteTrim (ON_BrepTrim& trim,
+              ON_BOOL32 bDeleteTrimEdges); // pass true to delete edges and vertices
+                                           // used only by trim
+  void
+  DeleteLoop (ON_BrepLoop& loop,
+              ON_BOOL32 bDeleteLoopEdges); // pass true to delete edges and vertices
+                                           // used only by trim
+  void
+  DeleteFace (ON_BrepFace& face,
+              ON_BOOL32 bDeleteFaceEdges); // pass true to delete edges and vertices
+                                           // used only by face
+  void
+  DeleteSurface (int s_index);
+  void
+  Delete2dCurve (int c2_index);
+  void
+  Delete3dCurve (int c3_index);
 
   // Description:
   //   Set m_vertex_user.i, m_edge_user.i, m_face_user.i, m_loop_user.i,
-  //   and m_trim_user.i values of faces of component including 
+  //   and m_trim_user.i values of faces of component including
   //   m_F[face_index] to label. Numbering starts at 1.
   // Parameters:
   //   face_index - [in] index of face in component
@@ -3034,10 +3132,8 @@ public:
   // Remarks:
   //   Chases through trim lists of face edges to find adjacent faces.
   //   Does NOT check for vertex-vertex connections
-  void LabelConnectedComponent(
-    int face_index,
-    int label
-    );
+  void
+  LabelConnectedComponent (int face_index, int label);
 
   /*
   Description:
@@ -3049,15 +3145,16 @@ public:
   Remarks:
     For each face in the ith component, sets m_face_user.i to i>0.
     Chases through trim lists of face edges to find adjacent faces.
-	  Numbering starts at 1. Does NOT check for vertex-vertex connections.
+    Numbering starts at 1. Does NOT check for vertex-vertex connections.
   See Also:
     ON_Brep::GetConnectedComponents
   */
-  int LabelConnectedComponents();
+  int
+  LabelConnectedComponents ();
 
   /*
   Description:
-    If this brep has two or more connected components, 
+    If this brep has two or more connected components,
     then duplicates of the connected components are appended
     to the components[] array.
   Parameters:
@@ -3070,10 +3167,9 @@ public:
   See Also:
     ON_Brep::GetConnectedComponents
   */
-  int GetConnectedComponents( 
-          ON_SimpleArray< ON_Brep* >& components,
-          bool bDuplicateMeshes
-          ) const;
+  int
+  GetConnectedComponents (ON_SimpleArray<ON_Brep*>& components,
+                          bool bDuplicateMeshes) const;
 
   /*
   Description:
@@ -3094,35 +3190,35 @@ public:
     in the subbrep's m_F array are in the same
     order as they were specified in sub_fi[].
   */
-  ON_Brep* SubBrep( 
-    int subfi_count, 
-    const int* sub_fi, 
-    ON_Brep* sub_brep = 0 
-    ) const;
+  ON_Brep*
+  SubBrep (int subfi_count, const int* sub_fi, ON_Brep* sub_brep = 0) const;
 
   ///////////////////////////////////////////////////////////////////////
   //
   // region topology
   //
-  bool HasRegionTopology() const;
+  bool
+  HasRegionTopology () const;
 
   /*
   Description:
     Get region topology information:
     In order to keep the ON_Brep class efficient, rarely used
-    region topology information is not maintained.  If you 
+    region topology information is not maintained.  If you
     require this information, call RegionTopology().
   */
-  const ON_BrepRegionTopology& RegionTopology() const;
+  const ON_BrepRegionTopology&
+  RegionTopology () const;
 
   /*
   Description:
     Get region topology information:
     In order to keep the ON_Brep class efficient, rarely used
-    region topology information is not maintained.  If you 
+    region topology information is not maintained.  If you
     require this information, call RegionTopology().
   */
-  void DestroyRegionTopology();
+  void
+  DestroyRegionTopology ();
   // Description:
   //   Duplicate a single brep face.
   // Parameters:
@@ -3132,14 +3228,12 @@ public:
   //   Single face brep.
   // Remarks:
   //   The m_vertex_user.i, m_edge_user.i, m_face_user.i, m_loop_user.i,
-  //   and m_trim_user.i values of the returned brep are are set to the 
+  //   and m_trim_user.i values of the returned brep are are set to the
   //   indices of the objects they duplicate.
   // See Also:
   //   ON_Brep::DeleteFace, ON_Brep::ExtractFace
-  ON_Brep* DuplicateFace(
-    int face_index,
-    ON_BOOL32 bDuplicateMeshes
-    ) const;
+  ON_Brep*
+  DuplicateFace (int face_index, ON_BOOL32 bDuplicateMeshes) const;
 
   // Description:
   //   Duplicate a a subset of a brep
@@ -3151,15 +3245,14 @@ public:
   //   A brep made by duplicating the faces listed in the face_index[] array.
   // Remarks:
   //   The m_vertex_user.i, m_edge_user.i, m_face_user.i, m_loop_user.i,
-  //   and m_trim_user.i values of the returned brep are are set to the 
+  //   and m_trim_user.i values of the returned brep are are set to the
   //   indices of the objects they duplicate.
   // See Also:
   //   ON_Brep::DuplicateFace
-  ON_Brep* DuplicateFaces(
-    int face_count,
-    const int* face_index,
-    ON_BOOL32 bDuplicateMeshes
-    ) const;
+  ON_Brep*
+  DuplicateFaces (int face_count,
+                  const int* face_index,
+                  ON_BOOL32 bDuplicateMeshes) const;
 
   // Description:
   //   Extract a face from a brep.
@@ -3169,17 +3262,15 @@ public:
   //   Single face brep.
   // See Also:
   //   ON_Brep::DeleteFace, ON_Brep::DuplicateFace
-  ON_Brep* ExtractFace(
-    int face_index
-    );
-
+  ON_Brep*
+  ExtractFace (int face_index);
 
   /*
   Description:
     Standardizes the relationship between an ON_BrepEdge
     and the 3d curve it uses.  When done, the edge will
-    be the only edge that references its 3d curve, the 
-    domains of the edge and 3d curve will be the same, 
+    be the only edge that references its 3d curve, the
+    domains of the edge and 3d curve will be the same,
     and the edge will use the entire locus of the 3d curve.
   Parameters:
     edge_index - [in] index of edge to standardize.
@@ -3188,8 +3279,8 @@ public:
     ON_Brep::StandardizeEdgeCurves
     ON_Brep::Standardize
   */
-  bool StandardizeEdgeCurve( int edge_index, bool bAdjustEnds );
-
+  bool
+  StandardizeEdgeCurve (int edge_index, bool bAdjustEnds);
 
   /*
   Description:
@@ -3197,21 +3288,18 @@ public:
     curve use count is known for the edge.
     Standardizes the relationship between an ON_BrepEdge
     and the 3d curve it uses.  When done, the edge will
-    be the only edge that references its 3d curve, the 
-    domains of the edge and 3d curve will be the same, 
+    be the only edge that references its 3d curve, the
+    domains of the edge and 3d curve will be the same,
     and the edge will use the entire locus of the 3d curve.
   Parameters:
     edge_index - [in] index of edge to standardize.
     bAdjustEnds - [in] if true, move edge curve endpoints to vertices
-    EdgeCurveUse - [in] if > 1, then the edge curve for this edge is used by more than one
-        edge.  if 1, then the edge curve is used only for this edge. 
-        If <= 0, then use count is unknown.
-  See Also:
-    ON_Brep::StandardizeEdgeCurves
-    ON_Brep::Standardize
+    EdgeCurveUse - [in] if > 1, then the edge curve for this edge is used by more than
+  one edge.  if 1, then the edge curve is used only for this edge. If <= 0, then use
+  count is unknown. See Also: ON_Brep::StandardizeEdgeCurves ON_Brep::Standardize
   */
-  bool StandardizeEdgeCurve( int edge_index, bool bAdjustEnds, int EdgeCurveUse );
-
+  bool
+  StandardizeEdgeCurve (int edge_index, bool bAdjustEnds, int EdgeCurveUse);
 
   /*
   Description:
@@ -3222,14 +3310,15 @@ public:
     ON_Brep::StandardizeEdgeCurve
     ON_Brep::Standardize
   */
-  void StandardizeEdgeCurves( bool bAdjustEnds );
+  void
+  StandardizeEdgeCurves (bool bAdjustEnds);
 
   /*
   Description:
     Standardizes the relationship between an ON_BrepTrim
     and the 2d curve it uses.  When done, the trim will
-    be the only trim that references its 2d curve, the 
-    domains of the trim and 2d curve will be the same, 
+    be the only trim that references its 2d curve, the
+    domains of the trim and 2d curve will be the same,
     and the trim will use the entire locus of the 2d curve.
   Parameters:
     trim_index - [in] index of trim to standardize.
@@ -3237,7 +3326,8 @@ public:
     ON_Brep::StandardizeTrimCurves
     ON_Brep::Standardize
   */
-  bool StandardizeTrimCurve( int trim_index );
+  bool
+  StandardizeTrimCurve (int trim_index);
 
   /*
   Description:
@@ -3246,22 +3336,24 @@ public:
     ON_Brep::StandardizeTrimCurve
     ON_Brep::Standardize
   */
-  void StandardizeTrimCurves();
+  void
+  StandardizeTrimCurves ();
 
   /*
   Description:
     Standardizes the relationship between an ON_BrepFace
     and the 3d surface it uses.  When done, the face will
     be the only face that references its 3d surface, and
-    the orientations of the face and 3d surface will be 
-    the same. 
+    the orientations of the face and 3d surface will be
+    the same.
   Parameters:
     face_index - [in] index of face to standardize.
   See Also:
     ON_Brep::StardardizeFaceSurfaces
     ON_Brep::Standardize
   */
-  bool StandardizeFaceSurface( int face_index );
+  bool
+  StandardizeFaceSurface (int face_index);
 
   /*
   Description:
@@ -3270,10 +3362,12 @@ public:
     ON_Brep::StandardizeFaceSurface
     ON_Brep::Standardize
   */
-  void StandardizeFaceSurfaces();
+  void
+  StandardizeFaceSurfaces ();
 
   // misspelled function name is obsolete
-  ON_DEPRECATED void StardardizeFaceSurfaces();
+  ON_DEPRECATED void
+  StardardizeFaceSurfaces ();
 
   /*
   Description:
@@ -3288,8 +3382,8 @@ public:
     ON_Brep::StandardizeFaceSurface
     ON_Brep::Compact
   */
-  void Standardize();
-  
+  void
+  Standardize ();
 
   /*
   Description:
@@ -3300,9 +3394,9 @@ public:
   Parameters:
     face - [in] face to test and whose surface should be shrunk.
     DisableSide - [in] This is a bit field.  A set bit indicates not to shrink
-                the surface on a given side.  The default of 0 enables shrinking 
+                the surface on a given side.  The default of 0 enables shrinking
                 on all four sides.
-      @table  
+      @table
       value       meaning
       0x0001     Dont shrink on the west side of domain.
       0x0002     Dont shrink on the south side of domain.
@@ -3320,7 +3414,8 @@ public:
     ON_Brep::ShrinkSurfaces
     ON_Brep::CullUnusedSurfaces
   */
-  bool ShrinkSurface( ON_BrepFace& face, int DisableSide=0 );
+  bool
+  ShrinkSurface (ON_BrepFace& face, int DisableSide = 0);
 
   /*
   Description:
@@ -3341,7 +3436,8 @@ public:
     ON_Brep::ShrinkSurface
     ON_Brep::CullUnusedSurfaces
   */
-  bool ShrinkSurfaces();
+  bool
+  ShrinkSurfaces ();
 
   /*
   Description:
@@ -3358,27 +3454,36 @@ public:
     ON_Brep::CullUnused2dCurves
     ON_Brep::CullUnusedSurfaces
   */
-  bool Compact();
+  bool
+  Compact ();
 
-  bool CullUnusedFaces(); // culls faces with m_face_index == -1
-  bool CullUnusedLoops(); // culls loops with m_loop_index == -1
-  bool CullUnusedTrims(); // culls trims with m_trim_index == -1
-  bool CullUnusedEdges(); // culls edges with m_edge_index == -1
-  bool CullUnusedVertices(); // culls vertices with m_vertex_index == -1
-  bool CullUnused3dCurves(); // culls 2d curves not referenced by a trim
-  bool CullUnused2dCurves(); // culls 3d curves not referenced by an edge
-  bool CullUnusedSurfaces(); // culls surfaces not referenced by a face
+  bool
+  CullUnusedFaces (); // culls faces with m_face_index == -1
+  bool
+  CullUnusedLoops (); // culls loops with m_loop_index == -1
+  bool
+  CullUnusedTrims (); // culls trims with m_trim_index == -1
+  bool
+  CullUnusedEdges (); // culls edges with m_edge_index == -1
+  bool
+  CullUnusedVertices (); // culls vertices with m_vertex_index == -1
+  bool
+  CullUnused3dCurves (); // culls 2d curves not referenced by a trim
+  bool
+  CullUnused2dCurves (); // culls 3d curves not referenced by an edge
+  bool
+  CullUnusedSurfaces (); // culls surfaces not referenced by a face
 
   /////////////////////////////////////////////////////////////////
   // Navigation Interface
 
   // for moving around loops - returns trim index of prev/next trim in loop
-  int PrevTrim(
-        int // index of current trim (m_trim_index)
-        ) const;
-  int NextTrim(
-        int // index of current trim (m_trim_index)
-        ) const;
+  int
+  PrevTrim (int // index of current trim (m_trim_index)
+  ) const;
+  int
+  NextTrim (int // index of current trim (m_trim_index)
+  ) const;
 
   /*
   Description:
@@ -3387,7 +3492,7 @@ public:
   Parameters:
     current_edge_index - [in]
     endi - [in] 0 = use the edge start vertex, 1 = use the edge end vertex
-    prev_endi - [out] 0 if previous edge begins at the vertex, 
+    prev_endi - [out] 0 if previous edge begins at the vertex,
                       1 if previous edge ends at the vertex
   Returns:
     edge index of the previous edge or -1 if there is only one edge
@@ -3399,11 +3504,8 @@ public:
   See Also:
     ON_Brep::NextEdge
   */
-  int PrevEdge(
-        int current_edge_index,
-        int endi,
-        int* prev_endi = NULL
-        ) const;
+  int
+  PrevEdge (int current_edge_index, int endi, int* prev_endi = NULL) const;
 
   /*
   Description:
@@ -3412,29 +3514,26 @@ public:
   Parameters:
     current_edge_index - [in]
     endi - [in] 0 = use the edge start vertex, 1 = use the edge end vertex
-    next_endi - [out] 0 if next edge begins at the vertex, 
+    next_endi - [out] 0 if next edge begins at the vertex,
                       1 if next edge ends at the vertex
   Returns:
     edge index of the next edge or -1 if there is only one edge
     that begins or ends at the vertex.
   Remarks:
     This is a tool that simplifies searching through the
-    ON_BrepVertex.m_ei[] array.  
+    ON_BrepVertex.m_ei[] array.
     The edges are in no particular order.
   See Also:
     ON_Brep::NextEdge
   */
-  int NextEdge(
-        int current_edge_index,
-        int endi,
-        int* next_endi = NULL
-        ) const;
+  int
+  NextEdge (int current_edge_index, int endi, int* next_endi = NULL) const;
 
   /*
   Description:
     Get a brep component from its index.
   Parameters:
-    component_index - [in] 
+    component_index - [in]
   Returns:
     A const pointer to the component.  Do not delete
     the returned object.  It points to an object managed
@@ -3446,9 +3545,8 @@ public:
     ON_Brep::Trim
     ON_Brep::Vertex
   */
-  const ON_Geometry* BrepComponent( 
-    ON_COMPONENT_INDEX ci
-    ) const;
+  const ON_Geometry*
+  BrepComponent (ON_COMPONENT_INDEX ci) const;
 
   /*
   Description:
@@ -3463,8 +3561,10 @@ public:
   See Also
     ON_Brep::Component( const ON_BrepVertex& )
   */
-  ON_BrepVertex* Vertex( int vertex_index ) const;
-  ON_BrepVertex* Vertex( ON_COMPONENT_INDEX vertex_index ) const;
+  ON_BrepVertex*
+  Vertex (int vertex_index) const;
+  ON_BrepVertex*
+  Vertex (ON_COMPONENT_INDEX vertex_index) const;
 
   /*
   Description:
@@ -3479,8 +3579,10 @@ public:
   See Also
     ON_Brep::Component( const ON_BrepEdge& )
   */
-  ON_BrepEdge* Edge( int edge_index ) const;
-  ON_BrepEdge* Edge( ON_COMPONENT_INDEX edge_index ) const;
+  ON_BrepEdge*
+  Edge (int edge_index) const;
+  ON_BrepEdge*
+  Edge (ON_COMPONENT_INDEX edge_index) const;
 
   /*
   Description:
@@ -3495,8 +3597,10 @@ public:
   See Also
     ON_Brep::Component( const ON_BrepTrim& )
   */
-  ON_BrepTrim* Trim( int trim_index ) const;
-  ON_BrepTrim* Trim( ON_COMPONENT_INDEX trim_index ) const;
+  ON_BrepTrim*
+  Trim (int trim_index) const;
+  ON_BrepTrim*
+  Trim (ON_COMPONENT_INDEX trim_index) const;
 
   /*
   Description:
@@ -3511,8 +3615,10 @@ public:
   See Also
     ON_Brep::Component( const ON_BrepLoop& )
   */
-  ON_BrepLoop* Loop( int loop_index ) const;
-  ON_BrepLoop* Loop( ON_COMPONENT_INDEX loop_index ) const;
+  ON_BrepLoop*
+  Loop (int loop_index) const;
+  ON_BrepLoop*
+  Loop (ON_COMPONENT_INDEX loop_index) const;
 
   /*
   Description:
@@ -3527,8 +3633,10 @@ public:
   See Also
     ON_Brep::Component( const ON_BrepFace& )
   */
-  ON_BrepFace* Face( int face_index ) const;
-  ON_BrepFace* Face( ON_COMPONENT_INDEX face_index ) const;
+  ON_BrepFace*
+  Face (int face_index) const;
+  ON_BrepFace*
+  Face (ON_COMPONENT_INDEX face_index) const;
 
   /*
   Description:
@@ -3538,7 +3646,8 @@ public:
   Remarks:
     Caller should call Compact() afterwards.
   */
-  bool RemoveSlits();
+  bool
+  RemoveSlits ();
 
   /*
   Description:
@@ -3550,21 +3659,19 @@ public:
   Remarks:
     Caller should call Compact() when done.
   */
-  bool RemoveSlits(ON_BrepFace& F);
+  bool
+  RemoveSlits (ON_BrepFace& F);
 
   /*
   Description:
-    If fid0 != fid1 and m_F[fid0] and m_F[fid1] have the same surface (m_si is identical),
-    and they are joined along a set of edges that do not have any other faces, then this will
-    combine the two faces into one.
-  Parameters:
-    fid0, fid1 - [in] indices into m_F of faces to be merged.
-  Returns:
-    id of merged face if faces were successfully merged. -1 if not merged.
-  Remarks:
-    Caller should call Compact() when done.
+    If fid0 != fid1 and m_F[fid0] and m_F[fid1] have the same surface (m_si is
+  identical), and they are joined along a set of edges that do not have any other faces,
+  then this will combine the two faces into one. Parameters: fid0, fid1 - [in] indices
+  into m_F of faces to be merged. Returns: id of merged face if faces were successfully
+  merged. -1 if not merged. Remarks: Caller should call Compact() when done.
   */
-  int MergeFaces(int fid0, int fid1);
+  int
+  MergeFaces (int fid0, int fid1);
 
   /*
   Description:
@@ -3574,7 +3681,8 @@ public:
   Remarks:
     Caller should call Compact() when done.
   */
-  bool MergeFaces();
+  bool
+  MergeFaces ();
 
   /*
   Description:
@@ -3583,16 +3691,15 @@ public:
     bExtractSingleSegments - [in] if true, polycurves with a
       single segment are replaced with the segment curve.
     bEdges - [in] if true, the m_C3[] array is processed
-    bTrimCurves - [in] if true, the m_C2[] array is processed.  
+    bTrimCurves - [in] if true, the m_C2[] array is processed.
   Returns:
     True if any nesting was removed and false if no nesting
     was removed.
   */
-  bool RemoveNesting(
-          bool bExtractSingleSegments,
-          bool bEdges = true, 
-          bool bTrimCurves = true
-          );
+  bool
+  RemoveNesting (bool bExtractSingleSegments,
+                 bool bEdges = true,
+                 bool bTrimCurves = true);
 
   /*
   Description:
@@ -3614,14 +3721,11 @@ public:
   Remarks:
     After you finish cleaning up the brep, you need
     to call ON_Brep::Compact() to remove unused edge,
-    trim, and vertex information from the brep's m_E[], 
+    trim, and vertex information from the brep's m_E[],
     m_V[], m_T[], m_C2[], and m_C3[] arrays.
   */
-  bool CollapseEdge(
-    int edge_index,
-    bool bCloseTrimGap = true,
-    int vertex_index = -1
-    );
+  bool
+  CollapseEdge (int edge_index, bool bCloseTrimGap = true, int vertex_index = -1);
 
   /*
   Description:
@@ -3641,14 +3745,11 @@ public:
   Remarks:
     After you finish cleaning up the brep, you need
     to call ON_Brep::Compact() to remove unused edge,
-    trim, and vertex information from the brep's m_E[], 
+    trim, and vertex information from the brep's m_E[],
     m_V[], m_T[], m_C2[], and m_C3[] arrays.
   */
-  bool ChangeVertex( 
-    int old_vi, 
-    int new_vi, 
-    bool bClearTolerances 
-    );
+  bool
+  ChangeVertex (int old_vi, int new_vi, bool bClearTolerances);
 
   /*
   Description:
@@ -3664,24 +3765,22 @@ public:
     the start of trim1.  The trim's m_iso and m_type flags
     need to be correctly set.
   */
-  bool CloseTrimGap( 
-    ON_BrepTrim& trim0, 
-    ON_BrepTrim& trim1 
-    );
+  bool
+  CloseTrimGap (ON_BrepTrim& trim0, ON_BrepTrim& trim1);
 
   /*
   Description:
     Remove edges that are not connected to a face.
   Parameters:
     bDeleteVertices - [in] if true, then the vertices
-      at the ends of the wire edges are deleted if 
+      at the ends of the wire edges are deleted if
       they are not connected to face trimming edges.
   Returns:
     Number of edges that were removed.
   Remarks:
     After you finish cleaning up the brep, you need
     to call ON_Brep::Compact() to remove unused edge,
-    trim, and vertex information from the brep's m_E[], 
+    trim, and vertex information from the brep's m_E[],
     m_V[], m_T[], m_C2[], and m_C3[] arrays.
 
     If you want to remove wire edges and wiere
@@ -3691,7 +3790,8 @@ public:
   See Also:
     ON_Brep::RemoveWireVertices
   */
-  int RemoveWireEdges( bool bDeleteVertices = true );
+  int
+  RemoveWireEdges (bool bDeleteVertices = true);
 
   /*
   Description:
@@ -3700,55 +3800,64 @@ public:
     Number of vertices that were deleted.
   Remarks:
     After you finish cleaning up the brep, you need
-    to call ON_Brep::Compact() to remove deleted 
+    to call ON_Brep::Compact() to remove deleted
     vertices from the m_V[] array.
   See Also:
     ON_Brep::RemoveWireEdges
   */
-  int RemoveWireVertices();
+  int
+  RemoveWireVertices ();
 
   /////////////////////////////////////////////////////////////////
   // "Expert" Interface
 
-  void Set_user(ON_U u); // set every brep m_*_user value to u
-  void Clear_vertex_user_i(); // zero all brep's m_vertex_user values
-  void Clear_edge_user_i(int);   // zero all brep's m_edge_user values
-  void Clear_edge_user_i();   // zero all brep's m_edge_user values
-  void Clear_trim_user_i();   // zero all brep's m_trim_user values
-  void Clear_loop_user_i();   // zero all brep's m_loop_user values
-  void Clear_face_user_i();   // zero all brep's m_face_user values
-  void Clear_user_i();        // zero all brep's m_*_user values
+  void
+  Set_user (ON_U u); // set every brep m_*_user value to u
+  void
+  Clear_vertex_user_i (); // zero all brep's m_vertex_user values
+  void
+  Clear_edge_user_i (int); // zero all brep's m_edge_user values
+  void
+  Clear_edge_user_i (); // zero all brep's m_edge_user values
+  void
+  Clear_trim_user_i (); // zero all brep's m_trim_user values
+  void
+  Clear_loop_user_i (); // zero all brep's m_loop_user values
+  void
+  Clear_face_user_i (); // zero all brep's m_face_user values
+  void
+  Clear_user_i (); // zero all brep's m_*_user values
 
   // Union available for application use.
   // The constructor zeros m_brep_user.
   // The value is of m_brep_user is not saved in 3DM
   // archives and may be changed by some computations.
-  ON_U m_brep_user; 
+  ON_U m_brep_user;
 
-  // geometry 
+  // geometry
   // (all geometry is deleted by ~ON_Brep().  Pointers can be NULL
   // or not referenced.  Use Compact() to remove unreferenced geometry.
-  ON_CurveArray   m_C2;  // Pointers to parameter space trimming curves
-                         // (used by trims).
-  ON_CurveArray   m_C3;  // Pointers to 3d curves (used by edges).
-  ON_SurfaceArray m_S;   // Pointers to parametric surfaces (used by faces)
+  ON_CurveArray m_C2;  // Pointers to parameter space trimming curves
+                       // (used by trims).
+  ON_CurveArray m_C3;  // Pointers to 3d curves (used by edges).
+  ON_SurfaceArray m_S; // Pointers to parametric surfaces (used by faces)
 
   // topology
   // (all topology is deleted by ~ON_Brep().  Objects can be unreferenced.
   // Use Compact() to to remove unreferenced geometry.
-  ON_BrepVertexArray  m_V;   // vertices
-  ON_BrepEdgeArray    m_E;   // edges
-  ON_BrepTrimArray    m_T;   // trims
-  ON_BrepLoopArray    m_L;   // loops
-  ON_BrepFaceArray    m_F;   // faces
+  ON_BrepVertexArray m_V; // vertices
+  ON_BrepEdgeArray m_E;   // edges
+  ON_BrepTrimArray m_T;   // trims
+  ON_BrepLoopArray m_L;   // loops
+  ON_BrepFaceArray m_F;   // faces
 
-protected:	
+protected:
   friend class ON_BrepFace;
   friend class ON_BrepRegion;
   friend class ON_BrepFaceSide;
   ON_BoundingBox m_bbox;
 
-  // Never directly set m_is_solid, use calls to IsSolid() and/or 
+  // Never directly set m_is_solid, use calls to IsSolid() and/or
   // SolidOrientation() when you need to know the answer to this
   // question.
   // 0 = unset
@@ -3760,78 +3869,121 @@ protected:
   // These are friends so legacy tol values stored in v1 3dm files
   // can be used to set brep edge and trimming tolerances with a call
   // to ON_Brep::SetTolsFromLegacyValues().
-  friend bool ON_BinaryArchive::ReadV1_TCODE_LEGACY_FAC(ON_Object**,ON_3dmObjectAttributes*);
-  friend bool ON_BinaryArchive::ReadV1_TCODE_LEGACY_SHL(ON_Object**,ON_3dmObjectAttributes*);
-  void Initialize();
+  friend bool
+  ON_BinaryArchive::ReadV1_TCODE_LEGACY_FAC(ON_Object**, ON_3dmObjectAttributes*);
+  friend bool
+  ON_BinaryArchive::ReadV1_TCODE_LEGACY_SHL(ON_Object**, ON_3dmObjectAttributes*);
+  void
+  Initialize ();
 
   // helpers to set ON_BrepTrim::m_iso flag
-  void SetTrimIsoFlag(int,double[6]);
-  void SetTrimIsoFlag(int);
+  void
+  SetTrimIsoFlag (int, double[6]);
+  void
+  SetTrimIsoFlag (int);
 
   // helpers to create and set vertices
-  bool SetEdgeVertex(const int, const int, const int );
-  bool HopAcrossEdge( int&, int& ) const;
-  bool SetTrimStartVertex( const int, const int);
-  void SetLoopVertices(const int);
-  void ClearTrimVertices();
-  void ClearEdgeVertices();
+  bool
+  SetEdgeVertex (const int, const int, const int);
+  bool
+  HopAcrossEdge (int&, int&) const;
+  bool
+  SetTrimStartVertex (const int, const int);
+  void
+  SetLoopVertices (const int);
+  void
+  ClearTrimVertices ();
+  void
+  ClearEdgeVertices ();
 
   // helpers for SwapFaceParameters()
-  bool SwapLoopParameters(
-        int // index of loop
-        );
-  bool SwapTrimParameters(
-        int // index of trim
-        );
+  bool
+  SwapLoopParameters (int // index of loop
+  );
+  bool
+  SwapTrimParameters (int // index of trim
+  );
 
   // helpers for validation checking
-  bool IsValidTrim(int trim_index,ON_TextLog* text_log) const;
-  bool IsValidTrimTopology(int trim_index,ON_TextLog* text_log) const;
-  bool IsValidTrimGeometry(int trim_index,ON_TextLog* text_log) const;
-  bool IsValidTrimTolerancesAndFlags(int trim_index,ON_TextLog* text_log) const;
+  bool
+  IsValidTrim (int trim_index, ON_TextLog* text_log) const;
+  bool
+  IsValidTrimTopology (int trim_index, ON_TextLog* text_log) const;
+  bool
+  IsValidTrimGeometry (int trim_index, ON_TextLog* text_log) const;
+  bool
+  IsValidTrimTolerancesAndFlags (int trim_index, ON_TextLog* text_log) const;
 
-  bool IsValidLoop(int loop_index,ON_TextLog* text_log) const;
-  bool IsValidLoopTopology(int loop_index,ON_TextLog* text_log) const;
-  bool IsValidLoopGeometry(int loop_index,ON_TextLog* text_log) const;
-  bool IsValidLoopTolerancesAndFlags(int loop_index,ON_TextLog* text_log) const;
+  bool
+  IsValidLoop (int loop_index, ON_TextLog* text_log) const;
+  bool
+  IsValidLoopTopology (int loop_index, ON_TextLog* text_log) const;
+  bool
+  IsValidLoopGeometry (int loop_index, ON_TextLog* text_log) const;
+  bool
+  IsValidLoopTolerancesAndFlags (int loop_index, ON_TextLog* text_log) const;
 
-  bool IsValidFace(int face_index,ON_TextLog* text_log) const;
-  bool IsValidFaceTopology(int face_index,ON_TextLog* text_log) const;
-  bool IsValidFaceGeometry(int face_index,ON_TextLog* text_log) const;
-  bool IsValidFaceTolerancesAndFlags(int face_index,ON_TextLog* text_log) const;
-  
-  bool IsValidEdge(int edge_index,ON_TextLog* text_log) const;
-  bool IsValidEdgeTopology(int edge_index,ON_TextLog* text_log) const;
-  bool IsValidEdgeGeometry(int edge_index,ON_TextLog* text_log) const;
-  bool IsValidEdgeTolerancesAndFlags(int edge_index,ON_TextLog* text_log) const;
+  bool
+  IsValidFace (int face_index, ON_TextLog* text_log) const;
+  bool
+  IsValidFaceTopology (int face_index, ON_TextLog* text_log) const;
+  bool
+  IsValidFaceGeometry (int face_index, ON_TextLog* text_log) const;
+  bool
+  IsValidFaceTolerancesAndFlags (int face_index, ON_TextLog* text_log) const;
 
-  bool IsValidVertex(int vertex_index,ON_TextLog* text_log) const;
-  bool IsValidVertexTopology(int vertex_index,ON_TextLog* text_log) const;
-  bool IsValidVertexGeometry(int vertex_index,ON_TextLog* text_log) const;
-  bool IsValidVertexTolerancesAndFlags(int vertex_index,ON_TextLog* text_log) const;
+  bool
+  IsValidEdge (int edge_index, ON_TextLog* text_log) const;
+  bool
+  IsValidEdgeTopology (int edge_index, ON_TextLog* text_log) const;
+  bool
+  IsValidEdgeGeometry (int edge_index, ON_TextLog* text_log) const;
+  bool
+  IsValidEdgeTolerancesAndFlags (int edge_index, ON_TextLog* text_log) const;
 
-  void SetTolsFromLegacyValues();
+  bool
+  IsValidVertex (int vertex_index, ON_TextLog* text_log) const;
+  bool
+  IsValidVertexTopology (int vertex_index, ON_TextLog* text_log) const;
+  bool
+  IsValidVertexGeometry (int vertex_index, ON_TextLog* text_log) const;
+  bool
+  IsValidVertexTolerancesAndFlags (int vertex_index, ON_TextLog* text_log) const;
+
+  void
+  SetTolsFromLegacyValues ();
 
   // read helpers to support various versions
-  bool ReadOld100( ON_BinaryArchive& ); // reads legacy old RhinoIO toolkit b-rep
-  bool ReadOld101( ON_BinaryArchive& ); // reads legacy Rhino 1.1 b-rep
-  bool ReadOld200( ON_BinaryArchive&, int ); // reads legacy trimmed surface
-  ON_Curve* Read100_BrepCurve( ON_BinaryArchive& ) const;
-  ON_Surface* Read100_BrepSurface( ON_BinaryArchive& ) const;
+  bool
+  ReadOld100 (ON_BinaryArchive&); // reads legacy old RhinoIO toolkit b-rep
+  bool
+  ReadOld101 (ON_BinaryArchive&); // reads legacy Rhino 1.1 b-rep
+  bool
+  ReadOld200 (ON_BinaryArchive&, int); // reads legacy trimmed surface
+  ON_Curve*
+  Read100_BrepCurve (ON_BinaryArchive&) const;
+  ON_Surface*
+  Read100_BrepSurface (ON_BinaryArchive&) const;
 
   // helpers for reading legacy v1 trimmed surfaces and breps
-  bool ReadV1_LegacyTrimStuff( ON_BinaryArchive&, ON_BrepFace&, ON_BrepLoop& );
-  bool ReadV1_LegacyTrim( ON_BinaryArchive&, ON_BrepFace&, ON_BrepLoop& );
-  bool ReadV1_LegacyLoopStuff( ON_BinaryArchive&, ON_BrepFace& );
-  bool ReadV1_LegacyLoop( ON_BinaryArchive&, ON_BrepFace& );
-  bool ReadV1_LegacyFaceStuff( ON_BinaryArchive& );
-  bool ReadV1_LegacyShellStuff( ON_BinaryArchive& );
+  bool
+  ReadV1_LegacyTrimStuff (ON_BinaryArchive&, ON_BrepFace&, ON_BrepLoop&);
+  bool
+  ReadV1_LegacyTrim (ON_BinaryArchive&, ON_BrepFace&, ON_BrepLoop&);
+  bool
+  ReadV1_LegacyLoopStuff (ON_BinaryArchive&, ON_BrepFace&);
+  bool
+  ReadV1_LegacyLoop (ON_BinaryArchive&, ON_BrepFace&);
+  bool
+  ReadV1_LegacyFaceStuff (ON_BinaryArchive&);
+  bool
+  ReadV1_LegacyShellStuff (ON_BinaryArchive&);
 };
 
 ///////////////////////////////////////////////////////////////////////////////
 //
 // brep construction tools
-// 
+//
 
 /*
 Description:
@@ -3855,11 +4007,10 @@ See Also
   ON_BrepFromMesh( const ON_Mesh& mesh, ... );
 */
 ON_DECL
-ON_Brep* ON_BrepFromMesh( 
-          const ON_MeshTopology& mesh_topology, 
-          ON_BOOL32 bTrimmedTriangles = true,
-          ON_Brep* pBrep = NULL 
-          );
+ON_Brep*
+ON_BrepFromMesh (const ON_MeshTopology& mesh_topology,
+                 ON_BOOL32 bTrimmedTriangles = true,
+                 ON_Brep* pBrep = NULL);
 
 /*
 Description:
@@ -3871,7 +4022,7 @@ Parameters:
           v7_______e6_____v6
            |\             |\
            | e7           | e5
-           |  \ ______e4_____\ 
+           |  \ ______e4_____\
           e11  v4         |   v5
            |   |        e10   |
            |   |          |   |
@@ -3909,7 +4060,8 @@ Returns:
 //     m_F[5]            +m_E[4] +m_E[5]  +m_E[6] +m_E[7]
 */
 ON_DECL
-ON_Brep* ON_BrepBox( const ON_3dPoint* box_corners, ON_Brep* pBrep = NULL );
+ON_Brep*
+ON_BrepBox (const ON_3dPoint* box_corners, ON_Brep* pBrep = NULL);
 
 /*
 Description:
@@ -3918,20 +4070,20 @@ Parameters:
   corners - [in] 6 points defining the box corners
      arranged as the vN lables indicate.
 
-                     /v5    
-                    /|\       
-                   / | \     
-                  e5 |  e4   
-                 /   e8  \     
-                /__e3_____\  
-              v3|    |    |v4     
-                |    |    |       
-                |    /v2  |   
-                e6  / \   e7   
-                |  /   \  |   
-                | e2    e1|   
-                |/       \|     
-                /____e0___\  
+                     /v5
+                    /|\
+                   / | \
+                  e5 |  e4
+                 /   e8  \
+                /__e3_____\
+              v3|    |    |v4
+                |    |    |
+                |    /v2  |
+                e6  / \   e7
+                |  /   \  |
+                | e2    e1|
+                |/       \|
+                /____e0___\
               v0           v1
 
   pBrep - [in] if not NULL, this brep will be used and
@@ -3959,7 +4111,8 @@ Returns:
     m_F[5]            +m_E[3] +m_E[4]  +m_E[5]
 */
 ON_DECL
-ON_Brep* ON_BrepWedge( const ON_3dPoint* corners, ON_Brep* pBrep = NULL );
+ON_Brep*
+ON_BrepWedge (const ON_3dPoint* corners, ON_Brep* pBrep = NULL);
 
 /*
 Description:
@@ -3974,7 +4127,8 @@ Returns:
   and south poles.
 */
 ON_DECL
-ON_Brep* ON_BrepSphere( const ON_Sphere& sphere, ON_Brep* pBrep = NULL );
+ON_Brep*
+ON_BrepSphere (const ON_Sphere& sphere, ON_Brep* pBrep = NULL);
 
 /*
 Description:
@@ -3988,7 +4142,8 @@ Returns:
   a two edges along the seams.
 */
 ON_DECL
-ON_Brep* ON_BrepTorus( const ON_Torus& torus, ON_Brep* pBrep = NULL );
+ON_Brep*
+ON_BrepTorus (const ON_Torus& torus, ON_Brep* pBrep = NULL);
 
 /*
 Description:
@@ -4001,16 +4156,17 @@ Parameters:
                returned.
 Returns:
   An ON_Brep representation of the cylinder with a single
-  face for the cylinder, an edge along the cylinder seam, 
+  face for the cylinder, an edge along the cylinder seam,
   and vertices at the bottom and top ends of this seam edge.
   The optional bottom/top caps are single faces with one
   circular edge starting and ending at the bottom/top vertex.
 */
 ON_DECL
-ON_Brep* ON_BrepCylinder( const ON_Cylinder& cylinder, 
-                          ON_BOOL32 bCapBottom,
-                          ON_BOOL32 bCapTop,
-                          ON_Brep* pBrep = NULL );
+ON_Brep*
+ON_BrepCylinder (const ON_Cylinder& cylinder,
+                 ON_BOOL32 bCapBottom,
+                 ON_BOOL32 bCapTop,
+                 ON_Brep* pBrep = NULL);
 
 /*
 Description:
@@ -4022,17 +4178,14 @@ Parameters:
                returned.
 Returns:
   An ON_Brep representation of the cone with a single
-  face for the cone, an edge along the cone seam, 
+  face for the cone, an edge along the cone seam,
   and vertices at the base and apex ends of this seam edge.
-  The optional cap is asingle face with one circular edge 
+  The optional cap is asingle face with one circular edge
   starting and ending at the base vertex.
 */
 ON_DECL
-ON_Brep* ON_BrepCone( 
-          const ON_Cone& cone, 
-          ON_BOOL32 bCapBottom,
-          ON_Brep* pBrep = NULL 
-          );
+ON_Brep*
+ON_BrepCone (const ON_Cone& cone, ON_BOOL32 bCapBottom, ON_Brep* pBrep = NULL);
 
 /*
 Description:
@@ -4060,15 +4213,12 @@ Remarks:
   in ~ON_Brep.
 */
 ON_DECL
-ON_Brep* ON_BrepRevSurface( 
-          ON_RevSurface*& pRevSurface,
-          ON_BOOL32 bCapStart,
-          ON_BOOL32 bCapEnd,
-          ON_Brep* pBrep = NULL 
-          );
+ON_Brep*
+ON_BrepRevSurface (ON_RevSurface*& pRevSurface,
+                   ON_BOOL32 bCapStart,
+                   ON_BOOL32 bCapEnd,
+                   ON_Brep* pBrep = NULL);
 
-
-          
 /*
 Description:
   Create an ON_Brep trimmed plane.
@@ -4084,17 +4234,17 @@ See Also:
   ON_Brep::NewPlanarFaceLoop()
 */
 ON_DECL
-ON_Brep* ON_BrepTrimmedPlane( 
-            const ON_Plane& plane, 
-            const ON_Curve& boundary,
-            ON_Brep* pBrep = NULL );
+ON_Brep*
+ON_BrepTrimmedPlane (const ON_Plane& plane,
+                     const ON_Curve& boundary,
+                     ON_Brep* pBrep = NULL);
 
 /*
 Description:
   Get an ON_Brep definition of a trimmed plane.
 Parameters:
   plane - [in] plane that will be trimmed.
-  boundary - [in] a list of 3d curves that form a simple 
+  boundary - [in] a list of 3d curves that form a simple
       (no self intersections) closed curve that defines the
       outer boundary of the trimmed plane.
   bDuplicateCurves - [in] if true, duplicates of the
@@ -4109,12 +4259,11 @@ See Also:
   ON_Brep::NewPlanarFaceLoop()
 */
 ON_DECL
-ON_Brep* ON_BrepTrimmedPlane( 
-            const ON_Plane& plane, 
-            ON_SimpleArray<ON_Curve*>& boundary,
-            ON_BOOL32 bDuplicateCurves = true,
-            ON_Brep* pBrep = NULL );
-
+ON_Brep*
+ON_BrepTrimmedPlane (const ON_Plane& plane,
+                     ON_SimpleArray<ON_Curve*>& boundary,
+                     ON_BOOL32 bDuplicateCurves = true,
+                     ON_Brep* pBrep = NULL);
 
 /*
 Description:
@@ -4139,11 +4288,8 @@ Remarks:
   responsibility to insure the result does not self intersect.
 */
 ON_DECL
-bool ON_BrepExtrude( 
-          ON_Brep& brep,
-          const ON_Curve& path_curve,
-          bool bCap = true
-          );
+bool
+ON_BrepExtrude (ON_Brep& brep, const ON_Curve& path_curve, bool bCap = true);
 
 /*
 Description:
@@ -4181,12 +4327,11 @@ Remarks:
   it is the last face in the returned brep.m_F[]
 */
 ON_DECL
-int ON_BrepExtrudeFace( 
-          ON_Brep& brep,
-          int face_index,
-          const ON_Curve& path_curve,
-          bool bCap = true
-          );
+int
+ON_BrepExtrudeFace (ON_Brep& brep,
+                    int face_index,
+                    const ON_Curve& path_curve,
+                    bool bCap = true);
 
 /*
 Description:
@@ -4215,12 +4360,11 @@ Remarks:
   it is the last face in the returned brep.m_F[]
 */
 ON_DECL
-int ON_BrepExtrudeLoop( 
-          ON_Brep& brep,
-          int loop_index,
-          const ON_Curve& path_curve,
-          bool bCap = true
-          );
+int
+ON_BrepExtrudeLoop (ON_Brep& brep,
+                    int loop_index,
+                    const ON_Curve& path_curve,
+                    bool bCap = true);
 
 /*
 Description:
@@ -4245,12 +4389,8 @@ Remarks:
   The new face is appended to brep.m_F[].
 */
 ON_DECL
-int ON_BrepExtrudeEdge( 
-          ON_Brep& brep,
-          int edge_index,
-          const ON_Curve& path_curve
-          );
-
+int
+ON_BrepExtrudeEdge (ON_Brep& brep, int edge_index, const ON_Curve& path_curve);
 
 /*
 Description:
@@ -4276,12 +4416,8 @@ Remarks:
   the new edge is appended to brep.m_E[].
 */
 ON_DECL
-int ON_BrepExtrudeVertex( 
-          ON_Brep& brep,
-          int vertex_index,
-          const ON_Curve& path_curve
-          );
-
+int
+ON_BrepExtrudeVertex (ON_Brep& brep, int vertex_index, const ON_Curve& path_curve);
 
 /*
 Description:
@@ -4306,11 +4442,8 @@ Remarks:
   The new faces are appended to brep.m_F[].
 */
 ON_DECL
-int ON_BrepConeFace( 
-          ON_Brep& brep,
-          int face_index,
-          ON_3dPoint apex_point
-          );
+int
+ON_BrepConeFace (ON_Brep& brep, int face_index, ON_3dPoint apex_point);
 
 /*
 Description:
@@ -4335,11 +4468,8 @@ Remarks:
   The new faces are appended to brep.m_F[].
 */
 ON_DECL
-bool ON_BrepConeLoop( 
-          ON_Brep& brep,
-          int loop_index,
-          ON_3dPoint apex_point
-          );
+bool
+ON_BrepConeLoop (ON_Brep& brep, int loop_index, ON_3dPoint apex_point);
 
 /*
 Description:
@@ -4364,30 +4494,31 @@ Remarks:
   The new face is appended to brep.m_F[].
 */
 ON_DECL
-int ON_BrepConeEdge( 
-          ON_Brep& brep,
-          int edge_index,
-          ON_3dPoint apex_point
-          );
+int
+ON_BrepConeEdge (ON_Brep& brep, int edge_index, ON_3dPoint apex_point);
 
-//These merge adjacent faces that have the same underlying surface.
+// These merge adjacent faces that have the same underlying surface.
 ON_DECL
-int ON_BrepMergeFaces(ON_Brep& B, int fid0, int fid1);
+int
+ON_BrepMergeFaces (ON_Brep& B, int fid0, int fid1);
 
 ON_DECL
-bool ON_BrepMergeFaces(ON_Brep& B);
+bool
+ON_BrepMergeFaces (ON_Brep& B);
 
-//This removes all slit trims  from F that are not joined to another face.
-//Unlike ON_Brep::RemoveSlits(), this will remove slit pairs from a loop in cases 
-//that will result in the creation of more loops. Caller is responsible for calling 
-//ON_Brep::Compact() to get rid of deleted trims and loops.
+// This removes all slit trims  from F that are not joined to another face.
+// Unlike ON_Brep::RemoveSlits(), this will remove slit pairs from a loop in cases
+// that will result in the creation of more loops. Caller is responsible for calling
+// ON_Brep::Compact() to get rid of deleted trims and loops.
 
 ON_DECL
-bool ON_BrepRemoveSlits(ON_BrepFace& F);
+bool
+ON_BrepRemoveSlits (ON_BrepFace& F);
 
-//Merges all possible edges
+// Merges all possible edges
 ON_DECL
-void ON_BrepMergeAllEdges(ON_Brep& B);
+void
+ON_BrepMergeAllEdges (ON_Brep& B);
 
 /*
 Description:
@@ -4402,10 +4533,7 @@ Returns:
   Merged brep or NULL if calculation failed.
 */
 ON_DECL
-ON_Brep* ON_MergeBreps(
-          const ON_Brep& brep0,
-          const ON_Brep& brep1,
-          double tolerance
-          );
+ON_Brep*
+ON_MergeBreps (const ON_Brep& brep0, const ON_Brep& brep1, double tolerance);
 
 #endif

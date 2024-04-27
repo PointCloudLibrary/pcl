@@ -13,7 +13,7 @@
 using namespace pcl::simulation::gllib;
 
 char*
-readTextFile(const char* filename)
+readTextFile (const char* filename)
 {
   char* buf = nullptr;
   std::ifstream file;

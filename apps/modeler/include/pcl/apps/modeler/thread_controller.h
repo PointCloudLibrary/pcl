@@ -52,15 +52,15 @@ public:
   ~ThreadController();
 
   bool
-  runWorker(AbstractWorker* worker);
+  runWorker (AbstractWorker* worker);
 
 Q_SIGNALS:
   void
-  prepared();
+  prepared ();
 
 private Q_SLOTS:
   void
-  slotOnCloudMeshItemUpdate(CloudMeshItem* cloud_mesh_item);
+  slotOnCloudMeshItemUpdate (CloudMeshItem* cloud_mesh_item);
 };
 
 } // namespace modeler

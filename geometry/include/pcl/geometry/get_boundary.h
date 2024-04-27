@@ -57,7 +57,7 @@ namespace geometry {
  */
 template <class MeshT>
 void
-getBoundBoundaryHalfEdges(
+getBoundBoundaryHalfEdges (
     const MeshT& mesh,
     std::vector<typename MeshT::HalfEdgeIndices>& boundary_he_collection,
     const std::size_t expected_size = 3)

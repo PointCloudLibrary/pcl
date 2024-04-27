@@ -36,84 +36,106 @@
 
 #pragma once
 
-#include <pcl/pcl_config.h>
 #include <pcl/memory.h>
+#include <pcl/pcl_config.h>
 #ifdef HAVE_OPENNI
+
+#include <pcl/io/openni_camera/openni_image.h>
 
 #include "openni_device.h"
 #include "openni_driver.h"
 
-#include <pcl/io/openni_camera/openni_image.h>
-
 #include <condition_variable>
 #include <mutex>
 
-namespace openni_wrapper
-{
+namespace openni_wrapper {
 
-  /**
-   * @brief Concrete implementation of the interface OpenNIDevice for a virtual device playing back an ONI file.
-   * @author Suat Gedikli
-   * @date 19. june 2011
-   * @ingroup io
+/**
+ * @brief Concrete implementation of the interface OpenNIDevice for a virtual device
+ * playing back an ONI file.
+ * @author Suat Gedikli
+ * @date 19. june 2011
+ * @ingroup io
+ */
+class DeviceONI : public OpenNIDevice {
+  friend class OpenNIDriver;
+
+public:
+  using Ptr = pcl::shared_ptr<DeviceONI>;
+  using ConstPtr = pcl::shared_ptr<const DeviceONI>;
+
+  DeviceONI(xn::Context& context,
+            const std::string& file_name,
+            bool repeat = false,
+            bool streaming = true);
+  ~DeviceONI() noexcept override;
+
+  void
+  startImageStream () override;
+  void
+  stopImageStream () override;
+
+  void
+  startDepthStream () override;
+  void
+  stopDepthStream () override;
+
+  void
+  startIRStream () override;
+  void
+  stopIRStream () override;
+
+  bool
+  isImageStreamRunning () const noexcept override;
+  bool
+  isDepthStreamRunning () const noexcept override;
+  bool
+  isIRStreamRunning () const noexcept override;
+
+  bool
+  isImageResizeSupported (unsigned input_width,
+                          unsigned input_height,
+                          unsigned output_width,
+                          unsigned output_height) const noexcept override;
+
+  /** \brief Trigger a new frame in the ONI stream.
+   * \param[in] relative_offset the relative offset in case we want to seek in the file
    */
-  class DeviceONI : public OpenNIDevice
+  bool
+  trigger (int relative_offset = 0);
+
+  bool
+  isStreaming () const noexcept;
+
+  /** \brief Check if there is any data left in the ONI file to process. */
+  inline bool
+  hasDataLeft ()
   {
-    friend class OpenNIDriver;
-  public:
+    return (!player_.IsEOF());
+  }
 
-    using Ptr = pcl::shared_ptr<DeviceONI>;
-    using ConstPtr = pcl::shared_ptr<const DeviceONI>;
+protected:
+  Image::Ptr
+  getCurrentImage (
+      pcl::shared_ptr<xn::ImageMetaData> image_meta_data) const noexcept override;
 
-    DeviceONI (xn::Context& context, const std::string& file_name, bool repeat = false, bool streaming = true);
-    ~DeviceONI () noexcept override;
+  void
+  PlayerThreadFunction ();
+  static void __stdcall NewONIDepthDataAvailable(xn::ProductionNode& node,
+                                                 void* cookie) noexcept;
+  static void __stdcall NewONIImageDataAvailable(xn::ProductionNode& node,
+                                                 void* cookie) noexcept;
+  static void __stdcall NewONIIRDataAvailable(xn::ProductionNode& node,
+                                              void* cookie) noexcept;
 
-    void startImageStream () override;
-    void stopImageStream () override;
-
-    void startDepthStream () override;
-    void stopDepthStream () override;
-
-    void startIRStream () override;
-    void stopIRStream () override;
-
-    bool isImageStreamRunning () const noexcept override;
-    bool isDepthStreamRunning () const noexcept override;
-    bool isIRStreamRunning () const noexcept override;
-
-    bool isImageResizeSupported (unsigned input_width, unsigned input_height, unsigned output_width, unsigned output_height) const noexcept override;
-
-    /** \brief Trigger a new frame in the ONI stream.
-      * \param[in] relative_offset the relative offset in case we want to seek in the file
-      */
-    bool 
-    trigger (int relative_offset = 0);
-
-    bool isStreaming () const noexcept;
-
-    /** \brief Check if there is any data left in the ONI file to process. */
-    inline bool
-    hasDataLeft ()
-    {
-      return (!player_.IsEOF ());
-    }
-
-  protected:
-    Image::Ptr getCurrentImage (pcl::shared_ptr<xn::ImageMetaData> image_meta_data) const noexcept override;
-
-    void PlayerThreadFunction ();
-    static void __stdcall NewONIDepthDataAvailable (xn::ProductionNode& node, void* cookie) noexcept;
-    static void __stdcall NewONIImageDataAvailable (xn::ProductionNode& node, void* cookie) noexcept;
-    static void __stdcall NewONIIRDataAvailable (xn::ProductionNode& node, void* cookie) noexcept;
-
-    xn::Player player_;
-    std::thread player_thread_;
-    mutable std::mutex player_mutex_;
-    std::condition_variable player_condition_;
-    bool streaming_;
-    bool depth_stream_running_{false};
-    bool image_stream_running_{false};
-    bool ir_stream_running_{false};
-  };
-} //namespace openni_wrapper
-#endif //HAVE_OPENNI
+  xn::Player player_;
+  std::thread player_thread_;
+  mutable std::mutex player_mutex_;
+  std::condition_variable player_condition_;
+  bool streaming_;
+  bool depth_stream_running_{false};
+  bool image_stream_running_{false};
+  bool ir_stream_running_{false};
+};
+} // namespace openni_wrapper
+#endif // HAVE_OPENNI

@@ -79,8 +79,9 @@ public:
    * set of remaining correspondences
    */
   void
-  getRemainingCorrespondences(const pcl::Correspondences& original_correspondences,
-                              pcl::Correspondences& remaining_correspondences) override;
+  getRemainingCorrespondences (
+      const pcl::Correspondences& original_correspondences,
+      pcl::Correspondences& remaining_correspondences) override;
 
   /** \brief Provide a pointer to a cloud of feature descriptors associated with the
    * source point cloud \param[in] source_feature a cloud of feature descriptors
@@ -89,8 +90,8 @@ public:
    */
   template <typename FeatureT>
   inline void
-  setSourceFeature(const typename pcl::PointCloud<FeatureT>::ConstPtr& source_feature,
-                   const std::string& key);
+  setSourceFeature (const typename pcl::PointCloud<FeatureT>::ConstPtr& source_feature,
+                    const std::string& key);
 
   /** \brief Get a pointer to the source cloud's feature descriptors, specified by the
    * given \a key \param[in] key a string that uniquely identifies the feature (must
@@ -98,7 +99,7 @@ public:
    */
   template <typename FeatureT>
   inline typename pcl::PointCloud<FeatureT>::ConstPtr
-  getSourceFeature(const std::string& key);
+  getSourceFeature (const std::string& key);
 
   /** \brief Provide a pointer to a cloud of feature descriptors associated with the
    * target point cloud \param[in] target_feature a cloud of feature descriptors
@@ -107,8 +108,8 @@ public:
    */
   template <typename FeatureT>
   inline void
-  setTargetFeature(const typename pcl::PointCloud<FeatureT>::ConstPtr& target_feature,
-                   const std::string& key);
+  setTargetFeature (const typename pcl::PointCloud<FeatureT>::ConstPtr& target_feature,
+                    const std::string& key);
 
   /** \brief Get a pointer to the source cloud's feature descriptors, specified by the
    * given \a key \param[in] key a string that uniquely identifies the feature (must
@@ -116,7 +117,7 @@ public:
    */
   template <typename FeatureT>
   inline typename pcl::PointCloud<FeatureT>::ConstPtr
-  getTargetFeature(const std::string& key);
+  getTargetFeature (const std::string& key);
 
   /** \brief Set a hard distance threshold in the feature \a FeatureT space, between
    * source and target features. Any feature correspondence that is above this threshold
@@ -125,13 +126,13 @@ public:
    */
   template <typename FeatureT>
   inline void
-  setDistanceThreshold(double thresh, const std::string& key);
+  setDistanceThreshold (double thresh, const std::string& key);
 
   /** \brief Test that all features are valid (i.e., does each key have a valid source
    * cloud, target cloud, and search method)
    */
   inline bool
-  hasValidFeatures();
+  hasValidFeatures ();
 
   /** \brief Provide a boost shared pointer to a PointRepresentation to be used when
    * comparing features \param[in] key a string that uniquely identifies the feature
@@ -139,7 +140,7 @@ public:
    */
   template <typename FeatureT>
   inline void
-  setFeatureRepresentation(
+  setFeatureRepresentation (
       const typename pcl::PointRepresentation<FeatureT>::ConstPtr& fr,
       const std::string& key);
 
@@ -148,7 +149,7 @@ protected:
    * \param[out] correspondences the set of resultant correspondences.
    */
   inline void
-  applyRejection(pcl::Correspondences& correspondences) override
+  applyRejection (pcl::Correspondences& correspondences) override
   {
     getRemainingCorrespondences(*input_correspondences_, correspondences);
   }
@@ -164,11 +165,11 @@ protected:
     /** \brief Empty destructor */
     virtual ~FeatureContainerInterface() = default;
     virtual bool
-    isValid() = 0;
+    isValid () = 0;
     virtual double
-    getCorrespondenceScore(int index) = 0;
+    getCorrespondenceScore (int index) = 0;
     virtual bool
-    isCorrespondenceValid(int index) = 0;
+    isCorrespondenceValid (int index) = 0;
 
     using Ptr = shared_ptr<FeatureContainerInterface>;
   };
@@ -204,37 +205,37 @@ protected:
     ~FeatureContainer() override = default;
 
     inline void
-    setSourceFeature(const FeatureCloudConstPtr& source_features)
+    setSourceFeature (const FeatureCloudConstPtr& source_features)
     {
       source_features_ = source_features;
     }
 
     inline FeatureCloudConstPtr
-    getSourceFeature()
+    getSourceFeature ()
     {
       return (source_features_);
     }
 
     inline void
-    setTargetFeature(const FeatureCloudConstPtr& target_features)
+    setTargetFeature (const FeatureCloudConstPtr& target_features)
     {
       target_features_ = target_features;
     }
 
     inline FeatureCloudConstPtr
-    getTargetFeature()
+    getTargetFeature ()
     {
       return (target_features_);
     }
 
     inline void
-    setDistanceThreshold(double thresh)
+    setDistanceThreshold (double thresh)
     {
       thresh_ = thresh;
     }
 
     inline bool
-    isValid() override
+    isValid () override
     {
       if (!source_features_ || !target_features_)
         return (false);
@@ -245,7 +246,7 @@ protected:
      * comparing features \param[in] fr the point feature representation to be used
      */
     inline void
-    setFeatureRepresentation(const PointRepresentationConstPtr& fr)
+    setFeatureRepresentation (const PointRepresentationConstPtr& fr)
     {
       feature_representation_ = fr;
     }
@@ -255,7 +256,7 @@ protected:
      * \return score the resultant computed score
      */
     inline double
-    getCorrespondenceScore(int index) override
+    getCorrespondenceScore (int index) override
     {
       // If no feature representation was given, reset to the default implementation for
       // FeatureT
@@ -293,7 +294,7 @@ protected:
      * \return true if the correspondence is good, false otherwise
      */
     inline bool
-    isCorrespondenceValid(int index) override
+    isCorrespondenceValid (int index) override
     {
       return (getCorrespondenceScore(index) < thresh_ * thresh_);
     }

@@ -49,4 +49,3 @@
 PCL_INSTANTIATE(applyMorphologicalOperator, PCL_XYZ_POINT_TYPES)
 
 #endif // PCL_NO_PRECOMPILE
-

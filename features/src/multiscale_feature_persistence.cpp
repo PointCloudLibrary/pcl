@@ -39,13 +39,14 @@
 #include <pcl/features/impl/multiscale_feature_persistence.hpp>
 
 #ifndef PCL_NO_PRECOMPILE
-#include <pcl/point_types.h>
 #include <pcl/impl/instantiate.hpp>
+#include <pcl/point_types.h>
 // Instantiations of specific point types
 #ifdef PCL_ONLY_CORE_POINT_TYPES
-  PCL_INSTANTIATE_PRODUCT(MultiscaleFeaturePersistence, ((pcl::PointXYZ)(pcl::PointXYZRGBA))((pcl::FPFHSignature33)))
+PCL_INSTANTIATE_PRODUCT(MultiscaleFeaturePersistence,
+                        ((pcl::PointXYZ)(pcl::PointXYZRGBA))((pcl::FPFHSignature33)))
 #else
-  PCL_INSTANTIATE_PRODUCT(MultiscaleFeaturePersistence, (PCL_XYZ_POINT_TYPES)(PCL_FEATURE_POINT_TYPES))
+PCL_INSTANTIATE_PRODUCT(MultiscaleFeaturePersistence,
+                        (PCL_XYZ_POINT_TYPES)(PCL_FEATURE_POINT_TYPES))
 #endif
-#endif    // PCL_NO_PRECOMPILE
-
+#endif // PCL_NO_PRECOMPILE

@@ -26,14 +26,14 @@ protected:
   std::set<pcl::index_t> inner_perimeter_;
 
   void
-  SetUp() override
+  SetUp () override
   {
     cloud_ = generateSyntheticEdgeDetectionCloud();
   }
 
 private:
   pcl::PointCloud<pcl::PointXYZ>::Ptr
-  generateSyntheticEdgeDetectionCloud()
+  generateSyntheticEdgeDetectionCloud ()
   {
     auto organized_test_cloud = pcl::make_shared<pcl::PointCloud<pcl::PointXYZ>>(
         OUTER_SQUARE_EDGE_LENGTH, OUTER_SQUARE_EDGE_LENGTH);
@@ -139,7 +139,7 @@ TEST_F(OrganizedPlaneDetectionTestFixture, OccludedAndOccludingEdges)
 
 /* ---[ */
 int
-main(int argc, char** argv)
+main (int argc, char** argv)
 {
   testing::InitGoogleTest(&argc, argv);
   return (RUN_ALL_TESTS());

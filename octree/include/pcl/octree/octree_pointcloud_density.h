@@ -57,7 +57,7 @@ public:
 
   /** \brief deep copy function */
   virtual OctreePointCloudDensityContainer*
-  deepCopy() const
+  deepCopy () const
   {
     return (new OctreePointCloudDensityContainer(*this));
   }
@@ -77,7 +77,7 @@ public:
   /** \brief Read input data. Only an internal counter is increased.
    */
   void
-  addPointIndex(index_t) override
+  addPointIndex (index_t) override
   {
     point_counter_++;
   }
@@ -86,14 +86,14 @@ public:
    * \return Amount of points
    */
   uindex_t
-  getPointCounter()
+  getPointCounter ()
   {
     return (point_counter_);
   }
 
   /** \brief Reset leaf node. */
   void
-  reset() override
+  reset () override
   {
     point_counter_ = 0;
   }
@@ -134,7 +134,7 @@ public:
    * that fall within leaf node voxel
    */
   uindex_t
-  getVoxelDensityAtPoint(const PointT& point_arg) const
+  getVoxelDensityAtPoint (const PointT& point_arg) const
   {
     uindex_t point_count = 0;
 

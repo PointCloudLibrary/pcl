@@ -35,49 +35,45 @@
  */
 
 /**
-  * \file bearing_angle_image.h
-  * Created on: July 07, 2012
-  */
+ * \file bearing_angle_image.h
+ * Created on: July 07, 2012
+ */
 
 #pragma once
 
-#include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
+#include <pcl/point_types.h>
 
-namespace pcl
-{
-  /** \brief class BearingAngleImage is used as an interface to generate Bearing Angle(BA) image.
-    * \author: Qinghua Li (qinghua__li@163.com)
-    */
-  class PCL_EXPORTS BearingAngleImage : public pcl::PointCloud<PointXYZRGBA>
-  {
-    public:
-      // ===== TYPEDEFS =====
-      using BaseClass = pcl::PointCloud<PointXYZRGBA>;
+namespace pcl {
+/** \brief class BearingAngleImage is used as an interface to generate Bearing Angle(BA)
+ * image. \author: Qinghua Li (qinghua__li@163.com)
+ */
+class PCL_EXPORTS BearingAngleImage : public pcl::PointCloud<PointXYZRGBA> {
+public:
+  // ===== TYPEDEFS =====
+  using BaseClass = pcl::PointCloud<PointXYZRGBA>;
 
-      // =====CONSTRUCTOR & DESTRUCTOR=====
-      /** Constructor */
-      BearingAngleImage ();
+  // =====CONSTRUCTOR & DESTRUCTOR=====
+  /** Constructor */
+  BearingAngleImage();
 
-    public:
-      /** \brief Reset all values to an empty Bearing Angle image */
-      void
-      reset ();
+public:
+  /** \brief Reset all values to an empty Bearing Angle image */
+  void
+  reset ();
 
-      /** \brief Calculate the angle between the laser beam and the segment joining two consecutive
-        * measurement points.
-        * \param point1
-        * \param point2
-        */
-      double
-      getAngle (const PointXYZ &point1, const PointXYZ &point2);
+  /** \brief Calculate the angle between the laser beam and the segment joining two
+   * consecutive measurement points. \param point1 \param point2
+   */
+  double
+  getAngle (const PointXYZ& point1, const PointXYZ& point2);
 
-      /** \brief Transform 3D point cloud into a 2D Bearing Angle(BA) image */
-      void
-      generateBAImage (PointCloud<PointXYZ>& point_cloud);
+  /** \brief Transform 3D point cloud into a 2D Bearing Angle(BA) image */
+  void
+  generateBAImage (PointCloud<PointXYZ>& point_cloud);
 
-    protected:
-      /**< This point is used to be able to return a reference to a unknown gray point */
-      PointXYZRGBA unobserved_point_;
-  };
-}
+protected:
+  /**< This point is used to be able to return a reference to a unknown gray point */
+  PointXYZRGBA unobserved_point_;
+};
+} // namespace pcl

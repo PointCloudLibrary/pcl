@@ -35,12 +35,12 @@
  *
  */
 
+#include <pcl/console/parse.h>
 #include <pcl/test/gtest.h>
 #include <pcl/pcl_tests.h>
-#include <pcl/console/parse.h>
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-TEST (PCL, parse_double)
+TEST(PCL, parse_double)
 {
   const char arg0[] = {"test_name"};
   const char arg1[] = {"double"};
@@ -48,27 +48,27 @@ TEST (PCL, parse_double)
   const char arg2_2[] = {"-3.14f+0"};
   const char arg2_3[] = {"3.14e+309"};
 
-  const char* argv_1[] = { &arg0[0], &arg1[0], &arg2_1[0], nullptr};
-  const char* argv_2[] = { &arg0[0], &arg1[0], &arg2_2[0], nullptr};
-  const char* argv_3[] = { &arg0[0], &arg1[0], &arg2_3[0], nullptr};
-  constexpr int argc = static_cast<int> (sizeof (argv_1)/sizeof (argv_1[0])) - 1;
+  const char* argv_1[] = {&arg0[0], &arg1[0], &arg2_1[0], nullptr};
+  const char* argv_2[] = {&arg0[0], &arg1[0], &arg2_2[0], nullptr};
+  const char* argv_3[] = {&arg0[0], &arg1[0], &arg2_3[0], nullptr};
+  constexpr int argc = static_cast<int>(sizeof(argv_1) / sizeof(argv_1[0])) - 1;
 
   int index = -1;
   double value = 0;
 
-  index = pcl::console::parse_argument (argc, argv_1, "double", value);
+  index = pcl::console::parse_argument(argc, argv_1, "double", value);
   EXPECT_DOUBLE_EQ(-3.14, value);
   EXPECT_EQ(1, index);
 
-  index = pcl::console::parse_argument (argc, argv_2, "double", value);
+  index = pcl::console::parse_argument(argc, argv_2, "double", value);
   EXPECT_EQ(-1, index);
 
-  index = pcl::console::parse_argument (argc, argv_3, "double", value);
+  index = pcl::console::parse_argument(argc, argv_3, "double", value);
   EXPECT_EQ(-1, index);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-TEST (PCL, parse_float)
+TEST(PCL, parse_float)
 {
   const char arg0[] = {"test_name"};
   const char arg1[] = {"float"};
@@ -76,27 +76,27 @@ TEST (PCL, parse_float)
   const char arg2_2[] = {"-3.14f+0"};
   const char arg2_3[] = {"3.14e+39"};
 
-  const char* argv_1[] = { &arg0[0], &arg1[0], &arg2_1[0], nullptr};
-  const char* argv_2[] = { &arg0[0], &arg1[0], &arg2_2[0], nullptr};
-  const char* argv_3[] = { &arg0[0], &arg1[0], &arg2_3[0], nullptr};
+  const char* argv_1[] = {&arg0[0], &arg1[0], &arg2_1[0], nullptr};
+  const char* argv_2[] = {&arg0[0], &arg1[0], &arg2_2[0], nullptr};
+  const char* argv_3[] = {&arg0[0], &arg1[0], &arg2_3[0], nullptr};
   constexpr int argc = static_cast<int>(sizeof(argv_1) / sizeof(argv_1[0])) - 1;
 
   int index = -1;
   float value = 0;
 
-  index = pcl::console::parse_argument (argc, argv_1, "float", value);
+  index = pcl::console::parse_argument(argc, argv_1, "float", value);
   EXPECT_FLOAT_EQ(-3.14, value);
   EXPECT_EQ(1, index);
 
-  index = pcl::console::parse_argument (argc, argv_2, "float", value);
+  index = pcl::console::parse_argument(argc, argv_2, "float", value);
   EXPECT_EQ(-1, index);
 
-  index = pcl::console::parse_argument (argc, argv_3, "float", value);
+  index = pcl::console::parse_argument(argc, argv_3, "float", value);
   EXPECT_EQ(-1, index);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-TEST (PCL, parse_longint)
+TEST(PCL, parse_longint)
 {
   const char arg0[] = {"test_name"};
   const char arg1[] = {"long_int"};
@@ -104,27 +104,27 @@ TEST (PCL, parse_longint)
   const char arg2_2[] = {"3.14"};
   const char arg2_3[] = {"18446744073709551615"};
 
-  const char* argv_1[] = { &arg0[0], &arg1[0], &arg2_1[0], nullptr};
-  const char* argv_2[] = { &arg0[0], &arg1[0], &arg2_2[0], nullptr};
-  const char* argv_3[] = { &arg0[0], &arg1[0], &arg2_3[0], nullptr};
+  const char* argv_1[] = {&arg0[0], &arg1[0], &arg2_1[0], nullptr};
+  const char* argv_2[] = {&arg0[0], &arg1[0], &arg2_2[0], nullptr};
+  const char* argv_3[] = {&arg0[0], &arg1[0], &arg2_3[0], nullptr};
   constexpr int argc = static_cast<int>(sizeof(argv_1) / sizeof(argv_1[0])) - 1;
 
   int index = -1;
   long int value = 0;
 
-  index = pcl::console::parse_argument (argc, argv_1, "long_int", value);
+  index = pcl::console::parse_argument(argc, argv_1, "long_int", value);
   EXPECT_EQ(-314, value);
   EXPECT_EQ(1, index);
 
-  index = pcl::console::parse_argument (argc, argv_2, "long_int", value);
+  index = pcl::console::parse_argument(argc, argv_2, "long_int", value);
   EXPECT_EQ(-1, index);
 
-  index = pcl::console::parse_argument (argc, argv_3, "long_int", value);
+  index = pcl::console::parse_argument(argc, argv_3, "long_int", value);
   EXPECT_EQ(-1, index);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-TEST (PCL, parse_unsignedint)
+TEST(PCL, parse_unsignedint)
 {
   const char arg0[] = {"test_name"};
   const char arg1[] = {"unsigned_int"};
@@ -132,27 +132,27 @@ TEST (PCL, parse_unsignedint)
   const char arg2_2[] = {"-314"};
   const char arg2_3[] = {"18446744073709551615"};
 
-  const char* argv_1[] = { &arg0[0], &arg1[0], &arg2_1[0], nullptr};
-  const char* argv_2[] = { &arg0[0], &arg1[0], &arg2_2[0], nullptr};
-  const char* argv_3[] = { &arg0[0], &arg1[0], &arg2_3[0], nullptr};
+  const char* argv_1[] = {&arg0[0], &arg1[0], &arg2_1[0], nullptr};
+  const char* argv_2[] = {&arg0[0], &arg1[0], &arg2_2[0], nullptr};
+  const char* argv_3[] = {&arg0[0], &arg1[0], &arg2_3[0], nullptr};
   constexpr int argc = static_cast<int>(sizeof(argv_1) / sizeof(argv_1[0])) - 1;
 
   int index = -1;
   unsigned int value = 53;
 
-  index = pcl::console::parse_argument (argc, argv_1, "unsigned_int", value);
+  index = pcl::console::parse_argument(argc, argv_1, "unsigned_int", value);
   EXPECT_EQ(314, value);
   EXPECT_EQ(1, index);
 
-  index = pcl::console::parse_argument (argc, argv_2, "unsigned_int", value);
+  index = pcl::console::parse_argument(argc, argv_2, "unsigned_int", value);
   EXPECT_EQ(-1, index);
 
-  index = pcl::console::parse_argument (argc, argv_3, "unsigned_int", value);
+  index = pcl::console::parse_argument(argc, argv_3, "unsigned_int", value);
   EXPECT_EQ(-1, index);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-TEST (PCL, parse_int)
+TEST(PCL, parse_int)
 {
   const char arg0[] = {"test_name"};
   const char arg1[] = {"int"};
@@ -160,22 +160,22 @@ TEST (PCL, parse_int)
   const char arg2_2[] = {"3.14"};
   const char arg2_3[] = {"18446744073709551615"};
 
-  const char* argv_1[] = { &arg0[0], &arg1[0], &arg2_1[0], nullptr};
-  const char* argv_2[] = { &arg0[0], &arg1[0], &arg2_2[0], nullptr};
-  const char* argv_3[] = { &arg0[0], &arg1[0], &arg2_3[0], nullptr};
+  const char* argv_1[] = {&arg0[0], &arg1[0], &arg2_1[0], nullptr};
+  const char* argv_2[] = {&arg0[0], &arg1[0], &arg2_2[0], nullptr};
+  const char* argv_3[] = {&arg0[0], &arg1[0], &arg2_3[0], nullptr};
   constexpr int argc = static_cast<int>(sizeof(argv_1) / sizeof(argv_1[0])) - 1;
 
   int index = -1;
   int value = 0;
 
-  index = pcl::console::parse_argument (argc, argv_1, "int", value);
+  index = pcl::console::parse_argument(argc, argv_1, "int", value);
   EXPECT_EQ(-314, value);
   EXPECT_EQ(1, index);
 
-  index = pcl::console::parse_argument (argc, argv_2, "int", value);
+  index = pcl::console::parse_argument(argc, argv_2, "int", value);
   EXPECT_EQ(-1, index);
 
-  index = pcl::console::parse_argument (argc, argv_3, "int", value);
+  index = pcl::console::parse_argument(argc, argv_3, "int", value);
   EXPECT_EQ(-1, index);
 }
 
@@ -183,7 +183,7 @@ TEST (PCL, parse_int)
 int
 main (int argc, char** argv)
 {
-  testing::InitGoogleTest (&argc, argv);
-  return (RUN_ALL_TESTS ());
+  testing::InitGoogleTest(&argc, argv);
+  return (RUN_ALL_TESTS());
 }
 /* ]--- */

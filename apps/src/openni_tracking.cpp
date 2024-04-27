@@ -193,7 +193,7 @@ public:
   }
 
   bool
-  drawParticles(pcl::visualization::PCLVisualizer& viz)
+  drawParticles (pcl::visualization::PCLVisualizer& viz)
   {
     ParticleFilter::PointCloudStatePtr particles = tracker_->getParticles();
     if (particles) {
@@ -218,7 +218,7 @@ public:
   }
 
   void
-  drawResult(pcl::visualization::PCLVisualizer& viz)
+  drawResult (pcl::visualization::PCLVisualizer& viz)
   {
     ParticleXYZRPY result = tracker_->getResult();
     Eigen::Affine3f transformation = tracker_->toEigenMatrix(result);
@@ -242,7 +242,7 @@ public:
   }
 
   void
-  viz_cb(pcl::visualization::PCLVisualizer& viz)
+  viz_cb (pcl::visualization::PCLVisualizer& viz)
   {
     std::lock_guard<std::mutex> lock(mtx_);
 
@@ -304,7 +304,7 @@ public:
   }
 
   void
-  filterPassThrough(const CloudConstPtr& cloud, Cloud& result)
+  filterPassThrough (const CloudConstPtr& cloud, Cloud& result)
   {
     FPS_CALC_BEGIN;
     pcl::PassThrough<PointType> pass;
@@ -317,8 +317,8 @@ public:
   }
 
   void
-  euclideanSegment(const CloudConstPtr& cloud,
-                   std::vector<pcl::PointIndices>& cluster_indices)
+  euclideanSegment (const CloudConstPtr& cloud,
+                    std::vector<pcl::PointIndices>& cluster_indices)
   {
     FPS_CALC_BEGIN;
     pcl::EuclideanClusterExtraction<PointType> ec;
@@ -334,7 +334,7 @@ public:
   }
 
   void
-  gridSample(const CloudConstPtr& cloud, Cloud& result, double leaf_size = 0.01)
+  gridSample (const CloudConstPtr& cloud, Cloud& result, double leaf_size = 0.01)
   {
     FPS_CALC_BEGIN;
     double start = pcl::getTime();
@@ -348,7 +348,7 @@ public:
   }
 
   void
-  gridSampleApprox(const CloudConstPtr& cloud, Cloud& result, double leaf_size = 0.01)
+  gridSampleApprox (const CloudConstPtr& cloud, Cloud& result, double leaf_size = 0.01)
   {
     FPS_CALC_BEGIN;
     double start = pcl::getTime();
@@ -364,9 +364,9 @@ public:
   }
 
   void
-  planeSegmentation(const CloudConstPtr& cloud,
-                    pcl::ModelCoefficients& coefficients,
-                    pcl::PointIndices& inliers)
+  planeSegmentation (const CloudConstPtr& cloud,
+                     pcl::ModelCoefficients& coefficients,
+                     pcl::PointIndices& inliers)
   {
     FPS_CALC_BEGIN;
     pcl::SACSegmentation<PointType> seg;
@@ -381,9 +381,9 @@ public:
   }
 
   void
-  planeProjection(const CloudConstPtr& cloud,
-                  Cloud& result,
-                  const pcl::ModelCoefficients::ConstPtr& coefficients)
+  planeProjection (const CloudConstPtr& cloud,
+                   Cloud& result,
+                   const pcl::ModelCoefficients::ConstPtr& coefficients)
   {
     FPS_CALC_BEGIN;
     pcl::ProjectInliers<PointType> proj;
@@ -395,9 +395,9 @@ public:
   }
 
   void
-  convexHull(const CloudConstPtr& cloud,
-             Cloud&,
-             std::vector<pcl::Vertices>& hull_vertices)
+  convexHull (const CloudConstPtr& cloud,
+              Cloud&,
+              std::vector<pcl::Vertices>& hull_vertices)
   {
     FPS_CALC_BEGIN;
     pcl::ConvexHull<PointType> chull;
@@ -407,7 +407,7 @@ public:
   }
 
   void
-  normalEstimation(const CloudConstPtr& cloud, pcl::PointCloud<pcl::Normal>& result)
+  normalEstimation (const CloudConstPtr& cloud, pcl::PointCloud<pcl::Normal>& result)
   {
     FPS_CALC_BEGIN;
     ne_.setInputCloud(cloud);
@@ -416,7 +416,7 @@ public:
   }
 
   void
-  tracking(const RefCloudConstPtr& cloud)
+  tracking (const RefCloudConstPtr& cloud)
   {
     double start = pcl::getTime();
     FPS_CALC_BEGIN;
@@ -428,9 +428,9 @@ public:
   }
 
   void
-  addNormalToCloud(const CloudConstPtr& cloud,
-                   const pcl::PointCloud<pcl::Normal>::ConstPtr&,
-                   RefCloud& result)
+  addNormalToCloud (const CloudConstPtr& cloud,
+                    const pcl::PointCloud<pcl::Normal>::ConstPtr&,
+                    RefCloud& result)
   {
     result.width = cloud->width;
     result.height = cloud->height;
@@ -446,9 +446,9 @@ public:
   }
 
   void
-  extractNonPlanePoints(const CloudConstPtr& cloud,
-                        const CloudConstPtr& cloud_hull,
-                        Cloud& result)
+  extractNonPlanePoints (const CloudConstPtr& cloud,
+                         const CloudConstPtr& cloud_hull,
+                         Cloud& result)
   {
     pcl::ExtractPolygonalPrismData<PointType> polygon_extract;
     pcl::PointIndices::Ptr inliers_polygon(new pcl::PointIndices());
@@ -466,7 +466,7 @@ public:
   }
 
   void
-  removeZeroPoints(const CloudConstPtr& cloud, Cloud& result)
+  removeZeroPoints (const CloudConstPtr& cloud, Cloud& result)
   {
     for (const auto& point : *cloud) {
       if (!(std::abs(point.x) < 0.01 && std::abs(point.y) < 0.01 &&
@@ -481,10 +481,10 @@ public:
   }
 
   void
-  extractSegmentCluster(const CloudConstPtr& cloud,
-                        const std::vector<pcl::PointIndices>& cluster_indices,
-                        const int segment_index,
-                        Cloud& result)
+  extractSegmentCluster (const CloudConstPtr& cloud,
+                         const std::vector<pcl::PointIndices>& cluster_indices,
+                         const int segment_index,
+                         Cloud& result)
   {
     pcl::PointIndices segmented_indices = cluster_indices[segment_index];
     for (const auto& index : segmented_indices.indices) {
@@ -497,7 +497,7 @@ public:
   }
 
   void
-  cloud_cb(const CloudConstPtr& cloud)
+  cloud_cb (const CloudConstPtr& cloud)
   {
     std::lock_guard<std::mutex> lock(mtx_);
     double start = pcl::getTime();
@@ -599,16 +599,16 @@ public:
   }
 
   void
-  run()
+  run ()
   {
     pcl::OpenNIGrabber interface(device_id_);
-    std::function<void(const CloudConstPtr&)> f = [this](const CloudConstPtr& cloud) {
+    std::function<void(const CloudConstPtr&)> f = [this] (const CloudConstPtr& cloud) {
       cloud_cb(cloud);
     };
     interface.registerCallback(f);
 
     viewer_.runOnVisualizationThread(
-        [this](pcl::visualization::PCLVisualizer& viz) { viz_cb(viz); }, "viz_cb");
+        [this] (pcl::visualization::PCLVisualizer& viz) { viz_cb(viz); }, "viz_cb");
 
     interface.start();
 
@@ -644,7 +644,7 @@ public:
 };
 
 void
-usage(char** argv)
+usage (char** argv)
 {
   // clang format off
   std::cout
@@ -660,7 +660,7 @@ usage(char** argv)
 }
 
 int
-main(int argc, char** argv)
+main (int argc, char** argv)
 {
   /////////////////////////////////////////////////////////////////////
   if (pcl::console::find_argument(argc, argv, "-h") != -1 ||

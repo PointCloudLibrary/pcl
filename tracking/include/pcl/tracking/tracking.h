@@ -52,7 +52,7 @@ struct ParticleXYZR;
 
 /* \brief return the value of normal distribution */
 PCL_EXPORTS double
-sampleNormal(double mean, double sigma);
+sampleNormal (double mean, double sigma);
 } // namespace tracking
 } // namespace pcl
 

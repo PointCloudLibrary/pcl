@@ -107,7 +107,7 @@ public:
    * nr_iterations the maximum number of iterations
    */
   inline void
-  setMaximumIterationsSimilarTransforms(const int nr_iterations)
+  setMaximumIterationsSimilarTransforms (const int nr_iterations)
   {
     max_iterations_similar_transforms_ = nr_iterations;
   }
@@ -117,7 +117,7 @@ public:
    * user.
    */
   inline int
-  getMaximumIterationsSimilarTransforms() const
+  getMaximumIterationsSimilarTransforms () const
   {
     return (max_iterations_similar_transforms_);
   }
@@ -127,7 +127,7 @@ public:
    * optimization should run for
    */
   inline void
-  setMaximumIterations(const int nr_iterations)
+  setMaximumIterations (const int nr_iterations)
   {
     max_iterations_ = nr_iterations;
   }
@@ -135,7 +135,7 @@ public:
   /** \brief Get the maximum number of iterations the internal optimization should run
    * for, as set by the user. */
   inline int
-  getMaximumIterations() const
+  getMaximumIterations () const
   {
     return (max_iterations_);
   }
@@ -145,7 +145,7 @@ public:
    * fails. If false, the registration is assumed to have converged.
    */
   inline void
-  setFailureAfterMaximumIterations(const bool failure_after_max_iter)
+  setFailureAfterMaximumIterations (const bool failure_after_max_iter)
   {
     failure_after_max_iter_ = failure_after_max_iter;
   }
@@ -153,7 +153,7 @@ public:
   /** \brief Get whether the registration will fail or converge when the maximum number
    * of iterations is reached. */
   inline bool
-  getFailureAfterMaximumIterations() const
+  getFailureAfterMaximumIterations () const
   {
     return (failure_after_max_iter_);
   }
@@ -165,7 +165,7 @@ public:
    * converged to the final solution.
    */
   inline void
-  setRotationThreshold(const double threshold)
+  setRotationThreshold (const double threshold)
   {
     rotation_threshold_ = threshold;
   }
@@ -174,7 +174,7 @@ public:
    * between two consecutive transformations) as set by the user.
    */
   inline double
-  getRotationThreshold() const
+  getRotationThreshold () const
   {
     return (rotation_threshold_);
   }
@@ -186,7 +186,7 @@ public:
    * final solution.
    */
   inline void
-  setTranslationThreshold(const double threshold)
+  setTranslationThreshold (const double threshold)
   {
     translation_threshold_ = threshold;
   }
@@ -195,7 +195,7 @@ public:
    * between two consecutive transformations) as set by the user.
    */
   inline double
-  getTranslationThreshold() const
+  getTranslationThreshold () const
   {
     return (translation_threshold_);
   }
@@ -204,14 +204,14 @@ public:
    * \param[in] mse_relative the relative MSE threshold
    */
   inline void
-  setRelativeMSE(const double mse_relative)
+  setRelativeMSE (const double mse_relative)
   {
     mse_threshold_relative_ = mse_relative;
   }
 
   /** \brief Get the relative MSE between two consecutive sets of correspondences. */
   inline double
-  getRelativeMSE() const
+  getRelativeMSE () const
   {
     return (mse_threshold_relative_);
   }
@@ -220,25 +220,25 @@ public:
    * \param[in] mse_absolute the relative MSE threshold
    */
   inline void
-  setAbsoluteMSE(const double mse_absolute)
+  setAbsoluteMSE (const double mse_absolute)
   {
     mse_threshold_absolute_ = mse_absolute;
   }
 
   /** \brief Get the absolute MSE between two consecutive sets of correspondences. */
   inline double
-  getAbsoluteMSE() const
+  getAbsoluteMSE () const
   {
     return (mse_threshold_absolute_);
   }
 
   /** \brief Check if convergence has been reached. */
   bool
-  hasConverged() override;
+  hasConverged () override;
 
   /** \brief Return the convergence state after hasConverged () */
   ConvergenceState
-  getConvergenceState()
+  getConvergenceState ()
   {
     return (convergence_state_);
   }
@@ -249,7 +249,7 @@ public:
    * \param[in] c the convergence state
    */
   inline void
-  setConvergenceState(ConvergenceState c)
+  setConvergenceState (ConvergenceState c)
   {
     convergence_state_ = c;
   }
@@ -259,7 +259,7 @@ protected:
    * correspondences. \param[in] correspondences the given set of correspondences
    */
   inline double
-  calculateMSE(const pcl::Correspondences& correspondences) const
+  calculateMSE (const pcl::Correspondences& correspondences) const
   {
     double mse = 0;
     for (const auto& correspondence : correspondences)

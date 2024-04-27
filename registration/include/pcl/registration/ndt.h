@@ -111,7 +111,7 @@ public:
    * \param[in] cloud the input point cloud target
    */
   inline void
-  setInputTarget(const PointCloudTargetConstPtr& cloud) override
+  setInputTarget (const PointCloudTargetConstPtr& cloud) override
   {
     Registration<PointSource, PointTarget, Scalar>::setInputTarget(cloud);
     init();
@@ -121,7 +121,7 @@ public:
    * \param[in] resolution side length of voxels
    */
   inline void
-  setResolution(float resolution)
+  setResolution (float resolution)
   {
     // Prevents unnecessary voxel initiations
     if (resolution_ != resolution) {
@@ -139,7 +139,7 @@ public:
    * required for a voxel to be used
    */
   inline void
-  setMinPointPerVoxel(unsigned int min_points_per_voxel)
+  setMinPointPerVoxel (unsigned int min_points_per_voxel)
   {
     target_cells_.setMinPointPerVoxel(min_points_per_voxel);
   }
@@ -148,7 +148,7 @@ public:
    * \return side length of voxels
    */
   inline float
-  getResolution() const
+  getResolution () const
   {
     return resolution_;
   }
@@ -157,7 +157,7 @@ public:
    * \return maximum step length
    */
   inline double
-  getStepSize() const
+  getStepSize () const
   {
     return step_size_;
   }
@@ -166,7 +166,7 @@ public:
    * \param[in] step_size maximum step length
    */
   inline void
-  setStepSize(double step_size)
+  setStepSize (double step_size)
   {
     step_size_ = step_size;
   }
@@ -175,7 +175,7 @@ public:
    * \return outlier ratio
    */
   inline double
-  getOulierRatio() const
+  getOulierRatio () const
   {
     return outlier_ratio_;
   }
@@ -184,7 +184,7 @@ public:
    * \param[in] outlier_ratio outlier ratio
    */
   inline void
-  setOulierRatio(double outlier_ratio)
+  setOulierRatio (double outlier_ratio)
   {
     outlier_ratio_ = outlier_ratio;
   }
@@ -193,7 +193,7 @@ public:
    * \return transformation likelihood
    */
   inline double
-  getTransformationLikelihood() const
+  getTransformationLikelihood () const
   {
     return trans_likelihood_;
   }
@@ -206,7 +206,7 @@ public:
                  "The method `getTransformationProbability` has been renamed to "
                  "`getTransformationLikelihood`.")
   inline double
-  getTransformationProbability() const
+  getTransformationProbability () const
   {
     return trans_likelihood_;
   }
@@ -215,7 +215,7 @@ public:
    * \return final number of iterations
    */
   inline int
-  getFinalNumIteration() const
+  getFinalNumIteration () const
   {
     return nr_iterations_;
   }
@@ -229,7 +229,7 @@ public:
    * \endcode
    */
   inline const TargetGrid&
-  getTargetCells() const
+  getTargetCells () const
   {
     return target_cells_;
   }
@@ -240,7 +240,7 @@ public:
    * vector
    */
   static void
-  convertTransform(const Eigen::Matrix<double, 6, 1>& x, Affine3& trans)
+  convertTransform (const Eigen::Matrix<double, 6, 1>& x, Affine3& trans)
   {
     trans = Eigen::Translation<Scalar, 3>(x.head<3>().cast<Scalar>()) *
             Eigen::AngleAxis<Scalar>(static_cast<Scalar>(x(3)), Vector3::UnitX()) *
@@ -254,7 +254,7 @@ public:
    * transformation vector
    */
   static void
-  convertTransform(const Eigen::Matrix<double, 6, 1>& x, Matrix4& trans)
+  convertTransform (const Eigen::Matrix<double, 6, 1>& x, Matrix4& trans)
   {
     Affine3 _affine;
     convertTransform(x, _affine);
@@ -286,7 +286,7 @@ protected:
    * \param[out] output the resultant input transformed point cloud dataset
    */
   virtual void
-  computeTransformation(PointCloudSource& output)
+  computeTransformation (PointCloudSource& output)
   {
     computeTransformation(output, Matrix4::Identity());
   }
@@ -297,7 +297,7 @@ protected:
    * \param[in] guess the initial gross estimation of the transformation
    */
   void
-  computeTransformation(PointCloudSource& output, const Matrix4& guess) override;
+  computeTransformation (PointCloudSource& output, const Matrix4& guess) override;
 
   /** \brief Initiate covariance voxel structure. */
   void inline init()
@@ -325,11 +325,11 @@ protected:
    * calculation.
    */
   double
-  computeDerivatives(Eigen::Matrix<double, 6, 1>& score_gradient,
-                     Eigen::Matrix<double, 6, 6>& hessian,
-                     const PointCloudSource& trans_cloud,
-                     const Eigen::Matrix<double, 6, 1>& transform,
-                     bool compute_hessian = true);
+  computeDerivatives (Eigen::Matrix<double, 6, 1>& score_gradient,
+                      Eigen::Matrix<double, 6, 6>& hessian,
+                      const PointCloudSource& trans_cloud,
+                      const Eigen::Matrix<double, 6, 1>& transform,
+                      bool compute_hessian = true);
 
   /** \brief Compute individual point contributions to derivatives of
    * likelihood function w.r.t. the transformation vector.
@@ -345,11 +345,11 @@ protected:
    * calculation.
    */
   double
-  updateDerivatives(Eigen::Matrix<double, 6, 1>& score_gradient,
-                    Eigen::Matrix<double, 6, 6>& hessian,
-                    const Eigen::Vector3d& x_trans,
-                    const Eigen::Matrix3d& c_inv,
-                    bool compute_hessian = true) const;
+  updateDerivatives (Eigen::Matrix<double, 6, 1>& score_gradient,
+                     Eigen::Matrix<double, 6, 6>& hessian,
+                     const Eigen::Vector3d& x_trans,
+                     const Eigen::Matrix3d& c_inv,
+                     bool compute_hessian = true) const;
 
   /** \brief Precompute angular components of derivatives.
    * \note Equation 6.19 and 6.21 [Magnusson 2009].
@@ -358,8 +358,8 @@ protected:
    * calculation.
    */
   void
-  computeAngleDerivatives(const Eigen::Matrix<double, 6, 1>& transform,
-                          bool compute_hessian = true);
+  computeAngleDerivatives (const Eigen::Matrix<double, 6, 1>& transform,
+                           bool compute_hessian = true);
 
   /** \brief Compute point derivatives.
    * \note Equation 6.18-21 [Magnusson 2009].
@@ -368,7 +368,7 @@ protected:
    * calculation.
    */
   void
-  computePointDerivatives(const Eigen::Vector3d& x, bool compute_hessian = true);
+  computePointDerivatives (const Eigen::Vector3d& x, bool compute_hessian = true);
 
   /** \brief Compute hessian of likelihood function w.r.t. the transformation
    * vector.
@@ -378,8 +378,8 @@ protected:
    * \param[in] trans_cloud transformed point cloud
    */
   void
-  computeHessian(Eigen::Matrix<double, 6, 6>& hessian,
-                 const PointCloudSource& trans_cloud);
+  computeHessian (Eigen::Matrix<double, 6, 6>& hessian,
+                  const PointCloudSource& trans_cloud);
 
   /** \brief Compute hessian of likelihood function w.r.t. the transformation
    * vector.
@@ -391,9 +391,9 @@ protected:
    */
   PCL_DEPRECATED(1, 15, "Parameter `transform` is not required")
   void
-  computeHessian(Eigen::Matrix<double, 6, 6>& hessian,
-                 const PointCloudSource& trans_cloud,
-                 const Eigen::Matrix<double, 6, 1>& transform)
+  computeHessian (Eigen::Matrix<double, 6, 6>& hessian,
+                  const PointCloudSource& trans_cloud,
+                  const Eigen::Matrix<double, 6, 1>& transform)
   {
     pcl::utils::ignore(transform);
     computeHessian(hessian, trans_cloud);
@@ -409,9 +409,9 @@ protected:
    * \param[in] c_inv covariance of occupied covariance voxel
    */
   void
-  updateHessian(Eigen::Matrix<double, 6, 6>& hessian,
-                const Eigen::Vector3d& x_trans,
-                const Eigen::Matrix3d& c_inv) const;
+  updateHessian (Eigen::Matrix<double, 6, 6>& hessian,
+                 const Eigen::Vector3d& x_trans,
+                 const Eigen::Matrix3d& c_inv) const;
 
   /** \brief Compute line search step length and update transform and
    * likelihood derivatives using More-Thuente method.
@@ -443,15 +443,15 @@ protected:
    * \return final step length
    */
   double
-  computeStepLengthMT(const Eigen::Matrix<double, 6, 1>& transform,
-                      Eigen::Matrix<double, 6, 1>& step_dir,
-                      double step_init,
-                      double step_max,
-                      double step_min,
-                      double& score,
-                      Eigen::Matrix<double, 6, 1>& score_gradient,
-                      Eigen::Matrix<double, 6, 6>& hessian,
-                      PointCloudSource& trans_cloud);
+  computeStepLengthMT (const Eigen::Matrix<double, 6, 1>& transform,
+                       Eigen::Matrix<double, 6, 1>& step_dir,
+                       double step_init,
+                       double step_max,
+                       double step_min,
+                       double& score,
+                       Eigen::Matrix<double, 6, 1>& score_gradient,
+                       Eigen::Matrix<double, 6, 6>& hessian,
+                       PointCloudSource& trans_cloud);
 
   /** \brief Update interval of possible step lengths for More-Thuente method,
    * \f$ I \f$ in More-Thuente (1994)
@@ -484,15 +484,15 @@ protected:
    * \return if interval converges
    */
   bool
-  updateIntervalMT(double& a_l,
-                   double& f_l,
-                   double& g_l,
-                   double& a_u,
-                   double& f_u,
-                   double& g_u,
-                   double a_t,
-                   double f_t,
-                   double g_t) const;
+  updateIntervalMT (double& a_l,
+                    double& f_l,
+                    double& g_l,
+                    double& a_u,
+                    double& f_u,
+                    double& g_u,
+                    double a_t,
+                    double f_t,
+                    double g_t) const;
 
   /** \brief Select new trial value for More-Thuente method.
    * \note Trial Value Selection [More, Thuente 1994], \f$ \psi(\alpha_k) \f$ is
@@ -521,15 +521,15 @@ protected:
    * \return new trial value
    */
   double
-  trialValueSelectionMT(double a_l,
-                        double f_l,
-                        double g_l,
-                        double a_u,
-                        double f_u,
-                        double g_u,
-                        double a_t,
-                        double f_t,
-                        double g_t) const;
+  trialValueSelectionMT (double a_l,
+                         double f_l,
+                         double g_l,
+                         double a_u,
+                         double f_u,
+                         double g_u,
+                         double a_t,
+                         double f_t,
+                         double g_t) const;
 
   /** \brief Auxiliary function used to determine endpoints of More-Thuente
    * interval.
@@ -546,7 +546,7 @@ protected:
    * \return sufficient decrease value
    */
   inline double
-  auxilaryFunction_PsiMT(
+  auxilaryFunction_PsiMT (
       double a, double f_a, double f_0, double g_0, double mu = 1.e-4) const
   {
     return f_a - f_0 - mu * g_0 * a;
@@ -565,7 +565,7 @@ protected:
    * \return sufficient decrease derivative
    */
   inline double
-  auxilaryFunction_dPsiMT(double g_a, double g_0, double mu = 1.e-4) const
+  auxilaryFunction_dPsiMT (double g_a, double g_0, double mu = 1.e-4) const
   {
     return g_a - mu * g_0;
   }

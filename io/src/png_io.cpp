@@ -38,97 +38,110 @@
  */
 
 #include <pcl/io/png_io.h>
+
+#include <vtkImageFlip.h>
 #include <vtkImageImport.h>
 #include <vtkPNGWriter.h>
 #include <vtkSmartPointer.h>
-#include <vtkImageFlip.h>
 
-namespace 
+namespace {
+void
+flipAndWritePng (const std::string& file_name,
+                 vtkSmartPointer<vtkImageImport>& importer)
 {
-  void flipAndWritePng(const std::string &file_name, vtkSmartPointer<vtkImageImport>& importer)
-  {
-    vtkSmartPointer<vtkImageFlip> flipYFilter = vtkSmartPointer<vtkImageFlip>::New();
-    flipYFilter->SetFilteredAxis(1); // flip y axis
-    flipYFilter->SetInputConnection(importer->GetOutputPort());
-    flipYFilter->Update();
+  vtkSmartPointer<vtkImageFlip> flipYFilter = vtkSmartPointer<vtkImageFlip>::New();
+  flipYFilter->SetFilteredAxis(1); // flip y axis
+  flipYFilter->SetInputConnection(importer->GetOutputPort());
+  flipYFilter->Update();
 
-    vtkSmartPointer<vtkPNGWriter> writer = vtkSmartPointer<vtkPNGWriter>::New();
-    writer->SetFileName(file_name.c_str());
-    writer->SetInputConnection(flipYFilter->GetOutputPort());
-    writer->Write();
-  }
-};
+  vtkSmartPointer<vtkPNGWriter> writer = vtkSmartPointer<vtkPNGWriter>::New();
+  writer->SetFileName(file_name.c_str());
+  writer->SetInputConnection(flipYFilter->GetOutputPort());
+  writer->Write();
+}
+}; // namespace
 
-
-
-
-void 
-pcl::io::saveCharPNGFile (const std::string &file_name, const unsigned char *char_data, int width, int height, int channels)
+void
+pcl::io::saveCharPNGFile(const std::string& file_name,
+                         const unsigned char* char_data,
+                         int width,
+                         int height,
+                         int channels)
 {
-  vtkSmartPointer<vtkImageImport> importer = vtkSmartPointer<vtkImageImport>::New ();
-  importer->SetNumberOfScalarComponents (channels);
-  importer->SetDataScalarTypeToUnsignedChar ();
-  importer->SetWholeExtent (0, width - 1, 0, height - 1, 0, 0);
-  importer->SetDataExtentToWholeExtent ();
+  vtkSmartPointer<vtkImageImport> importer = vtkSmartPointer<vtkImageImport>::New();
+  importer->SetNumberOfScalarComponents(channels);
+  importer->SetDataScalarTypeToUnsignedChar();
+  importer->SetWholeExtent(0, width - 1, 0, height - 1, 0, 0);
+  importer->SetDataExtentToWholeExtent();
 
-  void* data = const_cast<void*> (reinterpret_cast<const void*> (char_data));
-  importer->SetImportVoidPointer (data, 1);
-  importer->Update ();
+  void* data = const_cast<void*>(reinterpret_cast<const void*>(char_data));
+  importer->SetImportVoidPointer(data, 1);
+  importer->Update();
 
   flipAndWritePng(file_name, importer);
 }
 
-void 
-pcl::io::saveShortPNGFile (const std::string &file_name, const unsigned short *short_image, int width, int height, int channels)
+void
+pcl::io::saveShortPNGFile(const std::string& file_name,
+                          const unsigned short* short_image,
+                          int width,
+                          int height,
+                          int channels)
 {
-  vtkSmartPointer<vtkImageImport> importer = vtkSmartPointer<vtkImageImport>::New ();
-  importer->SetNumberOfScalarComponents (channels);
-  importer->SetDataScalarTypeToUnsignedShort ();
-  importer->SetWholeExtent (0, width - 1, 0, height - 1, 0, 0);
-  importer->SetDataExtentToWholeExtent ();
+  vtkSmartPointer<vtkImageImport> importer = vtkSmartPointer<vtkImageImport>::New();
+  importer->SetNumberOfScalarComponents(channels);
+  importer->SetDataScalarTypeToUnsignedShort();
+  importer->SetWholeExtent(0, width - 1, 0, height - 1, 0, 0);
+  importer->SetDataExtentToWholeExtent();
 
-  void* data = const_cast<void*> (reinterpret_cast<const void*> (short_image));
-  importer->SetImportVoidPointer (data, 1);
-  importer->Update ();
+  void* data = const_cast<void*>(reinterpret_cast<const void*>(short_image));
+  importer->SetImportVoidPointer(data, 1);
+  importer->Update();
 
   flipAndWritePng(file_name, importer);
 }
 
-void 
-pcl::io::saveRgbPNGFile (const std::string& file_name, const unsigned char *rgb_image, int width, int height)
+void
+pcl::io::saveRgbPNGFile(const std::string& file_name,
+                        const unsigned char* rgb_image,
+                        int width,
+                        int height)
 {
   saveCharPNGFile(file_name, rgb_image, width, height, 3);
 }
 
 void
-pcl::io::savePNGFile (const std::string& file_name, const pcl::PointCloud<unsigned char>& cloud)
+pcl::io::savePNGFile(const std::string& file_name,
+                     const pcl::PointCloud<unsigned char>& cloud)
 {
   saveCharPNGFile(file_name, cloud.data(), cloud.width, cloud.height, 1);
 }
 
 void
-pcl::io::savePNGFile (const std::string& file_name, const pcl::PointCloud<unsigned short>& cloud)
+pcl::io::savePNGFile(const std::string& file_name,
+                     const pcl::PointCloud<unsigned short>& cloud)
 {
   saveShortPNGFile(file_name, cloud.data(), cloud.width, cloud.height, 1);
 }
 
 void
-pcl::io::savePNGFile (const std::string& file_name, const pcl::PCLImage& image)
+pcl::io::savePNGFile(const std::string& file_name, const pcl::PCLImage& image)
 {
-    if (image.encoding == "rgb8")
-    {
-        saveRgbPNGFile(file_name, image.data.data(), image.width, image.height);
-    }
-    else if (image.encoding == "mono8")
-    {
-        saveCharPNGFile(file_name, image.data.data(), image.width, image.height, 1);
-    }
-    else if (image.encoding == "mono16")
-    {
-        saveShortPNGFile(file_name, reinterpret_cast<const unsigned short*>(image.data.data()), image.width, image.height, 1);
-    }
-    else
-    {
-        PCL_ERROR ("[pcl::io::savePNGFile] Unsupported image encoding \"%s\".\n", image.encoding.c_str ());
-    }
+  if (image.encoding == "rgb8") {
+    saveRgbPNGFile(file_name, image.data.data(), image.width, image.height);
+  }
+  else if (image.encoding == "mono8") {
+    saveCharPNGFile(file_name, image.data.data(), image.width, image.height, 1);
+  }
+  else if (image.encoding == "mono16") {
+    saveShortPNGFile(file_name,
+                     reinterpret_cast<const unsigned short*>(image.data.data()),
+                     image.width,
+                     image.height,
+                     1);
+  }
+  else {
+    PCL_ERROR("[pcl::io::savePNGFile] Unsupported image encoding \"%s\".\n",
+              image.encoding.c_str());
+  }
 }

@@ -44,239 +44,255 @@
 #include <pcl/features/vfh.h>
 #include <pcl/search/search.h> // for Search
 
-namespace pcl
-{
-  /** \brief CVFHEstimation estimates the Clustered Viewpoint Feature Histogram (CVFH) descriptor for a given 
-    * point cloud dataset containing XYZ data and normals, as presented in: 
-    *   - CAD-Model Recognition and 6 DOF Pose Estimation
-    *     A. Aldoma, N. Blodow, D. Gossow, S. Gedikli, R.B. Rusu, M. Vincze and G. Bradski
-    *     ICCV 2011, 3D Representation and Recognition (3dRR11) workshop
-    *     Barcelona, Spain, (2011) 
-    *
-    * The suggested PointOutT is pcl::VFHSignature308.
-    *
-    * \author Aitor Aldoma
-    * \ingroup features
-    */
-  template<typename PointInT, typename PointNT, typename PointOutT = pcl::VFHSignature308>
-  class CVFHEstimation : public FeatureFromNormals<PointInT, PointNT, PointOutT>
+namespace pcl {
+/** \brief CVFHEstimation estimates the Clustered Viewpoint Feature Histogram (CVFH)
+ * descriptor for a given point cloud dataset containing XYZ data and normals, as
+ * presented in:
+ *   - CAD-Model Recognition and 6 DOF Pose Estimation
+ *     A. Aldoma, N. Blodow, D. Gossow, S. Gedikli, R.B. Rusu, M. Vincze and G. Bradski
+ *     ICCV 2011, 3D Representation and Recognition (3dRR11) workshop
+ *     Barcelona, Spain, (2011)
+ *
+ * The suggested PointOutT is pcl::VFHSignature308.
+ *
+ * \author Aitor Aldoma
+ * \ingroup features
+ */
+template <typename PointInT,
+          typename PointNT,
+          typename PointOutT = pcl::VFHSignature308>
+class CVFHEstimation : public FeatureFromNormals<PointInT, PointNT, PointOutT> {
+public:
+  using Ptr = shared_ptr<CVFHEstimation<PointInT, PointNT, PointOutT>>;
+  using ConstPtr = shared_ptr<const CVFHEstimation<PointInT, PointNT, PointOutT>>;
+
+  using Feature<PointInT, PointOutT>::feature_name_;
+  using Feature<PointInT, PointOutT>::getClassName;
+  using Feature<PointInT, PointOutT>::indices_;
+  using Feature<PointInT, PointOutT>::k_;
+  using Feature<PointInT, PointOutT>::search_radius_;
+  using Feature<PointInT, PointOutT>::surface_;
+  using FeatureFromNormals<PointInT, PointNT, PointOutT>::normals_;
+
+  using PointCloudOut = typename Feature<PointInT, PointOutT>::PointCloudOut;
+  using KdTreePtr = typename pcl::search::Search<PointNormal>::Ptr;
+  using VFHEstimator = pcl::VFHEstimation<PointInT, PointNT, pcl::VFHSignature308>;
+
+  /** \brief Empty constructor. */
+  CVFHEstimation()
+  :
+
+      cluster_tolerance_(leaf_size_ * 3)
+  ,
+
+  radius_normals_(leaf_size_ * 3)
   {
-    public:
-      using Ptr = shared_ptr<CVFHEstimation<PointInT, PointNT, PointOutT> >;
-      using ConstPtr = shared_ptr<const CVFHEstimation<PointInT, PointNT, PointOutT> >;
-
-      using Feature<PointInT, PointOutT>::feature_name_;
-      using Feature<PointInT, PointOutT>::getClassName;
-      using Feature<PointInT, PointOutT>::indices_;
-      using Feature<PointInT, PointOutT>::k_;
-      using Feature<PointInT, PointOutT>::search_radius_;
-      using Feature<PointInT, PointOutT>::surface_;
-      using FeatureFromNormals<PointInT, PointNT, PointOutT>::normals_;
-
-      using PointCloudOut = typename Feature<PointInT, PointOutT>::PointCloudOut;
-      using KdTreePtr = typename pcl::search::Search<PointNormal>::Ptr;
-      using VFHEstimator = pcl::VFHEstimation<PointInT, PointNT, pcl::VFHSignature308>;
-
-      /** \brief Empty constructor. */
-      CVFHEstimation () :
-         
-        cluster_tolerance_ (leaf_size_ * 3), 
-        
-        radius_normals_ (leaf_size_ * 3)
-      {
-        search_radius_ = 0;
-        k_ = 1;
-        feature_name_ = "CVFHEstimation";
-      }
-      ;
-
-      /** \brief Removes normals with high curvature caused by real edges or noisy data
-        * \param[in] cloud pointcloud to be filtered
-        * \param[in] indices_to_use the indices to use
-        * \param[out] indices_out the indices of the points with higher curvature than threshold
-        * \param[out] indices_in the indices of the remaining points after filtering
-        * \param[in] threshold threshold value for curvature
-        */
-      void
-      filterNormalsWithHighCurvature (const pcl::PointCloud<PointNT> & cloud, pcl::Indices & indices_to_use, pcl::Indices &indices_out,
-                                      pcl::Indices &indices_in, float threshold);
-
-      /** \brief Set the viewpoint.
-        * \param[in] vpx the X coordinate of the viewpoint
-        * \param[in] vpy the Y coordinate of the viewpoint
-        * \param[in] vpz the Z coordinate of the viewpoint
-        */
-      inline void
-      setViewPoint (float vpx, float vpy, float vpz)
-      {
-        vpx_ = vpx;
-        vpy_ = vpy;
-        vpz_ = vpz;
-      }
-
-      /** \brief Set the radius used to compute normals
-        * \param[in] radius_normals the radius
-        */
-      inline void
-      setRadiusNormals (float radius_normals)
-      {
-        radius_normals_ = radius_normals;
-      }
-
-      /** \brief Get the viewpoint. 
-        * \param[out] vpx the X coordinate of the viewpoint
-        * \param[out] vpy the Y coordinate of the viewpoint
-        * \param[out] vpz the Z coordinate of the viewpoint
-        */
-      inline void
-      getViewPoint (float &vpx, float &vpy, float &vpz)
-      {
-        vpx = vpx_;
-        vpy = vpy_;
-        vpz = vpz_;
-      }
-
-      /** \brief Get the centroids used to compute different CVFH descriptors
-        * \param[out] centroids vector to hold the centroids
-        */
-      inline void
-      getCentroidClusters (std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > & centroids)
-      {
-        centroids.insert (centroids.cend (), centroids_dominant_orientations_.cbegin (),
-                          centroids_dominant_orientations_.cend ());
-      }
-
-      /** \brief Get the normal centroids used to compute different CVFH descriptors
-        * \param[out] centroids vector to hold the normal centroids
-        */
-      inline void
-      getCentroidNormalClusters (std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > & centroids)
-      {
-        for (const auto& normal: dominant_normals_)
-          centroids.push_back (normal);
-      }
-
-      /** \brief Sets max. Euclidean distance between points to be added to the cluster 
-        * \param[in] d the maximum Euclidean distance 
-        */
-
-      inline void
-      setClusterTolerance (float d)
-      {
-        cluster_tolerance_ = d;
-      }
-
-      /** \brief Sets max. deviation of the normals between two points so they can be clustered together
-        * \param[in] d the maximum deviation 
-        */
-      inline void
-      setEPSAngleThreshold (float d)
-      {
-        eps_angle_threshold_ = d;
-      }
-
-      /** \brief Sets curvature threshold for removing normals
-        * \param[in] d the curvature threshold 
-        */
-      inline void
-      setCurvatureThreshold (float d)
-      {
-        curv_threshold_ = d;
-      }
-
-      /** \brief Set minimum amount of points for a cluster to be considered
-        * \param[in] min the minimum amount of points to be set 
-        */
-      inline void
-      setMinPoints (std::size_t min)
-      {
-        min_points_ = min;
-      }
-
-      /** \brief Sets whether if the CVFH signatures should be normalized or not
-        * \param[in] normalize true if normalization is required, false otherwise 
-        */
-      inline void
-      setNormalizeBins (bool normalize)
-      {
-        normalize_bins_ = normalize;
-      }
-
-      /** \brief Overloaded computed method from pcl::Feature.
-        * \param[out] output the resultant point cloud model dataset containing the estimated features
-        */
-      void
-      compute (PointCloudOut &output);
-
-    private:
-      /** \brief Values describing the viewpoint ("pinhole" camera model assumed). 
-        * By default, the viewpoint is set to 0,0,0.
-        */
-      float vpx_{0.0f}, vpy_{0.0f}, vpz_{0.0f};
-
-      /** \brief Size of the voxels after voxel gridding. IMPORTANT: Must match the voxel 
-        * size of the training data or the normalize_bins_ flag must be set to true.
-        */
-      float leaf_size_{0.005f};
-
-      /** \brief Whether to normalize the signatures or not. Default: false. */
-      bool normalize_bins_{false};
-
-      /** \brief Curvature threshold for removing normals. */
-      float curv_threshold_{0.03f};
-
-      /** \brief allowed Euclidean distance between points to be added to the cluster. */
-      float cluster_tolerance_;
-
-      /** \brief deviation of the normals between two points so they can be clustered together. */
-      float eps_angle_threshold_{0.125f};
-
-      /** \brief Minimum amount of points in a clustered region to be considered stable for CVFH
-        * computation.
-        */
-      std::size_t min_points_{50};
-
-      /** \brief Radius for the normals computation. */
-      float radius_normals_;
-
-      /** \brief Estimate the Clustered Viewpoint Feature Histograms (CVFH) descriptors at 
-        * a set of points given by <setInputCloud (), setIndices ()> using the surface in
-        * setSearchSurface ()
-        *
-        * \param[out] output the resultant point cloud model dataset that contains the CVFH
-        * feature estimates
-        */
-      void
-      computeFeature (PointCloudOut &output) override;
-
-      /** \brief Region growing method using Euclidean distances and neighbors normals to 
-        * add points to a region.
-        * \param[in] cloud point cloud to split into regions
-        * \param[in] normals are the normals of cloud
-        * \param[in] tolerance is the allowed Euclidean distance between points to be added to
-        * the cluster
-        * \param[in] tree is the spatial search structure for nearest neighbour search
-        * \param[out] clusters vector of indices representing the clustered regions
-        * \param[in] eps_angle deviation of the normals between two points so they can be
-        * clustered together
-        * \param[in] min_pts_per_cluster minimum cluster size. (default: 1 point)
-        * \param[in] max_pts_per_cluster maximum cluster size. (default: all the points)
-        */
-      void
-      extractEuclideanClustersSmooth (const pcl::PointCloud<pcl::PointNormal> &cloud,
-                                      const pcl::PointCloud<pcl::PointNormal> &normals, float tolerance,
-                                      const pcl::search::Search<pcl::PointNormal>::Ptr &tree,
-                                      std::vector<pcl::PointIndices> &clusters, double eps_angle,
-                                      unsigned int min_pts_per_cluster = 1,
-                                      unsigned int max_pts_per_cluster = (std::numeric_limits<int>::max) ());
-
-    protected:
-      /** \brief Centroids that were used to compute different CVFH descriptors */
-      std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > centroids_dominant_orientations_;
-      /** \brief Normal centroids that were used to compute different CVFH descriptors */
-      std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > dominant_normals_;
+    search_radius_ = 0;
+    k_ = 1;
+    feature_name_ = "CVFHEstimation";
   };
-}
+
+  /** \brief Removes normals with high curvature caused by real edges or noisy data
+   * \param[in] cloud pointcloud to be filtered
+   * \param[in] indices_to_use the indices to use
+   * \param[out] indices_out the indices of the points with higher curvature than
+   * threshold \param[out] indices_in the indices of the remaining points after
+   * filtering \param[in] threshold threshold value for curvature
+   */
+  void
+  filterNormalsWithHighCurvature (const pcl::PointCloud<PointNT>& cloud,
+                                  pcl::Indices& indices_to_use,
+                                  pcl::Indices& indices_out,
+                                  pcl::Indices& indices_in,
+                                  float threshold);
+
+  /** \brief Set the viewpoint.
+   * \param[in] vpx the X coordinate of the viewpoint
+   * \param[in] vpy the Y coordinate of the viewpoint
+   * \param[in] vpz the Z coordinate of the viewpoint
+   */
+  inline void
+  setViewPoint (float vpx, float vpy, float vpz)
+  {
+    vpx_ = vpx;
+    vpy_ = vpy;
+    vpz_ = vpz;
+  }
+
+  /** \brief Set the radius used to compute normals
+   * \param[in] radius_normals the radius
+   */
+  inline void
+  setRadiusNormals (float radius_normals)
+  {
+    radius_normals_ = radius_normals;
+  }
+
+  /** \brief Get the viewpoint.
+   * \param[out] vpx the X coordinate of the viewpoint
+   * \param[out] vpy the Y coordinate of the viewpoint
+   * \param[out] vpz the Z coordinate of the viewpoint
+   */
+  inline void
+  getViewPoint (float& vpx, float& vpy, float& vpz)
+  {
+    vpx = vpx_;
+    vpy = vpy_;
+    vpz = vpz_;
+  }
+
+  /** \brief Get the centroids used to compute different CVFH descriptors
+   * \param[out] centroids vector to hold the centroids
+   */
+  inline void
+  getCentroidClusters (
+      std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f>>&
+          centroids)
+  {
+    centroids.insert(centroids.cend(),
+                     centroids_dominant_orientations_.cbegin(),
+                     centroids_dominant_orientations_.cend());
+  }
+
+  /** \brief Get the normal centroids used to compute different CVFH descriptors
+   * \param[out] centroids vector to hold the normal centroids
+   */
+  inline void
+  getCentroidNormalClusters (
+      std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f>>&
+          centroids)
+  {
+    for (const auto& normal : dominant_normals_)
+      centroids.push_back(normal);
+  }
+
+  /** \brief Sets max. Euclidean distance between points to be added to the cluster
+   * \param[in] d the maximum Euclidean distance
+   */
+
+  inline void
+  setClusterTolerance (float d)
+  {
+    cluster_tolerance_ = d;
+  }
+
+  /** \brief Sets max. deviation of the normals between two points so they can be
+   * clustered together \param[in] d the maximum deviation
+   */
+  inline void
+  setEPSAngleThreshold (float d)
+  {
+    eps_angle_threshold_ = d;
+  }
+
+  /** \brief Sets curvature threshold for removing normals
+   * \param[in] d the curvature threshold
+   */
+  inline void
+  setCurvatureThreshold (float d)
+  {
+    curv_threshold_ = d;
+  }
+
+  /** \brief Set minimum amount of points for a cluster to be considered
+   * \param[in] min the minimum amount of points to be set
+   */
+  inline void
+  setMinPoints (std::size_t min)
+  {
+    min_points_ = min;
+  }
+
+  /** \brief Sets whether if the CVFH signatures should be normalized or not
+   * \param[in] normalize true if normalization is required, false otherwise
+   */
+  inline void
+  setNormalizeBins (bool normalize)
+  {
+    normalize_bins_ = normalize;
+  }
+
+  /** \brief Overloaded computed method from pcl::Feature.
+   * \param[out] output the resultant point cloud model dataset containing the estimated
+   * features
+   */
+  void
+  compute (PointCloudOut& output);
+
+private:
+  /** \brief Values describing the viewpoint ("pinhole" camera model assumed).
+   * By default, the viewpoint is set to 0,0,0.
+   */
+  float vpx_{0.0f}, vpy_{0.0f}, vpz_{0.0f};
+
+  /** \brief Size of the voxels after voxel gridding. IMPORTANT: Must match the voxel
+   * size of the training data or the normalize_bins_ flag must be set to true.
+   */
+  float leaf_size_{0.005f};
+
+  /** \brief Whether to normalize the signatures or not. Default: false. */
+  bool normalize_bins_{false};
+
+  /** \brief Curvature threshold for removing normals. */
+  float curv_threshold_{0.03f};
+
+  /** \brief allowed Euclidean distance between points to be added to the cluster. */
+  float cluster_tolerance_;
+
+  /** \brief deviation of the normals between two points so they can be clustered
+   * together. */
+  float eps_angle_threshold_{0.125f};
+
+  /** \brief Minimum amount of points in a clustered region to be considered stable for
+   * CVFH computation.
+   */
+  std::size_t min_points_{50};
+
+  /** \brief Radius for the normals computation. */
+  float radius_normals_;
+
+  /** \brief Estimate the Clustered Viewpoint Feature Histograms (CVFH) descriptors at
+   * a set of points given by <setInputCloud (), setIndices ()> using the surface in
+   * setSearchSurface ()
+   *
+   * \param[out] output the resultant point cloud model dataset that contains the CVFH
+   * feature estimates
+   */
+  void
+  computeFeature (PointCloudOut& output) override;
+
+  /** \brief Region growing method using Euclidean distances and neighbors normals to
+   * add points to a region.
+   * \param[in] cloud point cloud to split into regions
+   * \param[in] normals are the normals of cloud
+   * \param[in] tolerance is the allowed Euclidean distance between points to be added
+   * to the cluster \param[in] tree is the spatial search structure for nearest
+   * neighbour search \param[out] clusters vector of indices representing the clustered
+   * regions \param[in] eps_angle deviation of the normals between two points so they
+   * can be clustered together \param[in] min_pts_per_cluster minimum cluster size.
+   * (default: 1 point) \param[in] max_pts_per_cluster maximum cluster size. (default:
+   * all the points)
+   */
+  void
+  extractEuclideanClustersSmooth (
+      const pcl::PointCloud<pcl::PointNormal>& cloud,
+      const pcl::PointCloud<pcl::PointNormal>& normals,
+      float tolerance,
+      const pcl::search::Search<pcl::PointNormal>::Ptr& tree,
+      std::vector<pcl::PointIndices>& clusters,
+      double eps_angle,
+      unsigned int min_pts_per_cluster = 1,
+      unsigned int max_pts_per_cluster = (std::numeric_limits<int>::max)());
+
+protected:
+  /** \brief Centroids that were used to compute different CVFH descriptors */
+  std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f>>
+      centroids_dominant_orientations_;
+  /** \brief Normal centroids that were used to compute different CVFH descriptors */
+  std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f>>
+      dominant_normals_;
+};
+} // namespace pcl
 
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/features/impl/cvfh.hpp>

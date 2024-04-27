@@ -37,22 +37,22 @@
 
 #pragma once
 
-namespace pcl
-{
+namespace pcl {
 
-  /** \brief Copy the fields of a source point into a target point.
-    *
-    * If the source and the target point types are the same, then a complete
-    * copy is made. Otherwise only those fields that the two point types share
-    * in common are copied.
-    *
-    * \param[in]  point_in the source point
-    * \param[out] point_out the target point
-    *
-    * \ingroup common */
-  template <typename PointInT, typename PointOutT> void
-  copyPoint (const PointInT& point_in, PointOutT& point_out);
+/** \brief Copy the fields of a source point into a target point.
+ *
+ * If the source and the target point types are the same, then a complete
+ * copy is made. Otherwise only those fields that the two point types share
+ * in common are copied.
+ *
+ * \param[in]  point_in the source point
+ * \param[out] point_out the target point
+ *
+ * \ingroup common */
+template <typename PointInT, typename PointOutT>
+void
+copyPoint (const PointInT& point_in, PointOutT& point_out);
 
-}
+} // namespace pcl
 
 #include <pcl/common/impl/copy_point.hpp>

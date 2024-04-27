@@ -52,9 +52,9 @@ struct Static {};
 
 template <>
 struct [[deprecated("This class will be replaced at PCL release 1.15  by "
-                    "c++11's static_assert instead")]] Static<true>
-{
-  __PCL_GPU_HOST_DEVICE__ static void check(){};
+                    "c++11's static_assert instead")]] Static<true> {
+  __PCL_GPU_HOST_DEVICE__ static void
+  check (){};
 };
 } // namespace device
 

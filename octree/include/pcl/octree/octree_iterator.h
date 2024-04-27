@@ -163,7 +163,7 @@ public:
 
   /** \brief Reset iterator */
   inline void
-  reset()
+  reset ()
   {
     current_state_ = 0;
     if (octree_ && (!max_octree_depth_)) {
@@ -181,7 +181,7 @@ public:
    * \return octree key of current node
    */
   inline const OctreeKey&
-  getCurrentOctreeKey() const
+  getCurrentOctreeKey () const
   {
     assert(octree_ != 0);
     assert(current_state_ != 0);
@@ -193,7 +193,7 @@ public:
    * \return depth level
    */
   inline uindex_t
-  getCurrentOctreeDepth() const
+  getCurrentOctreeDepth () const
   {
     assert(octree_ != 0);
     assert(current_state_ != 0);
@@ -205,7 +205,7 @@ public:
    * \return pointer to current octree node
    */
   inline OctreeNode*
-  getCurrentOctreeNode() const
+  getCurrentOctreeNode () const
   {
     assert(octree_ != 0);
     assert(current_state_ != 0);
@@ -217,7 +217,7 @@ public:
    * \return true if current node is a branch node, false otherwise
    */
   inline bool
-  isBranchNode() const
+  isBranchNode () const
   {
     assert(octree_ != 0);
     assert(current_state_ != 0);
@@ -229,7 +229,7 @@ public:
    * \return true if current node is a branch node, false otherwise
    */
   inline bool
-  isLeafNode() const
+  isLeafNode () const
   {
     assert(octree_ != 0);
     assert(current_state_ != 0);
@@ -256,7 +256,7 @@ public:
    * node
    */
   inline char
-  getNodeConfiguration() const
+  getNodeConfiguration () const
   {
     char ret = 0;
 
@@ -280,7 +280,7 @@ public:
    * \return Reference to container class of leaf node.
    */
   const LeafContainer&
-  getLeafContainer() const
+  getLeafContainer () const
   {
     assert(octree_ != 0);
     assert(current_state_ != 0);
@@ -295,7 +295,7 @@ public:
    * \return Reference to container class of leaf node.
    */
   LeafContainer&
-  getLeafContainer()
+  getLeafContainer ()
   {
     assert(octree_ != 0);
     assert(current_state_ != 0);
@@ -310,7 +310,7 @@ public:
    * \return BranchContainer.
    */
   const BranchContainer&
-  getBranchContainer() const
+  getBranchContainer () const
   {
     assert(octree_ != 0);
     assert(current_state_ != 0);
@@ -325,7 +325,7 @@ public:
    * \return BranchContainer.
    */
   BranchContainer&
-  getBranchContainer()
+  getBranchContainer ()
   {
     assert(octree_ != 0);
     assert(current_state_ != 0);
@@ -340,7 +340,7 @@ public:
    * depth). \return node id.
    */
   virtual unsigned long
-  getNodeID() const
+  getNodeID () const
   {
     unsigned long id = 0;
 
@@ -446,7 +446,7 @@ public:
   /** \brief Reset the iterator to the root node of the octree
    */
   virtual void
-  reset();
+  reset ();
 
   /** \brief Preincrement operator.
    * \note recursively step to next octree node
@@ -468,7 +468,7 @@ public:
   /** \brief Skip all child voxels of current node and return to parent node.
    */
   void
-  skipChildVoxels();
+  skipChildVoxels ();
 
 protected:
   /** Stack structure. */
@@ -550,7 +550,7 @@ public:
   /** \brief Reset the iterator to the root node of the octree
    */
   void
-  reset();
+  reset ();
 
   /** \brief Preincrement operator.
    * \note step to next octree node
@@ -644,12 +644,12 @@ public:
    * \param[in] fixed_depth_arg Depth level during traversal
    */
   void
-  reset(uindex_t fixed_depth_arg);
+  reset (uindex_t fixed_depth_arg);
 
   /** \brief Reset the iterator to the first node at the current depth
    */
   void
-  reset()
+  reset ()
   {
     this->reset(fixed_depth_);
   }
@@ -715,7 +715,7 @@ public:
   /** \brief Reset the iterator to the root node of the octree
    */
   inline void
-  reset()
+  reset ()
   {
     OctreeDepthFirstIterator<OctreeT>::reset();
     this->operator++();
@@ -808,7 +808,7 @@ public:
   /** \brief Reset the iterator to the first leaf in the breadth first way.
    */
   inline void
-  reset();
+  reset ();
 
   /** \brief Preincrement operator.
    * \note recursively step to next octree leaf node

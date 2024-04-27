@@ -12,7 +12,7 @@
 namespace face_detection_apps_utils {
 
 inline bool
-readMatrixFromFile(const std::string& file, Eigen::Matrix4f& matrix)
+readMatrixFromFile (const std::string& file, Eigen::Matrix4f& matrix)
 {
 
   std::ifstream in;
@@ -35,7 +35,7 @@ readMatrixFromFile(const std::string& file, Eigen::Matrix4f& matrix)
 }
 
 inline bool
-sortFiles(const std::string& file1, const std::string& file2)
+sortFiles (const std::string& file1, const std::string& file2)
 {
   std::vector<std::string> strs1;
   boost::split(strs1, file1, boost::is_any_of("/"));
@@ -67,10 +67,10 @@ sortFiles(const std::string& file1, const std::string& file2)
 }
 
 inline void
-getFilesInDirectory(pcl_fs::path& dir,
-                    std::string& rel_path_so_far,
-                    std::vector<std::string>& relative_paths,
-                    std::string& ext)
+getFilesInDirectory (pcl_fs::path& dir,
+                     std::string& rel_path_so_far,
+                     std::vector<std::string>& relative_paths,
+                     std::string& ext)
 {
   for (const auto& dir_entry : pcl_fs::directory_iterator(dir)) {
     // check if its a directory, then get models in it
@@ -97,8 +97,8 @@ getFilesInDirectory(pcl_fs::path& dir,
 }
 
 void
-displayHeads(std::vector<Eigen::VectorXf>& heads,
-             pcl::visualization::PCLVisualizer& vis)
+displayHeads (std::vector<Eigen::VectorXf>& heads,
+              pcl::visualization::PCLVisualizer& vis)
 {
   for (std::size_t i = 0; i < heads.size(); i++) {
     std::string name = "sphere" + std::to_string(i);

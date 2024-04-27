@@ -46,112 +46,114 @@
 #include <memory>
 #include <mutex>
 
-namespace pcl
-{
+namespace pcl {
 
-  namespace io
-  {
+namespace io {
 
-    namespace depth_sense
-    {
+namespace depth_sense {
 
-      struct DepthSenseGrabberImpl
-      {
+struct DepthSenseGrabberImpl {
 
-        /// Parent grabber
-        DepthSenseGrabber* p_;
+  /// Parent grabber
+  DepthSenseGrabber* p_;
 
-        /// Serial number of the device captured by this grabber
-        std::string device_id_;
+  /// Serial number of the device captured by this grabber
+  std::string device_id_;
 
-        bool is_running_;
+  bool is_running_;
 
-        int confidence_threshold_;
-        DepthSenseGrabber::TemporalFilteringType temporal_filtering_type_;
+  int confidence_threshold_;
+  DepthSenseGrabber::TemporalFilteringType temporal_filtering_type_;
 
-        std::shared_ptr<DepthSense::ProjectionHelper> projection_;
+  std::shared_ptr<DepthSense::ProjectionHelper> projection_;
 
-        using sig_cb_depth_sense_point_cloud = DepthSenseGrabber::sig_cb_depth_sense_point_cloud;
-        using sig_cb_depth_sense_point_cloud_rgba = DepthSenseGrabber::sig_cb_depth_sense_point_cloud_rgba;
+  using sig_cb_depth_sense_point_cloud =
+      DepthSenseGrabber::sig_cb_depth_sense_point_cloud;
+  using sig_cb_depth_sense_point_cloud_rgba =
+      DepthSenseGrabber::sig_cb_depth_sense_point_cloud_rgba;
 
-        /// Signal to indicate whether new XYZ cloud is available
-        boost::signals2::signal<sig_cb_depth_sense_point_cloud>* point_cloud_signal_;
-        /// Signal to indicate whether new XYZRGBA cloud is available
-        boost::signals2::signal<sig_cb_depth_sense_point_cloud_rgba>* point_cloud_rgba_signal_;
+  /// Signal to indicate whether new XYZ cloud is available
+  boost::signals2::signal<sig_cb_depth_sense_point_cloud>* point_cloud_signal_;
+  /// Signal to indicate whether new XYZRGBA cloud is available
+  boost::signals2::signal<sig_cb_depth_sense_point_cloud_rgba>*
+      point_cloud_rgba_signal_;
 
-        /// Indicates whether there are subscribers for PointXYZ signal. This is
-        /// computed and stored on start()
-        bool need_xyz_;
+  /// Indicates whether there are subscribers for PointXYZ signal. This is
+  /// computed and stored on start()
+  bool need_xyz_;
 
-        /// Indicates whether there are subscribers for PointXYZRGBA signal. This
-        /// is computed and stored on start()
-        bool need_xyzrgba_;
+  /// Indicates whether there are subscribers for PointXYZRGBA signal. This
+  /// is computed and stored on start()
+  bool need_xyzrgba_;
 
-        EventFrequency frequency_;
-        mutable std::mutex fps_mutex_;
+  EventFrequency frequency_;
+  mutable std::mutex fps_mutex_;
 
-        /// Temporary buffer to store color data
-        std::vector<std::uint8_t> color_data_;
+  /// Temporary buffer to store color data
+  std::vector<std::uint8_t> color_data_;
 
-        std::shared_ptr<pcl::io::Buffer<float> > depth_buffer_;
+  std::shared_ptr<pcl::io::Buffer<float>> depth_buffer_;
 
-        static const int FRAMERATE = 30;
-        static const int WIDTH = 320;
-        static const int HEIGHT = 240;
-        static const int SIZE = WIDTH * HEIGHT;
-        static const int COLOR_WIDTH = 640;
-        static const int COLOR_HEIGHT = 480;
-        static const int COLOR_SIZE = COLOR_WIDTH * COLOR_HEIGHT;
+  static const int FRAMERATE = 30;
+  static const int WIDTH = 320;
+  static const int HEIGHT = 240;
+  static const int SIZE = WIDTH * HEIGHT;
+  static const int COLOR_WIDTH = 640;
+  static const int COLOR_HEIGHT = 480;
+  static const int COLOR_SIZE = COLOR_WIDTH * COLOR_HEIGHT;
 
-        DepthSenseGrabberImpl (DepthSenseGrabber* parent, const std::string& device_id);
+  DepthSenseGrabberImpl(DepthSenseGrabber* parent, const std::string& device_id);
 
-        ~DepthSenseGrabberImpl () noexcept;
+  ~DepthSenseGrabberImpl() noexcept;
 
-        void
-        start ();
+  void
+  start ();
 
-        void
-        stop ();
+  void
+  stop ();
 
-        float
-        getFramesPerSecond () const;
+  float
+  getFramesPerSecond () const;
 
-        void
-        setConfidenceThreshold (int threshold);
+  void
+  setConfidenceThreshold (int threshold);
 
-        void
-        enableTemporalFiltering (DepthSenseGrabber::TemporalFilteringType type, std::size_t window_size);
+  void
+  enableTemporalFiltering (DepthSenseGrabber::TemporalFilteringType type,
+                           std::size_t window_size);
 
-        void
-        setCameraParameters (const DepthSense::StereoCameraParameters& parameters);
+  void
+  setCameraParameters (const DepthSense::StereoCameraParameters& parameters);
 
-        void
-        configureDepthNode (DepthSense::DepthNode node) const;
+  void
+  configureDepthNode (DepthSense::DepthNode node) const;
 
-        void
-        configureColorNode (DepthSense::ColorNode node) const;
+  void
+  configureColorNode (DepthSense::ColorNode node) const;
 
-        /** A callback for processing depth data.
-          *
-          * It is supposed to be called from the DepthSense::Context thread that
-          * is managed by DepthSenseDeviceManager. */
-        void
-        onDepthDataReceived (DepthSense::DepthNode node, DepthSense::DepthNode::NewSampleReceivedData data);
+  /** A callback for processing depth data.
+   *
+   * It is supposed to be called from the DepthSense::Context thread that
+   * is managed by DepthSenseDeviceManager. */
+  void
+  onDepthDataReceived (DepthSense::DepthNode node,
+                       DepthSense::DepthNode::NewSampleReceivedData data);
 
-        /** A callback for processing color data.
-          *
-          * It is supposed to be called from the DepthSense::Context thread that
-          * is managed by DepthSenseDeviceManager. */
-        void
-        onColorDataReceived (DepthSense::ColorNode node, DepthSense::ColorNode::NewSampleReceivedData data);
+  /** A callback for processing color data.
+   *
+   * It is supposed to be called from the DepthSense::Context thread that
+   * is managed by DepthSenseDeviceManager. */
+  void
+  onColorDataReceived (DepthSense::ColorNode node,
+                       DepthSense::ColorNode::NewSampleReceivedData data);
 
-        template <typename Point> void
-        computeXYZ (PointCloud<Point>& cloud);
+  template <typename Point>
+  void
+  computeXYZ (PointCloud<Point>& cloud);
+};
 
-      };
+} // namespace depth_sense
 
-    }
+} // namespace io
 
-  }
-
-}
+} // namespace pcl

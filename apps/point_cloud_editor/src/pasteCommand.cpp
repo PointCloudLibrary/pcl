@@ -38,18 +38,18 @@
 /// @details implementation of the class PasteCommand
 /// @author  Yue Li and Matthew Hielsberg
 
-#include <pcl/apps/point_cloud_editor/pasteCommand.h>
 #include <pcl/apps/point_cloud_editor/cloud.h>
 #include <pcl/apps/point_cloud_editor/copyBuffer.h>
+#include <pcl/apps/point_cloud_editor/pasteCommand.h>
 #include <pcl/apps/point_cloud_editor/selection.h>
 
-PasteCommand::PasteCommand (ConstCopyBufferPtr copy_buffer_ptr,
-                            SelectionPtr selection_ptr,
-                            CloudPtr cloud_ptr)
-  : copy_buffer_ptr_(std::move(copy_buffer_ptr)), selection_ptr_(std::move(selection_ptr)),
-    cloud_ptr_(std::move(cloud_ptr))
-{
-}
+PasteCommand::PasteCommand(ConstCopyBufferPtr copy_buffer_ptr,
+                           SelectionPtr selection_ptr,
+                           CloudPtr cloud_ptr)
+: copy_buffer_ptr_(std::move(copy_buffer_ptr))
+, selection_ptr_(std::move(selection_ptr))
+, cloud_ptr_(std::move(cloud_ptr))
+{}
 
 void
 PasteCommand::execute()
@@ -63,11 +63,11 @@ PasteCommand::execute()
   cloud_ptr_->append(copy_buffer_ptr_->get());
 
   // make the appended cloud be selected
-  selection_ptr_ -> clear();
-  selection_ptr_ -> addIndexRange(prev_cloud_size_,
-                                  cloud_ptr_->size() - prev_cloud_size_);
+  selection_ptr_->clear();
+  selection_ptr_->addIndexRange(prev_cloud_size_,
+                                cloud_ptr_->size() - prev_cloud_size_);
   // notify the cloud that the selection has changed
-  cloud_ptr_ -> setSelection(selection_ptr_);
+  cloud_ptr_->setSelection(selection_ptr_);
 }
 
 void
@@ -75,6 +75,7 @@ PasteCommand::undo()
 {
   if (!cloud_ptr_)
     return;
-  selection_ptr_->removeIndexRange(prev_cloud_size_, cloud_ptr_->size()-prev_cloud_size_);
+  selection_ptr_->removeIndexRange(prev_cloud_size_,
+                                   cloud_ptr_->size() - prev_cloud_size_);
   cloud_ptr_->resize(prev_cloud_size_);
 }

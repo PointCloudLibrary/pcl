@@ -61,7 +61,7 @@ public:
   Dome();
 
   Vertices
-  getVertices() const;
+  getVertices () const;
 
 private:
   Vertices vertices_;
@@ -71,12 +71,12 @@ public:
 };
 
 PCL_EXPORTS void
-addDirection(const Eigen::Vector4f& normal,
-             const Eigen::Vector4f& direction,
-             std::uint32_t& directions);
+addDirection (const Eigen::Vector4f& normal,
+              const Eigen::Vector4f& direction,
+              std::uint32_t& directions);
 
 PCL_EXPORTS unsigned int
-countDirections(const std::uint32_t directions);
+countDirections (const std::uint32_t directions);
 
 } // End namespace ihs
 } // End namespace pcl

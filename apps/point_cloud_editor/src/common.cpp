@@ -43,30 +43,27 @@
 #include <pcl/apps/point_cloud_editor/localTypes.h>
 
 void
-setIdentity(float* matrix)
+setIdentity (float* matrix)
 {
   std::fill_n(matrix, MATRIX_SIZE, 0.0f);
-  for (unsigned int i = 0; i < MATRIX_SIZE; i+=MATRIX_SIZE_DIM+1)
+  for (unsigned int i = 0; i < MATRIX_SIZE; i += MATRIX_SIZE_DIM + 1)
     matrix[i] = 1.0f;
 }
 
 void
-multMatrix(const float* left, const float* right, float* result)
+multMatrix (const float* left, const float* right, float* result)
 {
   float r[MATRIX_SIZE];
-  for(unsigned int i = 0; i < MATRIX_SIZE_DIM; ++i)
-  {
-    for(unsigned int j = 0; j < MATRIX_SIZE_DIM; ++j)
-    {
+  for (unsigned int i = 0; i < MATRIX_SIZE_DIM; ++i) {
+    for (unsigned int j = 0; j < MATRIX_SIZE_DIM; ++j) {
       float sum = 0.0;
-      for(unsigned int k = 0; k < MATRIX_SIZE_DIM; ++k)
+      for (unsigned int k = 0; k < MATRIX_SIZE_DIM; ++k)
         sum += left[i * MATRIX_SIZE_DIM + k] * right[k * MATRIX_SIZE_DIM + j];
       r[i * MATRIX_SIZE_DIM + j] = sum;
     }
   }
   std::copy(r, r + MATRIX_SIZE, result);
 }
-
 
 // This code was found on:
 // http://stackoverflow.com/questions/1148309/inverting-a-4x4-matrix
@@ -82,148 +79,101 @@ multMatrix(const float* left, const float* right, float* result)
 // their authors. See below for a list of Mesa's main components and the license
 // for each.
 //
-//The core Mesa library is licensed according to the terms of the MIT license.
+// The core Mesa library is licensed according to the terms of the MIT license.
 // This allows integration with the XFree86, Xorg and DRI projects.
 //
-//The default Mesa license is as follows:
+// The default Mesa license is as follows:
 //
-//Copyright (C) 1999-2007  Brian Paul   All Rights Reserved.
+// Copyright (C) 1999-2007  Brian Paul   All Rights Reserved.
 //
-//Permission is hereby granted, free of charge, to any person obtaining a
-//copy of this software and associated documentation files (the "Software"),
-//to deal in the Software without restriction, including without limitation
-//the rights to use, copy, modify, merge, publish, distribute, sublicense,
-//and/or sell copies of the Software, and to permit persons to whom the
-//Software is furnished to do so, subject to the following conditions:
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the "Software"),
+// to deal in the Software without restriction, including without limitation
+// the rights to use, copy, modify, merge, publish, distribute, sublicense,
+// and/or sell copies of the Software, and to permit persons to whom the
+// Software is furnished to do so, subject to the following conditions:
 //
-//The above copyright notice and this permission notice shall be included
-//in all copies or substantial portions of the Software.
+// The above copyright notice and this permission notice shall be included
+// in all copies or substantial portions of the Software.
 //
-//THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-//OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-//FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
-//BRIAN PAUL BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN
-//AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
-//CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
+// BRIAN PAUL BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN
+// AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+// CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
-bool invertMatrix(const float* matrix, float* inverse)
+bool
+invertMatrix (const float* matrix, float* inverse)
 {
   double inv[16], det;
 
-  inv[0] = matrix[5]  * matrix[10] * matrix[15] -
-      matrix[5]  * matrix[11] * matrix[14] -
-      matrix[9]  * matrix[6]  * matrix[15] +
-      matrix[9]  * matrix[7]  * matrix[14] +
-      matrix[13] * matrix[6]  * matrix[11] -
-      matrix[13] * matrix[7]  * matrix[10];
+  inv[0] = matrix[5] * matrix[10] * matrix[15] - matrix[5] * matrix[11] * matrix[14] -
+           matrix[9] * matrix[6] * matrix[15] + matrix[9] * matrix[7] * matrix[14] +
+           matrix[13] * matrix[6] * matrix[11] - matrix[13] * matrix[7] * matrix[10];
 
-  inv[4] = -matrix[4]  * matrix[10] * matrix[15] +
-      matrix[4]  * matrix[11] * matrix[14] +
-      matrix[8]  * matrix[6]  * matrix[15] -
-      matrix[8]  * matrix[7]  * matrix[14] -
-      matrix[12] * matrix[6]  * matrix[11] +
-      matrix[12] * matrix[7]  * matrix[10];
+  inv[4] = -matrix[4] * matrix[10] * matrix[15] + matrix[4] * matrix[11] * matrix[14] +
+           matrix[8] * matrix[6] * matrix[15] - matrix[8] * matrix[7] * matrix[14] -
+           matrix[12] * matrix[6] * matrix[11] + matrix[12] * matrix[7] * matrix[10];
 
-  inv[8] = matrix[4]  * matrix[9] * matrix[15] -
-      matrix[4]  * matrix[11] * matrix[13] -
-      matrix[8]  * matrix[5] * matrix[15] +
-      matrix[8]  * matrix[7] * matrix[13] +
-      matrix[12] * matrix[5] * matrix[11] -
-      matrix[12] * matrix[7] * matrix[9];
+  inv[8] = matrix[4] * matrix[9] * matrix[15] - matrix[4] * matrix[11] * matrix[13] -
+           matrix[8] * matrix[5] * matrix[15] + matrix[8] * matrix[7] * matrix[13] +
+           matrix[12] * matrix[5] * matrix[11] - matrix[12] * matrix[7] * matrix[9];
 
-  inv[12] = -matrix[4]  * matrix[9] * matrix[14] +
-      matrix[4]  * matrix[10] * matrix[13] +
-      matrix[8]  * matrix[5] * matrix[14] -
-      matrix[8]  * matrix[6] * matrix[13] -
-      matrix[12] * matrix[5] * matrix[10] +
-      matrix[12] * matrix[6] * matrix[9];
+  inv[12] = -matrix[4] * matrix[9] * matrix[14] + matrix[4] * matrix[10] * matrix[13] +
+            matrix[8] * matrix[5] * matrix[14] - matrix[8] * matrix[6] * matrix[13] -
+            matrix[12] * matrix[5] * matrix[10] + matrix[12] * matrix[6] * matrix[9];
 
-  inv[1] = -matrix[1]  * matrix[10] * matrix[15] +
-      matrix[1]  * matrix[11] * matrix[14] +
-      matrix[9]  * matrix[2] * matrix[15] -
-      matrix[9]  * matrix[3] * matrix[14] -
-      matrix[13] * matrix[2] * matrix[11] +
-      matrix[13] * matrix[3] * matrix[10];
+  inv[1] = -matrix[1] * matrix[10] * matrix[15] + matrix[1] * matrix[11] * matrix[14] +
+           matrix[9] * matrix[2] * matrix[15] - matrix[9] * matrix[3] * matrix[14] -
+           matrix[13] * matrix[2] * matrix[11] + matrix[13] * matrix[3] * matrix[10];
 
-  inv[5] = matrix[0]  * matrix[10] * matrix[15] -
-      matrix[0]  * matrix[11] * matrix[14] -
-      matrix[8]  * matrix[2] * matrix[15] +
-      matrix[8]  * matrix[3] * matrix[14] +
-      matrix[12] * matrix[2] * matrix[11] -
-      matrix[12] * matrix[3] * matrix[10];
+  inv[5] = matrix[0] * matrix[10] * matrix[15] - matrix[0] * matrix[11] * matrix[14] -
+           matrix[8] * matrix[2] * matrix[15] + matrix[8] * matrix[3] * matrix[14] +
+           matrix[12] * matrix[2] * matrix[11] - matrix[12] * matrix[3] * matrix[10];
 
-  inv[9] = -matrix[0]  * matrix[9] * matrix[15] +
-      matrix[0]  * matrix[11] * matrix[13] +
-      matrix[8]  * matrix[1] * matrix[15] -
-      matrix[8]  * matrix[3] * matrix[13] -
-      matrix[12] * matrix[1] * matrix[11] +
-      matrix[12] * matrix[3] * matrix[9];
+  inv[9] = -matrix[0] * matrix[9] * matrix[15] + matrix[0] * matrix[11] * matrix[13] +
+           matrix[8] * matrix[1] * matrix[15] - matrix[8] * matrix[3] * matrix[13] -
+           matrix[12] * matrix[1] * matrix[11] + matrix[12] * matrix[3] * matrix[9];
 
-  inv[13] = matrix[0]  * matrix[9] * matrix[14] -
-      matrix[0]  * matrix[10] * matrix[13] -
-      matrix[8]  * matrix[1] * matrix[14] +
-      matrix[8]  * matrix[2] * matrix[13] +
-      matrix[12] * matrix[1] * matrix[10] -
-      matrix[12] * matrix[2] * matrix[9];
+  inv[13] = matrix[0] * matrix[9] * matrix[14] - matrix[0] * matrix[10] * matrix[13] -
+            matrix[8] * matrix[1] * matrix[14] + matrix[8] * matrix[2] * matrix[13] +
+            matrix[12] * matrix[1] * matrix[10] - matrix[12] * matrix[2] * matrix[9];
 
-  inv[2] = matrix[1]  * matrix[6] * matrix[15] -
-      matrix[1]  * matrix[7] * matrix[14] -
-      matrix[5]  * matrix[2] * matrix[15] +
-      matrix[5]  * matrix[3] * matrix[14] +
-      matrix[13] * matrix[2] * matrix[7] -
-      matrix[13] * matrix[3] * matrix[6];
+  inv[2] = matrix[1] * matrix[6] * matrix[15] - matrix[1] * matrix[7] * matrix[14] -
+           matrix[5] * matrix[2] * matrix[15] + matrix[5] * matrix[3] * matrix[14] +
+           matrix[13] * matrix[2] * matrix[7] - matrix[13] * matrix[3] * matrix[6];
 
-  inv[6] = -matrix[0]  * matrix[6] * matrix[15] +
-      matrix[0]  * matrix[7] * matrix[14] +
-      matrix[4]  * matrix[2] * matrix[15] -
-      matrix[4]  * matrix[3] * matrix[14] -
-      matrix[12] * matrix[2] * matrix[7] +
-      matrix[12] * matrix[3] * matrix[6];
+  inv[6] = -matrix[0] * matrix[6] * matrix[15] + matrix[0] * matrix[7] * matrix[14] +
+           matrix[4] * matrix[2] * matrix[15] - matrix[4] * matrix[3] * matrix[14] -
+           matrix[12] * matrix[2] * matrix[7] + matrix[12] * matrix[3] * matrix[6];
 
-  inv[10] = matrix[0]  * matrix[5] * matrix[15] -
-      matrix[0]  * matrix[7] * matrix[13] -
-      matrix[4]  * matrix[1] * matrix[15] +
-      matrix[4]  * matrix[3] * matrix[13] +
-      matrix[12] * matrix[1] * matrix[7] -
-      matrix[12] * matrix[3] * matrix[5];
+  inv[10] = matrix[0] * matrix[5] * matrix[15] - matrix[0] * matrix[7] * matrix[13] -
+            matrix[4] * matrix[1] * matrix[15] + matrix[4] * matrix[3] * matrix[13] +
+            matrix[12] * matrix[1] * matrix[7] - matrix[12] * matrix[3] * matrix[5];
 
-  inv[14] = -matrix[0]  * matrix[5] * matrix[14] +
-      matrix[0]  * matrix[6] * matrix[13] +
-      matrix[4]  * matrix[1] * matrix[14] -
-      matrix[4]  * matrix[2] * matrix[13] -
-      matrix[12] * matrix[1] * matrix[6] +
-      matrix[12] * matrix[2] * matrix[5];
+  inv[14] = -matrix[0] * matrix[5] * matrix[14] + matrix[0] * matrix[6] * matrix[13] +
+            matrix[4] * matrix[1] * matrix[14] - matrix[4] * matrix[2] * matrix[13] -
+            matrix[12] * matrix[1] * matrix[6] + matrix[12] * matrix[2] * matrix[5];
 
-  inv[3] = -matrix[1] * matrix[6] * matrix[11] +
-      matrix[1] * matrix[7] * matrix[10] +
-      matrix[5] * matrix[2] * matrix[11] -
-      matrix[5] * matrix[3] * matrix[10] -
-      matrix[9] * matrix[2] * matrix[7] +
-      matrix[9] * matrix[3] * matrix[6];
+  inv[3] = -matrix[1] * matrix[6] * matrix[11] + matrix[1] * matrix[7] * matrix[10] +
+           matrix[5] * matrix[2] * matrix[11] - matrix[5] * matrix[3] * matrix[10] -
+           matrix[9] * matrix[2] * matrix[7] + matrix[9] * matrix[3] * matrix[6];
 
-  inv[7] = matrix[0] * matrix[6] * matrix[11] -
-      matrix[0] * matrix[7] * matrix[10] -
-      matrix[4] * matrix[2] * matrix[11] +
-      matrix[4] * matrix[3] * matrix[10] +
-      matrix[8] * matrix[2] * matrix[7] -
-      matrix[8] * matrix[3] * matrix[6];
+  inv[7] = matrix[0] * matrix[6] * matrix[11] - matrix[0] * matrix[7] * matrix[10] -
+           matrix[4] * matrix[2] * matrix[11] + matrix[4] * matrix[3] * matrix[10] +
+           matrix[8] * matrix[2] * matrix[7] - matrix[8] * matrix[3] * matrix[6];
 
-  inv[11] = -matrix[0] * matrix[5] * matrix[11] +
-      matrix[0] * matrix[7] * matrix[9] +
-      matrix[4] * matrix[1] * matrix[11] -
-      matrix[4] * matrix[3] * matrix[9] -
-      matrix[8] * matrix[1] * matrix[7] +
-      matrix[8] * matrix[3] * matrix[5];
+  inv[11] = -matrix[0] * matrix[5] * matrix[11] + matrix[0] * matrix[7] * matrix[9] +
+            matrix[4] * matrix[1] * matrix[11] - matrix[4] * matrix[3] * matrix[9] -
+            matrix[8] * matrix[1] * matrix[7] + matrix[8] * matrix[3] * matrix[5];
 
-  inv[15] = matrix[0] * matrix[5] * matrix[10] -
-      matrix[0] * matrix[6] * matrix[9] -
-      matrix[4] * matrix[1] * matrix[10] +
-      matrix[4] * matrix[2] * matrix[9] +
-      matrix[8] * matrix[1] * matrix[6] -
-      matrix[8] * matrix[2] * matrix[5];
+  inv[15] = matrix[0] * matrix[5] * matrix[10] - matrix[0] * matrix[6] * matrix[9] -
+            matrix[4] * matrix[1] * matrix[10] + matrix[4] * matrix[2] * matrix[9] +
+            matrix[8] * matrix[1] * matrix[6] - matrix[8] * matrix[2] * matrix[5];
 
-  det = matrix[0] * inv[0] + matrix[1] * inv[4] +
-        matrix[2] * inv[8] + matrix[3] * inv[12];
+  det = matrix[0] * inv[0] + matrix[1] * inv[4] + matrix[2] * inv[8] +
+        matrix[3] * inv[12];
 
   if (det == 0)
     return (false);
@@ -237,7 +187,7 @@ bool invertMatrix(const float* matrix, float* inverse)
 }
 
 void
-stringToLower(std::string &s)
+stringToLower (std::string& s)
 {
   std::transform(s.begin(), s.end(), s.begin(), tolower);
 }

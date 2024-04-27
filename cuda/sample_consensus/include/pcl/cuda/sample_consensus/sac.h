@@ -37,162 +37,194 @@
 
 #pragma once
 
-#include <pcl/cuda/sample_consensus/sac_model.h>
 #include <pcl/cuda/point_cloud.h>
+#include <pcl/cuda/sample_consensus/sac_model.h>
+
 #include <limits>
-//#include <set>
+// #include <set>
 
-namespace pcl
-{
-  namespace cuda
+namespace pcl {
+namespace cuda {
+template <template <typename> class Storage>
+class SampleConsensus {
+  using SampleConsensusModelPtr = typename SampleConsensusModel<Storage>::Ptr;
+  using Hypotheses = typename SampleConsensusModel<Storage>::Hypotheses;
+
+  using Indices = typename SampleConsensusModel<Storage>::Indices;
+  using IndicesPtr = typename SampleConsensusModel<Storage>::IndicesPtr;
+  using IndicesConstPtr = typename SampleConsensusModel<Storage>::IndicesConstPtr;
+
+private:
+  /** \brief Constructor for base SAC. */
+  SampleConsensus(){};
+
+public:
+  using Coefficients = typename Storage<float>::type;
+  using CoefficientsPtr = shared_ptr<Coefficients>;
+  using CoefficientsConstPtr = shared_ptr<const Coefficients>;
+
+  using Ptr = shared_ptr<SampleConsensus>;
+  using ConstPtr = shared_ptr<const SampleConsensus>;
+
+  /** \brief Constructor for base SAC.
+   * \param model a Sample Consensus model
+   */
+  SampleConsensus(const SampleConsensusModelPtr& model)
+  : sac_model_(model)
+  , probability_(0.99)
+  , iterations_(0)
+  , threshold_(std::numeric_limits<double>::max())
+  , max_iterations_(1000){};
+
+  /** \brief Constructor for base SAC.
+   * \param model a Sample Consensus model
+   * \param threshold distance to model threshold
+   */
+  SampleConsensus(const SampleConsensusModelPtr& model, float threshold)
+  : sac_model_(model)
+  , probability_(0.99)
+  , iterations_(0)
+  , threshold_(threshold)
+  , max_iterations_(1000){};
+
+  /** \brief Destructor for base SAC. */
+  virtual ~SampleConsensus() = default;
+
+  /** \brief Set the distance to model threshold.
+   * \param threshold distance to model threshold
+   */
+  inline void
+  setDistanceThreshold (float threshold)
   {
-    template <template <typename> class Storage>
-    class SampleConsensus
-    {
-      using SampleConsensusModelPtr = typename SampleConsensusModel<Storage>::Ptr;
-      using Hypotheses = typename SampleConsensusModel<Storage>::Hypotheses;
+    threshold_ = threshold;
+  }
 
-      using Indices = typename SampleConsensusModel<Storage>::Indices;
-      using IndicesPtr = typename SampleConsensusModel<Storage>::IndicesPtr;
-      using IndicesConstPtr = typename SampleConsensusModel<Storage>::IndicesConstPtr;
+  /** \brief Get the distance to model threshold, as set by the user. */
+  inline float
+  getDistanceThreshold ()
+  {
+    return (threshold_);
+  }
 
-      private:
-        /** \brief Constructor for base SAC. */
-        SampleConsensus () {};
+  /** \brief Set the maximum number of iterations.
+   * \param max_iterations maximum number of iterations
+   */
+  inline void
+  setMaxIterations (int max_iterations)
+  {
+    max_iterations_ = max_iterations;
+  }
 
-      public:
-        using Coefficients = typename Storage<float>::type;
-        using CoefficientsPtr = shared_ptr <Coefficients>;
-        using CoefficientsConstPtr = shared_ptr <const Coefficients>;
+  /** \brief Get the maximum number of iterations, as set by the user. */
+  inline int
+  getMaxIterations ()
+  {
+    return (max_iterations_);
+  }
 
-        using Ptr = shared_ptr<SampleConsensus>;
-        using ConstPtr = shared_ptr<const SampleConsensus>;
+  /** \brief Set the desired probability of choosing at least one sample free from
+   * outliers.
+   * \param probability the desired probability of choosing at least one sample free
+   * from outliers
+   * \note internally, the probability is set to 99% (0.99) by default.
+   */
+  inline void
+  setProbability (float probability)
+  {
+    probability_ = probability;
+  }
 
-        /** \brief Constructor for base SAC.
-          * \param model a Sample Consensus model
-          */
-        SampleConsensus (const SampleConsensusModelPtr &model) : 
-          sac_model_(model), probability_(0.99), iterations_(0),
-          threshold_(std::numeric_limits<double>::max()), max_iterations_(1000)
-        {};
+  /** \brief Obtain the probability of choosing at least one sample free from outliers,
+   * as set by the user.
+   */
+  inline float
+  getProbability ()
+  {
+    return (probability_);
+  }
 
-        /** \brief Constructor for base SAC.
-          * \param model a Sample Consensus model
-          * \param threshold distance to model threshold
-          */
-        SampleConsensus (const SampleConsensusModelPtr &model, float threshold) : 
-          sac_model_(model), probability_ (0.99), iterations_ (0), threshold_ (threshold), 
-          max_iterations_ (1000)
-        {};
+  /** \brief Compute the actual model. Pure virtual. */
+  virtual bool
+  computeModel (int debug_verbosity_level = 0) = 0;
 
-        /** \brief Destructor for base SAC. */
-        virtual ~SampleConsensus() = default;
+  /* \brief Get a set of randomly selected indices.
+   * \param indices the input indices vector
+   * \param nr_samples the desired number of point indices to randomly select
+   * \param indices_subset the resultant output set of randomly selected indices
+   */
+  /*      inline void
+          getRandomSamples (const IndicesPtr &indices, std::size_t nr_samples,
+                            std::set<int> &indices_subset)
+          {
+            indices_subset.clear ();
+            while (indices_subset.size () < nr_samples)
+              indices_subset.insert ((*indices)[(int) (indices->size () * (rand () /
+     (RAND_MAX + 1.0)))]);
+          }*/
 
-        /** \brief Set the distance to model threshold.
-          * \param threshold distance to model threshold
-          */
-        inline void 
-        setDistanceThreshold (float threshold)  { threshold_ = threshold; }
+  /** \brief Return the best model found so far.
+   * \param model the resultant model
+   */
+  inline void
+  getModel (Indices& model)
+  {
+    model = model_;
+  }
 
-        /** \brief Get the distance to model threshold, as set by the user. */
-        inline float 
-        getDistanceThreshold () { return (threshold_); }
-
-        /** \brief Set the maximum number of iterations.
-          * \param max_iterations maximum number of iterations
-          */
-        inline void 
-        setMaxIterations (int max_iterations) { max_iterations_ = max_iterations; }
-
-        /** \brief Get the maximum number of iterations, as set by the user. */
-        inline int 
-        getMaxIterations () { return (max_iterations_); }
-
-        /** \brief Set the desired probability of choosing at least one sample free from 
-          * outliers.
-          * \param probability the desired probability of choosing at least one sample free 
-          * from outliers
-          * \note internally, the probability is set to 99% (0.99) by default.
-          */
-        inline void 
-        setProbability (float probability) { probability_ = probability; }
-
-        /** \brief Obtain the probability of choosing at least one sample free from outliers, 
-          * as set by the user. 
-          */
-        inline float 
-        getProbability () { return (probability_); }
-
-        /** \brief Compute the actual model. Pure virtual. */
-        virtual bool 
-        computeModel (int debug_verbosity_level = 0) = 0;
-
-        /* \brief Get a set of randomly selected indices.
-          * \param indices the input indices vector
-          * \param nr_samples the desired number of point indices to randomly select
-          * \param indices_subset the resultant output set of randomly selected indices
-          */
-/*      inline void
-        getRandomSamples (const IndicesPtr &indices, std::size_t nr_samples, 
-                          std::set<int> &indices_subset)
-        {
-          indices_subset.clear ();
-          while (indices_subset.size () < nr_samples)
-            indices_subset.insert ((*indices)[(int) (indices->size () * (rand () / (RAND_MAX + 1.0)))]);
-        }*/
-
-        /** \brief Return the best model found so far. 
-          * \param model the resultant model
-          */
-        inline void 
-        getModel (Indices &model) { model = model_; }
-
-        /** \brief Return the best set of inliers found so far for this model. 
-          */
-  //    inline void 
+  /** \brief Return the best set of inliers found so far for this model.
+   */
+  //    inline void
   //    getInliers (std::vector<int> &inliers) { inliers = inliers_; }
-        inline IndicesPtr 
-        getInliers () { return inliers_; }
+  inline IndicesPtr
+  getInliers ()
+  {
+    return inliers_;
+  }
 
-  //    inline void 
+  //    inline void
   //    getInliersStencil (Indices &inliers) { inliers = inliers_stencil_; }
-        inline IndicesPtr
-        getInliersStencil () { return inliers_stencil_; }
+  inline IndicesPtr
+  getInliersStencil ()
+  {
+    return inliers_stencil_;
+  }
 
-        /** \brief Return the model coefficients of the best model found so far. 
-          * \param model_coefficients the resultant model coefficients
-          */
-        inline void 
-        getModelCoefficients (Coefficients &model_coefficients) 
-        { 
-          model_coefficients = model_coefficients_; 
-        }
+  /** \brief Return the model coefficients of the best model found so far.
+   * \param model_coefficients the resultant model coefficients
+   */
+  inline void
+  getModelCoefficients (Coefficients& model_coefficients)
+  {
+    model_coefficients = model_coefficients_;
+  }
 
-      protected:
-        /** \brief The underlying data model used (what is it that we attempt to search for). */
-        SampleConsensusModelPtr sac_model_;
+protected:
+  /** \brief The underlying data model used (what is it that we attempt to search for).
+   */
+  SampleConsensusModelPtr sac_model_;
 
-        /** \brief The model found after the last computeModel () as point cloud indices. */
-        Indices model_;
+  /** \brief The model found after the last computeModel () as point cloud indices. */
+  Indices model_;
 
-        /** \brief The indices of the points that were chosen as inliers after the last call. */
-        IndicesPtr inliers_;
-        IndicesPtr inliers_stencil_;
+  /** \brief The indices of the points that were chosen as inliers after the last call.
+   */
+  IndicesPtr inliers_;
+  IndicesPtr inliers_stencil_;
 
-        /** \brief The coefficients of our model computed directly from the model found. */
-        Coefficients model_coefficients_;
+  /** \brief The coefficients of our model computed directly from the model found. */
+  Coefficients model_coefficients_;
 
-        /** \brief Desired probability of choosing at least one sample free from outliers. */
-        float probability_;
+  /** \brief Desired probability of choosing at least one sample free from outliers. */
+  float probability_;
 
-        /** \brief Total number of internal loop iterations that we've done so far. */
-        int iterations_;
-        
-        /** \brief Distance to model threshold. */
-        float threshold_;
-        
-        /** \brief Maximum number of iterations before giving up. */
-        int max_iterations_;
-    };
-  } // namespace
-} // namespace
+  /** \brief Total number of internal loop iterations that we've done so far. */
+  int iterations_;
+
+  /** \brief Distance to model threshold. */
+  float threshold_;
+
+  /** \brief Maximum number of iterations before giving up. */
+  int max_iterations_;
+};
+} // namespace cuda
+} // namespace pcl

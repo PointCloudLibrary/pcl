@@ -34,44 +34,61 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-#include <pcl/pcl_config.h>
 #include <pcl/memory.h>
+#include <pcl/pcl_config.h>
 #ifdef HAVE_OPENNI
 
 #include <pcl/io/openni_camera/openni_image_yuv_422.h>
-#include <sstream>
+
 #include <iostream>
+#include <sstream>
 
-#define CLIP_CHAR(c) static_cast<unsigned char> ((c)>255?255:(c)<0?0:(c))
+#define CLIP_CHAR(c) static_cast<unsigned char>((c) > 255 ? 255 : (c) < 0 ? 0 : (c))
 
-namespace openni_wrapper
+namespace openni_wrapper {
+
+ImageYUV422::ImageYUV422(pcl::shared_ptr<xn::ImageMetaData> image_meta_data) noexcept
+: Image(std::move(image_meta_data))
+{}
+
+ImageYUV422::~ImageYUV422() noexcept = default;
+
+bool
+ImageYUV422::isResizingSupported(unsigned input_width,
+                                 unsigned input_height,
+                                 unsigned output_width,
+                                 unsigned output_height) const
 {
-
-ImageYUV422::ImageYUV422 (pcl::shared_ptr<xn::ImageMetaData> image_meta_data) noexcept
-: Image (std::move(image_meta_data))
-{
+  return ImageYUV422::resizingSupported(
+      input_width, input_height, output_width, output_height);
 }
 
-ImageYUV422::~ImageYUV422 () noexcept = default;
-
-bool ImageYUV422::isResizingSupported (unsigned input_width, unsigned input_height, unsigned output_width, unsigned output_height) const
-{
-  return ImageYUV422::resizingSupported (input_width, input_height, output_width, output_height);
-}
-
-void ImageYUV422::fillRGB (unsigned width, unsigned height, unsigned char* rgb_buffer, unsigned rgb_line_step) const
+void
+ImageYUV422::fillRGB(unsigned width,
+                     unsigned height,
+                     unsigned char* rgb_buffer,
+                     unsigned rgb_line_step) const
 {
   // 0  1   2  3
   // u  y1  v  y2
 
-  if (image_md_->XRes() != width && image_md_->YRes() != height)
-  {
-    if (width > image_md_->XRes () || height > image_md_->YRes ())
-      THROW_OPENNI_EXCEPTION ("Upsampling not supported. Request was: %d x %d -> %d x %d", image_md_->XRes (), image_md_->YRes (), width, height);
+  if (image_md_->XRes() != width && image_md_->YRes() != height) {
+    if (width > image_md_->XRes() || height > image_md_->YRes())
+      THROW_OPENNI_EXCEPTION(
+          "Upsampling not supported. Request was: %d x %d -> %d x %d",
+          image_md_->XRes(),
+          image_md_->YRes(),
+          width,
+          height);
 
-    if ( image_md_->XRes () % width != 0 || image_md_->YRes () % height != 0
-        || (image_md_->XRes () / width) & 0x01 || (image_md_->YRes () / height & 0x01) )
-        THROW_OPENNI_EXCEPTION ("Downsampling only possible for power of two scale in both dimensions. Request was %d x %d -> %d x %d.", image_md_->XRes (), image_md_->YRes (), width, height);
+    if (image_md_->XRes() % width != 0 || image_md_->YRes() % height != 0 ||
+        (image_md_->XRes() / width) & 0x01 || (image_md_->YRes() / height & 0x01))
+      THROW_OPENNI_EXCEPTION("Downsampling only possible for power of two scale in "
+                             "both dimensions. Request was %d x %d -> %d x %d.",
+                             image_md_->XRes(),
+                             image_md_->YRes(),
+                             width,
+                             height);
   }
 
   const XnUInt8* yuv_buffer = image_md_->Data();
@@ -80,54 +97,67 @@ void ImageYUV422::fillRGB (unsigned width, unsigned height, unsigned char* rgb_b
   if (rgb_line_step != 0)
     rgb_line_skip = rgb_line_step - width * 3;
 
-  if (image_md_->XRes() == width && image_md_->YRes() == height)
-  {
-    for( unsigned yIdx = 0; yIdx < height; ++yIdx, rgb_buffer += rgb_line_skip )
-    {
-      for( unsigned xIdx = 0; xIdx < width; xIdx += 2, rgb_buffer += 6, yuv_buffer += 4 )
-      {
+  if (image_md_->XRes() == width && image_md_->YRes() == height) {
+    for (unsigned yIdx = 0; yIdx < height; ++yIdx, rgb_buffer += rgb_line_skip) {
+      for (unsigned xIdx = 0; xIdx < width;
+           xIdx += 2, rgb_buffer += 6, yuv_buffer += 4) {
         int v = yuv_buffer[2] - 128;
         int u = yuv_buffer[0] - 128;
 
-        rgb_buffer[0] =  CLIP_CHAR (yuv_buffer[1] + ((v * 18678 + 8192 ) >> 14));
-        rgb_buffer[1] =  CLIP_CHAR (yuv_buffer[1] + ((v * -9519 - u * 6472 + 8192 ) >> 14));
-        rgb_buffer[2] =  CLIP_CHAR (yuv_buffer[1] + ((u * 33292 + 8192 ) >> 14));
+        rgb_buffer[0] = CLIP_CHAR(yuv_buffer[1] + ((v * 18678 + 8192) >> 14));
+        rgb_buffer[1] =
+            CLIP_CHAR(yuv_buffer[1] + ((v * -9519 - u * 6472 + 8192) >> 14));
+        rgb_buffer[2] = CLIP_CHAR(yuv_buffer[1] + ((u * 33292 + 8192) >> 14));
 
-        rgb_buffer[3] =  CLIP_CHAR (yuv_buffer[3] + ((v * 18678 + 8192 ) >> 14));
-        rgb_buffer[4] =  CLIP_CHAR (yuv_buffer[3] + ((v * -9519 - u * 6472 + 8192 ) >> 14));
-        rgb_buffer[5] =  CLIP_CHAR (yuv_buffer[3] + ((u * 33292 + 8192 ) >> 14));
+        rgb_buffer[3] = CLIP_CHAR(yuv_buffer[3] + ((v * 18678 + 8192) >> 14));
+        rgb_buffer[4] =
+            CLIP_CHAR(yuv_buffer[3] + ((v * -9519 - u * 6472 + 8192) >> 14));
+        rgb_buffer[5] = CLIP_CHAR(yuv_buffer[3] + ((u * 33292 + 8192) >> 14));
       }
     }
   }
-  else
-  {
+  else {
     unsigned yuv_step = image_md_->XRes() / width;
     unsigned yuv_x_step = yuv_step << 1;
-    unsigned yuv_skip = (image_md_->YRes() / height - 1) * ( image_md_->XRes() << 1 );
+    unsigned yuv_skip = (image_md_->YRes() / height - 1) * (image_md_->XRes() << 1);
 
-    for( unsigned yIdx = 0; yIdx < image_md_->YRes(); yIdx += yuv_step, yuv_buffer += yuv_skip, rgb_buffer += rgb_line_skip )
-    {
-      for( unsigned xIdx = 0; xIdx < image_md_->XRes(); xIdx += yuv_step, rgb_buffer += 3, yuv_buffer += yuv_x_step )
-      {
+    for (unsigned yIdx = 0; yIdx < image_md_->YRes();
+         yIdx += yuv_step, yuv_buffer += yuv_skip, rgb_buffer += rgb_line_skip) {
+      for (unsigned xIdx = 0; xIdx < image_md_->XRes();
+           xIdx += yuv_step, rgb_buffer += 3, yuv_buffer += yuv_x_step) {
         int v = yuv_buffer[2] - 128;
         int u = yuv_buffer[0] - 128;
 
-        rgb_buffer[0] =  CLIP_CHAR (yuv_buffer[1] + ((v * 18678 + 8192 ) >> 14));
-        rgb_buffer[1] =  CLIP_CHAR (yuv_buffer[1] + ((v * -9519 - u * 6472 + 8192 ) >> 14));
-        rgb_buffer[2] =  CLIP_CHAR (yuv_buffer[1] + ((u * 33292 + 8192 ) >> 14));
+        rgb_buffer[0] = CLIP_CHAR(yuv_buffer[1] + ((v * 18678 + 8192) >> 14));
+        rgb_buffer[1] =
+            CLIP_CHAR(yuv_buffer[1] + ((v * -9519 - u * 6472 + 8192) >> 14));
+        rgb_buffer[2] = CLIP_CHAR(yuv_buffer[1] + ((u * 33292 + 8192) >> 14));
       }
     }
   }
 }
 
-void ImageYUV422::fillGrayscale (unsigned width, unsigned height, unsigned char* gray_buffer, unsigned gray_line_step) const
+void
+ImageYUV422::fillGrayscale(unsigned width,
+                           unsigned height,
+                           unsigned char* gray_buffer,
+                           unsigned gray_line_step) const
 {
   // u y1 v y2
-  if (width > image_md_->XRes () || height > image_md_->YRes ())
-    THROW_OPENNI_EXCEPTION ("Upsampling not supported. Request was: %d x %d -> %d x %d", image_md_->XRes (), image_md_->YRes (), width, height);
+  if (width > image_md_->XRes() || height > image_md_->YRes())
+    THROW_OPENNI_EXCEPTION("Upsampling not supported. Request was: %d x %d -> %d x %d",
+                           image_md_->XRes(),
+                           image_md_->YRes(),
+                           width,
+                           height);
 
-  if (image_md_->XRes () % width != 0 || image_md_->YRes () % height != 0)
-      THROW_OPENNI_EXCEPTION ("Downsampling only possible for integer scales in both dimensions. Request was %d x %d -> %d x %d.", image_md_->XRes (), image_md_->YRes (), width, height);
+  if (image_md_->XRes() % width != 0 || image_md_->YRes() % height != 0)
+    THROW_OPENNI_EXCEPTION("Downsampling only possible for integer scales in both "
+                           "dimensions. Request was %d x %d -> %d x %d.",
+                           image_md_->XRes(),
+                           image_md_->YRes(),
+                           width,
+                           height);
 
   unsigned gray_line_skip = 0;
   if (gray_line_step != 0)
@@ -135,16 +165,16 @@ void ImageYUV422::fillGrayscale (unsigned width, unsigned height, unsigned char*
 
   unsigned yuv_step = image_md_->XRes() / width;
   unsigned yuv_x_step = yuv_step << 1;
-  unsigned yuv_skip = (image_md_->YRes() / height - 1) * ( image_md_->XRes() << 1 );
+  unsigned yuv_skip = (image_md_->YRes() / height - 1) * (image_md_->XRes() << 1);
   const XnUInt8* yuv_buffer = (image_md_->Data() + 1);
 
-  for( unsigned yIdx = 0; yIdx < image_md_->YRes(); yIdx += yuv_step, yuv_buffer += yuv_skip, gray_buffer += gray_line_skip )
-  {
-    for( unsigned xIdx = 0; xIdx < image_md_->XRes(); xIdx += yuv_step, ++gray_buffer, yuv_buffer += yuv_x_step )
-    {
+  for (unsigned yIdx = 0; yIdx < image_md_->YRes();
+       yIdx += yuv_step, yuv_buffer += yuv_skip, gray_buffer += gray_line_skip) {
+    for (unsigned xIdx = 0; xIdx < image_md_->XRes();
+         xIdx += yuv_step, ++gray_buffer, yuv_buffer += yuv_x_step) {
       *gray_buffer = *yuv_buffer;
     }
   }
 }
-}//namespace
+} // namespace openni_wrapper
 #endif

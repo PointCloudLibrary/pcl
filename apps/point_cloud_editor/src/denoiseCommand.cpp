@@ -37,14 +37,14 @@
 /// @details the implementation of the class DenoiseCommand
 /// @author Yue Li and Matthew Hielsberg
 
-#include <pcl/point_types.h>
-#include <pcl/filters/statistical_outlier_removal.h>
+#include <pcl/apps/point_cloud_editor/cloud.h>
 #include <pcl/apps/point_cloud_editor/denoiseCommand.h>
 #include <pcl/apps/point_cloud_editor/selection.h>
-#include <pcl/apps/point_cloud_editor/cloud.h>
+#include <pcl/filters/statistical_outlier_removal.h>
+#include <pcl/point_types.h>
 
 void
-DenoiseCommand::execute ()
+DenoiseCommand::execute()
 {
   Cloud3D temp_cloud;
   // denoise
@@ -54,13 +54,13 @@ DenoiseCommand::execute ()
   pcl::StatisticalOutlierRemoval<Point3D> filter(true);
   filter.setInputCloud(cloud_ptr_->getInternalCloud().makeShared());
   filter.setMeanK(mean_);
-  filter.setStddevMulThresh (threshold_);
+  filter.setStddevMulThresh(threshold_);
   // filtering and back up
   filter.setNegative(false);
   filter.filter(temp_cloud);
   // back up the removed indices.
   pcl::IndicesConstPtr indices_ptr = filter.getRemovedIndices();
-  for(const auto &it : *indices_ptr)
+  for (const auto& it : *indices_ptr)
     removed_indices_.addIndex(static_cast<unsigned int>(it));
   // back up the removed points.
   removed_points_.set(cloud_ptr_, removed_indices_);
@@ -70,7 +70,7 @@ DenoiseCommand::execute ()
 }
 
 void
-DenoiseCommand::undo ()
+DenoiseCommand::undo()
 {
   cloud_ptr_->restore(removed_points_, removed_indices_);
 }

@@ -19,15 +19,15 @@ public:
   ~OpenNIFrameSource();
 
   const PointCloudPtr
-  snap();
+  snap ();
   bool
-  isActive() const;
+  isActive () const;
   void
-  onKeyboardEvent(const pcl::visualization::KeyboardEvent& event);
+  onKeyboardEvent (const pcl::visualization::KeyboardEvent& event);
 
 protected:
   void
-  onNewFrame(const PointCloudConstPtr& cloud);
+  onNewFrame (const PointCloudConstPtr& cloud);
 
   pcl::OpenNIGrabber grabber_;
   PointCloudPtr most_recent_frame_;

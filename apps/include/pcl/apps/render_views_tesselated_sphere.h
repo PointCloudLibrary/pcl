@@ -63,7 +63,7 @@ public:
   }
 
   void
-  setCamPosConstraints(std::function<bool(const Eigen::Vector3f&)>& bb)
+  setCamPosConstraints (std::function<bool(const Eigen::Vector3f&)>& bb)
   {
     campos_constraints_func_ = bb;
   }
@@ -73,7 +73,7 @@ public:
    * \param b organized/unorganized
    */
   void
-  setGenOrganized(bool b)
+  setGenOrganized (bool b)
   {
     gen_organized_ = b;
   }
@@ -83,7 +83,7 @@ public:
    * \param res resolution size
    */
   void
-  setResolution(int res)
+  setResolution (int res)
   {
     resolution_ = res;
   }
@@ -94,7 +94,7 @@ public:
    */
 
   void
-  setUseVertices(bool use)
+  setUseVertices (bool use)
   {
     use_vertices_ = use;
   }
@@ -104,7 +104,7 @@ public:
    * \param use true indicates to use vertices, false triangle centers
    */
   void
-  setRadiusSphere(float radius)
+  setRadiusSphere (float radius)
   {
     radius_sphere_ = radius;
   }
@@ -114,7 +114,7 @@ public:
    * \param compute true to compute entropies, false otherwise
    */
   void
-  setComputeEntropies(bool compute)
+  setComputeEntropies (bool compute)
   {
     compute_entropy_ = compute;
   }
@@ -125,7 +125,7 @@ public:
    * \param level amount of tessellation
    */
   void
-  setTesselationLevel(int level)
+  setTesselationLevel (int level)
   {
     tesselation_level_ = level;
   }
@@ -135,7 +135,7 @@ public:
    * \param angle view angle in degrees
    */
   void
-  setViewAngle(float angle)
+  setViewAngle (float angle)
   {
     view_angle_ = angle;
   }
@@ -145,7 +145,7 @@ public:
    * \param polydata vtkPolyData object
    */
   void
-  addModelFromPolyData(vtkSmartPointer<vtkPolyData>& polydata)
+  addModelFromPolyData (vtkSmartPointer<vtkPolyData>& polydata)
   {
     polydata_ = polydata;
   }
@@ -154,7 +154,7 @@ public:
    * \brief performs the rendering and stores the generated information
    */
   void
-  generateViews();
+  generateViews ();
 
   /**
    * \brief Get the generated poses for the generated views
@@ -162,7 +162,7 @@ public:
    * coordinate system
    */
   void
-  getPoses(
+  getPoses (
       std::vector<Eigen::Matrix4f, Eigen::aligned_allocator<Eigen::Matrix4f>>& poses)
   {
     poses = poses_;
@@ -173,7 +173,7 @@ public:
    * \param views generated pointclouds in camera coordinates
    */
   void
-  getViews(std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr>& views)
+  getViews (std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr>& views)
   {
     views = generated_views_;
   }
@@ -183,7 +183,7 @@ public:
    * \param entropies level of occlusions
    */
   void
-  getEntropies(std::vector<float>& entropies)
+  getEntropies (std::vector<float>& entropies)
   {
     entropies = entropies_;
   }

@@ -44,13 +44,13 @@
 #include <pcl/sample_consensus/msac.h>
 
 //////////////////////////////////////////////////////////////////////////
-template <typename PointT> bool
-pcl::MEstimatorSampleConsensus<PointT>::computeModel (int debug_verbosity_level)
+template <typename PointT>
+bool
+pcl::MEstimatorSampleConsensus<PointT>::computeModel(int debug_verbosity_level)
 {
   // Warn and exit if no threshold was set
-  if (threshold_ == std::numeric_limits<double>::max())
-  {
-    PCL_ERROR ("[pcl::MEstimatorSampleConsensus::computeModel] No threshold set!\n");
+  if (threshold_ == std::numeric_limits<double>::max()) {
+    PCL_ERROR("[pcl::MEstimatorSampleConsensus::computeModel] No threshold set!\n");
     return (false);
   }
 
@@ -58,115 +58,131 @@ pcl::MEstimatorSampleConsensus<PointT>::computeModel (int debug_verbosity_level)
   double d_best_penalty = std::numeric_limits<double>::max();
   double k = 1.0;
 
-  const double log_probability  = std::log (1.0 - probability_);
-  const double one_over_indices = 1.0 / static_cast<double> (sac_model_->getIndices ()->size ());
+  const double log_probability = std::log(1.0 - probability_);
+  const double one_over_indices =
+      1.0 / static_cast<double>(sac_model_->getIndices()->size());
 
   Indices selection;
-  Eigen::VectorXf model_coefficients (sac_model_->getModelSize ());
+  Eigen::VectorXf model_coefficients(sac_model_->getModelSize());
   std::vector<double> distances;
 
   int n_inliers_count = 0;
   unsigned skipped_count = 0;
-  // suppress infinite loops by just allowing 10 x maximum allowed iterations for invalid model parameters!
+  // suppress infinite loops by just allowing 10 x maximum allowed iterations for
+  // invalid model parameters!
   const unsigned max_skip = max_iterations_ * 10;
-  
-  // Iterate
-  while (iterations_ < k && skipped_count < max_skip)
-  {
-    // Get X samples which satisfy the model criteria
-    sac_model_->getSamples (iterations_, selection);
 
-    if (selection.empty ()) break;
+  // Iterate
+  while (iterations_ < k && skipped_count < max_skip) {
+    // Get X samples which satisfy the model criteria
+    sac_model_->getSamples(iterations_, selection);
+
+    if (selection.empty())
+      break;
 
     // Search for inliers in the point cloud for the current plane model M
-    if (!sac_model_->computeModelCoefficients (selection, model_coefficients))
-    {
-      //iterations_++;
-      ++ skipped_count;
-      continue;
-     }
-
-    double d_cur_penalty = 0;
-    // Iterate through the 3d points and calculate the distances from them to the model
-    sac_model_->getDistancesToModel (model_coefficients, distances);
-    
-    if (distances.empty ())
-    {
-      // skip invalid model suppress infinite loops 
-      ++ skipped_count;
+    if (!sac_model_->computeModelCoefficients(selection, model_coefficients)) {
+      // iterations_++;
+      ++skipped_count;
       continue;
     }
 
-    for (const double &distance : distances)
-      d_cur_penalty += (std::min) (distance, threshold_);
+    double d_cur_penalty = 0;
+    // Iterate through the 3d points and calculate the distances from them to the model
+    sac_model_->getDistancesToModel(model_coefficients, distances);
+
+    if (distances.empty()) {
+      // skip invalid model suppress infinite loops
+      ++skipped_count;
+      continue;
+    }
+
+    for (const double& distance : distances)
+      d_cur_penalty += (std::min)(distance, threshold_);
 
     // Better match ?
-    if (d_cur_penalty < d_best_penalty)
-    {
+    if (d_cur_penalty < d_best_penalty) {
       d_best_penalty = d_cur_penalty;
 
       // Save the current model/coefficients selection as being the best so far
-      model_              = selection;
+      model_ = selection;
       model_coefficients_ = model_coefficients;
 
       n_inliers_count = 0;
       // Need to compute the number of inliers for this model to adapt k
-      for (const double &distance : distances)
+      for (const double& distance : distances)
         if (distance <= threshold_)
           ++n_inliers_count;
 
       // Compute the k parameter (k=std::log(z)/std::log(1-w^n))
-      const double w = static_cast<double> (n_inliers_count) * one_over_indices;
-      double p_outliers = 1.0 - std::pow (w, static_cast<double> (selection.size ()));       // Probability that selection is contaminated by at least one outlier
-      p_outliers = (std::max) (std::numeric_limits<double>::epsilon (), p_outliers);         // Avoid division by -Inf
-      p_outliers = (std::min) (1.0 - std::numeric_limits<double>::epsilon (), p_outliers);   // Avoid division by 0.
-      k = log_probability / std::log (p_outliers);
+      const double w = static_cast<double>(n_inliers_count) * one_over_indices;
+      double p_outliers =
+          1.0 - std::pow(w,
+                         static_cast<double>(
+                             selection.size())); // Probability that selection is
+                                                 // contaminated by at least one outlier
+      p_outliers = (std::max)(std::numeric_limits<double>::epsilon(),
+                              p_outliers); // Avoid division by -Inf
+      p_outliers = (std::min)(1.0 - std::numeric_limits<double>::epsilon(),
+                              p_outliers); // Avoid division by 0.
+      k = log_probability / std::log(p_outliers);
     }
 
     ++iterations_;
     if (debug_verbosity_level > 1)
-      PCL_DEBUG ("[pcl::MEstimatorSampleConsensus::computeModel] Trial %d out of %d. Best penalty is %f.\n", iterations_, static_cast<int> (std::ceil (k)), d_best_penalty);
-    if (iterations_ > max_iterations_)
-    {
+      PCL_DEBUG("[pcl::MEstimatorSampleConsensus::computeModel] Trial %d out of %d. "
+                "Best penalty is %f.\n",
+                iterations_,
+                static_cast<int>(std::ceil(k)),
+                d_best_penalty);
+    if (iterations_ > max_iterations_) {
       if (debug_verbosity_level > 0)
-        PCL_DEBUG ("[pcl::MEstimatorSampleConsensus::computeModel] MSAC reached the maximum number of trials.\n");
+        PCL_DEBUG("[pcl::MEstimatorSampleConsensus::computeModel] MSAC reached the "
+                  "maximum number of trials.\n");
       break;
     }
   }
 
-  if (model_.empty ())
-  {
+  if (model_.empty()) {
     if (debug_verbosity_level > 0)
-      PCL_DEBUG ("[pcl::MEstimatorSampleConsensus::computeModel] Unable to find a solution!\n");
+      PCL_DEBUG("[pcl::MEstimatorSampleConsensus::computeModel] Unable to find a "
+                "solution!\n");
     return (false);
   }
 
-  // Iterate through the 3d points and calculate the distances from them to the model again
-  sac_model_->getDistancesToModel (model_coefficients_, distances);
-  Indices &indices = *sac_model_->getIndices ();
+  // Iterate through the 3d points and calculate the distances from them to the model
+  // again
+  sac_model_->getDistancesToModel(model_coefficients_, distances);
+  Indices& indices = *sac_model_->getIndices();
 
-  if (distances.size () != indices.size ())
-  {
-    PCL_ERROR ("[pcl::MEstimatorSampleConsensus::computeModel] Estimated distances (%lu) differs than the normal of indices (%lu).\n", distances.size (), indices.size ());
+  if (distances.size() != indices.size()) {
+    PCL_ERROR("[pcl::MEstimatorSampleConsensus::computeModel] Estimated distances "
+              "(%lu) differs than the normal of indices (%lu).\n",
+              distances.size(),
+              indices.size());
     return (false);
   }
 
-  inliers_.resize (distances.size ());
+  inliers_.resize(distances.size());
   // Get the inliers for the best model found
   n_inliers_count = 0;
-  for (std::size_t i = 0; i < distances.size (); ++i)
+  for (std::size_t i = 0; i < distances.size(); ++i)
     if (distances[i] <= threshold_)
       inliers_[n_inliers_count++] = indices[i];
 
   // Resize the inliers vector
-  inliers_.resize (n_inliers_count);
+  inliers_.resize(n_inliers_count);
 
   if (debug_verbosity_level > 0)
-    PCL_DEBUG ("[pcl::MEstimatorSampleConsensus::computeModel] Model: %lu size, %d inliers.\n", model_.size (), n_inliers_count);
+    PCL_DEBUG(
+        "[pcl::MEstimatorSampleConsensus::computeModel] Model: %lu size, %d inliers.\n",
+        model_.size(),
+        n_inliers_count);
 
   return (true);
 }
 
-#define PCL_INSTANTIATE_MEstimatorSampleConsensus(T) template class PCL_EXPORTS pcl::MEstimatorSampleConsensus<T>;
+#define PCL_INSTANTIATE_MEstimatorSampleConsensus(T)                                   \
+  template class PCL_EXPORTS pcl::MEstimatorSampleConsensus<T>;
 
-#endif    // PCL_SAMPLE_CONSENSUS_IMPL_MSAC_H_
+#endif // PCL_SAMPLE_CONSENSUS_IMPL_MSAC_H_

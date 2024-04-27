@@ -39,11 +39,13 @@
 #pragma once
 
 #include <pcl/pcl_macros.h>
+
 #include <boost/signals2/signal.hpp>
 
 #include <vtkCommand.h>
 
-template <typename T> class vtkSmartPointer;
+template <typename T>
+class vtkSmartPointer;
 class vtkObject;
 class vtkRenderWindow;
 class vtkRenderWindowInteractor;
@@ -51,175 +53,198 @@ class vtkCallbackCommand;
 class vtkRendererCollection;
 class PCLVisualizerInteractorStyle;
 
-namespace pcl
-{
-  namespace visualization
+namespace pcl {
+namespace visualization {
+class MouseEvent;
+class KeyboardEvent;
+
+class PCL_EXPORTS Window {
+public:
+  Window(const std::string& window_name = "");
+  Window(const Window& src);
+  Window&
+  operator=(const Window& src);
+
+  virtual ~Window();
+
+  /** \brief Spin method. Calls the interactor and runs an internal loop. */
+  void
+  spin ();
+
+  /** \brief Spin once method. Calls the interactor and updates the screen once.
+   *  \param time - How long (in ms) should the visualization loop be allowed to run.
+   *  \param force_redraw - if false it might return without doing anything if the
+   *  interactor's framerate does not require a redraw yet.
+   */
+  void
+  spinOnce (int time = 1, bool force_redraw = false);
+
+  /** \brief Returns true when the user tried to close the window */
+  bool
+  wasStopped () const
   {
-    class MouseEvent;
-    class KeyboardEvent;
-
-    class PCL_EXPORTS Window
-    {
-      public:
-        Window (const std::string& window_name = "");
-        Window (const Window &src);
-        Window& operator = (const Window &src);
-
-        virtual ~Window ();
-
-        /** \brief Spin method. Calls the interactor and runs an internal loop. */
-        void
-        spin ();
-
-        /** \brief Spin once method. Calls the interactor and updates the screen once.
-          *  \param time - How long (in ms) should the visualization loop be allowed to run.
-          *  \param force_redraw - if false it might return without doing anything if the
-          *  interactor's framerate does not require a redraw yet.
-          */
-        void
-        spinOnce (int time = 1, bool force_redraw = false);
-
-        /** \brief Returns true when the user tried to close the window */
-        bool
-        wasStopped () const { return (stopped_); }
-
-        /**
-          * @brief registering a callback function for keyboard events
-          * @param callback  the function that will be registered as a callback for a keyboard event
-          * @param cookie    user data that is passed to the callback
-          * @return          connection object that allows to disconnect the callback function.
-          */
-        boost::signals2::connection
-        registerKeyboardCallback (void (*callback) (const pcl::visualization::KeyboardEvent&, void*),
-                                  void* cookie = nullptr)
-        {
-          return registerKeyboardCallback ([=] (const pcl::visualization::KeyboardEvent& e) { (*callback) (e, cookie); });
-        }
-
-        /**
-          * @brief registering a callback function for keyboard events
-          * @param callback  the member function that will be registered as a callback for a keyboard event
-          * @param instance  instance to the class that implements the callback function
-          * @param cookie    user data that is passed to the callback
-          * @return          connection object that allows to disconnect the callback function.
-          */
-        template<typename T> boost::signals2::connection
-        registerKeyboardCallback (void (T::*callback) (const pcl::visualization::KeyboardEvent&, void*),
-                                  T& instance, void* cookie = nullptr)
-        {
-          return registerKeyboardCallback ([=, &instance] (const pcl::visualization::KeyboardEvent& e) { (instance.*callback) (e, cookie); });
-        }
-
-        /**
-          * @brief
-          * @param callback  the function that will be registered as a callback for a mouse event
-          * @param cookie    user data that is passed to the callback
-          * @return          connection object that allows to disconnect the callback function.
-          */
-        boost::signals2::connection
-        registerMouseCallback (void (*callback) (const pcl::visualization::MouseEvent&, void*),
-                               void* cookie = nullptr)
-        {
-          return registerMouseCallback ([=] (const pcl::visualization::MouseEvent& e) { (*callback) (e, cookie); });
-        }
-
-        /**
-          * @brief registering a callback function for mouse events
-          * @param callback  the member function that will be registered as a callback for a mouse event
-          * @param instance  instance to the class that implements the callback function
-          * @param cookie    user data that is passed to the callback
-          * @return          connection object that allows to disconnect the callback function.
-          */
-        template<typename T> boost::signals2::connection
-        registerMouseCallback (void (T::*callback) (const pcl::visualization::MouseEvent&, void*),
-                               T& instance, void* cookie = nullptr)
-        {
-          return registerMouseCallback ([=, &instance] (const pcl::visualization::MouseEvent& e) { (instance.*callback) (e, cookie); });
-        }
-
-      protected: // methods
-
-        /** \brief Set the stopped flag back to false */
-        void
-        resetStoppedFlag () { stopped_ = false; }
-
-        /**
-          * @brief   registering a callback function for mouse events
-          * @return  connection object that allows to disconnect the callback function.
-          */
-         // param   the std function that will be registered as a callback for a mouse event
-        boost::signals2::connection
-        registerMouseCallback (std::function<void (const pcl::visualization::MouseEvent&)> );
-
-        /**
-         * @brief   registering a callback std::function for keyboard events
-         * @return  connection object that allows to disconnect the callback function.
-         */
-         // param   the std function that will be registered as a callback for a keyboard event
-        boost::signals2::connection
-        registerKeyboardCallback (std::function<void (const pcl::visualization::KeyboardEvent&)> );
-
-        void
-        emitMouseEvent (unsigned long event_id);
-
-        void
-        emitKeyboardEvent (unsigned long event_id);
-
-        // Callbacks used to register for vtk command
-        static void
-        MouseCallback (vtkObject*, unsigned long eid, void* clientdata, void *calldata);
-        static void
-        KeyboardCallback (vtkObject*, unsigned long eid, void* clientdata, void *calldata);
-
-      protected: // types
-        struct ExitMainLoopTimerCallback : public vtkCommand
-        {
-          static ExitMainLoopTimerCallback* New ()
-          {
-            return (new ExitMainLoopTimerCallback);
-          }
-
-          ExitMainLoopTimerCallback ();
-
-          void 
-          Execute (vtkObject*, unsigned long event_id, void* call_data) override;
-
-          int right_timer_id{-1};
-          Window* window{nullptr};
-        };
-
-        struct ExitCallback : public vtkCommand
-        {
-          static ExitCallback* New ()
-          {
-            return (new ExitCallback);
-          }
-
-          ExitCallback ();
- 
-          void 
-          Execute (vtkObject*, unsigned long event_id, void*) override;
-
-          Window* window{nullptr};
-        };
-
-        bool stopped_{false};
-        int timer_id_{0};
-
-    protected: // member fields
-        boost::signals2::signal<void (const pcl::visualization::MouseEvent&)> mouse_signal_;
-        boost::signals2::signal<void (const pcl::visualization::KeyboardEvent&)> keyboard_signal_;
-
-        vtkSmartPointer<vtkRenderWindow> win_;
-        vtkSmartPointer<vtkRenderWindowInteractor> interactor_;
-        vtkCallbackCommand* mouse_command_;
-        vtkCallbackCommand* keyboard_command_;
-        /** \brief The render window interactor style. */
-        vtkSmartPointer<PCLVisualizerInteractorStyle> style_;
-        /** \brief The collection of renderers used. */
-        vtkSmartPointer<vtkRendererCollection> rens_;
-        vtkSmartPointer<ExitMainLoopTimerCallback> exit_main_loop_timer_callback_;
-        vtkSmartPointer<ExitCallback> exit_callback_;
-    };
+    return (stopped_);
   }
-}
+
+  /**
+   * @brief registering a callback function for keyboard events
+   * @param callback  the function that will be registered as a callback for a keyboard
+   * event
+   * @param cookie    user data that is passed to the callback
+   * @return          connection object that allows to disconnect the callback function.
+   */
+  boost::signals2::connection
+  registerKeyboardCallback (void (*callback)(const pcl::visualization::KeyboardEvent&,
+                                             void*),
+                            void* cookie = nullptr)
+  {
+    return registerKeyboardCallback(
+        [=] (const pcl::visualization::KeyboardEvent& e) { (*callback)(e, cookie); });
+  }
+
+  /**
+   * @brief registering a callback function for keyboard events
+   * @param callback  the member function that will be registered as a callback for a
+   * keyboard event
+   * @param instance  instance to the class that implements the callback function
+   * @param cookie    user data that is passed to the callback
+   * @return          connection object that allows to disconnect the callback function.
+   */
+  template <typename T>
+  boost::signals2::connection
+  registerKeyboardCallback (
+      void (T::*callback)(const pcl::visualization::KeyboardEvent&, void*),
+      T& instance,
+      void* cookie = nullptr)
+  {
+    return registerKeyboardCallback(
+        [=, &instance] (const pcl::visualization::KeyboardEvent& e) {
+          (instance.*callback)(e, cookie);
+        });
+  }
+
+  /**
+   * @brief
+   * @param callback  the function that will be registered as a callback for a mouse
+   * event
+   * @param cookie    user data that is passed to the callback
+   * @return          connection object that allows to disconnect the callback function.
+   */
+  boost::signals2::connection
+  registerMouseCallback (void (*callback)(const pcl::visualization::MouseEvent&, void*),
+                         void* cookie = nullptr)
+  {
+    return registerMouseCallback(
+        [=] (const pcl::visualization::MouseEvent& e) { (*callback)(e, cookie); });
+  }
+
+  /**
+   * @brief registering a callback function for mouse events
+   * @param callback  the member function that will be registered as a callback for a
+   * mouse event
+   * @param instance  instance to the class that implements the callback function
+   * @param cookie    user data that is passed to the callback
+   * @return          connection object that allows to disconnect the callback function.
+   */
+  template <typename T>
+  boost::signals2::connection
+  registerMouseCallback (void (T::*callback)(const pcl::visualization::MouseEvent&,
+                                             void*),
+                         T& instance,
+                         void* cookie = nullptr)
+  {
+    return registerMouseCallback(
+        [=, &instance] (const pcl::visualization::MouseEvent& e) {
+          (instance.*callback)(e, cookie);
+        });
+  }
+
+protected: // methods
+  /** \brief Set the stopped flag back to false */
+  void
+  resetStoppedFlag ()
+  {
+    stopped_ = false;
+  }
+
+  /**
+   * @brief   registering a callback function for mouse events
+   * @return  connection object that allows to disconnect the callback function.
+   */
+  // param   the std function that will be registered as a callback for a mouse event
+  boost::signals2::connection
+      registerMouseCallback(std::function<void(const pcl::visualization::MouseEvent&)>);
+
+  /**
+   * @brief   registering a callback std::function for keyboard events
+   * @return  connection object that allows to disconnect the callback function.
+   */
+  // param   the std function that will be registered as a callback for a keyboard event
+  boost::signals2::connection registerKeyboardCallback(
+      std::function<void(const pcl::visualization::KeyboardEvent&)>);
+
+  void
+  emitMouseEvent (unsigned long event_id);
+
+  void
+  emitKeyboardEvent (unsigned long event_id);
+
+  // Callbacks used to register for vtk command
+  static void
+  MouseCallback (vtkObject*, unsigned long eid, void* clientdata, void* calldata);
+  static void
+  KeyboardCallback (vtkObject*, unsigned long eid, void* clientdata, void* calldata);
+
+protected: // types
+  struct ExitMainLoopTimerCallback : public vtkCommand {
+    static ExitMainLoopTimerCallback*
+    New ()
+    {
+      return (new ExitMainLoopTimerCallback);
+    }
+
+    ExitMainLoopTimerCallback();
+
+    void
+    Execute (vtkObject*, unsigned long event_id, void* call_data) override;
+
+    int right_timer_id{-1};
+    Window* window{nullptr};
+  };
+
+  struct ExitCallback : public vtkCommand {
+    static ExitCallback*
+    New ()
+    {
+      return (new ExitCallback);
+    }
+
+    ExitCallback();
+
+    void
+    Execute (vtkObject*, unsigned long event_id, void*) override;
+
+    Window* window{nullptr};
+  };
+
+  bool stopped_{false};
+  int timer_id_{0};
+
+protected: // member fields
+  boost::signals2::signal<void(const pcl::visualization::MouseEvent&)> mouse_signal_;
+  boost::signals2::signal<void(const pcl::visualization::KeyboardEvent&)>
+      keyboard_signal_;
+
+  vtkSmartPointer<vtkRenderWindow> win_;
+  vtkSmartPointer<vtkRenderWindowInteractor> interactor_;
+  vtkCallbackCommand* mouse_command_;
+  vtkCallbackCommand* keyboard_command_;
+  /** \brief The render window interactor style. */
+  vtkSmartPointer<PCLVisualizerInteractorStyle> style_;
+  /** \brief The collection of renderers used. */
+  vtkSmartPointer<vtkRendererCollection> rens_;
+  vtkSmartPointer<ExitMainLoopTimerCallback> exit_main_loop_timer_callback_;
+  vtkSmartPointer<ExitCallback> exit_callback_;
+};
+} // namespace visualization
+} // namespace pcl

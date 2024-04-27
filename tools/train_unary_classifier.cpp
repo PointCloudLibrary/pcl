@@ -37,12 +37,10 @@
  *
  */
 
-
-#include <pcl/io/pcd_io.h>
-#include <pcl/console/print.h>
 #include <pcl/console/parse.h>
+#include <pcl/console/print.h>
 #include <pcl/console/time.h>
-
+#include <pcl/io/pcd_io.h>
 #include <pcl/segmentation/unary_classifier.h>
 
 using namespace pcl;
@@ -59,142 +57,159 @@ using CloudLT = PointCloud<PointXYZRGBL>;
 using FeatureT = PointCloud<FPFHSignature33>;
 
 void
-printHelp (int, char **argv)
+printHelp (int, char** argv)
 {
-  print_error ("Syntax is: %s input.pcd output.pcd <options>\n", argv[0]);
-  print_info ("  where options are:\n");
-  print_info ("                     -label = point cloud with labeled objects \n");
-  print_info ("                     -k X = k-means cluster size (default: "); 
-  print_value ("%d", static_cast<int> (default_cluster_size)); print_info (")\n");
-  print_info ("                     -normal-search X = Normal radius search (default: "); 
-  print_value ("%f", default_normal_radius_search); print_info (")\n");
-  print_info ("                     -fpfh-search X = FPFH radius search (default: "); 
-  print_value ("%f", default_fpfh_radius_search); print_info (")\n");
+  print_error("Syntax is: %s input.pcd output.pcd <options>\n", argv[0]);
+  print_info("  where options are:\n");
+  print_info("                     -label = point cloud with labeled objects \n");
+  print_info("                     -k X = k-means cluster size (default: ");
+  print_value("%d", static_cast<int>(default_cluster_size));
+  print_info(")\n");
+  print_info("                     -normal-search X = Normal radius search (default: ");
+  print_value("%f", default_normal_radius_search);
+  print_info(")\n");
+  print_info("                     -fpfh-search X = FPFH radius search (default: ");
+  print_value("%f", default_fpfh_radius_search);
+  print_info(")\n");
 }
 
 bool
-loadCloud (const std::string &filename, CloudT::Ptr &cloud)
+loadCloud (const std::string& filename, CloudT::Ptr& cloud)
 {
   TicToc tt;
-  print_highlight ("Loading "); print_value ("%s ", filename.c_str ());
+  print_highlight("Loading ");
+  print_value("%s ", filename.c_str());
 
-  tt.tic ();
-  if (loadPCDFile (filename, *cloud) < 0)
+  tt.tic();
+  if (loadPCDFile(filename, *cloud) < 0)
     return (false);
-  print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%d", cloud->width * cloud->height); print_info (" points]\n");
+  print_info("[done, ");
+  print_value("%g", tt.toc());
+  print_info(" ms : ");
+  print_value("%d", cloud->width * cloud->height);
+  print_info(" points]\n");
 
   return (true);
 }
 
 bool
-loadCloud (const std::string &filename, CloudLT::Ptr &cloud)
+loadCloud (const std::string& filename, CloudLT::Ptr& cloud)
 {
   TicToc tt;
-  print_highlight ("Loading "); print_value ("%s ", filename.c_str ());
+  print_highlight("Loading ");
+  print_value("%s ", filename.c_str());
 
-  tt.tic ();
-  if (loadPCDFile (filename, *cloud) < 0)
+  tt.tic();
+  if (loadPCDFile(filename, *cloud) < 0)
     return (false);
-  print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%d", cloud->width * cloud->height); print_info (" points]\n");
+  print_info("[done, ");
+  print_value("%g", tt.toc());
+  print_info(" ms : ");
+  print_value("%d", cloud->width * cloud->height);
+  print_info(" points]\n");
 
   return (true);
 }
 
 void
-compute (const CloudT::Ptr &input, std::vector<FeatureT, Eigen::aligned_allocator<FeatureT> > &output,
+compute (const CloudT::Ptr& input,
+         std::vector<FeatureT, Eigen::aligned_allocator<FeatureT>>& output,
          unsigned int k,
          float normal_radius_search,
          float fpfh_radius_search,
          bool label)
 {
   TicToc tt;
-  tt.tic ();
-  
-  print_highlight ("Computing ");
+  tt.tic();
+
+  print_highlight("Computing ");
 
   UnaryClassifier<PointT> classifier;
-  classifier.setInputCloud (input);
-  classifier.setClusterSize (k);
-  classifier.setNormalRadiusSearch (normal_radius_search);
-  classifier.setFPFHRadiusSearch (fpfh_radius_search);
-  classifier.setLabelField (label);
+  classifier.setInputCloud(input);
+  classifier.setClusterSize(k);
+  classifier.setNormalRadiusSearch(normal_radius_search);
+  classifier.setFPFHRadiusSearch(fpfh_radius_search);
+  classifier.setLabelField(label);
 
-  FeatureT::Ptr feature (new FeatureT);
-  classifier.train (feature);  
-  output.push_back (*feature);
+  FeatureT::Ptr feature(new FeatureT);
+  classifier.train(feature);
+  output.push_back(*feature);
 
-  print_info ("[done, "); 
-  print_value ("%g", tt.toc ()); 
-  print_info (" ms : "); print_value ("%d", feature->width * feature->height); 
-  print_info (" features]\n");
+  print_info("[done, ");
+  print_value("%g", tt.toc());
+  print_info(" ms : ");
+  print_value("%d", feature->width * feature->height);
+  print_info(" features]\n");
 }
 
 void
-compute (const CloudLT::Ptr &input, std::vector<FeatureT, Eigen::aligned_allocator<FeatureT> > &output,
+compute (const CloudLT::Ptr& input,
+         std::vector<FeatureT, Eigen::aligned_allocator<FeatureT>>& output,
          unsigned int k,
          float normal_radius_search,
          float fpfh_radius_search,
          bool label)
 {
   TicToc tt;
-  tt.tic ();
+  tt.tic();
 
   UnaryClassifier<PointXYZRGBL> classifier;
-  classifier.setInputCloud (input);
-  classifier.setClusterSize (k);
-  classifier.setNormalRadiusSearch (normal_radius_search);
-  classifier.setFPFHRadiusSearch (fpfh_radius_search);
-  classifier.setLabelField (label);
+  classifier.setInputCloud(input);
+  classifier.setClusterSize(k);
+  classifier.setNormalRadiusSearch(normal_radius_search);
+  classifier.setFPFHRadiusSearch(fpfh_radius_search);
+  classifier.setLabelField(label);
 
-  classifier.trainWithLabel (output);
+  classifier.trainWithLabel(output);
 
-  print_highlight ("Computing ");
-  print_info ("[done, "); 
-  print_value ("%g", tt.toc ()); 
-  print_info (" ms , "); 
-  print_value ("%d", output.size ()); 
-  print_info (" objects : "); 
-  print_value ("%d", output[0].width * output[0].height); 
-  print_info (" features]\n");
+  print_highlight("Computing ");
+  print_info("[done, ");
+  print_value("%g", tt.toc());
+  print_info(" ms , ");
+  print_value("%d", output.size());
+  print_info(" objects : ");
+  print_value("%d", output[0].width * output[0].height);
+  print_info(" features]\n");
 }
 
 void
-saveCloud (const std::string &filename, std::vector<FeatureT, Eigen::aligned_allocator<FeatureT> > &output)
+saveCloud (const std::string& filename,
+           std::vector<FeatureT, Eigen::aligned_allocator<FeatureT>>& output)
 {
   TicToc tt;
-  tt.tic ();
+  tt.tic();
 
-  if (output.size () == 1)
-  {
-    print_highlight ("Saving "); print_value ("%s ", filename.c_str ());
+  if (output.size() == 1) {
+    print_highlight("Saving ");
+    print_value("%s ", filename.c_str());
     PCDWriter w;
-    w.write (filename, output[0]);
+    w.write(filename, output[0]);
 
-    print_info ("[done, "); 
-    print_value ("%g", tt.toc ()); 
-    print_info (" ms : "); print_value ("%d", output[0].width * output[0].height); 
-    print_info (" features]\n");    
+    print_info("[done, ");
+    print_value("%g", tt.toc());
+    print_info(" ms : ");
+    print_value("%d", output[0].width * output[0].height);
+    print_info(" features]\n");
   }
-  else
-  {
-    for (std::size_t i = 0; i < output.size (); i++)
-    {
-      std::string fname (filename);
-      std::string s = std::to_string(static_cast<int> (i) );
+  else {
+    for (std::size_t i = 0; i < output.size(); i++) {
+      std::string fname(filename);
+      std::string s = std::to_string(static_cast<int>(i));
       fname += "_" + s + ".pcd";
 
-      print_highlight ("Saving "); print_value ("%s ", fname.c_str ());
+      print_highlight("Saving ");
+      print_value("%s ", fname.c_str());
 
       PCDWriter w;
-      w.write (fname, output[i]);
+      w.write(fname, output[i]);
 
-      print_info ("[done, "); 
-      print_value ("%g", tt.toc ()); 
-      print_info (" ms , "); 
-      print_value ("%d", i); 
-      print_info (" objects : "); 
-      print_value ("%d", output[i].width * output[i].height); 
-      print_info (" features]\n");
+      print_info("[done, ");
+      print_value("%g", tt.toc());
+      print_info(" ms , ");
+      print_value("%d", i);
+      print_info(" objects : ");
+      print_value("%d", output[i].width * output[i].height);
+      print_info(" features]\n");
     }
   }
 }
@@ -203,74 +218,67 @@ saveCloud (const std::string &filename, std::vector<FeatureT, Eigen::aligned_all
 int
 main (int argc, char** argv)
 {
-  print_info ("Train unary classifier using FPFH. For more information, use: %s -h\n", argv[0]);
+  print_info("Train unary classifier using FPFH. For more information, use: %s -h\n",
+             argv[0]);
 
-  if (argc < 3)
-  {
-    printHelp (argc, argv);
+  if (argc < 3) {
+    printHelp(argc, argv);
     return (-1);
   }
 
-  bool label = (find_argument (argc, argv, "-label") != -1);
+  bool label = (find_argument(argc, argv, "-label") != -1);
 
   // Parse the command line arguments for .pcd files
   std::vector<int> p_file_indices;
-  p_file_indices = parse_file_extension_argument (argc, argv, ".pcd");
-  if (!label)
-  {
-    if (p_file_indices.size () != 2)
-    {
-      print_error ("Need one input PCD file and one output PCD file to continue.\n");
+  p_file_indices = parse_file_extension_argument(argc, argv, ".pcd");
+  if (!label) {
+    if (p_file_indices.size() != 2) {
+      print_error("Need one input PCD file and one output PCD file to continue.\n");
       return (-1);
     }
   }
-  else
-  {
-    if (p_file_indices.size () != 1)
-    {
-      print_error ("Need one input PCD file and one output file name to continue.\n");
+  else {
+    if (p_file_indices.size() != 1) {
+      print_error("Need one input PCD file and one output file name to continue.\n");
       return (-1);
-    }    
+    }
   }
-  
+
   // parse optional input arguments from the command line
   unsigned int k = default_cluster_size;
-  float normal_radius_search = static_cast<float> (default_normal_radius_search);
-  float fpfh_radius_search = static_cast<float> (default_fpfh_radius_search);
+  float normal_radius_search = static_cast<float>(default_normal_radius_search);
+  float fpfh_radius_search = static_cast<float>(default_fpfh_radius_search);
 
-  parse_argument (argc, argv, "-k", k);
-  parse_argument (argc, argv, "-normal-radius-search", normal_radius_search);
-  parse_argument (argc, argv, "-fpfh-radius-search", fpfh_radius_search);
+  parse_argument(argc, argv, "-k", k);
+  parse_argument(argc, argv, "-normal-radius-search", normal_radius_search);
+  parse_argument(argc, argv, "-fpfh-radius-search", fpfh_radius_search);
 
-  print_info ("\nlabel: %d \n", label);
-  print_info ("k-means cluster size: %d \n", k);
-  print_info ("normal-radius-search: %f \n", normal_radius_search);
-  print_info ("fpfh-radius-search: %f \n\n", fpfh_radius_search);
+  print_info("\nlabel: %d \n", label);
+  print_info("k-means cluster size: %d \n", k);
+  print_info("normal-radius-search: %f \n", normal_radius_search);
+  print_info("fpfh-radius-search: %f \n\n", fpfh_radius_search);
 
-  std::vector<FeatureT, Eigen::aligned_allocator<FeatureT> > features;
-  //FeatureT::Ptr feature (new FeatureT);
-  if (!label)
-  {
+  std::vector<FeatureT, Eigen::aligned_allocator<FeatureT>> features;
+  // FeatureT::Ptr feature (new FeatureT);
+  if (!label) {
     // Load the input file
-    CloudT::Ptr cloud (new CloudT);
-    if (!loadCloud (argv[p_file_indices[0]], cloud)) 
-      return (-1);
-    
-    // compute the features
-    compute (cloud, features, k, normal_radius_search, fpfh_radius_search, label);
-  }
-  else
-  {
-    // Load the input file  
-    CloudLT::Ptr cloudL (new CloudLT);
-    if (!loadCloud (argv[p_file_indices[0]], cloudL)) 
+    CloudT::Ptr cloud(new CloudT);
+    if (!loadCloud(argv[p_file_indices[0]], cloud))
       return (-1);
 
     // compute the features
-    compute (cloudL, features, k, normal_radius_search, fpfh_radius_search, label);
+    compute(cloud, features, k, normal_radius_search, fpfh_radius_search, label);
+  }
+  else {
+    // Load the input file
+    CloudLT::Ptr cloudL(new CloudLT);
+    if (!loadCloud(argv[p_file_indices[0]], cloudL))
+      return (-1);
+
+    // compute the features
+    compute(cloudL, features, k, normal_radius_search, fpfh_radius_search, label);
   }
 
   // Save features to file
-  saveCloud (argv[2], features);
+  saveCloud(argv[2], features);
 }
-

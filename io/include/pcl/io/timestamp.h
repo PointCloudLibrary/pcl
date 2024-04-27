@@ -16,14 +16,16 @@
 
 namespace pcl {
 /**
- * @brief Returns a timestamp in local time as string formatted like boosts to_iso_string see https://www.boost.org/doc/libs/1_81_0/doc/html/date_time/posix_time.html#ptime_to_string
+ * @brief Returns a timestamp in local time as string formatted like boosts
+ * to_iso_string see
+ * https://www.boost.org/doc/libs/1_81_0/doc/html/date_time/posix_time.html#ptime_to_string
  * Example: 19750101T235959.123456
  * @param time std::chrono::timepoint to convert, defaults to now
  * @return std::string containing the timestamp
-*/
+ */
 PCL_EXPORTS inline std::string
-getTimestamp(const std::chrono::time_point<std::chrono::system_clock>& time =
-                 std::chrono::system_clock::now())
+getTimestamp (const std::chrono::time_point<std::chrono::system_clock>& time =
+                  std::chrono::system_clock::now())
 {
   const auto us =
       std::chrono::duration_cast<std::chrono::microseconds>(time.time_since_epoch());
@@ -44,12 +46,14 @@ getTimestamp(const std::chrono::time_point<std::chrono::system_clock>& time =
 }
 
 /**
- * @brief Parses a iso timestring (see https://www.boost.org/doc/libs/1_81_0/doc/html/date_time/posix_time.html#ptime_to_string) and returns a timepoint
+ * @brief Parses a iso timestring (see
+ * https://www.boost.org/doc/libs/1_81_0/doc/html/date_time/posix_time.html#ptime_to_string)
+ * and returns a timepoint
  * @param timestamp as string formatted like boost iso date
  * @return std::chrono::time_point with system_clock
-*/
+ */
 PCL_EXPORTS inline std::chrono::time_point<std::chrono::system_clock>
-parseTimestamp(std::string timestamp)
+parseTimestamp (std::string timestamp)
 {
   std::istringstream ss;
 
@@ -65,7 +69,7 @@ parseTimestamp(std::string timestamp)
   const auto pos = timestamp.find('.');
 
   if (pos != std::string::npos) {
-    const auto frac_text = timestamp.substr(pos+1);  
+    const auto frac_text = timestamp.substr(pos + 1);
     ss.str(frac_text);
     ss >> fractional_seconds;
     timepoint += std::chrono::microseconds(fractional_seconds);

@@ -29,7 +29,7 @@ public:
    * \param target instance of target point.
    */
   inline double
-  compute(PointInT& source, PointInT& target);
+  compute (PointInT& source, PointInT& target);
 
 protected:
   /** \brief The coherence name. */
@@ -40,11 +40,11 @@ protected:
    * \param[in] target instance of target point.
    */
   virtual double
-  computeCoherence(PointInT& source, PointInT& target) = 0;
+  computeCoherence (PointInT& source, PointInT& target) = 0;
 
   /** \brief Get a string representation of the name of this class. */
   inline const std::string&
-  getClassName() const
+  getClassName () const
   {
     return (coherence_name_);
   }
@@ -74,13 +74,13 @@ public:
 
   /** \brief compute coherence between two pointclouds. */
   inline void
-  compute(const PointCloudInConstPtr& cloud,
-          const IndicesConstPtr& indices,
-          float& w_i);
+  compute (const PointCloudInConstPtr& cloud,
+           const IndicesConstPtr& indices,
+           float& w_i);
 
   /** \brief get a list of pcl::tracking::PointCoherence.*/
   inline std::vector<PointCoherencePtr>
-  getPointCoherences()
+  getPointCoherences ()
   {
     return point_coherences_;
   }
@@ -89,7 +89,7 @@ public:
    * \param coherences a list of pcl::tracking::PointCoherence.
    */
   inline void
-  setPointCoherences(std::vector<PointCoherencePtr> coherences)
+  setPointCoherences (std::vector<PointCoherencePtr> coherences)
   {
     point_coherences_ = coherences;
   }
@@ -97,13 +97,13 @@ public:
   /** \brief This method should get called before starting the actual
    * computation. */
   virtual bool
-  initCompute();
+  initCompute ();
 
   /** \brief add a PointCoherence to the PointCloudCoherence.
    * \param coherence a pointer to PointCoherence.
    */
   inline void
-  addPointCoherence(PointCoherencePtr coherence)
+  addPointCoherence (PointCoherencePtr coherence)
   {
     point_coherences_.push_back(coherence);
   }
@@ -112,7 +112,7 @@ public:
    * \param cloud a pointer to PointCoherence.
    */
   virtual inline void
-  setTargetCloud(const PointCloudInConstPtr& cloud)
+  setTargetCloud (const PointCloudInConstPtr& cloud)
   {
     target_input_ = cloud;
   }
@@ -120,16 +120,16 @@ public:
 protected:
   /** \brief Abstract method to compute coherence. */
   virtual void
-  computeCoherence(const PointCloudInConstPtr& cloud,
-                   const IndicesConstPtr& indices,
-                   float& w_j) = 0;
+  computeCoherence (const PointCloudInConstPtr& cloud,
+                    const IndicesConstPtr& indices,
+                    float& w_j) = 0;
 
   inline double
-  calcPointCoherence(PointInT& source, PointInT& target);
+  calcPointCoherence (PointInT& source, PointInT& target);
 
   /** \brief Get a string representation of the name of this class. */
   inline const std::string&
-  getClassName() const
+  getClassName () const
   {
     return (coherence_name_);
   }

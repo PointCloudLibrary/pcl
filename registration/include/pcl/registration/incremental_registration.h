@@ -93,20 +93,20 @@ public:
    * \return true if registration converged
    */
   bool
-  registerCloud(const PointCloudConstPtr& cloud,
-                const Matrix4& delta_estimate = Matrix4::Identity());
+  registerCloud (const PointCloudConstPtr& cloud,
+                 const Matrix4& delta_estimate = Matrix4::Identity());
 
   /** \brief Get estimated transform between the last two registered clouds */
   inline Matrix4
-  getDeltaTransform() const;
+  getDeltaTransform () const;
 
   /** \brief Get estimated overall transform */
   inline Matrix4
-  getAbsoluteTransform() const;
+  getAbsoluteTransform () const;
 
   /** \brief Reset incremental Registration without resetting registration_ */
   inline void
-  reset();
+  reset ();
 
   /** \brief Set registration instance used to align clouds */
   inline void setRegistration(RegistrationPtr);

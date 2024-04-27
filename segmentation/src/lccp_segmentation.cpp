@@ -35,9 +35,11 @@
  *
  */
 
-#include <pcl/point_types.h>
 #include <pcl/impl/instantiate.hpp>
-#include <pcl/segmentation/lccp_segmentation.h>
 #include <pcl/segmentation/impl/lccp_segmentation.hpp>
+#include <pcl/segmentation/lccp_segmentation.h>
+#include <pcl/point_types.h>
 
-PCL_INSTANTIATE(LCCPSegmentation, (pcl::PointXYZ)(pcl::PointXYZRGB)(pcl::PointXYZRGBA)(pcl::PointXYZRGBNormal))
+PCL_INSTANTIATE(
+    LCCPSegmentation,
+    (pcl::PointXYZ)(pcl::PointXYZRGB)(pcl::PointXYZRGBA)(pcl::PointXYZRGBNormal))

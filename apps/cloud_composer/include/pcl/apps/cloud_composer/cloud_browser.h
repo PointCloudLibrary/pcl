@@ -42,40 +42,35 @@
 
 class QItemSelectionModel;
 
-namespace pcl
-{
-  namespace cloud_composer
-  {
-    /** \brief View class for displaying project composition
-     * \author Jeremie Papon
-     * \ingroup cloud_composer
-     */
-    class ProjectModel;
-    class CloudBrowser : public QTreeView
-    {
-      Q_OBJECT
-      public:
-        CloudBrowser (QWidget* parent = nullptr);
-        
-        void 
-        setModel (QAbstractItemModel* new_model) override;
-      
-      private:  
-        ProjectModel* current_project_model_;
-       
-    };
-    
-    class BackgroundDelegate : public QStyledItemDelegate
-    {
-      public:
-        explicit 
-        BackgroundDelegate (QObject *parent = nullptr)
-          : QStyledItemDelegate(parent) {}
-          
-        void
-        paint (QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const override;
-        
-    };
-    
-  }
-}
+namespace pcl {
+namespace cloud_composer {
+/** \brief View class for displaying project composition
+ * \author Jeremie Papon
+ * \ingroup cloud_composer
+ */
+class ProjectModel;
+class CloudBrowser : public QTreeView {
+  Q_OBJECT
+public:
+  CloudBrowser(QWidget* parent = nullptr);
+
+  void
+  setModel (QAbstractItemModel* new_model) override;
+
+private:
+  ProjectModel* current_project_model_;
+};
+
+class BackgroundDelegate : public QStyledItemDelegate {
+public:
+  explicit BackgroundDelegate(QObject* parent = nullptr) : QStyledItemDelegate(parent)
+  {}
+
+  void
+  paint (QPainter* painter,
+         const QStyleOptionViewItem& option,
+         const QModelIndex& index) const override;
+};
+
+} // namespace cloud_composer
+} // namespace pcl

@@ -19,7 +19,7 @@
 // For adding noise:
 static std::minstd_rand rng(std::random_device{}());
 
-//#define SIMULATION_DEBUG 1
+// #define SIMULATION_DEBUG 1
 #define DO_TIMING_PROFILE 0
 
 // 301 values, 0.0 uniform  1.0 normal. properly truncated/normalized
@@ -232,7 +232,7 @@ using namespace pcl::simulation;
 // Finds the maximum level n so a and b are still
 // divisible by 2^n
 int
-max_level(int a, int b)
+max_level (int a, int b)
 {
   int level = 0;
   while (true) {
@@ -248,7 +248,7 @@ max_level(int a, int b)
 // timestamps and displays the elapsed time between them as
 // a fraction and time used [for profiling]
 void
-display_tic_toc(std::vector<double>& tic_toc, const std::string& fun_name)
+display_tic_toc (std::vector<double>& tic_toc, const std::string& fun_name)
 {
   std::size_t tic_toc_size = tic_toc.size();
 
@@ -573,7 +573,7 @@ pcl::simulation::RangeLikelihood::drawParticles(
 // Below are 4 previously used cost functions:
 // 0 original scoring method
 float
-costFunction0(float ref_val, float depth_val)
+costFunction0 (float ref_val, float depth_val)
 {
   return (sqr(ref_val - depth_val));
 }
@@ -585,7 +585,7 @@ costFunction0(float ref_val, float depth_val)
 // float cost = sqr(ref[col%col_width] - 1/(1.33 -(*depth)*1.29));
 // Version 1: [29 aug 2011] Exact version using correct mappings:
 float
-costFunction1(float ref_val, float depth_val)
+costFunction1 (float ref_val, float depth_val)
 {
   float cost = sqr(ref_val - 1 / (1.4285f - (depth_val)*1.3788f));
   // std::cout << " [" << ref_val << "," << 1/(1.4285 -(depth_val)*1.3788) << "] ";
@@ -602,7 +602,7 @@ costFunction1(float ref_val, float depth_val)
 
 // 1st working likelihood function (by far most commonly used)
 float
-costFunction2(float ref_val, float depth_val)
+costFunction2 (float ref_val, float depth_val)
 {
   float min_dist = std::abs(ref_val - 1 / (1.4285f - (depth_val)*1.3788f));
   int lup = static_cast<int>(std::ceil(min_dist * 100)); // has resolution of 0.01m
@@ -634,7 +634,7 @@ costFunction2(float ref_val, float depth_val)
 }
 
 float
-costFunction3(float ref_val, float depth_val)
+costFunction3 (float ref_val, float depth_val)
 {
   float log_lhood = 0;
   // std::log(1) = 0 ---> has no effect
@@ -657,7 +657,7 @@ costFunction3(float ref_val, float depth_val)
 }
 
 float
-costFunction4(float ref_val, float depth_val)
+costFunction4 (float ref_val, float depth_val)
 {
   float disparity_diff = std::abs((-0.7253f / ref_val + 1.0360f) - depth_val);
 
@@ -699,10 +699,10 @@ costFunction4(float ref_val, float depth_val)
 using boost::math::normal;   // typedef provides default type is double.
 normal unit_norm_dist(0, 1); // (default mean = zero, and standard deviation = unity)
 double
-costFunction5(double measured_depth,
-              double model_disp,
-              double sigma,
-              double floor_proportion)
+costFunction5 (double measured_depth,
+               double model_disp,
+               double sigma,
+               double floor_proportion)
 {
   // NEED TO CONVERT MEASURED TO DISPARITY
   double measured_disp = (-0.7253 / measured_depth + 1.0360);

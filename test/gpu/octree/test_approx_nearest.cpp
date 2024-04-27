@@ -7,18 +7,18 @@
  *  All rights reserved
  */
 
+#include <pcl/common/distances.h>
 #include <pcl/gpu/containers/device_array.h>
 #include <pcl/gpu/octree/octree.hpp>
 #include <pcl/octree/octree_search.h>
 #include <pcl/point_cloud.h>
-#include <pcl/common/distances.h>
 
 #include <gtest/gtest.h>
 
 #include <algorithm>
+#include <array> // for std::array
 #include <fstream>
 #include <iostream>
-#include <array> // for std::array
 
 TEST(PCL_OctreeGPU, approxNearesSearch)
 {
@@ -59,7 +59,7 @@ TEST(PCL_OctreeGPU, approxNearesSearch)
   // While the GPU implementation has a fixed depth of 10 levels, octree depth in the
   // CPU implementation can vary based on the leaf size set by the user, which can
   // affect the results. Therefore results would only tally if depths match.
-  //generate custom pointcloud
+  // generate custom pointcloud
   constexpr pcl::index_t point_size = 1000 * coords.size();
   auto cloud = pcl::make_shared<pcl::PointCloud<pcl::PointXYZ>>(point_size, 1);
 
@@ -116,9 +116,10 @@ TEST(PCL_OctreeGPU, approxNearesSearch)
 
   ASSERT_EQ(downloaded, result_host_gpu);
 
-  const std::array<float, 3> expected_sqr_dists {pcl::squaredEuclideanDistance(coords[8], queries[0]),
-                                                  pcl::squaredEuclideanDistance(coords[8], queries[1]),
-                                                  pcl::squaredEuclideanDistance(coords[7], queries[2]) };
+  const std::array<float, 3> expected_sqr_dists{
+      pcl::squaredEuclideanDistance(coords[8], queries[0]),
+      pcl::squaredEuclideanDistance(coords[8], queries[1]),
+      pcl::squaredEuclideanDistance(coords[7], queries[2])};
 
   for (size_t i = 0; i < queries.size(); ++i) {
     ASSERT_EQ(dists_pcl[i], dists_gpu[i]);
@@ -129,7 +130,7 @@ TEST(PCL_OctreeGPU, approxNearesSearch)
 
 /* ---[ */
 int
-main(int argc, char** argv)
+main (int argc, char** argv)
 {
   testing::InitGoogleTest(&argc, argv);
   return (RUN_ALL_TESTS());

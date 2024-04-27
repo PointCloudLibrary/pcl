@@ -38,15 +38,15 @@ protected:
    * computation.
    */
   bool
-  initCompute() override;
+  initCompute () override;
 
   /** \brief compute the nearest pairs and compute coherence using
    * point_coherences_
    */
   void
-  computeCoherence(const PointCloudInConstPtr& cloud,
-                   const IndicesConstPtr& indices,
-                   float& w_j) override;
+  computeCoherence (const PointCloudInConstPtr& cloud,
+                    const IndicesConstPtr& indices,
+                    float& w_j) override;
 
   typename pcl::search::Octree<PointInT>::Ptr search_;
 };

@@ -100,7 +100,7 @@ public:
    * \param[in] fy the focal length in pixels along the y-axis of the image
    */
   inline void
-  setFocalLengths(const float fx, const float fy)
+  setFocalLengths (const float fx, const float fy)
   {
     fx_ = fx;
     fy_ = fy;
@@ -111,7 +111,7 @@ public:
    * \param[out] fy the focal length in pixels along the y-axis of the image
    */
   inline void
-  getFocalLengths(float& fx, float& fy) const
+  getFocalLengths (float& fx, float& fy) const
   {
     fx = fx_;
     fy = fy_;
@@ -122,7 +122,7 @@ public:
    * \param[in] cy the y-coordinate of the camera center
    */
   inline void
-  setCameraCenters(const float cx, const float cy)
+  setCameraCenters (const float cx, const float cy)
   {
     cx_ = cx;
     cy_ = cy;
@@ -133,7 +133,7 @@ public:
    * \param[out] cy the y-coordinate of the camera center
    */
   inline void
-  getCameraCenters(float& cx, float& cy) const
+  getCameraCenters (float& cx, float& cy) const
   {
     cx = cx_;
     cy = cy_;
@@ -145,7 +145,7 @@ public:
    * transformation
    */
   inline void
-  setSourceTransformation(const Eigen::Matrix4f& src_to_tgt_transformation)
+  setSourceTransformation (const Eigen::Matrix4f& src_to_tgt_transformation)
   {
     src_to_tgt_transformation_ = src_to_tgt_transformation;
   }
@@ -155,7 +155,7 @@ public:
    * so use this transformation to correct for that. \return the transformation
    */
   inline Eigen::Matrix4f
-  getSourceTransformation() const
+  getSourceTransformation () const
   {
     return (src_to_tgt_transformation_);
   }
@@ -166,7 +166,7 @@ public:
    * \param[in] depth_threshold the depth threshold
    */
   inline void
-  setDepthThreshold(const float depth_threshold)
+  setDepthThreshold (const float depth_threshold)
   {
     depth_threshold_ = depth_threshold;
   }
@@ -177,7 +177,7 @@ public:
    * \return the depth threshold
    */
   inline float
-  getDepthThreshold() const
+  getDepthThreshold () const
   {
     return (depth_threshold_);
   }
@@ -190,7 +190,7 @@ public:
    * will be rejected
    */
   void
-  determineCorrespondences(Correspondences& correspondences, double max_distance);
+  determineCorrespondences (Correspondences& correspondences, double max_distance);
 
   /** \brief Computes the correspondences, applying a maximum Euclidean distance
    * threshold.
@@ -200,12 +200,12 @@ public:
    * will be rejected
    */
   void
-  determineReciprocalCorrespondences(Correspondences& correspondences,
-                                     double max_distance);
+  determineReciprocalCorrespondences (Correspondences& correspondences,
+                                      double max_distance);
 
   /** \brief Clone and cast to CorrespondenceEstimationBase */
   virtual typename CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::Ptr
-  clone() const
+  clone () const
   {
     Ptr copy(new CorrespondenceEstimationOrganizedProjection<PointSource,
                                                              PointTarget,
@@ -217,7 +217,7 @@ protected:
   using CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::target_;
 
   bool
-  initCompute();
+  initCompute ();
 
   float fx_{525.f}, fy_{525.f};
   float cx_{319.5f}, cy_{239.5f};

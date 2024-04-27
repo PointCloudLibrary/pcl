@@ -14,7 +14,7 @@
 // clang-format on
 
 void
-run(pcl::RFFaceDetectorTrainer& fdrf, bool heat_map = false, bool show_votes = false)
+run (pcl::RFFaceDetectorTrainer& fdrf, bool heat_map = false, bool show_votes = false)
 {
   OpenNIFrameSource::OpenNIFrameSource camera;
   OpenNIFrameSource::PointCloudPtr scene_vis;
@@ -24,7 +24,7 @@ run(pcl::RFFaceDetectorTrainer& fdrf, bool heat_map = false, bool show_votes = f
 
   // keyboard callback to stop getting frames and finalize application
   std::function<void(const pcl::visualization::KeyboardEvent&)> keyboard_cb =
-      [&](const pcl::visualization::KeyboardEvent& event) {
+      [&] (const pcl::visualization::KeyboardEvent& event) {
         camera.onKeyboardEvent(event);
       };
   vis.registerKeyboardCallback(keyboard_cb);
@@ -91,7 +91,7 @@ run(pcl::RFFaceDetectorTrainer& fdrf, bool heat_map = false, bool show_votes = f
 }
 
 int
-main(int argc, char** argv)
+main (int argc, char** argv)
 {
   int STRIDE_SW = 4;
   int use_normals = 0;

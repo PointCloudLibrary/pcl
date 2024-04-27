@@ -87,17 +87,17 @@ public:
    * \param size elements number
    * */
   void
-  create(std::size_t size);
+  create (std::size_t size);
 
   /** \brief Decrements reference counter and releases internal buffer if needed. */
   void
-  release();
+  release ();
 
   /** \brief Performs data copying. If destination size differs it will be reallocated.
    * \param other destination container
    * */
   void
-  copyTo(DeviceArray& other) const;
+  copyTo (DeviceArray& other) const;
 
   /** \brief Uploads data to internal buffer in GPU memory. It calls create() inside to
    * ensure that internal buffer size is enough.
@@ -105,7 +105,7 @@ public:
    * \param size elements number
    * */
   void
-  upload(const T* host_ptr, std::size_t size);
+  upload (const T* host_ptr, std::size_t size);
 
   /** \brief Uploads data from CPU memory to internal buffer.
    * \return true if upload successful
@@ -116,13 +116,13 @@ public:
    * \param num_elements number of elements from device_bein_offset
    * */
   bool
-  upload(const T* host_ptr, std::size_t device_begin_offset, std::size_t num_elements);
+  upload (const T* host_ptr, std::size_t device_begin_offset, std::size_t num_elements);
 
   /** \brief Downloads data from internal buffer to CPU memory
    * \param host_ptr pointer to buffer to download
    * */
   void
-  download(T* host_ptr) const;
+  download (T* host_ptr) const;
 
   /** \brief Downloads data from internal buffer to CPU memory.
    * \return true if download successful
@@ -131,9 +131,9 @@ public:
    * \param num_elements number of elements from device_begin_offset
    * */
   bool
-  download(T* host_ptr,
-           std::size_t device_begin_offset,
-           std::size_t num_elements) const;
+  download (T* host_ptr,
+            std::size_t device_begin_offset,
+            std::size_t num_elements) const;
 
   /** \brief Uploads data to internal buffer in GPU memory. It calls create() inside to
    * ensure that internal buffer size is enough.
@@ -141,28 +141,28 @@ public:
    * */
   template <class A>
   void
-  upload(const std::vector<T, A>& data);
+  upload (const std::vector<T, A>& data);
 
   /** \brief Downloads data from internal buffer to CPU memory
    * \param data  host vector to download to
    * */
   template <typename A>
   void
-  download(std::vector<T, A>& data) const;
+  download (std::vector<T, A>& data) const;
 
   /** \brief Performs swap of data pointed with another device array.
    * \param other_arg device array to swap with
    * */
   void
-  swap(DeviceArray& other_arg);
+  swap (DeviceArray& other_arg);
 
   /** \brief Returns pointer for internal buffer in GPU memory. */
   T*
-  ptr();
+  ptr ();
 
   /** \brief Returns const pointer for internal buffer in GPU memory. */
   const T*
-  ptr() const;
+  ptr () const;
 
   // using DeviceMemory::ptr;
 
@@ -174,7 +174,7 @@ public:
 
   /** \brief Returns size in elements. */
   std::size_t
-  size() const;
+  size () const;
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -225,17 +225,17 @@ public:
    * \param cols number of elements in each row
    * */
   void
-  create(int rows, int cols);
+  create (int rows, int cols);
 
   /** \brief Decrements reference counter and releases internal buffer if needed. */
   void
-  release();
+  release ();
 
   /** \brief Performs data copying. If destination size differs it will be reallocated.
    * \param other destination container
    * */
   void
-  copyTo(DeviceArray2D& other) const;
+  copyTo (DeviceArray2D& other) const;
 
   /** \brief Uploads data to internal buffer in GPU memory. It calls create() inside to
    * ensure that internal buffer size is enough.
@@ -245,7 +245,7 @@ public:
    * \param cols number of elements in each row
    * */
   void
-  upload(const void* host_ptr, std::size_t host_step, int rows, int cols);
+  upload (const void* host_ptr, std::size_t host_step, int rows, int cols);
 
   /** \brief Downloads data from internal buffer to CPU memory. User is responsible for
    * correct host buffer size.
@@ -253,13 +253,13 @@ public:
    * \param host_step stride between two consecutive rows in bytes for host buffer
    * */
   void
-  download(void* host_ptr, std::size_t host_step) const;
+  download (void* host_ptr, std::size_t host_step) const;
 
   /** \brief Performs swap of data pointed with another device array.
    * \param other_arg device array to swap with
    * */
   void
-  swap(DeviceArray2D& other_arg);
+  swap (DeviceArray2D& other_arg);
 
   /** \brief Uploads data to internal buffer in GPU memory. It calls create() inside to
    * ensure that internal buffer size is enough.
@@ -268,7 +268,7 @@ public:
    * */
   template <class A>
   void
-  upload(const std::vector<T, A>& data, int cols);
+  upload (const std::vector<T, A>& data, int cols);
 
   /** \brief Downloads data from internal buffer to CPU memory
    * \param data host vector to download to
@@ -276,19 +276,19 @@ public:
    * */
   template <class A>
   void
-  download(std::vector<T, A>& data, int& cols) const;
+  download (std::vector<T, A>& data, int& cols) const;
 
   /** \brief Returns pointer to given row in internal buffer.
    * \param y row index
    * */
   T*
-  ptr(int y = 0);
+  ptr (int y = 0);
 
   /** \brief Returns const pointer to given row in internal buffer.
    * \param y row index
    * */
   const T*
-  ptr(int y = 0) const;
+  ptr (int y = 0) const;
 
   // using DeviceMemory2D::ptr;
 
@@ -300,15 +300,15 @@ public:
 
   /** \brief Returns number of elements in each row. */
   int
-  cols() const;
+  cols () const;
 
   /** \brief Returns number of rows. */
   int
-  rows() const;
+  rows () const;
 
   /** \brief Returns step in elements. */
   std::size_t
-  elem_step() const;
+  elem_step () const;
 };
 } // namespace gpu
 

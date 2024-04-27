@@ -159,11 +159,11 @@ public:
    * \param features the source point cloud's features
    */
   void
-  setSourceFeatures(const FeatureCloudConstPtr& features);
+  setSourceFeatures (const FeatureCloudConstPtr& features);
 
   /** \brief Get a pointer to the source point cloud's features */
   inline FeatureCloudConstPtr const
-  getSourceFeatures()
+  getSourceFeatures ()
   {
     return (input_features_);
   }
@@ -172,11 +172,11 @@ public:
    * \param features the target point cloud's features
    */
   void
-  setTargetFeatures(const FeatureCloudConstPtr& features);
+  setTargetFeatures (const FeatureCloudConstPtr& features);
 
   /** \brief Get a pointer to the target point cloud's features */
   inline FeatureCloudConstPtr const
-  getTargetFeatures()
+  getTargetFeatures ()
   {
     return (target_features_);
   }
@@ -185,14 +185,14 @@ public:
    * \param min_sample_distance the minimum distances between samples
    */
   void
-  setMinSampleDistance(float min_sample_distance)
+  setMinSampleDistance (float min_sample_distance)
   {
     min_sample_distance_ = min_sample_distance;
   }
 
   /** \brief Get the minimum distances between samples, as set by the user */
   float
-  getMinSampleDistance()
+  getMinSampleDistance ()
   {
     return (min_sample_distance_);
   }
@@ -201,7 +201,7 @@ public:
    * \param nr_samples the number of samples to use during each iteration
    */
   void
-  setNumberOfSamples(int nr_samples)
+  setNumberOfSamples (int nr_samples)
   {
     nr_samples_ = nr_samples;
   }
@@ -209,7 +209,7 @@ public:
   /** \brief Get the number of samples to use during each iteration, as set by the user
    */
   int
-  getNumberOfSamples()
+  getNumberOfSamples ()
   {
     return (nr_samples_);
   }
@@ -220,7 +220,7 @@ public:
    * correspondence.
    */
   void
-  setCorrespondenceRandomness(int k)
+  setCorrespondenceRandomness (int k)
   {
     k_correspondences_ = k;
   }
@@ -228,7 +228,7 @@ public:
   /** \brief Get the number of neighbors used when selecting a random feature
    * correspondence, as set by the user */
   int
-  getCorrespondenceRandomness()
+  getCorrespondenceRandomness ()
   {
     return (k_correspondences_);
   }
@@ -239,7 +239,7 @@ public:
    * SampleConsensusInitialAlignment::ErrorFunctor
    */
   void
-  setErrorFunction(const ErrorFunctorPtr& error_functor)
+  setErrorFunction (const ErrorFunctorPtr& error_functor)
   {
     error_functor_ = error_functor;
   }
@@ -249,7 +249,7 @@ public:
    * SampleConsensusInitialAlignment::ErrorFunctor
    */
   ErrorFunctorPtr
-  getErrorFunction()
+  getErrorFunction ()
   {
     return (error_functor_);
   }
@@ -259,7 +259,7 @@ protected:
    * \param n the number of possible indices to choose from
    */
   inline pcl::index_t
-  getRandomIndex(int n)
+  getRandomIndex (int n)
   {
     return (static_cast<pcl::index_t>(n * (rand() / (RAND_MAX + 1.0))));
   };
@@ -271,10 +271,10 @@ protected:
    * any two samples \param sample_indices the resulting sample indices
    */
   void
-  selectSamples(const PointCloudSource& cloud,
-                unsigned int nr_samples,
-                float min_sample_distance,
-                pcl::Indices& sample_indices);
+  selectSamples (const PointCloudSource& cloud,
+                 unsigned int nr_samples,
+                 float min_sample_distance,
+                 pcl::Indices& sample_indices);
 
   /** \brief For each of the sample points, find a list of points in the target cloud
    * whose features are similar to the sample points' features. From these, select one
@@ -284,24 +284,24 @@ protected:
    * sample's corresponding point in the target cloud
    */
   void
-  findSimilarFeatures(const FeatureCloud& input_features,
-                      const pcl::Indices& sample_indices,
-                      pcl::Indices& corresponding_indices);
+  findSimilarFeatures (const FeatureCloud& input_features,
+                       const pcl::Indices& sample_indices,
+                       pcl::Indices& corresponding_indices);
 
   /** \brief An error metric for that computes the quality of the alignment between the
    * given cloud and the target. \param cloud the input cloud \param threshold distances
    * greater than this value are capped
    */
   float
-  computeErrorMetric(const PointCloudSource& cloud, float threshold);
+  computeErrorMetric (const PointCloudSource& cloud, float threshold);
 
   /** \brief Rigid transformation computation method.
    * \param output the transformed input point cloud dataset using the rigid
    * transformation found \param guess The computed transforamtion
    */
   void
-  computeTransformation(PointCloudSource& output,
-                        const Eigen::Matrix4f& guess) override;
+  computeTransformation (PointCloudSource& output,
+                         const Eigen::Matrix4f& guess) override;
 
   /** \brief The source point cloud's feature descriptors. */
   FeatureCloudConstPtr input_features_;

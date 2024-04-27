@@ -78,15 +78,16 @@ public:
    * set of remaining correspondences
    */
   void
-  getRemainingCorrespondences(const pcl::Correspondences& original_correspondences,
-                              pcl::Correspondences& remaining_correspondences) override;
+  getRemainingCorrespondences (
+      const pcl::Correspondences& original_correspondences,
+      pcl::Correspondences& remaining_correspondences) override;
 
   /** \brief Set the thresholding angle between the normals for correspondence
    * rejection. \param[in] threshold cosine of the thresholding angle between the
    * normals for rejection
    */
   inline void
-  setThreshold(double threshold)
+  setThreshold (double threshold)
   {
     threshold_ = threshold;
   };
@@ -94,7 +95,7 @@ public:
   /** \brief Get the thresholding angle between the normals for correspondence
    * rejection. */
   inline double
-  getThreshold() const
+  getThreshold () const
   {
     return threshold_;
   };
@@ -103,7 +104,7 @@ public:
    * type. */
   template <typename PointT, typename NormalT>
   inline void
-  initializeDataContainer()
+  initializeDataContainer ()
   {
     data_container_.reset(new DataContainer<PointT, NormalT>);
   }
@@ -113,7 +114,7 @@ public:
    */
   template <typename PointT>
   inline void
-  setInputSource(const typename pcl::PointCloud<PointT>::ConstPtr& input)
+  setInputSource (const typename pcl::PointCloud<PointT>::ConstPtr& input)
   {
     if (!data_container_) {
       PCL_ERROR(
@@ -128,7 +129,7 @@ public:
   /** \brief Get the target input point cloud */
   template <typename PointT>
   inline typename pcl::PointCloud<PointT>::ConstPtr
-  getInputSource() const
+  getInputSource () const
   {
     if (!data_container_) {
       PCL_ERROR(
@@ -146,7 +147,7 @@ public:
    */
   template <typename PointT>
   inline void
-  setInputTarget(const typename pcl::PointCloud<PointT>::ConstPtr& target)
+  setInputTarget (const typename pcl::PointCloud<PointT>::ConstPtr& target)
   {
     if (!data_container_) {
       PCL_ERROR(
@@ -167,8 +168,8 @@ public:
    */
   template <typename PointT>
   inline void
-  setSearchMethodTarget(const typename pcl::search::KdTree<PointT>::Ptr& tree,
-                        bool force_no_recompute = false)
+  setSearchMethodTarget (const typename pcl::search::KdTree<PointT>::Ptr& tree,
+                         bool force_no_recompute = false)
   {
     static_pointer_cast<DataContainer<PointT>>(data_container_)
         ->setSearchMethodTarget(tree, force_no_recompute);
@@ -177,7 +178,7 @@ public:
   /** \brief Get the target input point cloud */
   template <typename PointT>
   inline typename pcl::PointCloud<PointT>::ConstPtr
-  getInputTarget() const
+  getInputTarget () const
   {
     if (!data_container_) {
       PCL_ERROR(
@@ -195,7 +196,7 @@ public:
    */
   template <typename PointT, typename NormalT>
   inline void
-  setInputNormals(const typename pcl::PointCloud<NormalT>::ConstPtr& normals)
+  setInputNormals (const typename pcl::PointCloud<NormalT>::ConstPtr& normals)
   {
     if (!data_container_) {
       PCL_ERROR(
@@ -211,7 +212,7 @@ public:
   /** \brief Get the normals computed on the input point cloud */
   template <typename NormalT>
   inline typename pcl::PointCloud<NormalT>::Ptr
-  getInputNormals() const
+  getInputNormals () const
   {
     if (!data_container_) {
       PCL_ERROR(
@@ -229,7 +230,7 @@ public:
    */
   template <typename PointT, typename NormalT>
   inline void
-  setTargetNormals(const typename pcl::PointCloud<NormalT>::ConstPtr& normals)
+  setTargetNormals (const typename pcl::PointCloud<NormalT>::ConstPtr& normals)
   {
     if (!data_container_) {
       PCL_ERROR(
@@ -245,7 +246,7 @@ public:
   /** \brief Get the normals computed on the target point cloud */
   template <typename NormalT>
   inline typename pcl::PointCloud<NormalT>::Ptr
-  getTargetNormals() const
+  getTargetNormals () const
   {
     if (!data_container_) {
       PCL_ERROR(
@@ -260,14 +261,14 @@ public:
 
   /** \brief See if this rejector requires source points */
   bool
-  requiresSourcePoints() const override
+  requiresSourcePoints () const override
   {
     return (true);
   }
 
   /** \brief Blob method for setting the source cloud */
   void
-  setSourcePoints(pcl::PCLPointCloud2::ConstPtr cloud2) override
+  setSourcePoints (pcl::PCLPointCloud2::ConstPtr cloud2) override
   {
     if (!data_container_)
       initializeDataContainer<PointXYZ, Normal>();
@@ -278,14 +279,14 @@ public:
 
   /** \brief See if this rejector requires a target cloud */
   bool
-  requiresTargetPoints() const override
+  requiresTargetPoints () const override
   {
     return (true);
   }
 
   /** \brief Method for setting the target cloud */
   void
-  setTargetPoints(pcl::PCLPointCloud2::ConstPtr cloud2) override
+  setTargetPoints (pcl::PCLPointCloud2::ConstPtr cloud2) override
   {
     if (!data_container_)
       initializeDataContainer<PointXYZ, Normal>();
@@ -296,14 +297,14 @@ public:
 
   /** \brief See if this rejector requires source normals */
   bool
-  requiresSourceNormals() const override
+  requiresSourceNormals () const override
   {
     return (true);
   }
 
   /** \brief Blob method for setting the source normals */
   void
-  setSourceNormals(pcl::PCLPointCloud2::ConstPtr cloud2) override
+  setSourceNormals (pcl::PCLPointCloud2::ConstPtr cloud2) override
   {
     if (!data_container_)
       initializeDataContainer<PointXYZ, Normal>();
@@ -314,14 +315,14 @@ public:
 
   /** \brief See if this rejector requires target normals*/
   bool
-  requiresTargetNormals() const override
+  requiresTargetNormals () const override
   {
     return (true);
   }
 
   /** \brief Method for setting the target normals */
   void
-  setTargetNormals(pcl::PCLPointCloud2::ConstPtr cloud2) override
+  setTargetNormals (pcl::PCLPointCloud2::ConstPtr cloud2) override
   {
     if (!data_container_)
       initializeDataContainer<PointXYZ, Normal>();
@@ -335,7 +336,7 @@ protected:
    * \param[out] correspondences the set of resultant correspondences.
    */
   inline void
-  applyRejection(pcl::Correspondences& correspondences) override
+  applyRejection (pcl::Correspondences& correspondences) override
   {
     getRemainingCorrespondences(*input_correspondences_, correspondences);
   }

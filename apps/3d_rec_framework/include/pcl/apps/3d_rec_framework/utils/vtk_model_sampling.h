@@ -22,23 +22,23 @@ namespace pcl {
 namespace rec_3d_framework {
 
 inline double
-uniform_deviate(int seed)
+uniform_deviate (int seed)
 {
   double ran = seed * (1.0 / (RAND_MAX + 1.0));
   return ran;
 }
 
 inline void
-randomPointTriangle(double a1,
-                    double a2,
-                    double a3,
-                    double b1,
-                    double b2,
-                    double b3,
-                    double c1,
-                    double c2,
-                    double c3,
-                    Eigen::Vector4f& p)
+randomPointTriangle (double a1,
+                     double a2,
+                     double a3,
+                     double b1,
+                     double b2,
+                     double b3,
+                     double c1,
+                     double c2,
+                     double c3,
+                     Eigen::Vector4f& p)
 {
   float r1 = static_cast<float>(uniform_deviate(rand()));
   float r2 = static_cast<float>(uniform_deviate(rand()));
@@ -61,10 +61,10 @@ randomPointTriangle(double a1,
 }
 
 inline void
-randPSurface(vtkPolyData* polydata,
-             std::vector<double>* cumulativeAreas,
-             double totalArea,
-             Eigen::Vector4f& p)
+randPSurface (vtkPolyData* polydata,
+              std::vector<double>* cumulativeAreas,
+              double totalArea,
+              Eigen::Vector4f& p)
 {
   float r = static_cast<float>(uniform_deviate(rand()) * totalArea);
 
@@ -87,9 +87,9 @@ randPSurface(vtkPolyData* polydata,
 
 template <typename PointT>
 inline void
-uniform_sampling(const vtkSmartPointer<vtkPolyData>& polydata,
-                 std::size_t n_samples,
-                 typename pcl::PointCloud<PointT>& cloud_out)
+uniform_sampling (const vtkSmartPointer<vtkPolyData>& polydata,
+                  std::size_t n_samples,
+                  typename pcl::PointCloud<PointT>& cloud_out)
 {
   polydata->BuildCells();
   vtkSmartPointer<vtkCellArray> cells = polydata->GetPolys();
@@ -121,10 +121,10 @@ uniform_sampling(const vtkSmartPointer<vtkPolyData>& polydata,
 
 template <typename PointT>
 inline void
-uniform_sampling(std::string& file,
-                 std::size_t n_samples,
-                 typename pcl::PointCloud<PointT>& cloud_out,
-                 float scale = 1.f)
+uniform_sampling (std::string& file,
+                  std::size_t n_samples,
+                  typename pcl::PointCloud<PointT>& cloud_out,
+                  float scale = 1.f)
 {
 
   vtkSmartPointer<vtkPLYReader> reader = vtkSmartPointer<vtkPLYReader>::New();
@@ -154,8 +154,8 @@ uniform_sampling(std::string& file,
 }
 
 inline void
-getVerticesAsPointCloud(const vtkSmartPointer<vtkPolyData>& polydata,
-                        pcl::PointCloud<pcl::PointXYZ>& cloud_out)
+getVerticesAsPointCloud (const vtkSmartPointer<vtkPolyData>& polydata,
+                         pcl::PointCloud<pcl::PointXYZ>& cloud_out)
 {
   vtkPoints* points = polydata->GetPoints();
   cloud_out.resize(points->GetNumberOfPoints());

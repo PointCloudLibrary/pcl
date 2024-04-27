@@ -24,7 +24,7 @@ class PreProcessorAndNormalEstimator {
   using PointInTPtr = typename pcl::PointCloud<PointInT>::Ptr;
 
   float
-  computeMeshResolution(PointInTPtr& input)
+  computeMeshResolution (PointInTPtr& input)
   {
     using KdTreeInPtr = typename pcl::KdTree<PointInT>::Ptr;
     KdTreeInPtr tree = pcl::make_shared<pcl::KdTreeFLANN<PointInT>>(false);
@@ -75,41 +75,41 @@ public:
   }
 
   void
-  setFactorsForCMR(float f1, float f2)
+  setFactorsForCMR (float f1, float f2)
   {
     factor_voxel_grid_ = f1;
     factor_normals_ = f2;
   }
 
   void
-  setValuesForCMRFalse(float f1, float f2)
+  setValuesForCMRFalse (float f1, float f2)
   {
     grid_resolution_ = f1;
     normal_radius_ = f2;
   }
 
   void
-  setDoVoxelGrid(bool b)
+  setDoVoxelGrid (bool b)
   {
     do_voxel_grid_ = b;
   }
 
   void
-  setRemoveOutliers(bool b)
+  setRemoveOutliers (bool b)
   {
     remove_outliers_ = b;
   }
 
   void
-  setCMR(bool b)
+  setCMR (bool b)
   {
     compute_mesh_resolution_ = b;
   }
 
   void
-  estimate(PointInTPtr& in,
-           PointInTPtr& out,
-           pcl::PointCloud<pcl::Normal>::Ptr& normals)
+  estimate (PointInTPtr& in,
+            PointInTPtr& out,
+            pcl::PointCloud<pcl::Normal>::Ptr& normals)
   {
     if (compute_mesh_resolution_) {
       mesh_resolution_ = computeMeshResolution(in);

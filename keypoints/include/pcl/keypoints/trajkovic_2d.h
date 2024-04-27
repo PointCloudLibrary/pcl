@@ -37,136 +37,167 @@
 
 #pragma once
 
-#include <pcl/keypoints/keypoint.h>
 #include <pcl/common/intensity.h>
+#include <pcl/keypoints/keypoint.h>
 
-namespace pcl
-{
-  /** \brief TrajkovicKeypoint2D implements Trajkovic and Hedley corner detector on
-    * organized point cloud using intensity information.
-    * It uses first order statistics to find variation of intensities in horizontal
-    * or vertical directions.
-    *
-    * \author Nizar Sallem
-    * \ingroup keypoints
-    */
-  template <typename PointInT, typename PointOutT, typename IntensityT = pcl::common::IntensityFieldAccessor<PointInT> >
-  class TrajkovicKeypoint2D : public Keypoint<PointInT, PointOutT>
+namespace pcl {
+/** \brief TrajkovicKeypoint2D implements Trajkovic and Hedley corner detector on
+ * organized point cloud using intensity information.
+ * It uses first order statistics to find variation of intensities in horizontal
+ * or vertical directions.
+ *
+ * \author Nizar Sallem
+ * \ingroup keypoints
+ */
+template <typename PointInT,
+          typename PointOutT,
+          typename IntensityT = pcl::common::IntensityFieldAccessor<PointInT>>
+class TrajkovicKeypoint2D : public Keypoint<PointInT, PointOutT> {
+public:
+  using Ptr = shared_ptr<TrajkovicKeypoint2D<PointInT, PointOutT, IntensityT>>;
+  using ConstPtr =
+      shared_ptr<const TrajkovicKeypoint2D<PointInT, PointOutT, IntensityT>>;
+  using PointCloudIn = typename Keypoint<PointInT, PointOutT>::PointCloudIn;
+  using PointCloudOut = typename Keypoint<PointInT, PointOutT>::PointCloudOut;
+  using PointCloudInConstPtr = typename PointCloudIn::ConstPtr;
+
+  using Keypoint<PointInT, PointOutT>::name_;
+  using Keypoint<PointInT, PointOutT>::input_;
+  using Keypoint<PointInT, PointOutT>::indices_;
+  using Keypoint<PointInT, PointOutT>::keypoints_indices_;
+
+  enum ComputationMethod { FOUR_CORNERS, EIGHT_CORNERS };
+
+  /** \brief Constructor
+   * \param[in] method the method to be used to determine the corner responses
+   * \param[in] window_size
+   * \param[in] first_threshold the threshold used in the simple cornerness test.
+   * \param[in] second_threshold the threshold used to reject weak corners.
+   */
+  TrajkovicKeypoint2D(ComputationMethod method = FOUR_CORNERS,
+                      int window_size = 3,
+                      float first_threshold = 0.1,
+                      float second_threshold = 100.0)
+  : method_(method)
+  , window_size_(window_size)
+  , first_threshold_(first_threshold)
+  , second_threshold_(second_threshold)
   {
-    public:
-      using Ptr = shared_ptr<TrajkovicKeypoint2D<PointInT, PointOutT, IntensityT> >;
-      using ConstPtr = shared_ptr<const TrajkovicKeypoint2D<PointInT, PointOutT, IntensityT> >;
-      using PointCloudIn = typename Keypoint<PointInT, PointOutT>::PointCloudIn;
-      using PointCloudOut = typename Keypoint<PointInT, PointOutT>::PointCloudOut;
-      using PointCloudInConstPtr = typename PointCloudIn::ConstPtr;
+    name_ = "TrajkovicKeypoint2D";
+  }
 
-      using Keypoint<PointInT, PointOutT>::name_;
-      using Keypoint<PointInT, PointOutT>::input_;
-      using Keypoint<PointInT, PointOutT>::indices_;
-      using Keypoint<PointInT, PointOutT>::keypoints_indices_;
+  /** \brief set the method of the response to be calculated.
+   * \param[in] method either 4 corners or 8 corners
+   */
+  inline void
+  setMethod (ComputationMethod method)
+  {
+    method_ = method;
+  }
 
-      enum ComputationMethod { FOUR_CORNERS, EIGHT_CORNERS };
+  /// \brief \return the computation method
+  inline ComputationMethod
+  getMethod () const
+  {
+    return (method_);
+  }
 
-      /** \brief Constructor
-        * \param[in] method the method to be used to determine the corner responses
-        * \param[in] window_size
-        * \param[in] first_threshold the threshold used in the simple cornerness test.
-        * \param[in] second_threshold the threshold used to reject weak corners.
-        */
-      TrajkovicKeypoint2D (ComputationMethod method = FOUR_CORNERS,
-                           int window_size = 3,
-                           float first_threshold = 0.1,
-                           float second_threshold = 100.0)
-        : method_ (method)
-        , window_size_ (window_size)
-        , first_threshold_ (first_threshold)
-        , second_threshold_ (second_threshold)
-      {
-        name_ = "TrajkovicKeypoint2D";
-      }
+  /// \brief Set window size
+  inline void
+  setWindowSize (int window_size)
+  {
+    window_size_ = window_size;
+  }
 
-      /** \brief set the method of the response to be calculated.
-        * \param[in] method either 4 corners or 8 corners
-        */
-      inline void
-      setMethod (ComputationMethod method) { method_ = method; }
+  /// \brief \return window size i.e. window width or height
+  inline int
+  getWindowSize () const
+  {
+    return (window_size_);
+  }
 
-      /// \brief \return the computation method
-      inline ComputationMethod
-      getMethod () const { return (method_); }
+  /** \brief set the first_threshold to reject corners in the simple cornerness
+   * computation stage.
+   * \param[in] threshold
+   */
+  inline void
+  setFirstThreshold (float threshold)
+  {
+    first_threshold_ = threshold;
+  }
 
-      /// \brief Set window size
-      inline void
-      setWindowSize (int window_size) { window_size_= window_size; }
+  /// \brief \return first threshold
+  inline float
+  getFirstThreshold () const
+  {
+    return (first_threshold_);
+  }
 
-      /// \brief \return window size i.e. window width or height
-      inline int
-      getWindowSize () const { return (window_size_); }
+  /** \brief set the second threshold to reject corners in the final cornerness
+   * computation stage.
+   * \param[in] threshold
+   */
+  inline void
+  setSecondThreshold (float threshold)
+  {
+    second_threshold_ = threshold;
+  }
 
-      /** \brief set the first_threshold to reject corners in the simple cornerness
-        * computation stage.
-        * \param[in] threshold
-        */
-      inline void
-      setFirstThreshold (float threshold) { first_threshold_= threshold; }
+  /// \brief \return second threshold
+  inline float
+  getSecondThreshold () const
+  {
+    return (second_threshold_);
+  }
 
-      /// \brief \return first threshold
-      inline float
-      getFirstThreshold () const { return (first_threshold_); }
+  /** \brief Initialize the scheduler and set the number of threads to use.
+   * \param nr_threads the number of hardware threads to use, 0 for automatic.
+   */
+  inline void
+  setNumberOfThreads (unsigned int nr_threads = 0)
+  {
+    threads_ = nr_threads;
+  }
 
-      /** \brief set the second threshold to reject corners in the final cornerness
-        * computation stage.
-        * \param[in] threshold
-        */
-      inline void
-      setSecondThreshold (float threshold) { second_threshold_= threshold; }
+  /// \brief \return the number of threads
+  inline unsigned int
+  getNumberOfThreads () const
+  {
+    return (threads_);
+  }
 
-      /// \brief \return second threshold
-      inline float
-      getSecondThreshold () const { return (second_threshold_); }
+protected:
+  bool
+  initCompute () override;
 
-      /** \brief Initialize the scheduler and set the number of threads to use.
-        * \param nr_threads the number of hardware threads to use, 0 for automatic.
-        */
-      inline void
-      setNumberOfThreads (unsigned int nr_threads = 0) { threads_ = nr_threads; }
+  void
+  detectKeypoints (PointCloudOut& output) override;
 
-      /// \brief \return the number of threads
-      inline unsigned int
-      getNumberOfThreads () const { return (threads_); }
+private:
+  /// comparator for responses intensity
+  inline bool
+  greaterCornernessAtIndices (int a, int b) const
+  {
+    return (response_->points[a] > response_->points[b]);
+  }
 
-    protected:
-      bool
-      initCompute () override;
-
-      void
-      detectKeypoints (PointCloudOut &output) override;
-
-    private:
-      /// comparator for responses intensity
-      inline bool
-      greaterCornernessAtIndices (int a, int b) const
-      {
-        return (response_->points [a] > response_->points [b]);
-      }
-
-      /// computation method
-      ComputationMethod method_;
-      /// Window size
-      int window_size_;
-      /// half window size
-      int half_window_size_;
-      /// intensity field accessor
-      IntensityT intensity_;
-      /// first threshold for quick rejection
-      float first_threshold_;
-      /// second threshold for corner evaluation
-      float second_threshold_;
-      /// number of threads to be used
-      unsigned int threads_{1};
-      /// point cloud response
-      pcl::PointCloud<float>::Ptr response_;
-  };
-}
+  /// computation method
+  ComputationMethod method_;
+  /// Window size
+  int window_size_;
+  /// half window size
+  int half_window_size_;
+  /// intensity field accessor
+  IntensityT intensity_;
+  /// first threshold for quick rejection
+  float first_threshold_;
+  /// second threshold for corner evaluation
+  float second_threshold_;
+  /// number of threads to be used
+  unsigned int threads_{1};
+  /// point cloud response
+  pcl::PointCloud<float>::Ptr response_;
+};
+} // namespace pcl
 
 #include <pcl/keypoints/impl/trajkovic_2d.hpp>

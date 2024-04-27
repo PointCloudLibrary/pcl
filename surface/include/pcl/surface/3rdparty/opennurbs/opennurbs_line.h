@@ -8,7 +8,7 @@
 // THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT EXPRESS OR IMPLIED WARRANTY.
 // ALL IMPLIED WARRANTIES OF FITNESS FOR ANY PARTICULAR PURPOSE AND OF
 // MERCHANTABILITY ARE HEREBY DISCLAIMED.
-//				
+//
 // For complete openNURBS copyright information see <http://www.opennurbs.org>.
 //
 ////////////////////////////////////////////////////////////////
@@ -17,24 +17,24 @@
 #if !defined(ON_LINE_INC_)
 #define ON_LINE_INC_
 
-class ON_CLASS ON_Line
-{
+class ON_CLASS ON_Line {
 public:
-
   ON_Line();
-  ON_Line( const ON_3dPoint& start, const ON_3dPoint& end );
+  ON_Line(const ON_3dPoint& start, const ON_3dPoint& end);
   ~ON_Line();
 
   /*
   Returns:
     True if from != to.
   */
-  bool IsValid() const;
+  bool
+  IsValid () const;
 
   // line[0] = start point line[1] = end point
-  ON_3dPoint& operator[](int);
-  const ON_3dPoint& operator[](int) const;
-
+  ON_3dPoint&
+  operator[](int);
+  const ON_3dPoint&
+  operator[](int) const;
 
   // Description:
   //   Create a line from two points.
@@ -43,18 +43,17 @@ public:
   //   end - [in] point at end of line segment
   // Returns:
   //   true if start and end are distinct points.
-  bool Create( 
-    const ON_3dPoint& start, 
-    const ON_3dPoint& end
-    );
+  bool
+  Create (const ON_3dPoint& start, const ON_3dPoint& end);
 
   /*
-  Description: 
+  Description:
     Get line's 3d axis aligned bounding box.
   Returns:
     3d bounding box.
   */
-  ON_BoundingBox BoundingBox() const;
+  ON_BoundingBox
+  BoundingBox () const;
 
   /*
   Description:
@@ -62,38 +61,35 @@ public:
     union of the input box with the object's bounding box.
   Parameters:
     bbox - [in/out] 3d axis aligned bounding box
-    bGrowBox - [in] (default=false) 
-      If true, then the union of the input bbox and the 
-      object's bounding box is returned in bbox.  
+    bGrowBox - [in] (default=false)
+      If true, then the union of the input bbox and the
+      object's bounding box is returned in bbox.
       If false, the object's bounding box is returned in bbox.
   Returns:
     true if object has bounding box and calculation was successful.
   */
-  bool GetBoundingBox(
-         ON_BoundingBox& bbox,
-         int bGrowBox = false
-         ) const;
+  bool
+  GetBoundingBox (ON_BoundingBox& bbox, int bGrowBox = false) const;
 
   /*
-	Description:
+  Description:
     Get tight bounding box.
-	Parameters:
-		tight_bbox - [in/out] tight bounding box
-		bGrowBox -[in]	(default=false)			
+  Parameters:
+    tight_bbox - [in/out] tight bounding box
+    bGrowBox -[in]	(default=false)
       If true and the input tight_bbox is valid, then returned
-      tight_bbox is the union of the input tight_bbox and the 
+      tight_bbox is the union of the input tight_bbox and the
       line's tight bounding box.
-		xform -[in] (default=NULL)
+    xform -[in] (default=NULL)
       If not NULL, the tight bounding box of the transformed
       line is calculated.  The line is not modified.
-	Returns:
+  Returns:
     True if a valid tight_bbox is returned.
   */
-	bool GetTightBoundingBox( 
-			ON_BoundingBox& tight_bbox, 
-      int bGrowBox = false,
-			const ON_Xform* xform = 0
-      ) const;
+  bool
+  GetTightBoundingBox (ON_BoundingBox& tight_bbox,
+                       int bGrowBox = false,
+                       const ON_Xform* xform = 0) const;
 
   /*
   Description:
@@ -109,23 +105,27 @@ public:
     true if a coordinate of the line's direction vector is
     larger than tolerance.
   */
-  bool InPlane( ON_Plane& plane, double tolerance = 0.0 ) const;
+  bool
+  InPlane (ON_Plane& plane, double tolerance = 0.0) const;
 
   // Returns:
   //   Length of line
-  double Length() const;
+  double
+  Length () const;
 
   // Returns:
   //   direction vector = line.to - line.from
   // See Also:
   //   ON_Line::Tangent
-  ON_3dVector Direction() const;
+  ON_3dVector
+  Direction () const;
 
   // Returns:
   //   Unit tangent vector.
   // See Also:
   //   ON_Line::Direction
-  ON_3dVector Tangent() const;
+  ON_3dVector
+  Tangent () const;
 
   /*
   Description:
@@ -139,9 +139,8 @@ public:
     ON_Line::Direction
     ON_Line::Tangent
   */
-  ON_3dPoint PointAt( 
-    double t 
-    ) const;
+  ON_3dPoint
+  PointAt (double t) const;
 
   /*
   Description:
@@ -149,15 +148,13 @@ public:
     closest to the test_point.
   Parameters:
     test_point - [in]
-    t - [out] line.PointAt(*t) is the point on the line 
+    t - [out] line.PointAt(*t) is the point on the line
               that is closest to test_point.
   Returns:
     true if successful.
   */
-  bool ClosestPointTo( 
-    const ON_3dPoint& test_point, 
-    double* t
-    ) const;
+  bool
+  ClosestPointTo (const ON_3dPoint& test_point, double* t) const;
 
   /*
   Description:
@@ -168,9 +165,8 @@ public:
   Returns:
     The point on the line that is closest to test_point.
   */
-  ON_3dPoint ClosestPointTo( 
-    const ON_3dPoint& test_point
-    ) const;
+  ON_3dPoint
+  ClosestPointTo (const ON_3dPoint& test_point) const;
 
   /*
   Description:
@@ -185,8 +181,8 @@ public:
     ON_3dPoint::DistanceTo
     ON_Line::ClosestPointTo
   */
-  double DistanceTo( ON_3dPoint test_point ) const;
-
+  double
+  DistanceTo (ON_3dPoint test_point) const;
 
   /*
   Description:
@@ -196,12 +192,14 @@ public:
     P - [in]
     L - [in] (another finite chord)
   Returns:
-    A value d such that if Q is any point on 
-    this line and P is any point on the other object, 
+    A value d such that if Q is any point on
+    this line and P is any point on the other object,
     then d <= Q.DistanceTo(P).
   */
-  double MinimumDistanceTo( const ON_3dPoint& P ) const;
-  double MinimumDistanceTo( const ON_Line& L ) const;
+  double
+  MinimumDistanceTo (const ON_3dPoint& P) const;
+  double
+  MinimumDistanceTo (const ON_Line& L) const;
 
   /*
   Description:
@@ -214,9 +212,10 @@ public:
     A value d such that if Q is any point on this line and P is any
     point on the other object, then d >= Q.DistanceTo(P).
   */
-  double MaximumDistanceTo( const ON_3dPoint& P ) const;
-  double MaximumDistanceTo( const ON_Line& other ) const;
-
+  double
+  MaximumDistanceTo (const ON_3dPoint& P) const;
+  double
+  MaximumDistanceTo (const ON_Line& other) const;
 
   /*
   Description:
@@ -224,43 +223,41 @@ public:
     this line to the other object is greater than d.
   Parameters:
     d - [in] distance (> 0.0)
-    P - [in] 
-    L - [in] 
+    P - [in]
+    L - [in]
   Returns:
     True if if the shortest distance from this line
     to the other object is greater than d.
   */
-  bool IsFartherThan( double d, const ON_3dPoint& P ) const;
-  bool IsFartherThan( double d, const ON_Line& L ) const;
-
+  bool
+  IsFartherThan (double d, const ON_3dPoint& P) const;
+  bool
+  IsFartherThan (double d, const ON_Line& L) const;
 
   // For intersections see ON_Intersect();
 
   // Description:
   //   Reverse line by swapping from and to.
-  void Reverse();
+  void
+  Reverse ();
 
-  bool Transform( 
-    const ON_Xform& xform
-    );
+  bool
+  Transform (const ON_Xform& xform);
 
   // rotate line about a point and axis
-  bool Rotate(
-        double sin_angle,
-        double cos_angle,
-        const ON_3dVector& axis_of_rotation,
-        const ON_3dPoint& center_of_rotation
-        );
+  bool
+  Rotate (double sin_angle,
+          double cos_angle,
+          const ON_3dVector& axis_of_rotation,
+          const ON_3dPoint& center_of_rotation);
 
-  bool Rotate(
-        double angle_in_radians,
-        const ON_3dVector& axis_of_rotation,
-        const ON_3dPoint& center_of_rotation
-        );
+  bool
+  Rotate (double angle_in_radians,
+          const ON_3dVector& axis_of_rotation,
+          const ON_3dPoint& center_of_rotation);
 
-  bool Translate(
-        const ON_3dVector& delta
-        );
+  bool
+  Translate (const ON_3dVector& delta);
 
 public:
   ON_3dPoint from; // start point

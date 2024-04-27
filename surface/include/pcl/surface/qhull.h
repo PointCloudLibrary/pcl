@@ -43,18 +43,17 @@
 #ifdef HAVE_QHULL
 
 #if defined __GNUC__
-#  pragma GCC system_header 
+#pragma GCC system_header
 #endif
 
-extern "C"
-{
+extern "C" {
+#include "libqhull_r/geom_r.h"
+#include "libqhull_r/io_r.h"
 #include "libqhull_r/libqhull_r.h"
 #include "libqhull_r/mem_r.h"
-#include "libqhull_r/qset_r.h"
-#include "libqhull_r/geom_r.h"
 #include "libqhull_r/merge_r.h"
 #include "libqhull_r/poly_r.h"
-#include "libqhull_r/io_r.h"
+#include "libqhull_r/qset_r.h"
 #include "libqhull_r/stat_r.h"
 }
 

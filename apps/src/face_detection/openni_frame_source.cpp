@@ -7,7 +7,7 @@ OpenNIFrameSource::OpenNIFrameSource(const std::string& device_id)
 : grabber_(device_id), frame_counter_(0), active_(true)
 {
   std::function<void(const PointCloudConstPtr&)> frame_cb =
-      [this](const PointCloudConstPtr& cloud) { onNewFrame(cloud); };
+      [this] (const PointCloudConstPtr& cloud) { onNewFrame(cloud); };
   grabber_.registerCallback(frame_cb);
   grabber_.start();
 }

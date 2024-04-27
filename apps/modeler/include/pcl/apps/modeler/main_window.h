@@ -51,78 +51,78 @@ class MainWindow : public QMainWindow {
 
 public:
   static MainWindow&
-  getInstance()
+  getInstance ()
   {
     static MainWindow theSingleton;
     return theSingleton;
   }
 
   QString
-  getRecentFolder();
+  getRecentFolder ();
 
   RenderWindowItem*
-  createRenderWindow();
+  createRenderWindow ();
 
 public Q_SLOTS:
   // slots for file menu
   void
-  slotOpenProject();
+  slotOpenProject ();
   void
-  slotSaveProject();
+  slotSaveProject ();
   void
-  slotCloseProject();
+  slotCloseProject ();
   void
-  slotExit();
+  slotExit ();
   void
-  slotUpdateRecentFile(const QString& filename);
+  slotUpdateRecentFile (const QString& filename);
 
   // slots for view menu
   void
-  slotCreateRenderWindow();
+  slotCreateRenderWindow ();
 
   void
-  slotOnWorkerStarted();
+  slotOnWorkerStarted ();
 
   void
-  slotOnWorkerFinished();
+  slotOnWorkerFinished ();
 
 private:
   // methods for file Menu
   void
-  connectFileMenuActions();
+  connectFileMenuActions ();
   void
-  createRecentPointCloudActions();
+  createRecentPointCloudActions ();
   void
-  updateRecentPointCloudActions();
+  updateRecentPointCloudActions ();
   void
-  createRecentProjectActions();
+  createRecentProjectActions ();
   void
-  updateRecentProjectActions();
+  updateRecentProjectActions ();
   bool
-  openProjectImpl(const QString& filename);
+  openProjectImpl (const QString& filename);
   static void
-  updateRecentActions(std::vector<std::shared_ptr<QAction>>& recent_actions,
-                      QStringList& recent_items);
+  updateRecentActions (std::vector<std::shared_ptr<QAction>>& recent_actions,
+                       QStringList& recent_items);
 
   // methods for view menu
   void
-  connectViewMenuActions();
+  connectViewMenuActions ();
 
   // methods for edit menu
   void
-  connectEditMenuActions();
+  connectEditMenuActions ();
 
   // methods for global settings
   void
-  loadGlobalSettings();
+  loadGlobalSettings ();
   void
-  saveGlobalSettings();
+  saveGlobalSettings ();
 
 private Q_SLOTS:
   void
-  slotOpenRecentPointCloud();
+  slotOpenRecentPointCloud ();
   void
-  slotOpenRecentProject();
+  slotOpenRecentProject ();
 
 private:
   friend class AbstractItem;

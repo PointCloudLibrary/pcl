@@ -36,148 +36,148 @@
 
 #pragma once
 
-#include <pcl/pcl_macros.h>
 #include <pcl/recognition/hv/hypotheses_verification.h>
+#include <pcl/pcl_macros.h>
 
 #include <memory>
 
-namespace pcl
-{
+namespace pcl {
 
-  /**
-   * \brief A greedy hypothesis verification method
-   * \author Aitor Aldoma
+/**
+ * \brief A greedy hypothesis verification method
+ * \author Aitor Aldoma
+ */
+
+template <typename ModelT, typename SceneT>
+class PCL_EXPORTS GreedyVerification : public HypothesisVerification<ModelT, SceneT> {
+  using HypothesisVerification<ModelT, SceneT>::mask_;
+  using HypothesisVerification<ModelT, SceneT>::scene_cloud_downsampled_;
+  using HypothesisVerification<ModelT, SceneT>::scene_downsampled_tree_;
+  using HypothesisVerification<ModelT, SceneT>::visible_models_;
+  using HypothesisVerification<ModelT, SceneT>::resolution_;
+  using HypothesisVerification<ModelT, SceneT>::inliers_threshold_;
+
+  /*
+   * \brief Recognition model using during the verification
    */
+  class RecognitionModel {
+  public:
+    std::vector<int> explained_;
+    typename pcl::PointCloud<ModelT>::Ptr cloud_;
+    int bad_information_;
+    int good_information_;
+    int id_;
+    float regularizer_;
+  };
 
-  template<typename ModelT, typename SceneT>
-    class PCL_EXPORTS GreedyVerification : public HypothesisVerification<ModelT, SceneT>
+  using RecognitionModelPtr = std::shared_ptr<RecognitionModel>;
+
+  /*
+   * \brief Sorts recognition models based on the number of explained scene points and
+   * visible outliers
+   */
+  struct sortModelsClass {
+    bool
+    operator()(const RecognitionModelPtr& n1, const RecognitionModelPtr& n2)
     {
-      using HypothesisVerification<ModelT, SceneT>::mask_;
-      using HypothesisVerification<ModelT, SceneT>::scene_cloud_downsampled_;
-      using HypothesisVerification<ModelT, SceneT>::scene_downsampled_tree_;
-      using HypothesisVerification<ModelT, SceneT>::visible_models_;
-      using HypothesisVerification<ModelT, SceneT>::resolution_;
-      using HypothesisVerification<ModelT, SceneT>::inliers_threshold_;
+      float val1 = static_cast<float>(n1->good_information_) -
+                   static_cast<float>(n1->bad_information_) * n1->regularizer_;
+      float val2 = static_cast<float>(n2->good_information_) -
+                   static_cast<float>(n2->bad_information_) * n2->regularizer_;
+      return val1 > val2;
+    }
+  } sortModelsOp;
 
-      /*
-       * \brief Recognition model using during the verification
-       */
-      class RecognitionModel
-      {
-      public:
-        std::vector<int> explained_;
-        typename pcl::PointCloud<ModelT>::Ptr cloud_;
-        int bad_information_;
-        int good_information_;
-        int id_;
-        float regularizer_;
-      };
+  /*
+   * \brief Recognition model indices to keep track of the sorted recognition hypotheses
+   */
+  struct modelIndices {
+    int index_;
+    RecognitionModelPtr model_;
+  };
 
-      using RecognitionModelPtr = std::shared_ptr<RecognitionModel>;
+  /*
+   * \brief Sorts model indices similar to sortModelsClass
+   */
+  struct sortModelIndicesClass {
+    bool
+    operator()(const modelIndices& n1, const modelIndices& n2)
+    {
+      float val1 =
+          static_cast<float>(n1.model_->good_information_) -
+          static_cast<float>(n1.model_->bad_information_) * n1.model_->regularizer_;
+      float val2 =
+          static_cast<float>(n2.model_->good_information_) -
+          static_cast<float>(n2.model_->bad_information_) * n2.model_->regularizer_;
+      return val1 > val2;
+    }
+  } sortModelsIndicesOp;
 
-      /*
-       * \brief Sorts recognition models based on the number of explained scene points and visible outliers
-       */
-      struct sortModelsClass
-      {
-        bool
-        operator() (const RecognitionModelPtr & n1, const RecognitionModelPtr & n2)
-        {
-          float val1 = static_cast<float>(n1->good_information_) - static_cast<float>(n1->bad_information_) * n1->regularizer_;
-          float val2 = static_cast<float>(n2->good_information_) - static_cast<float>(n2->bad_information_) * n2->regularizer_;
-          return val1 > val2;
-        }
-      } sortModelsOp;
+  /** \brief Recognition model and indices */
+  std::vector<modelIndices> indices_models_;
 
+  /** \brief Recognition models (hypotheses to be verified) */
+  std::vector<RecognitionModelPtr> recognition_models_;
 
-      /*
-       * \brief Recognition model indices to keep track of the sorted recognition hypotheses
-       */
-      struct modelIndices
-      {
-        int index_;
-        RecognitionModelPtr model_;
-      };
+  /** \brief Recognition models that explain a scene points. */
+  std::vector<std::vector<RecognitionModelPtr>> points_explained_by_rm_;
 
-      /*
-       * \brief Sorts model indices similar to sortModelsClass
-       */
-      struct sortModelIndicesClass
-      {
-        bool
-        operator() (const modelIndices & n1, const modelIndices & n2)
-        {
-          float val1 = static_cast<float>(n1.model_->good_information_) - static_cast<float>(n1.model_->bad_information_) * n1.model_->regularizer_;
-          float val2 = static_cast<float>(n2.model_->good_information_) - static_cast<float>(n2.model_->bad_information_) * n2.model_->regularizer_;
-          return val1 > val2;
-        }
-      } sortModelsIndicesOp;
+  /** \brief Weighting for outliers */
+  float regularizer_;
 
-      /** \brief Recognition model and indices */
-      std::vector<modelIndices> indices_models_;
+  /** \brief Initialize the data structures */
+  void
+  initialize ();
 
-      /** \brief Recognition models (hypotheses to be verified) */
-      std::vector<RecognitionModelPtr> recognition_models_;
+  /** \brief Sorts the hypotheses for the greedy approach */
+  void
+  sortModels ()
+  {
+    indices_models_.clear();
+    for (std::size_t i = 0; i < recognition_models_.size(); i++) {
+      modelIndices mi;
+      mi.index_ = static_cast<int>(i);
+      mi.model_ = recognition_models_[i];
+      indices_models_.push_back(mi);
+    }
 
-      /** \brief Recognition models that explain a scene points. */
-      std::vector<std::vector<RecognitionModelPtr>> points_explained_by_rm_;
+    std::sort(indices_models_.begin(), indices_models_.end(), sortModelsIndicesOp);
+    // sort also recognition models
+    std::sort(recognition_models_.begin(), recognition_models_.end(), sortModelsOp);
+  }
 
-      /** \brief Weighting for outliers */
-      float regularizer_;
-
-      /** \brief Initialize the data structures */
-      void
-      initialize ();
-
-      /** \brief Sorts the hypotheses for the greedy approach */
-      void
-      sortModels ()
-      {
-        indices_models_.clear ();
-        for (std::size_t i = 0; i < recognition_models_.size (); i++)
-        {
-          modelIndices mi;
-          mi.index_ = static_cast<int> (i);
-          mi.model_ = recognition_models_[i];
-          indices_models_.push_back (mi);
-        }
-
-        std::sort (indices_models_.begin (), indices_models_.end (), sortModelsIndicesOp);
-        //sort also recognition models
-        std::sort (recognition_models_.begin (), recognition_models_.end (), sortModelsOp);
+  /** \brief Updates conflicting recognition hypotheses when a hypothesis is accepted */
+  void
+  updateGoodInformation (int i)
+  {
+    for (std::size_t k = 0; k < recognition_models_[i]->explained_.size(); k++) {
+      // update good_information_ for all hypotheses that were explaining the same
+      // points as hypothesis i
+      for (std::size_t kk = 0;
+           kk < points_explained_by_rm_[recognition_models_[i]->explained_[k]].size();
+           kk++) {
+        (points_explained_by_rm_[recognition_models_[i]->explained_[k]])[kk]
+            ->good_information_--;
+        (points_explained_by_rm_[recognition_models_[i]->explained_[k]])[kk]
+            ->bad_information_++;
       }
+    }
+  }
 
-      /** \brief Updates conflicting recognition hypotheses when a hypothesis is accepted */
-      void
-      updateGoodInformation (int i)
-      {
-        for (std::size_t k = 0; k < recognition_models_[i]->explained_.size (); k++)
-        {
-          //update good_information_ for all hypotheses that were explaining the same points as hypothesis i
-          for (std::size_t kk = 0; kk < points_explained_by_rm_[recognition_models_[i]->explained_[k]].size (); kk++)
-          {
-            (points_explained_by_rm_[recognition_models_[i]->explained_[k]])[kk]->good_information_--;
-            (points_explained_by_rm_[recognition_models_[i]->explained_[k]])[kk]->bad_information_++;
-          }
-        }
-      }
+public:
+  /** \brief Constructor
+   * \param[in] reg Regularizer value
+   **/
+  GreedyVerification(float reg = 1.5f) : HypothesisVerification<ModelT, SceneT>()
+  {
+    regularizer_ = reg;
+  }
 
-    public:
-
-      /** \brief Constructor
-       * \param[in] reg Regularizer value
-       **/
-      GreedyVerification (float reg = 1.5f) :
-        HypothesisVerification<ModelT, SceneT> ()
-      {
-        regularizer_ = reg;
-      }
-
-      /** \brief Starts verification */
-      void
-      verify () override;
-    };
-}
+  /** \brief Starts verification */
+  void
+  verify () override;
+};
+} // namespace pcl
 
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/recognition/impl/hv/greedy_verification.hpp>

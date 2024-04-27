@@ -109,7 +109,7 @@ struct HistIntersectionUnionDistance {
    */
   template <typename U, typename V>
   inline ResultType
-  accum_dist(const U& a, const V& b, int) const
+  accum_dist (const U& a, const V& b, int) const
   {
     ResultType min0;
     ResultType max0;

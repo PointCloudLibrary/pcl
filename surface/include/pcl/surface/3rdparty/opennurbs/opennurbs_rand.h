@@ -8,7 +8,7 @@
 // THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT EXPRESS OR IMPLIED WARRANTY.
 // ALL IMPLIED WARRANTIES OF FITNESS FOR ANY PARTICULAR PURPOSE AND OF
 // MERCHANTABILITY ARE HEREBY DISCLAIMED.
-//				
+//
 // For complete openNURBS copyright information see <http://www.opennurbs.org>.
 //
 ////////////////////////////////////////////////////////////////
@@ -19,12 +19,10 @@
 
 ON_BEGIN_EXTERNC
 
-struct ON_RANDOM_NUMBER_CONTEXT
-{
+struct ON_RANDOM_NUMBER_CONTEXT {
   ON__UINT32 mti;     /* mti = 0xFFFFFFFF means mt[] is not initialized */
   ON__UINT32 mt[624]; /* the array for the state vector  */
 };
-
 
 /*
 Description:
@@ -45,10 +43,8 @@ Example:
           ON__UINT32 r2 = on_random_number( &rand_context );
           ON__UINT32 r3 = on_random_number( &rand_context );
 */
-void on_random_number_seed(
-        ON__UINT32 s,
-        struct ON_RANDOM_NUMBER_CONTEXT* rand_context
-        );
+void
+on_random_number_seed (ON__UINT32 s, struct ON_RANDOM_NUMBER_CONTEXT* rand_context);
 
 /*
 Description:
@@ -57,7 +53,7 @@ Parameters:
   rand_context - [in/out]
     random number context.  The first time rand_context is
     used it must be either initialized by calling on_random_number_seed()
-    or rand_context->mti must be set to 0xFFFFFFFF.  Otherwise do not 
+    or rand_context->mti must be set to 0xFFFFFFFF.  Otherwise do not
     modify randcontext between calls to on_random_number.
 Returns:
   A random number.
@@ -73,10 +69,8 @@ Example:
           ON__UINT32 r2 = on_random_number( &rand_context );
           ON__UINT32 r3 = on_random_number( &rand_context );
 */
-ON__UINT32 on_random_number(
-        struct ON_RANDOM_NUMBER_CONTEXT* rand_context
-        );
-
+ON__UINT32
+on_random_number (struct ON_RANDOM_NUMBER_CONTEXT* rand_context);
 
 /*
 Description:
@@ -87,7 +81,8 @@ Remarks:
   on_srand() is not thread safe.  It used static global memory
   that is modified by on_srand() and on_rand().
 */
-void on_srand(ON__UINT32 s);
+void
+on_srand (ON__UINT32 s);
 
 /*
 Description:
@@ -98,16 +93,14 @@ Remarks:
   on_rand() is not thread safe.  It used static global memory
   that is modified by on_srand() and on_rand().
 */
-ON__UINT32 on_rand(void);
-
+ON__UINT32
+on_rand (void);
 
 ON_END_EXTERNC
 
-
 #if defined(ON_CPLUSPLUS)
 
-class ON_CLASS ON_RandomNumberGenerator
-{
+class ON_CLASS ON_RandomNumberGenerator {
 public:
   ON_RandomNumberGenerator();
 
@@ -117,25 +110,29 @@ public:
   Parameters:
     s - [in]
   */
-  void Seed( ON__UINT32 s );
+  void
+  Seed (ON__UINT32 s);
 
   /*
   Returns:
     32 bit unsigned random number [0,0xFFFFFFFF] [0,4294967295]
   */
-  ON__UINT32 RandomNumber();
+  ON__UINT32
+  RandomNumber ();
 
   /*
   Returns:
     double in the interval [0.0 and 1.0]
   */
-  double RandomDouble();
+  double
+  RandomDouble ();
 
   /*
   Returns:
     double in the interval [t0,t1]
   */
-  double RandomDouble(double t0, double t1);
+  double
+  RandomDouble (double t0, double t1);
 
   /*
   Description:
@@ -148,13 +145,13 @@ public:
     sizeof_element
       size of an element in bytes.
   */
-  void RandomPermutation(void* base, std::size_t nel, std::size_t sizeof_element );
+  void
+  RandomPermutation (void* base, std::size_t nel, std::size_t sizeof_element);
 
 private:
   struct ON_RANDOM_NUMBER_CONTEXT m_rand_context;
 };
 
 #endif
-
 
 #endif

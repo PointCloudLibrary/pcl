@@ -35,31 +35,27 @@
  *
  */
 
-
 #ifndef PCL_IO_ASCII_IO_HPP_
 #define PCL_IO_ASCII_IO_HPP_
 
+namespace pcl {
 
-namespace pcl
+template <typename PointT>
+void
+ASCIIReader::setInputFields()
 {
-
-template<typename PointT> void
-ASCIIReader::setInputFields ()
-{
-  fields_ = pcl::getFields<PointT> ();
+  fields_ = pcl::getFields<PointT>();
 
   // Remove empty fields and adjust offset
-  int offset =0;
-  for (auto field_iter = fields_.begin ();
-       field_iter != fields_.end (); ++field_iter)
-  {
-    if (field_iter->name == "_") 
-      field_iter = fields_.erase (field_iter);
+  int offset = 0;
+  for (auto field_iter = fields_.begin(); field_iter != fields_.end(); ++field_iter) {
+    if (field_iter->name == "_")
+      field_iter = fields_.erase(field_iter);
     field_iter->offset = offset;
-    offset += typeSize (field_iter->datatype);
+    offset += typeSize(field_iter->datatype);
   }
 }
 
 } // namespace pcl
 
-#endif    //PCL_IO_ASCII_IO_HPP_
+#endif // PCL_IO_ASCII_IO_HPP_

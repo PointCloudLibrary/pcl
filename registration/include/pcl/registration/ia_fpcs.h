@@ -50,9 +50,9 @@ namespace pcl {
  */
 template <typename PointT>
 inline float
-getMeanPointDensity(const typename pcl::PointCloud<PointT>::ConstPtr& cloud,
-                    float max_dist,
-                    int nr_threads = 1);
+getMeanPointDensity (const typename pcl::PointCloud<PointT>::ConstPtr& cloud,
+                     float max_dist,
+                     int nr_threads = 1);
 
 /** \brief Compute the mean point density of a given point cloud.
  * \param[in] cloud pointer to the input point cloud
@@ -63,10 +63,10 @@ getMeanPointDensity(const typename pcl::PointCloud<PointT>::ConstPtr& cloud,
  */
 template <typename PointT>
 inline float
-getMeanPointDensity(const typename pcl::PointCloud<PointT>::ConstPtr& cloud,
-                    const pcl::Indices& indices,
-                    float max_dist,
-                    int nr_threads = 1);
+getMeanPointDensity (const typename pcl::PointCloud<PointT>::ConstPtr& cloud,
+                     const pcl::Indices& indices,
+                     float max_dist,
+                     int nr_threads = 1);
 
 namespace registration {
 /** \brief FPCSInitialAlignment computes corresponding four point congruent sets as
@@ -115,14 +115,14 @@ public:
    * \param[in] target_indices a pointer to the target indices
    */
   inline void
-  setTargetIndices(const IndicesPtr& target_indices)
+  setTargetIndices (const IndicesPtr& target_indices)
   {
     target_indices_ = target_indices;
   };
 
   /** \return a pointer to the vector of target indices. */
   inline IndicesPtr
-  getTargetIndices() const
+  getTargetIndices () const
   {
     return (target_indices_);
   };
@@ -131,14 +131,14 @@ public:
    * \param[in] source_normals pointer to the normals of the source pointer cloud.
    */
   inline void
-  setSourceNormals(const NormalsConstPtr& source_normals)
+  setSourceNormals (const NormalsConstPtr& source_normals)
   {
     source_normals_ = source_normals;
   };
 
   /** \return the normals of the source point cloud. */
   inline NormalsConstPtr
-  getSourceNormals() const
+  getSourceNormals () const
   {
     return (source_normals_);
   };
@@ -147,14 +147,14 @@ public:
    * \param[in] target_normals point to the normals of the target point cloud.
    */
   inline void
-  setTargetNormals(const NormalsConstPtr& target_normals)
+  setTargetNormals (const NormalsConstPtr& target_normals)
   {
     target_normals_ = target_normals;
   };
 
   /** \return the normals of the target point cloud. */
   inline NormalsConstPtr
-  getTargetNormals() const
+  getTargetNormals () const
   {
     return (target_normals_);
   };
@@ -163,14 +163,14 @@ public:
    * \param[in] nr_threads the number of used threads
    */
   inline void
-  setNumberOfThreads(int nr_threads)
+  setNumberOfThreads (int nr_threads)
   {
     nr_threads_ = nr_threads;
   };
 
   /** \return the number of threads used if OpenMP is activated. */
   inline int
-  getNumberOfThreads() const
+  getNumberOfThreads () const
   {
     return (nr_threads_);
   };
@@ -180,7 +180,7 @@ public:
    * delta should be normalized according to point cloud density
    */
   inline void
-  setDelta(float delta, bool normalize = false)
+  setDelta (float delta, bool normalize = false)
   {
     delta_ = delta;
     normalize_delta_ = normalize;
@@ -189,7 +189,7 @@ public:
   /** \return the constant factor delta which weights the internally calculated
    * parameters. */
   inline float
-  getDelta() const
+  getDelta () const
   {
     return (delta_);
   };
@@ -198,14 +198,14 @@ public:
    * \param[in] approx_overlap the estimated overlap
    */
   inline void
-  setApproxOverlap(float approx_overlap)
+  setApproxOverlap (float approx_overlap)
   {
     approx_overlap_ = approx_overlap;
   };
 
   /** \return the approximated overlap between source and target. */
   inline float
-  getApproxOverlap() const
+  getApproxOverlap () const
   {
     return (approx_overlap_);
   };
@@ -214,14 +214,14 @@ public:
    * \param[in] score_threshold early terminating score criteria
    */
   inline void
-  setScoreThreshold(float score_threshold)
+  setScoreThreshold (float score_threshold)
   {
     score_threshold_ = score_threshold;
   };
 
   /** \return the scoring threshold used for early finishing the method. */
   inline float
-  getScoreThreshold() const
+  getScoreThreshold () const
   {
     return (score_threshold_);
   };
@@ -230,14 +230,14 @@ public:
    * \param[in] nr_samples the number of source samples
    */
   inline void
-  setNumberOfSamples(int nr_samples)
+  setNumberOfSamples (int nr_samples)
   {
     nr_samples_ = nr_samples;
   };
 
   /** \return the number of source samples to use during alignment. */
   inline int
-  getNumberOfSamples() const
+  getNumberOfSamples () const
   {
     return (nr_samples_);
   };
@@ -246,7 +246,7 @@ public:
    * degree. \param[in] max_norm_diff the maximum difference in degree
    */
   inline void
-  setMaxNormalDifference(float max_norm_diff)
+  setMaxNormalDifference (float max_norm_diff)
   {
     max_norm_diff_ = max_norm_diff;
   };
@@ -254,7 +254,7 @@ public:
   /** \return the maximum normal difference between valid point correspondences in
    * degree. */
   inline float
-  getMaxNormalDifference() const
+  getMaxNormalDifference () const
   {
     return (max_norm_diff_);
   };
@@ -263,21 +263,21 @@ public:
    * \param[in] max_runtime the maximum runtime of the method in seconds
    */
   inline void
-  setMaxComputationTime(int max_runtime)
+  setMaxComputationTime (int max_runtime)
   {
     max_runtime_ = max_runtime;
   };
 
   /** \return the maximum computation time in seconds. */
   inline int
-  getMaxComputationTime() const
+  getMaxComputationTime () const
   {
     return (max_runtime_);
   };
 
   /** \return the fitness score of the best scored four-point match. */
   inline float
-  getFitnessScore() const
+  getFitnessScore () const
   {
     return (fitness_score_);
   };
@@ -303,12 +303,12 @@ protected:
    * transformation found \param guess The computed transforamtion
    */
   void
-  computeTransformation(PointCloudSource& output,
-                        const Eigen::Matrix4f& guess) override;
+  computeTransformation (PointCloudSource& output,
+                         const Eigen::Matrix4f& guess) override;
 
   /** \brief Internal computation initialization. */
   virtual bool
-  initCompute();
+  initCompute ();
 
   /** \brief Select an approximately coplanar set of four points from the source cloud.
    * \param[out] base_indices selected source cloud indices, further used as base (B)
@@ -318,7 +318,7 @@ protected:
    * * = 0 a set of four congruent points was selected
    */
   int
-  selectBase(pcl::Indices& base_indices, float (&ratio)[2]);
+  selectBase (pcl::Indices& base_indices, float (&ratio)[2]);
 
   /** \brief Select randomly a triplet of points with large point-to-point distances.
    * The minimum point sampling distance is calculated based on the estimated point
@@ -330,7 +330,7 @@ protected:
    * * = 0 base triangle successfully selected
    */
   int
-  selectBaseTriangle(pcl::Indices& base_indices);
+  selectBaseTriangle (pcl::Indices& base_indices);
 
   /** \brief Setup the base (four coplanar points) by ordering the points and computing
    * intersection ratios and segment to segment distances of base diagonal.
@@ -339,14 +339,14 @@ protected:
    * \param[out] ratio diagonal intersection ratios of base points
    */
   void
-  setupBase(pcl::Indices& base_indices, float (&ratio)[2]);
+  setupBase (pcl::Indices& base_indices, float (&ratio)[2]);
 
   /** \brief Calculate intersection ratios and segment to segment distances of base
    * diagonals. \param[in] base_indices indices of base B \param[out] ratio diagonal
    * intersection ratios of base points \return quality value of diagonal intersection
    */
   float
-  segmentToSegmentDist(const pcl::Indices& base_indices, float (&ratio)[2]);
+  segmentToSegmentDist (const pcl::Indices& base_indices, float (&ratio)[2]);
 
   /** \brief Search for corresponding point pairs given the distance between two base
    * points.
@@ -359,7 +359,7 @@ protected:
    * * = 0 at least one point pair candidate was found
    */
   virtual int
-  bruteForceCorrespondences(int idx1, int idx2, pcl::Correspondences& pairs);
+  bruteForceCorrespondences (int idx1, int idx2, pcl::Correspondences& pairs);
 
   /** \brief Determine base matches by combining the point pair candidate and search for
    * coinciding intersection points using the diagonal segment ratios of base B. The
@@ -375,11 +375,11 @@ protected:
    * * = 0 at least one base match was found
    */
   virtual int
-  determineBaseMatches(const pcl::Indices& base_indices,
-                       std::vector<pcl::Indices>& matches,
-                       const pcl::Correspondences& pairs_a,
-                       const pcl::Correspondences& pairs_b,
-                       const float (&ratio)[2]);
+  determineBaseMatches (const pcl::Indices& base_indices,
+                        std::vector<pcl::Indices>& matches,
+                        const pcl::Correspondences& pairs_a,
+                        const pcl::Correspondences& pairs_b,
+                        const float (&ratio)[2]);
 
   /** \brief Check if outer rectangle distance of matched points fit with the base
    * rectangle.
@@ -391,7 +391,7 @@ protected:
    * * = 0 edges of match M fits to the ones of base B
    */
   int
-  checkBaseMatch(const pcl::Indices& match_indices, const float (&ds)[4]);
+  checkBaseMatch (const pcl::Indices& match_indices, const float (&ds)[4]);
 
   /** \brief Method to handle current candidate matches. Here we validate and evaluate
    * the matches w.r.t the base and store the best fitting match (together with its
@@ -404,9 +404,9 @@ protected:
    * contains the candidates matches M
    */
   virtual void
-  handleMatches(const pcl::Indices& base_indices,
-                std::vector<pcl::Indices>& matches,
-                MatchingCandidates& candidates);
+  handleMatches (const pcl::Indices& base_indices,
+                 std::vector<pcl::Indices>& matches,
+                 MatchingCandidates& candidates);
 
   /** \brief Sets the correspondences between the base B and the match M by using the
    * distance of each point to the centroid of the rectangle.
@@ -416,9 +416,9 @@ protected:
    * \param[out] correspondences resulting correspondences
    */
   virtual void
-  linkMatchWithBase(const pcl::Indices& base_indices,
-                    pcl::Indices& match_indices,
-                    pcl::Correspondences& correspondences);
+  linkMatchWithBase (const pcl::Indices& base_indices,
+                     pcl::Indices& match_indices,
+                     pcl::Correspondences& correspondences);
 
   /** \brief Validate the matching by computing the transformation between the source
    * and target based on the four matched points and by comparing the mean square error
@@ -434,10 +434,10 @@ protected:
    * * = 0 MSE smaller than max_mse_
    */
   virtual int
-  validateMatch(const pcl::Indices& base_indices,
-                const pcl::Indices& match_indices,
-                const pcl::Correspondences& correspondences,
-                Eigen::Matrix4f& transformation);
+  validateMatch (const pcl::Indices& base_indices,
+                 const pcl::Indices& match_indices,
+                 const pcl::Correspondences& correspondences,
+                 Eigen::Matrix4f& transformation);
 
   /** \brief Validate the transformation by calculating the number of inliers after
    * transforming the source cloud. The resulting fitness score is later used as the
@@ -451,7 +451,7 @@ protected:
    * * = 0 current result is better than the previous one (score updated)
    */
   virtual int
-  validateTransformation(Eigen::Matrix4f& transformation, float& fitness_score);
+  validateTransformation (Eigen::Matrix4f& transformation, float& fitness_score);
 
   /** \brief Final computation of best match out of vector of best matches. To avoid
    * cross thread dependencies during parallel running, a best match for each try was
@@ -459,7 +459,7 @@ protected:
    * of 'vectors of size 1'. \param[in] candidates vector of candidate matches
    */
   virtual void
-  finalCompute(const std::vector<MatchingCandidates>& candidates);
+  finalCompute (const std::vector<MatchingCandidates>& candidates);
 
   /** \brief Normals of source point cloud. */
   NormalsConstPtr source_normals_;

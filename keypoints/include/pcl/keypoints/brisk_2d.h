@@ -2,7 +2,7 @@
  * Software License Agreement (BSD License)
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
- *  Copyright (C) 2011, The Autonomous Systems Lab (ASL), ETH Zurich, 
+ *  Copyright (C) 2011, The Autonomous Systems Lab (ASL), ETH Zurich,
  *                      Stefan Leutenegger, Simon Lynen and Margarita Chli.
  *  Copyright (c) 2012-, Open Perception, Inc.
  *
@@ -42,442 +42,462 @@
 #include <pcl/common/point_tests.h> // for pcl::isFinite
 #include <pcl/keypoints/agast_2d.h>
 
+namespace pcl {
+/** \brief Detects BRISK interest points based on the original code and paper
+ * reference by
+ *
+ * \par
+ * Stefan Leutenegger,Margarita Chli and Roland Siegwart,
+ * BRISK: Binary Robust Invariant Scalable Keypoints,
+ * in Proceedings of the IEEE International Conference on Computer Vision (ICCV2011).
+ *
+ * Code example:
+ *
+ * \code
+ * pcl::PointCloud<pcl::PointXYZRGBA> cloud;
+ * pcl::BriskKeypoint2D<pcl::PointXYZRGBA> brisk;
+ * brisk.setThreshold (60);
+ * brisk.setOctaves (4);
+ * brisk.setInputCloud (cloud);
+ *
+ * PointCloud<pcl::PointWithScale> keypoints;
+ * brisk.compute (keypoints);
+ * \endcode
+ *
+ * \author Radu B. Rusu, Stefan Holzer
+ * \ingroup keypoints
+ */
+template <typename PointInT,
+          typename PointOutT = pcl::PointWithScale,
+          typename IntensityT = pcl::common::IntensityFieldAccessor<PointInT>>
+class BriskKeypoint2D : public Keypoint<PointInT, PointOutT> {
+public:
+  using Ptr = shared_ptr<BriskKeypoint2D<PointInT, PointOutT, IntensityT>>;
+  using ConstPtr = shared_ptr<const BriskKeypoint2D<PointInT, PointOutT, IntensityT>>;
 
-namespace pcl
-{
-  /** \brief Detects BRISK interest points based on the original code and paper
-    * reference by
-    * 
-    * \par
-    * Stefan Leutenegger,Margarita Chli and Roland Siegwart, 
-    * BRISK: Binary Robust Invariant Scalable Keypoints, 
-    * in Proceedings of the IEEE International Conference on Computer Vision (ICCV2011).
-    *
-    * Code example:
-    *
-    * \code
-    * pcl::PointCloud<pcl::PointXYZRGBA> cloud;
-    * pcl::BriskKeypoint2D<pcl::PointXYZRGBA> brisk;
-    * brisk.setThreshold (60);
-    * brisk.setOctaves (4);
-    * brisk.setInputCloud (cloud);
-    *
-    * PointCloud<pcl::PointWithScale> keypoints;
-    * brisk.compute (keypoints);
-    * \endcode
-    *
-    * \author Radu B. Rusu, Stefan Holzer
-    * \ingroup keypoints
-    */
-  template <typename PointInT, typename PointOutT = pcl::PointWithScale, typename IntensityT = pcl::common::IntensityFieldAccessor<PointInT> >
-  class BriskKeypoint2D: public Keypoint<PointInT, PointOutT>
+  using PointCloudIn = typename Keypoint<PointInT, PointOutT>::PointCloudIn;
+  using PointCloudOut = typename Keypoint<PointInT, PointOutT>::PointCloudOut;
+  using KdTree = typename Keypoint<PointInT, PointOutT>::KdTree;
+  using PointCloudInConstPtr = typename PointCloudIn::ConstPtr;
+
+  using Keypoint<PointInT, PointOutT>::name_;
+  using Keypoint<PointInT, PointOutT>::input_;
+  using Keypoint<PointInT, PointOutT>::indices_;
+  using Keypoint<PointInT, PointOutT>::k_;
+
+  /** \brief Constructor */
+  BriskKeypoint2D(int octaves = 4, int threshold = 60)
+  : threshold_(threshold), octaves_(octaves)
   {
-    public:
-      using Ptr = shared_ptr<BriskKeypoint2D<PointInT, PointOutT, IntensityT> >;
-      using ConstPtr = shared_ptr<const BriskKeypoint2D<PointInT, PointOutT, IntensityT> >;
+    k_ = 1;
+    name_ = "BriskKeypoint2D";
+  }
 
-      using PointCloudIn = typename Keypoint<PointInT, PointOutT>::PointCloudIn;
-      using PointCloudOut = typename Keypoint<PointInT, PointOutT>::PointCloudOut;
-      using KdTree = typename Keypoint<PointInT, PointOutT>::KdTree;
-      using PointCloudInConstPtr = typename PointCloudIn::ConstPtr;
+  /** \brief Destructor. */
+  ~BriskKeypoint2D() override = default;
 
-      using Keypoint<PointInT, PointOutT>::name_;
-      using Keypoint<PointInT, PointOutT>::input_;
-      using Keypoint<PointInT, PointOutT>::indices_;
-      using Keypoint<PointInT, PointOutT>::k_;
+  /** \brief Sets the threshold for corner detection.
+   * \param[in] threshold the threshold used for corner detection.
+   */
+  inline void
+  setThreshold (const int threshold)
+  {
+    threshold_ = threshold;
+  }
 
-      /** \brief Constructor */
-      BriskKeypoint2D (int octaves = 4, int threshold = 60)
-        : threshold_ (threshold)
-        , octaves_ (octaves)
-      {
-        k_ = 1;
-        name_ = "BriskKeypoint2D";
-      }
+  /** \brief Get the threshold for corner detection, as set by the user. */
+  inline std::size_t
+  getThreshold ()
+  {
+    return (threshold_);
+  }
 
-      /** \brief Destructor. */
-      ~BriskKeypoint2D () override = default;
+  /** \brief Set the number of octaves to use
+   * \param[in] octaves the number of octaves to use
+   */
+  inline void
+  setOctaves (const int octaves)
+  {
+    octaves_ = octaves;
+  }
 
-      /** \brief Sets the threshold for corner detection.
-        * \param[in] threshold the threshold used for corner detection.
-        */
-      inline void
-      setThreshold (const int threshold)
-      {
-        threshold_ = threshold;
-      }
+  /** \brief Returns the number of octaves used. */
+  inline int
+  getOctaves ()
+  {
+    return (octaves_);
+  }
 
-      /** \brief Get the threshold for corner detection, as set by the user. */
-      inline std::size_t
-      getThreshold ()
-      {
-        return (threshold_);
-      }
+  /** \brief Specify whether we should do a 2nd pass through the list of keypoints
+   * found, and remove the ones that do not have a valid 3D (x-y-z) position
+   * (i.e., are NaN or Inf).
+   * \param[in] remove set to true whether we want the invalid 3D keypoints removed
+   */
+  inline void
+  setRemoveInvalid3DKeypoints (bool remove)
+  {
+    remove_invalid_3D_keypoints_ = remove;
+  }
 
-      /** \brief Set the number of octaves to use
-        * \param[in] octaves the number of octaves to use
-        */
-      inline void
-      setOctaves (const int octaves)
-      {
-        octaves_ = octaves;
-      }
+  /** \brief Specify whether the keypoints that do not have a valid 3D position are
+   * kept (false) or removed (true).
+   */
+  inline bool
+  getRemoveInvalid3DKeypoints ()
+  {
+    return (remove_invalid_3D_keypoints_);
+  }
 
-      /** \brief Returns the number of octaves used. */
-      inline int
-      getOctaves ()
-      {
-        return (octaves_);
-      }
+  /////////////////////////////////////////////////////////////////////////
+  inline void
+  bilinearInterpolation (const PointCloudInConstPtr& cloud,
+                         float x,
+                         float y,
+                         PointOutT& pt)
+  {
+    int u = static_cast<int>(x);
+    int v = static_cast<int>(y);
 
-      /** \brief Specify whether we should do a 2nd pass through the list of keypoints
-        * found, and remove the ones that do not have a valid 3D (x-y-z) position 
-        * (i.e., are NaN or Inf).
-        * \param[in] remove set to true whether we want the invalid 3D keypoints removed
-        */
-      inline void
-      setRemoveInvalid3DKeypoints (bool remove)
-      {
-        remove_invalid_3D_keypoints_ = remove;
-      }
+    pt.x = pt.y = pt.z = 0;
 
-      /** \brief Specify whether the keypoints that do not have a valid 3D position are
-        * kept (false) or removed (true).
-        */
-      inline bool
-      getRemoveInvalid3DKeypoints ()
-      {
-        return (remove_invalid_3D_keypoints_);
-      }
+    const PointInT& p1 = (*cloud)(u, v);
+    const PointInT& p2 = (*cloud)(u + 1, v);
+    const PointInT& p3 = (*cloud)(u, v + 1);
+    const PointInT& p4 = (*cloud)(u + 1, v + 1);
 
-      /////////////////////////////////////////////////////////////////////////
-      inline void
-      bilinearInterpolation (const PointCloudInConstPtr &cloud, 
-                             float x, float y,
-                             PointOutT &pt)
-      {
-        int u = static_cast<int>(x);
-        int v = static_cast<int>(y);
-        
-        pt.x = pt.y = pt.z = 0;
+    float fx = x - static_cast<float>(u), fy = y - static_cast<float>(v);
+    float fx1 = 1.0f - fx, fy1 = 1.0f - fy;
 
-        const PointInT &p1 = (*cloud)(u,   v);
-        const PointInT &p2 = (*cloud)(u+1, v);
-        const PointInT &p3 = (*cloud)(u,   v+1);
-        const PointInT &p4 = (*cloud)(u+1, v+1);
-        
-        float fx = x - static_cast<float>(u), fy = y - static_cast<float>(v);
-        float fx1 = 1.0f - fx, fy1 = 1.0f - fy;
+    float w1 = fx1 * fy1, w2 = fx * fy1, w3 = fx1 * fy, w4 = fx * fy;
+    float weight = 0;
 
-        float w1 = fx1 * fy1, w2 = fx * fy1, w3 = fx1 * fy, w4 = fx * fy;
-        float weight = 0;
-        
-        if (pcl::isFinite (p1))
-        {
-          pt.x += p1.x * w1;
-          pt.y += p1.y * w1;
-          pt.z += p1.z * w1;
-          weight += w1;
-        }
-        if (pcl::isFinite (p2))
-        {
-          pt.x += p2.x * w2;
-          pt.y += p2.y * w2;
-          pt.z += p2.z * w2;
-          weight += w2;
-        }
-        if (pcl::isFinite (p3))
-        {
-          pt.x += p3.x * w3;
-          pt.y += p3.y * w3;
-          pt.z += p3.z * w3;
-          weight += w3;
-        }
-        if (pcl::isFinite (p4))
-        {
-          pt.x += p4.x * w4;
-          pt.y += p4.y * w4;
-          pt.z += p4.z * w4;
-          weight += w4;
-        }
+    if (pcl::isFinite(p1)) {
+      pt.x += p1.x * w1;
+      pt.y += p1.y * w1;
+      pt.z += p1.z * w1;
+      weight += w1;
+    }
+    if (pcl::isFinite(p2)) {
+      pt.x += p2.x * w2;
+      pt.y += p2.y * w2;
+      pt.z += p2.z * w2;
+      weight += w2;
+    }
+    if (pcl::isFinite(p3)) {
+      pt.x += p3.x * w3;
+      pt.y += p3.y * w3;
+      pt.z += p3.z * w3;
+      weight += w3;
+    }
+    if (pcl::isFinite(p4)) {
+      pt.x += p4.x * w4;
+      pt.y += p4.y * w4;
+      pt.z += p4.z * w4;
+      weight += w4;
+    }
 
-        if (weight == 0)
-          pt.x = pt.y = pt.z = std::numeric_limits<float>::quiet_NaN ();
-        else
-        {
-          weight = 1.0f / weight;
-          pt.x *= weight; pt.y *= weight; pt.z *= weight;
-        }
-      }
+    if (weight == 0)
+      pt.x = pt.y = pt.z = std::numeric_limits<float>::quiet_NaN();
+    else {
+      weight = 1.0f / weight;
+      pt.x *= weight;
+      pt.y *= weight;
+      pt.z *= weight;
+    }
+  }
 
-    protected:
-      /** \brief Initializes everything and checks whether input data is fine. */
-      bool 
-      initCompute () override;
+protected:
+  /** \brief Initializes everything and checks whether input data is fine. */
+  bool
+  initCompute () override;
 
-      /** \brief Detects the keypoints. */
-      void 
-      detectKeypoints (PointCloudOut &output) override;
+  /** \brief Detects the keypoints. */
+  void
+  detectKeypoints (PointCloudOut& output) override;
 
-    private:
-      /** \brief Intensity field accessor. */
-      IntensityT intensity_;
-      
-      /** \brief Threshold for corner detection. */
-      int threshold_;
+private:
+  /** \brief Intensity field accessor. */
+  IntensityT intensity_;
 
-      int octaves_;
+  /** \brief Threshold for corner detection. */
+  int threshold_;
 
-      /** \brief Specify whether the keypoints that do not have a valid 3D position are
-        * kept (false) or removed (true).
-        */
-      bool remove_invalid_3D_keypoints_{false};
+  int octaves_;
+
+  /** \brief Specify whether the keypoints that do not have a valid 3D position are
+   * kept (false) or removed (true).
+   */
+  bool remove_invalid_3D_keypoints_{false};
+};
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+namespace keypoints {
+namespace brisk {
+/** \brief A layer in the BRISK detector pyramid. */
+class PCL_EXPORTS Layer {
+public:
+  // constructor arguments
+  struct CommonParams {
+    static const int HALFSAMPLE;
+    static const int TWOTHIRDSAMPLE;
   };
 
-  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  namespace keypoints
+  /** \brief Constructor.
+   * \param[in] img input image
+   * \param[in] width image width
+   * \param[in] height image height
+   * \param[in] scale scale
+   * \param[in] offset offset
+   */
+  Layer(const std::vector<unsigned char>& img,
+        int width,
+        int height,
+        float scale = 1.0f,
+        float offset = 0.0f);
+
+  /** \brief Copy constructor for deriving a layer.
+   * \param[in] layer layer to derive from
+   * \param[in] mode deriving mode
+   */
+  Layer(const Layer& layer, int mode);
+
+  /** \brief AGAST keypoints without non-max suppression.
+   * \param[in] threshold the keypoints threshold
+   * \param[out] keypoints the AGAST keypoints
+   */
+  void
+  getAgastPoints (
+      std::uint8_t threshold,
+      std::vector<pcl::PointUV, Eigen::aligned_allocator<pcl::PointUV>>& keypoints);
+
+  // get scores - attention, this is in layer coordinates, not scale=1 coordinates!
+  /** \brief Get the AGAST keypoint score for a given pixel using a threshold
+   * \param[in] x the U coordinate of the pixel
+   * \param[in] y the V coordinate of the pixel
+   * \param[in] threshold the threshold to use for cutting the response
+   */
+  std::uint8_t
+  getAgastScore (int x, int y, std::uint8_t threshold);
+  /** \brief Get the AGAST keypoint score for a given pixel using a threshold
+   * \param[in] x the U coordinate of the pixel
+   * \param[in] y the V coordinate of the pixel
+   * \param[in] threshold the threshold to use for cutting the response
+   */
+  std::uint8_t
+  getAgastScore_5_8 (int x, int y, std::uint8_t threshold);
+  /** \brief Get the AGAST keypoint score for a given pixel using a threshold
+   * \param[in] xf the X coordinate of the pixel
+   * \param[in] yf the Y coordinate of the pixel
+   * \param[in] threshold the threshold to use for cutting the response
+   * \param[in] scale the scale
+   */
+  std::uint8_t
+  getAgastScore (float xf, float yf, std::uint8_t threshold, float scale = 1.0f);
+
+  /** \brief Access gray values (smoothed/interpolated)
+   * \param[in] mat the image
+   * \param[in] width the image width
+   * \param[in] height the image height
+   * \param[in] xf the x coordinate
+   * \param[in] yf the y coordinate
+   * \param[in] scale the scale
+   */
+  std::uint8_t
+  getValue (const std::vector<unsigned char>& mat,
+            int width,
+            int height,
+            float xf,
+            float yf,
+            float scale);
+
+  /** \brief Get the image used. */
+  const std::vector<unsigned char>&
+  getImage () const
   {
-    namespace brisk
-    {
-      /** \brief A layer in the BRISK detector pyramid. */
-      class PCL_EXPORTS Layer
-      {
-        public:
-          // constructor arguments
-          struct CommonParams
-          {
-            static const int HALFSAMPLE;
-            static const int TWOTHIRDSAMPLE;
-          };
+    return (img_);
+  }
 
-          /** \brief Constructor.
-            * \param[in] img input image
-            * \param[in] width image width
-            * \param[in] height image height
-            * \param[in] scale scale
-            * \param[in] offset offset
-            */
-          Layer (const std::vector<unsigned char>& img, 
-                 int width, int height, 
-                 float scale = 1.0f, float offset = 0.0f);
-        
-          /** \brief Copy constructor for deriving a layer.
-            * \param[in] layer layer to derive from
-            * \param[in] mode deriving mode
-            */
-          Layer (const Layer& layer, int mode);
+  /** \brief Get the width of the image used. */
+  int
+  getImageWidth () const
+  {
+    return (img_width_);
+  }
 
-          /** \brief AGAST keypoints without non-max suppression.
-            * \param[in] threshold the keypoints threshold
-            * \param[out] keypoints the AGAST keypoints
-            */
-          void 
-          getAgastPoints (std::uint8_t threshold, std::vector<pcl::PointUV, Eigen::aligned_allocator<pcl::PointUV> > &keypoints);
+  /** \brief Get the height of the image used. */
+  int
+  getImageHeight () const
+  {
+    return (img_height_);
+  }
 
-          // get scores - attention, this is in layer coordinates, not scale=1 coordinates!
-          /** \brief Get the AGAST keypoint score for a given pixel using a threshold
-            * \param[in] x the U coordinate of the pixel
-            * \param[in] y the V coordinate of the pixel
-            * \param[in] threshold the threshold to use for cutting the response
-            */
-          std::uint8_t 
-          getAgastScore (int x, int y, std::uint8_t threshold);
-          /** \brief Get the AGAST keypoint score for a given pixel using a threshold
-            * \param[in] x the U coordinate of the pixel
-            * \param[in] y the V coordinate of the pixel
-            * \param[in] threshold the threshold to use for cutting the response
-            */
-          std::uint8_t 
-          getAgastScore_5_8 (int x, int y, std::uint8_t threshold);
-          /** \brief Get the AGAST keypoint score for a given pixel using a threshold
-            * \param[in] xf the X coordinate of the pixel
-            * \param[in] yf the Y coordinate of the pixel
-            * \param[in] threshold the threshold to use for cutting the response
-            * \param[in] scale the scale
-            */
-          std::uint8_t 
-          getAgastScore (float xf, float yf, std::uint8_t threshold, float scale = 1.0f);
+  /** \brief Get the scale used. */
+  float
+  getScale () const
+  {
+    return (scale_);
+  }
 
-          /** \brief Access gray values (smoothed/interpolated) 
-            * \param[in] mat the image
-            * \param[in] width the image width
-            * \param[in] height the image height
-            * \param[in] xf the x coordinate
-            * \param[in] yf the y coordinate
-            * \param[in] scale the scale
-            */
-          std::uint8_t 
-          getValue (const std::vector<unsigned char>& mat, 
-                    int width, int height, float xf, float yf, float scale);
-         
-          /** \brief Get the image used. */
-          const std::vector<unsigned char>&
-          getImage () const
-          {
-            return (img_);
-          }
+  /** \brief Get the offset used. */
+  inline float
+  getOffset () const
+  {
+    return (offset_);
+  }
 
-          /** \brief Get the width of the image used. */
-          int
-          getImageWidth () const
-          {
-            return (img_width_);
-          }
+  /** \brief Get the scores obtained. */
+  inline const std::vector<unsigned char>&
+  getScores () const
+  {
+    return (scores_);
+  }
 
-          /** \brief Get the height of the image used. */
-          int
-          getImageHeight () const
-          {
-            return (img_height_);
-          }
+private:
+  // half sampling
+  inline void
+  halfsample (const std::vector<unsigned char>& srcimg,
+              int srcwidth,
+              int srcheight,
+              std::vector<unsigned char>& dstimg,
+              int dstwidth,
+              int dstheight);
 
-          /** \brief Get the scale used. */
-          float
-          getScale () const
-          {
-            return (scale_);
-          }
+  // two third sampling
+  inline void
+  twothirdsample (const std::vector<unsigned char>& srcimg,
+                  int srcwidth,
+                  int srcheight,
+                  std::vector<unsigned char>& dstimg,
+                  int dstwidth,
+                  int dstheight);
 
-          /** \brief Get the offset used. */
-          inline float
-          getOffset () const
-          {
-            return (offset_);
-          }
+  /** the image */
+  std::vector<unsigned char> img_;
+  int img_width_;
+  int img_height_;
 
-          /** \brief Get the scores obtained. */
-          inline const std::vector<unsigned char>&
-          getScores () const
-          {
-            return (scores_);
-          }
+  /** its Fast scores */
+  std::vector<unsigned char> scores_;
 
-        private:
-          // half sampling
-          inline void 
-          halfsample (const std::vector<unsigned char>& srcimg,
-                      int srcwidth, int srcheight,
-                      std::vector<unsigned char>& dstimg,
-                      int dstwidth, int dstheight);
+  /** coordinate transformation */
+  float scale_;
+  float offset_;
 
-          // two third sampling
-          inline void 
-          twothirdsample (const std::vector<unsigned char>& srcimg,
-                          int srcwidth, int srcheight,
-                          std::vector<unsigned char>& dstimg,
-                          int dstwidth, int dstheight);
+  /** agast */
+  pcl::keypoints::agast::OastDetector9_16::Ptr oast_detector_;
+  pcl::keypoints::agast::AgastDetector5_8::Ptr agast_detector_5_8_;
+};
 
-          /** the image */
-          std::vector<unsigned char> img_;
-          int img_width_;
-          int img_height_;
+/** BRISK Scale Space helper. */
+class PCL_EXPORTS ScaleSpace {
+public:
+  /** \brief Constructor. Specify the number of octaves.
+   * \param[in] octaves the number of octaves (default: 3)
+   */
+  ScaleSpace(int octaves = 3);
+  ~ScaleSpace();
 
-          /** its Fast scores */
-          std::vector<unsigned char> scores_;
+  /** \brief Construct the image pyramids.
+   * \param[in] image the image to construct pyramids for
+   * \param[in] width the image width
+   * \param[in] height the image height
+   */
+  void
+  constructPyramid (const std::vector<unsigned char>& image, int width, int height);
 
-          /** coordinate transformation */
-          float scale_;
-          float offset_;
+  /** \brief Get the keypoints for the associated image and threshold.
+   * \param[in] threshold the threshold for the keypoints
+   * \param[out] keypoints the resultant list of keypoints
+   */
+  void
+  getKeypoints (const int threshold,
+                std::vector<pcl::PointWithScale,
+                            Eigen::aligned_allocator<pcl::PointWithScale>>& keypoints);
 
-          /** agast */
-          pcl::keypoints::agast::OastDetector9_16::Ptr oast_detector_;
-          pcl::keypoints::agast::AgastDetector5_8::Ptr agast_detector_5_8_;
-      };
+protected:
+  /** Nonmax suppression. */
+  inline bool
+  isMax2D (const std::uint8_t layer, const int x_layer, const int y_layer);
 
-      /** BRISK Scale Space helper. */ 
-      class PCL_EXPORTS ScaleSpace
-      {
-        public:
-          /** \brief Constructor. Specify the number of octaves.
-            * \param[in] octaves the number of octaves (default: 3)
-            */
-          ScaleSpace (int octaves = 3);
-          ~ScaleSpace ();
+  /** 1D (scale axis) refinement: around octave */
+  inline float
+  refine1D (const float s_05, const float s0, const float s05, float& max);
 
-          /** \brief Construct the image pyramids.
-            * \param[in] image the image to construct pyramids for
-            * \param[in] width the image width
-            * \param[in] height the image height
-            */ 
-          void 
-          constructPyramid (const std::vector<unsigned char>& image,
-                            int width, int height);
+  /** 1D (scale axis) refinement: around intra */
+  inline float
+  refine1D_1 (const float s_05, const float s0, const float s05, float& max);
 
-          /** \brief Get the keypoints for the associated image and threshold.
-            * \param[in] threshold the threshold for the keypoints
-            * \param[out] keypoints the resultant list of keypoints
-            */
-          void 
-          getKeypoints (const int threshold, 
-                        std::vector<pcl::PointWithScale, Eigen::aligned_allocator<pcl::PointWithScale> >  &keypoints);
+  /** 1D (scale axis) refinement: around octave 0 only */
+  inline float
+  refine1D_2 (const float s_05, const float s0, const float s05, float& max);
 
-        protected:
-          /** Nonmax suppression. */
-          inline bool 
-          isMax2D (const std::uint8_t layer, const int x_layer, const int y_layer);
+  /** 2D maximum refinement */
+  inline float
+  subpixel2D (const int s_0_0,
+              const int s_0_1,
+              const int s_0_2,
+              const int s_1_0,
+              const int s_1_1,
+              const int s_1_2,
+              const int s_2_0,
+              const int s_2_1,
+              const int s_2_2,
+              float& delta_x,
+              float& delta_y);
 
-          /** 1D (scale axis) refinement: around octave */
-          inline float 
-          refine1D (const float s_05, const float s0, const float s05, float& max); 
+  /** 3D maximum refinement centered around (x_layer,y_layer) */
+  inline float
+  refine3D (const std::uint8_t layer,
+            const int x_layer,
+            const int y_layer,
+            float& x,
+            float& y,
+            float& scale,
+            bool& ismax);
 
-          /** 1D (scale axis) refinement: around intra */
-          inline float 
-          refine1D_1 (const float s_05, const float s0, const float s05, float& max); 
+  /** interpolated score access with recalculation when needed */
+  inline int
+  getScoreAbove (const std::uint8_t layer, const int x_layer, const int y_layer);
 
-          /** 1D (scale axis) refinement: around octave 0 only */
-          inline float 
-          refine1D_2 (const float s_05, const float s0, const float s05, float& max); 
+  inline int
+  getScoreBelow (const std::uint8_t layer, const int x_layer, const int y_layer);
 
-          /** 2D maximum refinement */
-          inline float 
-          subpixel2D (const int s_0_0, const int s_0_1, const int s_0_2,
-                      const int s_1_0, const int s_1_1, const int s_1_2,
-                      const int s_2_0, const int s_2_1, const int s_2_2,
-                      float& delta_x, float& delta_y);
+  /** return the maximum of score patches above or below */
+  inline float
+  getScoreMaxAbove (const std::uint8_t layer,
+                    const int x_layer,
+                    const int y_layer,
+                    const int threshold,
+                    bool& ismax,
+                    float& dx,
+                    float& dy);
 
-          /** 3D maximum refinement centered around (x_layer,y_layer) */
-          inline float 
-          refine3D (const std::uint8_t layer,
-                    const int x_layer, const int y_layer,
-                    float& x, float& y, float& scale, bool& ismax);
+  inline float
+  getScoreMaxBelow (const std::uint8_t layer,
+                    const int x_layer,
+                    const int y_layer,
+                    const int threshold,
+                    bool& ismax,
+                    float& dx,
+                    float& dy);
 
-          /** interpolated score access with recalculation when needed */
-          inline int 
-          getScoreAbove (const std::uint8_t layer, const int x_layer, const int y_layer);
-          
-          inline int 
-          getScoreBelow (const std::uint8_t layer, const int x_layer, const int y_layer);
+  // the image pyramids
+  std::uint8_t layers_;
+  std::vector<pcl::keypoints::brisk::Layer> pyramid_;
 
-          /** return the maximum of score patches above or below */
-          inline float 
-          getScoreMaxAbove (const std::uint8_t layer,
-                            const int x_layer, const int y_layer,
-                            const int threshold, bool& ismax,
-                            float& dx, float& dy);
+  // Agast
+  std::uint8_t threshold_;
+  std::uint8_t safe_threshold_;
 
-          inline float 
-          getScoreMaxBelow (const std::uint8_t layer,
-                            const int x_layer, const int y_layer,
-                            const int threshold, bool& ismax,
-                            float& dx, float& dy);
+  // some constant parameters
+  float safety_factor_{1.0};
+  float basic_size_{12.0};
+};
+} // namespace brisk
+} // namespace keypoints
 
-          // the image pyramids
-          std::uint8_t layers_;
-          std::vector<pcl::keypoints::brisk::Layer> pyramid_;
-
-          // Agast
-          std::uint8_t threshold_;
-          std::uint8_t safe_threshold_;
-
-          // some constant parameters
-          float safety_factor_{1.0};
-          float basic_size_{12.0};
-      };
-    } // namespace brisk
-  } // namespace keypoints
-
-}
+} // namespace pcl
 
 #include <pcl/keypoints/impl/brisk_2d.hpp>

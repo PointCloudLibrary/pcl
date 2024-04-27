@@ -295,7 +295,7 @@ PCDVideoPlayer::refreshView()
 }
 
 void
-print_usage()
+print_usage ()
 {
   // clang-format off
   PCL_INFO ("PCDVideoPlayer V0.1\n");
@@ -311,7 +311,7 @@ print_usage()
 }
 
 int
-main(int argc, char** argv)
+main (int argc, char** argv)
 {
 #ifdef HAS_QVTKOPENGLWINDOW_H
   QSurfaceFormat::setDefaultFormat(QVTKOpenGLWindow::defaultFormat());

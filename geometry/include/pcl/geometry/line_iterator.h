@@ -73,13 +73,13 @@ public:
   void
   operator++() override;
   unsigned
-  getRowIndex() const override;
+  getRowIndex () const override;
   unsigned
-  getColumnIndex() const override;
+  getColumnIndex () const override;
   bool
-  isValid() const override;
+  isValid () const override;
   void
-  reset() override;
+  reset () override;
 
 protected:
   /**
@@ -87,7 +87,7 @@ protected:
    * \param[in] neighborhood connectivity to the neighborhood. Either 4 or 8
    */
   void
-  init(const Neighborhood& neighborhood);
+  init (const Neighborhood& neighborhood);
 
   /** \brief current column index*/
   unsigned x_;

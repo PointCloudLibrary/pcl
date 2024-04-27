@@ -41,58 +41,55 @@
 
 #include <pcl/common/io.h>
 
+namespace pcl {
 
-namespace pcl
+template <typename PointInT, typename PointOutT, typename IntensityT>
+bool
+AgastKeypoint2DBase<PointInT, PointOutT, IntensityT>::initCompute()
 {
-
-template <typename PointInT, typename PointOutT, typename IntensityT> bool
-AgastKeypoint2DBase<PointInT, PointOutT, IntensityT>::initCompute ()
-{
-  if (!pcl::Keypoint<PointInT, PointOutT>::initCompute ())
-  {
-    PCL_ERROR ("[pcl::%s::initCompute] init failed.!\n", name_.c_str ());
+  if (!pcl::Keypoint<PointInT, PointOutT>::initCompute()) {
+    PCL_ERROR("[pcl::%s::initCompute] init failed.!\n", name_.c_str());
     return (false);
   }
 
-  if (!input_->isOrganized ())
-  {
-    PCL_ERROR ("[pcl::%s::initCompute] %s doesn't support non organized clouds!\n", name_.c_str ());
+  if (!input_->isOrganized()) {
+    PCL_ERROR("[pcl::%s::initCompute] %s doesn't support non organized clouds!\n",
+              name_.c_str());
     return (false);
   }
 
   return (true);
 }
 
-
-template <typename PointInT, typename PointOutT> void
-AgastKeypoint2D<PointInT, PointOutT>::detectKeypoints (PointCloudOut &output)
+template <typename PointInT, typename PointOutT>
+void
+AgastKeypoint2D<PointInT, PointOutT>::detectKeypoints(PointCloudOut& output)
 {
   // image size
   const std::size_t width = input_->width;
   const std::size_t height = input_->height;
 
   // destination for intensity data; will be forwarded to AGAST
-  std::vector<unsigned char> image_data (width*height);
+  std::vector<unsigned char> image_data(width * height);
 
-  for (std::size_t i = 0; i < image_data.size (); ++i)
-    image_data[i] = static_cast<unsigned char> (intensity_ ((*input_)[i]));
+  for (std::size_t i = 0; i < image_data.size(); ++i)
+    image_data[i] = static_cast<unsigned char>(intensity_((*input_)[i]));
 
   if (!detector_)
-    detector_.reset (new pcl::keypoints::agast::AgastDetector7_12s (width, height, threshold_, bmax_));
+    detector_.reset(new pcl::keypoints::agast::AgastDetector7_12s(
+        width, height, threshold_, bmax_));
 
-  detector_->setMaxKeypoints (nr_max_keypoints_);
+  detector_->setMaxKeypoints(nr_max_keypoints_);
 
-  if (apply_non_max_suppression_)
-  {
+  if (apply_non_max_suppression_) {
     pcl::PointCloud<pcl::PointUV> tmp_cloud;
-    detector_->detectKeypoints (image_data, tmp_cloud);
+    detector_->detectKeypoints(image_data, tmp_cloud);
 
-    pcl::keypoints::internal::AgastApplyNonMaxSuppresion<PointOutT> anms (
+    pcl::keypoints::internal::AgastApplyNonMaxSuppresion<PointOutT> anms(
         image_data, tmp_cloud, detector_, output);
   }
-  else
-  {
-    pcl::keypoints::internal::AgastDetector<PointOutT> dec (
+  else {
+    pcl::keypoints::internal::AgastDetector<PointOutT> dec(
         image_data, detector_, output);
   }
 
@@ -102,7 +99,6 @@ AgastKeypoint2D<PointInT, PointOutT>::detectKeypoints (PointCloudOut &output)
 
 } // namespace pcl
 
-#define AgastKeypoint2D(T,I) template class PCL_EXPORTS pcl::AgastKeypoint2D<T,I>;
+#define AgastKeypoint2D(T, I) template class PCL_EXPORTS pcl::AgastKeypoint2D<T, I>;
 
 #endif
-

@@ -82,7 +82,7 @@ public:
    * \return true if success.
    */
   bool
-  read(const std::string& filename, Mesh& mesh) const
+  read (const std::string& filename, Mesh& mesh) const
   {
     std::ifstream file(filename.c_str());
 
@@ -213,7 +213,7 @@ public:
    * \return true if success
    */
   bool
-  write(const std::string& filename, const Mesh& mesh) const
+  write (const std::string& filename, const Mesh& mesh) const
   {
     std::ofstream file(filename.c_str());
 

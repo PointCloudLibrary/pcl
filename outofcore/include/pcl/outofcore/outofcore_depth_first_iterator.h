@@ -39,49 +39,46 @@
 #pragma once
 
 #include <pcl/outofcore/outofcore_iterator_base.h>
-namespace pcl
-{
-  namespace outofcore
+namespace pcl {
+namespace outofcore {
+/** \class OutofcoreDepthFirstIterator
+ *
+ *  \ingroup outofcore
+ *  \author Stephen Fox (foxstephend@gmail.com)
+ *  \note Code adapted from \ref octree_iterator.h in Module \ref pcl::octree written by
+ * Julius Kammerl
+ */
+template <typename PointT = pcl::PointXYZ,
+          typename ContainerT = OutofcoreOctreeDiskContainer<pcl::PointXYZ>>
+class OutofcoreDepthFirstIterator : public OutofcoreIteratorBase<PointT, ContainerT> {
+public:
+  using OctreeDisk = pcl::outofcore::OutofcoreOctreeBase<ContainerT, PointT>;
+  using OctreeDiskNode = pcl::outofcore::OutofcoreOctreeBaseNode<ContainerT, PointT>;
+
+  using LeafNode = pcl::outofcore::OutofcoreOctreeBaseNode<ContainerT, PointT>;
+  using BranchNode = pcl::outofcore::OutofcoreOctreeBaseNode<ContainerT, PointT>;
+
+  explicit OutofcoreDepthFirstIterator(OctreeDisk& octree_arg);
+
+  ~OutofcoreDepthFirstIterator() override;
+
+  OutofcoreDepthFirstIterator&
+  operator++();
+
+  inline OutofcoreDepthFirstIterator
+  operator++(int)
   {
-    /** \class OutofcoreDepthFirstIterator
-     *
-     *  \ingroup outofcore
-     *  \author Stephen Fox (foxstephend@gmail.com)
-     *  \note Code adapted from \ref octree_iterator.h in Module \ref pcl::octree written by Julius Kammerl
-     */
-    template<typename PointT=pcl::PointXYZ, typename ContainerT=OutofcoreOctreeDiskContainer<pcl::PointXYZ> >
-    class OutofcoreDepthFirstIterator : public OutofcoreIteratorBase<PointT, ContainerT>
-    {
-      public:
-        using OctreeDisk = pcl::outofcore::OutofcoreOctreeBase<ContainerT, PointT>;
-        using OctreeDiskNode = pcl::outofcore::OutofcoreOctreeBaseNode<ContainerT, PointT>;
-
-        using LeafNode = pcl::outofcore::OutofcoreOctreeBaseNode<ContainerT, PointT>;
-        using BranchNode = pcl::outofcore::OutofcoreOctreeBaseNode<ContainerT, PointT>;
-
-        explicit
-        OutofcoreDepthFirstIterator (OctreeDisk& octree_arg);
-
-        
-        ~OutofcoreDepthFirstIterator () override;
-      
-        OutofcoreDepthFirstIterator&
-        operator++ ();
-      
-        inline OutofcoreDepthFirstIterator
-        operator++ (int)
-        {
-          OutofcoreDepthFirstIterator _Tmp = *this;
-          ++*this;
-          return (_Tmp);
-        }
-      
-        void
-        skipChildVoxels ();
-      
-      protected:
-        unsigned char currentChildIdx_{0};
-        std::vector<std::pair<OctreeDiskNode*, unsigned char> > stack_;
-    };
+    OutofcoreDepthFirstIterator _Tmp = *this;
+    ++*this;
+    return (_Tmp);
   }
-}
+
+  void
+  skipChildVoxels ();
+
+protected:
+  unsigned char currentChildIdx_{0};
+  std::vector<std::pair<OctreeDiskNode*, unsigned char>> stack_;
+};
+} // namespace outofcore
+} // namespace pcl

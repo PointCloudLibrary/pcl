@@ -35,154 +35,144 @@
 
 /** \author Michael Dixon */
 
-#include <pcl/test/gtest.h>
-
-#include <pcl/point_types.h>
-#include <pcl/io/pcd_io.h>
 #include <pcl/filters/approximate_voxel_grid.h>
-
+#include <pcl/io/pcd_io.h>
 #include <pcl/keypoints/sift_keypoint.h>
+#include <pcl/test/gtest.h>
+#include <pcl/point_types.h>
 
 #include <set>
 
 using namespace pcl;
 using namespace pcl::io;
 
-struct KeypointT
-{
+struct KeypointT {
   float x, y, z, scale;
 };
 
-POINT_CLOUD_REGISTER_POINT_STRUCT (KeypointT,
-    (float, x, x)
-    (float, y, y)
-    (float, z, z)
-    (float, scale, scale)
-)
+POINT_CLOUD_REGISTER_POINT_STRUCT(
+    KeypointT, (float, x, x)(float, y, y)(float, z, z)(float, scale, scale))
 
-PointCloud<PointXYZI>::Ptr cloud_xyzi (new PointCloud<PointXYZI>);
+PointCloud<PointXYZI>::Ptr cloud_xyzi(new PointCloud<PointXYZI>);
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-TEST (PCL, SIFTKeypoint)
+TEST(PCL, SIFTKeypoint)
 {
   PointCloud<KeypointT> keypoints;
 
   // Compute the SIFT keypoints
   SIFTKeypoint<PointXYZI, KeypointT> sift_detector;
-	search::KdTree<PointXYZI>::Ptr tree (new search::KdTree<PointXYZI>);
-  sift_detector.setSearchMethod (tree);
-  sift_detector.setScales (0.02f, 5, 3);
-  sift_detector.setMinimumContrast (0.03f);
+  search::KdTree<PointXYZI>::Ptr tree(new search::KdTree<PointXYZI>);
+  sift_detector.setSearchMethod(tree);
+  sift_detector.setScales(0.02f, 5, 3);
+  sift_detector.setMinimumContrast(0.03f);
 
-  sift_detector.setInputCloud (cloud_xyzi);
-  sift_detector.compute (keypoints);
+  sift_detector.setInputCloud(cloud_xyzi);
+  sift_detector.compute(keypoints);
 
-  ASSERT_EQ (keypoints.width, keypoints.size ());
-  ASSERT_EQ (keypoints.height, 1);
-  EXPECT_EQ (keypoints.size (), static_cast<std::size_t> (169));
-  EXPECT_EQ (keypoints.header, cloud_xyzi->header);
-  EXPECT_EQ (keypoints.sensor_origin_ (0), cloud_xyzi->sensor_origin_ (0));
-  EXPECT_EQ (keypoints.sensor_origin_ (1), cloud_xyzi->sensor_origin_ (1));
-  EXPECT_EQ (keypoints.sensor_origin_ (2), cloud_xyzi->sensor_origin_ (2));
-  EXPECT_EQ (keypoints.sensor_origin_ (3), cloud_xyzi->sensor_origin_ (3));
-  EXPECT_EQ (keypoints.sensor_orientation_.w (), cloud_xyzi->sensor_orientation_.w ());
-  EXPECT_EQ (keypoints.sensor_orientation_.x (), cloud_xyzi->sensor_orientation_.x ());
-  EXPECT_EQ (keypoints.sensor_orientation_.y (), cloud_xyzi->sensor_orientation_.y ());
-  EXPECT_EQ (keypoints.sensor_orientation_.z (), cloud_xyzi->sensor_orientation_.z ());
+  ASSERT_EQ(keypoints.width, keypoints.size());
+  ASSERT_EQ(keypoints.height, 1);
+  EXPECT_EQ(keypoints.size(), static_cast<std::size_t>(169));
+  EXPECT_EQ(keypoints.header, cloud_xyzi->header);
+  EXPECT_EQ(keypoints.sensor_origin_(0), cloud_xyzi->sensor_origin_(0));
+  EXPECT_EQ(keypoints.sensor_origin_(1), cloud_xyzi->sensor_origin_(1));
+  EXPECT_EQ(keypoints.sensor_origin_(2), cloud_xyzi->sensor_origin_(2));
+  EXPECT_EQ(keypoints.sensor_origin_(3), cloud_xyzi->sensor_origin_(3));
+  EXPECT_EQ(keypoints.sensor_orientation_.w(), cloud_xyzi->sensor_orientation_.w());
+  EXPECT_EQ(keypoints.sensor_orientation_.x(), cloud_xyzi->sensor_orientation_.x());
+  EXPECT_EQ(keypoints.sensor_orientation_.y(), cloud_xyzi->sensor_orientation_.y());
+  EXPECT_EQ(keypoints.sensor_orientation_.z(), cloud_xyzi->sensor_orientation_.z());
 
   // Change the values and re-compute
-  sift_detector.setScales (0.05f, 5, 3);
-  sift_detector.setMinimumContrast (0.06f);
-  sift_detector.compute (keypoints);
+  sift_detector.setScales(0.05f, 5, 3);
+  sift_detector.setMinimumContrast(0.06f);
+  sift_detector.compute(keypoints);
 
-  ASSERT_EQ (keypoints.width, keypoints.size ());
-  ASSERT_EQ (keypoints.height, 1);
+  ASSERT_EQ(keypoints.width, keypoints.size());
+  ASSERT_EQ(keypoints.height, 1);
 
   // Compare to previously validated output
   constexpr std::size_t correct_nr_keypoints = 5;
-  const float correct_keypoints[correct_nr_keypoints][4] = 
-    { 
+  const float correct_keypoints[correct_nr_keypoints][4] = {
       // { x,  y,  z,  scale }
-      {-0.9425f, -0.6381f,  1.6445f,  0.0794f},
-      {-0.5083f, -0.5587f,  1.8519f,  0.0500f},
-      { 1.0265f,  0.0500f,  1.7154f,  0.1000f},
-      { 0.3005f, -0.3007f,  1.9526f,  0.2000f},
-      {-0.1002f, -0.1002f,  1.9933f,  0.3175f}
-    };
+      {-0.9425f, -0.6381f, 1.6445f, 0.0794f},
+      {-0.5083f, -0.5587f, 1.8519f, 0.0500f},
+      {1.0265f, 0.0500f, 1.7154f, 0.1000f},
+      {0.3005f, -0.3007f, 1.9526f, 0.2000f},
+      {-0.1002f, -0.1002f, 1.9933f, 0.3175f}};
 
-  ASSERT_EQ (keypoints.size (), correct_nr_keypoints);
-  for (std::size_t i = 0; i < correct_nr_keypoints; ++i)
-  {
-    EXPECT_NEAR (keypoints[i].x, correct_keypoints[i][0], 1e-4);
-    EXPECT_NEAR (keypoints[i].y, correct_keypoints[i][1], 1e-4);
-    EXPECT_NEAR (keypoints[i].z, correct_keypoints[i][2], 1e-4);
-    EXPECT_NEAR (keypoints[i].scale, correct_keypoints[i][3], 1e-4);
+  ASSERT_EQ(keypoints.size(), correct_nr_keypoints);
+  for (std::size_t i = 0; i < correct_nr_keypoints; ++i) {
+    EXPECT_NEAR(keypoints[i].x, correct_keypoints[i][0], 1e-4);
+    EXPECT_NEAR(keypoints[i].y, correct_keypoints[i][1], 1e-4);
+    EXPECT_NEAR(keypoints[i].z, correct_keypoints[i][2], 1e-4);
+    EXPECT_NEAR(keypoints[i].scale, correct_keypoints[i][3], 1e-4);
   }
-
 }
 
-TEST (PCL, SIFTKeypoint_radiusSearch)
+TEST(PCL, SIFTKeypoint_radiusSearch)
 {
   constexpr int nr_scales_per_octave = 3;
   constexpr float scale = 0.02f;
 
-  KdTreeFLANN<PointXYZI>::Ptr tree_ (new KdTreeFLANN<PointXYZI>);
-  auto cloud = cloud_xyzi->makeShared ();
+  KdTreeFLANN<PointXYZI>::Ptr tree_(new KdTreeFLANN<PointXYZI>);
+  auto cloud = cloud_xyzi->makeShared();
 
   ApproximateVoxelGrid<PointXYZI> voxel_grid;
   constexpr float s = 1.0 * scale;
-  voxel_grid.setLeafSize (s, s, s);
-  voxel_grid.setInputCloud (cloud);
-  voxel_grid.filter (*cloud);
-  tree_->setInputCloud (cloud);
-  
-  const PointCloud<PointXYZI> & input = *cloud;
-  KdTreeFLANN<PointXYZI> & tree = *tree_;
+  voxel_grid.setLeafSize(s, s, s);
+  voxel_grid.setInputCloud(cloud);
+  voxel_grid.filter(*cloud);
+  tree_->setInputCloud(cloud);
 
-  std::vector<float> scales (nr_scales_per_octave + 3);
-  for (int i_scale = 0; i_scale <= nr_scales_per_octave + 2; ++i_scale)
-  {
-    scales[i_scale] = scale * std::pow (2.0f, static_cast<float> (i_scale-1) / nr_scales_per_octave);
+  const PointCloud<PointXYZI>& input = *cloud;
+  KdTreeFLANN<PointXYZI>& tree = *tree_;
+
+  std::vector<float> scales(nr_scales_per_octave + 3);
+  for (int i_scale = 0; i_scale <= nr_scales_per_octave + 2; ++i_scale) {
+    scales[i_scale] =
+        scale * std::pow(2.0f, static_cast<float>(i_scale - 1) / nr_scales_per_octave);
   }
   Eigen::MatrixXf diff_of_gauss;
 
   pcl::Indices nn_indices;
   std::vector<float> nn_dist;
-  diff_of_gauss.resize (input.size (), scales.size () - 1);
+  diff_of_gauss.resize(input.size(), scales.size() - 1);
 
   constexpr float max_radius = 0.10f;
 
   constexpr std::size_t i_point = 500;
-  tree.radiusSearch (i_point, max_radius, nn_indices, nn_dist);
+  tree.radiusSearch(i_point, max_radius, nn_indices, nn_dist);
 
   // Are they all unique?
   std::set<pcl::index_t> unique_indices;
-  for (const auto &nn_index : nn_indices)
-  {
-    unique_indices.insert (nn_index);
+  for (const auto& nn_index : nn_indices) {
+    unique_indices.insert(nn_index);
   }
 
-  EXPECT_EQ (nn_indices.size (), unique_indices.size ());
+  EXPECT_EQ(nn_indices.size(), unique_indices.size());
 }
 
 /* ---[ */
 int
-  main (int argc, char** argv)
+main (int argc, char** argv)
 {
-  if (argc < 2)
-  {
-    std::cerr << "No test file given. Please download `cturtle.pcd` and pass its path to the test." << std::endl;
+  if (argc < 2) {
+    std::cerr << "No test file given. Please download `cturtle.pcd` and pass its path "
+                 "to the test."
+              << std::endl;
     return (-1);
   }
 
   // Load a sample point cloud
-  if (io::loadPCDFile (argv[1], *cloud_xyzi) < 0)
-  {
-    std::cerr << "Failed to read test file. Please download `cturtle.pcd` and pass its path to the test." << std::endl;
+  if (io::loadPCDFile(argv[1], *cloud_xyzi) < 0) {
+    std::cerr << "Failed to read test file. Please download `cturtle.pcd` and pass its "
+                 "path to the test."
+              << std::endl;
     return (-1);
   }
 
-  testing::InitGoogleTest (&argc, argv);
-  return (RUN_ALL_TESTS ());
+  testing::InitGoogleTest(&argc, argv);
+  return (RUN_ALL_TESTS());
 }
 /* ]--- */

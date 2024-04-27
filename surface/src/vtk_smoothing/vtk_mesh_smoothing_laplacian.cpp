@@ -41,29 +41,29 @@
 
 #include <vtkSmoothPolyDataFilter.h>
 
-
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::MeshSmoothingLaplacianVTK::performProcessing (pcl::PolygonMesh &output)
+pcl::MeshSmoothingLaplacianVTK::performProcessing(pcl::PolygonMesh& output)
 {
   // Convert from PCL mesh representation to the VTK representation
-  VTKUtils::convertToVTK (*input_mesh_, vtk_polygons_);
+  VTKUtils::convertToVTK(*input_mesh_, vtk_polygons_);
 
   // Apply the VTK algorithm
-  vtkSmartPointer<vtkSmoothPolyDataFilter> vtk_smoother = vtkSmartPointer<vtkSmoothPolyDataFilter>::New ();
-  vtk_smoother->SetInputData (vtk_polygons_);
-  vtk_smoother->SetNumberOfIterations (num_iter_);
+  vtkSmartPointer<vtkSmoothPolyDataFilter> vtk_smoother =
+      vtkSmartPointer<vtkSmoothPolyDataFilter>::New();
+  vtk_smoother->SetInputData(vtk_polygons_);
+  vtk_smoother->SetNumberOfIterations(num_iter_);
   if (convergence_ != 0.0f)
-    vtk_smoother->SetConvergence (convergence_);
-  vtk_smoother->SetRelaxationFactor (relaxation_factor_);
-  vtk_smoother->SetFeatureEdgeSmoothing (feature_edge_smoothing_);
-  vtk_smoother->SetFeatureAngle (feature_angle_);
-  vtk_smoother->SetEdgeAngle (edge_angle_);
-  vtk_smoother->SetBoundarySmoothing (boundary_smoothing_);
-  vtk_smoother->Update ();
+    vtk_smoother->SetConvergence(convergence_);
+  vtk_smoother->SetRelaxationFactor(relaxation_factor_);
+  vtk_smoother->SetFeatureEdgeSmoothing(feature_edge_smoothing_);
+  vtk_smoother->SetFeatureAngle(feature_angle_);
+  vtk_smoother->SetEdgeAngle(edge_angle_);
+  vtk_smoother->SetBoundarySmoothing(boundary_smoothing_);
+  vtk_smoother->Update();
 
-  vtk_polygons_ = vtk_smoother->GetOutput ();
+  vtk_polygons_ = vtk_smoother->GetOutput();
 
   // Convert the result back to the PCL representation
-  VTKUtils::convertToPCL (vtk_polygons_, output);
+  VTKUtils::convertToPCL(vtk_polygons_, output);
 }

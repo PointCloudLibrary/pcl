@@ -81,21 +81,22 @@ public:
    * set of remaining correspondences
    */
   inline void
-  getRemainingCorrespondences(const pcl::Correspondences& original_correspondences,
-                              pcl::Correspondences& remaining_correspondences) override;
+  getRemainingCorrespondences (
+      const pcl::Correspondences& original_correspondences,
+      pcl::Correspondences& remaining_correspondences) override;
 
   /** \brief Provide a source point cloud dataset (must contain XYZ data!)
    * \param[in] cloud a cloud containing XYZ data
    */
   virtual inline void
-  setInputSource(const PointCloudConstPtr& cloud)
+  setInputSource (const PointCloudConstPtr& cloud)
   {
     input_ = cloud;
   }
 
   /** \brief Get a pointer to the input point cloud dataset target. */
   inline PointCloudConstPtr const
-  getInputSource()
+  getInputSource ()
   {
     return (input_);
   }
@@ -104,28 +105,28 @@ public:
    * \param[in] cloud a cloud containing XYZ data
    */
   virtual inline void
-  setInputTarget(const PointCloudConstPtr& cloud)
+  setInputTarget (const PointCloudConstPtr& cloud)
   {
     target_ = cloud;
   }
 
   /** \brief Get a pointer to the input point cloud dataset target. */
   inline PointCloudConstPtr const
-  getInputTarget()
+  getInputTarget ()
   {
     return (target_);
   }
 
   /** \brief See if this rejector requires source points */
   bool
-  requiresSourcePoints() const override
+  requiresSourcePoints () const override
   {
     return (true);
   }
 
   /** \brief Blob method for setting the source cloud */
   void
-  setSourcePoints(pcl::PCLPointCloud2::ConstPtr cloud2) override
+  setSourcePoints (pcl::PCLPointCloud2::ConstPtr cloud2) override
   {
     PointCloudPtr cloud(new PointCloud);
     fromPCLPointCloud2(*cloud2, *cloud);
@@ -134,14 +135,14 @@ public:
 
   /** \brief See if this rejector requires a target cloud */
   bool
-  requiresTargetPoints() const override
+  requiresTargetPoints () const override
   {
     return (true);
   }
 
   /** \brief Method for setting the target cloud */
   void
-  setTargetPoints(pcl::PCLPointCloud2::ConstPtr cloud2) override
+  setTargetPoints (pcl::PCLPointCloud2::ConstPtr cloud2) override
   {
     PointCloudPtr cloud(new PointCloud);
     fromPCLPointCloud2(*cloud2, *cloud);
@@ -154,7 +155,7 @@ public:
    * data sets.
    */
   inline void
-  setInlierThreshold(double threshold)
+  setInlierThreshold (double threshold)
   {
     inlier_threshold_ = threshold;
   };
@@ -163,7 +164,7 @@ public:
    * \return Distance threshold in the same dimension as source and target data sets.
    */
   inline double
-  getInlierThreshold()
+  getInlierThreshold ()
   {
     return inlier_threshold_;
   };
@@ -172,7 +173,7 @@ public:
    * \param[in] max_iterations Maximum number if iterations to run
    */
   inline void
-  setMaximumIterations(int max_iterations)
+  setMaximumIterations (int max_iterations)
   {
     max_iterations_ = std::max(max_iterations, 0);
   }
@@ -181,7 +182,7 @@ public:
    * \return max_iterations Maximum number if iterations to run
    */
   inline int
-  getMaximumIterations()
+  getMaximumIterations ()
   {
     return (max_iterations_);
   }
@@ -190,7 +191,7 @@ public:
    * \return The homogeneous 4x4 transformation yielding the largest number of inliers.
    */
   inline Eigen::Matrix4f
-  getBestTransformation()
+  getBestTransformation ()
   {
     return best_transformation_;
   };
@@ -200,7 +201,7 @@ public:
    * otherwise
    */
   inline void
-  setRefineModel(const bool refine)
+  setRefineModel (const bool refine)
   {
     refine_ = refine;
   }
@@ -208,7 +209,7 @@ public:
   /** \brief Get the internal refine parameter value as set by the user using
    * setRefineModel */
   inline bool
-  getRefineModel() const
+  getRefineModel () const
   {
     return (refine_);
   }
@@ -218,7 +219,7 @@ public:
    * \param[out] inlier_indices Indices for the inliers
    */
   inline void
-  getInliersIndices(pcl::Indices& inlier_indices)
+  getInliersIndices (pcl::Indices& inlier_indices)
   {
     inlier_indices = inlier_indices_;
   }
@@ -227,14 +228,14 @@ public:
    * \param[in] s True to save inliers / False otherwise
    */
   inline void
-  setSaveInliers(bool s)
+  setSaveInliers (bool s)
   {
     save_inliers_ = s;
   }
 
   /** \brief Get whether the rejector is configured to save inliers */
   inline bool
-  getSaveInliers()
+  getSaveInliers ()
   {
     return save_inliers_;
   }
@@ -244,7 +245,7 @@ protected:
    * \param[out] correspondences the set of resultant correspondences.
    */
   inline void
-  applyRejection(pcl::Correspondences& correspondences) override
+  applyRejection (pcl::Correspondences& correspondences) override
   {
     getRemainingCorrespondences(*input_correspondences_, correspondences);
   }

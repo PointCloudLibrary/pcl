@@ -57,8 +57,8 @@ public:
    * \param[out] features the destination for the created features
    */
   virtual void
-  createRandomFeatures(const std::size_t num_of_features,
-                       std::vector<FeatureType>& features) = 0;
+  createRandomFeatures (const std::size_t num_of_features,
+                        std::vector<FeatureType>& features) = 0;
 
   /** Evaluates a feature on the specified data.
    *
@@ -71,11 +71,11 @@ public:
    *             results
    */
   virtual void
-  evaluateFeature(const FeatureType& feature,
-                  DataSet& data_set,
-                  std::vector<ExampleIndex>& examples,
-                  std::vector<float>& results,
-                  std::vector<unsigned char>& flags) const = 0;
+  evaluateFeature (const FeatureType& feature,
+                   DataSet& data_set,
+                   std::vector<ExampleIndex>& examples,
+                   std::vector<float>& results,
+                   std::vector<unsigned char>& flags) const = 0;
 
   /** Evaluates a feature on the specified data.
    *
@@ -87,11 +87,11 @@ public:
    * \param[out] flag flags that are supplied together with the results
    */
   virtual void
-  evaluateFeature(const FeatureType& feature,
-                  DataSet& data_set,
-                  const ExampleIndex& example,
-                  float& result,
-                  unsigned char& flag) const = 0;
+  evaluateFeature (const FeatureType& feature,
+                   DataSet& data_set,
+                   const ExampleIndex& example,
+                   float& result,
+                   unsigned char& flag) const = 0;
 
   /** Generates evaluation code for the specified feature and writes it to the specified
    *  stream
@@ -100,8 +100,8 @@ public:
    * \param[out] stream the destination for the code
    */
   virtual void
-  generateCodeForEvaluation(const FeatureType& feature,
-                            ::std::ostream& stream) const = 0;
+  generateCodeForEvaluation (const FeatureType& feature,
+                             ::std::ostream& stream) const = 0;
 };
 
 } // namespace pcl

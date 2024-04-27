@@ -42,307 +42,303 @@
 
 #include <Eigen/Sparse>
 
-namespace pcl
-{
+namespace pcl {
 
-  namespace segmentation
+namespace segmentation {
+
+namespace detail {
+
+/** \brief Multilabel graph segmentation using random walks.
+ *
+ * This is an implementation of the algorithm described in "Random Walks
+ * for Image Segmentation" by Leo Grady.
+ *
+ * See the documentation of the randomWalker() function for details.
+ *
+ * \author Sergey Alexandrov
+ * \ingroup segmentation
+ */
+template <class Graph, class EdgeWeightMap, class VertexColorMap>
+class RandomWalker {
+
+public:
+  using Color = typename boost::property_traits<VertexColorMap>::value_type;
+  using Weight = typename boost::property_traits<EdgeWeightMap>::value_type;
+  using GraphTraits = boost::graph_traits<Graph>;
+  using EdgeDescriptor = typename GraphTraits::edge_descriptor;
+  using VertexDescriptor = typename GraphTraits::vertex_descriptor;
+  using EdgeIterator = typename GraphTraits::edge_iterator;
+  using OutEdgeIterator = typename GraphTraits::out_edge_iterator;
+  using VertexIterator = typename GraphTraits::vertex_iterator;
+  using VertexIndexMap =
+      typename boost::property_map<Graph, boost::vertex_index_t>::type;
+  using VertexDegreeMap =
+      boost::iterator_property_map<typename std::vector<Weight>::iterator,
+                                   VertexIndexMap>;
+  using SparseMatrix = Eigen::SparseMatrix<Weight>;
+  using Matrix = Eigen::Matrix<Weight, Eigen::Dynamic, Eigen::Dynamic>;
+  using Vector = Eigen::Matrix<Weight, Eigen::Dynamic, 1>;
+
+  RandomWalker(Graph& g, EdgeWeightMap weights, VertexColorMap colors)
+  : g_(g)
+  , weight_map_(weights)
+  , color_map_(colors)
+  , index_map_(boost::get(boost::vertex_index, g_))
+  , degree_storage_(boost::num_vertices(g_), 0)
+  , degree_map_(boost::make_iterator_property_map(degree_storage_.begin(), index_map_))
+  {}
+
+  bool
+  segment ()
   {
-
-    namespace detail
-    {
-
-      /** \brief Multilabel graph segmentation using random walks.
-        *
-        * This is an implementation of the algorithm described in "Random Walks
-        * for Image Segmentation" by Leo Grady.
-        *
-        * See the documentation of the randomWalker() function for details.
-        *
-        * \author Sergey Alexandrov
-        * \ingroup segmentation
-        */
-      template <class Graph, class EdgeWeightMap, class VertexColorMap>
-      class RandomWalker
-      {
-
-        public:
-
-          using Color = typename boost::property_traits<VertexColorMap>::value_type;
-          using Weight = typename boost::property_traits<EdgeWeightMap>::value_type;
-          using GraphTraits = boost::graph_traits<Graph>;
-          using EdgeDescriptor = typename GraphTraits::edge_descriptor;
-          using VertexDescriptor = typename GraphTraits::vertex_descriptor;
-          using EdgeIterator = typename GraphTraits::edge_iterator;
-          using OutEdgeIterator = typename GraphTraits::out_edge_iterator;
-          using VertexIterator = typename GraphTraits::vertex_iterator;
-          using VertexIndexMap = typename boost::property_map<Graph, boost::vertex_index_t>::type;
-          using VertexDegreeMap = boost::iterator_property_map<typename std::vector<Weight>::iterator, VertexIndexMap>;
-          using SparseMatrix = Eigen::SparseMatrix<Weight>;
-          using Matrix = Eigen::Matrix<Weight, Eigen::Dynamic, Eigen::Dynamic>;
-          using Vector = Eigen::Matrix<Weight, Eigen::Dynamic, 1>;
-
-          RandomWalker (Graph& g, EdgeWeightMap weights, VertexColorMap colors)
-          : g_ (g)
-          , weight_map_ (weights)
-          , color_map_ (colors)
-          , index_map_ (boost::get (boost::vertex_index, g_))
-          , degree_storage_ (boost::num_vertices (g_), 0)
-          , degree_map_ (boost::make_iterator_property_map (degree_storage_.begin (), index_map_))
-          {
-          }
-
-          bool
-          segment ()
-          {
-            computeVertexDegrees ();
-            buildLinearSystem ();
-            return solveLinearSystem ();
-          }
-
-          void
-          computeVertexDegrees ()
-          {
-            using namespace boost;
-            EdgeIterator ei, e_end;
-            for (tie (ei, e_end) = edges (g_); ei != e_end; ++ei)
-            {
-              Weight w = weight_map_[*ei];
-              degree_map_[source (*ei, g_)] += w;
-              degree_map_[target (*ei, g_)] += w;
-            }
-          }
-
-          void
-          buildLinearSystem ()
-          {
-            using namespace boost;
-
-            using T = Eigen::Triplet<float>;
-            using Triplets = std::vector<T>;
-            Triplets L_triplets;
-            Triplets B_triplets;
-
-            VertexIterator vi, v_end;
-            for (tie (vi, v_end) = vertices (g_); vi != v_end; ++vi)
-            {
-              // If this is a labeled vertex add it to the seeds list and register its color
-              if (color_map_[*vi])
-              {
-                seeds_.push_back (*vi);
-                colors_.insert (color_map_[*vi]);
-              }
-              // Skip seeds and vertices with zero connectivity
-              if (color_map_[*vi] || std::fabs (degree_map_[*vi]) < std::numeric_limits<Weight>::epsilon ())
-                continue;
-              // Create a row in L matrix for the vertex
-              std::size_t current_row = insertInBimap (L_vertex_bimap, *vi);
-              // Add diagonal degree entry for the vertex
-              L_triplets.push_back (T (current_row, current_row, degree_map_[*vi]));
-              // Iterate over incident vertices and add entries on corresponding columns of L or B
-              OutEdgeIterator ei, e_end;
-              for (tie (ei, e_end) = out_edges (*vi, g_); ei != e_end; ++ei)
-              {
-                Weight w = weight_map_[*ei];
-                VertexDescriptor tgt = target (*ei, g_);
-                Color color = color_map_[tgt];
-                if (color)
-                {
-                  // This is a seed and will go to B matrix
-                  std::size_t column;
-                  if (B_color_bimap.right.count (color) == 0)
-                  {
-                    // This is the first time we encountered this color, create a new column in B
-                    column = insertInBimap (B_color_bimap, color);
-                  }
-                  else
-                  {
-                    column = B_color_bimap.right.at (color);
-                  }
-                  B_triplets.push_back (T (current_row, column, w));
-                }
-                else
-                {
-                  // This is a non-seed and will go to L matrix,
-                  // but only if a row for this vertex already exists
-                  if (L_vertex_bimap.right.count (tgt) && L_vertex_bimap.right.at (tgt) != current_row)
-                  {
-                    L_triplets.push_back (T (current_row, L_vertex_bimap.right.at (tgt), -w));
-                  }
-                }
-              }
-            }
-
-            std::size_t num_equations = L_vertex_bimap.size ();
-            std::size_t num_colors = B_color_bimap.size ();
-            L.resize (num_equations, num_equations);
-            B.resize (num_equations, num_colors);
-            if (!L_triplets.empty ())
-              L.setFromTriplets(L_triplets.begin(), L_triplets.end());
-            if (!B_triplets.empty ())
-              B.setFromTriplets(B_triplets.begin(), B_triplets.end());
-          }
-
-          bool solveLinearSystem()
-          {
-            X.resize (L.rows (), B.cols ());
-
-            // Nothing to solve
-            if (L.rows () == 0 || B.cols () == 0)
-              return true;
-
-            Eigen::SimplicialCholesky<SparseMatrix, Eigen::Lower> cg;
-            cg.compute (L);
-            bool succeeded = true;
-            for (Eigen::Index i = 0; i < B.cols (); ++i)
-            {
-              Vector b = B.col (i);
-              X.col (i) = cg.solve (b);
-              if (cg.info () != Eigen::Success)
-                succeeded = false;
-            }
-
-            assignColors ();
-            return succeeded;
-          }
-
-          void
-          assignColors ()
-          {
-            using namespace boost;
-            if (X.cols ())
-              for (Eigen::Index i = 0; i < X.rows (); ++i)
-              {
-                std::size_t max_column;
-                X.row (i).maxCoeff (&max_column);
-                VertexDescriptor vertex = L_vertex_bimap.left.at (i);
-                Color color = B_color_bimap.left.at (max_column);
-                color_map_[vertex] = color;
-              }
-          }
-
-          void
-          getPotentials (Matrix& potentials, std::map<Color, std::size_t>& color_to_column_map)
-          {
-            using namespace boost;
-            potentials = Matrix::Zero (num_vertices (g_), colors_.size ());
-            // Copy over rows from X
-            for (Eigen::Index i = 0; i < X.rows (); ++i)
-              potentials.row (L_vertex_bimap.left.at (i)).head (X.cols ()) = X.row (i);
-            // In rows that correspond to seeds put ones in proper columns
-            for (std::size_t i = 0; i < seeds_.size (); ++i)
-            {
-              VertexDescriptor v = seeds_[i];
-              insertInBimap (B_color_bimap, color_map_[v]);
-              potentials (seeds_[i], B_color_bimap.right.at (color_map_[seeds_[i]])) = 1;
-            }
-            // Fill in a map that associates colors with columns in potentials matrix
-            color_to_column_map.clear ();
-            for (Eigen::Index i = 0; i < potentials.cols (); ++i)
-              color_to_column_map[B_color_bimap.left.at (i)] = i;
-          }
-
-          template <typename T> static inline std::size_t
-          insertInBimap (boost::bimap<std::size_t, T>& bimap, T value)
-          {
-            if (bimap.right.count (value) != 0)
-            {
-              return bimap.right.at (value);
-            }
-            std::size_t s = bimap.size ();
-            bimap.insert (typename boost::bimap<std::size_t, T>::value_type (s, value));
-            return s;
-          }
-
-          Graph& g_;
-          EdgeWeightMap weight_map_;
-          VertexColorMap color_map_;
-          VertexIndexMap index_map_;
-
-          std::vector<VertexDescriptor> seeds_;
-          std::set<Color> colors_;
-
-          std::vector<Weight> degree_storage_;
-          VertexDegreeMap degree_map_;
-          SparseMatrix L;
-          SparseMatrix B;
-          Matrix X;
-
-          // Map vertex identifiers to the rows/columns of L and vice versa
-          boost::bimap<std::size_t, VertexDescriptor> L_vertex_bimap;
-          // Map colors to the columns of B and vice versa
-          boost::bimap<std::size_t, Color> B_color_bimap;
-
-      };
-
-    }
-
-    template <class Graph> bool
-    randomWalker (Graph& graph)
-    {
-      return randomWalker (graph,
-                           boost::get (boost::edge_weight, graph),
-                           boost::get (boost::vertex_color, graph));
-    }
-
-    template <class Graph, class EdgeWeightMap, class VertexColorMap> bool
-    randomWalker (Graph& graph,
-                  EdgeWeightMap weights,
-                  VertexColorMap colors)
-    {
-      using namespace boost;
-
-      using EdgeDescriptor = typename graph_traits<Graph>::edge_descriptor;
-      using VertexDescriptor = typename graph_traits<Graph>::vertex_descriptor;
-
-      BOOST_CONCEPT_ASSERT ((VertexListGraphConcept<Graph>));                                 // to have vertices(), num_vertices()
-      BOOST_CONCEPT_ASSERT ((EdgeListGraphConcept<Graph>));                                   // to have edges()
-      BOOST_CONCEPT_ASSERT ((IncidenceGraphConcept<Graph>));                                  // to have source(), target() and out_edges()
-      BOOST_CONCEPT_ASSERT ((ReadablePropertyMapConcept<EdgeWeightMap, EdgeDescriptor>));     // read weight-values from edges
-      BOOST_CONCEPT_ASSERT ((ReadWritePropertyMapConcept<VertexColorMap, VertexDescriptor>)); // read and write color-values from vertices
-
-      ::pcl::segmentation::detail::RandomWalker
-      <
-        Graph,
-        EdgeWeightMap,
-        VertexColorMap
-      >
-      rw (graph, weights, colors);
-      return rw.segment ();
-    }
-
-    template <class Graph, class EdgeWeightMap, class VertexColorMap> bool
-    randomWalker (Graph& graph,
-                  EdgeWeightMap weights,
-                  VertexColorMap colors,
-                  Eigen::Matrix<typename boost::property_traits<EdgeWeightMap>::value_type, Eigen::Dynamic, Eigen::Dynamic>& potentials,
-                  std::map<typename boost::property_traits<VertexColorMap>::value_type, std::size_t>& colors_to_columns_map)
-    {
-      using namespace boost;
-
-      using EdgeDescriptor = typename graph_traits<Graph>::edge_descriptor;
-      using VertexDescriptor = typename graph_traits<Graph>::vertex_descriptor;
-
-      BOOST_CONCEPT_ASSERT ((VertexListGraphConcept<Graph>));                                 // to have vertices(), num_vertices()
-      BOOST_CONCEPT_ASSERT ((EdgeListGraphConcept<Graph>));                                   // to have edges()
-      BOOST_CONCEPT_ASSERT ((IncidenceGraphConcept<Graph>));                                  // to have source(), target() and out_edges()
-      BOOST_CONCEPT_ASSERT ((ReadablePropertyMapConcept<EdgeWeightMap, EdgeDescriptor>));     // read weight-values from edges
-      BOOST_CONCEPT_ASSERT ((ReadWritePropertyMapConcept<VertexColorMap, VertexDescriptor>)); // read and write color-values from vertices
-
-      ::pcl::segmentation::detail::RandomWalker
-      <
-        Graph,
-        EdgeWeightMap,
-        VertexColorMap
-      >
-      rw (graph, weights, colors);
-      bool result = rw.segment ();
-      rw.getPotentials (potentials, colors_to_columns_map);
-      return result;
-    }
-
+    computeVertexDegrees();
+    buildLinearSystem();
+    return solveLinearSystem();
   }
 
+  void
+  computeVertexDegrees ()
+  {
+    using namespace boost;
+    EdgeIterator ei, e_end;
+    for (tie(ei, e_end) = edges(g_); ei != e_end; ++ei) {
+      Weight w = weight_map_[*ei];
+      degree_map_[source(*ei, g_)] += w;
+      degree_map_[target(*ei, g_)] += w;
+    }
+  }
+
+  void
+  buildLinearSystem ()
+  {
+    using namespace boost;
+
+    using T = Eigen::Triplet<float>;
+    using Triplets = std::vector<T>;
+    Triplets L_triplets;
+    Triplets B_triplets;
+
+    VertexIterator vi, v_end;
+    for (tie(vi, v_end) = vertices(g_); vi != v_end; ++vi) {
+      // If this is a labeled vertex add it to the seeds list and register its color
+      if (color_map_[*vi]) {
+        seeds_.push_back(*vi);
+        colors_.insert(color_map_[*vi]);
+      }
+      // Skip seeds and vertices with zero connectivity
+      if (color_map_[*vi] ||
+          std::fabs(degree_map_[*vi]) < std::numeric_limits<Weight>::epsilon())
+        continue;
+      // Create a row in L matrix for the vertex
+      std::size_t current_row = insertInBimap(L_vertex_bimap, *vi);
+      // Add diagonal degree entry for the vertex
+      L_triplets.push_back(T(current_row, current_row, degree_map_[*vi]));
+      // Iterate over incident vertices and add entries on corresponding columns of L or
+      // B
+      OutEdgeIterator ei, e_end;
+      for (tie(ei, e_end) = out_edges(*vi, g_); ei != e_end; ++ei) {
+        Weight w = weight_map_[*ei];
+        VertexDescriptor tgt = target(*ei, g_);
+        Color color = color_map_[tgt];
+        if (color) {
+          // This is a seed and will go to B matrix
+          std::size_t column;
+          if (B_color_bimap.right.count(color) == 0) {
+            // This is the first time we encountered this color, create a new column in
+            // B
+            column = insertInBimap(B_color_bimap, color);
+          }
+          else {
+            column = B_color_bimap.right.at(color);
+          }
+          B_triplets.push_back(T(current_row, column, w));
+        }
+        else {
+          // This is a non-seed and will go to L matrix,
+          // but only if a row for this vertex already exists
+          if (L_vertex_bimap.right.count(tgt) &&
+              L_vertex_bimap.right.at(tgt) != current_row) {
+            L_triplets.push_back(T(current_row, L_vertex_bimap.right.at(tgt), -w));
+          }
+        }
+      }
+    }
+
+    std::size_t num_equations = L_vertex_bimap.size();
+    std::size_t num_colors = B_color_bimap.size();
+    L.resize(num_equations, num_equations);
+    B.resize(num_equations, num_colors);
+    if (!L_triplets.empty())
+      L.setFromTriplets(L_triplets.begin(), L_triplets.end());
+    if (!B_triplets.empty())
+      B.setFromTriplets(B_triplets.begin(), B_triplets.end());
+  }
+
+  bool
+  solveLinearSystem ()
+  {
+    X.resize(L.rows(), B.cols());
+
+    // Nothing to solve
+    if (L.rows() == 0 || B.cols() == 0)
+      return true;
+
+    Eigen::SimplicialCholesky<SparseMatrix, Eigen::Lower> cg;
+    cg.compute(L);
+    bool succeeded = true;
+    for (Eigen::Index i = 0; i < B.cols(); ++i) {
+      Vector b = B.col(i);
+      X.col(i) = cg.solve(b);
+      if (cg.info() != Eigen::Success)
+        succeeded = false;
+    }
+
+    assignColors();
+    return succeeded;
+  }
+
+  void
+  assignColors ()
+  {
+    using namespace boost;
+    if (X.cols())
+      for (Eigen::Index i = 0; i < X.rows(); ++i) {
+        std::size_t max_column;
+        X.row(i).maxCoeff(&max_column);
+        VertexDescriptor vertex = L_vertex_bimap.left.at(i);
+        Color color = B_color_bimap.left.at(max_column);
+        color_map_[vertex] = color;
+      }
+  }
+
+  void
+  getPotentials (Matrix& potentials, std::map<Color, std::size_t>& color_to_column_map)
+  {
+    using namespace boost;
+    potentials = Matrix::Zero(num_vertices(g_), colors_.size());
+    // Copy over rows from X
+    for (Eigen::Index i = 0; i < X.rows(); ++i)
+      potentials.row(L_vertex_bimap.left.at(i)).head(X.cols()) = X.row(i);
+    // In rows that correspond to seeds put ones in proper columns
+    for (std::size_t i = 0; i < seeds_.size(); ++i) {
+      VertexDescriptor v = seeds_[i];
+      insertInBimap(B_color_bimap, color_map_[v]);
+      potentials(seeds_[i], B_color_bimap.right.at(color_map_[seeds_[i]])) = 1;
+    }
+    // Fill in a map that associates colors with columns in potentials matrix
+    color_to_column_map.clear();
+    for (Eigen::Index i = 0; i < potentials.cols(); ++i)
+      color_to_column_map[B_color_bimap.left.at(i)] = i;
+  }
+
+  template <typename T>
+  static inline std::size_t
+  insertInBimap (boost::bimap<std::size_t, T>& bimap, T value)
+  {
+    if (bimap.right.count(value) != 0) {
+      return bimap.right.at(value);
+    }
+    std::size_t s = bimap.size();
+    bimap.insert(typename boost::bimap<std::size_t, T>::value_type(s, value));
+    return s;
+  }
+
+  Graph& g_;
+  EdgeWeightMap weight_map_;
+  VertexColorMap color_map_;
+  VertexIndexMap index_map_;
+
+  std::vector<VertexDescriptor> seeds_;
+  std::set<Color> colors_;
+
+  std::vector<Weight> degree_storage_;
+  VertexDegreeMap degree_map_;
+  SparseMatrix L;
+  SparseMatrix B;
+  Matrix X;
+
+  // Map vertex identifiers to the rows/columns of L and vice versa
+  boost::bimap<std::size_t, VertexDescriptor> L_vertex_bimap;
+  // Map colors to the columns of B and vice versa
+  boost::bimap<std::size_t, Color> B_color_bimap;
+};
+
+} // namespace detail
+
+template <class Graph>
+bool
+randomWalker (Graph& graph)
+{
+  return randomWalker(graph,
+                      boost::get(boost::edge_weight, graph),
+                      boost::get(boost::vertex_color, graph));
 }
 
-#endif /* PCL_SEGMENTATION_IMPL_RANDOM_WALKER_HPP */
+template <class Graph, class EdgeWeightMap, class VertexColorMap>
+bool
+randomWalker (Graph& graph, EdgeWeightMap weights, VertexColorMap colors)
+{
+  using namespace boost;
 
+  using EdgeDescriptor = typename graph_traits<Graph>::edge_descriptor;
+  using VertexDescriptor = typename graph_traits<Graph>::vertex_descriptor;
+
+  BOOST_CONCEPT_ASSERT(
+      (VertexListGraphConcept<Graph>)); // to have vertices(), num_vertices()
+  BOOST_CONCEPT_ASSERT((EdgeListGraphConcept<Graph>)); // to have edges()
+  BOOST_CONCEPT_ASSERT(
+      (IncidenceGraphConcept<Graph>)); // to have source(), target() and out_edges()
+  BOOST_CONCEPT_ASSERT(
+      (ReadablePropertyMapConcept<EdgeWeightMap,
+                                  EdgeDescriptor>)); // read weight-values from edges
+  BOOST_CONCEPT_ASSERT(
+      (ReadWritePropertyMapConcept<VertexColorMap,
+                                   VertexDescriptor>)); // read and write color-values
+                                                        // from vertices
+
+  ::pcl::segmentation::detail::RandomWalker<Graph, EdgeWeightMap, VertexColorMap> rw(
+      graph, weights, colors);
+  return rw.segment();
+}
+
+template <class Graph, class EdgeWeightMap, class VertexColorMap>
+bool
+randomWalker (Graph& graph,
+              EdgeWeightMap weights,
+              VertexColorMap colors,
+              Eigen::Matrix<typename boost::property_traits<EdgeWeightMap>::value_type,
+                            Eigen::Dynamic,
+                            Eigen::Dynamic>& potentials,
+              std::map<typename boost::property_traits<VertexColorMap>::value_type,
+                       std::size_t>& colors_to_columns_map)
+{
+  using namespace boost;
+
+  using EdgeDescriptor = typename graph_traits<Graph>::edge_descriptor;
+  using VertexDescriptor = typename graph_traits<Graph>::vertex_descriptor;
+
+  BOOST_CONCEPT_ASSERT(
+      (VertexListGraphConcept<Graph>)); // to have vertices(), num_vertices()
+  BOOST_CONCEPT_ASSERT((EdgeListGraphConcept<Graph>)); // to have edges()
+  BOOST_CONCEPT_ASSERT(
+      (IncidenceGraphConcept<Graph>)); // to have source(), target() and out_edges()
+  BOOST_CONCEPT_ASSERT(
+      (ReadablePropertyMapConcept<EdgeWeightMap,
+                                  EdgeDescriptor>)); // read weight-values from edges
+  BOOST_CONCEPT_ASSERT(
+      (ReadWritePropertyMapConcept<VertexColorMap,
+                                   VertexDescriptor>)); // read and write color-values
+                                                        // from vertices
+
+  ::pcl::segmentation::detail::RandomWalker<Graph, EdgeWeightMap, VertexColorMap> rw(
+      graph, weights, colors);
+  bool result = rw.segment();
+  rw.getPotentials(potentials, colors_to_columns_map);
+  return result;
+}
+
+} // namespace segmentation
+
+} // namespace pcl
+
+#endif /* PCL_SEGMENTATION_IMPL_RANDOM_WALKER_HPP */

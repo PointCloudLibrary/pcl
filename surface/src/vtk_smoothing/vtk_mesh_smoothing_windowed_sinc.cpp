@@ -41,28 +41,28 @@
 
 #include <vtkWindowedSincPolyDataFilter.h>
 
-
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::MeshSmoothingWindowedSincVTK::performProcessing (pcl::PolygonMesh &output)
+pcl::MeshSmoothingWindowedSincVTK::performProcessing(pcl::PolygonMesh& output)
 {
   // Convert from PCL mesh representation to the VTK representation
-  VTKUtils::convertToVTK (*input_mesh_, vtk_polygons_);
+  VTKUtils::convertToVTK(*input_mesh_, vtk_polygons_);
 
   // Apply the VTK algorithm
-  vtkSmartPointer<vtkWindowedSincPolyDataFilter> vtk_smoother = vtkWindowedSincPolyDataFilter::New ();
-  vtk_smoother->SetInputData (vtk_polygons_);
-  vtk_smoother->SetNumberOfIterations (num_iter_);
-  vtk_smoother->SetPassBand (pass_band_);
-  vtk_smoother->SetNormalizeCoordinates (normalize_coordinates_);
-  vtk_smoother->SetFeatureEdgeSmoothing (feature_edge_smoothing_);
-  vtk_smoother->SetFeatureAngle (feature_angle_);
-  vtk_smoother->SetEdgeAngle (edge_angle_);
-  vtk_smoother->SetBoundarySmoothing (boundary_smoothing_);
-  vtk_smoother->Update ();
+  vtkSmartPointer<vtkWindowedSincPolyDataFilter> vtk_smoother =
+      vtkWindowedSincPolyDataFilter::New();
+  vtk_smoother->SetInputData(vtk_polygons_);
+  vtk_smoother->SetNumberOfIterations(num_iter_);
+  vtk_smoother->SetPassBand(pass_band_);
+  vtk_smoother->SetNormalizeCoordinates(normalize_coordinates_);
+  vtk_smoother->SetFeatureEdgeSmoothing(feature_edge_smoothing_);
+  vtk_smoother->SetFeatureAngle(feature_angle_);
+  vtk_smoother->SetEdgeAngle(edge_angle_);
+  vtk_smoother->SetBoundarySmoothing(boundary_smoothing_);
+  vtk_smoother->Update();
 
-  vtk_polygons_ = vtk_smoother->GetOutput ();
+  vtk_polygons_ = vtk_smoother->GetOutput();
 
   // Convert the result back to the PCL representation
-  VTKUtils::convertToPCL (vtk_polygons_, output);
+  VTKUtils::convertToPCL(vtk_polygons_, output);
 }

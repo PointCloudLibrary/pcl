@@ -40,223 +40,229 @@
 #pragma once
 
 // PCL includes
-#include <pcl/features/feature.h>
 #include <pcl/common/centroid.h>
 #include <pcl/common/intensity.h>
+#include <pcl/features/feature.h>
 
-namespace pcl
+namespace pcl {
+/** \brief Implementation of the BRISK-descriptor, based on the original code and paper
+ * reference by
+ *
+ * \par
+ * Stefan Leutenegger,Margarita Chli and Roland Siegwart,
+ * BRISK: Binary Robust Invariant Scalable Keypoints,
+ * in Proceedings of the IEEE International Conference on Computer Vision (ICCV2011).
+ *
+ * \warning The input keypoints cloud is not const, and it will be modified: keypoints
+ * for which descriptors can not be computed will be deleted from the cloud.
+ *
+ * \author Radu B. Rusu, Stefan Holzer
+ * \ingroup features
+ */
+template <typename PointInT,
+          typename PointOutT = pcl::BRISKSignature512,
+          typename KeypointT = pcl::PointWithScale,
+          typename IntensityT = pcl::common::IntensityFieldAccessor<PointInT>>
+class BRISK2DEstimation // : public Feature<PointT, KeyPointT>
 {
-  /** \brief Implementation of the BRISK-descriptor, based on the original code and paper reference by
-    * 
-    * \par
-    * Stefan Leutenegger,Margarita Chli and Roland Siegwart, 
-    * BRISK: Binary Robust Invariant Scalable Keypoints, 
-    * in Proceedings of the IEEE International Conference on Computer Vision (ICCV2011).
-    *
-    * \warning The input keypoints cloud is not const, and it will be modified: keypoints for which descriptors can not
-    * be computed will be deleted from the cloud.
-    *
-    * \author Radu B. Rusu, Stefan Holzer
-    * \ingroup features
-    */
-  template <typename PointInT, 
-            typename PointOutT  = pcl::BRISKSignature512, 
-            typename KeypointT  = pcl::PointWithScale,
-            typename IntensityT = pcl::common::IntensityFieldAccessor<PointInT> >
-  class BRISK2DEstimation// : public Feature<PointT, KeyPointT>
+public:
+  using Ptr = shared_ptr<BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>>;
+  using ConstPtr =
+      shared_ptr<const BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>>;
+
+  using PointCloudInT = pcl::PointCloud<PointInT>;
+  using PointCloudInTConstPtr = typename PointCloudInT::ConstPtr;
+
+  using KeypointPointCloudT = pcl::PointCloud<KeypointT>;
+  using KeypointPointCloudTPtr = typename KeypointPointCloudT::Ptr;
+  using KeypointPointCloudTConstPtr = typename KeypointPointCloudT::ConstPtr;
+
+  using PointCloudOutT = pcl::PointCloud<PointOutT>;
+
+  /** \brief Constructor. */
+  BRISK2DEstimation();
+
+  /** \brief Destructor. */
+  virtual ~BRISK2DEstimation();
+
+  /** \brief Determines whether rotation invariance is enabled.
+   * \param[in] enable determines whether rotation invariance is enabled.
+   */
+  inline void
+  setRotationInvariance (const bool enable)
   {
-    public:
-      using Ptr = shared_ptr<BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT> >;
-      using ConstPtr = shared_ptr<const BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT> >;
+    rotation_invariance_enabled_ = enable;
+  }
 
-      using PointCloudInT = pcl::PointCloud<PointInT>;
-      using PointCloudInTConstPtr = typename PointCloudInT::ConstPtr;
+  /** \brief Determines whether scale invariance is enabled.
+   * \param[in] enable determines whether scale invariance is enabled.
+   */
+  inline void
+  setScaleInvariance (const bool enable)
+  {
+    scale_invariance_enabled_ = enable;
+  }
 
-      using KeypointPointCloudT = pcl::PointCloud<KeypointT>;
-      using KeypointPointCloudTPtr = typename KeypointPointCloudT::Ptr;
-      using KeypointPointCloudTConstPtr = typename KeypointPointCloudT::ConstPtr;
+  /** \brief Sets the input cloud.
+   * \param[in] cloud the input cloud.
+   */
+  inline void
+  setInputCloud (const PointCloudInTConstPtr& cloud)
+  {
+    input_cloud_ = cloud;
+  }
 
-      using PointCloudOutT = pcl::PointCloud<PointOutT>;
+  /** \brief Sets the input keypoints.
+   * \param[in] keypoints the input cloud containing the keypoints.
+   */
+  inline void
+  setKeypoints (const KeypointPointCloudTPtr& keypoints)
+  {
+    // Make a copy as we will have to erase keypoints that we don't use
+    // TO DO: change this later
+    // keypoints_.reset (new KeypointPointCloudT (*keypoints));
+    keypoints_ = keypoints;
+  }
 
-      /** \brief Constructor. */
-      BRISK2DEstimation ();
+  /** \brief Computes the descriptors for the previously specified
+   * points and input data.
+   * \param[out] output descriptors the destination for the computed descriptors.
+   */
+  void
+  compute (PointCloudOutT& output);
+  // td::vector<pcl::features::brisk::BRISKDescriptor> & descriptors) const;
 
-      /** \brief Destructor. */
-      virtual ~BRISK2DEstimation ();
+protected:
+  /** \brief Call this to generate the kernel:
+   * circle of radius r (pixels), with n points;
+   * short pairings with dMax, long pairings with dMin
+   *
+   * \note This should never be called by a regular user. We use a fixed type in PCL
+   * (BRISKSignature512) and tampering with the parameters might lead to a different
+   * size descriptor which the user needs to accommodate in a new point type.
+   */
+  void
+  generateKernel (std::vector<float>& radius_list,
+                  std::vector<int>& number_list,
+                  float d_max = 5.85f,
+                  float d_min = 8.2f,
+                  std::vector<int> index_change = std::vector<int>());
 
-      /** \brief Determines whether rotation invariance is enabled.
-        * \param[in] enable determines whether rotation invariance is enabled.
-        */
-      inline void
-      setRotationInvariance (const bool enable)
-      {
-        rotation_invariance_enabled_ = enable;
-      }
+  /** \brief Compute the smoothed intensity for a given x/y position in the image. */
+  inline int
+  smoothedIntensity (const std::vector<unsigned char>& image,
+                     int image_width,
+                     int image_height,
+                     const std::vector<int>& integral_image,
+                     const float key_x,
+                     const float key_y,
+                     const unsigned int scale,
+                     const unsigned int rot,
+                     const unsigned int point) const;
 
-      /** \brief Determines whether scale invariance is enabled.
-        * \param[in] enable determines whether scale invariance is enabled.
-        */
-      inline void
-      setScaleInvariance (const bool enable)
-      {
-        scale_invariance_enabled_ = enable;
-      }
+private:
+  /** \brief ROI predicate comparator. */
+  bool
+  RoiPredicate (const float min_x,
+                const float min_y,
+                const float max_x,
+                const float max_y,
+                const KeypointT& key_pt);
 
-      /** \brief Sets the input cloud.
-        * \param[in] cloud the input cloud.
-        */
-      inline void
-      setInputCloud (const PointCloudInTConstPtr & cloud)
-      {
-        input_cloud_ = cloud;
-      }
+  /** \brief Specifies whether rotation invariance is enabled. */
+  bool rotation_invariance_enabled_{true};
 
-      /** \brief Sets the input keypoints.
-        * \param[in] keypoints the input cloud containing the keypoints.
-        */
-      inline void
-      setKeypoints (const KeypointPointCloudTPtr &keypoints)
-      {
-        // Make a copy as we will have to erase keypoints that we don't use
-        // TO DO: change this later
-        //keypoints_.reset (new KeypointPointCloudT (*keypoints));
-        keypoints_ = keypoints;
-      }
+  /** \brief Specifies whether scale invariance is enabled. */
+  bool scale_invariance_enabled_{true};
 
-      /** \brief Computes the descriptors for the previously specified 
-        * points and input data.
-        * \param[out] output descriptors the destination for the computed descriptors.
-        */
-      void
-      compute (PointCloudOutT &output);
-      //td::vector<pcl::features::brisk::BRISKDescriptor> & descriptors) const;
+  /** \brief Specifies the scale of the pattern. */
+  const float pattern_scale_{1.0f};
 
-    protected:
-      /** \brief Call this to generate the kernel:
-        * circle of radius r (pixels), with n points;
-        * short pairings with dMax, long pairings with dMin
-        *
-        * \note This should never be called by a regular user. We use a fixed type in PCL 
-        * (BRISKSignature512) and tampering with the parameters might lead to a different
-        * size descriptor which the user needs to accommodate in a new point type.
-        */
-      void
-      generateKernel (std::vector<float> &radius_list,
-                      std::vector<int> &number_list, 
-                      float d_max = 5.85f, float d_min = 8.2f,
-                      std::vector<int> index_change = std::vector<int> ());
+  /** \brief the input cloud. */
+  PointCloudInTConstPtr input_cloud_;
 
-      /** \brief Compute the smoothed intensity for a given x/y position in the image. */
-      inline int 
-      smoothedIntensity (const std::vector<unsigned char>& image,
-                         int image_width, int image_height,
-				                 const std::vector<int>& integral_image,
-                         const float key_x, const float key_y, const unsigned int scale,
-                         const unsigned int rot, const unsigned int point) const;
+  /** \brief the input keypoints. */
+  KeypointPointCloudTPtr keypoints_;
 
-    private:
-      /** \brief ROI predicate comparator. */
-      bool 
-      RoiPredicate (const float min_x, const float min_y, 
-                    const float max_x, const float max_y, const KeypointT& key_pt);
+  // TODO: set
+  float scale_range_{0.0f};
 
-      /** \brief Specifies whether rotation invariance is enabled. */
-      bool rotation_invariance_enabled_{true};
-      
-      /** \brief Specifies whether scale invariance is enabled. */
-      bool scale_invariance_enabled_{true};
-
-      /** \brief Specifies the scale of the pattern. */
-      const float pattern_scale_{1.0f};
-  
-      /** \brief the input cloud. */
-      PointCloudInTConstPtr input_cloud_;
-
-      /** \brief the input keypoints. */
-      KeypointPointCloudTPtr keypoints_;
-
-      // TODO: set
-      float scale_range_{0.0f};
-
-      // Some helper structures for the Brisk pattern representation
-      struct BriskPatternPoint
-      {
-        /** x coordinate relative to center. */
-        float x;         
-        /** x coordinate relative to center. */
-        float y;
-        /** Gaussian smoothing sigma. */
-        float sigma;
-      };
-
-      struct BriskShortPair
-      {
-        /** index of the first pattern point. */
-        unsigned int i;
-        /** index of other pattern point. */
-        unsigned int j;
-      };
-
-      struct BriskLongPair
-      {
-        /** index of the first pattern point. */
-        unsigned int i;
-        /** index of other pattern point. */
-        unsigned int j;
-        /** 1024.0/dx. */
-        int weighted_dx;
-        /** 1024.0/dy. */
-        int weighted_dy;
-      };
-
-      // pattern properties
-      /** [i][rotation][scale]. */
-      BriskPatternPoint* pattern_points_;
-      
-      /** Total number of collocation points. */
-      unsigned int points_{0u};
-      
-      /** Discretization of the rotation look-up. */
-		  const unsigned int n_rot_{1024};
-      
-      /** Lists the scaling per scale index [scale]. */
-      float* scale_list_{nullptr};
-      
-      /** Lists the total pattern size per scale index [scale]. */
-      unsigned int* size_list_{nullptr};
-      
-      /** Scales discretization. */
-      const unsigned int scales_{64};
-      
-      /** Span of sizes 40->4 Octaves - else, this needs to be adjusted... */
-      const float scalerange_{30};
-
-      // general
-      const float basic_size_{12.0};
-
-      // pairs
-      /** Number of uchars the descriptor consists of. */
-      int strings_{0};
-      /** Short pair maximum distance. */
-      float d_max_{0.0f};
-      /** Long pair maximum distance. */
-      float d_min_{0.0f};
-      /** d<_d_max. */
-      BriskShortPair* short_pairs_;
-      /** d>_d_min. */
-      BriskLongPair* long_pairs_;
-      /** Number of short pairs. */
-      unsigned int no_short_pairs_{0};
-      /** Number of long pairs. */
-      unsigned int no_long_pairs_{0};
-
-      /** \brief Intensity field accessor. */
-      IntensityT intensity_;
- 
-      /** \brief The name of the class. */
-      std::string name_;
+  // Some helper structures for the Brisk pattern representation
+  struct BriskPatternPoint {
+    /** x coordinate relative to center. */
+    float x;
+    /** x coordinate relative to center. */
+    float y;
+    /** Gaussian smoothing sigma. */
+    float sigma;
   };
 
-}
+  struct BriskShortPair {
+    /** index of the first pattern point. */
+    unsigned int i;
+    /** index of other pattern point. */
+    unsigned int j;
+  };
+
+  struct BriskLongPair {
+    /** index of the first pattern point. */
+    unsigned int i;
+    /** index of other pattern point. */
+    unsigned int j;
+    /** 1024.0/dx. */
+    int weighted_dx;
+    /** 1024.0/dy. */
+    int weighted_dy;
+  };
+
+  // pattern properties
+  /** [i][rotation][scale]. */
+  BriskPatternPoint* pattern_points_;
+
+  /** Total number of collocation points. */
+  unsigned int points_{0u};
+
+  /** Discretization of the rotation look-up. */
+  const unsigned int n_rot_{1024};
+
+  /** Lists the scaling per scale index [scale]. */
+  float* scale_list_{nullptr};
+
+  /** Lists the total pattern size per scale index [scale]. */
+  unsigned int* size_list_{nullptr};
+
+  /** Scales discretization. */
+  const unsigned int scales_{64};
+
+  /** Span of sizes 40->4 Octaves - else, this needs to be adjusted... */
+  const float scalerange_{30};
+
+  // general
+  const float basic_size_{12.0};
+
+  // pairs
+  /** Number of uchars the descriptor consists of. */
+  int strings_{0};
+  /** Short pair maximum distance. */
+  float d_max_{0.0f};
+  /** Long pair maximum distance. */
+  float d_min_{0.0f};
+  /** d<_d_max. */
+  BriskShortPair* short_pairs_;
+  /** d>_d_min. */
+  BriskLongPair* long_pairs_;
+  /** Number of short pairs. */
+  unsigned int no_short_pairs_{0};
+  /** Number of long pairs. */
+  unsigned int no_long_pairs_{0};
+
+  /** \brief Intensity field accessor. */
+  IntensityT intensity_;
+
+  /** \brief The name of the class. */
+  std::string name_;
+};
+
+} // namespace pcl
 
 #include <pcl/features/impl/brisk_2d.hpp>

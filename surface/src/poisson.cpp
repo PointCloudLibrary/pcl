@@ -36,8 +36,9 @@
  */
 
 #include <pcl/impl/instantiate.hpp>
-#include <pcl/point_types.h>
 #include <pcl/surface/impl/poisson.hpp>
+#include <pcl/point_types.h>
 
 // Instantiations of specific point types
-PCL_INSTANTIATE(Poisson, (pcl::PointNormal)(pcl::PointXYZRGBNormal)(pcl::PointXYZINormal))
+PCL_INSTANTIATE(Poisson,
+                (pcl::PointNormal)(pcl::PointXYZRGBNormal)(pcl::PointXYZINormal))

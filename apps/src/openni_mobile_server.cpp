@@ -56,8 +56,8 @@ struct PointCloudBuffers {
 };
 
 void
-CopyPointCloudToBuffers(const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr& cloud,
-                        PointCloudBuffers& cloud_buffers)
+CopyPointCloudToBuffers (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr& cloud,
+                         PointCloudBuffers& cloud_buffers)
 {
   const std::size_t nr_points = cloud->points.size();
 
@@ -114,7 +114,7 @@ public:
   }
 
   void
-  handleIncomingCloud(const CloudConstPtr& new_cloud)
+  handleIncomingCloud (const CloudConstPtr& new_cloud)
   {
     CloudPtr temp_cloud(new Cloud);
     voxel_grid_filter_.setInputCloud(new_cloud);
@@ -129,25 +129,25 @@ public:
   }
 
   PointCloudBuffers::Ptr
-  getLatestBuffers()
+  getLatestBuffers ()
   {
     std::lock_guard<std::mutex> lock(mutex_);
     return buffers_;
   }
 
   CloudPtr
-  getLatestPointCloud()
+  getLatestPointCloud ()
   {
     std::lock_guard<std::mutex> lock(mutex_);
     return filtered_cloud_;
   }
 
   void
-  run()
+  run ()
   {
     pcl::OpenNIGrabber grabber(device_id_);
     std::function<void(const CloudConstPtr&)> handler_function =
-        [this](const CloudConstPtr& cloud) { handleIncomingCloud(cloud); };
+        [this] (const CloudConstPtr& cloud) { handleIncomingCloud(cloud); };
     grabber.registerCallback(handler_function);
     grabber.start();
 
@@ -219,7 +219,7 @@ public:
 };
 
 void
-usage(char** argv)
+usage (char** argv)
 {
   std::cout << "usage: " << argv[0] << " [options]\n\n"
             << "where options are:\n"
@@ -229,7 +229,7 @@ usage(char** argv)
 }
 
 int
-main(int argc, char** argv)
+main (int argc, char** argv)
 {
   /////////////////////////////////////////////////////////////////////
   if (pcl::console::find_argument(argc, argv, "-h") != -1 ||

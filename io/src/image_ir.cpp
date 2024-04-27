@@ -35,122 +35,120 @@
  *
  */
 
-#include <pcl/pcl_config.h>
 #include <pcl/io/image_ir.h>
-
 #include <pcl/io/io_exception.h>
+#include <pcl/pcl_config.h>
 
 using pcl::io::FrameWrapper;
 using pcl::io::IOException;
 
-pcl::io::IRImage::IRImage (FrameWrapper::Ptr ir_metadata)
-  : wrapper_(std::move(ir_metadata))
-  , timestamp_(Clock::now ())
+pcl::io::IRImage::IRImage(FrameWrapper::Ptr ir_metadata)
+: wrapper_(std::move(ir_metadata)), timestamp_(Clock::now())
 {}
 
-
-pcl::io::IRImage::IRImage (FrameWrapper::Ptr ir_metadata, Timestamp time)
-  : wrapper_(std::move(ir_metadata))
-  , timestamp_(time)
+pcl::io::IRImage::IRImage(FrameWrapper::Ptr ir_metadata, Timestamp time)
+: wrapper_(std::move(ir_metadata)), timestamp_(time)
 {}
-
 
 const unsigned short*
-pcl::io::IRImage::getData ()
+pcl::io::IRImage::getData()
 {
-  return ( static_cast<const unsigned short*> (wrapper_->getData ()) );
+  return (static_cast<const unsigned short*>(wrapper_->getData()));
 }
-
 
 int
-pcl::io::IRImage::getDataSize () const
+pcl::io::IRImage::getDataSize() const
 {
-  return (wrapper_->getDataSize ());
+  return (wrapper_->getDataSize());
 }
 
-
 const FrameWrapper::Ptr
-pcl::io::IRImage::getMetaData () const
+pcl::io::IRImage::getMetaData() const
 {
   return (wrapper_);
 }
 
-
 unsigned
-pcl::io::IRImage::getWidth () const
+pcl::io::IRImage::getWidth() const
 {
-  return (wrapper_->getWidth ());
+  return (wrapper_->getWidth());
 }
 
-
 unsigned
-pcl::io::IRImage::getHeight () const
+pcl::io::IRImage::getHeight() const
 {
-  return (wrapper_->getHeight ());
+  return (wrapper_->getHeight());
 }
 
-
 unsigned
-pcl::io::IRImage::getFrameID () const
+pcl::io::IRImage::getFrameID() const
 {
-  return (wrapper_->getFrameID ());
+  return (wrapper_->getFrameID());
 }
-
 
 std::uint64_t
-pcl::io::IRImage::getTimestamp () const
+pcl::io::IRImage::getTimestamp() const
 {
-  return (wrapper_->getTimestamp ());
+  return (wrapper_->getTimestamp());
 }
 
-
 pcl::io::IRImage::Timestamp
-pcl::io::IRImage::getSystemTimestamp () const
+pcl::io::IRImage::getSystemTimestamp() const
 {
   return (timestamp_);
 }
 
-
-void pcl::io::IRImage::fillRaw (unsigned width, unsigned height, unsigned short* ir_buffer, unsigned line_step) const
+void
+pcl::io::IRImage::fillRaw(unsigned width,
+                          unsigned height,
+                          unsigned short* ir_buffer,
+                          unsigned line_step) const
 {
-  if (width > wrapper_->getWidth () || height > wrapper_->getHeight ())
-    THROW_IO_EXCEPTION ("upsampling not supported: %d x %d -> %d x %d", wrapper_->getWidth (), wrapper_->getHeight (), width, height);
+  if (width > wrapper_->getWidth() || height > wrapper_->getHeight())
+    THROW_IO_EXCEPTION("upsampling not supported: %d x %d -> %d x %d",
+                       wrapper_->getWidth(),
+                       wrapper_->getHeight(),
+                       width,
+                       height);
 
-  if (wrapper_->getWidth () % width != 0 || wrapper_->getHeight () % height != 0)
-    THROW_IO_EXCEPTION ("downsampling only supported for integer scale: %d x %d -> %d x %d", wrapper_->getWidth (), wrapper_->getHeight (), width, height);
+  if (wrapper_->getWidth() % width != 0 || wrapper_->getHeight() % height != 0)
+    THROW_IO_EXCEPTION(
+        "downsampling only supported for integer scale: %d x %d -> %d x %d",
+        wrapper_->getWidth(),
+        wrapper_->getHeight(),
+        width,
+        height);
 
   if (line_step == 0)
-    line_step = width * static_cast<unsigned> (sizeof (unsigned short));
+    line_step = width * static_cast<unsigned>(sizeof(unsigned short));
 
   // special case no sclaing, no padding => memcopy!
-  if (width == wrapper_->getWidth () && height == wrapper_->getHeight () && (line_step == width * sizeof (unsigned short)))
-  {
-    memcpy (ir_buffer, wrapper_->getData (), wrapper_->getDataSize ());
+  if (width == wrapper_->getWidth() && height == wrapper_->getHeight() &&
+      (line_step == width * sizeof(unsigned short))) {
+    memcpy(ir_buffer, wrapper_->getData(), wrapper_->getDataSize());
     return;
   }
 
   // padding skip for destination image
-  unsigned bufferSkip = line_step - width * static_cast<unsigned> (sizeof (unsigned short));
+  unsigned bufferSkip =
+      line_step - width * static_cast<unsigned>(sizeof(unsigned short));
 
   // step and padding skip for source image
-  unsigned xStep = wrapper_->getWidth () / width;
-  unsigned ySkip = (wrapper_->getHeight () / height - 1) * wrapper_->getWidth ();
+  unsigned xStep = wrapper_->getWidth() / width;
+  unsigned ySkip = (wrapper_->getHeight() / height - 1) * wrapper_->getWidth();
 
   unsigned irIdx = 0;
 
-  const auto* inputBuffer = static_cast<const unsigned short*> (wrapper_->getData ());
+  const auto* inputBuffer = static_cast<const unsigned short*>(wrapper_->getData());
 
-  for (unsigned yIdx = 0; yIdx < height; ++yIdx, irIdx += ySkip)
-  {
+  for (unsigned yIdx = 0; yIdx < height; ++yIdx, irIdx += ySkip) {
     for (unsigned xIdx = 0; xIdx < width; ++xIdx, irIdx += xStep, ++ir_buffer)
       *ir_buffer = inputBuffer[irIdx];
 
     // if we have padding
-    if (bufferSkip > 0)
-    {
-      char* cBuffer = reinterpret_cast<char*> (ir_buffer);
-      ir_buffer = reinterpret_cast<unsigned short*> (cBuffer + bufferSkip);
+    if (bufferSkip > 0) {
+      char* cBuffer = reinterpret_cast<char*>(ir_buffer);
+      ir_buffer = reinterpret_cast<unsigned short*>(cBuffer + bufferSkip);
     }
   }
 }
-

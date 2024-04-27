@@ -34,10 +34,9 @@
  *
  */
 
+#include <pcl/impl/instantiate.hpp>
 #include <pcl/keypoints/impl/harris_6d.hpp>
 #include <pcl/point_types.h>
-#include <pcl/impl/instantiate.hpp>
-
 
 // Instantiations of specific point types
-//PCL_INSTANTIATE_PRODUCT(HarrisKeypoint6D, (PCL_XYZ_POINT_TYPES));
+// PCL_INSTANTIATE_PRODUCT(HarrisKeypoint6D, (PCL_XYZ_POINT_TYPES));

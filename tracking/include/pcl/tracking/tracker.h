@@ -83,7 +83,7 @@ public:
    * <setInputCloud (), setIndices ()> using the indices in setIndices ()
    */
   void
-  compute();
+  compute ();
 
 protected:
   /** \brief The tracker name. */
@@ -94,7 +94,7 @@ protected:
 
   /** \brief Get a string representation of the name of this class. */
   inline const std::string&
-  getClassName() const
+  getClassName () const
   {
     return (tracker_name_);
   }
@@ -102,7 +102,7 @@ protected:
   /** \brief This method should get called before starting the actual
    * computation. */
   virtual bool
-  initCompute();
+  initCompute ();
 
   /** \brief Provide a pointer to a dataset to add additional information
    * to estimate the features for every point in the input dataset.  This
@@ -112,26 +112,26 @@ protected:
    * \param search a pointer to a PointCloud message
    */
   inline void
-  setSearchMethod(const SearchPtr& search)
+  setSearchMethod (const SearchPtr& search)
   {
     search_ = search;
   }
 
   /** \brief Get a pointer to the point cloud dataset. */
   inline SearchPtr
-  getSearchMethod()
+  getSearchMethod ()
   {
     return (search_);
   }
 
   /** \brief Get an instance of the result of tracking. */
   virtual StateT
-  getResult() const = 0;
+  getResult () const = 0;
 
 private:
   /** \brief Abstract tracking method. */
   virtual void
-  computeTracking() = 0;
+  computeTracking () = 0;
 
 public:
   PCL_MAKE_ALIGNED_OPERATOR_NEW

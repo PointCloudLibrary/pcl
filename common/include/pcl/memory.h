@@ -43,13 +43,13 @@
  * \ingroup common
  */
 
-#include <pcl/type_traits.h>  // for has_custom_allocator
+#include <pcl/type_traits.h> // for has_custom_allocator
 
-#include <Eigen/Core>  // for EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+#include <Eigen/Core> // for EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
-#include <memory>  // for std::allocate_shared, std::dynamic_pointer_cast, std::make_shared, std::shared_ptr, std::static_pointer_cast, std::weak_ptr
-#include <type_traits>  // for std::enable_if_t, std::false_type, std::true_type
-#include <utility>  // for std::forward
+#include <memory> // for std::allocate_shared, std::dynamic_pointer_cast, std::make_shared, std::shared_ptr, std::static_pointer_cast, std::weak_ptr
+#include <type_traits> // for std::enable_if_t, std::false_type, std::true_type
+#include <utility>     // for std::forward
 
 /**
  * \brief Macro to signal a class requires a custom allocator
@@ -60,13 +60,11 @@
  * \see pcl::has_custom_allocator, pcl::make_shared
  * \ingroup common
  */
-#define PCL_MAKE_ALIGNED_OPERATOR_NEW \
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW \
+#define PCL_MAKE_ALIGNED_OPERATOR_NEW                                                  \
+  EIGEN_MAKE_ALIGNED_OPERATOR_NEW                                                      \
   using _custom_allocator_type_trait = void;
 
-
-namespace pcl
-{
+namespace pcl {
 /**
  * \brief Force ADL for `shared_ptr`
  *
@@ -83,10 +81,12 @@ using std::shared_ptr;
  */
 using std::weak_ptr;
 
-/** ADL doesn't work until C++20 for dynamic_pointer_cast since it requires an explicit Tparam */
+/** ADL doesn't work until C++20 for dynamic_pointer_cast since it requires an explicit
+ * Tparam */
 using std::dynamic_pointer_cast;
 
-/** ADL doesn't work until C++20 for static_pointer_cast since it requires an explicit Tparam */
+/** ADL doesn't work until C++20 for static_pointer_cast since it requires an explicit
+ * Tparam */
 using std::static_pointer_cast;
 
 #ifdef DOXYGEN_ONLY
@@ -107,22 +107,26 @@ using std::static_pointer_cast;
  * \param args List of arguments with which an instance of T will be constructed
  * \return pcl::shared_ptr of an instance of type T
  */
-template<typename T, typename ... Args>
-shared_ptr<T> make_shared(Args&&... args);
+template <typename T, typename... Args>
+shared_ptr<T>
+make_shared (Args&&... args);
 
 #else
 
-template<typename T, typename ... Args>
-std::enable_if_t<has_custom_allocator<T>::value, shared_ptr<T>> make_shared(Args&&... args)
+template <typename T, typename... Args>
+std::enable_if_t<has_custom_allocator<T>::value, shared_ptr<T>>
+make_shared (Args&&... args)
 {
-  return std::allocate_shared<T>(Eigen::aligned_allocator<T>(), std::forward<Args> (args)...);
+  return std::allocate_shared<T>(Eigen::aligned_allocator<T>(),
+                                 std::forward<Args>(args)...);
 }
 
-template<typename T, typename ... Args>
-std::enable_if_t<!has_custom_allocator<T>::value, shared_ptr<T>> make_shared(Args&&... args)
+template <typename T, typename... Args>
+std::enable_if_t<!has_custom_allocator<T>::value, shared_ptr<T>>
+make_shared (Args&&... args)
 {
-  return std::make_shared<T>(std::forward<Args> (args)...);
+  return std::make_shared<T>(std::forward<Args>(args)...);
 }
 
 #endif
-}
+} // namespace pcl

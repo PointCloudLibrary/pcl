@@ -77,14 +77,14 @@ public:
    * \param[in] p warp parameters
    */
   virtual void
-  setParam(const VectorX& p) = 0;
+  setParam (const VectorX& p) = 0;
 
   /** \brief Warp a point given a transformation matrix
    * \param[in] pnt_in the point to warp (transform)
    * \param[out] pnt_out the warped (transformed) point
    */
   inline void
-  warpPoint(const PointSourceT& pnt_in, PointSourceT& pnt_out) const
+  warpPoint (const PointSourceT& pnt_in, PointSourceT& pnt_out) const
   {
     pnt_out.x = static_cast<float>(
         transform_matrix_(0, 0) * pnt_in.x + transform_matrix_(0, 1) * pnt_in.y +
@@ -106,7 +106,7 @@ public:
    * \param[out] pnt_out the warped (transformed) point
    */
   inline void
-  warpPoint(const PointSourceT& pnt_in, Vector4& pnt_out) const
+  warpPoint (const PointSourceT& pnt_in, Vector4& pnt_out) const
   {
     pnt_out[0] = static_cast<Scalar>(
         transform_matrix_(0, 0) * pnt_in.x + transform_matrix_(0, 1) * pnt_in.y +
@@ -122,14 +122,14 @@ public:
 
   /** \brief Get the number of dimensions. */
   inline int
-  getDimension() const
+  getDimension () const
   {
     return (nr_dim_);
   }
 
   /** \brief Get the Transform used. */
   inline const Matrix4&
-  getTransform() const
+  getTransform () const
   {
     return (transform_matrix_);
   }

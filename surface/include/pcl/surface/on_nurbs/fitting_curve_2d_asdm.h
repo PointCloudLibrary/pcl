@@ -31,83 +31,91 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * 
+ *
  *
  */
 
 #pragma once
 
-#include <pcl/pcl_exports.h>
-#include <pcl/surface/on_nurbs/nurbs_tools.h>
+#include <pcl/surface/on_nurbs/fitting_curve_2d_apdm.h>
 #include <pcl/surface/on_nurbs/nurbs_data.h>
 #include <pcl/surface/on_nurbs/nurbs_solve.h>
-#include <pcl/surface/on_nurbs/fitting_curve_2d_apdm.h>
+#include <pcl/surface/on_nurbs/nurbs_tools.h>
+#include <pcl/pcl_exports.h>
 
-namespace pcl
-{
-  namespace on_nurbs
-  {
+namespace pcl {
+namespace on_nurbs {
 
-    /** \brief Fitting a 2D B-Spline curve to 2D point-clouds using asymmetric squared-distance-minimization
-      *  Based on paper: TODO
-      * \author Thomas Mörwald
-      * \ingroup surface
-      */
-    class PCL_EXPORTS FittingCurve2dASDM : public FittingCurve2dAPDM
-    {
-      public:
-        /** \brief Constructor initializing B-Spline curve using initNurbsCurve2D(...).
-          * \param[in] order the polynomial order of the B-Spline curve.
-          * \param[in] data pointer to the 2D point-cloud data to be fit.
-          */
-        FittingCurve2dASDM (int order, NurbsDataCurve2d *data);
+/** \brief Fitting a 2D B-Spline curve to 2D point-clouds using asymmetric
+ * squared-distance-minimization Based on paper: TODO \author Thomas Mörwald \ingroup
+ * surface
+ */
+class PCL_EXPORTS FittingCurve2dASDM : public FittingCurve2dAPDM {
+public:
+  /** \brief Constructor initializing B-Spline curve using initNurbsCurve2D(...).
+   * \param[in] order the polynomial order of the B-Spline curve.
+   * \param[in] data pointer to the 2D point-cloud data to be fit.
+   */
+  FittingCurve2dASDM(int order, NurbsDataCurve2d* data);
 
-        /** \brief Constructor initializing with the B-Spline curve given in argument 2.
-          * \param[in] data pointer to the 2D point-cloud data to be fit.
-          * \param[in] nc B-Spline curve used for fitting.
-          */
-        FittingCurve2dASDM (NurbsDataCurve2d *data, const ON_NurbsCurve &nc);
+  /** \brief Constructor initializing with the B-Spline curve given in argument 2.
+   * \param[in] data pointer to the 2D point-cloud data to be fit.
+   * \param[in] nc B-Spline curve used for fitting.
+   */
+  FittingCurve2dASDM(NurbsDataCurve2d* data, const ON_NurbsCurve& nc);
 
-        /** \brief Assemble the system of equations for fitting
-          * - for large point-clouds this is time consuming.
-          * - should be done once before refinement to initialize the starting points for point inversion. 
-          */
-        void
-        assemble (const Parameter &parameter) override;
+  /** \brief Assemble the system of equations for fitting
+   * - for large point-clouds this is time consuming.
+   * - should be done once before refinement to initialize the starting points for point
+   * inversion.
+   */
+  void
+  assemble (const Parameter& parameter) override;
 
-        /** \brief Solve system of equations using Eigen or UmfPack (can be defined in on_nurbs.cmake),
-          * and updates B-Spline curve if a solution can be obtained.
-          */
-        double
-        solve (double damp = 1.0) override;
+  /** \brief Solve system of equations using Eigen or UmfPack (can be defined in
+   * on_nurbs.cmake), and updates B-Spline curve if a solution can be obtained.
+   */
+  double
+  solve (double damp = 1.0) override;
 
-        /** \brief Update curve according to the current system of equations.
-          * \param[in] damp damping factor from one iteration to the other.
-          */
-        double
-        updateCurve (double damp) override;
+  /** \brief Update curve according to the current system of equations.
+   * \param[in] damp damping factor from one iteration to the other.
+   */
+  double
+  updateCurve (double damp) override;
 
-      protected:
+protected:
+  /** \brief Add minimization constraint: point-to-surface distance
+   * (squared-distance-minimization). */
+  virtual void
+  addPointConstraint (const double& param,
+                      const Eigen::Vector2d& point,
+                      const Eigen::Vector2d& normal,
+                      const Eigen::Vector2d& tangent,
+                      double rho,
+                      double d,
+                      double weight,
+                      unsigned& row);
 
-        /** \brief Add minimization constraint: point-to-surface distance (squared-distance-minimization). */
-        virtual void
-        addPointConstraint (const double &param, const Eigen::Vector2d &point, const Eigen::Vector2d &normal,
-                            const Eigen::Vector2d &tangent, double rho, double d, double weight, unsigned &row);
+  /** \brief Add minimization constraint: smoothness by control point regularisation. */
+  void
+  addCageRegularisation (double weight,
+                         unsigned& row,
+                         const std::vector<double>& elements,
+                         double wConcav = 0.0) override;
 
-        /** \brief Add minimization constraint: smoothness by control point regularisation. */
-        void
-        addCageRegularisation (double weight, unsigned &row, const std::vector<double> &elements, double wConcav = 0.0) override;
+  /** \brief Assemble point-to-surface constraints. */
+  void
+  assembleInterior (double wInt, double sigma2, double rScale, unsigned& row) override;
 
-        /** \brief Assemble point-to-surface constraints. */
-        void
-        assembleInterior (double wInt, double sigma2, double rScale, unsigned &row) override;
-
-        /** \brief Assemble closest points constraints. At each midpoint of the curve elements the closest data points
-          * are computed and point-to-surface constraints are added. 
-          */
-        virtual void
-        assembleClosestPoints (const std::vector<double> &elements, double weight, double sigma2, unsigned &row);
-
-    };
-  }
-}
+  /** \brief Assemble closest points constraints. At each midpoint of the curve elements
+   * the closest data points are computed and point-to-surface constraints are added.
+   */
+  virtual void
+  assembleClosestPoints (const std::vector<double>& elements,
+                         double weight,
+                         double sigma2,
+                         unsigned& row);
+};
+} // namespace on_nurbs
+} // namespace pcl

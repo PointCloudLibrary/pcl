@@ -91,7 +91,7 @@ public:
    * \return "true" if leaf node exist; "false" otherwise
    */
   bool
-  voxelSearch(const PointT& point, Indices& point_idx_data);
+  voxelSearch (const PointT& point, Indices& point_idx_data);
 
   /** \brief Search for neighbors within a voxel at given point referenced by a point
    * index
@@ -100,7 +100,7 @@ public:
    * \return "true" if leaf node exist; "false" otherwise
    */
   bool
-  voxelSearch(uindex_t index, Indices& point_idx_data);
+  voxelSearch (uindex_t index, Indices& point_idx_data);
 
   /** \brief Search for k-nearest neighbors at the query point.
    * \param[in] cloud the point cloud data
@@ -113,11 +113,11 @@ public:
    * \return number of neighbors found
    */
   inline uindex_t
-  nearestKSearch(const PointCloud& cloud,
-                 uindex_t index,
-                 uindex_t k,
-                 Indices& k_indices,
-                 std::vector<float>& k_sqr_distances)
+  nearestKSearch (const PointCloud& cloud,
+                  uindex_t index,
+                  uindex_t k,
+                  Indices& k_indices,
+                  std::vector<float>& k_sqr_distances)
   {
     return (nearestKSearch(cloud[index], k, k_indices, k_sqr_distances));
   }
@@ -132,10 +132,10 @@ public:
    * \return number of neighbors found
    */
   uindex_t
-  nearestKSearch(const PointT& p_q,
-                 uindex_t k,
-                 Indices& k_indices,
-                 std::vector<float>& k_sqr_distances);
+  nearestKSearch (const PointT& p_q,
+                  uindex_t k,
+                  Indices& k_indices,
+                  std::vector<float>& k_sqr_distances);
 
   /** \brief Search for k-nearest neighbors at query point
    * \param[in] index index representing the query point in the dataset given by \a
@@ -149,10 +149,10 @@ public:
    * \return number of neighbors found
    */
   uindex_t
-  nearestKSearch(uindex_t index,
-                 uindex_t k,
-                 Indices& k_indices,
-                 std::vector<float>& k_sqr_distances);
+  nearestKSearch (uindex_t index,
+                  uindex_t k,
+                  Indices& k_indices,
+                  std::vector<float>& k_sqr_distances);
 
   /** \brief Search for approx. nearest neighbor at the query point.
    * \param[in] cloud the point cloud data
@@ -162,10 +162,10 @@ public:
    * \return number of neighbors found
    */
   inline void
-  approxNearestSearch(const PointCloud& cloud,
-                      uindex_t query_index,
-                      index_t& result_index,
-                      float& sqr_distance)
+  approxNearestSearch (const PointCloud& cloud,
+                       uindex_t query_index,
+                       index_t& result_index,
+                       float& sqr_distance)
   {
     return (approxNearestSearch(cloud[query_index], result_index, sqr_distance));
   }
@@ -176,7 +176,7 @@ public:
    * \param[out] sqr_distance the resultant squared distance to the neighboring point
    */
   void
-  approxNearestSearch(const PointT& p_q, index_t& result_index, float& sqr_distance);
+  approxNearestSearch (const PointT& p_q, index_t& result_index, float& sqr_distance);
 
   /** \brief Search for approx. nearest neighbor at the query point.
    * \param[in] query_index index representing the query point in the dataset given by
@@ -187,7 +187,9 @@ public:
    * \return number of neighbors found
    */
   void
-  approxNearestSearch(uindex_t query_index, index_t& result_index, float& sqr_distance);
+  approxNearestSearch (uindex_t query_index,
+                       index_t& result_index,
+                       float& sqr_distance);
 
   /** \brief Search for all neighbors of query point that are within a given radius.
    * \param[in] cloud the point cloud data
@@ -200,12 +202,12 @@ public:
    * \return number of neighbors found in radius
    */
   uindex_t
-  radiusSearch(const PointCloud& cloud,
-               uindex_t index,
-               double radius,
-               Indices& k_indices,
-               std::vector<float>& k_sqr_distances,
-               index_t max_nn = 0)
+  radiusSearch (const PointCloud& cloud,
+                uindex_t index,
+                double radius,
+                Indices& k_indices,
+                std::vector<float>& k_sqr_distances,
+                index_t max_nn = 0)
   {
     return (radiusSearch(cloud[index], radius, k_indices, k_sqr_distances, max_nn));
   }
@@ -220,11 +222,11 @@ public:
    * \return number of neighbors found in radius
    */
   uindex_t
-  radiusSearch(const PointT& p_q,
-               const double radius,
-               Indices& k_indices,
-               std::vector<float>& k_sqr_distances,
-               uindex_t max_nn = 0) const;
+  radiusSearch (const PointT& p_q,
+                const double radius,
+                Indices& k_indices,
+                std::vector<float>& k_sqr_distances,
+                uindex_t max_nn = 0) const;
 
   /** \brief Search for all neighbors of query point that are within a given radius.
    * \param[in] index index representing the query point in the dataset given by \a
@@ -238,11 +240,11 @@ public:
    * \return number of neighbors found in radius
    */
   uindex_t
-  radiusSearch(uindex_t index,
-               const double radius,
-               Indices& k_indices,
-               std::vector<float>& k_sqr_distances,
-               uindex_t max_nn = 0) const;
+  radiusSearch (uindex_t index,
+                const double radius,
+                Indices& k_indices,
+                std::vector<float>& k_sqr_distances,
+                uindex_t max_nn = 0) const;
 
   /** \brief Get a PointT vector of centers of all voxels that intersected by a ray
    * (origin, direction).
@@ -254,10 +256,10 @@ public:
    * \return number of intersected voxels
    */
   uindex_t
-  getIntersectedVoxelCenters(Eigen::Vector3f origin,
-                             Eigen::Vector3f direction,
-                             AlignedPointTVector& voxel_center_list,
-                             uindex_t max_voxel_count = 0) const;
+  getIntersectedVoxelCenters (Eigen::Vector3f origin,
+                              Eigen::Vector3f direction,
+                              AlignedPointTVector& voxel_center_list,
+                              uindex_t max_voxel_count = 0) const;
 
   /** \brief Get indices of all voxels that are intersected by a ray (origin,
    * direction).
@@ -269,10 +271,10 @@ public:
    * \return number of intersected voxels
    */
   uindex_t
-  getIntersectedVoxelIndices(Eigen::Vector3f origin,
-                             Eigen::Vector3f direction,
-                             Indices& k_indices,
-                             uindex_t max_voxel_count = 0) const;
+  getIntersectedVoxelIndices (Eigen::Vector3f origin,
+                              Eigen::Vector3f direction,
+                              Indices& k_indices,
+                              uindex_t max_voxel_count = 0) const;
 
   /** \brief Search for points within rectangular search area
    * Points exactly on the edges of the search rectangle are included.
@@ -282,9 +284,9 @@ public:
    * \return number of points found within search area
    */
   uindex_t
-  boxSearch(const Eigen::Vector3f& min_pt,
-            const Eigen::Vector3f& max_pt,
-            Indices& k_indices) const;
+  boxSearch (const Eigen::Vector3f& min_pt,
+             const Eigen::Vector3f& max_pt,
+             Indices& k_indices) const;
 
 protected:
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -368,7 +370,7 @@ protected:
    * \return squared distance between point A and point B
    */
   float
-  pointSquaredDist(const PointT& point_a, const PointT& point_b) const;
+  pointSquaredDist (const PointT& point_a, const PointT& point_b) const;
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   // Recursive search routine methods
@@ -386,14 +388,14 @@ protected:
    * \param[in] max_nn maximum of neighbors to be found
    */
   void
-  getNeighborsWithinRadiusRecursive(const PointT& point,
-                                    const double radiusSquared,
-                                    const BranchNode* node,
-                                    const OctreeKey& key,
-                                    uindex_t tree_depth,
-                                    Indices& k_indices,
-                                    std::vector<float>& k_sqr_distances,
-                                    uindex_t max_nn) const;
+  getNeighborsWithinRadiusRecursive (const PointT& point,
+                                     const double radiusSquared,
+                                     const BranchNode* node,
+                                     const OctreeKey& key,
+                                     uindex_t tree_depth,
+                                     Indices& k_indices,
+                                     std::vector<float>& k_sqr_distances,
+                                     uindex_t max_nn) const;
 
   /** \brief Recursive search method that explores the octree and finds the K nearest
    * neighbors
@@ -407,7 +409,7 @@ protected:
    * \return squared search radius based on current point candidate set found
    */
   double
-  getKNearestNeighborRecursive(
+  getKNearestNeighborRecursive (
       const PointT& point,
       uindex_t K,
       const BranchNode* node,
@@ -426,12 +428,12 @@ protected:
    * \param[out] sqr_distance squared distance to search
    */
   void
-  approxNearestSearchRecursive(const PointT& point,
-                               const BranchNode* node,
-                               const OctreeKey& key,
-                               uindex_t tree_depth,
-                               index_t& result_index,
-                               float& sqr_distance);
+  approxNearestSearchRecursive (const PointT& point,
+                                const BranchNode* node,
+                                const OctreeKey& key,
+                                uindex_t tree_depth,
+                                index_t& result_index,
+                                float& sqr_distance);
 
   /** \brief Recursively search the tree for all intersected leaf nodes and return a
    * vector of voxel centers. This algorithm is based off the paper An Efficient
@@ -452,17 +454,17 @@ protected:
    * \return number of voxels found
    */
   uindex_t
-  getIntersectedVoxelCentersRecursive(double min_x,
-                                      double min_y,
-                                      double min_z,
-                                      double max_x,
-                                      double max_y,
-                                      double max_z,
-                                      unsigned char a,
-                                      const OctreeNode* node,
-                                      const OctreeKey& key,
-                                      AlignedPointTVector& voxel_center_list,
-                                      uindex_t max_voxel_count) const;
+  getIntersectedVoxelCentersRecursive (double min_x,
+                                       double min_y,
+                                       double min_z,
+                                       double max_x,
+                                       double max_y,
+                                       double max_z,
+                                       unsigned char a,
+                                       const OctreeNode* node,
+                                       const OctreeKey& key,
+                                       AlignedPointTVector& voxel_center_list,
+                                       uindex_t max_voxel_count) const;
 
   /** \brief Recursive search method that explores the octree and finds points within a
    * rectangular search area
@@ -474,12 +476,12 @@ protected:
    * \param[out] k_indices the resultant point indices
    */
   void
-  boxSearchRecursive(const Eigen::Vector3f& min_pt,
-                     const Eigen::Vector3f& max_pt,
-                     const BranchNode* node,
-                     const OctreeKey& key,
-                     uindex_t tree_depth,
-                     Indices& k_indices) const;
+  boxSearchRecursive (const Eigen::Vector3f& min_pt,
+                      const Eigen::Vector3f& max_pt,
+                      const BranchNode* node,
+                      const OctreeKey& key,
+                      uindex_t tree_depth,
+                      Indices& k_indices) const;
 
   /** \brief Recursively search the tree for all intersected leaf nodes and return a
    * vector of indices. This algorithm is based off the paper An Efficient Parametric
@@ -499,17 +501,17 @@ protected:
    * \return number of voxels found
    */
   uindex_t
-  getIntersectedVoxelIndicesRecursive(double min_x,
-                                      double min_y,
-                                      double min_z,
-                                      double max_x,
-                                      double max_y,
-                                      double max_z,
-                                      unsigned char a,
-                                      const OctreeNode* node,
-                                      const OctreeKey& key,
-                                      Indices& k_indices,
-                                      uindex_t max_voxel_count) const;
+  getIntersectedVoxelIndicesRecursive (double min_x,
+                                       double min_y,
+                                       double min_z,
+                                       double max_x,
+                                       double max_y,
+                                       double max_z,
+                                       unsigned char a,
+                                       const OctreeNode* node,
+                                       const OctreeKey& key,
+                                       Indices& k_indices,
+                                       uindex_t max_voxel_count) const;
 
   /** \brief Initialize raytracing algorithm
    * \param[in] origin ray origin
@@ -523,15 +525,15 @@ protected:
    * \param[out] a number used for voxel child index remapping
    */
   inline void
-  initIntersectedVoxel(Eigen::Vector3f& origin,
-                       Eigen::Vector3f& direction,
-                       double& min_x,
-                       double& min_y,
-                       double& min_z,
-                       double& max_x,
-                       double& max_y,
-                       double& max_z,
-                       unsigned char& a) const
+  initIntersectedVoxel (Eigen::Vector3f& origin,
+                        Eigen::Vector3f& direction,
+                        double& min_x,
+                        double& min_y,
+                        double& min_z,
+                        double& max_x,
+                        double& max_y,
+                        double& max_z,
+                        unsigned char& a) const
   {
     // Account for division by zero when direction vector is 0.0
     constexpr float epsilon = 1e-10f;
@@ -582,12 +584,12 @@ protected:
    * \return the first child node ray will enter
    */
   inline int
-  getFirstIntersectedNode(double min_x,
-                          double min_y,
-                          double min_z,
-                          double mid_x,
-                          double mid_y,
-                          double mid_z) const
+  getFirstIntersectedNode (double min_x,
+                           double min_y,
+                           double min_z,
+                           double mid_x,
+                           double mid_y,
+                           double mid_z) const
   {
     int currNode = 0;
 
@@ -640,7 +642,7 @@ protected:
    * \return the next child node ray will enter or 8 if exiting
    */
   inline int
-  getNextIntersectedNode(double x, double y, double z, int a, int b, int c) const
+  getNextIntersectedNode (double x, double y, double z, int a, int b, int c) const
   {
     if (x < y) {
       if (x < z)

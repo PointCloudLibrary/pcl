@@ -35,161 +35,151 @@
  *
  */
 
-#include <pcl/io/io_exception.h>
-
-#include <pcl/io/depth_sense/depth_sense_grabber_impl.h>
 #include <pcl/io/depth_sense/depth_sense_device_manager.h>
+#include <pcl/io/depth_sense/depth_sense_grabber_impl.h>
+#include <pcl/io/io_exception.h>
 
 std::mutex pcl::io::depth_sense::DepthSenseDeviceManager::mutex_;
 
-pcl::io::depth_sense::DepthSenseDeviceManager::DepthSenseDeviceManager ()
+pcl::io::depth_sense::DepthSenseDeviceManager::DepthSenseDeviceManager()
 {
-  try
-  {
-    context_ = DepthSense::Context::create ("localhost");
-    depth_sense_thread_ = std::thread (&DepthSense::Context::run, &context_);
-  }
-  catch (...)
-  {
-    THROW_IO_EXCEPTION ("failed to initialize DepthSense context");
+  try {
+    context_ = DepthSense::Context::create("localhost");
+    depth_sense_thread_ = std::thread(&DepthSense::Context::run, &context_);
+  } catch (...) {
+    THROW_IO_EXCEPTION("failed to initialize DepthSense context");
   }
 }
 
-pcl::io::depth_sense::DepthSenseDeviceManager::~DepthSenseDeviceManager ()
+pcl::io::depth_sense::DepthSenseDeviceManager::~DepthSenseDeviceManager()
 {
-  try
-  {
+  try {
     context_.quit();
     depth_sense_thread_.join();
-  }
-  catch (DepthSense::InvalidOperationException& e)
-  {
+  } catch (DepthSense::InvalidOperationException& e) {
     // do nothing
   }
 }
 
 std::string
-pcl::io::depth_sense::DepthSenseDeviceManager::captureDevice (DepthSenseGrabberImpl* grabber)
+pcl::io::depth_sense::DepthSenseDeviceManager::captureDevice(
+    DepthSenseGrabberImpl* grabber)
 {
-  std::lock_guard<std::mutex> lock (mutex_);
-  std::vector<DepthSense::Device> devices = context_.getDevices ();
-  if (devices.size () == 0)
-    THROW_IO_EXCEPTION ("no connected devices");
-  for (std::size_t i = 0; i < devices.size (); ++i)
-    if (!isCaptured (devices[i].getSerialNumber ()))
-      return (captureDevice (grabber, devices[i]));
-  THROW_IO_EXCEPTION ("all connected devices are captured by other grabbers");
-  return ("");  // never reached, needed just to silence -Wreturn-type warning
+  std::lock_guard<std::mutex> lock(mutex_);
+  std::vector<DepthSense::Device> devices = context_.getDevices();
+  if (devices.size() == 0)
+    THROW_IO_EXCEPTION("no connected devices");
+  for (std::size_t i = 0; i < devices.size(); ++i)
+    if (!isCaptured(devices[i].getSerialNumber()))
+      return (captureDevice(grabber, devices[i]));
+  THROW_IO_EXCEPTION("all connected devices are captured by other grabbers");
+  return (""); // never reached, needed just to silence -Wreturn-type warning
 }
 
 std::string
-pcl::io::depth_sense::DepthSenseDeviceManager::captureDevice (DepthSenseGrabberImpl* grabber, std::size_t index)
+pcl::io::depth_sense::DepthSenseDeviceManager::captureDevice(
+    DepthSenseGrabberImpl* grabber, std::size_t index)
 {
-  std::lock_guard<std::mutex> lock (mutex_);
-  if (index >= context_.getDevices ().size ())
-    THROW_IO_EXCEPTION ("device with index %i is not connected", index + 1);
-  if (isCaptured (context_.getDevices ().at (index).getSerialNumber ()))
-    THROW_IO_EXCEPTION ("device with index %i is captured by another grabber", index);
-  return (captureDevice (grabber, context_.getDevices ().at (index)));
+  std::lock_guard<std::mutex> lock(mutex_);
+  if (index >= context_.getDevices().size())
+    THROW_IO_EXCEPTION("device with index %i is not connected", index + 1);
+  if (isCaptured(context_.getDevices().at(index).getSerialNumber()))
+    THROW_IO_EXCEPTION("device with index %i is captured by another grabber", index);
+  return (captureDevice(grabber, context_.getDevices().at(index)));
 }
 
 std::string
-pcl::io::depth_sense::DepthSenseDeviceManager::captureDevice (DepthSenseGrabberImpl* grabber, const std::string& sn)
+pcl::io::depth_sense::DepthSenseDeviceManager::captureDevice(
+    DepthSenseGrabberImpl* grabber, const std::string& sn)
 {
-  std::lock_guard<std::mutex> lock (mutex_);
-  std::vector<DepthSense::Device> devices = context_.getDevices ();
-  for (std::size_t i = 0; i < devices.size (); ++i)
-  {
-    if (devices[i].getSerialNumber () == sn)
-    {
-      if (isCaptured (sn))
-        THROW_IO_EXCEPTION ("device with serial number %s is captured by another grabber", sn.c_str ());
-      return (captureDevice (grabber, devices[i]));
+  std::lock_guard<std::mutex> lock(mutex_);
+  std::vector<DepthSense::Device> devices = context_.getDevices();
+  for (std::size_t i = 0; i < devices.size(); ++i) {
+    if (devices[i].getSerialNumber() == sn) {
+      if (isCaptured(sn))
+        THROW_IO_EXCEPTION(
+            "device with serial number %s is captured by another grabber", sn.c_str());
+      return (captureDevice(grabber, devices[i]));
     }
   }
-  THROW_IO_EXCEPTION ("device with serial number %s is not connected", sn.c_str ());
-  return ("");  // never reached, needed just to silence -Wreturn-type warning
+  THROW_IO_EXCEPTION("device with serial number %s is not connected", sn.c_str());
+  return (""); // never reached, needed just to silence -Wreturn-type warning
 }
 
 void
-pcl::io::depth_sense::DepthSenseDeviceManager::reconfigureDevice (const std::string& sn)
+pcl::io::depth_sense::DepthSenseDeviceManager::reconfigureDevice(const std::string& sn)
 {
-  std::lock_guard<std::mutex> lock (mutex_);
+  std::lock_guard<std::mutex> lock(mutex_);
   const CapturedDevice& dev = captured_devices_[sn];
-  context_.requestControl (dev.depth_node, 0);
-  dev.grabber->configureDepthNode (dev.depth_node);
-  context_.releaseControl (dev.depth_node);
-  context_.requestControl (dev.color_node, 0);
-  dev.grabber->configureColorNode (dev.color_node);
-  context_.releaseControl (dev.color_node);
+  context_.requestControl(dev.depth_node, 0);
+  dev.grabber->configureDepthNode(dev.depth_node);
+  context_.releaseControl(dev.depth_node);
+  context_.requestControl(dev.color_node, 0);
+  dev.grabber->configureColorNode(dev.color_node);
+  context_.releaseControl(dev.color_node);
 }
 
 void
-pcl::io::depth_sense::DepthSenseDeviceManager::startDevice (const std::string& sn)
+pcl::io::depth_sense::DepthSenseDeviceManager::startDevice(const std::string& sn)
 {
   const CapturedDevice& dev = captured_devices_[sn];
-  try
-  {
-    context_.registerNode (dev.depth_node);
-    context_.registerNode (dev.color_node);
-    context_.startNodes ();
-  }
-  catch (DepthSense::ArgumentException& e)
-  {
-    THROW_IO_EXCEPTION ("unable to start device %s, possibly disconnected", sn.c_str ());
+  try {
+    context_.registerNode(dev.depth_node);
+    context_.registerNode(dev.color_node);
+    context_.startNodes();
+  } catch (DepthSense::ArgumentException& e) {
+    THROW_IO_EXCEPTION("unable to start device %s, possibly disconnected", sn.c_str());
   }
 }
 
 void
-pcl::io::depth_sense::DepthSenseDeviceManager::stopDevice (const std::string& sn)
+pcl::io::depth_sense::DepthSenseDeviceManager::stopDevice(const std::string& sn)
 {
   const CapturedDevice& dev = captured_devices_[sn];
-  try
-  {
-    context_.unregisterNode (dev.depth_node);
-    context_.unregisterNode (dev.color_node);
-    if (context_.getRegisteredNodes ().size () == 0)
-      context_.stopNodes ();
-  }
-  catch (DepthSense::ArgumentException& e)
-  {
-    THROW_IO_EXCEPTION ("unable to stop device %s, possibly disconnected", sn.c_str ());
+  try {
+    context_.unregisterNode(dev.depth_node);
+    context_.unregisterNode(dev.color_node);
+    if (context_.getRegisteredNodes().size() == 0)
+      context_.stopNodes();
+  } catch (DepthSense::ArgumentException& e) {
+    THROW_IO_EXCEPTION("unable to stop device %s, possibly disconnected", sn.c_str());
   }
 }
 
 void
-pcl::io::depth_sense::DepthSenseDeviceManager::releaseDevice (const std::string& sn)
+pcl::io::depth_sense::DepthSenseDeviceManager::releaseDevice(const std::string& sn)
 {
-  std::lock_guard<std::mutex> lock (mutex_);
+  std::lock_guard<std::mutex> lock(mutex_);
   const CapturedDevice& dev = captured_devices_[sn];
-  dev.depth_node.newSampleReceivedEvent ().disconnect (dev.grabber, &DepthSenseGrabberImpl::onDepthDataReceived);
-  dev.color_node.newSampleReceivedEvent ().disconnect (dev.grabber, &DepthSenseGrabberImpl::onColorDataReceived);
-  captured_devices_.erase (sn);
+  dev.depth_node.newSampleReceivedEvent().disconnect(
+      dev.grabber, &DepthSenseGrabberImpl::onDepthDataReceived);
+  dev.color_node.newSampleReceivedEvent().disconnect(
+      dev.grabber, &DepthSenseGrabberImpl::onColorDataReceived);
+  captured_devices_.erase(sn);
 }
 
 std::string
-pcl::io::depth_sense::DepthSenseDeviceManager::captureDevice (DepthSenseGrabberImpl* grabber, DepthSense::Device device)
+pcl::io::depth_sense::DepthSenseDeviceManager::captureDevice(
+    DepthSenseGrabberImpl* grabber, DepthSense::Device device)
 {
   // This is called from public captureDevice() functions and should already be
   // under scoped lock
   CapturedDevice dev;
   dev.grabber = grabber;
-  std::vector<DepthSense::Node> nodes = device.getNodes ();
-  for (std::size_t i = 0; i < nodes.size (); ++i)
-  {
-    if (nodes[i].is<DepthSense::DepthNode> ())
-    {
-      dev.depth_node = nodes[i].as<DepthSense::DepthNode> ();
-      dev.depth_node.newSampleReceivedEvent ().connect (grabber, &DepthSenseGrabberImpl::onDepthDataReceived);
-      grabber->setCameraParameters (device.getStereoCameraParameters ());
+  std::vector<DepthSense::Node> nodes = device.getNodes();
+  for (std::size_t i = 0; i < nodes.size(); ++i) {
+    if (nodes[i].is<DepthSense::DepthNode>()) {
+      dev.depth_node = nodes[i].as<DepthSense::DepthNode>();
+      dev.depth_node.newSampleReceivedEvent().connect(
+          grabber, &DepthSenseGrabberImpl::onDepthDataReceived);
+      grabber->setCameraParameters(device.getStereoCameraParameters());
     }
-    if (nodes[i].is<DepthSense::ColorNode> ())
-    {
-      dev.color_node = nodes[i].as<DepthSense::ColorNode> ();
-      dev.color_node.newSampleReceivedEvent ().connect (grabber, &DepthSenseGrabberImpl::onColorDataReceived);
+    if (nodes[i].is<DepthSense::ColorNode>()) {
+      dev.color_node = nodes[i].as<DepthSense::ColorNode>();
+      dev.color_node.newSampleReceivedEvent().connect(
+          grabber, &DepthSenseGrabberImpl::onColorDataReceived);
     }
   }
-  captured_devices_.insert (std::make_pair (device.getSerialNumber (), dev));
-  return (device.getSerialNumber ());
+  captured_devices_.insert(std::make_pair(device.getSerialNumber(), dev));
+  return (device.getSerialNumber());
 }
-

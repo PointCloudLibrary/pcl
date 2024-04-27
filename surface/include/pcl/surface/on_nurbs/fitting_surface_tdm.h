@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * 
+ *
  *
  */
 
@@ -39,97 +39,107 @@
 
 #include <pcl/surface/on_nurbs/fitting_surface_pdm.h>
 
-namespace pcl
-{
-  namespace on_nurbs
-  {
-    /** \brief Fitting a B-Spline surface to 3D point-clouds using tangent-distance-minimization
-     *  Based on paper: TODO
-     * \author Thomas Mörwald
-     * \ingroup surface     */
-    class FittingSurfaceTDM : public FittingSurface
-    {
-    public:
+namespace pcl {
+namespace on_nurbs {
+/** \brief Fitting a B-Spline surface to 3D point-clouds using
+ * tangent-distance-minimization Based on paper: TODO \author Thomas Mörwald \ingroup
+ * surface     */
+class FittingSurfaceTDM : public FittingSurface {
+public:
+  /** \brief Parameters with TDM extensions for fitting */
+  struct ParameterTDM : public FittingSurface::Parameter {
+    double interior_tangent_weight;
+    double boundary_tangent_weight;
 
-      /** \brief Parameters with TDM extensions for fitting */
-      struct ParameterTDM : public FittingSurface::Parameter
-      {
-        double interior_tangent_weight;
-        double boundary_tangent_weight;
+    ParameterTDM(double intW = 1.0,
+                 double intS = 0.000001,
+                 double intR = 0.0,
+                 double intTW = 0.1,
+                 double bndW = 1.0,
+                 double bndS = 0.000001,
+                 double bndR = 0.0,
+                 double bndTW = 0.1,
+                 unsigned regU = 0,
+                 unsigned regV = 0)
+    : Parameter(intW, intS, intR, bndW, bndS, bndR, regU, regV)
+    , interior_tangent_weight(intTW)
+    , boundary_tangent_weight(bndTW)
+    {}
+  };
 
-        ParameterTDM (double intW = 1.0, double intS = 0.000001, double intR = 0.0, double intTW = 0.1,
-                      double bndW = 1.0, double bndS = 0.000001, double bndR = 0.0, double bndTW = 0.1,
-                      unsigned regU = 0, unsigned regV = 0) :
-          Parameter (intW, intS, intR, bndW, bndS, bndR, regU, regV), interior_tangent_weight (intTW),
-              boundary_tangent_weight (bndTW)
-        {
-        }
-      };
+  /** \brief Constructor initializing with the B-Spline surface given in argument 2.
+   * \param[in] data pointer to the 3D point-cloud data to be fit.
+   * \param[in] ns B-Spline surface used for fitting.        */
+  FittingSurfaceTDM(NurbsDataSurface* data, const ON_NurbsSurface& ns);
 
-      /** \brief Constructor initializing with the B-Spline surface given in argument 2.
-       * \param[in] data pointer to the 3D point-cloud data to be fit.
-       * \param[in] ns B-Spline surface used for fitting.        */
-      FittingSurfaceTDM (NurbsDataSurface *data, const ON_NurbsSurface &ns);
+  /** \brief Constructor initializing B-Spline surface using initNurbsPCA(...).
+   * \param[in] order the polynomial order of the B-Spline surface.
+   * \param[in] data pointer to the 2D point-cloud data to be fit.
+   * \param[in] z vector defining front face of surface.        */
+  FittingSurfaceTDM(int order,
+                    NurbsDataSurface* data,
+                    Eigen::Vector3d z = Eigen::Vector3d(0.0, 0.0, 1.0));
 
-      /** \brief Constructor initializing B-Spline surface using initNurbsPCA(...).
-       * \param[in] order the polynomial order of the B-Spline surface.
-       * \param[in] data pointer to the 2D point-cloud data to be fit.
-       * \param[in] z vector defining front face of surface.        */
-      FittingSurfaceTDM (int order, NurbsDataSurface *data, Eigen::Vector3d z = Eigen::Vector3d (0.0, 0.0, 1.0));
+  /** \brief Assemble the system of equations for fitting
+   * - for large point-clouds this is time consuming.
+   * - should be done once before refinement to initialize the starting points for point
+   * inversion. */
+  virtual void
+  assemble (ParameterTDM param = ParameterTDM());
 
-      /** \brief Assemble the system of equations for fitting
-       * - for large point-clouds this is time consuming.
-       * - should be done once before refinement to initialize the starting points for point inversion. */
-      virtual void
-      assemble (ParameterTDM param = ParameterTDM ());
+  /** \brief Solve system of equations using Eigen or UmfPack (can be defined in
+   * on_nurbs.cmake), and updates B-Spline surface if a solution can be obtained. */
+  void
+  solve (double damp = 1.0) override;
 
-      /** \brief Solve system of equations using Eigen or UmfPack (can be defined in on_nurbs.cmake),
-       *  and updates B-Spline surface if a solution can be obtained. */
-      void
-      solve (double damp = 1.0) override;
+  /** \brief Update surface according to the current system of equations.
+   *  \param[in] damp damping factor from one iteration to the other. */
+  void
+  updateSurf (double damp) override;
 
-      /** \brief Update surface according to the current system of equations.
-       *  \param[in] damp damping factor from one iteration to the other. */
-      void
-      updateSurf (double damp) override;
+protected:
+  /** \brief Assemble point-to-surface constraints for interior points. */
+  virtual void
+  assembleInterior (double wInt, double wTangent, unsigned& row);
 
-    protected:
+  /** \brief Assemble point-to-surface constraints for boundary points. */
+  virtual void
+  assembleBoundary (double wBnd, double wTangent, unsigned& row);
 
-      /** \brief Assemble point-to-surface constraints for interior points. */
-      virtual void
-      assembleInterior (double wInt, double wTangent, unsigned &row);
+  /** \brief Add minimization constraint: point-to-surface distance
+   * (point-distance-minimization). */
+  virtual void
+  addPointConstraint (const Eigen::Vector2d& params,
+                      const Eigen::Vector3d& point,
+                      const Eigen::Vector3d& normal,
+                      const Eigen::Vector3d& tu,
+                      const Eigen::Vector3d& tv,
+                      double tangent_weight,
+                      double weight,
+                      unsigned& row);
 
-      /** \brief Assemble point-to-surface constraints for boundary points. */
-      virtual void
-      assembleBoundary (double wBnd, double wTangent, unsigned &row);
+  /** \brief Add minimization constraint: interior smoothness by control point
+   * regularisation. */
+  void
+  addCageInteriorRegularisation (double weight, unsigned& row) override;
 
-      /** \brief Add minimization constraint: point-to-surface distance (point-distance-minimization). */
-      virtual void
-      addPointConstraint (const Eigen::Vector2d &params, const Eigen::Vector3d &point, const Eigen::Vector3d &normal,
-                          const Eigen::Vector3d &tu, const Eigen::Vector3d &tv, double tangent_weight, double weight,
-                          unsigned &row);
+  /** \brief Add minimization constraint: boundary smoothness by control point
+   * regularisation. */
+  void
+  addCageBoundaryRegularisation (double weight, int side, unsigned& row) override;
 
-      /** \brief Add minimization constraint: interior smoothness by control point regularisation. */
-      void
-      addCageInteriorRegularisation (double weight, unsigned &row) override;
+  /** \brief Add minimization constraint: corner smoothness by control point
+   * regularisation. */
+  void
+  addCageCornerRegularisation (double weight, unsigned& row) override;
 
-      /** \brief Add minimization constraint: boundary smoothness by control point regularisation. */
-      void
-      addCageBoundaryRegularisation (double weight, int side, unsigned &row) override;
+  void
+  addInteriorRegularisation (int, int, int, double, unsigned&) override
+  {}
+  void
+  addBoundaryRegularisation (int, int, int, double, unsigned&) override
+  {}
+};
 
-      /** \brief Add minimization constraint: corner smoothness by control point regularisation. */
-      void
-      addCageCornerRegularisation (double weight, unsigned &row) override;
-
-      void
-      addInteriorRegularisation (int, int, int, double, unsigned &) override
-      {
-      }
-      void
-      addBoundaryRegularisation (int, int, int, double, unsigned &) override
-      {
-      }
-    };
-
-  }
-}
+} // namespace on_nurbs
+} // namespace pcl

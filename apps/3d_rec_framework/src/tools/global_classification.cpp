@@ -19,7 +19,7 @@
 
 template <template <class> class DistT, typename PointT, typename FeatureT>
 void
-segmentAndClassify(
+segmentAndClassify (
     typename pcl::rec_3d_framework::GlobalNNPipeline<DistT, PointT, FeatureT>& global)
 {
   // get point cloud from the kinect, segment it and classify it
@@ -30,7 +30,7 @@ segmentAndClassify(
 
   // keyboard callback to stop getting frames and finalize application
   std::function<void(const pcl::visualization::KeyboardEvent&)> keyboard_cb =
-      [&](const pcl::visualization::KeyboardEvent& event) {
+      [&] (const pcl::visualization::KeyboardEvent& event) {
         camera.onKeyboardEvent(event);
       };
   vis.registerKeyboardCallback(keyboard_cb);
@@ -128,7 +128,7 @@ segmentAndClassify(
 }
 
 int
-main(int argc, char** argv)
+main (int argc, char** argv)
 {
 
   std::string path = "models/";

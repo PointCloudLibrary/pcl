@@ -39,23 +39,30 @@
 
 #include <pcl/cuda/point_cloud.h>
 
-namespace pcl
-{
-  namespace cuda
-  {
+namespace pcl {
+namespace cuda {
 
-    template <template <typename> class Storage, typename OutT, typename InT>
-    void createIndicesImage (OutT &dst, InT &region_mask);
+template <template <typename> class Storage, typename OutT, typename InT>
+void
+createIndicesImage (OutT& dst, InT& region_mask);
 
-    template <template <typename> class Storage, typename OutT, typename InT>
-    void createNormalsImage (const OutT &dst, InT &normals);
+template <template <typename> class Storage, typename OutT, typename InT>
+void
+createNormalsImage (const OutT& dst, InT& normals);
 
-    template <template <typename> class Storage>
-    void markInliers (const typename PointCloudAOS<Storage>::ConstPtr &input, typename Storage<int>::type &region_mask, std::vector<shared_ptr<typename Storage<int>::type> > inlier_stencils);
+template <template <typename> class Storage>
+void
+markInliers (const typename PointCloudAOS<Storage>::ConstPtr& input,
+             typename Storage<int>::type& region_mask,
+             std::vector<shared_ptr<typename Storage<int>::type>> inlier_stencils);
 
-    template <template <typename> class Storage>
-    std::vector<typename Storage<int>::type> createRegionStencils (typename Storage<int>::type &parent, typename Storage<int>::type &rank, typename Storage<int>::type &size, int min_size, float percentage);
-    
-  } // namespace
-} // namespace
+template <template <typename> class Storage>
+std::vector<typename Storage<int>::type>
+createRegionStencils (typename Storage<int>::type& parent,
+                      typename Storage<int>::type& rank,
+                      typename Storage<int>::type& size,
+                      int min_size,
+                      float percentage);
 
+} // namespace cuda
+} // namespace pcl

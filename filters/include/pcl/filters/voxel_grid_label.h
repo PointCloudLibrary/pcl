@@ -40,33 +40,28 @@
 #include <pcl/filters/voxel_grid.h>
 #include <pcl/point_types.h>
 
-namespace pcl
-{
-  /** \brief 
-    *
-    *
-    * \author Christian Potthast (potthast@usc.edu)
-    */
-  class PCL_EXPORTS VoxelGridLabel : public VoxelGrid<pcl::PointXYZRGBL>
-  {
-    public:
+namespace pcl {
+/** \brief
+ *
+ *
+ * \author Christian Potthast (potthast@usc.edu)
+ */
+class PCL_EXPORTS VoxelGridLabel : public VoxelGrid<pcl::PointXYZRGBL> {
+public:
+  using Ptr = shared_ptr<VoxelGridLabel>;
+  using ConstPtr = shared_ptr<const VoxelGridLabel>;
 
-      using Ptr = shared_ptr<VoxelGridLabel>;
-      using ConstPtr = shared_ptr<const VoxelGridLabel>;
+  /** \brief Constructor.
+   * Sets \ref leaf_size_ to 0.
+   */
+  VoxelGridLabel() = default;
 
-
-      /** \brief Constructor.
-       * Sets \ref leaf_size_ to 0.
-       */
-      VoxelGridLabel () = default;
-
-    protected:
-
-      /** \brief Filter cloud and initializes voxel structure.
-        * \param[out] output cloud containing centroids of voxels containing a sufficient number of points
-        */
-      void 
-      applyFilter (PointCloud &output) override;
-
-  };
-}
+protected:
+  /** \brief Filter cloud and initializes voxel structure.
+   * \param[out] output cloud containing centroids of voxels containing a sufficient
+   * number of points
+   */
+  void
+  applyFilter (PointCloud& output) override;
+};
+} // namespace pcl

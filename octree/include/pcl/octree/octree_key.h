@@ -109,7 +109,7 @@ public:
    *  \param[in] childIndex index of child node to be added (0-7)
    * */
   inline void
-  pushBranch(unsigned char childIndex)
+  pushBranch (unsigned char childIndex)
   {
     this->x = (this->x << 1) | (!!(childIndex & (1 << 2)));
     this->y = (this->y << 1) | (!!(childIndex & (1 << 1)));
@@ -119,7 +119,7 @@ public:
   /** \brief pop child node from octree key
    * */
   inline void
-  popBranch()
+  popBranch ()
   {
     this->x >>= 1;
     this->y >>= 1;
@@ -131,7 +131,7 @@ public:
    *  \return child node index
    * */
   inline unsigned char
-  getChildIdxWithDepthMask(uindex_t depthMask) const
+  getChildIdxWithDepthMask (uindex_t depthMask) const
   {
     return static_cast<unsigned char>(((!!(this->x & depthMask)) << 2) |
                                       ((!!(this->y & depthMask)) << 1) |

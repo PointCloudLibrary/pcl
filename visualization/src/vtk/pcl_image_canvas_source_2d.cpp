@@ -36,23 +36,21 @@
  */
 
 #include <pcl/visualization/vtk/pcl_image_canvas_source_2d.h>
+
 #include <vtkImageData.h>
 #include <vtkObjectFactory.h>
 
-namespace pcl
-{
-  namespace visualization
-  {
-    // Standard VTK macro for *New ()
-    vtkStandardNewMacro (PCLImageCanvasSource2D)
-  }
-}
+namespace pcl {
+namespace visualization {
+// Standard VTK macro for *New ()
+vtkStandardNewMacro(PCLImageCanvasSource2D)
+} // namespace visualization
+} // namespace pcl
 
 //////////////////////////////////////////////////////////////////////////////
-void 
-pcl::visualization::PCLImageCanvasSource2D::DrawImage (vtkImageData* image)
+void
+pcl::visualization::PCLImageCanvasSource2D::DrawImage(vtkImageData* image)
 {
-  this->ImageData->DeepCopy (image);
-  this->Modified ();
+  this->ImageData->DeepCopy(image);
+  this->Modified();
 }
-

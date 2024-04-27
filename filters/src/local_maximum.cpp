@@ -42,15 +42,15 @@
 #include <pcl/filters/impl/local_maximum.hpp>
 
 #ifndef PCL_NO_PRECOMPILE
-#include <pcl/point_types.h>
 #include <pcl/impl/instantiate.hpp>
+#include <pcl/point_types.h>
 
 // Instantiations of specific point types
 #ifdef PCL_ONLY_CORE_POINT_TYPES
-  PCL_INSTANTIATE(LocalMaximum, (pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGB)(pcl::PointXYZRGBA))
+PCL_INSTANTIATE(LocalMaximum,
+                (pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGB)(pcl::PointXYZRGBA))
 #else
-  PCL_INSTANTIATE(LocalMaximum, PCL_XYZ_POINT_TYPES)
+PCL_INSTANTIATE(LocalMaximum, PCL_XYZ_POINT_TYPES)
 #endif
 
-#endif    // PCL_NO_PRECOMPILE
-
+#endif // PCL_NO_PRECOMPILE

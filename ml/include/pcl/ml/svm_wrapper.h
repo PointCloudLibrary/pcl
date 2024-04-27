@@ -136,15 +136,15 @@ protected:
 
   /** Set for output printings during classification. */
   static void
-  printNull(const char*){};
+  printNull (const char*){};
 
   /** To read a line from the input file. Stored in "line_". */
   char*
-  readline(FILE* input);
+  readline (FILE* input);
 
   /** Outputs an error in file reading. */
   void
-  exitInputError(int line_num)
+  exitInputError (int line_num)
   {
     fprintf(stderr, "Wrong input format at line %d\n", line_num);
     exit(1);
@@ -152,30 +152,30 @@ protected:
 
   /** Get a string representation of the name of this class. */
   inline const std::string&
-  getClassName() const
+  getClassName () const
   {
     return (class_name_);
   }
 
   /** Convert the input format (vector of SVMData) into a readable format for libSVM. */
   void
-  adaptInputToLibSVM(std::vector<SVMData> training_set, svm_problem& prob);
+  adaptInputToLibSVM (std::vector<SVMData> training_set, svm_problem& prob);
 
   /** Convert the libSVM format (svm_problem) into a easier output format. */
   void
-  adaptLibSVMToInput(std::vector<SVMData>& training_set, svm_problem prob) const;
+  adaptLibSVMToInput (std::vector<SVMData>& training_set, svm_problem prob) const;
 
   /** Load a problem from an extern file. */
   bool
-  loadProblem(const char* filename, svm_problem& prob);
+  loadProblem (const char* filename, svm_problem& prob);
 
   /** Save the raw problem in an extern file.*/
   bool
-  saveProblem(const char* filename, bool labelled);
+  saveProblem (const char* filename, bool labelled);
 
   /** Save the problem (with normalized values) in an extern file.*/
   bool
-  saveProblemNorm(const char* filename, svm_problem prob_, bool labelled);
+  saveProblemNorm (const char* filename, svm_problem prob_, bool labelled);
 
 public:
   /**  Constructor. */
@@ -198,7 +198,7 @@ public:
 
   /** Return the labels order from the classifier model. */
   void
-  getLabel(std::vector<int>& labels)
+  getLabel (std::vector<int>& labels)
   {
     int nr_class = svm_get_nr_class(&model_);
     int* labels_ = static_cast<int*>(malloc(nr_class * sizeof(int)));
@@ -212,7 +212,7 @@ public:
 
   /** Save the classifier model in an extern file (in svmlight format). */
   void
-  saveClassifierModel(const char* filename)
+  saveClassifierModel (const char* filename)
   {
     // exit if model has no data
     if (model_.l == 0)
@@ -254,14 +254,14 @@ protected:
 
   /** To cross validate the classifier. It is automatic for probability estimate. */
   void
-  doCrossValidation();
+  doCrossValidation ();
 
   /** It extracts scaling factors from the input training_set.
    *
    *  The scaling of the training_set is a mandatory for a good training of the
    *  classifier. */
   void
-  scaleFactors(std::vector<SVMData> training_set, svm_scaling& scaling);
+  scaleFactors (std::vector<SVMData> training_set, svm_scaling& scaling);
 
 public:
   /** Constructor. */
@@ -281,42 +281,42 @@ public:
 
   /** Change default training parameters (pcl::SVMParam). */
   void
-  setParameters(SVMParam param)
+  setParameters (SVMParam param)
   {
     param_ = param;
   }
 
   /** Return the current training parameters. */
   SVMParam
-  getParameters()
+  getParameters ()
   {
     return param_;
   }
 
   /** Return the result of the training. */
   SVMModel
-  getClassifierModel()
+  getClassifierModel ()
   {
     return model_;
   }
 
   /** It adds/store the training set with labelled data. */
   void
-  setInputTrainingSet(std::vector<SVMData> training_set)
+  setInputTrainingSet (std::vector<SVMData> training_set)
   {
     training_set_.insert(training_set_.end(), training_set.begin(), training_set.end());
   }
 
   /** Return the current training set. */
   std::vector<SVMData>
-  getInputTrainingSet()
+  getInputTrainingSet ()
   {
     return training_set_;
   }
 
   /** Reset the training set. */
   void
-  resetTrainingSet()
+  resetTrainingSet ()
   {
     training_set_.clear();
   }
@@ -326,21 +326,21 @@ public:
    * \return false if fails
    */
   bool
-  trainClassifier();
+  trainClassifier ();
 
   /** Read in a problem (in svmlight format).
    *
    * \return false if fails
    */
   bool
-  loadProblem(const char* filename)
+  loadProblem (const char* filename)
   {
     return SVM::loadProblem(filename, prob_);
   };
 
   /** Set to 1 for debugging info. */
   void
-  setDebugMode(bool in)
+  setDebugMode (bool in)
   {
     debug_ = in;
 
@@ -355,7 +355,7 @@ public:
    * \return false if fails
    */
   bool
-  saveTrainingSet(const char* filename)
+  saveTrainingSet (const char* filename)
   {
     return SVM::saveProblem(filename, true);
   };
@@ -365,7 +365,7 @@ public:
    * \return false if fails
    */
   bool
-  saveNormTrainingSet(const char* filename)
+  saveNormTrainingSet (const char* filename)
   {
     return SVM::saveProblemNorm(filename, prob_, true);
   };
@@ -394,7 +394,7 @@ protected:
 
   /** It scales the input dataset using the model information. */
   void
-  scaleProblem(svm_problem& input, svm_scaling scaling);
+  scaleProblem (svm_problem& input, svm_scaling scaling);
 
 public:
   /** Constructor. */
@@ -409,7 +409,7 @@ public:
 
   /** It adds/store the training set with labelled data. */
   void
-  setInputTrainingSet(std::vector<SVMData> training_set)
+  setInputTrainingSet (std::vector<SVMData> training_set)
   {
     assert(training_set.size() > 0);
 
@@ -426,14 +426,14 @@ public:
 
   /** Return the current training set. */
   std::vector<SVMData>
-  getInputTrainingSet()
+  getInputTrainingSet ()
   {
     return training_set_;
   }
 
   /** Reset the training set. */
   void
-  resetTrainingSet()
+  resetTrainingSet ()
   {
     training_set_.clear();
   }
@@ -443,11 +443,11 @@ public:
    * \return false if fails
    */
   bool
-  loadClassifierModel(const char* filename);
+  loadClassifierModel (const char* filename);
 
   /** Get the result of the classification. */
   void
-  getClassificationResult(std::vector<std::vector<double>>& out)
+  getClassificationResult (std::vector<std::vector<double>>& out)
   {
     out.clear();
     out.insert(out.begin(), prediction_.begin(), prediction_.end());
@@ -455,11 +455,11 @@ public:
 
   /** Save the classification result in an extern file. */
   void
-  saveClassificationResult(const char* filename);
+  saveClassificationResult (const char* filename);
 
   /** Set the classifier model. */
   void
-  setClassifierModel(SVMModel model)
+  setClassifierModel (SVMModel model)
   {
     // model (inner pointers are references)
     model_ = model;
@@ -487,7 +487,7 @@ public:
    * \return false if fails
    */
   bool
-  loadClassProblem(const char* filename)
+  loadClassProblem (const char* filename)
   {
     assert(model_.l != 0);
 
@@ -504,7 +504,7 @@ public:
    * \return false if fails
    */
   bool
-  loadNormClassProblem(const char* filename)
+  loadNormClassProblem (const char* filename)
   {
     bool out = SVM::loadProblem(filename, prob_);
     SVM::adaptLibSVMToInput(training_set_, prob_);
@@ -514,7 +514,7 @@ public:
   /** Set whether the classification has to be done with the probability estimate. (The
    *  classifier model has to support it). */
   void
-  setProbabilityEstimates(bool set)
+  setProbabilityEstimates (bool set)
   {
     predict_probability_ = set;
   };
@@ -527,7 +527,7 @@ public:
    * \return false if fails
    */
   bool
-  classificationTest();
+  classificationTest ();
 
   /** Start the classification on un-labelled input dataset.
    *
@@ -536,18 +536,18 @@ public:
    * \return false if fails
    */
   bool
-  classification();
+  classification ();
 
   /** Start the classification on a single set. */
   std::vector<double>
-  classification(SVMData in);
+  classification (SVMData in);
 
   /** Save the raw classification problem in a file (in svmlight format).
    *
    * \return false if fails
    */
   bool
-  saveClassProblem(const char* filename)
+  saveClassProblem (const char* filename)
   {
     return SVM::saveProblem(filename, false);
   };
@@ -557,7 +557,7 @@ public:
    * \return false if fails
    */
   bool
-  saveNormClassProblem(const char* filename)
+  saveNormClassProblem (const char* filename)
   {
     return SVM::saveProblemNorm(filename, prob_, false);
   };

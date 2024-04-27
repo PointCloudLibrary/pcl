@@ -38,38 +38,52 @@
 #pragma once
 
 #if defined __GNUC__
-#  pragma GCC system_header 
+#pragma GCC system_header
 #endif
 
 #include <pcl/pcl_exports.h>
+
 #include <Eigen/Core>
 
-namespace pcl
-{
-  /** \brief Compute the 4-tuple representation containing the three angles and one distance between two points
-    * represented by Cartesian coordinates and normals.
-    * \note For explanations about the features, please see the literature mentioned above (the order of the
-    * features might be different).
-    * \param[in] p1 the first XYZ point
-    * \param[in] n1 the first surface normal
-    * \param[in] p2 the second XYZ point
-    * \param[in] n2 the second surface normal
-    * \param[out] f1 the first angular feature (angle between the projection of nq_idx and u)
-    * \param[out] f2 the second angular feature (angle between nq_idx and v)
-    * \param[out] f3 the third angular feature (angle between np_idx and |p_idx - q_idx|)
-    * \param[out] f4 the distance feature (p_idx - q_idx)
-    *
-    * \note For efficiency reasons, we assume that the point data passed to the method is finite.
-    * \ingroup features
-    */
-  PCL_EXPORTS bool 
-  computePairFeatures (const Eigen::Vector4f &p1, const Eigen::Vector4f &n1, 
-                       const Eigen::Vector4f &p2, const Eigen::Vector4f &n2, 
-                       float &f1, float &f2, float &f3, float &f4);
+namespace pcl {
+/** \brief Compute the 4-tuple representation containing the three angles and one
+ * distance between two points represented by Cartesian coordinates and normals. \note
+ * For explanations about the features, please see the literature mentioned above (the
+ * order of the features might be different). \param[in] p1 the first XYZ point
+ * \param[in] n1 the first surface normal
+ * \param[in] p2 the second XYZ point
+ * \param[in] n2 the second surface normal
+ * \param[out] f1 the first angular feature (angle between the projection of nq_idx and
+ * u) \param[out] f2 the second angular feature (angle between nq_idx and v) \param[out]
+ * f3 the third angular feature (angle between np_idx and |p_idx - q_idx|) \param[out]
+ * f4 the distance feature (p_idx - q_idx)
+ *
+ * \note For efficiency reasons, we assume that the point data passed to the method is
+ * finite. \ingroup features
+ */
+PCL_EXPORTS bool
+computePairFeatures (const Eigen::Vector4f& p1,
+                     const Eigen::Vector4f& n1,
+                     const Eigen::Vector4f& p2,
+                     const Eigen::Vector4f& n2,
+                     float& f1,
+                     float& f2,
+                     float& f3,
+                     float& f4);
 
-  PCL_EXPORTS bool
-  computeRGBPairFeatures (const Eigen::Vector4f &p1, const Eigen::Vector4f &n1, const Eigen::Vector4i &colors1,
-                          const Eigen::Vector4f &p2, const Eigen::Vector4f &n2, const Eigen::Vector4i &colors2,
-                          float &f1, float &f2, float &f3, float &f4, float &f5, float &f6, float &f7);
+PCL_EXPORTS bool
+computeRGBPairFeatures (const Eigen::Vector4f& p1,
+                        const Eigen::Vector4f& n1,
+                        const Eigen::Vector4i& colors1,
+                        const Eigen::Vector4f& p2,
+                        const Eigen::Vector4f& n2,
+                        const Eigen::Vector4i& colors2,
+                        float& f1,
+                        float& f2,
+                        float& f3,
+                        float& f4,
+                        float& f5,
+                        float& f6,
+                        float& f7);
 
-}
+} // namespace pcl

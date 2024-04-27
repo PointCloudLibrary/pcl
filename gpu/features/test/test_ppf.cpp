@@ -34,247 +34,255 @@
  *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
  */
 
-#include "gtest/gtest.h"
-
-#include <pcl/point_types.h>
-#include <pcl/features/ppf.h>
 #include <pcl/features/impl/ppf.hpp>
-#include <pcl/features/ppfrgb.h>
 #include <pcl/features/impl/ppfrgb.hpp>
+#include <pcl/features/ppf.h>
+#include <pcl/features/ppfrgb.h>
 #include <pcl/gpu/features/features.hpp>
+#include <pcl/point_types.h>
 
 #include "data_source.hpp"
+#include "gtest/gtest.h"
 
 using namespace pcl;
 using namespace pcl::gpu;
 
-//TEST(PCL_FeaturesGPU, DISABLED_ppf)
+// TEST(PCL_FeaturesGPU, DISABLED_ppf)
 TEST(PCL_FeaturesGPU, ppf)
-{   
-    DataSource source;
+{
+  DataSource source;
 
-    source.generateIndices();
-    source.estimateNormals();
-                   
-    std::vector<PointXYZ> normals_for_gpu(source.normals->size());    
-    std::transform(source.normals->points.begin(), source.normals->points.end(), normals_for_gpu.begin(), DataSource::Normal2PointXYZ());
-    
-    //uploading data to GPU
+  source.generateIndices();
+  source.estimateNormals();
 
-    //////////////////////////////////////////////////////////////////////////////////////////////  
+  std::vector<PointXYZ> normals_for_gpu(source.normals->size());
+  std::transform(source.normals->points.begin(),
+                 source.normals->points.end(),
+                 normals_for_gpu.begin(),
+                 DataSource::Normal2PointXYZ());
 
-    pcl::gpu::PPFEstimation::PointCloud cloud_gpu;
-    cloud_gpu.upload(source.cloud->points);
+  // uploading data to GPU
 
-    pcl::gpu::PPFEstimation::Normals normals_gpu;
-    normals_gpu.upload(normals_for_gpu);             
+  //////////////////////////////////////////////////////////////////////////////////////////////
 
-    pcl::gpu::PPFEstimation::Indices indices_gpu;
-    indices_gpu.upload(*source.indices);
+  pcl::gpu::PPFEstimation::PointCloud cloud_gpu;
+  cloud_gpu.upload(source.cloud->points);
 
-    DeviceArray<PPFSignature> ppf_features;
-    
-    gpu::PPFEstimation pph_gpu;    
-    pph_gpu.setInputCloud(cloud_gpu);
-    pph_gpu.setInputNormals(normals_gpu);
-    pph_gpu.setIndices(indices_gpu);
-    pph_gpu.compute(ppf_features);
+  pcl::gpu::PPFEstimation::Normals normals_gpu;
+  normals_gpu.upload(normals_for_gpu);
 
+  pcl::gpu::PPFEstimation::Indices indices_gpu;
+  indices_gpu.upload(*source.indices);
 
-    std::vector<PPFSignature> downloaded;
-    ppf_features.download(downloaded);
+  DeviceArray<PPFSignature> ppf_features;
 
-    pcl::PPFEstimation<PointXYZ, Normal, PPFSignature> fe;
-    fe.setInputCloud (source.cloud);
-    fe.setInputNormals (source.normals);
-    fe.setIndices(source.indices);
+  gpu::PPFEstimation pph_gpu;
+  pph_gpu.setInputCloud(cloud_gpu);
+  pph_gpu.setInputNormals(normals_gpu);
+  pph_gpu.setIndices(indices_gpu);
+  pph_gpu.compute(ppf_features);
 
-    PointCloud<PPFSignature> ppfs;
-    fe.compute (ppfs);
+  std::vector<PPFSignature> downloaded;
+  ppf_features.download(downloaded);
 
-    for(std::size_t i = 0; i < downloaded.size(); ++i)
-    {
-        PPFSignature& gpu = downloaded[i];
-        PPFSignature& cpu = ppfs[i];        
+  pcl::PPFEstimation<PointXYZ, Normal, PPFSignature> fe;
+  fe.setInputCloud(source.cloud);
+  fe.setInputNormals(source.normals);
+  fe.setIndices(source.indices);
 
-        ASSERT_NEAR(gpu.f1, cpu.f1, 0.01f);
-        ASSERT_NEAR(gpu.f2, cpu.f2, 0.01f);
-        ASSERT_NEAR(gpu.f3, cpu.f3, 0.01f);
-        ASSERT_NEAR(gpu.f4, cpu.f4, 0.01f);
-        ASSERT_NEAR(gpu.alpha_m, cpu.alpha_m, 0.01f);              
-    }
+  PointCloud<PPFSignature> ppfs;
+  fe.compute(ppfs);
+
+  for (std::size_t i = 0; i < downloaded.size(); ++i) {
+    PPFSignature& gpu = downloaded[i];
+    PPFSignature& cpu = ppfs[i];
+
+    ASSERT_NEAR(gpu.f1, cpu.f1, 0.01f);
+    ASSERT_NEAR(gpu.f2, cpu.f2, 0.01f);
+    ASSERT_NEAR(gpu.f3, cpu.f3, 0.01f);
+    ASSERT_NEAR(gpu.f4, cpu.f4, 0.01f);
+    ASSERT_NEAR(gpu.alpha_m, cpu.alpha_m, 0.01f);
+  }
 }
 
-
-//TEST(PCL_FeaturesGPU, DISABLED_ppfrgb)
+// TEST(PCL_FeaturesGPU, DISABLED_ppfrgb)
 TEST(PCL_FeaturesGPU, ppfrgb)
-{   
-    DataSource source;
-    source.generateColor();
+{
+  DataSource source;
+  source.generateColor();
 
-    source.generateIndices();
-    source.estimateNormals();
-                   
-    std::vector<PointXYZ> normals_for_gpu(source.normals->size());    
-    std::transform(source.normals->points.begin(), source.normals->points.end(), normals_for_gpu.begin(), DataSource::Normal2PointXYZ());
-    
-    //uploading data to GPU
+  source.generateIndices();
+  source.estimateNormals();
 
-    //////////////////////////////////////////////////////////////////////////////////////////////  
+  std::vector<PointXYZ> normals_for_gpu(source.normals->size());
+  std::transform(source.normals->points.begin(),
+                 source.normals->points.end(),
+                 normals_for_gpu.begin(),
+                 DataSource::Normal2PointXYZ());
 
-    pcl::gpu::PPFRGBEstimation::PointCloud cloud_gpu;
-    cloud_gpu.upload(source.cloud->points);
+  // uploading data to GPU
 
-    pcl::gpu::PPFRGBEstimation::Normals normals_gpu;
-    normals_gpu.upload(normals_for_gpu);             
+  //////////////////////////////////////////////////////////////////////////////////////////////
 
-    pcl::gpu::PPFRGBEstimation::Indices indices_gpu;
-    indices_gpu.upload(*source.indices);
+  pcl::gpu::PPFRGBEstimation::PointCloud cloud_gpu;
+  cloud_gpu.upload(source.cloud->points);
 
-    DeviceArray<PPFRGBSignature> ppf_features;
-    
-    gpu::PPFRGBEstimation pph_gpu;    
-    pph_gpu.setInputCloud(cloud_gpu);
-    pph_gpu.setInputNormals(normals_gpu);
-    pph_gpu.setIndices(indices_gpu);
-    pph_gpu.compute(ppf_features);
+  pcl::gpu::PPFRGBEstimation::Normals normals_gpu;
+  normals_gpu.upload(normals_for_gpu);
 
-    std::vector<PPFRGBSignature> downloaded;
-    ppf_features.download(downloaded);
+  pcl::gpu::PPFRGBEstimation::Indices indices_gpu;
+  indices_gpu.upload(*source.indices);
 
-    pcl::PPFRGBEstimation<PointXYZRGB, Normal, PPFRGBSignature> fe;
-    
-    PointCloud<PointXYZRGB>::Ptr cloud_XYZRGB(new PointCloud<PointXYZRGB>());
-    cloud_XYZRGB->points.clear();
-    for (const auto& p: *source.cloud)
-    {
-        int color = *(int*)&p.data[3];
-        int r =  color        & 0xFF;
-        int g = (color >>  8) & 0xFF;
-        int b = (color >> 16) & 0xFF;
+  DeviceArray<PPFRGBSignature> ppf_features;
 
-        PointXYZRGB o;
-        o.x = p.x; o.y = p.y; o.z = p.z; o.r = r; o.g = g; o.b = b;        
-        cloud_XYZRGB->points.push_back(o);
-    }
-    cloud_XYZRGB->width = cloud_XYZRGB->size();
-    cloud_XYZRGB->height = 1;
+  gpu::PPFRGBEstimation pph_gpu;
+  pph_gpu.setInputCloud(cloud_gpu);
+  pph_gpu.setInputNormals(normals_gpu);
+  pph_gpu.setIndices(indices_gpu);
+  pph_gpu.compute(ppf_features);
 
+  std::vector<PPFRGBSignature> downloaded;
+  ppf_features.download(downloaded);
 
-    fe.setInputCloud (cloud_XYZRGB);
-    fe.setInputNormals (source.normals);
-    fe.setIndices(source.indices);
+  pcl::PPFRGBEstimation<PointXYZRGB, Normal, PPFRGBSignature> fe;
 
-    PointCloud<PPFRGBSignature> ppfs;
-    fe.compute (ppfs);
+  PointCloud<PointXYZRGB>::Ptr cloud_XYZRGB(new PointCloud<PointXYZRGB>());
+  cloud_XYZRGB->points.clear();
+  for (const auto& p : *source.cloud) {
+    int color = *(int*)&p.data[3];
+    int r = color & 0xFF;
+    int g = (color >> 8) & 0xFF;
+    int b = (color >> 16) & 0xFF;
 
-    for(std::size_t i = 207025; i < downloaded.size(); ++i)
-    {
-        PPFRGBSignature& gpu = downloaded[i];
-        PPFRGBSignature& cpu = ppfs[i];        
+    PointXYZRGB o;
+    o.x = p.x;
+    o.y = p.y;
+    o.z = p.z;
+    o.r = r;
+    o.g = g;
+    o.b = b;
+    cloud_XYZRGB->points.push_back(o);
+  }
+  cloud_XYZRGB->width = cloud_XYZRGB->size();
+  cloud_XYZRGB->height = 1;
 
-        ASSERT_NEAR(gpu.f1, cpu.f1, 0.01f);
-        ASSERT_NEAR(gpu.f2, cpu.f2, 0.01f);
-        ASSERT_NEAR(gpu.f3, cpu.f3, 0.01f);
-        ASSERT_NEAR(gpu.f4, cpu.f4, 0.01f);
-        ASSERT_NEAR(gpu.alpha_m, cpu.alpha_m, 0.01f); 
+  fe.setInputCloud(cloud_XYZRGB);
+  fe.setInputNormals(source.normals);
+  fe.setIndices(source.indices);
 
-        if (std::isnan(gpu.r_ratio) || std::isnan(gpu.g_ratio) || std::isnan(gpu.b_ratio) || 
-            std::isnan(cpu.r_ratio) || std::isnan(cpu.g_ratio) || std::isnan(cpu.b_ratio))
-            continue;
-        
-        ASSERT_NEAR(gpu.r_ratio, cpu.r_ratio, 0.01f);
-        ASSERT_NEAR(gpu.g_ratio, cpu.g_ratio, 0.01f);
-        ASSERT_NEAR(gpu.b_ratio, cpu.b_ratio, 0.01f);     
-    }
+  PointCloud<PPFRGBSignature> ppfs;
+  fe.compute(ppfs);
+
+  for (std::size_t i = 207025; i < downloaded.size(); ++i) {
+    PPFRGBSignature& gpu = downloaded[i];
+    PPFRGBSignature& cpu = ppfs[i];
+
+    ASSERT_NEAR(gpu.f1, cpu.f1, 0.01f);
+    ASSERT_NEAR(gpu.f2, cpu.f2, 0.01f);
+    ASSERT_NEAR(gpu.f3, cpu.f3, 0.01f);
+    ASSERT_NEAR(gpu.f4, cpu.f4, 0.01f);
+    ASSERT_NEAR(gpu.alpha_m, cpu.alpha_m, 0.01f);
+
+    if (std::isnan(gpu.r_ratio) || std::isnan(gpu.g_ratio) || std::isnan(gpu.b_ratio) ||
+        std::isnan(cpu.r_ratio) || std::isnan(cpu.g_ratio) || std::isnan(cpu.b_ratio))
+      continue;
+
+    ASSERT_NEAR(gpu.r_ratio, cpu.r_ratio, 0.01f);
+    ASSERT_NEAR(gpu.g_ratio, cpu.g_ratio, 0.01f);
+    ASSERT_NEAR(gpu.b_ratio, cpu.b_ratio, 0.01f);
+  }
 }
 
-
-//TEST(PCL_FeaturesGPU, DISABLED_ppfrgb_region)
+// TEST(PCL_FeaturesGPU, DISABLED_ppfrgb_region)
 TEST(PCL_FeaturesGPU, ppfrgb_region)
-{   
-    DataSource source;
+{
+  DataSource source;
 
-    source.generateColor();
+  source.generateColor();
 
-    source.generateIndices();
-    source.radius/=2.f;
+  source.generateIndices();
+  source.radius /= 2.f;
 
-    source.estimateNormals();
-                   
-    std::vector<PointXYZ> normals_for_gpu(source.normals->size());    
-    std::transform(source.normals->points.begin(), source.normals->points.end(), normals_for_gpu.begin(), DataSource::Normal2PointXYZ());
-    
-    //uploading data to GPU
-    //////////////////////////////////////////////////////////////////////////////////////////////  
+  source.estimateNormals();
 
-    pcl::gpu::PPFRGBRegionEstimation::PointCloud cloud_gpu;
-    cloud_gpu.upload(source.cloud->points);
+  std::vector<PointXYZ> normals_for_gpu(source.normals->size());
+  std::transform(source.normals->points.begin(),
+                 source.normals->points.end(),
+                 normals_for_gpu.begin(),
+                 DataSource::Normal2PointXYZ());
 
-    pcl::gpu::PPFRGBRegionEstimation::Normals normals_gpu;
-    normals_gpu.upload(normals_for_gpu);             
+  // uploading data to GPU
+  //////////////////////////////////////////////////////////////////////////////////////////////
 
-    pcl::gpu::PPFRGBRegionEstimation::Indices indices_gpu;
-    indices_gpu.upload(*source.indices);
+  pcl::gpu::PPFRGBRegionEstimation::PointCloud cloud_gpu;
+  cloud_gpu.upload(source.cloud->points);
 
-    DeviceArray<PPFRGBSignature> ppf_features;
-       
-    gpu::PPFRGBRegionEstimation pph_gpu;    
-    pph_gpu.setInputCloud(cloud_gpu);
-    pph_gpu.setInputNormals(normals_gpu);
-    pph_gpu.setIndices(indices_gpu);
+  pcl::gpu::PPFRGBRegionEstimation::Normals normals_gpu;
+  normals_gpu.upload(normals_for_gpu);
 
-    pph_gpu.setRadiusSearch(source.radius, source.max_elements);
+  pcl::gpu::PPFRGBRegionEstimation::Indices indices_gpu;
+  indices_gpu.upload(*source.indices);
 
-    pph_gpu.compute(ppf_features);
+  DeviceArray<PPFRGBSignature> ppf_features;
 
-    std::vector<PPFRGBSignature> downloaded;
-    ppf_features.download(downloaded);
+  gpu::PPFRGBRegionEstimation pph_gpu;
+  pph_gpu.setInputCloud(cloud_gpu);
+  pph_gpu.setInputNormals(normals_gpu);
+  pph_gpu.setIndices(indices_gpu);
 
-    pcl::PPFRGBRegionEstimation<PointXYZRGB, Normal, PPFRGBSignature> fe;
-    
-    PointCloud<PointXYZRGB>::Ptr cloud_XYZRGB(new PointCloud<PointXYZRGB>());
-    cloud_XYZRGB->points.clear();
-    for (const auto& p: *source.cloud)
-    {
-        int color = *(int*)&p.data[3];
-        int r =  color        & 0xFF;
-        int g = (color >>  8) & 0xFF;
-        int b = (color >> 16) & 0xFF;
+  pph_gpu.setRadiusSearch(source.radius, source.max_elements);
 
-        PointXYZRGB o;
-        o.x = p.x; o.y = p.y; o.z = p.z; o.r = r; o.g = g; o.b = b;        
-        cloud_XYZRGB->points.push_back(o);
-    }
-    cloud_XYZRGB->width = cloud_XYZRGB->size();
-    cloud_XYZRGB->height = 1;
+  pph_gpu.compute(ppf_features);
 
+  std::vector<PPFRGBSignature> downloaded;
+  ppf_features.download(downloaded);
 
-    fe.setInputCloud (cloud_XYZRGB);
-    fe.setInputNormals (source.normals);
-    fe.setIndices(source.indices);
-    fe.setRadiusSearch(source.radius);
-    
-    PointCloud<PPFRGBSignature> ppfs;
-    fe.compute (ppfs);
+  pcl::PPFRGBRegionEstimation<PointXYZRGB, Normal, PPFRGBSignature> fe;
 
-    for(std::size_t i = 0; i < downloaded.size(); ++i)
-    {
-        PPFRGBSignature& gpu = downloaded[i];
-        PPFRGBSignature& cpu = ppfs[i];        
+  PointCloud<PointXYZRGB>::Ptr cloud_XYZRGB(new PointCloud<PointXYZRGB>());
+  cloud_XYZRGB->points.clear();
+  for (const auto& p : *source.cloud) {
+    int color = *(int*)&p.data[3];
+    int r = color & 0xFF;
+    int g = (color >> 8) & 0xFF;
+    int b = (color >> 16) & 0xFF;
 
-        ASSERT_NEAR(gpu.f1, cpu.f1, 0.01f);
-        ASSERT_NEAR(gpu.f2, cpu.f2, 0.01f);
-        ASSERT_NEAR(gpu.f3, cpu.f3, 0.01f);
-        ASSERT_NEAR(gpu.f4, cpu.f4, 0.01f);
-        ASSERT_NEAR(gpu.alpha_m, cpu.alpha_m, 0.01f); 
+    PointXYZRGB o;
+    o.x = p.x;
+    o.y = p.y;
+    o.z = p.z;
+    o.r = r;
+    o.g = g;
+    o.b = b;
+    cloud_XYZRGB->points.push_back(o);
+  }
+  cloud_XYZRGB->width = cloud_XYZRGB->size();
+  cloud_XYZRGB->height = 1;
 
-        if (std::isnan(gpu.r_ratio) || std::isnan(gpu.g_ratio) || std::isnan(gpu.b_ratio) || 
-            std::isnan(cpu.r_ratio) || std::isnan(cpu.g_ratio) || std::isnan(cpu.b_ratio))
-            continue;
-        
-        ASSERT_NEAR(gpu.r_ratio, cpu.r_ratio, 0.01f);
-        ASSERT_NEAR(gpu.g_ratio, cpu.g_ratio, 0.01f);
-        ASSERT_NEAR(gpu.b_ratio, cpu.b_ratio, 0.01f);     
-    }
+  fe.setInputCloud(cloud_XYZRGB);
+  fe.setInputNormals(source.normals);
+  fe.setIndices(source.indices);
+  fe.setRadiusSearch(source.radius);
+
+  PointCloud<PPFRGBSignature> ppfs;
+  fe.compute(ppfs);
+
+  for (std::size_t i = 0; i < downloaded.size(); ++i) {
+    PPFRGBSignature& gpu = downloaded[i];
+    PPFRGBSignature& cpu = ppfs[i];
+
+    ASSERT_NEAR(gpu.f1, cpu.f1, 0.01f);
+    ASSERT_NEAR(gpu.f2, cpu.f2, 0.01f);
+    ASSERT_NEAR(gpu.f3, cpu.f3, 0.01f);
+    ASSERT_NEAR(gpu.f4, cpu.f4, 0.01f);
+    ASSERT_NEAR(gpu.alpha_m, cpu.alpha_m, 0.01f);
+
+    if (std::isnan(gpu.r_ratio) || std::isnan(gpu.g_ratio) || std::isnan(gpu.b_ratio) ||
+        std::isnan(cpu.r_ratio) || std::isnan(cpu.g_ratio) || std::isnan(cpu.b_ratio))
+      continue;
+
+    ASSERT_NEAR(gpu.r_ratio, cpu.r_ratio, 0.01f);
+    ASSERT_NEAR(gpu.g_ratio, cpu.g_ratio, 0.01f);
+    ASSERT_NEAR(gpu.b_ratio, cpu.b_ratio, 0.01f);
+  }
 }

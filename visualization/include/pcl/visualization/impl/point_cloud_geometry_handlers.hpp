@@ -42,67 +42,63 @@
 
 #include <pcl/pcl_macros.h>
 
+namespace pcl {
 
-namespace pcl
-{
-
-namespace visualization
-{
+namespace visualization {
 
 template <typename PointT>
-PointCloudGeometryHandlerXYZ<PointT>::PointCloudGeometryHandlerXYZ (const PointCloudConstPtr &cloud)
-  : PointCloudGeometryHandler<PointT>::PointCloudGeometryHandler (cloud)
+PointCloudGeometryHandlerXYZ<PointT>::PointCloudGeometryHandlerXYZ(
+    const PointCloudConstPtr& cloud)
+: PointCloudGeometryHandler<PointT>::PointCloudGeometryHandler(cloud)
 {
-  field_x_idx_ = pcl::getFieldIndex<PointT> ("x", fields_);
+  field_x_idx_ = pcl::getFieldIndex<PointT>("x", fields_);
   if (field_x_idx_ == UNAVAILABLE)
     return;
-  field_y_idx_ = pcl::getFieldIndex<PointT> ("y", fields_);
+  field_y_idx_ = pcl::getFieldIndex<PointT>("y", fields_);
   if (field_y_idx_ == UNAVAILABLE)
     return;
-  field_z_idx_ = pcl::getFieldIndex<PointT> ("z", fields_);
+  field_z_idx_ = pcl::getFieldIndex<PointT>("z", fields_);
   if (field_z_idx_ == UNAVAILABLE)
     return;
   capable_ = true;
 }
 
-
-template <typename PointT> void
-PointCloudGeometryHandlerXYZ<PointT>::getGeometry (vtkSmartPointer<vtkPoints> &points) const
+template <typename PointT>
+void
+PointCloudGeometryHandlerXYZ<PointT>::getGeometry(
+    vtkSmartPointer<vtkPoints>& points) const
 {
   if (!capable_)
     return;
 
   if (!points)
-    points = vtkSmartPointer<vtkPoints>::New ();
-  points->SetDataTypeToFloat ();
+    points = vtkSmartPointer<vtkPoints>::New();
+  points->SetDataTypeToFloat();
 
-  vtkSmartPointer<vtkFloatArray> data = vtkSmartPointer<vtkFloatArray>::New ();
-  data->SetNumberOfComponents (3);
-  vtkIdType nr_points = cloud_->size ();
+  vtkSmartPointer<vtkFloatArray> data = vtkSmartPointer<vtkFloatArray>::New();
+  data->SetNumberOfComponents(3);
+  vtkIdType nr_points = cloud_->size();
 
   // Add all points
-  vtkIdType j = 0;    // true point index
-  float* pts = static_cast<float*> (malloc (nr_points * 3 * sizeof (float)));
+  vtkIdType j = 0; // true point index
+  float* pts = static_cast<float*>(malloc(nr_points * 3 * sizeof(float)));
 
   // If the dataset has no invalid values, just copy all of them
-  if (cloud_->is_dense)
-  {
-    for (vtkIdType i = 0; i < nr_points; ++i)
-    {
+  if (cloud_->is_dense) {
+    for (vtkIdType i = 0; i < nr_points; ++i) {
       pts[i * 3 + 0] = (*cloud_)[i].x;
       pts[i * 3 + 1] = (*cloud_)[i].y;
       pts[i * 3 + 2] = (*cloud_)[i].z;
     }
-    data->SetArray (&pts[0], nr_points * 3, 0);
-    points->SetData (data);
+    data->SetArray(&pts[0], nr_points * 3, 0);
+    points->SetData(data);
   }
   // Need to check for NaNs, Infs, ec
-  else
-  {
-    for (vtkIdType i = 0; i < nr_points; ++i)
-    {
+  else {
+    for (vtkIdType i = 0; i < nr_points; ++i) {
       // Check if the point is invalid
-      if (!std::isfinite ((*cloud_)[i].x) || !std::isfinite ((*cloud_)[i].y) || !std::isfinite ((*cloud_)[i].z))
+      if (!std::isfinite((*cloud_)[i].x) || !std::isfinite((*cloud_)[i].y) ||
+          !std::isfinite((*cloud_)[i].z))
         continue;
 
       pts[j * 3 + 0] = (*cloud_)[i].x;
@@ -111,57 +107,59 @@ PointCloudGeometryHandlerXYZ<PointT>::getGeometry (vtkSmartPointer<vtkPoints> &p
       // Set j and increment
       j++;
     }
-    data->SetArray (&pts[0], j * 3, 0);
-    points->SetData (data);
+    data->SetArray(&pts[0], j * 3, 0);
+    points->SetData(data);
   }
 }
 
-
 template <typename PointT>
-PointCloudGeometryHandlerSurfaceNormal<PointT>::PointCloudGeometryHandlerSurfaceNormal (const PointCloudConstPtr &cloud)
-  : PointCloudGeometryHandler<PointT>::PointCloudGeometryHandler (cloud)
+PointCloudGeometryHandlerSurfaceNormal<PointT>::PointCloudGeometryHandlerSurfaceNormal(
+    const PointCloudConstPtr& cloud)
+: PointCloudGeometryHandler<PointT>::PointCloudGeometryHandler(cloud)
 {
-  field_x_idx_ = pcl::getFieldIndex<PointT> ("normal_x", fields_);
+  field_x_idx_ = pcl::getFieldIndex<PointT>("normal_x", fields_);
   if (field_x_idx_ == UNAVAILABLE)
     return;
-  field_y_idx_ = pcl::getFieldIndex<PointT> ("normal_y", fields_);
+  field_y_idx_ = pcl::getFieldIndex<PointT>("normal_y", fields_);
   if (field_y_idx_ == UNAVAILABLE)
     return;
-  field_z_idx_ = pcl::getFieldIndex<PointT> ("normal_z", fields_);
+  field_z_idx_ = pcl::getFieldIndex<PointT>("normal_z", fields_);
   if (field_z_idx_ == UNAVAILABLE)
     return;
   capable_ = true;
 }
 
-
-template <typename PointT> void
-PointCloudGeometryHandlerSurfaceNormal<PointT>::getGeometry (vtkSmartPointer<vtkPoints> &points) const
+template <typename PointT>
+void
+PointCloudGeometryHandlerSurfaceNormal<PointT>::getGeometry(
+    vtkSmartPointer<vtkPoints>& points) const
 {
   if (!capable_)
     return;
 
   if (!points)
-    points = vtkSmartPointer<vtkPoints>::New ();
-  points->SetDataTypeToFloat ();
-  points->SetNumberOfPoints (cloud_->size ());
+    points = vtkSmartPointer<vtkPoints>::New();
+  points->SetDataTypeToFloat();
+  points->SetNumberOfPoints(cloud_->size());
 
   // Add all points
   double p[3];
-  for (vtkIdType i = 0; i < static_cast<vtkIdType> (cloud_->size ()); ++i)
-  {
+  for (vtkIdType i = 0; i < static_cast<vtkIdType>(cloud_->size()); ++i) {
     p[0] = (*cloud_)[i].normal[0];
     p[1] = (*cloud_)[i].normal[1];
     p[2] = (*cloud_)[i].normal[2];
 
-    points->SetPoint (i, p);
+    points->SetPoint(i, p);
   }
 }
 
 } // namespace visualization
 } // namespace pcl
 
-#define PCL_INSTANTIATE_PointCloudGeometryHandlerXYZ(T) template class PCL_EXPORTS pcl::visualization::PointCloudGeometryHandlerXYZ<T>;
-#define PCL_INSTANTIATE_PointCloudGeometryHandlerSurfaceNormal(T) template class PCL_EXPORTS pcl::visualization::PointCloudGeometryHandlerSurfaceNormal<T>;
+#define PCL_INSTANTIATE_PointCloudGeometryHandlerXYZ(T)                                \
+  template class PCL_EXPORTS pcl::visualization::PointCloudGeometryHandlerXYZ<T>;
+#define PCL_INSTANTIATE_PointCloudGeometryHandlerSurfaceNormal(T)                      \
+  template class PCL_EXPORTS                                                           \
+      pcl::visualization::PointCloudGeometryHandlerSurfaceNormal<T>;
 
-#endif      // PCL_POINT_CLOUD_GEOMETRY_HANDLERS_IMPL_HPP_
-
+#endif // PCL_POINT_CLOUD_GEOMETRY_HANDLERS_IMPL_HPP_

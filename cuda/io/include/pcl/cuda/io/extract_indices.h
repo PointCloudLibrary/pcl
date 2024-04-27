@@ -39,44 +39,52 @@
 
 #include <pcl/cuda/point_cloud.h>
 
-namespace pcl
-{
-namespace cuda
-{
-  template <template <typename> class Storage, class DataT, class MaskT>
-  void extractMask (const shared_ptr<typename Storage<DataT>::type> &input,
-                          MaskT* mask, 
-                          shared_ptr<typename Storage<DataT>::type> &output);
-  template <template <typename> class Storage, class T>
-  void extractMask (const typename PointCloudAOS<Storage>::Ptr &input,
-                          T* mask, 
-                          typename PointCloudAOS<Storage>::Ptr &output);
+namespace pcl {
+namespace cuda {
+template <template <typename> class Storage, class DataT, class MaskT>
+void
+extractMask (const shared_ptr<typename Storage<DataT>::type>& input,
+             MaskT* mask,
+             shared_ptr<typename Storage<DataT>::type>& output);
+template <template <typename> class Storage, class T>
+void
+extractMask (const typename PointCloudAOS<Storage>::Ptr& input,
+             T* mask,
+             typename PointCloudAOS<Storage>::Ptr& output);
 
-  template <template <typename> class Storage>
-  void extractIndices (const typename PointCloudAOS<Storage>::Ptr &input,
-                       typename Storage<int>::type& indices, 
-                       typename PointCloudAOS<Storage>::Ptr &output);
+template <template <typename> class Storage>
+void
+extractIndices (const typename PointCloudAOS<Storage>::Ptr& input,
+                typename Storage<int>::type& indices,
+                typename PointCloudAOS<Storage>::Ptr& output);
 
-  template <template <typename> class Storage>
-  void removeIndices  (const typename PointCloudAOS<Storage>::Ptr &input,
-                       typename Storage<int>::type& indices, 
-                       typename PointCloudAOS<Storage>::Ptr &output);
+template <template <typename> class Storage>
+void
+removeIndices (const typename PointCloudAOS<Storage>::Ptr& input,
+               typename Storage<int>::type& indices,
+               typename PointCloudAOS<Storage>::Ptr& output);
 
-  template <template <typename> class Storage>
-  void extractIndices (const typename PointCloudAOS<Storage>::Ptr &input,
-                       typename Storage<int>::type& indices, 
-                       typename PointCloudAOS<Storage>::Ptr &output, const OpenNIRGB& color);
+template <template <typename> class Storage>
+void
+extractIndices (const typename PointCloudAOS<Storage>::Ptr& input,
+                typename Storage<int>::type& indices,
+                typename PointCloudAOS<Storage>::Ptr& output,
+                const OpenNIRGB& color);
 
-  template <template <typename> class Storage>
-  void removeIndices  (const typename PointCloudAOS<Storage>::Ptr &input,
-                       typename Storage<int>::type& indices, 
-                       typename PointCloudAOS<Storage>::Ptr &output, const OpenNIRGB& color);
-  template <template <typename> class Storage>
-  void colorIndices  (typename PointCloudAOS<Storage>::Ptr &input,
-                       shared_ptr<typename Storage<int>::type> indices, 
-                       const OpenNIRGB& color);
-  template <template <typename> class Storage>
-  void colorCloud  (typename PointCloudAOS<Storage>::Ptr &input,
-                    typename Storage<char4>::type &colors);
-} // namespace 
-} // namespace
+template <template <typename> class Storage>
+void
+removeIndices (const typename PointCloudAOS<Storage>::Ptr& input,
+               typename Storage<int>::type& indices,
+               typename PointCloudAOS<Storage>::Ptr& output,
+               const OpenNIRGB& color);
+template <template <typename> class Storage>
+void
+colorIndices (typename PointCloudAOS<Storage>::Ptr& input,
+              shared_ptr<typename Storage<int>::type> indices,
+              const OpenNIRGB& color);
+template <template <typename> class Storage>
+void
+colorCloud (typename PointCloudAOS<Storage>::Ptr& input,
+            typename Storage<char4>::type& colors);
+} // namespace cuda
+} // namespace pcl

@@ -37,10 +37,9 @@
  */
 
 #include <pcl/impl/instantiate.hpp>
-#include <pcl/point_types.h>
-#include <pcl/search/organized.h>
 #include <pcl/search/impl/organized.hpp>
+#include <pcl/search/organized.h>
+#include <pcl/point_types.h>
 
 // Instantiations of specific point types
 PCL_INSTANTIATE(OrganizedNeighbor, PCL_XYZ_POINT_TYPES)
-

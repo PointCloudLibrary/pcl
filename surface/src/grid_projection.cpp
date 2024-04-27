@@ -35,12 +35,11 @@
  *
  */
 
-#include <pcl/point_types.h>
 #include <pcl/surface/grid_projection.h>
 #include <pcl/surface/impl/grid_projection.hpp>
+#include <pcl/point_types.h>
 
 // Instantiations of specific point types
 template class PCL_EXPORTS pcl::GridProjection<pcl::PointNormal>;
 template class PCL_EXPORTS pcl::GridProjection<pcl::PointXYZRGBNormal>;
 template class PCL_EXPORTS pcl::GridProjection<pcl::PointXYZINormal>;
-

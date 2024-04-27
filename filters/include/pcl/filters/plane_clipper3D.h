@@ -39,69 +39,74 @@
 
 #include "clipper3D.h"
 
-namespace pcl
-{
+namespace pcl {
+/**
+ * @author Suat Gedikli <gedikli@willowgarage.com>
+ * @brief Implementation of a plane clipper in 3D
+ * \ingroup filters
+ */
+template <typename PointT>
+class PlaneClipper3D : public Clipper3D<PointT> {
+public:
+  using Ptr = shared_ptr<PlaneClipper3D<PointT>>;
+  using ConstPtr = shared_ptr<const PlaneClipper3D<PointT>>;
+
+  PCL_MAKE_ALIGNED_OPERATOR_NEW
+
   /**
    * @author Suat Gedikli <gedikli@willowgarage.com>
-   * @brief Implementation of a plane clipper in 3D
-   * \ingroup filters
+   * @brief Constructor taking the homogeneous representation of the plane as a
+   * Eigen::Vector4f
+   * @param[in] plane_params plane parameters, need not necessarily be normalized
    */
-  template<typename PointT>
-  class PlaneClipper3D : public Clipper3D<PointT>
-  {
-    public:
+  PlaneClipper3D(const Eigen::Vector4f& plane_params);
 
-      using Ptr = shared_ptr< PlaneClipper3D<PointT> >;
-      using ConstPtr = shared_ptr< const PlaneClipper3D<PointT> >;
+  virtual ~PlaneClipper3D() noexcept = default;
 
-      PCL_MAKE_ALIGNED_OPERATOR_NEW
+  /**
+   * \brief Set new plane parameters
+   * \param plane_params
+   */
+  void
+  setPlaneParameters (const Eigen::Vector4f& plane_params);
 
-      /**
-       * @author Suat Gedikli <gedikli@willowgarage.com>
-       * @brief Constructor taking the homogeneous representation of the plane as a Eigen::Vector4f
-       * @param[in] plane_params plane parameters, need not necessarily be normalized
-       */
-      PlaneClipper3D (const Eigen::Vector4f& plane_params);
+  /**
+   * \brief return the current plane parameters
+   * \return the current plane parameters
+   */
+  const Eigen::Vector4f&
+  getPlaneParameters () const;
 
-      virtual ~PlaneClipper3D () noexcept = default;
+  virtual bool
+  clipPoint3D (const PointT& point) const;
 
-      /**
-        * \brief Set new plane parameters
-        * \param plane_params
-        */
-      void setPlaneParameters (const Eigen::Vector4f& plane_params);
+  virtual bool
+  clipLineSegment3D (PointT& from, PointT& to) const;
 
-      /**
-        * \brief return the current plane parameters
-        * \return the current plane parameters
-        */
-      const Eigen::Vector4f& getPlaneParameters () const;
+  virtual void
+  clipPlanarPolygon3D (
+      std::vector<PointT, Eigen::aligned_allocator<PointT>>& polygon) const;
 
-      virtual bool
-      clipPoint3D (const PointT& point) const;
+  virtual void
+  clipPlanarPolygon3D (
+      const std::vector<PointT, Eigen::aligned_allocator<PointT>>& polygon,
+      std::vector<PointT, Eigen::aligned_allocator<PointT>>& clipped_polygon) const;
 
-      virtual bool
-      clipLineSegment3D (PointT& from, PointT& to) const;
+  virtual void
+  clipPointCloud3D (const pcl::PointCloud<PointT>& cloud_in,
+                    Indices& clipped,
+                    const Indices& indices = Indices()) const;
 
-      virtual void
-      clipPlanarPolygon3D (std::vector<PointT, Eigen::aligned_allocator<PointT> >& polygon) const;
+  virtual Clipper3D<PointT>*
+  clone () const;
 
-      virtual void
-      clipPlanarPolygon3D (const std::vector<PointT, Eigen::aligned_allocator<PointT> >& polygon, std::vector<PointT, Eigen::aligned_allocator<PointT> >& clipped_polygon) const;
+protected:
+  float
+  getDistance (const PointT& point) const;
 
-      virtual void
-      clipPointCloud3D (const pcl::PointCloud<PointT> &cloud_in, Indices& clipped, const Indices& indices = Indices ()) const;
-
-      virtual Clipper3D<PointT>*
-      clone () const;
-
-    protected:
-      float
-      getDistance (const PointT& point) const;
-
-    private:
-      Eigen::Vector4f plane_params_;
-  };
-}
+private:
+  Eigen::Vector4f plane_params_;
+};
+} // namespace pcl
 
 #include <pcl/filters/impl/plane_clipper3D.hpp>

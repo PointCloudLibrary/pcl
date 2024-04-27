@@ -95,23 +95,23 @@ public:
    * registration converged
    */
   bool
-  registerCloud(const PointCloudConstPtr& cloud,
-                const Matrix4& delta_estimate = Matrix4::Identity());
+  registerCloud (const PointCloudConstPtr& cloud,
+                 const Matrix4& delta_estimate = Matrix4::Identity());
 
   /** \brief Get estimated transform of the last registered cloud */
   inline Matrix4
-  getAbsoluteTransform() const;
+  getAbsoluteTransform () const;
 
   /** \brief Reset MetaRegistration without resetting registration_ */
   inline void
-  reset();
+  reset ();
 
   /** \brief Set registration instance used to align clouds */
   inline void setRegistration(RegistrationPtr);
 
   /** \brief get accumulated meta point cloud */
   inline PointCloudConstPtr
-  getMetaCloud() const;
+  getMetaCloud () const;
 
 protected:
   /** \brief registered accumulated point cloud */

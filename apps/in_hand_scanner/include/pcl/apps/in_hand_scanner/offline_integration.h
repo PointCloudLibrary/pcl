@@ -90,13 +90,13 @@ public Q_SLOTS:
 
   /** \brief Start the procedure from a path. */
   void
-  start();
+  start ();
 
 private Q_SLOTS:
 
   /** \brief Loads in new data. */
   void
-  computationThread();
+  computationThread ();
 
 private:
   using PointXYZRGBA = pcl::PointXYZRGBA;
@@ -147,9 +147,9 @@ private:
    * \return True if success.
    */
   bool
-  getFilesFromDirectory(const std::string& path_dir,
-                        const std::string& extension,
-                        std::vector<std::string>& files) const;
+  getFilesFromDirectory (const std::string& path_dir,
+                         const std::string& extension,
+                         std::vector<std::string>& files) const;
 
   /** \brief Load the transformation matrix from the given file.
    *
@@ -159,7 +159,7 @@ private:
    * \return True if success.
    */
   bool
-  loadTransform(const std::string& filename, Eigen::Matrix4f& transform) const;
+  loadTransform (const std::string& filename, Eigen::Matrix4f& transform) const;
 
   /** \brief Load the cloud and transformation from the files and compute the normals.
    *
@@ -170,19 +170,19 @@ private:
    * \return True if success.
    */
   bool
-  load(const std::string& filename,
-       CloudXYZRGBNormalPtr& cloud,
-       Eigen::Matrix4f& T) const;
+  load (const std::string& filename,
+        CloudXYZRGBNormalPtr& cloud,
+        Eigen::Matrix4f& T) const;
 
   /** \see http://doc.qt.digia.com/qt/qwidget.html#paintEvent
    * \see http://doc.qt.digia.com/qt/opengl-overpainting.html
    */
   void
-  paintEvent(QPaintEvent* event) override;
+  paintEvent (QPaintEvent* event) override;
 
   /** \see http://doc.qt.digia.com/qt/qwidget.html#keyPressEvent */
   void
-  keyPressEvent(QKeyEvent* event) override;
+  keyPressEvent (QKeyEvent* event) override;
 
   //////////////////////////////////////////////////////////////////////////
   // Members

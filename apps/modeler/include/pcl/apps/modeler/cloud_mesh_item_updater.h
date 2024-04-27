@@ -51,7 +51,7 @@ public:
 
 public Q_SLOTS:
   void
-  updateCloudMeshItem();
+  updateCloudMeshItem ();
 
 private:
   CloudMeshItem* cloud_mesh_item_;

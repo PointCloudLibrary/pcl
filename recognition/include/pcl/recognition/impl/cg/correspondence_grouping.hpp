@@ -37,32 +37,29 @@
  *
  */
 
-
 #ifndef PCL_RECOGNITION_CORRESPONDENCE_GROUPING_IMPL_H_
 #define PCL_RECOGNITION_CORRESPONDENCE_GROUPING_IMPL_H_
 
+namespace pcl {
 
-namespace pcl
+template <typename PointModelT, typename PointSceneT>
+void
+CorrespondenceGrouping<PointModelT, PointSceneT>::cluster(
+    std::vector<Correspondences>& clustered_corrs)
 {
+  clustered_corrs.clear();
+  corr_group_scale_.clear();
 
-template <typename PointModelT, typename PointSceneT> void
-CorrespondenceGrouping<PointModelT, PointSceneT>::cluster (std::vector<Correspondences> &clustered_corrs)
-{
-  clustered_corrs.clear ();
-  corr_group_scale_.clear ();
-
-  if (!initCompute ())
-  {
+  if (!initCompute()) {
     return;
   }
 
-  //Perform the actual clustering
-  clusterCorrespondences (clustered_corrs);
+  // Perform the actual clustering
+  clusterCorrespondences(clustered_corrs);
 
-  deinitCompute ();
+  deinitCompute();
 }
 
 } // namespace pcl
 
 #endif // PCL_RECOGNITION_CORRESPONDENCE_GROUPING_IMPL_H_
-

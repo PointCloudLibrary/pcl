@@ -60,47 +60,47 @@ public:
   virtual ~Parameter() = default;
 
   const std::string&
-  getName() const
+  getName () const
   {
     return name_;
   }
 
   const std::string&
-  getDescription() const
+  getDescription () const
   {
     return description_;
   }
 
   void
-  setDefaultValue(const boost::any& value)
+  setDefaultValue (const boost::any& value)
   {
     default_value_ = value;
   }
 
   void
-  reset()
+  reset ()
   {
     current_value_ = default_value_;
   }
 
   virtual std::string
-  valueTip() = 0;
+  valueTip () = 0;
 
   virtual QWidget*
-  createEditor(QWidget* parent) = 0;
+  createEditor (QWidget* parent) = 0;
 
   virtual void
-  setEditorData(QWidget* editor) = 0;
+  setEditorData (QWidget* editor) = 0;
 
   virtual void
-  setModelData(QWidget* editor, QAbstractItemModel* model, const QModelIndex& index);
+  setModelData (QWidget* editor, QAbstractItemModel* model, const QModelIndex& index);
 
   virtual std::pair<QVariant, int>
-  toModelData() = 0;
+  toModelData () = 0;
 
 protected:
   virtual void
-  getEditorData(QWidget* editor) = 0;
+  getEditorData (QWidget* editor) = 0;
 
   std::string name_;
   std::string description_;
@@ -117,20 +117,20 @@ public:
   operator bool() const { return boost::any_cast<bool>(current_value_); }
 
   std::string
-  valueTip() override;
+  valueTip () override;
 
   QWidget*
-  createEditor(QWidget* parent) override;
+  createEditor (QWidget* parent) override;
 
   void
-  setEditorData(QWidget* editor) override;
+  setEditorData (QWidget* editor) override;
 
   std::pair<QVariant, int>
-  toModelData() override;
+  toModelData () override;
 
 protected:
   void
-  getEditorData(QWidget* editor) override;
+  getEditorData (QWidget* editor) override;
 };
 
 class IntParameter : public Parameter {
@@ -147,38 +147,38 @@ public:
   operator int() const { return boost::any_cast<int>(current_value_); }
 
   std::string
-  valueTip() override;
+  valueTip () override;
 
   QWidget*
-  createEditor(QWidget* parent) override;
+  createEditor (QWidget* parent) override;
 
   void
-  setEditorData(QWidget* editor) override;
+  setEditorData (QWidget* editor) override;
 
   std::pair<QVariant, int>
-  toModelData() override;
+  toModelData () override;
 
   void
-  setLow(int low)
+  setLow (int low)
   {
     low_ = low;
   }
 
   void
-  setHigh(int high)
+  setHigh (int high)
   {
     high_ = high;
   }
 
   void
-  setStep(int step)
+  setStep (int step)
   {
     step_ = step;
   }
 
 protected:
   void
-  getEditorData(QWidget* editor) override;
+  getEditorData (QWidget* editor) override;
 
   int low_;
   int high_;
@@ -198,20 +198,20 @@ public:
   operator T() const { return boost::any_cast<T>(current_value_); }
 
   std::string
-  valueTip() override;
+  valueTip () override;
 
   QWidget*
-  createEditor(QWidget* parent) override;
+  createEditor (QWidget* parent) override;
 
   void
-  setEditorData(QWidget* editor) override;
+  setEditorData (QWidget* editor) override;
 
   std::pair<QVariant, int>
-  toModelData() override;
+  toModelData () override;
 
 protected:
   void
-  getEditorData(QWidget* editor) override;
+  getEditorData (QWidget* editor) override;
 
   const std::map<T, std::string> candidates_;
 };
@@ -230,38 +230,38 @@ public:
   operator double() const { return boost::any_cast<double>(current_value_); }
 
   std::string
-  valueTip() override;
+  valueTip () override;
 
   QWidget*
-  createEditor(QWidget* parent) override;
+  createEditor (QWidget* parent) override;
 
   void
-  setEditorData(QWidget* editor) override;
+  setEditorData (QWidget* editor) override;
 
   std::pair<QVariant, int>
-  toModelData() override;
+  toModelData () override;
 
   void
-  setLow(double low)
+  setLow (double low)
   {
     low_ = low;
   }
 
   void
-  setHigh(double high)
+  setHigh (double high)
   {
     high_ = high;
   }
 
   void
-  setStep(double step)
+  setStep (double step)
   {
     step_ = step;
   }
 
 protected:
   void
-  getEditorData(QWidget* editor) override;
+  getEditorData (QWidget* editor) override;
 
   double low_;
   double high_;
@@ -279,20 +279,20 @@ public:
   operator QColor() const { return boost::any_cast<QColor>(current_value_); }
 
   std::string
-  valueTip() override;
+  valueTip () override;
 
   QWidget*
-  createEditor(QWidget* parent) override;
+  createEditor (QWidget* parent) override;
 
   void
-  setEditorData(QWidget* editor) override;
+  setEditorData (QWidget* editor) override;
 
   std::pair<QVariant, int>
-  toModelData() override;
+  toModelData () override;
 
 protected:
   void
-  getEditorData(QWidget* editor) override;
+  getEditorData (QWidget* editor) override;
 };
 
 } // namespace modeler

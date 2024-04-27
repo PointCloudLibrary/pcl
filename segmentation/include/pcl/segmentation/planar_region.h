@@ -37,71 +37,73 @@
 
 #pragma once
 
+#include <pcl/geometry/planar_polygon.h>
+#include <pcl/segmentation/region_3d.h>
 #include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
-#include <pcl/segmentation/region_3d.h>
-#include <pcl/geometry/planar_polygon.h>
 
-namespace pcl
-{
-  /** \brief PlanarRegion represents a set of points that lie in a plane.  Inherits summary statistics about these points from Region3D, and  summary statistics of a 3D collection of points.
-    * \author Alex Trevor
-    */
-  template <typename PointT>
-  class PlanarRegion : public pcl::Region3D<PointT>, public pcl::PlanarPolygon<PointT>
+namespace pcl {
+/** \brief PlanarRegion represents a set of points that lie in a plane.  Inherits
+ * summary statistics about these points from Region3D, and  summary statistics of a 3D
+ * collection of points. \author Alex Trevor
+ */
+template <typename PointT>
+class PlanarRegion : public pcl::Region3D<PointT>, public pcl::PlanarPolygon<PointT> {
+protected:
+  using Region3D<PointT>::centroid_;
+  using Region3D<PointT>::covariance_;
+  using Region3D<PointT>::count_;
+  using PlanarPolygon<PointT>::contour_;
+  using PlanarPolygon<PointT>::coefficients_;
+
+public:
+  /** \brief Empty constructor for PlanarRegion. */
+  PlanarRegion() = default;
+
+  /** \brief Constructor for Planar region from a Region3D and a PlanarPolygon.
+   * \param[in] region a Region3D for the input data
+   * \param[in] polygon a PlanarPolygon for the input region
+   */
+  PlanarRegion(const pcl::Region3D<PointT>& region,
+               const pcl::PlanarPolygon<PointT>& polygon)
   {
-    protected:
-      using Region3D<PointT>::centroid_;
-      using Region3D<PointT>::covariance_; 
-      using Region3D<PointT>::count_;
-      using PlanarPolygon<PointT>::contour_;
-      using PlanarPolygon<PointT>::coefficients_;
+    centroid_ = region.centroid;
+    covariance_ = region.covariance;
+    count_ = region.count;
+    contour_ = polygon.contour;
+    coefficients_ = polygon.coefficients;
+  }
 
-    public:
-      /** \brief Empty constructor for PlanarRegion. */
-      PlanarRegion () = default;
+  /** \brief Destructor. */
+  ~PlanarRegion() override = default;
 
-      /** \brief Constructor for Planar region from a Region3D and a PlanarPolygon. 
-        * \param[in] region a Region3D for the input data
-        * \param[in] polygon a PlanarPolygon for the input region
-        */
-      PlanarRegion (const pcl::Region3D<PointT>& region, const pcl::PlanarPolygon<PointT>& polygon) 
-      {
-        centroid_ = region.centroid;
-        covariance_ = region.covariance;
-        count_ = region.count;
-        contour_ = polygon.contour;
-        coefficients_ = polygon.coefficients;
-      }
-      
-      /** \brief Destructor. */
-      ~PlanarRegion () override = default;
+  /** \brief Constructor for PlanarRegion.
+   * \param[in] centroid the centroid of the region.
+   * \param[in] covariance the covariance of the region.
+   * \param[in] count the number of points in the region.
+   * \param[in] contour the contour / boundary for the region
+   * \param[in] coefficients the model coefficients (a,b,c,d) for the plane
+   */
+  PlanarRegion(const Eigen::Vector3f& centroid,
+               const Eigen::Matrix3f& covariance,
+               unsigned count,
+               const typename pcl::PointCloud<PointT>::VectorType& contour,
+               const Eigen::Vector4f& coefficients)
+  {
+    centroid_ = centroid;
+    covariance_ = covariance;
+    count_ = count;
+    contour_ = contour;
+    coefficients_ = coefficients;
+  }
 
-      /** \brief Constructor for PlanarRegion.
-        * \param[in] centroid the centroid of the region.
-        * \param[in] covariance the covariance of the region.
-        * \param[in] count the number of points in the region.
-        * \param[in] contour the contour / boundary for the region
-        * \param[in] coefficients the model coefficients (a,b,c,d) for the plane
-        */
-      PlanarRegion (const Eigen::Vector3f& centroid, const Eigen::Matrix3f& covariance, unsigned count,
-                    const typename pcl::PointCloud<PointT>::VectorType& contour,
-                    const Eigen::Vector4f& coefficients) 
-      {
-        centroid_ = centroid;
-        covariance_ = covariance;
-        count_ = count;
-        contour_ = contour;
-        coefficients_ = coefficients;
-      }
-      
-    private:
-      /** \brief The labels (good=true, bad=false) for whether or not this boundary was observed, 
-        * or was due to edge of frame / occlusion boundary. 
-        */
-      std::vector<bool> contour_labels_;
+private:
+  /** \brief The labels (good=true, bad=false) for whether or not this boundary was
+   * observed, or was due to edge of frame / occlusion boundary.
+   */
+  std::vector<bool> contour_labels_;
 
-    public:
-      PCL_MAKE_ALIGNED_OPERATOR_NEW
-  };
-}
+public:
+  PCL_MAKE_ALIGNED_OPERATOR_NEW
+};
+} // namespace pcl

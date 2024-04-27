@@ -59,14 +59,14 @@ public:
    * \param[in] root the root node
    */
   void
-  setRoot(const NodeType& root)
+  setRoot (const NodeType& root)
   {
     root_ = root;
   }
 
   /** Returns the root node of the tree. */
   NodeType&
-  getRoot()
+  getRoot ()
   {
     return root_;
   }
@@ -76,7 +76,7 @@ public:
    * \param[out] stream the destination for the serialization
    */
   void
-  serialize(::std::ostream& stream) const
+  serialize (::std::ostream& stream) const
   {
     root_.serialize(stream);
   }
@@ -86,7 +86,7 @@ public:
    * \param[in] stream the source for the deserialization
    */
   void
-  deserialize(::std::istream& stream)
+  deserialize (::std::istream& stream)
   {
     root_.deserialize(stream);
   }

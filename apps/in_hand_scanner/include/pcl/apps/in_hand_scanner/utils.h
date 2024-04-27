@@ -47,7 +47,7 @@ namespace ihs {
  */
 template <class T>
 inline T
-clamp(const T value, const T min, const T max)
+clamp (const T value, const T min, const T max)
 {
   return (value < min ? min : value > max ? max : value);
 }

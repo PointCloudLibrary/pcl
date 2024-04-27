@@ -35,94 +35,102 @@
 
 #pragma once
 
-#include <pcl/common/eigen.h>
 #include <pcl/common/bivariate_polynomial.h>
+#include <pcl/common/eigen.h>
 
-namespace pcl 
-{
-  /** \brief This provides some functionality for polynomials,
-    *         like finding roots or approximating bivariate polynomials
-    *  \author Bastian Steder 
-    *  \ingroup common
-    */
-  template <typename real>
-  class PolynomialCalculationsT 
-  {
-    public:
-      // =====PUBLIC STRUCTS=====
-      //! Parameters used in this class
-      struct Parameters
-      {
-        Parameters () { setZeroValue (1e-6);}
-        //! Set zero_value
-        void
-        setZeroValue (real new_zero_value);
+namespace pcl {
+/** \brief This provides some functionality for polynomials,
+ *         like finding roots or approximating bivariate polynomials
+ *  \author Bastian Steder
+ *  \ingroup common
+ */
+template <typename real>
+class PolynomialCalculationsT {
+public:
+  // =====PUBLIC STRUCTS=====
+  //! Parameters used in this class
+  struct Parameters {
+    Parameters() { setZeroValue(1e-6); }
+    //! Set zero_value
+    void
+    setZeroValue (real new_zero_value);
 
-        real zero_value = {};       //!< Every value below this is considered to be zero
-        real sqr_zero_value = {};   //!< sqr of the above
-      };
-      
-      // =====PUBLIC METHODS=====
-      /** Solves an equation of the form ax^4 + bx^3 + cx^2 +dx + e = 0
-       *  See https://en.wikipedia.org/wiki/Quartic_equation#Summary_of_Ferrari.27s_method */
-      inline void
-      solveQuarticEquation (real a, real b, real c, real d, real e, std::vector<real>& roots) const;
-
-      /** Solves an equation of the form ax^3 + bx^2 + cx + d = 0
-       *  See https://en.wikipedia.org/wiki/Cubic_equation */
-      inline void
-      solveCubicEquation (real a, real b, real c, real d, std::vector<real>& roots) const;
-
-      /** Solves an equation of the form ax^2 + bx + c = 0
-       *  See https://en.wikipedia.org/wiki/Quadratic_equation */
-      inline void
-      solveQuadraticEquation (real a, real b, real c, std::vector<real>& roots) const;
-
-      /** Solves an equation of the form ax + b = 0 */
-      inline void
-      solveLinearEquation (real a, real b, std::vector<real>& roots) const;
-      
-      /** Get the bivariate polynomial approximation for Z(X,Y) from the given sample points.
-       *  The parameters a,b,c,... for the polynom are returned.
-       *  The order is, e.g., for degree 1: ax+by+c and for degree 2: ax²+bxy+cx+dy²+ey+f.
-       *  error is set to true if the approximation did not work for any reason
-       *  (not enough points, matrix not invertible, etc.) */
-      inline BivariatePolynomialT<real>
-      bivariatePolynomialApproximation (std::vector<Eigen::Matrix<real, 3, 1>, Eigen::aligned_allocator<Eigen::Matrix<real, 3, 1> > >& samplePoints,
-                                        unsigned int polynomial_degree, bool& error) const;
-      
-      //! Same as above, using a reference for the return value
-      inline bool
-      bivariatePolynomialApproximation (std::vector<Eigen::Matrix<real, 3, 1>, Eigen::aligned_allocator<Eigen::Matrix<real, 3, 1> > >& samplePoints,
-                                        unsigned int polynomial_degree, BivariatePolynomialT<real>& ret) const;
-
-      //! Set the minimum value under which values are considered zero
-      inline void
-      setZeroValue (real new_zero_value) { parameters_.setZeroValue(new_zero_value); }
-      
-    protected:  
-      // =====PROTECTED METHODS=====
-      //! check if std::abs(d)<zeroValue
-      inline bool
-      isNearlyZero (real d) const 
-      { 
-        return (std::abs (d) < parameters_.zero_value);
-      }
-      
-      //! check if sqrt(std::abs(d))<zeroValue
-      inline bool
-      sqrtIsNearlyZero (real d) const 
-      { 
-        return (std::abs (d) < parameters_.sqr_zero_value);
-      }
-      
-      // =====PROTECTED MEMBERS=====
-      Parameters parameters_;
+    real zero_value = {};     //!< Every value below this is considered to be zero
+    real sqr_zero_value = {}; //!< sqr of the above
   };
 
-  using PolynomialCalculationsd = PolynomialCalculationsT<double>;
-  using PolynomialCalculations = PolynomialCalculationsT<float>;
+  // =====PUBLIC METHODS=====
+  /** Solves an equation of the form ax^4 + bx^3 + cx^2 +dx + e = 0
+   *  See https://en.wikipedia.org/wiki/Quartic_equation#Summary_of_Ferrari.27s_method
+   */
+  inline void
+  solveQuarticEquation (
+      real a, real b, real c, real d, real e, std::vector<real>& roots) const;
 
-}  // end namespace
+  /** Solves an equation of the form ax^3 + bx^2 + cx + d = 0
+   *  See https://en.wikipedia.org/wiki/Cubic_equation */
+  inline void
+  solveCubicEquation (real a, real b, real c, real d, std::vector<real>& roots) const;
+
+  /** Solves an equation of the form ax^2 + bx + c = 0
+   *  See https://en.wikipedia.org/wiki/Quadratic_equation */
+  inline void
+  solveQuadraticEquation (real a, real b, real c, std::vector<real>& roots) const;
+
+  /** Solves an equation of the form ax + b = 0 */
+  inline void
+  solveLinearEquation (real a, real b, std::vector<real>& roots) const;
+
+  /** Get the bivariate polynomial approximation for Z(X,Y) from the given sample
+   * points. The parameters a,b,c,... for the polynom are returned. The order is, e.g.,
+   * for degree 1: ax+by+c and for degree 2: ax²+bxy+cx+dy²+ey+f. error is set to true
+   * if the approximation did not work for any reason (not enough points, matrix not
+   * invertible, etc.) */
+  inline BivariatePolynomialT<real>
+  bivariatePolynomialApproximation (
+      std::vector<Eigen::Matrix<real, 3, 1>,
+                  Eigen::aligned_allocator<Eigen::Matrix<real, 3, 1>>>& samplePoints,
+      unsigned int polynomial_degree,
+      bool& error) const;
+
+  //! Same as above, using a reference for the return value
+  inline bool
+  bivariatePolynomialApproximation (
+      std::vector<Eigen::Matrix<real, 3, 1>,
+                  Eigen::aligned_allocator<Eigen::Matrix<real, 3, 1>>>& samplePoints,
+      unsigned int polynomial_degree,
+      BivariatePolynomialT<real>& ret) const;
+
+  //! Set the minimum value under which values are considered zero
+  inline void
+  setZeroValue (real new_zero_value)
+  {
+    parameters_.setZeroValue(new_zero_value);
+  }
+
+protected:
+  // =====PROTECTED METHODS=====
+  //! check if std::abs(d)<zeroValue
+  inline bool
+  isNearlyZero (real d) const
+  {
+    return (std::abs(d) < parameters_.zero_value);
+  }
+
+  //! check if sqrt(std::abs(d))<zeroValue
+  inline bool
+  sqrtIsNearlyZero (real d) const
+  {
+    return (std::abs(d) < parameters_.sqr_zero_value);
+  }
+
+  // =====PROTECTED MEMBERS=====
+  Parameters parameters_;
+};
+
+using PolynomialCalculationsd = PolynomialCalculationsT<double>;
+using PolynomialCalculations = PolynomialCalculationsT<float>;
+
+} // namespace pcl
 
 #include <pcl/common/impl/polynomial_calculations.hpp>

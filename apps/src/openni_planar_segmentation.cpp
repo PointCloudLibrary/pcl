@@ -71,13 +71,13 @@ public:
   }
 
   void
-  cloud_cb_(const CloudConstPtr& cloud)
+  cloud_cb_ (const CloudConstPtr& cloud)
   {
     set(cloud);
   }
 
   void
-  set(const CloudConstPtr& cloud)
+  set (const CloudConstPtr& cloud)
   {
     // lock while we set our cloud;
     std::lock_guard<std::mutex> lock(mtx_);
@@ -85,7 +85,7 @@ public:
   }
 
   CloudPtr
-  get()
+  get ()
   {
     // lock while we swap our cloud and reset it.
     std::lock_guard<std::mutex> lock(mtx_);
@@ -109,11 +109,11 @@ public:
   }
 
   void
-  run()
+  run ()
   {
     pcl::OpenNIGrabber interface(device_id_);
 
-    std::function<void(const CloudConstPtr&)> f = [this](const CloudConstPtr& cloud) {
+    std::function<void(const CloudConstPtr&)> f = [this] (const CloudConstPtr& cloud) {
       cloud_cb_(cloud);
     };
     boost::signals2::connection c = interface.registerCallback(f);
@@ -141,7 +141,7 @@ public:
 };
 
 void
-usage(char** argv)
+usage (char** argv)
 {
   std::cout
       << "usage: " << argv[0] << " [options]\n\n"
@@ -176,7 +176,7 @@ usage(char** argv)
 }
 
 int
-main(int argc, char** argv)
+main (int argc, char** argv)
 {
   /////////////////////////////////////////////////////////////////////
   if (pcl::console::find_argument(argc, argv, "-h") != -1 ||

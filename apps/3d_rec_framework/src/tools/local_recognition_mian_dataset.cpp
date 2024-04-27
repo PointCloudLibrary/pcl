@@ -22,9 +22,9 @@
 #include <flann/algorithms/dist.h>
 
 void
-getScenesInDirectory(pcl_fs::path& dir,
-                     std::string& rel_path_so_far,
-                     std::vector<std::string>& relative_paths)
+getScenesInDirectory (pcl_fs::path& dir,
+                      std::string& rel_path_so_far,
+                      std::vector<std::string>& relative_paths)
 {
   // list models in MODEL_FILES_DIR_ and return list
   for (const auto& dir_entry : pcl_fs::directory_iterator(dir)) {
@@ -52,7 +52,7 @@ getScenesInDirectory(pcl_fs::path& dir,
 }
 
 inline bool
-sortFiles(const std::string& file1, const std::string& file2)
+sortFiles (const std::string& file1, const std::string& file2)
 {
   std::vector<std::string> strs1;
   boost::split(strs1, file1, boost::is_any_of("/"));
@@ -77,7 +77,7 @@ sortFiles(const std::string& file1, const std::string& file2)
 
 template <template <class> class DistT, typename PointT, typename FeatureT>
 void
-recognizeAndVisualize(
+recognizeAndVisualize (
     typename pcl::rec_3d_framework::LocalRecognitionPipeline<DistT, PointT, FeatureT>&
         local,
     std::string& scenes_dir,
@@ -223,10 +223,10 @@ recognizeAndVisualize(
 }
 
 void
-getModelsInDirectory(pcl_fs::path& dir,
-                     std::string& rel_path_so_far,
-                     std::vector<std::string>& relative_paths,
-                     std::string& ext)
+getModelsInDirectory (pcl_fs::path& dir,
+                      std::string& rel_path_so_far,
+                      std::vector<std::string>& relative_paths,
+                      std::string& ext)
 {
   for (const auto& dir_entry : pcl_fs::directory_iterator(dir)) {
     // check if its a directory, then get models in it
@@ -269,7 +269,7 @@ float CG_THRESHOLD_ = 0.005f;
  */
 
 int
-main(int argc, char** argv)
+main (int argc, char** argv)
 {
   std::string path;
   std::string desc_name = "shot_omp";

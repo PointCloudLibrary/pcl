@@ -3,7 +3,7 @@
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010-2012, Willow Garage, Inc.
- *  
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -37,13 +37,16 @@
  *
  */
 
-#include "pcl/point_types.h"
-#include "pcl/impl/instantiate.hpp"
 #include "pcl/recognition/impl/cg/geometric_consistency.hpp"
 
-#ifdef PCL_ONLY_CORE_POINT_TYPES
-  PCL_INSTANTIATE_PRODUCT(GeometricConsistencyGrouping, ((pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA))((pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA)))
-#else
-  PCL_INSTANTIATE_PRODUCT(GeometricConsistencyGrouping, (PCL_XYZ_POINT_TYPES)(PCL_XYZ_POINT_TYPES))
-#endif
+#include "pcl/impl/instantiate.hpp"
+#include "pcl/point_types.h"
 
+#ifdef PCL_ONLY_CORE_POINT_TYPES
+PCL_INSTANTIATE_PRODUCT(GeometricConsistencyGrouping,
+                        ((pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA))(
+                            (pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA)))
+#else
+PCL_INSTANTIATE_PRODUCT(GeometricConsistencyGrouping,
+                        (PCL_XYZ_POINT_TYPES)(PCL_XYZ_POINT_TYPES))
+#endif

@@ -50,14 +50,15 @@
 /// selections as well as undo the point move.
 ///
 
-#include <QApplication>
 #include <pcl/apps/point_cloud_editor/mainWindow.h>
 
+#include <QApplication>
+
 int
-main(int argc, char *argv[])
+main (int argc, char* argv[])
 {
   QApplication app(argc, argv);
-  //QApplication::setWindowIcon(QIcon(":/pceditor.icns"));
+  // QApplication::setWindowIcon(QIcon(":/pceditor.icns"));
   MainWindow main_window(argc, argv);
   main_window.show();
   return (QApplication::exec());

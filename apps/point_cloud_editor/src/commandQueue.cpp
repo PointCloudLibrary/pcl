@@ -38,19 +38,15 @@
 /// details.
 /// @author  Yue Li and Matthew Hielsberg
 
-#include <pcl/apps/point_cloud_editor/commandQueue.h>
 #include <pcl/apps/point_cloud_editor/command.h>
+#include <pcl/apps/point_cloud_editor/commandQueue.h>
 
-CommandQueue::CommandQueue () : depth_limit_(DEFAULT_MAX_SIZE_)
-{
-}
+CommandQueue::CommandQueue() : depth_limit_(DEFAULT_MAX_SIZE_) {}
 
-CommandQueue::CommandQueue (unsigned int max_size) : depth_limit_(max_size)
-{
-}
+CommandQueue::CommandQueue(unsigned int max_size) : depth_limit_(max_size) {}
 
 void
-CommandQueue::enforceDequeLimit ()
+CommandQueue::enforceDequeLimit()
 {
   // the following loop should actually execute only one iteration.
   while (command_deque_.size() > depth_limit_)
@@ -58,20 +54,19 @@ CommandQueue::enforceDequeLimit ()
 }
 
 void
-CommandQueue::execute (const CommandPtr& command_ptr)
+CommandQueue::execute(const CommandPtr& command_ptr)
 {
   if (!command_ptr)
     return;
   command_ptr->execute();
-  if (command_ptr->hasUndo())
-  {
+  if (command_ptr->hasUndo()) {
     command_deque_.push_back(command_ptr);
     enforceDequeLimit();
   }
 }
 
 void
-CommandQueue::undo ()
+CommandQueue::undo()
 {
   // no-op when no command is in the queue.
   if (command_deque_.empty())
@@ -81,7 +76,7 @@ CommandQueue::undo ()
 }
 
 unsigned int
-CommandQueue::setMaxSize (unsigned int size)
+CommandQueue::setMaxSize(unsigned int size)
 {
   depth_limit_ = size;
   if (depth_limit_ > command_deque_.max_size())
@@ -91,6 +86,3 @@ CommandQueue::setMaxSize (unsigned int size)
     command_deque_.resize(depth_limit_);
   return (depth_limit_);
 }
-
-
-

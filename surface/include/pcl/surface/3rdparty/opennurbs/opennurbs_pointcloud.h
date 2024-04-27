@@ -8,7 +8,7 @@
 // THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT EXPRESS OR IMPLIED WARRANTY.
 // ALL IMPLIED WARRANTIES OF FITNESS FOR ANY PARTICULAR PURPOSE AND OF
 // MERCHANTABILITY ARE HEREBY DISCLAIMED.
-//				
+//
 // For complete openNURBS copyright information see <http://www.opennurbs.org>.
 //
 ////////////////////////////////////////////////////////////////
@@ -23,21 +23,22 @@
 //          ON_PointField  - point height field
 //
 
-class ON_CLASS ON_PointCloud : public ON_Geometry
-{
+class ON_CLASS ON_PointCloud : public ON_Geometry {
   ON_OBJECT_DECLARE(ON_PointCloud);
 
 public:
   ON_PointCloud();
-  ON_PointCloud(
-    int  // initial point array capacity
-    );
-  ON_PointCloud( const ON_PointCloud& );
+  ON_PointCloud(int // initial point array capacity
+  );
+  ON_PointCloud(const ON_PointCloud&);
   ~ON_PointCloud();
-  ON_PointCloud& operator=( const ON_PointCloud& );
+  ON_PointCloud&
+  operator=(const ON_PointCloud&);
 
-  ON_3dPoint& operator[](int);
-  const ON_3dPoint& operator[](int) const;
+  ON_3dPoint&
+  operator[](int);
+  const ON_3dPoint&
+  operator[](int) const;
 
   /*
   Description:
@@ -48,64 +49,74 @@ public:
   Returns:
     Point at [ci.m_index] or ON_UNSET_POINT if ci is not valid.
   */
-  ON_3dPoint Point( ON_COMPONENT_INDEX ci ) const;
+  ON_3dPoint
+  Point (ON_COMPONENT_INDEX ci) const;
 
-  void Destroy();
+  void
+  Destroy ();
 
   /*
   Description:
     Call when the memory pool used the point cloud's arrays is
     no longer in existence.
   */
-  void EmergencyDestroy();
+  void
+  EmergencyDestroy ();
 
   // virtual ON_Object override
-  ON_BOOL32 IsValid( ON_TextLog* text_log = NULL ) const;
+  ON_BOOL32
+  IsValid (ON_TextLog* text_log = NULL) const;
 
   // virtual ON_Object override
-  void Dump( ON_TextLog& ) const; // for debugging
+  void
+  Dump (ON_TextLog&) const; // for debugging
 
   // virtual ON_Object override
-  ON_BOOL32 Write( ON_BinaryArchive& ) const;
+  ON_BOOL32
+  Write (ON_BinaryArchive&) const;
 
   // virtual ON_Object override
-  ON_BOOL32 Read( ON_BinaryArchive& );
+  ON_BOOL32
+  Read (ON_BinaryArchive&);
 
   // virtual ON_Object override
-  ON::object_type ObjectType() const;
+  ON::object_type
+  ObjectType () const;
 
   // virtual ON_Geometry override
-  int Dimension() const;
+  int
+  Dimension () const;
 
   // virtual ON_Geometry override
-  ON_BOOL32 GetBBox( // returns true if successful
-         double*,    // minimum
-         double*,    // maximum
-         ON_BOOL32 = false  // true means grow box
-         ) const;
+  ON_BOOL32
+  GetBBox (             // returns true if successful
+      double*,          // minimum
+      double*,          // maximum
+      ON_BOOL32 = false // true means grow box
+  ) const;
 
   // virtual ON_Geometry override
-	bool GetTightBoundingBox( 
-			ON_BoundingBox& tight_bbox, 
-      int bGrowBox = false,
-			const ON_Xform* xform = 0
-      ) const;
+  bool
+  GetTightBoundingBox (ON_BoundingBox& tight_bbox,
+                       int bGrowBox = false,
+                       const ON_Xform* xform = 0) const;
 
   // virtual ON_Geometry override
-  ON_BOOL32 Transform( 
-         const ON_Xform&
-         );
+  ON_BOOL32
+  Transform (const ON_Xform&);
 
   // virtual ON_Geometry override
-  bool IsDeformable() const;
+  bool
+  IsDeformable () const;
 
   // virtual ON_Geometry override
-  bool MakeDeformable();
+  bool
+  MakeDeformable ();
 
   // virtual ON_Geometry override
-  ON_BOOL32 SwapCoordinates(
-        int, int        // indices of coords to swap
-        );
+  ON_BOOL32
+  SwapCoordinates (int, int // indices of coords to swap
+  );
 
   /*
   Description:
@@ -124,54 +135,64 @@ public:
   See Also:
     ON_GetClosestPointInPointList
   */
-  bool GetClosestPoint( 
-          ON_3dPoint P,
-          int* closest_point_index,
-          double maximum_distance = 0.0
-          ) const;
-
+  bool
+  GetClosestPoint (ON_3dPoint P,
+                   int* closest_point_index,
+                   double maximum_distance = 0.0) const;
 
   /////////////////////////////////////////////////////////////////
   // Interface
-  // 
-  int PointCount() const;
-  void AppendPoint( const ON_3dPoint& );
-  void InvalidateBoundingBox(); // call if you change values of points
+  //
+  int
+  PointCount () const;
+  void
+  AppendPoint (const ON_3dPoint&);
+  void
+  InvalidateBoundingBox (); // call if you change values of points
 
   // for ordered streams
-  void SetOrdered(bool bOrdered); // true if set is ordered stream
-  bool IsOrdered() const; // true if set is ordered stream
+  void
+  SetOrdered (bool bOrdered); // true if set is ordered stream
+  bool
+  IsOrdered () const; // true if set is ordered stream
 
   // for height fields
-  bool HasPlane() const; // true if set is height field above a plane
-  void SetPlane( const ON_Plane& );
-  const ON_Plane& Plane();
-  double Height(int);
+  bool
+  HasPlane () const; // true if set is height field above a plane
+  void
+  SetPlane (const ON_Plane&);
+  const ON_Plane&
+  Plane ();
+  double
+  Height (int);
 
   /*
   Returns:
     True if m_N.Count() == m_P.Count().
   */
-  bool HasPointNormals() const;
+  bool
+  HasPointNormals () const;
 
   /*
   Returns:
     True if m_C.Count() == m_P.Count().
   */
-  bool HasPointColors() const;
-
+  bool
+  HasPointColors () const;
 
   /*
   Returns:
     Number of points that are hidden.
   */
-  int HiddenPointCount() const;
+  int
+  HiddenPointCount () const;
 
   /*
   Description:
     Destroys the m_H[] array and sets m_hidden_count=0.
   */
-  void DestroyHiddenPointArray();
+  void
+  DestroyHiddenPointArray ();
 
   /*
   Returns:
@@ -180,7 +201,8 @@ public:
     element is true if the i-th vertex is hidden.
     If no ponts are hidden, NULL is returned.
   */
-  const bool* HiddenPointArray() const;
+  const bool*
+  HiddenPointArray () const;
 
   /*
   Description:
@@ -189,7 +211,8 @@ public:
     point_index - [in] point vertex index
     bHidden - [in] true to hide vertex
   */
-  void SetHiddenPointFlag( int point_index, bool bHidden );
+  void
+  SetHiddenPointFlag (int point_index, bool bHidden);
 
   /*
   Description:
@@ -200,7 +223,8 @@ public:
   Returns:
     True if the point is hidden.
   */
-  bool PointIsHidden( int point_index ) const;
+  bool
+  PointIsHidden (int point_index) const;
 
   /////////////////////////////////////////////////////////////////
   // Implementation
@@ -223,7 +247,7 @@ public:
   /////////////////////////////////////////////////////////////////
   // Implementation - RUNTIME point visibility - not saved in 3dm files.
   //    If m_H.Count() = m_P.Count(), then
-  //    m_H[j] is true if the point m_P[j] 
+  //    m_H[j] is true if the point m_P[j]
   //    is hidden.  Otherwise, all points are visible.
   //    m_hidden_count = number of true values in the m_H[] array.
   ON_SimpleArray<bool> m_H;
@@ -233,7 +257,6 @@ public:
   ON_BoundingBox m_bbox;
   unsigned int m_flags; // bit 1 is set if ordered
                         // bit 2 is set if plane is set
-
 };
 
 #endif

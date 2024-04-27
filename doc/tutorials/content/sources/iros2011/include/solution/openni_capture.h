@@ -1,31 +1,36 @@
 #pragma once
 
-#include "typedefs.h"
-
 #include <pcl/io/openni_grabber.h>
 #include <pcl/visualization/pcl_visualizer.h>
 
+#include "typedefs.h"
+
 /* A simple class for capturing data from an OpenNI camera */
-class OpenNICapture
-{
-  public:
-    OpenNICapture (const std::string& device_id = "");
-    ~OpenNICapture ();
-    
-    void setTriggerMode (bool use_trigger);
-    const PointCloudPtr snap ();
-    const PointCloudPtr snapAndSave (const std::string & filename);
+class OpenNICapture {
+public:
+  OpenNICapture(const std::string& device_id = "");
+  ~OpenNICapture();
 
-  protected:
-    void onNewFrame (const PointCloudConstPtr &cloud);
-    void onKeyboardEvent (const pcl::visualization::KeyboardEvent & event);
+  void
+  setTriggerMode (bool use_trigger);
+  const PointCloudPtr
+  snap ();
+  const PointCloudPtr
+  snapAndSave (const std::string& filename);
 
-    void waitForTrigger ();
+protected:
+  void
+  onNewFrame (const PointCloudConstPtr& cloud);
+  void
+  onKeyboardEvent (const pcl::visualization::KeyboardEvent& event);
 
-    pcl::OpenNIGrabber grabber_;
-    pcl::visualization::PCLVisualizer::Ptr preview_;
-    int frame_counter_;
-    PointCloudPtr most_recent_frame_;
-    bool use_trigger_, trigger_;
-    std::mutex mutex_;
+  void
+  waitForTrigger ();
+
+  pcl::OpenNIGrabber grabber_;
+  pcl::visualization::PCLVisualizer::Ptr preview_;
+  int frame_counter_;
+  PointCloudPtr most_recent_frame_;
+  bool use_trigger_, trigger_;
+  std::mutex mutex_;
 };

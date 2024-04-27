@@ -30,10 +30,10 @@ class SHOTLocalEstimationOMP : public LocalEstimator<PointInT, FeatureT> {
 
 public:
   bool
-  estimate(PointInTPtr& in,
-           PointInTPtr& processed,
-           PointInTPtr& keypoints,
-           FeatureTPtr& signatures) override
+  estimate (PointInTPtr& in,
+            PointInTPtr& processed,
+            PointInTPtr& keypoints,
+            FeatureTPtr& signatures) override
   {
     if (!normal_estimator_) {
       PCL_ERROR("SHOTLocalEstimationOMP :: This feature needs normals... please "

@@ -91,8 +91,8 @@ public:
    * \return number of point indices
    */
   std::size_t
-  getPointIndicesFromNewVoxels(Indices& indicesVector_arg,
-                               const uindex_t minPointsPerLeaf_arg = 0)
+  getPointIndicesFromNewVoxels (Indices& indicesVector_arg,
+                                const uindex_t minPointsPerLeaf_arg = 0)
   {
 
     std::vector<OctreeContainerPointIndices*> leaf_containers;

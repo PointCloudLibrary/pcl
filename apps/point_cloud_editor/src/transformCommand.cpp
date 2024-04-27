@@ -37,24 +37,27 @@
 /// @details the implementation of the class TransformCommand.
 /// @author  Yue Li and Matthew Hielsberg
 
-#include <algorithm>
-#include <pcl/apps/point_cloud_editor/transformCommand.h>
-#include <pcl/apps/point_cloud_editor/selection.h>
 #include <pcl/apps/point_cloud_editor/common.h>
+#include <pcl/apps/point_cloud_editor/selection.h>
+#include <pcl/apps/point_cloud_editor/transformCommand.h>
+
+#include <algorithm>
 
 TransformCommand::TransformCommand(const ConstSelectionPtr& selection_ptr,
                                    CloudPtr cloud_ptr,
-                                   const float *matrix,
+                                   const float* matrix,
                                    float translate_x,
                                    float translate_y,
                                    float translate_z)
-  : selection_ptr_(selection_ptr), cloud_ptr_(std::move(cloud_ptr)),
-    translate_x_(translate_x), translate_y_(translate_y),
-    translate_z_(translate_z),
-    internal_selection_ptr_(new Selection(*selection_ptr))
+: selection_ptr_(selection_ptr)
+, cloud_ptr_(std::move(cloud_ptr))
+, translate_x_(translate_x)
+, translate_y_(translate_y)
+, translate_z_(translate_z)
+, internal_selection_ptr_(new Selection(*selection_ptr))
 {
   std::copy(matrix, matrix + MATRIX_SIZE, transform_matrix_);
-  const float *cloud_matrix = cloud_ptr_->getMatrix();
+  const float* cloud_matrix = cloud_ptr_->getMatrix();
   std::copy(cloud_matrix, cloud_matrix + MATRIX_SIZE, cloud_matrix_);
   invertMatrix(cloud_matrix, cloud_matrix_inv_);
   cloud_ptr_->getCenter(cloud_center_[X], cloud_center_[Y], cloud_center_[Z]);
@@ -68,54 +71,43 @@ TransformCommand::execute()
   applyTransform(selection_ptr_);
 }
 
-
 void
 TransformCommand::undo()
-{ 
+{
   if (!cloud_ptr_)
     return;
   float transform_matrix_inv[MATRIX_SIZE];
   invertMatrix(transform_matrix_, transform_matrix_inv);
-  for(const unsigned int &index : *internal_selection_ptr_)
-  {
+  for (const unsigned int& index : *internal_selection_ptr_) {
     Point3D pt;
     pt.x = (*cloud_ptr_)[index].x - cloud_center_[X];
     pt.y = (*cloud_ptr_)[index].y - cloud_center_[Y];
     pt.z = (*cloud_ptr_)[index].z - cloud_center_[Z];
 
-    float x,y,z;
-    x = pt.x * cloud_matrix_[0] +
-        pt.y * cloud_matrix_[4] +
-        pt.z * cloud_matrix_[8] + cloud_matrix_[12];
-    y = pt.x * cloud_matrix_[1] +
-        pt.y * cloud_matrix_[5] +
-        pt.z * cloud_matrix_[9] + cloud_matrix_[13];
-    z = pt.x * cloud_matrix_[2] +
-        pt.y * cloud_matrix_[6] +
-        pt.z * cloud_matrix_[10] + cloud_matrix_[14];
+    float x, y, z;
+    x = pt.x * cloud_matrix_[0] + pt.y * cloud_matrix_[4] + pt.z * cloud_matrix_[8] +
+        cloud_matrix_[12];
+    y = pt.x * cloud_matrix_[1] + pt.y * cloud_matrix_[5] + pt.z * cloud_matrix_[9] +
+        cloud_matrix_[13];
+    z = pt.x * cloud_matrix_[2] + pt.y * cloud_matrix_[6] + pt.z * cloud_matrix_[10] +
+        cloud_matrix_[14];
 
     pt.x = x - translate_x_;
     pt.y = y - translate_y_;
     pt.z = z - translate_z_;
 
-    x = pt.x * transform_matrix_inv[0] +
-        pt.y * transform_matrix_inv[4] +
+    x = pt.x * transform_matrix_inv[0] + pt.y * transform_matrix_inv[4] +
         pt.z * transform_matrix_inv[8] + transform_matrix_inv[12];
-    y = pt.x * transform_matrix_inv[1] +
-        pt.y * transform_matrix_inv[5] +
+    y = pt.x * transform_matrix_inv[1] + pt.y * transform_matrix_inv[5] +
         pt.z * transform_matrix_inv[9] + transform_matrix_inv[13];
-    z = pt.x * transform_matrix_inv[2] +
-        pt.y * transform_matrix_inv[6] +
+    z = pt.x * transform_matrix_inv[2] + pt.y * transform_matrix_inv[6] +
         pt.z * transform_matrix_inv[10] + transform_matrix_inv[14];
 
-    pt.x = x * cloud_matrix_inv_[0] +
-           y * cloud_matrix_inv_[4] +
+    pt.x = x * cloud_matrix_inv_[0] + y * cloud_matrix_inv_[4] +
            z * cloud_matrix_inv_[8] + cloud_matrix_inv_[12];
-    pt.y = x * cloud_matrix_inv_[1] +
-           y * cloud_matrix_inv_[5] +
+    pt.y = x * cloud_matrix_inv_[1] + y * cloud_matrix_inv_[5] +
            z * cloud_matrix_inv_[9] + cloud_matrix_inv_[13];
-    pt.z = x * cloud_matrix_inv_[2] +
-           y * cloud_matrix_inv_[6] +
+    pt.z = x * cloud_matrix_inv_[2] + y * cloud_matrix_inv_[6] +
            z * cloud_matrix_inv_[10] + cloud_matrix_inv_[14];
 
     (*cloud_ptr_)[index].x = pt.x + cloud_center_[X];
@@ -128,33 +120,26 @@ void
 TransformCommand::applyTransform(const ConstSelectionPtr& sel_ptr)
 {
   // now modify the selected points' coordinates
-  for(const unsigned int &index : *sel_ptr)
-  {
+  for (const unsigned int& index : *sel_ptr) {
     Point3D pt = cloud_ptr_->getObjectSpacePoint(index);
 
-    float x,y,z;
-    x = pt.x * transform_matrix_[0] +
-        pt.y * transform_matrix_[4] +
+    float x, y, z;
+    x = pt.x * transform_matrix_[0] + pt.y * transform_matrix_[4] +
         pt.z * transform_matrix_[8] + transform_matrix_[12];
-    y = pt.x * transform_matrix_[1] +
-        pt.y * transform_matrix_[5] +
+    y = pt.x * transform_matrix_[1] + pt.y * transform_matrix_[5] +
         pt.z * transform_matrix_[9] + transform_matrix_[13];
-    z = pt.x * transform_matrix_[2] +
-        pt.y * transform_matrix_[6] +
+    z = pt.x * transform_matrix_[2] + pt.y * transform_matrix_[6] +
         pt.z * transform_matrix_[10] + transform_matrix_[14];
 
     pt.x = x + translate_x_;
     pt.y = y + translate_y_;
     pt.z = z + translate_z_;
 
-    x = pt.x * cloud_matrix_inv_[0] +
-        pt.y * cloud_matrix_inv_[4] +
+    x = pt.x * cloud_matrix_inv_[0] + pt.y * cloud_matrix_inv_[4] +
         pt.z * cloud_matrix_inv_[8] + cloud_matrix_inv_[12];
-    y = pt.x * cloud_matrix_inv_[1] +
-        pt.y * cloud_matrix_inv_[5] +
+    y = pt.x * cloud_matrix_inv_[1] + pt.y * cloud_matrix_inv_[5] +
         pt.z * cloud_matrix_inv_[9] + cloud_matrix_inv_[13];
-    z = pt.x * cloud_matrix_inv_[2] +
-        pt.y * cloud_matrix_inv_[6] +
+    z = pt.x * cloud_matrix_inv_[2] + pt.y * cloud_matrix_inv_[6] +
         pt.z * cloud_matrix_inv_[10] + cloud_matrix_inv_[14];
 
     (*cloud_ptr_)[index].x = x + cloud_center_[X];
@@ -162,13 +147,3 @@ TransformCommand::applyTransform(const ConstSelectionPtr& sel_ptr)
     (*cloud_ptr_)[index].z = z + cloud_center_[Z];
   }
 }
-
-
-
-
-
-
-
-
-
-

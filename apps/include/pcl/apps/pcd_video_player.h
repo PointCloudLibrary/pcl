@@ -86,7 +86,7 @@ public:
 
 protected:
   void
-  refreshView();
+  refreshView ();
 
   pcl::visualization::PCLVisualizer::Ptr vis_;
   pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud_;
@@ -123,33 +123,33 @@ protected:
 
 public Q_SLOTS:
   void
-  playButtonPressed()
+  playButtonPressed ()
   {
     play_mode_ = true;
   }
 
   void
-  stopButtonPressed()
+  stopButtonPressed ()
   {
     play_mode_ = false;
   }
 
   void
-  backButtonPressed();
+  backButtonPressed ();
 
   void
-  nextButtonPressed();
+  nextButtonPressed ();
 
   void
-  selectFolderButtonPressed();
+  selectFolderButtonPressed ();
 
   void
-  selectFilesButtonPressed();
+  selectFilesButtonPressed ();
 
   void
-  indexSliderValueChanged(int value);
+  indexSliderValueChanged (int value);
 
 private Q_SLOTS:
   void
-  timeoutSlot();
+  timeoutSlot ();
 };

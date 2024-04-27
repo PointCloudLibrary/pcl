@@ -39,11 +39,10 @@
 #include <pcl/filters/impl/voxel_grid_covariance.hpp>
 
 #ifndef PCL_NO_PRECOMPILE
-#include <pcl/point_types.h>
 #include <pcl/impl/instantiate.hpp>
+#include <pcl/point_types.h>
 
 // Instantiations of specific point types
-PCL_INSTANTIATE (VoxelGridCovariance, PCL_XYZ_POINT_TYPES)
+PCL_INSTANTIATE(VoxelGridCovariance, PCL_XYZ_POINT_TYPES)
 
-#endif    // PCL_NO_PRECOMPILE
-
+#endif // PCL_NO_PRECOMPILE

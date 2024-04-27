@@ -121,7 +121,7 @@ public:
   }
 
   void
-  cloud_cb(const CloudConstPtr& cloud)
+  cloud_cb (const CloudConstPtr& cloud)
   {
     std::lock_guard<std::mutex> lock(mtx_);
     // lock while we set our cloud;
@@ -161,7 +161,7 @@ public:
   }
 
   void
-  viz_cb(pcl::visualization::PCLVisualizer& viz)
+  viz_cb (pcl::visualization::PCLVisualizer& viz)
   {
     std::lock_guard<std::mutex> lock(mtx_);
     if (!cloud_) {
@@ -186,17 +186,17 @@ public:
   }
 
   void
-  run()
+  run ()
   {
     pcl::OpenNIGrabber interface(device_id_);
 
-    std::function<void(const CloudConstPtr&)> f = [this](const CloudConstPtr& cloud) {
+    std::function<void(const CloudConstPtr&)> f = [this] (const CloudConstPtr& cloud) {
       cloud_cb(cloud);
     };
     boost::signals2::connection c = interface.registerCallback(f);
 
     viewer.runOnVisualizationThread(
-        [this](pcl::visualization::PCLVisualizer& viz) { viz_cb(viz); }, "viz_cb");
+        [this] (pcl::visualization::PCLVisualizer& viz) { viz_cb(viz); }, "viz_cb");
 
     interface.start();
 
@@ -229,7 +229,7 @@ public:
 };
 
 void
-usage(char** argv)
+usage (char** argv)
 {
   // clang-format off
   std::cout << "usage: " << argv[0] << " [options]\n\n"
@@ -271,7 +271,7 @@ usage(char** argv)
 }
 
 int
-main(int argc, char** argv)
+main (int argc, char** argv)
 {
   std::cout << "OpenNIFeaturePersistence - show persistent features based on the "
                "MultiscaleFeaturePersistence class using the FPFH features\n"

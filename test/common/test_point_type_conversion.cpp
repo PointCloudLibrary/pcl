@@ -45,46 +45,54 @@
 using namespace pcl;
 using namespace pcl::test;
 
-TEST (PointTypeConversions, PointXYZRGBtoPointXYZHSV)
+TEST(PointTypeConversions, PointXYZRGBtoPointXYZHSV)
 {
   pcl::PointXYZRGB rgb;
-  rgb.r = 0;  rgb.g = 0; rgb.b = 0;
+  rgb.r = 0;
+  rgb.g = 0;
+  rgb.b = 0;
 
   pcl::PointXYZHSV hsv;
-  pcl::PointXYZRGBtoXYZHSV (rgb, hsv);
+  pcl::PointXYZRGBtoXYZHSV(rgb, hsv);
 
-  EXPECT_EQ (hsv.h, 0);
-  EXPECT_EQ (hsv.s, 0);
-  EXPECT_EQ (hsv.v, 0);
+  EXPECT_EQ(hsv.h, 0);
+  EXPECT_EQ(hsv.s, 0);
+  EXPECT_EQ(hsv.v, 0);
 
-  rgb.r = 100;  rgb.g = 100; rgb.b = 100;
+  rgb.r = 100;
+  rgb.g = 100;
+  rgb.b = 100;
 
-  pcl::PointXYZRGBtoXYZHSV (rgb, hsv);
+  pcl::PointXYZRGBtoXYZHSV(rgb, hsv);
 
-  EXPECT_EQ (hsv.h, 0);
-  EXPECT_EQ (hsv.s, 0);
-  EXPECT_NEAR (hsv.v, 0.392157, 1e-4);
+  EXPECT_EQ(hsv.h, 0);
+  EXPECT_EQ(hsv.s, 0);
+  EXPECT_NEAR(hsv.v, 0.392157, 1e-4);
 
-  rgb.r = 255;  rgb.g = 255; rgb.b = 255;
+  rgb.r = 255;
+  rgb.g = 255;
+  rgb.b = 255;
 
-  pcl::PointXYZRGBtoXYZHSV (rgb, hsv);
+  pcl::PointXYZRGBtoXYZHSV(rgb, hsv);
 
-  EXPECT_EQ (hsv.h, 0);
-  EXPECT_EQ (hsv.s, 0);
-  EXPECT_EQ (hsv.v, 1);
+  EXPECT_EQ(hsv.h, 0);
+  EXPECT_EQ(hsv.s, 0);
+  EXPECT_EQ(hsv.v, 1);
 
-  rgb.r = 240;  rgb.g = 90; rgb.b = 250;
+  rgb.r = 240;
+  rgb.g = 90;
+  rgb.b = 250;
 
-  pcl::PointXYZRGBtoXYZHSV (rgb, hsv);
+  pcl::PointXYZRGBtoXYZHSV(rgb, hsv);
 
-  EXPECT_NEAR (hsv.h, 296.25, 1e-2);
-  EXPECT_NEAR (hsv.s, 0.64, 1e-2);
-  EXPECT_NEAR (hsv.v, 0.980392, 1e-2);
+  EXPECT_NEAR(hsv.h, 296.25, 1e-2);
+  EXPECT_NEAR(hsv.s, 0.64, 1e-2);
+  EXPECT_NEAR(hsv.v, 0.980392, 1e-2);
 }
 
 int
 main (int argc, char** argv)
 {
-  testing::InitGoogleTest (&argc, argv);
-  return (RUN_ALL_TESTS ());
+  testing::InitGoogleTest(&argc, argv);
+  return (RUN_ALL_TESTS());
 }

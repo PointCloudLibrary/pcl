@@ -110,7 +110,7 @@ public:
    * double::max. \param[in] max_range the new maximum allowable distance
    */
   inline void
-  setMaxRange(double max_range)
+  setMaxRange (double max_range)
   {
     max_range_ = max_range;
   }
@@ -119,7 +119,7 @@ public:
    * correspondence, as set by the user.
    */
   inline double
-  getMaxRange()
+  getMaxRange ()
   {
     return (max_range_);
   }
@@ -132,7 +132,7 @@ public:
    * confident that the tree will be set correctly.
    */
   inline void
-  setSearchMethodTarget(const KdTreePtr& tree, bool force_no_recompute = false)
+  setSearchMethodTarget (const KdTreePtr& tree, bool force_no_recompute = false)
   {
     tree_ = tree;
     force_no_recompute_ = force_no_recompute;
@@ -147,14 +147,14 @@ public:
    * \param[in] threshold the threshold for which a transformation is vali
    */
   inline void
-  setThreshold(double threshold)
+  setThreshold (double threshold)
   {
     threshold_ = threshold;
   }
 
   /** \brief Get the threshold for which a specific transformation is valid. */
   inline double
-  getThreshold()
+  getThreshold ()
   {
     return (threshold_);
   }
@@ -170,9 +170,9 @@ public:
    * transformation_matrix with respect to the input data
    */
   double
-  validateTransformation(const PointCloudSourceConstPtr& cloud_src,
-                         const PointCloudTargetConstPtr& cloud_tgt,
-                         const Matrix4& transformation_matrix) const;
+  validateTransformation (const PointCloudSourceConstPtr& cloud_src,
+                          const PointCloudTargetConstPtr& cloud_tgt,
+                          const Matrix4& transformation_matrix) const;
 
   /** \brief Comparator function for deciding which score is better after running the
    * validation on multiple transforms.
@@ -197,9 +197,9 @@ public:
    * \return true if the transformation is valid, false otherwise.
    */
   virtual bool
-  isValid(const PointCloudSourceConstPtr& cloud_src,
-          const PointCloudTargetConstPtr& cloud_tgt,
-          const Matrix4& transformation_matrix) const
+  isValid (const PointCloudSourceConstPtr& cloud_src,
+           const PointCloudTargetConstPtr& cloud_tgt,
+           const Matrix4& transformation_matrix) const
   {
     if (std::isnan(threshold_)) {
       PCL_ERROR("[pcl::TransformationValidationEuclidean::isValid] Threshold not set! "
@@ -249,7 +249,7 @@ protected:
     virtual ~MyPointRepresentation() = default;
 
     virtual void
-    copyToFloatArray(const PointTarget& p, float* out) const
+    copyToFloatArray (const PointTarget& p, float* out) const
     {
       out[0] = p.x;
       out[1] = p.y;

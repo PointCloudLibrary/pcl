@@ -42,76 +42,74 @@
 
 #include <pcl/features/feature.h>
 
-namespace pcl
-{
-  /** \brief MomentInvariantsEstimation estimates the 3 moment invariants (j1, j2, j3) at each 3D point.
-    *
-    * \note The code is stateful as we do not expect this class to be multicore parallelized. Please look at
-    * \ref NormalEstimationOMP for an example on how to extend this to parallel implementations.
-    * \author Radu B. Rusu
-    * \ingroup features
-    * \tparam PointOutT Suggested type is `pcl::MomentInvariants`
-    */
-  template <typename PointInT, typename PointOutT>
-  class MomentInvariantsEstimation: public Feature<PointInT, PointOutT>
-  {
-    public:
-      using Ptr = shared_ptr<MomentInvariantsEstimation<PointInT, PointOutT> >;
-      using ConstPtr = shared_ptr<const MomentInvariantsEstimation<PointInT, PointOutT> >;
-      using Feature<PointInT, PointOutT>::feature_name_;
-      using Feature<PointInT, PointOutT>::getClassName;
-      using Feature<PointInT, PointOutT>::indices_;
-      using Feature<PointInT, PointOutT>::k_;
-      using Feature<PointInT, PointOutT>::search_parameter_;
-      using Feature<PointInT, PointOutT>::surface_;
-      using Feature<PointInT, PointOutT>::input_;
+namespace pcl {
+/** \brief MomentInvariantsEstimation estimates the 3 moment invariants (j1, j2, j3) at
+ * each 3D point.
+ *
+ * \note The code is stateful as we do not expect this class to be multicore
+ * parallelized. Please look at \ref NormalEstimationOMP for an example on how to extend
+ * this to parallel implementations. \author Radu B. Rusu \ingroup features \tparam
+ * PointOutT Suggested type is `pcl::MomentInvariants`
+ */
+template <typename PointInT, typename PointOutT>
+class MomentInvariantsEstimation : public Feature<PointInT, PointOutT> {
+public:
+  using Ptr = shared_ptr<MomentInvariantsEstimation<PointInT, PointOutT>>;
+  using ConstPtr = shared_ptr<const MomentInvariantsEstimation<PointInT, PointOutT>>;
+  using Feature<PointInT, PointOutT>::feature_name_;
+  using Feature<PointInT, PointOutT>::getClassName;
+  using Feature<PointInT, PointOutT>::indices_;
+  using Feature<PointInT, PointOutT>::k_;
+  using Feature<PointInT, PointOutT>::search_parameter_;
+  using Feature<PointInT, PointOutT>::surface_;
+  using Feature<PointInT, PointOutT>::input_;
 
-      using PointCloudOut = typename Feature<PointInT, PointOutT>::PointCloudOut;
+  using PointCloudOut = typename Feature<PointInT, PointOutT>::PointCloudOut;
 
-      /** \brief Empty constructor. */
-      MomentInvariantsEstimation ()
-      {
-        feature_name_ = "MomentInvariantsEstimation";
-      };
+  /** \brief Empty constructor. */
+  MomentInvariantsEstimation() { feature_name_ = "MomentInvariantsEstimation"; };
 
-      /** \brief Compute the 3 moment invariants (j1, j2, j3) for a given set of points, using their indices.
-        * \param[in] cloud the input point cloud
-        * \param[in] indices the point cloud indices that need to be used
-        * \param[out] j1 the resultant first moment invariant
-        * \param[out] j2 the resultant second moment invariant
-        * \param[out] j3 the resultant third moment invariant
-        */
-      void 
-      computePointMomentInvariants (const pcl::PointCloud<PointInT> &cloud, 
-                                    const pcl::Indices &indices, 
-                                    float &j1, float &j2, float &j3);
+  /** \brief Compute the 3 moment invariants (j1, j2, j3) for a given set of points,
+   * using their indices. \param[in] cloud the input point cloud \param[in] indices the
+   * point cloud indices that need to be used \param[out] j1 the resultant first moment
+   * invariant \param[out] j2 the resultant second moment invariant \param[out] j3 the
+   * resultant third moment invariant
+   */
+  void
+  computePointMomentInvariants (const pcl::PointCloud<PointInT>& cloud,
+                                const pcl::Indices& indices,
+                                float& j1,
+                                float& j2,
+                                float& j3);
 
-      /** \brief Compute the 3 moment invariants (j1, j2, j3) for a given set of points, using their indices.
-        * \param[in] cloud the input point cloud
-        * \param[out] j1 the resultant first moment invariant
-        * \param[out] j2 the resultant second moment invariant
-        * \param[out] j3 the resultant third moment invariant
-        */
-      void 
-      computePointMomentInvariants (const pcl::PointCloud<PointInT> &cloud, 
-                                    float &j1, float &j2, float &j3);
+  /** \brief Compute the 3 moment invariants (j1, j2, j3) for a given set of points,
+   * using their indices. \param[in] cloud the input point cloud \param[out] j1 the
+   * resultant first moment invariant \param[out] j2 the resultant second moment
+   * invariant \param[out] j3 the resultant third moment invariant
+   */
+  void
+  computePointMomentInvariants (const pcl::PointCloud<PointInT>& cloud,
+                                float& j1,
+                                float& j2,
+                                float& j3);
 
-    protected:
+protected:
+  /** \brief Estimate moment invariants for all points given in <setInputCloud (),
+   * setIndices ()> using the surface in setSearchSurface () and the spatial locator in
+   * setSearchMethod () \param[out] output the resultant point cloud model dataset that
+   * contains the moment invariants
+   */
+  void
+  computeFeature (PointCloudOut& output) override;
 
-      /** \brief Estimate moment invariants for all points given in <setInputCloud (), setIndices ()> using the surface
-        * in setSearchSurface () and the spatial locator in setSearchMethod ()
-        * \param[out] output the resultant point cloud model dataset that contains the moment invariants
-        */
-      void 
-      computeFeature (PointCloudOut &output) override;
-    private:
-      /** \brief 16-bytes aligned placeholder for the XYZ centroid of a surface patch. */
-      Eigen::Vector4f xyz_centroid_;
+private:
+  /** \brief 16-bytes aligned placeholder for the XYZ centroid of a surface patch. */
+  Eigen::Vector4f xyz_centroid_;
 
-      /** \brief Internal data vector. */
-      Eigen::Vector4f temp_pt_;
-  };
-}
+  /** \brief Internal data vector. */
+  Eigen::Vector4f temp_pt_;
+};
+} // namespace pcl
 
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/features/impl/moment_invariants.hpp>

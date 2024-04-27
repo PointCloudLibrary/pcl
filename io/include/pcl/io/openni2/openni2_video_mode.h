@@ -31,59 +31,52 @@
 
 #pragma once
 
-#include <ostream>
-
 #include <OpenNI.h>
 
-namespace pcl
-{
-  namespace io
-  {
-    namespace openni2
-    {
-      // copied from OniEnums.h
-      enum PixelFormat
-      {
-	      // Depth
-        PIXEL_FORMAT_DEPTH_1_MM = 100,
-        PIXEL_FORMAT_DEPTH_100_UM = 101,
-        PIXEL_FORMAT_SHIFT_9_2 = 102,
-        PIXEL_FORMAT_SHIFT_9_3 = 103,
+#include <ostream>
 
-	      // Color
-        PIXEL_FORMAT_RGB888 = 200,
-        PIXEL_FORMAT_YUV422 = 201,
-        PIXEL_FORMAT_GRAY8 = 202,
-        PIXEL_FORMAT_GRAY16 = 203,
-        PIXEL_FORMAT_JPEG = 204,
-        PIXEL_FORMAT_YUYV = 205,
-      };
+namespace pcl {
+namespace io {
+namespace openni2 {
+// copied from OniEnums.h
+enum PixelFormat {
+  // Depth
+  PIXEL_FORMAT_DEPTH_1_MM = 100,
+  PIXEL_FORMAT_DEPTH_100_UM = 101,
+  PIXEL_FORMAT_SHIFT_9_2 = 102,
+  PIXEL_FORMAT_SHIFT_9_3 = 103,
 
-      struct OpenNI2VideoMode
-      {
-        OpenNI2VideoMode ()
-          :x_resolution_(0), y_resolution_(0), frame_rate_(0)
-        {}
+  // Color
+  PIXEL_FORMAT_RGB888 = 200,
+  PIXEL_FORMAT_YUV422 = 201,
+  PIXEL_FORMAT_GRAY8 = 202,
+  PIXEL_FORMAT_GRAY16 = 203,
+  PIXEL_FORMAT_JPEG = 204,
+  PIXEL_FORMAT_YUYV = 205,
+};
 
-        OpenNI2VideoMode (int xResolution, int yResolution, int frameRate)
-          :x_resolution_(xResolution), y_resolution_(yResolution), frame_rate_(frameRate)
-        {}
+struct OpenNI2VideoMode {
+  OpenNI2VideoMode() : x_resolution_(0), y_resolution_(0), frame_rate_(0) {}
 
-        int x_resolution_;
-        int y_resolution_;
-        int frame_rate_;
-        PixelFormat pixel_format_;
-      };
+  OpenNI2VideoMode(int xResolution, int yResolution, int frameRate)
+  : x_resolution_(xResolution), y_resolution_(yResolution), frame_rate_(frameRate)
+  {}
 
-      std::ostream&
-      operator<< (std::ostream& stream, const OpenNI2VideoMode& video_mode);
+  int x_resolution_;
+  int y_resolution_;
+  int frame_rate_;
+  PixelFormat pixel_format_;
+};
 
-      bool
-      operator== (const OpenNI2VideoMode& video_mode_a, const OpenNI2VideoMode& video_mode_b);
+std::ostream&
+operator<<(std::ostream& stream, const OpenNI2VideoMode& video_mode);
 
-      bool
-      operator!= (const OpenNI2VideoMode& video_mode_a, const OpenNI2VideoMode& video_mode_b);
+bool
+operator==(const OpenNI2VideoMode& video_mode_a, const OpenNI2VideoMode& video_mode_b);
 
-    } // namespace
-  }
-}
+bool
+operator!=(const OpenNI2VideoMode& video_mode_a, const OpenNI2VideoMode& video_mode_b);
+
+} // namespace openni2
+} // namespace io
+} // namespace pcl

@@ -48,37 +48,37 @@ public:
   MeshSource() : SourceT() { gen_organized_ = false; }
 
   void
-  setTesselationLevel(int lev)
+  setTesselationLevel (int lev)
   {
     tes_level_ = lev;
   }
 
   void
-  setCamPosConstraints(std::function<bool(const Eigen::Vector3f&)>& bb)
+  setCamPosConstraints (std::function<bool(const Eigen::Vector3f&)>& bb)
   {
     campos_constraints_func_ = bb;
   }
 
   void
-  setResolution(int res)
+  setResolution (int res)
   {
     resolution_ = res;
   }
 
   void
-  setRadiusSphere(float r)
+  setRadiusSphere (float r)
   {
     radius_sphere_ = r;
   }
 
   void
-  setViewAngle(float a)
+  setViewAngle (float a)
   {
     view_angle_ = a;
   }
 
   void
-  loadOrGenerate(std::string& dir, std::string& model_path, ModelT& model)
+  loadOrGenerate (std::string& dir, std::string& model_path, ModelT& model)
   {
     const std::string pathmodel = dir + '/' + model.class_ + '/' + model.id_;
     pcl_fs::path trained_dir = pathmodel;
@@ -221,7 +221,7 @@ public:
    * needed
    */
   void
-  generate(std::string& training_dir) override
+  generate (std::string& training_dir) override
   {
 
     // create training dir fs if not existent

@@ -66,7 +66,7 @@ public:
    * \param[in] correspondences the const shared pointer to a correspondence vector
    */
   virtual inline void
-  setInputCorrespondences(const CorrespondencesConstPtr& correspondences)
+  setInputCorrespondences (const CorrespondencesConstPtr& correspondences)
   {
     input_correspondences_ = correspondences;
   };
@@ -75,7 +75,7 @@ public:
    * \return correspondences the const shared pointer to a correspondence vector
    */
   inline CorrespondencesConstPtr
-  getInputCorrespondences()
+  getInputCorrespondences ()
   {
     return input_correspondences_;
   };
@@ -84,7 +84,7 @@ public:
    * \param[out] correspondences Vector of correspondences that have not been rejected.
    */
   inline void
-  getCorrespondences(pcl::Correspondences& correspondences)
+  getCorrespondences (pcl::Correspondences& correspondences)
   {
     if (!input_correspondences_ || (input_correspondences_->empty()))
       return;
@@ -101,8 +101,8 @@ public:
    * correspondences
    */
   virtual inline void
-  getRemainingCorrespondences(const pcl::Correspondences& original_correspondences,
-                              pcl::Correspondences& remaining_correspondences) = 0;
+  getRemainingCorrespondences (const pcl::Correspondences& original_correspondences,
+                               pcl::Correspondences& remaining_correspondences) = 0;
 
   /** \brief Determine the indices of query points of
    * correspondences that have been rejected, i.e., the difference
@@ -113,8 +113,8 @@ public:
    * that have been rejected.
    */
   inline void
-  getRejectedQueryIndices(const pcl::Correspondences& correspondences,
-                          pcl::Indices& indices)
+  getRejectedQueryIndices (const pcl::Correspondences& correspondences,
+                           pcl::Indices& indices)
   {
     if (!input_correspondences_ || input_correspondences_->empty()) {
       PCL_WARN("[pcl::registration::%s::getRejectedQueryIndices] Input correspondences "
@@ -128,21 +128,21 @@ public:
 
   /** \brief Get a string representation of the name of this class. */
   inline const std::string&
-  getClassName() const
+  getClassName () const
   {
     return (rejection_name_);
   }
 
   /** \brief See if this rejector requires source points */
   virtual bool
-  requiresSourcePoints() const
+  requiresSourcePoints () const
   {
     return (false);
   }
 
   /** \brief Abstract method for setting the source cloud */
   virtual void
-  setSourcePoints(pcl::PCLPointCloud2::ConstPtr /*cloud2*/)
+  setSourcePoints (pcl::PCLPointCloud2::ConstPtr /*cloud2*/)
   {
     PCL_WARN("[pcl::registration::%s::setSourcePoints] This class does not require an "
              "input source cloud\n",
@@ -151,14 +151,14 @@ public:
 
   /** \brief See if this rejector requires source normals */
   virtual bool
-  requiresSourceNormals() const
+  requiresSourceNormals () const
   {
     return (false);
   }
 
   /** \brief Abstract method for setting the source normals */
   virtual void
-  setSourceNormals(pcl::PCLPointCloud2::ConstPtr /*cloud2*/)
+  setSourceNormals (pcl::PCLPointCloud2::ConstPtr /*cloud2*/)
   {
     PCL_WARN("[pcl::registration::%s::setSourceNormals] This class does not require "
              "input source normals\n",
@@ -166,14 +166,14 @@ public:
   }
   /** \brief See if this rejector requires a target cloud */
   virtual bool
-  requiresTargetPoints() const
+  requiresTargetPoints () const
   {
     return (false);
   }
 
   /** \brief Abstract method for setting the target cloud */
   virtual void
-  setTargetPoints(pcl::PCLPointCloud2::ConstPtr /*cloud2*/)
+  setTargetPoints (pcl::PCLPointCloud2::ConstPtr /*cloud2*/)
   {
     PCL_WARN("[pcl::registration::%s::setTargetPoints] This class does not require an "
              "input target cloud\n",
@@ -182,14 +182,14 @@ public:
 
   /** \brief See if this rejector requires target normals */
   virtual bool
-  requiresTargetNormals() const
+  requiresTargetNormals () const
   {
     return (false);
   }
 
   /** \brief Abstract method for setting the target normals */
   virtual void
-  setTargetNormals(pcl::PCLPointCloud2::ConstPtr /*cloud2*/)
+  setTargetNormals (pcl::PCLPointCloud2::ConstPtr /*cloud2*/)
   {
     PCL_WARN("[pcl::registration::%s::setTargetNormals] This class does not require "
              "input target normals\n",
@@ -205,7 +205,7 @@ protected:
 
   /** \brief Abstract rejection method. */
   virtual void
-  applyRejection(Correspondences& correspondences) = 0;
+  applyRejection (Correspondences& correspondences) = 0;
 };
 
 /** @b DataContainerInterface provides a generic interface for computing correspondence
@@ -219,11 +219,11 @@ public:
 
   virtual ~DataContainerInterface() = default;
   virtual double
-  getCorrespondenceScore(int index) = 0;
+  getCorrespondenceScore (int index) = 0;
   virtual double
-  getCorrespondenceScore(const pcl::Correspondence&) = 0;
+  getCorrespondenceScore (const pcl::Correspondence&) = 0;
   virtual double
-  getCorrespondenceScoreFromNormals(const pcl::Correspondence&) = 0;
+  getCorrespondenceScoreFromNormals (const pcl::Correspondence&) = 0;
 };
 
 /** @b DataContainer is a container for the input and target point clouds and implements
@@ -264,14 +264,14 @@ public:
    * \param[in] cloud a cloud containing XYZ data
    */
   inline void
-  setInputSource(const PointCloudConstPtr& cloud)
+  setInputSource (const PointCloudConstPtr& cloud)
   {
     input_ = cloud;
   }
 
   /** \brief Get a pointer to the input point cloud dataset target. */
   inline PointCloudConstPtr const
-  getInputSource()
+  getInputSource ()
   {
     return (input_);
   }
@@ -281,7 +281,7 @@ public:
    * \param[in] target a cloud containing XYZ data
    */
   inline void
-  setInputTarget(const PointCloudConstPtr& target)
+  setInputTarget (const PointCloudConstPtr& target)
   {
     target_ = target;
     target_cloud_updated_ = true;
@@ -289,7 +289,7 @@ public:
 
   /** \brief Get a pointer to the input point cloud dataset target. */
   inline PointCloudConstPtr const
-  getInputTarget()
+  getInputTarget ()
   {
     return (target_);
   }
@@ -302,7 +302,7 @@ public:
    * confident that the tree will be set correctly.
    */
   inline void
-  setSearchMethodTarget(const KdTreePtr& tree, bool force_no_recompute = false)
+  setSearchMethodTarget (const KdTreePtr& tree, bool force_no_recompute = false)
   {
     tree_ = tree;
     force_no_recompute_ = force_no_recompute;
@@ -313,14 +313,14 @@ public:
    * \param[in] normals the normals computed for the input cloud
    */
   inline void
-  setInputNormals(const NormalsConstPtr& normals)
+  setInputNormals (const NormalsConstPtr& normals)
   {
     input_normals_ = normals;
   }
 
   /** \brief Get the normals computed on the input point cloud */
   inline NormalsConstPtr
-  getInputNormals()
+  getInputNormals ()
   {
     return (input_normals_);
   }
@@ -329,14 +329,14 @@ public:
    * \param[in] normals the normals computed for the input cloud
    */
   inline void
-  setTargetNormals(const NormalsConstPtr& normals)
+  setTargetNormals (const NormalsConstPtr& normals)
   {
     target_normals_ = normals;
   }
 
   /** \brief Get the normals computed on the target point cloud */
   inline NormalsConstPtr
-  getTargetNormals()
+  getTargetNormals ()
   {
     return (target_normals_);
   }
@@ -345,7 +345,7 @@ public:
    * \param[in] index index of the point in the input cloud
    */
   inline double
-  getCorrespondenceScore(int index) override
+  getCorrespondenceScore (int index) override
   {
     if (target_cloud_updated_ && !force_no_recompute_) {
       tree_->setInputCloud(target_);
@@ -361,7 +361,7 @@ public:
    * \param[in] corr Correspondent points
    */
   inline double
-  getCorrespondenceScore(const pcl::Correspondence& corr) override
+  getCorrespondenceScore (const pcl::Correspondence& corr) override
   {
     // Get the source and the target feature from the list
     const PointT& src = (*input_)[corr.index_query];
@@ -375,7 +375,7 @@ public:
    * must be set before using this function \param[in] corr Correspondent points
    */
   inline double
-  getCorrespondenceScoreFromNormals(const pcl::Correspondence& corr) override
+  getCorrespondenceScoreFromNormals (const pcl::Correspondence& corr) override
   {
     // assert ( (input_normals_->size () != 0) && (target_normals_->size () != 0) &&
     // "Normals are not set for the input and target point clouds");
@@ -426,7 +426,7 @@ private:
 
   /** \brief Get a string representation of the name of this class. */
   inline const std::string&
-  getClassName() const
+  getClassName () const
   {
     return (class_name_);
   }

@@ -91,7 +91,7 @@ public:
   }
 
   void
-  cloud_cb(const CloudConstPtr& cloud);
+  cloud_cb (const CloudConstPtr& cloud);
 
 protected:
   pcl::visualization::PCLVisualizer::Ptr vis_;
@@ -136,56 +136,56 @@ protected:
 
 public Q_SLOTS:
   void
-  toggleCapturePressed()
+  toggleCapturePressed ()
   {
     capture_ = !capture_;
   }
 
   void
-  usePlaneComparatorPressed();
+  usePlaneComparatorPressed ();
   void
-  useEuclideanComparatorPressed();
+  useEuclideanComparatorPressed ();
   void
-  useRGBComparatorPressed();
+  useRGBComparatorPressed ();
   void
-  useEdgeAwareComparatorPressed();
+  useEdgeAwareComparatorPressed ();
 
   void
-  displayCurvaturePressed();
+  displayCurvaturePressed ();
   void
-  displayDistanceMapPressed();
+  displayDistanceMapPressed ();
   void
-  displayNormalsPressed();
+  displayNormalsPressed ();
 
   void
-  disableRefinementPressed()
+  disableRefinementPressed ()
   {
     use_planar_refinement_ = false;
   }
 
   void
-  usePlanarRefinementPressed()
+  usePlanarRefinementPressed ()
   {
     use_planar_refinement_ = true;
   }
 
   void
-  disableClusteringPressed()
+  disableClusteringPressed ()
   {
     use_clustering_ = false;
   }
 
   void
-  useEuclideanClusteringPressed()
+  useEuclideanClusteringPressed ()
   {
     use_clustering_ = true;
   }
 
 private Q_SLOTS:
   void
-  timeoutSlot();
+  timeoutSlot ();
 
 private:
   void
-  refreshView();
+  refreshView ();
 };

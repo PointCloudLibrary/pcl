@@ -42,183 +42,195 @@
 #include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 
-namespace pcl
-{
-  /** \brief SampleConsensusModelRegistration2D defines a model for Point-To-Point registration outlier rejection using distances between 2D pixels
-    * \author Radu B. Rusu
-    * \ingroup sample_consensus
-    */
-  template <typename PointT>
-  class SampleConsensusModelRegistration2D : public pcl::SampleConsensusModelRegistration<PointT>
+namespace pcl {
+/** \brief SampleConsensusModelRegistration2D defines a model for Point-To-Point
+ * registration outlier rejection using distances between 2D pixels \author Radu B. Rusu
+ * \ingroup sample_consensus
+ */
+template <typename PointT>
+class SampleConsensusModelRegistration2D
+: public pcl::SampleConsensusModelRegistration<PointT> {
+public:
+  using pcl::SampleConsensusModelRegistration<PointT>::model_name_;
+  using pcl::SampleConsensusModelRegistration<PointT>::input_;
+  using pcl::SampleConsensusModelRegistration<PointT>::target_;
+  using pcl::SampleConsensusModelRegistration<PointT>::indices_;
+  using pcl::SampleConsensusModelRegistration<PointT>::indices_tgt_;
+  using pcl::SampleConsensusModelRegistration<PointT>::error_sqr_dists_;
+  using pcl::SampleConsensusModelRegistration<PointT>::correspondences_;
+  using pcl::SampleConsensusModelRegistration<PointT>::sample_dist_thresh_;
+  using pcl::SampleConsensusModelRegistration<PointT>::computeOriginalIndexMapping;
+  using pcl::SampleConsensusModel<PointT>::isModelValid;
+
+  using PointCloud = typename pcl::SampleConsensusModel<PointT>::PointCloud;
+  using PointCloudPtr = typename pcl::SampleConsensusModel<PointT>::PointCloudPtr;
+  using PointCloudConstPtr =
+      typename pcl::SampleConsensusModel<PointT>::PointCloudConstPtr;
+
+  using Ptr = shared_ptr<SampleConsensusModelRegistration2D<PointT>>;
+  using ConstPtr = shared_ptr<const SampleConsensusModelRegistration2D<PointT>>;
+
+  /** \brief Constructor for base SampleConsensusModelRegistration2D.
+   * \param[in] cloud the input point cloud dataset
+   * \param[in] random if true set the random seed to the current time, else set to
+   * 12345 (default: false)
+   */
+  SampleConsensusModelRegistration2D(const PointCloudConstPtr& cloud,
+                                     bool random = false)
+  : pcl::SampleConsensusModelRegistration<PointT>(cloud, random)
+  , projection_matrix_(Eigen::Matrix3f::Identity())
   {
-    public:
-      using pcl::SampleConsensusModelRegistration<PointT>::model_name_;
-      using pcl::SampleConsensusModelRegistration<PointT>::input_;
-      using pcl::SampleConsensusModelRegistration<PointT>::target_;
-      using pcl::SampleConsensusModelRegistration<PointT>::indices_;
-      using pcl::SampleConsensusModelRegistration<PointT>::indices_tgt_;
-      using pcl::SampleConsensusModelRegistration<PointT>::error_sqr_dists_;
-      using pcl::SampleConsensusModelRegistration<PointT>::correspondences_;
-      using pcl::SampleConsensusModelRegistration<PointT>::sample_dist_thresh_;
-      using pcl::SampleConsensusModelRegistration<PointT>::computeOriginalIndexMapping;
-      using pcl::SampleConsensusModel<PointT>::isModelValid;
+    // Call our own setInputCloud
+    setInputCloud(cloud);
+    model_name_ = "SampleConsensusModelRegistration2D";
+    sample_size_ = 3;
+    model_size_ = 16;
+  }
 
-      using PointCloud = typename pcl::SampleConsensusModel<PointT>::PointCloud;
-      using PointCloudPtr = typename pcl::SampleConsensusModel<PointT>::PointCloudPtr;
-      using PointCloudConstPtr = typename pcl::SampleConsensusModel<PointT>::PointCloudConstPtr;
+  /** \brief Constructor for base SampleConsensusModelRegistration2D.
+   * \param[in] cloud the input point cloud dataset
+   * \param[in] indices a vector of point indices to be used from \a cloud
+   * \param[in] random if true set the random seed to the current time, else set to
+   * 12345 (default: false)
+   */
+  SampleConsensusModelRegistration2D(const PointCloudConstPtr& cloud,
+                                     const Indices& indices,
+                                     bool random = false)
+  : pcl::SampleConsensusModelRegistration<PointT>(cloud, indices, random)
+  , projection_matrix_(Eigen::Matrix3f::Identity())
+  {
+    computeOriginalIndexMapping();
+    computeSampleDistanceThreshold(cloud, indices);
+    model_name_ = "SampleConsensusModelRegistration2D";
+    sample_size_ = 3;
+    model_size_ = 16;
+  }
 
-      using Ptr = shared_ptr<SampleConsensusModelRegistration2D<PointT> >;
-      using ConstPtr = shared_ptr<const SampleConsensusModelRegistration2D<PointT> >;
+  /** \brief Empty destructor */
+  virtual ~SampleConsensusModelRegistration2D() = default;
 
-      /** \brief Constructor for base SampleConsensusModelRegistration2D.
-        * \param[in] cloud the input point cloud dataset
-        * \param[in] random if true set the random seed to the current time, else set to 12345 (default: false)
-        */
-      SampleConsensusModelRegistration2D (const PointCloudConstPtr &cloud,
-                                          bool random = false) 
-        : pcl::SampleConsensusModelRegistration<PointT> (cloud, random)
-        , projection_matrix_ (Eigen::Matrix3f::Identity ())
-      {
-        // Call our own setInputCloud
-        setInputCloud (cloud);
-        model_name_ = "SampleConsensusModelRegistration2D";
-        sample_size_ = 3;
-        model_size_ = 16;
-      }
+  /** \brief Compute all distances from the transformed points to their correspondences
+   * \param[in] model_coefficients the 4x4 transformation matrix
+   * \param[out] distances the resultant estimated distances
+   */
+  void
+  getDistancesToModel (const Eigen::VectorXf& model_coefficients,
+                       std::vector<double>& distances) const;
 
-      /** \brief Constructor for base SampleConsensusModelRegistration2D.
-        * \param[in] cloud the input point cloud dataset
-        * \param[in] indices a vector of point indices to be used from \a cloud
-        * \param[in] random if true set the random seed to the current time, else set to 12345 (default: false)
-        */
-      SampleConsensusModelRegistration2D (const PointCloudConstPtr &cloud,
-                                          const Indices &indices,
-                                          bool random = false)
-        : pcl::SampleConsensusModelRegistration<PointT> (cloud, indices, random)
-        , projection_matrix_ (Eigen::Matrix3f::Identity ())
-      {
-        computeOriginalIndexMapping ();
-        computeSampleDistanceThreshold (cloud, indices);
-        model_name_ = "SampleConsensusModelRegistration2D";
-        sample_size_ = 3;
-        model_size_ = 16;
-      }
-      
-      /** \brief Empty destructor */
-      virtual ~SampleConsensusModelRegistration2D () = default;
+  /** \brief Select all the points which respect the given model coefficients as
+   * inliers. \param[in] model_coefficients the 4x4 transformation matrix \param[in]
+   * threshold a maximum admissible distance threshold for determining the inliers from
+   * the outliers \param[out] inliers the resultant model inliers
+   */
+  void
+  selectWithinDistance (const Eigen::VectorXf& model_coefficients,
+                        const double threshold,
+                        Indices& inliers);
 
-      /** \brief Compute all distances from the transformed points to their correspondences
-        * \param[in] model_coefficients the 4x4 transformation matrix
-        * \param[out] distances the resultant estimated distances
-        */
-      void
-      getDistancesToModel (const Eigen::VectorXf &model_coefficients,
-                           std::vector<double> &distances) const;
+  /** \brief Count all the points which respect the given model coefficients as inliers.
+   *
+   * \param[in] model_coefficients the coefficients of a model that we need to compute
+   * distances to \param[in] threshold maximum admissible distance threshold for
+   * determining the inliers from the outliers \return the resultant number of inliers
+   */
+  virtual std::size_t
+  countWithinDistance (const Eigen::VectorXf& model_coefficients,
+                       const double threshold) const;
 
-      /** \brief Select all the points which respect the given model coefficients as inliers.
-        * \param[in] model_coefficients the 4x4 transformation matrix
-        * \param[in] threshold a maximum admissible distance threshold for determining the inliers from the outliers
-        * \param[out] inliers the resultant model inliers
-        */
-      void
-      selectWithinDistance (const Eigen::VectorXf &model_coefficients,
-                            const double threshold,
-                            Indices &inliers);
+  /** \brief Set the camera projection matrix.
+   * \param[in] projection_matrix the camera projection matrix
+   */
+  inline void
+  setProjectionMatrix (const Eigen::Matrix3f& projection_matrix)
+  {
+    projection_matrix_ = projection_matrix;
+  }
 
-      /** \brief Count all the points which respect the given model coefficients as inliers.
-        *
-        * \param[in] model_coefficients the coefficients of a model that we need to compute distances to
-        * \param[in] threshold maximum admissible distance threshold for determining the inliers from the outliers
-        * \return the resultant number of inliers
-        */
-      virtual std::size_t
-      countWithinDistance (const Eigen::VectorXf &model_coefficients,
-                           const double threshold) const;
+  /** \brief Get the camera projection matrix. */
+  inline Eigen::Matrix3f
+  getProjectionMatrix () const
+  {
+    return (projection_matrix_);
+  }
 
-      /** \brief Set the camera projection matrix. 
-        * \param[in] projection_matrix the camera projection matrix 
-        */
-      inline void
-      setProjectionMatrix (const Eigen::Matrix3f &projection_matrix)
-      { projection_matrix_ = projection_matrix; }
+protected:
+  using SampleConsensusModel<PointT>::sample_size_;
+  using SampleConsensusModel<PointT>::model_size_;
 
-      /** \brief Get the camera projection matrix. */
-      inline Eigen::Matrix3f
-      getProjectionMatrix () const
-      { return (projection_matrix_); }
+  /** \brief Check if a sample of indices results in a good sample of points
+   * indices.
+   * \param[in] samples the resultant index samples
+   */
+  bool
+  isSampleGood (const Indices& samples) const;
 
-    protected:
-      using SampleConsensusModel<PointT>::sample_size_;
-      using SampleConsensusModel<PointT>::model_size_;
+  /** \brief Computes an "optimal" sample distance threshold based on the
+   * principal directions of the input cloud.
+   */
+  inline void
+  computeSampleDistanceThreshold (const PointCloudConstPtr&)
+  {
+    //// Compute the principal directions via PCA
+    // Eigen::Vector4f xyz_centroid;
+    // Eigen::Matrix3f covariance_matrix = Eigen::Matrix3f::Zero ();
 
-      /** \brief Check if a sample of indices results in a good sample of points
-        * indices.
-        * \param[in] samples the resultant index samples
-        */
-      bool
-      isSampleGood (const Indices &samples) const;
+    // computeMeanAndCovarianceMatrix (*cloud, covariance_matrix, xyz_centroid);
 
-      /** \brief Computes an "optimal" sample distance threshold based on the
-        * principal directions of the input cloud.
-        */
-      inline void
-      computeSampleDistanceThreshold (const PointCloudConstPtr&)
-      {
-        //// Compute the principal directions via PCA
-        //Eigen::Vector4f xyz_centroid;
-        //Eigen::Matrix3f covariance_matrix = Eigen::Matrix3f::Zero ();
+    //// Check if the covariance matrix is finite or not.
+    // for (int i = 0; i < 3; ++i)
+    //   for (int j = 0; j < 3; ++j)
+    //     if (!std::isfinite (covariance_matrix.coeffRef (i, j)))
+    //       PCL_ERROR
+    //       ("[pcl::SampleConsensusModelRegistration::computeSampleDistanceThreshold]
+    //       Covariance matrix has NaN values! Is the input cloud finite?\n");
 
-        //computeMeanAndCovarianceMatrix (*cloud, covariance_matrix, xyz_centroid);
+    // Eigen::Vector3f eigen_values;
+    // pcl::eigen33 (covariance_matrix, eigen_values);
 
-        //// Check if the covariance matrix is finite or not.
-        //for (int i = 0; i < 3; ++i)
-        //  for (int j = 0; j < 3; ++j)
-        //    if (!std::isfinite (covariance_matrix.coeffRef (i, j)))
-        //      PCL_ERROR ("[pcl::SampleConsensusModelRegistration::computeSampleDistanceThreshold] Covariance matrix has NaN values! Is the input cloud finite?\n");
+    //// Compute the distance threshold for sample selection
+    // sample_dist_thresh_ = eigen_values.array ().sqrt ().sum () / 3.0;
+    // sample_dist_thresh_ *= sample_dist_thresh_;
+    // PCL_DEBUG ("[pcl::SampleConsensusModelRegistration::setInputCloud] Estimated a
+    // sample selection distance threshold of: %f\n", sample_dist_thresh_);
+  }
 
-        //Eigen::Vector3f eigen_values;
-        //pcl::eigen33 (covariance_matrix, eigen_values);
+  /** \brief Computes an "optimal" sample distance threshold based on the
+   * principal directions of the input cloud.
+   */
+  inline void
+  computeSampleDistanceThreshold (const PointCloudConstPtr&, const Indices&)
+  {
+    //// Compute the principal directions via PCA
+    // Eigen::Vector4f xyz_centroid;
+    // Eigen::Matrix3f covariance_matrix;
+    // computeMeanAndCovarianceMatrix (*cloud, indices, covariance_matrix,
+    // xyz_centroid);
 
-        //// Compute the distance threshold for sample selection
-        //sample_dist_thresh_ = eigen_values.array ().sqrt ().sum () / 3.0;
-        //sample_dist_thresh_ *= sample_dist_thresh_;
-        //PCL_DEBUG ("[pcl::SampleConsensusModelRegistration::setInputCloud] Estimated a sample selection distance threshold of: %f\n", sample_dist_thresh_);
-      }
+    //// Check if the covariance matrix is finite or not.
+    // for (int i = 0; i < 3; ++i)
+    //   for (int j = 0; j < 3; ++j)
+    //     if (!std::isfinite (covariance_matrix.coeffRef (i, j)))
+    //       PCL_ERROR
+    //       ("[pcl::SampleConsensusModelRegistration::computeSampleDistanceThreshold]
+    //       Covariance matrix has NaN values! Is the input cloud finite?\n");
 
-      /** \brief Computes an "optimal" sample distance threshold based on the
-        * principal directions of the input cloud.
-        */
-      inline void
-      computeSampleDistanceThreshold (const PointCloudConstPtr&,
-                                      const Indices&)
-      {
-        //// Compute the principal directions via PCA
-        //Eigen::Vector4f xyz_centroid;
-        //Eigen::Matrix3f covariance_matrix;
-        //computeMeanAndCovarianceMatrix (*cloud, indices, covariance_matrix, xyz_centroid);
+    // Eigen::Vector3f eigen_values;
+    // pcl::eigen33 (covariance_matrix, eigen_values);
 
-        //// Check if the covariance matrix is finite or not.
-        //for (int i = 0; i < 3; ++i)
-        //  for (int j = 0; j < 3; ++j)
-        //    if (!std::isfinite (covariance_matrix.coeffRef (i, j)))
-        //      PCL_ERROR ("[pcl::SampleConsensusModelRegistration::computeSampleDistanceThreshold] Covariance matrix has NaN values! Is the input cloud finite?\n");
+    //// Compute the distance threshold for sample selection
+    // sample_dist_thresh_ = eigen_values.array ().sqrt ().sum () / 3.0;
+    // sample_dist_thresh_ *= sample_dist_thresh_;
+    // PCL_DEBUG ("[pcl::SampleConsensusModelRegistration::setInputCloud] Estimated a
+    // sample selection distance threshold of: %f\n", sample_dist_thresh_);
+  }
 
-        //Eigen::Vector3f eigen_values;
-        //pcl::eigen33 (covariance_matrix, eigen_values);
+private:
+  /** \brief Camera projection matrix. */
+  Eigen::Matrix3f projection_matrix_;
 
-        //// Compute the distance threshold for sample selection
-        //sample_dist_thresh_ = eigen_values.array ().sqrt ().sum () / 3.0;
-        //sample_dist_thresh_ *= sample_dist_thresh_;
-        //PCL_DEBUG ("[pcl::SampleConsensusModelRegistration::setInputCloud] Estimated a sample selection distance threshold of: %f\n", sample_dist_thresh_);
-      }
-
-    private:
-      /** \brief Camera projection matrix. */
-      Eigen::Matrix3f projection_matrix_;
-
-    public:
-      PCL_MAKE_ALIGNED_OPERATOR_NEW
-  };
-}
+public:
+  PCL_MAKE_ALIGNED_OPERATOR_NEW
+};
+} // namespace pcl
 
 #include <pcl/sample_consensus/impl/sac_model_registration_2d.hpp>

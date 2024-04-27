@@ -82,7 +82,7 @@ public:
   }
 
   void
-  cloud_cb(const CloudConstPtr& cloud)
+  cloud_cb (const CloudConstPtr& cloud)
   {
     std::lock_guard<std::mutex> lock(mtx_);
     // lock while we set our cloud;
@@ -97,7 +97,7 @@ public:
   }
 
   void
-  viz_cb(pcl::visualization::PCLVisualizer& viz)
+  viz_cb (pcl::visualization::PCLVisualizer& viz)
   {
     mtx_.lock();
     if (!cloud_ || !normals_) {
@@ -125,7 +125,7 @@ public:
   }
 
   void
-  keyboard_callback(const pcl::visualization::KeyboardEvent& event, void*)
+  keyboard_callback (const pcl::visualization::KeyboardEvent& event, void*)
   {
     std::lock_guard<std::mutex> lock(mtx_);
     switch (event.getKeyCode()) {
@@ -157,17 +157,17 @@ public:
   }
 
   void
-  run()
+  run ()
   {
     pcl::OpenNIGrabber interface(device_id_);
 
-    std::function<void(const CloudConstPtr&)> f = [this](const CloudConstPtr& cloud) {
+    std::function<void(const CloudConstPtr&)> f = [this] (const CloudConstPtr& cloud) {
       cloud_cb(cloud);
     };
     boost::signals2::connection c = interface.registerCallback(f);
 
     viewer.runOnVisualizationThread(
-        [this](pcl::visualization::PCLVisualizer& viz) { viz_cb(viz); }, "viz_cb");
+        [this] (pcl::visualization::PCLVisualizer& viz) { viz_cb(viz); }, "viz_cb");
 
     interface.start();
 
@@ -189,7 +189,7 @@ public:
 };
 
 void
-usage(char** argv)
+usage (char** argv)
 {
   std::cout << "usage: " << argv[0] << " [-device_id X (default: \"#1\")]\n\n";
 
@@ -220,7 +220,7 @@ usage(char** argv)
 }
 
 int
-main(int argc, char** argv)
+main (int argc, char** argv)
 {
   /////////////////////////////////////////////////////////////////////
   if (pcl::console::find_argument(argc, argv, "-h") != -1 ||

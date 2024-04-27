@@ -144,7 +144,7 @@ public:
    * \param[in] normals the normals computed for the source cloud
    */
   inline void
-  setSourceNormals(const NormalsConstPtr& normals)
+  setSourceNormals (const NormalsConstPtr& normals)
   {
     source_normals_ = normals;
   }
@@ -152,21 +152,21 @@ public:
   /** \brief Get the normals of the source point cloud
    */
   inline NormalsConstPtr
-  getSourceNormals() const
+  getSourceNormals () const
   {
     return (source_normals_);
   }
 
   /** \brief See if this rejector requires source normals */
   bool
-  requiresSourceNormals() const override
+  requiresSourceNormals () const override
   {
     return (true);
   }
 
   /** \brief Blob method for setting the source normals */
   void
-  setSourceNormals(pcl::PCLPointCloud2::ConstPtr cloud2) override
+  setSourceNormals (pcl::PCLPointCloud2::ConstPtr cloud2) override
   {
     NormalsPtr cloud(new PointCloudNormals);
     fromPCLPointCloud2(*cloud2, *cloud);
@@ -180,7 +180,7 @@ public:
    * cloud
    */
   void
-  determineCorrespondences(
+  determineCorrespondences (
       pcl::Correspondences& correspondences,
       double max_distance = std::numeric_limits<double>::max()) override;
 
@@ -193,7 +193,7 @@ public:
    * correspondences
    */
   void
-  determineReciprocalCorrespondences(
+  determineReciprocalCorrespondences (
       pcl::Correspondences& correspondences,
       double max_distance = std::numeric_limits<double>::max()) override;
 
@@ -203,7 +203,7 @@ public:
    * \param[in] k the number of nearest neighbours to be considered
    */
   inline void
-  setKSearch(unsigned int k)
+  setKSearch (unsigned int k)
   {
     k_ = k;
   }
@@ -213,14 +213,14 @@ public:
    * neighbors.
    */
   inline unsigned int
-  getKSearch() const
+  getKSearch () const
   {
     return (k_);
   }
 
   /** \brief Clone and cast to CorrespondenceEstimationBase */
   typename CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::Ptr
-  clone() const override
+  clone () const override
   {
     Ptr copy(new CorrespondenceEstimationNormalShooting<PointSource,
                                                         PointTarget,
@@ -238,7 +238,7 @@ protected:
 
   /** \brief Internal computation initialization. */
   bool
-  initCompute();
+  initCompute ();
 
 private:
   /** \brief The normals computed at each point in the source cloud */

@@ -37,181 +37,178 @@
  *
  */
 
-#include <pcl/point_types.h>
-#include <pcl/io/vtk_io.h>
-#include <fstream>
 #include <pcl/common/io.h>
+#include <pcl/io/vtk_io.h>
+#include <pcl/point_types.h>
+
+#include <fstream>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 int
-pcl::io::saveVTKFile (const std::string &file_name, 
-                      const pcl::PolygonMesh &triangles, unsigned precision)
+pcl::io::saveVTKFile(const std::string& file_name,
+                     const pcl::PolygonMesh& triangles,
+                     unsigned precision)
 {
-  if (triangles.cloud.data.empty ())
-  {
-    PCL_ERROR ("[pcl::io::saveVTKFile] Input point cloud has no data!\n");
+  if (triangles.cloud.data.empty()) {
+    PCL_ERROR("[pcl::io::saveVTKFile] Input point cloud has no data!\n");
     return (-1);
   }
 
   // Open file
   std::ofstream fs;
-  fs.precision (precision);
-  fs.open (file_name.c_str ());
+  fs.precision(precision);
+  fs.open(file_name.c_str());
 
-  unsigned int nr_points  = triangles.cloud.width * triangles.cloud.height;
-  auto point_size = static_cast<unsigned int> (triangles.cloud.data.size () / nr_points);
+  unsigned int nr_points = triangles.cloud.width * triangles.cloud.height;
+  auto point_size = static_cast<unsigned int>(triangles.cloud.data.size() / nr_points);
 
   // Write the header information
-  fs << "# vtk DataFile Version 3.0\nvtk output\nASCII\nDATASET POLYDATA\nPOINTS " << nr_points << " float" << '\n';
+  fs << "# vtk DataFile Version 3.0\nvtk output\nASCII\nDATASET POLYDATA\nPOINTS "
+     << nr_points << " float" << '\n';
 
   // Iterate through the points
-  for (unsigned int i = 0; i < nr_points; ++i)
-  {
+  for (unsigned int i = 0; i < nr_points; ++i) {
     int xyz = 0;
-    for (std::size_t d = 0; d < triangles.cloud.fields.size (); ++d)
-    {
-      if ((triangles.cloud.fields[d].datatype == pcl::PCLPointField::FLOAT32) && (
-           triangles.cloud.fields[d].name == "x" || 
-           triangles.cloud.fields[d].name == "y" || 
-           triangles.cloud.fields[d].name == "z"))
-      {
+    for (std::size_t d = 0; d < triangles.cloud.fields.size(); ++d) {
+      if ((triangles.cloud.fields[d].datatype == pcl::PCLPointField::FLOAT32) &&
+          (triangles.cloud.fields[d].name == "x" ||
+           triangles.cloud.fields[d].name == "y" ||
+           triangles.cloud.fields[d].name == "z")) {
         float value;
-        memcpy (&value, &triangles.cloud.data[i * point_size + triangles.cloud.fields[d].offset], sizeof (float));
+        memcpy(&value,
+               &triangles.cloud.data[i * point_size + triangles.cloud.fields[d].offset],
+               sizeof(float));
         fs << value;
         if (++xyz == 3)
           break;
       }
       fs << " ";
     }
-    if (xyz != 3)
-    {
-      PCL_ERROR ("[pcl::io::saveVTKFile] Input point cloud has no XYZ data!\n");
+    if (xyz != 3) {
+      PCL_ERROR("[pcl::io::saveVTKFile] Input point cloud has no XYZ data!\n");
       return (-2);
     }
     fs << '\n';
   }
 
   // Write vertices
-  fs << "\nVERTICES " << nr_points << " " << 2*nr_points << '\n';
+  fs << "\nVERTICES " << nr_points << " " << 2 * nr_points << '\n';
   for (unsigned int i = 0; i < nr_points; ++i)
     fs << "1 " << i << '\n';
 
   // Write polygons
   // compute the correct number of values:
-  std::size_t triangle_size = triangles.polygons.size ();
+  std::size_t triangle_size = triangles.polygons.size();
   std::size_t correct_number = triangle_size;
   for (std::size_t i = 0; i < triangle_size; ++i)
-    correct_number += triangles.polygons[i].vertices.size ();
+    correct_number += triangles.polygons[i].vertices.size();
   fs << "\nPOLYGONS " << triangle_size << " " << correct_number << '\n';
-  for (std::size_t i = 0; i < triangle_size; ++i)
-  {
-    fs << triangles.polygons[i].vertices.size () << " ";
-    for (std::size_t j = 0; j < triangles.polygons[i].vertices.size () - 1; ++j)
+  for (std::size_t i = 0; i < triangle_size; ++i) {
+    fs << triangles.polygons[i].vertices.size() << " ";
+    for (std::size_t j = 0; j < triangles.polygons[i].vertices.size() - 1; ++j)
       fs << triangles.polygons[i].vertices[j] << " ";
     fs << triangles.polygons[i].vertices.back() << '\n';
   }
 
   // Write RGB values
-  int field_index = getFieldIndex (triangles.cloud, "rgb");
-  if (field_index != -1)
-  {
+  int field_index = getFieldIndex(triangles.cloud, "rgb");
+  if (field_index != -1) {
     fs << "\nPOINT_DATA " << nr_points << "\nCOLOR_SCALARS scalars 3\n";
-    for (unsigned int i = 0; i < nr_points; ++i)
-    {
-      if (triangles.cloud.fields[field_index].datatype == pcl::PCLPointField::FLOAT32)
-      {
+    for (unsigned int i = 0; i < nr_points; ++i) {
+      if (triangles.cloud.fields[field_index].datatype == pcl::PCLPointField::FLOAT32) {
         pcl::RGB color;
-        memcpy (&color, &triangles.cloud.data[i * point_size + triangles.cloud.fields[field_index].offset], sizeof (RGB));
+        memcpy(&color,
+               &triangles.cloud
+                    .data[i * point_size + triangles.cloud.fields[field_index].offset],
+               sizeof(RGB));
         int r = color.r;
         int g = color.g;
         int b = color.b;
-        fs << static_cast<float> (r) / 255.0f << " " << static_cast<float> (g) / 255.0f << " " << static_cast<float> (b) / 255.0f;
+        fs << static_cast<float>(r) / 255.0f << " " << static_cast<float>(g) / 255.0f
+           << " " << static_cast<float>(b) / 255.0f;
       }
       fs << '\n';
     }
   }
 
   // Close file
-  fs.close ();
+  fs.close();
   return (0);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 int
-pcl::io::saveVTKFile (const std::string &file_name, 
-                      const pcl::PCLPointCloud2 &cloud, unsigned precision)
+pcl::io::saveVTKFile(const std::string& file_name,
+                     const pcl::PCLPointCloud2& cloud,
+                     unsigned precision)
 {
-  if (cloud.data.empty ())
-  {
-    PCL_ERROR ("[pcl::io::saveVTKFile] Input point cloud has no data!\n");
+  if (cloud.data.empty()) {
+    PCL_ERROR("[pcl::io::saveVTKFile] Input point cloud has no data!\n");
     return (-1);
   }
 
   // Open file
   std::ofstream fs;
-  fs.precision (precision);
-  fs.open (file_name.c_str ());
+  fs.precision(precision);
+  fs.open(file_name.c_str());
 
-  unsigned int nr_points  = cloud.width * cloud.height;
-  auto point_size = static_cast<unsigned int> (cloud.data.size () / nr_points);
+  unsigned int nr_points = cloud.width * cloud.height;
+  auto point_size = static_cast<unsigned int>(cloud.data.size() / nr_points);
 
   // Write the header information
-  fs << "# vtk DataFile Version 3.0\nvtk output\nASCII\nDATASET POLYDATA\nPOINTS " << nr_points << " float" << '\n';
+  fs << "# vtk DataFile Version 3.0\nvtk output\nASCII\nDATASET POLYDATA\nPOINTS "
+     << nr_points << " float" << '\n';
 
   // Iterate through the points
-  for (unsigned int i = 0; i < nr_points; ++i)
-  {
+  for (unsigned int i = 0; i < nr_points; ++i) {
     int xyz = 0;
-    for (std::size_t d = 0; d < cloud.fields.size (); ++d)
-    {
-      if ((cloud.fields[d].datatype == pcl::PCLPointField::FLOAT32) && (
-           cloud.fields[d].name == "x" || 
-           cloud.fields[d].name == "y" || 
-           cloud.fields[d].name == "z"))
-      {
+    for (std::size_t d = 0; d < cloud.fields.size(); ++d) {
+      if ((cloud.fields[d].datatype == pcl::PCLPointField::FLOAT32) &&
+          (cloud.fields[d].name == "x" || cloud.fields[d].name == "y" ||
+           cloud.fields[d].name == "z")) {
         float value;
-        memcpy (&value, &cloud.data[i * point_size + cloud.fields[d].offset], sizeof (float));
+        memcpy(&value,
+               &cloud.data[i * point_size + cloud.fields[d].offset],
+               sizeof(float));
         fs << value;
         if (++xyz == 3)
           break;
       }
       fs << " ";
     }
-    if (xyz != 3)
-    {
-      PCL_ERROR ("[pcl::io::saveVTKFile] Input point cloud has no XYZ data!\n");
+    if (xyz != 3) {
+      PCL_ERROR("[pcl::io::saveVTKFile] Input point cloud has no XYZ data!\n");
       return (-2);
     }
     fs << '\n';
   }
 
   // Write vertices
-  fs << "\nVERTICES " << nr_points << " " << 2*nr_points << '\n';
+  fs << "\nVERTICES " << nr_points << " " << 2 * nr_points << '\n';
   for (unsigned int i = 0; i < nr_points; ++i)
     fs << "1 " << i << '\n';
 
   // Write RGB values
-  int field_index = getFieldIndex (cloud, "rgb");
-  if (field_index != -1)
-  {
+  int field_index = getFieldIndex(cloud, "rgb");
+  if (field_index != -1) {
     fs << "\nPOINT_DATA " << nr_points << "\nCOLOR_SCALARS scalars 3\n";
-    for (unsigned int i = 0; i < nr_points; ++i)
-    {
-      if (cloud.fields[field_index].datatype == pcl::PCLPointField::FLOAT32)
-      {
+    for (unsigned int i = 0; i < nr_points; ++i) {
+      if (cloud.fields[field_index].datatype == pcl::PCLPointField::FLOAT32) {
         pcl::RGB color;
-        memcpy (&color, &cloud.data[i * point_size + cloud.fields[field_index].offset], sizeof (RGB));
+        memcpy(&color,
+               &cloud.data[i * point_size + cloud.fields[field_index].offset],
+               sizeof(RGB));
         int r = color.r;
         int g = color.g;
         int b = color.b;
-        fs << static_cast<float> (r) / 255.0f << " " << static_cast<float> (g) / 255.0f << " " << static_cast<float> (b) / 255.0f;
+        fs << static_cast<float>(r) / 255.0f << " " << static_cast<float>(g) / 255.0f
+           << " " << static_cast<float>(b) / 255.0f;
       }
       fs << '\n';
     }
   }
 
   // Close file
-  fs.close ();
+  fs.close();
   return (0);
 }
-

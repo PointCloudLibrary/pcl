@@ -46,7 +46,7 @@
 using namespace pcl;
 
 void
-example_edge()
+example_edge ()
 {
   Edge<pcl::PointXYZRGB> edge;
 
@@ -80,7 +80,7 @@ example_edge()
 }
 
 void
-example_convolution()
+example_convolution ()
 {
   Kernel<pcl::PointXYZRGB> kernel;
   Convolution<pcl::PointXYZRGB> convolution;
@@ -113,7 +113,7 @@ example_convolution()
 }
 
 void
-example_morphology()
+example_morphology ()
 {
   Morphology<pcl::PointXYZRGB> morphology;
 
@@ -138,7 +138,7 @@ example_morphology()
 }
 
 int
-main(char* args, int argv)
+main (char* args, int argv)
 {
   return 0;
 }

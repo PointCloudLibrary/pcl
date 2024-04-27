@@ -8,14 +8,14 @@ are permitted provided that the following conditions are met:
 Redistributions of source code must retain the above copyright notice, this list of
 conditions and the following disclaimer. Redistributions in binary form must reproduce
 the above copyright notice, this list of conditions and the following disclaimer
-in the documentation and/or other materials provided with the distribution. 
+in the documentation and/or other materials provided with the distribution.
 
 Neither the name of the Johns Hopkins University nor the names of its contributors
 may be used to endorse or promote products derived from this software without specific
-prior written permission. 
+prior written permission.
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY
-EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO THE IMPLIED WARRANTIES 
+EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO THE IMPLIED WARRANTIES
 OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT
 SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
 INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED
@@ -32,54 +32,58 @@ DAMAGE.
 #define BOUNDARY_CONDITIONS 1
 
 #if defined __GNUC__
-#  pragma GCC system_header
+#pragma GCC system_header
 #endif
-
 
 #include "ppolynomial.h"
 
-namespace pcl
-{
-  namespace poisson
-  {
+namespace pcl {
+namespace poisson {
 
-    template<int Degree,class Real>
-    class FunctionData{
-        bool useDotRatios;
-        int normalize;
+template <int Degree, class Real>
+class FunctionData {
+  bool useDotRatios;
+  int normalize;
 #if BOUNDARY_CONDITIONS
-        bool reflectBoundary;
+  bool reflectBoundary;
 #endif // BOUNDARY_CONDITIONS
-      public:
-        const static int     DOT_FLAG = 1;
-        const static int   D_DOT_FLAG = 2;
-        const static int  D2_DOT_FLAG = 4;
-        const static int   VALUE_FLAG = 1;
-        const static int D_VALUE_FLAG = 2;
+public:
+  const static int DOT_FLAG = 1;
+  const static int D_DOT_FLAG = 2;
+  const static int D2_DOT_FLAG = 4;
+  const static int VALUE_FLAG = 1;
+  const static int D_VALUE_FLAG = 2;
 
-        int depth , res , res2;
-        Real *dotTable , *dDotTable , *d2DotTable;
-        Real *valueTables , *dValueTables;
+  int depth, res, res2;
+  Real *dotTable, *dDotTable, *d2DotTable;
+  Real *valueTables, *dValueTables;
 #if BOUNDARY_CONDITIONS
-        PPolynomial<Degree> baseFunction , leftBaseFunction , rightBaseFunction;
-        PPolynomial<Degree-1> dBaseFunction , dLeftBaseFunction , dRightBaseFunction;
-#else // !BOUNDARY_CONDITIONS
-        PPolynomial<Degree> baseFunction;
-        PPolynomial<Degree-1> dBaseFunction;
+  PPolynomial<Degree> baseFunction, leftBaseFunction, rightBaseFunction;
+  PPolynomial<Degree - 1> dBaseFunction, dLeftBaseFunction, dRightBaseFunction;
+#else  // !BOUNDARY_CONDITIONS
+  PPolynomial<Degree> baseFunction;
+  PPolynomial<Degree - 1> dBaseFunction;
 #endif // BOUNDARY_CONDITIONS
-        PPolynomial<Degree+1>* baseFunctions;
+  PPolynomial<Degree + 1>* baseFunctions;
 
-        FunctionData(void);
-        ~FunctionData(void);
+  FunctionData(void);
+  ~FunctionData(void);
 
-        virtual void   setDotTables(const int& flags);
-        virtual void clearDotTables(const int& flags);
+  virtual void
+  setDotTables (const int& flags);
+  virtual void
+  clearDotTables (const int& flags);
 
-        virtual void   setValueTables(const int& flags,const double& smooth=0);
-        virtual void   setValueTables(const int& flags,const double& valueSmooth,const double& normalSmooth);
-        virtual void clearValueTables(void);
+  virtual void
+  setValueTables (const int& flags, const double& smooth = 0);
+  virtual void
+  setValueTables (const int& flags,
+                  const double& valueSmooth,
+                  const double& normalSmooth);
+  virtual void
+  clearValueTables (void);
 
-        /********************************************************
+  /********************************************************
    * Sets the translates and scales of the basis function
    * up to the prescribed depth
    * <maxDepth> the maximum depth
@@ -94,29 +98,68 @@ namespace pcl
    * forced to be reflectively symmetric across the boundary
    ********************************************************/
 #if BOUNDARY_CONDITIONS
-        void set( const int& maxDepth , const PPolynomial<Degree>& F , const int& normalize , bool useDotRatios=true , bool reflectBoundary=false );
-#else // !BOUNDARY_CONDITIONS
-        void set(const int& maxDepth,const PPolynomial<Degree>& F,const int& normalize , bool useDotRatios=true );
+  void
+  set (const int& maxDepth,
+       const PPolynomial<Degree>& F,
+       const int& normalize,
+       bool useDotRatios = true,
+       bool reflectBoundary = false);
+#else  // !BOUNDARY_CONDITIONS
+  void
+  set (const int& maxDepth,
+       const PPolynomial<Degree>& F,
+       const int& normalize,
+       bool useDotRatios = true);
 #endif // BOUNDARY_CONDITIONS
 
 #if BOUNDARY_CONDITIONS
-        Real   dotProduct( const double& center1 , const double& width1 , const double& center2 , const double& width2 , int boundary1 , int boundary2 ) const;
-        Real  dDotProduct( const double& center1 , const double& width1 , const double& center2 , const double& width2 , int boundary1 , int boundary2 ) const;
-        Real d2DotProduct( const double& center1 , const double& width1 , const double& center2 , const double& width2 , int boundary1 , int boundary2 ) const;
-#else // !BOUNDARY_CONDITIONS
-        Real   dotProduct( const double& center1 , const double& width1 , const double& center2 , const double& width2 ) const;
-        Real  dDotProduct( const double& center1 , const double& width1 , const double& center2 , const double& width2 ) const;
-        Real d2DotProduct( const double& center1 , const double& width1 , const double& center2 , const double& width2 ) const;
+  Real
+  dotProduct (const double& center1,
+              const double& width1,
+              const double& center2,
+              const double& width2,
+              int boundary1,
+              int boundary2) const;
+  Real
+  dDotProduct (const double& center1,
+               const double& width1,
+               const double& center2,
+               const double& width2,
+               int boundary1,
+               int boundary2) const;
+  Real
+  d2DotProduct (const double& center1,
+                const double& width1,
+                const double& center2,
+                const double& width2,
+                int boundary1,
+                int boundary2) const;
+#else  // !BOUNDARY_CONDITIONS
+  Real
+  dotProduct (const double& center1,
+              const double& width1,
+              const double& center2,
+              const double& width2) const;
+  Real
+  dDotProduct (const double& center1,
+               const double& width1,
+               const double& center2,
+               const double& width2) const;
+  Real
+  d2DotProduct (const double& center1,
+                const double& width1,
+                const double& center2,
+                const double& width2) const;
 #endif // BOUNDARY_CONDITIONS
 
-        static inline int SymmetricIndex( const int& i1 , const int& i2 );
-        static inline int SymmetricIndex( const int& i1 , const int& i2 , int& index  );
-    };
+  static inline int
+  SymmetricIndex (const int& i1, const int& i2);
+  static inline int
+  SymmetricIndex (const int& i1, const int& i2, int& index);
+};
 
-
-  }
-}
-
+} // namespace poisson
+} // namespace pcl
 
 #include "function_data.hpp"
 

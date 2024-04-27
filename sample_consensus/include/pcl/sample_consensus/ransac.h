@@ -43,71 +43,72 @@
 #include <pcl/sample_consensus/sac.h>
 #include <pcl/sample_consensus/sac_model.h>
 
-namespace pcl
-{
-  /** \brief @b RandomSampleConsensus represents an implementation of the RANSAC (RANdom SAmple Consensus) algorithm, as 
-    * described in: "Random Sample Consensus: A Paradigm for Model Fitting with Applications to Image Analysis and 
-    * Automated Cartography", Martin A. Fischler and Robert C. Bolles, Comm. Of the ACM 24: 381–395, June 1981.
-    * A parallel variant is available, enable with setNumberOfThreads. Default is non-parallel.
-    * 
-    * The algorithm works as follows:
-    * <ol>
-    *   <li> randomly select samples from the cloud, just as many as needed to determine a model
-    *   <li> compute the coefficients of the model from the samples
-    *   <li> count how many points of the cloud belong to the model, given a threshold. These are called inliers
-    *   <li> repeat until a good model has been found or a max number of iterations has been reached
-    *   <li> return the model with the most inliers 
-    * </ol>
-    * \author Radu B. Rusu
-    * \ingroup sample_consensus
-    */
-  template <typename PointT>
-  class RandomSampleConsensus : public SampleConsensus<PointT>
+namespace pcl {
+/** \brief @b RandomSampleConsensus represents an implementation of the RANSAC (RANdom
+ * SAmple Consensus) algorithm, as described in: "Random Sample Consensus: A Paradigm
+ * for Model Fitting with Applications to Image Analysis and Automated Cartography",
+ * Martin A. Fischler and Robert C. Bolles, Comm. Of the ACM 24: 381–395, June 1981. A
+ * parallel variant is available, enable with setNumberOfThreads. Default is
+ * non-parallel.
+ *
+ * The algorithm works as follows:
+ * <ol>
+ *   <li> randomly select samples from the cloud, just as many as needed to determine a
+ * model <li> compute the coefficients of the model from the samples <li> count how many
+ * points of the cloud belong to the model, given a threshold. These are called inliers
+ *   <li> repeat until a good model has been found or a max number of iterations has
+ * been reached <li> return the model with the most inliers
+ * </ol>
+ * \author Radu B. Rusu
+ * \ingroup sample_consensus
+ */
+template <typename PointT>
+class RandomSampleConsensus : public SampleConsensus<PointT> {
+  using SampleConsensusModelPtr = typename SampleConsensusModel<PointT>::Ptr;
+
+public:
+  using Ptr = shared_ptr<RandomSampleConsensus<PointT>>;
+  using ConstPtr = shared_ptr<const RandomSampleConsensus<PointT>>;
+
+  using SampleConsensus<PointT>::max_iterations_;
+  using SampleConsensus<PointT>::threshold_;
+  using SampleConsensus<PointT>::iterations_;
+  using SampleConsensus<PointT>::sac_model_;
+  using SampleConsensus<PointT>::model_;
+  using SampleConsensus<PointT>::model_coefficients_;
+  using SampleConsensus<PointT>::inliers_;
+  using SampleConsensus<PointT>::probability_;
+  using SampleConsensus<PointT>::threads_;
+
+  /** \brief RANSAC (RANdom SAmple Consensus) main constructor
+   * \param[in] model a Sample Consensus model
+   */
+  RandomSampleConsensus(const SampleConsensusModelPtr& model)
+  : SampleConsensus<PointT>(model)
   {
-    using SampleConsensusModelPtr = typename SampleConsensusModel<PointT>::Ptr;
+    // Maximum number of trials before we give up.
+    max_iterations_ = 10000;
+  }
 
-    public:
-      using Ptr = shared_ptr<RandomSampleConsensus<PointT> >;
-      using ConstPtr = shared_ptr<const RandomSampleConsensus<PointT> >;
+  /** \brief RANSAC (RANdom SAmple Consensus) main constructor
+   * \param[in] model a Sample Consensus model
+   * \param[in] threshold distance to model threshold
+   */
+  RandomSampleConsensus(const SampleConsensusModelPtr& model, double threshold)
+  : SampleConsensus<PointT>(model, threshold)
+  {
+    // Maximum number of trials before we give up.
+    max_iterations_ = 10000;
+  }
 
-      using SampleConsensus<PointT>::max_iterations_;
-      using SampleConsensus<PointT>::threshold_;
-      using SampleConsensus<PointT>::iterations_;
-      using SampleConsensus<PointT>::sac_model_;
-      using SampleConsensus<PointT>::model_;
-      using SampleConsensus<PointT>::model_coefficients_;
-      using SampleConsensus<PointT>::inliers_;
-      using SampleConsensus<PointT>::probability_;
-      using SampleConsensus<PointT>::threads_;
-
-      /** \brief RANSAC (RANdom SAmple Consensus) main constructor
-        * \param[in] model a Sample Consensus model
-        */
-      RandomSampleConsensus (const SampleConsensusModelPtr &model) 
-        : SampleConsensus<PointT> (model)
-      {
-        // Maximum number of trials before we give up.
-        max_iterations_ = 10000;
-      }
-
-      /** \brief RANSAC (RANdom SAmple Consensus) main constructor
-        * \param[in] model a Sample Consensus model
-        * \param[in] threshold distance to model threshold
-        */
-      RandomSampleConsensus (const SampleConsensusModelPtr &model, double threshold) 
-        : SampleConsensus<PointT> (model, threshold)
-      {
-        // Maximum number of trials before we give up.
-        max_iterations_ = 10000;
-      }
-
-      /** \brief Compute the actual model and find the inliers
-        * \param[in] debug_verbosity_level enable/disable on-screen debug information and set the verbosity level
-        */
-      bool 
-      computeModel (int debug_verbosity_level = 0) override;
-  };
-}
+  /** \brief Compute the actual model and find the inliers
+   * \param[in] debug_verbosity_level enable/disable on-screen debug information and set
+   * the verbosity level
+   */
+  bool
+  computeModel (int debug_verbosity_level = 0) override;
+};
+} // namespace pcl
 
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/sample_consensus/impl/ransac.hpp>

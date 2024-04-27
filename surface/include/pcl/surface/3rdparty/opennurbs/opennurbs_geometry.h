@@ -8,7 +8,7 @@
 // THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT EXPRESS OR IMPLIED WARRANTY.
 // ALL IMPLIED WARRANTIES OF FITNESS FOR ANY PARTICULAR PURPOSE AND OF
 // MERCHANTABILITY ARE HEREBY DISCLAIMED.
-//				
+//
 // For complete openNURBS copyright information see <http://www.opennurbs.org>.
 //
 ////////////////////////////////////////////////////////////////
@@ -33,8 +33,7 @@ class ON_Brep;
 //   for common geometric operations like finding bounding
 //   boxes and transforming.
 //
-class ON_CLASS ON_Geometry : public ON_Object
-{
+class ON_CLASS ON_Geometry : public ON_Object {
   // Any object derived from ON_Geometry should have a
   //   ON_OBJECT_DECLARE(ON_...);
   // as the last line of its class definition and a
@@ -47,34 +46,34 @@ class ON_CLASS ON_Geometry : public ON_Object
 public:
   ON_Geometry();
   ON_Geometry(const ON_Geometry&);
-  ON_Geometry& operator=(const ON_Geometry&);
+  ON_Geometry&
+  operator=(const ON_Geometry&);
   virtual ~ON_Geometry();
 
-  // Description: 
+  // Description:
   //   Get object's 3d axis aligned bounding box.
   // Returns:
   //   3d bounding box.
   // Remarks:
   //   Uses virtual GetBBox() function to calculate the result.
-  ON_BoundingBox BoundingBox() const;
+  ON_BoundingBox
+  BoundingBox () const;
 
   // Description:
   //   Get object's 3d axis aligned bounding box or the
   //   union of the input box with the object's bounding box.
   // Parameters:
   //   bbox - [in/out] 3d axis aligned bounding box
-  //   bGrowBox - [in] (default=false) 
-  //     If true, then the union of the input bbox and the 
-  //     object's bounding box is returned in bbox.  
+  //   bGrowBox - [in] (default=false)
+  //     If true, then the union of the input bbox and the
+  //     object's bounding box is returned in bbox.
   //     If false, the object's bounding box is returned in bbox.
   // Returns:
   //   true if object has bounding box and calculation was successful.
   // Remarks:
   //   Uses virtual GetBBox() function to calculate the result.
-  ON_BOOL32 GetBoundingBox(
-         ON_BoundingBox& bbox,
-         int bGrowBox = false
-         ) const;
+  ON_BOOL32
+  GetBoundingBox (ON_BoundingBox& bbox, int bGrowBox = false) const;
 
   // Description:
   //   Get corners of object's 3d axis aligned bounding box
@@ -83,17 +82,16 @@ public:
   // Parameters:
   //   bbox_min - [in/out] minimum corner of the 3d bounding box
   //   bbox_max - [in/out] maximum corner of the 3d bounding box
-  //   bGrowBox - [in] (default=false) 
-  //     If true, then the union of the input bbox and the 
+  //   bGrowBox - [in] (default=false)
+  //     If true, then the union of the input bbox and the
   //     object's bounding box is returned.
   //     If false, the object's bounding box is returned.
   // Returns:
   //   true if successful.
-  ON_BOOL32 GetBoundingBox(
-         ON_3dPoint& bbox_min,
-         ON_3dPoint& bbox_max,
-         int bGrowBox = false
-         ) const;
+  ON_BOOL32
+  GetBoundingBox (ON_3dPoint& bbox_min,
+                  ON_3dPoint& bbox_max,
+                  int bGrowBox = false) const;
 
   // Description:
   //   Rotates the object about the specified axis.  A positive
@@ -108,12 +106,11 @@ public:
   //   true if object successfully rotated
   // Remarks:
   //   Uses virtual Transform() function to calculate the result.
-  ON_BOOL32 Rotate(
-        double sin_angle,
-        double cos_angle,
-        const ON_3dVector& rotation_axis,
-        const ON_3dPoint& rotation_center
-        );
+  ON_BOOL32
+  Rotate (double sin_angle,
+          double cos_angle,
+          const ON_3dVector& rotation_axis,
+          const ON_3dPoint& rotation_center);
 
   // Description:
   //   Rotates the object about the specified axis.  A positive
@@ -127,11 +124,10 @@ public:
   //   true if object successfully rotated
   // Remarks:
   //   Uses virtual Transform() function to calculate the result.
-  ON_BOOL32 Rotate(
-        double rotation_angle,
-        const ON_3dVector& rotation_axis,
-        const ON_3dPoint& rotation_center
-        );
+  ON_BOOL32
+  Rotate (double rotation_angle,
+          const ON_3dVector& rotation_axis,
+          const ON_3dPoint& rotation_center);
 
   // Description:
   //   Translates the object along the specified vector.
@@ -141,9 +137,8 @@ public:
   //   true if object successfully translated
   // Remarks:
   //   Uses virtual Transform() function to calculate the result.
-  ON_BOOL32 Translate( 
-    const ON_3dVector& translation_vector
-    );
+  ON_BOOL32
+  Translate (const ON_3dVector& translation_vector);
 
   // Description:
   //   Scales the object by the specified facotor.  The scale is
@@ -154,9 +149,8 @@ public:
   //   true if object successfully scaled
   // Remarks:
   //   Uses virtual Transform() function to calculate the result.
-  ON_BOOL32 Scale( 
-    double scale_factor
-    );
+  ON_BOOL32
+  Scale (double scale_factor);
 
   // Description:
   //   Dimension of the object.
@@ -166,8 +160,8 @@ public:
   //   The dimension is typically three.  For parameter space trimming
   //   curves the dimension is two.  In rare cases the dimension can
   //   be one or greater than three.
-  virtual 
-  int Dimension() const = 0;
+  virtual int
+  Dimension () const = 0;
 
   // Description:
   //   This is the virtual function that actually calculates axis
@@ -175,49 +169,43 @@ public:
   // Parameters:
   //   boxmin - [in/out] array of Dimension() doubles
   //   boxmax - [in/out] array of Dimension() doubles
-  //   bGrowBox - [in] (default=false) 
-  //     If true, then the union of the input bbox and the 
-  //     object's bounding box is returned in bbox.  
+  //   bGrowBox - [in] (default=false)
+  //     If true, then the union of the input bbox and the
+  //     object's bounding box is returned in bbox.
   //     If false, the object's bounding box is returned in bbox.
   // Returns:
   //   true if object has bounding box and calculation was successful
-  virtual
-  ON_BOOL32 GetBBox(
-         double* boxmin,
-         double* boxmax,
-         int bGrowBox = false
-         ) const = 0;
+  virtual ON_BOOL32
+  GetBBox (double* boxmin, double* boxmax, int bGrowBox = false) const = 0;
 
   /*
-	Description:
+  Description:
     Get tight bounding box.
-	Parameters:
-		tight_bbox - [in/out] tight bounding box
-		bGrowBox -[in]	(default=false)			
+  Parameters:
+    tight_bbox - [in/out] tight bounding box
+    bGrowBox -[in]	(default=false)
       If true and the input tight_bbox is valid, then returned
-      tight_bbox is the union of the input tight_bbox and the 
+      tight_bbox is the union of the input tight_bbox and the
       curve's tight bounding box.
-		xform -[in] (default=NULL)
+    xform -[in] (default=NULL)
       If not NULL, the tight bounding box of the transformed
       geometry is calculated.  The geometry is not modified.
-	Returns:
+  Returns:
     True if a valid tight_bbox is returned.
   Remarks:
     In general, GetTightBoundingBox is slower that BoundingBox,
     especially when xform is not null.
   */
-  virtual
-	bool GetTightBoundingBox( 
-			ON_BoundingBox& tight_bbox, 
-      int bGrowBox = false,
-			const ON_Xform* xform = 0
-      ) const;
+  virtual bool
+  GetTightBoundingBox (ON_BoundingBox& tight_bbox,
+                       int bGrowBox = false,
+                       const ON_Xform* xform = 0) const;
 
   // Description:
   //   Some objects cache bounding box information.
   //   If you modify an object, then call ClearBoundingBox()
   //   to inform the object that any cached bounding boxes
-  //   are invalid.  
+  //   are invalid.
   //
   // Remarks:
   //   Generally, ClearBoundingBox() overrides
@@ -225,23 +213,23 @@ public:
   //   for a call to GetBBox() before recomputing the bounding box.
   //
   //   The default implementation does nothing.
-  virtual
-  void ClearBoundingBox();
+  virtual void
+  ClearBoundingBox ();
 
   /*
   Description:
     Transforms the object.
- 
+
   Parameters:
     xform - [in] transformation to apply to object.
       If xform.IsSimilarity() is zero, then you may
       want to call MakeSquishy() before calling
       Transform.
- 
+
   Remarks:
     When overriding this function, be sure to include a call
-    to ON_Object::TransformUserData() which takes care of 
-    transforming any ON_UserData that may be attached to 
+    to ON_Object::TransformUserData() which takes care of
+    transforming any ON_UserData that may be attached to
     the object.
 
   See Also:
@@ -253,21 +241,19 @@ public:
     transformations and then transform their
     definition.
   */
-  virtual
-  ON_BOOL32 Transform( 
-         const ON_Xform& xform
-         );
+  virtual ON_BOOL32
+  Transform (const ON_Xform& xform);
 
   /*
   Returns:
-    True if object can be accuratly modified with 
-    "squishy" transformations like projections, 
+    True if object can be accuratly modified with
+    "squishy" transformations like projections,
     shears, an non-uniform scaling.
   See Also:
     ON_Geometry::MakeDeformable();
   */
-  virtual
-  bool IsDeformable() const;
+  virtual bool
+  IsDeformable () const;
 
   /*
   Description:
@@ -281,8 +267,8 @@ public:
   See Also:
     ON_Geometry::IsDeformable();
   */
-  virtual
-  bool MakeDeformable();
+  virtual bool
+  MakeDeformable ();
 
   // Description:
   //   Swaps object coordinate values with indices i and j.
@@ -292,7 +278,7 @@ public:
   //   j - [in] coordinate index
   //
   // Remarks:
-  //   The default implementation uses the virtual Transform() 
+  //   The default implementation uses the virtual Transform()
   //   function to calculate the result.  If you are creating
   //   an object where Transform() is slow, coordinate swapping
   //   will be frequently used, and coordinate swapping can
@@ -303,11 +289,8 @@ public:
   //          ON_Point point(7,8,9);
   //          point.SwapCoordinates(0,2);
   //          // point = (9,8,7)
-  virtual
-  ON_BOOL32 SwapCoordinates(
-        int i,
-        int j
-        );
+  virtual ON_BOOL32
+  SwapCoordinates (int i, int j);
 
   /*
   Description:
@@ -316,18 +299,18 @@ public:
     Returns true if the virtual ON_Geometry::BrepForm can compute
     an ON_Brep representation of this object.
   Remarks:
-    The default implementation of ON_Geometry::BrepForm returns 
+    The default implementation of ON_Geometry::BrepForm returns
     false.
   See Also
     ON_Geometry::BrepForm
   */
-  virtual
-  ON_BOOL32 HasBrepForm() const;
+  virtual ON_BOOL32
+  HasBrepForm () const;
 
   /*
   Description:
     If possible, BrepForm() creates a brep form of the
-    ON_Geometry. 
+    ON_Geometry.
   Parameters:
     brep - [in] if not NULL, brep is used to store the brep
         form of the geometry.
@@ -341,8 +324,8 @@ public:
   See Also
     ON_Geometry::HasBrepForm
   */
-  virtual
-  ON_Brep* BrepForm( ON_Brep* brep = NULL ) const;
+  virtual ON_Brep*
+  BrepForm (ON_Brep* brep = NULL) const;
 
   /*
   Description:
@@ -352,13 +335,13 @@ public:
   Returns:
     This object's component index.  If this object is
     not a sub-piece of a larger geometric entity, then
-    the returned index has 
+    the returned index has
     m_type = ON_COMPONENT_INDEX::invalid_type
     and
     m_index = -1.
   */
-  virtual
-  ON_COMPONENT_INDEX ComponentIndex() const;
+  virtual ON_COMPONENT_INDEX
+  ComponentIndex () const;
 
   /*
   Description:
@@ -372,9 +355,8 @@ public:
   Returns:
     True if successful.
   */
-  virtual
-  bool EvaluatePoint( const class ON_ObjRef& objref, ON_3dPoint& P ) const;
+  virtual bool
+  EvaluatePoint (const class ON_ObjRef& objref, ON_3dPoint& P) const;
 };
 
 #endif
-

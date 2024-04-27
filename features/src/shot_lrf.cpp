@@ -40,15 +40,20 @@
 #include <pcl/features/impl/shot_lrf_omp.hpp>
 
 #ifndef PCL_NO_PRECOMPILE
-#include <pcl/point_types.h>
 #include <pcl/impl/instantiate.hpp>
+#include <pcl/point_types.h>
 // Instantiations of specific point types
 #ifdef PCL_ONLY_CORE_POINT_TYPES
-  PCL_INSTANTIATE_PRODUCT(SHOTLocalReferenceFrameEstimation, ((pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA)(pcl::PointXYZRGB))((pcl::ReferenceFrame)))
-  PCL_INSTANTIATE_PRODUCT(SHOTLocalReferenceFrameEstimationOMP, ((pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA)(pcl::PointXYZRGB))((pcl::ReferenceFrame)))
+PCL_INSTANTIATE_PRODUCT(SHOTLocalReferenceFrameEstimation,
+                        ((pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA)(
+                            pcl::PointXYZRGB))((pcl::ReferenceFrame)))
+PCL_INSTANTIATE_PRODUCT(SHOTLocalReferenceFrameEstimationOMP,
+                        ((pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA)(
+                            pcl::PointXYZRGB))((pcl::ReferenceFrame)))
 #else
-  PCL_INSTANTIATE_PRODUCT(SHOTLocalReferenceFrameEstimation, (PCL_XYZ_POINT_TYPES)((pcl::ReferenceFrame)))
-  PCL_INSTANTIATE_PRODUCT(SHOTLocalReferenceFrameEstimationOMP, (PCL_XYZ_POINT_TYPES)((pcl::ReferenceFrame)))
+PCL_INSTANTIATE_PRODUCT(SHOTLocalReferenceFrameEstimation,
+                        (PCL_XYZ_POINT_TYPES)((pcl::ReferenceFrame)))
+PCL_INSTANTIATE_PRODUCT(SHOTLocalReferenceFrameEstimationOMP,
+                        (PCL_XYZ_POINT_TYPES)((pcl::ReferenceFrame)))
 #endif
-#endif    // PCL_NO_PRECOMPILE
-
+#endif // PCL_NO_PRECOMPILE

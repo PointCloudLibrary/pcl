@@ -89,92 +89,92 @@ public:
    * \param[in] center_x x-coordinate of the image center.
    */
   inline void
-  setImageCenterX(const float center_x);
+  setImageCenterX (const float center_x);
 
   /** \brief Get x-coordinate of the image center.
    * \return x-coordinate of the image center.
    */
   inline float
-  getImageCenterX() const;
+  getImageCenterX () const;
 
   /** \brief Set y-coordinate of the image center.
    * \param[in] center_y y-coordinate of the image center.
    */
   inline void
-  setImageCenterY(const float center_y);
+  setImageCenterY (const float center_y);
 
   /** \brief Get y-coordinate of the image center.
    * \return y-coordinate of the image center.
    */
   inline float
-  getImageCenterY() const;
+  getImageCenterY () const;
 
   /** \brief Set focal length.
    * \param[in] focal_length the focal length.
    */
   inline void
-  setFocalLength(const float focal_length);
+  setFocalLength (const float focal_length);
 
   /** \brief Get focal length.
    * \return the focal length.
    */
   inline float
-  getFocalLength() const;
+  getFocalLength () const;
 
   /** \brief Set baseline.
    * \param[in] baseline baseline.
    */
   inline void
-  setBaseline(const float baseline);
+  setBaseline (const float baseline);
 
   /** \brief Get baseline.
    * \return the baseline.
    */
   inline float
-  getBaseline() const;
+  getBaseline () const;
 
   /** \brief Set min disparity threshold.
    * \param[in] disparity_threshold_min min disparity threshold.
    */
   inline void
-  setDisparityThresholdMin(const float disparity_threshold_min);
+  setDisparityThresholdMin (const float disparity_threshold_min);
 
   /** \brief Get min disparity threshold.
    * \return min disparity threshold.
    */
   inline float
-  getDisparityThresholdMin() const;
+  getDisparityThresholdMin () const;
 
   /** \brief Set max disparity threshold.
    * \param[in] disparity_threshold_max max disparity threshold.
    */
   inline void
-  setDisparityThresholdMax(const float disparity_threshold_max);
+  setDisparityThresholdMax (const float disparity_threshold_max);
 
   /** \brief Get max disparity threshold.
    * \return max disparity threshold.
    */
   inline float
-  getDisparityThresholdMax() const;
+  getDisparityThresholdMax () const;
 
   /** \brief Set an image, that will be used for coloring of the output cloud.
    * \param[in] image the image.
    */
   void
-  setImage(const pcl::PointCloud<pcl::RGB>::ConstPtr& image);
+  setImage (const pcl::PointCloud<pcl::RGB>::ConstPtr& image);
 
   /** \brief Get the image, that is used for coloring of the output cloud.
    * \return the image.
    */
   pcl::PointCloud<RGB>::Ptr
-  getImage();
+  getImage ();
 
   /** \brief Load the disparity map.
    * \param[in] file_name the name of the disparity map file.
    * \return "true" if the disparity map was successfully loaded; "false" otherwise
    */
   bool
-  loadDisparityMap(const std::string& file_name);
+  loadDisparityMap (const std::string& file_name);
 
   /** \brief Load the disparity map and initialize it's size.
    * \param[in] file_name the name of the disparity map file.
@@ -183,15 +183,15 @@ public:
    * \return "true" if the disparity map was successfully loaded; "false" otherwise
    */
   bool
-  loadDisparityMap(const std::string& file_name,
-                   const std::size_t width,
-                   const std::size_t height);
+  loadDisparityMap (const std::string& file_name,
+                    const std::size_t width,
+                    const std::size_t height);
 
   /** \brief Set the disparity map.
    * \param[in] disparity_map the disparity map.
    */
   void
-  setDisparityMap(const std::vector<float>& disparity_map);
+  setDisparityMap (const std::vector<float>& disparity_map);
 
   /** \brief Set the disparity map and initialize it's size.
    * \param[in] disparity_map the disparity map.
@@ -200,21 +200,21 @@ public:
    * \return "true" if the disparity map was successfully loaded; "false" otherwise
    */
   void
-  setDisparityMap(const std::vector<float>& disparity_map,
-                  const std::size_t width,
-                  const std::size_t height);
+  setDisparityMap (const std::vector<float>& disparity_map,
+                   const std::size_t width,
+                   const std::size_t height);
 
   /** \brief Get the disparity map.
    * \return the disparity map.
    */
   std::vector<float>
-  getDisparityMap();
+  getDisparityMap ();
 
   /** \brief Compute the output cloud.
    * \param[out] out_cloud the variable to return the resulting cloud.
    */
   virtual void
-  compute(PointCloud& out_cloud);
+  compute (PointCloud& out_cloud);
 
 protected:
   /** \brief Translate point from image coordinates and disparity to 3D-coordinates
@@ -225,7 +225,7 @@ protected:
    * calibration.
    */
   PointXYZ
-  translateCoordinates(std::size_t row, std::size_t column, float disparity) const;
+  translateCoordinates (std::size_t row, std::size_t column, float disparity) const;
 
   /** \brief X-coordinate of the image center. */
   float center_x_{0.0f};

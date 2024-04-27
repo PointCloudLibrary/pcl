@@ -41,148 +41,148 @@
 #include <pcl/surface/processing.h>
 #include <pcl/surface/vtk_smoothing/vtk.h>
 
-namespace pcl
-{
-  /** \brief PCL mesh smoothing based on the vtkWindowedSincPolyDataFilter algorithm from the VTK library.
-    * Please check out the original documentation for more details on the inner workings of the algorithm
-    * Warning: This wrapper does two fairly computationally expensive conversions from the PCL PolygonMesh
-    * data structure to the vtkPolyData data structure and back.
-    */
-  class PCL_EXPORTS MeshSmoothingWindowedSincVTK : public MeshProcessing
+namespace pcl {
+/** \brief PCL mesh smoothing based on the vtkWindowedSincPolyDataFilter algorithm from
+ * the VTK library. Please check out the original documentation for more details on the
+ * inner workings of the algorithm Warning: This wrapper does two fairly computationally
+ * expensive conversions from the PCL PolygonMesh data structure to the vtkPolyData data
+ * structure and back.
+ */
+class PCL_EXPORTS MeshSmoothingWindowedSincVTK : public MeshProcessing {
+public:
+  /** \brief Empty constructor that sets the values of the algorithm parameters to the
+   * VTK defaults */
+  MeshSmoothingWindowedSincVTK() = default;
+
+  /** \brief Set the number of iterations for the smoothing filter.
+   * \param[in] num_iter the number of iterations
+   */
+  inline void
+  setNumIter (int num_iter)
   {
-    public:
-      /** \brief Empty constructor that sets the values of the algorithm parameters to the VTK defaults */
-      MeshSmoothingWindowedSincVTK () = default;
-
-      /** \brief Set the number of iterations for the smoothing filter.
-        * \param[in] num_iter the number of iterations
-        */
-      inline void
-      setNumIter (int num_iter)
-      {
-        num_iter_ = num_iter;
-      };
-
-      /** \brief Get the number of iterations. */
-      inline int
-      getNumIter () const
-      {
-        return num_iter_;
-      };
-
-      /** \brief Set the pass band value for windowed sinc filtering.
-        * \param[in] pass_band value for the pass band.
-        */
-      inline void
-      setPassBand (float pass_band)
-      {
-        pass_band_ = pass_band;
-      };
-
-      /** \brief Get the pass band value. */
-      inline float
-      getPassBand () const
-      {
-        return pass_band_;
-      };
-
-      /** \brief Turn on/off coordinate normalization. The positions can be translated and scaled such that they fit
-       * within a [-1, 1] prior to the smoothing computation. The default is off. The numerical stability of the
-       * solution can be improved by turning normalization on. If normalization is on, the coordinates will be rescaled
-       * to the original coordinate system after smoothing has completed.
-       * \param[in] normalize_coordinates decision whether to normalize coordinates or not
-       */
-      inline void
-      setNormalizeCoordinates (bool normalize_coordinates)
-      {
-        normalize_coordinates_ = normalize_coordinates;
-      }
-
-      /** \brief Get whether the coordinate normalization is active or not */
-      inline bool
-      getNormalizeCoordinates () const
-      {
-        return normalize_coordinates_;
-      }
-
-      /** \brief Turn on/off smoothing along sharp interior edges.
-       * \param[in] feature_edge_smoothing whether to enable/disable smoothing along sharp interior edges
-       */
-      inline void
-      setFeatureEdgeSmoothing (bool feature_edge_smoothing)
-      {
-        feature_edge_smoothing_ = feature_edge_smoothing;
-      };
-
-      /** \brief Get the status of the feature edge smoothing */
-      inline bool
-      getFeatureEdgeSmoothing () const
-      {
-        return feature_edge_smoothing_;
-      };
-
-      /** \brief Specify the feature angle for sharp edge identification.
-       * \param[in] feature_angle the angle threshold for considering an edge to be sharp
-       */
-      inline void
-      setFeatureAngle (float feature_angle)
-      {
-        feature_angle_ = feature_angle;
-      };
-
-      /** \brief Get the angle threshold for considering an edge to be sharp */
-      inline float
-      getFeatureAngle () const
-      {
-        return feature_angle_;
-      };
-
-      /** \brief Specify the edge angle to control smoothing along edges (either interior or boundary).
-       * \param[in] edge_angle the angle to control smoothing along edges
-       */
-      inline void
-      setEdgeAngle (float edge_angle)
-      {
-        edge_angle_ = edge_angle;
-      };
-
-      /** \brief Get the edge angle to control smoothing along edges */
-      inline float
-      getEdgeAngle () const
-      {
-        return edge_angle_;
-      };
-
-
-      /** \brief Turn on/off the smoothing of vertices on the boundary of the mesh.
-       * \param[in] boundary_smoothing decision whether boundary smoothing is on or off
-       */
-      inline void
-      setBoundarySmoothing (bool boundary_smoothing)
-      {
-        boundary_smoothing_ = boundary_smoothing;
-      };
-
-      /** \brief Get the status of the boundary smoothing */
-      inline bool
-      getBoundarySmoothing () const
-      {
-        return boundary_smoothing_;
-      }
-
-
-    protected:
-      void
-      performProcessing (pcl::PolygonMesh &output) override;
-
-    private:
-      vtkSmartPointer<vtkPolyData> vtk_polygons_;
-      int num_iter_{20};
-      float pass_band_{0.1f};
-      bool feature_edge_smoothing_{false};
-      float feature_angle_{45.f};
-      float edge_angle_{15.f};
-      bool boundary_smoothing_{true};
-      bool normalize_coordinates_{false};
+    num_iter_ = num_iter;
   };
-}
+
+  /** \brief Get the number of iterations. */
+  inline int
+  getNumIter () const
+  {
+    return num_iter_;
+  };
+
+  /** \brief Set the pass band value for windowed sinc filtering.
+   * \param[in] pass_band value for the pass band.
+   */
+  inline void
+  setPassBand (float pass_band)
+  {
+    pass_band_ = pass_band;
+  };
+
+  /** \brief Get the pass band value. */
+  inline float
+  getPassBand () const
+  {
+    return pass_band_;
+  };
+
+  /** \brief Turn on/off coordinate normalization. The positions can be translated and
+   * scaled such that they fit within a [-1, 1] prior to the smoothing computation. The
+   * default is off. The numerical stability of the solution can be improved by turning
+   * normalization on. If normalization is on, the coordinates will be rescaled to the
+   * original coordinate system after smoothing has completed. \param[in]
+   * normalize_coordinates decision whether to normalize coordinates or not
+   */
+  inline void
+  setNormalizeCoordinates (bool normalize_coordinates)
+  {
+    normalize_coordinates_ = normalize_coordinates;
+  }
+
+  /** \brief Get whether the coordinate normalization is active or not */
+  inline bool
+  getNormalizeCoordinates () const
+  {
+    return normalize_coordinates_;
+  }
+
+  /** \brief Turn on/off smoothing along sharp interior edges.
+   * \param[in] feature_edge_smoothing whether to enable/disable smoothing along sharp
+   * interior edges
+   */
+  inline void
+  setFeatureEdgeSmoothing (bool feature_edge_smoothing)
+  {
+    feature_edge_smoothing_ = feature_edge_smoothing;
+  };
+
+  /** \brief Get the status of the feature edge smoothing */
+  inline bool
+  getFeatureEdgeSmoothing () const
+  {
+    return feature_edge_smoothing_;
+  };
+
+  /** \brief Specify the feature angle for sharp edge identification.
+   * \param[in] feature_angle the angle threshold for considering an edge to be sharp
+   */
+  inline void
+  setFeatureAngle (float feature_angle)
+  {
+    feature_angle_ = feature_angle;
+  };
+
+  /** \brief Get the angle threshold for considering an edge to be sharp */
+  inline float
+  getFeatureAngle () const
+  {
+    return feature_angle_;
+  };
+
+  /** \brief Specify the edge angle to control smoothing along edges (either interior or
+   * boundary). \param[in] edge_angle the angle to control smoothing along edges
+   */
+  inline void
+  setEdgeAngle (float edge_angle)
+  {
+    edge_angle_ = edge_angle;
+  };
+
+  /** \brief Get the edge angle to control smoothing along edges */
+  inline float
+  getEdgeAngle () const
+  {
+    return edge_angle_;
+  };
+
+  /** \brief Turn on/off the smoothing of vertices on the boundary of the mesh.
+   * \param[in] boundary_smoothing decision whether boundary smoothing is on or off
+   */
+  inline void
+  setBoundarySmoothing (bool boundary_smoothing)
+  {
+    boundary_smoothing_ = boundary_smoothing;
+  };
+
+  /** \brief Get the status of the boundary smoothing */
+  inline bool
+  getBoundarySmoothing () const
+  {
+    return boundary_smoothing_;
+  }
+
+protected:
+  void
+  performProcessing (pcl::PolygonMesh& output) override;
+
+private:
+  vtkSmartPointer<vtkPolyData> vtk_polygons_;
+  int num_iter_{20};
+  float pass_band_{0.1f};
+  bool feature_edge_smoothing_{false};
+  float feature_angle_{45.f};
+  float edge_angle_{15.f};
+  bool boundary_smoothing_{true};
+  bool normalize_coordinates_{false};
+};
+} // namespace pcl

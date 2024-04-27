@@ -43,171 +43,171 @@
 
 #include <chrono>
 
-namespace pcl
-{
-  namespace io
+namespace pcl {
+namespace io {
+
+/**
+ * @brief Image interface class providing an interface to fill a RGB or Grayscale image
+ * buffer.
+ * @param[in] image_metadata
+ * @ingroup io
+ */
+class PCL_EXPORTS Image {
+public:
+  using Ptr = shared_ptr<Image>;
+  using ConstPtr = shared_ptr<const Image>;
+
+  using Clock = std::chrono::high_resolution_clock;
+  using Timestamp = std::chrono::high_resolution_clock::time_point;
+
+  enum Encoding { BAYER_GRBG, YUV422, RGB };
+
+  Image(FrameWrapper::Ptr image_metadata)
+  : wrapper_(std::move(image_metadata)), timestamp_(Clock::now())
+  {}
+
+  Image(FrameWrapper::Ptr image_metadata, Timestamp time)
+  : wrapper_(std::move(image_metadata)), timestamp_(time)
+  {}
+
+  /**
+   * @brief virtual Destructor that never throws an exception.
+   */
+  inline virtual ~Image() = default;
+
+  /**
+   * @param[in] input_width width of input image
+   * @param[in] input_height height of input image
+   * @param[in] output_width width of desired output image
+   * @param[in] output_height height of desired output image
+   * @return whether the resizing is supported or not.
+   */
+  virtual bool
+  isResizingSupported (unsigned input_width,
+                       unsigned input_height,
+                       unsigned output_width,
+                       unsigned output_height) const = 0;
+
+  /**
+   * @brief fills a user given buffer with the RGB values, with an optional
+   * nearest-neighbor down sampling and an optional subregion
+   * @param[in] width desired width of output image.
+   * @param[in] height desired height of output image.
+   * @param[in,out] rgb_buffer the output RGB buffer.
+   * @param[in] rgb_line_step optional line step in bytes to allow the output in a
+   * rectangular subregion of the output buffer.
+   */
+  virtual void
+  fillRGB (unsigned width,
+           unsigned height,
+           unsigned char* rgb_buffer,
+           unsigned rgb_line_step = 0) const = 0;
+
+  /**
+   * @brief returns the encoding of the native data.
+   * @return encoding
+   */
+  virtual Encoding
+  getEncoding () const = 0;
+
+  /**
+   * @brief fills a user given buffer with the raw values.
+   * @param[in,out] rgb_buffer
+   */
+  virtual void
+  fillRaw (unsigned char* rgb_buffer) const
   {
+    memcpy(rgb_buffer, wrapper_->getData(), wrapper_->getDataSize());
+  }
 
-    /**
-    * @brief Image interface class providing an interface to fill a RGB or Grayscale image buffer.
-    * @param[in] image_metadata
-    * @ingroup io
-    */
-    class PCL_EXPORTS Image
-    {
-      public:
-        using Ptr = shared_ptr<Image>;
-        using ConstPtr = shared_ptr<const Image>;
+  /**
+   * @brief fills a user given buffer with the gray values, with an optional
+   * nearest-neighbor down sampling and an optional subregion
+   * @param[in] width desired width of output image.
+   * @param[in] height desired height of output image.
+   * @param[in,out] gray_buffer the output gray buffer.
+   * @param[in] gray_line_step optional line step in bytes to allow the output in a
+   * rectangular subregion of the output buffer.
+   */
+  virtual void
+  fillGrayscale (unsigned width,
+                 unsigned height,
+                 unsigned char* gray_buffer,
+                 unsigned gray_line_step = 0) const = 0;
 
-        using Clock = std::chrono::high_resolution_clock;
-        using Timestamp = std::chrono::high_resolution_clock::time_point;
+  /**
+   * @return width of the image
+   */
+  unsigned
+  getWidth () const
+  {
+    return (wrapper_->getWidth());
+  }
 
-        enum Encoding
-        {
-          BAYER_GRBG,
-          YUV422,
-          RGB
-        };
+  /**
+   * @return height of the image
+   */
+  unsigned
+  getHeight () const
+  {
+    return (wrapper_->getHeight());
+  }
 
-        Image (FrameWrapper::Ptr image_metadata)
-          : wrapper_ (std::move(image_metadata))
-          , timestamp_ (Clock::now ())
-        {}
+  /**
+   * @return frame id of the image.
+   * @note frame ids are ascending, but not necessarily synchronized with other streams
+   */
+  unsigned
+  getFrameID () const
+  {
+    return (wrapper_->getFrameID());
+  }
 
-        Image (FrameWrapper::Ptr image_metadata, Timestamp time)
-          : wrapper_ (std::move(image_metadata))
-          , timestamp_ (time)
-        {}
+  /**
+   * @return the timestamp of the image
+   * @note the time value is not synchronized with the system time
+   */
+  std::uint64_t
+  getTimestamp () const
+  {
+    return (wrapper_->getTimestamp());
+  }
 
-        /**
-        * @brief virtual Destructor that never throws an exception.
-        */
-        inline virtual ~Image () = default;
+  /**
+   * @return the timestamp of the image
+   * @note the time value *is* synchronized with the system time.
+   */
+  Timestamp
+  getSystemTimestamp () const
+  {
+    return (timestamp_);
+  }
 
-        /**
-        * @param[in] input_width width of input image
-        * @param[in] input_height height of input image
-        * @param[in] output_width width of desired output image
-        * @param[in] output_height height of desired output image
-        * @return whether the resizing is supported or not.
-        */
-        virtual bool
-        isResizingSupported (unsigned input_width, unsigned input_height,
-          unsigned output_width, unsigned output_height) const = 0;
+  // Get a const pointer to the raw depth buffer
+  const void*
+  getData ()
+  {
+    return (wrapper_->getData());
+  }
 
-        /**
-        * @brief fills a user given buffer with the RGB values, with an optional nearest-neighbor down sampling and an optional subregion
-        * @param[in] width desired width of output image.
-        * @param[in] height desired height of output image.
-        * @param[in,out] rgb_buffer the output RGB buffer.
-        * @param[in] rgb_line_step optional line step in bytes to allow the output in a rectangular subregion of the output buffer.
-        */
-        virtual void
-        fillRGB (unsigned width, unsigned height, unsigned char* rgb_buffer, unsigned rgb_line_step = 0) const = 0;
+  // Data buffer size in bytes
+  int
+  getDataSize () const
+  {
+    return (wrapper_->getDataSize());
+  }
 
-        /**
-        * @brief returns the encoding of the native data.
-        * @return encoding
-        */
-        virtual Encoding
-        getEncoding () const = 0;
+  // Size of each row, including any padding
+  inline unsigned
+  getStep () const
+  {
+    return (getDataSize() / getHeight());
+  }
 
-        /**
-        * @brief fills a user given buffer with the raw values.
-        * @param[in,out] rgb_buffer
-        */
-        virtual void
-        fillRaw (unsigned char* rgb_buffer) const
-        {
-          memcpy (rgb_buffer, wrapper_->getData (), wrapper_->getDataSize ());
-        }
+protected:
+  FrameWrapper::Ptr wrapper_;
+  Timestamp timestamp_;
+};
 
-        /**
-        * @brief fills a user given buffer with the gray values, with an optional nearest-neighbor down sampling and an optional subregion
-        * @param[in] width desired width of output image.
-        * @param[in] height desired height of output image.
-        * @param[in,out] gray_buffer the output gray buffer.
-        * @param[in] gray_line_step optional line step in bytes to allow the output in a rectangular subregion of the output buffer.
-        */
-        virtual void
-        fillGrayscale (unsigned width, unsigned height, unsigned char* gray_buffer,
-          unsigned gray_line_step = 0) const = 0;
-
-        /**
-        * @return width of the image
-        */
-        unsigned
-        getWidth () const
-        {
-          return (wrapper_->getWidth ());
-        }
-
-        /**
-        * @return height of the image
-        */
-        unsigned
-        getHeight () const
-        {
-          return (wrapper_->getHeight ());
-        }
-
-        /**
-        * @return frame id of the image.
-        * @note frame ids are ascending, but not necessarily synchronized with other streams
-        */
-        unsigned
-        getFrameID () const
-        {
-          return (wrapper_->getFrameID ());
-        }
-
-        /**
-        * @return the timestamp of the image
-        * @note the time value is not synchronized with the system time
-        */
-        std::uint64_t
-        getTimestamp () const
-        {
-          return (wrapper_->getTimestamp ());
-        }
-
-
-        /**
-        * @return the timestamp of the image
-        * @note the time value *is* synchronized with the system time.
-        */
-        Timestamp
-        getSystemTimestamp () const
-        {
-          return (timestamp_);
-        }
-
-        // Get a const pointer to the raw depth buffer
-        const void*
-        getData ()
-        {
-          return (wrapper_->getData ());
-        }
-
-        // Data buffer size in bytes
-        int
-        getDataSize () const
-        {
-          return (wrapper_->getDataSize ());
-        }
-
-        // Size of each row, including any padding
-        inline unsigned
-        getStep() const
-        {
-          return (getDataSize() / getHeight());
-        }
-
-      protected:
-        FrameWrapper::Ptr wrapper_;
-        Timestamp timestamp_;
-    };
-
-  } // namespace
-}
-
+} // namespace io
+} // namespace pcl

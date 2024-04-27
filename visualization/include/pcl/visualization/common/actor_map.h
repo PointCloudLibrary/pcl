@@ -37,69 +37,67 @@
 
 #pragma once
 
-#include <pcl/visualization/point_cloud_geometry_handlers.h> // for PointCloudGeometryHandler
 #include <pcl/visualization/point_cloud_color_handlers.h> // for PointCloudColorHandler
+#include <pcl/visualization/point_cloud_geometry_handlers.h> // for PointCloudGeometryHandler
 #include <pcl/PCLPointCloud2.h>
 
+#include <vtkIdTypeArray.h>
 #include <vtkLODActor.h>
 #include <vtkSmartPointer.h>
-#include <vtkIdTypeArray.h>
 
 #include <unordered_map>
 #include <vector>
 
-template <typename T> class vtkSmartPointer;
+template <typename T>
+class vtkSmartPointer;
 class vtkLODActor;
 class vtkProp;
 
-namespace pcl
-{
-  namespace visualization
-  {
-    class PCL_EXPORTS CloudActor
-    {
-      using GeometryHandler = PointCloudGeometryHandler<pcl::PCLPointCloud2>;
-      using GeometryHandlerPtr = GeometryHandler::Ptr;
-      using GeometryHandlerConstPtr = GeometryHandler::ConstPtr;
+namespace pcl {
+namespace visualization {
+class PCL_EXPORTS CloudActor {
+  using GeometryHandler = PointCloudGeometryHandler<pcl::PCLPointCloud2>;
+  using GeometryHandlerPtr = GeometryHandler::Ptr;
+  using GeometryHandlerConstPtr = GeometryHandler::ConstPtr;
 
-      using ColorHandler = PointCloudColorHandler<pcl::PCLPointCloud2>;
-      using ColorHandlerPtr = ColorHandler::Ptr;
-      using ColorHandlerConstPtr = ColorHandler::ConstPtr;
+  using ColorHandler = PointCloudColorHandler<pcl::PCLPointCloud2>;
+  using ColorHandlerPtr = ColorHandler::Ptr;
+  using ColorHandlerConstPtr = ColorHandler::ConstPtr;
 
-      public:
-        CloudActor () = default;
+public:
+  CloudActor() = default;
 
-        virtual ~CloudActor () = default;
+  virtual ~CloudActor() = default;
 
-        /** \brief The actor holding the data to render. */
-        vtkSmartPointer<vtkLODActor> actor;
+  /** \brief The actor holding the data to render. */
+  vtkSmartPointer<vtkLODActor> actor;
 
-        /** \brief A vector of geometry handlers that can be used for rendering the data. */
-        std::vector<GeometryHandlerConstPtr> geometry_handlers;
+  /** \brief A vector of geometry handlers that can be used for rendering the data. */
+  std::vector<GeometryHandlerConstPtr> geometry_handlers;
 
-        /** \brief A vector of color handlers that can be used for rendering the data. */
-        std::vector<ColorHandlerConstPtr> color_handlers;
+  /** \brief A vector of color handlers that can be used for rendering the data. */
+  std::vector<ColorHandlerConstPtr> color_handlers;
 
-        /** \brief The active color handler. */
-        int color_handler_index_{0};
+  /** \brief The active color handler. */
+  int color_handler_index_{0};
 
-        /** \brief The active geometry handler. */
-        int geometry_handler_index_{0};
+  /** \brief The active geometry handler. */
+  int geometry_handler_index_{0};
 
-        /** \brief The viewpoint transformation matrix. */
-        vtkSmartPointer<vtkMatrix4x4> viewpoint_transformation_;
+  /** \brief The viewpoint transformation matrix. */
+  vtkSmartPointer<vtkMatrix4x4> viewpoint_transformation_;
 
-        /** \brief Internal cell array. Used for optimizing updatePointCloud. */
-        vtkSmartPointer<vtkIdTypeArray> cells;
-    };
+  /** \brief Internal cell array. Used for optimizing updatePointCloud. */
+  vtkSmartPointer<vtkIdTypeArray> cells;
+};
 
-    using CloudActorMap = std::unordered_map<std::string, CloudActor>;
-    using CloudActorMapPtr = shared_ptr<CloudActorMap>;
+using CloudActorMap = std::unordered_map<std::string, CloudActor>;
+using CloudActorMapPtr = shared_ptr<CloudActorMap>;
 
-    using ShapeActorMap = std::unordered_map<std::string, vtkSmartPointer<vtkProp> >;
-    using ShapeActorMapPtr = shared_ptr<ShapeActorMap>;
+using ShapeActorMap = std::unordered_map<std::string, vtkSmartPointer<vtkProp>>;
+using ShapeActorMapPtr = shared_ptr<ShapeActorMap>;
 
-    using CoordinateActorMap = std::unordered_map<std::string, vtkSmartPointer<vtkProp> >;
-    using CoordinateActorMapPtr = shared_ptr<CoordinateActorMap>;
-  }
-}
+using CoordinateActorMap = std::unordered_map<std::string, vtkSmartPointer<vtkProp>>;
+using CoordinateActorMapPtr = shared_ptr<CoordinateActorMap>;
+} // namespace visualization
+} // namespace pcl

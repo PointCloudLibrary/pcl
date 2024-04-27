@@ -79,9 +79,9 @@ public:
    * resultant transformation matrix
    */
   void
-  estimateRigidTransformation(const pcl::PointCloud<PointSource>& cloud_src,
-                              const pcl::PointCloud<PointTarget>& cloud_tgt,
-                              Matrix4& transformation_matrix) const override;
+  estimateRigidTransformation (const pcl::PointCloud<PointSource>& cloud_src,
+                               const pcl::PointCloud<PointTarget>& cloud_tgt,
+                               Matrix4& transformation_matrix) const override;
 
   /** \brief Estimate a rigid rotation transformation between a source and a target
    * point cloud. \param[in] cloud_src the source point cloud dataset \param[in]
@@ -90,10 +90,10 @@ public:
    * \param[out] transformation_matrix the resultant transformation matrix
    */
   void
-  estimateRigidTransformation(const pcl::PointCloud<PointSource>& cloud_src,
-                              const pcl::Indices& indices_src,
-                              const pcl::PointCloud<PointTarget>& cloud_tgt,
-                              Matrix4& transformation_matrix) const override;
+  estimateRigidTransformation (const pcl::PointCloud<PointSource>& cloud_src,
+                               const pcl::Indices& indices_src,
+                               const pcl::PointCloud<PointTarget>& cloud_tgt,
+                               Matrix4& transformation_matrix) const override;
 
   /** \brief Estimate a rigid rotation transformation between a source and a target
    * point cloud. \param[in] cloud_src the source point cloud dataset \param[in]
@@ -104,11 +104,11 @@ public:
    * \param[out] transformation_matrix the resultant transformation matrix
    */
   void
-  estimateRigidTransformation(const pcl::PointCloud<PointSource>& cloud_src,
-                              const pcl::Indices& indices_src,
-                              const pcl::PointCloud<PointTarget>& cloud_tgt,
-                              const pcl::Indices& indices_tgt,
-                              Matrix4& transformation_matrix) const override;
+  estimateRigidTransformation (const pcl::PointCloud<PointSource>& cloud_src,
+                               const pcl::Indices& indices_src,
+                               const pcl::PointCloud<PointTarget>& cloud_tgt,
+                               const pcl::Indices& indices_tgt,
+                               Matrix4& transformation_matrix) const override;
 
   /** \brief Estimate a rigid rotation transformation between a source and a target
    * point cloud. \param[in] cloud_src the source point cloud dataset \param[in]
@@ -117,10 +117,10 @@ public:
    * transformation_matrix the resultant transformation matrix
    */
   void
-  estimateRigidTransformation(const pcl::PointCloud<PointSource>& cloud_src,
-                              const pcl::PointCloud<PointTarget>& cloud_tgt,
-                              const pcl::Correspondences& correspondences,
-                              Matrix4& transformation_matrix) const override;
+  estimateRigidTransformation (const pcl::PointCloud<PointSource>& cloud_src,
+                               const pcl::PointCloud<PointTarget>& cloud_tgt,
+                               const pcl::Correspondences& correspondences,
+                               Matrix4& transformation_matrix) const override;
 
 protected:
   /** \brief Estimate a rigid rotation transformation between a source and a target
@@ -129,9 +129,9 @@ protected:
    * \param[out] transformation_matrix the resultant transformation matrix
    */
   void
-  estimateRigidTransformation(ConstCloudIterator<PointSource>& source_it,
-                              ConstCloudIterator<PointTarget>& target_it,
-                              Matrix4& transformation_matrix) const;
+  estimateRigidTransformation (ConstCloudIterator<PointSource>& source_it,
+                               ConstCloudIterator<PointTarget>& target_it,
+                               Matrix4& transformation_matrix) const;
 };
 }; // namespace registration
 }; // namespace pcl

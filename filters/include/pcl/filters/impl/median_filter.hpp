@@ -39,52 +39,50 @@
 
 #pragma once
 
-#include <pcl/filters/median_filter.h>
 #include <pcl/common/point_tests.h> // for pcl::isFinite
+#include <pcl/filters/median_filter.h>
 
-template <typename PointT> void
-pcl::MedianFilter<PointT>::applyFilter (PointCloud &output)
+template <typename PointT>
+void
+pcl::MedianFilter<PointT>::applyFilter(PointCloud& output)
 {
-  if (!input_->isOrganized ())
-  {
-    PCL_ERROR ("[pcl::MedianFilter] Input cloud needs to be organized\n");
+  if (!input_->isOrganized()) {
+    PCL_ERROR("[pcl::MedianFilter] Input cloud needs to be organized\n");
     return;
   }
 
-  // Copy everything from the input cloud to the output cloud (takes care of all the fields)
-  copyPointCloud (*input_, output);
+  // Copy everything from the input cloud to the output cloud (takes care of all the
+  // fields)
+  copyPointCloud(*input_, output);
 
-  int height = static_cast<int> (output.height);
-  int width = static_cast<int> (output.width);
+  int height = static_cast<int>(output.height);
+  int width = static_cast<int>(output.width);
   for (int y = 0; y < height; ++y)
     for (int x = 0; x < width; ++x)
-      if (pcl::isFinite ((*input_)(x, y)))
-      {
+      if (pcl::isFinite((*input_)(x, y))) {
         std::vector<float> vals;
-        vals.reserve (window_size_ * window_size_);
+        vals.reserve(window_size_ * window_size_);
         // Fill in the vector of values with the depths around the interest point
-        for (int y_dev = -window_size_/2; y_dev <= window_size_/2; ++y_dev)
-          for (int x_dev = -window_size_/2; x_dev <= window_size_/2; ++x_dev)
-          {
-            if (x + x_dev >= 0 && x + x_dev < width &&
-                y + y_dev >= 0 && y + y_dev < height &&
-                pcl::isFinite ((*input_)(x+x_dev, y+y_dev)))
-              vals.push_back ((*input_)(x+x_dev, y+y_dev).z);
+        for (int y_dev = -window_size_ / 2; y_dev <= window_size_ / 2; ++y_dev)
+          for (int x_dev = -window_size_ / 2; x_dev <= window_size_ / 2; ++x_dev) {
+            if (x + x_dev >= 0 && x + x_dev < width && y + y_dev >= 0 &&
+                y + y_dev < height && pcl::isFinite((*input_)(x + x_dev, y + y_dev)))
+              vals.push_back((*input_)(x + x_dev, y + y_dev).z);
           }
 
-        if (vals.empty ())
+        if (vals.empty())
           continue;
 
         // The output depth will be the median of all the depths in the window
-        auto middle_it = vals.begin () + vals.size () / 2;
-        std::nth_element (vals.begin (), middle_it, vals.end ());
+        auto middle_it = vals.begin() + vals.size() / 2;
+        std::nth_element(vals.begin(), middle_it, vals.end());
         float new_depth = *middle_it;
         // Do not allow points to move more than the set max_allowed_movement_
-        if (std::abs (new_depth - (*input_)(x, y).z) < max_allowed_movement_)
-          output (x, y).z = new_depth;
+        if (std::abs(new_depth - (*input_)(x, y).z) < max_allowed_movement_)
+          output(x, y).z = new_depth;
         else
-          output (x, y).z = (*input_)(x, y).z +
-                            max_allowed_movement_ * (new_depth - (*input_)(x, y).z) / std::abs (new_depth - (*input_)(x, y).z);
+          output(x, y).z = (*input_)(x, y).z +
+                           max_allowed_movement_ * (new_depth - (*input_)(x, y).z) /
+                               std::abs(new_depth - (*input_)(x, y).z);
       }
 }
-

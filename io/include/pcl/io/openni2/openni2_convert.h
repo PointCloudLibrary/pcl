@@ -29,34 +29,29 @@
  *      Author: Julius Kammerl (jkammerl@willowgarage.com)
  */
 
-
 #pragma once
 
+#include "OpenNI.h"
 #include "pcl/io/openni2/openni2_device_info.h"
 #include "pcl/io/openni2/openni2_video_mode.h"
 
-#include "OpenNI.h"
-
 #include <vector>
 
-namespace pcl
-{
-  namespace io
-  {
-    namespace openni2
-    {
-      const OpenNI2DeviceInfo
-      openni2_convert (const openni::DeviceInfo* pInfo);
+namespace pcl {
+namespace io {
+namespace openni2 {
+const OpenNI2DeviceInfo
+openni2_convert (const openni::DeviceInfo* pInfo);
 
-      const openni::VideoMode
-      grabberModeToOpenniMode (const OpenNI2VideoMode& input);
+const openni::VideoMode
+grabberModeToOpenniMode (const OpenNI2VideoMode& input);
 
-      const OpenNI2VideoMode
-      openniModeToGrabberMode (const openni::VideoMode& input);
+const OpenNI2VideoMode
+openniModeToGrabberMode (const openni::VideoMode& input);
 
-      const std::vector<OpenNI2VideoMode>
-      openniModeToGrabberMode (const openni::Array<openni::VideoMode>& input);
+const std::vector<OpenNI2VideoMode>
+openniModeToGrabberMode (const openni::Array<openni::VideoMode>& input);
 
-    } // namespace
-  }
-}
+} // namespace openni2
+} // namespace io
+} // namespace pcl

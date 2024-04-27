@@ -42,99 +42,103 @@
 
 #include <pcl/features/feature.h>
 #define GRIDSIZE 64
-#define GRIDSIZE_H (GRIDSIZE/2)
+#define GRIDSIZE_H (GRIDSIZE / 2)
 #include <vector>
 
-namespace pcl
-{
-  /** \brief @b ESFEstimation estimates the ensemble of shape functions descriptors for a given point cloud
-    * dataset containing points. Shape functions are D2, D3, A3.  For more information about the ESF descriptor, see:
-    * Walter Wohlkinger and Markus Vincze, "Ensemble of Shape Functions for 3D Object Classification", 
-    * IEEE International Conference on Robotics and Biomimetics (IEEE-ROBIO), 2011
-    * \author Walter Wohlkinger
-    * \ingroup features
-    */
+namespace pcl {
+/** \brief @b ESFEstimation estimates the ensemble of shape functions descriptors for a
+ * given point cloud dataset containing points. Shape functions are D2, D3, A3.  For
+ * more information about the ESF descriptor, see: Walter Wohlkinger and Markus Vincze,
+ * "Ensemble of Shape Functions for 3D Object Classification", IEEE International
+ * Conference on Robotics and Biomimetics (IEEE-ROBIO), 2011 \author Walter Wohlkinger
+ * \ingroup features
+ */
 
-  template <typename PointInT,  typename PointOutT = pcl::ESFSignature640>
-  class ESFEstimation: public Feature<PointInT, PointOutT>
+template <typename PointInT, typename PointOutT = pcl::ESFSignature640>
+class ESFEstimation : public Feature<PointInT, PointOutT> {
+public:
+  using Ptr = shared_ptr<ESFEstimation<PointInT, PointOutT>>;
+  using ConstPtr = shared_ptr<const ESFEstimation<PointInT, PointOutT>>;
+
+  using Feature<PointInT, PointOutT>::feature_name_;
+  using Feature<PointInT, PointOutT>::getClassName;
+  using Feature<PointInT, PointOutT>::indices_;
+  using Feature<PointInT, PointOutT>::k_;
+  using Feature<PointInT, PointOutT>::search_radius_;
+  using Feature<PointInT, PointOutT>::input_;
+  using Feature<PointInT, PointOutT>::surface_;
+
+  using PointCloudIn = pcl::PointCloud<PointInT>;
+  using PointCloudOut = typename Feature<PointInT, PointOutT>::PointCloudOut;
+
+  /** \brief Empty constructor. */
+  ESFEstimation() : local_cloud_()
   {
-    public:
-      using Ptr = shared_ptr<ESFEstimation<PointInT, PointOutT> >;
-      using ConstPtr = shared_ptr<const ESFEstimation<PointInT, PointOutT> >;
+    feature_name_ = "ESFEstimation";
+    lut_.resize(GRIDSIZE);
+    for (int i = 0; i < GRIDSIZE; ++i) {
+      lut_[i].resize(GRIDSIZE);
+      for (int j = 0; j < GRIDSIZE; ++j)
+        lut_[i][j].resize(GRIDSIZE);
+    }
+    // lut_.resize (boost::extents[GRIDSIZE][GRIDSIZE][GRIDSIZE]);
+    search_radius_ = 0;
+    k_ = 5;
+  }
 
-      using Feature<PointInT, PointOutT>::feature_name_;
-      using Feature<PointInT, PointOutT>::getClassName;
-      using Feature<PointInT, PointOutT>::indices_;
-      using Feature<PointInT, PointOutT>::k_;
-      using Feature<PointInT, PointOutT>::search_radius_;
-      using Feature<PointInT, PointOutT>::input_;
-      using Feature<PointInT, PointOutT>::surface_;
+  /** \brief Overloaded computed method from pcl::Feature.
+   * \param[out] output the resultant point cloud model dataset containing the estimated
+   * features
+   */
+  void
+  compute (PointCloudOut& output);
 
-      using PointCloudIn = pcl::PointCloud<PointInT>;
-      using PointCloudOut = typename Feature<PointInT, PointOutT>::PointCloudOut;
+protected:
+  /** \brief Estimate the Ensebmel of Shape Function (ESF) descriptors at a set of
+   * points given by <setInputCloud (), \param output the resultant point cloud model
+   * histogram that contains the ESF feature estimates
+   */
+  void
+  computeFeature (PointCloudOut& output) override;
 
-      /** \brief Empty constructor. */
-      ESFEstimation () : local_cloud_ ()
-      {
-        feature_name_ = "ESFEstimation";
-        lut_.resize (GRIDSIZE);
-        for (int i = 0; i < GRIDSIZE; ++i)
-        {
-          lut_[i].resize (GRIDSIZE);
-          for (int j = 0; j < GRIDSIZE; ++j)
-            lut_[i][j].resize (GRIDSIZE);
-        }
-        //lut_.resize (boost::extents[GRIDSIZE][GRIDSIZE][GRIDSIZE]);
-        search_radius_ = 0;
-        k_ = 5;
-      }
+  /** \brief ... */
+  int
+  lci (const int x1,
+       const int y1,
+       const int z1,
+       const int x2,
+       const int y2,
+       const int z2,
+       float& ratio,
+       int& incnt,
+       int& pointcount);
 
-      /** \brief Overloaded computed method from pcl::Feature.
-        * \param[out] output the resultant point cloud model dataset containing the estimated features
-        */
-      void
-      compute (PointCloudOut &output);
+  /** \brief ... */
+  void
+  computeESF (PointCloudIn& pc, std::vector<float>& hist);
 
-    protected:
+  /** \brief ... */
+  void
+  voxelize9 (PointCloudIn& cluster);
 
-      /** \brief Estimate the Ensebmel of Shape Function (ESF) descriptors at a set of points given by
-        * <setInputCloud (),
-        * \param output the resultant point cloud model histogram that contains the ESF feature estimates
-        */
-      void 
-      computeFeature (PointCloudOut &output) override;
+  /** \brief ... */
+  void
+  cleanup9 (PointCloudIn& cluster);
 
-      /** \brief ... */
-      int
-      lci (const int x1, const int y1, const int z1, 
-           const int x2, const int y2, const int z2, 
-           float &ratio, int &incnt, int &pointcount);
-     
-      /** \brief ... */
-      void
-      computeESF (PointCloudIn &pc, std::vector<float> &hist);
-      
-      /** \brief ... */
-      void
-      voxelize9 (PointCloudIn &cluster);
-      
-      /** \brief ... */
-      void
-      cleanup9 (PointCloudIn &cluster);
+  /** \brief ... */
+  void
+  scale_points_unit_sphere (const pcl::PointCloud<PointInT>& pc,
+                            float scalefactor,
+                            Eigen::Vector4f& centroid);
 
-      /** \brief ... */
-      void
-      scale_points_unit_sphere (const pcl::PointCloud<PointInT> &pc, float scalefactor, Eigen::Vector4f& centroid);
+private:
+  /** \brief ... */
+  std::vector<std::vector<std::vector<int>>> lut_;
 
-    private:
-
-      /** \brief ... */
-      std::vector<std::vector<std::vector<int> > > lut_;
-      
-      /** \brief ... */
-      PointCloudIn local_cloud_;
-  };
-}
+  /** \brief ... */
+  PointCloudIn local_cloud_;
+};
+} // namespace pcl
 
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/features/impl/esf.hpp>

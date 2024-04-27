@@ -39,13 +39,12 @@
 
 #include <pcl/console/parse.h>
 #include <pcl/io/pcd_io.h>
-#include <pcl/point_types.h>
-#include <pcl/registration/icp.h>
 #include <pcl/registration/elch.h>
+#include <pcl/registration/icp.h>
+#include <pcl/point_types.h>
 
 #include <iostream>
 #include <string>
-
 #include <vector>
 
 using PointType = pcl::PointXYZ;
@@ -56,42 +55,41 @@ using CloudPair = std::pair<std::string, CloudPtr>;
 using CloudVector = std::vector<CloudPair>;
 
 bool
-loopDetection (int end, const CloudVector &clouds, double dist, int &first, int &last)
+loopDetection (int end, const CloudVector& clouds, double dist, int& first, int& last)
 {
   static double min_dist = -1;
   int state = 0;
 
-  for (int i = end-1; i > 0; i--)
-  {
+  for (int i = end - 1; i > 0; i--) {
     Eigen::Vector4f cstart, cend;
-    //TODO use pose of scan
-    pcl::compute3DCentroid (*(clouds[i].second), cstart);
-    pcl::compute3DCentroid (*(clouds[end].second), cend);
+    // TODO use pose of scan
+    pcl::compute3DCentroid(*(clouds[i].second), cstart);
+    pcl::compute3DCentroid(*(clouds[end].second), cend);
     Eigen::Vector4f diff = cend - cstart;
 
-    double norm = diff.norm ();
+    double norm = diff.norm();
 
-    //std::cout << "distance between " << i << " and " << end << " is " << norm << " state is " << state << std::endl;
+    // std::cout << "distance between " << i << " and " << end << " is " << norm << "
+    // state is " << state << std::endl;
 
-    if (state == 0 && norm > dist)
-    {
+    if (state == 0 && norm > dist) {
       state = 1;
-      //std::cout << "state 1" << std::endl;
+      // std::cout << "state 1" << std::endl;
     }
-    if (state > 0 && norm < dist)
-    {
+    if (state > 0 && norm < dist) {
       state = 2;
-      //std::cout << "loop detected between scan " << i << " (" << clouds[i].first << ") and scan " << end << " (" << clouds[end].first << ")" << std::endl;
-      if (min_dist < 0 || norm < min_dist)
-      {
+      // std::cout << "loop detected between scan " << i << " (" << clouds[i].first <<
+      // ") and scan " << end << " (" << clouds[end].first << ")" << std::endl;
+      if (min_dist < 0 || norm < min_dist) {
         min_dist = norm;
         first = i;
         last = end;
       }
     }
   }
-  //std::cout << "min_dist: " << min_dist << " state: " << state << " first: " << first << " end: " << end << std::endl;
-  if (min_dist > 0 && (state < 2 || end == static_cast<int>(clouds.size ()) - 1)) //TODO
+  // std::cout << "min_dist: " << min_dist << " state: " << state << " first: " << first
+  // << " end: " << end << std::endl;
+  if (min_dist > 0 && (state < 2 || end == static_cast<int>(clouds.size()) - 1)) // TODO
   {
     min_dist = -1;
     return true;
@@ -100,56 +98,55 @@ loopDetection (int end, const CloudVector &clouds, double dist, int &first, int 
 }
 
 int
-main (int argc, char **argv)
+main (int argc, char** argv)
 {
   double dist = 0.1;
-  pcl::console::parse_argument (argc, argv, "-d", dist);
+  pcl::console::parse_argument(argc, argv, "-d", dist);
 
   double rans = 0.1;
-  pcl::console::parse_argument (argc, argv, "-r", rans);
+  pcl::console::parse_argument(argc, argv, "-r", rans);
 
   int iter = 100;
-  pcl::console::parse_argument (argc, argv, "-i", iter);
+  pcl::console::parse_argument(argc, argv, "-i", iter);
 
   pcl::registration::ELCH<PointType> elch;
-  pcl::IterativeClosestPoint<PointType, PointType>::Ptr icp (new pcl::IterativeClosestPoint<PointType, PointType>);
-  icp->setMaximumIterations (iter);
-  icp->setMaxCorrespondenceDistance (dist);
-  icp->setRANSACOutlierRejectionThreshold (rans);
-  elch.setReg (icp);
+  pcl::IterativeClosestPoint<PointType, PointType>::Ptr icp(
+      new pcl::IterativeClosestPoint<PointType, PointType>);
+  icp->setMaximumIterations(iter);
+  icp->setMaxCorrespondenceDistance(dist);
+  icp->setRANSACOutlierRejectionThreshold(rans);
+  elch.setReg(icp);
 
   std::vector<int> pcd_indices;
-  pcd_indices = pcl::console::parse_file_extension_argument (argc, argv, ".pcd");
+  pcd_indices = pcl::console::parse_file_extension_argument(argc, argv, ".pcd");
 
   CloudVector clouds;
-  for (std::size_t i = 0; i < pcd_indices.size (); i++)
-  {
-    CloudPtr pc (new Cloud);
-    pcl::io::loadPCDFile (argv[pcd_indices[i]], *pc);
-    clouds.push_back (CloudPair (argv[pcd_indices[i]], pc));
-    std::cout << "loading file: " << argv[pcd_indices[i]] << " size: " << pc->size () << std::endl;
-    elch.addPointCloud (clouds[i].second);
+  for (std::size_t i = 0; i < pcd_indices.size(); i++) {
+    CloudPtr pc(new Cloud);
+    pcl::io::loadPCDFile(argv[pcd_indices[i]], *pc);
+    clouds.push_back(CloudPair(argv[pcd_indices[i]], pc));
+    std::cout << "loading file: " << argv[pcd_indices[i]] << " size: " << pc->size()
+              << std::endl;
+    elch.addPointCloud(clouds[i].second);
   }
 
   int first = 0, last = 0;
 
-  for (std::size_t i = 0; i < clouds.size (); i++)
-  {
+  for (std::size_t i = 0; i < clouds.size(); i++) {
 
-    if (loopDetection (static_cast<int>(i), clouds, 3.0, first, last))
-    {
-      std::cout << "Loop between " << first << " (" << clouds[first].first << ") and " << last << " (" << clouds[last].first << ")" << std::endl;
-      elch.setLoopStart (first);
-      elch.setLoopEnd (last);
-      elch.compute ();
+    if (loopDetection(static_cast<int>(i), clouds, 3.0, first, last)) {
+      std::cout << "Loop between " << first << " (" << clouds[first].first << ") and "
+                << last << " (" << clouds[last].first << ")" << std::endl;
+      elch.setLoopStart(first);
+      elch.setLoopEnd(last);
+      elch.compute();
     }
   }
 
-  for (const auto &cloud : clouds)
-  {
-    std::string result_filename (cloud.first);
-    result_filename = result_filename.substr (result_filename.rfind ('/') + 1);
-    pcl::io::savePCDFileBinary (result_filename, *(cloud.second));
+  for (const auto& cloud : clouds) {
+    std::string result_filename(cloud.first);
+    result_filename = result_filename.substr(result_filename.rfind('/') + 1);
+    pcl::io::savePCDFileBinary(result_filename, *(cloud.second));
     std::cout << "saving result to " << result_filename << std::endl;
   }
 

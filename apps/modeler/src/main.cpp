@@ -37,10 +37,10 @@
 #include <pcl/apps/modeler/main_window.h>
 
 extern int
-qInitResources_resources();
+qInitResources_resources ();
 
 int
-main(int argc, char** argv)
+main (int argc, char** argv)
 {
   QApplication app(argc, argv);
 

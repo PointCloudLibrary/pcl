@@ -83,14 +83,14 @@ public:
    * this parameter.
    */
   inline void
-  setInputDimensionRange(std::vector<std::pair<float, float>>& dimension_range_input)
+  setInputDimensionRange (std::vector<std::pair<float, float>>& dimension_range_input)
   {
     dimension_range_input_ = dimension_range_input;
   }
 
   /** \brief Method for retrieving the input dimension range vector */
   inline std::vector<std::pair<float, float>>
-  getInputDimensionRange()
+  getInputDimensionRange ()
   {
     return dimension_range_input_;
   }
@@ -100,14 +100,14 @@ public:
    * this parameter.
    */
   inline void
-  setTargetDimensionRange(std::vector<std::pair<float, float>>& dimension_range_target)
+  setTargetDimensionRange (std::vector<std::pair<float, float>>& dimension_range_target)
   {
     dimension_range_target_ = dimension_range_target;
   }
 
   /** \brief Method for retrieving the target dimension range vector */
   inline std::vector<std::pair<float, float>>
-  getTargetDimensionRange()
+  getTargetDimensionRange ()
   {
     return dimension_range_target_;
   }
@@ -117,7 +117,7 @@ public:
    * PointRepresentation
    */
   inline void
-  setPointRepresentation(const FeatureRepresentationConstPtr& feature_representation)
+  setPointRepresentation (const FeatureRepresentationConstPtr& feature_representation)
   {
     feature_representation_ = feature_representation;
   }
@@ -125,7 +125,7 @@ public:
   /** \brief Get a pointer to the feature representation used when converting features
    * into k-D vectors. */
   inline FeatureRepresentationConstPtr const
-  getPointRepresentation()
+  getPointRepresentation ()
   {
     return feature_representation_;
   }
@@ -133,11 +133,11 @@ public:
   /** \brief The central method for inserting the feature set inside the pyramid and
    * obtaining the complete pyramid */
   void
-  compute();
+  compute ();
 
   /** \brief Checks whether the pyramid histogram has been computed */
   inline bool
-  isComputed()
+  isComputed ()
   {
     return is_computed_;
   }
@@ -149,8 +149,8 @@ public:
    * Pointer to the second pyramid to be compared (needs to be computed already).
    */
   static float
-  comparePyramidFeatureHistograms(const PyramidFeatureHistogramPtr& pyramid_a,
-                                  const PyramidFeatureHistogramPtr& pyramid_b);
+  comparePyramidFeatureHistograms (const PyramidFeatureHistogramPtr& pyramid_a,
+                                   const PyramidFeatureHistogramPtr& pyramid_b);
 
 private:
   std::size_t nr_dimensions{0}, nr_levels{0}, nr_features{0};
@@ -161,34 +161,34 @@ private:
   /** \brief Checks for input inconsistencies and initializes the underlying data
    * structures */
   bool
-  initializeHistogram();
+  initializeHistogram ();
 
   /** \brief Converts a feature in templated form to an STL vector. This is the point
    * where the conversion from the input dimension range to the target dimension range
    * is done.
    */
   void
-  convertFeatureToVector(const PointFeature& feature,
-                         std::vector<float>& feature_vector);
+  convertFeatureToVector (const PointFeature& feature,
+                          std::vector<float>& feature_vector);
 
   /** \brief Adds a feature vector to its corresponding bin at each level in the pyramid
    */
   void
-  addFeature(std::vector<float>& feature);
+  addFeature (std::vector<float>& feature);
 
   /** \brief Access the pyramid bin given the position of the bin at the given pyramid
    * level and the pyramid level \param access index of the bin at the respective level
    * \param level the level in the pyramid
    */
   inline unsigned int&
-  at(std::vector<std::size_t>& access, std::size_t& level);
+  at (std::vector<std::size_t>& access, std::size_t& level);
 
   /** \brief Access the pyramid bin given a feature vector and the pyramid level
    * \param feature the feature in vectorized form
    * \param level the level in the pyramid
    */
   inline unsigned int&
-  at(std::vector<float>& feature, std::size_t& level);
+  at (std::vector<float>& feature, std::size_t& level);
 
   /** \brief Structure for representing a single pyramid histogram level */
   struct PyramidFeatureHistogramLevel {
@@ -202,7 +202,7 @@ private:
     }
 
     void
-    initializeHistogramLevel();
+    initializeHistogramLevel ();
 
     std::vector<unsigned int> hist;
     std::vector<std::size_t> bins_per_dimension;

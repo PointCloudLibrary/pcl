@@ -40,35 +40,35 @@
 #include <pcl/pcl_macros.h>
 #include <pcl/point_cloud.h>
 
-namespace pcl
-{
+namespace pcl {
+/**
+ * \brief
+ * \author Christian Potthast
+ */
+template <typename PointT>
+class PCL_DEPRECATED(
+    1, 17, "CrfNormalSegmentation is not implemented and does not do anything useful")
+    CrfNormalSegmentation {
+public:
+  /** \brief Constructor that sets default values for member variables. */
+  CrfNormalSegmentation();
+
+  /** \brief Destructor that frees memory. */
+  ~CrfNormalSegmentation();
+
   /**
-   * \brief
-   * \author Christian Potthast
+   * \brief This method sets the input cloud.
+   * \param[in] input_cloud input point cloud
    */
-  template <typename PointT>
-  class PCL_DEPRECATED(1, 17, "CrfNormalSegmentation is not implemented and does not do anything useful") CrfNormalSegmentation
-  {
-    public:
-      /** \brief Constructor that sets default values for member variables. */
-      CrfNormalSegmentation ();
+  void
+  setCloud (typename pcl::PointCloud<PointT>::Ptr input_cloud);
 
-      /** \brief Destructor that frees memory. */
-      ~CrfNormalSegmentation ();
+  /** \brief This method simply launches the segmentation algorithm */
+  void
+  segmentPoints ();
 
-      /**
-       * \brief This method sets the input cloud.
-       * \param[in] input_cloud input point cloud
-       */
-      void
-      setCloud (typename pcl::PointCloud<PointT>::Ptr input_cloud);
-
-      /** \brief This method simply launches the segmentation algorithm */
-      void
-      segmentPoints ();
-
-      PCL_MAKE_ALIGNED_OPERATOR_NEW
-  };
-}
+  PCL_MAKE_ALIGNED_OPERATOR_NEW
+};
+} // namespace pcl
 
 #include <pcl/segmentation/impl/crf_normal_segmentation.hpp>

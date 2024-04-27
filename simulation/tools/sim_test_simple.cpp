@@ -73,14 +73,14 @@ bool paused_;
 bool write_file_;
 
 void
-printHelp(int, char** argv)
+printHelp (int, char** argv)
 {
   print_error("Syntax is: %s <filename>\n", argv[0]);
   print_info("acceptable filenames include vtk, obj and ply. ply can support colour\n");
 }
 
 void
-wait()
+wait ()
 {
   std::cout << "Press enter to continue";
   getchar();
@@ -88,7 +88,7 @@ wait()
 }
 
 void
-display_score_image(const float* score_buffer)
+display_score_image (const float* score_buffer)
 {
   int npixels = range_likelihood_->getWidth() * range_likelihood_->getHeight();
   auto* score_img = new std::uint8_t[npixels * 3];
@@ -120,7 +120,7 @@ display_score_image(const float* score_buffer)
 }
 
 void
-display_depth_image(const float* depth_buffer, int width, int height)
+display_depth_image (const float* depth_buffer, int width, int height)
 {
   int npixels = width * height;
   auto* depth_img = new std::uint8_t[npixels * 3];
@@ -276,7 +276,7 @@ display_depth_image(const float* depth_buffer)
 */
 
 pcl::visualization::PCLVisualizer::Ptr
-simpleVis(pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr cloud)
+simpleVis (pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr cloud)
 {
   // --------------------------------------------
   // -----Open 3D viewer and add point cloud-----
@@ -294,7 +294,7 @@ simpleVis(pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr cloud)
 }
 
 void
-display()
+display ()
 {
   float* reference =
       new float[range_likelihood_->getRowHeight() * range_likelihood_->getColWidth()];
@@ -445,7 +445,7 @@ display()
 
 // Handle normal keys
 void
-on_keyboard(unsigned char key, int, int)
+on_keyboard (unsigned char key, int, int)
 {
   double speed = 0.1;
 
@@ -474,7 +474,7 @@ on_keyboard(unsigned char key, int, int)
 
 // Handle special keys, e.g. F1, F2, ...
 void
-on_special(int key, int, int)
+on_special (int key, int, int)
 {
   switch (key) {
   case GLUT_KEY_F1:
@@ -485,7 +485,7 @@ on_special(int key, int, int)
 }
 
 void
-on_reshape(int w, int h)
+on_reshape (int w, int h)
 {
   // Window size changed
   window_width_ = w;
@@ -493,7 +493,7 @@ on_reshape(int w, int h)
 }
 
 void
-on_mouse(int, int, int, int)
+on_mouse (int, int, int, int)
 {
   // button:
   // GLUT_LEFT_BUTTON
@@ -506,11 +506,11 @@ on_mouse(int, int, int, int)
 }
 
 void
-on_motion(int, int)
+on_motion (int, int)
 {}
 
 void
-on_passive_motion(int x, int y)
+on_passive_motion (int x, int y)
 {
   if (paused_)
     return;
@@ -524,7 +524,7 @@ on_passive_motion(int x, int y)
 }
 
 void
-on_entry(int)
+on_entry (int)
 {
   // state:
   // GLUT_LEFT
@@ -533,7 +533,7 @@ on_entry(int)
 
 // Read in a 3D model
 void
-load_PolygonMesh_model(char* polygon_file)
+load_PolygonMesh_model (char* polygon_file)
 {
   pcl::PolygonMesh mesh; // (new pcl::PolygonMesh);
   // pcl::io::loadPolygonFile("/home/mfallon/data/models/dalet/Darlek_modified_works.obj",mesh);
@@ -552,7 +552,7 @@ load_PolygonMesh_model(char* polygon_file)
 }
 
 void
-initialize(int, char** argv)
+initialize (int, char** argv)
 {
   const GLubyte* version = glGetString(GL_VERSION);
   std::cout << "OpenGL Version: " << version << std::endl;
@@ -576,7 +576,7 @@ initialize(int, char** argv)
 }
 
 int
-main(int argc, char** argv)
+main (int argc, char** argv)
 {
   int width = 640;
   int height = 480;

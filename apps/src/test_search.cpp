@@ -8,7 +8,7 @@
 #include <vector>
 
 int
-main(int argc, char** argv)
+main (int argc, char** argv)
 {
   if (argc < 2) {
     pcl::console::print_info(

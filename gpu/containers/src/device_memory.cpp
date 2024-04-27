@@ -46,7 +46,7 @@
 #if !defined(HAVE_CUDA)
 
 void
-throw_nogpu()
+throw_nogpu ()
 {
   throw "PCL 2.0 exception";
 }

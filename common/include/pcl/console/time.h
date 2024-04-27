@@ -38,50 +38,47 @@
 
 #pragma once
 
-#include <chrono>
-
 #include <pcl/console/print.h>
 
-namespace pcl
-{
-  namespace console
+#include <chrono>
+
+namespace pcl {
+namespace console {
+class TicToc {
+public:
+  TicToc() = default;
+
+  void
+  tic ()
   {
-    class TicToc
-    {
-      public:
+    tictic_ = std::chrono::steady_clock::now();
+  };
 
-        TicToc () = default;
+  inline double
+  toc () const
+  {
+    auto end_time = std::chrono::steady_clock::now();
+    return std::chrono::duration<double, std::ratio<1, 1000>>(end_time - tictic_)
+        .count();
+  };
 
-        void 
-        tic ()
-        {
-          tictic_ = std::chrono::steady_clock::now();
-        };
+  inline void
+  toc_print () const
+  {
+    double milliseconds = toc();
+    // int minutes = (int) std::floor ( seconds / 60.0 );
+    // seconds -= minutes * 60.0;
+    // if (minutes != 0)
+    //{
+    //   print_value ("%i", minutes);
+    //   print_info (" minutes, ");
+    // }
+    print_value("%g", milliseconds);
+    print_info(" ms\n");
+  };
 
-        inline double 
-        toc () const
-        {
-          auto end_time = std::chrono::steady_clock::now();
-          return std::chrono::duration<double, std::ratio<1, 1000>>(end_time - tictic_).count();
-        };
-        
-        inline void 
-        toc_print () const
-        {
-          double milliseconds = toc ();
-          //int minutes = (int) std::floor ( seconds / 60.0 );
-          //seconds -= minutes * 60.0;
-          //if (minutes != 0)
-          //{
-          //  print_value ("%i", minutes);
-          //  print_info (" minutes, ");
-          //}
-          print_value ("%g", milliseconds);
-          print_info (" ms\n");
-        };
-      
-      private:
-        std::chrono::time_point<std::chrono::steady_clock> tictic_;
-    };
-  } 
-}
+private:
+  std::chrono::time_point<std::chrono::steady_clock> tictic_;
+};
+} // namespace console
+} // namespace pcl

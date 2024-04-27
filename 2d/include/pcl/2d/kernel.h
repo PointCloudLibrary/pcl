@@ -76,7 +76,7 @@ public:
    * Helper function which returns the kernel selected by the kernel_type_ enum
    */
   void
-  fetchKernel(pcl::PointCloud<PointT>& kernel);
+  fetchKernel (pcl::PointCloud<PointT>& kernel);
 
   /**
    *
@@ -85,7 +85,7 @@ public:
    * Gaussian kernel with size (kernel_size_ x kernel_size_) and variance sigma_
    */
   void
-  gaussianKernel(pcl::PointCloud<PointT>& kernel);
+  gaussianKernel (pcl::PointCloud<PointT>& kernel);
 
   /**
    *
@@ -95,7 +95,7 @@ public:
    * sigma_
    */
   void
-  loGKernel(pcl::PointCloud<PointT>& kernel);
+  loGKernel (pcl::PointCloud<PointT>& kernel);
 
   /**
    *
@@ -104,7 +104,7 @@ public:
    * 3x3 Sobel kernel in the X direction
    */
   void
-  sobelKernelX(pcl::PointCloud<PointT>& kernel);
+  sobelKernelX (pcl::PointCloud<PointT>& kernel);
 
   /**
    *
@@ -113,7 +113,7 @@ public:
    * 3x3 Prewitt kernel in the X direction
    */
   void
-  prewittKernelX(pcl::PointCloud<PointT>& kernel);
+  prewittKernelX (pcl::PointCloud<PointT>& kernel);
 
   /**
    *
@@ -122,7 +122,7 @@ public:
    * 2x2 Roberts kernel in the X direction
    */
   void
-  robertsKernelX(pcl::PointCloud<PointT>& kernel);
+  robertsKernelX (pcl::PointCloud<PointT>& kernel);
 
   /**
    *
@@ -131,7 +131,7 @@ public:
    * 3x3 Sobel kernel in the Y direction
    */
   void
-  sobelKernelY(pcl::PointCloud<PointT>& kernel);
+  sobelKernelY (pcl::PointCloud<PointT>& kernel);
 
   /**
    *
@@ -140,7 +140,7 @@ public:
    * 3x3 Prewitt kernel in the Y direction
    */
   void
-  prewittKernelY(pcl::PointCloud<PointT>& kernel);
+  prewittKernelY (pcl::PointCloud<PointT>& kernel);
 
   /**
    *
@@ -149,7 +149,7 @@ public:
    * 2x2 Roberts kernel in the Y direction
    */
   void
-  robertsKernelY(pcl::PointCloud<PointT>& kernel);
+  robertsKernelY (pcl::PointCloud<PointT>& kernel);
 
   /**
    *
@@ -158,7 +158,7 @@ public:
    * kernel [-1 0 1]
    */
   void
-  derivativeXCentralKernel(pcl::PointCloud<PointT>& kernel);
+  derivativeXCentralKernel (pcl::PointCloud<PointT>& kernel);
 
   /**
    *
@@ -167,7 +167,7 @@ public:
    * kernel [-1 0 1]'
    */
   void
-  derivativeYCentralKernel(pcl::PointCloud<PointT>& kernel);
+  derivativeYCentralKernel (pcl::PointCloud<PointT>& kernel);
 
   /**
    *
@@ -176,7 +176,7 @@ public:
    * kernel [0 -1 1]
    */
   void
-  derivativeXForwardKernel(pcl::PointCloud<PointT>& kernel);
+  derivativeXForwardKernel (pcl::PointCloud<PointT>& kernel);
 
   /**
    *
@@ -185,7 +185,7 @@ public:
    * kernel [0 -1 1]'
    */
   void
-  derivativeYForwardKernel(pcl::PointCloud<PointT>& kernel);
+  derivativeYForwardKernel (pcl::PointCloud<PointT>& kernel);
 
   /**
    *
@@ -194,7 +194,7 @@ public:
    * kernel [-1 1 0]
    */
   void
-  derivativeXBackwardKernel(pcl::PointCloud<PointT>& kernel);
+  derivativeXBackwardKernel (pcl::PointCloud<PointT>& kernel);
 
   /**
    *
@@ -203,7 +203,7 @@ public:
    * kernel [-1 1 0]'
    */
   void
-  derivativeYBackwardKernel(PointCloud<PointT>& kernel);
+  derivativeYBackwardKernel (PointCloud<PointT>& kernel);
 
   /**
    *
@@ -212,7 +212,7 @@ public:
    * select the kernel type.
    */
   void
-  setKernelType(KERNEL_ENUM kernel_type);
+  setKernelType (KERNEL_ENUM kernel_type);
 
   /**
    *
@@ -222,7 +222,7 @@ public:
    * Setter function for kernel_size_
    */
   void
-  setKernelSize(int kernel_size);
+  setKernelSize (int kernel_size);
 
   /**
    *
@@ -231,7 +231,7 @@ public:
    * Setter function for kernel_sigma_
    */
   void
-  setKernelSigma(float kernel_sigma);
+  setKernelSigma (float kernel_sigma);
 };
 
 } // namespace pcl

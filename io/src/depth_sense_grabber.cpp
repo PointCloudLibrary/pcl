@@ -35,65 +35,60 @@
  *
  */
 
-#include <pcl/io/depth_sense_grabber.h>
 #include <pcl/io/depth_sense/depth_sense_grabber_impl.h>
+#include <pcl/io/depth_sense_grabber.h>
 
-pcl::DepthSenseGrabber::DepthSenseGrabber (const std::string& device_id)
-: Grabber ()
-, p_ (new pcl::io::depth_sense::DepthSenseGrabberImpl (this, device_id))
-{
-}
+pcl::DepthSenseGrabber::DepthSenseGrabber(const std::string& device_id)
+: Grabber(), p_(new pcl::io::depth_sense::DepthSenseGrabberImpl(this, device_id))
+{}
 
-pcl::DepthSenseGrabber::~DepthSenseGrabber () noexcept
-{
-  delete p_;
-}
+pcl::DepthSenseGrabber::~DepthSenseGrabber() noexcept { delete p_; }
 
 void
-pcl::DepthSenseGrabber::start ()
+pcl::DepthSenseGrabber::start()
 {
   p_->start();
 }
 
 void
-pcl::DepthSenseGrabber::stop ()
+pcl::DepthSenseGrabber::stop()
 {
   p_->stop();
 }
 
 bool
-pcl::DepthSenseGrabber::isRunning () const
+pcl::DepthSenseGrabber::isRunning() const
 {
   return (p_->is_running_);
 }
 
 float
-pcl::DepthSenseGrabber::getFramesPerSecond () const
+pcl::DepthSenseGrabber::getFramesPerSecond() const
 {
   return (p_->getFramesPerSecond());
 }
 
 void
-pcl::DepthSenseGrabber::setConfidenceThreshold (int threshold)
+pcl::DepthSenseGrabber::setConfidenceThreshold(int threshold)
 {
-  p_->setConfidenceThreshold (threshold);
+  p_->setConfidenceThreshold(threshold);
 }
 
 void
-pcl::DepthSenseGrabber::enableTemporalFiltering (TemporalFilteringType type, std::size_t window_size)
+pcl::DepthSenseGrabber::enableTemporalFiltering(TemporalFilteringType type,
+                                                std::size_t window_size)
 {
-  p_->enableTemporalFiltering (type, window_size);
+  p_->enableTemporalFiltering(type, window_size);
 }
 
 void
-pcl::DepthSenseGrabber::disableTemporalFiltering ()
+pcl::DepthSenseGrabber::disableTemporalFiltering()
 {
-  p_->enableTemporalFiltering (DepthSense_None, 1);
+  p_->enableTemporalFiltering(DepthSense_None, 1);
 }
 
 std::string
-pcl::DepthSenseGrabber::getDeviceSerialNumber () const
+pcl::DepthSenseGrabber::getDeviceSerialNumber() const
 {
   return (p_->device_id_);
 }
-

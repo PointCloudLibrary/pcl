@@ -32,23 +32,22 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  *
- * range coder based on Dmitry Subbotin's carry-less implementation (http://www.compression.ru/ds/)
- * Added optimized symbol lookup and fixed/static frequency tables
+ * range coder based on Dmitry Subbotin's carry-less implementation
+ * (http://www.compression.ru/ds/) Added optimized symbol lookup and fixed/static
+ * frequency tables
  *
  * Author: Julius Kammerl (julius@kammerl.de)
  */
 
-
 #include <pcl/compression/entropy_range_coder.h>
 #include <pcl/compression/impl/entropy_range_coder.hpp>
-
 #include <pcl/test/gtest.h>
-#include <vector>
-#include <sstream>
 
+#include <sstream>
+#include <vector>
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TEST (PCL, Adaptive_Range_Coder_Test)
+TEST(PCL, Adaptive_Range_Coder_Test)
 {
   std::stringstream sstream;
   std::vector<char> inputData;
@@ -64,8 +63,7 @@ TEST (PCL, Adaptive_Range_Coder_Test)
   outputData.resize(vectorSize);
 
   // fill vector with random data
-  for (std::size_t i=0; i<vectorSize; i++)
-  {
+  for (std::size_t i = 0; i < vectorSize; i++) {
     inputData[i] = static_cast<char>(rand() & 0xFF);
   }
 
@@ -79,26 +77,23 @@ TEST (PCL, Adaptive_Range_Coder_Test)
   readByteLen = rangeCoder.decodeStreamToCharVector(sstream, outputData);
 
   // compare amount of bytes that are read and written to/from stream
-  EXPECT_EQ (writeByteLen, readByteLen);
-  EXPECT_EQ (writeByteLen, sstream.str().length());
+  EXPECT_EQ(writeByteLen, readByteLen);
+  EXPECT_EQ(writeByteLen, sstream.str().length());
 
   // compare input and output vector - should be identical
-  EXPECT_EQ (inputData.size(), outputData.size());
-  EXPECT_EQ (inputData.size(), vectorSize);
+  EXPECT_EQ(inputData.size(), outputData.size());
+  EXPECT_EQ(inputData.size(), vectorSize);
 
-  for (std::size_t i=0; i<vectorSize; i++)
-  {
-    EXPECT_EQ (inputData[i], outputData[i]);
+  for (std::size_t i = 0; i < vectorSize; i++) {
+    EXPECT_EQ(inputData[i], outputData[i]);
   }
-
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TEST (PCL, Static_Range_Coder_Test)
+TEST(PCL, Static_Range_Coder_Test)
 {
   // Run test for different vector sizes
-  for (unsigned int vectorSize: { 253, 10000 })
-  {
+  for (unsigned int vectorSize : {253, 10000}) {
     std::stringstream sstream;
     std::vector<char> inputCharData;
     std::vector<char> outputCharData;
@@ -116,10 +111,9 @@ TEST (PCL, Static_Range_Coder_Test)
     outputIntData.resize(vectorSize);
 
     // fill vectors with random data
-    for (std::size_t i=0; i<vectorSize; i++)
-    {
-      inputCharData[i] = static_cast<char> (rand () & 0xFF);
-      inputIntData[i] = static_cast<unsigned int> (rand () & 0xFFFF);
+    for (std::size_t i = 0; i < vectorSize; i++) {
+      inputCharData[i] = static_cast<char>(rand() & 0xFF);
+      inputIntData[i] = static_cast<unsigned int>(rand() & 0xFFFF);
     }
 
     // initialize static range coder
@@ -132,16 +126,15 @@ TEST (PCL, Static_Range_Coder_Test)
     readByteLen = rangeCoder.decodeStreamToCharVector(sstream, outputCharData);
 
     // compare amount of bytes that are read and written to/from stream
-    EXPECT_EQ (writeByteLen, readByteLen);
-    EXPECT_EQ (writeByteLen, sstream.str().length());
+    EXPECT_EQ(writeByteLen, readByteLen);
+    EXPECT_EQ(writeByteLen, sstream.str().length());
 
     // compare input and output vector - should be identical
-    EXPECT_EQ (inputCharData.size(), outputCharData.size());
-    EXPECT_EQ (inputCharData.size(), vectorSize);
+    EXPECT_EQ(inputCharData.size(), outputCharData.size());
+    EXPECT_EQ(inputCharData.size(), vectorSize);
 
-    for (std::size_t i=0; i<vectorSize; i++)
-    {
-      EXPECT_EQ (inputCharData[i], outputCharData[i]);
+    for (std::size_t i = 0; i < vectorSize; i++) {
+      EXPECT_EQ(inputCharData[i], outputCharData[i]);
     }
 
     sstream.clear();
@@ -153,26 +146,23 @@ TEST (PCL, Static_Range_Coder_Test)
     readByteLen = rangeCoder.decodeStreamToIntVector(sstream, outputIntData);
 
     // compare amount of bytes that are read and written to/from stream
-    EXPECT_EQ (writeByteLen, readByteLen);
+    EXPECT_EQ(writeByteLen, readByteLen);
 
     // compare input and output vector - should be identical
-    EXPECT_EQ (inputIntData.size(), outputIntData.size());
-    EXPECT_EQ (inputIntData.size(), vectorSize);
+    EXPECT_EQ(inputIntData.size(), outputIntData.size());
+    EXPECT_EQ(inputIntData.size(), vectorSize);
 
-    for (std::size_t i=0; i<vectorSize; i++)
-    {
-      EXPECT_EQ (inputIntData[i], outputIntData[i]);
+    for (std::size_t i = 0; i < vectorSize; i++) {
+      EXPECT_EQ(inputIntData[i], outputIntData[i]);
     }
   }
 }
 
-
-
 /* ---[ */
 int
-  main (int argc, char** argv)
+main (int argc, char** argv)
 {
-  testing::InitGoogleTest (&argc, argv);
-  return (RUN_ALL_TESTS ());
+  testing::InitGoogleTest(&argc, argv);
+  return (RUN_ALL_TESTS());
 }
 /* ]--- */

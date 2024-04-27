@@ -54,47 +54,47 @@ public:
   CloudMeshItem(QTreeWidgetItem* parent, const CloudMeshItem& cloud_mesh_item);
 
   inline CloudMesh::Ptr&
-  getCloudMesh()
+  getCloudMesh ()
   {
     return cloud_mesh_;
   }
 
   inline const CloudMesh::Ptr&
-  getCloudMesh() const
+  getCloudMesh () const
   {
     return cloud_mesh_;
   }
 
   static bool
-  savePointCloud(const QList<CloudMeshItem*>& items, const QString& filename);
+  savePointCloud (const QList<CloudMeshItem*>& items, const QString& filename);
 
   bool
-  open();
+  open ();
 
   void
-  createChannels();
+  createChannels ();
 
   void
-  updateChannels();
+  updateChannels ();
 
   std::string
-  getItemName() const override
+  getItemName () const override
   {
     return "Cloud Mesh Item";
   }
 
   void
-  updateRenderWindow();
+  updateRenderWindow ();
 
 protected:
   void
-  prepareContextMenu(QMenu* menu) const override;
+  prepareContextMenu (QMenu* menu) const override;
 
   void
-  prepareProperties(ParameterDialog* parameter_dialog) override;
+  prepareProperties (ParameterDialog* parameter_dialog) override;
 
   void
-  setProperties() override;
+  setProperties () override;
 
 private:
   std::string filename_;

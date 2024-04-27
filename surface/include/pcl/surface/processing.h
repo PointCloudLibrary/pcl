@@ -42,110 +42,112 @@
 #include <pcl/pcl_base.h>
 #include <pcl/PolygonMesh.h>
 
-namespace pcl
-{
-  template <typename PointT> class PointCloud;
+namespace pcl {
+template <typename PointT>
+class PointCloud;
 
-  /** \brief @b CloudSurfaceProcessing represents the base class for algorithms that takes a point cloud as input and
-    * produces a new output cloud that has been modified towards a better surface representation. These types of
-    * algorithms include surface smoothing, hole filling, cloud upsampling etc.
-    *
-    * \author Alexandru E. Ichim
-    * \ingroup surface
-    */
-  template <typename PointInT, typename PointOutT>
-  class CloudSurfaceProcessing : public PCLBase<PointInT>
+/** \brief @b CloudSurfaceProcessing represents the base class for algorithms that takes
+ * a point cloud as input and produces a new output cloud that has been modified towards
+ * a better surface representation. These types of algorithms include surface smoothing,
+ * hole filling, cloud upsampling etc.
+ *
+ * \author Alexandru E. Ichim
+ * \ingroup surface
+ */
+template <typename PointInT, typename PointOutT>
+class CloudSurfaceProcessing : public PCLBase<PointInT> {
+public:
+  using Ptr = shared_ptr<CloudSurfaceProcessing<PointInT, PointOutT>>;
+  using ConstPtr = shared_ptr<const CloudSurfaceProcessing<PointInT, PointOutT>>;
+
+  using PCLBase<PointInT>::input_;
+  using PCLBase<PointInT>::indices_;
+  using PCLBase<PointInT>::initCompute;
+  using PCLBase<PointInT>::deinitCompute;
+
+public:
+  /** \brief Constructor. */
+  CloudSurfaceProcessing() : PCLBase<PointInT>(){};
+
+  /** \brief Empty destructor */
+  ~CloudSurfaceProcessing() override = default;
+
+  /** \brief Process the input cloud and store the results
+   * \param[out] output the cloud where the results will be stored
+   */
+  virtual void
+  process (pcl::PointCloud<PointOutT>& output);
+
+protected:
+  /** \brief Abstract cloud processing method */
+  virtual void
+  performProcessing (pcl::PointCloud<PointOutT>& output) = 0;
+};
+
+/** \brief @b MeshProcessing represents the base class for mesh processing algorithms.
+ * \author Alexandru E. Ichim
+ * \ingroup surface
+ */
+class PCL_EXPORTS MeshProcessing {
+public:
+  using Ptr = shared_ptr<MeshProcessing>;
+  using ConstPtr = shared_ptr<const MeshProcessing>;
+
+  using PolygonMeshConstPtr = PolygonMesh::ConstPtr;
+
+  /** \brief Constructor. */
+  MeshProcessing() = default;
+
+  /** \brief Destructor. */
+  virtual ~MeshProcessing() = default;
+
+  /** \brief Set the input mesh that we want to process
+   * \param[in] input the input polygonal mesh
+   */
+  inline void
+  setInputMesh (const pcl::PolygonMeshConstPtr& input)
   {
-    public:
-      using Ptr = shared_ptr<CloudSurfaceProcessing<PointInT, PointOutT> >;
-      using ConstPtr = shared_ptr<const CloudSurfaceProcessing<PointInT, PointOutT> >;
+    input_mesh_ = input;
+  }
 
-      using PCLBase<PointInT>::input_;
-      using PCLBase<PointInT>::indices_;
-      using PCLBase<PointInT>::initCompute;
-      using PCLBase<PointInT>::deinitCompute;
-
-    public:
-      /** \brief Constructor. */
-      CloudSurfaceProcessing () : PCLBase<PointInT> ()
-      {};
-      
-      /** \brief Empty destructor */
-      ~CloudSurfaceProcessing () override = default;
-
-      /** \brief Process the input cloud and store the results
-        * \param[out] output the cloud where the results will be stored
-        */
-      virtual void
-      process (pcl::PointCloud<PointOutT> &output);
-
-    protected:
-      /** \brief Abstract cloud processing method */
-      virtual void
-      performProcessing (pcl::PointCloud<PointOutT> &output) = 0;
-
-  };
-
-
-  /** \brief @b MeshProcessing represents the base class for mesh processing algorithms.
-    * \author Alexandru E. Ichim
-    * \ingroup surface
-    */
-  class PCL_EXPORTS MeshProcessing
+  /** \brief Get the input mesh to be processed
+   * \returns the mesh
+   */
+  inline pcl::PolygonMeshConstPtr
+  getInputMesh () const
   {
-    public:
-      using Ptr = shared_ptr<MeshProcessing>;
-      using ConstPtr = shared_ptr<const MeshProcessing>;
+    return input_mesh_;
+  }
 
-      using PolygonMeshConstPtr = PolygonMesh::ConstPtr;
+  /** \brief Process the input surface mesh and store the results
+   * \param[out] output the resultant processed surface model
+   */
+  void
+  process (pcl::PolygonMesh& output);
 
-      /** \brief Constructor. */
-      MeshProcessing () = default;
+protected:
+  /** \brief Initialize computation. Must be called before processing starts. */
+  virtual bool
+  initCompute ();
 
-      /** \brief Destructor. */
-      virtual ~MeshProcessing () = default;
+  /** \brief UnInitialize computation. Must be called after processing ends. */
+  virtual void
+  deinitCompute ();
 
-      /** \brief Set the input mesh that we want to process
-        * \param[in] input the input polygonal mesh
-        */
-      inline void
-      setInputMesh (const pcl::PolygonMeshConstPtr &input) 
-      { input_mesh_ = input; }
+  /** \brief Abstract surface processing method. */
+  virtual void
+  performProcessing (pcl::PolygonMesh& output) = 0;
 
-      /** \brief Get the input mesh to be processed
-        * \returns the mesh
-        */
-      inline pcl::PolygonMeshConstPtr
-      getInputMesh () const
-      { return input_mesh_; }
+  /** \brief Abstract class get name method. */
+  virtual std::string
+  getClassName () const
+  {
+    return ("");
+  }
 
-      /** \brief Process the input surface mesh and store the results
-        * \param[out] output the resultant processed surface model
-        */
-      void 
-      process (pcl::PolygonMesh &output);
-
-    protected:
-      /** \brief Initialize computation. Must be called before processing starts. */
-      virtual bool 
-      initCompute ();
-      
-      /** \brief UnInitialize computation. Must be called after processing ends. */
-      virtual void 
-      deinitCompute ();
-
-      /** \brief Abstract surface processing method. */
-      virtual void 
-      performProcessing (pcl::PolygonMesh &output) = 0;
-
-      /** \brief Abstract class get name method. */
-      virtual std::string 
-      getClassName () const
-      { return (""); }
-
-      /** \brief Input polygonal mesh. */
-      pcl::PolygonMeshConstPtr input_mesh_;
-  };
-}
+  /** \brief Input polygonal mesh. */
+  pcl::PolygonMeshConstPtr input_mesh_;
+};
+} // namespace pcl
 
 #include "pcl/surface/impl/processing.hpp"

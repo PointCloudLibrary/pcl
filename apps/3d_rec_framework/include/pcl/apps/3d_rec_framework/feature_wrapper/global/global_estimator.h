@@ -30,25 +30,26 @@ public:
   virtual ~GlobalEstimator() = default;
 
   virtual void
-  estimate(PointInTPtr& in,
-           PointInTPtr& processed,
-           std::vector<pcl::PointCloud<FeatureT>,
-                       Eigen::aligned_allocator<pcl::PointCloud<FeatureT>>>& signatures,
-           std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f>>&
-               centroids) = 0;
+  estimate (
+      PointInTPtr& in,
+      PointInTPtr& processed,
+      std::vector<pcl::PointCloud<FeatureT>,
+                  Eigen::aligned_allocator<pcl::PointCloud<FeatureT>>>& signatures,
+      std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f>>&
+          centroids) = 0;
 
   virtual bool
-  computedNormals() = 0;
+  computedNormals () = 0;
 
   void
-  setNormalEstimator(
+  setNormalEstimator (
       std::shared_ptr<PreProcessorAndNormalEstimator<PointInT, pcl::Normal>>& ne)
   {
     normal_estimator_ = ne;
   }
 
   void
-  getNormals(pcl::PointCloud<pcl::Normal>::Ptr& normals)
+  getNormals (pcl::PointCloud<pcl::Normal>::Ptr& normals)
   {
     normals = normals_;
   }

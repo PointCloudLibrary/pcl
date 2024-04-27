@@ -54,7 +54,7 @@ namespace distances {
  * \param[in] m the number of doubles in the set
  */
 inline double
-computeMedian(double* fvec, int m)
+computeMedian (double* fvec, int m)
 {
   // Copy the values to vectors for faster sorting
   std::vector<double> data(fvec, fvec + m);
@@ -69,7 +69,7 @@ computeMedian(double* fvec, int m)
  * \param[in] sigma the sigma value
  */
 inline double
-huber(const Eigen::Vector4f& p_src, const Eigen::Vector4f& p_tgt, double sigma)
+huber (const Eigen::Vector4f& p_src, const Eigen::Vector4f& p_tgt, double sigma)
 {
   Eigen::Array4f diff = (p_tgt.array() - p_src.array()).abs();
   double norm = 0.0;
@@ -87,7 +87,7 @@ huber(const Eigen::Vector4f& p_src, const Eigen::Vector4f& p_tgt, double sigma)
  * \param[in] sigma the sigma value
  */
 inline double
-huber(double diff, double sigma)
+huber (double diff, double sigma)
 {
   double norm = 0.0;
   if (diff < sigma)
@@ -104,7 +104,7 @@ huber(double diff, double sigma)
  * \param[in] slope the slope. Default: 4
  */
 inline double
-gedikli(double val, double clipping, double slope = 4)
+gedikli (double val, double clipping, double slope = 4)
 {
   return (1.0 / (1.0 + pow(std::abs(val) / clipping, slope)));
 }
@@ -114,7 +114,7 @@ gedikli(double val, double clipping, double slope = 4)
  * \param[in] p_tgt the second eigen vector
  */
 inline double
-l1(const Eigen::Vector4f& p_src, const Eigen::Vector4f& p_tgt)
+l1 (const Eigen::Vector4f& p_src, const Eigen::Vector4f& p_tgt)
 {
   return ((p_src.array() - p_tgt.array()).abs().sum());
 }
@@ -124,7 +124,7 @@ l1(const Eigen::Vector4f& p_src, const Eigen::Vector4f& p_tgt)
  * \param[in] p_tgt the second eigen vector
  */
 inline double
-l2(const Eigen::Vector4f& p_src, const Eigen::Vector4f& p_tgt)
+l2 (const Eigen::Vector4f& p_src, const Eigen::Vector4f& p_tgt)
 {
   return ((p_src - p_tgt).norm());
 }
@@ -134,7 +134,7 @@ l2(const Eigen::Vector4f& p_src, const Eigen::Vector4f& p_tgt)
  * \param[in] p_tgt the second eigen vector
  */
 inline double
-l2Sqr(const Eigen::Vector4f& p_src, const Eigen::Vector4f& p_tgt)
+l2Sqr (const Eigen::Vector4f& p_src, const Eigen::Vector4f& p_tgt)
 {
   return ((p_src - p_tgt).squaredNorm());
 }

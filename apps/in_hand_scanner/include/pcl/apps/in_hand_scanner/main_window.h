@@ -78,77 +78,77 @@ public:
 public Q_SLOTS:
 
   void
-  showHelp();
+  showHelp ();
   void
-  saveAs();
+  saveAs ();
 
   // In hand scanner
   void
-  runningModeChanged(const RunningMode mode);
+  runningModeChanged (const RunningMode mode);
   void
-  keyPressEvent(QKeyEvent* event) override;
+  keyPressEvent (QKeyEvent* event) override;
 
   // Input data processing.
   void
-  setXMin(const int x_min);
+  setXMin (const int x_min);
   void
-  setXMax(const int x_max);
+  setXMax (const int x_max);
   void
-  setYMin(const int y_min);
+  setYMin (const int y_min);
   void
-  setYMax(const int y_max);
+  setYMax (const int y_max);
   void
-  setZMin(const int z_min);
+  setZMin (const int z_min);
   void
-  setZMax(const int z_max);
+  setZMax (const int z_max);
 
   void
-  setHMin(const int h_min);
+  setHMin (const int h_min);
   void
-  setHMax(const int h_max);
+  setHMax (const int h_max);
   void
-  setSMin(const int s_min);
+  setSMin (const int s_min);
   void
-  setSMax(const int s_max);
+  setSMax (const int s_max);
   void
-  setVMin(const int v_min);
+  setVMin (const int v_min);
   void
-  setVMax(const int v_max);
+  setVMax (const int v_max);
 
   void
-  setColorSegmentationInverted(const bool is_inverted);
+  setColorSegmentationInverted (const bool is_inverted);
   void
-  setColorSegmentationEnabled(const bool is_enabled);
+  setColorSegmentationEnabled (const bool is_enabled);
 
   void
-  setXYZErodeSize(const int size);
+  setXYZErodeSize (const int size);
   void
-  setHSVDilateSize(const int size);
+  setHSVDilateSize (const int size);
 
   // Registration
   void
-  setEpsilon();
+  setEpsilon ();
   void
-  setMaxIterations(const int iterations);
+  setMaxIterations (const int iterations);
   void
-  setMinOverlap(const int overlap);
+  setMinOverlap (const int overlap);
   void
-  setMaxFitness();
+  setMaxFitness ();
 
   void
-  setCorrespondenceRejectionFactor(const double factor);
+  setCorrespondenceRejectionFactor (const double factor);
   void
-  setCorrespondenceRejectionMaxAngle(const int angle);
+  setCorrespondenceRejectionMaxAngle (const int angle);
 
   // Integration
   void
-  setMaxSquaredDistance();
+  setMaxSquaredDistance ();
   void
-  setAveragingMaxAngle(const int angle);
+  setAveragingMaxAngle (const int angle);
   void
-  setMaxAge(const int age);
+  setMaxAge (const int age);
   void
-  setMinDirections(const int directions);
+  setMinDirections (const int directions);
 
 private:
   Ui::MainWindow* ui_;

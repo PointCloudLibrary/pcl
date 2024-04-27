@@ -40,37 +40,35 @@
 #include <string>
 
 int
-main (int argc, char **argv)
+main (int argc, char** argv)
 {
-  if (argc != 3)
-  {
+  if (argc != 3) {
     std::cout << "call with " << argv[0] << " input.pcd output.pcd" << std::endl;
     return 0;
   }
 
-  if (!strcmp (argv[1], argv[2]))
-  {
-    std::cout << "called with same name for input and output! (done nothing)" << std::endl;
+  if (!strcmp(argv[1], argv[2])) {
+    std::cout << "called with same name for input and output! (done nothing)"
+              << std::endl;
     return 1;
   }
 
   std::ostringstream ss;
-  ss << std::numeric_limits<float>::quiet_NaN ();
-  std::string nanStr (ss.str ());
+  ss << std::numeric_limits<float>::quiet_NaN();
+  std::string nanStr(ss.str());
 
   std::cout << R"(converting ")" << nanStr << R"(" to "nan")" << std::endl;
 
-  std::ifstream input (argv[1]);
-  std::ofstream output (argv[2]);
+  std::ifstream input(argv[1]);
+  std::ofstream output(argv[2]);
   std::string str;
 
-  while (input >> str)
-  {
+  while (input >> str) {
     if (str == nanStr)
       output << "nan";
     else
       output << str;
-    char next = static_cast<char> (input.peek ());
+    char next = static_cast<char>(input.peek());
     if (next == '\n' || next == '\r')
       output << "\n";
     else

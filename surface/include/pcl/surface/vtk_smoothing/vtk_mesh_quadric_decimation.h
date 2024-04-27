@@ -41,42 +41,41 @@
 #include <pcl/surface/processing.h>
 #include <pcl/surface/vtk_smoothing/vtk.h>
 
-namespace pcl
-{
-  /** \brief PCL mesh decimation based on vtkQuadricDecimation from the VTK library.
-    * Please check out the original documentation for more details on the inner workings of the algorithm
-    * Warning: This wrapper does two fairly computationally expensive conversions from the PCL PolygonMesh
-    * data structure to the vtkPolyData data structure and back.
-    */
-  class PCL_EXPORTS MeshQuadricDecimationVTK : public MeshProcessing
+namespace pcl {
+/** \brief PCL mesh decimation based on vtkQuadricDecimation from the VTK library.
+ * Please check out the original documentation for more details on the inner workings of
+ * the algorithm Warning: This wrapper does two fairly computationally expensive
+ * conversions from the PCL PolygonMesh data structure to the vtkPolyData data structure
+ * and back.
+ */
+class PCL_EXPORTS MeshQuadricDecimationVTK : public MeshProcessing {
+public:
+  /** \brief Empty constructor */
+  MeshQuadricDecimationVTK();
+
+  /** \brief Set the percentage of faces that should be removed.
+   * \param[in] factor the factor
+   */
+  inline void
+  setTargetReductionFactor (float factor)
   {
-    public:
-      /** \brief Empty constructor */
-      MeshQuadricDecimationVTK ();
+    target_reduction_factor_ = factor;
+  }
 
-      /** \brief Set the percentage of faces that should be removed.
-        * \param[in] factor the factor
-        */
-      inline void
-      setTargetReductionFactor (float factor)
-      {
-        target_reduction_factor_ = factor;
-      }
+  /** \brief Get the target reduction factor */
+  inline float
+  getTargetReductionFactor () const
+  {
+    return target_reduction_factor_;
+  }
 
-      /** \brief Get the target reduction factor */
-      inline float
-      getTargetReductionFactor () const
-      {
-        return target_reduction_factor_;
-      }
+protected:
+  void
+  performProcessing (pcl::PolygonMesh& output) override;
 
-    protected:
-      void
-      performProcessing (pcl::PolygonMesh &output) override;
+private:
+  float target_reduction_factor_{0.5f};
 
-    private:
-      float target_reduction_factor_{0.5f};
-
-      vtkSmartPointer<vtkPolyData> vtk_polygons_;
-  };
-}
+  vtkSmartPointer<vtkPolyData> vtk_polygons_;
+};
+} // namespace pcl

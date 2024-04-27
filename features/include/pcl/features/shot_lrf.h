@@ -39,70 +39,69 @@
 
 #pragma once
 
-#include <pcl/point_types.h>
 #include <pcl/features/feature.h>
+#include <pcl/point_types.h>
 
-namespace pcl
-{
-  /** \brief SHOTLocalReferenceFrameEstimation estimates the Local Reference Frame used in the calculation
-    * of the (SHOT) descriptor.
-    *
-    * \note If you use this code in any academic work, please cite:
-    *
-    *   - F. Tombari, S. Salti, L. Di Stefano
-    *     Unique Signatures of Histograms for Local Surface Description.
-    *     In Proceedings of the 11th European Conference on Computer Vision (ECCV),
-    *     Heraklion, Greece, September 5-11 2010.
-    *   - F. Tombari, S. Salti, L. Di Stefano
-    *     A Combined Texture-Shape Descriptor For Enhanced 3D Feature Matching.
-    *     In Proceedings of the 18th International Conference on Image Processing (ICIP),
-    *     Brussels, Belgium, September 11-14 2011.
-    *
-    * \author Samuele Salti, Federico Tombari
-    * \ingroup features
-    */
-  template<typename PointInT, typename PointOutT = ReferenceFrame>
-  class SHOTLocalReferenceFrameEstimation : public Feature<PointInT, PointOutT>
+namespace pcl {
+/** \brief SHOTLocalReferenceFrameEstimation estimates the Local Reference Frame used in
+ * the calculation of the (SHOT) descriptor.
+ *
+ * \note If you use this code in any academic work, please cite:
+ *
+ *   - F. Tombari, S. Salti, L. Di Stefano
+ *     Unique Signatures of Histograms for Local Surface Description.
+ *     In Proceedings of the 11th European Conference on Computer Vision (ECCV),
+ *     Heraklion, Greece, September 5-11 2010.
+ *   - F. Tombari, S. Salti, L. Di Stefano
+ *     A Combined Texture-Shape Descriptor For Enhanced 3D Feature Matching.
+ *     In Proceedings of the 18th International Conference on Image Processing (ICIP),
+ *     Brussels, Belgium, September 11-14 2011.
+ *
+ * \author Samuele Salti, Federico Tombari
+ * \ingroup features
+ */
+template <typename PointInT, typename PointOutT = ReferenceFrame>
+class SHOTLocalReferenceFrameEstimation : public Feature<PointInT, PointOutT> {
+public:
+  using Ptr = shared_ptr<SHOTLocalReferenceFrameEstimation<PointInT, PointOutT>>;
+  using ConstPtr =
+      shared_ptr<const SHOTLocalReferenceFrameEstimation<PointInT, PointOutT>>;
+  /** \brief Constructor */
+  SHOTLocalReferenceFrameEstimation()
   {
-    public:
-      using Ptr = shared_ptr<SHOTLocalReferenceFrameEstimation<PointInT, PointOutT> >;
-      using ConstPtr = shared_ptr<const SHOTLocalReferenceFrameEstimation<PointInT, PointOutT> >;
-      /** \brief Constructor */
-      SHOTLocalReferenceFrameEstimation ()
-      {
-        feature_name_ = "SHOTLocalReferenceFrameEstimation";
-      }
-      
-      /** \brief Empty destructor */
-      ~SHOTLocalReferenceFrameEstimation () override = default;
+    feature_name_ = "SHOTLocalReferenceFrameEstimation";
+  }
 
-    protected:
-      using Feature<PointInT, PointOutT>::feature_name_;
-      using Feature<PointInT, PointOutT>::getClassName;
-      //using Feature<PointInT, PointOutT>::searchForNeighbors;
-      using Feature<PointInT, PointOutT>::input_;
-      using Feature<PointInT, PointOutT>::indices_;
-      using Feature<PointInT, PointOutT>::surface_;
-      using Feature<PointInT, PointOutT>::tree_;
-      using Feature<PointInT, PointOutT>::search_parameter_;
+  /** \brief Empty destructor */
+  ~SHOTLocalReferenceFrameEstimation() override = default;
 
-      using PointCloudIn = typename Feature<PointInT, PointOutT>::PointCloudIn;
-      using PointCloudOut = typename Feature<PointInT, PointOutT>::PointCloudOut;
+protected:
+  using Feature<PointInT, PointOutT>::feature_name_;
+  using Feature<PointInT, PointOutT>::getClassName;
+  // using Feature<PointInT, PointOutT>::searchForNeighbors;
+  using Feature<PointInT, PointOutT>::input_;
+  using Feature<PointInT, PointOutT>::indices_;
+  using Feature<PointInT, PointOutT>::surface_;
+  using Feature<PointInT, PointOutT>::tree_;
+  using Feature<PointInT, PointOutT>::search_parameter_;
 
-      /** \brief Computes disambiguated local RF for a point index
-        * \param[in] index the index
-        * \param[out] rf reference frame to compute
-        */
-      float
-      getLocalRF (const int &index, Eigen::Matrix3f &rf);
+  using PointCloudIn = typename Feature<PointInT, PointOutT>::PointCloudIn;
+  using PointCloudOut = typename Feature<PointInT, PointOutT>::PointCloudOut;
 
-      /** \brief Feature estimation method.
-        * \param[out] output the resultant features
-        */
-      void
-      computeFeature (PointCloudOut &output) override;
-  };
-}
+  /** \brief Computes disambiguated local RF for a point index
+   * \param[in] index the index
+   * \param[out] rf reference frame to compute
+   */
+  float
+  getLocalRF (const int& index, Eigen::Matrix3f& rf);
+
+  /** \brief Feature estimation method.
+   * \param[out] output the resultant features
+   */
+  void
+  computeFeature (PointCloudOut& output) override;
+};
+} // namespace pcl
 
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/features/impl/shot_lrf.hpp>

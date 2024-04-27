@@ -42,66 +42,64 @@
 
 #include <map>
 
-namespace pcl
-{
-  namespace visualization
+namespace pcl {
+namespace visualization {
+/** /brief Class representing 3D area picking events. */
+class PCL_EXPORTS AreaPickingEvent {
+public:
+  AreaPickingEvent(std::map<std::string, pcl::Indices> cloud_indices)
+  : cloud_indices_(std::move(cloud_indices))
+  {}
+
+  PCL_DEPRECATED(1, 16, "This constructor is deprecated!")
+  AreaPickingEvent(int /*nb_points*/, const pcl::Indices& indices)
+  : AreaPickingEvent({{"", indices}})
+  {}
+
+  /** \brief For situations where a whole area is selected, return the points indices.
+   * \param[out] indices indices of the points under the area selected by user.
+   * \return true, if the area selected by the user contains points, false otherwise
+   */
+  inline bool
+  getPointsIndices (pcl::Indices& indices) const
   {
-    /** /brief Class representing 3D area picking events. */
-    class PCL_EXPORTS AreaPickingEvent
-    {
-      public:
-        AreaPickingEvent (std::map<std::string, pcl::Indices> cloud_indices)
-        : cloud_indices_ (std::move(cloud_indices))
-        {}
+    if (cloud_indices_.empty())
+      return (false);
 
-        PCL_DEPRECATED(1,16,"This constructor is deprecated!")
-        AreaPickingEvent(int /*nb_points*/, const pcl::Indices& indices)
-          : AreaPickingEvent ({{"",indices}}) {}
+    for (const auto& i : cloud_indices_)
+      indices.insert(indices.cend(), i.second.cbegin(), i.second.cend());
 
-        /** \brief For situations where a whole area is selected, return the points indices.
-          * \param[out] indices indices of the points under the area selected by user.
-          * \return true, if the area selected by the user contains points, false otherwise
-          */
-        inline bool
-        getPointsIndices (pcl::Indices& indices) const
-        {
-          if (cloud_indices_.empty())
-            return (false);
+    return (true);
+  }
+  /** \brief For situations where a whole area is selected, return the names
+   * of the selected point clouds.
+   * \return The names of selected point clouds
+   */
+  inline std::vector<std::string>
+  getCloudNames () const
+  {
+    std::vector<std::string> names;
+    for (const auto& i : cloud_indices_)
+      names.push_back(i.first);
+    return names;
+  }
+  /** \brief For situations where a whole area is selected, return the points indices
+   * for a given point cloud
+   * \param[in] name of selected clouds.
+   * \return The indices for the selected cloud.
+   */
+  inline Indices
+  getPointsIndices (const std::string& name) const
+  {
+    const auto cloud = cloud_indices_.find(name);
+    if (cloud == cloud_indices_.cend())
+      return {};
 
-          for (const auto& i : cloud_indices_)
-            indices.insert(indices.cend (), i.second.cbegin (), i.second.cend ());
+    return cloud->second;
+  }
 
-          return (true);
-        }
-        /** \brief For situations where a whole area is selected, return the names
-          * of the selected point clouds.
-          * \return The names of selected point clouds
-          */
-        inline std::vector<std::string>
-        getCloudNames () const
-        {
-          std::vector<std::string> names;
-          for (const auto& i : cloud_indices_)
-            names.push_back (i.first);
-          return names;
-        }
-        /** \brief For situations where a whole area is selected, return the points indices
-          * for a given point cloud
-          * \param[in] name of selected clouds.
-          * \return The indices for the selected cloud.
-          */
-        inline Indices
-        getPointsIndices (const std::string& name) const
-        {
-          const auto cloud = cloud_indices_.find (name);
-          if(cloud == cloud_indices_.cend ())
-            return {};
-
-          return cloud->second;
-        }
-
-      private:
-        std::map<std::string, pcl::Indices> cloud_indices_;
-    };
-  } //namespace visualization
-} //namespace pcl
+private:
+  std::map<std::string, pcl::Indices> cloud_indices_;
+};
+} // namespace visualization
+} // namespace pcl

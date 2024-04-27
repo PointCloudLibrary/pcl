@@ -54,19 +54,19 @@ public:
    *        in score
    */
   void
-  computeLikelihoods(
+  computeLikelihoods (
       float* reference,
       std::vector<Eigen::Isometry3d, Eigen::aligned_allocator<Eigen::Isometry3d>> poses,
       std::vector<float>& scores);
 
   /** Set the basic camera intrinsic parameters. */
   void
-  setCameraIntrinsicsParameters(int camera_width_in,
-                                int camera_height_in,
-                                float camera_fx_in,
-                                float camera_fy_in,
-                                float camera_cx_in,
-                                float camera_cy_in)
+  setCameraIntrinsicsParameters (int camera_width_in,
+                                 int camera_height_in,
+                                 float camera_fx_in,
+                                 float camera_fy_in,
+                                 float camera_cx_in,
+                                 float camera_cy_in)
   {
     camera_width_ = camera_width_in;
     camera_height_ = camera_height_in;
@@ -78,12 +78,12 @@ public:
 
   /** Get the basic camera intrinsic parameters. */
   void
-  getCameraIntrinsicsParameters(int& camera_width_in,
-                                int& camera_height_in,
-                                float& camera_fx_in,
-                                float& camera_fy_in,
-                                float& camera_cx_in,
-                                float& camera_cy_in) const
+  getCameraIntrinsicsParameters (int& camera_width_in,
+                                 int& camera_height_in,
+                                 float& camera_fx_in,
+                                 float& camera_fy_in,
+                                 float& camera_cx_in,
+                                 float& camera_cy_in) const
   {
     camera_width_in = camera_width_;
     camera_height_in = camera_height_;
@@ -95,55 +95,55 @@ public:
 
   /** Set the cost function to be used - one of 4 hard coded currently. */
   void
-  setCostFunction(int which_cost_function_in)
+  setCostFunction (int which_cost_function_in)
   {
     which_cost_function_ = which_cost_function_in;
   }
 
   void
-  setSigma(double sigma_in)
+  setSigma (double sigma_in)
   {
     sigma_ = sigma_in;
   }
 
   void
-  setFloorProportion(double floor_proportion_in)
+  setFloorProportion (double floor_proportion_in)
   {
     floor_proportion_ = floor_proportion_in;
   }
 
   int
-  getRows() const
+  getRows () const
   {
     return rows_;
   }
 
   int
-  getCols() const
+  getCols () const
   {
     return cols_;
   }
 
   int
-  getRowHeight() const
+  getRowHeight () const
   {
     return row_height_;
   }
 
   int
-  getColWidth() const
+  getColWidth () const
   {
     return col_width_;
   }
 
   int
-  getWidth() const
+  getWidth () const
   {
     return width_;
   }
 
   int
-  getHeight() const
+  getHeight () const
   {
     return height_;
   }
@@ -156,69 +156,69 @@ public:
    *                     camera pose
    */
   void
-  getPointCloud(pcl::PointCloud<pcl::PointXYZRGB>::Ptr pc,
-                bool make_global,
-                const Eigen::Isometry3d& pose,
-                bool organized = false) const;
+  getPointCloud (pcl::PointCloud<pcl::PointXYZRGB>::Ptr pc,
+                 bool make_global,
+                 const Eigen::Isometry3d& pose,
+                 bool organized = false) const;
 
   /** Convenience function to return RangeImagePlanar containing simulated RGB-D. */
   void
-  getRangeImagePlanar(pcl::RangeImagePlanar& rip) const;
+  getRangeImagePlanar (pcl::RangeImagePlanar& rip) const;
 
   /** Add various types of noise to simulated RGB-D data. */
   void
-  addNoise();
+  addNoise ();
 
   double
-  sampleNormal(double sigma = 1.0);
+  sampleNormal (double sigma = 1.0);
 
   void
-  setComputeOnCPU(bool compute_on_cpu)
+  setComputeOnCPU (bool compute_on_cpu)
   {
     compute_likelihood_on_cpu_ = compute_on_cpu;
   }
 
   void
-  setSumOnCPU(bool sum_on_cpu)
+  setSumOnCPU (bool sum_on_cpu)
   {
     aggregate_on_cpu_ = sum_on_cpu;
   }
 
   void
-  setUseColor(bool use_color)
+  setUseColor (bool use_color)
   {
     use_color_ = use_color;
   }
 
   const std::uint8_t*
-  getColorBuffer() const;
+  getColorBuffer () const;
 
   const float*
-  getDepthBuffer() const;
+  getDepthBuffer () const;
 
   const float*
-  getScoreBuffer() const;
+  getScoreBuffer () const;
 
   float
-  getZNear() const
+  getZNear () const
   {
     return z_near_;
   }
 
   float
-  getZFar() const
+  getZFar () const
   {
     return z_far_;
   }
 
   void
-  setZNear(float z)
+  setZNear (float z)
   {
     z_near_ = z;
   }
 
   void
-  setZFar(float z)
+  setZFar (float z)
   {
     z_far_ = z;
   }
@@ -230,27 +230,27 @@ private:
    * \param[out] scores output score
    */
   void
-  computeScores(float* reference, std::vector<float>& scores);
+  computeScores (float* reference, std::vector<float>& scores);
 
   void
-  computeScoresShader(float* reference);
+  computeScoresShader (float* reference);
 
   void
-  render(const std::vector<Eigen::Isometry3d,
-                           Eigen::aligned_allocator<Eigen::Isometry3d>>& poses);
+  render (const std::vector<Eigen::Isometry3d,
+                            Eigen::aligned_allocator<Eigen::Isometry3d>>& poses);
 
   void
-  drawParticles(std::vector<Eigen::Isometry3d,
-                            Eigen::aligned_allocator<Eigen::Isometry3d>> poses);
+  drawParticles (std::vector<Eigen::Isometry3d,
+                             Eigen::aligned_allocator<Eigen::Isometry3d>> poses);
 
   void
-  applyCameraTransform(const Eigen::Isometry3d& pose);
+  applyCameraTransform (const Eigen::Isometry3d& pose);
 
   void
-  applyCameraTransform(const Camera& camera);
+  applyCameraTransform (const Camera& camera);
 
   void
-  setupProjectionMatrix() const;
+  setupProjectionMatrix () const;
 
   Scene::Ptr scene_;
   int rows_;
@@ -312,7 +312,7 @@ private:
 
 template <class T>
 T
-sqr(T val)
+sqr (T val)
 {
   return val * val;
 }

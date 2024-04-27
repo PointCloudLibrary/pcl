@@ -39,14 +39,14 @@
 
 #include <pcl/console/parse.h>
 #include <pcl/io/pcd_io.h>
-#include <pcl/point_types.h>
 #include <pcl/registration/icp.h>
 #include <pcl/registration/icp_nl.h>
 #include <pcl/registration/transformation_estimation_lm.h>
 #include <pcl/registration/warp_point_rigid_3d.h>
+#include <pcl/point_types.h>
 
-#include <string>
 #include <iostream>
+#include <string>
 #include <vector>
 
 using PointType = pcl::PointXYZ;
@@ -55,79 +55,79 @@ using CloudConstPtr = Cloud::ConstPtr;
 using CloudPtr = Cloud::Ptr;
 
 int
-main (int argc, char **argv)
+main (int argc, char** argv)
 {
   double dist = 0.05;
-  pcl::console::parse_argument (argc, argv, "-d", dist);
+  pcl::console::parse_argument(argc, argv, "-d", dist);
 
   double rans = 0.05;
-  pcl::console::parse_argument (argc, argv, "-r", rans);
+  pcl::console::parse_argument(argc, argv, "-r", rans);
 
   int iter = 50;
-  pcl::console::parse_argument (argc, argv, "-i", iter);
+  pcl::console::parse_argument(argc, argv, "-i", iter);
 
   std::vector<int> pcd_indices;
-  pcd_indices = pcl::console::parse_file_extension_argument (argc, argv, ".pcd");
+  pcd_indices = pcl::console::parse_file_extension_argument(argc, argv, ".pcd");
 
-  CloudPtr model (new Cloud);
-  if (pcl::io::loadPCDFile (argv[pcd_indices[0]], *model) == -1)
-  {
+  CloudPtr model(new Cloud);
+  if (pcl::io::loadPCDFile(argv[pcd_indices[0]], *model) == -1) {
     std::cout << "Could not read file" << std::endl;
     return -1;
   }
-  std::cout << argv[pcd_indices[0]] << " width: " << model->width << " height: " << model->height << std::endl;
+  std::cout << argv[pcd_indices[0]] << " width: " << model->width
+            << " height: " << model->height << std::endl;
 
-  std::string result_filename (argv[pcd_indices[0]]);
-  result_filename = result_filename.substr (result_filename.rfind ('/') + 1);
-  pcl::io::savePCDFile (result_filename, *model);
+  std::string result_filename(argv[pcd_indices[0]]);
+  result_filename = result_filename.substr(result_filename.rfind('/') + 1);
+  pcl::io::savePCDFile(result_filename, *model);
   std::cout << "saving first model to " << result_filename << std::endl;
 
-  Eigen::Matrix4f t (Eigen::Matrix4f::Identity ());
+  Eigen::Matrix4f t(Eigen::Matrix4f::Identity());
 
-  for (std::size_t i = 1; i < pcd_indices.size (); i++)
-  {
-    CloudPtr data (new Cloud);
-    if (pcl::io::loadPCDFile (argv[pcd_indices[i]], *data) == -1)
-    {
+  for (std::size_t i = 1; i < pcd_indices.size(); i++) {
+    CloudPtr data(new Cloud);
+    if (pcl::io::loadPCDFile(argv[pcd_indices[i]], *data) == -1) {
       std::cout << "Could not read file" << std::endl;
       return -1;
     }
-    std::cout << argv[pcd_indices[i]] << " width: " << data->width << " height: " << data->height << std::endl;
+    std::cout << argv[pcd_indices[i]] << " width: " << data->width
+              << " height: " << data->height << std::endl;
 
     pcl::IterativeClosestPointNonLinear<PointType, PointType> icp;
 
-    pcl::registration::WarpPointRigid3D<PointType, PointType>::Ptr warp_fcn 
-      (new pcl::registration::WarpPointRigid3D<PointType, PointType>);
+    pcl::registration::WarpPointRigid3D<PointType, PointType>::Ptr warp_fcn(
+        new pcl::registration::WarpPointRigid3D<PointType, PointType>);
 
     // Create a TransformationEstimationLM object, and set the warp to it
-    pcl::registration::TransformationEstimationLM<PointType, PointType>::Ptr te (new pcl::registration::TransformationEstimationLM<PointType, PointType>);
-    te->setWarpFunction (warp_fcn);
+    pcl::registration::TransformationEstimationLM<PointType, PointType>::Ptr te(
+        new pcl::registration::TransformationEstimationLM<PointType, PointType>);
+    te->setWarpFunction(warp_fcn);
 
     // Pass the TransformationEstimation object to the ICP algorithm
-    icp.setTransformationEstimation (te);
+    icp.setTransformationEstimation(te);
 
-    icp.setMaximumIterations (iter);
-    icp.setMaxCorrespondenceDistance (dist);
-    icp.setRANSACOutlierRejectionThreshold (rans);
+    icp.setMaximumIterations(iter);
+    icp.setMaxCorrespondenceDistance(dist);
+    icp.setRANSACOutlierRejectionThreshold(rans);
 
-    icp.setInputTarget (model);
+    icp.setInputTarget(model);
 
-    icp.setInputSource (data);
+    icp.setInputSource(data);
 
-    CloudPtr tmp (new Cloud);
-    icp.align (*tmp);
+    CloudPtr tmp(new Cloud);
+    icp.align(*tmp);
 
-    t *= icp.getFinalTransformation ();
+    t *= icp.getFinalTransformation();
 
-    pcl::transformPointCloud (*data, *tmp, t);
+    pcl::transformPointCloud(*data, *tmp, t);
 
-    std::cout << icp.getFinalTransformation () << std::endl;
+    std::cout << icp.getFinalTransformation() << std::endl;
 
     *model = *data;
 
-    std::string result_filename (argv[pcd_indices[i]]);
-    result_filename = result_filename.substr (result_filename.rfind ('/') + 1);
-    pcl::io::savePCDFileBinary (result_filename, *tmp);
+    std::string result_filename(argv[pcd_indices[i]]);
+    result_filename = result_filename.substr(result_filename.rfind('/') + 1);
+    pcl::io::savePCDFileBinary(result_filename, *tmp);
     std::cout << "saving result to " << result_filename << std::endl;
   }
 

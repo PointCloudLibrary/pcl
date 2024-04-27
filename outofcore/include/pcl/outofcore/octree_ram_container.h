@@ -40,132 +40,136 @@
 #pragma once
 
 // C++
+#include <pcl/outofcore/octree_abstract_node_container.h>
+
 #include <mutex>
 #include <random>
 
-#include <pcl/outofcore/octree_abstract_node_container.h>
+namespace pcl {
+namespace outofcore {
+/** \class OutofcoreOctreeRamContainer
+ *  \brief Storage container class which the outofcore octree base is templated against
+ *  \note Code was adapted from the Urban Robotics out of core octree implementation.
+ *  Contact Jacob Schloss <jacob.schloss@urbanrobotics.net> with any questions.
+ *  http://www.urbanrobotics.net/
+ *
+ *  \ingroup outofcore
+ *  \author Jacob Schloss (jacob.scloss@urbanrobotics.net)
+ */
+template <typename PointT>
+class OutofcoreOctreeRamContainer : public OutofcoreAbstractNodeContainer<PointT> {
+public:
+  using AlignedPointTVector =
+      typename OutofcoreAbstractNodeContainer<PointT>::AlignedPointTVector;
 
-namespace pcl
-{
-  namespace outofcore
+  /** \brief empty constructor (with a path parameter?)
+   */
+  OutofcoreOctreeRamContainer(const boost::filesystem::path&) : container_() {}
+
+  /** \brief inserts count number of points into container; uses the container_ type's
+   * insert function \param[in] start - address of first point in array \param[in] count
+   * - the maximum offset from start of points inserted
+   */
+  void
+  insertRange (const PointT* start, const std::uint64_t count);
+
+  /** \brief inserts count points into container
+   * \param[in] start - address of first point in array
+   * \param[in] count - the maximum offset from start of points inserted
+   */
+  void
+  insertRange (const PointT* const* start, const std::uint64_t count);
+
+  void
+  insertRange (AlignedPointTVector& /*p*/)
   {
-    /** \class OutofcoreOctreeRamContainer
-     *  \brief Storage container class which the outofcore octree base is templated against
-     *  \note Code was adapted from the Urban Robotics out of core octree implementation. 
-     *  Contact Jacob Schloss <jacob.schloss@urbanrobotics.net> with any questions. 
-     *  http://www.urbanrobotics.net/
-     * 
-     *  \ingroup outofcore
-     *  \author Jacob Schloss (jacob.scloss@urbanrobotics.net)
-     */
-    template<typename PointT>
-    class OutofcoreOctreeRamContainer : public OutofcoreAbstractNodeContainer<PointT>
-    {
-      public:
-        using AlignedPointTVector = typename OutofcoreAbstractNodeContainer<PointT>::AlignedPointTVector;
-
-        /** \brief empty constructor (with a path parameter?)
-          */
-        OutofcoreOctreeRamContainer (const boost::filesystem::path&) : container_ () { }
-        
-        /** \brief inserts count number of points into container; uses the container_ type's insert function
-          * \param[in] start - address of first point in array
-          * \param[in] count - the maximum offset from start of points inserted 
-          */
-        void
-        insertRange (const PointT* start, const std::uint64_t count);
-
-        /** \brief inserts count points into container 
-          * \param[in] start - address of first point in array
-          * \param[in] count - the maximum offset from start of points inserted 
-          */
-        void
-        insertRange (const PointT* const * start, const std::uint64_t count);
-
-        void
-        insertRange (AlignedPointTVector& /*p*/)
-        {
-          PCL_ERROR ("[pcl::outofcore::OutofcoreOctreeRamContainer] Inserting eigen-aligned point vectors is not implemented using the ram containers\n");
-          //insertRange (&(p.begin ()), p.size ());
-        }
-
-        void
-        insertRange (const AlignedPointTVector& /*p*/)
-        {
-          PCL_ERROR ("[pcl::outofcore::OutofcoreOctreeRamContainer] Inserting eigen-aligned point vectors is not implemented using the ram containers\n");
-        }
-        
-        /** \brief 
-          * \param[in] start Index of first point to return from container
-          * \param[in] count Offset (start + count) of the last point to return from container
-          * \param[out] v Array of points read from the input range
-          */
-        void
-        readRange (const std::uint64_t start, const std::uint64_t count, AlignedPointTVector &v);
-
-        /** \brief grab percent*count random points. points are NOT
-          *   guaranteed to be unique (could have multiple identical points!)
-          *
-          * \param[in] start Index of first point in range to subsample
-          * \param[in] count Offset (start+count) of last point in range to subsample
-          * \param[in] percent Percentage of range to return
-          * \param[out] v Vector with percent*count uniformly random sampled 
-          * points from given input rangerange
-          */
-        void
-        readRangeSubSample (const std::uint64_t start, const std::uint64_t count, const double percent, AlignedPointTVector &v);
-
-        /** \brief returns the size of the vector of points stored in this class */
-        inline std::uint64_t
-        size () const
-        {
-          return container_.size ();
-        }
-
-        inline bool
-        empty () const
-        {
-          return container_.empty ();
-        }
-        
-
-        /** \brief clears the vector of points in this class */
-        inline void
-        clear ()
-        {
-          //clear the elements in the vector of points
-          container_.clear ();
-        }
-
-        /** \brief Writes ascii x,y,z point data to path.string().c_str()
-          *  \param path The path/filename destination of the ascii xyz data
-          */
-        void
-        convertToXYZ (const boost::filesystem::path &path);
-
-        inline PointT
-        operator[] (std::uint64_t index) const
-        {
-          assert ( index < container_.size () );
-          return ( container_[index] );
-        }
-        
-
-      protected:
-        //no copy construction
-        OutofcoreOctreeRamContainer (const OutofcoreOctreeRamContainer& /*rval*/) { }
-
-        OutofcoreOctreeRamContainer&
-        operator= (const OutofcoreOctreeRamContainer& /*rval*/) { }
-
-        //the actual container
-        //std::deque<PointT> container;
-
-        /** \brief linear container to hold the points */
-        AlignedPointTVector container_;
-
-        static std::mutex rng_mutex_;
-        static std::mt19937 rng_;
-    };
+    PCL_ERROR("[pcl::outofcore::OutofcoreOctreeRamContainer] Inserting eigen-aligned "
+              "point vectors is not implemented using the ram containers\n");
+    // insertRange (&(p.begin ()), p.size ());
   }
-}
+
+  void
+  insertRange (const AlignedPointTVector& /*p*/)
+  {
+    PCL_ERROR("[pcl::outofcore::OutofcoreOctreeRamContainer] Inserting eigen-aligned "
+              "point vectors is not implemented using the ram containers\n");
+  }
+
+  /** \brief
+   * \param[in] start Index of first point to return from container
+   * \param[in] count Offset (start + count) of the last point to return from container
+   * \param[out] v Array of points read from the input range
+   */
+  void
+  readRange (const std::uint64_t start,
+             const std::uint64_t count,
+             AlignedPointTVector& v);
+
+  /** \brief grab percent*count random points. points are NOT
+   *   guaranteed to be unique (could have multiple identical points!)
+   *
+   * \param[in] start Index of first point in range to subsample
+   * \param[in] count Offset (start+count) of last point in range to subsample
+   * \param[in] percent Percentage of range to return
+   * \param[out] v Vector with percent*count uniformly random sampled
+   * points from given input rangerange
+   */
+  void
+  readRangeSubSample (const std::uint64_t start,
+                      const std::uint64_t count,
+                      const double percent,
+                      AlignedPointTVector& v);
+
+  /** \brief returns the size of the vector of points stored in this class */
+  inline std::uint64_t
+  size () const
+  {
+    return container_.size();
+  }
+
+  inline bool
+  empty () const
+  {
+    return container_.empty();
+  }
+
+  /** \brief clears the vector of points in this class */
+  inline void
+  clear ()
+  {
+    // clear the elements in the vector of points
+    container_.clear();
+  }
+
+  /** \brief Writes ascii x,y,z point data to path.string().c_str()
+   *  \param path The path/filename destination of the ascii xyz data
+   */
+  void
+  convertToXYZ (const boost::filesystem::path& path);
+
+  inline PointT
+  operator[](std::uint64_t index) const
+  {
+    assert(index < container_.size());
+    return (container_[index]);
+  }
+
+protected:
+  // no copy construction
+  OutofcoreOctreeRamContainer(const OutofcoreOctreeRamContainer& /*rval*/) {}
+
+  OutofcoreOctreeRamContainer&
+  operator=(const OutofcoreOctreeRamContainer& /*rval*/)
+  {}
+
+  // the actual container
+  // std::deque<PointT> container;
+
+  /** \brief linear container to hold the points */
+  AlignedPointTVector container_;
+
+  static std::mutex rng_mutex_;
+  static std::mt19937 rng_;
+};
+} // namespace outofcore
+} // namespace pcl

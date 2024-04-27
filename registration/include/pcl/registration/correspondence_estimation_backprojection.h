@@ -111,7 +111,7 @@ public:
    * \param[in] normals the normals computed for the source cloud
    */
   inline void
-  setSourceNormals(const NormalsConstPtr& normals)
+  setSourceNormals (const NormalsConstPtr& normals)
   {
     source_normals_ = normals;
   }
@@ -119,7 +119,7 @@ public:
   /** \brief Get the normals of the source point cloud
    */
   inline NormalsConstPtr
-  getSourceNormals() const
+  getSourceNormals () const
   {
     return (source_normals_);
   }
@@ -128,7 +128,7 @@ public:
    * \param[in] normals the normals computed for the target cloud
    */
   inline void
-  setTargetNormals(const NormalsConstPtr& normals)
+  setTargetNormals (const NormalsConstPtr& normals)
   {
     target_normals_ = normals;
   }
@@ -136,21 +136,21 @@ public:
   /** \brief Get the normals of the target point cloud
    */
   inline NormalsConstPtr
-  getTargetNormals() const
+  getTargetNormals () const
   {
     return (target_normals_);
   }
 
   /** \brief See if this rejector requires source normals */
   bool
-  requiresSourceNormals() const
+  requiresSourceNormals () const
   {
     return (true);
   }
 
   /** \brief Blob method for setting the source normals */
   void
-  setSourceNormals(pcl::PCLPointCloud2::ConstPtr cloud2)
+  setSourceNormals (pcl::PCLPointCloud2::ConstPtr cloud2)
   {
     NormalsPtr cloud(new PointCloudNormals);
     fromPCLPointCloud2(*cloud2, *cloud);
@@ -159,14 +159,14 @@ public:
 
   /** \brief See if this rejector requires target normals*/
   bool
-  requiresTargetNormals() const
+  requiresTargetNormals () const
   {
     return (true);
   }
 
   /** \brief Method for setting the target normals */
   void
-  setTargetNormals(pcl::PCLPointCloud2::ConstPtr cloud2)
+  setTargetNormals (pcl::PCLPointCloud2::ConstPtr cloud2)
   {
     NormalsPtr cloud(new PointCloudNormals);
     fromPCLPointCloud2(*cloud2, *cloud);
@@ -180,8 +180,8 @@ public:
    * cloud
    */
   void
-  determineCorrespondences(pcl::Correspondences& correspondences,
-                           double max_distance = std::numeric_limits<double>::max());
+  determineCorrespondences (pcl::Correspondences& correspondences,
+                            double max_distance = std::numeric_limits<double>::max());
 
   /** \brief Determine the reciprocal correspondences between input and target cloud.
    * A correspondence is considered reciprocal if both Src_i has Tgt_i as a
@@ -192,7 +192,7 @@ public:
    * correspondences
    */
   virtual void
-  determineReciprocalCorrespondences(
+  determineReciprocalCorrespondences (
       pcl::Correspondences& correspondences,
       double max_distance = std::numeric_limits<double>::max());
 
@@ -202,7 +202,7 @@ public:
    * \param[in] k the number of nearest neighbours to be considered
    */
   inline void
-  setKSearch(unsigned int k)
+  setKSearch (unsigned int k)
   {
     k_ = k;
   }
@@ -212,14 +212,14 @@ public:
    * neighbors.
    */
   inline unsigned int
-  getKSearch() const
+  getKSearch () const
   {
     return (k_);
   }
 
   /** \brief Clone and cast to CorrespondenceEstimationBase */
   virtual typename CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::Ptr
-  clone() const
+  clone () const
   {
     Ptr copy(new CorrespondenceEstimationBackProjection<PointSource,
                                                         PointTarget,
@@ -237,7 +237,7 @@ protected:
 
   /** \brief Internal computation initialization. */
   bool
-  initCompute();
+  initCompute ();
 
 private:
   /** \brief The normals computed at each point in the source cloud */

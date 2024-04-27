@@ -38,23 +38,23 @@
 /// @details the implementation of the class CutCommand
 /// @author  Yue Li and Matthew Hielsberg
 
-#include <pcl/apps/point_cloud_editor/cutCommand.h>
 #include <pcl/apps/point_cloud_editor/copyBuffer.h>
+#include <pcl/apps/point_cloud_editor/cutCommand.h>
 #include <pcl/apps/point_cloud_editor/selection.h>
 
-CutCommand::CutCommand (CopyBufferPtr copy_buffer_ptr,
-                        SelectionPtr selection_ptr,
-                        const CloudPtr& cloud_ptr)
-  : selection_ptr_(std::move(selection_ptr)), cloud_ptr_(cloud_ptr),
-    copy_buffer_ptr_(std::move(copy_buffer_ptr)), cut_selection_(cloud_ptr)
-{
-}
+CutCommand::CutCommand(CopyBufferPtr copy_buffer_ptr,
+                       SelectionPtr selection_ptr,
+                       const CloudPtr& cloud_ptr)
+: selection_ptr_(std::move(selection_ptr))
+, cloud_ptr_(cloud_ptr)
+, copy_buffer_ptr_(std::move(copy_buffer_ptr))
+, cut_selection_(cloud_ptr)
+{}
 
-CutCommand::~CutCommand ()
-= default;
+CutCommand::~CutCommand() = default;
 
 void
-CutCommand::execute ()
+CutCommand::execute()
 {
   if (!cloud_ptr_)
     return;
@@ -62,21 +62,21 @@ CutCommand::execute ()
     return;
 
   // do the copy
-  copy_buffer_ptr_ -> set(cloud_ptr_, *selection_ptr_);
+  copy_buffer_ptr_->set(cloud_ptr_, *selection_ptr_);
 
   // back up copied points for undo
   cut_cloud_buffer_ = *copy_buffer_ptr_;
   cut_selection_ = *selection_ptr_;
 
-   // remove the copied points from the cloud.
-  cloud_ptr_ -> remove(cut_selection_);
+  // remove the copied points from the cloud.
+  cloud_ptr_->remove(cut_selection_);
 
   // The selection points to the incorrect points or may have indices out of
   // bounds, so we must clear it.
-  selection_ptr_ -> clear();
+  selection_ptr_->clear();
 
   // notify the cloud that the selection has changed
-  cloud_ptr_ -> setSelection(selection_ptr_);
+  cloud_ptr_->setSelection(selection_ptr_);
 }
 
 void
@@ -84,5 +84,5 @@ CutCommand::undo()
 {
   if (!cloud_ptr_)
     return;
-  cloud_ptr_ -> restore(cut_cloud_buffer_, cut_selection_);
+  cloud_ptr_->restore(cut_cloud_buffer_, cut_selection_);
 }

@@ -39,11 +39,12 @@
 #include <pcl/features/impl/organized_edge_detection.hpp>
 
 #ifndef PCL_NO_PRECOMPILE
-#include <pcl/point_types.h>
 #include <pcl/impl/instantiate.hpp>
+#include <pcl/point_types.h>
 PCL_INSTANTIATE_PRODUCT(OrganizedEdgeBase, (PCL_XYZ_POINT_TYPES)((pcl::Label)))
 PCL_INSTANTIATE_PRODUCT(OrganizedEdgeFromRGB, (PCL_RGB_POINT_TYPES)((pcl::Label)))
-PCL_INSTANTIATE_PRODUCT(OrganizedEdgeFromNormals, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES)((pcl::Label)))
-PCL_INSTANTIATE_PRODUCT(OrganizedEdgeFromRGBNormals, (PCL_RGB_POINT_TYPES)(PCL_NORMAL_POINT_TYPES)((pcl::Label)))
-#endif    // PCL_NO_PRECOMPILE
-
+PCL_INSTANTIATE_PRODUCT(OrganizedEdgeFromNormals,
+                        (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES)((pcl::Label)))
+PCL_INSTANTIATE_PRODUCT(OrganizedEdgeFromRGBNormals,
+                        (PCL_RGB_POINT_TYPES)(PCL_NORMAL_POINT_TYPES)((pcl::Label)))
+#endif // PCL_NO_PRECOMPILE

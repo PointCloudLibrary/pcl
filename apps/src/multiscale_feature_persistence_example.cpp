@@ -50,9 +50,9 @@ const Eigen::Vector4f subsampling_leaf_size(0.01f, 0.01f, 0.01f, 0.0f);
 constexpr float normal_estimation_search_radius = 0.05f;
 
 void
-subsampleAndCalculateNormals(PointCloud<PointXYZ>::Ptr& cloud,
-                             PointCloud<PointXYZ>::Ptr& cloud_subsampled,
-                             PointCloud<Normal>::Ptr& cloud_subsampled_normals)
+subsampleAndCalculateNormals (PointCloud<PointXYZ>::Ptr& cloud,
+                              PointCloud<PointXYZ>::Ptr& cloud_subsampled,
+                              PointCloud<Normal>::Ptr& cloud_subsampled_normals)
 {
   cloud_subsampled = PointCloud<PointXYZ>::Ptr(new PointCloud<PointXYZ>());
   VoxelGrid<PointXYZ> subsampling_filter;
@@ -70,7 +70,7 @@ subsampleAndCalculateNormals(PointCloud<PointXYZ>::Ptr& cloud,
 }
 
 int
-main(int argc, char** argv)
+main (int argc, char** argv)
 {
   if (argc != 2) {
     PCL_ERROR("Syntax: ./multiscale_feature_persistence_example [path_to_cloud.pcl]\n");

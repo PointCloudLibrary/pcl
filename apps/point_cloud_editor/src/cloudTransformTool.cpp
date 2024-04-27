@@ -37,43 +37,44 @@
 /// @details the implementation of class CloudTransformTool
 /// @author Yue Li and Matthew Hielsberg
 
-#include <pcl/apps/point_cloud_editor/common.h>
-#include <pcl/apps/point_cloud_editor/cloudTransformTool.h>
 #include <pcl/apps/point_cloud_editor/cloud.h>
+#include <pcl/apps/point_cloud_editor/cloudTransformTool.h>
+#include <pcl/apps/point_cloud_editor/common.h>
 
 const float CloudTransformTool::DEFAULT_SCALE_FACTOR_ = 1.14;
 const float CloudTransformTool::DEFAULT_TRANSLATE_FACTOR_ = 0.001f;
 
-
-CloudTransformTool::CloudTransformTool (CloudPtr cloud_ptr)
-  : cloud_ptr_(std::move(cloud_ptr)), x_(0), y_(0), scale_factor_(DEFAULT_SCALE_FACTOR_),
-    translate_factor_(DEFAULT_TRANSLATE_FACTOR_)
+CloudTransformTool::CloudTransformTool(CloudPtr cloud_ptr)
+: cloud_ptr_(std::move(cloud_ptr))
+, x_(0)
+, y_(0)
+, scale_factor_(DEFAULT_SCALE_FACTOR_)
+, translate_factor_(DEFAULT_TRANSLATE_FACTOR_)
 {
   setIdentity(transform_matrix_);
 }
 
-CloudTransformTool::~CloudTransformTool ()
-= default;
+CloudTransformTool::~CloudTransformTool() = default;
 
 void
-CloudTransformTool::start (int x, int y, BitMask, BitMask)
+CloudTransformTool::start(int x, int y, BitMask, BitMask)
 {
   x_ = x;
   y_ = y;
-    
+
   trackball_.start(x, y);
 }
 
 void
-CloudTransformTool::update (int x, int y, BitMask modifiers, BitMask buttons)
+CloudTransformTool::update(int x, int y, BitMask modifiers, BitMask buttons)
 {
   if (!cloud_ptr_)
     return;
   if (!(buttons & LEFT))
     return;
-    
+
   float transform[MATRIX_SIZE];
-    
+
   int dx = (x - x_);
   int dy = (y - y_);
   if (dx == 0 && dy == 0)
@@ -88,34 +89,33 @@ CloudTransformTool::update (int x, int y, BitMask modifiers, BitMask buttons)
   else
     trackball_.getRotationMatrix(transform);
 
-  cloud_ptr_ -> multMatrix(transform);
+  cloud_ptr_->multMatrix(transform);
 
   x_ = x;
   y_ = y;
 }
 
 void
-CloudTransformTool::getTranslateMatrix (int dx, int dy, float* matrix)
+CloudTransformTool::getTranslateMatrix(int dx, int dy, float* matrix)
 {
   setIdentity(matrix);
-  float scale = 1.0f / cloud_ptr_-> getScalingFactor();
+  float scale = 1.0f / cloud_ptr_->getScalingFactor();
   matrix[12] = float(dx) * translate_factor_ * scale;
   matrix[13] = float(-dy) * translate_factor_ * scale;
 }
 
 void
-CloudTransformTool::getZTranslateMatrix (int dy, float* matrix)
+CloudTransformTool::getZTranslateMatrix(int dy, float* matrix)
 {
   setIdentity(matrix);
-  matrix[14] = float(dy) * translate_factor_ / cloud_ptr_-> getScalingFactor();
+  matrix[14] = float(dy) * translate_factor_ / cloud_ptr_->getScalingFactor();
 }
 
 void
-CloudTransformTool::getScaleMatrix (int dy, float* matrix) const
+CloudTransformTool::getScaleMatrix(int dy, float* matrix) const
 {
   setIdentity(matrix);
   float scale = dy > 0 ? scale_factor_ : 1.0 / scale_factor_;
-  for (unsigned int i = 0; i < MATRIX_SIZE-1; i+=MATRIX_SIZE_DIM+1)
+  for (unsigned int i = 0; i < MATRIX_SIZE - 1; i += MATRIX_SIZE_DIM + 1)
     matrix[i] = scale;
 }
-

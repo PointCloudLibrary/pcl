@@ -4,7 +4,7 @@
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010-2011, Willow Garage, Inc.
  *
- *  All rights reserved. 
+ *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -37,78 +37,75 @@
 
 #pragma once
 
-#include <vector>
-
 #include <pcl/recognition/region_xy.h>
 
-namespace pcl
-{
+#include <vector>
 
-  struct DenseQuantizedSingleModTemplate
+namespace pcl {
+
+struct DenseQuantizedSingleModTemplate {
+  std::vector<unsigned char> features;
+
+  void
+  serialize (std::ostream& stream) const
   {
-    std::vector<unsigned char> features;
-
-    void 
-    serialize (std::ostream & stream) const
-    {
-      const auto num_of_features = static_cast<std::size_t> (features.size ());
-      write (stream, num_of_features);
-      for (std::size_t feature_index = 0; feature_index < num_of_features; ++feature_index)
-      {
-        write (stream, features[feature_index]);
-      }
+    const auto num_of_features = static_cast<std::size_t>(features.size());
+    write(stream, num_of_features);
+    for (std::size_t feature_index = 0; feature_index < num_of_features;
+         ++feature_index) {
+      write(stream, features[feature_index]);
     }
+  }
 
-    void 
-    deserialize (std::istream & stream)
-    {
-      features.clear ();
-
-      std::size_t num_of_features;
-      read (stream, num_of_features);
-      features.resize (num_of_features);
-      for (std::size_t feature_index = 0; feature_index < num_of_features; ++feature_index)
-      {
-        read (stream, features[feature_index]);
-      }
-    }
-  };
-
-  struct DenseQuantizedMultiModTemplate
+  void
+  deserialize (std::istream& stream)
   {
-    std::vector<DenseQuantizedSingleModTemplate> modalities;
-    float response_factor;
+    features.clear();
 
-    RegionXY region;
+    std::size_t num_of_features;
+    read(stream, num_of_features);
+    features.resize(num_of_features);
+    for (std::size_t feature_index = 0; feature_index < num_of_features;
+         ++feature_index) {
+      read(stream, features[feature_index]);
+    }
+  }
+};
 
-    void 
-    serialize (std::ostream & stream) const
-    {
-      const auto num_of_modalities = static_cast<std::size_t> (modalities.size ());
-      write (stream, num_of_modalities);
-      for (std::size_t modality_index = 0; modality_index < num_of_modalities; ++modality_index)
-      {
-        modalities[modality_index].serialize (stream);
-      }
+struct DenseQuantizedMultiModTemplate {
+  std::vector<DenseQuantizedSingleModTemplate> modalities;
+  float response_factor;
 
-      region.serialize (stream);
+  RegionXY region;
+
+  void
+  serialize (std::ostream& stream) const
+  {
+    const auto num_of_modalities = static_cast<std::size_t>(modalities.size());
+    write(stream, num_of_modalities);
+    for (std::size_t modality_index = 0; modality_index < num_of_modalities;
+         ++modality_index) {
+      modalities[modality_index].serialize(stream);
     }
 
-    void 
-    deserialize (std::istream & stream)
-    {
-      modalities.clear ();
+    region.serialize(stream);
+  }
 
-      std::size_t num_of_modalities;
-      read (stream, num_of_modalities);
-      modalities.resize (num_of_modalities);
-      for (std::size_t modality_index = 0; modality_index < num_of_modalities; ++modality_index)
-      {
-        modalities[modality_index].deserialize (stream);
-      }
+  void
+  deserialize (std::istream& stream)
+  {
+    modalities.clear();
 
-      region.deserialize (stream);
+    std::size_t num_of_modalities;
+    read(stream, num_of_modalities);
+    modalities.resize(num_of_modalities);
+    for (std::size_t modality_index = 0; modality_index < num_of_modalities;
+         ++modality_index) {
+      modalities[modality_index].deserialize(stream);
     }
-  };
 
-}
+    region.deserialize(stream);
+  }
+};
+
+} // namespace pcl

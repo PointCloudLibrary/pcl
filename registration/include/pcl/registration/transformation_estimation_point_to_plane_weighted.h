@@ -125,9 +125,9 @@ public:
    * \note Uses the weights given by setWeights.
    */
   inline void
-  estimateRigidTransformation(const pcl::PointCloud<PointSource>& cloud_src,
-                              const pcl::PointCloud<PointTarget>& cloud_tgt,
-                              Matrix4& transformation_matrix) const;
+  estimateRigidTransformation (const pcl::PointCloud<PointSource>& cloud_src,
+                               const pcl::PointCloud<PointTarget>& cloud_tgt,
+                               Matrix4& transformation_matrix) const;
 
   /** \brief Estimate a rigid rotation transformation between a source and a target
    * point cloud using LM. \param[in] cloud_src the source point cloud dataset
@@ -138,10 +138,10 @@ public:
    * \note Uses the weights given by setWeights.
    */
   inline void
-  estimateRigidTransformation(const pcl::PointCloud<PointSource>& cloud_src,
-                              const pcl::Indices& indices_src,
-                              const pcl::PointCloud<PointTarget>& cloud_tgt,
-                              Matrix4& transformation_matrix) const;
+  estimateRigidTransformation (const pcl::PointCloud<PointSource>& cloud_src,
+                               const pcl::Indices& indices_src,
+                               const pcl::PointCloud<PointTarget>& cloud_tgt,
+                               Matrix4& transformation_matrix) const;
 
   /** \brief Estimate a rigid rotation transformation between a source and a target
    * point cloud using LM. \param[in] cloud_src the source point cloud dataset
@@ -154,11 +154,11 @@ public:
    * \note Uses the weights given by setWeights.
    */
   void
-  estimateRigidTransformation(const pcl::PointCloud<PointSource>& cloud_src,
-                              const pcl::Indices& indices_src,
-                              const pcl::PointCloud<PointTarget>& cloud_tgt,
-                              const pcl::Indices& indices_tgt,
-                              Matrix4& transformation_matrix) const;
+  estimateRigidTransformation (const pcl::PointCloud<PointSource>& cloud_src,
+                               const pcl::Indices& indices_src,
+                               const pcl::PointCloud<PointTarget>& cloud_tgt,
+                               const pcl::Indices& indices_tgt,
+                               Matrix4& transformation_matrix) const;
 
   /** \brief Estimate a rigid rotation transformation between a source and a target
    * point cloud using LM. \param[in] cloud_src the source point cloud dataset
@@ -168,13 +168,13 @@ public:
    * \note Uses the weights given by setWeights.
    */
   void
-  estimateRigidTransformation(const pcl::PointCloud<PointSource>& cloud_src,
-                              const pcl::PointCloud<PointTarget>& cloud_tgt,
-                              const pcl::Correspondences& correspondences,
-                              Matrix4& transformation_matrix) const;
+  estimateRigidTransformation (const pcl::PointCloud<PointSource>& cloud_src,
+                               const pcl::PointCloud<PointTarget>& cloud_tgt,
+                               const pcl::Correspondences& correspondences,
+                               Matrix4& transformation_matrix) const;
 
   inline void
-  setWeights(const std::vector<double>& weights)
+  setWeights (const std::vector<double>& weights)
   {
     correspondence_weights_ = weights;
   }
@@ -182,7 +182,7 @@ public:
   /// use the weights given in the pcl::CorrespondencesPtr for one of the
   /// estimateTransformation (...) methods
   inline void
-  setUseCorrespondenceWeights(bool use_correspondence_weights)
+  setUseCorrespondenceWeights (bool use_correspondence_weights)
   {
     use_correspondence_weights_ = use_correspondence_weights;
   }
@@ -191,7 +191,7 @@ public:
    * \param[in] warp_fcn a shared pointer to an object that warps points
    */
   void
-  setWarpFunction(
+  setWarpFunction (
       const typename WarpPointRigid<PointSource, PointTarget, MatScalar>::Ptr& warp_fcn)
   {
     warp_point_ = warp_fcn;
@@ -244,7 +244,7 @@ protected:
 
     /** \brief Get the number of values. */
     int
-    values() const
+    values () const
     {
       return (m_data_points_);
     }

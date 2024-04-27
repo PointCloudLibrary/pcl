@@ -37,278 +37,294 @@
 #include <pcl/pcl_config.h>
 
 // needed for the grabber interface / observers
-#include <map>
-#include <memory>
-#include <iostream>
-#include <string>
-#include <typeinfo>
-#include <tuple>
-#include <vector>
-#include <sstream>
-#include <pcl/pcl_macros.h>
 #include <pcl/exceptions.h>
+#include <pcl/pcl_macros.h>
+
 #include <boost/signals2.hpp> // for connection, signal, ...
 
-namespace pcl
-{
+#include <iostream>
+#include <map>
+#include <memory>
+#include <sstream>
+#include <string>
+#include <tuple>
+#include <typeinfo>
+#include <vector>
 
-  /** \brief Grabber interface for PCL 1.x device drivers
-    * \author Suat Gedikli <gedikli@willowgarage.com>
-    * \ingroup io
-    */
-  class PCL_EXPORTS Grabber
-  {
-    public:
-      /**
-       * \brief Default ctor
-       */
-      Grabber() = default;
+namespace pcl {
 
-      /**
-       * \brief No copy ctor since Grabber can't be copied
-       */
-      Grabber(const Grabber&) = delete;
+/** \brief Grabber interface for PCL 1.x device drivers
+ * \author Suat Gedikli <gedikli@willowgarage.com>
+ * \ingroup io
+ */
+class PCL_EXPORTS Grabber {
+public:
+  /**
+   * \brief Default ctor
+   */
+  Grabber() = default;
 
-      /**
-       * \brief No copy assign operator since Grabber can't be copied
-       */
-      Grabber& operator=(const Grabber&) = delete;
+  /**
+   * \brief No copy ctor since Grabber can't be copied
+   */
+  Grabber(const Grabber&) = delete;
 
-      /**
-       * \brief Move ctor
-       */
-      Grabber(Grabber&&) = default;
+  /**
+   * \brief No copy assign operator since Grabber can't be copied
+   */
+  Grabber&
+  operator=(const Grabber&) = delete;
 
-      /**
-       * \brief Move assign operator
-       */
-      Grabber& operator=(Grabber&&) = default;
+  /**
+   * \brief Move ctor
+   */
+  Grabber(Grabber&&) = default;
 
-      /** \brief virtual destructor. */
-      virtual inline ~Grabber () noexcept = default;
+  /**
+   * \brief Move assign operator
+   */
+  Grabber&
+  operator=(Grabber&&) = default;
 
-      /** \brief registers a callback function/method to a signal with the corresponding signature
-        * \param[in] callback: the callback function/method
-        * \return Connection object, that can be used to disconnect the callback method from the signal again.
-        */
-      template<typename T> boost::signals2::connection
-      registerCallback (const std::function<T>& callback);
+  /** \brief virtual destructor. */
+  virtual inline ~Grabber() noexcept = default;
 
-      /** \brief indicates whether a signal with given parameter-type exists or not
-        * \return true if signal exists, false otherwise
-        */
-      template<typename T> bool
-      providesCallback () const noexcept;
+  /** \brief registers a callback function/method to a signal with the corresponding
+   * signature \param[in] callback: the callback function/method \return Connection
+   * object, that can be used to disconnect the callback method from the signal again.
+   */
+  template <typename T>
+  boost::signals2::connection
+  registerCallback (const std::function<T>& callback);
 
-      /** \brief For devices that are streaming, the streams are started by calling this method.
-        *        Trigger-based devices, just trigger the device once for each call of start.
-        */
-      virtual void
-      start () = 0;
-
-      /** \brief For devices that are streaming, the streams are stopped.
-        *        This method has no effect for triggered devices.
-        */
-      virtual void
-      stop () = 0;
-
-      /** \brief For devices that are streaming, stopped streams are started and running stream are stopped.
-        *        For triggered devices, the behavior is not defined.
-        * \return true if grabber is running / streaming. False otherwise.
-        */
-      inline bool
-      toggle ();
-
-      /** \brief returns the name of the concrete subclass.
-        * \return the name of the concrete driver.
-        */
-      virtual std::string
-      getName () const = 0;
-
-      /** \brief Indicates whether the grabber is streaming or not. This value is not defined for triggered devices.
-        * \return true if grabber is running / streaming. False otherwise.
-        */
-      virtual bool
-      isRunning () const = 0;
-
-      /** \brief returns fps. 0 if trigger based. */
-      virtual float
-      getFramesPerSecond () const = 0;
-
-    protected:
-
-      virtual void
-      signalsChanged () { }
-
-      template<typename T> boost::signals2::signal<T>*
-      find_signal () const noexcept;
-
-      template<typename T> int
-      num_slots () const noexcept;
-
-      template<typename T> void
-      disconnect_all_slots ();
-
-      template<typename T> void
-      block_signal ();
-
-      template<typename T> void
-      unblock_signal ();
-
-      inline void
-      block_signals ();
-
-      inline void
-      unblock_signals ();
-
-      template<typename T> boost::signals2::signal<T>*
-      createSignal ();
-
-      std::map<std::string, std::unique_ptr<boost::signals2::signal_base>> signals_;
-      std::map<std::string, std::vector<boost::signals2::connection> > connections_;
-      std::map<std::string, std::vector<boost::signals2::shared_connection_block> > shared_connections_;
-  } ;
-
+  /** \brief indicates whether a signal with given parameter-type exists or not
+   * \return true if signal exists, false otherwise
+   */
+  template <typename T>
   bool
-  Grabber::toggle ()
-  {
-    if (isRunning ())
-    {
-      stop ();
-    } else
-    {
-      start ();
-    }
-    return isRunning ();
+  providesCallback () const noexcept;
+
+  /** \brief For devices that are streaming, the streams are started by calling this
+   * method. Trigger-based devices, just trigger the device once for each call of start.
+   */
+  virtual void
+  start () = 0;
+
+  /** \brief For devices that are streaming, the streams are stopped.
+   *        This method has no effect for triggered devices.
+   */
+  virtual void
+  stop () = 0;
+
+  /** \brief For devices that are streaming, stopped streams are started and running
+   * stream are stopped. For triggered devices, the behavior is not defined. \return
+   * true if grabber is running / streaming. False otherwise.
+   */
+  inline bool
+  toggle ();
+
+  /** \brief returns the name of the concrete subclass.
+   * \return the name of the concrete driver.
+   */
+  virtual std::string
+  getName () const = 0;
+
+  /** \brief Indicates whether the grabber is streaming or not. This value is not
+   * defined for triggered devices. \return true if grabber is running / streaming.
+   * False otherwise.
+   */
+  virtual bool
+  isRunning () const = 0;
+
+  /** \brief returns fps. 0 if trigger based. */
+  virtual float
+  getFramesPerSecond () const = 0;
+
+protected:
+  virtual void
+  signalsChanged ()
+  {}
+
+  template <typename T>
+  boost::signals2::signal<T>*
+  find_signal () const noexcept;
+
+  template <typename T>
+  int
+  num_slots () const noexcept;
+
+  template <typename T>
+  void
+  disconnect_all_slots ();
+
+  template <typename T>
+  void
+  block_signal ();
+
+  template <typename T>
+  void
+  unblock_signal ();
+
+  inline void
+  block_signals ();
+
+  inline void
+  unblock_signals ();
+
+  template <typename T>
+  boost::signals2::signal<T>*
+  createSignal ();
+
+  std::map<std::string, std::unique_ptr<boost::signals2::signal_base>> signals_;
+  std::map<std::string, std::vector<boost::signals2::connection>> connections_;
+  std::map<std::string, std::vector<boost::signals2::shared_connection_block>>
+      shared_connections_;
+};
+
+bool
+Grabber::toggle()
+{
+  if (isRunning()) {
+    stop();
   }
+  else {
+    start();
+  }
+  return isRunning();
+}
 
-  template<typename T> boost::signals2::signal<T>*
-  Grabber::find_signal () const noexcept
-  {
-    using Signal = boost::signals2::signal<T>;
+template <typename T>
+boost::signals2::signal<T>*
+Grabber::find_signal() const noexcept
+{
+  using Signal = boost::signals2::signal<T>;
 
-    const auto signal_it = signals_.find (typeid (T).name ());
-    if (signal_it != signals_.end ())
-    {
-      return (static_cast<Signal*> (signal_it->second.get ()));
-    }
+  const auto signal_it = signals_.find(typeid(T).name());
+  if (signal_it != signals_.end()) {
+    return (static_cast<Signal*>(signal_it->second.get()));
+  }
+  return nullptr;
+}
+
+template <typename T>
+void
+Grabber::disconnect_all_slots()
+{
+  const auto signal = find_signal<T>();
+  if (signal != nullptr) {
+    signal->disconnect_all_slots();
+  }
+}
+
+template <typename T>
+void
+Grabber::block_signal()
+{
+  if (connections_.find(typeid(T).name()) != connections_.end())
+    for (auto& connection : shared_connections_[typeid(T).name()])
+      connection.block();
+}
+
+template <typename T>
+void
+Grabber::unblock_signal()
+{
+  if (connections_.find(typeid(T).name()) != connections_.end())
+    for (auto& connection : shared_connections_[typeid(T).name()])
+      connection.unblock();
+}
+
+void
+Grabber::block_signals()
+{
+  for (const auto& signal : signals_)
+    for (auto& connection : shared_connections_[signal.first])
+      connection.block();
+}
+
+void
+Grabber::unblock_signals()
+{
+  for (const auto& signal : signals_)
+    for (auto& connection : shared_connections_[signal.first])
+      connection.unblock();
+}
+
+template <typename T>
+int
+Grabber::num_slots() const noexcept
+{
+  const auto signal = find_signal<T>();
+  if (signal != nullptr) {
+    return static_cast<int>(signal->num_slots());
+  }
+  return 0;
+}
+
+template <typename T>
+boost::signals2::signal<T>*
+Grabber::createSignal()
+{
+  using Signal = boost::signals2::signal<T>;
+  using Base = boost::signals2::signal_base;
+  // DefferedPtr serves 2 purposes:
+  // * allows MSVC to copy it around, can't do that with unique_ptr<T>
+  // * performs dynamic allocation only when required. If the key is found, this
+  //   struct is a no-op, otherwise it allocates when implicit conversion operator
+  //   is called inside emplace/try_emplace
+  struct DefferedPtr {
+    operator std::unique_ptr<Base>() const { return std::make_unique<Signal>(); }
+  };
+  // TODO: remove later for C++17 features: structured bindings and try_emplace
+  std::string signame{typeid(T).name()};
+#ifdef __cpp_structured_bindings
+  const auto [iterator, success] =
+#else
+  typename decltype(signals_)::const_iterator iterator;
+  bool success;
+  std::tie(iterator, success) =
+#endif
+
+#ifdef __cpp_lib_map_try_emplace
+      signals_.try_emplace(
+#else
+      signals_.emplace(
+#endif
+          signame, DefferedPtr());
+  if (!success) {
     return nullptr;
   }
+  return static_cast<Signal*>(iterator->second.get());
+}
 
-  template<typename T> void
-  Grabber::disconnect_all_slots ()
-  {
-    const auto signal = find_signal<T> ();
-    if (signal != nullptr)
-    {
-      signal->disconnect_all_slots ();
-    }
+template <typename T>
+boost::signals2::connection
+Grabber::registerCallback(const std::function<T>& callback)
+{
+  const auto signal = find_signal<T>();
+  if (signal == nullptr) {
+    std::stringstream sstream;
+
+    sstream << "no callback for type:" << typeid(T).name();
+
+    PCL_THROW_EXCEPTION(pcl::IOException, "[" << getName() << "] " << sstream.str());
+    // return (boost::signals2::connection ());
   }
+  boost::signals2::connection ret = signal->connect(callback);
 
-  template<typename T> void
-  Grabber::block_signal ()
-  {
-    if (connections_.find (typeid (T).name ()) != connections_.end ())
-      for (auto &connection : shared_connections_[typeid (T).name ()])
-        connection.block ();
-  }
+  connections_[typeid(T).name()].push_back(ret);
+  shared_connections_[typeid(T).name()].push_back(
+      boost::signals2::shared_connection_block(connections_[typeid(T).name()].back(),
+                                               false));
+  signalsChanged();
+  return (ret);
+}
 
-  template<typename T> void
-  Grabber::unblock_signal ()
-  {
-    if (connections_.find (typeid (T).name ()) != connections_.end ())
-      for (auto &connection : shared_connections_[typeid (T).name ()])
-        connection.unblock ();
-  }
+template <typename T>
+bool
+Grabber::providesCallback() const noexcept
+{
+  return find_signal<T>();
+}
 
-  void
-  Grabber::block_signals ()
-  {
-    for (const auto &signal : signals_)
-      for (auto &connection : shared_connections_[signal.first])
-        connection.block ();
-  }
-
-  void
-  Grabber::unblock_signals ()
-  {
-    for (const auto &signal : signals_)
-      for (auto &connection : shared_connections_[signal.first])
-        connection.unblock ();
-  }
-
-  template<typename T> int
-  Grabber::num_slots () const noexcept
-  {
-    const auto signal = find_signal<T> ();
-    if (signal != nullptr)
-    {
-      return static_cast<int> (signal->num_slots ());
-    }
-    return 0;
-  }
-
-  template<typename T> boost::signals2::signal<T>*
-  Grabber::createSignal ()
-  {
-    using Signal = boost::signals2::signal<T>;
-    using Base = boost::signals2::signal_base;
-    // DefferedPtr serves 2 purposes:
-    // * allows MSVC to copy it around, can't do that with unique_ptr<T>
-    // * performs dynamic allocation only when required. If the key is found, this
-    //   struct is a no-op, otherwise it allocates when implicit conversion operator
-    //   is called inside emplace/try_emplace
-    struct DefferedPtr {
-      operator std::unique_ptr<Base>() const { return std::make_unique<Signal>(); }
-    };
-    // TODO: remove later for C++17 features: structured bindings and try_emplace
-    std::string signame{typeid (T).name ()};
-    #ifdef __cpp_structured_bindings
-      const auto [iterator, success] =
-    #else
-      typename decltype(signals_)::const_iterator iterator;
-      bool success;
-      std::tie (iterator, success) =
-    #endif
-
-    #ifdef __cpp_lib_map_try_emplace
-      signals_.try_emplace (
-    #else
-      signals_.emplace (
-    #endif
-            signame, DefferedPtr ());
-    if (!success)
-    {
-      return nullptr;
-    }
-    return static_cast<Signal*> (iterator->second.get ());
-  }
-
-  template<typename T> boost::signals2::connection
-  Grabber::registerCallback (const std::function<T> & callback)
-  {
-    const auto signal = find_signal<T> ();
-    if (signal == nullptr)
-    {
-      std::stringstream sstream;
-
-      sstream << "no callback for type:" << typeid (T).name ();
-
-      PCL_THROW_EXCEPTION (pcl::IOException, "[" << getName () << "] " << sstream.str ());
-      //return (boost::signals2::connection ());
-    }
-    boost::signals2::connection ret = signal->connect (callback);
-
-    connections_[typeid (T).name ()].push_back (ret);
-    shared_connections_[typeid (T).name ()].push_back (boost::signals2::shared_connection_block (connections_[typeid (T).name ()].back (), false));
-    signalsChanged ();
-    return (ret);
-  }
-
-  template<typename T> bool
-  Grabber::providesCallback () const noexcept
-  {
-    return find_signal<T> ();
-  }
-
-} // namespace
+} // namespace pcl

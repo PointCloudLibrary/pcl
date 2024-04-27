@@ -40,152 +40,179 @@
 
 #pragma once
 
-#include <pcl/point_types.h>
 #include <pcl/features/feature.h>
+#include <pcl/point_types.h>
 
-namespace pcl
-{
-  /** \brief UniqueShapeContext implements the Unique Shape Context Descriptor
-    * described here:
-    *
-    *   - F. Tombari, S. Salti, L. Di Stefano,
-    *     "Unique Shape Context for 3D data description",
-    *     International Workshop on 3D Object Retrieval (3DOR 10) -
-    *     in conjunction with ACM Multimedia 2010
-    *
-    * The suggested PointOutT is pcl::UniqueShapeContext1960
-    *
-    * \author Alessandro Franchi, Federico Tombari, Samuele Salti (original code)
-    * \author Nizar Sallem (port to PCL)
-    * \ingroup features
-    */
-  template <typename PointInT, typename PointOutT = pcl::UniqueShapeContext1960, typename PointRFT = pcl::ReferenceFrame>
-  class UniqueShapeContext : public Feature<PointInT, PointOutT>,
-                             public FeatureWithLocalReferenceFrames<PointInT, PointRFT>
+namespace pcl {
+/** \brief UniqueShapeContext implements the Unique Shape Context Descriptor
+ * described here:
+ *
+ *   - F. Tombari, S. Salti, L. Di Stefano,
+ *     "Unique Shape Context for 3D data description",
+ *     International Workshop on 3D Object Retrieval (3DOR 10) -
+ *     in conjunction with ACM Multimedia 2010
+ *
+ * The suggested PointOutT is pcl::UniqueShapeContext1960
+ *
+ * \author Alessandro Franchi, Federico Tombari, Samuele Salti (original code)
+ * \author Nizar Sallem (port to PCL)
+ * \ingroup features
+ */
+template <typename PointInT,
+          typename PointOutT = pcl::UniqueShapeContext1960,
+          typename PointRFT = pcl::ReferenceFrame>
+class UniqueShapeContext : public Feature<PointInT, PointOutT>,
+                           public FeatureWithLocalReferenceFrames<PointInT, PointRFT> {
+public:
+  using Feature<PointInT, PointOutT>::feature_name_;
+  using Feature<PointInT, PointOutT>::getClassName;
+  using Feature<PointInT, PointOutT>::indices_;
+  using Feature<PointInT, PointOutT>::search_parameter_;
+  using Feature<PointInT, PointOutT>::search_radius_;
+  using Feature<PointInT, PointOutT>::surface_;
+  using Feature<PointInT, PointOutT>::fake_surface_;
+  using Feature<PointInT, PointOutT>::input_;
+  using Feature<PointInT, PointOutT>::searchForNeighbors;
+  using FeatureWithLocalReferenceFrames<PointInT, PointRFT>::frames_;
+
+  using PointCloudOut = typename Feature<PointInT, PointOutT>::PointCloudOut;
+  using PointCloudIn = typename Feature<PointInT, PointOutT>::PointCloudIn;
+  using Ptr = shared_ptr<UniqueShapeContext<PointInT, PointOutT, PointRFT>>;
+  using ConstPtr = shared_ptr<const UniqueShapeContext<PointInT, PointOutT, PointRFT>>;
+
+  /** \brief Constructor. */
+  UniqueShapeContext()
+  : radii_interval_(0), theta_divisions_(0), phi_divisions_(0), volume_lut_(0)
   {
-    public:
-      using Feature<PointInT, PointOutT>::feature_name_;
-      using Feature<PointInT, PointOutT>::getClassName;
-      using Feature<PointInT, PointOutT>::indices_;
-      using Feature<PointInT, PointOutT>::search_parameter_;
-      using Feature<PointInT, PointOutT>::search_radius_;
-      using Feature<PointInT, PointOutT>::surface_;
-      using Feature<PointInT, PointOutT>::fake_surface_;
-      using Feature<PointInT, PointOutT>::input_;
-      using Feature<PointInT, PointOutT>::searchForNeighbors;
-      using FeatureWithLocalReferenceFrames<PointInT, PointRFT>::frames_;
+    feature_name_ = "UniqueShapeContext";
+    search_radius_ = 2.0;
+  }
 
-      using PointCloudOut = typename Feature<PointInT, PointOutT>::PointCloudOut;
-      using PointCloudIn = typename Feature<PointInT, PointOutT>::PointCloudIn;
-      using Ptr = shared_ptr<UniqueShapeContext<PointInT, PointOutT, PointRFT> >;
-      using ConstPtr = shared_ptr<const UniqueShapeContext<PointInT, PointOutT, PointRFT> >;
+  ~UniqueShapeContext() override = default;
 
+  /** \return The number of bins along the azimuth. */
+  inline std::size_t
+  getAzimuthBins () const
+  {
+    return (azimuth_bins_);
+  }
 
-      /** \brief Constructor. */
-      UniqueShapeContext () :
-        radii_interval_(0), theta_divisions_(0), phi_divisions_(0), volume_lut_(0)
-      {
-        feature_name_ = "UniqueShapeContext";
-        search_radius_ = 2.0;
-      }
+  /** \return The number of bins along the elevation */
+  inline std::size_t
+  getElevationBins () const
+  {
+    return (elevation_bins_);
+  }
 
-      ~UniqueShapeContext() override = default;
+  /** \return The number of bins along the radii direction. */
+  inline std::size_t
+  getRadiusBins () const
+  {
+    return (radius_bins_);
+  }
 
-      /** \return The number of bins along the azimuth. */
-      inline std::size_t
-      getAzimuthBins () const { return (azimuth_bins_); }
+  /** The minimal radius value for the search sphere (rmin) in the original paper
+   * \param[in] radius the desired minimal radius
+   */
+  inline void
+  setMinimalRadius (double radius)
+  {
+    min_radius_ = radius;
+  }
 
-      /** \return The number of bins along the elevation */
-      inline std::size_t
-      getElevationBins () const { return (elevation_bins_); }
+  /** \return The minimal sphere radius. */
+  inline double
+  getMinimalRadius () const
+  {
+    return (min_radius_);
+  }
 
-      /** \return The number of bins along the radii direction. */
-      inline std::size_t
-      getRadiusBins () const { return (radius_bins_); }
+  /** This radius is used to compute local point density
+   * density = number of points within this radius
+   * \param[in] radius Value of the point density search radius
+   */
+  inline void
+  setPointDensityRadius (double radius)
+  {
+    point_density_radius_ = radius;
+  }
 
-      /** The minimal radius value for the search sphere (rmin) in the original paper
-        * \param[in] radius the desired minimal radius
-        */
-      inline void
-      setMinimalRadius (double radius) { min_radius_ = radius; }
+  /** \return The point density search radius. */
+  inline double
+  getPointDensityRadius () const
+  {
+    return (point_density_radius_);
+  }
 
-      /** \return The minimal sphere radius. */
-      inline double
-      getMinimalRadius () const { return (min_radius_); }
+  /** Set the local RF radius value
+   * \param[in] radius the desired local RF radius
+   */
+  inline void
+  setLocalRadius (double radius)
+  {
+    local_radius_ = radius;
+  }
 
-      /** This radius is used to compute local point density
-        * density = number of points within this radius
-        * \param[in] radius Value of the point density search radius
-        */
-      inline void
-      setPointDensityRadius (double radius) { point_density_radius_ = radius; }
+  /** \return The local RF radius. */
+  inline double
+  getLocalRadius () const
+  {
+    return (local_radius_);
+  }
 
-      /** \return The point density search radius. */
-      inline double
-      getPointDensityRadius () const { return (point_density_radius_); }
+protected:
+  /** Compute 3D shape context feature descriptor
+   * \param[in] index point index in input_
+   * \param[out] desc descriptor to compute
+   */
+  void
+  computePointDescriptor (std::size_t index, std::vector<float>& desc);
 
-      /** Set the local RF radius value
-        * \param[in] radius the desired local RF radius
-        */
-      inline void
-      setLocalRadius (double radius) { local_radius_ = radius; }
+  /** \brief Initialize computation by allocating all the intervals and the volume
+   * lookup table. */
+  bool
+  initCompute () override;
 
-      /** \return The local RF radius. */
-      inline double
-      getLocalRadius () const { return (local_radius_); }
+  /** \brief The actual feature computation.
+   * \param[out] output the resultant features
+   */
+  void
+  computeFeature (PointCloudOut& output) override;
 
-    protected:
-      /** Compute 3D shape context feature descriptor
-        * \param[in] index point index in input_
-        * \param[out] desc descriptor to compute
-        */
-      void
-      computePointDescriptor (std::size_t index, std::vector<float> &desc);
+  /** \brief values of the radii interval. */
+  std::vector<float> radii_interval_;
 
-      /** \brief Initialize computation by allocating all the intervals and the volume lookup table. */
-      bool
-      initCompute () override;
+  /** \brief Theta divisions interval. */
+  std::vector<float> theta_divisions_;
 
-      /** \brief The actual feature computation.
-        * \param[out] output the resultant features
-        */
-      void
-      computeFeature (PointCloudOut &output) override;
+  /** \brief Phi divisions interval. */
+  std::vector<float> phi_divisions_;
 
-      /** \brief values of the radii interval. */
-      std::vector<float> radii_interval_;
+  /** \brief Volumes look up table. */
+  std::vector<float> volume_lut_;
 
-      /** \brief Theta divisions interval. */
-      std::vector<float> theta_divisions_;
+  /** \brief Bins along the azimuth dimension. */
+  std::size_t azimuth_bins_{14};
 
-      /** \brief Phi divisions interval. */
-      std::vector<float> phi_divisions_;
+  /** \brief Bins along the elevation dimension. */
+  std::size_t elevation_bins_{14};
 
-      /** \brief Volumes look up table. */
-      std::vector<float> volume_lut_;
+  /** \brief Bins along the radius dimension. */
+  std::size_t radius_bins_{10};
 
-      /** \brief Bins along the azimuth dimension. */
-      std::size_t azimuth_bins_{14};
+  /** \brief Minimal radius value. */
+  double min_radius_{0.1};
 
-      /** \brief Bins along the elevation dimension. */
-      std::size_t elevation_bins_{14};
+  /** \brief Point density radius. */
+  double point_density_radius_{0.1};
 
-      /** \brief Bins along the radius dimension. */
-      std::size_t radius_bins_{10};
+  /** \brief Descriptor length. */
+  std::size_t descriptor_length_{};
 
-      /** \brief Minimal radius value. */
-      double min_radius_{0.1};
-
-      /** \brief Point density radius. */
-      double point_density_radius_{0.1};
-
-      /** \brief Descriptor length. */
-      std::size_t descriptor_length_{};
-
-      /** \brief Radius to compute local RF. */
-      double local_radius_{2.0};
-  };
-}
+  /** \brief Radius to compute local RF. */
+  double local_radius_{2.0};
+};
+} // namespace pcl
 
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/features/impl/usc.hpp>

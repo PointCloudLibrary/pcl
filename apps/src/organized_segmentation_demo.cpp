@@ -16,7 +16,7 @@
 #include <vtkRenderWindow.h>
 
 void
-displayPlanarRegions(
+displayPlanarRegions (
     std::vector<pcl::PlanarRegion<PointT>,
                 Eigen::aligned_allocator<pcl::PlanarRegion<PointT>>>& regions,
     const pcl::visualization::PCLVisualizer::Ptr& viewer)
@@ -50,8 +50,8 @@ displayPlanarRegions(
 }
 
 void
-displayEuclideanClusters(const pcl::PointCloud<PointT>::CloudVectorType& clusters,
-                         const pcl::visualization::PCLVisualizer::Ptr& viewer)
+displayEuclideanClusters (const pcl::PointCloud<PointT>::CloudVectorType& clusters,
+                          const pcl::visualization::PCLVisualizer::Ptr& viewer)
 {
   char name[1024];
   unsigned char red[6] = {255, 0, 0, 255, 255, 0};
@@ -74,9 +74,9 @@ displayEuclideanClusters(const pcl::PointCloud<PointT>::CloudVectorType& cluster
 }
 
 void
-displayCurvature(pcl::PointCloud<PointT>& cloud,
-                 pcl::PointCloud<pcl::Normal>& normals,
-                 const pcl::visualization::PCLVisualizer::Ptr& viewer)
+displayCurvature (pcl::PointCloud<PointT>& cloud,
+                  pcl::PointCloud<pcl::Normal>& normals,
+                  const pcl::visualization::PCLVisualizer::Ptr& viewer)
 {
   pcl::PointCloud<pcl::PointXYZRGBA> curvature_cloud = cloud;
   for (std::size_t i = 0; i < cloud.size(); i++) {
@@ -97,9 +97,9 @@ displayCurvature(pcl::PointCloud<PointT>& cloud,
 }
 
 void
-displayDistanceMap(pcl::PointCloud<PointT>& cloud,
-                   float* distance_map,
-                   const pcl::visualization::PCLVisualizer::Ptr& viewer)
+displayDistanceMap (pcl::PointCloud<PointT>& cloud,
+                    float* distance_map,
+                    const pcl::visualization::PCLVisualizer::Ptr& viewer)
 {
   pcl::PointCloud<pcl::PointXYZRGBA> distance_map_cloud = cloud;
   for (std::size_t i = 0; i < cloud.size(); i++) {
@@ -120,9 +120,9 @@ displayDistanceMap(pcl::PointCloud<PointT>& cloud,
 }
 
 void
-removePreviousDataFromScreen(std::size_t prev_models_size,
-                             std::size_t prev_clusters_size,
-                             const pcl::visualization::PCLVisualizer::Ptr& viewer)
+removePreviousDataFromScreen (std::size_t prev_models_size,
+                              std::size_t prev_clusters_size,
+                              const pcl::visualization::PCLVisualizer::Ptr& viewer)
 {
   char name[1024];
   for (std::size_t i = 0; i < prev_models_size; i++) {
@@ -140,8 +140,8 @@ removePreviousDataFromScreen(std::size_t prev_models_size,
 }
 
 bool
-compareClusterToRegion(pcl::PlanarRegion<PointT>& region,
-                       pcl::PointCloud<PointT>& cluster)
+compareClusterToRegion (pcl::PlanarRegion<PointT>& region,
+                        pcl::PointCloud<PointT>& cluster)
 {
   Eigen::Vector4f model = region.getCoefficients();
   pcl::PointCloud<PointT> poly;
@@ -158,9 +158,9 @@ compareClusterToRegion(pcl::PlanarRegion<PointT>& region,
 }
 
 bool
-comparePointToRegion(PointT& pt,
-                     pcl::ModelCoefficients& model,
-                     pcl::PointCloud<PointT>& poly)
+comparePointToRegion (PointT& pt,
+                      pcl::ModelCoefficients& model,
+                      pcl::PointCloud<PointT>& poly)
 {
   double ptp_dist = std::abs(model.values[0] * pt.x + model.values[1] * pt.y +
                              model.values[2] * pt.z + model.values[3]);
@@ -221,7 +221,7 @@ OrganizedSegmentationDemo::OrganizedSegmentationDemo(pcl::Grabber& grabber)
   vis_->getInteractorStyle()->setKeyboardModifier(
       pcl::visualization::INTERACTOR_KB_MOD_SHIFT);
 
-  std::function<void(const CloudConstPtr&)> f = [this](const CloudConstPtr& cloud) {
+  std::function<void(const CloudConstPtr&)> f = [this] (const CloudConstPtr& cloud) {
     cloud_cb(cloud);
   };
   boost::signals2::connection c = grabber_.registerCallback(f);
@@ -513,7 +513,7 @@ OrganizedSegmentationDemo::displayNormalsPressed()
 }
 
 int
-main(int argc, char** argv)
+main (int argc, char** argv)
 {
   QApplication app(argc, argv);
 

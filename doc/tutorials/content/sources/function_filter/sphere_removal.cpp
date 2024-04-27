@@ -5,7 +5,7 @@
 #include <iostream>
 
 int
-main()
+main ()
 {
   using XYZCloud = pcl::PointCloud<pcl::PointXYZ>;
   const auto cloud = pcl::make_shared<XYZCloud>();
@@ -25,7 +25,7 @@ main()
   const float radius = 2;
 
   pcl::experimental::FilterFunction<pcl::PointXYZ> filter;
-  filter = [=](const XYZCloud& cloud, pcl::index_t idx) {
+  filter = [=] (const XYZCloud& cloud, pcl::index_t idx) {
     return ((cloud[idx].getVector3fMap() - center).norm() >= radius);
   };
 

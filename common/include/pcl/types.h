@@ -45,97 +45,113 @@
 
 #include <pcl/pcl_config.h>
 #include <pcl/pcl_macros.h>
-#include <vector>
-
-#include <cstdint>
 
 #include <Eigen/Core>
 
-namespace pcl
-{
-  namespace detail {
-    /**
-     * \brief int_type::type refers to an integral type that satisfies template parameters
-     * \tparam Bits number of bits in the integral type
-     * \tparam Signed signed or unsigned nature of the type
-     */
-    template <std::size_t Bits, bool Signed = true>
-    struct int_type { using type = void; };
+#include <cstdint>
+#include <vector>
 
-    /**
-     * \brief helper type to use for `int_type::type`
-     * \see int_type
-     */
-    template <std::size_t Bits, bool Signed = true>
-    using int_type_t = typename int_type<Bits, Signed>::type;
+namespace pcl {
+namespace detail {
+/**
+ * \brief int_type::type refers to an integral type that satisfies template parameters
+ * \tparam Bits number of bits in the integral type
+ * \tparam Signed signed or unsigned nature of the type
+ */
+template <std::size_t Bits, bool Signed = true>
+struct int_type {
+  using type = void;
+};
 
-    template <>
-    struct int_type<8, true> { using type = std::int8_t; };
-    template <>
-    struct int_type<8, false> { using type = std::uint8_t; };
-    template <>
-    struct int_type<16, true> { using type = std::int16_t; };
-    template <>
-    struct int_type<16, false> { using type = std::uint16_t; };
-    template <>
-    struct int_type<32, true> { using type = std::int32_t; };
-    template <>
-    struct int_type<32, false> { using type = std::uint32_t; };
-    template <>
-    struct int_type<64, true> { using type = std::int64_t; };
-    template <>
-    struct int_type<64, false> { using type = std::uint64_t; };
+/**
+ * \brief helper type to use for `int_type::type`
+ * \see int_type
+ */
+template <std::size_t Bits, bool Signed = true>
+using int_type_t = typename int_type<Bits, Signed>::type;
 
-    /**
-     * \brief number of bits in PCL's index type
-     *
-     * Please use PCL_INDEX_SIZE when building PCL to choose a size best suited for your needs.
-     * PCL 1.12 will come with default 32
-     *
-     * PCL 1.11 has a default size = sizeof(int)
-     */
-    constexpr std::uint8_t index_type_size = PCL_INDEX_SIZE;
+template <>
+struct int_type<8, true> {
+  using type = std::int8_t;
+};
+template <>
+struct int_type<8, false> {
+  using type = std::uint8_t;
+};
+template <>
+struct int_type<16, true> {
+  using type = std::int16_t;
+};
+template <>
+struct int_type<16, false> {
+  using type = std::uint16_t;
+};
+template <>
+struct int_type<32, true> {
+  using type = std::int32_t;
+};
+template <>
+struct int_type<32, false> {
+  using type = std::uint32_t;
+};
+template <>
+struct int_type<64, true> {
+  using type = std::int64_t;
+};
+template <>
+struct int_type<64, false> {
+  using type = std::uint64_t;
+};
 
-    /**
-     * \brief signed/unsigned nature of PCL's index type
-     * Please use PCL_INDEX_SIGNED when building PCL to choose a type best suited for your needs.
-     * Default: signed
-     */
-    constexpr bool index_type_signed = PCL_INDEX_SIGNED;
-}  // namespace detail
+/**
+ * \brief number of bits in PCL's index type
+ *
+ * Please use PCL_INDEX_SIZE when building PCL to choose a size best suited for your
+ * needs. PCL 1.12 will come with default 32
+ *
+ * PCL 1.11 has a default size = sizeof(int)
+ */
+constexpr std::uint8_t index_type_size = PCL_INDEX_SIZE;
 
-  /**
-   * \brief Type used for an index in PCL
-   *
-   * Default index_t = int for PCL 1.11, std::int32_t for PCL >= 1.12
-   */
-  using index_t = detail::int_type_t<detail::index_type_size, detail::index_type_signed>;
-  static_assert(!std::is_void<index_t>::value, "`index_t` can't have type `void`");
+/**
+ * \brief signed/unsigned nature of PCL's index type
+ * Please use PCL_INDEX_SIGNED when building PCL to choose a type best suited for your
+ * needs. Default: signed
+ */
+constexpr bool index_type_signed = PCL_INDEX_SIGNED;
+} // namespace detail
 
-     /**
-   * \brief Type used for an unsigned index in PCL
-   *
-   * Unsigned index that mirrors the type of the index_t
-   */
-  using uindex_t = detail::int_type_t<detail::index_type_size, false>;
-  static_assert(!std::is_signed<uindex_t>::value, "`uindex_t` must be unsigned");
+/**
+ * \brief Type used for an index in PCL
+ *
+ * Default index_t = int for PCL 1.11, std::int32_t for PCL >= 1.12
+ */
+using index_t = detail::int_type_t<detail::index_type_size, detail::index_type_signed>;
+static_assert(!std::is_void<index_t>::value, "`index_t` can't have type `void`");
 
-  /**
-   * \brief Type used for indices in PCL
-   * \todo Remove with C++20
-   */
-  template <typename Allocator = std::allocator<index_t>>
-  using IndicesAllocator = std::vector<index_t, Allocator>;
+/**
+ * \brief Type used for an unsigned index in PCL
+ *
+ * Unsigned index that mirrors the type of the index_t
+ */
+using uindex_t = detail::int_type_t<detail::index_type_size, false>;
+static_assert(!std::is_signed<uindex_t>::value, "`uindex_t` must be unsigned");
 
-  /**
-   * \brief Type used for indices in PCL
-   */
-  using Indices = IndicesAllocator<>;
+/**
+ * \brief Type used for indices in PCL
+ * \todo Remove with C++20
+ */
+template <typename Allocator = std::allocator<index_t>>
+using IndicesAllocator = std::vector<index_t, Allocator>;
 
-  /**
-   * \brief Type used for aligned vector of Eigen objects in PCL
-   */
-  template <typename T>
-  using AlignedVector = std::vector<T, Eigen::aligned_allocator<T>>;
-}  // namespace pcl
+/**
+ * \brief Type used for indices in PCL
+ */
+using Indices = IndicesAllocator<>;
 
+/**
+ * \brief Type used for aligned vector of Eigen objects in PCL
+ */
+template <typename T>
+using AlignedVector = std::vector<T, Eigen::aligned_allocator<T>>;
+} // namespace pcl

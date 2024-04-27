@@ -8,14 +8,14 @@ are permitted provided that the following conditions are met:
 Redistributions of source code must retain the above copyright notice, this list of
 conditions and the following disclaimer. Redistributions in binary form must reproduce
 the above copyright notice, this list of conditions and the following disclaimer
-in the documentation and/or other materials provided with the distribution. 
+in the documentation and/or other materials provided with the distribution.
 
 Neither the name of the Johns Hopkins University nor the names of its contributors
 may be used to endorse or promote products derived from this software without specific
-prior written permission. 
+prior written permission.
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY
-EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO THE IMPLIED WARRANTIES 
+EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO THE IMPLIED WARRANTIES
 OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT
 SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
 INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED
@@ -31,72 +31,104 @@ DAMAGE.
 
 #include <vector>
 
-namespace pcl
-{
-  namespace poisson
-  {
+namespace pcl {
+namespace poisson {
 
-    template< int Degree >
-    class Polynomial{
-      public:
-        double coefficients[Degree+1];
+template <int Degree>
+class Polynomial {
+public:
+  double coefficients[Degree + 1];
 
-        Polynomial(void);
-        template<int Degree2>
-        Polynomial(const Polynomial<Degree2>& P);
-        double operator()( double t ) const;
-        double integral( double tMin , double tMax ) const;
+  Polynomial(void);
+  template <int Degree2>
+  Polynomial(const Polynomial<Degree2>& P);
+  double
+  operator()(double t) const;
+  double
+  integral (double tMin, double tMax) const;
 
-        int operator == (const Polynomial& p) const;
-        int operator != (const Polynomial& p) const;
-        int isZero(void) const;
-        void setZero(void);
+  int
+  operator==(const Polynomial& p) const;
+  int
+  operator!=(const Polynomial& p) const;
+  int
+  isZero (void) const;
+  void
+  setZero (void);
 
-        template<int Degree2>
-        Polynomial& operator  = (const Polynomial<Degree2> &p);
-        Polynomial& operator += (const Polynomial& p);
-        Polynomial& operator -= (const Polynomial& p);
-        Polynomial  operator -  (void) const;
-        Polynomial  operator +  (const Polynomial& p) const;
-        Polynomial  operator -  (const Polynomial& p) const;
-        template<int Degree2>
-        Polynomial<Degree+Degree2>  operator *  (const Polynomial<Degree2>& p) const;
+  template <int Degree2>
+  Polynomial&
+  operator=(const Polynomial<Degree2>& p);
+  Polynomial&
+  operator+=(const Polynomial& p);
+  Polynomial&
+  operator-=(const Polynomial& p);
+  Polynomial
+  operator-(void) const;
+  Polynomial
+  operator+(const Polynomial& p) const;
+  Polynomial
+  operator-(const Polynomial& p) const;
+  template <int Degree2>
+  Polynomial<Degree + Degree2>
+  operator*(const Polynomial<Degree2>& p) const;
 
-        Polynomial& operator += ( double s );
-        Polynomial& operator -= ( double s );
-        Polynomial& operator *= ( double s );
-        Polynomial& operator /= ( double s );
-        Polynomial  operator +  ( double s ) const;
-        Polynomial  operator -  ( double s ) const;
-        Polynomial  operator *  ( double s ) const;
-        Polynomial  operator /  ( double s ) const;
+  Polynomial&
+  operator+=(double s);
+  Polynomial&
+  operator-=(double s);
+  Polynomial&
+  operator*=(double s);
+  Polynomial&
+  operator/=(double s);
+  Polynomial
+  operator+(double s) const;
+  Polynomial
+  operator-(double s) const;
+  Polynomial
+  operator*(double s) const;
+  Polynomial
+  operator/(double s) const;
 
-        Polynomial scale( double s ) const;
-        Polynomial shift( double t ) const;
+  Polynomial
+  scale (double s) const;
+  Polynomial
+  shift (double t) const;
 
-        Polynomial<Degree-1> derivative(void) const;
-        Polynomial<Degree+1> integral(void) const;
+  Polynomial<Degree - 1>
+  derivative (void) const;
+  Polynomial<Degree + 1>
+  integral (void) const;
 
-        void printnl(void) const;
+  void
+  printnl (void) const;
 
-        Polynomial& addScaled(const Polynomial& p,double scale);
+  Polynomial&
+  addScaled (const Polynomial& p, double scale);
 
-        static void Negate(const Polynomial& in,Polynomial& out);
-        static void Subtract(const Polynomial& p1,const Polynomial& p2,Polynomial& q);
-        static void Scale(const Polynomial& p,double w,Polynomial& q);
-        static void AddScaled(const Polynomial& p1,double w1,const Polynomial& p2,double w2,Polynomial& q);
-        static void AddScaled(const Polynomial& p1,const Polynomial& p2,double w2,Polynomial& q);
-        static void AddScaled(const Polynomial& p1,double w1,const Polynomial& p2,Polynomial& q);
+  static void
+  Negate (const Polynomial& in, Polynomial& out);
+  static void
+  Subtract (const Polynomial& p1, const Polynomial& p2, Polynomial& q);
+  static void
+  Scale (const Polynomial& p, double w, Polynomial& q);
+  static void
+  AddScaled (
+      const Polynomial& p1, double w1, const Polynomial& p2, double w2, Polynomial& q);
+  static void
+  AddScaled (const Polynomial& p1, const Polynomial& p2, double w2, Polynomial& q);
+  static void
+  AddScaled (const Polynomial& p1, double w1, const Polynomial& p2, Polynomial& q);
 
-        void getSolutions(double c,std::vector<double>& roots,double EPS) const;
+  void
+  getSolutions (double c, std::vector<double>& roots, double EPS) const;
 
-        static Polynomial BSplineComponent( int i );
-    };
+  static Polynomial
+  BSplineComponent (int i);
+};
 
-
-  }
-}
-
+} // namespace poisson
+} // namespace pcl
 
 #include "polynomial.hpp"
 #endif // POLYNOMIAL_INCLUDED

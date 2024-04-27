@@ -38,256 +38,272 @@
 
 #pragma once
 
-#include <pcl/search/search.h>
 #include <pcl/octree/octree_search.h>
+#include <pcl/search/search.h>
 
-namespace pcl
-{
-  namespace search
+namespace pcl {
+namespace search {
+/** \brief @b search::Octree is a wrapper class which implements nearest neighbor search
+ * operations based on the pcl::octree::Octree structure.
+ *
+ * The octree pointcloud class needs to be initialized with its voxel
+ * resolution. Its bounding box is automatically adjusted according to the
+ * pointcloud dimension or it can be predefined. Note: The tree depth
+ * equates to the resolution and the bounding box dimensions of the
+ * octree.
+ *
+ * \note typename: PointT: type of point used in pointcloud
+ * \note typename: LeafT:  leaf node class (usuallt templated with integer indices
+ * values) \note typename: OctreeT: octree implementation ()
+ *
+ * \author Julius Kammerl
+ * \ingroup search
+ */
+template <typename PointT,
+          typename LeafTWrap = pcl::octree::OctreeContainerPointIndices,
+          typename BranchTWrap = pcl::octree::OctreeContainerEmpty,
+          typename OctreeT = pcl::octree::OctreeBase<LeafTWrap, BranchTWrap>>
+class Octree : public Search<PointT> {
+public:
+  // public typedefs
+  using Ptr = shared_ptr<pcl::search::Octree<PointT, LeafTWrap, BranchTWrap, OctreeT>>;
+  using ConstPtr =
+      shared_ptr<const pcl::search::Octree<PointT, LeafTWrap, BranchTWrap, OctreeT>>;
+
+  using PointCloud = pcl::PointCloud<PointT>;
+  using PointCloudPtr = typename PointCloud::Ptr;
+  using PointCloudConstPtr = typename PointCloud::ConstPtr;
+
+  // Boost shared pointers
+  using OctreePointCloudSearchPtr =
+      typename pcl::octree::OctreePointCloudSearch<PointT, LeafTWrap, BranchTWrap>::Ptr;
+  using OctreePointCloudSearchConstPtr = typename pcl::octree::
+      OctreePointCloudSearch<PointT, LeafTWrap, BranchTWrap>::ConstPtr;
+  OctreePointCloudSearchPtr tree_;
+
+  using pcl::search::Search<PointT>::input_;
+  using pcl::search::Search<PointT>::indices_;
+  using pcl::search::Search<PointT>::sorted_results_;
+
+  /** \brief Octree constructor.
+   * \param[in] resolution octree resolution at lowest octree level
+   */
+  Octree(const double resolution)
+  : Search<PointT>("Octree")
+  , tree_(new pcl::octree::OctreePointCloudSearch<PointT, LeafTWrap, BranchTWrap>(
+        resolution))
+  {}
+
+  /** \brief Empty Destructor. */
+
+  ~Octree() override = default;
+
+  /** \brief Provide a pointer to the input dataset.
+   * \param[in] cloud the const boost shared pointer to a PointCloud message
+   */
+  inline void
+  setInputCloud (const PointCloudConstPtr& cloud)
   {
-    /** \brief @b search::Octree is a wrapper class which implements nearest neighbor search operations based on the 
-      * pcl::octree::Octree structure. 
-      * 
-      * The octree pointcloud class needs to be initialized with its voxel
-      * resolution. Its bounding box is automatically adjusted according to the
-      * pointcloud dimension or it can be predefined. Note: The tree depth
-      * equates to the resolution and the bounding box dimensions of the
-      * octree.
-      *
-      * \note typename: PointT: type of point used in pointcloud
-      * \note typename: LeafT:  leaf node class (usuallt templated with integer indices values)
-      * \note typename: OctreeT: octree implementation ()
-      *
-      * \author Julius Kammerl
-      * \ingroup search
-      */
-    template<typename PointT,
-             typename LeafTWrap = pcl::octree::OctreeContainerPointIndices,
-             typename BranchTWrap = pcl::octree::OctreeContainerEmpty,
-             typename OctreeT = pcl::octree::OctreeBase<LeafTWrap, BranchTWrap > >
-    class Octree: public Search<PointT>
-    {
-      public:
-        // public typedefs
-        using Ptr = shared_ptr<pcl::search::Octree<PointT,LeafTWrap,BranchTWrap,OctreeT> >;
-        using ConstPtr = shared_ptr<const pcl::search::Octree<PointT,LeafTWrap,BranchTWrap,OctreeT> >;
-
-        using PointCloud = pcl::PointCloud<PointT>;
-        using PointCloudPtr = typename PointCloud::Ptr;
-        using PointCloudConstPtr = typename PointCloud::ConstPtr;
-
-        // Boost shared pointers
-        using OctreePointCloudSearchPtr = typename pcl::octree::OctreePointCloudSearch<PointT, LeafTWrap, BranchTWrap>::Ptr;
-        using OctreePointCloudSearchConstPtr = typename pcl::octree::OctreePointCloudSearch<PointT, LeafTWrap, BranchTWrap>::ConstPtr;
-        OctreePointCloudSearchPtr tree_;
-
-        using pcl::search::Search<PointT>::input_;
-        using pcl::search::Search<PointT>::indices_;
-        using pcl::search::Search<PointT>::sorted_results_;
-
-        /** \brief Octree constructor.
-          * \param[in] resolution octree resolution at lowest octree level
-          */
-        Octree (const double resolution)
-          : Search<PointT> ("Octree")
-          , tree_ (new pcl::octree::OctreePointCloudSearch<PointT, LeafTWrap, BranchTWrap> (resolution))
-        {
-        }
-
-        /** \brief Empty Destructor. */
-        
-        ~Octree () override = default;
-
-        /** \brief Provide a pointer to the input dataset.
-          * \param[in] cloud the const boost shared pointer to a PointCloud message
-          */
-        inline void
-        setInputCloud (const PointCloudConstPtr &cloud)
-        {
-          tree_->deleteTree ();
-          tree_->setInputCloud (cloud);
-          tree_->addPointsFromInputCloud ();
-          input_ = cloud;
-        }
-
-        /** \brief Provide a pointer to the input dataset.
-          * \param[in] cloud the const boost shared pointer to a PointCloud message
-          * \param[in] indices the point indices subset that is to be used from \a cloud 
-          */
-        inline bool
-        setInputCloud (const PointCloudConstPtr &cloud, const IndicesConstPtr& indices) override
-        {
-          tree_->deleteTree ();
-          tree_->setInputCloud (cloud, indices);
-          tree_->addPointsFromInputCloud ();
-          input_ = cloud;
-          indices_ = indices;
-          return true;
-        }
-
-        /** \brief Search for the k-nearest neighbors for the given query point.
-          * \param[in] cloud the point cloud data
-          * \param[in] index the index in \a cloud representing the query point
-          * \param[in] k the number of neighbors to search for
-          * \param[out] k_indices the resultant indices of the neighboring points (must be resized to \a k a priori!)
-          * \param[out] k_sqr_distances the resultant squared distances to the neighboring points (must be resized to \a k
-          * a priori!)
-          * \return number of neighbors found
-          */
-        inline int
-        nearestKSearch (const PointCloud &cloud, index_t index, int k, Indices &k_indices,
-                        std::vector<float> &k_sqr_distances) const override
-        {
-          return (tree_->nearestKSearch (cloud, index, k, k_indices, k_sqr_distances));
-        }
-
-        /** \brief Search for the k-nearest neighbors for the given query point.
-          * \param[in] point the given query point
-          * \param[in] k the number of neighbors to search for
-          * \param[out] k_indices the resultant indices of the neighboring points (must be resized to \a k a priori!)
-          * \param[out] k_sqr_distances the resultant squared distances to the neighboring points (must be resized to \a k
-          * a priori!)
-          * \return number of neighbors found
-          */
-        inline int
-        nearestKSearch (const PointT &point, int k, Indices &k_indices,
-                        std::vector<float> &k_sqr_distances) const override
-        {
-          return (tree_->nearestKSearch (point, k, k_indices, k_sqr_distances));
-        }
-
-        /** \brief Search for the k-nearest neighbors for the given query point (zero-copy).
-          *
-          * \param[in] index the index representing the query point in the
-          * dataset given by \a setInputCloud if indices were given in
-          * setInputCloud, index will be the position in the indices vector
-          * \param[in] k the number of neighbors to search for
-          * \param[out] k_indices the resultant indices of the neighboring points (must be resized to \a k a priori!)
-          * \param[out] k_sqr_distances the resultant squared distances to the neighboring points (must be resized to \a k
-          * a priori!)
-          * \return number of neighbors found
-          */
-        inline int
-        nearestKSearch (index_t index, int k, Indices &k_indices, std::vector<float> &k_sqr_distances) const override
-        {
-          return (tree_->nearestKSearch (index, k, k_indices, k_sqr_distances));
-        }
-
-        /** \brief search for all neighbors of query point that are within a given radius.
-         * \param cloud the point cloud data
-         * \param index the index in \a cloud representing the query point
-         * \param radius the radius of the sphere bounding all of p_q's neighbors
-         * \param k_indices the resultant indices of the neighboring points
-         * \param k_sqr_distances the resultant squared distances to the neighboring points
-         * \param max_nn if given, bounds the maximum returned neighbors to this value
-         * \return number of neighbors found in radius
-         */
-        inline int
-        radiusSearch (const PointCloud &cloud, 
-                      index_t index,
-                      double radius,
-                      Indices &k_indices,
-                      std::vector<float> &k_sqr_distances, 
-                      unsigned int max_nn = 0) const override
-        {
-          tree_->radiusSearch (cloud, index, radius, k_indices, k_sqr_distances, max_nn);
-          if (sorted_results_)
-            this->sortResults (k_indices, k_sqr_distances);
-          return (static_cast<int> (k_indices.size ()));
-        }
-
-        /** \brief search for all neighbors of query point that are within a given radius.
-         * \param p_q the given query point
-         * \param radius the radius of the sphere bounding all of p_q's neighbors
-         * \param k_indices the resultant indices of the neighboring points
-         * \param k_sqr_distances the resultant squared distances to the neighboring points
-         * \param max_nn if given, bounds the maximum returned neighbors to this value
-         * \return number of neighbors found in radius
-         */
-        inline int
-        radiusSearch (const PointT &p_q, 
-                      double radius, 
-                      Indices &k_indices,
-                      std::vector<float> &k_sqr_distances, 
-                      unsigned int max_nn = 0) const override
-        {
-          tree_->radiusSearch (p_q, radius, k_indices, k_sqr_distances, max_nn);
-          if (sorted_results_)
-            this->sortResults (k_indices, k_sqr_distances);
-          return (static_cast<int> (k_indices.size ()));
-        }
-
-        /** \brief search for all neighbors of query point that are within a given radius.
-         * \param index index representing the query point in the dataset given by \a setInputCloud.
-         *        If indices were given in setInputCloud, index will be the position in the indices vector
-         * \param radius radius of the sphere bounding all of p_q's neighbors
-         * \param k_indices the resultant indices of the neighboring points
-         * \param k_sqr_distances the resultant squared distances to the neighboring points
-         * \param max_nn if given, bounds the maximum returned neighbors to this value
-         * \return number of neighbors found in radius
-         */
-        inline int
-        radiusSearch (index_t index, double radius, Indices &k_indices,
-                      std::vector<float> &k_sqr_distances, unsigned int max_nn = 0) const override
-        {
-          tree_->radiusSearch (index, radius, k_indices, k_sqr_distances, max_nn);
-          if (sorted_results_)
-            this->sortResults (k_indices, k_sqr_distances);
-          return (static_cast<int> (k_indices.size ()));
-        }
-
-
-        /** \brief Search for approximate nearest neighbor at the query point.
-          * \param[in] cloud the point cloud data
-          * \param[in] query_index the index in \a cloud representing the query point
-          * \param[out] result_index the resultant index of the neighbor point
-          * \param[out] sqr_distance the resultant squared distance to the neighboring point
-          * \return number of neighbors found
-          */
-        inline void
-        approxNearestSearch (const PointCloudConstPtr &cloud, index_t query_index, index_t &result_index,
-                             float &sqr_distance)
-        {
-          return (tree_->approxNearestSearch ((*cloud)[query_index], result_index, sqr_distance));
-        }
-
-        /** \brief Search for approximate nearest neighbor at the query point.
-          * \param[in] p_q the given query point
-          * \param[out] result_index the resultant index of the neighbor point
-          * \param[out] sqr_distance the resultant squared distance to the neighboring point
-          */
-        inline void
-        approxNearestSearch (const PointT &p_q, index_t &result_index, float &sqr_distance)
-        {
-          return (tree_->approxNearestSearch (p_q, result_index, sqr_distance));
-        }
-
-        /** \brief Search for approximate nearest neighbor at the query point.
-          * \param query_index index representing the query point in the dataset given by \a setInputCloud.
-          *        If indices were given in setInputCloud, index will be the position in the indices vector.
-          * \param result_index the resultant index of the neighbor point
-          * \param sqr_distance the resultant squared distance to the neighboring point
-          * \return number of neighbors found
-          */
-        inline void
-        approxNearestSearch (index_t query_index, index_t &result_index, float &sqr_distance)
-        {
-          return (tree_->approxNearestSearch (query_index, result_index, sqr_distance));
-        }
-        /** \brief Search for points within rectangular search area
-	        * \param[in] min_pt lower corner of search area
-	        * \param[in] max_pt upper corner of search area
-	        * \param[out] k_indices the resultant point indices
-	        * \return number of points found within search area
-	        */
-        inline uindex_t
-        boxSearch(const Eigen::Vector3f &min_pt, const Eigen::Vector3f &max_pt, Indices &k_indices) const
-        {
-          return (tree_->boxSearch(min_pt, max_pt, k_indices));
-        }
-    };
+    tree_->deleteTree();
+    tree_->setInputCloud(cloud);
+    tree_->addPointsFromInputCloud();
+    input_ = cloud;
   }
-}
+
+  /** \brief Provide a pointer to the input dataset.
+   * \param[in] cloud the const boost shared pointer to a PointCloud message
+   * \param[in] indices the point indices subset that is to be used from \a cloud
+   */
+  inline bool
+  setInputCloud (const PointCloudConstPtr& cloud,
+                 const IndicesConstPtr& indices) override
+  {
+    tree_->deleteTree();
+    tree_->setInputCloud(cloud, indices);
+    tree_->addPointsFromInputCloud();
+    input_ = cloud;
+    indices_ = indices;
+    return true;
+  }
+
+  /** \brief Search for the k-nearest neighbors for the given query point.
+   * \param[in] cloud the point cloud data
+   * \param[in] index the index in \a cloud representing the query point
+   * \param[in] k the number of neighbors to search for
+   * \param[out] k_indices the resultant indices of the neighboring points (must be
+   * resized to \a k a priori!) \param[out] k_sqr_distances the resultant squared
+   * distances to the neighboring points (must be resized to \a k a priori!) \return
+   * number of neighbors found
+   */
+  inline int
+  nearestKSearch (const PointCloud& cloud,
+                  index_t index,
+                  int k,
+                  Indices& k_indices,
+                  std::vector<float>& k_sqr_distances) const override
+  {
+    return (tree_->nearestKSearch(cloud, index, k, k_indices, k_sqr_distances));
+  }
+
+  /** \brief Search for the k-nearest neighbors for the given query point.
+   * \param[in] point the given query point
+   * \param[in] k the number of neighbors to search for
+   * \param[out] k_indices the resultant indices of the neighboring points (must be
+   * resized to \a k a priori!) \param[out] k_sqr_distances the resultant squared
+   * distances to the neighboring points (must be resized to \a k a priori!) \return
+   * number of neighbors found
+   */
+  inline int
+  nearestKSearch (const PointT& point,
+                  int k,
+                  Indices& k_indices,
+                  std::vector<float>& k_sqr_distances) const override
+  {
+    return (tree_->nearestKSearch(point, k, k_indices, k_sqr_distances));
+  }
+
+  /** \brief Search for the k-nearest neighbors for the given query point (zero-copy).
+   *
+   * \param[in] index the index representing the query point in the
+   * dataset given by \a setInputCloud if indices were given in
+   * setInputCloud, index will be the position in the indices vector
+   * \param[in] k the number of neighbors to search for
+   * \param[out] k_indices the resultant indices of the neighboring points (must be
+   * resized to \a k a priori!) \param[out] k_sqr_distances the resultant squared
+   * distances to the neighboring points (must be resized to \a k a priori!) \return
+   * number of neighbors found
+   */
+  inline int
+  nearestKSearch (index_t index,
+                  int k,
+                  Indices& k_indices,
+                  std::vector<float>& k_sqr_distances) const override
+  {
+    return (tree_->nearestKSearch(index, k, k_indices, k_sqr_distances));
+  }
+
+  /** \brief search for all neighbors of query point that are within a given radius.
+   * \param cloud the point cloud data
+   * \param index the index in \a cloud representing the query point
+   * \param radius the radius of the sphere bounding all of p_q's neighbors
+   * \param k_indices the resultant indices of the neighboring points
+   * \param k_sqr_distances the resultant squared distances to the neighboring points
+   * \param max_nn if given, bounds the maximum returned neighbors to this value
+   * \return number of neighbors found in radius
+   */
+  inline int
+  radiusSearch (const PointCloud& cloud,
+                index_t index,
+                double radius,
+                Indices& k_indices,
+                std::vector<float>& k_sqr_distances,
+                unsigned int max_nn = 0) const override
+  {
+    tree_->radiusSearch(cloud, index, radius, k_indices, k_sqr_distances, max_nn);
+    if (sorted_results_)
+      this->sortResults(k_indices, k_sqr_distances);
+    return (static_cast<int>(k_indices.size()));
+  }
+
+  /** \brief search for all neighbors of query point that are within a given radius.
+   * \param p_q the given query point
+   * \param radius the radius of the sphere bounding all of p_q's neighbors
+   * \param k_indices the resultant indices of the neighboring points
+   * \param k_sqr_distances the resultant squared distances to the neighboring points
+   * \param max_nn if given, bounds the maximum returned neighbors to this value
+   * \return number of neighbors found in radius
+   */
+  inline int
+  radiusSearch (const PointT& p_q,
+                double radius,
+                Indices& k_indices,
+                std::vector<float>& k_sqr_distances,
+                unsigned int max_nn = 0) const override
+  {
+    tree_->radiusSearch(p_q, radius, k_indices, k_sqr_distances, max_nn);
+    if (sorted_results_)
+      this->sortResults(k_indices, k_sqr_distances);
+    return (static_cast<int>(k_indices.size()));
+  }
+
+  /** \brief search for all neighbors of query point that are within a given radius.
+   * \param index index representing the query point in the dataset given by \a
+   * setInputCloud. If indices were given in setInputCloud, index will be the position
+   * in the indices vector \param radius radius of the sphere bounding all of p_q's
+   * neighbors \param k_indices the resultant indices of the neighboring points \param
+   * k_sqr_distances the resultant squared distances to the neighboring points \param
+   * max_nn if given, bounds the maximum returned neighbors to this value \return number
+   * of neighbors found in radius
+   */
+  inline int
+  radiusSearch (index_t index,
+                double radius,
+                Indices& k_indices,
+                std::vector<float>& k_sqr_distances,
+                unsigned int max_nn = 0) const override
+  {
+    tree_->radiusSearch(index, radius, k_indices, k_sqr_distances, max_nn);
+    if (sorted_results_)
+      this->sortResults(k_indices, k_sqr_distances);
+    return (static_cast<int>(k_indices.size()));
+  }
+
+  /** \brief Search for approximate nearest neighbor at the query point.
+   * \param[in] cloud the point cloud data
+   * \param[in] query_index the index in \a cloud representing the query point
+   * \param[out] result_index the resultant index of the neighbor point
+   * \param[out] sqr_distance the resultant squared distance to the neighboring point
+   * \return number of neighbors found
+   */
+  inline void
+  approxNearestSearch (const PointCloudConstPtr& cloud,
+                       index_t query_index,
+                       index_t& result_index,
+                       float& sqr_distance)
+  {
+    return (
+        tree_->approxNearestSearch((*cloud)[query_index], result_index, sqr_distance));
+  }
+
+  /** \brief Search for approximate nearest neighbor at the query point.
+   * \param[in] p_q the given query point
+   * \param[out] result_index the resultant index of the neighbor point
+   * \param[out] sqr_distance the resultant squared distance to the neighboring point
+   */
+  inline void
+  approxNearestSearch (const PointT& p_q, index_t& result_index, float& sqr_distance)
+  {
+    return (tree_->approxNearestSearch(p_q, result_index, sqr_distance));
+  }
+
+  /** \brief Search for approximate nearest neighbor at the query point.
+   * \param query_index index representing the query point in the dataset given by \a
+   * setInputCloud. If indices were given in setInputCloud, index will be the position
+   * in the indices vector. \param result_index the resultant index of the neighbor
+   * point \param sqr_distance the resultant squared distance to the neighboring point
+   * \return number of neighbors found
+   */
+  inline void
+  approxNearestSearch (index_t query_index, index_t& result_index, float& sqr_distance)
+  {
+    return (tree_->approxNearestSearch(query_index, result_index, sqr_distance));
+  }
+  /** \brief Search for points within rectangular search area
+   * \param[in] min_pt lower corner of search area
+   * \param[in] max_pt upper corner of search area
+   * \param[out] k_indices the resultant point indices
+   * \return number of points found within search area
+   */
+  inline uindex_t
+  boxSearch (const Eigen::Vector3f& min_pt,
+             const Eigen::Vector3f& max_pt,
+             Indices& k_indices) const
+  {
+    return (tree_->boxSearch(min_pt, max_pt, k_indices));
+  }
+};
+} // namespace search
+} // namespace pcl
 
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/octree/impl/octree_search.hpp>

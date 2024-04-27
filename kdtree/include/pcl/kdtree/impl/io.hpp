@@ -43,44 +43,41 @@
 #include <pcl/kdtree/io.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename Point1T, typename Point2T> void
-pcl::getApproximateIndices (
-    const typename pcl::PointCloud<Point1T>::ConstPtr &cloud_in,
-    const typename pcl::PointCloud<Point2T>::ConstPtr &cloud_ref,
-    Indices &indices)
+template <typename Point1T, typename Point2T>
+void
+pcl::getApproximateIndices(const typename pcl::PointCloud<Point1T>::ConstPtr& cloud_in,
+                           const typename pcl::PointCloud<Point2T>::ConstPtr& cloud_ref,
+                           Indices& indices)
 {
   pcl::KdTreeFLANN<Point2T> tree;
-  tree.setInputCloud (cloud_ref);
+  tree.setInputCloud(cloud_ref);
 
-  Indices nn_idx (1);
-  std::vector<float> nn_dists (1);
-  indices.resize (cloud_in->size ());
-  for (std::size_t i = 0; i < cloud_in->size (); ++i)
-  {
-    tree.nearestKSearchT ((*cloud_in)[i], 1, nn_idx, nn_dists);
+  Indices nn_idx(1);
+  std::vector<float> nn_dists(1);
+  indices.resize(cloud_in->size());
+  for (std::size_t i = 0; i < cloud_in->size(); ++i) {
+    tree.nearestKSearchT((*cloud_in)[i], 1, nn_idx, nn_dists);
     indices[i] = nn_idx[0];
   }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT> void
-pcl::getApproximateIndices (
-    const typename pcl::PointCloud<PointT>::ConstPtr &cloud_in,
-    const typename pcl::PointCloud<PointT>::ConstPtr &cloud_ref,
-    Indices &indices)
+template <typename PointT>
+void
+pcl::getApproximateIndices(const typename pcl::PointCloud<PointT>::ConstPtr& cloud_in,
+                           const typename pcl::PointCloud<PointT>::ConstPtr& cloud_ref,
+                           Indices& indices)
 {
   pcl::KdTreeFLANN<PointT> tree;
-  tree.setInputCloud (cloud_ref);
+  tree.setInputCloud(cloud_ref);
 
-  Indices nn_idx (1);
-  std::vector<float> nn_dists (1);
-  indices.resize (cloud_in->size ());
-  for (std::size_t i = 0; i < cloud_in->size (); ++i)
-  {
-    tree.nearestKSearch (*cloud_in, i, 1, nn_idx, nn_dists);
+  Indices nn_idx(1);
+  std::vector<float> nn_dists(1);
+  indices.resize(cloud_in->size());
+  for (std::size_t i = 0; i < cloud_in->size(); ++i) {
+    tree.nearestKSearch(*cloud_in, i, 1, nn_idx, nn_dists);
     indices[i] = nn_idx[0];
   }
 }
 
 #endif // PCL_KDTREE_IO_IMPL_H_
-

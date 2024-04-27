@@ -38,17 +38,20 @@
  */
 
 #include <pcl/impl/instantiate.hpp>
-#include <pcl/point_types.h>
 #include <pcl/segmentation/extract_polygonal_prism_data.h>
 #include <pcl/segmentation/impl/extract_polygonal_prism_data.hpp>
+#include <pcl/point_types.h>
 
 // Instantiations of specific point types
 #ifdef PCL_ONLY_CORE_POINT_TYPES
-  PCL_INSTANTIATE(ExtractPolygonalPrismData, (pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA)(pcl::PointXYZRGB))
-  PCL_INSTANTIATE(isPointIn2DPolygon, (pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA)(pcl::PointXYZRGB))
-  PCL_INSTANTIATE(isXYPointIn2DXYPolygon, (pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA)(pcl::PointXYZRGB))
+PCL_INSTANTIATE(ExtractPolygonalPrismData,
+                (pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA)(pcl::PointXYZRGB))
+PCL_INSTANTIATE(isPointIn2DPolygon,
+                (pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA)(pcl::PointXYZRGB))
+PCL_INSTANTIATE(isXYPointIn2DXYPolygon,
+                (pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA)(pcl::PointXYZRGB))
 #else
-  PCL_INSTANTIATE(ExtractPolygonalPrismData, PCL_XYZ_POINT_TYPES)
-  PCL_INSTANTIATE(isPointIn2DPolygon, PCL_XYZ_POINT_TYPES)
-  PCL_INSTANTIATE(isXYPointIn2DXYPolygon, PCL_XYZ_POINT_TYPES)
+PCL_INSTANTIATE(ExtractPolygonalPrismData, PCL_XYZ_POINT_TYPES)
+PCL_INSTANTIATE(isPointIn2DPolygon, PCL_XYZ_POINT_TYPES)
+PCL_INSTANTIATE(isXYPointIn2DXYPolygon, PCL_XYZ_POINT_TYPES)
 #endif

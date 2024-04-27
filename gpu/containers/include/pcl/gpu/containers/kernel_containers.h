@@ -60,7 +60,7 @@ struct DevPtr {
   DevPtr(T* data_arg) : data(data_arg) {}
 
   __PCL_GPU_HOST_DEVICE__ std::size_t
-  elemSize() const
+  elemSize () const
   {
     return elem_size;
   }
@@ -94,13 +94,13 @@ struct PtrStep : public DevPtr<T> {
   std::size_t step;
 
   __PCL_GPU_HOST_DEVICE__ T*
-  ptr(int y = 0)
+  ptr (int y = 0)
   {
     return (T*)((char*)DevPtr<T>::data + y * step);
   }
 
   __PCL_GPU_HOST_DEVICE__ const T*
-  ptr(int y = 0) const
+  ptr (int y = 0) const
   {
     return (const T*)((const char*)DevPtr<T>::data + y * step);
   }

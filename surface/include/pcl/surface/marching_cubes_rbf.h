@@ -35,90 +35,87 @@
 
 #pragma once
 
+#include <pcl/surface/marching_cubes.h>
 #include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
-#include <pcl/surface/marching_cubes.h>
 
-namespace pcl
-{
-  /** \brief The marching cubes surface reconstruction algorithm, using a signed distance function based on radial
-    * basis functions. Partially based on:
-    * Carr J.C., Beatson R.K., Cherrie J.B., Mitchell T.J., Fright W.R., McCallum B.C. and Evans T.R.,
-    * "Reconstruction and representation of 3D objects with radial basis functions"
-    * SIGGRAPH '01
-    *
-    * \note This algorithm in its current implementation may not be suitable for very
-    * large point clouds, due to high memory requirements.
-    * \tparam PointNT Use `pcl::PointNormal` or `pcl::PointXYZRGBNormal` or `pcl::PointXYZINormal`
-    * \author Alexandru E. Ichim
-    * \ingroup surface
-    */
-  template <typename PointNT>
-  class MarchingCubesRBF : public MarchingCubes<PointNT>
+namespace pcl {
+/** \brief The marching cubes surface reconstruction algorithm, using a signed distance
+ * function based on radial basis functions. Partially based on: Carr J.C., Beatson
+ * R.K., Cherrie J.B., Mitchell T.J., Fright W.R., McCallum B.C. and Evans T.R.,
+ * "Reconstruction and representation of 3D objects with radial basis functions"
+ * SIGGRAPH '01
+ *
+ * \note This algorithm in its current implementation may not be suitable for very
+ * large point clouds, due to high memory requirements.
+ * \tparam PointNT Use `pcl::PointNormal` or `pcl::PointXYZRGBNormal` or
+ * `pcl::PointXYZINormal` \author Alexandru E. Ichim \ingroup surface
+ */
+template <typename PointNT>
+class MarchingCubesRBF : public MarchingCubes<PointNT> {
+public:
+  using Ptr = shared_ptr<MarchingCubesRBF<PointNT>>;
+  using ConstPtr = shared_ptr<const MarchingCubesRBF<PointNT>>;
+
+  using SurfaceReconstruction<PointNT>::input_;
+  using SurfaceReconstruction<PointNT>::tree_;
+  using MarchingCubes<PointNT>::grid_;
+  using MarchingCubes<PointNT>::res_x_;
+  using MarchingCubes<PointNT>::res_y_;
+  using MarchingCubes<PointNT>::res_z_;
+  using MarchingCubes<PointNT>::size_voxel_;
+  using MarchingCubes<PointNT>::upper_boundary_;
+  using MarchingCubes<PointNT>::lower_boundary_;
+
+  using PointCloudPtr = typename pcl::PointCloud<PointNT>::Ptr;
+
+  using KdTree = pcl::KdTree<PointNT>;
+  using KdTreePtr = typename KdTree::Ptr;
+
+  /** \brief Constructor. */
+  MarchingCubesRBF(const float off_surface_epsilon = 0.1f,
+                   const float percentage_extend_grid = 0.0f,
+                   const float iso_level = 0.0f)
+  : MarchingCubes<PointNT>(percentage_extend_grid, iso_level)
+  , off_surface_epsilon_(off_surface_epsilon)
+  {}
+
+  /** \brief Destructor. */
+  ~MarchingCubesRBF() override;
+
+  /** \brief Convert the point cloud into voxel data.
+   */
+  void
+  voxelizeData () override;
+
+  /** \brief Set the off-surface points displacement value.
+   * \param[in] epsilon the value
+   */
+  inline void
+  setOffSurfaceDisplacement (float epsilon)
   {
-    public:
-      using Ptr = shared_ptr<MarchingCubesRBF<PointNT> >;
-      using ConstPtr = shared_ptr<const MarchingCubesRBF<PointNT> >;
+    off_surface_epsilon_ = epsilon;
+  }
 
-      using SurfaceReconstruction<PointNT>::input_;
-      using SurfaceReconstruction<PointNT>::tree_;
-      using MarchingCubes<PointNT>::grid_;
-      using MarchingCubes<PointNT>::res_x_;
-      using MarchingCubes<PointNT>::res_y_;
-      using MarchingCubes<PointNT>::res_z_;
-      using MarchingCubes<PointNT>::size_voxel_;
-      using MarchingCubes<PointNT>::upper_boundary_;
-      using MarchingCubes<PointNT>::lower_boundary_;
+  /** \brief Get the off-surface points displacement value. */
+  inline float
+  getOffSurfaceDisplacement ()
+  {
+    return off_surface_epsilon_;
+  }
 
-      using PointCloudPtr = typename pcl::PointCloud<PointNT>::Ptr;
+protected:
+  /** \brief the Radial Basis Function kernel. */
+  double
+  kernel (Eigen::Vector3d c, Eigen::Vector3d x);
 
-      using KdTree = pcl::KdTree<PointNT>;
-      using KdTreePtr = typename KdTree::Ptr;
+  /** \brief The off-surface displacement value. */
+  float off_surface_epsilon_;
 
-
-      /** \brief Constructor. */
-      MarchingCubesRBF (const float off_surface_epsilon = 0.1f,
-                        const float percentage_extend_grid = 0.0f,
-                        const float iso_level = 0.0f) :
-        MarchingCubes<PointNT> (percentage_extend_grid, iso_level),
-        off_surface_epsilon_ (off_surface_epsilon)
-      {
-      }
-
-      /** \brief Destructor. */
-      ~MarchingCubesRBF () override;
-
-      /** \brief Convert the point cloud into voxel data.
-        */
-      void
-      voxelizeData () override;
-
-
-      /** \brief Set the off-surface points displacement value.
-        * \param[in] epsilon the value
-        */
-      inline void
-      setOffSurfaceDisplacement (float epsilon)
-      { off_surface_epsilon_ = epsilon; }
-
-      /** \brief Get the off-surface points displacement value. */
-      inline float
-      getOffSurfaceDisplacement ()
-      { return off_surface_epsilon_; }
-
-
-    protected:
-      /** \brief the Radial Basis Function kernel. */
-      double
-      kernel (Eigen::Vector3d c, Eigen::Vector3d x);
-
-      /** \brief The off-surface displacement value. */
-      float off_surface_epsilon_;
-
-    public:
-      PCL_MAKE_ALIGNED_OPERATOR_NEW
-  };
-}
+public:
+  PCL_MAKE_ALIGNED_OPERATOR_NEW
+};
+} // namespace pcl
 
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/surface/impl/marching_cubes_rbf.hpp>

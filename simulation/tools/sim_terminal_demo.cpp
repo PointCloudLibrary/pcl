@@ -32,7 +32,7 @@ using namespace pcl::simulation;
 SimExample::Ptr simexample;
 
 void
-printHelp(int, char** argv)
+printHelp (int, char** argv)
 {
   print_error("Syntax is: %s <mode 1,2 or 3> <filename>\n", argv[0]);
   print_info("acceptable filenames include vtk, obj and ply. ply can support colour\n");
@@ -40,7 +40,7 @@ printHelp(int, char** argv)
 
 // Output the simulated output to file:
 void
-write_sim_output(const std::string& fname_root)
+write_sim_output (const std::string& fname_root)
 {
   pcl::PointCloud<pcl::PointXYZRGB>::Ptr pc_out(new pcl::PointCloud<pcl::PointXYZRGB>);
 
@@ -92,7 +92,7 @@ write_sim_output(const std::string& fname_root)
 // @param: halo_dz: elevation of the camera above/below focus_center's z value
 // @param: n_poses: number of generated poses
 void
-generate_halo(
+generate_halo (
     std::vector<Eigen::Isometry3d, Eigen::aligned_allocator<Eigen::Isometry3d>>& poses,
     Eigen::Vector3d focus_center,
     double halo_r,
@@ -125,7 +125,7 @@ generate_halo(
 }
 
 int
-main(int argc, char** argv)
+main (int argc, char** argv)
 {
   // 1. Parse arguments:
   print_info("Manually generate a simulated RGB-D point cloud using pcl::simulation. "

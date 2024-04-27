@@ -36,9 +36,10 @@
  *  Author: Victor Lamoine (victor.lamoine@gmail.com)
  */
 
-#include <iostream>
 #include <pcl/io/davidsdk_grabber.h>
 #include <pcl/visualization/cloud_viewer.h>
+
+#include <iostream>
 
 using namespace std::chrono_literals;
 
@@ -59,8 +60,8 @@ pcl::DavidSDKGrabber::Ptr davidsdk_ptr;
 void
 grabberCallback (const PointCloudXYZ::Ptr& cloud)
 {
-  if (!viewer_ptr->wasStopped ())
-    viewer_ptr->showCloud (cloud);
+  if (!viewer_ptr->wasStopped())
+    viewer_ptr->showCloud(cloud);
 }
 
 /** @brief Main function
@@ -68,42 +69,40 @@ grabberCallback (const PointCloudXYZ::Ptr& cloud)
  * @param[in] argv
  * @return Exit status */
 int
-main (int argc,
-      char *argv[])
+main (int argc, char* argv[])
 {
-  if (argc != 2)
-  {
-    PCL_ERROR ("Usage:\n%s 192.168.100.65\n", argv[0]);
+  if (argc != 2) {
+    PCL_ERROR("Usage:\n%s 192.168.100.65\n", argv[0]);
     return (-1);
   }
 
-  viewer_ptr.reset (new CloudViewer ("davidSDK 3D cloud viewer"));
-  davidsdk_ptr.reset (new pcl::DavidSDKGrabber);
-  davidsdk_ptr->connect (argv[1]);
+  viewer_ptr.reset(new CloudViewer("davidSDK 3D cloud viewer"));
+  davidsdk_ptr.reset(new pcl::DavidSDKGrabber);
+  davidsdk_ptr->connect(argv[1]);
 
-  if (!davidsdk_ptr->isConnected ())
+  if (!davidsdk_ptr->isConnected())
     return (-1);
-  PCL_WARN ("davidSDK connected\n");
+  PCL_WARN("davidSDK connected\n");
 
-#ifndef _WIN32// || _WIN64
-  PCL_WARN ("Linux / Mac OSX detected, setting local_path_ to /var/tmp/davidsdk/ and remote_path_ to \\\\m6700\\davidsdk\\\n");
-  davidsdk_ptr->setLocalAndRemotePaths ("/var/tmp/davidsdk/", "\\\\m6700\\davidsdk\\");
+#ifndef _WIN32 // || _WIN64
+  PCL_WARN("Linux / Mac OSX detected, setting local_path_ to /var/tmp/davidsdk/ and "
+           "remote_path_ to \\\\m6700\\davidsdk\\\n");
+  davidsdk_ptr->setLocalAndRemotePaths("/var/tmp/davidsdk/", "\\\\m6700\\davidsdk\\");
 #endif
 
-  //davidsdk_ptr->setFileFormatToPLY();
-  std::cout << "Using " << davidsdk_ptr->getFileFormat () << " file format" << std::endl;
+  // davidsdk_ptr->setFileFormatToPLY();
+  std::cout << "Using " << davidsdk_ptr->getFileFormat() << " file format" << std::endl;
 
-  std::function<void (const PointCloudXYZ::Ptr&)> f = [] (const PointCloudXYZ::Ptr& cloud) { grabberCallback (cloud); };
-  davidsdk_ptr->registerCallback (f);
-  davidsdk_ptr->start ();
+  std::function<void(const PointCloudXYZ::Ptr&)> f =
+      [] (const PointCloudXYZ::Ptr& cloud) { grabberCallback(cloud); };
+  davidsdk_ptr->registerCallback(f);
+  davidsdk_ptr->start();
 
-  while (!viewer_ptr->wasStopped ())
-  {
+  while (!viewer_ptr->wasStopped()) {
     std::this_thread::sleep_for(20s);
-    std::cout << "FPS: " << davidsdk_ptr->getFramesPerSecond () << std::endl;
+    std::cout << "FPS: " << davidsdk_ptr->getFramesPerSecond() << std::endl;
   }
 
-  davidsdk_ptr->stop ();
+  davidsdk_ptr->stop();
   return (0);
 }
-

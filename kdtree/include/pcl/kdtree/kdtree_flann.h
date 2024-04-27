@@ -41,19 +41,20 @@
 #pragma once
 
 #include <pcl/kdtree/kdtree.h>
+
 #include <flann/util/params.h>
 
 #include <memory>
 
 // Forward declarations
-namespace flann
-{
-  template <typename T> struct L2_Simple;
-  template <typename T> class Index;
-}
+namespace flann {
+template <typename T>
+struct L2_Simple;
+template <typename T>
+class Index;
+} // namespace flann
 
-namespace pcl
-{
+namespace pcl {
 namespace detail {
 // Helper struct to create a compatible Matrix and copy data back when needed
 // Replace using if constexpr in C++17
@@ -88,12 +89,12 @@ template <class FlannIndex,
           class Distances,
           class SearchParams>
 int
-radius_search(const FlannIndex& index,
-              const Query& query,
-              Indices& indices,
-              Distances& dists,
-              float radius,
-              const SearchParams& params);
+radius_search (const FlannIndex& index,
+               const Query& query,
+               Indices& indices,
+               Distances& dists,
+               float radius,
+               const SearchParams& params);
 
 /**
  * @brief Compatibility template function to allow use of various types of indices with
@@ -114,12 +115,12 @@ template <class FlannIndex,
           class Distances,
           class SearchParams>
 int
-knn_search(const FlannIndex& index,
-           const Query& query,
-           Indices& indices,
-           Distances& dists,
-           unsigned int k,
-           const SearchParams& params);
+knn_search (const FlannIndex& index,
+            const Query& query,
+            Indices& indices,
+            Distances& dists,
+            unsigned int k,
+            const SearchParams& params);
 
 /** \brief KdTreeFLANN is a generic type of 3D spatial locator using kD-tree structures.
  * The class is making use of the FLANN (Fast Library for Approximate Nearest Neighbor)
@@ -186,13 +187,13 @@ public:
    * searches. \param[in] eps precision (error bound) for nearest neighbors searches
    */
   void
-  setEpsilon(float eps) override;
+  setEpsilon (float eps) override;
 
   void
-  setSortedResults(bool sorted);
+  setSortedResults (bool sorted);
 
   inline Ptr
-  makeShared()
+  makeShared ()
   {
     return Ptr(new KdTreeFLANN<PointT, Dist>(*this));
   }
@@ -200,10 +201,7 @@ public:
   /** \brief Destructor for KdTreeFLANN.
    * Deletes all allocated data arrays and destroys the kd-tree structures.
    */
-  ~KdTreeFLANN() override
-  {
-    cleanup();
-  }
+  ~KdTreeFLANN() override { cleanup(); }
 
   /** \brief Provide a pointer to the input dataset.
    * \param[in] cloud the const boost shared pointer to a PointCloud message
@@ -211,8 +209,8 @@ public:
    * NULL the whole cloud is used
    */
   void
-  setInputCloud(const PointCloudConstPtr& cloud,
-                const IndicesConstPtr& indices = IndicesConstPtr()) override;
+  setInputCloud (const PointCloudConstPtr& cloud,
+                 const IndicesConstPtr& indices = IndicesConstPtr()) override;
 
   /** \brief Search for k-nearest neighbors for the given query point.
    *
@@ -230,10 +228,10 @@ public:
    * number of points
    */
   int
-  nearestKSearch(const PointT& point,
-                 unsigned int k,
-                 Indices& k_indices,
-                 std::vector<float>& k_sqr_distances) const override;
+  nearestKSearch (const PointT& point,
+                  unsigned int k,
+                  Indices& k_indices,
+                  std::vector<float>& k_sqr_distances) const override;
 
   /** \brief Search for all the nearest neighbors of the query point in a given radius.
    *
@@ -253,34 +251,34 @@ public:
    * number of points
    */
   int
-  radiusSearch(const PointT& point,
-               double radius,
-               Indices& k_indices,
-               std::vector<float>& k_sqr_distances,
-               unsigned int max_nn = 0) const override;
+  radiusSearch (const PointT& point,
+                double radius,
+                Indices& k_indices,
+                std::vector<float>& k_sqr_distances,
+                unsigned int max_nn = 0) const override;
 
 private:
   /** \brief Internal cleanup method. */
   void
-  cleanup();
+  cleanup ();
 
   /** \brief Converts a PointCloud to the internal FLANN point array representation.
    * Returns the number of points. \param cloud the PointCloud
    */
   void
-  convertCloudToArray(const PointCloud& cloud);
+  convertCloudToArray (const PointCloud& cloud);
 
   /** \brief Converts a PointCloud with a given set of indices to the internal FLANN
    * point array representation. Returns the number of points. \param[in] cloud the
    * PointCloud data \param[in] indices the point cloud indices
    */
   void
-  convertCloudToArray(const PointCloud& cloud, const Indices& indices);
+  convertCloudToArray (const PointCloud& cloud, const Indices& indices);
 
 private:
   /** \brief Class getName method. */
   std::string
-  getName() const override
+  getName () const override
   {
     return ("KdTreeFLANN");
   }
@@ -310,8 +308,8 @@ private:
 
   /** \brief The KdTree search parameters for radius search. */
   ::flann::SearchParams param_radius_;
-  };
-}
+};
+} // namespace pcl
 
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/kdtree/impl/kdtree_flann.hpp>

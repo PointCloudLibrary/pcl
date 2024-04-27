@@ -107,7 +107,7 @@ public:
    * \param[in] kernel convolution kernel passed by reference
    */
   inline void
-  setKernel(const pcl::PointCloud<PointT>& kernel)
+  setKernel (const pcl::PointCloud<PointT>& kernel)
   {
     kernel_ = kernel;
   }
@@ -117,7 +117,7 @@ public:
    * convolution
    */
   inline void
-  setBoundaryOptions(BOUNDARY_OPTIONS_ENUM boundary_options)
+  setBoundaryOptions (BOUNDARY_OPTIONS_ENUM boundary_options)
   {
     boundary_options_ = boundary_options;
   }
@@ -127,12 +127,12 @@ public:
    * \param[out] output Output point cloud passed by reference
    */
   void
-  filter(pcl::PointCloud<PointT>& output);
+  filter (pcl::PointCloud<PointT>& output);
 
 protected:
   /** \brief This is an over-ride function for the pcl::Filter interface. */
   void
-  applyFilter(pcl::PointCloud<PointT>&) override
+  applyFilter (pcl::PointCloud<PointT>&) override
   {}
 
 private:

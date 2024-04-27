@@ -138,11 +138,11 @@ public:
    * descriptors \param features the source point cloud's features
    */
   void
-  setSourceFeatures(const FeatureCloudConstPtr& features);
+  setSourceFeatures (const FeatureCloudConstPtr& features);
 
   /** \brief Get a pointer to the source point cloud's features */
   inline const FeatureCloudConstPtr
-  getSourceFeatures() const
+  getSourceFeatures () const
   {
     return (input_features_);
   }
@@ -151,11 +151,11 @@ public:
    * descriptors \param features the target point cloud's features
    */
   void
-  setTargetFeatures(const FeatureCloudConstPtr& features);
+  setTargetFeatures (const FeatureCloudConstPtr& features);
 
   /** \brief Get a pointer to the target point cloud's features */
   inline const FeatureCloudConstPtr
-  getTargetFeatures() const
+  getTargetFeatures () const
   {
     return (target_features_);
   }
@@ -164,7 +164,7 @@ public:
    * \param nr_samples the number of samples to use during each iteration
    */
   inline void
-  setNumberOfSamples(int nr_samples)
+  setNumberOfSamples (int nr_samples)
   {
     nr_samples_ = nr_samples;
   }
@@ -172,7 +172,7 @@ public:
   /** \brief Get the number of samples to use during each iteration, as set by the user
    */
   inline int
-  getNumberOfSamples() const
+  getNumberOfSamples () const
   {
     return (nr_samples_);
   }
@@ -183,7 +183,7 @@ public:
    * correspondence.
    */
   inline void
-  setCorrespondenceRandomness(int k)
+  setCorrespondenceRandomness (int k)
   {
     k_correspondences_ = k;
   }
@@ -191,7 +191,7 @@ public:
   /** \brief Get the number of neighbors used when selecting a random feature
    * correspondence, as set by the user */
   inline int
-  getCorrespondenceRandomness() const
+  getCorrespondenceRandomness () const
   {
     return (k_correspondences_);
   }
@@ -201,7 +201,7 @@ public:
    * \param similarity_threshold edge length similarity threshold
    */
   inline void
-  setSimilarityThreshold(float similarity_threshold)
+  setSimilarityThreshold (float similarity_threshold)
   {
     correspondence_rejector_poly_->setSimilarityThreshold(similarity_threshold);
   }
@@ -210,7 +210,7 @@ public:
    * polygonal correspondence rejector object, \return edge length similarity threshold
    */
   inline float
-  getSimilarityThreshold() const
+  getSimilarityThreshold () const
   {
     return correspondence_rejector_poly_->getSimilarityThreshold();
   }
@@ -219,7 +219,7 @@ public:
    * \param inlier_fraction required inlier fraction, must be in [0,1]
    */
   inline void
-  setInlierFraction(float inlier_fraction)
+  setInlierFraction (float inlier_fraction)
   {
     inlier_fraction_ = inlier_fraction;
   }
@@ -228,7 +228,7 @@ public:
    * \return required inlier fraction in [0,1]
    */
   inline float
-  getInlierFraction() const
+  getInlierFraction () const
   {
     return inlier_fraction_;
   }
@@ -238,7 +238,7 @@ public:
    * @return inlier indices
    */
   inline const pcl::Indices&
-  getInliers() const
+  getInliers () const
   {
     return inliers_;
   }
@@ -248,7 +248,7 @@ protected:
    * \param n the number of possible indices to choose from
    */
   inline int
-  getRandomIndex(int n) const
+  getRandomIndex (int n) const
   {
     return (static_cast<int>(n * (rand() / (RAND_MAX + 1.0))));
   };
@@ -259,9 +259,9 @@ protected:
    * number of samples to select \param sample_indices the resulting sample indices
    */
   void
-  selectSamples(const PointCloudSource& cloud,
-                int nr_samples,
-                pcl::Indices& sample_indices);
+  selectSamples (const PointCloudSource& cloud,
+                 int nr_samples,
+                 pcl::Indices& sample_indices);
 
   /** \brief For each of the sample points, find a list of points in the target cloud
    * whose features are similar to the sample points' features. From these, select one
@@ -272,17 +272,17 @@ protected:
    * point in the target cloud
    */
   void
-  findSimilarFeatures(const pcl::Indices& sample_indices,
-                      std::vector<pcl::Indices>& similar_features,
-                      pcl::Indices& corresponding_indices);
+  findSimilarFeatures (const pcl::Indices& sample_indices,
+                       std::vector<pcl::Indices>& similar_features,
+                       pcl::Indices& corresponding_indices);
 
   /** \brief Rigid transformation computation method.
    * \param output the transformed input point cloud dataset using the rigid
    * transformation found \param guess The computed transformation
    */
   void
-  computeTransformation(PointCloudSource& output,
-                        const Eigen::Matrix4f& guess) override;
+  computeTransformation (PointCloudSource& output,
+                         const Eigen::Matrix4f& guess) override;
 
   /** \brief Obtain the fitness of a transformation
    * The following metrics are calculated, based on
@@ -293,7 +293,7 @@ protected:
    * \param fitness_score output fitness score as RMSE
    */
   void
-  getFitness(pcl::Indices& inliers, float& fitness_score);
+  getFitness (pcl::Indices& inliers, float& fitness_score);
 
   /** \brief The source point cloud's feature descriptors. */
   FeatureCloudConstPtr input_features_;

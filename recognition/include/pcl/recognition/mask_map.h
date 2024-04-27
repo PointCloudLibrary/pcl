@@ -51,56 +51,56 @@ public:
   virtual ~MaskMap() = default;
 
   void
-  resize(std::size_t width, std::size_t height);
+  resize (std::size_t width, std::size_t height);
 
   inline std::size_t
-  getWidth() const
+  getWidth () const
   {
     return (width_);
   }
 
   inline std::size_t
-  getHeight() const
+  getHeight () const
   {
     return (height_);
   }
 
   inline unsigned char*
-  getData()
+  getData ()
   {
     return (data_.data());
   }
 
   inline const unsigned char*
-  getData() const
+  getData () const
   {
     return (data_.data());
   }
 
   PCL_NODISCARD
   static MaskMap
-  getDifferenceMask(const MaskMap& mask0, const MaskMap& mask1);
+  getDifferenceMask (const MaskMap& mask0, const MaskMap& mask1);
 
   inline void
-  set(const std::size_t x, const std::size_t y)
+  set (const std::size_t x, const std::size_t y)
   {
     data_[y * width_ + x] = 255;
   }
 
   inline void
-  unset(const std::size_t x, const std::size_t y)
+  unset (const std::size_t x, const std::size_t y)
   {
     data_[y * width_ + x] = 0;
   }
 
   inline bool
-  isSet(const std::size_t x, const std::size_t y) const
+  isSet (const std::size_t x, const std::size_t y) const
   {
     return (data_[y * width_ + x] != 0);
   }
 
   inline void
-  reset()
+  reset ()
   {
     data_.assign(data_.size(), 0);
   }
@@ -118,7 +118,7 @@ public:
   }
 
   void
-  erode(MaskMap& eroded_mask) const;
+  erode (MaskMap& eroded_mask) const;
 
 private:
   std::vector<unsigned char> data_;

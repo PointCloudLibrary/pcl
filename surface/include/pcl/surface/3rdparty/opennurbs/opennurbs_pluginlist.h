@@ -8,7 +8,7 @@
 // THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT EXPRESS OR IMPLIED WARRANTY.
 // ALL IMPLIED WARRANTIES OF FITNESS FOR ANY PARTICULAR PURPOSE AND OF
 // MERCHANTABILITY ARE HEREBY DISCLAIMED.
-//				
+//
 // For complete openNURBS copyright information see <http://www.opennurbs.org>.
 //
 ////////////////////////////////////////////////////////////////
@@ -24,14 +24,13 @@ Description:
   in a 3dm file so they can be loaded as needed for
   reading their user data.
 */
-class ON_CLASS ON_PlugInRef
-{
+class ON_CLASS ON_PlugInRef {
 public:
   ON_PlugInRef();
 
   // executable informtion
   ON_UUID m_plugin_id;
-  int m_plugin_type; // CRhinoPlugIn::plugin_type enum value
+  int m_plugin_type;     // CRhinoPlugIn::plugin_type enum value
   int m_plugin_platform; // 0 = unknown, 1 = C++, 2 = .NET
   int m_plugin_sdk_version;
   int m_plugin_sdk_service_release;
@@ -49,25 +48,27 @@ public:
   ON_wString m_developer_updateurl;
   ON_wString m_developer_fax;
 
-  void Default();
+  void
+  Default ();
 
-  bool Write( ON_BinaryArchive& file ) const;
-  bool Read( ON_BinaryArchive& file );
+  bool
+  Write (ON_BinaryArchive& file) const;
+  bool
+  Read (ON_BinaryArchive& file);
 
-  void Dump(ON_TextLog& text_log) const;
+  void
+  Dump (ON_TextLog& text_log) const;
 };
-
 
 #if defined(ON_DLL_TEMPLATE)
 
 // This stuff is here because of a limitation in the way Microsoft
-// handles templates and DLLs.  See Microsoft's knowledge base 
+// handles templates and DLLs.  See Microsoft's knowledge base
 // article ID Q168958 for details.
-#pragma warning( push )
-#pragma warning( disable : 4231 )
+#pragma warning(push)
+#pragma warning(disable : 4231)
 ON_DLL_TEMPLATE template class ON_CLASS ON_ClassArray<ON_PlugInRef>;
-#pragma warning( pop )
+#pragma warning(pop)
 #endif
 
 #endif
-

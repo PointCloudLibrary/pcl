@@ -55,13 +55,21 @@
 #endif //  !defined(ON_MSC_LIB_DIR)
 
 #if defined(ON_DLL_IMPORTS)
-#pragma message( " --- dynamically linking opennurbs (DLL)." )
-#pragma comment(lib, "\"" ON_MSC_SOLUTION_DIR "/" ON_MSC_LIB_DIR "/" "opennurbs.lib" "\"")
+#pragma message(" --- dynamically linking opennurbs (DLL).")
+#pragma comment(lib,                                                                   \
+                    "\"" ON_MSC_SOLUTION_DIR "/" ON_MSC_LIB_DIR "/"                    \
+                    "opennurbs.lib"                                                    \
+                    "\"")
 #else
-#pragma message( " --- statically linking opennurbs." )
-#pragma comment(lib, "\"" ON_MSC_SOLUTION_DIR "/" ON_MSC_LIB_DIR "/" "zlib.lib" "\"")
-#pragma comment(lib, "\"" ON_MSC_SOLUTION_DIR "/" ON_MSC_LIB_DIR "/" "opennurbs_staticlib.lib" "\"")
+#pragma message(" --- statically linking opennurbs.")
+#pragma comment(lib,                                                                   \
+                    "\"" ON_MSC_SOLUTION_DIR "/" ON_MSC_LIB_DIR "/"                    \
+                    "zlib.lib"                                                         \
+                    "\"")
+#pragma comment(lib,                                                                   \
+                    "\"" ON_MSC_SOLUTION_DIR "/" ON_MSC_LIB_DIR "/"                    \
+                    "opennurbs_staticlib.lib"                                          \
+                    "\"")
 #endif
-
 
 #endif

@@ -38,13 +38,13 @@
  * $Id$
  */
 
-#include <pcl/point_types.h>
-#include <pcl/io/pcd_io.h>
 #include <pcl/common/generate.h>
 #include <pcl/common/random.h>
-#include <pcl/console/print.h>
 #include <pcl/console/parse.h>
+#include <pcl/console/print.h>
 #include <pcl/console/time.h>
+#include <pcl/io/pcd_io.h>
+#include <pcl/point_types.h>
 
 using namespace pcl;
 using namespace pcl::io;
@@ -71,55 +71,70 @@ float default_zstddev = 1.0f;
 int default_size = 10000;
 
 void
-printHelp (int, char **argv)
+printHelp (int, char** argv)
 {
-  print_error ("Syntax is: %s output.pcd <options>\n", argv[0]);
-  print_info ("  where options are:\n");
-  print_info ("                     -distribution X = the distribution to be used (options: uniform / normal) (default: ");
-  print_value ("%s", default_distribution.c_str ()); print_info (")\n");
-  print_info ("                     -size X = number of points in cloud (default: ");
-  print_value ("%d", default_size); print_info (")\n");
-  print_info ("                Options for uniform distribution:\n");
-  print_info ("                     -[x|y|z]min X = minimum for the [x|y|z] dimension (defaults: ");
-  print_value ("%f, %f, %f", default_xmin, default_ymin, default_zmin); print_info (")\n");
-  print_info ("                     -[x|y|z]max X = maximum for the [x|y|z] dimension (defaults: ");
-  print_value ("%f, %f, %f", default_xmax, default_ymax, default_zmax); print_info (")\n");
-  print_info ("                Options for normal distribution:\n");
-  print_info ("                     -[x|y|z]mean X = mean for the [x|y|z] dimension (defaults: ");
-  print_value ("%f, %f, %f", default_xmean, default_ymean, default_zmean); print_info (")\n");
-  print_info ("                     -[x|y|z]stddev X = standard deviation for the [x|y|z] dimension (defaults: ");
-  print_value ("%f, %f, %f", default_xstddev, default_ystddev, default_zstddev); print_info (")\n");
+  print_error("Syntax is: %s output.pcd <options>\n", argv[0]);
+  print_info("  where options are:\n");
+  print_info("                     -distribution X = the distribution to be used "
+             "(options: uniform / normal) (default: ");
+  print_value("%s", default_distribution.c_str());
+  print_info(")\n");
+  print_info("                     -size X = number of points in cloud (default: ");
+  print_value("%d", default_size);
+  print_info(")\n");
+  print_info("                Options for uniform distribution:\n");
+  print_info("                     -[x|y|z]min X = minimum for the [x|y|z] dimension "
+             "(defaults: ");
+  print_value("%f, %f, %f", default_xmin, default_ymin, default_zmin);
+  print_info(")\n");
+  print_info("                     -[x|y|z]max X = maximum for the [x|y|z] dimension "
+             "(defaults: ");
+  print_value("%f, %f, %f", default_xmax, default_ymax, default_zmax);
+  print_info(")\n");
+  print_info("                Options for normal distribution:\n");
+  print_info("                     -[x|y|z]mean X = mean for the [x|y|z] dimension "
+             "(defaults: ");
+  print_value("%f, %f, %f", default_xmean, default_ymean, default_zmean);
+  print_info(")\n");
+  print_info("                     -[x|y|z]stddev X = standard deviation for the "
+             "[x|y|z] dimension (defaults: ");
+  print_value("%f, %f, %f", default_xstddev, default_ystddev, default_zstddev);
+  print_info(")\n");
 }
 
 void
-saveCloud (const std::string &filename, const Cloud &output)
+saveCloud (const std::string& filename, const Cloud& output)
 {
   TicToc tt;
-  tt.tic ();
+  tt.tic();
 
-  print_highlight ("Saving "); print_value ("%s ", filename.c_str ());
+  print_highlight("Saving ");
+  print_value("%s ", filename.c_str());
 
   PCDWriter w;
-  w.writeBinaryCompressed (filename, output);
+  w.writeBinaryCompressed(filename, output);
 
-  print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%d", output.width * output.height); print_info (" points]\n");
+  print_info("[done, ");
+  print_value("%g", tt.toc());
+  print_info(" ms : ");
+  print_value("%d", output.width * output.height);
+  print_info(" points]\n");
 }
 
 /* ---[ */
 int
 main (int argc, char** argv)
 {
-  if (find_switch (argc, argv, "-h"))
-  {
-    printHelp (argc, argv);
+  if (find_switch(argc, argv, "-h")) {
+    printHelp(argc, argv);
     return (0);
   }
 
-  print_info ("Generate a random point cloud. For more information, use: %s -h\n", argv[0]);
+  print_info("Generate a random point cloud. For more information, use: %s -h\n",
+             argv[0]);
 
-  if (argc < 2)
-  {
-    printHelp (argc, argv);
+  if (argc < 2) {
+    printHelp(argc, argv);
     return (-1);
   }
 
@@ -138,27 +153,26 @@ main (int argc, char** argv)
   float zmean = default_zmean;
   float zstddev = default_zstddev;
   int size = default_size;
-  parse_argument (argc, argv, "-distribution", distribution);
-  parse_argument (argc, argv, "-xmin", xmin);
-  parse_argument (argc, argv, "-xmax", xmax);
-  parse_argument (argc, argv, "-xmean", xmean);
-  parse_argument (argc, argv, "-xstddev", xstddev);
-  parse_argument (argc, argv, "-ymin", ymin);
-  parse_argument (argc, argv, "-ymax", ymax);
-  parse_argument (argc, argv, "-ymean", ymean);
-  parse_argument (argc, argv, "-ystddev", ystddev);
-  parse_argument (argc, argv, "-zmin", zmin);
-  parse_argument (argc, argv, "-zmax", zmax);
-  parse_argument (argc, argv, "-zmean", zmean);
-  parse_argument (argc, argv, "-zstddev", zstddev);
-  parse_argument (argc, argv, "-size", size);
+  parse_argument(argc, argv, "-distribution", distribution);
+  parse_argument(argc, argv, "-xmin", xmin);
+  parse_argument(argc, argv, "-xmax", xmax);
+  parse_argument(argc, argv, "-xmean", xmean);
+  parse_argument(argc, argv, "-xstddev", xstddev);
+  parse_argument(argc, argv, "-ymin", ymin);
+  parse_argument(argc, argv, "-ymax", ymax);
+  parse_argument(argc, argv, "-ymean", ymean);
+  parse_argument(argc, argv, "-ystddev", ystddev);
+  parse_argument(argc, argv, "-zmin", zmin);
+  parse_argument(argc, argv, "-zmax", zmax);
+  parse_argument(argc, argv, "-zmean", zmean);
+  parse_argument(argc, argv, "-zstddev", zstddev);
+  parse_argument(argc, argv, "-size", size);
 
   // Parse the command line arguments for .pcd files
   std::vector<int> p_file_indices;
-  p_file_indices = parse_file_extension_argument (argc, argv, ".pcd");
-  if (p_file_indices.size () != 1)
-  {
-    print_error ("Need one output PCD file to continue.\n");
+  p_file_indices = parse_file_extension_argument(argc, argv, ".pcd");
+  if (p_file_indices.size() != 1) {
+    print_error("Need one output PCD file to continue.\n");
     return (-1);
   }
 
@@ -167,45 +181,45 @@ main (int argc, char** argv)
 
   // Estimate
   TicToc tt;
-  tt.tic ();
+  tt.tic();
 
-  print_highlight (stderr, "Computing ");
+  print_highlight(stderr, "Computing ");
 
-  if (distribution == "uniform")
-  {
-    CloudGenerator<pcl::PointXYZ, UniformGenerator<float> > generator;
-    auto seed = static_cast<std::uint32_t> (time (nullptr));
-    UniformGenerator<float>::Parameters x_params (xmin, xmax, seed++);
-    generator.setParametersForX (x_params);
-    UniformGenerator<float>::Parameters y_params (ymin, ymax, seed++);
-    generator.setParametersForY (y_params);
-    UniformGenerator<float>::Parameters z_params (zmin, zmax, seed++);
-    generator.setParametersForZ (z_params);
+  if (distribution == "uniform") {
+    CloudGenerator<pcl::PointXYZ, UniformGenerator<float>> generator;
+    auto seed = static_cast<std::uint32_t>(time(nullptr));
+    UniformGenerator<float>::Parameters x_params(xmin, xmax, seed++);
+    generator.setParametersForX(x_params);
+    UniformGenerator<float>::Parameters y_params(ymin, ymax, seed++);
+    generator.setParametersForY(y_params);
+    UniformGenerator<float>::Parameters z_params(zmin, zmax, seed++);
+    generator.setParametersForZ(z_params);
 
-    generator.fill (size, 1, output);
+    generator.fill(size, 1, output);
   }
-  else if (distribution == "normal")
-  {
-    CloudGenerator<pcl::PointXYZ, NormalGenerator<float> > generator;
-    auto seed = static_cast<std::uint32_t> (time (nullptr));
-    NormalGenerator<float>::Parameters x_params (xmean, xstddev, seed++);
-    generator.setParametersForX (x_params);
-    NormalGenerator<float>::Parameters y_params (ymean, ystddev, seed++);
-    generator.setParametersForY (y_params);
-    NormalGenerator<float>::Parameters z_params (zmean, zstddev, seed++);
-    generator.setParametersForZ (z_params);
+  else if (distribution == "normal") {
+    CloudGenerator<pcl::PointXYZ, NormalGenerator<float>> generator;
+    auto seed = static_cast<std::uint32_t>(time(nullptr));
+    NormalGenerator<float>::Parameters x_params(xmean, xstddev, seed++);
+    generator.setParametersForX(x_params);
+    NormalGenerator<float>::Parameters y_params(ymean, ystddev, seed++);
+    generator.setParametersForY(y_params);
+    NormalGenerator<float>::Parameters z_params(zmean, zstddev, seed++);
+    generator.setParametersForZ(z_params);
 
-    generator.fill (size, 1, output);
+    generator.fill(size, 1, output);
   }
-  else
-  {
-    PCL_ERROR ("%s is not a valid generator! Quitting!\n", distribution.c_str ());
+  else {
+    PCL_ERROR("%s is not a valid generator! Quitting!\n", distribution.c_str());
     return (0);
   }
 
-  print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%d", output.width * output.height); print_info (" points]\n");
+  print_info("[done, ");
+  print_value("%g", tt.toc());
+  print_info(" ms : ");
+  print_value("%d", output.width * output.height);
+  print_info(" points]\n");
 
   // Save into the second file
-  saveCloud (argv[p_file_indices[0]], output);
+  saveCloud(argv[p_file_indices[0]], output);
 }
-

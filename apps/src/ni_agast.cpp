@@ -74,7 +74,7 @@ public:
 
   /////////////////////////////////////////////////////////////////////////
   void
-  cloud_callback(const CloudConstPtr& cloud)
+  cloud_callback (const CloudConstPtr& cloud)
   {
     FPS_CALC("cloud callback");
     std::lock_guard<std::mutex> lock(cloud_mutex_);
@@ -127,7 +127,7 @@ public:
 
   /////////////////////////////////////////////////////////////////////////
   void
-  keyboard_callback(const pcl::visualization::KeyboardEvent& event, void* cookie)
+  keyboard_callback (const pcl::visualization::KeyboardEvent& event, void* cookie)
   {
     AGASTDemo* obj = static_cast<AGASTDemo*>(cookie);
 
@@ -191,25 +191,25 @@ public:
 
   /////////////////////////////////////////////////////////////////////////
   void
-  init()
+  init ()
   {
     std::function<void(const CloudConstPtr&)> cloud_cb =
-        [this](const CloudConstPtr& cloud) { cloud_callback(cloud); };
+        [this] (const CloudConstPtr& cloud) { cloud_callback(cloud); };
     cloud_connection = grabber_.registerCallback(cloud_cb);
   }
 
   /////////////////////////////////////////////////////////////////////////
   std::string
-  getStrBool(bool state)
+  getStrBool (bool state)
   {
     return state ? "1" : "0";
   }
 
   /////////////////////////////////////////////////////////////////////////
   void
-  get3DKeypoints(const CloudConstPtr& cloud,
-                 const PointCloud<KeyPointT>::Ptr& keypoints,
-                 PointCloud<PointT>& keypoints3d)
+  get3DKeypoints (const CloudConstPtr& cloud,
+                  const PointCloud<KeyPointT>::Ptr& keypoints,
+                  PointCloud<PointT>& keypoints3d)
   {
     if (!cloud || !keypoints || cloud->points.empty() || keypoints->points.empty())
       return;
@@ -241,7 +241,7 @@ public:
 
   /////////////////////////////////////////////////////////////////////////
   void
-  run()
+  run ()
   {
     cloud_viewer_.registerKeyboardCallback(
         &AGASTDemo::keyboard_callback, *this, static_cast<AGASTDemo*>(this));
@@ -341,7 +341,7 @@ private:
 
 /* ---[ */
 int
-main(int argc, char** argv)
+main (int argc, char** argv)
 {
   bool debug = false;
   pcl::console::parse_argument(argc, argv, "-debug", debug);

@@ -8,7 +8,7 @@
 // THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT EXPRESS OR IMPLIED WARRANTY.
 // ALL IMPLIED WARRANTIES OF FITNESS FOR ANY PARTICULAR PURPOSE AND OF
 // MERCHANTABILITY ARE HEREBY DISCLAIMED.
-//				
+//
 // For complete openNURBS copyright information see <http://www.opennurbs.org>.
 //
 ////////////////////////////////////////////////////////////////
@@ -57,7 +57,7 @@
 
 #if _MSC_VER >= 1300
 #define ON_COMPILER_MSC1300
-// If you are using VC7/.NET and are having trouble linking 
+// If you are using VC7/.NET and are having trouble linking
 // to functions that have whcar_t types in arguments, then
 // read the documentation about the wchar_t type and
 // the /Zc:wchar_t compiler option.
@@ -65,7 +65,6 @@
 #if _MSC_VER >= 1400
 // Using at least Visual C++ 8.0 (2005)
 #define ON_COMPILER_MSC1400
-
 
 #if _MSC_VER >= 1600
 // Using at least Visual C++ 10.0 (2010)
@@ -79,7 +78,7 @@
 // to enable specific warnings.
 
 #if defined(ON_COMPILING_OPENNURBS)
-#pragma warning(disable:4100) // C4100: 'identifier' : unreferenced formal parameter
+#pragma warning(disable : 4100) // C4100: 'identifier' : unreferenced formal parameter
 #endif
 
 #if !defined(_CRT_SECURE_NO_DEPRECATE)
@@ -97,7 +96,8 @@
 
 #endif
 
-#if defined(__GNUG_) || defined(__GNUG__) || defined(__GNUC_) || defined(__GNUC__) || defined(_GNU_SOURCE) || defined(__GNU_SOURCE)
+#if defined(__GNUG_) || defined(__GNUG__) || defined(__GNUC_) || defined(__GNUC__) ||  \
+    defined(_GNU_SOURCE) || defined(__GNU_SOURCE)
 /* using Gnu's compiler */
 #if !defined(ON_COMPILER_GNU)
 #define ON_COMPILER_GNU
@@ -106,7 +106,6 @@
 #define _GNU_SOURCE
 #endif
 #endif
-
 
 #if defined(_GNU_SOURCE) && defined(__APPLE__)
 /* using Apple's OSX XCode compiler */
@@ -130,22 +129,22 @@
 /*
 /////////////////////////////////////////////////////////////////////////
 //
-// Begin Windows system includes - 
+// Begin Windows system includes -
 */
 #if defined(_WIN32) || defined(WIN32) || defined(_WIN64) || defined(WIN64)
 
 #if defined(_M_X64) && defined(WIN32) && defined(WIN64)
 // 23 August 2007 Dale Lear
 
-//#if defined(_INC_WINDOWS)
-// The user has included Microsoft's windows.h before opennurbs.h,
-// and windows.h has nested includes that unconditionally define WIN32.
-// Just undo the damage here or everybody that includes opennurbs.h after
-// windows.h has to fight with this Microsoft bug.
+// #if defined(_INC_WINDOWS)
+//  The user has included Microsoft's windows.h before opennurbs.h,
+//  and windows.h has nested includes that unconditionally define WIN32.
+//  Just undo the damage here or everybody that includes opennurbs.h after
+//  windows.h has to fight with this Microsoft bug.
 #undef WIN32
-//#else
-//#error do not define WIN32 for x64 builds
-//#endif
+// #else
+// #error do not define WIN32 for x64 builds
+// #endif
 
 // NOTE _WIN32 is defined for any type of Windows build
 #endif
@@ -153,21 +152,22 @@
 /*
 // From windows.h openNURBS only needs definitions of ON_BOOL32, true,
 // and false, and a declarations of OutputDebugString(), and
-// WideCharToMultiByte().  These 
+// WideCharToMultiByte().  These
 // defines disable the inclusion of most of the Windows garbage.
 */
 
 #if defined(ON_COMPILER_MSC1600)
 // include SKDDDKVer.h When using the v100 platform headers.
 // Including SDKDDKVer.h defines the highest available Windows platform.
-// If you wish to build your application for a previous Windows platform, include WinSDKVer.h and
-// set the _WIN32_WINNT macro to the platform you wish to support before including SDKDDKVer.h.
-//#include <SDKDDKVer.h>
+// If you wish to build your application for a previous Windows platform, include
+// WinSDKVer.h and set the _WIN32_WINNT macro to the platform you wish to support before
+// including SDKDDKVer.h.
+// #include <SDKDDKVer.h>
 #endif
 
 #if !defined(_WINDOWS_)
 /* windows.h has not been read - read just what we need */
-#define WIN32_LEAN_AND_MEAN  /* Exclude rarely-used stuff from Windows headers */
+#define WIN32_LEAN_AND_MEAN /* Exclude rarely-used stuff from Windows headers */
 #include <windows.h>
 #endif
 
@@ -194,10 +194,10 @@
 #endif
 
 #if defined(_MSC_VER)
-/* 
+/*
   Microsoft's Visual C/C++ requires some functions, including those that
-  use vargs to be declared with __cdecl 
-  Since this code must also compile with non-Micorosoft compilers, 
+  use vargs to be declared with __cdecl
+  Since this code must also compile with non-Micorosoft compilers,
   the ON_MSC_CDECL macro is used to insert __cdecl when needed.
 */
 #define ON_MSC_CDECL __cdecl
@@ -210,28 +210,28 @@
 
 // NOTE: Do not use rand_s() - it crashes Win2000.
 //
-//#if defined(_MSC_VER) && !defined(_CRT_RAND_S)
+// #if defined(_MSC_VER) && !defined(_CRT_RAND_S)
 //// In order to get high quality random numbers out of
 //// Microsoft Visual Studio, you have to define _CRT_RAND_S
 //// before including system header files.
-//#define _CRT_RAND_S
-//#endif
+// #define _CRT_RAND_S
+// #endif
 
-#include <stdlib.h>
 #include <memory.h>
+#include <stdlib.h>
 #if defined(ON_COMPILER_XCODE)
 #include <malloc/malloc.h>
 #else
 #include <malloc.h>
 #endif
-#include <string.h>
-#include <math.h>
-#include <stdio.h>
-#include <stdarg.h>
-#include <float.h>
-#include <time.h>
-#include <limits.h>
 #include <ctype.h>
+#include <float.h>
+#include <limits.h>
+#include <math.h>
+#include <stdarg.h>
+#include <stdio.h>
+#include <string.h>
+#include <time.h>
 
 #if defined(ON_COMPILER_IRIX)
 #include <alloca.h>
@@ -253,10 +253,10 @@
 #endif
 
 #if defined(ON_COMPILER_GNU)
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <wctype.h>
 #include <dirent.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <wctype.h>
 #if defined(ON_COMPILER_XCODE)
 #include <uuid/uuid.h>
 #endif
@@ -264,7 +264,7 @@
 
 #include <errno.h>
 
-#if defined (cplusplus) || defined(_cplusplus) || defined(__cplusplus)
+#if defined(cplusplus) || defined(_cplusplus) || defined(__cplusplus)
 // C++ system includes
 
 #if !defined(ON_CPLUSPLUS)
@@ -296,10 +296,10 @@
 #endif
 
 #if !defined(_WCHAR_T_DEFINED)
-// If you are using VC7/.NET and are having trouble linking 
+// If you are using VC7/.NET and are having trouble linking
 // to functions that have whcar_t types in arguments, then
 // read the documentation about the wchar_t type and
-// the /Zc:wchar_t compiler option.  Since 
+// the /Zc:wchar_t compiler option.  Since
 
 /* 16-bit wide character ("UNICODE") */
 
@@ -312,13 +312,12 @@ typedef unsigned short wchar_t;
 
 #endif
 
-
 // As 64 bit compilers become more common, the definitions
 // of the next 6 typedefs may need to vary with compiler.
-// As much as possible, the size of runtime types is left 
-// up to the compiler so performance and ease of use can 
-// be maximized.  In the rare cases where it is critical 
-// to use an integer that is exactly 16 bits, 32 bits 
+// As much as possible, the size of runtime types is left
+// up to the compiler so performance and ease of use can
+// be maximized.  In the rare cases where it is critical
+// to use an integer that is exactly 16 bits, 32 bits
 // or 64 bits, the ON__INT16, ON__INT32, and ON__INT64
 // typedefs are used.
 
@@ -387,7 +386,8 @@ typedef unsigned long long ON__UINT64;
 #endif
 
 // 32 bit boolean (true/false) value
-// When we can break the SDK, this will be replaced with "bool", which is 1 byte on windows.
+// When we can break the SDK, this will be replaced with "bool", which is 1 byte on
+// windows.
 typedef int ON_BOOL32;
 
 // ON_INT_PTR must be an integer type with sizeof(ON_INT_PTR) = sizeof(void*).
@@ -410,9 +410,7 @@ typedef unsigned int ON__UINT_PTR;
 #error Update OpenNURBS to work with new pointer size.
 #endif
 
-
-
-// In some functions, performance is slightly increased 
+// In some functions, performance is slightly increased
 // when the endianess of the CPU is known at compile time.
 // If the endianness is not known, it is quickly detected
 // at runtime and all opennurbs code still works.
@@ -443,25 +441,23 @@ typedef unsigned int ON__UINT_PTR;
 
 #if (defined(__ppc__) || defined(__ppc64__))
 #define ON_BIG_ENDIAN
-#elif (defined (__i386__) || defined( __x86_64__ ))
+#elif (defined(__i386__) || defined(__x86_64__))
 #define ON_LITTLE_ENDIAN
 #endif
 
 #endif
 
-
 #if defined(ON_LITTLE_ENDIAN) && defined(ON_BIG_ENDIAN)
 #error At most one of ON_LITTLE_ENDIAN and ON_BIG_ENDIAN can be defined.
 #endif
 
-
 // on_vsnprintf()/on_vsnwprintf() call _vsnprintf()/_vsnwprintf() in Windows
 // and something equivalent in other OSs
 
-int on_vsnprintf( char *buffer, size_t count, const char *format, va_list argptr );
+int
+on_vsnprintf (char* buffer, size_t count, const char* format, va_list argptr);
 
-int on_vsnwprintf( wchar_t *buffer, size_t count, const wchar_t *format, va_list argptr );
-
+int
+on_vsnwprintf (wchar_t* buffer, size_t count, const wchar_t* format, va_list argptr);
 
 #endif
-

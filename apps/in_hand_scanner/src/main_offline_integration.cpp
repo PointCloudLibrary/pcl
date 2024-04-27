@@ -44,7 +44,7 @@
 #include <QTimer>
 
 int
-main(int argc, char** argv)
+main (int argc, char** argv)
 {
   QApplication app(argc, argv);
   pcl::ihs::OfflineIntegration oi;

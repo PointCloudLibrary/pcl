@@ -38,124 +38,127 @@
 #pragma once
 
 #if defined __GNUC__
-#  pragma GCC system_header
+#pragma GCC system_header
 #endif
 
-#include <Eigen/Core>
 #include <pcl/console/print.h>
 
+#include <Eigen/Core>
+
 /**
-  * \file common/geometry.h
-  * Defines some geometrical functions and utility functions
-  * \ingroup common
-  */
+ * \file common/geometry.h
+ * Defines some geometrical functions and utility functions
+ * \ingroup common
+ */
 
 /*@{*/
-namespace pcl
+namespace pcl {
+namespace geometry {
+/** @return the euclidean distance between 2 points */
+template <typename PointT>
+inline float
+distance (const PointT& p1, const PointT& p2)
 {
-  namespace geometry
-  {
-    /** @return the euclidean distance between 2 points */
-    template <typename PointT> inline float 
-    distance (const PointT& p1, const PointT& p2)
-    {
-      Eigen::Vector3f diff = p1.getVector3fMap () - p2.getVector3fMap ();
-      return (diff.norm ());
-    }
-
-    /** @return the squared euclidean distance between 2 points */
-    template<typename PointT> inline float 
-    squaredDistance (const PointT& p1, const PointT& p2)
-    {
-      Eigen::Vector3f diff = p1.getVector3fMap () - p2.getVector3fMap ();
-      return (diff.squaredNorm ());
-    }
-
-    /** @return the point projection on a plane defined by its origin and normal vector 
-      * \param[in] point Point to be projected
-      * \param[in] plane_origin The plane origin
-      * \param[in] plane_normal The plane normal 
-      * \param[out] projected The returned projected point
-      */
-    template<typename PointT, typename NormalT> inline void 
-    project (const PointT& point, const PointT &plane_origin, 
-             const NormalT& plane_normal, PointT& projected)
-    {
-      Eigen::Vector3f po = point - plane_origin;
-      const Eigen::Vector3f normal = plane_normal.getVector3fMapConst ();
-      float lambda = normal.dot(po);
-      projected.getVector3fMap () = point.getVector3fMapConst () - (lambda * normal);
-    }
-
-    /** @return the point projection on a plane defined by its origin and normal vector 
-      * \param[in] point Point to be projected
-      * \param[in] plane_origin The plane origin
-      * \param[in] plane_normal The plane normal 
-      * \param[out] projected The returned projected point
-      */
-    inline void 
-    project (const Eigen::Vector3f& point, const Eigen::Vector3f &plane_origin, 
-             const Eigen::Vector3f& plane_normal, Eigen::Vector3f& projected)
-    {
-      Eigen::Vector3f po = point - plane_origin;
-      float lambda = plane_normal.dot(po);
-      projected = point - (lambda * plane_normal);
-    }
-
-
-    /** \brief Given a plane defined by plane_origin and plane_normal, find the unit vector pointing from plane_origin to the projection of point on the plane.
-      * 
-      * \param[in] point Point projected on the plane
-      * \param[in] plane_origin The plane origin
-      * \param[in] plane_normal The plane normal 
-      * \return unit vector pointing from plane_origin to the projection of point on the plane.
-      * \ingroup geometry
-      */
-    inline Eigen::Vector3f
-    projectedAsUnitVector (Eigen::Vector3f const &point,
-                           Eigen::Vector3f const &plane_origin,
-                           Eigen::Vector3f const &plane_normal)
-    {
-      Eigen::Vector3f projection;
-      project (point, plane_origin, plane_normal, projection);
-      Eigen::Vector3f projected_as_unit_vector = projection - plane_origin;
-      projected_as_unit_vector.normalize ();
-      return projected_as_unit_vector;
-    }
-
-
-    /** \brief Define a random unit vector orthogonal to axis.
-      * 
-      * \param[in] axis Axis
-      * \return random unit vector orthogonal to axis
-      * \ingroup geometry
-      */
-    inline Eigen::Vector3f
-    randomOrthogonalAxis (Eigen::Vector3f const &axis)
-    {
-      Eigen::Vector3f rand_ortho_axis;
-      rand_ortho_axis.setRandom();
-      if (std::abs (axis.z ()) > 1E-8f)
-      {
-        rand_ortho_axis.z () = -(axis.x () * rand_ortho_axis.x () + axis.y () * rand_ortho_axis.y ()) / axis.z ();
-      }
-      else if (std::abs (axis.y ()) > 1E-8f)
-      {
-        rand_ortho_axis.y () = -(axis.x () * rand_ortho_axis.x () + axis.z () * rand_ortho_axis.z ()) / axis.y ();
-      }
-      else if (std::abs (axis.x ()) > 1E-8f)
-      {
-        rand_ortho_axis.x () = -(axis.y () * rand_ortho_axis.y () + axis.z () * rand_ortho_axis.z ()) / axis.x ();
-      }
-      else
-      {
-        PCL_WARN ("[pcl::randomOrthogonalAxis] provided axis has norm < 1E-8f\n");
-      }
-
-      rand_ortho_axis.normalize ();
-      return rand_ortho_axis;
-    }
-
-
-  }
+  Eigen::Vector3f diff = p1.getVector3fMap() - p2.getVector3fMap();
+  return (diff.norm());
 }
+
+/** @return the squared euclidean distance between 2 points */
+template <typename PointT>
+inline float
+squaredDistance (const PointT& p1, const PointT& p2)
+{
+  Eigen::Vector3f diff = p1.getVector3fMap() - p2.getVector3fMap();
+  return (diff.squaredNorm());
+}
+
+/** @return the point projection on a plane defined by its origin and normal vector
+ * \param[in] point Point to be projected
+ * \param[in] plane_origin The plane origin
+ * \param[in] plane_normal The plane normal
+ * \param[out] projected The returned projected point
+ */
+template <typename PointT, typename NormalT>
+inline void
+project (const PointT& point,
+         const PointT& plane_origin,
+         const NormalT& plane_normal,
+         PointT& projected)
+{
+  Eigen::Vector3f po = point - plane_origin;
+  const Eigen::Vector3f normal = plane_normal.getVector3fMapConst();
+  float lambda = normal.dot(po);
+  projected.getVector3fMap() = point.getVector3fMapConst() - (lambda * normal);
+}
+
+/** @return the point projection on a plane defined by its origin and normal vector
+ * \param[in] point Point to be projected
+ * \param[in] plane_origin The plane origin
+ * \param[in] plane_normal The plane normal
+ * \param[out] projected The returned projected point
+ */
+inline void
+project (const Eigen::Vector3f& point,
+         const Eigen::Vector3f& plane_origin,
+         const Eigen::Vector3f& plane_normal,
+         Eigen::Vector3f& projected)
+{
+  Eigen::Vector3f po = point - plane_origin;
+  float lambda = plane_normal.dot(po);
+  projected = point - (lambda * plane_normal);
+}
+
+/** \brief Given a plane defined by plane_origin and plane_normal, find the unit vector
+ * pointing from plane_origin to the projection of point on the plane.
+ *
+ * \param[in] point Point projected on the plane
+ * \param[in] plane_origin The plane origin
+ * \param[in] plane_normal The plane normal
+ * \return unit vector pointing from plane_origin to the projection of point on the
+ * plane. \ingroup geometry
+ */
+inline Eigen::Vector3f
+projectedAsUnitVector (Eigen::Vector3f const& point,
+                       Eigen::Vector3f const& plane_origin,
+                       Eigen::Vector3f const& plane_normal)
+{
+  Eigen::Vector3f projection;
+  project(point, plane_origin, plane_normal, projection);
+  Eigen::Vector3f projected_as_unit_vector = projection - plane_origin;
+  projected_as_unit_vector.normalize();
+  return projected_as_unit_vector;
+}
+
+/** \brief Define a random unit vector orthogonal to axis.
+ *
+ * \param[in] axis Axis
+ * \return random unit vector orthogonal to axis
+ * \ingroup geometry
+ */
+inline Eigen::Vector3f
+randomOrthogonalAxis (Eigen::Vector3f const& axis)
+{
+  Eigen::Vector3f rand_ortho_axis;
+  rand_ortho_axis.setRandom();
+  if (std::abs(axis.z()) > 1E-8f) {
+    rand_ortho_axis.z() =
+        -(axis.x() * rand_ortho_axis.x() + axis.y() * rand_ortho_axis.y()) / axis.z();
+  }
+  else if (std::abs(axis.y()) > 1E-8f) {
+    rand_ortho_axis.y() =
+        -(axis.x() * rand_ortho_axis.x() + axis.z() * rand_ortho_axis.z()) / axis.y();
+  }
+  else if (std::abs(axis.x()) > 1E-8f) {
+    rand_ortho_axis.x() =
+        -(axis.y() * rand_ortho_axis.y() + axis.z() * rand_ortho_axis.z()) / axis.x();
+  }
+  else {
+    PCL_WARN("[pcl::randomOrthogonalAxis] provided axis has norm < 1E-8f\n");
+  }
+
+  rand_ortho_axis.normalize();
+  return rand_ortho_axis;
+}
+
+} // namespace geometry
+} // namespace pcl

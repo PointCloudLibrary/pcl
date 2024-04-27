@@ -40,15 +40,15 @@
 #pragma once
 
 #if defined __GNUC__
-#  pragma GCC system_header 
+#pragma GCC system_header
 #endif
 PCL_DEPRECATED_HEADER(1, 16, "Please include the needed boost headers directly.")
 
 #include <boost/shared_array.hpp>
 #define BOOST_PARAMETER_MAX_ARITY 7
-#include <boost/signals2.hpp>
 #include <boost/algorithm/string.hpp>
-#include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string/classification.hpp>
-#include <boost/foreach.hpp>
+#include <boost/algorithm/string/split.hpp>
 #include <boost/filesystem.hpp>
+#include <boost/foreach.hpp>
+#include <boost/signals2.hpp>

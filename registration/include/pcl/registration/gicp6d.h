@@ -80,7 +80,7 @@ public:
    * \param[in] cloud the input point cloud source
    */
   void
-  setInputSource(const PointCloudSourceConstPtr& cloud) override;
+  setInputSource (const PointCloudSourceConstPtr& cloud) override;
 
   /** \brief Provide a pointer to the input target
    * (e.g., the point cloud that we want to align the input source to)
@@ -88,7 +88,7 @@ public:
    * \param[in] target the input point cloud target
    */
   void
-  setInputTarget(const PointCloudTargetConstPtr& target) override;
+  setInputTarget (const PointCloudTargetConstPtr& target) override;
 
 protected:
   /** \brief Rigid transformation computation method  with initial guess.
@@ -97,8 +97,8 @@ protected:
    * compute
    */
   void
-  computeTransformation(PointCloudSource& output,
-                        const Eigen::Matrix4f& guess) override;
+  computeTransformation (PointCloudSource& output,
+                         const Eigen::Matrix4f& guess) override;
 
   /** \brief Search for the closest nearest neighbor of a given point.
    * \param query the point to search a nearest neighbour for
@@ -106,9 +106,9 @@ protected:
    * \param distance vector of size 1 to store the distance to nearest neighbour found
    */
   inline bool
-  searchForNeighbors(const PointXYZLAB& query,
-                     pcl::Indices& index,
-                     std::vector<float>& distance);
+  searchForNeighbors (const PointXYZLAB& query,
+                      pcl::Indices& index,
+                      std::vector<float>& distance);
 
 protected:
   /** \brief Holds the converted (LAB) data cloud. */
@@ -142,13 +142,13 @@ protected:
     ~MyPointRepresentation() override = default;
 
     inline Ptr
-    makeShared() const
+    makeShared () const
     {
       return Ptr(new MyPointRepresentation(*this));
     }
 
     void
-    copyToFloatArray(const PointXYZLAB& p, float* out) const override
+    copyToFloatArray (const PointXYZLAB& p, float* out) const override
     {
       // copy all of the six values
       out[0] = p.x;

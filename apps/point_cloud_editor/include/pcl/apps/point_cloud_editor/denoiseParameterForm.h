@@ -40,73 +40,68 @@
 
 #pragma once
 
-#include <QLineEdit>
 #include <QDialog>
 #include <QDialogButtonBox>
 #include <QFormLayout>
-#include <QVBoxLayout>
 #include <QLineEdit>
+#include <QVBoxLayout>
 
-class DenoiseParameterForm : public QDialog
-{
+class DenoiseParameterForm : public QDialog {
   Q_OBJECT
 
-  public:
-    /// @brief Default Constructor
-    DenoiseParameterForm();
+public:
+  /// @brief Default Constructor
+  DenoiseParameterForm();
 
-    /// @brief Destructor
-    ~DenoiseParameterForm () override;
+  /// @brief Destructor
+  ~DenoiseParameterForm() override;
 
-    /// @brief Returns the mean
-    inline
-    float
-    getMeanK () const
-    {
-      return (mean_k_);
-    }
+  /// @brief Returns the mean
+  inline float
+  getMeanK () const
+  {
+    return (mean_k_);
+  }
 
-    /// @brief Returns the standard deviation multiplier threshold
-    inline
-    float
-    getStdDevThresh () const
-    {
-      return (std_dev_thresh_);
-    }
+  /// @brief Returns the standard deviation multiplier threshold
+  inline float
+  getStdDevThresh () const
+  {
+    return (std_dev_thresh_);
+  }
 
-    /// @brief Checks whether the OK button was pressed.
-    inline
-    bool
-    ok () const
-    {
-      return (ok_);
-    }
+  /// @brief Checks whether the OK button was pressed.
+  inline bool
+  ok () const
+  {
+    return (ok_);
+  }
 
-  private Q_SLOTS:
-    /// @brief Accepts and stores the current user inputs, and turns off the
-    /// dialog box.
-    void
-    accept () override;
+private Q_SLOTS:
+  /// @brief Accepts and stores the current user inputs, and turns off the
+  /// dialog box.
+  void
+  accept () override;
 
-    /// @brief Rejects the current inputs, and turns off the dialog box.
-    void
-    reject () override;
+  /// @brief Rejects the current inputs, and turns off the dialog box.
+  void
+  reject () override;
 
-  private:
-    /// The line for entering the mean
-    QLineEdit *mean_K_line_;
-    /// The line for entering the standard deviation multiplier threshold
-    QLineEdit *std_dev_mul_thresh_line_;
-    /// The button box.
-    QDialogButtonBox *button_box_;
-    /// The layout of the two input QLineEdit objects
-    QFormLayout *layout_;
-    /// The main layout for the dialog
-    QVBoxLayout* main_layout_;
-    /// The mean
-    float mean_k_;
-    /// The standard deviation multiplier threshold
-    float std_dev_thresh_;
-    /// The flag indicating whether the OK button was pressed
-    bool ok_;
+private:
+  /// The line for entering the mean
+  QLineEdit* mean_K_line_;
+  /// The line for entering the standard deviation multiplier threshold
+  QLineEdit* std_dev_mul_thresh_line_;
+  /// The button box.
+  QDialogButtonBox* button_box_;
+  /// The layout of the two input QLineEdit objects
+  QFormLayout* layout_;
+  /// The main layout for the dialog
+  QVBoxLayout* main_layout_;
+  /// The mean
+  float mean_k_;
+  /// The standard deviation multiplier threshold
+  float std_dev_thresh_;
+  /// The flag indicating whether the OK button was pressed
+  bool ok_;
 };

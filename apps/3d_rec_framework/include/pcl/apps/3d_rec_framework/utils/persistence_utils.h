@@ -10,7 +10,7 @@ namespace rec_3d_framework {
 namespace PersistenceUtils {
 
 inline bool
-writeCentroidToFile(const std::string& file, Eigen::Vector3f& centroid)
+writeCentroidToFile (const std::string& file, Eigen::Vector3f& centroid)
 {
   std::ofstream out(file.c_str());
   if (!out) {
@@ -25,7 +25,7 @@ writeCentroidToFile(const std::string& file, Eigen::Vector3f& centroid)
 }
 
 inline bool
-getCentroidFromFile(const std::string& file, Eigen::Vector3f& centroid)
+getCentroidFromFile (const std::string& file, Eigen::Vector3f& centroid)
 {
   std::ifstream in;
   in.open(file.c_str(), std::ifstream::in);
@@ -43,7 +43,7 @@ getCentroidFromFile(const std::string& file, Eigen::Vector3f& centroid)
 }
 
 inline bool
-writeMatrixToFile(const std::string& file, Eigen::Matrix4f& matrix)
+writeMatrixToFile (const std::string& file, Eigen::Matrix4f& matrix)
 {
   std::ofstream out(file.c_str());
   if (!out) {
@@ -64,7 +64,7 @@ writeMatrixToFile(const std::string& file, Eigen::Matrix4f& matrix)
 }
 
 inline bool
-writeFloatToFile(const std::string& file, float value)
+writeFloatToFile (const std::string& file, float value)
 {
   std::ofstream out(file.c_str());
   if (!out) {
@@ -79,7 +79,7 @@ writeFloatToFile(const std::string& file, float value)
 }
 
 inline std::string
-getViewId(std::string id)
+getViewId (std::string id)
 {
   std::vector<std::string> strs;
   boost::split(strs, id, boost::is_any_of("_"));
@@ -88,7 +88,7 @@ getViewId(std::string id)
 }
 
 inline bool
-readFloatFromFile(const std::string& file, float& value)
+readFloatFromFile (const std::string& file, float& value)
 {
 
   std::ifstream in;
@@ -102,7 +102,7 @@ readFloatFromFile(const std::string& file, float& value)
 }
 
 inline bool
-readMatrixFromFile(const std::string& file, Eigen::Matrix4f& matrix)
+readMatrixFromFile (const std::string& file, Eigen::Matrix4f& matrix)
 {
 
   std::ifstream in;

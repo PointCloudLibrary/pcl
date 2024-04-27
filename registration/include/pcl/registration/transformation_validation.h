@@ -94,9 +94,9 @@ public:
    * transformation_matrix with respect to the input data
    */
   virtual double
-  validateTransformation(const PointCloudSourceConstPtr& cloud_src,
-                         const PointCloudTargetConstPtr& cloud_tgt,
-                         const Matrix4& transformation_matrix) const = 0;
+  validateTransformation (const PointCloudSourceConstPtr& cloud_src,
+                          const PointCloudTargetConstPtr& cloud_tgt,
+                          const Matrix4& transformation_matrix) const = 0;
 
   /** \brief Comparator function for deciding which score is better after running the
    * validation on multiple transforms. Pure virtual.
@@ -121,9 +121,9 @@ public:
    * \return true if the transformation is valid, false otherwise.
    */
   virtual bool
-  isValid(const PointCloudSourceConstPtr& cloud_src,
-          const PointCloudTargetConstPtr& cloud_tgt,
-          const Matrix4& transformation_matrix) const = 0;
+  isValid (const PointCloudSourceConstPtr& cloud_src,
+           const PointCloudTargetConstPtr& cloud_tgt,
+           const Matrix4& transformation_matrix) const = 0;
 };
 } // namespace registration
 } // namespace pcl

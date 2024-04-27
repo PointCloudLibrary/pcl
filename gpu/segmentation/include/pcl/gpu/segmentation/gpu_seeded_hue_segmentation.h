@@ -47,12 +47,12 @@
 namespace pcl {
 namespace gpu {
 void
-seededHueSegmentation(const pcl::PointCloud<pcl::PointXYZRGB>::Ptr& host_cloud_,
-                      const pcl::gpu::Octree::Ptr& tree,
-                      float tolerance,
-                      PointIndices& clusters_in,
-                      PointIndices& clusters_out,
-                      float delta_hue = 0.0);
+seededHueSegmentation (const pcl::PointCloud<pcl::PointXYZRGB>::Ptr& host_cloud_,
+                       const pcl::gpu::Octree::Ptr& tree,
+                       float tolerance,
+                       PointIndices& clusters_in,
+                       PointIndices& clusters_out,
+                       float delta_hue = 0.0);
 
 class SeededHueSegmentation {
 public:
@@ -77,7 +77,7 @@ public:
    * \param tree a pointer to the spatial search object.
    */
   inline void
-  setSearchMethod(const GPUTreePtr& tree)
+  setSearchMethod (const GPUTreePtr& tree)
   {
     tree_ = tree;
   }
@@ -86,7 +86,7 @@ public:
    *  @todo fix this for a generic search tree
    */
   inline GPUTreePtr
-  getSearchMethod()
+  getSearchMethod ()
   {
     return (tree_);
   }
@@ -96,7 +96,7 @@ public:
    * space
    */
   inline void
-  setClusterTolerance(double tolerance)
+  setClusterTolerance (double tolerance)
   {
     cluster_tolerance_ = tolerance;
   }
@@ -104,19 +104,19 @@ public:
   /** \brief Get the spatial cluster tolerance as a measure in the L2 Euclidean space.
    */
   inline double
-  getClusterTolerance()
+  getClusterTolerance ()
   {
     return (cluster_tolerance_);
   }
 
   inline void
-  setInput(CloudDevice input)
+  setInput (CloudDevice input)
   {
     input_ = input;
   }
 
   inline void
-  setHostCloud(PointCloudHostPtr host_cloud)
+  setHostCloud (PointCloudHostPtr host_cloud)
   {
     host_cloud_ = host_cloud;
   }
@@ -125,14 +125,14 @@ public:
    * \param[in] delta_hue the new delta hue
    */
   inline void
-  setDeltaHue(float delta_hue)
+  setDeltaHue (float delta_hue)
   {
     delta_hue_ = delta_hue;
   }
 
   /** \brief Get the tolerance on the hue */
   inline float
-  getDeltaHue()
+  getDeltaHue ()
   {
     return (delta_hue_);
   }
@@ -142,7 +142,7 @@ public:
    * \param indices_out
    */
   void
-  segment(PointIndices& indices_in, PointIndices& indices_out);
+  segment (PointIndices& indices_in, PointIndices& indices_out);
 
 protected:
   /** \brief the input cloud on the GPU */
@@ -162,7 +162,7 @@ protected:
 
   /** \brief Class getName method. */
   virtual std::string
-  getClassName() const
+  getClassName () const
   {
     return ("gpu::SeededHueSegmentation");
   }
@@ -171,7 +171,7 @@ protected:
  * \ingroup segmentation
  */
 inline bool
-comparePointClusters(const pcl::PointIndices& a, const pcl::PointIndices& b)
+comparePointClusters (const pcl::PointIndices& a, const pcl::PointIndices& b)
 {
   return (a.indices.size() < b.indices.size());
 }

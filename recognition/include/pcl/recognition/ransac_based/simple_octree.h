@@ -50,161 +50,224 @@
 #include <set>
 #include <vector>
 
-namespace pcl
-{
-  namespace recognition
-  {
-    template<typename NodeData, typename NodeDataCreator, typename Scalar = float>
-    class PCL_EXPORTS SimpleOctree
+namespace pcl {
+namespace recognition {
+template <typename NodeData, typename NodeDataCreator, typename Scalar = float>
+class PCL_EXPORTS SimpleOctree {
+public:
+  class Node {
+  public:
+    Node();
+
+    virtual ~Node();
+
+    inline void
+    setCenter (const Scalar* c);
+
+    inline void
+    setBounds (const Scalar* b);
+
+    inline const Scalar*
+    getCenter () const
     {
-      public:
-        class Node
-        {
-          public:
-            Node ();
+      return center_;
+    }
 
-            virtual~ Node ();
+    inline const Scalar*
+    getBounds () const
+    {
+      return bounds_;
+    }
 
-            inline void
-            setCenter (const Scalar *c);
+    inline void
+    getBounds (Scalar b[6]) const
+    {
+      std::copy(bounds_, bounds_ + 6, b);
+    }
 
-            inline void
-            setBounds (const Scalar *b);
+    inline Node*
+    getChild (int id)
+    {
+      return &children_[id];
+    }
 
-            inline const Scalar*
-            getCenter () const { return center_;}
+    inline Node*
+    getChildren ()
+    {
+      return children_;
+    }
 
-            inline const Scalar*
-            getBounds () const { return bounds_;}
+    inline void
+    setData (const NodeData& src)
+    {
+      *data_ = src;
+    }
 
-            inline void
-            getBounds (Scalar b[6]) const { std::copy(bounds_, bounds_ + 6, b); }
+    inline NodeData&
+    getData ()
+    {
+      return *data_;
+    }
 
-            inline Node*
-            getChild (int id) { return &children_[id];}
+    inline const NodeData&
+    getData () const
+    {
+      return *data_;
+    }
 
-            inline Node*
-            getChildren () { return children_;}
+    inline Node*
+    getParent ()
+    {
+      return parent_;
+    }
 
-            inline void
-            setData (const NodeData& src){ *data_ = src;}
+    inline float
+    getRadius () const
+    {
+      return radius_;
+    }
 
-            inline NodeData&
-            getData (){ return *data_;}
+    inline bool
+    hasData ()
+    {
+      return static_cast<bool>(data_);
+    }
 
-            inline const NodeData&
-            getData () const { return *data_;}
+    inline bool
+    hasChildren ()
+    {
+      return static_cast<bool>(children_);
+    }
 
-            inline Node*
-            getParent (){ return parent_;}
+    inline const std::set<Node*>&
+    getNeighbors () const
+    {
+      return (full_leaf_neighbors_);
+    }
 
-            inline float
-            getRadius () const { return radius_;}
+    inline void
+    deleteChildren ();
 
-            inline bool
-            hasData (){ return static_cast<bool> (data_);}
+    inline void
+    deleteData ();
 
-            inline bool
-            hasChildren (){ return static_cast<bool> (children_);}
+    friend class SimpleOctree;
 
-            inline const std::set<Node*>&
-            getNeighbors () const { return (full_leaf_neighbors_);}
+  protected:
+    void
+    setData (NodeData* data)
+    {
+      delete data_;
+      data_ = data;
+    }
 
-            inline void
-            deleteChildren ();
+    inline bool
+    createChildren ();
 
-            inline void
-            deleteData ();
+    /** \brief Make this and 'node' neighbors by inserting each node in the others node
+     * neighbor set. Nothing happens of either of the nodes has no data. */
+    inline void
+    makeNeighbors (Node* node);
 
-            friend class SimpleOctree;
+    inline void
+    setParent (Node* parent)
+    {
+      parent_ = parent;
+    }
 
-          protected:
-            void
-            setData (NodeData* data){ delete data_; data_ = data;}
+    /** \brief Computes the "radius" of the node which is half the diagonal length. */
+    inline void
+    computeRadius ();
 
-            inline bool
-            createChildren ();
+  protected:
+    NodeData* data_;
+    Scalar center_[3], bounds_[6];
+    Node *parent_, *children_;
+    Scalar radius_;
+    std::set<Node*> full_leaf_neighbors_;
+  };
 
-            /** \brief Make this and 'node' neighbors by inserting each node in the others node neighbor set. Nothing happens
-              * of either of the nodes has no data. */
-            inline void
-            makeNeighbors (Node* node);
+public:
+  SimpleOctree();
 
-            inline void
-            setParent (Node* parent){ parent_ = parent;}
+  virtual ~SimpleOctree();
 
-            /** \brief Computes the "radius" of the node which is half the diagonal length. */
-            inline void
-            computeRadius ();
+  void
+  clear ();
 
-          protected:
-            NodeData *data_;
-            Scalar center_[3], bounds_[6];
-            Node *parent_, *children_;
-            Scalar radius_;
-            std::set<Node*> full_leaf_neighbors_;
-        };
+  /** \brief Creates an empty octree with bounds at least as large as the ones provided
+   * as input and with leaf size equal to 'voxel_size'. */
+  void
+  build (const Scalar* bounds, Scalar voxel_size, NodeDataCreator* node_data_creator);
 
-      public:
-        SimpleOctree ();
+  /** \brief Creates the leaf containing p = (x, y, z) and returns a pointer to it,
+   * however, only if p lies within the octree bounds! A more general version which
+   * allows p to be out of bounds is not implemented yet. The method returns NULL if p
+   * is not within the root bounds. If the leaf containing p already exists nothing
+   * happens and method just returns a pointer to the leaf. Note that for a new created
+   * leaf, the method also creates its data object. */
+  inline Node*
+  createLeaf (Scalar x, Scalar y, Scalar z);
 
-        virtual ~SimpleOctree ();
+  /** \brief Since the leaves are aligned in a rectilinear grid, each leaf has a unique
+   * id. The method returns the full leaf, i.e., the one having a data object, with id
+   * [i, j, k] or NULL is no such leaf exists. */
+  inline Node*
+  getFullLeaf (int i, int j, int k);
 
-        void
-        clear ();
+  /** \brief Returns a pointer to the full leaf, i.e., one having a data pbject,
+   * containing p = (x, y, z) or NULL if no such leaf exists. */
+  inline Node*
+  getFullLeaf (Scalar x, Scalar y, Scalar z);
 
-        /** \brief Creates an empty octree with bounds at least as large as the ones provided as input and with leaf
-          * size equal to 'voxel_size'. */
-        void
-        build (const Scalar* bounds, Scalar voxel_size, NodeDataCreator* node_data_creator);
+  inline std::vector<Node*>&
+  getFullLeaves ()
+  {
+    return full_leaves_;
+  }
 
-        /** \brief Creates the leaf containing p = (x, y, z) and returns a pointer to it, however, only if p lies within
-          * the octree bounds! A more general version which allows p to be out of bounds is not implemented yet. The method
-          * returns NULL if p is not within the root bounds. If the leaf containing p already exists nothing happens and
-          * method just returns a pointer to the leaf. Note that for a new created leaf, the method also creates its data
-          * object. */
-        inline Node*
-        createLeaf (Scalar x, Scalar y, Scalar z);
+  inline const std::vector<Node*>&
+  getFullLeaves () const
+  {
+    return full_leaves_;
+  }
 
-        /** \brief Since the leaves are aligned in a rectilinear grid, each leaf has a unique id. The method returns the full
-          * leaf, i.e., the one having a data object, with id [i, j, k] or NULL is no such leaf exists. */
-        inline Node*
-        getFullLeaf (int i, int j, int k);
+  inline Node*
+  getRoot ()
+  {
+    return root_;
+  }
 
-        /** \brief Returns a pointer to the full leaf, i.e., one having a data pbject, containing p = (x, y, z) or NULL if no such leaf exists. */
-        inline Node*
-        getFullLeaf (Scalar x, Scalar y, Scalar z);
+  inline const Scalar*
+  getBounds () const
+  {
+    return (bounds_);
+  }
 
-        inline std::vector<Node*>&
-        getFullLeaves () { return full_leaves_;}
+  inline void
+  getBounds (Scalar b[6]) const
+  {
+    std::copy(bounds_, bounds_ + 6, b);
+  }
 
-        inline const std::vector<Node*>&
-        getFullLeaves () const { return full_leaves_;}
+  inline Scalar
+  getVoxelSize () const
+  {
+    return voxel_size_;
+  }
 
-        inline Node*
-        getRoot (){ return root_;}
+protected:
+  inline void
+  insertNeighbors (Node* node);
 
-        inline const Scalar*
-        getBounds () const { return (bounds_);}
-
-        inline void
-        getBounds (Scalar b[6]) const { std::copy(bounds_, bounds_ + 6, b); }
-
-        inline Scalar
-        getVoxelSize () const { return voxel_size_;}
-
-      protected:
-        inline void
-        insertNeighbors (Node* node);
-
-      protected:
-        Scalar voxel_size_{0.0f}, bounds_[6]{};
-        int tree_levels_{0};
-        Node* root_{nullptr};
-        std::vector<Node*> full_leaves_;
-        NodeDataCreator* node_data_creator_{nullptr};
-    };
-  } // namespace recognition
+protected:
+  Scalar voxel_size_{0.0f}, bounds_[6]{};
+  int tree_levels_{0};
+  Node* root_{nullptr};
+  std::vector<Node*> full_leaves_;
+  NodeDataCreator* node_data_creator_{nullptr};
+};
+} // namespace recognition
 } // namespace pcl
 
 #include <pcl/recognition/impl/ransac_based/simple_octree.hpp>

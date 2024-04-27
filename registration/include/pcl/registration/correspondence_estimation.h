@@ -109,7 +109,7 @@ public:
    * \param[in] cloud the input point cloud source
    */
   inline void
-  setInputSource(const PointCloudSourceConstPtr& cloud)
+  setInputSource (const PointCloudSourceConstPtr& cloud)
   {
     source_cloud_updated_ = true;
     PCLBase<PointSource>::setInputCloud(cloud);
@@ -118,7 +118,7 @@ public:
 
   /** \brief Get a pointer to the input point cloud dataset target. */
   inline PointCloudSourceConstPtr const
-  getInputSource()
+  getInputSource ()
   {
     return (input_);
   }
@@ -128,25 +128,25 @@ public:
    * \param[in] cloud the input point cloud target
    */
   inline void
-  setInputTarget(const PointCloudTargetConstPtr& cloud);
+  setInputTarget (const PointCloudTargetConstPtr& cloud);
 
   /** \brief Get a pointer to the input point cloud dataset target. */
   inline PointCloudTargetConstPtr const
-  getInputTarget()
+  getInputTarget ()
   {
     return (target_);
   }
 
   /** \brief See if this rejector requires source normals */
   virtual bool
-  requiresSourceNormals() const
+  requiresSourceNormals () const
   {
     return (false);
   }
 
   /** \brief Abstract method for setting the source normals */
   virtual void
-  setSourceNormals(pcl::PCLPointCloud2::ConstPtr /*cloud2*/)
+  setSourceNormals (pcl::PCLPointCloud2::ConstPtr /*cloud2*/)
   {
     PCL_WARN("[pcl::registration::%s::setSourceNormals] This class does not require "
              "input source normals\n",
@@ -155,14 +155,14 @@ public:
 
   /** \brief See if this rejector requires target normals */
   virtual bool
-  requiresTargetNormals() const
+  requiresTargetNormals () const
   {
     return (false);
   }
 
   /** \brief Abstract method for setting the target normals */
   virtual void
-  setTargetNormals(pcl::PCLPointCloud2::ConstPtr /*cloud2*/)
+  setTargetNormals (pcl::PCLPointCloud2::ConstPtr /*cloud2*/)
   {
     PCL_WARN("[pcl::registration::%s::setTargetNormals] This class does not require "
              "input target normals\n",
@@ -174,14 +174,14 @@ public:
    * \param[in] indices a pointer to the vector of indices
    */
   inline void
-  setIndicesSource(const IndicesPtr& indices)
+  setIndicesSource (const IndicesPtr& indices)
   {
     setIndices(indices);
   }
 
   /** \brief Get a pointer to the vector of indices used for the source dataset. */
   inline IndicesPtr const
-  getIndicesSource()
+  getIndicesSource ()
   {
     return (indices_);
   }
@@ -190,7 +190,7 @@ public:
    * point cloud. \param[in] indices a pointer to the vector of indices
    */
   inline void
-  setIndicesTarget(const IndicesPtr& indices)
+  setIndicesTarget (const IndicesPtr& indices)
   {
     target_cloud_updated_ = true;
     target_indices_ = indices;
@@ -198,7 +198,7 @@ public:
 
   /** \brief Get a pointer to the vector of indices used for the target dataset. */
   inline IndicesPtr const
-  getIndicesTarget()
+  getIndicesTarget ()
   {
     return (target_indices_);
   }
@@ -211,7 +211,7 @@ public:
    * confident that the tree will be set correctly.
    */
   inline void
-  setSearchMethodTarget(const KdTreePtr& tree, bool force_no_recompute = false)
+  setSearchMethodTarget (const KdTreePtr& tree, bool force_no_recompute = false)
   {
     tree_ = tree;
     force_no_recompute_ = force_no_recompute;
@@ -222,7 +222,7 @@ public:
   /** \brief Get a pointer to the search method used to find correspondences in the
    * target cloud. */
   inline KdTreePtr
-  getSearchMethodTarget() const
+  getSearchMethodTarget () const
   {
     return (tree_);
   }
@@ -235,8 +235,8 @@ public:
    * extremely confident that the tree will be set correctly.
    */
   inline void
-  setSearchMethodSource(const KdTreeReciprocalPtr& tree,
-                        bool force_no_recompute = false)
+  setSearchMethodSource (const KdTreeReciprocalPtr& tree,
+                         bool force_no_recompute = false)
   {
     tree_reciprocal_ = tree;
     force_no_recompute_reciprocal_ = force_no_recompute;
@@ -247,7 +247,7 @@ public:
   /** \brief Get a pointer to the search method used to find correspondences in the
    * source cloud. */
   inline KdTreeReciprocalPtr
-  getSearchMethodSource() const
+  getSearchMethodSource () const
   {
     return (tree_reciprocal_);
   }
@@ -258,7 +258,7 @@ public:
    * correspondences
    */
   virtual void
-  determineCorrespondences(
+  determineCorrespondences (
       pcl::Correspondences& correspondences,
       double max_distance = std::numeric_limits<double>::max()) = 0;
 
@@ -271,7 +271,7 @@ public:
    * correspondences
    */
   virtual void
-  determineReciprocalCorrespondences(
+  determineReciprocalCorrespondences (
       pcl::Correspondences& correspondences,
       double max_distance = std::numeric_limits<double>::max()) = 0;
 
@@ -282,7 +282,7 @@ public:
    * k-D tree for nearest neighbor search
    */
   inline void
-  setPointRepresentation(const PointRepresentationConstPtr& point_representation)
+  setPointRepresentation (const PointRepresentationConstPtr& point_representation)
   {
     point_representation_ = point_representation;
   }
@@ -294,7 +294,7 @@ public:
    * k-D tree for nearest neighbor search
    */
   inline void
-  setPointRepresentationReciprocal(
+  setPointRepresentationReciprocal (
       const PointRepresentationReciprocalConstPtr& point_representation_reciprocal)
   {
     point_representation_reciprocal_ = point_representation_reciprocal;
@@ -302,7 +302,7 @@ public:
 
   /** \brief Clone and cast to CorrespondenceEstimationBase */
   virtual typename CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::Ptr
-  clone() const = 0;
+  clone () const = 0;
 
 protected:
   /** \brief The correspondence estimation method name. */
@@ -334,18 +334,18 @@ protected:
 
   /** \brief Abstract class get name method. */
   inline const std::string&
-  getClassName() const
+  getClassName () const
   {
     return (corr_name_);
   }
 
   /** \brief Internal computation initialization. */
   bool
-  initCompute();
+  initCompute ();
 
   /** \brief Internal computation initialization for reciprocal correspondences. */
   bool
-  initComputeReciprocal();
+  initComputeReciprocal ();
 
   /** \brief Variable that stores whether we have a new target cloud, meaning we need to
    * pre-process it again. This way, we avoid rebuilding the kd-tree for the target
@@ -455,7 +455,7 @@ public:
    * correspondences
    */
   void
-  determineCorrespondences(
+  determineCorrespondences (
       pcl::Correspondences& correspondences,
       double max_distance = std::numeric_limits<double>::max()) override;
 
@@ -468,13 +468,13 @@ public:
    * correspondences
    */
   void
-  determineReciprocalCorrespondences(
+  determineReciprocalCorrespondences (
       pcl::Correspondences& correspondences,
       double max_distance = std::numeric_limits<double>::max()) override;
 
   /** \brief Clone and cast to CorrespondenceEstimationBase */
   typename CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::Ptr
-  clone() const override
+  clone () const override
   {
     Ptr copy(new CorrespondenceEstimation<PointSource, PointTarget, Scalar>(*this));
     return (copy);

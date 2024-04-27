@@ -39,195 +39,214 @@
 
 #pragma once
 
+#include <pcl/features/feature.h>
 #include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/Vertices.h> // for Vertices
-#include <pcl/features/feature.h>
+
 #include <set>
 
-namespace pcl
-{
-  /** \brief
-    * This class implements the method for extracting RoPS features presented in the article
-    * "Rotational Projection Statistics for 3D Local Surface Description and Object Recognition" by
-    * Yulan Guo, Ferdous Sohel, Mohammed Bennamoun, Min Lu and Jianwei Wan.
-    */
-  template <typename PointInT, typename PointOutT>
-  class PCL_EXPORTS ROPSEstimation : public pcl::Feature <PointInT, PointOutT>
-  {
-    public:
+namespace pcl {
+/** \brief
+ * This class implements the method for extracting RoPS features presented in the
+ * article "Rotational Projection Statistics for 3D Local Surface Description and Object
+ * Recognition" by Yulan Guo, Ferdous Sohel, Mohammed Bennamoun, Min Lu and Jianwei Wan.
+ */
+template <typename PointInT, typename PointOutT>
+class PCL_EXPORTS ROPSEstimation : public pcl::Feature<PointInT, PointOutT> {
+public:
+  using Feature<PointInT, PointOutT>::input_;
+  using Feature<PointInT, PointOutT>::indices_;
+  using Feature<PointInT, PointOutT>::surface_;
+  using Feature<PointInT, PointOutT>::tree_;
 
-      using Feature <PointInT, PointOutT>::input_;
-      using Feature <PointInT, PointOutT>::indices_;
-      using Feature <PointInT, PointOutT>::surface_;
-      using Feature <PointInT, PointOutT>::tree_;
+  using PointCloudOut = typename pcl::Feature<PointInT, PointOutT>::PointCloudOut;
+  using PointCloudIn = typename pcl::Feature<PointInT, PointOutT>::PointCloudIn;
 
-      using PointCloudOut = typename pcl::Feature <PointInT, PointOutT>::PointCloudOut;
-      using PointCloudIn = typename pcl::Feature <PointInT, PointOutT>::PointCloudIn;
+public:
+  /** \brief Simple constructor. */
+  ROPSEstimation();
 
-    public:
+  /** \brief Virtual destructor. */
 
-      /** \brief Simple constructor. */
-      ROPSEstimation ();
+  ~ROPSEstimation() override;
 
-      /** \brief Virtual destructor. */
-      
-      ~ROPSEstimation () override;
+  /** \brief Allows to set the number of partition bins that is used for distribution
+   * matrix calculation. \param[in] number_of_bins number of partition bins
+   */
+  void
+  setNumberOfPartitionBins (unsigned int number_of_bins);
 
-      /** \brief Allows to set the number of partition bins that is used for distribution matrix calculation.
-        * \param[in] number_of_bins number of partition bins
-        */
-      void
-      setNumberOfPartitionBins (unsigned int number_of_bins);
+  /** \brief Returns the number of partition bins. */
+  unsigned int
+  getNumberOfPartitionBins () const;
 
-      /** \brief Returns the number of partition bins. */
-      unsigned int
-      getNumberOfPartitionBins () const;
+  /** \brief This method sets the number of rotations.
+   * \param[in] number_of_rotations number of rotations
+   */
+  void
+  setNumberOfRotations (unsigned int number_of_rotations);
 
-      /** \brief This method sets the number of rotations.
-        * \param[in] number_of_rotations number of rotations
-        */
-      void
-      setNumberOfRotations (unsigned int number_of_rotations);
+  /** \brief returns the number of rotations. */
+  unsigned int
+  getNumberOfRotations () const;
 
-      /** \brief returns the number of rotations. */
-      unsigned int
-      getNumberOfRotations () const;
+  /** \brief Allows to set the support radius that is used to crop the local surface of
+   * the point. \param[in] support_radius support radius
+   */
+  void
+  setSupportRadius (float support_radius);
 
-      /** \brief Allows to set the support radius that is used to crop the local surface of the point.
-        * \param[in] support_radius support radius
-        */
-      void
-      setSupportRadius (float support_radius);
+  /** \brief Returns the support radius. */
+  float
+  getSupportRadius () const;
 
-      /** \brief Returns the support radius. */
-      float
-      getSupportRadius () const;
+  /** \brief This method sets the triangles of the mesh.
+   * \param[in] triangles list of triangles of the mesh
+   */
+  void
+  setTriangles (const std::vector<pcl::Vertices>& triangles);
 
-      /** \brief This method sets the triangles of the mesh.
-        * \param[in] triangles list of triangles of the mesh
-        */
-      void
-      setTriangles (const std::vector <pcl::Vertices>& triangles);
+  /** \brief Returns the triangles of the mesh.
+   * \param[out] triangles triangles of the mesh
+   */
+  void
+  getTriangles (std::vector<pcl::Vertices>& triangles) const;
 
-      /** \brief Returns the triangles of the mesh.
-        * \param[out] triangles triangles of the mesh
-        */
-      void
-      getTriangles (std::vector <pcl::Vertices>& triangles) const;
+private:
+  /** \brief Abstract feature estimation method.
+   * \param[out] output the resultant features
+   */
+  void
+  computeFeature (PointCloudOut& output) override;
 
-    private:
+  /** \brief This method simply builds the list of triangles for every point.
+   * The list of triangles for each point consists of indices of triangles it belongs
+   * to. The only purpose of this method is to improve performance of the algorithm.
+   */
+  void
+  buildListOfPointsTriangles ();
 
-      /** \brief Abstract feature estimation method.
-        * \param[out] output the resultant features
-        */
-      void
-      computeFeature (PointCloudOut& output) override;
+  /** \brief This method crops all the triangles within the given radius of the given
+   * point. \param[in] point point for which the local surface is computed \param[out]
+   * local_triangles stores the indices of the triangles that belong to the local
+   * surface \param[out] local_points stores the indices of the points that belong to
+   * the local surface
+   */
+  void
+  getLocalSurface (const PointInT& point,
+                   std::set<unsigned int>& local_triangles,
+                   pcl::Indices& local_points) const;
 
-      /** \brief This method simply builds the list of triangles for every point.
-        * The list of triangles for each point consists of indices of triangles it belongs to.
-        * The only purpose of this method is to improve performance of the algorithm.
-        */
-      void
-      buildListOfPointsTriangles ();
+  /** \brief This method computes LRF (Local Reference Frame) matrix for the given
+   * point. \param[in] point point for which the LRF is computed \param[in]
+   * local_triangles list of triangles that represents the local surface of the point
+   * \paran[out] lrf_matrix stores computed LRF matrix for the given point
+   */
+  void
+  computeLRF (const PointInT& point,
+              const std::set<unsigned int>& local_triangles,
+              Eigen::Matrix3f& lrf_matrix) const;
 
-      /** \brief This method crops all the triangles within the given radius of the given point.
-        * \param[in] point point for which the local surface is computed
-        * \param[out] local_triangles stores the indices of the triangles that belong to the local surface
-        * \param[out] local_points stores the indices of the points that belong to the local surface
-        */
-      void
-      getLocalSurface (const PointInT& point, std::set <unsigned int>& local_triangles, pcl::Indices& local_points) const;
+  /** \brief This method calculates the eigen values and eigen vectors
+   * for the given covariance matrix. Note that it returns normalized eigen
+   * vectors that always form the right-handed coordinate system.
+   * \param[in] matrix covariance matrix of the cloud
+   * \param[out] major_axis eigen vector which corresponds to a major eigen value
+   * \param[out] middle_axis eigen vector which corresponds to a middle eigen value
+   * \param[out] minor_axis eigen vector which corresponds to a minor eigen value
+   */
+  void
+  computeEigenVectors (const Eigen::Matrix3f& matrix,
+                       Eigen::Vector3f& major_axis,
+                       Eigen::Vector3f& middle_axis,
+                       Eigen::Vector3f& minor_axis) const;
 
-      /** \brief This method computes LRF (Local Reference Frame) matrix for the given point.
-        * \param[in] point point for which the LRF is computed
-        * \param[in] local_triangles list of triangles that represents the local surface of the point
-        * \paran[out] lrf_matrix stores computed LRF matrix for the given point
-        */
-      void
-      computeLRF (const PointInT& point, const std::set <unsigned int>& local_triangles, Eigen::Matrix3f& lrf_matrix) const;
+  /** \brief This method translates the cloud so that the given point becomes the
+   * origin. After that the cloud is rotated with the help of the given matrix.
+   * \param[in] point point which stores the translation information
+   * \param[in] matrix rotation matrix
+   * \param[in] local_points point to transform
+   * \param[out] transformed_cloud stores the transformed cloud
+   */
+  void
+  transformCloud (const PointInT& point,
+                  const Eigen::Matrix3f& matrix,
+                  const pcl::Indices& local_points,
+                  PointCloudIn& transformed_cloud) const;
 
-      /** \brief This method calculates the eigen values and eigen vectors
-        * for the given covariance matrix. Note that it returns normalized eigen
-        * vectors that always form the right-handed coordinate system.
-        * \param[in] matrix covariance matrix of the cloud
-        * \param[out] major_axis eigen vector which corresponds to a major eigen value
-        * \param[out] middle_axis eigen vector which corresponds to a middle eigen value
-        * \param[out] minor_axis eigen vector which corresponds to a minor eigen value
-        */
-      void
-      computeEigenVectors (const Eigen::Matrix3f& matrix, Eigen::Vector3f& major_axis, Eigen::Vector3f& middle_axis,
-                           Eigen::Vector3f& minor_axis) const;
+  /** \brief This method rotates the cloud around the given axis and computes AABB of
+   * the rotated cloud. \param[in] axis axis around which cloud must be rotated
+   * \param[in] angle angle in degrees
+   * \param[in] cloud cloud to rotate
+   * \param[out] rotated_cloud stores the rotated cloud
+   * \param[out] min stores the min point of the AABB
+   * \param[out] max stores the max point of the AABB
+   */
+  void
+  rotateCloud (const PointInT& axis,
+               const float angle,
+               const PointCloudIn& cloud,
+               PointCloudIn& rotated_cloud,
+               Eigen::Vector3f& min,
+               Eigen::Vector3f& max) const;
 
-      /** \brief This method translates the cloud so that the given point becomes the origin.
-        * After that the cloud is rotated with the help of the given matrix.
-        * \param[in] point point which stores the translation information
-        * \param[in] matrix rotation matrix
-        * \param[in] local_points point to transform
-        * \param[out] transformed_cloud stores the transformed cloud
-        */
-      void
-      transformCloud (const PointInT& point, const Eigen::Matrix3f& matrix, const pcl::Indices& local_points, PointCloudIn& transformed_cloud) const;
+  /** \brief This method projects the local surface onto the XY, XZ or YZ plane
+   * and computes the distribution matrix.
+   * \param[in] projection represents the case of projection. 1 - XY, 2 - XZ, 3 - YZ
+   * \param[in] min min point of the AABB
+   * \param[in] max max point of the AABB
+   * \param[in] cloud cloud containing the points of the local surface
+   * \param[out] matrix stores computed distribution matrix
+   */
+  void
+  getDistributionMatrix (const unsigned int projection,
+                         const Eigen::Vector3f& min,
+                         const Eigen::Vector3f& max,
+                         const PointCloudIn& cloud,
+                         Eigen::MatrixXf& matrix) const;
 
-      /** \brief This method rotates the cloud around the given axis and computes AABB of the rotated cloud.
-        * \param[in] axis axis around which cloud must be rotated
-        * \param[in] angle angle in degrees
-        * \param[in] cloud cloud to rotate
-        * \param[out] rotated_cloud stores the rotated cloud
-        * \param[out] min stores the min point of the AABB
-        * \param[out] max stores the max point of the AABB
-        */
-      void
-      rotateCloud (const PointInT& axis, const float angle, const PointCloudIn& cloud, PointCloudIn& rotated_cloud,
-                   Eigen::Vector3f& min, Eigen::Vector3f& max) const;
+  /** \brief This method computes the set ofcentral moments for the given matrix.
+   * \param[in] matrix input matrix
+   * \param[out] moments set of computed moments
+   */
+  void
+  computeCentralMoments (const Eigen::MatrixXf& matrix,
+                         std::vector<float>& moments) const;
 
-      /** \brief This method projects the local surface onto the XY, XZ or YZ plane
-        * and computes the distribution matrix.
-        * \param[in] projection represents the case of projection. 1 - XY, 2 - XZ, 3 - YZ
-        * \param[in] min min point of the AABB
-        * \param[in] max max point of the AABB
-        * \param[in] cloud cloud containing the points of the local surface
-        * \param[out] matrix stores computed distribution matrix
-        */
-      void
-      getDistributionMatrix (const unsigned int projection, const Eigen::Vector3f& min, const Eigen::Vector3f& max, const PointCloudIn& cloud, Eigen::MatrixXf& matrix) const;
+private:
+  /** \brief Stores the number of partition bins that is used for distribution matrix
+   * calculation. */
+  unsigned int number_of_bins_{5};
 
-      /** \brief This method computes the set ofcentral moments for the given matrix.
-        * \param[in] matrix input matrix
-        * \param[out] moments set of computed moments
-        */
-      void
-      computeCentralMoments (const Eigen::MatrixXf& matrix, std::vector <float>& moments) const;
+  /** \brief Stores number of rotations. Central moments are calculated for every
+   * rotation. */
+  unsigned int number_of_rotations_{3};
 
-    private:
+  /** \brief Support radius that is used to crop the local surface of the point. */
+  float support_radius_{1.0f};
 
-      /** \brief Stores the number of partition bins that is used for distribution matrix calculation. */
-      unsigned int number_of_bins_{5};
+  /** \brief Stores the squared support radius. Used to improve performance. */
+  float sqr_support_radius_{1.0f};
 
-      /** \brief Stores number of rotations. Central moments are calculated for every rotation. */
-      unsigned int number_of_rotations_{3};
+  /** \brief Stores the angle step. Step is calculated with respect to number of
+   * rotations. */
+  float step_{22.5f};
 
-      /** \brief Support radius that is used to crop the local surface of the point. */
-      float support_radius_{1.0f};
+  /** \brief Stores the set of triangles representing the mesh. */
+  std::vector<pcl::Vertices> triangles_;
 
-      /** \brief Stores the squared support radius. Used to improve performance. */
-      float sqr_support_radius_{1.0f};
+  /** \brief Stores the set of triangles for each point. Its purpose is to improve
+   * performance. */
+  std::vector<std::vector<unsigned int>> triangles_of_the_point_;
 
-      /** \brief Stores the angle step. Step is calculated with respect to number of rotations. */
-      float step_{22.5f};
+public:
+  PCL_MAKE_ALIGNED_OPERATOR_NEW
+};
+} // namespace pcl
 
-      /** \brief Stores the set of triangles representing the mesh. */
-      std::vector <pcl::Vertices> triangles_;
-
-      /** \brief Stores the set of triangles for each point. Its purpose is to improve performance. */
-      std::vector <std::vector <unsigned int> > triangles_of_the_point_;
-
-    public:
-      PCL_MAKE_ALIGNED_OPERATOR_NEW
-  };
-}
-
-#define PCL_INSTANTIATE_ROPSEstimation(InT, OutT) template class PCL_EXPORTS pcl::ROPSEstimation<InT, OutT>;
+#define PCL_INSTANTIATE_ROPSEstimation(InT, OutT)                                      \
+  template class PCL_EXPORTS pcl::ROPSEstimation<InT, OutT>;
 
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/features/impl/rops_estimation.hpp>

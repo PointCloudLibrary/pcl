@@ -10,21 +10,19 @@
 
 // VTK
 #include <vtkActor.h>
-#include <vtkRectilinearGrid.h>
 #include <vtkDataSetMapper.h>
 #include <vtkDoubleArray.h>
 #include <vtkPolyData.h>
+#include <vtkRectilinearGrid.h>
 #include <vtkSmartPointer.h>
 
-//class Grid : public Geometry
-class Grid : public Object
-{
+// class Grid : public Geometry
+class Grid : public Object {
 public:
-
   // Operators
   // -----------------------------------------------------------------------------
-  Grid (std::string name, int size = 10, double spacing = 1.0);
-  ~Grid () override = default;
+  Grid(std::string name, int size = 10, double spacing = 1.0);
+  ~Grid() override = default;
 
   // Accessors
   // -----------------------------------------------------------------------------
@@ -34,7 +32,7 @@ public:
     return grid_;
   }
 
-//  virtual vtkSmartPointer<vtkActor>
+  //  virtual vtkSmartPointer<vtkActor>
   vtkSmartPointer<vtkActor>
   getGridActor () const
   {
@@ -42,10 +40,8 @@ public:
   }
 
 private:
-
   // Members
   // -----------------------------------------------------------------------------
   vtkSmartPointer<vtkRectilinearGrid> grid_;
   vtkSmartPointer<vtkActor> grid_actor_;
-
 };

@@ -40,277 +40,284 @@
 #pragma once
 
 #include <pcl/cuda/sample_consensus/sac_model.h>
+
 #include <thrust/random.h>
 
-namespace pcl
-{
-  namespace cuda
-  {
-    /** \brief Check if a certain tuple is a point inlier. */
-    struct CountPlanarInlier
-    {
-      float4 coefficients;
-      float threshold;
+namespace pcl {
+namespace cuda {
+/** \brief Check if a certain tuple is a point inlier. */
+struct CountPlanarInlier {
+  float4 coefficients;
+  float threshold;
 
-      CountPlanarInlier (float4 coeff, float thresh) : 
-        coefficients(coeff), threshold(thresh) 
-      {}
+  CountPlanarInlier(float4 coeff, float thresh) : coefficients(coeff), threshold(thresh)
+  {}
 
-      template <typename Tuple> __inline__ __host__ __device__ bool
-      operator () (const Tuple &t);
-    };
+  template <typename Tuple>
+  __inline__ __host__ __device__ bool
+  operator()(const Tuple& t);
+};
 
-    /** \brief Check if a certain tuple is a point inlier. */
-    template <template <typename> class Storage>
-    struct NewCheckPlanarInlier
-    {
-      float4 coefficients;
-      float threshold;
-      const typename Storage<PointXYZRGB>::type &input_;
+/** \brief Check if a certain tuple is a point inlier. */
+template <template <typename> class Storage>
+struct NewCheckPlanarInlier {
+  float4 coefficients;
+  float threshold;
+  const typename Storage<PointXYZRGB>::type& input_;
 
-      NewCheckPlanarInlier (float4 coeff, float thresh, const typename Storage<PointXYZRGB>::type &input) : 
-        coefficients(coeff), threshold(thresh), input_(input)
-      {}
+  NewCheckPlanarInlier(float4 coeff,
+                       float thresh,
+                       const typename Storage<PointXYZRGB>::type& input)
+  : coefficients(coeff), threshold(thresh), input_(input)
+  {}
 
-      __inline__ __host__ __device__ int
-      operator () (const int &idx);
-    };
+  __inline__ __host__ __device__ int
+  operator()(const int& idx);
+};
 
-    /** \brief Check if a certain tuple is a point inlier. */
-    struct CheckPlanarInlier
-    {
-      float4 coefficients;
-      float threshold;
+/** \brief Check if a certain tuple is a point inlier. */
+struct CheckPlanarInlier {
+  float4 coefficients;
+  float threshold;
 
-      CheckPlanarInlier (float4 coeff, float thresh) : 
-        coefficients(coeff), threshold(thresh) 
-      {}
+  CheckPlanarInlier(float4 coeff, float thresh) : coefficients(coeff), threshold(thresh)
+  {}
 
-      template <typename Tuple> __inline__ __host__ __device__ int
-      operator () (const Tuple &t);
-    };
+  template <typename Tuple>
+  __inline__ __host__ __device__ int
+  operator()(const Tuple& t);
+};
 
-    /** \brief Check if a certain tuple is a point inlier. */
-    struct CheckPlanarInlierIndices
-    {
-      float4 coefficients;
-      float threshold;
+/** \brief Check if a certain tuple is a point inlier. */
+struct CheckPlanarInlierIndices {
+  float4 coefficients;
+  float threshold;
 
-      CheckPlanarInlierIndices (float4 coeff, float thresh) : 
-        coefficients(coeff), threshold(thresh) 
-      {}
+  CheckPlanarInlierIndices(float4 coeff, float thresh)
+  : coefficients(coeff), threshold(thresh)
+  {}
 
-      __inline__ __host__ __device__ int
-      operator () (const PointXYZRGB &pt, const int &idx);
-    };
+  __inline__ __host__ __device__ int
+  operator()(const PointXYZRGB& pt, const int& idx);
+};
 
-    /** \brief Check if a certain tuple is a point inlier. */
-    struct CheckPlanarInlierKinectNormalIndices
-    {
-      float4 coefficients;
-      float threshold;
-      float angle_threshold;
+/** \brief Check if a certain tuple is a point inlier. */
+struct CheckPlanarInlierKinectNormalIndices {
+  float4 coefficients;
+  float threshold;
+  float angle_threshold;
 
-      CheckPlanarInlierKinectNormalIndices (float4 coeff, float thresh, float angle_thresh) : 
-        coefficients(coeff), threshold(thresh), angle_threshold (angle_thresh)
-      {}
+  CheckPlanarInlierKinectNormalIndices(float4 coeff, float thresh, float angle_thresh)
+  : coefficients(coeff), threshold(thresh), angle_threshold(angle_thresh)
+  {}
 
-      template <typename Tuple> __inline__ __host__ __device__ int
-      operator () (const Tuple &t, const int &idx);
-    };
+  template <typename Tuple>
+  __inline__ __host__ __device__ int
+  operator()(const Tuple& t, const int& idx);
+};
 
-    /** \brief Check if a certain tuple is a point inlier. */
-    struct CheckPlanarInlierKinectIndices
-    {
-      float4 coefficients;
-      float threshold;
-      float angle_threshold;
+/** \brief Check if a certain tuple is a point inlier. */
+struct CheckPlanarInlierKinectIndices {
+  float4 coefficients;
+  float threshold;
+  float angle_threshold;
 
-      CheckPlanarInlierKinectIndices (float4 coeff, float thresh, float angle_thresh) : 
-        coefficients(coeff), threshold(thresh), angle_threshold (angle_thresh)
-      {}
+  CheckPlanarInlierKinectIndices(float4 coeff, float thresh, float angle_thresh)
+  : coefficients(coeff), threshold(thresh), angle_threshold(angle_thresh)
+  {}
 
-      __inline__ __host__ __device__ int
-      operator () (const PointXYZRGB &pt, const int &idx);
-    };
+  __inline__ __host__ __device__ int
+  operator()(const PointXYZRGB& pt, const int& idx);
+};
 
-    /** \brief Check if a certain tuple is a point inlier. */
-    struct CheckPlanarInlierNormalIndices
-    {
-      float4 coefficients;
-      float threshold;
-      float angle_threshold;
+/** \brief Check if a certain tuple is a point inlier. */
+struct CheckPlanarInlierNormalIndices {
+  float4 coefficients;
+  float threshold;
+  float angle_threshold;
 
-      CheckPlanarInlierNormalIndices (float4 coeff, float thresh, float angle_thresh) : 
-        coefficients(coeff), threshold(thresh), angle_threshold (angle_thresh)
-      {}
+  CheckPlanarInlierNormalIndices(float4 coeff, float thresh, float angle_thresh)
+  : coefficients(coeff), threshold(thresh), angle_threshold(angle_thresh)
+  {}
 
-      template <typename Tuple>
-      __inline__ __host__ __device__ int
-      operator () (const Tuple &pt, const int &idx);
-    };
+  template <typename Tuple>
+  __inline__ __host__ __device__ int
+  operator()(const Tuple& pt, const int& idx);
+};
 
-    ////////////////////////////////////////////////////////////////////////////////////////////
-    /** \brief @b SampleConsensusModel1PointPlane defines a model for 3D plane segmentation.
-      */
-    template <template <typename> class Storage>
-    class SampleConsensusModel1PointPlane : public SampleConsensusModel<Storage>
-    {
-      public:
-        using SampleConsensusModel<Storage>::input_;
-        using SampleConsensusModel<Storage>::normals_;
-        using SampleConsensusModel<Storage>::indices_;
-        using SampleConsensusModel<Storage>::indices_stencil_;
-        using SampleConsensusModel<Storage>::rngl_;
+////////////////////////////////////////////////////////////////////////////////////////////
+/** \brief @b SampleConsensusModel1PointPlane defines a model for 3D plane segmentation.
+ */
+template <template <typename> class Storage>
+class SampleConsensusModel1PointPlane : public SampleConsensusModel<Storage> {
+public:
+  using SampleConsensusModel<Storage>::input_;
+  using SampleConsensusModel<Storage>::normals_;
+  using SampleConsensusModel<Storage>::indices_;
+  using SampleConsensusModel<Storage>::indices_stencil_;
+  using SampleConsensusModel<Storage>::rngl_;
 
-        using PointCloud = typename SampleConsensusModel<Storage>::PointCloud;
-        using PointCloudPtr = typename PointCloud::Ptr;
-        using PointCloudConstPtr = typename PointCloud::ConstPtr;
+  using PointCloud = typename SampleConsensusModel<Storage>::PointCloud;
+  using PointCloudPtr = typename PointCloud::Ptr;
+  using PointCloudConstPtr = typename PointCloud::ConstPtr;
 
-        using Indices = typename SampleConsensusModel<Storage>::Indices;
-        using IndicesPtr = typename SampleConsensusModel<Storage>::IndicesPtr;
-        using IndicesConstPtr = typename SampleConsensusModel<Storage>::IndicesConstPtr;
+  using Indices = typename SampleConsensusModel<Storage>::Indices;
+  using IndicesPtr = typename SampleConsensusModel<Storage>::IndicesPtr;
+  using IndicesConstPtr = typename SampleConsensusModel<Storage>::IndicesConstPtr;
 
-        using Coefficients = typename SampleConsensusModel<Storage>::Coefficients;
-        using Hypotheses = typename SampleConsensusModel<Storage>::Hypotheses;
-        using Samples = typename SampleConsensusModel<Storage>::Samples;
+  using Coefficients = typename SampleConsensusModel<Storage>::Coefficients;
+  using Hypotheses = typename SampleConsensusModel<Storage>::Hypotheses;
+  using Samples = typename SampleConsensusModel<Storage>::Samples;
 
+  using Ptr = shared_ptr<SampleConsensusModel1PointPlane>;
+  using ConstPtr = shared_ptr<const SampleConsensusModel1PointPlane>;
 
-        using Ptr = shared_ptr<SampleConsensusModel1PointPlane>;
-        using ConstPtr = shared_ptr<const SampleConsensusModel1PointPlane>;
+  /** \brief Constructor for base SampleConsensusModel1PointPlane.
+   * \param cloud the input point cloud dataset
+   */
+  SampleConsensusModel1PointPlane(const PointCloudConstPtr& cloud);
 
-        /** \brief Constructor for base SampleConsensusModel1PointPlane.
-          * \param cloud the input point cloud dataset
-          */
-        SampleConsensusModel1PointPlane (const PointCloudConstPtr &cloud);
+  /** \brief Get 3 random non-collinear points as data samples and return them as point
+   * indices. \param iterations the internal number of iterations used by SAC methods
+   * \param samples the resultant model samples
+   * \note assumes unique points!
+   */
+  void
+  getSamples (int& iterations, Indices& samples);
 
-        /** \brief Get 3 random non-collinear points as data samples and return them as point indices.
-          * \param iterations the internal number of iterations used by SAC methods
-          * \param samples the resultant model samples
-          * \note assumes unique points!
-          */
-        void 
-        getSamples (int &iterations, Indices &samples);
+  /** \brief Check whether the given index samples can form a valid plane model, compute
+   * the model coefficients from these samples and store them in model_coefficients. The
+   * plane coefficients are: a, b, c, d (ax+by+cz+d=0) \param samples the point indices
+   * found as possible good candidates for creating a valid model \param
+   * model_coefficients the resultant model coefficients
+   */
+  bool
+  computeModelCoefficients (const Indices& samples, Coefficients& model_coefficients);
 
-        /** \brief Check whether the given index samples can form a valid plane model, compute the model coefficients from
-          * these samples and store them in model_coefficients. The plane coefficients are:
-          * a, b, c, d (ax+by+cz+d=0)
-          * \param samples the point indices found as possible good candidates for creating a valid model
-          * \param model_coefficients the resultant model coefficients
-          */
-        bool 
-        computeModelCoefficients (const Indices &samples, Coefficients &model_coefficients);
+  bool
+  generateModelHypotheses (Hypotheses& h, int max_iterations);
 
-        bool 
-        generateModelHypotheses (Hypotheses &h, int max_iterations);
+  bool
+  generateModelHypotheses (Hypotheses& h, Samples& s, int max_iterations);
 
-        bool 
-        generateModelHypotheses (Hypotheses &h, Samples &s, int max_iterations);
+  /** \brief Select all the points which respect the given model coefficients as
+   * inliers. \param model_coefficients the coefficients of a plane model that we need
+   * to compute distances to \param threshold a maximum admissible distance threshold
+   * for determining the inliers from the outliers \param inliers the resultant model
+   * inliers \param inliers_stencil
+   */
+  int
+  selectWithinDistance (const Coefficients& model_coefficients,
+                        float threshold,
+                        IndicesPtr& inliers,
+                        IndicesPtr& inliers_stencil);
+  int
+  selectWithinDistance (const Hypotheses& h,
+                        int idx,
+                        float threshold,
+                        IndicesPtr& inliers,
+                        IndicesPtr& inliers_stencil);
+  int
+  selectWithinDistance (Hypotheses& h,
+                        int idx,
+                        float threshold,
+                        IndicesPtr& inliers_stencil,
+                        float3& centroid);
+  int
+  countWithinDistance (const Coefficients& model_coefficients, float threshold);
 
-        /** \brief Select all the points which respect the given model coefficients as inliers.
-          * \param model_coefficients the coefficients of a plane model that we need to 
-          * compute distances to
-          * \param threshold a maximum admissible distance threshold for determining the 
-          * inliers from the outliers
-          * \param inliers the resultant model inliers
-          * \param inliers_stencil
-          */
-        int
-        selectWithinDistance (const Coefficients &model_coefficients, 
-                              float threshold, IndicesPtr &inliers, IndicesPtr &inliers_stencil);
-        int
-        selectWithinDistance (const Hypotheses &h, int idx,
-                              float threshold,
-                              IndicesPtr &inliers, IndicesPtr &inliers_stencil);
-        int
-        selectWithinDistance (Hypotheses &h, int idx,
-                              float threshold,
-                              IndicesPtr &inliers_stencil,
-                              float3 &centroid);
-        int
-        countWithinDistance (const Coefficients &model_coefficients, float threshold);
-
-        int
-        countWithinDistance (const Hypotheses &h, int idx, float threshold);
+  int
+  countWithinDistance (const Hypotheses& h, int idx, float threshold);
 
   //    private:
   //      /** \brief Define the maximum number of iterations for collinearity checks */
-        const static int MAX_ITERATIONS_COLLINEAR = 1000;
-    };
+  const static int MAX_ITERATIONS_COLLINEAR = 1000;
+};
 
-    /** \brief Check if a certain tuple is a point inlier. */
-    template <template <typename> class Storage>
-    struct Create1PointPlaneHypothesis
-    {
-      using PointCloud = typename SampleConsensusModel<Storage>::PointCloud;
-      using PointCloudConstPtr = typename PointCloud::ConstPtr;
-      using Indices = typename SampleConsensusModel<Storage>::Indices;
-      using IndicesConstPtr = typename SampleConsensusModel<Storage>::IndicesConstPtr;
+/** \brief Check if a certain tuple is a point inlier. */
+template <template <typename> class Storage>
+struct Create1PointPlaneHypothesis {
+  using PointCloud = typename SampleConsensusModel<Storage>::PointCloud;
+  using PointCloudConstPtr = typename PointCloud::ConstPtr;
+  using Indices = typename SampleConsensusModel<Storage>::Indices;
+  using IndicesConstPtr = typename SampleConsensusModel<Storage>::IndicesConstPtr;
 
-      const PointXYZRGB *input;
-      const int *indices;
-      int nr_indices;
-      float bad_value;
+  const PointXYZRGB* input;
+  const int* indices;
+  int nr_indices;
+  float bad_value;
 
-      Create1PointPlaneHypothesis (const PointXYZRGB *_input, const int *_indices, int _nr_indices, float bad) : 
-        input(_input), indices(_indices), nr_indices(_nr_indices), bad_value(bad)
-      {}
+  Create1PointPlaneHypothesis(const PointXYZRGB* _input,
+                              const int* _indices,
+                              int _nr_indices,
+                              float bad)
+  : input(_input), indices(_indices), nr_indices(_nr_indices), bad_value(bad)
+  {}
 
-      //template <typename Tuple> 
-      __inline__ __host__ __device__ float4
-      //operator () (const Tuple &t);
-      operator () (int t);
-    };
+  // template <typename Tuple>
+  __inline__ __host__ __device__ float4
+  // operator () (const Tuple &t);
+  operator()(int t);
+};
 
-    /** \brief Check if a certain tuple is a point inlier. */
-    template <template <typename> class Storage>
-    struct Create1PointPlaneSampleHypothesis
-    {
-      using PointCloud = typename SampleConsensusModel<Storage>::PointCloud;
-      using PointCloudConstPtr = typename PointCloud::ConstPtr;
-      using Indices = typename SampleConsensusModel<Storage>::Indices;
-      using IndicesConstPtr = typename SampleConsensusModel<Storage>::IndicesConstPtr;
+/** \brief Check if a certain tuple is a point inlier. */
+template <template <typename> class Storage>
+struct Create1PointPlaneSampleHypothesis {
+  using PointCloud = typename SampleConsensusModel<Storage>::PointCloud;
+  using PointCloudConstPtr = typename PointCloud::ConstPtr;
+  using Indices = typename SampleConsensusModel<Storage>::Indices;
+  using IndicesConstPtr = typename SampleConsensusModel<Storage>::IndicesConstPtr;
 
-      const PointXYZRGB *input;
-      const float4 *normals_;
-      const int *indices;
-      int width_;
-      int height_;
-      int nr_indices;
-      float bad_value;
-      thrust::default_random_engine rng;
+  const PointXYZRGB* input;
+  const float4* normals_;
+  const int* indices;
+  int width_;
+  int height_;
+  int nr_indices;
+  float bad_value;
+  thrust::default_random_engine rng;
 
-      Create1PointPlaneSampleHypothesis (const PointXYZRGB *_input, const float4* normals, const int *_indices, int width, int height, int _nr_indices, float bad) : 
-        input(_input), normals_(normals), indices(_indices), width_(width), height_(height), nr_indices(_nr_indices), bad_value(bad)
-      {
-      }
+  Create1PointPlaneSampleHypothesis(const PointXYZRGB* _input,
+                                    const float4* normals,
+                                    const int* _indices,
+                                    int width,
+                                    int height,
+                                    int _nr_indices,
+                                    float bad)
+  : input(_input)
+  , normals_(normals)
+  , indices(_indices)
+  , width_(width)
+  , height_(height)
+  , nr_indices(_nr_indices)
+  , bad_value(bad)
+  {}
 
-      //template <typename Tuple> 
-      __inline__ __host__ __device__ thrust::tuple<int,float4>
-      //operator () (const Tuple &t);
-      operator () (int t);
-    };
+  // template <typename Tuple>
+  __inline__ __host__ __device__ thrust::tuple<int, float4>
+  // operator () (const Tuple &t);
+  operator()(int t);
+};
 
-    struct parallel_random_generator 
-    { 
-      
-      __inline__ __host__ __device__ 
-      parallel_random_generator(unsigned int seed) 
-      { 
-        m_seed = seed; 
-      } 
+struct parallel_random_generator {
 
-      __inline__ __host__ __device__ 
-      unsigned int operator()(const unsigned int n) const 
-      { 
-        thrust::default_random_engine rng(m_seed); 
-        // discard n numbers to avoid correlation 
-        rng.discard(n); 
-        // return a random number 
-        return rng(); 
-      } 
-      unsigned int m_seed; 
-    }; 
+  __inline__ __host__ __device__
+  parallel_random_generator (unsigned int seed)
+  {
+    m_seed = seed;
+  }
 
-  } // namespace
-} // namespace
+  __inline__ __host__ __device__ unsigned int
+  operator()(const unsigned int n) const
+  {
+    thrust::default_random_engine rng(m_seed);
+    // discard n numbers to avoid correlation
+    rng.discard(n);
+    // return a random number
+    return rng();
+  }
+  unsigned int m_seed;
+};
+
+} // namespace cuda
+} // namespace pcl

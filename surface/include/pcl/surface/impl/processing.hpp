@@ -39,28 +39,25 @@
 
 #pragma once
 
+namespace pcl {
 
-namespace pcl
-{
-
-template <typename PointInT, typename PointOutT> void
-CloudSurfaceProcessing<PointInT, PointOutT>::process (pcl::PointCloud<PointOutT> &output)
+template <typename PointInT, typename PointOutT>
+void
+CloudSurfaceProcessing<PointInT, PointOutT>::process(pcl::PointCloud<PointOutT>& output)
 {
   // Copy the header
   output.header = input_->header;
 
-  if (!initCompute ())
-  {
+  if (!initCompute()) {
     output.width = output.height = 0;
-    output.clear ();
+    output.clear();
     return;
   }
 
   // Perform the actual surface reconstruction
-  performProcessing (output);
+  performProcessing(output);
 
-  deinitCompute ();
+  deinitCompute();
 }
 
 } // namespace pcl
-

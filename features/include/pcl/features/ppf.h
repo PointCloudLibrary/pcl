@@ -40,65 +40,66 @@
 
 #include <pcl/features/feature.h>
 
-namespace pcl
-{
-  /** \brief
-    * \param[in] p1 
-    * \param[in] n1
-    * \param[in] p2 
-    * \param[in] n2
-    * \param[out] f1
-    * \param[out] f2
-    * \param[out] f3
-    * \param[out] f4
-    */
-  PCL_EXPORTS bool
-  computePPFPairFeature (const Eigen::Vector4f &p1, const Eigen::Vector4f &n1,
-                         const Eigen::Vector4f &p2, const Eigen::Vector4f &n2,
-                         float &f1, float &f2, float &f3, float &f4);
+namespace pcl {
+/** \brief
+ * \param[in] p1
+ * \param[in] n1
+ * \param[in] p2
+ * \param[in] n2
+ * \param[out] f1
+ * \param[out] f2
+ * \param[out] f3
+ * \param[out] f4
+ */
+PCL_EXPORTS bool
+computePPFPairFeature (const Eigen::Vector4f& p1,
+                       const Eigen::Vector4f& n1,
+                       const Eigen::Vector4f& p2,
+                       const Eigen::Vector4f& n2,
+                       float& f1,
+                       float& f2,
+                       float& f3,
+                       float& f4);
 
+/** \brief Class that calculates the "surflet" features for each pair in the given
+ * pointcloud. Please refer to the following publication for more details:
+ *    B. Drost, M. Ulrich, N. Navab, S. Ilic
+ *    Model Globally, Match Locally: Efficient and Robust 3D Object Recognition
+ *    2010 IEEE Conference on Computer Vision and Pattern Recognition (CVPR)
+ *    13-18 June 2010, San Francisco, CA
+ *
+ * PointOutT is meant to be pcl::PPFSignature - contains the 4 values of the Surflet
+ * feature and in addition, alpha_m for the respective pair - optimization proposed by
+ * the authors (see above)
+ *
+ * \author Alexandru-Eugen Ichim
+ */
+template <typename PointInT, typename PointNT, typename PointOutT>
+class PPFEstimation : public FeatureFromNormals<PointInT, PointNT, PointOutT> {
+public:
+  using Ptr = shared_ptr<PPFEstimation<PointInT, PointNT, PointOutT>>;
+  using ConstPtr = shared_ptr<const PPFEstimation<PointInT, PointNT, PointOutT>>;
+  using PCLBase<PointInT>::indices_;
+  using Feature<PointInT, PointOutT>::input_;
+  using Feature<PointInT, PointOutT>::feature_name_;
+  using Feature<PointInT, PointOutT>::getClassName;
+  using FeatureFromNormals<PointInT, PointNT, PointOutT>::normals_;
 
-  /** \brief Class that calculates the "surflet" features for each pair in the given
-    * pointcloud. Please refer to the following publication for more details:
-    *    B. Drost, M. Ulrich, N. Navab, S. Ilic
-    *    Model Globally, Match Locally: Efficient and Robust 3D Object Recognition
-    *    2010 IEEE Conference on Computer Vision and Pattern Recognition (CVPR)
-    *    13-18 June 2010, San Francisco, CA
-    *
-    * PointOutT is meant to be pcl::PPFSignature - contains the 4 values of the Surflet
-    * feature and in addition, alpha_m for the respective pair - optimization proposed by
-    * the authors (see above)
-    *
-    * \author Alexandru-Eugen Ichim
-    */
-  template <typename PointInT, typename PointNT, typename PointOutT>
-  class PPFEstimation : public FeatureFromNormals<PointInT, PointNT, PointOutT>
-  {
-    public:
-      using Ptr = shared_ptr<PPFEstimation<PointInT, PointNT, PointOutT> >;
-      using ConstPtr = shared_ptr<const PPFEstimation<PointInT, PointNT, PointOutT> >;
-      using PCLBase<PointInT>::indices_;
-      using Feature<PointInT, PointOutT>::input_;
-      using Feature<PointInT, PointOutT>::feature_name_;
-      using Feature<PointInT, PointOutT>::getClassName;
-      using FeatureFromNormals<PointInT, PointNT, PointOutT>::normals_;
+  using PointCloudOut = pcl::PointCloud<PointOutT>;
 
-      using PointCloudOut = pcl::PointCloud<PointOutT>;
+  /** \brief Empty Constructor. */
+  PPFEstimation();
 
-      /** \brief Empty Constructor. */
-      PPFEstimation ();
-
-
-    private:
-      /** \brief The method called for actually doing the computations
-        * \param[out] output the resulting point cloud (which should be of type pcl::PPFSignature);
-        * its size is the size of the input cloud, squared (i.e., one point for each pair in
-        * the input cloud);
-        */
-      void
-      computeFeature (PointCloudOut &output) override;
-  };
-}
+private:
+  /** \brief The method called for actually doing the computations
+   * \param[out] output the resulting point cloud (which should be of type
+   * pcl::PPFSignature); its size is the size of the input cloud, squared (i.e., one
+   * point for each pair in the input cloud);
+   */
+  void
+  computeFeature (PointCloudOut& output) override;
+};
+} // namespace pcl
 
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/features/impl/ppf.hpp>

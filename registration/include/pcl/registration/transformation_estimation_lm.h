@@ -113,9 +113,9 @@ public:
    * \param[out] transformation_matrix the resultant transformation matrix
    */
   inline void
-  estimateRigidTransformation(const pcl::PointCloud<PointSource>& cloud_src,
-                              const pcl::PointCloud<PointTarget>& cloud_tgt,
-                              Matrix4& transformation_matrix) const override;
+  estimateRigidTransformation (const pcl::PointCloud<PointSource>& cloud_src,
+                               const pcl::PointCloud<PointTarget>& cloud_tgt,
+                               Matrix4& transformation_matrix) const override;
 
   /** \brief Estimate a rigid rotation transformation between a source and a target
    * point cloud using LM. \param[in] cloud_src the source point cloud dataset
@@ -125,10 +125,10 @@ public:
    * \param[out] transformation_matrix the resultant transformation matrix
    */
   inline void
-  estimateRigidTransformation(const pcl::PointCloud<PointSource>& cloud_src,
-                              const pcl::Indices& indices_src,
-                              const pcl::PointCloud<PointTarget>& cloud_tgt,
-                              Matrix4& transformation_matrix) const override;
+  estimateRigidTransformation (const pcl::PointCloud<PointSource>& cloud_src,
+                               const pcl::Indices& indices_src,
+                               const pcl::PointCloud<PointTarget>& cloud_tgt,
+                               Matrix4& transformation_matrix) const override;
 
   /** \brief Estimate a rigid rotation transformation between a source and a target
    * point cloud using LM. \param[in] cloud_src the source point cloud dataset
@@ -140,11 +140,11 @@ public:
    * \param[out] transformation_matrix the resultant transformation matrix
    */
   inline void
-  estimateRigidTransformation(const pcl::PointCloud<PointSource>& cloud_src,
-                              const pcl::Indices& indices_src,
-                              const pcl::PointCloud<PointTarget>& cloud_tgt,
-                              const pcl::Indices& indices_tgt,
-                              Matrix4& transformation_matrix) const override;
+  estimateRigidTransformation (const pcl::PointCloud<PointSource>& cloud_src,
+                               const pcl::Indices& indices_src,
+                               const pcl::PointCloud<PointTarget>& cloud_tgt,
+                               const pcl::Indices& indices_tgt,
+                               Matrix4& transformation_matrix) const override;
 
   /** \brief Estimate a rigid rotation transformation between a source and a target
    * point cloud using LM. \param[in] cloud_src the source point cloud dataset
@@ -153,16 +153,16 @@ public:
    * point cloud \param[out] transformation_matrix the resultant transformation matrix
    */
   inline void
-  estimateRigidTransformation(const pcl::PointCloud<PointSource>& cloud_src,
-                              const pcl::PointCloud<PointTarget>& cloud_tgt,
-                              const pcl::Correspondences& correspondences,
-                              Matrix4& transformation_matrix) const override;
+  estimateRigidTransformation (const pcl::PointCloud<PointSource>& cloud_src,
+                               const pcl::PointCloud<PointTarget>& cloud_tgt,
+                               const pcl::Correspondences& correspondences,
+                               Matrix4& transformation_matrix) const override;
 
   /** \brief Set the function we use to warp points. Defaults to rigid 6D warp.
    * \param[in] warp_fcn a shared pointer to an object that warps points
    */
   void
-  setWarpFunction(
+  setWarpFunction (
       const typename WarpPointRigid<PointSource, PointTarget, MatScalar>::Ptr& warp_fcn)
   {
     warp_point_ = warp_fcn;
@@ -179,7 +179,7 @@ protected:
    * kept for API compatibility reasons.
    */
   virtual MatScalar
-  computeDistance(const PointSource& p_src, const PointTarget& p_tgt) const
+  computeDistance (const PointSource& p_src, const PointTarget& p_tgt) const
   {
     Vector4 s(p_src.x, p_src.y, p_src.z, 0);
     Vector4 t(p_tgt.x, p_tgt.y, p_tgt.z, 0);
@@ -195,7 +195,7 @@ protected:
    * (See \a TransformationEstimationPointToPlane)
    */
   virtual MatScalar
-  computeDistance(const Vector4& p_src, const PointTarget& p_tgt) const
+  computeDistance (const Vector4& p_src, const PointTarget& p_tgt) const
   {
     Vector4 t(p_tgt.x, p_tgt.y, p_tgt.z, 0);
     return ((p_src - t).norm());
@@ -244,7 +244,7 @@ protected:
 
     /** \brief Get the number of values. */
     int
-    values() const
+    values () const
     {
       return (m_data_points_);
     }

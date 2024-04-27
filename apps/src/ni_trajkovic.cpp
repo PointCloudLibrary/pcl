@@ -72,7 +72,7 @@ public:
 
   /////////////////////////////////////////////////////////////////////////
   void
-  cloud_callback_3d(const CloudConstPtr& cloud)
+  cloud_callback_3d (const CloudConstPtr& cloud)
   {
     FPS_CALC("cloud callback");
     std::lock_guard<std::mutex> lock(cloud_mutex_);
@@ -89,7 +89,7 @@ public:
 
   /////////////////////////////////////////////////////////////////////////
   void
-  cloud_callback_2d(const CloudConstPtr& cloud)
+  cloud_callback_2d (const CloudConstPtr& cloud)
   {
     FPS_CALC("cloud callback");
     std::lock_guard<std::mutex> lock(cloud_mutex_);
@@ -106,20 +106,20 @@ public:
 
   /////////////////////////////////////////////////////////////////////////
   void
-  init()
+  init ()
   {
     std::function<void(const CloudConstPtr&)> cloud_cb;
     if (enable_3d_)
-      cloud_cb = [this](const CloudConstPtr& cloud) { cloud_callback_3d(cloud); };
+      cloud_cb = [this] (const CloudConstPtr& cloud) { cloud_callback_3d(cloud); };
     else
-      cloud_cb = [this](const CloudConstPtr& cloud) { cloud_callback_2d(cloud); };
+      cloud_cb = [this] (const CloudConstPtr& cloud) { cloud_callback_2d(cloud); };
 
     cloud_connection = grabber_.registerCallback(cloud_cb);
   }
 
   /////////////////////////////////////////////////////////////////////////
   std::string
-  getStrBool(bool state)
+  getStrBool (bool state)
   {
     std::ostringstream ss;
     ss << state;
@@ -128,7 +128,7 @@ public:
 
   /////////////////////////////////////////////////////////////////////////
   void
-  run()
+  run ()
   {
     grabber_.start();
 
@@ -219,7 +219,7 @@ private:
 
 /* ---[ */
 int
-main(int argc, char** argv)
+main (int argc, char** argv)
 {
   if (pcl::console::find_switch(argc, argv, "-h")) {
     pcl::console::print_info("Syntax is: %s [-device device_id_string] [-2d]\n",

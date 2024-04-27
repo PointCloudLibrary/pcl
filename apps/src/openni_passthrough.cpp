@@ -82,7 +82,7 @@ OpenNIPassthrough::OpenNIPassthrough(pcl::OpenNIGrabber& grabber)
   refreshView();
 
   // Start the OpenNI data acquision
-  std::function<void(const CloudConstPtr&)> f = [this](const CloudConstPtr& cloud) {
+  std::function<void(const CloudConstPtr&)> f = [this] (const CloudConstPtr& cloud) {
     cloud_cb(cloud);
   };
   boost::signals2::connection c = grabber_.registerCallback(f);
@@ -148,7 +148,7 @@ OpenNIPassthrough::refreshView()
 }
 
 int
-main(int argc, char** argv)
+main (int argc, char** argv)
 {
   // Initialize QT
   QApplication app(argc, argv);

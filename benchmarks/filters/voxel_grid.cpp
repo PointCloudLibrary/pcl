@@ -5,7 +5,7 @@
 #include <benchmark/benchmark.h>
 
 static void
-BM_VoxelGrid(benchmark::State& state, const std::string& file)
+BM_VoxelGrid (benchmark::State& state, const std::string& file)
 {
   // Perform setup here
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
@@ -25,7 +25,7 @@ BM_VoxelGrid(benchmark::State& state, const std::string& file)
 }
 
 static void
-BM_ApproxVoxelGrid(benchmark::State& state, const std::string& file)
+BM_ApproxVoxelGrid (benchmark::State& state, const std::string& file)
 {
   // Perform setup here
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
@@ -45,7 +45,7 @@ BM_ApproxVoxelGrid(benchmark::State& state, const std::string& file)
 }
 
 int
-main(int argc, char** argv)
+main (int argc, char** argv)
 {
   if (argc < 3) {
     std::cerr

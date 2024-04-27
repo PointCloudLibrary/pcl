@@ -117,7 +117,7 @@ char usage[] = "\n"
 // clang-format on
 
 void
-print_usage(const std::string& msg)
+print_usage (const std::string& msg)
 {
   std::cerr << msg << std::endl;
   std::cout << usage << std::endl;
@@ -133,7 +133,7 @@ public:
   {}
 
   void
-  cloud_cb_(const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr& cloud)
+  cloud_cb_ (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr& cloud)
   {
     if (!viewer.wasStopped()) {
       PointCloud<PointXYZRGBA>::Ptr cloudOut(new PointCloud<PointXYZRGBA>);
@@ -145,7 +145,7 @@ public:
   }
 
   void
-  run()
+  run ()
   {
 
     // create a new grabber for OpenNI devices
@@ -153,7 +153,7 @@ public:
 
     // make callback function from member function
     std::function<void(const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)> f =
-        [this](const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr& cloud) {
+        [this] (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr& cloud) {
           cloud_cb_(cloud);
         };
 
@@ -189,7 +189,7 @@ struct EventHelper {
   }
 
   void
-  cloud_cb_(const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr& cloud)
+  cloud_cb_ (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr& cloud)
   {
     if (!outputFile_.fail()) {
       PointCloud<PointXYZRGBA>::Ptr cloud_out(new PointCloud<PointXYZRGBA>);
@@ -203,14 +203,14 @@ struct EventHelper {
   }
 
   void
-  run()
+  run ()
   {
     // create a new grabber for OpenNI devices
     pcl::OpenNIGrabber interface;
 
     // make callback function from member function
     std::function<void(const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)> f =
-        [this](const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr& cloud) {
+        [this] (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr& cloud) {
           cloud_cb_(cloud);
         };
 
@@ -234,7 +234,7 @@ struct EventHelper {
 };
 
 int
-main(int argc, char** argv)
+main (int argc, char** argv)
 {
   OctreePointCloudCompression<PointXYZRGBA>* octreeCoder;
 

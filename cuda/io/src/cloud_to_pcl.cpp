@@ -35,46 +35,43 @@
  *
  */
 
+#include <pcl/cuda/io/cloud_to_pcl.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
-#include <pcl/cuda/io/cloud_to_pcl.h>
 
-namespace pcl
-{
-namespace cuda
-{
+namespace pcl {
+namespace cuda {
 
 //////////////////////////////////////////////////////////////////////////
 void
-toPCL (const PointCloudAOS<Host> &input, 
-                 const thrust::host_vector<float4> &normals,
-                 pcl::PointCloud<pcl::PointXYZRGBNormal> &output)
+toPCL (const PointCloudAOS<Host>& input,
+       const thrust::host_vector<float4>& normals,
+       pcl::PointCloud<pcl::PointXYZRGBNormal>& output)
 {
-  output.resize (input.points.size ());
-  for (std::size_t i = 0; i < input.points.size (); ++i)
-  {
+  output.resize(input.points.size());
+  for (std::size_t i = 0; i < input.points.size(); ++i) {
     output[i].x = input.points[i].x;
     output[i].y = input.points[i].y;
     output[i].z = input.points[i].z;
     // Pack RGB into a float
     output[i].rgb = *(float*)(&input.points[i].rgb);
 
-    output[i].normal_x  = normals[i].x;
-    output[i].normal_y  = normals[i].y;
-    output[i].normal_z  = normals[i].z;
+    output[i].normal_x = normals[i].x;
+    output[i].normal_y = normals[i].y;
+    output[i].normal_z = normals[i].z;
     output[i].curvature = normals[i].w;
   }
 
-  output.width    = input.width;
-  output.height   = input.height;
+  output.width = input.width;
+  output.height = input.height;
   output.is_dense = input.is_dense;
 }
 
 //////////////////////////////////////////////////////////////////////////
 void
-toPCL (const PointCloudAOS<Device> &d_input, 
-                 const thrust::device_vector<float4> &d_normals,
-                 pcl::PointCloud<pcl::PointXYZRGBNormal> &output)
+toPCL (const PointCloudAOS<Device>& d_input,
+       const thrust::device_vector<float4>& d_normals,
+       pcl::PointCloud<pcl::PointXYZRGBNormal>& output)
 {
   PointCloudAOS<Host> input;
   input << d_input;
@@ -85,12 +82,10 @@ toPCL (const PointCloudAOS<Device> &d_input,
 
 //////////////////////////////////////////////////////////////////////////
 void
-toPCL (const PointCloudAOS<Host> &input, 
-                 pcl::PointCloud<pcl::PointXYZRGB> &output)
+toPCL (const PointCloudAOS<Host>& input, pcl::PointCloud<pcl::PointXYZRGB>& output)
 {
-  output.resize (input.points.size ());
-  for (std::size_t i = 0; i < input.points.size (); ++i)
-  {
+  output.resize(input.points.size());
+  for (std::size_t i = 0; i < input.points.size(); ++i) {
     output[i].x = input.points[i].x;
     output[i].y = input.points[i].y;
     output[i].z = input.points[i].z;
@@ -98,27 +93,25 @@ toPCL (const PointCloudAOS<Host> &input,
     output[i].rgb = *(float*)(&input.points[i].rgb);
   }
 
-  output.width    = input.width;
-  output.height   = input.height;
+  output.width = input.width;
+  output.height = input.height;
   output.is_dense = input.is_dense;
 
-/*  for (std::size_t i = 0; i < output.size (); ++i)
-  std::cerr << 
-    output[i].x << " " <<
-    output[i].y << " " <<
-    output[i].z << " " << std::endl;*/
+  /*  for (std::size_t i = 0; i < output.size (); ++i)
+    std::cerr <<
+      output[i].x << " " <<
+      output[i].y << " " <<
+      output[i].z << " " << std::endl;*/
 }
 
 //////////////////////////////////////////////////////////////////////////
 void
-toPCL (const PointCloudAOS<Device> &input, 
-                 pcl::PointCloud<pcl::PointXYZRGB> &output)
+toPCL (const PointCloudAOS<Device>& input, pcl::PointCloud<pcl::PointXYZRGB>& output)
 {
   PointCloudAOS<Host> cloud;
   cloud << input;
 
   toPCL(cloud, output);
 }
-} // namespace
-} // namespace
-
+} // namespace cuda
+} // namespace pcl

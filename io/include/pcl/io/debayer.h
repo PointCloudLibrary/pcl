@@ -39,41 +39,41 @@
 
 #include <pcl/pcl_exports.h>
 
-namespace pcl
-{
-  namespace io
-  {
-    /** \brief Various debayering methods.
-      * \author Suat Gedikli
-      * \ingroup io
-      */
-    class PCL_EXPORTS DeBayer
-    {
-      public:
-        // Debayering methods
-        void
-        debayerBilinear (
-            const unsigned char *bayer_pixel, unsigned char *rgb_buffer,
-            unsigned width, unsigned height, 
-            int bayer_line_step = 0,
-            int bayer_line_step2 = 0,
-            unsigned rgb_line_step = 0) const;
+namespace pcl {
+namespace io {
+/** \brief Various debayering methods.
+ * \author Suat Gedikli
+ * \ingroup io
+ */
+class PCL_EXPORTS DeBayer {
+public:
+  // Debayering methods
+  void
+  debayerBilinear (const unsigned char* bayer_pixel,
+                   unsigned char* rgb_buffer,
+                   unsigned width,
+                   unsigned height,
+                   int bayer_line_step = 0,
+                   int bayer_line_step2 = 0,
+                   unsigned rgb_line_step = 0) const;
 
-        void
-        debayerEdgeAware (
-            const unsigned char *bayer_pixel, unsigned char *rgb_buffer,
-            unsigned width, unsigned height, 
-            int bayer_line_step = 0,
-            int bayer_line_step2 = 0,
-            unsigned rgb_line_step = 0) const;
+  void
+  debayerEdgeAware (const unsigned char* bayer_pixel,
+                    unsigned char* rgb_buffer,
+                    unsigned width,
+                    unsigned height,
+                    int bayer_line_step = 0,
+                    int bayer_line_step2 = 0,
+                    unsigned rgb_line_step = 0) const;
 
-        void
-        debayerEdgeAwareWeighted (
-            const unsigned char *bayer_pixel, unsigned char *rgb_buffer,
-            unsigned width, unsigned height, 
-            int bayer_line_step = 0,
-            int bayer_line_step2 = 0,
-            unsigned rgb_line_step = 0) const;
-    };
-  }
-}
+  void
+  debayerEdgeAwareWeighted (const unsigned char* bayer_pixel,
+                            unsigned char* rgb_buffer,
+                            unsigned width,
+                            unsigned height,
+                            int bayer_line_step = 0,
+                            int bayer_line_step2 = 0,
+                            unsigned rgb_line_step = 0) const;
+};
+} // namespace io
+} // namespace pcl

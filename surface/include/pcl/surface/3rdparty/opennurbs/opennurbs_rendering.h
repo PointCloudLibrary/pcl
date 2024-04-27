@@ -8,7 +8,7 @@
 // THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT EXPRESS OR IMPLIED WARRANTY.
 // ALL IMPLIED WARRANTIES OF FITNESS FOR ANY PARTICULAR PURPOSE AND OF
 // MERCHANTABILITY ARE HEREBY DISCLAIMED.
-//				
+//
 // For complete openNURBS copyright information see <http://www.opennurbs.org>.
 //
 ////////////////////////////////////////////////////////////////
@@ -17,34 +17,41 @@
 #if !defined(OPENNURBS_RENDERING_INC_)
 #define OPENNURBS_RENDERING_INC_
 
-
-class ON_CLASS ON_RenderingAttributes
-{
+class ON_CLASS ON_RenderingAttributes {
 public:
   ON_RenderingAttributes();
-  void Default();
-  int Compare( const ON_RenderingAttributes& other ) const;
-  bool Write( ON_BinaryArchive& archive ) const;
-  bool Read( ON_BinaryArchive& archive );
+  void
+  Default ();
+  int
+  Compare (const ON_RenderingAttributes& other) const;
+  bool
+  Write (ON_BinaryArchive& archive) const;
+  bool
+  Read (ON_BinaryArchive& archive);
 
-  bool IsValid( ON_TextLog* text_log ) const;
+  bool
+  IsValid (ON_TextLog* text_log) const;
 
-
-  const ON_MaterialRef* MaterialRef( const ON_UUID& plugin_id ) const;
+  const ON_MaterialRef*
+  MaterialRef (const ON_UUID& plugin_id) const;
 
   ON_ClassArray<ON_MaterialRef> m_materials;
 };
 
-class ON_CLASS ON_ObjectRenderingAttributes : public ON_RenderingAttributes
-{
+class ON_CLASS ON_ObjectRenderingAttributes : public ON_RenderingAttributes {
 public:
   ON_ObjectRenderingAttributes();
-  void Default();
-  int Compare( const ON_ObjectRenderingAttributes& other ) const;
-  bool Write( ON_BinaryArchive& archive ) const;
-  bool Read( ON_BinaryArchive& archive );
+  void
+  Default ();
+  int
+  Compare (const ON_ObjectRenderingAttributes& other) const;
+  bool
+  Write (ON_BinaryArchive& archive) const;
+  bool
+  Read (ON_BinaryArchive& archive);
 
-  bool IsValid( ON_TextLog* text_log ) const;
+  bool
+  IsValid (ON_TextLog* text_log) const;
 
   /*
   Description:
@@ -56,7 +63,8 @@ public:
     True is successful.  False if there are mapping channels
     and xform cannot be inverted.
   */
-  bool Transform( const ON_Xform& xform );
+  bool
+  Transform (const ON_Xform& xform);
 
   /*
   Parameters:
@@ -65,9 +73,8 @@ public:
     A pointer to the plug-in's mapping reference, if there
     is one. Otherwise NULL is returned.
   */
-  const ON_MappingRef* MappingRef( 
-    const ON_UUID& plugin_id 
-    ) const;
+  const ON_MappingRef*
+  MappingRef (const ON_UUID& plugin_id) const;
 
   /*
   Parameters:
@@ -76,9 +83,8 @@ public:
     If a mapping ref exists, it is returned.  Otherwise
     one is added.
   */
-  ON_MappingRef* AddMappingRef( 
-    const ON_UUID& plugin_id 
-    );
+  ON_MappingRef*
+  AddMappingRef (const ON_UUID& plugin_id);
 
   /*
   Parameters:
@@ -87,10 +93,8 @@ public:
     If a mapping ref exists, it is returned.  Otherwise
     one is added.
   */
-  bool DeleteMappingRef( 
-    const ON_UUID& plugin_id 
-    );
-
+  bool
+  DeleteMappingRef (const ON_UUID& plugin_id);
 
   /*
   Parameters:
@@ -102,16 +106,11 @@ public:
     A pointer to the plug-in's mapping channel, if there
     is one. Otherwise NULL is returned.
   */
-  const ON_MappingChannel* MappingChannel( 
-    const ON_UUID& plugin_id, 
-    int mapping_channel_id
-    ) const;
+  const ON_MappingChannel*
+  MappingChannel (const ON_UUID& plugin_id, int mapping_channel_id) const;
 
-  const ON_MappingChannel* MappingChannel( 
-    const ON_UUID& plugin_id, 
-    const ON_UUID& mapping_id
-    ) const;
-
+  const ON_MappingChannel*
+  MappingChannel (const ON_UUID& plugin_id, const ON_UUID& mapping_id) const;
 
   /*
   Parameters:
@@ -121,15 +120,14 @@ public:
       ON_TextureMapping id
   Returns:
     True if the mapping channel was added or a pefect
-    match already existed.  False if a mapping channel 
+    match already existed.  False if a mapping channel
     with a different mapping_id already exists for this
     plug-in and channel.
   */
-  bool AddMappingChannel(
-    const ON_UUID& plugin_id, 
-    int mapping_channel_id,
-    const ON_UUID& mapping_id
-    );
+  bool
+  AddMappingChannel (const ON_UUID& plugin_id,
+                     int mapping_channel_id,
+                     const ON_UUID& mapping_id);
 
   /*
   Parameters:
@@ -140,15 +138,11 @@ public:
   Returns:
     True if a matching mapping channel was deleted.
   */
-  bool DeleteMappingChannel(
-    const ON_UUID& plugin_id, 
-    int mapping_channel_id
-    );
+  bool
+  DeleteMappingChannel (const ON_UUID& plugin_id, int mapping_channel_id);
 
-  bool DeleteMappingChannel(
-    const ON_UUID& plugin_id, 
-    const ON_UUID& mapping_id
-    );
+  bool
+  DeleteMappingChannel (const ON_UUID& plugin_id, const ON_UUID& mapping_id);
 
   /*
   Parameters:
@@ -158,13 +152,12 @@ public:
   Returns:
     True if a matching mapping channel was found and changed.
   */
-  bool ChangeMappingChannel(
-    const ON_UUID& plugin_id, 
-    int old_mapping_channel_id,
-    int new_mapping_channel_id
-    );
+  bool
+  ChangeMappingChannel (const ON_UUID& plugin_id,
+                        int old_mapping_channel_id,
+                        int new_mapping_channel_id);
 
-  // Use AddMappingRef() or AddMappingChannel() if you 
+  // Use AddMappingRef() or AddMappingChannel() if you
   // want to add an element to this array.
   //
   // Every mapping ref in this array must have
@@ -175,22 +168,24 @@ public:
   Parameters:
     bEnable - [in]
       false - (default)
-       Do not generate bitmap textures that 
+       Do not generate bitmap textures that
        approximate procedural textures.
-      true - 
+      true -
        generate bitmap textures that approximate
        procedural textures and use these for
        quick previews.
   Returns:
     True if advancded texture preview is enabled.
   */
-  void EnableAdvancedTexturePreview(bool b);
+  void
+  EnableAdvancedTexturePreview (bool b);
 
   /*
   Returns:
     True if advancded texture preview is enabled.
   */
-  bool AdvancedTexturePreview() const;
+  bool
+  AdvancedTexturePreview () const;
 
   bool m_bCastsShadows;    // default is true
   bool m_bReceivesShadows; // default is true
@@ -204,15 +199,13 @@ private:
 
 #if defined(ON_DLL_TEMPLATE)
 // This stuff is here because of a limitation in the way Microsoft
-// handles templates and DLLs.  See Microsoft's knowledge base 
+// handles templates and DLLs.  See Microsoft's knowledge base
 // article ID Q168958 for details.
-#pragma warning( push )
-#pragma warning( disable : 4231 )
+#pragma warning(push)
+#pragma warning(disable : 4231)
 ON_DLL_TEMPLATE template class ON_CLASS ON_ClassArray<ON_RenderingAttributes>;
 ON_DLL_TEMPLATE template class ON_CLASS ON_ClassArray<ON_ObjectRenderingAttributes>;
-#pragma warning( pop )
+#pragma warning(pop)
 #endif
 
-
 #endif
-

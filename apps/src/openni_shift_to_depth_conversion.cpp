@@ -63,9 +63,9 @@ public:
   {}
 
   void
-  image_callback(const openni_wrapper::Image::Ptr& image,
-                 const openni_wrapper::DepthImage::Ptr& depth_image,
-                 float)
+  image_callback (const openni_wrapper::Image::Ptr& image,
+                  const openni_wrapper::DepthImage::Ptr& depth_image,
+                  float)
   {
 
     std::vector<std::uint16_t> raw_shift_data;
@@ -112,7 +112,7 @@ public:
   }
 
   void
-  run()
+  run ()
   {
     // initialize OpenNIDevice to shift-value mode
     int depthformat = openni_wrapper::OpenNIDevice::OpenNI_shift_values;
@@ -125,9 +125,9 @@ public:
     std::function<void(const openni_wrapper::Image::Ptr&,
                        const openni_wrapper::DepthImage::Ptr&,
                        float)>
-        image_cb = [this](const openni_wrapper::Image::Ptr& img,
-                          const openni_wrapper::DepthImage::Ptr& depth,
-                          float f) { image_callback(img, depth, f); };
+        image_cb = [this] (const openni_wrapper::Image::Ptr& img,
+                           const openni_wrapper::DepthImage::Ptr& depth,
+                           float f) { image_callback(img, depth, f); };
     grabber_.registerCallback(image_cb);
 
     // start grabber thread
@@ -141,12 +141,12 @@ public:
 protected:
   /* helper method to convert depth&rgb data to pointcloud*/
   void
-  convert(std::vector<std::uint16_t>& depthData_arg,
-          std::vector<std::uint8_t>& rgbData_arg,
-          std::size_t width_arg,
-          std::size_t height_arg,
-          float focalLength_arg,
-          pcl::PointCloud<PointXYZRGB>& cloud_arg) const
+  convert (std::vector<std::uint16_t>& depthData_arg,
+           std::vector<std::uint8_t>& rgbData_arg,
+           std::size_t width_arg,
+           std::size_t height_arg,
+           float focalLength_arg,
+           pcl::PointCloud<PointXYZRGB>& cloud_arg) const
   {
     std::size_t cloud_size = width_arg * height_arg;
 
@@ -204,7 +204,7 @@ protected:
 };
 
 int
-main(int, char**)
+main (int, char**)
 {
   SimpleOpenNIViewer v;
   v.run();

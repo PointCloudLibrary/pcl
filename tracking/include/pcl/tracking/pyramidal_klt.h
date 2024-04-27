@@ -106,14 +106,14 @@ public:
    * \param levels desired number of pyramid levels
    */
   inline void
-  setNumberOfPyramidLevels(int levels)
+  setNumberOfPyramidLevels (int levels)
   {
     nb_levels_ = levels;
   }
 
   /** \return the number of pyramid levels */
   inline int
-  getNumberOfPyramidLevels() const
+  getNumberOfPyramidLevels () const
   {
     return (nb_levels_);
   }
@@ -122,14 +122,14 @@ public:
    * \param[in] accuracy desired accuracy.
    */
   inline void
-  setAccuracy(float accuracy)
+  setAccuracy (float accuracy)
   {
     accuracy_ = accuracy;
   }
 
   /** \return the accuracy */
   inline float
-  getAccuracy() const
+  getAccuracy () const
   {
     return (accuracy_);
   }
@@ -138,14 +138,14 @@ public:
    * \param[in] epsilon desired epsilon.
    */
   inline void
-  setEpsilon(float epsilon)
+  setEpsilon (float epsilon)
   {
     epsilon_ = epsilon;
   }
 
   /** \return the epsilon */
   inline float
-  getEpsilon() const
+  getEpsilon () const
   {
     return (epsilon_);
   }
@@ -155,14 +155,14 @@ public:
    * \param[in] number the desired number of points to detect.
    */
   inline void
-  setNumberOfKeypoints(std::size_t number)
+  setNumberOfKeypoints (std::size_t number)
   {
     keypoints_nbr_ = number;
   }
 
   /** \return the maximum number of keypoints to keep */
   inline std::size_t
-  getNumberOfKeypoints()
+  getNumberOfKeypoints ()
   {
     return (keypoints_nbr_);
   }
@@ -172,32 +172,32 @@ public:
    * \param[in] height the tracking window height
    */
   inline void
-  setTrackingWindowSize(int width, int height);
+  setTrackingWindowSize (int width, int height);
 
   /** \brief Set tracking window width */
   inline void
-  setTrackingWindowWidth(int width)
+  setTrackingWindowWidth (int width)
   {
     track_width_ = width;
   };
 
   /** \return the tracking window size */
   inline int
-  getTrackingWindowWidth()
+  getTrackingWindowWidth ()
   {
     return (track_width_);
   }
 
   /** \brief Set tracking window height */
   inline void
-  setTrackingWindowHeight(int height)
+  setTrackingWindowHeight (int height)
   {
     track_height_ = height;
   };
 
   /** \return the tracking window size */
   inline int
-  getTrackingWindowHeight()
+  getTrackingWindowHeight ()
   {
     return (track_height_);
   }
@@ -207,14 +207,14 @@ public:
    * back to automatic).
    */
   inline void
-  setNumberOfThreads(unsigned int nr_threads = 0)
+  setNumberOfThreads (unsigned int nr_threads = 0)
   {
     threads_ = nr_threads;
   }
 
   /** \brief Get a pointer of the cloud at t-1. */
   inline PointCloudInConstPtr
-  getReferenceCloud() const
+  getReferenceCloud () const
   {
     return (ref_);
   }
@@ -223,14 +223,14 @@ public:
    * \param[in] max the desired maximum number of iterations
    */
   inline void
-  setMaxIterationsNumber(unsigned int max)
+  setMaxIterationsNumber (unsigned int max)
   {
     max_iterations_ = max;
   }
 
   /** \return the maximum iterations number */
   inline unsigned int
-  getMaxIterationsNumber() const
+  getMaxIterationsNumber () const
   {
     return (max_iterations_);
   }
@@ -239,17 +239,17 @@ public:
    * \param points the const boost shared pointer to a PointIndices message
    */
   inline void
-  setPointsToTrack(const pcl::PointIndicesConstPtr& points);
+  setPointsToTrack (const pcl::PointIndicesConstPtr& points);
 
   /** \brief Provide a pointer to points to track.
    * \param points the const boost shared pointer to a PointIndices message
    */
   inline void
-  setPointsToTrack(const pcl::PointCloud<pcl::PointUV>::ConstPtr& points);
+  setPointsToTrack (const pcl::PointCloud<pcl::PointUV>::ConstPtr& points);
 
   /** \return a pointer to the points successfully tracked. */
   inline pcl::PointCloud<pcl::PointUV>::ConstPtr
-  getTrackedPoints() const
+  getTrackedPoints () const
   {
     return (keypoints_);
   };
@@ -262,7 +262,7 @@ public:
    */
   PCL_DEPRECATED(1, 15, "use getStatusOfPointsToTrack instead")
   inline pcl::PointIndicesConstPtr
-  getPointsToTrackStatus() const
+  getPointsToTrackStatus () const
   {
     pcl::PointIndicesPtr res(new pcl::PointIndices);
     res->indices.insert(
@@ -277,28 +277,28 @@ public:
    * Status == -2 --> optical flow can not be computed for this point.
    */
   inline pcl::shared_ptr<const std::vector<int>>
-  getStatusOfPointsToTrack() const
+  getStatusOfPointsToTrack () const
   {
     return (keypoints_status_);
   }
 
   /** \brief Return the computed transformation from tracked points. */
   Eigen::Affine3f
-  getResult() const override
+  getResult () const override
   {
     return (motion_);
   }
 
   /** \return initialization state */
   bool
-  getInitialized() const
+  getInitialized () const
   {
     return (initialized_);
   }
 
 protected:
   bool
-  initCompute() override;
+  initCompute () override;
 
   /** \brief compute Scharr derivatives of a source cloud.
    * \param[in]  src the image for which gradients are to be computed
@@ -306,14 +306,14 @@ protected:
    * \param[out] grad_y image gradient along Y direction
    */
   void
-  derivatives(const FloatImage& src, FloatImage& grad_x, FloatImage& grad_y) const;
+  derivatives (const FloatImage& src, FloatImage& grad_x, FloatImage& grad_y) const;
 
   /** \brief downsample input
    * \param[in]  input the image to downsample
    * \param[out] output the downsampled image
    */
   void
-  downsample(const FloatImageConstPtr& input, FloatImageConstPtr& output) const;
+  downsample (const FloatImageConstPtr& input, FloatImageConstPtr& output) const;
 
   /** \brief downsample input and compute output gradients.
    * \param[in]  input the image to downsample
@@ -322,31 +322,31 @@ protected:
    * \param[out] output_grad_y downsampled image gradient along Y direction
    */
   void
-  downsample(const FloatImageConstPtr& input,
-             FloatImageConstPtr& output,
-             FloatImageConstPtr& output_grad_x,
-             FloatImageConstPtr& output_grad_y) const;
+  downsample (const FloatImageConstPtr& input,
+              FloatImageConstPtr& output,
+              FloatImageConstPtr& output_grad_x,
+              FloatImageConstPtr& output_grad_y) const;
 
   /** \brief Separately convolve image with decomposable convolution kernel.
    * \param[in]  input input the image to convolve
    * \param[out] output output the convolved image
    */
   void
-  convolve(const FloatImageConstPtr& input, FloatImage& output) const;
+  convolve (const FloatImageConstPtr& input, FloatImage& output) const;
 
   /** \brief Convolve image columns.
    * \param[in]  input input the image to convolve
    * \param[out] output output the convolved image
    */
   void
-  convolveCols(const FloatImageConstPtr& input, FloatImage& output) const;
+  convolveCols (const FloatImageConstPtr& input, FloatImage& output) const;
 
   /** \brief Convolve image rows.
    * \param[in]  input input the image to convolve
    * \param[out] output output the convolved image
    */
   void
-  convolveRows(const FloatImageConstPtr& input, FloatImage& output) const;
+  convolveRows (const FloatImageConstPtr& input, FloatImage& output) const;
 
   /** \brief extract the patch from the previous image, previous image gradients
    * surrounding pixel allocation while interpolating image and gradients data
@@ -363,23 +363,23 @@ protected:
    * \param[out] covariance covariance matrix coefficients
    */
   virtual void
-  spatialGradient(const FloatImage& img,
-                  const FloatImage& grad_x,
-                  const FloatImage& grad_y,
+  spatialGradient (const FloatImage& img,
+                   const FloatImage& grad_x,
+                   const FloatImage& grad_y,
+                   const Eigen::Array2i& location,
+                   const Eigen::Array4f& weights,
+                   Eigen::ArrayXXf& win,
+                   Eigen::ArrayXXf& grad_x_win,
+                   Eigen::ArrayXXf& grad_y_win,
+                   Eigen::Array3f& covariance) const;
+  void
+  mismatchVector (const Eigen::ArrayXXf& prev,
+                  const Eigen::ArrayXXf& prev_grad_x,
+                  const Eigen::ArrayXXf& prev_grad_y,
+                  const FloatImage& next,
                   const Eigen::Array2i& location,
                   const Eigen::Array4f& weights,
-                  Eigen::ArrayXXf& win,
-                  Eigen::ArrayXXf& grad_x_win,
-                  Eigen::ArrayXXf& grad_y_win,
-                  Eigen::Array3f& covariance) const;
-  void
-  mismatchVector(const Eigen::ArrayXXf& prev,
-                 const Eigen::ArrayXXf& prev_grad_x,
-                 const Eigen::ArrayXXf& prev_grad_y,
-                 const FloatImage& next,
-                 const Eigen::Array2i& location,
-                 const Eigen::Array4f& weights,
-                 Eigen::Array2f& b) const;
+                  Eigen::Array2f& b) const;
 
   /** \brief Compute the pyramidal representation of an image.
    * \param[in] input the input cloud
@@ -388,22 +388,22 @@ protected:
    * \param[in]  border_type
    */
   virtual void
-  computePyramids(const PointCloudInConstPtr& input,
-                  std::vector<FloatImageConstPtr>& pyramid,
-                  pcl::InterpolationType border_type) const;
+  computePyramids (const PointCloudInConstPtr& input,
+                   std::vector<FloatImageConstPtr>& pyramid,
+                   pcl::InterpolationType border_type) const;
 
   virtual void
-  track(const PointCloudInConstPtr& previous_input,
-        const PointCloudInConstPtr& current_input,
-        const std::vector<FloatImageConstPtr>& previous_pyramid,
-        const std::vector<FloatImageConstPtr>& current_pyramid,
-        const pcl::PointCloud<pcl::PointUV>::ConstPtr& previous_keypoints,
-        pcl::PointCloud<pcl::PointUV>::Ptr& current_keypoints,
-        std::vector<int>& status,
-        Eigen::Affine3f& motion) const;
+  track (const PointCloudInConstPtr& previous_input,
+         const PointCloudInConstPtr& current_input,
+         const std::vector<FloatImageConstPtr>& previous_pyramid,
+         const std::vector<FloatImageConstPtr>& current_pyramid,
+         const pcl::PointCloud<pcl::PointUV>::ConstPtr& previous_keypoints,
+         pcl::PointCloud<pcl::PointUV>::Ptr& current_keypoints,
+         std::vector<int>& status,
+         Eigen::Affine3f& motion) const;
 
   void
-  computeTracking() override;
+  computeTracking () override;
 
   /** \brief input pyranid at t-1 */
   std::vector<FloatImageConstPtr> ref_pyramid_;

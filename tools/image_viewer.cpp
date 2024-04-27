@@ -33,34 +33,36 @@
  *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
- *	
+ *
  */
 
-#include <pcl/point_cloud.h>
-#include <pcl/point_types.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/visualization/cloud_viewer.h>
 #include <pcl/visualization/image_viewer.h>
+#include <pcl/point_cloud.h>
+#include <pcl/point_types.h>
+
 #include <vector>
 
 int
-main (int, char ** argv)
+main (int, char** argv)
 {
   pcl::PointCloud<pcl::PointXYZ> xyz;
   pcl::io::loadPCDFile(argv[1], xyz);
-  
+
   pcl::visualization::ImageViewer depth_image_viewer_;
   float* img = new float[xyz.width * xyz.height];
 
-  for (int i = 0; i < static_cast<int> (xyz.size ()); ++i)
+  for (int i = 0; i < static_cast<int>(xyz.size()); ++i)
     img[i] = xyz[i].z;
-  
-  depth_image_viewer_.showFloatImage (img, 
-                                      xyz.width, xyz.height,
-                                      std::numeric_limits<float>::min (), 
-                                      // Scale so that the colors look brighter on screen
-                                      std::numeric_limits<float>::max () / 10, 
-                                      true);
-  depth_image_viewer_.spin ();
+
+  depth_image_viewer_.showFloatImage(img,
+                                     xyz.width,
+                                     xyz.height,
+                                     std::numeric_limits<float>::min(),
+                                     // Scale so that the colors look brighter on screen
+                                     std::numeric_limits<float>::max() / 10,
+                                     true);
+  depth_image_viewer_.spin();
   return (0);
 }

@@ -26,7 +26,7 @@ public:
   /** Computes the complex roots of a new polynomial. */
   template <typename OtherPolynomial>
   void
-  compute(const OtherPolynomial& poly, bool& hasRealRoot)
+  compute (const OtherPolynomial& poly, bool& hasRealRoot)
   {
     constexpr Scalar ZERO(0);
     Scalar a2(2 * poly[2]);
@@ -55,7 +55,7 @@ public:
 
   template <typename OtherPolynomial>
   void
-  compute(const OtherPolynomial& poly)
+  compute (const OtherPolynomial& poly)
   {
     bool hasRealRoot;
     compute(poly, hasRealRoot);
@@ -89,7 +89,7 @@ struct BFGSDummyFunctor {
 
   virtual ~BFGSDummyFunctor() = default;
   int
-  inputs() const
+  inputs () const
   {
     return m_inputs;
   }
@@ -97,11 +97,11 @@ struct BFGSDummyFunctor {
   virtual double
   operator()(const VectorType& x) = 0;
   virtual void
-  df(const VectorType& x, VectorType& df) = 0;
+  df (const VectorType& x, VectorType& df) = 0;
   virtual void
-  fdf(const VectorType& x, Scalar& f, VectorType& df) = 0;
+  fdf (const VectorType& x, Scalar& f, VectorType& df) = 0;
   virtual BFGSSpace::Status
-  checkGradient(const VectorType& /*g*/)
+  checkGradient (const VectorType& /*g*/)
   {
     return BFGSSpace::NotStarted;
   };
@@ -153,15 +153,15 @@ public:
   };
 
   BFGSSpace::Status
-  minimize(FVectorType& x);
+  minimize (FVectorType& x);
   BFGSSpace::Status
-  minimizeInit(FVectorType& x);
+  minimizeInit (FVectorType& x);
   BFGSSpace::Status
-  minimizeOneStep(FVectorType& x);
+  minimizeOneStep (FVectorType& x);
   BFGSSpace::Status
-  testGradient();
+  testGradient ();
   void
-  resetParameters(void)
+  resetParameters (void)
   {
     parameters = Parameters();
   }
@@ -174,43 +174,43 @@ private:
   BFGS&
   operator=(const BFGS&);
   BFGSSpace::Status
-  lineSearch(Scalar rho,
-             Scalar sigma,
-             Scalar tau1,
-             Scalar tau2,
-             Scalar tau3,
-             int order,
-             Scalar alpha1,
-             Scalar& alpha_new);
+  lineSearch (Scalar rho,
+              Scalar sigma,
+              Scalar tau1,
+              Scalar tau2,
+              Scalar tau3,
+              int order,
+              Scalar alpha1,
+              Scalar& alpha_new);
   Scalar
-  interpolate(Scalar a,
-              Scalar fa,
-              Scalar fpa,
-              Scalar b,
-              Scalar fb,
-              Scalar fpb,
-              Scalar xmin,
-              Scalar xmax,
-              int order);
+  interpolate (Scalar a,
+               Scalar fa,
+               Scalar fpa,
+               Scalar b,
+               Scalar fb,
+               Scalar fpb,
+               Scalar xmin,
+               Scalar xmax,
+               int order);
   void
-  checkExtremum(const Eigen::Matrix<Scalar, 4, 1>& coefficients,
-                Scalar x,
-                Scalar& xmin,
-                Scalar& fmin);
+  checkExtremum (const Eigen::Matrix<Scalar, 4, 1>& coefficients,
+                 Scalar x,
+                 Scalar& xmin,
+                 Scalar& fmin);
   void
-  moveTo(Scalar alpha);
+  moveTo (Scalar alpha);
   Scalar
-  slope();
+  slope ();
   Scalar
-  applyF(Scalar alpha);
+  applyF (Scalar alpha);
   Scalar
-  applyDF(Scalar alpha);
+  applyDF (Scalar alpha);
   void
-  applyFDF(Scalar alpha, Scalar& f, Scalar& df);
+  applyFDF (Scalar alpha, Scalar& f, Scalar& df);
   void
-  updatePosition(Scalar alpha, FVectorType& x, Scalar& f, FVectorType& g);
+  updatePosition (Scalar alpha, FVectorType& x, Scalar& f, FVectorType& g);
   void
-  changeDirection();
+  changeDirection ();
 
   Scalar delta_f, fp0;
   FVectorType x0, dx0, dg0, g0, dx, p;

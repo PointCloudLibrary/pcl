@@ -82,8 +82,9 @@ public:
    * set of remaining correspondences
    */
   void
-  getRemainingCorrespondences(const pcl::Correspondences& original_correspondences,
-                              pcl::Correspondences& remaining_correspondences) override;
+  getRemainingCorrespondences (
+      const pcl::Correspondences& original_correspondences,
+      pcl::Correspondences& remaining_correspondences) override;
 
   /** \brief Set the maximum distance used for thresholding in correspondence rejection.
    * \param[in] distance Distance to be used as maximum distance between
@@ -91,7 +92,7 @@ public:
    * Internally, the distance will be stored squared.
    */
   virtual inline void
-  setMaximumDistance(float distance)
+  setMaximumDistance (float distance)
   {
     max_distance_ = distance * distance;
   };
@@ -99,7 +100,7 @@ public:
   /** \brief Get the maximum distance used for thresholding in correspondence rejection.
    */
   inline float
-  getMaximumDistance() const
+  getMaximumDistance () const
   {
     return std::sqrt(max_distance_);
   };
@@ -110,7 +111,7 @@ public:
    */
   template <typename PointT>
   inline void
-  setInputSource(const typename pcl::PointCloud<PointT>::ConstPtr& cloud)
+  setInputSource (const typename pcl::PointCloud<PointT>::ConstPtr& cloud)
   {
     if (!data_container_)
       data_container_.reset(new DataContainer<PointT>);
@@ -123,7 +124,7 @@ public:
    */
   template <typename PointT>
   inline void
-  setInputTarget(const typename pcl::PointCloud<PointT>::ConstPtr& target)
+  setInputTarget (const typename pcl::PointCloud<PointT>::ConstPtr& target)
   {
     if (!data_container_)
       data_container_.reset(new DataContainer<PointT>);
@@ -132,14 +133,14 @@ public:
 
   /** \brief See if this rejector requires source points */
   bool
-  requiresSourcePoints() const override
+  requiresSourcePoints () const override
   {
     return (true);
   }
 
   /** \brief Blob method for setting the source cloud */
   void
-  setSourcePoints(pcl::PCLPointCloud2::ConstPtr cloud2) override
+  setSourcePoints (pcl::PCLPointCloud2::ConstPtr cloud2) override
   {
     PointCloud<PointXYZ>::Ptr cloud(new PointCloud<PointXYZ>);
     fromPCLPointCloud2(*cloud2, *cloud);
@@ -148,14 +149,14 @@ public:
 
   /** \brief See if this rejector requires a target cloud */
   bool
-  requiresTargetPoints() const override
+  requiresTargetPoints () const override
   {
     return (true);
   }
 
   /** \brief Method for setting the target cloud */
   void
-  setTargetPoints(pcl::PCLPointCloud2::ConstPtr cloud2) override
+  setTargetPoints (pcl::PCLPointCloud2::ConstPtr cloud2) override
   {
     PointCloud<PointXYZ>::Ptr cloud(new PointCloud<PointXYZ>);
     fromPCLPointCloud2(*cloud2, *cloud);
@@ -171,8 +172,8 @@ public:
    */
   template <typename PointT>
   inline void
-  setSearchMethodTarget(const typename pcl::search::KdTree<PointT>::Ptr& tree,
-                        bool force_no_recompute = false)
+  setSearchMethodTarget (const typename pcl::search::KdTree<PointT>::Ptr& tree,
+                         bool force_no_recompute = false)
   {
     static_pointer_cast<DataContainer<PointT>>(data_container_)
         ->setSearchMethodTarget(tree, force_no_recompute);
@@ -183,7 +184,7 @@ protected:
    * \param[out] correspondences the set of resultant correspondences.
    */
   inline void
-  applyRejection(pcl::Correspondences& correspondences) override
+  applyRejection (pcl::Correspondences& correspondences) override
   {
     getRemainingCorrespondences(*input_correspondences_, correspondences);
   }

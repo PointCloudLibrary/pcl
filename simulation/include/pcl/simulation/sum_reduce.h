@@ -47,7 +47,7 @@ public:
    * \param[out] a pointer to an array that can store the summation result
    */
   void
-  sum(GLuint input_array, float* output_array);
+  sum (GLuint input_array, float* output_array);
 
 private:
   GLuint fbo_;

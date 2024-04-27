@@ -51,9 +51,9 @@ namespace registration {
  * standard deviation
  */
 inline void
-getCorDistMeanStd(const pcl::Correspondences& correspondences,
-                  double& mean,
-                  double& stddev);
+getCorDistMeanStd (const pcl::Correspondences& correspondences,
+                   double& mean,
+                   double& stddev);
 
 /** \brief extracts the query indices
  * \param[in] correspondences list of correspondences
@@ -61,7 +61,7 @@ getCorDistMeanStd(const pcl::Correspondences& correspondences,
  * \note order of indices corresponds to input list of descriptor correspondences
  */
 inline void
-getQueryIndices(const pcl::Correspondences& correspondences, pcl::Indices& indices);
+getQueryIndices (const pcl::Correspondences& correspondences, pcl::Indices& indices);
 
 /** \brief extracts the match indices
  * \param[in] correspondences list of correspondences
@@ -69,7 +69,7 @@ getQueryIndices(const pcl::Correspondences& correspondences, pcl::Indices& indic
  * \note order of indices corresponds to input list of descriptor correspondences
  */
 inline void
-getMatchIndices(const pcl::Correspondences& correspondences, pcl::Indices& indices);
+getMatchIndices (const pcl::Correspondences& correspondences, pcl::Indices& indices);
 
 } // namespace registration
 } // namespace pcl

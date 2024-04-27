@@ -139,7 +139,7 @@ public:
    * (e.g., the point cloud that we want to align to the target)
    */
   void
-  setInputSource(const PointCloudSourceConstPtr& /*cloud*/) override
+  setInputSource (const PointCloudSourceConstPtr& /*cloud*/) override
   {
     PCL_WARN("[pcl::%s::setInputSource] Warning; JointIterativeClosestPoint expects "
              "multiple clouds. Please use addInputSource.\n",
@@ -152,7 +152,7 @@ public:
    * \param[in] cloud source cloud
    */
   inline void
-  addInputSource(const PointCloudSourceConstPtr& cloud)
+  addInputSource (const PointCloudSourceConstPtr& cloud)
   {
     // Set the parent InputSource, just to get all cached values (e.g. the existence of
     // normals).
@@ -165,7 +165,7 @@ public:
    * (e.g., the point cloud that we want to align to the target)
    */
   void
-  setInputTarget(const PointCloudTargetConstPtr& /*cloud*/) override
+  setInputTarget (const PointCloudTargetConstPtr& /*cloud*/) override
   {
     PCL_WARN("[pcl::%s::setInputTarget] Warning; JointIterativeClosestPoint expects "
              "multiple clouds. Please use addInputTarget.\n",
@@ -178,7 +178,7 @@ public:
    * \param[in] cloud target cloud
    */
   inline void
-  addInputTarget(const PointCloudTargetConstPtr& cloud)
+  addInputTarget (const PointCloudTargetConstPtr& cloud)
   {
     // Set the parent InputTarget, just to get all cached values (e.g. the existence of
     // normals).
@@ -195,7 +195,7 @@ public:
    * \param[in] ce Correspondence estimation
    */
   inline void
-  addCorrespondenceEstimation(CorrespondenceEstimationPtr ce)
+  addCorrespondenceEstimation (CorrespondenceEstimationPtr ce)
   {
     correspondence_estimations_.push_back(ce);
   }
@@ -203,7 +203,7 @@ public:
   /** \brief Reset my list of input sources
    */
   inline void
-  clearInputSources()
+  clearInputSources ()
   {
     sources_.clear();
   }
@@ -211,7 +211,7 @@ public:
   /** \brief Reset my list of input targets
    */
   inline void
-  clearInputTargets()
+  clearInputTargets ()
   {
     targets_.clear();
   }
@@ -219,7 +219,7 @@ public:
   /** \brief Reset my list of correspondence estimation methods.
    */
   inline void
-  clearCorrespondenceEstimations()
+  clearCorrespondenceEstimations ()
   {
     correspondence_estimations_.clear();
   }
@@ -231,12 +231,12 @@ protected:
    * compute
    */
   void
-  computeTransformation(PointCloudSource& output, const Matrix4& guess) override;
+  computeTransformation (PointCloudSource& output, const Matrix4& guess) override;
 
   /** \brief Looks at the Estimators and Rejectors and determines whether their
    * blob-setter methods need to be called */
   void
-  determineRequiredBlobData() override;
+  determineRequiredBlobData () override;
 
   std::vector<PointCloudSourceConstPtr> sources_;
   std::vector<PointCloudTargetConstPtr> targets_;

@@ -40,9 +40,9 @@
 #pragma once
 
 #if defined __GNUC__
-#  pragma GCC system_header 
+#pragma GCC system_header
 #endif
 PCL_DEPRECATED_HEADER(1, 15, "Please include the needed eigen headers directly.")
 
-#include <Eigen/Geometry>
 #include <Eigen/Dense>
+#include <Eigen/Geometry>

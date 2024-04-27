@@ -51,26 +51,26 @@ public:
                   const vtkSmartPointer<vtkRenderWindow>& render_window);
 
   std::string
-  getItemName() const override
+  getItemName () const override
   {
     return "Points Actor Item";
   }
 
 protected:
   void
-  initImpl() override;
+  initImpl () override;
 
   void
-  updateImpl() override;
+  updateImpl () override;
 
   void
-  prepareContextMenu(QMenu* menu) const override;
+  prepareContextMenu (QMenu* menu) const override;
 
   void
-  prepareProperties(ParameterDialog* parameter_dialog) override;
+  prepareProperties (ParameterDialog* parameter_dialog) override;
 
   void
-  setProperties() override;
+  setProperties () override;
 
 private:
 };

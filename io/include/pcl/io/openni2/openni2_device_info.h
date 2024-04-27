@@ -31,29 +31,24 @@
 
 #pragma once
 
+#include <cstdint>
 #include <ostream>
 
-#include <cstdint>
+namespace pcl {
+namespace io {
+namespace openni2 {
 
-namespace pcl
-{
-  namespace io
-  {
-    namespace openni2
-    {
+struct OpenNI2DeviceInfo {
+  std::string uri_;
+  std::string vendor_;
+  std::string name_;
+  std::uint16_t vendor_id_;
+  std::uint16_t product_id_;
+};
 
-      struct OpenNI2DeviceInfo
-      {
-        std::string uri_;
-        std::string vendor_;
-        std::string name_;
-        std::uint16_t vendor_id_;
-        std::uint16_t product_id_;
-      };
+std::ostream&
+operator<<(std::ostream& stream, const OpenNI2DeviceInfo& device_info);
 
-      std::ostream&
-      operator<< (std::ostream& stream, const OpenNI2DeviceInfo& device_info);
-
-    } // namespace
-  }
-}
+} // namespace openni2
+} // namespace io
+} // namespace pcl

@@ -35,12 +35,11 @@
  */
 
 #include <pcl/2d/keypoint.h> // for pcl::Keypoint
-
-#include <pcl/point_types.h> // for pcl::PointXYZ
 #include <pcl/test/gtest.h>  // for SUCCEED
+#include <pcl/point_types.h> // for pcl::PointXYZ
 
 /** This isn't useful except for testing the instantiation of this class. See #3898 */
-TEST (Keypoint, instantiatesWithAndWithoutPrecompiledHeaders)
+TEST(Keypoint, instantiatesWithAndWithoutPrecompiledHeaders)
 {
   pcl::Keypoint<pcl::PointXYZ> keypoint = pcl::Keypoint<pcl::PointXYZ>();
   SUCCEED();
@@ -50,7 +49,7 @@ TEST (Keypoint, instantiatesWithAndWithoutPrecompiledHeaders)
 int
 main (int argc, char** argv)
 {
-  testing::InitGoogleTest (&argc, argv);
-  return (RUN_ALL_TESTS ());
+  testing::InitGoogleTest(&argc, argv);
+  return (RUN_ALL_TESTS());
 }
 /* ]-- */

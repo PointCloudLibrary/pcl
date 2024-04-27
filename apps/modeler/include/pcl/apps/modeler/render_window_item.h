@@ -55,37 +55,37 @@ public:
   ~RenderWindowItem();
 
   inline RenderWindow*
-  getRenderWindow()
+  getRenderWindow ()
   {
     return render_window_;
   }
   inline const RenderWindow*
-  getRenderWindow() const
+  getRenderWindow () const
   {
     return render_window_;
   }
 
   bool
-  openPointCloud(const QString& filename);
+  openPointCloud (const QString& filename);
 
   CloudMeshItem*
-  addPointCloud(CloudMesh::PointCloudPtr cloud);
+  addPointCloud (CloudMesh::PointCloudPtr cloud);
 
   std::string
-  getItemName() const override
+  getItemName () const override
   {
     return "Render Window Item";
   }
 
 protected:
   void
-  prepareContextMenu(QMenu* menu) const override;
+  prepareContextMenu (QMenu* menu) const override;
 
   void
-  prepareProperties(ParameterDialog* parameter_dialog) override;
+  prepareProperties (ParameterDialog* parameter_dialog) override;
 
   void
-  setProperties() override;
+  setProperties () override;
 
 private:
   RenderWindow* render_window_;

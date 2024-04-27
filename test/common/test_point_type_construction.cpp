@@ -14,7 +14,7 @@
 using namespace pcl;
 using namespace pcl::test;
 
-TEST (PointTypeConstruction, PointXYZDefaultConstruction)
+TEST(PointTypeConstruction, PointXYZDefaultConstruction)
 {
   PCL_CONSTEXPR const pcl::PointXYZ pt;
   PCL_EXPECT_FLOAT_EQ(pt.data[0], 0.0f);
@@ -23,7 +23,7 @@ TEST (PointTypeConstruction, PointXYZDefaultConstruction)
   PCL_EXPECT_FLOAT_EQ(pt.data[3], 1.0f);
 }
 
-TEST (PointTypeConstruction, PointXYZThreeScalarsConstruction)
+TEST(PointTypeConstruction, PointXYZThreeScalarsConstruction)
 {
   PCL_CONSTEXPR const pcl::PointXYZ pt(2.0f, 3.0f, 4.0f);
   PCL_EXPECT_FLOAT_EQ(pt.data[0], 2.0f);
@@ -32,7 +32,7 @@ TEST (PointTypeConstruction, PointXYZThreeScalarsConstruction)
   PCL_EXPECT_FLOAT_EQ(pt.data[3], 1.0f);
 }
 
-TEST (PointTypeConstruction, PointXYZIDefaultConstruction)
+TEST(PointTypeConstruction, PointXYZIDefaultConstruction)
 {
   PCL_CONSTEXPR const pcl::PointXYZI pt;
   PCL_EXPECT_FLOAT_EQ(pt.data[0], 0.0f);
@@ -42,7 +42,7 @@ TEST (PointTypeConstruction, PointXYZIDefaultConstruction)
   PCL_EXPECT_FLOAT_EQ(pt.intensity, 0.0f);
 }
 
-TEST (PointTypeConstruction, PointXYZIFourScalarsConstruction)
+TEST(PointTypeConstruction, PointXYZIFourScalarsConstruction)
 {
   PCL_CONSTEXPR const pcl::PointXYZI pt(2.0f, 3.0f, 4.0f, 5.0f);
   PCL_EXPECT_FLOAT_EQ(pt.data[0], 2.0f);
@@ -52,7 +52,7 @@ TEST (PointTypeConstruction, PointXYZIFourScalarsConstruction)
   PCL_EXPECT_FLOAT_EQ(pt.intensity, 5.0f);
 }
 
-TEST (PointTypeConstruction, PointXYZLDefaultConstruction)
+TEST(PointTypeConstruction, PointXYZLDefaultConstruction)
 {
   PCL_CONSTEXPR const pcl::PointXYZL pt;
   PCL_EXPECT_FLOAT_EQ(pt.data[0], 0.0f);
@@ -62,7 +62,7 @@ TEST (PointTypeConstruction, PointXYZLDefaultConstruction)
   PCL_EXPECT_INT_EQ(pt.label, 0u);
 }
 
-TEST (PointTypeConstruction, PointXYZLFourScalarsConstruction)
+TEST(PointTypeConstruction, PointXYZLFourScalarsConstruction)
 {
   PCL_CONSTEXPR const pcl::PointXYZL pt(2.0f, 3.0f, 4.0f, 5u);
   PCL_EXPECT_FLOAT_EQ(pt.data[0], 2.0f);
@@ -72,55 +72,55 @@ TEST (PointTypeConstruction, PointXYZLFourScalarsConstruction)
   PCL_EXPECT_INT_EQ(pt.label, 5u);
 }
 
-TEST (PointTypeConstruction, IntensityDefaultConstruction)
+TEST(PointTypeConstruction, IntensityDefaultConstruction)
 {
   PCL_CONSTEXPR const pcl::Intensity pt;
   PCL_EXPECT_FLOAT_EQ(pt.intensity, 0.0f);
 }
 
-TEST (PointTypeConstruction, IntensityOneScalarConstruction)
+TEST(PointTypeConstruction, IntensityOneScalarConstruction)
 {
   PCL_CONSTEXPR const pcl::Intensity pt(1.0f);
   PCL_EXPECT_FLOAT_EQ(pt.intensity, 1.0f);
 }
 
-TEST (PointTypeConstruction, Intensity8uDefaultConstruction)
+TEST(PointTypeConstruction, Intensity8uDefaultConstruction)
 {
   PCL_CONSTEXPR const pcl::Intensity8u pt;
   PCL_EXPECT_INT_EQ(pt.intensity, std::uint8_t{});
 }
 
-TEST (PointTypeConstruction, Intensity8uOneScalarConstruction)
+TEST(PointTypeConstruction, Intensity8uOneScalarConstruction)
 {
   PCL_CONSTEXPR const pcl::Intensity8u pt(1u);
   PCL_EXPECT_INT_EQ(pt.intensity, 1u);
 }
 
-TEST (PointTypeConstruction, Intensity32uDefaultConstruction)
+TEST(PointTypeConstruction, Intensity32uDefaultConstruction)
 {
   PCL_CONSTEXPR const pcl::Intensity32u pt;
   PCL_EXPECT_INT_EQ(pt.intensity, std::uint32_t{});
 }
 
-TEST (PointTypeConstruction, Intensity32uOneScalarConstruction)
+TEST(PointTypeConstruction, Intensity32uOneScalarConstruction)
 {
   PCL_CONSTEXPR const pcl::Intensity32u pt(1u);
   PCL_EXPECT_INT_EQ(pt.intensity, std::uint32_t{1u});
 }
 
-TEST (PointTypeConstruction, LabelDefaultConstruction)
+TEST(PointTypeConstruction, LabelDefaultConstruction)
 {
   PCL_CONSTEXPR const pcl::Label pt;
   PCL_EXPECT_INT_EQ(pt.label, 0u);
 }
 
-TEST (PointTypeConstruction, LabelOneScalarConstruction)
+TEST(PointTypeConstruction, LabelOneScalarConstruction)
 {
   PCL_CONSTEXPR const pcl::Label pt(1.0f);
   PCL_EXPECT_FLOAT_EQ(pt.label, 1u);
 }
 
-TEST (PointTypeConstruction, PointXYZRGBADefaultConstruction)
+TEST(PointTypeConstruction, PointXYZRGBADefaultConstruction)
 {
   PCL_CONSTEXPR const pcl::PointXYZRGBA pt;
   PCL_EXPECT_FLOAT_EQ(pt.data[0], 0.0f);
@@ -133,7 +133,7 @@ TEST (PointTypeConstruction, PointXYZRGBADefaultConstruction)
   PCL_EXPECT_INT_EQ(pt.a, 255u);
 }
 
-TEST (PointTypeConstruction, PointXYZRGBASevenScalarsConstruction)
+TEST(PointTypeConstruction, PointXYZRGBASevenScalarsConstruction)
 {
   PCL_CONSTEXPR const pcl::PointXYZRGBA pt(2.0f, 3.0f, 4.0f, 2u, 3u, 4u, 5u);
   PCL_EXPECT_FLOAT_EQ(pt.data[0], 2.0f);
@@ -146,7 +146,7 @@ TEST (PointTypeConstruction, PointXYZRGBASevenScalarsConstruction)
   PCL_EXPECT_INT_EQ(pt.a, 5u);
 }
 
-TEST (PointTypeConstruction, PointXYZRGBDefaultConstruction)
+TEST(PointTypeConstruction, PointXYZRGBDefaultConstruction)
 {
   PCL_CONSTEXPR const pcl::PointXYZRGB pt;
   PCL_EXPECT_FLOAT_EQ(pt.data[0], 0.0f);
@@ -158,7 +158,7 @@ TEST (PointTypeConstruction, PointXYZRGBDefaultConstruction)
   PCL_EXPECT_INT_EQ(pt.b, 0u);
 }
 
-TEST (PointTypeConstruction, PointXYZRGBSixScalarsConstruction)
+TEST(PointTypeConstruction, PointXYZRGBSixScalarsConstruction)
 {
   PCL_CONSTEXPR const pcl::PointXYZRGB pt(2.0f, 3.0f, 4.0f, 2u, 3u, 4u);
   PCL_EXPECT_FLOAT_EQ(pt.data[0], 2.0f);
@@ -170,7 +170,7 @@ TEST (PointTypeConstruction, PointXYZRGBSixScalarsConstruction)
   PCL_EXPECT_INT_EQ(pt.b, 4u);
 }
 
-TEST (PointTypeConstruction, PointXYZRGBLDefaultConstruction)
+TEST(PointTypeConstruction, PointXYZRGBLDefaultConstruction)
 {
   PCL_CONSTEXPR const pcl::PointXYZRGBL pt;
   PCL_EXPECT_FLOAT_EQ(pt.data[0], 0.0f);
@@ -183,7 +183,7 @@ TEST (PointTypeConstruction, PointXYZRGBLDefaultConstruction)
   PCL_EXPECT_INT_EQ(pt.label, 0u);
 }
 
-TEST (PointTypeConstruction, PointXYZRGBLSevenScalarsConstruction)
+TEST(PointTypeConstruction, PointXYZRGBLSevenScalarsConstruction)
 {
   PCL_CONSTEXPR const pcl::PointXYZRGBL pt(2.0f, 3.0f, 4.0f, 2u, 3u, 4u, 5u);
   PCL_EXPECT_FLOAT_EQ(pt.data[0], 2.0f);
@@ -196,7 +196,7 @@ TEST (PointTypeConstruction, PointXYZRGBLSevenScalarsConstruction)
   PCL_EXPECT_INT_EQ(pt.label, 5u);
 }
 
-TEST (PointTypeConstruction, PointXYZLABDefaultConstruction)
+TEST(PointTypeConstruction, PointXYZLABDefaultConstruction)
 {
   PCL_CONSTEXPR const pcl::PointXYZLAB pt;
   PCL_EXPECT_FLOAT_EQ(pt.data[0], 0.0f);
@@ -208,7 +208,7 @@ TEST (PointTypeConstruction, PointXYZLABDefaultConstruction)
   PCL_EXPECT_FLOAT_EQ(pt.b, 0.0f);
 }
 
-TEST (PointTypeConstruction, PointXYZLABSixScalarsConstruction)
+TEST(PointTypeConstruction, PointXYZLABSixScalarsConstruction)
 {
   PCL_CONSTEXPR const pcl::PointXYZLAB pt(2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f);
   PCL_EXPECT_FLOAT_EQ(pt.data[0], 2.0f);
@@ -220,7 +220,7 @@ TEST (PointTypeConstruction, PointXYZLABSixScalarsConstruction)
   PCL_EXPECT_FLOAT_EQ(pt.b, 7.0f);
 }
 
-TEST (PointTypeConstruction, PointXYZHSVDefaultConstruction)
+TEST(PointTypeConstruction, PointXYZHSVDefaultConstruction)
 {
   PCL_CONSTEXPR const pcl::PointXYZHSV pt;
   PCL_EXPECT_FLOAT_EQ(pt.data[0], 0.0f);
@@ -232,7 +232,7 @@ TEST (PointTypeConstruction, PointXYZHSVDefaultConstruction)
   PCL_EXPECT_FLOAT_EQ(pt.v, 0.0f);
 }
 
-TEST (PointTypeConstruction, PointXYZHSVSixScalarsConstruction)
+TEST(PointTypeConstruction, PointXYZHSVSixScalarsConstruction)
 {
   PCL_CONSTEXPR const pcl::PointXYZHSV pt(2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f);
   PCL_EXPECT_FLOAT_EQ(pt.data[0], 2.0f);
@@ -244,35 +244,35 @@ TEST (PointTypeConstruction, PointXYZHSVSixScalarsConstruction)
   PCL_EXPECT_FLOAT_EQ(pt.v, 7.0f);
 }
 
-TEST (PointTypeConstruction, PointXYDefaultConstruction)
+TEST(PointTypeConstruction, PointXYDefaultConstruction)
 {
   PCL_CONSTEXPR const pcl::PointXY pt;
   PCL_EXPECT_FLOAT_EQ(pt.x, 0.0f);
-  PCL_EXPECT_FLOAT_EQ(pt.y, 0.0f); 
+  PCL_EXPECT_FLOAT_EQ(pt.y, 0.0f);
 }
 
-TEST (PointTypeConstruction, PointXYTwoScalarsConstruction)
+TEST(PointTypeConstruction, PointXYTwoScalarsConstruction)
 {
   PCL_CONSTEXPR const pcl::PointXY pt(1.0f, 2.0f);
   PCL_EXPECT_FLOAT_EQ(pt.x, 1.0f);
   PCL_EXPECT_FLOAT_EQ(pt.y, 2.0f);
 }
 
-TEST (PointTypeConstruction, PointUVDefaultConstruction)
+TEST(PointTypeConstruction, PointUVDefaultConstruction)
 {
   PCL_CONSTEXPR const pcl::PointUV pt;
   PCL_EXPECT_FLOAT_EQ(pt.u, 0.0f);
-  PCL_EXPECT_FLOAT_EQ(pt.v, 0.0f); 
+  PCL_EXPECT_FLOAT_EQ(pt.v, 0.0f);
 }
 
-TEST (PointTypeConstruction, PointUVTwoScalarsConstruction)
+TEST(PointTypeConstruction, PointUVTwoScalarsConstruction)
 {
   PCL_CONSTEXPR const pcl::PointUV pt(1.0f, 2.0f);
   PCL_EXPECT_FLOAT_EQ(pt.u, 1.0f);
   PCL_EXPECT_FLOAT_EQ(pt.v, 2.0f);
 }
 
-TEST (PointTypeConstruction, NormalDefaultConstruction)
+TEST(PointTypeConstruction, NormalDefaultConstruction)
 {
   PCL_CONSTEXPR const pcl::Normal pt;
   PCL_EXPECT_FLOAT_EQ(pt.data_n[0], 0.0f);
@@ -282,7 +282,7 @@ TEST (PointTypeConstruction, NormalDefaultConstruction)
   PCL_EXPECT_FLOAT_EQ(pt.curvature, 0.0f);
 }
 
-TEST (PointTypeConstruction, NormalFourScalarsConstruction)
+TEST(PointTypeConstruction, NormalFourScalarsConstruction)
 {
   PCL_CONSTEXPR const pcl::Normal pt(2.0f, 3.0f, 4.0f, 5.0f);
   PCL_EXPECT_FLOAT_EQ(pt.data_n[0], 2.0f);
@@ -292,7 +292,7 @@ TEST (PointTypeConstruction, NormalFourScalarsConstruction)
   PCL_EXPECT_FLOAT_EQ(pt.curvature, 5.0f);
 }
 
-TEST (PointTypeConstruction, AxisDefaultConstruction)
+TEST(PointTypeConstruction, AxisDefaultConstruction)
 {
   PCL_CONSTEXPR const pcl::Axis pt;
   PCL_EXPECT_FLOAT_EQ(pt.data_n[0], 0.0f);
@@ -301,7 +301,7 @@ TEST (PointTypeConstruction, AxisDefaultConstruction)
   PCL_EXPECT_FLOAT_EQ(pt.data_n[3], 0.0f);
 }
 
-TEST (PointTypeConstruction, AxisThreeScalarsConstruction)
+TEST(PointTypeConstruction, AxisThreeScalarsConstruction)
 {
   PCL_CONSTEXPR const pcl::Axis pt(2.0f, 3.0f, 4.0f);
   PCL_EXPECT_FLOAT_EQ(pt.data_n[0], 2.0f);
@@ -310,7 +310,7 @@ TEST (PointTypeConstruction, AxisThreeScalarsConstruction)
   PCL_EXPECT_FLOAT_EQ(pt.data_n[3], 0.0f);
 }
 
-TEST (PointTypeConstruction, PointNormalDefaultConstruction)
+TEST(PointTypeConstruction, PointNormalDefaultConstruction)
 {
   PCL_CONSTEXPR const pcl::PointNormal pt;
   PCL_EXPECT_FLOAT_EQ(pt.data[0], 0.0f);
@@ -323,7 +323,7 @@ TEST (PointTypeConstruction, PointNormalDefaultConstruction)
   PCL_EXPECT_FLOAT_EQ(pt.data_n[3], 0.0f);
 }
 
-TEST (PointTypeConstruction, PointNormalSixScalarsConstruction)
+TEST(PointTypeConstruction, PointNormalSixScalarsConstruction)
 {
   PCL_CONSTEXPR const pcl::PointNormal pt(2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f);
   PCL_EXPECT_FLOAT_EQ(pt.data[0], 2.0f);
@@ -336,8 +336,7 @@ TEST (PointTypeConstruction, PointNormalSixScalarsConstruction)
   PCL_EXPECT_FLOAT_EQ(pt.data_n[3], 0.0f);
 }
 
-
-TEST (PointTypeConstruction, PointXYZRGBNormalDefaultConstruction)
+TEST(PointTypeConstruction, PointXYZRGBNormalDefaultConstruction)
 {
   PCL_CONSTEXPR const pcl::PointXYZRGBNormal pt;
   PCL_EXPECT_FLOAT_EQ(pt.data[0], 0.0f);
@@ -355,9 +354,10 @@ TEST (PointTypeConstruction, PointXYZRGBNormalDefaultConstruction)
   PCL_EXPECT_FLOAT_EQ(pt.curvature, 0.0f);
 }
 
-TEST (PointTypeConstruction, PointXYZRGBNormalTenScalarsConstruction)
+TEST(PointTypeConstruction, PointXYZRGBNormalTenScalarsConstruction)
 {
-  PCL_CONSTEXPR const pcl::PointXYZRGBNormal pt(2.0f, 3.0f, 4.0f, 5u, 6u, 7u, 8.0f, 9.0f, 10.0f, 11.0f);
+  PCL_CONSTEXPR const pcl::PointXYZRGBNormal pt(
+      2.0f, 3.0f, 4.0f, 5u, 6u, 7u, 8.0f, 9.0f, 10.0f, 11.0f);
   PCL_EXPECT_FLOAT_EQ(pt.data[0], 2.0f);
   PCL_EXPECT_FLOAT_EQ(pt.data[1], 3.0f);
   PCL_EXPECT_FLOAT_EQ(pt.data[2], 4.0f);
@@ -372,7 +372,7 @@ TEST (PointTypeConstruction, PointXYZRGBNormalTenScalarsConstruction)
   PCL_EXPECT_FLOAT_EQ(pt.curvature, 11.0f);
 }
 
-TEST (PointTypeConstruction, PointXYZINormalDefaultConstruction)
+TEST(PointTypeConstruction, PointXYZINormalDefaultConstruction)
 {
   PCL_CONSTEXPR const pcl::PointXYZINormal pt;
   PCL_EXPECT_FLOAT_EQ(pt.data[0], 0.0f);
@@ -387,9 +387,10 @@ TEST (PointTypeConstruction, PointXYZINormalDefaultConstruction)
   PCL_EXPECT_FLOAT_EQ(pt.curvature, 0.0f);
 }
 
-TEST (PointTypeConstruction, PointXYZINormalTenScalarsConstruction)
+TEST(PointTypeConstruction, PointXYZINormalTenScalarsConstruction)
 {
-  PCL_CONSTEXPR const pcl::PointXYZINormal pt(2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f, 8.0f, 9.0f);
+  PCL_CONSTEXPR const pcl::PointXYZINormal pt(
+      2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f, 8.0f, 9.0f);
   PCL_EXPECT_FLOAT_EQ(pt.data[0], 2.0f);
   PCL_EXPECT_FLOAT_EQ(pt.data[1], 3.0f);
   PCL_EXPECT_FLOAT_EQ(pt.data[2], 4.0f);
@@ -402,7 +403,7 @@ TEST (PointTypeConstruction, PointXYZINormalTenScalarsConstruction)
   PCL_EXPECT_FLOAT_EQ(pt.curvature, 9.0f);
 }
 
-TEST (PointTypeConstruction, PointXYZLNormalDefaultConstruction)
+TEST(PointTypeConstruction, PointXYZLNormalDefaultConstruction)
 {
   PCL_CONSTEXPR const pcl::PointXYZLNormal pt;
   PCL_EXPECT_FLOAT_EQ(pt.data[0], 0.0f);
@@ -415,12 +416,12 @@ TEST (PointTypeConstruction, PointXYZLNormalDefaultConstruction)
   PCL_EXPECT_FLOAT_EQ(pt.data_n[3], 0.0f);
   PCL_EXPECT_INT_EQ(pt.label, 0u);
   PCL_EXPECT_FLOAT_EQ(pt.curvature, 0.0f);
-
 }
 
-TEST (PointTypeConstruction, PointXYZLNormalTenScalarsConstruction)
+TEST(PointTypeConstruction, PointXYZLNormalTenScalarsConstruction)
 {
-  PCL_CONSTEXPR const pcl::PointXYZLNormal pt(2.0f, 3.0f, 4.0f, 5u, 6.0f, 7.0f, 8.0f, 9.0f);
+  PCL_CONSTEXPR const pcl::PointXYZLNormal pt(
+      2.0f, 3.0f, 4.0f, 5u, 6.0f, 7.0f, 8.0f, 9.0f);
   PCL_EXPECT_FLOAT_EQ(pt.data[0], 2.0f);
   PCL_EXPECT_FLOAT_EQ(pt.data[1], 3.0f);
   PCL_EXPECT_FLOAT_EQ(pt.data[2], 4.0f);
@@ -433,7 +434,7 @@ TEST (PointTypeConstruction, PointXYZLNormalTenScalarsConstruction)
   PCL_EXPECT_FLOAT_EQ(pt.curvature, 9.0f);
 }
 
-TEST (PointTypeConstruction, PointWithRangeDefaultConstruction)
+TEST(PointTypeConstruction, PointWithRangeDefaultConstruction)
 {
   PCL_CONSTEXPR const pcl::PointWithRange pt;
   PCL_EXPECT_FLOAT_EQ(pt.data[0], 0.0f);
@@ -443,7 +444,7 @@ TEST (PointTypeConstruction, PointWithRangeDefaultConstruction)
   PCL_EXPECT_FLOAT_EQ(pt.range, 0.0f);
 }
 
-TEST (PointTypeConstruction, PointWithRangeFourScalarsConstruction)
+TEST(PointTypeConstruction, PointWithRangeFourScalarsConstruction)
 {
   PCL_CONSTEXPR const pcl::PointWithRange pt(2.0f, 3.0f, 4.0f, 5.0f);
   PCL_EXPECT_FLOAT_EQ(pt.data[0], 2.0f);
@@ -453,7 +454,7 @@ TEST (PointTypeConstruction, PointWithRangeFourScalarsConstruction)
   PCL_EXPECT_FLOAT_EQ(pt.range, 5.0f);
 }
 
-TEST (PointTypeConstruction, PointWithViewpointDefaultConstruction)
+TEST(PointTypeConstruction, PointWithViewpointDefaultConstruction)
 {
   PCL_CONSTEXPR const pcl::PointWithViewpoint pt;
   PCL_EXPECT_FLOAT_EQ(pt.data[0], 0.0f);
@@ -465,7 +466,7 @@ TEST (PointTypeConstruction, PointWithViewpointDefaultConstruction)
   PCL_EXPECT_FLOAT_EQ(pt.vp_z, 0.0f);
 }
 
-TEST (PointTypeConstruction, PointWithViewpointSixScalarsConstruction)
+TEST(PointTypeConstruction, PointWithViewpointSixScalarsConstruction)
 {
   PCL_CONSTEXPR const pcl::PointWithViewpoint pt(2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f);
   PCL_EXPECT_FLOAT_EQ(pt.data[0], 2.0f);
@@ -477,15 +478,15 @@ TEST (PointTypeConstruction, PointWithViewpointSixScalarsConstruction)
   PCL_EXPECT_FLOAT_EQ(pt.vp_z, 7.0f);
 }
 
-TEST (PointTypeConstruction, MomentInvariantsDefaultConstruction)
+TEST(PointTypeConstruction, MomentInvariantsDefaultConstruction)
 {
   PCL_CONSTEXPR const pcl::MomentInvariants pt;
   PCL_EXPECT_FLOAT_EQ(pt.j1, 0.0f);
-  PCL_EXPECT_FLOAT_EQ(pt.j2, 0.0f); 
-  PCL_EXPECT_FLOAT_EQ(pt.j3, 0.0f); 
+  PCL_EXPECT_FLOAT_EQ(pt.j2, 0.0f);
+  PCL_EXPECT_FLOAT_EQ(pt.j3, 0.0f);
 }
 
-TEST (PointTypeConstruction, MomentInvariantsThreeScalarsConstruction)
+TEST(PointTypeConstruction, MomentInvariantsThreeScalarsConstruction)
 {
   PCL_CONSTEXPR const pcl::MomentInvariants pt(1.0f, 2.0f, 3.0f);
   PCL_EXPECT_FLOAT_EQ(pt.j1, 1.0f);
@@ -493,33 +494,33 @@ TEST (PointTypeConstruction, MomentInvariantsThreeScalarsConstruction)
   PCL_EXPECT_FLOAT_EQ(pt.j3, 3.0f);
 }
 
-TEST (PointTypeConstruction, PrincipalRadiiRSDDefaultConstruction)
+TEST(PointTypeConstruction, PrincipalRadiiRSDDefaultConstruction)
 {
   PCL_CONSTEXPR const pcl::PrincipalRadiiRSD pt;
   PCL_EXPECT_FLOAT_EQ(pt.r_min, 0.0f);
-  PCL_EXPECT_FLOAT_EQ(pt.r_max, 0.0f); 
+  PCL_EXPECT_FLOAT_EQ(pt.r_max, 0.0f);
 }
 
-TEST (PointTypeConstruction, PrincipalRadiiRSDScalarsConstruction)
+TEST(PointTypeConstruction, PrincipalRadiiRSDScalarsConstruction)
 {
   PCL_CONSTEXPR const pcl::PrincipalRadiiRSD pt(1.0f, 2.0f);
   PCL_EXPECT_FLOAT_EQ(pt.r_min, 1.0f);
   PCL_EXPECT_FLOAT_EQ(pt.r_max, 2.0f);
 }
 
-TEST (PointTypeConstruction, BoundaryDefaultConstruction)
+TEST(PointTypeConstruction, BoundaryDefaultConstruction)
 {
   PCL_CONSTEXPR const pcl::Boundary pt;
   PCL_EXPECT_INT_EQ(pt.boundary_point, std::uint8_t{});
 }
 
-TEST (PointTypeConstruction, BoundaryOneScalarConstruction)
+TEST(PointTypeConstruction, BoundaryOneScalarConstruction)
 {
   PCL_CONSTEXPR const pcl::Boundary pt(1u);
   PCL_EXPECT_INT_EQ(pt.boundary_point, std::uint8_t{1u});
 }
 
-TEST (PointTypeConstruction, PrincipalCurvaturesDefaultConstruction)
+TEST(PointTypeConstruction, PrincipalCurvaturesDefaultConstruction)
 {
   PCL_CONSTEXPR const pcl::PrincipalCurvatures pt;
   PCL_EXPECT_FLOAT_EQ(pt.principal_curvature_x, 0.0f);
@@ -529,7 +530,7 @@ TEST (PointTypeConstruction, PrincipalCurvaturesDefaultConstruction)
   PCL_EXPECT_FLOAT_EQ(pt.pc2, 0.0f);
 }
 
-TEST (PointTypeConstruction, PrincipalCurvaturesFiveScalarsConstruction)
+TEST(PointTypeConstruction, PrincipalCurvaturesFiveScalarsConstruction)
 {
   PCL_CONSTEXPR const pcl::PrincipalCurvatures pt(2.0f, 3.0f, 4.0f, 5.0f, 6.0f);
   PCL_EXPECT_FLOAT_EQ(pt.principal_curvature_x, 2.0f);
@@ -539,7 +540,7 @@ TEST (PointTypeConstruction, PrincipalCurvaturesFiveScalarsConstruction)
   PCL_EXPECT_FLOAT_EQ(pt.pc2, 6.0f);
 }
 
-TEST (PointTypeConstruction, ReferenceFrameDefaultConstruction)
+TEST(PointTypeConstruction, ReferenceFrameDefaultConstruction)
 {
   PCL_CONSTEXPR const pcl::ReferenceFrame pt;
   PCL_EXPECT_FLOAT_EQ(pt.rf[0], 0.0f);
@@ -553,9 +554,10 @@ TEST (PointTypeConstruction, ReferenceFrameDefaultConstruction)
   PCL_EXPECT_FLOAT_EQ(pt.rf[8], 0.0f);
 }
 
-TEST (PointTypeConstruction, ReferenceFrameArrayOfScalarsConstruction)
+TEST(PointTypeConstruction, ReferenceFrameArrayOfScalarsConstruction)
 {
-  PCL_CONSTEXPR const float values[9]{ 1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f, 8.0f, 9.0f };
+  PCL_CONSTEXPR const float values[9]{
+      1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f, 8.0f, 9.0f};
   PCL_CONSTEXPR const pcl::ReferenceFrame pt(values);
   PCL_EXPECT_FLOAT_EQ(pt.rf[0], values[0]);
   PCL_EXPECT_FLOAT_EQ(pt.rf[1], values[1]);
@@ -568,64 +570,66 @@ TEST (PointTypeConstruction, ReferenceFrameArrayOfScalarsConstruction)
   PCL_EXPECT_FLOAT_EQ(pt.rf[8], values[8]);
 }
 
-
-namespace pcl
-{
+namespace pcl {
 
 // to be replaced with std:: when C++20 is available
 // implementations taken from cppreference.com
 
-template<class InputIt, class UnaryPredicate>
-constexpr InputIt find_if_not(InputIt first, InputIt last, UnaryPredicate q)
+template <class InputIt, class UnaryPredicate>
+constexpr InputIt
+find_if_not (InputIt first, InputIt last, UnaryPredicate q)
 {
-    for (; first != last; ++first) {
-        if (!q(*first)) {
-            return first;
-        }
+  for (; first != last; ++first) {
+    if (!q(*first)) {
+      return first;
     }
-    return last;
+  }
+  return last;
 }
 
 template <class InputIt, class UnaryPredicate>
-constexpr bool all_of(InputIt first, InputIt last, UnaryPredicate p)
+constexpr bool
+all_of (InputIt first, InputIt last, UnaryPredicate p)
 {
-    return pcl::find_if_not(first, last, p) == last;
+  return pcl::find_if_not(first, last, p) == last;
 }
 
 // may be replaced with lambda when C++17 is available
-constexpr bool is_equal_to_zero(float value)
+constexpr bool
+is_equal_to_zero (float value)
 {
   return value == 0.0f;
 }
 
-}
+} // namespace pcl
 
-template <typename T> class PointTypesWithRawArrayMemberTest : public ::testing::Test { };
-using PointTypesWithRawArrayMember
-  = ::testing::Types<
-    pcl::FPFHSignature33, 
-    pcl::VFHSignature308, 
-    pcl::GRSDSignature21, 
-    pcl::ESFSignature640, 
-    pcl::GASDSignature512, 
-    pcl::GASDSignature984, 
-    pcl::GASDSignature7992, 
-    pcl::GFPFHSignature16>;
-TYPED_TEST_SUITE (PointTypesWithRawArrayMemberTest, PointTypesWithRawArrayMember);
+template <typename T>
+class PointTypesWithRawArrayMemberTest : public ::testing::Test {};
+using PointTypesWithRawArrayMember = ::testing::Types<pcl::FPFHSignature33,
+                                                      pcl::VFHSignature308,
+                                                      pcl::GRSDSignature21,
+                                                      pcl::ESFSignature640,
+                                                      pcl::GASDSignature512,
+                                                      pcl::GASDSignature984,
+                                                      pcl::GASDSignature7992,
+                                                      pcl::GFPFHSignature16>;
+TYPED_TEST_SUITE(PointTypesWithRawArrayMemberTest, PointTypesWithRawArrayMember);
 
-TYPED_TEST (PointTypesWithRawArrayMemberTest, ConstexprDefaultConstructionTests)
+TYPED_TEST(PointTypesWithRawArrayMemberTest, ConstexprDefaultConstructionTests)
 {
   PCL_CONSTEXPR const TypeParam pt;
-  PCL_EXPECT_TRUE(pcl::all_of(std::cbegin(pt.histogram), std::cend(pt.histogram), &pcl::is_equal_to_zero));
+  PCL_EXPECT_TRUE(pcl::all_of(
+      std::cbegin(pt.histogram), std::cend(pt.histogram), &pcl::is_equal_to_zero));
 }
 
-TEST (PointTypeConstuction, BRISKSignature512DefaultConstruction)
+TEST(PointTypeConstuction, BRISKSignature512DefaultConstruction)
 {
   PCL_CONSTEXPR const BRISKSignature512 pt;
-  PCL_EXPECT_TRUE(pcl::all_of(std::cbegin(pt.descriptor), std::cend(pt.descriptor), &pcl::is_equal_to_zero));
+  PCL_EXPECT_TRUE(pcl::all_of(
+      std::cbegin(pt.descriptor), std::cend(pt.descriptor), &pcl::is_equal_to_zero));
 }
 
-TEST (PointTypeConstruction, Narf36DefaultConstruction)
+TEST(PointTypeConstruction, Narf36DefaultConstruction)
 {
   PCL_CONSTEXPR const pcl::Narf36 pt;
   PCL_EXPECT_FLOAT_EQ(pt.x, 0.0f);
@@ -636,7 +640,7 @@ TEST (PointTypeConstruction, Narf36DefaultConstruction)
   PCL_EXPECT_FLOAT_EQ(pt.yaw, 0.0f);
 }
 
-TEST (PointTypeConstruction, Narf36ThreeScalarsConstruction)
+TEST(PointTypeConstruction, Narf36ThreeScalarsConstruction)
 {
   PCL_CONSTEXPR const pcl::Narf36 pt{1.0f, 2.0f, 3.0f};
   PCL_EXPECT_FLOAT_EQ(pt.x, 1.0f);
@@ -647,7 +651,7 @@ TEST (PointTypeConstruction, Narf36ThreeScalarsConstruction)
   PCL_EXPECT_FLOAT_EQ(pt.yaw, 0.0f);
 }
 
-TEST (PointTypeConstruction, Narf36SixScalarsConstruction)
+TEST(PointTypeConstruction, Narf36SixScalarsConstruction)
 {
   PCL_CONSTEXPR const pcl::Narf36 pt{1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f};
   PCL_EXPECT_FLOAT_EQ(pt.x, 1.0f);
@@ -658,22 +662,21 @@ TEST (PointTypeConstruction, Narf36SixScalarsConstruction)
   PCL_EXPECT_FLOAT_EQ(pt.yaw, 6.0f);
 }
 
-TEST (PointTypeConstruction, BorderDescriptionDefaultConstruction)
+TEST(PointTypeConstruction, BorderDescriptionDefaultConstruction)
 {
   PCL_CONSTEXPR const pcl::BorderDescription pt;
   PCL_EXPECT_INT_EQ(pt.x, 0);
   PCL_EXPECT_INT_EQ(pt.y, 0);
 }
 
-
-TEST (PointTypeConstruction, BorderDescriptionTwoScalarsConstruction)
+TEST(PointTypeConstruction, BorderDescriptionTwoScalarsConstruction)
 {
   PCL_CONSTEXPR const pcl::BorderDescription pt{1, 2};
   PCL_EXPECT_INT_EQ(pt.x, 1);
   PCL_EXPECT_INT_EQ(pt.y, 2);
 }
 
-TEST (PointTypeConstruction, IntensityGradientDefaultConstruction)
+TEST(PointTypeConstruction, IntensityGradientDefaultConstruction)
 {
   PCL_CONSTEXPR const pcl::IntensityGradient pt;
   PCL_EXPECT_FLOAT_EQ(pt.gradient_x, 0.0f);
@@ -681,7 +684,7 @@ TEST (PointTypeConstruction, IntensityGradientDefaultConstruction)
   PCL_EXPECT_FLOAT_EQ(pt.gradient_z, 0.0f);
 }
 
-TEST (PointTypeConstruction, IntensityGradientThreeScalarsConstruction)
+TEST(PointTypeConstruction, IntensityGradientThreeScalarsConstruction)
 {
   PCL_CONSTEXPR const pcl::IntensityGradient pt{1.0f, 2.0f, 3.0f};
   PCL_EXPECT_FLOAT_EQ(pt.gradient_x, 1.0f);
@@ -689,7 +692,7 @@ TEST (PointTypeConstruction, IntensityGradientThreeScalarsConstruction)
   PCL_EXPECT_FLOAT_EQ(pt.gradient_z, 3.0f);
 }
 
-TEST (PointTypeConstruction, PointWithScaleDefaultConstruction)
+TEST(PointTypeConstruction, PointWithScaleDefaultConstruction)
 {
   PCL_CONSTEXPR const pcl::PointWithScale pt;
   PCL_EXPECT_FLOAT_EQ(pt.data[0], 0.0f);
@@ -702,7 +705,7 @@ TEST (PointTypeConstruction, PointWithScaleDefaultConstruction)
   PCL_EXPECT_INT_EQ(pt.octave, 0);
 }
 
-TEST (PointTypeConstruction, PointWithScaleSevenScalarsConstruction)
+TEST(PointTypeConstruction, PointWithScaleSevenScalarsConstruction)
 {
   PCL_CONSTEXPR const pcl::PointWithScale pt{1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7};
   PCL_EXPECT_FLOAT_EQ(pt.data[0], 1.0f);
@@ -715,7 +718,7 @@ TEST (PointTypeConstruction, PointWithScaleSevenScalarsConstruction)
   PCL_EXPECT_INT_EQ(pt.octave, 7);
 }
 
-TEST (PointTypeConstruction, PointSurfelDefaultConstruction)
+TEST(PointTypeConstruction, PointSurfelDefaultConstruction)
 {
   PCL_CONSTEXPR const pcl::PointSurfel pt;
   PCL_EXPECT_FLOAT_EQ(pt.data[0], 0.0f);
@@ -735,9 +738,10 @@ TEST (PointTypeConstruction, PointSurfelDefaultConstruction)
   PCL_EXPECT_FLOAT_EQ(pt.curvature, 0.0f);
 }
 
-TEST (PointTypeConstruction, PointSurfelTenScalarsConstruction)
+TEST(PointTypeConstruction, PointSurfelTenScalarsConstruction)
 {
-  PCL_CONSTEXPR const pcl::PointSurfel pt{1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7u, 8u, 9u, 10u, 11.0f, 12.0f, 13.0f};
+  PCL_CONSTEXPR const pcl::PointSurfel pt{
+      1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7u, 8u, 9u, 10u, 11.0f, 12.0f, 13.0f};
   PCL_EXPECT_FLOAT_EQ(pt.data[0], 1.0f);
   PCL_EXPECT_FLOAT_EQ(pt.data[1], 2.0f);
   PCL_EXPECT_FLOAT_EQ(pt.data[2], 3.0f);
@@ -755,7 +759,7 @@ TEST (PointTypeConstruction, PointSurfelTenScalarsConstruction)
   PCL_EXPECT_FLOAT_EQ(pt.curvature, 13.0f);
 }
 
-TEST (PointTypeConstruction, PointDEMDefaultConstruction)
+TEST(PointTypeConstruction, PointDEMDefaultConstruction)
 {
   PCL_CONSTEXPR const pcl::PointDEM pt;
   PCL_EXPECT_FLOAT_EQ(pt.data[0], 0.0f);
@@ -767,7 +771,7 @@ TEST (PointTypeConstruction, PointDEMDefaultConstruction)
   PCL_EXPECT_FLOAT_EQ(pt.height_variance, 0.0f);
 }
 
-TEST (PointTypeConstruction, PointDEMSixScalarsConstruction)
+TEST(PointTypeConstruction, PointDEMSixScalarsConstruction)
 {
   PCL_CONSTEXPR const pcl::PointDEM pt{1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f};
   PCL_EXPECT_FLOAT_EQ(pt.data[0], 1.0f);
@@ -782,6 +786,6 @@ TEST (PointTypeConstruction, PointDEMSixScalarsConstruction)
 int
 main (int argc, char** argv)
 {
-  testing::InitGoogleTest (&argc, argv);
-  return (RUN_ALL_TESTS ());
+  testing::InitGoogleTest(&argc, argv);
+  return (RUN_ALL_TESTS());
 }

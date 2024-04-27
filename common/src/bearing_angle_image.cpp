@@ -35,49 +35,46 @@
  */
 
 /**
-  * \file bearing_angle_image.cpp
-  * \created on: July 07, 2012
-  * \author: Qinghua Li (qinghua__li@163.com)
-  */
+ * \file bearing_angle_image.cpp
+ * \created on: July 07, 2012
+ * \author: Qinghua Li (qinghua__li@163.com)
+ */
 
 #include <pcl/range_image/bearing_angle_image.h>
 
-namespace pcl
-{
+namespace pcl {
 /////////////////////////////////////////////////////////
-BearingAngleImage::BearingAngleImage () 
+BearingAngleImage::BearingAngleImage()
 {
-  reset ();
+  reset();
   unobserved_point_.x = unobserved_point_.y = unobserved_point_.z = 0.0;
   unobserved_point_.rgba = 255;
 }
 
 /////////////////////////////////////////////////////////
 void
-BearingAngleImage::reset ()
+BearingAngleImage::reset()
 {
   width = height = 0;
-  points.clear ();
+  points.clear();
 }
 
 /////////////////////////////////////////////////////////
 double
-BearingAngleImage::getAngle (const PointXYZ &point1, const PointXYZ &point2)
+BearingAngleImage::getAngle(const PointXYZ& point1, const PointXYZ& point2)
 {
   double a, b, c;
   double theta;
-  const Eigen::Vector3f& p1 = point1.getVector3fMap ();
-  const Eigen::Vector3f& p2 = point2.getVector3fMap ();
-  a = p1.squaredNorm ();
-  b = (p1 - p2).squaredNorm ();
-  c = p2.squaredNorm ();
+  const Eigen::Vector3f& p1 = point1.getVector3fMap();
+  const Eigen::Vector3f& p2 = point2.getVector3fMap();
+  a = p1.squaredNorm();
+  b = (p1 - p2).squaredNorm();
+  c = p2.squaredNorm();
 
-  if (a != 0 && b != 0)
-  {
-    theta = std::acos ((a + b - c) / (2 * sqrt (a) * sqrt (b))) * 180 / M_PI;
+  if (a != 0 && b != 0) {
+    theta = std::acos((a + b - c) / (2 * sqrt(a) * sqrt(b))) * 180 / M_PI;
   }
-  else
-  {
+  else {
     theta = 0.0;
   }
 
@@ -86,23 +83,21 @@ BearingAngleImage::getAngle (const PointXYZ &point1, const PointXYZ &point2)
 
 /////////////////////////////////////////////////////////
 void
-BearingAngleImage::generateBAImage (PointCloud<PointXYZ>& point_cloud)
+BearingAngleImage::generateBAImage(PointCloud<PointXYZ>& point_cloud)
 {
   width = point_cloud.width;
   height = point_cloud.height;
   unsigned int size = width * height;
-  points.clear ();
-  points.resize (size, unobserved_point_);
+  points.clear();
+  points.resize(size, unobserved_point_);
 
   double theta;
   std::uint8_t r, g, b, gray;
 
   // primary transformation process
-  for (decltype(height) i = 0; i < height - 1; ++i)
-  {
-    for (decltype(width) j = 0; j < width - 1; ++j)
-    {
-      theta = getAngle (point_cloud.at (j, i + 1), point_cloud.at (j + 1, i));
+  for (decltype(height) i = 0; i < height - 1; ++i) {
+    for (decltype(width) j = 0; j < width - 1; ++j) {
+      theta = getAngle(point_cloud.at(j, i + 1), point_cloud.at(j + 1, i));
 
       // based on the theta, calculate the gray value of every pixel point
       gray = theta * 255 / 180;
@@ -110,13 +105,15 @@ BearingAngleImage::generateBAImage (PointCloud<PointXYZ>& point_cloud)
       g = gray;
       b = gray;
 
-      points[(i + 1) * width + j].x = point_cloud.at (j, i + 1).x;
-      points[(i + 1) * width + j].y = point_cloud.at (j, i + 1).y;
-      points[(i + 1) * width + j].z = point_cloud.at (j, i + 1).z;
+      points[(i + 1) * width + j].x = point_cloud.at(j, i + 1).x;
+      points[(i + 1) * width + j].y = point_cloud.at(j, i + 1).y;
+      points[(i + 1) * width + j].z = point_cloud.at(j, i + 1).z;
       // set the gray value for every pixel point
-      points[(i + 1) * width + j].rgba = (static_cast<int>(r)) << 24 | (static_cast<int>(g)) << 16 | (static_cast<int>(b)) << 8 | 0xff;
+      points[(i + 1) * width + j].rgba = (static_cast<int>(r)) << 24 |
+                                         (static_cast<int>(g)) << 16 |
+                                         (static_cast<int>(b)) << 8 | 0xff;
     }
   }
 }
 
-}  // namespace end
+} // namespace pcl

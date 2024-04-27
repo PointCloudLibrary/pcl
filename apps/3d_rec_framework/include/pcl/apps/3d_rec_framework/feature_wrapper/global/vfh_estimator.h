@@ -23,11 +23,11 @@ class VFHEstimation : public GlobalEstimator<PointInT, FeatureT> {
 
 public:
   void
-  estimate(PointInTPtr& in,
-           PointInTPtr& processed,
-           typename pcl::PointCloud<FeatureT>::CloudVectorType& signatures,
-           std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f>>&
-               centroids) override
+  estimate (PointInTPtr& in,
+            PointInTPtr& processed,
+            typename pcl::PointCloud<FeatureT>::CloudVectorType& signatures,
+            std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f>>&
+                centroids) override
   {
 
     if (!normal_estimator_) {
@@ -62,7 +62,7 @@ public:
   }
 
   bool
-  computedNormals() override
+  computedNormals () override
   {
     return true;
   }

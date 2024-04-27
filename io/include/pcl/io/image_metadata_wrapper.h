@@ -42,43 +42,38 @@
 #include <pcl/memory.h>
 #include <pcl/pcl_config.h>
 
-namespace pcl
-{
-  namespace io
-  {
+namespace pcl {
+namespace io {
 
-    /**
-    * Pure abstract interface to wrap native frame data types.
-    */
-    class FrameWrapper
-    {
-      public:
-        using Ptr = shared_ptr<FrameWrapper>;
-        using ConstPtr = shared_ptr<const FrameWrapper>;
+/**
+ * Pure abstract interface to wrap native frame data types.
+ */
+class FrameWrapper {
+public:
+  using Ptr = shared_ptr<FrameWrapper>;
+  using ConstPtr = shared_ptr<const FrameWrapper>;
 
-        virtual
-        ~FrameWrapper() = default;
+  virtual ~FrameWrapper() = default;
 
-        virtual const void*
-        getData () const = 0;
+  virtual const void*
+  getData () const = 0;
 
-        virtual unsigned
-        getDataSize () const = 0;
+  virtual unsigned
+  getDataSize () const = 0;
 
-        virtual unsigned
-        getWidth () const = 0;
+  virtual unsigned
+  getWidth () const = 0;
 
-        virtual unsigned
-        getHeight () const = 0;
+  virtual unsigned
+  getHeight () const = 0;
 
-        virtual unsigned
-        getFrameID () const = 0;
+  virtual unsigned
+  getFrameID () const = 0;
 
-        // Microseconds from some arbitrary start point
-        virtual std::uint64_t
-        getTimestamp () const = 0;
-    };
+  // Microseconds from some arbitrary start point
+  virtual std::uint64_t
+  getTimestamp () const = 0;
+};
 
-  } // namespace
-}
-
+} // namespace io
+} // namespace pcl

@@ -8,7 +8,7 @@
 // THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT EXPRESS OR IMPLIED WARRANTY.
 // ALL IMPLIED WARRANTIES OF FITNESS FOR ANY PARTICULAR PURPOSE AND OF
 // MERCHANTABILITY ARE HEREBY DISCLAIMED.
-//				
+//
 // For complete openNURBS copyright information see <http://www.opennurbs.org>.
 //
 ////////////////////////////////////////////////////////////////
@@ -16,20 +16,19 @@
 #if !defined(OPENNURBS_FSP_INC_)
 #define OPENNURBS_FSP_INC_
 
-class ON_CLASS ON_FixedSizePool
-{
+class ON_CLASS ON_FixedSizePool {
 public:
   ON_FixedSizePool();
   ~ON_FixedSizePool();
-  
+
   /*
   Description:
     Create a fixed size memory pool.
   Parameters:
-    sizeof_element - [in] 
+    sizeof_element - [in]
       number of bytes in each element. This parameter must be greater than zero.
-      In general, use sizeof(element type).  If you pass a "raw" number as 
-      sizeof_element, then be certain that it is the right size to insure the 
+      In general, use sizeof(element type).  If you pass a "raw" number as
+      sizeof_element, then be certain that it is the right size to insure the
       fields in your elements will be properly aligned.
     element_count_estimate - [in] (0 = good default)
       If you know how many elements you will need, pass that number here.
@@ -39,8 +38,8 @@ public:
       If block_element_capacity is zero, Create() will calculate a block
       size that is efficent for most applications.  If you are an expert
       user and want to specify the number of elements per block,
-      then pass the number of elements per block here.  When 
-      block_element_capacity > 0 and element_count_estimate > 0, the first 
+      then pass the number of elements per block here.  When
+      block_element_capacity > 0 and element_count_estimate > 0, the first
       block will have a capacity of at least element_count_estimate; in this
       case do not ask for extraordinarly large amounts of contiguous heap.
   Remarks:
@@ -49,24 +48,25 @@ public:
   Returns:
     True if successful and the pool can be used.
   */
-  bool Create( 
-    std::size_t sizeof_element,
-    std::size_t element_count_estimate,
-    std::size_t block_element_capacity
-    );
+  bool
+  Create (std::size_t sizeof_element,
+          std::size_t element_count_estimate,
+          std::size_t block_element_capacity);
 
   /*
   Returns:
     Size of the elements in this pool.
   */
-  std::size_t SizeofElement() const;
+  std::size_t
+  SizeofElement () const;
 
   /*
   Returns:
     A pointer to sizeof_element bytes.  The memory is zeroed.
   */
-  void* AllocateElement();
-  
+  void*
+  AllocateElement ();
+
   /*
   Description:
     Return an element to the pool.
@@ -88,7 +88,7 @@ public:
 
     ON_FixedMemoryPool uses the first sizeof(void*) bytes of the
     returned element for bookkeeping purposes.  Therefore, if you
-    are going to use ReturnElement(), then SizeofElement() must be 
+    are going to use ReturnElement(), then SizeofElement() must be
     at least sizeof(void*).  If you are using a platform that requires
     pointers to be aligned on sizeof(void*) boundaries, then
     SizeofElement() must be a multiple of sizeof(void*).
@@ -96,12 +96,13 @@ public:
     and NextElement() to iterate through the list of elements, then you
     need to set a value in the returned element to indicate that it
     needs to be skipped during the iteration.  This value cannot be
-    located in the fist sizeof(void*) bytes of the element.  If the 
-    element is a class with a vtable, you cannot call a virtual 
-    function on a returned element because the vtable pointer is 
+    located in the fist sizeof(void*) bytes of the element.  If the
+    element is a class with a vtable, you cannot call a virtual
+    function on a returned element because the vtable pointer is
     trashed when ReturnElement() modifies the fist sizeof(void*) bytes.
   */
-  void ReturnElement(void* p);
+  void
+  ReturnElement (void* p);
 
   /*
   Description:
@@ -109,33 +110,37 @@ public:
     the pool remains initialized and ready for AllocateElement()
     to be called.
   */
-  void ReturnAll();
+  void
+  ReturnAll ();
 
   /*
   Description:
     Destroy the pool and free all the heap. The pool cannot be used again
     until Create() is called.
   */
-  void Destroy();
+  void
+  Destroy ();
 
   /*
   Returns:
     Number of active elements. (Elements that have been returned are not active.)
   */
-  std::size_t ActiveElementCount() const;
+  std::size_t
+  ActiveElementCount () const;
 
   /*
   Returns:
     Total number of elements = number of active elements + number of returned elements.
   */
-  std::size_t TotalElementCount() const;
+  std::size_t
+  TotalElementCount () const;
 
   /*
   Description:
     Get the first element when iterating through the list of elements.
   Parameters:
     element_index - [in]
-      If you use the version of FirstElement() that has an 
+      If you use the version of FirstElement() that has an
       element_index parameter, then the iteration begins at
       that element.
   Example:
@@ -160,8 +165,8 @@ public:
   Returns:
     The first element when iterating through the list of elements.
   Remarks:
-    FirstElement() and NextElement() will return elements that have 
-    been returned to the pool using ReturnElement().  If you use 
+    FirstElement() and NextElement() will return elements that have
+    been returned to the pool using ReturnElement().  If you use
     ReturnElement(), then be sure to mark the element so it can be
     identified and skipped.
 
@@ -171,11 +176,13 @@ public:
     If you need iterate through a fixed size pool and another
     function may also be in the middle of iterating the pool
     as well, then use ON_FixedSizePoolIterator.  In particular,
-    if you have multiple concurrent threads iterating the same 
+    if you have multiple concurrent threads iterating the same
     fixed size pool, then use ON_FixedSizePoolIterator.
   */
-  void* FirstElement();
-  void* FirstElement( std::size_t element_index );
+  void*
+  FirstElement ();
+  void*
+  FirstElement (std::size_t element_index);
 
   /*
   Description:
@@ -185,8 +192,8 @@ public:
   Returns:
     The next element when iterating through the list of elements.
   Remarks:
-    FirstElement() and NextElement() will return elements that have 
-    been returned to the pool using ReturnElement().  If you use 
+    FirstElement() and NextElement() will return elements that have
+    been returned to the pool using ReturnElement().  If you use
     ReturnElement(), then be sure to mark the element so it can be
     identified and skipped.
 
@@ -196,10 +203,11 @@ public:
     If you need iterate through a fixed size pool and another
     function may also be in the middle of iterating the pool
     as well, then use ON_FixedSizePoolIterator.  In particular,
-    if you have multiple concurrent threads iterating the same 
+    if you have multiple concurrent threads iterating the same
     fixed size pool, then use ON_FixedSizePoolIterator.
   */
-  void* NextElement();
+  void*
+  NextElement ();
 
   /*
   Description:
@@ -215,15 +223,15 @@ public:
 
           // iterate through all blocks in the pool
           std::size_t block_element_count = 0;
-          for ( void* p = FirstBlock(&block_element_count); 
-                0 != p; 
-                p = NextBlock(&block_element_count) 
+          for ( void* p = FirstBlock(&block_element_count);
+                0 != p;
+                p = NextBlock(&block_element_count)
               )
           {
             ElementType* e = (ElementType*)p;
-            for ( std::size_t i = 0; 
-                  i < block_element_count; 
-                  i++, e = ((const char*)e) + SizeofElement() 
+            for ( std::size_t i = 0;
+                  i < block_element_count;
+                  i++, e = ((const char*)e) + SizeofElement()
                 )
             {
               ...
@@ -243,10 +251,11 @@ public:
     If you need iterate through a fixed size pool and another
     function may also be in the middle of iterating the pool
     as well, then use ON_FixedSizePoolIterator.  In particular,
-    if you have multiple concurrent threads iterating the same 
+    if you have multiple concurrent threads iterating the same
     fixed size pool, then use ON_FixedSizePoolIterator.
   */
-  void* FirstBlock( std::size_t* block_element_count );
+  void*
+  FirstBlock (std::size_t* block_element_count);
 
   /*
   Description:
@@ -268,10 +277,11 @@ public:
     If you need iterate through a fixed size pool and another
     function may also be in the middle of iterating the pool
     as well, then use ON_FixedSizePoolIterator.  In particular,
-    if you have multiple concurrent threads iterating the same 
+    if you have multiple concurrent threads iterating the same
     fixed size pool, then use ON_FixedSizePoolIterator.
   */
-  void* NextBlock( std::size_t* block_element_count );
+  void*
+  NextBlock (std::size_t* block_element_count);
 
   /*
   Description:
@@ -291,11 +301,12 @@ public:
     in the first few blocks.
 
     If ReturnElement() is not used or AllocateElement() calls to
-    are made after any use of ReturnElement(), then the i-th 
-    element is the one returned by the (i+1)-th call to 
+    are made after any use of ReturnElement(), then the i-th
+    element is the one returned by the (i+1)-th call to
     AllocateElement().
   */
-  void* Element(std::size_t element_index) const;
+  void*
+  Element (std::size_t element_index) const;
 
 public:
   // Expert user functions below for situations where you
@@ -305,7 +316,8 @@ public:
   Description:
     Expert user function to specify which heap is used.
   */
-  void SetHeap( ON_MEMORY_POOL* heap );
+  void
+  SetHeap (ON_MEMORY_POOL* heap);
 
   /*
   Description:
@@ -314,16 +326,18 @@ public:
     Heap used by this pool.  A null pointer means the default
     heap is being used.
   */
-  ON_MEMORY_POOL* Heap();
+  ON_MEMORY_POOL*
+  Heap ();
 
   /*
   Description:
     Expert user function to call when the heap used by this pool
     is no longer valid.  This call zeros all fields and does not
-    call any heap functions.  After calling EmergencyDestroy(), 
+    call any heap functions.  After calling EmergencyDestroy(),
     the destructor will not attempt to free any heap.
   */
-  void EmergencyDestroy();
+  void
+  EmergencyDestroy ();
 
 private:
   friend class ON_FixedSizePoolIterator;
@@ -347,23 +361,26 @@ private:
   std::size_t m_active_element_count; // number of active elements
   std::size_t m_total_element_count;  // total number of elements (active + returned)
   ON_MEMORY_POOL* m_heap;
-  
+
 private:
   // returns capacity of elements in existing block
-  std::size_t BlockElementCapacity( const void* block ) const;
+  std::size_t
+  BlockElementCapacity (const void* block) const;
 
   // returns number of allocated of elements in existing block
-  std::size_t BlockElementCount( const void* block ) const;
+  std::size_t
+  BlockElementCount (const void* block) const;
+
 private:
   // prohibit copy construction and operator=.
   ON_FixedSizePool(const ON_FixedSizePool&);
-  ON_FixedSizePool& operator=(const ON_FixedSizePool&);
+  ON_FixedSizePool&
+  operator=(const ON_FixedSizePool&);
 };
 
-class ON_CLASS ON_FixedSizePoolIterator
-{
+class ON_CLASS ON_FixedSizePoolIterator {
 public:
-  ON_FixedSizePoolIterator( const class ON_FixedSizePool& fsp );
+  ON_FixedSizePoolIterator(const class ON_FixedSizePool& fsp);
 
   const class ON_FixedSizePool& m_fsp;
 
@@ -372,7 +389,7 @@ public:
     Get the first element when iterating through the list of elements.
   Parameters:
     element_index - [in]
-      If you use the version of FirstElement() that has an 
+      If you use the version of FirstElement() that has an
       element_index parameter, then the iteration begins at
       that element.
   Example:
@@ -397,16 +414,18 @@ public:
   Returns:
     The first element when iterating through the list of elements.
   Remarks:
-    FirstElement() and NextElement() will return elements that have 
-    been returned to the pool using ReturnElement().  If you use 
+    FirstElement() and NextElement() will return elements that have
+    been returned to the pool using ReturnElement().  If you use
     ReturnElement(), then be sure to mark the element so it can be
     identified and skipped.
 
     Do not make any calls to FirstBlock() or NextBlock() when using
     FirstElement() and NextElement() to iteratate through elements.
   */
-  void* FirstElement();
-  void* FirstElement( std::size_t element_index );
+  void*
+  FirstElement ();
+  void*
+  FirstElement (std::size_t element_index);
 
   /*
   Description:
@@ -416,15 +435,16 @@ public:
   Returns:
     The next element when iterating through the list of elements.
   Remarks:
-    FirstElement() and NextElement() will return elements that have 
-    been returned to the pool using ReturnElement().  If you use 
+    FirstElement() and NextElement() will return elements that have
+    been returned to the pool using ReturnElement().  If you use
     ReturnElement(), then be sure to mark the element so it can be
     identified and skipped.
 
     Do not make any calls to FirstBlock() or NextBlock() when using
     FirstElement() and NextElement() to iteratate through elements.
   */
-  void* NextElement();
+  void*
+  NextElement ();
 
   /*
   Description:
@@ -440,15 +460,15 @@ public:
 
           // iterate through all blocks in the pool
           std::size_t block_element_count = 0;
-          for ( void* p = FirstBlock(&block_element_count); 
-                0 != p; 
-                p = NextBlock(&block_element_count) 
+          for ( void* p = FirstBlock(&block_element_count);
+                0 != p;
+                p = NextBlock(&block_element_count)
               )
           {
             ElementType* e = (ElementType*)p;
-            for ( std::size_t i = 0; 
-                  i < block_element_count; 
-                  i++, e = ((const char*)e) + SizeofElement() 
+            for ( std::size_t i = 0;
+                  i < block_element_count;
+                  i++, e = ((const char*)e) + SizeofElement()
                 )
             {
               ...
@@ -465,7 +485,8 @@ public:
     Do not make any calls to FirstElement() or NextElement() when using
     FirstBlock() and NextBlock() to iteratate through blocks.
   */
-  void* FirstBlock( std::size_t* block_element_count );
+  void*
+  FirstBlock (std::size_t* block_element_count);
 
   /*
   Description:
@@ -484,25 +505,26 @@ public:
     Do not make any calls to FirstElement() or NextElement() when using
     FirstBlock() and NextBlock() to iteratate through blocks.
   */
-  void* NextBlock( std::size_t* block_element_count );
+  void*
+  NextBlock (std::size_t* block_element_count);
 
 private:
   void* m_it_block;
   void* m_it_element;
 
   // no implementation (you can use a copy construtor)
-  ON_FixedSizePoolIterator& operator=(const ON_FixedSizePoolIterator&);
+  ON_FixedSizePoolIterator&
+  operator=(const ON_FixedSizePoolIterator&);
 };
 
-
-template <class T> class ON_SimpleFixedSizePool : private ON_FixedSizePool
-{
+template <class T>
+class ON_SimpleFixedSizePool : private ON_FixedSizePool {
 public:
   // construction ////////////////////////////////////////////////////////
 
   ON_SimpleFixedSizePool();
   ~ON_SimpleFixedSizePool();
-  
+
   /*
   Description:
     Create a fixed size memory pool.
@@ -525,23 +547,23 @@ public:
   Returns:
     True if successful and the pool can be used.
   */
-  bool Create( 
-    std::size_t element_count_estimate,
-    std::size_t block_element_count
-    );
+  bool
+  Create (std::size_t element_count_estimate, std::size_t block_element_count);
 
   /*
   Returns:
     Size of the elements in this pool.
   */
-  std::size_t SizeofElement() const;
+  std::size_t
+  SizeofElement () const;
 
   /*
   Returns:
     A pointer to sizeof_element bytes.  The memory is zeroed.
   */
-  T* AllocateElement();
-  
+  T*
+  AllocateElement ();
+
   /*
   Description:
     Return an element to the pool.
@@ -563,7 +585,7 @@ public:
 
     ON_FixedMemoryPool uses the first sizeof(void*) bytes of the
     returned element for bookkeeping purposes.  Therefore, if you
-    are going to use ReturnElement(), then SizeofElement() must be 
+    are going to use ReturnElement(), then SizeofElement() must be
     at least sizeof(void*).  If you are using a platform that requires
     pointers to be aligned on sizeof(void*) boundaries, then
     SizeofElement() must be a multiple of sizeof(void*).
@@ -571,12 +593,13 @@ public:
     and NextElement() to iterate through the list of elements, then you
     need to set a value in the returned element to indicate that it
     needs to be skipped during the iteration.  This value cannot be
-    located in the fist sizeof(void*) bytes of the element.  If the 
-    element is a class with a vtable, you cannot call a virtual 
-    function on a returned element because the vtable pointer is 
+    located in the fist sizeof(void*) bytes of the element.  If the
+    element is a class with a vtable, you cannot call a virtual
+    function on a returned element because the vtable pointer is
     trashed when ReturnElement() modifies the fist sizeof(void*) bytes.
   */
-  void ReturnElement(T* p);
+  void
+  ReturnElement (T* p);
 
   /*
   Description:
@@ -584,26 +607,30 @@ public:
     the pool remains initialized and ready for AllocateElement()
     to be called.
   */
-  void ReturnAll();
+  void
+  ReturnAll ();
 
   /*
   Description:
     Destroy the pool and free all the heap. The pool cannot be used again
     until Create() is called.
   */
-  void Destroy();
+  void
+  Destroy ();
 
   /*
   Returns:
     Number of active elements. (Elements that have been returned are not active.)
   */
-  std::size_t ActiveElementCount() const;
+  std::size_t
+  ActiveElementCount () const;
 
   /*
   Returns:
     Total number of elements = number of active elements + number of returned elements.
   */
-  std::size_t TotalElementCount() const;
+  std::size_t
+  TotalElementCount () const;
 
   /*
   Description:
@@ -633,7 +660,8 @@ public:
     the pool using ReturnElement().  If you use ReturnElement(),
     be sure to mark the element so it can be identified and skipped.
   */
-  T* FirstElement();
+  T*
+  FirstElement ();
 
   /*
   Description:
@@ -647,7 +675,8 @@ public:
     the pool using ReturnElement().  If you use ReturnElement(),
     be sure to mark the element so it can be identified and skipped.
   */
-  T* NextElement();
+  T*
+  NextElement ();
 
   /*
   Description:
@@ -657,9 +686,9 @@ public:
 
           // iterate through all blocks in the pool
           std::size_t block_element_count = 0;
-          for ( T* p = FirstBlock(&block_element_count); 
-                0 != p; 
-                p = NextBlock(&block_element_count) 
+          for ( T* p = FirstBlock(&block_element_count);
+                0 != p;
+                p = NextBlock(&block_element_count)
               )
           {
             // a[] is an array of length block_element_count
@@ -671,7 +700,8 @@ public:
     Do not make any calls to FirstElement() or NextElement() when using
     FirstBlock() and NextBlock() to iteratate through blocks.
   */
-  T* FirstBlock( std::size_t* block_element_count );
+  T*
+  FirstBlock (std::size_t* block_element_count);
 
   /*
   Description:
@@ -684,8 +714,8 @@ public:
     Do not make any calls to FirstElement() or NextElement() when using
     FirstBlock() and NextBlock() to iteratate through blocks.
   */
-  T* NextBlock( std::size_t* block_element_count );
-
+  T*
+  NextBlock (std::size_t* block_element_count);
 
   /*
   Description:
@@ -705,11 +735,12 @@ public:
     in the first few blocks.
 
     If ReturnElement() is not used or AllocateElement() calls to
-    are made after any use of ReturnElement(), then the i-th 
-    element is the one returned by the (i+1)-th call to 
+    are made after any use of ReturnElement(), then the i-th
+    element is the one returned by the (i+1)-th call to
     AllocateElement().
   */
-  T* Element(std::size_t element_index) const;
+  T*
+  Element (std::size_t element_index) const;
 
 public:
   // Expert user functions below for situations where you
@@ -719,7 +750,8 @@ public:
   Description:
     Expert user function to specify which heap is used.
   */
-  void SetHeap( ON_MEMORY_POOL* heap );
+  void
+  SetHeap (ON_MEMORY_POOL* heap);
 
   /*
   Description:
@@ -728,21 +760,24 @@ public:
     Heap used by this pool.  A null pointer means the default
     heap is being used.
   */
-  ON_MEMORY_POOL* Heap();
+  ON_MEMORY_POOL*
+  Heap ();
 
   /*
   Description:
     Expert user function to call when the heap used by this pool
     is no longer valid.  This call zeros all fields and does not
-    call any heap functions.  After calling EmergencyDestroy(), 
+    call any heap functions.  After calling EmergencyDestroy(),
     the destructor will not attempt to free any heap.
   */
-  void EmergencyDestroy();
+  void
+  EmergencyDestroy ();
 
 private:
   // prohibit copy construction and operator=.
   ON_SimpleFixedSizePool(const ON_SimpleFixedSizePool<T>&);
-  ON_SimpleFixedSizePool<T>& operator=(const ON_SimpleFixedSizePool<T>&);
+  ON_SimpleFixedSizePool<T>&
+  operator=(const ON_SimpleFixedSizePool<T>&);
 };
 
 // definitions of the template functions are in a different file
@@ -751,4 +786,3 @@ private:
 #include "opennurbs_fsp_defs.h"
 
 #endif
-

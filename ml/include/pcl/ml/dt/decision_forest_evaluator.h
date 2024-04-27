@@ -72,7 +72,7 @@ public:
    * \param[out] label_data the destination for the resulting label data
    */
   void
-  evaluate(
+  evaluate (
       pcl::DecisionForest<NodeType>& DecisionForestEvaluator,
       pcl::FeatureHandler<FeatureType, DataSet, ExampleIndex>& feature_handler,
       pcl::StatsEstimator<LabelType, NodeType, DataSet, ExampleIndex>& stats_estimator,
@@ -91,7 +91,7 @@ public:
    * \param[out] leaves the leaves where the patch arrives
    */
   void
-  evaluate(
+  evaluate (
       pcl::DecisionForest<NodeType>& DecisionForestEvaluator,
       pcl::FeatureHandler<FeatureType, DataSet, ExampleIndex>& feature_handler,
       pcl::StatsEstimator<LabelType, NodeType, DataSet, ExampleIndex>& stats_estimator,

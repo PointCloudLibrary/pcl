@@ -8,7 +8,7 @@
 // THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT EXPRESS OR IMPLIED WARRANTY.
 // ALL IMPLIED WARRANTIES OF FITNESS FOR ANY PARTICULAR PURPOSE AND OF
 // MERCHANTABILITY ARE HEREBY DISCLAIMED.
-//				
+//
 // For complete openNURBS copyright information see <http://www.opennurbs.org>.
 //
 ////////////////////////////////////////////////////////////////
@@ -17,10 +17,8 @@
 #if !defined(ON_PLANE_INC_)
 #define ON_PLANE_INC_
 
-class ON_CLASS ON_Plane
-{
+class ON_CLASS ON_Plane {
 public:
-
   /*
   Description:
     The default constructor creates a plane
@@ -41,10 +39,7 @@ public:
   See Also:
     ON_Plane::CreateFromNormal
   */
-  ON_Plane(
-    const ON_3dPoint& origin,
-    const ON_3dVector& normal
-    );
+  ON_Plane(const ON_3dPoint& origin, const ON_3dVector& normal);
 
   /*
   Description:
@@ -58,11 +53,9 @@ public:
         that is used to determine the yaxis direction.
         y_dir does not have to be perpendicular to x_dir.
   */
-  ON_Plane(
-    const ON_3dPoint& origin,
-    const ON_3dVector& x_dir,
-    const ON_3dVector& y_dir
-    );
+  ON_Plane(const ON_3dPoint& origin,
+           const ON_3dVector& x_dir,
+           const ON_3dVector& y_dir);
 
   /*
   Description:
@@ -75,11 +68,9 @@ public:
         not colinear with the first two points.
         yaxis*(y_point-origin) will be > 0.
   */
-  ON_Plane(
-    const ON_3dPoint& origin,
-    const ON_3dPoint& x_point,
-    const ON_3dPoint& y_point
-    );
+  ON_Plane(const ON_3dPoint& origin,
+           const ON_3dPoint& x_point,
+           const ON_3dPoint& y_point);
 
   /*
   Description:
@@ -89,14 +80,14 @@ public:
        one of equation[0], equation[1], or equation[2]
        being non-zero.
   */
-  ON_Plane(
-    const double equation[4]
-    );
+  ON_Plane(const double equation[4]);
 
   ~ON_Plane();
 
-  bool operator==(const ON_Plane&) const;
-  bool operator!=(const ON_Plane&) const;
+  bool
+  operator==(const ON_Plane&) const;
+  bool
+  operator!=(const ON_Plane&) const;
 
   /*
   Description:
@@ -110,10 +101,8 @@ public:
   Returns:
     true if valid plane is created.
   */
-  bool CreateFromNormal(
-    const ON_3dPoint& origin,
-    const ON_3dVector& normal
-    );
+  bool
+  CreateFromNormal (const ON_3dPoint& origin, const ON_3dVector& normal);
 
   /*
   Description:
@@ -129,11 +118,10 @@ public:
   Returns:
     true if valid plane is created.
   */
-  bool CreateFromFrame(
-    const ON_3dPoint& origin,
-    const ON_3dVector& x_dir,
-    const ON_3dVector& y_dir
-    );
+  bool
+  CreateFromFrame (const ON_3dPoint& origin,
+                   const ON_3dVector& x_dir,
+                   const ON_3dVector& y_dir);
 
   /*
   Description:
@@ -148,11 +136,10 @@ public:
   Returns:
     true if valid plane is created.
   */
-  bool CreateFromPoints(
-    const ON_3dPoint& origin,
-    const ON_3dPoint& point_on_x,
-    const ON_3dPoint& point_on
-    );
+  bool
+  CreateFromPoints (const ON_3dPoint& origin,
+                    const ON_3dPoint& point_on_x,
+                    const ON_3dPoint& point_on);
 
   /*
   Description:
@@ -162,14 +149,13 @@ public:
        one of equation[0], equation[1], or equation[2]
        being non-zero.
   Remarks:
-    points on the plane will satisfy 
+    points on the plane will satisfy
     x*equation[0] +y*equation[1] + z*equation[2] + equation[3] = 0
   Returns:
     true if valid plane is created.
   */
-  bool CreateFromEquation( 
-    const double equation[4]
-    );
+  bool
+  CreateFromEquation (const double equation[4]);
 
   /*
   Description:
@@ -178,32 +164,36 @@ public:
     true if all fields contain reasonable
     information and equation jibes with point and zaxis.
   */
-  bool IsValid() const;
+  bool
+  IsValid () const;
 
   /*
   Returns:
     Plane origin.
   */
-  const ON_3dPoint& Origin() const;
+  const ON_3dPoint&
+  Origin () const;
 
   /*
   Returns:
     Plane unit x-axis.
   */
-  const ON_3dVector& Xaxis() const;
+  const ON_3dVector&
+  Xaxis () const;
 
   /*
   Returns:
     Plane unit y-axis.
   */
-  const ON_3dVector& Yaxis() const;
+  const ON_3dVector&
+  Yaxis () const;
 
   /*
   Returns:
     Plane unit normal.
   */
-  const ON_3dVector& Normal() const;
-
+  const ON_3dVector&
+  Normal () const;
 
   /*
   Description:
@@ -211,8 +201,9 @@ public:
   Parameters:
     origin - [in] the new origin
   */
-  void SetOrigin( const ON_3dPoint& origin );
-  
+  void
+  SetOrigin (const ON_3dPoint& origin);
+
   /*
   Description:
     Evaluate a point on the plane
@@ -222,10 +213,8 @@ public:
   Returns:
     plane.origin + u*plane.xaxis + v*plane.yaxis
   */
-  ON_3dPoint PointAt(
-    double u,
-    double v
-    ) const;
+  ON_3dPoint
+  PointAt (double u, double v) const;
 
   /*
   Description:
@@ -237,11 +226,8 @@ public:
   Returns:
     plane.origin + u*plane.xaxis + v*plane.yaxis + z*plane.zaxis
   */
-  ON_3dPoint PointAt(
-    double u,
-    double v,
-    double w
-    ) const;
+  ON_3dPoint
+  PointAt (double u, double v, double w) const;
 
   /*
   Description:
@@ -252,14 +238,12 @@ public:
            e.g., line(t) = plane(t,c)
         1: first parameter is constant and second parameter varies
            e.g., line(t) = plane(c,t)
-    c - [in] value of constant parameter 
+    c - [in] value of constant parameter
   Returns:
     iso-parametric line
   */
-  ON_Line IsoLine(
-         int dir,
-         double c
-         ) const;
+  ON_Line
+  IsoLine (int dir, double c) const;
 
   /*
   Description:
@@ -274,19 +258,18 @@ public:
     If the point is below the plane the distance is < 0.
     The zaxis determines the plane's orientation.
   */
-  double DistanceTo( 
-        const ON_3dPoint& point
-        ) const;
+  double
+  DistanceTo (const ON_3dPoint& point) const;
 
+  bool
+  GetDistanceToBoundingBox (
+      // returns false if plane has zero length normal
+      const ON_BoundingBox&, // Box
 
-  bool GetDistanceToBoundingBox(
-           //returns false if plane has zero length normal
-				   const ON_BoundingBox&, // Box
-
-           //output
-				   double* min,    // min signed dist from plane to box 
-           double* max     //max signed dist from plane to box
-           ) const;
+      // output
+      double* min, // min signed dist from plane to box
+      double* max  // max signed dist from plane to box
+  ) const;
 
   /*
   Description:
@@ -296,26 +279,24 @@ public:
     true if successful.  false if zaxis is zero.
   Remarks:
     If you modify a plane's origin or zaxis, call UpdateEquation()
-    to set equation[]. 
+    to set equation[].
   */
-  bool UpdateEquation();
+  bool
+  UpdateEquation ();
 
   /*
   Description:
     Get point on plane that is closest to a given point.
   Parameters:
     world_point - [in] 3d point
-    u - [out] 
+    u - [out]
     v - [out] The point ON_Plane::PointAt(*u,*v) is the point
               on the plane that is closest to world_point.
   Returns:
     true if successful.
   */
-  bool ClosestPointTo( 
-         ON_3dPoint world_point,
-         double* u,
-         double* v
-         ) const;
+  bool
+  ClosestPointTo (ON_3dPoint world_point, double* u, double* v) const;
 
   /*
   Description:
@@ -325,9 +306,8 @@ public:
   Returns:
     A 3d point on the plane that is closest to world_point.
   */
-  ON_3dPoint ClosestPointTo( 
-         ON_3dPoint point
-         ) const;
+  ON_3dPoint
+  ClosestPointTo (ON_3dPoint point) const;
 
   // For intersections see ON_Intersect();
 
@@ -339,9 +319,8 @@ public:
   Returns:
     true if successful
   */
-  bool Transform( 
-        const ON_Xform& xform
-        );
+  bool
+  Transform (const ON_Xform& xform);
 
   /*
   Description:
@@ -353,10 +332,8 @@ public:
   Returns:
     true if successful.
   */
-  bool SwapCoordinates(
-        int i,
-        int j
-        );
+  bool
+  SwapCoordinates (int i, int j);
 
   /*
   Description:
@@ -368,11 +345,8 @@ public:
   Returns:
     true if successful
   */
-  bool Rotate(
-        double sin_angle,
-        double cos_angle,
-        const ON_3dVector& axis
-        );
+  bool
+  Rotate (double sin_angle, double cos_angle, const ON_3dVector& axis);
 
   /*
   Description:
@@ -383,10 +357,8 @@ public:
   Returns:
     true if successful
   */
-  bool Rotate(
-        double angle,
-        const ON_3dVector& axis
-        );
+  bool
+  Rotate (double angle, const ON_3dVector& axis);
 
   /*
   Description:
@@ -399,12 +371,11 @@ public:
   Returns:
     true if successful
   */
-  bool Rotate(
-        double sin_angle,
-        double cos_angle,
-        const ON_3dVector& axis,
-        const ON_3dPoint&  center
-        );
+  bool
+  Rotate (double sin_angle,
+          double cos_angle,
+          const ON_3dVector& axis,
+          const ON_3dPoint& center);
 
   /*
   Description:
@@ -416,11 +387,8 @@ public:
   Returns:
     true if successful
   */
-  bool Rotate(
-        double angle,
-        const ON_3dVector& axis,
-        const ON_3dPoint& center
-        );
+  bool
+  Rotate (double angle, const ON_3dVector& axis, const ON_3dPoint& center);
 
   /*
   Description:
@@ -430,9 +398,8 @@ public:
   Returns:
     true if successful
   */
-  bool Translate(
-        const ON_3dVector&  delta
-        );
+  bool
+  Translate (const ON_3dVector& delta);
 
   /*
   Description:
@@ -441,15 +408,15 @@ public:
   Returns:
     true if successful
   */
-  bool Flip();
+  bool
+  Flip ();
 
-// world plane coordinate system ON_Plane(ON_origin, ON_xaxis, ON_yaxis); 
-	const static
-	ON_Plane World_xy;	
+  // world plane coordinate system ON_Plane(ON_origin, ON_xaxis, ON_yaxis);
+  const static ON_Plane World_xy;
 
 public:
   // origin of plane
-  ON_3dPoint  origin;
+  ON_3dPoint origin;
 
   // unit X axis of plane
   ON_3dVector xaxis;
@@ -462,11 +429,10 @@ public:
 
   // equation of plane
   ON_PlaneEquation plane_equation;
-  //double equation[4];
+  // double equation[4];
 };
 
-class ON_CLASS ON_ClippingPlaneInfo
-{
+class ON_CLASS ON_ClippingPlaneInfo {
 public:
   // C++ defaults for construction, destruction, copy construction
   // and operator= work fine.
@@ -477,42 +443,47 @@ public:
   ON_UUID m_plane_id;
   bool m_bEnabled;
 
-  void Default();
-  bool Write( ON_BinaryArchive& ) const;
-  bool Read( ON_BinaryArchive& );
+  void
+  Default ();
+  bool
+  Write (ON_BinaryArchive&) const;
+  bool
+  Read (ON_BinaryArchive&);
 };
 
-class ON_CLASS ON_ClippingPlane
-{
+class ON_CLASS ON_ClippingPlane {
 public:
   ON_ClippingPlane();
   ~ON_ClippingPlane();
 
-  void Default();
+  void
+  Default ();
 
   ON_Plane m_plane;
-  ON_UuidList m_viewport_ids; //ids of viewports that this clipping plane "clips"
+  ON_UuidList m_viewport_ids; // ids of viewports that this clipping plane "clips"
   ON_UUID m_plane_id;
   bool m_bEnabled; // true if this clipping plane is active
 
-  ON_ClippingPlaneInfo ClippingPlaneInfo() const;
+  ON_ClippingPlaneInfo
+  ClippingPlaneInfo () const;
 
-  bool Read( class ON_BinaryArchive& );
-  bool Write( class ON_BinaryArchive& ) const;
+  bool
+  Read (class ON_BinaryArchive&);
+  bool
+  Write (class ON_BinaryArchive&) const;
 };
-
 
 #if defined(ON_DLL_TEMPLATE)
 
 // This stuff is here because of a limitation in the way Microsoft
-// handles templates and DLLs.  See Microsoft's knowledge base 
+// handles templates and DLLs.  See Microsoft's knowledge base
 // article ID Q168958 for details.
-#pragma warning( push )
-#pragma warning( disable : 4231 )
+#pragma warning(push)
+#pragma warning(disable : 4231)
 ON_DLL_TEMPLATE template class ON_CLASS ON_SimpleArray<ON_Plane>;
 ON_DLL_TEMPLATE template class ON_CLASS ON_ClassArray<ON_ClippingPlane>;
 ON_DLL_TEMPLATE template class ON_CLASS ON_SimpleArray<ON_ClippingPlaneInfo>;
-#pragma warning( pop )
+#pragma warning(pop)
 
 #endif
 
@@ -529,7 +500,7 @@ Parameters:
     but is too slow for hundreds of points.
   hull -[out]
     Equations of the sides of the convex hull are appended to
-    this list.  
+    this list.
     A point P is inside the hull if hull[i].ValueAt(P) <= 0 for
     every plane equation.
 Returns:
@@ -540,9 +511,8 @@ Returns:
   If >= 4, then the points are in a 3d convex hull.
 */
 ON_DECL
-int ON_Get3dConvexHull( 
-          const ON_SimpleArray<ON_3dPoint> & points, 
-          ON_SimpleArray<ON_PlaneEquation> & hull 
-          );
+int
+ON_Get3dConvexHull (const ON_SimpleArray<ON_3dPoint>& points,
+                    ON_SimpleArray<ON_PlaneEquation>& hull);
 
 #endif

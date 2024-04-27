@@ -78,7 +78,7 @@ public:
    * \param[in] k number of clusters
    */
   void
-  setClusterSize(unsigned int k)
+  setClusterSize (unsigned int k)
   {
     num_clusters_ = k;
   };
@@ -98,10 +98,10 @@ public:
   // cluster (std::vector<PointIndices> &clusters);
 
   void
-  kMeans();
+  kMeans ();
 
   void
-  setInputData(std::vector<Point>& data)
+  setInputData (std::vector<Point>& data)
   {
     if (num_points_ != data.size())
       std::cout << "Data vector not the same" << std::endl;
@@ -110,7 +110,7 @@ public:
   }
 
   void
-  addDataPoint(Point& data_point)
+  addDataPoint (Point& data_point)
   {
     if (num_dimensions_ != data_point.size())
       std::cout << "Dimensions not the same" << std::endl;
@@ -120,14 +120,14 @@ public:
 
   // Initial partition points among available clusters
   void
-  initialClusterPoints();
+  initialClusterPoints ();
 
   void
-  computeCentroids();
+  computeCentroids ();
 
   // distance between two points
   float
-  distance(const Point& x, const Point& y)
+  distance (const Point& x, const Point& y)
   {
     float total = 0.0;
     float diff;
@@ -141,7 +141,7 @@ public:
   }
 
   Centroids
-  get_centroids()
+  get_centroids ()
   {
     return centroids_;
   }

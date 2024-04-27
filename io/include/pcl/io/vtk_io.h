@@ -47,26 +47,28 @@
 // Please do not add any functions that depend on VTK structures to this file!
 // Use vtk_io_lib.h instead.
 
-namespace pcl
-{
-  namespace io
-  {
-    /** \brief Saves a PolygonMesh in ascii VTK format. 
-      * \param[in] file_name the name of the file to write to disk
-      * \param[in] triangles the polygonal mesh to save
-      * \param[in] precision the output ASCII precision
-      * \ingroup io
-      */
-    PCL_EXPORTS int 
-    saveVTKFile (const std::string &file_name, const pcl::PolygonMesh &triangles, unsigned precision = 5);
+namespace pcl {
+namespace io {
+/** \brief Saves a PolygonMesh in ascii VTK format.
+ * \param[in] file_name the name of the file to write to disk
+ * \param[in] triangles the polygonal mesh to save
+ * \param[in] precision the output ASCII precision
+ * \ingroup io
+ */
+PCL_EXPORTS int
+saveVTKFile (const std::string& file_name,
+             const pcl::PolygonMesh& triangles,
+             unsigned precision = 5);
 
-    /** \brief Saves a PointCloud in ascii VTK format. 
-      * \param[in] file_name the name of the file to write to disk
-      * \param[in] cloud the point cloud to save
-      * \param[in] precision the output ASCII precision
-      * \ingroup io
-      */
-    PCL_EXPORTS int 
-    saveVTKFile (const std::string &file_name, const pcl::PCLPointCloud2 &cloud, unsigned precision = 5);
-  }
-}
+/** \brief Saves a PointCloud in ascii VTK format.
+ * \param[in] file_name the name of the file to write to disk
+ * \param[in] cloud the point cloud to save
+ * \param[in] precision the output ASCII precision
+ * \ingroup io
+ */
+PCL_EXPORTS int
+saveVTKFile (const std::string& file_name,
+             const pcl::PCLPointCloud2& cloud,
+             unsigned precision = 5);
+} // namespace io
+} // namespace pcl

@@ -46,7 +46,7 @@
 /// elements
 /// @pre Assumes the pointer is valid.
 void
-setIdentity(float* matrix);
+setIdentity (float* matrix);
 
 /// @brief Performs result = left * right
 /// @param left A pointer to memory representing at least MATRIX_SIZE
@@ -57,15 +57,15 @@ setIdentity(float* matrix);
 /// elements.  The output of left * right is stored in this matrix
 /// @pre Assumes all pointers are valid.
 void
-multMatrix(const float* left, const float* right, float* result);
+multMatrix (const float* left, const float* right, float* result);
 
 /// @brief Finds the inverse of a matrix
 /// @param the input 4x4 column-major matrix following OpenGL's format
 /// @param the output 4x4 column-major inverse matrix following OpenGL's format
 bool
-invertMatrix(const float* matrix, float* inverse);
+invertMatrix (const float* matrix, float* inverse);
 
 /// @brief Converts the passed string to lowercase in place
 /// @param s The string to be made lower.
 void
-stringToLower(std::string &s);
+stringToLower (std::string& s);

@@ -44,66 +44,69 @@
 #include <cstddef>
 #include <utility> // for swap
 
-namespace pcl
-{
-  namespace io
-  {
-    namespace ply
-    {
-      /** \file byte_order.h
-        * defines byte shift operations and endianness.
-        * \author Ares Lagae as part of libply, Nizar Sallem
-        * \ingroup io
-        */
+namespace pcl {
+namespace io {
+namespace ply {
+/** \file byte_order.h
+ * defines byte shift operations and endianness.
+ * \author Ares Lagae as part of libply, Nizar Sallem
+ * \ingroup io
+ */
 
-      enum byte_order
-      {
-        little_endian_byte_order,
-        big_endian_byte_order,
+enum byte_order {
+  little_endian_byte_order,
+  big_endian_byte_order,
 #if BOOST_ENDIAN_BIG_BYTE
-        host_byte_order = big_endian_byte_order,
+  host_byte_order = big_endian_byte_order,
 #elif BOOST_ENDIAN_LITTLE_BYTE
-        host_byte_order = little_endian_byte_order,
+  host_byte_order = little_endian_byte_order,
 #else
 #error "unable to determine system endianness"
 #endif
-        network_byte_order = big_endian_byte_order
-      };
+  network_byte_order = big_endian_byte_order
+};
 
-      template <std::size_t N>
-      void swap_byte_order (char* bytes);
+template <std::size_t N>
+void
+swap_byte_order (char* bytes);
 
-      template <>
-      inline void swap_byte_order<1> (char*) {}
+template <>
+inline void
+swap_byte_order<1>(char*)
+{}
 
-      template <>
-      inline void swap_byte_order<2> (char* bytes)
-      {
-        std::swap (bytes[0], bytes[1]);
-      }
+template <>
+inline void
+swap_byte_order<2>(char* bytes)
+{
+  std::swap(bytes[0], bytes[1]);
+}
 
-      template <>
-        inline void swap_byte_order<4> (char* bytes)
-      {
-        std::swap (bytes[0], bytes[3]);
-        std::swap (bytes[1], bytes[2]);
-      }
-      
-      template <>
-        inline void swap_byte_order<8> (char* bytes)
-      {
-        std::swap (bytes[0], bytes[7]);
-        std::swap (bytes[1], bytes[6]);
-        std::swap (bytes[2], bytes[5]);
-        std::swap (bytes[3], bytes[4]);
-      }
-      
-      template <typename T>
-      void swap_byte_order (T& value)
-      {
-        swap_byte_order<sizeof (T)> (reinterpret_cast<char*> (&value));
-      }
+template <>
+inline void
+swap_byte_order<4>(char* bytes)
+{
+  std::swap(bytes[0], bytes[3]);
+  std::swap(bytes[1], bytes[2]);
+}
 
-    } // namespace ply
-  } // namespace io
+template <>
+inline void
+swap_byte_order<8>(char* bytes)
+{
+  std::swap(bytes[0], bytes[7]);
+  std::swap(bytes[1], bytes[6]);
+  std::swap(bytes[2], bytes[5]);
+  std::swap(bytes[3], bytes[4]);
+}
+
+template <typename T>
+void
+swap_byte_order (T& value)
+{
+  swap_byte_order<sizeof(T)>(reinterpret_cast<char*>(&value));
+}
+
+} // namespace ply
+} // namespace io
 } // namespace pcl

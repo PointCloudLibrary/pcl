@@ -59,7 +59,7 @@ public:
 
   /** \brief deep copy function */
   virtual OctreePointCloudVoxelCentroidContainer*
-  deepCopy() const
+  deepCopy () const
   {
     return (new OctreePointCloudVoxelCentroidContainer(*this));
   }
@@ -77,7 +77,7 @@ public:
    * \param[in] new_point the new point to add
    */
   void
-  addPoint(const PointT& new_point)
+  addPoint (const PointT& new_point)
   {
     using namespace pcl::common;
 
@@ -90,7 +90,7 @@ public:
    * \param[out] centroid_arg the resultant centroid of the voxel
    */
   void
-  getCentroid(PointT& centroid_arg) const
+  getCentroid (PointT& centroid_arg) const
   {
     using namespace pcl::common;
 
@@ -105,7 +105,7 @@ public:
 
   /** \brief Reset leaf container. */
   void
-  reset() override
+  reset () override
   {
     using namespace pcl::common;
 
@@ -156,7 +156,7 @@ public:
    * \param pointIdx_arg
    */
   void
-  addPointIdx(const uindex_t pointIdx_arg) override
+  addPointIdx (const uindex_t pointIdx_arg) override
   {
     OctreeKey key;
 
@@ -181,7 +181,7 @@ public:
    * \return "true" if voxel is found; "false" otherwise
    */
   bool
-  getVoxelCentroidAtPoint(const PointT& point_arg, PointT& voxel_centroid_arg) const;
+  getVoxelCentroidAtPoint (const PointT& point_arg, PointT& voxel_centroid_arg) const;
 
   /** \brief Get centroid for a single voxel addressed by a PointT point from input
    * cloud.
@@ -190,8 +190,8 @@ public:
    * \return "true" if voxel is found; "false" otherwise
    */
   inline bool
-  getVoxelCentroidAtPoint(const index_t& point_idx_arg,
-                          PointT& voxel_centroid_arg) const
+  getVoxelCentroidAtPoint (const index_t& point_idx_arg,
+                           PointT& voxel_centroid_arg) const
   {
     // get centroid at point
     return (this->getVoxelCentroidAtPoint((*this->input_)[point_idx_arg],
@@ -204,7 +204,7 @@ public:
    * \return number of occupied voxels
    */
   uindex_t
-  getVoxelCentroids(
+  getVoxelCentroids (
       typename OctreePointCloud<PointT, LeafContainerT, BranchContainerT>::
           AlignedPointTVector& voxel_centroid_list_arg) const;
 
@@ -216,7 +216,7 @@ public:
    * elements
    */
   void
-  getVoxelCentroidsRecursive(
+  getVoxelCentroidsRecursive (
       const BranchNode* branch_arg,
       OctreeKey& key_arg,
       typename OctreePointCloud<PointT, LeafContainerT, BranchContainerT>::

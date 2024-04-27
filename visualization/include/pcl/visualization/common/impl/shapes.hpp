@@ -38,82 +38,77 @@
 
 #pragma once
 
-#include <vtkSmartPointer.h>
 #include <vtkPoints.h>
 #include <vtkPolygon.h>
+#include <vtkSmartPointer.h>
 #include <vtkUnstructuredGrid.h>
 
+namespace pcl {
 
-namespace pcl
-{
+namespace visualization {
 
-namespace visualization
-{
-
-template <typename PointT> vtkSmartPointer<vtkDataSet> 
-createPolygon (const typename pcl::PointCloud<PointT>::ConstPtr &cloud)
+template <typename PointT>
+vtkSmartPointer<vtkDataSet>
+createPolygon (const typename pcl::PointCloud<PointT>::ConstPtr& cloud)
 {
   vtkSmartPointer<vtkUnstructuredGrid> poly_grid;
-  if (cloud->points.empty ())
+  if (cloud->points.empty())
     return (poly_grid);
 
-  vtkSmartPointer<vtkPoints> poly_points = vtkSmartPointer<vtkPoints>::New ();
-  vtkSmartPointer<vtkPolygon> polygon    = vtkSmartPointer<vtkPolygon>::New ();
+  vtkSmartPointer<vtkPoints> poly_points = vtkSmartPointer<vtkPoints>::New();
+  vtkSmartPointer<vtkPolygon> polygon = vtkSmartPointer<vtkPolygon>::New();
 
-  poly_points->SetNumberOfPoints (cloud->size ());
-  polygon->GetPointIds ()->SetNumberOfIds (cloud->size ());
+  poly_points->SetNumberOfPoints(cloud->size());
+  polygon->GetPointIds()->SetNumberOfIds(cloud->size());
 
-  for (std::size_t i = 0; i < cloud->size (); ++i)
-  {
-    poly_points->SetPoint (i, (*cloud)[i].x, (*cloud)[i].y, (*cloud)[i].z);
-    polygon->GetPointIds ()->SetId (i, i);
+  for (std::size_t i = 0; i < cloud->size(); ++i) {
+    poly_points->SetPoint(i, (*cloud)[i].x, (*cloud)[i].y, (*cloud)[i].z);
+    polygon->GetPointIds()->SetId(i, i);
   }
 
-  allocVtkUnstructuredGrid (poly_grid);
-  poly_grid->Allocate (1, 1);
-  poly_grid->InsertNextCell (polygon->GetCellType (), polygon->GetPointIds ());
-  poly_grid->SetPoints (poly_points);
+  allocVtkUnstructuredGrid(poly_grid);
+  poly_grid->Allocate(1, 1);
+  poly_grid->InsertNextCell(polygon->GetCellType(), polygon->GetPointIds());
+  poly_grid->SetPoints(poly_points);
 
   return (poly_grid);
 }
 
-
-template <typename PointT> vtkSmartPointer<vtkDataSet> 
-createPolygon (const pcl::PlanarPolygon<PointT> &planar_polygon)
+template <typename PointT>
+vtkSmartPointer<vtkDataSet>
+createPolygon (const pcl::PlanarPolygon<PointT>& planar_polygon)
 {
   vtkSmartPointer<vtkUnstructuredGrid> poly_grid;
-  if (planar_polygon.getContour ().empty ())
+  if (planar_polygon.getContour().empty())
     return (poly_grid);
 
-  vtkSmartPointer<vtkPoints> poly_points = vtkSmartPointer<vtkPoints>::New ();
-  vtkSmartPointer<vtkPolygon> polygon    = vtkSmartPointer<vtkPolygon>::New ();
+  vtkSmartPointer<vtkPoints> poly_points = vtkSmartPointer<vtkPoints>::New();
+  vtkSmartPointer<vtkPolygon> polygon = vtkSmartPointer<vtkPolygon>::New();
 
-  poly_points->SetNumberOfPoints (planar_polygon.getContour ().size () + 1);
-  polygon->GetPointIds ()->SetNumberOfIds (planar_polygon.getContour ().size () + 1);
+  poly_points->SetNumberOfPoints(planar_polygon.getContour().size() + 1);
+  polygon->GetPointIds()->SetNumberOfIds(planar_polygon.getContour().size() + 1);
 
-  for (std::size_t i = 0; i < planar_polygon.getContour ().size (); ++i)
-  {
-    poly_points->SetPoint (i, planar_polygon.getContour ()[i].x,
-                              planar_polygon.getContour ()[i].y,
-                              planar_polygon.getContour ()[i].z);
-    polygon->GetPointIds ()->SetId (i, i);
+  for (std::size_t i = 0; i < planar_polygon.getContour().size(); ++i) {
+    poly_points->SetPoint(i,
+                          planar_polygon.getContour()[i].x,
+                          planar_polygon.getContour()[i].y,
+                          planar_polygon.getContour()[i].z);
+    polygon->GetPointIds()->SetId(i, i);
   }
 
-  std::size_t closingContourId = planar_polygon.getContour ().size ();
-  auto firstContour = planar_polygon.getContour ()[0];
-  poly_points->SetPoint (closingContourId, firstContour.x,
-                                           firstContour.y,
-                                           firstContour.z);
-  polygon->GetPointIds ()->SetId (closingContourId, closingContourId);
+  std::size_t closingContourId = planar_polygon.getContour().size();
+  auto firstContour = planar_polygon.getContour()[0];
+  poly_points->SetPoint(
+      closingContourId, firstContour.x, firstContour.y, firstContour.z);
+  polygon->GetPointIds()->SetId(closingContourId, closingContourId);
 
-  allocVtkUnstructuredGrid (poly_grid);
-  poly_grid->Allocate (1, 1);
-  poly_grid->InsertNextCell (polygon->GetCellType (), polygon->GetPointIds ());
-  poly_grid->SetPoints (poly_points);
+  allocVtkUnstructuredGrid(poly_grid);
+  poly_grid->Allocate(1, 1);
+  poly_grid->InsertNextCell(polygon->GetCellType(), polygon->GetPointIds());
+  poly_grid->SetPoints(poly_points);
 
   return (poly_grid);
 }
 
 } // namespace visualization
 } // namespace pcl
-

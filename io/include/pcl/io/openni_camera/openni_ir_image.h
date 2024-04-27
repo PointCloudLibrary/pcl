@@ -36,69 +36,82 @@
 #ifndef __OPENNI_IR_IMAGE__
 #define __OPENNI_IR_IMAGE__
 
-#include <pcl/pcl_macros.h>
 #include <pcl/memory.h>
+#include <pcl/pcl_macros.h>
+
 #include "openni.h"
 #include "openni_exception.h"
 
-namespace openni_wrapper
-{
+namespace openni_wrapper {
 
 /**
  * @brief Class containing just a reference to IR meta data.
- * @author Patrick Mihelich <mihelich@willowgarage.com>, Suat Gedikli <gedikli@willowgarage.com>
+ * @author Patrick Mihelich <mihelich@willowgarage.com>, Suat Gedikli
+ * <gedikli@willowgarage.com>
  */
-class PCL_EXPORTS IRImage
-{
+class PCL_EXPORTS IRImage {
 public:
   using Ptr = pcl::shared_ptr<IRImage>;
   using ConstPtr = pcl::shared_ptr<const IRImage>;
 
-  inline IRImage (pcl::shared_ptr<xn::IRMetaData> ir_meta_data) noexcept;
-  inline virtual ~IRImage () noexcept;
+  inline IRImage(pcl::shared_ptr<xn::IRMetaData> ir_meta_data) noexcept;
+  inline virtual ~IRImage() noexcept;
 
-  void fillRaw (unsigned width, unsigned height, unsigned short* ir_buffer, unsigned line_step = 0) const;
+  void
+  fillRaw (unsigned width,
+           unsigned height,
+           unsigned short* ir_buffer,
+           unsigned line_step = 0) const;
 
-  inline unsigned getWidth () const noexcept;
-  inline unsigned getHeight () const noexcept;
-  inline unsigned getFrameID () const noexcept;
-  inline unsigned long getTimeStamp () const noexcept;
-  inline const xn::IRMetaData& getMetaData () const noexcept;
+  inline unsigned
+  getWidth () const noexcept;
+  inline unsigned
+  getHeight () const noexcept;
+  inline unsigned
+  getFrameID () const noexcept;
+  inline unsigned long
+  getTimeStamp () const noexcept;
+  inline const xn::IRMetaData&
+  getMetaData () const noexcept;
 
 protected:
   pcl::shared_ptr<xn::IRMetaData> ir_md_;
 };
 
-IRImage::IRImage (pcl::shared_ptr<xn::IRMetaData> ir_meta_data) noexcept
-: ir_md_ (std::move(ir_meta_data))
+IRImage::IRImage(pcl::shared_ptr<xn::IRMetaData> ir_meta_data) noexcept
+: ir_md_(std::move(ir_meta_data))
+{}
+
+IRImage::~IRImage() noexcept = default;
+
+unsigned
+IRImage::getWidth() const noexcept
 {
+  return ir_md_->XRes();
 }
 
-IRImage::~IRImage () noexcept = default;
-
-unsigned IRImage::getWidth () const noexcept
+unsigned
+IRImage::getHeight() const noexcept
 {
-  return ir_md_->XRes ();
+  return ir_md_->YRes();
 }
 
-unsigned IRImage::getHeight () const noexcept
+unsigned
+IRImage::getFrameID() const noexcept
 {
-  return ir_md_->YRes ();
+  return ir_md_->FrameID();
 }
 
-unsigned IRImage::getFrameID () const noexcept
+unsigned long
+IRImage::getTimeStamp() const noexcept
 {
-  return ir_md_->FrameID ();
+  return static_cast<unsigned long>(ir_md_->Timestamp());
 }
 
-unsigned long IRImage::getTimeStamp () const noexcept
+const xn::IRMetaData&
+IRImage::getMetaData() const noexcept
 {
-  return static_cast<unsigned long> (ir_md_->Timestamp ());
+  return *ir_md_;
 }
-
-const xn::IRMetaData& IRImage::getMetaData () const noexcept
-{
-	return *ir_md_;
-}
-} // namespace
+} // namespace openni_wrapper
 #endif //__OPENNI_IR_IMAGE__

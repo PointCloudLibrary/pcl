@@ -58,7 +58,7 @@ using Indices = std::vector<GLuint>;
 class Model {
 public:
   virtual void
-  draw() = 0;
+  draw () = 0;
 
   using Ptr = shared_ptr<Model>;
   using ConstPtr = shared_ptr<const Model>;
@@ -74,7 +74,7 @@ public:
   virtual ~TriangleMeshModel();
 
   void
-  draw() override;
+  draw () override;
 
 private:
   GLuint vbo_;
@@ -89,7 +89,7 @@ public:
   PolygonMeshModel(GLenum mode, pcl::PolygonMesh::Ptr plg);
   virtual ~PolygonMeshModel();
   void
-  draw() override;
+  draw () override;
 
   using Ptr = shared_ptr<PolygonMeshModel>;
   using ConstPtr = shared_ptr<const PolygonMeshModel>;
@@ -122,7 +122,7 @@ public:
   virtual ~PointCloudModel();
 
   void
-  draw() override;
+  draw () override;
 
 private:
   float* vertices_;
@@ -161,7 +161,7 @@ public:
 
   /** Render the quad. */
   void
-  render() const;
+  render () const;
 
 private:
   GLuint quad_vbo_;
@@ -176,10 +176,10 @@ public:
   ~TexturedQuad();
 
   void
-  setTexture(const std::uint8_t* data) const;
+  setTexture (const std::uint8_t* data) const;
 
   void
-  render();
+  render ();
 
 private:
   int width_;

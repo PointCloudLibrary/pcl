@@ -40,139 +40,144 @@
 
 #include <string>
 
-namespace pcl
+namespace pcl {
+namespace visualization {
+/** /brief Class representing key hit/release events */
+class KeyboardEvent {
+public:
+  /** \brief bit pattern for the ALT key*/
+  static const unsigned int Alt = 1;
+  /** \brief bit pattern for the Control key*/
+  static const unsigned int Ctrl = 2;
+  /** \brief bit pattern for the Shift key*/
+  static const unsigned int Shift = 4;
+
+  /** \brief Constructor
+   * \param[in] action    true for key was pressed, false for released
+   * \param[in] key_sym   the key-name that caused the action
+   * \param[in] key       the key code that caused the action
+   * \param[in] alt       whether the alt key was pressed at the time where this event
+   * was triggered \param[in] ctrl      whether the ctrl was pressed at the time where
+   * this event was triggered \param[in] shift     whether the shift was pressed at the
+   * time where this event was triggered
+   */
+  inline KeyboardEvent(bool action,
+                       const std::string& key_sym,
+                       unsigned char key,
+                       bool alt,
+                       bool ctrl,
+                       bool shift);
+
+  /**
+   * \return   whether the alt key was pressed at the time where this event was
+   * triggered
+   */
+  inline bool
+  isAltPressed () const;
+
+  /**
+   * \return whether the ctrl was pressed at the time where this event was triggered
+   */
+  inline bool
+  isCtrlPressed () const;
+
+  /**
+   * \return whether the shift was pressed at the time where this event was triggered
+   */
+  inline bool
+  isShiftPressed () const;
+
+  /**
+   * \return the ASCII Code of the key that caused the event. If 0, then it was a
+   * special key, like ALT, F1, F2,... PgUp etc. Then the name of the key is in the
+   * keysym field.
+   */
+  inline unsigned char
+  getKeyCode () const;
+
+  /**
+   * \return name of the key that caused the event
+   */
+  inline const std::string&
+  getKeySym () const;
+
+  /**
+   * \return true if a key-press caused the event, false otherwise
+   */
+  inline bool
+  keyDown () const;
+
+  /**
+   * \return true if a key-release caused the event, false otherwise
+   */
+  inline bool
+  keyUp () const;
+
+protected:
+  bool action_;
+  unsigned int modifiers_{0};
+  unsigned char key_code_;
+  std::string key_sym_;
+};
+
+KeyboardEvent::KeyboardEvent(bool action,
+                             const std::string& key_sym,
+                             unsigned char key,
+                             bool alt,
+                             bool ctrl,
+                             bool shift)
+: action_(action), key_code_(key), key_sym_(key_sym)
 {
-  namespace visualization
-  {
-    /** /brief Class representing key hit/release events */
-    class KeyboardEvent
-    {
-      public:
-        /** \brief bit pattern for the ALT key*/
-        static const unsigned int Alt   = 1;
-        /** \brief bit pattern for the Control key*/
-        static const unsigned int Ctrl  = 2;
-        /** \brief bit pattern for the Shift key*/
-        static const unsigned int Shift = 4;
+  if (alt)
+    modifiers_ = Alt;
 
-        /** \brief Constructor
-          * \param[in] action    true for key was pressed, false for released
-          * \param[in] key_sym   the key-name that caused the action
-          * \param[in] key       the key code that caused the action
-          * \param[in] alt       whether the alt key was pressed at the time where this event was triggered
-          * \param[in] ctrl      whether the ctrl was pressed at the time where this event was triggered
-          * \param[in] shift     whether the shift was pressed at the time where this event was triggered
-          */
-        inline KeyboardEvent (bool action, const std::string& key_sym, unsigned char key, 
-                              bool alt, bool ctrl, bool shift);
+  if (ctrl)
+    modifiers_ |= Ctrl;
 
-        /**
-          * \return   whether the alt key was pressed at the time where this event was triggered
-          */
-        inline bool 
-        isAltPressed () const;
-        
-        /**
-          * \return whether the ctrl was pressed at the time where this event was triggered
-          */
-        inline bool 
-        isCtrlPressed () const;
-        
-        /**
-          * \return whether the shift was pressed at the time where this event was triggered
-          */
-        inline bool 
-        isShiftPressed () const;
+  if (shift)
+    modifiers_ |= Shift;
+}
 
-        /**
-          * \return the ASCII Code of the key that caused the event. If 0, then it was a special key, like ALT, F1, F2,... PgUp etc. Then the name of the key is in the keysym field.
-          */
-        inline unsigned char 
-        getKeyCode () const;
-        
-        /**
-          * \return name of the key that caused the event
-          */
-        inline const std::string& 
-        getKeySym () const;
-        
-        /**
-          * \return true if a key-press caused the event, false otherwise
-          */
-        inline bool 
-        keyDown () const;
-        
-        /**
-          * \return true if a key-release caused the event, false otherwise
-          */
-        inline bool 
-        keyUp () const;
+bool
+KeyboardEvent::isAltPressed() const
+{
+  return (modifiers_ & Alt) != 0;
+}
 
-      protected:
+bool
+KeyboardEvent::isCtrlPressed() const
+{
+  return (modifiers_ & Ctrl) != 0;
+}
 
-        bool action_;
-        unsigned int modifiers_{0};
-        unsigned char key_code_;
-        std::string key_sym_;
-    };
+bool
+KeyboardEvent::isShiftPressed() const
+{
+  return (modifiers_ & Shift) != 0;
+}
 
-    KeyboardEvent::KeyboardEvent (bool action, const std::string& key_sym, unsigned char key, 
-                                  bool alt, bool ctrl, bool shift)
-      : action_ (action)
-      , 
-       key_code_(key)
-      , key_sym_ (key_sym)
-    {
-      if (alt)
-        modifiers_ = Alt;
+unsigned char
+KeyboardEvent::getKeyCode() const
+{
+  return (key_code_);
+}
 
-      if (ctrl)
-        modifiers_ |= Ctrl;
+const std::string&
+KeyboardEvent::getKeySym() const
+{
+  return (key_sym_);
+}
 
-      if (shift)
-        modifiers_ |= Shift;
-    }
+bool
+KeyboardEvent::keyDown() const
+{
+  return (action_);
+}
 
-    bool 
-    KeyboardEvent::isAltPressed () const
-    {
-      return (modifiers_ & Alt) != 0;
-    }
-
-    bool 
-    KeyboardEvent::isCtrlPressed () const
-    {
-      return (modifiers_ & Ctrl) != 0;
-    }
-
-    bool 
-    KeyboardEvent::isShiftPressed () const
-    {
-      return (modifiers_ & Shift) != 0;
-    }
-
-    unsigned char 
-    KeyboardEvent::getKeyCode () const
-    {
-      return (key_code_);
-    }
-
-    const std::string& 
-    KeyboardEvent::getKeySym () const
-    {
-      return (key_sym_);
-    }
-
-    bool 
-    KeyboardEvent::keyDown () const
-    {
-      return (action_);
-    }
-
-    bool 
-    KeyboardEvent::keyUp () const
-    {
-      return (!action_);
-    }  
-  } // namespace visualization
+bool
+KeyboardEvent::keyUp() const
+{
+  return (!action_);
+}
+} // namespace visualization
 } // namespace pcl

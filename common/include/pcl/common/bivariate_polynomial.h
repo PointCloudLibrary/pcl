@@ -43,101 +43,112 @@
 #include <iostream>
 #include <vector>
 
-namespace pcl
-{
-  /** \brief This represents a bivariate polynomial and provides some functionality for it
-    * \author Bastian Steder
-    * \ingroup common
-    */
-  template<typename real>
-  class BivariatePolynomialT
+namespace pcl {
+/** \brief This represents a bivariate polynomial and provides some functionality for it
+ * \author Bastian Steder
+ * \ingroup common
+ */
+template <typename real>
+class BivariatePolynomialT {
+public:
+  //-----CONSTRUCTOR&DESTRUCTOR-----
+  /** Constructor */
+  BivariatePolynomialT(int new_degree = 0);
+  /** Copy constructor */
+  BivariatePolynomialT(const BivariatePolynomialT& other);
+  /** Destructor */
+  ~BivariatePolynomialT();
+
+  //-----OPERATORS-----
+  /** = operator */
+  BivariatePolynomialT&
+  operator=(const BivariatePolynomialT& other)
   {
-    public:
-      //-----CONSTRUCTOR&DESTRUCTOR-----
-      /** Constructor */
-      BivariatePolynomialT (int new_degree=0);
-      /** Copy constructor */
-      BivariatePolynomialT (const BivariatePolynomialT& other);
-      /** Destructor */
-      ~BivariatePolynomialT ();
+    deepCopy(other);
+    return *this;
+  }
 
-      //-----OPERATORS-----
-      /** = operator */
-      BivariatePolynomialT&
-      operator= (const BivariatePolynomialT& other) { deepCopy (other); return *this;}
+  //-----METHODS-----
+  /** Initialize members to default values */
+  void
+  setDegree (int new_degree);
 
-      //-----METHODS-----
-      /** Initialize members to default values */
-      void
-      setDegree (int new_degree);
+  /** How many parameters has a bivariate polynomial with this degree */
+  unsigned int
+  getNoOfParameters () const
+  {
+    return getNoOfParametersFromDegree(degree);
+  }
 
-      /** How many parameters has a bivariate polynomial with this degree */
-      unsigned int
-      getNoOfParameters () const { return getNoOfParametersFromDegree (degree);}
+  /** Calculate the value of the polynomial at the given point */
+  real
+  getValue (real x, real y) const;
 
-      /** Calculate the value of the polynomial at the given point */
-      real
-      getValue (real x, real y) const;
+  /** Calculate the gradient of this polynomial
+   *  If forceRecalc is false, it will do nothing when the gradient already exists */
+  void
+  calculateGradient (bool forceRecalc = false);
 
-      /** Calculate the gradient of this polynomial
-       *  If forceRecalc is false, it will do nothing when the gradient already exists */
-      void
-      calculateGradient (bool forceRecalc=false);
+  /** Calculate the value of the gradient at the given point */
+  void
+  getValueOfGradient (real x, real y, real& gradX, real& gradY);
 
-      /** Calculate the value of the gradient at the given point */
-      void
-      getValueOfGradient (real x, real y, real& gradX, real& gradY);
+  /** Returns critical points of the polynomial. type can be 0=maximum, 1=minimum, or
+   * 2=saddle point
+   *  !!Currently only implemented for degree 2!! */
+  void
+  findCriticalPoints (std::vector<real>& x_values,
+                      std::vector<real>& y_values,
+                      std::vector<int>& types) const;
 
-      /** Returns critical points of the polynomial. type can be 0=maximum, 1=minimum, or 2=saddle point
-       *  !!Currently only implemented for degree 2!! */
-      void
-      findCriticalPoints (std::vector<real>& x_values, std::vector<real>& y_values, std::vector<int>& types) const;
+  /** write as binary to a stream */
+  void
+  writeBinary (std::ostream& os) const;
 
-      /** write as binary to a stream */
-      void
-      writeBinary (std::ostream& os) const;
+  /** write as binary into a file */
+  void
+  writeBinary (const char* filename) const;
 
-      /** write as binary into a file */
-      void
-      writeBinary (const char* filename) const;
+  /** read binary from a stream */
+  void
+  readBinary (std::istream& os);
 
-      /** read binary from a stream */
-      void
-      readBinary (std::istream& os);
+  /** read binary from a file */
+  void
+  readBinary (const char* filename);
 
-      /** read binary from a file */
-      void
-      readBinary (const char* filename);
+  /** How many parameters has a bivariate polynomial of the given degree */
+  static unsigned int
+  getNoOfParametersFromDegree (int n)
+  {
+    return ((n + 2) * (n + 1)) / 2;
+  }
 
-      /** How many parameters has a bivariate polynomial of the given degree */
-      static unsigned int
-      getNoOfParametersFromDegree (int n) { return ((n+2)* (n+1))/2;}
+  //-----VARIABLES-----
+  int degree{0};
+  real* parameters{nullptr};
+  BivariatePolynomialT<real>* gradient_x{nullptr};
+  BivariatePolynomialT<real>* gradient_y{nullptr};
 
-      //-----VARIABLES-----
-      int degree{0};
-      real* parameters{nullptr};
-      BivariatePolynomialT<real>* gradient_x{nullptr};
-      BivariatePolynomialT<real>* gradient_y{nullptr};
+protected:
+  //-----METHODS-----
+  /** Delete all members */
+  void
+  memoryCleanUp ();
 
-    protected:
-      //-----METHODS-----
-      /** Delete all members */
-      void
-      memoryCleanUp ();
+  /** Create a deep copy of the given polynomial */
+  void
+  deepCopy (const BivariatePolynomialT<real>& other);
+  //-----VARIABLES-----
+};
 
-      /** Create a deep copy of the given polynomial */
-      void
-      deepCopy (const BivariatePolynomialT<real>& other);
-    //-----VARIABLES-----
-  };
+template <typename real>
+std::ostream&
+operator<<(std::ostream& os, const BivariatePolynomialT<real>& p);
 
-  template<typename real>
-  std::ostream&
-    operator<< (std::ostream& os, const BivariatePolynomialT<real>& p);
+using BivariatePolynomiald = BivariatePolynomialT<double>;
+using BivariatePolynomial = BivariatePolynomialT<float>;
 
-  using BivariatePolynomiald = BivariatePolynomialT<double>;
-  using BivariatePolynomial = BivariatePolynomialT<float>;
-
-}  // end namespace
+} // namespace pcl
 
 #include <pcl/common/impl/bivariate_polynomial.hpp>

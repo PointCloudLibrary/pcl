@@ -41,89 +41,105 @@
 
 #include <pcl/point_cloud.h>
 
-namespace pcl
-{
-  namespace common
-  {
-    /** expand point cloud inserting \a amount rows at the 
-     * top and the bottom of a point cloud and filling them with 
-     * custom values.
-     * \param[in] input the input point cloud
-     * \param[out] output the output point cloud
-     * \param[in] val the point value to be inserted
-     * \param[in] amount the amount of rows to be added
-     */
-    template <typename PointT> void
-    expandRows (const PointCloud<PointT>& input, PointCloud<PointT>& output, 
-                const PointT& val, const std::size_t& amount);
+namespace pcl {
+namespace common {
+/** expand point cloud inserting \a amount rows at the
+ * top and the bottom of a point cloud and filling them with
+ * custom values.
+ * \param[in] input the input point cloud
+ * \param[out] output the output point cloud
+ * \param[in] val the point value to be inserted
+ * \param[in] amount the amount of rows to be added
+ */
+template <typename PointT>
+void
+expandRows (const PointCloud<PointT>& input,
+            PointCloud<PointT>& output,
+            const PointT& val,
+            const std::size_t& amount);
 
-    /** expand point cloud inserting \a amount columns at 
-      * the right and the left of a point cloud and filling them with 
-      * custom values.
-      * \param[in] input the input point cloud
-      * \param[out] output the output point cloud
-      * \param[in] val the point value to be inserted
-      * \param[in] amount the amount of columns to be added
-      */
-    template <typename PointT> void
-    expandColumns (const PointCloud<PointT>& input, PointCloud<PointT>& output, 
-                   const PointT& val, const std::size_t& amount);
+/** expand point cloud inserting \a amount columns at
+ * the right and the left of a point cloud and filling them with
+ * custom values.
+ * \param[in] input the input point cloud
+ * \param[out] output the output point cloud
+ * \param[in] val the point value to be inserted
+ * \param[in] amount the amount of columns to be added
+ */
+template <typename PointT>
+void
+expandColumns (const PointCloud<PointT>& input,
+               PointCloud<PointT>& output,
+               const PointT& val,
+               const std::size_t& amount);
 
-    /** expand point cloud duplicating the \a amount top and bottom rows times.
-      * \param[in] input the input point cloud
-      * \param[out] output the output point cloud
-      * \param[in] amount the amount of rows to be added
-      */
-    template <typename PointT> void
-    duplicateRows (const PointCloud<PointT>& input, PointCloud<PointT>& output, 
-                   const std::size_t& amount);
+/** expand point cloud duplicating the \a amount top and bottom rows times.
+ * \param[in] input the input point cloud
+ * \param[out] output the output point cloud
+ * \param[in] amount the amount of rows to be added
+ */
+template <typename PointT>
+void
+duplicateRows (const PointCloud<PointT>& input,
+               PointCloud<PointT>& output,
+               const std::size_t& amount);
 
-    /** expand point cloud duplicating the \a amount right and left columns
-      * times.
-      * \param[in] input the input point cloud
-      * \param[out] output the output point cloud
-      * \param[in] amount the amount of cilumns to be added
-      */
-    template <typename PointT> void
-    duplicateColumns (const PointCloud<PointT>& input, PointCloud<PointT>& output, 
-                      const std::size_t& amount);
+/** expand point cloud duplicating the \a amount right and left columns
+ * times.
+ * \param[in] input the input point cloud
+ * \param[out] output the output point cloud
+ * \param[in] amount the amount of cilumns to be added
+ */
+template <typename PointT>
+void
+duplicateColumns (const PointCloud<PointT>& input,
+                  PointCloud<PointT>& output,
+                  const std::size_t& amount);
 
-    /** expand point cloud mirroring \a amount top and bottom rows. 
-      * \param[in] input the input point cloud
-      * \param[out] output the output point cloud
-      * \param[in] amount the amount of rows to be added
-      */
-    template <typename PointT> void
-    mirrorRows (const PointCloud<PointT>& input, PointCloud<PointT>& output, 
-                const std::size_t& amount);
+/** expand point cloud mirroring \a amount top and bottom rows.
+ * \param[in] input the input point cloud
+ * \param[out] output the output point cloud
+ * \param[in] amount the amount of rows to be added
+ */
+template <typename PointT>
+void
+mirrorRows (const PointCloud<PointT>& input,
+            PointCloud<PointT>& output,
+            const std::size_t& amount);
 
-    /** expand point cloud mirroring \a amount right and left columns.
-      * \param[in] input the input point cloud
-      * \param[out] output the output point cloud
-      * \param[in] amount the amount of rows to be added
-      */
-    template <typename PointT> void
-    mirrorColumns (const PointCloud<PointT>& input, PointCloud<PointT>& output, 
-                   const std::size_t& amount);
+/** expand point cloud mirroring \a amount right and left columns.
+ * \param[in] input the input point cloud
+ * \param[out] output the output point cloud
+ * \param[in] amount the amount of rows to be added
+ */
+template <typename PointT>
+void
+mirrorColumns (const PointCloud<PointT>& input,
+               PointCloud<PointT>& output,
+               const std::size_t& amount);
 
-    /** delete \a amount rows in top and bottom of point cloud 
-      * \param[in] input the input point cloud
-      * \param[out] output the output point cloud
-      * \param[in] amount the amount of rows to be added
-      */
-    template <typename PointT> void
-    deleteRows (const PointCloud<PointT>& input, PointCloud<PointT>& output, 
-                const std::size_t& amount);
+/** delete \a amount rows in top and bottom of point cloud
+ * \param[in] input the input point cloud
+ * \param[out] output the output point cloud
+ * \param[in] amount the amount of rows to be added
+ */
+template <typename PointT>
+void
+deleteRows (const PointCloud<PointT>& input,
+            PointCloud<PointT>& output,
+            const std::size_t& amount);
 
-    /** delete \a amount columns in top and bottom of point cloud
-      * \param[in] input the input point cloud
-      * \param[out] output the output point cloud
-      * \param[in] amount the amount of rows to be added
-      */
-    template <typename PointT> void
-    deleteCols (const PointCloud<PointT>& input, PointCloud<PointT>& output, 
-                const std::size_t& amount);
-  };
-}
+/** delete \a amount columns in top and bottom of point cloud
+ * \param[in] input the input point cloud
+ * \param[out] output the output point cloud
+ * \param[in] amount the amount of rows to be added
+ */
+template <typename PointT>
+void
+deleteCols (const PointCloud<PointT>& input,
+            PointCloud<PointT>& output,
+            const std::size_t& amount);
+}; // namespace common
+} // namespace pcl
 
 #include <pcl/common/impl/spring.hpp>

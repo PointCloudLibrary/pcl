@@ -44,7 +44,7 @@
 #include <pcl/point_types.h>
 
 void
-usage(char** argv)
+usage (char** argv)
 {
   // clang-format off
   pcl::console::print_info ("usage: %s <filename> <-r|-c|-s> [-p <borders policy>] [-t <number of threads>] [-d <distance>]\n\n", argv[0]);
@@ -62,7 +62,7 @@ usage(char** argv)
 }
 
 int
-main(int argc, char** argv)
+main (int argc, char** argv)
 {
   int viewport_source, viewport_convolved = 0;
   int direction = -1;

@@ -41,28 +41,28 @@ public:
   ~GrabCutHelper() override = default;
 
   void
-  setInputCloud(const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr& cloud) override;
+  setInputCloud (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr& cloud) override;
   void
-  setBackgroundPointsIndices(const pcl::PointIndices::ConstPtr& point_indices);
+  setBackgroundPointsIndices (const pcl::PointIndices::ConstPtr& point_indices);
   void
-  setBackgroundPointsIndices(int x1, int y1, int x2, int y2);
+  setBackgroundPointsIndices (int x1, int y1, int x2, int y2);
   void
-  setTrimap(
+  setTrimap (
       int x1, int y1, int x2, int y2, const pcl::segmentation::grabcut::TrimapValue& t);
   void
-  refine() override;
+  refine () override;
   int
-  refineOnce() override;
+  refineOnce () override;
   void
-  fitGMMs() override;
+  fitGMMs () override;
   void
-  display(int display_type);
+  display (int display_type);
   void
-  overlayAlpha();
+  overlayAlpha ();
 
 private:
   void
-  buildImages();
+  buildImages ();
 
   // Clouds of various variables that can be displayed for debugging.
   pcl::PointCloud<float>::Ptr n_links_image_;
@@ -288,7 +288,7 @@ pcl::segmentation::grabcut::Image::Ptr display_image;
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 void
-display()
+display ()
 {
   glClear(GL_COLOR_BUFFER_BIT);
 
@@ -321,7 +321,7 @@ display()
 
 /////////////////////////////////////////////////////////////////////////
 void
-idle_callback()
+idle_callback ()
 {
   int changed = 0;
 
@@ -338,7 +338,7 @@ idle_callback()
 
 /////////////////////////////////////////////////////////////////////////
 void
-motion_callback(int x, int y)
+motion_callback (int x, int y)
 {
   y = height - y;
 
@@ -362,7 +362,7 @@ motion_callback(int x, int y)
 }
 
 void
-mouse_callback(int button, int state, int x, int y)
+mouse_callback (int button, int state, int x, int y)
 {
   y = height - y;
 
@@ -418,7 +418,7 @@ mouse_callback(int button, int state, int x, int y)
 
 /////////////////////////////////////////////////////////////////////////
 void
-keyboard_callback(unsigned char key, int, int)
+keyboard_callback (unsigned char key, int, int)
 {
   switch (key) {
   case ' ': // space bar show/hide alpha mask
@@ -478,7 +478,7 @@ keyboard_callback(unsigned char key, int, int)
 
 ///////////////////////////////////////////////////////////////////////////////////
 int
-main(int argc, char** argv)
+main (int argc, char** argv)
 {
   // Parse the command line arguments for .pcd files
   std::vector<int> parsed_file_indices =

@@ -37,397 +37,439 @@
 
 #pragma once
 
-#include <pcl/conversions.h> // for fromPCLPointCloud2, toPCLPointCloud2
-#include <pcl/point_cloud.h> // for PointCloud
+#include <pcl/conversions.h>    // for fromPCLPointCloud2, toPCLPointCloud2
 #include <pcl/PCLPointCloud2.h> // for PCLPointCloud2
+#include <pcl/point_cloud.h>    // for PointCloud
+
+#include <boost/algorithm/string/predicate.hpp> // for iequals
+#include <boost/numeric/conversion/cast.hpp>    // for numeric_cast
+
+#include <Eigen/Geometry> // for Quaternionf
+
 #include <cmath>
 #include <sstream>
-#include <Eigen/Geometry> // for Quaternionf
-#include <boost/numeric/conversion/cast.hpp> // for numeric_cast
-#include <boost/algorithm/string/predicate.hpp> // for iequals
 
-namespace pcl
-{
-  /** \brief Point Cloud Data (FILE) file format reader interface.
-    * Any (FILE) format file reader should implement its virtual methods.
-    * \author Nizar Sallem
-    * \ingroup io
-    */
-  class PCL_EXPORTS FileReader
-  {
-    public:
-      /** \brief empty constructor */ 
-      FileReader() = default;
-      /** \brief empty destructor */ 
-      virtual ~FileReader() = default;
-      /** \brief Read a point cloud data header from a FILE file. 
-        *
-        * Load only the meta information (number of points, their types, etc),
-        * and not the points themselves, from a given FILE file. Useful for fast
-        * evaluation of the underlying data structure.
-        *
-        * Returns:
-        *  * < 0 (-1) on error
-        *  * > 0 on success
-        * \param[in] file_name the name of the file to load
-        * \param[out] cloud the resultant point cloud dataset (only the header will be filled)
-        * \param[out] origin the sensor acquisition origin (only for > FILE_V7 - null if not present)
-        * \param[out] orientation the sensor acquisition orientation (only for > FILE_V7 - identity if not present)
-        * \param[out] file_version the FILE version of the file (either FILE_V6 or FILE_V7)
-        * \param[out] data_type the type of data (binary data=1, ascii=0, etc)
-        * \param[out] data_idx the offset of cloud data within the file
-        * \param[in] offset the offset in the file where to expect the true header to begin.
-        * One usage example for setting the offset parameter is for reading
-        * data from a TAR "archive containing multiple files: TAR files always
-        * add a 512 byte header in front of the actual file, so set the offset
-        * to the next byte after the header (e.g., 513).
-        */
-      virtual int 
-      readHeader (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
-                  Eigen::Vector4f &origin, Eigen::Quaternionf &orientation, 
-                  int &file_version, int &data_type, unsigned int &data_idx, const int offset = 0) = 0;
-
-      /** \brief Read a point cloud data from a FILE file and store it into a pcl/PCLPointCloud2.
-        * \param[in] file_name the name of the file containing the actual PointCloud data
-        * \param[out] cloud the resultant PointCloud message read from disk
-        * \param[out] origin the sensor acquisition origin (only for > FILE_V7 - null if not present)
-        * \param[out] orientation the sensor acquisition orientation (only for > FILE_V7 - identity if not present)
-        * \param[out] file_version the FILE version of the file (either FILE_V6 or FILE_V7)
-        * \param[in] offset the offset in the file where to expect the true header to begin.
-        * One usage example for setting the offset parameter is for reading
-        * data from a TAR "archive containing multiple files: TAR files always
-        * add a 512 byte header in front of the actual file, so set the offset
-        * to the next byte after the header (e.g., 513).
-        */
-      virtual int 
-      read (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
-            Eigen::Vector4f &origin, Eigen::Quaternionf &orientation, int &file_version, 
-            const int offset = 0) = 0;
-
-      /** \brief Read a point cloud data from a FILE file (FILE_V6 only!) and store it into a pcl/PCLPointCloud2.
-        * 
-        * \note This function is provided for backwards compatibility only and
-        * it can only read FILE_V6 files correctly, as pcl::PCLPointCloud2
-        * does not contain a sensor origin/orientation. Reading any file 
-        * > FILE_V6 will generate a warning. 
-        *
-        * \param[in] file_name the name of the file containing the actual PointCloud data
-        * \param[out] cloud the resultant PointCloud message read from disk
-        *
-        * \param[in] offset the offset in the file where to expect the true header to begin.
-        * One usage example for setting the offset parameter is for reading
-        * data from a TAR "archive containing multiple files: TAR files always
-        * add a 512 byte header in front of the actual file, so set the offset
-        * to the next byte after the header (e.g., 513).
-        */
-      int 
-      read (const std::string &file_name, pcl::PCLPointCloud2 &cloud, const int offset = 0)
-      {
-        Eigen::Vector4f origin;
-        Eigen::Quaternionf orientation;
-        int file_version;
-        return (read (file_name, cloud, origin, orientation, file_version, offset));
-      }
-
-      /** \brief Read a point cloud data from any FILE file, and convert it to the given template format.
-        * \param[in] file_name the name of the file containing the actual PointCloud data
-        * \param[out] cloud the resultant PointCloud message read from disk
-        * \param[in] offset the offset in the file where to expect the true header to begin.
-        * One usage example for setting the offset parameter is for reading
-        * data from a TAR "archive containing multiple files: TAR files always
-        * add a 512 byte header in front of the actual file, so set the offset
-        * to the next byte after the header (e.g., 513).
-        */
-      template<typename PointT> inline int
-      read (const std::string &file_name, pcl::PointCloud<PointT> &cloud, const int offset  =0)
-      {
-        pcl::PCLPointCloud2 blob;
-        int file_version;
-        int res = read (file_name, blob, cloud.sensor_origin_, cloud.sensor_orientation_, 
-                        file_version, offset);
-
-        // Exit in case of error
-        if (res < 0)
-          return res;
-        pcl::fromPCLPointCloud2 (blob, cloud);
-        return (0);
-      }
-  };
-
-  /** \brief Point Cloud Data (FILE) file format writer.
-    * Any (FILE) format file reader should implement its virtual methods
-    * \author Nizar Sallem
-    * \ingroup io
-    */
-  class PCL_EXPORTS FileWriter
-  {
-    public:
-      /** \brief Empty constructor */ 
-      FileWriter () = default;
-
-      /** \brief Empty destructor */ 
-      virtual ~FileWriter () = default;
-
-      /** \brief Save point cloud data to a FILE file containing n-D points
-        * \param[in] file_name the output file name
-        * \param[in] cloud the point cloud data message
-        * \param[in] origin the sensor acquisition origin
-        * \param[in] orientation the sensor acquisition orientation
-        * \param[in] binary set to true if the file is to be written in a binary
-        * FILE format, false (default) for ASCII
-        */
-      virtual int
-      write (const std::string &file_name, const pcl::PCLPointCloud2 &cloud,
-             const Eigen::Vector4f &origin = Eigen::Vector4f::Zero (), 
-             const Eigen::Quaternionf &orientation = Eigen::Quaternionf::Identity (),
-             const bool binary = false) = 0;
-
-      /** \brief Save point cloud data to a FILE file containing n-D points
-        * \param[in] file_name the output file name
-        * \param[in] cloud the point cloud data message (boost shared pointer)
-        * \param[in] binary set to true if the file is to be written in a binary
-        * FILE format, false (default) for ASCII
-        * \param[in] origin the sensor acquisition origin
-        * \param[in] orientation the sensor acquisition orientation
-        */
-      inline int
-      write (const std::string &file_name, const pcl::PCLPointCloud2::ConstPtr &cloud,
-             const Eigen::Vector4f &origin = Eigen::Vector4f::Zero (), 
-             const Eigen::Quaternionf &orientation = Eigen::Quaternionf::Identity (),
-             const bool binary = false)
-      {
-        return (write (file_name, *cloud, origin, orientation, binary));
-      }
-
-      /** \brief Save point cloud data to a FILE file containing n-D points
-        * \param[in] file_name the output file name
-        * \param[in] cloud the pcl::PointCloud data
-        * \param[in] binary set to true if the file is to be written in a binary
-        * FILE format, false (default) for ASCII
-        */
-      template<typename PointT> inline int
-      write (const std::string &file_name, 
-             const pcl::PointCloud<PointT> &cloud, 
-             const bool binary = false)
-      {
-        Eigen::Vector4f origin = cloud.sensor_origin_;
-        Eigen::Quaternionf orientation = cloud.sensor_orientation_;
-
-        pcl::PCLPointCloud2 blob;
-        pcl::toPCLPointCloud2 (cloud, blob);
-
-        // Save the data
-        return (write (file_name, blob, origin, orientation, binary));
-      }
-  };
-
-  /** \brief inserts a value of type Type (uchar, char, uint, int, float, double, ...) into a stringstream.
-    *
-    * If the value is NaN, it inserts "nan".
-    *
-    * \param[in] cloud the cloud to copy from
-    * \param[in] point_index the index of the point
-    * \param[in] point_size the size of the point in the cloud
-    * \param[in] field_idx the index of the dimension/field
-    * \param[in] fields_count the current fields count
-    * \param[out] stream the ostringstream to copy into
-    */
-  template <typename Type> inline
-  std::enable_if_t<std::is_floating_point<Type>::value>
-  copyValueString (const pcl::PCLPointCloud2 &cloud,
-                   const pcl::index_t point_index, 
-                   const int point_size, 
-                   const unsigned int field_idx, 
-                   const unsigned int fields_count, 
-                   std::ostream &stream)
-  {
-    Type value;
-    memcpy (&value, &cloud.data[point_index * point_size + cloud.fields[field_idx].offset + fields_count * sizeof (Type)], sizeof (Type));
-    if (std::isnan (value))
-      stream << "nan";
-    else
-      stream << value;
-  }
-
-  template <typename Type> inline
-  std::enable_if_t<std::is_integral<Type>::value>
-  copyValueString (const pcl::PCLPointCloud2 &cloud,
-                   const pcl::index_t point_index, 
-                   const int point_size, 
-                   const unsigned int field_idx, 
-                   const unsigned int fields_count, 
-                   std::ostream &stream)
-  {
-    Type value;
-    memcpy (&value, &cloud.data[point_index * point_size + cloud.fields[field_idx].offset + fields_count * sizeof (Type)], sizeof (Type));
-    stream << value;
-  }
-
-  template <> inline void
-  copyValueString<std::int8_t> (const pcl::PCLPointCloud2 &cloud,
-                           const pcl::index_t point_index, 
-                           const int point_size, 
-                           const unsigned int field_idx, 
-                           const unsigned int fields_count, 
-                           std::ostream &stream)
-  {
-    std::int8_t value;
-    memcpy (&value, &cloud.data[point_index * point_size + cloud.fields[field_idx].offset + fields_count * sizeof (std::int8_t)], sizeof (std::int8_t));
-    //Cast to int to prevent value is handled as char
-    stream << boost::numeric_cast<int>(value);
-  }
-
-  template <> inline void
-  copyValueString<std::uint8_t> (const pcl::PCLPointCloud2 &cloud,
-                            const pcl::index_t point_index, 
-                            const int point_size, 
-                            const unsigned int field_idx, 
-                            const unsigned int fields_count, 
-                            std::ostream &stream)
-  {
-    std::uint8_t value;
-    memcpy (&value, &cloud.data[point_index * point_size + cloud.fields[field_idx].offset + fields_count * sizeof (std::uint8_t)], sizeof (std::uint8_t));
-    //Cast to unsigned int to prevent value is handled as char
-    stream << boost::numeric_cast<unsigned int>(value);
-  }
-
-  /** \brief Check whether a given value of type Type (uchar, char, uint, int, float, double, ...) is finite or not
-    *
-    * \param[in] cloud the cloud that contains the data
-    * \param[in] point_index the index of the point
-    * \param[in] point_size the size of the point in the cloud
-    * \param[in] field_idx the index of the dimension/field
-    * \param[in] fields_count the current fields count
-    *
-    * \return true if the value is finite, false otherwise
-    */
-  template <typename Type> inline
-  std::enable_if_t<std::is_floating_point<Type>::value, bool>
-  isValueFinite (const pcl::PCLPointCloud2 &cloud,
-                 const pcl::index_t point_index, 
-                 const int point_size, 
-                 const unsigned int field_idx, 
-                 const unsigned int fields_count)
-  {
-    Type value;
-    memcpy (&value, &cloud.data[point_index * point_size + cloud.fields[field_idx].offset + fields_count * sizeof (Type)], sizeof (Type));
-    return std::isfinite (value);
-  }
-
-  template <typename Type> inline
-  std::enable_if_t<std::is_integral<Type>::value, bool>
-  isValueFinite (const pcl::PCLPointCloud2& /* cloud */,
-                 const pcl::index_t /* point_index */,
-                 const int /* point_size */,
-                 const unsigned int /* field_idx */,
-                 const unsigned int /* fields_count */)
-  {
-    return true;
-  }
-
-  namespace detail {
-  template <typename Type>
-  inline void
-  copyStringValue(const std::string& st,
-                  pcl::PCLPointCloud2& cloud,
-                  pcl::index_t point_index,
-                  unsigned int field_idx,
-                  unsigned int fields_count,
-                  std::istringstream& is)
-  {
-    Type value;
-    if (boost::iequals(st, "nan")) {
-      value = std::numeric_limits<Type>::quiet_NaN();
-      cloud.is_dense = false;
-    }
-    else {
-      is.str(st);
-      is.clear(); // clear error state flags
-      if (!(is >> value))
-        value = static_cast<Type>(atof(st.c_str()));
-    }
-
-    memcpy(&cloud.data[point_index * cloud.point_step + cloud.fields[field_idx].offset +
-                       fields_count * sizeof(Type)],
-           reinterpret_cast<char*>(&value),
-           sizeof(Type));
-  }
-
-  template <>
-  inline void
-  copyStringValue<std::int8_t>(const std::string& st,
-                               pcl::PCLPointCloud2& cloud,
-                               pcl::index_t point_index,
-                               unsigned int field_idx,
-                               unsigned int fields_count,
-                               std::istringstream& is)
-  {
-    std::int8_t value;
-    int val;
-    is.str(st);
-    is.clear(); // clear error state flags
-    // is >> val;  -- unfortunately this fails on older GCC versions and CLANG on MacOS
-    if (!(is >> val)) {
-      val = static_cast<int>(atof(st.c_str()));
-    }
-    value = static_cast<std::int8_t>(val);
-
-    memcpy(&cloud.data[point_index * cloud.point_step + cloud.fields[field_idx].offset +
-                       fields_count * sizeof(std::int8_t)],
-           reinterpret_cast<char*>(&value),
-           sizeof(std::int8_t));
-  }
-
-  template <>
-  inline void
-  copyStringValue<std::uint8_t>(const std::string& st,
-                                pcl::PCLPointCloud2& cloud,
-                                pcl::index_t point_index,
-                                unsigned int field_idx,
-                                unsigned int fields_count,
-                                std::istringstream& is)
-  {
-    std::uint8_t value;
-    int val;
-    is.str(st);
-    is.clear(); // clear error state flags
-    // is >> val;  -- unfortunately this fails on older GCC versions and CLANG on
-    // MacOS
-    if (!(is >> val)) {
-      val = static_cast<int>(atof(st.c_str()));
-    }
-    value = static_cast<std::uint8_t>(val);
-
-    memcpy(&cloud.data[point_index * cloud.point_step + cloud.fields[field_idx].offset +
-                       fields_count * sizeof(std::uint8_t)],
-           reinterpret_cast<char*>(&value),
-           sizeof(std::uint8_t));
-  }
-  } // namespace detail
-
-  /**
-   * \brief Copy one single value of type T (uchar, char, uint, int, float, double, ...) from a string
-   * \details Uses `istringstream` to do the conversion in classic locale
-   * Checks if the st is "nan" and converts it accordingly.
+namespace pcl {
+/** \brief Point Cloud Data (FILE) file format reader interface.
+ * Any (FILE) format file reader should implement its virtual methods.
+ * \author Nizar Sallem
+ * \ingroup io
+ */
+class PCL_EXPORTS FileReader {
+public:
+  /** \brief empty constructor */
+  FileReader() = default;
+  /** \brief empty destructor */
+  virtual ~FileReader() = default;
+  /** \brief Read a point cloud data header from a FILE file.
    *
-   * \param[in] st the string containing the value to convert and copy
-   * \param[out] cloud the cloud to copy it to
-   * \param[in] point_index the index of the point
-   * \param[in] field_idx the index of the dimension/field
-   * \param[in] fields_count the current fields count
+   * Load only the meta information (number of points, their types, etc),
+   * and not the points themselves, from a given FILE file. Useful for fast
+   * evaluation of the underlying data structure.
+   *
+   * Returns:
+   *  * < 0 (-1) on error
+   *  * > 0 on success
+   * \param[in] file_name the name of the file to load
+   * \param[out] cloud the resultant point cloud dataset (only the header will be
+   * filled) \param[out] origin the sensor acquisition origin (only for > FILE_V7 - null
+   * if not present) \param[out] orientation the sensor acquisition orientation (only
+   * for > FILE_V7 - identity if not present) \param[out] file_version the FILE version
+   * of the file (either FILE_V6 or FILE_V7) \param[out] data_type the type of data
+   * (binary data=1, ascii=0, etc) \param[out] data_idx the offset of cloud data within
+   * the file \param[in] offset the offset in the file where to expect the true header
+   * to begin. One usage example for setting the offset parameter is for reading data
+   * from a TAR "archive containing multiple files: TAR files always add a 512 byte
+   * header in front of the actual file, so set the offset to the next byte after the
+   * header (e.g., 513).
    */
-  template <typename Type> inline void
-  copyStringValue (const std::string &st, pcl::PCLPointCloud2 &cloud,
-                   pcl::index_t point_index, unsigned int field_idx, unsigned int fields_count)
+  virtual int
+  readHeader (const std::string& file_name,
+              pcl::PCLPointCloud2& cloud,
+              Eigen::Vector4f& origin,
+              Eigen::Quaternionf& orientation,
+              int& file_version,
+              int& data_type,
+              unsigned int& data_idx,
+              const int offset = 0) = 0;
+
+  /** \brief Read a point cloud data from a FILE file and store it into a
+   * pcl/PCLPointCloud2. \param[in] file_name the name of the file containing the actual
+   * PointCloud data \param[out] cloud the resultant PointCloud message read from disk
+   * \param[out] origin the sensor acquisition origin (only for > FILE_V7 - null if not
+   * present) \param[out] orientation the sensor acquisition orientation (only for >
+   * FILE_V7 - identity if not present) \param[out] file_version the FILE version of the
+   * file (either FILE_V6 or FILE_V7) \param[in] offset the offset in the file where to
+   * expect the true header to begin. One usage example for setting the offset parameter
+   * is for reading data from a TAR "archive containing multiple files: TAR files always
+   * add a 512 byte header in front of the actual file, so set the offset
+   * to the next byte after the header (e.g., 513).
+   */
+  virtual int
+  read (const std::string& file_name,
+        pcl::PCLPointCloud2& cloud,
+        Eigen::Vector4f& origin,
+        Eigen::Quaternionf& orientation,
+        int& file_version,
+        const int offset = 0) = 0;
+
+  /** \brief Read a point cloud data from a FILE file (FILE_V6 only!) and store it into
+   * a pcl/PCLPointCloud2.
+   *
+   * \note This function is provided for backwards compatibility only and
+   * it can only read FILE_V6 files correctly, as pcl::PCLPointCloud2
+   * does not contain a sensor origin/orientation. Reading any file
+   * > FILE_V6 will generate a warning.
+   *
+   * \param[in] file_name the name of the file containing the actual PointCloud data
+   * \param[out] cloud the resultant PointCloud message read from disk
+   *
+   * \param[in] offset the offset in the file where to expect the true header to begin.
+   * One usage example for setting the offset parameter is for reading
+   * data from a TAR "archive containing multiple files: TAR files always
+   * add a 512 byte header in front of the actual file, so set the offset
+   * to the next byte after the header (e.g., 513).
+   */
+  int
+  read (const std::string& file_name, pcl::PCLPointCloud2& cloud, const int offset = 0)
   {
-    std::istringstream is;
-    is.imbue (std::locale::classic ());
-    detail::copyStringValue<Type> (st, cloud,point_index, field_idx, fields_count, is);
+    Eigen::Vector4f origin;
+    Eigen::Quaternionf orientation;
+    int file_version;
+    return (read(file_name, cloud, origin, orientation, file_version, offset));
   }
+
+  /** \brief Read a point cloud data from any FILE file, and convert it to the given
+   * template format. \param[in] file_name the name of the file containing the actual
+   * PointCloud data \param[out] cloud the resultant PointCloud message read from disk
+   * \param[in] offset the offset in the file where to expect the true header to begin.
+   * One usage example for setting the offset parameter is for reading
+   * data from a TAR "archive containing multiple files: TAR files always
+   * add a 512 byte header in front of the actual file, so set the offset
+   * to the next byte after the header (e.g., 513).
+   */
+  template <typename PointT>
+  inline int
+  read (const std::string& file_name,
+        pcl::PointCloud<PointT>& cloud,
+        const int offset = 0)
+  {
+    pcl::PCLPointCloud2 blob;
+    int file_version;
+    int res = read(file_name,
+                   blob,
+                   cloud.sensor_origin_,
+                   cloud.sensor_orientation_,
+                   file_version,
+                   offset);
+
+    // Exit in case of error
+    if (res < 0)
+      return res;
+    pcl::fromPCLPointCloud2(blob, cloud);
+    return (0);
+  }
+};
+
+/** \brief Point Cloud Data (FILE) file format writer.
+ * Any (FILE) format file reader should implement its virtual methods
+ * \author Nizar Sallem
+ * \ingroup io
+ */
+class PCL_EXPORTS FileWriter {
+public:
+  /** \brief Empty constructor */
+  FileWriter() = default;
+
+  /** \brief Empty destructor */
+  virtual ~FileWriter() = default;
+
+  /** \brief Save point cloud data to a FILE file containing n-D points
+   * \param[in] file_name the output file name
+   * \param[in] cloud the point cloud data message
+   * \param[in] origin the sensor acquisition origin
+   * \param[in] orientation the sensor acquisition orientation
+   * \param[in] binary set to true if the file is to be written in a binary
+   * FILE format, false (default) for ASCII
+   */
+  virtual int
+  write (const std::string& file_name,
+         const pcl::PCLPointCloud2& cloud,
+         const Eigen::Vector4f& origin = Eigen::Vector4f::Zero(),
+         const Eigen::Quaternionf& orientation = Eigen::Quaternionf::Identity(),
+         const bool binary = false) = 0;
+
+  /** \brief Save point cloud data to a FILE file containing n-D points
+   * \param[in] file_name the output file name
+   * \param[in] cloud the point cloud data message (boost shared pointer)
+   * \param[in] binary set to true if the file is to be written in a binary
+   * FILE format, false (default) for ASCII
+   * \param[in] origin the sensor acquisition origin
+   * \param[in] orientation the sensor acquisition orientation
+   */
+  inline int
+  write (const std::string& file_name,
+         const pcl::PCLPointCloud2::ConstPtr& cloud,
+         const Eigen::Vector4f& origin = Eigen::Vector4f::Zero(),
+         const Eigen::Quaternionf& orientation = Eigen::Quaternionf::Identity(),
+         const bool binary = false)
+  {
+    return (write(file_name, *cloud, origin, orientation, binary));
+  }
+
+  /** \brief Save point cloud data to a FILE file containing n-D points
+   * \param[in] file_name the output file name
+   * \param[in] cloud the pcl::PointCloud data
+   * \param[in] binary set to true if the file is to be written in a binary
+   * FILE format, false (default) for ASCII
+   */
+  template <typename PointT>
+  inline int
+  write (const std::string& file_name,
+         const pcl::PointCloud<PointT>& cloud,
+         const bool binary = false)
+  {
+    Eigen::Vector4f origin = cloud.sensor_origin_;
+    Eigen::Quaternionf orientation = cloud.sensor_orientation_;
+
+    pcl::PCLPointCloud2 blob;
+    pcl::toPCLPointCloud2(cloud, blob);
+
+    // Save the data
+    return (write(file_name, blob, origin, orientation, binary));
+  }
+};
+
+/** \brief inserts a value of type Type (uchar, char, uint, int, float, double, ...)
+ * into a stringstream.
+ *
+ * If the value is NaN, it inserts "nan".
+ *
+ * \param[in] cloud the cloud to copy from
+ * \param[in] point_index the index of the point
+ * \param[in] point_size the size of the point in the cloud
+ * \param[in] field_idx the index of the dimension/field
+ * \param[in] fields_count the current fields count
+ * \param[out] stream the ostringstream to copy into
+ */
+template <typename Type>
+inline std::enable_if_t<std::is_floating_point<Type>::value>
+copyValueString (const pcl::PCLPointCloud2& cloud,
+                 const pcl::index_t point_index,
+                 const int point_size,
+                 const unsigned int field_idx,
+                 const unsigned int fields_count,
+                 std::ostream& stream)
+{
+  Type value;
+  memcpy(&value,
+         &cloud.data[point_index * point_size + cloud.fields[field_idx].offset +
+                     fields_count * sizeof(Type)],
+         sizeof(Type));
+  if (std::isnan(value))
+    stream << "nan";
+  else
+    stream << value;
+}
+
+template <typename Type>
+inline std::enable_if_t<std::is_integral<Type>::value>
+copyValueString (const pcl::PCLPointCloud2& cloud,
+                 const pcl::index_t point_index,
+                 const int point_size,
+                 const unsigned int field_idx,
+                 const unsigned int fields_count,
+                 std::ostream& stream)
+{
+  Type value;
+  memcpy(&value,
+         &cloud.data[point_index * point_size + cloud.fields[field_idx].offset +
+                     fields_count * sizeof(Type)],
+         sizeof(Type));
+  stream << value;
+}
+
+template <>
+inline void
+copyValueString<std::int8_t>(const pcl::PCLPointCloud2& cloud,
+                             const pcl::index_t point_index,
+                             const int point_size,
+                             const unsigned int field_idx,
+                             const unsigned int fields_count,
+                             std::ostream& stream)
+{
+  std::int8_t value;
+  memcpy(&value,
+         &cloud.data[point_index * point_size + cloud.fields[field_idx].offset +
+                     fields_count * sizeof(std::int8_t)],
+         sizeof(std::int8_t));
+  // Cast to int to prevent value is handled as char
+  stream << boost::numeric_cast<int>(value);
+}
+
+template <>
+inline void
+copyValueString<std::uint8_t>(const pcl::PCLPointCloud2& cloud,
+                              const pcl::index_t point_index,
+                              const int point_size,
+                              const unsigned int field_idx,
+                              const unsigned int fields_count,
+                              std::ostream& stream)
+{
+  std::uint8_t value;
+  memcpy(&value,
+         &cloud.data[point_index * point_size + cloud.fields[field_idx].offset +
+                     fields_count * sizeof(std::uint8_t)],
+         sizeof(std::uint8_t));
+  // Cast to unsigned int to prevent value is handled as char
+  stream << boost::numeric_cast<unsigned int>(value);
+}
+
+/** \brief Check whether a given value of type Type (uchar, char, uint, int, float,
+ * double, ...) is finite or not
+ *
+ * \param[in] cloud the cloud that contains the data
+ * \param[in] point_index the index of the point
+ * \param[in] point_size the size of the point in the cloud
+ * \param[in] field_idx the index of the dimension/field
+ * \param[in] fields_count the current fields count
+ *
+ * \return true if the value is finite, false otherwise
+ */
+template <typename Type>
+inline std::enable_if_t<std::is_floating_point<Type>::value, bool>
+isValueFinite (const pcl::PCLPointCloud2& cloud,
+               const pcl::index_t point_index,
+               const int point_size,
+               const unsigned int field_idx,
+               const unsigned int fields_count)
+{
+  Type value;
+  memcpy(&value,
+         &cloud.data[point_index * point_size + cloud.fields[field_idx].offset +
+                     fields_count * sizeof(Type)],
+         sizeof(Type));
+  return std::isfinite(value);
+}
+
+template <typename Type>
+inline std::enable_if_t<std::is_integral<Type>::value, bool>
+isValueFinite (const pcl::PCLPointCloud2& /* cloud */,
+               const pcl::index_t /* point_index */,
+               const int /* point_size */,
+               const unsigned int /* field_idx */,
+               const unsigned int /* fields_count */)
+{
+  return true;
+}
+
+namespace detail {
+template <typename Type>
+inline void
+copyStringValue (const std::string& st,
+                 pcl::PCLPointCloud2& cloud,
+                 pcl::index_t point_index,
+                 unsigned int field_idx,
+                 unsigned int fields_count,
+                 std::istringstream& is)
+{
+  Type value;
+  if (boost::iequals(st, "nan")) {
+    value = std::numeric_limits<Type>::quiet_NaN();
+    cloud.is_dense = false;
+  }
+  else {
+    is.str(st);
+    is.clear(); // clear error state flags
+    if (!(is >> value))
+      value = static_cast<Type>(atof(st.c_str()));
+  }
+
+  memcpy(&cloud.data[point_index * cloud.point_step + cloud.fields[field_idx].offset +
+                     fields_count * sizeof(Type)],
+         reinterpret_cast<char*>(&value),
+         sizeof(Type));
+}
+
+template <>
+inline void
+copyStringValue<std::int8_t>(const std::string& st,
+                             pcl::PCLPointCloud2& cloud,
+                             pcl::index_t point_index,
+                             unsigned int field_idx,
+                             unsigned int fields_count,
+                             std::istringstream& is)
+{
+  std::int8_t value;
+  int val;
+  is.str(st);
+  is.clear(); // clear error state flags
+  // is >> val;  -- unfortunately this fails on older GCC versions and CLANG on MacOS
+  if (!(is >> val)) {
+    val = static_cast<int>(atof(st.c_str()));
+  }
+  value = static_cast<std::int8_t>(val);
+
+  memcpy(&cloud.data[point_index * cloud.point_step + cloud.fields[field_idx].offset +
+                     fields_count * sizeof(std::int8_t)],
+         reinterpret_cast<char*>(&value),
+         sizeof(std::int8_t));
+}
+
+template <>
+inline void
+copyStringValue<std::uint8_t>(const std::string& st,
+                              pcl::PCLPointCloud2& cloud,
+                              pcl::index_t point_index,
+                              unsigned int field_idx,
+                              unsigned int fields_count,
+                              std::istringstream& is)
+{
+  std::uint8_t value;
+  int val;
+  is.str(st);
+  is.clear(); // clear error state flags
+  // is >> val;  -- unfortunately this fails on older GCC versions and CLANG on
+  // MacOS
+  if (!(is >> val)) {
+    val = static_cast<int>(atof(st.c_str()));
+  }
+  value = static_cast<std::uint8_t>(val);
+
+  memcpy(&cloud.data[point_index * cloud.point_step + cloud.fields[field_idx].offset +
+                     fields_count * sizeof(std::uint8_t)],
+         reinterpret_cast<char*>(&value),
+         sizeof(std::uint8_t));
+}
+} // namespace detail
+
 /**
- * \brief Copy one single value of type T (uchar, char, uint, int, float, double, ...) from a string
- * \details Uses the provided `istringstream` to do the conversion, respecting its locale settings
+ * \brief Copy one single value of type T (uchar, char, uint, int, float, double, ...)
+ * from a string \details Uses `istringstream` to do the conversion in classic locale
  * Checks if the st is "nan" and converts it accordingly.
+ *
+ * \param[in] st the string containing the value to convert and copy
+ * \param[out] cloud the cloud to copy it to
+ * \param[in] point_index the index of the point
+ * \param[in] field_idx the index of the dimension/field
+ * \param[in] fields_count the current fields count
+ */
+template <typename Type>
+inline void
+copyStringValue (const std::string& st,
+                 pcl::PCLPointCloud2& cloud,
+                 pcl::index_t point_index,
+                 unsigned int field_idx,
+                 unsigned int fields_count)
+{
+  std::istringstream is;
+  is.imbue(std::locale::classic());
+  detail::copyStringValue<Type>(st, cloud, point_index, field_idx, fields_count, is);
+}
+/**
+ * \brief Copy one single value of type T (uchar, char, uint, int, float, double, ...)
+ * from a string \details Uses the provided `istringstream` to do the conversion,
+ * respecting its locale settings Checks if the st is "nan" and converts it accordingly.
  *
  * \param[in] st the string containing the value to convert and copy
  * \param[out] cloud the cloud to copy it to
@@ -436,11 +478,15 @@ namespace pcl
  * \param[in] fields_count the current fields count
  * \param[in,out] is input string stream for helping to convert st into cloud
  */
-  template <typename Type> inline void
-  copyStringValue (const std::string &st, pcl::PCLPointCloud2 &cloud,
-                   pcl::index_t point_index, unsigned int field_idx, unsigned int fields_count,
-                   std::istringstream& is)
-  {
-    detail::copyStringValue<Type> (st, cloud,point_index, field_idx, fields_count, is);
-  }
+template <typename Type>
+inline void
+copyStringValue (const std::string& st,
+                 pcl::PCLPointCloud2& cloud,
+                 pcl::index_t point_index,
+                 unsigned int field_idx,
+                 unsigned int fields_count,
+                 std::istringstream& is)
+{
+  detail::copyStringValue<Type>(st, cloud, point_index, field_idx, fields_count, is);
 }
+} // namespace pcl

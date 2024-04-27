@@ -38,46 +38,49 @@
 #ifndef PCL_RECOGNITION_LINEMOD_LINE_RGBD_IMPL_HPP_
 #define PCL_RECOGNITION_LINEMOD_LINE_RGBD_IMPL_HPP_
 
-//#include <pcl/recognition/linemod/line_rgbd.h>
+// #include <pcl/recognition/linemod/line_rgbd.h>
 #include <pcl/io/pcd_io.h>
-#include <fcntl.h>
 #include <pcl/point_cloud.h>
+
+#include <fcntl.h>
+
 #include <limits>
 
+namespace pcl {
 
-namespace pcl
-{
-
-template <typename PointXYZT, typename PointRGBT> bool
-LineRGBD<PointXYZT, PointRGBT>::readLTMHeader (int fd, pcl::io::TARHeader &header)
+template <typename PointXYZT, typename PointRGBT>
+bool
+LineRGBD<PointXYZT, PointRGBT>::readLTMHeader(int fd, pcl::io::TARHeader& header)
 {
   // Read in the header
-  int result = static_cast<int> (io::raw_read (fd, reinterpret_cast<char*> (&header), 512));
+  int result =
+      static_cast<int>(io::raw_read(fd, reinterpret_cast<char*>(&header), 512));
   if (result == -1)
     return (false);
 
   // We only support regular files for now.
-  // Additional file types in TAR include: hard links, symbolic links, device/special files, block devices,
-  // directories, and named pipes.
+  // Additional file types in TAR include: hard links, symbolic links, device/special
+  // files, block devices, directories, and named pipes.
   if (header.file_type[0] != '0' && header.file_type[0] != '\0')
     return (false);
 
   // We only support USTAR version 0 files for now
-  if (std::string (header.ustar).substr (0, 5) != "ustar")
+  if (std::string(header.ustar).substr(0, 5) != "ustar")
     return (false);
 
-  if (header.getFileSize () == 0)
+  if (header.getFileSize() == 0)
     return (false);
 
   return (true);
 }
 
-
-template <typename PointXYZT, typename PointRGBT> bool
-LineRGBD<PointXYZT, PointRGBT>::loadTemplates (const std::string &file_name, const std::size_t object_id)
+template <typename PointXYZT, typename PointRGBT>
+bool
+LineRGBD<PointXYZT, PointRGBT>::loadTemplates(const std::string& file_name,
+                                              const std::size_t object_id)
 {
   // Open the file
-  int ltm_fd = io::raw_open(file_name.c_str (), O_RDONLY);
+  int ltm_fd = io::raw_open(file_name.c_str(), O_RDONLY);
   if (ltm_fd == -1)
     return (false);
 
@@ -86,59 +89,64 @@ LineRGBD<PointXYZT, PointRGBT>::loadTemplates (const std::string &file_name, con
   pcl::io::TARHeader ltm_header;
   PCDReader pcd_reader;
 
-  std::string pcd_ext (".pcd");
-  std::string sqmmt_ext (".sqmmt");
+  std::string pcd_ext(".pcd");
+  std::string sqmmt_ext(".sqmmt");
 
   // While there still is an LTM header to be read
-  while (readLTMHeader (ltm_fd, ltm_header))
-  {
+  while (readLTMHeader(ltm_fd, ltm_header)) {
     ltm_offset += 512;
 
     // Search for extension
-    std::string chunk_name (ltm_header.file_name);
+    std::string chunk_name(ltm_header.file_name);
 
-    std::transform (chunk_name.begin (), chunk_name.end (), chunk_name.begin (), ::tolower);
+    std::transform(chunk_name.begin(), chunk_name.end(), chunk_name.begin(), ::tolower);
     std::string::size_type it;
 
-    if ((it = chunk_name.find (pcd_ext)) != std::string::npos &&
-        (pcd_ext.size () - (chunk_name.size () - it)) == 0)
-    {
-      PCL_DEBUG ("[pcl::LineRGBD::loadTemplates] Reading and parsing %s as a PCD file.\n", chunk_name.c_str ());
+    if ((it = chunk_name.find(pcd_ext)) != std::string::npos &&
+        (pcd_ext.size() - (chunk_name.size() - it)) == 0) {
+      PCL_DEBUG(
+          "[pcl::LineRGBD::loadTemplates] Reading and parsing %s as a PCD file.\n",
+          chunk_name.c_str());
       // Read the next PCD file
-      template_point_clouds_.resize (template_point_clouds_.size () + 1);
-      pcd_reader.read (file_name, template_point_clouds_[template_point_clouds_.size () - 1], ltm_offset);
+      template_point_clouds_.resize(template_point_clouds_.size() + 1);
+      pcd_reader.read(file_name,
+                      template_point_clouds_[template_point_clouds_.size() - 1],
+                      ltm_offset);
 
       // Increment the offset for the next file
-      ltm_offset += (ltm_header.getFileSize ()) + (512 - ltm_header.getFileSize () % 512);
+      ltm_offset += (ltm_header.getFileSize()) + (512 - ltm_header.getFileSize() % 512);
     }
-    else if ((it = chunk_name.find (sqmmt_ext)) != std::string::npos &&
-             (sqmmt_ext.size () - (chunk_name.size () - it)) == 0)
-    {
-      PCL_DEBUG ("[pcl::LineRGBD::loadTemplates] Reading and parsing %s as a SQMMT file.\n", chunk_name.c_str ());
+    else if ((it = chunk_name.find(sqmmt_ext)) != std::string::npos &&
+             (sqmmt_ext.size() - (chunk_name.size() - it)) == 0) {
+      PCL_DEBUG(
+          "[pcl::LineRGBD::loadTemplates] Reading and parsing %s as a SQMMT file.\n",
+          chunk_name.c_str());
 
-      unsigned int fsize = ltm_header.getFileSize ();
-      char *buffer = new char[fsize];
-      int result = static_cast<int> (io::raw_read (ltm_fd, reinterpret_cast<char*> (&buffer[0]), fsize));
-      if (result == -1)
-      {
-        delete [] buffer;
-        PCL_ERROR ("[pcl::LineRGBD::loadTemplates] Error reading SQMMT template from file!\n");
+      unsigned int fsize = ltm_header.getFileSize();
+      char* buffer = new char[fsize];
+      int result = static_cast<int>(
+          io::raw_read(ltm_fd, reinterpret_cast<char*>(&buffer[0]), fsize));
+      if (result == -1) {
+        delete[] buffer;
+        PCL_ERROR(
+            "[pcl::LineRGBD::loadTemplates] Error reading SQMMT template from file!\n");
         break;
       }
 
       // Read a SQMMT file
-      std::stringstream stream (std::stringstream::in | std::stringstream::out | std::stringstream::binary);
-      stream.write (buffer, fsize);
+      std::stringstream stream(std::stringstream::in | std::stringstream::out |
+                               std::stringstream::binary);
+      stream.write(buffer, fsize);
       SparseQuantizedMultiModTemplate sqmmt;
-      sqmmt.deserialize (stream);
+      sqmmt.deserialize(stream);
 
-      linemod_.addTemplate (sqmmt);
-      object_ids_.push_back (object_id);
+      linemod_.addTemplate(sqmmt);
+      object_ids_.push_back(object_id);
 
       // Increment the offset for the next file
-      ltm_offset += (ltm_header.getFileSize ()) + (512 - ltm_header.getFileSize () % 512);
+      ltm_offset += (ltm_header.getFileSize()) + (512 - ltm_header.getFileSize() % 512);
 
-      delete [] buffer;
+      delete[] buffer;
     }
 
     if (io::raw_lseek(ltm_fd, ltm_offset, SEEK_SET) < 0)
@@ -149,35 +157,33 @@ LineRGBD<PointXYZT, PointRGBT>::loadTemplates (const std::string &file_name, con
   io::raw_close(ltm_fd);
 
   // Compute 3D bounding boxes from the template point clouds
-  bounding_boxes_.resize (template_point_clouds_.size ());
-  for (std::size_t i = 0; i < template_point_clouds_.size (); ++i)
-  {
-    PointCloud<PointXYZRGBA> & template_point_cloud = template_point_clouds_[i];
-    BoundingBoxXYZ & bb = bounding_boxes_[i];
-    bb.x = bb.y = bb.z = std::numeric_limits<float>::max ();
+  bounding_boxes_.resize(template_point_clouds_.size());
+  for (std::size_t i = 0; i < template_point_clouds_.size(); ++i) {
+    PointCloud<PointXYZRGBA>& template_point_cloud = template_point_clouds_[i];
+    BoundingBoxXYZ& bb = bounding_boxes_[i];
+    bb.x = bb.y = bb.z = std::numeric_limits<float>::max();
     bb.width = bb.height = bb.depth = 0.0f;
 
     float center_x = 0.0f;
     float center_y = 0.0f;
     float center_z = 0.0f;
-    float min_x = std::numeric_limits<float>::max ();
-    float min_y = std::numeric_limits<float>::max ();
-    float min_z = std::numeric_limits<float>::max ();
-    float max_x = -std::numeric_limits<float>::max ();
-    float max_y = -std::numeric_limits<float>::max ();
-    float max_z = -std::numeric_limits<float>::max ();
+    float min_x = std::numeric_limits<float>::max();
+    float min_y = std::numeric_limits<float>::max();
+    float min_z = std::numeric_limits<float>::max();
+    float max_x = -std::numeric_limits<float>::max();
+    float max_y = -std::numeric_limits<float>::max();
+    float max_z = -std::numeric_limits<float>::max();
     std::size_t counter = 0;
-    for (const auto & p : template_point_cloud)
-    {
-      if (!std::isfinite (p.x) || !std::isfinite (p.y) || !std::isfinite (p.z))
+    for (const auto& p : template_point_cloud) {
+      if (!std::isfinite(p.x) || !std::isfinite(p.y) || !std::isfinite(p.z))
         continue;
 
-      min_x = std::min (min_x, p.x);
-      min_y = std::min (min_y, p.y);
-      min_z = std::min (min_z, p.z);
-      max_x = std::max (max_x, p.x);
-      max_y = std::max (max_y, p.y);
-      max_z = std::max (max_z, p.z);
+      min_x = std::min(min_x, p.x);
+      min_y = std::min(min_y, p.y);
+      min_z = std::min(min_z, p.z);
+      max_x = std::max(max_x, p.x);
+      max_y = std::max(max_y, p.y);
+      max_z = std::max(max_z, p.z);
 
       center_x += p.x;
       center_y += p.y;
@@ -186,23 +192,22 @@ LineRGBD<PointXYZT, PointRGBT>::loadTemplates (const std::string &file_name, con
       ++counter;
     }
 
-    center_x /= static_cast<float> (counter);
-    center_y /= static_cast<float> (counter);
-    center_z /= static_cast<float> (counter);
+    center_x /= static_cast<float>(counter);
+    center_y /= static_cast<float>(counter);
+    center_z /= static_cast<float>(counter);
 
-    bb.width  = max_x - min_x;
+    bb.width = max_x - min_x;
     bb.height = max_y - min_y;
-    bb.depth  = max_z - min_z;
+    bb.depth = max_z - min_z;
 
     bb.x = (min_x + bb.width / 2.0f) - center_x - bb.width / 2.0f;
     bb.y = (min_y + bb.height / 2.0f) - center_y - bb.height / 2.0f;
     bb.z = (min_z + bb.depth / 2.0f) - center_z - bb.depth / 2.0f;
 
-    for (auto & j : template_point_cloud)
-    {
+    for (auto& j : template_point_cloud) {
       PointXYZRGBA p = j;
 
-      if (!std::isfinite (p.x) || !std::isfinite (p.y) || !std::isfinite (p.z))
+      if (!std::isfinite(p.x) || !std::isfinite(p.y) || !std::isfinite(p.z))
         continue;
 
       p.x -= center_x;
@@ -216,53 +221,52 @@ LineRGBD<PointXYZT, PointRGBT>::loadTemplates (const std::string &file_name, con
   return (true);
 }
 
-
-template <typename PointXYZT, typename PointRGBT> int
-LineRGBD<PointXYZT, PointRGBT>::createAndAddTemplate (
-  pcl::PointCloud<pcl::PointXYZRGBA> & cloud,
-  const std::size_t object_id,
-  const MaskMap & mask_xyz,
-  const MaskMap & mask_rgb,
-  const RegionXY & region)
+template <typename PointXYZT, typename PointRGBT>
+int
+LineRGBD<PointXYZT, PointRGBT>::createAndAddTemplate(
+    pcl::PointCloud<pcl::PointXYZRGBA>& cloud,
+    const std::size_t object_id,
+    const MaskMap& mask_xyz,
+    const MaskMap& mask_rgb,
+    const RegionXY& region)
 {
   // add point cloud
-  template_point_clouds_.resize (template_point_clouds_.size () + 1);
-  pcl::copyPointCloud (cloud, template_point_clouds_[template_point_clouds_.size () - 1]);
+  template_point_clouds_.resize(template_point_clouds_.size() + 1);
+  pcl::copyPointCloud(cloud, template_point_clouds_[template_point_clouds_.size() - 1]);
 
   // add template
-  object_ids_.push_back (object_id);
+  object_ids_.push_back(object_id);
 
   // Compute 3D bounding boxes from the template point clouds
-  bounding_boxes_.resize (template_point_clouds_.size ());
+  bounding_boxes_.resize(template_point_clouds_.size());
   {
-    const std::size_t i = template_point_clouds_.size () - 1;
+    const std::size_t i = template_point_clouds_.size() - 1;
 
-    PointCloud<PointXYZRGBA> & template_point_cloud = template_point_clouds_[i];
-    BoundingBoxXYZ & bb = bounding_boxes_[i];
-    bb.x = bb.y = bb.z = std::numeric_limits<float>::max ();
+    PointCloud<PointXYZRGBA>& template_point_cloud = template_point_clouds_[i];
+    BoundingBoxXYZ& bb = bounding_boxes_[i];
+    bb.x = bb.y = bb.z = std::numeric_limits<float>::max();
     bb.width = bb.height = bb.depth = 0.0f;
 
     float center_x = 0.0f;
     float center_y = 0.0f;
     float center_z = 0.0f;
-    float min_x = std::numeric_limits<float>::max ();
-    float min_y = std::numeric_limits<float>::max ();
-    float min_z = std::numeric_limits<float>::max ();
-    float max_x = -std::numeric_limits<float>::max ();
-    float max_y = -std::numeric_limits<float>::max ();
-    float max_z = -std::numeric_limits<float>::max ();
+    float min_x = std::numeric_limits<float>::max();
+    float min_y = std::numeric_limits<float>::max();
+    float min_z = std::numeric_limits<float>::max();
+    float max_x = -std::numeric_limits<float>::max();
+    float max_y = -std::numeric_limits<float>::max();
+    float max_z = -std::numeric_limits<float>::max();
     std::size_t counter = 0;
-    for (const auto & p : template_point_cloud)
-    {
-      if (!std::isfinite (p.x) || !std::isfinite (p.y) || !std::isfinite (p.z))
+    for (const auto& p : template_point_cloud) {
+      if (!std::isfinite(p.x) || !std::isfinite(p.y) || !std::isfinite(p.z))
         continue;
 
-      min_x = std::min (min_x, p.x);
-      min_y = std::min (min_y, p.y);
-      min_z = std::min (min_z, p.z);
-      max_x = std::max (max_x, p.x);
-      max_y = std::max (max_y, p.y);
-      max_z = std::max (max_z, p.z);
+      min_x = std::min(min_x, p.x);
+      min_y = std::min(min_y, p.y);
+      min_z = std::min(min_z, p.z);
+      max_x = std::max(max_x, p.x);
+      max_y = std::max(max_y, p.y);
+      max_z = std::max(max_z, p.z);
 
       center_x += p.x;
       center_y += p.y;
@@ -271,23 +275,22 @@ LineRGBD<PointXYZT, PointRGBT>::createAndAddTemplate (
       ++counter;
     }
 
-    center_x /= static_cast<float> (counter);
-    center_y /= static_cast<float> (counter);
-    center_z /= static_cast<float> (counter);
+    center_x /= static_cast<float>(counter);
+    center_y /= static_cast<float>(counter);
+    center_z /= static_cast<float>(counter);
 
-    bb.width  = max_x - min_x;
+    bb.width = max_x - min_x;
     bb.height = max_y - min_y;
-    bb.depth  = max_z - min_z;
+    bb.depth = max_z - min_z;
 
     bb.x = (min_x + bb.width / 2.0f) - center_x - bb.width / 2.0f;
     bb.y = (min_y + bb.height / 2.0f) - center_y - bb.height / 2.0f;
     bb.z = (min_z + bb.depth / 2.0f) - center_z - bb.depth / 2.0f;
 
-    for (auto & j : template_point_cloud)
-    {
+    for (auto& j : template_point_cloud) {
       PointXYZRGBA p = j;
 
-      if (!std::isfinite (p.x) || !std::isfinite (p.y) || !std::isfinite (p.z))
+      if (!std::isfinite(p.x) || !std::isfinite(p.y) || !std::isfinite(p.z))
         continue;
 
       p.x -= center_x;
@@ -299,59 +302,61 @@ LineRGBD<PointXYZT, PointRGBT>::createAndAddTemplate (
   }
 
   std::vector<pcl::QuantizableModality*> modalities;
-  modalities.push_back (&color_gradient_mod_);
-  modalities.push_back (&surface_normal_mod_);
+  modalities.push_back(&color_gradient_mod_);
+  modalities.push_back(&surface_normal_mod_);
 
   std::vector<MaskMap*> masks;
-  masks.push_back (const_cast<MaskMap*> (&mask_rgb));
-  masks.push_back (const_cast<MaskMap*> (&mask_xyz));
+  masks.push_back(const_cast<MaskMap*>(&mask_rgb));
+  masks.push_back(const_cast<MaskMap*>(&mask_xyz));
 
-  return (linemod_.createAndAddTemplate (modalities, masks, region));
+  return (linemod_.createAndAddTemplate(modalities, masks, region));
 }
 
-
-template <typename PointXYZT, typename PointRGBT> bool
-LineRGBD<PointXYZT, PointRGBT>::addTemplate (const SparseQuantizedMultiModTemplate & sqmmt, pcl::PointCloud<pcl::PointXYZRGBA> & cloud, std::size_t object_id)
+template <typename PointXYZT, typename PointRGBT>
+bool
+LineRGBD<PointXYZT, PointRGBT>::addTemplate(
+    const SparseQuantizedMultiModTemplate& sqmmt,
+    pcl::PointCloud<pcl::PointXYZRGBA>& cloud,
+    std::size_t object_id)
 {
   // add point cloud
-  template_point_clouds_.resize (template_point_clouds_.size () + 1);
-  pcl::copyPointCloud (cloud, template_point_clouds_[template_point_clouds_.size () - 1]);
+  template_point_clouds_.resize(template_point_clouds_.size() + 1);
+  pcl::copyPointCloud(cloud, template_point_clouds_[template_point_clouds_.size() - 1]);
 
   // add template
-  linemod_.addTemplate (sqmmt);
-  object_ids_.push_back (object_id);
+  linemod_.addTemplate(sqmmt);
+  object_ids_.push_back(object_id);
 
   // Compute 3D bounding boxes from the template point clouds
-  bounding_boxes_.resize (template_point_clouds_.size ());
+  bounding_boxes_.resize(template_point_clouds_.size());
   {
-    const std::size_t i = template_point_clouds_.size () - 1;
+    const std::size_t i = template_point_clouds_.size() - 1;
 
-    PointCloud<PointXYZRGBA> & template_point_cloud = template_point_clouds_[i];
-    BoundingBoxXYZ & bb = bounding_boxes_[i];
-    bb.x = bb.y = bb.z = std::numeric_limits<float>::max ();
+    PointCloud<PointXYZRGBA>& template_point_cloud = template_point_clouds_[i];
+    BoundingBoxXYZ& bb = bounding_boxes_[i];
+    bb.x = bb.y = bb.z = std::numeric_limits<float>::max();
     bb.width = bb.height = bb.depth = 0.0f;
 
     float center_x = 0.0f;
     float center_y = 0.0f;
     float center_z = 0.0f;
-    float min_x = std::numeric_limits<float>::max ();
-    float min_y = std::numeric_limits<float>::max ();
-    float min_z = std::numeric_limits<float>::max ();
-    float max_x = -std::numeric_limits<float>::max ();
-    float max_y = -std::numeric_limits<float>::max ();
-    float max_z = -std::numeric_limits<float>::max ();
+    float min_x = std::numeric_limits<float>::max();
+    float min_y = std::numeric_limits<float>::max();
+    float min_z = std::numeric_limits<float>::max();
+    float max_x = -std::numeric_limits<float>::max();
+    float max_y = -std::numeric_limits<float>::max();
+    float max_z = -std::numeric_limits<float>::max();
     std::size_t counter = 0;
-    for (const auto & p : template_point_cloud)
-    {
-      if (!std::isfinite (p.x) || !std::isfinite (p.y) || !std::isfinite (p.z))
+    for (const auto& p : template_point_cloud) {
+      if (!std::isfinite(p.x) || !std::isfinite(p.y) || !std::isfinite(p.z))
         continue;
 
-      min_x = std::min (min_x, p.x);
-      min_y = std::min (min_y, p.y);
-      min_z = std::min (min_z, p.z);
-      max_x = std::max (max_x, p.x);
-      max_y = std::max (max_y, p.y);
-      max_z = std::max (max_z, p.z);
+      min_x = std::min(min_x, p.x);
+      min_y = std::min(min_y, p.y);
+      min_z = std::min(min_z, p.z);
+      max_x = std::max(max_x, p.x);
+      max_y = std::max(max_y, p.y);
+      max_z = std::max(max_z, p.z);
 
       center_x += p.x;
       center_y += p.y;
@@ -360,23 +365,22 @@ LineRGBD<PointXYZT, PointRGBT>::addTemplate (const SparseQuantizedMultiModTempla
       ++counter;
     }
 
-    center_x /= static_cast<float> (counter);
-    center_y /= static_cast<float> (counter);
-    center_z /= static_cast<float> (counter);
+    center_x /= static_cast<float>(counter);
+    center_y /= static_cast<float>(counter);
+    center_z /= static_cast<float>(counter);
 
-    bb.width  = max_x - min_x;
+    bb.width = max_x - min_x;
     bb.height = max_y - min_y;
-    bb.depth  = max_z - min_z;
+    bb.depth = max_z - min_z;
 
     bb.x = (min_x + bb.width / 2.0f) - center_x - bb.width / 2.0f;
     bb.y = (min_y + bb.height / 2.0f) - center_y - bb.height / 2.0f;
     bb.z = (min_z + bb.depth / 2.0f) - center_z - bb.depth / 2.0f;
 
-    for (auto & j : template_point_cloud)
-    {
+    for (auto& j : template_point_cloud) {
       PointXYZRGBA p = j;
 
-      if (!std::isfinite (p.x) || !std::isfinite (p.y) || !std::isfinite (p.z))
+      if (!std::isfinite(p.x) || !std::isfinite(p.y) || !std::isfinite(p.z))
         continue;
 
       p.x -= center_x;
@@ -390,25 +394,25 @@ LineRGBD<PointXYZT, PointRGBT>::addTemplate (const SparseQuantizedMultiModTempla
   return (true);
 }
 
-
-template <typename PointXYZT, typename PointRGBT> void
-LineRGBD<PointXYZT, PointRGBT>::detect (
-    std::vector<typename pcl::LineRGBD<PointXYZT, PointRGBT>::Detection> & detections)
+template <typename PointXYZT, typename PointRGBT>
+void
+LineRGBD<PointXYZT, PointRGBT>::detect(
+    std::vector<typename pcl::LineRGBD<PointXYZT, PointRGBT>::Detection>& detections)
 {
   std::vector<pcl::QuantizableModality*> modalities;
-  modalities.push_back (&color_gradient_mod_);
-  modalities.push_back (&surface_normal_mod_);
+  modalities.push_back(&color_gradient_mod_);
+  modalities.push_back(&surface_normal_mod_);
 
   std::vector<pcl::LINEMODDetection> linemod_detections;
-  linemod_.detectTemplates (modalities, linemod_detections);
+  linemod_.detectTemplates(modalities, linemod_detections);
 
-  detections_.clear ();
-  detections_.reserve (linemod_detections.size ());
-  detections.clear ();
-  detections.reserve (linemod_detections.size ());
-  for (std::size_t detection_id = 0; detection_id < linemod_detections.size (); ++detection_id)
-  {
-    pcl::LINEMODDetection & linemod_detection = linemod_detections[detection_id];
+  detections_.clear();
+  detections_.reserve(linemod_detections.size());
+  detections.clear();
+  detections.reserve(linemod_detections.size());
+  for (std::size_t detection_id = 0; detection_id < linemod_detections.size();
+       ++detection_id) {
+    pcl::LINEMODDetection& linemod_detection = linemod_detections[detection_id];
 
     typename pcl::LineRGBD<PointXYZT, PointRGBT>::Detection detection;
     detection.template_id = linemod_detection.template_id;
@@ -417,42 +421,42 @@ LineRGBD<PointXYZT, PointRGBT>::detect (
     detection.response = linemod_detection.score;
 
     // compute bounding box:
-    // we assume that the bounding boxes of the templates are relative to the center of mass
-    // of the template points; so we also compute the center of mass of the points
+    // we assume that the bounding boxes of the templates are relative to the center of
+    // mass of the template points; so we also compute the center of mass of the points
     // covered by the
 
-    const pcl::SparseQuantizedMultiModTemplate & linemod_template =
-      linemod_.getTemplate (linemod_detection.template_id);
+    const pcl::SparseQuantizedMultiModTemplate& linemod_template =
+        linemod_.getTemplate(linemod_detection.template_id);
 
-    const std::size_t start_x = std::max (linemod_detection.x, 0);
-    const std::size_t start_y = std::max (linemod_detection.y, 0);
-    const std::size_t end_x = std::min (static_cast<std::size_t> (start_x + linemod_template.region.width),
-                                   static_cast<std::size_t> (cloud_xyz_->width));
-    const std::size_t end_y = std::min (static_cast<std::size_t> (start_y + linemod_template.region.height),
-                                   static_cast<std::size_t> (cloud_xyz_->height));
+    const std::size_t start_x = std::max(linemod_detection.x, 0);
+    const std::size_t start_y = std::max(linemod_detection.y, 0);
+    const std::size_t end_x =
+        std::min(static_cast<std::size_t>(start_x + linemod_template.region.width),
+                 static_cast<std::size_t>(cloud_xyz_->width));
+    const std::size_t end_y =
+        std::min(static_cast<std::size_t>(start_y + linemod_template.region.height),
+                 static_cast<std::size_t>(cloud_xyz_->height));
 
     detection.region.x = linemod_detection.x;
     detection.region.y = linemod_detection.y;
-    detection.region.width  = linemod_template.region.width;
+    detection.region.width = linemod_template.region.width;
     detection.region.height = linemod_template.region.height;
 
-    //std::cerr << "detection region: " << linemod_detection.x << ", "
-    //  << linemod_detection.y << ", "
-    //  << linemod_template.region.width << ", "
-    //  << linemod_template.region.height << std::endl;
+    // std::cerr << "detection region: " << linemod_detection.x << ", "
+    //   << linemod_detection.y << ", "
+    //   << linemod_template.region.width << ", "
+    //   << linemod_template.region.height << std::endl;
 
     float center_x = 0.0f;
     float center_y = 0.0f;
     float center_z = 0.0f;
     std::size_t counter = 0;
-    for (std::size_t row_index = start_y; row_index < end_y; ++row_index)
-    {
-      for (std::size_t col_index = start_x; col_index < end_x; ++col_index)
-      {
-        const PointXYZT & point = (*cloud_xyz_) (col_index, row_index);
+    for (std::size_t row_index = start_y; row_index < end_y; ++row_index) {
+      for (std::size_t col_index = start_x; col_index < end_x; ++col_index) {
+        const PointXYZT& point = (*cloud_xyz_)(col_index, row_index);
 
-        if (std::isfinite (point.x) && std::isfinite (point.y) && std::isfinite (point.z))
-        {
+        if (std::isfinite(point.x) && std::isfinite(point.y) &&
+            std::isfinite(point.z)) {
           center_x += point.x;
           center_y += point.y;
           center_z += point.z;
@@ -460,7 +464,7 @@ LineRGBD<PointXYZT, PointRGBT>::detect (
         }
       }
     }
-    const float inv_counter = 1.0f / static_cast<float> (counter);
+    const float inv_counter = 1.0f / static_cast<float>(counter);
     center_x *= inv_counter;
     center_y *= inv_counter;
     center_z *= inv_counter;
@@ -472,44 +476,45 @@ LineRGBD<PointXYZT, PointRGBT>::detect (
     detection.bounding_box.y += center_y;
     detection.bounding_box.z += center_z;
 
-    detections_.push_back (detection);
+    detections_.push_back(detection);
   }
 
   // refine detections along depth
-  refineDetectionsAlongDepth ();
-  //applyprojectivedepthicpondetections();
+  refineDetectionsAlongDepth();
+  // applyprojectivedepthicpondetections();
 
   // remove overlaps
-  removeOverlappingDetections ();
+  removeOverlappingDetections();
 
-  for (std::size_t detection_index = 0; detection_index < detections_.size (); ++detection_index)
-  {
-    detections.push_back (detections_[detection_index]);
+  for (std::size_t detection_index = 0; detection_index < detections_.size();
+       ++detection_index) {
+    detections.push_back(detections_[detection_index]);
   }
 }
 
-
-template <typename PointXYZT, typename PointRGBT> void
-LineRGBD<PointXYZT, PointRGBT>::detectSemiScaleInvariant (
-    std::vector<typename pcl::LineRGBD<PointXYZT, PointRGBT>::Detection> & detections,
+template <typename PointXYZT, typename PointRGBT>
+void
+LineRGBD<PointXYZT, PointRGBT>::detectSemiScaleInvariant(
+    std::vector<typename pcl::LineRGBD<PointXYZT, PointRGBT>::Detection>& detections,
     const float min_scale,
     const float max_scale,
     const float scale_multiplier)
 {
   std::vector<pcl::QuantizableModality*> modalities;
-  modalities.push_back (&color_gradient_mod_);
-  modalities.push_back (&surface_normal_mod_);
+  modalities.push_back(&color_gradient_mod_);
+  modalities.push_back(&surface_normal_mod_);
 
   std::vector<pcl::LINEMODDetection> linemod_detections;
-  linemod_.detectTemplatesSemiScaleInvariant (modalities, linemod_detections, min_scale, max_scale, scale_multiplier);
+  linemod_.detectTemplatesSemiScaleInvariant(
+      modalities, linemod_detections, min_scale, max_scale, scale_multiplier);
 
-  detections_.clear ();
-  detections_.reserve (linemod_detections.size ());
-  detections.clear ();
-  detections.reserve (linemod_detections.size ());
-  for (std::size_t detection_id = 0; detection_id < linemod_detections.size (); ++detection_id)
-  {
-    pcl::LINEMODDetection & linemod_detection = linemod_detections[detection_id];
+  detections_.clear();
+  detections_.reserve(linemod_detections.size());
+  detections.clear();
+  detections.reserve(linemod_detections.size());
+  for (std::size_t detection_id = 0; detection_id < linemod_detections.size();
+       ++detection_id) {
+    pcl::LINEMODDetection& linemod_detection = linemod_detections[detection_id];
 
     typename pcl::LineRGBD<PointXYZT, PointRGBT>::Detection detection;
     detection.template_id = linemod_detection.template_id;
@@ -518,42 +523,44 @@ LineRGBD<PointXYZT, PointRGBT>::detectSemiScaleInvariant (
     detection.response = linemod_detection.score;
 
     // compute bounding box:
-    // we assume that the bounding boxes of the templates are relative to the center of mass
-    // of the template points; so we also compute the center of mass of the points
+    // we assume that the bounding boxes of the templates are relative to the center of
+    // mass of the template points; so we also compute the center of mass of the points
     // covered by the
 
-    const pcl::SparseQuantizedMultiModTemplate & linemod_template =
-      linemod_.getTemplate (linemod_detection.template_id);
+    const pcl::SparseQuantizedMultiModTemplate& linemod_template =
+        linemod_.getTemplate(linemod_detection.template_id);
 
-    const std::size_t start_x = std::max (linemod_detection.x, 0);
-    const std::size_t start_y = std::max (linemod_detection.y, 0);
-    const std::size_t end_x = std::min (static_cast<std::size_t> (start_x + linemod_template.region.width * linemod_detection.scale),
-                                   static_cast<std::size_t> (cloud_xyz_->width));
-    const std::size_t end_y = std::min (static_cast<std::size_t> (start_y + linemod_template.region.height * linemod_detection.scale),
-                                   static_cast<std::size_t> (cloud_xyz_->height));
+    const std::size_t start_x = std::max(linemod_detection.x, 0);
+    const std::size_t start_y = std::max(linemod_detection.y, 0);
+    const std::size_t end_x =
+        std::min(static_cast<std::size_t>(start_x + linemod_template.region.width *
+                                                        linemod_detection.scale),
+                 static_cast<std::size_t>(cloud_xyz_->width));
+    const std::size_t end_y =
+        std::min(static_cast<std::size_t>(start_y + linemod_template.region.height *
+                                                        linemod_detection.scale),
+                 static_cast<std::size_t>(cloud_xyz_->height));
 
     detection.region.x = linemod_detection.x;
     detection.region.y = linemod_detection.y;
-    detection.region.width  = linemod_template.region.width * linemod_detection.scale;
+    detection.region.width = linemod_template.region.width * linemod_detection.scale;
     detection.region.height = linemod_template.region.height * linemod_detection.scale;
 
-    //std::cerr << "detection region: " << linemod_detection.x << ", "
-    //  << linemod_detection.y << ", "
-    //  << linemod_template.region.width << ", "
-    //  << linemod_template.region.height << std::endl;
+    // std::cerr << "detection region: " << linemod_detection.x << ", "
+    //   << linemod_detection.y << ", "
+    //   << linemod_template.region.width << ", "
+    //   << linemod_template.region.height << std::endl;
 
     float center_x = 0.0f;
     float center_y = 0.0f;
     float center_z = 0.0f;
     std::size_t counter = 0;
-    for (std::size_t row_index = start_y; row_index < end_y; ++row_index)
-    {
-      for (std::size_t col_index = start_x; col_index < end_x; ++col_index)
-      {
-        const PointXYZT & point = (*cloud_xyz_) (col_index, row_index);
+    for (std::size_t row_index = start_y; row_index < end_y; ++row_index) {
+      for (std::size_t col_index = start_x; col_index < end_x; ++col_index) {
+        const PointXYZT& point = (*cloud_xyz_)(col_index, row_index);
 
-        if (std::isfinite (point.x) && std::isfinite (point.y) && std::isfinite (point.z))
-        {
+        if (std::isfinite(point.x) && std::isfinite(point.y) &&
+            std::isfinite(point.z)) {
           center_x += point.x;
           center_y += point.y;
           center_z += point.z;
@@ -561,7 +568,7 @@ LineRGBD<PointXYZT, PointRGBT>::detectSemiScaleInvariant (
         }
       }
     }
-    const float inv_counter = 1.0f / static_cast<float> (counter);
+    const float inv_counter = 1.0f / static_cast<float>(counter);
     center_x *= inv_counter;
     center_y *= inv_counter;
     center_z *= inv_counter;
@@ -573,59 +580,61 @@ LineRGBD<PointXYZT, PointRGBT>::detectSemiScaleInvariant (
     detection.bounding_box.y += center_y;
     detection.bounding_box.z += center_z;
 
-    detections_.push_back (detection);
+    detections_.push_back(detection);
   }
 
   // refine detections along depth
-  //refineDetectionsAlongDepth ();
-  //applyProjectiveDepthICPOnDetections();
+  // refineDetectionsAlongDepth ();
+  // applyProjectiveDepthICPOnDetections();
 
   // remove overlaps
-  removeOverlappingDetections ();
+  removeOverlappingDetections();
 
-  for (std::size_t detection_index = 0; detection_index < detections_.size (); ++detection_index)
-  {
-    detections.push_back (detections_[detection_index]);
+  for (std::size_t detection_index = 0; detection_index < detections_.size();
+       ++detection_index) {
+    detections.push_back(detections_[detection_index]);
   }
 }
 
-
-template <typename PointXYZT, typename PointRGBT> void
-LineRGBD<PointXYZT, PointRGBT>::computeTransformedTemplatePoints (
-    const std::size_t detection_id, pcl::PointCloud<pcl::PointXYZRGBA> &cloud)
+template <typename PointXYZT, typename PointRGBT>
+void
+LineRGBD<PointXYZT, PointRGBT>::computeTransformedTemplatePoints(
+    const std::size_t detection_id, pcl::PointCloud<pcl::PointXYZRGBA>& cloud)
 {
-  if (detection_id >= detections_.size ())
-    PCL_ERROR ("ERROR pcl::LineRGBD::computeTransformedTemplatePoints - detection_id is out of bounds\n");
+  if (detection_id >= detections_.size())
+    PCL_ERROR("ERROR pcl::LineRGBD::computeTransformedTemplatePoints - detection_id is "
+              "out of bounds\n");
 
   const std::size_t template_id = detections_[detection_id].template_id;
-  const pcl::PointCloud<pcl::PointXYZRGBA> & template_point_cloud = template_point_clouds_[template_id];
+  const pcl::PointCloud<pcl::PointXYZRGBA>& template_point_cloud =
+      template_point_clouds_[template_id];
 
-  const pcl::BoundingBoxXYZ & template_bounding_box = bounding_boxes_[template_id];
-  const pcl::BoundingBoxXYZ & detection_bounding_box = detections_[detection_id].bounding_box;
+  const pcl::BoundingBoxXYZ& template_bounding_box = bounding_boxes_[template_id];
+  const pcl::BoundingBoxXYZ& detection_bounding_box =
+      detections_[detection_id].bounding_box;
 
-  //std::cerr << "detection: "
-  //  << detection_bounding_box.x << ", "
-  //  << detection_bounding_box.y << ", "
-  //  << detection_bounding_box.z << std::endl;
-  //std::cerr << "template: "
-  //  << template_bounding_box.x << ", "
-  //  << template_bounding_box.y << ", "
-  //  << template_bounding_box.z << std::endl;
+  // std::cerr << "detection: "
+  //   << detection_bounding_box.x << ", "
+  //   << detection_bounding_box.y << ", "
+  //   << detection_bounding_box.z << std::endl;
+  // std::cerr << "template: "
+  //   << template_bounding_box.x << ", "
+  //   << template_bounding_box.y << ", "
+  //   << template_bounding_box.z << std::endl;
   const float translation_x = detection_bounding_box.x - template_bounding_box.x;
   const float translation_y = detection_bounding_box.y - template_bounding_box.y;
   const float translation_z = detection_bounding_box.z - template_bounding_box.z;
 
-  //std::cerr << "translation: "
-  //  << translation_x << ", "
-  //  << translation_y << ", "
-  //  << translation_z << std::endl;
+  // std::cerr << "translation: "
+  //   << translation_x << ", "
+  //   << translation_y << ", "
+  //   << translation_z << std::endl;
 
-  const std::size_t nr_points = template_point_cloud.size ();
-  cloud.resize (nr_points);
+  const std::size_t nr_points = template_point_cloud.size();
+  cloud.resize(nr_points);
   cloud.width = template_point_cloud.width;
   cloud.height = template_point_cloud.height;
-  for (std::size_t point_index = 0; point_index < nr_points; ++point_index)
-  {
+  for (std::size_t point_index = 0; point_index < nr_points; ++point_index) {
     pcl::PointXYZRGBA point = template_point_cloud[point_index];
 
     point.x += translation_x;
@@ -636,143 +645,144 @@ LineRGBD<PointXYZT, PointRGBT>::computeTransformedTemplatePoints (
   }
 }
 
-
-template <typename PointXYZT, typename PointRGBT> void
-LineRGBD<PointXYZT, PointRGBT>::refineDetectionsAlongDepth ()
+template <typename PointXYZT, typename PointRGBT>
+void
+LineRGBD<PointXYZT, PointRGBT>::refineDetectionsAlongDepth()
 {
-  const std::size_t nr_detections = detections_.size ();
-  for (std::size_t detection_index = 0; detection_index < nr_detections; ++detection_index)
-  {
-    typename LineRGBD<PointXYZT, PointRGBT>::Detection & detection = detections_[detection_index];
+  const std::size_t nr_detections = detections_.size();
+  for (std::size_t detection_index = 0; detection_index < nr_detections;
+       ++detection_index) {
+    typename LineRGBD<PointXYZT, PointRGBT>::Detection& detection =
+        detections_[detection_index];
 
     // find depth with most valid points
-    const std::size_t start_x = std::max (detection.region.x, 0);
-    const std::size_t start_y = std::max (detection.region.y, 0);
-    const std::size_t end_x = std::min (static_cast<std::size_t> (detection.region.x + detection.region.width),
-                                   static_cast<std::size_t> (cloud_xyz_->width));
-    const std::size_t end_y = std::min (static_cast<std::size_t> (detection.region.y + detection.region.height),
-                                   static_cast<std::size_t> (cloud_xyz_->height));
+    const std::size_t start_x = std::max(detection.region.x, 0);
+    const std::size_t start_y = std::max(detection.region.y, 0);
+    const std::size_t end_x =
+        std::min(static_cast<std::size_t>(detection.region.x + detection.region.width),
+                 static_cast<std::size_t>(cloud_xyz_->width));
+    const std::size_t end_y =
+        std::min(static_cast<std::size_t>(detection.region.y + detection.region.height),
+                 static_cast<std::size_t>(cloud_xyz_->height));
 
+    float min_depth = std::numeric_limits<float>::max();
+    float max_depth = -std::numeric_limits<float>::max();
+    for (std::size_t row_index = start_y; row_index < end_y; ++row_index) {
+      for (std::size_t col_index = start_x; col_index < end_x; ++col_index) {
+        const PointXYZT& point = (*cloud_xyz_)(col_index, row_index);
 
-    float min_depth = std::numeric_limits<float>::max ();
-    float max_depth = -std::numeric_limits<float>::max ();
-    for (std::size_t row_index = start_y; row_index < end_y; ++row_index)
-    {
-      for (std::size_t col_index = start_x; col_index < end_x; ++col_index)
-      {
-        const PointXYZT & point = (*cloud_xyz_) (col_index, row_index);
-
-        if (/*std::isfinite (point.x) && std::isfinite (point.y) && */std::isfinite (point.z))
-        {
-          min_depth = std::min (min_depth, point.z);
-          max_depth = std::max (max_depth, point.z);
+        if (/*std::isfinite (point.x) && std::isfinite (point.y) && */ std::isfinite(
+            point.z)) {
+          min_depth = std::min(min_depth, point.z);
+          max_depth = std::max(max_depth, point.z);
         }
       }
     }
 
     constexpr std::size_t nr_bins = 1000;
-    const float step_size = (max_depth - min_depth) / static_cast<float> (nr_bins-1);
-    std::vector<std::size_t> depth_bins (nr_bins, 0);
-    for (std::size_t row_index = start_y; row_index < end_y; ++row_index)
-    {
-      for (std::size_t col_index = start_x; col_index < end_x; ++col_index)
-      {
-        const PointXYZT & point = (*cloud_xyz_) (col_index, row_index);
+    const float step_size = (max_depth - min_depth) / static_cast<float>(nr_bins - 1);
+    std::vector<std::size_t> depth_bins(nr_bins, 0);
+    for (std::size_t row_index = start_y; row_index < end_y; ++row_index) {
+      for (std::size_t col_index = start_x; col_index < end_x; ++col_index) {
+        const PointXYZT& point = (*cloud_xyz_)(col_index, row_index);
 
-        if (/*std::isfinite (point.x) && std::isfinite (point.y) && */std::isfinite (point.z))
-        {
-          const auto bin_index = static_cast<std::size_t> ((point.z - min_depth) / step_size);
+        if (/*std::isfinite (point.x) && std::isfinite (point.y) && */ std::isfinite(
+            point.z)) {
+          const auto bin_index =
+              static_cast<std::size_t>((point.z - min_depth) / step_size);
           ++depth_bins[bin_index];
         }
       }
     }
 
-    std::vector<std::size_t> integral_depth_bins (nr_bins, 0);
+    std::vector<std::size_t> integral_depth_bins(nr_bins, 0);
 
     integral_depth_bins[0] = depth_bins[0];
-    for (std::size_t bin_index = 1; bin_index < nr_bins; ++bin_index)
-    {
-      integral_depth_bins[bin_index] = depth_bins[bin_index] + integral_depth_bins[bin_index-1];
+    for (std::size_t bin_index = 1; bin_index < nr_bins; ++bin_index) {
+      integral_depth_bins[bin_index] =
+          depth_bins[bin_index] + integral_depth_bins[bin_index - 1];
     }
 
-    const auto bb_depth_range = static_cast<std::size_t> (detection.bounding_box.depth / step_size);
+    const auto bb_depth_range =
+        static_cast<std::size_t>(detection.bounding_box.depth / step_size);
 
     std::size_t max_nr_points = 0;
     std::size_t max_index = 0;
-    for (std::size_t bin_index = 0; (bin_index+bb_depth_range) < nr_bins; ++bin_index)
-    {
-      const std::size_t nr_points_in_range = integral_depth_bins[bin_index+bb_depth_range] - integral_depth_bins[bin_index];
+    for (std::size_t bin_index = 0; (bin_index + bb_depth_range) < nr_bins;
+         ++bin_index) {
+      const std::size_t nr_points_in_range =
+          integral_depth_bins[bin_index + bb_depth_range] -
+          integral_depth_bins[bin_index];
 
-      if (nr_points_in_range > max_nr_points)
-      {
+      if (nr_points_in_range > max_nr_points) {
         max_nr_points = nr_points_in_range;
         max_index = bin_index;
       }
     }
 
-    const float z = static_cast<float> (max_index) * step_size + min_depth;
+    const float z = static_cast<float>(max_index) * step_size + min_depth;
 
     detection.bounding_box.z = z;
   }
 }
 
-
-template <typename PointXYZT, typename PointRGBT> void
-LineRGBD<PointXYZT, PointRGBT>::applyProjectiveDepthICPOnDetections ()
+template <typename PointXYZT, typename PointRGBT>
+void
+LineRGBD<PointXYZT, PointRGBT>::applyProjectiveDepthICPOnDetections()
 {
-  const std::size_t nr_detections = detections_.size ();
-  for (std::size_t detection_index = 0; detection_index < nr_detections; ++detection_index)
-  {
-    typename pcl::LineRGBD<PointXYZT, PointRGBT>::Detection & detection = detections_[detection_index];
+  const std::size_t nr_detections = detections_.size();
+  for (std::size_t detection_index = 0; detection_index < nr_detections;
+       ++detection_index) {
+    typename pcl::LineRGBD<PointXYZT, PointRGBT>::Detection& detection =
+        detections_[detection_index];
 
     const std::size_t template_id = detection.template_id;
-    pcl::PointCloud<pcl::PointXYZRGBA> & point_cloud = template_point_clouds_[template_id];
+    pcl::PointCloud<pcl::PointXYZRGBA>& point_cloud =
+        template_point_clouds_[template_id];
 
     const std::size_t start_x = detection.region.x;
     const std::size_t start_y = detection.region.y;
     const std::size_t pc_width = point_cloud.width;
     const std::size_t pc_height = point_cloud.height;
 
-    std::vector<std::pair<float, float> > depth_matches;
-    for (std::size_t row_index = 0; row_index < pc_height; ++row_index)
-    {
-      for (std::size_t col_index = 0; col_index < pc_width; ++col_index)
-      {
-        const pcl::PointXYZRGBA & point_template = point_cloud (col_index, row_index);
-        const PointXYZT & point_input = (*cloud_xyz_) (col_index + start_x, row_index + start_y);
+    std::vector<std::pair<float, float>> depth_matches;
+    for (std::size_t row_index = 0; row_index < pc_height; ++row_index) {
+      for (std::size_t col_index = 0; col_index < pc_width; ++col_index) {
+        const pcl::PointXYZRGBA& point_template = point_cloud(col_index, row_index);
+        const PointXYZT& point_input =
+            (*cloud_xyz_)(col_index + start_x, row_index + start_y);
 
-        if (!std::isfinite (point_template.z) || !std::isfinite (point_input.z))
+        if (!std::isfinite(point_template.z) || !std::isfinite(point_input.z))
           continue;
 
-        depth_matches.push_back (std::make_pair (point_template.z, point_input.z));
+        depth_matches.push_back(std::make_pair(point_template.z, point_input.z));
       }
     }
 
     // apply ransac on matches
-    const std::size_t nr_matches = depth_matches.size ();
+    const std::size_t nr_matches = depth_matches.size();
     const std::size_t nr_iterations = 100; // todo: should be a parameter...
-    const float inlier_threshold = 0.01f; // 5cm // todo: should be a parameter...
+    const float inlier_threshold = 0.01f;  // 5cm // todo: should be a parameter...
     std::size_t best_nr_inliers = 0;
     float best_z_translation = 0.0f;
-    for (std::size_t iteration_index = 0; iteration_index < nr_iterations; ++iteration_index)
-    {
-      const std::size_t rand_index = (rand () * nr_matches) / RAND_MAX;
+    for (std::size_t iteration_index = 0; iteration_index < nr_iterations;
+         ++iteration_index) {
+      const std::size_t rand_index = (rand() * nr_matches) / RAND_MAX;
 
-      const float z_translation = depth_matches[rand_index].second - depth_matches[rand_index].first;
+      const float z_translation =
+          depth_matches[rand_index].second - depth_matches[rand_index].first;
 
       std::size_t nr_inliers = 0;
-      for (std::size_t match_index = 0; match_index < nr_matches; ++match_index)
-      {
-        const float error = std::abs (depth_matches[match_index].first + z_translation - depth_matches[match_index].second);
+      for (std::size_t match_index = 0; match_index < nr_matches; ++match_index) {
+        const float error = std::abs(depth_matches[match_index].first + z_translation -
+                                     depth_matches[match_index].second);
 
-        if (error <= inlier_threshold)
-        {
+        if (error <= inlier_threshold) {
           ++nr_inliers;
         }
       }
 
-      if (nr_inliers > best_nr_inliers)
-      {
+      if (nr_inliers > best_nr_inliers) {
         best_nr_inliers = nr_inliers;
         best_z_translation = z_translation;
       }
@@ -780,89 +790,98 @@ LineRGBD<PointXYZT, PointRGBT>::applyProjectiveDepthICPOnDetections ()
 
     float average_depth = 0.0f;
     std::size_t average_counter = 0;
-    for (std::size_t match_index = 0; match_index < nr_matches; ++match_index)
-    {
-      const float error = std::abs (depth_matches[match_index].first + best_z_translation - depth_matches[match_index].second);
+    for (std::size_t match_index = 0; match_index < nr_matches; ++match_index) {
+      const float error =
+          std::abs(depth_matches[match_index].first + best_z_translation -
+                   depth_matches[match_index].second);
 
-      if (error <= inlier_threshold)
-      {
-        //average_depth += depth_matches[match_index].second;
-        average_depth += depth_matches[match_index].second - depth_matches[match_index].first;
+      if (error <= inlier_threshold) {
+        // average_depth += depth_matches[match_index].second;
+        average_depth +=
+            depth_matches[match_index].second - depth_matches[match_index].first;
         ++average_counter;
       }
     }
-    average_depth /= static_cast<float> (average_counter);
+    average_depth /= static_cast<float>(average_counter);
 
-    detection.bounding_box.z = bounding_boxes_[template_id].z + average_depth;// - detection.bounding_box.depth/2.0f;
+    detection.bounding_box.z = bounding_boxes_[template_id].z +
+                               average_depth; // - detection.bounding_box.depth/2.0f;
   }
 }
 
-
-template <typename PointXYZT, typename PointRGBT> void
-LineRGBD<PointXYZT, PointRGBT>::removeOverlappingDetections ()
+template <typename PointXYZT, typename PointRGBT>
+void
+LineRGBD<PointXYZT, PointRGBT>::removeOverlappingDetections()
 {
   // compute overlap between each detection
-  const std::size_t nr_detections = detections_.size ();
-  Eigen::MatrixXf overlaps (nr_detections, nr_detections);
-  for (std::size_t detection_index_1 = 0; detection_index_1 < nr_detections; ++detection_index_1)
-  {
-    for (std::size_t detection_index_2 = detection_index_1+1; detection_index_2 < nr_detections; ++detection_index_2)
-    {
-      const float bounding_box_volume = detections_[detection_index_1].bounding_box.width
-                                      * detections_[detection_index_1].bounding_box.height
-                                      * detections_[detection_index_1].bounding_box.depth;
+  const std::size_t nr_detections = detections_.size();
+  Eigen::MatrixXf overlaps(nr_detections, nr_detections);
+  for (std::size_t detection_index_1 = 0; detection_index_1 < nr_detections;
+       ++detection_index_1) {
+    for (std::size_t detection_index_2 = detection_index_1 + 1;
+         detection_index_2 < nr_detections;
+         ++detection_index_2) {
+      const float bounding_box_volume =
+          detections_[detection_index_1].bounding_box.width *
+          detections_[detection_index_1].bounding_box.height *
+          detections_[detection_index_1].bounding_box.depth;
 
-      if (detections_[detection_index_1].object_id != detections_[detection_index_2].object_id)
-        overlaps (detection_index_1, detection_index_2) = 0.0f;
+      if (detections_[detection_index_1].object_id !=
+          detections_[detection_index_2].object_id)
+        overlaps(detection_index_1, detection_index_2) = 0.0f;
       else
-        overlaps (detection_index_1, detection_index_2) = computeBoundingBoxIntersectionVolume (
-          detections_[detection_index_1].bounding_box,
-          detections_[detection_index_2].bounding_box) / bounding_box_volume;
+        overlaps(detection_index_1, detection_index_2) =
+            computeBoundingBoxIntersectionVolume(
+                detections_[detection_index_1].bounding_box,
+                detections_[detection_index_2].bounding_box) /
+            bounding_box_volume;
     }
   }
 
   // create clusters of detections
-  std::vector<int> detection_to_cluster_mapping (nr_detections, -1);
-  std::vector<std::vector<std::size_t> > clusters;
-  for (std::size_t detection_index = 0; detection_index < nr_detections; ++detection_index)
-  {
+  std::vector<int> detection_to_cluster_mapping(nr_detections, -1);
+  std::vector<std::vector<std::size_t>> clusters;
+  for (std::size_t detection_index = 0; detection_index < nr_detections;
+       ++detection_index) {
     if (detection_to_cluster_mapping[detection_index] != -1)
       continue; // already part of a cluster
 
     std::vector<std::size_t> cluster;
-    const std::size_t cluster_id = clusters.size ();
+    const std::size_t cluster_id = clusters.size();
 
-    cluster.push_back (detection_index);
-    detection_to_cluster_mapping[detection_index] = static_cast<int> (cluster_id);
+    cluster.push_back(detection_index);
+    detection_to_cluster_mapping[detection_index] = static_cast<int>(cluster_id);
 
-    // check for detections which have sufficient overlap with a detection in the cluster
-    for (std::size_t cluster_index = 0; cluster_index < cluster.size (); ++cluster_index)
-    {
+    // check for detections which have sufficient overlap with a detection in the
+    // cluster
+    for (std::size_t cluster_index = 0; cluster_index < cluster.size();
+         ++cluster_index) {
       const std::size_t detection_index_1 = cluster[cluster_index];
 
-      for (std::size_t detection_index_2 = detection_index_1+1; detection_index_2 < nr_detections; ++detection_index_2)
-      {
+      for (std::size_t detection_index_2 = detection_index_1 + 1;
+           detection_index_2 < nr_detections;
+           ++detection_index_2) {
         if (detection_to_cluster_mapping[detection_index_2] != -1)
           continue; // already part of a cluster
 
-        if (overlaps (detection_index_1, detection_index_2) < intersection_volume_threshold_)
+        if (overlaps(detection_index_1, detection_index_2) <
+            intersection_volume_threshold_)
           continue; // not enough overlap
 
-        cluster.push_back (detection_index_2);
-        detection_to_cluster_mapping[detection_index_2] = static_cast<int> (cluster_id);
+        cluster.push_back(detection_index_2);
+        detection_to_cluster_mapping[detection_index_2] = static_cast<int>(cluster_id);
       }
     }
 
-    clusters.push_back (cluster);
+    clusters.push_back(cluster);
   }
 
   // compute detection representatives for every cluster
   std::vector<typename LineRGBD<PointXYZT, PointRGBT>::Detection> clustered_detections;
 
-  const std::size_t nr_clusters = clusters.size ();
-  for (std::size_t cluster_id = 0; cluster_id < nr_clusters; ++cluster_id)
-  {
-    std::vector<std::size_t> & cluster = clusters[cluster_id];
+  const std::size_t nr_clusters = clusters.size();
+  for (std::size_t cluster_id = 0; cluster_id < nr_clusters; ++cluster_id) {
+    std::vector<std::size_t>& cluster = clusters[cluster_id];
 
     float average_center_x = 0.0f;
     float average_center_y = 0.0f;
@@ -875,20 +894,19 @@ LineRGBD<PointXYZT, PointRGBT>::removeOverlappingDetections ()
     float average_region_x = 0.0f;
     float average_region_y = 0.0f;
 
-    const std::size_t elements_in_cluster = cluster.size ();
-    for (std::size_t cluster_index = 0; cluster_index < elements_in_cluster; ++cluster_index)
-    {
+    const std::size_t elements_in_cluster = cluster.size();
+    for (std::size_t cluster_index = 0; cluster_index < elements_in_cluster;
+         ++cluster_index) {
       const std::size_t detection_id = cluster[cluster_index];
 
       const float weight = detections_[detection_id].response;
 
-      if (weight > best_response)
-      {
+      if (weight > best_response) {
         best_response = weight;
         best_detection_id = detection_id;
       }
 
-      const Detection & d = detections_[detection_id];
+      const Detection& d = detections_[detection_id];
       const float p_center_x = d.bounding_box.x + d.bounding_box.width / 2.0f;
       const float p_center_y = d.bounding_box.y + d.bounding_box.height / 2.0f;
       const float p_center_z = d.bounding_box.z + d.bounding_box.depth / 2.0f;
@@ -898,8 +916,10 @@ LineRGBD<PointXYZT, PointRGBT>::removeOverlappingDetections ()
       average_center_z += p_center_z * weight;
       weight_sum += weight;
 
-      average_region_x += static_cast<float>(detections_[detection_id].region.x) * weight;
-      average_region_y += static_cast<float>(detections_[detection_id].region.y) * weight;
+      average_region_x +=
+          static_cast<float>(detections_[detection_id].region.x) * weight;
+      average_region_y +=
+          static_cast<float>(detections_[detection_id].region.y) * weight;
     }
 
     typename LineRGBD<PointXYZT, PointRGBT>::Detection detection;
@@ -909,32 +929,38 @@ LineRGBD<PointXYZT, PointRGBT>::removeOverlappingDetections ()
     detection.response = best_response;
 
     const float inv_weight_sum = 1.0f / weight_sum;
-    const float best_detection_bb_width  = detections_[best_detection_id].bounding_box.width;
-    const float best_detection_bb_height = detections_[best_detection_id].bounding_box.height;
-    const float best_detection_bb_depth  = detections_[best_detection_id].bounding_box.depth;
+    const float best_detection_bb_width =
+        detections_[best_detection_id].bounding_box.width;
+    const float best_detection_bb_height =
+        detections_[best_detection_id].bounding_box.height;
+    const float best_detection_bb_depth =
+        detections_[best_detection_id].bounding_box.depth;
 
-    detection.bounding_box.x = average_center_x * inv_weight_sum - best_detection_bb_width/2.0f;
-    detection.bounding_box.y = average_center_y * inv_weight_sum - best_detection_bb_height/2.0f;
-    detection.bounding_box.z = average_center_z * inv_weight_sum - best_detection_bb_depth/2.0f;
-    detection.bounding_box.width  = best_detection_bb_width;
+    detection.bounding_box.x =
+        average_center_x * inv_weight_sum - best_detection_bb_width / 2.0f;
+    detection.bounding_box.y =
+        average_center_y * inv_weight_sum - best_detection_bb_height / 2.0f;
+    detection.bounding_box.z =
+        average_center_z * inv_weight_sum - best_detection_bb_depth / 2.0f;
+    detection.bounding_box.width = best_detection_bb_width;
     detection.bounding_box.height = best_detection_bb_height;
-    detection.bounding_box.depth  = best_detection_bb_depth;
+    detection.bounding_box.depth = best_detection_bb_depth;
 
     detection.region.x = static_cast<int>(average_region_x * inv_weight_sum);
     detection.region.y = static_cast<int>(average_region_y * inv_weight_sum);
     detection.region.width = detections_[best_detection_id].region.width;
     detection.region.height = detections_[best_detection_id].region.height;
 
-    clustered_detections.push_back (detection);
+    clustered_detections.push_back(detection);
   }
 
   detections_ = clustered_detections;
 }
 
-
-template <typename PointXYZT, typename PointRGBT> float
-LineRGBD<PointXYZT, PointRGBT>::computeBoundingBoxIntersectionVolume (
-  const BoundingBoxXYZ &box1, const BoundingBoxXYZ &box2)
+template <typename PointXYZT, typename PointRGBT>
+float
+LineRGBD<PointXYZT, PointRGBT>::computeBoundingBoxIntersectionVolume(
+    const BoundingBoxXYZ& box1, const BoundingBoxXYZ& box2)
 {
   const float x1_min = box1.x;
   const float y1_min = box1.y;
@@ -950,27 +976,28 @@ LineRGBD<PointXYZT, PointRGBT>::computeBoundingBoxIntersectionVolume (
   const float y2_max = box2.y + box2.height;
   const float z2_max = box2.z + box2.depth;
 
-  const float xi_min = std::max (x1_min, x2_min);
-  const float yi_min = std::max (y1_min, y2_min);
-  const float zi_min = std::max (z1_min, z2_min);
+  const float xi_min = std::max(x1_min, x2_min);
+  const float yi_min = std::max(y1_min, y2_min);
+  const float zi_min = std::max(z1_min, z2_min);
 
-  const float xi_max = std::min (x1_max, x2_max);
-  const float yi_max = std::min (y1_max, y2_max);
-  const float zi_max = std::min (z1_max, z2_max);
+  const float xi_max = std::min(x1_max, x2_max);
+  const float yi_max = std::min(y1_max, y2_max);
+  const float zi_max = std::min(z1_max, z2_max);
 
-  const float intersection_width  = xi_max - xi_min;
+  const float intersection_width = xi_max - xi_min;
   const float intersection_height = yi_max - yi_min;
-  const float intersection_depth  = zi_max - zi_min;
+  const float intersection_depth = zi_max - zi_min;
 
-  if (intersection_width <= 0.0f || intersection_height <= 0.0f || intersection_depth <= 0.0f)
+  if (intersection_width <= 0.0f || intersection_height <= 0.0f ||
+      intersection_depth <= 0.0f)
     return 0.0f;
 
-  const float intersection_volume = intersection_width * intersection_height * intersection_depth;
+  const float intersection_volume =
+      intersection_width * intersection_height * intersection_depth;
 
   return (intersection_volume);
 }
 
 } // namespace pcl
 
-#endif        // PCL_RECOGNITION_LINEMOD_LINE_RGBD_IMPL_HPP_
-
+#endif // PCL_RECOGNITION_LINEMOD_LINE_RGBD_IMPL_HPP_

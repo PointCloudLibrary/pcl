@@ -78,44 +78,44 @@ public:
   /** \brief Starts playing the list of Stereo images if frames_per_second is > 0.
    * Otherwise it works as a trigger: publishes only the next pair in the list. */
   void
-  start() override;
+  start () override;
 
   /** \brief Stops playing the list of Stereo images if frames_per_second is > 0.
    * Otherwise the method has no effect. */
   void
-  stop() override;
+  stop () override;
 
   /** \brief Triggers a callback with new data */
   virtual void
-  trigger();
+  trigger ();
 
   /** \brief whether the grabber is started (publishing) or not.
    * \return true only if publishing.
    */
   bool
-  isRunning() const override;
+  isRunning () const override;
 
   /** \return The name of the grabber */
   std::string
-  getName() const override;
+  getName () const override;
 
   /** \brief Rewinds to the first pair of files in the list.*/
   virtual void
-  rewind();
+  rewind ();
 
   /** \brief Returns the frames_per_second. 0 if grabber is trigger-based */
   float
-  getFramesPerSecond() const override;
+  getFramesPerSecond () const override;
 
   /** \brief Returns whether the repeat flag is on */
   bool
-  isRepeatOn() const;
+  isRepeatOn () const;
 
 private:
   virtual void
-  publish(const pcl::PCLPointCloud2& blob,
-          const Eigen::Vector4f& origin,
-          const Eigen::Quaternionf& orientation) const = 0;
+  publish (const pcl::PCLPointCloud2& blob,
+           const Eigen::Vector4f& origin,
+           const Eigen::Quaternionf& orientation) const = 0;
 
   // to separate and hide the implementation from interface: PIMPL
   struct StereoGrabberImpl;
@@ -135,9 +135,9 @@ public:
 
 protected:
   void
-  publish(const pcl::PCLPointCloud2& blob,
-          const Eigen::Vector4f& origin,
-          const Eigen::Quaternionf& orientation) const override;
+  publish (const pcl::PCLPointCloud2& blob,
+           const Eigen::Vector4f& origin,
+           const Eigen::Quaternionf& orientation) const override;
 
   boost::signals2::signal<void(const typename pcl::PointCloud<PointT>::ConstPtr&)>*
       signal_;

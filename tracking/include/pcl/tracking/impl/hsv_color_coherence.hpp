@@ -68,7 +68,7 @@ union RGBValue {
  * \param[out] fv the output Value component
  */
 void
-RGB2HSV(int r, int g, int b, float& fh, float& fs, float& fv)
+RGB2HSV (int r, int g, int b, float& fh, float& fs, float& fv)
 {
   // mostly copied from opencv-svn/modules/imgproc/src/color.cpp
   // revision is 4351

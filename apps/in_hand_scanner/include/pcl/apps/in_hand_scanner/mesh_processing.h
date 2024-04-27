@@ -69,9 +69,9 @@ public:
    * \param[in] cleanup Calls mesh.cleanup() if true.
    */
   void
-  processBoundary(Mesh& mesh,
-                  const std::vector<HalfEdgeIndices>& boundary_collection,
-                  const bool cleanup = true) const;
+  processBoundary (Mesh& mesh,
+                   const std::vector<HalfEdgeIndices>& boundary_collection,
+                   const bool cleanup = true) const;
 };
 } // End namespace ihs
 } // End namespace pcl

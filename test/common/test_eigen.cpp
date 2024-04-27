@@ -37,396 +37,375 @@
  *
  */
 
+#include <pcl/common/eigen.h>
 #include <pcl/test/gtest.h>
+#include <pcl/point_types.h>
 
 #include <random>
 
-#include <pcl/point_types.h>
-#include <pcl/common/eigen.h>
-
 using namespace pcl;
 
-namespace
-{
-  std::mt19937 rng;
-  std::uniform_real_distribution<> rand_double(0.0, 1.0);
-  std::uniform_int_distribution<unsigned int> rand_uint(0, 100);
-}
+namespace {
+std::mt19937 rng;
+std::uniform_real_distribution<> rand_double(0.0, 1.0);
+std::uniform_int_distribution<unsigned int> rand_uint(0, 100);
+} // namespace
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TEST (PCL, InverseGeneral3x3f)
-{
-  using Scalar = float;
-  using RMatrix = Eigen::Matrix<Scalar, 3, 3, Eigen::RowMajor>;
-  using CMatrix = Eigen::Matrix<Scalar, 3, 3, Eigen::ColMajor>;
-  RMatrix r_matrix = RMatrix::Zero ();
-  RMatrix r_inverse = RMatrix::Zero ();
-  CMatrix c_matrix = CMatrix::Zero ();
-  CMatrix c_inverse = CMatrix::Zero ();
-  Eigen::Matrix<Scalar, 3, 3> result = Eigen::Matrix<Scalar, 3, 3>::Zero ();
-  Eigen::Matrix<Scalar, 3, 3> error = Eigen::Matrix<Scalar, 3, 3>::Zero ();
-  constexpr Scalar epsilon = 1e-5f;
-  constexpr unsigned iterations = 1000000;
-
-  // test floating point row-major : row-major
-  for (unsigned idx = 0; idx < iterations; ++idx)
-  {
-    for (unsigned elIdx = 0; elIdx < 9; ++elIdx)
-      r_matrix.coeffRef (elIdx) = static_cast<Scalar>(rand_double (rng));
-
-    c_matrix = r_matrix;
-
-    // test row-major -> row-major
-    Scalar determinant = invert3x3Matrix (r_matrix, r_inverse);
-    if (std::abs (determinant) > epsilon)
-    {
-      float eps = std::max (epsilon, epsilon / std::abs(determinant));
-
-      result = r_inverse * r_matrix;
-      error = result - Eigen::Matrix<Scalar, 3, 3>::Identity ();
-      Scalar distance = error.cwiseAbs ().sum ();
-      EXPECT_LE (distance, eps);
-
-      result = r_matrix * r_inverse;
-      error = result - Eigen::Matrix<Scalar, 3, 3>::Identity ();
-      distance = error.cwiseAbs ().sum ();
-      EXPECT_LE (distance, eps);
-    }
-
-    // test row-major -> col-major
-    determinant = invert3x3Matrix (c_matrix, c_inverse);
-    if (std::abs (determinant) > epsilon)
-    {
-      Scalar eps = std::max (epsilon, epsilon / std::abs(determinant));
-
-      result = c_inverse * c_matrix;
-      error = result - Eigen::Matrix<Scalar, 3, 3>::Identity ();
-      Scalar distance = error.cwiseAbs ().sum ();
-      EXPECT_LE (distance, eps);
-
-      result = c_matrix * c_inverse;
-      error = result - Eigen::Matrix<Scalar, 3, 3>::Identity ();
-      distance = error.cwiseAbs ().sum ();
-      EXPECT_LE (distance, eps);
-    }
-  }
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TEST (PCL, InverseGeneral3x3d)
-{
-  using Scalar = double;
-  using RMatrix = Eigen::Matrix<Scalar, 3, 3, Eigen::RowMajor>;
-  using CMatrix = Eigen::Matrix<Scalar, 3, 3, Eigen::ColMajor>;
-  RMatrix r_matrix = RMatrix::Zero ();
-  RMatrix r_inverse = RMatrix::Zero ();
-  CMatrix c_matrix = CMatrix::Zero ();
-  CMatrix c_inverse = CMatrix::Zero ();
-  Eigen::Matrix<Scalar, 3, 3> result = Eigen::Matrix<Scalar, 3, 3>::Zero ();
-  Eigen::Matrix<Scalar, 3, 3> error = Eigen::Matrix<Scalar, 3, 3>::Zero ();
-  constexpr Scalar epsilon = 1e-13;
-  constexpr unsigned iterations = 1000000;
-
-  // test floating point row-major : row-major
-  for (unsigned idx = 0; idx < iterations; ++idx)
-  {
-    for (unsigned elIdx = 0; elIdx < 9; ++elIdx)
-    {
-      r_matrix.coeffRef (elIdx) = static_cast<Scalar>(rand_double (rng));
-    }
-    c_matrix = r_matrix;
-    // test row-major -> row-major
-    Scalar determinant = invert3x3Matrix (r_matrix, r_inverse);
-    if (std::abs (determinant) > epsilon)
-    {
-      Scalar eps = std::max (epsilon, epsilon / std::abs (determinant));
-
-      result = r_inverse * r_matrix;
-      error = result - Eigen::Matrix<Scalar, 3, 3>::Identity ();
-      Scalar distance = error.cwiseAbs ().sum ();
-      EXPECT_LE (distance, eps);
-
-      result = r_matrix * r_inverse;
-      error = result - Eigen::Matrix<Scalar, 3, 3>::Identity ();
-      distance = error.cwiseAbs ().sum ();
-      EXPECT_LE (distance, eps);
-    }
-
-    // test row-major -> col-major
-    determinant = invert3x3Matrix (c_matrix, c_inverse);
-    if (std::abs (determinant) > epsilon)
-    {
-      Scalar eps = std::max (epsilon, epsilon / std::abs(determinant));
-
-      result = c_inverse * c_matrix;
-      error = result - Eigen::Matrix<Scalar, 3, 3>::Identity ();
-      Scalar distance = error.cwiseAbs ().sum ();
-      EXPECT_LE (distance, eps);
-
-      result = c_matrix * c_inverse;
-      error = result - Eigen::Matrix<Scalar, 3, 3>::Identity ();
-      distance = error.cwiseAbs ().sum ();
-      EXPECT_LE (distance, eps);
-    }
-  }
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TEST (PCL, InverseSymmetric3x3f)
+TEST(PCL, InverseGeneral3x3f)
 {
   using Scalar = float;
   using RMatrix = Eigen::Matrix<Scalar, 3, 3, Eigen::RowMajor>;
   using CMatrix = Eigen::Matrix<Scalar, 3, 3, Eigen::ColMajor>;
-  RMatrix r_matrix = RMatrix::Zero ();
-  RMatrix r_inverse = RMatrix::Zero ();
-  CMatrix c_matrix = CMatrix::Zero ();
-  CMatrix c_inverse = CMatrix::Zero ();
-  Eigen::Matrix<Scalar, 3, 3> result = Eigen::Matrix<Scalar, 3, 3>::Zero ();
-  Eigen::Matrix<Scalar, 3, 3> error = Eigen::Matrix<Scalar, 3, 3>::Zero ();
+  RMatrix r_matrix = RMatrix::Zero();
+  RMatrix r_inverse = RMatrix::Zero();
+  CMatrix c_matrix = CMatrix::Zero();
+  CMatrix c_inverse = CMatrix::Zero();
+  Eigen::Matrix<Scalar, 3, 3> result = Eigen::Matrix<Scalar, 3, 3>::Zero();
+  Eigen::Matrix<Scalar, 3, 3> error = Eigen::Matrix<Scalar, 3, 3>::Zero();
   constexpr Scalar epsilon = 1e-5f;
   constexpr unsigned iterations = 1000000;
 
   // test floating point row-major : row-major
-  for (unsigned idx = 0; idx < iterations; ++idx)
-  {
+  for (unsigned idx = 0; idx < iterations; ++idx) {
     for (unsigned elIdx = 0; elIdx < 9; ++elIdx)
-      r_matrix.coeffRef (elIdx) = static_cast<Scalar>(rand_double (rng));
+      r_matrix.coeffRef(elIdx) = static_cast<Scalar>(rand_double(rng));
 
-    r_matrix.coeffRef (3) = r_matrix.coeffRef (1);
-    r_matrix.coeffRef (6) = r_matrix.coeffRef (2);
-    r_matrix.coeffRef (7) = r_matrix.coeffRef (5);
     c_matrix = r_matrix;
-    //c_matrix.coeffRef (3) = c_matrix.coeffRef (1);
-    //c_matrix.coeffRef (6) = c_matrix.coeffRef (2);
-    //c_matrix.coeffRef (7) = c_matrix.coeffRef (5);
 
     // test row-major -> row-major
-    Scalar determinant = invert3x3SymMatrix (r_matrix, r_inverse);
-    if (std::abs (determinant) > epsilon)
-    {
-      float eps = std::max (epsilon, epsilon / std::abs(determinant));
+    Scalar determinant = invert3x3Matrix(r_matrix, r_inverse);
+    if (std::abs(determinant) > epsilon) {
+      float eps = std::max(epsilon, epsilon / std::abs(determinant));
 
       result = r_inverse * r_matrix;
-      error = result - Eigen::Matrix<Scalar, 3, 3>::Identity ();
-      Scalar distance = error.cwiseAbs ().sum ();
-      EXPECT_LE (distance, eps);
+      error = result - Eigen::Matrix<Scalar, 3, 3>::Identity();
+      Scalar distance = error.cwiseAbs().sum();
+      EXPECT_LE(distance, eps);
 
       result = r_matrix * r_inverse;
-      error = result - Eigen::Matrix<Scalar, 3, 3>::Identity ();
-      distance = error.cwiseAbs ().sum ();
-      EXPECT_LE (distance, eps);
+      error = result - Eigen::Matrix<Scalar, 3, 3>::Identity();
+      distance = error.cwiseAbs().sum();
+      EXPECT_LE(distance, eps);
     }
 
     // test row-major -> col-major
-    determinant = invert3x3SymMatrix (c_matrix, c_inverse);
-    if (std::abs (determinant) > epsilon)
-    {
-      Scalar eps = std::max (epsilon, epsilon / std::abs(determinant));
+    determinant = invert3x3Matrix(c_matrix, c_inverse);
+    if (std::abs(determinant) > epsilon) {
+      Scalar eps = std::max(epsilon, epsilon / std::abs(determinant));
 
       result = c_inverse * c_matrix;
-      error = result - Eigen::Matrix<Scalar, 3, 3>::Identity ();
-      Scalar distance = error.cwiseAbs ().sum ();
-      EXPECT_LE (distance, eps);
+      error = result - Eigen::Matrix<Scalar, 3, 3>::Identity();
+      Scalar distance = error.cwiseAbs().sum();
+      EXPECT_LE(distance, eps);
 
       result = c_matrix * c_inverse;
-      error = result - Eigen::Matrix<Scalar, 3, 3>::Identity ();
-      distance = error.cwiseAbs ().sum ();
-      EXPECT_LE (distance, eps);
+      error = result - Eigen::Matrix<Scalar, 3, 3>::Identity();
+      distance = error.cwiseAbs().sum();
+      EXPECT_LE(distance, eps);
     }
   }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TEST (PCL, InverseSymmetric3x3d)
+TEST(PCL, InverseGeneral3x3d)
 {
   using Scalar = double;
   using RMatrix = Eigen::Matrix<Scalar, 3, 3, Eigen::RowMajor>;
   using CMatrix = Eigen::Matrix<Scalar, 3, 3, Eigen::ColMajor>;
-  RMatrix r_matrix = RMatrix::Zero ();
-  RMatrix r_inverse = RMatrix::Zero ();
-  CMatrix c_matrix = CMatrix::Zero ();
-  CMatrix c_inverse = CMatrix::Zero ();
-  Eigen::Matrix<Scalar, 3, 3> result = Eigen::Matrix<Scalar, 3, 3>::Zero ();
-  Eigen::Matrix<Scalar, 3, 3> error = Eigen::Matrix<Scalar, 3, 3>::Zero ();
+  RMatrix r_matrix = RMatrix::Zero();
+  RMatrix r_inverse = RMatrix::Zero();
+  CMatrix c_matrix = CMatrix::Zero();
+  CMatrix c_inverse = CMatrix::Zero();
+  Eigen::Matrix<Scalar, 3, 3> result = Eigen::Matrix<Scalar, 3, 3>::Zero();
+  Eigen::Matrix<Scalar, 3, 3> error = Eigen::Matrix<Scalar, 3, 3>::Zero();
   constexpr Scalar epsilon = 1e-13;
   constexpr unsigned iterations = 1000000;
 
   // test floating point row-major : row-major
-  for (unsigned idx = 0; idx < iterations; ++idx)
-  {
-    for (unsigned elIdx = 0; elIdx < 9; ++elIdx)
-      r_matrix.coeffRef (elIdx) = static_cast<Scalar>(rand_double (rng));
-
-    r_matrix.coeffRef (3) = r_matrix.coeffRef (1);
-    r_matrix.coeffRef (6) = r_matrix.coeffRef (2);
-    r_matrix.coeffRef (7) = r_matrix.coeffRef (5);
+  for (unsigned idx = 0; idx < iterations; ++idx) {
+    for (unsigned elIdx = 0; elIdx < 9; ++elIdx) {
+      r_matrix.coeffRef(elIdx) = static_cast<Scalar>(rand_double(rng));
+    }
     c_matrix = r_matrix;
-    //c_matrix.coeffRef (3) = c_matrix.coeffRef (1);
-    //c_matrix.coeffRef (6) = c_matrix.coeffRef (2);
-    //c_matrix.coeffRef (7) = c_matrix.coeffRef (5);
-
     // test row-major -> row-major
-    Scalar determinant = invert3x3SymMatrix (r_matrix, r_inverse);
-    if (std::abs (determinant) > epsilon)
-    {
-      Scalar eps = std::max (epsilon, epsilon / std::abs (determinant));
+    Scalar determinant = invert3x3Matrix(r_matrix, r_inverse);
+    if (std::abs(determinant) > epsilon) {
+      Scalar eps = std::max(epsilon, epsilon / std::abs(determinant));
 
       result = r_inverse * r_matrix;
-      error = result - Eigen::Matrix<Scalar, 3, 3>::Identity ();
-      Scalar distance = error.cwiseAbs ().sum ();
-      EXPECT_LE (distance, eps);
+      error = result - Eigen::Matrix<Scalar, 3, 3>::Identity();
+      Scalar distance = error.cwiseAbs().sum();
+      EXPECT_LE(distance, eps);
 
       result = r_matrix * r_inverse;
-      error = result - Eigen::Matrix<Scalar, 3, 3>::Identity ();
-      distance = error.cwiseAbs ().sum ();
-      EXPECT_LE (distance, eps);
+      error = result - Eigen::Matrix<Scalar, 3, 3>::Identity();
+      distance = error.cwiseAbs().sum();
+      EXPECT_LE(distance, eps);
     }
 
     // test row-major -> col-major
-    determinant = invert3x3SymMatrix (c_matrix, c_inverse);
-    if (std::abs (determinant) > epsilon)
-    {
-      Scalar eps = std::max (epsilon, epsilon / std::abs(determinant));
+    determinant = invert3x3Matrix(c_matrix, c_inverse);
+    if (std::abs(determinant) > epsilon) {
+      Scalar eps = std::max(epsilon, epsilon / std::abs(determinant));
 
       result = c_inverse * c_matrix;
-      error = result - Eigen::Matrix<Scalar, 3, 3>::Identity ();
-      Scalar distance = error.cwiseAbs ().sum ();
-      EXPECT_LE (distance, eps);
+      error = result - Eigen::Matrix<Scalar, 3, 3>::Identity();
+      Scalar distance = error.cwiseAbs().sum();
+      EXPECT_LE(distance, eps);
 
       result = c_matrix * c_inverse;
-      error = result - Eigen::Matrix<Scalar, 3, 3>::Identity ();
-      distance = error.cwiseAbs ().sum ();
-      EXPECT_LE (distance, eps);
+      error = result - Eigen::Matrix<Scalar, 3, 3>::Identity();
+      distance = error.cwiseAbs().sum();
+      EXPECT_LE(distance, eps);
     }
   }
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST(PCL, InverseSymmetric3x3f)
+{
+  using Scalar = float;
+  using RMatrix = Eigen::Matrix<Scalar, 3, 3, Eigen::RowMajor>;
+  using CMatrix = Eigen::Matrix<Scalar, 3, 3, Eigen::ColMajor>;
+  RMatrix r_matrix = RMatrix::Zero();
+  RMatrix r_inverse = RMatrix::Zero();
+  CMatrix c_matrix = CMatrix::Zero();
+  CMatrix c_inverse = CMatrix::Zero();
+  Eigen::Matrix<Scalar, 3, 3> result = Eigen::Matrix<Scalar, 3, 3>::Zero();
+  Eigen::Matrix<Scalar, 3, 3> error = Eigen::Matrix<Scalar, 3, 3>::Zero();
+  constexpr Scalar epsilon = 1e-5f;
+  constexpr unsigned iterations = 1000000;
+
+  // test floating point row-major : row-major
+  for (unsigned idx = 0; idx < iterations; ++idx) {
+    for (unsigned elIdx = 0; elIdx < 9; ++elIdx)
+      r_matrix.coeffRef(elIdx) = static_cast<Scalar>(rand_double(rng));
+
+    r_matrix.coeffRef(3) = r_matrix.coeffRef(1);
+    r_matrix.coeffRef(6) = r_matrix.coeffRef(2);
+    r_matrix.coeffRef(7) = r_matrix.coeffRef(5);
+    c_matrix = r_matrix;
+    // c_matrix.coeffRef (3) = c_matrix.coeffRef (1);
+    // c_matrix.coeffRef (6) = c_matrix.coeffRef (2);
+    // c_matrix.coeffRef (7) = c_matrix.coeffRef (5);
+
+    // test row-major -> row-major
+    Scalar determinant = invert3x3SymMatrix(r_matrix, r_inverse);
+    if (std::abs(determinant) > epsilon) {
+      float eps = std::max(epsilon, epsilon / std::abs(determinant));
+
+      result = r_inverse * r_matrix;
+      error = result - Eigen::Matrix<Scalar, 3, 3>::Identity();
+      Scalar distance = error.cwiseAbs().sum();
+      EXPECT_LE(distance, eps);
+
+      result = r_matrix * r_inverse;
+      error = result - Eigen::Matrix<Scalar, 3, 3>::Identity();
+      distance = error.cwiseAbs().sum();
+      EXPECT_LE(distance, eps);
+    }
+
+    // test row-major -> col-major
+    determinant = invert3x3SymMatrix(c_matrix, c_inverse);
+    if (std::abs(determinant) > epsilon) {
+      Scalar eps = std::max(epsilon, epsilon / std::abs(determinant));
+
+      result = c_inverse * c_matrix;
+      error = result - Eigen::Matrix<Scalar, 3, 3>::Identity();
+      Scalar distance = error.cwiseAbs().sum();
+      EXPECT_LE(distance, eps);
+
+      result = c_matrix * c_inverse;
+      error = result - Eigen::Matrix<Scalar, 3, 3>::Identity();
+      distance = error.cwiseAbs().sum();
+      EXPECT_LE(distance, eps);
+    }
+  }
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TEST (PCL, Inverse2x2f)
+TEST(PCL, InverseSymmetric3x3d)
+{
+  using Scalar = double;
+  using RMatrix = Eigen::Matrix<Scalar, 3, 3, Eigen::RowMajor>;
+  using CMatrix = Eigen::Matrix<Scalar, 3, 3, Eigen::ColMajor>;
+  RMatrix r_matrix = RMatrix::Zero();
+  RMatrix r_inverse = RMatrix::Zero();
+  CMatrix c_matrix = CMatrix::Zero();
+  CMatrix c_inverse = CMatrix::Zero();
+  Eigen::Matrix<Scalar, 3, 3> result = Eigen::Matrix<Scalar, 3, 3>::Zero();
+  Eigen::Matrix<Scalar, 3, 3> error = Eigen::Matrix<Scalar, 3, 3>::Zero();
+  constexpr Scalar epsilon = 1e-13;
+  constexpr unsigned iterations = 1000000;
+
+  // test floating point row-major : row-major
+  for (unsigned idx = 0; idx < iterations; ++idx) {
+    for (unsigned elIdx = 0; elIdx < 9; ++elIdx)
+      r_matrix.coeffRef(elIdx) = static_cast<Scalar>(rand_double(rng));
+
+    r_matrix.coeffRef(3) = r_matrix.coeffRef(1);
+    r_matrix.coeffRef(6) = r_matrix.coeffRef(2);
+    r_matrix.coeffRef(7) = r_matrix.coeffRef(5);
+    c_matrix = r_matrix;
+    // c_matrix.coeffRef (3) = c_matrix.coeffRef (1);
+    // c_matrix.coeffRef (6) = c_matrix.coeffRef (2);
+    // c_matrix.coeffRef (7) = c_matrix.coeffRef (5);
+
+    // test row-major -> row-major
+    Scalar determinant = invert3x3SymMatrix(r_matrix, r_inverse);
+    if (std::abs(determinant) > epsilon) {
+      Scalar eps = std::max(epsilon, epsilon / std::abs(determinant));
+
+      result = r_inverse * r_matrix;
+      error = result - Eigen::Matrix<Scalar, 3, 3>::Identity();
+      Scalar distance = error.cwiseAbs().sum();
+      EXPECT_LE(distance, eps);
+
+      result = r_matrix * r_inverse;
+      error = result - Eigen::Matrix<Scalar, 3, 3>::Identity();
+      distance = error.cwiseAbs().sum();
+      EXPECT_LE(distance, eps);
+    }
+
+    // test row-major -> col-major
+    determinant = invert3x3SymMatrix(c_matrix, c_inverse);
+    if (std::abs(determinant) > epsilon) {
+      Scalar eps = std::max(epsilon, epsilon / std::abs(determinant));
+
+      result = c_inverse * c_matrix;
+      error = result - Eigen::Matrix<Scalar, 3, 3>::Identity();
+      Scalar distance = error.cwiseAbs().sum();
+      EXPECT_LE(distance, eps);
+
+      result = c_matrix * c_inverse;
+      error = result - Eigen::Matrix<Scalar, 3, 3>::Identity();
+      distance = error.cwiseAbs().sum();
+      EXPECT_LE(distance, eps);
+    }
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST(PCL, Inverse2x2f)
 {
   using Scalar = float;
   using RMatrix = Eigen::Matrix<Scalar, 2, 2, Eigen::RowMajor>;
   using CMatrix = Eigen::Matrix<Scalar, 2, 2, Eigen::ColMajor>;
-  RMatrix r_matrix = RMatrix::Zero ();
-  RMatrix r_inverse = RMatrix::Zero ();
-  CMatrix c_matrix = CMatrix::Zero ();
-  CMatrix c_inverse = CMatrix::Zero ();
-  Eigen::Matrix<Scalar, 2, 2> result = Eigen::Matrix<Scalar, 2, 2>::Zero ();
-  Eigen::Matrix<Scalar, 2, 2> error = Eigen::Matrix<Scalar, 2, 2>::Zero ();
+  RMatrix r_matrix = RMatrix::Zero();
+  RMatrix r_inverse = RMatrix::Zero();
+  CMatrix c_matrix = CMatrix::Zero();
+  CMatrix c_inverse = CMatrix::Zero();
+  Eigen::Matrix<Scalar, 2, 2> result = Eigen::Matrix<Scalar, 2, 2>::Zero();
+  Eigen::Matrix<Scalar, 2, 2> error = Eigen::Matrix<Scalar, 2, 2>::Zero();
   constexpr Scalar epsilon = 1e-6f;
   constexpr unsigned iterations = 1000000;
 
   // test floating point row-major : row-major
-  for (unsigned idx = 0; idx < iterations; ++idx)
-  {
+  for (unsigned idx = 0; idx < iterations; ++idx) {
     for (unsigned elIdx = 0; elIdx < 4; ++elIdx)
-      r_matrix.coeffRef (elIdx) = static_cast<Scalar>(rand_double (rng));
+      r_matrix.coeffRef(elIdx) = static_cast<Scalar>(rand_double(rng));
 
     c_matrix = r_matrix;
     // test row-major -> row-major
-    Scalar determinant = invert2x2 (r_matrix, r_inverse);
-    if (std::abs (determinant) > epsilon)
-    {
-      float eps = std::max (epsilon, epsilon / std::abs(determinant));
+    Scalar determinant = invert2x2(r_matrix, r_inverse);
+    if (std::abs(determinant) > epsilon) {
+      float eps = std::max(epsilon, epsilon / std::abs(determinant));
 
       result = r_inverse * r_matrix;
-      error = result - Eigen::Matrix<Scalar, 2, 2>::Identity ();
-      Scalar distance = error.cwiseAbs ().sum ();
-      EXPECT_LE (distance, eps);
+      error = result - Eigen::Matrix<Scalar, 2, 2>::Identity();
+      Scalar distance = error.cwiseAbs().sum();
+      EXPECT_LE(distance, eps);
 
       result = r_matrix * r_inverse;
-      error = result - Eigen::Matrix<Scalar, 2, 2>::Identity ();
-      distance = error.cwiseAbs ().sum ();
-      EXPECT_LE (distance, eps);
+      error = result - Eigen::Matrix<Scalar, 2, 2>::Identity();
+      distance = error.cwiseAbs().sum();
+      EXPECT_LE(distance, eps);
     }
 
     // test row-major -> col-major
-    determinant = invert2x2 (c_matrix, c_inverse);
-    if (std::abs (determinant) > epsilon)
-    {
-      Scalar eps = std::max (epsilon, epsilon / std::abs(determinant));
+    determinant = invert2x2(c_matrix, c_inverse);
+    if (std::abs(determinant) > epsilon) {
+      Scalar eps = std::max(epsilon, epsilon / std::abs(determinant));
 
       result = c_inverse * c_matrix;
-      error = result - Eigen::Matrix<Scalar, 2, 2>::Identity ();
-      Scalar distance = error.cwiseAbs ().sum ();
-      EXPECT_LE (distance, eps);
+      error = result - Eigen::Matrix<Scalar, 2, 2>::Identity();
+      Scalar distance = error.cwiseAbs().sum();
+      EXPECT_LE(distance, eps);
 
       result = c_matrix * c_inverse;
-      error = result - Eigen::Matrix<Scalar, 2, 2>::Identity ();
-      distance = error.cwiseAbs ().sum ();
-      EXPECT_LE (distance, eps);
+      error = result - Eigen::Matrix<Scalar, 2, 2>::Identity();
+      distance = error.cwiseAbs().sum();
+      EXPECT_LE(distance, eps);
     }
   }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TEST (PCL, Inverse2x2d)
+TEST(PCL, Inverse2x2d)
 {
   using Scalar = double;
   using RMatrix = Eigen::Matrix<Scalar, 2, 2, Eigen::RowMajor>;
   using CMatrix = Eigen::Matrix<Scalar, 2, 2, Eigen::ColMajor>;
-  RMatrix r_matrix = RMatrix::Zero ();
-  RMatrix r_inverse = RMatrix::Zero ();
-  CMatrix c_matrix = CMatrix::Zero ();
-  CMatrix c_inverse = CMatrix::Zero ();
+  RMatrix r_matrix = RMatrix::Zero();
+  RMatrix r_inverse = RMatrix::Zero();
+  CMatrix c_matrix = CMatrix::Zero();
+  CMatrix c_inverse = CMatrix::Zero();
   Eigen::Matrix<Scalar, 2, 2> result;
   Eigen::Matrix<Scalar, 2, 2> error;
   constexpr Scalar epsilon = 1e-15;
   constexpr unsigned iterations = 1000000;
 
   // test floating point row-major : row-major
-  for (unsigned idx = 0; idx < iterations; ++idx)
-  {
+  for (unsigned idx = 0; idx < iterations; ++idx) {
     for (unsigned elIdx = 0; elIdx < 4; ++elIdx)
-      r_matrix.coeffRef (elIdx) = static_cast<Scalar>(rand_double (rng));
+      r_matrix.coeffRef(elIdx) = static_cast<Scalar>(rand_double(rng));
 
     c_matrix = r_matrix;
     // test row-major -> row-major
-    Scalar determinant = invert2x2 (r_matrix, r_inverse);
-    if (std::abs (determinant) > epsilon)
-    {
-      Scalar eps = std::max (epsilon, epsilon / std::abs (determinant));
+    Scalar determinant = invert2x2(r_matrix, r_inverse);
+    if (std::abs(determinant) > epsilon) {
+      Scalar eps = std::max(epsilon, epsilon / std::abs(determinant));
 
       result = r_inverse * r_matrix;
-      error = result - Eigen::Matrix<Scalar, 2, 2>::Identity ();
-      Scalar distance = error.cwiseAbs ().sum ();
-      EXPECT_LE (distance, eps);
+      error = result - Eigen::Matrix<Scalar, 2, 2>::Identity();
+      Scalar distance = error.cwiseAbs().sum();
+      EXPECT_LE(distance, eps);
 
       result = r_matrix * r_inverse;
-      error = result - Eigen::Matrix<Scalar, 2, 2>::Identity ();
-      distance = error.cwiseAbs ().sum ();
-      EXPECT_LE (distance, eps);
+      error = result - Eigen::Matrix<Scalar, 2, 2>::Identity();
+      distance = error.cwiseAbs().sum();
+      EXPECT_LE(distance, eps);
     }
 
     // test row-major -> col-major
-    determinant = invert2x2 (c_matrix, c_inverse);
-    if (std::abs (determinant) > epsilon)
-    {
-      Scalar eps = std::max (epsilon, epsilon / std::abs(determinant));
+    determinant = invert2x2(c_matrix, c_inverse);
+    if (std::abs(determinant) > epsilon) {
+      Scalar eps = std::max(epsilon, epsilon / std::abs(determinant));
 
       result = c_inverse * c_matrix;
-      error = result - Eigen::Matrix<Scalar, 2, 2>::Identity ();
-      Scalar distance = error.cwiseAbs ().sum ();
-      EXPECT_LE (distance, eps);
+      error = result - Eigen::Matrix<Scalar, 2, 2>::Identity();
+      Scalar distance = error.cwiseAbs().sum();
+      EXPECT_LE(distance, eps);
 
       result = c_matrix * c_inverse;
-      error = result - Eigen::Matrix<Scalar, 2, 2>::Identity ();
-      distance = error.cwiseAbs ().sum ();
-      EXPECT_LE (distance, eps);
+      error = result - Eigen::Matrix<Scalar, 2, 2>::Identity();
+      distance = error.cwiseAbs().sum();
+      EXPECT_LE(distance, eps);
     }
   }
 }
 
-template<class Matrix>
-inline void generateSymPosMatrix2x2 (Matrix& matrix)
+template <class Matrix>
+inline void
+generateSymPosMatrix2x2 (Matrix& matrix)
 {
   using Scalar = typename Matrix::Scalar;
 
-  unsigned test_case = rand_uint (rng) % 10;
+  unsigned test_case = rand_uint(rng) % 10;
 
-  Scalar val1 = static_cast<Scalar> (rand_double (rng));
-  Scalar val2 = static_cast<Scalar> (rand_double (rng));
+  Scalar val1 = static_cast<Scalar>(rand_double(rng));
+  Scalar val2 = static_cast<Scalar>(rand_double(rng));
 
   // 10% of test cases include equal eigenvalues
   if (test_case == 0)
@@ -438,30 +417,28 @@ inline void generateSymPosMatrix2x2 (Matrix& matrix)
     val1 = 0.0;
 
   Scalar sqrNorm;
-  Matrix eigenvectors = Matrix::Identity ();
-  Matrix eigenvalues = Matrix::Zero ();
+  Matrix eigenvectors = Matrix::Identity();
+  Matrix eigenvalues = Matrix::Zero();
 
-  unsigned test_case2 = rand_uint (rng) % 10;
-  if (test_case2 != 0)
-  {
-    do
-    {
-      eigenvectors.col (0)[0] = static_cast<Scalar> (rand_double (rng));
-      eigenvectors.col (0)[1] = static_cast<Scalar> (rand_double (rng));
-      sqrNorm = eigenvectors.col (0).squaredNorm ();
+  unsigned test_case2 = rand_uint(rng) % 10;
+  if (test_case2 != 0) {
+    do {
+      eigenvectors.col(0)[0] = static_cast<Scalar>(rand_double(rng));
+      eigenvectors.col(0)[1] = static_cast<Scalar>(rand_double(rng));
+      sqrNorm = eigenvectors.col(0).squaredNorm();
     } while (sqrNorm == 0);
-    eigenvectors.col (0) /= sqrt (sqrNorm);
+    eigenvectors.col(0) /= sqrt(sqrNorm);
 
-    eigenvectors.col (1)[0] = -eigenvectors.col (1)[1];
-    eigenvectors.col (1)[1] =  eigenvectors.col (1)[0];
+    eigenvectors.col(1)[0] = -eigenvectors.col(1)[1];
+    eigenvectors.col(1)[1] = eigenvectors.col(1)[0];
   }
-  eigenvalues (0, 0) = val1;
-  eigenvalues (1, 1) = val2;
+  eigenvalues(0, 0) = val1;
+  eigenvalues(1, 1) = val2;
   matrix = eigenvectors * eigenvalues * eigenvectors.adjoint();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TEST (PCL, eigen22d)
+TEST(PCL, eigen22d)
 {
   using Scalar = double;
   using RMatrix = Eigen::Matrix<Scalar, 2, 2, Eigen::RowMajor>;
@@ -483,43 +460,42 @@ TEST (PCL, eigen22d)
   constexpr unsigned iterations = 1000000;
 
   // test floating point row-major : row-major
-  for (unsigned idx = 0; idx < iterations; ++idx)
-  {
+  for (unsigned idx = 0; idx < iterations; ++idx) {
     // generate test matrices
-    generateSymPosMatrix2x2 (r_matrix);
+    generateSymPosMatrix2x2(r_matrix);
     c_matrix = r_matrix;
 
     // calculate the eigenvalue decomposition
-    eigen22 (r_matrix, r_vectors, r_eigenvalues);
+    eigen22(r_matrix, r_vectors, r_eigenvalues);
 
     // test if U * V * U^T = M
-    r_result = r_vectors * r_eigenvalues.asDiagonal () * r_vectors.transpose ();
+    r_result = r_vectors * r_eigenvalues.asDiagonal() * r_vectors.transpose();
     r_error = r_result - r_matrix;
-    Scalar diff = r_error.cwiseAbs ().maxCoeff ();
-    EXPECT_LE (diff, epsilon);
+    Scalar diff = r_error.cwiseAbs().maxCoeff();
+    EXPECT_LE(diff, epsilon);
 
     // test if the eigenvalues are orthonormal
-    g_result = r_vectors * r_vectors.transpose ();
-    g_error = g_result - RMatrix::Identity ();
-    diff = g_error.cwiseAbs ().maxCoeff ();
-    EXPECT_LE (diff, epsilon);
+    g_result = r_vectors * r_vectors.transpose();
+    g_error = g_result - RMatrix::Identity();
+    diff = g_error.cwiseAbs().maxCoeff();
+    EXPECT_LE(diff, epsilon);
 
     // test if column major matrices are also calculated correctly
-    eigen22 (c_matrix, c_vectors, c_eigenvalues);
-    c_result = c_vectors * c_eigenvalues.asDiagonal () * c_vectors.transpose ();
+    eigen22(c_matrix, c_vectors, c_eigenvalues);
+    c_result = c_vectors * c_eigenvalues.asDiagonal() * c_vectors.transpose();
     c_error = c_result - c_matrix;
-    diff = c_error.cwiseAbs ().maxCoeff ();
-    EXPECT_LE (diff, epsilon);
+    diff = c_error.cwiseAbs().maxCoeff();
+    EXPECT_LE(diff, epsilon);
 
-    g_result = c_vectors * c_vectors.transpose ();
-    g_error = g_result - CMatrix::Identity ();
-    diff = g_error.cwiseAbs ().maxCoeff ();
-    EXPECT_LE (diff, epsilon);
+    g_result = c_vectors * c_vectors.transpose();
+    g_error = g_result - CMatrix::Identity();
+    diff = g_error.cwiseAbs().maxCoeff();
+    EXPECT_LE(diff, epsilon);
   }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TEST (PCL, eigen22f)
+TEST(PCL, eigen22f)
 {
   using Scalar = float;
   using RMatrix = Eigen::Matrix<Scalar, 2, 2, Eigen::RowMajor>;
@@ -541,45 +517,45 @@ TEST (PCL, eigen22f)
   constexpr unsigned iterations = 1000000;
 
   // test floating point row-major : row-major
-  for (unsigned idx = 0; idx < iterations; ++idx)
-  {
+  for (unsigned idx = 0; idx < iterations; ++idx) {
     // generate test matrices
-    generateSymPosMatrix2x2 (r_matrix);
+    generateSymPosMatrix2x2(r_matrix);
     c_matrix = r_matrix;
 
     // calculate the eigenvalue decomposition
-    eigen22 (r_matrix, r_vectors, r_eigenvalues);
+    eigen22(r_matrix, r_vectors, r_eigenvalues);
 
     // test if U * V * U^T = M
-    r_result = r_vectors * r_eigenvalues.asDiagonal () * r_vectors.transpose ();
+    r_result = r_vectors * r_eigenvalues.asDiagonal() * r_vectors.transpose();
     r_error = r_result - r_matrix;
-    Scalar diff = r_error.cwiseAbs ().maxCoeff ();
-    EXPECT_LE (diff, epsilon);
+    Scalar diff = r_error.cwiseAbs().maxCoeff();
+    EXPECT_LE(diff, epsilon);
 
     // test if the eigenvalues are orthonormal
-    g_result = r_vectors * r_vectors.transpose ();
-    g_error = g_result - RMatrix::Identity ();
-    diff = g_error.cwiseAbs ().maxCoeff ();
-    EXPECT_LE (diff, epsilon);
+    g_result = r_vectors * r_vectors.transpose();
+    g_error = g_result - RMatrix::Identity();
+    diff = g_error.cwiseAbs().maxCoeff();
+    EXPECT_LE(diff, epsilon);
 
     // test if column major matrices are also calculated correctly
-    eigen22 (c_matrix, c_vectors, c_eigenvalues);
-    c_result = c_vectors * c_eigenvalues.asDiagonal () * c_vectors.transpose ();
+    eigen22(c_matrix, c_vectors, c_eigenvalues);
+    c_result = c_vectors * c_eigenvalues.asDiagonal() * c_vectors.transpose();
     c_error = c_result - c_matrix;
-    diff = c_error.cwiseAbs ().maxCoeff ();
-    EXPECT_LE (diff, epsilon);
+    diff = c_error.cwiseAbs().maxCoeff();
+    EXPECT_LE(diff, epsilon);
 
-    g_result = c_vectors * c_vectors.transpose ();
-    g_error = g_result - CMatrix::Identity ();
-    diff = g_error.cwiseAbs ().maxCoeff ();
-    EXPECT_LE (diff, epsilon);
+    g_result = c_vectors * c_vectors.transpose();
+    g_error = g_result - CMatrix::Identity();
+    diff = g_error.cwiseAbs().maxCoeff();
+    EXPECT_LE(diff, epsilon);
   }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-template<class Matrix>
-inline void generateSymPosMatrix3x3 (Matrix& matrix)
+template <class Matrix>
+inline void
+generateSymPosMatrix3x3 (Matrix& matrix)
 {
   using Scalar = typename Matrix::Scalar;
 
@@ -590,75 +566,69 @@ inline void generateSymPosMatrix3x3 (Matrix& matrix)
   // 1 x 0
   // anything
 
-  unsigned test_case = rand_uint (rng);
+  unsigned test_case = rand_uint(rng);
 
-  Scalar val1 = static_cast<Scalar> (rand_double (rng));
-  Scalar val2 = static_cast<Scalar> (rand_double (rng));
-  Scalar val3 = static_cast<Scalar> (rand_double (rng));
+  Scalar val1 = static_cast<Scalar>(rand_double(rng));
+  Scalar val2 = static_cast<Scalar>(rand_double(rng));
+  Scalar val3 = static_cast<Scalar>(rand_double(rng));
 
   // 1%: all three values are equal and non-zero
-  if (test_case == 0)
-  {
-    if (val1 ==0)
+  if (test_case == 0) {
+    if (val1 == 0)
       val1 = 1.0;
     val2 = val1;
     val3 = val1;
   }
   // 1%: 2 values are equal but none is set explicitly to 0
-  else if (test_case == 1)
-  {
+  else if (test_case == 1) {
     val2 = val3;
   }
   // 1%: 2 values equal and the third = 0
-  else if (test_case == 2)
-  {
+  else if (test_case == 2) {
     if (val1 == 0)
       val1 = 1.0;
     val2 = val1;
     val3 = 0.0;
   }
   // 1% 2 x 0 and 1x not-0
-  else if (test_case == 3)
-  {
+  else if (test_case == 3) {
     if (val1 == 0)
       val1 = 1.0;
     val2 = val3 = 0.0;
   }
-  else if (test_case == 4)
-  {
+  else if (test_case == 4) {
     val1 = 0.0;
   }
 
   Scalar sqrNorm;
-  Matrix eigenvectors = Matrix::Zero ();
-  Matrix eigenvalues = Matrix::Zero ();
+  Matrix eigenvectors = Matrix::Zero();
+  Matrix eigenvalues = Matrix::Zero();
 
-  do
-  {
-    eigenvectors.col (0)[0] = static_cast<Scalar> (rand_double (rng));
-    eigenvectors.col (0)[1] = static_cast<Scalar> (rand_double (rng));
-    eigenvectors.col (0)[2] = static_cast<Scalar> (rand_double (rng));
-    eigenvectors.col (1)[0] = static_cast<Scalar> (rand_double (rng));
-    eigenvectors.col (1)[1] = static_cast<Scalar> (rand_double (rng));
-    eigenvectors.col (1)[2] = static_cast<Scalar> (rand_double (rng));
-    eigenvectors.col (2) = eigenvectors.col (0).cross (eigenvectors.col (1));
+  do {
+    eigenvectors.col(0)[0] = static_cast<Scalar>(rand_double(rng));
+    eigenvectors.col(0)[1] = static_cast<Scalar>(rand_double(rng));
+    eigenvectors.col(0)[2] = static_cast<Scalar>(rand_double(rng));
+    eigenvectors.col(1)[0] = static_cast<Scalar>(rand_double(rng));
+    eigenvectors.col(1)[1] = static_cast<Scalar>(rand_double(rng));
+    eigenvectors.col(1)[2] = static_cast<Scalar>(rand_double(rng));
+    eigenvectors.col(2) = eigenvectors.col(0).cross(eigenvectors.col(1));
 
-    sqrNorm = eigenvectors.col (2).squaredNorm ();
+    sqrNorm = eigenvectors.col(2).squaredNorm();
   } while (sqrNorm == 0);
 
-  eigenvectors.col (0).normalize ();
-  eigenvectors.col (2).normalize ();
-  eigenvectors.col (1) = eigenvectors.col (2).cross (eigenvectors.col (0));
+  eigenvectors.col(0).normalize();
+  eigenvectors.col(2).normalize();
+  eigenvectors.col(1) = eigenvectors.col(2).cross(eigenvectors.col(0));
 
-  eigenvalues (0, 0) = val1;
-  eigenvalues (1, 1) = val2;
-  eigenvalues (2, 2) = val3;
+  eigenvalues(0, 0) = val1;
+  eigenvalues(1, 1) = val2;
+  eigenvalues(2, 2) = val3;
 
   matrix = eigenvectors * eigenvalues * eigenvectors.adjoint();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TEST (PCL, eigen33d)
+TEST(PCL, eigen33d)
 {
   using Scalar = double;
   using RMatrix = Eigen::Matrix<Scalar, 3, 3, Eigen::RowMajor>;
@@ -684,7 +654,8 @@ TEST (PCL, eigen33d)
   c_matrix = r_matrix;
 
   eigen33(r_matrix, r_vectors, r_eigenvalues);
-  // check if the main vector is the positive Z direction. In this case it is equal to (0,0,1)
+  // check if the main vector is the positive Z direction. In this case it is equal to
+  // (0,0,1)
   EXPECT_NEAR(r_vectors(0, 0), 0, epsilon);
   EXPECT_NEAR(r_vectors(0, 1), 0, epsilon);
   EXPECT_NEAR(r_vectors(0, 2), 1, epsilon);
@@ -695,45 +666,45 @@ TEST (PCL, eigen33d)
   EXPECT_NEAR(c_vectors(0, 2), 1, epsilon);
 
   // test floating point row-major : row-major
-  for (unsigned idx = 0; idx < iterations; ++idx)
-  {
+  for (unsigned idx = 0; idx < iterations; ++idx) {
     // generate test matrices
-    generateSymPosMatrix3x3 (r_matrix);
+    generateSymPosMatrix3x3(r_matrix);
     c_matrix = r_matrix;
 
     // calculate the eigenvalue decomposition
-    eigen33 (r_matrix, r_vectors, r_eigenvalues);
+    eigen33(r_matrix, r_vectors, r_eigenvalues);
 
     // test if U * V * U^T = M
-    r_result = r_vectors * r_eigenvalues.asDiagonal () * r_vectors.transpose ();
+    r_result = r_vectors * r_eigenvalues.asDiagonal() * r_vectors.transpose();
     r_error = r_result - r_matrix;
-    Scalar diff = r_error.cwiseAbs (). sum ();
-    EXPECT_LE (diff, epsilon);
+    Scalar diff = r_error.cwiseAbs().sum();
+    EXPECT_LE(diff, epsilon);
 
     // test if the eigenvalues are orthonormal
-    g_result = r_vectors * r_vectors.transpose ();
-    g_error = g_result - RMatrix::Identity ();
-    diff = g_error.cwiseAbs (). sum ();
-    EXPECT_LE (diff, epsilon);
+    g_result = r_vectors * r_vectors.transpose();
+    g_error = g_result - RMatrix::Identity();
+    diff = g_error.cwiseAbs().sum();
+    EXPECT_LE(diff, epsilon);
 
     // test if column major matrices are also calculated correctly
-    eigen33 (c_matrix, c_vectors, c_eigenvalues);
-    c_result = c_vectors * c_eigenvalues.asDiagonal () * c_vectors.transpose ();
+    eigen33(c_matrix, c_vectors, c_eigenvalues);
+    c_result = c_vectors * c_eigenvalues.asDiagonal() * c_vectors.transpose();
     c_error = c_result - c_matrix;
-    diff = c_error.cwiseAbs (). sum ();
-    EXPECT_LE (diff, epsilon);
+    diff = c_error.cwiseAbs().sum();
+    EXPECT_LE(diff, epsilon);
 
-    g_result = c_vectors * c_vectors.transpose ();
-    g_error = g_result - CMatrix::Identity ();
-    diff = g_error.cwiseAbs (). sum ();
-    EXPECT_LE (diff, epsilon);
+    g_result = c_vectors * c_vectors.transpose();
+    g_error = g_result - CMatrix::Identity();
+    diff = g_error.cwiseAbs().sum();
+    EXPECT_LE(diff, epsilon);
   }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// since we use float in this test and some matrices are bad conditioned for the eigenvalue decomposition, we will have
-// some errors > 0.2 but less than 1% is > 1e-3 -> we will just check whether the failure rate is below 1%
-TEST (PCL, eigen33f)
+// since we use float in this test and some matrices are bad conditioned for the
+// eigenvalue decomposition, we will have some errors > 0.2 but less than 1% is > 1e-3
+// -> we will just check whether the failure rate is below 1%
+TEST(PCL, eigen33f)
 {
   using Scalar = float;
   using RMatrix = Eigen::Matrix<Scalar, 3, 3, Eigen::RowMajor>;
@@ -756,49 +727,48 @@ TEST (PCL, eigen33f)
   unsigned r_fail_count = 0;
 
   // test floating point row-major : row-major
-  for (unsigned idx = 0; idx < iterations; ++idx)
-  {
+  for (unsigned idx = 0; idx < iterations; ++idx) {
     bool r_failed = false;
     // generate test matrices
-    generateSymPosMatrix3x3 (r_matrix);
+    generateSymPosMatrix3x3(r_matrix);
     c_matrix = r_matrix;
 
     // calculate the eigenvalue decomposition
-    eigen33 (r_matrix, r_vectors, r_eigenvalues);
+    eigen33(r_matrix, r_vectors, r_eigenvalues);
 
     // test if U * V * U^T = M
-    r_result = r_vectors * r_eigenvalues.asDiagonal () * r_vectors.transpose ();
+    r_result = r_vectors * r_eigenvalues.asDiagonal() * r_vectors.transpose();
     r_error = r_result - r_matrix;
-    Scalar diff = r_error.cwiseAbs (). sum ();
+    Scalar diff = r_error.cwiseAbs().sum();
     if (diff > epsilon)
       r_failed = true;
 
     // test if the eigenvalues are orthonormal
-    g_result = r_vectors * r_vectors.transpose ();
-    g_error = g_result - RMatrix::Identity ();
-    diff = g_error.cwiseAbs (). sum ();
+    g_result = r_vectors * r_vectors.transpose();
+    g_error = g_result - RMatrix::Identity();
+    diff = g_error.cwiseAbs().sum();
     if (diff > epsilon)
       r_failed = true;
 
-    if(r_failed)
+    if (r_failed)
       ++r_fail_count;
 
     // test if column major matrices are also calculated correctly
-    eigen33 (c_matrix, c_vectors, c_eigenvalues);
-    c_result = c_vectors * c_eigenvalues.asDiagonal () * c_vectors.transpose ();
+    eigen33(c_matrix, c_vectors, c_eigenvalues);
+    c_result = c_vectors * c_eigenvalues.asDiagonal() * c_vectors.transpose();
     c_error = c_result - c_matrix;
 
-    g_result = c_vectors * c_vectors.transpose ();
-    g_error = g_result - CMatrix::Identity ();
+    g_result = c_vectors * c_vectors.transpose();
+    g_error = g_result - CMatrix::Identity();
   }
 
   // less than 1% failure rate
-  EXPECT_LE (float(r_fail_count) / float(iterations), 0.01);
-  EXPECT_LE (float(r_fail_count) / float(iterations), 0.01);
+  EXPECT_LE(float(r_fail_count) / float(iterations), 0.01);
+  EXPECT_LE(float(r_fail_count) / float(iterations), 0.01);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TEST (PCL, transformLine)
+TEST(PCL, transformLine)
 {
   // This also tests transformPoint and transformVector
   Eigen::VectorXf line;
@@ -809,70 +779,71 @@ TEST (PCL, transformLine)
   double tolerance = 1e-7;
 
   // Simple translation
-  Eigen::Affine3f transformation = Eigen::Affine3f::Identity ();
-  Eigen::Affine3d transformationd = Eigen::Affine3d::Identity ();
+  Eigen::Affine3f transformation = Eigen::Affine3f::Identity();
+  Eigen::Affine3d transformationd = Eigen::Affine3d::Identity();
   transformation.translation() << 1, -2, 0;
   transformationd.translation() << 1, -2, 0;
   line << 1, 2, 3, 0, 1, 0;
   lined << 1, 2, 3, 0, 1, 0;
   test << 2, 0, 3, 0, 1, 0;
 
-  EXPECT_TRUE (pcl::transformLine (line, line, transformation));
-  EXPECT_TRUE (pcl::transformLine (lined, lined, transformationd));
-  for (int i = 0; i < 6; i++)
-  {
-    EXPECT_NEAR (line[i], test[i], tolerance);
-    EXPECT_NEAR (lined[i], test[i], tolerance);
+  EXPECT_TRUE(pcl::transformLine(line, line, transformation));
+  EXPECT_TRUE(pcl::transformLine(lined, lined, transformationd));
+  for (int i = 0; i < 6; i++) {
+    EXPECT_NEAR(line[i], test[i], tolerance);
+    EXPECT_NEAR(lined[i], test[i], tolerance);
   }
 
   // Simple rotation
-  transformation = Eigen::Affine3f::Identity ();
-  transformationd = Eigen::Affine3d::Identity ();
-  transformation.linear() = Eigen::Matrix3f(Eigen::AngleAxisf(M_PI/2, Eigen::Vector3f::UnitZ()));
-  transformationd.linear() = Eigen::Matrix3d(Eigen::AngleAxisd(M_PI/2, Eigen::Vector3d::UnitZ()));
+  transformation = Eigen::Affine3f::Identity();
+  transformationd = Eigen::Affine3d::Identity();
+  transformation.linear() =
+      Eigen::Matrix3f(Eigen::AngleAxisf(M_PI / 2, Eigen::Vector3f::UnitZ()));
+  transformationd.linear() =
+      Eigen::Matrix3d(Eigen::AngleAxisd(M_PI / 2, Eigen::Vector3d::UnitZ()));
 
   line << 1, 2, 3, 0, 1, 0;
   lined << 1, 2, 3, 0, 1, 0;
   test << -2, 1, 3, -1, 0, 0;
   tolerance = 1e-4;
 
-  EXPECT_TRUE (pcl::transformLine (line, line, transformation));
-  EXPECT_TRUE (pcl::transformLine (lined, lined, transformationd));
-  for (int i = 0; i < 6; i++)
-  {
-    EXPECT_NEAR (line[i], test[i], tolerance);
-    EXPECT_NEAR (lined[i], test[i], tolerance);
+  EXPECT_TRUE(pcl::transformLine(line, line, transformation));
+  EXPECT_TRUE(pcl::transformLine(lined, lined, transformationd));
+  for (int i = 0; i < 6; i++) {
+    EXPECT_NEAR(line[i], test[i], tolerance);
+    EXPECT_NEAR(lined[i], test[i], tolerance);
   }
 
   // Random transformation
-  transformation = Eigen::Affine3f::Identity ();
-  transformationd = Eigen::Affine3d::Identity ();
+  transformation = Eigen::Affine3f::Identity();
+  transformationd = Eigen::Affine3d::Identity();
   transformation.translation() << 25.97, -2.45, 0.48941;
   transformationd.translation() << 25.97, -2.45, 0.48941;
-  transformation.linear() = Eigen::Matrix3f(Eigen::AngleAxisf(M_PI/5, Eigen::Vector3f::UnitX()))
-  * Eigen::AngleAxisf(M_PI/3, Eigen::Vector3f::UnitY());
-  transformationd.linear() = Eigen::Matrix3d(Eigen::AngleAxisd(M_PI/5, Eigen::Vector3d::UnitX()))
-  * Eigen::AngleAxisd(M_PI/3, Eigen::Vector3d::UnitY());
+  transformation.linear() =
+      Eigen::Matrix3f(Eigen::AngleAxisf(M_PI / 5, Eigen::Vector3f::UnitX())) *
+      Eigen::AngleAxisf(M_PI / 3, Eigen::Vector3f::UnitY());
+  transformationd.linear() =
+      Eigen::Matrix3d(Eigen::AngleAxisd(M_PI / 5, Eigen::Vector3d::UnitX())) *
+      Eigen::AngleAxisd(M_PI / 3, Eigen::Vector3d::UnitY());
 
   line << -1, 9, 3, 1.5, 2.0, 0.2;
   lined << -1, 9, 3, 1.5, 2.0, 0.2;
   test << 28.0681, 3.44044, 7.69363, 0.923205, 2.32281, 0.205528;
   tolerance = 1e-3;
 
-  EXPECT_TRUE (pcl::transformLine (line, line, transformation));
-  EXPECT_TRUE (pcl::transformLine (lined, lined, transformationd));
-  for (int i = 0; i < 6; i++)
-  {
-    EXPECT_NEAR (line[i], test[i], tolerance);
-    EXPECT_NEAR (lined[i], test[i], tolerance);
+  EXPECT_TRUE(pcl::transformLine(line, line, transformation));
+  EXPECT_TRUE(pcl::transformLine(lined, lined, transformationd));
+  for (int i = 0; i < 6; i++) {
+    EXPECT_NEAR(line[i], test[i], tolerance);
+    EXPECT_NEAR(lined[i], test[i], tolerance);
   }
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TEST (PCL, transformPlane)
+TEST(PCL, transformPlane)
 {
   Eigen::Vector4d test;
   double tolerance = 1e-8;
-  pcl::ModelCoefficients::Ptr plane (new pcl::ModelCoefficients);
+  pcl::ModelCoefficients::Ptr plane(new pcl::ModelCoefficients);
   plane->values.resize(4);
   plane->values[0] = 1.0;
   plane->values[1] = 0.0;
@@ -880,29 +851,31 @@ TEST (PCL, transformPlane)
   plane->values[3] = -2.0;
 
   // Simple translation
-  Eigen::Affine3f transformation = Eigen::Affine3f::Identity ();
-  Eigen::Affine3d transformationd = Eigen::Affine3d::Identity ();
+  Eigen::Affine3f transformation = Eigen::Affine3f::Identity();
+  Eigen::Affine3d transformationd = Eigen::Affine3d::Identity();
   transformation.translation() << 1, 0, 0;
   transformationd.translation() << 1, 0, 0;
   test << 1, 0, 0, -3;
 
-  pcl::transformPlane (plane, plane, transformation);
+  pcl::transformPlane(plane, plane, transformation);
   for (int i = 0; i < 4; i++)
-  EXPECT_NEAR (plane->values[i], test[i], tolerance);
+    EXPECT_NEAR(plane->values[i], test[i], tolerance);
 
   plane->values[0] = 1.0;
   plane->values[1] = 0.0;
   plane->values[2] = 0.0;
   plane->values[3] = -2.0;
-  pcl::transformPlane (plane, plane, transformationd);
+  pcl::transformPlane(plane, plane, transformationd);
   for (int i = 0; i < 4; i++)
-  EXPECT_NEAR (plane->values[i], test[i], tolerance);
+    EXPECT_NEAR(plane->values[i], test[i], tolerance);
 
   // Simple rotation
   transformation.translation() << 0, 0, 0;
   transformationd.translation() << 0, 0, 0;
-  transformation.linear() = Eigen::Matrix3f(Eigen::AngleAxisf(M_PI/2, Eigen::Vector3f::UnitZ()));
-  transformationd.linear() = Eigen::Matrix3d(Eigen::AngleAxisd(M_PI/2, Eigen::Vector3d::UnitZ()));
+  transformation.linear() =
+      Eigen::Matrix3f(Eigen::AngleAxisf(M_PI / 2, Eigen::Vector3f::UnitZ()));
+  transformationd.linear() =
+      Eigen::Matrix3d(Eigen::AngleAxisd(M_PI / 2, Eigen::Vector3d::UnitZ()));
   test << 0, 1, 0, -2;
   tolerance = 1e-6;
 
@@ -910,27 +883,29 @@ TEST (PCL, transformPlane)
   plane->values[1] = 0.0;
   plane->values[2] = 0.0;
   plane->values[3] = -2.0;
-  pcl::transformPlane (plane, plane, transformation);
+  pcl::transformPlane(plane, plane, transformation);
   for (int i = 0; i < 4; i++)
-  EXPECT_NEAR (plane->values[i], test[i], tolerance);
+    EXPECT_NEAR(plane->values[i], test[i], tolerance);
 
   plane->values[0] = 1.0;
   plane->values[1] = 0.0;
   plane->values[2] = 0.0;
   plane->values[3] = -2.0;
-  pcl::transformPlane (plane, plane, transformationd);
+  pcl::transformPlane(plane, plane, transformationd);
   for (int i = 0; i < 4; i++)
-  EXPECT_NEAR (plane->values[i], test[i], tolerance);
+    EXPECT_NEAR(plane->values[i], test[i], tolerance);
 
   // Random transformation
   transformation.translation() << 12.5, -5.4, 0.1;
   transformationd.translation() << 12.5, -5.4, 0.1;
-  transformation.linear() = Eigen::Matrix3f(Eigen::AngleAxisf(M_PI/7, Eigen::Vector3f::UnitY()))
-  * Eigen::AngleAxisf(M_PI/4, Eigen::Vector3f::UnitZ());
-  transformationd.linear() = Eigen::Matrix3d(Eigen::AngleAxisd(M_PI/7, Eigen::Vector3d::UnitY()))
-  * Eigen::AngleAxisd(M_PI/4, Eigen::Vector3d::UnitZ());
+  transformation.linear() =
+      Eigen::Matrix3f(Eigen::AngleAxisf(M_PI / 7, Eigen::Vector3f::UnitY())) *
+      Eigen::AngleAxisf(M_PI / 4, Eigen::Vector3f::UnitZ());
+  transformationd.linear() =
+      Eigen::Matrix3d(Eigen::AngleAxisd(M_PI / 7, Eigen::Vector3d::UnitY())) *
+      Eigen::AngleAxisd(M_PI / 4, Eigen::Vector3d::UnitZ());
   test << 5.35315, 2.89914, 0.196848, -49.2788;
-  test /= test.head<3> ().norm ();
+  test /= test.head<3>().norm();
 
   tolerance = 1e-4;
 
@@ -938,54 +913,56 @@ TEST (PCL, transformPlane)
   plane->values[1] = -1.3;
   plane->values[2] = 2.5;
   plane->values[3] = 2.0;
-  pcl::transformPlane (plane, plane, transformation);
+  pcl::transformPlane(plane, plane, transformation);
   for (int i = 0; i < 4; i++)
-  EXPECT_NEAR (plane->values[i], test[i], tolerance);
+    EXPECT_NEAR(plane->values[i], test[i], tolerance);
 
   plane->values[0] = 5.4;
   plane->values[1] = -1.3;
   plane->values[2] = 2.5;
   plane->values[3] = 2.0;
-  pcl::transformPlane (plane, plane, transformationd);
+  pcl::transformPlane(plane, plane, transformationd);
   for (int i = 0; i < 4; i++)
-  EXPECT_NEAR (plane->values[i], test[i], tolerance);
+    EXPECT_NEAR(plane->values[i], test[i], tolerance);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TEST (PCL, checkCoordinateSystem)
+TEST(PCL, checkCoordinateSystem)
 {
   Eigen::VectorXd line_x, line_y;
   Eigen::VectorXd line_xd, line_yd;
-  line_x.resize(6); line_y.resize(6);
-  line_xd.resize(6); line_yd.resize(6);
+  line_x.resize(6);
+  line_y.resize(6);
+  line_xd.resize(6);
+  line_yd.resize(6);
 
   Eigen::Vector3d origin, vector_x, vector_y;
   Eigen::Vector3d origind, vector_xd, vector_yd;
 
   // No translation, no rotation coordinate system
-  line_x << 0, 0, 0, 0, 1, 0;// Y
-  line_y << 0, 0, 0, 0, 0, 1;// Z
+  line_x << 0, 0, 0, 0, 1, 0; // Y
+  line_y << 0, 0, 0, 0, 0, 1; // Z
   line_xd << 0, 0, 0, 0, 1, 0;
   line_yd << 0, 0, 0, 0, 0, 1;
-  EXPECT_TRUE (pcl::checkCoordinateSystem (line_x, line_y ));
-  EXPECT_TRUE (pcl::checkCoordinateSystem (line_xd, line_yd));
+  EXPECT_TRUE(pcl::checkCoordinateSystem(line_x, line_y));
+  EXPECT_TRUE(pcl::checkCoordinateSystem(line_xd, line_yd));
 
   origin << 0, 0, 0;
-  vector_x << 0, 1, 0;// Y
-  vector_y << 0, 0, 1;// Z
+  vector_x << 0, 1, 0; // Y
+  vector_y << 0, 0, 1; // Z
   origind << 0, 0, 0;
   vector_xd << 0, 1, 0;
   vector_yd << 0, 0, 1;
-  EXPECT_TRUE (pcl::checkCoordinateSystem (origin, vector_x, vector_y ));
-  EXPECT_TRUE (pcl::checkCoordinateSystem (origind, vector_xd, vector_yd));
+  EXPECT_TRUE(pcl::checkCoordinateSystem(origin, vector_x, vector_y));
+  EXPECT_TRUE(pcl::checkCoordinateSystem(origind, vector_xd, vector_yd));
 
   // Simple translated coordinate system
-  line_x << 10, -1, 0, 1, 0, 0;// X
-  line_y << 10, -1, 0, 0, 1, 0;// Y
+  line_x << 10, -1, 0, 1, 0, 0; // X
+  line_y << 10, -1, 0, 0, 1, 0; // Y
   line_xd << 10, -1, 0, 1, 0, 0;
   line_yd << 10, -1, 0, 0, 1, 0;
-  EXPECT_TRUE (pcl::checkCoordinateSystem (line_x, line_y ));
-  EXPECT_TRUE (pcl::checkCoordinateSystem (line_xd, line_yd));
+  EXPECT_TRUE(pcl::checkCoordinateSystem(line_x, line_y));
+  EXPECT_TRUE(pcl::checkCoordinateSystem(line_xd, line_yd));
 
   origin << 10, -1, 0;
   vector_x << 1, 0, 0;
@@ -993,16 +970,16 @@ TEST (PCL, checkCoordinateSystem)
   origind << 10, -1, 0;
   vector_xd << 1, 0, 0;
   vector_yd << 0, 1, 0;
-  EXPECT_TRUE (pcl::checkCoordinateSystem (origin, vector_x, vector_y ));
-  EXPECT_TRUE (pcl::checkCoordinateSystem (origind, vector_xd, vector_yd));
+  EXPECT_TRUE(pcl::checkCoordinateSystem(origin, vector_x, vector_y));
+  EXPECT_TRUE(pcl::checkCoordinateSystem(origind, vector_xd, vector_yd));
 
   // General coordinate system
   line_x << 1234.56, 0.0, 0.0, 0.00387281179, 0.00572064891, -0.999976099;
   line_y << 1234.56, 0.0, 0.0, 0.6113801, -0.79133445, -0.00202810019;
   line_xd << 1234.56, 0.0, 0.0, 0.00387281179, 0.00572064891, -0.999976099;
   line_yd << 1234.56, 0.0, 0.0, 0.6113801, -0.79133445, -0.00202810019;
-  EXPECT_TRUE (pcl::checkCoordinateSystem (line_x, line_y , 1e-7, 5e-3));
-  EXPECT_TRUE (pcl::checkCoordinateSystem (line_xd, line_yd, 1e-7, 5e-3));
+  EXPECT_TRUE(pcl::checkCoordinateSystem(line_x, line_y, 1e-7, 5e-3));
+  EXPECT_TRUE(pcl::checkCoordinateSystem(line_xd, line_yd, 1e-7, 5e-3));
 
   origin << 1234.56, 0.0, 0.0;
   vector_x << 0.00387281179, 0.00572064891, -0.999976099;
@@ -1010,137 +987,146 @@ TEST (PCL, checkCoordinateSystem)
   origind << 1234.56, 0.0, 0.0;
   vector_xd << 0.00387281179, 0.00572064891, -0.999976099;
   vector_yd << 0.6113801, -0.79133445, -0.00202810019;
-  EXPECT_TRUE (pcl::checkCoordinateSystem (origin, vector_x, vector_y , 1e-7, 5e-3));
-  EXPECT_TRUE (pcl::checkCoordinateSystem (origind, vector_xd, vector_yd, 1e-7, 5e-3));
+  EXPECT_TRUE(pcl::checkCoordinateSystem(origin, vector_x, vector_y, 1e-7, 5e-3));
+  EXPECT_TRUE(pcl::checkCoordinateSystem(origind, vector_xd, vector_yd, 1e-7, 5e-3));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TEST (PCL, transformBetween2CoordinateSystems)
+TEST(PCL, transformBetween2CoordinateSystems)
 {
   Eigen::Affine3f transformation;
   Eigen::Affine3d transformationd;
   Eigen::VectorXf from_line_x, from_line_y, to_line_x, to_line_y;
   Eigen::VectorXd from_line_xd, from_line_yd, to_line_xd, to_line_yd;
-  from_line_x.resize(6); from_line_y.resize(6);
-  to_line_x.resize(6); to_line_y.resize(6);
-  from_line_xd.resize(6); from_line_yd.resize(6);
-  to_line_xd.resize(6); to_line_yd.resize(6);
+  from_line_x.resize(6);
+  from_line_y.resize(6);
+  to_line_x.resize(6);
+  to_line_y.resize(6);
+  from_line_xd.resize(6);
+  from_line_yd.resize(6);
+  to_line_xd.resize(6);
+  to_line_yd.resize(6);
 
   Eigen::Matrix4d test;
   double tolerance = 1e-3;
 
   // Simple translation
-  test << 1, 0, 0, 10,
-  0, 1, 0, -5,
-  0, 0, 1, 1,
-  0, 0, 0, 1;
+  test << 1, 0, 0, 10, 0, 1, 0, -5, 0, 0, 1, 1, 0, 0, 0, 1;
 
   from_line_x << 0, 0, 0, 1, 0, 0;
   from_line_y << 0, 0, 0, 0, 1, 0;
   to_line_x << 10, -5, 1, 1, 0, 0;
   to_line_y << 10, -5, 1, 0, 1, 0;
-  EXPECT_TRUE (pcl::transformBetween2CoordinateSystems (from_line_x, from_line_y, to_line_x, to_line_y, transformation));
+  EXPECT_TRUE(pcl::transformBetween2CoordinateSystems(
+      from_line_x, from_line_y, to_line_x, to_line_y, transformation));
 
   for (int i = 0; i < 3; i++)
-  for (int j = 0; j < 3; j++)
-  EXPECT_LE ((transformation.matrix())(i,j) - test(i,j), tolerance);
+    for (int j = 0; j < 3; j++)
+      EXPECT_LE((transformation.matrix())(i, j) - test(i, j), tolerance);
 
   from_line_xd << 0, 0, 0, 1, 0, 0;
   from_line_yd << 0, 0, 0, 0, 1, 0;
   to_line_xd << 10, -5, 1, 1, 0, 0;
   to_line_yd << 10, -5, 1, 0, 1, 0;
-  EXPECT_TRUE (pcl::transformBetween2CoordinateSystems (from_line_xd, from_line_yd, to_line_xd, to_line_yd, transformationd));
+  EXPECT_TRUE(pcl::transformBetween2CoordinateSystems(
+      from_line_xd, from_line_yd, to_line_xd, to_line_yd, transformationd));
 
   for (int i = 0; i < 3; i++)
-  for (int j = 0; j < 3; j++)
-  EXPECT_LE ((transformationd.matrix())(i,j) - test(i,j), tolerance);
+    for (int j = 0; j < 3; j++)
+      EXPECT_LE((transformationd.matrix())(i, j) - test(i, j), tolerance);
 
   // Simple rotation
-  test << 0, 0, 1, 0,
-  1, 0, 0, 0,
-  0, 1, 0, 0,
-  0, 0, 0, 1;
+  test << 0, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1;
 
   from_line_x << 0, 0, 0, 1, 0, 0;
   from_line_y << 0, 0, 0, 0, 1, 0;
   to_line_x << 0, 0, 0, 0, 1, 0;
   to_line_y << 0, 0, 0, 0, 0, 1;
-  EXPECT_TRUE (pcl::transformBetween2CoordinateSystems (from_line_x, from_line_y, to_line_x, to_line_y, transformation));
+  EXPECT_TRUE(pcl::transformBetween2CoordinateSystems(
+      from_line_x, from_line_y, to_line_x, to_line_y, transformation));
 
   for (int i = 0; i < 3; i++)
-  for (int j = 0; j < 3; j++)
-  EXPECT_LE ((transformation.matrix())(i,j) - test(i,j), tolerance);
+    for (int j = 0; j < 3; j++)
+      EXPECT_LE((transformation.matrix())(i, j) - test(i, j), tolerance);
 
   from_line_xd << 0, 0, 0, 1, 0, 0;
   from_line_yd << 0, 0, 0, 0, 1, 0;
   to_line_xd << 0, 0, 1, 0, 1, 0;
   to_line_yd << 0, 0, 1, 0, 0, 1;
-  EXPECT_TRUE (pcl::transformBetween2CoordinateSystems (from_line_xd, from_line_yd, to_line_xd, to_line_yd, transformationd));
+  EXPECT_TRUE(pcl::transformBetween2CoordinateSystems(
+      from_line_xd, from_line_yd, to_line_xd, to_line_yd, transformationd));
 
   for (int i = 0; i < 3; i++)
-  for (int j = 0; j < 3; j++)
-  EXPECT_LE ((transformationd.matrix())(i,j) - test(i,j), tolerance);
+    for (int j = 0; j < 3; j++)
+      EXPECT_LE((transformationd.matrix())(i, j) - test(i, j), tolerance);
 
   // General case
-  test << 0.00397405, 0.00563289, -0.999976, -4.9062,
-  0.611348, -0.791359, -0.00213906, -754.746,
-  -0.791352, -0.611325, -0.00658855, 976.972,
-  0, 0, 0, 1;
+  test << 0.00397405, 0.00563289, -0.999976, -4.9062, 0.611348, -0.791359, -0.00213906,
+      -754.746, -0.791352, -0.611325, -0.00658855, 976.972, 0, 0, 0, 1;
 
   from_line_x << 1234.56, 0.0, 0.0, 0.00387281179, 0.00572064891, -0.999976099;
   from_line_y << 1234.56, 0.0, 0.0, 0.6113801, -0.79133445, -0.00202810019;
   to_line_x << 0, 0, 0, 1, 0, 0;
   to_line_y << 0, 0, 0, 0, 1, 0;
-  EXPECT_TRUE (pcl::transformBetween2CoordinateSystems (from_line_x, from_line_y, to_line_x, to_line_y, transformation));
+  EXPECT_TRUE(pcl::transformBetween2CoordinateSystems(
+      from_line_x, from_line_y, to_line_x, to_line_y, transformation));
 
   for (int i = 0; i < 3; i++)
-  for (int j = 0; j < 3; j++)
-  EXPECT_LE ((transformation.matrix())(i,j) - test(i,j), tolerance);
+    for (int j = 0; j < 3; j++)
+      EXPECT_LE((transformation.matrix())(i, j) - test(i, j), tolerance);
 
   from_line_xd << 1234.56, 0.0, 0.0, 0.00387281179, 0.00572064891, -0.999976099;
   from_line_yd << 1234.56, 0.0, 0.0, 0.6113801, -0.79133445, -0.00202810019;
   to_line_xd << 0, 0, 0, 1, 0, 0;
   to_line_yd << 0, 0, 0, 0, 1, 0;
-  EXPECT_TRUE (pcl::transformBetween2CoordinateSystems (from_line_xd, from_line_yd, to_line_xd, to_line_yd, transformationd));
+  EXPECT_TRUE(pcl::transformBetween2CoordinateSystems(
+      from_line_xd, from_line_yd, to_line_xd, to_line_yd, transformationd));
 
   for (int i = 0; i < 3; i++)
-  for (int j = 0; j < 3; j++)
-  EXPECT_LE ((transformationd.matrix())(i,j) - test(i,j), tolerance);
+    for (int j = 0; j < 3; j++)
+      EXPECT_LE((transformationd.matrix())(i, j) - test(i, j), tolerance);
 }
 
-TEST (PCL, getTransFromUnitVectors)
+TEST(PCL, getTransFromUnitVectors)
 {
-  Eigen::Vector3f xaxis (1, 0, 0), yaxis (0, 1, 0), zaxis (0, 0, 1);
+  Eigen::Vector3f xaxis(1, 0, 0), yaxis(0, 1, 0), zaxis(0, 0, 1);
   Eigen::Affine3f trans;
 
-  trans = pcl::getTransFromUnitVectorsZY (zaxis, yaxis);
-  Eigen::Vector3f xaxistrans = trans * xaxis, yaxistrans = trans * yaxis, zaxistrans = trans * zaxis;
-  EXPECT_NEAR ((xaxistrans - xaxis).norm (), 0.0f,  1e-6);
-  EXPECT_NEAR ((yaxistrans - yaxis).norm (), 0.0f,  1e-6);
-  EXPECT_NEAR ((zaxistrans - zaxis).norm (), 0.0f,  1e-6);
+  trans = pcl::getTransFromUnitVectorsZY(zaxis, yaxis);
+  Eigen::Vector3f xaxistrans = trans * xaxis, yaxistrans = trans * yaxis,
+                  zaxistrans = trans * zaxis;
+  EXPECT_NEAR((xaxistrans - xaxis).norm(), 0.0f, 1e-6);
+  EXPECT_NEAR((yaxistrans - yaxis).norm(), 0.0f, 1e-6);
+  EXPECT_NEAR((zaxistrans - zaxis).norm(), 0.0f, 1e-6);
 
-  trans = pcl::getTransFromUnitVectorsXY (xaxis, yaxis);
+  trans = pcl::getTransFromUnitVectorsXY(xaxis, yaxis);
   xaxistrans = trans * xaxis, yaxistrans = trans * yaxis, zaxistrans = trans * zaxis;
-  EXPECT_NEAR ((xaxistrans-xaxis).norm (), 0.0f,  1e-6);
-  EXPECT_NEAR ((yaxistrans-yaxis).norm (), 0.0f,  1e-6);
-  EXPECT_NEAR ((zaxistrans-zaxis).norm (), 0.0f,  1e-6);
+  EXPECT_NEAR((xaxistrans - xaxis).norm(), 0.0f, 1e-6);
+  EXPECT_NEAR((yaxistrans - yaxis).norm(), 0.0f, 1e-6);
+  EXPECT_NEAR((zaxistrans - zaxis).norm(), 0.0f, 1e-6);
 }
 
-TEST (PCL, getTransformation)
+TEST(PCL, getTransformation)
 {
   constexpr float rot_x = 2.8827f;
   constexpr float rot_y = -0.31190f;
   constexpr float rot_z = -0.93058f;
 
   Eigen::Affine3f affine;
-  pcl::getTransformation (0, 0, 0, rot_x, rot_y, rot_z, affine);
+  pcl::getTransformation(0, 0, 0, rot_x, rot_y, rot_z, affine);
 
-  EXPECT_NEAR (affine (0, 0),  0.56854731f, 1e-4); EXPECT_NEAR (affine (0, 1), -0.82217032f, 1e-4); EXPECT_NEAR (affine (0, 2), -0.028107658f, 1e-4);
-  EXPECT_NEAR (affine (1, 0), -0.76327348f, 1e-4); EXPECT_NEAR (affine (1, 1), -0.51445758f, 1e-4); EXPECT_NEAR (affine (1, 2), -0.39082864f, 1e-4);
-  EXPECT_NEAR (affine (2, 0),  0.30686751f, 1e-4); EXPECT_NEAR (affine (2, 1),  0.24365838f, 1e-4); EXPECT_NEAR (affine (2, 2), -0.920034f, 1e-4);
+  EXPECT_NEAR(affine(0, 0), 0.56854731f, 1e-4);
+  EXPECT_NEAR(affine(0, 1), -0.82217032f, 1e-4);
+  EXPECT_NEAR(affine(0, 2), -0.028107658f, 1e-4);
+  EXPECT_NEAR(affine(1, 0), -0.76327348f, 1e-4);
+  EXPECT_NEAR(affine(1, 1), -0.51445758f, 1e-4);
+  EXPECT_NEAR(affine(1, 2), -0.39082864f, 1e-4);
+  EXPECT_NEAR(affine(2, 0), 0.30686751f, 1e-4);
+  EXPECT_NEAR(affine(2, 1), 0.24365838f, 1e-4);
+  EXPECT_NEAR(affine(2, 2), -0.920034f, 1e-4);
 }
 
-TEST (PCL, getTranslationAndEulerAngles)
+TEST(PCL, getTranslationAndEulerAngles)
 {
   constexpr float trans_x = 0.1f;
   constexpr float trans_y = 0.2f;
@@ -1150,23 +1136,23 @@ TEST (PCL, getTranslationAndEulerAngles)
   constexpr float rot_z = -0.93058f;
 
   Eigen::Affine3f affine;
-  pcl::getTransformation (trans_x, trans_y, trans_z, rot_x, rot_y, rot_z, affine);
+  pcl::getTransformation(trans_x, trans_y, trans_z, rot_x, rot_y, rot_z, affine);
 
   float tx, ty, tz, rx, ry, rz;
-  pcl::getTranslationAndEulerAngles (affine, tx, ty, tz, rx, ry, rz);
-  EXPECT_NEAR (tx, trans_x, 1e-4);
-  EXPECT_NEAR (ty, trans_y, 1e-4);
-  EXPECT_NEAR (tz, trans_z, 1e-4);
-  EXPECT_NEAR (rx, rot_x, 1e-4);
-  EXPECT_NEAR (ry, rot_y, 1e-4);
-  EXPECT_NEAR (rz, rot_z, 1e-4);
+  pcl::getTranslationAndEulerAngles(affine, tx, ty, tz, rx, ry, rz);
+  EXPECT_NEAR(tx, trans_x, 1e-4);
+  EXPECT_NEAR(ty, trans_y, 1e-4);
+  EXPECT_NEAR(tz, trans_z, 1e-4);
+  EXPECT_NEAR(rx, rot_x, 1e-4);
+  EXPECT_NEAR(ry, rot_y, 1e-4);
+  EXPECT_NEAR(rz, rot_z, 1e-4);
 }
 
 /* ---[ */
 int
 main (int argc, char** argv)
 {
-  testing::InitGoogleTest (&argc, argv);
-  return (RUN_ALL_TESTS ());
+  testing::InitGoogleTest(&argc, argv);
+  return (RUN_ALL_TESTS());
 }
 /* ]--- */

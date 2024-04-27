@@ -50,11 +50,11 @@ public:
                       Qt::WindowFlags flags = Qt::WindowFlags());
 
   void
-  setFocusBasedStyle(bool focused);
+  setFocusBasedStyle (bool focused);
 
 protected:
   void
-  focusInEvent(QFocusEvent* event) override;
+  focusInEvent (QFocusEvent* event) override;
 
 private:
 };

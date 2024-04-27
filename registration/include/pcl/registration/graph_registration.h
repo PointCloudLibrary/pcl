@@ -69,29 +69,29 @@ public:
   /** \brief Add a point cloud and the associated camera pose to the graph */
   template <typename PointT>
   inline void
-  addPointCloud(const typename pcl::PointCloud<PointT>::ConstPtr& cloud,
-                const Eigen::Matrix4f& pose)
+  addPointCloud (const typename pcl::PointCloud<PointT>::ConstPtr& cloud,
+                 const Eigen::Matrix4f& pose)
   {
     last_vertices_.push_back(graph_handler_->addPointCloud(cloud, pose));
   }
 
   /** \brief Set the graph handler */
   inline void
-  setGraphHandler(GraphHandlerPtr& gh)
+  setGraphHandler (GraphHandlerPtr& gh)
   {
     graph_handler_ = gh;
   }
 
   /** \brief Get a pointer to the graph handler */
   inline GraphHandlerPtr
-  getGraphHandler()
+  getGraphHandler ()
   {
     return graph_handler_;
   }
 
   /** \brief Get a pointer to the graph handler */
   inline GraphHandlerConstPtr
-  getGraphHandler() const
+  getGraphHandler () const
   {
     return graph_handler_;
   }
@@ -100,7 +100,7 @@ public:
    * method which is implemented by the subclasses
    */
   inline void
-  compute()
+  compute ()
   {
     if (last_vertices_.empty())
       return;
@@ -120,6 +120,6 @@ protected:
 private:
   /** \brief The registration method */
   virtual void
-  computeRegistration() = 0;
+  computeRegistration () = 0;
 };
 } // namespace pcl

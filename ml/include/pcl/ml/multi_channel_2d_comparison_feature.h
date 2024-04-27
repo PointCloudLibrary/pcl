@@ -59,7 +59,7 @@ public:
    * \param[out] stream the destination for the serialization
    */
   inline void
-  serialize(std::ostream& stream) const
+  serialize (std::ostream& stream) const
   {
     p1.serialize(stream);
     p2.serialize(stream);
@@ -71,7 +71,7 @@ public:
    * \param[in] stream the source for the deserialization
    */
   inline void
-  deserialize(std::istream& stream)
+  deserialize (std::istream& stream)
   {
     p1.deserialize(stream);
     p2.deserialize(stream);

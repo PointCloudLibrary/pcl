@@ -38,13 +38,12 @@
  *
  */
 
-#include <cstdio>
-#include <string>
-
+#include <pcl/geometry/mesh_io.h>
+#include <pcl/geometry/triangle_mesh.h>
 #include <pcl/test/gtest.h>
 
-#include <pcl/geometry/triangle_mesh.h>
-#include <pcl/geometry/mesh_io.h>
+#include <cstdio>
+#include <string>
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -58,14 +57,13 @@ using FaceIndex = Mesh::FaceIndex;
 
 ////////////////////////////////////////////////////////////////////////////////
 
-TEST (TestMeshIO, WriteAndRead)
+TEST(TestMeshIO, WriteAndRead)
 {
   Mesh expected_mesh, loaded_mesh;
 
   Mesh::VertexIndices vi;
-  for (unsigned int i=0; i<11; ++i)
-  {
-    vi.push_back (expected_mesh.addVertex ());
+  for (unsigned int i = 0; i < 11; ++i) {
+    vi.push_back(expected_mesh.addVertex());
   }
 
   // No triangles 1-3-4 and 6-9-7!
@@ -78,25 +76,26 @@ TEST (TestMeshIO, WriteAndRead)
   //   6 - 7    //
   //  / \ / \   //
   // 8 - 9 - 10 //
-  ASSERT_TRUE (expected_mesh.addFace (vi [0], vi [3], vi [ 1]).isValid ());
-  ASSERT_TRUE (expected_mesh.addFace (vi [1], vi [4], vi [ 2]).isValid ());
-  ASSERT_TRUE (expected_mesh.addFace (vi [3], vi [5], vi [ 4]).isValid ());
-  ASSERT_TRUE (expected_mesh.addFace (vi [6], vi [8], vi [ 0]).isValid ());
-  ASSERT_TRUE (expected_mesh.addFace (vi [7], vi [9], vi [10]).isValid ());
-  ASSERT_TRUE (expected_mesh.addFace (vi [5], vi [6], vi [ 7]).isValid ());
+  ASSERT_TRUE(expected_mesh.addFace(vi[0], vi[3], vi[1]).isValid());
+  ASSERT_TRUE(expected_mesh.addFace(vi[1], vi[4], vi[2]).isValid());
+  ASSERT_TRUE(expected_mesh.addFace(vi[3], vi[5], vi[4]).isValid());
+  ASSERT_TRUE(expected_mesh.addFace(vi[6], vi[8], vi[0]).isValid());
+  ASSERT_TRUE(expected_mesh.addFace(vi[7], vi[9], vi[10]).isValid());
+  ASSERT_TRUE(expected_mesh.addFace(vi[5], vi[6], vi[7]).isValid());
 
   // 'PCL_TEST_GEOMETRY_BINARY_DIR' defined in CMakeLists.txt
-  std::string filename = std::string (PCL_TEST_GEOMETRY_BINARY_DIR).append ("/test_mesh_io_mesh_tmp.txt");
+  std::string filename =
+      std::string(PCL_TEST_GEOMETRY_BINARY_DIR).append("/test_mesh_io_mesh_tmp.txt");
   MeshIO io;
 
-  ASSERT_TRUE (io.write (filename, expected_mesh));
-  ASSERT_TRUE (io.read  (filename, loaded_mesh));
+  ASSERT_TRUE(io.write(filename, expected_mesh));
+  ASSERT_TRUE(io.read(filename, loaded_mesh));
 
-  ASSERT_TRUE (expected_mesh.isEqualTopology (loaded_mesh));
+  ASSERT_TRUE(expected_mesh.isEqualTopology(loaded_mesh));
 
   // TODO: no test for the mesh data yet.
 
-  std::remove (filename.c_str ());
+  std::remove(filename.c_str());
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -104,6 +103,6 @@ TEST (TestMeshIO, WriteAndRead)
 int
 main (int argc, char** argv)
 {
-  testing::InitGoogleTest (&argc, argv);
-  return (RUN_ALL_TESTS ());
+  testing::InitGoogleTest(&argc, argv);
+  return (RUN_ALL_TESTS());
 }

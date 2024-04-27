@@ -59,7 +59,7 @@ public:
   }
 
   void
-  cloud_cb_(const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr& cloud)
+  cloud_cb_ (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr& cloud)
   {
     std::cerr << cloud->size() << " -- ";
 
@@ -109,12 +109,12 @@ public:
   }
 
   void
-  run()
+  run ()
   {
     pcl::OpenNIGrabber interface;
 
     std::function<void(const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)> f =
-        [this](const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr& cloud) {
+        [this] (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr& cloud) {
           cloud_cb_(cloud);
         };
 
@@ -137,7 +137,7 @@ public:
 };
 
 int
-main(int argc, char* argv[])
+main (int argc, char* argv[])
 {
 
   std::cout << "Syntax is " << argv[0]

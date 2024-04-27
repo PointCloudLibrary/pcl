@@ -44,7 +44,7 @@ public:
   }
 
   void
-  setCVFHParams(float p1, float p2, float p3)
+  setCVFHParams (float p1, float p2, float p3)
   {
     eps_angle_threshold_ = p1;
     curvature_threshold_ = p2;
@@ -52,36 +52,36 @@ public:
   }
 
   void
-  setAdaptativeMLS(bool b)
+  setAdaptativeMLS (bool b)
   {
     adaptative_MLS_ = b;
   }
 
   void
-  setRefineClustersParam(float p4)
+  setRefineClustersParam (float p4)
   {
     refine_factor_ = p4;
   }
 
   void
-  getValidTransformsVec(std::vector<bool>& valid)
+  getValidTransformsVec (std::vector<bool>& valid)
   {
     valid = valid_roll_transforms_;
   }
 
   void
-  getTransformsVec(
+  getTransformsVec (
       std::vector<Eigen::Matrix4f, Eigen::aligned_allocator<Eigen::Matrix4f>>& trans)
   {
     trans = transforms_;
   }
 
   void
-  estimate(PointInTPtr& in,
-           PointInTPtr& processed,
-           typename pcl::PointCloud<FeatureT>::CloudVectorType& signatures,
-           std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f>>&
-               centroids) override
+  estimate (PointInTPtr& in,
+            PointInTPtr& processed,
+            typename pcl::PointCloud<FeatureT>::CloudVectorType& signatures,
+            std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f>>&
+                centroids) override
   {
 
     valid_roll_transforms_.clear();
@@ -177,13 +177,13 @@ public:
   }
 
   bool
-  computedNormals() override
+  computedNormals () override
   {
     return true;
   }
 
   void
-  setNormalizeBins(bool b)
+  setNormalizeBins (bool b)
   {
     normalize_bins_ = b;
   }

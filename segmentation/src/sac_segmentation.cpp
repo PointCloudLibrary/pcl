@@ -38,15 +38,20 @@
  */
 
 #include <pcl/impl/instantiate.hpp>
-#include <pcl/point_types.h>
-#include <pcl/segmentation/sac_segmentation.h>
 #include <pcl/segmentation/impl/sac_segmentation.hpp>
+#include <pcl/segmentation/sac_segmentation.h>
+#include <pcl/point_types.h>
 
 // Instantiations of specific point types
 #ifdef PCL_ONLY_CORE_POINT_TYPES
-  PCL_INSTANTIATE(SACSegmentation, (pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA)(pcl::PointXYZRGB)(pcl::PointXYZRGBNormal))
-  PCL_INSTANTIATE_PRODUCT(SACSegmentationFromNormals, ((pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA)(pcl::PointXYZRGB))((pcl::Normal)))
+PCL_INSTANTIATE(SACSegmentation,
+                (pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA)(pcl::PointXYZRGB)(
+                    pcl::PointXYZRGBNormal))
+PCL_INSTANTIATE_PRODUCT(SACSegmentationFromNormals,
+                        ((pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA)(
+                            pcl::PointXYZRGB))((pcl::Normal)))
 #else
-  PCL_INSTANTIATE(SACSegmentation, PCL_XYZ_POINT_TYPES)
-  PCL_INSTANTIATE_PRODUCT(SACSegmentationFromNormals, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES))
+PCL_INSTANTIATE(SACSegmentation, PCL_XYZ_POINT_TYPES)
+PCL_INSTANTIATE_PRODUCT(SACSegmentationFromNormals,
+                        (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES))
 #endif

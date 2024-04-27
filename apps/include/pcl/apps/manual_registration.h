@@ -66,26 +66,26 @@ public:
   ~ManualRegistration() override = default;
 
   void
-  setSrcCloud(pcl::PointCloud<PointT>::Ptr cloud_src)
+  setSrcCloud (pcl::PointCloud<PointT>::Ptr cloud_src)
   {
     cloud_src_ = std::move(cloud_src);
     vis_src_->addPointCloud(cloud_src_, "cloud_src_");
   }
   void
-  setDstCloud(pcl::PointCloud<PointT>::Ptr cloud_dst)
+  setDstCloud (pcl::PointCloud<PointT>::Ptr cloud_dst)
   {
     cloud_dst_ = std::move(cloud_dst);
     vis_dst_->addPointCloud(cloud_dst_, "cloud_dst_");
   }
 
   void
-  SrcPointPickCallback(const pcl::visualization::PointPickingEvent& event, void*);
+  SrcPointPickCallback (const pcl::visualization::PointPickingEvent& event, void*);
   void
-  DstPointPickCallback(const pcl::visualization::PointPickingEvent& event, void*);
+  DstPointPickCallback (const pcl::visualization::PointPickingEvent& event, void*);
 
 protected:
   void
-  refreshView();
+  refreshView ();
 
   pcl::visualization::PCLVisualizer::Ptr vis_src_;
   pcl::visualization::PCLVisualizer::Ptr vis_dst_;
@@ -115,17 +115,17 @@ protected:
 
 public Q_SLOTS:
   void
-  confirmSrcPointPressed();
+  confirmSrcPointPressed ();
   void
-  confirmDstPointPressed();
+  confirmDstPointPressed ();
   void
-  calculatePressed();
+  calculatePressed ();
   void
-  clearPressed();
+  clearPressed ();
   void
-  orthoChanged(int state);
+  orthoChanged (int state);
   void
-  applyTransformPressed();
+  applyTransformPressed ();
   void
-  refinePressed();
+  refinePressed ();
 };

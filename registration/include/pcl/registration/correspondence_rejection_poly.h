@@ -87,15 +87,16 @@ public:
    * correspondences
    */
   void
-  getRemainingCorrespondences(const pcl::Correspondences& original_correspondences,
-                              pcl::Correspondences& remaining_correspondences) override;
+  getRemainingCorrespondences (
+      const pcl::Correspondences& original_correspondences,
+      pcl::Correspondences& remaining_correspondences) override;
 
   /** \brief Provide a source point cloud dataset (must contain XYZ data!), used to
    * compute the correspondence distance.
    * \param[in] cloud a cloud containing XYZ data
    */
   inline void
-  setInputSource(const PointCloudSourceConstPtr& cloud)
+  setInputSource (const PointCloudSourceConstPtr& cloud)
   {
     input_ = cloud;
   }
@@ -105,21 +106,21 @@ public:
    * \param[in] target a cloud containing XYZ data
    */
   inline void
-  setInputTarget(const PointCloudTargetConstPtr& target)
+  setInputTarget (const PointCloudTargetConstPtr& target)
   {
     target_ = target;
   }
 
   /** \brief See if this rejector requires source points */
   bool
-  requiresSourcePoints() const override
+  requiresSourcePoints () const override
   {
     return (true);
   }
 
   /** \brief Blob method for setting the source cloud */
   void
-  setSourcePoints(pcl::PCLPointCloud2::ConstPtr cloud2) override
+  setSourcePoints (pcl::PCLPointCloud2::ConstPtr cloud2) override
   {
     PointCloudSourcePtr cloud(new PointCloudSource);
     fromPCLPointCloud2(*cloud2, *cloud);
@@ -128,14 +129,14 @@ public:
 
   /** \brief See if this rejector requires a target cloud */
   bool
-  requiresTargetPoints() const override
+  requiresTargetPoints () const override
   {
     return (true);
   }
 
   /** \brief Method for setting the target cloud */
   void
-  setTargetPoints(pcl::PCLPointCloud2::ConstPtr cloud2) override
+  setTargetPoints (pcl::PCLPointCloud2::ConstPtr cloud2) override
   {
     PointCloudTargetPtr cloud(new PointCloudTarget);
     fromPCLPointCloud2(*cloud2, *cloud);
@@ -146,7 +147,7 @@ public:
    * \param cardinality polygon cardinality
    */
   inline void
-  setCardinality(int cardinality)
+  setCardinality (int cardinality)
   {
     cardinality_ = cardinality;
   }
@@ -155,7 +156,7 @@ public:
    * \return polygon cardinality
    */
   inline int
-  getCardinality()
+  getCardinality ()
   {
     return (cardinality_);
   }
@@ -165,7 +166,7 @@ public:
    * \param similarity_threshold similarity threshold
    */
   inline void
-  setSimilarityThreshold(float similarity_threshold)
+  setSimilarityThreshold (float similarity_threshold)
   {
     similarity_threshold_ = similarity_threshold;
     similarity_threshold_squared_ = similarity_threshold * similarity_threshold;
@@ -175,7 +176,7 @@ public:
    * \return similarity threshold
    */
   inline float
-  getSimilarityThreshold()
+  getSimilarityThreshold ()
   {
     return (similarity_threshold_);
   }
@@ -184,7 +185,7 @@ public:
    * \param iterations number of iterations
    */
   inline void
-  setIterations(int iterations)
+  setIterations (int iterations)
   {
     iterations_ = iterations;
   }
@@ -193,7 +194,7 @@ public:
    * \return number of iterations
    */
   inline int
-  getIterations()
+  getIterations ()
   {
     return (iterations_);
   }
@@ -205,7 +206,7 @@ public:
    * \ref similarity_threshold_
    */
   inline bool
-  thresholdPolygon(const pcl::Correspondences& corr, const std::vector<int>& idx)
+  thresholdPolygon (const pcl::Correspondences& corr, const std::vector<int>& idx)
   {
     if (cardinality_ ==
         2) // Special case: when two points are considered, we only have one edge
@@ -238,8 +239,8 @@ public:
    * \ref similarity_threshold_
    */
   inline bool
-  thresholdPolygon(const pcl::Indices& source_indices,
-                   const pcl::Indices& target_indices)
+  thresholdPolygon (const pcl::Indices& source_indices,
+                    const pcl::Indices& target_indices)
   {
     // Convert indices to correspondences and an index vector pointing to each element
     pcl::Correspondences corr(cardinality_);
@@ -258,7 +259,7 @@ protected:
    * \param[out] correspondences the set of resultant correspondences.
    */
   inline void
-  applyRejection(pcl::Correspondences& correspondences) override
+  applyRejection (pcl::Correspondences& correspondences) override
   {
     getRemainingCorrespondences(*input_correspondences_, correspondences);
   }
@@ -270,7 +271,7 @@ protected:
    * \return k unique random indices in range {0,...,n-1}
    */
   inline std::vector<int>
-  getUniqueRandomIndices(int n, int k)
+  getUniqueRandomIndices (int n, int k)
   {
     // Marked sampled indices and sample counter
     std::vector<bool> sampled(n, false);
@@ -300,7 +301,7 @@ protected:
    * \return squared Euclidean distance
    */
   inline float
-  computeSquaredDistance(const SourceT& p1, const TargetT& p2)
+  computeSquaredDistance (const SourceT& p1, const TargetT& p2)
   {
     const float dx = p2.x - p1.x;
     const float dy = p2.y - p1.y;
@@ -318,11 +319,11 @@ protected:
    * \return true if edge length ratio is larger than or equal to threshold
    */
   inline bool
-  thresholdEdgeLength(int index_query_1,
-                      int index_query_2,
-                      int index_match_1,
-                      int index_match_2,
-                      float simsq)
+  thresholdEdgeLength (int index_query_1,
+                       int index_query_2,
+                       int index_match_1,
+                       int index_match_2,
+                       float simsq)
   {
     // Distance between source points
     const float dist_src =
@@ -347,7 +348,7 @@ protected:
    * \return linear histogram
    */
   std::vector<int>
-  computeHistogram(const std::vector<float>& data, float lower, float upper, int bins);
+  computeHistogram (const std::vector<float>& data, float lower, float upper, int bins);
 
   /** \brief Find the optimal value for binary histogram thresholding using Otsu's
    * method
@@ -355,7 +356,7 @@ protected:
    * criterion
    */
   int
-  findThresholdOtsu(const std::vector<int>& histogram);
+  findThresholdOtsu (const std::vector<int>& histogram);
 
   /** \brief The input point cloud dataset */
   PointCloudSourceConstPtr input_;

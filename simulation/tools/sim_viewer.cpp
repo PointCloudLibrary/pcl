@@ -106,7 +106,7 @@ bool paused_;
 bool write_file_;
 
 bool
-isValidFieldName(const std::string& field)
+isValidFieldName (const std::string& field)
 {
   if (field == "_")
     return (false);
@@ -118,7 +118,7 @@ isValidFieldName(const std::string& field)
 }
 
 bool
-isMultiDimensionalFeatureField(const pcl::PCLPointField& field)
+isMultiDimensionalFeatureField (const pcl::PCLPointField& field)
 {
   if (field.count > 1)
     return (true);
@@ -126,7 +126,7 @@ isMultiDimensionalFeatureField(const pcl::PCLPointField& field)
 }
 
 void
-printHelp(int, char** argv)
+printHelp (int, char** argv)
 {
   print_error("Syntax is: %s <file_name 1..N>.<pcd or vtk> <options>\n", argv[0]);
   print_info("pcl::simulation viewer\n");
@@ -198,7 +198,7 @@ pcl::visualization::PCLHistogramVisualizer ph_global;
 pcl::visualization::PCLVisualizer::Ptr p;
 
 void
-pp_callback(const pcl::visualization::PointPickingEvent& event, void* cookie)
+pp_callback (const pcl::visualization::PointPickingEvent& event, void* cookie)
 {
   if (event.getPointIndex() == -1)
     return;
@@ -234,7 +234,7 @@ pp_callback(const pcl::visualization::PointPickingEvent& event, void* cookie)
 }
 
 void
-capture(Eigen::Isometry3d pose_in)
+capture (Eigen::Isometry3d pose_in)
 {
   // No reference image - but this is kept for compatibility with range_test_v2:
   float* reference =
@@ -284,7 +284,7 @@ capture(Eigen::Isometry3d pose_in)
 }
 
 void
-print_Quaterniond(Eigen::Quaterniond r, std::stringstream& ss)
+print_Quaterniond (Eigen::Quaterniond r, std::stringstream& ss)
 {
   ss << r.w() << ", " << r.x() << ", " << r.y() << ", " << r.z();
   //  std::cout << r.str() << "q\n";
@@ -292,7 +292,7 @@ print_Quaterniond(Eigen::Quaterniond r, std::stringstream& ss)
 
 // Normalize angle to be within the interval [-pi,pi].
 double
-standardRad(double t)
+standardRad (double t)
 {
   if (t >= 0.) {
     t = std::fmod(t + M_PI, 2 * M_PI) - M_PI;
@@ -304,7 +304,7 @@ standardRad(double t)
 }
 
 void
-wRo_to_euler(const Eigen::Matrix3f& wRo, double& yaw, double& pitch, double& roll)
+wRo_to_euler (const Eigen::Matrix3f& wRo, double& yaw, double& pitch, double& roll)
 {
   yaw = standardRad(std::atan2(wRo(1, 0), wRo(0, 0)));
   double c = std::cos(yaw);
@@ -316,7 +316,7 @@ wRo_to_euler(const Eigen::Matrix3f& wRo, double& yaw, double& pitch, double& rol
 }
 
 void
-print_Isometry3d(Eigen::Isometry3d pose, std::stringstream& ss)
+print_Isometry3d (Eigen::Isometry3d pose, std::stringstream& ss)
 {
   Eigen::Vector3d t(pose.translation());
   Eigen::Quaterniond r(pose.rotation());
@@ -326,7 +326,7 @@ print_Isometry3d(Eigen::Isometry3d pose, std::stringstream& ss)
 }
 
 void
-simulate_callback(const pcl::visualization::KeyboardEvent& event, void* viewer_void)
+simulate_callback (const pcl::visualization::KeyboardEvent& event, void* viewer_void)
 {
   pcl::visualization::PCLVisualizer::Ptr viewer =
       *static_cast<pcl::visualization::PCLVisualizer::Ptr*>(viewer_void);
@@ -404,7 +404,7 @@ simulate_callback(const pcl::visualization::KeyboardEvent& event, void* viewer_v
 
 // Read in a 3D model
 void
-loadPolygonMeshModel(char* polygon_file)
+loadPolygonMeshModel (char* polygon_file)
 {
   pcl::PolygonMesh mesh; // (new pcl::PolygonMesh);
   // pcl::io::loadPolygonFile("/home/mfallon/data/models/dalet/Darlek_modified_works.obj",mesh);
@@ -424,7 +424,7 @@ loadPolygonMeshModel(char* polygon_file)
 }
 
 void
-initialize(int, char** argv)
+initialize (int, char** argv)
 {
   const GLubyte* version = glGetString(GL_VERSION);
   std::cout << "OpenGL Version: " << version << std::endl;
@@ -436,7 +436,7 @@ initialize(int, char** argv)
 }
 
 int
-main(int argc, char** argv)
+main (int argc, char** argv)
 {
   srand(time(nullptr));
 

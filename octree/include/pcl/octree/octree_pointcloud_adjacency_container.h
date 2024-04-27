@@ -62,18 +62,18 @@ public:
   using const_iterator = typename NeighborListT::const_iterator;
   // const iterators to neighbors
   inline const_iterator
-  cbegin() const
+  cbegin () const
   {
     return (neighbors_.begin());
   }
   inline const_iterator
-  cend() const
+  cend () const
   {
     return (neighbors_.end());
   }
   // size of neighbors
   inline std::size_t
-  size() const
+  size () const
   {
     return neighbors_.size();
   }
@@ -88,21 +88,21 @@ public:
    *  \returns number of neighbors
    */
   std::size_t
-  getNumNeighbors() const
+  getNumNeighbors () const
   {
     return neighbors_.size();
   }
 
   /** \brief Gets the number of points contributing to this leaf */
   uindex_t
-  getPointCounter() const
+  getPointCounter () const
   {
     return num_points_;
   }
 
   /** \brief Returns a reference to the data member to access it without copying */
   DataT&
-  getData()
+  getData ()
   {
     return data_;
   }
@@ -111,7 +111,7 @@ public:
    *  \param[in] data_arg New value for data
    */
   void
-  setData(const DataT& data_arg)
+  setData (const DataT& data_arg)
   {
     data_ = data_arg;
   }
@@ -120,7 +120,7 @@ public:
    * \return number of points added to leaf node container.
    */
   uindex_t
-  getSize() const override
+  getSize () const override
   {
     return num_points_;
   }
@@ -129,19 +129,19 @@ protected:
   // iterators to neighbors
   using iterator = typename NeighborListT::iterator;
   inline iterator
-  begin()
+  begin ()
   {
     return (neighbors_.begin());
   }
   inline iterator
-  end()
+  end ()
   {
     return (neighbors_.end());
   }
 
   /** \brief deep copy function */
   virtual OctreePointCloudAdjacencyContainer*
-  deepCopy() const
+  deepCopy () const
   {
     auto* new_container = new OctreePointCloudAdjacencyContainer;
     new_container->setNeighbors(this->neighbors_);
@@ -155,7 +155,7 @@ protected:
    */
   // param[in] new_point the new point to add
   void
-  addPoint(const PointInT& /*new_point*/)
+  addPoint (const PointInT& /*new_point*/)
   {
     using namespace pcl::common;
     ++num_points_;
@@ -164,19 +164,19 @@ protected:
   /** \brief Function for working on data added. Base implementation does nothing
    * */
   void
-  computeData()
+  computeData ()
   {}
 
   /** \brief Sets the number of points contributing to this leaf */
   void
-  setPointCounter(uindex_t points_arg)
+  setPointCounter (uindex_t points_arg)
   {
     num_points_ = points_arg;
   }
 
   /** \brief Clear the voxel centroid */
   void
-  reset() override
+  reset () override
   {
     neighbors_.clear();
     num_points_ = 0;
@@ -187,7 +187,7 @@ protected:
    * \param[in] neighbor the new neighbor to add
    */
   void
-  addNeighbor(OctreePointCloudAdjacencyContainer* neighbor)
+  addNeighbor (OctreePointCloudAdjacencyContainer* neighbor)
   {
     neighbors_.push_back(neighbor);
   }
@@ -196,7 +196,7 @@ protected:
    * \param[in] neighbor the neighbor to remove
    */
   void
-  removeNeighbor(OctreePointCloudAdjacencyContainer* neighbor)
+  removeNeighbor (OctreePointCloudAdjacencyContainer* neighbor)
   {
     for (auto neighb_it = neighbors_.begin(); neighb_it != neighbors_.end();
          ++neighb_it) {
@@ -211,7 +211,7 @@ protected:
    * \param[in] neighbor_arg the new set
    */
   void
-  setNeighbors(const NeighborListT& neighbor_arg)
+  setNeighbors (const NeighborListT& neighbor_arg)
   {
     neighbors_ = neighbor_arg;
   }

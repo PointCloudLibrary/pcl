@@ -41,109 +41,107 @@
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 
-namespace pcl
-{
+namespace pcl {
 
-  // Forward declaration of a class that contains actual grabber implementation
-  namespace io { namespace depth_sense { struct DepthSenseGrabberImpl; } }
+// Forward declaration of a class that contains actual grabber implementation
+namespace io {
+namespace depth_sense {
+struct DepthSenseGrabberImpl;
+}
+} // namespace io
 
-  /** Grabber for DepthSense devices (e.g. Creative Senz3D, SoftKinetic DS325).
-    *
-    * Requires [SoftKinetic DepthSense SDK](http://www.softkinetic.com/Support/Download).
-    *
-    * \author Sergey Alexandrov
-    * \ingroup io */
-  class PCL_EXPORTS DepthSenseGrabber : public Grabber
-  {
+/** Grabber for DepthSense devices (e.g. Creative Senz3D, SoftKinetic DS325).
+ *
+ * Requires [SoftKinetic DepthSense SDK](http://www.softkinetic.com/Support/Download).
+ *
+ * \author Sergey Alexandrov
+ * \ingroup io */
+class PCL_EXPORTS DepthSenseGrabber : public Grabber {
 
-    public:
+public:
+  using Ptr = shared_ptr<DepthSenseGrabber>;
+  using ConstPtr = shared_ptr<const DepthSenseGrabber>;
 
-      using Ptr = shared_ptr<DepthSenseGrabber>;
-      using ConstPtr = shared_ptr<const DepthSenseGrabber>;
+  using sig_cb_depth_sense_point_cloud =
+      void(const pcl::PointCloud<pcl::PointXYZ>::ConstPtr&);
+  using sig_cb_depth_sense_point_cloud_rgba =
+      void(const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&);
 
-      using sig_cb_depth_sense_point_cloud = void(const pcl::PointCloud<pcl::PointXYZ>::ConstPtr&);
-      using sig_cb_depth_sense_point_cloud_rgba = void(const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&);
-
-      enum Mode
-      {
-        DepthSense_QVGA_30Hz = 0,
-      };
-
-      enum TemporalFilteringType
-      {
-        DepthSense_None = 0,
-        DepthSense_Median = 1,
-        DepthSense_Average = 2,
-      };
-
-      /** Create a grabber for a DepthSense device.
-        *
-        * The grabber "captures" the device, making it impossible for other
-        * grabbers to interact with it. The device is "released" when the
-        * grabber is destructed.
-        *
-        * This will throw pcl::IOException if there are no free devices that
-        * match the supplied \a device_id.
-        *
-        * \param[in] device_id device identifier, which might be a serial
-        * number, an index (with '#' prefix), or an empty string (to select the
-        * first available device)
-        */
-      DepthSenseGrabber (const std::string& device_id = "");
-
-      virtual
-      ~DepthSenseGrabber () noexcept;
-
-      virtual void
-      start ();
-
-      virtual void
-      stop ();
-
-      virtual bool
-      isRunning () const;
-
-      virtual std::string
-      getName () const
-      {
-        return (std::string ("DepthSenseGrabber"));
-      }
-
-      virtual float
-      getFramesPerSecond () const;
-
-      /** Set the confidence threshold for depth data.
-        *
-        * Each pixel in a depth image output by the device has an associated
-        * confidence value. The higher this value is, the more reliable the
-        * datum is.
-        *
-        * The depth pixels (and their associated 3D points) are filtered based
-        * on the confidence value. Those that are below the threshold are
-        * discarded (i.e. their coordinates are set to NaN). */
-      void
-      setConfidenceThreshold (int threshold);
-
-      /** Enable temporal filtering of the depth data received from the device.
-        *
-        * The window size parameter is not relevant for `DepthSense_None`
-        * filtering type. */
-      void
-      enableTemporalFiltering (TemporalFilteringType type, std::size_t window_size = 1);
-
-      /** Disable temporal filtering. */
-      void
-      disableTemporalFiltering ();
-
-      /** Get the serial number of device captured by the grabber. */
-      std::string
-      getDeviceSerialNumber () const;
-
-    private:
-
-      pcl::io::depth_sense::DepthSenseGrabberImpl* p_;
-      friend struct pcl::io::depth_sense::DepthSenseGrabberImpl;
-
+  enum Mode {
+    DepthSense_QVGA_30Hz = 0,
   };
 
-}
+  enum TemporalFilteringType {
+    DepthSense_None = 0,
+    DepthSense_Median = 1,
+    DepthSense_Average = 2,
+  };
+
+  /** Create a grabber for a DepthSense device.
+   *
+   * The grabber "captures" the device, making it impossible for other
+   * grabbers to interact with it. The device is "released" when the
+   * grabber is destructed.
+   *
+   * This will throw pcl::IOException if there are no free devices that
+   * match the supplied \a device_id.
+   *
+   * \param[in] device_id device identifier, which might be a serial
+   * number, an index (with '#' prefix), or an empty string (to select the
+   * first available device)
+   */
+  DepthSenseGrabber(const std::string& device_id = "");
+
+  virtual ~DepthSenseGrabber() noexcept;
+
+  virtual void
+  start ();
+
+  virtual void
+  stop ();
+
+  virtual bool
+  isRunning () const;
+
+  virtual std::string
+  getName () const
+  {
+    return (std::string("DepthSenseGrabber"));
+  }
+
+  virtual float
+  getFramesPerSecond () const;
+
+  /** Set the confidence threshold for depth data.
+   *
+   * Each pixel in a depth image output by the device has an associated
+   * confidence value. The higher this value is, the more reliable the
+   * datum is.
+   *
+   * The depth pixels (and their associated 3D points) are filtered based
+   * on the confidence value. Those that are below the threshold are
+   * discarded (i.e. their coordinates are set to NaN). */
+  void
+  setConfidenceThreshold (int threshold);
+
+  /** Enable temporal filtering of the depth data received from the device.
+   *
+   * The window size parameter is not relevant for `DepthSense_None`
+   * filtering type. */
+  void
+  enableTemporalFiltering (TemporalFilteringType type, std::size_t window_size = 1);
+
+  /** Disable temporal filtering. */
+  void
+  disableTemporalFiltering ();
+
+  /** Get the serial number of device captured by the grabber. */
+  std::string
+  getDeviceSerialNumber () const;
+
+private:
+  pcl::io::depth_sense::DepthSenseGrabberImpl* p_;
+  friend struct pcl::io::depth_sense::DepthSenseGrabberImpl;
+};
+
+} // namespace pcl

@@ -43,12 +43,12 @@
 #include <cstdio>
 
 #define HAVE_CUDA
-//#include <pcl_config.h>
+// #include <pcl_config.h>
 
 #if !defined(HAVE_CUDA)
 
 void
-throw_nogpu()
+throw_nogpu ()
 {
   throw "PCL 2.0 exception";
 }
@@ -130,7 +130,7 @@ pcl::gpu::checkIfPreFermiGPU(int device)
 namespace {
 template <class T>
 inline void
-getCudaAttribute(T* attribute, CUdevice_attribute /*device_attribute*/, int /*device*/)
+getCudaAttribute (T* attribute, CUdevice_attribute /*device_attribute*/, int /*device*/)
 {
   *attribute = T();
   CUresult error =
@@ -144,7 +144,7 @@ getCudaAttribute(T* attribute, CUdevice_attribute /*device_attribute*/, int /*de
 }
 
 inline int
-convertSMVer2Cores(int major, int minor)
+convertSMVer2Cores (int major, int minor)
 {
   // Defines for GPU Architecture types (using the SM version to determine the # of
   // cores per SM

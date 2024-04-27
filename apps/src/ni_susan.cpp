@@ -70,7 +70,7 @@ public:
 
   /////////////////////////////////////////////////////////////////////////
   void
-  cloud_callback(const CloudConstPtr& cloud)
+  cloud_callback (const CloudConstPtr& cloud)
   {
     FPS_CALC("cloud callback");
     std::lock_guard<std::mutex> lock(cloud_mutex_);
@@ -87,23 +87,23 @@ public:
 
   /////////////////////////////////////////////////////////////////////////
   void
-  init()
+  init ()
   {
     std::function<void(const CloudConstPtr&)> cloud_cb =
-        [this](const CloudConstPtr& cloud) { cloud_callback(cloud); };
+        [this] (const CloudConstPtr& cloud) { cloud_callback(cloud); };
     cloud_connection = grabber_.registerCallback(cloud_cb);
   }
 
   /////////////////////////////////////////////////////////////////////////
   std::string
-  getStrBool(bool state)
+  getStrBool (bool state)
   {
     return state ? "1" : "0";
   }
 
   /////////////////////////////////////////////////////////////////////////
   void
-  run()
+  run ()
   {
     grabber_.start();
 
@@ -190,7 +190,7 @@ private:
 
 /* ---[ */
 int
-main(int, char**)
+main (int, char**)
 {
   std::string device_id("#1");
   OpenNIGrabber grabber(device_id);

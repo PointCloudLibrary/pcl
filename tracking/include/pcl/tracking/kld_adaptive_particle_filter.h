@@ -72,14 +72,14 @@ public:
    * \param bin_size the size of a bin
    */
   inline void
-  setBinSize(const StateT& bin_size)
+  setBinSize (const StateT& bin_size)
   {
     bin_size_ = bin_size;
   }
 
   /** \brief get the bin size. */
   inline StateT
-  getBinSize() const
+  getBinSize () const
   {
     return (bin_size_);
   }
@@ -88,14 +88,14 @@ public:
    * \param nr the maximum number of the particles.
    */
   inline void
-  setMaximumParticleNum(unsigned int nr)
+  setMaximumParticleNum (unsigned int nr)
   {
     maximum_particle_number_ = nr;
   }
 
   /** \brief get the maximum number of the particles.*/
   inline unsigned int
-  getMaximumParticleNum() const
+  getMaximumParticleNum () const
   {
     return (maximum_particle_number_);
   }
@@ -104,14 +104,14 @@ public:
    * \param eps epsilon
    */
   inline void
-  setEpsilon(double eps)
+  setEpsilon (double eps)
   {
     epsilon_ = eps;
   }
 
   /** \brief get epsilon to be used to calc K-L boundary. */
   inline double
-  getEpsilon() const
+  getEpsilon () const
   {
     return (epsilon_);
   }
@@ -120,14 +120,14 @@ public:
    * \param delta delta of chi-squared distribution.
    */
   inline void
-  setDelta(double delta)
+  setDelta (double delta)
   {
     delta_ = delta;
   }
 
   /** \brief get delta to be used in chi-squared distribution.*/
   inline double
-  getDelta() const
+  getDelta () const
   {
     return (delta_);
   }
@@ -138,7 +138,7 @@ protected:
    * \param b index of the bin
    */
   virtual bool
-  equalBin(const std::vector<int>& a, const std::vector<int>& b)
+  equalBin (const std::vector<int>& a, const std::vector<int>& b)
   {
     int dimension = StateT::stateDimension();
     for (int i = 0; i < dimension; i++)
@@ -151,7 +151,7 @@ protected:
    * \param[in] u ratio of quantile.
    */
   double
-  normalQuantile(double u)
+  normalQuantile (double u)
   {
     const double a[9] = {1.24818987e-4,
                          -1.075204047e-3,
@@ -211,7 +211,7 @@ protected:
    * \param[in] k the number of bins and the first parameter of chi distribution.
    */
   virtual double
-  calcKLBound(int k)
+  calcKLBound (int k)
   {
     double z = normalQuantile(delta_);
     double chi = 1.0 - 2.0 / (9.0 * (k - 1)) + sqrt(2.0 / (9.0 * (k - 1))) * z;
@@ -224,19 +224,19 @@ protected:
    * \param bins a set of the bins
    */
   virtual bool
-  insertIntoBins(std::vector<int>&& new_bin, std::vector<std::vector<int>>& bins);
+  insertIntoBins (std::vector<int>&& new_bin, std::vector<std::vector<int>>& bins);
 
   /** \brief This method should get called before starting the actual
    * computation. */
   bool
-  initCompute() override;
+  initCompute () override;
 
   /** \brief resampling phase of particle filter method. sampling the particles
    * according to the weights calculated in weight method. in particular, "sample with
    * replacement" is achieved by walker's alias method.
    */
   void
-  resample() override;
+  resample () override;
 
   /** \brief the maximum number of the particles. */
   unsigned int maximum_particle_number_{0};

@@ -39,48 +39,45 @@
 #ifndef PCL_COMMON_ANGLES_IMPL_HPP_
 #define PCL_COMMON_ANGLES_IMPL_HPP_
 
-#include <cmath>
 #include <pcl/pcl_macros.h>
 
-namespace pcl
+#include <cmath>
+
+namespace pcl {
+inline float
+normAngle (float alpha)
 {
-  inline float
-  normAngle (float alpha)
-  {
-    return (alpha >= 0  ? 
-        std::fmod (alpha + static_cast<float>(M_PI), 
-               2.0f * static_cast<float>(M_PI)) 
-        - static_cast<float>(M_PI) 
-        : 
-        -(std::fmod (static_cast<float>(M_PI) - alpha, 
-                 2.0f * static_cast<float>(M_PI)) 
-        - static_cast<float>(M_PI)));
-  }
-
-  inline float 
-  rad2deg (float alpha)
-  {
-    return (alpha * 57.29578f);
-  }
-
-  inline float 
-  deg2rad (float alpha)
-  {
-    return (alpha * 0.017453293f);
-  }
-
-  inline double 
-  rad2deg (double alpha)
-  {
-    return (alpha * 57.29578);
-  }
-
-  inline double 
-  deg2rad (double alpha)
-  {
-    return (alpha * 0.017453293);
-  }
+  return (alpha >= 0 ? std::fmod(alpha + static_cast<float>(M_PI),
+                                 2.0f * static_cast<float>(M_PI)) -
+                           static_cast<float>(M_PI)
+                     : -(std::fmod(static_cast<float>(M_PI) - alpha,
+                                   2.0f * static_cast<float>(M_PI)) -
+                         static_cast<float>(M_PI)));
 }
 
-#endif  // PCL_COMMON_ANGLES_IMPL_HPP_
+inline float
+rad2deg (float alpha)
+{
+  return (alpha * 57.29578f);
+}
 
+inline float
+deg2rad (float alpha)
+{
+  return (alpha * 0.017453293f);
+}
+
+inline double
+rad2deg (double alpha)
+{
+  return (alpha * 57.29578);
+}
+
+inline double
+deg2rad (double alpha)
+{
+  return (alpha * 0.017453293);
+}
+} // namespace pcl
+
+#endif // PCL_COMMON_ANGLES_IMPL_HPP_

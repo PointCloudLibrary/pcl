@@ -35,59 +35,57 @@
  */
 
 /**
-  * \file test_bearing_angle_image.cpp
-  * \created on: July 07, 2013
-  * \author: Qinghua Li (qinghua__li@163.com)
-  */
+ * \file test_bearing_angle_image.cpp
+ * \created on: July 07, 2013
+ * \author: Qinghua Li (qinghua__li@163.com)
+ */
 
-#include <pcl/test/gtest.h>
 #include <pcl/range_image/bearing_angle_image.h>
+#include <pcl/test/gtest.h>
 
 pcl::BearingAngleImage bearing_angle_image;
-pcl::PointCloud<pcl::PointXYZ> point_cloud (3, 2);
+pcl::PointCloud<pcl::PointXYZ> point_cloud(3, 2);
 
 /////////////////////////////////////////////////////////////////////
-TEST (BearingAngleImageTest, GetAngle)
+TEST(BearingAngleImageTest, GetAngle)
 {
-  pcl::PointXYZ point1 (1.0, 2.0, 3.0);
-  pcl::PointXYZ point2 (2.0, 1.0, 1.0);
+  pcl::PointXYZ point1(1.0, 2.0, 3.0);
+  pcl::PointXYZ point2(2.0, 1.0, 1.0);
 
-  double angle = bearing_angle_image.getAngle (point1, point2);
-  EXPECT_NEAR (40.203, angle, 1e-3);
+  double angle = bearing_angle_image.getAngle(point1, point2);
+  EXPECT_NEAR(40.203, angle, 1e-3);
 }
 
 /////////////////////////////////////////////////////////////////////
-TEST (BearingAngleImageTest, GenerateBAImage)
+TEST(BearingAngleImageTest, GenerateBAImage)
 {
-  point_cloud[0] = pcl::PointXYZ (3.0, 1.5, -2.0);
-  point_cloud[1] = pcl::PointXYZ (1.0, 3.0, 2.0);
-  point_cloud[2] = pcl::PointXYZ (2.0, 3.0, 2.0);
+  point_cloud[0] = pcl::PointXYZ(3.0, 1.5, -2.0);
+  point_cloud[1] = pcl::PointXYZ(1.0, 3.0, 2.0);
+  point_cloud[2] = pcl::PointXYZ(2.0, 3.0, 2.0);
 
-  point_cloud[3] = pcl::PointXYZ (2.0, 3.0, 1.0);
-  point_cloud[4] = pcl::PointXYZ (4.0, 2.0, 2.0);
-  point_cloud[5] = pcl::PointXYZ (-1.5, 3.0, 1.0);
+  point_cloud[3] = pcl::PointXYZ(2.0, 3.0, 1.0);
+  point_cloud[4] = pcl::PointXYZ(4.0, 2.0, 2.0);
+  point_cloud[5] = pcl::PointXYZ(-1.5, 3.0, 1.0);
 
-  bearing_angle_image.generateBAImage (point_cloud);
+  bearing_angle_image.generateBAImage(point_cloud);
 
   std::uint8_t grays[6];
-  for (int i = 0; i < 3 * 2; ++i)
-  {
+  for (int i = 0; i < 3 * 2; ++i) {
     grays[i] = (bearing_angle_image[i].rgba >> 8) & 0xff;
   }
 
-  EXPECT_EQ (0, grays[0]);
-  EXPECT_EQ (0, grays[1]);
-  EXPECT_EQ (0, grays[2]);
-  EXPECT_EQ (112, grays[3]);
-  EXPECT_EQ (80, grays[4]);
-  EXPECT_EQ (0, grays[5]);
+  EXPECT_EQ(0, grays[0]);
+  EXPECT_EQ(0, grays[1]);
+  EXPECT_EQ(0, grays[2]);
+  EXPECT_EQ(112, grays[3]);
+  EXPECT_EQ(80, grays[4]);
+  EXPECT_EQ(0, grays[5]);
 }
-
 
 /* ---[ */
 int
 main (int argc, char** argv)
 {
-  testing::InitGoogleTest (&argc, argv);
-  return (RUN_ALL_TESTS ());
+  testing::InitGoogleTest(&argc, argv);
+  return (RUN_ALL_TESTS());
 }

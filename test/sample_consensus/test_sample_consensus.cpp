@@ -36,15 +36,14 @@
  *
  */
 
-#include <pcl/test/gtest.h>
-
-#include <pcl/sample_consensus/msac.h>
 #include <pcl/sample_consensus/lmeds.h>
-#include <pcl/sample_consensus/rmsac.h>
 #include <pcl/sample_consensus/mlesac.h>
+#include <pcl/sample_consensus/msac.h>
 #include <pcl/sample_consensus/ransac.h>
+#include <pcl/sample_consensus/rmsac.h>
 #include <pcl/sample_consensus/rransac.h>
 #include <pcl/sample_consensus/sac_model_sphere.h>
+#include <pcl/test/gtest.h>
 
 #include <chrono>
 #include <condition_variable>
@@ -56,26 +55,26 @@ using namespace pcl;
 using SampleConsensusModelSpherePtr = SampleConsensusModelSphere<PointXYZ>::Ptr;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TEST (SampleConsensus, Base)
+TEST(SampleConsensus, Base)
 {
-  PointCloud<PointXYZ>::Ptr cloud (new PointCloud<PointXYZ>);
+  PointCloud<PointXYZ>::Ptr cloud(new PointCloud<PointXYZ>);
 
   // Create a shared sphere model pointer directly
-  SampleConsensusModelSpherePtr model (new SampleConsensusModelSphere<PointXYZ> (cloud));
+  SampleConsensusModelSpherePtr model(new SampleConsensusModelSphere<PointXYZ>(cloud));
 
   // Create the RANSAC object
-  RandomSampleConsensus<PointXYZ> sac (model, 0.03);
+  RandomSampleConsensus<PointXYZ> sac(model, 0.03);
 
   // Basic tests
-  ASSERT_EQ (0.03, sac.getDistanceThreshold ());
-  sac.setDistanceThreshold (0.03);
-  ASSERT_EQ (0.03, sac.getDistanceThreshold ());
+  ASSERT_EQ(0.03, sac.getDistanceThreshold());
+  sac.setDistanceThreshold(0.03);
+  ASSERT_EQ(0.03, sac.getDistanceThreshold());
 
-  sac.setProbability (0.99);
-  ASSERT_EQ (0.99, sac.getProbability ());
+  sac.setProbability(0.99);
+  ASSERT_EQ(0.99, sac.getProbability());
 
-  sac.setMaxIterations (10000);
-  ASSERT_EQ (10000, sac.getMaxIterations ());
+  sac.setMaxIterations(10000);
+  ASSERT_EQ(10000, sac.getMaxIterations());
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -83,14 +82,12 @@ TEST (SampleConsensus, Base)
 template <typename SacT>
 class SacTest : public ::testing::Test {};
 
-using sacTypes = ::testing::Types<
-  RandomSampleConsensus<PointXYZ>,
-  LeastMedianSquares<PointXYZ>,
-  MEstimatorSampleConsensus<PointXYZ>,
-  RandomizedRandomSampleConsensus<PointXYZ>,
-  RandomizedMEstimatorSampleConsensus<PointXYZ>,
-  MaximumLikelihoodSampleConsensus<PointXYZ>
->;
+using sacTypes = ::testing::Types<RandomSampleConsensus<PointXYZ>,
+                                  LeastMedianSquares<PointXYZ>,
+                                  MEstimatorSampleConsensus<PointXYZ>,
+                                  RandomizedRandomSampleConsensus<PointXYZ>,
+                                  RandomizedMEstimatorSampleConsensus<PointXYZ>,
+                                  MaximumLikelihoodSampleConsensus<PointXYZ>>;
 TYPED_TEST_SUITE(SacTest, sacTypes);
 
 TYPED_TEST(SacTest, InfiniteLoop)
@@ -99,16 +96,16 @@ TYPED_TEST(SacTest, InfiniteLoop)
 
   constexpr unsigned point_count = 100;
   PointCloud<PointXYZ> cloud;
-  cloud.resize (point_count);
-  for (unsigned idx = 0; idx < point_count; ++idx)
-  {
-    cloud[idx].x = static_cast<float> (idx);
+  cloud.resize(point_count);
+  for (unsigned idx = 0; idx < point_count; ++idx) {
+    cloud[idx].x = static_cast<float>(idx);
     cloud[idx].y = 0.0;
     cloud[idx].z = 0.0;
   }
 
-  SampleConsensusModelSpherePtr model (new SampleConsensusModelSphere<PointXYZ> (cloud.makeShared ()));
-  TypeParam sac (model, 0.03);
+  SampleConsensusModelSpherePtr model(
+      new SampleConsensusModelSphere<PointXYZ>(cloud.makeShared()));
+  TypeParam sac(model, 0.03);
 
   // This test sometimes fails for LMedS on azure, but always passes when run locally.
   // Enable all output for LMedS, so that when it fails next time, we hopefully see why.
@@ -125,26 +122,24 @@ TYPED_TEST(SacTest, InfiniteLoop)
   std::mutex mtx;
 
   // Create the RANSAC object
-  std::thread thread ([&] ()
-  {
-    sac.computeModel (debug_verbosity_level);
+  std::thread thread([&] () {
+    sac.computeModel(debug_verbosity_level);
 
     // Notify things are done
-    std::lock_guard<std::mutex> lock (mtx);
-    cv.notify_one ();
+    std::lock_guard<std::mutex> lock(mtx);
+    cv.notify_one();
   });
 
-
   // Waits for the delay
-  std::unique_lock<std::mutex> lock (mtx);
-  #if defined(DEBUG) || defined(_DEBUG)
-    EXPECT_EQ (std::cv_status::no_timeout, cv.wait_for (lock, 15s));
-  #else
-    EXPECT_EQ (std::cv_status::no_timeout, cv.wait_for (lock, 2s));
-  #endif
+  std::unique_lock<std::mutex> lock(mtx);
+#if defined(DEBUG) || defined(_DEBUG)
+  EXPECT_EQ(std::cv_status::no_timeout, cv.wait_for(lock, 15s));
+#else
+  EXPECT_EQ(std::cv_status::no_timeout, cv.wait_for(lock, 2s));
+#endif
   // release lock to avoid deadlock
   lock.unlock();
-  thread.join ();
+  thread.join();
 
   pcl::console::setVerbosityLevel(previous_verbosity_level); // reset verbosity level
 }
@@ -152,6 +147,6 @@ TYPED_TEST(SacTest, InfiniteLoop)
 int
 main (int argc, char** argv)
 {
-  testing::InitGoogleTest (&argc, argv);
-  return (RUN_ALL_TESTS ());
+  testing::InitGoogleTest(&argc, argv);
+  return (RUN_ALL_TESTS());
 }

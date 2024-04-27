@@ -46,10 +46,10 @@ namespace detail {
 
 //// Downloads only the neccssary cluster indices from the device to the host.
 PCL_EXPORTS void
-economical_download(const pcl::gpu::NeighborIndices& source_indices,
-                    const pcl::Indices& buffer_indices,
-                    std::size_t buffer_size,
-                    pcl::Indices& downloaded_indices);
+economical_download (const pcl::gpu::NeighborIndices& source_indices,
+                     const pcl::Indices& buffer_indices,
+                     std::size_t buffer_size,
+                     pcl::Indices& downloaded_indices);
 } // namespace detail
 } // namespace pcl
 

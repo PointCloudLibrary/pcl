@@ -72,7 +72,7 @@ public:
   }
 
   void
-  keyboard_callback(const pcl::visualization::KeyboardEvent& event, void*)
+  keyboard_callback (const pcl::visualization::KeyboardEvent& event, void*)
   {
     // do stuff and visualize here
     if (event.keyUp()) {
@@ -106,7 +106,7 @@ public:
   }
 
   void
-  process()
+  process ()
   {
     std::cout << "threshold: " << threshold_ << std::endl;
     std::cout << "depth dependent: " << (depth_dependent_ ? "true\n" : "false\n");
@@ -209,7 +209,7 @@ public:
   }
 
   void
-  run()
+  run ()
   {
     // initial processing
     process();
@@ -220,7 +220,7 @@ public:
 };
 
 int
-main(int argc, char** argv)
+main (int argc, char** argv)
 {
   bool refine = pcl::console::find_switch(argc, argv, "-refine");
 

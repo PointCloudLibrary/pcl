@@ -37,48 +37,44 @@
 
 #pragma once
 
+#include <pcl/apps/cloud_composer/cloud_view.h>
+#include <pcl/apps/cloud_composer/project_model.h>
+#include <pcl/visualization/pcl_visualizer.h>
+
 #include <QTabWidget>
 
-#include <pcl/visualization/pcl_visualizer.h>
-#include <pcl/apps/cloud_composer/project_model.h>
-#include <pcl/apps/cloud_composer/cloud_view.h>
+namespace pcl {
+namespace cloud_composer {
 
-namespace pcl
-{
-  namespace cloud_composer
-  {
-   
-    /** \brief Tabbed widget for containing CloudView widgets
-     * \author Jeremie Papon
-     * \ingroup cloud_composer
-     */
-    class CloudViewer : public QTabWidget
-    {
-        Q_OBJECT
+/** \brief Tabbed widget for containing CloudView widgets
+ * \author Jeremie Papon
+ * \ingroup cloud_composer
+ */
+class CloudViewer : public QTabWidget {
+  Q_OBJECT
 
-      public:
-        
-        CloudViewer (QWidget* parent = nullptr);
-        ProjectModel* getModel () const;
+public:
+  CloudViewer(QWidget* parent = nullptr);
+  ProjectModel*
+  getModel () const;
 
-      public Q_SLOTS:
-        void 
-        addModel (ProjectModel* new_model);
-        
-        void 
-        modelChanged (int index);
-        
-        void
-        addNewProject (ProjectModel* new_model);
-        
-      Q_SIGNALS:
-        void
-        newModelSelected (ProjectModel *new_model);
+public Q_SLOTS:
+  void
+  addModel (ProjectModel* new_model);
 
-      private:
-        
-        pcl::visualization::PCLVisualizer::Ptr vis_;
-        QMap <ProjectModel*, CloudView*> model_view_map_;
-    };
-  }
-}
+  void
+  modelChanged (int index);
+
+  void
+  addNewProject (ProjectModel* new_model);
+
+Q_SIGNALS:
+  void
+  newModelSelected (ProjectModel* new_model);
+
+private:
+  pcl::visualization::PCLVisualizer::Ptr vis_;
+  QMap<ProjectModel*, CloudView*> model_view_map_;
+};
+} // namespace cloud_composer
+} // namespace pcl

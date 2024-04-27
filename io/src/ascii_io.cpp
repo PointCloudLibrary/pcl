@@ -35,165 +35,175 @@
  *
  */
 
-#include <pcl/common/io.h>  // for getFieldSize
+#include <pcl/common/io.h> // for getFieldSize
 #include <pcl/common/pcl_filesystem.h>
 #include <pcl/common/utils.h> // pcl::utils::ignore
 #include <pcl/io/ascii_io.h>
-#include <istream>
-#include <fstream>
 
-#include <boost/lexical_cast.hpp> // for lexical_cast
 #include <boost/algorithm/string.hpp> // for split
+#include <boost/lexical_cast.hpp>     // for lexical_cast
+
 #include <cstdint>
+#include <fstream>
+#include <istream>
 
 //////////////////////////////////////////////////////////////////////////////
-pcl::ASCIIReader::ASCIIReader ()
+pcl::ASCIIReader::ASCIIReader()
 {
   {
     pcl::PCLPointField f;
     f.datatype = pcl::PCLPointField::FLOAT32;
-    f.count    = 1;
-    f.name     = "x";
-    f.offset   = 0;
-    fields_.push_back (f);
+    f.count = 1;
+    f.name = "x";
+    f.offset = 0;
+    fields_.push_back(f);
   }
 
   {
     pcl::PCLPointField f;
     f.datatype = pcl::PCLPointField::FLOAT32;
-    f.count    = 1;
-    f.name     = "y";
-    f.offset   = 4;
-    fields_.push_back (f);
+    f.count = 1;
+    f.name = "y";
+    f.offset = 4;
+    fields_.push_back(f);
   }
 
   {
     pcl::PCLPointField f;
     f.datatype = pcl::PCLPointField::FLOAT32;
-    f.count    = 1;
-    f.name     = "z";
-    f.offset   = 8;
-    fields_.push_back (f);
+    f.count = 1;
+    f.name = "z";
+    f.offset = 8;
+    fields_.push_back(f);
   }
 }
 
 //////////////////////////////////////////////////////////////////////////////
-pcl::ASCIIReader::~ASCIIReader () = default;
+pcl::ASCIIReader::~ASCIIReader() = default;
 
 //////////////////////////////////////////////////////////////////////////////
 int
-pcl::ASCIIReader::readHeader (const std::string& file_name,
-  pcl::PCLPointCloud2& cloud, Eigen::Vector4f& origin,
-  Eigen::Quaternionf& orientation, int& file_version, int& data_type,
-  unsigned int& data_idx, const int offset)
+pcl::ASCIIReader::readHeader(const std::string& file_name,
+                             pcl::PCLPointCloud2& cloud,
+                             Eigen::Vector4f& origin,
+                             Eigen::Quaternionf& orientation,
+                             int& file_version,
+                             int& data_type,
+                             unsigned int& data_idx,
+                             const int offset)
 {
-  pcl::utils::ignore(offset); //offset is not used for ascii file implementation
-	
+  pcl::utils::ignore(offset); // offset is not used for ascii file implementation
+
   pcl_fs::path fpath = file_name;
 
-  if (!pcl_fs::exists (fpath))
-  {
-    PCL_ERROR ("[%s] File %s does not exist.\n", name_.c_str (), file_name.c_str ());
+  if (!pcl_fs::exists(fpath)) {
+    PCL_ERROR("[%s] File %s does not exist.\n", name_.c_str(), file_name.c_str());
     return (-1);
   }
-  if (fpath.extension ().string () != extension_)
-  {
-    PCL_ERROR ("[%s] File does not have %s extension. \n", name_.c_str(), extension_.c_str());
+  if (fpath.extension().string() != extension_) {
+    PCL_ERROR(
+        "[%s] File does not have %s extension. \n", name_.c_str(), extension_.c_str());
     return -1;
   }
 
   cloud.fields = fields_;
   cloud.point_step = 0;
-  for (std::size_t i = 0; i < fields_.size (); i++) 
-    cloud.point_step += typeSize (cloud.fields[i].datatype);
+  for (std::size_t i = 0; i < fields_.size(); i++)
+    cloud.point_step += typeSize(cloud.fields[i].datatype);
 
-  std::fstream ifile (file_name.c_str (), std::fstream::in);
+  std::fstream ifile(file_name.c_str(), std::fstream::in);
   std::string line;
   int total = 0;
-  while (std::getline (ifile, line))
+  while (std::getline(ifile, line))
     total++;
 
-  origin = Eigen::Vector4f::Zero ();
-  orientation = Eigen::Quaternionf::Identity ();
+  origin = Eigen::Vector4f::Zero();
+  orientation = Eigen::Quaternionf::Identity();
   cloud.width = total;
   cloud.height = 1;
   cloud.is_dense = true;
   file_version = -1;
   data_type = 0;
-  data_idx  = 0;
+  data_idx = 0;
   return (total);
 }
 
 //////////////////////////////////////////////////////////////////////////////
 int
-pcl::ASCIIReader::read (
-    const std::string& file_name,
-    pcl::PCLPointCloud2& cloud,
-    Eigen::Vector4f& origin,
-    Eigen::Quaternionf& orientation, int& file_version, const int offset)
+pcl::ASCIIReader::read(const std::string& file_name,
+                       pcl::PCLPointCloud2& cloud,
+                       Eigen::Vector4f& origin,
+                       Eigen::Quaternionf& orientation,
+                       int& file_version,
+                       const int offset)
 {
 
-  int  data_type;
+  int data_type;
   unsigned int data_idx;
-  if (this->readHeader (file_name, cloud, origin, orientation, file_version, data_type, data_idx, offset) < 0) 
+  if (this->readHeader(file_name,
+                       cloud,
+                       origin,
+                       orientation,
+                       file_version,
+                       data_type,
+                       data_idx,
+                       offset) < 0)
     return (-1);
-  cloud.data.resize (cloud.height * cloud.width * cloud.point_step);
+  cloud.data.resize(cloud.height * cloud.width * cloud.point_step);
 
   std::string line;
-  std::fstream ifile (file_name.c_str (), std::fstream::in);
+  std::fstream ifile(file_name.c_str(), std::fstream::in);
 
-  int total=0;
+  int total = 0;
 
   std::uint8_t* data = cloud.data.data();
-  while (std::getline (ifile, line))
-  {
-    boost::algorithm::trim (line);
-    if (line.find_first_not_of ('#') != 0) 
-      continue;   //skip comment lines
+  while (std::getline(ifile, line)) {
+    boost::algorithm::trim(line);
+    if (line.find_first_not_of('#') != 0)
+      continue; // skip comment lines
 
-   std::vector<std::string> tokens;
-   boost::algorithm::split (tokens, line,boost::algorithm::is_any_of (sep_chars_), boost::algorithm::token_compress_on);
+    std::vector<std::string> tokens;
+    boost::algorithm::split(tokens,
+                            line,
+                            boost::algorithm::is_any_of(sep_chars_),
+                            boost::algorithm::token_compress_on);
 
-   if (tokens.size () != fields_.size ()) 
-     continue;
+    if (tokens.size() != fields_.size())
+      continue;
 
-   std::uint32_t offset = 0;
-   try
-   {
-     for (std::size_t i = 0; i < fields_.size (); i++) 
-       offset += parse (tokens[i], fields_[i], data + offset);
-   }
-   catch (std::exception& /*e*/)
-   {
-     continue;
-   }
-   data += offset;
-   total++;
+    std::uint32_t offset = 0;
+    try {
+      for (std::size_t i = 0; i < fields_.size(); i++)
+        offset += parse(tokens[i], fields_[i], data + offset);
+    } catch (std::exception& /*e*/) {
+      continue;
+    }
+    data += offset;
+    total++;
   }
-  cloud.data.resize (total * cloud.point_step);
+  cloud.data.resize(total * cloud.point_step);
   return (cloud.width * cloud.height);
 }
 
 //////////////////////////////////////////////////////////////////////////////
 void
-pcl::ASCIIReader::setInputFields (const std::vector<pcl::PCLPointField>& fields)
+pcl::ASCIIReader::setInputFields(const std::vector<pcl::PCLPointField>& fields)
 {
-	fields_ = fields;
+  fields_ = fields;
 }
 
 //////////////////////////////////////////////////////////////////////////////
 void
-pcl::ASCIIReader::setSepChars (const std::string &chars)
+pcl::ASCIIReader::setSepChars(const std::string& chars)
 {
-	sep_chars_ = chars;
+  sep_chars_ = chars;
 }
 
 //////////////////////////////////////////////////////////////////////////////
 int
-pcl::ASCIIReader::parse (
-    const std::string& token,
-    const pcl::PCLPointField& field,
-    std::uint8_t* data_target)
+pcl::ASCIIReader::parse(const std::string& token,
+                        const pcl::PCLPointField& field,
+                        std::uint8_t* data_target)
 {
 #define ASSIGN_TOKEN(CASE_LABEL)                                                       \
   case CASE_LABEL: {                                                                   \
@@ -201,8 +211,7 @@ pcl::ASCIIReader::parse (
         boost::lexical_cast<pcl::traits::asType_t<(CASE_LABEL)>>(token);               \
     return sizeof(pcl::traits::asType_t<CASE_LABEL>);                                  \
   }
-  switch (field.datatype)
-  {
+  switch (field.datatype) {
     ASSIGN_TOKEN(pcl::PCLPointField::BOOL)
     ASSIGN_TOKEN(pcl::PCLPointField::INT8)
     ASSIGN_TOKEN(pcl::PCLPointField::UINT8)
@@ -221,8 +230,7 @@ pcl::ASCIIReader::parse (
 
 //////////////////////////////////////////////////////////////////////////////
 std::uint32_t
-pcl::ASCIIReader::typeSize (int type)
+pcl::ASCIIReader::typeSize(int type)
 {
   return getFieldSize(type);
 }
-

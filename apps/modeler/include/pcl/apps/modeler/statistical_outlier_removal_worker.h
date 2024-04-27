@@ -52,19 +52,19 @@ public:
 
 protected:
   std::string
-  getName() const override
+  getName () const override
   {
     return "Statistical Outlier Removal";
   }
 
   void
-  initParameters(CloudMeshItem* cloud_mesh_item) override;
+  initParameters (CloudMeshItem* cloud_mesh_item) override;
 
   void
-  setupParameters() override;
+  setupParameters () override;
 
   void
-  processImpl(CloudMeshItem* cloud_mesh_item) override;
+  processImpl (CloudMeshItem* cloud_mesh_item) override;
 
 private:
   IntParameter* mean_k_;

@@ -40,78 +40,74 @@
 #pragma once
 
 #include <pcl/common/gaussian.h>
+
 #include <cassert>
 
-namespace pcl
-{
+namespace pcl {
 
-template <typename PointT> void
-GaussianKernel::convolveRows(const pcl::PointCloud<PointT> &input,
-                             std::function <float (const PointT& p)> field_accessor,
+template <typename PointT>
+void
+GaussianKernel::convolveRows(const pcl::PointCloud<PointT>& input,
+                             std::function<float(const PointT& p)> field_accessor,
                              const Eigen::VectorXf& kernel,
-                             pcl::PointCloud<float> &output) const
+                             pcl::PointCloud<float>& output) const
 {
-  assert(kernel.size () % 2 == 1);
-  int kernel_width = kernel.size () -1;
-  int radius = kernel.size () / 2.0;
-  if(output.height < input.height || output.width < input.width)
-  {
+  assert(kernel.size() % 2 == 1);
+  int kernel_width = kernel.size() - 1;
+  int radius = kernel.size() / 2.0;
+  if (output.height < input.height || output.width < input.width) {
     output.width = input.width;
     output.height = input.height;
-    output.resize (input.height * input.width);
+    output.resize(input.height * input.width);
   }
 
   int i;
-  for(int j = 0; j < input.height; j++)
-  {
-    for (i = 0 ; i < radius ; i++)
-      output (i,j) = 0;
+  for (int j = 0; j < input.height; j++) {
+    for (i = 0; i < radius; i++)
+      output(i, j) = 0;
 
-    for ( ; i < input.width - radius ; i++)  {
-      output (i,j) = 0;
-      for (int k = kernel_width, l = i - radius; k >= 0 ; k--, l++)
-        output (i,j) += field_accessor (input (l,j)) * kernel[k];
+    for (; i < input.width - radius; i++) {
+      output(i, j) = 0;
+      for (int k = kernel_width, l = i - radius; k >= 0; k--, l++)
+        output(i, j) += field_accessor(input(l, j)) * kernel[k];
     }
 
-    for ( ; i < input.width ; i++)
-      output (i,j) = 0;
+    for (; i < input.width; i++)
+      output(i, j) = 0;
   }
 }
 
-template <typename PointT> void
-GaussianKernel::convolveCols(const pcl::PointCloud<PointT> &input,
-                             std::function <float (const PointT& p)> field_accessor,
+template <typename PointT>
+void
+GaussianKernel::convolveCols(const pcl::PointCloud<PointT>& input,
+                             std::function<float(const PointT& p)> field_accessor,
                              const Eigen::VectorXf& kernel,
-                             pcl::PointCloud<float> &output) const
+                             pcl::PointCloud<float>& output) const
 {
-  assert(kernel.size () % 2 == 1);
-  int kernel_width = kernel.size () -1;
-  int radius = kernel.size () / 2.0;
-  if(output.height < input.height || output.width < input.width)
-  {
+  assert(kernel.size() % 2 == 1);
+  int kernel_width = kernel.size() - 1;
+  int radius = kernel.size() / 2.0;
+  if (output.height < input.height || output.width < input.width) {
     output.width = input.width;
     output.height = input.height;
-    output.resize (input.height * input.width);
+    output.resize(input.height * input.width);
   }
 
   int j;
-  for(int i = 0; i < input.width; i++)
-  {
-    for (j = 0 ; j < radius ; j++)
-      output (i,j) = 0;
+  for (int i = 0; i < input.width; i++) {
+    for (j = 0; j < radius; j++)
+      output(i, j) = 0;
 
-    for ( ; j < input.height - radius ; j++)  {
-      output (i,j) = 0;
-      for (int k = kernel_width, l = j - radius ; k >= 0 ; k--, l++)
-      {
-        output (i,j) += field_accessor (input (i,l)) * kernel[k];
+    for (; j < input.height - radius; j++) {
+      output(i, j) = 0;
+      for (int k = kernel_width, l = j - radius; k >= 0; k--, l++) {
+        output(i, j) += field_accessor(input(i, l)) * kernel[k];
       }
     }
 
-    for ( ; j < input.height ; j++)
-      output (i,j) = 0;
+    for (; j < input.height; j++)
+      output(i, j) = 0;
   }
 }
 
 } // namespace pcl
-

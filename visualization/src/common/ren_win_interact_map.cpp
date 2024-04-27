@@ -34,20 +34,18 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-#include <vtkSmartPointer.h>
-#include <vtkXYPlotActor.h>
+#include <pcl/visualization/common/ren_win_interact_map.h>
+
+#include <vtkInteractorStyleTrackballCamera.h>
 #include <vtkRenderer.h>
 #include <vtkRenderWindow.h>
 #include <vtkRenderWindowInteractor.h>
-#include <vtkInteractorStyleTrackballCamera.h>
-
-#include <pcl/visualization/common/ren_win_interact_map.h>
+#include <vtkSmartPointer.h>
+#include <vtkXYPlotActor.h>
 
 //////////////////////////////////////////////////////////////////////////////
-pcl::visualization::RenWinInteract::RenWinInteract ()
-  : xy_plot_ (vtkSmartPointer<vtkXYPlotActor>::New ())
-  , ren_ (vtkSmartPointer<vtkRenderer>::New ())
-  , win_ (vtkSmartPointer<vtkRenderWindow>::New ())
-{
-}
-
+pcl::visualization::RenWinInteract::RenWinInteract()
+: xy_plot_(vtkSmartPointer<vtkXYPlotActor>::New())
+, ren_(vtkSmartPointer<vtkRenderer>::New())
+, win_(vtkSmartPointer<vtkRenderWindow>::New())
+{}

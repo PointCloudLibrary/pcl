@@ -5,7 +5,7 @@
 #include <benchmark/benchmark.h>
 
 static void
-BM_NormalEstimation(benchmark::State& state, const std::string& file)
+BM_NormalEstimation (benchmark::State& state, const std::string& file)
 {
   // Perform setup here
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
@@ -23,7 +23,7 @@ BM_NormalEstimation(benchmark::State& state, const std::string& file)
 
 #ifdef _OPENMP
 static void
-BM_NormalEstimationOMP(benchmark::State& state, const std::string& file)
+BM_NormalEstimationOMP (benchmark::State& state, const std::string& file)
 {
   // Perform setup here
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
@@ -41,7 +41,7 @@ BM_NormalEstimationOMP(benchmark::State& state, const std::string& file)
 #endif
 
 int
-main(int argc, char** argv)
+main (int argc, char** argv)
 {
   if (argc < 3) {
     std::cerr

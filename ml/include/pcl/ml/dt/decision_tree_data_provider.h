@@ -75,9 +75,9 @@ public:
   /** Virtual function called to obtain training examples and labels before
    *  training a specific tree */
   virtual void
-  getDatasetAndLabels(DataSet& data_set,
-                      std::vector<LabelType>& label_data,
-                      std::vector<ExampleIndex>& examples) = 0;
+  getDatasetAndLabels (DataSet& data_set,
+                       std::vector<LabelType>& label_data,
+                       std::vector<ExampleIndex>& examples) = 0;
 };
 
 } // namespace pcl

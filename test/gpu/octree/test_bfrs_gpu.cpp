@@ -40,71 +40,71 @@
 #include <numeric>
 
 #if defined _MSC_VER
-    #pragma warning (disable: 4521)
+#pragma warning(disable : 4521)
 #endif
 
 #include <pcl/point_cloud.h>
 
 #if defined _MSC_VER
-    #pragma warning (default: 4521)
+#pragma warning(default : 4521)
 #endif
 
-#include <pcl/gpu/octree/octree.hpp>
 #include <pcl/gpu/containers/device_array.h>
+#include <pcl/gpu/octree/octree.hpp>
 
 #include "data_source.hpp"
 
 using namespace pcl::gpu;
 
+// TEST (PCL_GPU, DISABLED_bruteForceRadiusSeachGPU)
+TEST(PCL_GPU, bruteForceRadiusSeachGPU)
+{
+  DataGenerator data;
+  data.data_size = 871000;
+  data.tests_num = 100;
+  data.cube_size = 1024.f;
+  data.max_radius = data.cube_size / 15.f;
+  data.shared_radius = data.cube_size / 20.f;
+  data.printParams();
 
-//TEST (PCL_GPU, DISABLED_bruteForceRadiusSeachGPU)
-TEST (PCL_GPU, bruteForceRadiusSeachGPU)
-{   
-    DataGenerator data;
-    data.data_size = 871000;
-    data.tests_num = 100;
-    data.cube_size = 1024.f;
-    data.max_radius    = data.cube_size/15.f;
-    data.shared_radius = data.cube_size/20.f;
-    data.printParams();  
+  // generate
+  data();
 
-    //generate
-    data();
-    
-    // brute force radius search
-    data.bruteForceSearch();
+  // brute force radius search
+  data.bruteForceSearch();
 
-    //prepare gpu cloud
-    pcl::gpu::Octree::PointCloud cloud_device;
-    cloud_device.upload(data.points);
-    
-    pcl::gpu::DeviceArray<int> results_device, buffer(cloud_device.size());
-    
-    std::vector<int> results_host;
-    std::vector<std::size_t> sizes;
-    for(std::size_t i = 0; i < data.tests_num; ++i)
-    {
-        pcl::gpu::bruteForceRadiusSearchGPU(cloud_device, data.queries[i], data.radiuses[i], results_device, buffer);
+  // prepare gpu cloud
+  pcl::gpu::Octree::PointCloud cloud_device;
+  cloud_device.upload(data.points);
 
-        results_device.download(results_host);
-        std::sort(results_host.begin(), results_host.end());
+  pcl::gpu::DeviceArray<int> results_device, buffer(cloud_device.size());
 
-        ASSERT_EQ ( (results_host == data.bfresutls[i]), true );
-        sizes.push_back(results_device.size());      
-    }
-        
-    float avg_size = std::accumulate(sizes.begin(), sizes.end(), (std::size_t)0) * (1.f/sizes.size());;
+  std::vector<int> results_host;
+  std::vector<std::size_t> sizes;
+  for (std::size_t i = 0; i < data.tests_num; ++i) {
+    pcl::gpu::bruteForceRadiusSearchGPU(
+        cloud_device, data.queries[i], data.radiuses[i], results_device, buffer);
 
-    std::cout << "avg_result_size = " << avg_size << std::endl;
-    ASSERT_GT(avg_size, 5);    
+    results_device.download(results_host);
+    std::sort(results_host.begin(), results_host.end());
+
+    ASSERT_EQ((results_host == data.bfresutls[i]), true);
+    sizes.push_back(results_device.size());
+  }
+
+  float avg_size = std::accumulate(sizes.begin(), sizes.end(), (std::size_t)0) *
+                   (1.f / sizes.size());
+  ;
+
+  std::cout << "avg_result_size = " << avg_size << std::endl;
+  ASSERT_GT(avg_size, 5);
 }
 
 /* ---[ */
 int
 main (int argc, char** argv)
 {
-  testing::InitGoogleTest (&argc, argv);
-  return (RUN_ALL_TESTS ());
+  testing::InitGoogleTest(&argc, argv);
+  return (RUN_ALL_TESTS());
 }
 /* ]--- */
-

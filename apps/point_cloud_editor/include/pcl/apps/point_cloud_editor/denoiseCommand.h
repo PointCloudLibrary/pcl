@@ -43,14 +43,12 @@
 #pragma once
 
 #include <pcl/apps/point_cloud_editor/command.h>
+#include <pcl/apps/point_cloud_editor/copyBuffer.h>
 #include <pcl/apps/point_cloud_editor/localTypes.h>
 #include <pcl/apps/point_cloud_editor/selection.h>
-#include <pcl/apps/point_cloud_editor/copyBuffer.h>
+#include <pcl/memory.h> // for pcl::shared_ptr
 
-#include <pcl/memory.h>  // for pcl::shared_ptr
-
-class DenoiseCommand : public Command
-{
+class DenoiseCommand : public Command {
 public:
   /// The type for shared pointer pointing to a selection buffer
   using SelectionPtr = pcl::shared_ptr<Selection>;
@@ -60,19 +58,23 @@ public:
   /// @param cloud_ptr a shared pointer pointing to the cloud object.
   /// @param mean the number of points to use for mean distance estimation.
   /// @param threshold the standard deviation multiplier threshold
-  DenoiseCommand (SelectionPtr selection_ptr, const CloudPtr& cloud_ptr,
-                  float mean, float threshold)
-    : selection_ptr_(std::move(selection_ptr)), cloud_ptr_(cloud_ptr), mean_(mean),
-      threshold_(threshold), removed_indices_(cloud_ptr)
-  {
-  }
+  DenoiseCommand(SelectionPtr selection_ptr,
+                 const CloudPtr& cloud_ptr,
+                 float mean,
+                 float threshold)
+  : selection_ptr_(std::move(selection_ptr))
+  , cloud_ptr_(cloud_ptr)
+  , mean_(mean)
+  , threshold_(threshold)
+  , removed_indices_(cloud_ptr)
+  {}
 
   /// @brief Copy constructor - commands are non-copyable
-  DenoiseCommand (const DenoiseCommand&) = delete;
+  DenoiseCommand(const DenoiseCommand&) = delete;
 
   /// @brief Equal operator - commands are non-copyable
   DenoiseCommand&
-  operator= (const DenoiseCommand&) = delete;
+  operator=(const DenoiseCommand&) = delete;
 
 protected:
   /// @brief Runs the denois algorithm to remove all the outliers.

@@ -58,33 +58,33 @@ public:
    *  The input data vector holds the measurements coordinates as ijk of the voxel grid.
    */
   void
-  setDataVector(const std::vector<Eigen::Vector3i,
-                                  Eigen::aligned_allocator<Eigen::Vector3i>> data);
+  setDataVector (const std::vector<Eigen::Vector3i,
+                                   Eigen::aligned_allocator<Eigen::Vector3i>> data);
 
   /** The associated color of the data. */
   void
-  setColorVector(const std::vector<Eigen::Vector3i,
-                                   Eigen::aligned_allocator<Eigen::Vector3i>> color);
+  setColorVector (const std::vector<Eigen::Vector3i,
+                                    Eigen::aligned_allocator<Eigen::Vector3i>> color);
 
   void
-  setUnaryEnergy(const std::vector<float> unary);
+  setUnaryEnergy (const std::vector<float> unary);
 
   void
-  addPairwiseEnergy(const std::vector<float>& feature,
-                    const int feature_dimension,
-                    const float w);
+  addPairwiseEnergy (const std::vector<float>& feature,
+                     const int feature_dimension,
+                     const float w);
 
   /** Add a pairwise gaussian kernel. */
   void
-  addPairwiseGaussian(float sx, float sy, float sz, float w);
+  addPairwiseGaussian (float sx, float sy, float sz, float w);
 
   /** Add a bilateral gaussian kernel. */
   void
-  addPairwiseBilateral(
+  addPairwiseBilateral (
       float sx, float sy, float sz, float sr, float sg, float sb, float w);
 
   void
-  addPairwiseNormals(
+  addPairwiseNormals (
       std::vector<Eigen::Vector3i, Eigen::aligned_allocator<Eigen::Vector3i>>& coord,
       std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f>>& normals,
       float sx,
@@ -96,42 +96,42 @@ public:
       float w);
 
   void
-  inference(int n_iterations, std::vector<float>& result, float relax = 1.0f);
+  inference (int n_iterations, std::vector<float>& result, float relax = 1.0f);
 
   void
-  mapInference(int n_iterations, std::vector<int>& result, float relax = 1.0f);
+  mapInference (int n_iterations, std::vector<int>& result, float relax = 1.0f);
 
   void
-  expAndNormalize(std::vector<float>& out,
-                  const std::vector<float>& in,
-                  float scale,
-                  float relax = 1.0f) const;
+  expAndNormalize (std::vector<float>& out,
+                   const std::vector<float>& in,
+                   float scale,
+                   float relax = 1.0f) const;
 
   void
-  expAndNormalizeORI(float* out,
-                     const float* in,
-                     float scale = 1.0f,
-                     float relax = 1.0f);
+  expAndNormalizeORI (float* out,
+                      const float* in,
+                      float scale = 1.0f,
+                      float relax = 1.0f);
   void
-  map(int n_iterations, std::vector<int> result, float relax = 1.0f);
+  map (int n_iterations, std::vector<int> result, float relax = 1.0f);
 
   std::vector<float>
-  runInference(int n_iterations, float relax);
+  runInference (int n_iterations, float relax);
 
   void
-  startInference();
+  startInference ();
 
   void
-  stepInference(float relax);
+  stepInference (float relax);
 
   void
-  runInference(float relax);
+  runInference (float relax);
 
   void
-  getBarycentric(int idx, std::vector<float>& bary);
+  getBarycentric (int idx, std::vector<float>& bary);
 
   void
-  getFeatures(int idx, std::vector<float>& features);
+  getFeatures (int idx, std::vector<float>& features);
 
 protected:
   /** Number of variables and labels */

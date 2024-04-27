@@ -41,46 +41,44 @@
 #include <pcl/surface/processing.h>
 #include <pcl/surface/vtk_smoothing/vtk.h>
 
-namespace pcl
-{
-  /** \brief PCL mesh smoothing based on the vtkLinearSubdivisionFilter, vtkLoopSubdivisionFilter, vtkButterflySubdivisionFilter
-    * depending on the selected MeshSubdivisionVTKFilterType algorithm from the VTK library.
-    * Please check out the original documentation for more details on the inner workings of the algorithm
-    * Warning: This wrapper does two fairly computationally expensive conversions from the PCL PolygonMesh
-    * data structure to the vtkPolyData data structure and back.
-    */
-  class PCL_EXPORTS MeshSubdivisionVTK : public MeshProcessing
+namespace pcl {
+/** \brief PCL mesh smoothing based on the vtkLinearSubdivisionFilter,
+ * vtkLoopSubdivisionFilter, vtkButterflySubdivisionFilter depending on the selected
+ * MeshSubdivisionVTKFilterType algorithm from the VTK library. Please check out the
+ * original documentation for more details on the inner workings of the algorithm
+ * Warning: This wrapper does two fairly computationally expensive conversions from the
+ * PCL PolygonMesh data structure to the vtkPolyData data structure and back.
+ */
+class PCL_EXPORTS MeshSubdivisionVTK : public MeshProcessing {
+public:
+  /** \brief Empty constructor */
+  MeshSubdivisionVTK();
+
+  enum MeshSubdivisionVTKFilterType { LINEAR, LOOP, BUTTERFLY };
+
+  /** \brief Set the mesh subdivision filter type
+   * \param[in] type the filter type
+   */
+  inline void
+  setFilterType (MeshSubdivisionVTKFilterType type)
   {
-    public:
-      /** \brief Empty constructor */
-      MeshSubdivisionVTK ();
-
-      enum MeshSubdivisionVTKFilterType
-      { LINEAR, LOOP, BUTTERFLY };
-
-      /** \brief Set the mesh subdivision filter type
-        * \param[in] type the filter type
-        */
-      inline void
-      setFilterType (MeshSubdivisionVTKFilterType type)
-      {
-        filter_type_ = type;
-      };
-
-      /** \brief Get the mesh subdivision filter type */
-      inline MeshSubdivisionVTKFilterType
-      getFilterType ()
-      {
-        return filter_type_;
-      };
-
-    protected:
-      void
-      performProcessing (pcl::PolygonMesh &output) override;
-
-    private:
-      MeshSubdivisionVTKFilterType filter_type_{LINEAR};
-
-      vtkSmartPointer<vtkPolyData> vtk_polygons_;
+    filter_type_ = type;
   };
-}
+
+  /** \brief Get the mesh subdivision filter type */
+  inline MeshSubdivisionVTKFilterType
+  getFilterType ()
+  {
+    return filter_type_;
+  };
+
+protected:
+  void
+  performProcessing (pcl::PolygonMesh& output) override;
+
+private:
+  MeshSubdivisionVTKFilterType filter_type_{LINEAR};
+
+  vtkSmartPointer<vtkPolyData> vtk_polygons_;
+};
+} // namespace pcl

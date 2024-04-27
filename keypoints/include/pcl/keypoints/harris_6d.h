@@ -38,101 +38,123 @@
 
 #include <pcl/keypoints/keypoint.h>
 
-namespace pcl
-{
+namespace pcl {
 
-  /** \brief Keypoint detector for detecting corners in 3D (XYZ), 2D (intensity) AND mixed versions of these.
-    * \author Suat Gedikli
-    * \ingroup keypoints
-    */
-  template <typename PointInT, typename PointOutT, typename NormalT = pcl::Normal>
-  class HarrisKeypoint6D : public Keypoint<PointInT, PointOutT>
+/** \brief Keypoint detector for detecting corners in 3D (XYZ), 2D (intensity) AND mixed
+ * versions of these. \author Suat Gedikli \ingroup keypoints
+ */
+template <typename PointInT, typename PointOutT, typename NormalT = pcl::Normal>
+class HarrisKeypoint6D : public Keypoint<PointInT, PointOutT> {
+public:
+  using Ptr = shared_ptr<HarrisKeypoint6D<PointInT, PointOutT, NormalT>>;
+  using ConstPtr = shared_ptr<const HarrisKeypoint6D<PointInT, PointOutT, NormalT>>;
+
+  using PointCloudIn = typename Keypoint<PointInT, PointOutT>::PointCloudIn;
+  using PointCloudOut = typename Keypoint<PointInT, PointOutT>::PointCloudOut;
+  using KdTree = typename Keypoint<PointInT, PointOutT>::KdTree;
+  using PointCloudInConstPtr = typename PointCloudIn::ConstPtr;
+
+  using Keypoint<PointInT, PointOutT>::name_;
+  using Keypoint<PointInT, PointOutT>::input_;
+  using Keypoint<PointInT, PointOutT>::indices_;
+  using Keypoint<PointInT, PointOutT>::surface_;
+  using Keypoint<PointInT, PointOutT>::tree_;
+  using Keypoint<PointInT, PointOutT>::k_;
+  using Keypoint<PointInT, PointOutT>::search_radius_;
+  using Keypoint<PointInT, PointOutT>::search_parameter_;
+  using Keypoint<PointInT, PointOutT>::keypoints_indices_;
+
+  /**
+   * @brief Constructor
+   * @param radius the radius for normal estimation as well as for non maxima
+   * suppression
+   * @param threshold the threshold to filter out weak corners
+   */
+  HarrisKeypoint6D(float radius = 0.01, float threshold = 0.0)
+  : threshold_(threshold)
+  , normals_(new pcl::PointCloud<NormalT>)
+  , intensity_gradients_(new pcl::PointCloud<pcl::IntensityGradient>)
   {
-    public:
-      using Ptr = shared_ptr<HarrisKeypoint6D<PointInT, PointOutT, NormalT> >;
-      using ConstPtr = shared_ptr<const HarrisKeypoint6D<PointInT, PointOutT, NormalT> >;
+    name_ = "HarrisKeypoint6D";
+    search_radius_ = radius;
+  }
 
-      using PointCloudIn = typename Keypoint<PointInT, PointOutT>::PointCloudIn;
-      using PointCloudOut = typename Keypoint<PointInT, PointOutT>::PointCloudOut;
-      using KdTree = typename Keypoint<PointInT, PointOutT>::KdTree;
-      using PointCloudInConstPtr = typename PointCloudIn::ConstPtr;
+  /** \brief Empty destructor */
+  virtual ~HarrisKeypoint6D() = default;
 
-      using Keypoint<PointInT, PointOutT>::name_;
-      using Keypoint<PointInT, PointOutT>::input_;
-      using Keypoint<PointInT, PointOutT>::indices_;
-      using Keypoint<PointInT, PointOutT>::surface_;
-      using Keypoint<PointInT, PointOutT>::tree_;
-      using Keypoint<PointInT, PointOutT>::k_;
-      using Keypoint<PointInT, PointOutT>::search_radius_;
-      using Keypoint<PointInT, PointOutT>::search_parameter_;
-      using Keypoint<PointInT, PointOutT>::keypoints_indices_;
+  /**
+   * @brief set the radius for normal estimation and non maxima suppression.
+   * @param radius
+   */
+  void
+  setRadius (float radius);
 
-      /**
-       * @brief Constructor
-       * @param radius the radius for normal estimation as well as for non maxima suppression
-       * @param threshold the threshold to filter out weak corners
-       */
-      HarrisKeypoint6D (float radius = 0.01, float threshold = 0.0)
-      : threshold_ (threshold)
-      , 
-       normals_ (new pcl::PointCloud<NormalT>)
-      , intensity_gradients_ (new pcl::PointCloud<pcl::IntensityGradient>)
-      {
-        name_ = "HarrisKeypoint6D";
-        search_radius_ = radius;
-      }
-      
-      /** \brief Empty destructor */
-      virtual ~HarrisKeypoint6D () = default;
+  /**
+   * @brief set the threshold value for detecting corners. This is only evaluated if non
+   * maxima suppression is turned on.
+   * @brief note non maxima suppression needs to be activated in order to use this
+   * feature.
+   * @param threshold
+   */
+  void
+  setThreshold (float threshold);
 
-      /**
-       * @brief set the radius for normal estimation and non maxima suppression.
-       * @param radius
-       */
-      void setRadius (float radius);
+  /**
+   * @brief whether non maxima suppression should be applied or the response for each
+   * point should be returned
+   * @note this value needs to be turned on in order to apply thresholding and
+   * refinement
+   * @param nonmax default is false
+   */
+  void
+  setNonMaxSupression (bool = false);
 
-      /**
-       * @brief set the threshold value for detecting corners. This is only evaluated if non maxima suppression is turned on.
-       * @brief note non maxima suppression needs to be activated in order to use this feature.
-       * @param threshold
-       */
-      void setThreshold (float threshold);
+  /**
+   * @brief whether the detected key points should be refined or not. If turned of, the
+   * key points are a subset of the original point cloud. Otherwise the key points may
+   * be arbitrary.
+   * @brief note non maxima suppression needs to be on in order to use this feature.
+   * @param do_refine
+   */
+  void
+  setRefine (bool do_refine);
 
-      /**
-       * @brief whether non maxima suppression should be applied or the response for each point should be returned
-       * @note this value needs to be turned on in order to apply thresholding and refinement
-       * @param nonmax default is false
-       */
-      void setNonMaxSupression (bool = false);
+  virtual void
+  setSearchSurface (const PointCloudInConstPtr& cloud)
+  {
+    surface_ = cloud;
+    normals_->clear();
+    intensity_gradients_->clear();
+  }
 
-      /**
-       * @brief whether the detected key points should be refined or not. If turned of, the key points are a subset of the original point cloud. Otherwise the key points may be arbitrary.
-       * @brief note non maxima suppression needs to be on in order to use this feature.
-       * @param do_refine
-       */
-      void setRefine (bool do_refine);
+  /** \brief Initialize the scheduler and set the number of threads to use.
+   * \param nr_threads the number of hardware threads to use (0 sets the value back to
+   * automatic)
+   */
+  inline void
+  setNumberOfThreads (unsigned int nr_threads = 0)
+  {
+    threads_ = nr_threads;
+  }
 
-      virtual void
-      setSearchSurface (const PointCloudInConstPtr &cloud) { surface_ = cloud; normals_->clear (); intensity_gradients_->clear ();}
+protected:
+  void
+  detectKeypoints (PointCloudOut& output);
+  void
+  responseTomasi (PointCloudOut& output) const;
+  void
+  refineCorners (PointCloudOut& corners) const;
+  void
+  calculateCombinedCovar (const pcl::Indices& neighbors, float* coefficients) const;
 
-      /** \brief Initialize the scheduler and set the number of threads to use.
-        * \param nr_threads the number of hardware threads to use (0 sets the value back to automatic)
-        */
-      inline void
-      setNumberOfThreads (unsigned int nr_threads = 0) { threads_ = nr_threads; }
-    protected:
-      void detectKeypoints (PointCloudOut &output);
-      void responseTomasi (PointCloudOut &output) const;
-      void refineCorners (PointCloudOut &corners) const;
-      void calculateCombinedCovar (const pcl::Indices& neighbors, float* coefficients) const;
-    private:
-      float threshold_;
-      bool refine_{true};
-      bool nonmax_{true};
-      unsigned int threads_{0};    
-      typename pcl::PointCloud<NormalT>::Ptr normals_;
-      pcl::PointCloud<pcl::IntensityGradient>::Ptr intensity_gradients_;
-  } ;
-}
+private:
+  float threshold_;
+  bool refine_{true};
+  bool nonmax_{true};
+  unsigned int threads_{0};
+  typename pcl::PointCloud<NormalT>::Ptr normals_;
+  pcl::PointCloud<pcl::IntensityGradient>::Ptr intensity_gradients_;
+};
+} // namespace pcl
 
 #include <pcl/keypoints/impl/harris_6d.hpp>

@@ -32,13 +32,13 @@
  *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
- *	
+ *
  */
 
-#include <pcl/point_cloud.h>
-#include <pcl/point_types.h>
 #include <pcl/io/oni_grabber.h>
 #include <pcl/io/pcd_io.h>
+#include <pcl/point_cloud.h>
+#include <pcl/point_types.h>
 
 using namespace pcl;
 using namespace pcl::console;
@@ -51,9 +51,9 @@ char buf[4096];
 
 //////////////////////////////////////////////////////////////////////////////
 void
-printHelp (int, char **argv)
+printHelp (int, char** argv)
 {
-  print_error ("Syntax is: %s input.oni\n", argv[0]);
+  print_error("Syntax is: %s input.oni\n", argv[0]);
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -61,34 +61,38 @@ void
 cloud_cb (const CloudConstPtr& cloud)
 {
   PCDWriter w;
-  sprintf (buf, "frame_%06d.pcd", i);
-  w.writeBinaryCompressed (buf, *cloud);
-  PCL_INFO ("Wrote a cloud with %lu (%ux%u) points in %s.\n", 
-            cloud->size (), cloud->width, cloud->height, buf);
+  sprintf(buf, "frame_%06d.pcd", i);
+  w.writeBinaryCompressed(buf, *cloud);
+  PCL_INFO("Wrote a cloud with %lu (%ux%u) points in %s.\n",
+           cloud->size(),
+           cloud->width,
+           cloud->height,
+           buf);
   ++i;
 }
 
 /* ---[ */
 int
-main (int argc, char **argv)
+main (int argc, char** argv)
 {
-  print_info ("Convert an ONI file to PCD format. For more information, use: %s -h\n", argv[0]);
+  print_info("Convert an ONI file to PCD format. For more information, use: %s -h\n",
+             argv[0]);
 
-  if (argc < 2)
-  {
-    printHelp (argc, argv);
+  if (argc < 2) {
+    printHelp(argc, argv);
     return (-1);
   }
 
-  auto* grabber = new pcl::ONIGrabber (argv[1], false, false);
-  std::function<void (const CloudConstPtr&) > f = [] (const CloudConstPtr& cloud) { cloud_cb (cloud); };
-  boost::signals2::connection c = grabber->registerCallback (f);
+  auto* grabber = new pcl::ONIGrabber(argv[1], false, false);
+  std::function<void(const CloudConstPtr&)> f = [] (const CloudConstPtr& cloud) {
+    cloud_cb(cloud);
+  };
+  boost::signals2::connection c = grabber->registerCallback(f);
 
-  while (grabber->hasDataLeft ())
-  {
-    grabber->start ();
+  while (grabber->hasDataLeft()) {
+    grabber->start();
   }
-  PCL_INFO ("Successfully processed %d frames.\n", i);
+  PCL_INFO("Successfully processed %d frames.\n", i);
 
   delete grabber;
   return (0);

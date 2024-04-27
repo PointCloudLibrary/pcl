@@ -18,7 +18,7 @@ const Eigen::Vector4f subsampling_leaf_size(0.02f, 0.02f, 0.02f, 0.0f);
 constexpr float normal_estimation_search_radius = 0.05f;
 
 PointCloud<PointNormal>::Ptr
-subsampleAndCalculateNormals(const PointCloud<PointXYZ>::Ptr& cloud)
+subsampleAndCalculateNormals (const PointCloud<PointXYZ>::Ptr& cloud)
 {
   PointCloud<PointXYZ>::Ptr cloud_subsampled(new PointCloud<PointXYZ>());
   VoxelGrid<PointXYZ> subsampling_filter;
@@ -46,7 +46,7 @@ subsampleAndCalculateNormals(const PointCloud<PointXYZ>::Ptr& cloud)
 }
 
 int
-main(int argc, char** argv)
+main (int argc, char** argv)
 {
   if (argc != 3) {
     PCL_ERROR("Syntax: ./ppf_object_recognition pcd_model_list pcd_scene\n");

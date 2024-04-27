@@ -63,7 +63,7 @@ public:
    * \param[in] feature_handler the feature handler
    */
   inline void
-  setFeatureHandler(
+  setFeatureHandler (
       pcl::FeatureHandler<FeatureType, DataSet, ExampleIndex>& feature_handler)
   {
     feature_handler_ = &feature_handler;
@@ -74,7 +74,7 @@ public:
    * \param[in] stats_estimator the statistics estimator
    */
   inline void
-  setStatsEstimator(
+  setStatsEstimator (
       pcl::StatsEstimator<LabelType, NodeType, DataSet, ExampleIndex>& stats_estimator)
   {
     stats_estimator_ = &stats_estimator;
@@ -85,7 +85,7 @@ public:
    * \param[in] fern_depth maximum depth of the learned tree
    */
   inline void
-  setFernDepth(const std::size_t fern_depth)
+  setFernDepth (const std::size_t fern_depth)
   {
     fern_depth_ = fern_depth;
   }
@@ -95,7 +95,7 @@ public:
    * \param[in] num_of_features the number of features
    */
   inline void
-  setNumOfFeatures(const std::size_t num_of_features)
+  setNumOfFeatures (const std::size_t num_of_features)
   {
     num_of_features_ = num_of_features;
   }
@@ -106,7 +106,7 @@ public:
    * \param[in] num_of_threshold the number of thresholds
    */
   inline void
-  setNumOfThresholds(const std::size_t num_of_threshold)
+  setNumOfThresholds (const std::size_t num_of_threshold)
   {
     num_of_thresholds_ = num_of_threshold;
   }
@@ -116,7 +116,7 @@ public:
    * \param[in] data_set the data set used for training
    */
   inline void
-  setTrainingDataSet(DataSet& data_set)
+  setTrainingDataSet (DataSet& data_set)
   {
     data_set_ = data_set;
   }
@@ -126,7 +126,7 @@ public:
    * \param[in] examples the examples
    */
   inline void
-  setExamples(std::vector<ExampleIndex>& examples)
+  setExamples (std::vector<ExampleIndex>& examples)
   {
     examples_ = examples;
   }
@@ -136,7 +136,7 @@ public:
    * \param[in] label_data the label data
    */
   inline void
-  setLabelData(std::vector<LabelType>& label_data)
+  setLabelData (std::vector<LabelType>& label_data)
   {
     label_data_ = label_data;
   }
@@ -146,7 +146,7 @@ public:
    * \param[out] fern destination for the trained tree
    */
   void
-  train(Fern<FeatureType, NodeType>& fern);
+  train (Fern<FeatureType, NodeType>& fern);
 
 protected:
   /** Creates uniformly distributed thresholds over the range of the supplied
@@ -157,9 +157,9 @@ protected:
    * \param[out] thresholds the resulting thresholds
    */
   static void
-  createThresholdsUniform(const std::size_t num_of_thresholds,
-                          std::vector<float>& values,
-                          std::vector<float>& thresholds);
+  createThresholdsUniform (const std::size_t num_of_thresholds,
+                           std::vector<float>& values,
+                           std::vector<float>& thresholds);
 
 private:
   /** Desired depth of the learned fern. */

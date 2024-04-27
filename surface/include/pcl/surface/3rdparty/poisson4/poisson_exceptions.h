@@ -35,119 +35,120 @@
  *
  */
 
-#pragma once 
+#pragma once
 
-#include <stdexcept>
-#include <sstream>
 #include <boost/current_function.hpp>
 
+#include <sstream>
+#include <stdexcept>
+
 /** POISSON_THROW_EXCEPTION is a helper macro to be used for throwing exceptions. e.g.
-  * POISSON_THROW_EXCEPTION (PoissonBadArgumentException, "[ERROR] B-spline up-sampling not supported for degree " << Degree);
-  * 
-  * \note 
-  * Adapted from PCL_THROW_EXCEPTION. We intentionally do not reuse PCL_THROW_EXCEPTION here
-  * to avoid introducing any dependencies on PCL in this 3rd party module.       
-  */
+ * POISSON_THROW_EXCEPTION (PoissonBadArgumentException, "[ERROR] B-spline up-sampling
+ * not supported for degree " << Degree);
+ *
+ * \note
+ * Adapted from PCL_THROW_EXCEPTION. We intentionally do not reuse PCL_THROW_EXCEPTION
+ * here to avoid introducing any dependencies on PCL in this 3rd party module.
+ */
 // NOLINTBEGIN(bugprone-macro-parentheses)
-#define POISSON_THROW_EXCEPTION(ExceptionName, message)                     \
-{                                                                           \
-  std::ostringstream s;                                                     \
-  s << message;                                                             \
-  throw ExceptionName(s.str(), __FILE__, BOOST_CURRENT_FUNCTION, __LINE__); \
-}
+#define POISSON_THROW_EXCEPTION(ExceptionName, message)                                \
+  {                                                                                    \
+    std::ostringstream s;                                                              \
+    s << message;                                                                      \
+    throw ExceptionName(s.str(), __FILE__, BOOST_CURRENT_FUNCTION, __LINE__);          \
+  }
 // NOLINTEND(bugprone-macro-parentheses)
 
-namespace pcl
-{
-  namespace poisson
+namespace pcl {
+namespace poisson {
+/** \class PoissonException
+ * \brief A base class for all poisson exceptions which inherits from std::runtime_error
+ *
+ * \note
+ * Adapted from PCLException. We intentionally do not reuse PCLException here
+ * to avoid introducing any dependencies on PCL in this 3rd party module.
+ */
+class PoissonException : public std::runtime_error {
+public:
+  PoissonException(const std::string& error_description,
+                   const char* file_name = nullptr,
+                   const char* function_name = nullptr,
+                   unsigned line_number = 0)
+  : std::runtime_error(
+        createDetailedMessage(error_description, file_name, function_name, line_number))
+  , file_name_(file_name)
+  , function_name_(function_name)
+  , line_number_(line_number)
+  {}
+
+protected:
+  static std::string
+  createDetailedMessage (const std::string& error_description,
+                         const char* file_name,
+                         const char* function_name,
+                         unsigned line_number)
   {
-    /** \class PoissonException
-      * \brief A base class for all poisson exceptions which inherits from std::runtime_error
-      * 
-      * \note 
-      * Adapted from PCLException. We intentionally do not reuse PCLException here
-      * to avoid introducing any dependencies on PCL in this 3rd party module.       
-      */
-    class PoissonException : public std::runtime_error
-    {
-      public:
-        PoissonException (const std::string& error_description,
-                      const char* file_name = nullptr,
-                      const char* function_name = nullptr,
-                      unsigned line_number = 0)
-          : std::runtime_error (createDetailedMessage (error_description,
-                                                       file_name,
-                                                       function_name,
-                                                       line_number))
-          , file_name_ (file_name)
-          , function_name_ (function_name)
-          , line_number_ (line_number)
-        {}
+    std::ostringstream sstream;
+    if (function_name)
+      sstream << function_name << ' ';
 
-      protected:
-        static std::string
-        createDetailedMessage (const std::string& error_description,
-                               const char* file_name,
-                               const char* function_name,
-                               unsigned line_number)
-        {
-          std::ostringstream sstream;
-          if (function_name)
-            sstream << function_name << ' ';
-          
-          if (file_name)
-          {
-            sstream << "in " << file_name << ' ';
-            if (line_number)
-              sstream << "@ " << line_number << ' ';
-          }
-          sstream << ": " << error_description;
-          
-          return (sstream.str ());
-        }
-      
-        const char* file_name_;
-        const char* function_name_;
-        unsigned line_number_;
-    };
+    if (file_name) {
+      sstream << "in " << file_name << ' ';
+      if (line_number)
+        sstream << "@ " << line_number << ' ';
+    }
+    sstream << ": " << error_description;
 
-    /** \class PoissonBadArgumentException
-      * \brief An exception that is thrown when the arguments number or type is wrong/unhandled.
-      */
-    class PoissonBadArgumentException : public PoissonException
-    {
-    public:
-      PoissonBadArgumentException (const std::string& error_description,
-        const char* file_name = nullptr,
-        const char* function_name = nullptr,
-        unsigned line_number = 0)
-        : pcl::poisson::PoissonException (error_description, file_name, function_name, line_number) {}
-    };
-
-    /** \class PoissonOpenMPException
-      * \brief An exception that is thrown when something goes wrong inside an openMP for loop.
-      */
-    class PoissonOpenMPException : public PoissonException
-    {
-    public:
-      PoissonOpenMPException (const std::string& error_description,
-        const char* file_name = nullptr,
-        const char* function_name = nullptr,
-        unsigned line_number = 0)
-        : pcl::poisson::PoissonException (error_description, file_name, function_name, line_number) {}
-    };
-
-    /** \class PoissonBadInitException
-      * \brief An exception that is thrown when initialization fails.
-      */
-    class PoissonBadInitException : public PoissonException
-    {
-    public:
-      PoissonBadInitException (const std::string& error_description,
-        const char* file_name = nullptr,
-        const char* function_name = nullptr,
-        unsigned line_number = 0)
-        : pcl::poisson::PoissonException (error_description, file_name, function_name, line_number) {}
-    };
+    return (sstream.str());
   }
-}
+
+  const char* file_name_;
+  const char* function_name_;
+  unsigned line_number_;
+};
+
+/** \class PoissonBadArgumentException
+ * \brief An exception that is thrown when the arguments number or type is
+ * wrong/unhandled.
+ */
+class PoissonBadArgumentException : public PoissonException {
+public:
+  PoissonBadArgumentException(const std::string& error_description,
+                              const char* file_name = nullptr,
+                              const char* function_name = nullptr,
+                              unsigned line_number = 0)
+  : pcl::poisson::PoissonException(
+        error_description, file_name, function_name, line_number)
+  {}
+};
+
+/** \class PoissonOpenMPException
+ * \brief An exception that is thrown when something goes wrong inside an openMP for
+ * loop.
+ */
+class PoissonOpenMPException : public PoissonException {
+public:
+  PoissonOpenMPException(const std::string& error_description,
+                         const char* file_name = nullptr,
+                         const char* function_name = nullptr,
+                         unsigned line_number = 0)
+  : pcl::poisson::PoissonException(
+        error_description, file_name, function_name, line_number)
+  {}
+};
+
+/** \class PoissonBadInitException
+ * \brief An exception that is thrown when initialization fails.
+ */
+class PoissonBadInitException : public PoissonException {
+public:
+  PoissonBadInitException(const std::string& error_description,
+                          const char* file_name = nullptr,
+                          const char* function_name = nullptr,
+                          unsigned line_number = 0)
+  : pcl::poisson::PoissonException(
+        error_description, file_name, function_name, line_number)
+  {}
+};
+} // namespace poisson
+} // namespace pcl

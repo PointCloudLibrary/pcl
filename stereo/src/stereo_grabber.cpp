@@ -50,9 +50,9 @@ struct pcl::StereoGrabberBase::StereoGrabberImpl {
                     float frames_per_second,
                     bool repeat);
   void
-  trigger();
+  trigger ();
   void
-  readAhead();
+  readAhead ();
 
   pcl::StereoGrabberBase& grabber_;
   float frames_per_second_;

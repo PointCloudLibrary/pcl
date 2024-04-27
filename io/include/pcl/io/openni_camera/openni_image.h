@@ -35,174 +35,186 @@
  */
 
 #pragma once
- 
-#include <pcl/pcl_config.h>
+
 #include <pcl/memory.h>
+#include <pcl/pcl_config.h>
 #ifdef HAVE_OPENNI
 
 #include <pcl/pcl_exports.h>
+
 #include "openni.h"
 #include "openni_exception.h"
 
-namespace openni_wrapper
-{
+namespace openni_wrapper {
+
+/**
+ * @brief Image class containing just a reference to image meta data. Thus this class
+ * just provides an interface to fill a RGB or Grayscale image buffer.
+ * @author Suat Gedikli
+ * @date 02.january 2011
+ * @param[in] image_meta_data
+ * @ingroup io
+ */
+class PCL_EXPORTS Image {
+public:
+  using Ptr = pcl::shared_ptr<Image>;
+  using ConstPtr = pcl::shared_ptr<const Image>;
+
+  enum Encoding { BAYER_GRBG, YUV422, RGB };
 
   /**
-   * @brief Image class containing just a reference to image meta data. Thus this class
-   * just provides an interface to fill a RGB or Grayscale image buffer.
    * @author Suat Gedikli
-   * @date 02.january 2011
-   * @param[in] image_meta_data
-   * @ingroup io
+   * @brief Constructor
+   * @param[in] image_meta_data the actual image data from the OpenNI driver
    */
-  class PCL_EXPORTS Image
+  inline Image(pcl::shared_ptr<xn::ImageMetaData> image_meta_data) noexcept;
+
+  /**
+   * @author Suat Gedikli
+   * @brief virtual Destructor that never throws an exception.
+   */
+  inline virtual ~Image() noexcept;
+
+  /**
+   * @author Suat Gedikli
+   * @param[in] input_width width of input image
+   * @param[in] input_height height of input image
+   * @param[in] output_width width of desired output image
+   * @param[in] output_height height of desired output image
+   * @return whether the resizing is supported or not.
+   */
+  virtual bool
+  isResizingSupported (unsigned input_width,
+                       unsigned input_height,
+                       unsigned output_width,
+                       unsigned output_height) const = 0;
+
+  /**
+   * @author Suat Gedikli
+   * @brief fills a user given buffer with the RGB values, with an optional
+   * nearest-neighbor down sampling and an optional subregion
+   * @param[in] width desired width of output image.
+   * @param[in] height desired height of output image.
+   * @param[in,out] rgb_buffer the output RGB buffer.
+   * @param[in] rgb_line_step optional line step in bytes to allow the output in a
+   * rectangular subregion of the output buffer.
+   */
+  virtual void
+  fillRGB (unsigned width,
+           unsigned height,
+           unsigned char* rgb_buffer,
+           unsigned rgb_line_step = 0) const = 0;
+
+  /**
+   * @author Suat Gedikli
+   * @brief returns the encoding of the native data.
+   * @return encoding
+   */
+  virtual Encoding
+  getEncoding () const = 0;
+
+  /**
+   * @author Suat Gedikli
+   * @brief fills a user given buffer with the raw values.
+   * @param[in,out] rgb_buffer
+   */
+  inline void
+  fillRaw (unsigned char* rgb_buffer) const noexcept
   {
-  public:
-    using Ptr = pcl::shared_ptr<Image>;
-    using ConstPtr = pcl::shared_ptr<const Image>;
-
-    enum Encoding
-    {
-      BAYER_GRBG,
-      YUV422,
-      RGB
-    };
-
-    /**
-     * @author Suat Gedikli
-     * @brief Constructor
-     * @param[in] image_meta_data the actual image data from the OpenNI driver
-     */
-    inline Image (pcl::shared_ptr<xn::ImageMetaData> image_meta_data) noexcept;
-
-    /**
-     * @author Suat Gedikli
-     * @brief virtual Destructor that never throws an exception.
-     */
-    inline virtual ~Image () noexcept;
-
-    /**
-     * @author Suat Gedikli
-     * @param[in] input_width width of input image
-     * @param[in] input_height height of input image
-     * @param[in] output_width width of desired output image
-     * @param[in] output_height height of desired output image
-     * @return whether the resizing is supported or not.
-     */
-    virtual bool isResizingSupported (unsigned input_width, unsigned input_height,
-                                      unsigned output_width, unsigned output_height) const = 0;
-
-    /**
-     * @author Suat Gedikli
-     * @brief fills a user given buffer with the RGB values, with an optional nearest-neighbor down sampling and an optional subregion
-     * @param[in] width desired width of output image.
-     * @param[in] height desired height of output image.
-     * @param[in,out] rgb_buffer the output RGB buffer.
-     * @param[in] rgb_line_step optional line step in bytes to allow the output in a rectangular subregion of the output buffer.
-     */
-    virtual void fillRGB (unsigned width, unsigned height, unsigned char* rgb_buffer,
-                          unsigned rgb_line_step = 0) const = 0;
-
-    /**
-     * @author Suat Gedikli
-     * @brief returns the encoding of the native data.
-     * @return encoding
-     */
-    virtual Encoding getEncoding () const = 0;
-
-    /**
-     * @author Suat Gedikli
-     * @brief fills a user given buffer with the raw values.
-     * @param[in,out] rgb_buffer
-     */
-    inline void
-    fillRaw (unsigned char* rgb_buffer) const noexcept
-    {
-      memcpy (rgb_buffer, image_md_->Data (), image_md_->DataSize ());
-    }
-
-    /**
-     * @author Suat Gedikli
-     * @brief fills a user given buffer with the gray values, with an optional nearest-neighbor down sampling and an optional subregion
-     * @param[in] width desired width of output image.
-     * @param[in] height desired height of output image.
-     * @param[in,out] gray_buffer the output gray buffer.
-     * @param[in] gray_line_step optional line step in bytes to allow the output in a rectangular subregion of the output buffer.
-     */
-    virtual void fillGrayscale (unsigned width, unsigned height, unsigned char* gray_buffer,
-                                unsigned gray_line_step = 0) const = 0;
-
-    /**
-     * @author Suat Gedikli
-     * @return width of the image
-     */
-    inline unsigned getWidth () const noexcept;
-
-    /**
-     * @author Suat Gedikli
-     * @return height of the image
-     */
-    inline unsigned getHeight () const noexcept;
-
-    /**
-     * @author Suat Gedikli
-     * @return frame id of the image.
-     * @note frame ids are ascending, but not necessarily synch'ed with other streams
-     */
-    inline unsigned getFrameID () const noexcept;
-
-    /**
-     * @author Suat Gedikli
-     * @return the time stamp of the image
-     * @note the time value is not synche'ed with the system time
-     */
-    inline unsigned long getTimeStamp () const noexcept;
-
-    /**
-     * @author Suat Gedikli
-     * @return the actual data in native OpenNI format.
-     */
-    inline const xn::ImageMetaData& getMetaData () const noexcept;
-
-  protected:
-    pcl::shared_ptr<xn::ImageMetaData> image_md_;
-  } ;
-
-  Image::Image (pcl::shared_ptr<xn::ImageMetaData> image_meta_data) noexcept
-  : image_md_ (std::move(image_meta_data))
-  {
+    memcpy(rgb_buffer, image_md_->Data(), image_md_->DataSize());
   }
 
-  Image::~Image () noexcept = default;
+  /**
+   * @author Suat Gedikli
+   * @brief fills a user given buffer with the gray values, with an optional
+   * nearest-neighbor down sampling and an optional subregion
+   * @param[in] width desired width of output image.
+   * @param[in] height desired height of output image.
+   * @param[in,out] gray_buffer the output gray buffer.
+   * @param[in] gray_line_step optional line step in bytes to allow the output in a
+   * rectangular subregion of the output buffer.
+   */
+  virtual void
+  fillGrayscale (unsigned width,
+                 unsigned height,
+                 unsigned char* gray_buffer,
+                 unsigned gray_line_step = 0) const = 0;
 
-  unsigned
-  Image::getWidth () const noexcept
-  {
-    return image_md_->XRes ();
-  }
+  /**
+   * @author Suat Gedikli
+   * @return width of the image
+   */
+  inline unsigned
+  getWidth () const noexcept;
 
-  unsigned
-  Image::getHeight () const noexcept
-  {
-    return image_md_->YRes ();
-  }
+  /**
+   * @author Suat Gedikli
+   * @return height of the image
+   */
+  inline unsigned
+  getHeight () const noexcept;
 
-  unsigned
-  Image::getFrameID () const noexcept
-  {
-    return image_md_->FrameID ();
-  }
+  /**
+   * @author Suat Gedikli
+   * @return frame id of the image.
+   * @note frame ids are ascending, but not necessarily synch'ed with other streams
+   */
+  inline unsigned
+  getFrameID () const noexcept;
 
-  unsigned long
-  Image::getTimeStamp () const noexcept
-  {
-    return static_cast<unsigned long> (image_md_->Timestamp ());
-  }
+  /**
+   * @author Suat Gedikli
+   * @return the time stamp of the image
+   * @note the time value is not synche'ed with the system time
+   */
+  inline unsigned long
+  getTimeStamp () const noexcept;
 
-  const xn::ImageMetaData&
-  Image::getMetaData () const noexcept
-  {
-    return *image_md_;
-  }
-} // namespace
+  /**
+   * @author Suat Gedikli
+   * @return the actual data in native OpenNI format.
+   */
+  inline const xn::ImageMetaData&
+  getMetaData () const noexcept;
+
+protected:
+  pcl::shared_ptr<xn::ImageMetaData> image_md_;
+};
+
+Image::Image(pcl::shared_ptr<xn::ImageMetaData> image_meta_data) noexcept
+: image_md_(std::move(image_meta_data))
+{}
+
+Image::~Image() noexcept = default;
+
+unsigned
+Image::getWidth() const noexcept
+{
+  return image_md_->XRes();
+}
+
+unsigned
+Image::getHeight() const noexcept
+{
+  return image_md_->YRes();
+}
+
+unsigned
+Image::getFrameID() const noexcept
+{
+  return image_md_->FrameID();
+}
+
+unsigned long
+Image::getTimeStamp() const noexcept
+{
+  return static_cast<unsigned long>(image_md_->Timestamp());
+}
+
+const xn::ImageMetaData&
+Image::getMetaData() const noexcept
+{
+  return *image_md_;
+}
+} // namespace openni_wrapper
 #endif

@@ -57,10 +57,10 @@ public:
   ~PairwisePotential() = default;
 
   void
-  compute(std::vector<float>& out,
-          const std::vector<float>& in,
-          std::vector<float>& tmp,
-          int value_size) const;
+  compute (std::vector<float>& out,
+           const std::vector<float>& in,
+           std::vector<float>& tmp,
+           int value_size) const;
 
 protected:
   /// Permutohedral lattice

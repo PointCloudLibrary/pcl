@@ -46,7 +46,7 @@ public:
   }
 
   PointTPtrConst
-  getAssembled(float resolution)
+  getAssembled (float resolution)
   {
     if (resolution <= 0)
       return assembled_;
@@ -87,9 +87,9 @@ protected:
   bool load_views_;
 
   void
-  getIdAndClassFromFilename(const std::string& filename,
-                            std::string& id,
-                            std::string& classname)
+  getIdAndClassFromFilename (const std::string& filename,
+                             std::string& id,
+                             std::string& classname)
   {
     const bf::path path = filename;
     classname = path.parent_path().string() + '/';
@@ -97,7 +97,7 @@ protected:
   }
 
   void
-  createTrainingDir(std::string& training_dir)
+  createTrainingDir (std::string& training_dir)
   {
     bf::path trained_dir = training_dir;
     if (!bf::exists(trained_dir))
@@ -105,9 +105,9 @@ protected:
   }
 
   void
-  createClassAndModelDirectories(std::string& training_dir,
-                                 std::string& class_str,
-                                 std::string& id_str)
+  createClassAndModelDirectories (std::string& training_dir,
+                                  std::string& class_str,
+                                  std::string& id_str)
   {
     bf::create_directories(training_dir + '/' + class_str + '/' + id_str);
   }
@@ -118,29 +118,29 @@ public:
   virtual ~Source() = default;
 
   float
-  getScale()
+  getScale ()
   {
     return model_scale_;
   }
 
   void
-  setModelScale(float s)
+  setModelScale (float s)
   {
     model_scale_ = s;
   }
 
   void
-  setFilterDuplicateViews(bool f)
+  setFilterDuplicateViews (bool f)
   {
     filter_duplicate_views_ = f;
     std::cout << "setting filter duplicate views to " << f << std::endl;
   }
 
   void
-  getModelsInDirectory(bf::path& dir,
-                       std::string& rel_path_so_far,
-                       std::vector<std::string>& relative_paths,
-                       std::string& ext)
+  getModelsInDirectory (bf::path& dir,
+                        std::string& rel_path_so_far,
+                        std::vector<std::string>& relative_paths,
+                        std::string& ext)
   {
     for (const auto& dir_entry : bf::directory_iterator(dir)) {
       // check if its a directory, then get models in it
@@ -169,7 +169,7 @@ public:
   }
 
   void
-  voxelizeAllModels(float resolution)
+  voxelizeAllModels (float resolution)
   {
     for (std::size_t i = 0; i < models_->size(); i++) {
       models_->at(i).getAssembled(resolution);
@@ -180,42 +180,42 @@ public:
    * \brief Generate model representation
    */
   virtual void
-  generate(std::string& training_dir) = 0;
+  generate (std::string& training_dir) = 0;
 
   /**
    * \brief Get the generated model
    */
   std::shared_ptr<std::vector<ModelT>>
-  getModels()
+  getModels ()
   {
     return models_;
   }
 
   std::shared_ptr<std::vector<ModelT>>
-  getModels(std::string& model_id)
+  getModels (std::string& model_id)
   {
     models_->erase(std::remove_if(models_->begin(),
                                   models_->end(),
-                                  [=](ModelT& s) { return (s.id_ != model_id); }),
+                                  [=] (ModelT& s) { return (s.id_ != model_id); }),
                    models_->end());
 
     return models_;
   }
 
   bool
-  modelAlreadyTrained(ModelT m, std::string& base_dir, std::string& descr_name)
+  modelAlreadyTrained (ModelT m, std::string& base_dir, std::string& descr_name)
   {
     return bf::exists(getModelDescriptorDir(m, base_dir, descr_name));
   }
 
   std::string
-  getModelDescriptorDir(ModelT m, std::string& base_dir, std::string& descr_name)
+  getModelDescriptorDir (ModelT m, std::string& base_dir, std::string& descr_name)
   {
     return base_dir + '/' + m.class_ + '/' + m.id_ + '/' + descr_name;
   }
 
   void
-  removeDescDirectory(ModelT m, std::string& base_dir, std::string& descr_name)
+  removeDescDirectory (ModelT m, std::string& base_dir, std::string& descr_name)
   {
     std::string dir = getModelDescriptorDir(m, base_dir, descr_name);
 
@@ -225,13 +225,13 @@ public:
   }
 
   void
-  setPath(std::string& path)
+  setPath (std::string& path)
   {
     path_ = path;
   }
 
   void
-  setLoadViews(bool load)
+  setLoadViews (bool load)
   {
     load_views_ = load;
   }

@@ -43,43 +43,39 @@
 
 #include <pcl/point_cloud.h>
 
-namespace pcl
-{
-  /** \brief FileGrabber provides a container-style interface for grabbers which operate on fixed-size input
-    * \author Stephen Miller
-    * \ingroup io
-    */
-  template <typename PointT>
-  class PCL_EXPORTS FileGrabber
+namespace pcl {
+/** \brief FileGrabber provides a container-style interface for grabbers which operate
+ * on fixed-size input \author Stephen Miller \ingroup io
+ */
+template <typename PointT>
+class PCL_EXPORTS FileGrabber {
+public:
+  /** \brief Empty destructor */
+  virtual ~FileGrabber() = default;
+
+  /** \brief operator[] Returns the idx-th cloud in the dataset, without bounds
+   * checking. Note that in the future, this could easily be modified to do caching
+   *  \param[in] idx The frame to load
+   */
+  virtual const typename pcl::PointCloud<PointT>::ConstPtr
+  operator[](std::size_t idx) const = 0;
+
+  /** \brief size Returns the number of clouds currently loaded by the grabber */
+  virtual std::size_t
+  size () const = 0;
+
+  /** \brief at Returns the idx-th cloud in the dataset, with bounds checking
+   *  \param[in] idx The frame to load
+   */
+  virtual const typename pcl::PointCloud<PointT>::ConstPtr
+  at (std::size_t idx) const
   {
-  public:
-
-    /** \brief Empty destructor */
-    virtual ~FileGrabber () = default;
-
-    /** \brief operator[] Returns the idx-th cloud in the dataset, without bounds checking.
-     *  Note that in the future, this could easily be modified to do caching
-     *  \param[in] idx The frame to load
-     */
-    virtual const typename pcl::PointCloud<PointT>::ConstPtr
-    operator[] (std::size_t idx) const = 0;
-
-    /** \brief size Returns the number of clouds currently loaded by the grabber */
-    virtual std::size_t
-    size () const = 0;
-    
-    /** \brief at Returns the idx-th cloud in the dataset, with bounds checking
-     *  \param[in] idx The frame to load
-     */
-    virtual const typename pcl::PointCloud<PointT>::ConstPtr
-    at (std::size_t idx) const
-    {
-      if (idx >= size ())
-      {
-        // Throw error 
-        throw pcl::IOException ("[pcl::FileGrabber] Attempted to access element which is out of bounds!");
-      }
-      return (operator[] (idx));
+    if (idx >= size()) {
+      // Throw error
+      throw pcl::IOException(
+          "[pcl::FileGrabber] Attempted to access element which is out of bounds!");
     }
-  };
-}
+    return (operator[](idx));
+  }
+};
+} // namespace pcl

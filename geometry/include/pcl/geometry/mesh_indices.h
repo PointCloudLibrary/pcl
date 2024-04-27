@@ -84,28 +84,28 @@ public:
 
   /** \brief Returns true if the index is valid. */
   inline bool
-  isValid() const
+  isValid () const
   {
     return (index_ >= 0);
   }
 
   /** \brief Invalidate the index. */
   inline void
-  invalidate()
+  invalidate ()
   {
     index_ = -1;
   }
 
   /** \brief Get the index. */
   inline int
-  get() const
+  get () const
   {
     return (index_);
   }
 
   /** \brief Set the index. */
   inline void
-  set(const int index)
+  set (const int index)
   {
     index_ = index;
   }
@@ -221,7 +221,7 @@ namespace pcl {
 namespace geometry {
 /** \brief Convert the given half-edge index to an edge index. */
 inline EdgeIndex
-toEdgeIndex(const HalfEdgeIndex& index)
+toEdgeIndex (const HalfEdgeIndex& index)
 {
   return (index.isValid() ? EdgeIndex(index.get() / 2) : EdgeIndex());
 }
@@ -232,7 +232,7 @@ toEdgeIndex(const HalfEdgeIndex& index)
  * variable is true; elsewise the second.
  */
 inline HalfEdgeIndex
-toHalfEdgeIndex(const EdgeIndex& index, const bool get_first = true)
+toHalfEdgeIndex (const EdgeIndex& index, const bool get_first = true)
 {
   return (index.isValid()
               ? HalfEdgeIndex(index.get() * 2 + static_cast<int>(!get_first))

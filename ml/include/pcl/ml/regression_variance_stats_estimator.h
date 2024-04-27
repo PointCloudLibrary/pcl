@@ -58,7 +58,7 @@ public:
    * \param[out] stream the destination for the serialization
    */
   inline void
-  serialize(std::ostream& stream) const
+  serialize (std::ostream& stream) const
   {
     feature.serialize(stream);
 
@@ -80,7 +80,7 @@ public:
    * \param[in] stream the source for the deserialization
    */
   inline void
-  deserialize(std::istream& stream)
+  deserialize (std::istream& stream)
   {
     feature.deserialize(stream);
 
@@ -130,7 +130,7 @@ public:
 
   /** Returns the number of branches the corresponding tree has. */
   inline std::size_t
-  getNumOfBranches() const
+  getNumOfBranches () const
   {
     // return 2;
     return branch_estimator_->getNumOfBranches();
@@ -141,7 +141,7 @@ public:
    * \param[in] node the node which label is returned
    */
   inline LabelDataType
-  getLabelOfNode(NodeType& node) const
+  getLabelOfNode (NodeType& node) const
   {
     return node.value;
   }
@@ -156,12 +156,12 @@ public:
    * \param[in] threshold the threshold for which the information gain is computed
    */
   float
-  computeInformationGain(DataSet& data_set,
-                         std::vector<ExampleIndex>& examples,
-                         std::vector<LabelDataType>& label_data,
-                         std::vector<float>& results,
-                         std::vector<unsigned char>& flags,
-                         const float threshold) const
+  computeInformationGain (DataSet& data_set,
+                          std::vector<ExampleIndex>& examples,
+                          std::vector<LabelDataType>& label_data,
+                          std::vector<float>& results,
+                          std::vector<unsigned char>& flags,
+                          const float threshold) const
   {
     const std::size_t num_of_examples = examples.size();
     const std::size_t num_of_branches = getNumOfBranches();
@@ -224,10 +224,10 @@ public:
    * \param[out] branch_indices the destination for the computed branch indices
    */
   void
-  computeBranchIndices(std::vector<float>& results,
-                       std::vector<unsigned char>& flags,
-                       const float threshold,
-                       std::vector<unsigned char>& branch_indices) const
+  computeBranchIndices (std::vector<float>& results,
+                        std::vector<unsigned char>& flags,
+                        const float threshold,
+                        std::vector<unsigned char>& branch_indices) const
   {
     const std::size_t num_of_results = results.size();
     const std::size_t num_of_branches = getNumOfBranches();
@@ -249,10 +249,10 @@ public:
    * \param[out] branch_index the destination for the computed branch index
    */
   inline void
-  computeBranchIndex(const float result,
-                     const unsigned char flag,
-                     const float threshold,
-                     unsigned char& branch_index) const
+  computeBranchIndex (const float result,
+                      const unsigned char flag,
+                      const float threshold,
+                      unsigned char& branch_index) const
   {
     branch_estimator_->computeBranchIndex(result, flag, threshold, branch_index);
     // branch_index = (result > threshold) ? 1 : 0;
@@ -267,10 +267,10 @@ public:
    * \param[out] node the destination node for the statistics
    */
   void
-  computeAndSetNodeStats(DataSet& data_set,
-                         std::vector<ExampleIndex>& examples,
-                         std::vector<LabelDataType>& label_data,
-                         NodeType& node) const
+  computeAndSetNodeStats (DataSet& data_set,
+                          std::vector<ExampleIndex>& examples,
+                          std::vector<LabelDataType>& label_data,
+                          NodeType& node) const
   {
     const std::size_t num_of_examples = examples.size();
 
@@ -299,7 +299,7 @@ public:
    * \param[out] stream the destination for the generated code
    */
   void
-  generateCodeForBranchIndexComputation(NodeType& node, std::ostream& stream) const
+  generateCodeForBranchIndexComputation (NodeType& node, std::ostream& stream) const
   {
     stream << "ERROR: RegressionVarianceStatsEstimator does not implement "
               "generateCodeForBranchIndex(...)";
@@ -311,7 +311,7 @@ public:
    * \param[out] stream the destination for the generated code
    */
   void
-  generateCodeForOutput(NodeType& node, std::ostream& stream) const
+  generateCodeForOutput (NodeType& node, std::ostream& stream) const
   {
     stream << "ERROR: RegressionVarianceStatsEstimator does not implement "
               "generateCodeForBranchIndex(...)";

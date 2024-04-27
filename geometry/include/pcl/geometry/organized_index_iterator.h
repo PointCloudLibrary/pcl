@@ -70,31 +70,31 @@ public:
    * \return the pixel/point index in the linearized memory of the image/cloud
    */
   virtual unsigned
-  getIndex() const;
+  getIndex () const;
 
   /** \brief returns the row index (y-coordinate) of the current pixel/point
    * \return  the row index (y-coordinate) of the current pixel/point
    */
   virtual unsigned
-  getRowIndex() const;
+  getRowIndex () const;
 
   /** \brief returns the col index (x-coordinate) of the current pixel/point
    * \return  the col index (x-coordinate) of the current pixel/point
    */
   virtual unsigned
-  getColumnIndex() const;
+  getColumnIndex () const;
 
   /** \brief return whether the current visited pixel/point is valid or not.
    * \return true if the current pixel/point is within the points to be iterated over,
    * false otherwise
    */
   virtual bool
-  isValid() const = 0;
+  isValid () const = 0;
 
   /** \brief resets the iterator to the beginning of the line
    */
   virtual void
-  reset() = 0;
+  reset () = 0;
 
 protected:
   /** \brief the width of the image/cloud*/

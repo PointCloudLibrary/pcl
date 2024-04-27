@@ -39,7 +39,7 @@
 
 #pragma once
 
-#include <pcl/search/search.h>
 #include <pcl/search/kdtree.h>
 #include <pcl/search/octree.h>
 #include <pcl/search/organized.h>
+#include <pcl/search/search.h>

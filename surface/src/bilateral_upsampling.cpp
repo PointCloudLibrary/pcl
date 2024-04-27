@@ -37,13 +37,13 @@
  *
  */
 
+#include "pcl/surface/bilateral_upsampling.h"
 
 #include "pcl/impl/instantiate.hpp"
 #include "pcl/point_types.h"
-#include "pcl/surface/bilateral_upsampling.h"
 #include "pcl/surface/impl/bilateral_upsampling.hpp"
 
-
 // Instantiations of specific point types
-PCL_INSTANTIATE_PRODUCT(BilateralUpsampling, ((pcl::PointXYZRGB)(pcl::PointXYZRGBA))
-                                             ((pcl::PointXYZRGB)(pcl::PointXYZRGBA)))
+PCL_INSTANTIATE_PRODUCT(
+    BilateralUpsampling,
+    ((pcl::PointXYZRGB)(pcl::PointXYZRGBA))((pcl::PointXYZRGB)(pcl::PointXYZRGBA)))

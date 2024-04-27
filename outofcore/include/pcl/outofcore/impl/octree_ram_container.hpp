@@ -46,96 +46,102 @@
 // PCL (Urban Robotics)
 #include <pcl/outofcore/octree_ram_container.h>
 
-namespace pcl
+namespace pcl {
+namespace outofcore {
+template <typename PointT>
+std::mutex OutofcoreOctreeRamContainer<PointT>::rng_mutex_;
+
+template <typename PointT>
+std::mt19937 OutofcoreOctreeRamContainer<PointT>::rng_([] {
+  std::random_device rd;
+  return rd();
+}());
+
+template <typename PointT>
+void
+OutofcoreOctreeRamContainer<PointT>::convertToXYZ(const boost::filesystem::path& path)
 {
-  namespace outofcore
-  {
-    template<typename PointT>
-    std::mutex OutofcoreOctreeRamContainer<PointT>::rng_mutex_;
+  if (!container_.empty()) {
+    FILE* fxyz = fopen(path.string().c_str(), "we");
 
-    template<typename PointT> 
-    std::mt19937 OutofcoreOctreeRamContainer<PointT>::rng_ ([] {std::random_device rd; return rd(); } ());
+    std::uint64_t num = size();
+    for (std::uint64_t i = 0; i < num; i++) {
+      const PointT& p = container_[i];
 
-    template<typename PointT> void
-    OutofcoreOctreeRamContainer<PointT>::convertToXYZ (const boost::filesystem::path& path)
-    {
-      if (!container_.empty ())
-      {
-        FILE* fxyz = fopen (path.string ().c_str (), "we");
+      std::stringstream ss;
+      ss << std::fixed;
+      ss.precision(16);
+      ss << p.x << "\t" << p.y << "\t" << p.z << "\n";
 
-        std::uint64_t num = size ();
-        for (std::uint64_t i = 0; i < num; i++)
-        {
-          const PointT& p = container_[i];
-
-          std::stringstream ss;
-          ss << std::fixed;
-          ss.precision (16);
-          ss << p.x << "\t" << p.y << "\t" << p.z << "\n";
-
-          fwrite (ss.str ().c_str (), 1, ss.str ().size (), fxyz);
-        }
-
-        assert ( fclose (fxyz) == 0 );
-      }
+      fwrite(ss.str().c_str(), 1, ss.str().size(), fxyz);
     }
 
-    ////////////////////////////////////////////////////////////////////////////////
+    assert(fclose(fxyz) == 0);
+  }
+}
 
-    template<typename PointT> void
-    OutofcoreOctreeRamContainer<PointT>::insertRange (const PointT* start, const std::uint64_t count)
-    {
-      container_.insert (container_.end (), start, start + count);
-    }
+////////////////////////////////////////////////////////////////////////////////
 
-    ////////////////////////////////////////////////////////////////////////////////
+template <typename PointT>
+void
+OutofcoreOctreeRamContainer<PointT>::insertRange(const PointT* start,
+                                                 const std::uint64_t count)
+{
+  container_.insert(container_.end(), start, start + count);
+}
 
-    template<typename PointT> void
-    OutofcoreOctreeRamContainer<PointT>::insertRange (const PointT* const * start, const std::uint64_t count)
-    {
-      AlignedPointTVector temp;
-      temp.resize (count);
-      for (std::uint64_t i = 0; i < count; i++)
-      {
-        temp[i] = *start[i];
-      }
-      container_.insert (container_.end (), temp.begin (), temp.end ());
-    }
+////////////////////////////////////////////////////////////////////////////////
 
-    ////////////////////////////////////////////////////////////////////////////////
+template <typename PointT>
+void
+OutofcoreOctreeRamContainer<PointT>::insertRange(const PointT* const* start,
+                                                 const std::uint64_t count)
+{
+  AlignedPointTVector temp;
+  temp.resize(count);
+  for (std::uint64_t i = 0; i < count; i++) {
+    temp[i] = *start[i];
+  }
+  container_.insert(container_.end(), temp.begin(), temp.end());
+}
 
-    template<typename PointT> void
-    OutofcoreOctreeRamContainer<PointT>::readRange (const std::uint64_t start, const std::uint64_t count,
-                                             AlignedPointTVector& v)
-    {
-      v.resize (count);
-      std::copy(container_.cbegin() + start, container_.cbegin() + start + count, v.begin());
-    }
+////////////////////////////////////////////////////////////////////////////////
 
-    ////////////////////////////////////////////////////////////////////////////////
+template <typename PointT>
+void
+OutofcoreOctreeRamContainer<PointT>::readRange(const std::uint64_t start,
+                                               const std::uint64_t count,
+                                               AlignedPointTVector& v)
+{
+  v.resize(count);
+  std::copy(
+      container_.cbegin() + start, container_.cbegin() + start + count, v.begin());
+}
 
-    template<typename PointT> void
-    OutofcoreOctreeRamContainer<PointT>::readRangeSubSample (const std::uint64_t start, 
-                                                      const std::uint64_t count,
-                                                      const double percent, 
-                                                      AlignedPointTVector& v)
-    {
-      auto samplesize = static_cast<std::uint64_t> (percent * static_cast<double> (count));
+////////////////////////////////////////////////////////////////////////////////
 
-      std::lock_guard<std::mutex> lock (rng_mutex_);
+template <typename PointT>
+void
+OutofcoreOctreeRamContainer<PointT>::readRangeSubSample(const std::uint64_t start,
+                                                        const std::uint64_t count,
+                                                        const double percent,
+                                                        AlignedPointTVector& v)
+{
+  auto samplesize = static_cast<std::uint64_t>(percent * static_cast<double>(count));
 
-      std::uniform_int_distribution < std::uint64_t > buffdist (start, start + count);
+  std::lock_guard<std::mutex> lock(rng_mutex_);
 
-      for (std::uint64_t i = 0; i < samplesize; i++)
-      {
-        std::uint64_t buffstart = buffdist (rng_);
-        v.push_back (container_[buffstart]);
-      }
-    }
+  std::uniform_int_distribution<std::uint64_t> buffdist(start, start + count);
 
-    ////////////////////////////////////////////////////////////////////////////////
+  for (std::uint64_t i = 0; i < samplesize; i++) {
+    std::uint64_t buffstart = buffdist(rng_);
+    v.push_back(container_[buffstart]);
+  }
+}
 
-  }//namespace outofcore
-}//namespace pcl
+////////////////////////////////////////////////////////////////////////////////
 
-#endif //PCL_OUTOFCORE_RAM_CONTAINER_IMPL_H_
+} // namespace outofcore
+} // namespace pcl
+
+#endif // PCL_OUTOFCORE_RAM_CONTAINER_IMPL_H_

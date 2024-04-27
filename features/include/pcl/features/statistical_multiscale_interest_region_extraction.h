@@ -40,85 +40,87 @@
 #pragma once
 
 #include <pcl/pcl_base.h>
+
 #include <list>
 
-namespace pcl
-{
-  /** \brief Class for extracting interest regions from unstructured point clouds, based on a multi scale
-    * statistical approach.
-    * Please refer to the following publications for more details:
-    *    Ranjith Unnikrishnan and Martial Hebert
-    *    Multi-Scale Interest Regions from Unorganized Point Clouds
-    *    Workshop on Search in 3D (S3D), IEEE Conf. on Computer Vision and Pattern Recognition (CVPR)
-    *    June, 2008
-    *
-    *    Statistical Approaches to Multi-scale Point Cloud Processing
-    *    Ranjith Unnikrishnan
-    *    PhD Thesis
-    *    The Robotics Institute Carnegie Mellon University
-    *    May, 2008
-    *
-    * \author Alexandru-Eugen Ichim
-    */
-  template <typename PointT>
-  class StatisticalMultiscaleInterestRegionExtraction : public PCLBase<PointT>
+namespace pcl {
+/** \brief Class for extracting interest regions from unstructured point clouds, based
+ * on a multi scale statistical approach. Please refer to the following publications for
+ * more details: Ranjith Unnikrishnan and Martial Hebert Multi-Scale Interest Regions
+ * from Unorganized Point Clouds Workshop on Search in 3D (S3D), IEEE Conf. on Computer
+ * Vision and Pattern Recognition (CVPR) June, 2008
+ *
+ *    Statistical Approaches to Multi-scale Point Cloud Processing
+ *    Ranjith Unnikrishnan
+ *    PhD Thesis
+ *    The Robotics Institute Carnegie Mellon University
+ *    May, 2008
+ *
+ * \author Alexandru-Eugen Ichim
+ */
+template <typename PointT>
+class StatisticalMultiscaleInterestRegionExtraction : public PCLBase<PointT> {
+public:
+  using IndicesPtr = shared_ptr<pcl::Indices>;
+  using Ptr = shared_ptr<StatisticalMultiscaleInterestRegionExtraction<PointT>>;
+  using ConstPtr =
+      shared_ptr<const StatisticalMultiscaleInterestRegionExtraction<PointT>>;
+
+  /** \brief Empty constructor */
+  StatisticalMultiscaleInterestRegionExtraction() = default;
+
+  /** \brief Method that generates the underlying nearest neighbor graph based on the
+   * input point cloud
+   */
+  void
+  generateCloudGraph ();
+
+  /** \brief The method to be called in order to run the algorithm and produce the
+   * resulting set of regions of interest
+   */
+  void
+  computeRegionsOfInterest (std::list<IndicesPtr>& rois);
+
+  /** \brief Method for setting the scale parameters for the algorithm
+   * \param scale_values vector of scales to determine the size of each scaling step
+   */
+  inline void
+  setScalesVector (std::vector<float>& scale_values)
   {
-    public:
-      using IndicesPtr = shared_ptr<pcl::Indices >;
-      using Ptr = shared_ptr<StatisticalMultiscaleInterestRegionExtraction<PointT> >;
-      using ConstPtr = shared_ptr<const StatisticalMultiscaleInterestRegionExtraction<PointT> >;
+    scale_values_ = scale_values;
+  }
 
+  /** \brief Method for getting the scale parameters vector */
+  inline std::vector<float>
+  getScalesVector ()
+  {
+    return scale_values_;
+  }
 
-      /** \brief Empty constructor */
-      StatisticalMultiscaleInterestRegionExtraction () = default;
+private:
+  /** \brief Checks if all the necessary input was given and the computations can
+   * successfully start */
+  bool
+  initCompute ();
 
-      /** \brief Method that generates the underlying nearest neighbor graph based on the
-       * input point cloud
-       */
-      void
-      generateCloudGraph ();
+  void
+  geodesicFixedRadiusSearch (std::size_t& query_index,
+                             float& radius,
+                             std::vector<int>& result_indices);
 
-      /** \brief The method to be called in order to run the algorithm and produce the resulting
-       * set of regions of interest
-       */
-      void
-      computeRegionsOfInterest (std::list<IndicesPtr>& rois);
+  void
+  computeF ();
 
-      /** \brief Method for setting the scale parameters for the algorithm
-       * \param scale_values vector of scales to determine the size of each scaling step
-       */
-      inline void
-      setScalesVector (std::vector<float> &scale_values) { scale_values_ = scale_values; }
+  void
+  extractExtrema (std::list<IndicesPtr>& rois);
 
-      /** \brief Method for getting the scale parameters vector */
-      inline std::vector<float>
-      getScalesVector () { return scale_values_; }
-
-
-    private:
-      /** \brief Checks if all the necessary input was given and the computations can successfully start */
-      bool
-      initCompute ();
-
-      void
-      geodesicFixedRadiusSearch (std::size_t &query_index,
-                                 float &radius,
-                                 std::vector<int> &result_indices);
-
-      void
-      computeF ();
-
-      void
-      extractExtrema (std::list<IndicesPtr>& rois);
-
-      using PCLBase<PointT>::initCompute;
-      using PCLBase<PointT>::input_;
-      std::vector<float> scale_values_;
-      std::vector<std::vector<float> > geodesic_distances_;
-      std::vector<std::vector<float> > F_scales_;
-  };
-}
-
+  using PCLBase<PointT>::initCompute;
+  using PCLBase<PointT>::input_;
+  std::vector<float> scale_values_;
+  std::vector<std::vector<float>> geodesic_distances_;
+  std::vector<std::vector<float>> F_scales_;
+};
+} // namespace pcl
 
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/features/impl/statistical_multiscale_interest_region_extraction.hpp>

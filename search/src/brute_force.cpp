@@ -34,9 +34,9 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 #include <pcl/impl/instantiate.hpp>
-#include <pcl/point_types.h>
 #include <pcl/search/brute_force.h>
 #include <pcl/search/impl/brute_force.hpp>
+#include <pcl/point_types.h>
 
 // Instantiations of specific point types
-PCL_INSTANTIATE (BruteForce, PCL_XYZ_POINT_TYPES)
+PCL_INSTANTIATE(BruteForce, PCL_XYZ_POINT_TYPES)

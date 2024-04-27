@@ -8,26 +8,22 @@
 
 class Object;
 
-class Scene
-{
+class Scene {
 private:
-
-  static Scene *instance_;
-
+  static Scene* instance_;
 
 public:
-
-  Scene ();
-  Scene (const Scene& op) = delete;
+  Scene();
+  Scene(const Scene& op) = delete;
   Scene&
-  operator= (const Scene& op) = delete;
+  operator=(const Scene& op) = delete;
 
   // Singleton
   static Scene*
   instance ()
   {
     if (!Scene::instance_)
-      Scene::instance_ = new Scene ();
+      Scene::instance_ = new Scene();
 
     return Scene::instance_;
   }
@@ -35,13 +31,13 @@ public:
   // Accessors - Cameras
   // -----------------------------------------------------------------------------
   void
-  addCamera (Camera *camera);
+  addCamera (Camera* camera);
 
   std::vector<Camera*>
   getCameras ();
 
   Camera*
-  getCamera (vtkCamera *camera);
+  getCamera (vtkCamera* camera);
 
   Camera*
   getCamera (const std::string& name);
@@ -49,7 +45,7 @@ public:
   // Accessors - Objects
   // -----------------------------------------------------------------------------
   void
-  addObject (Object *object);
+  addObject (Object* object);
 
   Object*
   getObjectByName (const std::string& name);
@@ -61,7 +57,7 @@ public:
   // -----------------------------------------------------------------------------
 
   void
-  addViewport (Viewport *viewport);
+  addViewport (Viewport* viewport);
 
   std::vector<Viewport*>
   getViewports ();
@@ -69,13 +65,13 @@ public:
   void
   lock ()
   {
-    render_mutex_.lock ();
+    render_mutex_.lock();
   }
 
   void
   unlock ()
   {
-    render_mutex_.unlock ();
+    render_mutex_.unlock();
   }
 
 private:
@@ -84,5 +80,4 @@ private:
   std::vector<Object*> objects_;
 
   std::mutex render_mutex_;
-
 };

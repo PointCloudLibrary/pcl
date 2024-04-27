@@ -61,14 +61,14 @@ int window_height_;
 TexturedQuad::Ptr textured_quad_;
 
 void
-printHelp(int, char** argv)
+printHelp (int, char** argv)
 {
   print_error("Syntax is: %s <filename>\n", argv[0]);
   print_info("acceptable filenames include vtk, obj and ply. ply can support color\n");
 }
 
 void
-display_score_image(const float* score_buffer)
+display_score_image (const float* score_buffer)
 {
   int npixels = range_likelihood_->getWidth() * range_likelihood_->getHeight();
   auto* score_img = new std::uint8_t[npixels * 3];
@@ -94,7 +94,7 @@ display_score_image(const float* score_buffer)
 }
 
 void
-display_depth_image(const float* depth_buffer, int width, int height)
+display_depth_image (const float* depth_buffer, int width, int height)
 {
   int npixels = width * height;
   auto* depth_img = new std::uint8_t[npixels * 3];
@@ -169,7 +169,7 @@ display_depth_image(const float* depth_buffer, int width, int height)
 }
 
 void
-display()
+display ()
 {
   float* reference =
       new float[range_likelihood_->getRowHeight() * range_likelihood_->getColWidth()];
@@ -328,7 +328,7 @@ display()
 
 // Handle normal keys
 void
-on_keyboard(unsigned char key, int, int)
+on_keyboard (unsigned char key, int, int)
 {
   if (key == 27)
     exit(0);
@@ -336,7 +336,7 @@ on_keyboard(unsigned char key, int, int)
 
 // Read in a 3D model
 void
-loadPolygonMeshModel(char* polygon_file)
+loadPolygonMeshModel (char* polygon_file)
 {
   pcl::PolygonMesh mesh;
   pcl::io::loadPolygonFile(polygon_file, mesh);
@@ -351,7 +351,7 @@ loadPolygonMeshModel(char* polygon_file)
 }
 
 void
-initialize(int argc, char** argv)
+initialize (int argc, char** argv)
 {
   const GLubyte* version = glGetString(GL_VERSION);
   print_info("OpenGL Version: %s\n", version);
@@ -364,7 +364,7 @@ initialize(int argc, char** argv)
 }
 
 int
-main(int argc, char** argv)
+main (int argc, char** argv)
 {
   int width = 640;
   int height = 480;

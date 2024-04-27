@@ -40,54 +40,52 @@
 #include <pcl_cuda/sample_consensus/sac.h>
 #include <pcl_cuda/sample_consensus/sac_model.h>
 
-namespace pcl_cuda
-{
+namespace pcl_cuda {
 
-  template <template <typename> class Storage>
-  class MEstimatorSampleConsensus : public SampleConsensus<Storage>
+template <template <typename> class Storage>
+class MEstimatorSampleConsensus : public SampleConsensus<Storage> {
+  using SampleConsensus<Storage>::max_iterations_;
+  using SampleConsensus<Storage>::threshold_;
+  using SampleConsensus<Storage>::iterations_;
+  using SampleConsensus<Storage>::sac_model_;
+  using SampleConsensus<Storage>::model_;
+  using SampleConsensus<Storage>::model_coefficients_;
+  using SampleConsensus<Storage>::inliers_;
+  using SampleConsensus<Storage>::inliers_stencil_;
+  using SampleConsensus<Storage>::probability_;
+
+  using SampleConsensusModelPtr = typename SampleConsensusModel<Storage>::Ptr;
+  using Coefficients = typename SampleConsensusModel<Storage>::Coefficients;
+  using Indices = typename SampleConsensusModel<Storage>::Indices;
+  using Hypotheses = typename SampleConsensusModel<Storage>::Hypotheses;
+
+public:
+  /** \brief MEstimatorSampleConsensus main constructor
+   * \param model a Sample Consensus model
+   */
+  MEstimatorSampleConsensus(const SampleConsensusModelPtr& model)
+  : SampleConsensus<Storage>(model)
   {
-    using SampleConsensus<Storage>::max_iterations_;
-    using SampleConsensus<Storage>::threshold_;
-    using SampleConsensus<Storage>::iterations_;
-    using SampleConsensus<Storage>::sac_model_;
-    using SampleConsensus<Storage>::model_;
-    using SampleConsensus<Storage>::model_coefficients_;
-    using SampleConsensus<Storage>::inliers_;
-    using SampleConsensus<Storage>::inliers_stencil_;
-    using SampleConsensus<Storage>::probability_;
+    // Maximum number of trials before we give up.
+    max_iterations_ = 10000;
+  }
 
-    using SampleConsensusModelPtr = typename SampleConsensusModel<Storage>::Ptr;
-    using Coefficients = typename SampleConsensusModel<Storage>::Coefficients;
-    using Indices = typename SampleConsensusModel<Storage>::Indices;
-    using Hypotheses = typename SampleConsensusModel<Storage>::Hypotheses;
+  /** \brief RANSAC (RAndom SAmple Consensus) main constructor
+   * \param model a Sample Consensus model
+   * \param threshold distance to model threshold
+   */
+  MEstimatorSampleConsensus(const SampleConsensusModelPtr& model, float threshold)
+  : SampleConsensus<Storage>(model, threshold)
+  {
+    // Maximum number of trials before we give up.
+    max_iterations_ = 10000;
+  }
 
-    public:
-      /** \brief MEstimatorSampleConsensus main constructor
-        * \param model a Sample Consensus model
-        */
-      MEstimatorSampleConsensus (const SampleConsensusModelPtr &model) : 
-        SampleConsensus<Storage> (model)
-      {
-        // Maximum number of trials before we give up.
-        max_iterations_ = 10000;
-      }
-
-      /** \brief RANSAC (RAndom SAmple Consensus) main constructor
-        * \param model a Sample Consensus model
-        * \param threshold distance to model threshold
-        */
-      MEstimatorSampleConsensus (const SampleConsensusModelPtr &model, float threshold) : 
-        SampleConsensus<Storage> (model, threshold)
-      {
-        // Maximum number of trials before we give up.
-        max_iterations_ = 10000;
-      }
-
-      /** \brief Compute the actual model and find the inliers
-        * \param debug_verbosity_level enable/disable on-screen debug
-        * information and set the verbosity level
-        */
-      bool 
-      computeModel (int debug_verbosity_level = 0);
-  };
-}
+  /** \brief Compute the actual model and find the inliers
+   * \param debug_verbosity_level enable/disable on-screen debug
+   * information and set the verbosity level
+   */
+  bool
+  computeModel (int debug_verbosity_level = 0);
+};
+} // namespace pcl_cuda

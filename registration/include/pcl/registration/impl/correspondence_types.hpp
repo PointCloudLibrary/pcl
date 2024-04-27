@@ -48,9 +48,9 @@ namespace pcl {
 namespace registration {
 
 inline void
-getCorDistMeanStd(const pcl::Correspondences& correspondences,
-                  double& mean,
-                  double& stddev)
+getCorDistMeanStd (const pcl::Correspondences& correspondences,
+                   double& mean,
+                   double& stddev)
 {
   if (correspondences.empty())
     return;
@@ -68,7 +68,7 @@ getCorDistMeanStd(const pcl::Correspondences& correspondences,
 }
 
 inline void
-getQueryIndices(const pcl::Correspondences& correspondences, pcl::Indices& indices)
+getQueryIndices (const pcl::Correspondences& correspondences, pcl::Indices& indices)
 {
   indices.resize(correspondences.size());
   for (std::size_t i = 0; i < correspondences.size(); ++i)
@@ -76,7 +76,7 @@ getQueryIndices(const pcl::Correspondences& correspondences, pcl::Indices& indic
 }
 
 inline void
-getMatchIndices(const pcl::Correspondences& correspondences, pcl::Indices& indices)
+getMatchIndices (const pcl::Correspondences& correspondences, pcl::Indices& indices)
 {
   indices.resize(correspondences.size());
   for (std::size_t i = 0; i < correspondences.size(); ++i)

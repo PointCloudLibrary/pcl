@@ -35,124 +35,130 @@
  *
  */
 
-
 #ifndef PCL_KEYPOINT_IMPL_H_
 #define PCL_KEYPOINT_IMPL_H_
 
-#include <pcl/console/print.h> // for PCL_ERROR
-
+#include <pcl/console/print.h>    // for PCL_ERROR
+#include <pcl/search/kdtree.h>    // for KdTree
 #include <pcl/search/organized.h> // for OrganizedNeighbor
-#include <pcl/search/kdtree.h> // for KdTree
 
-namespace pcl
-{
+namespace pcl {
 
-template <typename PointInT, typename PointOutT> bool
-Keypoint<PointInT, PointOutT>::initCompute ()
+template <typename PointInT, typename PointOutT>
+bool
+Keypoint<PointInT, PointOutT>::initCompute()
 {
-  if (!PCLBase<PointInT>::initCompute ())
+  if (!PCLBase<PointInT>::initCompute())
     return (false);
 
   // Initialize the spatial locator
-  if (!tree_)
-  {
-    if (input_->isOrganized ())
-      tree_.reset (new pcl::search::OrganizedNeighbor<PointInT> ());
+  if (!tree_) {
+    if (input_->isOrganized())
+      tree_.reset(new pcl::search::OrganizedNeighbor<PointInT>());
     else
-      tree_.reset (new pcl::search::KdTree<PointInT> (false));
+      tree_.reset(new pcl::search::KdTree<PointInT>(false));
   }
 
-  // If no search surface has been defined, use the input dataset as the search surface itself
+  // If no search surface has been defined, use the input dataset as the search surface
+  // itself
   if (!surface_)
     surface_ = input_;
 
   // Send the surface dataset to the spatial locator
-  tree_->setInputCloud (surface_);
+  tree_->setInputCloud(surface_);
 
   // Do a fast check to see if the search parameters are well defined
-  if (search_radius_ != 0.0)
-  {
-    if (k_ != 0)
-    {
-      PCL_ERROR ("[pcl::%s::initCompute] Both radius (%f) and K (%d) defined! Set one of them to zero first and then re-run compute ().\n", getClassName ().c_str (), search_radius_, k_);
+  if (search_radius_ != 0.0) {
+    if (k_ != 0) {
+      PCL_ERROR("[pcl::%s::initCompute] Both radius (%f) and K (%d) defined! Set one "
+                "of them to zero first and then re-run compute ().\n",
+                getClassName().c_str(),
+                search_radius_,
+                k_);
       return (false);
     }
 
     // Use the radiusSearch () function
     search_parameter_ = search_radius_;
-    if (surface_ == input_)       // if the two surfaces are the same
+    if (surface_ == input_) // if the two surfaces are the same
     {
       // Declare the search locator definition
-      search_method_ = [this] (pcl::index_t index, double radius, pcl::Indices &k_indices, std::vector<float> &k_distances)
-      {
-        return tree_->radiusSearch (index, radius, k_indices, k_distances, 0);
+      search_method_ = [this] (pcl::index_t index,
+                               double radius,
+                               pcl::Indices& k_indices,
+                               std::vector<float>& k_distances) {
+        return tree_->radiusSearch(index, radius, k_indices, k_distances, 0);
       };
     }
-    else
-    {
+    else {
       // Declare the search locator definition
-      search_method_surface_ = [this] (const PointCloudIn &cloud, pcl::index_t index, double radius, pcl::Indices &k_indices, std::vector<float> &k_distances)
-      {
-        return tree_->radiusSearch (cloud, index, radius, k_indices, k_distances, 0);
+      search_method_surface_ = [this] (const PointCloudIn& cloud,
+                                       pcl::index_t index,
+                                       double radius,
+                                       pcl::Indices& k_indices,
+                                       std::vector<float>& k_distances) {
+        return tree_->radiusSearch(cloud, index, radius, k_indices, k_distances, 0);
       };
     }
   }
-  else
-  {
-    if (k_ != 0)         // Use the nearestKSearch () function
+  else {
+    if (k_ != 0) // Use the nearestKSearch () function
     {
       search_parameter_ = k_;
-      if (surface_ == input_)       // if the two surfaces are the same
+      if (surface_ == input_) // if the two surfaces are the same
       {
         // Declare the search locator definition
-        search_method_ = [this] (pcl::index_t index, int k, pcl::Indices &k_indices, std::vector<float> &k_distances)
-        {
-          return tree_->nearestKSearch (index, k, k_indices, k_distances);
+        search_method_ = [this] (pcl::index_t index,
+                                 int k,
+                                 pcl::Indices& k_indices,
+                                 std::vector<float>& k_distances) {
+          return tree_->nearestKSearch(index, k, k_indices, k_distances);
         };
       }
-      else
-      {
+      else {
         // Declare the search locator definition
-        search_method_surface_ = [this] (const PointCloudIn &cloud, pcl::index_t index, int k, pcl::Indices &k_indices, std::vector<float> &k_distances)
-        {
-          return tree_->nearestKSearch (cloud, index, k, k_indices, k_distances);
+        search_method_surface_ = [this] (const PointCloudIn& cloud,
+                                         pcl::index_t index,
+                                         int k,
+                                         pcl::Indices& k_indices,
+                                         std::vector<float>& k_distances) {
+          return tree_->nearestKSearch(cloud, index, k, k_indices, k_distances);
         };
       }
     }
-    else
-    {
-      PCL_ERROR ("[pcl::%s::initCompute] Neither radius nor K defined! Set one of them to a positive number first and then re-run compute ().\n", getClassName ().c_str ());
+    else {
+      PCL_ERROR("[pcl::%s::initCompute] Neither radius nor K defined! Set one of them "
+                "to a positive number first and then re-run compute ().\n",
+                getClassName().c_str());
       return (false);
     }
   }
 
-  keypoints_indices_.reset (new pcl::PointIndices);
-  keypoints_indices_->indices.reserve (input_->size ());
+  keypoints_indices_.reset(new pcl::PointIndices);
+  keypoints_indices_->indices.reserve(input_->size());
 
   return (true);
 }
 
-
-template <typename PointInT, typename PointOutT> inline void
-Keypoint<PointInT, PointOutT>::compute (PointCloudOut &output)
+template <typename PointInT, typename PointOutT>
+inline void
+Keypoint<PointInT, PointOutT>::compute(PointCloudOut& output)
 {
-  if (!initCompute ())
-  {
-    PCL_ERROR ("[pcl::%s::compute] initCompute failed!\n", getClassName ().c_str ());
+  if (!initCompute()) {
+    PCL_ERROR("[pcl::%s::compute] initCompute failed!\n", getClassName().c_str());
     return;
   }
 
   // Perform the actual computation
-  detectKeypoints (output);
+  detectKeypoints(output);
 
-  deinitCompute ();
+  deinitCompute();
 
   // Reset the surface
   if (input_ == surface_)
-    surface_.reset ();
+    surface_.reset();
 }
 
 } // namespace pcl
 
-#endif  //#ifndef PCL_KEYPOINT_IMPL_H_
-
+#endif // #ifndef PCL_KEYPOINT_IMPL_H_

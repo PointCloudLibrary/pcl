@@ -132,12 +132,12 @@ public:
    * only once). Not complying with this requirement results in undefined behavior!
    */
   inline FaceIndex
-  addFace(const VertexIndex& idx_v_0,
-          const VertexIndex& idx_v_1,
-          const VertexIndex& idx_v_2,
-          const FaceData& face_data = FaceData(),
-          const EdgeData& edge_data = EdgeData(),
-          const HalfEdgeData& half_edge_data = HalfEdgeData())
+  addFace (const VertexIndex& idx_v_0,
+           const VertexIndex& idx_v_1,
+           const VertexIndex& idx_v_2,
+           const FaceData& face_data = FaceData(),
+           const EdgeData& edge_data = EdgeData(),
+           const HalfEdgeData& half_edge_data = HalfEdgeData())
   {
     add_triangle_[0] = idx_v_0;
     add_triangle_[1] = idx_v_1;
@@ -162,10 +162,10 @@ public:
    * once). Not complying with this requirement results in undefined behavior!
    */
   FaceIndexPair
-  addTrianglePair(const VertexIndices& vertices,
-                  const FaceData& face_data = FaceData(),
-                  const EdgeData& edge_data = EdgeData(),
-                  const HalfEdgeData& half_edge_data = HalfEdgeData())
+  addTrianglePair (const VertexIndices& vertices,
+                   const FaceData& face_data = FaceData(),
+                   const EdgeData& edge_data = EdgeData(),
+                   const HalfEdgeData& half_edge_data = HalfEdgeData())
   {
     if (vertices.size() != 4) {
       return (std::make_pair(FaceIndex(), FaceIndex()));
@@ -197,13 +197,13 @@ public:
    * once). Not complying with this requirement results in undefined behavior!
    */
   inline FaceIndexPair
-  addTrianglePair(const VertexIndex& idx_v_0,
-                  const VertexIndex& idx_v_1,
-                  const VertexIndex& idx_v_2,
-                  const VertexIndex& idx_v_3,
-                  const FaceData& face_data = FaceData(),
-                  const EdgeData& edge_data = EdgeData(),
-                  const HalfEdgeData& half_edge_data = HalfEdgeData())
+  addTrianglePair (const VertexIndex& idx_v_0,
+                   const VertexIndex& idx_v_1,
+                   const VertexIndex& idx_v_2,
+                   const VertexIndex& idx_v_3,
+                   const FaceData& face_data = FaceData(),
+                   const EdgeData& edge_data = EdgeData(),
+                   const HalfEdgeData& half_edge_data = HalfEdgeData())
   {
     // Try to add two faces
     // 3 - 2
@@ -286,10 +286,10 @@ private:
 
   /** \brief addFace for the triangular mesh. */
   inline FaceIndex
-  addFaceImpl(const VertexIndices& vertices,
-              const FaceData& face_data,
-              const EdgeData& edge_data,
-              const HalfEdgeData& half_edge_data)
+  addFaceImpl (const VertexIndices& vertices,
+               const FaceData& face_data,
+               const EdgeData& edge_data,
+               const HalfEdgeData& half_edge_data)
   {
     if (vertices.size() == 3)
       return (this->addFaceImplBase(vertices, face_data, edge_data, half_edge_data));
@@ -302,15 +302,15 @@ private:
   // | / |
   // a - b
   FaceIndexPair
-  connectTrianglePair(const HalfEdgeIndex& idx_he_ab,
-                      const HalfEdgeIndex& idx_he_cd,
-                      const VertexIndex& idx_v_a,
-                      const VertexIndex& idx_v_b,
-                      const VertexIndex& idx_v_c,
-                      const VertexIndex& idx_v_d,
-                      const FaceData& face_data,
-                      const EdgeData& edge_data,
-                      const HalfEdgeData& he_data)
+  connectTrianglePair (const HalfEdgeIndex& idx_he_ab,
+                       const HalfEdgeIndex& idx_he_cd,
+                       const VertexIndex& idx_v_a,
+                       const VertexIndex& idx_v_b,
+                       const VertexIndex& idx_v_c,
+                       const VertexIndex& idx_v_d,
+                       const FaceData& face_data,
+                       const EdgeData& edge_data,
+                       const HalfEdgeData& he_data)
   {
     // Add new half-edges
     const HalfEdgeIndex idx_he_bc = Base::addEdge(idx_v_b, idx_v_c, he_data, edge_data);

@@ -36,41 +36,51 @@
 
 #pragma once
 
-#include <pcl/pcl_config.h>
 #include <pcl/memory.h>
+#include <pcl/pcl_config.h>
 #ifdef HAVE_OPENNI
+
+#include <pcl/io/openni_camera/openni_image.h>
 
 #include "openni_device.h"
 #include "openni_driver.h"
 #include "openni_image_yuv_422.h"
 
-#include <pcl/io/openni_camera/openni_image.h>
+namespace openni_wrapper {
 
+/**
+ * @brief Concrete implementation of the interface OpenNIDevice for a Asus Xtion Pro
+ * device.
+ * @author Suat Gedikli
+ * @date 02.january 2011
+ * @ingroup io
+ */
+class DeviceXtionPro : public OpenNIDevice {
+  friend class OpenNIDriver;
 
-namespace openni_wrapper
-{
+public:
+  DeviceXtionPro(xn::Context& context,
+                 const xn::NodeInfo& device_node,
+                 const xn::NodeInfo& depth_node,
+                 const xn::NodeInfo& ir_node);
+  ~DeviceXtionPro() noexcept override;
+  // virtual void setImageOutputMode (const XnMapOutputMode& output_mode);
 
-  /**
-   * @brief Concrete implementation of the interface OpenNIDevice for a Asus Xtion Pro device.
-   * @author Suat Gedikli
-   * @date 02.january 2011
-   * @ingroup io
-   */
-  class DeviceXtionPro : public OpenNIDevice
-  {
-    friend class OpenNIDriver;
-  public:
-    DeviceXtionPro (xn::Context& context, const xn::NodeInfo& device_node, const xn::NodeInfo& depth_node, const xn::NodeInfo& ir_node);
-    ~DeviceXtionPro () noexcept override;
-    //virtual void setImageOutputMode (const XnMapOutputMode& output_mode);
+protected:
+  Image::Ptr
+  getCurrentImage (
+      pcl::shared_ptr<xn::ImageMetaData> image_meta_data) const noexcept override;
+  void
+  enumAvailableModes () noexcept;
+  bool
+  isImageResizeSupported (unsigned input_width,
+                          unsigned input_height,
+                          unsigned output_width,
+                          unsigned output_height) const noexcept override;
 
-  protected:
-    Image::Ptr getCurrentImage (pcl::shared_ptr<xn::ImageMetaData> image_meta_data) const noexcept override;
-    void enumAvailableModes () noexcept;
-    bool isImageResizeSupported (unsigned input_width, unsigned input_height, unsigned output_width, unsigned output_height) const noexcept override;
-
-    void startDepthStream () override;
-  } ;
-} // namespace
+  void
+  startDepthStream () override;
+};
+} // namespace openni_wrapper
 
 #endif

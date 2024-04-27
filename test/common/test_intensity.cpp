@@ -37,43 +37,66 @@
  *
  */
 
+#include <pcl/common/intensity.h>
 #include <pcl/test/gtest.h>
 #include <pcl/pcl_tests.h>
 #include <pcl/point_types.h>
-#include <pcl/common/intensity.h>
 
 using namespace pcl;
 using namespace pcl::test;
 
-TEST (PointOperators, PointXYZRGBtoIntensity)
+TEST(PointOperators, PointXYZRGBtoIntensity)
 {
   using namespace pcl::common;
-  IntensityFieldAccessor <PointXYZRGB> convert;
-  PointXYZRGB p1; p1.x = 0.05f; p1.y = 0.05f; p1.z = 0.05f; p1.r = 0; p1.g = 127; p1.b = 127;
-  float p2 = 0.1f * convert (p1);
-  EXPECT_NEAR (p2, 0.1 * static_cast<float> (299*p1.r + 587*p1.g + 114*p1.b)/1000.0f, 1e-4);
+  IntensityFieldAccessor<PointXYZRGB> convert;
+  PointXYZRGB p1;
+  p1.x = 0.05f;
+  p1.y = 0.05f;
+  p1.z = 0.05f;
+  p1.r = 0;
+  p1.g = 127;
+  p1.b = 127;
+  float p2 = 0.1f * convert(p1);
+  EXPECT_NEAR(p2,
+              0.1 * static_cast<float>(299 * p1.r + 587 * p1.g + 114 * p1.b) / 1000.0f,
+              1e-4);
 }
 
-TEST (PointOperators, PointXYZRGBtoPointXYZI)
+TEST(PointOperators, PointXYZRGBtoPointXYZI)
 {
   using namespace pcl::common;
-  IntensityFieldAccessor <PointXYZRGB> rgb_intensity;
-  IntensityFieldAccessor <PointXYZI> intensity;
-  PointXYZRGB p0; p0.x = 0.1f; p0.y = 0.2f;  p0.z = 0.3f; p0.r = 0; p0.g = 127; p0.b = 127;
-  PointXYZRGB p1; p1.x = 0.05f; p1.y = 0.05f; p1.z = 0.05f; p1.r = 0; p1.g = 127; p1.b = 127;
-  float value = rgb_intensity (p0 + p1);
+  IntensityFieldAccessor<PointXYZRGB> rgb_intensity;
+  IntensityFieldAccessor<PointXYZI> intensity;
+  PointXYZRGB p0;
+  p0.x = 0.1f;
+  p0.y = 0.2f;
+  p0.z = 0.3f;
+  p0.r = 0;
+  p0.g = 127;
+  p0.b = 127;
+  PointXYZRGB p1;
+  p1.x = 0.05f;
+  p1.y = 0.05f;
+  p1.z = 0.05f;
+  p1.r = 0;
+  p1.g = 127;
+  p1.b = 127;
+  float value = rgb_intensity(p0 + p1);
   PointXYZI p2;
-  intensity.set (p2, value);
+  intensity.set(p2, value);
 
   // Disabled. Doesn't make any sense
-  //EXPECT_EQ (p2.intensity, static_cast<float> (299*p0.r + 587*p0.g + 114*p0.b)/1000.0f + static_cast<float> (299*p1.r + 587*p1.g + 114*p1.b)/1000.0f);
-  intensity.set (p2, rgb_intensity (p1) * 0.1f);
-  EXPECT_NEAR (p2.intensity, static_cast<float> (299*p1.r + 587*p1.g + 114*p1.b) / 1000.0f * 0.1, 1e-4);
+  // EXPECT_EQ (p2.intensity, static_cast<float> (299*p0.r + 587*p0.g +
+  // 114*p0.b)/1000.0f + static_cast<float> (299*p1.r + 587*p1.g + 114*p1.b)/1000.0f);
+  intensity.set(p2, rgb_intensity(p1) * 0.1f);
+  EXPECT_NEAR(p2.intensity,
+              static_cast<float>(299 * p1.r + 587 * p1.g + 114 * p1.b) / 1000.0f * 0.1,
+              1e-4);
 }
 
 int
 main (int argc, char** argv)
 {
-  testing::InitGoogleTest (&argc, argv);
-  return (RUN_ALL_TESTS ());
+  testing::InitGoogleTest(&argc, argv);
+  return (RUN_ALL_TESTS());
 }

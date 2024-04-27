@@ -41,36 +41,36 @@
 #define PCL_CRF_NORMAL_SEGMENTATION_HPP_
 
 #include <pcl/segmentation/crf_normal_segmentation.h>
-
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
-pcl::CrfNormalSegmentation<PointT>::CrfNormalSegmentation () = default;
+pcl::CrfNormalSegmentation<PointT>::CrfNormalSegmentation() = default;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
-pcl::CrfNormalSegmentation<PointT>::~CrfNormalSegmentation () = default;
+pcl::CrfNormalSegmentation<PointT>::~CrfNormalSegmentation() = default;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT> void
-pcl::CrfNormalSegmentation<PointT>::setCloud (typename pcl::PointCloud<PointT>::Ptr )
+template <typename PointT>
+void pcl::CrfNormalSegmentation<PointT>::setCloud(typename pcl::PointCloud<PointT>::Ptr)
 {
-/*
-  if (cloud_for_segmentation_ != 0)
-    cloud_for_segmentation_.reset ();
+  /*
+    if (cloud_for_segmentation_ != 0)
+      cloud_for_segmentation_.reset ();
 
-  cloud_for_segmentation_ = input_cloud;
-*/
+    cloud_for_segmentation_ = input_cloud;
+  */
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT> void
-pcl::CrfNormalSegmentation<PointT>::segmentPoints ()
-{
-}
+template <typename PointT>
+void
+pcl::CrfNormalSegmentation<PointT>::segmentPoints()
+{}
 
-#define PCL_INSTANTIATE_CrfNormalSegmentation(T) template class pcl::CrfNormalSegmentation<T>;
+#define PCL_INSTANTIATE_CrfNormalSegmentation(T)                                       \
+  template class pcl::CrfNormalSegmentation<T>;
 
-#endif    // PCL_CRF_NORMAL_SEGMENTATION_HPP_
+#endif // PCL_CRF_NORMAL_SEGMENTATION_HPP_

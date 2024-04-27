@@ -54,7 +54,7 @@ public:
 
   /** Returns the number of branches a node can have (e.g. a binary tree has 2). */
   virtual std::size_t
-  getNumOfBranches() const = 0;
+  getNumOfBranches () const = 0;
 
   /** Computes and sets the statistics for a node.
    *
@@ -65,17 +65,17 @@ public:
    * \param[out] node The destination node for the statistics
    */
   virtual void
-  computeAndSetNodeStats(DataSet& data_set,
-                         std::vector<ExampleIndex>& examples,
-                         std::vector<LabelDataType>& label_data,
-                         NodeType& node) const = 0;
+  computeAndSetNodeStats (DataSet& data_set,
+                          std::vector<ExampleIndex>& examples,
+                          std::vector<LabelDataType>& label_data,
+                          NodeType& node) const = 0;
 
   /** Returns the label of the specified node.
    *
    * \param[in] node The node from which the label is extracted
    */
   virtual LabelDataType
-  getLabelOfNode(NodeType& node) const = 0;
+  getLabelOfNode (NodeType& node) const = 0;
 
   /** Computes the information gain obtained by the specified threshold on the supplied
    *  feature evaluation results.
@@ -88,12 +88,12 @@ public:
    * \param[in] threshold the threshold which is used to compute the information gain
    */
   virtual float
-  computeInformationGain(DataSet& data_set,
-                         std::vector<ExampleIndex>& examples,
-                         std::vector<LabelDataType>& label_data,
-                         std::vector<float>& results,
-                         std::vector<unsigned char>& flags,
-                         const float threshold) const = 0;
+  computeInformationGain (DataSet& data_set,
+                          std::vector<ExampleIndex>& examples,
+                          std::vector<LabelDataType>& label_data,
+                          std::vector<float>& results,
+                          std::vector<unsigned char>& flags,
+                          const float threshold) const = 0;
 
   /** Computes the branch indices obtained by the specified threshold on the supplied
    *  feature evaluation results.
@@ -104,10 +104,10 @@ public:
    * \param[out] branch_indices the destination for the computed branch indices.
    */
   virtual void
-  computeBranchIndices(std::vector<float>& results,
-                       std::vector<unsigned char>& flags,
-                       const float threshold,
-                       std::vector<unsigned char>& branch_indices) const = 0;
+  computeBranchIndices (std::vector<float>& results,
+                        std::vector<unsigned char>& flags,
+                        const float threshold,
+                        std::vector<unsigned char>& branch_indices) const = 0;
 
   /** Computes the branch indices obtained by the specified threshold on the supplied
    *  feature evaluation results.
@@ -118,10 +118,10 @@ public:
    * \param[out] branch_index the destination for the computed branch index
    */
   virtual void
-  computeBranchIndex(const float result,
-                     const unsigned char flag,
-                     const float threshold,
-                     unsigned char& branch_index) const = 0;
+  computeBranchIndex (const float result,
+                      const unsigned char flag,
+                      const float threshold,
+                      unsigned char& branch_index) const = 0;
 
   /** Generates code for computing the branch indices for the specified node and writes
    *  it to the specified stream.
@@ -130,7 +130,8 @@ public:
    * \param[out] stream the destination for the code
    */
   virtual void
-  generateCodeForBranchIndexComputation(NodeType& node, std::ostream& stream) const = 0;
+  generateCodeForBranchIndexComputation (NodeType& node,
+                                         std::ostream& stream) const = 0;
 
   /** Generates code for computing the output for the specified node and writes it to
    *  the specified stream.
@@ -139,7 +140,7 @@ public:
    * \param[out] stream the destination for the code
    */
   virtual void
-  generateCodeForOutput(NodeType& node, std::ostream& stream) const = 0;
+  generateCodeForOutput (NodeType& node, std::ostream& stream) const = 0;
 };
 
 } // namespace pcl

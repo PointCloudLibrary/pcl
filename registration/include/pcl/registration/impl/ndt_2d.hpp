@@ -64,7 +64,7 @@ struct ValueAndDerivatives {
   T value;
 
   static ValueAndDerivatives<N, T>
-  Zero()
+  Zero ()
   {
     ValueAndDerivatives<N, T> r;
     r.hessian = Eigen::Matrix<T, N, N>::Zero();
@@ -105,7 +105,7 @@ public:
    * \param[in] i Point index to store
    */
   void
-  addIdx(std::size_t i)
+  addIdx (std::size_t i)
   {
     pt_indices_.push_back(i);
   }
@@ -116,7 +116,7 @@ public:
    * the smallest eigenvalue to this times the largest.
    */
   void
-  estimateParams(const PointCloud& cloud, double min_covar_eigvalue_mult = 0.001)
+  estimateParams (const PointCloud& cloud, double min_covar_eigvalue_mult = 0.001)
   {
     Eigen::Vector2d sx = Eigen::Vector2d::Zero();
     Eigen::Matrix2d sxx = Eigen::Matrix2d::Zero();
@@ -163,9 +163,9 @@ public:
    *
    */
   ValueAndDerivatives<3, double>
-  test(const PointT& transformed_pt,
-       const double& cos_theta,
-       const double& sin_theta) const
+  test (const PointT& transformed_pt,
+        const double& cos_theta,
+        const double& sin_theta) const
   {
     if (n_ < min_n_)
       return ValueAndDerivatives<3, double>::Zero();
@@ -261,9 +261,9 @@ public:
    * evaluation
    */
   ValueAndDerivatives<3, double>
-  test(const PointT& transformed_pt,
-       const double& cos_theta,
-       const double& sin_theta) const
+  test (const PointT& transformed_pt,
+        const double& cos_theta,
+        const double& sin_theta) const
   {
     const NormalDist* n = normalDistForPoint(transformed_pt);
     // index is in grid, return score from the normal distribution from
@@ -278,7 +278,7 @@ protected:
    * \param[in] p a point
    */
   NormalDist*
-  normalDistForPoint(PointT const& p) const
+  normalDistForPoint (PointT const& p) const
   {
     // this would be neater in 3d...
     Eigen::Vector2f idxf;
@@ -341,9 +341,9 @@ public:
    * evaluation
    */
   ValueAndDerivatives<3, double>
-  test(const PointT& transformed_pt,
-       const double& cos_theta,
-       const double& sin_theta) const
+  test (const PointT& transformed_pt,
+        const double& cos_theta,
+        const double& sin_theta) const
   {
     ValueAndDerivatives<3, double> r = ValueAndDerivatives<3, double>::Zero();
     for (const auto& single_grid : single_grids_)
@@ -368,7 +368,7 @@ struct NumTraits<pcl::ndt2d::NormalDist<PointT>> {
   using Real = double;
   using Literal = double;
   static Real
-  dummy_precision()
+  dummy_precision ()
   {
     return 1.0;
   }

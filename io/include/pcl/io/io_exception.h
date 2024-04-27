@@ -42,65 +42,61 @@
 #include <exception>
 #include <string>
 
-
-//from <pcl/pcl_macros.h>
+// from <pcl/pcl_macros.h>
 #if defined _WIN32 && defined _MSC_VER && !defined __PRETTY_FUNCTION__
-  #define __PRETTY_FUNCTION__ __FUNCTION__
+#define __PRETTY_FUNCTION__ __FUNCTION__
 #endif
 
+#define THROW_IO_EXCEPTION(format, ...)                                                \
+  throwIOException(__PRETTY_FUNCTION__, __FILE__, __LINE__, format, ##__VA_ARGS__)
 
-#define THROW_IO_EXCEPTION(format,...) throwIOException( __PRETTY_FUNCTION__, __FILE__, __LINE__, format , ##__VA_ARGS__ )
+namespace pcl {
+namespace io {
+/**
+ * @brief General IO exception class
+ */
+class IOException : public std::exception {
+public:
+  IOException(const std::string& function_name,
+              const std::string& file_name,
+              unsigned line_number,
+              const std::string& message);
 
+  ~IOException() noexcept override;
 
-namespace pcl
+  IOException&
+  operator=(const IOException& exception);
+
+  const char*
+  what () const noexcept override;
+
+  const std::string&
+  getFunctionName () const;
+
+  const std::string&
+  getFileName () const;
+
+  unsigned
+  getLineNumber () const;
+
+protected:
+  std::string function_name_;
+  std::string file_name_;
+  unsigned line_number_;
+  std::string message_;
+  std::string message_long_;
+};
+
+inline void
+throwIOException (
+    const char* function, const char* file, unsigned line, const char* format, ...)
 {
-  namespace io
-  {
-    /**
-    * @brief General IO exception class
-    */
-    class IOException : public std::exception
-    {
-      public:
-        IOException (const std::string& function_name,
-          const std::string& file_name,
-          unsigned line_number,
-          const std::string& message);
-
-        ~IOException () noexcept override;
-
-        IOException&
-        operator= (const IOException& exception);
-
-        const char*
-        what () const noexcept override;
-
-        const std::string&
-        getFunctionName () const;
-
-        const std::string&
-        getFileName () const;
-
-        unsigned
-        getLineNumber () const;
-
-      protected:
-        std::string function_name_;
-        std::string file_name_;
-        unsigned line_number_;
-        std::string message_;
-        std::string message_long_;
-    };
-
-    inline void
-    throwIOException (const char* function, const char* file, unsigned line, const char* format, ...)
-    {
-      static char msg[1024];
-      va_list args;
-      va_start (args, format);
-      vsnprintf (msg, 1024, format, args);
-      va_end (args);
-      throw IOException (function, file, line, msg);
-    }
-  } // namespace
+  static char msg[1024];
+  va_list args;
+  va_start(args, format);
+  vsnprintf(msg, 1024, format, args);
+  va_end(args);
+  throw IOException(function, file, line, msg);
 }
+} // namespace io
+} // namespace pcl

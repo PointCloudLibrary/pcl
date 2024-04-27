@@ -136,10 +136,10 @@ protected:
 
   // load features from disk and create flann structure
   void
-  loadFeaturesAndCreateFLANN();
+  loadFeaturesAndCreateFLANN ();
 
   inline void
-  convertToFLANN(const std::vector<flann_model>& models, flann::Matrix<float>& data)
+  convertToFLANN (const std::vector<flann_model>& models, flann::Matrix<float>& data)
   {
     data.rows = models.size();
     data.cols = models[0].descr.size(); // number of histogram bins
@@ -157,9 +157,9 @@ protected:
   }
 
   inline void
-  convertToFLANN(const std::vector<flann_model>& models,
-                 const std::shared_ptr<std::vector<int>>& indices,
-                 flann::Matrix<float>& data)
+  convertToFLANN (const std::vector<flann_model>& models,
+                  const std::shared_ptr<std::vector<int>>& indices,
+                  flann::Matrix<float>& data)
   {
     data.rows = indices->size();
     data.cols = models[0].descr.size(); // number of histogram bins
@@ -177,23 +177,23 @@ protected:
   }
 
   void
-  nearestKSearch(flann::Index<DistT>* index,
-                 const flann_model& model,
-                 int k,
-                 flann::Matrix<int>& indices,
-                 flann::Matrix<float>& distances);
+  nearestKSearch (flann::Index<DistT>* index,
+                  const flann_model& model,
+                  int k,
+                  flann::Matrix<int>& indices,
+                  flann::Matrix<float>& distances);
 
   void
-  getPose(ModelT& model, int view_id, Eigen::Matrix4f& pose_matrix);
+  getPose (ModelT& model, int view_id, Eigen::Matrix4f& pose_matrix);
 
   bool
-  getRollPose(ModelT& model, int view_id, int d_id, Eigen::Matrix4f& pose_matrix);
+  getRollPose (ModelT& model, int view_id, int d_id, Eigen::Matrix4f& pose_matrix);
 
   void
-  getCentroid(ModelT& model, int view_id, int d_id, Eigen::Vector3f& centroid);
+  getCentroid (ModelT& model, int view_id, int d_id, Eigen::Vector3f& centroid);
 
   void
-  getView(ModelT& model, int view_id, PointInTPtr& view);
+  getView (ModelT& model, int view_id, PointInTPtr& view);
 
   int NN_;
 
@@ -216,45 +216,45 @@ public:
   ~GlobalNNCVFHRecognizer() = default;
 
   void
-  getDescriptorDistances(std::vector<float>& ds)
+  getDescriptorDistances (std::vector<float>& ds)
   {
     ds = descriptor_distances_;
   }
 
   void
-  setComputeScale(bool d)
+  setComputeScale (bool d)
   {
     compute_scale_ = d;
   }
 
   void
-  setCategoriesToUseForRecognition(std::vector<std::string>& cats_to_use)
+  setCategoriesToUseForRecognition (std::vector<std::string>& cats_to_use)
   {
     categories_to_be_searched_.clear();
     categories_to_be_searched_ = cats_to_use;
   }
 
   void
-  setUseSingleCategories(bool b)
+  setUseSingleCategories (bool b)
   {
     use_single_categories_ = b;
   }
 
   void
-  setNoise(float n)
+  setNoise (float n)
   {
     noisify_ = true;
     noise_ = n;
   }
 
   void
-  setNN(int nn)
+  setNN (int nn)
   {
     NN_ = nn;
   }
 
   void
-  setICPIterations(int it)
+  setICPIterations (int it)
   {
     ICP_iterations_ = it;
   }
@@ -264,13 +264,13 @@ public:
    */
 
   void
-  initialize(bool force_retrain = false);
+  initialize (bool force_retrain = false);
 
   /**
    * \brief Sets the model data source_
    */
   void
-  setDataSource(std::shared_ptr<Source<PointInT>>& source)
+  setDataSource (std::shared_ptr<Source<PointInT>>& source)
   {
     source_ = source;
   }
@@ -280,7 +280,7 @@ public:
    */
 
   void
-  setFeatureEstimator(std::shared_ptr<OURCVFHEstimator<PointInT, FeatureT>>& feat)
+  setFeatureEstimator (std::shared_ptr<OURCVFHEstimator<PointInT, FeatureT>>& feat)
   {
     micvfh_estimator_ = feat;
   }
@@ -289,13 +289,13 @@ public:
    * \brief Sets the HV algorithm
    */
   void
-  setHVAlgorithm(std::shared_ptr<HypothesisVerification<PointInT, PointInT>>& alg)
+  setHVAlgorithm (std::shared_ptr<HypothesisVerification<PointInT, PointInT>>& alg)
   {
     hv_algorithm_ = alg;
   }
 
   void
-  setIndices(pcl::Indices& indices)
+  setIndices (pcl::Indices& indices)
   {
     indices_ = indices;
   }
@@ -304,19 +304,19 @@ public:
    * \brief Sets the input cloud to be classified
    */
   void
-  setInputCloud(const PointInTPtr& cloud)
+  setInputCloud (const PointInTPtr& cloud)
   {
     input_ = cloud;
   }
 
   void
-  setDescriptorName(std::string& name)
+  setDescriptorName (std::string& name)
   {
     descr_name_ = name;
   }
 
   void
-  setTrainingDir(std::string& dir)
+  setTrainingDir (std::string& dir)
   {
     training_dir_ = dir;
   }
@@ -326,23 +326,23 @@ public:
    */
 
   void
-  recognize();
+  recognize ();
 
   std::shared_ptr<std::vector<ModelT>>
-  getModels()
+  getModels ()
   {
     return models_;
   }
 
   std::shared_ptr<
       std::vector<Eigen::Matrix4f, Eigen::aligned_allocator<Eigen::Matrix4f>>>
-  getTransforms()
+  getTransforms ()
   {
     return transforms_;
   }
 
   void
-  setUseCache(bool u)
+  setUseCache (bool u)
   {
     use_cache_ = u;
   }

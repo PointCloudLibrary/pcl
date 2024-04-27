@@ -41,7 +41,7 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 bool
-pcl::MeshProcessing::initCompute ()
+pcl::MeshProcessing::initCompute()
 {
   if (!input_mesh_)
     return (false);
@@ -51,23 +51,20 @@ pcl::MeshProcessing::initCompute ()
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::MeshProcessing::deinitCompute ()
-{
-
-}
+pcl::MeshProcessing::deinitCompute()
+{}
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::MeshProcessing::process (pcl::PolygonMesh &output)
+pcl::MeshProcessing::process(pcl::PolygonMesh& output)
 {
   // Copy the header
   output.header = input_mesh_->header;
 
-  if (!initCompute ())
-  {
+  if (!initCompute()) {
     output.cloud.width = output.cloud.height = 0;
-    output.cloud.data.clear ();
-    output.polygons.clear ();
+    output.cloud.data.clear();
+    output.polygons.clear();
     return;
   }
 
@@ -75,12 +72,13 @@ pcl::MeshProcessing::process (pcl::PolygonMesh &output)
   output.cloud = input_mesh_->cloud;
   // \TODO: Double check if this is needed
   {
-    output.polygons.clear ();
-    output.polygons.reserve (2*input_mesh_->polygons.size ()); /// NOTE: usually the number of triangles is around twice the number of vertices
+    output.polygons.clear();
+    output.polygons.reserve(
+        2 * input_mesh_->polygons.size()); /// NOTE: usually the number of triangles is
+                                           /// around twice the number of vertices
   }
   // Perform the actual surface reconstruction
-  performProcessing (output);
+  performProcessing(output);
 
-  deinitCompute ();
+  deinitCompute();
 }
-

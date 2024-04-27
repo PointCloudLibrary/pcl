@@ -39,177 +39,189 @@
 
 #pragma once
 
-#include <pcl/point_types.h>
 #include <pcl/features/feature.h>
 #include <pcl/features/shot.h>
+#include <pcl/point_types.h>
 
-namespace pcl
-{
-  /** \brief SHOTEstimationOMP estimates the Signature of Histograms of OrienTations (SHOT) descriptor for a given point cloud dataset
-    * containing points and normals, in parallel, using the OpenMP standard.
-    *
-    * The suggested PointOutT is pcl::SHOT352.
-    *
-    * \note If you use this code in any academic work, please cite:
-    *
-    *   - F. Tombari, S. Salti, L. Di Stefano
-    *     Unique Signatures of Histograms for Local Surface Description.
-    *     In Proceedings of the 11th European Conference on Computer Vision (ECCV),
-    *     Heraklion, Greece, September 5-11 2010.
-    *   - F. Tombari, S. Salti, L. Di Stefano
-    *     A Combined Texture-Shape Descriptor For Enhanced 3D Feature Matching.
-    *     In Proceedings of the 18th International Conference on Image Processing (ICIP),
-    *     Brussels, Belgium, September 11-14 2011.
-    *
-    * \author Samuele Salti
-    * \ingroup features
-    */
+namespace pcl {
+/** \brief SHOTEstimationOMP estimates the Signature of Histograms of OrienTations
+ * (SHOT) descriptor for a given point cloud dataset containing points and normals, in
+ * parallel, using the OpenMP standard.
+ *
+ * The suggested PointOutT is pcl::SHOT352.
+ *
+ * \note If you use this code in any academic work, please cite:
+ *
+ *   - F. Tombari, S. Salti, L. Di Stefano
+ *     Unique Signatures of Histograms for Local Surface Description.
+ *     In Proceedings of the 11th European Conference on Computer Vision (ECCV),
+ *     Heraklion, Greece, September 5-11 2010.
+ *   - F. Tombari, S. Salti, L. Di Stefano
+ *     A Combined Texture-Shape Descriptor For Enhanced 3D Feature Matching.
+ *     In Proceedings of the 18th International Conference on Image Processing (ICIP),
+ *     Brussels, Belgium, September 11-14 2011.
+ *
+ * \author Samuele Salti
+ * \ingroup features
+ */
 
-  template <typename PointInT, typename PointNT, typename PointOutT = pcl::SHOT352, typename PointRFT = pcl::ReferenceFrame>
-  class SHOTEstimationOMP : public SHOTEstimation<PointInT, PointNT, PointOutT, PointRFT>
+template <typename PointInT,
+          typename PointNT,
+          typename PointOutT = pcl::SHOT352,
+          typename PointRFT = pcl::ReferenceFrame>
+class SHOTEstimationOMP
+: public SHOTEstimation<PointInT, PointNT, PointOutT, PointRFT> {
+public:
+  using Ptr = shared_ptr<SHOTEstimationOMP<PointInT, PointNT, PointOutT, PointRFT>>;
+  using ConstPtr =
+      shared_ptr<const SHOTEstimationOMP<PointInT, PointNT, PointOutT, PointRFT>>;
+  using Feature<PointInT, PointOutT>::feature_name_;
+  using Feature<PointInT, PointOutT>::getClassName;
+  using Feature<PointInT, PointOutT>::input_;
+  using Feature<PointInT, PointOutT>::indices_;
+  using Feature<PointInT, PointOutT>::k_;
+  using Feature<PointInT, PointOutT>::search_parameter_;
+  using Feature<PointInT, PointOutT>::search_radius_;
+  using Feature<PointInT, PointOutT>::surface_;
+  using Feature<PointInT, PointOutT>::fake_surface_;
+  using FeatureFromNormals<PointInT, PointNT, PointOutT>::normals_;
+  using FeatureWithLocalReferenceFrames<PointInT, PointRFT>::frames_;
+  using SHOTEstimationBase<PointInT, PointNT, PointOutT, PointRFT>::lrf_radius_;
+  using SHOTEstimation<PointInT, PointNT, PointOutT, PointRFT>::descLength_;
+  using SHOTEstimation<PointInT, PointNT, PointOutT, PointRFT>::nr_grid_sector_;
+  using SHOTEstimation<PointInT, PointNT, PointOutT, PointRFT>::nr_shape_bins_;
+  using SHOTEstimation<PointInT, PointNT, PointOutT, PointRFT>::sqradius_;
+  using SHOTEstimation<PointInT, PointNT, PointOutT, PointRFT>::radius3_4_;
+  using SHOTEstimation<PointInT, PointNT, PointOutT, PointRFT>::radius1_4_;
+  using SHOTEstimation<PointInT, PointNT, PointOutT, PointRFT>::radius1_2_;
+
+  using PointCloudOut = typename Feature<PointInT, PointOutT>::PointCloudOut;
+  using PointCloudIn = typename Feature<PointInT, PointOutT>::PointCloudIn;
+
+  /** \brief Empty constructor. */
+  SHOTEstimationOMP(unsigned int nr_threads = 0)
+  : SHOTEstimation<PointInT, PointNT, PointOutT, PointRFT>()
   {
-    public:
-      using Ptr = shared_ptr<SHOTEstimationOMP<PointInT, PointNT, PointOutT, PointRFT> >;
-      using ConstPtr = shared_ptr<const SHOTEstimationOMP<PointInT, PointNT, PointOutT, PointRFT> >;
-      using Feature<PointInT, PointOutT>::feature_name_;
-      using Feature<PointInT, PointOutT>::getClassName;
-      using Feature<PointInT, PointOutT>::input_;
-      using Feature<PointInT, PointOutT>::indices_;
-      using Feature<PointInT, PointOutT>::k_;
-      using Feature<PointInT, PointOutT>::search_parameter_;
-      using Feature<PointInT, PointOutT>::search_radius_;
-      using Feature<PointInT, PointOutT>::surface_;
-      using Feature<PointInT, PointOutT>::fake_surface_;
-      using FeatureFromNormals<PointInT, PointNT, PointOutT>::normals_;
-      using FeatureWithLocalReferenceFrames<PointInT, PointRFT>::frames_;
-      using SHOTEstimationBase<PointInT, PointNT, PointOutT, PointRFT>::lrf_radius_;
-      using SHOTEstimation<PointInT, PointNT, PointOutT, PointRFT>::descLength_;
-      using SHOTEstimation<PointInT, PointNT, PointOutT, PointRFT>::nr_grid_sector_;
-      using SHOTEstimation<PointInT, PointNT, PointOutT, PointRFT>::nr_shape_bins_;
-      using SHOTEstimation<PointInT, PointNT, PointOutT, PointRFT>::sqradius_;
-      using SHOTEstimation<PointInT, PointNT, PointOutT, PointRFT>::radius3_4_;
-      using SHOTEstimation<PointInT, PointNT, PointOutT, PointRFT>::radius1_4_;
-      using SHOTEstimation<PointInT, PointNT, PointOutT, PointRFT>::radius1_2_;
-
-      using PointCloudOut = typename Feature<PointInT, PointOutT>::PointCloudOut;
-      using PointCloudIn = typename Feature<PointInT, PointOutT>::PointCloudIn;
-
-      /** \brief Empty constructor. */
-      SHOTEstimationOMP (unsigned int nr_threads = 0) : SHOTEstimation<PointInT, PointNT, PointOutT, PointRFT> ()
-      {
-        setNumberOfThreads(nr_threads);
-      };
-
-      /** \brief Initialize the scheduler and set the number of threads to use.
-        * \param nr_threads the number of hardware threads to use (0 sets the value back to automatic)
-        */
-      void
-      setNumberOfThreads (unsigned int nr_threads = 0);
-
-    protected:
-
-      /** \brief Estimate the Signatures of Histograms of OrienTations (SHOT) descriptors at a set of points given by
-        * <setInputCloud (), setIndices ()> using the surface in setSearchSurface () and the spatial locator in
-        * setSearchMethod ()
-        * \param output the resultant point cloud model dataset that contains the SHOT feature estimates
-        */
-      void
-      computeFeature (PointCloudOut &output) override;
-
-      /** \brief This method should get called before starting the actual computation. */
-      bool
-      initCompute () override;
-
-      /** \brief The number of threads the scheduler should use. */
-      unsigned int threads_;
+    setNumberOfThreads(nr_threads);
   };
 
-  /** \brief SHOTColorEstimationOMP estimates the Signature of Histograms of OrienTations (SHOT) descriptor for a given point cloud dataset
-    * containing points, normals and colors, in parallel, using the OpenMP standard.
-    *
-    * The suggested PointOutT is pcl::SHOT1344.
-    *
-    * \note If you use this code in any academic work, please cite:
-    *
-    *   - F. Tombari, S. Salti, L. Di Stefano
-    *     Unique Signatures of Histograms for Local Surface Description.
-    *     In Proceedings of the 11th European Conference on Computer Vision (ECCV),
-    *     Heraklion, Greece, September 5-11 2010.
-    *   - F. Tombari, S. Salti, L. Di Stefano
-    *     A Combined Texture-Shape Descriptor For Enhanced 3D Feature Matching.
-    *     In Proceedings of the 18th International Conference on Image Processing (ICIP),
-    *     Brussels, Belgium, September 11-14 2011.
-    *
-    * \author Samuele Salti
-    * \ingroup features
-    */
+  /** \brief Initialize the scheduler and set the number of threads to use.
+   * \param nr_threads the number of hardware threads to use (0 sets the value back to
+   * automatic)
+   */
+  void
+  setNumberOfThreads (unsigned int nr_threads = 0);
 
-  template <typename PointInT, typename PointNT, typename PointOutT = pcl::SHOT1344, typename PointRFT = pcl::ReferenceFrame>
-  class SHOTColorEstimationOMP : public SHOTColorEstimation<PointInT, PointNT, PointOutT, PointRFT>
+protected:
+  /** \brief Estimate the Signatures of Histograms of OrienTations (SHOT) descriptors at
+   * a set of points given by <setInputCloud (), setIndices ()> using the surface in
+   * setSearchSurface () and the spatial locator in setSearchMethod () \param output the
+   * resultant point cloud model dataset that contains the SHOT feature estimates
+   */
+  void
+  computeFeature (PointCloudOut& output) override;
+
+  /** \brief This method should get called before starting the actual computation. */
+  bool
+  initCompute () override;
+
+  /** \brief The number of threads the scheduler should use. */
+  unsigned int threads_;
+};
+
+/** \brief SHOTColorEstimationOMP estimates the Signature of Histograms of OrienTations
+ * (SHOT) descriptor for a given point cloud dataset containing points, normals and
+ * colors, in parallel, using the OpenMP standard.
+ *
+ * The suggested PointOutT is pcl::SHOT1344.
+ *
+ * \note If you use this code in any academic work, please cite:
+ *
+ *   - F. Tombari, S. Salti, L. Di Stefano
+ *     Unique Signatures of Histograms for Local Surface Description.
+ *     In Proceedings of the 11th European Conference on Computer Vision (ECCV),
+ *     Heraklion, Greece, September 5-11 2010.
+ *   - F. Tombari, S. Salti, L. Di Stefano
+ *     A Combined Texture-Shape Descriptor For Enhanced 3D Feature Matching.
+ *     In Proceedings of the 18th International Conference on Image Processing (ICIP),
+ *     Brussels, Belgium, September 11-14 2011.
+ *
+ * \author Samuele Salti
+ * \ingroup features
+ */
+
+template <typename PointInT,
+          typename PointNT,
+          typename PointOutT = pcl::SHOT1344,
+          typename PointRFT = pcl::ReferenceFrame>
+class SHOTColorEstimationOMP
+: public SHOTColorEstimation<PointInT, PointNT, PointOutT, PointRFT> {
+public:
+  using Ptr =
+      shared_ptr<SHOTColorEstimationOMP<PointInT, PointNT, PointOutT, PointRFT>>;
+  using ConstPtr =
+      shared_ptr<const SHOTColorEstimationOMP<PointInT, PointNT, PointOutT, PointRFT>>;
+  using Feature<PointInT, PointOutT>::feature_name_;
+  using Feature<PointInT, PointOutT>::getClassName;
+  using Feature<PointInT, PointOutT>::input_;
+  using Feature<PointInT, PointOutT>::indices_;
+  using Feature<PointInT, PointOutT>::k_;
+  using Feature<PointInT, PointOutT>::search_parameter_;
+  using Feature<PointInT, PointOutT>::search_radius_;
+  using Feature<PointInT, PointOutT>::surface_;
+  using Feature<PointInT, PointOutT>::fake_surface_;
+  using FeatureFromNormals<PointInT, PointNT, PointOutT>::normals_;
+  using FeatureWithLocalReferenceFrames<PointInT, PointRFT>::frames_;
+  using SHOTEstimationBase<PointInT, PointNT, PointOutT, PointRFT>::lrf_radius_;
+  using SHOTColorEstimation<PointInT, PointNT, PointOutT, PointRFT>::descLength_;
+  using SHOTColorEstimation<PointInT, PointNT, PointOutT, PointRFT>::nr_grid_sector_;
+  using SHOTColorEstimation<PointInT, PointNT, PointOutT, PointRFT>::nr_shape_bins_;
+  using SHOTColorEstimation<PointInT, PointNT, PointOutT, PointRFT>::sqradius_;
+  using SHOTColorEstimation<PointInT, PointNT, PointOutT, PointRFT>::radius3_4_;
+  using SHOTColorEstimation<PointInT, PointNT, PointOutT, PointRFT>::radius1_4_;
+  using SHOTColorEstimation<PointInT, PointNT, PointOutT, PointRFT>::radius1_2_;
+  using SHOTColorEstimation<PointInT, PointNT, PointOutT, PointRFT>::b_describe_shape_;
+  using SHOTColorEstimation<PointInT, PointNT, PointOutT, PointRFT>::b_describe_color_;
+  using SHOTColorEstimation<PointInT, PointNT, PointOutT, PointRFT>::nr_color_bins_;
+
+  using PointCloudOut = typename Feature<PointInT, PointOutT>::PointCloudOut;
+  using PointCloudIn = typename Feature<PointInT, PointOutT>::PointCloudIn;
+
+  /** \brief Empty constructor. */
+  SHOTColorEstimationOMP(bool describe_shape = true,
+                         bool describe_color = true,
+                         unsigned int nr_threads = 0)
+  : SHOTColorEstimation<PointInT, PointNT, PointOutT, PointRFT>(describe_shape,
+                                                                describe_color)
   {
-    public:
-      using Ptr = shared_ptr<SHOTColorEstimationOMP<PointInT, PointNT, PointOutT, PointRFT> >;
-      using ConstPtr = shared_ptr<const SHOTColorEstimationOMP<PointInT, PointNT, PointOutT, PointRFT> >;
-      using Feature<PointInT, PointOutT>::feature_name_;
-      using Feature<PointInT, PointOutT>::getClassName;
-      using Feature<PointInT, PointOutT>::input_;
-      using Feature<PointInT, PointOutT>::indices_;
-      using Feature<PointInT, PointOutT>::k_;
-      using Feature<PointInT, PointOutT>::search_parameter_;
-      using Feature<PointInT, PointOutT>::search_radius_;
-      using Feature<PointInT, PointOutT>::surface_;
-      using Feature<PointInT, PointOutT>::fake_surface_;
-      using FeatureFromNormals<PointInT, PointNT, PointOutT>::normals_;
-      using FeatureWithLocalReferenceFrames<PointInT, PointRFT>::frames_;
-      using SHOTEstimationBase<PointInT, PointNT, PointOutT, PointRFT>::lrf_radius_;
-      using SHOTColorEstimation<PointInT, PointNT, PointOutT, PointRFT>::descLength_;
-      using SHOTColorEstimation<PointInT, PointNT, PointOutT, PointRFT>::nr_grid_sector_;
-      using SHOTColorEstimation<PointInT, PointNT, PointOutT, PointRFT>::nr_shape_bins_;
-      using SHOTColorEstimation<PointInT, PointNT, PointOutT, PointRFT>::sqradius_;
-      using SHOTColorEstimation<PointInT, PointNT, PointOutT, PointRFT>::radius3_4_;
-      using SHOTColorEstimation<PointInT, PointNT, PointOutT, PointRFT>::radius1_4_;
-      using SHOTColorEstimation<PointInT, PointNT, PointOutT, PointRFT>::radius1_2_;
-      using SHOTColorEstimation<PointInT, PointNT, PointOutT, PointRFT>::b_describe_shape_;
-      using SHOTColorEstimation<PointInT, PointNT, PointOutT, PointRFT>::b_describe_color_;
-      using SHOTColorEstimation<PointInT, PointNT, PointOutT, PointRFT>::nr_color_bins_;
+    setNumberOfThreads(nr_threads);
+  }
 
-      using PointCloudOut = typename Feature<PointInT, PointOutT>::PointCloudOut;
-      using PointCloudIn = typename Feature<PointInT, PointOutT>::PointCloudIn;
+  /** \brief Initialize the scheduler and set the number of threads to use.
+   * \param nr_threads the number of hardware threads to use (0 sets the value back to
+   * automatic)
+   */
+  void
+  setNumberOfThreads (unsigned int nr_threads = 0);
 
-      /** \brief Empty constructor. */
-      SHOTColorEstimationOMP (bool describe_shape = true,
-                              bool describe_color = true,
-                              unsigned int nr_threads = 0)
-        : SHOTColorEstimation<PointInT, PointNT, PointOutT, PointRFT> (describe_shape, describe_color)
-      {
-        setNumberOfThreads(nr_threads);
-      }
+protected:
+  /** \brief Estimate the Signatures of Histograms of OrienTations (SHOT) descriptors at
+   * a set of points given by <setInputCloud (), setIndices ()> using the surface in
+   * setSearchSurface () and the spatial locator in setSearchMethod () \param output the
+   * resultant point cloud model dataset that contains the SHOT feature estimates
+   */
+  void
+  computeFeature (PointCloudOut& output) override;
 
-      /** \brief Initialize the scheduler and set the number of threads to use.
-        * \param nr_threads the number of hardware threads to use (0 sets the value back to automatic)
-        */
-      void
-      setNumberOfThreads (unsigned int nr_threads = 0);
+  /** \brief This method should get called before starting the actual computation. */
+  bool
+  initCompute () override;
 
-    protected:
+  /** \brief The number of threads the scheduler should use. */
+  unsigned int threads_;
+};
 
-      /** \brief Estimate the Signatures of Histograms of OrienTations (SHOT) descriptors at a set of points given by
-        * <setInputCloud (), setIndices ()> using the surface in setSearchSurface () and the spatial locator in
-        * setSearchMethod ()
-        * \param output the resultant point cloud model dataset that contains the SHOT feature estimates
-        */
-      void
-      computeFeature (PointCloudOut &output) override;
-
-      /** \brief This method should get called before starting the actual computation. */
-      bool
-      initCompute () override;
-
-      /** \brief The number of threads the scheduler should use. */
-      unsigned int threads_;
-  };
-
-}
+} // namespace pcl
 
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/features/impl/shot_omp.hpp>

@@ -65,17 +65,17 @@ private:
    * channel
    */
   inline void
-  cannyTraceEdge(int rowOffset,
-                 int colOffset,
-                 int row,
-                 int col,
-                 pcl::PointCloud<pcl::PointXYZI>& maxima);
+  cannyTraceEdge (int rowOffset,
+                  int colOffset,
+                  int row,
+                  int col,
+                  pcl::PointCloud<pcl::PointXYZI>& maxima);
 
   /** \brief This function discretizes the edge directions in steps of 22.5 degrees.
    * \param thet point cloud containing the edge information in the direction channel
    */
   void
-  discretizeAngles(pcl::PointCloud<PointOutT>& thet);
+  discretizeAngles (pcl::PointCloud<PointOutT>& thet);
 
   /** \brief This function suppresses the edges which don't form a local maximum
    * in the edge direction.
@@ -84,9 +84,9 @@ private:
    * \param[in] tLow
    */
   void
-  suppressNonMaxima(const pcl::PointCloud<PointXYZIEdge>& edges,
-                    pcl::PointCloud<pcl::PointXYZI>& maxima,
-                    float tLow);
+  suppressNonMaxima (const pcl::PointCloud<PointXYZIEdge>& edges,
+                     pcl::PointCloud<pcl::PointXYZI>& maxima,
+                     float tLow);
 
 public:
   using Ptr = shared_ptr<Edge<PointInT, PointOutT>>;
@@ -131,19 +131,19 @@ public:
    * \param[in] output_type the output type
    */
   void
-  setOutputType(OUTPUT_TYPE output_type)
+  setOutputType (OUTPUT_TYPE output_type)
   {
     output_type_ = output_type;
   }
 
   void
-  setHysteresisThresholdLow(float threshold)
+  setHysteresisThresholdLow (float threshold)
   {
     hysteresis_threshold_low_ = threshold;
   }
 
   void
-  setHysteresisThresholdHigh(float threshold)
+  setHysteresisThresholdHigh (float threshold)
   {
     hysteresis_threshold_high_ = threshold;
   }
@@ -154,9 +154,9 @@ public:
    * \param[out] output
    */
   void
-  sobelMagnitudeDirection(const pcl::PointCloud<PointInT>& input_x,
-                          const pcl::PointCloud<PointInT>& input_y,
-                          pcl::PointCloud<PointOutT>& output);
+  sobelMagnitudeDirection (const pcl::PointCloud<PointInT>& input_x,
+                           const pcl::PointCloud<PointInT>& input_y,
+                           pcl::PointCloud<PointOutT>& output);
 
   /** Perform Canny edge detection with two separated input images for horizontal and
    * vertical derivatives.
@@ -173,16 +173,16 @@ public:
    * \param[out] output Output point cloud passed by reference
    */
   void
-  canny(const pcl::PointCloud<PointInT>& input_x,
-        const pcl::PointCloud<PointInT>& input_y,
-        pcl::PointCloud<PointOutT>& output);
+  canny (const pcl::PointCloud<PointInT>& input_x,
+         const pcl::PointCloud<PointInT>& input_y,
+         pcl::PointCloud<PointOutT>& output);
 
   /** \brief This is a convenience function which performs edge detection based on
    * the variable detector_kernel_type_
    * \param[out] output
    */
   void
-  detectEdge(pcl::PointCloud<PointOutT>& output);
+  detectEdge (pcl::PointCloud<PointOutT>& output);
 
   /** \brief All edges of magnitude above t_high are always classified as edges.
    * All edges below t_low are discarded.
@@ -192,7 +192,7 @@ public:
    * \param[out] output Output point cloud passed by reference
    */
   void
-  detectEdgeCanny(pcl::PointCloud<PointOutT>& output);
+  detectEdgeCanny (pcl::PointCloud<PointOutT>& output);
 
   /** \brief Uses the Sobel kernel for edge detection.
    * This function does NOT include a smoothing step.
@@ -200,7 +200,7 @@ public:
    * \param[out] output Output point cloud passed by reference
    */
   void
-  detectEdgeSobel(pcl::PointCloud<PointOutT>& output);
+  detectEdgeSobel (pcl::PointCloud<PointOutT>& output);
 
   /** \brief Uses the Prewitt kernel for edge detection.
    * This function does NOT include a smoothing step.
@@ -208,7 +208,7 @@ public:
    * \param[out] output Output point cloud passed by reference
    */
   void
-  detectEdgePrewitt(pcl::PointCloud<PointOutT>& output);
+  detectEdgePrewitt (pcl::PointCloud<PointOutT>& output);
 
   /** \brief Uses the Roberts kernel for edge detection.
    * This function does NOT include a smoothing step.
@@ -216,7 +216,7 @@ public:
    * \param[out] output Output point cloud passed by reference
    */
   void
-  detectEdgeRoberts(pcl::PointCloud<PointOutT>& output);
+  detectEdgeRoberts (pcl::PointCloud<PointOutT>& output);
 
   /** \brief Uses the LoG kernel for edge detection.
    * Zero crossings of the Laplacian operator applied on an image indicate edges.
@@ -231,9 +231,9 @@ public:
    * \param[out] output Output point cloud passed by reference.
    */
   void
-  detectEdgeLoG(const float kernel_sigma,
-                const float kernel_size,
-                pcl::PointCloud<PointOutT>& output);
+  detectEdgeLoG (const float kernel_sigma,
+                 const float kernel_size,
+                 pcl::PointCloud<PointOutT>& output);
 
   /** \brief Computes the image derivatives in X direction using the kernel
    * kernel::derivativeYCentralKernel. This function does NOT include a smoothing step.
@@ -241,7 +241,7 @@ public:
    * \param[out] output Output point cloud passed by reference
    */
   void
-  computeDerivativeXCentral(pcl::PointCloud<PointOutT>& output);
+  computeDerivativeXCentral (pcl::PointCloud<PointOutT>& output);
 
   /** \brief Computes the image derivatives in Y direction using the kernel
    * kernel::derivativeYCentralKernel. This function does NOT include a smoothing step.
@@ -249,7 +249,7 @@ public:
    * \param[out] output Output point cloud passed by reference
    */
   void
-  computeDerivativeYCentral(pcl::PointCloud<PointOutT>& output);
+  computeDerivativeYCentral (pcl::PointCloud<PointOutT>& output);
 
   /** \brief Computes the image derivatives in X direction using the kernel
    * kernel::derivativeYForwardKernel. This function does NOT include a smoothing step.
@@ -257,7 +257,7 @@ public:
    * \param[out] output Output point cloud passed by reference
    */
   void
-  computeDerivativeXForward(pcl::PointCloud<PointOutT>& output);
+  computeDerivativeXForward (pcl::PointCloud<PointOutT>& output);
 
   /** \brief Computes the image derivatives in Y direction using the kernel
    * kernel::derivativeYForwardKernel. This function does NOT include a smoothing step.
@@ -265,7 +265,7 @@ public:
    * \param[out] output Output point cloud passed by reference
    */
   void
-  computeDerivativeYForward(pcl::PointCloud<PointOutT>& output);
+  computeDerivativeYForward (pcl::PointCloud<PointOutT>& output);
 
   /** \brief Computes the image derivatives in X direction using the kernel
    * kernel::derivativeXBackwardKernel. This function does NOT include a smoothing step.
@@ -273,7 +273,7 @@ public:
    * \param output Output point cloud passed by reference
    */
   void
-  computeDerivativeXBackward(pcl::PointCloud<PointOutT>& output);
+  computeDerivativeXBackward (pcl::PointCloud<PointOutT>& output);
 
   /** \brief Computes the image derivatives in Y direction using the kernel
    * kernel::derivativeYBackwardKernel. This function does NOT include a smoothing step.
@@ -281,18 +281,18 @@ public:
    * \param[out] output Output point cloud passed by reference
    */
   void
-  computeDerivativeYBackward(pcl::PointCloud<PointOutT>& output);
+  computeDerivativeYBackward (pcl::PointCloud<PointOutT>& output);
 
   /** \brief Override function to implement the pcl::Filter interface */
   void
-  applyFilter(pcl::PointCloud<PointOutT>& /*output*/)
+  applyFilter (pcl::PointCloud<PointOutT>& /*output*/)
   {}
 
   /** \brief Set the input point cloud pointer
    * \param[in] input pointer to input point cloud
    */
   void
-  setInputCloud(PointCloudInPtr input)
+  setInputCloud (PointCloudInPtr input)
   {
     input_ = input;
   }

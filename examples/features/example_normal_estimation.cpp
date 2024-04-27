@@ -37,10 +37,10 @@
  *
  */
 
-#include <iostream>
-
-#include <pcl/io/pcd_io.h>
 #include <pcl/features/normal_3d.h>
+#include <pcl/io/pcd_io.h>
+
+#include <iostream>
 
 int
 main (int, char** argv)
@@ -48,35 +48,36 @@ main (int, char** argv)
   std::string filename = argv[1];
   std::cout << "Reading " << filename << std::endl;
 
-  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
+  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
 
-  if (pcl::io::loadPCDFile<pcl::PointXYZ> (filename, *cloud) == -1) // load the file
+  if (pcl::io::loadPCDFile<pcl::PointXYZ>(filename, *cloud) == -1) // load the file
   {
-    PCL_ERROR ("Couldn't read file\n");
+    PCL_ERROR("Couldn't read file\n");
     return -1;
   }
 
-  std::cout << "points: " << cloud->size () << std::endl;
+  std::cout << "points: " << cloud->size() << std::endl;
 
   // Create the normal estimation class, and pass the input dataset to it
   pcl::NormalEstimation<pcl::PointXYZ, pcl::Normal> normal_estimation;
-  normal_estimation.setInputCloud (cloud);
+  normal_estimation.setInputCloud(cloud);
 
   // Create an empty kdtree representation, and pass it to the normal estimation object.
-  // Its content will be filled inside the object, based on the given input dataset (as no other search surface is given).
-  pcl::search::KdTree<pcl::PointXYZ>::Ptr tree (new pcl::search::KdTree<pcl::PointXYZ>);
-  normal_estimation.setSearchMethod (tree);
+  // Its content will be filled inside the object, based on the given input dataset (as
+  // no other search surface is given).
+  pcl::search::KdTree<pcl::PointXYZ>::Ptr tree(new pcl::search::KdTree<pcl::PointXYZ>);
+  normal_estimation.setSearchMethod(tree);
 
   // Output datasets
-  pcl::PointCloud<pcl::Normal>::Ptr cloud_normals (new pcl::PointCloud<pcl::Normal>);
+  pcl::PointCloud<pcl::Normal>::Ptr cloud_normals(new pcl::PointCloud<pcl::Normal>);
 
   // Use all neighbors in a sphere of radius 3cm
-  normal_estimation.setRadiusSearch (0.03);
+  normal_estimation.setRadiusSearch(0.03);
 
   // Compute the features
-  normal_estimation.compute (*cloud_normals);
+  normal_estimation.compute(*cloud_normals);
 
   // cloud_normals->size () should have the same size as the input cloud->size ()
-  std::cout << "cloud_normals->size (): " << cloud_normals->size () << std::endl;
+  std::cout << "cloud_normals->size (): " << cloud_normals->size() << std::endl;
   return 0;
 }

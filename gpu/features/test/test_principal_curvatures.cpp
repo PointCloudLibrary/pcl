@@ -34,65 +34,66 @@
  *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
  */
 
-#include "gtest/gtest.h"
-
-#include <pcl/point_types.h>
 #include <pcl/features/principal_curvatures.h>
 #include <pcl/gpu/features/features.hpp>
+#include <pcl/point_types.h>
 
 #include "data_source.hpp"
+#include "gtest/gtest.h"
 
 using namespace pcl;
 using namespace pcl::gpu;
 
-//TEST(PCL_FeaturesGPU, DISABLED_PrincipalCurvatures)
+// TEST(PCL_FeaturesGPU, DISABLED_PrincipalCurvatures)
 TEST(PCL_FeaturesGPU, PrincipalCurvatures)
-{   
-    DataSource source;
-    
-    source.estimateNormals();
-                   
-    std::vector<PointXYZ> normals_for_gpu(source.normals->size());    
-    std::transform(source.normals->points.begin(), source.normals->points.end(), normals_for_gpu.begin(), DataSource::Normal2PointXYZ());
-    
-    //uploading data to GPU
+{
+  DataSource source;
 
-    //////////////////////////////////////////////////////////////////////////////////////////////  
+  source.estimateNormals();
 
-    pcl::gpu::PrincipalCurvaturesEstimation::PointCloud cloud_gpu;
-    cloud_gpu.upload(source.cloud->points);
+  std::vector<PointXYZ> normals_for_gpu(source.normals->size());
+  std::transform(source.normals->points.begin(),
+                 source.normals->points.end(),
+                 normals_for_gpu.begin(),
+                 DataSource::Normal2PointXYZ());
 
-    pcl::gpu::PrincipalCurvaturesEstimation::Normals normals_gpu;
-    normals_gpu.upload(normals_for_gpu);             
+  // uploading data to GPU
 
-    DeviceArray<PrincipalCurvatures> pc_features;
+  //////////////////////////////////////////////////////////////////////////////////////////////
 
-    gpu::PrincipalCurvaturesEstimation pc_gpu;    
-    pc_gpu.setInputCloud(cloud_gpu);
-    pc_gpu.setInputNormals(normals_gpu);
-    pc_gpu.setRadiusSearch(source.radius, source.max_elements);
-    pc_gpu.compute(pc_features);
+  pcl::gpu::PrincipalCurvaturesEstimation::PointCloud cloud_gpu;
+  cloud_gpu.upload(source.cloud->points);
 
-    std::vector<PrincipalCurvatures> downloaded;
-    pc_features.download(downloaded);
+  pcl::gpu::PrincipalCurvaturesEstimation::Normals normals_gpu;
+  normals_gpu.upload(normals_for_gpu);
 
-    pcl::PrincipalCurvaturesEstimation<PointXYZ, Normal, PrincipalCurvatures> fe;
-    fe.setInputCloud (source.cloud);
-    fe.setInputNormals (source.normals);
-    fe.setRadiusSearch(source.radius);
+  DeviceArray<PrincipalCurvatures> pc_features;
 
-    PointCloud<PrincipalCurvatures> pc;
-    fe.compute (pc);
+  gpu::PrincipalCurvaturesEstimation pc_gpu;
+  pc_gpu.setInputCloud(cloud_gpu);
+  pc_gpu.setInputNormals(normals_gpu);
+  pc_gpu.setRadiusSearch(source.radius, source.max_elements);
+  pc_gpu.compute(pc_features);
 
-    for(std::size_t i = 0; i < downloaded.size(); ++i)
-    {
-        PrincipalCurvatures& gpu = downloaded[i];
-        PrincipalCurvatures& cpu = pc[i];        
+  std::vector<PrincipalCurvatures> downloaded;
+  pc_features.download(downloaded);
 
-        ASSERT_NEAR(gpu.principal_curvature_x, cpu.principal_curvature_x, 0.01f);
-        ASSERT_NEAR(gpu.principal_curvature_y, cpu.principal_curvature_y, 0.01f);
-        ASSERT_NEAR(gpu.principal_curvature_z, cpu.principal_curvature_z, 0.01f);
-        ASSERT_NEAR(gpu.pc1, cpu.pc1, 0.01f);
-        ASSERT_NEAR(gpu.pc2, cpu.pc2, 0.01f);        
-    }
+  pcl::PrincipalCurvaturesEstimation<PointXYZ, Normal, PrincipalCurvatures> fe;
+  fe.setInputCloud(source.cloud);
+  fe.setInputNormals(source.normals);
+  fe.setRadiusSearch(source.radius);
+
+  PointCloud<PrincipalCurvatures> pc;
+  fe.compute(pc);
+
+  for (std::size_t i = 0; i < downloaded.size(); ++i) {
+    PrincipalCurvatures& gpu = downloaded[i];
+    PrincipalCurvatures& cpu = pc[i];
+
+    ASSERT_NEAR(gpu.principal_curvature_x, cpu.principal_curvature_x, 0.01f);
+    ASSERT_NEAR(gpu.principal_curvature_y, cpu.principal_curvature_y, 0.01f);
+    ASSERT_NEAR(gpu.principal_curvature_z, cpu.principal_curvature_z, 0.01f);
+    ASSERT_NEAR(gpu.pc1, cpu.pc1, 0.01f);
+    ASSERT_NEAR(gpu.pc2, cpu.pc2, 0.01f);
+  }
 }

@@ -52,20 +52,20 @@ public:
 
 protected:
   std::string
-  getName() const override
+  getName () const override
   {
     return "Poisson Reconstruction";
   }
 
   void
-  initParameters(CloudMeshItem*) override
+  initParameters (CloudMeshItem*) override
   {}
 
   void
-  setupParameters() override;
+  setupParameters () override;
 
   void
-  processImpl(CloudMeshItem* cloud_mesh_item) override;
+  processImpl (CloudMeshItem* cloud_mesh_item) override;
 
 private:
   IntParameter* depth_;

@@ -39,135 +39,148 @@
 
 #pragma once
 
+#include <pcl/features/fpfh.h>
+#include <pcl/ml/kmeans.h>
 #include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 
-#include <pcl/features/fpfh.h>
+namespace pcl {
+/** \brief
+ *
+ */
+template <typename PointT>
+class PCL_EXPORTS UnaryClassifier {
+public:
+  /** \brief Constructor that sets default values for member variables. */
+  UnaryClassifier();
 
-#include <pcl/ml/kmeans.h>
+  /** \brief This destructor destroys the cloud...
+   *
+   */
+  ~UnaryClassifier();
 
-namespace pcl
-{
-  /** \brief
-    * 
-    */
-  template <typename PointT>
-  class PCL_EXPORTS UnaryClassifier
+  /** \brief This method sets the input cloud.
+   * \param[in] input_cloud input point cloud
+   */
+  void
+  setInputCloud (typename pcl::PointCloud<PointT>::Ptr input_cloud);
+
+  void
+  train (pcl::PointCloud<pcl::FPFHSignature33>::Ptr& output);
+
+  void
+  trainWithLabel (
+      std::vector<pcl::PointCloud<pcl::FPFHSignature33>,
+                  Eigen::aligned_allocator<pcl::PointCloud<pcl::FPFHSignature33>>>&
+          output);
+
+  void
+  segment (pcl::PointCloud<pcl::PointXYZRGBL>::Ptr& out);
+
+  void
+  queryFeatureDistances (
+      std::vector<pcl::PointCloud<pcl::FPFHSignature33>::Ptr>& trained_features,
+      pcl::PointCloud<pcl::FPFHSignature33>::Ptr query_features,
+      pcl::Indices& indi,
+      std::vector<float>& dist);
+
+  void
+  assignLabels (pcl::Indices& indi,
+                std::vector<float>& dist,
+                int n_feature_means,
+                float feature_threshold,
+                pcl::PointCloud<pcl::PointXYZRGBL>::Ptr out);
+
+  void
+  setClusterSize (unsigned int k)
   {
-    public:
+    cluster_size_ = k;
+  };
 
-      /** \brief Constructor that sets default values for member variables. */
-      UnaryClassifier ();
+  void
+  setNormalRadiusSearch (float param)
+  {
+    normal_radius_search_ = param;
+  };
 
-      /** \brief This destructor destroys the cloud...
-        * 
-        */
-      ~UnaryClassifier ();
+  void
+  setFPFHRadiusSearch (float param)
+  {
+    fpfh_radius_search_ = param;
+  };
 
-      /** \brief This method sets the input cloud.
-        * \param[in] input_cloud input point cloud
-        */
-      void
-      setInputCloud (typename pcl::PointCloud<PointT>::Ptr input_cloud);
+  void
+  setLabelField (bool l)
+  {
+    label_field_ = l;
+  };
 
-      void 
-      train (pcl::PointCloud<pcl::FPFHSignature33>::Ptr &output);
-      
-      void
-      trainWithLabel (std::vector<pcl::PointCloud<pcl::FPFHSignature33>, Eigen::aligned_allocator<pcl::PointCloud<pcl::FPFHSignature33> > > &output);
+  void
+  setTrainedFeatures (std::vector<pcl::PointCloud<pcl::FPFHSignature33>::Ptr>& features)
+  {
+    trained_features_ = features;
+  };
 
-      void
-      segment (pcl::PointCloud<pcl::PointXYZRGBL>::Ptr &out);
+  void
+  setFeatureThreshold (float threshold)
+  {
+    feature_threshold_ = threshold;
+  };
 
-      void
-      queryFeatureDistances (std::vector<pcl::PointCloud<pcl::FPFHSignature33>::Ptr> &trained_features,
-                             pcl::PointCloud<pcl::FPFHSignature33>::Ptr query_features,
-                             pcl::Indices &indi,
-                             std::vector<float> &dist);
+protected:
+  void
+  convertCloud (typename pcl::PointCloud<PointT>::Ptr in,
+                pcl::PointCloud<pcl::PointXYZ>::Ptr out);
 
-      void
-      assignLabels (pcl::Indices &indi,
-                    std::vector<float> &dist,
-                    int n_feature_means,
-                    float feature_threshold,
-                    pcl::PointCloud<pcl::PointXYZRGBL>::Ptr out);
+  void
+  convertCloud (typename pcl::PointCloud<PointT>::Ptr in,
+                pcl::PointCloud<pcl::PointXYZRGBL>::Ptr out);
 
-      void
-      setClusterSize (unsigned int k){cluster_size_ = k;};
-      
-      void
-      setNormalRadiusSearch (float param){normal_radius_search_ = param;};
-      
-      void
-      setFPFHRadiusSearch (float param){fpfh_radius_search_ = param;};
-      
-      void
-      setLabelField (bool l){label_field_ = l;};
+  void
+  findClusters (typename pcl::PointCloud<PointT>::Ptr in,
+                std::vector<int>& cluster_numbers);
 
-      void
-      setTrainedFeatures (std::vector<pcl::PointCloud<pcl::FPFHSignature33>::Ptr> &features){trained_features_ = features;};
+  void
+  getCloudWithLabel (typename pcl::PointCloud<PointT>::Ptr in,
+                     pcl::PointCloud<pcl::PointXYZ>::Ptr out,
+                     int label_num);
 
-      void
-      setFeatureThreshold (float threshold){feature_threshold_ = threshold;};
+  void
+  computeFPFH (pcl::PointCloud<pcl::PointXYZ>::Ptr in,
+               pcl::PointCloud<pcl::FPFHSignature33>::Ptr out,
+               float normal_radius_search,
+               float fpfh_radius_search);
 
-    protected:
+  void
+  kmeansClustering (pcl::PointCloud<pcl::FPFHSignature33>::Ptr in,
+                    pcl::PointCloud<pcl::FPFHSignature33>::Ptr out,
+                    int k);
 
-      void
-      convertCloud (typename pcl::PointCloud<PointT>::Ptr in,
-                    pcl::PointCloud<pcl::PointXYZ>::Ptr out);
+  /** \brief Contains the input cloud */
+  typename pcl::PointCloud<PointT>::Ptr input_cloud_{new pcl::PointCloud<PointT>};
 
-      void
-      convertCloud (typename pcl::PointCloud<PointT>::Ptr in,
-                    pcl::PointCloud<pcl::PointXYZRGBL>::Ptr out);
+  bool label_field_{false};
 
-      void
-      findClusters (typename pcl::PointCloud<PointT>::Ptr in,
-                    std::vector<int> &cluster_numbers);
+  unsigned int cluster_size_{0};
 
-      void
-      getCloudWithLabel (typename pcl::PointCloud<PointT>::Ptr in,
-                         pcl::PointCloud<pcl::PointXYZ>::Ptr out,
-                         int label_num);
+  float normal_radius_search_{0.01f};
+  float fpfh_radius_search_{0.05f};
+  float feature_threshold_{5.0};
 
-      void
-      computeFPFH (pcl::PointCloud<pcl::PointXYZ>::Ptr in,
-                   pcl::PointCloud<pcl::FPFHSignature33>::Ptr out,
-                   float normal_radius_search,
-                   float fpfh_radius_search);
-      
-      void
-      kmeansClustering (pcl::PointCloud<pcl::FPFHSignature33>::Ptr in,
-                        pcl::PointCloud<pcl::FPFHSignature33>::Ptr out,
-                        int k);
+  std::vector<pcl::PointCloud<pcl::FPFHSignature33>::Ptr> trained_features_{};
 
+  /** \brief Contains normals of the points that will be segmented. */
+  // typename pcl::PointCloud<pcl::Normal>::Ptr normals_;
 
+  /** \brief Stores the cloud that will be segmented. */
+  // typename pcl::PointCloud<PointT>::Ptr cloud_for_segmentation_;
 
-      /** \brief Contains the input cloud */
-      typename pcl::PointCloud<PointT>::Ptr input_cloud_{new pcl::PointCloud<PointT>};
-      
-      bool label_field_{false};
-      
-      unsigned int cluster_size_{0};
-
-      float normal_radius_search_{0.01f};
-      float fpfh_radius_search_{0.05f};
-      float feature_threshold_{5.0};
-      
-      
-      std::vector<pcl::PointCloud<pcl::FPFHSignature33>::Ptr> trained_features_{};
-
-      /** \brief Contains normals of the points that will be segmented. */
-      //typename pcl::PointCloud<pcl::Normal>::Ptr normals_;
-
-      /** \brief Stores the cloud that will be segmented. */
-      //typename pcl::PointCloud<PointT>::Ptr cloud_for_segmentation_;
-
-    public:
-      PCL_MAKE_ALIGNED_OPERATOR_NEW
- };
-}
+public:
+  PCL_MAKE_ALIGNED_OPERATOR_NEW
+};
+} // namespace pcl
 
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/segmentation/impl/unary_classifier.hpp>
