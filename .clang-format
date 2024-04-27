@@ -69,3 +69,7 @@ IncludeCategories:
 # Any unknown include
   - Regex:           '.*'
     Priority:        500
+SpaceBeforeParens: Custom
+SpaceBeforeParensOptions:
+  AfterFunctionDeclarationName: true
+  AfterFunctionDefinitionName: true
