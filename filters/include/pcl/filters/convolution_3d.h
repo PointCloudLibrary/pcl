@@ -41,6 +41,7 @@
 
 #include <pcl/pcl_base.h>
 #include <boost/optional.hpp>
+#include <pcl/search/search.h>
 
 namespace pcl
 {

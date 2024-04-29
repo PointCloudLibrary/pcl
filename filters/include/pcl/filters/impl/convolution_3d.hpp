@@ -44,6 +44,7 @@
 #include <pcl/search/kdtree.h>
 #include <pcl/pcl_config.h>
 #include <pcl/point_types.h>
+#include <pcl/common/point_tests.h>
 
 #include <cmath>
 #include <cstdint>
