@@ -132,7 +132,8 @@ pcl::SampleConsensusModelTorus<PointT, PointNT>::computeModelCoefficients(
   float _b = (b01 * p + b0 * k + b1);
   float _c = (b0 * p + b);
 
-  float eps = 1e-9; //TODO, what is the right way in pcl?
+  float eps = Eigen::NumTraits<float>::dummy_precision ();
+
   // Check for imaginary solutions, or small denominators.
   if ((_b * _b - 4 * _a * _c) < 0 || std::abs(a0 - b0 * a01) < eps ||
       std::abs(b01) < eps || std::abs(_a) < eps) {
@@ -497,16 +498,16 @@ pcl::SampleConsensusModelTorus<PointT, PointNT>::isModelValid(
   if (!SampleConsensusModel<PointT>::isModelValid (model_coefficients))
     return (false);
 
-  if (radius_min_ != std::numeric_limits<double>::lowest() && (model_coefficients[3] < radius_min_ || model_coefficients[4] < radius_min_))
+  if (radius_min_ != std::numeric_limits<double>::lowest() && (model_coefficients[0] < radius_min_ || model_coefficients[1] < radius_min_))
   {
     PCL_DEBUG ("[pcl::SampleConsensusModelTorus::isModelValid] Major radius OR minor radius of torus is/are too small: should be larger than %g, but are {%g, %g}.\n",
-               radius_min_, model_coefficients[3], model_coefficients[4]);
+               radius_min_, model_coefficients[0], model_coefficients[1]);
     return (false);
   }
-  if (radius_max_ != std::numeric_limits<double>::max() && (model_coefficients[3] > radius_max_ || model_coefficients[4] > radius_max_))
+  if (radius_max_ != std::numeric_limits<double>::max() && (model_coefficients[0] > radius_max_ || model_coefficients[1] > radius_max_))
   {
     PCL_DEBUG ("[pcl::SampleConsensusModelTorus::isModelValid] Major radius OR minor radius of torus is/are too big: should be smaller than %g, but are {%g, %g}.\n",
-               radius_max_, model_coefficients[3], model_coefficients[4]);
+               radius_max_, model_coefficients[0], model_coefficients[1]);
     return (false);
   }
   return (true);

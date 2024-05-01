@@ -40,11 +40,6 @@
 #ifndef PCL_NO_PRECOMPILE
 #include <pcl/impl/instantiate.hpp>
 #include <pcl/point_types.h>
-// Instantiations of specific point types
-#ifdef PCL_ONLY_CORE_POINT_TYPES
-  PCL_INSTANTIATE_PRODUCT(SampleConsensusModelTorus, ((pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA)(pcl::PointXYZRGB))((pcl::Normal)))
-#else
- PCL_INSTANTIATE_PRODUCT(SampleConsensusModelTorus, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES))
-#endif
+PCL_INSTANTIATE_PRODUCT(SampleConsensusModelTorus, ((pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA)(pcl::PointXYZRGB))((pcl::Normal)))
 #endif    // PCL_NO_PRECOMPILE
 

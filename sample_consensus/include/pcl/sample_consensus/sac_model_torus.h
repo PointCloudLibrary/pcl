@@ -44,16 +44,7 @@
 #include <pcl/sample_consensus/model_types.h>
 #include <pcl/sample_consensus/sac_model.h>
 
-Eigen::Matrix3d
-toRotationMatrix(double theta, double rho);
 namespace pcl {
-namespace internal {
-int
-optimizeModelCoefficientsTorus(Eigen::VectorXf& coeff,
-                               const Eigen::ArrayXf& pts_x,
-                               const Eigen::ArrayXf& pts_y,
-                               const Eigen::ArrayXf& pts_z);
-} // namespace internal
 
 /** \brief @b SampleConsensusModelTorus defines a model for 3D torus segmentation.
  * The model coefficients are defined as:
@@ -66,7 +57,7 @@ optimizeModelCoefficientsTorus(Eigen::VectorXf& coeff,
  *   - \b torus_normal.y  : the Y coordinate of the normal of the torus
  *   - \b torus_normal.z  : the Z coordinate of the normal of the torus
  *
- * \author lasdasdas, Radu Bogdan Rusu
+ * \author lasdasdas
  * \ingroup sample_consensus
  */
 template <typename PointT, typename PointNT>
@@ -274,35 +265,35 @@ private:
     int
     operator()(const Eigen::VectorXd& xs, Eigen::VectorXd& fvec) const
     {
+      const double& R = xs[0];
+      const double& r = xs[1];
+
+      const double& x0 = xs[2];
+      const double& y0 = xs[3];
+      const double& z0 = xs[4];
+
+      const Eigen::Vector3d centroid{x0, y0, z0};
+
+      const double& nx = xs[5];
+      const double& ny = xs[6];
+      const double& nz = xs[7];
+
+      const Eigen::Vector3d n1{0.0, 0.0, 1.0};
+      const Eigen::Vector3d n2 = Eigen::Vector3d{nx, ny, nz}.normalized();
+
       for (size_t j = 0; j < indices_.size(); j++) {
         size_t i = indices_[j];
 
         // Getting constants from state vector
-        const double& R = xs[0];
-        const double& r = xs[1];
-
-        const double& x0 = xs[2];
-        const double& y0 = xs[3];
-        const double& z0 = xs[4];
-
-        Eigen::Vector3d centroid{x0, y0, z0};
-
-        const double& nx = xs[5];
-        const double& ny = xs[6];
-        const double& nz = xs[7];
-
-        Eigen::Vector3d n2{nx, ny, nz};
 
         const Eigen::Vector3d pt =
             (*model_->input_)[i].getVector3fMap().template cast<double>();
 
-        Eigen::Vector3d pt_n =
+        const Eigen::Vector3d pt_n =
             Eigen::Vector3f((*model_->normals_)[i].getNormalVector3fMap())
                 .template cast<double>();
 
         Eigen::Vector3d pte{pt - centroid};
-        Eigen::Vector3d n1{0.0, 0.0, 1.0};
-        n2.normalize();
 
         // Transposition is inversion
         // Using Quaternions instead of Rodrigues
