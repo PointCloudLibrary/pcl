@@ -225,6 +225,7 @@ protected:
    */
   void
   projectPointToTorus(const Eigen::Vector3f& pt,
+                      const Eigen::Vector3f& pt_n,
                       const Eigen::VectorXf& model_coefficients,
                       Eigen::Vector3f& pt_proj) const;
 
@@ -265,26 +266,30 @@ private:
     int
     operator()(const Eigen::VectorXd& xs, Eigen::VectorXd& fvec) const
     {
-      const double& R = xs[0];
-      const double& r = xs[1];
 
-      const double& x0 = xs[2];
-      const double& y0 = xs[3];
-      const double& z0 = xs[4];
-
-      const Eigen::Vector3d centroid{x0, y0, z0};
-
-      const double& nx = xs[5];
-      const double& ny = xs[6];
-      const double& nz = xs[7];
-
-      const Eigen::Vector3d n1{0.0, 0.0, 1.0};
-      const Eigen::Vector3d n2 = Eigen::Vector3d{nx, ny, nz}.normalized();
+      std::cout << "INDICES SIZE " << indices_.size() << std::endl;
+      std::cout << "params " << xs << std::endl;
 
       for (size_t j = 0; j < indices_.size(); j++) {
-        size_t i = indices_[j];
+        const double& R = xs[0];
+        const double& r = xs[1];
+
+        const double& x0 = xs[2];
+        const double& y0 = xs[3];
+        const double& z0 = xs[4];
+
+        const Eigen::Vector3d centroid{x0, y0, z0};
+
+        const double& nx = xs[5];
+        const double& ny = xs[6];
+        const double& nz = xs[7];
+
+        const Eigen::Vector3d n1{0.0, 0.0, 1.0};
+        const Eigen::Vector3d n2= Eigen::Vector3d{nx, ny, nz}.normalized();
+
 
         // Getting constants from state vector
+        size_t i = indices_[j];
 
         const Eigen::Vector3d pt =
             (*model_->input_)[i].getVector3fMap().template cast<double>();
@@ -312,12 +317,16 @@ private:
 
         fvec[j] =
             // Torus equation residual
-            w1 * (std::pow(sqrt(x * x + y * y) - R, 2) + z * z - r * r) +
+            (std::pow(sqrt(x * x + y * y) - R, 2) + z * z - r * r)
+
+
 
             // Distance from normal line to direction line residual
-            w2 * (n1.cross(pt_n).dot(pte) / n1.cross(pt_n).norm())
+            //+w2 * (n1.cross(pt_n).dot(pte) / n1.cross(pt_n).norm())
 
             ;
+
+        std::cout << fvec[j] << std::endl;
       }
       return 0;
     }

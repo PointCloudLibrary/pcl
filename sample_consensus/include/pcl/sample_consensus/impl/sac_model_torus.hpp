@@ -272,9 +272,10 @@ pcl::SampleConsensusModelTorus<PointT, PointNT>::getDistancesToModel(
   // point
   for (std::size_t i = 0; i < indices_->size(); ++i) {
     Eigen::Vector3f pt = (*input_)[(*indices_)[i]].getVector3fMap();
+    Eigen::Vector3f pt_n = (*normals_)[(*indices_)[i]].getNormalVector3fMap();
 
     Eigen::Vector3f torus_closest;
-    projectPointToTorus(pt, model_coefficients, torus_closest);
+    projectPointToTorus(pt, pt_n, model_coefficients, torus_closest);
 
     assert(torus_closest[3] == 0.f);
 
@@ -300,9 +301,10 @@ pcl::SampleConsensusModelTorus<PointT, PointNT>::selectWithinDistance(
 
   for (std::size_t i = 0; i < indices_->size(); ++i) {
     Eigen::Vector3f pt = (*input_)[(*indices_)[i]].getVector3fMap();
+    Eigen::Vector3f pt_n = (*normals_)[(*indices_)[i]].getNormalVector3fMap();
 
     Eigen::Vector3f torus_closest;
-    projectPointToTorus(pt, model_coefficients, torus_closest);
+    projectPointToTorus(pt,pt_n, model_coefficients, torus_closest);
 
     float distance = (torus_closest - pt).norm();
 
@@ -328,9 +330,10 @@ pcl::SampleConsensusModelTorus<PointT, PointNT>::countWithinDistance(
 
   for (std::size_t i = 0; i < indices_->size(); ++i) {
     Eigen::Vector3f pt = (*input_)[(*indices_)[i]].getVector3fMap();
+    Eigen::Vector3f pt_n = (*normals_)[(*indices_)[i]].getNormalVector3fMap();
 
     Eigen::Vector3f torus_closest;
-    projectPointToTorus(pt, model_coefficients, torus_closest);
+    projectPointToTorus(pt,pt_n, model_coefficients, torus_closest);
 
     float distance = (torus_closest - pt).norm();
 
@@ -372,14 +375,14 @@ pcl::SampleConsensusModelTorus<PointT, PointNT>::optimizeModelCoefficients(
   Eigen::NumericalDiff<OptimizationFunctor> num_diff(functor);
   Eigen::LevenbergMarquardt<Eigen::NumericalDiff<OptimizationFunctor>, double> lm(
       num_diff);
-  Eigen::VectorXd coeff(model_size_);
+                          //
+  Eigen::VectorXd coeff = model_coefficients.cast<double>();
   int info = lm.minimize(coeff);
 
-  if (info) {
-    PCL_ERROR("[pcl::SampleConsensusModelTorus::optimizeModelCoefficients] Not enough "
-              "inliers to refine/optimize the model's coefficients (%lu)! Returning "
-              "the same coefficients.\n",
-              inliers.size());
+  if (!info) {
+    PCL_ERROR("[pcl::SampleConsensusModelTorus382::optimizeModelCoefficients] Optimizer returned"
+              "with error (%i)! Returning ",
+              info);
     return;
   }
   else {
@@ -393,6 +396,7 @@ template <typename PointT, typename PointNT>
 void
 pcl::SampleConsensusModelTorus<PointT, PointNT>::projectPointToTorus(
     const Eigen::Vector3f& p_in,
+    const Eigen::Vector3f& p_n,
     const Eigen::VectorXf& model_coefficients,
     Eigen::Vector3f& pt_out) const
 {
@@ -418,14 +422,21 @@ pcl::SampleConsensusModelTorus<PointT, PointNT>::projectPointToTorus(
   // Ax + By + Cz + D = 0
   float D = -n.dot(pt0);
   Eigen::Vector4f planeCoeffs{n[0], n[1], n[2], D};
-  planeCoeffs.normalized();
-  Eigen::Vector3f p(p_in);
 
-  // Project to the torus circle plane
-  Eigen::Vector3f pt_proj;
-  projectPointToPlane(p, planeCoeffs, pt_proj);
+  // Project to the torus circle plane folling the point normal
+  // we want to find lambda such that p + pn_n*lambda lies on the
+  // torus plane.
+  // A*(pt_x + lambda*pn_x) + ... +  D = 0
+  // n = [A,B,C]
+  // n.dot(P) + lambda*n.dot(pn) + D = 0
+  //
+  float lambda = (-D - n.dot(p_in)) / n.dot(p_n);
 
-  // TODO expect singularities, mainly pt_proj_e == pt0 || pt_e ==
+
+  // TODO expect singularities, pt lies on the plane
+  Eigen::Vector3f pt_proj =  p_in + lambda*p_n;
+
+
   // Closest point from the inner circle to the current point
   Eigen::Vector3f circle_closest;
   circle_closest = (pt_proj - pt0).normalized() * R + pt0;
@@ -433,7 +444,7 @@ pcl::SampleConsensusModelTorus<PointT, PointNT>::projectPointToTorus(
   // From the that closest point we move towards the goal point until we
   // meet the surface of the torus
   Eigen::Vector3f torus_closest =
-      (p - circle_closest).normalized() * r + circle_closest;
+      (p_in - circle_closest).normalized() * r + circle_closest;
 
   pt_out = torus_closest;
 }
@@ -463,7 +474,8 @@ pcl::SampleConsensusModelTorus<PointT, PointNT>::projectPoints(
   for (const auto& inlier : inliers) {
 
     Eigen::Vector3f q;
-    projectPointToTorus((*input_)[inlier].getVector3fMap(), model_coefficients, q);
+    Eigen::Vector3f pt_n = (*normals_)[inlier].getNormalVector3fMap();
+    projectPointToTorus((*input_)[inlier].getVector3fMap(),pt_n, model_coefficients, q);
     projected_points[inlier].getVector3fMap() = q;
   }
 }
@@ -480,8 +492,9 @@ pcl::SampleConsensusModelTorus<PointT, PointNT>::doSamplesVerifyModel(
   for (const auto &index : indices)
   {
     Eigen::Vector3f pt = (*input_)[index].getVector3fMap ();
+    Eigen::Vector3f pt_n = (*normals_)[index].getNormalVector3fMap();
     Eigen::Vector3f torus_closest;
-    projectPointToTorus(pt, model_coefficients, torus_closest);
+    projectPointToTorus(pt, pt_n, model_coefficients, torus_closest);
 
     if ((pt - torus_closest).squaredNorm() > threshold)
       return (false);
