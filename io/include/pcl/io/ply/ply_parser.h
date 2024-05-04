@@ -49,6 +49,7 @@
 #include <string>
 #include <tuple>
 #include <vector>
+#include <functional>
 #include <boost/lexical_cast.hpp> // for lexical_cast
 #include <boost/mpl/fold.hpp> // for fold
 #include <boost/mpl/inherit.hpp> // for inherit

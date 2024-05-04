@@ -71,7 +71,7 @@ pcl::PCDWriter::setLockingPermissions (const std::string &file_name,
 
   try
   {
-#if (__cplusplus >= 201703L)
+#ifdef PCL_USING_STD_FILESYSTEM
     pcl_fs::permissions (pcl_fs::path (file_name), pcl_fs::perms::set_gid, pcl_fs::perm_options::add);
 #else
     pcl_fs::permissions (pcl_fs::path (file_name), pcl_fs::add_perms | pcl_fs::set_gid_on_exe);
@@ -95,7 +95,7 @@ pcl::PCDWriter::resetLockingPermissions (const std::string &file_name,
 #ifndef NO_MANDATORY_LOCKING
   try
   {
-#if (__cplusplus >= 201703L)
+#ifdef PCL_USING_STD_FILESYSTEM
     pcl_fs::permissions (pcl_fs::path (file_name), pcl_fs::perms::set_gid, pcl_fs::perm_options::remove);
 #else
     pcl_fs::permissions (pcl_fs::path (file_name), pcl_fs::remove_perms | pcl_fs::set_gid_on_exe);
@@ -509,7 +509,7 @@ pcl::PCDReader::readBodyASCII (std::istream &fs, pcl::PCLPointCloud2 &cloud, int
         {
 #define COPY_STRING(CASE_LABEL)                                                        \
   case CASE_LABEL: {                                                                   \
-    copyStringValue<pcl::traits::asType_t<CASE_LABEL>>(                                \
+    copyStringValue<pcl::traits::asType_t<(CASE_LABEL)>>(                              \
         st.at(total + c), cloud, idx, d, c, is);                                       \
     break;                                                                             \
   }
@@ -640,11 +640,11 @@ pcl::PCDReader::readBodyBinary (const unsigned char *map, pcl::PCLPointCloud2 &c
     {
       for (uindex_t c = 0; c < cloud.fields[d].count; ++c)
       {
-#define SET_CLOUD_DENSE(CASE_LABEL)                                                    \
-  case CASE_LABEL: {                                                                   \
-    if (!isValueFinite<pcl::traits::asType_t<CASE_LABEL>>(cloud, i, point_size, d, c)) \
-      cloud.is_dense = false;                                                          \
-    break;                                                                             \
+#define SET_CLOUD_DENSE(CASE_LABEL)                                                      \
+  case CASE_LABEL: {                                                                     \
+    if (!isValueFinite<pcl::traits::asType_t<(CASE_LABEL)>>(cloud, i, point_size, d, c)) \
+      cloud.is_dense = false;                                                            \
+    break;                                                                               \
   }
         switch (cloud.fields[d].datatype)
         {
@@ -677,13 +677,7 @@ pcl::PCDReader::read (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
   pcl::console::TicToc tt;
   tt.tic ();
 
-  if (file_name.empty ())
-  {
-    PCL_ERROR ("[pcl::PCDReader::read] No file name given!\n");
-    return (-1);
-  }
-
-  if (!pcl_fs::exists (file_name))
+  if (file_name.empty () || !pcl_fs::exists (file_name))
   {
     PCL_ERROR ("[pcl::PCDReader::read] Could not find file '%s'.\n", file_name.c_str ());
     return (-1);
@@ -1156,7 +1150,7 @@ pcl::PCDWriter::writeASCII (const std::string &file_name, const pcl::PCLPointClo
       {
 #define COPY_VALUE(CASE_LABEL)                                                         \
   case CASE_LABEL: {                                                                   \
-    copyValueString<pcl::traits::asType_t<CASE_LABEL>>(                                \
+    copyValueString<pcl::traits::asType_t<(CASE_LABEL)>>(                              \
         cloud, i, point_size, d, c, stream);                                           \
     break;                                                                             \
   }

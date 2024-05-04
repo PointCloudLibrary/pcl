@@ -213,16 +213,16 @@ pcl::people::HeightMap2D<PointT>::filterMaxima ()
 
       PointT* p_current = &(*cloud_)[maxima_cloud_indices_[i]];  // pointcloud point referring to the current maximum
       Eigen::Vector3f p_current_eigen(p_current->x, p_current->y, p_current->z);  // conversion to eigen
-      float t = p_current_eigen.dot(ground_coeffs_.head(3)) / std::pow(sqrt_ground_coeffs_, 2); // height from the ground
-      p_current_eigen -= ground_coeffs_.head(3) * t;       // projection of the point on the groundplane
+      float t = p_current_eigen.dot(ground_coeffs_.head<3>()) / std::pow(sqrt_ground_coeffs_, 2); // height from the ground
+      p_current_eigen -= ground_coeffs_.head<3>() * t;       // projection of the point on the groundplane
 
       int j = i-1;
       while ((j >= 0) && (good_maximum))
       {
         PointT* p_previous = &(*cloud_)[maxima_cloud_indices_[j]];         // pointcloud point referring to an already validated maximum
         Eigen::Vector3f p_previous_eigen(p_previous->x, p_previous->y, p_previous->z);  // conversion to eigen
-        float t = p_previous_eigen.dot(ground_coeffs_.head(3)) / std::pow(sqrt_ground_coeffs_, 2); // height from the ground
-        p_previous_eigen -= ground_coeffs_.head(3) * t;         // projection of the point on the groundplane
+        float t = p_previous_eigen.dot(ground_coeffs_.head<3>()) / std::pow(sqrt_ground_coeffs_, 2); // height from the ground
+        p_previous_eigen -= ground_coeffs_.head<3>() * t;         // projection of the point on the groundplane
 
         // distance of the projection of the points on the groundplane:
         float distance = (p_current_eigen-p_previous_eigen).norm();

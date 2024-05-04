@@ -507,7 +507,7 @@ getPrincipalTransformation (const pcl::PointCloud<PointT> &cloud,
   double rel1 = eigen_vals.coeff (0) / eigen_vals.coeff (1);
   double rel2 = eigen_vals.coeff (1) / eigen_vals.coeff (2);
 
-  transform.translation () = centroid.head (3);
+  transform.translation () = centroid.template head<3> ();
   transform.linear () = eigen_vects;
 
   return (std::min (rel1, rel2));

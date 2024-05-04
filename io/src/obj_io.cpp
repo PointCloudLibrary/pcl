@@ -215,8 +215,8 @@ pcl::MTLReader::read (const std::string& mtl_file_path)
 
       // Tokenize the line
       pcl::split (st, line, "\t\r ");
-      // Ignore comments
-      if (st[0] == "#")
+      // Ignore comments and lines with only whitespace
+      if (st.empty() || st[0] == "#")
         continue;
 
       if (st[0] == "newmtl")
@@ -573,8 +573,8 @@ pcl::OBJReader::read (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
       // Tokenize the line
       pcl::split (st, line, "\t\r ");
 
-      // Ignore comments
-      if (st[0] == "#")
+      // Ignore comments and lines with only whitespace
+      if (st.empty() || st[0] == "#")
         continue;
 
       // Vertex
@@ -904,8 +904,8 @@ pcl::OBJReader::read (const std::string &file_name, pcl::PolygonMesh &mesh,
       // Tokenize the line
       pcl::split (st, line, "\t\r ");
 
-      // Ignore comments
-      if (st[0] == "#")
+      // Ignore comments and lines with only whitespace
+      if (st.empty() || st[0] == "#")
         continue;
 
       // Vertex

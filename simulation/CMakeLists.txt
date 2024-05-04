@@ -2,11 +2,6 @@ set(SUBSYS_NAME simulation)
 set(SUBSYS_DESC "Point Cloud Library Simulation")
 set(SUBSYS_DEPS common io surface kdtree features search octree visualization filters geometry)
 
-set(build FALSE)
-find_package(OpenGL)
-
-find_package(GLEW)
-
 PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" OFF)
 PCL_SUBSYS_DEPEND(build NAME ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} EXT_DEPS opengl glew)
 
@@ -35,8 +30,6 @@ set(incs
 )
 
 set(LIB_NAME "pcl_${SUBSYS_NAME}")
-include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include")
-
 PCL_ADD_LIBRARY(${LIB_NAME} COMPONENT ${SUBSYS_NAME} SOURCES ${srcs} ${incs})
 
 target_link_libraries("${LIB_NAME}" pcl_common pcl_io

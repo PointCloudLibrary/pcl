@@ -1760,7 +1760,7 @@ pcl::visualization::PCLVisualizer::setShapeRenderingProperties (
   }
   // Get the actor pointer
   vtkActor* actor = vtkActor::SafeDownCast (am_it->second);
-  if (!actor)
+  if (!actor && property != PCL_VISUALIZER_FONT_SIZE) // vtkTextActor is not a subclass of vtkActor
     return (false);
 
   switch (property)
@@ -4162,8 +4162,8 @@ pcl::visualization::PCLVisualizer::getTransformationMatrix (
     Eigen::Matrix4f &transformation)
 {
   transformation.setIdentity ();
-  transformation.block<3, 3> (0, 0) = orientation.toRotationMatrix ();
-  transformation.block<3, 1> (0, 3) = origin.head (3);
+  transformation.topLeftCorner<3, 3> () = orientation.toRotationMatrix ();
+  transformation.block<3, 1> (0, 3) = origin.head<3> ();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////

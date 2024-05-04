@@ -42,7 +42,7 @@
 
 #include <pcl/features/feature.h>
 #define GRIDSIZE 64
-#define GRIDSIZE_H GRIDSIZE/2
+#define GRIDSIZE_H (GRIDSIZE/2)
 #include <vector>
 
 namespace pcl

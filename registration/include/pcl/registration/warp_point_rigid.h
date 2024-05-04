@@ -95,9 +95,9 @@ public:
     pnt_out.z = static_cast<float>(
         transform_matrix_(2, 0) * pnt_in.x + transform_matrix_(2, 1) * pnt_in.y +
         transform_matrix_(2, 2) * pnt_in.z + transform_matrix_(2, 3));
-    // pnt_out.getVector3fMap () = transform_matrix_.topLeftCorner (3, 3) *
+    // pnt_out.getVector3fMap () = transform_matrix_.topLeftCorner<3, 3> () *
     //                            pnt_in.getVector3fMap () +
-    //                            transform_matrix_.block (0, 3, 3, 1);
+    //                            transform_matrix_.block<3, 1> (0, 3);
     // pnt_out.data[3] = pnt_in.data[3];
   }
 

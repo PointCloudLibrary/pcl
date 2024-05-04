@@ -38,10 +38,14 @@
 
 #pragma once
 
-#if (__cplusplus >= 201703L)
+#include <pcl/pcl_config.h> // for PCL_PREFER_BOOST_FILESYSTEM
+
+#if (__cplusplus >= 201703L) && !defined(PCL_PREFER_BOOST_FILESYSTEM)
+#define PCL_USING_STD_FILESYSTEM
 #include <filesystem>
 namespace pcl_fs = std::filesystem;
 #else
+#define PCL_USING_BOOST_FILESYSTEM
 #include <boost/filesystem.hpp>
 namespace pcl_fs = boost::filesystem;
 #endif

@@ -3,12 +3,12 @@ set(SUBSUBSYS_DESC "In-hand scanner for small objects")
 set(SUBSUBSYS_DEPS     common     features     io     kdtree apps)
 set(SUBSUBSYS_LIBS pcl_common pcl_features pcl_io pcl_kdtree)
 set(SUBSUBSYS_EXT_DEPS ${QTX} OpenGL OpenGL_GLU openni)
+set(REASON "")
+set(DEFAULT OFF)
 
-################################################################################
-
-# Default to not building for now
-if(${DEFAULT} STREQUAL "TRUE")
-  set(DEFAULT FALSE)
+# Have Qt?
+if("${QTX}" STREQUAL "")
+  set(REASON "Cloud composer requires Qt.")
 endif()
 
 pcl_subsubsys_option(build "${SUBSYS_NAME}" "${SUBSUBSYS_NAME}" "${SUBSUBSYS_DESC}" ${DEFAULT} "${REASON}")

@@ -479,7 +479,7 @@ void pcl::RFFaceDetectorTrainer::detectFaces()
 
       Eigen::Matrix4f guess;
       guess.setIdentity ();
-      guess.block<3, 3> (0, 0) = matrixxx;
+      guess.topLeftCorner<3, 3> () = matrixxx;
       guess (0, 3) = head_clusters_centers_[i][0];
       guess (1, 3) = head_clusters_centers_[i][1];
       guess (2, 3) = head_clusters_centers_[i][2];
@@ -519,7 +519,7 @@ void pcl::RFFaceDetectorTrainer::detectFaces()
       head_clusters_centers_[i][1] = icp_trans (1, 3);
       head_clusters_centers_[i][2] = icp_trans (2, 3);
 
-      Eigen::Vector3f ea = icp_trans.block<3, 3> (0, 0).eulerAngles (0, 1, 2);
+      Eigen::Vector3f ea = icp_trans.topLeftCorner<3, 3> ().eulerAngles (0, 1, 2);
       head_clusters_rotation_[i][0] = ea[0];
       head_clusters_rotation_[i][1] = ea[1];
       head_clusters_rotation_[i][2] = ea[2];

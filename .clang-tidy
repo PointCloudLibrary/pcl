@@ -1,6 +1,8 @@
 ---
 Checks: >
     -*,
+    bugprone-copy-constructor-init,
+    bugprone-macro-parentheses,
     cppcoreguidelines-pro-type-cstyle-cast,
     cppcoreguidelines-pro-type-static-cast-downcast,
     google-readability-casting,

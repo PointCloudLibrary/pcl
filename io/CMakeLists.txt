@@ -3,7 +3,6 @@ set(SUBSYS_DESC "Point cloud IO library")
 set(SUBSYS_DEPS common octree)
 set(SUBSYS_EXT_DEPS boost eigen3)
 
-set(build TRUE)
 PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ON)
 if(WIN32)
   PCL_SUBSYS_DEPEND(build NAME ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} OPT_DEPS openni openni2 ensenso davidSDK dssdk rssdk rssdk2 pcap png vtk OpenMP EXT_DEPS ${SUBSYS_EXT_DEPS})
@@ -210,7 +209,6 @@ if(MINGW)
   target_link_libraries(pcl_io_ply ws2_32)
 endif()
 PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/ply" ${PLY_INCLUDES})
-target_include_directories(pcl_io_ply PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include")
 target_link_libraries(pcl_io_ply pcl_common Boost::boost)
 
 set(srcs
@@ -341,8 +339,6 @@ add_definitions(${VTK_DEFINES})
 
 PCL_ADD_LIBRARY(${LIB_NAME} COMPONENT ${SUBSYS_NAME} SOURCES ${srcs} ${incs} ${compression_incs} ${impl_incs} ${OPENNI_INCLUDES} ${OPENNI2_INCLUDES})
 
-target_include_directories(${LIB_NAME} PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include")
-
 target_link_libraries("${LIB_NAME}" Boost::boost Boost::iostreams pcl_common pcl_io_ply)
 if(TARGET Boost::filesystem)
   target_link_libraries("${LIB_NAME}" Boost::filesystem)
@@ -374,6 +370,7 @@ if(VTK_FOUND)
 endif()
 
 if(PNG_FOUND)
+  target_include_directories("${LIB_NAME}" SYSTEM PRIVATE ${PNG_INCLUDE_DIRS})
   target_link_libraries("${LIB_NAME}" ${PNG_LIBRARIES})
 endif()
 

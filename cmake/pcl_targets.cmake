@@ -192,32 +192,48 @@ function(PCL_ADD_LIBRARY _name)
     message(FATAL_ERROR "PCL_ADD_LIBRARY requires parameter COMPONENT.")
   endif()
 
-  add_library(${_name} ${PCL_LIB_TYPE} ${ARGS_SOURCES})
-  PCL_ADD_VERSION_INFO(${_name})
-  target_compile_features(${_name} PUBLIC ${PCL_CXX_COMPILE_FEATURES})
+  if(NOT ARGS_SOURCES)
+    add_library(${_name} INTERFACE)
+    
+    target_include_directories(${_name} INTERFACE
+      $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+      $<INSTALL_INTERFACE:${INCLUDE_INSTALL_ROOT}> 
+    )
 
-  target_link_libraries(${_name} Threads::Threads)
-  if(TARGET OpenMP::OpenMP_CXX)
-    target_link_libraries(${_name} OpenMP::OpenMP_CXX)
+  else()
+    add_library(${_name} ${PCL_LIB_TYPE} ${ARGS_SOURCES})
+    PCL_ADD_VERSION_INFO(${_name})
+    target_compile_features(${_name} PUBLIC ${PCL_CXX_COMPILE_FEATURES})
+
+    target_include_directories(${_name} PUBLIC
+      $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+      $<INSTALL_INTERFACE:${INCLUDE_INSTALL_ROOT}> 
+    )
+
+    target_link_libraries(${_name} Threads::Threads)
+    if(TARGET OpenMP::OpenMP_CXX)
+      target_link_libraries(${_name} OpenMP::OpenMP_CXX)
+    endif()
+
+    if((UNIX AND NOT ANDROID) OR MINGW)
+      target_link_libraries(${_name} m ${ATOMIC_LIBRARY})
+    endif()
+
+    if(MINGW)
+      target_link_libraries(${_name} gomp)
+    endif()
+
+    if(MSVC)
+      target_link_libraries(${_name} delayimp.lib)  # because delay load is enabled for openmp.dll
+    endif()
+    
+    set_target_properties(${_name} PROPERTIES
+      VERSION ${PCL_VERSION}
+      SOVERSION ${PCL_VERSION_MAJOR}.${PCL_VERSION_MINOR}
+      DEFINE_SYMBOL "PCLAPI_EXPORTS")
+
+      set_target_properties(${_name} PROPERTIES FOLDER "Libraries")
   endif()
-
-  if((UNIX AND NOT ANDROID) OR MINGW)
-    target_link_libraries(${_name} m ${ATOMIC_LIBRARY})
-  endif()
-
-  if(MINGW)
-    target_link_libraries(${_name} gomp)
-  endif()
-
-  if(MSVC)
-    target_link_libraries(${_name} delayimp.lib)  # because delay load is enabled for openmp.dll
-  endif()
-
-  set_target_properties(${_name} PROPERTIES
-    VERSION ${PCL_VERSION}
-    SOVERSION ${PCL_VERSION_MAJOR}.${PCL_VERSION_MINOR}
-    DEFINE_SYMBOL "PCLAPI_EXPORTS")
-  set_target_properties(${_name} PROPERTIES FOLDER "Libraries")
 
   install(TARGETS ${_name}
           RUNTIME DESTINATION ${BIN_INSTALL_DIR} COMPONENT pcl_${ARGS_COMPONENT}
@@ -256,6 +272,11 @@ function(PCL_CUDA_ADD_LIBRARY _name)
   PCL_ADD_VERSION_INFO(${_name})
 
   target_compile_options(${_name} PRIVATE $<$<COMPILE_LANGUAGE:CUDA>: ${GEN_CODE} --expt-relaxed-constexpr>)
+
+  target_include_directories(${_name} PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:${INCLUDE_INSTALL_ROOT}> 
+  )
 
   target_include_directories(${_name} PRIVATE ${CUDA_TOOLKIT_INCLUDE})
 

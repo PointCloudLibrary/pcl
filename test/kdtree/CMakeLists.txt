@@ -3,9 +3,7 @@ set(SUBSYS_DESC "Point cloud library kdtree module unit tests")
 PCL_SET_TEST_DEPENDENCIES(SUBSYS_DEPS kdtree)
 set(OPT_DEPS io) # io is not a mandatory dependency in kdtree
 
-set(DEFAULT ON)
-set(build TRUE)
-PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ${DEFAULT} "${REASON}")
+PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ON)
 PCL_SUBSYS_DEPEND(build NAME ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} OPT_DEPS ${OPT_DEPS})
 
 if(NOT (build AND BUILD_io))

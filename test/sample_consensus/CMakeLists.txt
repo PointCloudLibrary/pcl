@@ -3,9 +3,7 @@ set(SUBSYS_DESC "Point cloud library sample_consensus module unit tests")
 PCL_SET_TEST_DEPENDENCIES(SUBSYS_DEPS sample_consensus)
 set(OPT_DEPS io)
 
-set(DEFAULT ON)
-set(build TRUE)
-PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ${DEFAULT} "${REASON}")
+PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ON)
 PCL_SUBSYS_DEPEND(build NAME ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} OPT_DEPS ${OPT_DEPS})
 
 if(NOT build)

@@ -45,6 +45,9 @@ set(PCL_QHULL_REQUIRED_TYPE "DONTCARE" CACHE STRING "Select build type to use ST
 set_property(CACHE PCL_QHULL_REQUIRED_TYPE PROPERTY STRINGS DONTCARE SHARED STATIC)
 mark_as_advanced(PCL_QHULL_REQUIRED_TYPE)
 
+option(PCL_PREFER_BOOST_FILESYSTEM "Prefer boost::filesystem over std::filesystem (if compiled as C++17 or higher, std::filesystem is chosen by default)" OFF)
+mark_as_advanced(PCL_PREFER_BOOST_FILESYSTEM)
+
 # Precompile for a minimal set of point types instead of all.
 option(PCL_ONLY_CORE_POINT_TYPES "Compile explicitly only for a small subset of point types (e.g., pcl::PointXYZ instead of PCL_XYZ_POINT_TYPES)." OFF)
 mark_as_advanced(PCL_ONLY_CORE_POINT_TYPES)
@@ -87,8 +90,6 @@ mark_as_advanced(CMAKE_MSVC_CODE_LINK_OPTIMIZATION)
 
 # Project folders
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
-
-option(BUILD_tools "Useful PCL-based command line tools" ON)
 
 option(WITH_DOCS "Build doxygen documentation" OFF)
 

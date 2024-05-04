@@ -23,7 +23,7 @@ if("${CMAKE_BUILD_TYPE}" STREQUAL "")
   set(CMAKE_BUILD_TYPE RelWithDebInfo CACHE STRING "build type default to RelWithDebInfo, set to Release to improve performance" FORCE)
 endif()
 
-project(PCL VERSION 1.14.0.99)
+project(PCL VERSION 1.14.1.99)
 string(TOLOWER ${PROJECT_NAME} PROJECT_NAME_LOWER)
 
 if(MSVC AND ("${MSVC_VERSION}" LESS 1910))
@@ -368,7 +368,6 @@ if(WITH_PNG)
   find_package(PNG)
   if(PNG_FOUND)
     set(HAVE_PNG ON)
-    include_directories(SYSTEM "${PNG_INCLUDE_DIR}")
   endif()
 endif()
 
@@ -417,6 +416,12 @@ endif()
 option(WITH_OPENGL "Support for OpenGL" TRUE)
 if(WITH_OPENGL)
   include("${PCL_SOURCE_DIR}/cmake/pcl_find_gl.cmake")
+endif()
+
+# GLEW
+option(WITH_GLEW "Support for GLEW" TRUE)
+if(WITH_GLEW)
+  find_package(GLEW QUIET)
 endif()
 
 # Boost (required)

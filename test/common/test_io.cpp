@@ -250,6 +250,52 @@ TEST (PCL, CopyPointCloudWithSameTypes)
   ASSERT_EQ (0, cloud_out.size ());
 }
 
+TEST (toPCLPointCloud2NoPadding, PointXYZI)
+{
+  pcl::PointCloud<pcl::PointXYZI> cloud;
+  cloud.resize(static_cast<pcl::uindex_t>(2), static_cast<pcl::uindex_t>(2));
+  cloud[0].x = 1.0; cloud[0].y = 2.0; cloud[0].z = 3.0; cloud[0].intensity = 123.0;
+  cloud[1].x = -1.0; cloud[1].y = -2.0; cloud[1].z = -3.0; cloud[1].intensity = -123.0;
+  cloud[2].x = 0.1; cloud[2].y = 0.2; cloud[2].z = 0.3; cloud[2].intensity = 12.3;
+  cloud[3].x = 0.0; cloud[3].y = -1.7; cloud[3].z = 100.0; cloud[3].intensity = 3.14;
+  pcl::PCLPointCloud2 msg;
+  pcl::toPCLPointCloud2(cloud, msg, false);
+  EXPECT_EQ (msg.height, cloud.height);
+  EXPECT_EQ (msg.width, cloud.width);
+  EXPECT_EQ (msg.fields.size(), 4);
+  EXPECT_EQ (msg.fields[0].name, "x");
+  EXPECT_EQ (msg.fields[0].offset, 0);
+  EXPECT_EQ (msg.fields[0].datatype, pcl::PCLPointField::FLOAT32);
+  EXPECT_EQ (msg.fields[0].count, 1);
+  EXPECT_EQ (msg.fields[1].name, "y");
+  EXPECT_EQ (msg.fields[1].offset, 4);
+  EXPECT_EQ (msg.fields[1].datatype, pcl::PCLPointField::FLOAT32);
+  EXPECT_EQ (msg.fields[1].count, 1);
+  EXPECT_EQ (msg.fields[2].name, "z");
+  EXPECT_EQ (msg.fields[2].offset, 8);
+  EXPECT_EQ (msg.fields[2].datatype, pcl::PCLPointField::FLOAT32);
+  EXPECT_EQ (msg.fields[2].count, 1);
+  EXPECT_EQ (msg.fields[3].name, "intensity");
+  EXPECT_EQ (msg.fields[3].offset, 12);
+  EXPECT_EQ (msg.fields[3].datatype, pcl::PCLPointField::FLOAT32);
+  EXPECT_EQ (msg.fields[3].count, 1);
+  EXPECT_EQ (msg.point_step, 16);
+  EXPECT_EQ (msg.row_step, 16*cloud.width);
+  EXPECT_EQ (msg.data.size(), 16*cloud.width*cloud.height);
+  EXPECT_EQ (msg.at<float>(0, 0), 1.0f);
+  EXPECT_EQ (msg.at<float>(3, 4), -1.7f);
+  EXPECT_EQ (msg.at<float>(1, 8), -3.0f);
+  EXPECT_EQ (msg.at<float>(2, 12), 12.3f);
+  pcl::PointCloud<pcl::PointXYZI> cloud2;
+  pcl::fromPCLPointCloud2(msg, cloud2);
+  for(std::size_t i=0; i<cloud2.size(); ++i) {
+    EXPECT_EQ (cloud[i].x, cloud2[i].x);
+    EXPECT_EQ (cloud[i].y, cloud2[i].y);
+    EXPECT_EQ (cloud[i].z, cloud2[i].z);
+    EXPECT_EQ (cloud[i].intensity, cloud2[i].intensity);
+  }
+}
+
 /* ---[ */
 int
 main (int argc, char** argv)

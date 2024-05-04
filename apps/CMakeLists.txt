@@ -3,9 +3,7 @@ set(SUBSYS_DESC "Application examples/samples that show how PCL works")
 set(SUBSYS_DEPS common geometry io filters sample_consensus segmentation visualization kdtree features surface octree registration keypoints tracking search recognition ml stereo 2d)
 set(SUBSYS_OPT_DEPS openni vtk ${QTX})
 
-set(DEFAULT FALSE)
-set(REASON "Disabled by default")
-PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ${DEFAULT} "${REASON}")
+PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" OFF)
 PCL_SUBSYS_DEPEND(build NAME ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} OPT_DEPS ${SUBSYS_OPT_DEPS})
 
 if(NOT build)
@@ -117,8 +115,8 @@ if(VTK_FOUND)
     target_link_libraries(pcl_openni_octree_compression pcl_common pcl_io pcl_filters pcl_visualization pcl_octree)
 
     if(HAVE_PNG)
-    PCL_ADD_EXECUTABLE(pcl_openni_organized_compression COMPONENT ${SUBSYS_NAME} SOURCES src/openni_organized_compression.cpp BUNDLE)
-    target_link_libraries(pcl_openni_organized_compression pcl_common pcl_io pcl_filters pcl_visualization pcl_octree)
+      PCL_ADD_EXECUTABLE(pcl_openni_organized_compression COMPONENT ${SUBSYS_NAME} SOURCES src/openni_organized_compression.cpp BUNDLE)
+      target_link_libraries(pcl_openni_organized_compression pcl_common pcl_io pcl_filters pcl_visualization pcl_octree)
     endif()
 
     PCL_ADD_EXECUTABLE(pcl_openni_shift_to_depth_conversion COMPONENT ${SUBSYS_NAME} SOURCES src/openni_shift_to_depth_conversion.cpp BUNDLE)

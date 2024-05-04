@@ -198,7 +198,7 @@ pcl::ASCIIReader::parse (
 #define ASSIGN_TOKEN(CASE_LABEL)                                                       \
   case CASE_LABEL: {                                                                   \
     *(reinterpret_cast<pcl::traits::asType_t<CASE_LABEL>*>(data_target)) =             \
-        boost::lexical_cast<pcl::traits::asType_t<CASE_LABEL>>(token);                 \
+        boost::lexical_cast<pcl::traits::asType_t<(CASE_LABEL)>>(token);               \
     return sizeof(pcl::traits::asType_t<CASE_LABEL>);                                  \
   }
   switch (field.datatype)
