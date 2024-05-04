@@ -677,7 +677,13 @@ pcl::PCDReader::read (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
   pcl::console::TicToc tt;
   tt.tic ();
 
-  if (file_name.empty () || !pcl_fs::exists (file_name))
+  if (file_name.empty ())
+  {
+    PCL_ERROR ("[pcl::PCDReader::read] No file name given!\n");
+    return (-1);
+  }
+
+  if (!pcl_fs::exists (file_name))
   {
     PCL_ERROR ("[pcl::PCDReader::read] Could not find file '%s'.\n", file_name.c_str ());
     return (-1);
