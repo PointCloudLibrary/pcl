@@ -211,7 +211,7 @@ TransformationEstimationSVD<PointSource, PointTarget, Scalar>::
   Eigen::Matrix<Scalar, 3, 3> R = v * u.transpose();
 
   // Return the correct transformation
-  transformation_matrix.topLeftCorner(3, 3) = R;
+  transformation_matrix.template topLeftCorner<3, 3>() = R;
   const Eigen::Matrix<Scalar, 3, 1> Rc(R * centroid_src.template head<3>());
   transformation_matrix.template block<3, 1>(0, 3) =
       centroid_tgt.template head<3>() - Rc;
