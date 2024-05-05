@@ -108,12 +108,24 @@ namespace pcl
         search_radius_ = radius;
       }
 
+      /** \brief Set the minimum number of points required for a voxel to be used.
+        * \param[in] min_points_per_voxel the minimum number of points for required for a voxel to be used
+        */
+      inline void
+      setMinimumPointsNumberPerVoxel (unsigned int min_points_per_voxel) { min_points_per_voxel_ = min_points_per_voxel; }
+
+      /** \brief Return the minimum number of points required for a voxel to be used.
+        */
+      inline unsigned int
+      getMinimumPointsNumberPerVoxel () const { return min_points_per_voxel_; }
+
     protected:
       /** \brief Simple structure to hold an nD centroid and the number of points in a leaf. */
       struct Leaf
       {
         Leaf () = default;
         int idx{-1};
+        unsigned int count{0};
       };
 
       /** \brief The 3D grid leaves. */
@@ -130,6 +142,9 @@ namespace pcl
 
       /** \brief The nearest neighbors search radius for each point. */
       double search_radius_{0.0};
+
+      /** \brief Minimum number of points per voxel. */
+      unsigned int min_points_per_voxel_{0};
 
       /** \brief Downsample a Point Cloud using a voxelized grid approach
         * \param[out] output the resultant point cloud message

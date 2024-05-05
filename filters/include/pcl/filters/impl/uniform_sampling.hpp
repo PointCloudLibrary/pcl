@@ -104,6 +104,10 @@ pcl::UniformSampling<PointT>::applyFilter (PointCloud &output)
     // Compute the leaf index
     int idx = (ijk - min_b_).dot (divb_mul_);
     Leaf& leaf = leaves_[idx];
+
+    // Increment the count of points in this voxel
+    ++leaf.count;
+
     // First time we initialize the index
     if (leaf.idx == -1)
     {
@@ -134,11 +138,14 @@ pcl::UniformSampling<PointT>::applyFilter (PointCloud &output)
 
   // Second pass: go over all leaves and copy data
   output.resize (leaves_.size ());
-  int cp = 0;
+  std::size_t cp = 0;
 
   for (const auto& leaf : leaves_)
-    output[cp++] = (*input_)[leaf.second.idx];
-  output.width = output.size ();
+  {
+    if (leaf.second.count >= min_points_per_voxel_)
+      output[cp++] = (*input_)[leaf.second.idx];
+  }
+  output.resize (cp);
 }
 
 #define PCL_INSTANTIATE_UniformSampling(T) template class PCL_EXPORTS pcl::UniformSampling<T>;
