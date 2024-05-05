@@ -30,15 +30,14 @@ RUN wget $Env:CHANNEL_BASE_URL/vs_buildtools.exe -OutFile 'C:\TEMP\vs_buildtools
     "C:\TEMP\VisualStudio.chman",                                   `
     "--add",                                                        `
     "Microsoft.VisualStudio.Workload.VCTools",                      `
-    "Microsoft.Net.Component.4.8.SDK",                            `
+    "Microsoft.Net.Component.4.8.SDK",                              `
     "Microsoft.VisualStudio.Component.VC.ATLMFC",                   `
     "--includeRecommended"                                          `
     -Wait -PassThru;                                                `
     del c:\temp\vs_buildtools.exe;                                  
 
-# VCPKG requires update if Cmake version is > 3.20.5 see: https://github.com/microsoft/vcpkg-tool/pull/107
 RUN iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'));   `
-    choco install cmake --version=3.20.5 --installargs 'ADD_CMAKE_TO_PATH=System' -y --no-progress; `
+    choco install cmake --installargs 'ADD_CMAKE_TO_PATH=System' -y --no-progress; `
     choco install git -y --no-progress
 
 RUN git clone https://github.com/microsoft/vcpkg.git; cd vcpkg; git checkout $Env:VCPKGCOMMIT;
@@ -46,7 +45,7 @@ RUN git clone https://github.com/microsoft/vcpkg.git; cd vcpkg; git checkout $En
 # To explicit set VCPKG to only build Release version of the libraries.
 COPY $PLATFORM'-windows-rel.cmake' 'c:\vcpkg\triplets\'$PLATFORM'-windows-rel.cmake'
 
-RUN cd .\vcpkg;                                                `
-    .\bootstrap-vcpkg.bat;                                            `
-    .\vcpkg install boost flann eigen3 qhull vtk[qt,opengl] gtest benchmark openni2 --triplet $Env:PLATFORM-windows-rel --host-triplet $Env:PLATFORM-windows-rel --clean-after-build --x-buildtrees-root=C:\b; `
+RUN cd .\vcpkg;                                                     `
+    .\bootstrap-vcpkg.bat;                                          `
+    .\vcpkg install boost-filesystem boost-iostreams flann eigen3 qhull vtk[qt,opengl] gtest benchmark openni2 --triplet $Env:PLATFORM-windows-rel --host-triplet $Env:PLATFORM-windows-rel --clean-after-build --x-buildtrees-root=C:\b; `
 
