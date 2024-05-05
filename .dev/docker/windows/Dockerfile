@@ -47,5 +47,5 @@ COPY $PLATFORM'-windows-rel.cmake' 'c:\vcpkg\triplets\'$PLATFORM'-windows-rel.cm
 
 RUN cd .\vcpkg;                                                     `
     .\bootstrap-vcpkg.bat;                                          `
-    .\vcpkg install boost-filesystem boost-iostreams flann eigen3 qhull vtk[qt,opengl] gtest benchmark openni2 --triplet $Env:PLATFORM-windows-rel --host-triplet $Env:PLATFORM-windows-rel --clean-after-build --x-buildtrees-root=C:\b; `
+    .\vcpkg install boost-filesystem boost-iostreams flann eigen3 qhull vtk[qt,opengl] gtest benchmark openni2 --triplet $Env:PLATFORM-windows-rel --host-triplet $Env:PLATFORM-windows-rel --clean-after-build --x-buildtrees-root=C:\b;
 
