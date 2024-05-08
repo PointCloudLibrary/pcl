@@ -15324,11 +15324,8 @@ const wchar_t* ON_FileIterator::NextFile()
       NULL is returned and errno is not changed. If an error occurs,
       NULL is returned and errno is set appropriately.
     */
-    errno = 0;
     struct dirent* dp = 0;
     dp = readdir(m_dir);
-    if ( 0 != errno )
-      break;
     if ( 0 == dp )
       break;
     if ( 0 == dp->d_name[0] )
