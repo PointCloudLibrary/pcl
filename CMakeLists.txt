@@ -349,19 +349,6 @@ PCL_ADD_GRABBER_DEPENDENCY("DSSDK" "DepthSense SDK support")
 PCL_ADD_GRABBER_DEPENDENCY("RSSDK" "RealSense SDK support")
 PCL_ADD_GRABBER_DEPENDENCY("RSSDK2" "RealSense SDK 2.0 (librealsense) support")
 
-# metslib
-if(PKG_CONFIG_FOUND)
-  pkg_check_modules(METSLIB metslib)
-  if(METSLIB_FOUND)
-    set(HAVE_METSLIB ON)
-    include_directories(SYSTEM ${METSLIB_INCLUDE_DIRS})
-  else()
-    include_directories(SYSTEM "${PCL_SOURCE_DIR}/recognition/include/pcl/recognition/3rdparty/")
-  endif()
-else()
-    include_directories(SYSTEM ${PCL_SOURCE_DIR}/recognition/include/pcl/recognition/3rdparty/)
-endif()
-
 # LibPNG
 option(WITH_PNG "PNG file support" TRUE)
 if(WITH_PNG)
