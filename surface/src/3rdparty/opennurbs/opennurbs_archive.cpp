@@ -15318,14 +15318,20 @@ const wchar_t* ON_FileIterator::NextFile()
   for(;;)
   {
     current_file_attributes = 0;
+    /*
+      from readdir man page:
+      If the end of the directory stream is reached,
+      NULL is returned and errno is not changed. If an error occurs,
+      NULL is returned and errno is set appropriately.
+    */
     struct dirent* dp = 0;
-    int readdir_errno = readdir_r(m_dir, &m_dirent, &dp);
-    if ( 0 !=  readdir_errno )
-      break;
+    dp = readdir(m_dir);
     if ( 0 == dp )
       break;
-    if ( 0 == m_dirent.d_name[0] )
+    if ( 0 == dp->d_name[0] )
       break;
+
+    m_dirent = *dp;
 
     if ( IsDotOrDotDotDir(m_dirent.d_name) )
       continue;
