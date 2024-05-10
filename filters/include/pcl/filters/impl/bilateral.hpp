@@ -43,6 +43,7 @@
 #include <pcl/filters/bilateral.h>
 #include <pcl/search/organized.h> // for OrganizedNeighbor
 #include <pcl/search/kdtree.h> // for KdTree
+#include <pcl/common/point_tests.h> // for isXYZFinite
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> double
@@ -101,11 +102,14 @@ pcl::BilateralFilter<PointT>::applyFilter (PointCloud &output)
   // For all the indices given (equal to the entire cloud if none given)
   for (const auto& idx : (*indices_))
   {
-    // Perform a radius search to find the nearest neighbors
-    tree_->radiusSearch (idx, sigma_s_ * 2, k_indices, k_distances);
+    if (input_->is_dense || pcl::isXYZFinite((*input_)[idx]))
+    {
+      // Perform a radius search to find the nearest neighbors
+      tree_->radiusSearch (idx, sigma_s_ * 2, k_indices, k_distances);
 
-    // Overwrite the intensity value with the computed average
-    output[idx].intensity = static_cast<float> (computePointWeight (idx, k_indices, k_distances));
+      // Overwrite the intensity value with the computed average
+      output[idx].intensity = static_cast<float> (computePointWeight (idx, k_indices, k_distances));
+    }
   }
 }
  

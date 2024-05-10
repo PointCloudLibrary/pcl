@@ -48,6 +48,18 @@
 template<typename PointT> void
 pcl::SamplingSurfaceNormal<PointT>::applyFilter (PointCloud &output)
 {
+  if (ratio_ <= 0.0f)
+  {
+    PCL_ERROR("[SamplingSurfaceNormal::applyFilter] Parameter 'ratio' must be larger than zero!\n");
+    output.clear();
+    return;
+  }
+  if (sample_ < 5)
+  {
+    PCL_ERROR("[SamplingSurfaceNormal::applyFilter] Parameter 'sample' must be at least 5!\n");
+    output.clear();
+    return;
+  }
   Indices indices;
   std::size_t npts = input_->size ();
   for (std::size_t i = 0; i < npts; i++)
