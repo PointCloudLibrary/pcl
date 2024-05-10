@@ -924,13 +924,15 @@ pcl::visualization::PCLVisualizer::addPointCloudNormals (
         lines->InsertCellPoint (2 * cell_count + 1);
         cell_count ++;
     }
+    nr_normals = cell_count;
   }
   else
   {
     nr_normals = (cloud->size () - 1) / level + 1 ;
     pts = new float[2 * nr_normals * 3];
 
-    for (vtkIdType i = 0, j = 0; (j < nr_normals) && (i < static_cast<vtkIdType>(cloud->size())); i += level)
+    vtkIdType j = 0;
+    for (vtkIdType i = 0; (j < nr_normals) && (i < static_cast<vtkIdType>(cloud->size())); i += level)
     {
       if (!pcl::isFinite((*cloud)[i]) || !pcl::isNormalFinite((*normals)[i]))
         continue;
@@ -951,6 +953,7 @@ pcl::visualization::PCLVisualizer::addPointCloudNormals (
       lines->InsertCellPoint (2 * j + 1);
       ++j;
     }
+    nr_normals = j;
   }
 
   data->SetArray (&pts[0], 2 * nr_normals * 3, 0, vtkFloatArray::VTK_DATA_ARRAY_DELETE);
