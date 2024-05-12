@@ -97,6 +97,7 @@ OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::nearestKSearch
 
   prioPointQueueEntry point_entry;
   std::vector<prioPointQueueEntry> point_candidates;
+  point_candidates.reserve(k);
 
   OctreeKey key;
   key.x = key.y = key.z = 0;
@@ -305,20 +306,25 @@ OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::
         // calculate point distance to search point
         float squared_dist = pointSquaredDist(candidate_point, point);
 
-        // check if a closer match is found
-        if (squared_dist < smallest_squared_dist) {
-          prioPointQueueEntry point_entry;
-
-          point_entry.point_distance_ = squared_dist;
-          point_entry.point_idx_ = point_index;
-          point_candidates.push_back(point_entry);
+        const auto insert_into_queue = [&] {
+          point_candidates.emplace(
+              std::upper_bound(point_candidates.begin(),
+                               point_candidates.end(),
+                               squared_dist,
+                               [](float dist, const prioPointQueueEntry& ent) {
+                                 return dist < ent.point_distance_;
+                               }),
+              point_index,
+              squared_dist);
+        };
+        if (point_candidates.size() < K) {
+          insert_into_queue();
+        }
+        else if (point_candidates.back().point_distance_ > squared_dist) {
+          point_candidates.pop_back();
+          insert_into_queue();
         }
       }
-
-      std::sort(point_candidates.begin(), point_candidates.end());
-
-      if (point_candidates.size() > K)
-        point_candidates.resize(K);
 
       if (point_candidates.size() == K)
         smallest_squared_dist = point_candidates.back().point_distance_;
