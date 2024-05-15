@@ -12,8 +12,6 @@ if(NOT build)
 endif()
 
 set(incs
-  "include/pcl/${SUBSYS_NAME}/eigen.h"
-  "include/pcl/${SUBSYS_NAME}/boost.h"
   "include/pcl/${SUBSYS_NAME}/boost_graph.h"
   "include/pcl/${SUBSYS_NAME}/convergence_criteria.h"
   "include/pcl/${SUBSYS_NAME}/default_convergence_criteria.h"
@@ -51,7 +49,6 @@ set(incs
 
   "include/pcl/${SUBSYS_NAME}/pyramid_feature_matching.h"
   "include/pcl/${SUBSYS_NAME}/registration.h"
-  "include/pcl/${SUBSYS_NAME}/transforms.h"
   "include/pcl/${SUBSYS_NAME}/transformation_estimation.h"
   "include/pcl/${SUBSYS_NAME}/transformation_estimation_2D.h"
   "include/pcl/${SUBSYS_NAME}/transformation_estimation_svd.h"
@@ -86,17 +83,10 @@ set(impl_incs
   "include/pcl/${SUBSYS_NAME}/impl/correspondence_estimation_normal_shooting.hpp"
   "include/pcl/${SUBSYS_NAME}/impl/correspondence_estimation_backprojection.hpp"
   "include/pcl/${SUBSYS_NAME}/impl/correspondence_estimation_organized_projection.hpp"
-  "include/pcl/${SUBSYS_NAME}/impl/correspondence_rejection_distance.hpp"
-  "include/pcl/${SUBSYS_NAME}/impl/correspondence_rejection_median_distance.hpp"
-  "include/pcl/${SUBSYS_NAME}/impl/correspondence_rejection_surface_normal.hpp"
   "include/pcl/${SUBSYS_NAME}/impl/correspondence_rejection_features.hpp"
-  "include/pcl/${SUBSYS_NAME}/impl/correspondence_rejection_one_to_one.hpp"
   "include/pcl/${SUBSYS_NAME}/impl/correspondence_rejection_poly.hpp"
   "include/pcl/${SUBSYS_NAME}/impl/correspondence_rejection_sample_consensus.hpp"
   "include/pcl/${SUBSYS_NAME}/impl/correspondence_rejection_sample_consensus_2d.hpp"
-  "include/pcl/${SUBSYS_NAME}/impl/correspondence_rejection_trimmed.hpp"
-  "include/pcl/${SUBSYS_NAME}/impl/correspondence_rejection_var_trimmed.hpp"
-  "include/pcl/${SUBSYS_NAME}/impl/correspondence_rejection_organized_boundary.hpp"
   "include/pcl/${SUBSYS_NAME}/impl/correspondence_types.hpp"
   "include/pcl/${SUBSYS_NAME}/impl/ia_ransac.hpp"
   "include/pcl/${SUBSYS_NAME}/impl/icp.hpp"

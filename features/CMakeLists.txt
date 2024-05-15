@@ -12,8 +12,6 @@ if(NOT build)
 endif()
 
 set(incs
-  "include/pcl/${SUBSYS_NAME}/boost.h"
-  "include/pcl/${SUBSYS_NAME}/eigen.h"
   "include/pcl/${SUBSYS_NAME}/board.h"
   "include/pcl/${SUBSYS_NAME}/flare.h"
   "include/pcl/${SUBSYS_NAME}/brisk_2d.h"

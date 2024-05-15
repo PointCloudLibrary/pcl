@@ -30,8 +30,6 @@ set(srcs
 )
 
 set(incs
-  "include/pcl/${SUBSYS_NAME}/boost.h"
-  "include/pcl/${SUBSYS_NAME}/eigen.h"
   "include/pcl/${SUBSYS_NAME}/lmeds.h"
   "include/pcl/${SUBSYS_NAME}/method_types.h"
   "include/pcl/${SUBSYS_NAME}/mlesac.h"

@@ -381,24 +381,6 @@ protected:
   computeHessian(Eigen::Matrix<double, 6, 6>& hessian,
                  const PointCloudSource& trans_cloud);
 
-  /** \brief Compute hessian of likelihood function w.r.t. the transformation
-   * vector.
-   * \note Equation 6.13 [Magnusson 2009].
-   * \param[out] hessian the hessian matrix of the likelihood function
-   * w.r.t. the transformation vector
-   * \param[in] trans_cloud transformed point cloud
-   * \param[in] transform the current transform vector
-   */
-  PCL_DEPRECATED(1, 15, "Parameter `transform` is not required")
-  void
-  computeHessian(Eigen::Matrix<double, 6, 6>& hessian,
-                 const PointCloudSource& trans_cloud,
-                 const Eigen::Matrix<double, 6, 1>& transform)
-  {
-    pcl::utils::ignore(transform);
-    computeHessian(hessian, trans_cloud);
-  }
-
   /** \brief Compute individual point contributions to hessian of likelihood
    * function w.r.t. the transformation vector.
    * \note Equation 6.13 [Magnusson 2009].

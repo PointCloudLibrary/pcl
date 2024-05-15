@@ -19,9 +19,7 @@ pcl_add_doc("${SUBSUBSYS_NAME}")
 ################################################################################
 
 set(INCS
-  "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/boost.h"
   "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/common_types.h"
-  "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/eigen.h"
   "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/icp.h"
   "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/input_data_processing.h"
   "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/integration.h"

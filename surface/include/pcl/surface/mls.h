@@ -144,16 +144,6 @@ namespace pcl
     Eigen::Vector2f
     calculatePrincipalCurvatures (const double u, const double v) const;
 
-    /** \brief Calculate the principal curvatures using the polynomial surface.
-      * \param[in] u The u-coordinate of the point in local MLS frame.
-      * \param[in] v The v-coordinate of the point in local MLS frame.
-      * \return The principal curvature [k1, k2] at the provided uv coordinates.
-      * \note If an error occurs then 1e-5 is returned.
-      */
-    PCL_DEPRECATED(1, 15, "use calculatePrincipalCurvatures() instead")
-    inline Eigen::Vector2f
-    calculatePrincipleCurvatures (const double u, const double v) const { return calculatePrincipalCurvatures(u, v); };
-
     /** \brief Project a point orthogonal to the polynomial surface.
       * \param[in] u The u-coordinate of the point in local MLS frame.
       * \param[in] v The v-coordinate of the point in local MLS frame.
