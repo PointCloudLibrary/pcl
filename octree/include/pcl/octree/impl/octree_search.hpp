@@ -348,9 +348,6 @@ OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::
                                       std::vector<float>& k_sqr_distances,
                                       uindex_t max_nn) const
 {
-  // get spatial voxel information
-  double voxel_squared_diameter = this->getVoxelSquaredDiameter(tree_depth);
-
   // iterate over all children
   for (unsigned char child_idx = 0; child_idx < 8; child_idx++) {
     if (!this->branchHasChild(*node, child_idx))
@@ -360,7 +357,6 @@ OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::
     child_node = this->getBranchChildPtr(*node, child_idx);
 
     OctreeKey new_key;
-    PointT voxel_center;
     float squared_dist;
 
     // generate new key for current branch voxel
@@ -368,17 +364,24 @@ OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::
     new_key.y = (key.y << 1) + (!!(child_idx & (1 << 1)));
     new_key.z = (key.z << 1) + (!!(child_idx & (1 << 0)));
 
-    // generate voxel center point for voxel at key
-    this->genVoxelCenterFromOctreeKey(new_key, tree_depth, voxel_center);
-
-    // calculate distance to search point
-    squared_dist = pointSquaredDist(static_cast<const PointT&>(voxel_center), point);
-
-    // if distance is smaller than search radius
-    if (squared_dist + this->epsilon_ <=
-        voxel_squared_diameter / 4.0 + radiusSquared +
-            sqrt(voxel_squared_diameter * radiusSquared)) {
-
+    // compute min distance between query point and any point in this child node, to
+    // decide whether we can skip it
+    Eigen::Vector3f min_pt, max_pt;
+    this->genVoxelBoundsFromOctreeKey(new_key, tree_depth, min_pt, max_pt);
+    squared_dist = 0.0f;
+    if (point.x < min_pt.x())
+      squared_dist += std::pow(point.x - min_pt.x(), 2);
+    else if (point.x > max_pt.x())
+      squared_dist += std::pow(point.x - max_pt.x(), 2);
+    if (point.y < min_pt.y())
+      squared_dist += std::pow(point.y - min_pt.y(), 2);
+    else if (point.y > max_pt.y())
+      squared_dist += std::pow(point.y - max_pt.y(), 2);
+    if (point.z < min_pt.z())
+      squared_dist += std::pow(point.z - min_pt.z(), 2);
+    else if (point.z > max_pt.z())
+      squared_dist += std::pow(point.z - max_pt.z(), 2);
+    if (squared_dist < (radiusSquared + this->epsilon_)) {
       if (child_node->getNodeType() == BRANCH_NODE) {
         // we have not reached maximum tree depth
         getNeighborsWithinRadiusRecursive(point,
