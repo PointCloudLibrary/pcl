@@ -242,11 +242,6 @@ protected:
   bool
   isSampleGood(const Indices& samples) const override;
 
-  void
-  projectPointToPlane(const Eigen::Vector3f& p,
-                      const Eigen::Vector4f& model_coefficients,
-                      Eigen::Vector3f& q) const;
-
 private:
   struct OptimizationFunctor : pcl::Functor<double> {
     /** Functor constructor
@@ -266,37 +261,28 @@ private:
     int
     operator()(const Eigen::VectorXd& xs, Eigen::VectorXd& fvec) const
     {
+      // Getting constants from state vector
+      const double& R = xs[0];
+      const double& r = xs[1];
 
-      std::cout << "INDICES SIZE " << indices_.size() << std::endl;
-      std::cout << "params " << xs << std::endl;
+      const double& x0 = xs[2];
+      const double& y0 = xs[3];
+      const double& z0 = xs[4];
+
+      const Eigen::Vector3d centroid{x0, y0, z0};
+
+      const double& nx = xs[5];
+      const double& ny = xs[6];
+      const double& nz = xs[7];
+
+      const Eigen::Vector3d n1{0.0, 0.0, 1.0};
+      const Eigen::Vector3d n2 = Eigen::Vector3d{nx, ny, nz}.normalized();
 
       for (size_t j = 0; j < indices_.size(); j++) {
-        const double& R = xs[0];
-        const double& r = xs[1];
 
-        const double& x0 = xs[2];
-        const double& y0 = xs[3];
-        const double& z0 = xs[4];
-
-        const Eigen::Vector3d centroid{x0, y0, z0};
-
-        const double& nx = xs[5];
-        const double& ny = xs[6];
-        const double& nz = xs[7];
-
-        const Eigen::Vector3d n1{0.0, 0.0, 1.0};
-        const Eigen::Vector3d n2= Eigen::Vector3d{nx, ny, nz}.normalized();
-
-
-        // Getting constants from state vector
         size_t i = indices_[j];
-
         const Eigen::Vector3d pt =
             (*model_->input_)[i].getVector3fMap().template cast<double>();
-
-        const Eigen::Vector3d pt_n =
-            Eigen::Vector3f((*model_->normals_)[i].getNormalVector3fMap())
-                .template cast<double>();
 
         Eigen::Vector3d pte{pt - centroid};
 
@@ -312,21 +298,7 @@ private:
         const double& y = pte[1];
         const double& z = pte[2];
 
-        double w1 = 1.0;
-        double w2 = 1.0;
-
-        fvec[j] =
-            // Torus equation residual
-            (std::pow(sqrt(x * x + y * y) - R, 2) + z * z - r * r)
-
-
-
-            // Distance from normal line to direction line residual
-            //+w2 * (n1.cross(pt_n).dot(pte) / n1.cross(pt_n).norm())
-
-            ;
-
-        std::cout << fvec[j] << std::endl;
+        fvec[j] = (std::pow(sqrt(x * x + y * y) - R, 2) + z * z - r * r);
       }
       return 0;
     }

@@ -53,8 +53,34 @@ bool
 pcl::SampleConsensusModelTorus<PointT, PointNT>::isSampleGood(
     const Indices& samples) const
 {
-  // TODO implement
-  (void)samples;
+  if (samples.size() != sample_size_) {
+    PCL_ERROR("[pcl::SampleConsensusTorus::isSampleGood] Wrong number of samples (is "
+              "%lu, should be %lu)!\n",
+              samples.size(),
+              sample_size_);
+    return (false);
+  }
+
+  Eigen::Vector3f n0 = Eigen::Vector3f((*normals_)[samples[0]].getNormalVector3fMap());
+  Eigen::Vector3f n1 = Eigen::Vector3f((*normals_)[samples[1]].getNormalVector3fMap());
+  Eigen::Vector3f n2 = Eigen::Vector3f((*normals_)[samples[2]].getNormalVector3fMap());
+  Eigen::Vector3f n3 = Eigen::Vector3f((*normals_)[samples[3]].getNormalVector3fMap());
+
+  // Required for numeric stability on computeModelCoefficients
+  if (std::abs((n0).cross(n1).squaredNorm()) <
+          Eigen::NumTraits<float>::dummy_precision() ||
+      std::abs((n0).cross(n2).squaredNorm()) <
+          Eigen::NumTraits<float>::dummy_precision() ||
+      std::abs((n0).cross(n3).squaredNorm()) <
+          Eigen::NumTraits<float>::dummy_precision() ||
+      std::abs((n1).cross(n2).squaredNorm()) <
+          Eigen::NumTraits<float>::dummy_precision() ||
+      std::abs((n1).cross(n3).squaredNorm()) <
+          Eigen::NumTraits<float>::dummy_precision()) {
+    PCL_ERROR("[pcl::SampleConsensusModelEllipse3D::isSampleGood] Sample points "
+              "normals too similar or collinear!\n");
+    return (false);
+  }
   return (true);
 }
 
@@ -132,12 +158,12 @@ pcl::SampleConsensusModelTorus<PointT, PointNT>::computeModelCoefficients(
   float _b = (b01 * p + b0 * k + b1);
   float _c = (b0 * p + b);
 
-  float eps = Eigen::NumTraits<float>::dummy_precision ();
+  float eps = Eigen::NumTraits<float>::dummy_precision();
 
   // Check for imaginary solutions, or small denominators.
   if ((_b * _b - 4 * _a * _c) < 0 || std::abs(a0 - b0 * a01) < eps ||
       std::abs(b01) < eps || std::abs(_a) < eps) {
-    PCL_ERROR("[pcl::SampleConsensusModelTorus::computeModelCoefficients] Can't "
+    PCL_DEBUG("[pcl::SampleConsensusModelTorus::computeModelCoefficients] Can't "
               "compute model coefficients with this method!\n");
     return (false);
   }
@@ -242,21 +268,6 @@ pcl::SampleConsensusModelTorus<PointT, PointNT>::computeModelCoefficients(
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename PointNT>
 void
-pcl::SampleConsensusModelTorus<PointT, PointNT>::projectPointToPlane(
-    const Eigen::Vector3f& p,
-    const Eigen::Vector4f& plane_coefficients,
-    Eigen::Vector3f& q) const
-{
-
-  // TODO careful with Vector4f
-  //  use normalized coefficients to calculate the scalar projection
-  float distance_to_plane = p.dot(plane_coefficients.head<3>()) + plane_coefficients[3];
-  q = p - distance_to_plane * plane_coefficients.head<3>();
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT, typename PointNT>
-void
 pcl::SampleConsensusModelTorus<PointT, PointNT>::getDistancesToModel(
     const Eigen::VectorXf& model_coefficients, std::vector<double>& distances) const
 {
@@ -304,7 +315,7 @@ pcl::SampleConsensusModelTorus<PointT, PointNT>::selectWithinDistance(
     Eigen::Vector3f pt_n = (*normals_)[(*indices_)[i]].getNormalVector3fMap();
 
     Eigen::Vector3f torus_closest;
-    projectPointToTorus(pt,pt_n, model_coefficients, torus_closest);
+    projectPointToTorus(pt, pt_n, model_coefficients, torus_closest);
 
     float distance = (torus_closest - pt).norm();
 
@@ -333,7 +344,7 @@ pcl::SampleConsensusModelTorus<PointT, PointNT>::countWithinDistance(
     Eigen::Vector3f pt_n = (*normals_)[(*indices_)[i]].getNormalVector3fMap();
 
     Eigen::Vector3f torus_closest;
-    projectPointToTorus(pt,pt_n, model_coefficients, torus_closest);
+    projectPointToTorus(pt, pt_n, model_coefficients, torus_closest);
 
     float distance = (torus_closest - pt).norm();
 
@@ -375,20 +386,18 @@ pcl::SampleConsensusModelTorus<PointT, PointNT>::optimizeModelCoefficients(
   Eigen::NumericalDiff<OptimizationFunctor> num_diff(functor);
   Eigen::LevenbergMarquardt<Eigen::NumericalDiff<OptimizationFunctor>, double> lm(
       num_diff);
-                          //
+
   Eigen::VectorXd coeff = model_coefficients.cast<double>();
   int info = lm.minimize(coeff);
 
   if (!info) {
-    PCL_ERROR("[pcl::SampleConsensusModelTorus382::optimizeModelCoefficients] Optimizer returned"
-              "with error (%i)! Returning ",
-              info);
+    PCL_ERROR(
+        "[pcl::SampleConsensusModelTorus::optimizeModelCoefficients] Optimizer returned"
+        "with error (%i)! Returning ",
+        info);
     return;
   }
-  else {
-    for (Eigen::Index i = 0; i < coeff.size(); ++i)
-      optimized_coefficients[i] = static_cast<float>(coeff[i]);
-  }
+  optimized_coefficients = coeff.cast<float>();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -421,21 +430,26 @@ pcl::SampleConsensusModelTorus<PointT, PointNT>::projectPointToTorus(
 
   // Ax + By + Cz + D = 0
   float D = -n.dot(pt0);
-  Eigen::Vector4f planeCoeffs{n[0], n[1], n[2], D};
 
   // Project to the torus circle plane folling the point normal
   // we want to find lambda such that p + pn_n*lambda lies on the
   // torus plane.
-  // A*(pt_x + lambda*pn_x) + ... +  D = 0
-  // n = [A,B,C]
+  // A*(pt_x + lambda*pn_x) + B *(pt_y + lambda*pn_y) + ... + D = 0
+  // given that: n = [A,B,C]
   // n.dot(P) + lambda*n.dot(pn) + D = 0
   //
-  float lambda = (-D - n.dot(p_in)) / n.dot(p_n);
 
+  Eigen::Vector3f pt_proj;
+  // If the point lies in the torus plane, we just use it as projected
 
-  // TODO expect singularities, pt lies on the plane
-  Eigen::Vector3f pt_proj =  p_in + lambda*p_n;
-
+  // C++20 -> [[likely]]
+  if (std::abs(n.dot(p_n)) > Eigen::NumTraits<float>::dummy_precision()) {
+    float lambda = (-D - n.dot(p_in)) / n.dot(p_n);
+    pt_proj = p_in + lambda * p_n;
+  }
+  else {
+    pt_proj = p_in;
+  }
 
   // Closest point from the inner circle to the current point
   Eigen::Vector3f circle_closest;
@@ -465,18 +479,50 @@ pcl::SampleConsensusModelTorus<PointT, PointNT>::projectPoints(
     return;
   }
 
-  // TODO this is not right, copy other implementations
-  (void)copy_data_fields;
+  // Copy all the data fields from the input cloud to the projected one?
+  if (copy_data_fields) {
+    // Allocate enough space and copy the basics
+    projected_points.resize(input_->size());
+    projected_points.width = input_->width;
+    projected_points.height = input_->height;
 
-  projected_points.header = input_->header;
-  projected_points.is_dense = input_->is_dense;
+    using FieldList = typename pcl::traits::fieldList<PointT>::type;
+    // Iterate over each point
+    for (std::size_t i = 0; i < input_->size(); ++i)
+      // Iterate over each dimension
+      pcl::for_each_type<FieldList>(
+          NdConcatenateFunctor<PointT, PointT>((*input_)[i], projected_points[i]));
 
-  for (const auto& inlier : inliers) {
+    // Iterate through the 3d points and calculate the distances from them to the plane
+    for (const auto& inlier : inliers) {
+      Eigen::Vector3f q;
+      Eigen::Vector3f pt_n = (*normals_)[inlier].getNormalVector3fMap();
+      projectPointToTorus(
+          (*input_)[inlier].getVector3fMap(), pt_n, model_coefficients, q);
+      projected_points[inlier].getVector3fMap() = q;
+    }
+  }
+  else {
+    // Allocate enough space and copy the basics
+    projected_points.resize(inliers.size());
+    projected_points.width = inliers.size();
+    projected_points.height = 1;
 
-    Eigen::Vector3f q;
-    Eigen::Vector3f pt_n = (*normals_)[inlier].getNormalVector3fMap();
-    projectPointToTorus((*input_)[inlier].getVector3fMap(),pt_n, model_coefficients, q);
-    projected_points[inlier].getVector3fMap() = q;
+    using FieldList = typename pcl::traits::fieldList<PointT>::type;
+    // Iterate over each point
+    for (std::size_t i = 0; i < inliers.size(); ++i) {
+      // Iterate over each dimension
+      pcl::for_each_type<FieldList>(NdConcatenateFunctor<PointT, PointT>(
+          (*input_)[inliers[i]], projected_points[i]));
+    }
+
+    for (const auto& inlier : inliers) {
+      Eigen::Vector3f q;
+      Eigen::Vector3f pt_n = (*normals_)[inlier].getNormalVector3fMap();
+      projectPointToTorus(
+          (*input_)[inlier].getVector3fMap(), pt_n, model_coefficients, q);
+      projected_points[inlier].getVector3fMap() = q;
+    }
   }
 }
 
@@ -489,14 +535,13 @@ pcl::SampleConsensusModelTorus<PointT, PointNT>::doSamplesVerifyModel(
     const double threshold) const
 {
 
-  for (const auto &index : indices)
-  {
-    Eigen::Vector3f pt = (*input_)[index].getVector3fMap ();
+  for (const auto& index : indices) {
+    Eigen::Vector3f pt = (*input_)[index].getVector3fMap();
     Eigen::Vector3f pt_n = (*normals_)[index].getNormalVector3fMap();
     Eigen::Vector3f torus_closest;
     projectPointToTorus(pt, pt_n, model_coefficients, torus_closest);
 
-    if ((pt - torus_closest).squaredNorm() > threshold)
+    if ((pt - torus_closest).squaredNorm() > threshold * threshold)
       return (false);
   }
   return true;
@@ -508,19 +553,27 @@ bool
 pcl::SampleConsensusModelTorus<PointT, PointNT>::isModelValid(
     const Eigen::VectorXf& model_coefficients) const
 {
-  if (!SampleConsensusModel<PointT>::isModelValid (model_coefficients))
+  if (!SampleConsensusModel<PointT>::isModelValid(model_coefficients))
     return (false);
 
-  if (radius_min_ != std::numeric_limits<double>::lowest() && (model_coefficients[0] < radius_min_ || model_coefficients[1] < radius_min_))
-  {
-    PCL_DEBUG ("[pcl::SampleConsensusModelTorus::isModelValid] Major radius OR minor radius of torus is/are too small: should be larger than %g, but are {%g, %g}.\n",
-               radius_min_, model_coefficients[0], model_coefficients[1]);
+  if (radius_min_ != std::numeric_limits<double>::lowest() &&
+      (model_coefficients[0] < radius_min_ || model_coefficients[1] < radius_min_)) {
+    PCL_DEBUG(
+        "[pcl::SampleConsensusModelTorus::isModelValid] Major radius OR minor radius "
+        "of torus is/are too small: should be larger than %g, but are {%g, %g}.\n",
+        radius_min_,
+        model_coefficients[0],
+        model_coefficients[1]);
     return (false);
   }
-  if (radius_max_ != std::numeric_limits<double>::max() && (model_coefficients[0] > radius_max_ || model_coefficients[1] > radius_max_))
-  {
-    PCL_DEBUG ("[pcl::SampleConsensusModelTorus::isModelValid] Major radius OR minor radius of torus is/are too big: should be smaller than %g, but are {%g, %g}.\n",
-               radius_max_, model_coefficients[0], model_coefficients[1]);
+  if (radius_max_ != std::numeric_limits<double>::max() &&
+      (model_coefficients[0] > radius_max_ || model_coefficients[1] > radius_max_)) {
+    PCL_DEBUG(
+        "[pcl::SampleConsensusModelTorus::isModelValid] Major radius OR minor radius "
+        "of torus is/are too big: should be smaller than %g, but are {%g, %g}.\n",
+        radius_max_,
+        model_coefficients[0],
+        model_coefficients[1]);
     return (false);
   }
   return (true);
