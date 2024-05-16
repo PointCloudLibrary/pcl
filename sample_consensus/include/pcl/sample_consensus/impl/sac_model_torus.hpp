@@ -120,24 +120,24 @@ pcl::SampleConsensusModelTorus<PointT, PointNT>::computeModelCoefficients(
   // title = {Geometric Least-Squares Fitting of Spheres, Cylinders, Cones and Tori}
   //}
 
-  Eigen::Vector3f n0 = Eigen::Vector3f((*normals_)[samples[0]].getNormalVector3fMap());
-  Eigen::Vector3f n1 = Eigen::Vector3f((*normals_)[samples[1]].getNormalVector3fMap());
-  Eigen::Vector3f n2 = Eigen::Vector3f((*normals_)[samples[2]].getNormalVector3fMap());
-  Eigen::Vector3f n3 = Eigen::Vector3f((*normals_)[samples[3]].getNormalVector3fMap());
+  const Eigen::Vector3f n0 = Eigen::Vector3f((*normals_)[samples[0]].getNormalVector3fMap());
+  const Eigen::Vector3f n1 = Eigen::Vector3f((*normals_)[samples[1]].getNormalVector3fMap());
+  const Eigen::Vector3f n2 = Eigen::Vector3f((*normals_)[samples[2]].getNormalVector3fMap());
+  const Eigen::Vector3f n3 = Eigen::Vector3f((*normals_)[samples[3]].getNormalVector3fMap());
 
-  Eigen::Vector3f p0 = Eigen::Vector3f((*input_)[samples[0]].getVector3fMap());
-  Eigen::Vector3f p1 = Eigen::Vector3f((*input_)[samples[1]].getVector3fMap());
-  Eigen::Vector3f p2 = Eigen::Vector3f((*input_)[samples[2]].getVector3fMap());
-  Eigen::Vector3f p3 = Eigen::Vector3f((*input_)[samples[3]].getVector3fMap());
+  const Eigen::Vector3f p0 = Eigen::Vector3f((*input_)[samples[0]].getVector3fMap());
+  const Eigen::Vector3f p1 = Eigen::Vector3f((*input_)[samples[1]].getVector3fMap());
+  const Eigen::Vector3f p2 = Eigen::Vector3f((*input_)[samples[2]].getVector3fMap());
+  const Eigen::Vector3f p3 = Eigen::Vector3f((*input_)[samples[3]].getVector3fMap());
 
-  float a01 = crossDot(n0, n1, n2);
-  float b01 = crossDot(n0, n1, n3);
-  float a0 = crossDot(p2 - p1, n0, n2);
-  float a1 = crossDot(p0 - p2, n1, n2);
-  float b0 = crossDot(p3 - p1, n0, n3);
-  float b1 = crossDot(p0 - p3, n1, n3);
-  float a = crossDot(p0 - p2, p1 - p0, n2);
-  float b = crossDot(p0 - p3, p1 - p0, n3);
+  const float a01 = crossDot(n0, n1, n2);
+  const float b01 = crossDot(n0, n1, n3);
+  const float a0 = crossDot(p2 - p1, n0, n2);
+  const float a1 = crossDot(p0 - p2, n1, n2);
+  const float b0 = crossDot(p3 - p1, n0, n3);
+  const float b1 = crossDot(p0 - p3, n1, n3);
+  const float a = crossDot(p0 - p2, p1 - p0, n2);
+  const float b = crossDot(p0 - p3, p1 - p0, n3);
 
   // a10*t0*t1 + a0*t0 + a1*t1 + a = 0
   // b10*t0*t1 + b0*t0 + b1*t1 + b = 0
@@ -145,8 +145,8 @@ pcl::SampleConsensusModelTorus<PointT, PointNT>::computeModelCoefficients(
   // (a0 - b0*a10/b10)* t0 + (a1-b1*a10/b10) *t1 + a - b*a10/b10
   // t0 = k * t1 + p
 
-  float k = -(a1 - b1 * a01 / b01) / (a0 - b0 * a01 / b01);
-  float p = -(a - b * a01 / b01) / (a0 - b0 * a01 / b01);
+  const float k = -(a1 - b1 * a01 / b01) / (a0 - b0 * a01 / b01);
+  const float p = -(a - b * a01 / b01) / (a0 - b0 * a01 / b01);
 
   // Second deg eqn.
   //
@@ -154,11 +154,11 @@ pcl::SampleConsensusModelTorus<PointT, PointNT>::computeModelCoefficients(
   //
   // (b10*k) * t1*t1 + (b10*p + b0*k + b1) * t1  + (b0*p + b)
 
-  float _a = (b01 * k);
-  float _b = (b01 * p + b0 * k + b1);
-  float _c = (b0 * p + b);
+  const float _a = (b01 * k);
+  const float _b = (b01 * p + b0 * k + b1);
+  const float _c = (b0 * p + b);
 
-  float eps = Eigen::NumTraits<float>::dummy_precision();
+  const float eps = Eigen::NumTraits<float>::dummy_precision();
 
   // Check for imaginary solutions, or small denominators.
   if ((_b * _b - 4 * _a * _c) < 0 || std::abs(a0 - b0 * a01) < eps ||
@@ -168,15 +168,15 @@ pcl::SampleConsensusModelTorus<PointT, PointNT>::computeModelCoefficients(
     return (false);
   }
 
-  float s0 = (-_b + std::sqrt(_b * _b - 4 * _a * _c)) / (2 * _a);
-  float s1 = (-_b - std::sqrt(_b * _b - 4 * _a * _c)) / (2 * _a);
+  const float s0 = (-_b + std::sqrt(_b * _b - 4 * _a * _c)) / (2 * _a);
+  const float s1 = (-_b - std::sqrt(_b * _b - 4 * _a * _c)) / (2 * _a);
 
   float r_maj_stddev_cycle1 = std::numeric_limits<float>::max();
 
   for (float s : {s0, s1}) {
 
-    float t1 = s;
-    float t0 = k * t1 + p;
+    const float t1 = s;
+    const float t0 = k * t1 + p;
 
     // Direction vector
     Eigen::Vector3f d = ((p1 + n1 * t1) - (p0 + n0 * t0));
@@ -215,28 +215,28 @@ pcl::SampleConsensusModelTorus<PointT, PointNT>::computeModelCoefficients(
     Eigen::Matrix<float, -1, -1> sol;
     sol = A.bdcSvd(Eigen::ComputeThinU | Eigen::ComputeThinV).solve(B);
 
-    float r_min = -sol(0);
-    float D = sol(1);
+    const float r_min = -sol(0);
+    const float D = sol(1);
 
     // Axis line and plane intersect to find the centroid of the torus
     // We take a random point on the line. We find P_rand + lambda * d belongs in the
     // plane
 
-    Eigen::Vector3f Pany = (p1 + n1 * t1);
+    const Eigen::Vector3f Pany = (p1 + n1 * t1);
 
-    float lambda = (-d.dot(Pany) - D) / d.dot(d);
+    const float lambda = (-d.dot(Pany) - D) / d.dot(d);
 
-    Eigen::Vector3f centroid = Pany + d * lambda;
+    const Eigen::Vector3f centroid = Pany + d * lambda;
 
     // Finally, the major radius. The least square solution will be
     // the average in this case.
-    float r_maj = std::sqrt(((p0 - r_min * n0 - centroid).squaredNorm() +
+    const float r_maj = std::sqrt(((p0 - r_min * n0 - centroid).squaredNorm() +
                              (p1 - r_min * n1 - centroid).squaredNorm() +
                              (p2 - r_min * n2 - centroid).squaredNorm() +
                              (p3 - r_min * n3 - centroid).squaredNorm()) /
                             4.f);
 
-    float r_maj_stddev =
+    const float r_maj_stddev =
         std::sqrt((std::pow(r_maj - (p0 - r_min * n0 - centroid).norm(), 2) +
                    std::pow(r_maj - (p1 - r_min * n1 - centroid).norm(), 2) +
                    std::pow(r_maj - (p2 - r_min * n2 - centroid).norm(), 2) +
@@ -282,13 +282,11 @@ pcl::SampleConsensusModelTorus<PointT, PointNT>::getDistancesToModel(
   // Iterate through the 3d points and calculate the distances to the closest torus
   // point
   for (std::size_t i = 0; i < indices_->size(); ++i) {
-    Eigen::Vector3f pt = (*input_)[(*indices_)[i]].getVector3fMap();
-    Eigen::Vector3f pt_n = (*normals_)[(*indices_)[i]].getNormalVector3fMap();
+    const Eigen::Vector3f pt = (*input_)[(*indices_)[i]].getVector3fMap();
+    const Eigen::Vector3f pt_n = (*normals_)[(*indices_)[i]].getNormalVector3fMap();
 
     Eigen::Vector3f torus_closest;
     projectPointToTorus(pt, pt_n, model_coefficients, torus_closest);
-
-    assert(torus_closest[3] == 0.f);
 
     distances[i] = (torus_closest - pt).norm();
   }
@@ -311,13 +309,13 @@ pcl::SampleConsensusModelTorus<PointT, PointNT>::selectWithinDistance(
   error_sqr_dists_.reserve(indices_->size());
 
   for (std::size_t i = 0; i < indices_->size(); ++i) {
-    Eigen::Vector3f pt = (*input_)[(*indices_)[i]].getVector3fMap();
-    Eigen::Vector3f pt_n = (*normals_)[(*indices_)[i]].getNormalVector3fMap();
+    const Eigen::Vector3f pt = (*input_)[(*indices_)[i]].getVector3fMap();
+    const Eigen::Vector3f pt_n = (*normals_)[(*indices_)[i]].getNormalVector3fMap();
 
     Eigen::Vector3f torus_closest;
     projectPointToTorus(pt, pt_n, model_coefficients, torus_closest);
 
-    float distance = (torus_closest - pt).norm();
+    const float distance = (torus_closest - pt).norm();
 
     if (distance < threshold) {
       // Returns the indices of the points whose distances are smaller than the
@@ -340,13 +338,13 @@ pcl::SampleConsensusModelTorus<PointT, PointNT>::countWithinDistance(
   std::size_t nr_p = 0;
 
   for (std::size_t i = 0; i < indices_->size(); ++i) {
-    Eigen::Vector3f pt = (*input_)[(*indices_)[i]].getVector3fMap();
-    Eigen::Vector3f pt_n = (*normals_)[(*indices_)[i]].getNormalVector3fMap();
+    const Eigen::Vector3f pt = (*input_)[(*indices_)[i]].getVector3fMap();
+    const Eigen::Vector3f pt_n = (*normals_)[(*indices_)[i]].getNormalVector3fMap();
 
     Eigen::Vector3f torus_closest;
     projectPointToTorus(pt, pt_n, model_coefficients, torus_closest);
 
-    float distance = (torus_closest - pt).norm();
+    const float distance = (torus_closest - pt).norm();
 
     if (distance < threshold) {
       nr_p++;
@@ -429,7 +427,7 @@ pcl::SampleConsensusModelTorus<PointT, PointNT>::projectPointToTorus(
   Eigen::Vector3f pt0{x0, y0, z0};
 
   // Ax + By + Cz + D = 0
-  float D = -n.dot(pt0);
+  const float D = -n.dot(pt0);
 
   // Project to the torus circle plane folling the point normal
   // we want to find lambda such that p + pn_n*lambda lies on the
@@ -452,15 +450,11 @@ pcl::SampleConsensusModelTorus<PointT, PointNT>::projectPointToTorus(
   }
 
   // Closest point from the inner circle to the current point
-  Eigen::Vector3f circle_closest;
-  circle_closest = (pt_proj - pt0).normalized() * R + pt0;
+  const Eigen::Vector3f circle_closest = (pt_proj - pt0).normalized() * R + pt0;
 
   // From the that closest point we move towards the goal point until we
   // meet the surface of the torus
-  Eigen::Vector3f torus_closest =
-      (p_in - circle_closest).normalized() * r + circle_closest;
-
-  pt_out = torus_closest;
+  pt_out = (p_in - circle_closest).normalized() * r + circle_closest;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -496,7 +490,7 @@ pcl::SampleConsensusModelTorus<PointT, PointNT>::projectPoints(
     // Iterate through the 3d points and calculate the distances from them to the plane
     for (const auto& inlier : inliers) {
       Eigen::Vector3f q;
-      Eigen::Vector3f pt_n = (*normals_)[inlier].getNormalVector3fMap();
+      const Eigen::Vector3f pt_n = (*normals_)[inlier].getNormalVector3fMap();
       projectPointToTorus(
           (*input_)[inlier].getVector3fMap(), pt_n, model_coefficients, q);
       projected_points[inlier].getVector3fMap() = q;
@@ -518,7 +512,7 @@ pcl::SampleConsensusModelTorus<PointT, PointNT>::projectPoints(
 
     for (const auto& inlier : inliers) {
       Eigen::Vector3f q;
-      Eigen::Vector3f pt_n = (*normals_)[inlier].getNormalVector3fMap();
+      const Eigen::Vector3f pt_n = (*normals_)[inlier].getNormalVector3fMap();
       projectPointToTorus(
           (*input_)[inlier].getVector3fMap(), pt_n, model_coefficients, q);
       projected_points[inlier].getVector3fMap() = q;
@@ -536,10 +530,9 @@ pcl::SampleConsensusModelTorus<PointT, PointNT>::doSamplesVerifyModel(
 {
 
   for (const auto& index : indices) {
-    Eigen::Vector3f pt = (*input_)[index].getVector3fMap();
-    Eigen::Vector3f pt_n = (*normals_)[index].getNormalVector3fMap();
+    const Eigen::Vector3f pt_n = (*normals_)[index].getNormalVector3fMap();
     Eigen::Vector3f torus_closest;
-    projectPointToTorus(pt, pt_n, model_coefficients, torus_closest);
+    projectPointToTorus((*input_)[index].getVector3fMap(), pt_n, model_coefficients, torus_closest);
 
     if ((pt - torus_closest).squaredNorm() > threshold * threshold)
       return (false);
