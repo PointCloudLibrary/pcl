@@ -534,7 +534,7 @@ pcl::SampleConsensusModelTorus<PointT, PointNT>::doSamplesVerifyModel(
     Eigen::Vector3f torus_closest;
     projectPointToTorus((*input_)[index].getVector3fMap(), pt_n, model_coefficients, torus_closest);
 
-    if ((pt - torus_closest).squaredNorm() > threshold * threshold)
+    if (((*input_)[index].getVector3fMap() - torus_closest).squaredNorm() > threshold * threshold)
       return (false);
   }
   return true;
