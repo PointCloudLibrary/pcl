@@ -255,8 +255,6 @@ if(PCAP_FOUND)
 endif()
 
 set(incs
-  "include/pcl/${SUBSYS_NAME}/boost.h"
-  "include/pcl/${SUBSYS_NAME}/eigen.h"
   "include/pcl/${SUBSYS_NAME}/debayer.h"
   "include/pcl/${SUBSYS_NAME}/fotonic_grabber.h"
   "include/pcl/${SUBSYS_NAME}/file_io.h"
@@ -264,7 +262,6 @@ set(incs
   "include/pcl/${SUBSYS_NAME}/low_level_io.h"
   "include/pcl/${SUBSYS_NAME}/lzf.h"
   "include/pcl/${SUBSYS_NAME}/lzf_image_io.h"
-  "include/pcl/${SUBSYS_NAME}/io.h"
   "include/pcl/${SUBSYS_NAME}/grabber.h"
   "include/pcl/${SUBSYS_NAME}/file_grabber.h"
   "include/pcl/${SUBSYS_NAME}/timestamp.h"

@@ -13,7 +13,6 @@ endif()
 
 set(incs
   "include/pcl/${SUBSYS_NAME}/boost.h"
-  "include/pcl/${SUBSYS_NAME}/eigen.h"
   "include/pcl/${SUBSYS_NAME}/get_boundary.h"
   "include/pcl/${SUBSYS_NAME}/line_iterator.h"
   "include/pcl/${SUBSYS_NAME}/mesh_base.h"

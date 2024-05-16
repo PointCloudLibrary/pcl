@@ -59,7 +59,6 @@ set(incs
   include/pcl/types.h
   include/pcl/point_cloud.h
   include/pcl/point_struct_traits.h
-  include/pcl/point_traits.h
   include/pcl/type_traits.h
   include/pcl/point_types_conversion.h
   include/pcl/point_representation.h
@@ -79,11 +78,9 @@ set(incs
   include/pcl/PointIndices.h
   include/pcl/register_point_struct.h
   include/pcl/conversions.h
-  include/pcl/make_shared.h
 )
 
 set(common_incs
-  include/pcl/common/boost.h
   include/pcl/common/angles.h
   include/pcl/common/bivariate_polynomial.h
   include/pcl/common/centroid.h

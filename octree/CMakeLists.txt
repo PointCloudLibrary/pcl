@@ -16,7 +16,6 @@ set(srcs
 )
 
 set(incs
-  "include/pcl/${SUBSYS_NAME}/boost.h"
   "include/pcl/${SUBSYS_NAME}/octree_base.h"
   "include/pcl/${SUBSYS_NAME}/octree_container.h"
   "include/pcl/${SUBSYS_NAME}/octree_impl.h"

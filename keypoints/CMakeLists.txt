@@ -29,7 +29,6 @@ set(incs
   "include/pcl/${SUBSYS_NAME}/keypoint.h"
   "include/pcl/${SUBSYS_NAME}/narf_keypoint.h"
   "include/pcl/${SUBSYS_NAME}/sift_keypoint.h"
-  "include/pcl/${SUBSYS_NAME}/uniform_sampling.h"
   "include/pcl/${SUBSYS_NAME}/smoothed_surfaces_keypoint.h"
   "include/pcl/${SUBSYS_NAME}/agast_2d.h"
   "include/pcl/${SUBSYS_NAME}/harris_2d.h"

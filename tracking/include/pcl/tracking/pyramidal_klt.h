@@ -260,22 +260,6 @@ public:
    * Status == -1 --> point is out of bond;
    * Status == -2 --> optical flow can not be computed for this point.
    */
-  PCL_DEPRECATED(1, 15, "use getStatusOfPointsToTrack instead")
-  inline pcl::PointIndicesConstPtr
-  getPointsToTrackStatus() const
-  {
-    pcl::PointIndicesPtr res(new pcl::PointIndices);
-    res->indices.insert(
-        res->indices.end(), keypoints_status_->begin(), keypoints_status_->end());
-    return (res);
-  }
-
-  /** \return the status of points to track.
-   * Status == 0  --> points successfully tracked;
-   * Status < 0   --> point is lost;
-   * Status == -1 --> point is out of bond;
-   * Status == -2 --> optical flow can not be computed for this point.
-   */
   inline pcl::shared_ptr<const std::vector<int>>
   getStatusOfPointsToTrack() const
   {
