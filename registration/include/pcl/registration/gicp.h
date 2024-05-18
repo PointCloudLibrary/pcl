@@ -125,6 +125,7 @@ public:
     max_iterations_ = 200;
     transformation_epsilon_ = 5e-4;
     corr_dist_threshold_ = 5.;
+    setNumberOfThreads(0);
     rigid_transformation_estimation_ = [this](const PointCloudSource& cloud_src,
                                               const pcl::Indices& indices_src,
                                               const PointCloudTarget& cloud_tgt,
@@ -355,6 +356,13 @@ public:
     return rotation_gradient_tolerance_;
   }
 
+  /** \brief Initialize the scheduler and set the number of threads to use.
+   * \param nr_threads the number of hardware threads to use (0 sets the value back to
+   * automatic)
+   */
+  void
+  setNumberOfThreads(unsigned int nr_threads = 0);
+
 protected:
   /** \brief The number of neighbors used for covariances computation.
    * default: 20
@@ -508,6 +516,9 @@ private:
                      Eigen::Matrix3d& ddR_dTheta_dTheta,
                      Eigen::Matrix3d& ddR_dTheta_dPsi,
                      Eigen::Matrix3d& ddR_dPsi_dPsi) const;
+
+  /** \brief The number of threads the scheduler should use. */
+  unsigned int threads_;
 };
 } // namespace pcl
 
