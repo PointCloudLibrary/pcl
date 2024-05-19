@@ -677,7 +677,7 @@ pcl::OBJReader::read (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
         return (-1);
     }
 
-    for (int i = 0, main_offset = 0; i < cloud.width; ++i, main_offset += cloud.point_step)
+    for (uindex_t i = 0, main_offset = 0; i < cloud.width; ++i, main_offset += cloud.point_step)
     {
         normal_mapping[i].normalize();
 
@@ -922,7 +922,7 @@ pcl::OBJReader::read (const std::string &file_name, pcl::TextureMesh &mesh,
         return (-1);
     }
 
-    for (int i = 0, main_offset = 0; i < mesh.cloud.width; ++i, main_offset += mesh.cloud.point_step)
+    for (uindex_t i = 0, main_offset = 0; i < mesh.cloud.width; ++i, main_offset += mesh.cloud.point_step)
     {
         normal_mapping[i].normalize();
 
@@ -1109,7 +1109,7 @@ pcl::OBJReader::read (const std::string &file_name, pcl::PolygonMesh &mesh,
         return (-1);
     }
 
-    for (int i = 0, main_offset = 0; i < mesh.cloud.width; ++i, main_offset += mesh.cloud.point_step)
+    for (uindex_t i = 0, main_offset = 0; i < mesh.cloud.width; ++i, main_offset += mesh.cloud.point_step)
     {
         normal_mapping[i].normalize();
 
