@@ -677,12 +677,15 @@ pcl::OBJReader::read (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
         return (-1);
     }
 
-    for (uindex_t i = 0, main_offset = 0; i < cloud.width; ++i, main_offset += cloud.point_step)
+    if (!normal_mapping.empty())
     {
-        normal_mapping[i].normalize();
+      for (uindex_t i = 0, main_offset = 0; i < cloud.width; ++i, main_offset += cloud.point_step)
+      {
+          normal_mapping[i].normalize();
 
-        for (int j = 0, f = normal_x_field; j < 3; ++j, ++f)
-            memcpy(&cloud.data[main_offset + cloud.fields[f].offset], &normal_mapping[i][j], sizeof(float));
+          for (int j = 0, f = normal_x_field; j < 3; ++j, ++f)
+              memcpy(&cloud.data[main_offset + cloud.fields[f].offset], &normal_mapping[i][j], sizeof(float));
+      }
     }
 
     double total_time = tt.toc();
@@ -922,12 +925,15 @@ pcl::OBJReader::read (const std::string &file_name, pcl::TextureMesh &mesh,
         return (-1);
     }
 
-    for (uindex_t i = 0, main_offset = 0; i < mesh.cloud.width; ++i, main_offset += mesh.cloud.point_step)
+    if (!normal_mapping.empty())
     {
-        normal_mapping[i].normalize();
+      for (uindex_t i = 0, main_offset = 0; i < mesh.cloud.width; ++i, main_offset += mesh.cloud.point_step)
+      {
+          normal_mapping[i].normalize();
 
-        for (int j = 0, f = normal_x_field; j < 3; ++j, ++f)
-            memcpy(&mesh.cloud.data[main_offset + mesh.cloud.fields[f].offset], &normal_mapping[i][j], sizeof(float));
+          for (int j = 0, f = normal_x_field; j < 3; ++j, ++f)
+              memcpy(&mesh.cloud.data[main_offset + mesh.cloud.fields[f].offset], &normal_mapping[i][j], sizeof(float));
+      }
     }
 
     double total_time = tt.toc();
@@ -1109,12 +1115,15 @@ pcl::OBJReader::read (const std::string &file_name, pcl::PolygonMesh &mesh,
         return (-1);
     }
 
-    for (uindex_t i = 0, main_offset = 0; i < mesh.cloud.width; ++i, main_offset += mesh.cloud.point_step)
+    if (!normal_mapping.empty())
     {
-        normal_mapping[i].normalize();
+      for (uindex_t i = 0, main_offset = 0; i < mesh.cloud.width; ++i, main_offset += mesh.cloud.point_step)
+      {
+          normal_mapping[i].normalize();
 
-        for (int j = 0, f = normal_x_field; j < 3; ++j, ++f)
-			memcpy(&mesh.cloud.data[main_offset + mesh.cloud.fields[f].offset], &normal_mapping[i][j], sizeof(float));
+          for (int j = 0, f = normal_x_field; j < 3; ++j, ++f)
+              memcpy(&mesh.cloud.data[main_offset + mesh.cloud.fields[f].offset], &normal_mapping[i][j], sizeof(float));
+      }
     }
 
     double total_time = tt.toc();
