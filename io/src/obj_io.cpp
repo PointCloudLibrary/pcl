@@ -649,18 +649,16 @@ pcl::OBJReader::read (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
                             n_st = f_st[2];
                     }
                     else
-                        f_st.emplace_back(st[i]);
+                        f_st = { st[i] };
 
-                    int v;
-                    sscanf(f_st[0].c_str(), "%d", &v);
+                    int v = std::stoi(f_st[0]);
                     v = (v < 0) ? point_idx + v : v - 1;
                     face_vertices.vertices[i - 1] = v;
 
                     //handle normals
                     if (!n_st.empty())
                     {
-                        int n;
-                        sscanf(n_st.c_str(), "%d", &n);
+                        int n = std::stoi(n_st);
                         n = (n < 0) ? normal_idx + n : n - 1;
 
                         normal_mapping[v] += normals[n];
@@ -885,18 +883,16 @@ pcl::OBJReader::read (const std::string &file_name, pcl::TextureMesh &mesh,
                             n_st = f_st[2];
                     }
                     else
-                        f_st.emplace_back(st[i]);
+                        f_st = { st[i] };
 
-                    int v;
-                    sscanf(f_st[0].c_str(), "%d", &v);
+                    int v = std::stoi(f_st[0]);
                     v = (v < 0) ? v_idx + v : v - 1;
                     face_vertices.vertices[i - 1] = v;
 
                     //handle normals
                     if (!n_st.empty())
                     {
-                        int n;
-                        sscanf(n_st.c_str(), "%d", &n);
+                        int n = std::stoi(n_st);
                         n = (n < 0) ? vn_idx + n : n - 1;
 
                         normal_mapping[v] += normals[n];
@@ -904,8 +900,7 @@ pcl::OBJReader::read (const std::string &file_name, pcl::TextureMesh &mesh,
 
                     if (!vt_st.empty())
                     {
-                        int vt;
-                        sscanf(vt_st.c_str(), "%d", &vt);
+                        int vt = std::stoi(vt_st);
                         vt = (vt < 0) ? vt_idx + vt : vt - 1;
 
                         tex_indices.vertices.push_back(vt);
@@ -1086,18 +1081,16 @@ pcl::OBJReader::read (const std::string &file_name, pcl::PolygonMesh &mesh,
                             n_st = f_st[2];
                     }
                     else
-                        f_st.emplace_back(st[i]);
+                        f_st = { st[i] };
 
-                    int v;
-                	sscanf(f_st[0].c_str(), "%d", &v);
+                    int v = std::stoi(f_st[0]);
                     v = (v < 0) ? v_idx + v : v - 1;
                     face_vertices.vertices[i - 1] = v;
 
                     //handle normals
                     if (!n_st.empty())
                     {
-                        int n;
-                    	sscanf(n_st.c_str(), "%d", &n);
+                        int n = std::stoi(n_st);
                         n = (n < 0) ? vn_idx + n : n - 1;
                         
                         normal_mapping[v] += normals[n];
