@@ -633,7 +633,7 @@ pcl::OBJReader::read (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
         std::string n_st;
 
         pcl::Vertices face_vertices; face_vertices.vertices.resize(st.size() - 1);
-        for (std::size_t i = 1; i < st.size(); ++i)
+        for (std::size_t i = 1; i < st.size (); ++i)
         {
           if (st[i].find("//") != std::string::npos)
           {
@@ -862,9 +862,9 @@ pcl::OBJReader::read (const std::string &file_name, pcl::TextureMesh &mesh,
         std::string n_st;
         std::string vt_st;
 
-        pcl::Vertices face_vertices; face_vertices.vertices.resize(st.size() - 1);
-        pcl::Vertices tex_indices; tex_indices.vertices.reserve(st.size() - 1);
-        for (std::size_t i = 1; i < st.size(); ++i)
+        pcl::Vertices face_vertices; face_vertices.vertices.resize (st.size () - 1);
+        pcl::Vertices tex_indices; tex_indices.vertices.reserve (st.size () - 1);
+        for (std::size_t i = 1; i < st.size (); ++i)
         {
           if (st[i].find("//") != std::string::npos)
           {
@@ -906,8 +906,8 @@ pcl::OBJReader::read (const std::string &file_name, pcl::TextureMesh &mesh,
             tex_indices.vertices.push_back(vt);
           }
         }
-        mesh.tex_polygons.back().push_back(face_vertices);
-        mesh.tex_coord_indices.back().push_back(tex_indices);
+        mesh.tex_polygons.back ().push_back (face_vertices);
+        mesh.tex_coord_indices.back ().push_back (tex_indices);
         ++f_idx;
         continue;
       }
@@ -1063,8 +1063,8 @@ pcl::OBJReader::read (const std::string &file_name, pcl::PolygonMesh &mesh,
         std::vector<std::string> f_st;
         std::string n_st;
 
-        pcl::Vertices face_vertices; face_vertices.vertices.resize(st.size() - 1);
-        for (std::size_t i = 1; i < st.size(); ++i)
+        pcl::Vertices face_vertices; face_vertices.vertices.resize (st.size () - 1);
+        for (std::size_t i = 1; i < st.size (); ++i)
         {
           if (st[i].find("//") != std::string::npos)
           {
@@ -1095,7 +1095,7 @@ pcl::OBJReader::read (const std::string &file_name, pcl::PolygonMesh &mesh,
             normal_mapping[v] += normals[n];
           }
         }
-        mesh.polygons.push_back(face_vertices);
+        mesh.polygons.push_back (face_vertices);
         continue;
       }
     }
