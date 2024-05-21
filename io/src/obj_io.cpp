@@ -641,7 +641,7 @@ pcl::OBJReader::read (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
             pcl::split(f_st, st[i], "//");
             n_st = f_st[1];
           }
-          else if (st[i].find("/") != std::string::npos)
+          else if (st[i].find('/') != std::string::npos)
           {
             //covers format v/vt/vn and v/vt
             pcl::split(f_st, st[i], "/");
@@ -872,7 +872,7 @@ pcl::OBJReader::read (const std::string &file_name, pcl::TextureMesh &mesh,
             pcl::split(f_st, st[i], "//");
             n_st = f_st[1];
           }
-          else if (st[i].find("/") != std::string::npos)
+          else if (st[i].find('/') != std::string::npos)
           {
             //covers format v/vt/vn and v/vt
             pcl::split(f_st, st[i], "/");
@@ -1072,7 +1072,7 @@ pcl::OBJReader::read (const std::string &file_name, pcl::PolygonMesh &mesh,
             pcl::split(f_st, st[i], "//");
             n_st = f_st[1];
           }
-          else if (st[i].find("/") != std::string::npos)
+          else if (st[i].find('/') != std::string::npos)
           {
             //covers format v/vt/vn and v/vt
             pcl::split(f_st, st[i], "/");
