@@ -395,6 +395,9 @@ pcl::SampleConsensusModelTorus<PointT, PointNT>::optimizeModelCoefficients(
         info);
     return;
   }
+
+  // Normalize direction vector
+  coeff.tail<3>().normalize();
   optimized_coefficients = coeff.cast<float>();
 }
 
