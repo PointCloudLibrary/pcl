@@ -144,7 +144,7 @@ pcl::PrincipalCurvaturesEstimation<PointInT, PointNT, PointOutT>::computeFeature
   num_threads(threads_) \
   schedule(dynamic, chunk_size_)
     // Iterating over the entire index vector
-    for (std::size_t idx = 0; idx < indices_->size (); ++idx)
+    for (std::ptrdiff_t idx = 0; idx < static_cast<std::ptrdiff_t> (indices_->size ()); ++idx)
     {
       if (this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists) == 0)
       {
@@ -169,7 +169,7 @@ pcl::PrincipalCurvaturesEstimation<PointInT, PointNT, PointOutT>::computeFeature
   num_threads(threads_) \
   schedule(dynamic, chunk_size_)
     // Iterating over the entire index vector
-    for (std::size_t idx = 0; idx < indices_->size (); ++idx)
+    for (std::ptrdiff_t idx = 0; idx < static_cast<std::ptrdiff_t> (indices_->size ()); ++idx)
     {
       if (!isFinite ((*input_)[(*indices_)[idx]]) ||
           this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists) == 0)
