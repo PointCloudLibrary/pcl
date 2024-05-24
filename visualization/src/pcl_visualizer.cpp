@@ -4594,7 +4594,9 @@ pcl::visualization::PCLVisualizer::getUniqueCameraFile (int argc, char **argv)
       boost::uuids::detail::sha1::digest_type digest;
       sha1.get_digest (digest);
       sstream << ".";
-      sstream << std::hex << digest[0] << digest[1] << digest[2] << digest[3] << digest[4];
+      for (int i = 0; i < 5; ++i) {
+        sstream << std::hex << *(reinterpret_cast<unsigned int*>(&digest[0]) + i);
+      }
       sstream << ".cam";
     }
   }
