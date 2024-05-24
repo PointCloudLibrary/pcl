@@ -52,6 +52,7 @@ namespace pcl
     * Then, in each *voxel* (i.e., 3D box), all the points present will be
     * approximated (i.e., *downsampled*) with the closest point to the center of the voxel.
     *
+    * \sa VoxelGrid
     * \author Radu Bogdan Rusu
     * \ingroup filters
     */ 

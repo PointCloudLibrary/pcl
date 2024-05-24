@@ -47,6 +47,7 @@ namespace pcl
   /**
    * \brief A greedy hypothesis verification method
    * \author Aitor Aldoma
+   * \ingroup recognition
    */
 
   template<typename ModelT, typename SceneT>

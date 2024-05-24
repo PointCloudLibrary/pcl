@@ -383,9 +383,9 @@ protected:
   unsigned int num_threads_{1};
 };
 
-/** \brief @b CorrespondenceEstimation represents the base class for
+/** \brief @b CorrespondenceEstimation represents a simple class for
  * determining correspondences between target and query point
- * sets/features.
+ * sets/features, using nearest neighbor search.
  *
  * Code example:
  *

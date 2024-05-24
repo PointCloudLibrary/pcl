@@ -40,7 +40,7 @@ int
   pcl::PointCloud<pcl::PointXYZ> Final;
   icp.align(Final);
 
-  std::cout << "has converged:" << icp.hasConverged() << " score: " <<
+  std::cout << "ICP has " << (icp.hasConverged()?"converged":"not converged") << ", score: " <<
   icp.getFitnessScore() << std::endl;
   std::cout << icp.getFinalTransformation() << std::endl;
 
