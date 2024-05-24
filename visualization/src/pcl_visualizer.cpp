@@ -4591,7 +4591,7 @@ pcl::visualization::PCLVisualizer::getUniqueCameraFile (int argc, char **argv)
     // Build camera filename
     if (valid)
     {
-      unsigned int digest[5];
+      boost::uuids::detail::sha1::digest_type digest;
       sha1.get_digest (digest);
       sstream << ".";
       sstream << std::hex << digest[0] << digest[1] << digest[2] << digest[3] << digest[4];
