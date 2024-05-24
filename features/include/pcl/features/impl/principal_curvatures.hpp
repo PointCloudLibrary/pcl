@@ -44,6 +44,22 @@
 
 #include <pcl/common/point_tests.h> // for pcl::isFinite
 
+///////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointInT, typename PointNT, typename PointOutT> void
+pcl::PrincipalCurvaturesEstimation<PointInT, PointNT, PointOutT>::setNumberOfThreads (unsigned int nr_threads)
+{
+#ifdef _OPENMP
+  if (nr_threads == 0)
+    threads_ = omp_get_num_procs();
+  else
+    threads_ = nr_threads;
+  PCL_DEBUG ("[pcl::PrincipalCurvaturesEstimation::setNumberOfThreads] Setting number of threads to %u.\n", threads_);
+#else
+  threads_ = 1;
+  if (nr_threads != 1)
+    PCL_WARN ("[pcl::PrincipalCurvaturesEstimation::setNumberOfThreads] Parallelization is requested, but OpenMP is not available! Continuing without parallelization.\n");
+#endif // _OPENMP
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointNT, typename PointOutT> void
@@ -51,62 +67,60 @@ pcl::PrincipalCurvaturesEstimation<PointInT, PointNT, PointOutT>::computePointPr
       const pcl::PointCloud<PointNT> &normals, int p_idx, const pcl::Indices &indices,
       float &pcx, float &pcy, float &pcz, float &pc1, float &pc2)
 {
-  EIGEN_ALIGN16 Eigen::Matrix3f I = Eigen::Matrix3f::Identity ();
-  Eigen::Vector3f n_idx (normals[p_idx].normal[0], normals[p_idx].normal[1], normals[p_idx].normal[2]);
-  EIGEN_ALIGN16 Eigen::Matrix3f M = I - n_idx * n_idx.transpose ();    // projection matrix (into tangent plane)
+  const auto n_idx = normals[p_idx].getNormalVector3fMap();
+  EIGEN_ALIGN16 const Eigen::Matrix3f I = Eigen::Matrix3f::Identity ();
+  EIGEN_ALIGN16 const Eigen::Matrix3f M = I - n_idx * n_idx.transpose ();    // projection matrix (into tangent plane)
 
   // Project normals into the tangent plane
-  Eigen::Vector3f normal;
-  projected_normals_.resize (indices.size ());
-  xyz_centroid_.setZero ();
+  std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > projected_normals (indices.size());
+  Eigen::Vector3f xyz_centroid = Eigen::Vector3f::Zero();
   for (std::size_t idx = 0; idx < indices.size(); ++idx)
   {
-    normal[0] = normals[indices[idx]].normal[0];
-    normal[1] = normals[indices[idx]].normal[1];
-    normal[2] = normals[indices[idx]].normal[2];
-
-    projected_normals_[idx] = M * normal;
-    xyz_centroid_ += projected_normals_[idx];
+    const auto normal = normals[indices[idx]].getNormalVector3fMap();
+    projected_normals[idx] = M * normal;
+    xyz_centroid += projected_normals[idx];
   }
 
   // Estimate the XYZ centroid
-  xyz_centroid_ /= static_cast<float> (indices.size ());
+  xyz_centroid /= static_cast<float> (indices.size ());
 
   // Initialize to 0
-  covariance_matrix_.setZero ();
+  EIGEN_ALIGN16 Eigen::Matrix3f covariance_matrix = Eigen::Matrix3f::Zero();
 
   // For each point in the cloud
   for (std::size_t idx = 0; idx < indices.size (); ++idx)
   {
-    demean_ = projected_normals_[idx] - xyz_centroid_;
+    const Eigen::Vector3f demean = projected_normals[idx] - xyz_centroid;
 
-    double demean_xy = demean_[0] * demean_[1];
-    double demean_xz = demean_[0] * demean_[2];
-    double demean_yz = demean_[1] * demean_[2];
+    const double demean_xy = demean[0] * demean[1];
+    const double demean_xz = demean[0] * demean[2];
+    const double demean_yz = demean[1] * demean[2];
 
-    covariance_matrix_(0, 0) += demean_[0] * demean_[0];
-    covariance_matrix_(0, 1) += static_cast<float> (demean_xy);
-    covariance_matrix_(0, 2) += static_cast<float> (demean_xz);
+    covariance_matrix(0, 0) += demean[0] * demean[0];
+    covariance_matrix(0, 1) += static_cast<float> (demean_xy);
+    covariance_matrix(0, 2) += static_cast<float> (demean_xz);
 
-    covariance_matrix_(1, 0) += static_cast<float> (demean_xy);
-    covariance_matrix_(1, 1) += demean_[1] * demean_[1];
-    covariance_matrix_(1, 2) += static_cast<float> (demean_yz);
+    covariance_matrix(1, 0) += static_cast<float> (demean_xy);
+    covariance_matrix(1, 1) += demean[1] * demean[1];
+    covariance_matrix(1, 2) += static_cast<float> (demean_yz);
 
-    covariance_matrix_(2, 0) += static_cast<float> (demean_xz);
-    covariance_matrix_(2, 1) += static_cast<float> (demean_yz);
-    covariance_matrix_(2, 2) += demean_[2] * demean_[2];
+    covariance_matrix(2, 0) += static_cast<float> (demean_xz);
+    covariance_matrix(2, 1) += static_cast<float> (demean_yz);
+    covariance_matrix(2, 2) += demean[2] * demean[2];
   }
 
   // Extract the eigenvalues and eigenvectors
-  pcl::eigen33 (covariance_matrix_, eigenvalues_);
-  pcl::computeCorrespondingEigenVector (covariance_matrix_, eigenvalues_ [2], eigenvector_);
+  Eigen::Vector3f eigenvalues;
+  Eigen::Vector3f eigenvector;
+  pcl::eigen33 (covariance_matrix, eigenvalues);
+  pcl::computeCorrespondingEigenVector (covariance_matrix, eigenvalues [2], eigenvector);
 
-  pcx = eigenvector_ [0];
-  pcy = eigenvector_ [1];
-  pcz = eigenvector_ [2];
-  float indices_size = 1.0f / static_cast<float> (indices.size ());
-  pc1 = eigenvalues_ [2] * indices_size;
-  pc2 = eigenvalues_ [1] * indices_size;
+  pcx = eigenvector [0];
+  pcy = eigenvector [1];
+  pcz = eigenvector [2];
+  const float indices_size = 1.0f / static_cast<float> (indices.size ());
+  pc1 = eigenvalues [2] * indices_size;
+  pc2 = eigenvalues [1] * indices_size;
 }
 
 
@@ -123,8 +137,14 @@ pcl::PrincipalCurvaturesEstimation<PointInT, PointNT, PointOutT>::computeFeature
   // Save a few cycles by not checking every point for NaN/Inf values if the cloud is set to dense
   if (input_->is_dense)
   {
+#pragma omp parallel for \
+  default(none) \
+  shared(output) \
+  firstprivate(nn_indices, nn_dists) \
+  num_threads(threads_) \
+  schedule(dynamic, chunk_size_)
     // Iterating over the entire index vector
-    for (std::size_t idx = 0; idx < indices_->size (); ++idx)
+    for (std::ptrdiff_t idx = 0; idx < static_cast<std::ptrdiff_t> (indices_->size ()); ++idx)
     {
       if (this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists) == 0)
       {
@@ -142,8 +162,14 @@ pcl::PrincipalCurvaturesEstimation<PointInT, PointNT, PointOutT>::computeFeature
   }
   else
   {
+#pragma omp parallel for \
+  default(none) \
+  shared(output) \
+  firstprivate(nn_indices, nn_dists) \
+  num_threads(threads_) \
+  schedule(dynamic, chunk_size_)
     // Iterating over the entire index vector
-    for (std::size_t idx = 0; idx < indices_->size (); ++idx)
+    for (std::ptrdiff_t idx = 0; idx < static_cast<std::ptrdiff_t> (indices_->size ()); ++idx)
     {
       if (!isFinite ((*input_)[(*indices_)[idx]]) ||
           this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists) == 0)
