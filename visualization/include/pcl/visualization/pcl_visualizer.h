@@ -1961,6 +1961,7 @@ namespace pcl
           * buffer objects by default, transparently for the user.
           * \param[in] use_vbos set to true to use VBOs
           */
+        PCL_DEPRECATED(1, 18, "this function has no effect")
         void
         setUseVbos (bool use_vbos);
 

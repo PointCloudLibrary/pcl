@@ -513,9 +513,6 @@ main (int argc, char** argv)
       if (useEDLRendering)
         p->enableEDLRendering();
 
-      // Set whether or not we should be using the vtkVertexBufferObjectMapper
-      p->setUseVbos (use_vbos);
-
       if (!p->cameraParamsSet () && !p->cameraFileLoaded ())
       {
         Eigen::Matrix3f rotation;

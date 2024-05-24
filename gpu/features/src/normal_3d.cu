@@ -55,7 +55,8 @@ namespace pcl
                 CTA_SIZE = 256,
                 WAPRS = CTA_SIZE / Warp::WARP_SIZE,
 
-                MIN_NEIGHBOORS = 1
+                // if there are fewer than 3 neighbors, the normal is definitely garbage
+                MIN_NEIGHBOORS = 3
             };
 
             struct plus 
@@ -86,6 +87,7 @@ namespace pcl
                 {
                     constexpr float NaN = std::numeric_limits<float>::quiet_NaN();
                     normals.data[idx] = make_float4(NaN, NaN, NaN, NaN);
+                    return;
                 }
 
                 const int *ibeg = indices.ptr(idx);

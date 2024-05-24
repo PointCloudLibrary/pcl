@@ -2,12 +2,7 @@ set(SUBSYS_NAME recognition)
 set(SUBSYS_DESC "Point cloud recognition library")
 set(SUBSYS_DEPS common io search kdtree octree features filters registration sample_consensus ml)
 
-if(${PCL_VERSION} VERSION_LESS "1.15.0" AND NOT TARGET Boost::filesystem)
-  set(DEFAULT OFF)
-  set(REASON "Boost filesystem is not available.")
-else()
-  set(DEFAULT ON)
-endif()
+set(DEFAULT ON)
 
 PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ${DEFAULT} "${REASON}")
 PCL_SUBSYS_DEPEND(build NAME ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS})

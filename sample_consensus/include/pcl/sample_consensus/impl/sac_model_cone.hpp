@@ -87,6 +87,11 @@ pcl::SampleConsensusModelCone<PointT, PointNT>::computeModelCoefficients (
   Eigen::Vector4f ortho31 = n3.cross3(n1);
 
   float denominator = n1.dot(ortho23);
+  if (std::abs(denominator) < Eigen::NumTraits<float>::dummy_precision ())
+  {
+    PCL_ERROR ("[pcl::SampleConsensusModelCone::computeModelCoefficients] Impossible to compute stable model with these points.\n");
+    return (false);
+  }
 
   float d1 = p1.dot (n1);
   float d2 = p2.dot (n2);

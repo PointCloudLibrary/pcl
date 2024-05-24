@@ -46,8 +46,9 @@ int main (int argc, char *argv[])
   bool approx = false;
   constexpr double decimation = 100;
 
-  if(argc < 2){
+  if(argc < 3){
     std::cerr << "Expected 2 arguments: inputfile outputfile" << std::endl;
+    return 0;
   }
 
   ///The file to read from.

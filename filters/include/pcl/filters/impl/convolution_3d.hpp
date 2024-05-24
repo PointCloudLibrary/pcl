@@ -40,6 +40,7 @@
 #ifndef PCL_FILTERS_CONVOLUTION_3D_IMPL_HPP
 #define PCL_FILTERS_CONVOLUTION_3D_IMPL_HPP
 
+#include <pcl/common/point_tests.h> // for isFinite
 #include <pcl/search/organized.h>
 #include <pcl/search/kdtree.h>
 #include <pcl/pcl_config.h>

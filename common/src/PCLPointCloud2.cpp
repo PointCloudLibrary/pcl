@@ -137,6 +137,7 @@ pcl::PCLPointCloud2::concatenate (pcl::PCLPointCloud2 &cloud1, const pcl::PCLPoi
   cloud1.is_dense = cloud1.is_dense && cloud2.is_dense;
   cloud1.height = 1;
   cloud1.width = size1 + size2;
+  cloud1.row_step = cloud1.width * cloud1.point_step; // changed width
 
   if (simple_layout)
   {

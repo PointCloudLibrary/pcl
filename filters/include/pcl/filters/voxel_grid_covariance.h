@@ -434,9 +434,10 @@ namespace pcl
 
       /** \brief Get a cloud to visualize each voxels normal distribution.
        * \param[out] cell_cloud a cloud created by sampling the normal distributions of each voxel
+       * \param[in] pnt_per_cell how many points should be generated for each cell
        */
       void
-      getDisplayCloud (pcl::PointCloud<PointXYZ>& cell_cloud);
+      getDisplayCloud (pcl::PointCloud<PointXYZ>& cell_cloud, int pnt_per_cell = 1000) const;
 
       /** \brief Search for the k-nearest occupied voxels for the given query point.
        * \note Only voxels containing a sufficient number of points are used.

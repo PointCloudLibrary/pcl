@@ -439,7 +439,6 @@ void pcl::visualization::PCLVisualizer::setupStyle ()
   style_->setCloudActorMap (cloud_actor_map_);
   style_->setShapeActorMap (shape_actor_map_);
   style_->UseTimersOn ();
-  style_->setUseVbos (use_vbos_);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////

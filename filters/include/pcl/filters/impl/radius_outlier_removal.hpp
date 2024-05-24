@@ -138,7 +138,8 @@ pcl::RadiusOutlierRemoval<PointT>::applyFilterIndices (Indices &indices)
     {
       // Perform the radius search
       // Note: k includes the query point, so is always at least 1
-      int k = searcher_->radiusSearch (index, search_radius_, nn_indices, nn_dists);
+      // last parameter (max_nn) is the maximum number of neighbors returned. If enough neighbors are found so that point can not be an outlier, we stop searching.
+      int k = searcher_->radiusSearch (index, search_radius_, nn_indices, nn_dists, min_pts_radius_ + 1);
 
       // Points having too few neighbors are outliers and are passed to removed indices
       // Unless negative was set, then it's the opposite condition
