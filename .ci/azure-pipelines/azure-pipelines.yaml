@@ -24,8 +24,8 @@ resources:
       image: pointcloudlibrary/env:20.04
     - container: env2204
       image: pointcloudlibrary/env:22.04
-    - container: env2304
-      image: pointcloudlibrary/env:23.04
+    - container: env2404
+      image: pointcloudlibrary/env:24.04
 
 stages:
   - stage: formatting
@@ -49,8 +49,8 @@ stages:
               CXX: g++
               BUILD_GPU: ON
               CMAKE_ARGS: '-DPCL_WARNINGS_ARE_ERRORS=ON'
-            23.04 GCC:  # latest Ubuntu
-              CONTAINER: env2304
+            24.04 GCC:  # latest Ubuntu
+              CONTAINER: env2404
               CC: gcc
               CXX: g++
               BUILD_GPU: ON
