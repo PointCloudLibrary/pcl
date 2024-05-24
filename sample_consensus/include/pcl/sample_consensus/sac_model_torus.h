@@ -136,8 +136,8 @@ public:
   }
   /** \brief Check whether the given index samples can form a valid torus model, compute
    * the model coefficients from these samples and store them in model_coefficients. The
-   * torus coefficients are: radii, torus_center_point, torus_normal \param[in] samples
-   * the point indices found as possible good candidates for creating a valid model
+   * torus coefficients are: radii, torus_center_point, torus_normal.
+   * \param[in] samples the point indices found as possible good candidates for creating a valid model
    * \param[out] model_coefficients the resultant model coefficients
    */
   bool
@@ -145,17 +145,18 @@ public:
                            Eigen::VectorXf& model_coefficients) const override;
 
   /** \brief Compute all distances from the cloud data to a given torus model.
-   * \param[in] model_coefficients the coefficients of a torus model that we need to
-   * compute distances to \param[out] distances the resultant estimated distances
+   * \param[in] model_coefficients the coefficients of a torus model that we need to compute distances to
+   * \param[out] distances the resultant estimated distances
    */
   void
   getDistancesToModel(const Eigen::VectorXf& model_coefficients,
                       std::vector<double>& distances) const override;
 
   /** \brief Select all the points which respect the given model coefficients as
-   * inliers. \param[in] model_coefficients the coefficients of a torus model that we
-   * need to compute distances to \param[in] threshold a maximum admissible distance
-   * threshold for determining the inliers from the outliers \param[out] inliers the
+   * inliers.
+   * \param[in] model_coefficients the coefficients of a torus model that we need to compute distances to
+   * \param[in] threshold a maximum admissible distance threshold for determining the inliers from the outliers
+   * \param[out] inliers the
    * resultant model inliers
    */
   void
@@ -165,8 +166,8 @@ public:
 
   /** \brief Count all the points which respect the given model coefficients as inliers.
    *
-   * \param[in] model_coefficients the coefficients of a model that we need to compute
-   * distances to \param[in] threshold maximum admissible distance threshold for
+   * \param[in] model_coefficients the coefficients of a model that we need to compute distances to
+   * \param[in] threshold maximum admissible distance threshold for
    * determining the inliers from the outliers \return the resultant number of inliers
    */
   std::size_t
@@ -174,7 +175,8 @@ public:
                       const double threshold) const override;
 
   /** \brief Recompute the torus coefficients using the given inlier set and return them
-   * to the user. \param[in] inliers the data inliers found as supporting the model
+   * to the user.
+   * \param[in] inliers the data inliers found as supporting the model
    * \param[in] model_coefficients the initial guess for the optimization
    * \param[out] optimized_coefficients the resultant recomputed coefficients after
    * non-linear optimization
@@ -197,8 +199,9 @@ public:
                 bool copy_data_fields = true) const override;
 
   /** \brief Verify whether a subset of indices verifies the given torus model
-   * coefficients. \param[in] indices the data indices that need to be tested against
-   * the torus model \param[in] model_coefficients the torus model coefficients
+   * coefficients.
+   * \param[in] indices the data indices that need to be tested against the torus model
+   * \param[in] model_coefficients the torus model coefficients
    * \param[in] threshold a maximum admissible distance threshold for determining the
    * inliers from the outliers
    */
@@ -219,9 +222,10 @@ protected:
   using SampleConsensusModel<PointT>::model_size_;
 
   /** \brief Project a point onto a torus given by its model coefficients (radii,
-   * torus_center_point, torus_normal) \param[in] pt the input point to project
-   * \param[in] model_coefficients the coefficients of the torus (radii,
-   * torus_center_point, torus_normal) \param[out] pt_proj the resultant projected point
+   * torus_center_point, torus_normal)
+   * \param[in] pt the input point to project
+   * \param[in] model_coefficients the coefficients of the torus (radii, torus_center_point, torus_normal)
+   * \param[out] pt_proj the resultant projected point
    */
   void
   projectPointToTorus(const Eigen::Vector3f& pt,

@@ -181,8 +181,8 @@ pcl::SampleConsensusModelTorus<PointT, PointNT>::computeModelCoefficients(
     // Direction vector
     Eigen::Vector3f d = ((p1 + n1 * t1) - (p0 + n0 * t0));
     d.normalize();
-    // Flip direction, so that the fisrt element of the direction vector is
-    // positive, for consitency.
+    // Flip direction, so that the first element of the direction vector is
+    // positive, for consistency.
     if (d[0] < 0) {
       d *= -1;
     }
