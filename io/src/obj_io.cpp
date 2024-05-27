@@ -556,7 +556,7 @@ pcl::OBJReader::read (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
     if (cloud.fields[i].name == "normal_x")
     {
       normals.reserve(cloud.width);
-      normal_mapping.resize(cloud.width);
+      normal_mapping.resize(cloud.width, Eigen::Vector3f::Zero());
       normal_x_field = i;
       break;
     }
@@ -744,7 +744,7 @@ pcl::OBJReader::read (const std::string &file_name, pcl::TextureMesh &mesh,
     if (mesh.cloud.fields[i].name == "normal_x")
     {
       normals.reserve(mesh.cloud.width);
-      normal_mapping.resize(mesh.cloud.width);
+      normal_mapping.resize(mesh.cloud.width, Eigen::Vector3f::Zero());
       normal_x_field = i;
       break;
     }
@@ -989,7 +989,7 @@ pcl::OBJReader::read (const std::string &file_name, pcl::PolygonMesh &mesh,
     if (mesh.cloud.fields[i].name == "normal_x")
     {
       normals.reserve(mesh.cloud.width);
-      normal_mapping.resize(mesh.cloud.width);
+      normal_mapping.resize(mesh.cloud.width, Eigen::Vector3f::Zero());
       normal_x_field = i;
       break;
     }
