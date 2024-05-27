@@ -79,6 +79,9 @@ TEST(ExtractPolygonalPrism, two_rings)
 
   // check that all of the rings are in the prism.
   EXPECT_EQ(inliers->indices.size(), ringsPointCount);
+  for(std::size_t i=0; i<inliers->indices.size(); ++i) {
+    EXPECT_EQ(inliers->indices[i], i);
+  }
 }
 
 int
