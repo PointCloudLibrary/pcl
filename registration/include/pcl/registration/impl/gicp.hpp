@@ -46,6 +46,28 @@
 namespace pcl {
 
 template <typename PointSource, typename PointTarget, typename Scalar>
+void
+GeneralizedIterativeClosestPoint<PointSource, PointTarget, Scalar>::setNumberOfThreads(
+    unsigned int nr_threads)
+{
+#ifdef _OPENMP
+  if (nr_threads == 0)
+    threads_ = omp_get_num_procs();
+  else
+    threads_ = nr_threads;
+  PCL_DEBUG("[pcl::GeneralizedIterativeClosestPoint::setNumberOfThreads] Setting "
+            "number of threads to %u.\n",
+            threads_);
+#else
+  threads_ = 1;
+  if (nr_threads != 1)
+    PCL_WARN("[pcl::GeneralizedIterativeClosestPoint::setNumberOfThreads] "
+             "Parallelization is requested, but OpenMP is not available! Continuing "
+             "without parallelization.\n");
+#endif // _OPENMP
+}
+
+template <typename PointSource, typename PointTarget, typename Scalar>
 template <typename PointT>
 void
 GeneralizedIterativeClosestPoint<PointSource, PointTarget, Scalar>::computeCovariances(
@@ -62,6 +84,7 @@ GeneralizedIterativeClosestPoint<PointSource, PointTarget, Scalar>::computeCovar
   }
 
   Eigen::Vector3d mean;
+  Eigen::Matrix3d cov;
   pcl::Indices nn_indices(k_correspondences_);
   std::vector<float> nn_dist_sq(k_correspondences_);
 
@@ -69,11 +92,11 @@ GeneralizedIterativeClosestPoint<PointSource, PointTarget, Scalar>::computeCovar
   if (cloud_covariances.size() < cloud->size())
     cloud_covariances.resize(cloud->size());
 
-  auto matrices_iterator = cloud_covariances.begin();
-  for (auto points_iterator = cloud->begin(); points_iterator != cloud->end();
-       ++points_iterator, ++matrices_iterator) {
-    const PointT& query_point = *points_iterator;
-    Eigen::Matrix3d& cov = *matrices_iterator;
+#pragma omp parallel for default(none) num_threads(threads_) schedule(dynamic, 32)     \
+    shared(cloud, cloud_covariances, kdtree)                                           \
+        firstprivate(mean, cov, nn_indices, nn_dist_sq)
+  for (std::ptrdiff_t i = 0; i < static_cast<std::ptrdiff_t>(cloud->size()); ++i) {
+    const PointT& query_point = (*cloud)[i];
     // Zero out the cov and mean
     cov.setZero();
     mean.setZero();
@@ -124,6 +147,7 @@ GeneralizedIterativeClosestPoint<PointSource, PointTarget, Scalar>::computeCovar
         v = gicp_epsilon_;
       cov += v * col * col.transpose();
     }
+    cloud_covariances[i] = cov;
   }
 }
 
