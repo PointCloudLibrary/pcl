@@ -1082,7 +1082,7 @@ TEST(PCL, OBJRead)
   fs.close ();
 
   pcl::PCLPointCloud2 blob;
-  pcl::OBJReader objreader = pcl::OBJReader();
+  pcl::OBJReader objreader;
   int res = objreader.read ("test_obj.obj", blob);
   EXPECT_NE (res, -1);
   EXPECT_EQ (blob.width, 8);
@@ -1120,6 +1120,25 @@ TEST(PCL, OBJRead)
   EXPECT_EQ (blob.fields[5].offset, 4 * 5);
   EXPECT_EQ (blob.fields[5].count, 1);
   EXPECT_EQ (blob.fields[5].datatype, pcl::PCLPointField::FLOAT32);
+
+  auto fblob = reinterpret_cast<const float*>(blob.data.data());
+
+  size_t offset_p = 0;
+  size_t offset_vn = blob.fields[3].offset / 4;
+  for (size_t i = 0; i < blob.width; ++i, offset_p += 6, offset_vn += 6)
+  {
+    Eigen::Vector3f expected_normal =
+        Eigen::Vector3f(fblob[offset_p], fblob[offset_p + 1], fblob[offset_p + 2])
+            .normalized();
+
+    Eigen::Vector3f actual_normal =
+        Eigen::Vector3f(fblob[offset_vn], fblob[offset_vn + 1], fblob[offset_vn + 2])
+            .normalized();
+
+    EXPECT_NEAR(expected_normal.x(), actual_normal.x(), 1e-4);
+    EXPECT_NEAR(expected_normal.y(), actual_normal.y(), 1e-4);
+    EXPECT_NEAR(expected_normal.z(), actual_normal.z(), 1e-4);
+  }
 
   remove ("test_obj.obj");
   remove ("test_obj.mtl");

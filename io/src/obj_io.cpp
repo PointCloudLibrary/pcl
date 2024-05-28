@@ -546,10 +546,17 @@ pcl::OBJReader::read (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
 
   // Get normal_x and rgba fields indices
   int normal_x_field = -1;
+  std::vector<Eigen::Vector3f> normals;
+
+  //vector[idx of vertex]<accumulated normals{x, y, z}>
+  std::vector<Eigen::Vector3f> normal_mapping;
+
   // std::size_t rgba_field = 0;
   for (std::size_t i = 0; i < cloud.fields.size (); ++i)
     if (cloud.fields[i].name == "normal_x")
     {
+      normals.reserve(cloud.width);
+      normal_mapping.resize(cloud.width, Eigen::Vector3f::Zero());
       normal_x_field = i;
       break;
     }
@@ -602,28 +609,60 @@ pcl::OBJReader::read (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
       // Vertex normal
       if (st[0] == "vn")
       {
-        if (normal_idx >= cloud.width) 
-        {
-          if (normal_idx == cloud.width)
-            PCL_WARN ("[pcl:OBJReader] Too many vertex normals (expected %d), skipping remaining normals.\n", cloud.width, normal_idx + 1);
-          ++normal_idx;
-          continue;
-        }
         try
         {
-          for (int i = 1, f = normal_x_field; i < 4; ++i, ++f)
-          {
-            float value = boost::lexical_cast<float> (st[i]);
-            memcpy (&cloud.data[normal_idx * cloud.point_step + cloud.fields[f].offset],
-                &value,
-                sizeof (float));
-          }
+          normals.emplace_back(
+            boost::lexical_cast<float> (st[1]),
+            boost::lexical_cast<float> (st[2]),
+            boost::lexical_cast<float> (st[3])
+          );
           ++normal_idx;
         }
         catch (const boost::bad_lexical_cast&)
         {
           PCL_ERROR ("Unable to convert line %s to vertex normal!\n", line.c_str ());
           return (-1);
+        }
+        continue;
+      }
+
+      // Face
+      if (st[0] == "f")
+      {
+        std::vector<std::string> f_st;
+        std::string n_st;
+
+        pcl::Vertices face_vertices; face_vertices.vertices.resize(st.size() - 1);
+        for (std::size_t i = 1; i < st.size (); ++i)
+        {
+          if (st[i].find("//") != std::string::npos)
+          {
+            //covers format v//vn
+            pcl::split(f_st, st[i], "//");
+            n_st = f_st[1];
+          }
+          else if (st[i].find('/') != std::string::npos)
+          {
+            //covers format v/vt/vn and v/vt
+            pcl::split(f_st, st[i], "/");
+            if (f_st.size() > 2)
+              n_st = f_st[2];
+          }
+          else
+            f_st = { st[i] };
+
+          int v = std::stoi(f_st[0]);
+          v = (v < 0) ? point_idx + v : v - 1;
+          face_vertices.vertices[i - 1] = v;
+
+          //handle normals
+          if (!n_st.empty())
+          {
+            int n = std::stoi(n_st);
+            n = (n < 0) ? normal_idx + n : n - 1;
+
+            normal_mapping[v] += normals[n];
+          }
         }
         continue;
       }
@@ -634,6 +673,17 @@ pcl::OBJReader::read (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
     PCL_ERROR ("[pcl::OBJReader::read] %s\n", exception);
     fs.close ();
     return (-1);
+  }
+
+  if (!normal_mapping.empty())
+  {
+    for (uindex_t i = 0, main_offset = 0; i < cloud.width; ++i, main_offset += cloud.point_step)
+    {
+      normal_mapping[i].normalize();
+
+      for (int j = 0, f = normal_x_field; j < 3; ++j, ++f)
+        memcpy(&cloud.data[main_offset + cloud.fields[f].offset], &normal_mapping[i][j], sizeof(float));
+    }
   }
 
   double total_time = tt.toc ();
@@ -684,16 +734,24 @@ pcl::OBJReader::read (const std::string &file_name, pcl::TextureMesh &mesh,
 
   // Get normal_x and rgba fields indices
   int normal_x_field = -1;
+  std::vector<Eigen::Vector3f> normals;
+
+  //vector[idx of vertex]<accumulated normals{x, y, z}>
+  std::vector<Eigen::Vector3f> normal_mapping;
+
   // std::size_t rgba_field = 0;
   for (std::size_t i = 0; i < mesh.cloud.fields.size (); ++i)
     if (mesh.cloud.fields[i].name == "normal_x")
     {
+      normals.reserve(mesh.cloud.width);
+      normal_mapping.resize(mesh.cloud.width, Eigen::Vector3f::Zero());
       normal_x_field = i;
       break;
     }
 
   std::size_t v_idx = 0;
   std::size_t f_idx = 0;
+  std::size_t vt_idx = 0;
   std::string line;
   std::vector<std::string> st;
   std::vector<Eigen::Vector2f, Eigen::aligned_allocator<Eigen::Vector2f> > coordinates;
@@ -740,13 +798,11 @@ pcl::OBJReader::read (const std::string &file_name, pcl::TextureMesh &mesh,
       {
         try
         {
-          for (int i = 1, f = normal_x_field; i < 4; ++i, ++f)
-          {
-            float value = boost::lexical_cast<float> (st[i]);
-            memcpy (&mesh.cloud.data[vn_idx * mesh.cloud.point_step + mesh.cloud.fields[f].offset],
-                &value,
-                sizeof (float));
-          }
+          normals.emplace_back(
+            boost::lexical_cast<float> (st[1]),
+            boost::lexical_cast<float> (st[2]),
+            boost::lexical_cast<float> (st[3])
+          );
           ++vn_idx;
         }
         catch (const boost::bad_lexical_cast&)
@@ -768,6 +824,7 @@ pcl::OBJReader::read (const std::string &file_name, pcl::TextureMesh &mesh,
             coordinates.emplace_back(c[0], c[1]);
           else
             coordinates.emplace_back(c[0]/c[2], c[1]/c[2]);
+          ++vt_idx;
         }
         catch (const boost::bad_lexical_cast&)
         {
@@ -801,23 +858,55 @@ pcl::OBJReader::read (const std::string &file_name, pcl::TextureMesh &mesh,
       // Face
       if (st[0] == "f")
       {
-        // TODO read in normal indices properly
-        pcl::Vertices face_v; face_v.vertices.resize (st.size () - 1);
+        std::vector<std::string> f_st;
+        std::string n_st;
+        std::string vt_st;
+
+        pcl::Vertices face_vertices; face_vertices.vertices.resize (st.size () - 1);
         pcl::Vertices tex_indices; tex_indices.vertices.reserve (st.size () - 1);
         for (std::size_t i = 1; i < st.size (); ++i)
         {
-          char* str_end;
-          int v = std::strtol(st[i].c_str(), &str_end, 10);
-          v = (v < 0) ? v_idx + v : v - 1;
-          face_v.vertices[i-1] = v;
-          if (str_end[0] == '/' && str_end[1] != '/' && str_end[1] != '\0')
+          if (st[i].find("//") != std::string::npos)
           {
-            // texture coordinate indices are optional
-            int tex_index = std::strtol(str_end+1, &str_end, 10);
-            tex_indices.vertices.push_back (tex_index - 1);
+            //covers format v//vn
+            pcl::split(f_st, st[i], "//");
+            n_st = f_st[1];
+          }
+          else if (st[i].find('/') != std::string::npos)
+          {
+            //covers format v/vt/vn and v/vt
+            pcl::split(f_st, st[i], "/");
+            if (f_st.size() > 1)
+              vt_st = f_st[1];
+
+            if (f_st.size() > 2)
+              n_st = f_st[2];
+          }
+          else
+            f_st = { st[i] };
+
+          int v = std::stoi(f_st[0]);
+          v = (v < 0) ? v_idx + v : v - 1;
+          face_vertices.vertices[i - 1] = v;
+
+          //handle normals
+          if (!n_st.empty())
+          {
+            int n = std::stoi(n_st);
+            n = (n < 0) ? vn_idx + n : n - 1;
+
+            normal_mapping[v] += normals[n];
+          }
+
+          if (!vt_st.empty())
+          {
+            int vt = std::stoi(vt_st);
+            vt = (vt < 0) ? vt_idx + vt : vt - 1;
+
+            tex_indices.vertices.push_back(vt);
           }
         }
-        mesh.tex_polygons.back ().push_back (face_v);
+        mesh.tex_polygons.back ().push_back (face_vertices);
         mesh.tex_coord_indices.back ().push_back (tex_indices);
         ++f_idx;
         continue;
@@ -829,6 +918,17 @@ pcl::OBJReader::read (const std::string &file_name, pcl::TextureMesh &mesh,
     PCL_ERROR ("[pcl::OBJReader::read] %s\n", exception);
     fs.close ();
     return (-1);
+  }
+
+  if (!normal_mapping.empty())
+  {
+    for (uindex_t i = 0, main_offset = 0; i < mesh.cloud.width; ++i, main_offset += mesh.cloud.point_step)
+    {
+      normal_mapping[i].normalize();
+
+      for (int j = 0, f = normal_x_field; j < 3; ++j, ++f)
+        memcpy(&mesh.cloud.data[main_offset + mesh.cloud.fields[f].offset], &normal_mapping[i][j], sizeof(float));
+    }
   }
 
   double total_time = tt.toc ();
@@ -879,10 +979,17 @@ pcl::OBJReader::read (const std::string &file_name, pcl::PolygonMesh &mesh,
 
   // Get normal_x and rgba fields indices
   int normal_x_field = -1;
+  std::vector<Eigen::Vector3f> normals;
+
+  //vector[idx of vertex]<accumulated normals{x, y, z}>
+  std::vector<Eigen::Vector3f> normal_mapping;
+
   // std::size_t rgba_field = 0;
   for (std::size_t i = 0; i < mesh.cloud.fields.size (); ++i)
     if (mesh.cloud.fields[i].name == "normal_x")
     {
+      normals.reserve(mesh.cloud.width);
+      normal_mapping.resize(mesh.cloud.width, Eigen::Vector3f::Zero());
       normal_x_field = i;
       break;
     }
@@ -935,13 +1042,11 @@ pcl::OBJReader::read (const std::string &file_name, pcl::PolygonMesh &mesh,
       {
         try
         {
-          for (int i = 1, f = normal_x_field; i < 4; ++i, ++f)
-          {
-            float value = boost::lexical_cast<float> (st[i]);
-            memcpy (&mesh.cloud.data[vn_idx * mesh.cloud.point_step + mesh.cloud.fields[f].offset],
-                &value,
-                sizeof (float));
-          }
+          normals.emplace_back(
+            boost::lexical_cast<float> (st[1]),
+            boost::lexical_cast<float> (st[2]),
+            boost::lexical_cast<float> (st[3])
+          );
           ++vn_idx;
         }
         catch (const boost::bad_lexical_cast&)
@@ -955,13 +1060,40 @@ pcl::OBJReader::read (const std::string &file_name, pcl::PolygonMesh &mesh,
       // Face
       if (st[0] == "f")
       {
+        std::vector<std::string> f_st;
+        std::string n_st;
+
         pcl::Vertices face_vertices; face_vertices.vertices.resize (st.size () - 1);
         for (std::size_t i = 1; i < st.size (); ++i)
         {
-          int v;
-          sscanf (st[i].c_str (), "%d", &v);
+          if (st[i].find("//") != std::string::npos)
+          {
+            //covers format v//vn
+            pcl::split(f_st, st[i], "//");
+            n_st = f_st[1];
+          }
+          else if (st[i].find('/') != std::string::npos)
+          {
+            //covers format v/vt/vn and v/vt
+            pcl::split(f_st, st[i], "/");
+            if (f_st.size() > 2)
+              n_st = f_st[2];
+          }
+          else
+            f_st = { st[i] };
+
+          int v = std::stoi(f_st[0]);
           v = (v < 0) ? v_idx + v : v - 1;
           face_vertices.vertices[i - 1] = v;
+
+          //handle normals
+          if (!n_st.empty())
+          {
+            int n = std::stoi(n_st);
+            n = (n < 0) ? vn_idx + n : n - 1;
+              
+            normal_mapping[v] += normals[n];
+          }
         }
         mesh.polygons.push_back (face_vertices);
         continue;
@@ -973,6 +1105,17 @@ pcl::OBJReader::read (const std::string &file_name, pcl::PolygonMesh &mesh,
     PCL_ERROR ("[pcl::OBJReader::read] %s\n", exception);
     fs.close ();
     return (-1);
+  }
+
+  if (!normal_mapping.empty())
+  {
+    for (uindex_t i = 0, main_offset = 0; i < mesh.cloud.width; ++i, main_offset += mesh.cloud.point_step)
+    {
+      normal_mapping[i].normalize();
+
+      for (int j = 0, f = normal_x_field; j < 3; ++j, ++f)
+        memcpy(&mesh.cloud.data[main_offset + mesh.cloud.fields[f].offset], &normal_mapping[i][j], sizeof(float));
+    }
   }
 
   double total_time = tt.toc ();
