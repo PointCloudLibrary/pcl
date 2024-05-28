@@ -442,11 +442,11 @@ pcl::VoxelGridCovariance<PointT>::getAllNeighborsAtPoint(const PointT& reference
 
 //////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointT> void
-pcl::VoxelGridCovariance<PointT>::getDisplayCloud (pcl::PointCloud<PointXYZ>& cell_cloud)
+pcl::VoxelGridCovariance<PointT>::getDisplayCloud (pcl::PointCloud<PointXYZ>& cell_cloud, int pnt_per_cell) const
 {
   cell_cloud.clear ();
 
-  int pnt_per_cell = 1000;
+  // for now, we use random generator and normal distribution from boost instead of std because switching to std would make this function up to 2.8 times slower
   boost::mt19937 rng;
   boost::normal_distribution<> nd (0.0, 1.0);
   boost::variate_generator<boost::mt19937&, boost::normal_distribution<> > var_nor (rng, nd);
@@ -463,7 +463,7 @@ pcl::VoxelGridCovariance<PointT>::getDisplayCloud (pcl::PointCloud<PointXYZ>& ce
   // Generate points for each occupied voxel with sufficient points.
   for (auto it = leaves_.begin (); it != leaves_.end (); ++it)
   {
-    Leaf& leaf = it->second;
+    const Leaf& leaf = it->second;
 
     if (leaf.nr_points >= min_points_per_voxel_)
     {

@@ -25,7 +25,7 @@ main (int argc, char *argv[])
   if (argc < 3)
   {
     printf ("\nUsage: pcl_example_nurbs_fitting_surface pcd<PointXYZ>-in-file 3dm-out-file\n\n");
-    exit (0);
+    exit (EXIT_FAILURE);
   }
   pcd_file = argv[1];
   file_3dm = argv[2];

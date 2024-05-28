@@ -107,7 +107,7 @@ You will see something similar to::
   1 [20.000000%].
   [pcl::IterativeClosestPoint::computeTransformation] Convergence reached.
   Number of iterations: 1 out of 0. Transformation difference: 0.700001
-  has converged:1 score: 1.95122e-14
+  ICP has converged, score: 1.95122e-14
             1  4.47035e-08 -3.25963e-09          0.7
   2.98023e-08            1 -1.08499e-07 -2.98023e-08
   1.30385e-08 -1.67638e-08            1  1.86265e-08

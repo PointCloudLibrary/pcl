@@ -45,12 +45,15 @@ namespace pcl
     s << "  " << v.offset << std::endl;
     s << "datatype: ";
     switch(v.datatype) {
+      case ::pcl::PCLPointField::PointFieldTypes::BOOL: s << "  BOOL" << std::endl; break;
       case ::pcl::PCLPointField::PointFieldTypes::INT8: s << "  INT8" << std::endl; break;
       case ::pcl::PCLPointField::PointFieldTypes::UINT8: s << "  UINT8" << std::endl; break;
       case ::pcl::PCLPointField::PointFieldTypes::INT16: s << "  INT16" << std::endl; break;
       case ::pcl::PCLPointField::PointFieldTypes::UINT16: s << "  UINT16" << std::endl; break;
       case ::pcl::PCLPointField::PointFieldTypes::INT32: s << "  INT32" << std::endl; break;
       case ::pcl::PCLPointField::PointFieldTypes::UINT32: s << "  UINT32" << std::endl; break;
+      case ::pcl::PCLPointField::PointFieldTypes::INT64: s << "  INT64" << std::endl; break;
+      case ::pcl::PCLPointField::PointFieldTypes::UINT64: s << "  UINT64" << std::endl; break;
       case ::pcl::PCLPointField::PointFieldTypes::FLOAT32: s << "  FLOAT32" << std::endl; break;
       case ::pcl::PCLPointField::PointFieldTypes::FLOAT64: s << "  FLOAT64" << std::endl; break;
       default: s << "  " << static_cast<int>(v.datatype) << std::endl;

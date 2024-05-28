@@ -235,7 +235,7 @@ pcl::SampleConsensusModelEllipse3D<PointT>::computeModelCoefficients (const Indi
   model_coefficients[10] = static_cast<float>(x_axis[2]);
 
 
-  PCL_DEBUG ("[pcl::SampleConsensusModelEllipse3D::computeModelCoefficients] Model is (%g,%g,%g,%g,%g,%g,%g,%g,%g,%g,%g,%g,%g).\n",
+  PCL_DEBUG ("[pcl::SampleConsensusModelEllipse3D::computeModelCoefficients] Model is (%g,%g,%g,%g,%g,%g,%g,%g,%g,%g,%g).\n",
              model_coefficients[0], model_coefficients[1], model_coefficients[2], model_coefficients[3],
              model_coefficients[4], model_coefficients[5], model_coefficients[6], model_coefficients[7],
              model_coefficients[8], model_coefficients[9], model_coefficients[10]);
@@ -312,12 +312,14 @@ pcl::SampleConsensusModelEllipse3D<PointT>::selectWithinDistance (
     Indices &inliers)
 {
   inliers.clear();
+  error_sqr_dists_.clear();
   // Check if the model is valid given the user constraints
   if (!isModelValid (model_coefficients))
   {
     return;
   }
   inliers.reserve (indices_->size ());
+  error_sqr_dists_.reserve (indices_->size ());
 
   // c : Ellipse Center
   const Eigen::Vector3f c(model_coefficients[0], model_coefficients[1], model_coefficients[2]);
@@ -358,10 +360,12 @@ pcl::SampleConsensusModelEllipse3D<PointT>::selectWithinDistance (
     float th_opt;
     const Eigen::Vector2f distanceVector = dvec2ellipse(params, p_(0), p_(1), th_opt);
 
-    if (distanceVector.squaredNorm() < squared_threshold)
+    const double sqr_dist = distanceVector.squaredNorm();
+    if (sqr_dist < squared_threshold)
     {
       // Returns the indices of the points whose distances are smaller than the threshold
       inliers.push_back ((*indices_)[i]);
+      error_sqr_dists_.push_back (sqr_dist);
     }
   }
 }
@@ -453,7 +457,7 @@ pcl::SampleConsensusModelEllipse3D<PointT>::optimizeModelCoefficients (
     optimized_coefficients[i] = static_cast<float> (coeff[i]);
 
   // Compute the L2 norm of the residuals
-  PCL_DEBUG ("[pcl::SampleConsensusModelEllipse3D::optimizeModelCoefficients] LM solver finished with exit code %i, having a residual norm of %g. \nInitial solution: %g %g %g %g %g %g %g %g %g %g %g %g %g \nFinal solution: %g %g %g %g %g %g %g %g %g %g %g %g %g\n",
+  PCL_DEBUG ("[pcl::SampleConsensusModelEllipse3D::optimizeModelCoefficients] LM solver finished with exit code %i, having a residual norm of %g. \nInitial solution: %g %g %g %g %g %g %g %g %g %g %g\nFinal solution: %g %g %g %g %g %g %g %g %g %g %g\n",
             info, lm.fvec.norm (),
 
             model_coefficients[0],

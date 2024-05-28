@@ -46,6 +46,7 @@ namespace pcl
       using SampleConsensusModel<PointT>::indices_;
       using SampleConsensusModel<PointT>::radius_min_;
       using SampleConsensusModel<PointT>::radius_max_;
+      using SampleConsensusModel<PointT>::error_sqr_dists_;
 
       using PointCloud = typename SampleConsensusModel<PointT>::PointCloud;
       using PointCloudPtr = typename SampleConsensusModel<PointT>::PointCloudPtr;

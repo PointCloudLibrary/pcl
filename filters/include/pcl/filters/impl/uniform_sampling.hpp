@@ -48,7 +48,7 @@ pcl::UniformSampling<PointT>::applyFilter (PointCloud &output)
   // Has the input dataset been set already?
   if (!input_)
   {
-    PCL_WARN ("[pcl::%s::detectKeypoints] No input dataset given!\n", getClassName ().c_str ());
+    PCL_WARN ("[pcl::%s::applyFilter] No input dataset given!\n", getClassName ().c_str ());
     output.width = output.height = 0;
     output.clear ();
     return;

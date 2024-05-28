@@ -92,6 +92,7 @@ namespace pcl
   /** \brief ApproximateVoxelGrid assembles a local 3D grid over a given PointCloud, and downsamples + filters the data.
     * Thus, this is similar to the \ref VoxelGrid filter.
     * This class works best if points that are stored in memory next to each other (in the input point cloud), are also somewhat close in 3D euclidean space (this is for example usually the case for organized point clouds). If the points have no storage order (e.g. in synthetic, randomly generated point clouds), this class will give very poor results, and \ref VoxelGrid should be used instead.
+    * \sa VoxelGrid
     * \author James Bowman, Radu B. Rusu
     * \ingroup filters
     */

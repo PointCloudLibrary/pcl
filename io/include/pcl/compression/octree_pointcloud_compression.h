@@ -55,7 +55,7 @@ namespace pcl
   namespace io
   {
     /** \brief @b Octree pointcloud compression class
-     *  \note This class enables compression and decompression of point cloud data based on octree data structures.
+     *  \note This class enables compression and decompression of point cloud data based on octree data structures. It is a lossy compression. See also `PCDWriter` for another way to compress point cloud data.
      *  \note
      *  \note typename: PointT: type of point used in pointcloud
      *  \author Julius Kammerl (julius@kammerl.de)

@@ -88,7 +88,7 @@ will install PCL with default options as well as default triplet type (ie. x86).
 .. note::
 
   If there are new features or bugfixes that are not yet part of a release,
-  you can try to use --head, which downloads the master of PCL.
+  you can try to use `--head`, which downloads the master of PCL.
   
 You can see the available PCL version and options in VCPKG `here <https://github.com/microsoft/vcpkg/blob/master/ports/pcl/vcpkg.json>`_.
 
@@ -99,6 +99,9 @@ To enable specific features, you need to write:
 And all features:
 
   ./vcpkg install pcl[*]
+
+.. note::
+  If you want to use anything from the PCL visualization module (like the `PCLVisualizer`  for example), you need to explicitly request this from vcpkg by `./vcpkg install pcl[visualization]` or `./vcpkg install pcl[*]` (it is disabled by default).
 
 If you want to install with a different triplet type, the easiest way is:
 
@@ -135,6 +138,9 @@ Find PCL using CMake
 ====================
 
 To use PCL in CMake project, take a look at Kunal Tyagi's minimal example `in this repository <https://github.com/kunaltyagi/pcl-cmake-minimum>`_
+
+.. note::
+	You may get errors when your program is linked if you use specific point types that are not used so often (so for example `pcl::PointXYZ` and `pcl::PointXYZI` are usually not affected). Of course, the first thing you should check is whether you correctly link to all PCL libraries (`target_link_libraries(<my_executable> ${PCL_LIBRARIES})` in CMake). The next thing you can try is adding `#define PCL_NO_PRECOMPILE` before including any PCL headers. The background is that on Windows, PCL is always compiled with `PCL_ONLY_CORE_POINT_TYPES` enabled, otherwise some PCL modules (e.g. pcl_features) would fail to build due to limitations of the Windows linker. The effect is that the templated classes are only instantiated for some commonly used point types, not for all. For further explanations, see the :ref:`adding_custom_ptype` tutorial.
 
 
 Install PCL dependencies for contributions

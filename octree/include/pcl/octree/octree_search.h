@@ -159,7 +159,6 @@ public:
    * \param[in] query_index the index in \a cloud representing the query point
    * \param[out] result_index the resultant index of the neighbor point
    * \param[out] sqr_distance the resultant squared distance to the neighboring point
-   * \return number of neighbors found
    */
   inline void
   approxNearestSearch(const PointCloud& cloud,
@@ -184,7 +183,6 @@ public:
    * position in the indices vector.
    * \param[out] result_index the resultant index of the neighbor point
    * \param[out] sqr_distance the resultant squared distance to the neighboring point
-   * \return number of neighbors found
    */
   void
   approxNearestSearch(uindex_t query_index, index_t& result_index, float& sqr_distance);

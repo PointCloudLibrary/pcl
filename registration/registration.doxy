@@ -15,6 +15,8 @@ The <b>pcl_registration</b> library implements a plethora of point cloud
 registration algorithms for both organized and unorganized (general purpose)
 datasets.
 
+PCL's methods to register one point cloud to another can be divided into two groups: the first group needs an initial guess of the transformation (pcl::IterativeClosestPoint, pcl::IterativeClosestPointWithNormals, pcl::IterativeClosestPointNonLinear, pcl::GeneralizedIterativeClosestPoint, pcl::GeneralizedIterativeClosestPoint6D, pcl::NormalDistributionsTransform, pcl::NormalDistributionsTransform2D), and the second group does not need a guess but is usually slower and less accurate (pcl::registration::FPCSInitialAlignment, pcl::registration::KFPCSInitialAlignment, pcl::SampleConsensusInitialAlignment, pcl::SampleConsensusPrerejective, pcl::PPFRegistration). Many parts of the registration process can be configured and swapped out, like the correspondence estimation, correspondence rejection, or the transformation estimation. And finally, PCL also has methods if there are more than two point clouds to align (pcl::registration::ELCH, pcl::registration::LUM, pcl::PairwiseGraphRegistration, pcl::registration::IncrementalRegistration, pcl::registration::MetaRegistration).
+
 \image html http://www.pointclouds.org/assets/images/contents/documentation/registration_outdoor.png
 \image html http://www.pointclouds.org/assets/images/contents/documentation/registration_closeup.png
 

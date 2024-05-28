@@ -65,6 +65,7 @@ namespace pcl
       using SampleConsensusModel<PointT>::indices_;
       using SampleConsensusModel<PointT>::radius_min_;
       using SampleConsensusModel<PointT>::radius_max_;
+      using SampleConsensusModel<PointT>::error_sqr_dists_;
 
       using PointCloud = typename SampleConsensusModel<PointT>::PointCloud;
       using PointCloudPtr = typename SampleConsensusModel<PointT>::PointCloudPtr;
@@ -232,18 +233,19 @@ namespace pcl
          */
         int operator() (const Eigen::VectorXd &x, Eigen::VectorXd &fvec) const
         {
+          // Same for all points, so define outside of loop:
+          // C : Circle Center
+          const Eigen::Vector3d C (x[0], x[1], x[2]);
+          // N : Circle (Plane) Normal
+          const Eigen::Vector3d N (x[4], x[5], x[6]);
+          // r : Radius
+          const double r = x[3];
           for (int i = 0; i < values (); ++i)
           {
             // what i have:
             // P : Sample Point
             Eigen::Vector3d P =
                 (*model_->input_)[indices_[i]].getVector3fMap().template cast<double>();
-            // C : Circle Center
-            Eigen::Vector3d C (x[0], x[1], x[2]);
-            // N : Circle (Plane) Normal
-            Eigen::Vector3d N (x[4], x[5], x[6]);
-            // r : Radius
-            double r = x[3];
 
             Eigen::Vector3d helperVectorPC = P - C;
             // 1.1. get line parameter

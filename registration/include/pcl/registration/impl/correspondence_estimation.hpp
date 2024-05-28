@@ -43,6 +43,7 @@
 
 #include <pcl/common/copy_point.h>
 #include <pcl/common/io.h>
+#include <pcl/common/point_tests.h> // for isXYZFinite
 
 namespace pcl {
 
@@ -169,6 +170,8 @@ CorrespondenceEstimation<PointSource, PointTarget, Scalar>::determineCorresponde
     // Both point types MUST be registered using the POINT_CLOUD_REGISTER_POINT_STRUCT
     // macro!
     const auto& pt = detail::pointCopyOrRef<PointTarget, PointSource>(input_, idx);
+    if (!input_->is_dense && !pcl::isXYZFinite(pt))
+      continue;
     tree_->nearestKSearch(pt, 1, index, distance);
     if (distance[0] > max_dist_sqr)
       continue;
@@ -251,7 +254,8 @@ CorrespondenceEstimation<PointSource, PointTarget, Scalar>::
     // macro!
 
     const auto& pt_src = detail::pointCopyOrRef<PointTarget, PointSource>(input_, idx);
-
+    if (!input_->is_dense && !pcl::isXYZFinite(pt_src))
+      continue;
     tree_->nearestKSearch(pt_src, 1, index, distance);
     if (distance[0] > max_dist_sqr)
       continue;
