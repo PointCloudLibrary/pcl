@@ -886,12 +886,9 @@ pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>
   min_pt(2) = static_cast<float>(static_cast<double>(key_arg.z) * voxel_side_len +
                                  this->min_z_);
 
-  max_pt(0) = static_cast<float>(static_cast<double>(key_arg.x + 1) * voxel_side_len +
-                                 this->min_x_);
-  max_pt(1) = static_cast<float>(static_cast<double>(key_arg.y + 1) * voxel_side_len +
-                                 this->min_y_);
-  max_pt(2) = static_cast<float>(static_cast<double>(key_arg.z + 1) * voxel_side_len +
-                                 this->min_z_);
+  max_pt(0) = min_pt(0) + voxel_side_len;
+  max_pt(1) = min_pt(1) + voxel_side_len;
+  max_pt(2) = min_pt(2) + voxel_side_len;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
