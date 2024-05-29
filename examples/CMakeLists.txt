@@ -13,8 +13,19 @@ endif()
 set(PCL_EXAMPLES_ALL_TARGETS)
 
 include_directories(${PCL_INCLUDE_DIRS})
-# This looks for all examples/XXX/CMakeLists.txt
-file (GLOB examples_sbudirs */CMakeLists.txt)
+# file(GLOB ...) won't track the new file. Using hardcoded file lists is better.
+set(examples_sbudirs
+  common/CMakeLists.txt
+  features/CMakeLists.txt
+  filters/CMakeLists.txt
+  geometry/CMakeLists.txt
+  keypoints/CMakeLists.txt
+  outofcore/CMakeLists.txt
+  registration/CMakeLists.txt
+  segmentation/CMakeLists.txt
+  stereo/CMakeLists.txt
+  surface/CMakeLists.txt
+)
 # Extract only relevant XXX and append it to PCL_EXAMPLES_SUBDIRS
 foreach(subdir ${examples_sbudirs})
   # PATH of get_filename_component has problem dealing with windows shared folders "//xxx.xxx.xxx.xxx/folder"
