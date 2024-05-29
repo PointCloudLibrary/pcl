@@ -1,1 +1,1 @@
-PCL_ADD_EXAMPLE(pcl_example_icp FILES example_icp.cpp LINK_WITH pcl_common pcl_io pcl_registration pcl_filters)
+PCL_ADD_EXAMPLE(pcl_example_icp FILES example_icp.cpp LINK_WITH pcl_common pcl_io pcl_registration)
