@@ -58,7 +58,7 @@ namespace pcl
             void create(int query_number, int max_elements)
             {
                 max_elems = max_elements;
-                data.create (query_number * max_elems);
+                data.create (static_cast<std::size_t>(query_number) * static_cast<std::size_t>(max_elems));
 
                 if (max_elems != 1)
                     sizes.create(query_number);                
