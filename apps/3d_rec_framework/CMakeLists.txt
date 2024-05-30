@@ -16,8 +16,6 @@ if(NOT build)
   return()
 endif()
 
-include_directories("${CMAKE_CURRENT_BINARY_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}/include")
-
 set(incs_fw
   "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/feature_wrapper/normal_estimator.h"
 )
