@@ -21,7 +21,6 @@ set(examples_sbudirs
   geometry/CMakeLists.txt
   keypoints/CMakeLists.txt
   outofcore/CMakeLists.txt
-  registration/CMakeLists.txt
   segmentation/CMakeLists.txt
   stereo/CMakeLists.txt
   surface/CMakeLists.txt
