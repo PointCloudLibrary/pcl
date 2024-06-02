@@ -68,11 +68,6 @@ set(SRCS
   src/denoiseParameterForm.cpp
 )
 
-include_directories(
-  "${CMAKE_CURRENT_BINARY_DIR}"
-  "${CMAKE_CURRENT_SOURCE_DIR}/include"
-)
-
 set(EXE_NAME "pcl_${SUBSUBSYS_NAME}")
 PCL_ADD_EXECUTABLE(
   ${EXE_NAME}
@@ -84,6 +79,7 @@ PCL_ADD_EXECUTABLE(
     ${INCS})
 
 target_link_libraries("${EXE_NAME}" ${QTX}::Widgets ${QTX}::OpenGL ${OPENGL_LIBRARIES} ${BOOST_LIBRARIES} pcl_common pcl_io pcl_filters)
+target_include_directories(${EXE_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
 if (${QTX} MATCHES "Qt6")
   target_link_libraries("${EXE_NAME}" ${QTX}::OpenGLWidgets)
 endif()

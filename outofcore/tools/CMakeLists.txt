@@ -13,7 +13,6 @@ if(NOT VTK_FOUND)
 else()
   set(DEFAULT TRUE)
   set(REASON)
-  include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include")
 
   set(srcs outofcore_viewer.cpp
          ../src/visualization/camera.cpp
