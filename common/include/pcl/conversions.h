@@ -104,7 +104,7 @@ namespace pcl
           }
         }
         // Disable thrown exception per #595: http://dev.pointclouds.org/issues/595
-        PCL_WARN ("Failed to find match for field '%s'.\n", pcl::traits::name<PointT, Tag>::value);
+        PCL_WARN ("Failed to find exact match for field '%s'.\n", pcl::traits::name<PointT, Tag>::value);
         //throw pcl::InvalidConversionException (ss.str ());
       }
 
@@ -118,6 +118,71 @@ namespace pcl
       return (a.serialized_offset < b.serialized_offset);
     }
 
+    // Helps converting PCLPointCloud2 to templated point cloud. Casts fields if datatype is different.
+    template<typename PointT>
+    struct FieldCaster
+    {
+      FieldCaster (const std::vector<pcl::PCLPointField>& fields, const pcl::PCLPointCloud2& msg, const std::uint8_t* msg_data, std::uint8_t* cloud_data)
+        : fields_ (fields), msg_(msg), msg_data_(msg_data), cloud_data_(cloud_data)
+      {}
+
+      template<typename Tag> void
+      operator () ()
+      {
+        // first check whether any field matches exactly. Then there is nothing to do because the contents are memcpy-ed elsewhere
+        for (const auto& field : fields_) {
+          if (FieldMatches<PointT, Tag>()(field)) {
+            return;
+          }
+        }
+        for (const auto& field : fields_)
+        {
+          // The following check is similar to FieldMatches, but it tests for different datatypes
+          if ((field.name == pcl::traits::name<PointT, Tag>::value) &&
+              (field.datatype != pcl::traits::datatype<PointT, Tag>::value) &&
+              ((field.count == pcl::traits::datatype<PointT, Tag>::size) ||
+               (field.count == 0 && pcl::traits::datatype<PointT, Tag>::size == 1))) {
+#define PCL_CAST_POINT_FIELD(TYPE) case ::pcl::traits::asEnum_v<TYPE>: \
+            PCL_WARN("Will try to cast field '%s' (original type is " #TYPE "). You may loose precision during casting. Make sure that this is acceptable or choose a different point type.\n", pcl::traits::name<PointT, Tag>::value); \
+            for (std::size_t row = 0; row < msg_.height; ++row) { \
+              const std::uint8_t* row_data = msg_data_ + row * msg_.row_step; \
+              for (std::size_t col = 0; col < msg_.width; ++col) { \
+                const std::uint8_t* msg_data = row_data + col * msg_.point_step; \
+                for(std::uint32_t i=0; i<pcl::traits::datatype<PointT, Tag>::size; ++i) { \
+                  *(reinterpret_cast<typename pcl::traits::datatype<PointT, Tag>::decomposed::type*>(cloud_data + pcl::traits::offset<PointT, Tag>::value) + i) = *(reinterpret_cast<const TYPE*>(msg_data + field.offset) + i); \
+                } \
+                cloud_data += sizeof (PointT); \
+              } \
+            } \
+            break;
+            // end of PCL_CAST_POINT_FIELD definition
+
+            std::uint8_t* cloud_data = cloud_data_;
+            switch(field.datatype) {
+              PCL_CAST_POINT_FIELD(bool)
+              PCL_CAST_POINT_FIELD(std::int8_t)
+              PCL_CAST_POINT_FIELD(std::uint8_t)
+              PCL_CAST_POINT_FIELD(std::int16_t)
+              PCL_CAST_POINT_FIELD(std::uint16_t)
+              PCL_CAST_POINT_FIELD(std::int32_t)
+              PCL_CAST_POINT_FIELD(std::uint32_t)
+              PCL_CAST_POINT_FIELD(std::int64_t)
+              PCL_CAST_POINT_FIELD(std::uint64_t)
+              PCL_CAST_POINT_FIELD(float)
+              PCL_CAST_POINT_FIELD(double)
+              default: std::cout << "Unknown datatype: " << field.datatype << std::endl;
+            }
+            return;
+          }
+#undef PCL_CAST_POINT_FIELD
+        }
+      }
+
+      const std::vector<pcl::PCLPointField>& fields_;
+      const pcl::PCLPointCloud2& msg_;
+      const std::uint8_t* msg_data_;
+      std::uint8_t* cloud_data_;
+    };
   } //namespace detail
 
   template<typename PointT> void
@@ -223,6 +288,9 @@ namespace pcl
         }
       }
     }
+    // if any fields in msg and cloud have different datatypes but the same name, we cast them:
+    detail::FieldCaster<PointT> caster (msg.fields, msg, msg_data, reinterpret_cast<std::uint8_t*>(cloud.data()));
+    for_each_type< typename traits::fieldList<PointT>::type > (caster);
   }
 
   /** \brief Convert a PCLPointCloud2 binary data blob into a pcl::PointCloud<T> object using a field_map.
