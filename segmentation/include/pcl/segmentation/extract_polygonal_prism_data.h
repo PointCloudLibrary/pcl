@@ -130,13 +130,13 @@ namespace pcl
       setInputPlanarHull (const PointCloudConstPtr &hull) { planar_hull_ = hull; }
 
        /** \brief Provide a vector of the concave polygons indices, as recieved from ConcaveHull::polygons.
-       * \note This is only needed when using ConcaveHull that has more than one ring.
-       * \param[in] rings - see ConcaveHull::polygons
+       * \note This is only needed when using ConcaveHull that has more than one polygon.
+       * \param[in] polygons - see ConcaveHull::polygons
        */
       inline void
-      setRings(const std::vector<pcl::Vertices>& rings)
+      setPolygons(const std::vector<pcl::Vertices>& polygons)
       {
-        rings_ = rings;
+        polygons_ = polygons;
       }
 
       /** \brief Get a pointer the input planar hull dataset. */
@@ -201,7 +201,7 @@ namespace pcl
       PointCloudConstPtr planar_hull_;
 
       /** \brief polygons indices vectors, as recieved from ConcaveHull */
-      std::vector<pcl::Vertices> rings_;
+      std::vector<pcl::Vertices> polygons_;
 
       /** \brief The minimum number of points needed on the convex hull. */
       int min_pts_hull_;
