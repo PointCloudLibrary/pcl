@@ -73,7 +73,7 @@ TEST(ExtractPolygonalPrism, two_rings)
     ex.setInputCloud(cloud);
     ex.setInputPlanarHull(hullCloud);
     ex.setHeightLimits(-1, 1);
-    ex.setRings(rings);
+    ex.setPolygons(rings);
     ex.segment(*inliers);
   }
 
