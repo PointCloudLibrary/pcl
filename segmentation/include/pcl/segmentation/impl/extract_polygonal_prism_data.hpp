@@ -227,13 +227,13 @@ pcl::ExtractPolygonalPrismData<PointT>::segment (pcl::PointIndices &output)
   PointT pt_xy;
   pt_xy.z = 0;
 
-  std::vector<pcl::PointCloud<PointT>> polygons(rings_.size());
-  if (rings_.empty()) {
+  std::vector<pcl::PointCloud<PointT>> polygons(polygons_.size());
+  if (polygons_.empty()) {
     polygons.push_back(polygon);
   }
-  else { // incase of concave hull, prepare seperate polygons rings
-    for (size_t i = 0; i < rings_.size(); i++) {
-      const auto& ring = rings_[i];
+  else { // incase of concave hull, prepare separate polygons
+    for (size_t i = 0; i < polygons_.size(); i++) {
+      const auto& ring = polygons_[i];
       polygons[i].reserve(ring.vertices.size());
       for (auto pointIdx : ring.vertices) {
         polygons[i].points.push_back(polygon[pointIdx]);
