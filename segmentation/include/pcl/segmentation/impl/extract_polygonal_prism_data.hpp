@@ -233,9 +233,9 @@ pcl::ExtractPolygonalPrismData<PointT>::segment (pcl::PointIndices &output)
   }
   else { // incase of concave hull, prepare separate polygons
     for (size_t i = 0; i < polygons_.size(); i++) {
-      const auto& ring = polygons_[i];
-      polygons[i].reserve(ring.vertices.size());
-      for (auto pointIdx : ring.vertices) {
+      const auto& polygon_i = polygons_[i];
+      polygons[i].reserve(polygon_i.vertices.size());
+      for (const auto& pointIdx : polygon_i.vertices) {
         polygons[i].points.push_back(polygon[pointIdx]);
       }
     }
