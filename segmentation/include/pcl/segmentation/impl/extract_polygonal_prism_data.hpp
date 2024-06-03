@@ -227,6 +227,20 @@ pcl::ExtractPolygonalPrismData<PointT>::segment (pcl::PointIndices &output)
   PointT pt_xy;
   pt_xy.z = 0;
 
+  std::vector<pcl::PointCloud<PointT>> polygons(polygons_.size());
+  if (polygons_.empty()) {
+    polygons.push_back(polygon);
+  }
+  else { // incase of concave hull, prepare separate polygons
+    for (size_t i = 0; i < polygons_.size(); i++) {
+      const auto& polygon_i = polygons_[i];
+      polygons[i].reserve(polygon_i.vertices.size());
+      for (const auto& pointIdx : polygon_i.vertices) {
+        polygons[i].points.push_back(polygon[pointIdx]);
+      }
+    }
+  }
+
   output.indices.resize (indices_->size ());
   int l = 0;
   for (std::size_t i = 0; i < projected_points.size (); ++i)
@@ -243,8 +257,14 @@ pcl::ExtractPolygonalPrismData<PointT>::segment (pcl::PointIndices &output)
     pt_xy.x = pt[k1];
     pt_xy.y = pt[k2];
 
-    if (!pcl::isXYPointIn2DXYPolygon (pt_xy, polygon))
+    bool in_poly = false;
+    for (const auto& poly : polygons) {
+      in_poly ^= pcl::isXYPointIn2DXYPolygon(pt_xy, poly);
+    }
+
+    if (!in_poly) {
       continue;
+    }
 
     output.indices[l++] = (*indices_)[i];
   }

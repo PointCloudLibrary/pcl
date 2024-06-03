@@ -40,6 +40,7 @@
 #include <limits>
 
 #include <pcl/pcl_base.h>
+#include <pcl/Vertices.h> // for Vertices
 
 namespace pcl
 {
@@ -124,6 +125,16 @@ namespace pcl
       inline void 
       setInputPlanarHull (const PointCloudConstPtr &hull) { planar_hull_ = hull; }
 
+       /** \brief Provide a vector of the concave polygons indices, as recieved from ConcaveHull::polygons.
+       * \note This is only needed when using ConcaveHull that has more than one polygon.
+       * \param[in] polygons - see ConcaveHull::polygons
+       */
+      inline void
+      setPolygons(const std::vector<pcl::Vertices>& polygons)
+      {
+        polygons_ = polygons;
+      }
+
       /** \brief Get a pointer the input planar hull dataset. */
       inline PointCloudConstPtr 
       getInputPlanarHull () const { return (planar_hull_); }
@@ -184,6 +195,9 @@ namespace pcl
     protected:
       /** \brief A pointer to the input planar hull dataset. */
       PointCloudConstPtr planar_hull_{nullptr};
+
+      /** \brief polygons indices vectors, as recieved from ConcaveHull */
+      std::vector<pcl::Vertices> polygons_;
 
       /** \brief The minimum number of points needed on the convex hull. */
       int min_pts_hull_{3};
