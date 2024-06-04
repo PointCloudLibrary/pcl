@@ -12,19 +12,8 @@ endif()
 # this variable will filled with all targets added with pcl_add_example
 set(PCL_EXAMPLES_ALL_TARGETS)
 
-include_directories(${PCL_INCLUDE_DIRS})
-# file(GLOB ...) won't track the new file. Using hardcoded file lists is better.
-set(examples_sbudirs
-  common/CMakeLists.txt
-  features/CMakeLists.txt
-  filters/CMakeLists.txt
-  geometry/CMakeLists.txt
-  keypoints/CMakeLists.txt
-  outofcore/CMakeLists.txt
-  segmentation/CMakeLists.txt
-  stereo/CMakeLists.txt
-  surface/CMakeLists.txt
-)
+# This looks for all examples/XXX/CMakeLists.txt
+file (GLOB examples_sbudirs */CMakeLists.txt)
 # Extract only relevant XXX and append it to PCL_EXAMPLES_SUBDIRS
 foreach(subdir ${examples_sbudirs})
   # PATH of get_filename_component has problem dealing with windows shared folders "//xxx.xxx.xxx.xxx/folder"
@@ -49,4 +38,3 @@ else()
 endif()
 add_custom_target(${SUBSYS_TARGET_NAME} DEPENDS ${PCL_EXAMPLES_ALL_TARGETS})
 set_target_properties(${SUBSYS_TARGET_NAME} PROPERTIES FOLDER "Examples")
-
