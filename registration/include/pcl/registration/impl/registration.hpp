@@ -145,6 +145,8 @@ Registration<PointSource, PointTarget, Scalar>::getFitnessScore(double max_range
   // For each point in the source dataset
   int nr = 0;
   for (const auto& point : input_transformed) {
+    if (!input_->is_dense && !pcl::isXYZFinite(point))
+      continue;
     // Find its nearest neighbor in the target
     tree_->nearestKSearch(point, 1, nn_indices, nn_dists);
 
