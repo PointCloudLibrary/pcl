@@ -65,13 +65,71 @@ TEST(UniformSampling, extractRemovedIndices)
   us.setInputCloud(xyz);
   us.setRadiusSearch(0.1);
   pcl::PointCloud<pcl::PointXYZ> output;
+
+  //cloud
   us.filter(output);
+
+  //indices
+  pcl::Indices indices;
+  us.filter(indices);
+
+  for (std::size_t i = 0; i < indices.size(); ++i)
+  {
+    // Find the index of the point in the output cloud
+    int outputIndex = indices[i];
+
+    // Check if the point exists in the output cloud
+    bool found = false;
+    for (std::size_t j = 0; j < output.size(); ++j)
+    {
+      if (output[j].x == (*xyz)[outputIndex].x &&
+          output[j].y == (*xyz)[outputIndex].y &&
+          output[j].z == (*xyz)[outputIndex].z)
+      {
+        found = true;
+        break;
+      }
+    }
+
+    // Assert that the point was found in the output cloud
+    ASSERT_TRUE(found);
+  }
 
   auto removed_indices = us.getRemovedIndices();
   ASSERT_EQ(output.size(), 1000);
-  EXPECT_EQ(removed_indices->size(), xyz->size() - 1000);
+  EXPECT_EQ(int(removed_indices->size()), int(xyz->size() - 1000));
   std::set<int> removed_indices_set(removed_indices->begin(), removed_indices->end());
   ASSERT_EQ(removed_indices_set.size(), removed_indices->size());
+
+  // Negative
+  us.setNegative (true);
+  us.filter(output);
+  removed_indices = us.getRemovedIndices ();
+  EXPECT_EQ (int (removed_indices->size ()), 1000);
+  EXPECT_EQ (int (output.size ()), int (xyz->size() - 1000));
+
+  //Organized
+  us.setKeepOrganized (true);
+  us.setNegative (false);
+  us.filter(output);
+  removed_indices = us.getRemovedIndices ();
+  EXPECT_EQ (int (removed_indices->size ()), int(xyz->size() - 1000));
+  for (std::size_t i = 0; i < removed_indices->size (); ++i)
+  {
+    EXPECT_TRUE (std::isnan (output.at ((*removed_indices)[i]).x));
+    EXPECT_TRUE (std::isnan (output.at ((*removed_indices)[i]).y));
+    EXPECT_TRUE (std::isnan (output.at ((*removed_indices)[i]).z));
+  }
+
+  EXPECT_EQ (output.width, xyz->width);
+  EXPECT_EQ (output.height, xyz->height);
+
+  // Check input cloud with nan values
+  us.setInputCloud (output.makeShared ());
+  us.setRadiusSearch(2);
+  us.filter (output);
+  removed_indices = us.getRemovedIndices ();
+  EXPECT_EQ (int (removed_indices->size ()), output.size()-1);
 }
 
 int

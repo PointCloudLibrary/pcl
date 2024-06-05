@@ -43,19 +43,13 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
-pcl::UniformSampling<PointT>::applyFilter (PointCloud &output)
+pcl::UniformSampling<PointT>::applyFilter (Indices &indices)
 {
-  // Has the input dataset been set already?
-  if (!input_)
-  {
-    PCL_WARN ("[pcl::%s::applyFilter] No input dataset given!\n", getClassName ().c_str ());
-    output.width = output.height = 0;
-    output.clear ();
-    return;
-  }
+  // The arrays to be used
+  indices.resize (indices_->size ());
+  removed_indices_->resize (indices_->size ());
 
-  output.height       = 1;                    // downsampling breaks the organized structure
-  output.is_dense     = true;                 // we filter out invalid points
+  int oii = 0, rii = 0;  // oii = output indices iterator, rii = removed indices iterator
 
   Eigen::Vector4f min_p, max_p;
   // Get the minimum and maximum dimensions
@@ -79,7 +73,6 @@ pcl::UniformSampling<PointT>::applyFilter (PointCloud &output)
   // Set up the division multiplier
   divb_mul_ = Eigen::Vector4i (1, div_b_[0], div_b_[0] * div_b_[1], 0);
 
-  removed_indices_->clear();
   // First pass: build a set of leaves with the point index closest to the leaf center
   for (std::size_t cp = 0; cp < indices_->size (); ++cp)
   {
@@ -91,7 +84,7 @@ pcl::UniformSampling<PointT>::applyFilter (PointCloud &output)
           !std::isfinite ((*input_)[(*indices_)[cp]].z))
       {
         if (extract_removed_indices_)
-          removed_indices_->push_back ((*indices_)[cp]);
+          (*removed_indices_)[rii++] = (*indices_)[cp];
         continue;
       }
     }
@@ -126,26 +119,30 @@ pcl::UniformSampling<PointT>::applyFilter (PointCloud &output)
     if (diff_cur < diff_prev)
     {
       if (extract_removed_indices_)
-        removed_indices_->push_back (leaf.idx);
+        (*removed_indices_)[rii++] = leaf.idx;
       leaf.idx = (*indices_)[cp];
     }
     else
     {
       if (extract_removed_indices_)
-        removed_indices_->push_back ((*indices_)[cp]);
+        (*removed_indices_)[rii++] = (*indices_)[cp];
     }
   }
 
   // Second pass: go over all leaves and copy data
-  output.resize (leaves_.size ());
   std::size_t cp = 0;
 
   for (const auto& leaf : leaves_)
   {
     if (leaf.second.count >= min_points_per_voxel_)
-      output[cp++] = (*input_)[leaf.second.idx];
+      indices[oii++] = leaf.second.idx;
   }
-  output.resize (cp);
+ 
+  indices.resize (oii);
+  removed_indices_->resize(rii);
+  if(negative_){
+     indices.swap(*removed_indices_);
+  }
 }
 
 #define PCL_INSTANTIATE_UniformSampling(T) template class PCL_EXPORTS pcl::UniformSampling<T>;

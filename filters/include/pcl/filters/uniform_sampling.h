@@ -39,7 +39,7 @@
 
 #pragma once
 
-#include <pcl/filters/filter.h>
+#include <pcl/filters/filter_indices.h>
 
 #include <unordered_map>
 
@@ -57,9 +57,11 @@ namespace pcl
     * \ingroup filters
     */ 
   template <typename PointT>
-  class UniformSampling: public Filter<PointT>
+  class UniformSampling: public FilterIndices<PointT>
   {
-    using PointCloud = typename Filter<PointT>::PointCloud;
+    using PointCloud = typename FilterIndices<PointT>::PointCloud;
+
+    using FilterIndices<PointT>::negative_;
 
     using Filter<PointT>::filter_name_;
     using Filter<PointT>::input_;
@@ -69,14 +71,13 @@ namespace pcl
     using Filter<PointT>::getClassName;
 
     public:
-      using Ptr = shared_ptr<UniformSampling<PointT> >;
       using ConstPtr = shared_ptr<const UniformSampling<PointT> >;
 
       PCL_MAKE_ALIGNED_OPERATOR_NEW
 
       /** \brief Empty constructor. */
       UniformSampling (bool extract_removed_indices = false) :
-        Filter<PointT>(extract_removed_indices),
+        FilterIndices<PointT>(extract_removed_indices),
         leaves_ (),
         leaf_size_ (Eigen::Vector4f::Zero ()),
         inverse_leaf_size_ (Eigen::Vector4f::Zero ()),
@@ -120,6 +121,7 @@ namespace pcl
       inline unsigned int
       getMinimumPointsNumberPerVoxel () const { return min_points_per_voxel_; }
 
+      
     protected:
       /** \brief Simple structure to hold an nD centroid and the number of points in a leaf. */
       struct Leaf
@@ -147,11 +149,11 @@ namespace pcl
       /** \brief Minimum number of points per voxel. */
       unsigned int min_points_per_voxel_{0};
 
-      /** \brief Downsample a Point Cloud using a voxelized grid approach
-        * \param[out] output the resultant point cloud message
+      /** \brief Filtered results are indexed by an indices array.
+        * \param[out] indices The resultant indices.
         */
       void
-      applyFilter (PointCloud &output) override;
+      applyFilter (Indices &indices) override;
   };
 }
 
