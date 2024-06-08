@@ -39,6 +39,7 @@
 #pragma once
 
 #include <pcl/memory.h>                 // for PCL_MAKE_ALIGNED_OPERATOR_NEW
+#include <pcl/pcl_config.h>             // for PCL_XYZ_POINT_TYPES, PCL_NORMAL_POINT_TYPES
 #include <pcl/pcl_macros.h>             // for PCL_EXPORTS
 #include <pcl/PCLPointField.h>          // for PCLPointField
 #include <pcl/point_types.h>            // implementee
@@ -118,41 +119,11 @@
   (pcl::PointXYZRGBNormal)      \
   (pcl::PointSurfel)            \
 
-// Define all point types that include XYZ data
-#define PCL_XYZ_POINT_TYPES   \
-  (pcl::PointXYZ)             \
-  (pcl::PointXYZI)            \
-  (pcl::PointXYZL)            \
-  (pcl::PointXYZRGBA)         \
-  (pcl::PointXYZRGB)          \
-  (pcl::PointXYZRGBL)         \
-  (pcl::PointXYZLAB)          \
-  (pcl::PointXYZHSV)          \
-  (pcl::InterestPoint)        \
-  (pcl::PointNormal)          \
-  (pcl::PointXYZRGBNormal)    \
-  (pcl::PointXYZINormal)      \
-  (pcl::PointXYZLNormal)      \
-  (pcl::PointWithRange)       \
-  (pcl::PointWithViewpoint)   \
-  (pcl::PointWithScale)       \
-  (pcl::PointSurfel)          \
-  (pcl::PointDEM)
-
 // Define all point types with XYZ and label
 #define PCL_XYZL_POINT_TYPES  \
   (pcl::PointXYZL)            \
   (pcl::PointXYZRGBL)         \
   (pcl::PointXYZLNormal)
-
-// Define all point types that include normal[3] data
-#define PCL_NORMAL_POINT_TYPES  \
-  (pcl::Normal)                 \
-  (pcl::PointNormal)            \
-  (pcl::PointXYZRGBNormal)      \
-  (pcl::PointXYZINormal)        \
-  (pcl::PointXYZLNormal)        \
-  (pcl::PointSurfel)
 
 // Define all point types that represent features
 #define PCL_FEATURE_POINT_TYPES \
