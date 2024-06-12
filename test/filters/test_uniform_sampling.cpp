@@ -73,11 +73,8 @@ TEST(UniformSampling, extractRemovedIndices)
   pcl::Indices indices;
   us.filter(indices);
 
-  for (std::size_t i = 0; i < indices.size(); ++i)
+  for (const auto& outputIndex : indices)
   {
-    // Find the index of the point in the output cloud
-    int outputIndex = indices[i];
-
     // Check if the point exists in the output cloud
     bool found = false;
     for (std::size_t j = 0; j < output.size(); ++j)
