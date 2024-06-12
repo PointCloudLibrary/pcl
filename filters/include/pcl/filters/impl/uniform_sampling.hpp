@@ -130,8 +130,6 @@ pcl::UniformSampling<PointT>::applyFilter (Indices &indices)
   }
 
   // Second pass: go over all leaves and copy data
-  std::size_t cp = 0;
-
   for (const auto& leaf : leaves_)
   {
     if (leaf.second.count >= min_points_per_voxel_)
