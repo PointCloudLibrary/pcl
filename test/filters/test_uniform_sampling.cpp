@@ -77,11 +77,11 @@ TEST(UniformSampling, extractRemovedIndices)
   {
     // Check if the point exists in the output cloud
     bool found = false;
-    for (std::size_t j = 0; j < output.size(); ++j)
+    for (const auto& j : output)
     {
-      if (output[j].x == (*xyz)[outputIndex].x &&
-          output[j].y == (*xyz)[outputIndex].y &&
-          output[j].z == (*xyz)[outputIndex].z)
+      if (j.x == (*xyz)[outputIndex].x &&
+          j.y == (*xyz)[outputIndex].y &&
+          j.z == (*xyz)[outputIndex].z)
       {
         found = true;
         break;

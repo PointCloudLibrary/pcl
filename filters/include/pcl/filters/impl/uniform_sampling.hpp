@@ -74,25 +74,25 @@ pcl::UniformSampling<PointT>::applyFilter (Indices &indices)
   divb_mul_ = Eigen::Vector4i (1, div_b_[0], div_b_[0] * div_b_[1], 0);
 
   // First pass: build a set of leaves with the point index closest to the leaf center
-  for (std::size_t cp = 0; cp < indices_->size (); ++cp)
+  for (const auto& cp : *indices_)
   {
     if (!input_->is_dense)
     {
       // Check if the point is invalid
-      if (!std::isfinite ((*input_)[(*indices_)[cp]].x) || 
-          !std::isfinite ((*input_)[(*indices_)[cp]].y) || 
-          !std::isfinite ((*input_)[(*indices_)[cp]].z))
+      if (!std::isfinite ((*input_)[cp].x) || 
+          !std::isfinite ((*input_)[cp].y) || 
+          !std::isfinite ((*input_)[cp].z))
       {
         if (extract_removed_indices_)
-          (*removed_indices_)[rii++] = (*indices_)[cp];
+          (*removed_indices_)[rii++] = cp;
         continue;
       }
     }
 
     Eigen::Vector4i ijk = Eigen::Vector4i::Zero ();
-    ijk[0] = static_cast<int> (std::floor ((*input_)[(*indices_)[cp]].x * inverse_leaf_size_[0]));
-    ijk[1] = static_cast<int> (std::floor ((*input_)[(*indices_)[cp]].y * inverse_leaf_size_[1]));
-    ijk[2] = static_cast<int> (std::floor ((*input_)[(*indices_)[cp]].z * inverse_leaf_size_[2]));
+    ijk[0] = static_cast<int> (std::floor ((*input_)[cp].x * inverse_leaf_size_[0]));
+    ijk[1] = static_cast<int> (std::floor ((*input_)[cp].y * inverse_leaf_size_[1]));
+    ijk[2] = static_cast<int> (std::floor ((*input_)[cp].z * inverse_leaf_size_[2]));
 
     // Compute the leaf index
     int idx = (ijk - min_b_).dot (divb_mul_);
@@ -104,7 +104,7 @@ pcl::UniformSampling<PointT>::applyFilter (Indices &indices)
     // First time we initialize the index
     if (leaf.idx == -1)
     {
-      leaf.idx = (*indices_)[cp];
+      leaf.idx = cp;
       continue;
     }
 
@@ -112,7 +112,7 @@ pcl::UniformSampling<PointT>::applyFilter (Indices &indices)
     Eigen::Vector4f voxel_center = (ijk.cast<float>() + Eigen::Vector4f::Constant(0.5)) * search_radius_;
     voxel_center[3] = 0;
     // Check to see if this point is closer to the leaf center than the previous one we saved
-    float diff_cur   = ((*input_)[(*indices_)[cp]].getVector4fMap () - voxel_center).squaredNorm ();
+    float diff_cur   = ((*input_)[cp].getVector4fMap () - voxel_center).squaredNorm ();
     float diff_prev  = ((*input_)[leaf.idx].getVector4fMap ()        - voxel_center).squaredNorm ();
 
     // If current point is closer, copy its index instead
@@ -120,12 +120,12 @@ pcl::UniformSampling<PointT>::applyFilter (Indices &indices)
     {
       if (extract_removed_indices_)
         (*removed_indices_)[rii++] = leaf.idx;
-      leaf.idx = (*indices_)[cp];
+      leaf.idx = cp;
     }
     else
     {
       if (extract_removed_indices_)
-        (*removed_indices_)[rii++] = (*indices_)[cp];
+        (*removed_indices_)[rii++] = cp;
     }
   }
 
