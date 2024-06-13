@@ -71,6 +71,7 @@ namespace pcl
     using Filter<PointT>::getClassName;
 
     public:
+      using Ptr = shared_ptr<UniformSampling<PointT> >;
       using ConstPtr = shared_ptr<const UniformSampling<PointT> >;
 
       PCL_MAKE_ALIGNED_OPERATOR_NEW

@@ -62,15 +62,19 @@ TEST(UniformSampling, extractRemovedIndices)
   // the output cloud and the rest in removed indices.
 
   pcl::UniformSampling<pcl::PointXYZ> us(true); // extract removed indices
-  us.setInputCloud(xyz);
   us.setRadiusSearch(0.1);
   pcl::PointCloud<pcl::PointXYZ> output;
+  pcl::Indices indices;
+  
+  //empty input cloud
+  us.filter(output);
+  us.filter(indices);
 
+  us.setInputCloud(xyz);
   //cloud
   us.filter(output);
 
   //indices
-  pcl::Indices indices;
   us.filter(indices);
 
   for (const auto& outputIndex : indices)
