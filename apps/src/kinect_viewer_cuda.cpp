@@ -35,81 +35,78 @@
  *
  */
 
-#include <pcl/memory.h>
-#include <pcl/point_cloud.h>
-#include <pcl/point_types.h>
-#include <pcl/cuda/io/cloud_to_pcl.h>
 #include <pcl/cuda/io/disparity_to_cloud.h>
 #include <pcl/cuda/time_cpu.h>
 #include <pcl/io/openni_grabber.h>
 #include <pcl/visualization/cloud_viewer.h>
 
-#include <functional>
-#include <iostream>
-#include <mutex>
-
-
-using pcl::cuda::PointCloudAOS;
 using pcl::cuda::Device;
+using pcl::cuda::PointCloudAOS;
 
-class KinectViewerCuda
-{
-  public:
-     KinectViewerCuda (bool downsample) : viewer ("KinectGrabber"), downsample_(downsample) {}
+class KinectViewerCuda {
+public:
+  KinectViewerCuda(bool downsample) : viewer("KinectGrabber"), downsample_(downsample)
+  {}
 
-    void cloud_cb_ (const openni_wrapper::Image::Ptr& image, const openni_wrapper::DepthImage::Ptr& depth_image, float constant)
+  void
+  cloud_cb_(const openni_wrapper::Image::Ptr& image,
+            const openni_wrapper::DepthImage::Ptr& depth_image,
+            float constant)
+  {
+    PointCloudAOS<Device>::Ptr data;
     {
-      PointCloudAOS<Device>::Ptr data;
-    	{
-        pcl::cuda::ScopeTimeCPU t ("time:");    
-        d2c.compute<Device> (depth_image, image, constant, data, downsample_);
-      }
-
-      pcl::PointCloud<pcl::PointXYZRGB>::Ptr output (new pcl::PointCloud<pcl::PointXYZRGB>);
-      pcl::cuda::toPCL (*data, *output);
-
-      viewer.showCloud (output, "cloud");
-
-    }
-    
-    void run (const std::string& device_id)
-    {
-      pcl::Grabber* interface = new pcl::OpenNIGrabber(device_id);
-
-      std::function<void (const openni_wrapper::Image::Ptr& image, const openni_wrapper::DepthImage::Ptr& depth_image, float)>
-        f = [this](const openni_wrapper::Image::Ptr& image, const openni_wrapper::DepthImage::Ptr& depth_image, float constant) { cloud_cb_(image, depth_image, constant); };
-
-      boost::signals2::connection c = interface->registerCallback (f);
-
-      interface->start ();
-      
-      while (true)
-      {
-        pcl_sleep (1);
-      }
-
-      interface->stop ();
+      pcl::cuda::ScopeTimeCPU t("time:");
+      d2c.compute<Device>(depth_image, image, constant, data, downsample_);
     }
 
-    pcl::cuda::DisparityToCloud d2c;
-    pcl::visualization::CloudViewer viewer;
-    std::mutex mutex_;
-    bool downsample_;
+    pcl::PointCloud<pcl::PointXYZRGB>::Ptr output(
+        new pcl::PointCloud<pcl::PointXYZRGB>);
+    pcl::cuda::toPCL(*data, *output);
+
+    viewer.showCloud(output, "cloud");
+  }
+
+  void
+  run(const std::string& device_id)
+  {
+    pcl::Grabber* interface = new pcl::OpenNIGrabber(device_id);
+
+    std::function<void(const openni_wrapper::Image::Ptr& image,
+                       const openni_wrapper::DepthImage::Ptr& depth_image,
+                       float)>
+        f = [this](const openni_wrapper::Image::Ptr& image,
+                   const openni_wrapper::DepthImage::Ptr& depth_image,
+                   float constant) { cloud_cb_(image, depth_image, constant); };
+
+    boost::signals2::connection c = interface->registerCallback(f);
+
+    interface->start();
+
+    while (true) {
+      pcl_sleep(1);
+    }
+
+    interface->stop();
+  }
+
+  pcl::cuda::DisparityToCloud d2c;
+  pcl::visualization::CloudViewer viewer;
+  std::mutex mutex_;
+  bool downsample_;
 };
 
-int main (int argc, char** argv)
+int
+main(int argc, char** argv)
 {
-	std::string device_id = "#1";
+  std::string device_id = "#1";
   int downsample = false;
-	if (argc >= 2)
-	{
-		device_id = argv[1];
-	}
-	if (argc >= 3)
-	{
-		downsample = atoi (argv[2]);
-	}
-  KinectViewerCuda v (downsample);
-  v.run (device_id);
+  if (argc >= 2) {
+    device_id = argv[1];
+  }
+  if (argc >= 3) {
+    downsample = atoi(argv[2]);
+  }
+  KinectViewerCuda v(downsample);
+  v.run(device_id);
   return 0;
 }
