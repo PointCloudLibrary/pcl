@@ -382,7 +382,7 @@ pcl::visualization::PCLVisualizer::addPolygon (
   if (am_it != shape_actor_map_->end ())
   {
     vtkSmartPointer<vtkAppendPolyData> all_data = vtkSmartPointer<vtkAppendPolyData>::New ();
-    
+
     // Add old data
     all_data->AddInputData (reinterpret_cast<vtkPolyDataMapper*> ((vtkActor::SafeDownCast (am_it->second))->GetMapper ())->GetInput ());
 
@@ -398,8 +398,8 @@ pcl::visualization::PCLVisualizer::addPolygon (
     actor->GetProperty ()->SetRepresentationToWireframe ();
     actor->GetProperty ()->SetColor (r, g, b);
     actor->GetMapper ()->ScalarVisibilityOff ();
-    removeActorFromRenderer (am_it->second, viewport);
-    addActorToRenderer (actor, viewport);
+    removeCustomActorFromRenderer (am_it->second, viewport);
+    addCustomActorToRenderer (actor, viewport);
 
     // Save the pointer/ID pair to the global actor map
     (*shape_actor_map_)[id] = actor;
@@ -412,7 +412,7 @@ pcl::visualization::PCLVisualizer::addPolygon (
     actor->GetProperty ()->SetRepresentationToWireframe ();
     actor->GetProperty ()->SetColor (r, g, b);
     actor->GetMapper ()->ScalarVisibilityOff ();
-    addActorToRenderer (actor, viewport);
+    addCustomActorToRenderer (actor, viewport);
 
     // Save the pointer/ID pair to the global actor map
     (*shape_actor_map_)[id] = actor;
@@ -453,8 +453,8 @@ pcl::visualization::PCLVisualizer::addPolygon (
     actor->GetProperty ()->SetColor (r, g, b);
     actor->GetMapper ()->ScalarVisibilityOn ();
     actor->GetProperty ()->BackfaceCullingOff ();
-    removeActorFromRenderer (am_it->second, viewport);
-    addActorToRenderer (actor, viewport);
+    removeCustomActorFromRenderer (am_it->second, viewport);
+    addCustomActorToRenderer (actor, viewport);
 
     // Save the pointer/ID pair to the global actor map
     (*shape_actor_map_)[id] = actor;
@@ -468,7 +468,7 @@ pcl::visualization::PCLVisualizer::addPolygon (
     actor->GetProperty ()->SetColor (r, g, b);
     actor->GetMapper ()->ScalarVisibilityOn ();
     actor->GetProperty ()->BackfaceCullingOff ();
-    addActorToRenderer (actor, viewport);
+    addCustomActorToRenderer (actor, viewport);
 
     // Save the pointer/ID pair to the global actor map
     (*shape_actor_map_)[id] = actor;
@@ -503,7 +503,7 @@ pcl::visualization::PCLVisualizer::addLine (const P1 &pt1, const P2 &pt2, double
   actor->GetProperty ()->SetRepresentationToWireframe ();
   actor->GetProperty ()->SetColor (r, g, b);
   actor->GetMapper ()->ScalarVisibilityOff ();
-  addActorToRenderer (actor, viewport);
+  addCustomActorToRenderer (actor, viewport);
 
   // Save the pointer/ID pair to the global actor map
   (*shape_actor_map_)[id] = actor;
@@ -530,7 +530,7 @@ pcl::visualization::PCLVisualizer::addArrow (const P1 &pt1, const P2 &pt2, doubl
   leader->AutoLabelOn ();
 
   leader->GetProperty ()->SetColor (r, g, b);
-  addActorToRenderer (leader, viewport);
+  addCustomActorToRenderer (leader, viewport);
 
   // Save the pointer/ID pair to the global actor map
   (*shape_actor_map_)[id] = leader;
@@ -561,7 +561,7 @@ pcl::visualization::PCLVisualizer::addArrow (const P1 &pt1, const P2 &pt2, doubl
     leader->AutoLabelOff ();
 
   leader->GetProperty ()->SetColor (r, g, b);
-  addActorToRenderer (leader, viewport);
+  addCustomActorToRenderer (leader, viewport);
 
   // Save the pointer/ID pair to the global actor map
   (*shape_actor_map_)[id] = leader;
@@ -590,9 +590,9 @@ pcl::visualization::PCLVisualizer::addArrow (const P1 &pt1, const P2 &pt2,
   leader->AutoLabelOn ();
 
   leader->GetLabelTextProperty()->SetColor(r_text, g_text, b_text);
-  
+
   leader->GetProperty ()->SetColor (r_line, g_line, b_line);
-  addActorToRenderer (leader, viewport);
+  addCustomActorToRenderer (leader, viewport);
 
   // Save the pointer/ID pair to the global actor map
   (*shape_actor_map_)[id] = leader;
@@ -623,8 +623,8 @@ pcl::visualization::PCLVisualizer::addSphere (const PointT &center, double radiu
   data->SetThetaResolution (10);
   data->LatLongTessellationOff ();
   data->Update ();
- 
-  // Setup actor and mapper 
+
+  // Setup actor and mapper
   vtkSmartPointer <vtkPolyDataMapper> mapper = vtkSmartPointer<vtkPolyDataMapper>::New ();
   mapper->SetInputConnection (data->GetOutputPort ());
 
@@ -638,7 +638,7 @@ pcl::visualization::PCLVisualizer::addSphere (const PointT &center, double radiu
   actor->GetMapper ()->StaticOn ();
   actor->GetMapper ()->ScalarVisibilityOff ();
   actor->GetMapper ()->Update ();
-  addActorToRenderer (actor, viewport);
+  addCustomActorToRenderer (actor, viewport);
 
   // Save the pointer/ID pair to the global actor map
   (*shape_actor_map_)[id] = actor;
@@ -978,7 +978,7 @@ pcl::visualization::PCLVisualizer::addPointCloudNormals (
   actor->SetUserMatrix (transformation);
 
   // Add it to all renderers
-  addActorToRenderer (actor, viewport);
+  addCustomActorToRenderer (actor, viewport);
 
   // Save the pointer/ID pair to the global actor map
   (*cloud_actor_map_)[id].actor = actor;
@@ -1091,7 +1091,7 @@ pcl::visualization::PCLVisualizer::addPointCloudPrincipalCurvatures (
   actor->GetMapper ()->SetScalarModeToUseCellData ();
 
   // Add it to all renderers
-  addActorToRenderer (actor, viewport);
+  addCustomActorToRenderer (actor, viewport);
 
   // Save the pointer/ID pair to the global actor map
   CloudActor act;
@@ -1165,7 +1165,7 @@ pcl::visualization::PCLVisualizer::addPointCloudIntensityGradients (
   actor->SetMapper (mapper);
 
   // Add it to all renderers
-  addActorToRenderer (actor, viewport);
+  addCustomActorToRenderer (actor, viewport);
 
   // Save the pointer/ID pair to the global actor map
   (*cloud_actor_map_)[id].actor = actor;
@@ -1296,7 +1296,7 @@ pcl::visualization::PCLVisualizer::addCorrespondences (
   line_cells->SetCells (n_corr, line_cells_id);
   line_points->SetNumberOfPoints (j*2);
   line_tcoords->SetNumberOfTuples (j*2);
- 
+
   // Fill in the lines
   line_data->SetPoints (line_points);
   line_data->SetLines (line_cells);
@@ -1310,7 +1310,7 @@ pcl::visualization::PCLVisualizer::addCorrespondences (
     createActorFromVTKDataSet (line_data, actor);
     actor->GetProperty ()->SetRepresentationToWireframe ();
     actor->GetProperty ()->SetOpacity (0.5);
-    addActorToRenderer (actor, viewport);
+    addCustomActorToRenderer (actor, viewport);
 
     // Save the pointer/ID pair to the global actor map
     (*shape_actor_map_)[id] = actor;
@@ -1384,7 +1384,7 @@ pcl::visualization::PCLVisualizer::fromHandlersToScreen (
     actor->GetMapper ()->SetScalarRange (minmax);
 
   // Add it to all renderers
-  addActorToRenderer (actor, viewport);
+  addCustomActorToRenderer (actor, viewport);
 
   // Save the pointer/ID pair to the global actor map
   CloudActor& cloud_actor = (*cloud_actor_map_)[id];
@@ -1446,7 +1446,7 @@ pcl::visualization::PCLVisualizer::fromHandlersToScreen (
     actor->GetMapper ()->SetScalarRange (minmax);
 
   // Add it to all renderers
-  addActorToRenderer (actor, viewport);
+  addCustomActorToRenderer (actor, viewport);
 
   // Save the pointer/ID pair to the global actor map
   CloudActor& cloud_actor = (*cloud_actor_map_)[id];
@@ -1509,7 +1509,7 @@ pcl::visualization::PCLVisualizer::fromHandlersToScreen (
     actor->GetMapper ()->SetScalarRange (minmax);
 
   // Add it to all renderers
-  addActorToRenderer (actor, viewport);
+  addCustomActorToRenderer (actor, viewport);
 
   // Save the pointer/ID pair to the global actor map
   CloudActor& cloud_actor = (*cloud_actor_map_)[id];
@@ -1725,7 +1725,7 @@ pcl::visualization::PCLVisualizer::addPolygonMesh (
     cell_array->Squeeze ();
     polydata->SetPolys (cell_array);
     polydata->SetPoints (points);
-  
+
     if (colors)
       polydata->GetPointData ()->SetScalars (colors);
 
@@ -1757,7 +1757,7 @@ pcl::visualization::PCLVisualizer::addPolygonMesh (
 
     createActorFromVTKDataSet (poly_grid, actor, false);
   }
-  addActorToRenderer (actor, viewport);
+  addCustomActorToRenderer (actor, viewport);
   actor->GetProperty ()->SetRepresentationToSurface ();
   // Backface culling renders the visualization slower, but guarantees that we see all triangles
   actor->GetProperty ()->BackfaceCullingOff ();
