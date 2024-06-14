@@ -128,8 +128,10 @@ pcl::UniformSampling<PointT>::applyFilter (Indices &indices)
         (*removed_indices_)[rii++] = cp;
     }
   }
+  removed_indices_->resize(rii);
 
   // Second pass: go over all leaves and copy data
+  indices.resize (leaves_.size ());
   for (const auto& leaf : leaves_)
   {
     if (leaf.second.count >= min_points_per_voxel_)
@@ -137,7 +139,6 @@ pcl::UniformSampling<PointT>::applyFilter (Indices &indices)
   }
  
   indices.resize (oii);
-  removed_indices_->resize(rii);
   if(negative_){
      indices.swap(*removed_indices_);
   }
