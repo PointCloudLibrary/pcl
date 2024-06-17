@@ -40,6 +40,7 @@
 
 #include <pcl/common/common.h>
 #include <pcl/filters/uniform_sampling.h>
+#include <pcl/common/point_tests.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
@@ -79,9 +80,7 @@ pcl::UniformSampling<PointT>::applyFilter (Indices &indices)
     if (!input_->is_dense)
     {
       // Check if the point is invalid
-      if (!std::isfinite ((*input_)[cp].x) || 
-          !std::isfinite ((*input_)[cp].y) || 
-          !std::isfinite ((*input_)[cp].z))
+      if (!pcl::isXYZFinite ((*input_)[cp]))
       {
         if (extract_removed_indices_)
           (*removed_indices_)[rii++] = cp;

@@ -66,15 +66,14 @@ TEST(UniformSampling, extractRemovedIndices)
   pcl::PointCloud<pcl::PointXYZ> output;
   pcl::Indices indices;
   
-  //empty input cloud
+  // Empty input cloud
   us_ptr->filter(output);
   us_ptr->filter(indices);
 
   us_ptr->setInputCloud(xyz);
-  //cloud
+  // Cloud
   us_ptr->filter(output);
-
-  //indices
+  // Indices
   us_ptr->filter(indices);
 
   for (const auto& outputIndex : indices)
@@ -109,7 +108,7 @@ TEST(UniformSampling, extractRemovedIndices)
   EXPECT_EQ (int (removed_indices->size ()), 1000);
   EXPECT_EQ (int (output.size ()), int (xyz->size() - 1000));
 
-  //Organized
+  // Organized
   us_ptr->setKeepOrganized (true);
   us_ptr->setNegative (false);
   us_ptr->filter(output);
