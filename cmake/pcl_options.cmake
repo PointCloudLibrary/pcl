@@ -48,8 +48,18 @@ mark_as_advanced(PCL_QHULL_REQUIRED_TYPE)
 option(PCL_PREFER_BOOST_FILESYSTEM "Prefer boost::filesystem over std::filesystem (if compiled as C++17 or higher, std::filesystem is chosen by default)" OFF)
 mark_as_advanced(PCL_PREFER_BOOST_FILESYSTEM)
 
+set(PCL_XYZ_POINT_TYPES "(pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZL)(pcl::PointXYZRGBA)(pcl::PointXYZRGB)(pcl::PointXYZRGBL)(pcl::PointXYZLAB)(pcl::PointXYZHSV)(pcl::InterestPoint)(pcl::PointNormal)(pcl::PointXYZRGBNormal)(pcl::PointXYZINormal)(pcl::PointXYZLNormal)(pcl::PointWithRange)(pcl::PointWithViewpoint)(pcl::PointWithScale)(pcl::PointSurfel)(pcl::PointDEM)" CACHE STRING "Point types with xyz information for which PCL classes will be instantiated. Alternative to PCL_ONLY_CORE_POINT_TYPES. You can remove unneeded types to reduce compile time and library size.")
+mark_as_advanced(PCL_XYZ_POINT_TYPES)
+
+set(PCL_NORMAL_POINT_TYPES "(pcl::Normal)(pcl::PointNormal)(pcl::PointXYZRGBNormal)(pcl::PointXYZINormal)(pcl::PointXYZLNormal)(pcl::PointSurfel)" CACHE STRING "Point types with normal information for which PCL classes will be instantiated. Alternative to PCL_ONLY_CORE_POINT_TYPES. You can remove unneeded types to reduce compile time and library size.")
+mark_as_advanced(PCL_NORMAL_POINT_TYPES)
+
 # Precompile for a minimal set of point types instead of all.
+if(CMAKE_COMPILER_IS_MSVC OR CMAKE_COMPILER_IS_MINGW)
+option(PCL_ONLY_CORE_POINT_TYPES "Compile explicitly only for a small subset of point types (e.g., pcl::PointXYZ instead of PCL_XYZ_POINT_TYPES)." ON)
+else()
 option(PCL_ONLY_CORE_POINT_TYPES "Compile explicitly only for a small subset of point types (e.g., pcl::PointXYZ instead of PCL_XYZ_POINT_TYPES)." OFF)
+endif()
 mark_as_advanced(PCL_ONLY_CORE_POINT_TYPES)
 
 # Precompile for a minimal set of point types instead of all.
