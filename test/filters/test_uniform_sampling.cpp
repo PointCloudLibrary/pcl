@@ -61,17 +61,75 @@ TEST(UniformSampling, extractRemovedIndices)
   // sure that each cell has at least one point. As a result, we expect 1000 points in
   // the output cloud and the rest in removed indices.
 
-  pcl::UniformSampling<pcl::PointXYZ> us(true); // extract removed indices
-  us.setInputCloud(xyz);
-  us.setRadiusSearch(0.1);
+  pcl::UniformSampling<pcl::PointXYZ>::Ptr us_ptr(new pcl::UniformSampling<pcl::PointXYZ>(true));// extract removed indices
+  us_ptr->setRadiusSearch(0.1);
   pcl::PointCloud<pcl::PointXYZ> output;
-  us.filter(output);
+  pcl::Indices indices;
+  
+  // Empty input cloud
+  us_ptr->filter(output);
+  us_ptr->filter(indices);
 
-  auto removed_indices = us.getRemovedIndices();
+  us_ptr->setInputCloud(xyz);
+  // Cloud
+  us_ptr->filter(output);
+  // Indices
+  us_ptr->filter(indices);
+
+  for (const auto& outputIndex : indices)
+  {
+    // Check if the point exists in the output cloud
+    bool found = false;
+    for (const auto& j : output)
+    {
+      if (j.x == (*xyz)[outputIndex].x &&
+          j.y == (*xyz)[outputIndex].y &&
+          j.z == (*xyz)[outputIndex].z)
+      {
+        found = true;
+        break;
+      }
+    }
+
+    // Assert that the point was found in the output cloud
+    ASSERT_TRUE(found);
+  }
+
+  auto removed_indices = us_ptr->getRemovedIndices();
   ASSERT_EQ(output.size(), 1000);
-  EXPECT_EQ(removed_indices->size(), xyz->size() - 1000);
+  EXPECT_EQ(int(removed_indices->size()), int(xyz->size() - 1000));
   std::set<int> removed_indices_set(removed_indices->begin(), removed_indices->end());
   ASSERT_EQ(removed_indices_set.size(), removed_indices->size());
+
+  // Negative
+  us_ptr->setNegative (true);
+  us_ptr->filter(output);
+  removed_indices = us_ptr->getRemovedIndices ();
+  EXPECT_EQ (int (removed_indices->size ()), 1000);
+  EXPECT_EQ (int (output.size ()), int (xyz->size() - 1000));
+
+  // Organized
+  us_ptr->setKeepOrganized (true);
+  us_ptr->setNegative (false);
+  us_ptr->filter(output);
+  removed_indices = us_ptr->getRemovedIndices ();
+  EXPECT_EQ (int (removed_indices->size ()), int(xyz->size() - 1000));
+  for (std::size_t i = 0; i < removed_indices->size (); ++i)
+  {
+    EXPECT_TRUE (std::isnan (output.at ((*removed_indices)[i]).x));
+    EXPECT_TRUE (std::isnan (output.at ((*removed_indices)[i]).y));
+    EXPECT_TRUE (std::isnan (output.at ((*removed_indices)[i]).z));
+  }
+
+  EXPECT_EQ (output.width, xyz->width);
+  EXPECT_EQ (output.height, xyz->height);
+
+  // Check input cloud with nan values
+  us_ptr->setInputCloud (output.makeShared ());
+  us_ptr->setRadiusSearch(2);
+  us_ptr->filter (output);
+  removed_indices = us_ptr->getRemovedIndices ();
+  EXPECT_EQ (int (removed_indices->size ()), output.size()-1);
 }
 
 int
