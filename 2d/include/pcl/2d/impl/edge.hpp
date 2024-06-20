@@ -41,6 +41,8 @@
 #include <pcl/2d/edge.h>
 #include <pcl/common/angles.h> // for rad2deg
 
+#include <cstddef>
+
 namespace pcl {
 
 template <typename PointInT, typename PointOutT>
@@ -261,7 +263,8 @@ Edge<PointInT, PointOutT>::suppressNonMaxima(
 
   maxima.height = height;
   maxima.width = width;
-  maxima.resize(height * width);
+  std::size_t resize = static_cast<std::size_t>(height) * width;
+  maxima.resize(resize);
 
   for (auto& point : maxima)
     point.intensity = 0.0f;

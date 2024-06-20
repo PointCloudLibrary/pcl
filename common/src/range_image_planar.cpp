@@ -35,6 +35,7 @@
 /** \author Bastian Steder */
 
 #include <cassert>
+#include <cstddef>
 #include <iostream>
 using std::cout;
 using std::cerr;
@@ -69,7 +70,9 @@ namespace pcl
     focal_length_x_reciprocal_ = focal_length_y_reciprocal_ = 1.0f / focal_length_x_;
     center_x_ = static_cast<float> (di_width)  / static_cast<float> (2 * skip);
     center_y_ = static_cast<float> (di_height) / static_cast<float> (2 * skip);
-    points.resize (width*height);
+    using SizeType = decltype(points)::size_type;
+    SizeType resize = static_cast<SizeType>(width) * height;
+    points.resize (resize);
     
     //std::cout << PVARN (*this);
     
@@ -130,7 +133,9 @@ namespace pcl
     focal_length_y_reciprocal_ = 1.0f / focal_length_y_;
     center_x_ = static_cast<float> (di_center_x) / static_cast<float> (skip);
     center_y_ = static_cast<float> (di_center_y) / static_cast<float> (skip);
-    points.resize (width * height);
+    using SizeType = decltype(points)::size_type;
+    SizeType resize = static_cast<SizeType>(width) * height;
+    points.resize (resize);
     
     for (int y=0; y < static_cast<int> (height); ++y)
     {
@@ -176,7 +181,9 @@ namespace pcl
     focal_length_y_reciprocal_ = 1.0f / focal_length_y_;
     center_x_ = static_cast<float> (di_center_x) / static_cast<float> (skip);
     center_y_ = static_cast<float> (di_center_y) / static_cast<float> (skip);
-    points.resize (width * height);
+    using SizeType = decltype(points)::size_type;
+    SizeType resize = static_cast<SizeType>(width) * height;
+    points.resize (resize);
 
     for (int y = 0; y < static_cast<int> (height); ++y)
     {
