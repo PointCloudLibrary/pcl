@@ -121,6 +121,26 @@ namespace pcl
       bool
       loadTemplates (const std::string &file_name, std::size_t object_id = 0);
 
+      /** \brief Loads templates from a SQMMT file. Overrides old templates.
+        *
+        * \param[in] file_name The vector of file names that stores the templates.
+        * \param object_id
+        *
+        * \return true, if all files were loaded, false otherwise.
+        */
+      bool
+      loadTemplateSQMMT (const std::vector<std::string> &file_name, std::size_t object_id = 0);
+
+      /** \brief Loads templates from a LMT (LineMod Template) file. Overrides old templates.
+        *
+        * \param[in] file_name The vector of file names that stores the template PCD masks.
+        * \param object_id
+        *
+        * \return true, if all files were loaded, false otherwise.
+        */
+      bool
+      loadTemplatePCD (const std::vector<std::string> &file_name, std::size_t object_id = 0);
+
       bool
       addTemplate (const SparseQuantizedMultiModTemplate & sqmmt, pcl::PointCloud<pcl::PointXYZRGBA> & cloud, std::size_t object_id = 0);
 
