@@ -46,17 +46,18 @@ file(GLOB hdrs_cuda src/cuda/nvidia/*.h*)
 source_group("Source files\\cuda" FILES ${srcs_cuda})
 source_group("Source files" FILES ${srcs})
 
-include_directories(
-  "${CMAKE_CURRENT_SOURCE_DIR}/include"
-  "${CMAKE_CURRENT_SOURCE_DIR}/src"
-  "${CMAKE_CURRENT_SOURCE_DIR}/src/cuda"
-  "${CMAKE_CURRENT_SOURCE_DIR}/src/cuda/nvidia"
-)
-
 set(LIB_NAME "pcl_${SUBSYS_NAME}")
 
 PCL_CUDA_ADD_LIBRARY(${LIB_NAME} COMPONENT ${SUBSYS_NAME} SOURCES ${srcs} ${hdrs} ${srcs_cuda})
 target_link_libraries(${LIB_NAME} pcl_common pcl_search pcl_surface pcl_segmentation pcl_features pcl_sample_consensus pcl_gpu_utils pcl_gpu_containers ${CUDA_CUDART_LIBRARY} ${CUDA_npp_LIBRARY})
+target_include_directories(
+    ${LIB_NAME} 
+    PRIVATE
+      ${CMAKE_CURRENT_SOURCE_DIR}/src 
+      ${CMAKE_CURRENT_SOURCE_DIR}/src/cuda
+    PUBLIC
+      ${CMAKE_CURRENT_SOURCE_DIR}/src/cuda/nvidia
+)
 
 if(UNIX OR APPLE)
   target_compile_options(${LIB_NAME} INTERFACE $<$<COMPILE_LANGUAGE:CUDA>:"-Xcompiler=-fPIC">)
