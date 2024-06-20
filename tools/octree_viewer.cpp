@@ -271,7 +271,7 @@ private:
       //show centroid points
       pcl::visualization::PointCloudColorHandlerGenericField<pcl::PointXYZ> color_handler (cloudVoxel, "x");
       viz.addPointCloud (cloudVoxel, color_handler, "cloud_centroid");
-      viz.setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, point_size_, "cloud_centroid");
+      viz.setPointCloudRenderingProperties (pcl::visualization::RenderingProperties::PCL_VISUALIZER_POINT_SIZE, point_size_, "cloud_centroid");
     }
 
     if (show_original_points_)
@@ -279,7 +279,7 @@ private:
       //show origin point cloud
       pcl::visualization::PointCloudColorHandlerGenericField<pcl::PointXYZ> color_handler (cloud, "z");
       viz.addPointCloud (cloud, color_handler, "cloud");
-      viz.setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, point_size_, "cloud");
+      viz.setPointCloudRenderingProperties (pcl::visualization::RenderingProperties::PCL_VISUALIZER_POINT_SIZE, point_size_, "cloud");
     }
   }
 
