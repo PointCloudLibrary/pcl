@@ -47,9 +47,9 @@ namespace pcl
 bool RangeImage::debug = false;
 int RangeImage::max_no_of_threads = 1;
 const int RangeImage::lookup_table_size = 20001;
-std::vector<float> RangeImage::asin_lookup_table;
-std::vector<float> RangeImage::atan_lookup_table;
-std::vector<float> RangeImage::cos_lookup_table;
+PCL_EXPORTS std::vector<float> RangeImage::asin_lookup_table;
+PCL_EXPORTS std::vector<float> RangeImage::atan_lookup_table;
+PCL_EXPORTS std::vector<float> RangeImage::cos_lookup_table;
 
 /////////////////////////////////////////////////////////////////////////
 void 

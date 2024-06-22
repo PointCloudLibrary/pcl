@@ -139,7 +139,7 @@ namespace pcl
     * \ingroup sample_consensus
     */
   template <typename PointT>
-  class SampleConsensusModelPlane : public SampleConsensusModel<PointT>
+  class PCL_EXPORTS SampleConsensusModelPlane : public SampleConsensusModel<PointT>
   {
     public:
       using SampleConsensusModel<PointT>::model_name_;
@@ -293,11 +293,11 @@ namespace pcl
 #endif
 
 #ifdef __AVX__
-      inline __m256 dist8 (const std::size_t i, const __m256 &a_vec, const __m256 &b_vec, const __m256 &c_vec, const __m256 &d_vec, const __m256 &abs_help) const;
+      __m256 dist8 (const std::size_t i, const __m256 &a_vec, const __m256 &b_vec, const __m256 &c_vec, const __m256 &d_vec, const __m256 &abs_help) const;
 #endif
 
 #ifdef __SSE__
-      inline __m128 dist4 (const std::size_t i, const __m128 &a_vec, const __m128 &b_vec, const __m128 &c_vec, const __m128 &d_vec, const __m128 &abs_help) const;
+      __m128 dist4 (const std::size_t i, const __m128 &a_vec, const __m128 &b_vec, const __m128 &c_vec, const __m128 &d_vec, const __m128 &abs_help) const;
 #endif
 
     private:

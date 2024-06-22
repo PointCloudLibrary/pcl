@@ -323,7 +323,7 @@ pcl_round (float number)
         #define PCL_EXPORTS
     #endif
 #else
-    #define PCL_EXPORTS
+    #define PCL_EXPORTS __attribute__ ((visibility ("default")))
 #endif
 
 #if defined WIN32 || defined _WIN32
