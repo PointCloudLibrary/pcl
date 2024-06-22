@@ -38,6 +38,8 @@
 
 #pragma once
 
+#include <pcl/pcl_exports.h>
+
 #include <map>
 #include <string>
 
@@ -53,7 +55,7 @@ namespace pcl
 {
   namespace visualization
   {
-    class RenWinInteract
+    class PCL_EXPORTS RenWinInteract
     {
       public:
 
