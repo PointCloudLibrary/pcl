@@ -348,7 +348,7 @@ public:
   getCorrespondenceScore(int index) override
   {
     // Check correspondence is valid
-    if (index >= (*input_).size())
+    if ((size_t) index >= (*input_).size())
     {
       return (std::numeric_limits<double>::max ());
     }
@@ -370,7 +370,7 @@ public:
   getCorrespondenceScore(const pcl::Correspondence& corr) override
   {
     // Check correspondence is valid
-    if (corr.index_query >= (*input_).size() || corr.index_match >= (*target_).size())
+    if ((size_t) corr.index_query >= (*input_).size() || (size_t) corr.index_match >= (*target_).size())
     {
       return (std::numeric_limits<double>::max ());
     }
@@ -390,7 +390,7 @@ public:
   getCorrespondenceScoreFromNormals(const pcl::Correspondence& corr) override
   {
     // Check correspondence is valid
-    if (corr.index_query >= (*input_normals_).size() || corr.index_match >= (*target_normals_).size())
+    if ((size_t) corr.index_query >= (*input_normals_).size() || (size_t) corr.index_match >= (*target_normals_).size())
     {
       return (std::numeric_limits<double>::max ());
     }
