@@ -90,13 +90,30 @@ KFPCSInitialAlignment<PointSource, PointTarget, NormalT, Scalar>::initCompute()
 
   // generate a subset of indices of size ransac_iterations_ on which to evaluate
   // candidates on
-  std::size_t nr_indices = indices_->size();
-  if (nr_indices < static_cast<std::size_t>(ransac_iterations_))
+  if (indices_->size() <= static_cast<std::size_t>(ransac_iterations_) ||
+      ransac_iterations_ <= 0)
     indices_validation_ = indices_;
-  else
-    for (int i = 0; i < ransac_iterations_; i++)
-      indices_validation_->push_back((*indices_)[rand() % nr_indices]);
+  else {
+    indices_validation_.reset(new pcl::Indices);
+    // sampling without replacement (guaranteed to give exactly the desired number of
+    // samples, and no duplicate samples). n = how many elements still need to be
+    // selected, N = how many remaining elements to choose from
+    for (int i = 0, n = ransac_iterations_, N = indices_->size(); n > 0; --N, ++i) {
+      if ((N * static_cast<float>(rand()) / static_cast<float>(RAND_MAX)) <= n) {
+        indices_validation_->push_back((*indices_)[i]);
+        --n;
+      }
+    }
+  }
 
+  PCL_DEBUG("[%s::initCompute] delta_=%g, max_inlier_dist_sqr_=%g, "
+            "coincidation_limit_=%g, max_edge_diff_=%g, max_pair_diff_=%g\n",
+            reg_name_.c_str(),
+            delta_,
+            max_inlier_dist_sqr_,
+            coincidation_limit_,
+            max_edge_diff_,
+            max_pair_diff_);
   return (true);
 }
 
@@ -117,9 +134,10 @@ KFPCSInitialAlignment<PointSource, PointTarget, NormalT, Scalar>::handleMatches(
         std::numeric_limits<float>::max(); // reset to std::numeric_limits<float>::max()
                                            // to accept all candidates and not only best
 
-    // determine correspondences between base and match according to their distance to
-    // centroid
-    linkMatchWithBase(base_indices, match, correspondences_temp);
+    correspondences_temp.push_back(pcl::Correspondence(match[0], base_indices[0], 0.0));
+    correspondences_temp.push_back(pcl::Correspondence(match[1], base_indices[1], 0.0));
+    correspondences_temp.push_back(pcl::Correspondence(match[2], base_indices[2], 0.0));
+    correspondences_temp.push_back(pcl::Correspondence(match[3], base_indices[3], 0.0));
 
     // check match based on residuals of the corresponding points after transformation
     if (validateMatch(base_indices, match, correspondences_temp, transformation_temp) <
@@ -150,8 +168,8 @@ KFPCSInitialAlignment<PointSource, PointTarget, NormalT, Scalar>::
   float score_a = 0.f, score_b = 0.f;
 
   // residual costs based on mse
-  pcl::Indices ids;
-  std::vector<float> dists_sqr;
+  pcl::Indices ids(1);
+  std::vector<float> dists_sqr(1);
   for (const auto& source : source_transformed) {
     // search for nearest point using kd tree search
     tree_->nearestKSearch(source, 1, ids, dists_sqr);
@@ -220,6 +238,10 @@ KFPCSInitialAlignment<PointSource, PointTarget, NormalT, Scalar>::finalCompute(
   fitness_score_ = candidates_[0].fitness_score;
   final_transformation_ = candidates_[0].transformation;
   *correspondences_ = candidates_[0].correspondences;
+  PCL_DEBUG("[%s::finalCompute] best score is %g, out of %zu candidate solutions.\n",
+            reg_name_.c_str(),
+            fitness_score_,
+            candidates_.size());
 
   // here we define convergence if resulting score is above threshold
   converged_ = fitness_score_ < score_threshold_;
