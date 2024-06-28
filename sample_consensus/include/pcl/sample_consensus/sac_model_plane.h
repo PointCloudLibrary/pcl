@@ -139,7 +139,7 @@ namespace pcl
     * \ingroup sample_consensus
     */
   template <typename PointT>
-  class SampleConsensusModelPlane : public SampleConsensusModel<PointT>
+  class PCL_EXPORTS SampleConsensusModelPlane : public SampleConsensusModel<PointT>
   {
     public:
       using SampleConsensusModel<PointT>::model_name_;
@@ -292,13 +292,35 @@ namespace pcl
                               std::size_t i = 0) const;
 #endif
 
+#define PCLAT(POS) ((*input_)[(*indices_)[(POS)]])
+
 #ifdef __AVX__
-      inline __m256 dist8 (const std::size_t i, const __m256 &a_vec, const __m256 &b_vec, const __m256 &c_vec, const __m256 &d_vec, const __m256 &abs_help) const;
-#endif
+// This function computes the distances of 8 points to the plane
+inline __m256 dist8 (const std::size_t i, const __m256 &a_vec, const __m256 &b_vec, const __m256 &c_vec, const __m256 &d_vec, const __m256 &abs_help) const
+{
+  // The andnot-function realizes an abs-operation: the sign bit is removed
+  return _mm256_andnot_ps (abs_help,
+        _mm256_add_ps (_mm256_add_ps (_mm256_mul_ps (a_vec, _mm256_set_ps (PCLAT(i  ).x, PCLAT(i+1).x, PCLAT(i+2).x, PCLAT(i+3).x, PCLAT(i+4).x, PCLAT(i+5).x, PCLAT(i+6).x, PCLAT(i+7).x)),
+                                      _mm256_mul_ps (b_vec, _mm256_set_ps (PCLAT(i  ).y, PCLAT(i+1).y, PCLAT(i+2).y, PCLAT(i+3).y, PCLAT(i+4).y, PCLAT(i+5).y, PCLAT(i+6).y, PCLAT(i+7).y))),
+                       _mm256_add_ps (_mm256_mul_ps (c_vec, _mm256_set_ps (PCLAT(i  ).z, PCLAT(i+1).z, PCLAT(i+2).z, PCLAT(i+3).z, PCLAT(i+4).z, PCLAT(i+5).z, PCLAT(i+6).z, PCLAT(i+7).z)),
+                                      d_vec))); // TODO this could be replaced by three fmadd-instructions (if available), but the speed gain would probably be minimal
+}
+#endif // ifdef __AVX__
 
 #ifdef __SSE__
-      inline __m128 dist4 (const std::size_t i, const __m128 &a_vec, const __m128 &b_vec, const __m128 &c_vec, const __m128 &d_vec, const __m128 &abs_help) const;
-#endif
+// This function computes the distances of 4 points to the plane
+inline __m128 dist4 (const std::size_t i, const __m128 &a_vec, const __m128 &b_vec, const __m128 &c_vec, const __m128 &d_vec, const __m128 &abs_help) const
+{
+  // The andnot-function realizes an abs-operation: the sign bit is removed
+  return _mm_andnot_ps (abs_help,
+        _mm_add_ps (_mm_add_ps (_mm_mul_ps (a_vec, _mm_set_ps (PCLAT(i  ).x, PCLAT(i+1).x, PCLAT(i+2).x, PCLAT(i+3).x)),
+                                _mm_mul_ps (b_vec, _mm_set_ps (PCLAT(i  ).y, PCLAT(i+1).y, PCLAT(i+2).y, PCLAT(i+3).y))),
+                    _mm_add_ps (_mm_mul_ps (c_vec, _mm_set_ps (PCLAT(i  ).z, PCLAT(i+1).z, PCLAT(i+2).z, PCLAT(i+3).z)),
+                                d_vec))); // TODO this could be replaced by three fmadd-instructions (if available), but the speed gain would probably be minimal
+}
+#endif // ifdef __SSE__
+
+#undef PCLAT
 
     private:
       /** \brief Check if a sample of indices results in a good sample of points

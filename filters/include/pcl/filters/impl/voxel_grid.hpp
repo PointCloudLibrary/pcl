@@ -211,16 +211,6 @@ pcl::getMinMax3D (const typename pcl::PointCloud<PointT>::ConstPtr &cloud,
   max_pt = max_p;
 }
 
-struct cloud_point_index_idx 
-{
-  unsigned int idx;
-  unsigned int cloud_point_index;
-
-  cloud_point_index_idx() = default;
-  cloud_point_index_idx (unsigned int idx_, unsigned int cloud_point_index_) : idx (idx_), cloud_point_index (cloud_point_index_) {}
-  bool operator < (const cloud_point_index_idx &p) const { return (idx < p.idx); }
-};
-
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
 pcl::VoxelGrid<PointT>::applyFilter (PointCloud &output)
@@ -273,7 +263,7 @@ pcl::VoxelGrid<PointT>::applyFilter (PointCloud &output)
   divb_mul_ = Eigen::Vector4i (1, div_b_[0], div_b_[0] * div_b_[1], 0);
 
   // Storage for mapping leaf and pointcloud indexes
-  std::vector<cloud_point_index_idx> index_vector;
+  std::vector<internal::cloud_point_index_idx> index_vector;
   index_vector.reserve (indices_->size ());
 
   // If we don't want to process the entire cloud, but rather filter points far away from the viewpoint first...
@@ -350,7 +340,7 @@ pcl::VoxelGrid<PointT>::applyFilter (PointCloud &output)
 
   // Second pass: sort the index_vector vector using value representing target cell as index
   // in effect all points belonging to the same output cell will be next to each other
-  auto rightshift_func = [](const cloud_point_index_idx &x, const unsigned offset) { return x.idx >> offset; };
+  auto rightshift_func = [](const internal::cloud_point_index_idx &x, const unsigned offset) { return x.idx >> offset; };
   boost::sort::spreadsort::integer_sort(index_vector.begin(), index_vector.end(), rightshift_func);
   
   // Third pass: count output cells
