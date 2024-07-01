@@ -44,8 +44,18 @@ namespace registration {
  * on keypoints as described in: "Markerless point cloud registration with
  * keypoint-based 4-points congruent sets", Pascal Theiler, Jan Dirk Wegner, Konrad
  * Schindler. ISPRS Annals II-5/W2, 2013. Presented at ISPRS Workshop Laser Scanning,
- * Antalya, Turkey, 2013. \note Method has since been improved and some variations to
- * the paper exist. \author P.W.Theiler \ingroup registration
+ * Antalya, Turkey, 2013.
+ * \note Method has since been improved and some variations to the paper exist.
+ *
+ * The main differences to FPCSInitialAlignment are:
+ * <ol>
+ *   <li> KFPCSInitialAlignment stores all solution candidates instead of only the best
+ * one
+ *   <li> KFPCSInitialAlignment uses an MSAC approach to score candidates instead of
+ * counting inliers
+ * </ol>
+ * \author P.W.Theiler
+ * \ingroup registration
  */
 template <typename PointSource,
           typename PointTarget,

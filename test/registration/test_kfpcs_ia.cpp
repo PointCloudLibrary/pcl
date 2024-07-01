@@ -49,7 +49,7 @@ using namespace pcl;
 using namespace pcl::io;
 using namespace pcl::registration;
 
-PointCloud<PointXYZI> cloud_source, cloud_target;
+PointCloud<PointXYZ> cloud_source, cloud_target;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, KFPCSInitialAlignment)
@@ -57,13 +57,13 @@ TEST (PCL, KFPCSInitialAlignment)
   const auto previous_verbosity_level = pcl::console::getVerbosityLevel();
   pcl::console::setVerbosityLevel(pcl::console::L_VERBOSE);
   // create shared pointers
-  PointCloud<PointXYZI>::Ptr cloud_source_ptr, cloud_target_ptr;
+  PointCloud<PointXYZ>::Ptr cloud_source_ptr, cloud_target_ptr;
   cloud_source_ptr = cloud_source.makeShared ();
   cloud_target_ptr = cloud_target.makeShared ();
 
   // initialize k-fpcs
-  PointCloud <PointXYZI> cloud_source_aligned;
-  KFPCSInitialAlignment <PointXYZI, PointXYZI> kfpcs_ia;
+  PointCloud <PointXYZ> cloud_source_aligned;
+  KFPCSInitialAlignment <PointXYZ, PointXYZ> kfpcs_ia;
   kfpcs_ia.setInputSource (cloud_source_ptr);
   kfpcs_ia.setInputTarget (cloud_target_ptr);
 
@@ -71,6 +71,7 @@ TEST (PCL, KFPCSInitialAlignment)
   kfpcs_ia.setApproxOverlap (approx_overlap);
   kfpcs_ia.setDelta (voxel_size, false);
   kfpcs_ia.setScoreThreshold (abort_score);
+  kfpcs_ia.setMaximumIterations (100);
 
   // repeat alignment 2 times to increase probability to ~99.99%
   constexpr float max_angle3d = 0.1745f, max_translation3d = 1.f;
@@ -107,19 +108,19 @@ main (int argc, char** argv)
 {
   if (argc < 3)
   {
-    std::cerr << "No test files given. Please download `bun0.pcd` and `bun4.pcd` pass their path to the test." << std::endl;
+    std::cerr << "No test files given. Please download `office1_keypoints.pcd` and `office2_keypoints.pcd` pass their path to the test." << std::endl;
     return (-1);
   }
 
   // Input
   if (loadPCDFile (argv[1], cloud_source) < 0)
   {
-    std::cerr << "Failed to read test file. Please download `bun0.pcd` and pass its path to the test." << std::endl;
+    std::cerr << "Failed to read test file. Please download `office1_keypoints.pcd` and pass its path to the test." << std::endl;
     return (-1);
   }
   if (loadPCDFile (argv[2], cloud_target) < 0)
   {
-    std::cerr << "Failed to read test file. Please download `bun4.pcd` and pass its path to the test." << std::endl;
+    std::cerr << "Failed to read test file. Please download `office2_keypoints.pcd` and pass its path to the test." << std::endl;
     return (-1);
   }
 
