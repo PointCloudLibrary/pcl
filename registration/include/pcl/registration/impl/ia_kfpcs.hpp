@@ -152,6 +152,16 @@ KFPCSInitialAlignment<PointSource, PointTarget, NormalT, Scalar>::handleMatches(
     candidates.push_back(
         MatchingCandidate(fitness_score, correspondences_temp, transformation_temp));
   }
+  // make sure that candidate with best fitness score is at the front, for early
+  // termination check
+  if (!candidates.empty()) {
+    auto best_candidate = candidates.begin();
+    for (auto iter = candidates.begin(); iter < candidates.end(); ++iter)
+      if (iter->fitness_score < best_candidate->fitness_score)
+        best_candidate = iter;
+    if (best_candidate != candidates.begin())
+      std::swap(*best_candidate, *candidates.begin());
+  }
 }
 
 template <typename PointSource, typename PointTarget, typename NormalT, typename Scalar>
