@@ -1,7 +1,7 @@
 set(SUBSYS_NAME apps)
 set(SUBSYS_DESC "Application examples/samples that show how PCL works")
 set(SUBSYS_DEPS common geometry io filters sample_consensus segmentation visualization kdtree features surface octree registration keypoints tracking search recognition ml stereo 2d)
-set(SUBSYS_OPT_DEPS openni vtk ${QTX})
+set(SUBSYS_OPT_DEPS CUDA openni vtk ${QTX})
 
 PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" OFF)
 PCL_SUBSYS_DEPEND(build NAME ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} OPT_DEPS ${SUBSYS_OPT_DEPS})
@@ -245,6 +245,11 @@ if(VTK_FOUND)
 
     PCL_ADD_EXECUTABLE(pcl_openni_klt COMPONENT ${SUBSYS_NAME} SOURCES src/openni_klt.cpp BUNDLE)
     target_link_libraries(pcl_openni_klt pcl_common pcl_io pcl_visualization pcl_tracking)
+
+    if(BUILD_CUDA AND CUDA_FOUND)
+      PCL_CUDA_ADD_EXECUTABLE(kinect_viewer_cuda COMPONENT ${SUBSYS_NAME} SOURCES src/kinect_viewer_cuda.cpp)
+      target_link_libraries (kinect_viewer_cuda pcl_cuda_io pcl_visualization)
+    endif()
   endif() # WITH_OPENNI
 endif() # VTK_FOUND
 
