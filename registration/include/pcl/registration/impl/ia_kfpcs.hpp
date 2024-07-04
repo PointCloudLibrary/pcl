@@ -95,15 +95,11 @@ KFPCSInitialAlignment<PointSource, PointTarget, NormalT, Scalar>::initCompute()
     indices_validation_ = indices_;
   else {
     indices_validation_.reset(new pcl::Indices);
-    // sampling without replacement (guaranteed to give exactly the desired number of
-    // samples, and no duplicate samples). n = how many elements still need to be
-    // selected, N = how many remaining elements to choose from
-    for (int i = 0, n = ransac_iterations_, N = indices_->size(); n > 0; --N, ++i) {
-      if ((N * static_cast<float>(rand()) / static_cast<float>(RAND_MAX)) <= n) {
-        indices_validation_->push_back((*indices_)[i]);
-        --n;
-      }
-    }
+    pcl::RandomSample<PointSource> random_sampling;
+    random_sampling.setInputCloud(input_);
+    random_sampling.setIndices(indices_);
+    random_sampling.setSample(ransac_iterations_);
+    random_sampling.filter(*indices_validation_);
   }
 
   PCL_DEBUG("[%s::initCompute] delta_=%g, max_inlier_dist_sqr_=%g, "

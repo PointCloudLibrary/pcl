@@ -41,6 +41,7 @@
 #include <pcl/common/distances.h>
 #include <pcl/common/time.h>
 #include <pcl/common/utils.h>
+#include <pcl/filters/random_sample.h>
 #include <pcl/registration/ia_fpcs.h>
 #include <pcl/registration/transformation_estimation_3point.h>
 #include <pcl/sample_consensus/sac_model_plane.h>
@@ -250,15 +251,12 @@ pcl::registration::FPCSInitialAlignment<PointSource, PointTarget, NormalT, Scala
   // cloud
   if (nr_samples_ > 0 && static_cast<std::size_t>(nr_samples_) < indices_->size()) {
     source_indices_ = pcl::IndicesPtr(new pcl::Indices);
-    // sampling without replacement (guaranteed to give exactly the desired nr_samples_)
-    // n = how many elements still need to be selected, N = how many remaining elements
-    // to choose from
-    for (int i = 0, n = nr_samples_, N = indices_->size(); n > 0; --N, ++i) {
-      if ((N * static_cast<float>(rand()) / static_cast<float>(RAND_MAX)) <= n) {
-        source_indices_->push_back((*indices_)[i]);
-        --n;
-      }
-    }
+    pcl::RandomSample<PointSource> random_sampling;
+    random_sampling.setInputCloud(input_);
+    random_sampling.setIndices(indices_);
+    random_sampling.setSample(nr_samples_);
+    random_sampling.setSeed(seed);
+    random_sampling.filter(*source_indices_);
   }
   else
     source_indices_ = indices_;

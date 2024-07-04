@@ -197,8 +197,6 @@ protected:
   using FPCSInitialAlignment<PointSource, PointTarget, NormalT, Scalar>::fitness_score_;
   using FPCSInitialAlignment<PointSource, PointTarget, NormalT, Scalar>::
       score_threshold_;
-  using FPCSInitialAlignment<PointSource, PointTarget, NormalT, Scalar>::
-      linkMatchWithBase;
   using FPCSInitialAlignment<PointSource, PointTarget, NormalT, Scalar>::validateMatch;
 
   /** \brief Internal computation initialization. */
