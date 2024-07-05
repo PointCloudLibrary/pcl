@@ -41,6 +41,7 @@
 #include <pcl/common/distances.h>
 #include <pcl/common/time.h>
 #include <pcl/common/utils.h>
+#include <pcl/filters/random_sample.h>
 #include <pcl/registration/ia_fpcs.h>
 #include <pcl/registration/transformation_estimation_3point.h>
 #include <pcl/sample_consensus/sac_model_plane.h>
@@ -189,9 +190,19 @@ pcl::registration::FPCSInitialAlignment<PointSource, PointTarget, NormalT, Scala
         }
 
         // check terminate early (time or fitness_score threshold reached)
-        abort = (!candidates.empty() ? candidates[0].fitness_score < score_threshold_
-                                     : abort);
-        abort = (abort ? abort : timer.getTimeSeconds() > max_runtime_);
+        if (!candidates.empty() && candidates[0].fitness_score < score_threshold_) {
+          PCL_DEBUG("[%s::computeTransformation] Terminating because fitness score "
+                    "(%g) is below threshold (%g).\n",
+                    reg_name_.c_str(),
+                    candidates[0].fitness_score,
+                    score_threshold_);
+          abort = true;
+        }
+        else if (timer.getTimeSeconds() > max_runtime_) {
+          PCL_DEBUG("[%s::computeTransformation] Terminating because time exceeded.\n",
+                    reg_name_.c_str());
+          abort = true;
+        }
 
 #pragma omp flush(abort)
       }
@@ -238,14 +249,14 @@ pcl::registration::FPCSInitialAlignment<PointSource, PointTarget, NormalT, Scala
 
   // if a sample size for the point clouds is given; preferably no sampling of target
   // cloud
-  if (nr_samples_ != 0) {
-    const int ss = static_cast<int>(indices_->size());
-    const int sample_fraction_src = std::max(1, static_cast<int>(ss / nr_samples_));
-
+  if (nr_samples_ > 0 && static_cast<std::size_t>(nr_samples_) < indices_->size()) {
     source_indices_ = pcl::IndicesPtr(new pcl::Indices);
-    for (int i = 0; i < ss; i++)
-      if (rand() % sample_fraction_src == 0)
-        source_indices_->push_back((*indices_)[i]);
+    pcl::RandomSample<PointSource> random_sampling;
+    random_sampling.setInputCloud(input_);
+    random_sampling.setIndices(indices_);
+    random_sampling.setSample(nr_samples_);
+    random_sampling.setSeed(seed);
+    random_sampling.filter(*source_indices_);
   }
   else
     source_indices_ = indices_;
@@ -274,6 +285,15 @@ pcl::registration::FPCSInitialAlignment<PointSource, PointTarget, NormalT, Scala
   float max_base_diameter = diameter_ * approx_overlap_ * 2.f;
   max_base_diameter_sqr_ = max_base_diameter * max_base_diameter;
 
+#ifdef _OPENMP
+  if (nr_threads_ < 1) {
+    nr_threads_ = omp_get_num_procs();
+    PCL_DEBUG("[%s::initCompute] Setting number of threads to %i.\n",
+              reg_name_.c_str(),
+              nr_threads_);
+  }
+#endif // _OPENMP
+
   // normalize the delta
   if (normalize_delta_) {
     float mean_dist = getMeanPointDensity<PointTarget>(
@@ -289,6 +309,9 @@ pcl::registration::FPCSInitialAlignment<PointSource, PointTarget, NormalT, Scala
                                               static_cast<double>(min_iterations)));
     max_iterations_ =
         static_cast<int>(first_est / (diameter_fraction * approx_overlap_ * 2.f));
+    PCL_DEBUG("[%s::initCompute] Estimated max iterations as %i\n",
+              reg_name_.c_str(),
+              max_iterations_);
   }
 
   // set further parameter
@@ -307,6 +330,14 @@ pcl::registration::FPCSInitialAlignment<PointSource, PointTarget, NormalT, Scala
   coincidation_limit_ = delta_ * 2.f; // EDITED: originally std::sqrt (delta_ * 2.f)
   max_mse_ = powf(delta_ * 2.f, 2.f);
   max_inlier_dist_sqr_ = powf(delta_ * 2.f, 2.f);
+  PCL_DEBUG("[%s::initCompute] delta_=%g, max_inlier_dist_sqr_=%g, "
+            "coincidation_limit_=%g, max_edge_diff_=%g, max_pair_diff_=%g\n",
+            reg_name_.c_str(),
+            delta_,
+            max_inlier_dist_sqr_,
+            coincidation_limit_,
+            max_edge_diff_,
+            max_pair_diff_);
 
   // reset fitness_score
   fitness_score_ = std::numeric_limits<float>::max();
@@ -668,6 +699,11 @@ pcl::registration::FPCSInitialAlignment<PointSource, PointTarget, NormalT, Scala
             pairs_a[static_cast<int>(std::floor((id / 2.f)))].index_query;
         match_indices[2] = pair.index_match;
         match_indices[3] = pair.index_query;
+        if (match_indices[0] == match_indices[2] ||
+            match_indices[0] == match_indices[3] ||
+            match_indices[1] == match_indices[2] ||
+            match_indices[1] == match_indices[3])
+          continue;
 
         // EDITED: added coarse check of match based on edge length (due to rigid-body )
         if (checkBaseMatch(match_indices, dist_base) < 0)
@@ -679,7 +715,16 @@ pcl::registration::FPCSInitialAlignment<PointSource, PointTarget, NormalT, Scala
   }
 
   // return unsuccessful if no match was found
-  return (!matches.empty() ? 0 : -1);
+  if (matches.empty()) {
+    PCL_DEBUG("[%s::determineBaseMatches] no matches found\n", reg_name_.c_str());
+    return -1;
+  }
+  else {
+    PCL_DEBUG("[%s::determineBaseMatches] found %zu matches\n",
+              reg_name_.c_str(),
+              matches.size());
+    return 0;
+  }
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -721,10 +766,10 @@ pcl::registration::FPCSInitialAlignment<PointSource, PointTarget, NormalT, Scala
   for (auto& match : matches) {
     Eigen::Matrix4f transformation_temp;
     pcl::Correspondences correspondences_temp;
-
-    // determine correspondences between base and match according to their distance to
-    // centroid
-    linkMatchWithBase(base_indices, match, correspondences_temp);
+    correspondences_temp.push_back(pcl::Correspondence(match[0], base_indices[0], 0.0));
+    correspondences_temp.push_back(pcl::Correspondence(match[1], base_indices[1], 0.0));
+    correspondences_temp.push_back(pcl::Correspondence(match[2], base_indices[2], 0.0));
+    correspondences_temp.push_back(pcl::Correspondence(match[3], base_indices[3], 0.0));
 
     // check match based on residuals of the corresponding points after
     if (validateMatch(base_indices, match, correspondences_temp, transformation_temp) <
@@ -846,8 +891,8 @@ pcl::registration::FPCSInitialAlignment<PointSource, PointTarget, NormalT, Scala
                         : static_cast<std::size_t>((1.f - fitness_score) * nr_points);
 
   float inlier_score_temp = 0;
-  pcl::Indices ids;
-  std::vector<float> dists_sqr;
+  pcl::Indices ids(1);
+  std::vector<float> dists_sqr(1);
   auto it = source_transformed.begin();
 
   for (std::size_t i = 0; i < nr_points; it++, i++) {
@@ -888,6 +933,12 @@ pcl::registration::FPCSInitialAlignment<PointSource, PointTarget, NormalT, Scala
       best_index = i;
     }
   }
+  PCL_DEBUG(
+      "[%s::finalCompute] best score is %g (iteration %i), out of %zu iterations.\n",
+      reg_name_.c_str(),
+      best_score,
+      best_index,
+      candidates.size());
 
   // check if a valid candidate was available
   if (!(best_index < 0)) {

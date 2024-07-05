@@ -415,6 +415,7 @@ protected:
    * \param[in] match_indices indices of match M
    * \param[out] correspondences resulting correspondences
    */
+  PCL_DEPRECATED(1, 18, "this function has a bug and is generally not needed")
   virtual void
   linkMatchWithBase(const pcl::Indices& base_indices,
                     pcl::Indices& match_indices,
