@@ -3050,7 +3050,7 @@ static bool ON_3dmSettings_Read_v1_TCODE_VIEWPORT(ON_BinaryArchive& file, ON_3dm
   double snapsize = 0.0;
 
   int chunk_count = 0;// debugging counter
-  for ( chunk_count = 0; rc; chunk_count++ )
+  while ( rc )
   {
     rc = file.BeginRead3dmBigChunk( &tcode, &big_value );
     if (!rc )
@@ -3143,6 +3143,8 @@ static bool ON_3dmSettings_Read_v1_TCODE_VIEWPORT(ON_BinaryArchive& file, ON_3dm
       rc = false;
     if ( tcode == TCODE_ENDOFTABLE )
       break;
+
+    chunk_count++;
   }
   return rc;
 }
@@ -3160,7 +3162,7 @@ bool ON_3dmSettings::Read_v1( ON_BinaryArchive& file )
   rc = file.SeekFromStart(32)?true:false; // skip 32 byte header
   
   int chunk_count = 0; // debugging counter
-  for ( chunk_count = 0; rc; chunk_count++ )
+  while ( rc )
   {
     rc = file.BeginRead3dmBigChunk( &tcode, &big_value );
     if ( !rc ) 
@@ -3204,6 +3206,8 @@ bool ON_3dmSettings::Read_v1( ON_BinaryArchive& file )
     }
 
     rc = file.EndRead3dmChunk();
+
+    chunk_count++;
   }
 
   file.SeekFromStart(pos0);
