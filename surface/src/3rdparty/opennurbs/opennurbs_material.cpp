@@ -1505,7 +1505,7 @@ void ON_TextureMapping::Dump( ON_TextLog& text_log ) const
   case single:
     text_log.Print("single texture space\n");
     break;
-  case clspt_projection:
+  case divided:
     text_log.Print("divided texture space\n");
     break;
   default:
@@ -2359,7 +2359,7 @@ ON__UINT32 ON_TextureMapping::MappingCRC() const
       case ON_TextureMapping::cylinder_mapping:
       case ON_TextureMapping::sphere_mapping:
       case ON_TextureMapping::box_mapping:
-      case ON_TextureMapping::force_32bit_mapping_projection:
+      case ON_TextureMapping::force_32bit_mapping_type:
       default:
         break;
       }
