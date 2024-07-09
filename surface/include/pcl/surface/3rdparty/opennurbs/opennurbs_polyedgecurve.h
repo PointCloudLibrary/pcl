@@ -195,8 +195,9 @@ public:
           const ON_UUID& object_id
           );
 
+  using ON_CurveProxy::Trim; // Explicitly introduce the base class Trim function
   const ON_BrepEdge* Edge() const;
-  const ON_BrepTrim* Trim() const;
+  const ON_BrepTrim* Trim() const; // overload, not override
   const ON_Brep*     Brep() const;
   const ON_BrepFace* Face() const;
   const ON_Surface*  Surface() const;
