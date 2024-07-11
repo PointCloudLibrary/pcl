@@ -34,6 +34,7 @@ RUN apt-get update \
       libboost-filesystem-dev \
       libboost-iostreams-dev \
       libboost-system-dev \
+      libcjson-dev \
       libflann-dev \
       libglew-dev \
       libgtest-dev \
