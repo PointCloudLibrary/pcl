@@ -50,6 +50,7 @@ namespace pcl
     class FittingSurfaceTDM : public FittingSurface
     {
     public:
+      using FittingSurface::assemble;
 
       /** \brief Parameters with TDM extensions for fitting */
       struct ParameterTDM : public FittingSurface::Parameter
