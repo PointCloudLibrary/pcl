@@ -94,6 +94,9 @@ namespace pcl
       updateSurf (double damp) override;
 
     protected:
+      using FittingSurface::assembleInterior;
+      using FittingSurface::assembleBoundary;
+      using FittingSurface::addPointConstraint;
 
       /** \brief Assemble point-to-surface constraints for interior points. */
       virtual void
