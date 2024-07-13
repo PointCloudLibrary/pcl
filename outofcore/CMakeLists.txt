@@ -19,7 +19,6 @@ if(NOT build)
 endif()
 
 set(srcs
-  src/cJSON.cpp
   src/outofcore_node_data.cpp
   src/outofcore_base_data.cpp
 )
@@ -32,7 +31,6 @@ set(incs
   "include/pcl/${SUBSYS_NAME}/outofcore_breadth_first_iterator.h"
   "include/pcl/${SUBSYS_NAME}/outofcore_depth_first_iterator.h"
   "include/pcl/${SUBSYS_NAME}/boost.h"
-  "include/pcl/${SUBSYS_NAME}/cJSON.h"
   "include/pcl/${SUBSYS_NAME}/octree_base.h"
   "include/pcl/${SUBSYS_NAME}/octree_base_node.h"
   "include/pcl/${SUBSYS_NAME}/octree_abstract_node_container.h"
@@ -65,11 +63,19 @@ set(visualization_incs
   "include/pcl/${SUBSYS_NAME}/visualization/viewport.h"
 )
 
+if(NOT HAVE_CJSON)
+  list(APPEND srcs  src/cJSON.cpp)
+  list(APPEND incs "include/pcl/${SUBSYS_NAME}/cJSON.h")
+endif()
+
 set(LIB_NAME "pcl_${SUBSYS_NAME}")
 
 PCL_ADD_LIBRARY(${LIB_NAME} COMPONENT ${SUBSYS_NAME} SOURCES ${srcs} ${incs} ${impl_incs} ${visualization_incs})
 #PCL_ADD_SSE_FLAGS("${LIB_NAME}")
 target_link_libraries("${LIB_NAME}" pcl_common pcl_visualization ${Boost_SYSTEM_LIBRARY})
+if(HAVE_CJSON)
+  target_link_libraries("${LIB_NAME}" ${CJSON_LIBRARIES})
+endif()
 PCL_MAKE_PKGCONFIG(${LIB_NAME} COMPONENT ${SUBSYS_NAME} DESC ${SUBSYS_DESC} PCL_DEPS ${SUBSYS_DEPS})
 
 # Install include files

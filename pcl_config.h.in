@@ -54,6 +54,8 @@
 
 #cmakedefine HAVE_ZLIB
 
+#cmakedefine HAVE_CJSON
+
 #cmakedefine PCL_PREFER_BOOST_FILESYSTEM
 
 /* Precompile for a minimal set of point types instead of all. */

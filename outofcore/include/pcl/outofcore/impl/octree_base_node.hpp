@@ -57,7 +57,12 @@
 #include <pcl/filters/extract_indices.h>
 
 // JSON
+#include <pcl/pcl_config.h> // for HAVE_CJSON
+#if defined(HAVE_CJSON)
+#include <cjson/cJSON.h>
+#else
 #include <pcl/outofcore/cJSON.h>
+#endif
 
 namespace pcl
 {
