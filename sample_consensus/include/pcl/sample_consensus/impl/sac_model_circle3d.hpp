@@ -303,6 +303,7 @@ pcl::SampleConsensusModelCircle3D<PointT>::optimizeModelCoefficients (
   Eigen::LevenbergMarquardt<Eigen::NumericalDiff<OptimizationFunctor>, double> lm (num_diff);
   Eigen::VectorXd coeff = optimized_coefficients.cast<double>();
   int info = lm.minimize (coeff);
+  coeff.tail(3).normalize(); // normalize the cylinder axis
   for (Eigen::Index i = 0; i < coeff.size (); ++i)
     optimized_coefficients[i] = static_cast<float> (coeff[i]);
 
