@@ -435,6 +435,8 @@ set(PCL_INCLUDE_DIRS "${PCL_CONF_INCLUDE_DIR}")
 #set a suffix for debug libraries
 set(PCL_DEBUG_SUFFIX "@CMAKE_DEBUG_POSTFIX@")
 set(PCL_RELEASE_SUFFIX "@CMAKE_RELEASE_POSTFIX@")
+set(PCL_RELWITHDEBINFO_SUFFIX "@CMAKE_RELWITHDEBINFO_POSTFIX@")
+set(PCL_MINSIZEREL_SUFFIX "@CMAKE_MINSIZEREL_POSTFIX@")
 
 set(PCL_SHARED_LIBS "@PCL_SHARED_LIBS@")
 
@@ -539,7 +541,8 @@ foreach(component ${PCL_TO_FIND_COMPONENTS})
   # Skip find_library for header only modules
   list(FIND pcl_header_only_components ${component} _is_header_only)
   if(_is_header_only EQUAL -1)
-    find_library(PCL_${COMPONENT}_LIBRARY ${pcl_component}${PCL_RELEASE_SUFFIX}
+    find_library(PCL_${COMPONENT}_LIBRARY
+      NAMES ${pcl_component}${PCL_RELEASE_SUFFIX} ${pcl_component}${PCL_RELWITHDEBINFO_SUFFIX} ${pcl_component}${PCL_MINSIZEREL_SUFFIX}
       HINTS ${PCL_LIBRARY_DIRS}
       DOC "path to ${pcl_component} library"
       NO_DEFAULT_PATH)
