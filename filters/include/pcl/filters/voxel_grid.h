@@ -866,6 +866,21 @@ namespace pcl
       void
       applyFilter (PCLPointCloud2 &output) override;
   };
+
+  namespace internal
+  {
+    /** \brief Used internally in voxel grid classes.
+      */
+    struct cloud_point_index_idx
+    {
+      unsigned int idx;
+      unsigned int cloud_point_index;
+
+      cloud_point_index_idx() = default;
+      cloud_point_index_idx (unsigned int idx_, unsigned int cloud_point_index_) : idx (idx_), cloud_point_index (cloud_point_index_) {}
+      bool operator < (const cloud_point_index_idx &p) const { return (idx < p.idx); }
+    };
+  }
 }
 
 #ifdef PCL_NO_PRECOMPILE

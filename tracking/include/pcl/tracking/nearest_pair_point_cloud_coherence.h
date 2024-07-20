@@ -11,7 +11,8 @@ namespace tracking {
  * \ingroup tracking
  */
 template <typename PointInT>
-class NearestPairPointCloudCoherence : public PointCloudCoherence<PointInT> {
+class PCL_EXPORTS NearestPairPointCloudCoherence
+: public PointCloudCoherence<PointInT> {
 public:
   using PointCloudCoherence<PointInT>::getClassName;
   using PointCloudCoherence<PointInT>::coherence_name_;

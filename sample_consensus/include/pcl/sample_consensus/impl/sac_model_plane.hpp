@@ -117,36 +117,6 @@ pcl::SampleConsensusModelPlane<PointT>::computeModelCoefficients (
   return (true);
 }
 
-#define AT(POS) ((*input_)[(*indices_)[(POS)]])
-
-#ifdef __AVX__
-// This function computes the distances of 8 points to the plane
-template <typename PointT> inline __m256 pcl::SampleConsensusModelPlane<PointT>::dist8 (const std::size_t i, const __m256 &a_vec, const __m256 &b_vec, const __m256 &c_vec, const __m256 &d_vec, const __m256 &abs_help) const
-{
-  // The andnot-function realizes an abs-operation: the sign bit is removed
-  return _mm256_andnot_ps (abs_help,
-        _mm256_add_ps (_mm256_add_ps (_mm256_mul_ps (a_vec, _mm256_set_ps (AT(i  ).x, AT(i+1).x, AT(i+2).x, AT(i+3).x, AT(i+4).x, AT(i+5).x, AT(i+6).x, AT(i+7).x)),
-                                      _mm256_mul_ps (b_vec, _mm256_set_ps (AT(i  ).y, AT(i+1).y, AT(i+2).y, AT(i+3).y, AT(i+4).y, AT(i+5).y, AT(i+6).y, AT(i+7).y))),
-                       _mm256_add_ps (_mm256_mul_ps (c_vec, _mm256_set_ps (AT(i  ).z, AT(i+1).z, AT(i+2).z, AT(i+3).z, AT(i+4).z, AT(i+5).z, AT(i+6).z, AT(i+7).z)),
-                                      d_vec))); // TODO this could be replaced by three fmadd-instructions (if available), but the speed gain would probably be minimal
-}
-#endif // ifdef __AVX__
-
-#ifdef __SSE__
-// This function computes the distances of 4 points to the plane
-template <typename PointT> inline __m128 pcl::SampleConsensusModelPlane<PointT>::dist4 (const std::size_t i, const __m128 &a_vec, const __m128 &b_vec, const __m128 &c_vec, const __m128 &d_vec, const __m128 &abs_help) const
-{
-  // The andnot-function realizes an abs-operation: the sign bit is removed
-  return _mm_andnot_ps (abs_help,
-        _mm_add_ps (_mm_add_ps (_mm_mul_ps (a_vec, _mm_set_ps (AT(i  ).x, AT(i+1).x, AT(i+2).x, AT(i+3).x)),
-                                _mm_mul_ps (b_vec, _mm_set_ps (AT(i  ).y, AT(i+1).y, AT(i+2).y, AT(i+3).y))),
-                    _mm_add_ps (_mm_mul_ps (c_vec, _mm_set_ps (AT(i  ).z, AT(i+1).z, AT(i+2).z, AT(i+3).z)),
-                                d_vec))); // TODO this could be replaced by three fmadd-instructions (if available), but the speed gain would probably be minimal
-}
-#endif // ifdef __SSE__
-
-#undef AT
-
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
 pcl::SampleConsensusModelPlane<PointT>::getDistancesToModel (

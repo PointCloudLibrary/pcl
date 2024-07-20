@@ -37,8 +37,9 @@
  */
 
 #include <map>
+#include <pcl/common/common.h> // for getMinMax3D
 #include <pcl/filters/voxel_grid_label.h>
-#include <pcl/filters/impl/voxel_grid.hpp>
+#include <boost/mpl/size.hpp> // for boost::mpl::size
 
 //////////////////////////////////////////////////////////////////////////////
 void
@@ -111,7 +112,7 @@ pcl::VoxelGridLabel::applyFilter (PointCloud &output)
   int label_index = -1;
   label_index = pcl::getFieldIndex<PointXYZRGBL> ("label", fields);
 
-  std::vector<cloud_point_index_idx> index_vector;
+  std::vector<internal::cloud_point_index_idx> index_vector;
   index_vector.reserve(input_->size());
 
   // If we don't want to process the entire cloud, but rather filter points far away from the viewpoint first...
