@@ -92,7 +92,7 @@ main(int argc, char **argv)
   pcl::visualization::PointCloudColorHandlerRGBField<pcl::PointXYZRGB> intensity(out_cloud);
   viewer->addPointCloud<pcl::PointXYZRGB> (out_cloud, intensity, "stereo");
 
-  //viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 1, "stereo");
+  //viewer->setPointCloudRenderingProperties (pcl::visualization::RenderingProperties::PCL_VISUALIZER_POINT_SIZE, 1, "stereo");
   viewer->initCameraParameters ();
   //viewer->spin();
   while (!viewer->wasStopped ())

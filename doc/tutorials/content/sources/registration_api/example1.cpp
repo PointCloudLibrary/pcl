@@ -109,16 +109,16 @@ view (const CloudConstPtr &src, const CloudConstPtr &tgt, const CorrespondencesP
     vis->resetCameraViewpoint ("source");
   }
   if (!vis->updatePointCloud<PointT> (tgt, green, "target")) vis->addPointCloud<PointT> (tgt, green, "target");
-  vis->setPointCloudRenderingProperties (PCL_VISUALIZER_OPACITY, 0.5, "source");
-  vis->setPointCloudRenderingProperties (PCL_VISUALIZER_OPACITY, 0.7, "target");
-  vis->setPointCloudRenderingProperties (PCL_VISUALIZER_POINT_SIZE, 6, "source");
+  vis->setPointCloudRenderingProperties (RenderingProperties::PCL_VISUALIZER_OPACITY, 0.5, "source");
+  vis->setPointCloudRenderingProperties (RenderingProperties::PCL_VISUALIZER_OPACITY, 0.7, "target");
+  vis->setPointCloudRenderingProperties (RenderingProperties::PCL_VISUALIZER_POINT_SIZE, 6, "source");
   pcl::console::TicToc tt;
   tt.tic ();
   if (!vis->updateCorrespondences<PointT> (src, tgt, *correspondences, 1)) 
     vis->addCorrespondences<PointT> (src, tgt, *correspondences, 1, "correspondences");
   tt.toc_print ();
-  vis->setShapeRenderingProperties (PCL_VISUALIZER_LINE_WIDTH, 5, "correspondences");
-  //vis->setShapeRenderingProperties (PCL_VISUALIZER_COLOR, 1.0, 0.0, 0.0, "correspondences");
+  vis->setShapeRenderingProperties (RenderingProperties::PCL_VISUALIZER_LINE_WIDTH, 5, "correspondences");
+  //vis->setShapeRenderingProperties (RenderingProperties::PCL_VISUALIZER_COLOR, 1.0, 0.0, 0.0, "correspondences");
   vis->spin ();
 }
 
