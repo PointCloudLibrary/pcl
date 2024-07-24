@@ -133,7 +133,7 @@ namespace pcl
         * \param sensor_pose the pose of the virtual depth camera
         * \param coordinate_frame the used coordinate frame of the point cloud
         * \param noise_level what is the typical noise of the sensor - is used for averaging in the z-buffer
-        * \param min_range minimum range to consifder points
+        * \param min_range minimum range to consider points
         */
       template <typename PointCloudType> void
       createFromPointCloudWithFixedSize (const PointCloudType& point_cloud,
