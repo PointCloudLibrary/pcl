@@ -43,8 +43,6 @@
 #define PCL_REGISTRATION_IMPL_PPF_REGISTRATION_H_
 
 #include <pcl/common/transforms.h>
-#include <pcl/features/pfh.h>
-#include <pcl/features/pfh_tools.h> // for computePairFeatures
 #include <pcl/features/ppf.h>
 #include <pcl/registration/ppf_registration.h>
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -133,15 +131,15 @@ pcl::PPFRegistration<PointSource, PointTarget>::computeTransformation(
     {
       // size_t scene_point_index = i;
       if (scene_reference_index != scene_point_index) {
-        if (/*pcl::computePPFPairFeature*/ pcl::computePairFeatures(
-            (*target_)[scene_reference_index].getVector4fMap(),
-            (*target_)[scene_reference_index].getNormalVector4fMap(),
-            (*target_)[scene_point_index].getVector4fMap(),
-            (*target_)[scene_point_index].getNormalVector4fMap(),
-            f1,
-            f2,
-            f3,
-            f4)) {
+        if (pcl::computePPFPairFeature(
+          (*target_)[scene_reference_index].getVector4fMap(),
+          (*target_)[scene_reference_index].getNormalVector4fMap(),
+          (*target_)[scene_point_index].getVector4fMap(),
+          (*target_)[scene_point_index].getNormalVector4fMap(),
+          f1,
+          f2,
+          f3,
+          f4)) {
           std::vector<std::pair<std::size_t, std::size_t>> nearest_indices;
           search_method_->nearestNeighborSearch(f1, f2, f3, f4, nearest_indices);
 
