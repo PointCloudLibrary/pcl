@@ -531,7 +531,7 @@ pcl::io::saveRangeImagePlanarFilePNG (
     for (int x = 0; x < dims[0]; x++)
       {
       float* pixel = static_cast<float*>(image->GetScalarPointer(x,y,0));
-      pixel[0] = range_image(y,x).range;
+      *pixel = range_image(x,y).range;
       }
     }
 
