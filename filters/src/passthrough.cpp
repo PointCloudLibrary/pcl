@@ -61,7 +61,7 @@ pcl::PassThrough<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
     return;
   }
 
-  int nr_points = input_->width * input_->height;
+  uindex_t nr_points = input_->width * input_->height;
 
   // Check if we're going to keep the organized structure of the cloud or not
   if (keep_organized_)
@@ -96,10 +96,10 @@ pcl::PassThrough<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
 
   removed_indices_->resize (input_->data.size ());
 
-  int nr_p = 0;
-  int nr_removed_p = 0;
+  uindex_t nr_p = 0;
+  uindex_t nr_removed_p = 0;
   // Create the first xyz_offset
-  Eigen::Array4i xyz_offset (input_->fields[x_idx_].offset, input_->fields[y_idx_].offset,
+  Eigen::Array<uindex_t, 4, 1> xyz_offset (input_->fields[x_idx_].offset, input_->fields[y_idx_].offset,
                              input_->fields[z_idx_].offset, 0);
 
   Eigen::Vector4f pt = Eigen::Vector4f::Zero ();
@@ -131,7 +131,7 @@ pcl::PassThrough<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
     {
       float distance_value = 0;
       // Go over all points
-      for (int cp = 0; cp < nr_points; ++cp, xyz_offset += input_->point_step)
+      for (uindex_t cp = 0; cp < nr_points; ++cp, xyz_offset += input_->point_step)
       {
         // Copy all the fields
         memcpy (&output.data[cp * output.point_step], &input_->data[cp * output.point_step], output.point_step);
@@ -175,7 +175,7 @@ pcl::PassThrough<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
     {
       // Go over all points
       float distance_value = 0;
-      for (int cp = 0; cp < nr_points; ++cp, xyz_offset += input_->point_step)
+      for (uindex_t cp = 0; cp < nr_points; ++cp, xyz_offset += input_->point_step)
       {
         // Get the distance value
         memcpy (&distance_value, &input_->data[cp * input_->point_step + input_->fields[distance_idx].offset],
@@ -242,7 +242,7 @@ pcl::PassThrough<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
   // No distance filtering, process all data. No need to check for is_organized here as we did it above
   else
   {
-    for (int cp = 0; cp < nr_points; ++cp, xyz_offset += input_->point_step)
+    for (uindex_t cp = 0; cp < nr_points; ++cp, xyz_offset += input_->point_step)
     {
       // Unoptimized memcpys: assume fields x, y, z are in random order
       memcpy (&pt[0], &input_->data[xyz_offset[0]], sizeof(float)); // NOLINT(readability-container-data-pointer)
@@ -296,7 +296,7 @@ pcl::PassThrough<pcl::PCLPointCloud2>::applyFilter (Indices &indices)
   // The arrays to be used
   indices.resize (indices_->size ());
   removed_indices_->resize (indices_->size ());
-  int oii = 0, rii = 0;  // oii = output indices iterator, rii = removed indices iterator
+  uindex_t oii = 0, rii = 0;  // oii = output indices iterator, rii = removed indices iterator
   const auto x_offset = input_->fields[x_idx_].offset,
              y_offset = input_->fields[y_idx_].offset,
              z_offset = input_->fields[z_idx_].offset;
