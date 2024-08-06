@@ -44,7 +44,12 @@
 #include <pcl/outofcore/octree_base.h>
 
 // JSON
+#include <pcl/pcl_config.h> // for HAVE_CJSON
+#if defined(HAVE_CJSON)
+#include <cjson/cJSON.h>
+#else
 #include <pcl/outofcore/cJSON.h>
+#endif
 
 #include <pcl/filters/random_sample.h>
 #include <pcl/filters/extract_indices.h>

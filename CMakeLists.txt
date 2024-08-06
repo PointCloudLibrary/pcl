@@ -432,6 +432,16 @@ if(WITH_SYSTEM_ZLIB)
   endif()
 endif()
 
+option(WITH_SYSTEM_CJSON "Use system cJSON" TRUE)
+if(WITH_SYSTEM_CJSON)
+  find_package(cJSON)
+  if(cJSON_FOUND)
+    set(HAVE_CJSON ON)
+  else()
+    message(WARNING "It is recommended to install an up-to-date version of cJSON on your system. CMake did not find one, and will instead use a cJSON version bundled with the PCL source code. However, that is an older version which may pose a risk and may be removed in a future PCL release.")
+  endif()
+endif()
+
 ### ---[ Create the config.h file
 set(pcl_config_h_in "${CMAKE_CURRENT_SOURCE_DIR}/pcl_config.h.in")
 set(pcl_config_h "${CMAKE_CURRENT_BINARY_DIR}/include/pcl/pcl_config.h")
