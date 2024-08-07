@@ -51,11 +51,7 @@ namespace pcl
     * \author Bastian Steder
     * \ingroup range_image
     */
-#if defined _WIN32 || defined WINCE || defined __MINGW32__
   class RangeImage : public pcl::PointCloud<PointWithRange>
-#else
-  class PCL_EXPORTS RangeImage : public pcl::PointCloud<PointWithRange>
-#endif
   {
     public:
       // =====TYPEDEFS=====
@@ -75,7 +71,7 @@ namespace pcl
       /** Constructor */
       PCL_EXPORTS RangeImage ();
       /** Destructor */
-      PCL_EXPORTS virtual ~RangeImage () = default;
+      PCL_EXPORTS virtual ~RangeImage ();
 
       // =====STATIC VARIABLES=====
       /** The maximum number of openmp threads that can be used in this class */
