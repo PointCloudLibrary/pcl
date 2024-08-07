@@ -36,7 +36,9 @@
  */
 
 #include <pcl/common/gaussian.h>
+
 #include <cassert>
+#include <cstddef>
 
 void 
 pcl::GaussianKernel::compute (float sigma, 
@@ -147,7 +149,8 @@ pcl::GaussianKernel::convolveRows (const pcl::PointCloud<float>& input,
     {
       output.width = input.width;
       output.height = input.height;
-      output.resize (input.height * input.width);
+      std::size_t resize = static_cast<std::size_t>(input.height) * input.width;
+      output.resize (resize);
     }
     unaliased_input = &input;
   }
@@ -191,7 +194,8 @@ pcl::GaussianKernel::convolveCols (const pcl::PointCloud<float>& input,
     {
       output.width = input.width;
       output.height = input.height;
-      output.resize (input.height * input.width);
+      std::size_t resize = static_cast<std::size_t>(input.height) * input.width;
+      output.resize (resize);
     }
     unaliased_input = &input;
   }
