@@ -34,6 +34,8 @@
 
 #pragma once
 
+#include <pcl/pcl_config.h> // for PCL_SYMBOL_VISIBILITY_HIDDEN
+
 // This header is created to include to NVCC compiled sources.
 // Header 'pcl_macros' is not suitable since it includes <Eigen/Core>,
 // which can't be eaten by nvcc (it's too weak)
@@ -45,5 +47,9 @@
         #define PCL_EXPORTS
     #endif
 #else
-    #define PCL_EXPORTS
+    #ifdef PCL_SYMBOL_VISIBILITY_HIDDEN
+        #define PCL_EXPORTS __attribute__ ((visibility ("default")))
+    #else
+        #define PCL_EXPORTS
+    #endif
 #endif

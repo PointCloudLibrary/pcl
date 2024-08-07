@@ -71,6 +71,6 @@ pcl::CrfNormalSegmentation<PointT>::segmentPoints ()
 {
 }
 
-#define PCL_INSTANTIATE_CrfNormalSegmentation(T) template class pcl::CrfNormalSegmentation<T>;
+#define PCL_INSTANTIATE_CrfNormalSegmentation(T) template class PCL_EXPORTS pcl::CrfNormalSegmentation<T>;
 
 #endif    // PCL_CRF_NORMAL_SEGMENTATION_HPP_

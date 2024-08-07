@@ -143,11 +143,33 @@ namespace pcl
             owner_ (nullptr)
             {}
 
+#ifdef DOXYGEN_ONLY
           /** \brief Gets the data of in the form of a point
            *  \param[out] point_arg Will contain the point value of the voxeldata
            */
           void
           getPoint (PointT &point_arg) const;
+#else
+          template<typename PointT2 = PointT, traits::HasColor<PointT2> = true> void
+          getPoint (PointT &point_arg) const
+          {
+            point_arg.rgba = static_cast<std::uint32_t>(rgb_[0]) << 16 |
+            static_cast<std::uint32_t>(rgb_[1]) << 8 |
+            static_cast<std::uint32_t>(rgb_[2]);
+            point_arg.x = xyz_[0];
+            point_arg.y = xyz_[1];
+            point_arg.z = xyz_[2];
+          }
+
+          template<typename PointT2 = PointT, traits::HasNoColor<PointT2> = true> void
+          getPoint (PointT &point_arg ) const
+          {
+            //XYZ is required or this doesn't make much sense...
+            point_arg.x = xyz_[0];
+            point_arg.y = xyz_[1];
+            point_arg.z = xyz_[2];
+          }
+#endif
 
           /** \brief Gets the data of in the form of a normal
            *  \param[out] normal_arg Will contain the normal value of the voxeldata

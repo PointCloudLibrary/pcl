@@ -42,7 +42,9 @@
 #include <array> // replace c-style array with std::array
 #include <cstdio>
 
+#if !defined(HAVE_CUDA)
 #define HAVE_CUDA
+#endif
 //#include <pcl_config.h>
 
 #if !defined(HAVE_CUDA)

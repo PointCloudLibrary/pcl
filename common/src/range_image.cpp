@@ -113,6 +113,8 @@ RangeImage::RangeImage () :
   unobserved_point.range = -std::numeric_limits<float>::infinity ();
 }
 
+RangeImage::~RangeImage () = default;
+
 /////////////////////////////////////////////////////////////////////////
 void
 RangeImage::reset ()

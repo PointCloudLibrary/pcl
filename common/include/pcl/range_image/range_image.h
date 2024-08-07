@@ -71,7 +71,7 @@ namespace pcl
       /** Constructor */
       PCL_EXPORTS RangeImage ();
       /** Destructor */
-      PCL_EXPORTS virtual ~RangeImage () = default;
+      PCL_EXPORTS virtual ~RangeImage ();
 
       // =====STATIC VARIABLES=====
       /** The maximum number of openmp threads that can be used in this class */
@@ -782,10 +782,10 @@ namespace pcl
 
 
       // =====STATIC PROTECTED=====
-      static const int lookup_table_size;
-      static std::vector<float> asin_lookup_table;
-      static std::vector<float> atan_lookup_table;
-      static std::vector<float> cos_lookup_table;
+      PCL_EXPORTS static const int lookup_table_size;
+      PCL_EXPORTS static std::vector<float> asin_lookup_table;
+      PCL_EXPORTS static std::vector<float> atan_lookup_table;
+      PCL_EXPORTS static std::vector<float> cos_lookup_table;
       /** Create lookup tables for trigonometric functions */
       static void
       createLookupTables ();
