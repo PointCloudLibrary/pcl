@@ -840,7 +840,7 @@ void ON_ClassId::ConstructorHelper( const char* sClassName,
   {
     for ( ON_ClassId* p = m_p0; p; p = p->m_pNext )
     {
-      if ( !p->m_pBaseClassId && p->m_sBaseClassName ) {
+      if ( !p->m_pBaseClassId ) {
         if ( !strcmp( m_sClassName, p->m_sBaseClassName ) )
           p->m_pBaseClassId = this;
       }
