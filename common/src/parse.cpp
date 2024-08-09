@@ -215,12 +215,8 @@ pcl::console::parse_argument (int argc, const char * const * argv, const char * 
 int
 pcl::console::parse_argument (int argc, const char * const * argv, const char * str, bool &val)
 {
-  long int dummy;
-  const auto ret = parse_argument (argc, argv, str, dummy);
-  if (ret != -1)
-  {
-    val = static_cast<bool> (dummy);
-  }
+  int ret = find_argument (argc, argv, str);
+  val = ret != -1;
   return ret;
 }
 
