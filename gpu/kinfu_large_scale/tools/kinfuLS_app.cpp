@@ -59,7 +59,7 @@ Work in progress: patch by Marco (AUG,19th 2012)
 #include <pcl/gpu/kinfu_large_scale/kinfu.h>
 #include <pcl/gpu/kinfu_large_scale/raycaster.h>
 #include <pcl/gpu/kinfu_large_scale/marching_cubes.h>
-#include <pcl/gpu/containers/initialization.h>
+#include <pcl/gpu/utils/initialization.h>
 
 #include <pcl/common/time.h>
 #include <pcl/common/transforms.h> // for transformPoint

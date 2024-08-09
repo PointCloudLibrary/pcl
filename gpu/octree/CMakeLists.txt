@@ -25,9 +25,9 @@ source_group("Source Files\\cuda" FILES ${cuda})
 list(APPEND srcs ${utils} ${cuda})
 
 set(LIB_NAME "pcl_${SUBSYS_NAME}")
-include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include" "${CMAKE_CURRENT_SOURCE_DIR}/src" "${CMAKE_CURRENT_SOURCE_DIR}/src/utils")
 PCL_CUDA_ADD_LIBRARY(${LIB_NAME} COMPONENT ${SUBSYS_NAME} SOURCES ${srcs} ${incs})
 target_link_libraries("${LIB_NAME}" pcl_gpu_containers)
+target_include_directories(${LIB_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 set(EXT_DEPS "")
 #set(EXT_DEPS CUDA)
