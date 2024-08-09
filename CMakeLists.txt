@@ -382,6 +382,11 @@ if(WITH_CUDA)
   include("${PCL_SOURCE_DIR}/cmake/pcl_find_cuda.cmake")
 endif()
 
+# GLEW before VTK as it uses custom findGLEW that doesn't work with glew-config.
+option(WITH_GLEW "Support for GLEW" TRUE)
+if(WITH_GLEW)
+  find_package(GLEW CONFIG)
+endif()
 
 # Reset VTK_FOUND to off
 set(VTK_FOUND OFF)
@@ -412,12 +417,6 @@ endif()
 option(WITH_OPENGL "Support for OpenGL" TRUE)
 if(WITH_OPENGL)
   include("${PCL_SOURCE_DIR}/cmake/pcl_find_gl.cmake")
-endif()
-
-# GLEW
-option(WITH_GLEW "Support for GLEW" TRUE)
-if(WITH_GLEW)
-  find_package(GLEW QUIET)
 endif()
 
 # Boost (required)

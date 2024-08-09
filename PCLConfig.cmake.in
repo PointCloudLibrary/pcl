@@ -252,7 +252,7 @@ macro(find_libusb)
 endmacro()
 
 macro(find_glew)
-  find_package(GLEW)
+  find_package(GLEW CONFIG)
 endmacro()
 
 # Finds each component external libraries if any
