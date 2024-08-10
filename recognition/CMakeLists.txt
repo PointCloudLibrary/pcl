@@ -119,21 +119,17 @@ set(srcs
   src/implicit_shape_model.cpp
 )
 
-if(HAVE_METSLIB)
-  set(metslib_incs "")
-else()
-  set(metslib_incs
-    "include/pcl/${SUBSYS_NAME}/3rdparty/metslib/abstract-search.hh"
-    "include/pcl/${SUBSYS_NAME}/3rdparty/metslib/local-search.hh"
-    "include/pcl/${SUBSYS_NAME}/3rdparty/metslib/mets.hh"
-    "include/pcl/${SUBSYS_NAME}/3rdparty/metslib/metslib_config.hh"
-    "include/pcl/${SUBSYS_NAME}/3rdparty/metslib/model.hh"
-    "include/pcl/${SUBSYS_NAME}/3rdparty/metslib/observer.hh"
-    "include/pcl/${SUBSYS_NAME}/3rdparty/metslib/simulated-annealing.hh"
-    "include/pcl/${SUBSYS_NAME}/3rdparty/metslib/tabu-search.hh"
-    "include/pcl/${SUBSYS_NAME}/3rdparty/metslib/termination-criteria.hh"
-  )
-endif()
+set(metslib_incs
+  "include/pcl/${SUBSYS_NAME}/3rdparty/metslib/abstract-search.hh"
+  "include/pcl/${SUBSYS_NAME}/3rdparty/metslib/local-search.hh"
+  "include/pcl/${SUBSYS_NAME}/3rdparty/metslib/mets.hh"
+  "include/pcl/${SUBSYS_NAME}/3rdparty/metslib/metslib_config.hh"
+  "include/pcl/${SUBSYS_NAME}/3rdparty/metslib/model.hh"
+  "include/pcl/${SUBSYS_NAME}/3rdparty/metslib/observer.hh"
+  "include/pcl/${SUBSYS_NAME}/3rdparty/metslib/simulated-annealing.hh"
+  "include/pcl/${SUBSYS_NAME}/3rdparty/metslib/tabu-search.hh"
+  "include/pcl/${SUBSYS_NAME}/3rdparty/metslib/termination-criteria.hh"
+)
 
 set(LIB_NAME "pcl_${SUBSYS_NAME}")
 PCL_ADD_LIBRARY(${LIB_NAME} COMPONENT ${SUBSYS_NAME} SOURCES ${srcs} ${incs} ${impl_incs} ${face_detection_incs} ${ransac_based_incs} ${ransac_based_impl_incs} ${hv_incs} ${hv_impl_incs} ${cg_incs} ${cg_impl_incs} ${metslib_incs})
@@ -152,7 +148,4 @@ PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/impl/hv" ${hv_impl_incs})
 PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/impl/cg" ${cg_impl_incs})
 PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/linemod" ${LINEMOD_INCLUDES})
 PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/impl/linemod" ${LINEMOD_IMPLS})
-
-if(NOT HAVE_METSLIB)
-  PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/3rdparty/metslib" ${metslib_incs})
-endif()
+PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/3rdparty/metslib" ${metslib_incs})
