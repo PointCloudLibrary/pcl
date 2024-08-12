@@ -34,15 +34,10 @@
  *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
  */
 
-#ifndef PCL_GPU_UTILS_INTERNAL_HPP_
-#define PCL_GPU_UTILS_INTERNAL_HPP_
+#ifndef __PCL_GPU_UTILS_REPACKS_HPP__
+#define __PCL_GPU_UTILS_REPACKS_HPP__
 
-namespace pcl {
-namespace device {
-void
-copyFields(
-    int in_size, int out_size, int info[4], int size, const void* input, void* output);
-}
-} // namespace pcl
+PCL_DEPRECATED_HEADER(1, 17, "This has been deprecated, please include it from pcl/gpu/containers.")
 
-#endif
+
+#endif /* __PCL_GPU_UTILS_REPACKS_HPP__ */

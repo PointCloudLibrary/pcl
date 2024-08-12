@@ -34,52 +34,20 @@
  *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
  */
 
-#pragma once
+#ifndef PCL_GPU_UTILS_INTERNAL_HPP_
+#define PCL_GPU_UTILS_INTERNAL_HPP_
 
-#include <pcl/pcl_exports.h>
+#include <pcl/pcl_macros.h>
 
-#include <string>
+PCL_DEPRECATED_HEADER(1, 17, "This has been deprecated and will be removed.")
 
-namespace pcl {
-namespace gpu {
-/** \brief Returns number of Cuda device. */
-PCL_EXPORTS int
-getCudaEnabledDeviceCount();
 
-/** \brief Sets active device to work with. */
-PCL_EXPORTS void
-setDevice(int device);
+namespace pcl
+{
+    namespace device
+    {
+        void copyFields(int in_size, int out_size, int info[4], int size, const void* input, void* output);
+    }
+}
 
-/** \brief Return device name for given device. */
-PCL_EXPORTS std::string
-getDeviceName(int device);
-
-/** \brief Prints information about given cuda device or about all devices
- *  \param device: if < 0 prints info for all devices, otherwise the function interprets
- * it as device id.
- */
-void PCL_EXPORTS
-printCudaDeviceInfo(int device = -1);
-
-/** \brief Prints information about given cuda device or about all devices
- *  \param device: if < 0 prints info for all devices, otherwise the function interprets
- * it as device id.
- */
-void PCL_EXPORTS
-printShortCudaDeviceInfo(int device = -1);
-
-/** \brief Returns true if pre-Fermi generator GPU.
- * \param device: device id to check, if < 0 checks current device.
- */
-bool PCL_EXPORTS
-checkIfPreFermiGPU(int device = -1);
-
-/** \brief Error handler. All GPU functions call this to report an error. For internal
- * use only */
-void PCL_EXPORTS
-error(const char* error_string,
-      const char* file,
-      const int line,
-      const char* func = "");
-} // namespace gpu
-} // namespace pcl
+#endif

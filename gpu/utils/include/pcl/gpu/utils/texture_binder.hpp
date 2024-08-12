@@ -34,18 +34,9 @@
  *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
  */
 
-#include <pcl/gpu/utils/initialization.h>
+#ifndef PCL_GPU_UTILS_TEXTURE_BINDER_HPP_
+#define PCL_GPU_UTILS_TEXTURE_BINDER_HPP_
 
-#include <cstdlib>
-#include <iostream>
+PCL_DEPRECATED_HEADER(1, 17, "This has been deprecated, please include it from pcl/gpu/containers.")
 
-void
-pcl::gpu::error(const char* error_string,
-                const char* file,
-                const int line,
-                const char* func)
-{
-  std::cout << "Error: " << error_string << "\t" << file << ":" << line << ":" << func
-            << std::endl;
-  exit(EXIT_FAILURE);
-}
+#endif /* PCL_GPU_UTILS_TEXTURE_BINDER_HPP_*/

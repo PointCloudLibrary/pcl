@@ -1,4 +1,3 @@
-#include <pcl/gpu/containers/impl/internal.hpp>
 #include <pcl/gpu/utils/safe_call.hpp>
 #include <pcl/pcl_exports.h>
 
