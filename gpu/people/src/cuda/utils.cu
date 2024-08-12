@@ -2,6 +2,7 @@
 
 #include "internal.h"
 #include <pcl/gpu/utils/safe_call.hpp>
+#include <pcl/gpu/containers/initialization.h>
 #include <pcl/gpu/containers/impl/texture_binder.hpp>
 #include "npp.h"
 
