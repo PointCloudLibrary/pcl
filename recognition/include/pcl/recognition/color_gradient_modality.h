@@ -368,7 +368,7 @@ processInputData ()
 
 	convolution.setInputCloud (rgb_input_);
 	convolution.setKernel (gaussian_kernel);
-
+  convolution.setBordersPolicy(pcl::filters::Convolution<pcl::RGB, pcl::RGB>::BORDERS_POLICY_DUPLICATE);
   convolution.convolve (*smoothed_input_);
 
   // extract color gradients
