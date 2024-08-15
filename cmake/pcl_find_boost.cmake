@@ -13,8 +13,6 @@ else()
   endif()
 endif()
 
-include(${CMAKE_CURRENT_LIST_DIR}/Modules/AdditionalBoostVersions.cmake)
-
 if(CMAKE_CXX_STANDARD MATCHES "14")
   # Optional boost modules
   set(BOOST_OPTIONAL_MODULES serialization mpi)
@@ -27,8 +25,8 @@ else()
   set(BOOST_REQUIRED_MODULES iostreams system)
 endif()
 
-find_package(Boost 1.65.0 QUIET COMPONENTS ${BOOST_OPTIONAL_MODULES})
-find_package(Boost 1.65.0 REQUIRED COMPONENTS ${BOOST_REQUIRED_MODULES})
+find_package(Boost 1.71.0 QUIET COMPONENTS ${BOOST_OPTIONAL_MODULES} CONFIG)
+find_package(Boost 1.71.0 REQUIRED COMPONENTS ${BOOST_REQUIRED_MODULES} CONFIG)
 
 if(Boost_FOUND)
   set(BOOST_FOUND TRUE)
