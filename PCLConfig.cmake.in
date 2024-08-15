@@ -94,10 +94,7 @@ macro(find_boost)
     set(BOOST_INCLUDEDIR "@Boost_INCLUDE_DIR@")
   endif()
 
-  include(${CMAKE_CURRENT_LIST_DIR}/Modules/AdditionalBoostVersions.cmake)
-  set(Boost_ADDITIONAL_VERSIONS "@Boost_MAJOR_VERSION@.@Boost_MINOR_VERSION@.@Boost_SUBMINOR_VERSION@" "@Boost_MAJOR_VERSION@.@Boost_MINOR_VERSION@" ${Boost_ADDITIONAL_VERSIONS})
-  
-  find_package(Boost 1.65.0 ${QUIET_} COMPONENTS @PCLCONFIG_AVAILABLE_BOOST_MODULES@)
+  find_package(Boost 1.71.0 ${QUIET_} COMPONENTS @PCLCONFIG_AVAILABLE_BOOST_MODULES@ CONFIG)
 
   set(BOOST_FOUND ${Boost_FOUND})
   set(BOOST_INCLUDE_DIRS "${Boost_INCLUDE_DIR}")
