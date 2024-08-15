@@ -48,6 +48,7 @@
 // Boost
 #include <boost/random/bernoulli_distribution.hpp>
 #include <boost/random/uniform_int.hpp>
+#include <boost/random/variate_generator.hpp> // for boost::variate_generator
 #include <boost/uuid/uuid_io.hpp>
 
 // PCL
