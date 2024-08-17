@@ -92,9 +92,8 @@ GeneralizedIterativeClosestPoint<PointSource, PointTarget, Scalar>::computeCovar
   if (cloud_covariances.size() < cloud->size())
     cloud_covariances.resize(cloud->size());
 
-#pragma omp parallel for default(none) num_threads(threads_) schedule(dynamic, 32)     \
-    shared(cloud, cloud_covariances, kdtree)                                           \
-        firstprivate(mean, cov, nn_indices, nn_dist_sq)
+#pragma omp parallel for num_threads(threads_) schedule(dynamic, 32)                   \
+    shared(cloud, cloud_covariances) firstprivate(mean, cov, nn_indices, nn_dist_sq)
   for (std::ptrdiff_t i = 0; i < static_cast<std::ptrdiff_t>(cloud->size()); ++i) {
     const PointT& query_point = (*cloud)[i];
     // Zero out the cov and mean
