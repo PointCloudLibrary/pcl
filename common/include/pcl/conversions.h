@@ -241,7 +241,6 @@ namespace pcl
     // check if there is data to copy
     if (msg.width * msg.height == 0)
     {
-      PCL_WARN("[pcl::fromPCLPointCloud2] No data to copy.\n");
       return;
     }
 
