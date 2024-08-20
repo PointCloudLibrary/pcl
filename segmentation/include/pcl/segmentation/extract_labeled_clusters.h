@@ -187,7 +187,7 @@ protected:
 
   /** \brief The maximum number of labels we can find in this pointcloud (default =
    * MAXINT)*/
-  unsigned int max_label_{std::numeric_limits<int>::max()};
+  unsigned int max_label_{std::numeric_limits<unsigned int>::max()};
 
   /** \brief Class getName method. */
   virtual std::string
