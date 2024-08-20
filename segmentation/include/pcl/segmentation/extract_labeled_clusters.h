@@ -187,6 +187,7 @@ protected:
 
   /** \brief The maximum number of labels we can find in this pointcloud (default =
    * MAXINT)*/
+  PCL_DEPRECATED(1, 18, "this member variable is unused")
   unsigned int max_label_{std::numeric_limits<unsigned int>::max()};
 
   /** \brief Class getName method. */
