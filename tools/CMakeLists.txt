@@ -184,6 +184,8 @@ if(TARGET pcl_filters)
     PCL_ADD_EXECUTABLE(pcl_mls_smoothing COMPONENT ${SUBSYS_NAME} SOURCES mls_smoothing.cpp)
     target_link_libraries (pcl_mls_smoothing pcl_common pcl_io pcl_surface pcl_filters)
 
+    PCL_ADD_EXECUTABLE(pcl_bilateral_upsampling COMPONENT ${SUBSYS_NAME} SOURCES bilateral_upsampling.cpp)
+    target_link_libraries(pcl_bilateral_upsampling pcl_common pcl_io pcl_surface)
   endif()
 
   if(TARGET pcl_keypoints)
