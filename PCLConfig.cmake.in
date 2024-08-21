@@ -13,16 +13,7 @@
 #------------------------------------------------------------------------------------
 
 # Set default policy behavior similar to minimum requirement version
-cmake_policy(VERSION 3.10)
-
-# explicitly set policies we already support in newer cmake versions
-if(POLICY CMP0074)
-  # TODO: update *_ROOT variables to be PCL_*_ROOT or equivalent.
-  # CMP0074 directly affects how Find* modules work and *_ROOT variables.  Since
-  # this is a config file that will be consumed by parent projects with (likely)
-  # NEW behavior, we need to push a policy stack.
-  cmake_policy(SET CMP0074 NEW)
-endif()
+cmake_policy(VERSION 3.16.3)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/Modules")
 

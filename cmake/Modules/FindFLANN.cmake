@@ -104,8 +104,6 @@ find_path(FLANN_INCLUDE_DIR
     flann/flann.hpp
   HINTS
     ${PC_FLANN_INCLUDE_DIRS}
-    ${FLANN_ROOT}
-    $ENV{FLANN_ROOT}
   PATHS
     $ENV{PROGRAMFILES}/Flann
     $ENV{PROGRAMW6432}/Flann
@@ -118,8 +116,6 @@ find_library(FLANN_LIBRARY_SHARED
     flann_cpp
   HINTS
     ${PC_FLANN_LIBRARY_DIRS}
-    ${FLANN_ROOT}
-    $ENV{FLANN_ROOT}
   PATHS
     $ENV{PROGRAMFILES}/Flann
     $ENV{PROGRAMW6432}/Flann
@@ -132,8 +128,6 @@ find_library(FLANN_LIBRARY_DEBUG_SHARED
     flann_cpp-gd flann_cppd
   HINTS
     ${PC_FLANN_LIBRARY_DIRS}
-    ${FLANN_ROOT}
-    $ENV{FLANN_ROOT}
   PATHS
     $ENV{PROGRAMFILES}/Flann
     $ENV{PROGRAMW6432}/Flann
@@ -146,8 +140,6 @@ find_library(FLANN_LIBRARY_STATIC
     flann_cpp_s
   HINTS
     ${PC_FLANN_LIBRARY_DIRS}
-    ${FLANN_ROOT}
-    $ENV{FLANN_ROOT}
   PATHS
     $ENV{PROGRAMFILES}/Flann
     $ENV{PROGRAMW6432}/Flann
@@ -160,8 +152,6 @@ find_library(FLANN_LIBRARY_DEBUG_STATIC
     flann_cpp_s-gd flann_cpp_sd
   HINTS
     ${PC_FLANN_LIBRARY_DIRS}
-    ${FLANN_ROOT}
-    $ENV{FLANN_ROOT}
   PATHS
     $ENV{PROGRAMFILES}/Flann
     $ENV{PROGRAMW6432}/Flann

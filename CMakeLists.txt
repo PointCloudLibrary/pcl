@@ -1,11 +1,5 @@
 ### ---[ PCL global CMake
-cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
-
-if(POLICY CMP0074)
-  # 1. Remove with 3.12.4.
-  # 2. Remove search paths with *_ROOT since they will be automatically checked
-  cmake_policy(SET CMP0074 NEW)
-endif()
+cmake_minimum_required(VERSION 3.16.3 FATAL_ERROR)
 
 # Set target C++ standard and required compiler features
 set(CMAKE_CXX_STANDARD 14 CACHE STRING "The target C++ standard. PCL requires C++14 or higher.")
