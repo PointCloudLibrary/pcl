@@ -533,7 +533,7 @@ ON__UINT32 ON_NurbsCage::DataCRC(ON__UINT32 current_remainder) const
       for ( j = 0; j < m_cv_count[1]; j++ )
       {
         cv = CV(i,j,0);
-        for (k = 0; i < m_cv_count[2]; k++ )
+        for (k = 0; k < m_cv_count[2]; k++ )
         {
           current_remainder = ON_CRC32(current_remainder,sizeof_cv,cv);
           cv += m_cv_stride[2];

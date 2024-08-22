@@ -49,8 +49,10 @@ set(ON_NURBS_SOURCES
 
 set(USE_UMFPACK 0 CACHE BOOL "Use UmfPack for solving sparse systems of equations (e.g. in surface/on_nurbs)")
 if(USE_UMFPACK)
+  find_package(CHOLMOD REQUIRED)
+  find_package(UMFPACK REQUIRED)
   set(ON_NURBS_SOURCES ${ON_NURBS_SOURCES} src/on_nurbs/nurbs_solve_umfpack.cpp)
-  set(ON_NURBS_LIBRARIES ${ON_NURBS_LIBRARIES} cholmod umfpack)
+  set(ON_NURBS_LIBRARIES ${ON_NURBS_LIBRARIES} SuiteSparse::CHOLMOD SuiteSparse::UMFPACK)
 else()
   set(ON_NURBS_SOURCES ${ON_NURBS_SOURCES} src/on_nurbs/nurbs_solve_eigen.cpp)
 endif()
