@@ -1,6 +1,6 @@
 #include "internal.h"
 
-#include <pcl/gpu/utils/texture_binder.hpp>
+#include <pcl/gpu/containers/impl/texture_binder.hpp>
 #include <pcl/gpu/utils/device/block.hpp>
 
 #include <cassert>

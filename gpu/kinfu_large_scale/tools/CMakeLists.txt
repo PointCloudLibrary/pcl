@@ -13,10 +13,7 @@ if(NOT build)
   return()
 endif()
 
-include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include")
-
 file(GLOB hdrs "*.h*")
-include_directories(SYSTEM ${VTK_INCLUDE_DIRS})
 
 ## STANDALONE TEXTURE MAPPING
 set(the_target pcl_kinfu_largeScale_texture_output)

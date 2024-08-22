@@ -34,45 +34,60 @@
  *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
  */
 
-#ifndef __PCL_CUDA_SAFE_CALL_HPP__
-#define __PCL_CUDA_SAFE_CALL_HPP__
+#ifndef PCL_GPU_UTILS_TEXTURE_BINDER_HPP_
+#define PCL_GPU_UTILS_TEXTURE_BINDER_HPP_
 
-#include <cuda_runtime_api.h>
-
-#include <iostream>
-
-#if defined(__GNUC__)
-#define cudaSafeCall(expr) pcl::gpu::___cudaSafeCall(expr, __FILE__, __LINE__, __func__)
-#else /* defined(__CUDACC__) || defined(__MSVC__) */
-#define cudaSafeCall(expr) pcl::gpu::___cudaSafeCall(expr, __FILE__, __LINE__)
-#endif
+#include <pcl/gpu/containers/device_array.h>
+#include <pcl/gpu/utils/safe_call.hpp>
 
 namespace pcl {
 namespace gpu {
-
-static inline void
-___cudaSafeCall(cudaError_t err,
-                const char* file,
-                const int line,
-                const char* func = "")
-{
-  if (cudaSuccess != err) {
-    std::cout << "Error: " << cudaGetErrorString(err) << "\t" << file << ":" << line
-              << ":" << func << std::endl;
-    exit(EXIT_FAILURE);
+class TextureBinder {
+public:
+  template <class T, enum cudaTextureReadMode readMode>
+  TextureBinder(const DeviceArray2D<T>& arr, const struct texture<T, 2, readMode>& tex)
+  : texref(&tex)
+  {
+    cudaChannelFormatDesc desc = cudaCreateChannelDesc<T>();
+    cudaSafeCall(
+        cudaBindTexture2D(0, tex, arr.ptr(), desc, arr.cols(), arr.rows(), arr.step()));
   }
-}
 
-static inline int
-divUp(int total, int grain)
-{
-  return (total + grain - 1) / grain;
-}
+  template <class T, enum cudaTextureReadMode readMode>
+  TextureBinder(const DeviceArray<T>& arr, const struct texture<T, 1, readMode>& tex)
+  : texref(&tex)
+  {
+    cudaChannelFormatDesc desc = cudaCreateChannelDesc<T>();
+    cudaSafeCall(cudaBindTexture(0, tex, arr.ptr(), desc, arr.sizeBytes()));
+  }
+
+  template <class T, enum cudaTextureReadMode readMode>
+  TextureBinder(const PtrStepSz<T>& arr, const struct texture<T, 2, readMode>& tex)
+  : texref(&tex)
+  {
+    cudaChannelFormatDesc desc = cudaCreateChannelDesc<T>();
+    cudaSafeCall(
+        cudaBindTexture2D(0, tex, arr.data, desc, arr.cols, arr.rows, arr.step));
+  }
+
+  template <class T, enum cudaTextureReadMode readMode>
+  TextureBinder(const PtrSz<T>& arr, const struct texture<T, 1, readMode>& tex)
+  : texref(&tex)
+  {
+    cudaChannelFormatDesc desc = cudaCreateChannelDesc<T>();
+    cudaSafeCall(cudaBindTexture(0, tex, arr.data, desc, arr.size * arr.elemSize()));
+  }
+
+  ~TextureBinder() { cudaSafeCall(cudaUnbindTexture(texref)); }
+
+private:
+  const struct textureReference* texref;
+};
 } // namespace gpu
 
 namespace device {
-using pcl::gpu::divUp;
+using pcl::gpu::TextureBinder;
 }
 } // namespace pcl
 
-#endif /* __PCL_CUDA_SAFE_CALL_HPP__ */
+#endif /* PCL_GPU_UTILS_TEXTURE_BINDER_HPP_*/

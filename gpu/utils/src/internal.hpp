@@ -37,6 +37,11 @@
 #ifndef PCL_GPU_UTILS_INTERNAL_HPP_
 #define PCL_GPU_UTILS_INTERNAL_HPP_
 
+#include <pcl/pcl_macros.h>
+
+PCL_DEPRECATED_HEADER(1, 17, "This has been deprecated and will be removed.")
+
+
 namespace pcl
 {
     namespace device
