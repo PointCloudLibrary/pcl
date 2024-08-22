@@ -228,14 +228,18 @@ namespace pcl
     template<class T>
     void SparseMatrix<T>::SetZero()
     {
-      Resize(this->m_N, this->m_M);
+      // copied from operator *=
+      for (int i=0; i<rows; i++)
+      {
+        for(int ii=0;ii<rowSizes[i];ii++){m_ppElements[i][ii].Value=T(0);}
+      }
     }
 
     template<class T>
     void SparseMatrix<T>::SetIdentity()
     {
       SetZero();
-      for(int ij=0; ij < Min( this->Rows(), this->Columns() ); ij++)
+      for(int ij=0; ij < std::min<int>( rows, _maxEntriesPerRow ); ij++)
         (*this)(ij,ij) = T(1);
     }
 
@@ -388,7 +392,7 @@ namespace pcl
       T alpha,beta,rDotR;
       int i;
 
-      solution.Resize(M.Columns());
+      solution.Resize(bb.Dimensions());
       solution.SetZero();
 
       d=r=bb;

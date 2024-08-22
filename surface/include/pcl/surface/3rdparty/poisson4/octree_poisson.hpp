@@ -746,7 +746,10 @@ namespace pcl
       Real temp,dist2;
       if(!children){return this;}
       for(int i=0;i<Cube::CORNERS;i++){
-        temp=SquareDistance(children[i].center,p);
+        Point3D<Real> child_center;
+        Real child_width;
+        children[i].centerAndWidth(child_center, child_width);
+        temp=SquareDistance(child_center,p);
         if(!i || temp<dist2){
           dist2=temp;
           nearest=i;
@@ -807,7 +810,7 @@ namespace pcl
       children=NULL;
 
       d=node.depth ();
-      for(i=0;i<DIMENSION;i++){this->offset[i] = node.offset[i];}
+      for(i=0;i<DIMENSION;i++){this->off[i] = node.off[i];}
       if(node.children){
         initChildren();
         for(i=0;i<Cube::CORNERS;i++){children[i] = node.children[i];}
@@ -817,7 +820,7 @@ namespace pcl
 
     template <class NodeData,class Real>
     int OctNode<NodeData,Real>::CompareForwardDepths(const void* v1,const void* v2){
-      return ((const OctNode<NodeData,Real>*)v1)->depth-((const OctNode<NodeData,Real>*)v2)->depth;
+      return ((const OctNode<NodeData,Real>*)v1)->depth()-((const OctNode<NodeData,Real>*)v2)->depth();
     }
 
     template< class NodeData , class Real >
@@ -874,7 +877,7 @@ namespace pcl
 
     template <class NodeData,class Real>
     int OctNode<NodeData,Real>::CompareBackwardDepths(const void* v1,const void* v2){
-      return ((const OctNode<NodeData,Real>*)v2)->depth-((const OctNode<NodeData,Real>*)v1)->depth;
+      return ((const OctNode<NodeData,Real>*)v2)->depth()-((const OctNode<NodeData,Real>*)v1)->depth();
     }
 
     template <class NodeData,class Real>
