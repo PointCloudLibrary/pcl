@@ -6,15 +6,15 @@ jobs:
   tidy:
     runs-on: ubuntu-latest
     container:
-      image: pointcloudlibrary/env:22.04
+      image: pointcloudlibrary/env:24.04
     
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     - name: Run clang-tidy
       run: |
           bash -c "$(wget -O - https://apt.llvm.org/llvm.sh)"
-          cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_CXX_COMPILER=/usr/bin/clang-14 -DCMAKE_C_COMPILER=/usr/bin/clang-14 . \
+          cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_CXX_COMPILER=/usr/bin/clang-18 -DCMAKE_C_COMPILER=/usr/bin/clang-18 . \
             -DBUILD_benchmarks=ON \
             -DBUILD_examples=ON \
             -DBUILD_simulation=ON \
