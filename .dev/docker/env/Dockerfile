@@ -37,6 +37,7 @@ RUN apt-get update \
       libcjson-dev \
       libflann-dev \
       libglew-dev \
+      freeglut3-dev \
       libgtest-dev \
       libomp-dev \
       libopenni-dev \
