@@ -325,15 +325,19 @@ pcl::PCDReader::readHeader (std::istream &fs, pcl::PCLPointCloud2 &cloud,
       // Read the header + comments line by line until we get to <DATA>
       if (line_type.substr (0, 4) == "DATA")
       {
-        data_idx = static_cast<int> (fs.tellg ());
         if (st.at (1).substr (0, 17) == "binary_compressed")
-         data_type = 2;
-        else
-          if (st.at (1).substr (0, 6) == "binary")
-            data_type = 1;
-        continue;
+          data_type = 2;
+        else if (st.at (1).substr (0, 6) == "binary")
+          data_type = 1;
+        else if (st.at (1).substr (0, 5) == "ascii")
+          data_type = 0;
+        else {
+          PCL_WARN("[pcl::PCDReader::readHeader] Unknown DATA format: %s\n", line.c_str());
+          continue;
+        }
+        data_idx = static_cast<int> (fs.tellg ());
       }
-      break;
+      break;  // DATA is the last header entry, everything after it will be interpreted as point cloud data
     }
   }
   catch (const char *exception)
