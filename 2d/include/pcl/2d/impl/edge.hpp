@@ -259,9 +259,7 @@ Edge<PointInT, PointOutT>::suppressNonMaxima(
   const int height = edges.height;
   const int width = edges.width;
 
-  maxima.height = height;
-  maxima.width = width;
-  maxima.resize(height * width);
+  maxima.resize(edges.width, edges.height);
 
   for (auto& point : maxima)
     point.intensity = 0.0f;

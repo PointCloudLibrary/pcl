@@ -69,7 +69,7 @@ namespace pcl
     focal_length_x_reciprocal_ = focal_length_y_reciprocal_ = 1.0f / focal_length_x_;
     center_x_ = static_cast<float> (di_width)  / static_cast<float> (2 * skip);
     center_y_ = static_cast<float> (di_height) / static_cast<float> (2 * skip);
-    points.resize (width*height);
+    points.resize (static_cast<std::size_t>(width)*static_cast<std::size_t>(height));
     
     //std::cout << PVARN (*this);
     
@@ -130,7 +130,7 @@ namespace pcl
     focal_length_y_reciprocal_ = 1.0f / focal_length_y_;
     center_x_ = static_cast<float> (di_center_x) / static_cast<float> (skip);
     center_y_ = static_cast<float> (di_center_y) / static_cast<float> (skip);
-    points.resize (width * height);
+    points.resize (static_cast<std::size_t>(width) * static_cast<std::size_t>(height));
     
     for (int y=0; y < static_cast<int> (height); ++y)
     {
@@ -176,7 +176,7 @@ namespace pcl
     focal_length_y_reciprocal_ = 1.0f / focal_length_y_;
     center_x_ = static_cast<float> (di_center_x) / static_cast<float> (skip);
     center_y_ = static_cast<float> (di_center_y) / static_cast<float> (skip);
-    points.resize (width * height);
+    points.resize (static_cast<std::size_t>(width) * static_cast<std::size_t>(height));
 
     for (int y = 0; y < static_cast<int> (height); ++y)
     {

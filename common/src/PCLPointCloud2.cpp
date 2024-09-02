@@ -146,13 +146,13 @@ pcl::PCLPointCloud2::concatenate (pcl::PCLPointCloud2 &cloud1, const pcl::PCLPoi
   }
   const auto data1_size = cloud1.data.size ();
   cloud1.data.resize(data1_size + cloud2.data.size ());
-  for (uindex_t cp = 0; cp < size2; ++cp)
+  for (std::size_t cp = 0; cp < size2; ++cp)
   {
     for (const auto& field_data: valid_fields)
     {
       const auto& i = field_data.idx1;
       const auto& j = field_data.idx2;
-      const auto& size = field_data.size;
+      const std::size_t size = field_data.size;
       // Leave the data for the skip fields untouched in cloud1
       // Copy only the required data from cloud2 to the correct location for cloud1
       memcpy (reinterpret_cast<char*> (&cloud1.data[data1_size + cp * cloud1.point_step + cloud1.fields[i].offset]),

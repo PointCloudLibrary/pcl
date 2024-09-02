@@ -53,10 +53,8 @@ main ()
   CloudType::Ptr cloud (new CloudType);
   
   // Make the cloud a 10x10 grid
-  cloud->height = 10;
-  cloud->width = 10;
   cloud->is_dense = true;
-  cloud->resize(cloud->height * cloud->width);
+  cloud->resize(10, 10);
 
   // Output the (0,0) point
   std::cout << (*cloud)(0,0) << std::endl;

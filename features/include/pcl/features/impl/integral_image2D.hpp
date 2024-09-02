@@ -59,10 +59,11 @@ IntegralImage2D<DataType, Dimension>::setInput (const DataType * data, unsigned 
   {
     width_  = width;
     height_ = height;
-    first_order_integral_image_.resize ( (width_ + 1) * (height_ + 1) );
-    finite_values_integral_image_.resize ( (width_ + 1) * (height_ + 1) );
+    const std::size_t ii_size = static_cast<std::size_t>(width_ + 1) * static_cast<std::size_t>(height_ + 1);
+    first_order_integral_image_.resize (ii_size);
+    finite_values_integral_image_.resize (ii_size);
     if (compute_second_order_integral_images_)
-      second_order_integral_image_.resize ( (width_ + 1) * (height_ + 1) );
+      second_order_integral_image_.resize (ii_size);
   }
   computeIntegralImages (data, row_stride, element_stride);
 }
@@ -230,10 +231,11 @@ IntegralImage2D<DataType, 1>::setInput (const DataType * data, unsigned width,un
   {
     width_  = width;
     height_ = height;
-    first_order_integral_image_.resize ( (width_ + 1) * (height_ + 1) );
-    finite_values_integral_image_.resize ( (width_ + 1) * (height_ + 1) );
+    const std::size_t ii_size = static_cast<std::size_t>(width_ + 1) * static_cast<std::size_t>(height_ + 1);
+    first_order_integral_image_.resize (ii_size);
+    finite_values_integral_image_.resize (ii_size);
     if (compute_second_order_integral_images_)
-      second_order_integral_image_.resize ( (width_ + 1) * (height_ + 1) );
+      second_order_integral_image_.resize (ii_size);
   }
   computeIntegralImages (data, row_stride, element_stride);
 }
