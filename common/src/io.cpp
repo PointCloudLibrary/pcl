@@ -102,6 +102,8 @@ pcl::concatenateFields (const pcl::PCLPointCloud2 &cloud1,
   //by offset so that we can compute sizes correctly. There is no
   //guarantee that the fields are in the correct order when they come in
   std::vector<const pcl::PCLPointField*> cloud1_fields_sorted;
+  cloud1_fields_sorted.reserve(cloud1.fields.size());
+  
   for (const auto &field : cloud1.fields)
     cloud1_fields_sorted.push_back (&field);
 
