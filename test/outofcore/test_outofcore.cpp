@@ -445,7 +445,7 @@ TEST_F (OutofcoreTest, Outofcore_Constructors)
   AlignedPointTVector some_points;
 
   for (unsigned int i=0; i< numPts; i++)
-    some_points.push_back (PointT (static_cast<float>(rand () % 1024), static_cast<float>(rand () % 1024), static_cast<float>(rand () % 1024)));
+    some_points.emplace_back (static_cast<float>(rand () % 1024), static_cast<float>(rand () % 1024), static_cast<float>(rand () % 1024));
   
 
   //(Case 1)

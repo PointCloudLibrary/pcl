@@ -555,7 +555,7 @@ NarfKeypoint::calculateSparseInterestImage ()
                                        static_cast<int> (pcl_lrint (std::floor ( (angle+deg2rad (90.0f))/deg2rad (180.0f) * angle_histogram_size))));
       float& histogram_value = angle_histogram[histogram_cell];
       histogram_value = (std::max) (histogram_value, surface_change_score);
-      angle_elements[histogram_cell].push_back (std::make_pair(index2, surface_change_score));
+      angle_elements[histogram_cell].emplace_back (index2, surface_change_score);
     }
     
     // Reset was_touched to false
