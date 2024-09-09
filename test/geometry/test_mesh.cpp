@@ -334,7 +334,7 @@ TEST (TestAddDeleteFace, NonManifold2)
 TEST (TestAddDeleteFace, Manifold1)
 {
   using Mesh = ManifoldTriangleMesh;
-  using VI = VertexIndex;
+  
   Mesh mesh;
   for (unsigned int i=0; i<7; ++i) mesh.addVertex (i);
 

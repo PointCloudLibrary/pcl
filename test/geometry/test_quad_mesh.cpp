@@ -328,7 +328,6 @@ TYPED_TEST (TestQuadMesh, NineQuads)
   // 08 - 09 - 10 - 11 //
   //  |    |    |    | //
   // 12 - 13 - 14 - 15 //
-  using VI = VertexIndex;
   std::vector <VertexIndices> faces;
   VertexIndices vi;
   vi.emplace_back( 0); vi.emplace_back( 4); vi.emplace_back( 5); vi.emplace_back( 1); faces.push_back (vi); vi.clear ();

@@ -90,7 +90,7 @@ class TestMeshCirculators : public ::testing::Test
       for (int i=0; i<7; ++i) mesh_.addVertex ();
 
       VertexIndices vi;
-      using VI = VertexIndex;
+      
       vi.emplace_back(0); vi.emplace_back(1); vi.emplace_back(2); faces_.push_back (vi); vi.clear ();
       vi.emplace_back(0); vi.emplace_back(2); vi.emplace_back(3); faces_.push_back (vi); vi.clear ();
       vi.emplace_back(0); vi.emplace_back(3); vi.emplace_back(4); faces_.push_back (vi); vi.clear ();
