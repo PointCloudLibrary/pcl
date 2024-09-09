@@ -89,9 +89,9 @@ TEST (TestAddDeleteFace, NonManifold1)
   using VI = VertexIndex;
   VertexIndices vi;
   std::vector <VertexIndices> faces;
-  vi.push_back (VI (0)); vi.push_back (VI (3)); vi.push_back (VI (1)); faces.push_back (vi); vi.clear (); // 0
-  vi.push_back (VI (2)); vi.push_back (VI (1)); vi.push_back (VI (4)); faces.push_back (vi); vi.clear (); // 1
-  vi.push_back (VI (0)); vi.push_back (VI (2)); vi.push_back (VI (5)); faces.push_back (vi); vi.clear (); // 2
+  vi.emplace_back(0); vi.emplace_back(3); vi.emplace_back(1); faces.push_back (vi); vi.clear (); // 0
+  vi.emplace_back(2); vi.emplace_back(1); vi.emplace_back(4); faces.push_back (vi); vi.clear (); // 1
+  vi.emplace_back(0); vi.emplace_back(2); vi.emplace_back(5); faces.push_back (vi); vi.clear (); // 2
   for (const auto &face : faces)
   {
     ASSERT_TRUE (mesh.addFace (face).isValid ());
@@ -100,18 +100,18 @@ TEST (TestAddDeleteFace, NonManifold1)
 
   // Check if the whole boundary is reached.
   VertexIndices boundary_expected;
-  boundary_expected.push_back (VI (0));
-  boundary_expected.push_back (VI (5));
-  boundary_expected.push_back (VI (2));
-  boundary_expected.push_back (VI (4));
-  boundary_expected.push_back (VI (1));
-  boundary_expected.push_back (VI (3));
+  boundary_expected.emplace_back(0);
+  boundary_expected.emplace_back(5);
+  boundary_expected.emplace_back(2);
+  boundary_expected.emplace_back(4);
+  boundary_expected.emplace_back(1);
+  boundary_expected.emplace_back(3);
 
   VertexIndices boundary_vertices = getBoundaryVertices (mesh, VI (3));
   EXPECT_EQ (boundary_expected, boundary_vertices);
 
   // Close the gaps.
-  vi.push_back (VI (0)); vi.push_back (VI (1)); vi.push_back (VI (2)); faces.push_back (vi); vi.clear (); // 3
+  vi.emplace_back(0); vi.emplace_back(1); vi.emplace_back(2); faces.push_back (vi); vi.clear (); // 3
   ASSERT_TRUE (mesh.addFace (faces [3]).isValid ());
   EXPECT_TRUE (hasFaces (mesh, faces));
 
@@ -152,8 +152,8 @@ TEST (TestAddDeleteFace, NonManifold2)
   //   0   //
   //  / \  //
   // 3 - 4 //
-  vi.push_back (VI (0)); vi.push_back (VI (1)); vi.push_back (VI (2)); faces.push_back (vi); vi.clear ();
-  vi.push_back (VI (0)); vi.push_back (VI (3)); vi.push_back (VI (4)); faces.push_back (vi); vi.clear ();
+  vi.emplace_back(0); vi.emplace_back(1); vi.emplace_back(2); faces.push_back (vi); vi.clear ();
+  vi.emplace_back(0); vi.emplace_back(3); vi.emplace_back(4); faces.push_back (vi); vi.clear ();
   for (const auto &face : faces)
   {
     ASSERT_TRUE (mesh.addFace (face).isValid ());
@@ -161,23 +161,23 @@ TEST (TestAddDeleteFace, NonManifold2)
   EXPECT_TRUE (hasFaces (mesh, faces));
 
   // (*) Adding the next two faces would destroy the connectivity around vertex 0. E.g. a VertexAroundVertexCirculator would not be able to access all the vertices (1, 2, 3, 4) anymore.
-  vi.push_back (VI (3)); vi.push_back (VI (0)); vi.push_back (VI (4));
+  vi.emplace_back(3); vi.emplace_back(0); vi.emplace_back(4);
   EXPECT_FALSE (mesh.addFace (vi).isValid ());
   vi.clear ();
 
-  vi.push_back (VI (1)); vi.push_back (VI (0)); vi.push_back (VI (2));
+  vi.emplace_back(1); vi.emplace_back(0); vi.emplace_back(2);
   EXPECT_FALSE (mesh.addFace (vi).isValid ());
   vi.clear ();
 
   {
     // Check if the whole boundary is reached.
     VertexIndices boundary_expected;
-    boundary_expected.push_back (VI (0));
-    boundary_expected.push_back (VI (0));
-    boundary_expected.push_back (VI (1));
-    boundary_expected.push_back (VI (2));
-    boundary_expected.push_back (VI (3));
-    boundary_expected.push_back (VI (4));
+    boundary_expected.emplace_back(0);
+    boundary_expected.emplace_back(0);
+    boundary_expected.emplace_back(1);
+    boundary_expected.emplace_back(2);
+    boundary_expected.emplace_back(3);
+    boundary_expected.emplace_back(4);
 
     VertexIndices boundary_vertices = getBoundaryVertices (mesh, VI (2));
     std::sort (boundary_vertices.begin (), boundary_vertices.end ());
@@ -190,35 +190,35 @@ TEST (TestAddDeleteFace, NonManifold2)
   // 3 - 0 - 6  //
   //  \ / \ /   //
   //   4   5    //
-  vi.push_back (VI (0)); vi.push_back (VI (5)); vi.push_back (VI (6)); faces.push_back (vi); vi.clear ();
+  vi.emplace_back(0); vi.emplace_back(5); vi.emplace_back(6); faces.push_back (vi); vi.clear ();
   EXPECT_TRUE (mesh.addFace (faces [2]).isValid ());
   EXPECT_TRUE (hasFaces (mesh, faces));
 
   // Same as (*)
-  vi.push_back (VI (1)); vi.push_back (VI (0)); vi.push_back (VI (2));
+  vi.emplace_back(1); vi.emplace_back(0); vi.emplace_back(2);
   EXPECT_FALSE (mesh.addFace (vi).isValid ());
   vi.clear ();
 
-  vi.push_back (VI (3)); vi.push_back (VI (0)); vi.push_back (VI (4));
+  vi.emplace_back(3); vi.emplace_back(0); vi.emplace_back(4);
   EXPECT_FALSE (mesh.addFace (vi).isValid ());
   vi.clear ();
 
-  vi.push_back (VI (5)); vi.push_back (VI (0)); vi.push_back (VI (6));
+  vi.emplace_back(5); vi.emplace_back(0); vi.emplace_back(6);
   EXPECT_FALSE (mesh.addFace (vi).isValid ());
   vi.clear ();
 
   {
     // Check if the whole boundary is reached.
     VertexIndices boundary_expected;
-    boundary_expected.push_back (VI (0));
-    boundary_expected.push_back (VI (0));
-    boundary_expected.push_back (VI (0));
-    boundary_expected.push_back (VI (1));
-    boundary_expected.push_back (VI (2));
-    boundary_expected.push_back (VI (3));
-    boundary_expected.push_back (VI (4));
-    boundary_expected.push_back (VI (5));
-    boundary_expected.push_back (VI (6));
+    boundary_expected.emplace_back(0);
+    boundary_expected.emplace_back(0);
+    boundary_expected.emplace_back(0);
+    boundary_expected.emplace_back(1);
+    boundary_expected.emplace_back(2);
+    boundary_expected.emplace_back(3);
+    boundary_expected.emplace_back(4);
+    boundary_expected.emplace_back(5);
+    boundary_expected.emplace_back(6);
 
     VertexIndices boundary_vertices = getBoundaryVertices (mesh, VI (2));
     std::sort (boundary_vertices.begin (), boundary_vertices.end ());
@@ -235,42 +235,42 @@ TEST (TestAddDeleteFace, NonManifold2)
   // | / | \    //
   // |/  |  \   //
   // 4   5---6  //
-  vi.push_back (VI (0)); vi.push_back (VI (7)); vi.push_back (VI (8)); faces.push_back (vi); vi.clear ();
+  vi.emplace_back(0); vi.emplace_back(7); vi.emplace_back(8); faces.push_back (vi); vi.clear ();
   EXPECT_TRUE (mesh.addFace (faces [3]).isValid ());
   EXPECT_TRUE (hasFaces (mesh, faces));
 
   // Same as (*)
-  vi.push_back (VI (1)); vi.push_back (VI (0)); vi.push_back (VI (2));
+  vi.emplace_back(1); vi.emplace_back(0); vi.emplace_back(2);
   EXPECT_FALSE (mesh.addFace (vi).isValid ());
   vi.clear ();
 
-  vi.push_back (VI (3)); vi.push_back (VI (0)); vi.push_back (VI (4));
+  vi.emplace_back(3); vi.emplace_back(0); vi.emplace_back(4);
   EXPECT_FALSE (mesh.addFace (vi).isValid ());
   vi.clear ();
 
-  vi.push_back (VI (5)); vi.push_back (VI (0)); vi.push_back (VI (6));
+  vi.emplace_back(5); vi.emplace_back(0); vi.emplace_back(6);
   EXPECT_FALSE (mesh.addFace (vi).isValid ());
   vi.clear ();
 
-  vi.push_back (VI (7)); vi.push_back (VI (0)); vi.push_back (VI (8));
+  vi.emplace_back(7); vi.emplace_back(0); vi.emplace_back(8);
   EXPECT_FALSE (mesh.addFace (vi).isValid ());
   vi.clear ();
 
   // Check if the whole boundary is reached.
   {
     VertexIndices boundary_expected;
-    boundary_expected.push_back (VI (0));
-    boundary_expected.push_back (VI (0));
-    boundary_expected.push_back (VI (0));
-    boundary_expected.push_back (VI (0));
-    boundary_expected.push_back (VI (1));
-    boundary_expected.push_back (VI (2));
-    boundary_expected.push_back (VI (3));
-    boundary_expected.push_back (VI (4));
-    boundary_expected.push_back (VI (5));
-    boundary_expected.push_back (VI (6));
-    boundary_expected.push_back (VI (7));
-    boundary_expected.push_back (VI (8));
+    boundary_expected.emplace_back(0);
+    boundary_expected.emplace_back(0);
+    boundary_expected.emplace_back(0);
+    boundary_expected.emplace_back(0);
+    boundary_expected.emplace_back(1);
+    boundary_expected.emplace_back(2);
+    boundary_expected.emplace_back(3);
+    boundary_expected.emplace_back(4);
+    boundary_expected.emplace_back(5);
+    boundary_expected.emplace_back(6);
+    boundary_expected.emplace_back(7);
+    boundary_expected.emplace_back(8);
 
     VertexIndices boundary_vertices = getBoundaryVertices (mesh, VI (2));
     std::sort (boundary_vertices.begin (), boundary_vertices.end ());
@@ -287,10 +287,10 @@ TEST (TestAddDeleteFace, NonManifold2)
   // | /4|2\ |      //
   // |/  |  \|      //
   // 4---5---6      //
-  vi.push_back (VI (0)); vi.push_back (VI (4)); vi.push_back (VI (5)); faces.push_back (vi); vi.clear ();
-  vi.push_back (VI (0)); vi.push_back (VI (8)); vi.push_back (VI (1)); faces.push_back (vi); vi.clear ();
-  vi.push_back (VI (0)); vi.push_back (VI (2)); vi.push_back (VI (3)); faces.push_back (vi); vi.clear ();
-  vi.push_back (VI (0)); vi.push_back (VI (6)); vi.push_back (VI (7)); faces.push_back (vi); vi.clear ();
+  vi.emplace_back(0); vi.emplace_back(4); vi.emplace_back(5); faces.push_back (vi); vi.clear ();
+  vi.emplace_back(0); vi.emplace_back(8); vi.emplace_back(1); faces.push_back (vi); vi.clear ();
+  vi.emplace_back(0); vi.emplace_back(2); vi.emplace_back(3); faces.push_back (vi); vi.clear ();
+  vi.emplace_back(0); vi.emplace_back(6); vi.emplace_back(7); faces.push_back (vi); vi.clear ();
   for (std::size_t i = 4; i < faces.size (); ++i)
   {
     EXPECT_TRUE (mesh.addFace (faces [i]).isValid ());
@@ -300,7 +300,7 @@ TEST (TestAddDeleteFace, NonManifold2)
   VertexIndices boundary_expected;
   for (unsigned int i=8; i>0; --i)
   {
-    boundary_expected.push_back (VI (i));
+    boundary_expected.emplace_back(i);
   }
   VertexIndices boundary_vertices = getBoundaryVertices (mesh, VI (1));
   EXPECT_EQ (boundary_expected, boundary_vertices);
@@ -334,7 +334,7 @@ TEST (TestAddDeleteFace, NonManifold2)
 TEST (TestAddDeleteFace, Manifold1)
 {
   using Mesh = ManifoldTriangleMesh;
-  using VI = VertexIndex;
+  
   Mesh mesh;
   for (unsigned int i=0; i<7; ++i) mesh.addVertex (i);
 
@@ -346,12 +346,12 @@ TEST (TestAddDeleteFace, Manifold1)
   std::vector <VertexIndices> faces;
   std::vector <std::vector <int> > expected;
   VertexIndices vi;
-  vi.push_back (VI (0)); vi.push_back (VI (1)); vi.push_back (VI (2)); faces.push_back (vi); vi.clear ();
-  vi.push_back (VI (0)); vi.push_back (VI (2)); vi.push_back (VI (3)); faces.push_back (vi); vi.clear ();
-  vi.push_back (VI (0)); vi.push_back (VI (3)); vi.push_back (VI (4)); faces.push_back (vi); vi.clear ();
-  vi.push_back (VI (0)); vi.push_back (VI (4)); vi.push_back (VI (5)); faces.push_back (vi); vi.clear ();
-  vi.push_back (VI (0)); vi.push_back (VI (5)); vi.push_back (VI (6)); faces.push_back (vi); vi.clear ();
-  vi.push_back (VI (0)); vi.push_back (VI (6)); vi.push_back (VI (1)); faces.push_back (vi); vi.clear ();
+  vi.emplace_back(0); vi.emplace_back(1); vi.emplace_back(2); faces.push_back (vi); vi.clear ();
+  vi.emplace_back(0); vi.emplace_back(2); vi.emplace_back(3); faces.push_back (vi); vi.clear ();
+  vi.emplace_back(0); vi.emplace_back(3); vi.emplace_back(4); faces.push_back (vi); vi.clear ();
+  vi.emplace_back(0); vi.emplace_back(4); vi.emplace_back(5); faces.push_back (vi); vi.clear ();
+  vi.emplace_back(0); vi.emplace_back(5); vi.emplace_back(6); faces.push_back (vi); vi.clear ();
+  vi.emplace_back(0); vi.emplace_back(6); vi.emplace_back(1); faces.push_back (vi); vi.clear ();
 
   for (std::size_t i = 0; i < faces.size (); ++i)
   {
@@ -386,11 +386,11 @@ TEST (TestAddDeleteFace, Manifold1)
   mesh.clear ();
   expected.clear ();
   for (unsigned int i=0; i<11; ++i) mesh.addVertex (i);
-  vi.push_back (VI ( 3)); vi.push_back (VI (7)); vi.push_back (VI (4)); faces.push_back (vi); vi.clear ();
-  vi.push_back (VI ( 3)); vi.push_back (VI (2)); vi.push_back (VI (8)); faces.push_back (vi); vi.clear ();
-  vi.push_back (VI ( 8)); vi.push_back (VI (2)); vi.push_back (VI (9)); faces.push_back (vi); vi.clear ();
-  vi.push_back (VI (10)); vi.push_back (VI (9)); vi.push_back (VI (2)); faces.push_back (vi); vi.clear ();
-  vi.push_back (VI (10)); vi.push_back (VI (2)); vi.push_back (VI (1)); faces.push_back (vi); vi.clear ();
+  vi.emplace_back( 3); vi.emplace_back(7); vi.emplace_back(4); faces.push_back (vi); vi.clear ();
+  vi.emplace_back( 3); vi.emplace_back(2); vi.emplace_back(8); faces.push_back (vi); vi.clear ();
+  vi.emplace_back( 8); vi.emplace_back(2); vi.emplace_back(9); faces.push_back (vi); vi.clear ();
+  vi.emplace_back(10); vi.emplace_back(9); vi.emplace_back(2); faces.push_back (vi); vi.clear ();
+  vi.emplace_back(10); vi.emplace_back(2); vi.emplace_back(1); faces.push_back (vi); vi.clear ();
   for (std::size_t i = 0; i < faces.size (); ++i)
   {
     ASSERT_TRUE (mesh.addFace (faces [i]).isValid ()) << "Face " << i;
@@ -442,9 +442,9 @@ TEST (TestAddDeleteFace, Manifold2)
   //      2      //
   std::vector <VertexIndices> faces;
   VertexIndices vi;
-  vi.push_back (VI (0)); vi.push_back (VI (1)); vi.push_back (VI (2)); faces.push_back (vi); vi.clear ();
-  vi.push_back (VI (0)); vi.push_back (VI (2)); vi.push_back (VI (3)); faces.push_back (vi); vi.clear ();
-  vi.push_back (VI (0)); vi.push_back (VI (3)); vi.push_back (VI (1)); faces.push_back (vi); vi.clear ();
+  vi.emplace_back(0); vi.emplace_back(1); vi.emplace_back(2); faces.push_back (vi); vi.clear ();
+  vi.emplace_back(0); vi.emplace_back(2); vi.emplace_back(3); faces.push_back (vi); vi.clear ();
+  vi.emplace_back(0); vi.emplace_back(3); vi.emplace_back(1); faces.push_back (vi); vi.clear ();
 
   // Try all possible combinations of adding the faces and deleting a vertex.
   // NOTE: Some cases are redundant.
@@ -511,12 +511,12 @@ TEST (TestDelete, VertexAndEdge)
   std::vector <VertexIndices> faces;
   std::vector <std::vector <int> > expected;
   VertexIndices vi;
-  vi.push_back (VI (0)); vi.push_back (VI (1)); vi.push_back (VI (2)); faces.push_back (vi); vi.clear ();
-  vi.push_back (VI (0)); vi.push_back (VI (2)); vi.push_back (VI (3)); faces.push_back (vi); vi.clear ();
-  vi.push_back (VI (0)); vi.push_back (VI (3)); vi.push_back (VI (4)); faces.push_back (vi); vi.clear ();
-  vi.push_back (VI (0)); vi.push_back (VI (4)); vi.push_back (VI (5)); faces.push_back (vi); vi.clear ();
-  vi.push_back (VI (0)); vi.push_back (VI (5)); vi.push_back (VI (6)); faces.push_back (vi); vi.clear ();
-  vi.push_back (VI (0)); vi.push_back (VI (6)); vi.push_back (VI (1)); faces.push_back (vi); vi.clear ();
+  vi.emplace_back(0); vi.emplace_back(1); vi.emplace_back(2); faces.push_back (vi); vi.clear ();
+  vi.emplace_back(0); vi.emplace_back(2); vi.emplace_back(3); faces.push_back (vi); vi.clear ();
+  vi.emplace_back(0); vi.emplace_back(3); vi.emplace_back(4); faces.push_back (vi); vi.clear ();
+  vi.emplace_back(0); vi.emplace_back(4); vi.emplace_back(5); faces.push_back (vi); vi.clear ();
+  vi.emplace_back(0); vi.emplace_back(5); vi.emplace_back(6); faces.push_back (vi); vi.clear ();
+  vi.emplace_back(0); vi.emplace_back(6); vi.emplace_back(1); faces.push_back (vi); vi.clear ();
 
   for (std::size_t i = 0; i < faces.size (); ++i)
   {
@@ -581,9 +581,9 @@ TEST (TestMesh, IsBoundaryIsManifold)
   using VI = VertexIndex;
   VertexIndices vi;
   std::vector <VertexIndices> faces;
-  vi.push_back (VI (0)); vi.push_back (VI (3)); vi.push_back (VI (1)); faces.push_back (vi); vi.clear (); // 0
-  vi.push_back (VI (2)); vi.push_back (VI (1)); vi.push_back (VI (4)); faces.push_back (vi); vi.clear (); // 1
-  vi.push_back (VI (0)); vi.push_back (VI (2)); vi.push_back (VI (5)); faces.push_back (vi); vi.clear (); // 2
+  vi.emplace_back(0); vi.emplace_back(3); vi.emplace_back(1); faces.push_back (vi); vi.clear (); // 0
+  vi.emplace_back(2); vi.emplace_back(1); vi.emplace_back(4); faces.push_back (vi); vi.clear (); // 1
+  vi.emplace_back(0); vi.emplace_back(2); vi.emplace_back(5); faces.push_back (vi); vi.clear (); // 2
   for (const auto &face : faces)
   {
     ASSERT_TRUE (mesh.addFace (face).isValid ());
@@ -592,12 +592,12 @@ TEST (TestMesh, IsBoundaryIsManifold)
 
   // Check if the whole boundary is reached.
   VertexIndices boundary_expected;
-  boundary_expected.push_back (VI (0));
-  boundary_expected.push_back (VI (5));
-  boundary_expected.push_back (VI (2));
-  boundary_expected.push_back (VI (4));
-  boundary_expected.push_back (VI (1));
-  boundary_expected.push_back (VI (3));
+  boundary_expected.emplace_back(0);
+  boundary_expected.emplace_back(5);
+  boundary_expected.emplace_back(2);
+  boundary_expected.emplace_back(4);
+  boundary_expected.emplace_back(1);
+  boundary_expected.emplace_back(3);
 
   VertexIndices boundary_vertices = getBoundaryVertices (mesh, VI (3));
   EXPECT_EQ (boundary_expected, boundary_vertices);
@@ -615,7 +615,7 @@ TEST (TestMesh, IsBoundaryIsManifold)
   }
 
   // Make manifold
-  vi.push_back (VI (0)); vi.push_back (VI (1)); vi.push_back (VI (2)); faces.push_back (vi); vi.clear (); // 3
+  vi.emplace_back(0); vi.emplace_back(1); vi.emplace_back(2); faces.push_back (vi); vi.clear (); // 3
   ASSERT_TRUE  (mesh.addFace (faces [3]).isValid ());
   EXPECT_TRUE  (hasFaces (mesh, faces));
 

@@ -435,7 +435,7 @@ pcl::PLYReader::vertexEndCallback ()
 void
 pcl::PLYReader::rangeGridBeginCallback ()
 {
-  range_grid_->push_back (std::vector <int> ());
+  range_grid_->emplace_back();
 }
 
 void
@@ -459,7 +459,7 @@ pcl::PLYReader::rangeGridEndCallback () {}
 void
 pcl::PLYReader::faceBeginCallback ()
 {
-  polygons_->push_back (pcl::Vertices ());
+  polygons_->emplace_back();
 }
 
 void

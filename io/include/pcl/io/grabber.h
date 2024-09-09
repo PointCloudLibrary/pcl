@@ -300,7 +300,7 @@ namespace pcl
     boost::signals2::connection ret = signal->connect (callback);
 
     connections_[typeid (T).name ()].push_back (ret);
-    shared_connections_[typeid (T).name ()].push_back (boost::signals2::shared_connection_block (connections_[typeid (T).name ()].back (), false));
+    shared_connections_[typeid (T).name ()].emplace_back(connections_[typeid (T).name ()].back (), false);
     signalsChanged ();
     return (ret);
   }
