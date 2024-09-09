@@ -621,8 +621,8 @@ pcl::registration::FPCSInitialAlignment<PointSource, PointTarget, NormalT, Scala
             continue;
         }
 
-        pairs.emplace_back (*it_in, *it_out, dist);
-        pairs.emplace_back (*it_out, *it_in, dist);
+        pairs.emplace_back(*it_in, *it_out, dist);
+        pairs.emplace_back(*it_out, *it_in, dist);
       }
     }
   }
@@ -766,10 +766,10 @@ pcl::registration::FPCSInitialAlignment<PointSource, PointTarget, NormalT, Scala
   for (auto& match : matches) {
     Eigen::Matrix4f transformation_temp;
     pcl::Correspondences correspondences_temp;
-    correspondences_temp.emplace_back (match[0], base_indices[0], 0.0);
-    correspondences_temp.emplace_back (match[1], base_indices[1], 0.0);
-    correspondences_temp.emplace_back (match[2], base_indices[2], 0.0);
-    correspondences_temp.emplace_back (match[3], base_indices[3], 0.0);
+    correspondences_temp.emplace_back(match[0], base_indices[0], 0.0);
+    correspondences_temp.emplace_back(match[1], base_indices[1], 0.0);
+    correspondences_temp.emplace_back(match[2], base_indices[2], 0.0);
+    correspondences_temp.emplace_back(match[3], base_indices[3], 0.0);
 
     // check match based on residuals of the corresponding points after
     if (validateMatch(base_indices, match, correspondences_temp, transformation_temp) <
@@ -837,7 +837,7 @@ pcl::registration::FPCSInitialAlignment<PointSource, PointTarget, NormalT, Scala
     }
 
     // assign new correspondence and update indices of matched targets
-    correspondences.emplace_back (best_index, *it_base, best_diff_sqr);
+    correspondences.emplace_back(best_index, *it_base, best_diff_sqr);
     *it_match_orig = best_index;
   }
 }

@@ -104,7 +104,7 @@ TYPED_TEST (TestQuadMesh, CorrectNumberOfVertices)
     VertexIndices vi;
     for (unsigned int i=0; i<n; ++i)
     {
-      vi.emplace_back (i);
+      vi.emplace_back(i);
       mesh.addVertex (i);
     }
 
@@ -331,15 +331,15 @@ TYPED_TEST (TestQuadMesh, NineQuads)
   using VI = VertexIndex;
   std::vector <VertexIndices> faces;
   VertexIndices vi;
-  vi.emplace_back ( 0); vi.emplace_back ( 4); vi.emplace_back ( 5); vi.emplace_back ( 1); faces.push_back (vi); vi.clear ();
-  vi.emplace_back ( 1); vi.emplace_back ( 5); vi.emplace_back ( 6); vi.emplace_back ( 2); faces.push_back (vi); vi.clear ();
-  vi.emplace_back ( 2); vi.emplace_back ( 6); vi.emplace_back ( 7); vi.emplace_back ( 3); faces.push_back (vi); vi.clear ();
-  vi.emplace_back ( 4); vi.emplace_back ( 8); vi.emplace_back ( 9); vi.emplace_back ( 5); faces.push_back (vi); vi.clear ();
-  vi.emplace_back ( 5); vi.emplace_back ( 9); vi.emplace_back (10); vi.emplace_back ( 6); faces.push_back (vi); vi.clear ();
-  vi.emplace_back ( 6); vi.emplace_back (10); vi.emplace_back (11); vi.emplace_back ( 7); faces.push_back (vi); vi.clear ();
-  vi.emplace_back ( 8); vi.emplace_back (12); vi.emplace_back (13); vi.emplace_back ( 9); faces.push_back (vi); vi.clear ();
-  vi.emplace_back ( 9); vi.emplace_back (13); vi.emplace_back (14); vi.emplace_back (10); faces.push_back (vi); vi.clear ();
-  vi.emplace_back (10); vi.emplace_back (14); vi.emplace_back (15); vi.emplace_back (11); faces.push_back (vi); vi.clear ();
+  vi.emplace_back( 0); vi.emplace_back( 4); vi.emplace_back( 5); vi.emplace_back( 1); faces.push_back (vi); vi.clear ();
+  vi.emplace_back( 1); vi.emplace_back( 5); vi.emplace_back( 6); vi.emplace_back( 2); faces.push_back (vi); vi.clear ();
+  vi.emplace_back( 2); vi.emplace_back( 6); vi.emplace_back( 7); vi.emplace_back( 3); faces.push_back (vi); vi.clear ();
+  vi.emplace_back( 4); vi.emplace_back( 8); vi.emplace_back( 9); vi.emplace_back( 5); faces.push_back (vi); vi.clear ();
+  vi.emplace_back( 5); vi.emplace_back( 9); vi.emplace_back(10); vi.emplace_back( 6); faces.push_back (vi); vi.clear ();
+  vi.emplace_back( 6); vi.emplace_back(10); vi.emplace_back(11); vi.emplace_back( 7); faces.push_back (vi); vi.clear ();
+  vi.emplace_back( 8); vi.emplace_back(12); vi.emplace_back(13); vi.emplace_back( 9); faces.push_back (vi); vi.clear ();
+  vi.emplace_back( 9); vi.emplace_back(13); vi.emplace_back(14); vi.emplace_back(10); faces.push_back (vi); vi.clear ();
+  vi.emplace_back(10); vi.emplace_back(14); vi.emplace_back(15); vi.emplace_back(11); faces.push_back (vi); vi.clear ();
 
   ASSERT_EQ (order_vec.size (), non_manifold.size ());
   ASSERT_EQ (9, faces.size ());

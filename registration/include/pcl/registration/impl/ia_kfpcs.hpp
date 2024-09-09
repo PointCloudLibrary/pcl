@@ -130,10 +130,10 @@ KFPCSInitialAlignment<PointSource, PointTarget, NormalT, Scalar>::handleMatches(
         std::numeric_limits<float>::max(); // reset to std::numeric_limits<float>::max()
                                            // to accept all candidates and not only best
 
-    correspondences_temp.emplace_back (match[0], base_indices[0], 0.0);
-    correspondences_temp.emplace_back (match[1], base_indices[1], 0.0);
-    correspondences_temp.emplace_back (match[2], base_indices[2], 0.0);
-    correspondences_temp.emplace_back (match[3], base_indices[3], 0.0);
+    correspondences_temp.emplace_back(match[0], base_indices[0], 0.0);
+    correspondences_temp.emplace_back(match[1], base_indices[1], 0.0);
+    correspondences_temp.emplace_back(match[2], base_indices[2], 0.0);
+    correspondences_temp.emplace_back(match[3], base_indices[3], 0.0);
 
     // check match based on residuals of the corresponding points after transformation
     if (validateMatch(base_indices, match, correspondences_temp, transformation_temp) <
@@ -145,7 +145,7 @@ KFPCSInitialAlignment<PointSource, PointTarget, NormalT, Scalar>::handleMatches(
     validateTransformation(transformation_temp, fitness_score);
 
     // store all valid match as well as associated score and transformation
-    candidates.emplace_back (fitness_score, correspondences_temp, transformation_temp);
+    candidates.emplace_back(fitness_score, correspondences_temp, transformation_temp);
   }
   // make sure that candidate with best fitness score is at the front, for early
   // termination check

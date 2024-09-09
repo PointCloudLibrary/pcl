@@ -24,7 +24,7 @@ pcl::simulation::TriangleMeshModel::TriangleMeshModel(pcl::PolygonMesh::Ptr plg)
     for (const auto& polygon : plg->polygons) {
       for (const auto& point : polygon.vertices) {
         tmp = newcloud[point].getVector4fMap();
-        vertices.emplace_back (Eigen::Vector3f(tmp(0), tmp(1), tmp(2)),
+        vertices.emplace_back(Eigen::Vector3f(tmp(0), tmp(1), tmp(2)),
                                   Eigen::Vector3f(newcloud[point].r / 255.0f,
                                                   newcloud[point].g / 255.0f,
                                                   newcloud[point].b / 255.0f));
@@ -39,7 +39,7 @@ pcl::simulation::TriangleMeshModel::TriangleMeshModel(pcl::PolygonMesh::Ptr plg)
     for (const auto& polygon : plg->polygons) {
       for (const auto& point : polygon.vertices) {
         tmp = newcloud[point].getVector4fMap();
-        vertices.emplace_back (Eigen::Vector3f(tmp(0), tmp(1), tmp(2)),
+        vertices.emplace_back(Eigen::Vector3f(tmp(0), tmp(1), tmp(2)),
                                   Eigen::Vector3f(1.0, 1.0, 1.0));
         indices.push_back(indices.size());
       }
