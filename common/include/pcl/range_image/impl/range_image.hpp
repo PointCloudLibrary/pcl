@@ -470,7 +470,7 @@ RangeImage::isValid (int index) const
 bool 
 RangeImage::isObserved (int x, int y) const
 {
-  return (!isInImage (x,y) && (!std::isinf (getPoint (x,y).range) || getPoint (x,y).range >= 0.0f));
+  return (isInImage (x,y) && (!std::isinf (getPoint (x,y).range) || getPoint (x,y).range >= 0.0f));
 }
 
 /////////////////////////////////////////////////////////////////////////
