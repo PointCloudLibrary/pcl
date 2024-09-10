@@ -86,7 +86,7 @@ pcl::ConvexHull<PointInT>::performReconstruction2D (PointCloud &hull, std::vecto
   PointInT p1 = (*input_)[(*indices_)[indices_->size () - 1]];
   PointInT p2 = (*input_)[(*indices_)[indices_->size () / 2]];
   Eigen::Array4f dy1dy2 = (p1.getArray4fMap () - p0.getArray4fMap ()) / (p2.getArray4fMap () - p0.getArray4fMap ());
-  while (!( (dy1dy2[0] != dy1dy2[1]) || (dy1dy2[2] != dy1dy2[1]) ) )
+  while ( (dy1dy2[0] == dy1dy2[1]) && (dy1dy2[2] == dy1dy2[1]) )
   {
     p0 = (*input_)[(*indices_)[rand () % indices_->size ()]];
     p1 = (*input_)[(*indices_)[rand () % indices_->size ()]];
