@@ -173,7 +173,7 @@ ModelLibrary::addToHashTable (Model* model, const ORROctree::Node::Data* data1, 
   HashTableCell* cell = hash_table_.getVoxel (key);
 
   // Insert the pair (data1,data2) belonging to 'model'
-  (*cell)[model].push_back (std::pair<const ORROctree::Node::Data*, const ORROctree::Node::Data*> (data1, data2));
+  (*cell)[model].emplace_back(data1, data2);
 
   return (true);
 }

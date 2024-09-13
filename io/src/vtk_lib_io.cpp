@@ -410,7 +410,7 @@ pcl::io::vtk2mesh (const vtkSmartPointer<vtkPolyData>& poly_data, pcl::TextureMe
     {
       float tex[2];
       texture_coords->GetTupleValue (i, tex);
-      mesh.tex_coordinates.front ().push_back (Eigen::Vector2f (tex[0], tex[1]));
+      mesh.tex_coordinates.front ().emplace_back(tex[0], tex[1]);
     }
   }
   else

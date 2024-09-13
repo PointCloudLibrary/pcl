@@ -132,7 +132,7 @@ TYPED_TEST (TestPolygonMesh, CorrectNumberOfVertices)
     VertexIndices vi;
     for (unsigned int i=0; i<n; ++i)
     {
-      vi.push_back (VertexIndex (i));
+      vi.emplace_back(i);
       mesh.addVertex (i);
     }
 
@@ -158,24 +158,24 @@ TYPED_TEST (TestPolygonMesh, ThreePolygons)
 
   std::vector <VertexIndices> faces;
   VertexIndices vi;
-  vi.push_back (VertexIndex (0));
-  vi.push_back (VertexIndex (1));
-  vi.push_back (VertexIndex (2));
+  vi.emplace_back(0);
+  vi.emplace_back(1);
+  vi.emplace_back(2);
   faces.push_back (vi);
   vi.clear ();
 
-  vi.push_back (VertexIndex (0));
-  vi.push_back (VertexIndex (2));
-  vi.push_back (VertexIndex (3));
-  vi.push_back (VertexIndex (4));
+  vi.emplace_back(0);
+  vi.emplace_back(2);
+  vi.emplace_back(3);
+  vi.emplace_back(4);
   faces.push_back (vi);
   vi.clear ();
 
-  vi.push_back (VertexIndex (0));
-  vi.push_back (VertexIndex (4));
-  vi.push_back (VertexIndex (5));
-  vi.push_back (VertexIndex (6));
-  vi.push_back (VertexIndex (1));
+  vi.emplace_back(0);
+  vi.emplace_back(4);
+  vi.emplace_back(5);
+  vi.emplace_back(6);
+  vi.emplace_back(1);
   faces.push_back (vi);
   vi.clear ();
 

@@ -123,9 +123,9 @@ TEST (TestMesh, MeshData)
   //  \ / \ /  //
   //   0 - 1   //
   VertexIndices vi_0, vi_1, vi_2;
-  vi_0.push_back (VertexIndex (0)); vi_0.push_back (VertexIndex (1)); vi_0.push_back (VertexIndex (2));
-  vi_1.push_back (VertexIndex (0)); vi_1.push_back (VertexIndex (2)); vi_1.push_back (VertexIndex (3));
-  vi_2.push_back (VertexIndex (4)); vi_2.push_back (VertexIndex (2)); vi_2.push_back (VertexIndex (1));
+  vi_0.emplace_back(0); vi_0.emplace_back(1); vi_0.emplace_back(2);
+  vi_1.emplace_back(0); vi_1.emplace_back(2); vi_1.emplace_back(3);
+  vi_2.emplace_back(4); vi_2.emplace_back(2); vi_2.emplace_back(1);
 
   // Mesh data.
   int vd_0  (10), vd_1  (11), vd_2  (12), vd_3 (13), vd_4 (14);

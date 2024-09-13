@@ -85,7 +85,7 @@ main (int argc, char **argv)
   {
     CloudPtr pc (new Cloud);
     pcl::io::loadPCDFile (argv[pcd_indices[i]], *pc);
-    clouds.push_back (CloudPair (argv[pcd_indices[i]], pc));
+    clouds.emplace_back(argv[pcd_indices[i]], pc);
     std::cout << "loading file: " << argv[pcd_indices[i]] << " size: " << pc->size () << std::endl;
     lum.addPointCloud (clouds[i].second);
   }

@@ -104,7 +104,7 @@ TYPED_TEST (TestTriangleMesh, CorrectNumberOfVertices)
     VertexIndices vi;
     for (unsigned int i=0; i<n; ++i)
     {
-      vi.push_back (VertexIndex (i));
+      vi.emplace_back(i);
       mesh.addVertex (i);
     }
 

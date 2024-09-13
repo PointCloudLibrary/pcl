@@ -1333,7 +1333,7 @@ protected:
                  HalfEdgeIndex& /*idx_free_half_edge*/,
                  std::true_type /*is_manifold*/) const
   {
-    return !(is_new_ab && is_new_bc && !is_isolated_b);
+    return (!is_new_ab || !is_new_bc || is_isolated_b);
   }
 
   /** \brief Check if the half-edge bc is the next half-edge of ab.

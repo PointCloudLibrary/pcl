@@ -338,7 +338,7 @@ pcl::RegionGrowingRGB<PointT, NormalT>::findRegionsKNN (pcl::index_t index, pcl:
   {
     if (distances[i_seg] < max_dist)
     {
-      segment_neighbours.push (std::make_pair (distances[i_seg], i_seg) );
+      segment_neighbours.emplace (distances[i_seg], i_seg);
       if (segment_neighbours.size () > nghbr_number)
         segment_neighbours.pop ();
     }

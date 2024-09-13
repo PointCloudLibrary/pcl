@@ -557,9 +557,9 @@ OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::boxSearchRecur
 
     // test if search region overlap with voxel space
 
-    if (!((lower_voxel_corner(0) > max_pt(0)) || (min_pt(0) > upper_voxel_corner(0)) ||
-          (lower_voxel_corner(1) > max_pt(1)) || (min_pt(1) > upper_voxel_corner(1)) ||
-          (lower_voxel_corner(2) > max_pt(2)) || (min_pt(2) > upper_voxel_corner(2)))) {
+    if ((lower_voxel_corner(0) <= max_pt(0)) && (min_pt(0) <= upper_voxel_corner(0)) &&
+        (lower_voxel_corner(1) <= max_pt(1)) && (min_pt(1) <= upper_voxel_corner(1)) &&
+        (lower_voxel_corner(2) <= max_pt(2)) && (min_pt(2) <= upper_voxel_corner(2))) {
 
       if (child_node->getNodeType() == BRANCH_NODE) {
         // we have not reached maximum tree depth

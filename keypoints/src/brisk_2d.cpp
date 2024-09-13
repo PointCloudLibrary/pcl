@@ -1192,7 +1192,7 @@ pcl::keypoints::brisk::ScaleSpace::subpixel2D (
     return (static_cast<float>(coeff6) / 18.0f);
   }
 
-  if (!(H_det > 0 && coeff1 < 0))
+  if (H_det <= 0 || coeff1 >= 0)
   {
     // The maximum must be at the one of the 4 patch corners.
     int tmp_max = coeff3 + coeff4 + coeff5;

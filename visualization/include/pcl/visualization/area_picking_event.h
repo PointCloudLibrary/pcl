@@ -81,6 +81,8 @@ namespace pcl
         getCloudNames () const
         {
           std::vector<std::string> names;
+          names.reserve(cloud_indices_.size());
+          
           for (const auto& i : cloud_indices_)
             names.push_back (i.first);
           return names;
