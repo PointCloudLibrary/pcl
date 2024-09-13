@@ -218,7 +218,7 @@ template <typename PointNT> void
 pcl::MarchingCubes<PointNT>::performReconstruction (pcl::PointCloud<PointNT> &points,
                                                     std::vector<pcl::Vertices> &polygons)
 {
-  if (!(iso_level_ >= 0 && iso_level_ < 1))
+  if (iso_level_ < 0 || iso_level_ >= 1)
   {
     PCL_ERROR ("[pcl::%s::performReconstruction] Invalid iso level %f! Please use a number between 0 and 1.\n", 
         getClassName ().c_str (), iso_level_);

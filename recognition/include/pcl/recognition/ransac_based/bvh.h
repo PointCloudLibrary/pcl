@@ -190,8 +190,8 @@ namespace pcl
             inline bool
             intersect(const float box[6]) const
             {
-              return !(box[1] < bounds_[0] || box[3] < bounds_[2] || box[5] < bounds_[4] ||
-                   box[0] > bounds_[1] || box[2] > bounds_[3] || box[4] > bounds_[5]);
+              return (box[1] >= bounds_[0] && box[3] >= bounds_[2] && box[5] >= bounds_[4] &&
+                      box[0] <= bounds_[1] && box[2] <= bounds_[3] && box[4] <= bounds_[5]);
             }
 
             /** \brief Computes and returns the volume of the bounding box of this node. */

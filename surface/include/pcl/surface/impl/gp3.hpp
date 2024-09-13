@@ -667,7 +667,7 @@ pcl::GreedyProjectionTriangulation<PointInT>::reconstructPolygons (std::vector<p
                 }
                 if (inside_CB && !outside_CB)
                   need_invert = true;
-                else if (!(!inside_CB && outside_CB))
+                else if (inside_CB || !outside_CB)
                 {
                   if ((angles_[end].angle - angles_[start].angle) < M_PI)
                     need_invert = true;
