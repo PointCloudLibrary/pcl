@@ -62,6 +62,7 @@
 #define PCL_INFO(...)    pcl::console::print (pcl::console::L_INFO, __VA_ARGS__)
 #define PCL_DEBUG(...)   pcl::console::print (pcl::console::L_DEBUG, __VA_ARGS__)
 #define PCL_VERBOSE(...) pcl::console::print (pcl::console::L_VERBOSE, __VA_ARGS__)
+#define PCL_HIGH(...)    pcl::console::print_highlight (__VA_ARGS__)
 
 #define PCL_ASSERT_ERROR_PRINT_CHECK(pred, msg) \
     do \
