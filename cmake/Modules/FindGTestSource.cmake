@@ -15,13 +15,11 @@ if(APPLE)
 endif()
 
 find_path(GTEST_INCLUDE_DIR gtest/gtest.h
-    HINTS "${GTEST_ROOT}" "$ENV{GTEST_ROOT}"
     PATHS "$ENV{PROGRAMFILES}/gtest" "$ENV{PROGRAMW6432}/gtest"
     PATHS "$ENV{PROGRAMFILES}/gtest-1.7.0" "$ENV{PROGRAMW6432}/gtest-1.7.0"
     PATH_SUFFIXES gtest include/gtest include)
 
 find_path(GTEST_SRC_DIR src/gtest-all.cc
-    HINTS "${GTEST_ROOT}" "$ENV{GTEST_ROOT}"
     PATHS "$ENV{PROGRAMFILES}/gtest" "$ENV{PROGRAMW6432}/gtest"
     PATHS "$ENV{PROGRAMFILES}/gtest-1.7.0" "$ENV{PROGRAMW6432}/gtest-1.7.0"
     PATH /usr/src/googletest

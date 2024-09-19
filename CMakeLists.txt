@@ -1,11 +1,5 @@
 ### ---[ PCL global CMake
-cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
-
-if(POLICY CMP0074)
-  # 1. Remove with 3.12.4.
-  # 2. Remove search paths with *_ROOT since they will be automatically checked
-  cmake_policy(SET CMP0074 NEW)
-endif()
+cmake_minimum_required(VERSION 3.16.3 FATAL_ERROR)
 
 # Set target C++ standard and required compiler features
 set(CMAKE_CXX_STANDARD 14 CACHE STRING "The target C++ standard. PCL requires C++14 or higher.")
@@ -369,6 +363,12 @@ if(WITH_CUDA)
   include("${PCL_SOURCE_DIR}/cmake/pcl_find_cuda.cmake")
 endif()
 
+# find GLEW before VTK as it uses custom findGLEW that doesn't work with cmakes findGLEW.
+option(WITH_GLEW "Support for GLEW" TRUE)
+if(WITH_GLEW)
+  find_package(GLEW QUIET)
+endif()
+
 
 # Reset VTK_FOUND to off
 set(VTK_FOUND OFF)
@@ -399,12 +399,6 @@ endif()
 option(WITH_OPENGL "Support for OpenGL" TRUE)
 if(WITH_OPENGL)
   include("${PCL_SOURCE_DIR}/cmake/pcl_find_gl.cmake")
-endif()
-
-# GLEW
-option(WITH_GLEW "Support for GLEW" TRUE)
-if(WITH_GLEW)
-  find_package(GLEW QUIET)
 endif()
 
 # Boost (required)
