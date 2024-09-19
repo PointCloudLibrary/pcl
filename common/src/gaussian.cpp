@@ -145,7 +145,7 @@ pcl::GaussianKernel::convolveRows (const pcl::PointCloud<float>& input,
   {
     if (output.height < input.height || output.width < input.width)
     {
-      output.resize (input.width, input.height);
+      output.resize (static_cast<uindex_t>(input.width), static_cast<uindex_t>(input.height)); // Casting is necessary to resolve ambiguous call to resize
     }
     unaliased_input = &input;
   }
@@ -187,7 +187,7 @@ pcl::GaussianKernel::convolveCols (const pcl::PointCloud<float>& input,
   {
     if (output.height < input.height || output.width < input.width)
     {
-      output.resize (input.width, input.height);
+      output.resize (static_cast<uindex_t>(input.width), static_cast<uindex_t>(input.height)); // Casting is necessary to resolve ambiguous call to resize
     }
     unaliased_input = &input;
   }
