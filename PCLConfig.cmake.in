@@ -302,17 +302,17 @@ function(find_external_library _component _lib _is_optional)
 
   string(TOUPPER "${_component}" COMPONENT)
   string(TOUPPER "${_lib}" LIB)
-  string(REGEX REPLACE "[.-]" "_" LIB ${LIB})
+  string(REGEX REPLACE "[.-]" "_" LIB "${LIB}")
   if(${LIB}_FOUND)
     list(APPEND PCL_${COMPONENT}_INCLUDE_DIRS ${${LIB}_INCLUDE_DIRS})
     set(PCL_${COMPONENT}_INCLUDE_DIRS ${PCL_${COMPONENT}_INCLUDE_DIRS} PARENT_SCOPE)
-    
+
     if(${LIB} MATCHES "VTK")
       if(${${LIB}_VERSION_MAJOR} GREATER_EQUAL 9)
         set(ISVTK9ORGREATER TRUE)
       endif()
     endif()
-    
+
     if(${LIB}_USE_FILE AND NOT ISVTK9ORGREATER )
       include(${${LIB}_USE_FILE})
     else()
