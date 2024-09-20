@@ -276,9 +276,7 @@ CloudGenerator<pcl::PointXY, GeneratorT>::fill (int width, int height, pcl::Poin
   if (!cloud.empty ())
     PCL_WARN ("[pcl::common::CloudGenerator] Cloud data will be erased with new data\n!");
 
-  cloud.width = width;
-  cloud.height = height;
-  cloud.resize (cloud.width * cloud.height);
+  cloud.resize (width, height);
   cloud.is_dense = true;
 
   for (auto &point : cloud)

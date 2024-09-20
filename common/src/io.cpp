@@ -151,7 +151,7 @@ pcl::concatenateFields (const pcl::PCLPointCloud2 &cloud1,
 
   //the total size of extra data should be the size of data per point
   //multiplied by the total number of points in the cloud
-  std::uint32_t cloud1_unique_data_size = cloud1_unique_point_step * cloud1.width * cloud1.height; 
+  const std::size_t cloud1_unique_data_size = static_cast<std::size_t>(cloud1_unique_point_step) * cloud1.width * cloud1.height;
 
   // Point step must increase with the length of each matching field
   cloud_out.point_step = cloud2.point_step + cloud1_unique_point_step;
@@ -177,8 +177,9 @@ pcl::concatenateFields (const pcl::PCLPointCloud2 &cloud1,
   }
  
   // Iterate over each point and perform the appropriate memcpys
-  int point_offset = 0;
-  for (uindex_t cp = 0; cp < cloud_out.width * cloud_out.height; ++cp)
+  std::size_t point_offset = 0;
+  const std::size_t npts = static_cast<std::size_t>(cloud_out.width) * static_cast<std::size_t>(cloud_out.height);
+  for (std::size_t cp = 0; cp < npts; ++cp)
   {
     memcpy (&cloud_out.data[point_offset], &cloud2.data[cp * cloud2.point_step], cloud2.point_step);
     int field_offset = cloud2.point_step;
@@ -231,7 +232,7 @@ pcl::getPointCloudAsEigen (const pcl::PCLPointCloud2 &in, Eigen::MatrixXf &out)
     return (false);
   }
 
-  std::size_t npts = in.width * in.height;
+  std::size_t npts = static_cast<std::size_t>(in.width) * static_cast<std::size_t>(in.height);
   out = Eigen::MatrixXf::Ones (4, npts);
 
   Eigen::Array4i xyz_offset (in.fields[x_idx].offset, in.fields[y_idx].offset, in.fields[z_idx].offset, 0);
@@ -313,11 +314,11 @@ pcl::copyPointCloud (
   cloud_out.row_step     = cloud_in.point_step * static_cast<std::uint32_t> (indices.size ());
   cloud_out.is_dense     = cloud_in.is_dense;
 
-  cloud_out.data.resize (cloud_out.width * cloud_out.height * cloud_out.point_step);
+  cloud_out.data.resize (static_cast<std::size_t>(cloud_out.width) * static_cast<std::size_t>(cloud_out.height) * static_cast<std::size_t>(cloud_out.point_step));
 
   // Iterate over each point
   for (std::size_t i = 0; i < indices.size (); ++i)
-    memcpy (&cloud_out.data[i * cloud_out.point_step], &cloud_in.data[indices[i] * cloud_in.point_step], cloud_in.point_step);
+    memcpy (&cloud_out.data[i * cloud_out.point_step], &cloud_in.data[static_cast<std::size_t>(indices[i]) * cloud_in.point_step], cloud_in.point_step);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -336,11 +337,11 @@ pcl::copyPointCloud (
   cloud_out.row_step     = cloud_in.point_step * static_cast<std::uint32_t> (indices.size ());
   cloud_out.is_dense     = cloud_in.is_dense;
 
-  cloud_out.data.resize (cloud_out.width * cloud_out.height * cloud_out.point_step);
+  cloud_out.data.resize (static_cast<std::size_t>(cloud_out.width) * cloud_out.height * cloud_out.point_step);
 
   // Iterate over each point
   for (std::size_t i = 0; i < indices.size (); ++i)
-    memcpy (&cloud_out.data[i * cloud_out.point_step], &cloud_in.data[indices[i] * cloud_in.point_step], cloud_in.point_step);
+    memcpy (&cloud_out.data[i * cloud_out.point_step], &cloud_in.data[static_cast<std::size_t>(indices[i]) * cloud_in.point_step], cloud_in.point_step);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
