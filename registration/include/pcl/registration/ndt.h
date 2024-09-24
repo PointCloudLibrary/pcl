@@ -175,11 +175,37 @@ public:
    * \return outlier ratio
    */
   inline double
+  getOutlierRatio() const
+  {
+    return outlier_ratio_;
+  }
+
+  /** \brief Get the point cloud outlier ratio.
+   * \return outlier ratio
+   */
+  PCL_DEPRECATED(1,
+                 18,
+                 "The method `getOulierRatio` has been renamed to "
+                 "`getOutlierRatio`.")
+  inline double
   getOulierRatio() const
   {
     return outlier_ratio_;
   }
 
+  /** \brief Set/change the point cloud outlier ratio.
+   * \param[in] outlier_ratio outlier ratio
+   */
+  inline void
+  setOutlierRatio(double outlier_ratio)
+  {
+    outlier_ratio_ = outlier_ratio;
+  }
+
+  PCL_DEPRECATED(1,
+                 18,
+                 "The method `setOulierRatio` has been renamed to "
+                 "`setOutlierRatio`.")
   /** \brief Set/change the point cloud outlier ratio.
    * \param[in] outlier_ratio outlier ratio
    */
