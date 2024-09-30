@@ -686,57 +686,11 @@ pcl::SupervoxelClustering<PointT>::getMaxLabel () const
   return max_label;
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 namespace pcl
 { 
-  namespace octree
-  {
-    //Explicit overloads for RGB types
-    template<>
-    void
-    pcl::octree::OctreePointCloudAdjacencyContainer<pcl::PointXYZRGB,pcl::SupervoxelClustering<pcl::PointXYZRGB>::VoxelData>::addPoint (const pcl::PointXYZRGB &new_point);
-    
-    template<>
-    void
-    pcl::octree::OctreePointCloudAdjacencyContainer<pcl::PointXYZRGBA,pcl::SupervoxelClustering<pcl::PointXYZRGBA>::VoxelData>::addPoint (const pcl::PointXYZRGBA &new_point);
-    
-    //Explicit overloads for RGB types
-    template<> void
-    pcl::octree::OctreePointCloudAdjacencyContainer<pcl::PointXYZRGB,pcl::SupervoxelClustering<pcl::PointXYZRGB>::VoxelData>::computeData ();
-    
-    template<> void
-    pcl::octree::OctreePointCloudAdjacencyContainer<pcl::PointXYZRGBA,pcl::SupervoxelClustering<pcl::PointXYZRGBA>::VoxelData>::computeData ();
-    
-    //Explicit overloads for XYZ types
-    template<>
-    void
-    pcl::octree::OctreePointCloudAdjacencyContainer<pcl::PointXYZ,pcl::SupervoxelClustering<pcl::PointXYZ>::VoxelData>::addPoint (const pcl::PointXYZ &new_point);
-    
-    template<> void
-    pcl::octree::OctreePointCloudAdjacencyContainer<pcl::PointXYZ,pcl::SupervoxelClustering<pcl::PointXYZ>::VoxelData>::computeData ();
-  }
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-namespace pcl
-{
-  
-  template<> void
-  pcl::SupervoxelClustering<pcl::PointXYZRGB>::VoxelData::getPoint (pcl::PointXYZRGB &point_arg) const;
-  
-  template<> void
-  pcl::SupervoxelClustering<pcl::PointXYZRGBA>::VoxelData::getPoint (pcl::PointXYZRGBA &point_arg ) const;
-  
-  template<typename PointT> void
-  pcl::SupervoxelClustering<PointT>::VoxelData::getPoint (PointT &point_arg ) const
-  {
-    //XYZ is required or this doesn't make much sense...
-    point_arg.x = xyz_[0];
-    point_arg.y = xyz_[1];
-    point_arg.z = xyz_[2];
-  }
-  
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   template <typename PointT> void
   pcl::SupervoxelClustering<PointT>::VoxelData::getNormal (Normal &normal_arg) const

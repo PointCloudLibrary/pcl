@@ -55,7 +55,7 @@ namespace registration {
  * \ingroup registration
  */
 template <typename PointSource, typename PointTarget, typename Scalar = float>
-class PCL_EXPORTS TransformationEstimationSVD
+class TransformationEstimationSVD
 : public TransformationEstimation<PointSource, PointTarget, Scalar> {
 public:
   using Ptr = shared_ptr<TransformationEstimationSVD<PointSource, PointTarget, Scalar>>;

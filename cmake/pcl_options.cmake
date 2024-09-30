@@ -122,3 +122,11 @@ option(PCL_DISABLE_GPU_TESTS "Disable running GPU tests. If disabled, tests will
 # Set whether visualizations tests should be run
 # (Used to prevent visualizations tests from executing in CI where visualization is unavailable)
 option(PCL_DISABLE_VISUALIZATION_TESTS "Disable running visualizations tests. If disabled, tests will still be built." OFF)
+
+# This leads to smaller libraries, possibly faster code, and fixes some bugs. See https://gcc.gnu.org/wiki/Visibility
+option(PCL_SYMBOL_VISIBILITY_HIDDEN "Hide all binary symbols by default, export only those explicitly marked (gcc and clang only). Experimental!" OFF)
+mark_as_advanced(PCL_SYMBOL_VISIBILITY_HIDDEN)
+if(PCL_SYMBOL_VISIBILITY_HIDDEN)
+  set(CMAKE_CXX_VISIBILITY_PRESET hidden)
+  set(CMAKE_VISIBILITY_INLINES_HIDDEN ON)
+endif()
