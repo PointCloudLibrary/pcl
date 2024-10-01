@@ -1,6 +1,6 @@
 set(SUBSYS_NAME tests_io)
 set(SUBSYS_DESC "Point cloud library io module unit tests")
-PCL_SET_TEST_DEPENDENCIES(SUBSYS_DEPS io)
+PCL_SET_TEST_DEPENDENCIES(SUBSYS_DEPS common io octree)
 set(OPT_DEPS visualization)
 
 PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ON)
@@ -53,7 +53,7 @@ PCL_ADD_TEST(point_cloud_image_extractors test_point_cloud_image_extractors
 
 PCL_ADD_TEST(buffers test_buffers
              FILES test_buffers.cpp
-             LINK_WITH pcl_gtest pcl_common)
+             LINK_WITH pcl_gtest pcl_common pcl_io)
 
 PCL_ADD_TEST(io_octree_compression test_octree_compression
         FILES test_octree_compression.cpp

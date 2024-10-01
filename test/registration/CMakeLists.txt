@@ -1,6 +1,6 @@
 set(SUBSYS_NAME tests_registration)
 set(SUBSYS_DESC "Point cloud library registration module unit tests")
-PCL_SET_TEST_DEPENDENCIES(SUBSYS_DEPS registration)
+PCL_SET_TEST_DEPENDENCIES(SUBSYS_DEPS io registration)
 set(OPT_DEPS io) # module does not depend on these
 
 PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ON)
@@ -16,7 +16,7 @@ PCL_ADD_TEST(registration_warp_api test_warps
 
 PCL_ADD_TEST(correspondence_estimation test_correspondence_estimation
              FILES test_correspondence_estimation.cpp
-             LINK_WITH pcl_gtest pcl_registration pcl_features)
+             LINK_WITH pcl_gtest pcl_io pcl_registration pcl_features)
 
 if(BUILD_io)
   PCL_ADD_TEST(a_registration_test test_registration
