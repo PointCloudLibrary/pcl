@@ -47,7 +47,7 @@ PCL_ADD_EXECUTABLE(pcl_test_search_speed COMPONENT ${SUBSYS_NAME} SOURCES src/te
 target_link_libraries(pcl_test_search_speed pcl_common pcl_io pcl_search pcl_kdtree pcl_visualization)
 
 PCL_ADD_EXECUTABLE(pcl_nn_classification_example COMPONENT ${SUBSYS_NAME} SOURCES src/nn_classification_example.cpp)
-target_link_libraries(pcl_nn_classification_example pcl_common pcl_io pcl_features pcl_kdtree)
+target_link_libraries(pcl_nn_classification_example pcl_apps pcl_common pcl_io pcl_features pcl_kdtree)
 target_include_directories(pcl_nn_classification_example PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 PCL_ADD_EXECUTABLE(pcl_pyramid_surface_matching COMPONENT ${SUBSYS_NAME} SOURCES src/pyramid_surface_matching.cpp)
@@ -124,7 +124,7 @@ if(VTK_FOUND)
       src/pcd_video_player/pcd_video_player.ui
       BUNDLE)
 
-    target_link_libraries(pcl_pcd_video_player pcl_common pcl_io pcl_visualization pcl_segmentation pcl_features pcl_surface ${QTX}::Widgets)
+    target_link_libraries(pcl_pcd_video_player pcl_common pcl_io pcl_registration pcl_visualization pcl_segmentation pcl_features pcl_surface ${QTX}::Widgets)
     target_include_directories(pcl_pcd_video_player PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
   endif()
 
@@ -228,23 +228,23 @@ if(VTK_FOUND)
     endif() # QHULL_FOUND
 
     PCL_ADD_EXECUTABLE(pcl_ni_agast COMPONENT ${SUBSYS_NAME} SOURCES src/ni_agast.cpp BUNDLE)
-    target_link_libraries(pcl_ni_agast pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_features pcl_keypoints pcl_surface pcl_search)
+    target_link_libraries(pcl_ni_agast pcl_apps pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_features pcl_keypoints pcl_surface pcl_search)
     target_include_directories(pcl_ni_agast PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
     PCL_ADD_EXECUTABLE(pcl_ni_brisk COMPONENT ${SUBSYS_NAME} SOURCES src/ni_brisk.cpp BUNDLE)
-    target_link_libraries(pcl_ni_brisk pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_features pcl_keypoints pcl_surface pcl_search)
+    target_link_libraries(pcl_ni_brisk pcl_apps pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_features pcl_keypoints pcl_surface pcl_search)
     target_include_directories(pcl_ni_brisk PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
     PCL_ADD_EXECUTABLE(pcl_ni_susan COMPONENT ${SUBSYS_NAME} SOURCES src/ni_susan.cpp BUNDLE)
-    target_link_libraries(pcl_ni_susan pcl_common pcl_visualization pcl_features pcl_keypoints pcl_search)
+    target_link_libraries(pcl_ni_susan pcl_apps pcl_common pcl_visualization pcl_features pcl_keypoints pcl_search)
     target_include_directories(pcl_ni_susan PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
     PCL_ADD_EXECUTABLE(pcl_ni_trajkovic COMPONENT ${SUBSYS_NAME} SOURCES src/ni_trajkovic.cpp BUNDLE)
-    target_link_libraries(pcl_ni_trajkovic pcl_common pcl_visualization pcl_features pcl_keypoints pcl_search)
+    target_link_libraries(pcl_ni_trajkovic pcl_apps pcl_common pcl_visualization pcl_features pcl_keypoints pcl_search)
     target_include_directories(pcl_ni_trajkovic PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
     PCL_ADD_EXECUTABLE(pcl_openni_klt COMPONENT ${SUBSYS_NAME} SOURCES src/openni_klt.cpp BUNDLE)
-    target_link_libraries(pcl_openni_klt pcl_common pcl_io pcl_visualization pcl_tracking)
+    target_link_libraries(pcl_openni_klt pcl_common pcl_io pcl_keypoints pcl_visualization pcl_tracking)
   endif() # WITH_OPENNI
 endif() # VTK_FOUND
 
