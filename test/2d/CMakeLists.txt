@@ -10,7 +10,7 @@ if(NOT build)
 endif()
 
 PCL_ADD_TEST(test_2d test_2d FILES test_2d.cpp
-             LINK_WITH pcl_io pcl_gtest
+             LINK_WITH pcl_2d pcl_io pcl_gtest
              ARGUMENTS "${PCL_SOURCE_DIR}/test/2d/lena.pcd"
                        "${PCL_SOURCE_DIR}/test/2d/gauss_smooth.pcd"
                        "${PCL_SOURCE_DIR}/test/2d/erosion.pcd"
@@ -23,7 +23,7 @@ PCL_ADD_TEST(test_2d test_2d FILES test_2d.cpp
                        "${PCL_SOURCE_DIR}/test/2d/closing_binary.pcd"
                        "${PCL_SOURCE_DIR}/test/2d/canny.pcd")
 
-PCL_ADD_TEST(test_2d_keypoint_instantiation_with_precompile test_2d_keypoint_instantiation_with_precompile FILES keypoint_instantiation.cpp LINK_WITH pcl_gtest pcl_common)
+PCL_ADD_TEST(test_2d_keypoint_instantiation_with_precompile test_2d_keypoint_instantiation_with_precompile FILES keypoint_instantiation.cpp LINK_WITH pcl_2d pcl_gtest pcl_common)
 
-PCL_ADD_TEST(test_2d_keypoint_instantiation_without_precompile test_2d_keypoint_instantiation_without_precompile FILES keypoint_instantiation.cpp LINK_WITH pcl_gtest pcl_common)
+PCL_ADD_TEST(test_2d_keypoint_instantiation_without_precompile test_2d_keypoint_instantiation_without_precompile FILES keypoint_instantiation.cpp LINK_WITH pcl_2d pcl_gtest pcl_common)
 target_compile_definitions(test_2d_keypoint_instantiation_without_precompile PUBLIC PCL_NO_PRECOMPILE)
