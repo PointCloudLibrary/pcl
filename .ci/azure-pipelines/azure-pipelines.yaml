@@ -74,12 +74,12 @@ stages:
           vmImage: '$(VMIMAGE)'
         strategy:
           matrix:
-            Monterey 12:
-              VMIMAGE: 'macOS-12'
-              OSX_VERSION: '12'
             Ventura 13:
               VMIMAGE: 'macOS-13'
               OSX_VERSION: '13'
+            Sonoma 14:
+              VMIMAGE: 'macOS-14'
+              OSX_VERSION: '14'
         timeoutInMinutes: 0
         variables:
           BUILD_DIR: '$(Agent.WorkFolder)/build'
