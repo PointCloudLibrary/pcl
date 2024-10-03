@@ -169,7 +169,7 @@ namespace pcl
     * \author Patrick Mihelich, Radu B. Rusu
     */
   template <typename PointT>
-  class PCL_EXPORTS PointCloud
+  class PointCloud
   {
     public:
       /** \brief Default constructor. Sets \ref is_dense to true, \ref width
@@ -921,5 +921,3 @@ namespace pcl
     return (s);
   }
 }
-
-#define PCL_INSTANTIATE_PointCloud(T) template class PCL_EXPORTS pcl::PointCloud<T>;
