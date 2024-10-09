@@ -287,6 +287,19 @@ endif()
 # OpenMP (optional)
 option(WITH_OPENMP "Build with parallelization using OpenMP" TRUE)
 if(WITH_OPENMP)
+  if(APPLE)
+    # libomp 15.0+ from brew is keg-only,
+    # because it can override GCC headers and result in broken builds,
+    # so have to search in other locations.
+    execute_process(COMMAND brew --prefix libomp
+                            OUTPUT_VARIABLE HOMEBREW_LIBOMP_PREFIX
+                            OUTPUT_STRIP_TRAILING_WHITESPACE)
+    set(OpenMP_C_FLAGS "-Xpreprocessor -fopenmp -I${HOMEBREW_LIBOMP_PREFIX}/include")
+    set(OpenMP_CXX_FLAGS "-Xpreprocessor -fopenmp -I${HOMEBREW_LIBOMP_PREFIX}/include")
+    set(OpenMP_C_LIB_NAMES omp)
+    set(OpenMP_CXX_LIB_NAMES omp)
+    set(OpenMP_omp_LIBRARY ${HOMEBREW_LIBOMP_PREFIX}/lib/libomp.dylib)
+  endif()
   find_package(OpenMP COMPONENTS C CXX)
 endif()
 if(OpenMP_FOUND)
