@@ -1073,6 +1073,7 @@ pcl::LINEMOD::detectTemplatesSemiScaleInvariant (
   double start = getTickCount();
 
   const size_t nr_modalities = modalities.size();
+  modality_energy_maps.reserve(nr_modalities);
   for (size_t modality_index = 0; modality_index < nr_modalities; ++modality_index)
   {
     const QuantizedMap & quantized_map = modalities[modality_index]->getSpreadedQuantizedMap ();
@@ -1674,8 +1675,8 @@ pcl::LINEMOD::evaluateDetections(
 {
   // create energy maps
   std::vector<EnergyMaps> modality_energy_maps;
-
   const size_t nr_modalities = modalities.size();
+  modality_energy_maps.reserve(nr_modalities);
   for (size_t modality_index = 0; modality_index < nr_modalities; ++modality_index)
   {
     const QuantizedMap & quantized_map = modalities[modality_index]->getSpreadedQuantizedMap ();
