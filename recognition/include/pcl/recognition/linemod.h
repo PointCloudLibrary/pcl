@@ -400,6 +400,22 @@ namespace pcl
                                          float max_scale = 1.44f,
                                          float scale_multiplier = 1.2f) const;
 
+      /**
+       * @brief Given existing detections, evaluate these detections' linemod score.
+       * 
+       * @param modalities 
+       * @param inputDetections 
+       * @param inputTemplates       corresponding templates for each detection
+       * @param evaluationScores     output
+       */
+      void
+      evaluateDetections(
+        const std::vector<QuantizableModality*>& modalities,
+        const std::vector<LINEMODDetection>& inputDetections,
+        const std::vector<SparseQuantizedMultiModTemplate>& inputTemplates,
+        std::vector<float>& evaluationScores
+      ) const;
+
       /** \brief Matches the stored templates to the supplied modality data.
         * \param[in] modalities the modalities that will be used for matching.
         * \param[out] matches the found matches.
@@ -499,6 +515,11 @@ namespace pcl
       resizeTemplates (size_t n)
       {
         return templates_.resize(n);
+      }
+
+      float getScoreThreshold() const
+      {
+        return template_threshold_;
       }
 
 

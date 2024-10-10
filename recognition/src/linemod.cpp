@@ -1073,6 +1073,7 @@ pcl::LINEMOD::detectTemplatesSemiScaleInvariant (
   double start = getTickCount();
 
   const size_t nr_modalities = modalities.size();
+  modality_energy_maps.reserve(nr_modalities);
   for (size_t modality_index = 0; modality_index < nr_modalities; ++modality_index)
   {
     const QuantizedMap & quantized_map = modalities[modality_index]->getSpreadedQuantizedMap ();
@@ -1519,6 +1520,7 @@ pcl::LINEMOD::detectTemplatesSemiScaleInvariant (
           const float score = 2.0f * static_cast<float> (raw_score) * 0.25f * inv_max_score - 1.0f;
   #else
           const float raw_score = score_sums[mem_index];
+          float raw_score_rebased = (raw_score - (float (max_score) / 2.0f)) / (float (max_score) / 2.0f);
 
           const float score = 2.0f * static_cast<float> (raw_score) * inv_max_score - 1.0f;
   #endif
@@ -1605,7 +1607,7 @@ pcl::LINEMOD::detectTemplatesSemiScaleInvariant (
             }
 
             detection.template_id = static_cast<int> (template_index);
-            detection.score = score;
+            detection.score = raw_score_rebased;//score;
             detection.scale = scale;
 
   #ifdef LINEMOD_USE_SEPARATE_ENERGY_MAPS
@@ -1661,6 +1663,112 @@ pcl::LINEMOD::detectTemplatesSemiScaleInvariant (
 #endif
     }
   }
+}
+//////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::LINEMOD::evaluateDetections(
+  const std::vector<QuantizableModality*>& modalities,
+  const std::vector<LINEMODDetection>& inputDetections,
+  const std::vector<SparseQuantizedMultiModTemplate>& inputTemplates,
+  std::vector<float>& evaluationScores
+) const
+{
+  // create energy maps
+  std::vector<EnergyMaps> modality_energy_maps;
+  const size_t nr_modalities = modalities.size();
+  modality_energy_maps.reserve(nr_modalities);
+  for (size_t modality_index = 0; modality_index < nr_modalities; ++modality_index)
+  {
+    const QuantizedMap & quantized_map = modalities[modality_index]->getSpreadedQuantizedMap ();
+
+    const size_t width = quantized_map.getWidth ();
+    const size_t height = quantized_map.getHeight ();
+    const unsigned char * quantized_data = quantized_map.getData ();
+
+    const int nr_bins = 8;
+    EnergyMaps energy_maps;
+    energy_maps.initialize (width, height, nr_bins);
+
+    #pragma omp parallel for
+    for (int bin_index = 0; bin_index < nr_bins; ++bin_index)
+    {
+      static const unsigned char base_bit = static_cast<unsigned char> (0x1);
+      const unsigned char val0 = static_cast<unsigned char> (base_bit << bin_index); // e.g. 00100000
+      const unsigned char val1 = static_cast<unsigned char> (val0 | (base_bit << ((bin_index+1)%8)) | (base_bit << ((bin_index+7)%8))); // e.g. 01110000
+      const unsigned char val2 = static_cast<unsigned char> (val1 | (base_bit << ((bin_index+2)%8)) | (base_bit << ((bin_index+6)%8))); // e.g. 11111000
+      const unsigned char val3 = static_cast<unsigned char> (val2 | (base_bit << ((bin_index+3)%8)) | (base_bit << ((bin_index+5)%8))); // e.g. 11111101
+      unsigned char *energy_map_bin = energy_maps (bin_index);
+
+      size_t index = 0;
+      for (; index < width*height; ++index)
+      {
+        const uint8_t byte = quantized_data[index];
+        energy_map_bin[index] = ((val0 & byte) != 0) +
+                                ((val1 & byte) != 0) +
+                                ((val2 & byte) != 0) +
+                                ((val3 & byte) != 0);
+      }
+    }
+
+    modality_energy_maps.push_back (energy_maps);
+  }
+
+  // compute scores for templates
+  const size_t width = modality_energy_maps[0].getWidth ();
+  const size_t height = modality_energy_maps[0].getHeight ();
+
+  std::vector<size_t> indicesOfDetections(inputDetections.size(), 0);
+  std::vector<float> scoresTemp(inputDetections.size(), 0.0);
+  evaluationScores.resize(inputDetections.size(), 0.0);
+  #pragma omp for
+  for (size_t detection_index = 0; detection_index < inputDetections.size(); ++detection_index)
+  {
+    const LINEMODDetection& detection = inputDetections[detection_index];
+    const SparseQuantizedMultiModTemplate& inputTemplate = inputTemplates[detection_index];
+    int max_score = 0;
+    int raw_score = 0;
+    for (size_t feature_index = 0; feature_index < inputTemplate.features.size (); ++feature_index)
+    {
+      const QuantizedMultiModFeature & feature = inputTemplate.features[feature_index];
+
+      EnergyMaps& energymap = modality_energy_maps[feature.modality_index];
+      const size_t map_x = size_t (float (feature.x * detection.scale + detection.x));
+      const size_t map_y = size_t (float (feature.y * detection.scale + detection.y));
+
+      //feature.modality_index;
+      for (size_t bin_index = 0; bin_index < 8; ++bin_index)
+      {
+        if ((feature.quantized_value & (0x1<<bin_index)) != 0)
+        {
+          max_score += 4;
+
+          unsigned char energy = energymap(bin_index)[map_y * width + map_x];
+          raw_score += energy;
+        }
+      }
+    }
+    float raw_score_rebased = ((float)raw_score - (float (max_score) / 2.0f)) / (float (max_score) / 2.0f);
+    // std::cout << "raw_score_rebased: " << raw_score_rebased << ", max_score: " << max_score << std::endl;
+
+    #pragma omp critical
+    {
+      scoresTemp.push_back(raw_score_rebased);
+      indicesOfDetections.push_back(detection_index);
+    }
+  }
+
+  // Note: sort scores as the same order as inputDetections
+  for (size_t indexTemp = 0; indexTemp < indicesOfDetections.size(); indexTemp++)
+  {
+    evaluationScores[indicesOfDetections[indexTemp]] = scoresTemp[indexTemp];
+  }
+
+  // release data
+  for (size_t modality_index = 0; modality_index < modality_energy_maps.size (); ++modality_index)
+  {
+    modality_energy_maps[modality_index].releaseAll ();
+  }
+
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
