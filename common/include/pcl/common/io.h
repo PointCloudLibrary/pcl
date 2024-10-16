@@ -277,7 +277,7 @@ namespace pcl
     * \ingroup common
     */
   template <typename PointT>
-  PCL_EXPORTS bool
+  bool
   concatenate (const pcl::PointCloud<PointT> &cloud1,
                const pcl::PointCloud<PointT> &cloud2,
                pcl::PointCloud<PointT> &cloud_out)
@@ -295,7 +295,7 @@ namespace pcl
     * \return true if successful, false otherwise
     * \ingroup common
     */
-  PCL_EXPORTS inline bool
+  inline bool
   concatenate (const pcl::PCLPointCloud2 &cloud1,
                const pcl::PCLPointCloud2 &cloud2,
                pcl::PCLPointCloud2 &cloud_out)
@@ -310,7 +310,7 @@ namespace pcl
     * \return true if successful, false otherwise
     * \ingroup common
     */
-  PCL_EXPORTS inline bool
+  inline bool
   concatenate (const pcl::PolygonMesh &mesh1,
                const pcl::PolygonMesh &mesh2,
                pcl::PolygonMesh &mesh_out)
