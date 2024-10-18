@@ -138,7 +138,7 @@ if(APPLE)
   target_link_libraries("${LIB_NAME}" "-framework Cocoa")
 endif()
 
-target_link_libraries("${LIB_NAME}" pcl_common pcl_io pcl_kdtree ${OPENGL_LIBRARIES})
+target_link_libraries("${LIB_NAME}" pcl_common pcl_io pcl_kdtree pcl_geometry pcl_search ${OPENGL_LIBRARIES})
 
 if(${VTK_VERSION} VERSION_GREATER_EQUAL 9.0)
   #Some libs are referenced through depending on IO
