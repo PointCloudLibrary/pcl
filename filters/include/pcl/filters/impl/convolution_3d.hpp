@@ -249,7 +249,8 @@ pcl::filters::Convolution3D<PointInT, PointOutT, KernelT>::convolve (PointCloudO
   default(none) \
   shared(output) \
   firstprivate(nn_indices, nn_distances) \
-  num_threads(threads_)
+  num_threads(threads_) \
+  schedule(dynamic, 64)
   for (std::int64_t point_idx = 0; point_idx < static_cast<std::int64_t> (surface_->size ()); ++point_idx)
   {
     const PointInT& point_in = surface_->points [point_idx];
