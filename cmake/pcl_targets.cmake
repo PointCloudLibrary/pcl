@@ -421,16 +421,10 @@ macro(PCL_ADD_TEST _name _exename)
 
   #Only applies to MSVC
   if(MSVC)
-    #Requires CMAKE version 3.13.0
-    if(CMAKE_VERSION VERSION_LESS "3.13.0" AND (NOT ArgumentWarningShown))
-      message(WARNING "Arguments for unit test projects are not added - this requires at least CMake 3.13. Can be added manually in \"Project settings -> Debugging -> Command arguments\"")
-      SET (ArgumentWarningShown TRUE PARENT_SCOPE)
-    else()
-      #Only add if there are arguments to test
-      if(ARGS_ARGUMENTS)
-        string (REPLACE ";" " " ARGS_ARGUMENTS_STR "${ARGS_ARGUMENTS}")
-        set_target_properties(${_exename} PROPERTIES VS_DEBUGGER_COMMAND_ARGUMENTS ${ARGS_ARGUMENTS_STR})
-      endif()
+    #Only add if there are arguments to test
+    if(ARGS_ARGUMENTS)
+      string (REPLACE ";" " " ARGS_ARGUMENTS_STR "${ARGS_ARGUMENTS}")
+      set_target_properties(${_exename} PROPERTIES VS_DEBUGGER_COMMAND_ARGUMENTS ${ARGS_ARGUMENTS_STR})
     endif()
   endif()
 
@@ -471,15 +465,10 @@ function(PCL_ADD_BENCHMARK _name)
   if(MSVC)
     #Requires CMAKE version 3.13.0
     get_target_property(BenchmarkArgumentWarningShown run_benchmarks PCL_BENCHMARK_ARGUMENTS_WARNING_SHOWN)
-    if(CMAKE_VERSION VERSION_LESS "3.13.0" AND (NOT BenchmarkArgumentWarningShown))
-      message(WARNING "Arguments for benchmark projects are not added - this requires at least CMake 3.13. Can be added manually in \"Project settings -> Debugging -> Command arguments\"")
-      set_target_properties(run_benchmarks PROPERTIES PCL_BENCHMARK_ARGUMENTS_WARNING_SHOWN TRUE)
-    else()
-      #Only add if there are arguments to test
-      if(ARGS_ARGUMENTS)
-        string (REPLACE ";" " " ARGS_ARGUMENTS_STR "${ARGS_ARGUMENTS}")
-        set_target_properties(benchmark_${_name} PROPERTIES VS_DEBUGGER_COMMAND_ARGUMENTS ${ARGS_ARGUMENTS_STR})
-      endif()
+    #Only add if there are arguments to test
+    if(ARGS_ARGUMENTS)
+      string (REPLACE ";" " " ARGS_ARGUMENTS_STR "${ARGS_ARGUMENTS}")
+      set_target_properties(benchmark_${_name} PROPERTIES VS_DEBUGGER_COMMAND_ARGUMENTS ${ARGS_ARGUMENTS_STR})
     endif()
   endif()
 

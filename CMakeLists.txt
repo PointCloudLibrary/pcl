@@ -72,7 +72,8 @@ ENDIF()
 # Create a variable with expected default CXX flags
 # This will be used further down the road to check if the user explicitly provided CXX flags
 if(CMAKE_COMPILER_IS_MSVC)
-  set(CMAKE_CXX_FLAGS_DEFAULT "/DWIN32 /D_WINDOWS /W3 /GR /EHsc")
+  set(CMAKE_CXX_FLAGS_DEFAULT ${CMAKE_CXX_FLAGS_INIT})
+  string(STRIP ${CMAKE_CXX_FLAGS_DEFAULT} CMAKE_CXX_FLAGS_DEFAULT)
 else()
   set(CMAKE_CXX_FLAGS_DEFAULT "")
 endif()
@@ -104,6 +105,13 @@ if(PCL_ENABLE_AVX AND "${CMAKE_CXX_FLAGS}" STREQUAL "${CMAKE_CXX_FLAGS_DEFAULT}"
   include("${PCL_SOURCE_DIR}/cmake/pcl_find_avx.cmake")
   PCL_CHECK_FOR_AVX()
 endif()
+
+# Cuda
+option(WITH_CUDA "Build NVIDIA-CUDA support" TRUE)
+if(WITH_CUDA)
+  include("${PCL_SOURCE_DIR}/cmake/pcl_find_cuda.cmake")
+endif()
+
 
 # ---[ Unix/Darwin/Windows specific flags
 if(CMAKE_COMPILER_IS_GNUCXX)
@@ -139,19 +147,25 @@ endif()
 
 if(CMAKE_COMPILER_IS_MSVC)
   add_definitions("-DBOOST_ALL_NO_LIB -D_SCL_SECURE_NO_WARNINGS -D_CRT_SECURE_NO_WARNINGS -DNOMINMAX ${SSE_DEFINITIONS}")
-  
+
   if("${CMAKE_CXX_FLAGS}" STREQUAL "${CMAKE_CXX_FLAGS_DEFAULT}")
+    
     string(APPEND CMAKE_CXX_FLAGS " /fp:precise ${SSE_FLAGS} ${AVX_FLAGS}")
+    set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} -Xcompiler=/bigobj")
+
+    set(PCL_USE_GLOBAL_OPTIMIZATION TRUE)
+    if(CUDA_FOUND)
+      if(${CUDA_VERSION_STRING} VERSION_GREATER_EQUAL "10.0" AND ${CUDA_VERSION_STRING} VERSION_LESS "12.0")
+        set(PCL_USE_GLOBAL_OPTIMIZATION FALSE)
+        message("Global optimizations /GL has been turned off, as it doesn't work with nvcc/thrust in CUDA 10 and 11.")
+      endif()
+    endif()
 
     # Add extra code generation/link optimizations
-    if(CMAKE_MSVC_CODE_LINK_OPTIMIZATION AND (NOT BUILD_CUDA) AND (NOT BUILD_GPU))
+    if(CMAKE_MSVC_CODE_LINK_OPTIMIZATION AND PCL_USE_GLOBAL_OPTIMIZATION)
       string(APPEND CMAKE_CXX_FLAGS_RELEASE " /GL")
       string(APPEND CMAKE_SHARED_LINKER_FLAGS_RELEASE " /LTCG /OPT:REF")
       string(APPEND CMAKE_EXE_LINKER_FLAGS_RELEASE " /LTCG")
-    else()
-      set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} -Xcompiler=/bigobj")
-      
-      message("Global optimizations /GL has been turned off, as it doesn't work with nvcc/thrust")
     endif()
     # /MANIFEST:NO") # please, don't disable manifest generation, otherwise crash at start for vs2008
 
@@ -176,24 +190,13 @@ if(CMAKE_COMPILER_IS_MSVC)
     include(ProcessorCount)
     ProcessorCount(CPUCores)
     set(MSVC_MP ${CPUCores} CACHE STRING "Number of simultaneously running compilers (0 = automatic detection by MSVC). See documentation of /MP flag.")
-    if (CMAKE_VERSION VERSION_LESS 3.11.0)
-      # Usage of COMPILE_LANGUAGE generator expression for MSVC in add_compile_options requires at least CMake 3.11, see https://gitlab.kitware.com/cmake/cmake/issues/17435
-      if(MSVC_MP EQUAL 0)
-        # MSVC_MP is 0 in case the information cannot be determined by ProcessorCount => fallback
-        string(APPEND CMAKE_C_FLAGS " /MP")
-        string(APPEND CMAKE_CXX_FLAGS " /MP")
-      elseif(MSVC_MP GREATER 1)
-        string(APPEND CMAKE_C_FLAGS " /MP${MSVC_MP}")
-        string(APPEND CMAKE_CXX_FLAGS " /MP${MSVC_MP}")
-      endif()      
-    else()      
-      if(MSVC_MP EQUAL 0)
-        # MSVC_MP is 0 in case the information cannot be determined by ProcessorCount => fallback
-        # Generator expression is necessary to limit /MP flag to C/CXX, so flag will be not set to e.g. CUDA (see https://gitlab.kitware.com/cmake/cmake/issues/17535)
-        add_compile_options($<$<OR:$<COMPILE_LANGUAGE:C>,$<COMPILE_LANGUAGE:CXX>>:/MP>)
-      elseif(MSVC_MP GREATER 1)
-        add_compile_options($<$<OR:$<COMPILE_LANGUAGE:C>,$<COMPILE_LANGUAGE:CXX>>:/MP${MSVC_MP}>)
-      endif()
+    
+    if(MSVC_MP EQUAL 0)
+      # MSVC_MP is 0 in case the information cannot be determined by ProcessorCount => fallback
+      # Generator expression is necessary to limit /MP flag to C/CXX, so flag will be not set to e.g. CUDA (see https://gitlab.kitware.com/cmake/cmake/issues/17535)
+      add_compile_options($<$<OR:$<COMPILE_LANGUAGE:C>,$<COMPILE_LANGUAGE:CXX>>:/MP>)
+    elseif(MSVC_MP GREATER 1)
+      add_compile_options($<$<OR:$<COMPILE_LANGUAGE:C>,$<COMPILE_LANGUAGE:CXX>>:/MP${MSVC_MP}>)
     endif()
   endif()
   string(APPEND CMAKE_CXX_FLAGS " /bigobj")
@@ -355,12 +358,6 @@ if(WITH_QHULL)
   if(NOT (${QHULL_LIBRARY_TYPE} MATCHES ${PCL_QHULL_REQUIRED_TYPE}) AND NOT (${PCL_QHULL_REQUIRED_TYPE} MATCHES "DONTCARE"))
     message(FATAL_ERROR "Qhull was selected with ${PCL_QHULL_REQUIRED_TYPE} but found as ${QHULL_LIBRARY_TYPE}")
   endif()
-endif()
-
-# Cuda
-option(WITH_CUDA "Build NVIDIA-CUDA support" TRUE)
-if(WITH_CUDA)
-  include("${PCL_SOURCE_DIR}/cmake/pcl_find_cuda.cmake")
 endif()
 
 # find GLEW before VTK as it uses custom findGLEW that doesn't work with cmakes findGLEW.
