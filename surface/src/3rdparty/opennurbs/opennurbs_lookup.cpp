@@ -666,7 +666,7 @@ std::size_t ON_SerialNumberMap::ActiveIdCount() const
   return m_active_id_count;
 }
 
-#if _MSC_VER >= 1930
+#if (_MSC_VER >= 1930 && _MSC_VER <= 1949)
 // Solves internal compiler error on MSVC 2022
 // (see https://github.com/microsoft/vcpkg/issues/19561)
 #define ON_VS2022_COMPILER_CRASH
