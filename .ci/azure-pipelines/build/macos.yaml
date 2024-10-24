@@ -3,7 +3,7 @@ steps:
     # find the commit hash on a quick non-forced update too
     fetchDepth: 10
   - script: |
-      brew install cmake pkg-config boost eigen flann glew libusb qhull vtk glew freeglut qt5 libpcap libomp google-benchmark cjson
+      brew install cmake pkg-config boost eigen flann glew libusb qhull vtk glew freeglut qt5 libpcap libomp suite-sparse zlib google-benchmark cjson
       brew install brewsci/science/openni
       git clone https://github.com/abseil/googletest.git $GOOGLE_TEST_DIR # the official endpoint changed to abseil/googletest
       cd $GOOGLE_TEST_DIR && git checkout release-1.8.1
@@ -18,6 +18,7 @@ steps:
         -DGTEST_INCLUDE_DIR="$GOOGLE_TEST_DIR/googletest/include" \
         -DQt5_DIR=/usr/local/opt/qt5/lib/cmake/Qt5 \
         -DPCL_ONLY_CORE_POINT_TYPES=ON \
+        -DBUILD_surface_on_nurbs=ON -DUSE_UMFPACK=ON \
         -DBUILD_simulation=ON \
         -DBUILD_global_tests=ON \
         -DBUILD_benchmarks=ON \
