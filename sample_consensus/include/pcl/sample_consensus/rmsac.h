@@ -75,7 +75,8 @@ namespace pcl
         */
       RandomizedMEstimatorSampleConsensus (const SampleConsensusModelPtr &model) 
         : SampleConsensus<PointT> (model)
-        , fraction_nr_pretest_ (10.0) // Number of samples to try randomly in percents
+        , fraction_nr_pretest_ (-1.0)
+        , nr_samples_pretest_ (1)
       {
         // Maximum number of trials before we give up.
         max_iterations_ = 10000;
@@ -87,7 +88,8 @@ namespace pcl
         */
       RandomizedMEstimatorSampleConsensus (const SampleConsensusModelPtr &model, double threshold) 
         : SampleConsensus<PointT> (model, threshold)
-        , fraction_nr_pretest_ (10.0) // Number of samples to try randomly in percents
+        , fraction_nr_pretest_ (-1.0)
+        , nr_samples_pretest_ (1)
       {
         // Maximum number of trials before we give up.
         max_iterations_ = 10000;
@@ -100,18 +102,41 @@ namespace pcl
       computeModel (int debug_verbosity_level = 0) override;
 
       /** \brief Set the percentage of points to pre-test.
+        * This is an alternative to setNrSamplesPretest.
         * \param[in] nr_pretest percentage of points to pre-test
         */
       inline void 
-      setFractionNrPretest (double nr_pretest) { fraction_nr_pretest_ = nr_pretest; }
+      setFractionNrPretest (double nr_pretest)
+      {
+        fraction_nr_pretest_ = nr_pretest;
+        nr_samples_pretest_ = 0;
+      }
 
       /** \brief Get the percentage of points to pre-test. */
       inline double 
       getFractionNrPretest () const { return (fraction_nr_pretest_); }
 
+      /** \brief Set the absolute number of points to pre-test.
+        * This is an alternative to setFractionNrPretest.
+        * \param[in] nr_pretest absolute number of points to pre-test
+        */
+      inline void
+      setNrSamplesPretest (std::size_t nr_pretest)
+      {
+        nr_samples_pretest_ = nr_pretest;
+        fraction_nr_pretest_ = -1.0;
+      }
+
+      /** \brief Get the absolute number of points to pre-test. */
+      inline std::size_t
+      getNrSamplesPretest () const { return (nr_samples_pretest_); }
+
     private:
-      /** \brief Number of samples to randomly pre-test, in percents. */
+      /** \brief Number of samples to randomly pre-test, in percents. This is an alternative and mutually exclusive to nr_samples_pretest_. */
       double fraction_nr_pretest_;
+
+      /** \brief Absolute number of samples to randomly pre-test. This is an alternative and mutually exclusive to fraction_nr_pretest_. */
+      std::size_t nr_samples_pretest_;
   };
 }
 
