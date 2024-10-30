@@ -82,7 +82,7 @@ pcl::search::OrganizedNeighbor<PointT>::radiusSearch (const               PointT
   {
     for (; idx < xEnd; ++idx)
     {
-      if (!mask_[idx] || !isFinite ((*input_)[idx]))
+      if (!mask_[idx])
         continue;
 
       float dist_x = (*input_)[idx].x - query.x;
