@@ -42,6 +42,7 @@
 #include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/point_cloud.h>
+#include <pcl/common/point_tests.h> // for pcl::isFinite
 #include <pcl/search/search.h>
 #include <pcl/common/eigen.h>
 
@@ -138,10 +139,16 @@ namespace pcl
           {
             mask_.assign (input_->size (), 0);
             for (const auto& idx : *indices_)
-              mask_[idx] = 1;
+              if (pcl::isFinite((*input_)[idx]))
+                mask_[idx] = 1;
           }
           else
-            mask_.assign (input_->size (), 1);
+          {
+            mask_.assign (input_->size (), 0);
+            for (std::size_t idx=0; idx<input_->size(); ++idx)
+              if (pcl::isFinite((*input_)[idx]))
+                mask_[idx] = 1;
+          }
 
           return estimateProjectionMatrix () && isValid ();
         }
@@ -216,7 +223,7 @@ namespace pcl
         testPoint (const PointT& query, unsigned k, std::vector<Entry>& queue, index_t index) const
         {
           const PointT& point = input_->points [index];
-          if (mask_ [index] && std::isfinite (point.x))
+          if (mask_ [index])
           {
             //float squared_distance = (point.getVector3fMap () - query.getVector3fMap ()).squaredNorm ();
             float dist_x = point.x - query.x;
@@ -278,7 +285,7 @@ namespace pcl
         /** \brief using only a subsample of points to calculate the projection matrix. pyramid_level_ = use down sampled cloud given by pyramid_level_*/
         const unsigned pyramid_level_;
         
-        /** \brief mask, indicating whether the point was in the indices list or not.*/
+        /** \brief mask, indicating whether the point was in the indices list or not, and whether it is finite.*/
         std::vector<unsigned char> mask_;
       public:
         PCL_MAKE_ALIGNED_OPERATOR_NEW
