@@ -34,9 +34,8 @@ set(impl_incs
   "include/pcl/${SUBSYS_NAME}/impl/polygon_operations.hpp"
 )
 
-
 set(LIB_NAME "pcl_${SUBSYS_NAME}")
-PCL_ADD_LIBRARY(${LIB_NAME} COMPONENT ${SUBSYS_NAME})
+PCL_ADD_LIBRARY(${LIB_NAME} COMPONENT ${SUBSYS_NAME} INCLUDES ${incs} ${impl_incs})
 target_link_libraries(${LIB_NAME} INTERFACE Boost::boost pcl_common)
 
 PCL_MAKE_PKGCONFIG(${LIB_NAME} COMPONENT ${SUBSYS_NAME} DESC ${SUBSYS_DESC} PCL_DEPS ${SUBSYS_DEPS} HEADER_ONLY)
