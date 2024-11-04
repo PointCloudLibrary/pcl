@@ -172,7 +172,7 @@ endmacro()
 function(PCL_ADD_LIBRARY _name)
   set(options)
   set(oneValueArgs COMPONENT)
-  set(multiValueArgs SOURCES)
+  set(multiValueArgs SOURCES INCLUDES)
   cmake_parse_arguments(ARGS "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
   if(ARGS_UNPARSED_ARGUMENTS)
@@ -184,13 +184,13 @@ function(PCL_ADD_LIBRARY _name)
   endif()
 
   if(NOT ARGS_SOURCES)
-    add_library(${_name} INTERFACE)
+    add_library(${_name} INTERFACE ${ARGS_INCLUDES})
     
     target_include_directories(${_name} INTERFACE
       $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
       $<INSTALL_INTERFACE:${INCLUDE_INSTALL_ROOT}> 
     )
-
+    set_target_properties(${_name} PROPERTIES FOLDER "Libraries")
   else()
     add_library(${_name} ${PCL_LIB_TYPE} ${ARGS_SOURCES})
     PCL_ADD_VERSION_INFO(${_name})
