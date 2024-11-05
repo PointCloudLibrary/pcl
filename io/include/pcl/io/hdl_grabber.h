@@ -274,7 +274,7 @@ namespace pcl
       boost::asio::ip::udp::endpoint udp_listener_endpoint_;
       boost::asio::ip::address source_address_filter_;
       std::uint16_t source_port_filter_;
-      boost::asio::io_service hdl_read_socket_service_;
+      boost::asio::io_context hdl_read_socket_service_;
       boost::asio::ip::udp::socket *hdl_read_socket_;
       std::string pcap_file_name_;
       std::thread *queue_consumer_thread_;

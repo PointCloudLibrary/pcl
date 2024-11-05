@@ -128,7 +128,7 @@ class PCL_EXPORTS TimGrabber : public Grabber
     std::vector<float> distances_;
 
     boost::asio::ip::tcp::endpoint tcp_endpoint_;
-    boost::asio::io_service tim_io_service_;
+    boost::asio::io_context tim_io_service_;
     boost::asio::ip::tcp::socket tim_socket_;
     //// wait time for receiving data (on the order of milliseconds)
     unsigned int wait_time_milliseconds_ = 0;
