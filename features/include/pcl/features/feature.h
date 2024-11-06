@@ -488,4 +488,6 @@ namespace pcl
   };
 }
 
+#ifdef PCL_NO_PRECOMPILE
 #include <pcl/features/impl/feature.hpp>
+#endif
