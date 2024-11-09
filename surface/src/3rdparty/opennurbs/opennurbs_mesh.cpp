@@ -3689,7 +3689,6 @@ bool ON_Mesh::CombineIdenticalVertices(
     ON_SimpleArray<int> remap_array(vertex_count);
 
     int remap_vertex_count = 0;
-    int merge_count = 0;
     int i0, i1, k;
 
     struct tagMESHPOINTS mp;
@@ -3738,8 +3737,6 @@ bool ON_Mesh::CombineIdenticalVertices(
       {
         if ( CompareMeshPoint( mp.p0+index[i0], mp.p0+index[i1], &mp ) )
           break;
-        else
-          merge_count++;
       }
       for ( /*empty*/; i0 < i1; i0++ )
       {

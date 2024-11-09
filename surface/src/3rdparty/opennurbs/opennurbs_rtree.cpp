@@ -1472,22 +1472,6 @@ std::size_t ON_RTree::SizeOf() const
 }
 
 
-static void NodeCountHelper( const ON_RTreeNode* node, std::size_t& node_count, std::size_t& wasted_branch_count, std::size_t& leaf_count )
-{
-  if ( 0 == node )
-    return;
-  node_count++;
-  wasted_branch_count += (ON_RTree_MAX_NODE_COUNT - node->m_count);
-  if ( node->m_level > 0 )
-  {
-    for ( int i = 0; i < node->m_count; i++ )
-    {
-      NodeCountHelper(node->m_branch[i].m_child,node_count,wasted_branch_count,leaf_count);
-    }
-  }
-  else
-    leaf_count += node->m_count;
-}
 
 void ON_RTree::RemoveAll()
 {

@@ -143,7 +143,7 @@ ON_BOOL32 ON_NurbsSurface::SetDomain(
             )
 {
   bool rc = false;
-  if ( m_order[dir] >= 2 && m_cv_count[dir] >= m_order[dir] && m_knot && t0 < t1 ) {
+  if ( m_order[dir] >= 2 && m_cv_count[dir] >= m_order[dir] && nullptr != m_knot[dir] && t0 < t1 ) {
     const double k0 = m_knot[dir][m_order[dir]-2];
     const double k1 = m_knot[dir][m_cv_count[dir]-1];
     if ( k0 == t0 && k1 == t1 )

@@ -82,6 +82,9 @@ namespace pcl
       updateCurve (double damp) override;
 
     protected:
+      using FittingCurve2dAPDM::addPointConstraint;
+      using FittingCurve2dAPDM::assembleClosestPoints;
+
       /** \brief Add minimization constraint: point-to-surface distance (tangent-distance-minimization). */
       virtual void
       addPointConstraint (const double &param, const Eigen::Vector2d &point, const Eigen::Vector2d &normal,
