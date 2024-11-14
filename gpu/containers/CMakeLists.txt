@@ -26,6 +26,8 @@ target_link_libraries(${LIB_NAME} pcl_common pcl_gpu_utils)
 #Ensures that CUDA is added and the project can compile as it uses cuda calls.
 set_source_files_properties(src/device_memory.cpp PROPERTIES LANGUAGE CUDA)
 
+target_link_libraries(${LIB_NAME} Boost::boost)
+
 set(EXT_DEPS "")
 #set(EXT_DEPS CUDA)
 PCL_MAKE_PKGCONFIG(${LIB_NAME} COMPONENT ${SUBSYS_NAME} DESC ${SUBSYS_DESC} PCL_DEPS ${SUBSYS_DEPS} EXT_DEPS ${EXT_DEPS})
