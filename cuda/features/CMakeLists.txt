@@ -24,7 +24,7 @@ set(incs
 
 set(LIB_NAME "pcl_${SUBSYS_NAME}")
 PCL_CUDA_ADD_LIBRARY(${LIB_NAME} COMPONENT ${SUBSYS_NAME} SOURCES ${srcs} ${incs})
-target_link_libraries(${LIB_NAME} pcl_common)
+target_link_libraries(${LIB_NAME} pcl_common pcl_io pcl_cuda_common)
 
 set(EXT_DEPS "")
 #set(EXT_DEPS CUDA)

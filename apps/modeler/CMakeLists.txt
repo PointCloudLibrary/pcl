@@ -112,7 +112,7 @@ PCL_ADD_EXECUTABLE(
     ${incs}
     ${impl_incs})
 
-target_link_libraries("${EXE_NAME}" pcl_common pcl_io pcl_kdtree pcl_filters pcl_visualization pcl_segmentation pcl_surface pcl_features pcl_sample_consensus pcl_search ${QTX}::Widgets)
+target_link_libraries("${EXE_NAME}" pcl_common pcl_io pcl_kdtree pcl_filters pcl_registration pcl_visualization pcl_segmentation pcl_surface pcl_features pcl_sample_consensus pcl_search ${QTX}::Widgets)
 target_include_directories(${EXE_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 # Install include files
