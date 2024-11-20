@@ -67,7 +67,7 @@ pcl::SampleConsensusModelPlane<PointT>::isSampleGood (const Indices &samples) co
   // normalization will fail. One could also interpret this as kind of check
   // if the triangle spanned by those three points would have an area greater
   // than zero.
-  if ((p1 - p0).cross(p2 - p0).stableNorm() < Eigen::NumTraits<float>::dummy_precision ())
+  if ((p1 - p0).cross(p2 - p0).stableNorm() < Eigen::NumTraits<double>::dummy_precision ())
   {
     PCL_ERROR ("[pcl::SampleConsensusModelPlane::isSampleGood] Sample points too similar or collinear!\n");
     return (false);
@@ -98,7 +98,7 @@ pcl::SampleConsensusModelPlane<PointT>::computeModelCoefficients (
   const float crossNorm = cross.stableNorm();
 
   // Checking for collinearity here
-  if (crossNorm < Eigen::NumTraits<float>::dummy_precision ())
+  if (crossNorm < Eigen::NumTraits<double>::dummy_precision ())
   {
     PCL_ERROR ("[pcl::SampleConsensusModelPlane::computeModelCoefficients] Chosen samples are collinear!\n");
     return (false);

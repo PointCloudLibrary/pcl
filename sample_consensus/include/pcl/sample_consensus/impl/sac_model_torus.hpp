@@ -68,15 +68,15 @@ pcl::SampleConsensusModelTorus<PointT, PointNT>::isSampleGood(
 
   // Required for numeric stability on computeModelCoefficients
   if (std::abs((n0).cross(n1).squaredNorm()) <
-          Eigen::NumTraits<float>::dummy_precision() ||
+          Eigen::NumTraits<double>::dummy_precision() ||
       std::abs((n0).cross(n2).squaredNorm()) <
-          Eigen::NumTraits<float>::dummy_precision() ||
+          Eigen::NumTraits<double>::dummy_precision() ||
       std::abs((n0).cross(n3).squaredNorm()) <
-          Eigen::NumTraits<float>::dummy_precision() ||
+          Eigen::NumTraits<double>::dummy_precision() ||
       std::abs((n1).cross(n2).squaredNorm()) <
-          Eigen::NumTraits<float>::dummy_precision() ||
+          Eigen::NumTraits<double>::dummy_precision() ||
       std::abs((n1).cross(n3).squaredNorm()) <
-          Eigen::NumTraits<float>::dummy_precision()) {
+          Eigen::NumTraits<double>::dummy_precision()) {
     PCL_ERROR("[pcl::SampleConsensusModelEllipse3D::isSampleGood] Sample points "
               "normals too similar or collinear!\n");
     return (false);
