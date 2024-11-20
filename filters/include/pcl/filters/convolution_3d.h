@@ -272,7 +272,7 @@ namespace pcl
         double search_radius_;
 
         /** \brief number of threads */
-        unsigned int threads_;
+        unsigned int threads_{1};
 
         /** \brief convlving kernel */
         KernelT kernel_;

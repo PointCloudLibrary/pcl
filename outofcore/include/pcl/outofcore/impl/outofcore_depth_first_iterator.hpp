@@ -107,10 +107,10 @@ namespace pcl
           if (!stack_.empty ())
           {
             std::pair<OutofcoreOctreeBaseNode<ContainerT, PointT>*, unsigned char>& stackEntry = stack_.back ();
-            stack_.pop_back ();
               
             this->currentNode_ = stackEntry.first;
             currentChildIdx_ = stackEntry.second;
+            stack_.pop_back (); // stackEntry is a reference, so pop_back after accessing it!
               
             //don't do anything with the keys here...
             this->currentOctreeDepth_--;

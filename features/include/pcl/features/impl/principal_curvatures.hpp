@@ -43,6 +43,7 @@
 #include <pcl/features/principal_curvatures.h>
 
 #include <pcl/common/point_tests.h> // for pcl::isFinite
+#include <pcl/common/eigen.h> // for eigen33
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointNT, typename PointOutT> void

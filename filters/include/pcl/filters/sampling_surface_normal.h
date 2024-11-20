@@ -61,7 +61,7 @@ namespace pcl
     using PointCloudPtr = typename PointCloud::Ptr;
     using PointCloudConstPtr = typename PointCloud::ConstPtr;
 
-    using Vector = Eigen::Matrix<float, Eigen::Dynamic, 1>;
+    using Vector = Eigen::Matrix<float, 3, 1>;
 
     public:
 

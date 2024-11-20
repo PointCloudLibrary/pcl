@@ -86,7 +86,7 @@ pcl::SampleConsensusModelTorus<PointT, PointNT>::isSampleGood(
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 float
-crossDot(Eigen::Vector3f v1, Eigen::Vector3f v2, Eigen::Vector3f v3)
+crossDot(const Eigen::Vector3f& v1, const Eigen::Vector3f& v2, const Eigen::Vector3f& v3)
 {
   return v1.cross(v2).dot(v3);
 }

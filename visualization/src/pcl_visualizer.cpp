@@ -4358,7 +4358,7 @@ int
 pcl::visualization::PCLVisualizer::getGeometryHandlerIndex (const std::string &id)
 {
   auto am_it = style_->getCloudActorMap ()->find (id);
-  if (am_it != cloud_actor_map_->end ())
+  if (am_it == cloud_actor_map_->end ())
     return (-1);
 
   return (am_it->second.geometry_handler_index_);
@@ -4593,7 +4593,7 @@ pcl::visualization::PCLVisualizer::getUniqueCameraFile (int argc, char **argv)
       boost::uuids::detail::sha1::digest_type digest;
       sha1.get_digest (digest);
       sstream << ".";
-      for (int i = 0; i < 5; ++i) {
+      for (int i = 0; i < static_cast<int>(sizeof(digest)/sizeof(unsigned int)); ++i) {
         sstream << std::hex << *(reinterpret_cast<unsigned int*>(&digest[0]) + i);
       }
       sstream << ".cam";

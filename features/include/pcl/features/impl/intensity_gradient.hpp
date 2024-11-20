@@ -43,6 +43,7 @@
 #include <pcl/features/intensity_gradient.h>
 
 #include <pcl/common/point_tests.h> // for pcl::isFinite
+#include <pcl/common/eigen.h> // for eigen33
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////

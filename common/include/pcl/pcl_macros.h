@@ -116,11 +116,13 @@
   #define _PCL_DEPRECATED_HEADER_IMPL(Message)
 #endif
 
+// NOLINTBEGIN(bugprone-macro-parentheses)
 /**
  * \brief A handy way to inform the user of the removal deadline
  */
 #define _PCL_PREPARE_REMOVAL_MESSAGE(Major, Minor, Msg)                                 \
-  Msg " (It will be removed in PCL " BOOST_PP_STRINGIZE((Major).Minor) ")"
+  Msg " (It will be removed in PCL " BOOST_PP_STRINGIZE(Major.Minor) ")"
+// NOLINTEND(bugprone-macro-parentheses)
 
 /**
  * \brief Tests for Minor < PCL_MINOR_VERSION

@@ -47,6 +47,7 @@
 #include <pcl/common/io.h> // for copyPointCloud
 #include <pcl/common/common.h> // for getMaxDistance
 #include <pcl/common/transforms.h>
+#include <pcl/search/kdtree.h> // for KdTree
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointInT, typename PointNT, typename PointOutT> void
@@ -623,7 +624,6 @@ pcl::OURCVFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloud
     {
 
       pcl::PointIndices pi;
-      pcl::PointIndices pi_cvfh;
       pcl::PointIndices pi_filtered;
 
       clusters_.push_back (pi);

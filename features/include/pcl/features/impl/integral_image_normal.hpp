@@ -36,6 +36,7 @@
  *
  */
 #pragma once
+#include <pcl/common/eigen.h> // for eigen33
 #include <pcl/features/integral_image_normal.h>
 
 #include <algorithm>
@@ -491,7 +492,6 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computePointNormalMirro
     Eigen::Vector3f center;
     typename IntegralImage2D<float, 3>::SecondOrderType so_elements;
     typename IntegralImage2D<float, 3>::ElementType tmp_center;
-    typename IntegralImage2D<float, 3>::SecondOrderType tmp_so_elements;
 
     center[0] = 0;
     center[1] = 0;

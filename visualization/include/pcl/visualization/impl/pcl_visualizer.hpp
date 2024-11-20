@@ -259,9 +259,7 @@ pcl::visualization::PCLVisualizer::convertPointCloudToVTKPolyData (
     for (vtkIdType i = 0; i < nr_points; ++i)
     {
       // Check if the point is invalid
-      if (!std::isfinite ((*cloud)[i].x) ||
-          !std::isfinite ((*cloud)[i].y) ||
-          !std::isfinite ((*cloud)[i].z))
+      if (!pcl::isXYZFinite((*cloud)[i]))
         continue;
 
       std::copy (&(*cloud)[i].x, &(*cloud)[i].x + 3, &data[ptr]);
