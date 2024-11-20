@@ -63,7 +63,11 @@ pcl::RandomSample<PointT>::applyFilter (Indices &indices)
       removed_indices_->resize (N - sample_size);
 
     // Set random seed so derived indices are the same each time the filter runs
+#ifdef __OpenBSD__
+    srand_deterministic (seed_); // OpenBSD only offers repeatable sequences with this function
+#else
     std::srand (seed_);
+#endif // __OpenBSD__
 
     // Algorithm S
     std::size_t i = 0;

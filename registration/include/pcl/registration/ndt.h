@@ -126,7 +126,7 @@ public:
     // Prevents unnecessary voxel initiations
     if (resolution_ != resolution) {
       resolution_ = resolution;
-      if (input_) {
+      if (target_) { // init() needs target_
         init();
       }
     }

@@ -120,7 +120,6 @@ pcl::apps::DominantPlaneSegmentation<PointType>::compute_table_plane()
 
   // Compute the plane coefficients
   Eigen::Vector4f model_coefficients;
-  EIGEN_ALIGN16 Eigen::Matrix3f covariance_matrix;
 
   model_coefficients[0] = table_coefficients_->values[0];
   model_coefficients[1] = table_coefficients_->values[1];
@@ -251,7 +250,6 @@ pcl::apps::DominantPlaneSegmentation<PointType>::compute_fast(
 
   // Compute the plane coefficients
   Eigen::Vector4f model_coefficients;
-  EIGEN_ALIGN16 Eigen::Matrix3f covariance_matrix;
 
   model_coefficients[0] = table_coefficients_->values[0];
   model_coefficients[1] = table_coefficients_->values[1];
@@ -626,7 +624,6 @@ pcl::apps::DominantPlaneSegmentation<PointType>::compute(
 
   // Compute the plane coefficients
   Eigen::Vector4f model_coefficients;
-  EIGEN_ALIGN16 Eigen::Matrix3f covariance_matrix;
 
   model_coefficients[0] = table_coefficients_->values[0];
   model_coefficients[1] = table_coefficients_->values[1];
@@ -795,7 +792,6 @@ pcl::apps::DominantPlaneSegmentation<PointType>::compute_full(
 
   // Compute the plane coefficients
   Eigen::Vector4f model_coefficients;
-  EIGEN_ALIGN16 Eigen::Matrix3f covariance_matrix;
 
   model_coefficients[0] = table_coefficients_->values[0];
   model_coefficients[1] = table_coefficients_->values[1];

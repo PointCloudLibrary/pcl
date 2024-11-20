@@ -451,10 +451,9 @@ pcl::SampleConsensusModelEllipse3D<PointT>::optimizeModelCoefficients (
   OptimizationFunctor functor(this, inliers);
   Eigen::NumericalDiff<OptimizationFunctor> num_diff(functor);
   Eigen::LevenbergMarquardt<Eigen::NumericalDiff<OptimizationFunctor>, double> lm(num_diff);
-  Eigen::VectorXd coeff;
+  Eigen::VectorXd coeff = model_coefficients.cast<double>();
   int info = lm.minimize(coeff);
-  for (Eigen::Index i = 0; i < coeff.size (); ++i)
-    optimized_coefficients[i] = static_cast<float> (coeff[i]);
+  optimized_coefficients = coeff.cast<float>();
 
   // Compute the L2 norm of the residuals
   PCL_DEBUG ("[pcl::SampleConsensusModelEllipse3D::optimizeModelCoefficients] LM solver finished with exit code %i, having a residual norm of %g. \nInitial solution: %g %g %g %g %g %g %g %g %g %g %g\nFinal solution: %g %g %g %g %g %g %g %g %g %g %g\n",

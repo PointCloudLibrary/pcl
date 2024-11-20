@@ -44,6 +44,7 @@
 #include <pcl/features/cvfh.h>
 #include <pcl/features/normal_3d.h>
 #include <pcl/common/centroid.h>
+#include <pcl/search/kdtree.h> // for KdTree
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointInT, typename PointNT, typename PointOutT> void

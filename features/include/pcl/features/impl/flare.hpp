@@ -41,6 +41,8 @@
 
 #include <pcl/features/flare.h>
 #include <pcl/common/geometry.h>
+#include <pcl/search/kdtree.h> // for KdTree
+#include <pcl/search/organized.h> // for OrganizedNeighbor
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointInT, typename PointNT, typename PointOutT, typename SignedDistanceT> bool

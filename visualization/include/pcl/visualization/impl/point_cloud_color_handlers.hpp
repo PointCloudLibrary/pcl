@@ -171,9 +171,7 @@ PointCloudColorHandlerRGBField<PointT>::getColor () const
     for (vtkIdType cp = 0; cp < nr_points; ++cp)
     {
       // Copy the value at the specified field
-      if (!std::isfinite ((*cloud_)[cp].x) ||
-          !std::isfinite ((*cloud_)[cp].y) ||
-          !std::isfinite ((*cloud_)[cp].z))
+      if (!pcl::isXYZFinite((*cloud_)[cp]))
         continue;
       memcpy (&rgb, (reinterpret_cast<const char *> (&(*cloud_)[cp])) + rgba_offset, sizeof (pcl::RGB));
       colors[j    ] = rgb.r;
@@ -256,9 +254,7 @@ PointCloudColorHandlerHSVField<PointT>::getColor () const
     for (vtkIdType cp = 0; cp < nr_points; ++cp)
     {
       // Copy the value at the specified field
-      if (!std::isfinite ((*cloud_)[cp].x) ||
-          !std::isfinite ((*cloud_)[cp].y) ||
-          !std::isfinite ((*cloud_)[cp].z))
+      if (!pcl::isXYZFinite((*cloud_)[cp]))
         continue;
 
       ///@todo do this with the point_types_conversion in common, first template it!
@@ -409,7 +405,7 @@ PointCloudColorHandlerGenericField<PointT>::getColor () const
     for (vtkIdType cp = 0; cp < nr_points; ++cp)
     {
       // Copy the value at the specified field
-      if (!std::isfinite ((*cloud_)[cp].x) || !std::isfinite ((*cloud_)[cp].y) || !std::isfinite ((*cloud_)[cp].z))
+      if (!pcl::isXYZFinite((*cloud_)[cp]))
         continue;
 
       const std::uint8_t* pt_data = reinterpret_cast<const std::uint8_t*> (&(*cloud_)[cp]);
@@ -479,9 +475,7 @@ PointCloudColorHandlerRGBAField<PointT>::getColor () const
     for (vtkIdType cp = 0; cp < nr_points; ++cp)
     {
       // Copy the value at the specified field
-      if (!std::isfinite ((*cloud_)[cp].x) ||
-          !std::isfinite ((*cloud_)[cp].y) ||
-          !std::isfinite ((*cloud_)[cp].z))
+      if (!pcl::isXYZFinite((*cloud_)[cp]))
         continue;
 
       colors[j    ] = (*cloud_)[cp].r;

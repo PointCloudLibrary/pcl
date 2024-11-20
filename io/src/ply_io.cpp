@@ -409,8 +409,16 @@ void
 pcl::PLYReader::vertexIntensityCallback (pcl::io::ply::uint8 intensity)
 {
   pcl::io::ply::float32 intensity_ (intensity);
-  cloud_->at<pcl::io::ply::float32>(vertex_count_, vertex_offset_before_) = intensity_;
-  vertex_offset_before_ += static_cast<int> (sizeof (pcl::io::ply::float32));
+  try
+  {
+    cloud_->at<pcl::io::ply::float32>(vertex_count_, vertex_offset_before_) = intensity_;
+    vertex_offset_before_ += static_cast<int> (sizeof (pcl::io::ply::float32));
+  }
+  catch(const std::out_of_range&)
+  {
+    PCL_WARN ("[pcl::PLYReader::vertexIntensityCallback] Incorrect data index specified (%lu)!\n", vertex_count_ * cloud_->point_step + vertex_offset_before_);
+    assert(false);
+  }
 }
 
 void

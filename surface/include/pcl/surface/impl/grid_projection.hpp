@@ -630,9 +630,7 @@ pcl::GridProjection<PointNT>::reconstructPolygons (std::vector<pcl::Vertices> &p
   for (pcl::index_t cp = 0; cp < static_cast<pcl::index_t> (data_->size ()); ++cp)
   {
     // Check if the point is invalid
-    if (!std::isfinite ((*data_)[cp].x) ||
-        !std::isfinite ((*data_)[cp].y) ||
-        !std::isfinite ((*data_)[cp].z))
+    if (!pcl::isXYZFinite((*data_)[cp]))
       continue;
 
     Eigen::Vector3i index_3d;
