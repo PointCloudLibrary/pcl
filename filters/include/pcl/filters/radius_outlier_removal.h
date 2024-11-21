@@ -64,6 +64,7 @@ namespace pcl
     * indices_rem = rorfilter.getRemovedIndices ();
     * // The indices_rem array indexes all points of cloud_in that have 5 or more neighbors within the 0.1 search radius
     * \endcode
+    * \sa StatisticalOutlierRemoval
     * \author Radu Bogdan Rusu
     * \ingroup filters
     */
