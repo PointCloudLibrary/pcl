@@ -67,6 +67,7 @@ namespace pcl
    * filter.filter (*cloud_out);
 
    * \endcode
+   * \ingroup filters
    */
   template <typename PointT>
   class ModelOutlierRemoval : public FilterIndices<PointT>

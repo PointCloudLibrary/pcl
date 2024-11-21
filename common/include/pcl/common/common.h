@@ -180,7 +180,7 @@ namespace pcl
   getMaxDistance (const pcl::PointCloud<PointT> &cloud, const Indices &indices,
                   const Eigen::Vector4f &pivot_pt, Eigen::Vector4f &max_pt);
 
-  /** \brief Get the minimum and maximum values on each of the 3 (x-y-z) dimensions in a given pointcloud
+  /** \brief Get the minimum and maximum values on each of the 3 (x-y-z) dimensions in a given pointcloud. This is the axis aligned bounding box (AABB).
     * \param[in] cloud the point cloud data message
     * \param[out] min_pt the resultant minimum bounds
     * \param[out] max_pt the resultant maximum bounds
@@ -189,7 +189,7 @@ namespace pcl
   template <typename PointT> inline void 
   getMinMax3D (const pcl::PointCloud<PointT> &cloud, PointT &min_pt, PointT &max_pt);
   
-  /** \brief Get the minimum and maximum values on each of the 3 (x-y-z) dimensions in a given pointcloud
+  /** \brief Get the minimum and maximum values on each of the 3 (x-y-z) dimensions in a given pointcloud. This is the axis aligned bounding box (AABB).
     * \param[in] cloud the point cloud data message
     * \param[out] min_pt the resultant minimum bounds
     * \param[out] max_pt the resultant maximum bounds
@@ -199,7 +199,7 @@ namespace pcl
   getMinMax3D (const pcl::PointCloud<PointT> &cloud, 
                Eigen::Vector4f &min_pt, Eigen::Vector4f &max_pt);
 
-  /** \brief Get the minimum and maximum values on each of the 3 (x-y-z) dimensions in a given pointcloud
+  /** \brief Get the minimum and maximum values on each of the 3 (x-y-z) dimensions in a given pointcloud. This is the axis aligned bounding box (AABB).
     * \param[in] cloud the point cloud data message
     * \param[in] indices the vector of point indices to use from \a cloud
     * \param[out] min_pt the resultant minimum bounds
@@ -210,7 +210,7 @@ namespace pcl
   getMinMax3D (const pcl::PointCloud<PointT> &cloud, const Indices &indices,
                Eigen::Vector4f &min_pt, Eigen::Vector4f &max_pt);
 
-  /** \brief Get the minimum and maximum values on each of the 3 (x-y-z) dimensions in a given pointcloud
+  /** \brief Get the minimum and maximum values on each of the 3 (x-y-z) dimensions in a given pointcloud. This is the axis aligned bounding box (AABB).
     * \param[in] cloud the point cloud data message
     * \param[in] indices the vector of point indices to use from \a cloud
     * \param[out] min_pt the resultant minimum bounds

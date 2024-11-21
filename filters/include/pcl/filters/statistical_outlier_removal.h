@@ -73,6 +73,7 @@ namespace pcl
     * indices_rem = sorfilter.getRemovedIndices ();
     * // The indices_rem array indexes all points of cloud_in that are outliers
     * \endcode
+    * \sa RadiusOutlierRemoval
     * \author Radu Bogdan Rusu
     * \ingroup filters
     */
