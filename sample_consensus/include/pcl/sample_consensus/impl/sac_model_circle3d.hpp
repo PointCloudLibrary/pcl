@@ -65,7 +65,7 @@ pcl::SampleConsensusModelCircle3D<PointT>::isSampleGood (
   // Check if the squared norm of the cross-product is non-zero, otherwise
   // common_helper_vec, which plays an important role in computeModelCoefficients,
   // would likely be ill-formed.
-  if ((p1 - p0).cross(p1 - p2).squaredNorm() < Eigen::NumTraits<float>::dummy_precision ())
+  if ((p1 - p0).cross(p1 - p2).squaredNorm() < Eigen::NumTraits<double>::dummy_precision ())
   {
     PCL_ERROR ("[pcl::SampleConsensusModelCircle3D::isSampleGood] Sample points too similar or collinear!\n");
     return (false);
@@ -102,7 +102,7 @@ pcl::SampleConsensusModelCircle3D<PointT>::computeModelCoefficients (const Indic
 
   // The same check is implemented in isSampleGood, so be sure to look there too
   // if you find the need to change something here.
-  if (common_helper_vec.squaredNorm() < Eigen::NumTraits<float>::dummy_precision ())
+  if (common_helper_vec.squaredNorm() < Eigen::NumTraits<double>::dummy_precision ())
   {
     PCL_ERROR ("[pcl::SampleConsensusModelCircle3D::computeModelCoefficients] Sample points too similar or collinear!\n");
     return (false);
