@@ -79,6 +79,7 @@ pcl::RadiusOutlierRemoval<PointT>::applyFilterIndices (Indices &indices)
   // The arrays to be used
   Indices nn_indices (mean_k);
   std::vector<float> nn_dists(mean_k);
+  std::vector<std::uint8_t> to_keep(indices_->size());
   indices.resize (indices_->size ());
   removed_indices_->resize (indices_->size ());
   int oii = 0, rii = 0;  // oii = output indices iterator, rii = removed indices iterator
@@ -90,11 +91,11 @@ pcl::RadiusOutlierRemoval<PointT>::applyFilterIndices (Indices &indices)
     default(none) \
     schedule(dynamic,64) \
     firstprivate(nn_indices, nn_dists)                                                 \
-    shared(nn_dists_max, mean_k, indices, oii, rii) \
+    shared(nn_dists_max, mean_k, indices, to_keep) \
     num_threads(num_threads_)
     for (ptrdiff_t i = 0; i < static_cast<ptrdiff_t>(indices_->size()); i++)
     {
-      const index_t index = indices_->at(i);
+      const index_t& index = (*indices_)[i];
       // Perform the nearest-k search
       const int k = searcher_->nearestKSearch (index, mean_k, nn_indices, nn_dists);
 
@@ -129,22 +130,12 @@ pcl::RadiusOutlierRemoval<PointT>::applyFilterIndices (Indices &indices)
       // Unless negative was set, then it's the opposite condition
       if (!chk_neighbors)
       {
-        if (extract_removed_indices_)
-        {
-          #pragma omp critical
-          {
-            (*removed_indices_)[rii++] = index;
-          }
-        }
-          
+        to_keep[index] = 0;
         continue;
       }
 
       // Otherwise it was a normal point for output (inlier)
-      #pragma omp critical
-      {
-        indices[oii++] = index;
-      }
+      to_keep[index] = 1;
     }
   }
   // NaN or Inf values could exist => use radius search
@@ -154,11 +145,11 @@ pcl::RadiusOutlierRemoval<PointT>::applyFilterIndices (Indices &indices)
     default(none) \
     schedule(dynamic, 64) \
     firstprivate(nn_indices, nn_dists) \
-    shared(nn_dists_max, mean_k, indices, oii, rii) \
+    shared(nn_dists_max, mean_k, indices, to_keep) \
     num_threads(num_threads_)
     for (ptrdiff_t i = 0; i < static_cast<ptrdiff_t>(indices_->size()); i++)
     {
-      const index_t index = indices_->at(i);
+      const index_t& index = (*indices_)[i];
       if (!pcl::isXYFinite((*input_)[index]))
         continue;
       // Perform the radius search
@@ -170,21 +161,24 @@ pcl::RadiusOutlierRemoval<PointT>::applyFilterIndices (Indices &indices)
       // Unless negative was set, then it's the opposite condition
       if ((!negative_ && k <= min_pts_radius_) || (negative_ && k > min_pts_radius_))
       {
-        if (extract_removed_indices_)
-        {
-          #pragma omp critical
-          {
-            (*removed_indices_)[rii++] = index;
-          }
-        }
+        to_keep[index] = 0;
         continue;
       }
 
       // Otherwise it was a normal point for output (inlier)
-      #pragma omp critical
-      {
-        indices[oii++] = index;
-      }
+      to_keep[index] = 1;
+    }
+  }
+
+  for (index_t i=0; i < static_cast<index_t>(to_keep.size()); i++)
+  {
+    if (to_keep[i] == 1)
+    {
+      indices[oii++] = i;
+    }
+    else
+    {
+      (*removed_indices_)[rii++] = i;
     }
   }
 
