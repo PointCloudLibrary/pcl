@@ -72,9 +72,13 @@ pcl::RadiusOutlierRemoval<PointT>::applyFilterIndices (Indices &indices)
     return;
   }
 
+  // Note: k includes the query point, so is always at least 1
+  const int mean_k = min_pts_radius_ + 1;
+  const double nn_dists_max = search_radius_ * search_radius_;
+
   // The arrays to be used
-  Indices nn_indices (indices_->size ());
-  std::vector<float> nn_dists (indices_->size ());
+  Indices nn_indices (mean_k);
+  std::vector<float> nn_dists(mean_k);
   indices.resize (indices_->size ());
   removed_indices_->resize (indices_->size ());
   int oii = 0, rii = 0;  // oii = output indices iterator, rii = removed indices iterator
@@ -82,14 +86,17 @@ pcl::RadiusOutlierRemoval<PointT>::applyFilterIndices (Indices &indices)
   // If the data is dense => use nearest-k search
   if (input_->is_dense)
   {
-    // Note: k includes the query point, so is always at least 1
-    int mean_k = min_pts_radius_ + 1;
-    double nn_dists_max = search_radius_ * search_radius_;
-
-    for (const auto& index : (*indices_))
+    #pragma omp parallel for \
+    default(none) \
+    schedule(dynamic,64) \
+    firstprivate(nn_indices) \
+    firstprivate(nn_dists) \
+    num_threads(num_threads_)
+    for (ptrdiff_t i = 0; i < indices_->size(); i++)
     {
+      const index_t index = indices_->at(i);
       // Perform the nearest-k search
-      int k = searcher_->nearestKSearch (index, mean_k, nn_indices, nn_dists);
+      const int k = searcher_->nearestKSearch (index, mean_k, nn_indices, nn_dists);
 
       // Check the number of neighbors
       // Note: nn_dists is sorted, so check the last item
@@ -123,35 +130,61 @@ pcl::RadiusOutlierRemoval<PointT>::applyFilterIndices (Indices &indices)
       if (!chk_neighbors)
       {
         if (extract_removed_indices_)
-          (*removed_indices_)[rii++] = index;
+        {
+          #pragma omp critical
+          {
+            (*removed_indices_)[rii++] = index;
+          }
+        }
+          
         continue;
       }
 
       // Otherwise it was a normal point for output (inlier)
-      indices[oii++] = index;
+      #pragma omp critical
+      {
+        indices[oii++] = index;
+      }
     }
   }
   // NaN or Inf values could exist => use radius search
   else
   {
-    for (const auto& index : (*indices_))
+    #pragma omp parallel for \
+    default(none) \
+    schedule(dynamic, 64) \
+    firstprivate(nn_indices) \
+    firstprivate(nn_dists) \
+    num_threads(num_threads_)
+    for (ptrdiff_t i = 0; i < indices_->size(); i++)
     {
+      const index_t index = indices_->at(i);
+      if (!pcl::isXYFinite((*input_)[index]))
+        continue;
       // Perform the radius search
       // Note: k includes the query point, so is always at least 1
       // last parameter (max_nn) is the maximum number of neighbors returned. If enough neighbors are found so that point can not be an outlier, we stop searching.
-      int k = searcher_->radiusSearch (index, search_radius_, nn_indices, nn_dists, min_pts_radius_ + 1);
+      const int k = searcher_->radiusSearch (index, search_radius_, nn_indices, nn_dists, min_pts_radius_ + 1);
 
       // Points having too few neighbors are outliers and are passed to removed indices
       // Unless negative was set, then it's the opposite condition
       if ((!negative_ && k <= min_pts_radius_) || (negative_ && k > min_pts_radius_))
       {
         if (extract_removed_indices_)
-          (*removed_indices_)[rii++] = index;
+        {
+          #pragma omp critical
+          {
+            (*removed_indices_)[rii++] = index;
+          }
+        }
         continue;
       }
 
       // Otherwise it was a normal point for output (inlier)
-      indices[oii++] = index;
+      #pragma omp critical
+      {
+        indices[oii++] = index;
+      }
     }
   }
 
