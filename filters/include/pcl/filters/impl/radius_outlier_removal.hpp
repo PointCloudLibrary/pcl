@@ -89,10 +89,10 @@ pcl::RadiusOutlierRemoval<PointT>::applyFilterIndices (Indices &indices)
     #pragma omp parallel for \
     default(none) \
     schedule(dynamic,64) \
-    firstprivate(nn_indices) \
-    firstprivate(nn_dists) \
+    firstprivate(nn_indices, nn_dists)                                                 \
+    shared(nn_dists_max, mean_k, indices, oii, rii) \
     num_threads(num_threads_)
-    for (ptrdiff_t i = 0; i < indices_->size(); i++)
+    for (ptrdiff_t i = 0; i < static_cast<ptrdiff_t>(indices_->size()); i++)
     {
       const index_t index = indices_->at(i);
       // Perform the nearest-k search
@@ -153,10 +153,10 @@ pcl::RadiusOutlierRemoval<PointT>::applyFilterIndices (Indices &indices)
     #pragma omp parallel for \
     default(none) \
     schedule(dynamic, 64) \
-    firstprivate(nn_indices) \
-    firstprivate(nn_dists) \
+    firstprivate(nn_indices, nn_dists) \
+    shared(nn_dists_max, mean_k, indices, oii, rii) \
     num_threads(num_threads_)
-    for (ptrdiff_t i = 0; i < indices_->size(); i++)
+    for (ptrdiff_t i = 0; i < static_cast<ptrdiff_t>(indices_->size()); i++)
     {
       const index_t index = indices_->at(i);
       if (!pcl::isXYFinite((*input_)[index]))
