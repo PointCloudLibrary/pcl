@@ -1494,6 +1494,7 @@ TEST (RadiusOutlierRemoval, Filters)
 {
   // Test the PointCloud<PointT> method
   PointCloud<PointXYZ> cloud_out;
+  PointCloud<PointXYZ> cloud_out_neg;
   // Remove outliers using a spherical density criterion
   RadiusOutlierRemoval<PointXYZ> outrem;
   outrem.setInputCloud (cloud);
@@ -1506,7 +1507,14 @@ TEST (RadiusOutlierRemoval, Filters)
   EXPECT_EQ (cloud_out.width, 307);
   EXPECT_TRUE (cloud_out.is_dense);
 
+  outrem.setNegative(true);
+  outrem.filter(cloud_out_neg);
+
+  EXPECT_EQ(cloud_out_neg.size(), 90);
+  EXPECT_TRUE(cloud_out_neg.is_dense);
+
   PointCloud<PointXYZRGB> cloud_out_rgb;
+  PointCloud<PointXYZRGB> cloud_out_rgb_neg;
   // Remove outliers using a spherical density criterion on non-dense pointcloud
   RadiusOutlierRemoval<PointXYZRGB> outremNonDense;
   outremNonDense.setInputCloud(cloud_organized);
@@ -1518,6 +1526,11 @@ TEST (RadiusOutlierRemoval, Filters)
   EXPECT_EQ(cloud_out_rgb.size(), 240801);
   EXPECT_EQ(cloud_out_rgb.width, 240801);
   EXPECT_TRUE(cloud_out_rgb.is_dense);
+
+  outremNonDense.setNegative(true);
+  outremNonDense.filter(cloud_out_rgb_neg);
+  EXPECT_EQ(cloud_out_rgb_neg.size(), 66399);
+  //EXPECT_FALSE(cloud_out_rgb_neg.is_dense);
 
   // Test the pcl::PCLPointCloud2 method
   PCLPointCloud2 cloud_out2;

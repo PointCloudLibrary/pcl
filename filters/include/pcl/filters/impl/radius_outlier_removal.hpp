@@ -79,7 +79,9 @@ pcl::RadiusOutlierRemoval<PointT>::applyFilterIndices (Indices &indices)
   // The arrays to be used
   Indices nn_indices (mean_k);
   std::vector<float> nn_dists(mean_k);
-  std::vector<std::uint8_t> to_keep(indices_->size());
+  // Set to keep all points and in the filtering set those we don't want to keep, assuming
+  // we want to keep the majority of the points.
+  std::vector<std::uint8_t> to_keep(indices_->size(), 1);
   indices.resize (indices_->size ());
   removed_indices_->resize (indices_->size ());
   int oii = 0, rii = 0;  // oii = output indices iterator, rii = removed indices iterator
@@ -91,11 +93,11 @@ pcl::RadiusOutlierRemoval<PointT>::applyFilterIndices (Indices &indices)
     default(none) \
     schedule(dynamic,64) \
     firstprivate(nn_indices, nn_dists)                                                 \
-    shared(nn_dists_max, mean_k, indices, to_keep) \
+    shared(nn_dists_max, mean_k, to_keep) \
     num_threads(num_threads_)
     for (ptrdiff_t i = 0; i < static_cast<ptrdiff_t>(indices_->size()); i++)
     {
-      const index_t& index = (*indices_)[i];
+      const auto& index = (*indices_)[i];
       // Perform the nearest-k search
       const int k = searcher_->nearestKSearch (index, mean_k, nn_indices, nn_dists);
 
@@ -104,38 +106,22 @@ pcl::RadiusOutlierRemoval<PointT>::applyFilterIndices (Indices &indices)
       bool chk_neighbors = true;
       if (k == mean_k)
       {
-        if (negative_)
-        {
-          chk_neighbors = false;
-          if (nn_dists_max < nn_dists[k-1])
-          {
-            chk_neighbors = true;
-          }
-        }
-        else
-        {
-          chk_neighbors = true;
           if (nn_dists_max < nn_dists[k-1])
           {
             chk_neighbors = false;
           }
-        }
       }
       else
       {
-        chk_neighbors = negative_;
+        chk_neighbors = false;
       }
 
-      // Points having too few neighbors are outliers and are passed to removed indices
-      // Unless negative was set, then it's the opposite condition
+      // Points having too few neighbors are outliers
       if (!chk_neighbors)
       {
-        to_keep[index] = 0;
+        to_keep[i] = 0;
         continue;
       }
-
-      // Otherwise it was a normal point for output (inlier)
-      to_keep[index] = 1;
     }
   }
   // NaN or Inf values could exist => use radius search
@@ -145,40 +131,54 @@ pcl::RadiusOutlierRemoval<PointT>::applyFilterIndices (Indices &indices)
     default(none) \
     schedule(dynamic, 64) \
     firstprivate(nn_indices, nn_dists) \
-    shared(nn_dists_max, mean_k, indices, to_keep) \
+    shared(to_keep) \
     num_threads(num_threads_)
     for (ptrdiff_t i = 0; i < static_cast<ptrdiff_t>(indices_->size()); i++)
     {
-      const index_t& index = (*indices_)[i];
+      const auto& index = (*indices_)[i];
       if (!pcl::isXYFinite((*input_)[index]))
+      {
+        to_keep[i] = 0;
         continue;
+      }
+        
       // Perform the radius search
       // Note: k includes the query point, so is always at least 1
       // last parameter (max_nn) is the maximum number of neighbors returned. If enough neighbors are found so that point can not be an outlier, we stop searching.
       const int k = searcher_->radiusSearch (index, search_radius_, nn_indices, nn_dists, min_pts_radius_ + 1);
 
-      // Points having too few neighbors are outliers and are passed to removed indices
-      // Unless negative was set, then it's the opposite condition
-      if ((!negative_ && k <= min_pts_radius_) || (negative_ && k > min_pts_radius_))
+      // Points having too few neighbors are outliers
+      if (k <= min_pts_radius_)
       {
-        to_keep[index] = 0;
+        to_keep[i] = 0;
         continue;
       }
-
-      // Otherwise it was a normal point for output (inlier)
-      to_keep[index] = 1;
     }
   }
 
-  for (index_t i=0; i < static_cast<index_t>(to_keep.size()); i++)
+  if (!negative_)
   {
-    if (to_keep[i] == 1)
+    for (index_t i=0; i < static_cast<index_t>(to_keep.size()); i++)
     {
-      indices[oii++] = i;
+      if (to_keep[i] == 1)
+      {
+        indices[oii++] = (*indices_)[i];
+      }
+      else
+      {
+        (*removed_indices_)[rii++] = (*indices_)[i];
+      }
     }
-    else
-    {
-      (*removed_indices_)[rii++] = i;
+  }
+  else
+  {
+    for (index_t i = 0; i < static_cast<index_t>(to_keep.size()); i++) {
+      if (to_keep[i] == 0) {
+        indices[oii++] = (*indices_)[i];
+      }
+      else {
+        (*removed_indices_)[rii++] = (*indices_)[i];
+      }
     }
   }
 
