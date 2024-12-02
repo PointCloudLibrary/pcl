@@ -81,6 +81,7 @@ pcl::RadiusOutlierRemoval<PointT>::applyFilterIndices (Indices &indices)
   std::vector<float> nn_dists(mean_k);
   // Set to keep all points and in the filtering set those we don't want to keep, assuming
   // we want to keep the majority of the points.
+  // 0 = remove, 1 = keep, 2 = remove due to inf/nan
   std::vector<std::uint8_t> to_keep(indices_->size(), 1);
   indices.resize (indices_->size ());
   removed_indices_->resize (indices_->size ());
@@ -136,9 +137,9 @@ pcl::RadiusOutlierRemoval<PointT>::applyFilterIndices (Indices &indices)
     for (ptrdiff_t i = 0; i < static_cast<ptrdiff_t>(indices_->size()); i++)
     {
       const auto& index = (*indices_)[i];
-      if (!pcl::isXYFinite((*input_)[index]))
+      if (!pcl::isXYZFinite((*input_)[index]))
       {
-        to_keep[i] = 0;
+        to_keep[i] = 2;
         continue;
       }
         
@@ -156,31 +157,32 @@ pcl::RadiusOutlierRemoval<PointT>::applyFilterIndices (Indices &indices)
     }
   }
 
-  if (!negative_)
-  {
     for (index_t i=0; i < static_cast<index_t>(to_keep.size()); i++)
     {
-      if (to_keep[i] == 1)
+      if (to_keep[i] == 2)
       {
-        indices[oii++] = (*indices_)[i];
+        if (extract_removed_indices_)
+          (*removed_indices_)[rii++] = (*indices_)[i];
+        continue;
       }
-      else
+
+      if (!negative_ && to_keep[i] == 0)
       {
-        (*removed_indices_)[rii++] = (*indices_)[i];
+        if (extract_removed_indices_)
+          (*removed_indices_)[rii++] = (*indices_)[i];
+        continue;
       }
+
+      if (negative_ && to_keep[i] != 0)
+      {
+        if (extract_removed_indices_)
+          (*removed_indices_)[rii++] = (*indices_)[i];
+        continue;
+      }
+
+      // Otherwise it was a normal point for output (inlier)
+      indices[oii++] = (*indices_)[i];
     }
-  }
-  else
-  {
-    for (index_t i = 0; i < static_cast<index_t>(to_keep.size()); i++) {
-      if (to_keep[i] == 0) {
-        indices[oii++] = (*indices_)[i];
-      }
-      else {
-        (*removed_indices_)[rii++] = (*indices_)[i];
-      }
-    }
-  }
 
   // Resize the output arrays
   indices.resize (oii);
