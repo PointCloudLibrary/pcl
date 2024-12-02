@@ -283,9 +283,9 @@ pcl::ROPSEstimation <PointInT, PointOutT>::computeLRF (const PointInT& point, co
   }
 
   if (std::abs (total_area) < std::numeric_limits <float>::epsilon ())
-    total_area = 1.0f / total_area;
-  else
     total_area = 1.0f;
+  else
+    total_area = 1.0f / total_area;
 
   Eigen::Matrix3f overall_scatter_matrix;
   overall_scatter_matrix.setZero ();
