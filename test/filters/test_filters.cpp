@@ -1530,7 +1530,7 @@ TEST (RadiusOutlierRemoval, Filters)
   outremNonDense.setNegative(true);
   outremNonDense.filter(cloud_out_rgb_neg);
   EXPECT_EQ(cloud_out_rgb_neg.size(), 606);
-  //EXPECT_FALSE(cloud_out_rgb_neg.is_dense);
+  EXPECT_TRUE(cloud_out_rgb_neg.is_dense);
 
   // Test the pcl::PCLPointCloud2 method
   PCLPointCloud2 cloud_out2;

@@ -104,24 +104,32 @@ pcl::RadiusOutlierRemoval<PointT>::applyFilterIndices (Indices &indices)
 
       // Check the number of neighbors
       // Note: nn_dists is sorted, so check the last item
-      bool chk_neighbors = true;
       if (k == mean_k)
       {
-          if (nn_dists_max < nn_dists[k-1])
+          // if a neighbor is furhter away than max distance, remove the point
+          // if negative is true we keep the point
+          if (!negative_ && nn_dists_max < nn_dists[k-1])
           {
-            chk_neighbors = false;
+            to_keep[i] = 0;
+            continue;
+          }
+
+          // if a neighbor is closer than max distance and negative is true, remove the point
+          // if negative is false, we keep the point
+          if (negative_ && nn_dists_max >= nn_dists[k - 1])
+          {
+            to_keep[i] = 0;
+            continue;
           }
       }
       else
       {
-        chk_neighbors = false;
-      }
-
-      // Points having too few neighbors are outliers
-      if (!chk_neighbors)
-      {
-        to_keep[i] = 0;
-        continue;
+        if (!negative_)
+        {
+          // if too few neighbors, remove the point
+          to_keep[i] = 0;
+          continue;
+        }
       }
     }
   }
@@ -139,7 +147,7 @@ pcl::RadiusOutlierRemoval<PointT>::applyFilterIndices (Indices &indices)
       const auto& index = (*indices_)[i];
       if (!pcl::isXYZFinite((*input_)[index]))
       {
-        to_keep[i] = 2;
+        to_keep[i] = 0;
         continue;
       }
         
@@ -149,8 +157,13 @@ pcl::RadiusOutlierRemoval<PointT>::applyFilterIndices (Indices &indices)
       const int k = searcher_->radiusSearch (index, search_radius_, nn_indices, nn_dists, min_pts_radius_ + 1);
 
       // Points having too few neighbors are outliers
-      if (k <= min_pts_radius_)
+      if (!negative_ && k <= min_pts_radius_)
       {
+        to_keep[i] = 0;
+        continue;
+      }
+
+      if (negative_ && k > min_pts_radius_) {
         to_keep[i] = 0;
         continue;
       }
@@ -159,21 +172,7 @@ pcl::RadiusOutlierRemoval<PointT>::applyFilterIndices (Indices &indices)
 
     for (index_t i=0; i < static_cast<index_t>(to_keep.size()); i++)
     {
-      if (to_keep[i] == 2)
-      {
-        if (extract_removed_indices_)
-          (*removed_indices_)[rii++] = (*indices_)[i];
-        continue;
-      }
-
-      if (!negative_ && to_keep[i] == 0)
-      {
-        if (extract_removed_indices_)
-          (*removed_indices_)[rii++] = (*indices_)[i];
-        continue;
-      }
-
-      if (negative_ && to_keep[i] != 0)
+      if (to_keep[i] == 0)
       {
         if (extract_removed_indices_)
           (*removed_indices_)[rii++] = (*indices_)[i];
