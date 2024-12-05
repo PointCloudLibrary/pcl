@@ -81,7 +81,7 @@ pcl::RadiusOutlierRemoval<PointT>::applyFilterIndices (Indices &indices)
   std::vector<float> nn_dists(mean_k);
   // Set to keep all points and in the filtering set those we don't want to keep, assuming
   // we want to keep the majority of the points.
-  // 0 = remove, 1 = keep, 2 = remove due to inf/nan
+  // 0 = remove, 1 = keep
   std::vector<std::uint8_t> to_keep(indices_->size(), 1);
   indices.resize (indices_->size ());
   removed_indices_->resize (indices_->size ());
@@ -106,17 +106,10 @@ pcl::RadiusOutlierRemoval<PointT>::applyFilterIndices (Indices &indices)
       // Note: nn_dists is sorted, so check the last item
       if (k == mean_k)
       {
-          // if a neighbor is furhter away than max distance, remove the point
-          // if negative is true we keep the point
-          if (!negative_ && nn_dists_max < nn_dists[k-1])
-          {
-            to_keep[i] = 0;
-            continue;
-          }
-
-          // if a neighbor is closer than max distance and negative is true, remove the point
-          // if negative is false, we keep the point
-          if (negative_ && nn_dists_max >= nn_dists[k - 1])
+          // if negative_ is false and a neighbor is further away than max distance, remove the point
+          // or
+          // if negative is true and a neighbor is closer than max distance, remove the point
+          if ((!negative_ && nn_dists_max < nn_dists[k-1]) || (negative_ && nn_dists_max >= nn_dists[k - 1]))
           {
             to_keep[i] = 0;
             continue;
@@ -156,14 +149,10 @@ pcl::RadiusOutlierRemoval<PointT>::applyFilterIndices (Indices &indices)
       // last parameter (max_nn) is the maximum number of neighbors returned. If enough neighbors are found so that point can not be an outlier, we stop searching.
       const int k = searcher_->radiusSearch (index, search_radius_, nn_indices, nn_dists, min_pts_radius_ + 1);
 
-      // Points having too few neighbors are outliers
-      if (!negative_ && k <= min_pts_radius_)
+      // Points having too few neighbors are removed
+      // or if negative_ is true, then if it has too many neighbors
+      if ((!negative_ && k <= min_pts_radius_) || (negative_ && k > min_pts_radius_))
       {
-        to_keep[i] = 0;
-        continue;
-      }
-
-      if (negative_ && k > min_pts_radius_) {
         to_keep[i] = 0;
         continue;
       }

@@ -102,7 +102,6 @@ pcl::FilterIndices<PointT>::applyFilter (PointCloud &output)
   {
     applyFilter (indices);
     pcl::copyPointCloud (*input_, indices, output);
-    output.is_dense = true;
   }
 }
 
