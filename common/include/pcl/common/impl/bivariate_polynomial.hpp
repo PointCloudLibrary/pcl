@@ -267,9 +267,9 @@ pcl::operator<< (std::ostream& os, const pcl::BivariatePolynomialT<real>& p)
 template<typename real> void
 pcl::BivariatePolynomialT<real>::writeBinary (std::ostream& os) const
 {
-  os.write (reinterpret_cast<char*> (&degree), sizeof (int));
+  os.write (reinterpret_cast<const char*> (&degree), sizeof (int));
   unsigned int paramCnt = getNoOfParametersFromDegree (this->degree);
-  os.write (reinterpret_cast<char*> (this->parameters), paramCnt * sizeof (real));
+  os.write (reinterpret_cast<const char*> (this->parameters), paramCnt * sizeof (real));
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////

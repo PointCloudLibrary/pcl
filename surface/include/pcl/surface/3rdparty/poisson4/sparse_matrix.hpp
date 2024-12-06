@@ -226,14 +226,18 @@ namespace pcl
     template<class T>
     void SparseMatrix<T>::SetZero()
     {
-      Resize(this->m_N, this->m_M);
+      // copied from operator *=
+      for (int i=0; i<rows; i++)
+      {
+        for(int ii=0;ii<rowSizes[i];ii++){m_ppElements[i][ii].Value=T(0);}
+      }
     }
 
     template<class T>
     void SparseMatrix<T>::SetIdentity()
     {
       SetZero();
-      for(int ij=0; ij < Min( this->Rows(), this->Columns() ); ij++)
+      for(int ij=0; ij < std::min<int>( rows, _maxEntriesPerRow ); ij++)
         (*this)(ij,ij) = T(1);
     }
 
@@ -248,9 +252,9 @@ namespace pcl
     template<class T>
     SparseMatrix<T>& SparseMatrix<T>::operator *= (const T& V)
     {
-      for (int i=0; i<this->Rows(); i++)
+      for (int i=0; i<rows; i++)
       {
-        for(int ii=0;ii<m_ppElements[i].size();i++){m_ppElements[i][ii].Value*=V;}
+        for(int ii=0;ii<rowSizes[i];i++){m_ppElements[i][ii].Value*=V;}
       }
       return *this;
     }
@@ -258,12 +262,12 @@ namespace pcl
     template<class T>
     SparseMatrix<T> SparseMatrix<T>::Multiply( const SparseMatrix<T>& M ) const
     {
-      SparseMatrix<T> R( this->Rows(), M.Columns() );
-      for(int i=0; i<R.Rows(); i++){
-        for(int ii=0;ii<m_ppElements[i].size();ii++){
+      SparseMatrix<T> R( rows, M._maxEntriesPerRow );
+      for(int i=0; i<R.rows; i++){
+        for(int ii=0;ii<rowSizes[i];ii++){
           int N=m_ppElements[i][ii].N;
           T Value=m_ppElements[i][ii].Value;
-          for(int jj=0;jj<M.m_ppElements[N].size();jj++){
+          for(int jj=0;jj<M.rowSizes[N];jj++){
             R(i,M.m_ppElements[N][jj].N) += Value * M.m_ppElements[N][jj].Value;
           }
         }
@@ -317,11 +321,11 @@ namespace pcl
     template<class T>
     SparseMatrix<T> SparseMatrix<T>::Transpose() const
     {
-      SparseMatrix<T> M( this->Columns(), this->Rows() );
+      SparseMatrix<T> M( _maxEntriesPerRow, rows );
 
-      for (int i=0; i<this->Rows(); i++)
+      for (int i=0; i<rows; i++)
       {
-        for(int ii=0;ii<m_ppElements[i].size();ii++){
+        for(int ii=0;ii<rowSizes[i];ii++){
           M(m_ppElements[i][ii].N,i) = m_ppElements[i][ii].Value;
         }
       }
@@ -386,7 +390,7 @@ namespace pcl
       T alpha,beta,rDotR;
       int i;
 
-      solution.Resize(M.Columns());
+      solution.Resize(bb.Dimensions());
       solution.SetZero();
 
       d=r=bb;

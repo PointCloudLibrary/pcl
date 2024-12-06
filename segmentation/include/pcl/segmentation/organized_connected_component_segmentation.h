@@ -125,7 +125,7 @@ namespace pcl
       inline unsigned
       findRoot (const std::vector<unsigned>& runs, unsigned index) const
       {
-        register unsigned idx = index;
+        unsigned idx = index;
         while (runs[idx] != idx)
           idx = runs[idx];
 
