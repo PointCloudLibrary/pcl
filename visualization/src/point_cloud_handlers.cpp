@@ -420,6 +420,10 @@ pcl::visualization::PointCloudColorHandlerGenericField<pcl::PCLPointCloud2>::Poi
 {
   field_idx_  = pcl::getFieldIndex (*cloud, field_name);
   capable_ = field_idx_ != -1;
+  if (field_idx_ != -1 && cloud_->fields[field_idx_].datatype != pcl::PCLPointField::PointFieldTypes::FLOAT32) {
+    capable_ = false;
+    PCL_ERROR("[pcl::PointCloudColorHandlerGenericField] This currently only works with float32 fields, but field %s has a different type.\n", field_name.c_str());
+  }
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -575,6 +579,10 @@ pcl::visualization::PointCloudColorHandlerLabelField<pcl::PCLPointCloud2>::Point
   field_idx_ = pcl::getFieldIndex (*cloud, "label");
   capable_ = field_idx_ != -1;
   static_mapping_ = static_mapping;
+  if (field_idx_ != -1 && cloud_->fields[field_idx_].datatype != pcl::PCLPointField::PointFieldTypes::UINT32) {
+    capable_ = false;
+    PCL_ERROR("[pcl::PointCloudColorHandlerLabelField] This currently only works with uint32 fields, but label field has a different type.\n");
+  }
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
