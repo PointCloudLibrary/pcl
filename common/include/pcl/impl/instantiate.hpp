@@ -95,7 +95,7 @@
 //
 //    ((x)(y)(z))((1)(2)(3))((dracula)(radu))
 //
-#ifdef _MSC_VER
+#if defined(_MSC_VER) && !defined(__clang__)
 #define PCL_INSTANTIATE_PRODUCT_IMPL(r, product) \
   BOOST_PP_CAT(PCL_INSTANTIATE_, BOOST_PP_SEQ_HEAD(product)) \
           BOOST_PP_EXPAND(BOOST_PP_SEQ_TO_TUPLE(BOOST_PP_SEQ_TAIL(product))) 
