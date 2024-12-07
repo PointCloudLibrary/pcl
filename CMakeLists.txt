@@ -440,6 +440,21 @@ if(WITH_SYSTEM_CJSON)
   endif()
 endif()
 
+set(CMAKE_REQUIRED_LIBRARIES Eigen3::Eigen) # so that Eigen/Core is found below
+CHECK_CXX_SOURCE_COMPILES("
+#include <Eigen/Core>
+#if (EIGEN_DEFAULT_ALIGN_BYTES==0) || EIGEN_MALLOC_ALREADY_ALIGNED
+#error Eigen will not use handmade_aligned_malloc (which is fine, we just throw an error here to make this compilation fail)
+#endif
+int main() { return 0; }"
+PCL_USES_EIGEN_HANDMADE_ALIGNED_MALLOC)
+if (PCL_USES_EIGEN_HANDMADE_ALIGNED_MALLOC) # CHECK_CXX_SOURCE_COMPILES does not necessarily set this to 0 or 1
+  set(PCL_USES_EIGEN_HANDMADE_ALIGNED_MALLOC 1)
+else()
+  set(PCL_USES_EIGEN_HANDMADE_ALIGNED_MALLOC 0)
+endif()
+unset(CMAKE_REQUIRED_LIBRARIES)
+
 ### ---[ Create the config.h file
 set(pcl_config_h_in "${CMAKE_CURRENT_SOURCE_DIR}/pcl_config.h.in")
 set(pcl_config_h "${CMAKE_CURRENT_BINARY_DIR}/include/pcl/pcl_config.h")
