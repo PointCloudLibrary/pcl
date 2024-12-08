@@ -368,10 +368,16 @@ PointCloudColorHandlerGenericField<PointT>::setInputCloud (
 {
   PointCloudColorHandler<PointT>::setInputCloud (cloud);
   field_idx_  = pcl::getFieldIndex<PointT> (field_name_, fields_);
-  if (field_idx_ != -1)
-    capable_ = true;
-  else
+  if (field_idx_ == -1) {
     capable_ = false;
+    return;
+  }
+  if (fields_[field_idx_].datatype != pcl::PCLPointField::PointFieldTypes::FLOAT32) {
+    capable_ = false;
+    PCL_ERROR("[pcl::PointCloudColorHandlerGenericField::setInputCloud] This currently only works with float32 fields, but field %s has a different type.\n", field_name_.c_str());
+    return;
+  }
+  capable_ = true;
 }
 
 

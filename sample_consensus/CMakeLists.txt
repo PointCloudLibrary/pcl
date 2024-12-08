@@ -13,6 +13,7 @@ endif()
 
 set(srcs
   src/sac.cpp
+  src/sac_model_ellipse3d.cpp
   src/sac_model_circle.cpp
   src/sac_model_circle3d.cpp
   src/sac_model_cylinder.cpp
@@ -26,7 +27,6 @@ set(srcs
   src/sac_model_plane.cpp
   src/sac_model_registration.cpp
   src/sac_model_sphere.cpp
-  src/sac_model_ellipse3d.cpp
   src/sac_model_torus.cpp
 )
 
