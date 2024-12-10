@@ -91,10 +91,9 @@ pcl::RadiusOutlierRemoval<PointT>::applyFilterIndices (Indices &indices)
   if (input_->is_dense)
   {
     #pragma omp parallel for \
-    default(none) \
     schedule(dynamic,64) \
     firstprivate(nn_indices, nn_dists)                                                 \
-    shared(nn_dists_max, mean_k, to_keep) \
+    shared(to_keep) \
     num_threads(num_threads_)
     for (ptrdiff_t i = 0; i < static_cast<ptrdiff_t>(indices_->size()); i++)
     {
@@ -130,7 +129,6 @@ pcl::RadiusOutlierRemoval<PointT>::applyFilterIndices (Indices &indices)
   else
   {
     #pragma omp parallel for \
-    default(none) \
     schedule(dynamic, 64) \
     firstprivate(nn_indices, nn_dists) \
     shared(to_keep) \
