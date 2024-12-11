@@ -91,10 +91,17 @@ DefaultConvergenceCriteria<Scalar>::hasConverged()
   }
 
   correspondences_cur_mse_ = calculateMSE(correspondences_);
-  PCL_DEBUG("[pcl::DefaultConvergenceCriteria::hasConverged] Previous / Current MSE "
-            "for correspondences distances is: %f / %f.\n",
-            correspondences_prev_mse_,
-            correspondences_cur_mse_);
+  if (std::numeric_limits<double>::max() == correspondences_prev_mse_) {
+    PCL_DEBUG("[pcl::DefaultConvergenceCriteria::hasConverged] Previous / Current MSE "
+              "for correspondences distances is: INIT / %f.\n",
+              correspondences_cur_mse_);
+  }
+  else {
+    PCL_DEBUG("[pcl::DefaultConvergenceCriteria::hasConverged] Previous / Current MSE "
+              "for correspondences distances is: %f / %f.\n",
+              correspondences_prev_mse_,
+              correspondences_cur_mse_);
+  }
 
   // 3. The relative sum of Euclidean squared errors is smaller than a user defined
   // threshold Absolute
