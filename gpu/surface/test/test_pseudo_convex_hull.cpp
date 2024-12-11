@@ -132,7 +132,7 @@ TEST(PCL_SurfaceGPU, pseudoConvexHull)
   pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> single_color(convex_ptr, 0, 255, 0);
 
   viewer.addPointCloud<pcl::PointXYZ> (convex_ptr, single_color, "convex");
-  viewer.setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 5, "convex");
+  viewer.setPointCloudRenderingProperties (pcl::visualization::RenderingProperties::PCL_VISUALIZER_POINT_SIZE, 5, "convex");
 
 
   viewer.addPolylineFromPolygonMesh(mesh);

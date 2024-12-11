@@ -1340,7 +1340,7 @@ pcl::visualization::PCLVisualizer::setBackgroundColor (
 /////////////////////////////////////////////////////////////////////////////////////////////
 bool
 pcl::visualization::PCLVisualizer::setPointCloudRenderingProperties (
-    int property, double val1, double val2, double val3, const std::string &id, int)
+    RenderingProperties property, double val1, double val2, double val3, const std::string &id)
 {
   // Check to see if this ID entry already exists (has it been already added to the visualizer?)
   auto am_it = cloud_actor_map_->find (id);
@@ -1355,22 +1355,18 @@ pcl::visualization::PCLVisualizer::setPointCloudRenderingProperties (
   if (!actor)
     return (false);
 
-  switch (property)
+  if (property == RenderingProperties::PCL_VISUALIZER_COLOR)
   {
-    case PCL_VISUALIZER_COLOR:
-    {
       if (val1 > 1.0 || val2 > 1.0 || val3 > 1.0)
         PCL_WARN ("[setPointCloudRenderingProperties] Colors go from 0.0 to 1.0!\n");
       actor->GetProperty ()->SetColor (val1, val2, val3);
       actor->GetMapper ()->ScalarVisibilityOff ();
       actor->Modified ();
-      break;
-    }
-    default:
-    {
+  }
+  else
+  {
       pcl::console::print_error ("[setPointCloudRenderingProperties] Unknown property (%d) specified!\n", property);
       return (false);
-    }
   }
   return (true);
 }
@@ -1378,7 +1374,7 @@ pcl::visualization::PCLVisualizer::setPointCloudRenderingProperties (
 /////////////////////////////////////////////////////////////////////////////////////////////
 bool
 pcl::visualization::PCLVisualizer::setPointCloudRenderingProperties (
-    int property, double val1, double val2, const std::string &id, int)
+    RenderingProperties property, double val1, double val2, const std::string &id)
 {
   // Check to see if this ID entry already exists (has it been already added to the visualizer?)
   auto am_it = cloud_actor_map_->find (id);
@@ -1393,17 +1389,15 @@ pcl::visualization::PCLVisualizer::setPointCloudRenderingProperties (
   if (!actor)
     return (false);
 
-  switch (property)
+  if (property == RenderingProperties::PCL_VISUALIZER_LUT_RANGE)
   {
-    case PCL_VISUALIZER_LUT_RANGE:
-    {
       // Check if the mapper has scalars
       if (!actor->GetMapper ()->GetInput ()->GetPointData ()->GetScalars ())
-        break;
+        return (false);
       
       // Check that scalars are not unisgned char (i.e. check if a LUT is used to colormap scalars assuming vtk ColorMode is Default)
       if (actor->GetMapper ()->GetInput ()->GetPointData ()->GetScalars ()->IsA ("vtkUnsignedCharArray"))
-        break;
+        return (false);
 
       // Check that range values are correct
       if (val1 >= val2)
@@ -1416,20 +1410,18 @@ pcl::visualization::PCLVisualizer::setPointCloudRenderingProperties (
       actor->GetMapper ()->GetLookupTable ()->SetRange (val1, val2);
       actor->GetMapper()->UseLookupTableScalarRangeOn ();
       style_->updateLookUpTableDisplay (false);
-      break;
-    }
-    default:
-    {
+  }
+  else
+  {
       pcl::console::print_error ("[setPointCloudRenderingProperties] Unknown property (%d) specified!\n", property);
       return (false);
-    }
   }
   return (true);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 bool
-pcl::visualization::PCLVisualizer::getPointCloudRenderingProperties (int property, double &value, const std::string &id)
+pcl::visualization::PCLVisualizer::getPointCloudRenderingProperties (RenderingProperties property, double &value, const std::string &id)
 {
   // Check to see if this ID entry already exists (has it been already added to the visualizer?)
   auto am_it = cloud_actor_map_->find (id);
@@ -1443,19 +1435,19 @@ pcl::visualization::PCLVisualizer::getPointCloudRenderingProperties (int propert
 
   switch (property)
   {
-    case PCL_VISUALIZER_POINT_SIZE:
+    case RenderingProperties::PCL_VISUALIZER_POINT_SIZE:
     {
       value = actor->GetProperty ()->GetPointSize ();
       actor->Modified ();
       break;
     }
-    case PCL_VISUALIZER_OPACITY:
+    case RenderingProperties::PCL_VISUALIZER_OPACITY:
     {
       value = actor->GetProperty ()->GetOpacity ();
       actor->Modified ();
       break;
     }
-    case PCL_VISUALIZER_LINE_WIDTH:
+    case RenderingProperties::PCL_VISUALIZER_LINE_WIDTH:
     {
       value = actor->GetProperty ()->GetLineWidth ();
       actor->Modified ();
@@ -1487,25 +1479,21 @@ pcl::visualization::PCLVisualizer::getPointCloudRenderingProperties (RenderingPr
   if (!actor)
     return (false);
 
-  switch (property)
+  if (property == RenderingProperties::PCL_VISUALIZER_COLOR)
   {
-    case PCL_VISUALIZER_COLOR:
-    {
       double rgb[3];
       actor->GetProperty ()->GetColor (rgb);
       val1 = rgb[0];
       val2 = rgb[1];
       val3 = rgb[2];
-      break;
-    }
-    default:
-    {
+  }
+  else
+  {
       pcl::console::print_error ("[getPointCloudRenderingProperties] "
                                  "Property (%d) is either unknown or it requires a different "
                                  "number of variables to retrieve its contents.\n",
                                  property);
       return (false);
-    }
   }
   return (true);
 }
@@ -1513,7 +1501,7 @@ pcl::visualization::PCLVisualizer::getPointCloudRenderingProperties (RenderingPr
 /////////////////////////////////////////////////////////////////////////////////////////////
 bool
 pcl::visualization::PCLVisualizer::setPointCloudRenderingProperties (
-    int property, double value, const std::string &id, int)
+    RenderingProperties property, double value, const std::string &id)
 {
   // Check to see if this ID entry already exists (has it been already added to the visualizer?)
   auto am_it = cloud_actor_map_->find (id);
@@ -1530,13 +1518,13 @@ pcl::visualization::PCLVisualizer::setPointCloudRenderingProperties (
 
   switch (property)
   {
-    case PCL_VISUALIZER_POINT_SIZE:
+    case RenderingProperties::PCL_VISUALIZER_POINT_SIZE:
     {
       actor->GetProperty ()->SetPointSize (static_cast<float>(value));
       actor->Modified ();
       break;
     }
-    case PCL_VISUALIZER_OPACITY:
+    case RenderingProperties::PCL_VISUALIZER_OPACITY:
     {
       actor->GetProperty ()->SetOpacity (value);
       actor->Modified ();
@@ -1547,18 +1535,18 @@ pcl::visualization::PCLVisualizer::setPointCloudRenderingProperties (
     // handle larger datasets. The default value is immediate mode off. If you
     // are having problems rendering a large dataset you might want to consider
     // using immediate more rendering.
-    case PCL_VISUALIZER_IMMEDIATE_RENDERING:
+    case RenderingProperties::PCL_VISUALIZER_IMMEDIATE_RENDERING:
     {
       actor->Modified ();
       break;
     }
-    case PCL_VISUALIZER_LINE_WIDTH:
+    case RenderingProperties::PCL_VISUALIZER_LINE_WIDTH:
     {
       actor->GetProperty ()->SetLineWidth (static_cast<float>(value));
       actor->Modified ();
       break;
     }
-    case PCL_VISUALIZER_LUT:
+    case RenderingProperties::PCL_VISUALIZER_LUT:
     {
       // Check if the mapper has scalars
       if (!actor->GetMapper ()->GetInput ()->GetPointData ()->GetScalars ())
@@ -1582,7 +1570,7 @@ pcl::visualization::PCLVisualizer::setPointCloudRenderingProperties (
       style_->updateLookUpTableDisplay (false);
       break;
     }
-    case PCL_VISUALIZER_LUT_RANGE:
+    case RenderingProperties::PCL_VISUALIZER_LUT_RANGE:
     {
       // Check if the mapper has scalars
       if (!actor->GetMapper ()->GetInput ()->GetPointData ()->GetScalars ())
@@ -1648,7 +1636,7 @@ pcl::visualization::PCLVisualizer::setPointCloudSelected (const bool selected, c
 /////////////////////////////////////////////////////////////////////////////////////////////
 bool
 pcl::visualization::PCLVisualizer::setShapeRenderingProperties (
-    int property, double val1, double val2, double val3, const std::string &id, int)
+    RenderingProperties property, double val1, double val2, double val3, const std::string &id, int)
 {
   // Check to see if this ID entry already exists (has it been already added to the visualizer?)
   auto am_it = shape_actor_map_->find (id);
@@ -1663,10 +1651,8 @@ pcl::visualization::PCLVisualizer::setShapeRenderingProperties (
   if (!actor)
     return (false);
 
-  switch (property)
+  if (property == RenderingProperties::PCL_VISUALIZER_COLOR)
   {
-    case PCL_VISUALIZER_COLOR:
-    {
       if (val1 > 1.0 || val2 > 1.0 || val3 > 1.0)
         PCL_WARN ("[setShapeRenderingProperties] Colors go from 0.0 to 1.0!\n");
 
@@ -1681,13 +1667,11 @@ pcl::visualization::PCLVisualizer::setShapeRenderingProperties (
       actor->GetProperty ()->SetDiffuse (0.8);
       actor->GetProperty ()->SetSpecular (0.8);
       actor->Modified ();
-      break;
-    }
-    default:
-    {
+  }
+  else
+  {
       pcl::console::print_error ("[setShapeRenderingProperties] Unknown property (%d) specified!\n", property);
       return (false);
-    }
   }
   return (true);
 }
@@ -1695,7 +1679,7 @@ pcl::visualization::PCLVisualizer::setShapeRenderingProperties (
 /////////////////////////////////////////////////////////////////////////////////////////////
 bool
 pcl::visualization::PCLVisualizer::setShapeRenderingProperties (
-    int property, double val1, double val2, const std::string &id, int)
+    RenderingProperties property, double val1, double val2, const std::string &id, int)
 {
   // Check to see if this ID entry already exists (has it been already added to the visualizer?)
   auto am_it = shape_actor_map_->find (id);
@@ -1710,17 +1694,15 @@ pcl::visualization::PCLVisualizer::setShapeRenderingProperties (
   if (!actor)
     return (false);
 
-  switch (property)
+  if (property == RenderingProperties::PCL_VISUALIZER_LUT_RANGE)
   {
-    case PCL_VISUALIZER_LUT_RANGE:
-    {
       // Check if the mapper has scalars
       if (!actor->GetMapper ()->GetInput ()->GetPointData ()->GetScalars ())
-        break;
+        return (false);
       
       // Check that scalars are not unisgned char (i.e. check if a LUT is used to colormap scalars assuming vtk ColorMode is Default)
       if (actor->GetMapper ()->GetInput ()->GetPointData ()->GetScalars ()->IsA ("vtkUnsignedCharArray"))
-        break;
+        return (false);
 
       // Check that range values are correct
       if (val1 >= val2)
@@ -1733,13 +1715,11 @@ pcl::visualization::PCLVisualizer::setShapeRenderingProperties (
       actor->GetMapper ()->GetLookupTable ()->SetRange (val1, val2);
       actor->GetMapper()->UseLookupTableScalarRangeOn ();
       style_->updateLookUpTableDisplay (false);
-      break;
-    }
-    default:
-    {
+  }
+  else
+  {
       pcl::console::print_error ("[setShapeRenderingProperties] Unknown property (%d) specified!\n", property);
       return (false);
-    }
   }
   return (true);
 }
@@ -1747,7 +1727,7 @@ pcl::visualization::PCLVisualizer::setShapeRenderingProperties (
 /////////////////////////////////////////////////////////////////////////////////////////////
 bool
 pcl::visualization::PCLVisualizer::setShapeRenderingProperties (
-    int property, double value, const std::string &id, int)
+    RenderingProperties property, double value, const std::string &id, int)
 {
   // Check to see if this ID entry already exists (has it been already added to the visualizer?)
   auto am_it = shape_actor_map_->find (id);
@@ -1764,25 +1744,25 @@ pcl::visualization::PCLVisualizer::setShapeRenderingProperties (
 
   switch (property)
   {
-    case PCL_VISUALIZER_POINT_SIZE:
+    case RenderingProperties::PCL_VISUALIZER_POINT_SIZE:
     {
       actor->GetProperty ()->SetPointSize (static_cast<float>(value));
       actor->Modified ();
       break;
     }
-    case PCL_VISUALIZER_OPACITY:
+    case RenderingProperties::PCL_VISUALIZER_OPACITY:
     {
       actor->GetProperty ()->SetOpacity (value);
       actor->Modified ();
       break;
     }
-    case PCL_VISUALIZER_LINE_WIDTH:
+    case RenderingProperties::PCL_VISUALIZER_LINE_WIDTH:
     {
       actor->GetProperty ()->SetLineWidth (static_cast<float>(value));
       actor->Modified ();
       break;
     }
-    case PCL_VISUALIZER_FONT_SIZE:
+    case RenderingProperties::PCL_VISUALIZER_FONT_SIZE:
     {
       vtkTextActor* text_actor = vtkTextActor::SafeDownCast (am_it->second);
       if (!text_actor)
@@ -1792,7 +1772,7 @@ pcl::visualization::PCLVisualizer::setShapeRenderingProperties (
       text_actor->Modified ();
       break;
     }
-    case PCL_VISUALIZER_REPRESENTATION:
+    case RenderingProperties::PCL_VISUALIZER_REPRESENTATION:
     {
       switch (static_cast<int>(value))
       {
@@ -1815,7 +1795,7 @@ pcl::visualization::PCLVisualizer::setShapeRenderingProperties (
       actor->Modified ();
       break;
     }
-    case PCL_VISUALIZER_SHADING:
+    case RenderingProperties::PCL_VISUALIZER_SHADING:
     {
       switch (static_cast<int>(value))
       {
@@ -1852,7 +1832,7 @@ pcl::visualization::PCLVisualizer::setShapeRenderingProperties (
       actor->Modified ();
       break;
     }
-    case PCL_VISUALIZER_LUT:
+    case RenderingProperties::PCL_VISUALIZER_LUT:
     {
       // Check if the mapper has scalars
       if (!actor->GetMapper ()->GetInput ()->GetPointData ()->GetScalars ())
@@ -1876,7 +1856,7 @@ pcl::visualization::PCLVisualizer::setShapeRenderingProperties (
       style_->updateLookUpTableDisplay (false);
       break;
     }
-    case PCL_VISUALIZER_LUT_RANGE:
+    case RenderingProperties::PCL_VISUALIZER_LUT_RANGE:
     {
       // Check if the mapper has scalars
       if (!actor->GetMapper ()->GetInput ()->GetPointData ()->GetScalars ())

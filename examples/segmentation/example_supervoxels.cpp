@@ -355,7 +355,7 @@ main (int argc, char ** argv)
       if (!viewer->updatePointCloud ((show_refined)?refined_labeled_voxel_cloud:labeled_voxel_cloud, "colored voxels"))
       {
         viewer->addPointCloud ((show_refined)?refined_labeled_voxel_cloud:labeled_voxel_cloud, "colored voxels");
-        viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE,3.0, "colored voxels");
+        viewer->setPointCloudRenderingProperties (pcl::visualization::RenderingProperties::PCL_VISUALIZER_POINT_SIZE,3.0, "colored voxels");
       }
     }
     else
@@ -368,7 +368,7 @@ main (int argc, char ** argv)
       if (!viewer->updatePointCloud (voxel_centroid_cloud, "voxel centroids"))
       {
         viewer->addPointCloud (voxel_centroid_cloud, "voxel centroids");
-        viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE,2.0, "voxel centroids");
+        viewer->setPointCloudRenderingProperties (pcl::visualization::RenderingProperties::PCL_VISUALIZER_POINT_SIZE,2.0, "voxel centroids");
       }
     }
     else
