@@ -53,6 +53,7 @@ set(incs
   "include/pcl/${SUBSYS_NAME}/transformation_estimation_2D.h"
   "include/pcl/${SUBSYS_NAME}/transformation_estimation_svd.h"
   "include/pcl/${SUBSYS_NAME}/transformation_estimation_svd_scale.h"
+  "include/pcl/${SUBSYS_NAME}/transformation_estimation_point_to_point_robust.h"
   "include/pcl/${SUBSYS_NAME}/transformation_estimation_dual_quaternion.h"
   "include/pcl/${SUBSYS_NAME}/transformation_estimation_lm.h"
   "include/pcl/${SUBSYS_NAME}/transformation_estimation_point_to_plane.h"
@@ -103,6 +104,7 @@ set(impl_incs
   "include/pcl/${SUBSYS_NAME}/impl/registration.hpp"
   "include/pcl/${SUBSYS_NAME}/impl/transformation_estimation_2D.hpp"
   "include/pcl/${SUBSYS_NAME}/impl/transformation_estimation_svd.hpp"
+  "include/pcl/${SUBSYS_NAME}/impl/transformation_estimation_point_to_point_robust.hpp"
   "include/pcl/${SUBSYS_NAME}/impl/transformation_estimation_svd_scale.hpp"
   "include/pcl/${SUBSYS_NAME}/impl/transformation_estimation_dual_quaternion.hpp"
   "include/pcl/${SUBSYS_NAME}/impl/transformation_estimation_lm.hpp"
@@ -154,6 +156,7 @@ set(srcs
   src/transformation_estimation_svd_scale.cpp
   src/transformation_estimation_dual_quaternion.cpp
   src/transformation_estimation_lm.cpp
+  src/transformation_estimation_point_to_point_robust.cpp
   src/transformation_estimation_point_to_plane_weighted.cpp
   src/transformation_estimation_point_to_plane_lls.cpp
   src/transformation_estimation_point_to_plane_lls_weighted.cpp
