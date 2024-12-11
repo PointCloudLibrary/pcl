@@ -53,7 +53,6 @@ set(incs
   "include/pcl/${SUBSYS_NAME}/transformation_estimation_2D.h"
   "include/pcl/${SUBSYS_NAME}/transformation_estimation_svd.h"
   "include/pcl/${SUBSYS_NAME}/transformation_estimation_svd_scale.h"
-  "include/pcl/${SUBSYS_NAME}/transformation_estimation_point_to_point_robust.h"
   "include/pcl/${SUBSYS_NAME}/transformation_estimation_dual_quaternion.h"
   "include/pcl/${SUBSYS_NAME}/transformation_estimation_lm.h"
   "include/pcl/${SUBSYS_NAME}/transformation_estimation_point_to_plane.h"
@@ -61,6 +60,7 @@ set(incs
   "include/pcl/${SUBSYS_NAME}/transformation_estimation_point_to_plane_lls.h"
   "include/pcl/${SUBSYS_NAME}/transformation_estimation_point_to_plane_lls_weighted.h"
   "include/pcl/${SUBSYS_NAME}/transformation_estimation_symmetric_point_to_plane_lls.h"
+  "include/pcl/${SUBSYS_NAME}/transformation_estimation_point_to_point_robust.h"
   "include/pcl/${SUBSYS_NAME}/transformation_validation.h"
   "include/pcl/${SUBSYS_NAME}/transformation_validation_euclidean.h"
   "include/pcl/${SUBSYS_NAME}/gicp.h"
@@ -104,7 +104,6 @@ set(impl_incs
   "include/pcl/${SUBSYS_NAME}/impl/registration.hpp"
   "include/pcl/${SUBSYS_NAME}/impl/transformation_estimation_2D.hpp"
   "include/pcl/${SUBSYS_NAME}/impl/transformation_estimation_svd.hpp"
-  "include/pcl/${SUBSYS_NAME}/impl/transformation_estimation_point_to_point_robust.hpp"
   "include/pcl/${SUBSYS_NAME}/impl/transformation_estimation_svd_scale.hpp"
   "include/pcl/${SUBSYS_NAME}/impl/transformation_estimation_dual_quaternion.hpp"
   "include/pcl/${SUBSYS_NAME}/impl/transformation_estimation_lm.hpp"
@@ -112,6 +111,7 @@ set(impl_incs
   "include/pcl/${SUBSYS_NAME}/impl/transformation_estimation_point_to_plane_lls_weighted.hpp"
   "include/pcl/${SUBSYS_NAME}/impl/transformation_estimation_point_to_plane_weighted.hpp"
   "include/pcl/${SUBSYS_NAME}/impl/transformation_estimation_symmetric_point_to_plane_lls.hpp"
+  "include/pcl/${SUBSYS_NAME}/impl/transformation_estimation_point_to_point_robust.hpp"
   "include/pcl/${SUBSYS_NAME}/impl/transformation_validation_euclidean.hpp"
   "include/pcl/${SUBSYS_NAME}/impl/gicp.hpp"
   "include/pcl/${SUBSYS_NAME}/impl/sample_consensus_prerejective.hpp"
@@ -156,10 +156,10 @@ set(srcs
   src/transformation_estimation_svd_scale.cpp
   src/transformation_estimation_dual_quaternion.cpp
   src/transformation_estimation_lm.cpp
-  src/transformation_estimation_point_to_point_robust.cpp
   src/transformation_estimation_point_to_plane_weighted.cpp
   src/transformation_estimation_point_to_plane_lls.cpp
   src/transformation_estimation_point_to_plane_lls_weighted.cpp
+  src/transformation_estimation_point_to_point_robust.cpp
   src/transformation_validation_euclidean.cpp
   src/sample_consensus_prerejective.cpp
 )
