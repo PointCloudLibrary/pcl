@@ -420,7 +420,7 @@ pcl::recognition::ObjRecRANSAC::buildGraphOfCloseHypotheses (HypothesisOctree& h
   i = 0;
 
   // Now create the graph connectivity such that each two neighboring rotation spaces are neighbors in the graph
-  for ( std::vector<HypothesisOctree::Node*>::const_iterator hypo = hypo_leaves.begin () ; hypo != hypo_leaves.end () ; ++hypo, ++i )
+  for ( auto hypo = hypo_leaves.cbegin () ; hypo != hypo_leaves.cend () ; ++hypo, ++i )
   {
     // Compute the fitness of the graph node
     graph.getNodes ()[i]->setFitness (static_cast<int> ((*hypo)->getData ().explained_pixels_.size ()));

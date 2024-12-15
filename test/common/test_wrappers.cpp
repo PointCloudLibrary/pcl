@@ -108,8 +108,8 @@ TEST (PointCloud, iterators)
                      cloud.begin ()->getVector3fMap ());
   EXPECT_EQ_VECTORS ((--cloud.end ())->getVector3fMap (),
                      (--cloud.end ())->getVector3fMap ());
-  PointCloud<PointXYZ>::const_iterator pit = cloud.begin ();
-  PointCloud<PointXYZ>::VectorType::const_iterator pit2 = cloud.begin ();
+  auto pit = cloud.begin ();
+  auto pit2 = cloud.begin ();
   for (; pit < cloud.end (); ++pit2, ++pit)
     EXPECT_EQ_VECTORS (pit->getVector3fMap (), pit2->getVector3fMap ());
 }
@@ -125,8 +125,8 @@ TEST (PointCloud, insert_range)
   EXPECT_EQ (cloud.width, cloud.size ());
   EXPECT_EQ (cloud.height, 1);
   EXPECT_EQ (cloud.width, old_size + cloud2.size ());
-  PointCloud<PointXYZ>::const_iterator pit = cloud.begin ();
-  PointCloud<PointXYZ>::const_iterator pit2 = cloud2.begin ();
+  auto pit = cloud.begin ();
+  auto pit2 = cloud2.begin ();
   for (; pit2 < cloud2.end (); ++pit2, ++pit)
     EXPECT_EQ_VECTORS (pit->getVector3fMap (), pit2->getVector3fMap ());
 }

@@ -215,8 +215,8 @@ pcl::io::openni2::OpenNI2Device::isIRVideoModeSupported (const OpenNI2VideoMode&
 
   bool supported = false;
 
-  std::vector<OpenNI2VideoMode>::const_iterator it = ir_video_modes_.begin ();
-  std::vector<OpenNI2VideoMode>::const_iterator it_end = ir_video_modes_.end ();
+  auto it = ir_video_modes_.cbegin ();
+  auto it_end = ir_video_modes_.cend ();
 
   while (it != it_end && !supported)
   {
@@ -234,8 +234,8 @@ pcl::io::openni2::OpenNI2Device::isColorVideoModeSupported (const OpenNI2VideoMo
 
   bool supported = false;
 
-  std::vector<OpenNI2VideoMode>::const_iterator it = color_video_modes_.begin ();
-  std::vector<OpenNI2VideoMode>::const_iterator it_end = color_video_modes_.end ();
+  auto it = color_video_modes_.cbegin ();
+  auto it_end = color_video_modes_.cend ();
 
   while (it != it_end && !supported)
   {
@@ -253,8 +253,8 @@ pcl::io::openni2::OpenNI2Device::isDepthVideoModeSupported (const OpenNI2VideoMo
 
   bool supported = false;
 
-  std::vector<OpenNI2VideoMode>::const_iterator it = depth_video_modes_.begin ();
-  std::vector<OpenNI2VideoMode>::const_iterator it_end = depth_video_modes_.end ();
+  auto it = depth_video_modes_.cbegin ();
+  auto it_end = depth_video_modes_.cend ();
 
   while (it != it_end && !supported)
   {
