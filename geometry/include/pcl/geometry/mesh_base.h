@@ -1804,14 +1804,14 @@ protected:
                                 typename IndexContainerT::value_type());
     Index ind_old(0), ind_new(0);
 
-    typename ElementContainerT::const_iterator it_e_old = elements.begin();
+    auto it_e_old = elements.cbegin();
     auto it_e_new = elements.begin();
 
-    typename DataContainerT::const_iterator it_d_old = data_cloud.begin();
+    auto it_d_old = data_cloud.cbegin();
     auto it_d_new = data_cloud.begin();
 
     auto it_ind_new = new_indices.begin();
-    typename IndexContainerT::const_iterator it_ind_new_end = new_indices.end();
+    auto it_ind_new_end = new_indices.cend();
 
     while (it_ind_new != it_ind_new_end) {
       if (!this->isDeleted(ind_old)) {
