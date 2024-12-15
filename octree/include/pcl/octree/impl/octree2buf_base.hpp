@@ -279,8 +279,8 @@ Octree2BufBase<LeafContainerT, BranchContainerT>::deserializeTree(
   leaf_count_ = 0;
 
   // iterator for binary tree structure vector
-  std::vector<char>::const_iterator binary_tree_in_it = binary_tree_in_arg.begin();
-  std::vector<char>::const_iterator binary_tree_in_it_end = binary_tree_in_arg.end();
+  auto binary_tree_in_it = binary_tree_in_arg.cbegin();
+  auto binary_tree_in_it_end = binary_tree_in_arg.cend();
 
   deserializeTreeRecursive(root_node_,
                            depth_mask_,
@@ -307,19 +307,17 @@ Octree2BufBase<LeafContainerT, BranchContainerT>::deserializeTree(
   OctreeKey new_key;
 
   // set data iterator to first element
-  typename std::vector<LeafContainerT*>::const_iterator leaf_container_vector_it =
-      leaf_container_vector_arg.begin();
+  auto leaf_container_vector_it = leaf_container_vector_arg.cbegin();
 
   // set data iterator to last element
-  typename std::vector<LeafContainerT*>::const_iterator leaf_container_vector_it_end =
-      leaf_container_vector_arg.end();
+  auto leaf_container_vector_it_end = leaf_container_vector_arg.cend();
 
   // we will rebuild an octree -> reset leafCount
   leaf_count_ = 0;
 
   // iterator for binary tree structure vector
-  std::vector<char>::const_iterator binary_tree_in_it = binary_tree_in_arg.begin();
-  std::vector<char>::const_iterator binary_tree_in_it_end = binary_tree_in_arg.end();
+  auto binary_tree_in_it = binary_tree_in_arg.cbegin();
+  auto binary_tree_in_it_end = binary_tree_in_arg.cend();
 
   deserializeTreeRecursive(root_node_,
                            depth_mask_,

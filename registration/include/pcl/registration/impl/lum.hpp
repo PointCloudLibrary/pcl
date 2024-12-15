@@ -268,7 +268,7 @@ LUM<PointT>::compute()
     // Update the poses
     float sum = 0.0;
     for (int vi = 1; vi != n; ++vi) {
-      Eigen::Vector6f difference_pose = static_cast<Eigen::Vector6f>(
+      auto difference_pose = static_cast<Eigen::Vector6f>(
           -incidenceCorrection(getPose(vi)).inverse() * X.segment(6 * (vi - 1), 6));
       sum += difference_pose.norm();
       setPose(vi, getPose(vi) + difference_pose);

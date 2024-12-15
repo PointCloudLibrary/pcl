@@ -348,7 +348,7 @@ openni_wrapper::OpenNIDriver::getDeviceInfos () noexcept
   {
     libusb_device* device = devices[devIdx];
     std::uint8_t busId = libusb_get_bus_number (device);
-    std::map<unsigned char, std::map<unsigned char, unsigned> >::const_iterator busIt = bus_map_.find (busId);
+    auto busIt = bus_map_.find (busId);
     if (busIt == bus_map_.end ())
       continue;
 

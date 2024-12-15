@@ -48,7 +48,7 @@ stages:
               CC: gcc
               CXX: g++
               BUILD_GPU: ON
-              CMAKE_ARGS: '-DPCL_WARNINGS_ARE_ERRORS=ON'
+              CMAKE_ARGS: '-DPCL_WARNINGS_ARE_ERRORS=ON -DCMAKE_CXX_STANDARD=14 -DCMAKE_CUDA_STANDARD=14'
             24.04 GCC:  # latest Ubuntu
               CONTAINER: env2404
               CC: gcc

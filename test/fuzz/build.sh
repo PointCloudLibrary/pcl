@@ -54,7 +54,7 @@ $CXX $CXXFLAGS -DPCLAPI_EXPORTS \
         -I/src/pcl/build/include -I/src/pcl/common/include \
         -I/src/pcl/dssdk/include \
         -I/src/pcl/io/include -isystem /usr/include/eigen3 \
-        -O2 -g -DNDEBUG -fPIC -std=c++14 \
+        -O2 -g -DNDEBUG -fPIC -std=c++17 \
         -o ply_reader_fuzzer.o -c ply_reader_fuzzer.cpp
 
 $CXX $CXXFLAGS $LIB_FUZZING_ENGINE ply_reader_fuzzer.o \

@@ -460,7 +460,7 @@ pcl::segmentation::grabcut::BoykovKolmogorov::adoptOrphans (std::deque<int>& orp
       if (cut_[jt->first] != tree_label) continue;
 
       // check edge capacity
-      const capacitated_edge::iterator kt = nodes_[jt->first].find (u);
+      const auto kt = nodes_[jt->first].find (u);
       if (((tree_label == TARGET) && (jt->second <= 0.0)) ||
           ((tree_label == SOURCE) && (kt->second <= 0.0)))
         continue;
@@ -483,7 +483,7 @@ pcl::segmentation::grabcut::BoykovKolmogorov::adoptOrphans (std::deque<int>& orp
     // free the orphan subtree and remove it from the active set
     if (b_free_orphan)
     {
-      for (capacitated_edge::const_iterator jt = nodes_[u].begin (); jt != nodes_[u].end (); ++jt)
+      for (auto jt = nodes_[u].cbegin (); jt != nodes_[u].cend (); ++jt)
       {
         if ((cut_[jt->first] == tree_label) && (parents_[jt->first].first == u))
         {

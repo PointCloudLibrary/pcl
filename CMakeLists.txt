@@ -2,12 +2,22 @@
 cmake_minimum_required(VERSION 3.16.3 FATAL_ERROR)
 
 # Set target C++ standard and required compiler features
-set(CMAKE_CXX_STANDARD 14 CACHE STRING "The target C++ standard. PCL requires C++14 or higher.")
+set(CMAKE_CXX_STANDARD 17 CACHE STRING "The target C++ standard. PCL requires C++14 or higher.")
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
-set(PCL_CXX_COMPILE_FEATURES cxx_std_14)
+if("${CMAKE_CXX_STANDARD}" GREATER_EQUAL 17)
+  set(PCL_CXX_COMPILE_FEATURES cxx_std_17)
+  set(PCL__cplusplus 201703L)
+  set(PCL_REQUIRES_MSC_VER 1912)
+elseif("${CMAKE_CXX_STANDARD}" EQUAL 14)
+  set(PCL_CXX_COMPILE_FEATURES cxx_std_14)
+  set(PCL__cplusplus 201402L)
+  set(PCL_REQUIRES_MSC_VER 1900)
+else()
+  message(FATAL_ERROR "Unknown or unsupported C++ standard specified")
+endif()
 
-set(CMAKE_CUDA_STANDARD 14 CACHE STRING "The target CUDA/C++ standard. PCL requires CUDA/C++ 14 or higher.")
+set(CMAKE_CUDA_STANDARD 17 CACHE STRING "The target CUDA/C++ standard. PCL requires CUDA/C++ 14 or higher.")
 set(CMAKE_CUDA_STANDARD_REQUIRED ON)
 
 set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "possible configurations" FORCE)
