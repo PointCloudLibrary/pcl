@@ -47,9 +47,9 @@
 namespace pcl {
 namespace registration {
 /** @b TransformationEstimationPointToPointRobust implements SVD-based estimation of
- * the transformation aligning the given correspondences for minimizing the Welsch function instead of L2-norm, 
- * For additional details, see 
- * "Fast and Robust Iterative Closest Point", Juyong Zhang, Yuxin Yao, Bailin Deng, 2022.
+ * the transformation aligning the given correspondences for minimizing the Welsch
+ * function instead of L2-norm, For additional details, see "Fast and Robust Iterative
+ * Closest Point", Juyong Zhang, Yuxin Yao, Bailin Deng, 2022.
  * \note The class is templated on the source and target point types as well as on the
  * output scalar of the transformation matrix (i.e., float or double). Default: float.
  * \author Yuxin Yao
@@ -59,9 +59,12 @@ template <typename PointSource, typename PointTarget, typename Scalar = float>
 class TransformationEstimationPointToPointRobust
 : public TransformationEstimation<PointSource, PointTarget, Scalar> {
 public:
-  using Ptr = shared_ptr<TransformationEstimationPointToPointRobust<PointSource, PointTarget, Scalar>>;
+  using Ptr = shared_ptr<
+      TransformationEstimationPointToPointRobust<PointSource, PointTarget, Scalar>>;
   using ConstPtr =
-      shared_ptr<const TransformationEstimationPointToPointRobust<PointSource, PointTarget, Scalar>>;
+      shared_ptr<const TransformationEstimationPointToPointRobust<PointSource,
+                                                                  PointTarget,
+                                                                  Scalar>>;
 
   using Matrix4 =
       typename TransformationEstimation<PointSource, PointTarget, Scalar>::Matrix4;
@@ -123,7 +126,11 @@ public:
                               const pcl::Correspondences& correspondences,
                               Matrix4& transformation_matrix) const override;
 
-  void set_sigma(Scalar sigma) { sigma_=sigma; };
+  void
+  set_sigma(Scalar sigma)
+  {
+    sigma_ = sigma;
+  };
 
 protected:
   /** \brief Estimate a rigid rotation transformation between a source and a target
@@ -152,23 +159,26 @@ protected:
       const Eigen::Matrix<Scalar, Eigen::Dynamic, 1>& weights,
       Matrix4& transformation_matrix) const;
 
-/** \brief Compute the 3D (X-Y-Z) centroid of a set of weighted points and return it as a 3D vector.
-    * \param[in] cloud_iterator an iterator over the input point cloud
-    * \param[in] weights the weights corresponding to points in the input point cloud
-    * \param[out] centroid the output centroid
-    * \return number of valid points used to determine the centroid. In case of dense point clouds, this is the same as the size of input cloud.
-    * \note if return value is 0, the centroid is not changed, thus not valid.
-    * The last component of the vector is set to 1, this allows to transform the centroid vector with 4x4 matrices.
-    * \ingroup common
-    */
-inline unsigned int
-computeWeighted3DCentroid(ConstCloudIterator<PointSource> &cloud_iterator, Eigen::Matrix<Scalar, Eigen::Dynamic, 1>& weights, Eigen::Matrix<Scalar, 4, 1> &centroid) const;
+  /** \brief Compute the 3D (X-Y-Z) centroid of a set of weighted points and return it
+   * as a 3D vector.
+   * \param[in] cloud_iterator an iterator over the input point cloud
+   * \param[in] weights the weights corresponding to points in the input point cloud
+   * \param[out] centroid the output centroid
+   * \return number of valid points used to determine the centroid. In case of dense
+   * point clouds, this is the same as the size of input cloud.
+   * \note if return value is 0, the centroid is not changed, thus not valid.
+   * The last component of the vector is set to 1, this allows to transform the centroid
+   * vector with 4x4 matrices.
+   * \ingroup common
+   */
+  inline unsigned int
+  computeWeighted3DCentroid(ConstCloudIterator<PointSource>& cloud_iterator,
+                            Eigen::Matrix<Scalar, Eigen::Dynamic, 1>& weights,
+                            Eigen::Matrix<Scalar, 4, 1>& centroid) const;
 
   /** parameter for the Welsch function */
   Scalar sigma_ = -1;
-  
-  
-}; 
+};
 
 } // namespace registration
 } // namespace pcl

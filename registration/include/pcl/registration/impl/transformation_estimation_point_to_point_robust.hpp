@@ -56,7 +56,8 @@ TransformationEstimationPointToPointRobust<PointSource, PointTarget, Scalar>::
 {
   const auto nr_points = cloud_src.size();
   if (cloud_tgt.size() != nr_points) {
-    PCL_ERROR("[pcl::TransformationEstimationPointToPointRobust::estimateRigidTransformation] Number "
+    PCL_ERROR("[pcl::TransformationEstimationPointToPointRobust::"
+              "estimateRigidTransformation] Number "
               "or points in source (%zu) differs than target (%zu)!\n",
               static_cast<std::size_t>(nr_points),
               static_cast<std::size_t>(cloud_tgt.size()));
@@ -133,58 +134,56 @@ TransformationEstimationPointToPointRobust<PointSource, PointTarget, Scalar>::
 {
   // Convert to Eigen format
   const int npts = static_cast<int>(source_it.size());
-   source_it.reset();
-    target_it.reset();
-    Eigen::Matrix<Scalar, Eigen::Dynamic, 1> weights(npts); 
-    Eigen::Matrix<Scalar, Eigen::Dynamic, 1> square_distances(npts);
-    for(int i = 0; i < npts; i++)
-    {
-      Scalar dx = source_it->x - target_it->x;
-      Scalar dy = source_it->y - target_it->y;
-      Scalar dz = source_it->z - target_it->z;
-      Scalar dist2 = dx*dx + dy*dy + dz*dz; 
-      square_distances[i] = dist2;
-      
-      source_it++;
-      target_it++;
-    }
+  source_it.reset();
+  target_it.reset();
+  Eigen::Matrix<Scalar, Eigen::Dynamic, 1> weights(npts);
+  Eigen::Matrix<Scalar, Eigen::Dynamic, 1> square_distances(npts);
+  for (int i = 0; i < npts; i++) {
+    Scalar dx = source_it->x - target_it->x;
+    Scalar dy = source_it->y - target_it->y;
+    Scalar dz = source_it->z - target_it->z;
+    Scalar dist2 = dx * dx + dy * dy + dz * dz;
+    square_distances[i] = dist2;
 
-    Scalar sigma2; 
-    if(sigma_ < 0)
-      sigma2 = square_distances.maxCoeff()/9.0; 
-    else
-      sigma2 = sigma_*sigma_;
-    
-    for(int i = 0; i < npts; i++)
-    {
-      weights[i] = std::exp(-square_distances[i]/(2.0*sigma2));
-    }
-    weights = weights/weights.sum();
+    source_it++;
+    target_it++;
+  }
 
-    source_it.reset();
-    target_it.reset();
-    // <cloud_src,cloud_src> is the source dataset
-    transformation_matrix.setIdentity();
+  Scalar sigma2;
+  if (sigma_ < 0)
+    sigma2 = square_distances.maxCoeff() / 9.0;
+  else
+    sigma2 = sigma_ * sigma_;
 
-    Eigen::Matrix<Scalar, 4, 1> centroid_src, centroid_tgt;
-    // Estimate the centroids of source, target
-    computeWeighted3DCentroid(source_it, weights, centroid_src);
-    computeWeighted3DCentroid(target_it, weights, centroid_tgt);
-    source_it.reset();
-    target_it.reset();
+  for (int i = 0; i < npts; i++) {
+    weights[i] = std::exp(-square_distances[i] / (2.0 * sigma2));
+  }
+  weights = weights / weights.sum();
 
-    // Subtract the centroids from source, target
-    Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic> cloud_src_demean,
-        cloud_tgt_demean;
-    demeanPointCloud(source_it, centroid_src, cloud_src_demean);
-    demeanPointCloud(target_it, centroid_tgt, cloud_tgt_demean);
+  source_it.reset();
+  target_it.reset();
+  // <cloud_src,cloud_src> is the source dataset
+  transformation_matrix.setIdentity();
 
-    getTransformationFromCorrelation(cloud_src_demean,
-                                     centroid_src,
-                                     cloud_tgt_demean,
-                                     centroid_tgt,
-                                     weights,
-                                     transformation_matrix);
+  Eigen::Matrix<Scalar, 4, 1> centroid_src, centroid_tgt;
+  // Estimate the centroids of source, target
+  computeWeighted3DCentroid(source_it, weights, centroid_src);
+  computeWeighted3DCentroid(target_it, weights, centroid_tgt);
+  source_it.reset();
+  target_it.reset();
+
+  // Subtract the centroids from source, target
+  Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic> cloud_src_demean,
+      cloud_tgt_demean;
+  demeanPointCloud(source_it, centroid_src, cloud_src_demean);
+  demeanPointCloud(target_it, centroid_tgt, cloud_tgt_demean);
+
+  getTransformationFromCorrelation(cloud_src_demean,
+                                   centroid_src,
+                                   cloud_tgt_demean,
+                                   centroid_tgt,
+                                   weights,
+                                   transformation_matrix);
 }
 
 template <typename PointSource, typename PointTarget, typename Scalar>
@@ -202,7 +201,8 @@ TransformationEstimationPointToPointRobust<PointSource, PointTarget, Scalar>::
 
   // Assemble the correlation matrix H = source * weights * target'
   Eigen::Matrix<Scalar, 3, 3> H =
-      (cloud_src_demean * weights.asDiagonal() * cloud_tgt_demean.transpose()).template topLeftCorner<3, 3>();
+      (cloud_src_demean * weights.asDiagonal() * cloud_tgt_demean.transpose())
+          .template topLeftCorner<3, 3>();
 
   // Compute the Singular Value Decomposition
   Eigen::JacobiSVD<Eigen::Matrix<Scalar, 3, 3>> svd(
@@ -232,22 +232,22 @@ TransformationEstimationPointToPointRobust<PointSource, PointTarget, Scalar>::
   }
 }
 
-
-template <typename PointSource, typename PointTarget, typename Scalar> inline unsigned int
-TransformationEstimationPointToPointRobust<PointSource, PointTarget, Scalar>::computeWeighted3DCentroid(ConstCloudIterator<PointSource> &cloud_iterator, Eigen::Matrix<Scalar, Eigen::Dynamic, 1>& weights, 
-                   Eigen::Matrix<Scalar, 4, 1> &centroid) const
+template <typename PointSource, typename PointTarget, typename Scalar>
+inline unsigned int
+TransformationEstimationPointToPointRobust<PointSource, PointTarget, Scalar>::
+    computeWeighted3DCentroid(ConstCloudIterator<PointSource>& cloud_iterator,
+                              Eigen::Matrix<Scalar, Eigen::Dynamic, 1>& weights,
+                              Eigen::Matrix<Scalar, 4, 1>& centroid) const
 {
-  Eigen::Matrix<Scalar, 4, 1> accumulator {0, 0, 0, 0};
+  Eigen::Matrix<Scalar, 4, 1> accumulator{0, 0, 0, 0};
 
   unsigned int cp = 0;
 
   // For each point in the cloud
   // If the data is dense, we don't need to check for NaN
-  while (cloud_iterator.isValid ())
-  {
+  while (cloud_iterator.isValid()) {
     // Check if the point is invalid
-    if (pcl::isFinite (*cloud_iterator))
-    {
+    if (pcl::isFinite(*cloud_iterator)) {
       accumulator[0] += weights[cp] * cloud_iterator->x;
       accumulator[1] += weights[cp] * cloud_iterator->y;
       accumulator[2] += weights[cp] * cloud_iterator->z;
