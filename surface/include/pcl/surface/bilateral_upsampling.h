@@ -153,3 +153,6 @@ namespace pcl
       PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
 }
+#ifdef PCL_NO_PRECOMPILE
+#include <pcl/surface/impl/bilateral_upsampling.hpp>
+#endif
