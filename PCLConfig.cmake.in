@@ -436,6 +436,10 @@ list(APPEND PCL_COMPILE_OPTIONS @PCLCONFIG_SSE_COMPILE_OPTIONS@)
 list(APPEND PCL_COMPILE_OPTIONS @PCLCONFIG_AVX_COMPILE_OPTIONS@)
 
 set(pcl_all_components @PCLCONFIG_AVAILABLE_COMPONENTS@)
+# insert "io_ply" before "io"
+list(FIND pcl_all_components "io" pcl_pos_io)
+list(INSERT pcl_all_components ${pcl_pos_io} "io_ply")
+unset(pcl_pos_io)
 list(LENGTH pcl_all_components PCL_NB_COMPONENTS)
 
 #list each component dependencies IN PCL
@@ -445,6 +449,11 @@ list(LENGTH pcl_all_components PCL_NB_COMPONENTS)
 @PCLCONFIG_EXTERNAL_DEPENDENCIES@
 
 @PCLCONFIG_OPTIONAL_DEPENDENCIES@
+
+# io_ply subcomponent
+list(APPEND pcl_io_int_dep io_ply)
+set(pcl_io_ply_int_dep common)
+set(pcl_io_ply_ext_dep boost)
 
 # VTK components required by PCL
 set(PCL_VTK_COMPONENTS "@PCL_VTK_COMPONENTS@")
@@ -503,18 +512,21 @@ foreach(component ${PCL_TO_FIND_COMPONENTS})
 
   string(REGEX REPLACE "^cuda_(.*)$" "\\1" cuda_component "${component}")
   string(REGEX REPLACE "^gpu_(.*)$" "\\1" gpu_component "${component}")
+  string(REGEX REPLACE "^io_(.*)$" "\\1" io_component "${component}")
 
   find_path(PCL_${COMPONENT}_INCLUDE_DIR
     NAMES pcl/${component}
           pcl/apps/${component}
           pcl/cuda/${cuda_component} pcl/cuda/${component}
           pcl/gpu/${gpu_component} pcl/gpu/${component}
+          pcl/io/${io_component}
     HINTS ${PCL_INCLUDE_DIRS}
     PATH_SUFFIXES
           ${component}/include
           apps/${component}/include
           cuda/${cuda_component}/include
           gpu/${gpu_component}/include
+          io/${io_component}/include
     DOC "path to ${component} headers"
     NO_DEFAULT_PATH)
   mark_as_advanced(PCL_${COMPONENT}_INCLUDE_DIR)
