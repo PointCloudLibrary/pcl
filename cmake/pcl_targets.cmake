@@ -184,13 +184,18 @@ function(PCL_ADD_LIBRARY _name)
   endif()
 
   if(NOT ARGS_SOURCES)
-    add_library(${_name} INTERFACE ${ARGS_INCLUDES})
+    if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.19)
+      add_library(${_name} INTERFACE ${ARGS_INCLUDES})
+
+      set_target_properties(${_name} PROPERTIES FOLDER "Libraries")
+    else()
+      add_library(${_name} INTERFACE)
+    endif()
     
     target_include_directories(${_name} INTERFACE
       $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
       $<INSTALL_INTERFACE:${INCLUDE_INSTALL_ROOT}> 
     )
-    set_target_properties(${_name} PROPERTIES FOLDER "Libraries")
   else()
     add_library(${_name} ${PCL_LIB_TYPE} ${ARGS_SOURCES})
     PCL_ADD_VERSION_INFO(${_name})
