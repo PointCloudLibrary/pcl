@@ -68,15 +68,15 @@ public:
     operator()(const HashKeyStruct& s) const noexcept
     {
       /// RS hash function https://www.partow.net/programming/hashfunctions/index.html
-      std::size_t b_    = 378551;
-      std::size_t a_    = 63689;
+      std::size_t b_ = 378551;
+      std::size_t a_ = 63689;
       std::size_t hash = 0;
       hash = hash * a_ + s.first;
-      a_    = a_ * b_;
+      a_ = a_ * b_;
       hash = hash * a_ + s.second.first;
-      a_    = a_ * b_;
+      a_ = a_ * b_;
       hash = hash * a_ + s.second.second.first;
-      a_    = a_ * b_;
+      a_ = a_ * b_;
       hash = hash * a_ + s.second.second.second;
       return hash;
     }
