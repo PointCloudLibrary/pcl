@@ -217,7 +217,6 @@
   #endif
 
   #define __PRETTY_FUNCTION__ __FUNCTION__
-  #define __func__ __FUNCTION__
 #endif
 #endif // defined _WIN32
 
