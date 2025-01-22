@@ -216,7 +216,7 @@
     #define NOMINMAX
   #endif
 
-  #define __PRETTY_FUNCTION__ __FUNCTION__
+  #define __PRETTY_FUNCTION__ __FUNCSIG__
 #endif
 #endif // defined _WIN32
 
