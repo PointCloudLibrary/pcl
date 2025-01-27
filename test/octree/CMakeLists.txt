@@ -11,7 +11,7 @@ endif()
 
 PCL_ADD_TEST(a_octree_test test_octree
               FILES test_octree.cpp
-              LINK_WITH pcl_gtest pcl_common)
+              LINK_WITH pcl_gtest pcl_common pcl_octree)
 PCL_ADD_TEST(a_octree_iterator_test test_octree_iterator
               FILES test_octree_iterator.cpp
               LINK_WITH pcl_gtest pcl_common pcl_octree)

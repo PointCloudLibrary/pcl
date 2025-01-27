@@ -1,6 +1,6 @@
 set(SUBSYS_NAME tests_registration)
 set(SUBSYS_DESC "Point cloud library registration module unit tests")
-PCL_SET_TEST_DEPENDENCIES(SUBSYS_DEPS registration)
+PCL_SET_TEST_DEPENDENCIES(SUBSYS_DEPS io registration)
 set(OPT_DEPS io) # module does not depend on these
 
 PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ON)
