@@ -1144,6 +1144,32 @@ TEST(PCL, OBJRead)
   remove ("test_obj.mtl");
 }
 
+TEST(PCL, loadOBJWithoutFaces)
+{
+  std::ofstream fs;
+  fs.open ("test_obj.obj");
+  fs << "v -1.000000 -1.000000 1.000000\n"
+        "v -1.000000 1.000000 1.000000\n"
+        "v 1.000000 -1.000000 1.000000\n"
+        "v 1.000000 1.000000 1.000000\n"
+        "vn -1.0000 0.0000 0.0000\n"
+        "vn 0.0000 0.0000 -1.0000\n"
+        "vn 1.0000 0.0000 0.0000\n"
+        "vn 0.0000 1.0000 0.0000\n";
+
+  fs.close ();
+  pcl::PointCloud<pcl::PointNormal> point_cloud;
+  pcl::io::loadOBJFile("test_obj.obj", point_cloud);
+  EXPECT_EQ(point_cloud.size(), 4);
+  EXPECT_NEAR(point_cloud[0].normal_x, -1.0, 1e-5);
+  EXPECT_NEAR(point_cloud[1].normal_z, -1.0, 1e-5);
+  EXPECT_NEAR(point_cloud[2].normal_x, 1.0, 1e-5);
+  EXPECT_NEAR(point_cloud[3].normal_y, 1.0, 1e-5);
+  EXPECT_NEAR(point_cloud[1].normal_y, 0.0, 1e-5);
+  EXPECT_NEAR(point_cloud[3].normal_z, 0.0, 1e-5);
+  remove ("test_obj.obj");
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 struct PointXYZFPFH33
