@@ -26,7 +26,7 @@ BM_OrganizedNeighborSearch(benchmark::State& state, const std::string& file)
     int searchIdx = indices[radiusSearchIdx++ % indices.size()];
     double searchRadius = 0.1; // or any fixed radius like 0.05
 
-    std::vector<int> k_indices;
+    pcl::Indices k_indices;
     std::vector<float> k_sqr_distances;
 
     auto start_time = std::chrono::high_resolution_clock::now();

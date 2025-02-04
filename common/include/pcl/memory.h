@@ -52,7 +52,7 @@
 #include <type_traits>  // for std::enable_if_t, std::false_type, std::true_type
 #include <utility>  // for std::forward
 
-#if !defined(PCL_SILENCE_MALLOC_WARNING)
+#if !defined(PCL_SILENCE_MALLOC_WARNING) && !defined(__NVCC__)
 #if PCL_USES_EIGEN_HANDMADE_ALIGNED_MALLOC
 // EIGEN_DEFAULT_ALIGN_BYTES and EIGEN_MALLOC_ALREADY_ALIGNED will be set after including Eigen/Core
 // this condition is the same as in the function aligned_malloc in Memory.h in the Eigen code
