@@ -151,10 +151,7 @@ pcl::PPFRegistration<PointSource, PointTarget>::computeTransformation(
 
           const Eigen::Vector3f scene_point_transformed = transform_sg * scene_point;
           float alpha_s =
-              std::atan2(-scene_point_transformed(2), scene_point_transformed(1));
-          if (std::sin(alpha_s) * scene_point_transformed(2) < 0.0f)
-            alpha_s *= (-1);
-          alpha_s *= (-1);
+              std::atan2(scene_point_transformed(2), scene_point_transformed(1));
 
           // Go through point pairs in the model with the same discretized feature
           for (const auto& nearest_index : nearest_indices) {
@@ -162,8 +159,8 @@ pcl::PPFRegistration<PointSource, PointTarget>::computeTransformation(
             std::size_t model_point_index = nearest_index.second;
             // Calculate angle alpha = alpha_m - alpha_s
             float alpha =
-                search_method_->alpha_m_[model_reference_index][model_point_index] -
-                alpha_s;
+                alpha_s -
+                search_method_->alpha_m_[model_reference_index][model_point_index];
             if (alpha < -M_PI) {
               alpha += (2 * M_PI);
             }
