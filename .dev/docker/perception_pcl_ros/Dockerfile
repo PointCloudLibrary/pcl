@@ -6,7 +6,7 @@ FROM ros:${flavor}-robot
 ARG flavor="noetic"
 ARG workspace="/root/catkin_ws"
 
-COPY melodic_rosinstall.yaml ${workspace}/src/.rosinstall
+COPY ${flavor}_rosinstall.yaml ${workspace}/src/.rosinstall
 
 # Be careful:
 # * ROS uses Python2

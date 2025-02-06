@@ -1,0 +1,12 @@
+- git:
+    local-name: 'noetic/perception_pcl'
+    uri: 'https://github.com/ros-perception/perception_pcl'
+    version: 'melodic-devel'
+- git:
+    local-name: 'noetic/pcl_msgs'
+    uri: 'https://github.com/ros-perception/pcl_msgs'
+    version: 'noetic-devel'
+- git:
+    local-name: 'pcl'
+    uri: 'https://github.com/PointCloudLibrary/pcl'
+    version: 'master'
