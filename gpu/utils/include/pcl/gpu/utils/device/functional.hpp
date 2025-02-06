@@ -46,7 +46,6 @@ namespace pcl
     {
         // Function Objects
 
-        using thrust::unary_function;
         using thrust::binary_function;
 
         // Arithmetic Operations
@@ -79,8 +78,10 @@ namespace pcl
         using thrust::bit_or;
         using thrust::bit_xor;
 
-        template <typename T> struct bit_not : unary_function<T, T>
+        template <typename T> struct bit_not
         {
+            typedef T argument_type;
+            typedef T result_type;
             __forceinline__ __device__ T operator ()(const T& v) const {return ~v;}
         };
 
