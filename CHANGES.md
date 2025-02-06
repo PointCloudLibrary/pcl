@@ -1,5 +1,163 @@
 # ChangeList
 
+## = 1.15.0 (20 February 2025) =
+
+### Notable changes
+
+**New features** *added to PCL*
+
+* **[filters]** UniformSampling Filter: add option for a minimum number of points required per voxel [[#5968](https://github.com/PointCloudLibrary/pcl/pull/5968)]
+* **[sample_consensus]** Torus ransac model [[#5816](https://github.com/PointCloudLibrary/pcl/pull/5816)]
+* **[common]** Allow type conversion in fromPCLPointCloud2 [[#6059](https://github.com/PointCloudLibrary/pcl/pull/6059)]
+* **[segmentation]** ExtractPolygonalPrismData and ConcaveHull bugfix [[#5168](https://github.com/PointCloudLibrary/pcl/pull/5168)]
+* Allow hidden visibility default on gcc/clang [[#5779](https://github.com/PointCloudLibrary/pcl/pull/5779)]
+
+**Deprecation** *of public APIs, scheduled to be removed after two minor releases*
+
+* **[registration]** Fix spelling error in pcl::NormalDistributionsTransform getOulierRatio/setOulierRatio [[#6140](https://github.com/PointCloudLibrary/pcl/pull/6140)]
+
+**Removal** *of the public APIs deprecated in previous releases*
+
+* Remove Deprecated Code for 1.15.0 release [[#6040](https://github.com/PointCloudLibrary/pcl/pull/6040)]
+
+**Behavior changes** *in classes, apps, or tools*
+
+* **[cmake]** Compile PCL as C++17 by default, switching back to C++14 currently still possible [[#6201](https://github.com/PointCloudLibrary/pcl/pull/6201)]
+
+**ABI changes** *that are still API compatible*
+
+* **[recognition]** C++17 filesystem for recognition module [[#5935](https://github.com/PointCloudLibrary/pcl/pull/5935)]
+* **[registration]** Add OMP based Multi-threading to IterativeClosestPoint [[#4520](https://github.com/PointCloudLibrary/pcl/pull/4520)]
+* **[segmentation]** ExtractPolygonalPrismData and ConcaveHull bugfix [[#5168](https://github.com/PointCloudLibrary/pcl/pull/5168)]
+
+### Changes grouped by module
+
+#### CMake:
+
+* Remove global includes and use target include for Apps [[#6009](https://github.com/PointCloudLibrary/pcl/pull/6009)]
+* Give users more control regarding with which point types classes are … [[#6062](https://github.com/PointCloudLibrary/pcl/pull/6062)]
+* Fix finding lib when install with relwithdebinfo or minsizerel [[#6089](https://github.com/PointCloudLibrary/pcl/pull/6089)]
+* Use system-installed cJSON, if available [[#6084](https://github.com/PointCloudLibrary/pcl/pull/6084)]
+* Remove broken support for external metslib. [[#5959](https://github.com/PointCloudLibrary/pcl/pull/5959)]
+* Require at least Boost 1.71, support Boost 1.86, switch to BoostConfig.cmake [[#6105](https://github.com/PointCloudLibrary/pcl/pull/6105)]
+* Remove global includes and use target include for GPU/CUDA [[#6010](https://github.com/PointCloudLibrary/pcl/pull/6010)]
+* Remove findGLEW and FindOpenMP as they are already present in CMake. Update minimum required cmake to 3.16.3 [[#6100](https://github.com/PointCloudLibrary/pcl/pull/6100)]
+* PCLConfig.cmake.in: Handle potentially empty ${LIB} variable [[#6134](https://github.com/PointCloudLibrary/pcl/pull/6134)]
+* Replace make_directory (deprecated since CMake version 3.0) [[#6150](https://github.com/PointCloudLibrary/pcl/pull/6150)]
+* Updates to CXX flags and removal of cmake checks less than 3.16. [[#6144](https://github.com/PointCloudLibrary/pcl/pull/6144)]
+* Fix OpenMP on macOS/homebrew [[#6114](https://github.com/PointCloudLibrary/pcl/pull/6114)]
+* Preparation for Boost 1.87, flag change for GCC 14 [[#6166](https://github.com/PointCloudLibrary/pcl/pull/6166)]
+* Print warning if incompatible alignment option chosen [[#6184](https://github.com/PointCloudLibrary/pcl/pull/6184)]
+* **[behavior change]** Compile PCL as C++17 by default, switching back to C++14 currently still possible [[#6201](https://github.com/PointCloudLibrary/pcl/pull/6201)]
+* Fix linking with pcl_io_ply [[#6205](https://github.com/PointCloudLibrary/pcl/pull/6205)]
+* Remove global includes from PCL_SUBSYS_DEPEND in PCL_TARGETS and adjust accordingly [[#6013](https://github.com/PointCloudLibrary/pcl/pull/6013)]
+
+#### libpcl_common:
+
+* **[new feature]** Allow type conversion in fromPCLPointCloud2 [[#6059](https://github.com/PointCloudLibrary/pcl/pull/6059)]
+* change `sprintf` to `snprintf` to suppress deprecated warning on macOS [[#6102](https://github.com/PointCloudLibrary/pcl/pull/6102)]
+* Remove "No data to copy" warning in conversions.h [[#6108](https://github.com/PointCloudLibrary/pcl/pull/6108)]
+* add PCL_HIGH convenience macro [[#6136](https://github.com/PointCloudLibrary/pcl/pull/6136)]
+* Remove unnecessary PCL_EXPORTS in common [[#6141](https://github.com/PointCloudLibrary/pcl/pull/6141)]
+* Print warning if incompatible alignment option chosen [[#6184](https://github.com/PointCloudLibrary/pcl/pull/6184)]
+* Update `__func__` and `__PRETTY_FUNCTION__` defines for MSVC [[#6222](https://github.com/PointCloudLibrary/pcl/pull/6222)]
+
+#### libpcl_features:
+
+* Added parallel implementation of PrincipalCurvaturesEstimation [[#6048](https://github.com/PointCloudLibrary/pcl/pull/6048)]
+* :bug: Fix RoPS total area [[#6187](https://github.com/PointCloudLibrary/pcl/pull/6187)]
+
+#### libpcl_filters:
+
+* **[new feature]** UniformSampling Filter: add option for a minimum number of points required per voxel [[#5968](https://github.com/PointCloudLibrary/pcl/pull/5968)]
+* Fix issues related to nan/invalid points [[#6036](https://github.com/PointCloudLibrary/pcl/pull/6036)]
+* Make UniformSampling inherit from FilterIndices instead of Filter [[#6064](https://github.com/PointCloudLibrary/pcl/pull/6064)]
+* Fix an integer overflow issue in the PassThrough filter. [[#6097](https://github.com/PointCloudLibrary/pcl/pull/6097)]
+* Convolution3D: use dynamic schedule for OpenMP [[#6155](https://github.com/PointCloudLibrary/pcl/pull/6155)]
+* Add OpenMP to radius outlier removal [[#6182](https://github.com/PointCloudLibrary/pcl/pull/6182)]
+
+#### libpcl_gpu:
+
+* fix int type overflow by casting int to size_t [[#6058](https://github.com/PointCloudLibrary/pcl/pull/6058)]
+
+#### libpcl_io:
+
+* Fix problem with normals in obj loader [[#6047](https://github.com/PointCloudLibrary/pcl/pull/6047)]
+* fix saveRangeImagePlanarFilePNG [[#6095](https://github.com/PointCloudLibrary/pcl/pull/6095)]
+* fix pcd io small probability bug [[#6122](https://github.com/PointCloudLibrary/pcl/pull/6122)]
+* Preparation for Boost 1.87, flag change for GCC 14 [[#6166](https://github.com/PointCloudLibrary/pcl/pull/6166)]
+* Fix linking with pcl_io_ply [[#6205](https://github.com/PointCloudLibrary/pcl/pull/6205)]
+* Fix regression in OBJ loader [[#6228](https://github.com/PointCloudLibrary/pcl/pull/6228)]
+
+#### libpcl_octree:
+
+* Faster octree nearestKSearch [[#6037](https://github.com/PointCloudLibrary/pcl/pull/6037)]
+* Faster octree radiusSearch [[#6045](https://github.com/PointCloudLibrary/pcl/pull/6045)]
+
+#### libpcl_outofcore:
+
+* Use system-installed cJSON, if available [[#6084](https://github.com/PointCloudLibrary/pcl/pull/6084)]
+
+#### libpcl_recognition:
+
+* **[ABI break]** C++17 filesystem for recognition module [[#5935](https://github.com/PointCloudLibrary/pcl/pull/5935)]
+* add border type setting in linemod gauss step [[#6103](https://github.com/PointCloudLibrary/pcl/pull/6103)]
+
+#### libpcl_registration:
+
+* **[ABI break]** Add OMP based Multi-threading to IterativeClosestPoint [[#4520](https://github.com/PointCloudLibrary/pcl/pull/4520)]
+* GICP: parallel covariance computation [[#6046](https://github.com/PointCloudLibrary/pcl/pull/6046)]
+* Fixes and improvements for FPCS and KFPCS [[#6073](https://github.com/PointCloudLibrary/pcl/pull/6073)]
+* **[deprecation]** Fix spelling error in pcl::NormalDistributionsTransform getOulierRatio/setOulierRatio [[#6140](https://github.com/PointCloudLibrary/pcl/pull/6140)]
+* fix registration iteration 1 mse print [[#6198](https://github.com/PointCloudLibrary/pcl/pull/6198)]
+* Speed up PPFRegistration by using a hash function with fewer collisions [[#6223](https://github.com/PointCloudLibrary/pcl/pull/6223)]
+
+#### libpcl_sample_consensus:
+
+* **[new feature]** Torus ransac model [[#5816](https://github.com/PointCloudLibrary/pcl/pull/5816)]
+* Circle3D: fix optimizeModelCoefficients use an uninitialized var [[#6088](https://github.com/PointCloudLibrary/pcl/pull/6088)]
+* Set better default for RRANSAC and RMSAC [[#6158](https://github.com/PointCloudLibrary/pcl/pull/6158)]
+* Circle3D: Changed segmentation collinear check precision from float to double. [[#6175](https://github.com/PointCloudLibrary/pcl/pull/6175)]
+
+#### libpcl_search:
+
+* Faster organized radius search [[#6160](https://github.com/PointCloudLibrary/pcl/pull/6160)]
+
+#### libpcl_segmentation:
+
+* fix pcl::squaredEuclideanDistance already defined in grabcut_2d.cpp.obj [[#5985](https://github.com/PointCloudLibrary/pcl/pull/5985)]
+* **[new feature][ABI break]** ExtractPolygonalPrismData and ConcaveHull bugfix [[#5168](https://github.com/PointCloudLibrary/pcl/pull/5168)]
+* fix: Initialization with correct signedness [[#6111](https://github.com/PointCloudLibrary/pcl/pull/6111)]
+
+#### libpcl_surface:
+
+* Remove deprecated readdir_r [[#6035](https://github.com/PointCloudLibrary/pcl/pull/6035)]
+* Update opennurbs VS issue (opennurbs_lookup.cpp) [[#6143](https://github.com/PointCloudLibrary/pcl/pull/6143)]
+* Add missing include for implementation header in bilateral_upsampling.h [[#6203](https://github.com/PointCloudLibrary/pcl/pull/6203)]
+
+#### libpcl_visualization:
+
+* Fix issues related to nan/invalid points [[#6036](https://github.com/PointCloudLibrary/pcl/pull/6036)]
+* Fix boost hash data type [[#6053](https://github.com/PointCloudLibrary/pcl/pull/6053)]
+
+#### PCL Apps:
+
+* Preparation for Boost 1.87, flag change for GCC 14 [[#6166](https://github.com/PointCloudLibrary/pcl/pull/6166)]
+
+#### PCL Tools:
+
+* compile missing tools/bilateral_upsampling [[#6112](https://github.com/PointCloudLibrary/pcl/pull/6112)]
+
+#### CI:
+
+* Update windows docker boost and cmake [[#6033](https://github.com/PointCloudLibrary/pcl/pull/6033)]
+* CI: Install cjson [[#6082](https://github.com/PointCloudLibrary/pcl/pull/6082)]
+* Update Windows x86 docker, install boost-cmake [[#6109](https://github.com/PointCloudLibrary/pcl/pull/6109)]
+* Update clang-tidy github action [[#6116](https://github.com/PointCloudLibrary/pcl/pull/6116)]
+* Update macOS on CI (macOS 12 is now unmaintained) [[#6147](https://github.com/PointCloudLibrary/pcl/pull/6147)]
+* CI updates [[#6153](https://github.com/PointCloudLibrary/pcl/pull/6153)]
+* Fix OpenMP on macOS/homebrew [[#6114](https://github.com/PointCloudLibrary/pcl/pull/6114)]
+
 ## = 1.14.1 (03 May 2024) =
 
 ### Notable changes
