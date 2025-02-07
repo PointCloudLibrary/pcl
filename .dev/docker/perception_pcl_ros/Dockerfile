@@ -1,9 +1,9 @@
 # flavor appears twice, once for the FOR, once for the contents since
 # Dockerfile seems to reset arguments after a FOR appears
-ARG flavor="melodic"
+ARG flavor="noetic"
 FROM ros:${flavor}-robot
 
-ARG flavor="melodic"
+ARG flavor="noetic"
 ARG workspace="/root/catkin_ws"
 
 COPY ${flavor}_rosinstall.yaml ${workspace}/src/.rosinstall
@@ -17,10 +17,12 @@ COPY ${flavor}_rosinstall.yaml ${workspace}/src/.rosinstall
 RUN sed -i "s/^# deb-src/deb-src/" /etc/apt/sources.list \
  && apt update \
  && apt install -y \
+    git \
+    libboost-iostreams-dev \
     libeigen3-dev \
     libflann-dev \
     libqhull-dev \
-    python-pip \
+    python3-pip \
     ros-${flavor}-tf2-eigen \
  && pip install -U pip \
  && pip install catkin_tools \
