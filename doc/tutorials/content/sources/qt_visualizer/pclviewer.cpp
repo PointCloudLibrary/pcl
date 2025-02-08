@@ -103,7 +103,7 @@ PCLViewer::RGBsliderReleased ()
 void
 PCLViewer::pSliderValueChanged (int value)
 {
-  viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, value, "cloud");
+  viewer->setPointCloudRenderingProperties (pcl::visualization::RenderingProperties::PCL_VISUALIZER_POINT_SIZE, value, "cloud");
   refreshView();
 }
 
