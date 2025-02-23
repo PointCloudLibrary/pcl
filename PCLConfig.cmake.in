@@ -1,13 +1,11 @@
 # ------------------------------------------------------------------------------------
 # Helper to use PCL from outside project
 #
-# target_link_libraries(my_fabulous_target PCL_XXX_LIBRARIES) where XXX is the
-# upper cased xxx from :
-# @PCLCONFIG_AVAILABLE_COMPONENTS_LIST@
+# find_package(PCL CONFIG REQUIRED COMPONENTS xxx)
 #
-# PCL_INCLUDE_DIRS is filled with PCL and available 3rdparty headers
-# PCL_LIBRARY_DIRS is filled with PCL components libraries install directory and
-# 3rdparty libraries paths
+# target_link_libraries(my_fabulous_target pcl_xxx) where XXX is the
+# component name :
+# @PCLCONFIG_AVAILABLE_COMPONENTS_LIST@
 #
 #                                   www.pointclouds.org
 #------------------------------------------------------------------------------------
