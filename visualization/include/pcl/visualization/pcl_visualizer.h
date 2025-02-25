@@ -2001,9 +2001,62 @@ namespace pcl
         {
           return (style_);
         }
+
+
+        /** \brief Removes a vtk actor from the screen.
+          * \param[in] actor a pointer to the vtk actor object
+          * \param[in] viewport the view port where the actor should be removed from (default: all)
+          */
+        bool
+        removeCustomActorFromRenderer(const vtkSmartPointer<vtkLODActor> &actor,
+                                 int viewport = 0);
+
+
+        /** \brief Removes a vtk actor from the screen.
+          * \param[in] actor a pointer to the vtk actor object
+          * \param[in] viewport the view port where the actor should be removed from (default: all)
+          */
+        bool
+        removeCustomActorFromRenderer (const vtkSmartPointer<vtkActor> &actor,
+                                 int viewport = 0);
+
+
+        /** \brief Adds a vtk actor to screen.
+          * \param[in] actor a pointer to the vtk actor object
+          * \param[in] viewport the view port where the actor should be added to (default: all)
+          */
+        bool
+        removeCustomActorFromRenderer (const vtkSmartPointer<vtkProp> &actor,
+                                 int viewport = 0);
+
+
+        /** \brief  Adds a vtk actor to screen.
+          * \param[in] actor a pointer to the vtk actor object
+          * \param[in] viewport port where the actor should be added to (default: 0/all)
+          *
+          * \note If viewport is set to 0, the actor will be added to all existing
+          * renders. To select a specific viewport use an integer between 1 and N.
+          */
+        void
+        addCustomActorToRenderer(const vtkSmartPointer<vtkProp> &actor,
+                            int viewport = 0);
+                            
+
+
+
+
+
       protected:
         /** \brief The render window interactor. */
         vtkSmartPointer<vtkRenderWindowInteractor> interactor_;
+
+
+
+
+
+
+
+
       private:
         /** \brief Internal function for renderer setup
          * \param[in] vtk renderer
@@ -2126,17 +2179,29 @@ namespace pcl
           * \param[in] actor a pointer to the vtk actor object
           * \param[in] viewport the view port where the actor should be removed from (default: all)
           */
+		    PCL_DEPRECATED(1, 14, "Use removeCustomActorFromRenderer instead")
         bool
         removeActorFromRenderer (const vtkSmartPointer<vtkLODActor> &actor,
-                                 int viewport = 0);
+                                 int viewport = 0)
+
+        {
+          return removeCustomActorFromRenderer (actor,viewport);
+        }
+
+
 
         /** \brief Internal method. Removes a vtk actor from the screen.
           * \param[in] actor a pointer to the vtk actor object
           * \param[in] viewport the view port where the actor should be removed from (default: all)
           */
+		    PCL_DEPRECATED(1, 14, "Use removeCustomActorFromRenderer instead")
         bool
         removeActorFromRenderer (const vtkSmartPointer<vtkActor> &actor,
-                                 int viewport = 0);
+                                 int viewport = 0)
+        {
+          return removeCustomActorFromRenderer (actor,viewport);
+        }
+
 
         /** \brief Internal method. Adds a vtk actor to screen.
           * \param[in] actor a pointer to the vtk actor object
@@ -2145,17 +2210,27 @@ namespace pcl
           * \note If viewport is set to 0, the actor will be added to all existing
           * renders. To select a specific viewport use an integer between 1 and N.
           */
+		    PCL_DEPRECATED(1, 14, "Use addCustomActorToRenderer instead")
         void
         addActorToRenderer (const vtkSmartPointer<vtkProp> &actor,
-                            int viewport = 0);
+                            int viewport = 0)
+        {
+          return addCustomActorToRenderer (actor, viewport);
+        }
+
 
         /** \brief Internal method. Adds a vtk actor to screen.
           * \param[in] actor a pointer to the vtk actor object
           * \param[in] viewport the view port where the actor should be added to (default: all)
           */
+		    PCL_DEPRECATED(1, 14, "Use removeCustomActorFromRenderer instead")
         bool
         removeActorFromRenderer (const vtkSmartPointer<vtkProp> &actor,
-                                 int viewport = 0);
+                                 int viewport = 0)
+        {
+          return removeCustomActorFromRenderer (actor,viewport);
+        }
+
 
         /** \brief Internal method. Creates a vtk actor from a vtk polydata object.
           * \param[in] data the vtk polydata object to create an actor for
