@@ -2259,20 +2259,85 @@ namespace traits
   template <typename PointT>
   using HasNoIntensity = std::enable_if_t<!has_intensity_v<PointT>, bool>;
 
-  /** Metafunction to check if a given point type has either rgb or rgba field. */
+  /** Metafunction to check if a given point type has L*a*b* fields. */
   template <typename PointT>
-  struct has_color : has_any_field<PointT, boost::mpl::vector<pcl::fields::rgb,
-                                                              pcl::fields::rgba> >
+  struct has_Lab : has_all_fields<PointT, boost::mpl::vector<pcl::fields::L,
+                                                             pcl::fields::a,
+                                                             pcl::fields::b> >
   { };
 
   template <typename PointT>
-  constexpr auto has_color_v = has_color<PointT>::value;
+  constexpr auto has_Lab_v = has_Lab<PointT>::value;
 
   template <typename PointT>
-  using HasColor = std::enable_if_t<has_color_v<PointT>, bool>;
+  using HasLab = std::enable_if_t<has_Lab_v<PointT>, bool>;
 
   template <typename PointT>
-  using HasNoColor = std::enable_if_t<!has_color_v<PointT>, bool>;
+  using HasNoLab = std::enable_if_t<!has_Lab_v<PointT>, bool>;
+
+  /** Metafunction to check if a given point type has HSV color space fields. */
+  template <typename PointT>
+  struct has_HSV : has_all_fields<PointT, boost::mpl::vector<pcl::fields::h,
+                                                             pcl::fields::s,
+                                                             pcl::fields::v> >
+  { };
+
+  template <typename PointT>
+  constexpr auto has_HSV_v = has_HSV<PointT>::value;
+
+  template <typename PointT>
+  using HasHSV = std::enable_if_t<has_HSV_v<PointT>, bool>;
+
+  template <typename PointT>
+  using HasNoHSV = std::enable_if_t<!has_HSV_v<PointT>, bool>;
+
+  /** Metafunction to check if a given point type has either rgb or rgba field. */
+  template <typename PointT>
+  struct has_rgb : has_any_field<PointT, boost::mpl::vector<pcl::fields::rgb,
+                                                            pcl::fields::rgba> >
+  { };
+
+  template <typename PointT>
+  constexpr auto has_rgb_v = has_rgb<PointT>::value;
+
+  template <typename PointT>
+  using HasRGB = std::enable_if_t<has_rgb_v<PointT>, bool>;
+
+  template <typename PointT>
+  using HasNoRGB = std::enable_if_t<!has_rgb_v<PointT>, bool>;
+
+  /** Metafunction to check if a given point type has any color (e.g. rgb, rgba, hsv, lab) field. */
+  template <typename PointT>
+  constexpr auto has_any_color_v = has_rgb_v<PointT> || has_HSV_v<PointT> || has_Lab_v<PointT> || has_intensity_v<PointT>;
+
+  template <typename PointT>
+  using HasAnyColor = std::enable_if_t<has_any_color_v<PointT>, bool>;
+
+  // There should be a `HasNoAnyColor` implementation which exactly means no color fields in point types,
+  // but the name seems to be obscure, so we decide to change the behavior of `HasNoColor` for this purpose
+  // as soon as the deprecation of `has_color` families in PCL 1.15.
+  // See here: https://github.com/PointCloudLibrary/pcl/pull/4761#discussion_r646427755
+
+  /** Deprecated: Metafunction to check if a given point type has either rgb or rgba field. */
+  /* 
+    Deprecations contain has_color, has_color_v, HasColor, HasNoColor. And they will be 
+    removed in PCL 1.15. Please use has_rgb, has_rgb_v, HasRGB, HasNoRGB respectively.
+  */
+  template <typename PointT>
+  using has_color PCL_DEPRECATED(1, 15, "Please use has_rgb instead.")
+    = has_rgb<PointT>;
+
+  template <typename PointT>
+  PCL_DEPRECATED(1, 15, "Please use has_rgb_v instead.")
+  constexpr auto has_color_v = has_rgb<PointT>::value;
+
+  template <typename PointT>
+  using HasColor PCL_DEPRECATED(1, 15, "Please use HasRGB instead.")
+    = HasRGB<PointT>;
+
+  template <typename PointT>
+  using HasNoColor PCL_DEPRECATED(1, 15, "Please use HasNoRGB instead.")
+    = HasNoRGB<PointT>;
 
   /** Metafunction to check if a given point type has label field. */
   template <typename PointT>
