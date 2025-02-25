@@ -690,6 +690,7 @@ pcl::visualization::PCLVisualizer::addCoordinateSystem (double scale, const std:
 
   vtkSmartPointer<vtkLODActor> axes_actor = vtkSmartPointer<vtkLODActor>::New ();
   axes_actor->SetMapper (axes_mapper);
+  axes_actor->SetPickable(false);
 
   // Save the ID and actor pair to the global actor map
   (*coordinate_actor_map_) [id] = axes_actor;
@@ -732,6 +733,7 @@ pcl::visualization::PCLVisualizer::addCoordinateSystem (double scale, float x, f
   vtkSmartPointer<vtkLODActor> axes_actor = vtkSmartPointer<vtkLODActor>::New ();
   axes_actor->SetMapper (axes_mapper);
   axes_actor->SetPosition (x, y, z);
+  axes_actor->SetPickable(false);
 
   // Save the ID and actor pair to the global actor map
   (*coordinate_actor_map_) [id] = axes_actor;
@@ -1400,7 +1402,7 @@ pcl::visualization::PCLVisualizer::setPointCloudRenderingProperties (
       // Check if the mapper has scalars
       if (!actor->GetMapper ()->GetInput ()->GetPointData ()->GetScalars ())
         break;
-      
+
       // Check that scalars are not unisgned char (i.e. check if a LUT is used to colormap scalars assuming vtk ColorMode is Default)
       if (actor->GetMapper ()->GetInput ()->GetPointData ()->GetScalars ()->IsA ("vtkUnsignedCharArray"))
         break;
@@ -1411,7 +1413,7 @@ pcl::visualization::PCLVisualizer::setPointCloudRenderingProperties (
         PCL_WARN ("[setPointCloudRenderingProperties] Range max must be greater than range min!\n");
         return (false);
       }
-      
+
       // Update LUT
       actor->GetMapper ()->GetLookupTable ()->SetRange (val1, val2);
       actor->GetMapper()->UseLookupTableScalarRangeOn ();
@@ -1563,7 +1565,7 @@ pcl::visualization::PCLVisualizer::setPointCloudRenderingProperties (
       // Check if the mapper has scalars
       if (!actor->GetMapper ()->GetInput ()->GetPointData ()->GetScalars ())
         break;
-      
+
       // Check that scalars are not unisgned char (i.e. check if a LUT is used to colormap scalars assuming vtk ColorMode is Default)
       if (actor->GetMapper ()->GetInput ()->GetPointData ()->GetScalars ()->IsA ("vtkUnsignedCharArray"))
         break;
@@ -1571,7 +1573,7 @@ pcl::visualization::PCLVisualizer::setPointCloudRenderingProperties (
       // Get range limits from existing LUT
       double *range;
       range = actor->GetMapper ()->GetLookupTable ()->GetRange ();
-      
+
       actor->GetMapper ()->ScalarVisibilityOn ();
       actor->GetMapper ()->SetScalarRange (range[0], range[1]);
       vtkSmartPointer<vtkLookupTable> table;
@@ -1587,7 +1589,7 @@ pcl::visualization::PCLVisualizer::setPointCloudRenderingProperties (
       // Check if the mapper has scalars
       if (!actor->GetMapper ()->GetInput ()->GetPointData ()->GetScalars ())
         break;
-      
+
       // Check that scalars are not unisgned char (i.e. check if a LUT is used to colormap scalars assuming vtk ColorMode is Default)
       if (actor->GetMapper ()->GetInput ()->GetPointData ()->GetScalars ()->IsA ("vtkUnsignedCharArray"))
         break;
@@ -1717,7 +1719,7 @@ pcl::visualization::PCLVisualizer::setShapeRenderingProperties (
       // Check if the mapper has scalars
       if (!actor->GetMapper ()->GetInput ()->GetPointData ()->GetScalars ())
         break;
-      
+
       // Check that scalars are not unisgned char (i.e. check if a LUT is used to colormap scalars assuming vtk ColorMode is Default)
       if (actor->GetMapper ()->GetInput ()->GetPointData ()->GetScalars ()->IsA ("vtkUnsignedCharArray"))
         break;
@@ -1728,7 +1730,7 @@ pcl::visualization::PCLVisualizer::setShapeRenderingProperties (
         PCL_WARN ("[setShapeRenderingProperties] Range max must be greater than range min!\n");
         return (false);
       }
-      
+
       // Update LUT
       actor->GetMapper ()->GetLookupTable ()->SetRange (val1, val2);
       actor->GetMapper()->UseLookupTableScalarRangeOn ();
@@ -1861,11 +1863,11 @@ pcl::visualization::PCLVisualizer::setShapeRenderingProperties (
       // Check that scalars are not unisgned char (i.e. check if a LUT is used to colormap scalars assuming vtk ColorMode is Default)
       if (actor->GetMapper ()->GetInput ()->GetPointData ()->GetScalars ()->IsA ("vtkUnsignedCharArray"))
         break;
-      
+
       // Get range limits from existing LUT
       double *range;
       range = actor->GetMapper ()->GetLookupTable ()->GetRange ();
-      
+
       actor->GetMapper ()->ScalarVisibilityOn ();
       actor->GetMapper ()->SetScalarRange (range[0], range[1]);
       vtkSmartPointer<vtkLookupTable> table;
@@ -3005,7 +3007,7 @@ pcl::visualization::PCLVisualizer::addPolygonMesh (const pcl::PolygonMesh &poly_
   pcl::fromPCLPointCloud2 (poly_mesh.cloud, *point_cloud);
   poly_points->SetNumberOfPoints (point_cloud->size ());
 
-  for (std::size_t i = 0; i < point_cloud->size (); ++i) 
+  for (std::size_t i = 0; i < point_cloud->size (); ++i)
   {
     const pcl::PointXYZ& p = (*point_cloud)[i];
     poly_points->InsertPoint (i, p.x, p.y, p.z);
@@ -3175,7 +3177,7 @@ pcl::visualization::PCLVisualizer::updatePolygonMesh (
 
   // Update the cells
   cells = vtkSmartPointer<vtkCellArray>::New ();
-  
+
   const auto idx = details::fillCells(lookup, verts, cells, max_size_of_polygon);
 
   cells->GetData ()->SetNumberOfValues (idx);
@@ -3419,7 +3421,7 @@ pcl::visualization::PCLVisualizer::addTextureMesh (const pcl::TextureMesh &mesh,
     mapper->MapDataArrayToMultiTextureAttribute(tu,
       this_coordinates_name.c_str(),
       vtkDataObject::FIELD_ASSOCIATION_POINTS);
-    
+
     polydata->GetPointData ()->AddArray (coordinates);
     actor->GetProperty ()->SetTexture (tu, texture);
     ++tex_id;
@@ -4338,7 +4340,7 @@ pcl::visualization::PCLVisualizer::close ()
 void
 pcl::visualization::PCLVisualizer::removeCorrespondences (
     const std::string &id, int viewport)
-{ 
+{
   removeShape (id, viewport);
 }
 
@@ -4571,7 +4573,7 @@ pcl::visualization::PCLVisualizer::getUniqueCameraFile (int argc, char **argv)
   p_file_indices = pcl::console::parse_file_extension_argument (argc, argv, ".pcd");
   if (!p_file_indices.empty ())
   {
-    boost::uuids::detail::sha1 sha1;    
+    boost::uuids::detail::sha1 sha1;
     bool valid = false;
 
     // Calculate sha1 using canonical paths
