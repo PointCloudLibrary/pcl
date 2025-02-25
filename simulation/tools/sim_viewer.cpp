@@ -587,21 +587,26 @@ main(int argc, char** argv)
     // Change the shape rendered color
     if (fcolorparam && fcolor_r.size() > i && fcolor_g.size() > i &&
         fcolor_b.size() > i)
-      p->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_COLOR,
-                                     fcolor_r[i],
-                                     fcolor_g[i],
-                                     fcolor_b[i],
-                                     cloud_name);
+      p->setShapeRenderingProperties(
+          pcl::visualization::RenderingProperties::PCL_VISUALIZER_COLOR,
+          fcolor_r[i],
+          fcolor_g[i],
+          fcolor_b[i],
+          cloud_name);
 
     // Change the shape rendered point size
     if (!psize.empty())
       p->setShapeRenderingProperties(
-          pcl::visualization::PCL_VISUALIZER_POINT_SIZE, psize.at(i), cloud_name);
+          pcl::visualization::RenderingProperties::PCL_VISUALIZER_POINT_SIZE,
+          psize.at(i),
+          cloud_name);
 
     // Change the shape rendered opacity
     if (!opaque.empty())
       p->setShapeRenderingProperties(
-          pcl::visualization::PCL_VISUALIZER_OPACITY, opaque.at(i), cloud_name);
+          pcl::visualization::RenderingProperties::PCL_VISUALIZER_OPACITY,
+          opaque.at(i),
+          cloud_name);
   }
 
   pcl::PCLPointCloud2::Ptr cloud;
@@ -767,9 +772,15 @@ main(int argc, char** argv)
                                                           cloud_name_normals,
                                                           viewport);
       p->setPointCloudRenderingProperties(
-          pcl::visualization::PCL_VISUALIZER_COLOR, 1.0, 0.0, 0.0, cloud_name_normals);
+          pcl::visualization::RenderingProperties::PCL_VISUALIZER_COLOR,
+          1.0,
+          0.0,
+          0.0,
+          cloud_name_normals);
       p->setPointCloudRenderingProperties(
-          pcl::visualization::PCL_VISUALIZER_LINE_WIDTH, 3, cloud_name_normals);
+          pcl::visualization::RenderingProperties::PCL_VISUALIZER_LINE_WIDTH,
+          3,
+          cloud_name_normals);
       const auto cloud_name_normals_pc = cloud_name_normals + "-pc";
       p->addPointCloudPrincipalCurvatures<pcl::PointXYZ, pcl::Normal>(
           cloud_xyz,
@@ -780,7 +791,9 @@ main(int argc, char** argv)
           cloud_name_normals_pc,
           viewport);
       p->setPointCloudRenderingProperties(
-          pcl::visualization::PCL_VISUALIZER_LINE_WIDTH, 3, cloud_name_normals_pc);
+          pcl::visualization::RenderingProperties::PCL_VISUALIZER_LINE_WIDTH,
+          3,
+          cloud_name_normals_pc);
     }
 
     // Add every dimension as a possible color
@@ -811,17 +824,23 @@ main(int argc, char** argv)
 
     // Set immediate mode rendering ON
     p->setPointCloudRenderingProperties(
-        pcl::visualization::PCL_VISUALIZER_IMMEDIATE_RENDERING, 1.0, cloud_name);
+        pcl::visualization::RenderingProperties::PCL_VISUALIZER_IMMEDIATE_RENDERING,
+        1.0,
+        cloud_name);
 
     // Change the cloud rendered point size
     if (!psize.empty())
       p->setPointCloudRenderingProperties(
-          pcl::visualization::PCL_VISUALIZER_POINT_SIZE, psize.at(i), cloud_name);
+          pcl::visualization::RenderingProperties::PCL_VISUALIZER_POINT_SIZE,
+          psize.at(i),
+          cloud_name);
 
     // Change the cloud rendered opacity
     if (!opaque.empty())
       p->setPointCloudRenderingProperties(
-          pcl::visualization::PCL_VISUALIZER_OPACITY, opaque.at(i), cloud_name);
+          pcl::visualization::RenderingProperties::PCL_VISUALIZER_OPACITY,
+          opaque.at(i),
+          cloud_name);
   }
 
   ////////////////////////////////////////////////////////////////

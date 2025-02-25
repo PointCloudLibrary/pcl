@@ -158,32 +158,32 @@ TEST (PCL, PCLVisualizer_getPointCloudRenderingProperties)
 
   std::string cloud_id = "input_cloud";
   visualizer.addPointCloud (cloud, cloud_id);
-  ASSERT_TRUE (visualizer.setPointCloudRenderingProperties (PCL_VISUALIZER_COLOR,
+  ASSERT_TRUE (visualizer.setPointCloudRenderingProperties (RenderingProperties::PCL_VISUALIZER_COLOR,
                                                             1., 0., 0., cloud_id));
   double r, g, b;
-  EXPECT_FALSE (visualizer.getPointCloudRenderingProperties (PCL_VISUALIZER_POINT_SIZE,
+  EXPECT_FALSE (visualizer.getPointCloudRenderingProperties (RenderingProperties::PCL_VISUALIZER_POINT_SIZE,
                                                              r, g, b, cloud_id));
-  EXPECT_FALSE (visualizer.getPointCloudRenderingProperties (PCL_VISUALIZER_OPACITY,
+  EXPECT_FALSE (visualizer.getPointCloudRenderingProperties (RenderingProperties::PCL_VISUALIZER_OPACITY,
                                                              r, g, b, cloud_id));
-  EXPECT_FALSE (visualizer.getPointCloudRenderingProperties (PCL_VISUALIZER_LINE_WIDTH,
+  EXPECT_FALSE (visualizer.getPointCloudRenderingProperties (RenderingProperties::PCL_VISUALIZER_LINE_WIDTH,
                                                              r, g, b, cloud_id));
-  EXPECT_FALSE (visualizer.getPointCloudRenderingProperties (PCL_VISUALIZER_FONT_SIZE,
+  EXPECT_FALSE (visualizer.getPointCloudRenderingProperties (RenderingProperties::PCL_VISUALIZER_FONT_SIZE,
                                                              r, g, b, cloud_id));
-  EXPECT_FALSE (visualizer.getPointCloudRenderingProperties (PCL_VISUALIZER_REPRESENTATION,
+  EXPECT_FALSE (visualizer.getPointCloudRenderingProperties (RenderingProperties::PCL_VISUALIZER_REPRESENTATION,
                                                              r, g, b, cloud_id));
-  EXPECT_FALSE (visualizer.getPointCloudRenderingProperties (PCL_VISUALIZER_IMMEDIATE_RENDERING,
+  EXPECT_FALSE (visualizer.getPointCloudRenderingProperties (RenderingProperties::PCL_VISUALIZER_IMMEDIATE_RENDERING,
                                                              r, g, b, cloud_id));
-  EXPECT_FALSE (visualizer.getPointCloudRenderingProperties (PCL_VISUALIZER_SHADING,
+  EXPECT_FALSE (visualizer.getPointCloudRenderingProperties (RenderingProperties::PCL_VISUALIZER_SHADING,
                                                              r, g, b, cloud_id));
-  EXPECT_FALSE (visualizer.getPointCloudRenderingProperties (PCL_VISUALIZER_LUT,
+  EXPECT_FALSE (visualizer.getPointCloudRenderingProperties (RenderingProperties::PCL_VISUALIZER_LUT,
                                                              r, g, b, cloud_id));
-  EXPECT_FALSE (visualizer.getPointCloudRenderingProperties (PCL_VISUALIZER_LUT_RANGE,
+  EXPECT_FALSE (visualizer.getPointCloudRenderingProperties (RenderingProperties::PCL_VISUALIZER_LUT_RANGE,
                                                              r, g, b, cloud_id));
 
   r = 666.;
   g = 666.;
   b = 666.;
-  EXPECT_TRUE (visualizer.getPointCloudRenderingProperties (PCL_VISUALIZER_COLOR,
+  EXPECT_TRUE (visualizer.getPointCloudRenderingProperties (RenderingProperties::PCL_VISUALIZER_COLOR,
                                                             r, g, b, cloud_id));
 
   EXPECT_EQ (r, 1.);

@@ -205,7 +205,7 @@ int main (int argc, char** argv)
       (keypoints_cloud_ptr, 0, 255, 0);
     if (!viewer.updatePointCloud (keypoints_cloud_ptr, color_handler_keypoints, "keypoints"))
       viewer.addPointCloud (keypoints_cloud_ptr, color_handler_keypoints, "keypoints");
-    viewer.setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 7, "keypoints");
+    viewer.setPointCloudRenderingProperties (pcl::visualization::RenderingProperties::PCL_VISUALIZER_POINT_SIZE, 7, "keypoints");
   }
 
   interface->stop ();

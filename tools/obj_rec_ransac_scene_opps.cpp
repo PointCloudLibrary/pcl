@@ -179,12 +179,12 @@ void update (CallbackParameters* params)
   std::string lines_str_id = "opps";
   params->viz_.removeShape(lines_str_id);
   params->viz_.addModelFromPolyData (vtk_opps, lines_str_id);
-  params->viz_.setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_COLOR, 0.0, 0.0, 1.0, lines_str_id);
+  params->viz_.setShapeRenderingProperties(pcl::visualization::RenderingProperties::PCL_VISUALIZER_COLOR, 0.0, 0.0, 1.0, lines_str_id);
   // The normals
   std::string normals_str_id = "opps normals";
   params->viz_.removeShape(normals_str_id);
   params->viz_.addModelFromPolyData (vtk_hh->GetOutput (), normals_str_id);
-  params->viz_.setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_COLOR, 1.0, 1.0, 0.0, normals_str_id);
+  params->viz_.setShapeRenderingProperties(pcl::visualization::RenderingProperties::PCL_VISUALIZER_COLOR, 1.0, 1.0, 0.0, normals_str_id);
 
 }
 
@@ -216,15 +216,15 @@ void run (float pair_width, float voxel_size, float max_coplanarity_angle)
 
 #ifdef _SHOW_SCENE_POINTS_
   viz.addPointCloud (scene_points, "cloud in");
-  viz.setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 2, "cloud in");
+  viz.setPointCloudRenderingProperties (pcl::visualization::RenderingProperties::PCL_VISUALIZER_POINT_SIZE, 2, "cloud in");
 #endif
 
 #ifdef _SHOW_OCTREE_POINTS_
   PointCloud<PointXYZ>::Ptr octree_points (new PointCloud<PointXYZ> ());
   objrec.getSceneOctree ().getFullLeavesPoints (*octree_points);
   viz.addPointCloud (octree_points, "octree points");
-  viz.setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 5, "octree points");
-  viz.setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_COLOR, 1.0, 0.0, 0.0, "octree points");
+  viz.setPointCloudRenderingProperties (pcl::visualization::RenderingProperties::PCL_VISUALIZER_POINT_SIZE, 5, "octree points");
+  viz.setPointCloudRenderingProperties (pcl::visualization::RenderingProperties::PCL_VISUALIZER_COLOR, 1.0, 0.0, 0.0, "octree points");
 #endif
 
 #if defined _SHOW_OCTREE_NORMALS_ && defined _SHOW_OCTREE_POINTS_
