@@ -17,6 +17,7 @@ RUN apt update \
     libboost-filesystem-dev \
     libboost-iostreams-dev \
     libboost-system-dev \
+    libcjson-dev \
     libeigen3-dev \
     libflann-dev \
     libglew-dev \
