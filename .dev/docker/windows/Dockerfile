@@ -30,7 +30,7 @@ RUN wget $Env:CHANNEL_BASE_URL/vs_buildtools.exe -OutFile 'C:\TEMP\vs_buildtools
     "C:\TEMP\VisualStudio.chman",                                   `
     "--add",                                                        `
     "Microsoft.VisualStudio.Workload.VCTools",                      `
-    "Microsoft.Net.Component.4.8.SDK",                              `
+    "Microsoft.Net.Component.4.8.1.SDK",                            `
     "Microsoft.VisualStudio.Component.VC.ATLMFC",                   `
     "--includeRecommended"                                          `
     -Wait -PassThru;                                                `
@@ -48,29 +48,6 @@ COPY $PLATFORM'-windows-rel.cmake' 'c:\vcpkg\triplets\'$PLATFORM'-windows-rel.cm
 RUN cd .\vcpkg;                                                     `
     .\bootstrap-vcpkg.bat;                                          `
     .\vcpkg install `
-    boost-accumulators `
-    boost-asio `
-    boost-algorithm `
-    boost-filesystem `
-    boost-format `
-    boost-graph `
-    boost-interprocess `
-    boost-iostreams `
-    boost-math `
-    boost-ptr-container `
-    boost-signals2 `
-    boost-sort `
-    boost-uuid `
-    boost-cmake `
-    flann `
-    nanoflann `
-    eigen3 `
-    qhull `
-    glew `
-    freeglut `
-    vtk[qt,opengl] `
-    gtest `
-    benchmark `
     openni2 `
     cjson `
     --triplet $Env:PLATFORM-windows-rel --host-triplet $Env:PLATFORM-windows-rel --clean-after-build --x-buildtrees-root=C:\b; cat C:\b\openni2\build-x64-windows-rel-rel-out.log;
