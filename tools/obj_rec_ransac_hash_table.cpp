@@ -53,6 +53,7 @@
 #include <vtkDataArray.h>
 #include <vtkPointData.h>
 #include <vtkGlyph3D.h>
+#include <chrono>
 #include <cstdio>
 #include <thread>
 
