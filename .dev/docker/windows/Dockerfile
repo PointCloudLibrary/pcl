@@ -31,8 +31,6 @@ RUN wget $Env:CHANNEL_BASE_URL/vs_buildtools.exe -OutFile 'C:\TEMP\vs_buildtools
     "--add",                                                        `
     "Microsoft.VisualStudio.Workload.VCTools",                      `
     "Microsoft.Net.Component.4.7.2.SDK",                            `
-    "Microsoft.Net.Component.4.7.2.TargetingPack",                  `
-    "Microsoft.Net.ComponentGroup.4.7.2.DeveloperTools",            `
     "Microsoft.VisualStudio.Component.VC.ATLMFC",                   `
     "--includeRecommended"                                          `
     -Wait -PassThru;                                                `
