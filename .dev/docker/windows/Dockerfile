@@ -64,6 +64,7 @@ RUN cd .\vcpkg;                                                     `
     boost-uuid `
     boost-cmake `
     flann `
+    nanoflann `
     eigen3 `
     qhull `
     glew `
