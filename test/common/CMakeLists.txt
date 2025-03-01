@@ -11,6 +11,7 @@ if(NOT build)
 endif()
 
 # Args: name, executable_name
+PCL_ADD_TEST(common_console test_console FILES test_console.cpp LINK_WITH pcl_gtest pcl_common)
 PCL_ADD_TEST(common_test_wrappers test_wrappers FILES test_wrappers.cpp LINK_WITH pcl_gtest pcl_common)
 PCL_ADD_TEST(common_test_macros test_macros FILES test_macros.cpp LINK_WITH pcl_gtest pcl_common)
 PCL_ADD_TEST(common_vector_average test_vector_average FILES test_vector_average.cpp LINK_WITH pcl_gtest pcl_common)
