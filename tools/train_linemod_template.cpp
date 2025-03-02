@@ -85,7 +85,7 @@ bool
 loadCloud (const std::string & filename, PointCloudXYZRGBA & cloud)
 {
   TicToc tt;
-  print_highlight ("Loading "); print_value ("%s ", filename.c_str ());
+  print_highlight ("Loading "); print_value ("%s ", filename);
 
   tt.tic ();
   if (loadPCDFile (filename, cloud) < 0)
@@ -93,7 +93,7 @@ loadCloud (const std::string & filename, PointCloudXYZRGBA & cloud)
 
   printElapsedTimeAndNumberOfPoints (tt.toc (), cloud.width, cloud.height);
 
-  print_info ("Available dimensions: "); print_value ("%s\n", pcl::getFieldsList (cloud).c_str ());
+  print_info ("Available dimensions: "); print_value ("%s\n", pcl::getFieldsList (cloud));
 
   return (true);
 }
@@ -271,15 +271,13 @@ main (int argc, char** argv)
     if (!loadCloud (input_filename, *cloud))
     {
       error_code = -1;
-      std::string warn_msg = "Could not load point cloud from file: " + input_filename + "\n";
-      print_warn (warn_msg.c_str ());
+      print_warn("Could not load point cloud from file: " + input_filename + "\n");
       continue;
     }
 
     if (!cloud->isOrganized())
     {
-      std::string warn_msg = "Unorganized point cloud detected. Skipping file " + input_filename + "\n";
-      print_warn(warn_msg.c_str());
+      print_warn("Unorganized point cloud detected. Skipping file " + input_filename + "\n");
       continue;
     }
     else
