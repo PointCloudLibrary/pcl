@@ -321,9 +321,9 @@ namespace pcl
      */
     template <typename... Args>
     PCL_EXPORTS void
-    print_error(const char* format, Args&&... args)
+    print_error(std::string format, Args&&... args)
     {
-      print_error(stderr, std::string(format), std::forward<Args>(args)...);
+      print_error(stderr, format, std::forward<Args>(args)...);
     }
 
      /** \brief Print a warning message on stream with colors
@@ -342,9 +342,9 @@ namespace pcl
       */
     template <typename... Args>
     PCL_EXPORTS void
-    print_warn(const char* format, Args&&... args)
+    print_warn(std::string format, Args&&... args)
     {
-      print_warn(stderr, std::string(format), std::forward<Args>(args)...);
+      print_warn(stderr, format, std::forward<Args>(args)...);
     }
 
     /** \brief Print a debug message on stream with colors
@@ -365,10 +365,9 @@ namespace pcl
     PCL_EXPORTS void
     print_debug(const std::string format, Args&&... args)
     {
-      print_debug(stdout, std::string(format), std::forward<Args>(args)...);
+      print_debug(stdout, format, std::forward<Args>(args)...);
     }
 
-    
     /** \brief Print a message on stream with colors
      * \param stream the output stream (stdout, stderr, etc)
      * \param attr the text attribute
@@ -407,22 +406,6 @@ namespace pcl
       print_value(stdout, format, std::forward<Args>(args)...);
     }
 
-    /**
-     * @brief Print a message
-     * @param level Verbosity level
-     * @param fmt_str the string containing the formatting
-     * @param ...args values to be inserted into the fmt_str
-     */
-    template <typename... Args>
-    void
-    print(VERBOSITY_LEVEL level, const std::string format, Args&&... args)
-    {
-      const auto str = to_string(format, std::forward<Args>(args)...);
-
-      LogRecord logEntry{level, str};
-      Logger::getInstance().print(logEntry);
-    }
-
     /** \brief Print a message on stream
      * \param level the verbosity level
      * \param stream the output stream (stdout, stderr, etc)
@@ -438,7 +421,22 @@ namespace pcl
       Logger::getInstance().print(stream, logEntry);
     }
 
-    
+    /**
+     * @brief Print a message
+     * @param level Verbosity level
+     * @param fmt_str the string containing the formatting
+     * @param ...args values to be inserted into the fmt_str
+     */
+    template <typename... Args>
+    void
+    print(VERBOSITY_LEVEL level, const std::string format, Args&&... args)
+    {
+      const auto str = to_string(format, std::forward<Args>(args)...);
+
+      LogRecord logEntry{L_INFO, str};
+      Logger::getInstance().print(stream, logEntry);
+    }
+
     /** \brief Print a highlighted info message on stream with colors
      * \param stream the output stream (stdout, stderr, etc)
      * \param format the message
@@ -447,7 +445,7 @@ namespace pcl
     PCL_EXPORTS void
     print_highlight(FILE* stream, const std::string format, Args... args)
     {
-      const auto str = to_string(std::string(format), std::forward<Args>(args)...);
+      const auto str = to_string(format, std::forward<Args>(args)...);
       LogRecord logEntry{L_INFO, str};
       Logger::getInstance().print_highlight(stream,logEntry);
     }
