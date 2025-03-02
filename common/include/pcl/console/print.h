@@ -433,8 +433,8 @@ namespace pcl
     {
       const auto str = to_string(format, std::forward<Args>(args)...);
 
-      LogRecord logEntry{L_INFO, str};
-      Logger::getInstance().print(stream, logEntry);
+      LogRecord logEntry{level, str};
+      Logger::getInstance().print(logEntry);
     }
 
     /** \brief Print a highlighted info message on stream with colors
