@@ -139,8 +139,7 @@ public:
   }
 
   /* \brief maximum depth that can be addressed */
-  static const unsigned char maxDepth =
-      static_cast<unsigned char>(sizeof(uindex_t) * 8);
+  static const unsigned char maxDepth;
 
   // Indices addressing a voxel at (X, Y, Z)
   // NOLINTBEGIN(modernize-use-default-member-init)
