@@ -39,6 +39,9 @@
 #ifndef PCL_OCTREE_BASE_HPP
 #define PCL_OCTREE_BASE_HPP
 
+#include <pcl/octree/octree_base.h>
+#include <pcl/octree/octree_key.h>
+
 #include <vector>
 
 namespace pcl {
