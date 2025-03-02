@@ -23,6 +23,10 @@ PCL_ADD_TEST(filters_functor test_filters_functor
              FILES test_functor_filter.cpp
              LINK_WITH pcl_gtest pcl_common pcl_filters)
 
+PCL_ADD_TEST(filters_grid_filter test_filters_grid_filter
+             FILES test_grid_filter.cpp
+             LINK_WITH pcl_gtest pcl_common pcl_filters)
+
 PCL_ADD_TEST(filters_local_maximum test_filters_local_maximum
              FILES test_local_maximum.cpp
              LINK_WITH pcl_gtest pcl_common pcl_filters pcl_search pcl_octree)
@@ -49,6 +53,11 @@ if(BUILD_io)
          FILES test_bilateral.cpp
          LINK_WITH pcl_gtest pcl_filters pcl_io pcl_kdtree
          ARGUMENTS "${PCL_SOURCE_DIR}/test/milk_cartoon_all_small_clorox.pcd")
+  
+  PCL_ADD_TEST(filters_experimental_voxel_grid test_filters_experimental_voxel_grid
+         FILES test_experimental_voxel_grid.cpp
+         LINK_WITH pcl_gtest pcl_common pcl_filters pcl_io
+         ARGUMENTS "${PCL_SOURCE_DIR}/test/bun0.pcd" "${PCL_SOURCE_DIR}/test/milk_cartoon_all_small_clorox.pcd" "${PCL_SOURCE_DIR}/test/milk_color.pcd")
 
   if(BUILD_features)
     PCL_ADD_TEST(filters_sampling test_filters_sampling
