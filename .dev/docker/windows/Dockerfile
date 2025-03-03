@@ -69,7 +69,7 @@ RUN cd .\vcpkg;                                                     `
     qhull `
     glew `
     freeglut `
-    vtk[qt,opengl] `
+    vtk[core,qt,opengl] `
     gtest `
     benchmark `
     openni2 `
