@@ -61,7 +61,7 @@ TEST(PCL, checkLogLevel)
 {
   int callbackCount = 0;
   
-  pcl::console::Logger::getInstance().setCallback(
+  pcl::console::setCallback(
       [&callbackCount](const pcl::console::LogRecord& rec) {
         std::cout << "Received logrecord: level:" << rec.level << " with message: " << rec.message;
         callbackCount++;

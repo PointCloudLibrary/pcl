@@ -257,6 +257,13 @@ namespace pcl
       std::function<void(const LogRecord&)> logcallback;
     };
 
+    template <typename Functor>
+    void
+    setCallback(Functor&& callback)
+    {
+      Logger::getInstance().setCallback(std::move(callback));
+    }
+
     /**
      * @brief insert values into a formatted string
      * @param fmt_str string containing the format
