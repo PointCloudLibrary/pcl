@@ -12,7 +12,6 @@ if(NOT build)
 endif()
 
 set(srcs
-  src/octree_key.cpp
   src/octree_inst.cpp
 )
 
