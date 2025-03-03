@@ -181,7 +181,7 @@ LCCPSegmentation Parameters: \n\
   pcl::PCLPointCloud2 input_pointcloud2;
   if (pcl::io::loadPCDFile (pcd_filename, input_pointcloud2))
   {
-    PCL_ERROR ("ERROR: Could not read input point cloud %s.\n", pcd_filename.c_str ());
+    PCL_ERROR ("ERROR: Could not read input point cloud %s.\n", pcd_filename);
     return (3);
   }
   pcl::fromPCLPointCloud2 (input_pointcloud2, *input_cloud_ptr);
@@ -288,9 +288,8 @@ LCCPSegmentation Parameters: \n\
     PCL_INFO ("Refining supervoxels\n");
     super.refineSupervoxels (2, supervoxel_clusters);
   }
-  std::stringstream temp;
-  temp << "  Nr. Supervoxels: " << supervoxel_clusters.size () << "\n";
-  PCL_INFO (temp.str ().c_str ());
+  
+  PCL_INFO("  Nr. Supervoxels: %zu\n", supervoxel_clusters.size());
 
   PCL_INFO ("Getting supervoxel adjacency\n");
   std::multimap<std::uint32_t, std::uint32_t> supervoxel_adjacency;
