@@ -30,7 +30,8 @@ RUN wget $Env:CHANNEL_BASE_URL/vs_buildtools.exe -OutFile 'C:\TEMP\vs_buildtools
     "C:\TEMP\VisualStudio.chman",                                   `
     "--add",                                                        `
     "Microsoft.VisualStudio.Workload.VCTools",                      `
-    "Microsoft.Net.Component.4.8.SDK",                              `
+    "Microsoft.Net.Component.4.7.2.SDK",                            `
+    "Microsoft.Net.Component.4.7.2.TargetingPack",                  `
     "Microsoft.VisualStudio.Component.VC.ATLMFC",                   `
     "--includeRecommended"                                          `
     -Wait -PassThru;                                                `
@@ -63,11 +64,12 @@ RUN cd .\vcpkg;                                                     `
     boost-uuid `
     boost-cmake `
     flann `
+    nanoflann `
     eigen3 `
     qhull `
     glew `
     freeglut `
-    vtk[qt,opengl] `
+    vtk[core,qt,opengl] `
     gtest `
     benchmark `
     openni2 `
