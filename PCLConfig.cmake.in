@@ -1,16 +1,30 @@
 # ------------------------------------------------------------------------------------
 # Helper to use PCL from outside project
 #
-# target_link_libraries(my_fabulous_target PCL_XXX_LIBRARIES) where XXX is the
-# upper cased xxx from :
+# Search for PCL:
+# Request all PCL modules:
+#   find_package(PCL CONFIG REQUIRED)
+# Or request only specific PCL modules:
+#   find_package(PCL CONFIG REQUIRED COMPONENTS xxx yyy)
+#
+# Link to PCL:
+# Link to all found PCL modules:
+#   target_link_libraries(my_fabulous_target ${PCL_LIBRARIES})
+# Or link only to specific modules:
+#   target_link_libraries(my_fabulous_target pcl_xxx pcl_yyy)
+#
+# Where xxx and yyy are module names from the following list:
 # @PCLCONFIG_AVAILABLE_COMPONENTS_LIST@
 #
+# Some additional variables are set by PCLConfig.cmake, which are not needed when
+# using the (modern) linking approach described above:
 # PCL_INCLUDE_DIRS is filled with PCL and available 3rdparty headers
 # PCL_LIBRARY_DIRS is filled with PCL components libraries install directory and
 # 3rdparty libraries paths
 #
 #                                   www.pointclouds.org
 #------------------------------------------------------------------------------------
+
 
 # Set default policy behavior similar to minimum requirement version
 cmake_policy(VERSION 3.16.3)
