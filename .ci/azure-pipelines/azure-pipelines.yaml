@@ -156,7 +156,7 @@ stages:
               CONTAINER: winx64
               PLATFORM: 'x64'
               ARCHITECTURE: 'x86_amd64'
-              GENERATOR: '"Visual Studio 16 2019" -A x64'
+              GENERATOR: '"Visual Studio 17 2022" -A x64'
         container: $[ variables['CONTAINER'] ]
         timeoutInMinutes: 0
         variables:
