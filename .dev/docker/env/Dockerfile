@@ -54,6 +54,9 @@ RUN apt-get update \
       software-properties-common \
       wget \
       xvfb \
+ && if dpkg --compare-versions $(lsb_release -sr) ge 22.04; then \
+      apt-get -V install -y libnanoflann-dev ; \
+    fi \
  && if [ "$USE_LATEST_CMAKE" = true ] ; then \
       cmake_ubuntu_version=$(lsb_release -cs) ; \
       if ! wget -q --method=HEAD "https://apt.kitware.com/ubuntu/dists/$cmake_ubuntu_version/Release"; then \
