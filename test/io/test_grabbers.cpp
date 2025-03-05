@@ -5,6 +5,7 @@
 #include <pcl/io/pcd_grabber.h>
 #include <pcl/io/image_grabber.h>
 
+#include <chrono>
 #include <string>
 #include <thread>
 #include <vector>
