@@ -223,8 +223,8 @@ main (int argc, char** argv)
 
     if (!p.updatePointCloud (cloud_f, "filter"))
       p.addPointCloud (cloud_f, "filter");
-    p.setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 10.0, "filter");
-    p.setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_OPACITY, 0.2, "filter");
+    p.setPointCloudRenderingProperties (pcl::visualization::RenderingProperties::PCL_VISUALIZER_POINT_SIZE, 10.0, "filter");
+    p.setPointCloudRenderingProperties (pcl::visualization::RenderingProperties::PCL_VISUALIZER_OPACITY, 0.2, "filter");
 
     if (!p.updatePointCloud (line, "line inliers")) 
       p.addPointCloud (line, "line inliers");
@@ -240,8 +240,8 @@ main (int argc, char** argv)
       p.addLine<pcl::PointXYZRGB> (pmin, pmax);
       //p.addLine (coefficients);
     }
-    p.setShapeRenderingProperties (pcl::visualization::PCL_VISUALIZER_LINE_WIDTH, 50.0, "line");
-    p.setShapeRenderingProperties (pcl::visualization::PCL_VISUALIZER_COLOR, 1.0, 1.0, 0.0, "line");
+    p.setShapeRenderingProperties (pcl::visualization::RenderingProperties::PCL_VISUALIZER_LINE_WIDTH, 50.0, "line");
+    p.setShapeRenderingProperties (pcl::visualization::RenderingProperties::PCL_VISUALIZER_COLOR, 1.0, 1.0, 0.0, "line");
 
     if (p_file_indices.size () == 1)
       p.spin ();

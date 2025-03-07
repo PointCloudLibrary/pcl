@@ -186,21 +186,21 @@ showHypothesisAsCoordinateFrame (Hypothesis& hypo, CallbackParameters* parameter
   coeffs.values[4] = x_dir[1];
   coeffs.values[5] = x_dir[2];
   parameters->viz_.addLine (coeffs, frame_name + "_x_axis");
-  parameters->viz_.setShapeRenderingProperties (pcl::visualization::PCL_VISUALIZER_COLOR, 1.0, 0.0, 0.0, frame_name + "_x_axis");
+  parameters->viz_.setShapeRenderingProperties (pcl::visualization::RenderingProperties::PCL_VISUALIZER_COLOR, 1.0, 0.0, 0.0, frame_name + "_x_axis");
 
   // The y-axis
   coeffs.values[3] = y_dir[0];
   coeffs.values[4] = y_dir[1];
   coeffs.values[5] = y_dir[2];
   parameters->viz_.addLine (coeffs, frame_name + "_y_axis");
-  parameters->viz_.setShapeRenderingProperties (pcl::visualization::PCL_VISUALIZER_COLOR, 0.0, 1.0, 0.0, frame_name + "_y_axis");
+  parameters->viz_.setShapeRenderingProperties (pcl::visualization::RenderingProperties::PCL_VISUALIZER_COLOR, 0.0, 1.0, 0.0, frame_name + "_y_axis");
 
   // The z-axis
   coeffs.values[3] = z_dir[0];
   coeffs.values[4] = z_dir[1];
   coeffs.values[5] = z_dir[2];
   parameters->viz_.addLine (coeffs, frame_name + "_z_axis");
-  parameters->viz_.setShapeRenderingProperties (pcl::visualization::PCL_VISUALIZER_COLOR, 0.0, 0.0, 1.0, frame_name + "_z_axis");
+  parameters->viz_.setShapeRenderingProperties (pcl::visualization::RenderingProperties::PCL_VISUALIZER_COLOR, 0.0, 0.0, 1.0, frame_name + "_z_axis");
 }
 
 //===============================================================================================================================
@@ -286,11 +286,11 @@ update (CallbackParameters* params)
   // The lines
   std::string lines_str_id = "opps";
   params->viz_.addModelFromPolyData (vtk_opps, lines_str_id);
-  params->viz_.setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_COLOR, 0.0, 0.0, 1.0, lines_str_id);
+  params->viz_.setShapeRenderingProperties(pcl::visualization::RenderingProperties::RenderingProperties::PCL_VISUALIZER_COLOR, 0.0, 0.0, 1.0, lines_str_id);
   // The normals
   std::string normals_str_id = "opps normals";
   params->viz_.addModelFromPolyData (vtk_hh->GetOutput (), normals_str_id);
-  params->viz_.setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_COLOR, 1.0, 1.0, 0.0, normals_str_id);
+  params->viz_.setShapeRenderingProperties(pcl::visualization::RenderingProperties::RenderingProperties::PCL_VISUALIZER_COLOR, 1.0, 1.0, 0.0, normals_str_id);
 #endif
 
   // Now show some of the accepted hypotheses
@@ -434,15 +434,15 @@ run (float pair_width, float voxel_size, float max_coplanarity_angle, int num_hy
 
 #ifdef _SHOW_SCENE_POINTS_
   viz.addPointCloud (scene_points, "cloud in");
-  viz.setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 2, "cloud in");
+  viz.setPointCloudRenderingProperties (pcl::visualization::RenderingProperties::PCL_VISUALIZER_POINT_SIZE, 2, "cloud in");
 #endif
 
 #ifdef _SHOW_OCTREE_POINTS_
   PointCloud<PointXYZ>::Ptr octree_points (new PointCloud<PointXYZ> ());
   objrec.getSceneOctree ().getFullLeavesPoints (*octree_points);
   viz.addPointCloud (octree_points, "octree points");
-  viz.setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 5, "octree points");
-  viz.setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_COLOR, 1.0, 0.0, 0.0, "octree points");
+  viz.setPointCloudRenderingProperties (pcl::visualization::RenderingProperties::PCL_VISUALIZER_POINT_SIZE, 5, "octree points");
+  viz.setPointCloudRenderingProperties (pcl::visualization::RenderingProperties::PCL_VISUALIZER_COLOR, 1.0, 0.0, 0.0, "octree points");
 #endif
 
 #if defined _SHOW_OCTREE_NORMALS_ && defined _SHOW_OCTREE_POINTS_

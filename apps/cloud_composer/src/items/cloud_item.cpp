@@ -71,8 +71,8 @@ void
 pcl::cloud_composer::CloudItem::paintView (pcl::visualization::PCLVisualizer::Ptr vis) const
 {
   vis->addPointCloud (cloud_blob_ptr_, geometry_handler_, color_handler_, origin_, orientation_, getId ().toStdString ());
-  vis->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, properties_->getProperty ("Point Size").toDouble (), getId ().toStdString ());
-  vis->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_OPACITY, properties_->getProperty ("Opacity").toDouble (), getId ().toStdString ());
+  vis->setPointCloudRenderingProperties (pcl::visualization::RenderingProperties::PCL_VISUALIZER_POINT_SIZE, properties_->getProperty ("Point Size").toDouble (), getId ().toStdString ());
+  vis->setPointCloudRenderingProperties (pcl::visualization::RenderingProperties::PCL_VISUALIZER_OPACITY, properties_->getProperty ("Opacity").toDouble (), getId ().toStdString ());
  
 }
 

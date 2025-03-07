@@ -558,7 +558,7 @@ CPCSegmentation Parameters: \n\
         if (!viewer->contains ("adjacency_graph"))
         {
           viewer->addModelFromPolyData (polyData, "adjacency_graph", 0);
-          viewer->setShapeRenderingProperties (pcl::visualization::PCL_VISUALIZER_LINE_WIDTH, line_width, "adjacency_graph");
+          viewer->setShapeRenderingProperties (pcl::visualization::RenderingProperties::PCL_VISUALIZER_LINE_WIDTH, line_width, "adjacency_graph");
         }
       }
       else
