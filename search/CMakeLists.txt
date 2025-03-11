@@ -22,6 +22,7 @@ set(srcs
 set(incs
   "include/pcl/${SUBSYS_NAME}/search.h"
   "include/pcl/${SUBSYS_NAME}/kdtree.h"
+  "include/pcl/${SUBSYS_NAME}/kdtree_nanoflann.h"
   "include/pcl/${SUBSYS_NAME}/brute_force.h"
   "include/pcl/${SUBSYS_NAME}/organized.h"
   "include/pcl/${SUBSYS_NAME}/octree.h"
