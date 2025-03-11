@@ -37,7 +37,6 @@
 
 #pragma once
 
-#include <boost/mpl/assert.hpp>  // for BOOST_MPL_ASSERT_MSG
 #include <boost/mpl/identity.hpp>  // for boost::mpl::identity
 
 #include <boost/mpl/vector.hpp>  // for boost::mpl::vector
@@ -45,7 +44,7 @@
 #include <boost/preprocessor/tuple/elem.hpp>  // for BOOST_PP_TUPLE_ELEM
 #include <boost/preprocessor/stringize.hpp> // for BOOST_PP_STRINGIZE
 
-// This is required for the workaround at line 84
+// This is required for the MSVC workaround below
 #ifdef _MSC_VER
 #include <Eigen/Core>
 #include <Eigen/src/StlSupport/details.h>
@@ -111,8 +110,8 @@ struct name /** \cond NO_WARN_RECURSIVE */ : name<typename POD<PointT>::type, Ta
   // static const char value[];
 
   // Avoid infinite compile-time recursion
-  BOOST_MPL_ASSERT_MSG((!std::is_same<PointT, typename POD<PointT>::type>::value),
-                        POINT_TYPE_NOT_PROPERLY_REGISTERED, (PointT&));
+  static_assert(!std::is_same<PointT, typename POD<PointT>::type>::value,
+                "Point type not properly registered.");
 };
 } // namespace traits
 } // namespace pcl
@@ -143,8 +142,8 @@ struct offset /** \cond NO_WARN_RECURSIVE */ : offset<typename POD<PointT>::type
   // static const std::size_t value;
 
   // Avoid infinite compile-time recursion
-  BOOST_MPL_ASSERT_MSG((!std::is_same<PointT, typename POD<PointT>::type>::value),
-                        POINT_TYPE_NOT_PROPERLY_REGISTERED, (PointT&));
+   static_assert(!std::is_same<PointT, typename POD<PointT>::type>::value,
+                 "Point type not properly registered.");
 };
 } // namespace traits
 } // namespace pcl
@@ -170,8 +169,8 @@ namespace traits
    // static const std::uint32_t size;
 
    // Avoid infinite compile-time recursion
-   BOOST_MPL_ASSERT_MSG((!std::is_same<PointT, typename POD<PointT>::type>::value),
-                        POINT_TYPE_NOT_PROPERLY_REGISTERED, (PointT&));
+   static_assert(!std::is_same<PointT, typename POD<PointT>::type>::value,
+                 "Point type not properly registered.");
  };
  } // namespace traits
  } // namespace pcl
@@ -198,8 +197,8 @@ struct fieldList /** \cond NO_WARN_RECURSIVE */ : fieldList<typename POD<PointT>
   // using type = boost::mpl::vector<...>;
 
   // Avoid infinite compile-time recursion
-  BOOST_MPL_ASSERT_MSG((!std::is_same<PointT, typename POD<PointT>::type>::value),
-                        POINT_TYPE_NOT_PROPERLY_REGISTERED, (PointT&));
+   static_assert(!std::is_same<PointT, typename POD<PointT>::type>::value,
+                 "Point type not properly registered.");
 };
 } // namespace traits
 } // namespace pcl
