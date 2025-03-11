@@ -18,6 +18,13 @@ PCL_ADD_TEST(flann_search test_flann_search
              FILES test_flann_search.cpp
              LINK_WITH pcl_gtest pcl_search pcl_kdtree)
 
+if(TARGET nanoflann::nanoflann)
+PCL_ADD_TEST(kdtree_nanoflann_search test_kdtree_nanoflann_search
+             FILES test_kdtree_nanoflann.cpp
+             LINK_WITH pcl_gtest pcl_common pcl_search pcl_io pcl_features
+             ARGUMENTS "${PCL_SOURCE_DIR}/test/bun0.pcd")
+endif()
+
 PCL_ADD_TEST(organized_neighbor test_organized_search
              FILES test_organized.cpp
              LINK_WITH pcl_gtest pcl_search pcl_kdtree)
