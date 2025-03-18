@@ -100,3 +100,4 @@
 
 #cmakedefine HAVE_QVTK 1
 
+#cmakedefine PCL_VISUALIZATION_AVAILABLE
