@@ -471,6 +471,11 @@ else()
 endif()
 unset(CMAKE_REQUIRED_LIBRARIES)
 
+### --[ Set variables for pcl_config.h
+if (BUILD_visualization)
+  set(PCL_VISUALIZATION_AVAILABLE TRUE)
+endif()
+
 ### ---[ Create the config.h file
 set(pcl_config_h_in "${CMAKE_CURRENT_SOURCE_DIR}/pcl_config.h.in")
 set(pcl_config_h "${CMAKE_CURRENT_BINARY_DIR}/include/pcl/pcl_config.h")
@@ -478,6 +483,7 @@ configure_file("${pcl_config_h_in}" "${pcl_config_h}")
 PCL_ADD_INCLUDES(common "" "${pcl_config_h}")
 include_directories("${CMAKE_CURRENT_BINARY_DIR}/include")
 
+## ---[ PCL modules
 collect_subproject_directory_names("${PCL_SOURCE_DIR}" "CMakeLists.txt" PCL_MODULES_NAMES PCL_MODULES_DIRS doc)
 set(PCL_MODULES_NAMES_UNSORTED ${PCL_MODULES_NAMES})
 topological_sort(PCL_MODULES_NAMES PCL_ _DEPENDS)
