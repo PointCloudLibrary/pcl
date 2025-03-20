@@ -100,3 +100,5 @@
 
 #cmakedefine HAVE_QVTK 1
 
+/* musl libc returns aligned memory from malloc() but Eigen does not detect that */
+#cmakedefine EIGEN_MALLOC_ALREADY_ALIGNED 1
