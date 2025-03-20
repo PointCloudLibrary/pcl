@@ -617,6 +617,9 @@ pcl::ConcaveHull<PointInT>::performReconstruction (std::vector<pcl::Vertices> &p
 template <typename PointInT> void
 pcl::ConcaveHull<PointInT>::getHullPointIndices (pcl::PointIndices &hull_point_indices) const
 {
+  if (!keep_information_) {
+    PCL_WARN("[pcl::ConcaveHull::getHullPointIndices] You need to call setKeepInformation(true) before reconstructing!\n");
+  }
   hull_point_indices = hull_indices_;
 }
 

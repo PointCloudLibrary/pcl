@@ -69,6 +69,8 @@ pcl::ShadowPoints<PointT, NormalT>::applyFilter (PointCloud &output)
       {
         PointT &pt_new = output[cp++] = pt;
         pt_new.x = pt_new.y = pt_new.z = user_filter_value_;
+        if(!std::isfinite(user_filter_value_))
+          output.is_dense = false;
       }
 
     }  

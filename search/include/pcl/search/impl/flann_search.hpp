@@ -374,7 +374,7 @@ pcl::search::FlannSearch<PointT, FlannDistance>::convertInputToFlannMatrix ()
   std::size_t original_no_of_points = indices_ && !indices_->empty () ? indices_->size () : input_->size ();
 
   if (input_copied_for_flann_)
-    delete input_flann_->ptr();
+    delete[] input_flann_->ptr();
   input_copied_for_flann_ = true;
   index_mapping_.clear();
   identity_mapping_ = true;

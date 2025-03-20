@@ -133,7 +133,7 @@ namespace pcl
           * \param[in] sigma
           */
         inline void
-        setSigma (float sigma) { sigma_ = sigma; }
+        setSigma (float sigma) { sigma_ = sigma; sigma_sqr_ = sigma_ * sigma_; }
 
         /** Set the distance threshold relative to a sigma factor i.e. points such as
           * ||pi - q|| > sigma_coefficient^2 * sigma^2 are not considered.

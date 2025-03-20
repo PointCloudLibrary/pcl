@@ -184,7 +184,7 @@ bool
 SequentialFitter::is_back_facing (const Eigen::Vector3d &v0, const Eigen::Vector3d &v1, const Eigen::Vector3d &v2,
                                   const Eigen::Vector3d &)
 {
-  Eigen::Vector3d e1, e2, e3;
+  Eigen::Vector3d e1, e2;
   e1 = v1 - v0;
   e2 = v2 - v0;
 

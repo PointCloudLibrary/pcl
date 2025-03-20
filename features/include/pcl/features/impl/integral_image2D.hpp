@@ -194,7 +194,6 @@ IntegralImage2D<DataType, Dimension>::computeIntegralImages (
     for (unsigned int i = 0; i < (width_ + 1); ++i)
       so_previous_row[i].setZero();
 
-    SecondOrderType so_element;
     for (unsigned rowIdx = 0; rowIdx < height_; ++rowIdx, data += row_stride,
                                                 previous_row = current_row, current_row += (width_ + 1),
                                                 count_previous_row = count_current_row, count_current_row += (width_ + 1),
