@@ -115,7 +115,7 @@ namespace pcl
       unsigned count_;
 
       /** \brief The mean curvature of the region. */
-      float curvature_;
+      float curvature_{0.0f};
 
     public:
       PCL_MAKE_ALIGNED_OPERATOR_NEW

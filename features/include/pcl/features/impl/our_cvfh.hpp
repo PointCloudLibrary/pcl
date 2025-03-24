@@ -260,7 +260,7 @@ pcl::OURCVFHEstimation<PointInT, PointNT, PointOutT>::sgurf (Eigen::Vector3f & c
 
   scatter /= sum_w;
 
-  Eigen::JacobiSVD <Eigen::MatrixXf> svd (scatter, Eigen::ComputeFullV);
+  const Eigen::JacobiSVD <Eigen::Matrix3f> svd (scatter, Eigen::ComputeFullV);
   Eigen::Vector3f evx = svd.matrixV ().col (0);
   Eigen::Vector3f evy = svd.matrixV ().col (1);
   Eigen::Vector3f evz = svd.matrixV ().col (2);

@@ -617,10 +617,18 @@ pcl::segmentation::grabcut::GaussianFitter::fit (Gaussian& g, std::size_t total_
     {
       // Compute eigenvalues and vectors using SVD
       Eigen::JacobiSVD<Eigen::Matrix3f> svd (g.covariance, Eigen::ComputeFullU);
-      // Store highest eigenvalue
-      g.eigenvalue = svd.singularValues ()[0];
-      // Store corresponding eigenvector
-      g.eigenvector = svd.matrixU ().col (0);
+#if EIGEN_VERSION_AT_LEAST(3, 4, 0)
+      if (svd.info() == Eigen::ComputationInfo::Success) {
+#endif
+        // Store highest eigenvalue
+        g.eigenvalue = svd.singularValues ()[0];
+        // Store corresponding eigenvector
+        g.eigenvector = svd.matrixU ().col (0);
+#if EIGEN_VERSION_AT_LEAST(3, 4, 0)
+      } else {
+        PCL_WARN("[grabcut::GaussianFitter::fit] Eigen::JacobiSVD was unsuccessful!\n");
+      }
+#endif
     }
   }
 }

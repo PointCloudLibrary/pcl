@@ -399,47 +399,44 @@ pcl::MomentOfInertiaEstimation<PointT>::computeEigenVectors (const Eigen::Matrix
   Eigen::Vector3f& major_axis, Eigen::Vector3f& middle_axis, Eigen::Vector3f& minor_axis, float& major_value,
   float& middle_value, float& minor_value)
 {
-  Eigen::EigenSolver <Eigen::Matrix <float, 3, 3> > eigen_solver;
-  eigen_solver.compute (covariance_matrix);
+  const Eigen::SelfAdjointEigenSolver<Eigen::Matrix<float, 3, 3>> eigen_solver(covariance_matrix);
 
-  Eigen::EigenSolver <Eigen::Matrix <float, 3, 3> >::EigenvectorsType eigen_vectors;
-  Eigen::EigenSolver <Eigen::Matrix <float, 3, 3> >::EigenvalueType eigen_values;
-  eigen_vectors = eigen_solver.eigenvectors ();
-  eigen_values = eigen_solver.eigenvalues ();
+  const Eigen::SelfAdjointEigenSolver <Eigen::Matrix <float, 3, 3> >::EigenvectorsType& eigen_vectors = eigen_solver.eigenvectors ();
+  const Eigen::SelfAdjointEigenSolver <Eigen::Matrix <float, 3, 3> >::RealVectorType& eigen_values = eigen_solver.eigenvalues ();
 
   unsigned int temp = 0;
   unsigned int major_index = 0;
   unsigned int middle_index = 1;
   unsigned int minor_index = 2;
 
-  if (eigen_values.real () (major_index) < eigen_values.real () (middle_index))
+  if (eigen_values (major_index) < eigen_values (middle_index))
   {
     temp = major_index;
     major_index = middle_index;
     middle_index = temp;
   }
 
-  if (eigen_values.real () (major_index) < eigen_values.real () (minor_index))
+  if (eigen_values (major_index) < eigen_values (minor_index))
   {
     temp = major_index;
     major_index = minor_index;
     minor_index = temp;
   }
 
-  if (eigen_values.real () (middle_index) < eigen_values.real () (minor_index))
+  if (eigen_values (middle_index) < eigen_values (minor_index))
   {
     temp = minor_index;
     minor_index = middle_index;
     middle_index = temp;
   }
 
-  major_value = eigen_values.real () (major_index);
-  middle_value = eigen_values.real () (middle_index);
-  minor_value = eigen_values.real () (minor_index);
+  major_value = eigen_values (major_index);
+  middle_value = eigen_values (middle_index);
+  minor_value = eigen_values (minor_index);
 
-  major_axis = eigen_vectors.col (major_index).real ();
-  middle_axis = eigen_vectors.col (middle_index).real ();
-  minor_axis = eigen_vectors.col (minor_index).real ();
+  major_axis = eigen_vectors.col (major_index);
+  middle_axis = eigen_vectors.col (middle_index);
+  minor_axis = eigen_vectors.col (minor_index);
 
   major_axis.normalize ();
   middle_axis.normalize ();

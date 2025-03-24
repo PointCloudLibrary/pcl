@@ -74,7 +74,8 @@ pcl::SHOTLocalReferenceFrameEstimationOMP<PointInT, PointOutT>::computeFeature (
 #pragma omp parallel for \
   default(none) \
   shared(output) \
-  num_threads(threads_)
+  num_threads(threads_) \
+  schedule(dynamic, 64)
   for (std::ptrdiff_t i = 0; i < static_cast<std::ptrdiff_t> (indices_->size ()); ++i)
   {
     // point result

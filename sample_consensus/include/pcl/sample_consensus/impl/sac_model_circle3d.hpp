@@ -243,6 +243,12 @@ pcl::SampleConsensusModelCircle3D<PointT>::countWithinDistance (
     return (0);
   std::size_t nr_p = 0;
 
+  // C : Circle Center
+  const Eigen::Vector3d C (model_coefficients[0], model_coefficients[1], model_coefficients[2]);
+  // N : Circle (Plane) Normal
+  const Eigen::Vector3d N (model_coefficients[4], model_coefficients[5], model_coefficients[6]);
+  // r : Radius
+  const double r = model_coefficients[3];
   const auto squared_threshold = threshold * threshold;
   // Iterate through the 3d points and calculate the distances from them to the sphere
   for (std::size_t i = 0; i < indices_->size (); ++i)
@@ -250,12 +256,6 @@ pcl::SampleConsensusModelCircle3D<PointT>::countWithinDistance (
     // what i have:
     // P : Sample Point
     Eigen::Vector3d P ((*input_)[(*indices_)[i]].x, (*input_)[(*indices_)[i]].y, (*input_)[(*indices_)[i]].z);
-    // C : Circle Center
-    Eigen::Vector3d C (model_coefficients[0], model_coefficients[1], model_coefficients[2]);
-    // N : Circle (Plane) Normal
-    Eigen::Vector3d N (model_coefficients[4], model_coefficients[5], model_coefficients[6]);
-    // r : Radius
-    double r = model_coefficients[3];
 
     Eigen::Vector3d helper_vectorPC = P - C;
     // 1.1. get line parameter
@@ -303,7 +303,7 @@ pcl::SampleConsensusModelCircle3D<PointT>::optimizeModelCoefficients (
   Eigen::LevenbergMarquardt<Eigen::NumericalDiff<OptimizationFunctor>, double> lm (num_diff);
   Eigen::VectorXd coeff = optimized_coefficients.cast<double>();
   int info = lm.minimize (coeff);
-  coeff.tail(3).normalize(); // normalize the cylinder axis
+  coeff.tail<3>().normalize(); // normalize the cylinder axis
   for (Eigen::Index i = 0; i < coeff.size (); ++i)
     optimized_coefficients[i] = static_cast<float> (coeff[i]);
 

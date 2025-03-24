@@ -178,8 +178,6 @@ template<typename PointInT, typename PointNT, typename PointOutT, typename Signe
   SignedDistanceT best_shape_score = -std::numeric_limits<SignedDistanceT>::max ();
   int best_shape_index = -1;
 
-  Eigen::Vector3f best_margin_point;
-
   const float radius2 = tangent_radius_ * tangent_radius_;
   const float margin_distance2 = margin_thresh_ * margin_thresh_ * radius2;
 
