@@ -353,7 +353,7 @@ pcl::DinastGrabber::USBRxControlData (const unsigned char req_code,
                                       int length)
 {
   // The direction of the transfer is inferred from the requesttype field of the setup packet.
-  unsigned char requesttype = (static_cast<unsigned char>(LIBUSB_RECIPIENT_DEVICE) | static_cast<unsigned char>(LIBUSB_REQUEST_TYPE_VENDOR) | static_cast<unsigned char>(LIBUSB_ENDPOINT_IN));
+  const unsigned char requesttype = (static_cast<unsigned char>(LIBUSB_RECIPIENT_DEVICE) | static_cast<unsigned char>(LIBUSB_REQUEST_TYPE_VENDOR) | static_cast<unsigned char>(LIBUSB_ENDPOINT_IN));
   // The value field for the setup packet
   std::uint16_t value = 0x02;
   // The index field for the setup packet
@@ -377,7 +377,7 @@ pcl::DinastGrabber::USBTxControlData (const unsigned char req_code,
                                       int length)
 {
   // The direction of the transfer is inferred from the requesttype field of the setup packet.
-  unsigned char requesttype = (static_cast<unsigned char>(LIBUSB_RECIPIENT_DEVICE) | static_cast<unsigned char>(LIBUSB_REQUEST_TYPE_VENDOR) | static_cast<unsigned char>(LIBUSB_ENDPOINT_OUT));
+  const unsigned char requesttype = (static_cast<unsigned char>(LIBUSB_RECIPIENT_DEVICE) | static_cast<unsigned char>(LIBUSB_REQUEST_TYPE_VENDOR) | static_cast<unsigned char>(LIBUSB_ENDPOINT_OUT));
   // The value field for the setup packet
   std::uint16_t value = 0x01;
   // The index field for the setup packet

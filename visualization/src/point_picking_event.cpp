@@ -66,7 +66,7 @@ pcl::visualization::PointPickingCallback::Execute (vtkObject *caller, unsigned l
     if ((eventid == vtkCommand::LeftButtonPressEvent) && (iren->GetShiftKey () > 0))
     {
       float x = 0, y = 0, z = 0;
-      auto idx = performSinglePick (iren, x, y, z);
+      const auto idx = performSinglePick (iren, x, y, z);
       // Create a PointPickingEvent if a point was selected
       if (idx != pcl::UNAVAILABLE)
       {

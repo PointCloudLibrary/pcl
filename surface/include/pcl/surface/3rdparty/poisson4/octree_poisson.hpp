@@ -183,7 +183,7 @@ namespace pcl
       else{
         int c = std::numeric_limits<int>::lowest();
         for(int i=0;i<Cube::CORNERS;i++){
-          int d=children[i].maxDepth();
+          const int d=children[i].maxDepth();
           if(d>c){c=d;}
         }
         return c+1;

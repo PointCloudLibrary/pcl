@@ -373,7 +373,7 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloudOut
       Eigen::Matrix3d cov_m = Eigen::Matrix3d::Zero ();
       getScatterMatrix (static_cast<int> (index), cov_m);
 
-      Eigen::SelfAdjointEigenSolver<Eigen::Matrix3d> solver (cov_m, Eigen::EigenvaluesOnly);
+      const Eigen::SelfAdjointEigenSolver<Eigen::Matrix3d> solver (cov_m, Eigen::EigenvaluesOnly);
 
       const double& e1c = solver.eigenvalues ()[2];
       const double& e2c = solver.eigenvalues ()[1];

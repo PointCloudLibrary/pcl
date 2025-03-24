@@ -399,7 +399,7 @@ pcl::MomentOfInertiaEstimation<PointT>::computeEigenVectors (const Eigen::Matrix
   Eigen::Vector3f& major_axis, Eigen::Vector3f& middle_axis, Eigen::Vector3f& minor_axis, float& major_value,
   float& middle_value, float& minor_value)
 {
-  Eigen::SelfAdjointEigenSolver<Eigen::Matrix<float, 3, 3>> eigen_solver(covariance_matrix);
+  const Eigen::SelfAdjointEigenSolver<Eigen::Matrix<float, 3, 3>> eigen_solver(covariance_matrix);
 
   const Eigen::SelfAdjointEigenSolver <Eigen::Matrix <float, 3, 3> >::EigenvectorsType& eigen_vectors = eigen_solver.eigenvectors ();
   const Eigen::SelfAdjointEigenSolver <Eigen::Matrix <float, 3, 3> >::RealVectorType& eigen_values = eigen_solver.eigenvalues ();
