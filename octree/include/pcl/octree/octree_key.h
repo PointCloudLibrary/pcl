@@ -138,6 +138,10 @@ public:
                                       (!!(this->z & depthMask)));
   }
 
+  PCL_DEPRECATED(1, 18, "Use getMaxDepth() instead.")
+  static const unsigned char maxDepth =
+      static_cast<unsigned char>(sizeof(uindex_t) * 8);
+
   static unsigned char
   getMaxDepth()
   {
