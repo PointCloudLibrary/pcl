@@ -56,9 +56,9 @@
 #define PCL_LOG_STREAM(LEVEL, ARGS) \
   if(pcl::console::isVerbosityLevelEnabled(pcl::console::LEVEL)) \
   { \
-    pcl::console::LogRecorder rec; \
+    pcl::console::LogRecord entry{pcl::console::LEVEL}; \
+    pcl::console::LogRecorder rec(entry.message); \
     rec << ARGS; \
-    pcl::console::LogRecord entry{pcl::console::LEVEL, rec.to_string()}; \
     pcl::console::Logger::getInstance().print(entry); \
   }
 // NOLINTEND(bugprone-macro-parentheses)
@@ -139,11 +139,13 @@ namespace pcl
 
     class LogRecorder {
     public:
+      LogRecorder(std::string& string) : strstream(string) { }
+
       template <class T>
       LogRecorder&
       operator<<(const T& x)
       {
-        s << x;
+        strstream << x;
 
         return *this;
       }
@@ -151,17 +153,17 @@ namespace pcl
       LogRecorder&
       operator<<(std::ostream& (std::ostream&))
       {
-        s << std::endl;
+        strstream << std::endl;
         return *this;
       }
 
       std::string
       to_string() const
       {
-        return s.str();
+        return strstream.str();
       }
 
-      std::stringstream s;
+      std::stringstream strstream;
     };
 
 
