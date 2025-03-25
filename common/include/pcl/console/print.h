@@ -259,6 +259,12 @@ namespace pcl
       std::function<void(const LogRecord&)> logcallback;
     };
 
+    /**
+     * @brief Sets a callable in the Logger instance, which is called whenever a printout has occured
+     * @tparam Functor matching the definition: std::function<void(const LogRecord&)>
+     * @param callback the std::function or lambda to be called
+     * @note Its possible to reset the logging to console by setting the callback to a nullptr
+     */
     template <typename Functor>
     void
     setCallback(Functor&& callback)
