@@ -555,6 +555,10 @@ namespace pcl
       /** \brief A pointer to the vector of point indices to use. */
       IndicesPtr indices_;
 
+      /** The maximum number of samples to try until we get a good one */
+      PCL_DEPRECATED(1, 18, "Use getMaxSampleSize() instead.")
+      static const unsigned int max_sample_checks_ = 1000;
+
       /** \brief The minimum and maximum radius limits for the model.
         * Applicable to all models that estimate a radius. 
         */
