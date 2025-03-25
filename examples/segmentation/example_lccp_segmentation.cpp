@@ -181,7 +181,7 @@ LCCPSegmentation Parameters: \n\
   pcl::PCLPointCloud2 input_pointcloud2;
   if (pcl::io::loadPCDFile (pcd_filename, input_pointcloud2))
   {
-    PCL_ERROR ("ERROR: Could not read input point cloud %s.\n", pcd_filename);
+    PCL_ERROR ("ERROR: Could not read input point cloud %s.\n", pcd_filename.c_str());
     return (3);
   }
   pcl::fromPCLPointCloud2 (input_pointcloud2, *input_cloud_ptr);
