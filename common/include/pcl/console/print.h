@@ -56,7 +56,7 @@
 #define PCL_LOG_STREAM(LEVEL, ARGS) \
   if(pcl::console::isVerbosityLevelEnabled(pcl::console::LEVEL)) \
   { \
-    pcl::console::LogRecord entry{pcl::console::LEVEL}; \
+    pcl::console::LogRecord entry{pcl::console::LEVEL, ""}; \
     pcl::console::LogRecorder rec(entry.message); \
     rec << ARGS; \
     pcl::console::Logger::getInstance().print(entry); \
