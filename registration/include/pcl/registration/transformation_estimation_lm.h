@@ -349,3 +349,13 @@ public:
 } // namespace pcl
 
 #include <pcl/registration/impl/transformation_estimation_lm.hpp>
+
+#if !defined(PCL_NO_PRECOMPILE) &&                                                     \
+    !defined(PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_LM_CPP_)
+extern template class pcl::registration::TransformationEstimationLM<pcl::PointXYZ,
+                                                                     pcl::PointXYZ>;
+extern template class pcl::registration::TransformationEstimationLM<pcl::PointXYZI,
+                                                                     pcl::PointXYZI>;
+extern template class pcl::registration::TransformationEstimationLM<pcl::PointXYZRGB,
+                                                                     pcl::PointXYZRGB>;
+#endif // PCL_NO_PRECOMPILE
