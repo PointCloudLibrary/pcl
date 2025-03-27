@@ -45,6 +45,7 @@
 #include <pcl/pcl_exports.h> // for PCL_EXPORTS
 #include <pcl/point_types.h>
 template class PCL_EXPORTS pcl::IterativeClosestPoint<pcl::PointXYZ, pcl::PointXYZ>;
+template class PCL_EXPORTS pcl::IterativeClosestPoint<pcl::PointXYZ, pcl::PointNormal>;
 template class PCL_EXPORTS pcl::IterativeClosestPoint<pcl::PointXYZI, pcl::PointXYZI>;
 template class PCL_EXPORTS
     pcl::IterativeClosestPoint<pcl::PointXYZRGB, pcl::PointXYZRGB>;
