@@ -587,6 +587,19 @@ TEST(PCL, KdTreeNanoflann_nearestKSearch_L1)
     EXPECT_NEAR(k_distances[counter], it->first, 1e-6);
   }
   EXPECT_EQ(k_indices.size(), counter);
+  // test unsorted radius search
+  kdtree_nanoflann.setSortedResults(false);
+  k_indices.clear();
+  k_distances.clear();
+  kdtree_nanoflann.radiusSearch(test_point, search_radius, k_indices, k_distances);
+  EXPECT_EQ(k_indices.size(), k_distances.size());
+  for (auto it = sorted_brute_force_result.begin();
+       it != sorted_brute_force_result.end() && it->first <= search_radius;
+       ++it) {
+    auto pos = std::find(k_indices.begin(), k_indices.end(), it->second);
+    ASSERT_NE(pos, k_indices.end()); // must be found
+    EXPECT_NEAR(it->first, k_distances[std::distance(k_indices.begin(), pos)], 1e-6);
+  }
 }
 
 struct MyPoint : public PointXYZ {
@@ -703,7 +716,6 @@ TEST(PCL, KdTreeNanoflann_setPointRepresentation)
 // add/remove points)
 TEST(PCL, KdTreeNanoflann_dynamic)
 {
-  pcl::console::setVerbosityLevel(pcl::console::L_VERBOSE);
   using Distance = pcl::search::L2_Simple_Adaptor;
   constexpr std::int32_t Dim = 3;
   pcl::search::KdTreeNanoflann<PointXYZ,

@@ -575,12 +575,19 @@ public:
         k_indices.resize(max_nn);
         k_sqr_distances.resize(max_nn);
 #if NANOFLANN_VERSION < 0x151
-        // rknnSearch and RKNNResultSet were added in nanoflann 1.5.1
-        auto search_result = nanoflann_tree_->knnSearch(
-            (query_point ? query_point : reinterpret_cast<const float*>(&point)),
-            max_nn,
-            k_indices.data(),
-            k_sqr_distances.data());
+        // rknnSearch and RKNNResultSet were added in nanoflann 1.5.1, so do knn search
+        // and discard those neighbors that are outside of search radius
+        nanoflann::KNNResultSet<float, pcl::index_t> resultSet(max_nn);
+        resultSet.init(k_indices.data(), k_sqr_distances.data());
+        nanoflann_tree_->findNeighbors(
+            resultSet,
+            (query_point ? query_point : reinterpret_cast<const float*>(&point))
+#if NANOFLANN_VERSION < 0x150
+                ,
+            nanoflann::SearchParams()
+#endif // NANOFLANN_VERSION < 0x150
+        );
+        auto search_result = resultSet.size();
         for (auto iter = k_sqr_distances.rbegin();
              iter != k_sqr_distances.rend() &&
              *iter > pcl::search::internal::square_if_l2<Distance>(radius);
