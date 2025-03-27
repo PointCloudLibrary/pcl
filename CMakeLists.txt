@@ -354,6 +354,14 @@ else()
   endif()
 endif()
 
+find_package(nanoflann 1.4.2 QUIET)
+if(TARGET nanoflann::nanoflann)
+  set(PCL_HAS_NANOFLANN 1)
+  message(STATUS "Found nanoflann")
+else()
+  message(STATUS "nanoflann was not found, so some PCL classes will not be available.")
+endif()
+
 # libusb
 option(WITH_LIBUSB "Build USB RGBD-Camera drivers" TRUE)
 if(WITH_LIBUSB)
