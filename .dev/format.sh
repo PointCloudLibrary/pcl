@@ -26,8 +26,9 @@ format() {
 
     for dir in ${whitelist}; do
         path=${PCL_DIR}/${dir}
-        find ${path} -type f -iname *.[ch] -o -iname *.[ch]pp -o -iname *.[ch]xx \
-            -iname *.cu | xargs -n1 ${formatter} -i -style=file
+        find ${path} -type f -not -path "*/3rdparty/*" \
+            -regextype egrep -iregex ".*\.(cu|[ch](pp|xx)?)$" |
+            xargs -n1 ${formatter} -i -style=file
     done
 }
 
