@@ -312,7 +312,7 @@ struct CurrentFrameCloudView
     cloud_ptr_ = PointCloud<PointXYZ>::Ptr (new PointCloud<PointXYZ>);
 
     cloud_viewer_.setBackgroundColor (0, 0, 0.15);
-    cloud_viewer_.setPointCloudRenderingProperties (visualization::PCL_VISUALIZER_POINT_SIZE, 1);
+    cloud_viewer_.setPointCloudRenderingProperties (visualization::RenderingProperties::PCL_VISUALIZER_POINT_SIZE, 1);
     cloud_viewer_.addCoordinateSystem (1.0, "global");
     cloud_viewer_.initCameraParameters ();
     cloud_viewer_.setPosition (0, 500);

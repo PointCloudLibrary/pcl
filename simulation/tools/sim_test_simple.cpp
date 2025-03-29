@@ -287,7 +287,9 @@ simpleVis(pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr cloud)
   pcl::visualization::PointCloudColorHandlerRGBField<pcl::PointXYZRGB> rgb(cloud);
   viewer->addPointCloud<pcl::PointXYZRGB>(cloud, rgb, "sample cloud");
   viewer->setPointCloudRenderingProperties(
-      pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 3, "sample cloud");
+      pcl::visualization::RenderingProperties::PCL_VISUALIZER_POINT_SIZE,
+      3,
+      "sample cloud");
   viewer->addCoordinateSystem(1.0, "reference");
   viewer->initCameraParameters();
   return (viewer);

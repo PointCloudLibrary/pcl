@@ -124,8 +124,8 @@ main (int argc, char** argv)
 
   viewer.addCoordinateSystem (1.0, "cloud", 0);
   viewer.setBackgroundColor(0.05, 0.05, 0.05, 0); // Setting background to a dark grey
-  viewer.setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 2, "original_cloud");
-  viewer.setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 2, "transformed_cloud");
+  viewer.setPointCloudRenderingProperties (pcl::visualization::RenderingProperties::PCL_VISUALIZER_POINT_SIZE, 2, "original_cloud");
+  viewer.setPointCloudRenderingProperties (pcl::visualization::RenderingProperties::PCL_VISUALIZER_POINT_SIZE, 2, "transformed_cloud");
   //viewer.setPosition(800, 400); // Setting visualiser window position
 
   while (!viewer.wasStopped ()) { // Display the visualiser until 'q' key is pressed
