@@ -88,7 +88,7 @@ public:
   , tmp_tgt_(src.tmp_tgt_)
   , tmp_idx_src_(src.tmp_idx_src_)
   , tmp_idx_tgt_(src.tmp_idx_tgt_)
-  , warp_point_(src.warp_point_) {};
+  , warp_point_(src.warp_point_){};
 
   /** \brief Copy operator.
    * \param[in] src the TransformationEstimationLM object to copy into this
