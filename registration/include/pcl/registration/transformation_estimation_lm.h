@@ -88,7 +88,7 @@ public:
   , tmp_tgt_(src.tmp_tgt_)
   , tmp_idx_src_(src.tmp_idx_src_)
   , tmp_idx_tgt_(src.tmp_idx_tgt_)
-  , warp_point_(src.warp_point_){};
+  , warp_point_(src.warp_point_) {};
 
   /** \brief Copy operator.
    * \param[in] src the TransformationEstimationLM object to copy into this
@@ -353,9 +353,9 @@ public:
 #if !defined(PCL_NO_PRECOMPILE) &&                                                     \
     !defined(PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_LM_CPP_)
 extern template class pcl::registration::TransformationEstimationLM<pcl::PointXYZ,
-                                                                     pcl::PointXYZ>;
+                                                                    pcl::PointXYZ>;
 extern template class pcl::registration::TransformationEstimationLM<pcl::PointXYZI,
-                                                                     pcl::PointXYZI>;
+                                                                    pcl::PointXYZI>;
 extern template class pcl::registration::TransformationEstimationLM<pcl::PointXYZRGB,
-                                                                     pcl::PointXYZRGB>;
+                                                                    pcl::PointXYZRGB>;
 #endif // PCL_NO_PRECOMPILE

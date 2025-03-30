@@ -462,5 +462,6 @@ protected:
 #if !defined(PCL_NO_PRECOMPILE) && !defined(PCL_REGISTRATION_ICP_CPP_)
 extern template class pcl::IterativeClosestPoint<pcl::PointXYZ, pcl::PointXYZ>;
 extern template class pcl::IterativeClosestPoint<pcl::PointXYZI, pcl::PointXYZI>;
+extern template class pcl::IterativeClosestPoint<pcl::PointXYZI, pcl::PointNormal>;
 extern template class pcl::IterativeClosestPoint<pcl::PointXYZRGB, pcl::PointXYZRGB>;
 #endif // PCL_NO_PRECOMPILE
