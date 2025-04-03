@@ -65,6 +65,9 @@ elseif(MINGW)
   set(CMAKE_COMPILER_IS_MINGW 1)
 endif()
 
+# Ensure try_compile sets the include paths (e.g. for Eigen3)
+set(CMAKE_TRY_COMPILE_CONFIGURATION ${CMAKE_BUILD_TYPE})
+
 # https://github.com/fish-shell/fish-shell/issues/5865
 include(CheckCXXSourceCompiles)
 CHECK_CXX_SOURCE_COMPILES("
