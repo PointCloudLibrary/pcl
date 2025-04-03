@@ -104,6 +104,10 @@ if(CMAKE_TIMING_VERBOSE AND UNIX)
   set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${CMAKE_SOURCE_DIR}/cmake/custom_output.sh")
 endif()
 
+# check for allocation functions that return aligned memory
+include("${PCL_SOURCE_DIR}/cmake/pcl_alignment.cmake")
+PCL_CHECK_FOR_ALIGNMENT()
+
 # check for SSE flags
 include("${PCL_SOURCE_DIR}/cmake/pcl_find_sse.cmake")
 if(PCL_ENABLE_SSE AND "${CMAKE_CXX_FLAGS}" STREQUAL "${CMAKE_CXX_FLAGS_DEFAULT}")
