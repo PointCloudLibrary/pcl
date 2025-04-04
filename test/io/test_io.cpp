@@ -1730,6 +1730,30 @@ TYPED_TEST (AutoIOTest, AutoLoadCloudFiles)
   remove ("test_autoio.ifs");
 }
 
+TEST(PCL, IFS)
+{
+  // Write a cloud to an IFS file and check if it is the same after loading
+  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
+  cloud->push_back(pcl::PointXYZ(1.0, 2.0, 3.0));
+  cloud->push_back(pcl::PointXYZ(4.0, 5.0, 6.0));
+
+  pcl::io::saveIFSFile("test.ifs", *cloud);
+
+  pcl::PointCloud<pcl::PointXYZ>::Ptr loaded(new pcl::PointCloud<pcl::PointXYZ>);
+  pcl::io::loadIFSFile("test.ifs", *loaded);
+
+  EXPECT_EQ(cloud->size(), loaded->size());
+  for (size_t i = 0; i < cloud->size(); ++i)
+  {
+    const auto& src = cloud->points[i];
+    const auto& dst = loaded->points[i];
+    EXPECT_EQ(src.x, dst.x);
+    EXPECT_EQ(src.y, dst.y);
+    EXPECT_EQ(src.z, dst.z);
+  }
+  remove("test.ifs");
+}
+
 /* ---[ */
 int
   main (int argc, char** argv)
