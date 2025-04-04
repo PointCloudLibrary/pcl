@@ -665,7 +665,7 @@ protected:
                      pcl::Indices& indices,
                      std::vector<float>& distances)
   {
-    int k = tree_->nearestKSearch(cloud, index, 1, indices, distances);
+    int k = tree_->nearestKSearchT(cloud[index], index, 1, indices, distances);
     if (k == 0)
       return (false);
     return (true);
