@@ -51,7 +51,9 @@
 
 #include <pcl/common/common.h>
 #include <pcl/common/utils.h> // pcl::utils::ignore
+#ifdef PCL_VISUALIZATION_AVAILABLE
 #include <pcl/visualization/common/common.h>
+#endif
 #include <pcl/outofcore/octree_base_node.h>
 #include <pcl/filters/random_sample.h>
 #include <pcl/filters/extract_indices.h>
@@ -1199,7 +1201,7 @@ namespace pcl
     }
 
 ////////////////////////////////////////////////////////////////////////////////
-
+#ifdef PCL_VISUALIZATION_AVAILABLE
     template<typename Container, typename PointT> void
     OutofcoreOctreeBaseNode<Container, PointT>::queryFrustum (const double planes[24], const Eigen::Vector3d &eye, const Eigen::Matrix4d &view_projection_matrix, std::list<std::string>& file_names, const std::uint32_t query_depth, const bool skip_vfc_check)
     {
@@ -1310,6 +1312,7 @@ namespace pcl
         }
       }
     }
+#endif
 
 ////////////////////////////////////////////////////////////////////////////////
     template<typename ContainerT, typename PointT> void
