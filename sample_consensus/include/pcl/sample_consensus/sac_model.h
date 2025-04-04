@@ -186,7 +186,7 @@ namespace pcl
 
         // Get a second point which is different than the first
         samples.resize (getSampleSize ());
-        for (unsigned int iter = 0; iter < max_sample_checks_; ++iter)
+        for (unsigned int iter = 0; iter < getMaxSampleSize(); ++iter)
         {
           // Choose the random indices
           if (samples_radius_ < std::numeric_limits<double>::epsilon ())
@@ -201,7 +201,10 @@ namespace pcl
             return;
           }
         }
-        PCL_DEBUG ("[pcl::SampleConsensusModel::getSamples] WARNING: Could not select %d sample points in %d iterations!\n", getSampleSize (), max_sample_checks_);
+        PCL_DEBUG("[pcl::SampleConsensusModel::getSamples] WARNING: Could not select "
+                  "%d sample points in %d iterations!\n",
+                  getSampleSize(),
+                  getMaxSampleSize());
         samples.clear ();
       }
 
@@ -357,6 +360,14 @@ namespace pcl
       getSampleSize () const
       {
         return sample_size_;
+      }
+
+      static unsigned int
+      getMaxSampleSize()
+      {
+        /** The maximum number of samples to try until we get a good one */
+        static const unsigned int max_sample_checks_ = 1000;
+        return max_sample_checks_;
       }
 
       /** \brief Return the number of coefficients in the model. */
@@ -557,6 +568,7 @@ namespace pcl
       IndicesPtr indices_;
 
       /** The maximum number of samples to try until we get a good one */
+      PCL_DEPRECATED(1, 18, "Use getMaxSampleSize() instead.")
       static const unsigned int max_sample_checks_ = 1000;
 
       /** \brief The minimum and maximum radius limits for the model.
