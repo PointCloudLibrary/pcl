@@ -65,6 +65,9 @@ elseif(MINGW)
   set(CMAKE_COMPILER_IS_MINGW 1)
 endif()
 
+# Ensure try_compile sets the include paths (e.g. for Eigen3)
+set(CMAKE_TRY_COMPILE_CONFIGURATION ${CMAKE_BUILD_TYPE})
+
 # https://github.com/fish-shell/fish-shell/issues/5865
 include(CheckCXXSourceCompiles)
 CHECK_CXX_SOURCE_COMPILES("
@@ -103,6 +106,10 @@ if(CMAKE_TIMING_VERBOSE AND UNIX)
   set_property(GLOBAL PROPERTY RULE_MESSAGES OFF)
   set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${CMAKE_SOURCE_DIR}/cmake/custom_output.sh")
 endif()
+
+# check for allocation functions that return aligned memory
+include("${PCL_SOURCE_DIR}/cmake/pcl_alignment.cmake")
+PCL_CHECK_FOR_ALIGNMENT()
 
 # check for SSE flags
 include("${PCL_SOURCE_DIR}/cmake/pcl_find_sse.cmake")
