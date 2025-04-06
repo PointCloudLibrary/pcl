@@ -95,6 +95,13 @@ include("${PCL_SOURCE_DIR}/cmake/pcl_verbosity.cmake")
 include("${PCL_SOURCE_DIR}/cmake/pcl_targets.cmake")
 include("${PCL_SOURCE_DIR}/cmake/pcl_options.cmake")
 include("${PCL_SOURCE_DIR}/cmake/clang-format.cmake")
+include("${PCL_SOURCE_DIR}/cmake/clang-tidy.cmake")
+
+
+if(CLANG_TIDY)
+  clang_tidy_recurse("${CMAKE_SOURCE_DIR}")
+  add_custom_target(tidy DEPENDS tidy-2d tidy-apps tidy-common tidy-cuda tidy-doc tidy-examples tidy-features tidy-filters tidy-geometry tidy-gpu tidy-io tidy-kdtree tidy-keypoints tidy-ml tidy-octree tidy-outofcore tidy-people tidy-recognition tidy-registration tidy-sample_consensus tidy-search tidy-segmentation tidy-simulation tidy-stereo tidy-surface tidy-test tidy-tools tidy-tracking tidy-visualization)
+endif()
 
 if(${PCL_ENABLE_CCACHE})
   include (UseCompilerCache)
