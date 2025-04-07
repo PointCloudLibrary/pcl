@@ -3,15 +3,15 @@
 function(PCL_CHECK_FOR_AVX)
   set(AVX_FLAGS)
 
-  include(CheckCXXSourceRuns)
+  include(CheckCXXSourceCompiles)
   
   if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX OR CMAKE_COMPILER_IS_CLANG)
-    # Setting -march & -mtune just as required flags for check_cxx_source_runs,
-    # and CMAKE_REQUIRED_FLAGS will be restored after test runs.
+    # Setting -march & -mtune just as required flags for check_cxx_source_compiles,
+    # and CMAKE_REQUIRED_FLAGS will be restored after test compiles.
     set(CMAKE_REQUIRED_FLAGS "-march=native -mtune=native")
   endif()
 
-  check_cxx_source_runs("    
+  check_cxx_source_compiles("
     #include <immintrin.h>
     int main()
     {
@@ -22,7 +22,7 @@ function(PCL_CHECK_FOR_AVX)
   HAVE_AVX2)
 
   if(NOT HAVE_AVX2)
-    check_cxx_source_runs("
+    check_cxx_source_compiles("
       #include <immintrin.h>
       int main()
       {

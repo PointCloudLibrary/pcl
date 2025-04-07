@@ -66,12 +66,15 @@ mark_as_advanced(PCL_ONLY_CORE_POINT_TYPES)
 option(PCL_NO_PRECOMPILE "Do not precompile PCL code for any point types at all." OFF)
 mark_as_advanced(PCL_NO_PRECOMPILE)
 
-# Enable or Disable the check for SSE optimizations
+# Enable or Disable the check for SSE and AVX optimizations
+if(CMAKE_SYSTEM_PROCESSOR MATCHES "arm")
+option(PCL_ENABLE_SSE "Enable or Disable SSE optimizations." OFF)
+option(PCL_ENABLE_AVX "Enable or Disable AVX optimizations." OFF)
+else()
 option(PCL_ENABLE_SSE "Enable or Disable SSE optimizations." ON)
-mark_as_advanced(PCL_ENABLE_SSE)
-
-# Enable or Disable the check for AVX optimizations
 option(PCL_ENABLE_AVX "Enable or Disable AVX optimizations." ON)
+endif()
+mark_as_advanced(PCL_ENABLE_SSE)
 mark_as_advanced(PCL_ENABLE_AVX)
 
 if(UNIX)
