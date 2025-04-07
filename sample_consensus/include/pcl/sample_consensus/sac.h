@@ -300,20 +300,20 @@ namespace pcl
       /** \brief Return the best model found so far. 
         * \param[out] model the resultant model
         */
-      inline void 
-      getModel (Indices &model) const { model = model_; }
+      inline const 
+      Indices& getModel() const { return model_; }
 
       /** \brief Return the best set of inliers found so far for this model. 
         * \param[out] inliers the resultant set of inliers
         */
-      inline void 
-      getInliers (Indices &inliers) const { inliers = inliers_; }
+      inline const
+      Indices& getInliers() const { return inliers_; }
 
       /** \brief Return the model coefficients of the best model found so far. 
         * \param[out] model_coefficients the resultant model coefficients, as documented in \ref sample_consensus
         */
-      inline void 
-      getModelCoefficients (Eigen::VectorXf &model_coefficients) const { model_coefficients = model_coefficients_; }
+      inline const
+      Eigen::VectorXf& getModelCoefficients() const { return model_coefficients_; }
 
     protected:
       /** \brief The underlying data model used (i.e. what is it that we attempt to search for). */
