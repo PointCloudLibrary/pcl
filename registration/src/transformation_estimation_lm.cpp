@@ -36,4 +36,17 @@
  *
  */
 
+#define PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_LM_CPP_
 #include <pcl/registration/transformation_estimation_lm.h>
+#include <pcl/pcl_config.h> // for PCL_NO_PRECOMPILE
+
+#ifndef PCL_NO_PRECOMPILE
+#include <pcl/pcl_exports.h> // for PCL_EXPORTS
+#include <pcl/point_types.h>
+template class PCL_EXPORTS
+    pcl::registration::TransformationEstimationLM<pcl::PointXYZ, pcl::PointXYZ>;
+template class PCL_EXPORTS
+    pcl::registration::TransformationEstimationLM<pcl::PointXYZI, pcl::PointXYZI>;
+template class PCL_EXPORTS
+    pcl::registration::TransformationEstimationLM<pcl::PointXYZRGB, pcl::PointXYZRGB>;
+#endif // PCL_NO_PRECOMPILE
