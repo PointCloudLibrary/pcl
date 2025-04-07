@@ -19,7 +19,7 @@ function(PCL_CHECK_FOR_SSE)
   # precision). One solution would be to use "-ffloat-store" on 32bit (see
   # http://gcc.gnu.org/onlinedocs/gcc/Optimize-Options.html), but that slows code down,
   # so the preferred solution is to try "-mpfmath=sse" first.
-  include(CheckCXXSourceRuns)
+  include(CheckCXXSourceCompiles)
   set(CMAKE_REQUIRED_FLAGS)
   set(SSE_LEVEL 0)
 
@@ -27,7 +27,7 @@ function(PCL_CHECK_FOR_SSE)
     set(CMAKE_REQUIRED_FLAGS "-msse4.2")
   endif()
 
-  check_cxx_source_runs("
+  check_cxx_source_compiles("
     #include <emmintrin.h>
     #include <nmmintrin.h>
     int main ()
@@ -56,7 +56,7 @@ function(PCL_CHECK_FOR_SSE)
       set(CMAKE_REQUIRED_FLAGS "-msse4.1")
     endif()
 
-    check_cxx_source_runs("
+    check_cxx_source_compiles("
       #include <smmintrin.h>
       int main ()
       {
@@ -81,7 +81,7 @@ function(PCL_CHECK_FOR_SSE)
       set(CMAKE_REQUIRED_FLAGS "-mssse3")
     endif()
     
-    check_cxx_source_runs("
+    check_cxx_source_compiles("
       #include <tmmintrin.h>
       int main ()
       {
@@ -104,7 +104,7 @@ function(PCL_CHECK_FOR_SSE)
       set(CMAKE_REQUIRED_FLAGS "-msse3")
     endif()
 
-    check_cxx_source_runs("
+    check_cxx_source_compiles("
       #include <pmmintrin.h>
       int main ()
       {
@@ -129,7 +129,7 @@ function(PCL_CHECK_FOR_SSE)
       set(CMAKE_REQUIRED_FLAGS "/arch:SSE2")
     endif()
 
-    check_cxx_source_runs("
+    check_cxx_source_compiles("
       #include <emmintrin.h>
       int main ()
       {
@@ -154,7 +154,7 @@ function(PCL_CHECK_FOR_SSE)
       set(CMAKE_REQUIRED_FLAGS "/arch:SSE")
     endif()
 
-    check_cxx_source_runs("
+    check_cxx_source_compiles("
       #include <xmmintrin.h>
       int main ()
       {
