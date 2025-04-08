@@ -161,6 +161,8 @@ namespace pcl
                       std::vector<float> &k_sqr_distances,
                       unsigned int max_nn = 0) const override;
       protected:
+        /** \brief This leaves the internal tree_ object uninitialized! */
+        KdTree (const std::string& name, bool sorted);
         /** \brief A pointer to the internal KdTree object. */
         KdTreePtr tree_;
     };

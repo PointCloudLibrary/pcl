@@ -49,6 +49,10 @@
 
 #cmakedefine HAVE_DAVIDSDK 1
 
+#ifndef PCL_HAS_NANOFLANN
+#cmakedefine PCL_HAS_NANOFLANN 1
+#endif
+
 // SSE macros
 #cmakedefine HAVE_POSIX_MEMALIGN
 #cmakedefine HAVE_MM_MALLOC
