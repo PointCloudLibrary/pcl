@@ -333,7 +333,7 @@ public:
    * @param[in] point_representation the const shared pointer to a PointRepresentation
    */
   void
-  setPointRepresentation(const PointRepresentationConstPtr& point_representation)
+  setPointRepresentation(const PointRepresentationConstPtr& point_representation) override
   {
     PCL_DEBUG("[KdTreeNanoflann::setPointRepresentation] "
               "KdTreeNanoflann::setPointRepresentation called, "
@@ -356,7 +356,7 @@ public:
   /** @brief Get a pointer to the point representation used when converting points into
    * k-D vectors. */
   inline PointRepresentationConstPtr
-  getPointRepresentation() const
+  getPointRepresentation() const override
   {
     return point_representation_;
   }
@@ -375,7 +375,7 @@ public:
    * @param[in] eps precision (error bound) for nearest neighbors searches
    */
   void
-  setEpsilon(float eps)
+  setEpsilon(float eps) override
   {
     eps_ = eps;
   }
@@ -383,7 +383,7 @@ public:
   /** @brief Get the search epsilon precision (error bound) for nearest neighbors
    * searches. */
   inline float
-  getEpsilon() const
+  getEpsilon() const override
   {
     return eps_;
   }

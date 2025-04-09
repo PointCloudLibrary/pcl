@@ -95,11 +95,11 @@ namespace pcl
         /** \brief Provide a pointer to the point representation to use to convert points into k-D vectors. 
           * \param[in] point_representation the const boost shared pointer to a PointRepresentation
           */
-        void
+        virtual void
         setPointRepresentation (const PointRepresentationConstPtr &point_representation);
 
         /** \brief Get a pointer to the point representation used when converting points into k-D vectors. */
-        inline PointRepresentationConstPtr
+        virtual inline PointRepresentationConstPtr
         getPointRepresentation () const
         {
           return (tree_->getPointRepresentation ());
@@ -114,11 +114,11 @@ namespace pcl
         /** \brief Set the search epsilon precision (error bound) for nearest neighbors searches.
           * \param[in] eps precision (error bound) for nearest neighbors searches
           */
-        void
+        virtual void
         setEpsilon (float eps);
 
         /** \brief Get the search epsilon precision (error bound) for nearest neighbors searches. */
-        inline float
+        virtual inline float
         getEpsilon () const
         {
           return (tree_->getEpsilon ());
