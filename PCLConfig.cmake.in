@@ -29,6 +29,10 @@
 # Set default policy behavior similar to minimum requirement version
 cmake_policy(VERSION 3.16.3)
 
+if(POLICY CMP0144)
+  cmake_policy(SET CMP0144 NEW)
+endif()
+
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/Modules")
 
 ### ---[ some useful macros
