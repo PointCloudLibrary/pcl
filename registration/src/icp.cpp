@@ -48,4 +48,5 @@ template class PCL_EXPORTS pcl::IterativeClosestPoint<pcl::PointXYZ, pcl::PointX
 template class PCL_EXPORTS pcl::IterativeClosestPoint<pcl::PointXYZI, pcl::PointXYZI>;
 template class PCL_EXPORTS
     pcl::IterativeClosestPoint<pcl::PointXYZRGB, pcl::PointXYZRGB>;
+template class PCL_EXPORTS pcl::IterativeClosestPoint<pcl::PointXYZ, pcl::PointNormal>;
 #endif // PCL_NO_PRECOMPILE
