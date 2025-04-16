@@ -150,7 +150,7 @@ namespace pcl
                 mask_[idx] = 1;
           }
 
-          return estimateProjectionMatrix () && isValid ();
+          return (eps_ < 0 || estimateProjectionMatrix ()) && testProjectionMatrix() && isValid ();
         }
 
         /** \brief Search for all neighbors of query point that are within a given radius.
@@ -170,9 +170,32 @@ namespace pcl
                       std::vector<float> &k_sqr_distances,
                       unsigned int max_nn = 0) const override;
 
-        /** \brief estimated the projection matrix from the input cloud. */
+        /** \brief Estimate the projection matrix from the input cloud.
+          * \return True if it was possible to estimate the matrix, false otherwise
+          */
         bool
         estimateProjectionMatrix ();
+
+        /** \brief Quick test if projection matrix and input cloud work together.
+          */
+        bool
+        testProjectionMatrix () const;
+
+        /** \brief Set projection matrix manually. Projection matrix will _not_ be estimated automatically any more. If you want to use this, call it _before_ setInputCloud.
+          */
+        void
+        setProjectionMatrix (const Eigen::Matrix<float, 3, 4>& projection_matrix)
+        {
+          eps_ = -1.0f; // signal to not call estimateProjectionMatrix
+          projection_matrix_ = projection_matrix;
+          // rest is the same as in estimateProjectionMatrix():
+          // get left 3x3 sub matrix, which contains K * R, with K = camera matrix = [[fx s cx] [0 fy cy] [0 0 1]]
+          // and R being the rotation matrix
+          KR_ = projection_matrix_.topLeftCorner <3, 3> ();
+
+          // precalculate KR * KR^T needed by calculations during nn-search
+          KR_KRT_ = KR_ * KR_.transpose ();
+        }
 
          /** \brief Search for the k-nearest neighbors for a given query point.
            * \note limiting the maximum search radius (with setMaxDistance) can lead to a significant improvement in search speed
@@ -280,7 +303,7 @@ namespace pcl
         Eigen::Matrix<float, 3, 3, Eigen::RowMajor> KR_KRT_;
 
         /** \brief epsilon value for the MSE of the projection matrix estimation*/
-        const float eps_;
+        float eps_;
 
         /** \brief using only a subsample of points to calculate the projection matrix. pyramid_level_ = use down sampled cloud given by pyramid_level_*/
         const unsigned pyramid_level_;
