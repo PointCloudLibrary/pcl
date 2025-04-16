@@ -4,6 +4,7 @@
 #include <pcl/search/organized.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
+#include <pcl/filters/filter.h>
 
 #include <benchmark/benchmark.h>
 
@@ -125,6 +126,11 @@ main(int argc, char** argv)
   pcl::PCDReader reader;
   reader.read(argv[1], *cloudIn);
 
+  // Filter out nans
+  pcl::PointCloud<pcl::PointXYZ>::Ptr cloudFiltered(new pcl::PointCloud<pcl::PointXYZ>);
+  pcl::Indices indices;
+  pcl::removeNaNFromPointCloud(*cloudIn, *cloudFiltered, indices);
+
   double searchRadius = 0.1;
   if (argc > 2) {
     try {
@@ -147,21 +153,21 @@ main(int argc, char** argv)
 
   benchmark::RegisterBenchmark("OrganizedNeighborSearch",
                                &BM_OrganizedNeighborSearch,
-                               cloudIn,
+                               cloudFiltered,
                                searchRadius,
                                neighborLimit)
       ->Unit(benchmark::kMicrosecond);
   benchmark::RegisterBenchmark(
-      "KdTree", &BM_KdTree, cloudIn, searchRadius, neighborLimit)
+      "KdTree", &BM_KdTree, cloudFiltered, searchRadius, neighborLimit)
       ->Unit(benchmark::kMicrosecond);
   benchmark::RegisterBenchmark(
-      "KdTreeAll", &BM_KdTreeAll, cloudIn, searchRadius, neighborLimit)
+      "KdTreeAll", &BM_KdTreeAll, cloudFiltered, searchRadius, neighborLimit)
       ->Unit(benchmark::kMicrosecond)
       ->UseManualTime()
       ->Iterations(1);
 #if PCL_HAS_NANOFLANN
   benchmark::RegisterBenchmark(
-      "KdTreeNanoflann", &BM_KdTreeNanoflann, cloudIn, searchRadius, neighborLimit)
+      "KdTreeNanoflann", &BM_KdTreeNanoflann, cloudFiltered, searchRadius, neighborLimit)
       ->Unit(benchmark::kMicrosecond);
 #endif
   benchmark::Initialize(&argc, argv);
