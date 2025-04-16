@@ -46,7 +46,7 @@ BM_KdTree(benchmark::State& state,
           const double searchRadius,
           const size_t neighborLimit)
 {
-  pcl::search::KdTree<pcl::PointXYZ> kdtree;
+  pcl::search::KdTree<pcl::PointXYZ> kdtree(false);
   kdtree.setInputCloud(cloudIn);
 
   int radiusSearchIdx = 0;
@@ -68,7 +68,7 @@ BM_KdTreeAll(benchmark::State& state,
              const double searchRadius,
              const size_t neighborLimit)
 {
-  pcl::search::KdTree<pcl::PointXYZ> kdtree;
+  pcl::search::KdTree<pcl::PointXYZ> kdtree(false);
   kdtree.setInputCloud(cloudIn);
 
   // Leaving indices empty to have it search through all points
@@ -135,7 +135,7 @@ main(int argc, char** argv)
     }
   }
 
-  size_t neighborLimit = std::numeric_limits<int>::max();
+  size_t neighborLimit = 0u;
   if (argc > 3) {
     try {
       neighborLimit = std::stoul(argv[3]);
