@@ -214,6 +214,10 @@ estimateProjectionMatrix (
   if (projection_matrix.coeff (0) < 0)
     projection_matrix *= -1.0;
 
+  // if the bottom row is all zeros, except for the second-to-last element, then scale the whole projection matrix (convention)
+  if(std::abs(eigen_vectors.coeff (96))<1e-7 && std::abs(eigen_vectors.coeff (108))<1e-7 && std::abs(eigen_vectors.coeff (120))>1e-5 && std::abs(eigen_vectors.coeff (132))<1e-7)
+    projection_matrix /= projection_matrix.coeffRef (10);
+
   return (residual);
 }
 
