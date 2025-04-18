@@ -1,10 +1,10 @@
+#include <pcl/filters/filter.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/search/kdtree.h>
 #include <pcl/search/kdtree_nanoflann.h>
 #include <pcl/search/organized.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
-#include <pcl/filters/filter.h>
 
 #include <benchmark/benchmark.h>
 
@@ -35,6 +35,9 @@ BM_OrganizedNeighborSearch(benchmark::State& state,
   for (auto _ : state) {
     state.PauseTiming();
     int searchIdx = radiusSearchIdx++ % cloudIn->size();
+    while (!pcl::isFinite((*cloudIn)[searchIdx])) {
+      searchIdx = radiusSearchIdx++ % cloudIn->size();
+    }
     state.ResumeTiming();
     organizedNeighborSearch.radiusSearch(
         (*cloudIn)[searchIdx], searchRadius, k_indices, k_sqr_distances, neighborLimit);
@@ -57,6 +60,9 @@ BM_KdTree(benchmark::State& state,
   for (auto _ : state) {
     state.PauseTiming();
     int searchIdx = radiusSearchIdx++ % cloudIn->size();
+    while (!pcl::isFinite((*cloudIn)[searchIdx])) {
+      searchIdx = radiusSearchIdx++ % cloudIn->size();
+    }
     state.ResumeTiming();
     kdtree.radiusSearch(
         searchIdx, searchRadius, k_indices, k_sqr_distances, neighborLimit);
@@ -105,6 +111,9 @@ BM_KdTreeNanoflann(benchmark::State& state,
   for (auto _ : state) {
     state.PauseTiming();
     int searchIdx = radiusSearchIdx++ % cloudIn->size();
+    while (!pcl::isFinite((*cloudIn)[searchIdx])) {
+      searchIdx = radiusSearchIdx++ % cloudIn->size();
+    }
     state.ResumeTiming();
     kdtree.radiusSearch(
         searchIdx, searchRadius, k_indices, k_sqr_distances, neighborLimit);
@@ -153,12 +162,12 @@ main(int argc, char** argv)
 
   benchmark::RegisterBenchmark("OrganizedNeighborSearch",
                                &BM_OrganizedNeighborSearch,
-                               cloudFiltered,
+                               cloudIn,
                                searchRadius,
                                neighborLimit)
       ->Unit(benchmark::kMicrosecond);
   benchmark::RegisterBenchmark(
-      "KdTree", &BM_KdTree, cloudFiltered, searchRadius, neighborLimit)
+      "KdTree", &BM_KdTree, cloudIn, searchRadius, neighborLimit)
       ->Unit(benchmark::kMicrosecond);
   benchmark::RegisterBenchmark(
       "KdTreeAll", &BM_KdTreeAll, cloudFiltered, searchRadius, neighborLimit)
@@ -167,7 +176,7 @@ main(int argc, char** argv)
       ->Iterations(1);
 #if PCL_HAS_NANOFLANN
   benchmark::RegisterBenchmark(
-      "KdTreeNanoflann", &BM_KdTreeNanoflann, cloudFiltered, searchRadius, neighborLimit)
+      "KdTreeNanoflann", &BM_KdTreeNanoflann, cloudIn, searchRadius, neighborLimit)
       ->Unit(benchmark::kMicrosecond);
 #endif
   benchmark::Initialize(&argc, argv);
