@@ -20,14 +20,12 @@ print_help()
 }
 
 static void
-BM_OrganizedNeighborSearch(benchmark::State& state,
-                           const pcl::PointCloud<pcl::PointXYZ>::Ptr cloudIn,
-                           const double searchRadius,
-                           const size_t neighborLimit)
+BM_RadiusSearch(benchmark::State& state,
+                const pcl::search::Search<pcl::PointXYZ>& search,
+                const pcl::PointCloud<pcl::PointXYZ>::Ptr cloudIn,
+                const double searchRadius,
+                const size_t neighborLimit)
 {
-  pcl::search::OrganizedNeighbor<pcl::PointXYZ> organizedNeighborSearch;
-  organizedNeighborSearch.setInputCloud(cloudIn);
-
   int radiusSearchIdx = 0;
 
   pcl::Indices k_indices;
@@ -39,33 +37,8 @@ BM_OrganizedNeighborSearch(benchmark::State& state,
       searchIdx = radiusSearchIdx++ % cloudIn->size();
     }
     state.ResumeTiming();
-    organizedNeighborSearch.radiusSearch(
+    search.radiusSearch(
         (*cloudIn)[searchIdx], searchRadius, k_indices, k_sqr_distances, neighborLimit);
-  }
-}
-
-static void
-BM_KdTree(benchmark::State& state,
-          const pcl::PointCloud<pcl::PointXYZ>::Ptr cloudIn,
-          const double searchRadius,
-          const size_t neighborLimit)
-{
-  pcl::search::KdTree<pcl::PointXYZ> kdtree(false);
-  kdtree.setInputCloud(cloudIn);
-
-  int radiusSearchIdx = 0;
-
-  pcl::Indices k_indices;
-  std::vector<float> k_sqr_distances;
-  for (auto _ : state) {
-    state.PauseTiming();
-    int searchIdx = radiusSearchIdx++ % cloudIn->size();
-    while (!pcl::isFinite((*cloudIn)[searchIdx])) {
-      searchIdx = radiusSearchIdx++ % cloudIn->size();
-    }
-    state.ResumeTiming();
-    kdtree.radiusSearch(
-        searchIdx, searchRadius, k_indices, k_sqr_distances, neighborLimit);
   }
 }
 
@@ -93,33 +66,6 @@ BM_KdTreeAll(benchmark::State& state,
 
   state.SetItemsProcessed(cloudIn->size());
 }
-
-#if PCL_HAS_NANOFLANN
-static void
-BM_KdTreeNanoflann(benchmark::State& state,
-                   const pcl::PointCloud<pcl::PointXYZ>::Ptr cloudIn,
-                   const double searchRadius,
-                   const size_t neighborLimit)
-{
-  pcl::search::KdTreeNanoflann<pcl::PointXYZ> kdtree;
-  kdtree.setInputCloud(cloudIn);
-
-  int radiusSearchIdx = 0;
-
-  pcl::Indices k_indices;
-  std::vector<float> k_sqr_distances;
-  for (auto _ : state) {
-    state.PauseTiming();
-    int searchIdx = radiusSearchIdx++ % cloudIn->size();
-    while (!pcl::isFinite((*cloudIn)[searchIdx])) {
-      searchIdx = radiusSearchIdx++ % cloudIn->size();
-    }
-    state.ResumeTiming();
-    kdtree.radiusSearch(
-        searchIdx, searchRadius, k_indices, k_sqr_distances, neighborLimit);
-  }
-}
-#endif
 
 int
 main(int argc, char** argv)
@@ -160,25 +106,40 @@ main(int argc, char** argv)
     }
   }
 
+  pcl::search::OrganizedNeighbor<pcl::PointXYZ> organized_neighbor;
+  organized_neighbor.setInputCloud(cloudIn);
   benchmark::RegisterBenchmark("OrganizedNeighborSearch",
-                               &BM_OrganizedNeighborSearch,
+                               &BM_RadiusSearch,
+                               organized_neighbor,
                                cloudIn,
                                searchRadius,
                                neighborLimit)
       ->Unit(benchmark::kMicrosecond);
+
+  pcl::search::KdTree<pcl::PointXYZ> kdtree(false);
+  kdtree.setInputCloud(cloudIn);
   benchmark::RegisterBenchmark(
-      "KdTree", &BM_KdTree, cloudIn, searchRadius, neighborLimit)
+      "KdTree", &BM_RadiusSearch, kdtree, cloudIn, searchRadius, neighborLimit)
       ->Unit(benchmark::kMicrosecond);
+
   benchmark::RegisterBenchmark(
       "KdTreeAll", &BM_KdTreeAll, cloudFiltered, searchRadius, neighborLimit)
       ->Unit(benchmark::kMicrosecond)
       ->UseManualTime()
       ->Iterations(1);
+
 #if PCL_HAS_NANOFLANN
-  benchmark::RegisterBenchmark(
-      "KdTreeNanoflann", &BM_KdTreeNanoflann, cloudIn, searchRadius, neighborLimit)
+  pcl::search::KdTreeNanoflann<pcl::PointXYZ> kdtreeNanoflann;
+  kdtreeNanoflann.setInputCloud(cloudIn);
+  benchmark::RegisterBenchmark("KdTreeNanoflann",
+                               &BM_RadiusSearch,
+                               kdtreeNanoflann,
+                               cloudIn,
+                               searchRadius,
+                               neighborLimit)
       ->Unit(benchmark::kMicrosecond);
 #endif
+
   benchmark::Initialize(&argc, argv);
   benchmark::RunSpecifiedBenchmarks();
 }
