@@ -342,20 +342,20 @@ namespace pcl
   PCL_EXPORTS std::ostream& operator << (std::ostream& os, const RGB& p);
   /** \brief A structure representing RGB color information.
     *
-    * The RGBA information is available either as separate r, g, b, or as a
-    * packed std::uint32_t rgba value. To pack it, use:
+    * The RGB information is available either as separate r, g, b or as a
+    * packed std::uint32_t rgb value. To pack it, use:
     *
     * \code
-    * int rgb = ((int)r) << 16 | ((int)g) << 8 | ((int)b);
+    * std::uint32_t rgb = ((int)r) << 16 | ((int)g) << 8 | ((int)b);
     * \endcode
     *
     * To unpack it use:
     *
     * \code
-    * int rgb = ...;
+    * std::uint32_t rgb = p.rgba;
     * std::uint8_t r = (rgb >> 16) & 0x0000ff;
     * std::uint8_t g = (rgb >> 8)  & 0x0000ff;
-    * std::uint8_t b = (rgb)     & 0x0000ff;
+    * std::uint8_t b = (rgb)       & 0x0000ff;
     * \endcode
     *
     */
@@ -506,20 +506,22 @@ namespace pcl
   PCL_EXPORTS std::ostream& operator << (std::ostream& os, const PointXYZRGBA& p);
   /** \brief A point structure representing Euclidean xyz coordinates, and the RGBA color.
     *
-    * The RGBA information is available either as separate r, g, b, or as a
-    * packed std::uint32_t rgba value. To pack it, use:
+    * The RGBA information is available either as separate r, g, b and a uint8_t values,
+    * or as a packed std::uint32_t rgba value. To pack it, use:
     *
     * \code
-    * int rgb = ((int)r) << 16 | ((int)g) << 8 | ((int)b);
+    * std::uint32_t rgba = ((std::uint32_t)a << 24 | ((std::uint32_t)r << 16 | ((std::uint32_t)g << 8) | b;
     * \endcode
     *
     * To unpack it use:
     *
     * \code
-    * int rgb = ...;
+    * // unpack rgb into r/g/b
+    * std::uint32_t rgb = p.rgba;
+    * std::uint8_t a = (rgb >> 24) & 0x0000ff;
     * std::uint8_t r = (rgb >> 16) & 0x0000ff;
     * std::uint8_t g = (rgb >> 8)  & 0x0000ff;
-    * std::uint8_t b = (rgb)     & 0x0000ff;
+    * std::uint8_t b = (rgb)       & 0x0000ff;
     * \endcode
     *
     * \ingroup common
@@ -579,7 +581,7 @@ namespace pcl
     * \code
     * PointXYZRGB p;
     * // unpack rgb into r/g/b
-    * std::uint32_t rgb = *reinterpret_cast<int*>(&p.rgb);
+    * std::uint32_t rgb = p.rgb;
     * std::uint8_t r = (rgb >> 16) & 0x0000ff;
     * std::uint8_t g = (rgb >> 8)  & 0x0000ff;
     * std::uint8_t b = (rgb)       & 0x0000ff;
@@ -899,7 +901,7 @@ namespace pcl
     * \code
     * PointXYZRGB p;
     * // unpack rgb into r/g/b
-    * std::uint32_t rgb = *reinterpret_cast<int*>(&p.rgb);
+    * std::uint32_t rgb = p.rgba;
     * std::uint8_t r = (rgb >> 16) & 0x0000ff;
     * std::uint8_t g = (rgb >> 8)  & 0x0000ff;
     * std::uint8_t b = (rgb)       & 0x0000ff;
