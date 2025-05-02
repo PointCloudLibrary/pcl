@@ -796,8 +796,8 @@ pcl::MLSResult::computeMLSSurface (const pcl::PointCloud<PointT> &cloud,
 
       // Computing coefficients
       const Eigen::MatrixXd P_weight = P * weight_vec.asDiagonal(); // size will be (nr_coeff_, nn_indices.size ());
-      P_weight_Pt = P_weight * P.transpose ();
-      c_vec = P_weight * f_vec;
+      P_weight_Pt.noalias() = P_weight * P.transpose ();
+      c_vec.noalias() = P_weight * f_vec;
       P_weight_Pt.llt ().solveInPlace (c_vec);
     }
   }

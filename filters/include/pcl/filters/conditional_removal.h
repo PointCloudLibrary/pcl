@@ -401,8 +401,8 @@ namespace pcl
       inline void
       transformComparison (const Eigen::Matrix4f &transform)
       {
-        tf_comp_matr_ = transform.transpose () * comp_matr_ * transform;
-        tf_comp_vect_ = comp_vect_.transpose () * transform;
+        tf_comp_matr_.noalias() = transform.transpose () * comp_matr_ * transform;
+        tf_comp_vect_.noalias() = comp_vect_.transpose () * transform;
       }
 
       /** \brief transform the coordinate system of the comparison. If you think of

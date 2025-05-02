@@ -225,7 +225,7 @@ GeneralizedIterativeClosestPoint6D::computeTransformation(PointCloudSource& outp
       PCL_DEBUG("[pcl::%s::computeTransformation] Convergence failed\n",
                 getClassName().c_str());
   }
-  final_transformation_.topLeftCorner<3, 3>() =
+  final_transformation_.topLeftCorner<3, 3>().noalias() =
       previous_transformation_.topLeftCorner<3, 3>() * guess.topLeftCorner<3, 3>();
   final_transformation_(0, 3) = previous_transformation_(0, 3) + guess(0, 3);
   final_transformation_(1, 3) = previous_transformation_(1, 3) + guess(1, 3);

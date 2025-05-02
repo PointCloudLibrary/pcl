@@ -274,7 +274,7 @@ pcl::people::GroundBasedPeopleDetectionApp<PointT>::applyTransformationGround ()
   {
     Eigen::Transform<float, 3, Eigen::Affine> transform;
     transform = transformation_;
-    ground_coeffs_transformed_ = transform.matrix() * ground_coeffs_;
+    ground_coeffs_transformed_.noalias() = transform.matrix() * ground_coeffs_;
   }
   else
   {
@@ -287,7 +287,7 @@ pcl::people::GroundBasedPeopleDetectionApp<PointT>::applyTransformationIntrinsic
 {
   if (transformation_set_ && intrinsics_matrix_set_)
   {
-    intrinsics_matrix_transformed_ = intrinsics_matrix_ * transformation_.transpose();
+    intrinsics_matrix_transformed_.noalias() = intrinsics_matrix_ * transformation_.transpose();
   }
   else
   {

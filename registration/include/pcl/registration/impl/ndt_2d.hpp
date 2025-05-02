@@ -124,7 +124,7 @@ public:
     for (const auto& pt_index : pt_indices_) {
       Eigen::Vector2d p(cloud[pt_index].x, cloud[pt_index].y);
       sx += p;
-      sxx += p * p.transpose();
+      sxx.noalias() += p * p.transpose();
     }
 
     n_ = pt_indices_.size();
@@ -145,7 +145,7 @@ public:
         Eigen::Matrix2d q = solver.eigenvectors();
         // set minimum smallest eigenvalue:
         l(0, 0) = l(1, 1) * min_covar_eigvalue_mult;
-        covar = q * l * q.transpose();
+        covar.noalias() = q * l * q.transpose();
       }
       covar_inv_ = covar.inverse();
     }

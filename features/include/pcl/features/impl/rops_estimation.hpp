@@ -275,9 +275,9 @@ pcl::ROPSEstimation <PointInT, PointOutT>::computeLRF (const PointInT& point, co
     for (const auto &i_pt : pt)
     {
       Eigen::Vector3f vec = i_pt - feature_point;
-      curr_scatter_matrix += vec * (vec.transpose ());
+      curr_scatter_matrix.noalias() += vec * (vec.transpose ());
       for (const auto &j_pt : pt)
-        curr_scatter_matrix += vec * ((j_pt - feature_point).transpose ());
+        curr_scatter_matrix.noalias() += vec * ((j_pt - feature_point).transpose ());
     }
     scatter_matrices.emplace_back (coeff * curr_scatter_matrix);
   }

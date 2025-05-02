@@ -78,7 +78,7 @@ pcl::PrincipalCurvaturesEstimation<PointInT, PointNT, PointOutT>::computePointPr
   for (std::size_t idx = 0; idx < indices.size(); ++idx)
   {
     const auto normal = normals[indices[idx]].getNormalVector3fMap();
-    projected_normals[idx] = M * normal;
+    projected_normals[idx].noalias() = M * normal;
     xyz_centroid += projected_normals[idx];
   }
 

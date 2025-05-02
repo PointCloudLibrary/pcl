@@ -136,7 +136,7 @@ pcl::IntensityGradientEstimation <PointInT, PointNT, PointOutT, IntensitySelecto
 //  std::cout << A << "\n*\n" << bb << "\n=\n" << x << "\nvs.\n" << x2 << "\n\n";
 //  std::cout << A * x << "\nvs.\n" << A * x2 << "\n\n------\n";
   // Project the gradient vector, x, onto the tangent plane
-  gradient = (Eigen::Matrix3f::Identity () - normal*normal.transpose ()) * x;
+  gradient.noalias() = (Eigen::Matrix3f::Identity () - normal*normal.transpose ()) * x;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////

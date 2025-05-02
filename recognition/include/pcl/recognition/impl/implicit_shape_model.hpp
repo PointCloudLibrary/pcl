@@ -1185,7 +1185,7 @@ pcl::ism::ImplicitShapeModelEstimation<FeatureSize, PointT, NormalT>::alignYCoor
                           B,      A,   0.0f,
                        0.0f,   0.0f,   1.0f;
 
-  result = rotation_matrix_X * rotation_matrix_Z;
+  result.noalias() = rotation_matrix_X * rotation_matrix_Z;
 
   return (result);
 }

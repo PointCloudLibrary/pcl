@@ -482,7 +482,7 @@ PolynomialCalculationsT<real>::bivariatePolynomialApproximation (
   //std::cout << "Cholesky took "<< (choleskyStartTime+get_time ())*1000<<"ms.\n";
 
   //double invStartTime=-get_time ();
-  parameters = A.inverse () * b;
+  parameters.noalias() = A.inverse () * b;
   //std::cout << "Inverse took "<< (invStartTime+get_time ())*1000<<"ms.\n";
 
   //std::cout << PVARC (A)<<PVARC (b)<<PVARN (parameters);
