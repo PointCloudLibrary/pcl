@@ -77,7 +77,7 @@ pcl::SHOTLocalReferenceFrameEstimation<PointInT, PointOutT>::getLocalRF (const i
     distance = search_parameter_ - sqrt (n_sqr_distances[i_idx]);
 
     // Multiply vij * vij'
-    cov_m += distance * (vij.row (valid_nn_points).head<3> ().transpose () * vij.row (valid_nn_points).head<3> ());
+    cov_m.noalias() += distance * (vij.row (valid_nn_points).head<3> ().transpose () * vij.row (valid_nn_points).head<3> ());
 
     sum += distance;
     valid_nn_points++;

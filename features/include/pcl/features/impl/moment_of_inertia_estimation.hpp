@@ -266,7 +266,7 @@ pcl::MomentOfInertiaEstimation<PointT>::computeOBB ()
   obb_max_point_.y -= shift (1);
   obb_max_point_.z -= shift (2);
 
-  obb_position_ = mean_value_ + obb_rotational_matrix_ * shift;
+  obb_position_.noalias() = mean_value_ + obb_rotational_matrix_ * shift;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -366,7 +366,7 @@ pcl::MomentOfInertiaEstimation<PointT>::computeCovarianceMatrix (Eigen::Matrix <
     current_point (1) = (*input_)[(*indices_)[i_point]].y - mean_value_ (1);
     current_point (2) = (*input_)[(*indices_)[i_point]].z - mean_value_ (2);
 
-    covariance_matrix += current_point * current_point.transpose ();
+    covariance_matrix.noalias() += current_point * current_point.transpose ();
   }
 
   covariance_matrix *= factor;
@@ -387,7 +387,7 @@ pcl::MomentOfInertiaEstimation<PointT>::computeCovarianceMatrix (PointCloudConst
     current_point (1) = (*cloud)[i_point].y - mean_value_ (1);
     current_point (2) = (*cloud)[i_point].z - mean_value_ (2);
 
-    covariance_matrix += current_point * current_point.transpose ();
+    covariance_matrix.noalias() += current_point * current_point.transpose ();
   }
 
   covariance_matrix *= factor;

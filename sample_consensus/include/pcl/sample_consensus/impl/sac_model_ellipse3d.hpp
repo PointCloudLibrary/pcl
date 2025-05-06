@@ -199,12 +199,12 @@ pcl::SampleConsensusModelEllipse3D<PointT>::computeModelCoefficients (const Indi
   Eigen::Vector3f p_ctr;
   float aux_par(0.0);
   if (par_a > par_b) {
-    p_ctr = p0 + Rot * Eigen::Vector3f(par_h, par_k, 0.0);
+    p_ctr.noalias() = p0 + Rot * Eigen::Vector3f(par_h, par_k, 0.0);
   } else {
     aux_par = par_a;
     par_a = par_b;
     par_b = aux_par;
-    p_ctr = p0 + Rot * Eigen::Vector3f(par_k, par_h, 0.0);
+    p_ctr.noalias() = p0 + Rot * Eigen::Vector3f(par_k, par_h, 0.0);
   }
 
   // Center (x, y, z)

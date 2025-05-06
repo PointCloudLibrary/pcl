@@ -696,7 +696,7 @@ computeCentroidAndOBB (const pcl::PointCloud<PointT> &cloud,
   //[0    , 1             ]
   Eigen::Matrix<Scalar, 4, 4> transform = Eigen::Matrix<Scalar, 4, 4>::Identity();
   transform.template topLeftCorner<3, 3>() = obb_rotational_matrix.transpose();
-  transform.template topRightCorner<3, 1>() =-transform.template topLeftCorner<3, 3>()*centroid;
+  transform.template topRightCorner<3, 1>().noalias() =-transform.template topLeftCorner<3, 3>()*centroid;
 
   //when Scalar==double on a Windows 10 machine and MSVS:
   //if you substitute the following Scalars with floats you get a 20% worse processing time, if with 2 PointT 55% worse
@@ -786,7 +786,7 @@ computeCentroidAndOBB (const pcl::PointCloud<PointT> &cloud,
   obb_dimensions(1) = obb_max_pointy - obb_min_pointy;
   obb_dimensions(2) = obb_max_pointz - obb_min_pointz;
 
-  obb_center = centroid + obb_rotational_matrix * shift;//position of the OBB center in the same reference Oxyz of the point cloud
+  obb_center.noalias() = centroid + obb_rotational_matrix * shift;//position of the OBB center in the same reference Oxyz of the point cloud
 
   return (point_count);
 }
@@ -830,7 +830,7 @@ computeCentroidAndOBB (const pcl::PointCloud<PointT> &cloud,
   //[0    , 1             ]
   Eigen::Matrix<Scalar, 4, 4> transform = Eigen::Matrix<Scalar, 4, 4>::Identity();
   transform.template topLeftCorner<3, 3>() = obb_rotational_matrix.transpose();
-  transform.template topRightCorner<3, 1>() =-transform.template topLeftCorner<3, 3>()*centroid;
+  transform.template topRightCorner<3, 1>().noalias() =-transform.template topLeftCorner<3, 3>()*centroid;
 
   //when Scalar==double on a Windows 10 machine and MSVS:
   //if you substitute the following Scalars with floats you get a 20% worse processing time, if with 2 PointT 55% worse
@@ -922,7 +922,7 @@ computeCentroidAndOBB (const pcl::PointCloud<PointT> &cloud,
   obb_dimensions(1) = obb_max_pointy - obb_min_pointy;
   obb_dimensions(2) = obb_max_pointz - obb_min_pointz;
 
-  obb_center = centroid + obb_rotational_matrix * shift;//position of the OBB center in the same reference Oxyz of the point cloud
+  obb_center.noalias() = centroid + obb_rotational_matrix * shift;//position of the OBB center in the same reference Oxyz of the point cloud
 
   return (point_count);
 }

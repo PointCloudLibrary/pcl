@@ -86,7 +86,7 @@ PCA<PointT>::initCompute ()
   eigenvectors_.col(2) = eigenvectors_.col(0).cross(eigenvectors_.col(1));
   // If not basis only then compute the coefficients
   if (!basis_only_)
-    coefficients_ = eigenvectors_.transpose() * cloud_demean.topRows<3> ();
+    coefficients_.noalias() = eigenvectors_.transpose() * cloud_demean.topRows<3> ();
   compute_done_ = true;
   return (true);
 }
@@ -171,7 +171,7 @@ PCA<PointT>::project (const PointT& input, PointT& projection)
     PCL_THROW_EXCEPTION (InitFailedException, "[pcl::PCA::project] PCA initCompute failed");
 
   Eigen::Vector3f demean_input = input.getVector3fMap () - mean_.head<3> ();
-  projection.getVector3fMap () = eigenvectors_.transpose() * demean_input;
+  projection.getVector3fMap ().noalias () = eigenvectors_.transpose() * demean_input;
 }
 
 

@@ -144,7 +144,7 @@ GeneralizedIterativeClosestPoint<PointSource, PointTarget, Scalar>::computeCovar
       double v = 1.; // biggest 2 singular values replaced by 1
       if (k == 2)    // smallest singular value replaced by gicp_epsilon
         v = gicp_epsilon_;
-      cov += v * col * col.transpose();
+      cov.noalias() += v * col * col.transpose();
     }
     cloud_covariances[i] = cov;
   }
@@ -429,8 +429,8 @@ GeneralizedIterativeClosestPoint<PointSource, PointTarget, Scalar>::
       else
         inverted_eigenvalues(i, i) = 1.0 / ev;
     }
-    delta = eigensolver.eigenvectors() * inverted_eigenvalues *
-            eigensolver.eigenvectors().transpose() * gradient;
+    delta.noalias() = eigensolver.eigenvectors() * inverted_eigenvalues *
+                      eigensolver.eigenvectors().transpose() * gradient;
 
     // simple line search to guarantee a decrease in the function value
     double alpha = 1.0;
@@ -542,9 +542,9 @@ GeneralizedIterativeClosestPoint<PointSource, PointTarget, Scalar>::
     // closes)
     g.head<3>() += Md;
     // Increment rotation gradient
-    p_trans_src = gicp_->base_transformation_.template cast<float>() * p_src;
+    p_trans_src.noalias() = gicp_->base_transformation_.template cast<float>() * p_src;
     Eigen::Vector3d p_base_src(p_trans_src[0], p_trans_src[1], p_trans_src[2]);
-    dCost_dR_T += p_base_src * Md.transpose();
+    dCost_dR_T.noalias() += p_base_src * Md.transpose();
   }
   g.head<3>() *= 2.0 / m;
   dCost_dR_T *= 2.0 / m;
@@ -584,10 +584,10 @@ GeneralizedIterativeClosestPoint<PointSource, PointTarget, Scalar>::
     // g.head<3> ()+= 2*M*d/num_matches (we postpone 2/num_matches after the loop
     // closes)
     g.head<3>() += Md;
-    p_trans_src = gicp_->base_transformation_.template cast<float>() * p_src;
+    p_trans_src.noalias() = gicp_->base_transformation_.template cast<float>() * p_src;
     Eigen::Vector3d p_base_src(p_trans_src[0], p_trans_src[1], p_trans_src[2]);
     // Increment rotation gradient
-    dCost_dR_T += p_base_src * Md.transpose();
+    dCost_dR_T.noalias() += p_base_src * Md.transpose();
   }
   f /= static_cast<double>(m);
   g.head<3>() *= (2.0 / m);
@@ -661,7 +661,7 @@ GeneralizedIterativeClosestPoint<PointSource, PointTarget, Scalar>::
     const Eigen::Vector3d Md(M * d);    // Md = M*d
     gradient.head<3>() += Md;           // translation gradient
     hessian.topLeftCorner<3, 3>() += M; // translation-translation hessian
-    p_trans_src = base_transformation_float * p_src;
+    p_trans_src.noalias() = base_transformation_float * p_src;
     const Eigen::Vector3d p_base_src(p_trans_src[0], p_trans_src[1], p_trans_src[2]);
     dCost_dR_T.noalias() += p_base_src * Md.transpose();
     dCost_dR_T1b += p_base_src[0] * M;
@@ -895,7 +895,7 @@ GeneralizedIterativeClosestPoint<PointSource, PointTarget, Scalar>::
       PCL_DEBUG("[pcl::%s::computeTransformation] Convergence failed\n",
                 getClassName().c_str());
   }
-  final_transformation_ = previous_transformation_ * guess;
+  final_transformation_.noalias() = previous_transformation_ * guess;
 
   PCL_DEBUG("Transformation "
             "is:\n\t%5f\t%5f\t%5f\t%5f\n\t%5f\t%5f\t%5f\t%5f\n\t%5f\t%5f\t%5f\t%5f\n\t%"

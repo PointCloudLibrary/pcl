@@ -371,7 +371,7 @@ pcl::search::OrganizedNeighbor<PointT>::estimateProjectionMatrix ()
   KR_ = projection_matrix_.topLeftCorner <3, 3> ();
 
   // precalculate KR * KR^T needed by calculations during nn-search
-  KR_KRT_ = KR_ * KR_.transpose ();
+  KR_KRT_.noalias() = KR_ * KR_.transpose ();
   return true;
 }
 

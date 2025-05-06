@@ -175,7 +175,7 @@ pcl::VoxelGridCovariance<PointT>::applyFilter (PointCloud &output)
       // Accumulate point sum for centroid calculation
       leaf.mean_ += pt3d;
       // Accumulate x*xT for single pass covariance calculation
-      leaf.cov_ += pt3d * pt3d.transpose ();
+      leaf.cov_.noalias() += pt3d * pt3d.transpose ();
 
       // Do we need to process all the fields?
       if (!downsample_all_data_)
@@ -231,7 +231,7 @@ pcl::VoxelGridCovariance<PointT>::applyFilter (PointCloud &output)
       // Accumulate point sum for centroid calculation
       leaf.mean_ += pt3d;
       // Accumulate x*xT for single pass covariance calculation
-      leaf.cov_ += pt3d * pt3d.transpose ();
+      leaf.cov_.noalias() += pt3d * pt3d.transpose ();
 
       // Do we need to process all the fields?
       if (!downsample_all_data_)
@@ -349,7 +349,7 @@ pcl::VoxelGridCovariance<PointT>::applyFilter (PointCloud &output)
           eigen_val (1, 1) = min_covar_eigvalue;
         }
 
-        leaf.cov_ = leaf.evecs_ * eigen_val * leaf.evecs_.inverse ();
+        leaf.cov_.noalias() = leaf.evecs_ * eigen_val * leaf.evecs_.inverse ();
       }
       leaf.evals_ = eigen_val.diagonal ();
 
@@ -475,7 +475,7 @@ pcl::VoxelGridCovariance<PointT>::getDisplayCloud (pcl::PointCloud<PointXYZ>& ce
       for (int i = 0; i < pnt_per_cell; i++)
       {
         rand_point = Eigen::Vector3d (var_nor (), var_nor (), var_nor ());
-        dist_point = cell_mean + cholesky_decomp * rand_point;
+        dist_point.noalias() = cell_mean + cholesky_decomp * rand_point;
         cell_cloud.push_back (PointXYZ (static_cast<float> (dist_point (0)), static_cast<float> (dist_point (1)), static_cast<float> (dist_point (2))));
       }
     }
