@@ -790,11 +790,20 @@ GeneralizedIterativeClosestPoint<PointSource, PointTarget, Scalar>::
   base_transformation_ = Matrix4::Identity();
   nr_iterations_ = 0;
   converged_ = false;
-  double dist_threshold = corr_dist_threshold_ * corr_dist_threshold_;
   pcl::Indices nn_indices(1);
   std::vector<float> nn_dists(1);
 
   pcl::transformPointCloud(output, output, guess);
+  pcl::registration::CorrespondenceEstimation<PointSource, PointTarget, Scalar>
+      corr_estimation;
+  corr_estimation.setNumberOfThreads(threads_);
+  // setSearchMethodSource is not necessary because we do not use
+  // determineReciprocalCorrespondences
+  corr_estimation.setSearchMethodTarget(this->getSearchMethodTarget());
+  corr_estimation.setInputTarget(target_);
+  auto output_transformed = pcl::make_shared<PointCloudSource>();
+  output_transformed->resize(output.size());
+  pcl::Correspondences correspondences;
 
   while (!converged_) {
     std::size_t cnt = 0;
@@ -811,36 +820,19 @@ GeneralizedIterativeClosestPoint<PointSource, PointTarget, Scalar>::
 
     Eigen::Matrix3d R = transform_R.topLeftCorner<3, 3>();
 
-    for (std::size_t i = 0; i < N; i++) {
-      PointSource query = output[i];
-      query.getVector4fMap() =
-          transformation_.template cast<float>() * query.getVector4fMap();
-
-      if (!searchForNeighbors(query, nn_indices, nn_dists)) {
-        PCL_ERROR("[pcl::%s::computeTransformation] Unable to find a nearest neighbor "
-                  "in the target dataset for point %d in the source!\n",
-                  getClassName().c_str(),
-                  (*indices_)[i]);
-        return;
-      }
-
-      // Check if the distance to the nearest neighbor is smaller than the user imposed
-      // threshold
-      if (nn_dists[0] < dist_threshold) {
-        Eigen::Matrix3d& C1 = (*input_covariances_)[i];
-        Eigen::Matrix3d& C2 = (*target_covariances_)[nn_indices[0]];
-        Eigen::Matrix3d& M = mahalanobis_[i];
-        // M = R*C1
-        M = R * C1;
-        // temp = M*R' + C2 = R*C1*R' + C2
-        Eigen::Matrix3d temp = M * R.transpose();
-        temp += C2;
-        // M = temp^-1
-        M = temp.inverse();
-        source_indices[cnt] = static_cast<int>(i);
-        target_indices[cnt] = nn_indices[0];
-        cnt++;
-      }
+    transformPointCloud(
+        output, *output_transformed, transformation_.template cast<float>(), false);
+    corr_estimation.setInputSource(output_transformed);
+    corr_estimation.determineCorrespondences(correspondences, corr_dist_threshold_);
+    cnt = 0;
+    for (const auto& corr : correspondences) {
+      source_indices[cnt] = corr.index_query;
+      target_indices[cnt] = corr.index_match;
+      const Eigen::Matrix3d& C1 = (*input_covariances_)[corr.index_query];
+      const Eigen::Matrix3d& C2 = (*target_covariances_)[corr.index_match];
+      pcl::invert3x3SymMatrix<Eigen::Matrix3d>(R * C1 * R.transpose() + C2,
+                                               mahalanobis_[corr.index_query]);
+      ++cnt;
     }
     // Resize to the actual number of valid correspondences
     source_indices.resize(cnt);
