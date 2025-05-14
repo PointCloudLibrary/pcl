@@ -213,6 +213,21 @@ Registration<PointSource, PointTarget, Scalar>::align(PointCloudSource& output,
 
   computeTransformation(output, guess);
 
+  // The resulting point cloud 'output' is aligned with the input_ point cloud in terms of point values,
+  // but coordinate frames have not been taken into account.
+  // In other words, the 'output' is still expressed in the coordinate frame of the input_ sensor.
+  // to resolve this , we can simply reassign the sensor_origin_ and sensor_orientation_ of the output cloud to the target cloud.
+
+  if (input_->sensor_orientation_!= target_->sensor_orientation_ || input_->sensor_origin_ != target_->sensor_origin_) {
+    output.sensor_orientation_ = target_->sensor_orientation_;
+    output.sensor_origin_ = target_->sensor_origin_;
+
+      PCL_WARN("[pcl::%s::align] The sensor_origin_ and sensor_orientation_ of the source and target clouds differ.\n"
+          " The output cloud will remain in the source sensor's coordinate frame.\n"
+          " Original sensor-to-sensor relative pose information may be lost.\n",
+          getClassName().c_str());
+  }
+
   deinitCompute();
 }
 
