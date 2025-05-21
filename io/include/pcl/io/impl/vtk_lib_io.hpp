@@ -122,7 +122,7 @@ pcl::io::vtkPolyDataToPointCloud (vtkPolyData* const polydata, pcl::PointCloud<P
   {
     for (std::size_t i = 0; i < cloud.size (); ++i)
     {
-      float normal[3];
+      float normal[3] = {0.0f, 0.0f, 0.0f};
       normals->GetTupleValue (i, normal);
       pcl::setFieldValue<PointT, float> (cloud[i], normal_x_idx, normal[0]);
       pcl::setFieldValue<PointT, float> (cloud[i], normal_y_idx, normal[1]);
