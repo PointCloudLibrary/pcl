@@ -46,10 +46,14 @@ static void
 BM_KdTreeAll(benchmark::State& state,
              const pcl::PointCloud<pcl::PointXYZ>::Ptr cloudIn,
              const double searchRadius,
-             const size_t neighborLimit)
+             const size_t neighborLimit,
+             const bool threaded)
 {
   pcl::search::KdTree<pcl::PointXYZ> kdtree(false);
   kdtree.setInputCloud(cloudIn);
+  if (threaded) {
+    kdtree.setNumberOfThreads(0);
+  }
 
   // Leaving indices empty to have it search through all points
   pcl::Indices indices;
@@ -123,7 +127,17 @@ main(int argc, char** argv)
       ->Unit(benchmark::kMicrosecond);
 
   benchmark::RegisterBenchmark(
-      "KdTreeAll", &BM_KdTreeAll, cloudFiltered, searchRadius, neighborLimit)
+      "KdTreeAll", &BM_KdTreeAll, cloudFiltered, searchRadius, neighborLimit, false)
+      ->Unit(benchmark::kMicrosecond)
+      ->UseManualTime()
+      ->Iterations(1);
+
+  benchmark::RegisterBenchmark("KdTreeAllThreaded",
+                               &BM_KdTreeAll,
+                               cloudFiltered,
+                               searchRadius,
+                               neighborLimit,
+                               true)
       ->Unit(benchmark::kMicrosecond)
       ->UseManualTime()
       ->Iterations(1);

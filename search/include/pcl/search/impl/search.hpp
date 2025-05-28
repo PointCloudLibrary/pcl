@@ -120,6 +120,7 @@ pcl::search::Search<PointT>::nearestKSearch (
   {
     k_indices.resize (cloud.size ());
     k_sqr_distances.resize (cloud.size ());
+    #pragma omp parallel for num_threads(num_threads_)
     for (std::size_t i = 0; i < cloud.size (); i++)
       nearestKSearch (cloud, static_cast<index_t> (i), k, k_indices[i], k_sqr_distances[i]);
   }
@@ -127,6 +128,7 @@ pcl::search::Search<PointT>::nearestKSearch (
   {
     k_indices.resize (indices.size ());
     k_sqr_distances.resize (indices.size ());
+    #pragma omp parallel for num_threads(num_threads_)
     for (std::size_t i = 0; i < indices.size (); i++)
       nearestKSearch (cloud, indices[i], k, k_indices[i], k_sqr_distances[i]);
   }
@@ -172,6 +174,7 @@ pcl::search::Search<PointT>::radiusSearch (
   {
     k_indices.resize (cloud.size ());
     k_sqr_distances.resize (cloud.size ());
+    #pragma omp parallel for num_threads(num_threads_)
     for (std::size_t i = 0; i < cloud.size (); i++)
       radiusSearch (cloud, static_cast<index_t> (i), radius,k_indices[i], k_sqr_distances[i], max_nn);
   }
@@ -179,6 +182,7 @@ pcl::search::Search<PointT>::radiusSearch (
   {
     k_indices.resize (indices.size ());
     k_sqr_distances.resize (indices.size ());
+    #pragma omp parallel for num_threads(num_threads_)
     for (std::size_t i = 0; i < indices.size (); i++)
       radiusSearch (cloud,indices[i],radius,k_indices[i],k_sqr_distances[i], max_nn);
   }
