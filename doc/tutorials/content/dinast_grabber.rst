@@ -161,10 +161,6 @@ We will test the grabber with the previous example. Write down the whole code to
 
   find_package(PCL 1.7 REQUIRED)
 
-  include_directories(${PCL_INCLUDE_DIRS})
-  link_directories(${PCL_LIBRARY_DIRS})
-  add_definitions(${PCL_DEFINITIONS})
-
   add_executable (dinast_grabber dinast_grabber.cpp)
   target_link_libraries (dinast_grabber ${PCL_LIBRARIES})
 

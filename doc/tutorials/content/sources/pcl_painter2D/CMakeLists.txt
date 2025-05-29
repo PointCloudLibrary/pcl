@@ -1,8 +1,5 @@
 cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
 project(pcl_painter2D_demo)
 find_package(PCL 1.7)
-include_directories(${PCL_INCLUDE_DIRS})
-link_directories(${PCL_LIBRARY_DIRS})
-add_definitions(${PCL_DEFINITIONS})
 add_executable(pcl_painter2D_demo pcl_painter2D_demo.cpp)
 target_link_libraries(pcl_painter2D_demo ${PCL_LIBRARIES})
