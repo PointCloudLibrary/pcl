@@ -296,7 +296,8 @@ pcl::recognition::ObjRecRANSAC::groupHypotheses(std::list<HypothesisBase>& hypot
 #endif
 
   // Compute the bounds for the positional discretization
-  float b[6]; scene_octree_.getBounds (b);
+  float b[6] = {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f};
+  scene_octree_.getBounds (b);
   float enlr = scene_bounds_enlargement_factor_*std::max (std::max (b[1]-b[0], b[3]-b[2]), b[5]-b[4]);
   b[0] -= enlr; b[1] += enlr;
   b[2] -= enlr; b[3] += enlr;

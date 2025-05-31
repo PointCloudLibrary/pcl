@@ -121,6 +121,15 @@ NormalDistributionsTransform<PointSource, PointTarget, Scalar>::computeTransform
     // 2009]
     Eigen::JacobiSVD<Eigen::Matrix<double, 6, 6>> sv(
         hessian, Eigen::ComputeFullU | Eigen::ComputeFullV);
+#if EIGEN_VERSION_AT_LEAST(3, 4, 0)
+    if (sv.info() != Eigen::ComputationInfo::Success) {
+      trans_likelihood_ = score / static_cast<double>(input_->size());
+      converged_ = 0;
+      PCL_ERROR("[%s::computeTransformation] JacobiSVD on hessian failed!\n",
+                getClassName().c_str());
+      return;
+    }
+#endif
     // Negative for maximization as opposed to minimization
     Eigen::Matrix<double, 6, 1> delta = sv.solve(-score_gradient);
 
