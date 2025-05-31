@@ -125,6 +125,8 @@ NormalDistributionsTransform<PointSource, PointTarget, Scalar>::computeTransform
     if (sv.info() != Eigen::ComputationInfo::Success) {
       trans_likelihood_ = score / static_cast<double>(input_->size());
       converged_ = 0;
+      PCL_ERROR("[%s::computeTransformation] JacobiSVD on hessian failed!\n",
+                getClassName().c_str());
       return;
     }
 #endif
