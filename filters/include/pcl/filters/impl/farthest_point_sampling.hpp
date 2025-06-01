@@ -42,7 +42,7 @@ pcl::FarthestPointSampling<PointT>::applyFilter (Indices &indices)
   std::uniform_int_distribution<index_t> dis(0, size -1);
 
   //lambda to map filter indices back to pointcloud indices for increased readability
-  auto toCloudIndex = [this](const int idx){return (*indices_)[idx];};
+  auto toCloudIndex = [this](const auto idx){return (*indices_)[idx];};
 
   //pick the first point at random
   index_t max_index = dis(random_gen);
