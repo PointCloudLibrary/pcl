@@ -4,9 +4,7 @@ project(iccv11)
 
 find_package(PCL 1.5 REQUIRED)
 
-include_directories(${PCL_INCLUDE_DIRS} include)
-link_directories(${PCL_LIBRARY_DIRS})
-add_definitions(${PCL_DEFINITIONS})
+include_directories(include)
 
 add_executable (iccv2011_capture_tool src/capture_tool.cpp src/openni_capture.cpp)
 target_link_libraries (iccv2011_capture_tool ${PCL_LIBRARIES})
