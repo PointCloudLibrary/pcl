@@ -51,23 +51,28 @@ pcl::FarthestPointSampling<PointT>::applyFilter (Indices &indices)
   
   for (std::size_t j = 1; j < sample_size_; ++j)
   {
-    index_t next_max_index = 0;
-    
     const PointT& max_index_point = (*input_)[toCloudIndex(max_index)];
-    //recompute distances
+
+    #pragma omp parallel for \
+    num_threads(nr_threads_)
     for (std::size_t i = 0; i < size; ++i)
     {
       if (distances_to_selected_points[i] == -1.0)
         continue;
       distances_to_selected_points[i] = std::min(distances_to_selected_points[i], geometry::distance((*input_)[toCloudIndex(i)], max_index_point));
-      if (distances_to_selected_points[i] > distances_to_selected_points[next_max_index])
-        next_max_index = i;
+      if (distances_to_selected_points[i] > distances_to_selected_points[max_index]) {
+        #pragma omp critical
+        {
+          //have to check the condition again in case another thread modified max_index 
+          if (distances_to_selected_points[i] > distances_to_selected_points[max_index])
+            max_index = i;
+        }
+      }
     }
 
     //select farthest point based on previously calculated distances
     //since distance is set to -1 for all selected elements,previously selected 
     //elements are guaranteed to not be selected
-    max_index = next_max_index;
     distances_to_selected_points[max_index] = -1.0;
     indices.push_back(toCloudIndex(max_index));
     //set distance to -1 to ignore during max element search
