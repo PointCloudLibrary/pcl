@@ -54,6 +54,8 @@ pcl::FarthestPointSampling<PointT>::applyFilter (Indices &indices)
     const PointT& max_index_point = (*input_)[toCloudIndex(max_index)];
 
     #pragma omp parallel for \
+    default(none) \
+    shared(distances_to_selected_points, max_index, max_index_point, size, toCloudIndex) \
     num_threads(nr_threads_)
     for (std::size_t i = 0; i < size; ++i)
     {
