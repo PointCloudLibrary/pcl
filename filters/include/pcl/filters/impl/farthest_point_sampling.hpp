@@ -57,7 +57,7 @@ pcl::FarthestPointSampling<PointT>::applyFilter (Indices &indices)
     default(none) \
     shared(distances_to_selected_points, max_index, max_index_point, size, toCloudIndex) \
     num_threads(nr_threads_)
-    for (std::size_t i = 0; i < size; ++i)
+    for (std::ptrdiff_t i = 0; i < static_cast<std::ptrdiff_t>(size); ++i)
     {
       if (distances_to_selected_points[i] == -1.0)
         continue;

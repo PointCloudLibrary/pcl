@@ -10,7 +10,6 @@
 #pragma once
 
 #include <pcl/filters/filter_indices.h>
-#include <omp.h>
 
 #include <climits>
 #include <random>
@@ -44,7 +43,6 @@ namespace pcl
           seed_ (std::random_device()())
         {
           filter_name_ = "FarthestPointSamping";
-          setNumberOfThreads(0);
         }
 
         /** \brief Set number of points to be sampled.
@@ -87,7 +85,12 @@ namespace pcl
         inline void
         setNumberOfThreads (unsigned int nr_threads)
         {
+          #ifdef _OPENMP
           nr_threads_ = nr_threads == 0 ? omp_get_num_procs() : nr_threads;
+          #else
+          if (nr_threads_ != 1) 
+            PCL_WARN("OpenMP is not available. Keeping number of threads unchanged at 1\n");
+          #endif
         }
 
         /** \brief Get the value of the internal \a nr_threads_ parameter.
@@ -105,7 +108,7 @@ namespace pcl
         /** \brief Random number seed. */
         unsigned int seed_;
         /** \brief Number of threads */
-        unsigned int nr_threads_;
+        unsigned int nr_threads_{1};
 
         /** \brief Sample of point indices
           * \param indices indices of the filtered point cloud
