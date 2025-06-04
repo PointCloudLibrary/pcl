@@ -53,24 +53,30 @@ pcl::FarthestPointSampling<PointT>::applyFilter (Indices &indices)
   {
     const PointT& max_index_point = (*input_)[toCloudIndex(max_index)];
 
-    #pragma omp parallel for \
+    #pragma omp parallel \
     default(none) \
     shared(distances_to_selected_points, max_index, max_index_point, size, toCloudIndex) \
     num_threads(nr_threads_)
-    for (std::ptrdiff_t i = 0; i < static_cast<std::ptrdiff_t>(size); ++i)
     {
-      if (distances_to_selected_points[i] == -1.0)
-        continue;
-      distances_to_selected_points[i] = std::min(distances_to_selected_points[i], geometry::distance((*input_)[toCloudIndex(i)], max_index_point));
-      if (distances_to_selected_points[i] > distances_to_selected_points[max_index]) {
-        #pragma omp critical
-        {
-          //have to check the condition again in case another thread modified max_index 
-          if (distances_to_selected_points[i] > distances_to_selected_points[max_index])
-            max_index = i;
+      std::ptrdiff_t local_max_index = max_index;
+
+      #pragma omp for
+      for (std::ptrdiff_t i = 0; i < static_cast<std::ptrdiff_t>(size); ++i)
+      {
+        if (distances_to_selected_points[i] == -1.0)
+          continue;
+        distances_to_selected_points[i] = std::min(distances_to_selected_points[i], geometry::distance((*input_)[toCloudIndex(i)], max_index_point));
+        if (distances_to_selected_points[i] > distances_to_selected_points[local_max_index]) {
+            local_max_index = i;
         }
       }
-    }
+
+      #pragma omp critical
+      {
+        if (distances_to_selected_points[local_max_index] > distances_to_selected_points[max_index]) 
+          max_index = local_max_index;
+      }
+    } //pragma omp parallel
 
     //select farthest point based on previously calculated distances
     //since distance is set to -1 for all selected elements,previously selected 
