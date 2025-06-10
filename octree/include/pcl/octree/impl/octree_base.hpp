@@ -39,6 +39,9 @@
 #ifndef PCL_OCTREE_BASE_HPP
 #define PCL_OCTREE_BASE_HPP
 
+#include <pcl/octree/octree_base.h>
+#include <pcl/octree/octree_key.h>
+
 #include <vector>
 
 namespace pcl {
@@ -75,7 +78,7 @@ OctreeBase<LeafContainerT, BranchContainerT>::setMaxVoxelIndex(
 
   // tree depth == bitlength of maxVoxels
   tree_depth =
-      std::min(static_cast<uindex_t>(OctreeKey::maxDepth),
+      std::min(static_cast<uindex_t>(OctreeKey::getMaxDepth()),
                static_cast<uindex_t>(std::ceil(std::log2(max_voxel_index_arg))));
 
   setTreeDepth(tree_depth);
@@ -91,11 +94,11 @@ OctreeBase<LeafContainerT, BranchContainerT>::setTreeDepth(uindex_t depth_arg)
               depth_arg);
     return;
   }
-  if (depth_arg > OctreeKey::maxDepth) {
+  if (depth_arg > OctreeKey::getMaxDepth()) {
     PCL_ERROR("[pcl::octree::OctreeBase::setTreeDepth] Tree depth (%lu) must be <= max "
               "depth(%lu)!\n",
               depth_arg,
-              OctreeKey::maxDepth);
+              OctreeKey::getMaxDepth());
     return;
   }
 
