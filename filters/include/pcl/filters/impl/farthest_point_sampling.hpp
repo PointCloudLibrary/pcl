@@ -56,7 +56,7 @@ pcl::FarthestPointSampling<PointT>::applyFilter (Indices &indices)
     #pragma omp parallel \
     default(none) \
     shared(distances_to_selected_points, max_index, max_index_point, size, toCloudIndex) \
-    num_threads(nr_threads_)
+    num_threads(num_threads_)
     {
       std::ptrdiff_t local_max_index = max_index;
 
