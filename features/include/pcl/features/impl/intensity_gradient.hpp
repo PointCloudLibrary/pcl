@@ -149,13 +149,6 @@ pcl::IntensityGradientEstimation<PointInT, PointNT, PointOutT, IntensitySelector
   std::vector<float> nn_dists (k_);
   output.is_dense = true;
 
-#ifdef _OPENMP
-  if (threads_ == 0) {
-    threads_ = omp_get_num_procs();
-    PCL_DEBUG ("[pcl::IntensityGradientEstimation::computeFeature] Setting number of threads to %u.\n", threads_);
-  }
-#endif // _OPENMP
-
   // If the data is dense, we don't need to check for NaN
   if (surface_->is_dense)
   {
@@ -163,7 +156,7 @@ pcl::IntensityGradientEstimation<PointInT, PointNT, PointOutT, IntensitySelector
   default(none) \
   shared(output) \
   firstprivate(nn_indices, nn_dists) \
-  num_threads(threads_)
+  num_threads(num_threads_)
     // Iterating over the entire index vector
     for (std::ptrdiff_t idx = 0; idx < static_cast<std::ptrdiff_t> (indices_->size ()); ++idx)
     {
@@ -203,7 +196,7 @@ pcl::IntensityGradientEstimation<PointInT, PointNT, PointOutT, IntensitySelector
   default(none) \
   shared(output) \
   firstprivate(nn_indices, nn_dists) \
-  num_threads(threads_)
+  num_threads(num_threads_)
     // Iterating over the entire index vector
     for (std::ptrdiff_t idx = 0; idx < static_cast<std::ptrdiff_t> (indices_->size ()); ++idx)
     {
