@@ -80,7 +80,6 @@ namespace pcl
         , iterations_ (0)
         , threshold_ (std::numeric_limits<double>::max ())
         , max_iterations_ (1000)
-        , threads_ (-1)
         , rng_ (new boost::uniform_01<boost::mt19937> (rng_alg_))
       {
          // Create a random number generator object
@@ -103,7 +102,6 @@ namespace pcl
         , iterations_ (0)
         , threshold_ (threshold)
         , max_iterations_ (1000)
-        , threads_ (-1)
         , rng_ (new boost::uniform_01<boost::mt19937> (rng_alg_))
       {
          // Create a random number generator object
@@ -164,15 +162,28 @@ namespace pcl
       getProbability () const { return (probability_); }
 
       /** \brief Set the number of threads to use or turn off parallelization.
-        * \param[in] nr_threads the number of hardware threads to use (0 sets the value automatically, a negative number turns parallelization off)
+        * \param[in] num_threads the number of hardware threads to use (0 sets the value automatically)
         * \note Not all SAC methods have a parallel implementation. Some will ignore this setting.
         */
       inline void
-      setNumberOfThreads (const int nr_threads = -1) { threads_ = nr_threads; }
+      setNumberOfThreads (const int num_threads = 0)
+      {
+#ifdef _OPENMP
+        num_threads_ = num_threads != 0 ? num_threads : omp_get_num_procs();
+#else
+        if (num_threads_ != 1) {
+          PCL_WARN(
+              "OpenMP is not available. Keeping number of threads unchanged at 1\n");
+        }
+#endif
+      }
 
       /** \brief Get the number of threads, as set by the user. */
-      inline int
-      getNumberOfThreads () const { return (threads_); }
+      inline unsigned int
+      getNumberOfThreads() const
+      {
+        return (num_threads_);
+      }
 
       /** \brief Compute the actual model. Pure virtual. */
       virtual bool 
@@ -361,7 +372,7 @@ namespace pcl
       int max_iterations_;
 
       /** \brief The number of threads the scheduler should use, or a negative number if no parallelization is wanted. */
-      int threads_;
+      unsigned int num_threads_{1};
 
       /** \brief Boost-based random number generator algorithm. */
       boost::mt19937 rng_alg_;

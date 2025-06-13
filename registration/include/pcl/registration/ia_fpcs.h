@@ -45,28 +45,28 @@ namespace pcl {
 /** \brief Compute the mean point density of a given point cloud.
  * \param[in] cloud pointer to the input point cloud
  * \param[in] max_dist maximum distance of a point to be considered as a neighbor
- * \param[in] nr_threads number of threads to use (default = 1, only used if OpenMP flag
- * is set) \return the mean point density of a given point cloud
+ * \param[in] num_threads number of threads to use (default = 1, only used if OpenMP
+ * flag is set) \return the mean point density of a given point cloud
  */
 template <typename PointT>
 inline float
 getMeanPointDensity(const typename pcl::PointCloud<PointT>::ConstPtr& cloud,
                     float max_dist,
-                    int nr_threads = 1);
+                    int num_threads = 1);
 
 /** \brief Compute the mean point density of a given point cloud.
  * \param[in] cloud pointer to the input point cloud
  * \param[in] indices the vector of point indices to use from \a cloud
  * \param[in] max_dist maximum distance of a point to be considered as a neighbor
- * \param[in] nr_threads number of threads to use (default = 1, only used if OpenMP flag
- * is set) \return the mean point density of a given point cloud
+ * \param[in] num_threads number of threads to use (default = 1, only used if OpenMP
+ * flag is set) \return the mean point density of a given point cloud
  */
 template <typename PointT>
 inline float
 getMeanPointDensity(const typename pcl::PointCloud<PointT>::ConstPtr& cloud,
                     const pcl::Indices& indices,
                     float max_dist,
-                    int nr_threads = 1);
+                    int num_threads = 1);
 
 namespace registration {
 /** \brief FPCSInitialAlignment computes corresponding four point congruent sets as
@@ -160,19 +160,25 @@ public:
   };
 
   /** \brief Set the number of used threads if OpenMP is activated.
-   * \param[in] nr_threads the number of used threads
+   * \param[in] num_threads the number of used threads
    */
   inline void
-  setNumberOfThreads(int nr_threads)
+  setNumberOfThreads(int num_threads)
   {
-    nr_threads_ = nr_threads;
+#ifdef _OPENMP
+    num_threads_ = num_threads != 0 ? num_threads : omp_get_num_procs();
+#else
+    if (num_threads_ != 1) {
+      PCL_WARN("OpenMP is not available. Keeping number of threads unchanged at 1\n");
+    }
+#endif
   };
 
   /** \return the number of threads used if OpenMP is activated. */
   inline int
   getNumberOfThreads() const
   {
-    return (nr_threads_);
+    return (num_threads_);
   };
 
   /** \brief Set the constant factor delta which weights the internally calculated
@@ -471,7 +477,7 @@ protected:
   /** \brief Number of threads for parallelization (standard = 1).
    * \note Only used if run compiled with OpenMP.
    */
-  int nr_threads_{1};
+  unsigned int num_threads_{1};
 
   /** \brief Estimated overlap between source and target (standard = 0.5). */
   float approx_overlap_{0.5f};

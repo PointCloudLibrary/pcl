@@ -85,7 +85,6 @@ public:
   , nb_levels_(nb_levels)
   , track_width_(tracking_window_width)
   , track_height_(tracking_window_height)
-  , threads_(0)
   , initialized_(false)
   {
     tracker_name_ = "PyramidalKLTTracker";
@@ -203,13 +202,19 @@ public:
   }
 
   /** \brief Initialize the scheduler and set the number of threads to use.
-   * \param nr_threads the number of hardware threads to use (0 sets the value
+   * \param num_threads the number of hardware threads to use (0 sets the value
    * back to automatic).
    */
   inline void
-  setNumberOfThreads(unsigned int nr_threads = 0)
+  setNumberOfThreads(unsigned int num_threads = 0)
   {
-    threads_ = nr_threads;
+#ifdef _OPENMP
+    num_threads_ = num_threads != 0 ? num_threads : omp_get_num_procs();
+#else
+    if (num_threads_ != 1) {
+      PCL_WARN("OpenMP is not available. Keeping number of threads unchanged at 1\n");
+    }
+#endif
   }
 
   /** \brief Get a pointer of the cloud at t-1. */
@@ -418,7 +423,7 @@ protected:
   float epsilon_;
   float max_residue_;
   /** \brief number of hardware threads */
-  unsigned int threads_;
+  unsigned int num_threads_{1};
   /** \brief intensity accessor */
   IntensityT intensity_;
   /** \brief is the tracker initialized ? */

@@ -71,16 +71,16 @@ namespace pcl
       using ConstPtr = shared_ptr<const FastBilateralFilterOMP<PointT> >;
 
       /** \brief Empty constructor. */
-      FastBilateralFilterOMP (unsigned int nr_threads = 0)
+      FastBilateralFilterOMP (unsigned int num_threads = 0)
       {
-          setNumberOfThreads(nr_threads);
+          setNumberOfThreads(num_threads);
       }
 
       /** \brief Initialize the scheduler and set the number of threads to use.
-        * \param nr_threads the number of hardware threads to use (0 sets the value back to automatic)
+        * \param num_threads the number of hardware threads to use (0 sets the value back to automatic)
         */
       void
-      setNumberOfThreads (unsigned int nr_threads = 0);
+      setNumberOfThreads (unsigned int num_threads = 0);
 
       /** \brief Filter the input data and store the results into output.
         * \param[out] output the resultant point cloud
@@ -90,7 +90,7 @@ namespace pcl
 
     protected:
       /** \brief The number of threads the scheduler should use. */
-      unsigned int threads_;
+      unsigned int num_threads_{1};
 
   };
 }

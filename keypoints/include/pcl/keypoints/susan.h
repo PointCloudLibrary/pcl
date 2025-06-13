@@ -136,10 +136,10 @@ namespace pcl
       setSearchSurface (const PointCloudInConstPtr &cloud) override;
 
       /** \brief Initialize the scheduler and set the number of threads to use.
-        * \param nr_threads the number of hardware threads to use (0 sets the value back to automatic)
+        * \param num_threads the number of hardware threads to use (0 sets the value back to automatic)
         */
       void
-      setNumberOfThreads (unsigned int nr_threads);
+      setNumberOfThreads (unsigned int num_threads = 0);
 
       /** \brief Apply non maxima suppression to the responses to keep strongest corners.
         * \note in SUSAN points with less response or stronger corners
@@ -180,7 +180,7 @@ namespace pcl
       float intensity_threshold_;
       float tolerance_;
       PointCloudNConstPtr normals_;
-      unsigned int threads_{0};
+      unsigned int num_threads_{1};
       bool geometric_validation_;
       bool nonmax_;
       /// intensity field accessor

@@ -48,23 +48,15 @@ namespace pcl {
 template <typename PointSource, typename PointTarget, typename Scalar>
 void
 GeneralizedIterativeClosestPoint<PointSource, PointTarget, Scalar>::setNumberOfThreads(
-    unsigned int nr_threads)
+    unsigned int num_threads)
 {
 #ifdef _OPENMP
-  if (nr_threads == 0)
-    threads_ = omp_get_num_procs();
-  else
-    threads_ = nr_threads;
-  PCL_DEBUG("[pcl::GeneralizedIterativeClosestPoint::setNumberOfThreads] Setting "
-            "number of threads to %u.\n",
-            threads_);
+  num_threads_ = num_threads != 0 ? num_threads : omp_get_num_procs();
 #else
-  threads_ = 1;
-  if (nr_threads != 1)
-    PCL_WARN("[pcl::GeneralizedIterativeClosestPoint::setNumberOfThreads] "
-             "Parallelization is requested, but OpenMP is not available! Continuing "
-             "without parallelization.\n");
-#endif // _OPENMP
+  if (num_threads_ != 1) {
+    PCL_WARN("OpenMP is not available. Keeping number of threads unchanged at 1\n");
+  }
+#endif
 }
 
 template <typename PointSource, typename PointTarget, typename Scalar>
@@ -92,7 +84,7 @@ GeneralizedIterativeClosestPoint<PointSource, PointTarget, Scalar>::computeCovar
   if (cloud_covariances.size() < cloud->size())
     cloud_covariances.resize(cloud->size());
 
-#pragma omp parallel for num_threads(threads_) schedule(dynamic, 32)                   \
+#pragma omp parallel for num_threads(num_threads_) schedule(dynamic, 32)               \
     shared(cloud, cloud_covariances) firstprivate(mean, cov, nn_indices, nn_dist_sq)
   for (std::ptrdiff_t i = 0; i < static_cast<std::ptrdiff_t>(cloud->size()); ++i) {
     const PointT& query_point = (*cloud)[i];
@@ -796,7 +788,7 @@ GeneralizedIterativeClosestPoint<PointSource, PointTarget, Scalar>::
   pcl::transformPointCloud(output, output, guess);
   pcl::registration::CorrespondenceEstimation<PointSource, PointTarget, Scalar>
       corr_estimation;
-  corr_estimation.setNumberOfThreads(threads_);
+  corr_estimation.setNumberOfThreads(num_threads_);
   // setSearchMethodSource is not necessary because we do not use
   // determineReciprocalCorrespondences
   corr_estimation.setSearchMethodTarget(this->getSearchMethodTarget());

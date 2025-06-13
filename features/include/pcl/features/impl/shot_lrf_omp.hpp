@@ -45,16 +45,15 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointInT, typename PointOutT> void
-pcl::SHOTLocalReferenceFrameEstimationOMP<PointInT, PointOutT>::setNumberOfThreads (unsigned int nr_threads)
+pcl::SHOTLocalReferenceFrameEstimationOMP<PointInT, PointOutT>::setNumberOfThreads (unsigned int num_threads)
 {
-  if (nr_threads == 0)
 #ifdef _OPENMP
-    threads_ = omp_get_num_procs();
+  num_threads_ = num_threads != 0 ? num_threads : omp_get_num_procs();
 #else
-    threads_ = 1;
+  if (num_threads_ != 1) {
+    PCL_WARN("OpenMP is not available. Keeping number of threads unchanged at 1\n");
+  }
 #endif
-  else
-    threads_ = nr_threads;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -74,7 +73,7 @@ pcl::SHOTLocalReferenceFrameEstimationOMP<PointInT, PointOutT>::computeFeature (
 #pragma omp parallel for \
   default(none) \
   shared(output) \
-  num_threads(threads_) \
+  num_threads(num_threads_) \
   schedule(dynamic, 64)
   for (std::ptrdiff_t i = 0; i < static_cast<std::ptrdiff_t> (indices_->size ()); ++i)
   {

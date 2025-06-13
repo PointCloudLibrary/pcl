@@ -102,9 +102,15 @@ pcl::SUSANKeypoint<PointInT, PointOutT, NormalT, IntensityT>::setSearchSurface (
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT, typename NormalT, typename IntensityT> void
-pcl::SUSANKeypoint<PointInT, PointOutT, NormalT, IntensityT>::setNumberOfThreads (unsigned int nr_threads)
+pcl::SUSANKeypoint<PointInT, PointOutT, NormalT, IntensityT>::setNumberOfThreads (unsigned int num_threads)
 {
-  threads_ = nr_threads;
+#ifdef _OPENMP
+  num_threads_ = num_threads != 0 ? num_threads : omp_get_num_procs();
+#else
+  if (num_threads_ != 1) {
+    PCL_WARN("OpenMP is not available. Keeping number of threads unchanged at 1\n");
+  }
+#endif
 }
 
 

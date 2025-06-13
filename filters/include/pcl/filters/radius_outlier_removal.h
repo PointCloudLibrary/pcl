@@ -145,19 +145,18 @@ namespace pcl
       setSearchMethod (const SearcherPtr &searcher) { searcher_ = searcher; }
 
       /** \brief Set the number of threads to use.
-       * \param nr_threads the number of hardware threads to use (0 sets the value back
+       * \param num_threads the number of hardware threads to use (0 sets the value back
        * to automatic)
        */
       void
-      setNumberOfThreads(unsigned int nr_threads = 0)
+      setNumberOfThreads(unsigned int num_threads = 0)
       {
 #ifdef _OPENMP
-        num_threads_ = nr_threads != 0 ? nr_threads : omp_get_num_procs();
+        num_threads_ = num_threads != 0 ? num_threads : omp_get_num_procs();
 #else
         if (num_threads_ != 1) {
           PCL_WARN("OpenMP is not available. Keeping number of threads unchanged at 1\n");
         }
-        num_threads_ = 1;
 #endif
       }
 
@@ -200,7 +199,7 @@ namespace pcl
       /**
        * @brief Number of threads used during filtering
        */
-      int num_threads_{1};
+      unsigned int num_threads_{1};
   };
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

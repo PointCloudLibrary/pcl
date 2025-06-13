@@ -211,10 +211,20 @@ namespace pcl
         Convolution3D ();
 
         /** \brief Initialize the scheduler and set the number of threads to use.
-          * \param nr_threads the number of hardware threads to use (0 sets the value back to automatic)
+          * \param num_threads the number of hardware threads to use (0 sets the value back to automatic)
           */
         inline void
-        setNumberOfThreads (unsigned int nr_threads = 0) { threads_ = nr_threads; }
+        setNumberOfThreads(unsigned int num_threads = 0)
+        {
+#ifdef _OPENMP
+          num_threads_ = num_threads != 0 ? num_threads : omp_get_num_procs();
+#else
+          if (num_threads_ != 1) {
+            PCL_WARN(
+                "OpenMP is not available. Keeping number of threads unchanged at 1\n");
+          }
+#endif
+        }
 
         /** \brief Set convolving kernel
           * \param[in] kernel convolving element
@@ -272,7 +282,7 @@ namespace pcl
         double search_radius_;
 
         /** \brief number of threads */
-        unsigned int threads_{1};
+        unsigned int num_threads_{1};
 
         /** \brief convlving kernel */
         KernelT kernel_;

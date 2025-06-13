@@ -373,11 +373,11 @@ public:
   }
 
   /** \brief Initialize the scheduler and set the number of threads to use.
-   * \param nr_threads the number of hardware threads to use (0 sets the value back to
+   * \param num_threads the number of hardware threads to use (0 sets the value back to
    * automatic)
    */
   void
-  setNumberOfThreads(unsigned int nr_threads = 0);
+  setNumberOfThreads(unsigned int num_threads = 0);
 
 protected:
   /** \brief The number of neighbors used for covariances computation.
@@ -534,7 +534,7 @@ private:
                      Eigen::Matrix3d& ddR_dPsi_dPsi) const;
 
   /** \brief The number of threads the scheduler should use. */
-  unsigned int threads_;
+  unsigned int num_threads_{1};
 };
 } // namespace pcl
 

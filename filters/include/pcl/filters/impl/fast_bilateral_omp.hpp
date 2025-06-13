@@ -45,16 +45,15 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
-pcl::FastBilateralFilterOMP<PointT>::setNumberOfThreads (unsigned int nr_threads)
+pcl::FastBilateralFilterOMP<PointT>::setNumberOfThreads (unsigned int num_threads)
 {
-  if (nr_threads == 0)
 #ifdef _OPENMP
-    threads_ = omp_get_num_procs();
+  num_threads_ = num_threads != 0 ? num_threads : omp_get_num_procs();
 #else
-    threads_ = 1;
+  if (num_threads_ != 1) {
+    PCL_WARN("OpenMP is not available. Keeping number of threads unchanged at 1\n");
+  }
 #endif
-  else
-    threads_ = nr_threads;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -88,7 +87,7 @@ pcl::FastBilateralFilterOMP<PointT>::applyFilter (PointCloud &output)
 #pragma omp parallel for \
   default(none) \
   shared(base_min, base_max, output) \
-  num_threads(threads_)
+  num_threads(num_threads_)
   for (long int i = 0; i < static_cast<long int> (output.size ()); ++i)
     if (!std::isfinite (output.at(i).z))
       output.at(i).z = base_max;
@@ -107,12 +106,12 @@ pcl::FastBilateralFilterOMP<PointT>::applyFilter (PointCloud &output)
 #pragma omp parallel for \
   default(none) \
   shared(base_min, data, output) \
-  num_threads(threads_)
+  num_threads(num_threads_)
 #else
 #pragma omp parallel for \
   default(none) \
   shared(base_min, data, output, small_height, small_width) \
-  num_threads(threads_)	
+  num_threads(num_threads_)
 #endif
   for (long int i = 0; i < static_cast<long int> (small_width * small_height); ++i)
   {
@@ -156,12 +155,12 @@ pcl::FastBilateralFilterOMP<PointT>::applyFilter (PointCloud &output)
 #pragma omp parallel for \
   default(none) \
   shared(current_buffer, current_data, dim, offset) \
-  num_threads(threads_)
+  num_threads(num_threads_)
 #else
 #pragma omp parallel for \
   default(none) \
   shared(current_buffer, current_data, dim, offset, small_depth, small_height, small_width) \
-  num_threads(threads_)
+  num_threads(num_threads_)
 #endif
       for(long int i = 0; i < static_cast<long int> ((small_width - 2)*(small_height - 2)); ++i)
       {
@@ -188,7 +187,7 @@ pcl::FastBilateralFilterOMP<PointT>::applyFilter (PointCloud &output)
 #pragma omp parallel for \
   default(none) \
   shared(base_min, data, output) \
-  num_threads(threads_)
+  num_threads(num_threads_)
     for (long int i = 0; i < static_cast<long int> (input_->size ()); ++i)
     {
       auto x = static_cast<std::size_t> (i % input_->width);
@@ -205,7 +204,7 @@ pcl::FastBilateralFilterOMP<PointT>::applyFilter (PointCloud &output)
 #pragma omp parallel for \
   default(none) \
   shared(base_min, data, output) \
-  num_threads(threads_)
+  num_threads(num_threads_)
     for (long i = 0; i < static_cast<long int> (input_->size ()); ++i)
     {
       auto x = static_cast<std::size_t> (i % input_->width);
