@@ -289,12 +289,10 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::performProcessing (PointCloudOut &
   nr_coeff_ = (order_ + 1) * (order_ + 2) / 2;
 
 #ifdef _OPENMP
-  // (Maximum) number of threads
-  const unsigned int threads = threads_ == 0 ? 1 : threads_;
   // Create temporaries for each thread in order to avoid synchronization
-  typename PointCloudOut::CloudVectorType projected_points (threads);
-  typename NormalCloud::CloudVectorType projected_points_normals (threads);
-  std::vector<PointIndices> corresponding_input_indices (threads);
+  typename PointCloudOut::CloudVectorType projected_points(num_threads_);
+  typename NormalCloud::CloudVectorType projected_points_normals(num_threads_);
+  std::vector<PointIndices> corresponding_input_indices(num_threads_);
 #endif
 
   // For all points
@@ -302,7 +300,7 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::performProcessing (PointCloudOut &
   default(none) \
   shared(corresponding_input_indices, projected_points, projected_points_normals) \
   schedule(dynamic,1000) \
-  num_threads(threads)
+  num_threads(num_threads_)
   for (int cp = 0; cp < static_cast<int> (indices_->size ()); ++cp)
   {
     // Allocate enough space to hold the results of nearest neighbor searches
@@ -353,7 +351,7 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::performProcessing (PointCloudOut &
 
 #ifdef _OPENMP
   // Combine all threads' results into the output vectors
-  for (unsigned int tn = 0; tn < threads; ++tn)
+  for (unsigned int tn = 0; tn < num_threads_; ++tn)
   {
     output.insert (output.end (), projected_points[tn].begin (), projected_points[tn].end ());
     corresponding_input_indices_->indices.insert (corresponding_input_indices_->indices.end (),

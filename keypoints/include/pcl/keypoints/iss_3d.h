@@ -116,7 +116,9 @@ namespace pcl
       {
         name_ = "ISSKeypoint3D";
         search_radius_ = salient_radius_;
-        setNumberOfThreads(threads_); // Reset number of threads with the member's initialization value to apply input validation.
+        setNumberOfThreads(
+            num_threads_); // Reset number of threads with the member's initialization
+                           // value to apply input validation.
       }
 
       /** \brief Destructor. */
@@ -187,10 +189,10 @@ namespace pcl
       }
 
       /** \brief Initialize the scheduler and set the number of threads to use.
-        * \param[in] nr_threads the number of hardware threads to use (0 sets the value back to automatic)
+        * \param[in] num_threads the number of hardware threads to use (0 sets the value back to automatic)
         */
       void
-      setNumberOfThreads (unsigned int nr_threads = 0);
+      setNumberOfThreads (unsigned int num_threads = 0);
 
     protected:
 
@@ -257,7 +259,7 @@ namespace pcl
       float angle_threshold_;
 
       /** \brief The number of threads that has to be used by the scheduler. */
-      unsigned int threads_{0};
+      unsigned int num_threads_{1};
 
   };
 

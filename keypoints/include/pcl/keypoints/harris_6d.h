@@ -116,10 +116,21 @@ namespace pcl
       setSearchSurface (const PointCloudInConstPtr &cloud) { surface_ = cloud; normals_->clear (); intensity_gradients_->clear ();}
 
       /** \brief Initialize the scheduler and set the number of threads to use.
-        * \param nr_threads the number of hardware threads to use (0 sets the value back to automatic)
+        * \param num_threads the number of hardware threads to use (0 sets the value back to automatic)
         */
       inline void
-      setNumberOfThreads (unsigned int nr_threads = 0) { threads_ = nr_threads; }
+      setNumberOfThreads(unsigned int num_threads = 0)
+      {
+#ifdef _OPENMP
+        num_threads_ = num_threads != 0 ? num_threads : omp_get_num_procs();
+#else
+        if (num_threads_ != 1) {
+          PCL_WARN(
+              "OpenMP is not available. Keeping number of threads unchanged at 1\n");
+        }
+#endif
+      }
+
     protected:
       void detectKeypoints (PointCloudOut &output);
       void responseTomasi (PointCloudOut &output) const;
@@ -129,7 +140,7 @@ namespace pcl
       float threshold_;
       bool refine_{true};
       bool nonmax_{true};
-      unsigned int threads_{0};    
+      unsigned int num_threads_{1};    
       typename pcl::PointCloud<NormalT>::Ptr normals_;
       pcl::PointCloud<pcl::IntensityGradient>::Ptr intensity_gradients_;
   } ;

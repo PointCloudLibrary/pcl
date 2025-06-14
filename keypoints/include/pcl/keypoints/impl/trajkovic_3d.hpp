@@ -110,12 +110,12 @@ TrajkovicKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloudOu
 #pragma omp parallel for \
   default(none) \
   shared(input, normals, response) \
-  num_threads(threads_)
+  num_threads(num_threads_)
 #else
 #pragma omp parallel for \
   default(none) \
   shared(h, input, normals, response, w) \
-  num_threads(threads_)
+  num_threads(num_threads_)
 #endif
     for(int j = half_window_size_; j < h; ++j)
     {
@@ -160,12 +160,12 @@ TrajkovicKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloudOu
 #pragma omp parallel for \
   default(none) \
   shared(input, normals, response) \
-  num_threads(threads_)
+  num_threads(num_threads_)
 #else
 #pragma omp parallel for \
   default(none) \
   shared(h, input, normals, response, w) \
-  num_threads(threads_)
+  num_threads(num_threads_)
 #endif
     for(int j = half_window_size_; j < h; ++j)
     {
@@ -254,12 +254,12 @@ TrajkovicKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloudOu
 #pragma omp parallel for \
   default(none) \
   shared(indices, occupency_map, output) \
-  num_threads(threads_)
+  num_threads(num_threads_)
 #else
 #pragma omp parallel for \
   default(none) \
   shared(height, indices, occupency_map, output, width) \
-  num_threads(threads_)
+  num_threads(num_threads_)
 #endif
   for (int i = 0; i < static_cast<int>(indices.size ()); ++i)
   {

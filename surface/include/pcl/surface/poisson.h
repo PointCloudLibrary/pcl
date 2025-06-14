@@ -220,14 +220,14 @@ namespace pcl
        * \param[in] threads the number of threads
        */
       void
-      setThreads(int threads);
+      setThreads(unsigned int num_threads = 0);
       
 
       /** \brief Get the number of threads*/
       inline int
       getThreads()
       {
-        return threads_;
+        return num_threads_;
       }
 
     protected:
@@ -257,7 +257,7 @@ namespace pcl
       bool show_residual_{false};
       int min_iterations_{8};
       float solver_accuracy_{1e-3f};
-      int threads_{1};
+      unsigned int num_threads_{1};
 
       template<int Degree> void
       execute (poisson::CoredVectorMeshData &mesh,

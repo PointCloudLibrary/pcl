@@ -94,10 +94,20 @@ namespace pcl
         getNumberOfLevels () const { return (levels_); }
 
         /** \brief Initialize the scheduler and set the number of threads to use.
-          * \param nr_threads the number of hardware threads to use (0 sets the value back to automatic).
+          * \param num_threads the number of hardware threads to use (0 sets the value back to automatic).
           */
         inline void
-        setNumberOfThreads (unsigned int nr_threads = 0) { threads_ = nr_threads; }
+        setNumberOfThreads(unsigned int num_threads = 0)
+        {
+#ifdef _OPENMP
+          num_threads_ = num_threads != 0 ? num_threads : omp_get_num_procs();
+#else
+          if (num_threads_ != 1) {
+            PCL_WARN(
+                "OpenMP is not available. Keeping number of threads unchanged at 1\n");
+          }
+#endif
+        }
 
         /** \brief Choose a larger smoothing kernel for enhanced smoothing.
           * \param large if true large smoothng kernel will be used.
@@ -155,7 +165,7 @@ namespace pcl
         /// Threshold distance between adjacent points
         float threshold_{0.01f};
         /// \brief number of threads
-        unsigned int threads_{0};
+        unsigned int num_threads_{1};
 
       public:
         PCL_MAKE_ALIGNED_OPERATOR_NEW

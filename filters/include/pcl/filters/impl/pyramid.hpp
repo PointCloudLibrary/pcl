@@ -125,7 +125,7 @@ Pyramid<PointT>::compute (std::vector<PointCloudPtr>& output)
 #pragma omp parallel for \
   default(none)          \
   shared(next)           \
-  num_threads(threads_)
+  num_threads(num_threads_)
       for(int i=0; i < next.height; ++i)
       {
         for(int j=0; j < next.width; ++j)
@@ -161,7 +161,7 @@ Pyramid<PointT>::compute (std::vector<PointCloudPtr>& output)
 #pragma omp parallel for \
   default(none)          \
   shared(next)           \
-  num_threads(threads_)
+  num_threads(num_threads_)
       for(int i=0; i < next.height; ++i)
       {
         for(int j=0; j < next.width; ++j)

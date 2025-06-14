@@ -1,6 +1,6 @@
 #pragma once
 
-constexpr int nr_threads = 1;
+constexpr int num_threads = 1;
 constexpr float voxel_size = 0.1f;
 constexpr float approx_overlap = 0.9f;
 constexpr float abort_score = 0.4f;
