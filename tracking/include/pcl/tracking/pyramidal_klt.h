@@ -394,6 +394,8 @@ protected:
   void
   computeTracking() override;
 
+  using PCLBase<PointInT>::num_threads_;
+
   /** \brief input pyranid at t-1 */
   std::vector<FloatImageConstPtr> ref_pyramid_;
   /** \brief point cloud at t-1 */

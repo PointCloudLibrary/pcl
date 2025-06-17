@@ -107,6 +107,7 @@ namespace pcl
       setNumberOfThreads (unsigned int num_threads = 0);
 
     protected:
+      using PCLBase<PointInT>::num_threads_;
 
       /** \brief Estimate the Signatures of Histograms of OrienTations (SHOT) descriptors at a set of points given by
         * <setInputCloud (), setIndices ()> using the surface in setSearchSurface () and the spatial locator in
@@ -189,7 +190,7 @@ namespace pcl
       setNumberOfThreads (unsigned int num_threads = 0);
 
     protected:
-
+      using PCLBase<PointInT>::num_threads_;
       /** \brief Estimate the Signatures of Histograms of OrienTations (SHOT) descriptors at a set of points given by
         * <setInputCloud (), setIndices ()> using the surface in setSearchSurface () and the spatial locator in
         * setSearchMethod ()

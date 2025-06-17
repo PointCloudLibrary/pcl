@@ -86,6 +86,7 @@ namespace pcl
     setNumberOfThreads (unsigned int num_threads = 0);
 
     protected:
+      using PCLBase<PointInT>::num_threads_;
       using Feature<PointInT, PointOutT>::feature_name_;
       using Feature<PointInT, PointOutT>::getClassName;
       //using Feature<PointInT, PointOutT>::searchForNeighbors;

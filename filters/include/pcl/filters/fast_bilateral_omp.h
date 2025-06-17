@@ -57,6 +57,7 @@ namespace pcl
   class FastBilateralFilterOMP : public FastBilateralFilter<PointT>
   {
   protected:
+    using PCLBase<PointT>::num_threads_;
     using FastBilateralFilter<PointT>::input_;
     using FastBilateralFilter<PointT>::sigma_s_;
     using FastBilateralFilter<PointT>::sigma_r_;

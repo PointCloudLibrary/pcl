@@ -107,6 +107,9 @@ namespace pcl
       void
       setNumberOfThreads (unsigned int num_threads = 0);
 
+    protected:
+      using PCLBase<PointInT>::num_threads_;
+
     private:
       /** \brief Estimate the Fast Point Feature Histograms (FPFH) descriptors at a set of points given by
         * <setInputCloud (), setIndices ()> using the surface in setSearchSurface () and the spatial locator in

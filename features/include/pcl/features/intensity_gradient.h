@@ -114,7 +114,8 @@ namespace pcl
                                      const Eigen::Vector3f &normal,
                                      Eigen::Vector3f &gradient);
 
-    protected:
+      using PCLBase<PointInT>::num_threads_;
+
       ///intensity field accessor structure
       IntensitySelectorT intensity_;
   };

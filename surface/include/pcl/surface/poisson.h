@@ -231,6 +231,8 @@ namespace pcl
       }
 
     protected:
+      using PCLBase<PointNT>::num_threads_;
+
       /** \brief Class get name method. */
       std::string
       getClassName () const override { return ("Poisson"); }

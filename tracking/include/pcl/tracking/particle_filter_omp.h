@@ -73,6 +73,8 @@ public:
   setNumberOfThreads(unsigned int num_threads = 0);
 
 protected:
+  using PCLBase<PointInT>::num_threads_;
+
   /** \brief weighting phase of particle filter method. calculate the likelihood of all
    * of the particles and set the weights.
    */

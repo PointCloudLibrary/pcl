@@ -132,6 +132,7 @@ namespace pcl
       }
 
     protected:
+      using PCLBase<PointInT>::num_threads_;
       void detectKeypoints (PointCloudOut &output);
       void responseTomasi (PointCloudOut &output) const;
       void refineCorners (PointCloudOut &corners) const;

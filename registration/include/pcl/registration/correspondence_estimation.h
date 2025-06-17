@@ -69,7 +69,6 @@ public:
   using PCLBase<PointSource>::input_;
   using PCLBase<PointSource>::indices_;
   using PCLBase<PointSource>::setIndices;
-  using PCLBase<PointSource>::num_threads_;
 
   using KdTree = pcl::search::KdTree<PointTarget>;
   using KdTreePtr = typename KdTree::Ptr;
@@ -323,6 +322,8 @@ public:
   clone() const = 0;
 
 protected:
+  using PCLBase<PointSource>::num_threads_;
+
   /** \brief The correspondence estimation method name. */
   std::string corr_name_;
 
