@@ -72,6 +72,7 @@ namespace pcl
   class RadiusOutlierRemoval : public FilterIndices<PointT>
   {
     protected:
+      using PCLBase<PointT>::num_threads_;
       using PointCloud = typename FilterIndices<PointT>::PointCloud;
       using PointCloudPtr = typename PointCloud::Ptr;
       using PointCloudConstPtr = typename PointCloud::ConstPtr;

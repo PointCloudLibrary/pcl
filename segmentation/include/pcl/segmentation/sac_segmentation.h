@@ -69,7 +69,6 @@ namespace pcl
      public:
       using PCLBase<PointT>::input_;
       using PCLBase<PointT>::indices_;
-      using PCLBase<PointT>::num_threads_;
 
       using PointCloud = pcl::PointCloud<PointT>;
       using PointCloudPtr = typename PointCloud::Ptr;
@@ -257,6 +256,8 @@ namespace pcl
         */
       virtual void 
       initSAC (const int method_type);
+
+      using PCLBase<PointT>::num_threads_;
 
       /** \brief The model that needs to be segmented. */
       SampleConsensusModelPtr model_{nullptr};

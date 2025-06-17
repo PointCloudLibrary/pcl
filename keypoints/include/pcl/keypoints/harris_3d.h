@@ -165,6 +165,8 @@ namespace pcl
       }
 
     protected:
+      using PCLBase<PointInT>::num_threads_;
+
       bool
       initCompute () override;
       void detectKeypoints (PointCloudOut &output) override;

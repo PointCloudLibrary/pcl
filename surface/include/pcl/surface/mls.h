@@ -257,7 +257,6 @@ namespace pcl
 
       using PCLBase<PointInT>::input_;
       using PCLBase<PointInT>::indices_;
-      using PCLBase<PointInT>::num_threads_;
       using PCLBase<PointInT>::fake_indices_;
       using PCLBase<PointInT>::initCompute;
       using PCLBase<PointInT>::deinitCompute;
@@ -509,6 +508,8 @@ namespace pcl
       getCorrespondingIndices () const { return (corresponding_input_indices_); }
 
     protected:
+      using PCLBase<PointInT>::num_threads_;
+
       /** \brief The point cloud that will hold the estimated normals, if set. */
       NormalCloudPtr normals_{nullptr};
 

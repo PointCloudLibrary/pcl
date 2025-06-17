@@ -289,6 +289,7 @@ public:
   };
 
 protected:
+  using PCLBase<PointSource>::num_threads_;
   using PCLBase<PointSource>::deinitCompute;
   using PCLBase<PointSource>::input_;
   using PCLBase<PointSource>::indices_;

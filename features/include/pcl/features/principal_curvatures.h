@@ -111,6 +111,7 @@ namespace pcl
       setNumberOfThreads (unsigned int num_threads = 0);
 
     protected:
+      using PCLBase<PointInT>::num_threads_;
       /** \brief Chunk size for (dynamic) scheduling. */
       int chunk_size_;
 

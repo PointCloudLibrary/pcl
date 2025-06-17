@@ -269,6 +269,7 @@ namespace pcl
         convolve (PointCloudOut& output);
 
       protected:
+        using Base<PointIn>::num_threads_;
         /** \brief initialize computation */
         bool initCompute ();
 

@@ -196,6 +196,8 @@ namespace pcl
 
     protected:
 
+      using PCLBase<PointInT>::num_threads_;
+
       /** \brief Compute the boundary points for the given input cloud.
         * \param[in] input the input cloud
         * \param[in] border_radius the radius used to compute the boundary points

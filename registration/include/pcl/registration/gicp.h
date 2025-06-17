@@ -75,7 +75,6 @@ template <typename PointSource, typename PointTarget, typename Scalar = float>
 class GeneralizedIterativeClosestPoint
 : public IterativeClosestPoint<PointSource, PointTarget, Scalar> {
 public:
-  using PCLBase<PointSource>::num_threads_;
   using IterativeClosestPoint<PointSource, PointTarget, Scalar>::reg_name_;
   using IterativeClosestPoint<PointSource, PointTarget, Scalar>::getClassName;
   using IterativeClosestPoint<PointSource, PointTarget, Scalar>::indices_;
@@ -380,6 +379,8 @@ public:
   setNumberOfThreads(unsigned int num_threads = 0);
 
 protected:
+  using PCLBase<PointSource>::num_threads_;
+
   /** \brief The number of neighbors used for covariances computation.
    * default: 20
    */

@@ -153,6 +153,8 @@ namespace pcl
 
     protected:
 
+      using PCLBase<PointT>::num_threads_;
+
       /** \brief Maximum window size to be used in filtering ground returns. */
       int max_window_size_{33};
 
