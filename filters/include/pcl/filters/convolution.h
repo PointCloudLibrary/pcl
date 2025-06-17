@@ -227,8 +227,6 @@ namespace pcl
         /// kernel size - 1
         int kernel_width_{};
       protected:
-        /** \brief The number of threads the scheduler should use. */
-        unsigned int num_threads_{1};
 
         void
         makeInfinite (PointOut& p)

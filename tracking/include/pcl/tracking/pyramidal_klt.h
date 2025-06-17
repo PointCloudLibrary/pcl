@@ -422,8 +422,6 @@ protected:
   /** \brief epsilon for subpixel computation */
   float epsilon_;
   float max_residue_;
-  /** \brief number of hardware threads */
-  unsigned int num_threads_{1};
   /** \brief intensity accessor */
   IntensityT intensity_;
   /** \brief is the tracker initialized ? */

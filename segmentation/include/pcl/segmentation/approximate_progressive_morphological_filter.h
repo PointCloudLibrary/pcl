@@ -173,9 +173,6 @@ namespace pcl
 
       /** \brief Exponentially grow window sizes? */
       bool exponential_{true};
-
-      /** \brief Number of threads to be used. */
-      unsigned int num_threads_{1};      
   };
 }
 

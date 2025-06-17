@@ -119,9 +119,6 @@ namespace pcl
       /** \brief This method should get called before starting the actual computation. */
       bool
       initCompute () override;
-
-      /** \brief The number of threads the scheduler should use. */
-      unsigned int num_threads_{1};
   };
 
   /** \brief SHOTColorEstimationOMP estimates the Signature of Histograms of OrienTations (SHOT) descriptor for a given point cloud dataset
@@ -204,9 +201,6 @@ namespace pcl
       /** \brief This method should get called before starting the actual computation. */
       bool
       initCompute () override;
-
-      /** \brief The number of threads the scheduler should use. */
-      unsigned int num_threads_{1};
   };
 
 }

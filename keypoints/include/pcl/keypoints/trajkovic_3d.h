@@ -214,8 +214,6 @@ namespace pcl
       float first_threshold_;
       /// second threshold for corner evaluation
       float second_threshold_;
-      /// number of threads to be used
-      unsigned int num_threads_{1};
       /// point cloud normals
       NormalsConstPtr normals_;
       /// point cloud response

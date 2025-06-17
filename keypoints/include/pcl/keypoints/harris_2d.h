@@ -170,8 +170,6 @@ namespace pcl
       bool nonmax_;
       /// cornerness computation method
       ResponseMethod method_;
-      /// number of threads to be used
-      unsigned int num_threads_{1};
 
     private:
       Eigen::MatrixXf derivatives_rows_;

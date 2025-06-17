@@ -175,8 +175,6 @@ namespace pcl
       float first_threshold_;
       /// second threshold for corner evaluation
       float second_threshold_;
-      /// number of threads to be used
-      unsigned int num_threads_{1};
       /// point cloud response
       pcl::PointCloud<float>::Ptr response_;
   };

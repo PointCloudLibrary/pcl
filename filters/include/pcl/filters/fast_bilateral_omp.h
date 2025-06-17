@@ -87,11 +87,6 @@ namespace pcl
         */
       void
       applyFilter (PointCloud &output) override;
-
-    protected:
-      /** \brief The number of threads the scheduler should use. */
-      unsigned int num_threads_{1};
-
   };
 }
 

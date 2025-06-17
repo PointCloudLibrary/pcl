@@ -257,7 +257,6 @@ namespace pcl
       bool show_residual_{false};
       int min_iterations_{8};
       float solver_accuracy_{1e-3f};
-      unsigned int num_threads_{1};
 
       template<int Degree> void
       execute (poisson::CoredVectorMeshData &mesh,

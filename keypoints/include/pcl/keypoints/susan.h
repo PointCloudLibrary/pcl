@@ -180,7 +180,6 @@ namespace pcl
       float intensity_threshold_;
       float tolerance_;
       PointCloudNConstPtr normals_;
-      unsigned int num_threads_{1};
       bool geometric_validation_;
       bool nonmax_;
       /// intensity field accessor

@@ -119,9 +119,6 @@ namespace pcl
     public:
       /** \brief The number of subdivisions for each angular feature interval. */
       int nr_bins_f1_{11}, nr_bins_f2_{11}, nr_bins_f3_{11};
-    private:
-      /** \brief The number of threads the scheduler should use. */
-      unsigned int num_threads_{1};
   };
 }
 

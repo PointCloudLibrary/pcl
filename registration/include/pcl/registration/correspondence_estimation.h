@@ -69,6 +69,7 @@ public:
   using PCLBase<PointSource>::input_;
   using PCLBase<PointSource>::indices_;
   using PCLBase<PointSource>::setIndices;
+  using PCLBase<PointSource>::num_threads_;
 
   using KdTree = pcl::search::KdTree<PointTarget>;
   using KdTreePtr = typename KdTree::Ptr;
@@ -379,8 +380,6 @@ protected:
   /** \brief A flag which, if set, means the tree operating on the source cloud
    * will never be recomputed*/
   bool force_no_recompute_reciprocal_{false};
-
-  unsigned int num_threads_{1};
 };
 
 /** \brief @b CorrespondenceEstimation represents a simple class for

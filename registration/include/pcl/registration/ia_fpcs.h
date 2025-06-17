@@ -474,11 +474,6 @@ protected:
   /** \brief Normals of target point cloud. */
   NormalsConstPtr target_normals_;
 
-  /** \brief Number of threads for parallelization (standard = 1).
-   * \note Only used if run compiled with OpenMP.
-   */
-  unsigned int num_threads_{1};
-
   /** \brief Estimated overlap between source and target (standard = 0.5). */
   float approx_overlap_{0.5f};
 

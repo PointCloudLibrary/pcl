@@ -195,11 +195,6 @@ namespace pcl
 
       /** \brief The minimum number of neighbors that a point needs to have in the given search radius to be considered an inlier. */
       int min_pts_radius_{1};
-
-      /**
-       * @brief Number of threads used during filtering
-       */
-      unsigned int num_threads_{1};
   };
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
