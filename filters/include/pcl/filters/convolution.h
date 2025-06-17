@@ -226,6 +226,8 @@ namespace pcl
         int half_width_{};
         /// kernel size - 1
         int kernel_width_{};
+        /// number of threads to use
+        unsigned int num_threads_{0};
       protected:
 
         void
