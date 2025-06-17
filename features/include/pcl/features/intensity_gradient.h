@@ -117,8 +117,6 @@ namespace pcl
     protected:
       ///intensity field accessor structure
       IntensitySelectorT intensity_;
-      ///number of threads to be used
-      unsigned int num_threads_{1};
   };
 }
 

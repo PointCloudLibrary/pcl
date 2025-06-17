@@ -111,9 +111,6 @@ namespace pcl
       setNumberOfThreads (unsigned int num_threads = 0);
 
     protected:
-      /** \brief The number of threads the scheduler should use. */
-      unsigned int num_threads_{1};
-
       /** \brief Chunk size for (dynamic) scheduling. */
       int chunk_size_;
 

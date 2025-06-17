@@ -69,6 +69,7 @@ namespace pcl
      public:
       using PCLBase<PointT>::input_;
       using PCLBase<PointT>::indices_;
+      using PCLBase<PointT>::num_threads_;
 
       using PointCloud = pcl::PointCloud<PointT>;
       using PointCloudPtr = typename PointCloud::Ptr;
@@ -292,9 +293,6 @@ namespace pcl
 
       /** \brief Maximum number of iterations before giving up (user given parameter). */
       int max_iterations_{50};
-
-      /** \brief The number of threads the scheduler should use. */
-      unsigned int num_threads_{1};
 
       /** \brief Desired probability of choosing at least one sample free from outliers (user given parameter). */
       double probability_{0.99};

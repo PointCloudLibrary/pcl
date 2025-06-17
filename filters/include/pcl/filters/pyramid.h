@@ -164,9 +164,6 @@ namespace pcl
         Eigen::MatrixXf kernel_;
         /// Threshold distance between adjacent points
         float threshold_{0.01f};
-        /// \brief number of threads
-        unsigned int num_threads_{1};
-
       public:
         PCL_MAKE_ALIGNED_OPERATOR_NEW
     };

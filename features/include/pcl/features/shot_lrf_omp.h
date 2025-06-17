@@ -103,10 +103,6 @@ namespace pcl
         */
       void
       computeFeature (PointCloudOut &output) override;
-
-      /** \brief The number of threads the scheduler should use. */
-      unsigned int num_threads_{1};
-
   };
 }
 

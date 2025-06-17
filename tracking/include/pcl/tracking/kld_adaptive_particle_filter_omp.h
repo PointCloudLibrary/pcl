@@ -85,9 +85,6 @@ public:
   setNumberOfThreads(unsigned int num_threads = 0);
 
 protected:
-  /** \brief The number of threads the scheduler should use. */
-  unsigned int num_threads_{1};
-
   /** \brief weighting phase of particle filter method. calculate the likelihood of all
    * of the particles and set the weights.
    */

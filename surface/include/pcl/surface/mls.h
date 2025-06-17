@@ -257,6 +257,7 @@ namespace pcl
 
       using PCLBase<PointInT>::input_;
       using PCLBase<PointInT>::indices_;
+      using PCLBase<PointInT>::num_threads_;
       using PCLBase<PointInT>::fake_indices_;
       using PCLBase<PointInT>::initCompute;
       using PCLBase<PointInT>::deinitCompute;
@@ -562,10 +563,6 @@ namespace pcl
 
       /** \brief Parameter that specifies the projection method to be used. */
       MLSResult::ProjectionMethod projection_method_{MLSResult::SIMPLE};
-
-      /** \brief The maximum number of threads the scheduler should use. */
-      unsigned int num_threads_{1};
-
 
       /** \brief A minimalistic implementation of a voxel grid, necessary for the point cloud upsampling
         * \note Used only in the case of VOXEL_GRID_DILATION upsampling

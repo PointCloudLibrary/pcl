@@ -183,7 +183,6 @@ namespace pcl
       bool nonmax_{true};
       ResponseMethod method_;
       PointCloudNConstPtr normals_;
-      unsigned int num_threads_{1};
   };
 }
 

@@ -281,9 +281,6 @@ namespace pcl
         /** \brief The nearest neighbors search radius for each point. */
         double search_radius_;
 
-        /** \brief number of threads */
-        unsigned int num_threads_{1};
-
         /** \brief convlving kernel */
         KernelT kernel_;
     };

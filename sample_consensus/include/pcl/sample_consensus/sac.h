@@ -371,7 +371,7 @@ namespace pcl
       /** \brief Maximum number of iterations before giving up. */
       int max_iterations_;
 
-      /** \brief The number of threads the scheduler should use, or a negative number if no parallelization is wanted. */
+      /** Number of threads used */
       unsigned int num_threads_{1};
 
       /** \brief Boost-based random number generator algorithm. */

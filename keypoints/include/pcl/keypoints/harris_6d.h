@@ -140,7 +140,6 @@ namespace pcl
       float threshold_;
       bool refine_{true};
       bool nonmax_{true};
-      unsigned int num_threads_{1};    
       typename pcl::PointCloud<NormalT>::Ptr normals_;
       pcl::PointCloud<pcl::IntensityGradient>::Ptr intensity_gradients_;
   } ;
