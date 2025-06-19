@@ -136,11 +136,10 @@ namespace pcl
 
         inline const std::string&
         getClassName () const { return (name_); }
-
-      protected:
-        using PCLBase<PointT>::num_threads_;
-      
+     
       private:
+        /// \brief number of threads
+        unsigned int num_threads_{0};
 
         /// \brief init computation
         bool 
