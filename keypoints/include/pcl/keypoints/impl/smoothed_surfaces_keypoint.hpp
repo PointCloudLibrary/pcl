@@ -230,7 +230,7 @@ pcl::SmoothedSurfacesKeypoint<PointT, PointNT>::initCompute ()
   cloud_normals_.push_back (normals_);
   cloud_trees_.push_back (tree_);
   // Sort the clouds by their scales
-  sort (scales_.begin (), scales_.end (), compareScalesFunction);
+  std::sort (scales_.begin (), scales_.end (), compareScalesFunction);
 
   // Find the index of the input after sorting
   for (std::size_t i = 0; i < scales_.size (); ++i)
