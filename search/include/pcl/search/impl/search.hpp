@@ -194,7 +194,7 @@ pcl::search::Search<PointT>::sortResults (
     order [idx] = static_cast<index_t> (idx);
 
   Compare compare (distances);
-  sort (order.begin (), order.end (), compare);
+  std::sort (order.begin (), order.end (), compare);
 
   Indices sorted (indices.size ());
   for (std::size_t idx = 0; idx < order.size (); ++idx)
@@ -203,7 +203,7 @@ pcl::search::Search<PointT>::sortResults (
   indices = sorted;
 
   // sort  the according distances.
-  sort (distances.begin (), distances.end ());
+  std::sort (distances.begin (), distances.end ());
 }
 
 #define PCL_INSTANTIATE_Search(T) template class PCL_EXPORTS pcl::search::Search<T>;

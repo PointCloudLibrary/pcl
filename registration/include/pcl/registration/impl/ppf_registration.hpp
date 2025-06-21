@@ -250,7 +250,7 @@ pcl::PPFRegistration<PointSource, PointTarget>::clusterPoses(
   PCL_DEBUG("[PPFRegistration] Clustering poses (initially got %zu poses)\n",
             poses.size());
   // Start off by sorting the poses by the number of votes
-  sort(poses.begin(), poses.end(), poseWithVotesCompareFunction);
+  std::sort(poses.begin(), poses.end(), poseWithVotesCompareFunction);
 
   std::vector<PoseWithVotesList> clusters;
   std::vector<std::pair<std::size_t, unsigned int>> cluster_votes;
