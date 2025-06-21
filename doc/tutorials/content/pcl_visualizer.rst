@@ -107,7 +107,7 @@ or you can see the `PCLVisualizer documentation`_ for more details.
 .. code-block:: cpp
 
     ...
-    viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 1, "sample cloud");
+    viewer->setPointCloudRenderingProperties (pcl::visualization::RenderingProperties::PCL_VISUALIZER_POINT_SIZE, 1, "sample cloud");
     ...
 
 This next line changes the size of the rendered points. You can control
@@ -462,8 +462,8 @@ same point cloud, but this time we give it a custom colour handler.
 .. code-block:: cpp
 
     ...
-    viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 3, "sample cloud1");
-    viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 3, "sample cloud2");
+    viewer->setPointCloudRenderingProperties (pcl::visualization::RenderingProperties::PCL_VISUALIZER_POINT_SIZE, 3, "sample cloud1");
+    viewer->setPointCloudRenderingProperties (pcl::visualization::RenderingProperties::PCL_VISUALIZER_POINT_SIZE, 3, "sample cloud2");
     viewer->addCoordinateSystem (1.0);
     ...
 
