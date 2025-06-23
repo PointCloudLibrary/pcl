@@ -47,7 +47,6 @@
 #include <boost/mpl/begin_end.hpp>
 #include <boost/mpl/next_prior.hpp>
 #include <boost/mpl/deref.hpp>
-#include <boost/mpl/assert.hpp>
 #include <boost/mpl/remove_if.hpp>
 #include <boost/mpl/contains.hpp>
 #include <boost/mpl/not.hpp>
@@ -90,7 +89,8 @@ namespace pcl
   template<typename Sequence, typename F> inline void 
   for_each_type (F f)
   {
-    BOOST_MPL_ASSERT (( boost::mpl::is_sequence<Sequence> ));
+    static_assert(boost::mpl::is_sequence<Sequence>::type::value,
+                  "Given type is not a valid sequence.");
     using first = typename boost::mpl::begin<Sequence>::type;
     using last = typename boost::mpl::end<Sequence>::type;
     for_each_type_impl<std::is_same<first, last>::value>::template execute<first, last, F> (f);

@@ -51,7 +51,6 @@
 #endif
 
 #include <pcl/point_struct_traits.h> // for pcl::traits::POD, POINT_CLOUD_REGISTER_FIELD_(NAME, OFFSET, DATATYPE), POINT_CLOUD_REGISTER_POINT_FIELD_LIST
-#include <boost/mpl/assert.hpp>  // for BOOST_MPL_ASSERT_MSG
 #include <boost/preprocessor/seq/for_each.hpp>  // for BOOST_PP_SEQ_FOR_EACH
 #include <boost/preprocessor/seq/transform.hpp>  // for BOOST_PP_SEQ_TRANSFORM
 #include <boost/preprocessor/tuple/elem.hpp>  // for BOOST_PP_TUPLE_ELEM
@@ -66,12 +65,13 @@
     BOOST_PP_CAT(POINT_CLOUD_REGISTER_POINT_STRUCT_X fseq, 0))
   /***/
 
-#define POINT_CLOUD_REGISTER_POINT_WRAPPER(wrapper, pod)    \
-  BOOST_MPL_ASSERT_MSG(sizeof(wrapper) == sizeof(pod), POINT_WRAPPER_AND_POD_TYPES_HAVE_DIFFERENT_SIZES, (wrapper&, pod&)); \
-  namespace pcl {                                           \
-    namespace traits {                                      \
-      template<> struct POD<wrapper> { using type = pod; }; \
-    }                                                       \
+#define POINT_CLOUD_REGISTER_POINT_WRAPPER(wrapper, pod)              \
+  static_assert(sizeof(wrapper) == sizeof(pod),                       \
+                "Point wrapper and POD types have different sizes."); \
+  namespace pcl {                                                     \
+    namespace traits {                                                \
+      template<> struct POD<wrapper> { using type = pod; };           \
+    }                                                                 \
   }
   /***/
 
@@ -248,8 +248,6 @@ namespace pcl
   /***/
 
 // Construct type traits given full sequence of (type, name, tag) triples
-//  BOOST_MPL_ASSERT_MSG(std::is_pod<name>::value,
-//                       REGISTERED_POINT_TYPE_MUST_BE_PLAIN_OLD_DATA, (name));
 #define POINT_CLOUD_REGISTER_POINT_STRUCT_I(name, seq)                           \
   namespace pcl                                                                  \
   {                                                                              \
