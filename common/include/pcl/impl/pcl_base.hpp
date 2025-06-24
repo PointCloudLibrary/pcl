@@ -170,10 +170,6 @@ pcl::PCLBase<PointT>::initCompute ()
    // Set the number of threads
 #ifdef _OPENMP
   num_threads_ = num_threads_ != 0 ? num_threads_ : omp_get_num_procs();
-#else
-  if (num_threads_ != 1) {
-    PCL_WARN("OpenMP is not available. Keeping number of threads unchanged at 1\n");
-  }
 #endif
 
   return (true);
