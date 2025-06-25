@@ -40,6 +40,7 @@
 
 #include <pcl/apps/cloud_composer/impl/cloud_item.hpp>
 #include <pcl/apps/cloud_composer/merge_selection.h>
+#include <pcl/filters/extract_indices.h>
 #include <pcl/point_cloud.h>
 
 template <typename PointT>
