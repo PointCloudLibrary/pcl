@@ -41,6 +41,7 @@
 #include <pcl/apps/cloud_composer/impl/cloud_item.hpp>
 #include <pcl/apps/cloud_composer/items/normals_item.h>
 #include <pcl/apps/cloud_composer/tools/organized_segmentation.h>
+#include <pcl/filters/extract_indices.h>
 #include <pcl/segmentation/edge_aware_plane_comparator.h>
 #include <pcl/segmentation/euclidean_cluster_comparator.h>
 #include <pcl/segmentation/euclidean_plane_coefficient_comparator.h>
