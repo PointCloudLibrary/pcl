@@ -2,74 +2,74 @@
 
 #include <QDebug>
 
-pcl::cloud_composer::CloudComposerItem::CloudComposerItem (const QString& name)
-  : QStandardItem(name)
+pcl::cloud_composer::CloudComposerItem::CloudComposerItem(const QString& name)
+: QStandardItem(name)
 {
-  //Set up the properties, store pointer locally for convenience
-  properties_ = new PropertiesModel (this);
-  
-  QString item_id = name + QString ("%1").arg ((long)this);  
-  
-  
-  this->setData (QVariant::fromValue (properties_), ItemDataRole::PROPERTIES); 
-  this->setData (QVariant (item_id), ItemDataRole::ITEM_ID);
-  
-  this->setForeground (QBrush (Qt::black));  
+  // Set up the properties, store pointer locally for convenience
+  properties_ = new PropertiesModel(this);
+
+  QString item_id = name + QString("%1").arg((long)this);
+
+  this->setData(QVariant::fromValue(properties_), ItemDataRole::PROPERTIES);
+  this->setData(QVariant(item_id), ItemDataRole::ITEM_ID);
+
+  this->setForeground(QBrush(Qt::black));
 }
 
-pcl::cloud_composer::CloudComposerItem::~CloudComposerItem ()
+pcl::cloud_composer::CloudComposerItem::~CloudComposerItem()
 {
-  properties_->deleteLater ();
+  properties_->deleteLater();
 }
 
 pcl::cloud_composer::CloudComposerItem*
-pcl::cloud_composer::CloudComposerItem::clone () const
+pcl::cloud_composer::CloudComposerItem::clone() const
 {
-  CloudComposerItem* new_item = new CloudComposerItem (this->text ());
-  
-  PropertiesModel* new_item_properties = new_item->getPropertiesModel ();
-  new_item_properties->copyProperties (properties_);
-  
-  return new_item;  
+  CloudComposerItem* new_item = new CloudComposerItem(this->text());
+
+  PropertiesModel* new_item_properties = new_item->getPropertiesModel();
+  new_item_properties->copyProperties(properties_);
+
+  return new_item;
 }
 
-QList <pcl::cloud_composer::CloudComposerItem*>
-pcl::cloud_composer::CloudComposerItem::getChildren (CloudComposerItem::ItemType type) const
+QList<pcl::cloud_composer::CloudComposerItem*>
+pcl::cloud_composer::CloudComposerItem::getChildren(
+    CloudComposerItem::ItemType type) const
 {
-  QList <CloudComposerItem*> items;
-  for (int i = 0; i < this->rowCount (); ++i)
-  {
-    if ( this->child (i)->type () == type )
-    {
-        items.append (dynamic_cast <CloudComposerItem*> (this->child (i)));
+  QList<CloudComposerItem*> items;
+  for (int i = 0; i < this->rowCount(); ++i) {
+    if (this->child(i)->type() == type) {
+      items.append(dynamic_cast<CloudComposerItem*>(this->child(i)));
     }
   }
-  
+
   return items;
 }
 
-void 
-pcl::cloud_composer::CloudComposerItem::addChild (CloudComposerItem *item_arg)
+void
+pcl::cloud_composer::CloudComposerItem::addChild(CloudComposerItem* item_arg)
 {
-  this->appendRow (item_arg);
+  this->appendRow(item_arg);
 }
 
 void
-pcl::cloud_composer::CloudComposerItem::paintView (pcl::visualization::PCLVisualizer::Ptr) const
+pcl::cloud_composer::CloudComposerItem::paintView(
+    pcl::visualization::PCLVisualizer::Ptr) const
 {
-  qDebug () << "Paint View in Cloud Composer Item - doing nothing";
+  qDebug() << "Paint View in Cloud Composer Item - doing nothing";
 }
 
 void
-pcl::cloud_composer::CloudComposerItem::removeFromView (pcl::visualization::PCLVisualizer::Ptr) const
+pcl::cloud_composer::CloudComposerItem::removeFromView(
+    pcl::visualization::PCLVisualizer::Ptr) const
 {
-  qDebug () << "Remove from View in Cloud Composer Item - doing nothing";
+  qDebug() << "Remove from View in Cloud Composer Item - doing nothing";
 }
 
-QMap <QString, QWidget*>
-pcl::cloud_composer::CloudComposerItem::getInspectorTabs ()
+QMap<QString, QWidget*>
+pcl::cloud_composer::CloudComposerItem::getInspectorTabs()
 {
-  return QMap <QString, QWidget*> ();
+  return QMap<QString, QWidget*>();
 }
 
 /*
@@ -78,15 +78,13 @@ CloudPtrT
 pcl::cloud_composer::CloudComposerItem::getCloudPtr () const
 {
   QVariant cloud_variant = this->data (CLOUD);
-  // Get Extract the pointer from the cloud contained in this item, if the type can't be converted, default-constructed value is returned
-  CloudPtrT ptr;
-  if (cloud_variant.canConvert <CloudPtrT> ())
-    ptr =  cloud_variant.value <CloudPtrT> ();
+  // Get Extract the pointer from the cloud contained in this item, if the type can't be
+converted, default-constructed value is returned CloudPtrT ptr; if
+(cloud_variant.canConvert <CloudPtrT> ()) ptr =  cloud_variant.value <CloudPtrT> ();
   else
-    qCritical () << "Requested Cloud of incorrect type from "<<this->text ()<<" correct type is "<<cloud_variant.typeName();
-    
+    qCritical () << "Requested Cloud of incorrect type from "<<this->text ()<<" correct
+type is "<<cloud_variant.typeName();
+
   return ptr;
 }
 */
-
-
