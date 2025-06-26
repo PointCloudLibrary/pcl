@@ -41,180 +41,171 @@
 
 #include <QUndoCommand>
 
-namespace pcl
-{
-  namespace cloud_composer
+namespace pcl {
+namespace cloud_composer {
+class AbstractTool;
+class ProjectModel;
+struct OutputPair {
+  QList<const CloudComposerItem*> input_items_;
+  QList<CloudComposerItem*> output_items_;
+};
+
+class CloudCommand : public QUndoCommand {
+public:
+  CloudCommand(ConstItemList input_data, QUndoCommand* parent = nullptr);
+
+  ~CloudCommand();
+
+  virtual bool
+  runCommand(AbstractTool* tool) = 0;
+
+  void
+  undo() override = 0;
+
+  void
+  redo() override = 0;
+
+  // QList <CloudComposerItem*>
+  // executeToolOnTemplateCloud (AbstractTool* tool, ConstItemList &input_data);
+
+  void
+  setProjectModel(ProjectModel* model);
+
+  inline void
+  setInputData(ConstItemList input_data)
   {
-    class AbstractTool;
-    class ProjectModel;
-    struct OutputPair
-    {
-      QList <const CloudComposerItem*> input_items_;
-      QList <CloudComposerItem*> output_items_;
-    };
-
-
-    
-    class CloudCommand : public QUndoCommand
-    {
-      public: 
-        CloudCommand (ConstItemList input_data, QUndoCommand* parent = nullptr);
-        
-        
-        ~CloudCommand ();
-        
-        virtual bool
-        runCommand (AbstractTool* tool) = 0;
-
-        void 
-        undo ()  override = 0;
-        
-        void
-        redo () override = 0;
-        
-        //QList <CloudComposerItem*> 
-       // executeToolOnTemplateCloud (AbstractTool* tool, ConstItemList &input_data);
-        
-        void 
-        setProjectModel (ProjectModel* model);
-        
-        inline void
-        setInputData (ConstItemList input_data)
-        {
-          original_data_ = std::move(input_data);
-        }
-      protected:
-        /** \brief Removes the original item(s) from the model and replaces with the replacement(s)
-         *  Replacements are only inserted once, original items must have same parent
-         *  This stores the removed items in removed_items_
-         */
-        bool 
-        replaceOriginalWithNew (const QList <const CloudComposerItem*>& originals, const QList <CloudComposerItem*>& new_items);
-        
-        /** \brief This removes new_items from the model and restores originals */
-        bool
-        restoreOriginalRemoveNew (const QList <const CloudComposerItem*>& originals, const QList <CloudComposerItem*>& new_items);
-        
-        ConstItemList original_data_;
-        
-        QMap <QStandardItem*, QStandardItem*> removed_to_parent_map_;
-        QList <OutputPair> output_data_;
-        ProjectModel* project_model_;
-       
-        /** \brief This determines if we delete original items or not on destruction 
-         * If the command is being deleted because stack is at limit, then we want
-         * to only delete the originals, since the command is staying for good (new items shouldn't be deleted)
-         * On the other hand, if we destruct after an undo, then we want to delete the new items (but not the originals)
-         */
-        bool last_was_undo_;
-        
-        /** \brief This is used to check if a templated version of a tool can be used
-         *  For this to return true, all items must be clouds, and must have the same template type 
-         */
-        bool 
-        canUseTemplates (ConstItemList &input_data);
-        
-        bool can_use_templates_;
-        int template_type_;
-    };
-    
-    class ModifyItemCommand : public CloudCommand
-    {
-      public: 
-        ModifyItemCommand (ConstItemList input_data, QUndoCommand* parent = nullptr);
-    
-        bool
-        runCommand (AbstractTool* tool) override;
-        
-        void
-        undo () override;
-      
-        void
-        redo () override;
-      private: 
-        
-      
-      
-    };
-    
-    class NewItemCloudCommand : public CloudCommand
-    {
-      public: 
-        NewItemCloudCommand (ConstItemList input_data, QUndoCommand* parent = nullptr);
-      
-        bool
-        runCommand (AbstractTool* tool) override;
-        
-        void
-        undo () override;
-      
-        void
-        redo () override;
-
-    };
-    
-
-    class SplitCloudCommand : public CloudCommand
-    {
-      public: 
-        SplitCloudCommand (ConstItemList input_data, QUndoCommand* parent = nullptr);
-      
-        bool
-        runCommand (AbstractTool* tool) override;
-        
-        void
-        undo () override;
-      
-        void
-        redo () override;
-      private:
-
-    };  
-    
-    class DeleteItemCommand : public CloudCommand
-    {
-      public: 
-        DeleteItemCommand (ConstItemList input_data, QUndoCommand* parent = nullptr);
-      
-        bool
-        runCommand (AbstractTool* tool) override;
-        
-        void
-        undo () override;
-      
-        void
-        redo () override;
-      private:
-    };
-    
-    class MergeCloudCommand : public CloudCommand
-    {
-      public: 
-        /** \brief Construct for a merge command
-         *  \param[in] input_data Input list of CloudItem s from the project model which will be merged
-         *  \param[in] temporary_clouds Input list of CloudItems which 
-         */
-        MergeCloudCommand (ConstItemList input_data, QUndoCommand* parent = nullptr);
-      
-        bool
-        runCommand (AbstractTool* tool) override;
-        
-        void
-        undo () override;
-      
-        void
-        redo () override;
-        
-        inline void
-        setSelectedIndicesMap( const QMap <CloudItem*, pcl::PointIndices::Ptr >& selected_item_index_map)
-        {
-          selected_item_index_map_ = selected_item_index_map;
-        }
-          
-      private:
-        QMap <CloudItem*, pcl::PointIndices::Ptr > selected_item_index_map_;
-    };
+    original_data_ = std::move(input_data);
   }
-} 
 
-Q_DECLARE_METATYPE (ConstItemList);
+protected:
+  /** \brief Removes the original item(s) from the model and replaces with the
+   * replacement(s) Replacements are only inserted once, original items must have same
+   * parent This stores the removed items in removed_items_
+   */
+  bool
+  replaceOriginalWithNew(const QList<const CloudComposerItem*>& originals,
+                         const QList<CloudComposerItem*>& new_items);
+
+  /** \brief This removes new_items from the model and restores originals */
+  bool
+  restoreOriginalRemoveNew(const QList<const CloudComposerItem*>& originals,
+                           const QList<CloudComposerItem*>& new_items);
+
+  ConstItemList original_data_;
+
+  QMap<QStandardItem*, QStandardItem*> removed_to_parent_map_;
+  QList<OutputPair> output_data_;
+  ProjectModel* project_model_;
+
+  /** \brief This determines if we delete original items or not on destruction
+   * If the command is being deleted because stack is at limit, then we want
+   * to only delete the originals, since the command is staying for good (new items
+   * shouldn't be deleted) On the other hand, if we destruct after an undo, then we want
+   * to delete the new items (but not the originals)
+   */
+  bool last_was_undo_;
+
+  /** \brief This is used to check if a templated version of a tool can be used
+   *  For this to return true, all items must be clouds, and must have the same template
+   * type
+   */
+  bool
+  canUseTemplates(ConstItemList& input_data);
+
+  bool can_use_templates_;
+  int template_type_;
+};
+
+class ModifyItemCommand : public CloudCommand {
+public:
+  ModifyItemCommand(ConstItemList input_data, QUndoCommand* parent = nullptr);
+
+  bool
+  runCommand(AbstractTool* tool) override;
+
+  void
+  undo() override;
+
+  void
+  redo() override;
+
+private:
+};
+
+class NewItemCloudCommand : public CloudCommand {
+public:
+  NewItemCloudCommand(ConstItemList input_data, QUndoCommand* parent = nullptr);
+
+  bool
+  runCommand(AbstractTool* tool) override;
+
+  void
+  undo() override;
+
+  void
+  redo() override;
+};
+
+class SplitCloudCommand : public CloudCommand {
+public:
+  SplitCloudCommand(ConstItemList input_data, QUndoCommand* parent = nullptr);
+
+  bool
+  runCommand(AbstractTool* tool) override;
+
+  void
+  undo() override;
+
+  void
+  redo() override;
+
+private:
+};
+
+class DeleteItemCommand : public CloudCommand {
+public:
+  DeleteItemCommand(ConstItemList input_data, QUndoCommand* parent = nullptr);
+
+  bool
+  runCommand(AbstractTool* tool) override;
+
+  void
+  undo() override;
+
+  void
+  redo() override;
+
+private:
+};
+
+class MergeCloudCommand : public CloudCommand {
+public:
+  /** \brief Construct for a merge command
+   *  \param[in] input_data Input list of CloudItem s from the project model which will
+   * be merged \param[in] temporary_clouds Input list of CloudItems which
+   */
+  MergeCloudCommand(ConstItemList input_data, QUndoCommand* parent = nullptr);
+
+  bool
+  runCommand(AbstractTool* tool) override;
+
+  void
+  undo() override;
+
+  void
+  redo() override;
+
+  inline void
+  setSelectedIndicesMap(
+      const QMap<CloudItem*, pcl::PointIndices::Ptr>& selected_item_index_map)
+  {
+    selected_item_index_map_ = selected_item_index_map;
+  }
+
+private:
+  QMap<CloudItem*, pcl::PointIndices::Ptr> selected_item_index_map_;
+};
+} // namespace cloud_composer
+} // namespace pcl
+
+Q_DECLARE_METATYPE(ConstItemList);
