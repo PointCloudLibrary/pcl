@@ -94,12 +94,12 @@ TrajkovicKeypoint2D<PointInT, PointOutT, IntensityT>::detectKeypoints (PointClou
 #if OPENMP_LEGACY_CONST_DATA_SHARING_RULE
 #pragma omp parallel for \
   default(none) \
-  num_threads(threads_)
+  num_threads(num_threads_)
 #else
 #pragma omp parallel for \
   default(none) \
   shared(h, w) \
-  num_threads(threads_)
+  num_threads(num_threads_)
 #endif
     for(int j = half_window_size_; j < h; ++j)
     {
@@ -142,12 +142,12 @@ TrajkovicKeypoint2D<PointInT, PointOutT, IntensityT>::detectKeypoints (PointClou
 #if OPENMP_LEGACY_CONST_DATA_SHARING_RULE
 #pragma omp parallel for \
   default(none) \
-  num_threads(threads_)
+  num_threads(num_threads_)
 #else
 #pragma omp parallel for \
   default(none) \
   shared(h, w) \
-  num_threads(threads_)
+  num_threads(num_threads_)
 #endif
     for(int j = half_window_size_; j < h; ++j)
     {
@@ -239,12 +239,12 @@ TrajkovicKeypoint2D<PointInT, PointOutT, IntensityT>::detectKeypoints (PointClou
 #pragma omp parallel for \
   default(none) \
   shared(indices, occupency_map, output) \
-  num_threads(threads_)
+  num_threads(num_threads_)
 #else
 #pragma omp parallel for \
   default(none) \
   shared(height, indices, occupency_map, output, width) \
-  num_threads(threads_)
+  num_threads(num_threads_)
 #endif
   // Disable lint since this 'for' is part of the pragma
   // NOLINTNEXTLINE(modernize-loop-convert)

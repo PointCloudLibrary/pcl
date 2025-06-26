@@ -92,20 +92,23 @@ namespace pcl
       using PointCloudOut = typename Feature<PointInT, PointOutT>::PointCloudOut;
 
       /** \brief Initialize the scheduler and set the number of threads to use.
-        * \param[in] nr_threads the number of hardware threads to use (0 sets the value back to automatic)
+        * \param[in] num_threads the number of hardware threads to use (0 sets the value back to automatic)
         */
-      FPFHEstimationOMP (unsigned int nr_threads = 0)
+      FPFHEstimationOMP (unsigned int num_threads = 0)
       {
         feature_name_ = "FPFHEstimationOMP";
 
-        setNumberOfThreads(nr_threads);
+        setNumberOfThreads(num_threads);
       }
 
       /** \brief Initialize the scheduler and set the number of threads to use.
-        * \param[in] nr_threads the number of hardware threads to use (0 sets the value back to automatic)
+        * \param[in] num_threads the number of hardware threads to use (0 sets the value back to automatic)
         */
       void
-      setNumberOfThreads (unsigned int nr_threads = 0);
+      setNumberOfThreads (unsigned int num_threads = 0);
+
+    protected:
+      using PCLBase<PointInT>::num_threads_;
 
     private:
       /** \brief Estimate the Fast Point Feature Histograms (FPFH) descriptors at a set of points given by
@@ -119,9 +122,6 @@ namespace pcl
     public:
       /** \brief The number of subdivisions for each angular feature interval. */
       int nr_bins_f1_{11}, nr_bins_f2_{11}, nr_bins_f3_{11};
-    private:
-      /** \brief The number of threads the scheduler should use. */
-      unsigned int threads_;
   };
 }
 
