@@ -170,6 +170,55 @@ TEST (CopyPointTest, DifferentTypesWithSameColor)
   }
 }
 
+namespace custom {
+  struct MyPoint {
+    float x, y, z, w;
+    double intensity;
+  };
+  struct MyPoint2 {
+    double x, y, z, w;
+  };
+}
+
+POINT_CLOUD_REGISTER_POINT_STRUCT (custom::MyPoint,
+    (float, x, x)
+    (float, y, y)
+    (float, z, z)
+    (double, intensity, intensity)
+)
+POINT_CLOUD_REGISTER_POINT_STRUCT (custom::MyPoint2,
+    (double, x, x)
+    (double, y, y)
+    (double, z, z)
+)
+
+TEST(CopyPointTest, SameFieldNameDifferentDatatype)
+{
+  // in p1 the intensity field is double, while in p2 it is float
+  custom::MyPoint p1;
+  pcl::PointXYZI p2;
+  p1.x = 1.0;
+  p1.y = 2.0;
+  p1.z = 3.0;
+  p1.intensity = 5.0;
+  pcl::copyPoint(p1, p2);
+  EXPECT_EQ(p1.x, p2.x);
+  EXPECT_EQ(p1.y, p2.y);
+  EXPECT_EQ(p1.z, p2.z);
+  EXPECT_EQ(p1.intensity, p2.intensity);
+
+  // in p3 xyz are float, while in p4 they are double
+  pcl::PointXYZ p3;
+  custom::MyPoint2 p4;
+  p3.x = 10.0;
+  p3.y = 11.0;
+  p3.z = 12.0;
+  pcl::copyPoint(p3, p4);
+  EXPECT_EQ(p3.x, p4.x);
+  EXPECT_EQ(p3.y, p4.y);
+  EXPECT_EQ(p3.z, p4.z);
+}
+
 int
 main (int argc, char **argv)
 {
