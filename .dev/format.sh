@@ -7,9 +7,6 @@
 # $ sh /pcl/format.sh `which clang-format` /pcl
 
 format() {
-    # don't use a directory with whitespace
-    local whitelist="apps/3d_rec_framework apps/in_hand_scanner apps/include apps/modeler apps/src benchmarks 2d geometry ml octree simulation stereo tracking registration gpu/containers gpu/segmentation"
-
     local PCL_DIR="${2}"
     local formatter="${1}"
 
@@ -18,17 +15,22 @@ format() {
         exit 166
     fi
 
-    # check for self
     if [ ! -f "${PCL_DIR}/.dev/format.sh" ]; then
         echo "Please ensure that PCL_SOURCE_DIR is passed as the second argument"
         exit 166
     fi
 
-    for dir in ${whitelist}; do
+    local whitelist_file="${PCL_DIR}/.dev/whitelist.txt"
+    if [ ! -f "${whitelist_file}" ]; then
+        echo "Could not find whitelist file at ${whitelist_file}"
+        exit 167
+    fi
+
+    while IFS= read -r dir || [ -n "$dir" ]; do
+        [ -z "$dir" ] && continue
         path=${PCL_DIR}/${dir}
-        find ${path} -type f -iname *.[ch] -o -iname *.[ch]pp -o -iname *.[ch]xx \
-            -iname *.cu | xargs -n1 ${formatter} -i -style=file
-    done
+        find ${path} -type f \( -iname "*.[ch]" -o -iname "*.[ch]pp" -o -iname "*.[ch]xx" -o -iname "*.cu" \) | xargs -n1 ${formatter} -i -style=file
+    done < "${whitelist_file}"
 }
 
-format $@
+format "$@"

@@ -1,0 +1,16 @@
+apps/3d_rec_framework
+apps/in_hand_scanner
+apps/include
+apps/modeler
+apps/src
+benchmarks
+2d
+geometry
+ml
+octree
+simulation
+stereo
+tracking
+registration
+gpu/containers
+gpu/segmentation

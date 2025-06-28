@@ -3,97 +3,94 @@
 
 #include <algorithm>
 
-namespace pcl
+namespace pcl {
+namespace device {
+struct Info {
+  enum { SIZE = 4 };
+  int data[SIZE];
+};
+
+template <int n>
+struct Point {
+  int data[n];
+};
+
+template <int in, int out, typename Info>
+__global__ void
+deviceCopyFields4B(const Info info, const int size, const void* input, void* output)
 {
-    namespace device
-    {
-        struct Info
-        {
-            enum { SIZE = 4 };
-            int data[SIZE];
-        };
+  int idx = blockIdx.x * blockDim.x + threadIdx.x;
 
-        template<int n>
-        struct Point
-        {
-            int data[n];
-        };
+  if (idx < size) {
+    Point<in> point_in = reinterpret_cast<const Point<in>*>(input)[idx];
+    Point<out> point_out = reinterpret_cast<Point<out>*>(output)[idx];
 
-        template<int in, int out, typename Info>
-        __global__ void deviceCopyFields4B(const Info info, const int size, const void* input, void* output)
-        {
-            int idx = blockIdx.x * blockDim.x + threadIdx.x;
+    for (int i = 0; i < Info::SIZE; ++i) {
+      int byte;
+      int code = info.data[i];
 
-            if (idx < size)
-            {
-                Point<in>  point_in  = reinterpret_cast<const  Point<in>* >( input)[idx];
-                Point<out> point_out = reinterpret_cast<      Point<out>* >(output)[idx];
+      byte = ((code >> 0) & 0xFF);
 
-                for(int i = 0; i < Info::SIZE; ++i)
-                {
-                    int byte;
-                    int code = info.data[i];
+      if (byte == 0xFF)
+        break;
+      else
+        point_out.data[byte >> 4] = point_in.data[byte & 0xF];
 
-                    byte = ((code >> 0) & 0xFF);
+      byte = ((code >> 8) & 0xFF);
 
-                    if (byte == 0xFF)
-                        break;
-                    else
-                        point_out.data[byte >> 4] = point_in.data[byte & 0xF];
+      if (byte == 0xFF)
+        break;
+      else
+        point_out.data[byte >> 4] = point_in.data[byte & 0xF];
 
-                    byte = ((code >> 8) & 0xFF);
+      byte = ((code >> 16) & 0xFF);
 
-                    if (byte == 0xFF)
-                        break;
-                    else
-                        point_out.data[byte >> 4] = point_in.data[byte & 0xF];
+      if (byte == 0xFF)
+        break;
+      else
+        point_out.data[byte >> 4] = point_in.data[byte & 0xF];
 
-                    byte = ((code >> 16) & 0xFF);
+      byte = ((code >> 24) & 0xFF);
 
-                    if (byte == 0xFF)
-                        break;
-                    else
-                        point_out.data[byte >> 4] = point_in.data[byte & 0xF];
-
-                    byte = ((code >> 24) & 0xFF);
-
-                    if (byte == 0xFF)
-                        break;
-                    else
-                        point_out.data[byte >> 4] = point_in.data[byte & 0xF];
-                }
-
-                reinterpret_cast< Point<out>* >(output)[idx] = point_out;
-            }
-        };
-
-        template<int in_size, int out_size>
-        void cf(int info[4], int size, const void* input, void* output)
-        {
-            Info i;
-            std::copy(info, info + 4, i.data);
-
-            dim3 block(256);
-            dim3 grid(divUp(size, block.x));
-
-            deviceCopyFields4B<in_size, out_size><<<grid, block>>>(i, size, input, output);
-            cudaSafeCall ( cudaGetLastError () );
-            cudaSafeCall (cudaDeviceSynchronize ());
-        }
-
-        using copy_fields_t = void (*)(int info[4], int size, const void* input, void* output);
+      if (byte == 0xFF)
+        break;
+      else
+        point_out.data[byte >> 4] = point_in.data[byte & 0xF];
     }
+
+    reinterpret_cast<Point<out>*>(output)[idx] = point_out;
+  }
+};
+
+template <int in_size, int out_size>
+void
+cf(int info[4], int size, const void* input, void* output)
+{
+  Info i;
+  std::copy(info, info + 4, i.data);
+
+  dim3 block(256);
+  dim3 grid(divUp(size, block.x));
+
+  deviceCopyFields4B<in_size, out_size><<<grid, block>>>(i, size, input, output);
+  cudaSafeCall(cudaGetLastError());
+  cudaSafeCall(cudaDeviceSynchronize());
 }
 
-namespace pcl
-{
-    namespace gpu
-    {
-        using namespace pcl::device;
+using copy_fields_t = void (*)(int info[4], int size, const void* input, void* output);
+} // namespace device
+} // namespace pcl
 
-        PCL_EXPORTS void copyFieldsImpl(int in_size, int out_size, int rules[4], int size, const void* input, void* output)
-        {
-            pcl::device::copy_fields_t funcs[16][16] =
+namespace pcl {
+namespace gpu {
+using namespace pcl::device;
+
+PCL_EXPORTS void
+copyFieldsImpl(
+    int in_size, int out_size, int rules[4], int size, const void* input, void* output)
+{
+  // clang-format off
+  pcl::device::copy_fields_t funcs[16][16] =
             {
                 { /**/ cf<1,1>,  cf<1, 2>, cf<1, 3>, cf<1, 4>, /**/ cf<1, 5>, cf<1, 6>, cf<1, 7>, cf<1, 8>, /**/ cf<1, 9>, cf<1,10>, cf<1, 11>, cf<1, 12>, /**/ cf<1, 13>, cf<1, 14>, cf<1, 15>,  cf<1,16> },
                 { /**/ cf<2,1>,  cf<2, 2>, cf<2, 3>, cf<2, 4>, /**/ cf<2, 5>, cf<2, 6>, cf<2, 7>, cf<2, 8>, /**/ cf<2, 9>, cf<1,10>, cf<2, 11>, cf<2, 12>, /**/ cf<2, 13>, cf<2, 14>, cf<2, 15>,  cf<2,16> },
@@ -112,9 +109,8 @@ namespace pcl
                 { /**/ cf<15,1>, cf<15,2>, cf<15,3>, cf<15,4>, /**/ cf<15,5>, cf<15,6>, cf<15,7>, cf<15,8>, /**/ cf<15,9>, cf<1,10>, cf<15,11>, cf<15,12>, /**/ cf<15,13>, cf<15,14>, cf<15,15>, cf<15,16> },
                 { /**/ cf<16,1>, cf<16,2>, cf<16,3>, cf<16,4>, /**/ cf<16,5>, cf<16,6>, cf<16,7>, cf<16,8>, /**/ cf<16,9>, cf<1,10>, cf<16,11>, cf<16,12>, /**/ cf<16,13>, cf<16,14>, cf<16,15>, cf<16,16> }
             };
-
-            funcs[in_size-1][out_size-1](rules, size, input, output);
-        }
-    }
+  // clang-format on
+  funcs[in_size - 1][out_size - 1](rules, size, input, output);
 }
-
+} // namespace gpu
+} // namespace pcl
