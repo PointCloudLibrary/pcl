@@ -5,30 +5,19 @@ import sys
 import subprocess
 import argparse
 
-WHITELIST = [
-    "apps/3d_rec_framework",
-    "apps/in_hand_scanner",
-    "apps/include",
-    "apps/modeler",
-    "apps/src",
-    "benchmarks",
-    "2d",
-    "geometry",
-    "ml",
-    "octree",
-    "simulation",
-    "stereo",
-    "tracking",
-    "registration",
-    "gpu/containers",
-    "gpu/segmentation"
-]
-
 EXTENSIONS = (".c", ".h", ".cpp", ".hpp", ".cxx", ".hxx", ".cu")
+WHITELIST_FILE = os.path.join(".dev", "whitelist.txt")
 
-def is_in_whitelist(file_path):
+def load_whitelist():
+    if not os.path.isfile(WHITELIST_FILE):
+        print(f"Could not find whitelist file at {WHITELIST_FILE}")
+        sys.exit(167)
+    with open(WHITELIST_FILE, "r") as f:
+        return [line.strip() for line in f if line.strip()]
+
+def is_in_whitelist(file_path, whitelist):
     file_path = os.path.normpath(file_path)
-    for w in WHITELIST:
+    for w in whitelist:
         w_norm = os.path.normpath(w)
         if os.path.commonpath([file_path, w_norm]) == w_norm or file_path.startswith(w_norm + os.sep):
             return True
@@ -55,17 +44,18 @@ def main():
     )
     args = parser.parse_args()
 
+    whitelist = load_whitelist()
     manual_mode = len(args.files) == 1 and args.files[0] == "."
 
     if manual_mode:
         all_files = []
-        for rel_path in WHITELIST:
+        for rel_path in whitelist:
             abs_path = os.path.join(os.getcwd(), rel_path)
             all_files.extend(find_files(abs_path))
     else:
         all_files = [
             f for f in args.files
-            if f.endswith(EXTENSIONS) and os.path.isfile(f) and is_in_whitelist(f)
+            if f.endswith(EXTENSIONS) and os.path.isfile(f) and is_in_whitelist(f, whitelist)
         ]
 
     all_files = list(set(all_files))  # Remove duplicates
