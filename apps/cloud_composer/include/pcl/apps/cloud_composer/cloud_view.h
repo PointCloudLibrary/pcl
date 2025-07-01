@@ -37,130 +37,138 @@
 
 #pragma once
 
-#include <QWidget>
-
-#include <vtkEventQtSlotConnect.h>
-
+#include <pcl/apps/cloud_composer/point_selectors/interactor_style_switch.h>
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/visualization/qvtk_compatibility.h>
-#include <pcl/apps/cloud_composer/point_selectors/interactor_style_switch.h>
 
+#include <QWidget>
 
-#include <vtkSmartPointer.h>
-#include <vtkOrientationMarkerWidget.h>
 #include <vtkAxesActor.h>
+#include <vtkEventQtSlotConnect.h>
+#include <vtkOrientationMarkerWidget.h>
+#include <vtkSmartPointer.h>
 #include <vtkVersion.h>
 
 class QItemSelection;
 class QStandardItem;
 
-namespace pcl
-{
-  namespace cloud_composer
+namespace pcl {
+namespace cloud_composer {
+class ProjectModel;
+/** \brief View class for displaying ProjectModel data using PCLVisualizer
+ * \author Jeremie Papon
+ * \ingroup cloud_composer
+ */
+class CloudView : public QWidget {
+  Q_OBJECT
+
+public:
+  CloudView(QWidget* parent = nullptr);
+  CloudView(const CloudView& to_copy);
+  CloudView(ProjectModel* model, QWidget* parent = nullptr);
+
+  void
+  setModel(ProjectModel* new_model);
+
+  ProjectModel*
+  getModel() const
   {
-    class ProjectModel;
-    /** \brief View class for displaying ProjectModel data using PCLVisualizer
-     * \author Jeremie Papon
-     * \ingroup cloud_composer
-     */
-    class CloudView : public QWidget
-    {
-      Q_OBJECT
-      
-    public:
-      CloudView (QWidget* parent = nullptr);
-      CloudView (const CloudView& to_copy);
-      CloudView (ProjectModel* model, QWidget* parent = nullptr);
-      
-      void 
-      setModel (ProjectModel* new_model);
-      
-      ProjectModel* 
-      getModel () const { return model_; }
-      
-      PCLQVTKWidget*
-      getQVTK() const { return qvtk_; }
-      
-      pcl::visualization::PCLVisualizer::Ptr
-      getPCLVisualizer () const { return vis_; }
-      
-      void 
-      setAxisVisibility (bool visible);
-      
-      void 
-      setInteractorStyle (interactor_styles::INTERACTOR_STYLES style);
-    public Q_SLOTS:
-      void 
-      refresh ();
-      
-      /** \brief Slot called when the item selected in cloud browser changes */
-      void 
-      selectedItemChanged (const QItemSelection & selected, const QItemSelection & deselected);
-      
-      /** \brief Slot called when the data in model changes */
-      void 
-      dataChanged ( const QModelIndex & topLeft, const QModelIndex & bottomRight );
-      
-    protected Q_SLOTS:
-      /** \brief Slot called when an item in the model changes
-       * \param topLeft 
-       * \param bottomRight
-       */
-      void
-      itemChanged (QStandardItem* item);
-      
-      /** \brief Slot called when rows inserted to model
-       * \param start Start of new rows (inclusive)
-       * \param end End of new rows (inclusive)
-       */
-      void
-      rowsInserted (const QModelIndex& parent, int start, int end);
-      
-      void
-      rowsAboutToBeRemoved (const QModelIndex& parent, int start, int end);
-      
-      void
-      selectionCompleted (vtkObject* caller, unsigned long event_id, void* client_data, void* call_data);
-      
-      void
-      manipulationCompleted (vtkObject* caller, unsigned long event_id, void* client_data, void* call_data);
-      
-    protected:
-      void
-      paintEvent (QPaintEvent* event) override;
-      void 
-      resizeEvent (QResizeEvent* event) override;
-      //   void scrollContentsBy (int dx, int dy);
-      
-      
-      
-    private:
-      void
-      connectSignalsAndSlots ();
-      
-      /** \brief Internal function for setting up the style_switch_ */
-      void 
-      initializeInteractorSwitch ();
-      
-      void
-      addOrientationMarkerWidgetAxes ();
-      void
-      removeOrientationMarkerWidgetAxes ();
-      
-      pcl::visualization::PCLVisualizer::Ptr vis_;
-      ProjectModel* model_;
-
-      PCLQVTKWidget* qvtk_;
-
-      vtkSmartPointer<InteractorStyleSwitch> style_switch_;
-      
-      vtkSmartPointer<vtkOrientationMarkerWidget> axes_widget_;
-      vtkSmartPointer<vtkAxesActor> axes_;
-      
-      /** \brief Manages VTK events by connecting them to QT slots */
-      vtkSmartPointer<vtkEventQtSlotConnect> connections_;
-    };
+    return model_;
   }
-}
 
-Q_DECLARE_METATYPE (pcl::cloud_composer::CloudView);
+  PCLQVTKWidget*
+  getQVTK() const
+  {
+    return qvtk_;
+  }
+
+  pcl::visualization::PCLVisualizer::Ptr
+  getPCLVisualizer() const
+  {
+    return vis_;
+  }
+
+  void
+  setAxisVisibility(bool visible);
+
+  void
+  setInteractorStyle(interactor_styles::INTERACTOR_STYLES style);
+public Q_SLOTS:
+  void
+  refresh();
+
+  /** \brief Slot called when the item selected in cloud browser changes */
+  void
+  selectedItemChanged(const QItemSelection& selected, const QItemSelection& deselected);
+
+  /** \brief Slot called when the data in model changes */
+  void
+  dataChanged(const QModelIndex& topLeft, const QModelIndex& bottomRight);
+
+protected Q_SLOTS:
+  /** \brief Slot called when an item in the model changes
+   * \param topLeft
+   * \param bottomRight
+   */
+  void
+  itemChanged(QStandardItem* item);
+
+  /** \brief Slot called when rows inserted to model
+   * \param start Start of new rows (inclusive)
+   * \param end End of new rows (inclusive)
+   */
+  void
+  rowsInserted(const QModelIndex& parent, int start, int end);
+
+  void
+  rowsAboutToBeRemoved(const QModelIndex& parent, int start, int end);
+
+  void
+  selectionCompleted(vtkObject* caller,
+                     unsigned long event_id,
+                     void* client_data,
+                     void* call_data);
+
+  void
+  manipulationCompleted(vtkObject* caller,
+                        unsigned long event_id,
+                        void* client_data,
+                        void* call_data);
+
+protected:
+  void
+  paintEvent(QPaintEvent* event) override;
+  void
+  resizeEvent(QResizeEvent* event) override;
+  //   void scrollContentsBy (int dx, int dy);
+
+private:
+  void
+  connectSignalsAndSlots();
+
+  /** \brief Internal function for setting up the style_switch_ */
+  void
+  initializeInteractorSwitch();
+
+  void
+  addOrientationMarkerWidgetAxes();
+  void
+  removeOrientationMarkerWidgetAxes();
+
+  pcl::visualization::PCLVisualizer::Ptr vis_;
+  ProjectModel* model_;
+
+  PCLQVTKWidget* qvtk_;
+
+  vtkSmartPointer<InteractorStyleSwitch> style_switch_;
+
+  vtkSmartPointer<vtkOrientationMarkerWidget> axes_widget_;
+  vtkSmartPointer<vtkAxesActor> axes_;
+
+  /** \brief Manages VTK events by connecting them to QT slots */
+  vtkSmartPointer<vtkEventQtSlotConnect> connections_;
+};
+} // namespace cloud_composer
+} // namespace pcl
+
+Q_DECLARE_METATYPE(pcl::cloud_composer::CloudView);
