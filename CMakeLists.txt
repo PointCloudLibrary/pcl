@@ -165,7 +165,7 @@ if(CMAKE_COMPILER_IS_MSVC)
     ProcessorCount(CPUCores)
     set(MSVC_MP ${CPUCores} CACHE STRING "Number of simultaneously running compilers (0 = automatic detection by MSVC). See documentation of /MP flag.")
     if (CMAKE_VERSION VERSION_LESS 3.11.0)
-      # Usage of COMPILE_LANGUAGE generator expression for MSVC in add_compile_options requires at least CMake 3.11, see https://gitlab.kitware.com/cmake/cmake/issues/17435	  
+      # Usage of COMPILE_LANGUAGE generator expression for MSVC in add_compile_options requires at least CMake 3.11, see https://gitlab.kitware.com/cmake/cmake/issues/17435
       if(MSVC_MP EQUAL 0)
         # MSVC_MP is 0 in case the information cannot be determined by ProcessorCount => fallback
         set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /MP")
@@ -173,8 +173,8 @@ if(CMAKE_COMPILER_IS_MSVC)
       elseif(MSVC_MP GREATER 1)
         set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /MP${MSVC_MP}")
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP${MSVC_MP}")
-      endif()      
-    else()      
+      endif()
+    else()
       if(MSVC_MP EQUAL 0)
         # MSVC_MP is 0 in case the information cannot be determined by ProcessorCount => fallback
         # Generator expression is necessary to limit /MP flag to C/CXX, so flag will be not set to e.g. CUDA (see https://gitlab.kitware.com/cmake/cmake/issues/17535)
@@ -361,18 +361,18 @@ if(WITH_QHULL)
 endif()
 
 # Cuda
-option(WITH_CUDA "Build NVIDIA-CUDA support" TRUE)
+option(WITH_CUDA "Build NVIDIA-CUDA support" FALSE)
 if(WITH_CUDA)
   include("${PCL_SOURCE_DIR}/cmake/pcl_find_cuda.cmake")
 endif()
 
-option(WITH_QT "Build QT Front-End" TRUE)
+option(WITH_QT "Build QT Front-End" FALSE)
 if(WITH_QT)
   find_package(Qt5 COMPONENTS Concurrent OpenGL Widgets QUIET)
 endif()
 
 # Find VTK
-option(WITH_VTK "Build VTK-Visualizations" TRUE)
+option(WITH_VTK "Build VTK-Visualizations" FALSE)
 if(WITH_VTK AND NOT ANDROID)
   set(PCL_VTK_COMPONENTS
     vtkChartsCore

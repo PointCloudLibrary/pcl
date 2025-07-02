@@ -41,6 +41,7 @@
 #include <iostream>
 #include <pcl/common/io.h>
 #include <pcl/filters/impl/voxel_grid.hpp>
+#include <boost/sort/spreadsort/integer_sort.hpp>
 
 using Array4size_t = Eigen::Array<std::size_t, 4, 1>;
 
@@ -74,8 +75,8 @@ pcl::getMinMax3D (const pcl::PCLPointCloud2ConstPtr &cloud, int x_idx, int y_idx
     memcpy (&pt[1], &cloud->data[xyz_offset[1]], sizeof (float));
     memcpy (&pt[2], &cloud->data[xyz_offset[2]], sizeof (float));
     // Check if the point is invalid
-    if (!std::isfinite (pt[0]) || 
-        !std::isfinite (pt[1]) || 
+    if (!std::isfinite (pt[0]) ||
+        !std::isfinite (pt[1]) ||
         !std::isfinite (pt[2]))
     {
       xyz_offset += cloud->point_step;
@@ -157,8 +158,8 @@ pcl::getMinMax3D (const pcl::PCLPointCloud2ConstPtr &cloud, int x_idx, int y_idx
     memcpy (&pt[1], &cloud->data[xyz_offset[1]], sizeof (float));
     memcpy (&pt[2], &cloud->data[xyz_offset[2]], sizeof (float));
     // Check if the point is invalid
-    if (!std::isfinite (pt[0]) || 
-        !std::isfinite (pt[1]) || 
+    if (!std::isfinite (pt[0]) ||
+        !std::isfinite (pt[1]) ||
         !std::isfinite (pt[2]))
     {
       xyz_offset += cloud->point_step;
@@ -215,8 +216,8 @@ pcl::VoxelGrid<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
   Eigen::Vector4f min_p, max_p;
   // Get the minimum and maximum dimensions
   if (!filter_field_name_.empty ()) // If we don't want to process the entire cloud...
-    getMinMax3D (input_, x_idx_, y_idx_, z_idx_, filter_field_name_, 
-                 static_cast<float> (filter_limit_min_), 
+    getMinMax3D (input_, x_idx_, y_idx_, z_idx_, filter_field_name_,
+                 static_cast<float> (filter_limit_min_),
                  static_cast<float> (filter_limit_max_), min_p, max_p, filter_limit_negative_);
   else
     getMinMax3D (input_, x_idx_, y_idx_, z_idx_, min_p, max_p);
@@ -263,8 +264,8 @@ pcl::VoxelGrid<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
   if (downsample_all_data_)
   {
     centroid_size = static_cast<int> (input_->fields.size ());
-    
-    // ---[ RGB special case 
+
+    // ---[ RGB special case
     // if the data contains "rgba" or "rgb", add an extra field for r/g/b in centroid
     for (int d = 0; d < centroid_size; ++d)
     {
@@ -276,7 +277,7 @@ pcl::VoxelGrid<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
       }
     }
   }
-  
+
   // If we don't want to process the entire cloud, but rather filter points far away from the viewpoint first...
   if (!filter_field_name_.empty ())
   {
@@ -327,8 +328,8 @@ pcl::VoxelGrid<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
       memcpy (&pt[2], &input_->data[xyz_offset[2]], sizeof (float));
 
       // Check if the point is invalid
-      if (!std::isfinite (pt[0]) || 
-          !std::isfinite (pt[1]) || 
+      if (!std::isfinite (pt[0]) ||
+          !std::isfinite (pt[1]) ||
           !std::isfinite (pt[2]))
       {
         xyz_offset += input_->point_step;
@@ -357,8 +358,8 @@ pcl::VoxelGrid<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
       memcpy (&pt[2], &input_->data[xyz_offset[2]], sizeof (float));
 
       // Check if the point is invalid
-      if (!std::isfinite (pt[0]) || 
-          !std::isfinite (pt[1]) || 
+      if (!std::isfinite (pt[0]) ||
+          !std::isfinite (pt[1]) ||
           !std::isfinite (pt[2]))
       {
         xyz_offset += input_->point_step;
@@ -377,16 +378,17 @@ pcl::VoxelGrid<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
 
   // Second pass: sort the index_vector vector using value representing target cell as index
   // in effect all points belonging to the same output cell will be next to each other
-  std::sort (index_vector.begin (), index_vector.end (), std::less<cloud_point_index_idx> ());
+  auto rightshift_func = [](const cloud_point_index_idx &x, const unsigned offset) { return x.idx >> offset; };
+  boost::sort::spreadsort::integer_sort(index_vector.begin(), index_vector.end(), rightshift_func);
 
   // Third pass: count output cells
   // we need to skip all the same, adjacenent idx values
   std::size_t total = 0;
   std::size_t index = 0;
-  while (index < index_vector.size ()) 
+  while (index < index_vector.size ())
   {
     std::size_t i = index + 1;
-    while (i < index_vector.size () && index_vector[i].idx == index_vector[index].idx) 
+    while (i < index_vector.size () && index_vector[i].idx == index_vector[index].idx)
       ++i;
     ++total;
     index = i;
@@ -397,7 +399,7 @@ pcl::VoxelGrid<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
   output.row_step = output.point_step * output.width;
   output.data.resize (output.width * output.point_step);
 
-  if (save_leaf_layout_) 
+  if (save_leaf_layout_)
   {
     try
     {
@@ -408,21 +410,21 @@ pcl::VoxelGrid<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
       for (std::uint32_t i = 0; i < reinit_size; i++)
       {
         leaf_layout_[i] = -1;
-      }        
-      leaf_layout_.resize (new_layout_size, -1);           
+      }
+      leaf_layout_.resize (new_layout_size, -1);
     }
     catch (std::bad_alloc&)
     {
-      throw PCLException("VoxelGrid bin size is too low; impossible to allocate memory for layout", 
-        "voxel_grid.cpp", "applyFilter");	
+      throw PCLException("VoxelGrid bin size is too low; impossible to allocate memory for layout",
+        "voxel_grid.cpp", "applyFilter");
     }
     catch (std::length_error&)
     {
-      throw PCLException("VoxelGrid bin size is too low; impossible to allocate memory for layout", 
-        "voxel_grid.cpp", "applyFilter");	
+      throw PCLException("VoxelGrid bin size is too low; impossible to allocate memory for layout",
+        "voxel_grid.cpp", "applyFilter");
     }
   }
-  
+
   // If we downsample each field, the {x,y,z}_idx_ offsets should correspond in input_ and output
   if (downsample_all_data_)
     xyz_offset = Array4size_t (output.fields[x_idx_].offset,
@@ -441,7 +443,7 @@ pcl::VoxelGrid<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
   {
     std::size_t point_offset = index_vector[cp].cloud_point_index * input_->point_step;
     // Do we need to process all the fields?
-    if (!downsample_all_data_) 
+    if (!downsample_all_data_)
     {
       memcpy (&pt[0], &input_->data[point_offset+input_->fields[x_idx_].offset], sizeof (float));
       memcpy (&pt[1], &input_->data[point_offset+input_->fields[y_idx_].offset], sizeof (float));
@@ -470,10 +472,10 @@ pcl::VoxelGrid<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
     }
 
     std::size_t i = cp + 1;
-    while (i < index_vector.size () && index_vector[i].idx == index_vector[cp].idx) 
+    while (i < index_vector.size () && index_vector[i].idx == index_vector[cp].idx)
     {
       std::size_t point_offset = index_vector[i].cloud_point_index * input_->point_step;
-      if (!downsample_all_data_) 
+      if (!downsample_all_data_)
       {
         memcpy (&pt[0], &input_->data[point_offset+input_->fields[x_idx_].offset], sizeof (float));
         memcpy (&pt[1], &input_->data[point_offset+input_->fields[y_idx_].offset], sizeof (float));
@@ -528,7 +530,7 @@ pcl::VoxelGrid<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
 
       // ---[ RGB special case
       // full extra r/g/b centroid field
-      if (rgba_index >= 0) 
+      if (rgba_index >= 0)
       {
         float r = centroid[centroid_size-4], g = centroid[centroid_size-3], b = centroid[centroid_size-2], a = centroid[centroid_size-1];
         int rgb = (static_cast<int> (a) << 24) | (static_cast<int> (r) << 16) | (static_cast<int> (g) << 8) | static_cast<int> (b);

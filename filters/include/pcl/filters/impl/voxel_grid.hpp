@@ -42,6 +42,7 @@
 #include <pcl/common/common.h>
 #include <pcl/common/io.h>
 #include <pcl/filters/voxel_grid.h>
+#include <boost/sort/spreadsort/integer_sort.hpp>
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
@@ -107,8 +108,8 @@ pcl::getMinMax3D (const typename pcl::PointCloud<PointT>::ConstPtr &cloud,
       }
 
       // Check if the point is invalid
-      if (!std::isfinite (cloud->points[i].x) || 
-          !std::isfinite (cloud->points[i].y) || 
+      if (!std::isfinite (cloud->points[i].x) ||
+          !std::isfinite (cloud->points[i].y) ||
           !std::isfinite (cloud->points[i].z))
         continue;
       // Create the point structure and get the min/max
@@ -186,8 +187,8 @@ pcl::getMinMax3D (const typename pcl::PointCloud<PointT>::ConstPtr &cloud,
       }
 
       // Check if the point is invalid
-      if (!std::isfinite (cloud->points[index].x) || 
-          !std::isfinite (cloud->points[index].y) || 
+      if (!std::isfinite (cloud->points[index].x) ||
+          !std::isfinite (cloud->points[index].y) ||
           !std::isfinite (cloud->points[index].z))
         continue;
       // Create the point structure and get the min/max
@@ -200,11 +201,12 @@ pcl::getMinMax3D (const typename pcl::PointCloud<PointT>::ConstPtr &cloud,
   max_pt = max_p;
 }
 
-struct cloud_point_index_idx 
+struct cloud_point_index_idx
 {
   unsigned int idx;
   unsigned int cloud_point_index;
 
+  cloud_point_index_idx() = default;
   cloud_point_index_idx (unsigned int idx_, unsigned int cloud_point_index_) : idx (idx_), cloud_point_index (cloud_point_index_) {}
   bool operator < (const cloud_point_index_idx &p) const { return (idx < p.idx); }
 };
@@ -280,8 +282,8 @@ pcl::VoxelGrid<PointT>::applyFilter (PointCloud &output)
     {
       if (!input_->is_dense)
         // Check if the point is invalid
-        if (!std::isfinite (input_->points[*it].x) || 
-            !std::isfinite (input_->points[*it].y) || 
+        if (!std::isfinite (input_->points[*it].x) ||
+            !std::isfinite (input_->points[*it].y) ||
             !std::isfinite (input_->points[*it].z))
           continue;
 
@@ -302,7 +304,7 @@ pcl::VoxelGrid<PointT>::applyFilter (PointCloud &output)
         if ((distance_value > filter_limit_max_) || (distance_value < filter_limit_min_))
           continue;
       }
-      
+
       int ijk0 = static_cast<int> (std::floor (input_->points[*it].x * inverse_leaf_size_[0]) - static_cast<float> (min_b_[0]));
       int ijk1 = static_cast<int> (std::floor (input_->points[*it].y * inverse_leaf_size_[1]) - static_cast<float> (min_b_[1]));
       int ijk2 = static_cast<int> (std::floor (input_->points[*it].z * inverse_leaf_size_[2]) - static_cast<float> (min_b_[2]));
@@ -322,8 +324,8 @@ pcl::VoxelGrid<PointT>::applyFilter (PointCloud &output)
     {
       if (!input_->is_dense)
         // Check if the point is invalid
-        if (!std::isfinite (input_->points[*it].x) || 
-            !std::isfinite (input_->points[*it].y) || 
+        if (!std::isfinite (input_->points[*it].x) ||
+            !std::isfinite (input_->points[*it].y) ||
             !std::isfinite (input_->points[*it].z))
           continue;
 
@@ -339,7 +341,8 @@ pcl::VoxelGrid<PointT>::applyFilter (PointCloud &output)
 
   // Second pass: sort the index_vector vector using value representing target cell as index
   // in effect all points belonging to the same output cell will be next to each other
-  std::sort (index_vector.begin (), index_vector.end (), std::less<cloud_point_index_idx> ());
+  auto rightshift_func = [](const cloud_point_index_idx &x, const unsigned offset) { return x.idx >> offset; };
+  boost::sort::spreadsort::integer_sort(index_vector.begin(), index_vector.end(), rightshift_func);
 
   // Third pass: count output cells
   // we need to skip all the same, adjacent idx values
@@ -351,10 +354,10 @@ pcl::VoxelGrid<PointT>::applyFilter (PointCloud &output)
   std::vector<std::pair<unsigned int, unsigned int> > first_and_last_indices_vector;
   // Worst case size
   first_and_last_indices_vector.reserve (index_vector.size ());
-  while (index < index_vector.size ()) 
+  while (index < index_vector.size ())
   {
     unsigned int i = index + 1;
-    while (i < index_vector.size () && index_vector[i].idx == index_vector[index].idx) 
+    while (i < index_vector.size () && index_vector[i].idx == index_vector[index].idx)
       ++i;
     if (i - index >= min_points_per_voxel_)
     {
@@ -369,7 +372,7 @@ pcl::VoxelGrid<PointT>::applyFilter (PointCloud &output)
   if (save_leaf_layout_)
   {
     try
-    { 
+    {
       // Resizing won't reset old elements to -1.  If leaf_layout_ has been used previously, it needs to be re-initialized to -1
       std::uint32_t new_layout_size = div_b_[0]*div_b_[1]*div_b_[2];
       //This is the number of elements that need to be re-initialized to -1
@@ -377,21 +380,21 @@ pcl::VoxelGrid<PointT>::applyFilter (PointCloud &output)
       for (std::uint32_t i = 0; i < reinit_size; i++)
       {
         leaf_layout_[i] = -1;
-      }        
-      leaf_layout_.resize (new_layout_size, -1);           
+      }
+      leaf_layout_.resize (new_layout_size, -1);
     }
     catch (std::bad_alloc&)
     {
-      throw PCLException("VoxelGrid bin size is too low; impossible to allocate memory for layout", 
-        "voxel_grid.hpp", "applyFilter");	
+      throw PCLException("VoxelGrid bin size is too low; impossible to allocate memory for layout",
+        "voxel_grid.hpp", "applyFilter");
     }
     catch (std::length_error&)
     {
-      throw PCLException("VoxelGrid bin size is too low; impossible to allocate memory for layout", 
-        "voxel_grid.hpp", "applyFilter");	
+      throw PCLException("VoxelGrid bin size is too low; impossible to allocate memory for layout",
+        "voxel_grid.hpp", "applyFilter");
     }
   }
-  
+
   index = 0;
   for (const auto &cp : first_and_last_indices_vector)
   {
@@ -420,11 +423,11 @@ pcl::VoxelGrid<PointT>::applyFilter (PointCloud &output)
 
       // fill in the accumulator with leaf points
       for (unsigned int li = first_index; li < last_index; ++li)
-        centroid.add (input_->points[index_vector[li].cloud_point_index]);  
+        centroid.add (input_->points[index_vector[li].cloud_point_index]);
 
       centroid.get (output.points[index]);
     }
-     
+
     ++index;
   }
   output.width = static_cast<std::uint32_t> (output.points.size ());
