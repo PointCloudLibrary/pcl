@@ -109,11 +109,9 @@ compute (const pcl::PCLPointCloud2::ConstPtr &input, pcl::PCLPointCloud2 &output
   RandomSampleConsensus<PointXYZ> sac (model, threshold);
   sac.setMaxIterations (max_iterations);
   bool res = sac.computeModel ();
-  
-  pcl::Indices inliers;
-  sac.getInliers (inliers);
-  Eigen::VectorXf coefficients;
-  sac.getModelCoefficients (coefficients);
+
+  auto inliers = sac.getInliers ();
+  Eigen::VectorXf coefficients = sac.getModelCoefficients ();
 
   if (!res || inliers.empty ())
   {
@@ -121,8 +119,8 @@ compute (const pcl::PCLPointCloud2::ConstPtr &input, pcl::PCLPointCloud2 &output
     return;
   }
   sac.refineModel (2, 50);
-  sac.getInliers (inliers);
-  sac.getModelCoefficients (coefficients);
+  inliers = sac.getInliers ();
+  coefficients = sac.getModelCoefficients ();
 
   print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms, plane has : "); print_value ("%lu", inliers.size ()); print_info (" points]\n");
 

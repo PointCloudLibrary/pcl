@@ -110,8 +110,7 @@ CorrespondenceRejectorSampleConsensus<PointT>::getRemainingCorrespondences(
       return;
     }
 
-    pcl::Indices inliers;
-    sac.getInliers(inliers);
+    const auto inliers = sac.getInliers();
 
     if (inliers.size() < 3) {
       remaining_correspondences = original_correspondences;
@@ -133,9 +132,8 @@ CorrespondenceRejectorSampleConsensus<PointT>::getRemainingCorrespondences(
         inlier_indices_.push_back(index_to_correspondence[inlier]);
     }
 
-    // get best transformation
-    Eigen::VectorXf model_coefficients;
-    sac.getModelCoefficients(model_coefficients);
+    // get the best transformation
+    Eigen::VectorXf model_coefficients = sac.getModelCoefficients();
     best_transformation_.row(0) = model_coefficients.segment<4>(0);
     best_transformation_.row(1) = model_coefficients.segment<4>(4);
     best_transformation_.row(2) = model_coefficients.segment<4>(8);
