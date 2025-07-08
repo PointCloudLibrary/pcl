@@ -310,15 +310,13 @@ namespace pcl
       inline const Indices&
       getModel() const {return model_;  }
 
-      /** \brief Return the model coefficients of the best model found so far.
+      /** \brief Return the best set of inliers found so far for this model.
         * \param[out] inliers the resultant set of inliers
         */
       inline void 
       getInliers (Indices &inliers) const { inliers = inliers_; }
 
-      /**
-       *
-       * \brief Return the model coefficients of the best model found so far.
+      /** \brief Return the best set of inliers found so far for this model.
        * \return the resultant set of inliers
        */
       inline const Indices&

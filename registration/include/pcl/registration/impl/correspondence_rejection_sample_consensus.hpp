@@ -110,7 +110,7 @@ CorrespondenceRejectorSampleConsensus<PointT>::getRemainingCorrespondences(
       return;
     }
 
-    const auto inliers = sac.getInliers();
+    const auto& inliers = sac.getInliers();
 
     if (inliers.size() < 3) {
       remaining_correspondences = original_correspondences;
@@ -133,7 +133,7 @@ CorrespondenceRejectorSampleConsensus<PointT>::getRemainingCorrespondences(
     }
 
     // get the best transformation
-    Eigen::VectorXf model_coefficients = sac.getModelCoefficients();
+    const Eigen::VectorXf& model_coefficients = sac.getModelCoefficients();
     best_transformation_.row(0) = model_coefficients.segment<4>(0);
     best_transformation_.row(1) = model_coefficients.segment<4>(4);
     best_transformation_.row(2) = model_coefficients.segment<4>(8);
