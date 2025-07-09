@@ -122,8 +122,6 @@ compute (const CloudT::Ptr &cloud,
 
   // estimate surface normals
   pcl::NormalEstimation<PointT, pcl::PointNormal> ne;
-  pcl::search::KdTree<PointT>::Ptr tree (new pcl::search::KdTree<PointT> ());
-  ne.setSearchMethod (tree);
   ne.setInputCloud (cloud);
   ne.setRadiusSearch (normal_radius_search);
   ne.compute (*cloud_normals);

@@ -352,10 +352,11 @@ if(NOT EIGEN3_FOUND AND Eigen3_FOUND)
 endif()
 
 # FLANN
-find_package(FLANN 1.9.1)
+find_package(FLANN 1.9.1)#TODO comment out?
 if(NOT FLANN_FOUND)
   message(WARNING "Flann was not found, so many PCL modules will not be built!")
 else()
+  set(PCL_HAS_FLANN 1)
   if(NOT (${FLANN_LIBRARY_TYPE} MATCHES ${PCL_FLANN_REQUIRED_TYPE}) AND NOT (${PCL_FLANN_REQUIRED_TYPE} MATCHES "DONTCARE"))
     message(FATAL_ERROR "Flann was selected with ${PCL_FLANN_REQUIRED_TYPE} but found as ${FLANN_LIBRARY_TYPE}")
   endif()

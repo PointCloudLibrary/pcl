@@ -57,6 +57,7 @@
 #include <pcl/filters/conditional_removal.h>
 #include <pcl/filters/median_filter.h>
 #include <pcl/filters/normal_refinement.h>
+#include <pcl/search/kdtree.h> // for KdTree
 
 #include <pcl/common/transforms.h>
 #include <pcl/common/eigen.h>

@@ -43,6 +43,7 @@
 #include <pcl/io/pcd_io.h>
 #include <pcl/PCLPointCloud2.h>
 #include <pcl/point_types.h>
+#include <pcl/search/kdtree.h> // for KdTree
 
 #include <fstream>
 

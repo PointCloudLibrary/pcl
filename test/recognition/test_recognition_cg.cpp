@@ -48,6 +48,7 @@
 #include <pcl/recognition/cg/hough_3d.h>
 #include <pcl/recognition/cg/geometric_consistency.h>
 #include <pcl/common/eigen.h>
+#include <pcl/kdtree/kdtree_flann.h> // for KdTreeFLANN
 
 using namespace pcl;
 using namespace pcl::io;

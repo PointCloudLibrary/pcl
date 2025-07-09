@@ -196,7 +196,6 @@ namespace pcl
       using NormalCloudT = pcl::PointCloud<Normal>;
       using OctreeAdjacencyT = pcl::octree::OctreePointCloudAdjacency<PointT, LeafContainerT>;
       using OctreeSearchT = pcl::octree::OctreePointCloudSearch<PointT>;
-      using KdTreeT = pcl::search::KdTree<PointT>;
       using IndicesPtr = pcl::IndicesPtr;
 
       using PCLBase <PointT>::initCompute;
@@ -381,7 +380,7 @@ namespace pcl
       transformFunction (PointT &p);
 
       /** \brief Contains a KDtree for the voxelized cloud */
-      typename pcl::search::KdTree<PointT>::Ptr voxel_kdtree_;
+      typename pcl::search::Search<PointT>::Ptr voxel_kdtree_;
 
       /** \brief Octree Adjacency structure with leaves at voxel resolution */
       typename OctreeAdjacencyT::Ptr adjacency_octree_;

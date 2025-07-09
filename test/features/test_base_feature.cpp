@@ -42,6 +42,7 @@
 #include <pcl/features/feature.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/common/centroid.h>
+#include <pcl/search/kdtree.h> // for KdTree
 
 using namespace pcl;
 using namespace pcl::io;

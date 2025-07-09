@@ -46,6 +46,7 @@
 #include "pcl/features/shot_lrf.h"
 #include <pcl/features/3dsc.h>
 #include <pcl/features/usc.h>
+#include <pcl/search/kdtree.h> // for KdTree
 
 using namespace pcl;
 using namespace pcl::io;
