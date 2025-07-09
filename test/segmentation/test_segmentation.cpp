@@ -55,7 +55,6 @@ using namespace pcl::io;
 
 PointCloud<PointXYZ>::Ptr cloud_;
 PointCloud<PointXYZ>::Ptr cloud_t_;
-KdTree<PointXYZ>::Ptr tree_;
 
 pcl::PointCloud<pcl::PointXYZRGB>::Ptr colored_cloud;
 pcl::PointCloud<pcl::PointXYZ>::Ptr another_cloud_;

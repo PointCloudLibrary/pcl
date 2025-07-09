@@ -41,6 +41,7 @@
 #include <pcl/point_cloud.h>
 #include <pcl/features/rops_estimation.h>
 #include <pcl/io/pcd_io.h>
+#include <pcl/search/kdtree.h> // for KdTree
 
 pcl::PointCloud <pcl::PointXYZ>::Ptr cloud;
 pcl::PointIndicesPtr indices;

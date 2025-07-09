@@ -3,7 +3,7 @@ set(SUBSYS_DESC "Point cloud generic search library")
 set(SUBSYS_DEPS common kdtree octree)
 
 PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ON)
-PCL_SUBSYS_DEPEND(build NAME ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} OPT_DEPS OpenMP EXT_DEPS flann)
+PCL_SUBSYS_DEPEND(build NAME ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} OPT_DEPS OpenMP flann)# EXT_DEPS flann)
 
 PCL_ADD_DOC("${SUBSYS_NAME}")
 
@@ -12,14 +12,21 @@ if(NOT build)
 endif()
 
 set(srcs
+  src/auto.cpp
   src/search.cpp
-  src/kdtree.cpp
   src/brute_force.cpp
   src/organized.cpp
   src/octree.cpp
 )
 
+if(FLANN_FOUND)
+  list(APPEND srcs
+    src/kdtree.cpp
+  )
+endif()
+
 set(incs
+  "include/pcl/${SUBSYS_NAME}/auto.h"
   "include/pcl/${SUBSYS_NAME}/search.h"
   "include/pcl/${SUBSYS_NAME}/kdtree.h"
   "include/pcl/${SUBSYS_NAME}/kdtree_nanoflann.h"
@@ -40,8 +47,11 @@ set(impl_incs
 
 set(LIB_NAME "pcl_${SUBSYS_NAME}")
 PCL_ADD_LIBRARY(${LIB_NAME} COMPONENT ${SUBSYS_NAME} SOURCES ${srcs} ${incs} ${impl_incs})
-target_link_libraries("${LIB_NAME}" pcl_common FLANN::FLANN pcl_octree pcl_kdtree)
-list(APPEND EXT_DEPS flann)
+target_link_libraries("${LIB_NAME}" pcl_common pcl_octree pcl_kdtree)
+if(FLANN_FOUND)
+  target_link_libraries("${LIB_NAME}" FLANN::FLANN)
+  list(APPEND EXT_DEPS flann)
+endif()
 PCL_MAKE_PKGCONFIG(${LIB_NAME} COMPONENT ${SUBSYS_NAME} DESC ${SUBSYS_DESC} PCL_DEPS ${SUBSYS_DEPS})
 
 PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}" ${incs})

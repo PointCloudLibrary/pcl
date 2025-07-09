@@ -40,7 +40,8 @@
 #include <pcl/filters/voxel_grid.h>
 #include <map>
 #include <pcl/point_types.h>
-#include <pcl/kdtree/kdtree_flann.h>
+#include <pcl/search/search.h>
+#include <pcl/search/auto.h> // for autoSelectMethod
 
 namespace pcl
 {
@@ -196,8 +197,7 @@ namespace pcl
        */
       VoxelGridCovariance () :
         leaves_ (),
-        voxel_centroids_ (),
-        kdtree_ ()
+        voxel_centroids_ ()
       {
         downsample_all_data_ = false;
         save_leaf_layout_ = false;
@@ -270,7 +270,7 @@ namespace pcl
             searchable_ = false;
           } else {
             // Initiates kdtree of the centroids of voxels containing a sufficient number of points
-            kdtree_.setInputCloud (voxel_centroids_);
+            kdtree_.reset (pcl::search::autoSelectMethod<PointT>(voxel_centroids_, true)); // TODO sorted or not?
           }
         }
       }
@@ -292,7 +292,7 @@ namespace pcl
             searchable_ = false;
           } else {
             // Initiates kdtree of the centroids of voxels containing a sufficient number of points
-            kdtree_.setInputCloud (voxel_centroids_);
+            kdtree_.reset (pcl::search::autoSelectMethod<PointT>(voxel_centroids_, true)); // TODO sorted or not?
           }
         }
       }
@@ -462,7 +462,7 @@ namespace pcl
 
         // Find k-nearest neighbors in the occupied voxel centroid cloud
         Indices k_indices (k);
-        k = kdtree_.nearestKSearch (point, k, k_indices, k_sqr_distances);
+        k = kdtree_->nearestKSearch (point, k, k_indices, k_sqr_distances);
 
         // Find leaves corresponding to neighbors
         k_leaves.reserve (k);
@@ -521,7 +521,7 @@ namespace pcl
 
         // Find neighbors within radius in the occupied voxel centroid cloud
         Indices k_indices;
-        const int k = kdtree_.radiusSearch (point, radius, k_indices, k_sqr_distances, max_nn);
+        const int k = kdtree_->radiusSearch (point, radius, k_indices, k_sqr_distances, max_nn);
 
         // Find leaves corresponding to neighbors
         k_leaves.reserve (k);
@@ -583,7 +583,8 @@ namespace pcl
       std::vector<int> voxel_centroids_leaf_indices_;
 
       /** \brief KdTree generated using \ref voxel_centroids_ (used for searching). */
-      KdTreeFLANN<PointT> kdtree_;
+      //KdTreeFLANN<PointT> kdtree_;
+      typename pcl::search::Search<PointT>::Ptr kdtree_;
   };
 }
 

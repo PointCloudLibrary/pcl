@@ -41,8 +41,7 @@
 #define PCL_FILTERS_IMPL_STATISTICAL_OUTLIER_REMOVAL_H_
 
 #include <pcl/filters/statistical_outlier_removal.h>
-#include <pcl/search/organized.h> // for OrganizedNeighbor
-#include <pcl/search/kdtree.h> // for KdTree
+#include <pcl/search/auto.h> // for autoSelectMethod
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
@@ -51,12 +50,9 @@ pcl::StatisticalOutlierRemoval<PointT>::applyFilterIndices (Indices &indices)
   // Initialize the search class
   if (!searcher_)
   {
-    if (input_->isOrganized ())
-      searcher_.reset (new pcl::search::OrganizedNeighbor<PointT> ());
-    else
-      searcher_.reset (new pcl::search::KdTree<PointT> (false));
+    searcher_.reset (pcl::search::autoSelectMethod<PointT>(input_, false, pcl::search::Purpose::many_knn_search));
   }
-  if (!searcher_->setInputCloud (input_))
+  else if (!searcher_->setInputCloud (input_))
   {
     PCL_ERROR ("[pcl::%s::applyFilter] Error when initializing search method!\n", getClassName ().c_str ());
     indices.clear ();

@@ -41,7 +41,7 @@
 #pragma once
 
 #include <pcl/kdtree/kdtree.h>
-#include <flann/util/params.h>
+//#include <flann/util/params.h> // TODO remove?
 
 #include <memory>
 
@@ -50,6 +50,36 @@ namespace flann
 {
   template <typename T> struct L2_Simple;
   template <typename T> class Index;
+  struct SearchParams;
+#if 0
+struct SearchParams
+{
+    SearchParams(int checks_ = 32, float eps_ = 0.0, bool sorted_ = true ) :
+    	checks(checks_), eps(eps_), sorted(sorted_)
+    {
+    	max_neighbors = -1;
+    	use_heap = FLANN_Undefined;
+    	cores = 1;
+    	matrices_in_gpu_ram = false;
+    }
+
+    // how many leafs to visit when searching for neighbours (-1 for unlimited)
+    int checks;
+    // search for eps-approximate neighbours (default: 0)
+    float eps;
+    // only for radius search, require neighbours sorted by distance (default: true)
+    bool sorted;
+    // maximum number of neighbors radius search should return (-1 for unlimited)
+    int max_neighbors;
+    // use a heap to manage the result set (default: FLANN_Undefined)
+    tri_type use_heap;
+    // how many cores to assign to the search (used only if compiled with OpenMP capable compiler) (0 for auto)
+    int cores;
+    // for GPU search indicates if matrices are already in GPU ram
+    bool matrices_in_gpu_ram;
+};
+
+#endif
 }
 
 namespace pcl
@@ -177,8 +207,8 @@ public:
     identity_mapping_ = k.identity_mapping_;
     dim_ = k.dim_;
     total_nr_points_ = k.total_nr_points_;
-    param_k_ = k.param_k_;
-    param_radius_ = k.param_radius_;
+    //param_k_ = k.param_k_;
+    //param_radius_ = k.param_radius_;
     return (*this);
   }
 
@@ -306,10 +336,10 @@ private:
   uindex_t total_nr_points_{0};
 
   /** \brief The KdTree search parameters for K-nearest neighbors. */
-  ::flann::SearchParams param_k_;
+  //std::shared_ptr<::flann::SearchParams> param_k_;
 
   /** \brief The KdTree search parameters for radius search. */
-  ::flann::SearchParams param_radius_;
+  //std::shared_ptr<::flann::SearchParams> param_radius_;
   };
 }
 
