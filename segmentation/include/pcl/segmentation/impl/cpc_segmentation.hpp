@@ -159,12 +159,11 @@ pcl::CPCSegmentation<PointT>::applyCuttingPlane (std::uint32_t depth_levels_left
       continue;
     }
 
-    Eigen::VectorXf model_coefficients;
-    weight_sac.getModelCoefficients (model_coefficients);
+    Eigen::VectorXf model_coefficients = weight_sac.getModelCoefficients ();
 
     model_coefficients[3] += std::numeric_limits<float>::epsilon ();    
 
-    weight_sac.getInliers (*support_indices);
+    *support_indices = weight_sac.getInliers ();
 
     // the support_indices which are actually cut (if not locally constrain:  cut_support_indices = support_indices
     pcl::Indices cut_support_indices;
