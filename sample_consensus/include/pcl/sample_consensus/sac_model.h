@@ -48,6 +48,7 @@
 #include <boost/random/uniform_int.hpp> // for uniform_int
 #include <boost/random/variate_generator.hpp> // for variate_generator
 #include <random>
+#include <numeric>
 
 #include <pcl/memory.h>
 #include <pcl/console/print.h>
