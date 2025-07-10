@@ -110,7 +110,7 @@ CorrespondenceRejectorSampleConsensus2D<PointT>::getRemainingCorrespondences(
         "[pcl::registration::%s::getRemainingCorrespondences] Error refining model!\n",
         getClassName().c_str());
 
-  const auto inliers = sac.getInliers();
+  const auto& inliers = sac.getInliers();
 
   if (inliers.size() < 3) {
     PCL_ERROR("[pcl::registration::%s::getRemainingCorrespondences] Less than 3 "
@@ -131,7 +131,7 @@ CorrespondenceRejectorSampleConsensus2D<PointT>::getRemainingCorrespondences(
         original_correspondences[index_to_correspondence[inliers[i]]];
 
   // get the best transformation
-  Eigen::VectorXf model_coefficients = sac.getModelCoefficients();
+  const Eigen::VectorXf& model_coefficients = sac.getModelCoefficients();
   best_transformation_.row(0) = model_coefficients.segment<4>(0);
   best_transformation_.row(1) = model_coefficients.segment<4>(4);
   best_transformation_.row(2) = model_coefficients.segment<4>(8);
