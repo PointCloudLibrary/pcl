@@ -110,8 +110,8 @@ compute (const pcl::PCLPointCloud2::ConstPtr &input, pcl::PCLPointCloud2 &output
   sac.setMaxIterations (max_iterations);
   bool res = sac.computeModel ();
 
-  auto inliers = sac.getInliers ();
-  Eigen::VectorXf coefficients = sac.getModelCoefficients ();
+  const auto& inliers = sac.getInliers ();
+  const auto& coefficients = sac.getModelCoefficients ();
 
   if (!res || inliers.empty ())
   {
