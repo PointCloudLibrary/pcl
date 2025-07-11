@@ -41,55 +41,52 @@
 
 class QAction;
 
-namespace pcl
-{
-  namespace cloud_composer
+namespace pcl {
+namespace cloud_composer {
+
+class AbstractTool;
+class AbstractCommand;
+class PropertiesModel;
+
+class ToolFactory {
+public:
+  virtual AbstractTool*
+  createTool(PropertiesModel* parameter_model = nullptr, QObject* parent = nullptr) = 0;
+
+  virtual PropertiesModel*
+  createToolParameterModel(QObject* parent) = 0;
+
+  virtual QString
+  getPluginName() const = 0;
+
+  virtual QString
+  getToolGroupName() const = 0;
+
+  virtual QString
+  getIconName() const = 0;
+
+  /** \brief Reimplement this function to return the proper number if tool requires more
+   * than one input item */
+  inline virtual int
+  getNumInputItems() const
   {
-    
-    
-    class AbstractTool;
-    class AbstractCommand;
-    class PropertiesModel;
-    
-    class ToolFactory
-    {
-      public:
-        virtual AbstractTool*
-        createTool (PropertiesModel* parameter_model = nullptr, QObject* parent = nullptr) = 0;
-            
-        virtual PropertiesModel*
-        createToolParameterModel (QObject* parent) = 0;
-        
-        virtual QString
-        getPluginName () const = 0;
-        
-        virtual QString
-        getToolGroupName () const = 0; 
-        
-        virtual QString 
-        getIconName () const = 0;
-        
-        /** \brief Reimplement this function to return the proper number if tool requires more than one input item */
-        inline virtual int
-        getNumInputItems () const 
-        { 
-          return 1;
-        }
-        
-        /** \brief Returns a list of allowed input item types. Implement in tools so GUI can prevent impossible actions */
-        virtual CloudComposerItem::ItemType
-        getInputItemType () const = 0;
-        
-        /** \brief Returns a list of required input children. Implement in tools so GUI can prevent impossible actions */
-        virtual QList <CloudComposerItem::ItemType>
-        getRequiredInputChildrenTypes () const = 0;
-
-    };
-
+    return 1;
   }
-}
 
-Q_DECLARE_METATYPE (pcl::cloud_composer::ToolFactory*);
+  /** \brief Returns a list of allowed input item types. Implement in tools so GUI can
+   * prevent impossible actions */
+  virtual CloudComposerItem::ItemType
+  getInputItemType() const = 0;
 
-Q_DECLARE_INTERFACE(pcl::cloud_composer::ToolFactory,
-                    "cloud_composer.ToolFactory/1.0")
+  /** \brief Returns a list of required input children. Implement in tools so GUI can
+   * prevent impossible actions */
+  virtual QList<CloudComposerItem::ItemType>
+  getRequiredInputChildrenTypes() const = 0;
+};
+
+} // namespace cloud_composer
+} // namespace pcl
+
+Q_DECLARE_METATYPE(pcl::cloud_composer::ToolFactory*);
+
+Q_DECLARE_INTERFACE(pcl::cloud_composer::ToolFactory, "cloud_composer.ToolFactory/1.0")
