@@ -78,24 +78,11 @@ pcl::RandomSampleConsensus<PointT>::computeModel (int)
   // suppress infinite loops by just allowing 10 x maximum allowed iterations for invalid model parameters!
   const unsigned max_skip = max_iterations_ * 10;
 
-  int threads = threads_;
-  if (threads >= 0)
-  {
 #if OPENMP_AVAILABLE_RANSAC
-    if (threads == 0)
-    {
-      threads = omp_get_num_procs();
-      PCL_DEBUG ("[pcl::RandomSampleConsensus::computeModel] Automatic number of threads requested, choosing %i threads.\n", threads);
-    }
-#else
-    // Parallelization desired, but not available
-    PCL_WARN ("[pcl::RandomSampleConsensus::computeModel] Parallelization is requested, but OpenMP 3.1 is not available! Continuing without parallelization.\n");
-    threads = -1;
-#endif
-  }
-
-#if OPENMP_AVAILABLE_RANSAC
-#pragma omp parallel if(threads > 0) num_threads(threads) shared(k, skipped_count, n_best_inliers_count) firstprivate(selection, model_coefficients) // would be nice to have a default(none)-clause here, but then some compilers complain about the shared const variables
+#pragma omp parallel \
+  num_threads(num_threads_) \
+  shared(k, skipped_count, n_best_inliers_count) \
+  firstprivate(selection, model_coefficients) // would be nice to have a default(none)-clause here, but then some compilers complain about the shared const variables
 #endif
   {
 #if OPENMP_AVAILABLE_RANSAC
