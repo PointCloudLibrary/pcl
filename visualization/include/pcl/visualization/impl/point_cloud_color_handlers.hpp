@@ -361,86 +361,6 @@ PointCloudColorHandlerHSVField<PointT>::getColor () const
   return scalars;
 }
 
-
-template <typename PointT> void
-PointCloudColorHandlerGenericField<PointT>::setInputCloud (
-    const PointCloudConstPtr &cloud)
-{
-  PointCloudColorHandler<PointT>::setInputCloud (cloud);
-  field_idx_  = pcl::getFieldIndex<PointT> (field_name_, fields_);
-  if (field_idx_ == -1) {
-    capable_ = false;
-    return;
-  }
-  if (fields_[field_idx_].datatype != pcl::PCLPointField::PointFieldTypes::FLOAT32) {
-    capable_ = false;
-    PCL_ERROR("[pcl::PointCloudColorHandlerGenericField::setInputCloud] This currently only works with float32 fields, but field %s has a different type.\n", field_name_.c_str());
-    return;
-  }
-  capable_ = true;
-}
-
-
-template <typename PointT> vtkSmartPointer<vtkDataArray>
-PointCloudColorHandlerGenericField<PointT>::getColor () const
-{
-  if (!capable_ || !cloud_)
-    return nullptr;
-
-  auto scalars = vtkSmartPointer<vtkFloatArray>::New ();
-  scalars->SetNumberOfComponents (1);
-
-  vtkIdType nr_points = cloud_->size ();
-  scalars->SetNumberOfTuples (nr_points);
-
-  using FieldList = typename pcl::traits::fieldList<PointT>::type;
-
-  float* colors = new float[nr_points];
-  float field_data;
-
-  int j = 0;
-  // If XYZ present, check if the points are invalid
-  int x_idx = -1;
-  for (std::size_t d = 0; d < fields_.size (); ++d)
-    if (fields_[d].name == "x")
-      x_idx = static_cast<int> (d);
-
-  if (x_idx != -1)
-  {
-    // Color every point
-    for (vtkIdType cp = 0; cp < nr_points; ++cp)
-    {
-      // Copy the value at the specified field
-      if (!pcl::isXYZFinite((*cloud_)[cp]))
-        continue;
-
-      const std::uint8_t* pt_data = reinterpret_cast<const std::uint8_t*> (&(*cloud_)[cp]);
-      memcpy (&field_data, pt_data + fields_[field_idx_].offset, pcl::getFieldSize (fields_[field_idx_].datatype));
-
-      colors[j] = field_data;
-      j++;
-    }
-  }
-  else
-  {
-    // Color every point
-    for (vtkIdType cp = 0; cp < nr_points; ++cp)
-    {
-      const std::uint8_t* pt_data = reinterpret_cast<const std::uint8_t*> (&(*cloud_)[cp]);
-      memcpy (&field_data, pt_data + fields_[field_idx_].offset, pcl::getFieldSize (fields_[field_idx_].datatype));
-
-      if (!std::isfinite (field_data))
-        continue;
-
-      colors[j] = field_data;
-      j++;
-    }
-  }
-  scalars->SetArray (colors, j, 0, vtkFloatArray::VTK_DATA_ARRAY_DELETE);
-  return scalars;
-}
-
-
 template <typename PointT> void
 PointCloudColorHandlerRGBAField<PointT>::setInputCloud (
     const PointCloudConstPtr &cloud)
@@ -564,6 +484,177 @@ PointCloudColorHandlerLabelField<PointT>::getColor () const
   return scalars;
 }
 
+// ----
+// template specializations for PointCloud and PCLPointCloud2 to access certain
+// data from PointCloudColorHandlerGenericField without needing to know the
+// cloud type
+
+// Get point fields from cloud. Could not get it to work with existing
+// pcl::getFields
+inline template <typename CloudT> std::vector<pcl::PCLPointField>
+getFields(const CloudT& cloud)
+{
+  return pcl::getFields<typename CloudT::PointType>();
+}
+
+// Get point step. Does not directly exist in pcl::PointCloud
+inline template <typename CloudT> int getPointStep(const CloudT&)
+{
+  return sizeof(typename CloudT::PointType);
+}
+
+// Get cloud data blob
+inline template <typename CloudT> const std::uint8_t* getCloudData(const CloudT& cloud)
+{
+  return reinterpret_cast<const std::uint8_t*>(cloud.points.data());
+}
+
+inline const std::uint8_t* getCloudData(const typename pcl::PCLPointCloud2& cloud)
+{
+  return reinterpret_cast<const std::uint8_t*>(cloud.data.data());
+}
+
+// copy of pcl::getFieldIndex() from impl/io.hpp, without the unused template
+// parameter
+static int getFieldIndex(const std::string& field_name,
+              const std::vector<pcl::PCLPointField>& fields)
+{
+  const auto result =
+      std::find_if(fields.begin(), fields.end(), [&field_name](const auto& field) {
+        return field.name == field_name;
+      });
+  if (result == fields.end()) {
+    return -1;
+  }
+  return std::distance(fields.begin(), result);
+}
+
+template <typename DType, typename RType> RType reinterpret_and_cast(const std::uint8_t* p)
+{
+  return static_cast<RType>(*reinterpret_cast<const DType*>(p));
+}
+
+/**
+ * @brief   Get the value of a point field from raw data pointer and field type.
+ *
+ * @tparam T    return type the field will be cast as
+ * @param data  data pointer
+ * @param type  point field type
+ *
+ * @return  field value
+ */
+template <typename T> T point_field_as(const std::uint8_t* data, const std::uint8_t type)
+{
+  switch (type) {
+  case pcl::PCLPointField::PointFieldTypes::FLOAT32:
+    return reinterpret_and_cast<float, T>(data);
+    break;
+  case pcl::PCLPointField::PointFieldTypes::UINT8:
+    return reinterpret_and_cast<std::uint8_t, T>(data);
+    break;
+  case pcl::PCLPointField::PointFieldTypes::UINT16:
+    return reinterpret_and_cast<std::uint16_t, T>(data);
+    break;
+  case pcl::PCLPointField::PointFieldTypes::UINT32:
+    return reinterpret_and_cast<std::uint32_t, T>(data);
+    break;
+  case pcl::PCLPointField::PointFieldTypes::UINT64:
+    return reinterpret_and_cast<std::uint64_t, T>(data);
+    break;
+  case pcl::PCLPointField::PointFieldTypes::BOOL:
+    return reinterpret_and_cast<bool, T>(data);
+    break;
+  case pcl::PCLPointField::PointFieldTypes::FLOAT64:
+    return reinterpret_and_cast<double, T>(data);
+    break;
+  case pcl::PCLPointField::PointFieldTypes::INT16:
+    return reinterpret_and_cast<std::int16_t, T>(data);
+    break;
+  case pcl::PCLPointField::PointFieldTypes::INT32:
+    return reinterpret_and_cast<std::int32_t, T>(data);
+    break;
+  case pcl::PCLPointField::PointFieldTypes::INT64:
+    return reinterpret_and_cast<std::int64_t, T>(data);
+    break;
+  default:
+    return 0;
+    break;
+  }
+}
+
+template <typename PointT>
+PointCloudColorHandlerGenericField<PointT>::PointCloudColorHandlerGenericField(
+    const PointCloudConstPtr& cloud, const std::string& field_name)
+: PointCloudColorHandler<PointT>(cloud), field_name_(field_name)
+{
+  this->fields_ = getFields(*cloud);
+  this->setInputCloud(cloud);
+}
+
+template <typename PointT> void PointCloudColorHandlerGenericField<PointT>::setInputCloud(
+    const PointCloudConstPtr& cloud)
+{
+  PointCloudColorHandler<PointT>::setInputCloud(cloud);
+  this->field_idx_ = getFieldIndex(field_name_, this->fields_);
+  this->capable_ = this->field_idx_ != -1;
+}
+
+template <typename PointT> std::string PointCloudColorHandlerGenericField<PointT>::getFieldName() const
+{
+  return field_name_;
+}
+
+template <typename PointT> vtkSmartPointer<vtkDataArray> PointCloudColorHandlerGenericField<PointT>::getColor() const
+{
+  if (!this->capable_ || !this->cloud_) {
+    return nullptr;
+  }
+
+  auto scalars = vtkSmartPointer<vtkFloatArray>::New();
+  scalars->SetNumberOfComponents(1);
+
+  const vtkIdType nr_points = this->cloud_->width * this->cloud_->height;
+  scalars->SetNumberOfTuples(nr_points);
+
+  // per-point color as a float value. vtk turns that into rgb somehow
+  float* colors = new float[nr_points];
+
+  // Find X channel
+  int x_channel_idx = -1;
+  for (std::size_t channel_idx = 0; channel_idx < this->fields_.size(); ++channel_idx) {
+    if (this->fields_[channel_idx].name == "x") {
+      x_channel_idx = static_cast<int>(channel_idx);
+    }
+  }
+
+  int point_offset = this->fields_[this->field_idx_].offset;
+  const int point_step = getPointStep<PointCloud>(*this->cloud_);
+  const std::uint8_t* p_data = getCloudData<PointCloud>(*this->cloud_);
+  const std::uint8_t field_type = this->fields_[this->field_idx_].datatype;
+
+  // current index into colors array
+  int pt_idx = 0;
+
+  // Color every point
+  for (vtkIdType cp = 0; cp < nr_points; ++cp, point_offset += point_step) {
+
+    if (x_channel_idx != -1 && !pcl::isXYZFinite((*this->cloud_)[cp])) {
+        // no x channel in the cloud, or point is infinite
+        continue;
+    } else {
+      // point data at index, field offset already baked into point_offset
+      const std::uint8_t* pt_data = &p_data[point_offset];
+
+      colors[pt_idx] = point_field_as<float>(pt_data, field_type);
+
+    }
+
+    ++pt_idx;
+  }
+
+  scalars->SetArray(colors, pt_idx, 0, vtkFloatArray::VTK_DATA_ARRAY_DELETE);
+  return scalars;
+}
+
 } // namespace visualization
 } // namespace pcl
-
