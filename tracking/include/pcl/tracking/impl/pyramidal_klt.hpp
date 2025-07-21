@@ -250,7 +250,7 @@ PyramidalKLTTracker<PointInT, IntensityT>::downsample(const FloatImageConstPtr& 
   default(none) \
   shared(down, height, output, smoothed, width) \
   firstprivate(ii) \
-  num_threads(threads_)
+  num_threads(num_threads_)
   // clang-format on	
   for (int j = 0; j < height; ++j) {
     int jj = 2 * j;
@@ -304,7 +304,7 @@ PyramidalKLTTracker<PointInT, IntensityT>::convolveRows(
 #pragma omp parallel for \
   default(none) \
   shared(input, height, last, output, w, width) \
-  num_threads(threads_)
+  num_threads(num_threads_)
   // clang-format on
   for (int j = 0; j < height; ++j) {
     for (int i = kernel_size_2_; i < last; ++i) {
@@ -340,7 +340,7 @@ PyramidalKLTTracker<PointInT, IntensityT>::convolveCols(const FloatImageConstPtr
 #pragma omp parallel for \
   default(none) \
   shared(input, h, height, last, output, width) \
-  num_threads(threads_)
+  num_threads(num_threads_)
   // clang-format on
   for (int i = 0; i < width; ++i) {
     for (int j = kernel_size_2_; j < last; ++j) {
@@ -375,7 +375,7 @@ PyramidalKLTTracker<PointInT, IntensityT>::computePyramids(
 #pragma omp parallel for \
   default(none) \
   shared(input, tmp) \
-  num_threads(threads_)
+  num_threads(num_threads_)
   // clang-format on
   for (int i = 0; i < static_cast<int>(input->size()); ++i)
     (*tmp)[i] = intensity_((*input)[i]);
