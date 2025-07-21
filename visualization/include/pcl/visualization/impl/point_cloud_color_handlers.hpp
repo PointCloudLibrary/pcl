@@ -39,6 +39,7 @@
 
 #include <set>
 #include <map>
+#include <stdexcept>
 
 #include <pcl/pcl_macros.h>
 #include <pcl/common/colors.h>
@@ -491,28 +492,39 @@ PointCloudColorHandlerLabelField<PointT>::getColor () const
 
 // Get point fields from cloud. Could not get it to work with existing
 // pcl::getFields
-inline template <typename CloudT> std::vector<pcl::PCLPointField>
+template <typename CloudT> inline std::vector<pcl::PCLPointField>
 getFields(const CloudT& cloud)
 {
   return pcl::getFields<typename CloudT::PointType>();
 }
 
+template <> inline std::vector<pcl::PCLPointField>
+getFields<pcl::PCLPointCloud2>(const pcl::PCLPointCloud2& cloud) {
+  return cloud.fields;
+}
+
+
 // Get point step. Does not directly exist in pcl::PointCloud
-inline template <typename CloudT> int getPointStep(const CloudT&)
+template <typename CloudT> inline int getPointStep(const CloudT&)
 {
   return sizeof(typename CloudT::PointType);
 }
 
+template <> inline int
+getPointStep<pcl::PCLPointCloud2>(const pcl::PCLPointCloud2& cloud) {
+  return cloud.point_step;
+}
+
 // Get cloud data blob
-inline template <typename CloudT> const std::uint8_t* getCloudData(const CloudT& cloud)
+template <typename CloudT> inline const std::uint8_t* getCloudData(const CloudT& cloud)
 {
   return reinterpret_cast<const std::uint8_t*>(cloud.points.data());
 }
 
-inline const std::uint8_t* getCloudData(const typename pcl::PCLPointCloud2& cloud)
-{
+template <> inline const std::uint8_t* getCloudData<pcl::PCLPointCloud2>(const typename pcl::PCLPointCloud2& cloud) {
   return reinterpret_cast<const std::uint8_t*>(cloud.data.data());
 }
+
 
 // copy of pcl::getFieldIndex() from impl/io.hpp, without the unused template
 // parameter
@@ -527,6 +539,46 @@ static int getFieldIndex(const std::string& field_name,
     return -1;
   }
   return std::distance(fields.begin(), result);
+}
+
+// Cloud type agnostic isXYZFinite wrappers to check if pointcloud or PCLPointCloud2 at
+// given index is finite
+template <typename CloudT> inline bool isXYZFiniteAt(const CloudT& cloud, int index)
+{
+  return pcl::isXYZFinite(cloud.at(index));
+}
+
+template <> inline bool isXYZFiniteAt(const PCLPointCloud2& cloud, int index)
+{
+  // get x,y,z field indices
+  const auto x_field_idx = getFieldIndex("x", cloud.fields);
+  const auto y_field_idx = getFieldIndex("y", cloud.fields);
+  const auto z_field_idx = getFieldIndex("z", cloud.fields);
+
+  // if any missing, error
+  if (x_field_idx == -1 || y_field_idx == -1 || z_field_idx == -1) {
+    throw std::out_of_range("getXData(): input cloud missing at least one of x, y, z fields");
+  }
+  // get x,y,z field values
+  const auto position_x = index * cloud.point_step + cloud.fields[x_field_idx].offset;
+  const auto position_y = index * cloud.point_step + cloud.fields[y_field_idx].offset;
+  const auto position_z = index * cloud.point_step + cloud.fields[z_field_idx].offset;
+  if (cloud.data.size () >= (position_x + sizeof(float)) &&
+      cloud.data.size () >= (position_y + sizeof(float)) &&
+      cloud.data.size () >= (position_z + sizeof(float))) {
+    const float x = *reinterpret_cast<const float*>(cloud.data[position_x]);
+    const float y = *reinterpret_cast<const float*>(cloud.data[position_y]);
+    const float z = *reinterpret_cast<const float*>(cloud.data[position_z]);
+    return isXYZFinite(PointXYZ(x, y, z));
+  } else {
+    // the last of the three is out of range
+    throw std::out_of_range("getXData(): requested for index larger than number of points");
+  }
+}
+
+inline const std::uint8_t* getCloudData(const typename pcl::PCLPointCloud2& cloud)
+{
+  return reinterpret_cast<const std::uint8_t*>(cloud.data.data());
 }
 
 template <typename DType, typename RType> RType reinterpret_and_cast(const std::uint8_t* p)
@@ -587,14 +639,18 @@ PointCloudColorHandlerGenericField<PointT>::PointCloudColorHandlerGenericField(
     const PointCloudConstPtr& cloud, const std::string& field_name)
 : PointCloudColorHandler<PointT>(cloud), field_name_(field_name)
 {
-  this->fields_ = getFields(*cloud);
   this->setInputCloud(cloud);
 }
+
+template <typename PointT>
+PointCloudColorHandlerGenericField<PointT>::PointCloudColorHandlerGenericField(const std::string& field_name)
+  : PointCloudColorHandler<PointT>(), field_name_(field_name) {}
 
 template <typename PointT> void PointCloudColorHandlerGenericField<PointT>::setInputCloud(
     const PointCloudConstPtr& cloud)
 {
   PointCloudColorHandler<PointT>::setInputCloud(cloud);
+  this->fields_ = getFields(*cloud);
   this->field_idx_ = getFieldIndex(field_name_, this->fields_);
   this->capable_ = this->field_idx_ != -1;
 }
@@ -638,7 +694,7 @@ template <typename PointT> vtkSmartPointer<vtkDataArray> PointCloudColorHandlerG
   // Color every point
   for (vtkIdType cp = 0; cp < nr_points; ++cp, point_offset += point_step) {
 
-    if (x_channel_idx != -1 && !pcl::isXYZFinite((*this->cloud_)[cp])) {
+    if (x_channel_idx != -1 && !isXYZFiniteAt(*this->cloud_, cp)) {
         // no x channel in the cloud, or point is infinite
         continue;
     } else {

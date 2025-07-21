@@ -353,6 +353,8 @@ namespace pcl
       PointCloudColorHandlerGenericField(const PointCloudConstPtr& cloud,
                                          const std::string& field_name);
 
+      PointCloudColorHandlerGenericField(const std::string& field_name);
+
       /** \brief Set the input cloud to be used.
         * \param[in] cloud the input cloud to be used by the handler
         */
@@ -710,44 +712,6 @@ namespace pcl
         /** \brief The field index for "V". */
         int v_field_idx_;
      };
-
-    //////////////////////////////////////////////////////////////////////////////////////
-    /** \brief Generic field handler class for colors. Uses an user given field to extract
-      * 1D data and display the color at each point using a min-max lookup table.
-      * \author Radu B. Rusu 
-      * \ingroup visualization
-      */
-    template <>
-    class PCL_EXPORTS PointCloudColorHandlerGenericField<pcl::PCLPointCloud2> : public PointCloudColorHandler<pcl::PCLPointCloud2>
-    {
-      using PointCloud = PointCloudColorHandler<pcl::PCLPointCloud2>::PointCloud;
-      using PointCloudPtr = PointCloud::Ptr;
-      using PointCloudConstPtr = PointCloud::ConstPtr;
-
-      public:
-        using Ptr = shared_ptr<PointCloudColorHandlerGenericField<PointCloud> >;
-        using ConstPtr = shared_ptr<const PointCloudColorHandlerGenericField<PointCloud> >;
-
-        /** \brief Constructor. */
-        PointCloudColorHandlerGenericField (const PointCloudConstPtr &cloud,
-                                            const std::string &field_name);
-
-        vtkSmartPointer<vtkDataArray>
-        getColor () const override;
-
-      protected:
-        /** \brief Get the name of the class. */
-        virtual std::string
-        getName () const { return ("PointCloudColorHandlerGenericField"); }
-
-        /** \brief Get the name of the field used. */
-        virtual std::string
-        getFieldName () const { return (field_name_); }
-
-      private:
-        /** \brief Name of the field used to create the color handler. */
-        std::string field_name_;
-    };
 
     //////////////////////////////////////////////////////////////////////////////////////
     /** \brief RGBA handler class for colors. Uses the data present in the "rgba" field as
