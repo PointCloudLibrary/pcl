@@ -398,13 +398,9 @@ OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::
       else {
         // we reached leaf node level
         const auto* child_leaf = static_cast<const LeafNode*>(child_node);
-        Indices decoded_point_vector;
 
-        // decode leaf node into decoded_point_vector
-        (*child_leaf)->getPointIndices(decoded_point_vector);
-
-        // Linearly iterate over all decoded (unsorted) points
-        for (const auto& index : decoded_point_vector) {
+        // Linearly iterate over all points in the leaf
+        for (const auto& index : (*child_leaf)->getPointIndicesVector()) {
           const PointT& candidate_point = this->getPointByIndex(index);
 
           // calculate point distance to search point
