@@ -566,9 +566,9 @@ template <> inline bool isXYZFiniteAt(const PCLPointCloud2& cloud, int index)
   if (cloud.data.size () >= (position_x + sizeof(float)) &&
       cloud.data.size () >= (position_y + sizeof(float)) &&
       cloud.data.size () >= (position_z + sizeof(float))) {
-    const float x = *reinterpret_cast<const float*>(cloud.data[position_x]);
-    const float y = *reinterpret_cast<const float*>(cloud.data[position_y]);
-    const float z = *reinterpret_cast<const float*>(cloud.data[position_z]);
+    const float x = *reinterpret_cast<const float*>(&cloud.data[position_x]);
+    const float y = *reinterpret_cast<const float*>(&cloud.data[position_y]);
+    const float z = *reinterpret_cast<const float*>(&cloud.data[position_z]);
     return isXYZFinite(PointXYZ(x, y, z));
   } else {
     // the last of the three is out of range
