@@ -100,6 +100,8 @@ set(cg_impl_incs
 )
 
 set(srcs
+  src/cg/geometric_consistency.cpp
+  src/cg/hough_3d.cpp
   src/linemod.cpp
   src/quantizable_modality.cpp
   src/dotmod.cpp
@@ -108,8 +110,6 @@ set(srcs
   src/hv/hv_papazov.cpp
   src/hv/hv_go.cpp
   src/hv/greedy_verification.cpp
-  src/cg/hough_3d.cpp
-  src/cg/geometric_consistency.cpp
   src/ransac_based/obj_rec_ransac.cpp
   src/ransac_based/model_library.cpp
   src/ransac_based/orr_octree.cpp

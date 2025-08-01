@@ -115,6 +115,11 @@ set(impl_incs
 )
 
 set(srcs
+  src/integral_image_normal.cpp
+  src/shot.cpp
+  src/3dsc.cpp
+  src/multiscale_feature_persistence.cpp
+  src/vfh.cpp
   src/board.cpp
   src/flare.cpp
   src/brisk_2d.cpp
@@ -128,20 +133,17 @@ set(srcs
   src/from_meshes.cpp
   src/gasd.cpp
   src/gfpfh.cpp
-  src/integral_image_normal.cpp
   src/intensity_gradient.cpp
   src/intensity_spin.cpp
   src/linear_least_squares_normal.cpp
   src/moment_invariants.cpp
   src/moment_of_inertia_estimation.cpp
-  src/multiscale_feature_persistence.cpp
   src/narf.cpp
   src/normal_3d.cpp
   src/normal_based_signature.cpp
   src/organized_edge_detection.cpp
   src/pfh.cpp
   src/ppf.cpp
-  src/shot.cpp
   src/shot_lrf.cpp
   src/spin_image.cpp
   src/principal_curvatures.cpp
@@ -150,9 +152,7 @@ set(srcs
   src/rsd.cpp
   src/grsd.cpp
   src/statistical_multiscale_interest_region_extraction.cpp
-  src/vfh.cpp
   src/esf.cpp
-  src/3dsc.cpp
   src/usc.cpp
   src/range_image_border_extractor.cpp
 )
