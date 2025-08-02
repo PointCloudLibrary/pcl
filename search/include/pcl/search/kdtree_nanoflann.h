@@ -10,7 +10,7 @@
 #pragma once
 
 #include <pcl/pcl_config.h>
-#if PCL_HAS_NANOFLANN
+#if PCL_HAS_NANOFLANN || defined(DOXYGEN_ONLY)
 
 #include <pcl/search/kdtree.h>
 #include <pcl/point_representation.h>
