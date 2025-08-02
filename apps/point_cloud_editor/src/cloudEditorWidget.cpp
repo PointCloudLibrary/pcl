@@ -495,8 +495,11 @@ CloudEditorWidget::mousePressEvent (QMouseEvent *event)
   auto ratio = this->devicePixelRatio();
   if (!tool_ptr_)
     return;
-  tool_ptr_ -> start(event -> x()*ratio, event -> y()*ratio,
-                     event -> modifiers(), event -> buttons());
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+  tool_ptr_ -> start(event -> position().x()*ratio, event -> position().y()*ratio, event -> modifiers(), event -> buttons());
+#else
+  tool_ptr_ -> start(event -> x()*ratio, event -> y()*ratio, event -> modifiers(), event -> buttons());
+#endif
   update();
 }
 
@@ -506,8 +509,11 @@ CloudEditorWidget::mouseMoveEvent (QMouseEvent *event)
   auto ratio = this->devicePixelRatio();
   if (!tool_ptr_)
     return;
-  tool_ptr_ -> update(event -> x()*ratio, event -> y()*ratio,
-                      event -> modifiers(), event -> buttons());
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+  tool_ptr_ -> update(event -> position().x()*ratio, event -> position().y()*ratio, event -> modifiers(), event -> buttons());
+#else
+  tool_ptr_ -> update(event -> x()*ratio, event -> y()*ratio, event -> modifiers(), event -> buttons());
+#endif
   update();
 }
 
@@ -517,8 +523,11 @@ CloudEditorWidget::mouseReleaseEvent (QMouseEvent *event)
   auto ratio = this->devicePixelRatio();
   if (!tool_ptr_)
     return;
-  tool_ptr_ -> end(event -> x()*ratio, event -> y()*ratio,
-                   event -> modifiers(), event -> button());
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+  tool_ptr_ -> end(event -> position().x()*ratio, event -> position().y()*ratio, event -> modifiers(), event -> button());
+#else
+  tool_ptr_ -> end(event -> x()*ratio, event -> y()*ratio, event -> modifiers(), event -> button());
+#endif
   update();
 }
 

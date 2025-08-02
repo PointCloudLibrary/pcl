@@ -5,7 +5,12 @@
 
 #include <vtkAreaPicker.h>
 #include <vtkExtractGeometry.h>
+#include <vtkVersion.h>
+#if VTK_MAJOR_VERSION > 9 || (VTK_MAJOR_VERSION == 9 && VTK_MINOR_VERSION >= 4)
+#include <vtkGenerateIds.h>
+#else
 #include <vtkIdFilter.h>
+#endif
 #include <vtkObjectFactory.h>
 #include <vtkPlanes.h>
 #include <vtkSmartPointer.h>
@@ -36,7 +41,11 @@ pcl::cloud_composer::RectangularFrustumSelector::OnLeftButtonUp()
   vtkPlanes* frustum =
       static_cast<vtkAreaPicker*>(this->GetInteractor()->GetPicker())->GetFrustum();
 
+#if VTK_MAJOR_VERSION > 9 || (VTK_MAJOR_VERSION == 9 && VTK_MINOR_VERSION >= 4)
+  vtkSmartPointer<vtkGenerateIds> id_filter = vtkSmartPointer<vtkGenerateIds>::New();
+#else
   vtkSmartPointer<vtkIdFilter> id_filter = vtkSmartPointer<vtkIdFilter>::New();
+#endif
   id_filter->PointIdsOn();
 
   vtkSmartPointer<vtkExtractGeometry> extract_geometry =
