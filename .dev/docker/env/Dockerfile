@@ -11,7 +11,7 @@ ARG EIGEN_MINIMUM_VERSION=3.3.7
 ARG ENSENSOSDK_VERSION=3.2.489
 
 # See https://github.com/IntelRealSense/librealsense/tags for available tags of releases
-ARG REALSENSE_VERSION=2.50.0
+ARG REALSENSE_VERSION=2.56.3
 
 # Check https://packages.ubuntu.com/search?suite=all&arch=any&searchon=names&keywords=libvtk%20qt-dev
 # for available packages for chosen UBUNTU_VERSION
@@ -28,6 +28,7 @@ RUN apt-get update \
       build-essential \
       clang \
       clang-tidy \
+      git \
       libbenchmark-dev \
       libblas-dev \
       libboost-serialization-dev \
