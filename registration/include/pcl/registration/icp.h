@@ -262,13 +262,13 @@ public:
   }
 
   /** \brief Set the number of threads to use.
-   * \param nr_threads the number of hardware threads to use (0 sets the value back to
+   * \param num_threads the number of hardware threads to use (0 sets the value back to
    * automatic)
    */
   void
-  setNumberOfThreads(unsigned int nr_threads)
+  setNumberOfThreads(unsigned int num_threads)
   {
-    correspondence_estimation_->setNumberOfThreads(nr_threads);
+    correspondence_estimation_->setNumberOfThreads(num_threads);
   }
 
 protected:

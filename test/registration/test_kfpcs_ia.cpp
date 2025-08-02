@@ -67,7 +67,7 @@ TEST (PCL, KFPCSInitialAlignment)
   kfpcs_ia.setInputSource (cloud_source_ptr);
   kfpcs_ia.setInputTarget (cloud_target_ptr);
 
-  //kfpcs_ia.setNumberOfThreads (nr_threads);
+  //kfpcs_ia.setNumberOfThreads (num_threads);
   kfpcs_ia.setApproxOverlap (approx_overlap);
   kfpcs_ia.setDelta (voxel_size, false);
   kfpcs_ia.setScoreThreshold (abort_score);

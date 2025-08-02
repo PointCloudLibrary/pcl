@@ -70,7 +70,7 @@ TEST (PCL, FPCSInitialAlignment)
   fpcs_ia.setInputSource (cloud_source_ptr);
   fpcs_ia.setInputTarget (cloud_target_ptr);
 
-  fpcs_ia.setNumberOfThreads (nr_threads);
+  fpcs_ia.setNumberOfThreads (num_threads);
   fpcs_ia.setApproxOverlap (approx_overlap);
   fpcs_ia.setDelta (delta, true);
   fpcs_ia.setScoreThreshold (0.025); // if score is below this threshold, fpcs can stop because the solution is very good
