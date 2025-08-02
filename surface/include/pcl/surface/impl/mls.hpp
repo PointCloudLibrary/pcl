@@ -420,8 +420,8 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::performUpsampling (PointCloudOut &
       p.y = pos[1];
       p.z = pos[2];
 
-      pcl::Indices nn_indices;
-      std::vector<float> nn_dists;
+      pcl::Indices nn_indices (1);
+      std::vector<float> nn_dists (1);
       tree_->nearestKSearch (p, 1, nn_indices, nn_dists);
       const auto input_index = nn_indices.front ();
 

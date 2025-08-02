@@ -51,6 +51,7 @@
 
 #include <QOpenGLWidget>
 
+#include <array> // for std::array
 #include <functional>
 
 class Selection;
