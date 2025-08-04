@@ -11,6 +11,7 @@ if(NOT build)
   return()
 endif()
 
+# The cpp files have been ordered so that files with a long compile time appear at the top, to efficiently build in parallel. Do not reorder alphabetically!
 set(srcs
   src/voxel_grid_covariance.cpp
   src/conditional_removal.cpp
