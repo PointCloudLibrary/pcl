@@ -99,6 +99,7 @@ set(cg_impl_incs
   "include/pcl/${SUBSYS_NAME}/impl/cg/geometric_consistency.hpp"
 )
 
+# The cpp files have been ordered so that files with a long compile time appear at the top, to efficiently build in parallel. Do not reorder alphabetically!
 set(srcs
   src/cg/geometric_consistency.cpp
   src/cg/hough_3d.cpp
