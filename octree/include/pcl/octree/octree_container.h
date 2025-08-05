@@ -324,6 +324,16 @@ public:
     return leafDataTVector_;
   }
 
+  /** \brief Retrieve const reference to point indices vector. This container stores a
+   * vector of point indices.
+   * \return const reference to vector of point indices to be stored within data vector
+   */
+  const pcl::Indices&
+  getPointIndicesVector() const
+  {
+    return leafDataTVector_;
+  }
+
   /** \brief Get size of container (number of indices)
    * \return number of point indices in container.
    */
