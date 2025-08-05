@@ -79,12 +79,36 @@ namespace pcl
           return (seed_);
         }
 
+        /** \brief Set the number of threads to use when operating in parallel 
+          * \param num_threads the number of threads to use
+          */
+        inline void
+        setNumberOfThreads (unsigned int num_threads)
+        {
+          #ifdef _OPENMP
+          num_threads_ = num_threads != 0 ? num_threads : omp_get_num_procs();
+          #else
+          if (num_threads_ != 1) 
+            PCL_WARN("OpenMP is not available. Keeping number of threads unchanged at 1\n");
+          #endif
+        }
+
+        /** \brief Get the value of the internal \a num_threads_ parameter.
+          */
+        inline unsigned int 
+        getNumberOfThreads () const
+        {
+          return num_threads_;
+        }
+
       protected:
 
         /** \brief Number of points that will be returned. */
         std::size_t sample_size_;
         /** \brief Random number seed. */
         unsigned int seed_;
+        /** \brief Number of threads */
+        unsigned int num_threads_{1};
 
         /** \brief Sample of point indices
           * \param indices indices of the filtered point cloud
