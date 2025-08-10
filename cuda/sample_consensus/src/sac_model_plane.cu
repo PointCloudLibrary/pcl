@@ -238,7 +238,7 @@ namespace pcl
       coefficients.z = model_coefficients[2];
       coefficients.w = model_coefficients[3];
 
-      return (int) count_if (
+      return (int) thrust::count_if (
           make_zip_iterator (make_tuple (input_->points.begin (), indices_->begin ())),
           make_zip_iterator (make_tuple (input_->points.begin (), indices_->begin ())) + 
                              indices_->size (),
@@ -286,7 +286,7 @@ namespace pcl
       coefficients.w = model_coefficients[3];
 
       // Send the data to the device
-      transform (
+      thrust::transform (
           make_zip_iterator (make_tuple (input_->points.begin (), indices_->begin ())),
           make_zip_iterator (make_tuple (input_->points.begin (), indices_->begin ())) + 
                              nr_points,
@@ -331,7 +331,7 @@ namespace pcl
       coefficients.w = ((float4)h[idx]).w;
 
       // Send the data to the device
-      transform (
+      thrust::transform (
           make_zip_iterator (make_tuple (input_->points.begin (), indices_->begin ())),
           make_zip_iterator (make_tuple (input_->points.begin (), indices_->begin ())) + 
                              nr_points,
@@ -372,7 +372,7 @@ namespace pcl
       coefficients.z = ((float4)h[idx]).z;
       coefficients.w = ((float4)h[idx]).w;
 
-      transform (
+      thrust::transform (
           make_zip_iterator (make_tuple (input_->points.begin (), indices_->begin ())),
           make_zip_iterator (make_tuple (input_->points.begin (), indices_->begin ())) + 
                              nr_points,
