@@ -130,8 +130,8 @@ inline int cutGetMaxGflopsDeviceId()
 		cudaGetDeviceProperties( &deviceProp, current_device );
               int sm_per_multiproc = (deviceProp.major == 9999 && deviceProp.minor == 9999) ? 1 : _ConvertSMVer2Cores(deviceProp.major, deviceProp.minor);
 
-		cudaDeviceGetAttribute(&clock_rate, cudaDevAttrClockRate, current_device);
-        int compute_perf  = deviceProp.multiProcessorCount * sm_per_multiproc * clock_rate;
+                cudaDeviceGetAttribute(&clock_rate, cudaDevAttrClockRate, current_device);
+                int compute_perf  = deviceProp.multiProcessorCount * sm_per_multiproc * clock_rate;
 		if( compute_perf  > max_compute_perf ) {
             // If we find GPU with SM major > 2, search only these
 			if ( best_SM_arch > 2 ) {
@@ -188,8 +188,8 @@ inline int cutGetMaxGflopsGraphicsDeviceId()
 
 		if (!bTCC) // Is this GPU running the TCC driver?  If so we pass on this
 		{
-            cudaDeviceGetAttribute(&clock_rate, cudaDevAttrClockRate, current_device);
-            int compute_perf  = deviceProp.multiProcessorCount * sm_per_multiproc * clock_rate;
+                        cudaDeviceGetAttribute(&clock_rate, cudaDevAttrClockRate, current_device);
+                        int compute_perf  = deviceProp.multiProcessorCount * sm_per_multiproc * clock_rate;
 			if( compute_perf  > max_compute_perf ) {
 				// If we find GPU with SM major > 2, search only these
 				if ( best_SM_arch > 2 ) {
