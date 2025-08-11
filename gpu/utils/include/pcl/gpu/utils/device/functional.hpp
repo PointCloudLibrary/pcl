@@ -39,14 +39,12 @@
 #define PCL_DEVICE_FUNCTIONAL_HPP_
 
 #include <thrust/functional.h>
+#include <cuda.h>
 
 namespace pcl
 {
     namespace device
     {
-        // Function Objects
-
-        using thrust::binary_function;
 
         // Arithmetic Operations
 
@@ -87,7 +85,11 @@ namespace pcl
 
         // Generalized Identity Operations
 
-        using thrust::identity;    
+        #if CUDA_VERSION >= 13000
+        using cuda::std::identity;
+        #else
+        using thrust::identity;
+        #endif
         using thrust::project1st;
         using thrust::project2nd;
 
