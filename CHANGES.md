@@ -1,5 +1,98 @@
 # ChangeList
 
+## = 1.15.1 (22 August 2025) =
+
+### Notable changes
+
+**New features** *added to PCL*
+
+* **[search]** Add support for nanoflann (faster alternative to pcl::search::KdTree) [[#6250](https://github.com/PointCloudLibrary/pcl/pull/6250)]
+
+### Changes grouped by module
+
+#### CMake:
+
+* Fix get the root directory path of Boost [[#6259](https://github.com/PointCloudLibrary/pcl/pull/6259)]
+* Detect alignment when pcl_find_sse is not called & fix detection of Eigen [[#6261](https://github.com/PointCloudLibrary/pcl/pull/6261)]
+* Improve SSE/AVX detection on arm and when cross-compiling [[#6264](https://github.com/PointCloudLibrary/pcl/pull/6264)]
+* Fix CMake warning related to FLANN_ROOT [[#6266](https://github.com/PointCloudLibrary/pcl/pull/6266)]
+
+#### libpcl_common:
+
+* Make copyPoint work with point types having a field of the same name … [[#6300](https://github.com/PointCloudLibrary/pcl/pull/6300)]
+* Add potentially missing include cassert [[#6308](https://github.com/PointCloudLibrary/pcl/pull/6308)]
+
+#### libpcl_cuda:
+
+* Support CUDA 13 [[#6316](https://github.com/PointCloudLibrary/pcl/pull/6316)]
+
+#### libpcl_filters:
+
+* Make FarthestPointFilter respect user supplied indices [[#6286](https://github.com/PointCloudLibrary/pcl/pull/6286)]
+* Re-add instantiation of Convolution for MSVC [[#6310](https://github.com/PointCloudLibrary/pcl/pull/6310)]
+
+#### libpcl_gpu:
+
+* Fix CUDA 12.9 transform_reduce ambiguity [[#6299](https://github.com/PointCloudLibrary/pcl/pull/6299)]
+* Support CUDA 13 [[#6316](https://github.com/PointCloudLibrary/pcl/pull/6316)]
+
+#### libpcl_io:
+
+* Fix writing pcl::PointCloud to IFS file [[#6262](https://github.com/PointCloudLibrary/pcl/pull/6262)]
+* Increase accuracy of OctreePointCloudCompression [[#6273](https://github.com/PointCloudLibrary/pcl/pull/6273)]
+
+#### libpcl_ml:
+
+* Fix deprecated vsprintf warning in SVM implementation [[#6312](https://github.com/PointCloudLibrary/pcl/pull/6312)]
+
+#### libpcl_octree:
+
+* Increase accuracy of OctreePointCloudCompression [[#6273](https://github.com/PointCloudLibrary/pcl/pull/6273)]
+* Optimization for Octree radiusSearch [[#6313](https://github.com/PointCloudLibrary/pcl/pull/6313)]
+
+#### libpcl_outofcore:
+
+* Make the dependency of "outofcore" on "visualization" optional. [[#6254](https://github.com/PointCloudLibrary/pcl/pull/6254)]
+
+#### libpcl_registration:
+
+* add explicit instantiations to transformation estimation LM and one to ICP [[#6258](https://github.com/PointCloudLibrary/pcl/pull/6258)]
+* Make GICP use CorrespondenceEstimation [[#6278](https://github.com/PointCloudLibrary/pcl/pull/6278)]
+
+#### libpcl_sample_consensus:
+
+* SAC: add getInliers, getModel, getModelCoefficients to avoid copying data [[#6304](https://github.com/PointCloudLibrary/pcl/pull/6304)]
+
+#### libpcl_search:
+
+* **[new feature]** Add support for nanoflann (faster alternative to pcl::search::KdTree) [[#6250](https://github.com/PointCloudLibrary/pcl/pull/6250)]
+* Add option to manually set projection matrix in OrganizedNeighbor [[#6268](https://github.com/PointCloudLibrary/pcl/pull/6268)]
+
+#### libpcl_simulation:
+
+* Simulation: replace gluErrorString with switch-case [[#6253](https://github.com/PointCloudLibrary/pcl/pull/6253)]
+
+#### libpcl_surface:
+
+* Fix: Potential Vulnerability in Cloned zlib-Function [[#6245](https://github.com/PointCloudLibrary/pcl/pull/6245)]
+* Fix: Potential Vulnerability in Cloned zlib-Function [[#6246](https://github.com/PointCloudLibrary/pcl/pull/6246)]
+* Fix potential vulnerable cloned zlib-functions [[#6275](https://github.com/PointCloudLibrary/pcl/pull/6275)]
+* Fix potential vulnerable cloned zlib-functions [[#6274](https://github.com/PointCloudLibrary/pcl/pull/6274)]
+
+#### PCL Docs:
+
+* Modernize cmake config template [[#6235](https://github.com/PointCloudLibrary/pcl/pull/6235)]
+
+#### PCL Tutorials:
+
+* Update CMake commands in tutorials [[#6282](https://github.com/PointCloudLibrary/pcl/pull/6282)]
+
+#### CI:
+
+* Update/improve CI [[#6242](https://github.com/PointCloudLibrary/pcl/pull/6242)]
+* switch to VS 2022 on x64 Windows [[#6247](https://github.com/PointCloudLibrary/pcl/pull/6247)]
+* Add and use python for formatting. [[#6298](https://github.com/PointCloudLibrary/pcl/pull/6298)]
+
 ## = 1.15.0 (22 February 2025) =
 
 ### Notable changes
