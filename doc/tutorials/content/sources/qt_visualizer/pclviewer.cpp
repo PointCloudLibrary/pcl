@@ -1,5 +1,6 @@
 #include "pclviewer.h"
 #include "ui_pclviewer.h"
+#include <QSurfaceFormat>
 
 #if VTK_MAJOR_VERSION > 8
 #include <vtkGenericOpenGLRenderWindow.h>
@@ -9,6 +10,9 @@ PCLViewer::PCLViewer (QWidget *parent) :
   QMainWindow (parent),
   ui (new Ui::PCLViewer)
 {
+  // needed to ensure appropriate OpenGL context is created for VTK rendering.
+  QSurfaceFormat::setDefaultFormat(PCLQVTKWidget::defaultFormat());
+
   ui->setupUi (this);
   this->setWindowTitle ("PCL viewer");
 
@@ -34,13 +38,13 @@ PCLViewer::PCLViewer (QWidget *parent) :
     point.b = blue;
   }
 
-  // Set up the QVTK window  
+  // Set up the QVTK window
 #if VTK_MAJOR_VERSION > 8
   auto renderer = vtkSmartPointer<vtkRenderer>::New();
   auto renderWindow = vtkSmartPointer<vtkGenericOpenGLRenderWindow>::New();
   renderWindow->AddRenderer(renderer);
   viewer.reset(new pcl::visualization::PCLVisualizer(renderer, renderWindow, "viewer", false));
-  ui->qvtkWidget->setRenderWindow(viewer->getRenderWindow());
+  ui->qvtkWidget->setRenderWindow(viewer->getRenderWindow().Get());
   viewer->setupInteractor(ui->qvtkWidget->interactor(), ui->qvtkWidget->renderWindow());
 #else
   viewer.reset(new pcl::visualization::PCLVisualizer("viewer", false));
