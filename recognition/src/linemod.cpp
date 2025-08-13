@@ -1061,7 +1061,8 @@ pcl::LINEMOD::detectTemplatesSemiScaleInvariant (
     std::vector<LINEMODDetection> & detections,
     const float min_scale,
     const float max_scale,
-    const float scale_multiplier) const
+    const float scale_multiplier,
+    const float importanceOfDepthModality) const
 {
   // create energy maps
   std::vector<EnergyMaps> modality_energy_maps;
@@ -1074,6 +1075,8 @@ pcl::LINEMOD::detectTemplatesSemiScaleInvariant (
 
   const size_t nr_modalities = modalities.size();
   modality_energy_maps.reserve(nr_modalities);
+  const float weightMoveToDepthModality = importanceOfDepthModality;
+  const size_t indexModalityDepth = 1;
   for (size_t modality_index = 0; modality_index < nr_modalities; ++modality_index)
   {
     const QuantizedMap & quantized_map = modalities[modality_index]->getSpreadedQuantizedMap ();
@@ -1171,6 +1174,7 @@ pcl::LINEMOD::detectTemplatesSemiScaleInvariant (
 #endif
   for (size_t modality_index = 0; modality_index < nr_modalities; ++modality_index)
   {
+    float weightOnThisModality = (modality_index == indexModalityDepth)?(weightMoveToDepthModality + 1.0f):(1.0f - weightMoveToDepthModality);
     const size_t width = modality_energy_maps[modality_index].getWidth ();
     const size_t height = modality_energy_maps[modality_index].getHeight ();
 
@@ -1221,8 +1225,10 @@ pcl::LINEMOD::detectTemplatesSemiScaleInvariant (
             for (size_t col_index = 0; col_index < lin_width; ++col_index)
             {
               const size_t tmp_col_index = col_index*step_size + map_col;
-
-              linearized_map[row_index*lin_width + col_index] = energy_map[tmp_row_index*width + tmp_col_index];
+              
+              unsigned char energy = energy_map[tmp_row_index*width + tmp_col_index];
+              float energyWeighted = static_cast<float>(energy) * weightOnThisModality;
+              linearized_map[row_index*lin_width + col_index] = static_cast<unsigned char>(energyWeighted);
 #ifdef LINEMOD_USE_SEPARATE_ENERGY_MAPS
               linearized_map_1[row_index*lin_width + col_index] = energy_map_1[tmp_row_index*width + tmp_col_index];
               linearized_map_2[row_index*lin_width + col_index] = energy_map_2[tmp_row_index*width + tmp_col_index];
@@ -1516,14 +1522,12 @@ pcl::LINEMOD::detectTemplatesSemiScaleInvariant (
             + score_sums_1[mem_index]
             + score_sums_2[mem_index]
             + score_sums_3[mem_index];
-
-          const float score = 2.0f * static_cast<float> (raw_score) * 0.25f * inv_max_score - 1.0f;
+          // const float score = 2.0f * static_cast<float> (raw_score) * 0.25f * inv_max_score - 1.0f;
   #else
           const float raw_score = score_sums[mem_index];
-          float raw_score_rebased = (raw_score - (float (max_score) / 2.0f)) / (float (max_score) / 2.0f);
-
-          const float score = 2.0f * static_cast<float> (raw_score) * inv_max_score - 1.0f;
+          // const float score = 2.0f * static_cast<float> (raw_score) * inv_max_score - 1.0f;  // Note: switch to use raw_score_rebased
   #endif
+          float raw_score_rebased = (raw_score - (float (max_score) / 2.0f)) / (float (max_score) / 2.0f);
 
 
           //if (score > template_threshold_)
@@ -1670,6 +1674,7 @@ pcl::LINEMOD::evaluateDetections(
   const std::vector<QuantizableModality*>& modalities,
   const std::vector<LINEMODDetection>& inputDetections,
   const std::vector<SparseQuantizedMultiModTemplate>& inputTemplates,
+  const float importanceOfDepthModality,
   std::vector<float>& evaluationScores
 ) const
 {
@@ -1677,6 +1682,8 @@ pcl::LINEMOD::evaluateDetections(
   std::vector<EnergyMaps> modality_energy_maps;
   const size_t nr_modalities = modalities.size();
   modality_energy_maps.reserve(nr_modalities);
+  const float weightMoveToDepthModality = importanceOfDepthModality;
+  const size_t indexModalityDepth = 1;
   for (size_t modality_index = 0; modality_index < nr_modalities; ++modality_index)
   {
     const QuantizedMap & quantized_map = modalities[modality_index]->getSpreadedQuantizedMap ();
@@ -1730,6 +1737,7 @@ pcl::LINEMOD::evaluateDetections(
     for (size_t feature_index = 0; feature_index < inputTemplate.features.size (); ++feature_index)
     {
       const QuantizedMultiModFeature & feature = inputTemplate.features[feature_index];
+      float weightOnThisModality = (feature.modality_index == indexModalityDepth)?(weightMoveToDepthModality + 1.0f):(1.0f - weightMoveToDepthModality);
 
       EnergyMaps& energymap = modality_energy_maps[feature.modality_index];
       const size_t map_x = size_t (float (feature.x * detection.scale + detection.x));
@@ -1743,7 +1751,8 @@ pcl::LINEMOD::evaluateDetections(
           max_score += 4;
 
           unsigned char energy = energymap(bin_index)[map_y * width + map_x];
-          raw_score += energy;
+          float energyWeighted = static_cast<float> (energy) * weightOnThisModality;
+          raw_score += static_cast<int> (energyWeighted);
         }
       }
     }

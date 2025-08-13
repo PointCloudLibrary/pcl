@@ -391,6 +391,7 @@ namespace pcl
         * \param[out] detections the destination for the detections.
         * \param[in] min_scale the minimum scale.
         * \param[in] max_scale the maximum scale.
+        * \param[in] importanceOfDepthModality the weight of the depth modality in the detection. (-1.0 means no depth modality, 1.0 means only depth modality)
         * \param[in] scale_multiplier the multiplier for getting from one scale to the next.
         */
       void
@@ -398,7 +399,8 @@ namespace pcl
                                          std::vector<LINEMODDetection> & detections,
                                          float min_scale = 0.6944444f,
                                          float max_scale = 1.44f,
-                                         float scale_multiplier = 1.2f) const;
+                                         float scale_multiplier = 1.2f,
+                                         float importanceOfDepthModality = 0.0f) const;
 
       /**
        * @brief Given existing detections, evaluate these detections' linemod score.
@@ -406,6 +408,7 @@ namespace pcl
        * @param modalities 
        * @param inputDetections 
        * @param inputTemplates       corresponding templates for each detection
+       * @param importanceOfDepthModality  weight of the depth modality in the evaluation
        * @param evaluationScores     output
        */
       void
@@ -413,6 +416,7 @@ namespace pcl
         const std::vector<QuantizableModality*>& modalities,
         const std::vector<LINEMODDetection>& inputDetections,
         const std::vector<SparseQuantizedMultiModTemplate>& inputTemplates,
+        const float importanceOfDepthModality,
         std::vector<float>& evaluationScores
       ) const;
 
