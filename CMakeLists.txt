@@ -171,7 +171,7 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
 endif()
 
 include("${PCL_SOURCE_DIR}/cmake/pcl_utils.cmake")
-set(PCL_VERSION 1.10.0 CACHE STRING "PCL version")
+set(PCL_VERSION 1.11.0 CACHE STRING "PCL version")
 DISSECT_VERSION()
 GET_OS_INFO()
 SET_INSTALL_DIRS()
