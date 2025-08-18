@@ -440,7 +440,7 @@ public:
     // Else, draw it on screen
     // cloud_viewer_.addPolygon (region, 1.0, 0.0, 0.0, "region");
     // cloud_viewer_.setShapeRenderingProperties
-    // (visualization::PCL_VISUALIZER_LINE_WIDTH, 10, "region");
+    // (visualization::RenderingProperties::PCL_VISUALIZER_LINE_WIDTH, 10, "region");
 
     PlanarRegion<PointT> refined_region;
     pcl::approximatePolygon(region, refined_region, 0.01, false, true);
@@ -449,7 +449,9 @@ public:
              static_cast<std::size_t>(refined_region.getContour().size()));
     cloud_viewer_.addPolygon(refined_region, 0.0, 0.0, 1.0, "refined_region");
     cloud_viewer_.setShapeRenderingProperties(
-        visualization::PCL_VISUALIZER_LINE_WIDTH, 10, "refined_region");
+        visualization::RenderingProperties::PCL_VISUALIZER_LINE_WIDTH,
+        10,
+        "refined_region");
 
     // Draw in image space
     image_viewer_.addPlanarPolygon(
@@ -485,7 +487,7 @@ public:
                           0.0,
                           cube_name);
     cloud_viewer_.setShapeRenderingProperties(
-        visualization::PCL_VISUALIZER_LINE_WIDTH, 10, cube_name);
+        visualization::RenderingProperties::PCL_VISUALIZER_LINE_WIDTH, 10, cube_name);
 
     // ...and 2D
     image_viewer_.addRectangle(search_.getInputCloud(), *object);

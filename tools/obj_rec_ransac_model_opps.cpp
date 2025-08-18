@@ -143,8 +143,8 @@ void run (float pair_width, float voxel_size, float max_coplanarity_angle)
 
   model->getOctree ().getFullLeavesPoints (*octree_points);
   viz.addPointCloud (octree_points, "octree points");
-  viz.setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 5, "octree points");
-  viz.setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_COLOR, 1.0, 0.0, 0.0, "octree points");
+  viz.setPointCloudRenderingProperties (pcl::visualization::RenderingProperties::PCL_VISUALIZER_POINT_SIZE, 5, "octree points");
+  viz.setPointCloudRenderingProperties (pcl::visualization::RenderingProperties::PCL_VISUALIZER_COLOR, 1.0, 0.0, 0.0, "octree points");
 #endif
 
 #if defined _SHOW_MODEL_OCTREE_NORMALS_ && defined _SHOW_MODEL_OCTREE_POINTS_
@@ -224,7 +224,7 @@ void showModelOpps (PCLVisualizer& viz, const ModelLibrary::HashTable& hash_tabl
 #endif
 
   viz.addModelFromPolyData (vtk_opps, "opps");
-  viz.setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_COLOR, 1.0, 1.0, 0.0, "opps");
+  viz.setShapeRenderingProperties(pcl::visualization::RenderingProperties::PCL_VISUALIZER_COLOR, 1.0, 1.0, 0.0, "opps");
 
   printf ("done.\n");
 }

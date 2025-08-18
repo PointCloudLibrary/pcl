@@ -92,12 +92,12 @@ main (int argc, char ** argv)
 
   PointCloudT::Ptr voxel_centroid_cloud = super.getVoxelCentroidCloud ();
   viewer->addPointCloud (voxel_centroid_cloud, "voxel centroids");
-  viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE,2.0, "voxel centroids");
-  viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_OPACITY,0.95, "voxel centroids");
+  viewer->setPointCloudRenderingProperties (pcl::visualization::RenderingProperties::PCL_VISUALIZER_POINT_SIZE,2.0, "voxel centroids");
+  viewer->setPointCloudRenderingProperties (pcl::visualization::RenderingProperties::PCL_VISUALIZER_OPACITY,0.95, "voxel centroids");
 
   PointLCloudT::Ptr labeled_voxel_cloud = super.getLabeledVoxelCloud ();
   viewer->addPointCloud (labeled_voxel_cloud, "labeled voxels");
-  viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_OPACITY,0.8, "labeled voxels");
+  viewer->setPointCloudRenderingProperties (pcl::visualization::RenderingProperties::PCL_VISUALIZER_OPACITY,0.8, "labeled voxels");
 
   PointNCloudT::Ptr sv_normal_cloud = super.makeSupervoxelNormalCloud (supervoxel_clusters);
   //We have this disabled so graph is easy to see, uncomment to see supervoxel normals

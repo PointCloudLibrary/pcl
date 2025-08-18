@@ -253,9 +253,13 @@ public:
         if (!cloud_viewer_.updatePointCloud(keypoints3d, blue, "keypoints"))
           cloud_viewer_.addPointCloud(keypoints3d, blue, "keypoints");
         cloud_viewer_.setPointCloudRenderingProperties(
-            visualization::PCL_VISUALIZER_POINT_SIZE, 10, "keypoints");
+            visualization::RenderingProperties::PCL_VISUALIZER_POINT_SIZE,
+            10,
+            "keypoints");
         cloud_viewer_.setPointCloudRenderingProperties(
-            visualization::PCL_VISUALIZER_OPACITY, 0.5, "keypoints");
+            visualization::RenderingProperties::PCL_VISUALIZER_OPACITY,
+            0.5,
+            "keypoints");
       }
 
       cloud_viewer_.spinOnce();
