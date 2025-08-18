@@ -287,7 +287,7 @@ Convolution<PointIn, PointOut>::convolve_rows (PointCloudOut& output)
 #pragma omp parallel for \
   default(none) \
   shared(height, last, output, width) \
-  num_threads(threads_)
+  num_threads(num_threads_)
     for(int j = 0; j < height; ++j)
     {
       for (int i = 0; i < half_width_; ++i)
@@ -305,7 +305,7 @@ Convolution<PointIn, PointOut>::convolve_rows (PointCloudOut& output)
 #pragma omp parallel for \
   default(none) \
   shared(height, last, output, width) \
-  num_threads(threads_)
+  num_threads(num_threads_)
     for(int j = 0; j < height; ++j)
     {
       for (int i = 0; i < half_width_; ++i)
@@ -334,7 +334,7 @@ Convolution<PointIn, PointOut>::convolve_rows_duplicate (PointCloudOut& output)
 #pragma omp parallel for \
   default(none) \
   shared(height, last, output, w, width) \
-  num_threads(threads_)
+  num_threads(num_threads_)
     for(int j = 0; j < height; ++j)
     {
       for (int i = half_width_; i < last; ++i)
@@ -352,7 +352,7 @@ Convolution<PointIn, PointOut>::convolve_rows_duplicate (PointCloudOut& output)
 #pragma omp parallel for \
   default(none) \
   shared(height, last, output, w, width) \
-  num_threads(threads_)
+  num_threads(num_threads_)
     for(int j = 0; j < height; ++j)
     {
       for (int i = half_width_; i < last; ++i)
@@ -381,7 +381,7 @@ Convolution<PointIn, PointOut>::convolve_rows_mirror (PointCloudOut& output)
 #pragma omp parallel for \
   default(none) \
   shared(height, last, output, w, width) \
-  num_threads(threads_)
+  num_threads(num_threads_)
     for(int j = 0; j < height; ++j)
     {
       for (int i = half_width_; i < last; ++i)
@@ -399,7 +399,7 @@ Convolution<PointIn, PointOut>::convolve_rows_mirror (PointCloudOut& output)
 #pragma omp parallel for \
   default(none) \
   shared(height, last, output, w, width) \
-  num_threads(threads_)
+  num_threads(num_threads_)
     for(int j = 0; j < height; ++j)
     {
       for (int i = half_width_; i < last; ++i)
@@ -427,7 +427,7 @@ Convolution<PointIn, PointOut>::convolve_cols (PointCloudOut& output)
 #pragma omp parallel for \
   default(none) \
   shared(height, last, output, width) \
-  num_threads(threads_)
+  num_threads(num_threads_)
     for(int i = 0; i < width; ++i)
     {
       for (int j = 0; j < half_width_; ++j)
@@ -445,7 +445,7 @@ Convolution<PointIn, PointOut>::convolve_cols (PointCloudOut& output)
 #pragma omp parallel for \
   default(none) \
   shared(height, last, output, width) \
-  num_threads(threads_)
+  num_threads(num_threads_)
     for(int i = 0; i < width; ++i)
     {
       for (int j = 0; j < half_width_; ++j)
@@ -474,7 +474,7 @@ Convolution<PointIn, PointOut>::convolve_cols_duplicate (PointCloudOut& output)
 #pragma omp parallel for \
   default(none) \
   shared(h, height, last, output, width) \
-  num_threads(threads_)
+  num_threads(num_threads_)
     for(int i = 0; i < width; ++i)
     {
       for (int j = half_width_; j < last; ++j)
@@ -492,7 +492,7 @@ Convolution<PointIn, PointOut>::convolve_cols_duplicate (PointCloudOut& output)
 #pragma omp parallel for \
   default(none) \
   shared(h, height, last, output, width) \
-  num_threads(threads_)
+  num_threads(num_threads_)
     for(int i = 0; i < width; ++i)
     {
       for (int j = half_width_; j < last; ++j)
@@ -521,7 +521,7 @@ Convolution<PointIn, PointOut>::convolve_cols_mirror (PointCloudOut& output)
 #pragma omp parallel for \
   default(none) \
   shared(h, height, last, output, width) \
-  num_threads(threads_)
+  num_threads(num_threads_)
     for(int i = 0; i < width; ++i)
     {
       for (int j = half_width_; j < last; ++j)
@@ -539,7 +539,7 @@ Convolution<PointIn, PointOut>::convolve_cols_mirror (PointCloudOut& output)
 #pragma omp parallel for \
   default(none) \
   shared(h, height, last, output, width) \
-  num_threads(threads_)
+  num_threads(num_threads_)
     for(int i = 0; i < width; ++i)
     {
       for (int j = half_width_; j < last; ++j)

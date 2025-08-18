@@ -53,7 +53,7 @@ template <typename PointT>
 inline float
 pcl::getMeanPointDensity(const typename pcl::PointCloud<PointT>::ConstPtr& cloud,
                          float max_dist,
-                         int nr_threads)
+                         int num_threads)
 {
   const float max_dist_sqr = max_dist * max_dist;
   const std::size_t s = cloud->size();
@@ -66,10 +66,10 @@ pcl::getMeanPointDensity(const typename pcl::PointCloud<PointT>::ConstPtr& cloud
   pcl::Indices ids(2);
   std::vector<float> dists_sqr(2);
 
-  pcl::utils::ignore(nr_threads);
+  pcl::utils::ignore(num_threads);
 #pragma omp parallel for default(none) shared(tree, cloud)                             \
     firstprivate(ids, dists_sqr) reduction(+ : mean_dist, num)                         \
-    firstprivate(s, max_dist_sqr) num_threads(nr_threads)
+    firstprivate(s, max_dist_sqr) num_threads(num_threads)
   for (int i = 0; i < 1000; i++) {
     tree.nearestKSearch((*cloud)[rand() % s], 2, ids, dists_sqr);
     if (dists_sqr[1] < max_dist_sqr) {
@@ -87,7 +87,7 @@ inline float
 pcl::getMeanPointDensity(const typename pcl::PointCloud<PointT>::ConstPtr& cloud,
                          const pcl::Indices& indices,
                          float max_dist,
-                         int nr_threads)
+                         int num_threads)
 {
   const float max_dist_sqr = max_dist * max_dist;
   const std::size_t s = indices.size();
@@ -100,13 +100,13 @@ pcl::getMeanPointDensity(const typename pcl::PointCloud<PointT>::ConstPtr& cloud
   pcl::Indices ids(2);
   std::vector<float> dists_sqr(2);
 
-  pcl::utils::ignore(nr_threads);
+  pcl::utils::ignore(num_threads);
 #if OPENMP_LEGACY_CONST_DATA_SHARING_RULE
 #pragma omp parallel for default(none) shared(tree, cloud, indices)                    \
-    firstprivate(ids, dists_sqr) reduction(+ : mean_dist, num) num_threads(nr_threads)
+    firstprivate(ids, dists_sqr) reduction(+ : mean_dist, num) num_threads(num_threads)
 #else
 #pragma omp parallel for default(none) shared(tree, cloud, indices, s, max_dist_sqr)   \
-    firstprivate(ids, dists_sqr) reduction(+ : mean_dist, num) num_threads(nr_threads)
+    firstprivate(ids, dists_sqr) reduction(+ : mean_dist, num) num_threads(num_threads)
 #endif
   for (int i = 0; i < 1000; i++) {
     tree.nearestKSearch((*cloud)[indices[rand() % s]], 2, ids, dists_sqr);
@@ -150,7 +150,7 @@ pcl::registration::FPCSInitialAlignment<PointSource, PointTarget, NormalT, Scala
   pcl::StopWatch timer;
 
 #pragma omp parallel default(none) shared(abort, all_candidates, timer)                \
-    num_threads(nr_threads_)
+    num_threads(num_threads_)
   {
 #ifdef _OPENMP
     const unsigned int seed =
@@ -285,19 +285,10 @@ pcl::registration::FPCSInitialAlignment<PointSource, PointTarget, NormalT, Scala
   float max_base_diameter = diameter_ * approx_overlap_ * 2.f;
   max_base_diameter_sqr_ = max_base_diameter * max_base_diameter;
 
-#ifdef _OPENMP
-  if (nr_threads_ < 1) {
-    nr_threads_ = omp_get_num_procs();
-    PCL_DEBUG("[%s::initCompute] Setting number of threads to %i.\n",
-              reg_name_.c_str(),
-              nr_threads_);
-  }
-#endif // _OPENMP
-
   // normalize the delta
   if (normalize_delta_) {
     float mean_dist = getMeanPointDensity<PointTarget>(
-        target_, *target_indices_, 0.05f * diameter_, nr_threads_);
+        target_, *target_indices_, 0.05f * diameter_, num_threads_);
     delta_ *= mean_dist;
   }
 

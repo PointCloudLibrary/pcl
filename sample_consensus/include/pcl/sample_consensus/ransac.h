@@ -78,7 +78,7 @@ namespace pcl
       using SampleConsensus<PointT>::model_coefficients_;
       using SampleConsensus<PointT>::inliers_;
       using SampleConsensus<PointT>::probability_;
-      using SampleConsensus<PointT>::threads_;
+      using SampleConsensus<PointT>::num_threads_;
 
       /** \brief RANSAC (RANdom SAmple Consensus) main constructor
         * \param[in] model a Sample Consensus model
