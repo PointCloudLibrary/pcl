@@ -786,14 +786,6 @@ extern "C" {
                 __FILE__, __LINE__, cudaGetErrorString( err) );              \
     } }
 
-#  define CUFFT_SAFE_CALL( call) {                                           \
-    cufftResult err = call;                                                  \
-    if( CUFFT_SUCCESS != err) {                                              \
-        fprintf(stderr, "CUFFT error in file '%s' in line %i.\n",            \
-                __FILE__, __LINE__);                                         \
-        exit(EXIT_FAILURE);                                                  \
-    } }
-
 #  define CUT_SAFE_CALL( call)                                               \
     if( CUTTrue != call) {                                                   \
         fprintf(stderr, "Cut error in file '%s' in line %i.\n",              \
