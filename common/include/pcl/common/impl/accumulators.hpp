@@ -136,7 +136,7 @@ namespace pcl
     {
 
       // Requires that point type has rgb or rgba field
-      using IsCompatible = pcl::traits::has_color<boost::mpl::_1>;
+      using IsCompatible = pcl::traits::has_rgb<boost::mpl::_1>;
 
       // Storage
       float r = 0, g = 0, b = 0, a = 0;
