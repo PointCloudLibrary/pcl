@@ -204,7 +204,7 @@ namespace pcl
 
 
         //////////////////////////////////////////////////////////////////////////////////////////////  
-        ///** \brief @b Class for Viewpoint Feature Histogramm estimation.  */
+        ///** \brief @b Class for Viewpoint Feature Histogram estimation.  */
 
         class PCL_EXPORTS VFHEstimation : public FeatureFromNormals
         {
