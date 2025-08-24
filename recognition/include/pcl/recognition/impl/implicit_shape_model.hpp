@@ -188,7 +188,7 @@ pcl::features::ISMVoteList<PointT>::findStrongestPeaks (
       }
     }
 
-    if( peak_counter == 0 )
+    if( best_density == -1.0 || strongest_peak == Eigen::Vector3f::Constant (-1) || best_peak_ind == -1 || peak_counter == 0 )
       break;// no peaks
 
     pcl::ISMPeak peak;
