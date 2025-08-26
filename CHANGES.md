@@ -1,6 +1,6 @@
 # ChangeList
 
-## = 1.15.1 (22 August 2025) =
+## = 1.15.1 (26 August 2025) =
 
 ### Notable changes
 
