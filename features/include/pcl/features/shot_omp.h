@@ -95,18 +95,19 @@ namespace pcl
       using PointCloudIn = typename Feature<PointInT, PointOutT>::PointCloudIn;
 
       /** \brief Empty constructor. */
-      SHOTEstimationOMP (unsigned int nr_threads = 0) : SHOTEstimation<PointInT, PointNT, PointOutT, PointRFT> ()
+      SHOTEstimationOMP (unsigned int num_threads = 0) : SHOTEstimation<PointInT, PointNT, PointOutT, PointRFT> ()
       {
-        setNumberOfThreads(nr_threads);
+        setNumberOfThreads(num_threads);
       };
 
       /** \brief Initialize the scheduler and set the number of threads to use.
-        * \param nr_threads the number of hardware threads to use (0 sets the value back to automatic)
+        * \param num_threads the number of hardware threads to use (0 sets the value back to automatic)
         */
       void
-      setNumberOfThreads (unsigned int nr_threads = 0);
+      setNumberOfThreads (unsigned int num_threads = 0);
 
     protected:
+      using PCLBase<PointInT>::num_threads_;
 
       /** \brief Estimate the Signatures of Histograms of OrienTations (SHOT) descriptors at a set of points given by
         * <setInputCloud (), setIndices ()> using the surface in setSearchSurface () and the spatial locator in
@@ -119,9 +120,6 @@ namespace pcl
       /** \brief This method should get called before starting the actual computation. */
       bool
       initCompute () override;
-
-      /** \brief The number of threads the scheduler should use. */
-      unsigned int threads_;
   };
 
   /** \brief SHOTColorEstimationOMP estimates the Signature of Histograms of OrienTations (SHOT) descriptor for a given point cloud dataset
@@ -179,20 +177,20 @@ namespace pcl
       /** \brief Empty constructor. */
       SHOTColorEstimationOMP (bool describe_shape = true,
                               bool describe_color = true,
-                              unsigned int nr_threads = 0)
+                              unsigned int num_threads = 0)
         : SHOTColorEstimation<PointInT, PointNT, PointOutT, PointRFT> (describe_shape, describe_color)
       {
-        setNumberOfThreads(nr_threads);
+        setNumberOfThreads(num_threads);
       }
 
       /** \brief Initialize the scheduler and set the number of threads to use.
-        * \param nr_threads the number of hardware threads to use (0 sets the value back to automatic)
+        * \param num_threads the number of hardware threads to use (0 sets the value back to automatic)
         */
       void
-      setNumberOfThreads (unsigned int nr_threads = 0);
+      setNumberOfThreads (unsigned int num_threads = 0);
 
     protected:
-
+      using PCLBase<PointInT>::num_threads_;
       /** \brief Estimate the Signatures of Histograms of OrienTations (SHOT) descriptors at a set of points given by
         * <setInputCloud (), setIndices ()> using the surface in setSearchSurface () and the spatial locator in
         * setSearchMethod ()
@@ -204,9 +202,6 @@ namespace pcl
       /** \brief This method should get called before starting the actual computation. */
       bool
       initCompute () override;
-
-      /** \brief The number of threads the scheduler should use. */
-      unsigned int threads_;
   };
 
 }

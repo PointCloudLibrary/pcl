@@ -73,17 +73,17 @@ namespace pcl
       using PointCloudIn = pcl::PointCloud<PointInT>;
 
       /** \brief Initialize the scheduler and set the number of threads to use.
-        * \param nr_threads the number of hardware threads to use (0 sets the value to automatic)
+        * \param num_threads the number of hardware threads to use (0 sets the value to automatic)
         * \param chunk_size PCL will use dynamic scheduling with this chunk size. Setting it too 
         *                   low will lead to more parallelization overhead. Setting it too high 
         *                   will lead to a worse balancing between the threads.
         */
-      PrincipalCurvaturesEstimation (unsigned int nr_threads = 1, int chunk_size = 256) : 
+      PrincipalCurvaturesEstimation (unsigned int num_threads = 1, int chunk_size = 256) : 
         chunk_size_(chunk_size) 
       {
         feature_name_ = "PrincipalCurvaturesEstimation";
 
-        setNumberOfThreads(nr_threads);
+        setNumberOfThreads(num_threads);
       };
 
       /** \brief Perform Principal Components Analysis (PCA) on the point normals of a surface patch in the tangent
@@ -105,15 +105,13 @@ namespace pcl
 
       /** \brief Initialize the scheduler and set the number of threads to use. The default behavior is
        *         single threaded exectution
-       * \param nr_threads the number of hardware threads to use (0 sets the value to automatic)
+       * \param num_threads the number of hardware threads to use (0 sets the value to automatic)
        */
       void
-      setNumberOfThreads (unsigned int nr_threads);
+      setNumberOfThreads (unsigned int num_threads = 0);
 
     protected:
-      /** \brief The number of threads the scheduler should use. */
-      unsigned int threads_;
-
+      using PCLBase<PointInT>::num_threads_;
       /** \brief Chunk size for (dynamic) scheduling. */
       int chunk_size_;
 

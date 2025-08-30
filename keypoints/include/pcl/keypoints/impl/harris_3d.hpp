@@ -276,7 +276,7 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloud
 #pragma omp parallel for \
   default(none) \
   shared(output, response) \
-  num_threads(threads_)
+  num_threads(num_threads_)
     for (int idx = 0; idx < static_cast<int> (response->size ()); ++idx)
     {
       if (!isFinite ((*response)[idx]) ||
@@ -323,7 +323,7 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::responseHarris (PointCloudO
   default(none) \
   shared(output) \
   firstprivate(covar) \
-  num_threads(threads_)
+  num_threads(num_threads_)
   for (int pIdx = 0; pIdx < static_cast<int> (input_->size ()); ++pIdx)
   {
     const PointInT& pointIn = input_->points [pIdx];
@@ -364,7 +364,7 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::responseNoble (PointCloudOu
   for default(none) \
   shared(output) \
   firstprivate(covar) \
-  num_threads(threads_)
+  num_threads(num_threads_)
   for (int pIdx = 0; pIdx < static_cast<int> (input_->size ()); ++pIdx)
   {
     const PointInT& pointIn = input_->points [pIdx];
@@ -404,7 +404,7 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::responseLowe (PointCloudOut
   default(none) \
   shared(output) \
   firstprivate(covar) \
-  num_threads(threads_)
+  num_threads(num_threads_)
   for (int pIdx = 0; pIdx < static_cast<int> (input_->size ()); ++pIdx)
   {
     const PointInT& pointIn = input_->points [pIdx];
@@ -463,7 +463,7 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::responseTomasi (PointCloudO
   default(none) \
   shared(output) \
   firstprivate(covar, covariance_matrix) \
-  num_threads(threads_)
+  num_threads(num_threads_)
   for (int pIdx = 0; pIdx < static_cast<int> (input_->size ()); ++pIdx)
   {
     const PointInT& pointIn = input_->points [pIdx];
@@ -508,7 +508,7 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::refineCorners (PointCloudOu
 #pragma omp parallel for \
   shared(corners) \
   firstprivate(nnT, NNT, NNTp) \
-  num_threads(threads_)
+  num_threads(num_threads_)
   for (int cIdx = 0; cIdx < static_cast<int> (corners.size ()); ++cIdx)
   {
     unsigned iterations = 0;

@@ -68,16 +68,9 @@ pcl::Poisson<PointNT>::~Poisson () = default;
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointNT> void
-pcl::Poisson<PointNT>::setThreads (int threads)
+pcl::Poisson<PointNT>::setThreads (unsigned int num_threads)
 {
-  if (threads == 0)
-#ifdef _OPENMP
-    threads_ = omp_get_num_procs();
-#else
-    threads_ = 1;
-#endif
-  else
-    threads_ = threads;
+  setNumberOfThreads(num_threads);
 }
       
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -91,7 +84,7 @@ pcl::Poisson<PointNT>::execute (poisson::CoredVectorMeshData &mesh,
   poisson::Octree<Degree> tree;
 
   
-  tree.threads = threads_;
+  tree.threads = num_threads_;
   center.coords[0] = center.coords[1] = center.coords[2] = 0;
 
 
