@@ -60,17 +60,14 @@ int pcl::internal::optimizeModelCoefficientsCylinder (Eigen::VectorXf& coeff, co
     {
       Eigen::Vector3f line_dir(x[3], x[4], x[5]);
       line_dir.normalize();
-      const Eigen::ArrayXf line_dir_x = Eigen::ArrayXf::Constant(pts_x.size(), line_dir.x());
-      const Eigen::ArrayXf line_dir_y = Eigen::ArrayXf::Constant(pts_x.size(), line_dir.y());
-      const Eigen::ArrayXf line_dir_z = Eigen::ArrayXf::Constant(pts_x.size(), line_dir.z());
       const Eigen::ArrayXf bx = Eigen::ArrayXf::Constant(pts_x.size(), x[0]) - pts_x;
       const Eigen::ArrayXf by = Eigen::ArrayXf::Constant(pts_x.size(), x[1]) - pts_y;
       const Eigen::ArrayXf bz = Eigen::ArrayXf::Constant(pts_x.size(), x[2]) - pts_z;
       // compute the distance of point b to the line (cross product), then subtract the model radius
-      fvec = ((line_dir_y * bz - line_dir_z * by).square()
-             +(line_dir_z * bx - line_dir_x * bz).square()
-             +(line_dir_x * by - line_dir_y * bx).square()).sqrt()
-             -Eigen::ArrayXf::Constant(pts_x.size(), std::abs(x[6]));
+      fvec = ((line_dir.y() * bz - line_dir.z() * by).square()
+             +(line_dir.z() * bx - line_dir.x() * bz).square()
+             +(line_dir.x() * by - line_dir.y() * bx).square()).sqrt()
+             - std::abs(x[6]);
       return (0);
     }
 
