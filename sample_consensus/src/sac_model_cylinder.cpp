@@ -66,11 +66,11 @@ int pcl::internal::optimizeModelCoefficientsCylinder (Eigen::VectorXf& coeff, co
       const Eigen::ArrayXf bx = Eigen::ArrayXf::Constant(pts_x.size(), x[0]) - pts_x;
       const Eigen::ArrayXf by = Eigen::ArrayXf::Constant(pts_x.size(), x[1]) - pts_y;
       const Eigen::ArrayXf bz = Eigen::ArrayXf::Constant(pts_x.size(), x[2]) - pts_z;
-      // compute the squared distance of point b to the line (cross product), then subtract the squared model radius
+      // compute the distance of point b to the line (cross product), then subtract the model radius
       fvec = ((line_dir_y * bz - line_dir_z * by).square()
              +(line_dir_z * bx - line_dir_x * bz).square()
-             +(line_dir_x * by - line_dir_y * bx).square())
-             -Eigen::ArrayXf::Constant(pts_x.size(), x[6]*x[6]);
+             +(line_dir_x * by - line_dir_y * bx).square()).sqrt()
+             -Eigen::ArrayXf::Constant(pts_x.size(), std::abs(x[6]));
       return (0);
     }
 
