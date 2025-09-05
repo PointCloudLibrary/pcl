@@ -87,7 +87,7 @@ square_if_l2(float radius)
   return radius;
 };
 template <>
-float
+inline float
 square_if_l2<nanoflann::L2_Adaptor<float,
                                    pcl::search::internal::PointCloudAdaptor<float>,
                                    float,
@@ -96,7 +96,7 @@ square_if_l2<nanoflann::L2_Adaptor<float,
   return radius * radius;
 };
 template <>
-float
+inline float
 square_if_l2<
     nanoflann::L2_Simple_Adaptor<float,
                                  pcl::search::internal::PointCloudAdaptor<float>,
