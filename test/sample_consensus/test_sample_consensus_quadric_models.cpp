@@ -1641,6 +1641,71 @@ TEST(SampleConsensusModelTorusSelfIntersectSpindle, RANSAC)
   EXPECT_NEAR(coeff[7], 0.25000000000000017, 1e-2);
 }
 
+TEST(SampleConsensusModelCylinder, RadiusAccuracy)
+{
+  srand(0);
+
+  size_t num_runs = 100;
+  size_t num_points = 1000;
+  float std = 0.05f;
+
+  PointCloud<PointXYZ> cloud;
+  PointCloud<Normal> normals;
+  cloud.resize(num_points);
+  normals.resize(num_points);
+
+  std::mt19937 rng;
+  std::uniform_real_distribution<float> z_dist(0.0f, 1.0f);
+  std::uniform_real_distribution<float> angle_dist(0.0f, 2.0f * M_PI);
+  std::normal_distribution<float> noise_dist(0.0f, std);
+  Eigen::Vector3f center(-0.5f, 1.7f, 0.0f);
+  float radius = 0.5f;
+  double sq_radius_err = 0.0;
+  for (size_t i = 0; i < num_runs; ++i) {
+    for (size_t j = 0; j < num_points; ++j) {
+      float z = z_dist(rng);
+      float angle = angle_dist(rng);
+      float noise_r = std::min(std::max(noise_dist(rng), -3.0f * std), 3.0f * std);
+      float noise_nx = std::min(std::max(noise_dist(rng), -3.0f * std), 3.0f * std);
+      float noise_ny = std::min(std::max(noise_dist(rng), -3.0f * std), 3.0f * std);
+      float noise_nz = std::min(std::max(noise_dist(rng), -3.0f * std), 3.0f * std);
+      Eigen::Vector3f n(std::cos(angle), std::sin(angle), 0.0f);
+      cloud[j].getVector3fMap() =
+          center + (radius + noise_r) * n + Eigen::Vector3f(0.0, 0.0, z);
+      normals[j].getNormalVector3fMap() =
+          (n + Eigen::Vector3f(noise_nx, noise_ny, noise_nz)).normalized();
+    }
+
+    // Create a shared cylinder model pointer directly
+    SampleConsensusModelCylinderPtr model(
+        new SampleConsensusModelCylinder<PointXYZ, Normal>(cloud.makeShared()));
+    model->setInputNormals(normals.makeShared());
+
+    // Create the RANSAC object
+    RandomSampleConsensus<PointXYZ> sac(model, 3.5 * std);
+
+    // Algorithm tests
+    bool result = sac.computeModel();
+    ASSERT_TRUE(result);
+
+    sac.refineModel();
+
+    pcl::Indices inliers;
+    sac.getInliers(inliers);
+    EXPECT_EQ(num_points, inliers.size());
+
+    Eigen::VectorXf coeff_refined = sac.getModelCoefficients();
+    EXPECT_EQ(7, coeff_refined.size());
+
+    double radius_error = coeff_refined[6] - radius;
+    sq_radius_err += radius_error * radius_error;
+  }
+
+  // We expect the radius rmse to be approximately std / sqrt(num_points)
+  EXPECT_GE(1.3 * std / sqrt(num_points),
+            std::sqrt(sq_radius_err / static_cast<double>(num_runs)));
+}
+
 int
 main(int argc, char** argv)
 {
