@@ -352,7 +352,7 @@ if(NOT EIGEN3_FOUND AND Eigen3_FOUND)
 endif()
 
 # FLANN
-find_package(FLANN 1.9.1)#TODO comment out?
+find_package(FLANN 1.9.1)
 if(NOT FLANN_FOUND)
   message(WARNING "Flann was not found, so many PCL modules will not be built!")
 else()

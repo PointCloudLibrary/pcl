@@ -583,7 +583,6 @@ namespace pcl
       std::vector<int> voxel_centroids_leaf_indices_;
 
       /** \brief KdTree generated using \ref voxel_centroids_ (used for searching). */
-      //KdTreeFLANN<PointT> kdtree_;
       typename pcl::search::Search<PointT>::Ptr kdtree_;
   };
 }
