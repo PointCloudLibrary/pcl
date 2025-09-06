@@ -3,7 +3,7 @@ set(SUBSYS_DESC "Point cloud generic search library")
 set(SUBSYS_DEPS common kdtree octree)
 
 PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ON)
-PCL_SUBSYS_DEPEND(build NAME ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} OPT_DEPS OpenMP flann)# EXT_DEPS flann)
+PCL_SUBSYS_DEPEND(build NAME ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} OPT_DEPS OpenMP EXT_DEPS flann)
 
 PCL_ADD_DOC("${SUBSYS_NAME}")
 
@@ -38,6 +38,7 @@ set(incs
 )
 
 set(impl_incs
+  "include/pcl/${SUBSYS_NAME}/impl/auto.hpp"
   "include/pcl/${SUBSYS_NAME}/impl/search.hpp"
   "include/pcl/${SUBSYS_NAME}/impl/kdtree.hpp"
   "include/pcl/${SUBSYS_NAME}/impl/flann_search.hpp"

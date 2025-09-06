@@ -270,7 +270,7 @@ namespace pcl
             searchable_ = false;
           } else {
             // Initiates kdtree of the centroids of voxels containing a sufficient number of points
-            kdtree_.reset (pcl::search::autoSelectMethod<PointT>(voxel_centroids_, true)); // TODO sorted or not?
+            kdtree_.reset (pcl::search::autoSelectMethod<PointT>(voxel_centroids_, true));
           }
         }
       }
@@ -292,7 +292,7 @@ namespace pcl
             searchable_ = false;
           } else {
             // Initiates kdtree of the centroids of voxels containing a sufficient number of points
-            kdtree_.reset (pcl::search::autoSelectMethod<PointT>(voxel_centroids_, true)); // TODO sorted or not?
+            kdtree_.reset (pcl::search::autoSelectMethod<PointT>(voxel_centroids_, true));
           }
         }
       }
@@ -583,7 +583,6 @@ namespace pcl
       std::vector<int> voxel_centroids_leaf_indices_;
 
       /** \brief KdTree generated using \ref voxel_centroids_ (used for searching). */
-      //KdTreeFLANN<PointT> kdtree_;
       typename pcl::search::Search<PointT>::Ptr kdtree_;
   };
 }

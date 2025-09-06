@@ -119,14 +119,6 @@ Feature<PointInT, PointOutT>::initCompute ()
   // Check if a space search locator was given
   if (!tree_)
   {
-    //if (surface_->isOrganized () && input_->isOrganized ()) {
-    //  tree_.reset (new pcl::search::OrganizedNeighbor<PointInT> ());
-    //  if(!tree_->setInputCloud (surface_)) { // may return false if OrganizedNeighbor cannot work with the cloud, then use KdTree instead
-    //    tree_.reset (new pcl::search::KdTree<PointInT> (false));
-    //  }
-    //} else {
-    //  tree_.reset (new pcl::search::KdTree<PointInT> (false));
-    //}
     tree_.reset (pcl::search::autoSelectMethod<PointInT>(surface_, false));
   }
 

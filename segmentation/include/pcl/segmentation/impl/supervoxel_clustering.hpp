@@ -381,8 +381,7 @@ pcl::SupervoxelClustering<PointT>::selectInitialSupervoxelSeeds (Indices &seed_i
   distance.resize(1,0);
   if (!voxel_kdtree_)
   {
-    voxel_kdtree_.reset (pcl::search::autoSelectMethod<PointT>(voxel_centroid_cloud_, false)); // TODO sorted or not?
-    voxel_kdtree_ ->setInputCloud (voxel_centroid_cloud_);
+    voxel_kdtree_.reset (pcl::search::autoSelectMethod<PointT>(voxel_centroid_cloud_, false));
   }
   
   for (int i = 0; i < num_seeds; ++i)  

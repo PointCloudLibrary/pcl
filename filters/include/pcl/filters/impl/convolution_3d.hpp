@@ -191,16 +191,19 @@ pcl::filters::Convolution3D<PointInT, PointOutT, KernelT>::initCompute ()
     PCL_ERROR ("[pcl::filters::Convlution3D::initCompute] init failed!\n");
     return (false);
   }
-  // Initialize the spatial locator
-  if (!tree_)
-  {
-    tree_.reset (pcl::search::autoSelectMethod<PointT>(input_, false, pcl::search::Purpose::radius_search)); // TODO input_ or surface_?
-  }
   // If no search surface has been defined, use the input dataset as the search surface itself
   if (!surface_)
     surface_ = input_;
-  // Send the surface dataset to the spatial locator
-  tree_->setInputCloud (surface_);
+  // Initialize the spatial locator
+  if (!tree_)
+  {
+    tree_.reset (pcl::search::autoSelectMethod<PointT>(surface_, false, pcl::search::Purpose::radius_search));
+  }
+  else
+  {
+    // Send the surface dataset to the spatial locator
+    tree_->setInputCloud (surface_);
+  }
   // Do a fast check to see if the search parameters are well defined
   if (search_radius_ <= 0.0)
   {

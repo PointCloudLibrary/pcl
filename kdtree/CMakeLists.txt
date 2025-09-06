@@ -3,7 +3,7 @@ set(SUBSYS_DESC "Point cloud kd-tree library")
 set(SUBSYS_DEPS common)
 
 PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ON)
-PCL_SUBSYS_DEPEND(build NAME ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} OPT_DEPS flann)# EXT_DEPS flann)
+PCL_SUBSYS_DEPEND(build NAME ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} EXT_DEPS flann)
 
 PCL_ADD_DOC("${SUBSYS_NAME}")
 
@@ -31,8 +31,7 @@ set(impl_incs
 set(LIB_NAME "pcl_${SUBSYS_NAME}")
 if(FLANN_FOUND)
   PCL_ADD_LIBRARY(${LIB_NAME} COMPONENT ${SUBSYS_NAME} SOURCES ${srcs} ${incs} ${impl_incs})
-  target_link_libraries("${LIB_NAME}" pcl_common)
-  target_link_libraries("${LIB_NAME}" FLANN::FLANN)
+  target_link_libraries("${LIB_NAME}" pcl_common FLANN::FLANN)
   set(EXT_DEPS flann)
 else()
   PCL_ADD_LIBRARY(${LIB_NAME} COMPONENT ${SUBSYS_NAME} INCLUDES ${incs} ${impl_incs})
