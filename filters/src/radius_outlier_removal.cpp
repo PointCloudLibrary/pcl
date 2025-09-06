@@ -39,6 +39,7 @@
  */
 
 #include <pcl/filters/impl/radius_outlier_removal.hpp>
+#include <pcl/search/auto.h> // for autoSelectMethod
 #include <pcl/conversions.h>
 #include <pcl/memory.h>
 
@@ -69,18 +70,12 @@ pcl::RadiusOutlierRemoval<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &out
   // Initialize the spatial locator
   if (!searcher_)
   {
-    if (cloud->isOrganized ())
-    {
-      PCL_DEBUG ("[pcl::%s::applyFilter] Cloud is organized, so using OrganizedNeighbor.\n", getClassName ().c_str ());
-      searcher_.reset (new pcl::search::OrganizedNeighbor<pcl::PointXYZ> ());
-    }
-    else
-    {
-      PCL_DEBUG ("[pcl::%s::applyFilter] Cloud is not organized, so using KdTree.\n", getClassName ().c_str ());
-      searcher_.reset (new pcl::search::KdTree<pcl::PointXYZ> (false));
-    }
+    searcher_.reset (pcl::search::autoSelectMethod<pcl::PointXYZ>(cloud, false, pcl::search::Purpose::radius_search));
   }
-  searcher_->setInputCloud (cloud);
+  else
+  {
+    searcher_->setInputCloud (cloud);
+  }
 
   // Allocate enough space to hold the results
   Indices nn_indices (indices_->size ());
@@ -170,12 +165,12 @@ pcl::RadiusOutlierRemoval<pcl::PCLPointCloud2>::applyFilter (Indices &indices)
   // Initialize the search class
   if (!searcher_)
   {
-    if (cloud->isOrganized ())
-      searcher_.reset (new pcl::search::OrganizedNeighbor<pcl::PointXYZ> ());
-    else
-      searcher_.reset (new pcl::search::KdTree<pcl::PointXYZ> (false));
+    searcher_.reset (pcl::search::autoSelectMethod<pcl::PointXYZ>(cloud, false, cloud->is_dense ? pcl::search::Purpose::many_knn_search : pcl::search::Purpose::radius_search));
   }
-  searcher_->setInputCloud (cloud);
+  else
+  {
+    searcher_->setInputCloud (cloud);
+  }
 
   // The arrays to be used
   Indices nn_indices (indices_->size ());

@@ -49,7 +49,7 @@ template <typename PointT, typename Dist>
 pcl::KdTreeFLANN<PointT, Dist>::KdTreeFLANN (bool sorted)
   : pcl::KdTree<PointT> (sorted)
   , flann_index_ ()
-  , 
+  ,
    param_k_ (::flann::SearchParams (-1 , epsilon_))
   , param_radius_ (::flann::SearchParams (-1, epsilon_, sorted))
 {
@@ -70,7 +70,7 @@ template <typename PointT, typename Dist>
 pcl::KdTreeFLANN<PointT, Dist>::KdTreeFLANN (const KdTreeFLANN<PointT, Dist> &k)
   : pcl::KdTree<PointT> (false)
   , flann_index_ ()
-  , 
+  ,
    param_k_ (::flann::SearchParams (-1 , epsilon_))
   , param_radius_ (::flann::SearchParams (-1, epsilon_, false))
 {

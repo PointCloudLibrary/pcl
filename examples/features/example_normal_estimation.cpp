@@ -62,10 +62,7 @@ main (int, char** argv)
   pcl::NormalEstimation<pcl::PointXYZ, pcl::Normal> normal_estimation;
   normal_estimation.setInputCloud (cloud);
 
-  // Create an empty kdtree representation, and pass it to the normal estimation object.
-  // Its content will be filled inside the object, based on the given input dataset (as no other search surface is given).
-  pcl::search::KdTree<pcl::PointXYZ>::Ptr tree (new pcl::search::KdTree<pcl::PointXYZ>);
-  normal_estimation.setSearchMethod (tree);
+  // We could call normal_estimation.setSearchMethod (...); with a manually created search object here, but instead we let the NormalEstimation class decide
 
   // Output datasets
   pcl::PointCloud<pcl::Normal>::Ptr cloud_normals (new pcl::PointCloud<pcl::Normal>);

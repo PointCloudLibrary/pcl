@@ -117,7 +117,6 @@ computeFeatureViaNormals (const pcl::PCLPointCloud2::ConstPtr &input, pcl::PCLPo
 
   NormalEstimation<PointIn, NormalT> ne;
   ne.setInputCloud (xyz);
-  ne.setSearchMethod (typename pcl::search::KdTree<PointIn>::Ptr (new pcl::search::KdTree<PointIn>));
   ne.setKSearch (n_k);
   ne.setRadiusSearch (n_radius);
 
@@ -127,8 +126,6 @@ computeFeatureViaNormals (const pcl::PCLPointCloud2::ConstPtr &input, pcl::PCLPo
   FeatureAlgorithm feature_est;
   feature_est.setInputCloud (xyz);
   feature_est.setInputNormals (normals);
-
-  feature_est.setSearchMethod (typename pcl::search::KdTree<PointIn>::Ptr (new pcl::search::KdTree<PointIn>));
 
   PointCloud<PointOut> output_features;
 

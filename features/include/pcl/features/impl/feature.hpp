@@ -41,8 +41,8 @@
 #ifndef PCL_FEATURES_IMPL_FEATURE_H_
 #define PCL_FEATURES_IMPL_FEATURE_H_
 
-#include <pcl/search/kdtree.h> // for KdTree
-#include <pcl/search/organized.h> // for OrganizedNeighbor
+#include <pcl/common/eigen.h> // for eigen33
+#include <pcl/search/auto.h> // for autoSelectMethod
 
 
 namespace pcl
@@ -119,14 +119,7 @@ Feature<PointInT, PointOutT>::initCompute ()
   // Check if a space search locator was given
   if (!tree_)
   {
-    if (surface_->isOrganized () && input_->isOrganized ()) {
-      tree_.reset (new pcl::search::OrganizedNeighbor<PointInT> ());
-      if(!tree_->setInputCloud (surface_)) { // may return false if OrganizedNeighbor cannot work with the cloud, then use KdTree instead
-        tree_.reset (new pcl::search::KdTree<PointInT> (false));
-      }
-    } else {
-      tree_.reset (new pcl::search::KdTree<PointInT> (false));
-    }
+    tree_.reset (pcl::search::autoSelectMethod<PointInT>(surface_, false));
   }
 
   if (tree_->getInputCloud () != surface_) { // Make sure the tree searches the surface

@@ -42,6 +42,7 @@
 #include <pcl/io/pcd_io.h>
 #include <pcl/features/fpfh.h>
 #include <pcl/features/normal_3d.h>
+#include <pcl/search/kdtree.h> // for KdTree
 
 int
 main (int argc, char** argv)

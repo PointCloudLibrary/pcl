@@ -41,8 +41,7 @@
 #define PCL_FILTERS_BILATERAL_IMPL_H_
 
 #include <pcl/filters/bilateral.h>
-#include <pcl/search/organized.h> // for OrganizedNeighbor
-#include <pcl/search/kdtree.h> // for KdTree
+#include <pcl/search/auto.h> // for autoSelectMethod
 #include <pcl/common/point_tests.h> // for isXYZFinite
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -84,14 +83,12 @@ pcl::BilateralFilter<PointT>::applyFilter (PointCloud &output)
   // In case a search method has not been given, initialize it using some defaults
   if (!tree_)
   {
-    // For organized datasets, use an OrganizedNeighbor
-    if (input_->isOrganized ())
-      tree_.reset (new pcl::search::OrganizedNeighbor<PointT> ());
-    // For unorganized data, use a FLANN kdtree
-    else
-      tree_.reset (new pcl::search::KdTree<PointT> (false));
+    tree_.reset (pcl::search::autoSelectMethod<PointT>(input_, false, pcl::search::Purpose::radius_search));
   }
-  tree_->setInputCloud (input_);
+  else
+  {
+    tree_->setInputCloud (input_);
+  }
 
   Indices k_indices;
   std::vector<float> k_distances;
