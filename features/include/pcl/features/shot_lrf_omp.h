@@ -80,12 +80,13 @@ namespace pcl
     ~SHOTLocalReferenceFrameEstimationOMP () override = default;
 
     /** \brief Initialize the scheduler and set the number of threads to use.
-     * \param nr_threads the number of hardware threads to use (0 sets the value back to automatic)
+     * \param num_threads the number of hardware threads to use (0 sets the value back to automatic)
      */
     void
-    setNumberOfThreads (unsigned int nr_threads = 0);
+    setNumberOfThreads (unsigned int num_threads = 0);
 
     protected:
+      using PCLBase<PointInT>::num_threads_;
       using Feature<PointInT, PointOutT>::feature_name_;
       using Feature<PointInT, PointOutT>::getClassName;
       //using Feature<PointInT, PointOutT>::searchForNeighbors;
@@ -103,10 +104,6 @@ namespace pcl
         */
       void
       computeFeature (PointCloudOut &output) override;
-
-      /** \brief The number of threads the scheduler should use. */
-      unsigned int threads_;
-
   };
 }
 
