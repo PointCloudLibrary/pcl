@@ -44,6 +44,7 @@
 #include <pcl/geometry/mesh_elements.h>
 #include <pcl/geometry/mesh_indices.h>
 #include <pcl/geometry/mesh_traits.h>
+#include <pcl/exceptions.h>
 #include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/point_cloud.h>
@@ -1833,9 +1834,8 @@ protected:
       data_cloud.resize(ind_new.get());
     }
     else if (it_d_old != data_cloud.begin() || it_d_new != data_cloud.begin()) {
-      std::cerr << "TODO: Bug in MeshBase::remove!\n";
       assert(false);
-      exit(EXIT_FAILURE);
+      PCL_THROW_EXCEPTION(PCLException, "TODO: Bug in MeshBase::remove!")
     }
 
     return (new_indices);
