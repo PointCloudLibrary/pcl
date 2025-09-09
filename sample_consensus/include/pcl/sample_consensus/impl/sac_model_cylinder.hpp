@@ -154,8 +154,8 @@ pcl::SampleConsensusModelCylinder<PointT, PointNT>::getDistancesToModel (
 
   distances.resize (indices_->size ());
 
-  Eigen::Vector4f line_pt  (model_coefficients[0], model_coefficients[1], model_coefficients[2], 0.0f);
-  Eigen::Vector4f line_dir (model_coefficients[3], model_coefficients[4], model_coefficients[5], 0.0f);
+  Eigen::Vector3f line_pt  (model_coefficients[0], model_coefficients[1], model_coefficients[2]);
+  Eigen::Vector3f line_dir (model_coefficients[3], model_coefficients[4], model_coefficients[5]);
   line_dir.normalize ();
   // Iterate through the 3d points and calculate the distances from them to the cylinder
   for (std::size_t i = 0; i < indices_->size (); ++i)
@@ -163,15 +163,15 @@ pcl::SampleConsensusModelCylinder<PointT, PointNT>::getDistancesToModel (
     // Approximate the distance from the point to the cylinder as the difference between
     // dist(point,cylinder_axis) and cylinder radius
     // @note need to revise this.
-    Eigen::Vector4f pt ((*input_)[(*indices_)[i]].x, (*input_)[(*indices_)[i]].y, (*input_)[(*indices_)[i]].z, 0.0f);
+    Eigen::Vector3f pt ((*input_)[(*indices_)[i]].x, (*input_)[(*indices_)[i]].y, (*input_)[(*indices_)[i]].z);
 
-    Eigen::Vector4f diff = pt - line_pt;
+    Eigen::Vector3f diff = pt - line_pt;
     // Calculate the vector from the cylinder axis to the point
-    Eigen::Vector4f dir = diff - (diff.dot (line_dir)) * line_dir;
+    Eigen::Vector3f dir = diff - (diff.dot (line_dir)) * line_dir;
     const double weighted_euclid_dist = (1.0 - normal_distance_weight_) * std::abs (dir.norm () - model_coefficients[6]);
 
     // Calculate the angular distance between the point normal and the (dir=pt_proj->pt) vector
-    Eigen::Vector4f n  ((*normals_)[(*indices_)[i]].normal[0], (*normals_)[(*indices_)[i]].normal[1], (*normals_)[(*indices_)[i]].normal[2], 0.0f);
+    Eigen::Vector3f n  ((*normals_)[(*indices_)[i]].normal[0], (*normals_)[(*indices_)[i]].normal[1], (*normals_)[(*indices_)[i]].normal[2]);
     double d_normal = std::abs (getAngle3D (n, dir));
     d_normal = (std::min) (d_normal, M_PI - d_normal);
 
@@ -196,24 +196,24 @@ pcl::SampleConsensusModelCylinder<PointT, PointNT>::selectWithinDistance (
   inliers.reserve (indices_->size ());
   error_sqr_dists_.reserve (indices_->size ());
 
-  Eigen::Vector4f line_pt  (model_coefficients[0], model_coefficients[1], model_coefficients[2], 0.0f);
-  Eigen::Vector4f line_dir (model_coefficients[3], model_coefficients[4], model_coefficients[5], 0.0f);
+  Eigen::Vector3f line_pt  (model_coefficients[0], model_coefficients[1], model_coefficients[2]);
+  Eigen::Vector3f line_dir (model_coefficients[3], model_coefficients[4], model_coefficients[5]);
   line_dir.normalize ();
   // Iterate through the 3d points and calculate the distances from them to the cylinder
   for (std::size_t i = 0; i < indices_->size (); ++i)
   {
     // Approximate the distance from the point to the cylinder as the difference between
     // dist(point,cylinder_axis) and cylinder radius
-    Eigen::Vector4f pt ((*input_)[(*indices_)[i]].x, (*input_)[(*indices_)[i]].y, (*input_)[(*indices_)[i]].z, 0.0f);
-    Eigen::Vector4f diff = pt - line_pt;
+    Eigen::Vector3f pt ((*input_)[(*indices_)[i]].x, (*input_)[(*indices_)[i]].y, (*input_)[(*indices_)[i]].z);
+    Eigen::Vector3f diff = pt - line_pt;
     // Calculate the vector from the cylinder axis to the point
-    Eigen::Vector4f dir = diff - (diff.dot (line_dir)) * line_dir;
+    Eigen::Vector3f dir = diff - (diff.dot (line_dir)) * line_dir;
     const double weighted_euclid_dist = (1.0 - normal_distance_weight_) * std::abs (dir.norm () - model_coefficients[6]);
     if (weighted_euclid_dist > threshold) // Early termination: cannot be an inlier
       continue;
 
     // Calculate the angular distance between the point normal and the (dir=pt_proj->pt) vector
-    Eigen::Vector4f n  ((*normals_)[(*indices_)[i]].normal[0], (*normals_)[(*indices_)[i]].normal[1], (*normals_)[(*indices_)[i]].normal[2], 0.0f);
+    Eigen::Vector3f n  ((*normals_)[(*indices_)[i]].normal[0], (*normals_)[(*indices_)[i]].normal[1], (*normals_)[(*indices_)[i]].normal[2]);
     double d_normal = std::abs (getAngle3D (n, dir));
     d_normal = (std::min) (d_normal, M_PI - d_normal);
 
@@ -238,24 +238,24 @@ pcl::SampleConsensusModelCylinder<PointT, PointNT>::countWithinDistance (
 
   std::size_t nr_p = 0;
 
-  Eigen::Vector4f line_pt  (model_coefficients[0], model_coefficients[1], model_coefficients[2], 0);
-  Eigen::Vector4f line_dir (model_coefficients[3], model_coefficients[4], model_coefficients[5], 0);
+  Eigen::Vector3f line_pt  (model_coefficients[0], model_coefficients[1], model_coefficients[2]);
+  Eigen::Vector3f line_dir (model_coefficients[3], model_coefficients[4], model_coefficients[5]);
   line_dir.normalize ();
   // Iterate through the 3d points and calculate the distances from them to the cylinder
   for (std::size_t i = 0; i < indices_->size (); ++i)
   {
     // Approximate the distance from the point to the cylinder as the difference between
     // dist(point,cylinder_axis) and cylinder radius
-    Eigen::Vector4f pt ((*input_)[(*indices_)[i]].x, (*input_)[(*indices_)[i]].y, (*input_)[(*indices_)[i]].z, 0.0f);
-    Eigen::Vector4f diff = pt - line_pt;
+    Eigen::Vector3f pt ((*input_)[(*indices_)[i]].x, (*input_)[(*indices_)[i]].y, (*input_)[(*indices_)[i]].z);
+    Eigen::Vector3f diff = pt - line_pt;
     // Calculate the vector from the cylinder axis to the point
-    Eigen::Vector4f dir = diff - (diff.dot (line_dir)) * line_dir;
+    Eigen::Vector3f dir = diff - (diff.dot (line_dir)) * line_dir;
     const double weighted_euclid_dist = (1.0 - normal_distance_weight_) * std::abs (dir.norm () - model_coefficients[6]);
     if (weighted_euclid_dist > threshold) // Early termination: cannot be an inlier
       continue;
 
     // Calculate the angular distance between the point normal and the (dir=pt_proj->pt) vector
-    Eigen::Vector4f n  ((*normals_)[(*indices_)[i]].normal[0], (*normals_)[(*indices_)[i]].normal[1], (*normals_)[(*indices_)[i]].normal[2], 0.0f);
+    Eigen::Vector3f n  ((*normals_)[(*indices_)[i]].normal[0], (*normals_)[(*indices_)[i]].normal[1], (*normals_)[(*indices_)[i]].normal[2]);
     double d_normal = std::abs (getAngle3D (n, dir));
     d_normal = (std::min) (d_normal, M_PI - d_normal);
 
