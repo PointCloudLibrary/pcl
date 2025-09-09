@@ -38,6 +38,7 @@ BM_SacModelCylinder(benchmark::State& state, const std::string& file)
   seg.setMethodType(pcl::SAC_RANSAC);
   seg.setNormalDistanceWeight(0.1);
   seg.setMaxIterations(10000);
+  seg.setProbability(1.0);
   seg.setDistanceThreshold(0.05);
   seg.setRadiusLimits(0, 0.1);
   seg.setInputCloud(cloud);
