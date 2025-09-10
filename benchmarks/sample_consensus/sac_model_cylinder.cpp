@@ -27,6 +27,8 @@ BM_SacModelCylinder(benchmark::State& state, const std::string& file)
   // Read in the cloud data
   reader.read(file, *cloud);
 
+  pcl::Indices unused;
+  pcl::removeNaNFromPointCloud(*cloud, *cloud, unused);
   // Estimate point normals
   ne.setInputCloud(cloud);
   ne.setKSearch(50);
@@ -57,7 +59,7 @@ main(int argc, char** argv)
 {
   if (argc < 2) {
     std::cerr << "No test files given. Please download "
-                 "`table_scene_mug_stereo_textured_cylinder.pcd` "
+                 "`table_scene_mug_stereo_textured.pcd` "
                  "and pass its path to the test."
               << std::endl;
     return (-1);
