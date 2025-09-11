@@ -81,6 +81,12 @@ int pcl::internal::optimizeModelCoefficientsCylinder (Eigen::VectorXf& coeff, co
   Eigen::Vector3f line_pt(coeff[0], coeff[1], coeff[2]);
   Eigen::Vector3f line_dir(coeff[3], coeff[4], coeff[5]);
   line_dir.normalize();
+
+  // Compute the center of the point cloud and project it onto the cylinder axis.
+  // We do this so that the nonlinear optimization rotates the cylinder around the center, leading to a better convergence.
+  Eigen::Vector3f center(pts_x.mean(), pts_y.mean(), pts_z.mean());
+  line_pt += (center - line_pt).dot(line_dir) * line_dir;
+
   // find two vectors u, v spanning the plane orthogonal to line_dir
   Eigen::Vector3f u = std::abs(line_dir.x()) < std::abs(line_dir.y())
                           ? (std::abs(line_dir.x()) < std::abs(line_dir.z())
