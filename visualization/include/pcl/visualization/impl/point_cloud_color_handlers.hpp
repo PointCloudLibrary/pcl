@@ -541,7 +541,7 @@ template <> inline bool isXYZFiniteAt(const PCLPointCloud2& cloud, int index)
 
   // if any missing, error
   if (x_field_idx == -1 || y_field_idx == -1 || z_field_idx == -1) {
-    throw std::out_of_range("getXData(): input cloud missing at least one of x, y, z fields");
+    throw std::out_of_range("isXYZFiniteAt(): input cloud missing at least one of x, y, z fields");
   }
   // get x,y,z field values
   const auto position_x = index * cloud.point_step + cloud.fields[x_field_idx].offset;
@@ -556,7 +556,7 @@ template <> inline bool isXYZFiniteAt(const PCLPointCloud2& cloud, int index)
     return isXYZFinite(PointXYZ(x, y, z));
   } else {
     // the last of the three is out of range
-    throw std::out_of_range("getXData(): requested for index larger than number of points");
+    throw std::out_of_range("isXYZFiniteAt(): requested for index larger than number of points");
   }
 }
 
