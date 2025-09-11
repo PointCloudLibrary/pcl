@@ -74,6 +74,32 @@ int pcl::internal::optimizeModelCoefficientsCylinder (Eigen::VectorXf& coeff, co
       return (0);
     }
 
+    int
+    df(const Eigen::VectorXf &x, Eigen::MatrixXf& jac) const
+    {
+      Eigen::Vector3f line_pt = ref_pt + x[0] * u + x[1] * v;
+      Eigen::Vector3f line_dir = ref_dir + x[2] * u + x[3] * v;
+      const float sqr_norm = line_dir.squaredNorm();
+      const Eigen::ArrayXf bx = Eigen::ArrayXf::Constant(pts_x.size(), line_pt.x()) - pts_x;
+      const Eigen::ArrayXf by = Eigen::ArrayXf::Constant(pts_x.size(), line_pt.y()) - pts_y;
+      const Eigen::ArrayXf bz = Eigen::ArrayXf::Constant(pts_x.size(), line_pt.z()) - pts_z;
+      const Eigen::ArrayXf dist = (((line_dir.y() * bz - line_dir.z() * by).square()
+                                   +(line_dir.z() * bx - line_dir.x() * bz).square()
+                                   +(line_dir.x() * by - line_dir.y() * bx).square()) / sqr_norm).sqrt();
+      const Eigen::ArrayXf dir_b = line_dir.x() * bx + line_dir.y() * by + line_dir.z() * bz;
+      const Eigen::ArrayXf dx = bx - dir_b * line_dir.x() / sqr_norm;
+      const Eigen::ArrayXf dy = by - dir_b * line_dir.y() / sqr_norm;
+      const Eigen::ArrayXf dz = bz - dir_b * line_dir.z() / sqr_norm;
+      const Eigen::ArrayXf du = (dx * u.x() + dy * u.y() + dz * u.z()) / dist;
+      const Eigen::ArrayXf dv = (dx * v.x() + dy * v.y() + dz * v.z()) / dist;
+      jac.col(0) = du;
+      jac.col(1) = dv;
+      jac.col(2) = -du * dir_b / sqr_norm;
+      jac.col(3) = -dv * dir_b / sqr_norm;
+      jac.col(4) = Eigen::ArrayXf::Constant(pts_x.size(), x[4] > 0.f ? -1.f : 1.f);
+      return 0;
+    }
+
     const Eigen::ArrayXf& pts_x, pts_y, pts_z;
     const Eigen::Vector3f& ref_pt, ref_dir, u, v;
   };
@@ -97,8 +123,7 @@ int pcl::internal::optimizeModelCoefficientsCylinder (Eigen::VectorXf& coeff, co
   u.normalize();
   Eigen::Vector3f v = line_dir.cross(u);
   CylinderOptimizationFunctor functor (pts_x, pts_y, pts_z, line_pt, line_dir, u, v);
-  Eigen::NumericalDiff<CylinderOptimizationFunctor> num_diff (functor);
-  Eigen::LevenbergMarquardt<Eigen::NumericalDiff<CylinderOptimizationFunctor>, float> lm (num_diff);
+  Eigen::LevenbergMarquardt<CylinderOptimizationFunctor, float> lm (functor);
 
   Eigen::VectorXf coeff_optim(5);
   coeff_optim << 0.0f, 0.0f, 0.0f, 0.0f, coeff[6];
