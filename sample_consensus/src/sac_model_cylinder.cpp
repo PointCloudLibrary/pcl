@@ -51,34 +51,61 @@ int pcl::internal::optimizeModelCoefficientsCylinder (Eigen::VectorXf& coeff, co
   }
   struct CylinderOptimizationFunctor : pcl::Functor<float>
   {
-    CylinderOptimizationFunctor (const Eigen::ArrayXf& x, const Eigen::ArrayXf& y, const Eigen::ArrayXf& z) :
-      pcl::Functor<float>(x.size()), pts_x(x), pts_y(y), pts_z(z)
+    CylinderOptimizationFunctor (const Eigen::ArrayXf& x, const Eigen::ArrayXf& y, const Eigen::ArrayXf& z,
+                                 const Eigen::Vector3f& ref_pt, const Eigen::Vector3f& ref_dir,
+                                 const Eigen::Vector3f& u, const Eigen::Vector3f& v) :
+      pcl::Functor<float>(x.size()), pts_x(x), pts_y(y), pts_z(z), ref_pt(ref_pt), ref_dir(ref_dir), u(u), v(v)
       {}
 
     int
     operator() (const Eigen::VectorXf &x, Eigen::VectorXf &fvec) const
     {
-      Eigen::Vector3f line_dir(x[3], x[4], x[5]);
+      Eigen::Vector3f line_pt = ref_pt + x[0] * u + x[1] * v;
+      Eigen::Vector3f line_dir = ref_dir + x[2] * u + x[3] * v;
       line_dir.normalize();
-      const Eigen::ArrayXf bx = Eigen::ArrayXf::Constant(pts_x.size(), x[0]) - pts_x;
-      const Eigen::ArrayXf by = Eigen::ArrayXf::Constant(pts_x.size(), x[1]) - pts_y;
-      const Eigen::ArrayXf bz = Eigen::ArrayXf::Constant(pts_x.size(), x[2]) - pts_z;
+      const Eigen::ArrayXf bx = Eigen::ArrayXf::Constant(pts_x.size(), line_pt.x()) - pts_x;
+      const Eigen::ArrayXf by = Eigen::ArrayXf::Constant(pts_x.size(), line_pt.y()) - pts_y;
+      const Eigen::ArrayXf bz = Eigen::ArrayXf::Constant(pts_x.size(), line_pt.z()) - pts_z;
       // compute the distance of point b to the line (cross product), then subtract the model radius
       fvec = ((line_dir.y() * bz - line_dir.z() * by).square()
              +(line_dir.z() * bx - line_dir.x() * bz).square()
              +(line_dir.x() * by - line_dir.y() * bx).square()).sqrt()
-             - std::abs(x[6]);
+             - std::abs(x[4]);
       return (0);
     }
 
     const Eigen::ArrayXf& pts_x, pts_y, pts_z;
+    const Eigen::Vector3f& ref_pt, ref_dir, u, v;
   };
 
-  CylinderOptimizationFunctor functor (pts_x, pts_y, pts_z);
+  Eigen::Vector3f line_pt(coeff[0], coeff[1], coeff[2]);
+  Eigen::Vector3f line_dir(coeff[3], coeff[4], coeff[5]);
+  line_dir.normalize();
+  // find two vectors u, v spanning the plane orthogonal to line_dir
+  Eigen::Vector3f u = std::abs(line_dir.x()) < std::abs(line_dir.y())
+                          ? (std::abs(line_dir.x()) < std::abs(line_dir.z())
+                                 ? Eigen::Vector3f(1.f, 0.f, 0.f)
+                                 : Eigen::Vector3f(0.f, 0.f, 1.f))
+                          : Eigen::Vector3f(0.f, 1.f, 0.f);
+  u -= line_dir.dot(u) * line_dir;
+  u.normalize();
+  Eigen::Vector3f v = line_dir.cross(u);
+  CylinderOptimizationFunctor functor (pts_x, pts_y, pts_z, line_pt, line_dir, u, v);
   Eigen::NumericalDiff<CylinderOptimizationFunctor> num_diff (functor);
   Eigen::LevenbergMarquardt<Eigen::NumericalDiff<CylinderOptimizationFunctor>, float> lm (num_diff);
-  const int info = lm.minimize (coeff);
-  coeff[6] = std::abs(coeff[6]);
+
+  Eigen::VectorXf coeff_optim(5);
+  coeff_optim << 0.0f, 0.0f, 0.0f, 0.0f, coeff[6];
+  const int info = lm.minimize (coeff_optim);
+  Eigen::Vector3f line_pt_optim = line_pt + coeff_optim[0] * u + coeff_optim[1] * v;
+  Eigen::Vector3f line_dir_optim = line_dir + coeff_optim[2] * u + coeff_optim[3] * v;
+  coeff[0] = line_pt_optim.x();
+  coeff[1] = line_pt_optim.y();
+  coeff[2] = line_pt_optim.z();
+  coeff[3] = line_dir_optim.x();
+  coeff[4] = line_dir_optim.y();
+  coeff[5] = line_dir_optim.z();
+  coeff[6] = std::abs(coeff_optim[4]);
   PCL_DEBUG ("[pcl::internal::optimizeModelCoefficientsCylinder] LM solver finished with exit code %i, having a residual norm of %g.\n",
              info, lm.fvec.norm ());
   return info;
