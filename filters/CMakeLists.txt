@@ -11,7 +11,9 @@ if(NOT build)
   return()
 endif()
 
+# The cpp files have been ordered so that files with a long compile time appear at the top, to efficiently build in parallel. Do not reorder alphabetically!
 set(srcs
+  src/voxel_grid_covariance.cpp
   src/conditional_removal.cpp
   src/convolution.cpp
   src/crop_box.cpp
@@ -33,7 +35,6 @@ set(srcs
   src/fast_bilateral.cpp
   src/fast_bilateral_omp.cpp
   src/crop_hull.cpp
-  src/voxel_grid_covariance.cpp
   src/voxel_grid_label.cpp
   src/frustum_culling.cpp
   src/covariance_sampling.cpp

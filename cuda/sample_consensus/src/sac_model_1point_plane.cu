@@ -326,7 +326,7 @@ namespace pcl
       //thrust::counting_iterator<int> first (0);
       // Input: Point Cloud, Indices
       // Output: Hypotheses
-      transform (//first, first + max_iterations,
+      thrust::transform (//first, first + max_iterations,
                  //index_sequence_begin, 
                  //index_sequence_begin + max_iterations, 
                  randoms.begin (), randoms.begin () + max_iterations,
@@ -360,7 +360,7 @@ namespace pcl
       //thrust::counting_iterator<int> first (0);
       // Input: Point Cloud, Indices
       // Output: Hypotheses
-      transform (//first, first + max_iterations,
+      thrust::transform (//first, first + max_iterations,
                  //index_sequence_begin, 
                  //index_sequence_begin + max_iterations, 
                  randoms.begin (), randoms.begin () + max_iterations,
@@ -555,7 +555,7 @@ namespace pcl
       coefficients.z = model_coefficients[2];
       coefficients.w = model_coefficients[3];
 
-      return (int) count_if (
+      return (int) thrust::count_if (
           make_zip_iterator (make_tuple (input_->points.begin (), indices_->begin ())),
           make_zip_iterator (make_tuple (input_->points.begin (), indices_->begin ())) + 
                              indices_->size (),
@@ -608,7 +608,7 @@ namespace pcl
       {
     //  pcl::ScopeTime t ("transform");
       // Send the data to the device
-      transform (
+      thrust::transform (
           make_zip_iterator (make_tuple (input_->points.begin (), indices_->begin ())),
           make_zip_iterator (make_tuple (input_->points.begin (), indices_->begin ())) + 
                              nr_points,
@@ -667,7 +667,7 @@ namespace pcl
       {
     //  pcl::ScopeTime t ("transform");
       // Send the data to the device
-      transform (
+      thrust::transform (
           make_zip_iterator (make_tuple (input_->points.begin (), indices_->begin ())),
           make_zip_iterator (make_tuple (input_->points.begin (), indices_->begin ())) + 
                              nr_points,

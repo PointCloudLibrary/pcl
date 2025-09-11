@@ -5,7 +5,7 @@
 [![Release][release-image]][releases]
 [![License][license-image]][license]
 
-[release-image]: https://img.shields.io/badge/release-1.15.0-green.svg?style=flat
+[release-image]: https://img.shields.io/badge/release-1.15.1-green.svg?style=flat
 [releases]: https://github.com/PointCloudLibrary/pcl/releases
 
 [license-image]: https://img.shields.io/badge/license-BSD-green.svg?style=flat
@@ -26,8 +26,8 @@ Continuous integration
 [ci-ubuntu-24.04]: https://dev.azure.com/PointCloudLibrary/pcl/_apis/build/status/9?branchName=master&stageName=Build%20GCC&jobName=Ubuntu&configuration=Ubuntu%2024.04%20GCC&label=Ubuntu%2024.04%20GCC
 [ci-windows-x86]: https://dev.azure.com/PointCloudLibrary/pcl/_apis/build/status/9?branchName=master&stageName=Build%20MSVC&jobName=Windows%20Build&configuration=Windows%20Build%20x86&label=Windows%20VS2019%20x86
 [ci-windows-x64]: https://dev.azure.com/PointCloudLibrary/pcl/_apis/build/status/9?branchName=master&stageName=Build%20MSVC&jobName=Windows%20Build&configuration=Windows%20Build%20x64&label=Windows%20VS2022%20x64
-[ci-macos-13]: https://dev.azure.com/PointCloudLibrary/pcl/_apis/build/status/9?branchName=master&stageName=Build%20Clang&jobName=macOS&configuration=macOS%20Ventura%2013&label=macOS%20Ventura%2013
 [ci-macos-14]: https://dev.azure.com/PointCloudLibrary/pcl/_apis/build/status/9?branchName=master&stageName=Build%20Clang&jobName=macOS&configuration=macOS%20Sonoma%2014&label=macOS%20Sonoma%2014
+[ci-macos-15]: https://dev.azure.com/PointCloudLibrary/pcl/_apis/build/status/9?branchName=master&stageName=Build%20Clang&jobName=macOS&configuration=macOS%20Sequoia%2015&label=macOS%20Sequoia%2015
 [ci-docs]: https://dev.azure.com/PointCloudLibrary/pcl/_apis/build/status/Documentation?branchName=master
 [ci-latest-docs]: https://dev.azure.com/PointCloudLibrary/pcl/_build/latest?definitionId=14&branchName=master
 
@@ -35,7 +35,7 @@ Build Platform           | Status
 ------------------------ | ------------------------------------------------------------------------------------------------- |
 Ubuntu                   | [![Status][ci-ubuntu-20.04]][ci-latest-build] <br> [![Status][ci-ubuntu-22.04]][ci-latest-build] <br> [![Status][ci-ubuntu-24.04]][ci-latest-build] |
 Windows                  | [![Status][ci-windows-x86]][ci-latest-build]  <br> [![Status][ci-windows-x64]][ci-latest-build]   |
-macOS                    | [![Status][ci-macos-13]][ci-latest-build]  <br> [![Status][ci-macos-14]][ci-latest-build]   |
+macOS                    | [![Status][ci-macos-14]][ci-latest-build]  <br> [![Status][ci-macos-15]][ci-latest-build]   |
 Documentation            | [![Status][ci-docs]][ci-latest-docs] |
 Read the Docs            | [![Documentation Status](https://readthedocs.org/projects/pcl-tutorials/badge/?version=master)](https://pcl.readthedocs.io/projects/tutorials/en/master/?badge=master) |
 

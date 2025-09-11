@@ -189,5 +189,20 @@ Convolution<pcl::RGB, pcl::RGB>::convolveOneColDense(int i, int j)
   result.b = static_cast<std::uint8_t>(b);
   return (result);
 }
+
+#ifdef _MSC_VER
+// Seems to be necessary with MSVC, but not necessary with other compilers (even produces warning with PCL_SYMBOL_VISIBILITY_HIDDEN and gcc)
+#ifndef PCL_NO_PRECOMPILE
+#include <pcl/impl/instantiate.hpp>
+#include <pcl/point_types.h>
+
+PCL_INSTANTIATE_PRODUCT(
+    Convolution, ((pcl::RGB))((pcl::RGB)))
+
+PCL_INSTANTIATE_PRODUCT(
+    Convolution, ((pcl::PointXYZRGB))((pcl::PointXYZRGB)))
+#endif // PCL_NO_PRECOMPILE
+#endif // _MSC_VER
+
 } // namespace filters
 } // namespace pcl

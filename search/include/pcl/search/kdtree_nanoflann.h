@@ -10,7 +10,7 @@
 #pragma once
 
 #include <pcl/pcl_config.h>
-#if PCL_HAS_NANOFLANN
+#if PCL_HAS_NANOFLANN || defined(DOXYGEN_ONLY)
 
 #include <pcl/search/kdtree.h>
 #include <pcl/point_representation.h>
@@ -87,7 +87,7 @@ square_if_l2(float radius)
   return radius;
 };
 template <>
-float
+inline float
 square_if_l2<nanoflann::L2_Adaptor<float,
                                    pcl::search::internal::PointCloudAdaptor<float>,
                                    float,
@@ -96,7 +96,7 @@ square_if_l2<nanoflann::L2_Adaptor<float,
   return radius * radius;
 };
 template <>
-float
+inline float
 square_if_l2<
     nanoflann::L2_Simple_Adaptor<float,
                                  pcl::search::internal::PointCloudAdaptor<float>,
@@ -333,7 +333,7 @@ public:
    * @param[in] point_representation the const shared pointer to a PointRepresentation
    */
   void
-  setPointRepresentation(const PointRepresentationConstPtr& point_representation)
+  setPointRepresentation(const PointRepresentationConstPtr& point_representation) override
   {
     PCL_DEBUG("[KdTreeNanoflann::setPointRepresentation] "
               "KdTreeNanoflann::setPointRepresentation called, "
@@ -356,7 +356,7 @@ public:
   /** @brief Get a pointer to the point representation used when converting points into
    * k-D vectors. */
   inline PointRepresentationConstPtr
-  getPointRepresentation() const
+  getPointRepresentation() const override
   {
     return point_representation_;
   }
@@ -375,7 +375,7 @@ public:
    * @param[in] eps precision (error bound) for nearest neighbors searches
    */
   void
-  setEpsilon(float eps)
+  setEpsilon(float eps) override
   {
     eps_ = eps;
   }
@@ -383,7 +383,7 @@ public:
   /** @brief Get the search epsilon precision (error bound) for nearest neighbors
    * searches. */
   inline float
-  getEpsilon() const
+  getEpsilon() const override
   {
     return eps_;
   }
