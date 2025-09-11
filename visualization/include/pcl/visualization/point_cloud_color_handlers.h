@@ -58,7 +58,7 @@ namespace pcl
   {
     //////////////////////////////////////////////////////////////////////////////////////
     /** \brief Base Handler class for PointCloud colors.
-      * \author Radu B. Rusu 
+      * \author Radu B. Rusu
       * \ingroup visualization
       */
     template <typename PointT>
@@ -131,7 +131,7 @@ namespace pcl
 
     //////////////////////////////////////////////////////////////////////////////////////
     /** \brief Handler for random PointCloud colors (i.e., R, G, B will be randomly chosen)
-      * \author Radu B. Rusu 
+      * \author Radu B. Rusu
       * \ingroup visualization
       */
     template <typename PointT>
@@ -179,7 +179,7 @@ namespace pcl
     //////////////////////////////////////////////////////////////////////////////////////
     /** \brief Handler for predefined user colors. The color at each point will be drawn
       * as the use given R, G, B values.
-      * \author Radu B. Rusu 
+      * \author Radu B. Rusu
       * \ingroup visualization
       */
     template <typename PointT>
@@ -237,7 +237,7 @@ namespace pcl
     //////////////////////////////////////////////////////////////////////////////////////
     /** \brief RGB handler class for colors. Uses the data present in the "rgb" or "rgba"
       * fields as the color at each point.
-      * \author Radu B. Rusu 
+      * \author Radu B. Rusu
       * \ingroup visualization
       */
     template <typename PointT>
@@ -362,15 +362,16 @@ namespace pcl
 
       vtkSmartPointer<vtkDataArray> getColor() const override;
 
-    protected:
+      /** \brief Get the name of the field used. */
+      std::string getFieldName() const override;
 
       /** \brief Name of the field used to create the color handler. */
       std::string field_name_;
 
-      std::vector<pcl::PCLPointField> fields_;
 
-      /** \brief Get the name of the field used. */
-      std::string getFieldName() const override;
+    protected:
+
+      std::vector<pcl::PCLPointField> fields_;
 
       /** \brief Class getName method. */
       std::string getName() const override
@@ -503,7 +504,7 @@ namespace pcl
 
     //////////////////////////////////////////////////////////////////////////////////////
     /** \brief Base Handler class for PointCloud colors.
-      * \author Radu B. Rusu 
+      * \author Radu B. Rusu
       * \ingroup visualization
       */
     template <>
@@ -521,7 +522,7 @@ namespace pcl
         PointCloudColorHandler (const PointCloudConstPtr &cloud) :
           cloud_ (cloud), capable_ (false), field_idx_ ()
         {}
-        
+
         /** \brief Destructor. */
         virtual ~PointCloudColorHandler() = default;
 
@@ -570,7 +571,7 @@ namespace pcl
 
     //////////////////////////////////////////////////////////////////////////////////////
     /** \brief Handler for random PointCloud colors (i.e., R, G, B will be randomly chosen)
-      * \author Radu B. Rusu 
+      * \author Radu B. Rusu
       * \ingroup visualization
       */
     template <>
@@ -606,7 +607,7 @@ namespace pcl
     //////////////////////////////////////////////////////////////////////////////////////
     /** \brief Handler for predefined user colors. The color at each point will be drawn
       * as the use given R, G, B values.
-      * \author Radu B. Rusu 
+      * \author Radu B. Rusu
       * \ingroup visualization
       */
     template <>
@@ -645,7 +646,7 @@ namespace pcl
     //////////////////////////////////////////////////////////////////////////////////////
     /** \brief RGB handler class for colors. Uses the data present in the "rgb" or "rgba"
       * fields as the color at each point.
-      * \author Radu B. Rusu 
+      * \author Radu B. Rusu
       * \ingroup visualization
       */
     template <>

@@ -490,21 +490,6 @@ PointCloudColorHandlerLabelField<PointT>::getColor () const
 // data from PointCloudColorHandlerGenericField without needing to know the
 // cloud type
 
-// Get point fields from cloud. Could not get it to work with existing
-// pcl::getFields
-template <typename CloudT> inline std::vector<pcl::PCLPointField>
-getFields(const CloudT& cloud)
-{
-  return pcl::getFields<typename CloudT::PointType>();
-}
-
-template <> inline std::vector<pcl::PCLPointField>
-getFields<pcl::PCLPointCloud2>(const pcl::PCLPointCloud2& cloud) {
-  return cloud.fields;
-}
-
-
-// Get point step. Does not directly exist in pcl::PointCloud
 template <typename CloudT> inline int getPointStep(const CloudT&)
 {
   return sizeof(typename CloudT::PointType);
@@ -518,13 +503,12 @@ getPointStep<pcl::PCLPointCloud2>(const pcl::PCLPointCloud2& cloud) {
 // Get cloud data blob
 template <typename CloudT> inline const std::uint8_t* getCloudData(const CloudT& cloud)
 {
-  return reinterpret_cast<const std::uint8_t*>(cloud.points.data());
+  return reinterpret_cast<const std::uint8_t*>(cloud.data());
 }
 
 template <> inline const std::uint8_t* getCloudData<pcl::PCLPointCloud2>(const typename pcl::PCLPointCloud2& cloud) {
-  return reinterpret_cast<const std::uint8_t*>(cloud.data.data());
+  return cloud.data.data();
 }
-
 
 // copy of pcl::getFieldIndex() from impl/io.hpp, without the unused template
 // parameter
@@ -573,64 +557,6 @@ template <> inline bool isXYZFiniteAt(const PCLPointCloud2& cloud, int index)
   } else {
     // the last of the three is out of range
     throw std::out_of_range("getXData(): requested for index larger than number of points");
-  }
-}
-
-inline const std::uint8_t* getCloudData(const typename pcl::PCLPointCloud2& cloud)
-{
-  return reinterpret_cast<const std::uint8_t*>(cloud.data.data());
-}
-
-template <typename DType, typename RType> RType reinterpret_and_cast(const std::uint8_t* p)
-{
-  return static_cast<RType>(*reinterpret_cast<const DType*>(p));
-}
-
-/**
- * @brief   Get the value of a point field from raw data pointer and field type.
- *
- * @tparam T    return type the field will be cast as
- * @param data  data pointer
- * @param type  point field type
- *
- * @return  field value
- */
-template <typename T> T point_field_as(const std::uint8_t* data, const std::uint8_t type)
-{
-  switch (type) {
-  case pcl::PCLPointField::PointFieldTypes::FLOAT32:
-    return reinterpret_and_cast<float, T>(data);
-    break;
-  case pcl::PCLPointField::PointFieldTypes::UINT8:
-    return reinterpret_and_cast<std::uint8_t, T>(data);
-    break;
-  case pcl::PCLPointField::PointFieldTypes::UINT16:
-    return reinterpret_and_cast<std::uint16_t, T>(data);
-    break;
-  case pcl::PCLPointField::PointFieldTypes::UINT32:
-    return reinterpret_and_cast<std::uint32_t, T>(data);
-    break;
-  case pcl::PCLPointField::PointFieldTypes::UINT64:
-    return reinterpret_and_cast<std::uint64_t, T>(data);
-    break;
-  case pcl::PCLPointField::PointFieldTypes::BOOL:
-    return reinterpret_and_cast<bool, T>(data);
-    break;
-  case pcl::PCLPointField::PointFieldTypes::FLOAT64:
-    return reinterpret_and_cast<double, T>(data);
-    break;
-  case pcl::PCLPointField::PointFieldTypes::INT16:
-    return reinterpret_and_cast<std::int16_t, T>(data);
-    break;
-  case pcl::PCLPointField::PointFieldTypes::INT32:
-    return reinterpret_and_cast<std::int32_t, T>(data);
-    break;
-  case pcl::PCLPointField::PointFieldTypes::INT64:
-    return reinterpret_and_cast<std::int64_t, T>(data);
-    break;
-  default:
-    return 0;
-    break;
   }
 }
 
