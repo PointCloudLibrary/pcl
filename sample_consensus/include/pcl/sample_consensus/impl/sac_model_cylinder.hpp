@@ -126,7 +126,9 @@ pcl::SampleConsensusModelCylinder<PointT, PointNT>::computeModelCoefficients (
   model_coefficients[4] = line_dir[1];
   model_coefficients[5] = line_dir[2];
   // cylinder radius
-  model_coefficients[6] = static_cast<float> (sqrt (pcl::sqrPointToLineDistance (p1, line_pt, line_dir)));
+  model_coefficients[6] = static_cast<float> (
+      0.5 * (sqrt (pcl::sqrPointToLineDistance (p1, line_pt, line_dir)) +
+             sqrt (pcl::sqrPointToLineDistance (p2, line_pt, line_dir))));
 
   if (model_coefficients[6] > radius_max_ || model_coefficients[6] < radius_min_)
     return (false);
