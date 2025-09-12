@@ -1668,6 +1668,39 @@ TEST(SampleConsensusModelCylinder, SampleIntersectingLines)
   EXPECT_NEAR(1.0f, model_coefficients[6], 1e-5f);
 }
 
+TEST(SampleConsensusModelCylinder, SampleModelsSymmetric)
+{
+  PointCloud<PointXYZ> cloud;
+  PointCloud<Normal> normals;
+  cloud.resize(2);
+  normals.resize(2);
+  cloud[0].getVector3fMap() << 0.1f, 1.3f, 0.4f;
+  cloud[1].getVector3fMap() << 1.2f, -0.2f, -0.1f;
+  normals[0].getNormalVector3fMap() << 0.0f, 0.9f, -0.1f;
+  normals[1].getNormalVector3fMap() << 1.1f, -0.2f, 0.0f;
+
+  SampleConsensusModelCylinder<PointXYZ, Normal> model(cloud.makeShared());
+  model.setInputNormals(normals.makeShared());
+
+  Eigen::VectorXf model_coefficients, model_coefficients_swapped;
+  model.computeModelCoefficients({0, 1}, model_coefficients);
+  model.computeModelCoefficients({1, 0}, model_coefficients_swapped);
+
+  ASSERT_EQ(7, model_coefficients.size());
+  ASSERT_EQ(7, model_coefficients_swapped.size());
+
+  Eigen::Vector4f pt1(model_coefficients[0], model_coefficients[1], model_coefficients[2], 0.f);
+  Eigen::Vector4f dir1(model_coefficients[3], model_coefficients[4], model_coefficients[5], 0.f);
+  Eigen::Vector4f pt2(model_coefficients_swapped[0], model_coefficients_swapped[1], model_coefficients_swapped[2], 0.f);
+  Eigen::Vector4f dir2(model_coefficients_swapped[3], model_coefficients_swapped[4], model_coefficients_swapped[5], 0.f);
+
+  // Check if both cylinder axes are the same
+  EXPECT_GT(1e-5, sqrPointToLineDistance(pt2, pt1, dir1));
+  EXPECT_GT(1e-5f, (dir1 * (dir2.x() / dir1.x()) - dir2).squaredNorm());
+
+  EXPECT_NEAR(model_coefficients[6], model_coefficients_swapped[6], 1e-5f);
+}
+
 int
 main(int argc, char** argv)
 {
