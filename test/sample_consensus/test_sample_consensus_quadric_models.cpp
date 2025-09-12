@@ -1641,6 +1641,33 @@ TEST(SampleConsensusModelTorusSelfIntersectSpindle, RANSAC)
   EXPECT_NEAR(coeff[7], 0.25000000000000017, 1e-2);
 }
 
+TEST(SampleConsensusModelCylinder, SampleIntersectingLines)
+{
+  PointCloud<PointXYZ> cloud;
+  PointCloud<Normal> normals;
+  cloud.resize(2);
+  normals.resize(2);
+  cloud[0].getVector3fMap() << 0.0f, 1.0f, 0.0f;
+  cloud[1].getVector3fMap() << 1.0f, 0.0f, 0.0f;
+  normals[0].getNormalVector3fMap() << 0.0f, 1.0f, 0.0f;
+  normals[1].getNormalVector3fMap() << 1.0f, 0.0f, 0.0f;
+
+  SampleConsensusModelCylinder<PointXYZ, Normal> model(cloud.makeShared());
+  model.setInputNormals(normals.makeShared());
+
+  Eigen::VectorXf model_coefficients;
+  model.computeModelCoefficients({0, 1}, model_coefficients);
+
+  ASSERT_EQ(7, model_coefficients.size());
+
+  EXPECT_NEAR(0.0f, model_coefficients[0], 1e-5f);
+  EXPECT_NEAR(0.0f, model_coefficients[1], 1e-5f);
+  EXPECT_NEAR(0.0f, model_coefficients[3], 1e-5f);
+  EXPECT_NEAR(0.0f, model_coefficients[4], 1e-5f);
+  EXPECT_LT(0.0f, std::abs(model_coefficients[5]));
+  EXPECT_NEAR(1.0f, model_coefficients[6], 1e-5f);
+}
+
 int
 main(int argc, char** argv)
 {
