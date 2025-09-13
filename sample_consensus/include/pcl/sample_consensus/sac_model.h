@@ -48,7 +48,7 @@
 #include <boost/random/uniform_int.hpp> // for uniform_int
 #include <boost/random/variate_generator.hpp> // for variate_generator
 #include <random>
-#include <numeric>
+#include <numeric> // for iota
 
 #include <pcl/memory.h>
 #include <pcl/console/print.h>
@@ -107,7 +107,7 @@ namespace pcl
         * \param[in] indices a vector of point indices to be used from \a cloud
         * \param[in] random if true set the random seed to the current time, else set to 12345 (default: false)
         */
-      SampleConsensusModel (const PointCloudConstPtr &cloud, const Indices &indices = Indices(), const bool random = false) 
+      SampleConsensusModel (const PointCloudConstPtr &cloud, const Indices &indices, const bool random = false)
         : input_ (cloud)
         , indices_(new Indices(indices))
         , radius_min_ (-std::numeric_limits<double>::max ())
@@ -147,7 +147,7 @@ namespace pcl
         * \param[in] cloud the input point cloud dataset
         * \param[in] random if true set the random seed to the current time, else set to 12345 (default: false)
         */
-      SampleConsensusModel (const PointCloudConstPtr &cloud, const bool random = false) 
+      SampleConsensusModel (const PointCloudConstPtr &cloud, const bool random = false)
         : SampleConsensusModel(cloud, Indices(), random) {};
 
       /** \brief Destructor for base SampleConsensusModel. */
