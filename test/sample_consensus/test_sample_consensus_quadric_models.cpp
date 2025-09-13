@@ -428,7 +428,7 @@ TEST(SampleConsensusModelCylinder, RANSAC)
   cloud[18].getVector3fMap() << -0.702003f, 1.242707f, 0.899954f;
   cloud[19].getVector3fMap() << -0.289916f, 1.246296f, 0.950075f;
 
-  normals[0].getNormalVector3fMap() << 0.000098f, 1.000098f, 0.000008f;
+  normals[0].getNormalVector3fMap() << 0.000098f, 1.000098f, 0.200008f;
   normals[1].getNormalVector3fMap() << -0.750891f, 0.660413f, 0.000104f;
   normals[2].getNormalVector3fMap() << -0.991765f, -0.127949f, -0.000154f;
   normals[3].getNormalVector3fMap() << -0.558918f, -0.829439f, -0.000039f;
@@ -453,6 +453,7 @@ TEST(SampleConsensusModelCylinder, RANSAC)
   SampleConsensusModelCylinderPtr model(
       new SampleConsensusModelCylinder<PointXYZ, Normal>(cloud.makeShared()));
   model->setInputNormals(normals.makeShared());
+  model->setNormalDistanceWeight(.1);
 
   // Create the RANSAC object
   RandomSampleConsensus<PointXYZ> sac(model, 0.03);
@@ -480,6 +481,24 @@ TEST(SampleConsensusModelCylinder, RANSAC)
   model->optimizeModelCoefficients(inliers, coeff, coeff_refined);
   EXPECT_EQ(7, coeff_refined.size());
   EXPECT_NEAR(0.5, coeff_refined[6], 1e-3);
+
+  std::vector<double> distances;
+  model->getDistancesToModel(coeff_refined, distances);
+  ASSERT_EQ(20, distances.size());
+
+  const double first_point_dist = 0.020;
+  EXPECT_NEAR(first_point_dist, distances[0], 1e-3);
+  for (size_t i = 1; i < 20; ++i) {
+    EXPECT_NEAR(0., distances[i], 1e-3);
+  }
+
+  EXPECT_EQ(20, model->countWithinDistance(coeff_refined, first_point_dist + 1e-3));
+  EXPECT_EQ(19, model->countWithinDistance(coeff_refined, first_point_dist - 1e-3));
+
+  model->selectWithinDistance(coeff_refined, first_point_dist + 1e-3, inliers);
+  EXPECT_EQ(20, inliers.size());
+  model->selectWithinDistance(coeff_refined, first_point_dist - 1e-3, inliers);
+  EXPECT_EQ(19, inliers.size());
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
