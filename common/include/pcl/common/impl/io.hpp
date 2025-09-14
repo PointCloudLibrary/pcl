@@ -103,7 +103,7 @@ getFields ()
 }
 
 template <typename CloudT> inline std::vector<pcl::PCLPointField>
-getFields (const CloudT& cloud)
+getFields (const CloudT& /*cloud*/)
 {
   return pcl::getFields<typename CloudT::PointType>();
 }
