@@ -345,6 +345,9 @@ namespace pcl
       using PointCloudPtr = typename PointCloud::Ptr;
       using PointCloudConstPtr = typename PointCloud::ConstPtr;
 
+      /** \brief Name of the field used to create the color handler. */
+      std::string field_name_;
+
     public:
       using Ptr = std::shared_ptr<PointCloudColorHandlerGenericField<PointT>>;
       using ConstPtr = std::shared_ptr<const PointCloudColorHandlerGenericField<PointT>>;
@@ -364,10 +367,6 @@ namespace pcl
 
       /** \brief Get the name of the field used. */
       std::string getFieldName() const override;
-
-      /** \brief Name of the field used to create the color handler. */
-      std::string field_name_;
-
 
     protected:
 
