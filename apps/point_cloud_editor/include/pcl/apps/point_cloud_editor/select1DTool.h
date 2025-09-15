@@ -39,78 +39,69 @@
 
 #pragma once
 
-#include <pcl/apps/point_cloud_editor/toolInterface.h>
 #include <pcl/apps/point_cloud_editor/localTypes.h>
-
-#include <pcl/memory.h>  // for pcl::shared_ptr
+#include <pcl/apps/point_cloud_editor/toolInterface.h>
+#include <pcl/memory.h> // for pcl::shared_ptr
 
 #include <cassert>
 
 class Selection;
 
-class Select1DTool : public ToolInterface
-{
-  public:
-    /// The type for shared pointer pointing to a selection buffer
-    using SelectionPtr = pcl::shared_ptr<Selection>;
+class Select1DTool : public ToolInterface {
+public:
+  /// The type for shared pointer pointing to a selection buffer
+  using SelectionPtr = pcl::shared_ptr<Selection>;
 
-    /// @brief Constructor
-    /// @param selection_ptr a shared pointer pointing to the selection object.
-    /// @param cloud_ptr a shared pointer pointing to the cloud object.
-    Select1DTool (SelectionPtr selection_ptr, CloudPtr cloud_ptr);
+  /// @brief Constructor
+  /// @param selection_ptr a shared pointer pointing to the selection object.
+  /// @param cloud_ptr a shared pointer pointing to the cloud object.
+  Select1DTool(SelectionPtr selection_ptr, CloudPtr cloud_ptr);
 
-    /// @brief Destructor
-    ~Select1DTool () override
-    = default;
-  
-    /// @brief Does nothing for 1D selection.
-    /// @sa end
-    void
-    start (int, int, BitMask, BitMask) override
-    {
-    }
-  
-    /// @brief Does nothing for 1D selection.
-    /// @sa end
-    void
-    update (int, int, BitMask, BitMask) override
-    {
-    }
+  /// @brief Destructor
+  ~Select1DTool() override = default;
 
-    /// @brief Select or deselect the point under the mouse using GL's selection
-    /// facility.
-    /// @details If shift is pressed when the selection is made, the selected
-    /// point is appended to the existing selection. If instead ctrl is pressed,
-    /// the selected point will be removed from the existing selection.  If
-    /// neither shift nor ctrl is pressed when the selection is made then the
-    /// selected point, if any, will replace any current selection. Note that
-    /// the ctrl key may be evaluated as the command key in OSX.
-    /// @param x the x value of the mouse screen coordinates.
-    /// @param y the y value of the mouse screen coordinates.
-    /// @param modifiers the key modifier. SHIFT adds selected points to the
-    /// selection.  CTRL removes points and if neither are pressed then a new
-    /// selection is made.
-    /// @param buttons The state of the mouse buttons.  All interaction with
-    /// this tool requires the LEFT mouse button.  All others are ignored.
-    void
-    end (int x, int y, BitMask modifiers, BitMask buttons) override;
+  /// @brief Does nothing for 1D selection.
+  /// @sa end
+  void
+  start(int, int, BitMask, BitMask) override
+  {}
 
-    /// @brief This function does nothing.
-    void
-    draw () const override
-    {
-    }
+  /// @brief Does nothing for 1D selection.
+  /// @sa end
+  void
+  update(int, int, BitMask, BitMask) override
+  {}
 
-  private:
-    /// @brief Default constructor - object is not default constructable
-    Select1DTool()
-    {
-      assert(false);
-    }
+  /// @brief Select or deselect the point under the mouse using GL's selection
+  /// facility.
+  /// @details If shift is pressed when the selection is made, the selected
+  /// point is appended to the existing selection. If instead ctrl is pressed,
+  /// the selected point will be removed from the existing selection.  If
+  /// neither shift nor ctrl is pressed when the selection is made then the
+  /// selected point, if any, will replace any current selection. Note that
+  /// the ctrl key may be evaluated as the command key in OSX.
+  /// @param x the x value of the mouse screen coordinates.
+  /// @param y the y value of the mouse screen coordinates.
+  /// @param modifiers the key modifier. SHIFT adds selected points to the
+  /// selection.  CTRL removes points and if neither are pressed then a new
+  /// selection is made.
+  /// @param buttons The state of the mouse buttons.  All interaction with
+  /// this tool requires the LEFT mouse button.  All others are ignored.
+  void
+  end(int x, int y, BitMask modifiers, BitMask buttons) override;
 
-    /// a shared pointer pointing to the selection object
-    SelectionPtr selection_ptr_;
+  /// @brief This function does nothing.
+  void
+  draw() const override
+  {}
 
-    /// a shared pointer pointing to the cloud object
-    CloudPtr cloud_ptr_;
+private:
+  /// @brief Default constructor - object is not default constructable
+  Select1DTool() { assert(false); }
+
+  /// a shared pointer pointing to the selection object
+  SelectionPtr selection_ptr_;
+
+  /// a shared pointer pointing to the cloud object
+  CloudPtr cloud_ptr_;
 };
