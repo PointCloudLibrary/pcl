@@ -94,29 +94,26 @@ pcl::SampleConsensusModelCylinder<PointT, PointNT>::computeModelCoefficients (
   Eigen::Vector4f n1 ((*normals_)[samples[0]].normal[0], (*normals_)[samples[0]].normal[1], (*normals_)[samples[0]].normal[2], 0.0f);
   Eigen::Vector4f n2 ((*normals_)[samples[1]].normal[0], (*normals_)[samples[1]].normal[1], (*normals_)[samples[1]].normal[2], 0.0f);
   Eigen::Vector4f w = n1 + p1 - p2;
+  Eigen::Vector4f line_dir = n1.cross3 (n2);
 
-  float a = n1.dot (n1);
   float b = n1.dot (n2);
   float c = n2.dot (n2);
   float d = n1.dot (w);
   float e = n2.dot (w);
-  float denominator = a*c - b*b;
-  float sc, tc;
+  float denominator = line_dir.squaredNorm ();
+  float sc;
   // Compute the line parameters of the two closest points
   if (denominator < 1e-8)          // The lines are almost parallel
   {
     sc = 0.0f;
-    tc = (b > c ? d / b : e / c);  // Use the largest denominator
   }
   else
   {
     sc = (b*e - c*d) / denominator;
-    tc = (a*e - b*d) / denominator;
   }
 
   // point_on_axis, axis_direction
   Eigen::Vector4f line_pt  = p1 + n1 + sc * n1;
-  Eigen::Vector4f line_dir = p2 + tc * n2 - line_pt;
   line_dir.normalize ();
 
   model_coefficients.resize (model_size_);
@@ -129,7 +126,9 @@ pcl::SampleConsensusModelCylinder<PointT, PointNT>::computeModelCoefficients (
   model_coefficients[4] = line_dir[1];
   model_coefficients[5] = line_dir[2];
   // cylinder radius
-  model_coefficients[6] = static_cast<float> (sqrt (pcl::sqrPointToLineDistance (p1, line_pt, line_dir)));
+  model_coefficients[6] = static_cast<float> (
+      0.5 * (sqrt (pcl::sqrPointToLineDistance (p1, line_pt, line_dir)) +
+             sqrt (pcl::sqrPointToLineDistance (p2, line_pt, line_dir))));
 
   if (model_coefficients[6] > radius_max_ || model_coefficients[6] < radius_min_)
     return (false);
