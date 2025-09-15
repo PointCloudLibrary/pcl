@@ -43,6 +43,7 @@
 #include <pcl/console/print.h>
 #include <pcl/console/parse.h>
 #include <pcl/console/time.h>
+#include <pcl/search/kdtree.h> // for KdTree
 
 using namespace pcl;
 using namespace pcl::io;

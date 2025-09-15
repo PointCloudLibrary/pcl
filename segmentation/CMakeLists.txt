@@ -24,7 +24,6 @@ set(srcs
   src/organized_multi_plane_segmentation.cpp
   src/planar_polygon_fusion.cpp
   src/crf_segmentation.cpp
-  src/unary_classifier.cpp
   src/conditional_euclidean_clustering.cpp
   src/supervoxel_clustering.cpp
   src/grabcut_segmentation.cpp
@@ -60,7 +59,6 @@ set(incs
   "include/pcl/${SUBSYS_NAME}/planar_polygon_fusion.h"
   "include/pcl/${SUBSYS_NAME}/crf_segmentation.h"
   "include/pcl/${SUBSYS_NAME}/crf_normal_segmentation.h"
-  "include/pcl/${SUBSYS_NAME}/unary_classifier.h"
   "include/pcl/${SUBSYS_NAME}/conditional_euclidean_clustering.h"
   "include/pcl/${SUBSYS_NAME}/supervoxel_clustering.h"
   "include/pcl/${SUBSYS_NAME}/grabcut_segmentation.h"
@@ -85,7 +83,6 @@ set(impl_incs
   "include/pcl/${SUBSYS_NAME}/impl/organized_multi_plane_segmentation.hpp"
   "include/pcl/${SUBSYS_NAME}/impl/planar_polygon_fusion.hpp"
   "include/pcl/${SUBSYS_NAME}/impl/crf_segmentation.hpp"
-  "include/pcl/${SUBSYS_NAME}/impl/unary_classifier.hpp"
   "include/pcl/${SUBSYS_NAME}/impl/crf_normal_segmentation.hpp"
   "include/pcl/${SUBSYS_NAME}/impl/conditional_euclidean_clustering.hpp"
   "include/pcl/${SUBSYS_NAME}/impl/supervoxel_clustering.hpp"
@@ -95,6 +92,12 @@ set(impl_incs
   "include/pcl/${SUBSYS_NAME}/impl/lccp_segmentation.hpp"
   "include/pcl/${SUBSYS_NAME}/impl/cpc_segmentation.hpp"
 )
+
+if(FLANN_FOUND)
+  list(APPEND srcs src/unary_classifier.cpp)
+  list(APPEND incs "include/pcl/${SUBSYS_NAME}/unary_classifier.h")
+  list(APPEND impl_incs "include/pcl/${SUBSYS_NAME}/impl/unary_classifier.hpp")
+endif()
 
 set(LIB_NAME "pcl_${SUBSYS_NAME}")
 PCL_ADD_LIBRARY(${LIB_NAME} COMPONENT ${SUBSYS_NAME} SOURCES ${srcs} ${incs} ${impl_incs})

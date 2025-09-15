@@ -45,6 +45,7 @@
 #include <pcl/features/normal_3d.h>
 #include <pcl/surface/mls.h>
 #include <pcl/common/common.h> // getMinMax3D
+#include <pcl/search/kdtree.h> // for KdTree
 
 using namespace pcl;
 using namespace pcl::io;

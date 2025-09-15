@@ -49,6 +49,7 @@
 #include <pcl/features/normal_3d.h> // for NormalEstimation
 #include <pcl/segmentation/unary_classifier.h>
 #include <pcl/common/io.h>
+#include <pcl/search/kdtree.h> // for KdTree
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>

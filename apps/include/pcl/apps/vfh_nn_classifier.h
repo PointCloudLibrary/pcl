@@ -41,6 +41,7 @@
 #include <pcl/features/normal_3d.h>
 #include <pcl/features/vfh.h>
 #include <pcl/io/pcd_io.h>
+#include <pcl/search/kdtree.h> // for KdTree
 #include <pcl/PCLPointCloud2.h>
 #include <pcl/point_types.h>
 
