@@ -40,14 +40,13 @@
 
 #pragma once
 
-#include <pcl/apps/point_cloud_editor/localTypes.h>
-#include <pcl/apps/point_cloud_editor/common.h>
 #include <pcl/apps/point_cloud_editor/commandQueue.h>
+#include <pcl/apps/point_cloud_editor/common.h>
 #include <pcl/apps/point_cloud_editor/denoiseParameterForm.h>
+#include <pcl/apps/point_cloud_editor/localTypes.h>
 #include <pcl/apps/point_cloud_editor/statisticsDialog.h>
 #include <pcl/apps/point_cloud_editor/toolInterface.h>
-
-#include <pcl/memory.h>  // for pcl::shared_ptr
+#include <pcl/memory.h> // for pcl::shared_ptr
 
 #include <QOpenGLWidget>
 
@@ -58,271 +57,268 @@ class Selection;
 
 /// @brief class declaration for the widget for editing and viewing
 /// point clouds.
-class CloudEditorWidget : public QOpenGLWidget
-{
+class CloudEditorWidget : public QOpenGLWidget {
   Q_OBJECT
-  public:
-    /// The type for shared pointer pointing to a selection buffer
-    using SelectionPtr = pcl::shared_ptr<Selection>;
+public:
+  /// The type for shared pointer pointing to a selection buffer
+  using SelectionPtr = pcl::shared_ptr<Selection>;
 
-    /// @brief Constructor
-    /// @param parent a pointer which points to the parent widget
-    CloudEditorWidget (QWidget *parent = nullptr);
+  /// @brief Constructor
+  /// @param parent a pointer which points to the parent widget
+  CloudEditorWidget(QWidget* parent = nullptr);
 
-    /// @brief Destructor
-    ~CloudEditorWidget () override;
+  /// @brief Destructor
+  ~CloudEditorWidget() override;
 
-    /// @brief Attempts to load the point cloud designated by the passed file
-    /// name.
-    /// @param filename The name of the point cloud file to be loaded.
-    /// @remarks throws if the passed file can not be loaded.
-    void
-    loadFile(const std::string &filename);
+  /// @brief Attempts to load the point cloud designated by the passed file
+  /// name.
+  /// @param filename The name of the point cloud file to be loaded.
+  /// @remarks throws if the passed file can not be loaded.
+  void
+  loadFile(const std::string& filename);
 
-  public Q_SLOTS:
-    /// @brief Loads a new cloud.
-    void
-    load ();
+public Q_SLOTS:
+  /// @brief Loads a new cloud.
+  void
+  load();
 
-    /// @brief Saves a cloud to a .pcd file. The current format is ASCII.
-    void
-    save ();
+  /// @brief Saves a cloud to a .pcd file. The current format is ASCII.
+  void
+  save();
 
-    /// @brief Toggles the blend mode used to render the non-selected points
-    void
-    toggleBlendMode ();
+  /// @brief Toggles the blend mode used to render the non-selected points
+  void
+  toggleBlendMode();
 
-    /// @brief Switches to the view mode.
-    void
-    view ();
+  /// @brief Switches to the view mode.
+  void
+  view();
 
-    /// @brief Enters click selection mode.
-    void
-    select1D ();
+  /// @brief Enters click selection mode.
+  void
+  select1D();
 
-    /// @brief Enters 2D selection mode.
-    void
-    select2D ();
+  /// @brief Enters 2D selection mode.
+  void
+  select2D();
 
-    /// @brief Enters 3D selection mode.
-    void
-    select3D ();
+  /// @brief Enters 3D selection mode.
+  void
+  select3D();
 
-    /// @brief Inverts the current selection.
-    void
-    invertSelect ();
+  /// @brief Inverts the current selection.
+  void
+  invertSelect();
 
-    /// @brief Cancels the current selection.
-    void
-    cancelSelect ();
+  /// @brief Cancels the current selection.
+  void
+  cancelSelect();
 
-    /// @brief Copies the selected points.
-    void
-    copy ();
+  /// @brief Copies the selected points.
+  void
+  copy();
 
-    /// @brief Pastes the copied points to the cloud.
-    void
-    paste ();
+  /// @brief Pastes the copied points to the cloud.
+  void
+  paste();
 
-    /// @brief Removes the selected points.
-    void
-    remove ();
+  /// @brief Removes the selected points.
+  void
+  remove();
 
-    /// @brief Copies and then removes the selected points.
-    void
-    cut ();
+  /// @brief Copies and then removes the selected points.
+  void
+  cut();
 
-    /// @brief Enters the mode where users are able to translate the selected
-    /// points.
-    void
-    transform ();
+  /// @brief Enters the mode where users are able to translate the selected
+  /// points.
+  void
+  transform();
 
-    /// @brief Denoises the current cloud.
-    void
-    denoise ();
+  /// @brief Denoises the current cloud.
+  void
+  denoise();
 
-    /// @brief Undoes last change.
-    void
-    undo ();
+  /// @brief Undoes last change.
+  void
+  undo();
 
-    /// @brief Increases the size of the unselected points.
-    void
-    increasePointSize ();
+  /// @brief Increases the size of the unselected points.
+  void
+  increasePointSize();
 
-    /// @brief Decreases the size of the unselected points.
-    void
-    decreasePointSize ();
+  /// @brief Decreases the size of the unselected points.
+  void
+  decreasePointSize();
 
-    /// @brief Increases the size of the selected points.
-    void
-    increaseSelectedPointSize ();
+  /// @brief Increases the size of the selected points.
+  void
+  increaseSelectedPointSize();
 
-    /// @brief Decreases the size of the selected points.
-    void
-    decreaseSelectedPointSize ();
+  /// @brief Decreases the size of the selected points.
+  void
+  decreaseSelectedPointSize();
 
-    /// @brief Sets the size of the unselected points.
-    void
-    setPointSize (int size);
+  /// @brief Sets the size of the unselected points.
+  void
+  setPointSize(int size);
 
-    /// @brief Sets the size of the selected points.
-    void
-    setSelectedPointSize (int size);
+  /// @brief Sets the size of the selected points.
+  void
+  setSelectedPointSize(int size);
 
-    /// @brief Colors the unselected points by its native color.
-    void
-    colorByRGB ();
+  /// @brief Colors the unselected points by its native color.
+  void
+  colorByRGB();
 
-    /// @brief Colors the unselected points with a color ramp based on the X
-    /// values of the points
-    void
-    colorByX ();
+  /// @brief Colors the unselected points with a color ramp based on the X
+  /// values of the points
+  void
+  colorByX();
 
-    /// @brief Colors the unselected points with a color ramp based on the Y
-    /// values of the points
-    void
-    colorByY ();
+  /// @brief Colors the unselected points with a color ramp based on the Y
+  /// values of the points
+  void
+  colorByY();
 
-    /// @brief Colors the unselected points with a color ramp based on the Z
-    /// values of the points
-    void
-    colorByZ ();
+  /// @brief Colors the unselected points with a color ramp based on the Z
+  /// values of the points
+  void
+  colorByZ();
 
-    /// @brief Colors the unselected points using an single color.
-    void
-    colorByPure ();
+  /// @brief Colors the unselected points using an single color.
+  void
+  colorByPure();
 
-    /// @brief Turn on the dialog box showing the statistics of the cloud.
-    void
-    showStat ();
+  /// @brief Turn on the dialog box showing the statistics of the cloud.
+  void
+  showStat();
 
-  protected:  
-    /// initializes GL
-    void
-    initializeGL () override;
+protected:
+  /// initializes GL
+  void
+  initializeGL() override;
 
-    /// the rendering function.
-    void
-    paintGL () override;
+  /// the rendering function.
+  void
+  paintGL() override;
 
-    /// resizes widget
-    void
-    resizeGL (int width, int height) override;
+  /// resizes widget
+  void
+  resizeGL(int width, int height) override;
 
-    /// mouse press control
-    void
-    mousePressEvent (QMouseEvent *event) override;
+  /// mouse press control
+  void
+  mousePressEvent(QMouseEvent* event) override;
 
-    /// mouse move control
-    void
-    mouseMoveEvent (QMouseEvent *event) override;
+  /// mouse move control
+  void
+  mouseMoveEvent(QMouseEvent* event) override;
 
-    /// mouse release control
-    void
-    mouseReleaseEvent (QMouseEvent *event) override;
+  /// mouse release control
+  void
+  mouseReleaseEvent(QMouseEvent* event) override;
 
-    /// key press control
-    void
-    keyPressEvent (QKeyEvent *event) override;
+  /// key press control
+  void
+  keyPressEvent(QKeyEvent* event) override;
 
-  private:
-    
-    /// @brief Attempts to load a pcd file
-    /// @param filename The name of the pcd file to be loaded.
-    /// @remarks throws if the passed file can not be loaded.
-    void
-    loadFilePCD(const std::string &filename);
-    
-    /// @brief Adds all of our file loader functions to the extension map
-    void
-    initFileLoadMap();
-    
-    /// @brief Returns true if the cloud stored in a file is colored
-    /// @param fileName a reference to a string storing the path of a cloud
+private:
+  /// @brief Attempts to load a pcd file
+  /// @param filename The name of the pcd file to be loaded.
+  /// @remarks throws if the passed file can not be loaded.
+  void
+  loadFilePCD(const std::string& filename);
+
+  /// @brief Adds all of our file loader functions to the extension map
+  void
+  initFileLoadMap();
+
+  /// @brief Returns true if the cloud stored in a file is colored
+  /// @param fileName a reference to a string storing the path of a cloud
+  bool
+  isColored(const std::string& fileName) const;
+
+  /// @brief swap the values of r and b in each point of the cloud.
+  void
+  swapRBValues();
+
+  /// @brief initializes the map between key press events and the
+  /// corresponding functors.
+  void
+  initKeyMap();
+
+  struct ExtCompare {
     bool
-    isColored (const std::string &fileName) const;
-
-    /// @brief swap the values of r and b in each point of the cloud.
-    void
-    swapRBValues ();
-
-    /// @brief initializes the map between key press events and the
-    /// corresponding functors.
-    void
-    initKeyMap();
-
-    struct ExtCompare
+    operator()(std::string lhs, std::string rhs) const
     {
-      bool
-      operator()(std::string lhs, std::string rhs) const
-      {
-        stringToLower(lhs);
-        stringToLower(rhs);
-        return lhs.compare(rhs) < 0;
-      }
-    };
+      stringToLower(lhs);
+      stringToLower(rhs);
+      return lhs.compare(rhs) < 0;
+    }
+  };
 
-    using FileLoadFunc = std::function<void (CloudEditorWidget*, const std::string&)>;
-    using FileLoadMap = std::map<std::string, FileLoadFunc, ExtCompare>;
+  using FileLoadFunc = std::function<void(CloudEditorWidget*, const std::string&)>;
+  using FileLoadMap = std::map<std::string, FileLoadFunc, ExtCompare>;
 
-    /// a map of file type extensions to loader functions.
-    FileLoadMap cloud_load_func_map_;
-    
-    /// a pointer to the cloud being edited.
-    CloudPtr cloud_ptr_;
+  /// a map of file type extensions to loader functions.
+  FileLoadMap cloud_load_func_map_;
 
-    /// The display size, in pixels, of the cloud points
-    unsigned int point_size_;
+  /// a pointer to the cloud being edited.
+  CloudPtr cloud_ptr_;
 
-    /// The display size, in pixels, of the selected cloud points
-    unsigned int selected_point_size_;
+  /// The display size, in pixels, of the cloud points
+  unsigned int point_size_;
 
-    /// The transformation tool being used. Either a cloud transform tool or
-    /// a selection transform tool is activated at a time.
-    std::shared_ptr<ToolInterface> tool_ptr_;
+  /// The display size, in pixels, of the selected cloud points
+  unsigned int selected_point_size_;
 
-    /// a pointer to the selection object
-    SelectionPtr selection_ptr_;
+  /// The transformation tool being used. Either a cloud transform tool or
+  /// a selection transform tool is activated at a time.
+  std::shared_ptr<ToolInterface> tool_ptr_;
 
-    /// a pointer to the copy buffer object.
-    CopyBufferPtr copy_buffer_ptr_;
+  /// a pointer to the selection object
+  SelectionPtr selection_ptr_;
 
-    /// a pointer to the command queue object
-    CommandQueuePtr command_queue_ptr_;
+  /// a pointer to the copy buffer object.
+  CopyBufferPtr copy_buffer_ptr_;
 
-    /// The camera field of view
-    double cam_fov_;
+  /// a pointer to the command queue object
+  CommandQueuePtr command_queue_ptr_;
 
-    /// The camera aspect ratio
-    double cam_aspect_;
+  /// The camera field of view
+  double cam_fov_;
 
-    /// The camera near clipping plane
-    double cam_near_;
+  /// The camera aspect ratio
+  double cam_aspect_;
 
-    /// The camera far clipping plane
-    double cam_far_;
+  /// The camera near clipping plane
+  double cam_near_;
 
-    /// @brief Initialize the texture used for rendering the cloud
-    void
-    initTexture ();
+  /// The camera far clipping plane
+  double cam_far_;
 
-    /// The current scheme used for coloring the whole cloud
-    ColorScheme color_scheme_;
+  /// @brief Initialize the texture used for rendering the cloud
+  void
+  initTexture();
 
-    /// A flag indicates whether the cloud is initially colored or not.
-    bool is_colored_;
+  /// The current scheme used for coloring the whole cloud
+  ColorScheme color_scheme_;
 
-    using KeyMapFunc = std::function<void (CloudEditorWidget*)>;
+  /// A flag indicates whether the cloud is initially colored or not.
+  bool is_colored_;
 
-    /// map between pressed key and the corresponding functor
-    std::map<int, KeyMapFunc> key_map_;
+  using KeyMapFunc = std::function<void(CloudEditorWidget*)>;
 
-    /// a dialog displaying the statistics of the cloud editor
-    StatisticsDialog stat_dialog_;
+  /// map between pressed key and the corresponding functor
+  std::map<int, KeyMapFunc> key_map_;
 
-    /// the viewport, set by resizeGL
-    std::array<GLint, 4> viewport_;
+  /// a dialog displaying the statistics of the cloud editor
+  StatisticsDialog stat_dialog_;
 
-    /// the projection matrix, set by resizeGL
-    std::array<GLfloat, 16> projection_matrix_;
+  /// the viewport, set by resizeGL
+  std::array<GLint, 4> viewport_;
+
+  /// the projection matrix, set by resizeGL
+  std::array<GLfloat, 16> projection_matrix_;
 };
