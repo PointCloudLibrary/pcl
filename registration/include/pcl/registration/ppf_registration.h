@@ -335,7 +335,7 @@ private:
 
   /** \brief use a kd-tree with range searches of range max_dist to skip an O(N) pass
    * through the point cloud */
-  typename pcl::KdTreeFLANN<PointTarget>::Ptr scene_search_tree_;
+  typename pcl::search::Search<PointTarget>::Ptr scene_search_tree_;
 
   /** \brief List with the most promising pose candidates, after clustering. The pose
    * with the most votes is returned as the registration result. */

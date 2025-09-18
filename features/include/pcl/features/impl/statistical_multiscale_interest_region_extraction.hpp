@@ -41,7 +41,7 @@
 #define PCL_FEATURES_IMPL_STATISTICAL_MULTISCALE_INTEREST_REGION_EXTRACTION_H_
 
 #include <pcl/features/statistical_multiscale_interest_region_extraction.h>
-#include <pcl/kdtree/kdtree_flann.h>
+#include <pcl/search/auto.h>
 #include <pcl/common/distances.h>
 #include <pcl/console/print.h> // for PCL_INFO, PCL_ERROR
 #include <boost/graph/adjacency_list.hpp>
@@ -53,8 +53,7 @@ template <typename PointT> void
 pcl::StatisticalMultiscaleInterestRegionExtraction<PointT>::generateCloudGraph ()
 {
   // generate a K-NNG (K-nearest neighbors graph)
-  pcl::KdTreeFLANN<PointT> kdtree;
-  kdtree.setInputCloud (input_);
+  typename pcl::search::Search<PointT>::Ptr kdtree(pcl::search::autoSelectMethod<PointT> (input_, true, pcl::search::Purpose::many_knn_search));
 
   using namespace boost;
   using Weight = property<edge_weight_t, float>;
@@ -65,7 +64,7 @@ pcl::StatisticalMultiscaleInterestRegionExtraction<PointT>::generateCloudGraph (
   {
     pcl::Indices k_indices (16);
     std::vector<float> k_distances (16);
-    kdtree.nearestKSearch (static_cast<int> (point_i), 16, k_indices, k_distances);
+    kdtree->nearestKSearch (static_cast<int> (point_i), 16, k_indices, k_distances);
 
     for (std::size_t k_i = 0; k_i < k_indices.size (); ++k_i)
       add_edge (point_i, k_indices[k_i], Weight (std::sqrt (k_distances[k_i])), cloud_graph);
