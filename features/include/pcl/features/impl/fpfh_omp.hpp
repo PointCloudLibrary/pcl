@@ -55,7 +55,8 @@ pcl::FPFHEstimationOMP<PointInT, PointNT, PointOutT>::setNumberOfThreads (unsign
   num_threads_ = num_threads != 0 ? num_threads : omp_get_num_procs();
 #else
   if (num_threads_ != 1) {
-    PCL_WARN("OpenMP is not available. Keeping number of threads unchanged at 1\n");
+    PCL_WARN("OpenMP is not available. Setting number of threads to 1\n");
+    num_threads_ = 1;
   }
 #endif
 }
