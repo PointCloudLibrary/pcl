@@ -238,10 +238,6 @@ namespace pcl
       /** \brief If no set of indices are given, we construct a set of fake indices that mimic the input PointCloud. */
       bool fake_indices_;
 
-      /**
-       * @brief Number of threads used during filtering
-       */
-      unsigned int num_threads_{0};
 
       /** \brief The size of each individual field. */
       std::vector<uindex_t> field_sizes_;
@@ -251,6 +247,11 @@ namespace pcl
 
       /** \brief The desired x-y-z field names. */
       std::string x_field_name_, y_field_name_, z_field_name_;
+
+      /**
+       * @brief Number of threads used during filtering
+       */
+      unsigned int num_threads_{0};
 
       bool initCompute ();
       bool deinitCompute ();
