@@ -54,27 +54,26 @@ public:
   using CloudCoherenceConstPtr = typename CloudCoherence::ConstPtr;
 
   /** \brief Initialize the scheduler and set the number of threads to use.
-   * \param nr_threads the number of hardware threads to use (0 sets the value
+   * \param num_threads the number of hardware threads to use (0 sets the value
    * back to automatic)
    */
-  ParticleFilterOMPTracker(unsigned int nr_threads = 0)
+  ParticleFilterOMPTracker(unsigned int num_threads = 0)
   : ParticleFilterTracker<PointInT, StateT>()
   {
     tracker_name_ = "ParticleFilterOMPTracker";
 
-    setNumberOfThreads(nr_threads);
+    setNumberOfThreads(num_threads);
   }
 
   /** \brief Initialize the scheduler and set the number of threads to use.
-   * \param nr_threads the number of hardware threads to use (0 sets the value
+   * \param num_threads the number of hardware threads to use (0 sets the value
    * back to automatic)
    */
   void
-  setNumberOfThreads(unsigned int nr_threads = 0);
+  setNumberOfThreads(unsigned int num_threads = 0);
 
 protected:
-  /** \brief The number of threads the scheduler should use. */
-  unsigned int threads_;
+  using PCLBase<PointInT>::num_threads_;
 
   /** \brief weighting phase of particle filter method. calculate the likelihood of all
    * of the particles and set the weights.

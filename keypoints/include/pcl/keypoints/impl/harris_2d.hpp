@@ -261,13 +261,13 @@ HarrisKeypoint2D<PointInT, PointOutT, IntensityT>::detectKeypoints (PointCloudOu
   default(none)                                                \
   shared(occupency_map, output)                                \
   firstprivate(width, height)                                  \
-  num_threads(threads_)
+  num_threads(num_threads_)
 #else
 #pragma omp parallel for                                       \
   default(none)                                                \
   shared(occupency_map, occupency_map_size, output, threshold) \
   firstprivate(width, height)                                  \
-  num_threads(threads_)	
+  num_threads(num_threads_)
 #endif
     for (int i = 0; i < occupency_map_size; ++i)
     {
@@ -314,13 +314,13 @@ HarrisKeypoint2D<PointInT, PointOutT, IntensityT>::responseHarris (PointCloudOut
   default(none)               \
   shared(output)              \
   firstprivate(covar)              \
-  num_threads(threads_)
+  num_threads(num_threads_)
 #else
 #pragma omp parallel for      \
   default(none)               \
   shared(output, output_size) \
   firstprivate(covar)              \
-  num_threads(threads_)
+  num_threads(num_threads_)
 #endif
   for (int index = 0; index < output_size; ++index)
   {
@@ -360,13 +360,13 @@ HarrisKeypoint2D<PointInT, PointOutT, IntensityT>::responseNoble (PointCloudOut 
   default(none)               \
   shared(output)              \
   firstprivate(covar)              \
-  num_threads(threads_)
+  num_threads(num_threads_)
 #else
 #pragma omp parallel for      \
   default(none)               \
   shared(output, output_size) \
   firstprivate(covar)              \
-  num_threads(threads_)
+  num_threads(num_threads_)
 #endif
   for (int index = 0; index < output_size; ++index)
   {
@@ -406,13 +406,13 @@ HarrisKeypoint2D<PointInT, PointOutT, IntensityT>::responseLowe (PointCloudOut &
   default(none)               \
   shared(output)              \
   firstprivate(covar)              \
-  num_threads(threads_)
+  num_threads(num_threads_)
 #else
 #pragma omp parallel for      \
   default(none)               \
   shared(output, output_size) \
   firstprivate(covar)              \
-  num_threads(threads_)
+  num_threads(num_threads_)
 #endif
   for (int index = 0; index < output_size; ++index)
   {
@@ -452,13 +452,13 @@ HarrisKeypoint2D<PointInT, PointOutT, IntensityT>::responseTomasi (PointCloudOut
   default(none)               \
   shared(output)              \
   firstprivate(covar)              \
-  num_threads(threads_)
+  num_threads(num_threads_)
 #else
 #pragma omp parallel for      \
   default(none)               \
   shared(output, output_size) \
   firstprivate(covar)              \
-  num_threads(threads_)
+  num_threads(num_threads_)
 #endif
   for (int index = 0; index < output_size; ++index)
   {

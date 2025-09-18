@@ -130,6 +130,13 @@ pcl::PCLBase<pcl::PCLPointCloud2>::initCompute ()
       std::iota(indices_->begin () + indices_size, indices_->end (), indices_size);
   }
 
+  // Set the number of threads
+  #ifdef _OPENMP
+    num_threads_ = num_threads_ != 0 ? num_threads_ : omp_get_num_procs();
+  #else
+    num_threads_ = 1;
+  #endif
+
   return (true);
 }
 
