@@ -95,6 +95,16 @@ namespace pcl
   template <typename PointT> inline std::vector<pcl::PCLPointField>
   getFields ();
 
+  /** \brief Get the list of available fields (i.e., dimension/channel) from cloud type,
+    * not point type
+    * \tparam CloudT cloud type, PointCloud or PCLPointCloud2
+    * \param cloud  input cloud. Unsused for PointCloud, needed for PCLPointCloud2 because the fields are not available statically
+    * \ingroup common
+    */
+  template <typename CloudT> inline std::vector<pcl::PCLPointField>
+  getFields (const CloudT& cloud) ;
+
+
   /** \brief Get the list of all fields available in a given cloud
     * \param[in] cloud the point cloud message
     * \ingroup common
@@ -250,6 +260,19 @@ namespace pcl
         return ('?');
     }
   }
+
+  /**
+   * \brief   Get the value of a point field from raw data pointer and field type.
+   *
+   * \tparam T    return type the field will be cast as
+   * \param data  data pointer
+   * \param type  point field type
+   * \ingroup common
+   *
+   * \return  field value
+   */
+  template <typename T> T point_field_as (const std::uint8_t* data, const std::uint8_t type);
+
 
   enum InterpolationType
   {
