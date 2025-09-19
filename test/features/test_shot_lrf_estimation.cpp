@@ -42,6 +42,7 @@
 #include <pcl/pcl_tests.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/features/shot_lrf.h>
+#include <pcl/search/kdtree.h> // for KdTree
 
 using namespace pcl;
 using namespace pcl::test;

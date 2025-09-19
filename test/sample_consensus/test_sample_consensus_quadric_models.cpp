@@ -428,7 +428,7 @@ TEST(SampleConsensusModelCylinder, RANSAC)
   cloud[18].getVector3fMap() << -0.702003f, 1.242707f, 0.899954f;
   cloud[19].getVector3fMap() << -0.289916f, 1.246296f, 0.950075f;
 
-  normals[0].getNormalVector3fMap() << 0.000098f, 1.000098f, 0.000008f;
+  normals[0].getNormalVector3fMap() << 0.000098f, 1.000098f, 0.200008f;
   normals[1].getNormalVector3fMap() << -0.750891f, 0.660413f, 0.000104f;
   normals[2].getNormalVector3fMap() << -0.991765f, -0.127949f, -0.000154f;
   normals[3].getNormalVector3fMap() << -0.558918f, -0.829439f, -0.000039f;
@@ -453,6 +453,7 @@ TEST(SampleConsensusModelCylinder, RANSAC)
   SampleConsensusModelCylinderPtr model(
       new SampleConsensusModelCylinder<PointXYZ, Normal>(cloud.makeShared()));
   model->setInputNormals(normals.makeShared());
+  model->setNormalDistanceWeight(.1);
 
   // Create the RANSAC object
   RandomSampleConsensus<PointXYZ> sac(model, 0.03);
@@ -480,6 +481,24 @@ TEST(SampleConsensusModelCylinder, RANSAC)
   model->optimizeModelCoefficients(inliers, coeff, coeff_refined);
   EXPECT_EQ(7, coeff_refined.size());
   EXPECT_NEAR(0.5, coeff_refined[6], 1e-3);
+
+  std::vector<double> distances;
+  model->getDistancesToModel(coeff_refined, distances);
+  ASSERT_EQ(20, distances.size());
+
+  const double first_point_dist = 0.020;
+  EXPECT_NEAR(first_point_dist, distances[0], 1e-3);
+  for (size_t i = 1; i < 20; ++i) {
+    EXPECT_NEAR(0., distances[i], 1e-3);
+  }
+
+  EXPECT_EQ(20, model->countWithinDistance(coeff_refined, first_point_dist + 1e-3));
+  EXPECT_EQ(19, model->countWithinDistance(coeff_refined, first_point_dist - 1e-3));
+
+  model->selectWithinDistance(coeff_refined, first_point_dist + 1e-3, inliers);
+  EXPECT_EQ(20, inliers.size());
+  model->selectWithinDistance(coeff_refined, first_point_dist - 1e-3, inliers);
+  EXPECT_EQ(19, inliers.size());
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1639,6 +1658,131 @@ TEST(SampleConsensusModelTorusSelfIntersectSpindle, RANSAC)
   EXPECT_NEAR(coeff[5], 0.8660254037844385, 1e-2);
   EXPECT_NEAR(coeff[6], -0.4330127018922194, 1e-2);
   EXPECT_NEAR(coeff[7], 0.25000000000000017, 1e-2);
+}
+
+TEST(SampleConsensusModelCylinder, RadiusAccuracy)
+{
+  srand(0);
+
+  size_t num_runs = 100;
+  size_t num_points = 1000;
+  float std = 0.05f;
+
+  PointCloud<PointXYZ> cloud;
+  PointCloud<Normal> normals;
+  cloud.resize(num_points);
+  normals.resize(num_points);
+
+  std::mt19937 rng;
+  std::uniform_real_distribution<float> z_dist(0.0f, 1.0f);
+  std::uniform_real_distribution<float> angle_dist(0.0f, 2.0f * M_PI);
+  std::normal_distribution<float> noise_dist(0.0f, std);
+  Eigen::Vector3f center(-0.5f, 1.7f, 0.0f);
+  float radius = 0.5f;
+  double sq_radius_err = 0.0;
+  for (size_t i = 0; i < num_runs; ++i) {
+    for (size_t j = 0; j < num_points; ++j) {
+      float z = z_dist(rng);
+      float angle = angle_dist(rng);
+      float noise_r = std::min(std::max(noise_dist(rng), -3.0f * std), 3.0f * std);
+      float noise_nx = std::min(std::max(noise_dist(rng), -3.0f * std), 3.0f * std);
+      float noise_ny = std::min(std::max(noise_dist(rng), -3.0f * std), 3.0f * std);
+      float noise_nz = std::min(std::max(noise_dist(rng), -3.0f * std), 3.0f * std);
+      Eigen::Vector3f n(std::cos(angle), std::sin(angle), 0.0f);
+      cloud[j].getVector3fMap() =
+          center + (radius + noise_r) * n + Eigen::Vector3f(0.0, 0.0, z);
+      normals[j].getNormalVector3fMap() =
+          (n + Eigen::Vector3f(noise_nx, noise_ny, noise_nz)).normalized();
+    }
+
+    // Create a shared cylinder model pointer directly
+    SampleConsensusModelCylinderPtr model(
+        new SampleConsensusModelCylinder<PointXYZ, Normal>(cloud.makeShared()));
+    model->setInputNormals(normals.makeShared());
+
+    // Create the RANSAC object
+    RandomSampleConsensus<PointXYZ> sac(model, 3.5 * std);
+
+    // Algorithm tests
+    bool result = sac.computeModel();
+    ASSERT_TRUE(result);
+
+    sac.refineModel();
+
+    pcl::Indices inliers;
+    sac.getInliers(inliers);
+    EXPECT_EQ(num_points, inliers.size());
+
+    Eigen::VectorXf coeff_refined = sac.getModelCoefficients();
+    EXPECT_EQ(7, coeff_refined.size());
+
+    double radius_error = coeff_refined[6] - radius;
+    sq_radius_err += radius_error * radius_error;
+  }
+
+  // We expect the radius rmse to be approximately std / sqrt(num_points)
+  EXPECT_GE(1.3 * std / sqrt(num_points),
+            std::sqrt(sq_radius_err / static_cast<double>(num_runs)));
+}
+
+TEST(SampleConsensusModelCylinder, SampleIntersectingLines)
+{
+  PointCloud<PointXYZ> cloud;
+  PointCloud<Normal> normals;
+  cloud.resize(2);
+  normals.resize(2);
+  cloud[0].getVector3fMap() << 0.0f, 1.0f, 0.0f;
+  cloud[1].getVector3fMap() << 1.0f, 0.0f, 0.0f;
+  normals[0].getNormalVector3fMap() << 0.0f, 1.0f, 0.0f;
+  normals[1].getNormalVector3fMap() << 1.0f, 0.0f, 0.0f;
+
+  SampleConsensusModelCylinder<PointXYZ, Normal> model(cloud.makeShared());
+  model.setInputNormals(normals.makeShared());
+
+  Eigen::VectorXf model_coefficients;
+  model.computeModelCoefficients({0, 1}, model_coefficients);
+
+  ASSERT_EQ(7, model_coefficients.size());
+
+  EXPECT_NEAR(0.0f, model_coefficients[0], 1e-5f);
+  EXPECT_NEAR(0.0f, model_coefficients[1], 1e-5f);
+  EXPECT_NEAR(0.0f, model_coefficients[3], 1e-5f);
+  EXPECT_NEAR(0.0f, model_coefficients[4], 1e-5f);
+  EXPECT_LT(0.0f, std::abs(model_coefficients[5]));
+  EXPECT_NEAR(1.0f, model_coefficients[6], 1e-5f);
+}
+
+TEST(SampleConsensusModelCylinder, SampleModelsSymmetric)
+{
+  PointCloud<PointXYZ> cloud;
+  PointCloud<Normal> normals;
+  cloud.resize(2);
+  normals.resize(2);
+  cloud[0].getVector3fMap() << 0.1f, 1.3f, 0.4f;
+  cloud[1].getVector3fMap() << 1.2f, -0.2f, -0.1f;
+  normals[0].getNormalVector3fMap() << 0.0f, 0.9f, -0.1f;
+  normals[1].getNormalVector3fMap() << 1.1f, -0.2f, 0.0f;
+
+  SampleConsensusModelCylinder<PointXYZ, Normal> model(cloud.makeShared());
+  model.setInputNormals(normals.makeShared());
+
+  Eigen::VectorXf model_coefficients, model_coefficients_swapped;
+  model.computeModelCoefficients({0, 1}, model_coefficients);
+  model.computeModelCoefficients({1, 0}, model_coefficients_swapped);
+
+  ASSERT_EQ(7, model_coefficients.size());
+  ASSERT_EQ(7, model_coefficients_swapped.size());
+
+  Eigen::Vector4f pt1(model_coefficients[0], model_coefficients[1], model_coefficients[2], 0.f);
+  Eigen::Vector4f dir1(model_coefficients[3], model_coefficients[4], model_coefficients[5], 0.f);
+  Eigen::Vector4f pt2(model_coefficients_swapped[0], model_coefficients_swapped[1], model_coefficients_swapped[2], 0.f);
+  Eigen::Vector4f dir2(model_coefficients_swapped[3], model_coefficients_swapped[4], model_coefficients_swapped[5], 0.f);
+
+  // Check if both cylinder axes are the same
+  EXPECT_GT(1e-5, sqrPointToLineDistance(pt2, pt1, dir1));
+  EXPECT_GT(1e-5f, (dir1 * (dir2.x() / dir1.x()) - dir2).squaredNorm());
+
+  EXPECT_NEAR(model_coefficients[6], model_coefficients_swapped[6], 1e-5f);
 }
 
 int

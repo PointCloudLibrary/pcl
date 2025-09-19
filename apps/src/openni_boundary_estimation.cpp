@@ -42,6 +42,7 @@
 #include <pcl/filters/approximate_voxel_grid.h>
 #include <pcl/io/openni_camera/openni_driver.h>
 #include <pcl/io/openni_grabber.h>
+#include <pcl/search/organized.h> // for OrganizedNeighbor
 #include <pcl/visualization/cloud_viewer.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>

@@ -43,6 +43,7 @@
 #include <pcl/features/grsd.h>
 #include <pcl/features/normal_3d.h>
 #include <pcl/io/pcd_io.h>
+#include <pcl/search/kdtree.h> // for KdTree
 
 using namespace pcl;
 using namespace pcl::io;
@@ -77,15 +78,15 @@ TEST (PCL, GRSDEstimation)
   grsd.setRadiusSearch (rsd_radius);
   grsd.compute (*grsd_desc);
   
-  EXPECT_EQ (12, (*grsd_desc)[0].histogram[2]);
-  EXPECT_EQ (104, (*grsd_desc)[0].histogram[4]);
+  EXPECT_EQ (4, (*grsd_desc)[0].histogram[2]);
+  EXPECT_EQ (64, (*grsd_desc)[0].histogram[4]);
   EXPECT_EQ (0, (*grsd_desc)[0].histogram[6]);
   EXPECT_EQ (0, (*grsd_desc)[0].histogram[8]);
   EXPECT_EQ (0, (*grsd_desc)[0].histogram[10]);
-  EXPECT_EQ (34, (*grsd_desc)[0].histogram[12]);
-  EXPECT_EQ (167, (*grsd_desc)[0].histogram[14]);
-  EXPECT_EQ (68, (*grsd_desc)[0].histogram[16]);
-  EXPECT_EQ (204, (*grsd_desc)[0].histogram[18]);
+  EXPECT_EQ (24, (*grsd_desc)[0].histogram[12]);
+  EXPECT_EQ (105, (*grsd_desc)[0].histogram[14]);
+  EXPECT_EQ (108, (*grsd_desc)[0].histogram[16]);
+  EXPECT_EQ (212, (*grsd_desc)[0].histogram[18]);
   EXPECT_EQ (0, (*grsd_desc)[0].histogram[20]);
   
 }

@@ -19,6 +19,7 @@ apps/3d_rec_framework
 apps/in_hand_scanner
 apps/include
 apps/modeler
+apps/point_cloud_editor/include
 apps/src
 benchmarks
 2d

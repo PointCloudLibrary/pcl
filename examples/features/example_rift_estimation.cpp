@@ -44,6 +44,7 @@
 #include <pcl/features/normal_3d.h>
 #include <pcl/features/rift.h>
 #include <pcl/features/intensity_gradient.h>
+#include <pcl/search/kdtree.h> // for KdTree
 
 int
 main (int, char** argv)

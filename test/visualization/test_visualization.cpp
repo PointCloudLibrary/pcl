@@ -47,6 +47,7 @@
 #include <pcl/visualization/point_cloud_color_handlers.h>
 #include <cstddef>
 #include <limits>
+#include <pcl/search/kdtree.h> // for KdTree
 
 using namespace pcl;
 using namespace pcl::io;
@@ -390,7 +391,7 @@ main (int argc, char** argv)
 
   // Concatenate XYZ and normal information
   pcl::concatenateFields (*cloud, *normals, *cloud_with_normals);
-      
+
   // Create search tree
   tree2.reset (new search::KdTree<PointNormal>);
   tree2->setInputCloud (cloud_with_normals);

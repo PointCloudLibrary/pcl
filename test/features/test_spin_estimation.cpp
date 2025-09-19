@@ -43,6 +43,7 @@
 #include <pcl/io/pcd_io.h>
 #include <pcl/features/spin_image.h>
 #include <pcl/features/intensity_spin.h>
+#include <pcl/search/kdtree.h> // for KdTree
 
 using namespace pcl;
 using namespace pcl::io;

@@ -260,6 +260,7 @@ pcl::RSDEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
   // \note resize is irrelevant for a radiusSearch ().
   pcl::Indices nn_indices;
   std::vector<float> nn_sqr_dists;
+  tree_->setSortedResults(true); // computeRSD expects the first result to be the one with the smallest distance
 
   // Check if the full histogram has to be saved or not
   if (save_histograms_)
