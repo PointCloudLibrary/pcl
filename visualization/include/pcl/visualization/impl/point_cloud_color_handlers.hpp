@@ -609,7 +609,7 @@ template <typename PointT> vtkSmartPointer<vtkDataArray> PointCloudColorHandlerG
     }
   }
 
-  int point_offset = this->fields_[this->field_idx_].offset;
+  size_t point_offset = this->fields_[this->field_idx_].offset;
   const int point_step = getPointStep<PointCloud>(*this->cloud_);
   const std::uint8_t* p_data = getCloudData<PointCloud>(*this->cloud_);
   const std::uint8_t field_type = this->fields_[this->field_idx_].datatype;
