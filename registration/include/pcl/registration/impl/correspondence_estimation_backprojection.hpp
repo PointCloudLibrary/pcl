@@ -66,7 +66,8 @@ CorrespondenceEstimationBackProjection<PointSource, PointTarget, NormalT, Scalar
 template <typename PointSource, typename PointTarget, typename NormalT, typename Scalar>
 void
 CorrespondenceEstimationBackProjection<PointSource, PointTarget, NormalT, Scalar>::
-    determineCorrespondences(pcl::Correspondences& correspondences, double max_distance)
+    determineCorrespondences(pcl::Correspondences& correspondences,
+                             const double max_distance)
 {
   if (!initCompute())
     return;
@@ -98,7 +99,7 @@ CorrespondenceEstimationBackProjection<PointSource, PointTarget, NormalT, Scalar
                             (*target_normals_)[nn_indices[j]].normal_y +
                         (*source_normals_)[idx_i].normal_z *
                             (*target_normals_)[nn_indices[j]].normal_z;
-      float dist = nn_dists[j] * (2.0f - cos_angle * cos_angle);
+      const float dist = nn_dists[j] * (2.0f - cos_angle * cos_angle);
 
       if (dist < min_dist) {
         min_dist = dist;
@@ -121,7 +122,7 @@ template <typename PointSource, typename PointTarget, typename NormalT, typename
 void
 CorrespondenceEstimationBackProjection<PointSource, PointTarget, NormalT, Scalar>::
     determineReciprocalCorrespondences(pcl::Correspondences& correspondences,
-                                       double max_distance)
+                                       const double max_distance)
 {
   if (!initCompute())
     return;
@@ -166,7 +167,7 @@ CorrespondenceEstimationBackProjection<PointSource, PointTarget, NormalT, Scalar
                             (*target_normals_)[nn_indices[j]].normal_y +
                         (*source_normals_)[idx_i].normal_z *
                             (*target_normals_)[nn_indices[j]].normal_z;
-      float dist = nn_dists[j] * (2.0f - cos_angle * cos_angle);
+      const float dist = nn_dists[j] * (2.0f - cos_angle * cos_angle);
 
       if (dist < min_dist) {
         min_dist = dist;
