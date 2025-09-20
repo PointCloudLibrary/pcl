@@ -41,8 +41,7 @@
 
 #include <pcl/console/print.h> // for PCL_ERROR
 
-#include <pcl/search/organized.h> // for OrganizedNeighbor
-#include <pcl/search/kdtree.h> // for KdTree
+#include <pcl/search/auto.h>
 
 namespace pcl
 {
@@ -53,21 +52,16 @@ Keypoint<PointInT, PointOutT>::initCompute ()
   if (!PCLBase<PointInT>::initCompute ())
     return (false);
 
-  // Initialize the spatial locator
-  if (!tree_)
-  {
-    if (input_->isOrganized ())
-      tree_.reset (new pcl::search::OrganizedNeighbor<PointInT> ());
-    else
-      tree_.reset (new pcl::search::KdTree<PointInT> (false));
-  }
-
   // If no search surface has been defined, use the input dataset as the search surface itself
   if (!surface_)
     surface_ = input_;
 
-  // Send the surface dataset to the spatial locator
-  tree_->setInputCloud (surface_);
+  // Initialize the spatial locator
+  if (!tree_)
+    tree_.reset (pcl::search::autoSelectMethod<PointInT> (surface_, false));
+  else
+    // Send the surface dataset to the spatial locator
+    tree_->setInputCloud (surface_);
 
   // Do a fast check to see if the search parameters are well defined
   if (search_radius_ != 0.0)

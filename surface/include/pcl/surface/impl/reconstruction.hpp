@@ -44,7 +44,6 @@
 #include <pcl/search/kdtree.h> // for KdTree
 #include <pcl/search/organized.h> // for OrganizedNeighbor
 
-
 namespace pcl
 {
 
