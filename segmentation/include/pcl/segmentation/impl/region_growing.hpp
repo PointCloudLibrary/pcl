@@ -332,7 +332,7 @@ pcl::RegionGrowing<PointT, NormalT>::findPointNeighbours ()
     for (const auto& point_index: (*indices_))
     {
       neighbours.clear ();
-      search_->nearestKSearch (point_index, neighbour_number_, neighbours, distances);
+      search_->nearestKSearch ((*input_)[point_index], neighbour_number_, neighbours, distances);
       point_neighbours_[point_index].swap (neighbours);
     }
   }
@@ -343,7 +343,7 @@ pcl::RegionGrowing<PointT, NormalT>::findPointNeighbours ()
       if (!pcl::isFinite ((*input_)[point_index]))
         continue;
       neighbours.clear ();
-      search_->nearestKSearch (point_index, neighbour_number_, neighbours, distances);
+      search_->nearestKSearch ((*input_)[point_index], neighbour_number_, neighbours, distances);
       point_neighbours_[point_index].swap (neighbours);
     }
   }

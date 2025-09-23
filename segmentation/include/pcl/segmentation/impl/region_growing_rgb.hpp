@@ -278,7 +278,7 @@ pcl::RegionGrowingRGB<PointT, NormalT>::findPointNeighbours ()
   {
     neighbours.clear ();
     distances.clear ();
-    search_->nearestKSearch (point_index, region_neighbour_number_, neighbours, distances);
+    search_->nearestKSearch ((*input_)[point_index], region_neighbour_number_, neighbours, distances);
     point_neighbours_[point_index].swap (neighbours);
     point_distances_[point_index].swap (distances);
   }
