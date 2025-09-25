@@ -32,6 +32,8 @@
 
 #include <GL/glew.h>
 
+#include <chrono>
+
 #ifdef OPENGL_IS_A_FRAMEWORK
 #include <OpenGL/gl.h>
 #include <OpenGL/glu.h>
