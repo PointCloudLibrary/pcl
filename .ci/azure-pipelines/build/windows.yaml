@@ -13,9 +13,10 @@ steps:
         -DPCL_BUILD_WITH_BOOST_DYNAMIC_LINKING_WIN32=ON ^
         -DPCL_BUILD_WITH_FLANN_DYNAMIC_LINKING_WIN32=ON ^
         -DPCL_BUILD_WITH_QHULL_DYNAMIC_LINKING_WIN32=ON ^
+        -DBUILD_simulation=ON ^
         -DBUILD_global_tests=ON ^
         -DBUILD_benchmarks=ON ^
-        -DBUILD_tools=OFF ^
+        -DBUILD_tools=ON ^
         -DBUILD_surface_on_nurbs=ON ^
         -DPCL_DISABLE_VISUALIZATION_TESTS=ON
     displayName: 'CMake Configuration'
