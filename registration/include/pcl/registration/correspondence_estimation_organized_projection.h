@@ -190,7 +190,7 @@ public:
    * will be rejected
    */
   void
-  determineCorrespondences(Correspondences& correspondences, double max_distance);
+  determineCorrespondences(Correspondences& correspondences, const double max_distance);
 
   /** \brief Computes the correspondences, applying a maximum Euclidean distance
    * threshold.
@@ -201,7 +201,7 @@ public:
    */
   void
   determineReciprocalCorrespondences(Correspondences& correspondences,
-                                     double max_distance);
+                                     const double max_distance);
 
   /** \brief Clone and cast to CorrespondenceEstimationBase */
   virtual typename CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::Ptr
