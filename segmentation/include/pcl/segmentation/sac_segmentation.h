@@ -147,11 +147,21 @@ namespace pcl
       getProbability () const { return (probability_); }
 
       /** \brief Set the number of threads to use or turn off parallelization.
-        * \param[in] nr_threads the number of hardware threads to use (0 sets the value automatically, a negative number turns parallelization off)
+        * \param[in] num_threads the number of hardware threads to use (0 sets the value automatically)
         * \note Not all SAC methods have a parallel implementation. Some will ignore this setting.
         */
       inline void
-      setNumberOfThreads (const int nr_threads = -1) { threads_ = nr_threads; }
+      setNumberOfThreads (const int num_threads = 0 )
+      {
+#ifdef _OPENMP
+        num_threads_ = num_threads != 0 ? num_threads : omp_get_num_procs();
+#else
+        if (num_threads_ != 1) {
+          PCL_WARN("OpenMP is not available. Setting number of threads to 1\n");
+          num_threads_ = 1;
+        }
+#endif
+      }
 
       /** \brief Set to true if a coefficient refinement is required.
         * \param[in] optimize true for enabling model coefficient refinement, false otherwise
@@ -247,6 +257,8 @@ namespace pcl
       virtual void 
       initSAC (const int method_type);
 
+      using PCLBase<PointT>::num_threads_;
+
       /** \brief The model that needs to be segmented. */
       SampleConsensusModelPtr model_{nullptr};
 
@@ -282,9 +294,6 @@ namespace pcl
 
       /** \brief Maximum number of iterations before giving up (user given parameter). */
       int max_iterations_{50};
-
-      /** \brief The number of threads the scheduler should use, or a negative number if no parallelization is wanted. */
-      int threads_{-1};
 
       /** \brief Desired probability of choosing at least one sample free from outliers (user given parameter). */
       double probability_{0.99};

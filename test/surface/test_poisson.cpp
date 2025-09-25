@@ -67,6 +67,9 @@ TEST (PCL, Poisson)
 
   Poisson<PointNormal> poisson;
   poisson.setInputCloud (cloud_with_normals);
+  // poisson4 returns different vertices when parallelized
+  // for now, disable parallelization
+  poisson.setNumberOfThreads(1);
   PolygonMesh mesh;
   poisson.reconstruct (mesh);
 
