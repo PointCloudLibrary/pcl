@@ -40,8 +40,7 @@
 #include <pcl/common/distances.h>
 #include <pcl/common/io.h> // for getFieldIndex
 #include <pcl/common/point_tests.h> // for pcl::isFinite
-#include <pcl/search/organized.h>
-#include <pcl/search/kdtree.h>
+#include <pcl/search/auto.h>
 
 
 namespace pcl
@@ -112,10 +111,7 @@ GrabCut<PointT>::initCompute ()
 
   // Initialize the spatial locator
   if (!tree_ && !input_->isOrganized ())
-  {
-    tree_.reset (new pcl::search::KdTree<PointT> (true));
-    tree_->setInputCloud (input_);
-  }
+    tree_.reset (pcl::search::autoSelectMethod<PointT> (input_, true, pcl::search::Purpose::many_knn_search));
 
   const std::size_t indices_size = indices_->size ();
   trimap_ = std::vector<segmentation::grabcut::TrimapValue> (indices_size, TrimapUnknown);

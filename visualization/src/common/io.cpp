@@ -45,7 +45,7 @@
 #include <vtkSmartPointer.h>
 
 #include <pcl/visualization/common/io.h>
-#include <pcl/kdtree/kdtree_flann.h>
+#include <pcl/search/auto.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/memory.h>
 
@@ -70,15 +70,14 @@ pcl::visualization::getCorrespondingPointCloud (vtkPolyData *src,
   }
 
   // Compute a kd-tree for tgt
-  pcl::KdTreeFLANN<pcl::PointXYZ> kdtree;
-  kdtree.setInputCloud (make_shared<PointCloud<PointXYZ>> (tgt));
+  pcl::search::Search<pcl::PointXYZ>::Ptr search(pcl::search::autoSelectMethod<pcl::PointXYZ>(make_shared<PointCloud<PointXYZ>> (tgt), false, pcl::search::Purpose::one_knn_search));
 
   pcl::Indices nn_indices (1);
   std::vector<float> nn_dists (1);
   // For each point on screen, find its correspondent in the target
   for (const auto &point : cloud.points)
   {
-    kdtree.nearestKSearch (point, 1, nn_indices, nn_dists);
+    search->nearestKSearch (point, 1, nn_indices, nn_dists);
     indices.push_back (nn_indices[0]);
   }
   // Sort and remove duplicate indices

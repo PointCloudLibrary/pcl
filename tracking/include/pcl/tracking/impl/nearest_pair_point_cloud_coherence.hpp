@@ -1,7 +1,7 @@
 #ifndef PCL_TRACKING_IMPL_NEAREST_PAIR_POINT_CLOUD_COHERENCE_H_
 #define PCL_TRACKING_IMPL_NEAREST_PAIR_POINT_CLOUD_COHERENCE_H_
 
-#include <pcl/search/kdtree.h>
+#include <pcl/search/auto.h>
 #include <pcl/tracking/nearest_pair_point_cloud_coherence.h>
 
 namespace pcl {
@@ -48,10 +48,11 @@ NearestPairPointCloudCoherence<PointInT>::initCompute()
   }
 
   // initialize tree
-  if (!search_)
-    search_.reset(new pcl::search::KdTree<PointInT>(false));
-
-  if (new_target_ && target_input_) {
+  if (!search_) {
+    search_.reset(pcl::search::autoSelectMethod<PointInT>(target_input_, false));
+    new_target_ = false;
+  }
+  else if (new_target_ && target_input_) {
     search_->setInputCloud(target_input_);
     new_target_ = false;
   }

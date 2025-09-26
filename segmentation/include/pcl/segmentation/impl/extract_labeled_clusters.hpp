@@ -38,6 +38,7 @@
 #define PCL_SEGMENTATION_IMPL_EXTRACT_LABELED_CLUSTERS_H_
 
 #include <pcl/segmentation/extract_labeled_clusters.h>
+#include <pcl/search/auto.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
@@ -136,15 +137,11 @@ pcl::LabeledEuclideanClusterExtraction<PointT>::extract(
   }
 
   // Initialize the spatial locator
-  if (!tree_) {
-    if (input_->isOrganized())
-      tree_.reset(new pcl::search::OrganizedNeighbor<PointT>());
-    else
-      tree_.reset(new pcl::search::KdTree<PointT>(false));
-  }
-
-  // Send the input dataset to the spatial locator
-  tree_->setInputCloud(input_);
+  if (!tree_)
+    tree_.reset(pcl::search::autoSelectMethod<PointT>(input_, false, pcl::search::Purpose::radius_search));
+  else
+    // Send the input dataset to the spatial locator
+    tree_->setInputCloud(input_);
   extractLabeledEuclideanClusters(*input_,
                                   tree_,
                                   static_cast<float>(cluster_tolerance_),

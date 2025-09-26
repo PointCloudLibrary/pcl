@@ -41,6 +41,7 @@
 #include <pcl/keypoints/sift_keypoint.h>
 #include <pcl/common/io.h>
 #include <pcl/filters/voxel_grid.h>
+#include <pcl/search/kdtree.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT> void 

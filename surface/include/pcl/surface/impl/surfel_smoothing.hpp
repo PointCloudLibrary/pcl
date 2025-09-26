@@ -38,8 +38,7 @@
 #ifndef PCL_SURFACE_IMPL_SURFEL_SMOOTHING_H_
 #define PCL_SURFACE_IMPL_SURFEL_SMOOTHING_H_
 
-#include <pcl/search/organized.h> // for OrganizedNeighbor
-#include <pcl/search/kdtree.h> // for KdTree
+#include <pcl/search/auto.h>
 #include <pcl/surface/surfel_smoothing.h>
 #include <pcl/common/distances.h>
 #include <pcl/console/print.h> // for PCL_ERROR, PCL_DEBUG
@@ -66,10 +65,7 @@ pcl::SurfelSmoothing<PointT, PointNT>::initCompute ()
   // Initialize the spatial locator
   if (!tree_)
   {
-    if (input_->isOrganized ())
-      tree_.reset (new pcl::search::OrganizedNeighbor<PointT> ());
-    else
-      tree_.reset (new pcl::search::KdTree<PointT> (false));
+    tree_.reset (pcl::search::autoSelectMethod<PointT>(input_, false, pcl::search::Purpose::radius_search));
   }
 
   // create internal copies of the input - these will be modified

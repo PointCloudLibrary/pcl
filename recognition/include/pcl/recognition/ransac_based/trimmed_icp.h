@@ -47,12 +47,12 @@
 #pragma once
 
 #include <pcl/registration/transformation_estimation_svd.h>
-#include <pcl/kdtree/kdtree_flann.h>
 #include <pcl/correspondence.h>
 #include <pcl/point_cloud.h>
 #include <pcl/pcl_exports.h>
 #include <limits>
 #include <pcl/recognition/ransac_based/auxiliary.h>
+#include <pcl/search/auto.h>
 
 namespace pcl
 {
@@ -81,7 +81,7 @@ namespace pcl
         init (const PointCloudConstPtr& target)
         {
           target_points_ = target;
-          kdtree_.setInputCloud (target);
+          kdtree_.reset(pcl::search::autoSelectMethod<PointT> (target, false, pcl::search::Purpose::one_knn_search));
         }
 
         /** \brief The method performs trimmed ICP, i.e., it rigidly registers the source to the target (passed to the init() method).
@@ -125,7 +125,7 @@ namespace pcl
               aux::transform (guess_and_result, source_points[i], transformed_source_point);
 
               // Perform the closest point search
-              kdtree_.nearestKSearch (transformed_source_point, 1, target_index, sqr_dist_to_target);
+              kdtree_->nearestKSearch (transformed_source_point, 1, target_index, sqr_dist_to_target);
 
               // Update the i-th correspondence
               full_src_to_tgt[i].index_query = i;
@@ -174,7 +174,7 @@ namespace pcl
 
       protected:
         PointCloudConstPtr target_points_;
-        pcl::KdTreeFLANN<PointT> kdtree_;
+        typename pcl::search::Search<PointT>::Ptr kdtree_;
         float new_to_old_energy_ratio_{0.99f};
     };
   } // namespace recognition
