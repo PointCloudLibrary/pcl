@@ -69,7 +69,7 @@ pcl::SHOTEstimationOMP<PointInT, PointNT, PointOutT, PointRFT>::initCompute ()
   lrf_estimator->setRadiusSearch ((lrf_radius_ > 0 ? lrf_radius_ : search_radius_));
   lrf_estimator->setInputCloud (input_);
   lrf_estimator->setIndices (indices_);
-  lrf_estimator->setNumberOfThreads(threads_);
+  lrf_estimator->setNumberOfThreads(num_threads_);
 
   if (!fake_surface_)
     lrf_estimator->setSearchSurface(surface_);
@@ -107,7 +107,7 @@ pcl::SHOTColorEstimationOMP<PointInT, PointNT, PointOutT, PointRFT>::initCompute
   lrf_estimator->setRadiusSearch ((lrf_radius_ > 0 ? lrf_radius_ : search_radius_));
   lrf_estimator->setInputCloud (input_);
   lrf_estimator->setIndices (indices_);
-  lrf_estimator->setNumberOfThreads(threads_);
+  lrf_estimator->setNumberOfThreads(num_threads_);
 
   if (!fake_surface_)
     lrf_estimator->setSearchSurface(surface_);
@@ -123,16 +123,16 @@ pcl::SHOTColorEstimationOMP<PointInT, PointNT, PointOutT, PointRFT>::initCompute
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointInT, typename PointNT, typename PointOutT, typename PointRFT> void
-pcl::SHOTEstimationOMP<PointInT, PointNT, PointOutT, PointRFT>::setNumberOfThreads (unsigned int nr_threads)
+pcl::SHOTEstimationOMP<PointInT, PointNT, PointOutT, PointRFT>::setNumberOfThreads (unsigned int num_threads)
 {
-  if (nr_threads == 0)
 #ifdef _OPENMP
-    threads_ = omp_get_num_procs();
+  num_threads_ = num_threads != 0 ? num_threads : omp_get_num_procs();
 #else
-    threads_ = 1;
+  if (num_threads_ != 1) {
+    PCL_WARN("OpenMP is not available. Setting number of threads to 1\n");
+    num_threads_ = 1;
+  }
 #endif
-  else
-    threads_ = nr_threads;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -153,7 +153,7 @@ pcl::SHOTEstimationOMP<PointInT, PointNT, PointOutT, PointRFT>::computeFeature (
 #pragma omp parallel for \
   default(none) \
   shared(output) \
-  num_threads(threads_)
+  num_threads(num_threads_)
   for (std::ptrdiff_t idx = 0; idx < static_cast<std::ptrdiff_t> (indices_->size ()); ++idx)
   {
 
@@ -206,16 +206,16 @@ pcl::SHOTEstimationOMP<PointInT, PointNT, PointOutT, PointRFT>::computeFeature (
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointNT, typename PointOutT, typename PointRFT> void
-pcl::SHOTColorEstimationOMP<PointInT, PointNT, PointOutT, PointRFT>::setNumberOfThreads (unsigned int nr_threads)
+pcl::SHOTColorEstimationOMP<PointInT, PointNT, PointOutT, PointRFT>::setNumberOfThreads (unsigned int num_threads)
 {
-  if (nr_threads == 0)
 #ifdef _OPENMP
-    threads_ = omp_get_num_procs();
+  num_threads_ = num_threads != 0 ? num_threads : omp_get_num_procs();
 #else
-    threads_ = 1;
+  if (num_threads_ != 1) {
+    PCL_WARN("OpenMP is not available. Setting number of threads to 1\n");
+    num_threads_ = 1;
+  }
 #endif
-  else
-    threads_ = nr_threads;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -240,7 +240,7 @@ pcl::SHOTColorEstimationOMP<PointInT, PointNT, PointOutT, PointRFT>::computeFeat
 #pragma omp parallel for \
   default(none) \
   shared(output) \
-  num_threads(threads_)
+  num_threads(num_threads_)
   for (std::ptrdiff_t idx = 0; idx < static_cast<std::ptrdiff_t> (indices_->size ()); ++idx)
   {
     Eigen::VectorXf shot;

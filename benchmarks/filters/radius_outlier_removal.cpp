@@ -15,6 +15,7 @@ BM_RadiusOutlierRemoval(benchmark::State& state, const std::string& file)
   ror.setInputCloud(cloud);
   ror.setRadiusSearch(0.02);
   ror.setMinNeighborsInRadius(14);
+  ror.setNumberOfThreads(1);
 
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_voxelized(
       new pcl::PointCloud<pcl::PointXYZ>);

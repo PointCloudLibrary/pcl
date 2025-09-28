@@ -117,7 +117,7 @@ pcl::ApproximateProgressiveMorphologicalFilter<PointT>::extract (Indices& ground
 #pragma omp parallel for \
   default(none) \
   shared(A, global_min) \
-  num_threads(threads_)
+  num_threads(num_threads_)
     for (int i = 0; i < static_cast<int>(input_->size ()); ++i) {
       // ...then test for lower points within the cell
       const PointT& p = (*input_)[i];
@@ -132,7 +132,7 @@ pcl::ApproximateProgressiveMorphologicalFilter<PointT>::extract (Indices& ground
 #pragma omp parallel for \
   default(none) \
   shared(A, global_min) \
-  num_threads(threads_)
+  num_threads(num_threads_)
     for (int i = 0; i < static_cast<int>(input_->size ()); ++i) {
       // ...then test for lower points within the cell
       const PointT& p = (*input_)[i];
@@ -173,7 +173,7 @@ pcl::ApproximateProgressiveMorphologicalFilter<PointT>::extract (Indices& ground
 #pragma omp parallel for \
   default(none) \
   shared(A, cols, half_sizes, i, rows, Z) \
-  num_threads(threads_)
+  num_threads(num_threads_)
     for (int row = 0; row < rows; ++row)
     {
       int rs, re;
@@ -208,7 +208,7 @@ pcl::ApproximateProgressiveMorphologicalFilter<PointT>::extract (Indices& ground
 #pragma omp parallel for \
   default(none) \
   shared(cols, half_sizes, i, rows, Z, Zf) \
-  num_threads(threads_)
+  num_threads(num_threads_)
     for (int row = 0; row < rows; ++row)
     {
       int rs, re;

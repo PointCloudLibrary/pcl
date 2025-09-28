@@ -9,16 +9,16 @@ namespace tracking {
 template <typename PointInT, typename StateT>
 void
 KLDAdaptiveParticleFilterOMPTracker<PointInT, StateT>::setNumberOfThreads(
-    unsigned int nr_threads)
+    unsigned int num_threads)
 {
-  if (nr_threads == 0)
 #ifdef _OPENMP
-    threads_ = omp_get_num_procs();
+  num_threads_ = num_threads != 0 ? num_threads : omp_get_num_procs();
 #else
-    threads_ = 1;
+  if (num_threads_ != 1) {
+    PCL_WARN("OpenMP is not available. Setting number of threads to 1\n");
+    num_threads_ = 1;
+  }
 #endif
-  else
-    threads_ = nr_threads;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -30,7 +30,7 @@ KLDAdaptiveParticleFilterOMPTracker<PointInT, StateT>::weight()
     // clang-format off
 #pragma omp parallel for \
   default(none) \
-  num_threads(threads_)
+  num_threads(num_threads_)
     // clang-format on
     for (int i = 0; i < particle_num_; i++)
       this->computeTransformedPointCloudWithoutNormal((*particles_)[i],
@@ -48,7 +48,7 @@ KLDAdaptiveParticleFilterOMPTracker<PointInT, StateT>::weight()
         // clang-format off
 #pragma omp parallel for \
   default(none) \
-  num_threads(threads_)
+  num_threads(num_threads_)
         // clang-format on
         for (int i = 0; i < particle_num_; i++) {
           IndicesPtr indices;
@@ -66,7 +66,7 @@ KLDAdaptiveParticleFilterOMPTracker<PointInT, StateT>::weight()
       // clang-format off
 #pragma omp parallel for \
   default(none) \
-  num_threads(threads_)
+  num_threads(num_threads_)
       // clang-format on
       for (int i = 0; i < particle_num_; i++) {
         IndicesPtr indices;
@@ -84,7 +84,7 @@ KLDAdaptiveParticleFilterOMPTracker<PointInT, StateT>::weight()
 #pragma omp parallel for \
   default(none) \
   shared(indices_list) \
-  num_threads(threads_)
+  num_threads(num_threads_)
     // clang-format on
     for (int i = 0; i < particle_num_; i++) {
       this->computeTransformedPointCloudWithNormal(
@@ -100,7 +100,7 @@ KLDAdaptiveParticleFilterOMPTracker<PointInT, StateT>::weight()
 #pragma omp parallel for \
   default(none) \
   shared(indices_list) \
-  num_threads(threads_)
+  num_threads(num_threads_)
     // clang-format on
     for (int i = 0; i < particle_num_; i++) {
       coherence_->compute(

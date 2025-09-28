@@ -1,6 +1,6 @@
 #pragma once
 
-constexpr int nr_threads = 1;
+constexpr int num_threads = 1;
 constexpr float approx_overlap = 0.9f;
 constexpr float delta = 1.f;
 constexpr int nr_samples = 100;

@@ -169,7 +169,7 @@ struct pcl::ImageGrabberBase::ImageGrabberImpl
   double principal_point_x_ = 319.5;
   double principal_point_y_ = 239.5;
 
-  unsigned int num_threads_ = 1;
+  unsigned int num_threads_{1};
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -1015,7 +1015,14 @@ pcl::ImageGrabberBase::getTimestampAtIndex (std::size_t idx, std::uint64_t &time
 
 ////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::ImageGrabberBase::setNumberOfThreads (unsigned int nr_threads)
+pcl::ImageGrabberBase::setNumberOfThreads (unsigned int num_threads)
 {
-  impl_->num_threads_ = nr_threads;
+#ifdef _OPENMP
+  impl_->num_threads_ = num_threads != 0 ? num_threads : omp_get_num_procs();
+#else
+  if (num_threads_ != 1) {
+    PCL_WARN("OpenMP is not available. Setting number of threads to 1\n");
+    num_threads_ = 1;
+  }
+#endif
 }

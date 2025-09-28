@@ -138,19 +138,19 @@ public:
   }
 
   /** \brief Set the number of threads to use.
-   * \param nr_threads the number of hardware threads to use (0 sets the value back to
+   * \param num_threads the number of hardware threads to use (0 sets the value back to
    * automatic)
    */
   void
-  setNumberOfThreads(unsigned int nr_threads)
+  setNumberOfThreads(unsigned int num_threads)
   {
 #ifdef _OPENMP
-    num_threads_ = nr_threads != 0 ? nr_threads : omp_get_num_procs();
+    num_threads_ = num_threads != 0 ? num_threads : omp_get_num_procs();
 #else
-    if (nr_threads != 1) {
-      PCL_WARN("OpenMP is not available. Keeping number of threads unchanged at 1\n");
+    if (num_threads != 1) {
+      PCL_WARN("OpenMP is not available. Setting number of threads to 1\n");
+      num_threads_ = 1;
     }
-    num_threads_ = 1;
 #endif
   }
 
@@ -322,6 +322,8 @@ public:
   clone() const = 0;
 
 protected:
+  using PCLBase<PointSource>::num_threads_;
+
   /** \brief The correspondence estimation method name. */
   std::string corr_name_;
 
@@ -379,8 +381,6 @@ protected:
   /** \brief A flag which, if set, means the tree operating on the source cloud
    * will never be recomputed*/
   bool force_no_recompute_reciprocal_{false};
-
-  unsigned int num_threads_{1};
 };
 
 /** \brief @b CorrespondenceEstimation represents a simple class for

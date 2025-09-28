@@ -480,12 +480,19 @@ namespace pcl
       getMLSResults () const { return (mls_results_); }
 
       /** \brief Set the maximum number of threads to use
-      * \param threads the maximum number of hardware threads to use (0 sets the value to 1)
+      * \param threads the maximum number of hardware threads to use (0 sets the value automatically)
       */
       inline void
-      setNumberOfThreads (unsigned int threads = 1)
+      setNumberOfThreads(unsigned int num_threads = 0)
       {
-        threads_ = threads;
+#ifdef _OPENMP
+        num_threads_ = num_threads != 0 ? num_threads : omp_get_num_procs();
+#else
+        if (num_threads_ != 1) {
+          PCL_WARN("OpenMP is not available. Setting number of threads to 1\n");
+          num_threads_ = 1;
+        }
+#endif
       }
 
       /** \brief Base method for surface reconstruction for all points given in <setInputCloud (), setIndices ()>
@@ -501,6 +508,8 @@ namespace pcl
       getCorrespondingIndices () const { return (corresponding_input_indices_); }
 
     protected:
+      using PCLBase<PointInT>::num_threads_;
+
       /** \brief The point cloud that will hold the estimated normals, if set. */
       NormalCloudPtr normals_{nullptr};
 
@@ -555,10 +564,6 @@ namespace pcl
 
       /** \brief Parameter that specifies the projection method to be used. */
       MLSResult::ProjectionMethod projection_method_{MLSResult::SIMPLE};
-
-      /** \brief The maximum number of threads the scheduler should use. */
-      unsigned int threads_{1};
-
 
       /** \brief A minimalistic implementation of a voxel grid, necessary for the point cloud upsampling
         * \note Used only in the case of VOXEL_GRID_DILATION upsampling

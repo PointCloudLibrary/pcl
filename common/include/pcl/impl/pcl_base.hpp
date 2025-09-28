@@ -167,6 +167,13 @@ pcl::PCLBase<PointT>::initCompute ()
     for (auto i = indices_size; i < indices_->size (); ++i) { (*indices_)[i] = i; }
   }
 
+  // Set the number of threads
+  #ifdef _OPENMP
+    num_threads_ = num_threads_ != 0 ? num_threads_ : omp_get_num_procs();
+  #else
+    num_threads_ = 1;
+  #endif
+
   return (true);
 }
 

@@ -171,7 +171,7 @@ namespace pcl
     /** \brief Set the number of threads, if we wish to use OpenMP for quicker cloud population.
      *  Note that for a standard (< 4 core) machine this is unlikely to yield a drastic speedup.*/
     void
-    setNumberOfThreads (unsigned int nr_threads = 0);
+    setNumberOfThreads (unsigned int num_threads = 0);
 
     protected:
     /** \brief Convenience function to see how many frames this consists of

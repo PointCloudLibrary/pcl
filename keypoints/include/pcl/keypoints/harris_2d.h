@@ -80,7 +80,6 @@ namespace pcl
       , refine_ (false)
       , nonmax_ (true)
       , method_ (method)
-      , threads_ (0)
       , response_ (new pcl::PointCloud<PointOutT> ())
       , window_width_ (window_width)
       , window_height_ (window_height)
@@ -127,12 +126,24 @@ namespace pcl
       void setRefine (bool do_refine);
 
       /** \brief Initialize the scheduler and set the number of threads to use.
-        * \param nr_threads the number of hardware threads to use (0 sets the value back to automatic)
+        * \param num_threads the number of hardware threads to use (0 sets the value back to automatic)
         */
       inline void
-      setNumberOfThreads (unsigned int nr_threads = 0) { threads_ = nr_threads; }
+      setNumberOfThreads(unsigned int num_threads = 0)
+      {
+#ifdef _OPENMP
+        num_threads_ = num_threads != 0 ? num_threads : omp_get_num_procs();
+#else
+        if (num_threads_ != 1) {
+          PCL_WARN("OpenMP is not available. Setting number of threads to 1\n");
+          num_threads_ = 1;
+        }
+#endif
+      }
 
     protected:
+      using PCLBase<PointInT>::num_threads_;
+
       bool 
       initCompute () override;
       void 
@@ -161,8 +172,6 @@ namespace pcl
       bool nonmax_;
       /// cornerness computation method
       ResponseMethod method_;
-      /// number of threads to be used
-      unsigned int threads_;      
 
     private:
       Eigen::MatrixXf derivatives_rows_;
