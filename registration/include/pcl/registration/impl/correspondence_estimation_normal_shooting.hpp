@@ -66,7 +66,8 @@ CorrespondenceEstimationNormalShooting<PointSource, PointTarget, NormalT, Scalar
 template <typename PointSource, typename PointTarget, typename NormalT, typename Scalar>
 void
 CorrespondenceEstimationNormalShooting<PointSource, PointTarget, NormalT, Scalar>::
-    determineCorrespondences(pcl::Correspondences& correspondences, double max_distance)
+    determineCorrespondences(pcl::Correspondences& correspondences,
+                             const double max_distance)
 {
   if (!initCompute())
     return;
@@ -111,7 +112,7 @@ CorrespondenceEstimationNormalShooting<PointSource, PointTarget, NormalT, Scalar
       Eigen::Vector3d C = N.cross(V);
 
       // Check if we have a better correspondence
-      double dist = C.dot(C);
+      const double dist = C.dot(C);
       if (dist < min_dist) {
         min_dist = dist;
         min_index = static_cast<int>(j);
@@ -133,7 +134,7 @@ template <typename PointSource, typename PointTarget, typename NormalT, typename
 void
 CorrespondenceEstimationNormalShooting<PointSource, PointTarget, NormalT, Scalar>::
     determineReciprocalCorrespondences(pcl::Correspondences& correspondences,
-                                       double max_distance)
+                                       const double max_distance)
 {
   if (!initCompute())
     return;
@@ -186,7 +187,7 @@ CorrespondenceEstimationNormalShooting<PointSource, PointTarget, NormalT, Scalar
       Eigen::Vector3d C = N.cross(V);
 
       // Check if we have a better correspondence
-      double dist = C.dot(C);
+      const double dist = C.dot(C);
       if (dist < min_dist) {
         min_dist = dist;
         min_index = static_cast<int>(j);

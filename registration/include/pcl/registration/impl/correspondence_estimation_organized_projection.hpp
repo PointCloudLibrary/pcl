@@ -75,7 +75,8 @@ CorrespondenceEstimationOrganizedProjection<PointSource, PointTarget, Scalar>::
 template <typename PointSource, typename PointTarget, typename Scalar>
 void
 CorrespondenceEstimationOrganizedProjection<PointSource, PointTarget, Scalar>::
-    determineCorrespondences(pcl::Correspondences& correspondences, double max_distance)
+    determineCorrespondences(pcl::Correspondences& correspondences,
+                             const double max_distance)
 {
   if (!initCompute())
     return;
@@ -85,17 +86,17 @@ CorrespondenceEstimationOrganizedProjection<PointSource, PointTarget, Scalar>::
 
   for (const auto& src_idx : (*indices_)) {
     if (isFinite((*input_)[src_idx])) {
-      Eigen::Vector4f p_src(src_to_tgt_transformation_ *
-                            (*input_)[src_idx].getVector4fMap());
-      Eigen::Vector3f p_src3(p_src[0], p_src[1], p_src[2]);
-      Eigen::Vector3f uv(projection_matrix_ * p_src3);
+      const Eigen::Vector4f p_src(src_to_tgt_transformation_ *
+                                  (*input_)[src_idx].getVector4fMap());
+      const Eigen::Vector3f p_src3(p_src[0], p_src[1], p_src[2]);
+      const Eigen::Vector3f uv(projection_matrix_ * p_src3);
 
       /// Check if the point was behind the camera
       if (uv[2] <= 0)
         continue;
 
-      int u = static_cast<int>(uv[0] / uv[2]);
-      int v = static_cast<int>(uv[1] / uv[2]);
+      const int u = static_cast<int>(uv[0] / uv[2]);
+      const int v = static_cast<int>(uv[1] / uv[2]);
 
       if (u >= 0 && u < static_cast<int>(target_->width) && v >= 0 &&
           v < static_cast<int>(target_->height)) {
@@ -106,7 +107,7 @@ CorrespondenceEstimationOrganizedProjection<PointSource, PointTarget, Scalar>::
         if (std::abs(uv[2] - pt_tgt.z) > depth_threshold_)
           continue;
 
-        double dist = (p_src3 - pt_tgt.getVector3fMap()).norm();
+        const double dist = (p_src3 - pt_tgt.getVector3fMap()).norm();
         if (dist < max_distance)
           correspondences[c_index++] = pcl::Correspondence(
               src_idx, v * target_->width + u, static_cast<float>(dist));
@@ -121,7 +122,7 @@ template <typename PointSource, typename PointTarget, typename Scalar>
 void
 CorrespondenceEstimationOrganizedProjection<PointSource, PointTarget, Scalar>::
     determineReciprocalCorrespondences(pcl::Correspondences& correspondences,
-                                       double max_distance)
+                                       const double max_distance)
 {
   // Call the normal determineCorrespondences (...), as doing it both ways will not
   // improve the results
