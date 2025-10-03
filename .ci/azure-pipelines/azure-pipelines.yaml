@@ -28,7 +28,7 @@ resources:
       image: pointcloudlibrary/env:24.04
 
 variables:
-  isMain: $[ne(variables['Build.SourceBranch'], 'refs/heads/master')]
+  isMain: $[eq(variables['Build.SourceBranch'], 'refs/heads/master')]
 
 stages:
   - stage: formatting
