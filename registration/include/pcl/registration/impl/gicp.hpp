@@ -72,7 +72,7 @@ template <typename PointT>
 void
 GeneralizedIterativeClosestPoint<PointSource, PointTarget, Scalar>::computeCovariances(
     typename pcl::PointCloud<PointT>::ConstPtr cloud,
-    const typename pcl::search::KdTree<PointT>::Ptr kdtree,
+    const typename pcl::search::Search<PointT>::Ptr kdtree,
     MatricesVector& cloud_covariances)
 {
   if (k_correspondences_ > static_cast<int>(cloud->size())) {

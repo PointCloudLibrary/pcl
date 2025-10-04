@@ -28,7 +28,20 @@ namespace pcl {
       * \param[in] purpose Optional, can be used to give more information about what this search method will be used for, to achieve optimal performance
       */
     template<typename PointT>
-    pcl::search::Search<PointT> * autoSelectMethod(const typename pcl::PointCloud<PointT>::ConstPtr& cloud, bool sorted_results, Purpose purpose = Purpose::undefined);
+    pcl::search::Search<PointT> * autoSelectMethod(const typename pcl::PointCloud<PointT>::ConstPtr& cloud, bool sorted_results, Purpose purpose = Purpose::undefined)
+    {
+      return autoSelectMethod<PointT>(cloud, pcl::IndicesConstPtr(), sorted_results, purpose);
+    }
+
+    /**
+      * Automatically select the fastest search method for the given point cloud. Make sure to delete the returned object after use!
+      * \param[in] cloud Point cloud, this function will pass it to the search method via setInputCloud
+      * \param[in] indices Will be passed to the search method via setInputCloud, together with the point cloud
+      * \param[in] sorted_results Whether the search method should always return results sorted by distance (may be slower than unsorted)
+      * \param[in] purpose Optional, can be used to give more information about what this search method will be used for, to achieve optimal performance
+      */
+    template<typename PointT>
+    pcl::search::Search<PointT> * autoSelectMethod(const typename pcl::PointCloud<PointT>::ConstPtr& cloud, const pcl::IndicesConstPtr& indices, bool sorted_results, Purpose purpose = Purpose::undefined);
   } // namespace search
 } // namespace pcl
 

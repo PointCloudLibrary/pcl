@@ -38,8 +38,7 @@
 #define PCL_SEGMENTATION_IMPL_CONDITIONAL_EUCLIDEAN_CLUSTERING_HPP_
 
 #include <pcl/segmentation/conditional_euclidean_clustering.h>
-#include <pcl/search/organized.h> // for OrganizedNeighbor
-#include <pcl/search/kdtree.h> // for KdTree
+#include <pcl/search/auto.h>
 
 template<typename PointT> void
 pcl::ConditionalEuclideanClustering<PointT>::segment (pcl::IndicesClusters &clusters)
@@ -59,12 +58,12 @@ pcl::ConditionalEuclideanClustering<PointT>::segment (pcl::IndicesClusters &clus
   // Initialize the search class
   if (!searcher_)
   {
-    if (input_->isOrganized ())
-      searcher_.reset (new pcl::search::OrganizedNeighbor<PointT> (false)); // not requiring sorted results is much faster
-    else
-      searcher_.reset (new pcl::search::KdTree<PointT> (false)); // not requiring sorted results is much faster
+    searcher_.reset (pcl::search::autoSelectMethod<PointT>(input_, indices_, false, pcl::search::Purpose::radius_search)); // not requiring sorted results is much faster
   }
-  searcher_->setInputCloud (input_, indices_);
+  else
+  {
+    searcher_->setInputCloud (input_, indices_);
+  }
   // If searcher_ gives sorted results, we can skip the first one because it is the query point itself
   const int nn_start_idx = searcher_->getSortedResults () ? 1 : 0;
 

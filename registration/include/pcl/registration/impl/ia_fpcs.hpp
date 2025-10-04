@@ -45,6 +45,7 @@
 #include <pcl/registration/ia_fpcs.h>
 #include <pcl/registration/transformation_estimation_3point.h>
 #include <pcl/sample_consensus/sac_model_plane.h>
+#include <pcl/search/auto.h>
 
 #include <limits>
 
@@ -58,8 +59,8 @@ pcl::getMeanPointDensity(const typename pcl::PointCloud<PointT>::ConstPtr& cloud
   const float max_dist_sqr = max_dist * max_dist;
   const std::size_t s = cloud->size();
 
-  pcl::search::KdTree<PointT> tree;
-  tree.setInputCloud(cloud);
+  typename pcl::search::Search<PointT>::Ptr tree(pcl::search::autoSelectMethod<PointT>(
+      cloud, true, pcl::search::Purpose::many_knn_search));
 
   float mean_dist = 0.f;
   int num = 0;
@@ -71,7 +72,7 @@ pcl::getMeanPointDensity(const typename pcl::PointCloud<PointT>::ConstPtr& cloud
     firstprivate(ids, dists_sqr) reduction(+ : mean_dist, num)                         \
     firstprivate(s, max_dist_sqr) num_threads(nr_threads)
   for (int i = 0; i < 1000; i++) {
-    tree.nearestKSearch((*cloud)[rand() % s], 2, ids, dists_sqr);
+    tree->nearestKSearch((*cloud)[rand() % s], 2, ids, dists_sqr);
     if (dists_sqr[1] < max_dist_sqr) {
       mean_dist += std::sqrt(dists_sqr[1]);
       num++;
@@ -92,8 +93,8 @@ pcl::getMeanPointDensity(const typename pcl::PointCloud<PointT>::ConstPtr& cloud
   const float max_dist_sqr = max_dist * max_dist;
   const std::size_t s = indices.size();
 
-  pcl::search::KdTree<PointT> tree;
-  tree.setInputCloud(cloud);
+  typename pcl::search::Search<PointT>::Ptr tree(pcl::search::autoSelectMethod<PointT>(
+      cloud, true, pcl::search::Purpose::many_knn_search));
 
   float mean_dist = 0.f;
   int num = 0;
@@ -109,7 +110,7 @@ pcl::getMeanPointDensity(const typename pcl::PointCloud<PointT>::ConstPtr& cloud
     firstprivate(ids, dists_sqr) reduction(+ : mean_dist, num) num_threads(nr_threads)
 #endif
   for (int i = 0; i < 1000; i++) {
-    tree.nearestKSearch((*cloud)[indices[rand() % s]], 2, ids, dists_sqr);
+    tree->nearestKSearch((*cloud)[indices[rand() % s]], 2, ids, dists_sqr);
     if (dists_sqr[1] < max_dist_sqr) {
       mean_dist += std::sqrt(dists_sqr[1]);
       num++;

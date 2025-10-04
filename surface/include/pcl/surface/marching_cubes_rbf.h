@@ -72,9 +72,6 @@ namespace pcl
 
       using PointCloudPtr = typename pcl::PointCloud<PointNT>::Ptr;
 
-      using KdTree = pcl::KdTree<PointNT>;
-      using KdTreePtr = typename KdTree::Ptr;
-
 
       /** \brief Constructor. */
       MarchingCubesRBF (const float off_surface_epsilon = 0.1f,

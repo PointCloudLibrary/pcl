@@ -197,7 +197,7 @@ pcl::filters::Convolution3D<PointInT, PointOutT, KernelT>::initCompute ()
   // Initialize the spatial locator
   if (!tree_)
   {
-    tree_.reset (pcl::search::autoSelectMethod<PointT>(surface_, false, pcl::search::Purpose::radius_search));
+    tree_.reset (pcl::search::autoSelectMethod<PointInT>(surface_, false, pcl::search::Purpose::radius_search));
   }
   else
   {

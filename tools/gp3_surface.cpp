@@ -97,7 +97,6 @@ compute (const PointCloud<PointNormal>::Ptr &input, pcl::PolygonMesh &output,
   cloud->is_dense = true;
 
   GreedyProjectionTriangulation<PointNormal> gpt;
-  gpt.setSearchMethod (pcl::search::KdTree<pcl::PointNormal>::Ptr (new pcl::search::KdTree<pcl::PointNormal>));
   gpt.setInputCloud (cloud);
   gpt.setSearchRadius (radius);
   gpt.setMu (mu);

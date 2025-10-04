@@ -18,17 +18,17 @@
 #include <pcl/search/organized.h>
 
 template<typename PointT>
-pcl::search::Search<PointT> * pcl::search::autoSelectMethod(const typename pcl::PointCloud<PointT>::ConstPtr& cloud, bool sorted_results, pcl::search::Purpose purpose) {
+pcl::search::Search<PointT> * pcl::search::autoSelectMethod(const typename pcl::PointCloud<PointT>::ConstPtr& cloud, const pcl::IndicesConstPtr& indices, bool sorted_results, pcl::search::Purpose purpose) {
   pcl::search::Search<PointT> * searcher = nullptr;
   if (cloud->isOrganized ()) {
     searcher = new pcl::search::OrganizedNeighbor<PointT> (sorted_results);
-    if(searcher->setInputCloud (cloud)) { // may return false if OrganizedNeighbor cannot work with the cloud, then use another search method instead
+    if(searcher->setInputCloud (cloud, indices)) { // may return false if OrganizedNeighbor cannot work with the cloud, then use another search method instead
       return searcher;
     }
   }
 #if PCL_HAS_NANOFLANN
   searcher = new pcl::search::KdTreeNanoflann<PointT> (sorted_results, (purpose == pcl::search::Purpose::one_knn_search ? 10 : 20));
-  if(searcher->setInputCloud (cloud)) {
+  if(searcher->setInputCloud (cloud, indices)) {
     return searcher;
   }
 #else
@@ -36,16 +36,16 @@ pcl::search::Search<PointT> * pcl::search::autoSelectMethod(const typename pcl::
 #endif
 #if PCL_HAS_FLANN
   searcher = new pcl::search::KdTree<PointT> (sorted_results);
-  if(searcher->setInputCloud (cloud)) {
+  if(searcher->setInputCloud (cloud, indices)) {
     return searcher;
   }
 #endif
   // If nothing else works, use brute force method
   searcher = new pcl::search::BruteForce<PointT> (sorted_results);
-  searcher->setInputCloud (cloud);
+  searcher->setInputCloud (cloud, indices);
   return searcher;
 }
 
-#define PCL_INSTANTIATE_AutoSelectMethod(T) template PCL_EXPORTS pcl::search::Search<T> * pcl::search::autoSelectMethod<T>(const typename pcl::PointCloud<T>::ConstPtr& cloud, bool sorted_results, pcl::search::Purpose purpose);
+#define PCL_INSTANTIATE_AutoSelectMethod(T) template PCL_EXPORTS pcl::search::Search<T> * pcl::search::autoSelectMethod<T>(const typename pcl::PointCloud<T>::ConstPtr& cloud, const pcl::IndicesConstPtr& indices, bool sorted_results, pcl::search::Purpose purpose);
 
 #endif  //#ifndef PCL_SEARCH_AUTO_IMPL_HPP_
