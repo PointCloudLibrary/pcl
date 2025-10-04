@@ -41,8 +41,7 @@
 
 #include <pcl/segmentation/seeded_hue_segmentation.h>
 #include <pcl/console/print.h> // for PCL_ERROR
-#include <pcl/search/organized.h> // for OrganizedNeighbor
-#include <pcl/search/kdtree.h> // for KdTree
+#include <pcl/search/auto.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
@@ -220,14 +219,12 @@ pcl::SeededHueSegmentation::segment (PointIndices &indices_in, PointIndices &ind
   // Initialize the spatial locator
   if (!tree_)
   {
-    if (input_->isOrganized ())
-      tree_.reset (new pcl::search::OrganizedNeighbor<PointXYZRGB> ());
-    else
-      tree_.reset (new pcl::search::KdTree<PointXYZRGB> (false));
+    tree_.reset (pcl::search::autoSelectMethod<pcl::PointXYZRGB> (input_, false, pcl::search::Purpose::radius_search));
   }
+  else
+    // Send the input dataset to the spatial locator
+    tree_->setInputCloud (input_);
 
-  // Send the input dataset to the spatial locator
-  tree_->setInputCloud (input_);
   seededHueSegmentation (*input_, tree_, static_cast<float> (cluster_tolerance_), indices_in, indices_out, delta_hue_);
   deinitCompute ();
 }

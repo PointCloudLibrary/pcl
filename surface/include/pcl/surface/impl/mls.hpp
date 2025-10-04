@@ -44,8 +44,7 @@
 #include <pcl/common/common.h> // for getMinMax3D
 #include <pcl/common/copy_point.h>
 #include <pcl/common/eigen.h>
-#include <pcl/search/kdtree.h> // for KdTree
-#include <pcl/search/organized.h> // for OrganizedNeighbor
+#include <pcl/search/auto.h>
 #include <pcl/surface/mls.h>
 #include <pcl/type_traits.h>
 
@@ -100,16 +99,14 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::process (PointCloudOut &output)
   // Initialize the spatial locator
   if (!tree_)
   {
-    KdTreePtr tree;
-    if (input_->isOrganized ())
-      tree.reset (new pcl::search::OrganizedNeighbor<PointInT> ());
-    else
-      tree.reset (new pcl::search::KdTree<PointInT> (false));
+    KdTreePtr tree (pcl::search::autoSelectMethod<PointInT> (input_, false));
     setSearchMethod (tree);
   }
-
-  // Send the surface dataset to the spatial locator
-  tree_->setInputCloud (input_);
+  else
+  {
+    // Send the surface dataset to the spatial locator
+    tree_->setInputCloud (input_);
+  }
 
   switch (upsample_method_)
   {
