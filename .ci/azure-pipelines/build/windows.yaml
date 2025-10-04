@@ -11,12 +11,11 @@ steps:
         -DCMAKE_TOOLCHAIN_FILE="%VCPKG_ROOT%\scripts\buildsystems\vcpkg.cmake" ^
         -DVCPKG_APPLOCAL_DEPS=ON ^
         -DPCL_BUILD_WITH_BOOST_DYNAMIC_LINKING_WIN32=ON ^
-        -DPCL_BUILD_WITH_FLANN_DYNAMIC_LINKING_WIN32=ON ^
-        -DPCL_BUILD_WITH_QHULL_DYNAMIC_LINKING_WIN32=ON ^
-        -DBUILD_global_tests=ON ^
-        -DBUILD_benchmarks=ON ^
-        -DBUILD_tools=OFF ^
+        -DBUILD_simulation=ON ^
         -DBUILD_surface_on_nurbs=ON ^
+        -DBUILD_global_tests=ON ^
+        -DBUILD_benchmarks=$(isMain) ^
+        -DBUILD_tools=$(isMain) ^
         -DPCL_DISABLE_VISUALIZATION_TESTS=ON
     displayName: 'CMake Configuration'
   - script: |

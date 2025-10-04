@@ -27,6 +27,9 @@ resources:
     - container: env2404
       image: pointcloudlibrary/env:24.04
 
+variables:
+  isMain: $[eq(variables['Build.SourceBranch'], 'refs/heads/master')]
+
 stages:
   - stage: formatting
     displayName: Formatting
