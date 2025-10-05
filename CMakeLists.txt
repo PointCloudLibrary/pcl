@@ -95,6 +95,11 @@ include("${PCL_SOURCE_DIR}/cmake/pcl_verbosity.cmake")
 include("${PCL_SOURCE_DIR}/cmake/pcl_targets.cmake")
 include("${PCL_SOURCE_DIR}/cmake/pcl_options.cmake")
 include("${PCL_SOURCE_DIR}/cmake/clang-format.cmake")
+include("${PCL_SOURCE_DIR}/cmake/pcl_utils.cmake")
+DISSECT_VERSION()
+GET_OS_INFO()
+SET_INSTALL_DIRS()
+
 
 if(${PCL_ENABLE_CCACHE})
   include (UseCompilerCache)
@@ -246,11 +251,6 @@ if(CMAKE_COMPILER_IS_CLANG)
   endif()
   set(CLANG_LIBRARIES "stdc++")
 endif()
-
-include("${PCL_SOURCE_DIR}/cmake/pcl_utils.cmake")
-DISSECT_VERSION()
-GET_OS_INFO()
-SET_INSTALL_DIRS()
 
 if(WIN32)
   set(PCL_RESOURCES_DIR "${PCL_SOURCE_DIR}/resources")
@@ -487,7 +487,7 @@ unset(CMAKE_REQUIRED_LIBRARIES)
 
 ### --[ Set variables for pcl_config.h
 if (BUILD_visualization)
-  set(PCL_VISUALIZATION_AVAILABLE TRUE)
+  set(visualization_AVAILABLE TRUE)
 endif()
 
 ### ---[ Create the config.h file
@@ -505,6 +505,13 @@ sort_relative(PCL_MODULES_NAMES_UNSORTED PCL_MODULES_NAMES PCL_MODULES_DIRS)
 foreach(subdir ${PCL_MODULES_DIRS})
   add_subdirectory("${PCL_SOURCE_DIR}/${subdir}")
 endforeach()
+
+
+install(
+  EXPORT PCLTargets
+  NAMESPACE PCL::
+  DESTINATION cmake
+)  
 
 ### ---[ Documentation
 add_subdirectory(doc)

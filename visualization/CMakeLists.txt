@@ -3,7 +3,7 @@ set(SUBSYS_DESC "Point cloud visualization library")
 set(SUBSYS_DEPS common io kdtree geometry search octree)
 
 PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ON)
-PCL_SUBSYS_DEPEND(build NAME ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} EXT_DEPS vtk)
+PCL_SUBSYS_DEPEND(build NAME ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} EXT_DEPS VTK)
 
 if(ANDROID)
   message("VTK was found, but cannot be compiled for Android. Please use VES instead.")

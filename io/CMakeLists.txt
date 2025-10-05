@@ -1,7 +1,7 @@
 set(SUBSYS_NAME io)
 set(SUBSYS_DESC "Point cloud IO library")
 set(SUBSYS_DEPS common io_ply octree)
-set(SUBSYS_EXT_DEPS boost eigen3)
+set(SUBSYS_EXT_DEPS Boost Eigen3)
 
 PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ON)
 if(WIN32)
@@ -322,7 +322,7 @@ add_definitions(${VTK_DEFINES})
 
 PCL_ADD_LIBRARY(${LIB_NAME} COMPONENT ${SUBSYS_NAME} SOURCES ${srcs} ${incs} ${compression_incs} ${impl_incs} ${OPENNI_INCLUDES} ${OPENNI2_INCLUDES})
 
-target_link_libraries("${LIB_NAME}" Boost::boost Boost::iostreams pcl_common pcl_io_ply)
+target_link_libraries("${LIB_NAME}" Boost::boost Boost::iostreams pcl_common pcl_octree pcl_io_ply)
 
 if(TARGET Boost::filesystem)
   target_link_libraries("${LIB_NAME}" Boost::filesystem)

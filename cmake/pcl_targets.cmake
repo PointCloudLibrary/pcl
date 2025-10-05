@@ -223,33 +223,25 @@ function(PCL_ADD_LIBRARY _name)
     if(MSVC)
       target_link_libraries(${_name} delayimp.lib)  # because delay load is enabled for openmp.dll
     endif()
-  endif()
-  
-  PCL_ADD_VERSION_INFO(${_name})
-    
-  if(ARGS_SOURCES OR CMAKE_VERSION VERSION_GREATER_EQUAL 3.19)
+
     set_target_properties(${_name} PROPERTIES
       VERSION ${PCL_VERSION}
       SOVERSION ${PCL_VERSION_MAJOR}.${PCL_VERSION_MINOR}
       DEFINE_SYMBOL "PCLAPI_EXPORTS")
 
-      set_target_properties(${_name} PROPERTIES FOLDER "Libraries")
-  endif()
-
     set_target_properties(${_name} PROPERTIES FOLDER "Libraries")
   endif()
-  install(TARGETS ${_name}
-          EXPORT ${_name}Targets
-          RUNTIME DESTINATION ${BIN_INSTALL_DIR} COMPONENT pcl_${ARGS_COMPONENT}
-          LIBRARY DESTINATION ${LIB_INSTALL_DIR} COMPONENT pcl_${ARGS_COMPONENT}
-          ARCHIVE DESTINATION ${LIB_INSTALL_DIR} COMPONENT pcl_${ARGS_COMPONENT})
+  
+  PCL_ADD_VERSION_INFO(${_name})
 
-  install(
-    EXPORT ${_name}Targets
-    NAMESPACE pcl::
-    FILE ${_name}.cmake
-    DESTINATION ${PCLCONFIG_INSTALL_DIR}
-  )
+  add_library(PCL::${_name} ALIAS ${_name})
+
+  install(TARGETS ${_name}
+        EXPORT PCLTargets
+        RUNTIME DESTINATION ${BIN_INSTALL_DIR} COMPONENT pcl_${ARGS_COMPONENT}
+        LIBRARY DESTINATION ${LIB_INSTALL_DIR} COMPONENT pcl_${ARGS_COMPONENT}
+        ARCHIVE DESTINATION ${LIB_INSTALL_DIR} COMPONENT pcl_${ARGS_COMPONENT})
+
 
   # Copy PDB if available
   if(MSVC AND ${PCL_LIB_TYPE} EQUAL "SHARED")
@@ -277,6 +269,7 @@ function(PCL_CUDA_ADD_LIBRARY _name)
   endif()
 
   REMOVE_VTK_DEFINITIONS()
+
   if(NOT ARGS_SOURCES)
     add_library(${_name} INTERFACE)
     
@@ -284,44 +277,43 @@ function(PCL_CUDA_ADD_LIBRARY _name)
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         $<INSTALL_INTERFACE:${INCLUDE_INSTALL_ROOT}> 
     )
-
   else()
     add_library(${_name} ${PCL_LIB_TYPE} ${ARGS_SOURCES})
-  
-    PCL_ADD_VERSION_INFO(${_name})
-  
+
     target_compile_options(${_name} PRIVATE $<$<COMPILE_LANGUAGE:CUDA>: ${GEN_CODE} --expt-relaxed-constexpr>)
   
     target_include_directories(${_name} PUBLIC
       $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
       $<INSTALL_INTERFACE:${INCLUDE_INSTALL_ROOT}> 
     )
-  
+
     target_include_directories(${_name} PRIVATE ${CUDA_TOOLKIT_INCLUDE})
   
     if(MSVC)
       target_link_libraries(${_name} delayimp.lib)  # because delay load is enabled for openmp.dll
     endif()
-  
+
     set_target_properties(${_name} PROPERTIES
       VERSION ${PCL_VERSION}
       SOVERSION ${PCL_VERSION_MAJOR}.${PCL_VERSION_MINOR}
       DEFINE_SYMBOL "PCLAPI_EXPORTS")
     set_target_properties(${_name} PROPERTIES FOLDER "Libraries")
   endif()
+    
+  PCL_ADD_VERSION_INFO(${_name})
+  
+  add_library(PCL::${_name} ALIAS ${_name})
 
   install(TARGETS ${_name}
-          EXPORT ${_name}Targets
-          RUNTIME DESTINATION ${BIN_INSTALL_DIR} COMPONENT pcl_${ARGS_COMPONENT}
-          LIBRARY DESTINATION ${LIB_INSTALL_DIR} COMPONENT pcl_${ARGS_COMPONENT}
-          ARCHIVE DESTINATION ${LIB_INSTALL_DIR} COMPONENT pcl_${ARGS_COMPONENT})
+    EXPORT PCLTargets
+    RUNTIME DESTINATION ${BIN_INSTALL_DIR} COMPONENT pcl_${ARGS_COMPONENT}
+    LIBRARY DESTINATION ${LIB_INSTALL_DIR} COMPONENT pcl_${ARGS_COMPONENT}
+    ARCHIVE DESTINATION ${LIB_INSTALL_DIR} COMPONENT pcl_${ARGS_COMPONENT})
 
-  install(
-    EXPORT ${_name}Targets
-    NAMESPACE pcl::
-    FILE ${_name}.cmake
-    DESTINATION ${LIB_INSTALL_DIR}/cmake
-  )        
+  # Copy PDB if available
+  if(MSVC AND ${PCL_LIB_TYPE} EQUAL "SHARED")
+    install(FILES $<TARGET_PDB_FILE:${_name}> DESTINATION ${BIN_INSTALL_DIR} OPTIONAL)
+  endif()
 endfunction()
 
 ###############################################################################
