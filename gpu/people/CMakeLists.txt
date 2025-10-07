@@ -55,8 +55,6 @@ target_include_directories(
     PRIVATE
       ${CMAKE_CURRENT_SOURCE_DIR}/src 
       ${CMAKE_CURRENT_SOURCE_DIR}/src/cuda
-    PUBLIC
-      ${CMAKE_CURRENT_SOURCE_DIR}/src/cuda/nvidia
 )
 
 if(UNIX OR APPLE)
