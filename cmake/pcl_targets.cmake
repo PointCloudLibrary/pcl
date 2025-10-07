@@ -200,6 +200,8 @@ function(PCL_ADD_LIBRARY _name)
     add_library(${_name} ${PCL_LIB_TYPE} ${ARGS_SOURCES})
    
     target_compile_features(${_name} PUBLIC ${PCL_CXX_COMPILE_FEATURES})
+    target_compile_definitions(${_name} PUBLIC ${SSE_DEFINITIONS})
+    target_compile_options(${_name} PUBLIC $<IF:$<COMPILE_LANGUAGE:CUDA>,-Xcompiler="${SSE_FLAGS} ${AVX_FLAGS}",${SSE_FLAGS} ${AVX_FLAGS}>)
     
     target_include_directories(${_name} PUBLIC
       $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
