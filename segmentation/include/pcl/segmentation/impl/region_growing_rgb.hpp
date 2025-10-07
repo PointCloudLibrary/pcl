@@ -475,14 +475,14 @@ pcl::RegionGrowingRGB<PointT, NormalT>::applyRegionMergingAlgorithm ()
       num_seg_in_homogeneous_region[i_reg] = 0;
       final_segment_number -= 1;
 
-      for (auto& nghbr : region_neighbours[reg_index])
-      {
-        if ( segment_labels_[ nghbr.second ] == reg_index )
-        {
-          nghbr.first = std::numeric_limits<float>::max ();
-          nghbr.second = 0;
-        }
-      }
+      const auto filtered_region_neighbours_reg_index_end = std::remove_if (
+        region_neighbours[reg_index].begin (),
+        region_neighbours[reg_index].end (),
+        [this, reg_index] (const auto& nghbr) { return segment_labels_[ nghbr.second ] == reg_index; });
+      const auto filtered_region_neighbours_reg_index_size = std::distance (
+        region_neighbours[reg_index].begin (), filtered_region_neighbours_reg_index_end);
+      region_neighbours[reg_index].resize (filtered_region_neighbours_reg_index_size);
+
       for (const auto& nghbr : region_neighbours[i_reg])
       {
         if ( segment_labels_[ nghbr.second ] != reg_index )
@@ -491,7 +491,11 @@ pcl::RegionGrowingRGB<PointT, NormalT>::applyRegionMergingAlgorithm ()
         }
       }
       region_neighbours[i_reg].clear ();
-      std::sort (region_neighbours[reg_index].begin (), region_neighbours[reg_index].end (), comparePair);
+      std::inplace_merge (
+        region_neighbours[reg_index].begin (),
+        std::next (region_neighbours[reg_index].begin (), filtered_region_neighbours_reg_index_size),
+        region_neighbours[reg_index].end (),
+        comparePair);
     }
   }
 
