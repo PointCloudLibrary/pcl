@@ -69,9 +69,6 @@ namespace pcl
 
       using PointCloudPtr = typename pcl::PointCloud<PointNT>::Ptr;
 
-      using KdTree = pcl::KdTree<PointNT>;
-      using KdTreePtr = typename KdTree::Ptr;
-
       /** \brief Constructor that sets all the parameters to working default values. */
       Poisson ();
 

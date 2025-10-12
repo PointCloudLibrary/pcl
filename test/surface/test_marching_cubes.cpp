@@ -43,6 +43,7 @@
 #include <pcl/io/pcd_io.h>
 #include <pcl/io/vtk_io.h>
 #include <pcl/features/normal_3d.h>
+#include <pcl/search/kdtree.h>
 #include <pcl/surface/mls.h>
 #include <pcl/surface/gp3.h>
 #include <pcl/surface/marching_cubes_hoppe.h>

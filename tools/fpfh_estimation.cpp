@@ -43,7 +43,6 @@
 #include <pcl/console/print.h>
 #include <pcl/console/parse.h>
 #include <pcl/console/time.h>
-#include <pcl/search/kdtree.h> // for KdTree
 
 using namespace pcl;
 using namespace pcl::io;
@@ -104,7 +103,6 @@ compute (const pcl::PCLPointCloud2::ConstPtr &input, pcl::PCLPointCloud2 &output
   FPFHEstimation<PointNormal, PointNormal, FPFHSignature33> ne;
   ne.setInputCloud (xyznormals);
   ne.setInputNormals (xyznormals);
-  ne.setSearchMethod (search::KdTree<PointNormal>::Ptr (new search::KdTree<PointNormal>));
   ne.setKSearch (k);
   ne.setRadiusSearch (radius);
   

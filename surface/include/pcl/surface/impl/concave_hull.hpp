@@ -566,8 +566,7 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
   if (keep_information_)
   {
     // build a tree with the original points
-    pcl::KdTreeFLANN<PointInT> tree (true);
-    tree.setInputCloud (input_, indices_);
+    typename pcl::search::Search<PointInT>::Ptr tree(pcl::search::autoSelectMethod<PointInT>(input_, indices_, false, pcl::search::Purpose::one_knn_search));
 
     pcl::Indices neighbor;
     std::vector<float> distances;
@@ -581,7 +580,7 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
 
     for (const auto& point: alpha_shape)
     {
-      tree.nearestKSearch (point, 1, neighbor, distances);
+      tree->nearestKSearch (point, 1, neighbor, distances);
       hull_indices_.indices.push_back (neighbor[0]);
     }
 

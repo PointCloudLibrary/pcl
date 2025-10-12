@@ -45,6 +45,7 @@
 #include <pcl/features/normal_3d.h>
 #include <pcl/surface/concave_hull.h>
 #include <pcl/sample_consensus/model_types.h> // for SACMODEL_PLANE
+#include <pcl/search/kdtree.h>
 #include <pcl/filters/project_inliers.h>
 
 
