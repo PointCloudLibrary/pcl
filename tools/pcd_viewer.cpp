@@ -52,7 +52,7 @@
 #include <pcl/console/print.h>
 #include <pcl/console/parse.h>
 #include <pcl/console/time.h>
-#include <pcl/search/kdtree.h>
+#include <pcl/search/auto.h> // for autoSelectMethod
 #include <vtkPolyDataReader.h>
 
 using namespace std::chrono_literals;
@@ -150,7 +150,7 @@ printHelp (int, char **argv)
 pcl::visualization::PCLPlotter ph_global;
 pcl::visualization::PCLVisualizer::Ptr p;
 std::vector<pcl::visualization::ImageViewer::Ptr > imgs;
-pcl::search::KdTree<pcl::PointXYZ> search;
+pcl::search::Search<pcl::PointXYZ>::Ptr search;
 pcl::PCLPointCloud2::Ptr cloud;
 pcl::PointCloud<pcl::PointXYZ>::Ptr xyzcloud;
 
@@ -178,7 +178,7 @@ pp_callback (const pcl::visualization::PointPickingEvent& event, void* cookie)
     cloud = *reinterpret_cast<pcl::PCLPointCloud2::Ptr*> (cookie);
     xyzcloud.reset (new pcl::PointCloud<pcl::PointXYZ>);
     pcl::fromPCLPointCloud2 (*cloud, *xyzcloud);
-    search.setInputCloud (xyzcloud);
+    search.reset(pcl::search::autoSelectMethod<pcl::PointXYZ>(xyzcloud, false, pcl::search::Purpose::one_knn_search));
   }
   // Return the correct index in the cloud instead of the index on the screen
   pcl::Indices indices (1);
@@ -187,7 +187,7 @@ pp_callback (const pcl::visualization::PointPickingEvent& event, void* cookie)
   // Because VTK/OpenGL stores data without NaN, we lose the 1-1 correspondence, so we must search for the real point
   pcl::PointXYZ picked_pt;
   event.getPoint (picked_pt.x, picked_pt.y, picked_pt.z);
-  search.nearestKSearch (picked_pt, 1, indices, distances);
+  search->nearestKSearch (picked_pt, 1, indices, distances);
 
   PCL_INFO ("Point index picked: %d (real: %d) - [%f, %f, %f]\n", idx, indices[0], picked_pt.x, picked_pt.y, picked_pt.z);
 

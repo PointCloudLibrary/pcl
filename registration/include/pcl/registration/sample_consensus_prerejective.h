@@ -109,7 +109,7 @@ public:
   using ConstPtr =
       shared_ptr<const SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>>;
 
-  using FeatureKdTreePtr = typename KdTreeFLANN<FeatureT>::Ptr;
+  using FeatureKdTreePtr = typename pcl::search::Search<FeatureT>::Ptr;
 
   using CorrespondenceRejectorPoly =
       pcl::registration::CorrespondenceRejectorPoly<PointSource, PointTarget>;
@@ -121,7 +121,6 @@ public:
   SampleConsensusPrerejective()
   : input_features_()
   , target_features_()
-  , feature_tree_(new pcl::KdTreeFLANN<FeatureT>)
   , correspondence_rejector_poly_(new CorrespondenceRejectorPoly)
   {
     reg_name_ = "SampleConsensusPrerejective";

@@ -173,6 +173,7 @@ namespace pcl
       template<> struct descriptorSize<GASDSignature7992> { static constexpr const int value = 7992; };
       template<> struct descriptorSize<GFPFHSignature16> { static constexpr const int value = 16; };
       template<> struct descriptorSize<Narf36> { static constexpr const int value = 36; };
+      template<> struct descriptorSize<NormalBasedSignature12> { static constexpr const int value = 12; };
       template<int N> struct descriptorSize<Histogram<N>> { static constexpr const int value = N; };
 
 

@@ -41,6 +41,8 @@
 #ifndef PCL_REGISTRATION_SAMPLE_CONSENSUS_PREREJECTIVE_HPP_
 #define PCL_REGISTRATION_SAMPLE_CONSENSUS_PREREJECTIVE_HPP_
 
+#include <pcl/search/auto.h> // for autoSelectMethod
+
 namespace pcl {
 
 template <typename PointSource, typename PointTarget, typename FeatureT>
@@ -69,7 +71,8 @@ SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::setTargetFeatur
     return;
   }
   target_features_ = features;
-  feature_tree_->setInputCloud(target_features_);
+  feature_tree_.reset(pcl::search::autoSelectMethod<FeatureT>(
+      target_features_, false, pcl::search::Purpose::many_knn_search));
 }
 
 template <typename PointSource, typename PointTarget, typename FeatureT>
