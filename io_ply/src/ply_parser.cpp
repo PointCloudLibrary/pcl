@@ -38,7 +38,7 @@
  *
  */
 
-#include <pcl/io/ply/ply_parser.h>
+#include <pcl/io_ply/ply_parser.h>
 
 #include <algorithm> // for find_if
 #include <fstream> // for ifstream

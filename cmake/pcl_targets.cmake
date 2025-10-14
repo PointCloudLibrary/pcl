@@ -198,8 +198,21 @@ function(PCL_ADD_LIBRARY _name)
     )
   else()
     add_library(${_name} ${PCL_LIB_TYPE} ${ARGS_SOURCES})
-    PCL_ADD_VERSION_INFO(${_name})
-    target_compile_features(${_name} PUBLIC ${PCL_CXX_COMPILE_FEATURES})
+
+    target_compile_options(${_name}
+      PRIVATE ${PCL_PRIVATE_COMPILER_OPTIONS}
+      PUBLIC $<IF:$<COMPILE_LANGUAGE:CUDA>,-Xcompiler=${PCL_PUBLIC_COMPILER_OPTIONS},${PCL_PUBLIC_COMPILER_OPTIONS}>)
+       
+    target_compile_definitions(${_name}
+      PRIVATE ${PCL_PRIVATE_COMPILER_DEFINITIONS}
+      PUBLIC ${PCL_PUBLIC_COMPILER_DEFINITIONS})
+  
+    target_compile_features(${_name}
+      PRIVATE ${PCL_PRIVATE_COMPILER_FEATURES}
+      PUBLIC ${PCL_PUBLIC_COMPILER_FEATURES})
+
+    target_link_options(${_name}
+      PRIVATE ${PCL_PRIVATE_LINK_OPTIONS})
 
     target_include_directories(${_name} PUBLIC
       $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
@@ -207,6 +220,7 @@ function(PCL_ADD_LIBRARY _name)
     )
 
     target_link_libraries(${_name} Threads::Threads)
+
     if(TARGET OpenMP::OpenMP_CXX)
       target_link_libraries(${_name} OpenMP::OpenMP_CXX)
     endif()
@@ -222,19 +236,25 @@ function(PCL_ADD_LIBRARY _name)
     if(MSVC)
       target_link_libraries(${_name} delayimp.lib)  # because delay load is enabled for openmp.dll
     endif()
-    
+
     set_target_properties(${_name} PROPERTIES
       VERSION ${PCL_VERSION}
       SOVERSION ${PCL_VERSION_MAJOR}.${PCL_VERSION_MINOR}
       DEFINE_SYMBOL "PCLAPI_EXPORTS")
 
-      set_target_properties(${_name} PROPERTIES FOLDER "Libraries")
+    set_target_properties(${_name} PROPERTIES FOLDER "Libraries")
   endif()
+  
+  PCL_ADD_VERSION_INFO(${_name})
+
+  add_library(PCL::${_name} ALIAS ${_name})
 
   install(TARGETS ${_name}
-          RUNTIME DESTINATION ${BIN_INSTALL_DIR} COMPONENT pcl_${ARGS_COMPONENT}
-          LIBRARY DESTINATION ${LIB_INSTALL_DIR} COMPONENT pcl_${ARGS_COMPONENT}
-          ARCHIVE DESTINATION ${LIB_INSTALL_DIR} COMPONENT pcl_${ARGS_COMPONENT})
+        EXPORT PCLTargets
+        RUNTIME DESTINATION ${BIN_INSTALL_DIR} COMPONENT pcl_${ARGS_COMPONENT}
+        LIBRARY DESTINATION ${LIB_INSTALL_DIR} COMPONENT pcl_${ARGS_COMPONENT}
+        ARCHIVE DESTINATION ${LIB_INSTALL_DIR} COMPONENT pcl_${ARGS_COMPONENT})
+
 
   # Copy PDB if available
   if(MSVC AND ${PCL_LIB_TYPE} EQUAL "SHARED")
@@ -262,43 +282,57 @@ function(PCL_CUDA_ADD_LIBRARY _name)
   endif()
 
   REMOVE_VTK_DEFINITIONS()
+
   if(NOT ARGS_SOURCES)
-    add_library(${_name} INTERFACE)
+    if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.19)
+      add_library(${_name} INTERFACE ${ARGS_INCLUDES})
+
+      set_target_properties(${_name} PROPERTIES FOLDER "Libraries")
+    else()
+      add_library(${_name} INTERFACE)
+    endif()
     
     target_include_directories(${_name} INTERFACE
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         $<INSTALL_INTERFACE:${INCLUDE_INSTALL_ROOT}> 
     )
-
   else()
     add_library(${_name} ${PCL_LIB_TYPE} ${ARGS_SOURCES})
-  
-    PCL_ADD_VERSION_INFO(${_name})
-  
+
     target_compile_options(${_name} PRIVATE $<$<COMPILE_LANGUAGE:CUDA>: ${GEN_CODE} --expt-relaxed-constexpr>)
   
     target_include_directories(${_name} PUBLIC
       $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
       $<INSTALL_INTERFACE:${INCLUDE_INSTALL_ROOT}> 
     )
-  
+
     target_include_directories(${_name} PRIVATE ${CUDA_TOOLKIT_INCLUDE})
   
     if(MSVC)
       target_link_libraries(${_name} delayimp.lib)  # because delay load is enabled for openmp.dll
     endif()
-  
+
     set_target_properties(${_name} PROPERTIES
       VERSION ${PCL_VERSION}
       SOVERSION ${PCL_VERSION_MAJOR}.${PCL_VERSION_MINOR}
       DEFINE_SYMBOL "PCLAPI_EXPORTS")
     set_target_properties(${_name} PROPERTIES FOLDER "Libraries")
   endif()
+    
+  PCL_ADD_VERSION_INFO(${_name})
+  
+  add_library(PCL::${_name} ALIAS ${_name})
 
   install(TARGETS ${_name}
-          RUNTIME DESTINATION ${BIN_INSTALL_DIR} COMPONENT pcl_${ARGS_COMPONENT}
-          LIBRARY DESTINATION ${LIB_INSTALL_DIR} COMPONENT pcl_${ARGS_COMPONENT}
-          ARCHIVE DESTINATION ${LIB_INSTALL_DIR} COMPONENT pcl_${ARGS_COMPONENT})
+    EXPORT PCLTargets
+    RUNTIME DESTINATION ${BIN_INSTALL_DIR} COMPONENT pcl_${ARGS_COMPONENT}
+    LIBRARY DESTINATION ${LIB_INSTALL_DIR} COMPONENT pcl_${ARGS_COMPONENT}
+    ARCHIVE DESTINATION ${LIB_INSTALL_DIR} COMPONENT pcl_${ARGS_COMPONENT})
+
+  # Copy PDB if available
+  if(MSVC AND ${PCL_LIB_TYPE} EQUAL "SHARED")
+    install(FILES $<TARGET_PDB_FILE:${_name}> DESTINATION ${BIN_INSTALL_DIR} OPTIONAL)
+  endif()
 endfunction()
 
 ###############################################################################
@@ -326,7 +360,20 @@ function(PCL_ADD_EXECUTABLE _name)
   else()
     add_executable(${_name} ${ARGS_SOURCES})
   endif()
+
   PCL_ADD_VERSION_INFO(${_name})
+
+  target_compile_options(${_name}
+    PRIVATE ${PCL_PRIVATE_COMPILER_OPTIONS})
+      
+  target_compile_definitions(${_name}
+    PRIVATE ${PCL_PRIVATE_COMPILER_DEFINITIONS})
+
+  target_compile_features(${_name}
+    PRIVATE ${PCL_PRIVATE_COMPILER_FEATURES})
+
+  target_link_options(${_name}
+    PRIVATE ${PCL_PRIVATE_LINK_OPTIONS})
 
   target_link_libraries(${_name} Threads::Threads)
 
@@ -377,10 +424,20 @@ function(PCL_CUDA_ADD_EXECUTABLE _name)
   REMOVE_VTK_DEFINITIONS()
 
   add_executable(${_name} ${ARGS_SOURCES})
-
+  
   PCL_ADD_VERSION_INFO(${_name})
 
-  target_compile_options(${_name} PRIVATE $<$<COMPILE_LANGUAGE:CUDA>: ${GEN_CODE} --expt-relaxed-constexpr>)
+  target_compile_options(${_name}
+    PRIVATE ${PCL_PRIVATE_COMPILER_OPTIONS} $<$<COMPILE_LANGUAGE:CUDA>: ${GEN_CODE} --expt-relaxed-constexpr>)
+      
+  target_compile_definitions(${_name}
+    PRIVATE ${PCL_PRIVATE_COMPILER_DEFINITIONS})
+
+  target_compile_features(${_name}
+    PRIVATE ${PCL_PRIVATE_COMPILER_FEATURES})
+
+  target_link_options(${_name}
+    PRIVATE ${PCL_PRIVATE_LINK_OPTIONS})
 
   target_include_directories(${_name} PRIVATE ${CUDA_TOOLKIT_INCLUDE})
 
@@ -416,6 +473,19 @@ macro(PCL_ADD_TEST _name _exename)
   endif()
 
   add_executable(${_exename} ${ARGS_FILES})
+
+  target_compile_options(${_exename}
+    PRIVATE ${PCL_PRIVATE_COMPILER_OPTIONS} $<$<COMPILE_LANGUAGE:CUDA>: ${GEN_CODE} --expt-relaxed-constexpr>)
+      
+  target_compile_definitions(${_exename}
+    PRIVATE ${PCL_PRIVATE_COMPILER_DEFINITIONS})
+
+  target_compile_features(${_exename}
+    PRIVATE ${PCL_PRIVATE_COMPILER_FEATURES})
+
+  target_link_options(${_exename}
+    PRIVATE ${PCL_PRIVATE_LINK_OPTIONS})
+  
   if(NOT WIN32)
     set_target_properties(${_exename} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
   endif()
@@ -461,6 +531,18 @@ function(PCL_ADD_BENCHMARK _name)
   target_link_libraries(benchmark_${_name} benchmark::benchmark ${ARGS_LINK_WITH})
   set_target_properties(benchmark_${_name} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 
+  target_compile_options(benchmark_${_name}
+    PRIVATE ${PCL_PRIVATE_COMPILER_OPTIONS} $<$<COMPILE_LANGUAGE:CUDA>: ${GEN_CODE} --expt-relaxed-constexpr>)
+      
+  target_compile_definitions(benchmark_${_name}
+    PRIVATE ${PCL_PRIVATE_COMPILER_DEFINITIONS})
+
+  target_compile_features(benchmark_${_name}
+    PRIVATE ${PCL_PRIVATE_COMPILER_FEATURES})
+
+  target_link_options(benchmark_${_name}
+    PRIVATE ${PCL_PRIVATE_LINK_OPTIONS})
+
   # See https://github.com/google/benchmark/issues/1457
   if(BenchmarkBuildType STREQUAL "STATIC_LIBRARY" AND benchmark_VERSION STREQUAL "1.7.0")
     target_compile_definitions(benchmark_${_name} PUBLIC -DBENCHMARK_STATIC_DEFINE)
@@ -500,6 +582,19 @@ macro(PCL_ADD_EXAMPLE _name)
   endif()
 
   add_executable(${_name} ${ARGS_FILES})
+  
+  target_compile_options(${_name}
+    PRIVATE ${PCL_PRIVATE_COMPILER_OPTIONS} $<$<COMPILE_LANGUAGE:CUDA>: ${GEN_CODE} --expt-relaxed-constexpr>)
+      
+  target_compile_definitions(${_name}
+    PRIVATE ${PCL_PRIVATE_COMPILER_DEFINITIONS})
+
+  target_compile_features(${_name}
+    PRIVATE ${PCL_PRIVATE_COMPILER_FEATURES})
+
+  target_link_options(${_name}
+    PRIVATE ${PCL_PRIVATE_LINK_OPTIONS})
+
   target_link_libraries(${_name} ${ARGS_LINK_WITH} ${CLANG_LIBRARIES})
   if(WIN32 AND MSVC)
     set_target_properties(${_name} PROPERTIES DEBUG_OUTPUT_NAME ${_name}${CMAKE_DEBUG_POSTFIX}
@@ -926,7 +1021,6 @@ macro(PCL_ADD_GRABBER_DEPENDENCY _name _description)
       message(STATUS "${_description}: not building because ${_name} not found")
     else()
       set(HAVE_${_name_capitalized} TRUE)
-      include_directories(SYSTEM "${${_name_capitalized}_INCLUDE_DIRS}")
     endif()
   endif()
 endmacro()
