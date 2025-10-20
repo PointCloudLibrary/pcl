@@ -165,7 +165,7 @@ namespace pcl
     namespace traits
     {
       template<typename FeaturePointT> struct descriptorSize {};
-   
+
       template<> struct descriptorSize<PFHSignature125> { static constexpr const int value = 125; };
       template<> struct descriptorSize<PFHRGBSignature250> { static constexpr const int value = 250; };
       template<> struct descriptorSize<ShapeContext1980> { static constexpr const int value = 1980; };
@@ -189,7 +189,7 @@ namespace pcl
       static constexpr int descriptorSize_v = descriptorSize<FeaturePointT>::value;
     }
   }
-  
+
   using Vector2fMap = Eigen::Map<Eigen::Vector2f>;
   using Vector2fMapConst = const Eigen::Map<const Eigen::Vector2f>;
   using Array3fMap = Eigen::Map<Eigen::Array3f>;
@@ -215,6 +215,8 @@ namespace pcl
       float x; \
       float y; \
       float z; \
+      /* ensure last homogeneous component is 1 for affine transformations */ \
+      float _w  = 1; \
     }; \
   };
 
@@ -460,7 +462,7 @@ namespace pcl
     inline constexpr PointXYZI (float _intensity = 0.f) : PointXYZI(0.f, 0.f, 0.f, _intensity) {}
 
     inline constexpr PointXYZI (float _x, float _y, float _z, float _intensity = 0.f) : _PointXYZI{{{_x, _y, _z, 1.0f}}, {{_intensity}}} {}
-    
+
     friend std::ostream& operator << (std::ostream& os, const PointXYZI& p);
   };
 
@@ -689,7 +691,7 @@ namespace pcl
   PCL_EXPORTS std::ostream& operator << (std::ostream& os, const PointXYZHSV& p);
   struct EIGEN_ALIGN16 PointXYZHSV : public _PointXYZHSV
   {
-    inline constexpr PointXYZHSV (const _PointXYZHSV &p) : 
+    inline constexpr PointXYZHSV (const _PointXYZHSV &p) :
       PointXYZHSV{p.x, p.y, p.z, p.h, p.s, p.v} {}
 
     inline constexpr PointXYZHSV (): PointXYZHSV (0.f, 0.f, 0.f) {}
@@ -714,10 +716,10 @@ namespace pcl
   // NOLINTBEGIN(modernize-use-default-member-init)
   struct PointXY
   {
-    union 
-    { 
-      float data[2]; 
-      struct 
+    union
+    {
+      float data[2];
+      struct
       {
         float x;
         float y;
@@ -729,7 +731,7 @@ namespace pcl
 
     inline pcl::Vector2fMap getVector2fMap () { return (pcl::Vector2fMap (data)); }
     inline pcl::Vector2fMapConst getVector2fMap () const { return (pcl::Vector2fMapConst (data)); }
-    
+
     friend std::ostream& operator << (std::ostream& os, const PointXY& p);
   };
   // NOLINTEND(modernize-use-default-member-init)
@@ -929,8 +931,8 @@ namespace pcl
     inline constexpr PointXYZRGBNormal (float _x, float _y, float _z, std::uint8_t _r, std::uint8_t _g, std::uint8_t _b,
                               float n_x, float n_y, float n_z, float _curvature = 0.f) :
       _PointXYZRGBNormal{
-        {{_x, _y, _z, 1.0f}}, 
-        {{n_x, n_y, n_z, 0.0f}}, 
+        {{_x, _y, _z, 1.0f}},
+        {{n_x, n_y, n_z, 0.0f}},
         {{ {{{_b, _g, _r, 255u}}}, _curvature }}
       }
     {}
@@ -938,8 +940,8 @@ namespace pcl
     inline constexpr PointXYZRGBNormal (float _x, float _y, float _z, std::uint8_t _r, std::uint8_t _g, std::uint8_t _b,
                               std::uint8_t _a, float n_x, float n_y, float n_z, float _curvature = 0.f) :
       _PointXYZRGBNormal{
-        {{_x, _y, _z, 1.0f}}, 
-        {{n_x, n_y, n_z, 0.0f}}, 
+        {{_x, _y, _z, 1.0f}},
+        {{n_x, n_y, n_z, 0.0f}},
         {{ {{{_b, _g, _r, _a}}}, _curvature }}
       }
     {}
@@ -981,8 +983,8 @@ namespace pcl
     inline constexpr PointXYZINormal (float _x, float _y, float _z, float _intensity,
                             float n_x, float n_y, float n_z, float _curvature = 0.f) :
       _PointXYZINormal{
-        {{_x, _y, _z, 1.0f}}, 
-        {{n_x, n_y, n_z, 0.0f}}, 
+        {{_x, _y, _z, 1.0f}},
+        {{n_x, n_y, n_z, 0.0f}},
         {{_intensity, _curvature}}
       }
     {}
@@ -1024,11 +1026,11 @@ namespace pcl
     inline constexpr PointXYZLNormal (float _x, float _y, float _z, std::uint32_t _label,
                             float n_x, float n_y, float n_z, float _curvature = 0.f) :
       _PointXYZLNormal{
-        {{_x, _y, _z, 1.0f}}, 
-        {{n_x, n_y, n_z, 0.0f}}, 
+        {{_x, _y, _z, 1.0f}},
+        {{n_x, n_y, n_z, 0.0f}},
         {{_label, _curvature}}
       }
-    {} 
+    {}
 
     friend std::ostream& operator << (std::ostream& os, const PointXYZLNormal& p);
   };
@@ -1636,7 +1638,7 @@ namespace pcl
     inline constexpr PointWithScale (float _x, float _y, float _z, float _scale = 1.f,
                            float _angle = -1.f, float _response = 0.f, int _octave = 0) :
       _PointWithScale{{{_x, _y, _z, 1.0f}}, {_scale}, _angle, _response, _octave } {}
-    
+
     friend std::ostream& operator << (std::ostream& os, const PointWithScale& p);
   };
 
@@ -1673,11 +1675,11 @@ namespace pcl
       PointSurfel{0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0u, 0u, 0u, 0u, 0.0f, 0.0f, 0.0f} {}
 
     inline constexpr PointSurfel (float _x, float _y, float _z, float _nx,
-                           float _ny, float _nz, std::uint8_t _r, std::uint8_t _g, std::uint8_t _b, std::uint8_t _a, 
+                           float _ny, float _nz, std::uint8_t _r, std::uint8_t _g, std::uint8_t _b, std::uint8_t _a,
                            float _radius, float _confidence, float _curvature) :
       _PointSurfel{
-        {{_x, _y, _z, 1.0f}}, 
-        {{_nx, _ny, _nz, 0.0f}}, 
+        {{_x, _y, _z, 1.0f}},
+        {{_nx, _ny, _nz, 0.0f}},
         {{{{{_b, _g, _r, _a}}}, _radius, _confidence, _curvature}}
       } {}
 
@@ -1702,7 +1704,7 @@ namespace pcl
   {
     inline constexpr PointDEM (const _PointDEM &p) :
       PointDEM{p.x, p.y, p.z, p.intensity, p.intensity_variance, p.height_variance} {}
-   
+
     inline constexpr PointDEM (): PointDEM (0.f, 0.f, 0.f) {}
 
     inline constexpr PointDEM (float _x, float _y, float _z): PointDEM (_x, _y, _z, 0.f, 0.f, 0.f) {}
@@ -1710,7 +1712,7 @@ namespace pcl
     inline constexpr PointDEM (float _x, float _y, float _z, float _intensity,
                      float _intensity_variance, float _height_variance) :
       _PointDEM{{{_x, _y, _z, 1.0f}}, _intensity, _intensity_variance, _height_variance} {}
-    
+
     friend std::ostream& operator << (std::ostream& os, const PointDEM& p);
   };
 
@@ -2294,4 +2296,3 @@ namespace traits
 #endif
 
 } // namespace pcl
-
