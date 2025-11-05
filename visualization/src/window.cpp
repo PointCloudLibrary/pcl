@@ -129,6 +129,8 @@ pcl::visualization::Window::Window (const pcl::visualization::Window &src)
 pcl::visualization::Window&
 pcl::visualization::Window::operator = (const pcl::visualization::Window &src)
 {
+  if (this == &src)
+    return (*this);
   stopped_ = src.stopped_;
   timer_id_ = src.timer_id_;
   //mouse_signal_ = src.mouse_signal_;

@@ -71,6 +71,8 @@ class ply_to_raw_converter
     ply_to_raw_converter&
     operator = (const ply_to_raw_converter &f)
     {
+      if (this == &f)
+        return (*this);
       ostream_ = f.ostream_;
       vertex_x_ = f.vertex_x_;
       vertex_y_ = f.vertex_y_;
