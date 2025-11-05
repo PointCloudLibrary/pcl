@@ -101,6 +101,8 @@ namespace pcl
       PLYReader&
       operator = (const PLYReader &p)
       {
+        if (this == &p)
+          return *this;
         origin_ = p.origin_;
         orientation_ = p.orientation_;
         range_grid_ = p.range_grid_;

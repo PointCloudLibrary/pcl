@@ -91,9 +91,12 @@ namespace pcl
         inline OutofcoreIteratorBase&
         operator = (const OutofcoreIteratorBase& src)
         {
+          if (this == &src)
+            return *this;
           octree_ = src.octree_;
           currentNode_ = src.currentNode_;
           currentOctreeDepth_ = src.currentOctreeDepth_;
+          return *this;
         }
         
         

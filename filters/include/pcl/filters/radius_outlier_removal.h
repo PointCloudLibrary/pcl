@@ -110,7 +110,7 @@ namespace pcl
         * \return The radius of the sphere for nearest neighbor searching.
         */
       inline double
-      getRadiusSearch ()
+      getRadiusSearch () const
       {
         return (search_radius_);
       }
@@ -132,7 +132,7 @@ namespace pcl
         * \return The minimum number of neighbors (default = 1).
         */
       inline int
-      getMinNeighborsInRadius ()
+      getMinNeighborsInRadius () const
       {
         return (min_pts_radius_);
       }

@@ -136,7 +136,7 @@ namespace pcl
         * Points will be classified as inlier or outlier if their average neighbor distance is below or above this threshold respectively.
         */
       inline double
-      getStddevMulThresh ()
+      getStddevMulThresh () const
       {
         return (std_mul_);
       }
@@ -248,7 +248,7 @@ namespace pcl
 
       /** \brief Get the standard deviation multiplier threshold as set by the user. */
       inline double
-      getStddevMulThresh ()
+      getStddevMulThresh () const
       {
         return (std_mul_);
       }

@@ -76,6 +76,8 @@ namespace pcl
 
             const Entry& operator = (const Entry& src)
             {
+              if (this == &src)
+                return *this;
               num_transforms_ = src.num_transforms_;
               aux::copy3 (src.axis_angle_, this->axis_angle_);
               aux::copy3 (src.translation_, this->translation_);

@@ -343,6 +343,8 @@ public:
   inline Octree2BufBase&
   operator=(const Octree2BufBase& source)
   {
+    if (this == &source)
+      return *this;
     leaf_count_ = source.leaf_count_;
     branch_count_ = source.branch_count_;
     root_node_ = new (BranchNode)(*(source.root_node_));

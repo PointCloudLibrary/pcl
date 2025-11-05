@@ -2068,7 +2068,16 @@ namespace pcl
 
           FPSCallback () = default;
           FPSCallback (const FPSCallback& src)  = default;
-          FPSCallback& operator = (const FPSCallback& src) { actor = src.actor; pcl_visualizer = src.pcl_visualizer; decimated = src.decimated; last_fps = src.last_fps; return (*this); }
+          FPSCallback& operator = (const FPSCallback& src)
+          {
+            if (this == &src)
+              return *this;
+            actor = src.actor;
+            pcl_visualizer = src.pcl_visualizer;
+            decimated = src.decimated;
+            last_fps = src.last_fps;
+            return (*this);
+          }
 
           void
           Execute (vtkObject*, unsigned long event_id, void*) override;

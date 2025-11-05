@@ -64,7 +64,13 @@ namespace pcl
       //-----OPERATORS-----
       /** = operator */
       BivariatePolynomialT&
-      operator= (const BivariatePolynomialT& other) { deepCopy (other); return *this;}
+      operator= (const BivariatePolynomialT& other)
+      {
+        if (this == &other)
+          return *this;
+        deepCopy (other);
+        return *this;
+      }
 
       //-----METHODS-----
       /** Initialize members to default values */

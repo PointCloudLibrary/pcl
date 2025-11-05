@@ -96,6 +96,8 @@ public:
   TransformationEstimationLM&
   operator=(const TransformationEstimationLM& src)
   {
+    if (this == &src)
+      return *this;
     tmp_src_ = src.tmp_src_;
     tmp_tgt_ = src.tmp_tgt_;
     tmp_idx_src_ = src.tmp_idx_src_;
@@ -279,6 +281,8 @@ protected:
     inline OptimizationFunctor&
     operator=(const OptimizationFunctor& src)
     {
+      if (this == &src)
+        return *this;
       Functor<MatScalar>::operator=(src);
       estimator_ = src.estimator_;
       return (*this);
@@ -324,6 +328,8 @@ protected:
     inline OptimizationFunctorWithIndices&
     operator=(const OptimizationFunctorWithIndices& src)
     {
+      if (this == &src)
+        return *this;
       Functor<MatScalar>::operator=(src);
       estimator_ = src.estimator_;
       return (*this);

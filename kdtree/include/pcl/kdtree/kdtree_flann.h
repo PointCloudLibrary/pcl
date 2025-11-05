@@ -170,6 +170,9 @@ public:
   inline KdTreeFLANN<PointT, Dist>&
   operator=(const KdTreeFLANN<PointT, Dist>& k)
   {
+    if (this == &k)
+      return *this;
+
     KdTree<PointT>::operator=(k);
     flann_index_ = k.flann_index_;
     cloud_ = k.cloud_;

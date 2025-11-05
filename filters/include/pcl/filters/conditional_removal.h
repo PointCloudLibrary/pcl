@@ -159,6 +159,8 @@ namespace pcl
       inline FieldComparison&
       operator = (const FieldComparison &src)
       {
+        if (this == &src)
+          return *this;
         compare_val_ = src.compare_val_;
         point_data_  = src.point_data_;
         return (*this);

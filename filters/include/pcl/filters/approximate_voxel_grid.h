@@ -162,9 +162,11 @@ namespace pcl
       /** \brief Copy operator. 
         * \param[in] src the approximate voxel grid to copy into this. 
         */
-      inline ApproximateVoxelGrid& 
+      inline ApproximateVoxelGrid&
       operator = (const ApproximateVoxelGrid &src)
       {
+        if (this == &src)
+          return *this;
         leaf_size_ = src.leaf_size_;
         inverse_leaf_size_ = src.inverse_leaf_size_;
         downsample_all_data_ = src.downsample_all_data_;

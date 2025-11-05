@@ -328,6 +328,8 @@ public:
   OctreeBase&
   operator=(const OctreeBase& source)
   {
+    if (this == &source)
+      return *this;
     leaf_count_ = source.leaf_count_;
     branch_count_ = source.branch_count_;
     delete root_node_;
