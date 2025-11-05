@@ -182,12 +182,12 @@ namespace pcl
        */
 
       float
-      getMinimumDistanceThreshold ();
+      getMinimumDistanceThreshold () const;
 
       /** \brief Returns the current maximum distance threshold, in meters
        */
       float
-      getMaximumDistanceThreshold ();
+      getMaximumDistanceThreshold () const;
 
       /** \brief Returns the maximum number of lasers
       */
