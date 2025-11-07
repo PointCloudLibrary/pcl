@@ -13,14 +13,12 @@ if(NOT build)
 endif()
 
 file(GLOB incs include/pcl/gpu/utils/*.h*)
-file(GLOB srcs src/*.cpp src/*.cu src/*.h*)
 file(GLOB dev_incs include/pcl/gpu/utils/device/*.h*)
 source_group("Header Files\\device" FILES ${dev_incs})
 source_group("Source Files" FILES ${srcs})
 
 set(LIB_NAME "pcl_${SUBSYS_NAME}")
-PCL_CUDA_ADD_LIBRARY(${LIB_NAME} COMPONENT ${SUBSYS_NAME} SOURCES ${dev_incs} ${incs} ${srcs})
-target_link_libraries("${LIB_NAME}" pcl_common)
+PCL_CUDA_ADD_LIBRARY(${LIB_NAME} COMPONENT ${SUBSYS_NAME} INCLUDES ${dev_incs} ${incs})
 
 set(EXT_DEPS "")
 #set(EXT_DEPS CUDA)
