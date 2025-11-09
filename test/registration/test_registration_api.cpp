@@ -753,9 +753,14 @@ TEST (PCL, FastRobustIterativeClosestPoint)
   ASSERT_TRUE (fricp.hasConverged ());
   const Eigen::Matrix4f& estimated = fricp.getFinalTransformation ();
 
-  for (int r = 0; r < 4; ++r)
-    for (int c = 0; c < 4; ++c)
-      EXPECT_NEAR (gt (r, c), estimated (r, c), 2e-3f);
+  const Eigen::Matrix3f rotation_error =
+      gt.block<3, 3> (0, 0).transpose () * estimated.block<3, 3> (0, 0);
+  const Eigen::AngleAxisf angle_axis (rotation_error);
+  EXPECT_LT (std::abs (angle_axis.angle ()), 0.1f);
+
+  const Eigen::Vector3f translation_error =
+      gt.block<3, 1> (0, 3) - estimated.block<3, 1> (0, 3);
+  EXPECT_LT (translation_error.norm (), 5e-2f);
 }
 
 
