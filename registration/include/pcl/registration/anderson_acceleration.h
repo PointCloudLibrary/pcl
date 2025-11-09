@@ -1,7 +1,7 @@
 #pragma once
 
 #include <pcl/exceptions.h>
-#include <pcl/pcl_macros.h>
+#include <pcl/memory.h>
 
 #include <Eigen/Core>
 #include <Eigen/QR>

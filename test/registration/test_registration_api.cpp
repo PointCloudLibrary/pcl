@@ -42,6 +42,7 @@
 #include <limits>
 
 #include <pcl/point_types.h>
+#include <pcl/common/transforms.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/registration/correspondence_estimation.h>
 #include <pcl/registration/correspondence_rejection_distance.h>
@@ -58,6 +59,8 @@
 #include <pcl/registration/transformation_estimation_point_to_plane_lls.h>
 #include <pcl/registration/transformation_estimation_point_to_plane.h>
 #include <pcl/registration/transformation_estimation_symmetric_point_to_plane_lls.h>
+#include <pcl/registration/fricp.h>
+#include <Eigen/Geometry>
 #include <pcl/features/normal_3d.h>
 
 #include "test_registration_api_data.h"
@@ -705,6 +708,54 @@ TEST (PCL, TransformationEstimationSymmetricPointToPlaneLLS)
   for (int i = 0; i < 4; ++i)
     for (int j = 0; j < 4; ++j)
       EXPECT_NEAR (estimated_transform (i, j), ground_truth_tform (i, j), 1e-2);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (PCL, FastRobustIterativeClosestPoint)
+{
+  CloudXYZ::Ptr source (new CloudXYZ);
+  source->height = 1;
+  source->is_dense = true;
+  for (float x = -0.2f; x <= 0.2f; x += 0.1f)
+    for (float y = -0.1f; y <= 0.1f; y += 0.1f)
+    {
+      PointXYZ p;
+      p.x = x;
+      p.y = y;
+      p.z = 0.25f * x - 0.15f * y + 0.05f * x * y;
+      source->points.push_back (p);
+    }
+  source->width = static_cast<std::uint32_t>(source->size ());
+
+  Eigen::Matrix4f gt = Eigen::Matrix4f::Identity ();
+  gt.block<3, 3> (0, 0) =
+      (Eigen::AngleAxisf (0.35f, Eigen::Vector3f::UnitZ ()) *
+       Eigen::AngleAxisf (-0.25f, Eigen::Vector3f::UnitY ()) *
+       Eigen::AngleAxisf (0.15f, Eigen::Vector3f::UnitX ())).toRotationMatrix ();
+  gt.block<3, 1> (0, 3) = Eigen::Vector3f (0.05f, -0.08f, 0.12f);
+
+  CloudXYZ::Ptr target (new CloudXYZ);
+  pcl::transformPointCloud (*source, *target, gt);
+  target->push_back (PointXYZ (1.0f, -1.0f, 0.4f)); // mild outlier
+  target->width = static_cast<std::uint32_t>(target->size ());
+  target->height = 1;
+  target->is_dense = true;
+
+  CloudXYZ::Ptr input_source (new CloudXYZ (*source));
+  CloudXYZ aligned;
+
+  pcl::FastRobustIterativeClosestPoint<PointXYZ, PointXYZ> fricp;
+  fricp.setMaximumIterations (60);
+  fricp.setInputSource (input_source);
+  fricp.setInputTarget (target);
+  fricp.align (aligned);
+
+  ASSERT_TRUE (fricp.hasConverged ());
+  const Eigen::Matrix4f& estimated = fricp.getFinalTransformation ();
+
+  for (int r = 0; r < 4; ++r)
+    for (int c = 0; c < 4; ++c)
+      EXPECT_NEAR (gt (r, c), estimated (r, c), 2e-3f);
 }
 
 

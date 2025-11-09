@@ -106,6 +106,7 @@ private:
   using Matrix3Xd = Eigen::Matrix<double, 3, Eigen::Dynamic>;
   using VectorXd = Eigen::VectorXd;
   using Vector3d = Eigen::Vector3d;
+  using AndersonAccelerationType = registration::AndersonAcceleration;
 
   Matrix4d
   convertGuessToCentered(const Matrix4& guess,
@@ -159,7 +160,7 @@ private:
 
   static constexpr double same_threshold_ = 1e-6;
 
-  AndersonAcceleration anderson_;
+  AndersonAccelerationType anderson_;
 
   PCL_MAKE_ALIGNED_OPERATOR_NEW
 };

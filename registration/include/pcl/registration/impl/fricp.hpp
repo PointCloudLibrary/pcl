@@ -51,7 +51,6 @@
 #include <numeric>
 #include <utility>
 #include <vector>
-
 namespace pcl {
 
 template <typename PointSource, typename PointTarget, typename Scalar>
